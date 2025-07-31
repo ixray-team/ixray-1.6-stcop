@@ -15,7 +15,8 @@ def_state_standing = wait
 faction = freedom
 out_restr = val_out_restrictor_freedom_leader
 meet = meet
-on_info = {+val_spawn_attack_freedom_2 -val_strike_antenna_done -val_killer_base_is_no_more} walker@silent
+on_info = {+val_spawn_attack_freedom_2 -val_strike_antenna_done -val_killer_base_is_no_more} walker@silent, {+val_killer_base_is_no_more} walker@last
+invulnerable = true
 
 [walker@silent]
 danger = danger_condition
@@ -25,7 +26,17 @@ def_state_standing = wait
 faction = freedom
 out_restr = val_out_restrictor_freedom_leader
 meet = no_meet
-on_info = {+val_strike_antenna_done} walker@main, {+val_killer_base_is_no_more} walker@main
+on_info = {+val_strike_antenna_done} walker@main, {+val_killer_base_is_no_more} walker@last
+invulnerable = true
+
+[walker@last]
+danger = danger_condition
+path_walk = val_smart_terrain_freedom_leader_walker_1_walk
+path_look = val_smart_terrain_freedom_leader_walker_1_look
+def_state_standing = wait
+faction = freedom
+out_restr = val_out_restrictor_freedom_leader
+meet = meet
 
 [danger_condition]
 ignore_distance_corpse = 0

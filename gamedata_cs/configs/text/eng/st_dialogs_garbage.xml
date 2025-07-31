@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_bandit_leader_hello_11">
+		<text>What do you want?</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1">
+		<text>Hmm... Now that you mention it, I do have a job that needs doing. There's a fella that needs to disappear. If you take the job, I'll make sure he's at the old bus stop, the one beyond the eastern wall. You up for it?</text>
+	</string>
+	<string id="gar_bandit_trader_hello_11">
+		<text>So... Got some swag?</text>
+	</string>
+	<string id="gar_bandit_tech_hello_11">
+		<text>Hey, buddy... hic!.. Whatcha need?</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_0">
+		<text>Yoga gave me the coordinates of his stash, but supposedly the place is now crawling with either anomalies or mutants.</text>
+	</string>
+	<string id="gar_bandit_barman_bandit_secret_1">
+		<text>Is that so? Hah! That stash is Yoga's favorite prank, buddy. What, you really thought you were the first sucker he gave those coordinates to? Loads of losers have tried getting to that stash...The last one even managed to take out the psy-dog that lived there, right before he took a few thousand volts right in his ass. I suppose that will make getting the...hrm..."reward" a little easier.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_0">
+		<text>Yoga decided to clean out the diggers at the flea market once and for all.</text>
+	</string>
+	<string id="gar_bandit_barman_destroy_flea_market_1">
+		<text>Huh? What is he, crazy? It's like, the best place to skim cash from diggers, ever! Well, this spells the end of our chief, believe you me. He's done for. The smugglers are already hiding, and with the flea market out of action, the diggers are gonna dry up real quick. In a few months the boys won't have anyone to fleece, and what is Yoga gonna tell them? Well, I'll have a few words with the boys...Yoga is digging his own grave...</text>
+	</string>
+	<string id="gar_bandit_barman_hello_11">
+		<text>So?</text>
+	</string>
+	<string id="gar_bandit_barman_join_0">
+		<text>How can I join up?</text>
+	</string>
+	<string id="gar_bandit_barman_join_1">
+		<text>Oh, so you wanna get under Yoga's wing? Well, go ask him then. He's in his trailer, doing jack shit and waiting for idiots like you. Spend a little time running his errands for him, see if you change your mind. </text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_0">
+		<text>Yoga ordered a hit on a guy called Stringov. You know him?</text>
+	</string>
+	<string id="gar_bandit_barman_kill_digger_traitor_1">
+		<text>No, I don't, but lemme give you a slice of advice. Always think of yourself first. When a fella is staring down the barrel of a gun he can get real generous...use that. Just make sure he doesn't live long enough to regret his generosity.</text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_0">
+		<text>Yoga ordered a hit on some smuggler and a few of his digger clients. </text>
+	</string>
+	<string id="gar_bandit_barman_kill_smuggler_1">
+		<text>Well, that Yoga is real hardcore, ain't he? Even if them diggers get their dirty mits on whatever, it ain't gonna help them. We can pop them any time we want, but why would we? Fleecing them is easy as pie. As for the smuggler, what's Yoga thinking? Where does he think I get my shit from? Oh well, screw it.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_0">
+		<text>I have a couple of questions.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1">
+		<text>Shoot.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_11">
+		<text>What are you doing here?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_111">
+		<text>Kicking my heels and pouring drinks, that's what I'm doing. Wasting my friggin' time, basically. I've wanted to be a leader since I was a kid and I ain't never been a flunky. And look at me now, pouring vodka and watching Yoga do jack shit and get fat. The boys ain't doing much either. Man, if I was the top dog around here I'd find them something to do! We'd stir up so much trouble the Zone would shake worse than it does after an emission.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1111">
+		<text>I see. I also wanted to ask...</text>
+	</string>
+	<string id="gar_bandit_barman_questions_1112">
+		<text>Yeah, well that's enough talking for now.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_12">
+		<text>What's new in the Zone?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_121">
+		<text>Well, the emissions keep hitting us with increasing regularity and the Zone is changing with each one. Lots of new and interesting areas have opened up, and lots of folk are looking to get a slice of the action. And I ain't got a problem with that. If you got a good head on your shoulders and a whole clan by your side, staying home and doing shit instead of vying for a piece or two of the Zone is an absolute crime in my eyes.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_13">
+		<text>How do you get on with your neighbors?</text>
+	</string>
+	<string id="gar_bandit_barman_questions_131">
+		<text>Well, it's more or less like this: we're the only ones in the Zone with any sort of code. We ain't no bandits, we're wolves. And the rest of them suckers are sheep. They ain't got no order to their lives, so we're just doing our job as shepherds. Take the Garbage, for example. Whenever stalkers would find something useful in these piles of rust, they'd start shooting each other up over any ol' piece of junk. That's no way to do business, so our boys came here, set a few ground rules and it all got nice and quiet from there on in. We haven't yet managed to do the same with others, but we'll get to that. I'm not too concerned about that right now though - I've got other things on my mind.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_14">
+		<text>Never mind, we'll talk next time.</text>
+	</string>
+	<string id="gar_bandit_barman_questions_141">
+		<text>Whatever.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_11">
+		<text>Hey man, feel like shooting some crows?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_111">
+		<text>Sure.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1111">
+		<text>Great. You can play for fun, cash or try to set a new record. What do you want to do?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_112">
+		<text>Nah, I don't feel like it.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_1121">
+		<text>Your choice, buddy. I'll be here if you change your mind.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_21">
+		<text>Here's your dough as promised. I play fair. How about another go?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_31">
+		<text>That was just bad luck. Give it another shot, man!</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_41">
+		<text>Where are you going, man? Shooting outside is your private business, but how about you stay and play by the rules?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_51">
+		<text>You know that your time is ticking, right? We can talk later.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_511">
+		<text>Got it.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_0">
+		<text>I want to play for money.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1">
+		<text>That's music to my ears. You need me to run over the rules for you or what?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11">
+		<text>Let's get shooting.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111">
+		<text>Enough chat, buddy. So, how many crows do you reckon you can take down in one minute?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111111">
+		<text>Deal.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111111">
+		<text>Kickass. Get your shooter ready, man.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111111">
+		<text>OK.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112">
+		<text>I don't have that much cash.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_1111121">
+		<text>Then how about you choose something you can afford?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111211">
+		<text>Yeah, I'll choose a different number of crows.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_11111212">
+		<text>No, not interested.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_111112121">
+		<text>Well, you can play for fun. Or you could try to set a record, but that really hits your pocket. What do you say?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_12">
+		<text>Please explain.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_121">
+		<text>Playing for money is my definition of fun. Tell me how many crows you're gonna take down in a minute, bet your cash and go get 'em. If you kill as many as you said, I double your cash, fair and square. If you don't, I keep the bet. And remember, the more crows, the higher the bets.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_money_13">
+		<text>I don't feel like playing all of a sudden.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_0">
+		<text>Are there any general rules?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_questions_1">
+		<text>Not really. I start the timer, you get ready and start blasting at the crows on my signal. If you kill the right number in a minute, you win - good job and all that. How you kill them is up to you. But remember, if you leave this area the game is over. So, do you want to play for fun, money or try and set a new record?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_0">
+		<text>I don't feel like playing.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_quit_1">
+		<text>Your choice, buddy. I'll be here if you change your mind.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_0">
+		<text>I want to set a new record.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11">
+		<text>Let's start.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1111">
+		<text>OK.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11111">
+		<text>OK, let's see if you're champion material, buddy.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1112">
+		<text>I'd like to, but I don't have the cash.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_11121">
+		<text>Well, there are simpler options: you can play for cash or just for fun. What do you say?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_1113">
+		<text>I...changed my mind.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_12">
+		<text>Remind me what the rules are.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_121">
+		<text>Well, this one is for the real men. If you reckon you can beat the current record you make a bet that matches it. If you manage to set a new record, I'll double your bet, plus you'll be the new champ and all that. If you don't, I keep your cash.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_record_13">
+		<text>I...changed my mind.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_0">
+		<text>For fun.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_1">
+		<text>Ahh, just practicing? You remember the rules, dontcha?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11">
+		<text>Yeah. Let's get to the shooting.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111">
+		<text>OK, so how many crows can you take out?</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_11111">
+		<text>OK, well, cough up the cash.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_111111">
+		<text>OK.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_21">
+		<text>No. Tell me.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_211">
+		<text>Well, playing for fun is just that - you won't get any cash. It's good if you want to practice or just feeling shitty and want to shoot something. You just decide how many crows you can take out in a minute and attempt to do just that.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_31">
+		<text>I changed my mind.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_training_311">
+		<text>No problem. The choices are still the same: play for money or try for a record. What do you say?</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_111">
+		<text>What do you mean, "someone like you"? Sure, I didn't graduate from no damn academy but I've got the hands for this kind of work - I was the best specialist at my plant, with medals, commendations and all. I would celebrate that kinda stuff with my friends over some drinks, until our boss reported us and we all got fired. That son of a bitch! That plant was real high-profile, 'cause we were working for the defense industry. After that, I got a job as a technician at the local housing office. They always came to me if something happened, 'cause I was the only pro around. Some people slipped me a little cash or poured me a good drink and things were sweet... until I had a little fight with a plumber over a bottle - it got a bit heated and I stabbed the bastard with a screwdriver. He lived, but I got a stretch in a penal colony, and by the time I got back my crib was empty - the wife left me... I got real depressed and got me a case of jimjams. I lost the house through pure stupidity and became homeless. That's when I made my way here. And you know what? They treat me right in this place 'cause I know what I'm doing. And I'm the same, sometimes I even accept a good bottle as payment for work... keep that in mind.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_121">
+		<text>Just 'cause my hands are shaking don't mean I'm useless. I've just got a hangover, that's all - let me have a couple of shots and that'll solve that little problem right up - I'll be good as new! And don't you worry, I'll do a better job than any sober son of a bitch out there, no shit. I can do anything you need: repair your shooter, add some new Kevlar to your armor or sort you out with an upgrade. Just remember to keep your good friend Limpid in mind and pour him a drink for his hard work now and again.</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_131">
+		<text>Frankly, I couldn't give a shit about what's going on. So long as there's enough work (and drink!) to go around - it's all good. My life might be crap, but it's too late to change it now. So why should I cram my head full of useless gossip? I mean, all sorts of shit happens around here. You met Kirill yet? He's the lad with the spotty face - we even call him Spotty. Well, if you ain't seen him he's probably at the bottom of a bottle somewhere. Anyway, I spotted Spotty going outside the base a few times. I figured the boy's got himself a stash where he hides the loot he don't feel like sharing after raids. Others noticed it too, and it got to Yoga one way or another. He summoned Spotty and ordered him to give up the stash. Spotty was like: "Boss, I ain't no rat, I swear..." so he went and showed him. Turns out the lad picked up a wounded Chernobyl puppy and was feeding him scraps, 'cause he had no one else to talk to - the boys didn't think too much of him. Anyways, Yoga got real pissed about the whole thing - shot the puppy, Spotty got a bad beating and lost his cut. Man, that's life...</text>
+	</string>
+	<string id="gar_bandit_fixer_questions_141">
+		<text>Ah, that's my best friend, Senka. You'd drown in the amount of vodka we've drunk together, hah! We buddied up my very first day here: first we had a drink to celebrate our meeting like this, then we smacked each other around a bit, 'cause we got talking about life and had us a disagreement. But don't worry, Senka is a real decent fella, even tho' we still have a bit of a drunken playfight now and again. But I can always talk to him when I feel down - he's my one and only friend, like Pavlov and his dog. </text>
+	</string>
+	<string id="gar_bandit_fixer_questions_151">
+		<text>There's a very basic principle every man should stick to: never mix vodka with beer. No shit, right? Well, it's the same with weapons. Take any weapon characteristic and improve it to the max, got it? It doesn't matter what you pick, accuracy or rate of fire or whatever, just max it out. One fully maxed characteristic will get you much further than any several half-assed ones.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_21">
+		<text>I hope Stringov has copped it by now.</text>
+	</string>
+	<string id="gar_bandit_leader_hello_31">
+		<text>The smuggler ain't gonna get out of the Garbage alive anyhow, but if the diggers get themselves some shooters I ain't gonna be a happy friggin' bunny, ya feel me?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_41">
+		<text>The diggers are still at the flea market, but you're still here. Am I the only one around here who sees a problem with that?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_61">
+		<text>You came to talk some business over or are you just here to pay me some respect?</text>
+	</string>
+	<string id="gar_bandit_leader_hello_91">
+		<text>I'm all ears.</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_0">
+		<text>Will you let me join you?</text>
+	</string>
+	<string id="gar_bandit_leader_join_first_1">
+		<text>Slow down, punk! First you gotta pass the test, and a real test at that. I have just the job for you.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_0">
+		<text>So, am I good to join now? Will you take me?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_1">
+		<text>What are you, stupid? I gave you a job, now go friggin' do it. When it's done, then we can talk about it.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_2">
+		<text>You did the job and you did it good, too good in fact...I get suspicious when things go too smoothly, so how about you travel the Zone a bit while I run some background checks on you. If you really are clean I'll drop you a line on your PDA.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_3">
+		<text>Looks like you run with the Freedom pack. Well, I've got my own pack here and I'm their leader. Are you ready to quit Freedom?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_4">
+		<text>Well, well, a Duty member wants to join my team. Well, there's only one boss around here and that's me. Are you ready to swap your current bosses for me?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5">
+		<text>Well, I got real men on my team and you've just proved that you're good enough to be one of 'em. Just say the word and you're in. What do you say?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51">
+		<text>I've always dreamed about rolling with tough guys like you.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511">
+		<text>You'll get plenty of chances to work on your toughness, believe it. You know how shit works around here?</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5111">
+		<text>No. Break it down for me, pretty please.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51111">
+		<text>Well, the Zone is a mess with everyone whacking everyone. We live by our own rules and teach others to respect them. Our "lessons" cost money, which is why we milk the diggers for cash. The Garbage is all sorted, and now it's time for the Cordon. To get things under our control at the Cordon, we need to kick the stalkers out of there and show them who's boss.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511111">
+		<text>Got it.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_5112">
+		<text>I'm all good, no need for lecturin'.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_51121">
+		<text>OK, well that's about it. Your PDA is now tuned to our frequency, so you'll always know what our boys are up to and how we're doing in our fight against other clans. Alright now, show's over, get outta my sight!</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_511211">
+		<text>Got ya, big man. I'm gonna go join the workforce.</text>
+	</string>
+	<string id="gar_bandit_leader_join_main_52">
+		<text>I'll think about it.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_0">
+		<text>I'd like to work for you.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_11">
+		<text>I'll do it.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_111">
+		<text>Great. The guy's called Stringov. Head over to the stop - I reckon he'll be in position by the time you get there.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_1111">
+		<text>Got it.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_12">
+		<text>Nah, this sort of wet work isn't for me.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_121">
+		<text>Up to you. Let me know if you change your mind - the man might still be alive.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_0">
+		<text>I've decided to take you up on that job offer, after all.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_1">
+		<text>Good. Your luck's in - that fella's still alive. He'll be at the old bus stop beyond the eastern wall soon. Deal with him. He's called Stringov, so just make sure you got the right guy.</text>
+	</string>
+	<string id="gar_bandit_leader_kill_digger_traitor_told_11">
+		<text>Got it.</text>
+	</string>
+	<string id="gar_bandit_leader_meet_greet_b_2">
+		<text>Well, I'll be damned! It's you!</text>
+	</string>
+	<string id="gar_bandit_leader_questions_0">
+		<text>There's something I'd like to ask.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1">
+		<text>What's that?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_11">
+		<text>Tell me about yourself. </text>
+	</string>
+	<string id="gar_bandit_leader_questions_111">
+		<text>What are you, a cop? I ain't gotta answer your friggin' questions. You're nothin' but a punk, a hopeless reject, no different from hundreds I did over to get where I am today. And the reason I got where I am today is that I spent more time thinking and less time talking. Well, there's one other reason - if I had to make a move I did it faster than others, and it hurt more, you understand?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1111">
+		<text>I see. There's something else I wanted to ask.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_1112">
+		<text>I see. No more questions from me.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_12">
+		<text>Aren't you worried that the stalkers will rise up and attack you?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_121">
+		<text>A real man only has one thing to worry about - becoming a member of the non-traditional orientation brigade, if you know what I mean. Apart from that, there ain't nothing that concerns me. I've got enough steel in my balls to keep milking the diggers at the Garbage. Even if they get a whole clan to attack us we'll teach those pukes not to mess with us. We've got fellas joining our ranks all the time, and once we put together enough cash we'll leave this shithole and sort ourselves out with a decent base. And as for current residents of that base... well, they'll just have to find themselves a new place to live, won't they?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_13">
+		<text>Do you take an interest in what happens in the Zone?</text>
+	</string>
+	<string id="gar_bandit_leader_questions_131">
+		<text>There's only one thing I care about: where the jarheads or some other cocksuckers are gonna attack us from. I couldn't give two shits about nothin' else, except maybe the emissions and stalkers fighting the military, 'cause those are things we can profit from. Anyways, let me tell you a little story. There used to be this loser around here - we called him Chef. That wasn't 'cause he was a cook, it's just he could spot a meat grinder, one of the shittiest anomalies around here, from a hundred paces away. He started getting real cocky, saying he's saving us from certain death but his cut don't get any juicier. The little bitch needed a reminder of who's the boss around here, so I called him in, lamped him one between the eyes, and broke that cocksucker's fingers while he was out of it. Then I got my boys to blindfold him and take him to a good spot. I figured if he walks a hundred paces and stays alive I'll let him go on living and cleaning my boots. Well, he found himself his beloved meat grinder to step into and that was the end of Chef. The moral of the story is: mess with me and you'll be mince.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_14">
+		<text>Nothing, thanks.</text>
+	</string>
+	<string id="gar_bandit_leader_questions_141">
+		<text>Good boy. The less you know, the longer you'll live.</text>
+	</string>
+	<string id="gar_bandit_leader_reward_0">
+		<text>Don't you think the reward for my last job doesn't really reflect the risk?</text>
+	</string>
+	<string id="gar_bandit_leader_reward_111">
+		<text>I don't think so, I know so, know what I mean? Alright-alright, you're not the punk I thought you were at first, so I'm gonna tell you about a little stash. I hid a special shooter in there before the last emission, the massive one. After the emission that whole area got covered by anomalies, but some guy I came across told me it's not anomalies but monsters you gotta watch out for. Either way, getting there ain't easy, but I'll give you reliable coordinates if you feel like taking a walk. If you manage, the stuff in the stash will be worth the risk. </text>
+	</string>
+	<string id="gar_bandit_leader_reward_1111">
+		<text>OK, we'll see.</text>
+	</string>
+	<string id="gar_bandit_tech_join_0">
+		<text>Can you tell me how I can join your faction?</text>
+	</string>
+	<string id="gar_bandit_tech_join_1">
+		<text>That's for the boss to decide. His trailer is in the hangar.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_0">
+		<text>Can you answer a couple of questions?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1">
+		<text>Sure thing!</text>
+	</string>
+	<string id="gar_bandit_tech_questions_11">
+		<text>How did someone like you become a technician?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_111">
+		<text>What do you mean, "someone like you"? Sure, I didn't graduate from no damn academy but I've got the hands for this kind of work - I was the best specialist at my plant, with medals, commendations and all. I would celebrate that kinda stuff with my friends over some drinks until our boss reported us and we all got fired. That son of a bitch! That plant was real high-profile 'cause we were working for the defense industry. After that, I got a job as a technician at the local housing office. They always came to me if something happened 'cause I was the only pro around. Some people slipped me a little cash or poured me a good drink and things were sweet... until I had a little fight with a plumber over a bottle - it got a bit heated and I stabbed the bastard with a screwdriver. He lived, but I got a stretch in a penal colony, and by the time I got back my crib was empty - the wife left me... I got real depressed and got me a case of jimjams. I lost the house through pure stupidity and became homeless. That's when I made my way here. And you know what? They treat me right in this place 'cause I know what I'm doing. And I'm the same, sometimes I even accept a good bottle as payment for work... keep that in mind.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1111">
+		<text>I see. Do you mind if I ask another question?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_1112">
+		<text>Got it. That's all for now.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_12">
+		<text>Can you even do anything?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_121">
+		<text>Just 'cause my hands are shaking don't mean I'm useless. I've just got a hangover that's all - let me have a couple of shots and that'll solve that little problem right up - I'll be good as new! And don't you worry, I'll do a better job than any sober son of a bitch out there, no shit. I can do anything you need: repair your shooter, add some new Kevlar to your armor or sort you out with an upgrade. Just remember to keep your good friend Limpid in mind and pour him a drink for his hard work now and again.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_13">
+		<text>Do you even know what's going on around you?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_131">
+		<text>Frankly, I couldn't give a shit about what's going on. So long as there's enough work (and drink!) to go around - it's all good. My life might be crap, but it's too late to change it now. So why should I cram my head full of useless gossip? I mean, all sorts of shit happens around here. You met Kirill yet? He's the lad with the spotty face - we even call him Spotty. Well, if you ain't seen him he's probably at the bottom of a bottle somewhere. Anyway, I spotted Spotty going outside the base a few times. I figured the boy's got himself a stash where he hides the loot he don't feel like sharing after raids. Others noticed it too, and it got to Yoga one way or another. He summoned Spotty and ordered him to give up the stash. Spotty was like: "Boss, I ain't no rat, I swear..." so he went and showed him. Turns out the lad picked up a wounded Chernobyl puppy and was feeding him scraps, 'cause he had no one else to talk to - the boys didn't think too much of him. Anyways, Yoga got real pissed about the whole thing - shot the puppy, Spotty got a bad beating and lost his cut. Man, that's life...</text>
+	</string>
+	<string id="gar_bandit_tech_questions_14">
+		<text>Who's that guy that's always asleep in the corner?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_141">
+		<text>Ah, that's my best friend, Senka. You'd drown in the amount of vodka we've drunk together, hah! We buddied up my very first day here: first we had a drink to celebrate our meeting like this, then we smacked each other around a bit, 'cause we got talking about life and had us a disagreement. But don't worry, Senka is a real decent fella, even tho' we still have a bit of a drunken playfight now and again. But I can always talk to him when I feel down - he's my one and only friend, like Pavlov and his dog. </text>
+	</string>
+	<string id="gar_bandit_tech_questions_15">
+		<text>Which weapon characteristics do you think I should improve?</text>
+	</string>
+	<string id="gar_bandit_tech_questions_151">
+		<text>There's a very basic principle every man should stick to: never mix vodka with beer. No shit, right? Well, it's the same with weapons. Take any weapon characteristic and improve it to the max, got it? It doesn't matter what you pick, accuracy or rate of fire or whatever, just max it out. One fully maxed characteristic will get you much further than any several half-assed ones.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_16">
+		<text>OK. That's enough questions for now.</text>
+	</string>
+	<string id="gar_bandit_tech_questions_161">
+		<text>Well, I'm always up for a heart-to-heart so you keep that in mind.</text>
+	</string>
+	<string id="gar_bandit_trader_join_0">
+		<text>How can I join your clan?</text>
+	</string>
+	<string id="gar_bandit_trader_join_1">
+		<text>Ask Yoga! He's in charge of that kind of thing. The signs with the words "Boss" and "Route Registration" can't be that hard to spot.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_0">
+		<text>Feel like a chat, while the store is quiet?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1">
+		<text>Sure, what's up?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_11">
+		<text>Tell me about yourself. </text>
+	</string>
+	<string id="gar_bandit_trader_questions_111">
+		<text>I was doing backstreet business back in the Soviet Union when I got caught on a major deal. I did my time like a man, made some good buddies and connections with the underworld crowd, and when I got out I started buying up goods from burglars. I got nicked again and did some more time, but when I got out the Soviet Union was dead and buried. I never managed to adjust to the changes - I was broke and living a shit life... but then the Zone appeared, and I bolted here right away. This place immediately reminded me of the good old days, so I became a trader without a second thought.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1111">
+		<text>I see. Can you tell me anything else?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_1112">
+		<text>Right, well that's enough gum beating.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_12">
+		<text>What do you think about Yoga?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_121">
+		<text>Here's what I think: Yoga ain't gonna be the boss for long. I have this feeling Borov is gonna make his move sooner or later, 'cause Yoga is getting a bit too big for his britches, and he can't seem to see an inch beyond his nose. He's got him a snake in his bosom and it's gonna bite him sooner or later. I ain't tellin' you this for you to go and share it with every Tom, Dick and Harry. I'm trusting you with information, so if you find something worthwhile you bring it here, understand? Don't you worry, it don't matter who the boss is - Yoga or Borov - I'll still be trading here.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_13">
+		<text>Tell me about the Garbage.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_131">
+		<text>Heh, can't see how anyone would want to come to this shithole. Nobody ever came here before 'cause the only thing you'd find was trash and radiation. And then "wham" - a couple of stalkers got lucky and dug up a few decent trinkets. After that people started flooding here from all over the Zone like horny sailors to a whore. This place was a huge mess until our boys showed up and established some order around here. The Zone needs order, one way or another. Either pigs and jarheads enforce the law, or gangsters establish order of their own, and that's what we've done here at the Garbage. And you don't gotta be a rocket surgeon to know that order costs money - our boys need to eat. So, they're getting their fair cut of the action and I ain't suffering either, but I do feel like heading off to more profitable places.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_14">
+		<text>What are the latest news in the Zone?</text>
+	</string>
+	<string id="gar_bandit_trader_questions_141">
+		<text>Latest news, huh? Just make sure that latest doesn't become last, if you know what I mean. The mutants here generally ain't as bad as they are further in the Zone, but there was an incident the other day... A stalker came back, all pale, hands shaking and all... Started confessing his sins and shit. Anyhow, him and a buddy were running away from some poltergeists when they bumped into a group of hamsters. So this guy decides that it's every man for himself, unloads into his buddy and runs off. The hamsters obviously don't bother to chase him 'cause they already got fresh meat to feast on, but when our little hero got away he started thinking about what he'd done... After a second bottle at Borov's you could hear him wailing about how his buddy'd given him his last medkit and all that... Well, anyway, the guy hung himself that night... that's what happens to people in the Zone.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_15">
+		<text>Nothing, I guess.</text>
+	</string>
+	<string id="gar_bandit_trader_questions_151">
+		<text>Up to you.</text>
+	</string>
+	<string id="gar_digger_leader_attack_0">
+		<text>About attacking the concentration camp...</text>
+	</string>
+	<string id="gar_digger_leader_attack_1">
+		<text>Listen, I have long wanted to take the fight to the bandits and put a squeeze on them - to repay them for all they've done. The main problem is that the diggers are shit scared and don't even believe it's possible. As soon as someone mentions the words "concentration camp" all their resolve goes out the window. That means the only way to realize my dream is to make the diggers believe victory is possible.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11">
+		<text>And how do you plan to do that?</text>
+	</string>
+	<string id="gar_digger_leader_attack_111">
+		<text>I want to free the diggers held in the camp and wipe it off the face of the Earth. Do that, and the diggers will realize that bandits are far from invincible. All they need is a symbol, like the one Che Guevara gave to the people of Cuba! That's what I need the weapons for - to give my boys a fighting chance against the bandits. Frankly, even with the shooters our chances ain't great...That's why I'm asking you to lead them. You are an experienced fighter - with you in command we're sure to come out on top! Will you help us?</text>
+	</string>
+	<string id="gar_digger_leader_attack_1111">
+		<text>Help you attack the concentration camp? Yes, I will.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11111">
+		<text>I knew there was a reason I trusted you! Here are the coordinates of the position. My boys are already there, with the weapons from the smuggler's stash. I'll contact them and let them know you're coming. Break a leg - plenty of them!</text>
+	</string>
+	<string id="gar_digger_leader_attack_111111">
+		<text>I'll do my best.</text>
+	</string>
+	<string id="gar_digger_leader_attack_1112">
+		<text>I can't say I'm all that inspired by your little speech. I'll think about it though.</text>
+	</string>
+	<string id="gar_digger_leader_attack_11121">
+		<text>What's there to think about? If the diggers don't work together now, soon the bandits will become too powerful. What do you think will happen then? I'll tell you - they'll spread out into the Zone, and that's going to be a bad situation for everyone! Come on, man, you're our only chance of mounting a successful attack on the camp!</text>
+	</string>
+	<string id="gar_digger_leader_attack_2">
+		<text>We need to attack the camp! That's the only way to get the diggers to believe in themselves! Will you help us?</text>
+	</string>
+	<string id="gar_digger_leader_break_0">
+		<text>See you.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_0">
+		<text>A medkit, you say?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1">
+		<text>Yeah, that's what it says on the box: "a field kit of fast-acting medication." I dug it up in an old stash from back when the Zone had just appeared. I reckon it was left there by one of the first science expeditions...It's valuable but nobody wants to buy it, even for two thousand. It's too much for a digger. Why don't you buy it, man? I really need the cash...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11">
+		<text>A medkit for two thousand? Give it here, it's bound to come in handy.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111">
+		<text>Wow, dude, you really helped me out! Here's the medkit. You know, maybe I'm being foolish, but I think I can trust you. The reason I needed the money was to buy some shooters from the smuggler and finally arm my boys.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111">
+		<text>I see, but what does trust have to do with it?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111">
+		<text>Well, the thing is that Stringov has just left to meet the smuggler. He's got most of the cash, but if he had this money you gave me, he could buy all the shooters we need. So I wanted to ask you to take this money to Stringov. Here are the coordinates. I'll let him know to wait for you, but hurry up anyway, OK?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111111">
+		<text>OK.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111111">
+		<text>I knew I was right about you. Thanks in advance.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111111">
+		<text>Thank me when it's done.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111112">
+		<text>What do I need to do again?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111121">
+		<text>You need to take two grand to Stringov. He's waiting for the smuggler. </text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111211">
+		<text>I see.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_111113">
+		<text>I'll think about it.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_1111131">
+		<text>Hrm...I hope I wasn't wrong about you.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_11111311">
+		<text>Well, keep hoping.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_112">
+		<text>I'd be glad to, but we recently decided to leave all the major dealings for nighttime to avoid needless witnesses. Come back when it gets dark - the medkit will be waiting for you.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_12">
+		<text>I'll buy it. I just need to get enough cash together first.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_121">
+		<text>Dude, if you buy it I'll owe you big! The only thing is that we only do real business at night to avoid being spotted. I made that rule myself, so I've gotta obey it.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_13">
+		<text>I'll think about it.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_131">
+		<text>Dude, I don't know where else I could get this money from...</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_2">
+		<text>Yeah, only two grand. I'd sell it cheaper, but I really need exactly two thousand...Will you take it?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_3">
+		<text>Right. So, you scrape up two grand yet?</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_31">
+		<text>Yeah. Hand that medkit over.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_32">
+		<text>Not yet.</text>
+	</string>
+	<string id="gar_digger_leader_bring_money_321">
+		<text>Well...the medkit is waiting for you, and I'm waiting for you even more. Hell, I ain't got anywhere else to get the money from.</text>
+	</string>
+	<string id="gar_digger_leader_hello_11">
+		<text>Piss off, dude, life's bad enough as it is. The weather is shit, there's no loot to be had, bandits and mutants got all the best places covered... Even if you get lucky and dig up something decent, you ain't gonna get it past the Garbage. Someone will damn sure confiscate it, and on top of all of that Freshy and the boys have gone missing.</text>
+	</string>
+	<string id="gar_digger_leader_hello_111">
+		<text>Is there anything I can do to help?</text>
+	</string>
+	<string id="gar_digger_leader_hello_1111">
+		<text>Help, you say? How do I even know I can trust you? Then again, I don't have much of a choice, now do I? I really need this one object from a digger called Freshy. If you really want to help me...</text>
+	</string>
+	<string id="gar_digger_leader_hello_112">
+		<text>That's your problem, not mine.</text>
+	</string>
+	<string id="gar_digger_leader_hello_1121">
+		<text>Well, I'm not surprised, nobody cares about nobody else around here...Damn you Freshy, where are you?</text>
+	</string>
+	<string id="gar_digger_leader_hello_12">
+		<text>Why, God? Why?...Where is that damn Freshy...</text>
+	</string>
+	<string id="gar_digger_leader_hello_13">
+		<text>So, dude, is your offer to help with Freshy for real or what?</text>
+	</string>
+	<string id="gar_digger_leader_hello_14">
+		<text>So, you been to see Freshy yet?</text>
+	</string>
+	<string id="gar_digger_leader_hello_15">
+		<text>So, did you bring me Freshy's old PDA?</text>
+	</string>
+	<string id="gar_digger_leader_hello_21">
+		<text>So, you feel like buying the medkit yet? You have to understand, man, if I didn't need the cash so badly, I wouldn't be selling it so cheap.</text>
+	</string>
+	<string id="gar_digger_leader_hello_22">
+		<text>So, did you manage to get enough dough together for the medkit?</text>
+	</string>
+	<string id="gar_digger_leader_hello_31">
+		<text>Take this money to Stringov fast, would you? I trust in your honor.</text>
+	</string>
+	<string id="gar_digger_leader_hello_311">
+		<text>That's nice.</text>
+	</string>
+	<string id="gar_digger_leader_hello_32">
+		<text>Dude, what are you wasting your time here for? Stringov is gonna leg it before long!</text>
+	</string>
+	<string id="gar_digger_leader_hello_321">
+		<text>I doubt it. Relax.</text>
+	</string>
+	<string id="gar_digger_leader_hello_33">
+		<text>Dude, did you leave Stringov's PDA there? It's our only chance of getting those shooters!</text>
+	</string>
+	<string id="gar_digger_leader_hello_331">
+		<text>I see. Take care.</text>
+	</string>
+	<string id="gar_digger_leader_hello_34">
+		<text>Did you bring the smuggler's PDA? Thanks...I bet it was Stringov who sold out the smuggler to the bandits. How can you trust anyone after crap like that? I mean, Stringov did time in the camp himself, and yet when it came to it, personal gain got the best of him...Oh well, it's all in the past now, as is Stringov. By the way, my boys have already picked up the shooters from the stash...I think I can tell you what they're for now. We're going to use them to attack the concentration camp.</text>
+	</string>
+	<string id="gar_digger_leader_hello_342">
+		<text>Sure, but keep in mind I've already freed the diggers in the camp.</text>
+	</string>
+	<string id="gar_digger_leader_hello_51">
+		<text>Well, we're pretty much ready to attack the camp...Shall I fill you in on the details?</text>
+	</string>
+	<string id="gar_digger_leader_hello_52">
+		<text>Dude, there's no point attacking the camp without you. We're diggers, not soldiers...My boys can't fight for shit, and tactics ain't something you learn at digger school, if you know what I mean. The best they can do is provide some random covering fire. If you lead them, though, it'll be a totally different story. I'm begging you - please lead the attack on the camp?</text>
+	</string>
+	<string id="gar_digger_leader_hello_53">
+		<text>Go on, my boys are waiting for you.</text>
+	</string>
+	<string id="gar_digger_leader_hello_531">
+		<text>I'll get to it. Take care.</text>
+	</string>
+	<string id="gar_digger_leader_hello_54">
+		<text>What are you doing, man?! Our boys are dying over there!</text>
+	</string>
+	<string id="gar_digger_leader_hello_55">
+		<text>Damn, man...Looks like our boys copped it. Only you can avenge their deaths! Kill all those bastards in the camp! Free our guys!</text>
+	</string>
+	<string id="gar_digger_leader_hello_61">
+		<text>You know, dude, life ain't such a bad thing.</text>
+	</string>
+	<string id="gar_digger_leader_hello_71">
+		<text>Ugh, this life... what did I do to deserve this...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_0">
+		<text>About Freshy...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1">
+		<text>Well, the shituation is like this: Freshy, one of our fellow diggers, was supposed to bring me his old PDA, but he disappeared. He hasn't contacted me and neither did anyone from his group, but I need the PDA real bad. I'd go myself or send my buddy Stringov, but for now both of us need to stay here. Can you bring me the PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11">
+		<text>I suppose. Where can I find this Freshy character?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111">
+		<text>I don't know where you can find him, he wanders around a lot, but I can tell you that his camp is south of here, behind the cisterns and the pile of junk. If Freshy is there, tell him Wild Napr sent you. If he's not there just search his toolbox. The PDA should be in the hidden compartment under a false bottom. Got it?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1111">
+		<text>Got it.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11111">
+		<text>Good.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112">
+		<text>You know, I visited that camp and didn't see a single living soul there. Just piles of bodies, torn to shreds.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121">
+		<text>Shit...them too! Some beast is roaming the Garbage at night, killing everyone who's not well-armed, which is us - diggers. So far there hasn't been even a single survivor to tell us about it. Damn this shitty digger existence of ours...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_111211">
+		<text>With all that's happening, this isn't the best time to feel sorry for yourself, buddy.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112111">
+		<text>Yeah, you're right. You remember where to find the PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11121111">
+		<text>Yeah, I do.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1112112">
+		<text>Yeah, you're right. So did you bring Freshy's old PDA?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_1113">
+		<text>Tell me again.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11131">
+		<text>In short, Freshy's camp is south of here, behind the cisterns and the pile of junk. You need to get the old PDA and bring it to me. It'll be in one of two places: either Freshy has it or it's in his toolbox.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_11132">
+		<text>In short, Freshy's camp is south of here, behind the cisterns and the pile of junk. You need to grab the old PDA from the toolbox and bring it to me. </text>
+	</string>
+	<string id="gar_digger_leader_old_pda_12">
+		<text>You know, I don't feel like being an errand boy today.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_121">
+		<text>I'm asking you for help and you...Eh!</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_2">
+		<text>OK, so where are they?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_21">
+		<text>Who knows? I haven't been to see them yet.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_211">
+		<text>Listen, man, I really need that PDA. Do me a favor and go see them.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3">
+		<text>You got the PDA, right?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31">
+		<text>Yes. Here.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_311">
+		<text>Man, you really saved my ass there. Here, take this as your reward. OK, let's see here...Damn, there's only one and a half grand in here. Looks like he didn't get paid for the last order. Hrm...You see, me and Freshy, may he rest in peace, used this PDA to pass money to each other. Anyway, right now I need the cash badly, but Freshy didn't manage to get together as much as he said he would, so I still need to get two grand from somewhere. Trouble is, I've already emptied every stash...</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_3111">
+		<text>Well, shit happens.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_31111">
+		<text>Wait...I still have this medkit in need of a customer. You feel like buying it from me? I was planning to sell it for three grand, but I'll let you have it for two. One time deal, what do you say?</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_32">
+		<text>No, I didn't take it.</text>
+	</string>
+	<string id="gar_digger_leader_old_pda_321">
+		<text>Listen, Freshy and his boys got torn to shreds, may they rest in peace...But I still need that PDA real bad. Bring it to me, please?</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_11">
+		<text>Screw this, not with these eyeless beasts crawling around here!</text>
+	</string>
+	<string id="gar_digger_messenger_hello_dialog_21">
+		<text>Well, brother, it's a hard-knock life for a digger...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_11">
+		<text>What? What do you want? Can't you see I'm resting?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_21">
+		<text>Hrm...Leave me alone...Let me sleep...</text>
+	</string>
+	<string id="gar_digger_traitor_hello_31">
+		<text>Yoga sent you? Well, at last! Why did you take so long?</text>
+	</string>
+	<string id="gar_digger_traitor_hello_41">
+		<text>Yes, yes, I'm going! I'm just going to check that I don't bump into Yoga's crew, and then I'm outta here.</text>
+	</string>
+	<string id="gar_digger_traitor_hello_411">
+		<text>Go, go.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_0">
+		<text>Alright, here goes. Yoga asked me to settle things with you. Consider this your final payment.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1">
+		<text>Well, finally...Hey, wait, dude, wait! Yoga wants to whack me? Don't...don't...don't shoot me! I'll pay you more than Yoga!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11">
+		<text>How much is that?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111">
+		<text>Well, erm...I don't know how much Yoga promised to pay you, but I have the coordinates of a dead smuggler's stash. There are goods in there worth five grand at least!</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1111">
+		<text>Hrm. Give me the coordinates and disappear, understand?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_11111">
+		<text>Of course, of course! The stash is in the trunk of a rusty car, here are the coordinates! Thanks man! I know a secret path, so nobody will see me, that's for sure! I... I'm going, OK?</text>
+	</string>
+	<string id="gar_digger_traitor_kill_111111">
+		<text>OK.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_1112">
+		<text>An unknown stash with unknown goods inside? That's not enough. Goodbye.</text>
+	</string>
+	<string id="gar_digger_traitor_kill_12">
+		<text>Not interested. Goodbye.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_0">
+		<text>I was told you can set up a meeting with the smuggler. </text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_1">
+		<text>So you're the one they're sending for the shooters? Yeah, I can arrange a meeting. Look, I normally meet the guy near one of our digging sites, west of here. Here are the coordinates. The smuggler should be around there now, so you head over and I'll let him know you're coming. You got the money on you? Splendid.</text>
+	</string>
+	<string id="gar_digger_traitor_smuggler_11">
+		<text>Got you. Take care.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_0">
+		<text>Aren't you afraid of bandits?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_bandits_1">
+		<text>Sure I am, but what can I do? You gotta make a living somehow. We've learned to be careful though - during the day we only sell small crap to avoid attracting attention. Even so, we try not to move or breathe too much. Can't be too careful around here.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_0">
+		<text>What do you sell?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_goods_1">
+		<text>Just some junk. I sell what I dig up, you know? That, and a trade here and there gets me by...I gotta tell ya, in the Zone barter is the way to go!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_1">
+		<text>Hey! Can I interest you in anything?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_0">
+		<text>What is this place?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_market_1">
+		<text>Well, this here is the flea market, so I guess that makes us flea marketers. He-he, we're traders, buddy - we sell small stuff here and there...I'll be straight with you: our goods are crap, but hey, at least we're still in business, right? So, you come to trade or just to chat?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_0">
+		<text>Are you the only trader here?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_traders_1">
+		<text>Of course not! There are plenty of fellas doing business here, but we have a rule that the big stuff only gets traded after sundown. During the day it's just me and my goods, the "ain't much to look at" kind, but come nighttime the real merchandise comes out and the real business kicks off.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_11">
+		<text>Huh? What's going on?...Damn, you had me worried. Can't you see I'm sleeping?</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_rest_111">
+		<text>Oh, sorry. Take care.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_0">
+		<text>default text</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_1">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_11">
+		<text>Hey, buddy. Come on, if you want something don't be shy.</text>
+	</string>
+	<string id="gar_flea_market_evening_trader_trade_111">
+		<text>text in default</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_11">
+		<text>You're up early...right now is not the time to talk serious business, you feel me? Come back...later.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_rest_111">
+		<text>Roger.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_11">
+		<text>Good evening! Interested in something...specific?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_111">
+		<text>That's right. Show me.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_112">
+		<text>Nah, just for the pleasure of your company. See you.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21">
+		<text>What do you want?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211">
+		<text>I'd like to trade. How about it?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111">
+		<text>Trade? And who are you again?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21111">
+		<text>Hey, if you don't want my money, no problem. I'll just go to the traders above - they're smart enough not to ask dumb questions.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_211111">
+		<text>Hold on, man. The boys above did business with you? Hrm, well, they don't trade with just anyone, so...I've got some goods. Wanna see?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2111111">
+		<text>Now we're talking. Show me.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21112">
+		<text>None of your business.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212">
+		<text>A fair trade. You know any traders around?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121">
+		<text>No.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211">
+		<text>Not one?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111">
+		<text>That's right. </text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111">
+		<text>You sure?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111">
+		<text>I'm sure.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_212111111">
+		<text>Dude, I'm not a bandit or a jarhead or a zombie. Are you a trader or what?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_2121111111">
+		<text>I'm a trader. Are you gonna check out the goods or ask questions?</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21211111111">
+		<text>I'm all for checking out the goods.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_21212">
+		<text>See you, then.</text>
+	</string>
+	<string id="gar_flea_market_night_trader_trade_213">
+		<text>Nothing from you.</text>
+	</string>
+	<string id="gar_bandit_commentators_11">
+		<text>Check it out, man! One shot from this vertical baby and feathers fill the air! </text>
+	</string>
+	<string id="gar_bandit_commentators_111">
+		<text>Hrm...I better go now.</text>
+	</string>
+	<string id="gar_bandit_commentators_12">
+		<text>You don't like fowl either, heh? Don't worry, we got loads of 'em here!</text>
+	</string>
+	<string id="gar_bandit_commentators_13">
+		<text>Whatcha standing there for? C'mon, slaughter the damn things, make a bloody mess, go for it!</text>
+	</string>
+	<string id="gar_bandit_leader_break_0">
+		<text>See ya.</text>
+	</string>
+	<string id="gar_bandit_robbery_11">
+		<text>Hey there, time to cough up some loot. But don't go crying like you been robbed - remember, we earned this by upholding law and order here at the Garbage. That clear wit' you?</text>
+	</string>
+	<string id="gar_bandit_robbery_111">
+		<text>Oh, I'm all for supporting law and order. Here you go.</text>
+	</string>
+	<string id="gar_bandit_robbery_1111">
+		<text>That's our boy! So, I'll just be taking all of this, aight? But keep that pistol, dude. We're no thugs to be taking the shirt off someone's back, are we? You'll thank us next time you run into some monsters. So, good luck and goodbye!</text>
+	</string>
+	<string id="gar_bandit_robbery_11111">
+		<text>Yeah, bye.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_0">
+		<text>I'm here for my reward for cleaning out the flea market.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_1">
+		<text>Oh, yeah. I remember. Here you go.</text>
+	</string>
+	<string id="gar_bandit_trader_reward_11">
+		<text>Hrm. Don't you think a big job like that's worth more than this?</text>
+	</string>
+	<string id="gar_bandit_trader_reward_111">
+		<text>T'aint for me to decide. Whatever the boss told me, I paid you - don't think I carved out a slice for myself out of this deal. I feel you though - Yoga wasn't too generous this time. You know what...go see him, will ya. The guys know you worked your ass off, so unless the boss wants to look like a cheapass in their eyes, he'll jolly well chuck in.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11">
+		<text>Hey! Can I interest you in anything?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11111">
+		<text>What is this place?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111111">
+		<text>Well, this here is the flea market, so I guess that makes us flea marketers. He-he, we're traders, buddy - we sell small stuff here and there...I'll be straight with you: our goods are crap, but hey, at least we're still in business, right? So, you come to trade or just to chat?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11112">
+		<text>What do you sell?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111121">
+		<text>Just some junk. I sell what I dig up, you know? That, and a trade here and there gets me by...I gotta tell ya, in the Zone barter is the way to go!</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11113">
+		<text>Are you the only trader here?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111131">
+		<text>Of course not! There are plenty of fellas doing business here, but we have a rule that the big stuff only gets traded after sundown. During the day it's just me and my goods, the "ain't much to look at" kind, but come nighttime the real merchandise comes out and the real business kicks off.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11114">
+		<text>Aren't you afraid of bandits?</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_111141">
+		<text>Sure I am, but what can I do? You gotta make a living somehow. We've learned to be careful though - during the day we only sell small crap to avoid attracting attention. Even so, we try not to move or breathe too much. Can't be too careful around here.</text>
+	</string>
+	<string id="gar_flea_market_24h_trader_hello_11115">
+		<text>Nothing so far. See ya.</text>
+	</string>
+	<string id="gar_bandit_bookmaker_hello_61">
+		<text>You did some good shootin' there, buddy. You should think about playing for cash. Feel like shooting some more?</text>
+	</string>
+	<string id="gar_bandit_robbery_12">
+		<text>Well, pull out your PDA, time to share the cash. And don't be thinking it's for nothing - you're paying us to maintain order at the Garbage, understand?</text>
+	</string>
+	<string id="gar_bandit_robbery_121">
+		<text>Well, if it's to maintain order then here you go.</text>
+	</string>
+	<string id="gar_bandit_robbery_1211">
+		<text>Wow, you're smart for a loser! So, I'll take all of this, OK? You can keep the equipment - we're no animals to be stealing your guns and stuff. You'll thank us when you run into some mutants, believe me. OK, enough talk - get outta here.</text>
+	</string>
+	<string id="gar_bandit_robbery_12111">
+		<text>You… take care of yourself.</text>
+	</string>
+</string_table>

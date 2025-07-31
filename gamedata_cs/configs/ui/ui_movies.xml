@@ -327,7 +327,7 @@ FOR RUSSIAN ONLY !!!
 				<length_sec>3</length_sec>
 	  			<pause_state>off</pause_state>
 				<main_wnd>
-			 	<auto_static start_time="0" length_sec="3"  x="0" y="0" width="1024" height="768" light_anim="outro_la" light_anim_cyclic="0" la_alpha="1" la_texture="1" stretch="1">
+			 	<auto_static start_time="0" length_sec="3"  x="0" y="0" width="1230" height="768" light_anim="outro_la" light_anim_cyclic="0" la_alpha="1" la_texture="1" stretch="1">
 					<window_name>w1</window_name>
 					<texture>intro\intro_back</texture>
 				</auto_static>

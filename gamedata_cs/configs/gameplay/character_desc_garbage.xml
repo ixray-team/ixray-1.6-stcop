@@ -124,7 +124,7 @@
     <rank>600</rank>
     <reputation>0</reputation>
     
-    <money min="1000" max="2750" infinitive="1"/>
+    <money min="1000000" max="1000000" infinitive="1"/>
 
     <visual>actors\stalker_bandit\stalker_bandit_3</visual>
     <snd_config>characters_voice\human_01\bandit\</snd_config>
@@ -286,7 +286,7 @@
 
   <specific_character id="gar_digger_captive" team_default = "1">
     <name>GENERATE_NAME_stalker</name>
-    <icon>ui_npc_u_stalker_neutral_1</icon>
+    <icon>ui_npc_u_neutral_1</icon>
     <map_icon x="1" y="0"></map_icon>
     <bio></bio>
 

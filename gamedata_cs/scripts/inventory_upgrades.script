@@ -102,6 +102,8 @@ function property_functor_a( param1, name )
 		if not char_ini:line_exist(section, "value2") or not char_ini:r_string(section, "value2") then
 			if name == "prop_ammo_size" then
 				return t_prorerty_name.." "..value.." "..game.translate_string("st_upgr_ammunition")
+			elseif name == "prop_tonnage" then
+				return t_prorerty_name.." "..value.." "..game.translate_string("st_kg")
 			end
 			return t_prorerty_name.." "..value.."%"
 		end
@@ -152,11 +154,15 @@ function property_functor_a( param1, name )
 				if sum > 0 then
 					if name == "prop_ammo_size" then
 						return t_prorerty_name.." +"..sum.." "..game.translate_string("st_upgr_ammunition")
+					elseif name == "prop_tonnage" then
+						return t_prorerty_name.." +"..sum.." "..game.translate_string("st_kg")
 					end
 					return t_prorerty_name.." +"..sum.."%"..complementary
 				else
 					if name == "prop_ammo_size" then
 						return t_prorerty_name.." "..sum.." "..game..translate_string("st_upgr_ammunition")
+					elseif name == "prop_tonnage" then
+						return t_prorerty_name.." "..sum.." "..game.translate_string("st_kg")
 					end
 					return t_prorerty_name.." "..sum.."%"..complementary
 				end

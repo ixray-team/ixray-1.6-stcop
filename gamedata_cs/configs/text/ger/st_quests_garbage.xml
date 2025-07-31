@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="gar_defend_bandit_base_name">
+		<text>Verteidige die Banditenbasis</text>
+	</string>
+	<string id="gar_defend_bandit_base_text">
+		<text>Verteidige die Banditenbasis gegen die feindlichen Angriffe.</text>
+	</string>
+	<string id="gar_quest_bring_money_name">
+		<text>Bringe Napr 2.000 in Bar, wenn es dunkel wird.</text>
+	</string>
+	<string id="gar_quest_bring_money_text">
+		<text>Kaufe ein Medkit vom Wilden Napr beim Flohmarkt fьr 2.000. GrцЯere Geschдfte wie dieses finden auf dem Flohmarkt nur nachts statt.</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_name">
+		<text>Bringe dem Wilden Napr den alten PDA</text>
+	</string>
+	<string id="gar_quest_bring_old_pda_text">
+		<text>Bringe dem Wilden Napr beim Flohmarkt den alten PDA, den du in Freshys zerstцrtem Lager unter dem doppelten Boden des Werkzeugkastens gefunden hast.</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_name">
+		<text>Tцte den Verrдter</text>
+	</string>
+	<string id="gar_quest_destroy_ambush_text">
+		<text>Tцte Stringow dafьr, dass er dich in einen Hinterhalt gelockt hat.</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_name">
+		<text>Ьbernimm zusammen mit den Banditen den Flohmarkt</text>
+	</string>
+	<string id="gar_quest_destroy_flea_market_text">
+		<text>Tцte die Mьllgrдber auf dem Flohmarkt, um den anderen eine Lektion zu erteilen, und vergewissere dich, dass einer der Banditen dort als Wache zurьckbleibt.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_name">
+		<text>Nimm den alten PDA aus dem Werkzeugkasten</text>
+	</string>
+	<string id="gar_quest_get_old_pda_box_text">
+		<text>Hole den alten PDA aus Freshys Lager und bringe ihn zum Wilden Napr. Der PDA mьsste unter dem doppelten Boden des Werkzeugkastens liegen.</text>
+	</string>
+	<string id="gar_quest_get_old_pda_name">
+		<text>Hole den alten PDA aus Freshys Lager</text>
+	</string>
+	<string id="gar_quest_get_old_pda_text">
+		<text>Nimm Freshy im Lager den alten PDA ab und bringe ihn zum Wilden Napr. Wenn Freshy nicht da ist, findest du den PDA unter dem doppelten Boden im Werkzeugkasten.</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_name">
+		<text>Durchsuche Stringows Kцrper</text>
+	</string>
+	<string id="gar_quest_get_traitor_pda_text">
+		<text>Durchsuche Stringows Kцrper und nimm alles mit, was nьtzlich erscheint.</text>
+	</string>
+	<string id="gar_quest_get_weapons_name">
+		<text>Bringe Stringow 2.000</text>
+	</string>
+	<string id="gar_quest_get_weapons_text">
+		<text>Bringe Stringow 2.000 in bar, um ein paar geschmuggelte Waffen zu kaufen.</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_name">
+		<text>Erledige einen Mann namens Stringow</text>
+	</string>
+	<string id="gar_quest_kill_digger_traitor_text">
+		<text>Befolge Yogas Anweisungen und tцte einen Mann namens Stringow.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_name">
+		<text>Erledige den Schmuggler und die Mьllgrдber.</text>
+	</string>
+	<string id="gar_quest_kill_smuggler_text">
+		<text>Tцte den Schmuggler und die Mьllgrдber, die von ihm Waffen kaufen wollen.</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_name">
+		<text>Vernichte die Nachtjдger</text>
+	</string>
+	<string id="gar_quest_killer_pseudodogs_text">
+		<text>Finde und vernichte die Kreaturen, die Jagd auf die Mьllgrдber machen. Du kannst dort anfangen zu suchen, wo die Ьberlebenden angegriffen wurden. Du kannst sie wahrscheinlich nur bei Nacht aufspьren.</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_name">
+		<text>Schalte die Wachen beim Sammellager der Banditen aus</text>
+	</string>
+	<string id="gar_quest_liberate_conc_camp_text">
+		<text>Befreie die Gefangenen gemeinsam mit der Einheit der Mьllgrдber, nachdem du die Wachen am Sammellager der Banditen ausgeschaltet hast.</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_name">
+		<text>Triff die Einheit der Mьllgrдber</text>
+	</string>
+	<string id="gar_quest_meet_with_digger_fighters_text">
+		<text>Triff die Einheit der Mьllgrдber und fьhre den Angriff auf das Sammellager der Banditen aus.</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_name">
+		<text>Rede mit dem Wilden Napr</text>
+	</string>
+	<string id="gar_quest_speak_with_quester_text">
+		<text>Finde heraus, ьber was fьr wichtige Geschдfte der Wilde Napr mit dir beim Flohmarkt reden wollte.</text>
+	</string>
+	<string id="gar_story_chase_digger_name">
+		<text>Hole vom Boten der Mьllgrдber Informationen ein</text>
+	</string>
+	<string id="gar_story_chase_digger_text">
+		<text>Rede mit dem Boten der Mьllgrдber und finde heraus, wohin Fang gegangen ist.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_name">
+		<text>Finde Fang</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_cellar_text">
+		<text>Finde Fang im Keller, indem du seinem PDA-Signal folgst.</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_name">
+		<text>Hole Fang ein</text>
+	</string>
+	<string id="gar_story_chase_pda_signal_text">
+		<text>Hole Fang ein, indem du seinem PDA-Signal folgst.</text>
+	</string>
+	<string id="gar_story_find_cache_name">
+		<text>Finde das Versteck</text>
+	</string>
+	<string id="gar_story_find_cache_text">
+		<text>Finde das Versteck von Fangs Gruppe.</text>
+	</string>
+	<string id="gar_story_find_diggers_name">
+		<text>Hole von den Mьllgrдbern Informationen ьber Fang ein</text>
+	</string>
+	<string id="gar_story_find_diggers_text">
+		<text>Frage die Mьllgrдber, die Fang dem Hдndler zufolge aufgesucht hat, nach Fangs Aufenthaltsort.</text>
+	</string>
+	<string id="gar_story_get_pda_name">
+		<text>Nimm Fangs PDA</text>
+	</string>
+	<string id="gar_story_get_pda_text">
+		<text>Nimm den PDA, den Fang verloren hat.</text>
+	</string>
+	<string id="gar_story_go_to_freedom_name">
+		<text>Folge Fang ins Dunkle Tal</text>
+	</string>
+	<string id="gar_story_go_to_freedom_text">
+		<text>Folge Fang ins Dunkle Tal.</text>
+	</string>
+	<string id="gar_story_kill_dogs_name">
+		<text>Tцte die Schattenhunde</text>
+	</string>
+	<string id="gar_story_kill_dogs_text">
+		<text>Tцte die Schattenhunde, die den Boten der Mьllgrдber im Tal in die Enge getrieben haben.</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_name">
+		<text>Durchsuche den toten Mьllgrдber</text>
+	</string>
+	<string id="gar_story_search_digger_bodies_text">
+		<text>Durchsuche den toten Mьllgrдber nach Informationen ьber Fang.</text>
+	</string>
+	<string id="gar_quest_bandit_reward_name">
+		<text>Hol dir deine Belohnung von Tooth</text>
+	</string>
+	<string id="gar_quest_bandit_reward_text">
+		<text>Gehe zu Tooth, dem Hдndler, und hol dir eine Belohnung fьr die Sдuberung des Flohmarkts.</text>
+	</string>
+	<string id="gar_quest_bandit_secret_name">
+		<text>Hol die Knarre aus dem Versteck in der Anomalie</text>
+	</string>
+	<string id="gar_quest_bandit_secret_text">
+		<text>Hol die Knarre, von der Yoga erzдhlt hat, aus dem Versteck in der Anomalie</text>
+	</string>
+	<string id="gar_quest_captive_reward_name">
+		<text>Hol die Beute aus dem Versteck</text>
+	</string>
+	<string id="gar_quest_captive_reward_text">
+		<text>Hol die Beute aus dem alten Versteck der Mьllgrдber, die aus dem Sammellager befreit wurden.</text>
+	</string>
+	<string id="gar_quest_more_reward_name">
+		<text>Fordere eine Belohnung von Yoga</text>
+	</string>
+	<string id="gar_quest_more_reward_text">
+		<text>Fordere eine zusдtzliche Belohnung von Yoga fьr die Sдuberung des Flohmarkts.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_name">
+		<text>Finde Informationen ьber verstдrkten Kцrperschutz</text>
+	</string>
+	<string id="st_gar_find_flesh_up_aceg_scientific_outfit_text">
+		<text>Bringe Limpid eine Flasche Schnaps und Informationen ьber verstдrkten Kцrperschutz. Im Gegenzug kann er deinen Anzug vielleicht mit etwas Дhnlichem ausstatten.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_name">
+		<text>Finde Informationen darьber, wie man ein Screening bei einem Anzug durchfьhrt</text>
+	</string>
+	<string id="st_gar_find_flesh_up_bdfh_scientific_outfit_text">
+		<text>Limpid hat noch nie von den Psi-Emissionen gehцrt, aber wenn du ihm die nцtigen Informationen gibst, kцnnte er einem Anzug ein System verpassen, das den Trдger gegen diese Emissionen schьtzt.</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_name">
+		<text>Finde Informationen ьber geschlossene Atemmodule</text>
+	</string>
+	<string id="st_gar_find_flesh_up_fh_scientific_outfit_text">
+		<text>Limpid, der Techniker der Banditen, beherrscht jede Art von Modifikation, aber fьr den Einbau eines geschlossenen Atemmoduls in einen Anzug benцtigt er noch weitere Informationen.</text>
+	</string>
+	<string id="gar_quest_redemption_name">
+		<text>Hole dir deine Sachen zurьck</text>
+	</string>
+	<string id="gar_quest_redemption_text">
+		<text>Hole dir deine Sachen zurьck, die dir die Banditen in der Nдhe des Flohmarkts abgenommen haben.</text>
+	</string>
+	<string id="gar_recover_item_1_name">
+		<text>Bringe die Chaser 13 zurьck</text>
+	</string>
+	<string id="gar_recover_item_1_text">
+		<text>Nun, die Sache ist die: Einer unserer Jungs hat einen dieser Mьllgrдber geschnappt und ist mit ihm zwischen einigen Anomalien spazieren gegangen. Tja, am Ende sind die beiden in einer Gravit-Anomalie draufgegangen. Damit habe ich zwar kein Problem, aber der Kollege hatte meine Chaser fьr den Spaziergang ausgeliehen und die befindet sich immer noch dort. Wenn du mir die Waffe zurьckbringen kцnntest, wдre ich mehr als erfreut.</text>
+	</string>
+	<string id="gar_recover_item_2_name">
+		<text>Finde die modifizierte Waffe</text>
+	</string>
+	<string id="gar_recover_item_2_text">
+		<text>Hey, Bruder! Du kцnntest mir einen Gefallen tun. Vor kurzem war ich bei Limpid und er hat eine richtig gute Wumme fьr einen Typen gebaut, mit Modifizierungen und so. Nun, dieser Typ und unser Boss sind nicht sehr gut miteinander ausgekommen, also hat Yoga uns gesagt, dass wir den Typen verschwinden lassen sollen. Deswegen haben wir ihn in einen hьbschen Haufen Anomalien gejagt. Das ist zwar schцn und gut, aber diese tolle Knarre liegt jetzt auch dort! Wenn du sie mir beschaffen kannst, werde ich dafьr sorgen, dass Tooth dich gut belohnt.</text>
+	</string>
+	<string id="gar_recover_item_3_name">
+		<text>Liefere eine Flasche Cossacks-Wodka ab</text>
+	</string>
+	<string id="gar_recover_item_3_text">
+		<text>Kumpel, wьrdest du mir einen Gefallen tun und mir was zu trinken besorgen? Aber nicht den billigen Fusel, den jeder hier trinkt. Ich habe ein paar Flaschen mit gutem Wodka hier ganz in der Nдhe versteckt, aber kann gerade nicht selbst dorthin. Bringe mir den Wodka aus dem Versteck und achte darauf, dass dich niemand dabei beobachtet, OK?</text>
+	</string>
+	<string id="gar_recover_item_4_name">
+		<text>Bringe die Jacke des Anfдngers zurьck</text>
+	</string>
+	<string id="gar_recover_item_4_text">
+		<text>Vor ein paar Tagen kam hier ein Kerl vom Kordon vorbei, noch grьn hinter den Ohren und einer der ganz nervigen Sorte. Er hat jedem von seiner Zauberjacke erzдhlt, der keine Anomalie etwas anhaben kцnne. Selbst als die Banditen ihn geschnappt haben, hat er nicht aufgehцrt zu plappern, bis sie ihn schlieЯlich in eine Gravit-Anomalie gejagt haben. Nun ja, der arme Kerl hatte Recht: Die Jacke hat das Ganze ohne einen einzigen Kratzer ьberstanden. Ich kцnnte das Ding ganz gut gebrauchen, wenn du es mir beschaffen wьrdest.</text>
+	</string>
+	<string id="gar_recover_item_5_name">
+		<text>Bringe die Pistole mit der Gravur zurьck</text>
+	</string>
+	<string id="gar_recover_item_5_text">
+		<text>Du kannst mir bei einer Sache helfen. Ich hatte mal eine Pistole; nichts Besonderes, aber sie hatte meinem GroЯvater gehцrt. Ich habe sie in einem recht groЯen Durcheinander verloren... vor ein paar Tagen haben wir uns ziemlich betrunken und sind dann auf die Idee gekommen, dass wir in der Nacht die Banditen erschrecken kцnnten. Als es dunkel geworden ist, haben wir uns an ein Lager angeschlichen, das wir bei Tag ausgesucht hatten, und haben angefangen, Mutantengerдusche zu machen. Es hat sich dann recht schnell herausgestellt, dass da gar keine Banditen waren. Stattdessen haben uns zwei Blutsauger angegriffen! Ich wдre fast draufgegangen und habe auch noch meine Pistole dort fallen lassen.</text>
+	</string>
+</string_table>

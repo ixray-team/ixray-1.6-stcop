@@ -1,6 +1,9 @@
 [logic]
 active = walker@fire
-combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %+minigun_off%
 
 [walker@fire]
 danger = danger_condition
@@ -9,6 +12,17 @@ combat_ignore_cond = always
 path_walk = z1_minigunner_walk
 path_look = z1_minigunner_look
 invulnerable = true
+on_info = {+minigun_off} walker
+on_info2 = {+hospital_z1_komander_speak} walker@fire2 
+group = 1
+
+[walker@fire2]
+danger = danger_condition
+combat_ignore_cond = always
+;out_restr = z3_defender_restr
+path_walk = z1_minigunner_walk
+path_look = z1_minigunner_look
+;invulnerable = true
 on_info = {+minigun_off} walker
 group = 1
 

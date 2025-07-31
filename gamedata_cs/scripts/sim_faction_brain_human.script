@@ -32,10 +32,11 @@ function faction_brain_human:calculate_current_expansion()
 			-- ≈сли провер€емый уровень экспансии ниже, чем текущий
 			local power_valid = relative_power > expansion.precondition_power
 			local advance_valid = self:check_sim_targets_advance(expansion)
-			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
+			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"			
+			local actor_valid = expansion.precondition_actor_in_faction ~= true or faction.community_player == true
 			
 			-- ѕровер€ем все ли услови€ выполн€ютс€
-			if not (cond_valid and power_valid and advance_valid) then
+			if not (cond_valid and power_valid and advance_valid and actor_valid) then
 				-- ≈сли не выполн€ютс€ - выдаем сообщение о потери уровн€, ресетим квесты, прекращаем работу цикла.
 				--printf("LEVEL DOWN %s %s %s %s", self.faction.player_name, tostring(cond_valid), tostring(power_valid), tostring(advance_valid))
 				if faction.community_player == true then
@@ -53,8 +54,9 @@ function faction_brain_human:calculate_current_expansion()
 			local power_valid = relative_power > expansion.precondition_power
 			local advance_valid = self:check_sim_targets_advance(expansion)
 			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
+			local actor_valid = expansion.precondition_actor_in_faction ~= true or faction.community_player == true
 			
-			if not (cond_valid and power_valid and advance_valid) then
+			if not (cond_valid and power_valid and advance_valid and actor_valid) then
 				-- ≈сли не выполн€ютс€ - прекращаем работу цикла.
 				break
 			end
@@ -147,12 +149,14 @@ function faction_brain_human:check_sim_targets_advance(expansion)
 		end
 	end
 	
-	for k,v in pairs(expansion.precondition_target_eliminate) do
+	for k,v in pairs(expansion.precondition_target_eliminate) do		
 		local smart_obj = self.faction.board.smarts_by_names[v]
 		local smart_owner = smart_obj.player_name
+
+		--printf("   check target advance %s owner %s", smart_obj:name(), tostring(smart_owner))
 		
 		if smart_owner ~= "none" then
-			if game_relations.is_factions_enemies(smart_obj.player_name, smart_owner) then
+			if game_relations.is_factions_enemies(self.faction.player_name, smart_owner) then
 				return false
 			end
 		end
@@ -177,7 +181,7 @@ function faction_brain_human:get_sim_targets_advance(expansion)
 		local smart_owner = smart_obj.player_name
 		
 		if smart_owner ~= "none" then
-			if game_relations.is_factions_enemies(smart_obj.player_name, smart_owner) then
+			if game_relations.is_factions_enemies(self.faction.player_name, smart_owner) then
 				self:register_target_point(smart_obj, false, true)
 			end
 		end

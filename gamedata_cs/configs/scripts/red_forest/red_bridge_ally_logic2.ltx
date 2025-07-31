@@ -11,6 +11,7 @@ invulnerable = true
 path_walk = talk_1_walk
 path_look = talk_1_look
 on_signal = action | camper@talk_wait_work1 %+red_bridge_leshiy_redy%
+on_info = {+red_bridge_leshiy_redy} camper@talk_wait_work1
 meet = no_meet
 
 [camper@talk_wait_work1]
@@ -27,6 +28,7 @@ invulnerable = true
 path_walk = talk_1_walk
 path_look = talk_1_look
 on_game_timer = 30 | camper@reply2_work1 %+red_bridge_thanks_leshiy_reply =play_sound(red_bridge_thanks_leshiy_reply1)%
+on_info = {+red_bridge_thanks_leshiy_reply} camper@reply2_work1
 meet = no_meet
 
 [camper@reply2_work1]
@@ -43,6 +45,7 @@ invulnerable = true
 path_walk = talk_1_walk
 path_look = talk_1_look
 on_game_timer = 15 | camper@reply4_work1 %+red_bridge_thanks_leshiy_reply3 =play_sound(red_bridge_thanks_leshiy_reply3)%
+on_info = {+red_bridge_thanks_leshiy_reply3} camper@reply4_work1
 meet = no_meet
 
 [camper@reply4_work1]
@@ -51,6 +54,7 @@ invulnerable = true
 path_walk = talk_1_walk
 path_look = talk_1_look
 on_game_timer = 25 | {+red_bridge_thanks_leshiy_reply4} camper@reward_work1 %+red_bridge_stalkers_go%
+on_info = {+red_bridge_stalkers_go} camper@reward_work1
 meet = no_meet
 
 [camper@reward_work1]
@@ -58,8 +62,9 @@ out_restr = red_bridge_bandit_restr
 invulnerable = true
 path_walk = talk_1_walk
 path_look = talk_1_look
-on_game_timer = 150 | walker@bridge_walk_work_1
-on_info = {=dist_to_actor_ge(3) +red_leshiy_reward_done} walker@bridge_walk_work_1
+on_game_timer = 150 | walker@bridge_walk_work_1 %+red_bridge_leshiy_wait_1%
+on_info = {=dist_to_actor_ge(3) +red_leshiy_reward_done} walker@bridge_walk_work_1 %+red_bridge_leshiy_wait_1%
+on_info2 = {+red_bridge_leshiy_wait_1} walker@bridge_walk_work_1
 meet = meet@work1
 
 [walker@bridge_walk_work_1]
@@ -69,7 +74,8 @@ path_walk = bridge_walk
 def_state_moving1 = patrol
 def_state_moving2 = patrol
 def_state_moving3 = patrol
-on_signal = action | camper@post_work1
+on_signal = action | camper@post_work1 %+red_bridge_leshiy_wait_2%
+on_info = {+red_bridge_leshiy_wait_2} camper@post_work1
 meet = no_meet
 
 [camper@post_work1]
@@ -108,7 +114,8 @@ on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_2
 invulnerable = true
 combat_ignore_cond = always
 path_walk = bridge_walk
-on_signal = action | camper@post_work2
+on_signal = action | camper@post_work2 %+red_bridge_ally_2_wait_1%
+on_info = {+red_bridge_ally_2_wait_1} camper@post_work2
 
 [camper@post_work2]
 post_combat_time = 0,0
@@ -138,7 +145,8 @@ on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_3
 invulnerable = true
 combat_ignore_cond = always
 path_walk = bridge_walk
-on_signal = action | camper@post_work3
+on_signal = action | camper@post_work3 %+red_bridge_ally_3_wait_1%
+on_info = {+red_bridge_ally_3_wait_1} camper@post_work3
 commander = true 
 move_type = patrol
 
@@ -171,14 +179,16 @@ out_restr = red_bridge_bandit_restr
 invulnerable = true
 target = talk_1_look
 anim = salut_free
-on_game_timer = 30 | walker@bridge_walk_work_4
+on_game_timer = 30 | walker@bridge_walk_work_4 %+red_bridge_ally_4_wait_2%
+on_info = {+red_bridge_ally_4_wait_2} walker@bridge_walk_work_4
 
 [walker@bridge_walk_work_4]
 invulnerable = true
 combat_ignore_cond = always
 path_walk = bridge_walk
 move_type = rush
-on_signal = action | camper@post_work4
+on_signal = action | camper@post_work4 %+red_bridge_ally_4_wait_1%
+on_info = {+red_bridge_ally_4_wait_1} camper@post_work4
 
 [camper@post_work4]
 post_combat_time = 0,0
@@ -215,7 +225,8 @@ on_info = {+red_bridge_stalkers_go} walker@bridge_walk_work_5
 invulnerable = true
 combat_ignore_cond = always
 path_walk = bridge_walk
-on_signal = action | camper@post_work5
+on_signal = action | camper@post_work5 %+red_bridge_ally_5_wait_1%
+on_info = {+red_bridge_ally_5_wait_1} camper@post_work5
 
 [camper@post_work5]
 post_combat_time = 0,0

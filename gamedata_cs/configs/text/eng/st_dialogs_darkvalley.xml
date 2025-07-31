@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_freedom_blockpost_robbery_dialog_0">
+		<text>All right, stalker, stay put... Who are you and what are you doing here?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11">
+		<text>He's probably dead already, and I suggest you don't hang around here too long unless you want to join him.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1111">
+		<text>Someone keeps attacking us. They're real professional about it too - we never stand a chance. We control all the roads leading into the Dark Valley but that don't seem to stop the attacks one bit. The one place you can relax is the base. If you have questions about Fang, the Freedom base is your best bet.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51">
+		<text>So, did that dog give you the run around?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11">
+		<text>Hey, buddy. What will you be needing today?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_21">
+		<text>Hey, buddy! Looking for a good deal, eh?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11">
+		<text>Well, well, finally we meet face to face. My name is Chekhov, and I'm the boss around here. The recording on the PDA you found clears things up a bit. All the exits from the Valley were sealed off, but our outposts and patrols just kept getting hit! A few times we had a patrol leave the base and get slaughtered in no time. The boys started thinking that we offended the Zone somehow and this was some sort of punishment. We even tried putting together protection charms against ghosts and all... But as we now know there was nothing mystical about it - the commandant gave away all our movements...Frigging rat!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111">
+		<text>I didn't expect him to do this! I've known him for ages! We hunted for our first artifacts together, we made Freedom what it is today! I trusted him with all the operational planning, and he just went and sold us out...</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111">
+		<text>As soon as the outpost conversation was aired on our radio frequency, the commandant vanished. He knew he was screwed. What we've got do now is find him. He knows too much, if not everything. All the exits from the Valley are secured, so he couldn't have gone too far. We're tracking his PDA - he's near the road to the Cordon. A few of our squads are on their way over there.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111 ">
+		<text>Yep, there was a stalker like that. Very interested in rare parts and the like. He must've known we had the best tech team in the whole Zone! I sold him the part he wanted, and why not? He paid well and didn't even haggle. What I don't know is what he wanted with it: these parts were only used in old army cryptographic machines. He left the base straight away and nobody's seen him since.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31">
+		<text>Thanks for your help! After the shootout at the farmhouse we know that mercenaries are behind the attacks on Freedom. Information from the commandant's PDA also confirms this. The question is: why the hell are they doing it? Mercenaries have always stayed neutral and cooperated with all of the Zone's factions. I wonder who the client was for this little job. Perhaps it was Duty... or the army. I've got more questions than answers right now, but I'll get to the bottom of this, you can bet on it. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_3111">
+		<text>You've held up your end of the deal, and now I'll tell you about Fang. He was looking for rare components here and I got real curious as to what he wanted with all that ancient crap. When I asked him directly he told me to mind my own business - it's too bad I'm not the quittin' type! I asked one of our tech guys to hack into his PDA's frequency, and we were able to monitor him for a few days. It looks like he went to the Garbage - I'd look for him there. By the way, I made a note of his PDA frequency and I've already uploaded it for you. His location is now marked on your PDA. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41">
+		<text>Are you ready to help Freedom once again?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111">
+		<text>We know a lot more but the mercenaries keep attacking us and we're down to our bare bones here. I still don't know how they're getting into the Valley - we've got all the roads covered with our outposts. It looks like there's a tunnel here somewhere that we don't know about. That's how the mercenaries are getting into the Dark Valley. We need to find out where that hole is and blow it to bits!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_71">
+		<text>Merc, we need to gain control over the antennas.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_51">
+		<text>Thanks for your help! I sure as heck didn't expect it, 'cause most people in the Zone only care about themselves. I reckon we gave the mercs a good fight. The tunnel they used to get into the Valley is out of action, but the boys are going to blow the whole place to bits to make sure not even a mouse can sneak into our Valley without us knowing! There's still the issue of someone giving the mercs a contract to cause us problems, but I think we'll get to the client soon enough. Anyway, here is your reward!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_61">
+		<text>Hey! What brings you here?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111 ">
+		<text>Yeah, I'll help you... if you help me, that is. Don't take it personally, but we're having a rough time and if things don't change, Freedom won't have enough men to defend the base from bandit attacks... Help me find out who is attacking us and I'll give you information about Fang.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_121">
+		<text>Find the commandant and bring him to me alive...or dead. Do that and I'll tell you where you can find Fang. I've uploaded the coordinates of the commandant's PDA to yours. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111 ">
+		<text>There's an old triangulator in the Valley. It was built by geodesists back in Soviet times. The triangulator comprises three antennas. Once all 3 antennas are activated, you can monitor the surface of the whole valley. If it works, we'll be able to work out how the mercenaries are getting into the Valley.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111 ">
+		<text>One of the antennas is here in the base, but the other two were captured by mercenaries. Help us regain control over those antennas!</text>
+	</string>
+	<string id="val_arena_master_about_rule_0">
+		<text>What are the rules in the Arena?</text>
+	</string>
+	<string id="val_arena_master_about_rule_1">
+		<text>Rules? Shoot straight, as they say, and that's about it. You have to win in every round, and that all depends on how lucky you get. I mean, you're gonna need all the luck you can get if you've got a rusty shotgun and a sweater for protection looking at a fella in body armor and a shooter that can take down a mammoth. And sometimes you'll be up against not one guy, but two or even three. If you sign up for that kinda thing then there ain't more than two possible outcomes. You're either the winner or a rotting corpse, simple as that. If you win all the rounds I'll pay you a reward, but if you fail - you owe me. So, you wanna play?</text>
+	</string>
+	<string id="val_arena_master_comeback_0">
+		<text>Come back when you're up for it.</text>
+	</string>
+	<string id="val_arena_master_darkvalley_0">
+		<text>Where have you been, other than the Dark Valley?</text>
+	</string>
+	<string id="val_arena_master_darkvalley_1">
+		<text>Well, my friend, I've been to every corner of the Zone, let me tell you. Some of the shit I've seen... eh. Wandering the Zone ain't always easy, almost never, in fact. Then again, nobody finds it easy here, unless the Guide himself is helping you out. You heard of him? No? Oh man, he was the first stalker! Ever! He was the first person to walk the Zone and that's why they call him the Guide. He knows this hellhole like the back of his hand, and even if the Zone changes after an emission, the Guide can still take you where you need to go, no problemo. The guy is a real talent, it's like he's got a sixth sense or something. Trouble is, finding him is hard enough, and on top of that he doesn't help everyone, and only the Black Stalker knows why he helps some but refuses others. One thing you can be sure of though, if he agrees to take you somewhere, you're in for a real smooth journey - relax, sit back and enjoy the ride. Anyway, I sure as hell would like to talk to him - I bet he knows what's beyond the radar, he must have been there at some point, no doubt about it.</text>
+	</string>
+	<string id="val_arena_master_good_fight_0">
+		<text>Good fight. Here's the cash. Feel like another little firefight?</text>
+	</string>
+	<string id="val_arena_master_good_luck_0">
+		<text>Good luck, merc.</text>
+	</string>
+	<string id="val_arena_master_loozer_0">
+		<text>Bad luck, buddy. Don't worry, you'll do better next time.</text>
+	</string>
+	<string id="val_arena_master_money_back_0">
+		<text>Come back once you scrape up some cash.</text>
+	</string>
+	<string id="val_barmen_about_barmen_0">
+		<text>How did you become a barman?</text>
+	</string>
+	<string id="val_barmen_about_barmen_1">
+		<text>You're not asking the right question, bro. You should be asking how Ganja the barman, Ganja the hookah man, Ganja, the man who partied with all sorts of friends in all sorts of places, ended up in the Zone. But I ain't answering that, bro. That's a negative story and I'm a positive kind of guy. I found myself here. That's the way the cookie crumbles. I was on my own and I felt cosmic loneliness, bro. Yeah, man, it was real bad. But then I felt positive vibrations...coming from Freedom. I knew they were my kind of people. I had a choice, but my doubts were gone. I found my freedom - now I live a better life than most people in that crazy world outside the Zone. Here I have enough to drink, enough to smoke, I have the Zone and people who share their stories about it with me...Damn, this local weed is just pure suckage! </text>
+	</string>
+	<string id="val_barmen_about_zone_0">
+		<text>Go on, share some of your stories about the Zone.</text>
+	</string>
+	<string id="val_barmen_about_zone_1">
+		<text>Brother, I'll share everything with you: bread, weed, water, vodka and the sky. And information, too. Listen carefully. Deep inside the Zone there are secret labs - still active, from what I've heard. Strange, eh? How could people survive the emission and still go on without food or power? I wonder if it's even people running those labs. Man, what if it's aliens with their cold, merciless intellect? A brother once told me he intercepted some radio comms about some lab when he was at Yantar. He said the comms were so strange and scary he turned his receiver off real quick. Another fella once told me he encountered a semi-transparent creature in a protective suit, way more advanced than anything stalkers wear. That transparent thing told him, "Leave. We are working. You are interrupting our work." Then again, supposedly this happened right next to the Radar. Don't be quick to believe all that stuff, bro. But then, who knows? Maybe the Zone really did turn those people into pure energy...</text>
+	</string>
+	<string id="val_comendant_about_freedom_0">
+		<text>Can I join Freedom?</text>
+	</string>
+	<string id="val_comendant_about_freedom_1">
+		<text>I told you already: how do I know who you really are? What if you've been sent here by someone else? In these times we can't trust anyone, so you ain't getting in just like that...We need to test you, test you real good, make sure you ain't got any murky little thoughts in that head of yours. Pass the test, do a couple of jobs for the clan and then Chekhov will decide whether Freedom needs you or not.</text>
+	</string>
+	<string id="val_comendant_about_news_0">
+		<text>What's new?</text>
+	</string>
+	<string id="val_comendant_about_news_1">
+		<text>It rained this morning, is that news enough for you? Listen, I haven't got time to be talking to you, the situation ain't right for it. Some assholes are killing my men left right and center, and there ain't enough of them as it is! So, discussing news and beating gums isn't high on my list of priorities right now. And how am I even supposed to know you're not one of those bastards wasting my boys? If you've come for a heart-to-heart, you're in the wrong place, buddy.</text>
+	</string>
+	<string id="val_fixer_about_benefit_0">
+		<text>Got any useful info for a stalker?</text>
+	</string>
+	<string id="val_fixer_about_benefit_1">
+		<text>Useful? Useful in our line of work means something that's gonna help you stay alive. That, or something that's gonna make your enemy dead. I'll tell you about artifacts. What's an artifact? It's a cluster of anomalous energy, kinda like a stock cube. There's also artifacts that can...err...what's that damn word...ah, right...ge-ne-ra-te anomalies! I think that's how Chekhov says it. Anyway, only problem is, once the artifact generates an anomaly it's as good as useless. The anomaly itself ain't exactly powerful nor does it last long, but it's good enough to delay someone or knock 'em off your trail altogether. </text>
+	</string>
+	<string id="val_fixer_about_power_0">
+		<text>So what's your field of work?</text>
+	</string>
+	<string id="val_fixer_about_power_1">
+		<text>Well, I do my best work in the kitchen with a fork! Hah! Kidding, buddy. I'm a sniper expert. I can shoot pretty good myself and I help others too. I can work your assault rifle real nice - it'll fire like a Spetsnaz SVD when I'm finished with it. And if you get a real sniper rifle, oh baby - your enemies are gonna be taking real long detours to stay out of your way, that's a promise. I can also patch up your armor if need be. </text>
+	</string>
+	<string id="val_fixer_about_weapons_0">
+		<text>Share your experience with me. What's the best way to improve weapons and armor?</text>
+	</string>
+	<string id="val_fixer_about_weapons_1">
+		<text>Experience is something I've got aplenty. I'll tell you this: don't try to improve everything at once. If you want to have the most powerful shooter that's also the most accurate, you're dreaming. Say you increase your weapon's stopping power once, then next time do the same! That's because there are upgrades you can't remove. If you decide to make a sniper rifle out of a weapon you made powerful, it's gonna be too late, so you need to think ahead, and think well.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_11">
+		<text>Wassup?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_0">
+		<text>Got any work?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_1">
+		<text>For a couple of nights now I've been seeing some sort of light coming from the abandoned building at the gas station. Could have been smokes or torches, I suppose. Why not check it out? I mean, if it's some kind of evil we can handle that but if it's those bastards from the Garbage we'll need to deal with 'em. </text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_11">
+		<text>OK, I'll check it out. </text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_12">
+		<text>I'm not interested in that.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_2">
+		<text>So, what was it at the filling station?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_21">
+		<text>Bandits, I think they were watching you. They weren't too friendly at first, but I managed to calm them down some.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_212">
+		<text>Well, that's odd. Anyway, here's your reward. Thanks again!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_213">
+		<text>Let me know if you see any more ghosts.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_214">
+		<text>They had something on them, here, have a look.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_215">
+		<text>Very interesting. Show this PDA to Lingov. The bandits collected information, and I'm sure he'll be interested in it.\n</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_22">
+		<text>It's so radioactive I'm gonna be a little green man before long.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_3">
+		<text>No.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1">
+		<text>I'm a mercenary. I am looking for a stalker called Fang.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_111">
+		<text>Why dead? What's going on here?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11111">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_21">
+		<text>Get out of my ironsight.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11">
+		<text>You chose a bad area for a walk, buddy. Don't you know we're being attacked day and night? Hanging out in our base is dangerous enough, but wearing a Freedom jacket will make you a target...</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111">
+		<text>I'm looking for a stalker called Fang. Ever heard of him?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111">
+		<text>I don't know him personally. Some hobo came by a few days ago. He and our chief had some shady business to discuss - no witnesses, of course. It could have been your guy, but I don't really know.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111">
+		<text>How can I see the leader of Freedom?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111">
+		<text>Hah! You sure got a short temper, buddy!... Listen up, forget about seeing the chief while we're in quarantine. I mean, you're just a merc. That said... if you do me a favor of sorts, I'll put in a good word with the big man. So, whaddaya say?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111111">
+		<text>OK, what's the job?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111111">
+		<text>A pseudo-dog has settled down near the base and it's making life hell for us. Soon as it smells food being cooked at the Bar you can kiss your ass goodbye! The boys are all jumpy and nervous 'cause of that damn thing. You take care of this problem for us and when you come back we'll get down to real business.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111111">
+		<text>Consider it done.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_511">
+		<text>It doesn't matter. The bottom line: the beast is dead.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_5111">
+		<text>All right. Your next task is a little tougher. Listen up: we've got to deliver this ammo to our guys at the far outpost. Shoot straight for Ashot's - he'll tell you what exactly you have to lug and where to.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51111">
+		<text>Roger that.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_512">
+		<text>Not now.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_61">
+		<text>I told you, head to Ashot's!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_611">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_71">
+		<text>You're still here? Didn't you hear me, every second counts! Off to the outpost! Now!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_711">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_11">
+		<text>Piss off. If you have any questions, ask the commander.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_111">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_11">
+		<text>What are you doing here? We're expecting an attack any minute now. Run to our base and tell the commandant we're low on ammo. Tell him to send more. </text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_111">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11">
+		<text>Hello, merc. Feel like making some cash?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_111">
+		<text>Always.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1111">
+		<text>Here goes. A buddy of mine promised to bring me these rare diagrams, but he didn't reach the base. Now he's missing, but I really need the diagrams - they need to be delivered before sunrise. Time is money, you understand. So, you up for helping me out?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11111">
+		<text>Sure.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11112">
+		<text>Negative.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1112">
+		<text>I have a job that needs doing, but the doing best be real quiet - no witnesses, you feel me? Come see me when it gets dark, at around eleven. </text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11121">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_112">
+		<text>No, thanks.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_12">
+		<text>So, you interested in getting rich?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21">
+		<text>What about the component?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_211">
+		<text>Here they are, but you can forget about your buddy - those bloodsuckers had him for breakfast.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2111">
+		<text>Poor bastard. Anyway, here's your reward.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21111">
+		<text>If you've got any cash to spare - give me a shout.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_212">
+		<text>Hold your horses, I haven't got it yet.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2121">
+		<text>I'll wait until morning, but hurry up.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21211">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_31">
+		<text>Hi.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_311">
+		<text>Bye.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_41">
+		<text>I told you, come back when it gets dark.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_51">
+		<text>You're late. The client won't pay us now.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_511">
+		<text>Shit!</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_0">
+		<text>What does your clan do?</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_1">
+		<text>Our clan lives in the Zone and studies it, in a practical sense. I believe that the Zone is an unbelievable scientific opportunity for the whole of humanity. For several years now the Zone has produced artifacts, which are fantastic research materials, and there are more and more of them every day. As for anomalies, you couldn't recreate the experimental conditions they generate in any lab! I have no doubt that in a few years' time, we will see a massive leap in science and other areas of human knowledge thanks to our research here in the Zone. This leap will be felt by everyone...even people whose closest contact with science and technology is their cell phone!</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_0">
+		<text>Why do you dislike Duty so much?</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_1">
+		<text>Dislike? That's a very soft way of putting it. We have nothing in common, and in my opinion their struggle against the Zone only leads to the Zone resisting harder. If you look at the evidence, wherever Duty begins their holy war against the Zone, mutants and anomalies only increase in number. Instead of studying the Zone and trying to find a way to coexist, Duty is exacerbating the problem. The harder they hit the Zone, the harder it hits back. If they keep it up, this will lead to a disaster and the end of us all. Put simply, Duty is a faction of your standard dimwitted jarheads, who hear nothing, see nothing and only know how to pull a trigger. We've been fighting pretty much since the moment we got here, and sooner or later only one faction will remain.</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_0">
+		<text>Do you know anything interesting about the Zone?</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_1">
+		<text>To tell you all I know I'd need much more than a couple of minutes. For example, one area in which we're conducting research is stalkers who intuitively feel the Zone. They never carry any electronics or metal weapons. They even say that weapons and electronics irritate the Zone - and in return it sends monsters to attack the people who carry them and sticks anomalies in their path. They reckon that to be comfortable in the Zone a man needs nothing but his own skills. Pretty much all of them have been warped by the Zone in some way, but they survived and even acquired some strange abilities! Some of them intuitively know the way through deadly anomalies, others can get out of the thickest forest, and I heard that a few of them even make monsters stay away from them. Rumor has it that one of those fellas settled down at Agroprom.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111">
+		<text>An unpleasant turn of events.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111">
+		<text>And where is the commandant now?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111">
+		<text>I heard a stalker by the name of Fang was here?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111">
+		<text>Yep, there was one like that. Very interested in rare parts and the like. He must've known we had the best tech team in the whole Zone! So I sold him the part he wanted, and why not? He paid me on the spot - didn't even haggle. What I don't know is what he wanted with it. Actually, these parts were used in old army cryptographic machines...He left the base as soon as I handed over the component, and I've not seen him since. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111111">
+		<text>Do you know where Fang could have gone?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111">
+		<text>I'll help you, but you gotta help me first. Don't take it personally! We've got a pretty tough situation here - if this keeps up we won't have anyone left to defend the base against bandits...Help me find out who is attacking us and I'll tell you where to look for Fang.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_12">
+		<text>Deal. What do I do?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1211">
+		<text>Agreed.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_21">
+		<text>Listen, merc, I'm not going to tell you about Fang until I find out who is attacking us and where they're doing it from. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_311">
+		<text>So, what about Fang?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31111">
+		<text>Thanks for the information.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411">
+		<text>I'm ready.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111">
+		<text>How are you going to find the way mercenaries are getting in? The Valley is huge! It's like looking for a needle in a haystack. </text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111">
+		<text>There is a triangulator in the Valley - it was built by geodesists back in the Soviet times. It consists of three antennas. Once all three are activated, you can scan the surface of virtually the whole Valley. If it works, we'll be able to see how the mercenaries are getting in.\n</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111111">
+		<text>What do I do?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111">
+		<text>One of the antennas is right here inside the base, but the other two are controlled by mercenaries. Help us secure them.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111111">
+		<text>Agreed.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_412">
+		<text>Another time.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4121">
+		<text>Well...good luck to you, stalker.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_511">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_711">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_0">
+		<text>I want to join you.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_1">
+		<text>You see, to accept you we have to sit down, have a chat, and get a feel for who you are...I ain't got time for that right now and I don't see my schedule clearing up until I deal with the attacks on my men. Help me and we can talk.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_0">
+		<text>I want to join Freedom. Have I done enough to do that?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_1">
+		<text>Maybe yes, maybe no...Either way, I can't let you in until the attacks on my boys stop. Help us and we can talk.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_2">
+		<text>Definitely. Who knows how many more of our boys would have died if it weren't for you? But I can't let you join right now. Don't ask why...chalk it up to superstition. But time till come when we'll be ready to welcome you with open arms! I'll contact you then. I hope you don't change your mind about joining us by then.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_3">
+		<text>You are a free Stalker, it seems. Well, most of my guys are former stalkers too. Our factions are quite similar...but we have our differences too. You need to understand that if you join Freedom you'll lose everything you achieved with the Stalkers. Are you willing to do that?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_4">
+		<text>Correct me if I'm wrong but you're one of Yoga's merry band, no? That's amusing...it's not often that a bandit wants to fight for Freedom. But then, if this is what you really want and you're really prepared to respect the freedom of others and deliver the Zone's gifts to the rest of humanity...We'll be happy to take you. Of course, if we do - you got to promise that from hereon you'll have no more business with Yoga. Agreed?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5">
+		<text>That's a dumb question, buddy. I'd be glad to have a real man like you as part of my team, if you're down for it, of course.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51">
+		<text>I'm down. Now I can finally breathe the sweet air of Freedom!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511">
+		<text>Enjoy it, brother, but remember: freedom is a necessity we recognize. Are you familiar with our beliefs?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5111">
+		<text>Might be best if you tell me everything, just in case I missed something. </text>
+	</string>
+	<string id="val_freedom_leader_join_main_51111">
+		<text>We respect the freedom of our fighters and other stalkers, and believe that the Zone is open to all as humanity's greatest gift. It represents an opportunity for a massive leap forward, an opportunity for all of us! Duty seeks to destroy the Zone and appropriate its secrets. We must stop them. Our main job is to fight Duty. </text>
+	</string>
+	<string id="val_freedom_leader_join_main_511111">
+		<text>Got it.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5112">
+		<text>Yes, of course!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51121">
+		<text>Well, then, as of this moment you're one of us! Freedom's base is your home. I'll upload a codec to your PDA, which will allow you to receive radio transmissions from other Freedom units and fighters. You'll also be able to view the current state of our struggle against Duty in the tactical section. </text>
+	</string>
+	<string id="val_freedom_leader_join_main_511211">
+		<text>Duty's days are numbered...I'm going to bring freedom to the masses.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_52">
+		<text>I'll think about it.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_0">
+		<text>The barman suggested I show you this PDA.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_1">
+		<text>Oh yes. I have long since suspected that the bandits are after our base. You did well, brother. Here, take your reward.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_11">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111">
+		<text>The commandant sent me, I'm here for the ammo.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111">
+		<text>Oh, so he found a hero after all...</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11111">
+		<text>Why a "hero"?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111111">
+		<text>That's 'cause no one's got the guts to even take a peek outside. In two days we've had three attacks on our posts and fifteen men dead, and no one has any idea who it was. Whoever it was... they're always a step ahead of us. They always know where our squad will be next, and execute their plan to the "t." I can't help feeling it's one of our own leaking information to them... oh well. Here's a package for you from our boys. I've uploaded the coordinates to your PDA. Break a leg!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111111">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_12">
+		<text>Nothing.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_31">
+		<text>Hey, man! Run to the outpost, quick! Our boys can't hold out much longer without ammo!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_311">
+		<text>See you.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_0">
+		<text>Got a job for me?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_1">
+		<text>The base is under constant attack from mutants. Their lair is not far from here - destroy it, and hopefully that'll calm 'em down for a bit.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_11">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_12">
+		<text>Nah, that's not my kind of job.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_2">
+		<text>You dealt with the mutants?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_21">
+		<text>I killed them dead.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_211">
+		<text>Here's your reward.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_22">
+		<text>No.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_221">
+		<text>Well, that's no good. Come back when the little piggies are fried.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_3">
+		<text>No.</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_1">
+		<text>Oh, brother! You see, Freedom is all about, well, being free of any obligations. Everyone's free to do his own thing. You wanna collect artifacts? Go ahead! Feel like trading? That's fine too. You could even start a chess club if that floats your boat! Our basic rule is: no limits... as long as you don't infringe the rights of fellow Freedom members. We're not just a faction, brother, - we're a commune of free stalkers! We got fighters, but we got artists, too. And our engineers are the best in the Zone, anyone will tell you that!</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_111">
+		<text>That's life, brother... Those of us who value personal freedom and don't want to be governed by a bunch of suits must stick together to survive. This is how it works: the powers that be - on the outside - don't want to set foot in the Zone. That gives us all this room to do what we've always wanted!... Here you'll find people who couldn't find their place in that other world.</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_1">
+		<text>Brother, the Zone is a gift from above! From its very conception, humanity has suffered under the burden of disease. And now - look at all these opportunities! These wound-healing artifacts, for example, - they're gonna revolutionize medicine! And what about the anomalies that defy the laws of gravity and the theory of magnetic fields? Building a facility for just one tiny experiment used to take years, right? But now, the Zone is like a ready-made outdoor science lab that research centers could only dream about!</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_111">
+		<text>Of course it's dangerous. But so is fire, yet we still use it, don't we?... I believe that if we learn to use the Zone's riches properly we can turn the course of human history in the right direction! That's why we are fighting for open access to the Zone. It is public property, and we cannot allow it to only serve the interests of a small group.</text>
+	</string>
+	<string id="val_pressman_nickname_0">
+		<text>How did you get the nickname "Journalist"?</text>
+	</string>
+	<string id="val_pressman_nickname_1">
+		<text>Just something from my past. I used to be a journalist, a good one at that. I came to the Zone with an editorial mission: to write about the difficult lives of the military stationed here. The army welcomed me with an all-nighter of boozing, followed by, umm, a night safari, let's say. I don't remember the trip - I'd had a few, to say the least, but I took a few shots here and there. At some point I passed out cold, and when I woke up it was morning, I was lying on the ground by myself, with vehicle tracks ending right next to me...Just like that, a car was driving along just fine and then "bam!" - nothing. My bag and papers gone as well... but I guess the Zone liked me, as it let me find people again. Except this time it was some other group - they locked me up in a basement, saying I entered the zone illegally and might be contaminated, so just sit and wait until we work things out. Or you can give us some green and we'll let you go. I've seen plenty-a-day wasted in that basement before Ashot came and bought my freedom. Now I'm in Freedom, and I'll be grateful to Ashot to the end of my days. We go way back, he and I, the things we've seen...and I hope to God and pray to the Zone that we'll still see many more before our chapter is done. </text>
+	</string>
+	<string id="val_pressman_story_0">
+		<text>Can you tell me something interesting?</text>
+	</string>
+	<string id="val_pressman_story_1">
+		<text>I don't know if you heard but new mutants have started appearing in the Zone. You know how? Well, there are places where a new kind of anomaly has sprung up. Any creature that lands in one of them is changed, transformed even. What's interesting is that none of the transformations so far have been lethal. Maybe they're not lethal in essence. If a human gets sucked into this anomaly then the creature it becomes still has some semblance of consciousness. Imagine that you're walking along and then something utterly vile jumps out of the bush in front of you. How are you to know it's a former human being that needs your help? That's why these new mutants don't live very long...the first stalker they bump into usually sees to that.</text>
+	</string>
+	<string id="val_questman_about_zone_0">
+		<text>Do you know anything interesting about the Zone?</text>
+	</string>
+	<string id="val_questman_about_zone_1">
+		<text>People say many things. Some even say that everything that happens in the Zone and the Zone itself are alien handiwork. The theory is that they left a module, the Black Monolith, somewhere in the center, which changed everything around it. A sort of global experiment on mankind. It's like a weapons testing facility for them, you know? Stalkers collect artifacts and sell them on, which means that every large science research center probably has a few. And that's how the Black Monolith spreads its influence around the world. Nobody knows what the consequences will be. Maybe artifacts are just trinkets and maybe they really do affect humans somehow. Maybe this theory is a load of bull, but who's to say the Zone isn't here spreading artifacts around for a reason? If only we could get some answers from the people who've been beyond that damn radar. They could tell us if there's really a Monolith in the center or not - that would clear things up some.</text>
+	</string>
+	<string id="val_questman_dissatisfied_0">
+		<text>What are you so unhappy about?</text>
+	</string>
+	<string id="val_questman_dissatisfied_1">
+		<text>And what do I got to be happy about, huh? I'd like to see you play sitting duck in a base with no defenses and be happy about it. Do you even know how much we still need to do here? New fortifications, additional buildings...But the top dogs got no time for all that, I don't even know what they're thinking. Hell, I don't know if anyone around here is thinking at all! And anyway, we're in a shit place, far from any important positions. Man, I'd fix this crap up real quick, but they're hardly gonna let me do that.</text>
+	</string>
+	<string id="val_trader_about_freedom_0">
+		<text>What's life like in Freedom?</text>
+	</string>
+	<string id="val_trader_about_freedom_1">
+		<text>Life's good, real good. I couldn't wish for a better home, man. You know, I never had any brothers, but around here pretty much everyone is a brother to me, and the rest are trusted friends I can rely on. They help me, I help them. You know, I'm a trader, so I'm privy to plenty of info about the Zone and know more than most veterans. And that info saved the lives of many of our boys more than once. </text>
+	</string>
+	<string id="val_trader_about_said_0">
+		<text>You hear any interesting rumors lately?</text>
+	</string>
+	<string id="val_trader_about_said_1">
+		<text>Rumors? Alright, here's a little bedtime story, and it's about dreams, too. You ever tried sleeping deep inside the Zone? Well, I suggest you don't even try, because the horrors you'll dream of are beyond imagination. I heard a couple of stories about it: one guy had his heart rupture while sleeping - a terrible death. Another guy woke up but lost his wits for good - all he does now is hide from some dark stalkers he keeps going on about. So that's the rumor. If you really need to get your head down then you need a special helmet with a thin wire mesh on the inside. They say all military stalkers have them and they sleep like babies, no problem.</text>
+	</string>
+	<string id="val_trader_where_manufactured_0">
+		<text>Where do you get your goods?</text>
+	</string>
+	<string id="val_trader_where_manufactured_1">
+		<text>Well, I have my suppliers, but I don't share that info with anyone. I got enough problems as it is: my kindness will be the end of me. I'm good to people, polite to my clients, and the selection of goods in my shop is better than in a supermarket. On top of that, the prices are real low, like a winter sale in May, so I'm a popular trader in the Zone. Not with everyone though. The Asubers brothers from the black market added me to their little black list 'cause I'm a competitor. You know the reward they put on my head? You could vacation for a year with a new girl every night on that much cash! A couple of fellas around here liked the Asubers' offer...and the vultures liked the taste of their flesh too. The boys around here keep me safe, and I'm no wimp either.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_0">
+		<text>Wassup, dude.</text>
+	</string>
+	<string id="val_freedom_barmen_name">
+		<text>Ganja</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_0">
+		<text>I was at the gas station. Bandits made a nest there - looks like they've been watching you.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_1">
+		<text>Gee, I thought we had enough misery, but no - now even the bandits are plotting something nasty for us. Be that as it may, here's your reward and thanks for all your hard work.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_11">
+		<text>You get another job that needs doing - let me know.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_12">
+		<text>They had this little trinket on them. Maybe it'll be of interest to you.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_121">
+		<text>Very nice. The bandits collected some information on this PDA. Show it to Chekhov - I'm sure he'll be interested.</text>
+	</string>
+</string_table>
