@@ -28,9 +28,9 @@ bool CUIFrameLineWnd::InitTexture(pcstr texture, pcstr shader, bool fatal /*= tr
     dbg_tex_name = texture;
     string256 buf;
 
-    const bool back_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_back"));
-    const bool b_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_b"));
-    const bool e_exist = CUITextureMaster::ItemExist(xr_strconcat(buf, texture, "_e"));
+    const bool back_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_back"), shader, m_shader, m_tex_rect[flBack], fatal);
+    const bool b_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_b"), shader, m_shader, m_tex_rect[flFirst], fatal);
+    const bool e_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_e"), shader, m_shader, m_tex_rect[flSecond], fatal);
 
     bool failed = false;
 
@@ -46,12 +46,6 @@ bool CUIFrameLineWnd::InitTexture(pcstr texture, pcstr shader, bool fatal /*= tr
         failed |= !b_exist;
         failed |= !e_exist;
     }
-	if (back_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_back"), shader, m_shader, m_tex_rect[flBack]);
-	if (b_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_b"), shader, m_shader, m_tex_rect[flFirst]);
-	if (e_exist)
-		CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_e"), shader, m_shader, m_tex_rect[flSecond]);
 
     const bool B_and_E_are_similar_by_height = fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flSecond].height());
     const bool B_and_Back_are_similar_by_height = fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flBack].height());
