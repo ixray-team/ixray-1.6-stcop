@@ -37,7 +37,9 @@ class CPHObject:
 					st_net_interpolation			=(1<<3),
 					fl_ray_motions					=(1<<4),
 					st_recently_deactivated			=(1<<5),
-					fl_collision_disable			=(1<<6)
+					// fully disables static + dynamic
+					fl_collision_disable			=(1<<6),
+					fl_collision_disable_dynamic    = (1 << 7)
 				};
 
 			CPHIsland			m_island;
@@ -112,6 +114,8 @@ public:
 			void			check_recently_deactivated		()										;
 			void			collision_disable				()										;
 			void			collision_enable				()										;
+			void			collision_dynamic_enable();
+			void			collision_dynamic_disable();
 virtual		void			ClearRecentlyDeactivated		()										{;}		
 virtual		void			Collide							()										;
 virtual		void			near_callback					(CPHObject* obj)						{;}
