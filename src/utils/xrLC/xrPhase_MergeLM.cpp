@@ -81,7 +81,8 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	// Process 	
 	int _X = 0, _Y = 0;
  	u16 _Max_y = 0;
-#define SHIFT_HEIGHT 1
+
+#define SHIFT_HEIGHT 2
 
 	for (int it = 0; it < Layer.size(); it++)
 	{
@@ -114,7 +115,7 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 			rT = rS;
 
 			// Нужен только в оригенальной LMerge
-			BOOL		bRotated = false; //rT.SizeX() != rS.SizeX();
+			BOOL		bRotated = false;  
 
 			if (_Y < getLMSIZE() - HEIGHT)
 			{
@@ -196,10 +197,17 @@ void CBuild::xrPhase_MergeLM()
 		lmap->Save(pBuild->path);
 
 		clMsg( "Saving Map: %u ms, Merged: %u, %u", t.GetElapsed_ms(), MERGED, StartSize);
+
+		AditionalData("SavingMap: %ums|(%u|%u)", t.GetElapsed_ms(), MERGED, StartSize);
 	}
 
 	VERIFY(lc_global_data());
 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
+
+	size_t used, free, reserved;
+	vminfo(&free, &reserved, &used);
+
+	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32 (used / 1024 / 1024) );
 
 	// Cleanup deflectors
 	Progress(1.f);
@@ -209,4 +217,18 @@ void CBuild::xrPhase_MergeLM()
 
 
 	lc_global_data()->g_deflectors().clear();
+ 	vminfo(&free, &reserved, &used);
+
+	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(used / 1024 / 1024));
+
+	size_t USED_MEMORY = 0;
+	for (auto LM : lc_global_data()->lightmaps())
+	{
+		USED_MEMORY += LM->lm.memory_lmap();
+	}
+
+	u32 USED_LMAPS = USED_MEMORY / 1024 / 1024;
+	clMsg("Allocated FOR Lmaps Memory: %u mb", u32(USED_LMAPS) );
+
+	AditionalData("Lmaps allocated: %u mb", USED_LMAPS);
 }
