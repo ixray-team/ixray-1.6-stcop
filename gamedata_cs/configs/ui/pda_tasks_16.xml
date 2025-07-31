@@ -22,7 +22,7 @@
 		<texture>ui_pda2_delimiter_03_bottom</texture>
 	</right_bottom_background>
 
-	<task_split x="70" y="132" width="746" height="7" stretch="1">
+	<task_split x="66" y="132" width="750" height="7" stretch="1">
 		<texture>ui_pda2_split</texture>
 	</task_split>
 
@@ -84,7 +84,7 @@
 		<texture>ui_task_bt_right</texture>
 	</btn_next_task-->
 
-	<btn_second_task x="35" y="138" width="34" height="33" stretch="1">
+	<btn_second_task x="35" y="138" width="30" height="33" stretch="1">
 		<window_name>btn_second_task</window_name>
 		<texture>ui_task_bt_tslist</texture>
 		<hint_text delay="700">ui_show_second_task_wnd</hint_text>
@@ -96,9 +96,9 @@
 
 	<storyline_task_item x="35" y="96" width="750" height="35">
 		<window_name>pda_task_item1</window_name>
-		<t_icon x="0" y="2" width="34" height="33" stretch="1"/>
+		<t_icon x="0" y="2" width="31" height="33" stretch="1"/>
 
-		<t_icon_over x="-1" y="0" width="35" height="37" stretch="1">
+		<t_icon_over x="-1" y="0" width="33" height="37" stretch="1">
 			<texture>ui_pda2_mtask_overlay</texture>
 		</t_icon_over>
 
@@ -131,63 +131,63 @@
 		</t_time_rem-->
 	</secondary_task_item>
 
-	<btn_task_focus x="793" y="104" width="18" height="21" stretch="1">
+	<btn_task_focus x="793" y="104" width="16" height="21" stretch="1">
 		<window_name>btn_task_focus</window_name>
 		<texture>ui_task_bt_center</texture>
 		<hint_text delay="700">ui_task_btn_focus_center</hint_text>
 	</btn_task_focus>
 
-	<btn_task_focus2 x="793" y="145" width="18" height="21" stretch="1">
+	<btn_task_focus2 x="793" y="145" width="16" height="21" stretch="1">
 		<window_name>btn_task_focus2</window_name>
 		<texture>ui_task_bt_center</texture>
 		<hint_text delay="700">ui_task_btn_focus_center2</hint_text>
 	</btn_task_focus2>
 
-	<btn_nav_parent x="708" y="421" width="60" height="72" stretch="1">
+	<btn_nav_parent x="712" y="421" width="60" height="72" stretch="1">
 
-		<btn_nav_0 x="0" y="0" width="18" height="21" stretch="1">
+		<btn_nav_0 x="0" y="0" width="16" height="21" stretch="1">
 			<window_name>btn_nav_legend</window_name>
 			<texture>ui_mnav_bt_legend</texture>
 			<hint_text delay="700">ui_map_btn_legend</hint_text>
 		</btn_nav_0>
-		<btn_nav_1 x="20" y="0" width="18" height="21" stretch="1">
+		<btn_nav_1 x="18" y="0" width="16" height="21" stretch="1">
 			<window_name>btn_nav_up</window_name>
 			<texture>ui_mnav_bt_up</texture>
 			<hint_text delay="700">ui_map_btn_up</hint_text>
 		</btn_nav_1>
-		<btn_nav_2 x="40" y="0" width="18" height="21" stretch="1">
+		<btn_nav_2 x="36" y="0" width="16" height="21" stretch="1">
 			<window_name>btn_nav_zoom_in</window_name>
 			<texture>ui_mnav_bt_zoom_in</texture>
 			<hint_text delay="700">ui_map_btn_zoom_in</hint_text>
 		</btn_nav_2>
 
-		<btn_nav_3 x="0" y="24" width="18" height="21" stretch="1">
+		<btn_nav_3 x="0" y="24" width="16" height="21" stretch="1">
 			<window_name>btn_nav_left</window_name>
 			<texture>ui_mnav_bt_left</texture>
 			<hint_text delay="700">ui_map_btn_left</hint_text>
 		</btn_nav_3>
-		<btn_nav_4 x="20" y="24" width="18" height="21" stretch="1">
+		<btn_nav_4 x="18" y="24" width="16" height="21" stretch="1">
 			<window_name>btn_nav_center</window_name>
 			<texture>ui_mnav_bt_center</texture>
 			<hint_text delay="700">ui_map_btn_center</hint_text>
 		</btn_nav_4>
-		<btn_nav_5 x="40" y="24" width="18" height="21" stretch="1">
+		<btn_nav_5 x="36" y="24" width="16" height="21" stretch="1">
 			<window_name>btn_nav_right</window_name>
 			<texture>ui_mnav_bt_right</texture>
 			<hint_text delay="700">ui_map_btn_right</hint_text>
 		</btn_nav_5>
 
-		<btn_nav_6 x="0" y="48" width="18" height="21" stretch="1">
+		<btn_nav_6 x="0" y="48" width="16" height="21" stretch="1">
 			<window_name>btn_nav_zoom_out</window_name>
 			<texture>ui_mnav_bt_zoom_out</texture>
 			<hint_text delay="700">ui_map_btn_zoom_out</hint_text>
 		</btn_nav_6>
-		<btn_nav_7 x="20" y="48" width="18" height="21" stretch="1">
+		<btn_nav_7 x="18" y="48" width="16" height="21" stretch="1">
 			<window_name>btn_nav_down</window_name>
 			<texture>ui_mnav_bt_down</texture>
 			<hint_text delay="700">ui_map_btn_down</hint_text>
 		</btn_nav_7>
-		<btn_nav_8 x="40" y="48" width="18" height="21" stretch="1">
+		<btn_nav_8 x="36" y="48" width="16" height="21" stretch="1">
 			<window_name>btn_nav_zmreset</window_name>
 			<texture>ui_mnav_bt_zmreset</texture>
 			<hint_text delay="700">ui_map_btn_zmreset</hint_text>
@@ -215,7 +215,7 @@
 			<text align="r" font="letterica16" color="ui_4"/>
 		</t_counter>
 
-		<btn_close x="267" y="10" width="13" height="15" stretch="1">
+		<btn_close x="267" y="10" width="11.5" height="15" stretch="1">
 			<window_name>task_btn_close</window_name>
 			<texture>ui_task_bt_close</texture>
 		</btn_close>
@@ -231,13 +231,13 @@
 				<text align="l" font="letterica18" color="ui_1" complex_mode="1"/>
 			</name>
 
-			<btn_view x="207" y="0" width="20" height="21" stretch="1">
+			<btn_view x="207" y="0" width="18" height="21" stretch="1">
 				<window_name>task_item_btn_view</window_name>
 				<texture>ui_task_bt_visible</texture>
 				<hint_text delay="700">ui_task_btn_visible_map_spot</hint_text>
 			</btn_view>
 
-			<btn_focus x="230" y="0" width="18" height="21" stretch="1">
+			<btn_focus x="230" y="0" width="16" height="21" stretch="1">
 				<window_name>task_item_btn_focus</window_name>
 				<texture>ui_task_bt_center</texture>
 				<hint_text delay="700">ui_task_btn_focus_center2</hint_text>
@@ -260,7 +260,7 @@
 			<text align="l" font="letterica16" r="128" g="128" b="128" a="160">pda_legend_caption</text>
 		</t_caption>
 
-		<btn_close x="225" y="10" width="13" height="15" stretch="1">
+		<btn_close x="225" y="10" width="11.5" height="15" stretch="1">
 			<window_name>task_btn_close</window_name>
 			<texture>ui_task_bt_close</texture>
 		</btn_close>
@@ -268,7 +268,7 @@
 		<legend_list x="13" y="44" width="229" height="350" item_height="25" scroll_profile="pda" always_show_scroll="0">
 
 			<item x="0" y="0" width="229" height="26"><!-- 1 -->
-				<image x="8" y="0" width="16" height="19" stretch="1">
+				<image x="8" y="0" width="14" height="19" stretch="1">
 					<texture>ui_cur_task</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -277,7 +277,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 2 -->
-				<image x="10" y="0" width="13" height="15" stretch="1">
+				<image x="9" y="0" width="11" height="15" stretch="1">
 					<texture r="242" g="231" b="11">ui_pda2_secondary_task</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -295,7 +295,7 @@
 			</item-->
 
 			<item x="0" y="0" width="229" height="26"><!-- 4 -->
-				<image x="12" y="3" width="9" height="11" stretch="1">
+				<image x="10" y="3" width="8.5" height="11" stretch="1">
 					<texture>ui_pda2_squad_leader</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -304,7 +304,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 5 -->
-				<image x="11" y="2" width="11" height="13" stretch="1">
+				<image x="10" y="2" width="10" height="13" stretch="1">
 					<texture>ui_sm_mapQuest_gold</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -313,7 +313,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!--6 -->
-				<image x="8" y="-2" width="16" height="21" stretch="1">
+				<image x="8" y="-2" width="15" height="21" stretch="1">
 					<texture r="10" g="250" b="250">ui_pda2_exit_point</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -322,7 +322,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 7 -->
-				<image x="11" y="2" width="11" height="13" stretch="1">
+				<image x="10" y="2" width="10" height="13" stretch="1">
 					<texture color="pda_blue">ui_pda2_important1</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -331,7 +331,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 8 -->
-				<image x="11" y="1" width="11" height="13" stretch="1">
+				<image x="10" y="1" width="10" height="13" stretch="1">
 					<texture color="pda_blue">ui_pda2_trader</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -340,7 +340,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 9 -->
-				<image x="11" y="1" width="11" height="13" stretch="1">
+				<image x="10" y="1" width="10" height="13" stretch="1">
 					<texture color="pda_blue">ui_pda2_guide</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -349,7 +349,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 10 -->
-				<image x="11" y="1" width="11" height="13" stretch="1">
+				<image x="10" y="1" width="10" height="13" stretch="1">
 					<texture color="pda_blue">ui_pda2_mechanic</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -358,7 +358,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 11 -->
-				<image x="11" y="2" width="10" height="12" stretch="1">
+				<image x="10" y="2" width="9" height="12" stretch="1">
 					<texture r="30" g="215" b="30">ui_minimap_point</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -367,7 +367,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 12 -->
-				<image x="11" y="2" width="10" height="12" stretch="1">
+				<image x="10" y="2" width="9" height="12" stretch="1">
 					<texture r="215" g="215" b="10">ui_minimap_point</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
@@ -376,7 +376,7 @@
 			</item>
 
 			<item x="0" y="0" width="229" height="26"><!-- 13 -->
-				<image x="11" y="2" width="10" height="12" stretch="1">
+				<image x="10" y="2" width="9" height="12" stretch="1">
 					<texture r="215" g="30" b="30">ui_minimap_point</texture>
 				</image>
 				<text_static x="33" y="2" width="192" height="16" complex_mode="1">
