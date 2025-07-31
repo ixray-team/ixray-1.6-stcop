@@ -342,12 +342,12 @@ void CUILines::SetFont(CGameFont* pFont)
 	m_pFont = pFont;
 }
 
-void CUILines::SetTextGradient()
+void CUILines::SetTextGradient(bool val)
 {
 	if (!m_pFont)
 		return;
 	uFlags.set(flNeedReparse, true);
-	m_pFont->SetGradient();
+	m_pFont->SetGradient(val);
 }
 
 LPCSTR GetElipsisText(CGameFont* pFont, float width, LPCSTR source_text, LPSTR buff, int buff_len)

@@ -65,7 +65,7 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 			u32	clr, clr2;
 			clr2 = clr = str.c;
-			if(owner.uFlags & CGameFont::fsGradient) {
+			if(str.gradient) {
 				u32	_R = color_get_R(clr) / 2;
 				u32	_G = color_get_G(clr) / 2;
 				u32	_B = color_get_B(clr) / 2;
