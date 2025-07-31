@@ -1,4 +1,4 @@
-﻿#pragma	once
+#pragma	once
 
 extern class i_lc_log 
 {

@@ -37,7 +37,7 @@ void CRender::render_rain() {
 	PIX_EVENT(render_rain);
 
 	//	Use light as placeholder for rain data.
-	// нет необходимости создавать каждый кадр структуру размером почти в киллобайт на стеке.
+	// РЅРµС‚ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё СЃРѕР·РґР°РІР°С‚СЊ РєР°Р¶РґС‹Р№ РєР°РґСЂ СЃС‚СЂСѓРєС‚СѓСЂСѓ СЂР°Р·РјРµСЂРѕРј РїРѕС‡С‚Рё РІ РєРёР»Р»РѕР±Р°Р№С‚ РЅР° СЃС‚РµРєРµ.
 	light& RainLight = *RImplementation.Lights.rain_light;
 
 	//static const float	source_offset		= 40.f;

@@ -50,7 +50,7 @@ void CPS_Instance::PSI_destroy()
 //----------------------------------------------------
 void CPS_Instance::PSI_internal_delete		()
 {
-	VERIFY(!"ÍÅ ÇÀÕÎÄÈÒÜ");
+	VERIFY(!"Ã•â‰ˆ Â«Â¿â€™Å’Æ’Â»â€œâ€¹");
 	CPS_Instance*	self = this;
 	xr_delete		(self);
 }
