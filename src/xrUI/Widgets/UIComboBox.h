@@ -4,6 +4,7 @@
 #include "UIListBox.h"
 #include "UIInteractiveBackground.h"
 #include "UIOptionsItem.h"
+#include "UI_IB_Static.h"
 
 class CUIListBoxItem;
 
@@ -68,6 +69,7 @@ protected:
 
 
 	CUI_IB_FrameLineWnd	m_frameLine;
+	CUI_IB_Static		m_arrow;
 	CUITextWnd			m_text;
 	CUIFrameWindow		m_list_frame;
 
