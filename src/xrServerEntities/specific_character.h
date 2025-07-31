@@ -60,6 +60,8 @@ struct SSpecificCharacterData : CSharedResource
 	//диалоги актера, которые будут доступны только при встрече с данным персонажем
 	DIALOG_ID_VECTOR			m_ActorDialogs;
 
+	shared_str					m_saved_icon_name;
+	shared_str					m_prev_icon_name;
 	shared_str					m_icon_name;
 	//команда 
 	CHARACTER_COMMUNITY			m_Community;
@@ -160,6 +162,9 @@ public:
 	const shared_str&			IconName				() const	{return data()->m_icon_name;};
 #endif
 	shared_str					terrain_sect			() const;
+
+	virtual void				save					(NET_Packet &output_packet);
+	virtual void				load					(IReader &input_packet);
 };
 
 
