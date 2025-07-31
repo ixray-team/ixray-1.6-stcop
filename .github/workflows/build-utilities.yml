@@ -73,7 +73,7 @@ jobs:
         run: |
           cmake `
             --build `
-            --target TextureCloner xrCompress mp_configs_verifyer mp_gpprof_server mp_balancer mp_screenshots_info xrForms EFC `
+            --target TextureCloner xrCompress mp_configs_verifyer mp_gpprof_server mp_balancer mp_screenshots_info xrLevelBuilder EFC `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}
 
       - name: Upload binaries
