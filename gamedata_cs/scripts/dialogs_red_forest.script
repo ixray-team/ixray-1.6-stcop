@@ -39,8 +39,11 @@ function leshiy_reward_bead(first_speaker, second_speaker)
 end
 
 function forester_reward_for_compass(first_speaker, second_speaker)
+	if not has_alife_info("red_forester_take_compas") then
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_vintorez_up", 1)
 	--dialogs.relocate_money(first_speaker, second_speaker, 1000, "in")
+       	db.actor:give_info_portion("red_forester_take_compas")
+	end
 end
 
 function leshiy_reward_very_bead(first_speaker, second_speaker)
