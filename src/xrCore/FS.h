@@ -223,7 +223,7 @@ class XRCORE_API IReader :  public IReaderBase
 protected:
 	char *			data	;
 	int				Pos		;
-	int				Size	;
+	size_t			Size	;
 	int				iterpos	;
 
 public:
