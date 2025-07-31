@@ -2,6 +2,6 @@
 <w>
 	<button_texture_name>ui_inGame2_opt_slider_box</button_texture_name>
 	<track_texture_name>ui_inGame2_opt_slider_bar</track_texture_name>
-
+	<size>1</size>
 	<stretch>1</stretch>
 </w>
