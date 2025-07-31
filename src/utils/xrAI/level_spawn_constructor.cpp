@@ -505,10 +505,10 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 			),
 			l_tpaStack.end()
 		);
-/*
+
 		if (zone->m_artefact_spawn_count >= l_tpaStack.size()) 
 		{
-			zone->m_artefact_spawn_count	= (u16)l_tpaStack.size();
+			zone->m_artefact_spawn_count = (u16)l_tpaStack.size();
 #ifndef IGNORE_ZERO_SPAWN_POSITIONS
 			if (!zone->m_artefact_spawn_count) {
 				Msg						("! CANNOT GENERATE ARTEFACT SPAWN POSITIONS FOR ZONE [%s] ON LEVEL [%s]",zone->name_replace(),*level().name());
@@ -521,7 +521,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 			}
 #endif
 		}
-		else		*/
+		else
 			std::shuffle			(l_tpaStack.begin(),l_tpaStack.end(), rng);
 
 		zone->m_artefact_position_offset= (u32)m_level_points.size();
