@@ -243,6 +243,7 @@ function main_menu:OnButton_multiplayer_clicked()
 	self.mp_dlg:UpdateControls()
 	self:GetHolder():start_stop_menu(self.mp_dlg, true)
 	self:GetHolder():start_stop_menu(self, true) --new
+	self.mp_dlg:on_show_script()
 	self:Show(false)
 	
 --	self.mp_dlg:OnBtn_Refresh()

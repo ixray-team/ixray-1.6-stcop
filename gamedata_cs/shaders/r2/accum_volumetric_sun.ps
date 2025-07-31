@@ -1,6 +1,10 @@
+//	Allow dynamic branching usage for HW PCF support
+#ifdef	USE_HWSMAP_PCF
+#define SUNSHAFTS_DYNAMIC
+#endif	//	USE_HWSMAP_PCF
+
 #include "common.h"
 #include "shadow.h"
-
 
 #define RAY_PATH	2.0h
 
@@ -55,6 +59,7 @@ float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	if (depth<0.0001)
 		res = max_density;
 
+	#ifndef SUNSHAFTS_DYNAMIC
 	for ( int i=0; i<RAY_SAMPLES; ++i )
 	{
 		if (depth>0.3)
@@ -66,6 +71,19 @@ float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 		depth -= deltaDepth;
 		current -= delta;
 	}
+	#else
+	int n = (int)((P.z - 0.3) / deltaDepth);
+	for ( int i=0; i<n; ++i )
+	{		
+#ifndef	FILTER_LOW
+				res += density*shadow(current);
+#else	//	FILTER_LOW
+				res += density*sample_hw_pcf(current, float4(0,0,0,0));
+#endif	//	FILTER_LOW
+		depth -= deltaDepth;
+		current -= delta;
+	}
+	#endif
 
 	//	float fSturation = -dot(Ldynamic_dir, half3(0,0,1));
 	float fSturation = -Ldynamic_dir.z;
@@ -80,56 +98,3 @@ float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
 	return res*Ldynamic_color;
 #endif	//	SUN_SHAFTS_QUALITY
 }
-
-/**/
-/*
-float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
-{
-	
-
-	half3 P = tex2D(s_position, tc).xyz;
-	half3 delta = 0.05*normalize(P);
-//	half3 delta = 0.1*normalize(P);
-
-	half res = 0;
-	half density = 0.5/40.0;
-
-	if (P.z<0.0001)
-		res = 0.5;
-
-	for ( int i=0; i<40; ++i )
-	{
-		float4 	PS = mul (m_shadow,float4(P,1));	  	
-//		if ((P.z>0)&&(P.z<=volume_range.y))
-		if (P.z>0)
-			res += density*shadow(PS);
-		P -= delta;
-	}
-
-	return res*Ldynamic_color;
-}                        
-/**/
-/*
-
-float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
-{
-	
-
-	half3 P = tex2D (s_position, tc).xyz;
-	
-	half targetZ = max( P.z-RAY_PATH , 0);
-
-	half res = 0;
-	half density = 0.5*RAY_STEP/RAY_PATH;
-
-	half density = 0.1;
-
-	while ( P.z > targetZ )
-	{
-		res += density;
-		P.z -= RAY_STEP;
-	}
-
-	return half4(res,res,res,0);
-}
-*/

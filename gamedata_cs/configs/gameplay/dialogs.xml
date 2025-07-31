@@ -23,6 +23,8 @@
     <!-- FINAL DIALOGS -->
     <!-- ALIFE DIALOGS -->
     <dialog id="hello_dialog">
+        <init_func>dialog_manager.init_hello_dialogs</init_func>
+<!--
         <phrase_list>
             <phrase id="1">
                 <next>2</next>
@@ -40,6 +42,7 @@
                 <next>1</next>
             </phrase>
         </phrase_list>
+-->
     </dialog>
     <dialog id="actor_help_wounded" priority="10">
         <precondition>dialogs.allow_wounded_dialog</precondition>

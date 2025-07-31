@@ -675,4 +675,13 @@
 	<string id="ui_st_invalid_saved_game">
 		<text>Saved game version doesn't match the current game's version.</text>
 	</string>
+	<string id="st_opt_atest_msaa_dx10_0">
+		<text>DX10.0 style [Standard]</text>
+	</string>
+	<string id="st_opt_atest_msaa_dx10_1">
+		<text>DX10.1 style [Higher quality]</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>Ultra</text>
+	</string>
 </string_table>

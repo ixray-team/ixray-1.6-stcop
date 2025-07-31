@@ -1,5 +1,18 @@
 #include "common.h"
 #include "lmodel.h"
+
+#ifdef USE_MINMAX_SM
+#define SM_MINMAX
+#endif
+
+#if SUN_QUALITY>2
+#define ULTRA_SHADOWS_ON
+#endif //	SUN_QUALITY>2
+
+#ifdef ULTRA_SHADOWS_ON
+#define USE_ULTRA_SHADOWS
+#endif
+
 #include "shadow.h"
 
 #ifdef USE_SUNFILTER
@@ -60,7 +73,11 @@ float4 main ( v2p_TL2uv I ) : SV_Target
 	#ifdef 	USE_SJITTER
 	  		s 	*= shadowtest_sun( PS, I.Tex1 );
 	#else
-	  		s 	*= shadow( PS );
+#ifdef SM_MINMAX
+	  		s 	*= shadow_dx10_1( PS, I.Tex1, I.HPos.xy );
+#else
+			s *= shadow( PS );
+#endif
 	#endif
 
 	return 		blend( Ldynamic_color * light * s, I.Tex0 );
