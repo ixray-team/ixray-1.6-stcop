@@ -118,7 +118,7 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 	data_hits.energy = 1.0f;
 
 	RTCRayHit rayhit;
-	Embree::SetRay1(rayhit, P, N, range);
+	Embree::SetRay1(rayhit, P, N, 0.f, range);
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
