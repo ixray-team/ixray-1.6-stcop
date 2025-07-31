@@ -455,16 +455,7 @@ void CLevel::OnConnectResult(NET_Packet*	P)
 			{
 				if (strstr(ResultStr, "Data verification failed. Cheater?"))
 					MainMenu()->SetErrorDialog(CMainMenu::ErrDifferentVersion);
-			}break;
-		case ecr_cdkey_validation_failed:		//GameSpy CDKey
-			{
-				if (!xr_strcmp(ResultStr, "Invalid CD Key"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInvalid);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "CD Key in use"))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyInUse);//, ResultStr);
-				if (!xr_strcmp(ResultStr, "Your CD Key is disabled. Contact customer service."))
-					MainMenu()->SetErrorDialog(CMainMenu::ErrCDKeyDisabled);//, ResultStr);
-			}break;		
+			}break;	
 		case ecr_password_verification_failed:		//login+password
 			{
 				MainMenu()->SetErrorDialog(CMainMenu::ErrInvalidPassword);
