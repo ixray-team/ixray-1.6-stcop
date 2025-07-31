@@ -57,7 +57,10 @@ void CSector::BuildHierrarhy	()
 	int		iLevel					= 2;
 	float	SizeLimit				= c_SS_maxsize/4.f;
 	if		(SizeLimit<4.f)			SizeLimit=4.f;
-	if		(delimiter<=SizeLimit)	delimiter*=2;		// just very small level
+
+	// just very small level
+	if (delimiter <= SizeLimit)
+		delimiter *= 2;
 
 	struct OGF_Data{ 
 		OGF_Base* node;
