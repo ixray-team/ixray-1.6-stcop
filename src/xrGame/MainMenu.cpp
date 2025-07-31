@@ -276,7 +276,7 @@ bool CMainMenu::ReloadUI()
 	m_startDialog->m_bWorkInPause= true;
 	m_startDialog->ShowDialog	(true);
 
-	m_activatedScreenRatio		= (float)Device.TargetWidth/(float)Device.TargetHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
+	m_activatedScreenRatio.set((float)Device.TargetWidth, (float)Device.TargetHeight);
 	return true;
 }
 
@@ -485,8 +485,8 @@ void CMainMenu::OnFrame()
 	if(IsActive())
 	{
 		CheckForErrorDlg();
-		bool b_is_16_9	= (float)Device.TargetWidth/(float)Device.TargetHeight > (UI_BASE_WIDTH/UI_BASE_HEIGHT+0.01f);
-		if(b_is_16_9 !=m_activatedScreenRatio)
+		Fvector2 newRatio	= Fvector2().set((float)Device.TargetWidth, (float)Device.TargetHeight);
+		if(!newRatio.similar(m_activatedScreenRatio))
 		{
 			ReloadUI();
 			m_startDialog->SendMessage(m_startDialog, MAIN_MENU_RELOADED, nullptr);
