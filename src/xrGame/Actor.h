@@ -183,6 +183,7 @@ public:
 	virtual void						HitSignal		(float P, Fvector &vLocalDir,	CObject* who, s16 element);
 			void						HitSector		(CObject* who, CObject* weapon);
 			void						HitMark			(float P, Fvector dir,			CObject* who, s16 element, Fvector position_in_bone_space, float impulse,  ALife::EHitType hit_type);
+	virtual void						FootStepCallback(float power, bool b_play, bool b_on_ground, bool b_hud_view);
 
 			void						Feel_Grenade_Update( float rad );
 
