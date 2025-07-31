@@ -380,6 +380,10 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		    	SendBroadcast(BroadcastCID, P, MODE);
 		    }
 		}break;
+	case GE_STALKER_ANIMATION:
+	case GE_STALKER_DIALOG:
+		SendBroadcast(BroadcastCID, P, MODE);
+		break;
 	case GE_FREEZE_OBJECT:
 		break;
 	case GE_REQUEST_PLAYERS_INFO:
