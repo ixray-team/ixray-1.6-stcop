@@ -32,6 +32,7 @@ UIInvUpgradeInfo::UIInvUpgradeInfo()
 	m_desc       = nullptr;
 	m_prereq     = nullptr;
 	m_properties_wnd = nullptr;
+	m_legacy_mode = EngineExternal().ClearSkyMode();
 }
 
 UIInvUpgradeInfo::~UIInvUpgradeInfo()
@@ -90,90 +91,95 @@ bool UIInvUpgradeInfo::init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_ite
 	m_name->SetText( m_upgrade->name() );
 	m_desc->SetText( m_upgrade->description_text() );
 
-	if (m_upgrade->is_known())
-	{
-		m_desc->SetText(m_upgrade->description_text());
-		m_prereq->Show(true);
 
-		inventory::upgrade::UpgradeStateResult upg_res = m_upgrade->can_install(*inv_item, false);
-		if (upg_res == inventory::upgrade::result_ok || upg_res == inventory::upgrade::result_e_precondition_money
-			|| upg_res == inventory::upgrade::result_e_precondition_quest)
-		{
-			m_prereq->SetText(m_upgrade->get_prerequisites());
-		}
-		else
-		{
-			string32 str_res;
-			switch (upg_res)
-			{
-			case inventory::upgrade::result_e_unknown:
-				xr_strcpy(str_res, sizeof(str_res), "st_upgr_unknown");
-				break;
-			case inventory::upgrade::result_e_installed:
-				xr_strcpy(str_res, sizeof(str_res), "st_upgr_installed");
-				break;
-			case inventory::upgrade::result_e_parents:
-				xr_strcpy(str_res, sizeof(str_res), "st_upgr_parents");
-				break;
-			case inventory::upgrade::result_e_group:
-				xr_strcpy(str_res, sizeof(str_res), "st_upgr_group");
-				break;
-				//case inventory::upgrade::result_e_precondition:
-			default:
-				xr_strcpy(str_res, sizeof(str_res), "st_upgr_unknown");
-				break;
-			}
-			m_prereq->SetTextST(str_res);
-		}
-		m_properties_wnd->Show(true);
-	}
+    if (m_upgrade->is_known())
+    {
+        m_prereq->Show(true);
+        m_properties_wnd->Show(true);
+        if (m_cost)
+        {
+            luabind::functor<LPCSTR> cost_func;
+            pcstr cost_func_str = "inventory_upgrades.get_upgrade_cost";
+            R_ASSERT2(ai().script_engine().functor(cost_func_str, cost_func), "Failed to get cost");
+            m_cost->SetText(cost_func(m_upgrade->section()));
+            m_cost->Show(true);
+        }
 
-	if ( m_upgrade->is_known() )
-	{
-		m_prereq->Show( true );
-		m_properties_wnd->Show( true );
-		if (m_cost)
-		{
-			luabind::functor<LPCSTR> cost_func;
-			LPCSTR cost_func_str = "inventory_upgrades.get_upgrade_cost";
-			R_ASSERT2(ai().script_engine().functor(cost_func_str, cost_func), "Failed to get cost");
-			m_cost->SetText(cost_func(m_upgrade->section()));
-			m_cost->Show(true);
-		}
+        m_prereq->SetText(nullptr);
+        if (!m_legacy_mode)
+            m_prereq->SetTextColor(color_rgba(255, 90, 90, 255));
 
-		inventory::upgrade::UpgradeStateResult upg_res = m_upgrade->can_install( *inv_item, false );
-		inventory::upgrade::UpgradeStateResult upg_res_script = m_upgrade->get_preconditions();
-		string512 str_res = "";
-		m_prereq->SetTextColor(color_rgba(255,90,90,255));
-		if(upg_res==inventory::upgrade::result_e_installed)
-		{
-			m_prereq->SetTextColor(color_rgba(117,255,123,255));
-			xr_sprintf(str_res, sizeof(str_res), "%s", g_pStringTable->translate("st_upgr_installed").c_str());
-		}
-		else if(upg_res==inventory::upgrade::result_e_unknown)
-		{
-			xr_sprintf(str_res, sizeof(str_res), "%s:\\n - %s", g_pStringTable->translate("st_upgr_disable").c_str(), g_pStringTable->translate("st_upgr_unknown").c_str());
-			if (m_cost)
-				m_cost->Show(false);
-		}
-		else if(upg_res==inventory::upgrade::result_e_group)
-			xr_sprintf(str_res, sizeof(str_res), "%s:\\n - %s", g_pStringTable->translate("st_upgr_disable").c_str(), g_pStringTable->translate("st_upgr_group").c_str());
-		else if(upg_res_script==inventory::upgrade::result_e_precondition_money)
-			xr_sprintf(str_res, sizeof(str_res), "%s:\\n - %s", g_pStringTable->translate("st_upgr_disable").c_str(), g_pStringTable->translate("st_upgr_cant_do").c_str());
-		else
-		{
-			if(upg_res!=inventory::upgrade::result_ok)
-			{
-				xr_sprintf(str_res, sizeof(str_res), "%s:\\n%s", g_pStringTable->translate("st_upgr_disable").c_str(), m_upgrade->get_prerequisites());
-				if(upg_res==inventory::upgrade::result_e_parents)
-					xr_sprintf(str_res, sizeof(str_res), "%s\\n - %s", str_res, g_pStringTable->translate("st_upgr_parents").c_str());
+        string512 str_res{};
+        auto set_result_string = [&](pcstr desc, bool add = false)
+        {
+            if (m_legacy_mode)
+            {
+                xr_strcpy(str_res, g_pStringTable->translate(desc).c_str());
+            }
+            else if (add)
+            {
+                xr_sprintf(str_res, "%s\\n - %s", str_res,
+					g_pStringTable->translate(desc).c_str());
+            }
+            else
+            {
+                xr_sprintf(str_res, "%s:\\n - %s",
+					g_pStringTable->translate("st_upgr_disable").c_str(),
+					g_pStringTable->translate(desc).c_str());
+            }
+        };
 
-				if(upg_res==inventory::upgrade::result_e_precondition_money)
-					xr_sprintf(str_res, sizeof(str_res), "%s:\\n - %s", g_pStringTable->translate("st_upgr_disable").c_str(), g_pStringTable->translate("st_upgr_cant_do").c_str());
-			}
-		}
-		m_prereq->SetText(str_res);
-	}
+        const auto upg_res = m_upgrade->can_install(*inv_item, false);
+        switch (upg_res)
+        {
+        case inventory::upgrade::result_e_installed:
+            if (!m_legacy_mode)
+                m_prereq->SetTextColor(color_rgba(117, 255, 123, 255));
+            m_prereq->SetTextST("st_upgr_installed");
+            break;
+
+        case inventory::upgrade::result_e_unknown:
+            set_result_string("st_upgr_unknown");
+            if (m_cost)
+                m_cost->Show(false);
+            break;
+
+        case inventory::upgrade::result_e_group:
+            set_result_string("st_upgr_group");
+            break;
+
+        case inventory::upgrade::result_e_cant_do:
+            set_result_string("st_upgr_cant_do");
+            break;
+
+        default:
+        {
+            switch (upg_res)
+            {
+            case inventory::upgrade::result_ok:
+            case inventory::upgrade::result_e_precondition_money:
+            case inventory::upgrade::result_e_precondition_quest:
+                if (m_legacy_mode)
+                {
+                    m_prereq->SetText(m_upgrade->get_prerequisites());
+                    break;
+                }
+
+                if (upg_res != inventory::upgrade::result_e_precondition_quest)
+                    break;
+                [[fallthrough]];
+
+            default:
+                xr_strconcat(str_res, g_pStringTable->translate("st_upgr_disable").c_str(), ":\\n", m_upgrade->get_prerequisites());
+
+                if (upg_res == inventory::upgrade::result_e_parents)
+                    set_result_string("st_upgr_parents", true);
+            }
+        }
+        } // switch (upg_res)
+        if (str_res[0])
+            m_prereq->SetText(str_res);            
+    }
 	else
 	{
 		m_desc->SetTextST("st_desc_unknown");
