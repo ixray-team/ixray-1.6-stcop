@@ -19,6 +19,7 @@ public:
 			bool InitFrameLineWnd	(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal = true, bool fatal = true);
 			void InitFrameLineWnd	(Fvector2 pos, Fvector2 size, bool horizontal = true);
 			bool InitTexture		(LPCSTR tex_name,LPCSTR sh_name="hud\\default", bool fatal = true);
+			bool InitTextureEx		(LPCSTR tex_name,LPCSTR sh_name="hud\\default", bool fatal = true) {return InitTexture(tex_name, sh_name, fatal); }; // for compiler
 	virtual void Draw				();
 
 			float GetTextureHeight	() const						{return m_tex_rect[0].height();}
