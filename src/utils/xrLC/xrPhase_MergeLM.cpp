@@ -9,16 +9,6 @@
 
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) return TRUE; }; if (D->bMerged) { D->bMerged = FALSE; return TRUE; } else return FALSE; }; };
 
-// Surface access
-IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
-{
-	if (D1->layer.height < D2->layer.height)
-		return true;
-	else
-		return false;
-}
-
-
 IC int	compare_defl(CDeflector* D1, CDeflector* D2)
 {
 	// First  - by material
@@ -82,7 +72,7 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	int _X = 0, _Y = 0;
  	u16 _Max_y = 0;
 
-#define SHIFT_HEIGHT 2
+#define SHIFT_HEIGHT 1
 
 	for (int it = 0; it < Layer.size(); it++)
 	{
@@ -94,8 +84,8 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 		lm_layer& L = Layer[it]->layer;
  
-		u32 WIDTH = L.width + (2 * BORDER - 1);
-		u32 HEIGHT = L.height + (2 * BORDER - 1);
+		u32 WIDTH = L.width + (2 * BORDER);
+		u32 HEIGHT = L.height + (2 * BORDER);
 
 		if (_Max_y < HEIGHT)
 			_Max_y = HEIGHT;
@@ -135,47 +125,47 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
  
 void CBuild::xrPhase_MergeLM()
 {
- 	vecDefl			Layer;
+	R_ASSERT(lc_global_data());
+	R_ASSERT(pBuild);
+
+	string512	phase_name;
+	xr_sprintf(phase_name, "Building lightmaps ...");
+	Phase(phase_name);
+	
+	vecDefl			Layer;
 
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[it];
-		if (D->bMerged)		continue;
+		if (D->bMerged)	
+			continue;
 		Layer.push_back(D);
 	}
+	
+	CTimer tSort; tSort.Start();
+	// Сортируем 1 раз !!!! (выравниваем по размеру высоты)
+	std::stable_sort(Layer.begin(), Layer.end(), [&](CDeflector* D1, CDeflector* D2)
+	{
+		if (D1->layer.height < D2->layer.height)
+			return true;
+		else
+			return false;
+	}); 
 
-	string512	phase_name;
-	xr_sprintf(phase_name, "Building lightmaps ...");
-	Phase(phase_name);
-	 
+	clMsg("Sorting Lmaps time %u ms", tSort.GetElapsed_ms());
+ 	AditionalData("Sorting Lmaps time %u ms", tSort.GetElapsed_ms());
+
 	// Merge this layer (which left unmerged)
 	u32 StartSize = Layer.size();
 	u32 TotalMerged = 0;
+	 
 	while (Layer.size())
 	{
-		VERIFY(lc_global_data());
-		
-		// Sort layer by similarity (state changes)
-		// + calc material area
-		//Status("Selection...");
-		for (u32 it = 0; it < materials().size(); it++)
-			materials()[it].internal_max_area = 0;
-
-		for (u32 it = 0; it < Layer.size(); it++)
-		{
-			CDeflector* D = Layer[it];
-			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
-		}
-		std::stable_sort(Layer.begin(), Layer.end(), sort_defl_fast);
-		 
-		// Startup
- 		//Status("Processing...");
-
+		// Allocation CLightMap (1k * 1k) (2k * 2k) (4k * 4k) (8k * 8k)  PIXELS !!!! 
 		CLightmap* lmap = new CLightmap();
-		VERIFY(lc_global_data());
-		lc_global_data()->lightmaps().push_back(lmap);
+ 		lc_global_data()->lightmaps().push_back(lmap);
 
 		int MERGED = 0;
 		MergeLmap(Layer, lmap, MERGED);
@@ -183,22 +173,16 @@ void CBuild::xrPhase_MergeLM()
 
 		Progress ( float( float(MERGED) /  float( StartSize ) ) );
  
-		CTimer t; 
-		t.Start();
-
 		// Remove merged lightmaps
-		// Status("Cleanup...");
-		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
+ 		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
 		Layer.erase(last, Layer.end());
 
+
+		CTimer t;  t.Start();
 		// Save
-		// Status("Saving...");
-		VERIFY(pBuild);
-		lmap->Save(pBuild->path);
-
-		clMsg( "Saving Map: %u ms, Merged: %u, %u", t.GetElapsed_ms(), MERGED, StartSize);
-
-		AditionalData("SavingMap: %ums|(%u|%u)", t.GetElapsed_ms(), MERGED, StartSize);
+ 		lmap->Save(pBuild->path);
+ 		clMsg( "Saving Map: %u ms, Merged: %u/%u, WaitingMerge: %u, ", t.GetElapsed_ms(), MERGED, TotalMerged, Layer.size());
+ 		AditionalData("save: %ums| (Merged: %u/tot:%u | ToMerge:%u)", t.GetElapsed_ms(), MERGED, TotalMerged, Layer.size());
 	}
 
 	VERIFY(lc_global_data());

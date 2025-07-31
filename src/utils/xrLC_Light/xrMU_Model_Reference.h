@@ -1,9 +1,10 @@
-#ifndef XRMUMODEL_REFERENCE_H
-#define XRMUMODEL_REFERENCE_H
+#pragma once
 
 #include "base_color.h"
  
 class xrMU_Model;
+struct FaceDataIntel;
+
 namespace CDB { class CollectorPacked; }
   
 class XRLC_LIGHT_API xrMU_Reference
@@ -26,6 +27,9 @@ public:
 
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
+
+	void					export_cform_rcast_new(xr_vector<FaceDataIntel>& faces);
+	
+
 };
  
-#endif
