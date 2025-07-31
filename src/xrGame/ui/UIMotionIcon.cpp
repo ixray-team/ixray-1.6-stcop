@@ -2,16 +2,25 @@
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
 #include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
+
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
 CUIMotionIcon* g_pMotionIcon = nullptr;
 
 CUIMotionIcon::CUIMotionIcon()
 {
+	m_current_state = stLast;
 	g_pMotionIcon	= this;
 	m_bchanged		= true;
 	m_luminosity	= 0.0f;
-	cur_pos			= 0.0f;
+	m_cur_pos		= 0.0f;
+
+	m_power_progress = nullptr;
+	m_luminosity_progress_bar = nullptr;
+	m_noise_progress_bar = nullptr;
+	m_luminosity_progress_shape = nullptr;
+	m_noise_progress_shape = nullptr;
 }
 
 CUIMotionIcon::~CUIMotionIcon()
@@ -26,57 +35,182 @@ void CUIMotionIcon::ResetVisibility()
 	m_bchanged				= true;
 }
 
-void CUIMotionIcon::Init(Frect const& zonemap_rect)
+bool CUIMotionIcon::Init(Frect const& zonemap_rect)
 {
 	CUIXml						uiXml;
 	uiXml.Load					(CONFIG_PATH, UI_PATH, MOTION_ICON_XML);
 
 	CUIXmlInit					xml_init;
 
-	xml_init.InitWindow			(uiXml, "window", 0, this);
-	float rel_sz				= uiXml.ReadAttribFlt("window", 0, "rel_size", 1.0f);
+	bool independent = false; // Not bound to minimap
+	if (uiXml.NavigateToNode("window", 0))
+	{
+		xml_init.InitWindow(uiXml, "window", 0, this);
+	}
+	else
+	{
+		independent = xml_init.InitStatic(uiXml, "background", 0, this);
+	}
+
 	Fvector2					sz;
 	Fvector2					pos;
-	zonemap_rect.getsize		(sz);
 
-	pos.set						(sz.x/2.0f, sz.y/2.0f);
-	SetWndSize					(sz);
-	SetWndPos					(pos);
+    if (!independent)
+    {
+        const float rel_sz = uiXml.ReadAttribFlt("window", 0, "rel_size", 1.0f);
 
-	float k = UI().get_current_kx();
-	sz.mul						(rel_sz*k);
+        zonemap_rect.getsize(sz);
+        pos.set(sz.x / 2.0f, sz.y / 2.0f);
 
+        SetWndSize(sz);
+        SetWndPos(pos);
 
-	//float h = Device.TargetHeight;
-	//float w = Device.TargetWidth;
-	AttachChild					(&m_luminosity_progress);
-	xml_init.InitProgressShape	(uiXml, "luminosity_progress", 0, &m_luminosity_progress);	
-	m_luminosity_progress.SetWndSize(sz);
-	m_luminosity_progress.SetWndPos(pos);
-	m_luminosity_progress.SetPos(0.f);
+        float k = UI().get_current_kx();
+        sz.mul(rel_sz * k);
+    }
 
-	AttachChild					(&m_noise_progress);
-	xml_init.InitProgressShape	(uiXml, "noise_progress", 0, &m_noise_progress);
-	m_noise_progress.SetWndSize	(sz);
-	m_noise_progress.SetWndPos	(pos);
+    if (uiXml.NavigateToNode("power_progress", 0))
+        m_power_progress = UIHelper::CreateProgressBar(uiXml, "power_progress", this);
 
+    // Initialization order matters, we should try progress bars first!!!
+    if (independent)
+    {
+        m_luminosity_progress_bar = UIHelper::CreateProgressBar(uiXml, "luminosity_progress", this);
+        m_noise_progress_bar = UIHelper::CreateProgressBar(uiXml, "noise_progress", this);
+    }
+    else
+    {
+        // Allow only shape or bar, not both
+        if (!m_luminosity_progress_bar)
+        {
+            m_luminosity_progress_shape = UIHelper::CreateProgressShape(uiXml, "luminosity_progress", this);
+            if (m_luminosity_progress_shape && !independent)
+            {
+                m_luminosity_progress_shape->SetWndSize(sz);
+                m_luminosity_progress_shape->SetWndPos(pos);
+            }
+        }
+
+        if (!m_noise_progress_bar)
+        {
+            m_noise_progress_shape = UIHelper::CreateProgressShape(uiXml, "noise_progress", this);
+            if (m_noise_progress_shape && !independent)
+            {
+                m_noise_progress_shape->SetWndSize(sz);
+                m_noise_progress_shape->SetWndPos(pos);
+            }
+        }
+    }
+    CUIStatic* state = nullptr;
+
+    if (uiXml.NavigateToNode("state_normal", 0))
+    {
+        state = UIHelper::CreateStatic(uiXml, "state_normal", this);
+        m_states[stNormal] = state;
+        state->Show(false);
+    }
+
+    if (uiXml.NavigateToNode("state_crouch", 0))
+    {
+        state = UIHelper::CreateStatic(uiXml, "state_crouch", this);
+        m_states[stCrouch] = state;
+        state->Show(false);
+    }
+
+    if (uiXml.NavigateToNode("state_creep", 0))
+    {
+        state = UIHelper::CreateStatic(uiXml, "state_creep", this);
+        m_states[stCreep] = state;
+        state->Show(false);
+    }
+
+    if (uiXml.NavigateToNode("state_climb", 0))
+    {
+        state = UIHelper::CreateStatic(uiXml, "state_climb", this);
+        m_states[stClimb] = state;
+        state->Show(false);
+    }
+
+    if (uiXml.NavigateToNode("state_run", 0))
+    { 
+        state = UIHelper::CreateStatic(uiXml, "state_run", this);
+        m_states[stRun] = state;
+        state->Show(false);
+    }
+
+    if (uiXml.NavigateToNode("state_sprint", 0))
+    {
+		state = UIHelper::CreateStatic(uiXml, "state_sprint", this);
+        m_states[stSprint] = state;
+        state->Show(false);
+    }
+
+    ShowState(stNormal);
+
+    return independent;
 }
 
-void CUIMotionIcon::SetNoise(float Pos)
+void CUIMotionIcon::ShowState(EState state)
+{
+	if (m_current_state == state)
+		return;
+
+	if (m_current_state != stLast)
+	{
+		CUIStatic* curState = m_states[m_current_state];
+		if (curState)
+		{
+			curState->Show(false);
+			curState->Enable(false);
+		}
+	}
+	CUIStatic* newState = m_states[state];
+	if (newState)
+	{
+		newState->Show(true);
+		newState->Enable(true);
+	}
+
+	m_current_state = state;
+}
+
+void CUIMotionIcon::SetPower(float newPos)
+{
+	if (m_power_progress)
+		m_power_progress->SetProgressPos(newPos);
+}
+
+void CUIMotionIcon::SetNoise(float newPos)
 {
 	if(!IsGameTypeSingle())
 		return;
 
-	Pos	= clampr(Pos, 0.f, 100.f);
-	m_noise_progress.SetPos(Pos/100.f);
+    if (m_noise_progress_shape)
+    {
+        float pos = newPos;
+        pos = clampr(pos, 0.f, 100.f);
+        m_noise_progress_shape->SetPos(pos / 100.f);
+    }
+    else if (m_noise_progress_bar)
+    {
+        float pos = newPos;
+        pos = clampr(pos, m_noise_progress_bar->GetRange_min(), m_noise_progress_bar->GetRange_max());
+        m_noise_progress_bar->SetProgressPos(pos);
+    }
 }
 
-void CUIMotionIcon::SetLuminosity(float Pos)
+void CUIMotionIcon::SetLuminosity(float newPos)
 {
 	if(!IsGameTypeSingle())
 		return;
 
-	m_luminosity	= Pos;
+	if (m_luminosity_progress_shape)
+		m_luminosity = newPos;
+	else if (m_luminosity_progress_bar)
+	{
+		newPos = clampr(newPos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
+		m_luminosity = newPos;
+	}
 }
 
 void CUIMotionIcon::Draw()
@@ -86,34 +220,62 @@ void CUIMotionIcon::Draw()
 
 void CUIMotionIcon::Update()
 {
-	if(!IsGameTypeSingle())
-	{
-		inherited::Update();
-		return;
-	}
-	if(m_bchanged){
-		m_bchanged = false;
-		if( m_npc_visibility.size() )
-		{
-			std::sort		(m_npc_visibility.begin(), m_npc_visibility.end());
-			SetLuminosity	(m_npc_visibility.back().value);
-		}
-		else
-			SetLuminosity	(0.f);
-	}
-	inherited::Update();
-	
-	//m_luminosity_progress 
-	if(cur_pos!=m_luminosity){
-		float _diff = _abs(m_luminosity-cur_pos);
-		if(m_luminosity>cur_pos){
-			cur_pos				+= _diff*Device.fTimeDelta;
-		}else{
-			cur_pos				-= _diff*Device.fTimeDelta;
-		}
-		clamp(cur_pos, 0.f, 100.f);
-		m_luminosity_progress.SetPos(cur_pos/100.f);
-	}
+    if (!IsGameTypeSingle())
+    {
+        inherited::Update();
+        return;
+    }
+    if (m_bchanged)
+    {
+        m_bchanged = false;
+        if (!m_npc_visibility.empty())
+        {
+            std::sort(m_npc_visibility.begin(), m_npc_visibility.end());
+            SetLuminosity(m_npc_visibility.back().value);
+        }
+        else
+            SetLuminosity(0.f);
+    }
+    inherited::Update();
+
+    // m_luminosity_progress_shape
+    if (m_luminosity_progress_shape)
+    {
+        if (m_cur_pos != m_luminosity)
+        {
+            const float _diff = _abs(m_luminosity - m_cur_pos);
+            if (m_luminosity > m_cur_pos)
+            {
+                m_cur_pos += _diff * Device.fTimeDelta;
+            }
+            else
+            {
+                m_cur_pos -= _diff * Device.fTimeDelta;
+            }
+            clamp(m_cur_pos, 0.f, 100.f);
+            // XXX: make it like progress bar so we can remove m_cur_pos
+            m_luminosity_progress_shape->SetPos(m_cur_pos / 100.f);
+        }
+    }
+        else if (m_luminosity_progress_bar)
+        {
+            const float len = m_luminosity_progress_bar->GetRange_max() - m_luminosity_progress_bar->GetRange_min();
+            m_cur_pos = m_luminosity_progress_bar->GetProgressPos();
+            if (m_cur_pos != m_luminosity)
+            {
+                const float _diff = _abs(m_luminosity - m_cur_pos);
+                if (m_luminosity > m_cur_pos)
+                {
+                    m_cur_pos += _min(len * Device.fTimeDelta, _diff);
+                }
+                else
+                {
+                    m_cur_pos -= _min(len * Device.fTimeDelta, _diff);
+                }
+                clamp(m_cur_pos, m_luminosity_progress_bar->GetRange_min(), m_luminosity_progress_bar->GetRange_max());
+                m_luminosity_progress_bar->SetProgressPos(m_cur_pos);
+        }
+    }
 }
 
 void SetActorVisibility		(u16 who_id, float value)
@@ -127,12 +289,19 @@ void SetActorVisibility		(u16 who_id, float value)
 
 void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
 {
-	clamp(value, 0.f, 1.f);
-	value		*= 100.f;
+    if (m_luminosity_progress_shape)
+    {
+        clamp(value, 0.f, 1.f);
+        value *= 100.f;
+    }
+    else if (m_luminosity_progress_bar)
+    {
+        float v = float(m_luminosity_progress_bar->GetRange_max() - m_luminosity_progress_bar->GetRange_min());
+        value *= v;
+        value += m_luminosity_progress_bar->GetRange_min();
+    }
 
-	xr_vector<_npc_visibility>::iterator it = std::find(m_npc_visibility.begin(), 
-														m_npc_visibility.end(),
-														who_id);
+    auto it = std::find(m_npc_visibility.begin(), m_npc_visibility.end(), who_id);
 
 	if(it==m_npc_visibility.end() && value!=0)
 	{
