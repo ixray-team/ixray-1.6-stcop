@@ -157,64 +157,64 @@ void CScriptIniFile::w_fvector2(LPCSTR S, LPCSTR L, const Fvector2& V, LPCSTR co
 
 void CScriptIniFile::w_fvector3(LPCSTR S, LPCSTR L, const Fvector3& V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+   // VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_fvector3(S, L, V, comment);
 }
 
 void CScriptIniFile::w_fvector4(LPCSTR S, LPCSTR L, const Fvector4& V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_fvector4(S, L, V, comment);
 }
 
 void CScriptIniFile::w_s16(LPCSTR S, LPCSTR L, s16 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_s16(S, L, V, comment);
 }
 
 void CScriptIniFile::w_s32(LPCSTR S, LPCSTR L, s32 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_s32(S, L, V, comment);
 }
 
 void CScriptIniFile::w_s64(LPCSTR S, LPCSTR L, s64 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_s64(S, L, V, comment);
 }
 
 void CScriptIniFile::w_s8(LPCSTR S, LPCSTR L, s8 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+	//VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+	//VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_s8(S, L, V, comment);
 }
 
 void CScriptIniFile::w_string(LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_string(S, L, V, comment);
 }
 
 void CScriptIniFile::w_u16(LPCSTR S, LPCSTR L, u16 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+   // VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_u16(S, L, V, comment);
 }
 
 void CScriptIniFile::w_u32(LPCSTR S, LPCSTR L, u32 V, LPCSTR comment)
 {
-    VERIFY3(inherited::section_exist(S), "Cannot find section", S);
-    VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
+    //VERIFY3(inherited::section_exist(S), "Cannot find section", S);
+    //VERIFY3(inherited::line_exist(S, L), "Cannot find line", L);
     inherited::w_u32(S, L, V, comment);
 }
 

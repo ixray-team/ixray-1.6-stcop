@@ -189,6 +189,11 @@ namespace ixray::save
 	}
 }
 
+void TryLoadFile(const char* FileName)
+{
+	FS.TryLoad(FileName);
+}
+
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -214,8 +219,8 @@ void CScriptEngine::script_register(lua_State *L)
 		def("SemiLog",							&SemiLog),
 		def("time_global_async",				&script_time_global_async),
 		def("IsSupportMP",						&CheckMP),
-		def("IsEditor",							&IsEditorMode)
-
+		def("IsEditor",							&IsEditorMode),
+		def("try_load_file",					&TryLoadFile)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
 		def("TinyLog",							&MyLog)

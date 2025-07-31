@@ -21,6 +21,7 @@ void CPuddle::Construct(LPVOID data)
 	Shape.data.box = FTransform;
 
 	m_DrawTranspColor = color_rgba(20, 20, 187, 150);
+
 }
 
 CPuddle::~CPuddle()
@@ -29,7 +30,10 @@ CPuddle::~CPuddle()
 
 bool CPuddle::LoadLTX(CInifile& ini, LPCSTR sect_name)
 {
-	return CEditShape::LoadLTX(ini, sect_name);
+	bool Result = CEditShape::LoadLTX(ini, sect_name);
+
+	OnUpdateTransform();
+	return Result;
 }
 
 void CPuddle::SaveLTX(CInifile& ini, LPCSTR sect_name)
