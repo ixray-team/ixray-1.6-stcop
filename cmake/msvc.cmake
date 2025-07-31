@@ -73,3 +73,6 @@ function(target_validate_pch target target_path)
 	set_source_files_properties(${CORE_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 	source_group("pch" FILES ${CORE_SOURCE_PCH_FILES})
 endfunction()
+
+# Discord
+option(IXRAY_DISCORD_RPC "Enable Discord activity" ON)
