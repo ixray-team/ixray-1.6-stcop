@@ -44,7 +44,7 @@ void setup_luabind_allocator()
 extern HWND logWindow;
 
 void StartupAI(LPSTR lpCmdLine);
-void StartupLC(LPSTR lpCmdLine);
+void StartupLC();
 void StartupDO(LPSTR lpCmdLine);
 
 void InitialFactory();
@@ -64,7 +64,7 @@ void Startup(LPSTR lpCmdLine)
 	if (gCompilerMode.LC) {
 		dwTimeLC = timeGetTime();
 		Phase("xrLC Startup");
-		StartupLC(lpCmdLine);
+		StartupLC();
 
 		dwTimeLC = (timeGetTime() - dwTimeLC) / 1000;
 	}
@@ -128,7 +128,7 @@ void SDL_Application()
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-	g_AppInfo.Window = SDL_CreateWindow("IXR Level Builder", 430, 560, window_flags);
+	g_AppInfo.Window = SDL_CreateWindow("IXR Level Builder", 1000, 560, window_flags);
 	SDL_Renderer* renderer = SDL_CreateRenderer(g_AppInfo.Window, NULL, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
 	SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -196,6 +196,20 @@ void SDL_Application()
 
 }
 
+void StartCompile()
+{
+	// Give a LOG-thread a chance to startup
+	InitCommonControls();
+	Sleep(150);
+	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
+
+	while (!logWindow)
+		Sleep(100);
+	
+	string128 cmd;
+	Startup(cmd);
+}
+
 int APIENTRY WinMain (
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
@@ -206,7 +220,7 @@ int APIENTRY WinMain (
 	Debug._initialize(false);
 	Core._initialize("IX-Ray Compilers");
 
-#if 0
+#if true
 	InitializeUIData();
 	SDL_Application();
 #else
