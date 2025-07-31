@@ -28,6 +28,8 @@ target_compile_definitions(xrRender_DS0 PRIVATE xrRender_DS0_EXPORTS)
 target_compile_definitions(xrRender_DS0 PRIVATE _USRDLL)
 
 # Linker list
+target_link_libraries(xrRender_DS0 PRIVATE xrCore)
+target_link_libraries(xrRender_DS0 PRIVATE xrCDB)
 target_link_libraries(xrRender_DS0 PRIVATE xrAbstractions)
 target_link_libraries(xrRender_DS0 PRIVATE xrParticles)
 

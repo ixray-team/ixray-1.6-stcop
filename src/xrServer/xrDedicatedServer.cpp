@@ -41,7 +41,7 @@ int APIENTRY WinMain
 
 	Engine.External.CreateRendererList();
 
-	Console->Execute("renderer renderer_r1");
+	Console->Execute("renderer renderer_ds0");
 	
 	Engine.External.Initialize();
 	//Console->Execute("stat_memory");
