@@ -34,6 +34,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_scope(section, test);
 	result |= install_upgrade_hud_sect_gl(section, test);
 	result |= install_upgrade_bones		( section, test );
+	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
+
 	return result;
 }
 
