@@ -13,6 +13,8 @@ public:
 	virtual ~UIRenderForm();
 	virtual void Draw();
 
+	void DrawVP();
+
 	IC Ivector2 GetMousePos()const { return m_mouse_position; }
 	IC const Frect&	GetRect() const { return m_render_pos; }
 

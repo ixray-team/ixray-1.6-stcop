@@ -3,7 +3,7 @@
 // refs
 class ESceneToolBase;
 class TfrmObjectList;
-
+class IViewport;
 
 #define estDefault 0
 #define CHECK_SNAP(R,A,C){ R+=A; if(fabsf(R)>=C){ A=snapto(R,C); R=0; }else{A=0;}}
@@ -52,6 +52,7 @@ class CLevelTool: public CToolCustom
 private:
 	HANDLE mtPropObj = nullptr;
 	static void			mtUpdateProperties(void*);
+	xr_vector<IViewport*> Viewlist;
 
 public:
 	volatile bool PropUpdateIsCompleted = true;
@@ -59,6 +60,10 @@ public:
 	float 				fFogness;
 	u32					dwFogColor;
 	xr_string			m_LastSelectionName;
+
+	int AddViewport(IViewport*);
+	void RemoveViewport(IViewport* VP);
+
 public:
 						CLevelTool			();
 	virtual         	~CLevelTool		();

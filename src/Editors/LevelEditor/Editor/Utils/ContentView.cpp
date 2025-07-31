@@ -4,6 +4,8 @@
 #include "../../Nodes/UIDialogsView.h"
 #include "../../../../utils/xrDXT/xrDXT.h"
 
+#include "Viewports/ViewportMesh.h"
+
 CContentView* GContentView = nullptr;
 
 CContentView::CContentView():
@@ -72,8 +74,6 @@ void CContentView::Draw()
 			{
 				DrawRootDir(HorBtnIter, IterCount, NextDir);
 			}
-
-
 
 			CurrentDir = NextDir;
 			xr_strlwr(CurrentDir);
@@ -1214,6 +1214,16 @@ bool CContentView::DrawContext(const xr_path& Path)
 	}
 
 
+	if (Path.has_extension() && Path.extension().string() == ".object")
+	{
+		if (ImGui::MenuItem("Open"))
+		{
+			CViewportMesh* MeshView = new CViewportMesh;
+			MeshView->OpenModel(Path);
+
+			UI->Push(MeshView);
+		}
+	}
 	if (Path.has_extension() && Path.extension().string() == ".level")
 	{
 		if (ImGui::MenuItem("Open"))

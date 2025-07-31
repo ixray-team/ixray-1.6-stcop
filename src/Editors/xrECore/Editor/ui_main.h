@@ -13,12 +13,14 @@ class TUI_Tools;
 class C3DCursor;
 //------------------------------------------------------------------------------
 
-enum EEditorState{
+enum EEditorState
+{
 	esNone,
 	esEditScene,
 	esEditLibrary,
 	esEditLightAnim,
-	esBuildLevel
+	esBuildLevel,
+	esEditMesh
 };
 
 struct ECORE_API SPBItem
