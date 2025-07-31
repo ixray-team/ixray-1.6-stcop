@@ -165,15 +165,13 @@ zoom_rotate_time        = 0.25
 scope_zoom_factor       = 50                                                ; fov for zoom mode
 scope_texture				= wpn_crosshair_l85
 
-scope_name 					= wpn_addon_scope_susat
-scope_x 					= 75
-scope_y 					= -5
 silencer_name              = wpn_addon_silencer    ; section name for the attachable silencer
 silencer_x              = 210                ; offset in inventory icon
 silencer_y              = 9
 grenade_launcher_name      = wpn_addon_grenade_launcher_m203; section name for the attachable grenade launcher
 grenade_launcher_x         = 128                ; offset in inventory icon
 grenade_launcher_y         = 28
+scopes_sect				   = scope_susat_lr, scope_susat_x1.6_lr, scope_susat_custom_lr, scope_susat_dusk_lr, scope_susat_night_lr
 
 ;звуки
 snd_draw                = weapons\generic_draw
@@ -300,3 +298,28 @@ $spawn          = "weapons\uniq\wpn_lr300_up2"
 upgrades                = up_gr_ab_lr300, up_gr_cd_lr300, up_gr_ef_lr300, up_gr_gh_lr300, up_gr_i_lr300, up_gr_j_lr300
 installed_upgrades      = up_b_lr300, up_d_lr300, up_f_lr300, up_h_lr300, up_i_lr300, up_j_lr300
 upgrade_scheme          = upgrade_scheme_u16a
+
+[scope_susat_lr]
+scope_name 					= wpn_addon_scope_susat
+scope_x 					= 75
+scope_y 					= -5
+
+[scope_susat_x1.6_lr]
+scope_name 					= wpn_addon_scope_susat_x1.6
+scope_x 					= 75
+scope_y 					= -5
+
+[scope_susat_custom_lr]
+scope_name 					= wpn_addon_scope_susat_custom
+scope_x 					= 75
+scope_y 					= -5
+
+[scope_susat_dusk_lr]
+scope_name 					= wpn_addon_scope_susat_dusk
+scope_x 					= 75
+scope_y 					= -5
+
+[scope_susat_night_lr]
+scope_name 					= wpn_addon_scope_susat_night
+scope_x 					= 75
+scope_y 					= -5
