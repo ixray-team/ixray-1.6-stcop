@@ -94,21 +94,23 @@ void RenderMainUI()
 
 			if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 			{
-				for (auto& FILE : Files)
+				if (gCompilerMode.LC)
 				{
-					if (FILE.Select)
+					for (auto& FILE : Files)
 					{
-						strcpy(gCompilerMode.level_name, FILE.Name.c_str());
-						break;
+						if (FILE.Select)
+						{
+							strcpy(gCompilerMode.level_name, FILE.Name.c_str());
+							break;
+						}
 					}
+
+					extern void StartCompile();
+					StartCompile();
+
+					Msg("Level For Building : %s", gCompilerMode.level_name);
 				}
-
-
-				extern void StartCompile();
-				StartCompile();
-
-				Msg("Level For Building : %s", gCompilerMode.level_name);
-			}
+ 			}
 			 
 			ImGui::TableSetColumnIndex(1);
 			
@@ -127,6 +129,8 @@ void RenderMainUI()
 			DrawDOConfig();
 
 			ImGui::EndTable();  
+
+			
  			
 		}
 	}
@@ -207,7 +211,9 @@ void DrawAIConfig()
 		ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
 		ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
 
-
+		ImGui::InputText("Spawn Name", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
+		ImGui::InputText("Start Actor Level", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+		
 		ImGui::EndDisabled();
 		ImGui::EndChild();
 	}
