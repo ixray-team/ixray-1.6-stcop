@@ -184,7 +184,7 @@ void attachable_hud_item::tune(Ivector values)
 
 void attachable_hud_item::debug_draw_firedeps()
 {
-#ifndef MASTER_GOLD
+#ifdef DEBUG_DRAW
 	bool bForce = (hud_adj_mode==3||hud_adj_mode==4);
 
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7 ||bForce)
