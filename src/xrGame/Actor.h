@@ -223,6 +223,8 @@ protected:
 	float					m_hit_probability;
 	s8						m_block_sprint_counter;
 
+	bool IsWaunded = false;
+
 	// media
 	SndShockEffector*		m_sndShockEffector;
 	xr_vector<ref_sound>	sndHit[ALife::eHitTypeMax];
