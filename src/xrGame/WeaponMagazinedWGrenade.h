@@ -90,5 +90,8 @@ public:
 	CCartridge				m_DefaultCartridge2;
 	u8						iAmmoElapsed2;
 
+	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const override;
+	virtual u8				GetAmmoType(bool for_grenade_mode = false) const override;
+
 	virtual void UpdateGrenadeVisibility(bool visibility);
 };
