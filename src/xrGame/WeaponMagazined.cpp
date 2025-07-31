@@ -1449,7 +1449,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	VERIFY( m_pInventory );
 	string32	int_str;
 
-	int	ae				= GetAmmoElapsed();
+	const int	ae				= GetAmmoElapsed();
 	xr_sprintf			( int_str, "%d", ae );
 	info.cur_ammo		= int_str;
 
@@ -1470,7 +1470,9 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	{
 		return false;
 	}
-	GetSuitableAmmoTotal();//update m_BriefInfo_CalcFrame
+	const int at = GetSuitableAmmoTotal() - GetAmmoElapsed(); // update m_BriefInfo_CalcFrame
+	xr_sprintf(int_str, "%d", at);
+	info.total_ammo = int_str;
 	info.grenade				= "";
 
 	u32 at_size = (u32)m_ammoTypes.size();
@@ -1478,6 +1480,7 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 	{
 		info.fmj_ammo._set("∞");
 		info.ap_ammo._set("∞");
+		info.total_ammo._set("∞");
 	}
 	else
 	{
