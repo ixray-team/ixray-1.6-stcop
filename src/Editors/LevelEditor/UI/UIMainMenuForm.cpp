@@ -164,7 +164,8 @@ void UIMainMenuForm::Draw()
 				DrawMenuItem("Make Details", COMMAND_MAKE_DETAILS);
 				DrawMenuItem("Make Hom", COMMAND_MAKE_HOM);
 				DrawMenuItem("Make SOM", COMMAND_MAKE_SOM);
-				DrawMenuItem("Make AI-Map", COMMAND_MAKE_AIMAP);
+				DrawMenuItem("Make AI-Map (25 bit)", COMMAND_MAKE_AIMAP);
+				DrawMenuItem("Make AI-Map (Legacy)", COMMAND_MAKE_AIMAP_LEGACY);
 				ImGui::EndMenu();
 			}
 			bool bDisable = false;
