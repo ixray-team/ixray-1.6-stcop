@@ -37,29 +37,113 @@ CEffect_Rain::~CEffect_Rain()
 }
 
 // Born
-void CEffect_Rain::Born(Item& dest, float radius)
+void CEffect_Rain::Born(Item& dest, float radius, shared_str rainType)
 {
-	Fvector axis;
+	Fvector axis= {};
 	axis.set(0.f, -1.f, 0.f);
 
-	float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
-	float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
-	axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
+	auto computeDirection = [&](float variation)
+	{
+		float k = g_pGamePersistent->Environment().CurrentEnv->rain_angle / g_pGamePersistent->Environment().drop_max_wind_vel;
+		float pitch = g_pGamePersistent->Environment().drop_max_angle * k - PI_DIV_2;
+
+		axis.setHP(g_pGamePersistent->Environment().CurrentEnv->rain_angle_rotation, pitch);
+
+		dest.D.random_dir(axis, deg2rad(::Random.randF(0.f, variation)));
+	};
 
 	Fvector& view = Device.vCameraPosition;
-	float angle = ::Random.randF(0.f, PI_MUL_2);
-	float dist = ::Random.randF();
 
-	dist = _sqrt(dist) * radius;
-	float x = dist * _cos(angle);
-	float z = dist * _sin(angle);
+	using rainHandler = std::function<void()>;
 
-	dest.D.random_dir(axis, deg2rad(g_pGamePersistent->Environment().drop_angle));
-	dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset + view.y, z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
-	dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
-		g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+	std::unordered_map<xr_string, rainHandler> rainBehaviors =
+	{
+		{
+			"default", [&]() 
+			{
+				float angle = ::Random.randF(0.f, PI_MUL_2);
+				float dist = _sqrt(::Random.randF()) * radius;
+				float x = dist * _cos(angle);
+				float z = dist * _sin(angle);
 
-	float height = g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
+				computeDirection(10.f);
+
+				dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset,
+					g_pGamePersistent->Environment().source_offset + view.y,
+					z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
+
+				dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+					g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+			}
+		},
+		{
+			"drizzle", [&]() 
+			{
+				float angle = ::Random.randF(0.f, PI_MUL_2);
+				float dist = _sqrt(::Random.randF()) * radius;
+				float x = dist * _cos(angle);
+				float z = dist * _sin(angle);
+
+				computeDirection(10.f);
+
+				dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset,
+					g_pGamePersistent->Environment().source_offset + view.y,
+					z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
+
+				dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min * 0.5f,
+					g_pGamePersistent->Environment().CurrentEnv->rain_speed_max * 0.7f);
+			}
+		},
+		{
+			"dense", [&]() 
+			{
+				float angle = ::Random.randF(0.f, PI_MUL_2);
+				float dist = _sqrt(::Random.randF()) * (radius * 0.5f);
+				float x = dist * _cos(angle);
+				float z = dist * _sin(angle);
+
+				computeDirection(5.f);
+
+				dest.P.set(x + view.x - dest.D.x * g_pGamePersistent->Environment().source_offset,
+					g_pGamePersistent->Environment().source_offset + view.y,
+					z + view.z - dest.D.z * g_pGamePersistent->Environment().source_offset);
+
+				dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+					g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+			}
+		},
+		{
+			"spherical", [&]() 
+			{
+				float theta = ::Random.randF(0.f, PI_MUL_2);
+				float phi = ::Random.randF(0.f, PI_DIV_2);
+				float r = ::Random.randF() * radius;
+
+				float x = r * sinf(phi) * cosf(theta);
+				float y = r * cosf(phi);
+				float z = r * sinf(phi) * sinf(theta);
+
+				computeDirection(15.f);
+
+				dest.P.set(x + view.x, y + view.y, z + view.z);
+				dest.fSpeed = ::Random.randF(g_pGamePersistent->Environment().CurrentEnv->rain_speed_min,
+					g_pGamePersistent->Environment().CurrentEnv->rain_speed_max);
+			}
+		}
+	};
+
+	if (rainBehaviors.count(rainType.c_str()))
+	{
+		rainBehaviors[rainType.c_str()]();
+	}
+	else
+	{
+		rainBehaviors["default"]();
+	}
+
+	float height = 
+		g_pGamePersistent->Environment().max_distance + g_pGamePersistent->Environment().add_const_dist_coefficient;
+
 	RenewItem(dest, height, RayPick(dest.P, dest.D, height, collide::rqtBoth));
 }
 
