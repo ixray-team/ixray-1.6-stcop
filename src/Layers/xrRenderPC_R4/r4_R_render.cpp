@@ -9,7 +9,7 @@
 
 #include "../xrRender/QueryHelper.h"
 
-#include "FSR2Wrapper.h"
+#include "OverlayAPI\FSR2Wrapper.h"
 
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
@@ -22,8 +22,9 @@ static	float	CalcSSADynamic				(const Fvector& C, float R)
 	return	v_res1.sub(v_res2).magnitude();
 }
 constexpr float base_fov = 67.f;
+
+// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
 static float GetDistFromCamera(const Fvector& from_position)
-	// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
 {
 	float distance = Device.vCameraPosition.distance_to(from_position);
 	float fov_K = base_fov / Device.fFOV;
@@ -31,25 +32,6 @@ static float GetDistFromCamera(const Fvector& from_position)
 
 	return adjusted_distane;
 }
-
-//static void dbg_text_renderer(const Fvector& pos, u32 color = color_rgba(0,255,100,255), shared_str str = "+")
-//{
-//    Fvector4		v_res;
-//    Device.mFullTransform.transform(v_res, pos);
-//
-//    float x = (1.f + v_res.x) / 2.f * (Device.Width);
-//    float y = (1.f - v_res.y) / 2.f * (Device.Height);
-//
-//    if (v_res.z < 0 || v_res.w < 0)
-//        return;
-//
-//    if (v_res.x < -1.f || v_res.x > 1.f || v_res.y < -1.f || v_res.y>1.f)
-//        return;
-//
-//	g_FontManager->pFontSystem->SetAligment(CGameFont::alCenter);
-//	g_FontManager->pFontSystem->SetColor(color);
-//	g_FontManager->pFontSystem->Out(x, y, "%s", str.c_str());
-//}
 
 void CRender::render_main	(bool deffered, bool zfill)
 {
@@ -489,7 +471,8 @@ void CRender::Render()
 		phase = PHASE_NORMAL;
 	}
 
-	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3) {
+	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3)
+	{
 		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
@@ -499,7 +482,8 @@ void CRender::Render()
 		ps_r_taa_jitter.y = -2.0f * ps_r_taa_jitter_full.y / RCache.get_height();
 		ps_r_taa_jitter.z = float(Device.dwFrame % jitterPhaseCount) / float(jitterPhaseCount) + EPS;
 	}
-	else {
+	else
+	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 	}
