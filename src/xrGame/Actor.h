@@ -85,6 +85,9 @@ class CActor:
 private:
 	typedef CEntityAlive	inherited;
 	CPickUpManager* pPickup = nullptr;
+
+	const char* m_onBeforeHitCallback = {};
+	bool m_isBeforeHitCallback = false;
 public:
 										CActor				();
 	virtual								~CActor				();

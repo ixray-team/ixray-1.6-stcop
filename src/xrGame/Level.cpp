@@ -84,6 +84,9 @@ u32			lvInterpSteps		= 0;
 CLevel::CLevel():
 	IPureClient(Device.GetTimerGlobal())
 {
+	LoadCallbackGlobals(m_isStartAttack, m_onStartAttack, "OnStartAttack");
+	LoadCallbackGlobals(m_isKeyPress, m_onKeyPress, "OnKeyPress");
+
 	g_bDebugEvents				= Core.ParamsData.test(ECoreParams::debug_ge);
 
 	Server						= nullptr;
