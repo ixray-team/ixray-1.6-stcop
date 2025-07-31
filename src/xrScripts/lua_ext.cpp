@@ -18,71 +18,54 @@ extern "C"
 #include "lua_ext.h"
 
 /******************** STRING ********************/
-int str_trim(lua_State* L)
+enum TrimDirection { TRIM_BOTH, TRIM_LEFT, TRIM_RIGHT };
+
+int str_trim_common(lua_State* L, TrimDirection dir)
 {
-    const char* front;
-    const char* end;
     size_t size;
-    front = luaL_checklstring(L, 1, &size);
-    end = &front[size - 1];
-    for (; size && isspace(*front); size--, front++)
-        ;
-    for (; size && isspace(*end); size--, end--)
-        ;
+    const char* front = luaL_checklstring(L, 1, &size);
+    const char* end = &front[size - 1];
+
+    if (dir == TRIM_BOTH || dir == TRIM_LEFT)
+        while (size && std::isspace(*front)) ++front, --size;
+
+    if (dir == TRIM_BOTH || dir == TRIM_RIGHT)
+        while (size && std::isspace(*end)) --end, --size;
+
     lua_pushlstring(L, front, (size_t)(end - front) + 1);
     return 1;
 }
 
-int str_trim_l(lua_State* L)
-{
-    const char* front;
-    const char* end;
-    size_t size;
-    front = luaL_checklstring(L, 1, &size);
-    end = &front[size - 1];
-    for (; size && isspace(*front); size--, front++)
-        ;
-    lua_pushlstring(L, front, (size_t)(end - front) + 1);
-    return 1;
-}
-
-int str_trim_r(lua_State* L)
-{
-    const char* front;
-    const char* end;
-    size_t size;
-    front = luaL_checklstring(L, 1, &size);
-    end = &front[size - 1];
-    for (; size && isspace(*end); size--, end--)
-        ;
-    lua_pushlstring(L, front, (size_t)(end - front) + 1);
-    return 1;
-}
+int str_trim(lua_State* L) { return str_trim_common(L, TRIM_BOTH); }
+int str_trim_l(lua_State* L) { return str_trim_common(L, TRIM_LEFT); }
+int str_trim_r(lua_State* L) { return str_trim_common(L, TRIM_RIGHT); }
 
 int str_trim_w(lua_State* L)
 {
-    int i = 0, d, n;
-    const char* s = luaL_checkstring(L, 1);
+    const char* str = luaL_checkstring(L, 1);
+    const char* start = str;
+    const char* end = str;
 
-    while (s[i] == ' ')
-        i++;
-    n = i;
-    while (s[i] != ' ' && s[i])
-        i++;
-    d = i - n;
-    lua_pushlstring(L, s + n, d);
+    // Пропускаем начальные пробелы
+    while (*start == ' ') ++start;
+
+    // Пропускаем слово
+    end = start;
+    while (*end && *end != ' ') ++end;
+
+    lua_pushlstring(L, start, end - start);
     return 1;
 }
 
 const luaL_Reg strlib[] = {
-    {"trim", str_trim}, {"trim_l", str_trim_l}, {"trim_r", str_trim_r}, {"trim_w", str_trim_w}, {NULL, NULL} };
+    {"trim", str_trim}, {"trim_l", str_trim_l}, {"trim_r", str_trim_r}, {"trim_w", str_trim_w}, {NULL, NULL}
+};
 
 int open_string(lua_State* L)
 {
     luaL_openlib(L, LUA_STRLIBNAME, strlib, 0);
     return 0;
 }
-/******************** STRING END ********************/
 
 /******************** MATH ********************/
 std::mt19937 intgen(std::random_device{}());
@@ -92,33 +75,33 @@ int gen_random_in_range(int a1, int a2)
     std::uniform_int_distribution<int> dist(a1, a2);
     return dist(intgen);
 }
-/******************** MATH END ********************/
 
 /******************** TABLE ********************/
-inline DWORD C_get_size(lua_State* L)
+inline int C_get_size(lua_State* L)
 {
-    int i = 0;
-    lua_settop(L, 2);
+    int size = 0;
+    lua_settop(L, 2); // Устанавливаем стек для доступа к таблице
+    lua_pushnil(L);
     while (lua_next(L, 1))
     {
-        ++i;
+        ++size;
         lua_pop(L, 1);
     }
-    return i;
+    return size;
 }
 
 int tab_keys(lua_State* L)
 {
-    int i = 1;
     luaL_checktype(L, 1, LUA_TTABLE);
     lua_newtable(L);
+
+    int index = 1;
     lua_pushnil(L);
-    while (lua_next(L, 1) != 0)
+    while (lua_next(L, 1))
     {
-        lua_pushinteger(L, i);
-        ++i;
-        lua_pushvalue(L, -3);
-        lua_settable(L, 2);
+        lua_pushinteger(L, index++);
+        lua_pushvalue(L, -2);
+        lua_settable(L, -4);
         lua_pop(L, 1);
     }
     return 1;
@@ -126,16 +109,16 @@ int tab_keys(lua_State* L)
 
 int tab_values(lua_State* L)
 {
-    int i = 1;
     luaL_checktype(L, 1, LUA_TTABLE);
     lua_newtable(L);
+
+    int index = 1;
     lua_pushnil(L);
-    while (lua_next(L, 1) != 0)
+    while (lua_next(L, 1))
     {
-        lua_pushinteger(L, i);
-        ++i;
-        lua_pushvalue(L, -2);
-        lua_settable(L, 2);
+        lua_pushinteger(L, index++);
+        lua_pushvalue(L, -1);
+        lua_settable(L, -4);
         lua_pop(L, 1);
     }
     return 1;
@@ -150,18 +133,21 @@ int get_size(lua_State* L)
 
 int get_random(lua_State* L)
 {
-    int i = C_get_size(L);
-    int j = gen_random_in_range(1, i);
-    i = 0;
+    int size = C_get_size(L);
+    if (size == 0) return 0;
+
+    int random_index = gen_random_in_range(1, size);
+
     luaL_checktype(L, 1, LUA_TTABLE);
-    lua_settop(L, 2);
+    lua_pushnil(L);
+
+    int current_index = 0;
     while (lua_next(L, 1))
     {
-        ++i;
-        if (i == j)
+        if (++current_index == random_index)
         {
-            lua_pushvalue(L, -2);
-            lua_pushvalue(L, -2);
+            lua_pushvalue(L, -2); // Ключ
+            lua_pushvalue(L, -1); // Значение
             return 2;
         }
         lua_pop(L, 1);
@@ -170,14 +156,14 @@ int get_random(lua_State* L)
 }
 
 const luaL_Reg tab_funcs[] = {
-    {"keys", tab_keys}, {"values", tab_values}, {"size", get_size}, {"random", get_random}, {NULL, NULL} };
+    {"keys", tab_keys}, {"values", tab_values}, {"size", get_size}, {"random", get_random}, {NULL, NULL}
+};
 
 int open_table(lua_State* L)
 {
     luaL_openlib(L, LUA_TABLIBNAME, tab_funcs, 0);
     return 0;
 }
-/******************** TABLE END ********************/
 
 bool LoadScriptToGlobal(lua_State* L, const char* name, bool KernelScript)
 {
