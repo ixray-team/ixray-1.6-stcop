@@ -6,7 +6,8 @@
 #include "../SoundRender_TargetA.h"
 #include <AL/al.h>
 
-CNotificationClient::CNotificationClient() 
+CNotificationClient::CNotificationClient() :
+    m_pEnumerator(nullptr)
 {
     Start();
 }
