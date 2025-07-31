@@ -16,6 +16,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "ui/UIInventoryUtilities.h"
+#include "../map_manager.h"
 //////////////////////////////////////////////////////////////////////////
 
 CUIZoneMap::CUIZoneMap()
@@ -38,7 +39,7 @@ void CUIZoneMap::Init()
 	xml_init.InitWindow				(uiXml, "minimap:level_frame",	0, &m_clipFrame);
 	xml_init.InitStatic				(uiXml, "minimap:center",		0, &m_center);
 	
-	m_clock_wnd						= UIHelper::CreateStatic(uiXml, "minimap:clock_wnd", &m_background);
+		m_clock_wnd						= UIHelper::CreateStatic(uiXml, "minimap:clock_wnd", &m_background);
 
 	m_activeMap						= new CUIMiniMap();
 	m_clipFrame.AttachChild			(m_activeMap);
@@ -62,7 +63,7 @@ void CUIZoneMap::Init()
 		sz.x					= sz.y / k;
 
 		m_clipFrame.SetWndSize	(sz);
-		
+
 		Fvector2 p				= m_clipFrame.GetWndPos();
 		p.mul					(UI_BASE_HEIGHT);
 		m_clipFrame.SetWndPos	(p);
@@ -107,6 +108,8 @@ void CUIZoneMap::Render			()
 	if ( !visible )
 		return;
 
+	xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
+
 	m_clipFrame.Draw	();
 	m_background.Draw	();
 }
@@ -138,7 +141,7 @@ void CUIZoneMap::Update()
 	Device.vCameraDirection.getHP( h, p );
 	SetHeading( -h );
 
-	m_clock_wnd->TextItemControl()->SetText( InventoryUtilities::GetGameTimeAsString( InventoryUtilities::etpTimeToMinutes ).c_str() );
+		m_clock_wnd->TextItemControl()->SetText( InventoryUtilities::GetGameTimeAsString( InventoryUtilities::etpTimeToMinutes ).c_str() );
 }
 
 void CUIZoneMap::SetHeading		(float angle)

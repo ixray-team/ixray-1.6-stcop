@@ -36,6 +36,7 @@ public:
 #endif
 	void					Destroy						(CMapLocation*);
 
+	xrCriticalSection		UpdateCS;
 
 	void MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor);
 	void AllLocationsForEach(const luabind::functor<bool>& functor);
