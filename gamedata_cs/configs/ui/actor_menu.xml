@@ -131,7 +131,7 @@
 	
   <dragdrop_bag x="705" y="140" width="308" height="590"
           cell_width="41" cell_height="41" rows_num="14" cols_num="7"
-          unlimited="1" group_similar="1" always_show_scroll="1"/>
+          unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
   <dragdrop_belt x="363" y="97" width="45" height="320"
           cell_width="45" cell_height="45" rows_num="5" cols_num="1"
@@ -155,23 +155,23 @@
   
     <dragdrop_actor_trade x="705" y="144" width="308" height="180"
           cell_width="41" cell_height="41" rows_num="4" cols_num="7"
-          unlimited="1" group_similar="1" always_show_scroll="1"/>
+          unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
   <dragdrop_actor_trade_bag x="705" y="365" width="308" height="363"
           cell_width="41" cell_height="41" rows_num="8" cols_num="7"
-          unlimited="1" group_similar="1" always_show_scroll="1"/>
+          unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
   <dragdrop_partner_trade x="10" y="144" width="308" height="180"
             cell_width="41" cell_height="41" rows_num="4" cols_num="7"
-            unlimited="1" group_similar="1" always_show_scroll="1"/>
+            unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
   <dragdrop_partner_bag x="10" y="365" width="308" height="363"
             cell_width="41" cell_height="41" rows_num="8" cols_num="7"
-            unlimited="1" group_similar="1" always_show_scroll="1"/>
+            unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>
 
   <dragdrop_deadbody_bag x="10" y="140" width="308" height="590"
             cell_width="41" cell_height="41" rows_num="14" cols_num="7"
-            unlimited="1" group_similar="1" always_show_scroll="1"/>		
+            unlimited="1" group_similar="1" always_show_scroll="1" condition_progress_bar="1"/>		
 
   <trade_button x="355" y="725" width="157" height="48">
     <window_name>trade_button</window_name>
