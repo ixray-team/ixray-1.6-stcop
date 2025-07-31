@@ -53,7 +53,7 @@ public:
         CLE_Visual*		m_Visual;
         Flags8			m_flags;
         xr_vector<CLE_Visual*> m_VisualHelpers;
-
+        IRenderVisual*  IdleParticle = nullptr;
         CLE_Motion*		m_Motion;
         CSpawnPoint*	m_owner;
         enum{ eSDTypeRespawn = (1<<0),};
