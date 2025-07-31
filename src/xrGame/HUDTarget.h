@@ -24,6 +24,13 @@ private:
 	bool					m_bShowCrosshair;
 	CHUDCrosshair			HUDCrosshair;
 
+	u32						colorEnemy;
+	u32						colorFriend;
+	u32						colorNeutral;
+	u32						colorDefault;
+	CGameFont*				targetFont;
+	bool					bInitialized;
+
 private:
 	collide::rq_results		RQR;
 
