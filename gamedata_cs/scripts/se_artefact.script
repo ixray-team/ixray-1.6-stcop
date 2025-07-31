@@ -22,36 +22,36 @@ function se_artefact:can_switch_online ()
        return cse_alife_item_artefact.can_switch_online (self)
     end
     
-    -- обработаем ситуацию, когда актер дал дуба или вообще отсутствует
+    -- РѕР±СЂР°Р±РѕС‚Р°РµРј СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° Р°РєС‚РµСЂ РґР°Р» РґСѓР±Р° РёР»Рё РІРѕРѕР±С‰Рµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚
     if db.actor == nil or db.actor:alive () == false then
-       return self.online  --просто вернем текущее состояние. 
+       return self.online  --РїСЂРѕСЃС‚Рѕ РІРµСЂРЅРµРј С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ. 
     end
     
     --printf ("CAN_SWITCH_ONLINE called")
     
-    -- если есть родитель, то ничего не ломаем.
+    -- РµСЃР»Рё РµСЃС‚СЊ СЂРѕРґРёС‚РµР»СЊ, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ Р»РѕРјР°РµРј.
     if self.parent_id ~= 65535 then
        return true 
     end   
     
-    if self.online == true then --обработаем ситуацию, когда артефакт в онлайне
-       --если ночь (или актера нет или он дал дуба, то мы в онлайне и остаемся 
+    if self.online == true then --РѕР±СЂР°Р±РѕС‚Р°РµРј СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° Р°СЂС‚РµС„Р°РєС‚ РІ РѕРЅР»Р°Р№РЅРµ
+       --РµСЃР»Рё РЅРѕС‡СЊ (РёР»Рё Р°РєС‚РµСЂР° РЅРµС‚ РёР»Рё РѕРЅ РґР°Р» РґСѓР±Р°, С‚Рѕ РјС‹ РІ РѕРЅР»Р°Р№РЅРµ Рё РѕСЃС‚Р°РµРјСЃСЏ 
        if utils.electro_art_enabled () == true then 
           return true
        end   
        if level.vertex_position (self.m_level_vertex_id):distance_to (db.actor:position ()) < 50 then
-          return true  --если актер слишком близко, то оставляем все как есть
+          return true  --РµСЃР»Рё Р°РєС‚РµСЂ СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ, С‚Рѕ РѕСЃС‚Р°РІР»СЏРµРј РІСЃРµ РєР°Рє РµСЃС‚СЊ
        end
-       return false -- актер далеко - в оффлайн.
-    else --обработаем ситуацию, когда арефакт в оффлайне
-       if utils.electro_art_enabled () == false then --если день, то ничего не делаем
+       return false -- Р°РєС‚РµСЂ РґР°Р»РµРєРѕ - РІ РѕС„С„Р»Р°Р№РЅ.
+    else --РѕР±СЂР°Р±РѕС‚Р°РµРј СЃРёС‚СѓР°С†РёСЋ, РєРѕРіРґР° Р°СЂРµС„Р°РєС‚ РІ РѕС„С„Р»Р°Р№РЅРµ
+       if utils.electro_art_enabled () == false then --РµСЃР»Рё РґРµРЅСЊ, С‚Рѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
           return false
        end 
        
        if level.vertex_position (self.m_level_vertex_id):distance_to (db.actor:position ()) < 50 then
-          return false  --если актер слишком близко, то оставляем все как есть
+          return false  --РµСЃР»Рё Р°РєС‚РµСЂ СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ, С‚Рѕ РѕСЃС‚Р°РІР»СЏРµРј РІСЃРµ РєР°Рє РµСЃС‚СЊ
        end
-       return true -- актер далеко - в онлайн.
+       return true -- Р°РєС‚РµСЂ РґР°Р»РµРєРѕ - РІ РѕРЅР»Р°Р№РЅ.
     end   
 ]]
 end

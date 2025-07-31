@@ -2,11 +2,11 @@
 ----------------------------------------------------------------------------------------------------
 -- Mob remarks
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
--- Исходный скрипт (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
+-- РСЃС…РѕРґРЅС‹Р№ СЃРєСЂРёРїС‚ (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
 ----------------------------------------------------------------------------------------------------
 
-local default_wait_time = 5000 -- время в ms, или nil для anim_end condition
+local default_wait_time = 5000 -- РІСЂРµРјСЏ РІ ms, РёР»Рё nil РґР»СЏ anim_end condition
 local default_anim_standing = anim.stand_idle
 
 local state_moving = 0
@@ -58,7 +58,7 @@ function mob_walker:reset_scheme()
 	self.crouch = false
 	self.running = true
 	self.cur_anim_set = default_anim_standing
-	self.pt_wait_time = default_wait_time -- сколько ждать в точке, где играем анимацию 
+	self.pt_wait_time = default_wait_time -- СЃРєРѕР»СЊРєРѕ Р¶РґР°С‚СЊ РІ С‚РѕС‡РєРµ, РіРґРµ РёРіСЂР°РµРј Р°РЅРёРјР°С†РёСЋ 
 
 	self.scheduled_snd = nil
 
@@ -81,7 +81,7 @@ function mob_walker:update(delta)
 		return
 	end
 	
-	-- Монстр после выхода из alife может уже быть не под скриптом, поэтому взять опять под скрипт
+	-- РњРѕРЅСЃС‚СЂ РїРѕСЃР»Рµ РІС‹С…РѕРґР° РёР· alife РјРѕР¶РµС‚ СѓР¶Рµ Р±С‹С‚СЊ РЅРµ РїРѕРґ СЃРєСЂРёРїС‚РѕРј, РїРѕСЌС‚РѕРјСѓ РІР·СЏС‚СЊ РѕРїСЏС‚СЊ РїРѕРґ СЃРєСЂРёРїС‚
 	if not xr_logic.mob_captured(self.object) then
 		self:reset_scheme()
 		return
@@ -102,7 +102,7 @@ function mob_walker:update(delta)
 			else
 				self.last_look_index = nil
 				self.state = state_moving
-				self:update_movement_state() -- идти дальше
+				self:update_movement_state() -- РёРґС‚Рё РґР°Р»СЊС€Рµ
 			end
 		end
 	end
@@ -159,9 +159,9 @@ function mob_walker:waypoint_callback(obj, action_type, index)
 	
 	local search_for = self.path_walk_info[index].flags
 	if search_for:get() == 0 then
-		-- TODO: запретить одноточечные пути без соответствующего path_look по аналогии с move_mgr
+		-- TODO: Р·Р°РїСЂРµС‚РёС‚СЊ РѕРґРЅРѕС‚РѕС‡РµС‡РЅС‹Рµ РїСѓС‚Рё Р±РµР· СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ path_look РїРѕ Р°РЅР°Р»РѕРіРёРё СЃ move_mgr
 		printf("_bp: no flags")
-		self:update_movement_state() -- идти дальше
+		self:update_movement_state() -- РёРґС‚Рё РґР°Р»СЊС€Рµ
 		return
 	end
 
@@ -196,14 +196,14 @@ function mob_walker:waypoint_callback(obj, action_type, index)
 			mob_state_mgr.set_state(self.object, db.actor, self.st.state)
 		end
 
-		if pt_chosen_idx ~= self.last_look_index then -- если уже смотрели туда - не поворачиваться
-			self:look_at_waypoint(pt_chosen_idx) -- поворачиваемся
+		if pt_chosen_idx ~= self.last_look_index then -- РµСЃР»Рё СѓР¶Рµ СЃРјРѕС‚СЂРµР»Рё С‚СѓРґР° - РЅРµ РїРѕРІРѕСЂР°С‡РёРІР°С‚СЊСЃСЏ
+			self:look_at_waypoint(pt_chosen_idx) -- РїРѕРІРѕСЂР°С‡РёРІР°РµРјСЃСЏ
 		end
 		self.state = state_standing
 		self:update_standing_state()
 
-		-- Сразу же стартовать update, не ждать execute. Тогда, если мы уже смотрим
-		-- в нужную сторону - не будет паузы в несколько миллисекунд на поворот.
+		-- РЎСЂР°Р·Сѓ Р¶Рµ СЃС‚Р°СЂС‚РѕРІР°С‚СЊ update, РЅРµ Р¶РґР°С‚СЊ execute. РўРѕРіРґР°, РµСЃР»Рё РјС‹ СѓР¶Рµ СЃРјРѕС‚СЂРёРј
+		-- РІ РЅСѓР¶РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ - РЅРµ Р±СѓРґРµС‚ РїР°СѓР·С‹ РІ РЅРµСЃРєРѕР»СЊРєРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ РЅР° РїРѕРІРѕСЂРѕС‚.
 		self:update(true)
 	else
 		abort("object '%s': path_walk '%s', index %d: cannot find corresponding point(s) on path_look '%s'",
@@ -272,7 +272,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 
 	local new_action = mob_walker(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
@@ -288,7 +288,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.path_walk       = utils.cfg_get_string(ini, section, "path_walk", npc, true,  gulag_name)
 	st.path_look       = utils.cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
 
-	st.path_walk_info = nil -- Будут инициализированы в reset(), сейчас пути могут быть еще
-	st.path_look_info = nil -- не загружены.
+	st.path_walk_info = nil -- Р‘СѓРґСѓС‚ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅС‹ РІ reset(), СЃРµР№С‡Р°СЃ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ
+	st.path_look_info = nil -- РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹.
 end
 

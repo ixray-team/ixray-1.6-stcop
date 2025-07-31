@@ -1,121 +1,121 @@
 ----------------------------------------------------------------------------------------------------
 -- Script switching logic
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 --function printf()
 --end
 
 --[[
 ----------------------------------------------------------------------------------------------------
--- ФУНКЦИИ, КОТОРЫЕ РАЗРЕШЕНО ВЫЗЫВАТЬ ИЗ ДРУГИХ СКРИПТОВ
+-- Р¤РЈРќРљР¦РР, РљРћРўРћР Р«Р• Р РђР—Р Р•РЁР•РќРћ Р’Р«Р—Р«Р’РђРўР¬ РР— Р”Р РЈР“РРҐ РЎРљР РРџРўРћР’
 ----------------------------------------------------------------------------------------------------
-	Активация схем производится с помощью функций:
+	РђРєС‚РёРІР°С†РёСЏ СЃС…РµРј РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ С„СѓРЅРєС†РёР№:
 
 function gulag_activate(npc, ini, section, gulag_name, death, combat, actor_dialogs, trade, hit)
-Предназначение:
-	активирует заданную схему, используется схемой гулаг. Тип скрипта определяется автоматически по имени секции.
-Здесь:
-	npc - персонаж, для которого будет активирована схема
-	ini - его customdata
-	section - имя секции, которая должна быть активирована
-	gulag_name - имя гулага, которое будет добавлено спереди к именам путей
-	death, combat, actor_dialogs, trade, hit - имена секций, задающих поведение при смерти и в бою
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р°РєС‚РёРІРёСЂСѓРµС‚ Р·Р°РґР°РЅРЅСѓСЋ СЃС…РµРјСѓ, РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃС…РµРјРѕР№ РіСѓР»Р°Рі. РўРёРї СЃРєСЂРёРїС‚Р° РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїРѕ РёРјРµРЅРё СЃРµРєС†РёРё.
+Р—РґРµСЃСЊ:
+	npc - РїРµСЂСЃРѕРЅР°Р¶, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ Р°РєС‚РёРІРёСЂРѕРІР°РЅР° СЃС…РµРјР°
+	ini - РµРіРѕ customdata
+	section - РёРјСЏ СЃРµРєС†РёРё, РєРѕС‚РѕСЂР°СЏ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ Р°РєС‚РёРІРёСЂРѕРІР°РЅР°
+	gulag_name - РёРјСЏ РіСѓР»Р°РіР°, РєРѕС‚РѕСЂРѕРµ Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅРѕ СЃРїРµСЂРµРґРё Рє РёРјРµРЅР°Рј РїСѓС‚РµР№
+	death, combat, actor_dialogs, trade, hit - РёРјРµРЅР° СЃРµРєС†РёР№, Р·Р°РґР°СЋС‰РёС… РїРѕРІРµРґРµРЅРёРµ РїСЂРё СЃРјРµСЂС‚Рё Рё РІ Р±РѕСЋ
 
 function assign_storage_and_bind(npc, ini, scheme, section)
-Предназначение:
-	Вызывает функцию add_to_binder схемы, а также создает (если его еще нет) и возвращает ссылку на storage
-	для схемы. Примечание: в storage при этом могут оставаться старые данные, схема должна очистить его
-	самостоятельно.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р’С‹Р·С‹РІР°РµС‚ С„СѓРЅРєС†РёСЋ add_to_binder СЃС…РµРјС‹, Р° С‚Р°РєР¶Рµ СЃРѕР·РґР°РµС‚ (РµСЃР»Рё РµРіРѕ РµС‰Рµ РЅРµС‚) Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ РЅР° storage
+	РґР»СЏ СЃС…РµРјС‹. РџСЂРёРјРµС‡Р°РЅРёРµ: РІ storage РїСЂРё СЌС‚РѕРј РјРѕРіСѓС‚ РѕСЃС‚Р°РІР°С‚СЊСЃСЏ СЃС‚Р°СЂС‹Рµ РґР°РЅРЅС‹Рµ, СЃС…РµРјР° РґРѕР»Р¶РЅР° РѕС‡РёСЃС‚РёС‚СЊ РµРіРѕ
+	СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕ.
 
 function subscribe_action_for_events(npc, storage, new_action)
-Предназначение:
-	Регистрирует класс для получения нотификаций о таких событиях как сброс схемы, сохранение и т.д.
-	Класс реализует соответствующие функции (reset_scheme() и т.д.), которые будут вызываться из xr_logic
-	в нужные моменты.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р РµРіРёСЃС‚СЂРёСЂСѓРµС‚ РєР»Р°СЃСЃ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РЅРѕС‚РёС„РёРєР°С†РёР№ Рѕ С‚Р°РєРёС… СЃРѕР±С‹С‚РёСЏС… РєР°Рє СЃР±СЂРѕСЃ СЃС…РµРјС‹, СЃРѕС…СЂР°РЅРµРЅРёРµ Рё С‚.Рґ.
+	РљР»Р°СЃСЃ СЂРµР°Р»РёР·СѓРµС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРµ С„СѓРЅРєС†РёРё (reset_scheme() Рё С‚.Рґ.), РєРѕС‚РѕСЂС‹Рµ Р±СѓРґСѓС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РёР· xr_logic
+	РІ РЅСѓР¶РЅС‹Рµ РјРѕРјРµРЅС‚С‹.
 
 function pick_section_from_condlist(actor, npc, condlist)
-Предназначение:
-	Проверяет условия condlist, и если они успешны - ставит указанные infoportions и возвращает текст.
-	Если условия не выполняются - возвращает nil.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РџСЂРѕРІРµСЂСЏРµС‚ СѓСЃР»РѕРІРёСЏ condlist, Рё РµСЃР»Рё РѕРЅРё СѓСЃРїРµС€РЅС‹ - СЃС‚Р°РІРёС‚ СѓРєР°Р·Р°РЅРЅС‹Рµ infoportions Рё РІРѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚.
+	Р•СЃР»Рё СѓСЃР»РѕРІРёСЏ РЅРµ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ - РІРѕР·РІСЂР°С‰Р°РµС‚ nil.
 
 function try_switch_to_another_section(npc, st, actor)
-Предназчанение:
-	Используя настройки xr_logic из storage персонажа, пытается переключить его на другую схему, если
-	хоть одно из условий переключения сработало. Обычно вызывается из метода update класса персонажа.
+РџСЂРµРґРЅР°Р·С‡Р°РЅРµРЅРёРµ:
+	РСЃРїРѕР»СЊР·СѓСЏ РЅР°СЃС‚СЂРѕР№РєРё xr_logic РёР· storage РїРµСЂСЃРѕРЅР°Р¶Р°, РїС‹С‚Р°РµС‚СЃСЏ РїРµСЂРµРєР»СЋС‡РёС‚СЊ РµРіРѕ РЅР° РґСЂСѓРіСѓСЋ СЃС…РµРјСѓ, РµСЃР»Рё
+	С…РѕС‚СЊ РѕРґРЅРѕ РёР· СѓСЃР»РѕРІРёР№ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃСЂР°Р±РѕС‚Р°Р»Рѕ. РћР±С‹С‡РЅРѕ РІС‹Р·С‹РІР°РµС‚СЃСЏ РёР· РјРµС‚РѕРґР° update РєР»Р°СЃСЃР° РїРµСЂСЃРѕРЅР°Р¶Р°.
 
 function is_active(npc, st)
-Предназначение:
-	Вызывается из evaluator-а (или в самом начале update у предметов и монстров) для проверки, что данная
-	схема сейчас активна (схема определяется по данным в storage).
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р’С‹Р·С‹РІР°РµС‚СЃСЏ РёР· evaluator-Р° (РёР»Рё РІ СЃР°РјРѕРј РЅР°С‡Р°Р»Рµ update Сѓ РїСЂРµРґРјРµС‚РѕРІ Рё РјРѕРЅСЃС‚СЂРѕРІ) РґР»СЏ РїСЂРѕРІРµСЂРєРё, С‡С‚Рѕ РґР°РЅРЅР°СЏ
+	СЃС…РµРјР° СЃРµР№С‡Р°СЃ Р°РєС‚РёРІРЅР° (СЃС…РµРјР° РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕ РґР°РЅРЅС‹Рј РІ storage).
 
 function cfg_get_switch_conditions(ini, section, npc)
-Предназначение:
-	Считывает все возможные условия переключения схем.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РЎС‡РёС‚С‹РІР°РµС‚ РІСЃРµ РІРѕР·РјРѕР¶РЅС‹Рµ СѓСЃР»РѕРІРёСЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃС…РµРј.
 
 function parse_condlist(npc, section, field, src)
-Предназначение:
-	Распарсивает условия вида: {+infop1} section1 %-infop2%, {+infop3 -infop4} section2 ... в таблицу.
-	Параметры section и field используются только в сообщениях об ошибках. Если строка src считана не из файла,
-	а передается в эту функцию гулагом, то нужно задать следующие параметры:
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р Р°СЃРїР°СЂСЃРёРІР°РµС‚ СѓСЃР»РѕРІРёСЏ РІРёРґР°: {+infop1} section1 %-infop2%, {+infop3 -infop4} section2 ... РІ С‚Р°Р±Р»РёС†Сѓ.
+	РџР°СЂР°РјРµС‚СЂС‹ section Рё field РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ СЃРѕРѕР±С‰РµРЅРёСЏС… РѕР± РѕС€РёР±РєР°С…. Р•СЃР»Рё СЃС‚СЂРѕРєР° src СЃС‡РёС‚Р°РЅР° РЅРµ РёР· С„Р°Р№Р»Р°,
+	Р° РїРµСЂРµРґР°РµС‚СЃСЏ РІ СЌС‚Сѓ С„СѓРЅРєС†РёСЋ РіСѓР»Р°РіРѕРј, С‚Рѕ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ СЃР»РµРґСѓСЋС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹:
 --]]
 --		section = "[[[gulag_tasks.script]]]"
---		field = "[[[gulag_name=имя_гулага]]]"
+--		field = "[[[gulag_name=РёРјСЏ_РіСѓР»Р°РіР°]]]"
 --[[
 ----------------------------------------------------------------------------------------------------
--- ПРИВАТНЫЕ ФУНКЦИИ
+-- РџР РР’РђРўРќР«Р• Р¤РЈРќРљР¦РР
 ----------------------------------------------------------------------------------------------------
 
 function activate_by_section(npc, ini, section, loading)
-Предназначение:
-	Активирует указанную секцию. Если в данный момент какая-либо секция уже активирована, сообщает об ошибке.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РђРєС‚РёРІРёСЂСѓРµС‚ СѓРєР°Р·Р°РЅРЅСѓСЋ СЃРµРєС†РёСЋ. Р•СЃР»Рё РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РєР°РєР°СЏ-Р»РёР±Рѕ СЃРµРєС†РёСЏ СѓР¶Рµ Р°РєС‚РёРІРёСЂРѕРІР°РЅР°, СЃРѕРѕР±С‰Р°РµС‚ РѕР± РѕС€РёР±РєРµ.
 
 function switch_to_section(npc, st, section)
-Предназначение:
-	Выполняет переключение с одной секции на другую, если новая секция не nil. Если же она nil, остается
-	активной старая секция.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р’С‹РїРѕР»РЅСЏРµС‚ РїРµСЂРµРєР»СЋС‡РµРЅРёРµ СЃ РѕРґРЅРѕР№ СЃРµРєС†РёРё РЅР° РґСЂСѓРіСѓСЋ, РµСЃР»Рё РЅРѕРІР°СЏ СЃРµРєС†РёСЏ РЅРµ nil. Р•СЃР»Рё Р¶Рµ РѕРЅР° nil, РѕСЃС‚Р°РµС‚СЃСЏ
+	Р°РєС‚РёРІРЅРѕР№ СЃС‚Р°СЂР°СЏ СЃРµРєС†РёСЏ.
 
 function abort_syntax_error_in_cond(npc, section, field)
-Предназначение:
-	Сообщает о синтаксической ошибке в условиях переключения схем секции section и поля field, и останавливает
-	игру.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РЎРѕРѕР±С‰Р°РµС‚ Рѕ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕР№ РѕС€РёР±РєРµ РІ СѓСЃР»РѕРІРёСЏС… РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃС…РµРј СЃРµРєС†РёРё section Рё РїРѕР»СЏ field, Рё РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚
+	РёРіСЂСѓ.
 
 function parse_infop(rslt, str)
-Предназначение:
-	Распарсивает условия вида " +infop1 =func -infop2 " и т.д. (все не перечислены) в таблицу.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р Р°СЃРїР°СЂСЃРёРІР°РµС‚ СѓСЃР»РѕРІРёСЏ РІРёРґР° " +infop1 =func -infop2 " Рё С‚.Рґ. (РІСЃРµ РЅРµ РїРµСЂРµС‡РёСЃР»РµРЅС‹) РІ С‚Р°Р±Р»РёС†Сѓ.
 
 function cfg_get_number_and_condlist(ini, section, field, npc)
 function cfg_get_string_and_condlist(ini, section, field, npc)
 function cfg_get_condlist(ini, section, field, npc)
-Предназначение:
-	Считывает из customdata различные условия переключения схем.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РЎС‡РёС‚С‹РІР°РµС‚ РёР· customdata СЂР°Р·Р»РёС‡РЅС‹Рµ СѓСЃР»РѕРІРёСЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃС…РµРј.
 
 function add_condition(lst, at, cond)
-Предназначение:
-	Добавляет условие в список условий переключения схем.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р”РѕР±Р°РІР»СЏРµС‚ СѓСЃР»РѕРІРёРµ РІ СЃРїРёСЃРѕРє СѓСЃР»РѕРІРёР№ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃС…РµРј.
 
 function cfg_get_overrides(ini, section, npc)
-Предназначение:
-	Считывает настройки для схем общего поведения.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	РЎС‡РёС‚С‹РІР°РµС‚ РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ СЃС…РµРј РѕР±С‰РµРіРѕ РїРѕРІРµРґРµРЅРёСЏ.
 
 function generic_scheme_overrides(npc)
-Предназначение:
-	Возвращает ссылку на настройки схем общего поведения, актуальные для работающей в данный момент схемы,
-	либо nil, если ни одна из секций не активна, либо настройки не заданы.
+РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+	Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ РЅР° РЅР°СЃС‚СЂРѕР№РєРё СЃС…РµРј РѕР±С‰РµРіРѕ РїРѕРІРµРґРµРЅРёСЏ, Р°РєС‚СѓР°Р»СЊРЅС‹Рµ РґР»СЏ СЂР°Р±РѕС‚Р°СЋС‰РµР№ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЃС…РµРјС‹,
+	Р»РёР±Рѕ nil, РµСЃР»Рё РЅРё РѕРґРЅР° РёР· СЃРµРєС†РёР№ РЅРµ Р°РєС‚РёРІРЅР°, Р»РёР±Рѕ РЅР°СЃС‚СЂРѕР№РєРё РЅРµ Р·Р°РґР°РЅС‹.
 
 --]]
 
 --[[
--- Предназначение:
---      вызывается при включении набора скриптов через секцию logic у персонажа. Если в секции logic присутствует только
---      поле cfg, использует конфигурационный файл, заданный в этом поле, и возвращает новый ini file.
--- Здесь:
---	npc - персонаж, для которого будет активирована схема
---	ini - его customdata
---	stype - тип скрипта. Поскольку имя секции все еще неизвестно, его нужно задавать явно. Допустимые значения
---	        перечислены в файле modules.script.
---	section - имя секции logic
---	gulag_name - имя гулага, если скрипт включается гулагом, а не биндером
+-- РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+--      РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РІРєР»СЋС‡РµРЅРёРё РЅР°Р±РѕСЂР° СЃРєСЂРёРїС‚РѕРІ С‡РµСЂРµР· СЃРµРєС†РёСЋ logic Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°. Р•СЃР»Рё РІ СЃРµРєС†РёРё logic РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ С‚РѕР»СЊРєРѕ
+--      РїРѕР»Рµ cfg, РёСЃРїРѕР»СЊР·СѓРµС‚ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹Р№ С„Р°Р№Р», Р·Р°РґР°РЅРЅС‹Р№ РІ СЌС‚РѕРј РїРѕР»Рµ, Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРІС‹Р№ ini file.
+-- Р—РґРµСЃСЊ:
+--	npc - РїРµСЂСЃРѕРЅР°Р¶, РґР»СЏ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґРµС‚ Р°РєС‚РёРІРёСЂРѕРІР°РЅР° СЃС…РµРјР°
+--	ini - РµРіРѕ customdata
+--	stype - С‚РёРї СЃРєСЂРёРїС‚Р°. РџРѕСЃРєРѕР»СЊРєСѓ РёРјСЏ СЃРµРєС†РёРё РІСЃРµ РµС‰Рµ РЅРµРёР·РІРµСЃС‚РЅРѕ, РµРіРѕ РЅСѓР¶РЅРѕ Р·Р°РґР°РІР°С‚СЊ СЏРІРЅРѕ. Р”РѕРїСѓСЃС‚РёРјС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
+--	        РїРµСЂРµС‡РёСЃР»РµРЅС‹ РІ С„Р°Р№Р»Рµ modules.script.
+--	section - РёРјСЏ СЃРµРєС†РёРё logic
+--	gulag_name - РёРјСЏ РіСѓР»Р°РіР°, РµСЃР»Рё СЃРєСЂРёРїС‚ РІРєР»СЋС‡Р°РµС‚СЃСЏ РіСѓР»Р°РіРѕРј, Р° РЅРµ Р±РёРЅРґРµСЂРѕРј
 --]]--
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name)
 	--printf("DEBUG: enable_scripts: npc:name()=%s", npc:name())
@@ -123,7 +123,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 	local npc_id = npc:id()
 	local st     = db.storage[npc_id]
 
-	-- если какая-то схема была до этого активна, деактивировать её
+	-- РµСЃР»Рё РєР°РєР°СЏ-С‚Рѕ СЃС…РµРјР° Р±С‹Р»Р° РґРѕ СЌС‚РѕРіРѕ Р°РєС‚РёРІРЅР°, РґРµР°РєС‚РёРІРёСЂРѕРІР°С‚СЊ РµС‘
 	if st.active_section then
 		issue_event(npc, st[st.active_scheme], "deactivate", npc)
 	end
@@ -132,11 +132,11 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 	local actual_ini_filename
 	if not ini:section_exist(section_logic) then
 		if gulag_name == "" then
-			-- Общие схемы должны работать и без logic:
+			-- РћР±С‰РёРµ СЃС…РµРјС‹ РґРѕР»Р¶РЅС‹ СЂР°Р±РѕС‚Р°С‚СЊ Рё Р±РµР· logic:
 			actual_ini_filename = ini_filename
-			actual_ini = ini -- персонаж не обязательно должен иметь секцию logic
+			actual_ini = ini -- РїРµСЂСЃРѕРЅР°Р¶ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ СЃРµРєС†РёСЋ logic
 		else
-			-- Иначе это персонаж Gulag-а и ему не задали работу:
+			-- РРЅР°С‡Рµ СЌС‚Рѕ РїРµСЂСЃРѕРЅР°Р¶ Gulag-Р° Рё РµРјСѓ РЅРµ Р·Р°РґР°Р»Рё СЂР°Р±РѕС‚Сѓ:
 			abort("ERROR: object '%s': unable to find section '%s' in '%s'", npc:name(), section_logic, tostring(ini_filename))
 		end
 	else
@@ -148,7 +148,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 				abort("object '%s' configuration file [%s] NOT FOUND or section [logic] isn't assigned ", npc:name(), filename)
 			end
 			--printf("_bp: enable_scripts: object '%s' has external configuration file '%s'", npc:name(), filename)
-			-- Рекурсивно обработать конфигурационный файл, на который ссылается поле cfg
+			-- Р РµРєСѓСЂСЃРёРІРЅРѕ РѕР±СЂР°Р±РѕС‚Р°С‚СЊ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹Р№ С„Р°Р№Р», РЅР° РєРѕС‚РѕСЂС‹Р№ СЃСЃС‹Р»Р°РµС‚СЃСЏ РїРѕР»Рµ cfg
 
 
 			return configure_schemes(npc, actual_ini, actual_ini_filename, stype, section_logic, gulag_name)
@@ -177,12 +177,12 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 		end
 	end
 
-	-- Поскольку в момент активации схемы могли работать ранее установленные общие схемы, нужно их все отключить:
+	-- РџРѕСЃРєРѕР»СЊРєСѓ РІ РјРѕРјРµРЅС‚ Р°РєС‚РёРІР°С†РёРё СЃС…РµРјС‹ РјРѕРіР»Рё СЂР°Р±РѕС‚Р°С‚СЊ СЂР°РЅРµРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅРЅС‹Рµ РѕР±С‰РёРµ СЃС…РµРјС‹, РЅСѓР¶РЅРѕ РёС… РІСЃРµ РѕС‚РєР»СЋС‡РёС‚СЊ:
 	disable_generic_schemes(npc, stype)
-	-- Включаем все общие схемы (раненный, коллбек на попадание и т.д.):
+	-- Р’РєР»СЋС‡Р°РµРј РІСЃРµ РѕР±С‰РёРµ СЃС…РµРјС‹ (СЂР°РЅРµРЅРЅС‹Р№, РєРѕР»Р»Р±РµРє РЅР° РїРѕРїР°РґР°РЅРёРµ Рё С‚.Рґ.):
 	enable_generic_schemes(actual_ini, npc, stype, section_logic)
 
-	-- Инициализация торговли
+	-- РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РѕСЂРіРѕРІР»Рё
 	if stype == modules.stype_stalker or
 	   npc:clsid() == clsid.script_trader
 	then
@@ -202,13 +202,13 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 	return st.ini
 end
 
--- Вызывается биндером с целью определить первую активную схему
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ Р±РёРЅРґРµСЂРѕРј СЃ С†РµР»СЊСЋ РѕРїСЂРµРґРµР»РёС‚СЊ РїРµСЂРІСѓСЋ Р°РєС‚РёРІРЅСѓСЋ СЃС…РµРјСѓ
 function determine_section_to_activate(npc, ini, section_logic, actor)
 	if not ini:section_exist(section_logic) then
 		return "nil"
 	end
 
-	-- Распарсить строку выбора активной секции с учетом команд, заключенных в %%
+	-- Р Р°СЃРїР°СЂСЃРёС‚СЊ СЃС‚СЂРѕРєСѓ РІС‹Р±РѕСЂР° Р°РєС‚РёРІРЅРѕР№ СЃРµРєС†РёРё СЃ СѓС‡РµС‚РѕРј РєРѕРјР°РЅРґ, Р·Р°РєР»СЋС‡РµРЅРЅС‹С… РІ %%
 	local active_section_cond = cfg_get_condlist(ini, section_logic, "active", npc)
 	local active_section
 	if not active_section_cond then
@@ -225,7 +225,7 @@ function determine_section_to_activate(npc, ini, section_logic, actor)
 end
 
 ------------------------------------------------------------------------------------------------------------
--- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В enable_generic_schemes
+-- Р’РќРћРЎРЇ РР—РњР•РќР•РќРРЇ Р’ Р­РўРЈ Р¤РЈРќРљР¦РР®, РќР• Р—РђР‘Р«Р’РђР™РўР• Р”РћР‘РђР’Р›РЇРўР¬ РЎРћРћРўР’Р•РўРЎРўР’РЈР®Р©РР• РЎРўР РћРљР Р Р’ enable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
 function disable_generic_schemes(npc, stype)
 	if stype == modules.stype_stalker then
@@ -250,7 +250,7 @@ function disable_generic_schemes(npc, stype)
 end
 
 ------------------------------------------------------------------------------------------------------------
--- ВНОСЯ ИЗМЕНЕНИЯ В ЭТУ ФУНКЦИЮ, НЕ ЗАБЫВАЙТЕ ДОБАВЛЯТЬ СООТВЕТСТВУЮЩИЕ СТРОКИ И В disable_generic_schemes
+-- Р’РќРћРЎРЇ РР—РњР•РќР•РќРРЇ Р’ Р­РўРЈ Р¤РЈРќРљР¦РР®, РќР• Р—РђР‘Р«Р’РђР™РўР• Р”РћР‘РђР’Р›РЇРўР¬ РЎРћРћРўР’Р•РўРЎРўР’РЈР®Р©РР• РЎРўР РћРљР Р Р’ disable_generic_schemes
 ------------------------------------------------------------------------------------------------------------
  function enable_generic_schemes(ini, npc, stype, section)
 	if stype == modules.stype_stalker then
@@ -336,9 +336,9 @@ end
 	end
 end
 
--- Существует два способа вызова функции: с передаванием секции или без нее
--- В обоих случаях передавать gulag_name ОБЯЗАТЕЛЬНО
--- Если section не передана, то она берется из работы переданного гулага.
+-- РЎСѓС‰РµСЃС‚РІСѓРµС‚ РґРІР° СЃРїРѕСЃРѕР±Р° РІС‹Р·РѕРІР° С„СѓРЅРєС†РёРё: СЃ РїРµСЂРµРґР°РІР°РЅРёРµРј СЃРµРєС†РёРё РёР»Рё Р±РµР· РЅРµРµ
+-- Р’ РѕР±РѕРёС… СЃР»СѓС‡Р°СЏС… РїРµСЂРµРґР°РІР°С‚СЊ gulag_name РћР‘РЇР—РђРўР•Р›Р¬РќРћ
+-- Р•СЃР»Рё section РЅРµ РїРµСЂРµРґР°РЅР°, С‚Рѕ РѕРЅР° Р±РµСЂРµС‚СЃСЏ РёР· СЂР°Р±РѕС‚С‹ РїРµСЂРµРґР°РЅРЅРѕРіРѕ РіСѓР»Р°РіР°.
 function activate_by_section(npc, ini, section, gulag_name, loading)
 	--printf("LOGIC[%s]: Object '%s': activate_by_section: looking for section '%s'", tostring(time_global()), npc:name(), section)
 
@@ -380,15 +380,15 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
 		abort("object '%s': unable to determine scheme name from section name '%s'", npc:name(), section)
 	end
 
-	-- Загрузить оверрайды:
+	-- Р—Р°РіСЂСѓР·РёС‚СЊ РѕРІРµСЂСЂР°Р№РґС‹:
 	db.storage[npc_id].overrides = cfg_get_overrides(ini, section, npc)
 
-	-- Сбросить общие схемы:
+	-- РЎР±СЂРѕСЃРёС‚СЊ РѕР±С‰РёРµ СЃС…РµРјС‹:
 	reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 
 
-	-- schemes[scheme] даст имя файла (модуля), в котором реализована схема
-	-- _G[] даст указатель на неймспейс (таблицу) этого модуля
+	-- schemes[scheme] РґР°СЃС‚ РёРјСЏ С„Р°Р№Р»Р° (РјРѕРґСѓР»СЏ), РІ РєРѕС‚РѕСЂРѕРј СЂРµР°Р»РёР·РѕРІР°РЅР° СЃС…РµРјР°
+	-- _G[] РґР°СЃС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРµР№РјСЃРїРµР№СЃ (С‚Р°Р±Р»РёС†Сѓ) СЌС‚РѕРіРѕ РјРѕРґСѓР»СЏ
 	local filename = schemes[scheme]
 	if filename == nil then
 		abort("xr_logic: scheme '%s' is not registered in modules.script", scheme)
@@ -404,7 +404,7 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
 	db.storage[npc_id].active_scheme = scheme
 
 	if db.storage[npc_id].stype == modules.stype_stalker then
-		-- чтобы избежать дальнейшего движения по пути при установке рестрикторов
+		-- С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РґР°Р»СЊРЅРµР№С€РµРіРѕ РґРІРёР¶РµРЅРёСЏ РїРѕ РїСѓС‚Рё РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ
 		utils.send_to_nearest_accessible_vertex(npc, npc:level_vertex_id())
 
 		issue_event(npc, db.storage[npc_id][scheme], "activate_scheme", loading, npc)
@@ -414,9 +414,9 @@ function activate_by_section(npc, ini, section, gulag_name, loading)
 end
 
 --[[
--- Предназначение:
---	Производит сброс состояния объекта (снимает коллбеки, отключает разговор) непосредственно перед включением
---	новой схемы.
+-- РџСЂРµРґРЅР°Р·РЅР°С‡РµРЅРёРµ:
+--	РџСЂРѕРёР·РІРѕРґРёС‚ СЃР±СЂРѕСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РѕР±СЉРµРєС‚Р° (СЃРЅРёРјР°РµС‚ РєРѕР»Р»Р±РµРєРё, РѕС‚РєР»СЋС‡Р°РµС‚ СЂР°Р·РіРѕРІРѕСЂ) РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ РїРµСЂРµРґ РІРєР»СЋС‡РµРЅРёРµРј
+--	РЅРѕРІРѕР№ СЃС…РµРјС‹.
 	]] --
 
 function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
@@ -449,7 +449,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 
 	elseif st.stype == modules.stype_mobile then
 		--printf("_bp: disabling talk")
-		--npc:disable_talk() -- теперь делается в dialog_manager_reset
+		--npc:disable_talk() -- С‚РµРїРµСЂСЊ РґРµР»Р°РµС‚СЃСЏ РІ dialog_manager_reset
 		xr_meet.dialog_manager_reset(npc, st.stype)
 		mob_release(npc)
 		if get_clsid(npc) == clsid.bloodsucker_s then
@@ -457,7 +457,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 				npc:set_manual_invisibility(false)
 			else
 				npc:set_manual_invisibility(true)
-				-- Видимый или нет определяет схема, которая возьмет его под контроль:
+				-- Р’РёРґРёРјС‹Р№ РёР»Рё РЅРµС‚ РѕРїСЂРµРґРµР»СЏРµС‚ СЃС…РµРјР°, РєРѕС‚РѕСЂР°СЏ РІРѕР·СЊРјРµС‚ РµРіРѕ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ:
 				--npc:set_invisible(false)
 			end
 		end
@@ -474,7 +474,7 @@ function reset_generic_schemes_on_scheme_switch(npc, scheme, section)
 		npc:set_callback(callback.use_object, nil)
 		npc:set_nonscript_usable(true)
 		if get_clsid(npc) == clsid.car then
-			-- Другие объекты под скрипт не берутся, поэтому для них не надо сбрасывать
+			-- Р”СЂСѓРіРёРµ РѕР±СЉРµРєС‚С‹ РїРѕРґ СЃРєСЂРёРїС‚ РЅРµ Р±РµСЂСѓС‚СЃСЏ, РїРѕСЌС‚РѕРјСѓ РґР»СЏ РЅРёС… РЅРµ РЅР°РґРѕ СЃР±СЂР°СЃС‹РІР°С‚СЊ
 			npc:destroy_car()
 			mob_release(npc)
 		end
@@ -491,7 +491,7 @@ function assign_storage_and_bind(npc, ini, scheme, section)
 
 		st["npc"] = npc
 
-		-- Схема стартует впервые - прибиндить
+		-- РЎС…РµРјР° СЃС‚Р°СЂС‚СѓРµС‚ РІРїРµСЂРІС‹Рµ - РїСЂРёР±РёРЅРґРёС‚СЊ
 		--printf("DEBUG: assign_storage_and_bind: bind scheme: '%s'", scheme)
 		_G[schemes[scheme]].add_to_binder(npc, ini, scheme, section, st)
 	else
@@ -523,7 +523,7 @@ function unsubscribe_action_from_events(npc, storage, new_action)
 	storage.actions[new_action] = nil
 end
 
--- st - storage активной схемы
+-- st - storage Р°РєС‚РёРІРЅРѕР№ СЃС…РµРјС‹
 function issue_event(npc, st, event_fn, ...)
 	if not st or not st.actions then
 		return
@@ -546,7 +546,7 @@ function issue_event(npc, st, event_fn, ...)
 --	end
 end
 
---' Функция проверяет выполняется ли у активной схемы заданная функция
+--' Р¤СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂСЏРµС‚ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ Р»Рё Сѓ Р°РєС‚РёРІРЅРѕР№ СЃС…РµРјС‹ Р·Р°РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
 function check_action(npc, st, event_fn, p)
 	if not st or not st.actions then
 		return true
@@ -568,14 +568,14 @@ function pick_section_from_condlist(actor, npc, condlist)
 	local newsect = nil
 	local infop_conditions_met
 	for n, cond in pairs(condlist) do
-		infop_conditions_met = true -- изначально считаем, что все условия переключения удовлетворены
+		infop_conditions_met = true -- РёР·РЅР°С‡Р°Р»СЊРЅРѕ СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РІСЃРµ СѓСЃР»РѕРІРёСЏ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СѓРґРѕРІР»РµС‚РІРѕСЂРµРЅС‹
 		for inum, infop in pairs(cond.infop_check) do
 			if infop.prob then
 				if not rval then
 					rval = math.random(100)
 				end
 				if infop.prob < rval then
-					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РѕРЅ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 					break
 				end
 			elseif infop.func then
@@ -593,24 +593,24 @@ function pick_section_from_condlist(actor, npc, condlist)
 				if infop.params then
 					if xr_conditions[infop.func](actor, npc, infop.params) then
 						if not infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 							break
 						end
 					else
 						if infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 							break
 						end
 					end
 				else
 					if xr_conditions[infop.func](actor, npc) then
 						if not infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 							break
 						end
 					else
 						if infop.expected then
-							infop_conditions_met = false -- инфопоршен есть, но не должен присутствовать
+							infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 							break
 						end
 					end
@@ -618,7 +618,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 			elseif has_alife_info(infop.name) then
 				if not infop.required then
 					--'printf("FAILED: actor has infop '%s', which is NOT needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-					infop_conditions_met = false -- инфопоршен есть, но он не должен присутствовать
+					infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅ РµСЃС‚СЊ, РЅРѕ РѕРЅ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ
 					break
 				else
 					--'printf("PASSED: actor has infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
@@ -626,7 +626,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 			else
 				if infop.required then
 					--'printf("FAILED: actor has NO infop '%s', which is needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
-					infop_conditions_met = false -- инфопоршена нет, но он нужен
+					infop_conditions_met = false -- РёРЅС„РѕРїРѕСЂС€РµРЅР° РЅРµС‚, РЅРѕ РѕРЅ РЅСѓР¶РµРЅ
 					break
 				else
 					--'printf("PASSED: actor has NO infop '%s', which is not needed [%s]", infop.name, tostring(has_alife_info(infop.name)))
@@ -635,7 +635,7 @@ function pick_section_from_condlist(actor, npc, condlist)
 		end
 		--printf("_bp: infop_cond_met = %s", utils.to_str(infop_conditions_met))
 		if infop_conditions_met then
-			-- Условия выполнены. Независимо от того, задана ли секция, нужно проставить требуемые
+			-- РЈСЃР»РѕРІРёСЏ РІС‹РїРѕР»РЅРµРЅС‹. РќРµР·Р°РІРёСЃРёРјРѕ РѕС‚ С‚РѕРіРѕ, Р·Р°РґР°РЅР° Р»Рё СЃРµРєС†РёСЏ, РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Р°РІРёС‚СЊ С‚СЂРµР±СѓРµРјС‹Рµ
 			-- infoportions:
 			for inum, infop in pairs(cond.infop_set) do
 				if db.actor == nil then
@@ -674,8 +674,8 @@ function pick_section_from_condlist(actor, npc, condlist)
 	return nil
 end
 
--- Выполняет переключение на указанную секцию, если задана.
--- Если section == nil, остается работать старая секция.
+-- Р’С‹РїРѕР»РЅСЏРµС‚ РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ СЃРµРєС†РёСЋ, РµСЃР»Рё Р·Р°РґР°РЅР°.
+-- Р•СЃР»Рё section == nil, РѕСЃС‚Р°РµС‚СЃСЏ СЂР°Р±РѕС‚Р°С‚СЊ СЃС‚Р°СЂР°СЏ СЃРµРєС†РёСЏ.
 function switch_to_section(npc, ini, section)
 	if section == "" or section == nil then
 		return false
@@ -740,13 +740,13 @@ function try_switch_to_another_section(npc, st, actor)
 			end
 		elseif cond_name(c.name, "on_actor_dist_ge") then
 			--printf("_bp: dist=%d (need <= %d), see_actor: %s", distance_between(actor, npc), c.v1, utils.to_str(see_actor(npc)))
-			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le, где <=
+			-- РўРЈРў РЈРњР«РЁР›Р•РќРќРћ >, Рђ РќР• >=, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅРѕ СЃРѕСЃС‚Р°РІР»СЏРµС‚ РїР°СЂСѓ СЃ on_actor_dist_le, РіРґРµ <=
 			if see_actor(npc) and distance_between(actor, npc) > c.v1 then
 				--printf("_bp: conditions met")
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
 		elseif cond_name(c.name, "on_actor_dist_ge_nvis") then
-			-- ТУТ УМЫШЛЕННО >, А НЕ >=, потому что оно составляет пару с on_actor_dist_le_nvis, где <=
+			-- РўРЈРў РЈРњР«РЁР›Р•РќРќРћ >, Рђ РќР• >=, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅРѕ СЃРѕСЃС‚Р°РІР»СЏРµС‚ РїР°СЂСѓ СЃ on_actor_dist_le_nvis, РіРґРµ <=
 			if distance_between(actor, npc) > c.v1 then
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
@@ -757,7 +757,7 @@ function try_switch_to_another_section(npc, st, actor)
 				--printf("_bp: signalled")
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
-		-- FIXME: не дублировать тут имена, оставить один on_info, но добавлять несколько его экземпляров в список
+		-- FIXME: РЅРµ РґСѓР±Р»РёСЂРѕРІР°С‚СЊ С‚СѓС‚ РёРјРµРЅР°, РѕСЃС‚Р°РІРёС‚СЊ РѕРґРёРЅ on_info, РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РµРіРѕ СЌРєР·РµРјРїР»СЏСЂРѕРІ РІ СЃРїРёСЃРѕРє
 		elseif cond_name(c.name, "on_info") then
 			switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 		elseif cond_name(c.name, "on_timer") then
@@ -818,7 +818,7 @@ function is_active(npc, st)
 	end
 	local is_act = (st.section == db.storage[npc:id()].active_section)
 
-	-- Текущая секция активна и не сработало ни одно из условий переключения на другие секции
+	-- РўРµРєСѓС‰Р°СЏ СЃРµРєС†РёСЏ Р°РєС‚РёРІРЅР° Рё РЅРµ СЃСЂР°Р±РѕС‚Р°Р»Рѕ РЅРё РѕРґРЅРѕ РёР· СѓСЃР»РѕРІРёР№ РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ РЅР° РґСЂСѓРіРёРµ СЃРµРєС†РёРё
 	return is_act
 end
 
@@ -828,8 +828,8 @@ function abort_syntax_error_in_cond(npc, section, field)
 		npc:name(), section, field)
 end
 
--- На входе имеем пустой массив и строку вида "  +infop1  -infop2 +infop3 ... "
--- Заполнить массив:
+-- РќР° РІС…РѕРґРµ РёРјРµРµРј РїСѓСЃС‚РѕР№ РјР°СЃСЃРёРІ Рё СЃС‚СЂРѕРєСѓ РІРёРґР° "  +infop1  -infop2 +infop3 ... "
+-- Р—Р°РїРѕР»РЅРёС‚СЊ РјР°СЃСЃРёРІ:
 -- { "infop_name" = true/false }.
 function parse_infop1(rslt, str)
 	--printf("_bp: parse_infop: %s", utils.to_str(str))
@@ -881,7 +881,7 @@ function parse_infop(rslt, str)
 			infop_name = string.sub(s, 2)
 			params = nil
 
-			-- парсим параметры функций
+			-- РїР°СЂСЃРёРј РїР°СЂР°РјРµС‚СЂС‹ С„СѓРЅРєС†РёР№
 			at = string.find(infop_name, "%(")
 			if at then
 				if string.sub(infop_name, -1) ~= ")" then
@@ -915,9 +915,9 @@ function parse_infop(rslt, str)
 	end
 end
 
--- Распарсивает строку src вида:
+-- Р Р°СЃРїР°СЂСЃРёРІР°РµС‚ СЃС‚СЂРѕРєСѓ src РІРёРґР°:
 -- {+infop1} section1 %-infop2%, {+infop3 -infop4} section2 ...
--- в таблицу:
+-- РІ С‚Р°Р±Р»РёС†Сѓ:
 -- {
 --   1 = { infop_check = { 1 = {"infop1" = true} }, infop_set = { 1 = {"infop2" = false } }, section = "section1" },
 --   2 = { infop_check = { 1 = {"infop3" = true}, 2 = {"infop4" = false} }, infop_set = {}, section = "section2" },
@@ -925,57 +925,57 @@ end
 function parse_condlist(npc, section, field, src)
 	local lst = {}
 
-	-- 1) Разбиваем на разделенные запятыми части:
+	-- 1) Р Р°Р·Р±РёРІР°РµРј РЅР° СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё С‡Р°СЃС‚Рё:
 	local at, to, infop_check_lst, remainings, infop_set_lst, newsect
 
 	--printf("_bp: src = %s", src)
 
 	local n = 1
 	for fld in string.gfind(src, "%s*([^,]+)%s*") do
-		-- Здесь fld это набор infoportions в {} и имя секции, на которую переключиться.
+		-- Р—РґРµСЃСЊ fld СЌС‚Рѕ РЅР°Р±РѕСЂ infoportions РІ {} Рё РёРјСЏ СЃРµРєС†РёРё, РЅР° РєРѕС‚РѕСЂСѓСЋ РїРµСЂРµРєР»СЋС‡РёС‚СЊСЃСЏ.
 		lst[n] = {}
 		--printf("_bp: iter %d: fld = %s", n, fld)
 
-		-- Выделяем список infoportions для проверки:
+		-- Р’С‹РґРµР»СЏРµРј СЃРїРёСЃРѕРє infoportions РґР»СЏ РїСЂРѕРІРµСЂРєРё:
 		at, to, infop_check_lst = string.find(fld, "{%s*(.*)%s*}")
 		if infop_check_lst then
 			--printf("_bp: infop_check_lst: [%s]", infop_check_lst)
 
-			-- Выделяем оставшуюся часть поля, т.е. имя секции плюс список infoportions для установки:
+			-- Р’С‹РґРµР»СЏРµРј РѕСЃС‚Р°РІС€СѓСЋСЃСЏ С‡Р°СЃС‚СЊ РїРѕР»СЏ, С‚.Рµ. РёРјСЏ СЃРµРєС†РёРё РїР»СЋСЃ СЃРїРёСЃРѕРє infoportions РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё:
 			remainings = string.sub(fld, 1, at - 1) .. string.sub(fld, to + 1)
 		else
-			-- Список infoportions для проверки не был задан, следовательно, ничего не удаляем:
+			-- РЎРїРёСЃРѕРє infoportions РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРµ Р±С‹Р» Р·Р°РґР°РЅ, СЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ, РЅРёС‡РµРіРѕ РЅРµ СѓРґР°Р»СЏРµРј:
 			remainings = fld
 		end
 		--printf("_bp: remainings: %s", remainings)
 
-		-- Выделяем список infoportions для установки из remainings:
+		-- Р’С‹РґРµР»СЏРµРј СЃРїРёСЃРѕРє infoportions РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РёР· remainings:
 		at, to, infop_set_lst = string.find(remainings, "%%%s*(.*)%s*%%")
 		if infop_set_lst then
-			-- Выделяем оставшуюся часть поля, т.е. имя секции:
+			-- Р’С‹РґРµР»СЏРµРј РѕСЃС‚Р°РІС€СѓСЋСЃСЏ С‡Р°СЃС‚СЊ РїРѕР»СЏ, С‚.Рµ. РёРјСЏ СЃРµРєС†РёРё:
 			newsect = string.sub(remainings, 1, at - 1) .. string.sub(remainings, to + 1)
 		else
-			-- Список infoportions для установки не был задан, следовательно, remainings и есть имя секции.
+			-- РЎРїРёСЃРѕРє infoportions РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РЅРµ Р±С‹Р» Р·Р°РґР°РЅ, СЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ, remainings Рё РµСЃС‚СЊ РёРјСЏ СЃРµРєС†РёРё.
 			newsect = remainings
 		end
 		--printf("_bp: newsect: %s", newsect)
 
-		-- И сразу trim имя секции:
+		-- Р СЃСЂР°Р·Сѓ trim РёРјСЏ СЃРµРєС†РёРё:
 		at, to, newsect = string.find(newsect, "%s*(.*)%s*")
 		if not newsect then
 			abort_syntax_error_in_cond(npc, section, field)
 		end
 
-		-- Имя секции теперь можно сохранить:
+		-- РРјСЏ СЃРµРєС†РёРё С‚РµРїРµСЂСЊ РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅРёС‚СЊ:
 		lst[n].section = newsect
 
-		-- Теперь нужно распарсить infoportions в строке infop_check_lst и
-		-- заполнить массив infop_check: { "infop_name" = true/false }.
-		-- На входе имеем строку вида "  +infop1  -infop2 +infop3 ... "
+		-- РўРµРїРµСЂСЊ РЅСѓР¶РЅРѕ СЂР°СЃРїР°СЂСЃРёС‚СЊ infoportions РІ СЃС‚СЂРѕРєРµ infop_check_lst Рё
+		-- Р·Р°РїРѕР»РЅРёС‚СЊ РјР°СЃСЃРёРІ infop_check: { "infop_name" = true/false }.
+		-- РќР° РІС…РѕРґРµ РёРјРµРµРј СЃС‚СЂРѕРєСѓ РІРёРґР° "  +infop1  -infop2 +infop3 ... "
 		lst[n].infop_check = {}
 		parse_infop(lst[n].infop_check, infop_check_lst)
 
-		-- То же самое для устанавливаемых infoportions:
+		-- РўРѕ Р¶Рµ СЃР°РјРѕРµ РґР»СЏ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРјС‹С… infoportions:
 		lst[n].infop_set = {}
 		parse_infop(lst[n].infop_set, infop_set_lst)
 
@@ -1170,8 +1170,8 @@ function cfg_get_npc_and_zone(ini, section, field, npc)
 	return t
 end
 
--- Возвращает ссылку на оверрайды, зарегистрированные в активной на данный момент секции,
--- либо nil, если ни одна из секций не активна, или оверрайдов нет.
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃСЃС‹Р»РєСѓ РЅР° РѕРІРµСЂСЂР°Р№РґС‹, Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ РІ Р°РєС‚РёРІРЅРѕР№ РЅР° РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ СЃРµРєС†РёРё,
+-- Р»РёР±Рѕ nil, РµСЃР»Рё РЅРё РѕРґРЅР° РёР· СЃРµРєС†РёР№ РЅРµ Р°РєС‚РёРІРЅР°, РёР»Рё РѕРІРµСЂСЂР°Р№РґРѕРІ РЅРµС‚.
 function generic_scheme_overrides(npc)
 	return db.storage[npc:id()].overrides
 end
@@ -1400,8 +1400,8 @@ function load_obj(obj, reader)
 
 	local active_section = reader:r_stringZ()
 	if active_section == "" then
-		-- В activate_by_section нужно передать строку "nil", а не nil, чтобы не активировать ни одной из схем.
-		-- При этом реальная active_section станет равной nil.
+		-- Р’ activate_by_section РЅСѓР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ СЃС‚СЂРѕРєСѓ "nil", Р° РЅРµ nil, С‡С‚РѕР±С‹ РЅРµ Р°РєС‚РёРІРёСЂРѕРІР°С‚СЊ РЅРё РѕРґРЅРѕР№ РёР· СЃС…РµРј.
+		-- РџСЂРё СЌС‚РѕРј СЂРµР°Р»СЊРЅР°СЏ active_section СЃС‚Р°РЅРµС‚ СЂР°РІРЅРѕР№ nil.
 		active_section = "nil"
 	end
 
@@ -1448,7 +1448,7 @@ function get_customdata_or_ini_file(npc, filename)
 			return ini_file([[scripts\dummy.ltx]])
 		end
 	elseif string.find( filename, "*" ) == 1 then
-		-- динамический ltx
+		-- РґРёРЅР°РјРёС‡РµСЃРєРёР№ ltx
 		if st.job_ini ~= nil then
 			--printf("custom_data_or_ini:job_ini!!!")
 			return ini_file(st.job_ini)

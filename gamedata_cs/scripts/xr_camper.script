@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------------------------------------------
---'	Схема кемпер. Чудак с бальшой пушкой ходит и отстреливает живность.
---'	автор: Диденко Руслан (Stohe)
+--'	РЎС…РµРјР° РєРµРјРїРµСЂ. Р§СѓРґР°Рє СЃ Р±Р°Р»СЊС€РѕР№ РїСѓС€РєРѕР№ С…РѕРґРёС‚ Рё РѕС‚СЃС‚СЂРµР»РёРІР°РµС‚ Р¶РёРІРЅРѕСЃС‚СЊ.
+--'	Р°РІС‚РѕСЂ: Р”РёРґРµРЅРєРѕ Р СѓСЃР»Р°РЅ (Stohe)
 --'	TODO: 
 ----------------------------------------------------------------------------------------------------------------------
 --function printf()
@@ -16,7 +16,7 @@
 		return nil
 	end
 
---' Условие завершения скрипта
+--' РЈСЃР»РѕРІРёРµ Р·Р°РІРµСЂС€РµРЅРёСЏ СЃРєСЂРёРїС‚Р°
 class "evaluator_end" (property_evaluator)
 function evaluator_end:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -25,7 +25,7 @@ function evaluator_end:evaluate()
 	return not xr_logic.is_active(self.object, self.a)
 end
 
---' Обычный комбат или кемперский
+--' РћР±С‹С‡РЅС‹Р№ РєРѕРјР±Р°С‚ РёР»Рё РєРµРјРїРµСЂСЃРєРёР№
 class "evaluator_close_combat" (property_evaluator)
 function evaluator_close_combat:__init(name, storage) super (nil, name)
 	self.a = storage
@@ -43,18 +43,18 @@ function evaluator_close_combat:evaluate()
 		return false
 	end
 
-	-- если мы не можем воевать вообще - вернуть false
+	-- РµСЃР»Рё РјС‹ РЅРµ РјРѕР¶РµРј РІРѕРµРІР°С‚СЊ РІРѕРѕР±С‰Рµ - РІРµСЂРЅСѓС‚СЊ false
 	if not self.mgr:evaluator(xr_evaluators_id.sidor_wounded_base + 1):evaluate() then
 		return false
 	end
 
-	-- Если видим гранату - автоматом отпускаем в close_combat (возвращаем true)
+	-- Р•СЃР»Рё РІРёРґРёРј РіСЂР°РЅР°С‚Сѓ - Р°РІС‚РѕРјР°С‚РѕРј РѕС‚РїСѓСЃРєР°РµРј РІ close_combat (РІРѕР·РІСЂР°С‰Р°РµРј true)
 	if self.mgr:evaluator(stalker_ids.property_danger):evaluate() then
 		return true
 	end
 
 	if self.object:best_enemy() == nil then
-		return self.close_combat  -- Тут возможно нужно просто устанавливать FALSE и возвращать FALSE
+		return self.close_combat  -- РўСѓС‚ РІРѕР·РјРѕР¶РЅРѕ РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Рѕ СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ FALSE Рё РІРѕР·РІСЂР°С‰Р°С‚СЊ FALSE
 	end
 
 	if self.close_combat == false then
@@ -78,7 +78,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- ACTIONS
 ----------------------------------------------------------------------------------------------------------------------
---' Патрулировать территорию по патрульному пути
+--' РџР°С‚СЂСѓР»РёСЂРѕРІР°С‚СЊ С‚РµСЂСЂРёС‚РѕСЂРёСЋ РїРѕ РїР°С‚СЂСѓР»СЊРЅРѕРјСѓ РїСѓС‚Рё
 
 class "action_patrol" (action_base)
 function action_patrol:__init (npc,action_name,storage) super (nil,action_name)
@@ -106,7 +106,7 @@ function action_patrol:reset_scheme()
 			nil,
 			nil,self.a.suggested_state,{obj=self,func=self.process_point})
 			
-		-- тут вставить парсинг углов для скана
+		-- С‚СѓС‚ РІСЃС‚Р°РІРёС‚СЊ РїР°СЂСЃРёРЅРі СѓРіР»РѕРІ РґР»СЏ СЃРєР°РЅР°
 		local path = patrol(self.a.path_look)
 		if path ~= nil then
 			for k = 0, path:count() - 1 do
@@ -121,7 +121,7 @@ function action_patrol:reset_scheme()
 			end
 		end
 		
-		--' Включаем быстрый апдейт снайпера
+		--' Р’РєР»СЋС‡Р°РµРј Р±С‹СЃС‚СЂС‹Р№ Р°РїРґРµР№С‚ СЃРЅР°Р№РїРµСЂР°
 		if self.object:sniper_update_rate() == false then
 		    self.object:sniper_update_rate(true)
 		end
@@ -132,7 +132,7 @@ function action_patrol:reset_scheme()
 			utils.path_parse_waypoints(self.a.path_look),
 			nil,self.a.suggested_state,{obj=self,func=self.process_point})
 			
-		--' Включаем обычный апдейт снайпера
+		--' Р’РєР»СЋС‡Р°РµРј РѕР±С‹С‡РЅС‹Р№ Р°РїРґРµР№С‚ СЃРЅР°Р№РїРµСЂР°
 		if self.object:sniper_update_rate() == true then
 		    self.object:sniper_update_rate(false)
 		end
@@ -169,7 +169,7 @@ function action_patrol:execute()
 	if self.enemy ~= nil then
 		self.a.mem_enemy = self.object:memory_time(self.enemy)
 
-		--'Забывание врага по времени.		
+		--'Р—Р°Р±С‹РІР°РЅРёРµ РІСЂР°РіР° РїРѕ РІСЂРµРјРµРЅРё.		
 		if self.a.mem_enemy == nil or
 		   time_global()- self.a.mem_enemy > self.a.idle
 		then
@@ -184,11 +184,11 @@ function action_patrol:execute()
 		end		
 	end
 	
-	-- Три типа действия:
-	-- Есть враг
+	-- РўСЂРё С‚РёРїР° РґРµР№СЃС‚РІРёСЏ:
+	-- Р•СЃС‚СЊ РІСЂР°Рі
 	if self.enemy ~= nil then
 		if self.object:see(self.enemy) == true and self:can_shoot() then
-			-- отстрел врага
+			-- РѕС‚СЃС‚СЂРµР» РІСЂР°РіР°
 			--printf("cp: [%s] see [%s]", self.object:name(), self.enemy:name())
 			if self.a.sniper == true then
 				if self.a.suggested_state.campering_fire then
@@ -207,7 +207,7 @@ function action_patrol:execute()
 			xr_sound.set_sound_play(self.object:id(), self.a.attack_sound)
 
 		else
-			--' Анализируем последнюю известную позицию врага.
+			--' РђРЅР°Р»РёР·РёСЂСѓРµРј РїРѕСЃР»РµРґРЅСЋСЋ РёР·РІРµСЃС‚РЅСѓСЋ РїРѕР·РёС†РёСЋ РІСЂР°РіР°.
 			local memory_position = self.object:memory_position(self.enemy)
 			if self.enemy_position == nil or
 			   self.enemy_position.x ~= memory_position.x or
@@ -215,7 +215,7 @@ function action_patrol:execute()
 			   self.enemy_position.z ~= memory_position.z
 			then
 				self.enemy_position = memory_position
-				--' Занести место поиска врага в scan_table
+				--' Р—Р°РЅРµСЃС‚Рё РјРµСЃС‚Рѕ РїРѕРёСЃРєР° РІСЂР°РіР° РІ scan_table
 				if self.a.sniper == true then
 					self.position = self.object:position()
 
@@ -243,9 +243,9 @@ function action_patrol:execute()
 
 --			xr_sound.set_sound(self.object, nil)
 			if self.a.sniper == true then
-				-- поиск врага (сканирование врага)
+				-- РїРѕРёСЃРє РІСЂР°РіР° (СЃРєР°РЅРёСЂРѕРІР°РЅРёРµ РІСЂР°РіР°)
 				--printf("SCAN_ENEMY [%s] of [%s]", utils.to_str(time_global() - self.a.mem_enemy), utils.to_str(self.a.idle))
-				-- сканируем
+				-- СЃРєР°РЅРёСЂСѓРµРј
 				if time_global() - self.a.mem_enemy < self.a.post_enemy_wait then
 					local position
 					if self.enemy_position then
@@ -260,7 +260,7 @@ function action_patrol:execute()
 					self:scan(-1)
 				end
 			else				
-				-- если норетрит или мы на месте - ныкаться, иначе идти на точку				
+				-- РµСЃР»Рё РЅРѕСЂРµС‚СЂРёС‚ РёР»Рё РјС‹ РЅР° РјРµСЃС‚Рµ - РЅС‹РєР°С‚СЊСЃСЏ, РёРЅР°С‡Рµ РёРґС‚Рё РЅР° С‚РѕС‡РєСѓ				
 				if self:on_place() then 
 					--printf("on place[%s]", self.object:name())
 					local position
@@ -274,7 +274,7 @@ function action_patrol:execute()
 					end
 				else
 					--printf("not on place[%s]", self.object:name())
-					-- идем дальше
+					-- РёРґРµРј РґР°Р»СЊС€Рµ
 					self.move_mgr:continue()
 					self.move_mgr:update()
 				end
@@ -295,22 +295,22 @@ function action_patrol:execute()
 		self.move_mgr:continue()
 	end
 	
-	-- если нет ни врага ни денжера.	
+	-- РµСЃР»Рё РЅРµС‚ РЅРё РІСЂР°РіР° РЅРё РґРµРЅР¶РµСЂР°.	
 	if self.a.sniper == true then
-		-- Сканирование местности в узловых точках
-		-- если мы на точке - запустить счетчик сканирования и посканировать определенное время.
+		-- РЎРєР°РЅРёСЂРѕРІР°РЅРёРµ РјРµСЃС‚РЅРѕСЃС‚Рё РІ СѓР·Р»РѕРІС‹С… С‚РѕС‡РєР°С…
+		-- РµСЃР»Рё РјС‹ РЅР° С‚РѕС‡РєРµ - Р·Р°РїСѓСЃС‚РёС‚СЊ СЃС‡РµС‚С‡РёРє СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ Рё РїРѕСЃРєР°РЅРёСЂРѕРІР°С‚СЊ РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ РІСЂРµРјСЏ.
 		if self:on_place() then
 			if self.scantime == nil then
 				self.scantime = time_global()
 			end
 			--printf("SCAN [%s] : [%s] of [%s]", self.object:name(), utils.to_str(time_global() - self.scantime), utils.to_str(self.a.scantime_free))
-			-- сканируем
+			-- СЃРєР°РЅРёСЂСѓРµРј
 			self:scan(self.a.wp_flag)
-			-- если мы стоим на финальной точке - не ресетить.
+			-- РµСЃР»Рё РјС‹ СЃС‚РѕРёРј РЅР° С„РёРЅР°Р»СЊРЅРѕР№ С‚РѕС‡РєРµ - РЅРµ СЂРµСЃРµС‚РёС‚СЊ.
 			if self.move_mgr:standing_on_terminal_waypoint() then
 				return
 			end
-			-- проверка на завершение сканирования.
+			-- РїСЂРѕРІРµСЂРєР° РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ.
 			if self.scantime ~= nil and time_global() - self.scantime >= self.a.scantime_free then
 				self.move_mgr:continue()
 			end
@@ -319,7 +319,7 @@ function action_patrol:execute()
 			self.move_mgr:update()
 		end
 	else
-		-- Перемещение по move_mgr
+		-- РџРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ move_mgr
 		--printf("camper [%s] update move mgr", self.object:name())
 		self.move_mgr:update()
 	end		
@@ -341,12 +341,12 @@ function action_patrol:process_danger()
     end
     
 	local passed_time = time_global() - best_danger:time()
-	-- Отсеиваем по инерции
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ РёРЅРµСЂС†РёРё
 	if xr_danger.check_danger_inertion_time(self.object, best_danger, passed_time) == false then
 		return false
 	end
 
-	-- Отсеиваем реакцию на денжеры своих чуваков
+	-- РћС‚СЃРµРёРІР°РµРј СЂРµР°РєС†РёСЋ РЅР° РґРµРЅР¶РµСЂС‹ СЃРІРѕРёС… С‡СѓРІР°РєРѕРІ
 	local bd_type = best_danger:type()
 	local danger_obj = best_danger:object()
 	if bd_type == danger_object.attack_sound then
@@ -355,7 +355,7 @@ function action_patrol:process_danger()
 		end
 	end
 	
-	-- Отсеиваем по расстоянию
+	-- РћС‚СЃРµРёРІР°РµРј РїРѕ СЂР°СЃСЃС‚РѕСЏРЅРёСЋ
 --	if not self:on_place() then
 		if xr_danger.check_danger_distance(self.object, best_danger) == false then
 			--'printf("DANGER [%s] [FALSE] danger_distance camper", self.object:name())
@@ -370,8 +370,8 @@ function action_patrol:process_danger()
 		self.object:play_sound(stalker_ids.sound_alarm, 1, 0, 1, 0)
 	end
 	
-	-- Если денжер опасный - стрельнуть в позицию его инициатора, если нет - повернуться и смотреть туда.
-	-- Опасный денжер - хит или очень близкий рикошет.
+	-- Р•СЃР»Рё РґРµРЅР¶РµСЂ РѕРїР°СЃРЅС‹Р№ - СЃС‚СЂРµР»СЊРЅСѓС‚СЊ РІ РїРѕР·РёС†РёСЋ РµРіРѕ РёРЅРёС†РёР°С‚РѕСЂР°, РµСЃР»Рё РЅРµС‚ - РїРѕРІРµСЂРЅСѓС‚СЊСЃСЏ Рё СЃРјРѕС‚СЂРµС‚СЊ С‚СѓРґР°.
+	-- РћРїР°СЃРЅС‹Р№ РґРµРЅР¶РµСЂ - С…РёС‚ РёР»Рё РѕС‡РµРЅСЊ Р±Р»РёР·РєРёР№ СЂРёРєРѕС€РµС‚.
 	local urgent_danger = (danger_obj ~= nil) and
 						  (bd_type == danger_object.attacked) and
 						  (time_global() - best_danger:time() < 5000)
@@ -568,10 +568,10 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 		st.attack_sound = nil
 	end
 	
-	-- Время забывания врага
+	-- Р’СЂРµРјСЏ Р·Р°Р±С‹РІР°РЅРёСЏ РІСЂР°РіР°
 	st.idle = utils.cfg_get_number(ini, section, "enemy_idle", npc, false, 60000)
-	st.post_enemy_wait = 5000 -- время, которое мы ждем врага, смотря в его последнюю позицию.	
-	st.enemy_disp = 7/57.2957 -- Угол в пределах которого снайпер ведет поиск потерянного врага.
+	st.post_enemy_wait = 5000 -- РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РјС‹ Р¶РґРµРј РІСЂР°РіР°, СЃРјРѕС‚СЂСЏ РІ РµРіРѕ РїРѕСЃР»РµРґРЅСЋСЋ РїРѕР·РёС†РёСЋ.	
+	st.enemy_disp = 7/57.2957 -- РЈРіРѕР» РІ РїСЂРµРґРµР»Р°С… РєРѕС‚РѕСЂРѕРіРѕ СЃРЅР°Р№РїРµСЂ РІРµРґРµС‚ РїРѕРёСЃРє РїРѕС‚РµСЂСЏРЅРЅРѕРіРѕ РІСЂР°РіР°.
 	
 	st.scandelta = 30
 	st.timedelta = 4000

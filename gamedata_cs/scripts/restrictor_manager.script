@@ -19,7 +19,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- STALKER restrictions
 ----------------------------------------------------------------------------------------------------------------------
---' Данная функция вычитывает из логики набор рестрикторов, которые нужно проставить персонажу.
+--' Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ РІС‹С‡РёС‚С‹РІР°РµС‚ РёР· Р»РѕРіРёРєРё РЅР°Р±РѕСЂ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Р°РІРёС‚СЊ РїРµСЂСЃРѕРЅР°Р¶Сѓ.
 function Crestrictor_manager:reset_restrictions(st, section)
 	--printf("reset restrictions obj=%s section=%s", self.object:name(), tostring(section))
 
@@ -27,15 +27,15 @@ function Crestrictor_manager:reset_restrictions(st, section)
 	
 	local out_restr_string = get_param_string(utils.cfg_get_string(actual_ini, section, "out_restr", nil, false, "", ""), self.object)
 	
-	--' Вычитываем новые аут рестрикторы
+	--' Р’С‹С‡РёС‚С‹РІР°РµРј РЅРѕРІС‹Рµ Р°СѓС‚ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local new_out_restr = utils.parse_names(out_restr_string)
 	
-	--' Узнаем про существующие аут рестрикторы
+	--' РЈР·РЅР°РµРј РїСЂРѕ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ Р°СѓС‚ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local old_out_restr = utils.parse_names(self.object:out_restrictions())
 
-	--' Проверяем появились ли новые рестрикторы.
-	local ins_restr = {}  --' Тут поместим рестрикторы, которые нужно добавить
-	local del_restr = {}  --' Тут поместим рестрикторы, которые нужно удалить
+	--' РџСЂРѕРІРµСЂСЏРµРј РїРѕСЏРІРёР»РёСЃСЊ Р»Рё РЅРѕРІС‹Рµ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹.
+	local ins_restr = {}  --' РўСѓС‚ РїРѕРјРµСЃС‚РёРј СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ
+	local del_restr = {}  --' РўСѓС‚ РїРѕРјРµСЃС‚РёРј СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ
 	for k,v in pairs(old_out_restr) do
 		local exist_rest = false
 		for kk,vv in pairs(new_out_restr) do
@@ -61,7 +61,7 @@ function Crestrictor_manager:reset_restrictions(st, section)
 		end
 	end
 
-	--'Удаляем старые аут рестрикторы. апплаим новые.
+	--'РЈРґР°Р»СЏРµРј СЃС‚Р°СЂС‹Рµ Р°СѓС‚ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹. Р°РїРїР»Р°РёРј РЅРѕРІС‹Рµ.
 	for k,v in pairs(del_restr) do
 		--printf("old_out_restr [%s] deleted", v)
 		self.object:remove_restrictions(v, "")
@@ -73,18 +73,18 @@ function Crestrictor_manager:reset_restrictions(st, section)
 
 	
 	
-	--' Вычитываем новые ИН рестрикторы
+	--' Р’С‹С‡РёС‚С‹РІР°РµРј РЅРѕРІС‹Рµ РРќ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local in_restr_string = get_param_string(utils.cfg_get_string(actual_ini, section, "in_restr", nil, false, "", ""), self.object)
 	
-	--' Вычитываем новые аут рестрикторы
+	--' Р’С‹С‡РёС‚С‹РІР°РµРј РЅРѕРІС‹Рµ Р°СѓС‚ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local new_in_restr = utils.parse_names(in_restr_string)
 
-	--' Узнаем про существующие ИН рестрикторы
+	--' РЈР·РЅР°РµРј РїСЂРѕ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РРќ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹
 	local old_in_restr = utils.parse_names(self.object:in_restrictions())
 
-	--' Проверяем появились ли новые рестрикторы.
-	ins_restr = {}  --' Тут поместим рестрикторы, которые нужно добавить
-	del_restr = {}  --' Тут поместим рестрикторы, которые нужно удалить
+	--' РџСЂРѕРІРµСЂСЏРµРј РїРѕСЏРІРёР»РёСЃСЊ Р»Рё РЅРѕРІС‹Рµ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹.
+	ins_restr = {}  --' РўСѓС‚ РїРѕРјРµСЃС‚РёРј СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ
+	del_restr = {}  --' РўСѓС‚ РїРѕРјРµСЃС‚РёРј СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ
 	for k,v in pairs(old_in_restr) do
 		local exist_rest = false
 		for kk,vv in pairs(new_in_restr) do
@@ -110,7 +110,7 @@ function Crestrictor_manager:reset_restrictions(st, section)
 		end
 	end
 
-	--'Удаляем старые аут рестрикторы. апплаим новые.
+	--'РЈРґР°Р»СЏРµРј СЃС‚Р°СЂС‹Рµ Р°СѓС‚ СЂРµСЃС‚СЂРёРєС‚РѕСЂС‹. Р°РїРїР»Р°РёРј РЅРѕРІС‹Рµ.
 	for k,v in pairs(del_restr) do
 		--printf("old_in_restr [%s] deleted", v)
 		self.object:remove_restrictions("", v)

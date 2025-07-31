@@ -41,6 +41,6 @@ function set_scheme(obj, ini, scheme, section, gulag_name)
 	if db.storage.table_squad_for_recoveritem == nil then
 		db.storage.table_squad_for_recoveritem = {}
 	end
---' записываем все обькты с данной схемой в таблицу
+--' Р·Р°РїРёСЃС‹РІР°РµРј РІСЃРµ РѕР±СЊРєС‚С‹ СЃ РґР°РЅРЅРѕР№ СЃС…РµРјРѕР№ РІ С‚Р°Р±Р»РёС†Сѓ
 	db.storage.recoveritem_table[obj:id()] = obj
 end

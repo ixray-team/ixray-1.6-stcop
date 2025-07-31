@@ -14,10 +14,10 @@ function WeatherManager:__init()
 	end
 end
 
--- Вызывается после load(). Состояние погоды уже загружено.
+-- Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»Рµ load(). РЎРѕСЃС‚РѕСЏРЅРёРµ РїРѕРіРѕРґС‹ СѓР¶Рµ Р·Р°РіСЂСѓР¶РµРЅРѕ.
 function WeatherManager:reset()
 	printf("WeatherManager:WeatherManager():Reset()")
-	-- Загрузить кондлист с погодой.
+	-- Р—Р°РіСЂСѓР·РёС‚СЊ РєРѕРЅРґР»РёСЃС‚ СЃ РїРѕРіРѕРґРѕР№.
 	local ini = ini_file("game.ltx")
 	local weather = utils.cfg_get_string(ini, level.name(), "weathers", db.actor, false, "", "[default]")
 	local postprocess = utils.cfg_get_string(ini, level.name(), "postprocess", db.actor, false, "")
@@ -29,7 +29,7 @@ function WeatherManager:reset()
 		level.remove_pp_effector(999)
 	end
 	if weather == "[default]" then		
-		-- сетим дефолтовую погоду
+		-- СЃРµС‚РёРј РґРµС„РѕР»С‚РѕРІСѓСЋ РїРѕРіРѕРґСѓ
 		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", "[default]")
 	else
 		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)
@@ -38,7 +38,7 @@ function WeatherManager:reset()
 	self.last_hour=level.get_time_hours()
 end
 
--- Обновляем погоду раз в час.
+-- РћР±РЅРѕРІР»СЏРµРј РїРѕРіРѕРґСѓ СЂР°Р· РІ С‡Р°СЃ.
 function WeatherManager:update()
 	if not benchmark.weather then
 		if self.last_hour~=level.get_time_hours() then
@@ -47,7 +47,7 @@ function WeatherManager:update()
 				st.current_state=st.next_state
 				st.next_state=get_next_state(st.graph,st.current_state)
 		    end
-		    -- Устанавливаем погоду на текущем уровне
+		    -- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕРіРѕРґСѓ РЅР° С‚РµРєСѓС‰РµРј СѓСЂРѕРІРЅРµ
 		    self:select_weather(false)
 		end
 	end
@@ -57,20 +57,20 @@ function WeatherManager:select_weather(now)
 	local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
 	local graph=self:get_graph_by_name(weather)
 	local weather_section_name=""
-	-- Проверим, совпадает ли текущий граф уровня с полученным по кондлисту...
+	-- РџСЂРѕРІРµСЂРёРј, СЃРѕРІРїР°РґР°РµС‚ Р»Рё С‚РµРєСѓС‰РёР№ РіСЂР°С„ СѓСЂРѕРІРЅСЏ СЃ РїРѕР»СѓС‡РµРЅРЅС‹Рј РїРѕ РєРѕРЅРґР»РёСЃС‚Сѓ...
 	if graph==nil then
-		-- Переходим на статику
+		-- РџРµСЂРµС…РѕРґРёРј РЅР° СЃС‚Р°С‚РёРєСѓ
 		self.state[weather]=nil
 	    weather_section_name=weather
 	else
-		-- Новая погода - динамическая. Проверим, нужно ли менять/устанавливать граф
+		-- РќРѕРІР°СЏ РїРѕРіРѕРґР° - РґРёРЅР°РјРёС‡РµСЃРєР°СЏ. РџСЂРѕРІРµСЂРёРј, РЅСѓР¶РЅРѕ Р»Рё РјРµРЅСЏС‚СЊ/СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РіСЂР°С„
 	    if self.state[weather]==nil or self.state[weather].graph_name~=weather then
-			-- Граф изменился. Переходим на него.
+			-- Р“СЂР°С„ РёР·РјРµРЅРёР»СЃСЏ. РџРµСЂРµС…РѕРґРёРј РЅР° РЅРµРіРѕ.
 			self.state[weather]=self:init_by_graph(graph,weather)
 		-- else
 			-- now = false
 	    end
-	    -- Получаем название секции по текущему состоянию. 		
+	    -- РџРѕР»СѓС‡Р°РµРј РЅР°Р·РІР°РЅРёРµ СЃРµРєС†РёРё РїРѕ С‚РµРєСѓС‰РµРјСѓ СЃРѕСЃС‚РѕСЏРЅРёСЋ. 		
 	    local st=self.state[weather]
 	    --weather_section_name="dw_"..st.current_state.."_"..st.next_state.."_"..level.get_time_hours()
 	    weather_section_name="default_"..st.current_state
@@ -82,14 +82,14 @@ function WeatherManager:select_weather(now)
 	-- end
 end
 
--- Возвращает начальное состояние погоды.
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕРіРѕРґС‹.
 function WeatherManager:init_by_graph(graph,graph_name)
   local cur_state=get_next_state(graph,"")
   local next_state=get_next_state(graph,cur_state)
   return {current_state=cur_state,next_state=next_state,graph_name=graph_name,graph=graph}
 end
 
--- Возвращает одно из следующих состояний графа, согласно прописанным вероятностям.
+-- Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕРґРЅРѕ РёР· СЃР»РµРґСѓСЋС‰РёС… СЃРѕСЃС‚РѕСЏРЅРёР№ РіСЂР°С„Р°, СЃРѕРіР»Р°СЃРЅРѕ РїСЂРѕРїРёСЃР°РЅРЅС‹Рј РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЏРј.
 function get_next_state(graph,state)
   local sum=0
   for st,prob in pairs(graph) do
@@ -109,7 +109,7 @@ function get_next_state(graph,state)
   return next_state
 end
 
--- Устанавливаем состояние менеджера, распарсивая строку состояния
+-- РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃРѕСЃС‚РѕСЏРЅРёРµ РјРµРЅРµРґР¶РµСЂР°, СЂР°СЃРїР°СЂСЃРёРІР°СЏ СЃС‚СЂРѕРєСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 function WeatherManager:set_state_as_string(ss)
   self.state={}
     for lvlstring in string.gmatch(ss,"[^;]+") do
@@ -123,14 +123,14 @@ function WeatherManager:set_state_as_string(ss)
     local graph_name=self:unpack_graph_name(grname)
     local graph=self:get_graph_by_name(graph_name)
     if graph==nil then
-    -- Старая сохранёнка? Будем считать что на этом уровне - статическая погода
+    -- РЎС‚Р°СЂР°СЏ СЃРѕС…СЂР°РЅС‘РЅРєР°? Р‘СѓРґРµРј СЃС‡РёС‚Р°С‚СЊ С‡С‚Рѕ РЅР° СЌС‚РѕРј СѓСЂРѕРІРЅРµ - СЃС‚Р°С‚РёС‡РµСЃРєР°СЏ РїРѕРіРѕРґР°
     else
       self.state[graph_name]={current_state=current_state,next_state=next_state,graph_name=graph_name,graph=graph}
     end
   end
 end
 
--- Преобразуем текущее состояние менеджера в строку
+-- РџСЂРµРѕР±СЂР°Р·СѓРµРј С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ РјРµРЅРµРґР¶РµСЂР° РІ СЃС‚СЂРѕРєСѓ
 function WeatherManager:get_state_as_string()
   local lvlstrings={}
   for lvl_name,st in pairs(self.state) do
@@ -143,7 +143,7 @@ function WeatherManager:get_state_as_string()
   return table.concat(lvlstrings,";")
 end
 
--- Получить граф (таблицу переходов состояний погоды) по его названию и названию игрового уровня
+-- РџРѕР»СѓС‡РёС‚СЊ РіСЂР°С„ (С‚Р°Р±Р»РёС†Сѓ РїРµСЂРµС…РѕРґРѕРІ СЃРѕСЃС‚РѕСЏРЅРёР№ РїРѕРіРѕРґС‹) РїРѕ РµРіРѕ РЅР°Р·РІР°РЅРёСЋ Рё РЅР°Р·РІР°РЅРёСЋ РёРіСЂРѕРІРѕРіРѕ СѓСЂРѕРІРЅСЏ
 function WeatherManager:get_graph_by_name(name)
 	if not self.graphs[name] then		
 		self.graphs[name] = xr_s.parse_ini_section_to_array(self.graphs_ini,name)
@@ -151,27 +151,27 @@ function WeatherManager:get_graph_by_name(name)
 	return self.graphs[name]
 end
 
--- Запаковать название вершины графа
+-- Р—Р°РїР°РєРѕРІР°С‚СЊ РЅР°Р·РІР°РЅРёРµ РІРµСЂС€РёРЅС‹ РіСЂР°С„Р°
 function WeatherManager:pack_state(state)
-  -- Пока паковать не будем.
+  -- РџРѕРєР° РїР°РєРѕРІР°С‚СЊ РЅРµ Р±СѓРґРµРј.
   return state
 end
 
--- Распаковать название вершины графа
+-- Р Р°СЃРїР°РєРѕРІР°С‚СЊ РЅР°Р·РІР°РЅРёРµ РІРµСЂС€РёРЅС‹ РіСЂР°С„Р°
 function WeatherManager:unpack_state(st)
-  -- Пока паковать не будем
+  -- РџРѕРєР° РїР°РєРѕРІР°С‚СЊ РЅРµ Р±СѓРґРµРј
   return st
 end
 
--- Запаковать название графа переходов погоды
+-- Р—Р°РїР°РєРѕРІР°С‚СЊ РЅР°Р·РІР°РЅРёРµ РіСЂР°С„Р° РїРµСЂРµС…РѕРґРѕРІ РїРѕРіРѕРґС‹
 function WeatherManager:pack_graph_name(graph_name)
-  -- Пока паковать не будем.
+  -- РџРѕРєР° РїР°РєРѕРІР°С‚СЊ РЅРµ Р±СѓРґРµРј.
   return graph_name
 end
 
--- Распаковать название графа переходов погоды
+-- Р Р°СЃРїР°РєРѕРІР°С‚СЊ РЅР°Р·РІР°РЅРёРµ РіСЂР°С„Р° РїРµСЂРµС…РѕРґРѕРІ РїРѕРіРѕРґС‹
 function WeatherManager:unpack_graph_name(grn)
-  -- Пока паковать не будем
+  -- РџРѕРєР° РїР°РєРѕРІР°С‚СЊ РЅРµ Р±СѓРґРµРј
   return grn
 end
 
