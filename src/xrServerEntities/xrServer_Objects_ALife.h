@@ -350,6 +350,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
 	shared_str						m_caLevelToChange;
 	shared_str						m_caLevelPointToChange;
 	BOOL							m_bSilentMode;
+	LPSTR							destLeveName;
 
 									CSE_ALifeLevelChanger		(LPCSTR caSection);
 	virtual							~CSE_ALifeLevelChanger		();
