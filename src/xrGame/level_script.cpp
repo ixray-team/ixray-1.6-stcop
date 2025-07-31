@@ -187,8 +187,11 @@ CScriptGameObject *get_object_by_name(LPCSTR caObjectName)
 CScriptGameObject *get_object_by_id(u16 id)
 {
 	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
-	if(!pGameObject)
+	if (!pGameObject)
+	{
+		//g_pScriptEngine->print_stack();
 		return nullptr;
+	}
 
 	return pGameObject->lua_game_object();
 }

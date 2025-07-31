@@ -2,6 +2,8 @@
 #include "xrServer.h"
 #include "xrserver_objects.h"
 
+#include "../../../xrScripts/script_engine.h"
+
 bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
 {
 	// Parse message
@@ -40,6 +42,7 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 		Msg	("! ERROR: can't detach independant object. entity[%s][%d], parent[%s][%d], section[%s]",
 			e_entity->name_replace(), id_entity, e_parent->name_replace(), id_parent, e_entity->s_name.c_str() );
 #endif // #ifndef MASTER_GOLD
+		g_pScriptEngine->print_stack();
 		return			(false);
 	}
 
