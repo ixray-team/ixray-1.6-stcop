@@ -2,7 +2,7 @@
 #include "Terrain.h"
 
 CTerrain::CTerrain(LPVOID data, LPCSTR name):
-	inherited(data,name), TerrainObject(new CEditableObject(name))
+	inherited(data,name), TerrainObject(new CEditableObject(name ? name : "terrain"))
 {
 	Construct(data);
 	FScale.set(1, 1, 1);
@@ -41,6 +41,7 @@ bool CTerrain::LoadStream(IReader& F)
 
 void CTerrain::SaveStream(IWriter& F)
 {
+	HMap.SaveSteam(&F);
 	inherited::SaveStream(F);
 }
 
