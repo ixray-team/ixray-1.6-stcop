@@ -514,15 +514,28 @@ bool CInifile::save_as	(LPCSTR new_fname)
 {
 	// save if needed
 	if (new_fname && new_fname[0])
-		xr_strcpy		(m_file_name, sizeof(m_file_name), new_fname);
+		xr_strcpy(m_file_name, sizeof(m_file_name), new_fname);
 
-	IWriter* F			= FS.w_open_ex(m_file_name);
+	auto fileIter = FS.exist(m_file_name);
+	if (fileIter == nullptr)
+	{
+		IWriter* F = FS.w_open_ex(m_file_name);
+		if (!F)
+			return (false);
+
+		save_as(*F);
+		FS.w_close(F);
+		return (true);
+	}
+
+	shared_str newPath = fileIter->wrap ? fileIter->wrap : fileIter->name;
+	IWriter* F = FS.w_open_ex(newPath.c_str());
 	if (!F)
-		return			(false);
+		return false;
 
-	save_as				(*F);
-	FS.w_close			(F);
-	return				(true);
+	save_as(*F);
+	FS.w_close(F);
+	return true;
 }
 
 BOOL CInifile::section_exist(LPCSTR S) const
