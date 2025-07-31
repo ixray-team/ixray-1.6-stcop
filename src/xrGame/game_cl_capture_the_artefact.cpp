@@ -136,8 +136,9 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 					{
 						if (!m_bReadMapDesc && Level().CurrentEntity())
 						{
-							m_bReadMapDesc = m_game_ui->ShowServerInfo() ? TRUE : FALSE;
-							GetActiveVoting				();
+							m_game_ui->ShowMapDesc	();
+							GetActiveVoting			();
+							m_bReadMapDesc			= TRUE;
 						}
 
 						UpdateMoneyIndicator();
@@ -1413,7 +1414,7 @@ void game_cl_CaptureTheArtefact::OnTeamMenuBack()
 {
 	if (local_player->testFlag(GAME_PLAYER_FLAG_SPECTATOR))
 	{
-		m_game_ui->ShowServerInfo();
+		m_game_ui->ShowMapDesc();
 	}
 }
 void game_cl_CaptureTheArtefact::OnTeamMenu_Cancel()
