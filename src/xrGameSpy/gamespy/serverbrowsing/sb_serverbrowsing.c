@@ -248,7 +248,7 @@ static SBError WaitForTriggerUpdate(ServerBrowser sb, SBBool viaMaster)
 	{
 		msleep(10);
 		err = ServerBrowserThink(sb);
-		if (viaMaster && sb->list.state == sb_disconnected) //we were supposed to get from master, and it's disconnected
+		if (viaMaster && (SBState)sb->list.state == sb_disconnected) //we were supposed to get from master, and it's disconnected
 			break;		
 	}
 	return err;
