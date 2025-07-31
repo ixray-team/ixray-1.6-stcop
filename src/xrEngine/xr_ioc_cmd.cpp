@@ -636,6 +636,7 @@ public		:
 
 ENGINE_API float psHUD_FOV_def = 33.75f;
 ENGINE_API float psHUD_FOV = psHUD_FOV_def;
+ENGINE_API bool g_3d_scopes = false;
 
 ENGINE_API int m_look_cam_fp_zoom = 0; // first-person aiming
 
