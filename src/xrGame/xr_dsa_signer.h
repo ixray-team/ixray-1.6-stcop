@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../3rd party/crypto/crypto.h"
+#include "../3rd-party/crypto/crypto.h"
 
 using sha_process_yielder = xr_delegate<void(long)>;
 
