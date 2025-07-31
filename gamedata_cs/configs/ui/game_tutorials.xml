@@ -577,6 +577,24 @@
 		</item>
 	</game_over>
 
+  <game_loaded>
+    <global_wnd>
+      <pause_state>on</pause_state>
+    </global_wnd>
+
+    <item>
+      <length_sec>1</length_sec>
+      <guard_key>any</guard_key>
+      <grab_input>1</grab_input>
+      <main_wnd>
+
+        <auto_static start_time="0" length_sec="10000" alignment="c" x="510" y="710" width="405" height="20" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_text="1" la_alpha="1">
+          <text align="c" r="157" g="140" b="120" font="graffiti19">st_press_any_key</text>
+        </auto_static>
+      </main_wnd>
+    </item>
+  </game_loaded>
+
 #include "ui\ui_credits.xml"
 #include "ui\ui_movies.xml" FOR RUSSIAN ONLY
 <!-- FOR RUSSIAN ONLY-->
