@@ -34,6 +34,7 @@ public:
 	bool					IsActive			()				{return !!m_flags.test(etsActive);}
 
 
+	LPCSTR					m_name;
 	//IInputReceiver
 	virtual void			IR_OnMousePress		(int btn);
 	virtual void			IR_OnMouseRelease	(int btn);
