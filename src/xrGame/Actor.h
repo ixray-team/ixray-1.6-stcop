@@ -111,6 +111,7 @@ public:
 	virtual void						shedule_Update		( u32 T );
 	void PlayRainOnHelmetSound();
 	virtual void						UpdateCL			( );
+	void CheckFlyhack();
 			void						UpdatePlayerView	( );
 
 	virtual void						OnEvent				( NET_Packet& P, u16 type		);
