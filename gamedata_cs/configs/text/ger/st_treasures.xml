@@ -1,0 +1,1797 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_val_box_01_2">
+		<text>Kiste im Keller</text>
+	</string>
+	<string id="st_val_box_01_2_descr">
+		<text>Ich hab mein Zeug im Keller bei den Tьren mit dem Gefahrenzeichen drauf verstaut. Ich hab jetzt keine Zeit, ich hol's spдter.</text>
+	</string>
+	<string id="st_val_electric_box_01">
+		<text>Versteck im Schaltraum</text>
+	</string>
+	<string id="st_val_electric_box_01_descr">
+		<text>Ich habe ein kleines Versteck im Schaltraum im ersten Stock der verlassenen Fabrik angelegt. Ich warte, bis ich ein paar weitere Artefakte gefunden habe, und verkaufe sie dann alle zusammen.</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free">
+		<text>Versteck am Ende des Sammelrohrs</text>
+	</string>
+	<string id="st_val_pipe_o1_base_free_descr">
+		<text>Ich bin zufдllig am Ende des Sammelrohrs unter der Basis gelandet. Es sah mir nach einem guten Versteck aus, also hab ich dort ein paar nette Sachen in dem Rohrkreuzstьck hinterlegt.</text>
+	</string>
+	<string id="st_val_pipe_02">
+		<text>Versteck im Rohr</text>
+	</string>
+	<string id="st_val_pipe_02_descr">
+		<text>Ich habe etwas in einem Rohr im Erdgeschoss der verlassenen Fabrik in der Nдhe der Treppe versteckt.</text>
+	</string>
+	<string id="st_val_pipe_02_0000">
+		<text>Rohr unter dem Tank</text>
+	</string>
+	<string id="st_val_pipe_02_0000_descr">
+		<text>Als ich am Bauernhof vorbeikam, wurde ich auf einmal von einer Meute Hunde verfolgt. Da hab ich mein Zeug in dem Rohr unter dem Tank versteckt und bin weggerannt. Ich hol's mir, sobald ich kann.</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01">
+		<text>Versteck bei der Fabrik</text>
+	</string>
+	<string id="st_val_pipe_valve_01_01_descr">
+		<text>Ein wertvolles Versteck bei der verlassenen Fabrik. Es ist gleich gegenьber dem Eingang in einem Rohrkreuzstьck mit einem Ventil. Man kann es leicht mit anderen verwechseln.</text>
+	</string>
+	<string id="st_val_rucksack_01">
+		<text>Rucksack im Fahrerhaus</text>
+	</string>
+	<string id="st_val_rucksack_01_descr">
+		<text>Ich sollte meinen Rucksack vom Vordersitz des umgestьrzten Lastwagens holen. Ich musste ihn neulich loswerden, sonst wдre ich geschnappt worden.</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base">
+		<text>Versteck unter der Tanne</text>
+	</string>
+	<string id="st_val_rucksack_01_free_base_descr">
+		<text>Ich darf diese Tanne nicht vergessen, bei der ich mein Zeug versteckt habe. Sie steht nah beim Eingang zum Sammelrohr, aber der Baum an sich ist eher unauffдllig.</text>
+	</string>
+	<string id="st_val_rucksack_02">
+		<text>Rucksack auf dem Baum</text>
+	</string>
+	<string id="st_val_rucksack_02_descr">
+		<text>Alle anderen verstecken ihr Zeug unter der Erde, aber ich hab mein's auf einem Baum versteckt. Ich wette, da sieht keiner nach!</text>
+	</string>
+	<string id="st_val_rucksack_02_02">
+		<text>Geheimversteck unter dem Dach</text>
+	</string>
+	<string id="st_val_rucksack_02_02_descr">
+		<text>Ьber mein Zeug mach ich mir keine Sorgen. Wer danach sucht, muss erst ьber diese Balken springen, um da ranzukommen.</text>
+	</string>
+	<string id="st_val_rucksack_02_03">
+		<text>Versteck beim Turm</text>
+	</string>
+	<string id="st_val_rucksack_02_03_descr">
+		<text>Ich hab meinem Partner gesagt, dass ich meinen Rucksack unterwegs verloren hдtte, und der Idiot hat's geglaubt. Dabei hab ich ihn oben im Wasserturm versteckt. Dort wartet er, bis ich ihn hole.</text>
+	</string>
+	<string id="st_val_rucksack_02_2">
+		<text>Rucksack im Fahrstuhl</text>
+	</string>
+	<string id="st_val_rucksack_02_2_descr">
+		<text>Vor lauter SchieЯerei hatte ich gar keine Zeit, mein Zeug richtig zu verstecken. Ich hab's in dem "Schlauch" unter den Holzbrettern versteckt. Ich hol's mir, sobald ich kann.</text>
+	</string>
+	<string id="st_val_instrument_case_01">
+		<text>Schlosserkasten</text>
+	</string>
+	<string id="st_val_instrument_case_01_descr">
+		<text>Ich hab einen Schlosserkasten gefunden und meinen "Schatz" darin versteckt. Ich bring ihn an einen sichereren Ort, sobald ich kann.</text>
+	</string>
+	<string id="st_val_seif_01">
+		<text>Tresor in der Fabrik</text>
+	</string>
+	<string id="st_val_seif_01_descr">
+		<text>Wenn jemand das hier liest, bin ich bereits tot. Was du ьber mein Versteck im Tresor wissen sollst - Ich hoffe, dass du ihn nie aufbekommst, Mistkerl!</text>
+	</string>
+	<string id="st_val_seif_02_descr">
+		<text>Ich hatte schon gedacht, dass draufgehe, also hab ich mein Zeug in diesem rostigen Tresor in dem verlassenen Bauernhof versteckt. Ich muss es mir zurьckholen.</text>
+	</string>
+	<string id="st_val_trees_log_01">
+		<text>Baumstumpf auf der Insel</text>
+	</string>
+	<string id="st_val_trees_log_01_descr">
+		<text>Ein Kumpel von mir hatte ein paar nette Dinge dabei, als er in den Sьmpfen in einen Hinterhalt geriet. Er hat's nicht geschafft, aber er hat einen Teil der Beute in einem verrotteten Baumstumpf in der Nдhe einer Antenne versteckt. Ich sollte mir das Zeug holen.</text>
+	</string>
+	<string id="st_val_trees_log_01_1">
+		<text>Verrotteter Baumstamm</text>
+	</string>
+	<string id="st_val_trees_log_01_1_descr">
+		<text>Ich misstraue meinem Partner. Ich glaube, er will mich aufs Kreuz legen, also hab ich mein Zeug vor ihm versteckt. Ich hab es in einem alten Baumstamm bei der Brьcke zur Insel verstaut. Hoffentlich findet er es nicht.</text>
+	</string>
+	<string id="st_val_trees_stump_01">
+		<text>Verrotteter Baumstumpf</text>
+	</string>
+	<string id="st_val_trees_stump_01_descr">
+		<text>Neulich musste ich vor ein paar Wildschweinen flьchten und hab meine Sachen einen holen Baumstumpf gesteckt - nicht weit von dem alten Bauernhof.</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000">
+		<text>Baumstumpf beim Hьgel</text>
+	</string>
+	<string id="st_val_trees_stump_01_0000_descr">
+		<text>Mein Versteck ist am FuЯ des Hьgels unter einem alten Baumstumpf. Ein gutes Versteck! Ich hoffe nur, dass ich weiter so viel Glьck habe und noch mehr Zeug finde.</text>
+	</string>
+	<string id="st_val_trees_stump_01_1">
+		<text>Baumstumpf bei dem Holzdeck</text>
+	</string>
+	<string id="st_val_trees_stump_01_1_descr">
+		<text>Ich habe Kolja gesehen, wie er ein paar Mal zu dem Stumpf auf der Insel gegangen ist. Ich wette, der Geizkragen hat etwas darin versteckt. Ich werde ihn noch etwas mehr Beute sammeln lassen, bevor ich es mir ansehe.</text>
+	</string>
+	<string id="st_val_trees_zaz968">
+		<text>Alter Saporoschez</text>
+	</string>
+	<string id="st_val_trees_zaz968_descr">
+		<text>Die armseligen Bastarde zerbrechen sich die Kцpfe, um herauszubekommen, wohin ihr ganzes Zeug verschwunden ist. Ha-ha-ha! Nun, ich hab's in dem alten Saporoschez bei den Sьmpfen versteckt. Dort wird garantiert keiner suchen.</text>
+	</string>
+	<string id="st_yan_electric_box_01">
+		<text>Schaltkasten in der Fabrik</text>
+	</string>
+	<string id="st_yan_electric_box_01_descr">
+		<text>Ich hab mir Andreis PDA angesehen und hab das gesehen, als der "Hirnzermalmer" kam. Er hat ein Versteck in dem verrosteten Schaltkasten auf dem Fabrikgelдnde.</text>
+	</string>
+	<string id="st_yan_electric_box_02">
+		<text>Schalttafel im Transformatorraum</text>
+	</string>
+	<string id="st_yan_electric_box_02_descr">
+		<text>Als die Fabrik auЯer Betrieb gegangen ist, hab ich mein ganzes Zeug in der Schalttafel im Transformatorraum deponiert.</text>
+	</string>
+	<string id="st_yan_instrument_case_01">
+		<text>Kiste in der Fabrik</text>
+	</string>
+	<string id="st_yan_instrument_case_01_descr">
+		<text>Im Hangar hab ich einen alten Werkzeugkasten gefunden. Ich war zwar schnell, aber ich hatte keine Zeit hineinzusehen. Ich hab ihn dort gelassen und sehe beim nдchsten Mal nach.</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000">
+		<text>Kleines Kдstchen im Lastwagen</text>
+	</string>
+	<string id="st_yan_instrument_case_01_0000_descr">
+		<text>Netter Ort fьr ein Versteck - genau zwischen der Fahrerkabine und der Ladeflдche. Die Zombies in der Gegend und die Strahlung sorgen fьr den perfekten natьrlichen Schutz.</text>
+	</string>
+	<string id="st_yan_pipe_01">
+		<text>Versteck beim Zaun</text>
+	</string>
+	<string id="st_yan_pipe_01_descr">
+		<text>Ich hab ein paar Dinge versteckt, wo sich die Rohre kreuzen, direkt beim Bauwagen neben dem Zaun.</text>
+	</string>
+	<string id="st_yan_pipe_02">
+		<text>Ein paar Schmuckstьcke in einem Rohr</text>
+	</string>
+	<string id="st_yan_pipe_02_descr">
+		<text>Ich habe das wertvollste Zeug mitgenommen und den Rest in einem Rohr in dem Raum mit dem Loch in der Wand versteckt.</text>
+	</string>
+	<string id="st_yan_rucksack_01">
+		<text>Rucksack beim Eingang</text>
+	</string>
+	<string id="st_yan_rucksack_01_descr">
+		<text>Ich musste einen vollen Rucksack mit Beute beim Eingang der Ruinen zurьcklassen. Ob ihn schon jemand entdeckt hat...?</text>
+	</string>
+	<string id="st_yan_rucksack_02">
+		<text>Versteck im Lьftungsschacht</text>
+	</string>
+	<string id="st_yan_rucksack_02_descr">
+		<text>Hey, Tony, erinnere dich an die Koordinaten und den Bezugspunkt - der Rucksack liegt im Lьftungsschacht neben der durchbrochenen Wand. GrьЯe, Uhu.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000">
+		<text>Rucksack unter dem Sitz</text>
+	</string>
+	<string id="st_yan_rucksack_02_0000_descr">
+		<text>Ich hatte keine Zeit zum Ьberlegen, also hab ich die Beute unter den Fahrersitz des rostigen UAZ gestopft.</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001">
+		<text>Versteck im Getriebekasten des Krans</text>
+	</string>
+	<string id="st_yan_rucksack_02_0001_descr">
+		<text>Gott allein weiЯ, warum ich mein Zeug dort oben versteckt habe. Jetzt komm ich nicht mehr ran!</text>
+	</string>
+	<string id="st_yan_seif_01">
+		<text>Versteck im Tresor</text>
+	</string>
+	<string id="st_yan_seif_01_descr">
+		<text>Das beste Versteck der Gegend ist mein. Ein Tresor auf dem Fabrikgelдnde.</text>
+	</string>
+	<string id="st_yan_trees_log_01">
+		<text>Hohler Baumstamm</text>
+	</string>
+	<string id="st_yan_trees_log_01_descr">
+		<text>Ich hab mein Zeug in einem hohlen Baumstamm beim Stacheldrahtzaun versteckt.</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000">
+		<text>Baumstamm beim Hьgel</text>
+	</string>
+	<string id="st_yan_trees_log_01_0000_descr">
+		<text>Als diese Zombies von der Fabrik kamen, musste ich mich von meiner Beute trennen. Ich hab sie in einem Baumstamm am FuЯ des Hьgels versteckt.</text>
+	</string>
+	<string id="st_yan_trees_stump_01">
+		<text>Baumstumpf beim Hochspannungsmast</text>
+	</string>
+	<string id="st_yan_trees_stump_01_descr">
+		<text>Ich hab noch ein Versteck eingerichtet - in einem Baumstumpf auf dem Hьgel mit dem Hochspannungsmast. Alle denken, ich gehe wegen der Aussicht dahin, diese Idioten!</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss">
+		<text>Rohrцffnung</text>
+	</string>
+	<string id="gar_equipment_pipe_01_ss_descr">
+		<text>Ich habe ein Versteck in einer Rohrцffnung in diesem Haufen aus radioaktivem Abfall.</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss">
+		<text>Rohr bei Auto</text>
+	</string>
+	<string id="gar_equipment_pipe_02_ss_descr">
+		<text>Neben dem kaputten Auto auf dem Schrottplatz ist ein Rohr mit meiner Beute darin.</text>
+	</string>
+	<string id="st_agr_cross_1">
+		<text>Unter dem Kreuz</text>
+	</string>
+	<string id="st_agr_cross_1_descr">
+		<text>Agroprom, Bьsche, Kreuz. Grab unter Kreuz.</text>
+	</string>
+	<string id="st_agr_electric_box_02">
+		<text>Schalttafel in Werkstatt</text>
+	</string>
+	<string id="st_agr_electric_box_02_descr">
+		<text>Der verdammte Dehydrator reiЯt sich unsere gesamte Beute unter den Nagel. Blцder alter Sack. Ich verstecke mein Zeug vor ihm in der Schalttafel im zweiten Stock.</text>
+	</string>
+	<string id="st_agr_instrument_case_01">
+		<text>Traktor</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000">
+		<text>Auto in Garage</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0000_descr">
+		<text>Ich verstaue mein Zeug im Kofferraum des Wagens des Kommandanten. Solange er damit nicht wegfдhrt, sind meine Sachen sicher.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001">
+		<text>Kiste unter Waggon</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0001_descr">
+		<text>Werkzeugkasten unter Waggon im Agroprom-Institut.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002">
+		<text>Bus bei der Haltestelle</text>
+	</string>
+	<string id="st_agr_instrument_case_01_0002_descr">
+		<text>Werkzeugkasten in einem Bus bei der Bushaltestelle, in der Nдhe der neutralen Basis.</text>
+	</string>
+	<string id="st_agr_instrument_case_01_descr">
+		<text>Als Timmy die Zugmaschine repariert hat, haben wir uns zugeschьttet und dann nachts eine kleine Spritztour gemacht. Dabei sind wir einem Blutsauger ьber den Weg gelaufen. Wir mussten uns verdammt schnell aus dem Staub machen und haben die Kiste mit unserer Beute zurьckgelassen.</text>
+	</string>
+	<string id="st_agr_pipe_02">
+		<text>Rohr im Schutt</text>
+	</string>
+	<string id="st_agr_pipe_02_descr">
+		<text>Versteck: blockierter Eingang zum Untergrund, in einem L-fцrmigen Rohr.</text>
+	</string>
+	<string id="st_agr_rucksack_01">
+		<text>Herrenloser Rucksack</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000">
+		<text>Stalkerbasis</text>
+	</string>
+	<string id="st_agr_rucksack_01_0000_descr">
+		<text>Ich habe meinen Rucksack in die Astgabel des Baumes geworfen. Sonst wьsste jeder sofort, dass ich Witali erledigt habe. Der kьrzeste Weg dorthin fьhrt durch die Rohre der neutralen Basis.</text>
+	</string>
+	<string id="st_agr_rucksack_01_descr">
+		<text>Ich habe etwas auf einem Baum in der Nдhe der Wдchterbasis gesehen, hatte aber keine Zeit hochzuklettern.</text>
+	</string>
+	<string id="st_agr_rucksack_02">
+		<text>Rohr in den Sьmpfen</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000">
+		<text>Verlorener Rucksack</text>
+	</string>
+	<string id="st_agr_rucksack_02_0000_descr">
+		<text>Wir kamen von einem Ausflug zurьck und haben uns bei den Felsen ausgeruht. Irgendwie hab ich da meinen Rucksack vergessen. Ich hole ihn mir, sobald ich kann.</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001">
+		<text>Rigmans Rucksack</text>
+	</string>
+	<string id="st_agr_rucksack_02_0001_descr">
+		<text>Ich musste ganz hoch in den Turm, bis unsere Jungs die verdammten Hunde vertrieben hatten. Ich musste meinen Rucksack ins Gebьsch werfen.</text>
+	</string>
+	<string id="st_agr_rucksack_02_descr">
+		<text>Mein Versteck ist ein Rohr in den Sьmpfen. Die Beute ist im Rucksack.</text>
+	</string>
+	<string id="st_agr_seif_01">
+		<text>Tresor im Gebьsch</text>
+	</string>
+	<string id="st_agr_seif_01_descr">
+		<text>Wir haben versucht, den Tresor ьber die Schlucht zu bekommen. Es war wegen des Regens so matschig, dass es eine einzige Rutschpartie war. Irgendwo auf dem Weg ist er uns dann runtergefallen.</text>
+	</string>
+	<string id="st_agr_trees_log_01">
+		<text>Einzelner Baumstamm</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000">
+		<text>Ostereier</text>
+	</string>
+	<string id="st_agr_trees_log_01_0000_descr">
+		<text>An Ostern hat Tony uns Verstecke fьr den Clan anlegen lassen. Ich habe eins dieser "Ostereier" in einem Baumstamm versteckt.</text>
+	</string>
+	<string id="st_agr_trees_log_01_descr">
+		<text>So weit drauЯen sucht garantiert niemand in einem Baumstamm nach einem Versteck.</text>
+	</string>
+	<string id="st_agru_treasure_1">
+		<text>Rohr im Kontrollraum</text>
+	</string>
+	<string id="st_agru_treasure_1_descr">
+		<text>Als die Monster das Gebiet ьberflutet haben, habe ich meine Sachen in einem Rohr versteckt und mich aus dem Staub gemacht.</text>
+	</string>
+	<string id="st_agru_treasure_2">
+		<text>Rucksack in Anomalie</text>
+	</string>
+	<string id="st_agru_treasure_2_descr">
+		<text>Beim Ьberqueren der Brьcke ist mir mein Rucksack aus Versehen in ein kontaminiertes Gebiet gefallen. Ich hab zwar versucht, ihn wiederzubekommen, aber es ist mir nicht gelungen.</text>
+	</string>
+	<string id="st_agru_treasure_3">
+		<text>Zurьckgelassener Schrank</text>
+	</string>
+	<string id="st_agru_treasure_3_descr">
+		<text>Ich habe den Schrank geliebt. So gerдumig. Als die Mutanten aus ihren Lцchern krochen, mussten wir uns zurьckziehen und ihn zurьcklassen.</text>
+	</string>
+	<string id="st_agru_treasure_4">
+		<text>Rucksack bei Leichnam</text>
+	</string>
+	<string id="st_agru_treasure_4_descr">
+		<text>Fiese kleine rattenartige Mutanten haben meine Kumpel regelrecht zerlegt. Ich bin entkommen knapp - Gott sei dank war die Treppe nicht weit.</text>
+	</string>
+	<string id="st_agru_treasure_5">
+		<text>Rucksack unter Treppe</text>
+	</string>
+	<string id="st_agru_treasure_5_descr">
+		<text>Ich habe einen groЯen, schwarzen Rucksack im Wasser unter der Treppe gesehen. Wenn da nicht diese fiese Anomalie wдre, wьrde ich selbst dort hingehen.</text>
+	</string>
+	<string id="st_esc_cross_2">
+		<text>Unter Kreuz auf Hьgel</text>
+	</string>
+	<string id="st_esc_cross_2_descr">
+		<text>Ich habe meine Beute in einem falschen Stalkergrab auf dem Hьgel versteckt.</text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp">
+		<text>Truhe ьber Brьcke </text>
+	</string>
+	<string id="st_esc_instrument_case_01_ramp_descr">
+		<text>Ich habe meine Beute in einer Kiste versteckt - dort, wo die Balken der Brьcke sich kreuzen. Mann, habe ich beim Raufklettern geschwitzt...</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater">
+		<text>Rohr unter gefдlltem Baum</text>
+	</string>
+	<string id="st_esc_pipe_02_in_crater_descr">
+		<text>Wir haben unser Lager nicht weit von dem Anfдngerdorf entfernt aufgeschlagen. Ich habe mein Zeug in einem Rohr unter dem gefдllten Baum versteckt. Ich hol's mir spдter.</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater">
+		<text>Rohr im Tunnel</text>
+	</string>
+	<string id="st_esc_pipe_03_in_crater_descr">
+		<text>Wir haben diverses Zeug in eine Anomalie geworfen und dabei versehentlich ein Rohr mit unserer Beute mit hineingeschmissen. Da liegt es immer noch und verstaubt langsam.</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney">
+		<text>Rucksack im Ofenrohr</text>
+	</string>
+	<string id="st_esc_rucksack_01_in_chimney_descr">
+		<text>Als ich noch ein Anfдnger war, habe ich mir ein kleines Versteck in einem Ofenrohr angelegt. Ich weiЯ nicht mal mehr, was da drin war.</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree">
+		<text>Versteck im Baum</text>
+	</string>
+	<string id="st_esc_rucksack_01_natree_descr">
+		<text>Ich habe den Parkplatz von einem Baum aus beobachtet und mich entschlossen, meinen Rucksack dort zu lassen. Am besten klettert man ьber den Ast an der Hьgelseite hoch.</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train">
+		<text>Unter Lokomotive</text>
+	</string>
+	<string id="st_esc_rucksack_01_pod_train_descr">
+		<text>Mein Kommandant befahl uns, Nikolaews Gruppe so schnell wie mцglich zu helfen. Da habe ich meinen Rucksack unter die Lokomotive neben dem Bahndamm geworfen.</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush">
+		<text>Rucksack hinterm Busch</text>
+	</string>
+	<string id="st_esc_rucksack_02_inbush_descr">
+		<text>Wir sind nachts ein paar Banditen begegnet und haben uns ein kleines Feuergefecht geliefert. Wir mussten uns beeilen, dort rauszukommen. Also habe ich meinen Rucksack zwischen ein paar Felsen hinter einen Busch geworfen. </text>
+	</string>
+	<string id="st_esc_rucksack_02_natree">
+		<text>Rucksack unterm Feuerholz</text>
+	</string>
+	<string id="st_esc_rucksack_02_natree_descr">
+		<text>Ich habe mein Versteck mit Feuerholz getarnt. Es liegt gleich neben einem zweistцckigen Gebдude gegenьber von dem Bauernhof.</text>
+	</string>
+	<string id="st_esc_seif_03">
+		<text>Tresor in Rohr</text>
+	</string>
+	<string id="st_esc_seif_03_0000">
+		<text>Tresor in Basis</text>
+	</string>
+	<string id="st_esc_seif_03_0000_desc">
+		<text>Zil bewahrt sein Zeug in einem Tresor in der neutralen Basis beim Kordon auf.</text>
+	</string>
+	<string id="st_esc_seif_03_descr">
+		<text>Koljan und ich haben unser Versteck in einem Tresor auf dem Schrottplatz in der Nдhe des Anfдngerdorfes.</text>
+	</string>
+	<string id="st_esc_trees_log_01">
+		<text>Versteck in Baumstamm</text>
+	</string>
+	<string id="st_esc_trees_log_01_descr">
+		<text>Ich wurde von ein paar Hunden angegriffen und hatte kaum eine Wahl - ich habe die Beute in einem abgebrochenen Baumstamm mitten auf dem Feld versteckt und bin zurьck zum Lager gerannt.</text>
+	</string>
+	<string id="st_esc_trees_log_02">
+		<text>Versteck in Baumstamm</text>
+	</string>
+	<string id="st_esc_trees_log_02_descr">
+		<text>Ich habe die Koordinaten eines Verstecks eines toten Stalkers - es befindet sich in einem Baumstamm hinter dem Bauernhof.</text>
+	</string>
+	<string id="st_esc_trees_stump_01">
+		<text>Baumstumpf in Fichtenwald</text>
+	</string>
+	<string id="st_esc_trees_stump_01_descr">
+		<text>Mein Kumpel und ich haben unsere kдrgliche Beute in einem alten Baumstumpf zwischen ein paar Fichten versteckt.</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader">
+		<text>Baumstumpf bei Dorf</text>
+	</string>
+	<string id="st_esc_trees_stump_01_penb_syn_trader_descr">
+		<text>Mein Versteck ist nicht weit entfernt. Ich habe den ersten anstдndigen hohlen Baumstumpf in der Nдhe des Anfдngerdorfes genommen. Dort verstecke ich, was ich so finde.</text>
+	</string>
+	<string id="st_esc_trees_stump_02">
+		<text>Baumstumpf im Wald</text>
+	</string>
+	<string id="st_esc_trees_stump_02_descr">
+		<text>Sidorowitsch hat uns gebeten, ein Versteck in der Nдhe des AuЯenpostens, der nach drauЯen fьhrt, anzulegen. Wahrscheinlich fьr irgendeinen Anfдnger. Ich habe alles in einem Baumstumpf in der Nдhe des Hьgels versteckt.</text>
+	</string>
+	<string id="st_esc_trees_stump_03">
+		<text>Baumstumpf beim Kordon</text>
+	</string>
+	<string id="st_esc_trees_stump_03_descr">
+		<text>Auf meinem Weg zur Mьllhalde habe ich alles in einem Baumstumpf im Wald versteckt, damit die Banditen da nicht rankommen.</text>
+	</string>
+	<string id="st_found_new_treasure">
+		<text>Informationen ьber ein Versteck erhalten:</text>
+	</string>
+	<string id="st_gar_electric_box_01">
+		<text>Schalttafel im Mьll</text>
+	</string>
+	<string id="st_gar_electric_box_01_descr">
+		<text>Ich habe etwas zur Seite geschafft, um es spдter auf dem Flohmarkt verkaufen zu kцnnen. Es befindet sich in der Schalttafel neben dem Fьhrerhaus des umgefallenen Krans.</text>
+	</string>
+	<string id="st_gar_electric_box_02">
+		<text>Schalttafel unter Schuppen</text>
+	</string>
+	<string id="st_gar_electric_box_02_descr">
+		<text>Ich freue mich schon darauf, dieses Ding zu verkaufen, das ich in einer Schalttafel unter einem nahegelegenen Schuppen versteckt habe.</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss">
+		<text>Schalttafel auf Schrottplatz</text>
+	</string>
+	<string id="st_gar_electric_box_02_ss_descr">
+		<text>Die Beute befindet sich unter der Abdeckung einer Schalttafel in einem Mьllhaufen.</text>
+	</string>
+	<string id="st_gar_pipe_02">
+		<text>Rohr auf der Mьllhalde</text>
+	</string>
+	<string id="st_gar_pipe_02_descr">
+		<text>Ich habe meine Sachen in einem abgetrennten Rohrstьck versteckt, damit sie mir niemand abnimmt.</text>
+	</string>
+	<string id="st_gar_pipe_05">
+		<text>Rohr am FuЯ des Krans</text>
+	</string>
+	<string id="st_gar_pipe_05_descr">
+		<text>Am FuЯe eines zusammengefallenen Krans liegt ein Rohr - dort habe ich meine Schmuckstьckchen versteckt.</text>
+	</string>
+	<string id="st_gar_rucksack_02">
+		<text>Rucksack unter Tanne</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss">
+		<text>Rucksack in Fьhrerkabine</text>
+	</string>
+	<string id="st_gar_rucksack_02_1_ss_descr">
+		<text>Ich habe meinen Rucksack im Fьhrerhaus des Krans versteckt, als er noch aufrecht stand. Jetzt komme ich nicht mehr ran.</text>
+	</string>
+	<string id="st_gar_rucksack_02_descr">
+		<text>Bis auf Weiteres bleiben mein Rucksack und all die Sachen darin unter dieser Tanne versteckt.</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss">
+		<text>Versteck vor meinen Feinden</text>
+	</string>
+	<string id="st_gar_rucksack_02_ss_descr">
+		<text>Ich habe meinen Rucksack in einen Haufen radioaktiven Abfall geworfen, damit meine Feinde nicht an ihn rankommen.</text>
+	</string>
+	<string id="st_gar_rucksack_03">
+		<text>Versteck auf dem Schrottplatz</text>
+	</string>
+	<string id="st_gar_rucksack_03_descr">
+		<text>Ich habe meine Sachen unter einer Betonplatte in der Nдhe des Autofriedhofs versteckt. Ich hole sie mir besser schnell zurьck, bevor mir noch jemand zuvorkommt.</text>
+	</string>
+	<string id="st_gar_rucksack_04">
+		<text>Dach der Lokomotive</text>
+	</string>
+	<string id="st_gar_rucksack_04_descr">
+		<text>Ich habe meinen kleinen Rucksack auf dem Dach der Lokomotive liegen gelassen. Vom Bahndamm aus gelangt man leicht dorthin. Das Versteck ist aber nicht so einfach zu entdecken.</text>
+	</string>
+	<string id="st_gar_seif_01">
+		<text>Tresor in Pfьtze</text>
+	</string>
+	<string id="st_gar_seif_01_descr">
+		<text>Ich bezweifle, dass viele Leute sich fьr einen halb versunkenen Tresor in so einer Pfьtze interessieren. Ein guter Ort fьr ein Ьbergangsversteck.</text>
+	</string>
+	<string id="st_gar_seif_03">
+		<text>Tresor unter Stьtze</text>
+	</string>
+	<string id="st_gar_seif_03_descr">
+		<text>Ich habe meine Beute in einem Tresor in der Nдhe eines Warnschilds vor Strahlung versteckt. Nur ein Lebensmьder wьrde versuchen, ihn zu цffnen!</text>
+	</string>
+	<string id="st_gar_trees_log_01">
+		<text>Hohler Baumstamm</text>
+	</string>
+	<string id="st_gar_trees_log_01_descr">
+		<text>Ich habe einen hohlen Baumstamm in der Nдhe des Sammellagers als Tresor benutzt.</text>
+	</string>
+	<string id="st_gar_trees_log_02">
+		<text>Baumstamm hinter Eiche</text>
+	</string>
+	<string id="st_gar_trees_log_02_descr">
+		<text>Koljan hat mir ein paar Infos gegeben - er hat erzдhlt, dass Weedy seine Beute in einem hohlen Baumstamm hinter einer abgestorbenen Eiche versteckt.</text>
+	</string>
+	<string id="st_gar_trees_log_03">
+		<text>Baumstamm im Gebьsch</text>
+	</string>
+	<string id="st_gar_trees_log_03_descr">
+		<text>Ich habe meine Beute in einem Baumstamm versteckt und ihn ins Gebьsch gezogen. Da ist er gut vor neugierigen Blicken geschьtzt.</text>
+	</string>
+	<string id="st_gar_trees_stump_01">
+		<text>Lamsters Versteck</text>
+	</string>
+	<string id="st_gar_trees_stump_01_descr">
+		<text>Einer der Mьllgrдber wollte mit seiner Beute davonkommen, aber Schдfer und seine Jungs hatten was dagegen. Sie haben den Typen kaltgemacht, aber konnten die Beute nicht finden. Ich bin der Einzige, der den Baumstumpf gesehen hat, den die Mьllgrдber als Versteck benutzt haben.</text>
+	</string>
+	<string id="st_gar_trees_stump_03">
+		<text>Einsames Versteck</text>
+	</string>
+	<string id="st_gar_trees_stump_03_descr">
+		<text>Ich habe einen einzeln stehenden, hohlen Baumstumpf als Versteck benutzt - nur fьr den Fall, dass unsere Jungs vorhaben, mich auszurauben.</text>
+	</string>
+	<string id="st_gar_trees_stump_04">
+		<text>Versteck bei Basis</text>
+	</string>
+	<string id="st_gar_trees_stump_04_descr">
+		<text>Keine Ahnung, was die anderen machen, aber ich habe meine Sachen direkt unter Yogas Nase versteckt - neben dem Zaun unter einem alten Baumstumpf.</text>
+	</string>
+	<string id="st_gar_zaz968">
+		<text>WeiЯe Saporoschez-Limousine</text>
+	</string>
+	<string id="st_gar_zaz968_descr">
+		<text>Eines Tages wird Yoga nicht mehr ьber die Mьllhalde herrschen. Dann hol ich all meine Beute aus dem weiЯen Saporoschez und sage der Mьllhalde Adieu.</text>
+	</string>
+	<string id="st_hos_electric_box_02">
+		<text>Schalttafel im Krankenhaus</text>
+	</string>
+	<string id="st_hos_electric_box_02_descr">
+		<text>Unsere Gruppe hat ein Versteck im ersten Stock des Krankenhauses angelegt.</text>
+	</string>
+	<string id="st_hos_rucksack_01">
+		<text>Rucksack unter Treppe</text>
+	</string>
+	<string id="st_hos_rucksack_01_descr">
+		<text>Als wir den zweiten Stock gestьrmt haben, mussten wir alles Ьberflьssige ablegen.</text>
+	</string>
+	<string id="st_hos_seif_01">
+		<text>Barrikaden in Halle</text>
+	</string>
+	<string id="st_hos_seif_01_descr">
+		<text>Ich war in einer ziemliche fiesen SchieЯerei in der Halle im zweiten Stock des Krankenhauses verwickelt. Ich musste meine Beute in einem alten Tresor bei den Barrikaden verstecken.</text>
+	</string>
+	<string id="st_lim_electric_box_01">
+		<text>Rohr im Abflusssystem</text>
+	</string>
+	<string id="st_lim_electric_box_01_2">
+		<text>Schalttafel im Forschungsinstitut "Radiowelle"</text>
+	</string>
+	<string id="st_lim_electric_box_01_2_descr">
+		<text>Als wir das Institut eingenommen haben, bin ich ьber ein Versteck in der Schalttafel auf dem Balkon gestolpert. Wir hatten's allerdings zu eilig, um etwas mitzunehmen.</text>
+	</string>
+	<string id="st_lim_electric_box_01_descr">
+		<text>Ich habe ein Versteck im Abflussrohr entdeckt. Wenn wir wieder in dem Gebiet sind, schau ich's mir genauer an.</text>
+	</string>
+	<string id="st_lim_instrument_case_01">
+		<text>Reisetasche in Ecke</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1">
+		<text>Reisetasche auf Dachboden</text>
+	</string>
+	<string id="st_lim_instrument_case_01_1_descr">
+		<text>Wir mussten uns zwei Tage lang gegen Angriffe wehren. Zum Schluss haben sie uns zum Rьckzug aufs Dach gezwungen, doch zum Glьck traf bald darauf unsere Verstдrkung ein. Ich hab eine Kiste auf dem Dachboden gesehen, aber ich hab vergessen, sie mitzunehmen.</text>
+	</string>
+	<string id="st_lim_instrument_case_01_descr">
+		<text>Beim Durchqueren eines Hinterhofs fiel mir ein Werzeugkasten hinter einer Mauer auf.</text>
+	</string>
+	<string id="st_lim_pipe_02">
+		<text>Rohr unter Gelдndewagen</text>
+	</string>
+	<string id="st_lim_pipe_02_01">
+		<text>Hinter Garagen</text>
+	</string>
+	<string id="st_lim_pipe_02_01_descr">
+		<text>Ich habe ein Versteck hinter den Garagen entdeckt, hatte aber keine Zeit, es mir genauer anzusehen. Es befindet sich in einem Rohr hinter dem Baum.</text>
+	</string>
+	<string id="st_lim_pipe_02_2">
+		<text>Rohr im Container</text>
+	</string>
+	<string id="st_lim_pipe_02_2_descr">
+		<text>Wir steckten in einem Hinterhof fest. Da war ein Mьllcontainer und ich glaube, etwas in einem Rohr darin gesehen zu haben. Sobald wir hier fertig sind, gehe ich zurьck und schau's mir genauer an.</text>
+	</string>
+	<string id="st_lim_pipe_02_descr">
+		<text>Ein Sack mit irgendwelchem Zeug guckte unter einem Gelдndewagen hervor. Ich hatte keine Zeit, ihn mir genauer anzusehen. Das hole ich spдter nach - wenn ich dann noch am Leben bin.</text>
+	</string>
+	<string id="st_lim_rucksack_01">
+		<text>Rucksack unter Handschuhfach</text>
+	</string>
+	<string id="st_lim_rucksack_01_descr">
+		<text>Ich habe Zinndoses Rucksack unter dem Armaturenbrett eines alten Moskwitsch versteckt.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1">
+		<text>Rucksack an der Mauer</text>
+	</string>
+	<string id="st_lim_rucksack_02_12">
+		<text>Sachen des verletzten Mannes</text>
+	</string>
+	<string id="st_lim_rucksack_02_12_descr">
+		<text>Sanek hat eine abbekommen, als wir ьber eine Mauer kletterten. Er musste seinen Rucksack wegwerfen, um seinen Arsch zu retten.</text>
+	</string>
+	<string id="st_lim_rucksack_02_1_descr">
+		<text>Weil ich verfolgt wurde, lieЯ ich meinen Rucksack in der Nдhe einer Mauer bei diesen Koordinaten fallen.</text>
+	</string>
+	<string id="st_lim_rucksack_02_2">
+		<text>Rucksack eines Toten</text>
+	</string>
+	<string id="st_lim_rucksack_02_2_descr">
+		<text>Ein Anfдnger wurde direkt neben mir von einer Granate zerfetzt - er war sofort tot. Dan hat seinen Rucksack genommen und ihn unter die Brьcke geworfen. Ein Toter hat schlieЯlich keine Verwendung mehr dafьr, wir aber vielleicht schon.</text>
+	</string>
+	<string id="st_lim_seif_03">
+		<text>Tresor in Garage</text>
+	</string>
+	<string id="st_lim_seif_03_descr">
+		<text>Wir haben die Garagen nach einem Fluchtweg durchsucht und sind dabei einen Tresor gestoЯen. Irgendwann werden wir versuchen, ihn aufzubrechen.</text>
+	</string>
+	<string id="st_lim_trees_log_01">
+		<text>Halb begrabener Baumstamm</text>
+	</string>
+	<string id="st_lim_trees_log_01_descr">
+		<text>Bevor wir es dem Mistkerl besorgt haben, sah ich ihn an dem Baumstamm hinter dem Gartenhдuschen herumspielen.</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1">
+		<text>Bьndel in Baumstumpf</text>
+	</string>
+	<string id="st_lim_trees_stump_01_1_descr">
+		<text>Ich habe irgendein Bьndel in einem hohlen Baumstumpf gesehen, als wir uns auf einen Angriff vorbereitet haben.</text>
+	</string>
+	<string id="st_mar_nichka_0000">
+		<text>Versteck bei Bunker</text>
+	</string>
+	<string id="st_mar_nichka_0000_descr">
+		<text>Squints Leute waren hinter mir her, deswegen habe ich einen Haufen Beute neben einem Bunker in einem Sumpf in der Nдhe des verlassenen Parkplatzes versenkt.</text>
+	</string>
+	<string id="st_mar_nichka_0001">
+		<text>Kleine Kiste unter Turm</text>
+	</string>
+	<string id="st_mar_nichka_0001_descr">
+		<text>Ich sammle all meine Beute in einem Versteck unter einem der Hochspannungsmasten.</text>
+	</string>
+	<string id="st_mar_nichka_0003">
+		<text>Kiste in ZIL-Limousine</text>
+	</string>
+	<string id="st_mar_nichka_0003_descr">
+		<text>Der lahme Alex hatte irgendwo eine Schlosserkiste aufgegabelt. Wir haben ein paar Sachen reingetan und sie in einen verrosteten ZIL gesteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0004">
+		<text>Rohr bei Station</text>
+	</string>
+	<string id="st_mar_nichka_0004_descr">
+		<text>Ich habe etwas in der Цffnung eines Rohres neben einem Ventil versteckt. Es liegt in der alten Pumpstation inmitten eines Sumpfes.</text>
+	</string>
+	<string id="st_mar_nichka_0005">
+		<text>Rohr im Sumpf</text>
+	</string>
+	<string id="st_mar_nichka_0005_descr">
+		<text>Ich hatte die Nase voll davon, mein Zeug die ganze Zeit mit durch das Sumpfland zu schleppen, also habe ich's auf einer Halbinsel gelassen, in einem  Rohr mit Ventil. Ich wollte nicht mehr so viel Ballast mitschleppen und hielt das Versteck dort im Schilf fьr sicher.</text>
+	</string>
+	<string id="st_mar_nichka_0006">
+		<text>Rucksack in den Sьmpfen</text>
+	</string>
+	<string id="st_mar_nichka_0006_descr">
+		<text>Ich bin diesen Sumpfbiestern nur knapp entkommen. Ich lieЯ meinen Rucksack fallen, wдhrend ich wegrannte, hab aber keine Lust, wieder zurьckzugehen.</text>
+	</string>
+	<string id="st_mar_nichka_0007">
+		<text>Versunkener Tresor</text>
+	</string>
+	<string id="st_mar_nichka_0007_descr">
+		<text>Nicht weit von der zusammengefallenen Brьcke liegt ein versunkener Tresor im Wasser. Da habe ich mein ganzes Zeug drin verstaut.</text>
+	</string>
+	<string id="st_mar_nichka_0008">
+		<text>Rucksack im Schilf</text>
+	</string>
+	<string id="st_mar_nichka_0008_descr">
+		<text>Ich habe meinen Rucksack ins Schilf geworfen, wдhrend ich mich gegen ein paar Wildschweine wehren musste. Genauer kann ich's nicht beschreiben, ich hab nur die Koordinaten.</text>
+	</string>
+	<string id="st_mar_nichka_0009">
+		<text>Zurьckgelassene Artefakte</text>
+	</string>
+	<string id="st_mar_nichka_0009_descr">
+		<text>Ich habe so einen Idioten ьbers Ohr gehauen und ihm seinen Rucksack voller Beute abgejagt. Danach habe ich ihn lieber im Schilf versteckt, damit mir niemand auf die Schliche kommt.</text>
+	</string>
+	<string id="st_mar_nichka_0010">
+		<text>Baumstumpf bei Baum</text>
+	</string>
+	<string id="st_mar_nichka_0010_descr">
+		<text>Ich habe mein Versteck in einem Baumstumpf in der Nдhe des vertrockneten Baums angelegt. Ich werde die Sachen mitnehmen, wenn ich den Sьmpfen Lebewohl sage.</text>
+	</string>
+	<string id="st_mar_nichka_0011">
+		<text>Baumstamm bei Mast</text>
+	</string>
+	<string id="st_mar_nichka_0011_descr">
+		<text>Ein zerbrochener Baumstamm in der Nдhe eines Hochspannungsmasts.</text>
+	</string>
+	<string id="st_mar_nichka_0012">
+		<text>Grab mit Gasmaske</text>
+	</string>
+	<string id="st_mar_nichka_0012_descr">
+		<text>Ich traue den Toten mehr als den Lebenden. Mein Versteck ist auf dem Friedhof in dem Grab mit der Gasmaske ganz links.</text>
+	</string>
+	<string id="st_mar_nichka_0013">
+		<text>Holzkreuz</text>
+	</string>
+	<string id="st_mar_nichka_0013_descr">
+		<text>Ich hab mir ein wenig was auf die Seite geschafft. Es befindet sich auf dem Friedhof der Kirche in dem einzigen Grab mit einem Holzkreuz.</text>
+	</string>
+	<string id="st_mar_nichka_0014">
+		<text>Holzstapel bei Kirche</text>
+	</string>
+	<string id="st_mar_nichka_0014_descr">
+		<text>Lieber Gott, bitte pass auf meine Sachen auf. Ich hab sie in einem abgebrochenen Baumstamm in dem Holzstapel versteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0015">
+		<text>Versteck im Schilf</text>
+	</string>
+	<string id="st_mar_nichka_0015_descr">
+		<text>Ich habe meinen Rucksack im Schilf unweit der Kirche gelassen. Ich kann ihn aber nicht wiederfinden. Nicht einmal mit den exakten Koordinaten in meinem PDA.</text>
+	</string>
+	<string id="st_mar_nichka_0016">
+		<text>Tresor im Schmutz</text>
+	</string>
+	<string id="st_mar_nichka_0016_descr">
+		<text>Ich habe meine ganze Beute in einem Tresor am Sumpfrand bei der Kirche versteckt. Verdammte Plьnderer!</text>
+	</string>
+	<string id="st_mar_nichka_0017">
+		<text>Reisetasche unter Ofen</text>
+	</string>
+	<string id="st_mar_nichka_0017_descr">
+		<text>Was haben ein heiЯer Ofen und eine heiЯe Maus gemeinsam? Wenn du sie lange genug bearbeitest, verbrennst du dir die Finger! Ha-ha. Na ja, ich habe meine Reisetasche voller Beute in so einem Ofen versteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0018">
+		<text>Zeug in Saporoschez-Limousine</text>
+	</string>
+	<string id="st_mar_nichka_0018_descr">
+		<text>Wir haben die halbe Nacht auf dem Dach dieses halb versunkenen Saporoschez verbracht, bevor unsere Jungs uns zur Hilfe kamen. Ich hatte keine Ahnung, ob wir's schaffen wьrden, also habe ich mein Zeug irgendwo da fallen gelassen. Ich werde mal bei Tag dahin zurьckgehen und die Sachen ausbuddeln.</text>
+	</string>
+	<string id="st_mar_nichka_0019">
+		<text>Baumstumpf bei Bahngleis</text>
+	</string>
+	<string id="st_mar_nichka_0019_descr">
+		<text>Als wir die Bahngleise ьberquerten, hцrten wir ein paar Schьsse. Ich habe meine Sachen in einem Baumstumpf hinter ein paar Felsen versteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0020">
+		<text>Rohr vom Tank</text>
+	</string>
+	<string id="st_mar_nichka_0020_descr">
+		<text>Meine Jungs und ich bewahren unser Zeug im Ende des Rohrs mit dem Ventil auf, das vom Tank zu den Sьmpfen fьhrt.</text>
+	</string>
+	<string id="st_mar_nichka_0021">
+		<text>Rucksack bei Matratze</text>
+	</string>
+	<string id="st_mar_nichka_0021_descr">
+		<text>Der Idiot Lecha hat auf einer Matratze in dem versunkenen Boot geschlafen und dann seinen Rucksack vergessen.</text>
+	</string>
+	<string id="st_mar_nichka_0022">
+		<text>Kiste in Kьche</text>
+	</string>
+	<string id="st_mar_nichka_0022_descr">
+		<text>Ich habe mir ein paar Sachen zum Verkaufen auf die Seite gelegt. Sie sind in einer blauen Kiste in der Kьche im Nebengebдude.</text>
+	</string>
+	<string id="st_mar_nichka_0023">
+		<text>Versteck in Baumstamm</text>
+	</string>
+	<string id="st_mar_nichka_0023_descr">
+		<text>Bevor ich in einen anderen Teil der Sьmpfe aufgebrochen bin, musste ich meinen Rucksack ausrдumen. Ich habe etwas Beute in einem abgebrochenen Baumstamm versteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0024">
+		<text>Versteck in Schalttafel</text>
+	</string>
+	<string id="st_mar_nichka_0024_descr">
+		<text>Die Schalttafel vor dem Transformatorraum im Bauernhof. Lebensgefahr! Fernhalten!</text>
+	</string>
+	<string id="st_mar_nichka_0025">
+		<text>Elektrische Steuerungseinheit auf Parkplatz</text>
+	</string>
+	<string id="st_mar_nichka_0025_descr">
+		<text>Als ich mich Graus Gang anschloss, habe ich ein paar Schmuckstьcke in der elektrischen Steuerungseinheit am Turm hinter dem Hautgebдude versteckt. Wer weiЯ, vielleicht werden sie sich noch mal als nьtzlich erweisen.</text>
+	</string>
+	<string id="st_mar_nichka_0026">
+		<text>Rucksack auf Weg</text>
+	</string>
+	<string id="st_mar_nichka_0026_descr">
+		<text>Ich bin auf einem Weg auf etwas Fleisch gestoЯen und hatte nur mein Messer dabei. Ich warf meinen Rucksack weg und stьrzte mich auf es. Spдter wurde ich eine Meile entfernt aufgefunden. Irgendwann werde ich dorthin zurьckgehen.</text>
+	</string>
+	<string id="st_mar_nichka_0027">
+		<text>Baumstumpf bei jungem Baum</text>
+	</string>
+	<string id="st_mar_nichka_0027_descr">
+		<text>Haken wird sich schon um die Narren kьmmern. Ich werde mir nach und nach Beute zulegen und sie unter einem Baumstumpf in der Nдhe eines jungen Baums verstecken.</text>
+	</string>
+	<string id="st_mar_nichka_0028">
+		<text>Tresor hinter abgestorbenem Baum</text>
+	</string>
+	<string id="st_mar_nichka_0028_descr">
+		<text>Ich sammle Beute, um Medikamente fьr meinen Sohn kaufen zu kцnnen, und verstecke sie in einem Tresor hinter einem abgestorbenen Baum. Sobald ich genug zusammen habe, haue ich hier ab.</text>
+	</string>
+	<string id="st_mar_nichka_0029">
+		<text>Versteck im Gebьsch</text>
+	</string>
+	<string id="st_mar_nichka_0029_descr">
+		<text>Als ich aus den Sьmpfen kam, war ich so erschцpft, dass ich mein Zeug direkt auf dem Weg im Gebьsch gelassen habe.</text>
+	</string>
+	<string id="st_mar_nichka_0030">
+		<text>Versteck unter Bett im LKW.</text>
+	</string>
+	<string id="st_mar_nichka_0030_descr">
+		<text>En una caja de herramientas bajo un camiуn, al otro lado del puente.</text>
+	</string>
+	<string id="st_mar_nichka_0031">
+		<text>Mitten im Sumpf</text>
+	</string>
+	<string id="st_mar_nichka_0031_descr">
+		<text>Ich habe eine Kiste voller Sachen mitten im Sumpf liegen lassen. Auf einem Betonteil, aus dem Metallstдbe ragen. Wenn ich mich nach drauЯen aufmache, werde ich sie mitnehmen.</text>
+	</string>
+	<string id="st_mar_nichka_0032">
+		<text>Kleine Kiste in Ofen</text>
+	</string>
+	<string id="st_mar_nichka_0032_descr">
+		<text>Mein Versteck ist eine Truhe. Die Truhe ist in einem Ofen. Der Ofen ist in einem abgebrannten Haus und das Haus ist in den Sьmpfen.</text>
+	</string>
+	<string id="st_mar_nichka_0033">
+		<text>Tresor im Schilf</text>
+	</string>
+	<string id="st_mar_nichka_0033_descr">
+		<text>Keine Ahnung, was so ein Tresor hier in den Sьmpfen macht, aber ich konnte ihn nicht einfach ignorieren. Ich bewahre mein Zeug vorerst dort auf.</text>
+	</string>
+	<string id="st_mar_nichka_0034">
+		<text>Baumstumpf beim Sumpf</text>
+	</string>
+	<string id="st_mar_nichka_0034_descr">
+		<text>Unser Boss meinte, wir sollten nicht so viel Zeug mitnehmen. Ich habe meins unter einem Baumstumpf in der Nдhe des Wasserturms im Gebьsch unter einem Baum versteckt.</text>
+	</string>
+	<string id="st_mar_nichka_0035">
+		<text>Stamm im Sumpf</text>
+	</string>
+	<string id="st_mar_nichka_0035_descr">
+		<text>Wдhrend eines Streifzugs durch die Sьmpfe ist mir ein verrotteter Baumstamm in der Nдhe eines Holzdecks aufgefallen. Ich hielt ihn fьr ein gutes Versteck fьr meine "Schдtze".</text>
+	</string>
+	<string id="st_mar_nichka_0036">
+		<text>Rucksack auf Insel</text>
+	</string>
+	<string id="st_mar_nichka_0036_descr">
+		<text>Diese Sumpfkreatur hat mich die ganze Zeit verfolgt. Nach ein paar Meilen Marathon war ich so mьde, dass ich meinen Rucksack auf einer der Inseln fallen gelassen habe.</text>
+	</string>
+	<string id="st_mar_nichka_0037">
+		<text>Klappe bei Station</text>
+	</string>
+	<string id="st_mar_nichka_0037_descr">
+		<text>Ich habe meine Sachen unter einer Klappe in der Nдhe der Station in Sicherheit gebracht.</text>
+	</string>
+	<string id="st_mar_nichka_0038">
+		<text>Versteck in Rohr</text>
+	</string>
+	<string id="st_mar_nichka_0038_descr">
+		<text>Der schwarze Rucksack in dem groЯen Rohr ist alles, was von Mitka ьbrig geblieben ist.</text>
+	</string>
+	<string id="st_mar_nichka_0039">
+		<text>Werkzeugkasten in Fьhrerhaus</text>
+	</string>
+	<string id="st_mar_nichka_0039_descr">
+		<text>Ich habe im Sumpf einen Werkzeugkasten gefunden, all mein Zeug hineingepackt und ihn im Fьhrerhaus eines Krans versteckt. Ich werde ihn erst holen, wenn's hier besser aussieht.</text>
+	</string>
+	<string id="st_mar_nichka_0040">
+		<text>Rucksack unter Waggon</text>
+	</string>
+	<string id="st_mar_nichka_0040_descr">
+		<text>Ich war auf der Flucht, also habe ich etwas Ballast in Form meines Rucksacks abgeworfen. Er liegt unter einem Waggon auf dem Bahndamm.</text>
+	</string>
+	<string id="st_mar_nichka_0041">
+		<text>Auf dem Sims der Kuppel</text>
+	</string>
+	<string id="st_mar_nichka_0041_descr">
+		<text>Ich habe meinen Rucksack auf dem Sims der Kirchenkuppel liegen lassen. Ich muss beim Herumhьpfen auf dem Dach ausgesehen haben wie eine wild gewordene Bergziege.</text>
+	</string>
+	<string id="st_mar_nichka_0042">
+		<text>Unter Brьcke</text>
+	</string>
+	<string id="st_mar_nichka_0042_descr">
+		<text>Wir haben uns unter einer Brьcke vor unseren Verfolgern versteckt. Ich habe meinen Rucksack dort gelassen, in der Nдhe eines Balken.</text>
+	</string>
+	<string id="st_mar_nichka_0043">
+		<text>Zwischen Felsen</text>
+	</string>
+	<string id="st_mar_nichka_0043_descr">
+		<text>Ich habe meine Tasche in einen Spalt zwischen drei Felsen geworfen, damit ich nicht zur Zielscheibe eines Ьberfalls werde. </text>
+	</string>
+	<string id="st_mar_nichka_0044">
+		<text>Sawyer unter Felsen</text>
+	</string>
+	<string id="st_mar_nichka_0044_descr">
+		<text>Ich habe lange nach einem sicheren Versteck gesucht und schlieЯlich einen netten Sawyer mit einem Loch unter ein paar Felsen im Schilf gefunden.</text>
+	</string>
+	<string id="st_mil_cross_1">
+		<text>Versteck in Grab</text>
+	</string>
+	<string id="st_mil_cross_1_descr">
+		<text>Ich habe mein Zeug unter einem Grabkreuz vergraben. Mцge es in Frieden ruhen, bis ich wieder dort bin.</text>
+	</string>
+	<string id="st_mil_cross_2">
+		<text>Kreuz bei Baum</text>
+	</string>
+	<string id="st_mil_cross_2_descr">
+		<text>Ich habe ein Versteck in dem Grab neben einem Baum angelegt.</text>
+	</string>
+	<string id="st_mil_instrument_case_01">
+		<text>Kiste in Ofen</text>
+	</string>
+	<string id="st_mil_instrument_case_01_descr">
+		<text>Ich habe eine kleine Kiste in einem Ofen in einer verfallenen Hьtte deponiert. Dort bringe ich all meine Sachen hin.</text>
+	</string>
+	<string id="st_mil_pipe_02">
+		<text>Rohr bei Basiseingang</text>
+	</string>
+	<string id="st_mil_pipe_02_descr">
+		<text>Ich habe mein Zeug direkt unter der Nase vom Boss versteckt. Es befindet sich in einem Rohr hinter dem Wachhдuschen am Basiseingang.</text>
+	</string>
+	<string id="st_mil_rucksack_01">
+		<text>Rucksack bei Schornstein</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000">
+		<text>Versteck in Moskwitsch-Limousine</text>
+	</string>
+	<string id="st_mil_rucksack_01_0000_descr">
+		<text>Wenn Max zurьckkommt, gebe ich ihm seinen Rucksack. Bis dahin bleibt er in dem alten Moskwitsch.</text>
+	</string>
+	<string id="st_mil_rucksack_01_descr">
+		<text>Ich habe meinen Rucksack auf dem Dachboden in der Nдhe eines Schornsteins eines verfallenen Hauses gelassen. Wenn da nicht dieser Blutsauger im Dorf wдre, wьrde ich ihn mir wiederholen.</text>
+	</string>
+	<string id="st_mil_rucksack_02">
+		<text>Rucksack unter Anhдnger</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000">
+		<text>Versteck unter Brьcke</text>
+	</string>
+	<string id="st_mil_rucksack_02_0000_descr">
+		<text>Der Rucksack ist in einem Waggon unter der Brьcke in der Militдrbasis.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001">
+		<text>Spalt im Tunnel</text>
+	</string>
+	<string id="st_mil_rucksack_02_0001_descr">
+		<text>Ich habe meinen Rucksack in den Spalt ьber dem Tunnel deponiert, als es anfing, "heiЯ" zu werden. Allerdings hat er sich an einem Metallstab verfangen. Wirklich schade, ihn dort zurьcklassen zu mьssen - ich muss unbedingt zurьck und ihn holen.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002">
+		<text>Versteck in Toilette</text>
+	</string>
+	<string id="st_mil_rucksack_02_0002_descr">
+		<text>Ich bezweifle, dass irgendjemand auf die Idee kommt, in der Dorftoilette nach einem Versteck zu suchen. Genau da habe ich meins angelegt - da sind meine Sachen absolut sicher.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003">
+		<text>Versteck bei Zaun</text>
+	</string>
+	<string id="st_mil_rucksack_02_0003_descr">
+		<text>Ich habe den Rucksack vom armen alten Koljan hinter dem Hangar fallen lassen. Ich hatte schon genug zu schleppen.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004">
+		<text>Rucksack unter Baum</text>
+	</string>
+	<string id="st_mil_rucksack_02_0004_descr">
+		<text>In dem Moment, in dem ich das Monster beim Wasserturm gesehen habe, habe ich meinen Rucksack unter einem umgestьrzten Baum fallen lassen wie eine heiЯe Kartoffel. Manchmal kann es einem das Leben retten, wenn man nicht so viel zu tragen hat.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005">
+		<text>Rucksack in Keller</text>
+	</string>
+	<string id="st_mil_rucksack_02_0005_descr">
+		<text>Mir war nach der Emission so schwindlig, dass ich meinen Rucksack in einem Keller deponiert habe. Ich hole ihn mir wieder, wenn ich wieder auf den Beinen bin.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006">
+		<text>Vergessener Rucksack</text>
+	</string>
+	<string id="st_mil_rucksack_02_0006_descr">
+		<text>Eine Explosion zerstцrte eine Mauer, unter der ich begraben wurde. Ich musste meinen Rucksack ablegen, um wieder herausklettern und ein paar Schlдge austeilen zu kцnnen. Das hat dann so viel SpaЯ gemacht, dass ich den Rucksack ganz vergessen habe. Liegt wahrscheinlich immer noch da unten...</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007">
+		<text>Versteck in Kьche</text>
+	</string>
+	<string id="st_mil_rucksack_02_0007_descr">
+		<text>Ein grьner Rucksack im Ofen in der Kьche in einem der Hдuser des verlassenen Dorfes. Koordinaten notiert.</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008">
+		<text>Versteck unter Felsen</text>
+	</string>
+	<string id="st_mil_rucksack_02_0008_descr">
+		<text>Ich hatte ordentlich was zu tun und da habe ich meinen Rucksack voller heiЯer Ware im Gebьsch zwischen zwei Felsen gelassen.</text>
+	</string>
+	<string id="st_mil_rucksack_02_descr">
+		<text>Ich habe gesehen, wie ein Typ kurz vor einer Emission seinen Rucksack unter einen Anhдnger geworfen hat. Ich sollte mir das Zeug mal ansehen.</text>
+	</string>
+	<string id="st_mil_trees_01_0001">
+		<text>Baumstamm unter Felsen</text>
+	</string>
+	<string id="st_mil_trees_01_0001_descr">
+		<text>Neben ein paar Felsen liegt ein Baumstamm und darin, gut verborgen vor neugierigen Augen, ist mein Versteck.</text>
+	</string>
+	<string id="st_mil_trees_log_01">
+		<text>Abgebrochener Baumstamm</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000">
+		<text>Versteck in Schlitten</text>
+	</string>
+	<string id="st_mil_trees_log_01_0000_descr">
+		<text>Ein Versteck in einem groЯen Baumstamm bei einem Schlitten.</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001">
+		<text>Baumstamm unter Felsen</text>
+	</string>
+	<string id="st_mil_trees_log_01_0001_descr">
+		<text>Neben ein paar Felsen liegt ein Baumstamm und darin, gut verborgen vor neugierigen Augen, ist mein Versteck.</text>
+	</string>
+	<string id="st_mil_trees_log_01_descr">
+		<text>Ich habe mein Zeug in einem Baumstamm unter einer Kiefer in der Nдhe des umgestьrzten Turms versteckt.</text>
+	</string>
+	<string id="st_mil_trees_stump_01">
+		<text>Baumstumpf hinter Betonplatten</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000">
+		<text>Baumstumpf bei Zaun</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0000_descr">
+		<text>Witjok hat gesagt, er hдtte meinen Anteil der Beute in einem hohlen Baumstumpf gelassen, der zwischen dem Zaun der Militдrbasis und dem kleinen Sumpf steht.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001">
+		<text>Baumstumpf bei Zaun</text>
+	</string>
+	<string id="st_mil_trees_stump_01_0001_descr">
+		<text>Witjok hat gesagt, er hдtte meinen Anteil der Beute in einem hohlen Baumstumpf gelassen, der zwischen dem Zaun der Militдrbasis und dem kleinen Sumpf steht.</text>
+	</string>
+	<string id="st_mil_trees_stump_01_descr">
+		<text>Ein Stumpf zwischen zwei Felsen hinter einem Haufen Betonplatten.</text>
+	</string>
+	<string id="st_red_box_01_0000">
+		<text>Blaue Kiste</text>
+	</string>
+	<string id="st_red_box_01_0000_descr">
+		<text>Meine Beute ist in einer blauen Kiste im zweiten Stock des Gebдudes in der Nдhe des Grubenlifts.</text>
+	</string>
+	<string id="st_red_pipe_02">
+		<text>Rohr in Wagen</text>
+	</string>
+	<string id="st_red_pipe_02_descr">
+		<text>Ich habe meine Sachen in einem Rohr deponiert und es in einen rostigen Wagen beim alten Steinbruch geworfen.</text>
+	</string>
+	<string id="st_red_rucksack_01">
+		<text>Schwarzer Rucksack</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000">
+		<text>Rucksack auf Ast</text>
+	</string>
+	<string id="st_red_rucksack_01_1_0000_descr">
+		<text>Ich hab mich vor ein paar Monstern in einem Baum versteckt. Ich hab das Viech zwar nicht gesehen, aber ich konnte es nur allzu gut hцren. Ich hab den Rucksack auf dem Ast gelassen, bin heruntergesprungen und um mein Leben gerannt.</text>
+	</string>
+	<string id="st_red_rucksack_01_descr">
+		<text>Mist, ich habe meinen schwarzen Rucksack verloren, als ich aus dem Wald geflohen bin. Ich weiЯ auch, wo er ist, aber ich gehe nur zurьck, nachdem das ganze Gebiet mit einer Ladung Napalm versorgt worden ist.</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree">
+		<text>Baum bei Zaun</text>
+	</string>
+	<string id="st_red_rucksack_01_on_tree_descr">
+		<text>So ein verdammter Blutsauger hat mich bis zum Zaun des Reservats verfolgt und auf einen Baum gejagt. Wenn ich meinen Rucksack nicht in dem Baum gelassen hдtte, hдtte ich den Sprung zum Zaun nie geschafft.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2">
+		<text>Rucksack in Hцhle</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_2_descr">
+		<text>Ich bin nachts in eine Hцhle gekrochen, um etwas Schlaf zu bekommen. Ich wurde unsanft von einem Blutsauger geweckt, der sich an meiner Tasche zuschaffen machte. Ich bin gerannt wie ein Weltmeister, aber der Blutsauger hat immer noch meinen Rucksack.</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3">
+		<text>Felsen bei Schlucht</text>
+	</string>
+	<string id="st_red_rucksack_01_under_stone_3_descr">
+		<text>Ich wurde von ein paar Hunden bei einer Schlucht in die Enge getrieben, da hab ich meinen Rucksack auf ein paar Felsen geworfen und dann versucht, zu entkommen.</text>
+	</string>
+	<string id="st_red_rucksack_02">
+		<text>Rucksack im Gebьsch</text>
+	</string>
+	<string id="st_red_rucksack_02_0000">
+		<text>Rucksack in Wald</text>
+	</string>
+	<string id="st_red_rucksack_02_0000_descr">
+		<text>Das war wie in einem Horrorfilm. Ich weiЯ nicht, wie ich da rausgekommen bin... Ich hab dabei meinen Rucksack verloren, aber ich kann ihn nur an einer Stelle fallen gelassen haben.</text>
+	</string>
+	<string id="st_red_rucksack_02_0001">
+		<text>Rucksack unter Felsen</text>
+	</string>
+	<string id="st_red_rucksack_02_0001_descr">
+		<text>Koljas Rucksack war mir zu schwer, also hab ich ihn unter ein paar Felsen beim Ausgang zur Limansker Brьcke deponiert.</text>
+	</string>
+	<string id="st_red_rucksack_02_4">
+		<text>Verfluchte Beute</text>
+	</string>
+	<string id="st_red_rucksack_02_4_descr">
+		<text>Der Rucksack hat eine besondere Geschichte! Jeder, der ihn getragen hat, ist inzwischen tot. Ich habe ihn weggeworfen, wollte das verfluchte Ding niemals wiedersehen.</text>
+	</string>
+	<string id="st_red_rucksack_02_5">
+		<text>Seltsamer Ort</text>
+	</string>
+	<string id="st_red_rucksack_02_5_descr">
+		<text>Ich bin auf meinem Rucksack in der Nдhe eines Felsens eingeschlafen. Am nдchsten Morgen wachte ich an einem vollkommen anderen Ort wieder auf. Ich habe versucht, den Felsen wiederzufinden, bin aber immer nur im Kreis gelaufen.</text>
+	</string>
+	<string id="st_red_rucksack_02_6">
+		<text>Rucksack unter Felsrutsch</text>
+	</string>
+	<string id="st_red_rucksack_02_6_descr">
+		<text>Einige Felsen der Schlucht haben sich gelockert und sind beim Ausgang des Roten Waldes auf mich herabgestьrzt. Dann griff irgendwas Dunkles dahinter nach mir. Ich hab's gerade noch rausgeschafft, hatte aber keine andere Wahl, als meine Sachen fallen zu lassen.</text>
+	</string>
+	<string id="st_red_rucksack_02_descr">
+		<text>Wir haben uns durchs Gebьsch geschlagen und irgendwie habe ich dabei meinen Rucksack verloren.</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone">
+		<text>Verlorener Rucksack</text>
+	</string>
+	<string id="st_red_rucksack_02_in_stone_descr">
+		<text>Dieser Idiot Abe hat meinen Rucksack bei ein paar Steinen hier in der Gegend verloren. Jetzt hat er zu viel Angst, ihn wiederzuholen. Ein toller Freund!</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel">
+		<text>Versteck im Stollen</text>
+	</string>
+	<string id="st_red_rucksack_02_in_tonnel_descr">
+		<text>Ich habe meine Artefakte am Ende eines verlassenen Stollens versteckt.</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000">
+		<text>Baumstumpf in der Wildnis</text>
+	</string>
+	<string id="st_red_sekret_trees_stump_01_0000_descr">
+		<text>Ich habe mich im Roten Wald verlaufen und all meinen Kram dort gelassen. In einem hohlen Baumstumpf.</text>
+	</string>
+	<string id="st_red_trees_log_01">
+		<text>Sachen in Baumloch</text>
+	</string>
+	<string id="st_red_trees_log_01_descr">
+		<text>Auf dem Weg nach Limansk haben Peitsche und ich unser Zeug in einem Loch eines gefдllten Baumes in der Nдhe des Reservatsausgangs versteckt.</text>
+	</string>
+	<string id="st_red_trees_stump_01">
+		<text>Durchlцcherter Baumstumpf</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000">
+		<text>Baumstumpf vor Wald</text>
+	</string>
+	<string id="st_red_trees_stump_01_0000_descr">
+		<text>Wir wussten nicht, was uns in dem Wald erwarten wьrde... also haben wir unsere Sachen in einem verrotteten Baumstumpf versteckt.</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000">
+		<text>Baumstumpf bei Schlucht</text>
+	</string>
+	<string id="st_red_trees_stump_01_2_0000_descr">
+		<text>Wir haben unser Zeug in der Nдhe dieser verdammten Anomalie versteckt. Unser Ziel ist die Anomalie selbst. Die ist so einzigartig, dass da bestimmt ein paar mдchtig wertvolle Artefakte drinstecken.</text>
+	</string>
+	<string id="st_red_trees_stump_01_3">
+		<text>GroЯer Baumstumpf</text>
+	</string>
+	<string id="st_red_trees_stump_01_3_descr">
+		<text>Sewa hat mir von einem groЯen hohlen Baumstumpf im Roten Wald erzдhlt. Ich werde ihn suchen, um mal zu sehen, was in ihm steckt.</text>
+	</string>
+	<string id="st_red_trees_stump_01_4">
+		<text>Versteck im Baumstumpf</text>
+	</string>
+	<string id="st_red_trees_stump_01_4_descr">
+		<text>Gene und ich haben ein paar Sachen in einem Baumstumpf im Roten Wald versteckt.</text>
+	</string>
+	<string id="st_red_trees_stump_01_7">
+		<text>Baumstumpf bei Schlucht</text>
+	</string>
+	<string id="st_red_trees_stump_01_7_descr">
+		<text>Als ich in die Schlucht gefallen bin, hab ich diesen Baumstumpf getroffen. Da hab ich einfach erst mal meine Beute darin versteckt.</text>
+	</string>
+	<string id="st_red_trees_stump_01_descr">
+		<text>Ich hцrte ein Schreien und Heulen, da habe ich meine Sachen im nдchsten durchlцcherten Baum versteckt und bin abgehauen.</text>
+	</string>
+	<string id="st_red_zaz968">
+		<text>Saporoschez-Limousine bei Grubenlift</text>
+	</string>
+	<string id="st_red_zaz968_descr">
+		<text>Ich habe meine Beute unter dem Sitz des Saporoschez in der Nдhe des Mineneingangs versteckt. Ich werde sie mir wiederholen, bevor ich zu Sidorowitsch gehe.</text>
+	</string>
+	<string id="st_val_seif_02">
+		<text>Tresor beim Bauernhof</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001">
+		<text>Baumstamm hinter Garagen</text>
+	</string>
+	<string id="st_yan_trees_log_01_0001_descr">
+		<text>Ich habe meine Beute in einem Baustamm in der Nдhe der Garagen neben der Fabrik in Jantar versteckt. Der beste Platz, den ich finden konnte.</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02">
+		<text>Versteck unter junger Tanne</text>
+	</string>
+	<string id="val_equipment_rucksack_01_02_descr">
+		<text>Unweit des Sumpfes habe ich meinen Rucksack bei einem Rohr unter einer jungen Tanne liegen gelassen.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_descr">
+		<text>Ein kleiner Tresor in einem Betonrohr. Da habe ich mir ein paar Sachen zurьckgelegt.</text>
+	</string>
+	<string id="esc_treasure_weapon_prisoner_name">
+		<text>Major Chaletskijs Agent</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward">
+		<text>Altes Versteck</text>
+	</string>
+	<string id="gar_treasure_quest_digger_reward_descr">
+		<text>Die Mьllgrдber haben ihre Beute in diesem Versteck gelassen.</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda">
+		<text>Werkzeugkasten</text>
+	</string>
+	<string id="gar_treasure_quest_old_pda_descr">
+		<text>Der alte PDA befindet sich unter dem doppelten Boden des Werkzeugkastens.</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly">
+		<text>Versteck in Anomalie</text>
+	</string>
+	<string id="gar_treasure_quest_reward_in_anomaly_descr">
+		<text>Wenn Yoga nicht gelogen hat, befindet sich eine besondere Knarre in dem Versteck inmitten der Anomalien.</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons">
+		<text>Kofferraum</text>
+	</string>
+	<string id="gar_treasure_quest_smuggler_weapons_descr">
+		<text>Laut Stringow befinden sich im Kofferraum des alten Autos einige Schmuggelwaren.</text>
+	</string>
+	<string id="st_esc_seif_03_0000_descr">
+		<text>Zil hat sein Zeug in einem Tresor in der neutralen Basis beim Kordon versteckt.</text>
+	</string>
+	<string id="st_mar_q_n_10">
+		<text>Versteck im Sumpf</text>
+	</string>
+	<string id="st_mar_q_n_10_descr">
+		<text>Es gibt da ein wertvolles Versteck bei der Wiederverwertungsanlage in den Sьmpfen. Was immer da drin sein mag - jetzt gehцrt es dir.</text>
+	</string>
+	<string id="st_mar_q_n_11">
+		<text>Tresor mit Belohnung</text>
+	</string>
+	<string id="st_mar_q_n_11_descr">
+		<text>Mann, diese Schlьssel gehцren zu einem Tresor, in dem etwas Wertvolles ist. Das wurde mir zumindest gesagt...</text>
+	</string>
+	<string id="st_mar_q_n_12">
+		<text>Belohnung</text>
+	</string>
+	<string id="st_mar_q_n_12_descr">
+		<text>Unsere Geheimverstecke fьr dein Geld. Du bist der Einzige, dem ich das Angebot mache.</text>
+	</string>
+	<string id="st_mar_q_n_13">
+		<text>Kleiner Koffer</text>
+	</string>
+	<string id="st_mar_q_n_13_descr">
+		<text>Hier sind die Koordinaten eines Koffers mit etwas Beute. Du findest ihn hinter der Mьlltonne bei der Wand.</text>
+	</string>
+	<string id="st_mar_q_n_14">
+		<text>Tresor unter Brьcke</text>
+	</string>
+	<string id="st_mar_q_n_14_descr">
+		<text>Ich werde dich nicht mit meinen Geschichten belasten. Das Versteck ist in dem Tresor unter der Brьcke.</text>
+	</string>
+	<string id="st_mar_q_n_6">
+		<text>Rucksack als Bezahlung</text>
+	</string>
+	<string id="st_mar_q_n_6_descr">
+		<text>Der Inhalt dieses Rucksacks, dessen Koordinaten ich dir auf deinen PDA lade, ist mehr wert, als der Preis, den du mir dafьr zahlst.</text>
+	</string>
+	<string id="st_mar_q_n_7">
+		<text>Tresor mit Code</text>
+	</string>
+	<string id="st_mar_q_n_7_descr">
+		<text>Die Beute in diesem Tresor in den Sьmpfen wiegt deinen Lohn durchaus auf.</text>
+	</string>
+	<string id="st_mar_q_n_8">
+		<text>Beute als Bezahlung</text>
+	</string>
+	<string id="st_mar_q_n_8_descr">
+		<text>Die Beute in dem schwarzen Rucksack unter den Felsen gehцrt jetzt dir. Betrachten wir diese Transaktion als erledigt.</text>
+	</string>
+	<string id="st_mar_q_n_9">
+		<text>Kleine Kiste bei Turm</text>
+	</string>
+	<string id="st_mar_q_n_9_descr">
+		<text>Eine vertrauenswьrdige Quelle hat mir von etwas Beute in einem herrenlosen Versteck unter einem Turm erzдhlt.</text>
+	</string>
+	<string id="st_mar_q_t_a_15">
+		<text>Soldatenrucksack</text>
+	</string>
+	<string id="st_mar_q_t_a_15_descr">
+		<text>Du hast ein gutes Geschдft gemacht. Deine Belohnung ist in einem Rucksack neben dem Leichnam eines Soldaten.</text>
+	</string>
+	<string id="st_mar_q_t_a_3">
+		<text>Umweg</text>
+	</string>
+	<string id="st_mar_q_t_a_3_descr">
+		<text>Wenn du einen kleinen Umweg zu dem Rucksack des toten Soldaten auf dich nimmst, wirst du reich belohnt werden.</text>
+	</string>
+	<string id="st_mar_q_t_l_16">
+		<text>Schwere Arbeit</text>
+	</string>
+	<string id="st_mar_q_t_l_16_descr">
+		<text>Ich gebe dir Informationen ьber eine wertvolle, aber schwer zu erreichende Beute. Sei aber vorsichtig - der vorherige Besitzer hat nicht auf meinen Rat gehцrt...</text>
+	</string>
+	<string id="st_mar_q_t_l_1">
+		<text>Rucksack bei Leichnam</text>
+	</string>
+	<string id="st_mar_q_t_l_1_descr">
+		<text>Hier hast du einen Tipp zu einem Versteck: Es befindet sich in einem Rucksack auf dem Rьcken eines Toten.</text>
+	</string>
+	<string id="st_mar_q_t_l_2">
+		<text>Fallschirmjдger</text>
+	</string>
+	<string id="st_mar_q_t_l_2_descr">
+		<text>Die Leiche befindet sich bei diesen Koordinaten - in ihrem Rucksack befindet sich dein Lohn.</text>
+	</string>
+	<string id="st_mar_q_t_l_4">
+		<text>Kдmpferleiche</text>
+	</string>
+	<string id="st_mar_q_t_l_4_descr">
+		<text>Hier sind die Infos: Ein junger Kдmpfer, der im Gebьsch "ruht", bewacht seinen Rucksack fьr dich.</text>
+	</string>
+	<string id="st_mar_q_t_l_5">
+		<text>Rucksack unter Leitung</text>
+	</string>
+	<string id="st_mar_q_t_l_5_descr">
+		<text>Hier sind die Koordinaten - sie fьhren zu einem Rucksack neben der Leiche eines Stalkers unter der Leitung.</text>
+	</string>
+	<string id="st_esc_q10_n">
+		<text>Baumstumpf bei Stacheldraht</text>
+	</string>
+	<string id="st_esc_q10_n_descr">
+		<text>Okay, Kumpel, deine Belohnung befindet sich in einem Baumstumpf in der Nдhe des Stacheldrahts.</text>
+	</string>
+	<string id="st_esc_q1_n">
+		<text>Grьne Kiste</text>
+	</string>
+	<string id="st_esc_q1_n_descr">
+		<text>Ich habe diese Beute extra fьr dich aufbewahrt. Sie befindet sich in der Armeekiste am Rand des Kordons. Ich kann mich nur schwer davon trennen!</text>
+	</string>
+	<string id="st_esc_q2_n">
+		<text>Kleiner Rucksack</text>
+	</string>
+	<string id="st_esc_q2_n_descr">
+		<text>Und so wird deine GroЯzьgigkeit mit GroЯmut belohnt! He-he-he. Hier ist mein Versteck - mach damit, was du willst.</text>
+	</string>
+	<string id="st_esc_q3_t_l">
+		<text>StraЯe zu den Sьmpfen</text>
+	</string>
+	<string id="st_esc_q3_t_l_descr">
+		<text>Ich bekomme dein Geld und du bekommst dafьr mein Versteck. Du findest es auf der StraЯe in die Sьmpfe, gleich neben einem Leichnam.</text>
+	</string>
+	<string id="st_esc_q4_t_a">
+		<text>Belohnung fьr einen Helden</text>
+	</string>
+	<string id="st_esc_q4_t_a_descr">
+		<text>Deine Ware wartet in einem Rucksack neben der Leiche eines unglьcklichen Stalkers auf dich. Suche in der Nдhe der alten E-Lok.</text>
+	</string>
+	<string id="st_esc_q5_n">
+		<text>Entschдdigung</text>
+	</string>
+	<string id="st_esc_q5_n_descr">
+		<text>Das Versteck ist ein Rucksack unter einem Baum bei diesen Koordinaten.</text>
+	</string>
+	<string id="st_esc_q6_n">
+		<text>Zutritt erlaubt</text>
+	</string>
+	<string id="st_esc_q6_n_descr">
+		<text>Mein Teil des Deals ist im Schaltkasten im Fahrstuhl. Geh einfach hin und greif hinein - du brauchst keine Angst vor einem Stromschlag zu haben. Ich bin mir allerdings nicht ganz sicher, ob es dort eine Anomalie gibt...</text>
+	</string>
+	<string id="st_esc_q7_n">
+		<text>Kiste unter Waggon</text>
+	</string>
+	<string id="st_esc_q7_n_descr">
+		<text>Dein "Anteil" ist der Inhalt einer Kiste unter einem Waggon.</text>
+	</string>
+	<string id="st_esc_q8_n">
+		<text>Falsches Grab</text>
+	</string>
+	<string id="st_esc_q8_n_descr">
+		<text>In Grдbern herumzuwьhlen, gehцrt sich nicht. Aber mein Versteck ist in einem falschen Grab - du wirst also keine Totenruhe stцren mьssen.</text>
+	</string>
+	<string id="st_esc_q9_t_a">
+		<text>Kiste hinter Schrottplatz</text>
+	</string>
+	<string id="st_esc_q9_t_a_descr">
+		<text>Ich bezahle dich mit dem Inhalt einer Kiste, die sich neben einer Anomalie hinter dem Schrottplatz beim Kordon befindet. Ein anderer hat schon seine Finger danach ausgestreckt, aber keine Sorge - er weilt nicht mehr unter uns.</text>
+	</string>
+	<string id="st_gar_q10_n">
+		<text>Baumstumpf am Rand der Mьllhalde</text>
+	</string>
+	<string id="st_gar_q10_n_descr">
+		<text>Ich gebe dir einen Tipp. Deine Entschдdigung erwartet dich in einem Baumstumpf am Rand der Mьllhalde.</text>
+	</string>
+	<string id="st_gar_q1_n">
+		<text>Schwarzer Rucksack in Wrack</text>
+	</string>
+	<string id="st_gar_q1_n_descr">
+		<text>Was ich dir schulde, befindet sich in einem schwarzen Rucksack in dem Wrack des Baukrans.</text>
+	</string>
+	<string id="st_gar_q2_n">
+		<text>Abgetrenntes Rohr</text>
+	</string>
+	<string id="st_gar_q2_n_descr">
+		<text>Ich habe mein Geld, aber um an deine Belohnung zu kommen, musst du deinen Arsch zu meinem Versteck in einem abgetrennten Rohr schieben.</text>
+	</string>
+	<string id="st_gar_q3_n">
+		<text>Schaltkasten in Wrack</text>
+	</string>
+	<string id="st_gar_q3_n_descr">
+		<text>Ich habe dieses Versteck vor einer Weile fьr mich selbst angelegt, aber jetzt werde ich es dir wohl ьberlassen mьssen. Na gut.</text>
+	</string>
+	<string id="st_gar_q4_n">
+		<text>Kleine Kiste zwischen kontaminiertem Abfall</text>
+	</string>
+	<string id="st_gar_q4_n_descr">
+		<text>Ich gebe dir die Koordinaten einer kleinen Kiste mit Beute. Pass aber gut auf deine Eier auf - die Strahlung dort ist immens.</text>
+	</string>
+	<string id="st_gar_q5_n">
+		<text>Kiste bei Planierschild</text>
+	</string>
+	<string id="st_gar_q5_n_descr">
+		<text>Was du gerade gekauft hast, findest du am FuЯ des Schildes einer Planierraupe.</text>
+	</string>
+	<string id="st_gar_q6_t_l">
+		<text>Rucksack eines Toten</text>
+	</string>
+	<string id="st_gar_q6_t_l_descr">
+		<text>Du hast doch keine Angst vor Geistern, oder? Dann sieh dir mal den Rucksack neben einem Leichnam an.</text>
+	</string>
+	<string id="st_gar_q7_t_l">
+		<text>Leiche bei Bagger</text>
+	</string>
+	<string id="st_gar_q7_t_l_descr">
+		<text>Der leblose Kerl neben dem umgestьrzten Bagger hat was in seinem Rucksack fьr dich.</text>
+	</string>
+	<string id="st_gar_q8_t_a">
+		<text>Leiche auf der Mьllhalde</text>
+	</string>
+	<string id="st_gar_q8_t_a_descr">
+		<text>Schдtze, es wird dich etwas SchweiЯ kosten, an das zu kommen, was ich dir schulde. Die Beute ist im Rucksack dieses Anomalie-Opfers.</text>
+	</string>
+	<string id="st_gar_q9_n">
+		<text>Auf dem Weg zum Agroprom</text>
+	</string>
+	<string id="st_gar_q9_n_descr">
+		<text>Suche nach einer kleinen Kiste in einem UAZ-LKW auf dem Weg zum Agroprom-Institut. Ich denke, ihr Inhalt wird dir gefallen.</text>
+	</string>
+	<string id="st_val_q10_n">
+		<text>Tresor in Hangar</text>
+	</string>
+	<string id="st_val_q10_n_descr">
+		<text>Ich halte mein Wort - das versprochene Versteck erwartet dich in einem Tresor bei der alten Fabrik.</text>
+	</string>
+	<string id="st_val_q11_t_l">
+		<text>Leiche bei Steinen</text>
+	</string>
+	<string id="st_val_q11_t_l_descr">
+		<text>Du hast gerade den Inhalt eines Rucksacks erworben, der sich an einer Leiche in der Nдhe der Steine befindet.</text>
+	</string>
+	<string id="st_val_q1_n">
+		<text>Unter Tank</text>
+	</string>
+	<string id="st_val_q1_n_descr">
+		<text>Meine Beute - nein, jetzt ist es deine - befindet sich in einem Rucksack unter dem Tank.</text>
+	</string>
+	<string id="st_val_q2_n">
+		<text>Gebьsch bei Tanne</text>
+	</string>
+	<string id="st_val_q2_n_descr">
+		<text>Nach einem lohnenswerten Ausflug habe ich meine Beute im Gebьsch versteckt. Jetzt gehцrt sie dir.</text>
+	</string>
+	<string id="st_val_q3_t_a">
+		<text>Soldatenleiche</text>
+	</string>
+	<string id="st_val_q3_t_a_descr">
+		<text>Notier dir Folgendes: sehr wertvolle Beute - Rucksack - glьckloser Soldat - gleich neben einer Anomalie.</text>
+	</string>
+	<string id="st_val_q4_n">
+		<text>Beute im Gebьsch</text>
+	</string>
+	<string id="st_val_q4_n_descr">
+		<text>Ich bezahle immer meine Schulden. Und ich schulde dir die Koordinaten meiner Beute.</text>
+	</string>
+	<string id="st_val_q5_n">
+		<text>Tresor in Freiheitsbasis</text>
+	</string>
+	<string id="st_val_q5_n_descr">
+		<text>In dem dreistцckigen Gebдude bei der Freiheitsbasis gibt es einen Tresor mit wertvollem Inhalt.</text>
+	</string>
+	<string id="st_val_q6_n">
+		<text>Kiste auf Turmspitze</text>
+	</string>
+	<string id="st_val_q6_n_descr">
+		<text>Vielen Dank fьr dein Interesse. Dafьr bekommst du von mir den Inhalt einer blauen Kiste auf der Turmspitze gleich hinter der Freiheitsbasis.</text>
+	</string>
+	<string id="st_val_q7_n">
+		<text>Stalkergrab</text>
+	</string>
+	<string id="st_val_q7_n_descr">
+		<text>Du hast gerade den Inhalt eines Stalkergrabes unter einem Kreuz neben einem alten Baum erworben.</text>
+	</string>
+	<string id="st_val_q8_n">
+		<text>Kiste unter Sitz</text>
+	</string>
+	<string id="st_val_q8_n_descr">
+		<text>Unter dem Fahrersitz eines roten LAZ befindet sich eine Kiste. Sie sie dir ruhig einmal an. Oder auch nicht - ist deine Entscheidung.</text>
+	</string>
+	<string id="st_val_q9_n">
+		<text>Baumstumpf bei Zaun</text>
+	</string>
+	<string id="st_val_q9_n_descr">
+		<text>Fьr Situationen wie diese hab ich etwas Zeug in einem Baumstumpf bei einem Zaun versteckt.</text>
+	</string>
+	<string id="st_agr_q10_t_l">
+		<text>Konfiszierte Waren bei Anomalie</text>
+	</string>
+	<string id="st_agr_q10_t_l_descr">
+		<text>Dieser Soldat ist in eine Anomalie gestolpert und sein Rucksack mit der Beute, die er selbst Stalkern abgenommen hat, liegt immer noch neben ihm. Mit etwas Glьck gehцrt er dir.</text>
+	</string>
+	<string id="st_agr_q1_n">
+		<text>Am Zaun bei Stacheldraht</text>
+	</string>
+	<string id="st_agr_q1_n_descr">
+		<text>Okay, ich bezahle dich mit diesem Geheimversteck - der Rucksack eines Stalkers bei einem Zaun. Der Hochspannungsmast ist dein Orientierungspunkt.</text>
+	</string>
+	<string id="st_agr_q2_n">
+		<text>Unter entwurzeltem Baum</text>
+	</string>
+	<string id="st_agr_q2_n_descr">
+		<text>Tut mir leid, aber in der Zone gibt's keine Lagerrдume! Also beeil dich und hol dir dieses Versteck unter einem entwurzelten Baum, bevor es jemand anders tut.</text>
+	</string>
+	<string id="st_agr_q3_t_a">
+		<text>Leiche in verstrahltem Gebiet</text>
+	</string>
+	<string id="st_agr_q3_t_a_descr">
+		<text>Du willst ein lohnenswertes Versteck und genau das habe ich fьr dich. Es ist deins, wenn du dich traust, in ein hochverstrahltes Gebiet zu gehen. Dein Preis liegt neben einem Leichnam.</text>
+	</string>
+	<string id="st_agr_q4_n">
+		<text>Zylinder auf Grab</text>
+	</string>
+	<string id="st_agr_q4_n_descr">
+		<text>Ehre ist mehr wert als Geld. Nimm als Belohnung dieses Versteck, das in einigen Zylindern auf einem anonymen Grab liegt.</text>
+	</string>
+	<string id="st_agr_q5_n">
+		<text>Rand eines Zauns</text>
+	</string>
+	<string id="st_agr_q5_n_descr">
+		<text>Nach der letzten Emission hat Walka Squint, Gott sei seiner Seele gnдdig, etwas in diesem alten Baumstumpf am Rand eines Zauns versteckt.</text>
+	</string>
+	<string id="st_agr_q6_n">
+		<text>Schalttafel</text>
+	</string>
+	<string id="st_agr_q6_n_descr">
+		<text>Mein Versteck - дh, ich meine dein Versteck - ist in einem Schaltkasten in der Wдchterbasis.</text>
+	</string>
+	<string id="st_agr_q7_n">
+		<text>Baumstamm bei Baum</text>
+	</string>
+	<string id="st_agr_q7_n_descr">
+		<text>Ich habe vor kurzem von einem Versteck meiner Feinde gehцrt. Hol's dir, okay?</text>
+	</string>
+	<string id="st_agr_q8_t_a">
+		<text>Leiche in Eisenbahnwagen</text>
+	</string>
+	<string id="st_agr_q8_t_a_descr">
+		<text>Diese Soldaten haben so aufs Gas ihres Busses gedrьckt, dass sie in eine Anomalie hier in der Gegend gerast sind. Sie sind alle draufgegangen und du bist drauf und dran, dir ihre Beute unter den Nagel zu reiЯen.</text>
+	</string>
+	<string id="st_agr_q9_n">
+		<text>Tresor unter Erdrutsch</text>
+	</string>
+	<string id="st_agr_q9_n_descr">
+		<text>Ich habe auf dem Grund einer Schlucht einen Tresor halb vergraben. Tun wir doch einfach so, als hдtte er schon immer dir gehцrt.</text>
+	</string>
+	<string id="st_agru_q1_n">
+		<text>Querstьck unter Treppe</text>
+	</string>
+	<string id="st_agru_q1_n_descr">
+		<text>Ich weiЯ von einem Versteck an diesem bцsen Ort. Ich bin mir allerdings nicht sicher, ob es nicht schon geplьndert wurde. Es befindet sich im Keller unter der Treppe.</text>
+	</string>
+	<string id="st_agru_q2_n">
+		<text>Kiste im Untergrund</text>
+	</string>
+	<string id="st_agru_q2_n_descr">
+		<text>Am FuЯ der Wendeltreppe befindet sich eine Kiste mit Beute. Pass aber auf, dass du keinen Bewohner des Untergrunds stцrst.</text>
+	</string>
+	<string id="st_agru_q3_t_a">
+		<text>Untergrund</text>
+	</string>
+	<string id="st_agru_q3_t_a_descr">
+		<text>Hier kannst du dir den Rucksack eines Soldaten schnappen. Er ist im Agroprom-Untergrund einer Anomalie zum Opfer gefallen. Pass bloЯ auf, dass es dir nicht genauso ergeht!</text>
+	</string>
+	<string id="st_agru_q4_n">
+		<text>Rohr in Kollektor</text>
+	</string>
+	<string id="st_agru_q4_n_descr">
+		<text>Ich habe die Info ьber dieses Versteck im Agroprom-Untergrund aus dem PDA eines Stalkers. Kopier dir bitte die Koordinaten.</text>
+	</string>
+	<string id="st_yan_q8_t_l">
+		<text>Leiche in See</text>
+	</string>
+	<string id="st_yan_q8_t_l_descr">
+		<text>Suche nach dem Rucksack dieses Soldaten, der gerade ein Bad im See nimmt.</text>
+	</string>
+	<string id="st_yan_q1_n">
+		<text>Kiste auf dem Dach des Heizungsraums</text>
+	</string>
+	<string id="st_yan_q1_n_descr">
+		<text>Auf dem Dach des Heizungsraums ist ein kleines Versteck in einer blauen Kiste. Das Gebiet wimmelt nur so vor Zombies, sei also vorsichtig.</text>
+	</string>
+	<string id="st_yan_q2_n">
+		<text>Kiste in Waggon</text>
+	</string>
+	<string id="st_yan_q2_n_descr">
+		<text>Klasse - hier hast du die Koordinaten einer Kiste in einem Waggon bei der Fabrik. Sieh dich einfach um und du weiЯt Bescheid.</text>
+	</string>
+	<string id="st_yan_q3_t_l">
+		<text>Rucksack bei Abflussrohr</text>
+	</string>
+	<string id="st_yan_q3_t_l_descr">
+		<text>Hol dir den Rucksack bei dem Abflussrohr und wir sind quitt. Ein toter Neutraler liegt in der Nдhe, der Ort ist also einfach zu finden.</text>
+	</string>
+	<string id="st_yan_q4_n">
+		<text>Kiste bei der Basis der Wissenschaftler</text>
+	</string>
+	<string id="st_yan_q4_n_descr">
+		<text>Ausgezeichnet! Dir gehцrt alles, was du in der Kiste im Kofferraum eines UAZ in der Basis der Wissenschaftler findest.</text>
+	</string>
+	<string id="st_yan_q5_n">
+		<text>Hьtte mit Schalttafel</text>
+	</string>
+	<string id="st_yan_q5_n_descr">
+		<text>Ich gebe dir die Koordinaten eines kleinen Verstecks in der Hьtte bei der Fabrik.</text>
+	</string>
+	<string id="st_yan_q6_n">
+		<text>Tankeinlauf</text>
+	</string>
+	<string id="st_yan_q6_n_descr">
+		<text>Es befindet sich ein Versteck im Einlauf des Tanks bei der Fabrik. Was sich darin befindet, weiЯ ich allerdings nicht.</text>
+	</string>
+	<string id="st_yan_q7_n">
+		<text>MAZ-Fahrerhaus</text>
+	</string>
+	<string id="st_yan_q7_n_descr">
+		<text>Du findest das Zeug in einem Koffer in diesem MAZ-Lastwagen.</text>
+	</string>
+	<string id="st_yan_q9_n">
+		<text>Baumstumpf gegenьber dem Lager der Wissenschaftler</text>
+	</string>
+	<string id="st_yan_q9_n_descr">
+		<text>Das Versteck befindet sich unter dem Baumstumpf gegenьber des Lagers der Wissenschaftler.</text>
+	</string>
+	<string id="st_red_q10_n">
+		<text>Rohr in Mine</text>
+	</string>
+	<string id="st_red_q10_n_descr">
+		<text>Ich bin sicher, dass da etwas Wertvolles in diesem Versteck im Roten Wald ist.</text>
+	</string>
+	<string id="st_red_q1_t_l">
+		<text>Toter Stalker</text>
+	</string>
+	<string id="st_red_q1_t_l_descr">
+		<text>Ich habe in dem PDA eines toten Stalkers entdeckt, dass sein Rucksack etwas Interessantes enthдlt. Hier sind die Koordinaten.</text>
+	</string>
+	<string id="st_red_q2_t_a">
+		<text>Gefдhrliches Versteck</text>
+	</string>
+	<string id="st_red_q2_t_a_descr">
+		<text>Ich habe schon mal jemanden zu dem Versteck geschickt, aber er hat's nie so weit geschafft - er ist in eine Anomalie in der Nдhe gelaufen.</text>
+	</string>
+	<string id="st_red_q3_n">
+		<text>Rotes Ventil</text>
+	</string>
+	<string id="st_red_q3_n_descr">
+		<text>Das Versteck befindet sich hinter dem roten Ventil des Rohrsystems der Mine. Ich habe nicht das geringste Interesse an seinem Inhalt.</text>
+	</string>
+	<string id="st_red_q4_n">
+		<text>Bus</text>
+	</string>
+	<string id="st_red_q4_n_descr">
+		<text>Einer meiner Freunde hat sein Versteck unter dem Rьcksitz dieses Busses eingerichtet. Er weilt nicht mehr unter uns - macht ihm also nichts aus, wenn du sein kleines Versteck plьnderst.</text>
+	</string>
+	<string id="st_red_q5_n">
+		<text>Rohr im Schutt</text>
+	</string>
+	<string id="st_red_q5_n_descr">
+		<text>Ich habe die Informationen ьber dieses Versteck von einem Gefangenen - es befindet sich in einem Rohrstьck im Schutt hinter dem MTW.</text>
+	</string>
+	<string id="st_red_q6_n">
+		<text>Kiste mit Rucksack</text>
+	</string>
+	<string id="st_red_q6_n_descr">
+		<text>Dein Schatz ist einfach groЯartig! Okay, aufgepasst - die Belohnung befindet sich in einem Rucksack, der Rucksack ist in einer Kiste, die Kiste ist bei der Brьcke, die Brьcke ist auf der anderen Seite des Roten Waldes.</text>
+	</string>
+	<string id="st_red_q7_t_a">
+		<text>Rucksack eines armen Teufels</text>
+	</string>
+	<string id="st_red_q7_t_a_descr">
+		<text>Dieser arme Teufel wollte mir seinen Rucksack bringen, aber er hat es nicht durch den Roten Wald geschafft. Wenn du ihn findest, gehцrt er dir.</text>
+	</string>
+	<string id="st_red_q8_n">
+		<text>Tresor bei StraЯenbahnwagen</text>
+	</string>
+	<string id="st_red_q8_n_descr">
+		<text>Ich erzдhl dir garantiert keinen Mist. Irgendein Penner hat etwas Wertvolles in einem Tresor in der Nдhe eines umgestьrzten StraЯenbahnwagens versteckt.</text>
+	</string>
+	<string id="st_red_q9_n">
+		<text>Gewцhnlicher alter Baumstumpf</text>
+	</string>
+	<string id="st_red_q9_n_descr">
+		<text>In dem durchlцcherten Baumstumpf befindet sich ein Versteck. Nichts Besonderes, nur ein unauffдlliger Platz, den du ohne meine Koordinaten nicht finden wirst. Hier sind sie.</text>
+	</string>
+	<string id="st_mil_q10_n">
+		<text>Versteck im Wald</text>
+	</string>
+	<string id="st_mil_q10_n_descr">
+		<text>Unter den Steinen im Wald ist ein Rucksack versteckt - hier sind seine Koordinaten.</text>
+	</string>
+	<string id="st_mil_q1_t_l">
+		<text>Rucksack unter Leichnam</text>
+	</string>
+	<string id="st_mil_q1_t_l_descr">
+		<text>Das ist vielleicht kein richtiges Versteck, aber in dem Rucksack auf dem Wasserturm mьsste sich etwas Wertvolles befinden.</text>
+	</string>
+	<string id="st_mil_q2_n">
+		<text>Versteck unter entwurzeltem Baum</text>
+	</string>
+	<string id="st_mil_q2_n_descr">
+		<text>Glaub mir ruhig - da ist ein Versteck unter einem entwurzelten Baum.</text>
+	</string>
+	<string id="st_mil_q3_n">
+		<text>GroЯmutters Tresor</text>
+	</string>
+	<string id="st_mil_q3_n_descr">
+		<text>Ich habe keine Ahnung, wie der Tresor auf den Ofen gekommen ist, aber meine Quellen behaupten, er sei nicht leer.</text>
+	</string>
+	<string id="st_mil_q4_n">
+		<text>Grabversteck</text>
+	</string>
+	<string id="st_mil_q4_n_descr">
+		<text>Es gibt ein Gerьcht, dass derjenige reich wird, der unter dem Kreuz bei diesen Koordinaten nachsieht.</text>
+	</string>
+	<string id="st_mil_q5_n">
+		<text>Kiste in Militдrbasis</text>
+	</string>
+	<string id="st_mil_q5_n_descr">
+		<text>Wenn du es schaffst, dich in die Militдrbasis zu schleichen, gibt's in der Kiste auf einem Dachboden eine Belohnung fьr deine Mьhen.</text>
+	</string>
+	<string id="st_mil_q6_n_a">
+		<text>Tresor in Schrank</text>
+	</string>
+	<string id="st_mil_q6_n_a_descr">
+		<text>Meine Quellen berichten mir von einem Versteck in dem Tresor in den Militдrbaracken.</text>
+	</string>
+	<string id="st_mil_q7_n_a">
+		<text>Kleiner Tresor</text>
+	</string>
+	<string id="st_mil_q7_n_a_descr">
+		<text>Hauptmann Jeltyschew hatte diesen Tresor immer dabei, bis er versetzt wurde. Du solltest ihn dir mal genauer ansehen.</text>
+	</string>
+	<string id="st_mil_q8_n_a">
+		<text>Mьllhaufen</text>
+	</string>
+	<string id="st_mil_q8_n_a_descr">
+		<text>Jawa hat seine Sachen in einem Mьllhaufen versteckt. Allerdings hat er das inzwischen vergessen. Ich hab's mir allerdings notiert und jetzt gebe ich das Geheimnis an dich weiter.</text>
+	</string>
+	<string id="st_mil_q9_n_a">
+		<text>Kiste mit Geheimnis</text>
+	</string>
+	<string id="st_mil_q9_n_a_descr">
+		<text>Hinter dem Fahrerhaus des Armee-MAZ befindet sich eine kleine Kiste mit einem Geheimnis. Das ist das Geheimnis, das ich dir verkaufe.</text>
+	</string>
+</string_table>

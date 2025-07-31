@@ -15,6 +15,7 @@ cover_name = red_bridge_east_smartcover_3
 ;target_path = red_bridge_csky_smart_soldier_3_f1_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
+on_info3 = {+red_bridge_down_done} walker@bridge_walk_work_3
 on_game_timer = 250 | {-red_bridge_bandit_time_out ~50} smartcover@soldier_3_wait_fire
 
 [smartcover@soldier_3_wait_fire]
@@ -27,6 +28,7 @@ cover_name = red_bridge_east_smartcover_3
 ;target_path = red_bridge_csky_smart_soldier_3_f1_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
+on_info3 = {+red_bridge_down_done} walker@bridge_walk_work_3
 on_game_timer = 50 | smartcover@soldier3_wait
 
 [smartcover@clear_path_fire]
@@ -39,6 +41,7 @@ cover_state = fire_target
 ;target_path = red_bridge_csky_smart_soldier_3_f1_fire_look
 on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
 on_info2 = {=has_enemy_in_current_loopholes_fov()} smartcover@clear_path_fire2
+on_info3 = {+red_bridge_down_done} walker@bridge_walk_work_3
 
 [smartcover@clear_path_fire2]
 use_in_combat = true
@@ -48,6 +51,7 @@ invulnerable = true
 cover_name = red_bridge_east_smartcover_3
 on_info = {+red_bridge_allyes_skirmish2} camper@go_to_cover2
 on_info2 = {!has_enemy_in_current_loopholes_fov()} smartcover@clear_path_fire
+on_info3 = {+red_bridge_down_done} walker@bridge_walk_work_3
 
 [camper@go_to_cover2]
 meet = no_meet
@@ -58,6 +62,7 @@ path_walk = red_bridge_csky_smart_soldier_3_f2_walk
 path_look = red_bridge_csky_smart_soldier_3_f2_hide_look
 def_state_moving = sneak_run
 on_signal = action | smartcover@soldier_3_cover2
+on_info = {+red_bridge_down_done} walker@bridge_walk_work_3
 
 [smartcover@soldier_3_cover2]
 use_in_combat = true
@@ -88,6 +93,7 @@ def_state_moving1 = assault
 def_state_moving2 = assault
 def_state_moving3 = assault
 on_signal = action | camper@assault_work_3 %+red_bridge_csky_assault%
+on_info = {+red_bridge_csky_assault} camper@assault_work_3
 meet = no_meet
 
 [camper@assault_work_3]
@@ -120,6 +126,7 @@ out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_3_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
 on_signal = action | camper@wait_talk_work_3 %+red_bridge_cs3%
+on_info = {+red_bridge_cs3} camper@wait_talk_work_3
 
 [camper@wait_talk_work_3]
 invulnerable = true
@@ -133,7 +140,8 @@ invulnerable = true
 out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_3_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
-on_game_timer = 50 | {+red_bridge_csky_go_limansk} walker@bridge_guard_work_3
+on_game_timer = 50 | {+red_bridge_csky_go_limansk} walker@bridge_guard_work_3 %+red_bridge_cs_soldier_3_wait_1%
+on_info = {+red_bridge_cs_soldier_3_wait_1} walker@bridge_guard_work_3
 
 [remark@talk_work_3]
 invulnerable = true
@@ -149,3 +157,4 @@ out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_3_guard_walk
 path_look = red_bridge_csky_smart_soldier_3_guard_look
 meet = no_meet
+;on_info = {=dist_to_actor_ge(150) !actor_see_npc} %=destroy_object%

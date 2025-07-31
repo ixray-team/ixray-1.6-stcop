@@ -6,18 +6,23 @@ on_info = sr_idle@sniper_back_task_1 %+lim_go_to_hospital =give_inited_task(stor
 
 [sr_idle@sniper_back_task_1]
 on_info = {+katacomb_task_sniper_back} sr_idle@sniper_back_task_2 %=give_inited_task(storyline:hosp_task_sniper_back_rush_1:csky)%
+on_info2 = {+sniper_off} sr_idle@heli_task
 
 [sr_idle@sniper_back_task_2]
 on_info = {+hosp_task_sniper_back_rush_1_complete} sr_idle@sniper_back_task_3 %=give_inited_task(storyline:hosp_task_sniper_back_rush_2:csky)%
+on_info2 = {+sniper_off} sr_idle@heli_task
 
 [sr_idle@sniper_back_task_3]
 on_info = {+hosp_task_sniper_back_rush_2_complete} sr_idle@sniper_back_task_4 %=give_inited_task(storyline:hosp_task_sniper_back_rush_3:csky)%
+on_info2 = {+sniper_off} sr_idle@heli_task
 
 [sr_idle@sniper_back_task_4]
 on_info = {+hosp_task_sniper_back_rush_3_complete} sr_idle@kill_sniper_task %=give_inited_task(storyline:hosp_task_sniper_back_rush_4:csky)%
+on_info2 = {+sniper_off} sr_idle@heli_task
 
 [sr_idle@kill_sniper_task]
 on_info = {+katacomb_task_kill_sniper} sr_idle@heli_task %=give_inited_task(storyline:hosp_task_kill_sniper:csky)%
+on_info2 = {+sniper_off} sr_idle@heli_task
 
 [sr_idle@heli_task]
 on_info = {+katacomb_task_helicopter} sr_idle@z2_exit_task %=give_inited_task(storyline:hosp_task_heli:csky)%

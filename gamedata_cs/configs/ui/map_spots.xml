@@ -786,11 +786,11 @@
         </ui_pda2_quest_npc_location_mini_spot>
 
 		<!--task_highlight -->
-		<ui_pda_short_blink_point_location ttl="13">
+		<ui_pda_short_blink_point_location ttl="13" hint="disable_hint">
                 <level_map spot="ui_pda_blink_point_location_spot"/>
         </ui_pda_short_blink_point_location>
 
-		<ui_pda_long_blink_point_location ttl="26">
+		<ui_pda_long_blink_point_location ttl="26" hint="disable_hint">
                 <level_map spot="ui_pda_blink_point_location_spot"/>
         </ui_pda_long_blink_point_location>
 
@@ -800,6 +800,7 @@
 
 
 </map_spots>
+
 
 
 

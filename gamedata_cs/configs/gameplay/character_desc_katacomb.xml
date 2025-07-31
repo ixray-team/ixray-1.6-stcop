@@ -311,7 +311,7 @@
 		<rank>400</rank>
     <reputation>0</reputation>
 
-    <visual>actors\stalker_monolith\stalker_monolith_2</visual>
+    <visual>actors\stalker_monolith\stalker_monolith_4</visual>
     <supplies>
       [spawn] \n
       wpn_svu \n

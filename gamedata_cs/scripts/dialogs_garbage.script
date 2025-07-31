@@ -17,7 +17,7 @@ function reward_for_money(first_speaker, second_speaker)
 end
 
 function reward_for_flea_market(first_speaker, second_speaker)
-	dialogs.relocate_money(first_speaker, 1000,"out")
+	dialogs.relocate_money(first_speaker, 1000, "in")
 end
 
 function reward_before_attack(first_speaker, second_speaker)
