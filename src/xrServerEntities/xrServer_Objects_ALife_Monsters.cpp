@@ -1983,42 +1983,88 @@ void CSE_ALifeMonsterBase::STATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_u16			(m_spec_object_id);	
 }
 
+void CSE_ALifeMonsterBase::SyncWrite(NET_Packet& Packet)
+{
+	Packet.w_angle8(o_torso.pitch);
+	Packet.w_angle8(o_torso.yaw);
+
+	Packet << phSyncFlag;
+
+	if (phSyncFlag) 
+	{
+		physics_state->write(Packet);
+	}
+	else 
+	{
+		Packet << o_Position;
+	}
+
+	// Sound Sync
+	Packet << m_snd_sync_flag;
+
+	if (m_snd_sync_flag != eMonsterSound::monster_sound_no) 
+	{
+		Packet << m_snd_sync_sound;
+
+		if (m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay)
+		{
+			Packet << m_snd_sync_sound_delay;
+		}
+	}
+
+	Packet << u_motion_idx;
+	Packet << u_motion_slot;
+
+	float whealth = f_health;
+	clamp(whealth, 0.f, 1.f);
+
+	Packet.w_float_q8(whealth, 0, 1);
+}
+
+void CSE_ALifeMonsterBase::SyncRead(NET_Packet& Packet)
+{
+	Packet.r_angle8(o_torso.pitch);
+	Packet.r_angle8(o_torso.yaw);
+
+	Packet >> phSyncFlag;
+
+	if (phSyncFlag)
+	{
+		physics_state->read(Packet);
+		o_Position.set(physics_state->physics_position);
+	}
+	else
+	{
+		Packet >> o_Position;
+	}
+
+	// Sound Sync
+	Packet >> m_snd_sync_flag;
+
+	if (m_snd_sync_flag != eMonsterSound::monster_sound_no)
+	{
+		Packet >> m_snd_sync_sound;
+
+		if (m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay)
+		{
+			Packet >> m_snd_sync_sound_delay;
+		}
+	}
+
+	// Sound Sync
+	Packet >> u_motion_idx;
+	Packet >> u_motion_slot;
+
+	float health = 0;
+	Packet.r_float_q8(health, 0, 1);
+	set_health(health);
+}
+
 void CSE_ALifeMonsterBase::UPDATE_Read	(NET_Packet	&tNetPacket)
 {
 #ifdef XRGAME_EXPORTS
-	if(g_pGamePersistent->GameType() != eGameIDSingle) {
-		tNetPacket.r_angle8(o_torso.pitch);
-		tNetPacket.r_angle8(o_torso.yaw);
-
-		tNetPacket >> phSyncFlag;
-
-		if(phSyncFlag) 
-		{
-			physics_state->read(tNetPacket);
-			o_Position.set(physics_state->physics_position);
-		}
-		else
-		{
-			tNetPacket >> o_Position;
-		}
-
-		// Sound Sync
-		tNetPacket >> m_snd_sync_flag;
-
-		if(m_snd_sync_flag != eMonsterSound::monster_sound_no) {
-			tNetPacket >> m_snd_sync_sound;
-
-			if(m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay) {
-				tNetPacket >> m_snd_sync_sound_delay;
-			}
-		}
-		// Sound Sync
-
-		tNetPacket >> u_motion_idx;
-		tNetPacket >> u_motion_slot;
-
-		tNetPacket >> f_health;
-		set_health(f_health);
+	if(g_pGamePersistent->GameType() != eGameIDSingle)
+	{
 		return;
 	}
 #endif
@@ -2032,34 +2078,6 @@ void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet& tNetPacket)
 #ifdef XRGAME_EXPORTS
 	if(g_pGamePersistent->GameType() != eGameIDSingle) 
 	{
-		tNetPacket.w_angle8(o_torso.pitch);
-		tNetPacket.w_angle8(o_torso.yaw);
-
-		tNetPacket << phSyncFlag;
-
-		if(phSyncFlag) {
-			physics_state->write(tNetPacket);
-		}
-		else {
-			tNetPacket << o_Position;
-		}
-
-		// Sound Sync
-		tNetPacket << m_snd_sync_flag;
-
-		if(m_snd_sync_flag != eMonsterSound::monster_sound_no) {
-			tNetPacket << m_snd_sync_sound;
-
-			if(m_snd_sync_flag == eMonsterSound::monster_sound_play_with_delay) {
-				tNetPacket << m_snd_sync_sound_delay;
-			}
-		}
-		// Sound Sync
-
-		tNetPacket << u_motion_idx;
-		tNetPacket << u_motion_slot;
-
-		tNetPacket << get_health();
 		return;
 	}
 #endif
@@ -2071,7 +2089,8 @@ void CSE_ALifeMonsterBase::UPDATE_Write(NET_Packet& tNetPacket)
 BOOL CSE_ALifeMonsterBase::Net_Relevant() 
 {
 #ifdef XRGAME_EXPORTS
-	if(g_pGamePersistent->GameType() != eGameIDSingle) {
+	if(g_pGamePersistent->GameType() != eGameIDSingle)
+	{
 		return g_Alive();
 	}
 #endif
@@ -2240,6 +2259,13 @@ void CSE_ALifeHumanStalker::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 
 void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet& tNetPacket)
 {
+#ifdef XRGAME_EXPORTS
+	if (g_pGamePersistent->GameType() != eGameIDSingle)
+	{
+		return;
+	}
+#endif
+
 	inherited1::UPDATE_Write(tNetPacket);
 	inherited2::UPDATE_Write(tNetPacket);
 	tNetPacket.w_stringZ(m_start_dialog);
@@ -2247,6 +2273,13 @@ void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet& tNetPacket)
 
 void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet& tNetPacket)
 {
+#ifdef XRGAME_EXPORTS
+	if (g_pGamePersistent->GameType() != eGameIDSingle)
+	{
+		return;
+	}
+#endif
+
 	inherited1::UPDATE_Read(tNetPacket);
 	inherited2::UPDATE_Read(tNetPacket);
 	tNetPacket.r_stringZ(m_start_dialog);

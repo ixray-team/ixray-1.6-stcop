@@ -28,40 +28,126 @@ BOOL CBaseMonster::net_SaveRelevant	()
 	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell() != nullptr));
 }
 
+void CBaseMonster::SyncRead(NET_Packet& Packet)
+{
+	net_physics_state physics_state;
+	SRotation fv_direction;
+
+	Packet.r_angle8(fv_direction.pitch);
+	Packet.r_angle8(fv_direction.yaw);
+
+	bool phSyncFlag;
+	Packet >> phSyncFlag;
+
+	if (phSyncFlag)
+	{
+		physics_state.read(Packet);
+
+		monster_interpolation::net_update_A N_A;
+
+		N_A.State.enabled = physics_state.physics_state_enabled;
+		N_A.State.linear_vel = physics_state.physics_linear_velocity;
+		N_A.State.position = physics_state.physics_position;
+
+		N_A.o_torso = fv_direction;
+		N_A.dwTimeStamp = physics_state.dwTimeStamp;
+
+		postprocess_packet(N_A);
+	}
+	else
+	{
+		if (!g_Alive()) 
+		{
+			PHUnFreeze();
+		}
+
+		XFORM().rotateY(fv_direction.yaw);
+		Packet >> Position();
+
+		NET_A.clear();
+	}
+
+	net_Import_Sounds(Packet);
+
+	u16 u_motion_idx;
+	u16 u_motion_slot;
+
+	Packet >> u_motion_idx;
+	Packet >> u_motion_slot;
+
+	float f_health;
+
+	float rhealth = 0;
+	Packet.r_float_q8(rhealth, 0, 1);
+	SetfHealth(rhealth);
+
+	SPHNetState	State = {};
+
+	MotionID motion;
+	IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+	if (u_last_motion_idx != u_motion_idx || u_last_motion_slot != u_motion_slot)
+	{
+		u_last_motion_idx = u_motion_idx;
+		u_last_motion_slot = u_motion_slot;
+		motion.idx = u_motion_idx;
+		motion.slot = u_motion_slot;
+
+		if (motion.valid())
+		{
+			CStepManager::on_animation_start
+			(
+				motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
+				ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
+				ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0)
+			);
+		}
+	}
+
+	setVisible(TRUE);
+	setEnabled(TRUE);
+}
+
+void CBaseMonster::SyncWrite(NET_Packet& Packet)
+{
+	CPHSynchronize* sync = PHGetSyncItem(0);
+
+	Packet.w_angle8(movement().m_body.current.pitch);
+	Packet.w_angle8(movement().m_body.current.yaw);
+
+	Packet << (sync != nullptr);
+	if (sync)
+	{
+		SPHNetState state;
+		sync->get_State(state);
+
+		net_physics_state physics_state;
+		physics_state.fill(state, Level().timeServer());
+		physics_state.write(Packet);
+	}
+	else
+	{
+		Packet << Position();
+	}
+
+	net_Export_Sounds(Packet);
+
+	auto ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
+
+	Packet << ik_anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).idx;
+	Packet << ik_anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).slot;
+
+	float whealth = GetfHealth();
+	clamp(whealth, 0.f, 1.f);
+
+	Packet.w_float_q8(whealth, 0, 1);
+}
+
 void CBaseMonster::net_Export(NET_Packet& P) 
 {
 	R_ASSERT(Local());
 
-	if(!IsGameTypeSingle()) {
-		CPHSynchronize* sync = PHGetSyncItem(0);
-
-		P.w_angle8(movement().m_body.current.pitch);
-		P.w_angle8(movement().m_body.current.yaw);
-
-		if(sync) {
-			P << true;
-
-			SPHNetState state;
-			sync->get_State(state);
-
-			net_physics_state physics_state;
-			physics_state.fill(state, Level().timeServer());
-			physics_state.write(P);
-		}
-		else {
-			P << false;
-			P << Position();
-		}
-
-		net_Export_Sounds(P);
-
-		auto ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
-
-		P << ik_anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).idx;
-		P << ik_anim_obj->ID_Cycle_Safe(m_anim_base->cur_anim_info().name).slot;
-
-		P << GetfHealth();
-
+	if(!IsGameTypeSingle()) 
+	{
 		return;
 	}
 
@@ -84,13 +170,15 @@ void CBaseMonster::net_Export(NET_Packet& P)
 	P.w(&l_game_vertex_id, sizeof(l_game_vertex_id));
 	float f1 = 0;
 
-	if(ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
+	if(ai().game_graph().valid_vertex_id(l_game_vertex_id)) 
+	{
 		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w(&f1, sizeof(f1));
 		f1 = Position().distance_to(ai().game_graph().vertex(l_game_vertex_id)->level_point());
 		P.w(&f1, sizeof(f1));
 	}
-	else {
+	else
+	{
 		P.w(&f1, sizeof(f1));
 		P.w(&f1, sizeof(f1));
 	}
@@ -101,74 +189,6 @@ void CBaseMonster::net_Import(NET_Packet& P)
 	R_ASSERT(Remote());
 
 	if(!IsGameTypeSingle()) {
-		net_physics_state physics_state;
-		SRotation fv_direction;
-
-		P.r_angle8(fv_direction.pitch);
-		P.r_angle8(fv_direction.yaw);
-
-		bool phSyncFlag;
-		P >> phSyncFlag;
-
-		if(phSyncFlag) {
-			physics_state.read(P);
-
-			monster_interpolation::net_update_A N_A;
-
-			N_A.State.enabled = physics_state.physics_state_enabled;
-			N_A.State.linear_vel = physics_state.physics_linear_velocity;
-			N_A.State.position = physics_state.physics_position;
-
-			N_A.o_torso = fv_direction;
-			N_A.dwTimeStamp = physics_state.dwTimeStamp;
-
-			postprocess_packet(N_A);
-		}
-		else {
-			if(!g_Alive()) {
-				PHUnFreeze();
-			}
-
-			XFORM().rotateY(fv_direction.yaw);
-			P >> Position();
-
-			NET_A.clear();
-		}
-
-		net_Import_Sounds(P);
-
-		u16 u_motion_idx;
-		u16 u_motion_slot;
-
-		P >> u_motion_idx;
-		P >> u_motion_slot;
-
-		float f_health;
-
-		P >> f_health;
-		SetfHealth(f_health);
-
-		SPHNetState	State = {};
-
-		MotionID motion;
-		IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
-		if(u_last_motion_idx != u_motion_idx || u_last_motion_slot != u_motion_slot) {
-			u_last_motion_idx = u_motion_idx;
-			u_last_motion_slot = u_motion_slot;
-			motion.idx = u_motion_idx;
-			motion.slot = u_motion_slot;
-			if(motion.valid()) {
-				CStepManager::on_animation_start(
-					motion, ik_anim_obj->LL_PlayCycle(ik_anim_obj->LL_GetMotionDef(motion)->bone_or_part, motion, TRUE,
-					ik_anim_obj->LL_GetMotionDef(motion)->Accrue(), ik_anim_obj->LL_GetMotionDef(motion)->Falloff(),
-					ik_anim_obj->LL_GetMotionDef(motion)->Speed(), FALSE, 0, 0, 0)
-				);
-			}
-		}
-
-		setVisible(TRUE);
-		setEnabled(TRUE);
-
 		return;
 	}
 
