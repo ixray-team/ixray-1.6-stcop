@@ -937,7 +937,11 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 	// Queue shrink
 	VERIFY				(_valid(Position()));
 	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
-	VERIFY				(!NET.empty());
+	if (NET.empty())
+	{
+		return;
+	}
+
 	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
 
 	Fvector				vNewPosition = Position();
