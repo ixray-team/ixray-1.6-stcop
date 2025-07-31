@@ -17,31 +17,25 @@ float4 main(v2p_volume I) : SV_Target
 
     float3 Shift = O.Normal;
 
-    if (O.SSS > 0.5f)
+    if (O.SSS > 0.0f)
     {
         Shift *= dot(Ldynamic_dir.xyz, Shift) >= 0.0 ? -1.0f : 1.0f;
     }
 
     float4 Point = float4(O.Point.xyz, 1.f);
     Point.xyz += Shift * 0.025f;
-
-    // ----- shadow
+	
     float4 PS = mul(m_shadow, Point);
 
 #ifdef USE_FAR_ATTENTION
-    // Far edge fading code
     float3 Factor = smoothstep(0.5f, 0.45f, abs(PS.xyz / PS.w - 0.5f));
-
     float Fade = Factor.x * Factor.y * Factor.z;
-    O.SSS *= Fade * Fade;
+	
+    O.SSS *= 0.5f + 0.5f * Fade;
 #endif
 
-#ifdef USE_LEGACY_LIGHT
-    O.Roughness *= 1.0f - O.SSS;
-#endif
-
-    O.Normal = lerp(O.Normal, -Ldynamic_dir.xyz, O.SSS);
-    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness);
+    float3 Light = DirectLight(Ldynamic_color, Ldynamic_dir.xyz, O.Normal, O.View.xyz, O.Color, O.Metalness, O.Roughness, O.F0);
+    Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
 
 #if SUN_QUALITY == 2
     float Shadow = shadow_high(PS);
@@ -50,7 +44,10 @@ float4 main(v2p_volume I) : SV_Target
 #endif
 
 #ifdef USE_FAR_ATTENTION
-    Shadow = lerp(1.0f, Shadow, Fade);
+	float FarShadow = dot(Ldynamic_dir.xyz, O.Normal.xyz);
+	FarShadow = smoothstep(0.75f, 0.6f, FarShadow) * saturate(O.Hemi * 8.0f - 2.0f);
+	
+    Shadow = lerp(FarShadow, Shadow, Fade);
 
 #elif defined(USE_HUD_SHADOWS)
     if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > 0.0001f)
@@ -62,3 +59,4 @@ float4 main(v2p_volume I) : SV_Target
     Shadow *= sunmask(Point);
     return float4(Light * Shadow, Shadow);
 }
+
