@@ -239,6 +239,7 @@ public:
 	bool m_bUseGLHud = false;
 	bool m_bHideColimSightInAlter;
 	bool m_bIsAimStarted = false;
+	bool m_bRestGlSil = false;
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
 	bool m_bUseChamberInUpdateBones = false;
