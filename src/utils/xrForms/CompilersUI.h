@@ -70,3 +70,6 @@ struct CompilersMode
 void RenderMainUI();
 void RenderCompilerUI(int X, int Y);
 void InitializeUIData();
+
+
+extern CompilersMode gCompilerMode;;

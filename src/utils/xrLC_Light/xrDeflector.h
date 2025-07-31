@@ -1,5 +1,5 @@
 #pragma once
-#include "xrFaceDefs.h"
+#include "xrFace.h"
 #include "base_color.h"
 #include "lm_layer.h"
 #include "uv_tri.h"
