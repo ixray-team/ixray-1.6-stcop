@@ -281,7 +281,7 @@ void CLocatorAPI::LoadArchive(archive& A, LPCSTR entrypoint)
 
         if (!strstr(A.path.c_str(), ".xdb"))
         {
-            Msg("Assuming that [%s] is encrypted ShoC archive", A.path.c_str());
+            Msg("Assuming that [%s] is encrypted SoC archive", A.path.c_str());
             shouldDecrypt = true;
         }
 
