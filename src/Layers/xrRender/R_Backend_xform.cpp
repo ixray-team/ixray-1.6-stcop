@@ -39,6 +39,7 @@ void	R_xforms::set_V			(const Fmatrix& m)
 	if (c_vp)		RCache.set_c(c_vp,	m_vp);
 	if (c_wv)		RCache.set_c(c_wv,	m_wv);
 	if (c_wvp)		RCache.set_c(c_wvp,	m_wvp);
+	if (c_invv)		apply_invv();
 	RCache.set_xform(D3DTS_VIEW,m);
 }
 void	R_xforms::set_P			(const Fmatrix& m)
@@ -98,9 +99,18 @@ void	R_xforms::apply_invw()
 	RCache.set_c( c_invw, m_invw);
 }
 
+void R_xforms::apply_invv()
+{
+	VERIFY(c_invv);
+
+	m_invv.invert(m_v);
+	RCache.set_c(c_invv, m_invv);
+}
+
 void	R_xforms::unmap			()
 {
 	c_invw		= nullptr;
+	c_invv		= nullptr;
 
 	c_w			= nullptr;
 	c_v			= nullptr;
@@ -120,6 +130,7 @@ R_xforms::R_xforms ()
 {
 	unmap			();
 	m_invw.identity	();
+	m_invv.identity	();
 
 	m_w.identity	();
 	m_v.identity	();
