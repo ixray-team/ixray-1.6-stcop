@@ -134,7 +134,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	bool NeedExit = false;
 
-	while (!NeedExit)
+	while (!NeedExit && !UI->NeedQuit())
 	{
 		SDL_Event Event;
 		while (SDL_PollEvent(&Event))
