@@ -148,6 +148,7 @@ XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback;
 
 static void full_memory_stats()
 {
+	PROF_EVENT("full_memory_stats");
 	Memory.mem_compact();
 	u32		_process_heap = mem_usage_impl((HANDLE)_get_heap_handle(), 0, 0);
 #ifdef SEVERAL_ALLOCATORS

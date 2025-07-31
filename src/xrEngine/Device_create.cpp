@@ -62,6 +62,7 @@ void CRenderDevice::ConnectToRender()
 
 void CRenderDevice::Create	() 
 {
+	PROF_EVENT("CRenderDevice::Create");
 	if (b_is_Ready)		return;		// prevent double call
 	Statistic			= new CStats();
 
