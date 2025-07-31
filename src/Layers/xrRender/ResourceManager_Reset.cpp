@@ -36,17 +36,7 @@ void	CResourceManager::reset_begin			()
 	RCache.Vertex.reset_begin	();
 }
 
-#ifdef USE_DX11
-bool cmp_rtc(const CRTC* A, const CRTC* B) {
-	return A->_order < B->_order;
-}
-#endif
-
-bool cmp_rt(const CRT* A, const CRT* B) {
-	return A->_order < B->_order;
-}
-
-void	CResourceManager::reset_end				()
+void CResourceManager::reset_end()
 {
 	// create RDStreams
 	RCache.Vertex.reset_end		();
@@ -84,7 +74,10 @@ void	CResourceManager::reset_end				()
 		for (auto&[Name, Target] : m_rtargets)
 			m_rt_sorter.push_back(Target);
 
-		std::sort(m_rt_sorter.begin(), m_rt_sorter.end(),cmp_rt);
+		std::sort(m_rt_sorter.begin(), m_rt_sorter.end(),[](const CRT* A, const CRT* B) 
+		{
+			return A->_order < B->_order;
+		});
 
 		for (CRT* Target : m_rt_sorter)
 			Target->reset_end	();
