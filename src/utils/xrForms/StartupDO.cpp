@@ -21,28 +21,34 @@ void xrLight_Details();
 #include "CompilersUI.h"
 extern CompilersMode gCompilerMode;
 
-void StartupDO() 
+void StartupDO()
 {
 	bClose = FALSE;
 
-	char name[256];
- 	strcpy(name, gCompilerMode.level_name);
-	// Load project
-  
-	extern  HWND logWindow;
-	string256			temp;
-	xr_sprintf(temp, "%s - Detail Compiler", name);
-	SetWindowTextA(logWindow, temp);
+	for (auto& [Name, Selected] : gCompilerMode.Files)
+	{
+		if (!Selected)
+			continue;
 
-	FS.get_path("$level$")->_set(name);
+		char name[256];
+		strcpy(name, Name.data());
+		// Load project
 
-	Phase("Loading level...");
- 	gl_data.xrLoad();
+		extern HWND logWindow;
+		string256 temp;
+		xr_sprintf(temp, "%s - Detail Compiler", name);
+		SetWindowTextA(logWindow, temp);
 
-	gl_data.use_intel = gCompilerMode.Embree;
+		FS.get_path("$level$")->_set(name);
 
-	Phase("Lighting nodes...");
-	xrLight_Details();
+		Phase("Loading level...");
+		gl_data.xrLoad();
 
-	gl_data.slots_data.Free();
+		gl_data.use_intel = gCompilerMode.Embree;
+
+		Phase("Lighting nodes...");
+		xrLight_Details();
+
+		gl_data.slots_data.Free();
+	}
 }

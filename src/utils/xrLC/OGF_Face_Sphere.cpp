@@ -65,8 +65,8 @@ void OGF_Base::CalcBounds()
 	GetGeometry(V);
 	 
 	//se7kills (Merging Problems Need fix this)
-	if (V.size() < 3)
-		return; 
+	//if (V.size() < 3)
+	//	return; 
 	 
 	// 1: calc first variation
 	Fsphere	S1; Fsphere_compute(S1,&*V.begin(),(u32)V.size());

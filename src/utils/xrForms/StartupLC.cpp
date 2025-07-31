@@ -32,26 +32,25 @@ extern bool g_using_smooth_groups;
 
 extern CompilersMode gCompilerMode;;
 
-void StartupLC() 
+void StartupLC()
 {
 	create_global_data();
-// 	xr_strcpy(cmd, lpCmdLine);
-//	_strlwr(cmd);
-	
-	
-  	g_build_options.b_radiosity = gCompilerMode.LC_GI;
-	g_build_options.b_noise		= gCompilerMode.LC_Noise;
- 	g_using_smooth_groups		= !gCompilerMode.LC_NoSMG;
+	// 	xr_strcpy(cmd, lpCmdLine);
+	//	_strlwr(cmd);
+
+
+	g_build_options.b_radiosity = gCompilerMode.LC_GI;
+	g_build_options.b_noise = gCompilerMode.LC_Noise;
+	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
 
 	VERIFY(lc_global_data());
-	
-	lc_global_data()->SetLevelName(gCompilerMode.level_name);
+
 	lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
 	lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
 	lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
 	lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
 	lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
-	
+
 	// Se7kills
 	lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
 	lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
@@ -60,59 +59,63 @@ void StartupLC()
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 
-
 	// Load project
-	  
-	 
-
-	extern  HWND logWindow;
-	string256				temp;
-	xr_sprintf(temp, "%s - Levels Compiler", gCompilerMode.level_name);
-	SetWindowTextA(logWindow, temp);
-
-	string_path prjName;
-	FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, gCompilerMode.level_name, "\\build.prj"));
-
-	string256 phaseName;
-	Phase(xr_strconcat(phaseName, "Reading project [", gCompilerMode.level_name, "]..."));
-
-	string256 inf;
-	IReader* F = FS.r_open(prjName);
-	if (NULL == F) {
-		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", gCompilerMode.level_name);
-		clMsg(inf);
-		MessageBoxA(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
-		return;
-	}
-
-	// Version
-	F->r_chunk(EB_Version, &version);
-	clMsg("version: %d", version);
-	R_ASSERT(XRCL_CURRENT_VERSION == version);
-
-	// Header
-	b_params Params;
-	F->r_chunk(EB_Parameters, &Params);
-
-	// Conversion
-	Phase("Converting data structures...");
-	pBuild = new CBuild();
-	pBuild->Load(Params, *F);
-
-	lc_global_data()->SetOverrideSettings(gCompilerMode.IsOverloadedSettings);
-
-	if (gCompilerMode.IsOverloadedSettings)
+	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
-		g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
-		lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
-	} 
+		if (!Selected)
+			continue;
 
-	FS.r_close(F);
+		lc_global_data()->SetLevelName(Name.data());
+		extern HWND logWindow;
+		string256 temp;
+		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
+		SetWindowTextA(logWindow, temp);
 
-	// Call for builder
-	string_path lfn;
-	FS.update_path(lfn, _game_levels_, gCompilerMode.level_name);
-	pBuild->Run(lfn);
-	xr_delete(pBuild);
+		string_path prjName;
+		FS.update_path(prjName, "$game_levels$", xr_strconcat(prjName, Name.data(), "\\build.prj"));
+
+		string256 phaseName;
+		Phase(xr_strconcat(phaseName, "Reading project [", Name.data(), "]..."));
+
+		string256 inf;
+		IReader* F = FS.r_open(prjName);
+		if (NULL == F) 
+		{
+			xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", Name.data());
+			clMsg(inf);
+			MessageBoxA(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
+			return;
+		}
+
+		// Version
+		F->r_chunk(EB_Version, &version);
+		clMsg("version: %d", version);
+		R_ASSERT(XRCL_CURRENT_VERSION == version);
+
+		// Header
+		b_params Params;
+		F->r_chunk(EB_Parameters, &Params);
+
+		// Conversion
+		Phase("Converting data structures...");
+		pBuild = new CBuild();
+		pBuild->Load(Params, *F);
+
+		lc_global_data()->SetOverrideSettings(gCompilerMode.IsOverloadedSettings);
+
+		if (gCompilerMode.IsOverloadedSettings)
+		{
+			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
+			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
+			lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
+		}
+
+		FS.r_close(F);
+
+		// Call for builder
+		string_path lfn;
+		FS.update_path(lfn, _game_levels_, Name.data());
+		pBuild->Run(lfn);
+		xr_delete(pBuild);
+	}
 }
