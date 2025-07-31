@@ -335,7 +335,9 @@ const xr_vector<MemorySpace::CVisibleObject>& CScriptGameObject::memory_visible_
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member memory_visible_objects!");
 	NODEFAULT;
-	return {};
+
+	static xr_vector<MemorySpace::CVisibleObject> dummy;
+	return dummy;
 }
 
 const xr_vector<MemorySpace::CSoundObject>& CScriptGameObject::memory_sound_objects() const
@@ -347,7 +349,9 @@ const xr_vector<MemorySpace::CSoundObject>& CScriptGameObject::memory_sound_obje
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member memory_sound_objects!");
 	NODEFAULT;
-	return {};
+
+	static xr_vector<MemorySpace::CSoundObject> dummy;
+	return dummy;
 }
 
 const xr_vector<MemorySpace::CHitObject>& CScriptGameObject::memory_hit_objects() const
@@ -359,7 +363,9 @@ const xr_vector<MemorySpace::CHitObject>& CScriptGameObject::memory_hit_objects(
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member memory_hit_objects!");
 	NODEFAULT;
-	return {};
+
+	static xr_vector<MemorySpace::CHitObject> dummy;
+	return dummy;
 }
 
 void CScriptGameObject::ChangeTeam(u8 team, u8 squad, u8 group)
