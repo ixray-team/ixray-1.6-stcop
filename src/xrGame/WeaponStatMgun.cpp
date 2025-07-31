@@ -44,19 +44,23 @@ CWeaponStatMgun::~CWeaponStatMgun()
 void CWeaponStatMgun::SetBoneCallbacks()
 {
 	m_pPhysicsShell->EnabledCallbacks(FALSE);
-	
-	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
-	biX.set_callback		(bctCustom,BoneCallbackX,this);
-	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
-	biY.set_callback		(bctCustom,BoneCallbackY,this);
+
+	IKinematics* pK = PKinematics(Visual());
+
+	CBoneInstance& biX = pK->LL_GetBoneInstance(m_rotate_x_bone);
+	biX.set_callback(bctCustom, BoneCallbackX, this);
+	CBoneInstance& biY = pK->LL_GetBoneInstance(m_rotate_y_bone);
+	biY.set_callback(bctCustom, BoneCallbackY, this);
 }
 
 void CWeaponStatMgun::ResetBoneCallbacks()
 {
-	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
-	biX.reset_callback		();
-	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
-	biY.reset_callback		();
+	IKinematics* pK = PKinematics(Visual());
+
+	CBoneInstance& biX = pK->LL_GetBoneInstance(m_rotate_x_bone);
+	biX.reset_callback();
+	CBoneInstance& biY = pK->LL_GetBoneInstance(m_rotate_y_bone);
+	biY.reset_callback();
 
 	m_pPhysicsShell->EnabledCallbacks(TRUE);
 }
@@ -64,16 +68,16 @@ void CWeaponStatMgun::ResetBoneCallbacks()
 void CWeaponStatMgun::Load(LPCSTR section)
 {
 	inheritedPH::Load(section);
-	inheritedShooting::Load	(section);
+	inheritedShooting::Load(section);
 
-	m_sounds_layered.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
+	m_sounds_layered.LoadSound(section, "snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	m_Ammo->Load(pSettings->r_string(section, "ammo_class"), 0);
-	camMaxAngle			= pSettings->r_float		(section,"cam_max_angle"	); 
-	camMaxAngle			= _abs( deg2rad				(camMaxAngle) );
-	camRelaxSpeed		= pSettings->r_float		(section,"cam_relax_speed"	); 
-	camRelaxSpeed		= _abs( deg2rad				(camRelaxSpeed) );
+	camMaxAngle = pSettings->r_float(section, "cam_max_angle");
+	camMaxAngle = _abs(deg2rad(camMaxAngle));
+	camRelaxSpeed = pSettings->r_float(section, "cam_relax_speed");
+	camRelaxSpeed = _abs(deg2rad(camRelaxSpeed));
 
-	m_overheat_enabled = pSettings->line_exist(section, "overheat_enabled") ? !!pSettings->r_bool(section, "overheat_enabled") : false;
+	m_overheat_enabled = !!READ_IF_EXISTS(pSettings, r_bool, section, "overheat_enabled", false);
 	m_overheat_time_quant = READ_IF_EXISTS(pSettings, r_float, section, "overheat_time_quant", 0.025f);
 	m_overheat_decr_quant = READ_IF_EXISTS(pSettings, r_float, section, "overheat_decr_quant", 0.002f);
 	m_overheat_threshold = READ_IF_EXISTS(pSettings, r_float, section, "overheat_threshold", 110.f);
@@ -82,56 +86,57 @@ void CWeaponStatMgun::Load(LPCSTR section)
 	m_bEnterLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_enter", false);
 	m_bExitLocked = !!READ_IF_EXISTS(pSettings, r_bool, section, "lock_exit", false);
 
-	VERIFY( !fis_zero(camMaxAngle) );
-	VERIFY( !fis_zero(camRelaxSpeed) );
+	VERIFY(!fis_zero(camMaxAngle));
+	VERIFY(!fis_zero(camRelaxSpeed));
 }
 
 BOOL CWeaponStatMgun::net_Spawn(CSE_Abstract* DC)
 {
-	if(!inheritedPH::net_Spawn	(DC)) return FALSE;
+	if (!inheritedPH::net_Spawn(DC))
+	{
+		return FALSE;
+	}
 
+	IKinematics* K = PKinematics(Visual());
+	CInifile* pUserData = K->LL_UserData();
 
+	R_ASSERT2(pUserData, "Empty WeaponStatMgun user data!");
 
-	IKinematics* K			= smart_cast<IKinematics*>(Visual());
-	CInifile* pUserData		= K->LL_UserData(); 
-
-	R_ASSERT2				(pUserData,"Empty WeaponStatMgun user data!");
-
-	m_rotate_x_bone			= K->LL_BoneID	(pUserData->r_string("mounted_weapon_definition","rotate_x_bone"));
-	m_rotate_y_bone			= K->LL_BoneID	(pUserData->r_string("mounted_weapon_definition","rotate_y_bone"));
-	m_fire_bone				= K->LL_BoneID	(pUserData->r_string("mounted_weapon_definition","fire_bone"));
-	m_camera_bone			= K->LL_BoneID	(pUserData->r_string("mounted_weapon_definition","camera_bone"));
+	m_rotate_x_bone = K->LL_BoneID(pUserData->r_string("mounted_weapon_definition", "rotate_x_bone"));
+	m_rotate_y_bone = K->LL_BoneID(pUserData->r_string("mounted_weapon_definition", "rotate_y_bone"));
+	m_fire_bone = K->LL_BoneID(pUserData->r_string("mounted_weapon_definition", "fire_bone"));
+	m_camera_bone = K->LL_BoneID(pUserData->r_string("mounted_weapon_definition", "camera_bone"));
 
 	U16Vec fixed_bones;
-	fixed_bones.push_back	(K->LL_GetBoneRoot());
-	PPhysicsShell()			= P_build_Shell(this,false,fixed_bones);
+	fixed_bones.push_back(K->LL_GetBoneRoot());
+	PPhysicsShell() = P_build_Shell(this, false, fixed_bones);
 
-	CBoneData& bdX			= K->LL_GetData(m_rotate_x_bone); VERIFY(bdX.IK_data.type==jtJoint);
-	m_lim_x_rot.set			(bdX.IK_data.limits[0].limit.x,bdX.IK_data.limits[0].limit.y);
-	CBoneData& bdY			= K->LL_GetData(m_rotate_y_bone); VERIFY(bdY.IK_data.type==jtJoint);
-	m_lim_y_rot.set			(bdY.IK_data.limits[1].limit.x,bdY.IK_data.limits[1].limit.y);
-	
+	CBoneData& bdX = K->LL_GetData(m_rotate_x_bone); VERIFY(bdX.IK_data.type == jtJoint);
+	m_lim_x_rot.set(bdX.IK_data.limits[0].limit.x, bdX.IK_data.limits[0].limit.y);
+	CBoneData& bdY = K->LL_GetData(m_rotate_y_bone); VERIFY(bdY.IK_data.type == jtJoint);
+	m_lim_y_rot.set(bdY.IK_data.limits[1].limit.x, bdY.IK_data.limits[1].limit.y);
+
 
 	xr_vector<Fmatrix> matrices;
-	K->LL_GetBindTransform	(matrices);
-	m_i_bind_x_xform.invert	(matrices[m_rotate_x_bone]);
-	m_i_bind_y_xform.invert	(matrices[m_rotate_y_bone]);
-	m_bind_x_rot			= matrices[m_rotate_x_bone].k.getP();
-	m_bind_y_rot			= matrices[m_rotate_y_bone].k.getH();
-	m_bind_x.set			(matrices[m_rotate_x_bone].c);
-	m_bind_y.set			(matrices[m_rotate_y_bone].c);
+	K->LL_GetBindTransform(matrices);
+	m_i_bind_x_xform.invert(matrices[m_rotate_x_bone]);
+	m_i_bind_y_xform.invert(matrices[m_rotate_y_bone]);
+	m_bind_x_rot = matrices[m_rotate_x_bone].k.getP();
+	m_bind_y_rot = matrices[m_rotate_y_bone].k.getH();
+	m_bind_x.set(matrices[m_rotate_x_bone].c);
+	m_bind_y.set(matrices[m_rotate_y_bone].c);
 
-	m_cur_x_rot				= m_bind_x_rot;
-	m_cur_y_rot				= m_bind_y_rot;
-	m_destEnemyDir.setHP	(m_bind_y_rot,m_bind_x_rot);
-	XFORM().transform_dir	(m_destEnemyDir);
+	m_cur_x_rot = m_bind_x_rot;
+	m_cur_y_rot = m_bind_y_rot;
+	m_destEnemyDir.setHP(m_bind_y_rot, m_bind_x_rot);
+	XFORM().transform_dir(m_destEnemyDir);
 
 	inheritedShooting::Light_Create();
 
-	processing_activate		();
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
-	return					TRUE;
+	processing_activate();
+	setVisible(TRUE);
+	setEnabled(TRUE);
+	return TRUE;
 }
 
 void CWeaponStatMgun::net_Destroy()

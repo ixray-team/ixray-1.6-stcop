@@ -284,42 +284,42 @@ void CUIMpTradeWnd::CreateHelperItems (CUIDragDropListEx* list, const CStoreHier
 	}
 }
 
-void CUIMpTradeWnd::CreateHelperItems (CUIDragDropListEx* list)
+void CUIMpTradeWnd::CreateHelperItems(CUIDragDropListEx* list)
 {
 	CUIDragDropListEx* parent_list = nullptr;
 
-	if ( list == m_list[e_pistol_ammo] )
+	if (list == m_list[e_pistol_ammo])
 	{
-		parent_list								=	m_list[e_pistol];
+		parent_list = m_list[e_pistol];
 	}
-	else if ( list == m_list[e_rifle_ammo] )
+	else if (list == m_list[e_rifle_ammo])
 	{
-		parent_list								=	m_list[e_rifle];
+		parent_list = m_list[e_rifle];
 	}
 
-	if ( list == m_list[e_medkit] || list == m_list[e_granade] )
+	if (list == m_list[e_medkit] || list == m_list[e_granade])
 	{
 		CreateHelperItems(list, &m_store_hierarchy->GetRoot());
 		return;
 	}
 
 	VERIFY(parent_list);
-	if ( !parent_list->ItemsCount() )
+	if (!parent_list->ItemsCount())
 	{
 		return;
 	}
 
-	CInventoryItem* parent_item					=	(CInventoryItem*)parent_list->GetItemIdx(0)->m_pData;
-	CWeapon*		wpn							=	smart_cast<CWeapon*>(parent_item);
-	R_ASSERT	   (wpn);
+	CInventoryItem* parent_item = (CInventoryItem*)parent_list->GetItemIdx(0)->m_pData;
+	CWeapon* wpn = parent_item != nullptr ? parent_item->cast_weapon() : nullptr;
+	R_ASSERT(wpn);
 
-	CreateHelperItems								(wpn->m_ammoTypes);
+	CreateHelperItems(wpn->m_ammoTypes);
 
-	if ( CWeaponMagazinedWGrenade* wpn2			=	smart_cast<CWeaponMagazinedWGrenade*>(parent_item) )
+	if (CWeaponMagazinedWGrenade* wpn2 = parent_item != nullptr ? parent_item->cast_weapon_magazined_w_grenade() : nullptr)
 	{
-		if ( wpn2->IsGrenadeLauncherAttached() )
+		if (wpn2->IsGrenadeLauncherAttached())
 		{
-			CreateHelperItems						(wpn2->m_ammoTypes2);
+			CreateHelperItems(wpn2->m_ammoTypes2);
 		}
 	}
 }

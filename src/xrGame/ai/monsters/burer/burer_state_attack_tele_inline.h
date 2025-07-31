@@ -110,9 +110,10 @@ void CStateBurerAttackTele<Object>::deactivate()
 			{
 				continue;
 			}
-			if ( CGrenade* grenade = smart_cast<CGrenade*>(cur_object) )
+
+			if (CGrenade* grenade = cur_object->cast_grenade())
 			{
-				grenade->set_destroy_callback		(NULL);
+				grenade->set_destroy_callback(nullptr);
 			}
 		}
 	}
@@ -189,26 +190,30 @@ bool CStateBurerAttackTele<Object>::check_completion()
 //////////////////////////////////////////////////////////////////////////
 
 template <typename Object>
-void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjects, const Fvector &pos)
+void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*>& tpObjects, const Fvector& pos)
 {
-	Level().ObjectSpace.GetNearest	(tpObjects, pos, this->object->m_tele_find_radius, NULL);
+	Level().ObjectSpace.GetNearest(tpObjects, pos, this->object->m_tele_find_radius, NULL);
 
-	for (u32 i=0;i<tpObjects.size();i++) {
-		CPhysicsShellHolder *obj			=	smart_cast<CPhysicsShellHolder *>(tpObjects[i]);
-		CCustomMonster		*custom_monster	=	smart_cast<CCustomMonster *>(tpObjects[i]);
-		CGrenade			*grenade		=	smart_cast<CGrenade *>(tpObjects[i]);
-		
+	for (CObject* object : tpObjects)
+	{
+		CPhysicsShellHolder* obj = object->cast_physics_shell_holder();
+		CCustomMonster* custom_monster = object->cast_custom_monster();
+		CGrenade* grenade = object->cast_grenade();
+
 		if (grenade || // grenades are handled by HandleGrenades function
-			!obj || 
-			!obj->PPhysicsShell() || 
-			!obj->PPhysicsShell()->isActive()|| 
+			!obj ||
+			!obj->PPhysicsShell() ||
+			!obj->PPhysicsShell()->isActive() ||
 			custom_monster ||
-			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) || 
-			(obj->m_pPhysicsShell->getMass() < this->object->m_tele_object_min_mass) || 
-			(obj->m_pPhysicsShell->getMass() > this->object->m_tele_object_max_mass) || 
+			(obj->spawn_ini() && obj->spawn_ini()->section_exist("ph_heavy")) ||
+			(obj->m_pPhysicsShell->getMass() < this->object->m_tele_object_min_mass) ||
+			(obj->m_pPhysicsShell->getMass() > this->object->m_tele_object_max_mass) ||
 			(obj == this->object) ||
-			this->object->CTelekinesis::is_active_object(obj) || 
-			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
+			this->object->CTelekinesis::is_active_object(obj) ||
+			!obj->m_pPhysicsShell->get_ApplyByGravity())
+		{
+			continue;
+		}
 
 		tele_objects.push_back(obj);
 	}
@@ -462,40 +467,39 @@ void  CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade
 }
 
 template <typename Object>
-void CStateBurerAttackTele<Object>::HandleGrenades ()
-{	
-	if ( current_time() < m_last_grenade_scan + 1000 )
+void CStateBurerAttackTele<Object>::HandleGrenades()
+{
+	if (current_time() < m_last_grenade_scan + 1000)
 	{
 		return;
 	}
 
 	m_nearest.resize(0);
-	Level().ObjectSpace.GetNearest		(m_nearest, this->object->Position(), this->object->m_tele_find_radius, NULL);
+	Level().ObjectSpace.GetNearest(m_nearest, this->object->Position(), this->object->m_tele_find_radius, NULL);
 
-	for ( u32 i=0; i<m_nearest.size(); ++i )
+	for (CObject* object : m_nearest)
 	{
-		CGrenade*		grenade		=	smart_cast<CGrenade *>(m_nearest[i]);
+		CGrenade* grenade = object->cast_grenade();
 
-		if ( !grenade ||
-			 !grenade->PPhysicsShell() || 
-			 !grenade->PPhysicsShell()->isActive() || 
-			  this->object->CTelekinesis::is_active_object(grenade) || 
-			 !grenade->m_pPhysicsShell->get_ApplyByGravity() )
+		if (!grenade ||
+			!grenade->PPhysicsShell() ||
+			!grenade->PPhysicsShell()->isActive() ||
+			this->object->CTelekinesis::is_active_object(grenade) ||
+			!grenade->m_pPhysicsShell->get_ApplyByGravity())
 		{
 			continue;
 		}
 
-		grenade->set_destroy_callback	( CGrenade::destroy_callback(this, 
-										  &CStateBurerAttackTele<Object>::OnGrenadeDestroyed) );
+		grenade->set_destroy_callback(CGrenade::destroy_callback(this, &CStateBurerAttackTele<Object>::OnGrenadeDestroyed));
 
-		float const height			=	2.5f;
-		bool  const rotate			=	false;
+		float const height = 2.5f;
+		bool const rotate = false;
 
-		CTelekineticObject* tele_obj=	this->object->CTelekinesis::activate(grenade, 3.f, height, 10000, rotate);
-		tele_obj->set_sound				(this->object->sound_tele_hold, this->object->sound_tele_throw);
-		this->object->StartTeleObjectParticle	(grenade);
-	
-		if ( this->object->CTelekinesis::get_objects_count() >= this->object->m_tele_max_handled_objects + 1 ) 
+		CTelekineticObject* tele_obj = this->object->CTelekinesis::activate(grenade, 3.0f, height, 10000, rotate);
+		tele_obj->set_sound(this->object->sound_tele_hold, this->object->sound_tele_throw);
+		this->object->StartTeleObjectParticle(grenade);
+
+		if (this->object->CTelekinesis::get_objects_count() >= this->object->m_tele_max_handled_objects + 1)
 		{
 			break;
 		}

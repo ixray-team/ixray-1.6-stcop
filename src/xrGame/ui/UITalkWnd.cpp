@@ -67,9 +67,12 @@ void CUITalkWnd::InitTalkWnd()
 void CUITalkWnd::InitTalkDialog()
 {
 	m_pActor = Actor();
-	if (m_pActor && !m_pActor->IsTalking()) return;
+	if (m_pActor != nullptr && !m_pActor->IsTalking())
+	{
+		return;
+	}
 
-	m_pOurInvOwner = smart_cast<CInventoryOwner*>(m_pActor);
+	m_pOurInvOwner = m_pActor->cast_inventory_owner();
 	m_pOthersInvOwner = m_pActor->GetTalkPartner();
 
 	m_pOurDialogManager = smart_cast<CPhraseDialogManager*>(m_pOurInvOwner);
@@ -79,17 +82,17 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOurInvOwner);
 	UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
-	
+
 	//очистить лог сообщений
 	UITalkDialogWnd->ClearAll();
 
-	InitOthersStartDialog					();
-	NeedUpdateQuestions						();
-	Update									();
+	InitOthersStartDialog();
+	NeedUpdateQuestions();
+	Update();
 
-	UITalkDialogWnd->mechanic_mode			= m_pOthersInvOwner->SpecificCharacter().upgrade_mechanic();
-	UITalkDialogWnd->SetOsoznanieMode		(m_pOthersInvOwner->NeedOsoznanieMode());
-	UITalkDialogWnd->Show					();
+	UITalkDialogWnd->mechanic_mode = m_pOthersInvOwner->SpecificCharacter().upgrade_mechanic();
+	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
+	UITalkDialogWnd->Show();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 }
 
@@ -242,32 +245,37 @@ void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 void CUITalkWnd::Update()
 {
 	//остановить разговор, если нужно
-	if (g_actor && m_pActor && !m_pActor->IsTalking() )
+	if (g_actor && m_pActor && !m_pActor->IsTalking())
 	{
 		StopTalk();
-	}else{
-		CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurInvOwner);
-		CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
-	
-		if(	nullptr==pOurGO || nullptr==pOtherGO )
+	}
+	else
+	{
+		CGameObject* pOurGO = m_pOurInvOwner != nullptr ? m_pOurInvOwner->cast_game_object() : nullptr;
+		CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
+
+		if (nullptr == pOurGO || nullptr == pOtherGO)
+		{
 			HideDialog();
+		}
 	}
 
-	if(m_bNeedToUpdateQuestions)
+	if (m_bNeedToUpdateQuestions)
 	{
-		UpdateQuestions			();
+		UpdateQuestions();
 	}
-	inherited::Update			();
-	UpdateCameraDirection		(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
+
+	inherited::Update();
+	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
 
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
-	if(playing_sound())
+	if (playing_sound())
 	{
-		CGameObject* pOtherGO	= smart_cast<CGameObject*>(m_pOthersInvOwner);
-		Fvector P				= pOtherGO->Position();
-		P.y						+= 1.8f;
-		m_sound.set_position	(P);
+		CGameObject* pOtherGO = m_pOthersInvOwner != nullptr ? m_pOthersInvOwner->cast_game_object() : nullptr;
+		Fvector P = pOtherGO->Position();
+		P.y += 1.8f;
+		m_sound.set_position(P);
 	}
 }
 
@@ -465,16 +473,16 @@ void CUITalkWnd::PlaySnd(LPCSTR text)
 	//	strconcat( sizeof(fn), fn, "characters_voice\\dialogs\\", text2, ".ogg" );
 
 	StopSnd();
-	if ( FS.exist( "$game_sounds$", fn ) )
+	if (FS.exist("$game_sounds$", fn))
 	{
-		VERIFY( m_pActor );
-		if ( !m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fn) )
+		VERIFY(m_pActor);
+		if (!m_pActor->OnDialogSoundHandlerStart(m_pOthersInvOwner, fn))
 		{
-			CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
+			CGameObject* pOtherGO = m_pOthersInvOwner->cast_game_object();
 			Fvector P = pOtherGO->Position();
-			P.y			+= 1.8f;
-			m_sound.create( fn, st_Effect, sg_SourceType );
-			m_sound.play_at_pos( 0, P );
+			P.y += 1.8f;
+			m_sound.create(fn, st_Effect, sg_SourceType);
+			m_sound.play_at_pos(0, P);
 		}
 	}
 }
