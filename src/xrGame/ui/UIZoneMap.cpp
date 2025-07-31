@@ -137,35 +137,41 @@ void CUIZoneMap::Render			()
 void CUIZoneMap::Update()
 {
 	if (disabled)
-		return;
-
-	CActor* pActor = smart_cast<CActor*>( Level().CurrentViewEntity() );
-	if ( !pActor ) return;
-
-	if ( !( Device.dwFrame % 20 ) && IsGameTypeSingleCompatible() )
 	{
-		string16	text_str;
-		xr_strcpy( text_str, sizeof(text_str), "" );
-
-		CPda* pda = pActor->GetPDA();
-		if ( pda )
-		{
-			u32 cn = pda->ActiveContactsNum();
-			if ( cn > 0 )
-			{
-				xr_sprintf( text_str, sizeof(text_str), "%d", cn );
-			}
-		}
-		m_Counter_text.SetText( text_str );
+		return;
 	}
 
-	UpdateRadar( Device.vCameraPosition );
+	CObject* obj = Level().CurrentViewEntity();
+	CActor* pActor = obj != nullptr ? obj->cast_actor() : nullptr;
+	if (pActor == nullptr)
+	{
+		return;
+	}
+
+	if (!(Device.dwFrame % 20) && IsGameTypeSingleCompatible())
+	{
+		string16	text_str;
+		xr_strcpy(text_str, sizeof(text_str), "");
+
+		CPda* pda = pActor->GetPDA();
+		if (pda)
+		{
+			u32 cn = pda->ActiveContactsNum();
+			if (cn > 0)
+			{
+				xr_sprintf(text_str, sizeof(text_str), "%d", cn);
+			}
+		}
+		m_Counter_text.SetText(text_str);
+	}
+
+	UpdateRadar(Device.vCameraPosition);
 	float h, p;
-	Device.vCameraDirection.getHP( h, p );
-	SetHeading( -h );
+	Device.vCameraDirection.getHP(h, p);
+	SetHeading(-h);
 
 	if (m_clock_wnd)
-		m_clock_wnd->TextItemControl()->SetText( InventoryUtilities::GetGameTimeAsString( InventoryUtilities::etpTimeToMinutes ).c_str() );
+		m_clock_wnd->TextItemControl()->SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
 }
 
 void CUIZoneMap::SetHeading		(float angle)

@@ -120,23 +120,21 @@ void SBinocVisibleObj::Update()
 
 			//-----------------------------------------------------
 			CActor* pActor = nullptr;
-			if (IsGameTypeSingle()) pActor = Actor();
-			else
+			if (CObject* obj = Level().CurrentViewEntity())
 			{
-				if (Level().CurrentViewEntity())
-				{
-					pActor = smart_cast<CActor*> (Level().CurrentViewEntity());
-				}
+				pActor = obj->cast_actor();
 			}
-			if (pActor) 
+
+			if (pActor != nullptr) 
 			{
 				//-----------------------------------------------------
 
-				CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pActor);
-				CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(m_object);
-				CBaseMonster	*monster			= smart_cast<CBaseMonster*>(m_object);
+				CInventoryOwner* our_inv_owner = pActor->cast_inventory_owner();
+				CInventoryOwner* others_inv_owner = m_object->cast_inventory_owner();
+				CBaseMonster* monster = m_object->cast_base_monster();
 
-				if(our_inv_owner && others_inv_owner && !monster){
+				if(our_inv_owner && others_inv_owner && !monster)
+				{
 					if (IsGameTypeSingle())
 					{
 						switch(RELATION_REGISTRY().GetRelationType(others_inv_owner, our_inv_owner))
@@ -151,8 +149,8 @@ void SBinocVisibleObj::Update()
 					}
 					else
 					{
-						CEntityAlive* our_ealive		= smart_cast<CEntityAlive*>(pActor);
-						CEntityAlive* others_ealive		= smart_cast<CEntityAlive*>(m_object);
+						CEntityAlive* our_ealive = pActor->cast_entity_alive();
+						CEntityAlive* others_ealive = m_object->cast_entity_alive();
 						if (our_ealive && others_ealive)
 						{
 							if (Game().IsEnemy(our_ealive, others_ealive))
@@ -196,15 +194,16 @@ void CBinocularsVision::Update()
 		return;
 	//-----------------------------------------------------
 	const CActor* pActor = nullptr;
-	if (IsGameTypeSingle()) pActor = Actor();
-	else
+	if (CObject* obj = Level().CurrentViewEntity())
 	{
-		if (Level().CurrentViewEntity())
-		{
-			pActor = smart_cast<const CActor*> (Level().CurrentViewEntity());
-		}
+		pActor = obj->cast_actor();
 	}
-	if (!pActor) return;
+
+	if (pActor == nullptr)
+	{
+		return;
+	}
+
 	//-----------------------------------------------------
 	const CVisualMemoryManager::VISIBLES& vVisibles = pActor->memory().visual().objects();
 
@@ -216,15 +215,19 @@ void CBinocularsVision::Update()
 	CVisualMemoryManager::VISIBLES::const_iterator v_it = vVisibles.begin();
 	for (; v_it!=vVisibles.end(); ++v_it)
 	{
-		const CObject*	_object_			= (*v_it).m_object;
+		const CObject* _object_ = (*v_it).m_object;
 		if (!pActor->memory().visual().visible_right_now(smart_cast<const CGameObject*>(_object_)))
+		{
 			continue;
+		}
 
 		CObject* object_ = const_cast<CObject*>(_object_);
-		
+		CEntityAlive* EA = object_->cast_entity_alive();
 
-		CEntityAlive*	EA = smart_cast<CEntityAlive*>(object_);
-		if(!EA || !EA->g_Alive())						continue;
+		if (EA == nullptr || !EA->g_Alive())
+		{
+			continue;
+		}
 		
 
 		FindVisObjByObject	f				(object_);
