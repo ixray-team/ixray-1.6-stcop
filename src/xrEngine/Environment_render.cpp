@@ -197,7 +197,7 @@ void CEnvironment::RenderClouds			()
 
 void CEnvironment::RenderFlares()
 {
-	if (0 == g_pGameLevel)
+	if (0 == g_pGameLevel && !Device.IsEditorMode())
 		return;
 
 	// 1

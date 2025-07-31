@@ -92,7 +92,26 @@ void EScene::Render( const Fmatrix& camera )
             }
         }
     }
-    
+
+	auto RENDER_SCENE_TOOLS = [scene_tools](int P, bool B)
+	{
+		SceneMToolsIt s_it = scene_tools.begin();
+		SceneMToolsIt s_end = scene_tools.end();
+		for (; s_it != s_end; s_it++) 
+        {
+			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
+			RCache.set_xform_world(Fidentity);
+			try 
+            {
+				(*s_it)->OnRenderRoot(P, B);
+			}
+			catch (...) 
+            {
+				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'", (*s_it)->ClassName()); \
+			}
+		}
+	};
+
 // priority #0
     // normal
     mapRenderObjects.traverseLR		(object_Normal_0);

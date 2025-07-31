@@ -333,12 +333,15 @@ void CCustomPreferences::Load()
 				scene_recent_list.push_back(fn.c_str());
 		}
 	}
-    // Weather
-    env_from_time = JSONData["editor_prefs"]["env_from_time"];
-    env_to_time = JSONData["editor_prefs"]["env_to_time"];
-    env_speed = JSONData["editor_prefs"]["env_speed"];
-    sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
+	// Weather
+	if (JSONData["editor_prefs"].contains("env_from_time"))
+	{
+		env_from_time = JSONData["editor_prefs"]["env_from_time"];
+		env_to_time = JSONData["editor_prefs"]["env_to_time"];
+		env_speed = JSONData["editor_prefs"]["env_speed"];
+	}
 
+	sWeather = ((std::string)(JSONData["editor_prefs"]["weather"])).c_str();
 	if (JSONData["ContentBrowser"].contains("file_custom_icon"))
 	{
 		custom_icons = JSONData["ContentBrowser"]["file_custom_icon"].get<std::map<std::string, std::string>>();

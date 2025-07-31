@@ -375,22 +375,18 @@ void CLevelTool::ZoomObject(BOOL bSelectedOnly)
 
 void CLevelTool::GetCurrentFog(u32& fog_color, float& s_fog, float& e_fog)
 {
-
-	if (psDeviceFlags.is(rsEnvironment)&&psDeviceFlags.is(rsFog)||UI->IsPlayInEditor())
+	if (psDeviceFlags.is(rsEnvironment) && psDeviceFlags.is(rsFog) || UI->IsPlayInEditor())
 	{
-		s_fog				= g_pGamePersistent->Environment().CurrentEnv->fog_near;
-		e_fog				= g_pGamePersistent->Environment().CurrentEnv->fog_far;
-		Fvector& f_clr		= g_pGamePersistent->Environment().CurrentEnv->fog_color;
-		fog_color 			= color_rgba_f(f_clr.x,f_clr.y,f_clr.z,1.f);
+		s_fog = g_pGamePersistent->Environment().CurrentEnv->fog_near;
+		e_fog = g_pGamePersistent->Environment().CurrentEnv->fog_far;
+		Fvector& f_clr = g_pGamePersistent->Environment().CurrentEnv->fog_color;
+		fog_color = color_rgba_f(f_clr.x, f_clr.y, f_clr.z, 1.f);
 	}
 	else
 	{
-   
-		s_fog				= psDeviceFlags.is(rsFog)?(1.0f - fFogness)* 0.85f * UI->ZFar():0.99f*UI->ZFar();
-		e_fog				= psDeviceFlags.is(rsFog)?0.91f * UI->ZFar():UI->ZFar();
-
+		s_fog = psDeviceFlags.is(rsFog) ? (1.0f - fFogness) * 0.85f * UI->ZFar() : 0.99f * UI->ZFar();
+		e_fog = psDeviceFlags.is(rsFog) ? 0.91f * UI->ZFar() : UI->ZFar();
 	}
-	
 }
 
 
