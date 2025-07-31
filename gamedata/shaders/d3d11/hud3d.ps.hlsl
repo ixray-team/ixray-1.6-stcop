@@ -8,5 +8,7 @@ struct ui_vert_out
 float4 main(ui_vert_out I) : SV_Target
 {
     float4 r = s_base.Sample(smp_base, I.tc0);
+    r.xyz = PushGamma(r.xyz);
+
     return r;
 }
