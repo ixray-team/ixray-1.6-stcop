@@ -24,10 +24,9 @@ file(GLOB CORE_SOURCE_LZ_FILES
 	"lzhuf.h"
 )
 
-file(GLOB CORE_SOURCE_XML_FILES
-	"FormatParsers/XML/*.cpp"
-	"FormatParsers/XML/*.h"
-)
+file(GLOB CORE_SOURCE_XML_FILES "FormatParsers/XML/*.*")
+file(GLOB CORE_SOURCE_JSON_FILES "FormatParsers/json/*.*")
+file(GLOB CORE_SOURCE_YAML_FILES "FormatParsers/YAML/*.*")
 
 file(GLOB CORE_SOURCE_STACK_FILES
 	"StackTrace/*.h"
@@ -105,7 +104,9 @@ source_group("compressors/lz" FILES ${CORE_SOURCE_LZ_FILES})
 source_group("compressors/ppmd" FILES ${CORE_SOURCE_PPMD_FILES})
 source_group("core/fs" FILES ${CORE_SOURCE_FS_FILES})
 source_group("core/stl" FILES ${CORE_SOURCE_STL_FILES})
-source_group("core/XML" FILES ${CORE_SOURCE_XML_FILES})
+source_group("core/formats/YAML" FILES ${CORE_SOURCE_YAML_FILES})
+source_group("core/formats/XML" FILES ${CORE_SOURCE_XML_FILES})
+source_group("core/formats/json" FILES ${CORE_SOURCE_JSON_FILES})
 source_group("core/Crypto" FILES ${CORE_SOURCE_CRYPTO_FILES})
 source_group("core/StackTrace" FILES ${CORE_SOURCE_STACK_FILES})
 source_group("discord" FILES ${CORE_SOURCE_DISCORD_FILES})
