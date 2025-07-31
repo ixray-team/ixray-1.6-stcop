@@ -48,9 +48,9 @@ void RenderMainUI()
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
 		 
-		ImGui::Text("Levels:");
+		//ImGui::Text("Levels:");
 
-		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 100) };
+		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 75) };
 		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
 			// 
@@ -65,7 +65,7 @@ void RenderMainUI()
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			
-			ImVec2 ListBoxSize2 = { 168, float(Size[1] - 175) };
+			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 115) };
 			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
 			{
 				ImGui::TableSetupColumn("Name");
@@ -90,76 +90,6 @@ void RenderMainUI()
 				ImGui::EndTable();
 			}
 
-			auto BSize = ImGui::GetContentRegionAvail();
-
-			if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
-			{
-				bool isReady = false;
-				if (gCompilerMode.LC)
-				{
-					for (auto& FILE : Files)
-					{
-						if (FILE.Select)
-						{
-							strcpy(gCompilerMode.level_name, FILE.Name.c_str());
-							break;
-						}
-					}
-					isReady = true;
-					Msg("Level For Building : %s", gCompilerMode.level_name);
-				}
-
-				if (gCompilerMode.AI)
-				{
-					std::string temp_maps;
-
-					int Size = 0;
-					for (auto& FILE : Files)
-					{
-						if (FILE.Select)
-						{
-							temp_maps += FILE.Name.c_str();
-							temp_maps += ",";
-							Size++;
-							//break;
-						}
-					}
-
-					if (Size > 1)
-						temp_maps.pop_back();
-					
-				
-					if (gCompilerMode.AI_BuildLevel)
-					{
-						if (Size > 1)
-						{	
-							Msg("Dont Correct Level Size > 1");
-							return;
-						}
-
-						strcpy( gCompilerMode.level_name, temp_maps.c_str() );
-						isReady = true;
-					}
-					 
-					if (gCompilerMode.AI_BuildSpawn)
-					{
-						strcpy(gCompilerMode.level_name, temp_maps.c_str());
-						isReady = true;
-					}
-
-					
-
-					Msg("Level For Building : %s", temp_maps.c_str());
-				}
-				
-				if (isReady)
-				{
-					extern void StartCompile();
-					StartCompile();
-				}
-
- 			}
-			 
 			ImGui::TableSetColumnIndex(1);
 			
 			DrawCompilerConfig();
@@ -177,17 +107,84 @@ void RenderMainUI()
 			DrawDOConfig();
 
 			ImGui::EndTable();  
-
-			
- 			
 		}
 	}
+	auto BSize = ImGui::GetContentRegionAvail();
+
+	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
+	{
+		bool isReady = false;
+		if (gCompilerMode.LC)
+		{
+			for (auto& FILE : Files)
+			{
+				if (FILE.Select)
+				{
+					strcpy(gCompilerMode.level_name, FILE.Name.c_str());
+					break;
+				}
+			}
+			isReady = true;
+			Msg("Level For Building : %s", gCompilerMode.level_name);
+		}
+
+		if (gCompilerMode.AI)
+		{
+			std::string temp_maps;
+
+			int Size = 0;
+			for (auto& FILE : Files)
+			{
+				if (FILE.Select)
+				{
+					temp_maps += FILE.Name.c_str();
+					temp_maps += ",";
+					Size++;
+					//break;
+				}
+			}
+
+			if (Size > 1)
+				temp_maps.pop_back();
+
+
+			if (gCompilerMode.AI_BuildLevel)
+			{
+				if (Size > 1)
+				{
+					Msg("Dont Correct Level Size > 1");
+					return;
+				}
+
+				strcpy(gCompilerMode.level_name, temp_maps.c_str());
+				isReady = true;
+			}
+
+			if (gCompilerMode.AI_BuildSpawn)
+			{
+				strcpy(gCompilerMode.level_name, temp_maps.c_str());
+				isReady = true;
+			}
+
+
+
+			Msg("Level For Building : %s", temp_maps.c_str());
+		}
+
+		if (isReady)
+		{
+			extern void StartCompile();
+			StartCompile();
+		}
+
+	}
+
 	ImGui::End();
 }
 
-int item_current_selected = 0;
-int item_current_jitter = 0;
-int item_current_jitter_mu = 0;
+int item_current_selected = 2;
+int item_current_jitter = 2;
+int item_current_jitter_mu = 5;
 
 const char* items[] = { "1024", "2048", "4096", "8192" };
 const char* itemsJitter[] = { "1", "4", "9" };
@@ -195,7 +192,7 @@ const char* itemsJitterMU[] = { "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	if (ImGui::BeginChild("LC", { 200, 350 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("LC", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
@@ -210,18 +207,29 @@ void DrawLCConfig()
 		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
 		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
-		
- 
- 		ImGui::Combo("lmaps", &item_current_selected, items, 4);
+
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::Combo("lmaps", &item_current_selected, items, 4))
+		{
+			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
+		}
+
+		ImGui::Separator();
+		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
+
+		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
+		ImGui::SetNextItemWidth(100);
 		ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 6);
+		ImGui::SetNextItemWidth(100);
 		ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
 
+		ImGui::SetNextItemWidth(100);
 		ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
 
-		gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
 		gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
 		gCompilerMode.LC_JSampleMU = atoi(itemsJitter[item_current_jitter_mu]);
  
+		ImGui::EndDisabled();
 		ImGui::EndDisabled();
 		
 		
@@ -233,7 +241,7 @@ void DrawLCConfig()
 
 void DrawDOConfig()
 {
-	if (ImGui::BeginChild("DO", { 200, 350 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("DO", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
 		ImGui::Separator();
@@ -254,7 +262,7 @@ void DrawAIConfig()
 	}
 
 
-	if (ImGui::BeginChild("AI", { 200, 350 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 			ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
 		
@@ -292,14 +300,16 @@ void DrawAIConfig()
 	ImGui::EndChild();
 }
 
+extern bool SaveCForm;
 
 void DrawCompilerConfig()
 {
-	if (ImGui::BeginChild("Settings", { 150, 80 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("Settings", { 170, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Save cform to obj", &SaveCForm);
 		ImGui::EndChild();
 	}
 	

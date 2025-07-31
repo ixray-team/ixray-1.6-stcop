@@ -25,6 +25,7 @@ struct CompilersMode
 
 	int LC_sizeLmaps = 1024 * 4;
 
+	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
 	float LC_Pixels  = 10;
