@@ -23,6 +23,10 @@ void CAdvancedDetector::CreateUI()
 
 CUIArtefactDetectorAdv&  CAdvancedDetector::ui()
 {
+	if (m_ui == NULL)
+	{
+		CreateUI(); 
+	}
 	return *((CUIArtefactDetectorAdv*)m_ui);
 }
 
