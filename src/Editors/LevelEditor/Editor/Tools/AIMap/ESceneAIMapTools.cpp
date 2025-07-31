@@ -55,41 +55,62 @@ void SAINode::PointBL(Fvector& D, float patch_size)
 
 void SAINode::LoadLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
 {
-	R_ASSERT(0);
+    u32 id;
+    u16 pl;
+    SNodePositionOld np;
+    s16 x;
+    u16 y;
+    s16 z;
+
+    id = ini.r_u32(sect_name, "n1"); 
+    n1 = (SAINode*)tools->UnpackLink(id);
+    id = ini.r_u32(sect_name, "n2"); 
+    n2 = (SAINode*)tools->UnpackLink(id);
+    id = ini.r_u32(sect_name, "n3"); 
+    n3 = (SAINode*)tools->UnpackLink(id);
+    id = ini.r_u32(sect_name, "n4"); 
+    n4 = (SAINode*)tools->UnpackLink(id);
+
+    pl = ini.r_u16(sect_name, "plane"); 		
+    pvDecompress(Plane.n, pl);
+
+    sscanf(ini.r_string(sect_name, "np"), "%hi,%hu,%hi", &x, &y, &z);
+    np.x = x;
+    np.y = y;
+    np.z = z;
+    tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
+    Plane.build(Pos, Plane.n);
+
+    flags.assign(ini.r_u8(sect_name, "flags"));
 }
 
 void SAINode::SaveLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
 {
-	R_ASSERT2		(0, "dont use it !!!");
-	u32 			id;
-    u16 			pl;
-	SNodePositionOld 	np;
+	u32 id;
+    u16 pl;
+	SNodePositionOld np;
 
-    id 				= n1?(u32)n1->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n1", id);
+    id = n1?(u32)n1->idx:InvalidNode;
+    ini.w_u32(sect_name,"n1", id);
 
-    id 				= n2?(u32)n2->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n2", id);
+    id = n2?(u32)n2->idx:InvalidNode;
+    ini.w_u32(sect_name,"n2", id);
 
-    id 				= n3?(u32)n3->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n3", id);
+    id = n3?(u32)n3->idx:InvalidNode;
+    ini.w_u32(sect_name,"n3", id);
 
-    id 				= n4?(u32)n4->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n4", id);
+    id = n4?(u32)n4->idx:InvalidNode;
+    ini.w_u32(sect_name,"n4", id);
 
-    pl 				= pvCompress (Plane.n);
-    ini.w_u16		(sect_name, "plane", pl);
+    pl = pvCompress (Plane.n);
+    ini.w_u16(sect_name, "plane", pl);
 
 	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params);
-    string256		buff;
 
-	s16				x;
-	u16				y;
-	s16				z;
-
-    sprintf			(buff,"%i,%u,%i",np.x,np.y,np.z);
+    string256 buff;
+    sprintf			(buff,"%hi,%hu,%hi",np.x,np.y,np.z);
     ini.w_string	(sect_name, "np", buff);
-    ini.w_u8		(sect_name, "flag", flags.get());
+    ini.w_u8		(sect_name, "flags", flags.get());
 }
 
 void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
@@ -236,43 +257,147 @@ void ESceneAIMapTool::DenumerateNodes()
 }
 bool ESceneAIMapTool::LoadLTX(CInifile& ini)
 {
-	R_ASSERT(0);
-	return true;
+	IsLoaded = false;
+    inherited::LoadLTX(ini);
+
+    u32 version = ini.r_u32("main", "version");
+
+    if (version != AIMAP_VERSION)
+    {
+        ELog.DlgMsg(mtError, "AI-Map: Unsupported version.");
+        return false;
+    }
+
+    m_Flags.assign(ini.r_u32("main", "flags"));
+
+    m_AIBBox.min = ini.r_fvector3("main", "bbox_min");
+    m_AIBBox.max = ini.r_fvector3("main", "bbox_max");
+
+    m_Params.fPatchSize = ini.r_float("params", "patch_size");
+    m_Params.fTestHeight = ini.r_float("params", "test_height");
+    m_Params.fCanUP = ini.r_float("params", "can_up");
+    m_Params.fCanDOWN = ini.r_float("params", "can_down");
+    
+    m_Nodes.clear();
+
+    u32 cnt_ai_nodes = ini.r_u32("main", "ai_nodes_count");
+
+    for (u32 i = 0; i < cnt_ai_nodes; i++)
+    {
+        string128 sect_name;
+        SAINode* ai_node = new SAINode();
+        sprintf(sect_name, "ai_node_%d", i);
+        ai_node->LoadLTX(ini, sect_name, this);
+        m_Nodes.push_back(ai_node);
+    }
+
+    DenumerateNodes();
+
+    m_VisRadius = ini.r_float("main", "vis_radius");
+    m_BrushSize = ini.r_u32("main", "brush_size");
+
+    m_SmoothHeight = ini.r_float("main", "smooth_height");
+
+    u32 cnt_snap_objects = ini.r_u32("main", "snap_objects_count");
+
+    for (u32 i = 0; i < cnt_snap_objects; i++)
+    {
+        string128 sect_name;
+        sprintf(sect_name, "snap_object_%d", i);
+        LPCSTR s = ini.r_string(sect_name,"name");
+        CCustomObject* O = Scene->FindObjectByName(s, OBJCLASS_SCENEOBJECT);
+        if (!O) ELog.Msg(mtError, "AI-Map: Can't find snap object '%s'.", s);
+        else m_SnapObjects.push_back(O);
+    }
+    
+    // ignored_materials
+    m_ignored_materials.clear();
+    if (ini.section_exist("ignored_materials"))
+    {
+        u32 ignored_materials_count = ini.r_u32("ignored_materials", "count");
+        m_ignored_materials.reserve(ignored_materials_count);
+
+        for (u32 i = 0; i < ignored_materials_count; i++)
+        {
+            string128 key;
+            sprintf(key, "material_%d", i);
+            SGameMtl* mtl = GameMaterialLibraryEditors->GetMaterial(ini.r_string("ignored_materials", key));
+            if (mtl) m_ignored_materials.push_back(mtl->GetID());
+        }
+    }
+    
+    hash_FillFromNodes();
+
+    IsLoaded = true;
+    return true;
 }
 
 void ESceneAIMapTool::SaveLTX(CInifile& ini, int id)
 {
-	inherited::SaveLTX	(ini, id);
+	inherited::SaveLTX(ini, id);
 
-	ini.w_u32			("main", "version", AIMAP_VERSION);
-	ini.w_u32			("main", "flags", m_Flags.get());
+	ini.w_u32("main", "version", AIMAP_VERSION);
+	ini.w_u32("main", "flags", m_Flags.get());
 
-    ini.w_fvector3		("main", "bbox_min", m_AIBBox.min);
-    ini.w_fvector3		("main", "bbox_max", m_AIBBox.max);
+    ini.w_fvector3("main", "bbox_min", m_AIBBox.min);
+    ini.w_fvector3("main", "bbox_max", m_AIBBox.max);
 
-    ini.w_float			("params", "patch_size", m_Params.fPatchSize);
-    ini.w_float			("params", "test_height", m_Params.fTestHeight);
-    ini.w_float			("params", "can_up", m_Params.fCanUP);
-    ini.w_float			("params", "can_down", m_Params.fCanDOWN);
+    ini.w_float("params", "patch_size", m_Params.fPatchSize);
+    ini.w_float("params", "test_height", m_Params.fTestHeight);
+    ini.w_float("params", "can_up", m_Params.fCanUP);
+    ini.w_float("params", "can_down", m_Params.fCanDOWN);
 
-    EnumerateNodes		();
-    ini.w_u32			("main", "nodes_count", m_Nodes.size());
+    EnumerateNodes();
 
-    u32 i 				= 0;
-    string128			buff;
-	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); ++it, ++i)
+    ini.w_u32("main", "ai_nodes_count", m_Nodes.size());
+
+    if (m_Nodes.size())
     {
-    	sprintf			(buff,"n_%d", i);
-    	(*it)->SaveLTX	(ini, buff, this);
+        u32 i = 0;
+        for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++, i++)
+        {
+            string128 buff;
+            sprintf(buff, "ai_node_%d", i);
+            (*it)->SaveLTX(ini, buff, this);
+        }
     }
 
-    ini.w_float			("main", "vis_radius", m_VisRadius);
-    ini.w_u32			("main", "brush_size", m_BrushSize);
+    ini.w_float("main", "vis_radius", m_VisRadius);
+    ini.w_u32("main", "brush_size", m_BrushSize);
+    ini.w_float("main", "smooth_height", m_SmoothHeight);
 
-    ini.w_float			("main", "smooth_height", m_SmoothHeight);
+    ini.w_u32("main", "snap_objects_count", m_SnapObjects.size());
 
-    for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); ++o_it)
-    	ini.w_string	("snap_objects", (*o_it)->GetName(), NULL);
+    if (m_SnapObjects.size())
+    {
+        u32 i = 0;
+        for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++, i++)
+        {
+            string128 buff;
+            sprintf(buff, "snap_object_%d", i);
+            ini.w_string(buff, "name", (*o_it)->GetName());
+        }
+    }
+    
+    // ignored_materials
+	u32 ignored_materials_count = (u32)m_ignored_materials.size();
+    ini.w_u32("ignored_materials", "count", ignored_materials_count);
+	
+	if (ignored_materials_count)
+	{
+		u16 i = 0;
+		for (u16 MaterialID : m_ignored_materials)
+		{
+			SGameMtl* mtl = GameMaterialLibraryEditors->GetMaterialByID(MaterialID);
+			R_ASSERT(mtl);
+			string128 key;
+			sprintf(key, "material_%d", i);
+			ini.w_string("ignored_materials", key, *mtl->m_Name);
+			i++;
+		}
+
+		((UIAIMapTool*)(pForm))->UpdateIgnoreMaterial();
+	}    
 }
 
 bool ESceneAIMapTool::LoadStream(IReader& F)
@@ -327,7 +452,8 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
             }
         }
     }
-
+    
+	// ignored_materials
     m_ignored_materials.clear();
     if (F.find_chunk(AIMAP_CHUNK_IGNORED_MTLS))
     {
@@ -404,7 +530,8 @@ void ESceneAIMapTool::SaveStream(IWriter& F)
     for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); o_it++)
     	F.w_stringZ	((*o_it)->GetName());
     F.close_chunk	();
-
+	
+	// ignored_materials
     F.open_chunk(AIMAP_CHUNK_IGNORED_MTLS);
     F.w_u32((u32)m_ignored_materials.size());
 
