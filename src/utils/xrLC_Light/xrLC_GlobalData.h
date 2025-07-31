@@ -32,6 +32,7 @@ struct	compilers_global_data
 		CDB::MODEL*						_RCAST_Model;
 };
 
+extern XRLC_LIGHT_API void		setLMSIZE(int size);
 
 class	XRLC_LIGHT_API xrLC_GlobalData
 {
@@ -143,8 +144,8 @@ public:
 	bool GetSkipWeld() { return _b_skipWeld; }
 	void SetSkipWeld(bool value) { _b_skipWeld = value; }
 
-	bool GetLMapsAlt() { return _b_use_lmaps_build_alt; }
-	void SetLMapsAlt(bool use_intel) { _b_use_lmaps_build_alt = use_intel; }
+	
+	void SetLmapsSize(u32 size) { setLMSIZE(size); }
 
 };
 
