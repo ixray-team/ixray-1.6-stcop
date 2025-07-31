@@ -68,6 +68,15 @@ static	CDeflector*		read_create					();
 	void	RemapUV				(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
  	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
+
+	// se7kills Подсчитать Размер
+	u64		size_deflector()
+	{
+		u32 STri = UVpolys.capacity() * sizeof(UVtri);
+		u32 SLMLayer = layer.memory_lmap();
+
+		return sizeof(*this) + STri + SLMLayer;
+	}
 };
 
 
