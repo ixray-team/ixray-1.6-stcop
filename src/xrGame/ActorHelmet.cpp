@@ -131,7 +131,12 @@ void CHelmet::OnMoveToRuck(const SInvItemPlace& previous_place)
 void CHelmet::Hit(float hit_power, ALife::EHitType hit_type)
 {
 	hit_power *= GetHitImmunity(hit_type);
-	ChangeCondition(-hit_power);
+
+	if (!psActorFlags.test(AF_INFINITEDURABILITY))
+	{
+		ChangeCondition(-hit_power);
+	}
+
 }
 
 float CHelmet::GetDefHitTypeProtection(ALife::EHitType hit_type)
