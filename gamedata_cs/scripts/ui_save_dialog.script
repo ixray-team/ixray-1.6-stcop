@@ -4,6 +4,7 @@
 -- Author:      Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
 -- Copyright:   2004 GSC Game World
 -- Version:     0.8
+local saved_game_extension = ui_load_dialog.saved_game_extension
 
 class "save_item" (CUIListItemEx)
 
@@ -46,7 +47,7 @@ end
 
 function save_dialog:FillList()
 	self.list_box:RemoveAll()
-	local flist = getFS():file_list_open_ex("$game_saves$",FS.FS_ListFiles,"*.sav")
+	local flist = getFS():file_list_open_ex("$game_saves$",FS.FS_ListFiles,"*"..saved_game_extension)
 	local f_cnt = flist:Size()
 	
 	flist:Sort(FS.FS_sort_by_modif_down)
@@ -197,7 +198,7 @@ function save_dialog:OnButton_ok_clicked()
 	-- check for match name
 	local f = getFS()
 	local flist = f:file_list_open("$game_saves$",FS.FS_ListFiles)
-	local file_struct = f:exist("$game_saves$", self.new_save .. ".sav" )
+	local file_struct = f:exist("$game_saves$", self.new_save .. saved_game_extension )
 
 	if file_struct ~= nil then
 		self.mbox_mode = 1
