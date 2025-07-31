@@ -1,6 +1,6 @@
 #pragma once
 
-#pragma pack(push,1)vc
+#pragma pack(push,1)
 
 struct SIniFileStream :public IIniFileStream
 {
