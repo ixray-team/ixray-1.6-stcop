@@ -263,6 +263,8 @@ void OGF::Optimize()
 	}
 }
 
+thread_local VIMP_Processor make_progressive_vimp;
+
 // Make Progressive
 void OGF::MakeProgressive	(float metric_limit)
 {
@@ -275,8 +277,13 @@ void OGF::MakeProgressive	(float metric_limit)
  	if (g_params().m_quality==ebqDraft)			return;
 	if (g_build_options.b_noise)				return;
 
+	// Есть шанс словить вылет
+	if (data.faces.size() > 32 * 1024)
+	{
+		clMsg("xmesh : Processing to big faces : %u", data.faces.size());
+		return;
+	}
  
-	thread_local VIMP_Processor make_progressive_vimp;
 
 	//////////////////////////////////////////////////////////////////////////
 	// NORMAL
@@ -298,13 +305,15 @@ void OGF::MakeProgressive	(float metric_limit)
 		VIPM_Result*	VR		= 0;
 		try						{
 						VR		= make_progressive_vimp.VIPM_Convert			(u32(25),1.f,1);
-		} catch (...)			{
+		} 
+		catch (...)	
+		{
 			progressive_clear	()		;
-			clMsg				("* mesh simplification failed: access violation");
+			// clMsg				("* mesh simplification failed: access violation");
 		}
 		if (0==VR)				{
 			progressive_clear	()		;
-			clMsg				("* mesh simplification failed");
+			// clMsg				("* mesh simplification failed");
 		}
 		
 		while (VR && VR->swr_records.size()>0)
@@ -314,12 +323,15 @@ void OGF::MakeProgressive	(float metric_limit)
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
-			if		(_metric<metric_limit)		{
+			if		(_metric<metric_limit)	
+			{
 				progressive_clear				()		;
-				clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded",_full,_simple,VR->indices.size()/3,metric_limit);
+				//clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded",_full,_simple,VR->indices.size()/3,metric_limit);
 				break									;
-			} else {
-				clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", _full,_simple,VR->indices.size()/3,metric_limit);
+			} 
+			else 
+			{
+				// clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", _full,_simple,VR->indices.size()/3,metric_limit);
 			}
 
 			// OK
@@ -367,17 +379,21 @@ void OGF::MakeProgressive	(float metric_limit)
 		VIPM_Result*	VR		= 0;
 		try						{
 			VR		= make_progressive_vimp.VIPM_Convert			(u32(25),1.f,1);
-		} catch (...)			{
+		} 
+		catch (...)		
+		{
 			data.faces				= _saved_faces		;
 			data.vertices			= _saved_vertices	;
 			progressive_clear	()		;
-			clMsg				("* X-mesh simplification failed: access violation");
+			// clMsg				("* X-mesh simplification failed: access violation");
 		}
-		if (0==VR)				{
+		
+		if (0==VR)				
+		{
 			data.faces				= _saved_faces		;
 			data.vertices			= _saved_vertices	;
 			progressive_clear	()		;
-			clMsg				("* X-mesh simplification failed");
+			// clMsg				("* X-mesh simplification failed");
 		}
 		else
 		{
@@ -386,7 +402,7 @@ void OGF::MakeProgressive	(float metric_limit)
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
-			clMsg	("X mesh simplified from [%4dv] to [%4dv], nf[%4d]",_full,_simple,VR ? VR->indices.size()/3 : 0);
+			// clMsg	("X mesh simplified from [%4dv] to [%4dv], nf[%4d]",_full,_simple,VR ? VR->indices.size()/3 : 0);
 
 			// OK
 			vec_XV					vertices_saved;
