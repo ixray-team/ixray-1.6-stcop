@@ -26,7 +26,7 @@ public:
 
 	// definition
 	IC LPCSTR			ClassName				(){return "terrain";}
-	IC LPCSTR			ClassDesc				(){return "terrain";}
+	IC LPCSTR			ClassDesc				(){return "Terrain";}
 	IC int				RenderPriority			(){return 1;}
 
 	// IO
