@@ -27,7 +27,7 @@ void	CCar::cam_Update			(float dt, float fov)
 	Da.set							(0,0,0);
 	//bool							owner = !!Owner();
 
-	XFORM().transform_tiny			(P,m_camera_position);
+	XFORM().transform_tiny			(P, *m_camera_current_position);
 
 	switch(active_camera->tag) {
 	case ectFirst:
@@ -49,10 +49,12 @@ void	CCar::OnCameraChange		(int type)
 	{
 		if	(type==ectFirst)
 		{
+			m_camera_current_position = &m_camera_position;
 			Owner()->setVisible(FALSE);
 		}
 		else if(active_camera->tag==ectFirst)
 		{
+			m_camera_current_position = &m_camera_position_2;
 			Owner()->setVisible(TRUE);
 		}
 	}
