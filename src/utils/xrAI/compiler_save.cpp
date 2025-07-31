@@ -1,70 +1,49 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "guid_generator.h"
 
-IC BYTE	compress(float c, int max_value)
+xr_vector<NodeCompressed> compressed_nodes;
+
+IC u8 compress(float c, int max_value)
 {
 	int	cover = iFloor(c*float(max_value)+.5f);
 	clamp(cover,0,max_value);
 	return BYTE(cover);
 }
 
-struct CNodeCompressed {
-	IC	void	compress_node(NodeCompressed& Dest, vertex& Src);
+struct CNodeCompressed
+{
+	IC void compress_node(NodeCompressed& Dest, vertex& Src);
 };
 
 IC void	CNodeCompressed::compress_node(NodeCompressed& Dest, vertex& Src)
 {
-	Dest.light	(15);//compress(Src.LightLevel,15));
+	Dest.light	(15);
 	for	(u8 L=0; L<4; ++L)
 		Dest.link(L,Src.n[L]);
-//	for	(u32 L=0; L<4; ++L)
-//		if ((Src.n[L] < g_nodes.size()) && (Dest.link(L) != Src.n[L])) {
-//			Dest.link(L,Src.n[L]);
-//			Dest.link(L);
-//		}
 }
 
-void	Compress	(NodeCompressed& Dest, vertex& Src, hdrNODES& H)
+void Compress(NodeCompressed& Dest, vertex& Src, hdrNODES& H)
 {
 	// Compress plane (normal)
-	Dest.plane	= pvCompress	(Src.Plane.n);
-	
+	Dest.plane = pvCompress(Src.Plane.n);
+
 	// Compress position
-	CNodePositionCompressor(Dest.p,Src.Pos,H);
-//	CompressPos	(Dest.p1,Src.P1,H);
-	
-	// Sector
-	// R_ASSERT(Src.sector<=255);
-	// Dest.sector = BYTE(Src.sector);
+	CNodePositionCompressor(Dest.p, Src.Pos, H);
 
 	// Light & Cover
-	CNodeCompressed().compress_node(Dest,Src);
-//	Dest.cover[0]	= CompressCover(Src.cover[0]);
-//	Dest.cover[1]	= CompressCover(Src.cover[1]);
-//	Dest.cover[2]	= CompressCover(Src.cover[2]);
-//	Dest.cover[3]	= CompressCover(Src.cover[3]);
-	Dest.high.cover0= compress(Src.high_cover[0],15);
-	Dest.high.cover1= compress(Src.high_cover[1],15);
-	Dest.high.cover2= compress(Src.high_cover[2],15);
-	Dest.high.cover3= compress(Src.high_cover[3],15);
-	Dest.low.cover0	= compress(Src.low_cover[0],15);
-	Dest.low.cover1	= compress(Src.low_cover[1],15);
-	Dest.low.cover2	= compress(Src.low_cover[2],15);
-	Dest.low.cover3	= compress(Src.low_cover[3],15);
-//	Msg				("[%.3f -> %d][%.3f -> %d][%.3f -> %d][%.3f -> %d]",
-//		Src.cover[0],Dest.cover0,
-//		Src.cover[1],Dest.cover1,
-//		Src.cover[2],Dest.cover2,
-//		Src.cover[3],Dest.cover3
-//		);
+	CNodeCompressed().compress_node(Dest, Src);
 
-	// Compress links
-//	R_ASSERT	(Src.neighbours.size()<64);
-//	Dest.links	= BYTE(Src.neighbours.size());
+	Dest.high.cover0 = compress(Src.high_cover[0], 15);
+	Dest.high.cover1 = compress(Src.high_cover[1], 15);
+	Dest.high.cover2 = compress(Src.high_cover[2], 15);
+	Dest.high.cover3 = compress(Src.high_cover[3], 15);
+	Dest.low.cover0  = compress(Src.low_cover[0], 15);
+	Dest.low.cover1  = compress(Src.low_cover[1], 15);
+	Dest.low.cover2  = compress(Src.low_cover[2], 15);
+	Dest.low.cover3  = compress(Src.low_cover[3], 15);
 }
 
-float	CalculateHeight(Fbox& BB)
+float CalculateHeight(Fbox& BB)
 {
 	// All nodes
 	BB.invalidate();
@@ -77,24 +56,24 @@ float	CalculateHeight(Fbox& BB)
 	return BB.max.y-BB.min.y+EPS_L;
 }
 
-xr_vector<NodeCompressed>	compressed_nodes;
-
-class CNodeRenumberer {
-	IC	bool operator=	(const CNodeRenumberer&)
+class CNodeRenumberer
+{
+	IC void operator=(const CNodeRenumberer&)
 	{
 	}
 
-	struct SSortNodesPredicate {
+	struct SSortNodesPredicate
+	{
 
-		IC	bool	operator()			(const NodeCompressed &vertex0, const NodeCompressed &vertex1) const
+		IC bool operator()(const NodeCompressed &vertex0, const NodeCompressed &vertex1) const
 		{
-			return		(vertex0.p.xz() < vertex1.p.xz());
+			return (vertex0.p.xz() < vertex1.p.xz());
 		}
 
 
-		IC	bool	operator()			(u32 vertex_id0, u32 vertex_id1) const
+		IC bool operator()(u32 vertex_id0, u32 vertex_id1) const
 		{
-			return		(compressed_nodes[vertex_id0].p.xz() < compressed_nodes[vertex_id1].p.xz());
+			return (compressed_nodes[vertex_id0].p.xz() < compressed_nodes[vertex_id1].p.xz());
 		}
 	};
 
@@ -157,10 +136,6 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	H.size_y		= CalculateHeight(H.aabb);
 	H.guid			= generate_guid();
 	fs->w			(&H,sizeof(H));
-	
-//	fs->w_u32		(g_covers_palette.size());
-//	for (u32 j=0; j<g_covers_palette.size(); ++j)
-//		fs->w		(&g_covers_palette[j],sizeof(g_covers_palette[j]));
 
 	// All nodes
 	Status("Saving nodes...");

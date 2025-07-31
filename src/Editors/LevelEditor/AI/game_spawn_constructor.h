@@ -14,14 +14,15 @@
 #include "../../xrServerEntities/xrServer_Object_Base.h"
 #include "spawn_constructor_space.h"
 #include "server_entity_wrapper.h"
-#include "../../xrECore/Engine/guid_generator.h"
+
 class CSE_Abstract;
 class CLevelSpawnConstructor;
 class CSE_ALifeCreatureAbstract;
 class CPatrolPathStorage;
 class CSE_ALifeCreatureActor;
 
-struct CLevelInfo {
+struct CLevelInfo
+{
 	u8				m_id;
 	shared_str		m_name;
 	Fvector			m_offset;
@@ -41,7 +42,8 @@ struct CLevelInfo {
 	}
 };
 
-class CGameSpawnConstructor {
+class CGameSpawnConstructor 
+{
 	friend class CSpawnMerger;
 public:
 	typedef SpawnConstructorSpace::LEVEL_POINT_STORAGE								LEVEL_POINT_STORAGE;
@@ -51,7 +53,8 @@ public:
 	typedef xr_set<CLevelInfo>														LEVEL_INFO_STORAGE;
 
 public:
-	struct CSpawnHeader {
+	struct CSpawnHeader
+	{
 		u32							m_version;
 		xrGUID						m_guid;
 		xrGUID						m_graph_guid;

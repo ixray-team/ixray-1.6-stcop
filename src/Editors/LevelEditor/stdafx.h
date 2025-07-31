@@ -24,7 +24,6 @@
 #include "../xrECore/Editor/pick_defs.h"
 #include "../xrECore/Editor/SoundManager.h"
 #include "../xrECore/Editor/EDetailModel.h"
-#include "../xrECore/Engine/guid_generator.h"
 #include "../xrECore/Editor/ExportSkeleton.h"
 #include "../FreeMagic/MgcAppr3DPlaneFit.h"
 #include "../FreeMagic/MgcEigen.h"

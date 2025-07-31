@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef ENGINE_API
 #ifdef	DEBUG_DRAW
 	ENGINE_API	extern BOOL			bDebug;
 #else
@@ -55,6 +56,9 @@ ENGINE_API extern	u32			psCurrentVidMode[];
 ENGINE_API extern	u32			psCurrentBPP		;
 ENGINE_API extern	Flags32		psDeviceFlags		;
 ENGINE_API extern	Flags32		psGameFlags			;
+
+#endif 
+
 // game path definition
 #define _game_data_				"$game_data$"
 #define _game_textures_			"$game_textures$"
