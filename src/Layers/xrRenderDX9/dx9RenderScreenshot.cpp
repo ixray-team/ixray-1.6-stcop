@@ -120,17 +120,17 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (ps_screenshot_format == 0) // jpg screenshots - default one
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
-            R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, saved));
+            R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatJpeg, saved));
         }
         else if (ps_screenshot_format == 1) // tga screenshots
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
-            R_CHK(SaveToTGAMemory(*scratchImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_NONE, saved));
+            R_CHK(SaveToTGAMemory(*scratchImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_FORCE_SRGB, saved));
         }
         else if (ps_screenshot_format == 2) // png screenshots
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(t_stemp), lvl_name.c_str());
-            R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatPng, saved));
+            R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, GUID_ContainerFormatPng, saved));
         }
 
         auto fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
