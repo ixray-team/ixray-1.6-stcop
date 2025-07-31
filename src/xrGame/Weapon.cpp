@@ -611,11 +611,16 @@ void CWeapon::Load		(LPCSTR section)
 	LoadVector(m_bScopeHideBones, "no_scope_overriding_hide_bones");
 	LoadVector(m_sCollimatorSightsBones, "collimator_sights_bones");
 
-	Fvector3 tmp_vector = { -1.0f, -1.0f, 0.0f };
+	Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
 	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "collimator_breaking_params", tmp_vector);
 	CollimatorBreakingParams.start_condition = tmp_vector.x;
 	CollimatorBreakingParams.end_condition = tmp_vector.y;
 	CollimatorBreakingParams.start_probability = tmp_vector.z;
+
+	tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+	TorchBreakingParams.start_condition = tmp_vector.x;
+	TorchBreakingParams.end_condition = tmp_vector.y;
+	TorchBreakingParams.start_probability = tmp_vector.z;
 
 	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
 
@@ -945,6 +950,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_ammoType,					output_packet);
 	save_data		(m_ChamberAmmoType,				output_packet);
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
+	save_data		(m_bTacticalTorchStatus,		output_packet);
 	save_data		(m_LastShotAmmoType,			output_packet);
 }
 
@@ -958,6 +964,7 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_ammoType,					input_packet);
 	load_data		(m_ChamberAmmoType,				input_packet);
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
+	load_data		(m_bTacticalTorchStatus,		input_packet);
 	load_data		(m_LastShotAmmoType,			input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
@@ -965,6 +972,7 @@ void CWeapon::load(IReader &input_packet)
 		else			
 			OnZoomOut();
 
+	UpdateTorch();
 	UpdateAddonsVisibility();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
@@ -1152,6 +1160,7 @@ void CWeapon::UpdateCL		()
 	}
 
 	UpdateCollimatorSight();
+	UpdateTorch();
 
 	inherited::UpdateCL		();
 
@@ -1241,6 +1250,69 @@ void CWeapon::ForceUpdateHUD()
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	UpdateShellBones(iAmmoElapsed, m_ammoType);
+}
+
+void CWeapon::SwitchTorch(bool status, bool forced)
+{
+	if (!m_HudLight.GetTorchInstalled())
+	{
+		return;
+	}
+
+	if (!forced && status == m_bTacticalTorchStatus)
+	{
+		return;
+	}
+
+	m_bTacticalTorchStatus = status;
+
+	m_HudLight.SwitchTorchlight(status);
+}
+
+void CWeapon::UpdateTorch()
+{
+	if (!m_HudLight.GetTorchInstalled())
+	{
+		return;
+	}
+
+	if (H_Parent() != nullptr && !ParentIsActor())
+	{
+		SwitchTorch(false);
+	}
+
+	SwitchTorch(m_bTacticalTorchStatus, true);
+
+	bool is_broken = false;
+	float current_condition = GetCondition();
+
+	if (current_condition < TorchBreakingParams.end_condition)
+	{
+		is_broken = true;
+	}
+	else if (current_condition < TorchBreakingParams.start_condition)
+	{
+		is_broken = (::Random.randF(0.0f, 1.0f) < TorchBreakingParams.start_probability +
+			(TorchBreakingParams.start_condition - current_condition) *
+			(1.0f - TorchBreakingParams.start_probability) /
+			(TorchBreakingParams.start_condition - TorchBreakingParams.end_condition));
+	}
+
+	if (is_broken)
+	{
+		m_HudLight.SwitchTorchlight(false);
+	}
+
+	if (m_HudLight.GetTorchInstalled())
+	{
+		if (attachable_hud_item* item = HudItemData())
+		{
+			for (const shared_str& bone : m_HudLight.ConeBones)
+			{
+				item->set_bone_visible(bone, m_HudLight.GetTorchActive(), TRUE);
+			}
+		}
+	}
 }
 
 void CWeapon::LoadUpgradeBonesToHide(const char* section, const char* line)
@@ -2039,6 +2111,14 @@ void CWeapon::UpdateAddonsVisibility()
 		for (auto& bone : m_bDefHideBonesGLAttached)
 		{
 			ChangeBoneVisible(bone, false, false);
+		}
+	}
+
+	if (m_HudLight.GetTorchInstalled())
+	{
+		for (const shared_str& bone : m_HudLight.ConeBones)
+		{
+			ChangeBoneVisible(bone, m_HudLight.GetTorchActive());
 		}
 	}
 
