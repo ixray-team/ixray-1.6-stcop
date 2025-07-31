@@ -354,8 +354,17 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 		}
 		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
 	}
-	blend_cycles[part].push_back(B);
-	return		B;
+
+	constexpr size_t MAX_CYCLES_IN_PART = MAX_BLENDED * MAX_CHANNELS;
+	if (MAX_CYCLES_IN_PART > blend_cycles[part].size())
+	{
+		blend_cycles[part].push_back(B);
+	}
+	else
+	{
+		Msg("! Not found free slot in cycles!");
+	}
+	return B;
 }
 CBlend*	CKinematicsAnimated::LL_PlayCycle		(u16 part, MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*=0*/)
 {
