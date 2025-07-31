@@ -142,9 +142,15 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
-	BOOL bRes 			= TRUE;
+	BOOL bRes = TRUE;
 	if (Device.IsEditorMode())
-		return EditorScene->RayPick(s, d, range);
+	{
+		EditorScene->SetPlayInEditorRayPickCall(true);
+		bool value = EditorScene->RayPick(s, d, range);
+		EditorScene->SetPlayInEditorRayPickCall(false);
+
+		return value;
+	}
 	else
 	{
 		if (!g_pGameLevel || !g_pGameLevel->bReady)
@@ -188,7 +194,7 @@ void CEffect_Rain::OnFrame()
     float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     static float hemi_factor = 0.f;
     CObject *E = g_pGameLevel ? g_pGameLevel->CurrentViewEntity() : nullptr;
-    if (E && E->renderable_ROS())
+    if (E && E->renderable_ROS() && !Device.IsEditorMode())
     {
 		float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
 		float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
@@ -201,6 +207,13 @@ void CEffect_Rain::OnFrame()
 		float t = Device.fTimeDelta;
 		clamp(t, 0.001f, 1.0f);
 		hemi_factor = hemi_factor * (1.0f - t) + f * t;
+	}
+	else if (Device.IsEditorMode())
+	{
+		float Distance = 35.f;
+		const Fvector Direction(0, 1, 0);
+		Fvector Position = Device.vCameraPosition;
+		hemi_factor = !RayPick(Position, Direction, Distance, collide::rqtBoth);
 	}
 
 	ref_sound& CurDropSnd = factor < 0.7f ? snd_RoofDroplets : snd_RoofDropletsHard;
