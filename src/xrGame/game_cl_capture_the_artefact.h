@@ -161,7 +161,6 @@ public:
 	bool			CanActivateArtefact		()	const;
 
 	bool			InWarmUp				()	const;
-	virtual	bool	Is_Rewarding_Allowed	()  const { return !InWarmUp(); };
 	bool			HasTimeLimit			()	const;
 
 	virtual	LPCSTR	GetGameScore			(string32&	score_dest);

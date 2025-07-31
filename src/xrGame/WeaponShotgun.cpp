@@ -6,6 +6,7 @@
 #include "Level.h"
 #include "Actor.h"
 #include "script_game_object.h"
+#include "../xrScripts/script_callback_ex.h"
 
 CWeaponShotgun::CWeaponShotgun()
 {
