@@ -10,11 +10,7 @@
 
 #include "CompilerIcons.h"
 
-static LPVOID __cdecl luabind_allocator(
-	luabind::memory_allocation_function_parameter const,
-	void const* const pointer,
-	size_t const size
-)
+static LPVOID __cdecl luabind_allocator(luabind::memory_allocation_function_parameter const, void const* const pointer, size_t const size)
 {
 	if (!size)
 	{
@@ -50,7 +46,8 @@ void StartupDO();
 void InitialFactory();
 void DestroyFactory();
 
-void Help(const char* h_str) {
+void Help(const char* h_str)
+{
 	MessageBoxA(0, h_str, "Command line options", MB_OK | MB_ICONINFORMATION);
 }
 
@@ -67,7 +64,8 @@ void Startup(LPSTR lpCmdLine)
 
 	SetActiveIteration(&(GetIterationData()[0]));
 	u32 dwTimeLC = 0;
-	if (gCompilerMode.LC) {
+	if (gCompilerMode.LC)
+	{
 		GetActiveIteration()->status = InProgress;
 		dwTimeLC = timeGetTime();
 		Phase("xrLC Startup");
@@ -231,7 +229,6 @@ void SDL_Application()
 	style.LogSliderDeadzone = 4;
 	style.TabRounding = 4;
 
-
 	colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
 	colors[ImGuiCol_MenuBarBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
 	colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
@@ -274,6 +271,7 @@ void SDL_Application()
 	config.FontDataOwnedByAtlas = false;
 
 	gCompilerMode.CompilerIconsFont = io.Fonts->AddFontFromMemoryTTF(IconsFont, sizeof(IconsFont), 16.f, &config, io.Fonts->GetGlyphRangesDefault());
+	gCompilerMode.ThreadsPerWork = CPU::ID.n_threads - 1;
 
 	bool done = false;
 	while (!done)
