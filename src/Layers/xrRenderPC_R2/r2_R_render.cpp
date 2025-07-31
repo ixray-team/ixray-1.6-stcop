@@ -98,7 +98,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			Fmatrix m_project;
 			m_project.build_projection(
 				deg2rad(Device.fFOV/* *Device.fASPECT*/), 
-				Device.fASPECT, VIEWPORT_NEAR, 
+				Device.fASPECT, Device.fViewportNear,
 				ps_r2_zfill * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 			mftrans.mul(m_project,Device.mView);
 		}

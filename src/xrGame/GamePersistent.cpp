@@ -615,7 +615,7 @@ if (!g_pGameLevel)
 						C = Actor()->Holder()->Camera();
 
 					Actor()->Cameras().UpdateFromCamera		(C);
-					Actor()->Cameras().ApplyDevice			(VIEWPORT_NEAR);
+					Actor()->Cameras().ApplyDevice			(Device.fViewportNear);
 #ifdef DEBUG
 					if(psActorFlags.test(AF_NO_CLIP))
 					{
@@ -661,7 +661,7 @@ if (!g_pGameLevel)
 				C = Actor()->Holder()->Camera();
 
 			Actor()->Cameras().UpdateFromCamera			(C);
-			Actor()->Cameras().ApplyDevice				(VIEWPORT_NEAR);
+			Actor()->Cameras().ApplyDevice				(Device.fViewportNear);
 
 		}
 #endif // MASTER_GOLD

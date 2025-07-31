@@ -110,10 +110,10 @@ float CActor::CameraHeight()
 
 IC float viewport_near(float& w, float& h)
 {
-	w = 2.f*VIEWPORT_NEAR*tan(deg2rad(Device.fFOV)/2.f);
+	w = 2.f* Device.fViewportNear*tan(deg2rad(Device.fFOV)/2.f);
 	h = w*Device.fASPECT;
 	float	c	= _sqrt					(w*w + h*h);
-	return	_max(_max(VIEWPORT_NEAR,_max(w,h)),c);
+	return	_max(_max(Device.fViewportNear,_max(w,h)),c);
 }
 
 ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
@@ -124,7 +124,7 @@ ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
 }
 ICF void calc_gl_point(Fvector& pt, const Fmatrix& xform, float radius, float angle )
 {
-	calc_point			(pt,radius,VIEWPORT_NEAR/2,angle);
+	calc_point			(pt,radius, Device.fViewportNear /2,angle);
 	xform.transform_tiny(pt);
 }
 
@@ -239,7 +239,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			{
 				float da		= 0.f;
 				BOOL bIntersect	= FALSE;
-				Fvector	ext		= {w,h,VIEWPORT_NEAR/2};
+				Fvector	ext		= {w,h,Device.fViewportNear /2};
 				Fvector				pt;
 				calc_gl_point	( pt, xform, radius, alpha );
 				if ( test_point( pt, mat, ext, this  ) )
@@ -369,7 +369,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		fPrevCamPos			= flCurrentPlayerY;
 	}
 
-	float _viewport_near			= VIEWPORT_NEAR;
+	float _viewport_near			= Device.fViewportNear;
 	// calc point
 	xform.transform_tiny			(point);
 

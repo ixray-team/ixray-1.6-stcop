@@ -55,7 +55,7 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
 		Device.mView_saved.transform(v0p);
 		Device.mView_saved.transform(v1p);
 
-		static auto viewport_near = VIEWPORT_NEAR * 0.1f;
+		static auto viewport_near = Device.fViewportNear * 0.1f;
 
 		if(v0p.z <= viewport_near && v1p.z <= viewport_near) {
 			continue;

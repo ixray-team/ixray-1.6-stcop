@@ -41,7 +41,7 @@ void CRender::Calculate		()
 	// Check if camera is too near to some portal - if so force DualRender
 	if (rmPortals) 
 	{
-		float	eps			= VIEWPORT_NEAR+EPS_L;
+		float	eps			= Device.fViewportNear+EPS_L;
 		Fvector box_radius; box_radius.set(eps,eps,eps);
 		Sectors_xrc.box_options	(CDB::OPT_FULL_TEST);
 		Sectors_xrc.box_query	(rmPortals,Device.vCameraPosition,box_radius);
