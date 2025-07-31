@@ -7,17 +7,14 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/Lightmap.h"
  
-
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
 	// Process 	
 	// Немного отступ делаем
-	int _X = (2 * BORDER), _Y = 0;
- 	u16 _Max_y = 0;
+	int _X = (2 * BORDER), _Y = (2 * BORDER);
+ 	int _Max_y = 0;
 
-	#define SHIFT_HEIGHT 1
-
-	for (int it = 0; it < Layer.size(); it++)
+ 	for (int it = 0; it < Layer.size(); it++)
 	{
  		if (0 == (it % 1024))
 			AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
@@ -35,15 +32,17 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 		if (_X + WIDTH > getLMSIZE() - 32 )
 		{
-			_X = (2 * BORDER);
-			_Y += _Max_y + SHIFT_HEIGHT;
+			_X = (2 * BORDER) ;
+			_Y += _Max_y + (2* BORDER);
 			_Max_y = 0;
 		}
 
  		L_rect		rT, rS;
+
 		rS.a.set(_X, _Y);
 		rS.b.set(_X + WIDTH, _Y + HEIGHT);
-		rS.iArea = L.Area();
+		rS.iArea = L.Area(); //;
+		// rS.calc_area();
 		rT = rS;
 
 		// Нужен только в оригенальной LMerge
@@ -55,7 +54,8 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 			Layer[it]->bMerged = TRUE;
 			MERGED++;
 		}
- 		_X += WIDTH + SHIFT_HEIGHT; 
+ 		
+		_X += WIDTH + (2 * BORDER);
 		Progress(float(it) / float(g_XSplit.size()));
 	}
 }
@@ -119,7 +119,14 @@ void CBuild::xrPhase_MergeLM()
   
 		
 		// Remove merged lightmaps
-		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), [&](CDeflector* D) {if (D->bMerged) return true; });
+		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), [&](CDeflector* D) 
+			{
+				if (D->bMerged)
+					return true;
+				else
+					return false;
+			});
+
 		Layer.erase(last, Layer.end());
 		clMsg("Erase Layer(Deflects) Time: %u ms", t.GetElapsed_ms()); t.Start();
 		
