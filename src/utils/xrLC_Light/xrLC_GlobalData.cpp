@@ -109,10 +109,7 @@ XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 	FacesStorage.push_back(F);
 	return FacesStorage.size() - 1;
 }
-
-static xr_vector<Fvector> verts;
-static xr_vector<CDB::TRI> tris;
-  
+ 
 void	xrLC_GlobalData::mu_models_calc_materials()
 {
 	for (u32 m=0; m<mu_models().size(); m++)

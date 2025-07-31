@@ -13,29 +13,34 @@ struct CompilersMode
 	bool Silent = false;
 	bool Embree = true;
 	bool EmbreeBVHCompact = false;
-	bool ClearTemp = false;
+	bool EmbreeBVHRobust = false;
+ 	bool ClearTemp = false;
+	bool SkipTHM = false;
 
 	bool AI = false;
 	bool DO = false;
 	bool LC = false;
 
+	bool LC_SaveOFG = false;
 	bool LC_GI = false;
 	bool LC_NoSun = false;
-	bool LC_NoSMG = false;
+	bool LC_NoSMG = true;
 	bool LC_Noise = false;
 	bool LC_Tess = true;
 	bool LC_SkipInvalidFaces = true;
 	bool LC_tex_rgba = false;
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
-
+ 
 	int LC_sizeLmaps = 1024 * 4;
 
 	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;
 	int LC_JSample = 9;
 	float LC_Pixels  = 10;
-	float MergeDistance = 0.005f;
+
+	float WeldDistance = 0.005f;
+
  
 	bool DO_NoSun = false;
 

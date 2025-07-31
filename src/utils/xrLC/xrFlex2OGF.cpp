@@ -10,8 +10,6 @@
 
 void CBuild::validate_splits			()
 {
-	Validate_gXsplit();
-
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
@@ -42,15 +40,14 @@ void Face2OGF_Vertices( const Face &FF, OGF_Vertex	V[3] )
 	}
 }
 
-void OGF_AddFace(OGF& ogf, const Face& FF, bool _tc_)
+void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
 {
-	OGF_Vertex* V = new OGF_Vertex[3];
+	OGF_Vertex	V[3];
 	// Geometry
-	Face2OGF_Vertices(FF, V);
+	Face2OGF_Vertices( FF, V );
 	// build face
-	TRY(ogf._BuildFace(V[0], V[1], V[2], _tc_));
-	V[0].UV.clear(); V[1].UV.clear(); V[2].UV.clear();
-	xr_delete(V);
+	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
+	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
 }
 
 void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
@@ -63,6 +60,7 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 	}
 }
 
+
 void CBuild::Flex2OGF()
 {
 	float p_total	= 0;
@@ -73,17 +71,24 @@ void CBuild::Flex2OGF()
 	g_tree.clear	();
 	g_tree.reserve	(4096);
 
-	int MODEL_ID = 0;
-	for (auto faces : g_XSplit)
+	clMsg("Splits to convert: %u", g_XSplit.size() );
+	 
+	// for (auto SV  = 0 ; SV< g_XSplit.size(); SV++)
+	xrCriticalSection cs;
+
+	int ProgressID = 0;
+
+	xr_parallel_for(size_t(0), size_t(g_XSplit.size()), [&] ( size_t SV )
 	{
+		auto& faces = g_XSplit[SV];
+
+		Progress( float (SV) / float(g_XSplit.size()) );
+
 		OGF*		pOGF	= new OGF ();
-		Face*		F		= *(faces->begin());			// first face
+		Face*		F		= (* faces->begin() );			// first face
 		b_material*	M		= &(materials()[F->dwMaterial]);	// and it's material
 		R_ASSERT	(F && M);
-		
-		if (faces->size() < 3)
-			clMsg("* Warning Small Faces ! | OGF[%u] : Faces: %u", MODEL_ID, faces->size());
-
+ 
 		try 
 		{
 			// Common data
@@ -91,13 +96,15 @@ void CBuild::Flex2OGF()
 			pOGF->material		= F->dwMaterial;
 			
 			// Collect textures
-			OGF_Texture			T;			
+			OGF_Texture			T;
+			//pOGF->shader		= M->shader;
+			//pOGF->shader_xrlc	= &F->Shader();
+			
 			TRY(T.name			= textures()[M->surfidx].name);
 			TRY(T.pBuildSurface	= &(textures()[M->surfidx]));
 			TRY(pOGF->textures.push_back(T));
 			
-			try
-			{
+			try {
 				if (F->hasImplicitLighting())
 				{
 					// specific lmap
@@ -107,19 +114,18 @@ void CBuild::Flex2OGF()
 					T.pBuildSurface		= T.pBuildSurface;	// Leave surface intact
 					R_ASSERT		(pOGF);
 					pOGF->textures.push_back(T);
-				} 
-				else
-				{
+				} else {
 					// If lightmaps persist
 					CLightmap*	LM	= F->lmap_layer;
-					if (LM)		{
+					if (LM)	
+					{
 						string_path	fn;
 						xr_sprintf		(fn,"%s_1",LM->lm_texture.name); 
 						T.name		= fn;
 						T.pBuildSurface	= &(LM->lm_texture);
 						R_ASSERT	(T.pBuildSurface);
 						R_ASSERT	(pOGF);
-						pOGF->textures.push_back(T);					//.
+						pOGF->textures.push_back(T);					 
 						xr_sprintf		(fn,"%s_2",LM->lm_texture.name); 
 						T.name		= fn;
 						pOGF->textures.push_back(T);
@@ -128,50 +134,55 @@ void CBuild::Flex2OGF()
 			} 
 			catch (...)
 			{ 
-				clMsg("* ERROR: Flex2OGF, model# %d, *textures*",MODEL_ID);
+				Msg("* ERROR: Flex2OGF, model# %d, *textures*", SV);
 			}
 			
+		
 			// Collect faces & vertices
 			F->CacheOpacity	();
-			bool	_tc_	= !(F->flags.bOpaque);
+ 			bool	_tc_	= !(F->flags.bOpaque);
+		
 			try 
 			{
 				BuildOGFGeom( *pOGF, *faces, _tc_ );
 			} 
 			catch (...)
 			{  
-				clMsg("* ERROR: Flex2OGF, model# %d, *faces*",MODEL_ID);
+				Msg("* ERROR: Flex2OGF, model# %d, *faces*",SV);
 			}
-
 		} 
 		catch (...)
 		{
-			clMsg("* ERROR: Flex2OGF, 1st part, model# %d",MODEL_ID);
+			Msg("* ERROR: Flex2OGF, 1st part, model# %d",SV);
 		}
-		
+ 	
 		try
 		{
- 			pOGF->Optimize						();
- 			pOGF->CalcBounds					();
- 			// pOGF->MakeProgressive	(c_PM_MetricLimit_static);
+  			pOGF->Optimize						();
+  			pOGF->CalcBounds					();
+  			// pOGF->MakeProgressive	(c_PM_MetricLimit_static);
  			// pOGF->Stripify						();
 		}
 		catch (...)
 		{
-			clMsg("* ERROR: Flex2OGF, 2nd part, model# %d",MODEL_ID);
-		}
-		
-		if (CheckInfinity_FBOX(pOGF->bbox))
-		{
-			clMsg("! Corrupted OGF [%u] is INFINITY bbox", MODEL_ID);
-			clMsg("! Corrupted OGF min{%.2f, %.2f, %.2f} max{%.2f, %.2f, %.2f}", VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+			Msg("* ERROR: Flex2OGF, 2nd part, model# %d", SV);
 		}
 
-		g_tree.push_back	(pOGF);
- 
-		MODEL_ID++;
-		Progress			(p_total+=p_cost);
+		if (!CheckInfinity_FBOX(pOGF->bbox))
+		{
+			cs.Enter();
+			g_tree.push_back(pOGF);
+			ProgressID++;
+			Progress(float(ProgressID) / float(g_XSplit.size()));
+
+			if (ProgressID % 256 == 0)
+				clMsg("Progress: %u/%u", ProgressID, g_XSplit.size() );
+			cs.Leave();
+		}
+		else
+			Msg("pOGF is Errors: %u, FBOX min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}", SV, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max) );
 	}
+	);
 
 	for (auto it : g_XSplit)
 	{
@@ -179,4 +190,63 @@ void CBuild::Flex2OGF()
 			xr_delete(it);
 	}
 	g_XSplit.clear	();
+}
+
+void CBuild::SaveOGF()
+{
+	return; // ме дндекюмн
+
+ 	u32 BaseID = 0;
+
+	u32 start = 0;
+ 	size_t GBs		= 2 * 1024 * 1024 * 1024;
+	 
+	int INDEX_FILE	= 0;
+	while (true)
+	{
+		if (start >= g_tree.size() || INDEX_FILE > 4)
+			break;
+
+		string_path p_ref;
+ 		sprintf_s(p_ref, "%s\\build.geom_%u", path, INDEX_FILE);
+
+
+		IWriter* write_ogf_ref = FS.w_open(p_ref);
+		u32 ID = start;
+
+		write_ogf_ref->open_chunk(9999);
+
+		for (; ID < g_tree.size(); ID++)
+		{
+			OGF_Reference* ORef = smart_cast<OGF_Reference*> (g_tree[ID]);
+			if (ORef)
+			{
+				ORef->SaveForCompile(write_ogf_ref);
+				clMsg("BaseINDEX: %u/%u, SizeMU: %llu", ID, g_tree.size(), write_ogf_ref->tell());
+ 			}
+			
+
+			if (write_ogf_ref->tell() > GBs)
+ 				break;
+ 		}
+
+ 		write_ogf_ref->close_chunk();
+		FS.w_close(write_ogf_ref);
+		 
+		INDEX_FILE++;
+		start = ID;
+	}
+}
+
+size_t CBuild::GetTreeSize()
+{
+	size_t treeOgf = 0;
+	for (auto& tree : g_tree)
+	{
+		auto P = smart_cast<OGF*> ( tree );
+		
+		if (P != nullptr)
+		treeOgf += P->Sizeof();
+	}
+	return treeOgf;
 }

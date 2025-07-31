@@ -58,7 +58,7 @@ static void	add_face(	const Face& F,
 
 static void	fill_mender_input( xr_vector< MeshMender::Vertex >& theVerts, xr_vector< unsigned int >& theIndices )
 {
-		// ************************************* Build vectors + expand TC if nessesary
+	// ************************************* Build vectors + expand TC if nessesary
 	Status						("Building inputs...");
 	std::sort					(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end());
 	xr_vector<xr_vector<u32> >	remap;
@@ -83,19 +83,17 @@ static void retrive_data_from_mender_otput( const	 xr_vector< MeshMender::Vertex
 		u32	id0							=	theIndices	[f*3+0];	// vertex index
 		u32	id1							=	theIndices	[f*3+1];	// vertex index
 		u32	id2							=	theIndices	[f*3+2];	// vertex index
-		R_ASSERT						( id0 < theVerts.size() );
-		R_ASSERT						( id1 < theVerts.size() );
-		R_ASSERT						( id2 < theVerts.size() );
 		MeshMender::Vertex verts[3] =	{ theVerts[id0], theVerts[id1], theVerts[id2] };
 		set_face( *F, verts );
 	}
 }
-static		xr_vector< MeshMender::Vertex > mender_in_out_verts;
-static		xr_vector< unsigned int >		mender_in_out_indices;
-static		xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
-
+ 
 void CBuild::xrPhase_TangentBasis()
 {
+	xr_vector< MeshMender::Vertex > mender_in_out_verts;
+	xr_vector< unsigned int >		mender_in_out_indices;
+	xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
+
 	// ************************************* Declare inputs
 	Status						("Declarator...");
 	u32 v_count_reserve			= iFloor(float(lc_global_data()->g_vertices().size())*1.33f);
@@ -111,10 +109,23 @@ void CBuild::xrPhase_TangentBasis()
 	mender_mapping_out_to_in_vert	.reserve( v_count_reserve );
 
 
-	fill_mender_input( mender_in_out_verts, mender_in_out_indices );
+	// ************************************* Build vectors + expand TC if nessesary
+	Status("Building inputs...");
+	std::sort(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end());
+	xr_vector<xr_vector<u32> >	remap;
+	remap.resize(lc_global_data()->g_vertices().size());
+	for (u32 f = 0; f < lc_global_data()->g_faces().size(); f++)
+	{
+		Progress(float(f) / float(lc_global_data()->g_faces().size()));
+		Face* F = lc_global_data()->g_faces()[f];
+		add_face(*F, mender_in_out_verts, mender_in_out_indices, remap);
+	}
+	remap.clear();
+ 
+	// **************************************************** 
 
-	u32			v_was	= lc_global_data()->g_vertices().size();
-	u32			v_become= mender_in_out_verts.size();
+	u32			v_was	 = lc_global_data()->g_vertices().size();
+	u32			v_become = mender_in_out_verts.size();
 	clMsg		("duplication: was[%d] / become[%d] - %2.1f%%",v_was,v_become,100.f*float(v_become-v_was)/float(v_was));
 
 	// ************************************* Perform mungle
@@ -137,13 +148,20 @@ void CBuild::xrPhase_TangentBasis()
 	)
 	{
 		Debug.fatal	(DEBUG_INFO, "NVMeshMender failed " );
-		//Debug.fatal	(DEBUG_INFO,"NVMeshMender failed (%s)",mender.GetLastError().c_str());
+	}
+	
+	// ************************************* Retreive data
+	Status("Retreiving basis...");
+	for (u32 f = 0; f < lc_global_data()->g_faces().size(); f++)
+	{
+		Face* F = lc_global_data()->g_faces()[f];
+		u32	id0 = mender_in_out_indices[f * 3 + 0];	// vertex index
+		u32	id1 = mender_in_out_indices[f * 3 + 1];	// vertex index
+		u32	id2 = mender_in_out_indices[f * 3 + 2];	// vertex index
+		MeshMender::Vertex verts[3] = { mender_in_out_verts[id0], mender_in_out_verts[id1], mender_in_out_verts[id2] };
+		set_face(*F, verts);
 	}
 
-	// ************************************* Bind declarators
-	// bind
-
-	retrive_data_from_mender_otput( mender_in_out_verts, mender_in_out_indices );
 	mender_in_out_verts				.clear( );
 	mender_in_out_indices			.clear( );
 	mender_mapping_out_to_in_vert	.clear( );

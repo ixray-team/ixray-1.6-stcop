@@ -1,6 +1,7 @@
 #include "../xrLC/StdAfx.h"
 #include "../xrLC/Build.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
+#include <CompilersUI.h>
 
 CBuild* pBuild = NULL;
 u32		version = 0;
@@ -15,11 +16,6 @@ static const char* h_str =
 "-nosubd	== don`t use subdivide geometry\n"
 "-tex_rgba	== don`t compress lightmap textures\n"
 "-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
-"-skip_weld == don't use welding vertexis \n"
-"-lmaps_alt == Используем альтернативный метод ligtmaps building texture \n"
-"-lmaps_size == Менять размер тексуры LMAP\n"
-"-use_intel == Используем альтернативный метод Raytracing Intel Embree \n"
-
 "\n"
 "NOTE: The last key is required for any functionality\n";
 
@@ -28,15 +24,10 @@ void Help(const char*);
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 extern bool g_using_smooth_groups;
 
-#include "CompilersUI.h"
+extern CompilersMode gCompilerMode;
 
-extern CompilersMode gCompilerMode;;
-
-void StartupLC()
+void StartupLC() 
 {
-	// 	xr_strcpy(cmd, lpCmdLine);
-	//	_strlwr(cmd);
-
 
 	g_build_options.b_radiosity = gCompilerMode.LC_GI;
 	g_build_options.b_noise = gCompilerMode.LC_Noise;
@@ -57,6 +48,7 @@ void StartupLC()
 		lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
 		lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
 		lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
+		lc_global_data()->SetSkipTHM(gCompilerMode.SkipTHM);
 
 		// Se7kills
 		lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
@@ -77,7 +69,7 @@ void StartupLC()
 
 		string256 inf;
 		IReader* F = FS.r_open(prjName);
-		if (NULL == F) 
+		if (NULL == F)
 		{
 			xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", Name.data());
 			clMsg(inf);
@@ -100,18 +92,13 @@ void StartupLC()
 		pBuild->Load(Params, *F);
 
 		lc_global_data()->SetOverrideSettings(gCompilerMode.IsOverloadedSettings);
-
+  
 		if (gCompilerMode.IsOverloadedSettings)
 		{
 			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
 			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
-			
-			clMsg("Original Weld Distance: %f", g_params().m_weld_distance);
-			g_params().m_weld_distance = gCompilerMode.MergeDistance;
-
-			clMsg("Original m_sm_angle: %f", g_params().m_sm_angle);
-
-			lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
+  			g_params().m_weld_distance = gCompilerMode.WeldDistance;
+ 			lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
 		}
 
 		FS.r_close(F);
@@ -122,4 +109,6 @@ void StartupLC()
 		pBuild->Run(lfn);
 		xr_delete(pBuild);
 	}
+	    
+	 
 }
