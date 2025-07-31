@@ -181,30 +181,68 @@ void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 	PlayHUDMotion("anm_close", FALSE, GetState());
 }
 
-void	CWeaponAutomaticShotgun::net_Export	(NET_Packet& P)
+BOOL CWeaponAutomaticShotgun::net_Spawn(CSE_Abstract* DC)
 {
-	inherited::net_Export(P);	
-	P.w_u8(u8(m_magazine.size()));	
-	for (u32 i=0; i<m_magazine.size(); i++)
+	BOOL bResult = inherited::net_Spawn(DC);
+
+	CSE_ALifeItemWeaponShotGun* E = smart_cast<CSE_ALifeItemWeaponShotGun*>(DC);
+
+	xr_vector<u8> ammo_ids = E->m_AmmoIDs;
+
+	for (u32 i = 0; i < (u32)ammo_ids.size(); i++)
 	{
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
+		u8 LocalAmmoType = ammo_ids[i];
+		if (i >= m_magazine.size())
+		{
+			continue;
+		}
+
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
+		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+		{
+			continue;
+		}
+
+		l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+	}
+
+	return bResult;
+}
+
+void CWeaponAutomaticShotgun::net_Export(NET_Packet& P)
+{
+	inherited::net_Export(P);
+
+	P.w_u8(u8(m_magazine.size()));
+
+	for (u32 i = 0; i < m_magazine.size(); i++)
+	{
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
 		P.w_u8(l_cartridge.m_LocalAmmoType);
 	}
 }
 
-void	CWeaponAutomaticShotgun::net_Import	(NET_Packet& P)
+void CWeaponAutomaticShotgun::net_Import(NET_Packet& P)
 {
-	inherited::net_Import(P);	
+	inherited::net_Import(P);
 	u8 AmmoCount = P.r_u8();
-	for (u32 i=0; i<AmmoCount; i++)
+	for (u32 i = 0; i < AmmoCount; i++)
 	{
 		u8 LocalAmmoType = P.r_u8();
-		if (i>=m_magazine.size()) continue;
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType) continue;
+		if (i >= m_magazine.size())
+		{
+			continue;
+		}
+
+		CCartridge& l_cartridge = *(m_magazine.begin() + i);
+		if (LocalAmmoType == l_cartridge.m_LocalAmmoType)
+		{
+			continue;
+		}
+
 #ifdef DEBUG
 		Msg("! %s reload to %s", *l_cartridge.m_ammoSect, m_ammoTypes[LocalAmmoType].c_str());
 #endif
-		l_cartridge.Load( m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType );
+		l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
 	}
 }
