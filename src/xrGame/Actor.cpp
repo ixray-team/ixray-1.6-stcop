@@ -1014,22 +1014,26 @@ float g_fov = 67.5f;
 
 float CActor::currentFOV()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))
 		return g_fov;
 
-	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
+	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
-	if (eacFreeLook != cam_active && pWeapon &&
-		pWeapon->IsZoomed() && 
-		( !pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()) )
-		 )
+	if (eacFreeLook != cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
 	{
-		return pWeapon->GetZoomFactor() * (0.75f);
-	}else
-	{
-		return g_fov;
+		static const bool isAltFovCalc = EngineExternal()[EEngineExternalGame::EnableAlternateZoomFovCalc];
+		if (isAltFovCalc)
+		{
+			float fov = (g_fov / 2.f) * PI / 180.f;
+			return (2.f * atan(tan(fov) / pWeapon->GetZoomFactor()) * 180.f / PI);
+		}
+		else
+			return pWeapon->GetZoomFactor() * (0.75f);
 	}
+	else
+		return g_fov;
 }
+
 float	NET_Jump = 0;
 static bool bLook_cam_fp_zoom = false;
 extern ENGINE_API int m_look_cam_fp_zoom;
