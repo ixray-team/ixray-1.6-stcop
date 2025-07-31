@@ -448,11 +448,22 @@ void				game_cl_Deathmatch::LoadDefItemsForRank(IBuyWnd* pBuyMenu)
 
 		s16 ID = GetBuyMenuItemIndex(0, ItemID);
 		
-		if (GameID() != eGameIDDeathmatch)
+		if (EngineExternal().CallOfPripyatMode())
 		{
-			PlayerDefItems.push_back(ID);
-			PlayerDefItems.push_back(ID);
-		}		
+			if (GameID() != eGameIDDeathmatch)
+			{
+				PlayerDefItems.push_back(ID);
+				PlayerDefItems.push_back(ID);
+			}
+		}
+		else
+		{
+			if (GameID() == eGameIDArtefactHunt)
+			{
+				PlayerDefItems.push_back(ID);
+				PlayerDefItems.push_back(ID);
+			}
+		}
 	};
 	//-------------------------------------------------------------
 	if (pCurBuyMenu->IsShown()) return;
