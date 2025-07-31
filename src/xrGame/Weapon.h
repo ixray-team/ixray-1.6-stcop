@@ -214,6 +214,7 @@ public:
 	bool m_bUseScopeHud = false;
 	bool m_bUseGLHud = false;
 	bool m_bHideColimSightInAlter;
+	bool m_bIsAimStarted = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -273,7 +274,7 @@ protected:
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
 
-private:
+protected:
 
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
