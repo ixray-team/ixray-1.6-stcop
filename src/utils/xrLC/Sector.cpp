@@ -63,7 +63,6 @@ void CSector::BuildHierrarhy	()
 
 	u64 ticks_find = 0;
 	u64 ticks_bounds = 0;
-	u64 count_finded = 0;
 
 
 	struct GridKey
@@ -96,42 +95,37 @@ void CSector::BuildHierrarhy	()
 	
 	CTimer tGlobalCalculateBounds;
 	u64 TotalMS = 0;
+	
+	#define GRIDING_SIZE 128
 
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
 		ProgressID = 0;
 		int iSize			= (int)g_tree.size();
 		xr_vector<OGF_Data> data;
-
 		std::unordered_map<GridKey, xr_vector<OGF_Data>, GridKey::Hash> grid_map;
-
-		u32 IDx = 0;
-
-		#define GRIDING_SIZE 64
-
-		u32 ChunkSize = GRIDING_SIZE;
-		for (auto O : g_tree)
+  		for (u32 oID = 0; oID < g_tree.size(); oID ++)
 		{
+			auto O = g_tree[oID];
 			if (!O->bConnected && O->Sector == SelfID )
 			{
-				int cell_x = static_cast<int>(std::floor(O->bbox.min.x / ChunkSize));
-				int cell_z = static_cast<int>(std::floor(O->bbox.min.z / ChunkSize));
+				int cell_x = static_cast<int>(std::floor(O->bbox.min.x / GRIDING_SIZE));
+				int cell_z = static_cast<int>(std::floor(O->bbox.min.z / GRIDING_SIZE));
 				GridKey key = { cell_x, cell_z };
- 				OGF_Data OData = { O, IDx, cell_x, cell_z, key };
+ 				OGF_Data OData = { O, oID, cell_x, cell_z, key };
  				data.push_back(OData);
- 				grid_map[key].push_back(OData);
+  				grid_map[key].push_back(OData);
 			}
-			IDx++;
-		}
+ 		}
 		
-		bool use_grid  = SizeLimit <= GRIDING_SIZE ? true : false;
-	 
- 		AditionalData("Delimiter: %f, use grid: %u", SizeLimit, use_grid);
-
+		bool use_grid  = SizeLimit <= GRIDING_SIZE ? true : false;	
+		u64 count_connected = 0;
    		for (auto& Ogf : data)
 		{
  			Progress( float( ProgressID ) / float(data.size()));
 			ProgressID++; 
+
+			AditionalData("Sz: %.0f finded: %u | conn: %u/%u", SizeLimit, count_connected, ProgressID, data.size());
 
  			int I = Ogf.ID;
 			if (g_tree[I]->bConnected)	
@@ -162,12 +156,12 @@ void CSector::BuildHierrarhy	()
 					return TRUE;
 				};
 				 
-				int	best_id = -1;
+				int		best_id = -1;
+				float	best_volume = flt_max;
+
 				if (use_grid)
 				{
- 					float best_volume = flt_max;
-
-					for (auto& FOgf : grid_map[selected_grid])
+ 					for (auto& FOgf : grid_map[selected_grid])
 					{
 						OGF_Base* candidate = g_tree[FOgf.ID];
 						if (candidate->bConnected || candidate->Sector != SelfID)
@@ -185,9 +179,7 @@ void CSector::BuildHierrarhy	()
 				}
 				else
 				{
- 					float	best_volume = flt_max;
-
-					for (auto& Ogf : data)
+  					for (auto& Ogf : data)
 					{
 						OGF_Base* candidate = Ogf.node;
 						if (candidate->bConnected)			continue;
@@ -209,7 +201,7 @@ void CSector::BuildHierrarhy	()
 					break;
   				
 				pNode->AddChield(best_id);
-				count_finded += 1;
+				count_connected += 1;
 			}
 		 
    			if (pNode->chields.size()>1)	
