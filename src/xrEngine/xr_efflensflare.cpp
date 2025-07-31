@@ -14,8 +14,8 @@
 #include "../xrServerEntities/object_broker.h"
 
 #ifdef _EDITOR
-    #include "ui_toolscustom.h"
-    #include "ui_main.h"
+	#include "ui_toolscustom.h"
+	#include "ui_main.h"
 #else
 	#include "xr_object.h"
 #include "IGame_Level.h"
@@ -34,17 +34,17 @@
 void CLensFlareDescriptor::SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name)
 {
 	m_Source.fRadius	= fRadius;
-    m_Source.shader		= sh_name;
-    m_Source.texture	= tex_name;
-    m_Source.ignore_color=ign_color;
+	m_Source.shader		= sh_name;
+	m_Source.texture	= tex_name;
+	m_Source.ignore_color=ign_color;
 }
 
 void CLensFlareDescriptor::SetGradient(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name)
 {
 	m_Gradient.fRadius	= fMaxRadius;
 	m_Gradient.fOpacity	= fOpacity;
-    m_Gradient.shader	= sh_name;
-    m_Gradient.texture	= tex_name;
+	m_Gradient.shader	= sh_name;
+	m_Gradient.texture	= tex_name;
 }
 
 void CLensFlareDescriptor::AddFlare(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name)
@@ -52,9 +52,9 @@ void CLensFlareDescriptor::AddFlare(float fRadius, float fOpacity, float fPositi
 	SFlare F;
 	F.fRadius	= fRadius;
 	F.fOpacity	= fOpacity;
-    F.fPosition	= fPosition;
-    F.shader	= sh_name;
-    F.texture	= tex_name;
+	F.fPosition	= fPosition;
+	F.shader	= sh_name;
+	F.texture	= tex_name;
 	m_Flares.push_back	(F);
 }
 
@@ -80,13 +80,13 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 	}
 	m_Flags.set	(flFlare,pIni->r_bool ( sect,"flares" ));
 	if (m_Flags.is(flFlare)){
-	    LPCSTR S= pIni->r_string 	( sect,"flare_shader" );
+		LPCSTR S= pIni->r_string 	( sect,"flare_shader" );
 		LPCSTR T= pIni->r_string 	( sect,"flare_textures" );
 		LPCSTR R= pIni->r_string 	( sect,"flare_radius" );
 		LPCSTR O= pIni->r_string 	( sect,"flare_opacity");
 		LPCSTR P= pIni->r_string 	( sect,"flare_position");
 		u32 tcnt= _GetItemCount(T);
-        string256 name;
+		string256 name;
 		for (u32 i=0; i<tcnt; i++){
 			_GetItem(R,i,name); float r=(float)atof(name);
 			_GetItem(O,i,name); float o=(float)atof(name);
@@ -103,8 +103,8 @@ void CLensFlareDescriptor::load(CInifile* pIni, LPCSTR sect)
 		float o = pIni->r_float		( sect,"gradient_opacity" );
 		SetGradient(r,o,T,S);
 	}
-    m_StateBlendUpSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_rise_time" ),0.f)+EPS_S);
-    m_StateBlendDnSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_down_time" ),0.f)+EPS_S);
+	m_StateBlendUpSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_rise_time" ),0.f)+EPS_S);
+	m_StateBlendDnSpeed	= 1.f/(_max(pIni->r_float( sect,"blend_down_time" ),0.f)+EPS_S);
 
 	OnDeviceCreate();
 }
@@ -119,7 +119,7 @@ void CLensFlareDescriptor::OnDeviceCreate()
 	/*
 	m_Gradient.hShader	= CreateShader	(*m_Gradient.texture,*m_Gradient.shader);
 	m_Source.hShader	= CreateShader	(*m_Source.texture,*m_Source.shader);
-    for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader = CreateShader(*it->texture,*it->shader);
+	for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader = CreateShader(*it->texture,*it->shader);
 	*/
 }
 
@@ -131,9 +131,9 @@ void CLensFlareDescriptor::OnDeviceDestroy()
 	for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++)
 		it->m_pRender->DestroyShader();
 	/*
-    m_Gradient.hShader.destroy	();
-    m_Source.hShader.destroy	();
-    for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader.destroy();
+	m_Gradient.hShader.destroy	();
+	m_Source.hShader.destroy	();
+	for (FlareIt it=m_Flares.begin(); it!=m_Flares.end(); it++) it->hShader.destroy();
 	*/
 }
 
@@ -145,23 +145,21 @@ CLensFlare::CLensFlare()
 
 	fBlend						= 0.f;
 
-    LightColor.set				( 0xFFFFFFFF );
+	LightColor.set				( 0xFFFFFFFF );
 	fGradientValue				= 0.f;
 
-    //hGeom						= 0;
+	//hGeom						= 0;
 	m_Current					= 0;
 
-    m_State						= lfsNone;
-    m_StateBlend				= 0.f;
+	m_State						= lfsNone;
+	m_StateBlend				= 0.f;
 
-#ifndef _EDITOR
 	for( int i=0; i<MAX_RAYS; ++i)
 	{
 		m_ray_cache[i].verts[0].set	(0,0,0);
 		m_ray_cache[i].verts[1].set	(0,0,0);
 		m_ray_cache[i].verts[2].set	(0,0,0);
 	}
-#endif
 
 	OnDeviceCreate				();	
 }
@@ -172,8 +170,8 @@ CLensFlare::~CLensFlare()
 	delete_data(m_Palette);	
 }
 
-#ifndef _EDITOR
-struct STranspParam		{
+struct STranspParam
+{
 	Fvector				P;
 	Fvector				D;
 	float				f;
@@ -183,6 +181,7 @@ struct STranspParam		{
 	float				vis_threshold;
 	STranspParam		(collide::ray_cache	*p, const Fvector& _P, const Fvector& _D, float _f, float _vis_threshold):P(_P),D(_D),f(_f),pray_cache(p),vis(1.f),vis_threshold(_vis_threshold){}
 };
+
 IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 {
 	STranspParam* fp= (STranspParam*)params;
@@ -207,7 +206,6 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
 	fp->vis			*=vis;
 	return (fp->vis>fp->vis_threshold); 
 }
-#endif
 
 IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
 {
@@ -219,22 +217,6 @@ IC void	blend_lerp	(float& cur, float tgt, float speed, float dt)
 	cur				+= (diff/diff_a)*mot;
 }
 
-#if 0
-static LPCSTR state_to_string (const CLensFlare::LFState &state)
-{
-	switch (state) {
-		case CLensFlare::lfsNone : return("none");
-		case CLensFlare::lfsIdle : return("idle");
-		case CLensFlare::lfsHide : return("hide");
-		case CLensFlare::lfsShow : return("show");
-		default : NODEFAULT;
-	}
-#ifdef DEBUG
-	return			(0);
-#endif // DEBUG
-}
-#endif
-
 static Fvector2 RayDeltas[CLensFlare::MAX_RAYS] = 
 {
 	{ 0,		0 },
@@ -243,13 +225,16 @@ static Fvector2 RayDeltas[CLensFlare::MAX_RAYS] =
 	{ 0,		-1 },
 	{ 0,		1 },
 };
+
 void CLensFlare::OnFrame(shared_str id)
 {
 	PROF_EVENT("CLensFlare::OnFrame");
-	if (dwFrame==Device.dwFrame)return;
-#ifndef _EDITOR
-	if (!g_pGameLevel)			return;
-#endif
+	if (dwFrame==Device.dwFrame)
+		return;
+
+	if (!g_pGameLevel)
+		return;
+
 	dwFrame			= Device.dwFrame;
 
 	R_ASSERT		( _valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir) );
@@ -257,33 +242,33 @@ void CLensFlare::OnFrame(shared_str id)
 	R_ASSERT		( _valid(vSunDir) );
 
 	// color
-    float tf		= g_pGamePersistent->Environment().fTimeFactor;
-    Fvector& c		= g_pGamePersistent->Environment().CurrentEnv->sun_color;
+	float tf		= g_pGamePersistent->Environment().fTimeFactor;
+	Fvector& c		= g_pGamePersistent->Environment().CurrentEnv->sun_color;
 	LightColor.set	(c.x,c.y,c.z,1.f); 
 
 	CLensFlareDescriptor* desc = id.size() ? g_pGamePersistent->Environment().add_flare(m_Palette, id) : 0;
 
 //	LFState			previous_state = m_State;
-    switch(m_State){
-    case lfsNone: m_State=lfsShow; m_Current=desc; break;
-    case lfsIdle: if (desc!=m_Current) m_State=lfsHide; 	break;
-    case lfsShow: 
-        m_StateBlend 	= m_Current?(m_StateBlend + m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf):1.f+EPS;
-        if (m_StateBlend>=1.f) m_State=lfsIdle;
-    break;
-    case lfsHide: 
-        m_StateBlend 	= m_Current?(m_StateBlend - m_Current->m_StateBlendDnSpeed * Device.fTimeDelta * tf):0.f-EPS;
-        if (m_StateBlend<=0.f){ 	
-            m_State		= lfsShow;
-            m_Current	= desc;
-	        m_StateBlend= m_Current?m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf:0;
-        }
-    break;
-    }
+	switch(m_State){
+	case lfsNone: m_State=lfsShow; m_Current=desc; break;
+	case lfsIdle: if (desc!=m_Current) m_State=lfsHide; 	break;
+	case lfsShow: 
+		m_StateBlend 	= m_Current?(m_StateBlend + m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf):1.f+EPS;
+		if (m_StateBlend>=1.f) m_State=lfsIdle;
+	break;
+	case lfsHide: 
+		m_StateBlend 	= m_Current?(m_StateBlend - m_Current->m_StateBlendDnSpeed * Device.fTimeDelta * tf):0.f-EPS;
+		if (m_StateBlend<=0.f){ 	
+			m_State		= lfsShow;
+			m_Current	= desc;
+			m_StateBlend= m_Current?m_Current->m_StateBlendUpSpeed * Device.fTimeDelta * tf:0;
+		}
+	break;
+	}
 //	Msg				("%6d : [%s] -> [%s]", Device.dwFrame, state_to_string(previous_state), state_to_string(m_State));
-    clamp(m_StateBlend,0.f,1.f);
+	clamp(m_StateBlend,0.f,1.f);
 
-    if ((m_Current==0)||(LightColor.magnitude_rgb()==0.f)){bRender=false; return;}
+	if ((m_Current==0)||(LightColor.magnitude_rgb()==0.f)){bRender=false; return;}
 
 	//
 	// Compute center and axis of flares
@@ -335,7 +320,7 @@ void CLensFlare::OnFrame(shared_str id)
 
 #ifdef _EDITOR
 	float dist = UI->ZFar();
-    if (Tools->RayPick(Device.m_Camera.GetPosition(),vSunDir,dist))
+	if (Tools->RayPick(Device.m_Camera.GetPosition(),vSunDir,dist))
 		fBlend = fBlend - BLEND_DEC_SPEED * Device.fTimeDelta;
 	else
 		fBlend = fBlend + BLEND_INC_SPEED * Device.fTimeDelta;
@@ -399,7 +384,7 @@ void CLensFlare::OnFrame(shared_str id)
 
 	// gradient
 	if (m_Current->m_Flags.is(CLensFlareDescriptor::flGradient))
-    {
+	{
 		Fvector				scr_pos;
 		Device.mFullTransform.transform	( scr_pos, vecLight );
 		float kx = 1, ky = 1;
@@ -411,7 +396,7 @@ void CLensFlare::OnFrame(shared_str id)
 		if (_abs(scr_pos.y) > sun_blend)	ky = ((sun_max - (float)_abs(scr_pos.y))) / (sun_max - sun_blend);
 
 		if (!((_abs(scr_pos.x) > sun_max) || (_abs(scr_pos.y) > sun_max))){
-        	float op		= m_StateBlend*m_Current->m_Gradient.fOpacity;
+			float op		= m_StateBlend*m_Current->m_Gradient.fOpacity;
 			fGradientValue	= kx * ky *  op * fBlend;
 		}else
 			fGradientValue	= 0;
@@ -430,11 +415,11 @@ void CLensFlare::Render(BOOL bSun, BOOL bFlares, BOOL bGradient)
 shared_str CLensFlare::AppendDef(CEnvironment& environment, CInifile* pIni, LPCSTR sect)
 {
 	if (!sect||(0==sect[0])) return "";
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
-    	if (0==xr_strcmp(*(*it)->section,sect)) return sect;
+	for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+		if (0==xr_strcmp(*(*it)->section,sect)) return sect;
 
 	environment.add_flare(m_Palette, sect); 
-    return sect;
+	return sect;
 }
 
 void CLensFlare::OnDeviceCreate()
@@ -444,15 +429,15 @@ void CLensFlare::OnDeviceCreate()
 	m_pRender->OnDeviceCreate();
 
 	// palette
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
-        (*it)->OnDeviceCreate();
+	for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+		(*it)->OnDeviceCreate();
 }
 
 void CLensFlare::OnDeviceDestroy()
 {
 	// palette
-    for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
-        (*it)->OnDeviceDestroy();
+	for (LensFlareDescIt it=m_Palette.begin(); it!=m_Palette.end(); it++)
+		(*it)->OnDeviceDestroy();
 
 	// VS
 	//hGeom.destroy();
