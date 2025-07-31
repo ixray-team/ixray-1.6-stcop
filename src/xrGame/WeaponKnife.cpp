@@ -402,27 +402,38 @@ void CWeaponKnife::UpdateCL()
 
 void CWeaponKnife::FireStart()
 {	
+	if (GetState() != eIdle)
+	{
+		return;
+	}
+
 	inherited::FireStart();
-	SwitchState			(eFire);
+	SwitchState(eFire);
 }
 
-void CWeaponKnife::Fire2Start () 
+void CWeaponKnife::Fire2Start()
 {
 	SwitchState(eFire2);
 }
 
-
-bool CWeaponKnife::Action(u16 cmd, u32 flags) 
+bool CWeaponKnife::Action(u16 cmd, u32 flags)
 {
-	if(inherited::Action(cmd, flags)) return true;
-	switch(cmd) 
+	if (inherited::Action(cmd, flags))
 	{
+		return true;
+	}
 
-		case kWPN_ZOOM : 
-			if(flags&CMD_START) 
-				Fire2Start			();
+	switch (cmd)
+	{
+		case kWPN_ZOOM:
+		{
+			if (flags & CMD_START && GetState() == eIdle)
+			{
+				Fire2Start();
+			}
 
 			return true;
+		}
 	}
 	return false;
 }
