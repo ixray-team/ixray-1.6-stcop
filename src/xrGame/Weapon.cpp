@@ -313,7 +313,7 @@ void CWeapon::Load		(LPCSTR section)
 	float temp_f = 0.0f;
 	temp_f					= pSettings->r_float( section,"cam_relax_speed" );
 	cam_recoil.RelaxSpeed	= _abs( deg2rad( temp_f ) );
-	VERIFY( !fis_zero(cam_recoil.RelaxSpeed) );
+	VERIFY2(!fis_zero(cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line cam_relax_speed = %f", section, temp_f));
 	if ( fis_zero(cam_recoil.RelaxSpeed) )
 	{
 		cam_recoil.RelaxSpeed = EPS_L;
@@ -324,7 +324,7 @@ void CWeapon::Load		(LPCSTR section)
 	{
 		temp_f						= pSettings->r_float( section, "cam_relax_speed_ai" );
 		cam_recoil.RelaxSpeed_AI	= _abs( deg2rad( temp_f ) );
-		VERIFY( !fis_zero(cam_recoil.RelaxSpeed_AI) );
+		VERIFY2(!fis_zero(cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line cam_relax_speed_ai = %f", section, temp_f));
 		if ( fis_zero(cam_recoil.RelaxSpeed_AI) )
 		{
 			cam_recoil.RelaxSpeed_AI = EPS_L;
@@ -332,7 +332,8 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	temp_f						= pSettings->r_float( section, "cam_max_angle" );
 	cam_recoil.MaxAngleVert		= _abs( deg2rad( temp_f ) );
-	VERIFY( !fis_zero(cam_recoil.MaxAngleVert) );
+	VERIFY2(!fis_zero(cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line cam_max_angle = %f", section, temp_f));
+
 	if ( fis_zero(cam_recoil.MaxAngleVert) )
 	{
 		cam_recoil.MaxAngleVert = EPS;
@@ -340,7 +341,8 @@ void CWeapon::Load		(LPCSTR section)
 	
 	temp_f						= pSettings->r_float( section, "cam_max_angle_horz" );
 	cam_recoil.MaxAngleHorz		= _abs( deg2rad( temp_f ) );
-	VERIFY( !fis_zero(cam_recoil.MaxAngleHorz) );
+	VERIFY2(!fis_zero(cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line cam_max_angle_horz = %f", section, temp_f));
+
 	if ( fis_zero(cam_recoil.MaxAngleHorz) )
 	{
 		cam_recoil.MaxAngleHorz = EPS;
@@ -367,7 +369,7 @@ void CWeapon::Load		(LPCSTR section)
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed" ) )
 	{
 		zoom_cam_recoil.RelaxSpeed		= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_relax_speed" ) ) );
-		VERIFY( !fis_zero(zoom_cam_recoil.RelaxSpeed) );
+		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line zoom_cam_relax_speed = %f", section, zoom_cam_recoil.RelaxSpeed));
 		if ( fis_zero(zoom_cam_recoil.RelaxSpeed) )
 		{
 			zoom_cam_recoil.RelaxSpeed = EPS_L;
@@ -375,8 +377,8 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed_ai" ) )
 	{
-		zoom_cam_recoil.RelaxSpeed_AI	= _abs( deg2rad( pSettings->r_float( section,"zoom_cam_relax_speed_ai" ) ) ); 
-		VERIFY( !fis_zero(zoom_cam_recoil.RelaxSpeed_AI) );
+		zoom_cam_recoil.RelaxSpeed_AI	= _abs( deg2rad( pSettings->r_float( section,"zoom_cam_relax_speed_ai" ) ) );
+		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line zoom_cam_relax_speed_ai = %f", section, zoom_cam_recoil.RelaxSpeed_AI));
 		if ( fis_zero(zoom_cam_recoil.RelaxSpeed_AI) )
 		{
 			zoom_cam_recoil.RelaxSpeed_AI = EPS_L;
@@ -385,7 +387,8 @@ void CWeapon::Load		(LPCSTR section)
 	if ( pSettings->line_exist( section, "zoom_cam_max_angle" ) )
 	{
 		zoom_cam_recoil.MaxAngleVert	= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle" ) ) );
-		VERIFY( !fis_zero(zoom_cam_recoil.MaxAngleVert) );
+		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line zoom_cam_max_angle = %f", section, zoom_cam_recoil.MaxAngleVert));
+
 		if ( fis_zero(zoom_cam_recoil.MaxAngleVert) )
 		{
 			zoom_cam_recoil.MaxAngleVert = EPS;
@@ -394,7 +397,8 @@ void CWeapon::Load		(LPCSTR section)
 	if ( pSettings->line_exist( section, "zoom_cam_max_angle_horz" ) )
 	{
 		zoom_cam_recoil.MaxAngleHorz	= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle_horz" ) ) ); 
-		VERIFY( !fis_zero(zoom_cam_recoil.MaxAngleHorz) );
+		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line zoom_cam_max_angle_horz = %f", section, zoom_cam_recoil.MaxAngleHorz));
+
 		if ( fis_zero(zoom_cam_recoil.MaxAngleHorz) )
 		{
 			zoom_cam_recoil.MaxAngleHorz = EPS;
