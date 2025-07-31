@@ -74,9 +74,25 @@ void CPluginPython::Run()
 
 	xr_string Command = "python \"";
 	Command += Path;
-	Command += "\" -level=\"";
-	Command += Scene->full_name;
 	Command += "\"";
+
+	if (IsSimple())
+	{
+		Command += " -level=\"";
+		Command += Scene->full_name;
+		Command += "\"";
+	}
+	else
+	{
+		for (auto& [Arg, Value] : InputArgsValues)
+		{
+			Command += " -";
+			Command += Arg;
+			Command += "=\"";
+			Command += Value;
+			Command += "\"";
+		}
+	}
 
 	Msg(RunCommand(Command).c_str());
 }
@@ -86,7 +102,10 @@ xr_string CPluginPython::ReadDesc() const
 	std::ifstream file(Path.data());
 
 	xr_string line;
+	xr_string result = "Not found description!";
+
 	const std::string_view prefix = "# desc: ";
+	const std::string_view prefix_input = "# input: ";
 
 	while (std::getline(file, line))
 	{
@@ -95,10 +114,25 @@ xr_string CPluginPython::ReadDesc() const
 			size_t pos = line.find(':');
 			if (pos != std::string::npos && pos + 1 < line.size())
 			{
-				return line.substr(pos + 1);
+				result = line.substr(pos + 1);
+			}
+		}
+		else if (line.rfind(prefix_input, 0) == 0)
+		{
+			std::regex pattern(R"(\[([^,]+), ([^\]]+)\])");
+
+			std::smatch match;
+			xr_string::const_iterator searchStart(line.cbegin());
+
+			while (std::regex_search(searchStart, line.cend(), match, pattern))
+			{
+				std::string key = match[1];
+				std::string value = match[2];
+				InputArgsName[match[1].str().c_str()] = match[2].str().c_str();
+				searchStart = match.suffix().first;
 			}
 		}
 	}
 
-	return "Not found description!";
+	return result;
 }

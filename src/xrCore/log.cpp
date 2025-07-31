@@ -18,7 +18,6 @@ void Log(const char* s)
 
 void Msg(const char *format, ...)
 {
-
 	va_list		mark;
 	va_start	(mark, format );
 	theLogger->Msg(format, mark);
