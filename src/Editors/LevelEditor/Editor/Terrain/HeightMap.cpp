@@ -45,233 +45,206 @@ bool SHeightMap::LoadSteam(IReader* Reader)
 		if (Data[i] > MaxH) MaxH = Data[i];
 	}
 
+	PrecacheRenderData(100, 1.f, 0xffffff, true);
+
 	return true;
 }
-void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor)
+
+void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor, bool geometryOnly)
 {
-    if (!RenderData.IsDirty)
-        return;
+	if (!RenderData.IsDirty)
+		return;
 
-    RenderData.Clear();
+	auto Height2Color = [&](float h, float minH, float maxH) -> u32
+	{
+		float t = std::clamp((h - minH) / std::max(maxH - minH, EPS_S), 0.0f, 0.9f);
+		t = pow(t, 0.7f);
+		float brightness = 0.2f + 0.8f * t;
 
-    float global_min_h = FLT_MAX;
-    float global_max_h = -FLT_MAX;
+		return color_rgba(
+			u8(((baseColor >> 16) & 0xFF) * brightness),
+			u8(((baseColor >> 8) & 0xFF) * brightness),
+			u8((baseColor & 0xFF) * brightness),
+			255
+		);
+	};
 
-    const u32 ChunkSize = SHeightMapRenderData::CHUNK_SIZE;
-    const float FlatThreshold = SHeightMapRenderData::FLAT_THRESHOLD;
+	const u32 ChunkSize = SHeightMapRenderData::CHUNK_SIZE;
+	const float FlatThreshold = SHeightMapRenderData::FLAT_THRESHOLD;
 
-    // Calculate center offset with scale applied
-    float centerX = (Width * cellSize * Size.x) * 0.5f;
-    float centerZ = (Height * cellSize * Size.z) * 0.5f;
+	float centerX = (Width * cellSize * Size.x) * 0.5f;
+	float centerZ = (Height * cellSize * Size.z) * 0.5f;
 
-    // Calculate scaled dimensions
-    u32 scaledWidth = u32(Width * Size.x);
-    u32 scaledHeight = u32(Height * Size.z);
+	u32 scaledWidth = u32(Width * Size.x);
+	u32 scaledHeight = u32(Height * Size.z);
 
-    u32 chunkCountX = (scaledWidth - 1) / ChunkSize + 1;
-    u32 chunkCountZ = (scaledHeight - 1) / ChunkSize + 1;
+	if (geometryOnly)
+	{
+		RenderData.Clear();
+		u32 chunkCountX = (scaledWidth - 1) / ChunkSize + 1;
+		u32 chunkCountZ = (scaledHeight - 1) / ChunkSize + 1;
 
-    struct ChunkInfo
-    {
-        float min_h, max_h;
-        bool is_flat;
-        bool has_holes;
-    };
+		struct ChunkInfo
+		{
+			float minH = FLT_MAX, maxH = -FLT_MAX;
+			bool isFlat = false, hasHoles = false;
+		};
 
-    xr_vector<ChunkInfo> ChunkInfos(chunkCountX * chunkCountZ);
+		std::vector<ChunkInfo> chunkInfos(chunkCountX * chunkCountZ);
+		RenderData.Chunks.reserve(chunkCountX * chunkCountZ);
 
-    for (u32 cz = 0; cz < chunkCountZ; ++cz)
-    {
-        for (u32 cx = 0; cx < chunkCountX; ++cx)
-        {
-            float minH = FLT_MAX, maxH = -FLT_MAX;
-            bool has_holes = false;
+		float globalMinH = FLT_MAX;
+		float globalMaxH = -FLT_MAX;
 
-            u32 x0 = cx * ChunkSize;
-            u32 z0 = cz * ChunkSize;
-            u32 x_end = std::min(x0 + ChunkSize, scaledWidth - 1);
-            u32 z_end = std::min(z0 + ChunkSize, scaledHeight - 1);
+		// Сканируем чанк-сетку и собираем базовую информацию
+		for (u32 cz = 0; cz < chunkCountZ; ++cz)
+		{
+			for (u32 cx = 0; cx < chunkCountX; ++cx)
+			{
+				auto& info = chunkInfos[cz * chunkCountX + cx];
+				for (u32 z = cz * ChunkSize; z <= std::min((cz + 1) * ChunkSize, scaledHeight - 1); ++z)
+				{
+					for (u32 x = cx * ChunkSize; x <= std::min((cx + 1) * ChunkSize, scaledWidth - 1); ++x)
+					{
+						u32 ix = u32((Width - 1 - (x - Pos.x)) / Size.x);
+						u32 iz = u32((z - Pos.z) / Size.z);
 
-            for (u32 z = z0; z <= z_end; ++z)
-            {
-                for (u32 x = x0; x <= x_end; ++x)
-                {
-                    // Инвертируем ось X
-                    u32 orig_x = u32((Width - 1 - (x - Pos.x)) / Size.x);
-                    u32 orig_z = u32((z - Pos.z) / Size.z);
+						if (ix >= Width || iz >= Height)
+						{
+							info.hasHoles = true;
+							continue;
+						}
 
-                    if (orig_x >= Width || orig_z >= Height)
-                    {
-                        has_holes = true;
-                        continue;
-                    }
+						float h = (GetHeight(ix, iz) + Pos.y) * scaleY * Size.y;
+						if (h == 0.0f)
+							info.hasHoles = true;
 
-                    float h = (GetHeight(orig_x, orig_z) + Pos.y) * scaleY * Size.y;
-                    if (h == 0.0f)
-                        has_holes = true;
-                    minH = std::min(minH, h);
-                    maxH = std::max(maxH, h);
+						info.minH = std::min(info.minH, h);
+						info.maxH = std::max(info.maxH, h);
+						globalMinH = std::min(globalMinH, h);
+						globalMaxH = std::max(globalMaxH, h);
+					}
+				}
+				info.isFlat = (info.maxH - info.minH < FlatThreshold) && !info.hasHoles;
+			}
+		}
 
-                    global_min_h = std::min(global_min_h, h);
-                    global_max_h = std::max(global_max_h, h);
-                }
-            }
+		float CenterY = (globalMinH + globalMaxH) * 0.5f;
 
-            bool is_flat = (maxH - minH < FlatThreshold) && !has_holes;
-            ChunkInfos[cz * chunkCountX + cx] = { minH, maxH, is_flat, has_holes };
-        }
-    }
+		// Генерация чанков
+		for (u32 cz = 0; cz < chunkCountZ; ++cz)
+		{
+			for (u32 cx = 0; cx < chunkCountX; ++cx)
+			{
+				const ChunkInfo& info = chunkInfos[cz * chunkCountX + cx];
+				bool useFlat = info.isFlat;
 
-    // Height to color conversion
-    auto Height2Color = [&](float h) -> u32
-        {
-            float t = (h - global_min_h) / std::max(global_max_h - global_min_h, EPS_S);
-            t = std::clamp(t, 0.0f, 0.9f); // Убрал нижний clamp 0.2f
+				// Проверка соседей
+				for (int dz = -1; dz <= 1 && useFlat; ++dz)
+				{
+					for (int dx = -1; dx <= 1 && useFlat; ++dx)
+					{
+						if (!dx && !dz) continue;
+						int nx = int(cx) + dx, nz = int(cz) + dz;
+						if (nx >= 0 && nz >= 0 && nx < int(chunkCountX) && nz < int(chunkCountZ))
+							useFlat &= chunkInfos[nz * chunkCountX + nx].isFlat;
+					}
+				}
 
-            // Нелинейное преобразование для лучшего восприятия глубины
-            t = pow(t, 0.7f); // Можно регулировать степень (0.5-0.8)
+				SHeightMapChunk chunk;
+				chunk.BBox.invalidate();
+				chunk.IsFlat = useFlat;
+				chunk.Vertices.reserve(ChunkSize * ChunkSize * 6);
+				chunk.Colors.reserve(ChunkSize * ChunkSize * 6);
 
-            // Коррекция яркости для темных участков
-            float brightness = 0.2f + 0.8f * t; // Минимальная яркость 20%
+				for (u32 z = cz * ChunkSize; z < std::min((cz + 1) * ChunkSize, scaledHeight - 1); ++z)
+				{
+					for (u32 x = cx * ChunkSize; x < std::min((cx + 1) * ChunkSize, scaledWidth - 1); ++x)
+					{
+						u32 ix0 = u32((Width - 1 - (x - Pos.x)) / Size.x);
+						u32 iz0 = u32((z - Pos.z) / Size.z);
+						u32 ix1 = u32((Width - 1 - ((x + 1) - Pos.x)) / Size.x);
+						u32 iz1 = u32(((z + 1) - Pos.z) / Size.z);
 
-            return color_rgba(
-                u8(((baseColor >> 16) & 0xFF) * brightness),
-                u8(((baseColor >> 8) & 0xFF) * brightness),
-                u8((baseColor & 0xFF) * brightness),
-                255
-            );
-        };
+						if (ix0 >= Width || iz0 >= Height || ix1 >= Width || iz1 >= Height)
+							continue;
 
-    for (u32 cz = 0; cz < chunkCountZ; ++cz)
-    {
-        for (u32 cx = 0; cx < chunkCountX; ++cx)
-        {
-            const ChunkInfo& info = ChunkInfos[cz * chunkCountX + cx];
+						float h0 = GetHeight(ix0, iz0) * scaleY * Size.y;
+						float h1 = GetHeight(ix1, iz0) * scaleY * Size.y;
+						float h2 = GetHeight(ix1, iz1) * scaleY * Size.y;
+						float h3 = GetHeight(ix0, iz1) * scaleY * Size.y;
 
-            // Check neighbors
-            bool neighbor_flat = true;
-            for (int dz = -1; dz <= 1 && neighbor_flat; ++dz)
-            {
-                for (int dx = -1; dx <= 1 && neighbor_flat; ++dx)
-                {
-                    if (dx == 0 && dz == 0)
-                        continue;
+						if (h0 == 0.0f || h1 == 0.0f || h2 == 0.0f || h3 == 0.0f)
+							continue;
 
-                    int nx = int(cx) + dx;
-                    int nz = int(cz) + dz;
+						Fvector v0 = { x * cellSize - centerX, h0 - CenterY + Pos.y, z * cellSize - centerZ };
+						Fvector v1 = { (x + 1) * cellSize - centerX, h1 - CenterY, z * cellSize - centerZ };
+						Fvector v2 = { (x + 1) * cellSize - centerX, h2 - CenterY, (z + 1) * cellSize - centerZ };
+						Fvector v3 = { x * cellSize - centerX, h3 - CenterY, (z + 1) * cellSize - centerZ };
 
-                    if (nx >= 0 && nz >= 0 && nx < int(chunkCountX) && nz < int(chunkCountZ))
-                    {
-                        const ChunkInfo& neighbor = ChunkInfos[nz * chunkCountX + nx];
-                        if (!neighbor.is_flat)
-                            neighbor_flat = false;
-                    }
-                }
-            }
+						chunk.Vertices.insert(chunk.Vertices.end(), { v0, v1, v2, v0, v2, v3 });
+						chunk.BBox.modify(v0);
+						chunk.BBox.modify(v2);
 
-            bool use_flat = info.is_flat && neighbor_flat;
+						float hAvg = (h0 + h1 + h2 + h3) * 0.25f;
+						u32 col = Height2Color(hAvg, globalMinH, globalMaxH);
+						chunk.Colors.insert(chunk.Colors.end(), 6, col);
+					}
+				}
 
-            SHeightMapChunk chunk;
-            chunk.BBox.invalidate();
+				chunk.IsValid = !chunk.Vertices.empty();
+				if (chunk.IsValid)
+					RenderData.Chunks.push_back(std::move(chunk));
+			}
+		}
+	}
+	else
+	{
+		// Обновление существующих данных
+		float globalMinH = FLT_MAX;
+		float globalMaxH = -FLT_MAX;
+		for (u32 z = 0; z < Height; ++z)
+		{
+			for (u32 x = 0; x < Width; ++x)
+			{
+				float h = GetHeight(x, z);
+				if (h == 0.0f)
+					continue;
 
-            u32 x0 = cx * ChunkSize;
-            u32 z0 = cz * ChunkSize;
-            u32 x_end = std::min(x0 + ChunkSize, scaledWidth - 1);
-            u32 z_end = std::min(z0 + ChunkSize, scaledHeight - 1);
+				h *= scaleY * Size.y;
+				globalMinH = std::min(globalMinH, h);
+				globalMaxH = std::max(globalMaxH, h);
+			}
+		}
 
-            for (u32 z = z0; z < z_end; ++z)
-            {
-                for (u32 x = x0; x < x_end; ++x)
-                {
-                    // Инвертируем ось X при получении оригинальных координат
-                    u32 orig_x = u32((Width - 1 - (x - Pos.x)) / Size.x);  // Инвертируем ось X
-                    u32 orig_z = u32((z - Pos.z) / Size.z);
-                    u32 orig_x1 = u32((Width - 1 - ((x + 1) - Pos.x)) / Size.x);  // Инвертируем ось X
-                    u32 orig_z1 = u32(((z + 1) - Pos.z) / Size.z);
+		float CenterY = (globalMinH + globalMaxH) * 0.5f;
 
-                    // Проверяем границы
-                    if (orig_x >= Width || orig_z >= Height ||
-                        orig_x1 >= Width || orig_z1 >= Height)
-                        continue;
+		for (auto& chunk : RenderData.Chunks)
+		{
+			if (chunk.IsFlat)
+				continue;
 
-                    // Применяем масштаб и оффсет по Y
-                    float h0 = (GetHeight(orig_x, orig_z) + Pos.y) * scaleY * Size.y;
-                    float h1 = (GetHeight(orig_x1, orig_z) + Pos.y) * scaleY * Size.y;
-                    float h2 = (GetHeight(orig_x1, orig_z1) + Pos.y) * scaleY * Size.y;
-                    float h3 = (GetHeight(orig_x, orig_z1) + Pos.y) * scaleY * Size.y;
+			chunk.BBox.invalidate();
+			for (auto& v : chunk.Vertices)
+			{
+				float ox = (v.x + centerX) / cellSize;
+				float oz = (v.z + centerZ) / cellSize;
 
-                    bool same_height = std::abs(h0 - h1) < FlatThreshold &&
-                        std::abs(h1 - h2) < FlatThreshold &&
-                        std::abs(h2 - h3) < FlatThreshold;
+				u32 ix = u32((Width - 1 - (ox - Pos.x)) / Size.x);
+				u32 iz = u32((oz - Pos.z) / Size.z);
 
-                    if (same_height)
-                    {
-                        if (h0 == 0.0f)
-                            continue;
+				v.y = GetHeight(ix, iz) * scaleY * Size.y - CenterY + Pos.y;
+				chunk.BBox.modify(v);
+			}
+		}
+	}
 
-                        // Применяем масштаб и центрирование по XZ
-                        Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
-                        Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
-                        Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
-                        Fvector v3 = { x * cellSize - centerX, h3, (z + 1) * cellSize - centerZ };
-
-                        chunk.BBox.modify(v0);
-                        chunk.BBox.modify(v2);
-
-                        chunk.Vertices.push_back(v0);
-                        chunk.Vertices.push_back(v1);
-                        chunk.Vertices.push_back(v2);
-                        chunk.Vertices.push_back(v0);
-                        chunk.Vertices.push_back(v2);
-                        chunk.Vertices.push_back(v3);
-
-                        float h_avg = (h0 + h1 + h2 + h3) * 0.25f;
-                        u32 col = Height2Color(h_avg);
-                        chunk.Colors.insert(chunk.Colors.end(), 6, col);
-                    }
-                    else
-                    {
-                        // Применяем масштаб и центрирование по XZ
-                        Fvector v0 = { x * cellSize - centerX, h0, z * cellSize - centerZ };
-                        Fvector v1 = { (x + 1) * cellSize - centerX, h1, z * cellSize - centerZ };
-                        Fvector v2 = { (x + 1) * cellSize - centerX, h2, (z + 1) * cellSize - centerZ };
-                        Fvector v3 = { x * cellSize - centerX, h3, (z + 1) * cellSize - centerZ };
-
-                        if (h0 == 0.0f && h1 == 0.0f && h2 == 0.0f && h3 == 0.0f)
-                            continue;
-
-                        chunk.BBox.modify(v0);
-                        chunk.BBox.modify(v2);
-
-                        chunk.Vertices.push_back(v0);
-                        chunk.Vertices.push_back(v1);
-                        chunk.Vertices.push_back(v2);
-                        chunk.Vertices.push_back(v0);
-                        chunk.Vertices.push_back(v2);
-                        chunk.Vertices.push_back(v3);
-
-                        float h_avg = (h0 + h1 + h2 + h3) * 0.25f;
-                        u32 col = Height2Color(h_avg);
-                        chunk.Colors.insert(chunk.Colors.end(), 6, col);
-                    }
-                }
-            }
-
-            chunk.IsFlat = use_flat;
-            chunk.IsValid = !chunk.Vertices.empty();
-
-            if (chunk.IsValid)
-                RenderData.Chunks.push_back(chunk);
-        }
-    }
-
-    RenderData.IsDirty = false;
+	RenderData.IsDirty = false;
 }
 
-
-void SHeightMap::Draw(float scaleY, float cellSize, u32 baseColor)
+void SHeightMap::Draw(float scaleY, float cellSize)
 {
-	PrecacheRenderData(scaleY, cellSize, baseColor);
+	PrecacheRenderData(scaleY, cellSize, 0xffffff, false);
 
 	if (RenderData.Chunks.empty())
 		return;

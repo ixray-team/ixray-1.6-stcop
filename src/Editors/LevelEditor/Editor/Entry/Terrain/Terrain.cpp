@@ -2,7 +2,7 @@
 #include "Terrain.h"
 
 CTerrain::CTerrain(LPVOID data, LPCSTR name):
-	inherited(data,name), TerrainObject("terrain")
+	inherited(data,name), TerrainObject(new CEditableObject(name))
 {
 	Construct(data);
 	FScale.set(1, 1, 1);
@@ -16,6 +16,7 @@ void CTerrain::Construct(LPVOID data)
 
 CTerrain::~CTerrain()
 {
+	xr_delete(TerrainObject);
 }
 
 void CTerrain::OnUpdateTransform()
@@ -26,7 +27,7 @@ void CTerrain::OnUpdateTransform()
 bool CTerrain::LoadStream(IReader& F)
 {
 	HMap.LoadSteam(&F);
-	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, &TerrainObject);
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, ScaleY);
 
 	return true;
 }
@@ -73,7 +74,7 @@ bool CTerrain::RayPick(float& dist, const Fvector& S, const Fvector& D, SRayPick
 	}
 	else
 	{
-		if (TerrainObject.RayPick(dist, S, D, _ITransform(), pinf))
+		if (TerrainObject->RayPick(dist, S, D, _ITransform(), pinf))
 		{
 			if (pinf) pinf->s_obj = this;
 			return true;
@@ -89,12 +90,12 @@ void CTerrain::Render(int priority, bool strictB2F)
 	{
 		if (priority == 1 && !strictB2F)
 		{
-			HMap.Draw(100, 1.f, 0xffffff);
+			HMap.Draw(ScaleY, 1.f);
 		}
 	}
 	else
 	{
-		TerrainObject.Render(_Transform(), priority, strictB2F);
+		TerrainObject->Render(_Transform(), priority, strictB2F);
 	}
 }
 
@@ -116,20 +117,23 @@ void CTerrain::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProp(pref, items);
 
-	SurfaceVec& s_lst = TerrainObject.m_Surfaces;
-	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
+	SurfaceVec& s_lst = TerrainObject->m_Surfaces;
+	PHelper().CreateBool(items, "Height Map\\Preview", &IsPreview);
+	
+	S32Value* ScaleEdit = PHelper().CreateS32(items, "Height Map\\Multiply Y", &ScaleY);
+	ScaleEdit->OnAfterEditEvent.bind(this, &CTerrain::OnChangeHMData);
 
-	PHelper().CreateBool(items, "Preview", &IsPreview);
+	shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
 
 	for (SurfaceIt s_it = s_lst.begin(); s_it != s_lst.end(); s_it++)
 	{
 		shared_str Pref2 = PrepareKey(Pref1.c_str(), (*s_it)->_Name()).c_str();
 		{
-				PropValue* V;
-				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
-				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
-				V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+			PropValue* V;
+			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CTerrain::OnChangeShader);
+			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
+			V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); V->OnChangeEvent.bind(this, &CTerrain::OnChangeSurface);
 		}
 	}
 }
@@ -137,9 +141,36 @@ void CTerrain::FillProp(LPCSTR pref, PropItemVec& items)
 void CTerrain::OnChangeShader(PropValue* sender)
 {
 	OnChangeSurface(sender);
-	for (CSurface* i : TerrainObject.m_Surfaces) { i->OnDeviceDestroy(); }
+	for (CSurface* i : TerrainObject->m_Surfaces) { i->OnDeviceDestroy(); }
 }
+
 void CTerrain::OnChangeSurface(PropValue* sender)
 {
 	//m_Flags.set(flUseSurface, 1);
+}
+
+bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
+{
+	if (NewValue < 0)
+		return false;
+
+	HMap.MarkDirty();
+
+	// Очень медленная херня. Нужно просто аплаить дельту на высоту вертексов
+	// но пока впадлу, мб потом
+	CEditableObject* OldObject = TerrainObject;
+	UI->CommandList[TUI::ECommandListID::NextFrame].push_back
+	(
+		[OldObject]()
+		{
+			xr_delete(OldObject);
+		}
+	);
+
+	TerrainObject = new CEditableObject(GetName());
+	XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(HMap, TerrainObject, NewValue);
+
+	LTools->UpdateProperties(false);
+
+	return true;
 }

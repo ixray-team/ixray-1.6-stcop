@@ -101,6 +101,7 @@
 #include "_thread_types.h"
 #include "shared_string.h"
 #include "xrstring.h"
+#include "FixedVector.h"
 #include "xr_resource.h"
 #include "rt_compressor.h"
 #include "xr_shared.h"
