@@ -60,9 +60,11 @@ public:
 	void			SetHideAndRestore(bool val){m_bHideAndRestore = val;};
 
 	virtual bool	can_be_attached		() const;
+	void PlayWpnFinishDetector();
+	void 	TurnDetectorInternal(bool b);
+
 protected:
 			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
-			void 	TurnDetectorInternal		(bool b);
 	void 			UpdateNightVisionMode		(bool b_off);
 	void			UpdateVisibility			();
 	virtual void	UpfateWork					();
