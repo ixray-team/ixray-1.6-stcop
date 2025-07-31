@@ -260,12 +260,6 @@ void DrawDOConfig()
 
 void DrawAIConfig()
 {
-	//if (gCompilerMode.AI_BuildSpawn && gCompilerMode.AI_BuildLevel)
-	//{
-	//	gCompilerMode.AI_BuildSpawn = false;
-	//}
-
-
 	if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 			ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);

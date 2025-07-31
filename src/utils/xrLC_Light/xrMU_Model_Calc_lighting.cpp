@@ -111,7 +111,11 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		exact_normalize			(vN); 
 
 		// multi-sample
-		const int n_samples		= (g_params().m_quality==ebqDraft)?1: lc_global_data()->GetJitterMU();
+		u32 SampleMAX = 6;
+		if (lc_global_data()->GetOverrideSettings())
+			SampleMAX = lc_global_data()->GetJitterMU();
+
+		const int n_samples		= (g_params().m_quality==ebqDraft) ? 1: SampleMAX;
 		for (u32 sample=0; sample<(u32)n_samples; sample++)
 		{
 			float				a	= 0.2f * float(sample) / float(n_samples);
