@@ -7,6 +7,7 @@
 
 //Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
+extern size_t GetHeapMemory();
 
 bool ShowMainUI = true;
 
@@ -37,6 +38,7 @@ void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
+
 
 void RenderMainUI()
 {
@@ -741,10 +743,7 @@ void RenderCompilerUI(int X, int Y)
 
 	ImGui::SameLine();
 
-	size_t  w_free, w_reserved, w_committed;
-	vminfo(&w_free, &w_reserved, &w_committed);
- 
-	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", w_committed / 1024 / 1024);
+	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory usage: %u mb", GetHeapMemory() / 1024 / 1024);
 
 	ImGui::SameLine();
 	ImGui::Checkbox("Show Main", &ShowMainUI);
