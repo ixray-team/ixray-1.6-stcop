@@ -473,7 +473,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 		}break;
 	case M_SPAWN:	
 		{
-			if (CL->flags.bLocal)
+			if (CL && CL->flags.bLocal)
 				Process_spawn		(P,sender);	
 
 			VERIFY					(verify_entities());
