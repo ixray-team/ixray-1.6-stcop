@@ -24,7 +24,8 @@ class CStepManager {
 
 	u32					m_time_anim_started = {};
 	xr_vector<ref_sound> m_rain_steps = {};
-
+	xr_vector<ref_sound> m_exo_steps = {};
+	bool is_exo = false;
 public: 
 						CStepManager			();
 	virtual				~CStepManager			();
@@ -40,8 +41,10 @@ public:
 	
 	// process event
 	virtual	void		event_on_step			() {}
-	inline void PlayRainStep(bool bHudView);
 
+	inline void PlayRainStep(const bool bHudView);
+	inline void PlayExoStep(const bool bHudView);
+	void CheckExo();
 protected:
 			Fvector		get_foot_position		(ELegType leg_type);
 	virtual bool		is_on_ground			()						{return true;}
