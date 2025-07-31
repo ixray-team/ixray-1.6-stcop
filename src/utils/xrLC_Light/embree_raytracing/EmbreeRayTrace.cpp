@@ -55,6 +55,16 @@ bool CalculateEnergy(Face* F, Fvector& B, float& energy, float u, float v)
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
+	// se7kills Fix if no has texture
+ 	if (!T.bHasAlpha)
+		return false;
+
+	if (T.pSurface == nullptr)
+	{
+		T.bHasAlpha = false;
+		return false;
+	}
+
 	// barycentric coords
 	// note: W,U,V order
 	B.set(1.0f - u - v, u, v);
@@ -133,7 +143,6 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	data_hits.energy = 1.0f;
 	data_hits.Hits = 0;
  
-	// se7kills : 07.02.2025 0.001 виноват BORDER 1 был поставил 4 
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.001f, range);
 
@@ -166,6 +175,7 @@ size_t GetMemory()
 
 void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
+
 	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(geom, quality);
 
@@ -184,8 +194,10 @@ void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTran
 void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem)
 {
  	// Конструктор модели
+	Phase("EmbreeData Loading");
 	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
 	 
+	Phase("EmbreeData Loading Geometry Buffers");
  	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
 	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
 	
@@ -212,6 +224,11 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
 	size_t start = GetMemory();
 	rtcCommitScene(IntelScene);
 	BVH_size = GetMemory() - start;
+
+	// static_geom.CleanumpMemory();
+	// static_geom_transp.CleanumpMemory();
+	// murefs_geom.CleanumpMemory();
+	// murefs_geom_transp.CleanumpMemory();
  
 	return (GetMemory() - start);
 }

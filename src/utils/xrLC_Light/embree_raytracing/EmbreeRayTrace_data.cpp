@@ -113,8 +113,15 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
   	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
 	
 	size_t s = GetMemory();
+
+	Status("Capturing Faces...");
+
+	int ProgressID = 0;
 	for (auto F : lc_global_data()->g_faces())
 	{
+		Progress(float(ProgressID) / float(lc_global_data()->g_faces().size()));
+		ProgressID++;
+
 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow)
 			continue;
@@ -169,8 +176,14 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	Static_size = static_mem;
   
 	s = GetMemory();
+	Status("Capturing MU-Ref Faces...");
+
+	ProgressID = 0;
 	for (auto ref : lc_global_data()->mu_refs())
 	{
+		Progress(float(ProgressID) / float(lc_global_data()->mu_refs().size()));
+		ProgressID++;
+
 		xr_vector<FaceDataIntel> temp_buffer;
   		ref->export_cform_rcast_new(temp_buffer);
 		for (auto pF : temp_buffer)
@@ -185,6 +198,8 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
  	}
 	murefs_mem = GetMemory() - s;
 	MU_size = murefs_mem;
+
+	Status("Capturing MU-Ref Faces... Ended");
 }
 #include "../xrLC/Build.h"
 void EmbreeData::BuildRcast()
@@ -382,3 +397,4 @@ void TriangleContainer::ClearAll()
 	faces_v.shrink_to_fit();
 	verts_v.shrink_to_fit();
 }
+ 
