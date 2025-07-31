@@ -1,5 +1,5 @@
 		<item>
-			<length_sec>184</length_sec>
+			<length_sec>194</length_sec>
 			<pause_state>on</pause_state>
 			<function_on_stop>xr_effects.after_credits</function_on_stop>
 			<guard_key/>
@@ -311,7 +311,7 @@
 				<auto_static start_time="102" length_sec="10" x="124" y="460" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="r" font="graffiti32" color="ui_white">st_kirienko</text>
 				</auto_static>
-				<auto_static start_time="102" length_sec="10" x="436" y="460" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="102" length_sec="10" x="436" y="460" width="600" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="l" font="graffiti32" color="ui_white">st_poperechniy</text>
 				</auto_static>
 				<auto_static start_time="102" length_sec="10" x="124" y="490" width="300" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
@@ -417,7 +417,7 @@
 				<!--               SPECIAL THANKS                 -->
 
 				<!-- next frame -->
-				<auto_static start_time="133" length_sec="49" x="185" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="133" length_sec="59" x="185" y="40" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti50" color="ui_6">st_special_thanks</text>
 				</auto_static>
 
@@ -449,48 +449,107 @@
 				</auto_static>
 
 				<!-- next frame -->
-				<auto_static start_time="159" length_sec="13" x="65" y="100" width="740" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="159" length_sec="10" x="185" y="90" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="170" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc1</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="200" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc2</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="230" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc3</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="260" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc4</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="290" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc5</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="320" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc6</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="350" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc7</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="380" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc8</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="410" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc9</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="440" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc10</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="470" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc11</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="500" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc12</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="530" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc13</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="560" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc14</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="590" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc15</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="610" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc16</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="640" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc17</text>
+				</auto_static>
+				<auto_static start_time="159" length_sec="10" x="185" y="670" width="500" height="30" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+					<text align="c" font="graffiti32" color="ui_white">st_thanks_litconc18</text>
+				</auto_static>
+
+				<!-- next frame -->
+				<auto_static start_time="169" length_sec="13" x="65" y="100" width="740" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="250" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="250" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase2</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="300" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="300" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase3</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="325" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="325" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase4</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="350" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="350" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase5</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="375" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="375" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase6</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="400" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="400" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase7</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="425" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="425" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase8</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="450" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="450" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase9</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="475" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="475" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase10</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="500" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="500" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase11</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="525" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="525" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase12</text>
 				</auto_static>
-				<auto_static start_time="162" length_sec="10" x="85" y="550" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="172" length_sec="10" x="85" y="550" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti22" color="ui_white">st_thanks_fanbase13</text>
 				</auto_static>
 
 				<!-- next frame -->
-				<auto_static start_time="172" length_sec="10" x="85" y="240" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
+				<auto_static start_time="182" length_sec="10" x="85" y="240" width="700" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti32" color="ui_white">st_thanks_all</text>
 				</auto_static>
 

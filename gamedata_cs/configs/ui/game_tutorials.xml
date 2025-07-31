@@ -559,7 +559,7 @@
 			<pause_state>off</pause_state>
 			<guard_key>jump</guard_key>
 			<function_on_stop>xr_effects.on_tutor_gameover_stop</function_on_stop>
-
+      <action id="quick_load" finalize="1">xr_effects.on_tutor_gameover_quickload</action>
 			<sound/>
 			<cursor_pos/>
 			<pda_section/>

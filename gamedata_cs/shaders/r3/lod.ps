@@ -1,4 +1,4 @@
-#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if ( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) ) 
 #define EXTEND_F_DEFFER
 #endif
 
@@ -30,7 +30,24 @@ void sample_Textures( inout float4 D, inout float4 H, float2 tc1, float2 tc0, fl
   H 	= lerp		(H0,H1,af.w);		H.w	*= af.x;	// multiply hemi
 }
 
+#ifdef	ATOC
+
+float4 	main	( vf I ) : SV_Target
+{
+	float4 D;
+	float4 H;
+	sample_Textures(D, H, I.tc1, I.tc0, I.af, float2(0,0) );
+	D.w = (D.w-(96.h/255.h)*0.5)/(1-(96.h/255.h)*0.5);
+	return D.w;
+}
+
+#else	//	ATOC
+
+#ifdef	MSAA_ALPHATEST_DX10_1_ATOC
+f_deffer 	main	( vf I, float4 pos2d : SV_Position )
+#else	//	MSAA_ALPHATEST_DX10_1_ATOC
 f_deffer 	main	( vf I )
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
 {
   f_deffer	O;
 
@@ -42,9 +59,17 @@ f_deffer 	main	( vf I )
   float4 D;
   float4 H;
   
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if !defined(MSAA_ALPHATEST_DX10_1)
   sample_Textures(D, H, I.tc1, I.tc0, I.af, float2(0,0));
-  clip		(D.w-(96.h/255.h))  ;
+
+#if	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_0_ATOC) )
+	clip		(D.w-(96.h/255.h))  ;
+#endif	//	!( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1_ATOC) )
+#ifdef 	MSAA_ALPHATEST_DX10_1_ATOC
+	float alpha = (D.w-(96.h/255.h)*0.5)/(1-(96.h/255.h)*0.5);
+	uint mask = alpha_to_coverage ( alpha, pos2d );
+#endif	//	MSAA_ALPHATEST_DX10_1_ATOC
+
 #else
   uint mask = 0x0;
   
@@ -70,8 +95,10 @@ f_deffer 	main	( vf I )
   
   float3 N 	= normalize	(H.xyz);
 
+//  D.xyz = float3(1,0,0);
+
   // 2. Standart output
-#if !( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#ifndef EXTEND_F_DEFFER
   O				= pack_gbuffer(
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.h	, 0		),
@@ -86,3 +113,5 @@ f_deffer 	main	( vf I )
 
   return O;
 }
+
+#endif	//	ATOC
