@@ -292,6 +292,7 @@ public:
 	void 				OnGeometryModified	(void);
 
 	bool				IsVisualPresent		(){return m_RenderObject.IsRenderable();}
+	IKinematics*		GetKinematics		(){VERIFY(m_RenderObject.m_pVisual); return m_RenderObject.m_pVisual->dcast_PKinematics();}
 
 	CEditableObject*	CurrentObject		(){return m_pEditObject;}
 	void				SetCurrentMotion	(LPCSTR name, u16 slot);

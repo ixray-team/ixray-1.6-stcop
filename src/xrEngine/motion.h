@@ -144,7 +144,7 @@ public:
 	Flags8		           	        m_Flags;
 
 	xr_vector<motion_marks>			marks;
-	xr_hash_map<float, anim_notify> notify;
+	editor_notify_data notify;
 	xr_stack<float> notifies_to_remove = {};
 
     void			Clear			();
