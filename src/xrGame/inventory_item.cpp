@@ -106,6 +106,30 @@ void CInventoryItem::Load(LPCSTR section)
 {
 	CHitImmunity::LoadImmunities	(pSettings->r_string(section,"immunities_sect"),pSettings);
 
+	m_parse_params.m_chances.clear();
+	m_parse_params.m_items.clear();
+
+	if (pSettings->line_exist(section, "parse_spawn_items") && pSettings->line_exist(section, "parse_spawn_chances"))
+	{
+		shared_str SpawnList = pSettings->r_string(section, "parse_spawn_items");
+		shared_str ChanceList = pSettings->r_string(section, "parse_spawn_chances");
+
+		int Count = _GetItemCount(SpawnList.c_str());
+		int Count2 = _GetItemCount(ChanceList.c_str());
+
+		string256 sItem = {};
+
+		for (int i = 0; i < Count; ++i)
+		{
+			m_parse_params.m_items.push_back(_GetItem(SpawnList.c_str(), i, sItem));
+		}
+
+		for (int i = 0; i < Count2; ++i)
+		{
+			m_parse_params.m_chances.push_back(atof(_GetItem(ChanceList.c_str(), i, sItem)));
+		}
+	}
+
 	if (cast_game_object())
 	{
 		cast_game_object()->SpatialComponent->spatial.type |= STYPE_VISIBLEFORAI;
