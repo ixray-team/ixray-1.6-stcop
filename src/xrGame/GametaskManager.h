@@ -25,6 +25,7 @@ public:
 							~CGameTaskManager				();
 
     void					AllowMultipleTask				(bool allow) { m_flags.set(eMultipleTasks, allow); }
+    bool					IsMultipleTask					() { return m_flags.test(eMultipleTasks); }
 
 	vGameTasks&				GetGameTasks					();
 	CGameTask*				HasGameTask						(const CMapLocation* ml, bool only_inprocess);
