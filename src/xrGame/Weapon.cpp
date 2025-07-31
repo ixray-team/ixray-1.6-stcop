@@ -633,6 +633,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);
 	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_chamber", false);
 
+	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
+
 	if (pSettings->line_exist(hud_sect, "shell_params_section"))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
@@ -1583,6 +1585,11 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 	if ( !(flags & CMD_START) )
 		return false;
 
+	if (m_bBlockReload && GetState() != eIdle)
+	{
+		return false;
+	}
+
 	if (IsMisfire() && !IsGrenadeMode())
 	{
 		return false;
@@ -1593,7 +1600,7 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 
 	if (bReloadKeyPressed || bAmmotypeKeyPressed)
 		return false;
-	
+
 	bAmmotypeKeyPressed = true;
 
 	if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
