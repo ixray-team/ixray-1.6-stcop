@@ -579,7 +579,8 @@ void CUIActorMenu::highlight_item_slot(CUICellItem* cell_item)
 	CArtefact* artefact = smart_cast<CArtefact*>(item);
 
 	u16 slot_id = item->BaseSlot();
-	if (slot_id == INV_SLOT_2 || slot_id == INV_SLOT_3)
+	const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
+	if ((slot_id == INV_SLOT_2 || slot_id == INV_SLOT_3) && !pistolsOnly)
 	{
 		if (m_pInvSlotHighlight[INV_SLOT_2])
 			m_pInvSlotHighlight[INV_SLOT_2]->Show(true);
