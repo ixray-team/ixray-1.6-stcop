@@ -28,6 +28,7 @@ CHudItem::CHudItem()
 	m_fLR_MovingFactor			= 0.f;
 	m_fLR_InertiaFactor			= 0.f;
 	m_fUD_InertiaFactor			= 0.f;
+	m_eDevicesFlags.zero();
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -69,7 +70,31 @@ void CHudItem::Load(LPCSTR section)
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
 	if (!m_bDisableBore)
+	{
 		m_sounds.LoadSound(section, "snd_bore", "sndBore", true);
+	}
+
+	if (pSettings->line_exist(section, "snd_switch_device"))
+	{
+		m_sounds.LoadSound(section, "snd_switch_device", "sndSwitchDevice", false);
+	}
+
+	if (pSettings->line_exist(section, "snd_headlamp_on"))
+	{
+		m_sounds.LoadSound(section, "snd_headlamp_on", "sndHeadlampOn", false);
+		m_sounds.LoadSound(section, "snd_headlamp_off", "sndHeadlampOff", false);
+	}
+
+	if (pSettings->line_exist(section, "snd_nv_on"))
+	{
+		m_sounds.LoadSound(section, "snd_nv_on", "sndNVOn", false);
+		m_sounds.LoadSound(section, "snd_nv_off", "sndNVOff", false);
+	}
+
+	if (pSettings->line_exist(section, "snd_gasmask"))
+	{
+		m_sounds.LoadSound(section, "snd_gasmask", "sndGasmask", false);
+	}
 }
 
 
@@ -171,6 +196,11 @@ void CHudItem::OnStateSwitch(u32 S)
 		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), true, eSprintEnd);
 		break;
 	}
+	case eDeviceSwitch:
+	{
+		PlayAnimDeviceSwitch();
+		break;
+	}
 	};
 
 	if (S != eIdle && S != eSprintStart && S != eSprintEnd)
@@ -191,10 +221,12 @@ void CHudItem::OnAnimationEnd(u32 state)
 	case eSprintStart:
 	case eSprintEnd:
 	case eBore:
-		{
-			SwitchState	(eIdle);
-		} break;
+	case eDeviceSwitch:
+	{
+		SwitchState(eIdle);
+		break;
 	}
+	};
 }
 
 void CHudItem::PlayAnimBore()
@@ -542,18 +574,14 @@ void CHudItem::on_b_hud_detach()
 
 void CHudItem::on_a_hud_attach()
 {
-	if(m_current_motion_def)
+	if (m_current_motion_def)
 	{
 		PlayHUDMotion_noCB(m_current_motion, FALSE);
-#ifdef DEBUG
-//		Msg("continue playing [%s][%d]",m_current_motion.c_str(), Device.dwFrame);
-#endif // #ifdef DEBUG
-	}else
-	{
-#ifdef DEBUG
-//		Msg("no active motion");
-#endif // #ifdef DEBUG
 	}
+
+	m_eAnimationsFlags.set(EAnimationsFlags::af_torch, HudAnimationExist("anm_switch_device"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_nvg, m_eAnimationsFlags.test(EAnimationsFlags::af_torch));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_clear_mask, HudAnimationExist("anm_gasmask"));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)
@@ -767,6 +795,64 @@ void CHudItem::PlayAnimIdleSprint()
 	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), TRUE, GetState());
 }
 
+void CHudItem::PlayAnimDeviceSwitch()
+{
+	SetPending(TRUE);
+	shared_str anim_name;
+	shared_str sound_name;
+
+	if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+	{
+		anim_name = SetCurrentStateAnimation("anm_switch_device");
+
+		if (m_sounds.FindSoundItem("sndHeadlampOn", false))
+		{
+			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			{
+				if (CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT)))
+				{
+					sound_name = pTorch->IsSwitched() ? "sndHeadlampOff" : "sndHeadlampOn";
+				}
+			}
+		}
+		else
+		{
+			sound_name = "sndSwitchDevice";
+		}
+	}
+	else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
+	{
+		anim_name = SetCurrentStateAnimation("anm_switch_device");
+
+		if (m_sounds.FindSoundItem("sndNVOn", false))
+		{
+			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			{
+				if (pActor->GetNightVisionEffector() != nullptr)
+				{
+					sound_name = pActor->GetNightVisionEffector()->GetStatus() ? "sndNVOff" : "sndNVOn";
+				}
+			}
+		}
+		else
+		{
+			sound_name = "sndSwitchDevice";
+		}
+	}
+	else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
+	{
+		anim_name = SetCurrentStateAnimation("anm_gasmask");
+		sound_name = "sndGasmask";
+	}
+
+	if (g_player_hud->attached_item(0) == nullptr && g_player_hud->attached_item(1) != nullptr || g_player_hud->attached_item(0) != nullptr && g_player_hud->attached_item(0) == HudItemData())
+	{
+		PlaySoundIfExist(*sound_name, m_object->Position());
+	}
+
+	PlayHUDMotion(anim_name, true, eDeviceSwitch);
+}
+
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
 	if (GetState() == eIdle && !m_bStopAtEndAnimIsRunning)
@@ -866,5 +952,43 @@ void CHudItem::SetMultipleBonesStatus(const char* section, const char* line, BOO
 				SetModelBoneStatus(_Item, show);
 			}
 		}
+	}
+}
+
+void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	if (state == eDeviceSwitch && mark.name == "Left")
+	{
+		if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) == HudItemData() && g_player_hud->attached_item(0) != nullptr)
+		{
+			m_eDevicesFlags.zero();
+		}
+
+		if (m_eDevicesFlags.test(EDevicesFlags::df_torch))
+		{
+			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			{
+				if (CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT)))
+				{
+					pTorch->Switch();
+				}
+			}
+		}
+		else if (m_eDevicesFlags.test(EDevicesFlags::df_nvg))
+		{
+			if (CActor* pActor = m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+			{
+				if (pActor->GetNightVisionEffector() != nullptr)
+				{
+					pActor->GetNightVisionEffector()->SwitchNightVision();
+				}
+			}
+		}
+		else if (m_eDevicesFlags.test(EDevicesFlags::df_clear_mask))
+		{
+			//Implement clearing mask
+		}
+
+		m_eDevicesFlags.zero();
 	}
 }
