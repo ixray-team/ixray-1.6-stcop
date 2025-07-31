@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "XESSWrapper.h"
+#include "OverlayAPI\XESSWrapper.h"
 
 extern Fvector3 ps_r_taa_jitter_full;
 
