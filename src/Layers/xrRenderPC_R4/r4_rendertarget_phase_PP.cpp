@@ -108,7 +108,7 @@ void CRenderTarget::phase_pp		()
 	// combination/postprocess
 	u32 _w = (u32)RCache.get_target_width();
 	u32 _h = (u32)RCache.get_target_height();
-	u_setrt(_w, _h, RTarget, nullptr, nullptr, nullptr);
+	u_setrt(_w, _h, RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();
