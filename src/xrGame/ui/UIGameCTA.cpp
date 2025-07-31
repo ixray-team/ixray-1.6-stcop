@@ -48,6 +48,7 @@ m_pFragLimitIndicator(nullptr),
 m_team1_score(nullptr),
 m_team2_score(nullptr),
 m_pCurBuyMenu(nullptr),
+m_pMapDesc(nullptr),
 m_pCurSkinMenu(nullptr),
 m_pBuySpawnMsgBox(nullptr),
 m_game(nullptr),
@@ -144,6 +145,7 @@ CUIGameCTA::~CUIGameCTA()
 	xr_delete	(m_voteStatusWnd);
 	xr_delete	(m_pCurBuyMenu);
 	xr_delete	(m_pCurSkinMenu);
+	xr_delete	(m_pMapDesc);
 
 	if (m_pReinforcementInidcator_old)
 		xr_delete	(m_pReinforcementInidcator_old);
@@ -176,7 +178,7 @@ void CUIGameCTA::SetClGame(game_cl_GameState* g)
 	m_game = smart_cast<game_cl_CaptureTheArtefact*>(g);
 	VERIFY(m_game);
 	
-	/*if (m_pMapDesc)
+	if (m_pMapDesc)
 	{
 		if (m_pMapDesc->IsShown())
 		{
@@ -184,7 +186,7 @@ void CUIGameCTA::SetClGame(game_cl_GameState* g)
 		}
 		delete_data(m_pMapDesc);
 	}
-	m_pMapDesc = new CUIMapDesc();*/
+	m_pMapDesc = new CUIMapDesc();
 	
 	if (m_pBuySpawnMsgBox)
 	{
@@ -230,6 +232,23 @@ void CUIGameCTA::ShowTeamSelectMenu()
 	if (!m_pUITeamSelectWnd->IsShown())
 	{
 		m_pUITeamSelectWnd->ShowDialog(true);
+	}
+}
+
+bool CUIGameCTA::IsMapDescShown()
+{
+	VERIFY(m_pMapDesc);
+	return m_pMapDesc->IsShown();
+}
+
+void CUIGameCTA::ShowMapDesc()
+{
+	if (Level().IsDemoPlay())
+		return;
+	VERIFY(m_pMapDesc);
+	if (!m_pMapDesc->IsShown())
+	{
+		m_pMapDesc->ShowDialog(true);
 	}
 }
 
