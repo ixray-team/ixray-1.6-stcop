@@ -103,10 +103,13 @@ void	CBuild::LMaps					()
   
 void CBuild::BuildAdaptiveHT()
 {
-	//****************************************** HEMI-Tesselate
-	FPU::m64r();
-	Phase("Adaptive HT...");
- 	xrPhase_AdaptiveHT();
+	if (!gCompilerMode.LC_BackingDisabled)
+	{
+		//****************************************** HEMI-Tesselate
+		FPU::m64r();
+		Phase("Adaptive HT...");
+		xrPhase_AdaptiveHT();
+	}
 }
 
 #include "../xrLC_Light/xrFaceDefs.h"
@@ -133,46 +136,52 @@ void CBuild::Light()
 	lc_global_data()->vertices_isolate_and_pool_reload();
 	IsolateVertices(TRUE);
 
-	//****************************************** GLOBAL-RayCast model
-	Phase("Building rcast-CFORM model...");
-	Light_prepare();
-	BuildRapid(TRUE);
+	if (!gCompilerMode.LC_BackingDisabled)
+	{
+		//****************************************** GLOBAL-RayCast model
+		Phase("Building rcast-CFORM model...");
+		Light_prepare();
+		BuildRapid(TRUE);
 
- 	//****************************************** Implicit
-	Phase("LIGHT: Implicit...");
-	if (gCompilerMode.Embree_SplitBVH)
-		EmbreeMain.AttachGeometrys(true);
- 	ImplicitLighting();
+		//****************************************** Implicit
+		Phase("LIGHT: Implicit...");
+		if (gCompilerMode.Embree_SplitBVH)
+			EmbreeMain.AttachGeometrys(true);
+		ImplicitLighting();
+
+		//****************************************** LMAPS
+		Phase("LIGHT: LMaps...");
+		if (gCompilerMode.Embree_SplitBVH)
+			EmbreeMain.AttachGeometrys(false);
+		LMaps();
+
+		//****************************************** Vertex
+		Phase("LIGHT: Vertex...");
+		LightVertex();
  
-	//****************************************** LMAPS
- 	Phase("LIGHT: LMaps...");
-	if (gCompilerMode.Embree_SplitBVH)
-		EmbreeMain.AttachGeometrys(false);
-	LMaps		();
+		//****************************************** Merge LMAPS
+		Phase("LIGHT: Merging lightmaps...");
+		xrPhase_MergeLM();
 
- 	//****************************************** Vertex
-	Phase("LIGHT: Vertex...");
-  	LightVertex		();
-	
-	//****************************************** Merge LMAPS
-	Phase("LIGHT: Merging lightmaps...");
-  	xrPhase_MergeLM();
-	
-	// Save Lmaps
-	Phase("LIGHT: Save lightmaps...");
-	xrPhase_SaveLmaps();
+		// Save Lmaps
+		Phase("LIGHT: Save lightmaps...");
+		xrPhase_SaveLmaps();
+	}
 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
 
-	//****************************************** Starting MU
-	Phase("LIGHT: Starting MU...");
-  	Light_prepare();
-	if (gCompilerMode.Embree_SplitBVH)
- 		EmbreeMain.AttachGeometrys(true);
-	StartMu();
-	 
+	if (!gCompilerMode.LC_BackingDisabled)
+	{
+		//****************************************** Starting MU
+		Phase("LIGHT: Starting MU...");
+		Light_prepare();
+		if (gCompilerMode.Embree_SplitBVH)
+			EmbreeMain.AttachGeometrys(true);
+		StartMu();
+	}
+	
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
  	lc_global_data()->destroy_rcmodel();
