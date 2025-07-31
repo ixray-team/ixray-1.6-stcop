@@ -21,6 +21,7 @@ CUILines::CUILines()
 	m_eTextAlign					= CGameFont::alLeft;
 	m_eVTextAlign					= valTop;
 	m_dwTextColor					= 0xffffffff;
+	m_dwTextGradientColor			= 0xff888888;
 	m_TextOffset.set				(0.0f,0.0f);
 	m_text							="";
 	uFlags.zero();
@@ -335,6 +336,14 @@ void CUILines::SetTextColor(u32 color)
 	m_dwTextColor = color; 
 }
 
+void CUILines::SetTextGradientColor(u32 color)
+{
+	if (color == m_dwTextGradientColor)
+		return;
+	uFlags.set(flNeedReparse, true);
+	m_dwTextGradientColor = color;
+}
+
 void CUILines::SetFont(CGameFont* pFont)
 {
 	if (pFont == m_pFont)
@@ -398,6 +407,7 @@ void CUILines::Draw(float x, float y)
 
 	R_ASSERT(m_pFont);
 	m_pFont->SetColor(m_dwTextColor);
+	m_pFont->SetGradientColor(m_dwTextGradientColor);
 
 	if (!uFlags.is(flComplexMode))
 	{

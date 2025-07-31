@@ -384,6 +384,14 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	else if (_stricmp(mode_str, "down") == 0) { mode = CGameFont::gm_down; }
 	pLines->SetTextGradientMode(mode);
 
+	u32 color2;
+	u32	_R = color_get_R(color) / 2;
+	u32	_G = color_get_G(color) / 2;
+	u32	_B = color_get_B(color) / 2;
+	u32	_A = color_get_A(color);
+	color2 = GetGradientColor(xml_doc, path, index, color_rgba(_R, _G, _B, _A));
+	pLines->SetTextGradientColor(color2);
+
 	shared_str text = xml_doc.Read(path, index, nullptr);
 	if (text.size())
 		pLines->SetText(g_pStringTable->translate(text).c_str());
@@ -1331,6 +1339,18 @@ u32	CUIXmlInit::GetColor(CUIXml& xml_doc, LPCSTR path, int index, u32 def_clr)
 		return color_argb(a,r,g,b);
 	}
 
+}
+
+u32	CUIXmlInit::GetGradientColor(CUIXml& xml_doc, LPCSTR path, int index, u32 def_clr)
+{
+	LPCSTR clr_def = xml_doc.ReadAttrib(path, index, "gradient_color", nullptr);
+	if (clr_def) {
+		VERIFY(GetColorDefs()->find(clr_def) != GetColorDefs()->end());
+		return 	(*m_pColorDefs)[clr_def];
+	}
+	else {
+		return def_clr;
+	}
 }
 
 bool CUIXmlInit::InitHintWindow(CUIXml& xml_doc, LPCSTR path, int index, UIHintWindow* pWnd)
