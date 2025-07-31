@@ -23,6 +23,8 @@ vf _main(v_model v)
     o.c0 = fade;
     o.fog = 1.0f - calc_fogging(float4(mul(m_W, v.P), 1.0f).xyz); // fog, input in world coords
 
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
+	
     return o;
 }
 

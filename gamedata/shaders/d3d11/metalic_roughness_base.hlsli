@@ -55,6 +55,23 @@ struct IXrayGbuffer
 	float AO;
 };
 
+float2 PackNormalVector(float3 Vector) {
+	float PackedZ = 0.5f + 0.5f * Vector.z;
+	float Scale = rcp(dot(Vector.xy, Vector.xy));
+	return Vector.xy * sqrt(PackedZ * Scale);
+}
+
+float3 UnPackNormalVector(float2 Packed) {
+	float PackedZ = dot(Packed, Packed);
+	
+	float3 Vector;
+	
+	Vector.z = PackedZ * 2.0f - 1.0f;
+	Vector.xy = Packed * sqrt(1.0f - PackedZ) * 2.0f;
+	
+	return Vector;
+}
+
 float2 NormalEncode(float3 Normal)
 {
     Normal *= rcp(abs(Normal.x) + abs(Normal.y) + abs(Normal.z));
