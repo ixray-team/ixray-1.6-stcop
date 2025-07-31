@@ -18,17 +18,13 @@ static	INetLog* pSvNetLog = nullptr;
 
 BaseServer::BaseServer(CTimer* timer, BOOL	Dedicated)
 	: m_bDedicated(Dedicated)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	, csMessage(MUTEX_PROFILE_ID(BaseServer::csMessage))
-	, csMessagesQueue(MUTEX_PROFILE_ID(BaseServer::csMessagesQueue))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	SV_Client = nullptr;
 	device_timer = timer;
 	stats.clear();
 	stats.dwSendTime = TimeGlobal(device_timer);
 
-	pSvNetLog = nullptr;//new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
+	pSvNetLog = nullptr;
 
 #ifdef DEBUG
 	sender_functor_invoked = false;

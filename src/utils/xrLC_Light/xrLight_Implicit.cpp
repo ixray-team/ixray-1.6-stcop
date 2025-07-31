@@ -161,134 +161,132 @@ void	ImplicitExecute::	Execute	( )
 static xr_vector<u32> not_clear;
 void ImplicitLightingExec()
 {
-	
+
 	Implicit		calculator;
 
 	cl_globs.Allocate();
 	not_clear.clear();
 	// Sorting
 	Status("Sorting faces...");
-	for (vecFaceIt I=inlc_global_data()->g_faces().begin(); I!=inlc_global_data()->g_faces().end(); I++)
+	for (vecFaceIt I = inlc_global_data()->g_faces().begin(); I != inlc_global_data()->g_faces().end(); I++)
 	{
 		Face* F = *I;
 		if (F->pDeflector)				continue;
 		if (!F->hasImplicitLighting())	continue;
-		
-		Progress		(float(I-inlc_global_data()->g_faces().begin())/float(inlc_global_data()->g_faces().size()));
-		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
+
+		Progress(float(I - inlc_global_data()->g_faces().begin()) / float(inlc_global_data()->g_faces().size()));
+		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		u32				Tid = M.surfidx;
-		b_BuildTexture*	T	= &(inlc_global_data()->textures()[Tid]);
-		
-		Implicit_it		it	= calculator.find(Tid);
-		if (it==calculator.end()) 
+		b_BuildTexture* T = &(inlc_global_data()->textures()[Tid]);
+
+		Implicit_it		it = calculator.find(Tid);
+		if (it == calculator.end())
 		{
 			ImplicitDeflector	ImpD;
-			ImpD.texture		= T;
+			ImpD.texture = T;
 			ImpD.faces.push_back(F);
-			calculator.insert	(std::make_pair(Tid,ImpD));
-			not_clear.push_back	(Tid);
-		} else {
-			ImplicitDeflector&	ImpD = it->second;
+			calculator.insert(std::make_pair(Tid, ImpD));
+			not_clear.push_back(Tid);
+		}
+		else {
+			ImplicitDeflector& ImpD = it->second;
 			ImpD.faces.push_back(F);
 		}
 	}
 
-	
 	// Lighing
-	for (Implicit_it imp=calculator.begin(); imp!=calculator.end(); imp++)
+	for (Implicit_it imp = calculator.begin(); imp != calculator.end(); imp++)
 	{
 		ImplicitDeflector& defl = imp->second;
-		Status			("Lighting implicit map '%s'...",defl.texture->name);
-		Progress		(0);
-		defl.Allocate	();
-		
+		Status("Lighting implicit map '%s'...", defl.texture->name);
+		Progress(0);
+		defl.Allocate();
+
 		// Setup cache
-		Progress					(0);
-		cl_globs.Initialize( defl );
+		Progress(0);
+		cl_globs.Initialize(defl);
 
 		RunImplicitMultithread(defl);
-	
+
 		defl.faces.clear();
 
 		// Expand
-		Status	("Processing lightmap...");
-		for (u32 ref=254; ref>0; ref--)	if (!ApplyBorders(defl.lmap,ref)) break;
+		Status("Processing lightmap...");
+		for (u32 ref = 254; ref > 0; ref--)	if (!ApplyBorders(defl.lmap, ref)) break;
 
-		Status	("Mixing lighting with texture...");
+		Status("Mixing lighting with texture...");
 		{
-			b_BuildTexture& TEX		=	*defl.texture;
-			VERIFY					(TEX.pSurface);
-			u32*			color	= TEX.pSurface;
-			for (u32 V=0; V<defl.Height(); V++)	{
-				for (u32 U=0; U<defl.Width(); U++)	{
+			b_BuildTexture& TEX = *defl.texture;
+			VERIFY(TEX.pSurface);
+			u32* color = TEX.pSurface;
+			for (u32 V = 0; V < defl.Height(); V++) {
+				for (u32 U = 0; U < defl.Width(); U++) {
 					// Retreive Texel
-					float	h	= defl.Lumel(U,V).h._r();
-					u32 &C		= color[V*defl.Width() + U];
-					C			= subst_alpha(C,u8_clr(h));
+					float	h = defl.Lumel(U, V).h._r();
+					u32& C = color[V * defl.Width() + U];
+					C = subst_alpha(C, u8_clr(h));
 				}
 			}
 		}
 
-		xr_vector<u32>				packed;
-		defl.lmap.Pack				(packed);
-		defl.Deallocate				();
-		
-		
-		// base
-		Status	("Saving base...");
-		{
-			string128				name; 
-			string_path				out_name;
- 			xr_strcpy (name, lc_global_data()->GetLavelName() );
-			
-			R_ASSERT				(name[0] && defl.texture);
+		xr_vector<u32> packed;
+		defl.lmap.Pack(packed);
+		defl.Deallocate();
 
-			b_BuildTexture& TEX		=	*defl.texture;
+		// base
+		Status("Saving base...");
+		{
+			string128 name;
+			string_path out_name;
+			xr_strcpy(name, lc_global_data()->GetLavelName());
+
+			R_ASSERT(name[0] && defl.texture);
+
+			b_BuildTexture& TEX = *defl.texture;
 			xr_strconcat(out_name, name, "\\", TEX.name, ".dds");
-			FS.update_path			(out_name,"$game_levels$",out_name);
-			clMsg					("Saving texture '%s'...",out_name);
-			VerifyPath				(out_name);
-			BYTE* raw_data			=	LPBYTE(TEX.pSurface);
-			u32	w					=	TEX.dwWidth;
-			u32	h					=	TEX.dwHeight;
-			u32	pitch				=	w*4;
-			STextureParams			fmt	= TEX.THM;
+			FS.update_path(out_name, "$game_levels$", out_name);
+			clMsg("Saving texture '%s'...", out_name);
+			VerifyPath(out_name);
+			BYTE* raw_data = LPBYTE(TEX.pSurface);
+			u32	w = TEX.dwWidth;
+			u32	h = TEX.dwHeight;
+			u32	pitch = w * 4;
+			STextureParams fmt = TEX.THM;
 			fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
-			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
-			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
-			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-			DXTUtils::Compress(out_name,raw_data,0,w,h,pitch,&fmt,4);
+			fmt.flags.set(STextureParams::flDitherColor, FALSE);
+			fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
+			fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+			DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
 		}
 
 		// lmap
-		Status	("Saving lmap...");
+		Status("Saving lmap...");
 		{
-			string128				name;
-			string_path				out_name;
+			string128 name;
+			string_path out_name;
 			xr_strcpy(name, lc_global_data()->GetLavelName());
-			 
-			b_BuildTexture& TEX		=	*defl.texture;
-			xr_strconcat(out_name,name,"\\",TEX.name,"_lm.dds");
-			FS.update_path			(out_name,"$game_levels$",out_name);
-			clMsg					("Saving texture '%s'...",out_name);
-			VerifyPath				(out_name);
-			BYTE* raw_data			= LPBYTE(&*packed.begin());
-			u32	w					= TEX.dwWidth;
-			u32	h					= TEX.dwHeight;
-			u32	pitch				= w*4;
+
+			b_BuildTexture& TEX = *defl.texture;
+			xr_strconcat(out_name, name, "\\", TEX.name, "_lm.dds");
+			FS.update_path(out_name, "$game_levels$", out_name);
+			clMsg("Saving texture '%s'...", out_name);
+			VerifyPath(out_name);
+			BYTE* raw_data = LPBYTE(&*packed.begin());
+			u32	w = TEX.dwWidth;
+			u32	h = TEX.dwHeight;
+			u32	pitch = w * 4;
 			STextureParams			fmt;
 			fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
-			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
-			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
-			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-			DXTUtils::Compress(out_name,raw_data,0,w,h,pitch,&fmt,4);
+			fmt.flags.set(STextureParams::flDitherColor, FALSE);
+			fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
+			fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+			DXTUtils::Compress(out_name, raw_data, 0, w, h, pitch, &fmt, 4);
 		}
 		//defl.Deallocate				();
 	}
 	not_clear.clear();
 	cl_globs.Deallocate();
-	calculator.clear	();
- 
+	calculator.clear();
 }
 
 void ImplicitLighting()

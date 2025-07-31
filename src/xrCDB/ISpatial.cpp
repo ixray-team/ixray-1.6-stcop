@@ -198,9 +198,6 @@ void ISpatial_NODE::_remove(ISpatialShared S)
 //////////////////////////////////////////////////////////////////////////
 
 ISpatial_DB::ISpatial_DB()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(ISpatial_DB))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	m_root					= nullptr;
 	stat_nodes				= 0;
