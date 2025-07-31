@@ -86,7 +86,7 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	for (int it = 0; it < Layer.size(); it++)
 	{
  		if (0 == (it % 1024))
-			Status("Process [%d/%d]...Merged{%d}", it, g_XSplit.size(), MERGED);
+			StatusNoMsg("Process [%d/%d]...Merged{%d}", it, g_XSplit.size(), MERGED);
 
 		if (_Y > getLMSIZE())
   			break;
@@ -144,18 +144,21 @@ void CBuild::xrPhase_MergeLM()
 		if (D->bMerged)		continue;
 		Layer.push_back(D);
 	}
-  
+
+	string512	phase_name;
+	xr_sprintf(phase_name, "Building lightmaps ...");
+	Phase(phase_name);
+	 
 	// Merge this layer (which left unmerged)
+	u32 StartSize = Layer.size();
+	u32 TotalMerged = 0;
 	while (Layer.size())
 	{
 		VERIFY(lc_global_data());
-		string512	phase_name;
-		xr_sprintf(phase_name, "Building lightmap %d...", lc_global_data()->lightmaps().size());
-		Phase(phase_name);
-
+		
 		// Sort layer by similarity (state changes)
 		// + calc material area
-		Status("Selection...");
+		//Status("Selection...");
 		for (u32 it = 0; it < materials().size(); it++)
 			materials()[it].internal_max_area = 0;
 
@@ -164,14 +167,10 @@ void CBuild::xrPhase_MergeLM()
 			CDeflector* D = Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
-
 		std::stable_sort(Layer.begin(), Layer.end(), sort_defl_fast);
-
-		// Select first deflectors which can fit
-		Status("Selection...");
-
+		 
 		// Startup
- 		Status("Processing...");
+ 		//Status("Processing...");
 
 		CLightmap* lmap = new CLightmap();
 		VERIFY(lc_global_data());
@@ -179,21 +178,26 @@ void CBuild::xrPhase_MergeLM()
 
 		int MERGED = 0;
 		MergeLmap(Layer, lmap, MERGED);
+ 		TotalMerged += MERGED;
 
-		Progress(1.f);
-
-		clMsg("MERGED: %d, TOT: %d", MERGED, Layer.size());
+		Progress ( float( float(MERGED) /  float( StartSize ) ) );
+ 
+		CTimer t; 
+		t.Start();
 
 		// Remove merged lightmaps
-		Status("Cleanup...");
+		// Status("Cleanup...");
 		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
 		Layer.erase(last, Layer.end());
 
 		// Save
-		Status("Saving...");
+		// Status("Saving...");
 		VERIFY(pBuild);
 		lmap->Save(pBuild->path);
+
+		clMsg( "Saving Map: %u ms, Merged: %u, %u", t.GetElapsed_ms(), MERGED, StartSize);
 	}
+
 	VERIFY(lc_global_data());
 	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
 

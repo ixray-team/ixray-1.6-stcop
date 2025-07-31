@@ -18,7 +18,6 @@ CSector::CSector(u32 ID)
 
 CSector::~CSector()
 {
-
 }
 
 IC BOOL	ValidateMerge	(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
@@ -81,8 +80,8 @@ void CSector::BuildHierrarhy	()
 			IDx++;
 		}
 
-		StatusNoMsg("Sector Process[%d] / [%d] gtree[%d] / noconn[%d]", (u32) SizeLimit, (u32) delimiter, g_tree.size(), data.size());
-		 
+		StatusNoMsg("Sector (%d/%d) noconn[%d]", (u32) SizeLimit, (u32) delimiter, data.size());
+		  
 		for (auto Ogf : data)
 		{
 			int I = Ogf.ID;

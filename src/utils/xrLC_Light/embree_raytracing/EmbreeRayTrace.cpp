@@ -22,6 +22,9 @@
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
 int LastGeometryIDTransp = RTC_INVALID_GEOMETRY_ID;
 
+RTCSceneFlags scene_flags = RTC_SCENE_FLAG_ROBUST;
+RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
+
 RTCDevice device;
 RTCScene IntelScene = 0;
 
@@ -209,7 +212,7 @@ void InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_t
 
 	// RtcIntilize Geoms
 	RtcGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(RtcGeometry,  RTC_BUILD_QUALITY_LOW);
+	rtcSetGeometryBuildQuality(RtcGeometry, scene_quality);
 
 	rtcSetGeometryOccludedFilterFunction(RtcGeometry, &FilterRaytrace);
 	rtcSetGeometryIntersectFilterFunction(RtcGeometry, &FilterRaytrace);
@@ -305,13 +308,6 @@ void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
 		// Создание сцены и добавление геометрии
 		// Scene
 		IntelScene = rtcNewScene(device);
-
-		RTCSceneFlags scene_flags;
-
-	 
-		//scene_flags = RTC_SCENE_FLAG_ROBUST;
- 		scene_flags = RTC_SCENE_FLAG_NONE;
-
 		rtcSetSceneFlags(IntelScene, scene_flags);
 	}
 
