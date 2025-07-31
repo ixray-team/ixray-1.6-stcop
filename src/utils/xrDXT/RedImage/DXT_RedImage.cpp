@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+
+#ifdef IXR_WINDOWS
 #include "../../Layers/xrRender/ETextureParams.h"
 #include <RedImage/RedImage.hpp>
 
@@ -69,3 +71,4 @@ int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, S
     Msg("# DXT: Compressing Image: 2 [Closing File]. Time from start %f ms", T.GetElapsed_sec() * 1000.f);
     return Image.SaveToDds(out_name);
 }
+#endif
