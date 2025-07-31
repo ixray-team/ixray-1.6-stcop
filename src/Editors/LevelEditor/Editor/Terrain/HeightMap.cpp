@@ -42,7 +42,7 @@ bool SHeightMap::LoadSteam(IReader* Reader)
 
 	Width = Height = (u32)sqrt(Reader->length() / sizeof(u16));
 	const size_t Offset = Width * Height * sizeof(u16);
-	if (Offset >= Reader->length())
+	if (Offset > Reader->length())
 	{
 		return false;
 	}
