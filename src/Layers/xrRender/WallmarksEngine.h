@@ -50,7 +50,7 @@ private:
 private:
 	void				BuildMatrix				(Fmatrix &dest, float invsz, const Fvector& from);
 	void				RecurseTri				(u32 T,	Fmatrix &mView, static_wallmark	&W);
-	void				AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVerts, const Fvector &contact_point, ref_shader hTexture, float sz);
+	void				AddWallmark_internal	(CDB::TRI* pTri, const Fvector* pVerts, const Fvector &contact_point, ref_shader hTexture, float sz, bool UseCameraDirection);
 
 	static_wallmark*	static_wm_allocate		();
 	void				static_wm_render		(static_wallmark*	W, FVF::LIT* &V);
@@ -61,7 +61,7 @@ public:
 						CWallmarksEngine		();
 						~CWallmarksEngine		();
 	// edit wallmarks
-	void				AddStaticWallmark		(CDB::TRI* pTri, const Fvector* pVerts, const Fvector &contact_point, ref_shader hTexture, float sz);
+	void				AddStaticWallmark		(CDB::TRI* pTri, const Fvector* pVerts, const Fvector &contact_point, ref_shader hTexture, float sz, bool UseCameraDirection = false);
 	void				AddSkeletonWallmark		(intrusive_ptr<CSkeletonWallmark> wm);
 	void				AddSkeletonWallmark		(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
 

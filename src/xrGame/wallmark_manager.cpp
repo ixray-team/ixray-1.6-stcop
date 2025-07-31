@@ -56,32 +56,6 @@ void CWalmarkManager::AddWallmark(const Fvector& dir, const Fvector& start_pos,
 	}
 }
 
-/*
-void CWalmarkManager::PlaceWallmark(const Fvector& dir, const Fvector& start_pos, 
-									  float trace_dist, float wallmark_size,
-									  SHADER_VECTOR& wallmarks_vector,CObject* ignore_obj)
-{
-	collide::rq_result	result;
-	BOOL				reach_wall = 
-		Level().ObjectSpace.RayPick(
-		start_pos,
-		dir,
-		trace_dist, 
-		collide::rqtBoth,
-		result,
-		ignore_obj
-		)
-		&&
-		!result.O;
-
-	//если кровь долетела до статического объекта
-	if(reach_wall)
-	{
-		AddWallmark(dir,start_pos,result.range,wallmark_size,wallmarks_vector,result.element);
-	}
-}
-*/
-
 void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
 {
     m_pos = start_pos;
@@ -104,9 +78,19 @@ void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos)
     StartWorkflow(sect);
 }
 
+void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos, shared_str Sect)
+{
+    m_pos = start_pos;
+
+    if (m_owner == nullptr)
+        return;
+
+    StartWorkflow(Sect, true);
+}
+
 float Distance (const Fvector& rkPoint, const Fvector rkTri[3], float& pfSParam, float& pfTParam, Fvector& closest, Fvector& dir);
 
-void CWalmarkManager::StartWorkflow(const shared_str& sect)
+void CWalmarkManager::StartWorkflow(const shared_str& sect, bool UseCamDir)
 {
 	float				m_trace_dist		= pSettings->r_float(sect,"dist");
 	float				m_wallmark_size		= pSettings->r_float(sect,"size");
@@ -166,7 +150,7 @@ void CWalmarkManager::StartWorkflow(const shared_str& sect)
 
 		if(dist <= m_trace_dist )
 		{
-			::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array);
+			::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array, UseCamDir);
 			++wm_count;
 		}else
 			++_not_dist;
