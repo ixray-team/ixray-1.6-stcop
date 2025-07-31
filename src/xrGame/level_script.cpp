@@ -1278,6 +1278,54 @@ u32 get_build_id()
 	return Core.BuildId;
 }
 
+extern ENGINE_API float psHUD_FOV;
+
+Fvector2 World2Ui(Fvector pos, bool hud)
+{
+	Fmatrix world = {}, res = {};
+	world.identity();
+	world.c = pos;
+
+	if (hud)
+	{
+		Fmatrix fp ={};
+		Fmatrix ft = {};
+		Fmatrix fv = {};
+		fv.build_camera_dir(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
+		fp.build_projection(
+			deg2rad(psHUD_FOV * Device.fFOV),
+			Device.fASPECT, RDEVICE.fViewportNear,
+			g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+		ft.mul(fp, fv);
+		res.mul(ft, world);
+	}
+	else
+	{
+		res.mul(Device.mFullTransform, world);
+	}
+
+	Fvector4 vRes = {};
+	vRes.w = res._44;
+	vRes.x = res._41 / vRes.w;
+	vRes.y = res._42 / vRes.w;
+	vRes.z = res._43 / vRes.w;
+
+	if (vRes.z < 0 || vRes.w < 0) return { -9999,0 };
+	if (abs(vRes.x) > 1.f || abs(vRes.y) > 1.f) return { -9999,0 };
+
+	float x = (1.f + vRes.x) / 2.f * Device.TargetWidth;
+	float y = (1.f - vRes.y) / 2.f * Device.TargetHeight;
+
+	float widthFk = Device.TargetWidth / UI_BASE_WIDTH;
+	float heightFk = Device.TargetHeight / UI_BASE_HEIGHT;
+
+	x /= widthFk;
+	y /= heightFk;
+
+	return { x, y };
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1589,6 +1637,7 @@ void CLevel::script_register(lua_State *L)
 			def("has_active_tutorial",	&has_active_tutotial),
 			def("active_tutorial_name", &tutorial_name),
 			def("translate_string",		&translate_string),
-			def("reload_language", &ReloadLanguage)
+			def("reload_language", &ReloadLanguage),
+			def("world2ui", &World2Ui)
 	];
 }
