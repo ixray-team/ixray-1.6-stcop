@@ -109,7 +109,7 @@ void CUITaskWnd::Init()
 
 	if (xml.NavigateToNode("secondary_task_item"))
     {
-        Level().GameTaskManager().AllowMultipleTask(true);
+        Level().GameTaskManager()->AllowMultipleTask(true);
         m_pSecondaryTaskItem = new CUITaskItem();
         m_pSecondaryTaskItem->Init(xml, "secondary_task_item");
         AttachChild(m_pSecondaryTaskItem);
@@ -152,7 +152,7 @@ void CUITaskWnd::Init()
 
 void CUITaskWnd::Update()
 {
-	if(Level().GameTaskManager().ActualFrame() != m_actual_frame)
+	if(Level().GameTaskManager()->ActualFrame() != m_actual_frame)
 	{
 		ReloadTaskInfo();
 	}
@@ -223,13 +223,13 @@ void CUITaskWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUITaskWnd::ReloadTaskInfo()
 {
-    CGameTask* storyTask = Level().GameTaskManager().ActiveTask(eTaskTypeStoryline);
+    CGameTask* storyTask = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
     m_pStoryLineTaskItem->InitTask(storyTask);
 
     CGameTask* additionalTask = nullptr;
     if (m_pSecondaryTaskItem)
     {
-        additionalTask = Level().GameTaskManager().ActiveTask(eTaskTypeAdditional);
+        additionalTask = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
         m_pSecondaryTaskItem->InitTask(additionalTask);
     }
 
@@ -267,7 +267,7 @@ void CUITaskWnd::ReloadTaskInfo()
 
 	if (storyTask || additionalTask)
 	{
-		m_actual_frame = Level().GameTaskManager().ActualFrame();
+		m_actual_frame = Level().GameTaskManager()->ActualFrame();
 		if (m_task_wnd->IsShown())
 			m_task_wnd->UpdateList();
 	}
@@ -277,10 +277,10 @@ void CUITaskWnd::ReloadTaskInfo()
 
 	if (storyTask && !additionalTask)
 	{
-		const auto task_count = Level().GameTaskManager().GetTaskCount(eTaskStateInProgress, eTaskTypeStoryline);
+		const auto task_count = Level().GameTaskManager()->GetTaskCount(eTaskStateInProgress, eTaskTypeStoryline);
 		if (task_count)
 		{
-			const auto task_index = Level().GameTaskManager().GetTaskIndex(storyTask, eTaskStateInProgress, eTaskTypeStoryline);
+			const auto task_index = Level().GameTaskManager()->GetTaskIndex(storyTask, eTaskStateInProgress, eTaskTypeStoryline);
 			string32 buf;
 			xr_sprintf(buf, sizeof(buf), "%d / %d", task_index, task_count);
 
@@ -296,11 +296,11 @@ void CUITaskWnd::ReloadTaskInfo()
 
 	if (additionalTask)
 	{
-		const auto task2_count = Level().GameTaskManager().GetTaskCount(eTaskStateInProgress, eTaskTypeAdditional);
+		const auto task2_count = Level().GameTaskManager()->GetTaskCount(eTaskStateInProgress, eTaskTypeAdditional);
 
 		if (task2_count)
 		{
-			const auto task2_index = Level().GameTaskManager().GetTaskIndex(additionalTask, eTaskStateInProgress, eTaskTypeAdditional);
+			const auto task2_index = Level().GameTaskManager()->GetTaskIndex(additionalTask, eTaskStateInProgress, eTaskTypeAdditional);
 			string32 buf;
 			xr_sprintf(buf, sizeof(buf), "%d / %d", task2_index, task2_count);
 
@@ -398,13 +398,13 @@ void CUITaskWnd::TaskShowMapSpot( CGameTask* task, bool show )
 
 void CUITaskWnd::OnTask1DbClicked(CUIWindow*, void*)
 {
-    CGameTask* task = Level().GameTaskManager().ActiveTask(eTaskTypeStoryline);
+    CGameTask* task = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);
     TaskSetTargetMap(task);
 }
 
 void CUITaskWnd::OnTask2DbClicked(CUIWindow*, void*)
 {
-    CGameTask* task = Level().GameTaskManager().ActiveTask(eTaskTypeAdditional);
+    CGameTask* task = Level().GameTaskManager()->ActiveTask(eTaskTypeAdditional);
     TaskSetTargetMap(task);
 }
 

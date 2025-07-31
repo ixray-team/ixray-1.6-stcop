@@ -382,7 +382,7 @@ public:
 
 public:
 	CMapManager&			MapManager					() const 	{return *m_map_manager;}
-	CGameTaskManager&		GameTaskManager				() const	{return *m_game_task_manager;}
+	IC CGameTaskManager* GameTaskManager() const { return m_game_task_manager; }
 	void					OnAlifeSimulatorLoaded		();
 	void					OnAlifeSimulatorUnLoaded	();
 	//работа с пулями

@@ -66,7 +66,9 @@ private:
 	bool					CheckFunctions	(const task_state_functors& v) const;
 
 	void					CreateMapLocation(bool on_load);
-
+	bool isTaskCompleted();
+	bool isTaskFail();
+	void checkTask();
 
 							CGameTask		(const CGameTask&);
 public:
