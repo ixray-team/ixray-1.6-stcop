@@ -122,7 +122,7 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 	{
 		for (CEntity* entity : Group.members())
 		{
-			if (entity && entity->g_Alive() && ((entity->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			if (entity && entity->m_entity_condition && entity->g_Alive() && ((entity->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
 			{
 				if (tpEntity->Position().distance_to(entity->Position()) < fGroupDistance)
 				{
