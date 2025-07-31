@@ -127,7 +127,7 @@ public:
 
 	void			Execute				( LPCSTR cmd );
 	void			ExecuteScript		( LPCSTR str );
-	void			ExecuteCommand		( LPCSTR cmd, bool record_cmd = true );
+	void			ExecuteCommand		( LPCSTR cmd, bool record_cmd = true, bool Silent = true);
 	void			SelectCommand		();
 
 	bool			GetBool				( LPCSTR cmd ) const;

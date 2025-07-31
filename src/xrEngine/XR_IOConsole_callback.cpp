@@ -173,7 +173,7 @@ void CConsole::Execute_cmd()
 	}
 	else 
 	{
-		ExecuteCommand( ec().str_edit() );
+		ExecuteCommand(ec().str_edit(), true, false);
 	}
 	m_disable_tips = false;
 }
