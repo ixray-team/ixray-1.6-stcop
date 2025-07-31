@@ -1,7 +1,17 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 
-void main(p_bumped_new I, out IXrayGbufferPack O)
+#ifndef USE_LENGTH_BUFFER
+	#define OutStructure IXrayGbufferPack
+#else
+	#define OutStructure f_forward
+	
+#include "metalic_roughness_light.hlsli"
+#include "metalic_roughness_ambient.hlsli"
+
+#endif
+
+void main(p_bumped_new I, out OutStructure O)
 {
     IXrayMaterial M;
     M.Depth = I.position.z;
@@ -15,6 +25,8 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
     float4 Lmap = s_lmap.Sample(smp_base, I.tcdh.xy);
     float2 tcdbump = I.tcdh.xy * dt_params.xy;
 
+    M.Metalness = 0.0f;
+	
 #ifdef USE_4_BUMP
     float4 Mask = s_mask.Sample(smp_base, I.tcdh.xy);
     Mask /= dot(Mask, 1.0f);
@@ -42,7 +54,6 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
 	
     M.Color.xyz *= Detail * 2.0f;
 
-    M.Metalness = 0.0f;
     M.SSS = 0.0f;
     M.AO = 1.0f;
 
@@ -60,6 +71,40 @@ void main(p_bumped_new I, out IXrayGbufferPack O)
 #endif
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	
+#ifndef USE_LENGTH_BUFFER
     GbufferPack(O, M);
+#else
+	float4 LightColor = float4(L_sun_color.xyz, 0.5f);
+
+    M.Sun = saturate(M.Sun * 2.0f);
+    M.Color.xyz = PushGamma(saturate(M.Color.xyz));
+	
+	float ViewLength = length(M.Point);
+	float3 View = M.Point.xyz * rcp(ViewLength);
+	
+#ifndef USE_PBR
+	float3 F0 = 0.0f;
+#else
+	float3 F0 = 0.04f;
+#endif
+
+    float3 Light = M.Sun * DirectLight(LightColor, mul((float3x3)m_V, L_sun_dir_w.xyz), M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+    float3 Ambient = PushGamma(M.AO) * AmbientLighting(View, M.Normal, M.Color.xyz, M.Metalness, M.Roughness, M.Hemi, F0);
+	
+	Light += DirectLight(float4(Lmap.xyz, 0.5f), View, M.Normal, View, M.Color.xyz, M.Metalness, M.Roughness, F0);
+	
+    O.Color.xyz = Ambient + Light;
+    O.Color.w = 1.0f;
+
+    float Fog = PushGamma(saturate(ViewLength * fog_params.w + fog_params.x));
+    O.Color = lerp(O.Color, PushGamma(fog_color), Fog);
+
+    O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+    O.Reactive = O.Color.w * 0.9f;
+	
+	O.Color.w = ViewLength;
+	O.Color.xyz *= rcp(1.0f + O.Color.xyz);
+#endif
 }
 

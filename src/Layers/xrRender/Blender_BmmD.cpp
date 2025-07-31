@@ -207,6 +207,7 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 //////////////////////////////////////////////////////////////////////////
 // R3
 //////////////////////////////////////////////////////////////////////////
+#include "dxRenderDeviceRender.h"
 void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 {
 	IBlender::Compile(C);
@@ -261,6 +262,25 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_dx10Sampler("smp_base");
 		C.r_dx10Sampler("smp_linear");
 		C.r_ColorWriteEnable(false, false, false, false);
+		C.r_End();
+		break;
+	case SE_R2_REFLECTIONS:
+		C.SH->flags.bLandscape = false;
+		C.bDetail = !!DEV->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+		C.bDetail_Bump = C.bDetail_Diffuse = C.bDetail;
+
+		RImplementation.addShaderOption("USE_LENGTH_BUFFER", "1");
+		uber_deffer(C, true, "deffer_base", "deffer_impl", false, oT2_Name[0] ? oT2_Name : 0, true);
+
+		C.r_dx10Texture("s_lmap", C.L_textures[1]);
+
+		C.r_dx10Texture("s_material", r2_material);
+		C.r_dx10Texture("env_s0", r2_T_envs0);
+		C.r_dx10Texture("env_s1", r2_T_envs1);
+		C.r_dx10Texture("sky_s0", r2_T_sky0);
+		C.r_dx10Texture("sky_s1", r2_T_sky1);
+
+		C.r_dx10Sampler("smp_material");
 		C.r_End();
 		break;
 	}
