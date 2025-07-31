@@ -382,4 +382,10 @@
 	<string id="ui_inv_max_weight">
 		<text>max</text>
 	</string>
+	<string id="st_track_opt_off">
+		<text>off</text>
+	</string>
+	<string id="st_track_opt_on">
+		<text>on</text>
+	</string>
 </string_table>
