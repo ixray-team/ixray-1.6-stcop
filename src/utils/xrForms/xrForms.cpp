@@ -58,20 +58,36 @@ CompilersMode gCompilerMode;
 
 void Startup(LPSTR lpCmdLine) 
 {
+	GetIterationData().push_back({ "xrLC" });
+	GetIterationData().push_back({ "xrAI" });
+	GetIterationData().push_back({ "xrDO" });
+
 	u32 dwStartupTime = timeGetTime();
 
+	SetActiveIteration(&(GetIterationData()[0]));
 	u32 dwTimeLC = 0;
 	if (gCompilerMode.LC) {
+		GetActiveIteration()->status = InProgress;
 		dwTimeLC = timeGetTime();
 		Phase("xrLC Startup");
 		StartupLC();
 
 		dwTimeLC = (timeGetTime() - dwTimeLC) / 1000;
+
+		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->elapsed_time = dwTimeLC;
+	}
+	else
+	{
+		GetActiveIteration()->status = Skip;
 	}
 
+	SetActiveIteration(&(GetIterationData()[1]));
 	u32 dwTimeAI = 0;
 	if (gCompilerMode.AI)
 	{
+		GetActiveIteration()->status = InProgress;
+
 		dwTimeAI = timeGetTime();
 		Phase("xrAI Startup");
 
@@ -80,14 +96,30 @@ void Startup(LPSTR lpCmdLine)
 		StartupAI();
 		DestroyFactory();
 		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
+
+		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->elapsed_time = dwTimeLC;
+	}
+	else
+	{
+		GetActiveIteration()->status = Skip;
 	}
 
+	SetActiveIteration(&(GetIterationData()[2]));
 	u32 dwTimeDO = 0;
 	if (gCompilerMode.DO) {
+		GetActiveIteration()->status = InProgress;
 		dwTimeDO = timeGetTime();
 		Phase("xrDO Startup");
 		StartupDO();
 		dwTimeDO = (timeGetTime() - dwTimeDO) / 1000;
+
+		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->elapsed_time = dwTimeLC;
+	}
+	else
+	{
+		GetActiveIteration()->status = Skip;
 	}
 
 	// Show statistic
@@ -285,11 +317,10 @@ void StartCompile()
 	Sleep(150);
 	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
 
-	while (!logWindow)
-		Sleep(100);
+	/*while (!logWindow)
+		Sleep(100);*/
 	
-	string128 cmd;
-	Startup(cmd);
+	
 }
 
 int APIENTRY WinMain (
