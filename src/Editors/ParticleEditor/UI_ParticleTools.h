@@ -143,6 +143,7 @@ public:
 	void 				Remove				(LPCSTR name);
 
     // PG routine
+    void                ImportPE            ();
     PS::CPEDef*			FindPE				(LPCSTR name);
     PS::CPEDef*			AppendPE			(PS::CPEDef* src, const char* path);
     void 				SetCurrentPE		(PS::CPEDef* P);

@@ -15,6 +15,7 @@ CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Un
 		{
 			if (Line.second != "0")
 			{
+				Msg("Enable shader option: %s", *Line.first);
 				ShadersOptions[*Line.first] = *Line.second;
 			}
 			else
