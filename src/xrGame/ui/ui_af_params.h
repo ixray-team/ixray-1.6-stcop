@@ -11,7 +11,13 @@ class UIArtefactParamItem;
 class CUIArtefactParams : public CUIWindow
 {
 public:
-					CUIArtefactParams		();
+	enum class CParamType
+	{
+		eParamTypeOutfit,
+		eParamTypeArtefact
+	};
+
+					CUIArtefactParams		(const CParamType& type);
 	virtual			~CUIArtefactParams		();
 			void	InitFromXml				(CUIXml& xml);
 			bool	Check					(const shared_str& af_section);
@@ -23,6 +29,10 @@ protected:
 	UIArtefactParamItem*	m_additional_weight;
 
 	CUIStatic*				m_Prop_line;
+
+	CParamType				object_type;
+
+	bool is_artefact() const { return object_type == CParamType::eParamTypeArtefact; }
 
 }; // class CUIArtefactParams
 

@@ -65,6 +65,7 @@ public:
 	CUIWpnParams*			UIWpnParams;
 	CUIKnifeParams*			UIKnifeParams;
 	CUIArtefactParams*		UIArtefactParams;
+	CUIArtefactParams*		UIOutfitParams;
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;
