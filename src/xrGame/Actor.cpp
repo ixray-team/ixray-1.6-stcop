@@ -1933,7 +1933,7 @@ float CActor::Radius()const
 
 bool		CActor::use_bolts				() const
 {
-	if (!IsGameTypeSingle()) return false;
+	if (!IsGameTypeSingleCompatible()) return false;
 	return CInventoryOwner::use_bolts();
 };
 

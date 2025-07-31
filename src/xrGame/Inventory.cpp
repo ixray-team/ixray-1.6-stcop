@@ -685,7 +685,7 @@ bool CInventory::Action(u16 cmd, u32 flags)
 	case kWPN_6:
 		{
 			b_send_event = true;
-			if (cmd == kWPN_6 && !IsGameTypeSingle()) return false;
+			if (cmd == kWPN_6 && !IsGameTypeSingleCompatible()) return false;
 			
 			u16 slot = u16(cmd - kWPN_1 + 1);
 			if ( flags & CMD_START )
