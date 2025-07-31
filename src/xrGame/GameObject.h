@@ -68,6 +68,9 @@ class CScope;
 class CGrenadeLauncher;
 class CProjector;
 class CLevelChanger;
+class CPhysicItem;
+class CEatableItem;
+class CScriptZone;
 
 class IKinematics;
 class CAI_Trader;
@@ -144,6 +147,9 @@ public:
 	virtual CGrenadeLauncher* cast_addon_grenade_launcher() { return nullptr; }
 	virtual CProjector* cast_projector() { return nullptr; }
 	virtual CLevelChanger* cast_level_changer() { return nullptr; }
+	virtual CPhysicItem* cast_physics_item() { return nullptr; }
+	virtual CEatableItem* cast_eatable_item() { return nullptr; }
+	virtual CScriptZone* cast_script_zone() { return nullptr; }
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}

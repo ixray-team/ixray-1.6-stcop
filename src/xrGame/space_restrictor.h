@@ -12,6 +12,8 @@
 #include "restriction_space.h"
 #include "../xrScripts/script_export_space.h"
 
+class CScriptZone;
+
 class CSpaceRestrictor : public CGameObject {
 private:
 	typedef CGameObject			inherited;
@@ -60,6 +62,7 @@ public:
 	virtual CCustomZone* cast_custom_zone() { return nullptr; }
 	virtual CSpaceRestrictor* cast_restrictor() { return this; }
 	virtual CGameObject* cast_game_object() { return this; }
+	virtual CScriptZone* cast_script_zone() { return nullptr; }
 	virtual	bool				register_schedule	() const {return false;}
 
 	virtual		void	shedule_Update				(u32 dt);
