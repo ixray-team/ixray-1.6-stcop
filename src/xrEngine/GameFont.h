@@ -167,8 +167,8 @@ public:
 	const Glyph* GetGlyphInfo(int ch);
 
 	// returns symbol width in pixels
-	int WidthOf(int ch);
-	int WidthOf(const char* str);
+	float WidthOf(int ch);
+	float WidthOf(const char* str);
 
 private:
 	float LetterSpacing = 0; //that must be in CUIText from new font system

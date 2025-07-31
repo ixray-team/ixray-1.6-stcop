@@ -457,12 +457,12 @@ float CGameFont::SizeOf_(int cChar)
 		cChar = u8(cChar);
 	}
 
-	return static_cast<float>(WidthOf(cChar));
+	return WidthOf(cChar);
 }
 
 float CGameFont::SizeOf_(const char* s)
 {
-	return static_cast<float> (WidthOf(s));
+	return WidthOf(s);
 }
 
 float CGameFont::SizeOf_(const wide_char* wsStr)
@@ -494,39 +494,46 @@ const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 	return &symbolInfoIterator->second;
 }
 
-int CGameFont::WidthOf(int ch)
+float CGameFont::WidthOf(int ch)
 {
 	if (ch == '\t' || ch == '\n')
-		return 0;
+		return 0.f;
 
 	if (const Glyph* glyphInfo = GetGlyphInfo(ch))
-		return glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC;
+		return float(glyphInfo->Abc.abcA + glyphInfo->Abc.abcB + glyphInfo->Abc.abcC);
 
-	return OurFont->glyph->metrics.width / 64;
+	return float(OurFont->glyph->metrics.width) / 64.f;
 }
 
-int CGameFont::WidthOf(const char* str)
+float CGameFont::WidthOf(const char* str)
 {
 	if (!str || !str[0]) return 0;
 
-	int size = 0;
+	float size = 0;
 	int length = 0;
 	const float spacing = GetLetterSpacing();
 
 	if (IsUTF8(str)) {
 		auto wideStr = Platform::ANSI_TO_TCHAR(str);
 		length = std::wcslen(wideStr);
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
+		{
 			size += WidthOf(wideStr[i]);
-			if (i < length - 1) size += (int)spacing;
+			size += spacing;
 		}
+
+		size -= spacing;
 	}
-	else {
+	else
+	{
 		length = xr_strlen(str);
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
+		{
 			size += WidthOf((u8)str[i]);
-			if (i < length - 1) size += (int)spacing;
+			size += spacing;
 		}
+
+		size -= spacing;
 	}
 
 	return size;
