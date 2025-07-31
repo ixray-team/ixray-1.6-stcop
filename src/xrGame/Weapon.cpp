@@ -1229,9 +1229,9 @@ void CWeapon::HideOneUpgradeLevel(const char* section)
 	}
 }
 
-bool  CWeapon::need_renderable()
+bool CWeapon::need_renderable()
 {
-	return !( IsZoomed() && ZoomTexture() && !IsRotatingToZoom() );
+	return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom() && !IsHudModelForceUnhide());
 }
 
 void CWeapon::renderable_Render		()
