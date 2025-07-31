@@ -4,46 +4,42 @@
 #include "../xrLC_Light/xrDeflector.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrFace.h"
- 
+
 
 void Detach(vecFace* S)
 {
-	map_v2v			verts;
-	verts.clear		();
-	
+  	map_v2v			verts;
+	verts.clear();
+
 	// Collect vertices
-	for (vecFaceIt F=S->begin(); F!=S->end(); ++F)
+	for (vecFaceIt F = S->begin(); F != S->end(); ++F)
 	{
-		for (int i=0; i<3; ++i) 
+		for (int i = 0; i < 3; ++i)
 		{
-			Vertex*		V=(*F)->v[i];
-			Vertex*		VC;
-			map_v2v_it	W=verts.find(V);	// iterator
-			
-			if (W==verts.end()) 
+			Vertex* V = (*F)->v[i];
+			Vertex* VC;
+ 			map_v2v_it	W = verts.find(V);	// iterator
+ 
+			if (W == verts.end())
 			{	// where is no such-vertex
-				VC = V->CreateCopy_NOADJ( lc_global_data()->g_vertices() );	// make copy
+				VC = V->CreateCopy_NOADJ(lc_global_data()->g_vertices());	// make copy
 				verts.insert(std::make_pair(V, VC));
-			} else 
+			}
+			else
 			{
 				// such vertex(key) already exists - update its adjacency
 				VC = W->second;
 			}
-			VC->prep_add		(*F);
-			V->prep_remove		(*F);
-			(*F)->v[i]=VC;
+			
+ 			VC->prep_add(*F);
+			V->prep_remove(*F);
+ 			(*F)->v[i] = VC;
 		}
 	}
+
 	// vertices are already registered in container
 	// so we doesn't need "vers" for this time
-	verts.clear	();
-}
-
-extern int orig_size = 0;
-
-bool find_AFFECTED(Face* face)
-{
-	return face->pDeflector != NULL;
+	verts.clear(); 	
 }
 
 bool sort_faces(Face* face, Face* face2)
@@ -52,28 +48,7 @@ bool sort_faces(Face* face, Face* face2)
 		return true;
 	return false;
 }
-
-#include <atomic>
-xr_atomic_s32 integer_mt;
-
-void MT_FindAttached(CDeflector* defl, vecFace& affected, int SP, int start, int end)
-{
-	for (int i = start; i != end; i++)
-	{
-		auto Face = (*g_XSplit[SP])[i];
-
-		if (Face->pDeflector == defl)
-		{
-			affected.push_back(Face);
-			integer_mt.fetch_add(1);
-		}
-	}
-}
-
-#include <thread>
-#include <algorithm>
-#include <execution>
-  
+ 
 void CBuild::xrPhase_UVmap()
 {
 	size_t used, rel, free;
