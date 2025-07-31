@@ -111,22 +111,15 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	P.w_u8				(u8(g_Squad()));
 	P.w_u8				(u8(g_Group()));
 
-
-	//CSE_ALifeCreatureTrader
-//	P.w_float			(inventory().TotalWeight());
-//	P.w_u32				(m_dwMoney);
-
-	//CSE_ALifeCreatureActor
-	
 	u16 ms	= (u16)(mstate_real & 0x0000ffff);
 	P.w_u16				(u16(ms));
 	P.w_sdir			(NET_SavedAccel);
 	Fvector				v = character_physics_support()->movement()->GetVelocity();
-	P.w_sdir			(v);//m_PhysicMovementControl.GetVelocity());
-//	P.w_float_q16		(fArmor,-500,1000);
+	P.w_sdir			(v);
 	P.w_float			(g_Radiation());
 
-	P.w_u8				(u8(inventory().GetActiveSlot()));
+	P.w_u8(u8(inventory().GetActiveSlot()));
+	P.w_u8(IsWaunded);
 	/////////////////////////////////////////////////
 	u16 NumItems		= PHGetSyncItemsNumber();
 	
@@ -135,8 +128,9 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	
 	if (!g_Alive()) NumItems = 0;
 	
-	P.w_u16				(NumItems);
-	if (!NumItems)		return;
+	P.w_u16(NumItems);
+	if (!NumItems)
+		return;
 
 	if (g_Alive())
 	{
@@ -146,26 +140,26 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 		pSyncObj = PHGetSyncItem(0);
 		pSyncObj->get_State(State);
 
-		P.w_u8					( State.enabled );
+		P.w_u8(State.enabled);
 
-		P.w_vec3				( State.angular_vel);
-		P.w_vec3				( State.linear_vel);
+		P.w_vec3(State.angular_vel);
+		P.w_vec3(State.linear_vel);
 
-		P.w_vec3				( State.force);
-		P.w_vec3				( State.torque);
+		P.w_vec3(State.force);
+		P.w_vec3(State.torque);
 
-		P.w_vec3				( State.position);
+		P.w_vec3(State.position);
 
-		P.w_float				( State.quaternion.x );
-		P.w_float				( State.quaternion.y );
-		P.w_float				( State.quaternion.z );
-		P.w_float				( State.quaternion.w );
+		P.w_float(State.quaternion.x);
+		P.w_float(State.quaternion.y);
+		P.w_float(State.quaternion.z);
+		P.w_float(State.quaternion.w);
 	}
 	else
 	{
 		net_ExportDeadBody(P);
-	};
-};
+	}
+}
 
 static void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
 {
@@ -305,7 +299,7 @@ void CActor::net_Import		(NET_Packet& P)					// import from server
 	//-----------------------------------------------
 };
 
-void		CActor::net_Import_Base				( NET_Packet& P)
+void CActor::net_Import_Base( NET_Packet& P)
 {
 	net_update			N;
 
@@ -335,61 +329,49 @@ void		CActor::net_Import_Base				( NET_Packet& P)
 	id_Team				= P.r_u8();
 	id_Squad			= P.r_u8();
 	id_Group			= P.r_u8();
-	
-	
-	//----------- for E3 -----------------------------
-//	if (OnClient())
-	//------------------------------------------------
+
+	if (Level().IsDemoPlay())
 	{
-//		if (OnServer() || Remote())
-		if (Level().IsDemoPlay())
-		{
-			unaffected_r_torso.yaw		= N.o_torso.yaw;
-			unaffected_r_torso.pitch	= N.o_torso.pitch;
-			unaffected_r_torso.roll		= N.o_torso.roll;
+		unaffected_r_torso.yaw = N.o_torso.yaw;
+		unaffected_r_torso.pitch = N.o_torso.pitch;
+		unaffected_r_torso.roll = N.o_torso.roll;
 
-			cam_Active()->yaw	= -N.o_torso.yaw;
-			cam_Active()->pitch = N.o_torso.pitch;
-		};
-	};
+		cam_Active()->yaw = -N.o_torso.yaw;
+		cam_Active()->pitch = N.o_torso.pitch;
+	}
 
-	//CSE_ALifeCreatureTrader
-//	P.r_float			(fDummy);
-//	m_dwMoney =			P.r_u32();
-
-	//CSE_ALifeCreatureActor
 	P.r_u16				(tmp			); N.mstate = u32(tmp);
 	P.r_sdir			(N.p_accel		);
 	P.r_sdir			(N.p_velocity	);
 	float				fRRadiation;
 	P.r_float			(fRRadiation);
-	//----------- for E3 -----------------------------
+
 	if (OnClient())		
 	{
-//		fArmor = fRArmor;
 		SetfRadiation(fRRadiation);
 	};
-	//------------------------------------------------
 
-	u8					ActiveSlot;
-	P.r_u8				(ActiveSlot);
-	
-	//----------- for E3 -----------------------------
+	u8 ActiveSlot = P.r_u8();
+
 	if (OnClient())
-	//------------------------------------------------
 	{
-		if (ActiveSlot == NO_ACTIVE_SLOT) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-		else 
+		if (ActiveSlot == NO_ACTIVE_SLOT)
 		{
-			if (inventory().GetActiveSlot() != u16(ActiveSlot))
-				inventory().Activate(ActiveSlot);
-		};
+			inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+		}
+		else if (inventory().GetActiveSlot() != u16(ActiveSlot))
+		{
+			inventory().Activate(ActiveSlot);
+		}
 	}
 
-	//----------- for E3 -----------------------------
-	if (Local() && OnClient()) return;
-	//-------------------------------------------------
-	if (!NET.empty() && N.dwTimeStamp < NET.back().dwTimeStamp) return;
+	IsWaunded = P.r_u8();
+
+	if (Local() && OnClient())
+		return;
+
+	if (!NET.empty() && N.dwTimeStamp < NET.back().dwTimeStamp) 
+		return;
 
 	if (!NET.empty() && N.dwTimeStamp == NET.back().dwTimeStamp)
 	{
@@ -400,24 +382,22 @@ void		CActor::net_Import_Base				( NET_Packet& P)
 		NET.push_back			(N);
 		if (NET.size()>5) NET.pop_front();
 	}	
-	//-----------------------------------------------
-	net_Import_Base_proceed	();
-	//-----------------------------------------------
-};
 
-void	CActor::net_Import_Base_proceed		( )
+	net_Import_Base_proceed	();
+}
+
+void CActor::net_Import_Base_proceed()
 {
 	if (g_Alive())
 	{
-		setVisible				((BOOL)!HUDview	());
-		setEnabled				(TRUE);
+		setVisible((BOOL)!HUDview());
+		setEnabled(TRUE);
 	};
 	//---------------------------------------------
-		
-	if (Remote()) return;
 
-	net_update N		= NET.back();
-};
+	if (Remote())
+		return;
+}
 
 void		CActor::net_Import_Physic			( NET_Packet& P)
 {
@@ -2013,21 +1993,16 @@ void				CActor::OnCriticalRadiationHealthLoss	()
 	u_EventSend(P);
 };
 
-bool				CActor::Check_for_BackStab_Bone			(u16 element)
+bool CActor::Check_for_BackStab_Bone(u16 element)
 {
 	if (element == m_head) return true;
-	else
-		if (element == m_neck) return true;
-		else
-			if (element == m_spine2) return true;
-			else
-				if (element == m_l_clavicle) return true;
-				else
-					if (element == m_r_clavicle) return true;
-					else
-						if (element == m_spine1) return true;
-						else 
-							if (element == m_spine) return true;
+	else if (element == m_neck) return true;
+	else if (element == m_spine2) return true;
+	else if (element == m_l_clavicle) return true;
+	else if (element == m_r_clavicle) return true;
+	else if (element == m_spine1) return true;
+	else if (element == m_spine) return true;
+
 	return false;
 }
 
@@ -2060,8 +2035,5 @@ BOOL CActor::BonePassBullet(int boneID)
 
 void CActor::On_B_NotCurrentEntity()
 {
-#ifndef MASTER_GOLD
-	Msg("CActor::On_B_NotCurrentEntity");
-#endif // #ifndef MASTER_GOLD
 	inventory().Items_SetCurrentEntityHud(false);
-};
+}
