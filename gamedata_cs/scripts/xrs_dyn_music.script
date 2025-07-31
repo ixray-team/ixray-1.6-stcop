@@ -3,7 +3,7 @@ xStream 02.2008
 ]]
 
 function init()  
-  --колбеки для заглушения амбента
+  --РєРѕР»Р±РµРєРё РґР»СЏ Р·Р°РіР»СѓС€РµРЅРёСЏ Р°РјР±РµРЅС‚Р°
   xr_s.register_callback("update",fades,nil)
   xr_s.register_callback("actor_destroy",restore_ambient_on_end,nil)
   xr_s.register_callback("main_menu_on",main_menu_on,nil)
@@ -119,9 +119,9 @@ function music_change(sound)
 	end
 end
 
---проверяем, какие можно играть треки на этой карте
--- если нет в теме переменной maps, то можно везде
--- если есть, то только если наша карта есть в списке - карты перечисляются через запятую по именам
+--РїСЂРѕРІРµСЂСЏРµРј, РєР°РєРёРµ РјРѕР¶РЅРѕ РёРіСЂР°С‚СЊ С‚СЂРµРєРё РЅР° СЌС‚РѕР№ РєР°СЂС‚Рµ
+-- РµСЃР»Рё РЅРµС‚ РІ С‚РµРјРµ РїРµСЂРµРјРµРЅРЅРѕР№ maps, С‚Рѕ РјРѕР¶РЅРѕ РІРµР·РґРµ
+-- РµСЃР»Рё РµСЃС‚СЊ, С‚Рѕ С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С€Р° РєР°СЂС‚Р° РµСЃС‚СЊ РІ СЃРїРёСЃРєРµ - РєР°СЂС‚С‹ РїРµСЂРµС‡РёСЃР»СЏСЋС‚СЃСЏ С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ РїРѕ РёРјРµРЅР°Рј
 function prepare_tracks()
 	if not xrs_dynamic_music_themes or not xrs_dynamic_music_themes.themes then return end
 	local new_table={}
@@ -341,7 +341,7 @@ local function fade_out(cur_amb_vol, timer, counter)
 	end	
 end
 
---интерпретируем колбеки по-своему
+--РёРЅС‚РµСЂРїСЂРµС‚РёСЂСѓРµРј РєРѕР»Р±РµРєРё РїРѕ-СЃРІРѕРµРјСѓ
 function fades()	
 	--' Distemper 05.2008 --
 	local actor = db.actor	
@@ -406,10 +406,10 @@ function main_menu_off()
 	get_console():execute('snd_volume_music '..ambient_vol)
 end
 
--- Дубликат из xr_combat_ignore, только без кучи проверок 
+-- Р”СѓР±Р»РёРєР°С‚ РёР· xr_combat_ignore, С‚РѕР»СЊРєРѕ Р±РµР· РєСѓС‡Рё РїСЂРѕРІРµСЂРѕРє 
 function i_am_is_enemy(obj, enemy, st)
 	local overrides = st.overrides
-	--' Если есть оверрайды, то работаем по ним. 
+	--' Р•СЃР»Рё РµСЃС‚СЊ РѕРІРµСЂСЂР°Р№РґС‹, С‚Рѕ СЂР°Р±РѕС‚Р°РµРј РїРѕ РЅРёРј. 
 	if overrides and overrides.combat_ignore then
 		if xr_logic.pick_section_from_condlist( enemy, obj, overrides.combat_ignore.condlist ) ~= nil then
 			--printf("pl:Disabling_memory_object[10] obj [%s]", obj:name())

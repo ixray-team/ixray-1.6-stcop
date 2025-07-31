@@ -73,13 +73,13 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 			local npc = sim:story_object(sender_id)
 			if npc ~= nil then
 				if npc.online then
-					--в онлайне проверяем на раненность
+					--РІ РѕРЅР»Р°Р№РЅРµ РїСЂРѕРІРµСЂСЏРµРј РЅР° СЂР°РЅРµРЅРЅРѕСЃС‚СЊ
 					if xr_wounded.is_heavy_wounded_by_id(npc.id) then
 						printf("[PDA]Cannot send tips [%s], sender is heavy wounded", tostring(news_id))
 						return false
 					end
 				end
-				-- в других случаях только на смерть
+				-- РІ РґСЂСѓРіРёС… СЃР»СѓС‡Р°СЏС… С‚РѕР»СЊРєРѕ РЅР° СЃРјРµСЂС‚СЊ
 				if npc:alive() == 1 then
 					printf("[PDA]Cannot send tips [%s], sender is dead", tostring(news_id))
 					return false
@@ -91,7 +91,7 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	if timeout == nil then timeout = 0 end
 	if showtime == nil then showtime = 5000 end
 
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
     xr_sound.set_sound_play(actor:id(), "pda_tips")
 
 
@@ -145,7 +145,7 @@ function send_sound(npc, faction, point, str, str2)
 
 
 --		callstack()
-		--' Играем дефолтный звук
+		--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 --	    xr_sound.set_sound_play(db.actor:id(), "pda_tips")
 
 	    local texture = "ui_iconsTotal_grouping"
@@ -224,7 +224,7 @@ end
 
 function relocate_item(actor, type, item, amount)
 	if db.actor == nil then return false end
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if not amount then
 		amount = 1
 	end
@@ -261,7 +261,7 @@ end
 
 function relocate_money(actor, type, amount)
 	if db.actor == nil then return false end
-	--' Играем дефолтный звук
+	--' РРіСЂР°РµРј РґРµС„РѕР»С‚РЅС‹Р№ Р·РІСѓРє
 	if type == "in" then
 		local news_caption = game.translate_string("general_in_money")
 		local news_text = game.translate_string(tostring(amount))

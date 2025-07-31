@@ -25,13 +25,13 @@ function empty	(container)
 end
 
 
-schemes = {} -- соответствие схем модулям
-stypes = {} -- типv схем
+schemes = {} -- СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃС…РµРј РјРѕРґСѓР»СЏРј
+stypes = {} -- С‚РёРїС‹ СЃС…РµРј
 
--- іагружает схему из файла на диске и активирует в мотиваторе.
--- ідесь:
--- 	filename - имя файла, в котором реализована схема, без расширения
--- 	scheme - имя схемv
+-- Р—Р°РіСЂСѓР¶Р°РµС‚ СЃС…РµРјСѓ РёР· С„Р°Р№Р»Р° РЅР° РґРёСЃРєРµ Рё Р°РєС‚РёРІРёСЂСѓРµС‚ РІ РјРѕС‚РёРІР°С‚РѕСЂРµ.
+-- Р—РґРµСЃСЊ:
+-- 	filename - РёРјСЏ С„Р°Р№Р»Р°, РІ РєРѕС‚РѕСЂРѕРј СЂРµР°Р»РёР·РѕРІР°РЅР° СЃС…РµРјР°, Р±РµР· СЂР°СЃС€РёСЂРµРЅРёСЏ
+-- 	scheme - РёРјСЏ СЃС…РµРјС‹
 function load_scheme(filename, scheme, stype)
 	schemes[scheme] = filename
 	stypes[scheme] = stype
@@ -180,9 +180,6 @@ function debug_get_level_object(obj_name)
 		local res = level.debug_object(obj_name)
 		while res == nil do
 
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- !!!!! =+ іLі+іі+=TLіLTLЈT+, L=L++ =+ +L-+T TL-=+ ++L++і ііL іLTTTL=+Tі+ ++-+іT+T !!!!!
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				printf("get_level_object() is waiting for object \"%s\"", obj_name)
 
 				res         = level.object(obj_name)
@@ -204,14 +201,14 @@ function distance_between(obj1, obj2)
 		return obj1:position():distance_to(obj2:position())
 end
 
--- +сли один объект nil, например нет актера, то считаем, что он далеко
+-- Р•СЃР»Рё РѕРґРёРЅ РѕР±СЉРµРєС‚ nil, РЅР°РїСЂРёРјРµСЂ РЅРµС‚ Р°РєС‚РµСЂР°, С‚Рѕ СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕРЅ РґР°Р»РµРєРѕ
 function distance_between_safe(obj1, obj2)
 		if(obj1 == nil or obj2 == nil) then return 100000 end
 	return obj1:position():distance_to(obj2:position())
 end
 
 local aa = nil
---' іроверка на инфопоршнv, даже если игрока не су	ествует
+-- РџСЂРѕРІРµСЂРєР° РЅР° РёРЅС„РѕРїРѕСЂС€РЅРё, РґР°Р¶Рµ РµСЃР»Рё РёРіСЂРѕРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
 function has_alife_info(info_id)
 	if aa == nil then
 		return false
@@ -247,7 +244,7 @@ function script_object:update()
 end
 
 --
--- іередача персонажу информации
+-- РџРµСЂРµРґР°С‡Р° РїРµСЂСЃРѕРЅР°Р¶Сѓ РёРЅС„РѕСЂРјР°С†РёРё
 --
 
 function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
@@ -259,22 +256,22 @@ end
 -- Functions and variables added by Zmey
 --------------------------------------------------
 
--- іонстанта, которуі использовать в местах, где нужно задать неограниченное время действия
+-- РљРѕРЅСЃС‚Р°РЅС‚Р°, РєРѕС‚РѕСЂСѓСЋ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІ РјРµСЃС‚Р°С…, РіРґРµ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РЅРµРѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РІСЂРµРјСЏ РґРµР№СЃС‚РІРёСЏ
 time_infinite = 100000000
 
--- =азвание скрипта, которvй в даннvй момент находится в отладке
--- (в этом скрипте будут срабатvвать вvзовv функции debug_log)
+-- РќР°Р·РІР°РЅРёРµ СЃРєСЂРёРїС‚Р°, РєРѕС‚РѕСЂС‹Р№ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕС‚Р»Р°РґРєРµ
+-- (РІ СЌС‚РѕРј СЃРєСЂРёРїС‚Рµ Р±СѓРґСѓС‚ СЃСЂР°Р±Р°С‚С‹РІР°С‚СЊ РІС‹Р·РѕРІС‹ С„СѓРЅРєС†РёРё debug_log)
 debug_script_name = ""
 
--- Tvводит в лог строчку, если script_name == debug_script_name
--- Lспользуется для отрадки сценариев
+-- Р’С‹РІРѕРґРёС‚ РІ Р»РѕРі СЃС‚СЂРѕС‡РєСѓ, РµСЃР»Рё script_name == debug_script_name
+-- РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕС‚СЂР°РґРєРё СЃС†РµРЅР°СЂРёРµРІ
 function debug_log(script_name, fmt, ...)
 	if debug_script_name == script_name then
 		log(string.format(fmt, ...))
 	end
 end
 
--- +сли в даннvй момент вvполняется какое-то действие, прерvвает его и отклічает скриптовvй режим
+-- Р•СЃР»Рё РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РєР°РєРѕРµ-С‚Рѕ РґРµР№СЃС‚РІРёРµ, РїСЂРµСЂС‹РІР°РµС‚ РµРіРѕ Рё РѕС‚РєР»СЋС‡Р°РµС‚ СЃРєСЂРёРїС‚РѕРІС‹Р№ СЂРµР¶РёРј
 function interrupt_action(who, script_name)
 	if who:get_script() then
 		who:script(false, script_name)
@@ -501,7 +498,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- Evaluators
 ----------------------------------------------------------------------------------------------------------------------
--- зарезервированv id с номерами от 0 до 256 для создания стандартнvх эвалуаторов.
+-- Р—Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅС‹ id СЃ РЅРѕРјРµСЂР°РјРё РѕС‚ 0 РґРѕ 256 РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… СЌРІР°Р»СѓР°С‚РѕСЂРѕРІ.
 
 --Constant evaluator
 class "const_evaluator" (property_evaluator)
@@ -605,8 +602,8 @@ function random_number (min_value, max_value)
 		end
 end
 
--- ‚аҐ¬п бгв®Є ў ¬б
--- —гЈ ©
+-- Р’СЂРµРјСЏ СЃСѓС‚РѕРє РІ РјСЃ
+-- Р§СѓРіР°Р№
 local ms_per_day = 24 * 60 * 60 * 1000
 function day_time()
 		return math.mod( game.time(), ms_per_day )
@@ -617,8 +614,8 @@ function local_hours()
 		return math.floor( math.mod( game.time()/1000, 86400 )/ 3600 )
 end
 
--- Ї абЁв бва®Єг ўЁ¤  "   , ЎЎЎ, ўўў..." ў в Ў«Ёжг { "   ", "ЎЎЎ", "ўўў", ... }
--- —гЈ ©
+-- РїР°СЂСЃРёС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "Р°Р°Р°, Р±Р±Р±, РІРІРІ..." РІ С‚Р°Р±Р»РёС†Сѓ { "Р°Р°Р°", "Р±Р±Р±", "РІРІРІ", ... }
+-- Р§СѓРіР°Р№
 function parse_names( s )
 		local t = {}
 		for name in string.gfind( s, "([%w_\\]+)%p*" ) do
@@ -663,8 +660,8 @@ function empty (container)
 	return   (true)
 end
 
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - жҐ«лҐ зЁб« 
--- —гЈ ©
+-- РїР°СЂСЃРёС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "n1, n2, n3..." РІ С‚Р°Р±Р»РёС†Сѓ { n1, n2, n3, ... } РіРґРµ n1, n2, n3... - С†РµР»С‹Рµ С‡РёСЃР»Р°
+-- Р§СѓРіР°Р№
 --[[function parse_nums( s )
 		local t = {}
 
@@ -675,7 +672,7 @@ end
 		return t
 end]]
 
--- Ї абЁв бва®Єг ўЁ¤  "n1, n2, n3..." ў в Ў«Ёжг { n1, n2, n3, ... } Ј¤Ґ n1, n2, n3... - ¤а®Ў­лҐ зЁб« 
+-- РїР°СЂСЃРёС‚ СЃС‚СЂРѕРєСѓ РІРёРґР° "n1, n2, n3..." РІ С‚Р°Р±Р»РёС†Сѓ { n1, n2, n3, ... } РіРґРµ n1, n2, n3... - РґСЂРѕР±РЅС‹Рµ С‡РёСЃР»Р°
 function parse_nums( s )
 	local t = {}
 
@@ -686,7 +683,7 @@ function parse_nums( s )
 	return t
 end
 
--- Їа®ўҐапҐв, Ґбвм «Ё ®ЎкҐЄв ў ®­« ©­Ґ
+-- РїСЂРѕРІРµСЂСЏРµС‚, РµСЃС‚СЊ Р»Рё РѕР±СЉРµРєС‚ РІ РѕРЅР»Р°Р№РЅРµ
 function is_object_online(obj_id)
 	return level.object_by_id(obj_id) ~= nil
 end
@@ -703,7 +700,7 @@ function get_clsid(npc)
 --    end
 end
 
---Tvчисляет yaw в радианах
+--Р’С‹С‡РёСЃР»СЏРµС‚ yaw РІ СЂР°РґРёР°РЅР°С…
 function yaw( v1, v2 )
 		return  math.acos( ( (v1.x*v2.x) + (v1.z*v2.z ) ) / ( math.sqrt(v1.x*v1.x + v1.z*v1.z ) * math.sqrt(v2.x*v2.x + v2.z*v2.z ) ) )
 end
@@ -719,7 +716,7 @@ function vector_cross(v1, v2)
 		return vector():set(v1.y  * v2.z  - v1.z  * v2.y, v1.z  * v2.x  - v1.x  * v2.z, v1.x  * v2.y  - v1.y  * v2.x)
 end
 
---Tра	ает вектор вокруг оси y против часовой стрелки
+--Р’СЂР°С‰Р°РµС‚ РІРµРєС‚РѕСЂ РІРѕРєСЂСѓРі РѕСЃРё y РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№ СЃС‚СЂРµР»РєРё
 
 function vector_rotate_y(v, angle)
 		angle = angle * 0.017453292519943295769236907684886
@@ -728,16 +725,16 @@ function vector_rotate_y(v, angle)
 		return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
--- очистка таблицv
+-- РћС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹
 function clear_table (t)
 		while #t > 0 do
 					table.remove (t, #t)
 		end
 end
 
---€бЇ®«м§гҐв ¤«п ¬®­бва®ў. ‚лЎ®а в®зЄЁ, Єг¤  Ё¤вЁ ў ­ҐЄ®в®а®¬ а ¤ЁгбҐ Ё зв®Ў в®зЄ  Ўл«  ¤ «миҐ ­  а ббв®п­ЁЁ
--- min_radius ®в вҐЄгйҐ© Ї®§ЁжЁЁ(Ґб«Ё нв® Ї®«гзЁвбп). center_id - жҐ­ва Ї®§ЁжЁЁ, ў®ЄагЈ Є®в®а®© ¦ЁўҐ¬,
--- position_id - вгЄгй п Ї®§ЁжЁп, radius - ў Є Є®¬ а ¤ЁгбҐ ўлЎЁа вм в®зЄг, min_radius - ¬Ё­Ё¬ «м­®Ґ а ббв®п­ЁҐ, ®в вҐЄгйҐ© Ї®§ЁжЁЁ ¤® ­®ў®© в®зЄЁ.
+--РСЃРїРѕР»СЊР·СѓРµС‚ РґР»СЏ РјРѕРЅСЃС‚СЂРѕРІ. Р’С‹Р±РѕСЂ С‚РѕС‡РєРё, РєСѓРґР° РёРґС‚Рё РІ РЅРµРєРѕС‚РѕСЂРѕРј СЂР°РґРёСѓСЃРµ Рё С‡С‚РѕР± С‚РѕС‡РєР° Р±С‹Р»Р° РґР°Р»СЊС€Рµ РЅР° СЂР°СЃСЃС‚РѕСЏРЅРёРё
+-- min_radius РѕС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё(РµСЃР»Рё СЌС‚Рѕ РїРѕР»СѓС‡РёС‚СЃСЏ). center_id - С†РµРЅС‚СЂ РїРѕР·РёС†РёРё, РІРѕРєСЂСѓРі РєРѕС‚РѕСЂРѕР№ Р¶РёРІРµРј,
+-- position_id - С‚СѓРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ, radius - РІ РєР°РєРѕРј СЂР°РґРёСѓСЃРµ РІС‹Р±РёСЂР°С‚СЊ С‚РѕС‡РєСѓ, min_radius - РјРёРЅРёРјР°Р»СЊРЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ, РѕС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РґРѕ РЅРѕРІРѕР№ С‚РѕС‡РєРё.
 function new_point(center_id, position_id,radius, min_radius)
 		local dir = vector():set(math.random(-1000, 1000)/1000.0, 0.0001, math.random(-1000, 1000)/1000.0)
 		local pos = level.vertex_in_direction(center_id, dir, radius)
@@ -759,14 +756,14 @@ function stop_play_sound(obj)
 	end
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-	local points = {}                                       -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРёР·РІРѕР»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РїСѓС‚Рё Сѓ РєРѕС‚РѕСЂРѕР№ СѓСЃС‚Р°РЅРѕРІР»РµРЅ Р±РёС‚
+function point_with_bit(patrol_path, bit, old_point)      -- old_point - РёРЅРґРµРєСЃ С‚РѕС‡РєРё, РєРѕС‚РѕСЂСѓСЋ РЅРµ РЅР°РґРѕ РІС‹Р±РёСЂР°С‚СЊ,
+	local points = {}                                       -- РїР°СЂР°РјРµС‚СЂ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Р№( РЅР°РїСЂРёРјРµСЂ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё )
 
 		for i = 0, patrol_path:count()-1 do
-			--„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+			--Р”РѕР±РѕРІР»СЏРµРј РІ С‚Р°Р±Р»РёС†Сѓ С‚РѕС‡РєРё СЃ РЅСѓР¶РЅС‹Рј Р±РёС‚РѕРј
 			if( patrol_path:flag(i, bit)) then
-						--„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+						--Р”РѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РµСЃР»Рё old_point == nil РёР»Рё РЅРѕРІР°СЏ С‚РѕС‡РєР° РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ old_point
 						if(old_point == nil) then
 								table.insert(points, patrol_path:point(i))
 						elseif(old_point ~= i) then
@@ -786,14 +783,14 @@ function point_with_bit(patrol_path, bit, old_point)      -- old_point - Ё­¤ҐЄб 
 		end
 end
 
---ў®§ўа й Ґв Їа®Ё§ў®«м­го в®зЄг ЇгвЁ г Є®в®а®© гбв ­®ў«Ґ­ ЎЁв
-function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­¤ҐЄб в®зЄЁ, Є®в®аго ­Ґ ­ ¤® ўлЎЁа вм,
-		local points = {}                                          -- Ї а ¬Ґва ­Ґ ®Ўп§ вҐ«м­л©( ­ ЇаЁ¬Ґа вҐЄгйҐ© в®зЄЁ )
+--РІРѕР·РІСЂР°С‰Р°РµС‚ РїСЂРѕРёР·РІРѕР»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РїСѓС‚Рё Сѓ РєРѕС‚РѕСЂРѕР№ СѓСЃС‚Р°РЅРѕРІР»РµРЅ Р±РёС‚
+function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - РЃВ­В¤ТђР„Р± РІВ®Р·Р„РЃ, Р„В®РІВ®Р°РіРѕ В­Тђ В­В В¤В® СћР»РЋРЃР°В РІРј,
+		local points = {}                                          -- Р‡В Р°В В¬ТђРІР° В­Тђ В®РЋРїВ§В РІТђВ«РјВ­Р»В©( В­В Р‡Р°РЃВ¬ТђР° РІТђР„РіР№ТђВ© РІВ®Р·Р„РЃ )
 
 		for i = 0, patrol_path:count()-1 do
-			--„®Ў®ў«пҐ¬ ў в Ў«Ёжг в®зЄЁ б ­г¦­л¬ ЎЁв®¬
+			--Р”РѕР±РѕРІР»СЏРµРј РІ С‚Р°Р±Р»РёС†Сѓ С‚РѕС‡РєРё СЃ РЅСѓР¶РЅС‹Рј Р±РёС‚РѕРј
 			if( patrol_path:flag(i, bit)) then
-						--„®Ў ў«пҐ¬ в®зЄг Ґб«Ё old_point == nil Ё«Ё ­®ў п в®зЄ  ­Ґ б®ўЇ ¤ Ґв б old_point
+						--Р”РѕР±Р°РІР»СЏРµРј С‚РѕС‡РєСѓ РµСЃР»Рё old_point == nil РёР»Рё РЅРѕРІР°СЏ С‚РѕС‡РєР° РЅРµ СЃРѕРІРїР°РґР°РµС‚ СЃ old_point
 						if(old_point == nil) then
 								table.insert(points, i)
 						elseif(old_point ~= i) then
@@ -813,7 +810,7 @@ function point_with_bit_id(patrol_path, bit, old_point)        -- old_point - Ё­
 		end
 end
 
---‚®§ўа й Ґв Ё­¤ҐЄб б ¬®© Ў«Ё¦­Ґ© в®зЄЁ ЇгвЁ б § ¤ ­л¬ ЎЁв®¬, ®в вҐЄгйҐ© в®зЄЁ
+--Р’РѕР·РІСЂР°С‰Р°РµС‚ РёРЅРґРµРєСЃ СЃР°РјРѕР№ Р±Р»РёР¶РЅРµР№ С‚РѕС‡РєРё РїСѓС‚Рё СЃ Р·Р°РґР°РЅС‹Рј Р±РёС‚РѕРј, РѕС‚ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё
 function near_point_with_bit(point, patrol_path, bit)
 		local new_point = nil
 		local index     = nil
@@ -822,7 +819,7 @@ function near_point_with_bit(point, patrol_path, bit)
 		for i = 0, patrol_path:count()-1 do
 				if( patrol_path:flag(i, bit) ) then
 						if(new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-								--…б«Ё нв  в®зЄ  ЇҐаў п Ё§ ­ иҐ¤иЁебп, «ЁЎ® ®в ­ҐҐ Їгвм Ў«Ё¦Ґ, в® § Ї®¬Ё­ Ґ¬ ҐҐ
+								--Р•СЃР»Рё СЌС‚Р° С‚РѕС‡РєР° РїРµСЂРІР°СЏ РёР· РЅР°С€РµРґС€РёС…СЃСЏ, Р»РёР±Рѕ РѕС‚ РЅРµРµ РїСѓС‚СЊ Р±Р»РёР¶Рµ, С‚Рѕ Р·Р°РїРѕРјРёРЅР°РµРј РµРµ
 								new_point   = patrol_path:point(i)
 								index       = i
 								dist        = new_point:distance_to(point)
@@ -833,7 +830,7 @@ function near_point_with_bit(point, patrol_path, bit)
 		return index
 end
 
--- ђҐЄгабЁў­ п а бЇҐз вЄ  в Ў«Ёжл
+-- Р РµРєСѓСЂСЃРёРІРЅР°СЏ СЂР°СЃРїРµС‡Р°С‚РєР° С‚Р°Р±Р»РёС†С‹
 function print_table(table, subs)
 	local sub
 	if subs ~= nil then
@@ -967,7 +964,7 @@ function id_by_sid( sid )
 	return nil
 end
 
--- ірешнуть игру (после вvвода сооб	ения об ошибке в лог)
+-- РљСЂРµС€РЅСѓС‚СЊ РёРіСЂСѓ (РїРѕСЃР»Рµ РІС‹РІРѕРґР° СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ РІ Р»РѕРі)
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
 	assert("ERROR: " .. reason)
@@ -987,7 +984,7 @@ function set_inactivate_input_time(delta)
 	db.storage[db.actor:id()].disable_input_idle = delta
 	level.disable_input()
 end
--- іринимает: позициі положения, позициі куда смотреть, время сна в минутах.
+-- РџСЂРёРЅРёРјР°РµС‚: РїРѕР·РёС†РёСЋ РїРѕР»РѕР¶РµРЅРёСЏ, РїРѕР·РёС†РёСЋ РєСѓРґР° СЃРјРѕС‚СЂРµС‚СЊ, РІСЂРµРјСЏ СЃРЅР° РІ РјРёРЅСѓС‚Р°С….
 function set_sleep_relocate(point, look, timeout)
 	db.storage[db.actor:id()].sleep_relocate_time = game.get_game_time()
 	db.storage[db.actor:id()].sleep_relocate_idle = timeout*60
@@ -998,13 +995,13 @@ function set_sleep_relocate(point, look, timeout)
 	--db.actor:actor_sleep(0, timeout)
 end
 
--- проверяет целуі часть числа на нечїтность
+-- РџСЂРѕРІРµСЂСЏРµС‚ С†РµР»СѓСЋ С‡Р°СЃС‚СЊ С‡РёСЃР»Р° РЅР° РЅРµС‡С‘С‚РЅРѕСЃС‚СЊ
 function odd( x )
 	return math.floor( x * 0.5 ) * 2 == math.floor( x )
 end
 
 
---' =аходится ли =іT во фруструме игрока
+-- РќР°С…РѕРґРёС‚СЃСЏ Р»Рё npc РІРѕ С„СЂСѓСЃС‚СЂСѓРјРµ РёРіСЂРѕРєР°
 function npc_in_actor_frustrum(npc)
 	local actor_dir = device().cam_dir
 	--local actor_dir = db.actor:direction()
@@ -1016,7 +1013,7 @@ function npc_in_actor_frustrum(npc)
 	return yaw < 35
 end
 
---' Lсталость
+-- РЈСЃС‚Р°Р»РѕСЃС‚СЊ
 function on_actor_critical_power()
 
 end
@@ -1024,7 +1021,7 @@ end
 function on_actor_critical_max_power()
 end
 
---' іровотечение
+-- РљСЂРѕРІРѕС‚РµС‡РµРЅРёРµ
 function on_actor_bleeding()
 
 end
@@ -1032,22 +1029,22 @@ end
 function on_actor_satiety()
 end
 
---' іадиация
+-- Р Р°РґРёР°С†РёСЏ
 function on_actor_radiation()
 
 end
 
---' іаклинило оружие
+-- Р—Р°РєР»РёРЅРёР»Рѕ РѕСЂСѓР¶РёРµ
 function on_actor_weapon_jammed()
 
 end
 
---' не может ходить изза веса
+-- РќРµ РјРѕР¶РµС‚ С…РѕРґРёС‚СЊ РёР·Р·Р° РІРµСЃР°
 function on_actor_cant_walk_weight()
 
 end
 
---' пси воздействие
+-- РџСЃРё РІРѕР·РґРµР№СЃС‚РІРёРµ
 function on_actor_psy()
 end
 
@@ -1156,7 +1153,7 @@ artefact_classes = {
 		sr_light.clean_up ()
 
 
-	-- Tестирование оптимизации
+	-- TРµСЃС‚РёСЂРѕРІР°РЅРёРµ РѕРїС‚РёРјРёР·Р°С†РёРё
 	--local test_object = test_object.test_object_class()
 	--test_object:test()
 end
@@ -1206,10 +1203,10 @@ end
 
 local save_markers = {}
 
--- Lункции для проверки корректности сейв лоад
+-- Р¤СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРІРµСЂРєРё РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃРµР№РІ Р»РѕР°Рґ
 function set_save_marker(p, mode, check, prefix)
 
-	-- +пределяем кліч маркера.
+	-- РћРїСЂРµРґРµР»СЏРµРј РєР»СЋС‡ РјР°СЂРєРµСЂР°.
 	local result = ""
 --	if debug ~= nil then
 --		local info_table = debug.getinfo(2)

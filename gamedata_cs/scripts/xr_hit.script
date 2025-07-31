@@ -37,15 +37,15 @@ function set_hit_checker(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 	
-	-- НЕ СТАВИТЬ hit callback напрямую - получаем его из motivator-а через
-	-- event в подписанном на него action-е:
+	-- РќР• РЎРўРђР’РРўР¬ hit callback РЅР°РїСЂСЏРјСѓСЋ - РїРѕР»СѓС‡Р°РµРј РµРіРѕ РёР· motivator-Р° С‡РµСЂРµР·
+	-- event РІ РїРѕРґРїРёСЃР°РЅРЅРѕРј РЅР° РЅРµРіРѕ action-Рµ:
 	--npc:set_callback(callback.hit, st.action.hit_callback, st.action)
 	xr_logic.subscribe_action_for_events(npc, st, st.action)
 end
 
 function disable_scheme(npc, scheme)
-	-- При отключении схемы, нужно снять подписку, чтобы hit callback перестал
-	-- передаваться:
+	-- РџСЂРё РѕС‚РєР»СЋС‡РµРЅРёРё СЃС…РµРјС‹, РЅСѓР¶РЅРѕ СЃРЅСЏС‚СЊ РїРѕРґРїРёСЃРєСѓ, С‡С‚РѕР±С‹ hit callback РїРµСЂРµСЃС‚Р°Р»
+	-- РїРµСЂРµРґР°РІР°С‚СЊСЃСЏ:
 	--npc:set_callback(callback.hit, nil)
 	local st = db.storage[npc:id()][scheme]
 	if st then
