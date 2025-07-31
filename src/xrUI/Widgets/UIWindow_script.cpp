@@ -241,7 +241,8 @@ void CUIWindow::script_register(lua_State *L)
 	// CUIListWnd
 				value("LIST_ITEM_CLICKED",				int(LIST_ITEM_CLICKED)),
 				value("LIST_ITEM_SELECT",				int(LIST_ITEM_SELECT)),
-	
+				value("LIST_ITEM_UNSELECT",				int(LIST_ITEM_UNSELECT)),
+
 	// UIPropertiesBox
 				value("PROPERTY_CLICKED",				int(PROPERTY_CLICKED)),
 

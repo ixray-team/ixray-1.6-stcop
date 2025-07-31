@@ -29,6 +29,7 @@ class CUIMMShniaga;
 class CUIScrollView;
 class CUIListBox;
 class CUIProgressBar;
+class CUIListWnd;
 
 class CScriptXmlInit 
 {
@@ -48,6 +49,7 @@ public:
 	CUISpinText*		InitSpinText(LPCSTR path, CUIWindow* parent);
 	CUIComboBox*		InitComboBox(LPCSTR path, CUIWindow* parent);
 	CUI3tButton*		Init3tButton(LPCSTR path, CUIWindow* parent);
+	CUIListWnd*			InitListWnd(pcstr path, CUIWindow* parent);
 
 	CUITabControl*		InitTab(LPCSTR path, CUIWindow* parent);
 	CServerList*		InitServerList(LPCSTR path, CUIWindow* parent);

@@ -16,6 +16,7 @@
 #include "ui/UIMMShniaga.h"
 #include "../xrUI/Widgets/UIComboBox.h"
 #include "../xrUI/Widgets/UIOptionsManagerScript.h"
+#include "../xrUI/Widgets/UIListWnd.h"
 #include "ui/UIMapInfo.h"
 #include "map_manager.h"
 #include "ScriptXMLInit.h"
@@ -40,6 +41,7 @@ void UIRegistrator::script_register(lua_State *L)
 	CUIEditBox::script_register(L);
 	CUITabControl::script_register(L);
 	CUIMessageBox::script_register(L);
+	CUIListWnd::script_register(L);
 	CUIListBox::script_register(L);
 	CUIMapList::script_register(L);
 	CUIDialogWndEx::script_register(L);
