@@ -423,13 +423,14 @@ bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		}
 		else if(is_binded(kSPRINT_TOGGLE, dik))
 		{
-			if (m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode())
-				return true;
-
-			if(UITalkDialogWnd->mechanic_mode)
-				SwitchToUpgrade();
-			else
-				SwitchToTrade();
+            if (!m_pOthersInvOwner->NeedOsoznanieMode())
+            {
+                if (UITalkDialogWnd->mechanic_mode)
+                    SwitchToUpgrade();
+                else
+                    SwitchToTrade();
+                return true;
+            }
 		}
 	}
 
