@@ -863,6 +863,18 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 	}
 }
 
+void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
+{
+	string256 buff;
+	if (ls_title)
+	{
+		xr_sprintf(buff, "%s%s", g_pStringTable->translate(ls_title).c_str(), "...");
+		pApp->SetLoadStageTitle(buff);
+	}
+	else
+		pApp->SetLoadStageTitle("");
+}
+
 bool CGamePersistent::CanBePaused()
 {
 	return IsGameTypeSingle	() || (g_pGameLevel && Level().IsDemoPlay());
