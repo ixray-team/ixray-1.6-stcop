@@ -69,6 +69,7 @@ public:
 	float				m_destination;
 	float				m_mag_pos;
 	float				m_offset;
+	u32					m_run_speed;
 
 	xr_vector<CUITextWnd*>	m_buttons;
 	xr_vector<CUITextWnd*>	m_buttons_new;
