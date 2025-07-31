@@ -16,22 +16,24 @@
 void CBaseMonster::UpdateMemory()
 {
 	// Обновить память
-	EnemyMemory.update			();
-	SoundMemory.UpdateHearing	();	
-	CorpseMemory.update			();
-	HitMemory.update			();
-	
-	// обновить менеджеры врагов и трупов
-	EnemyMan.update				();	
-	CorpseMan.update			();
-		
-	// remove hit info from objects that are corpses
-	
+	if (OnServer())
+	{
+		EnemyMemory.update();
+		SoundMemory.UpdateHearing();
+		CorpseMemory.update();
+		HitMemory.update();
 
+		// обновить менеджеры врагов и трупов
+		EnemyMan.update();
+		CorpseMan.update();
+	}
+	 	
+	// remove hit info from objects that are corpses
 	hear_dangerous_sound = hear_interesting_sound = false;
 	SoundElem se;
 	
-	if (SoundMemory.IsRememberSound()) {
+	if (SoundMemory.IsRememberSound()) 
+	{
 		SoundMemory.GetSound(se,hear_dangerous_sound);
 		hear_interesting_sound = !hear_dangerous_sound;
 	}
@@ -39,8 +41,7 @@ void CBaseMonster::UpdateMemory()
 	// Setup is own additional flags
 	m_bDamaged		= ((conditions().GetHealth() < db().m_fDamagedThreshold) ? true : false);
 	
-	m_bAggressive	=	hear_dangerous_sound || (EnemyMan.get_enemies_count() > 0) || 
-						HitMemory.is_hit();
+	m_bAggressive	=	hear_dangerous_sound || (EnemyMan.get_enemies_count() > 0) || HitMemory.is_hit();
 
 }
 
