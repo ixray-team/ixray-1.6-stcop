@@ -114,12 +114,13 @@ public:
 	void                        SoundEvent_OnDestDestroy (Feel::Sound*);
 
 	// Loader interface
-	//ref_shader					LL_CreateShader			(int S, int T, int M, int C);
-	void						LL_CheckTextures		();
-	virtual void				SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
-	virtual float				GetEnvironmentTimeFactor() const = 0;
-	virtual void				SetEnvironmentTimeFactor(const float fTimeFactor) = 0;
-	virtual u64					GetEnvironmentGameTime() const = 0;
+	// ref_shader               LL_CreateShader(int S, int T, int M, int C);
+	void                        LL_CheckTextures();
+    virtual float               GetEnvironmentGameDayTimeSec() const = 0;
+    virtual void                SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
+    virtual float               GetEnvironmentTimeFactor() const = 0;
+    virtual void                SetEnvironmentTimeFactor(float fTimeFactor) = 0;
+    virtual u64                 GetEnvironmentGameTime() const = 0;
 
 	virtual	void				SpawnItem(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id) = 0;
 	virtual IGame_Patrol*		CreatePatrol(const char* patrol) = 0;
