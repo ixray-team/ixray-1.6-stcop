@@ -45,8 +45,7 @@ struct RayQueryContext
 	RTCRayQueryContext context;
 	Fvector B;
 
-	EmbreeData* embree_data;
-	Face* skip = 0;
+ 	Face* skip = 0;
 	R_Light* Light = 0;
 	float energy = 1.0f;
 	u32 Hits = 0;
@@ -129,8 +128,7 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
 	data_hits.Hits = 0;
-	data_hits.embree_data = &EmbreeMain;
-
+ 
 	// se7kills : 07.02.2025 0.001 виноват BORDER 1 был поставил 4 
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.001f, range);
@@ -162,7 +160,7 @@ size_t GetMemory()
 #include <xrMU_Model.h>
 #include <xrMU_Model_Reference.h>
 
-void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, EmbreeData::TriangleContainer& geom_buffer)
+void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
 	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(geom, quality);
