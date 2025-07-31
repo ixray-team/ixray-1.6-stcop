@@ -121,11 +121,12 @@ SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName
 
 void Destroy()
 {
-	SDL_DestroyRenderer(splashRenderer);
-	SDL_DestroyWindow(splashWindow);
 	if (texture)
 		SDL_DestroyTexture(texture);
 	SDL_DestroyTexture(fontTexture);
+
+	SDL_DestroyRenderer(splashRenderer);
+	SDL_DestroyWindow(splashWindow);
 
 	splashRenderer = nullptr;
 	splashWindow = nullptr;
