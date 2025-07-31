@@ -35,6 +35,11 @@ player_hud_motion* player_hud_motion_container::find_motion(const shared_str& na
 	return nullptr;
 }
 
+bool player_hud_motion_container::has_motion(const shared_str& name)
+{
+	return m_names[name];
+}
+
 void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect)
 {
 	CInifile::Sect& _sect		= pSettings->r_section(sect);
@@ -49,6 +54,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 	{
 		if(strstr(_b->first.c_str(), "anm_")==_b->first.c_str())
 		{
+			m_names[_b->first] = true;
 			const shared_str& anm	= _b->second;
 			m_anims.resize			(m_anims.size()+1);
 			pm						= &m_anims.back();
