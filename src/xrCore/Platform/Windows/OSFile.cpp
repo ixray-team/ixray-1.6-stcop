@@ -81,3 +81,12 @@ bool Platform::OpenFileWnd(char* buffer, size_t sz_buf, FS_Path* P, int start_fl
 
 	return bRes;
 }
+
+size_t Platform::Stat(const char* path, time_t& Time)
+{
+	struct _stat st;
+	_stat(path, &st);
+
+	Time = st.st_mtime;
+	return st.st_size;
+}
