@@ -153,7 +153,7 @@ public:
 	{
 		if constexpr (std::is_same<char, char_t>::value)
 		{
-			return strlen(m_buffer);
+			return (number_type)strlen(m_buffer);
 		}
 
 		if constexpr (std::is_same<wchar_t, char_t>::value)
