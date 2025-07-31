@@ -285,6 +285,7 @@ public:
 	IKinematics*	m_legs_model;
 	bool			m_show_legs = true;
 	bool			m_need_reload = true;
+	shared_str		NextHUDSect;
 
 	IKinematicsAnimated* GetModel() { return m_model; }
 	animator_item* create_animator_item(const shared_str& section);
