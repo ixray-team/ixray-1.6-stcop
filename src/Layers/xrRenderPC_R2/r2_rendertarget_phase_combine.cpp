@@ -207,7 +207,8 @@ void	CRenderTarget::phase_combine	()
 	// Distortion filter
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
 	{
-		if		((0==RImplementation.mapDistort.size()) && !_menu_pp)		bDistort= FALSE;
+		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
+		if		((0 == count) && !_menu_pp)		bDistort= FALSE;
 		if (bDistort)		{
 			u_setrt						(rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
 			RCache.set_CullMode			(CULL_CCW);
