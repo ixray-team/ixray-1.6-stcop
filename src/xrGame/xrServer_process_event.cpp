@@ -363,8 +363,14 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		{
 			CSE_Abstract				*e_dest = receiver;
 			CSE_ALifeTraderAbstract*	pTa = smart_cast<CSE_ALifeTraderAbstract*>(e_dest);
-			pTa->m_dwMoney				= P.r_u32();
-						
+			if (pTa != nullptr) 
+			{
+				pTa->m_dwMoney				= P.r_u32();
+			}
+		    if (game->Type() != eGameIDSingle)
+	     	{
+		    	SendBroadcast(BroadcastCID, P, MODE);
+		    }
 		}break;
 	case GE_FREEZE_OBJECT:
 		break;
