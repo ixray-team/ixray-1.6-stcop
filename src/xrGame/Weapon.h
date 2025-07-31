@@ -625,4 +625,5 @@ public:
 	bool bScopeIsHasTexture{};
 
 	float GetAimFactor() const { return m_zoom_params.m_fZoomRotationFactor; }
+	bool GetScopeBack();
 };
