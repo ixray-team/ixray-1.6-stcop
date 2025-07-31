@@ -898,6 +898,18 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 
 		m_eDevicesFlags.zero();
 	}
+
+	if (state == ePrepareDetector && mark.name == "Left")
+	{
+		if (CActor* pActor = m_object && m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
+		{
+			if (CCustomDetector* det = pActor->GetDetector(true))
+			{
+				det->SwitchState(eShowing);
+				det->TurnDetectorInternal(true);
+			}
+		}
+	}
 }
 
 bool CHudItem::SoundExist(LPCSTR section, LPCSTR sound_name)
