@@ -15,6 +15,8 @@
 
 UIMainMenuForm::UIMainMenuForm()
 {
+	PlugPy = EDevice->Resources->_CreateTexture("ed\\plugins\\python");
+	PlugLua = EDevice->Resources->_CreateTexture("ed\\plugins\\lua");
 }
 
 UIMainMenuForm::~UIMainMenuForm()
@@ -551,8 +553,29 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Plugins", ""))
 		{
-			for (IPluginBase* Plug : CPluginsManagers::Instance().Plugins)
+			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
+
+			bool NeedReinit = false;
+			if (ImGui::MenuItem("Reinit"))
 			{
+				PlugMngr.Reinit();
+			}
+
+			ImGui::Separator();
+			PlugPy->Load();
+			PlugLua->Load();
+
+			for (IPluginBase* Plug : PlugMngr.Plugins)
+			{
+				if (Plug->Type == EPluginType::Lua)
+				{
+					ImGui::Image(PlugLua->pSurface, { 15, 15 });
+				}
+				else
+				{
+					ImGui::Image(PlugPy->pSurface, { 15, 15 });
+				}
+				ImGui::SameLine();
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))
 				{
 					if (Plug->IsSimple())
@@ -564,7 +587,7 @@ void UIMainMenuForm::Draw()
 						UI->Push(new CPluginUIRun(Plug));
 					}
 				}
-				
+
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetTooltip(Plug->Desc.c_str());
