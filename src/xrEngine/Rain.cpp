@@ -211,7 +211,10 @@ void CEffect_Rain::OnFrame()
 		if (factor < EPS_L)
 		{
 			if (snd_Ambient._feedback())
+			{
 				snd_Ambient.stop();
+				m_rainVolume = 0.0f;
+			}
 			return;
 		}
 
@@ -238,8 +241,7 @@ void CEffect_Rain::OnFrame()
 	// ambient sound
 	if (snd_Ambient._feedback())
 	{
-		m_rainVolume = factor * hemi_factor;
-		clamp(m_rainVolume, 0.1f, 1.0f);
+		m_rainVolume = _max(0.1f, factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 
