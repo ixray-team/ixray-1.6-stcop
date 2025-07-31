@@ -150,6 +150,8 @@ public:
 	void						r_close				(IReader* &S);
 	void						r_close				(CStreamReader* &fs);
 
+	void						get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir);
+
 	IWriter*					w_open				(LPCSTR initial, LPCSTR N);
 	IC IWriter*					w_open				(LPCSTR N){return w_open(0,N);}
 	IWriter*					w_open_ex			(LPCSTR initial, LPCSTR N);

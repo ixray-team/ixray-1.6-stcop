@@ -130,6 +130,7 @@ public:
 	IC CMotionDef*				LL_GetMotionDef	(MotionID id){return m_Motions[id.slot].motions.motion_def(id.idx);}
 	IC CMotion*					LL_GetRootMotion(MotionID id){return &m_Motions[id.slot].bone_motions[iRoot]->at(id.idx);}
 	IC CMotion*					LL_GetMotion	(MotionID id, u16 bone_id){return &m_Motions[id.slot].bone_motions[bone_id]->at(id.idx);}
+	IC 
 
 	virtual IBlendDestroyCallback	*GetBlendDestroyCallback	( );
 	virtual void					SetBlendDestroyCallback		( IBlendDestroyCallback	*cb );

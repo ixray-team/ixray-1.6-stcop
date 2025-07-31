@@ -17,5 +17,6 @@ private:
 	bool m_AutoChange;
 	float m_TimeFactor;
 	CSMotion* m_currentEditMotion;
+	anim_notify* m_currentNotify = nullptr;
 };
 
