@@ -16,10 +16,13 @@ xr_token							mode_token					[ ]={
 //---------------------------------------------------------------------------
 void  CSHEngineTools::FillMatrixProps(PropItemVec& items, LPCSTR pref, LPSTR name)
 {
-    CMatrix* M 						= AppendMatrix(name);
-    R_ASSERT(M);
+    CMatrix* M = AppendMatrix(name);
+    VERIFY(M);
 
-    PHelper().CreateToken32			(items,PrepareKey(pref,"Mode"),&M->dwMode,mode_token);
+    if (M == nullptr)
+        return;
+
+    PHelper().CreateToken32(items,PrepareKey(pref,"Mode"),&M->dwMode,mode_token);
 
     if (M->dwMode==CMatrix::modeTCM){
 	    PHelper().CreateFlag32		(items,	PrepareKey(pref,"Scale enabled"),	&M->tcm_flags,CMatrix::tcmScale);
