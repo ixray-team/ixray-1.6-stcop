@@ -40,6 +40,8 @@
 #include "../game_sv_single.h"
 #include "ai_object_location.h"
 
+using namespace luabind; //Alundaio
+
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
@@ -844,8 +846,6 @@ bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )
 		return false;
 	}
 
-	cell_itm->UpdateConditionProgressBar(); //Alundaio
-
 	u16 recipient = m_pActorInvOwner->object_id();
 	if ( item->parent_id() != recipient )
 	{
@@ -855,7 +855,7 @@ bool CUIActorMenu::TryUseItem( CUICellItem* cell_itm )
 
 	SendEvent_Item_Eat		( item, recipient );
 	PlaySnd					( eItemUse );
-	SetCurrentItem			( nullptr );
+//	SetCurrentItem			( nullptr );
 	return true;
 }
 
@@ -865,6 +865,12 @@ bool CUIActorMenu::ToQuickSlot(CUICellItem* itm)
 	CEatableItemObject* eat_item = smart_cast<CEatableItemObject*>(iitem);
 	if(!eat_item)
 		return false;
+
+	//Alundaio: Prevent icons greater then 1x1 to be quick slotted
+	Ivector2 iWH = iitem->GetInvGridRect().rb;
+	if (iWH.x > 1 || iWH.y > 1)
+		return false;
+	//Alundaio: END
 
 	u8 slot_idx = u8(m_pQuickSlot->PickCell(GetUICursor().GetCursorPosition()).x);
 	if(slot_idx==255)
@@ -1151,28 +1157,56 @@ void CUIActorMenu::PropertiesBoxForAddon( PIItem item, bool& b_show )
 
 void CUIActorMenu::PropertiesBoxForUsing( PIItem item, bool& b_show )
 {
-	CMedkit*		pMedkit			= smart_cast<CMedkit*>		(item);
-	CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
-	CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
-	CBottleItem*	pBottleItem		= smart_cast<CBottleItem*>	(item);
-
 	LPCSTR act_str = nullptr;
-	if ( pMedkit || pAntirad )
+	CGameObject* GO = smart_cast<CGameObject*>(item);
+	shared_str	section_name = GO->cNameSect();
+
+	//ability to set eat string from settings
+	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "default_use_text", 0);
+	if (act_str)
 	{
-		act_str = "st_use";
+		m_UIPropertiesBox->AddItem(act_str, nullptr, INVENTORY_EAT_ACTION);
+		b_show = true;
 	}
-	else if ( pBottleItem )
-	{
-		act_str = "st_drink";
+	else {
+		CMedkit*		pMedkit			= smart_cast<CMedkit*>		(item);
+		CAntirad*		pAntirad		= smart_cast<CAntirad*>		(item);
+		CEatableItem*	pEatableItem	= smart_cast<CEatableItem*>	(item);
+		CBottleItem*	pBottleItem		= smart_cast<CBottleItem*>	(item);
+
+		if ( pMedkit || pAntirad )
+		{
+			act_str = "st_use";
+		}
+		else if ( pBottleItem )
+		{
+			act_str = "st_drink";
+		}
+		else if ( pEatableItem )
+		{
+			act_str = *pEatableItem->UseText;
+		}
+		if ( act_str )
+		{
+			m_UIPropertiesBox->AddItem( act_str,  nullptr, INVENTORY_EAT_ACTION );
+			b_show			= true;
+		}
 	}
-	else if ( pEatableItem )
+
+	//1st Custom Use action
+	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use1_text", 0);
+	if (act_str)
 	{
-		act_str = *pEatableItem->UseText;
+		m_UIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT2_ACTION);
+		b_show = true;
 	}
-	if ( act_str )
+
+	//2nd Custom Use action
+	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use2_text", 0);
+	if (act_str)
 	{
-		m_UIPropertiesBox->AddItem( act_str,  nullptr, INVENTORY_EAT_ACTION );
-		b_show			= true;
+		m_UIPropertiesBox->AddItem(act_str, NULL, INVENTORY_EAT3_ACTION);
+		b_show = true;
 	}
 }
 
@@ -1258,9 +1292,38 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	case INVENTORY_TO_BELT_ACTION:	ToBelt( cell_item, false );		break;
 	case INVENTORY_TO_BAG_ACTION:	ToBag ( cell_item, false );		break;
 	case INVENTORY_EAT_ACTION:
-		CurrentGameUI()->ActorMenu().SetCurrentConsumable( cell_item );
 		TryUseItem( cell_item );
 		break;	
+	case INVENTORY_EAT2_ACTION:
+	{
+		CGameObject* GO = smart_cast<CGameObject*>(item);
+		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_functor", 0);
+		if (functor_name)
+		{
+			luabind::functor<bool>	funct1;
+			if (ai().script_engine().functor(functor_name, funct1))
+			{
+				if (funct1(GO->lua_game_object()))
+					TryUseItem(cell_item);
+			}
+		}
+		break;
+	}
+	case INVENTORY_EAT3_ACTION:
+	{
+		CGameObject* GO = smart_cast<CGameObject*>(item);
+		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_functor", 0);
+		if (functor_name)
+		{
+			luabind::functor<bool>	funct2;
+			if (ai().script_engine().functor(functor_name, funct2))
+			{
+				if (funct2(GO->lua_game_object()))
+					TryUseItem(cell_item);
+			}
+		}
+		break;
+	}
 	case INVENTORY_DROP_ACTION:
 		{
 			void* d_ = m_UIPropertiesBox->GetClickedItem()->GetData();
@@ -1439,7 +1502,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 	}break;
 	}//switch
 
-	SetCurrentItem( nullptr );
+//	SetCurrentItem( nullptr );
 	UpdateItemsPlace();
 	UpdateConditionProgressBars();
 }//ProcessPropertiesBoxClicked
