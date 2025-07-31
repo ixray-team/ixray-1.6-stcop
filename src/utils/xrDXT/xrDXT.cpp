@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "xrDXT.h"
 
-#include <RedImage.hpp>
+#include <RedImage/RedImage.hpp>
 
 #include "../../Layers/xrRender/ETextureParams.h"
 

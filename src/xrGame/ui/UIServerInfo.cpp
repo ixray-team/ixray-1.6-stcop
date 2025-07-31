@@ -11,9 +11,8 @@
 #include "../game_cl_mp.h"
 
 #ifdef XR_MP_BUILD
-#	include "../3rd party/cximage/cximage/ximage.h"
-#	include "../3rd party/cximage/cximage/xmemfile.h"
-#endif // XR_MP_BUILD
+#	include <RedImage/RedImage.hpp>
+#endif
 
 CUIServerInfo::CUIServerInfo()
 {
@@ -101,25 +100,25 @@ char const * CUIServerInfo::tmp_logo_file_name = "tmp_sv_logo.dds";
 void CUIServerInfo::SetServerLogo(u8 const * data_ptr, u32 const data_size)
 {
 #ifdef XR_MP_BUILD
-	CxMemFile	tmp_memfile(const_cast<BYTE*>(data_ptr), data_size);
-	CxImage		tmp_image;
-	if (!tmp_image.Decode(&tmp_memfile, CXIMAGE_FORMAT_JPG))
+	RedImageTool::RedImage tmp_image;
+	if (!tmp_image.LoadFromMemory(const_cast<u8*>(data_ptr), data_size))
 	{
-		Msg("! ERROR: Failed to decode server logo image as JPEG formated.");
+		Msg("! ERROR: Failed to decode server logo image as JPEG formatted.");
 		return;
 	}
-	
+
 	IWriter* tmp_writer = FS.w_open("$game_saves$", tmp_logo_file_name);
 	if (!tmp_writer)
 	{
 		Msg("! ERROR: failed to create temporary dds file");
 		return;
 	}
-	tmp_writer->w			((void*)data_ptr, data_size);	//sorry :(
+	tmp_writer->w((void*)data_ptr, data_size); // записываем исходный JPEG
 	FS.w_close(tmp_writer);
-	m_dds_file_created		= true;
-	m_image->InitTexture	(tmp_logo_file_name);
-	FS.file_delete			("$game_saves$", tmp_logo_file_name);
+
+	m_dds_file_created = true;
+	m_image->InitTexture(tmp_logo_file_name);
+	FS.file_delete("$game_saves$", tmp_logo_file_name);
 #endif // XR_MP_BUILD
 }
 

@@ -173,10 +173,6 @@ target_link_libraries(xrGame PUBLIC crypto)
 
 target_link_libraries(xrGame PRIVATE "shlwapi.lib")
 
-if(IXRAY_MP)
-    target_link_libraries(xrGame PUBLIC CxImage)
-endif()
-
 # Move precompiled header
 set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
@@ -191,3 +187,15 @@ endif()
 
 file(GLOB_RECURSE GAME_SOURCE_PCH_FILES "stdafx.*")
 source_group("pch" FILES ${GAME_SOURCE_PCH_FILES})
+
+# RedImage
+if(IXRAY_MP)
+	target_link_libraries(xrGame PUBLIC ${REDIMAGE_LIB})
+	target_include_directories(xrGame PUBLIC "${REDIMAGE_INCL}")
+
+	## Copy binaries
+	add_custom_command(TARGET ${PROJECT_NAME}
+	    POST_BUILD
+	    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	)
+endif()

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "../../Layers/xrRender/ETextureParams.h"
-#include <RedImage.hpp>
+#include <RedImage/RedImage.hpp>
 
 int DXTCompressImageRI(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {

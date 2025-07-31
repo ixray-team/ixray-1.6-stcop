@@ -10,10 +10,7 @@
 #endif
 
 #ifdef XR_MP_BUILD
-
-#include <ddraw.h>
-#include "../3rd party/cximage/CxImage/ximage.h"
-#include "../3rd party/cximage/CxImage/xmemfile.h"
+#include <RedImage/RedImage.hpp>
 
 void*	cxalloc(size_t size)
 {
@@ -121,33 +118,36 @@ void screenshot_manager::prepare_image()
 
 void screenshot_manager::make_jpeg_file()
 {
-	u32*	sizes = reinterpret_cast<u32*>(m_result_writer.pointer());
-	u32		width = *sizes;
-	u32		height = *(++sizes);
-	u8* rgb24data = reinterpret_cast<u8*>(m_result_writer.pointer() + 2*sizeof(u32) );
-	
-	CxImage jpg_image;
-	
-	jpg_image.CreateFromArray(
-		rgb24data,
-		width,		//width
-		height,		//height
-		24,
-		width * 3,
-		true);
-	
-	jpg_image.SetJpegQuality	(30);
+	u32* sizes = reinterpret_cast<u32*>(m_result_writer.pointer());
+	u32 width = *sizes;
+	u32 height = *(++sizes);
+	u8* rgb24data = reinterpret_cast<u8*>(m_result_writer.pointer() + 2 * sizeof(u32));
 
-	realloc_jpeg_buffer			(m_result_writer.size() + screenshots::writer::info_max_size);
+	RedImageTool::RedImage image;
+	image.Create(width, height, 1, 1, RedImageTool::RedTexturePixelFormat::R8G8B8);
 
-	CxMemFile					tmp_mem_file(m_jpeg_buffer, m_jpeg_buffer_capacity);
-	jpg_image.Encode			(&tmp_mem_file, CXIMAGE_FORMAT_JPG);
-	
-	m_jpeg_buffer_size			= static_cast<u32>(tmp_mem_file.Tell());
+	// копируем RGB-данные
+	std::memcpy(image.operator*(), rgb24data, width * height * 3);
 
-#ifdef DEBUG
-	Msg("* JPEG encoded to %d bytes", m_jpeg_buffer_size);
-#endif
+	// Подготовка буфера для JPEG в памяти
+	realloc_jpeg_buffer(m_jpeg_buffer_capacity);
+
+	size_t jpeg_size = 0;
+	bool success = image.SaveToJpgMemory
+	(
+		m_jpeg_buffer,
+		m_jpeg_buffer_capacity,
+		jpeg_size,
+		30
+	);
+
+	if (!success)
+	{
+		Msg("! Failed to encode JPEG to memory");
+		return;
+	}
+
+	m_jpeg_buffer_size = static_cast<u32>(jpeg_size);
 }
 
 void screenshot_manager::sign_jpeg_file()
@@ -159,7 +159,7 @@ void screenshot_manager::sign_jpeg_file()
 	if (tmp_cdkey_digest.size() == 0)
 		tmp_cdkey_digest = "null";
 	tmp_writer.set_player_cdkey_digest	(tmp_cdkey_digest);
-	m_jpeg_buffer_size					= tmp_writer.write_info(&g_jpeg_encode_delegate);
+	m_jpeg_buffer_size					= tmp_writer.write_info();
 }
 
 
@@ -268,17 +268,6 @@ void screenshot_manager::set_draw_downloads(bool draw)
 
 void screenshot_manager::process_screenshot(bool singlecore)
 {
-	if (singlecore)
-	{
-		//g_jpeg_encode_cb = &jpeg_encode_callback;
-		g_jpeg_encode_delegate.bind(this,
-			&screenshot_manager::jpeg_compress_cb);
-	} else
-	{
-		//g_jpeg_encode_cb = nullptr;
-		g_jpeg_encode_delegate.clear();
-	}
-		
 	if (m_make_start_event)
 	{
 		SetEvent(m_make_start_event);
@@ -287,17 +276,6 @@ void screenshot_manager::process_screenshot(bool singlecore)
 	m_make_start_event	= CreateEvent(nullptr, FALSE, TRUE, nullptr);
 	m_make_done_event	= CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	thread_spawn	(&screenshot_manager::screenshot_maker_thread, "screenshot_maker", 0, this);
-}
-void		screenshot_manager::jpeg_compress_cb(long progress)
-{
-/*#ifdef DEBUG
-	Msg("* JPEG encoding progress : %d%%", progress);
-#endif*/
-	if (progress % 5 == 0)
-	{
-		if (!SwitchToThread())
-			Sleep(10);
-	}
 }
 
 void screenshot_manager::screenshot_maker_thread(void* arg_ptr)
