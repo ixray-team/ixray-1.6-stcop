@@ -17,7 +17,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 	// Count number of materials
 	CTimer t;
 	t.Start();
-
+ 	// Calculating materials
 	xr_vector<_counter>	counts;
 	{
 		counts.reserve		(256);
@@ -51,52 +51,40 @@ void	CBuild::xrPhase_ResolveMaterials()
  		});
 	}
 	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
+	
+	
+	// Performing Subdivs
 	t.Start();
-	{
-		g_XSplit.reserve(64*1024);
-		g_XSplit.resize	(counts.size());
-		for (u32 I=0; I<counts.size(); I++) 
+	u32 msCalc = 0;
+	{		
+		//x6 Áûסענוו םא Ryzen 7 3700x קול SC
+		concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> g_Xsplits_def;
+		g_Xsplits_def.reserve(64*1024);
+		g_Xsplits_def.resize(counts.size());
+
+ 		xr_parallel_foreach ( lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 		{
-			g_XSplit[I] = new vecFace ();
-			g_XSplit[I]->reserve	(counts[I].dwCount);
-		}
-		
-
-		xr_parallel_foreach ( lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(),
-			[&](Face* F)
+			if (!F->Shader().flags.bRendering) return;					
+			
+			for (u32 I=0; I<counts.size(); I++)
 			{
-				if (!F->Shader().flags.bRendering)
-					return;		// continue;
-
-				for (u32 I = 0; I < counts.size(); I++)
+				if (F->dwMaterial == counts[I].dwMaterial)
 				{
-					if (F->dwMaterial == counts[I].dwMaterial)
-					{
-						csResolveMat.Enter();
- 						g_XSplit[I]->push_back(F);
-						csResolveMat.Leave();
-					}
-				};
+					g_Xsplits_def[I].push_back(F);
+				}
 			}
-		);
+   		});
+		msCalc = t.GetElapsed_ms();
 
-		// Single Core
-		//for (vecFaceIt F_it=lc_global_data()->g_faces().begin(); F_it!=lc_global_data()->g_faces().end(); F_it++)
-		//{
-		//	Face*	F							= *F_it;
-		//	if (!F->Shader().flags.bRendering)	continue;
-		//
-		//	for (u32 I=0; I<counts.size(); I++)
-		//	{
-		//		if (F->dwMaterial == counts[I].dwMaterial)
-		//		{
-		//			g_XSplit[I]->push_back	(F);
-		//		}
-		//	}
-		//	Progress(float(F_it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
-		//}
+		  
+		g_XSplit.reserve(64 * 1024);
+		g_XSplit.resize(counts.size());
+		for (auto i = 0; i < g_XSplit.size(); i++)
+		{
+  			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
+ 		}
 	}	
-	clMsg("Perfroming subdivisions (SC)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
+	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums] copy[%ums]", GetMemoryUsed() / 1024 / 1024, msCalc,  t.GetElapsed_ms() - msCalc);
 
 	t.Start();
 	{
@@ -108,12 +96,11 @@ void	CBuild::xrPhase_ResolveMaterials()
 		g_XSplit.erase(std::remove(g_XSplit.begin(),g_XSplit.end(),(vecFace*) NULL),g_XSplit.end());
 	}
 	clMsg("Removing empty subdivs (SC) ... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
-
- 
+  
 	t.Start();
- 	for (u32 it=0; it<g_XSplit.size(); it++)
- 		Detach(g_XSplit[it]);
- 	clMsg("Detaching subdivs (SC)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());;
+	for (auto F : g_XSplit)
+ 		Detach(F);
+   	clMsg("Detaching subdivs (MT)... Memory: [%umb] [%ums]", GetMemoryUsed() / 1024 / 1024, t.GetElapsed_ms());
 
 	clMsg				("%d subdivisions.",g_XSplit.size());
 }
