@@ -1,8 +1,6 @@
 #ifndef PLAYER_ACCOUNT_H
 #define PLAYER_ACCOUNT_H
 
-#include "profile_data_types.h"
-
 class player_account
 {
 public:
@@ -20,7 +18,6 @@ public:
 	void					load_account	();
 	bool					is_online		() const { return m_online_account; };
 
-	gamespy_profile::all_awards_t const &	get_awards() const { return m_awards; };
 	void					set_player_name	(char const * new_name);
 protected:
 	shared_str						m_player_name;
@@ -28,8 +25,6 @@ protected:
 	u32								m_profile_id;
 	bool							m_clan_leader;
 	bool							m_online_account;
-	
-	gamespy_profile::all_awards_t	m_awards;
 }; //class player_account
 
 
