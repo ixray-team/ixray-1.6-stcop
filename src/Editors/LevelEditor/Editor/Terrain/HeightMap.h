@@ -6,12 +6,12 @@ namespace XRay::Editor::HeightmapUtils
 {
 	struct SHeightMapChunk
 	{
-		xr_vector<Fvector> Vertices;    // Вершины чанка (уже оптимизированные)
-		xr_vector<u32> Colors;          // Цвета (если нужны)
-		Fbox BBox;                      // Bounding-box чанка
-		bool IsFlat;					// Можно ли упростить (все Y почти одинаковы)
+		xr_vector<Fvector> Vertices;    // Р’РµСЂС€РёРЅС‹ С‡Р°РЅРєР° (СѓР¶Рµ РѕРїС‚РёРјРёР·РёСЂРѕРІР°РЅРЅС‹Рµ)
+		xr_vector<u32> Colors;          // Р¦РІРµС‚Р° (РµСЃР»Рё РЅСѓР¶РЅС‹)
+		Fbox BBox;                      // Bounding-box С‡Р°РЅРєР°
+		bool IsFlat;					// РњРѕР¶РЅРѕ Р»Рё СѓРїСЂРѕСЃС‚РёС‚СЊ (РІСЃРµ Y РїРѕС‡С‚Рё РѕРґРёРЅР°РєРѕРІС‹)
 		bool IsValid = false;
-		int LodLevel;					// Уровень детализации (0 = максимальный)
+		int LodLevel;					// РЈСЂРѕРІРµРЅСЊ РґРµС‚Р°Р»РёР·Р°С†РёРё (0 = РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№)
 	};
 
 	struct SHeightMapRenderData
@@ -39,9 +39,9 @@ namespace XRay::Editor::HeightmapUtils
 	struct SHeightMap
 	{
 		u32 Width;
-		u32 Height;			// Размеры карты (в точках)
-		float* Data;        // Массив высот [width * height]
-		float MinH, MaxH;   // Минимальная и максимальная высота
+		u32 Height;			// Р Р°Р·РјРµСЂС‹ РєР°СЂС‚С‹ (РІ С‚РѕС‡РєР°С…)
+		float* Data;        // РњР°СЃСЃРёРІ РІС‹СЃРѕС‚ [width * height]
+		float MinH, MaxH;   // РњРёРЅРёРјР°Р»СЊРЅР°СЏ Рё РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р°
 
 		Fvector Pos;
 		Fvector Size = { 1, 1, 1 };

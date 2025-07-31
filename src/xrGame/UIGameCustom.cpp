@@ -21,7 +21,7 @@
 #include "game_cl_base.h"
 
 #include "../xrEngine/x_ray.h"
-#include "ui\UICellItem.h" //Alundaio
+#include "ui/UICellItem.h"
 
 EGameIDs ParseStringToGameType(LPCSTR str);
 

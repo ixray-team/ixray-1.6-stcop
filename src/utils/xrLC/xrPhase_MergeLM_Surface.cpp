@@ -1,9 +1,9 @@
 /*
 
-#include "stdafx.h"
-#include "build.h"
+#include "StdAfx.h"
+#include "Build.h"
 #include "xrPhase_MergeLM_Rect.h"
-#include "../xrLC_Light/xrdeflector.h"
+#include "../xrLC_Light/xrDeflector.h"
 
 #include <intrin.h>
 #include <mmintrin.h>
@@ -53,7 +53,7 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 		{
 			int INDEX = (y + R.a.y) * getLMSIZE() + R.a.x;
 			BYTE* P = atomicBuffer + INDEX;	// destination scan-line
-			// Считываем и записывем S и проверяем по 253 для альфы
+			// РЎС‡РёС‚С‹РІР°РµРј Рё Р·Р°РїРёСЃС‹РІРµРј S Рё РїСЂРѕРІРµСЂСЏРµРј РїРѕ 253 РґР»СЏ Р°Р»СЊС„С‹
 			u8* S = lm + y * s_x;
 			for (u32 x = 0; x < s_x; x++, P++, S++)
 				if (*S >= alpha_ref)
@@ -71,7 +71,7 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 			int INDEX = (y + R.a.y) * getLMSIZE() + R.a.x;
 			BYTE* P = atomicBuffer + INDEX;	// destination scan-line
 
-			// Считываем и записывем S и проверяем по 253 для альфы
+			// РЎС‡РёС‚С‹РІР°РµРј Рё Р·Р°РїРёСЃС‹РІРµРј S Рё РїСЂРѕРІРµСЂСЏРµРј РїРѕ 253 РґР»СЏ Р°Р»СЊС„С‹
 			for (u32 x = 0; x < s_y; x++, P++)
 				if (lm[x * s_x + y] >= alpha_ref)
 				{
@@ -155,7 +155,7 @@ bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
 	//BYTE* SURFACE_LOCAL = surface.load();
 	BYTE* atomicBuffer(reinterpret_cast<BYTE*>(surface.load()));
 
-	// Ждем Пока зарегаем
+	// Р–РґРµРј РџРѕРєР° Р·Р°СЂРµРіР°РµРј
 	if (!bRotate)
 	{
 		// Normal (and fastest way)
@@ -192,7 +192,7 @@ bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
 
 
 // Check for intersection 
-// Проверка для очень быстрой растоновки (Моего ворианта)
+// РџСЂРѕРІРµСЂРєР° РґР»СЏ РѕС‡РµРЅСЊ Р±С‹СЃС‚СЂРѕР№ СЂР°СЃС‚РѕРЅРѕРІРєРё (РњРѕРµРіРѕ РІРѕСЂРёР°РЅС‚Р°)
 BOOL _rect_place_fast(L_rect& rect, lm_layer* D, int _X, int _Y)
 {
 	L_rect R;
@@ -219,7 +219,7 @@ BOOL _rect_place_fast(L_rect& rect, lm_layer* D, int _X, int _Y)
 	return FALSE;
 }
 
-// Оригенал с доработкой
+// РћСЂРёРіРµРЅР°Р» СЃ РґРѕСЂР°Р±РѕС‚РєРѕР№
 BOOL _rect_place(L_rect& r, lm_layer* D)
 {
 	BYTE* temp_surf;
@@ -249,14 +249,14 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 			{
 				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
 
-				// Сравниваем каждый байт с нулем
+				// РЎСЂР°РІРЅРёРІР°РµРј РєР°Р¶РґС‹Р№ Р±Р°Р№С‚ СЃ РЅСѓР»РµРј
 				__m128i zeros = _mm_setzero_si128();
 				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
 
-				// Получаем маску ненулевых байтов
+				// РџРѕР»СѓС‡Р°РµРј РјР°СЃРєСѓ РЅРµРЅСѓР»РµРІС‹С… Р±Р°Р№С‚РѕРІ
 				int mask = _mm_movemask_epi8(cmp);
 
-				// Если есть хотя бы один ненулевой байт
+				// Р•СЃР»Рё РµСЃС‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РЅРµРЅСѓР»РµРІРѕР№ Р±Р°Р№С‚
 				if (mask != 0xFFFF)
 				{
 					_X += 16;
@@ -279,7 +279,7 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 			}
 
 
-			if (occuped_parts == part_lmap)	// Все занято заменяем
+			if (occuped_parts == part_lmap)	// Р’СЃРµ Р·Р°РЅСЏС‚Рѕ Р·Р°РјРµРЅСЏРµРј
 			{
 				lock_mutex.lock();
 				occuped_Y[_Y] = true;
@@ -312,14 +312,14 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 			{
 				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
 
-				// Сравниваем каждый байт с нулем
+				// РЎСЂР°РІРЅРёРІР°РµРј РєР°Р¶РґС‹Р№ Р±Р°Р№С‚ СЃ РЅСѓР»РµРј
 				__m128i zeros = _mm_setzero_si128();
 				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
 
-				// Получаем маску ненулевых байтов
+				// РџРѕР»СѓС‡Р°РµРј РјР°СЃРєСѓ РЅРµРЅСѓР»РµРІС‹С… Р±Р°Р№С‚РѕРІ
 				int mask = _mm_movemask_epi8(cmp);
 
-				// Если есть хотя бы один ненулевой байт
+				// Р•СЃР»Рё РµСЃС‚СЊ С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ РЅРµРЅСѓР»РµРІРѕР№ Р±Р°Р№С‚
 				if (mask != 0xFFFF)
 				{
 					_X += 16;

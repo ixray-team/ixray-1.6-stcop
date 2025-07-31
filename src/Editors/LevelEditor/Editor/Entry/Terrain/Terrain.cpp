@@ -172,8 +172,8 @@ bool CTerrain::OnChangeHMData(PropValue* sender, int& NewValue)
 
 	HMap.MarkDirty();
 
-	// Î÷åíü ìåäëåííàÿ õåðíÿ. Íóæíî ïðîñòî àïëàèòü äåëüòó íà âûñîòó âåðòåêñîâ
-	// íî ïîêà âïàäëó, ìá ïîòîì
+	// ÐžÑ‡ÐµÐ½ÑŒ Ð¼ÐµÐ´Ð»ÐµÐ½Ð½Ð°Ñ Ñ…ÐµÑ€Ð½Ñ. ÐÑƒÐ¶Ð½Ð¾ Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ð°Ð¿Ð»Ð°Ð¸Ñ‚ÑŒ Ð´ÐµÐ»ÑŒÑ‚Ñƒ Ð½Ð° Ð²Ñ‹ÑÐ¾Ñ‚Ñƒ Ð²ÐµÑ€Ñ‚ÐµÐºÑÐ¾Ð²
+	// Ð½Ð¾ Ð¿Ð¾ÐºÐ° Ð²Ð¿Ð°Ð´Ð»Ñƒ, Ð¼Ð± Ð¿Ð¾Ñ‚Ð¾Ð¼
 	CEditableObject* OldObject = TerrainObject;
 	UI->CommandList[TUI::ECommandListID::NextFrame].push_back
 	(

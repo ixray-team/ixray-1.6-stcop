@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../../../xrEngine/device.h"
 #include "UI_Camera.h"

@@ -114,7 +114,7 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 {
 	if (Device.IsEditorMode())
 	{
-		// FX: Отключаем переходы для PIE
+		// FX: РћС‚РєР»СЋС‡Р°РµРј РїРµСЂРµС…РѕРґС‹ РґР»СЏ PIE
 		Msg("~ Actor into Level Changer! Unsupported in PIE!");
 		return;
 	}
