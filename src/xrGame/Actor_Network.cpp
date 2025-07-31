@@ -804,9 +804,8 @@ void CActor::net_Destroy	()
 		destroy_physics_shell( actor_camera_shell );
 }
 
-void CActor::net_Relcase	(CObject* O)
+void CActor::net_Relcase(CObject* O)
 {
-	
 	VERIFY(O);
 	CGameObject* GO = O->cast_game_object();
 	if(GO&&m_pObjectWeLookingAt==GO){
@@ -827,8 +826,16 @@ void CActor::net_Relcase	(CObject* O)
 		memory().remove_links(O);
 
 	m_pPhysics_support->in_NetRelcase(O);
-
 	HUD().net_Relcase	(O);
+
+	if (OnClient())
+	{
+		auto Iter = std::find(q_nearest.begin(), q_nearest.end(), O);
+		if (Iter != q_nearest.end())
+		{
+			q_nearest.erase(Iter);
+		}
+	}
 }
 
 BOOL	CActor::net_Relevant		()				// relevant for export to server
