@@ -17,6 +17,7 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
+#include "../xrScripts/script_callback_ex.h"
 
 #define BODY_REMOVE_TIME		600000
 

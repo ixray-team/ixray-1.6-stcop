@@ -18,7 +18,7 @@
 #include "game_object_space.h"
 #include "object_broker.h"
 #include "../../xrUI/UITextureMaster.h"
-
+#include "../xrScripts/script_callback_ex.h"
 
 CGameTask::CGameTask() :
 	m_map_object_id(0), m_TimeToComplete(0), m_priority(0)

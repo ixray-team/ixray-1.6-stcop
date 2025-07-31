@@ -22,6 +22,7 @@
 #include "saved_game_wrapper.h"
 
 #include "../Include/xrRender/DebugRender.h"
+#include "../xrScripts/script_callback_ex.h"
 
 //Alundaio
 #include "pch_script.h"

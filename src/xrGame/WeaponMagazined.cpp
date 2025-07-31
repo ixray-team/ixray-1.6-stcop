@@ -27,6 +27,7 @@
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
 #endif
+#include "../xrScripts/script_callback_ex.h"
 
 ENGINE_API bool	g_dedicated_server;
 

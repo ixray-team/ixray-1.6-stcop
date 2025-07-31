@@ -79,7 +79,7 @@ void CUISkinSelectorWnd::UpdateSkins()
 {
 	for (int i = 0; i < m_SkinCount; i++)
 	{
-		if (!!m_shader)
+		if (m_shader.size())
             m_pImage[i]->InitTextureEx(m_skins[i + m_firstSkin].c_str(), m_shader.c_str());
 		else
 			m_pImage[i]->InitTexture(m_skins[i + m_firstSkin].c_str());
