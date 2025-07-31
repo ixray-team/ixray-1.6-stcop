@@ -391,7 +391,7 @@
 
     <class>val_killer_sniper</class>
     <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_01\stalker\</snd_config>
+    <snd_config>characters_voice\human_03\killer\</snd_config>
 
     <rank>350</rank>
     <reputation>0</reputation>
@@ -490,7 +490,7 @@
 
     <class>val_killer</class>
     <community>killer</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_01\stalker\</snd_config>
+    <snd_config>characters_voice\human_03\killer\</snd_config>
 
     <rank>350</rank>
     <reputation>0</reputation>
