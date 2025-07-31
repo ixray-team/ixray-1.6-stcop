@@ -2,6 +2,7 @@
 
 #include "space_restrictor.h"
 #include "../xrEngine/Feel_Touch.h"
+#include "../xrScripts/script_export_space.h"
 
 class CActor;
 class CLAItem;
@@ -312,7 +313,7 @@ public:
 // Lain: adde
 private:
 	virtual bool            light_in_slow_mode () { return true; }
-
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 //информация о объекте, находящемся в зоне
