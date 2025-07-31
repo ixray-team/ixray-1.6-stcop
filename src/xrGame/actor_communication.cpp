@@ -29,6 +29,7 @@
 #include "CustomDetector.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
+#include "../xrScripts/script_callback_ex.h"
 
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
