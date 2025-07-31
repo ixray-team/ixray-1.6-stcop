@@ -342,6 +342,11 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 			//Msg						("cl_export: %d '%s'",P->ID(),*P->cName());
 			P->net_Export			(Packet);
 
+			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+			{
+				P->SyncWrite(Packet);
+			}
+
 #ifdef DEBUG
 			u32 size				= u32		(Packet.w_tell()-position)-sizeof(u8);
 			if				(size>=256)			{
@@ -382,6 +387,11 @@ void CObjectList::net_Import		(NET_Packet* Packet)
 			u32 rsize = Packet->r_tell();			
 			
 			P->net_Import	(*Packet);
+
+			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+			{
+				P->SyncRead(*Packet);
+			}
 
 			if (g_Dump_Import_Obj) Msg("* %s : %d - %d", *(P->cNameSect()), size, Packet->r_tell() - rsize);
 
