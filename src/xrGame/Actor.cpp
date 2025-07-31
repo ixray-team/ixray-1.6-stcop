@@ -213,6 +213,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	{
 		m_rainOnHelmetSnd.create(R"(ambient\rain_on_helmet)", st_Effect, sg_Undefined);
 	}
+
+	_last_update_time = Device.dwTimeGlobal;
 }
 
 
@@ -1172,6 +1174,11 @@ void CActor::UpdateCL()
 {
 	PROF_EVENT("CActor UpdateCL");
 
+	u32 ct = Device.dwTimeGlobal;
+	u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
+	_last_update_time = ct;
+	UpdateElectronicsProblemsCnt(dt);
+
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
 		CHudItemObject* item = smart_cast<CHudItemObject*>(inventory().ActiveItem());
@@ -1286,6 +1293,13 @@ void CActor::UpdateCL()
 		HudAnimator()->Update();
 	}
 
+	Device.hudViewportData.IsElectronicsProblemsDecreasing = IsElectronicsProblemsDecreasing();
+	Device.hudViewportData.CurrentElectronicsProblemsCnt = CurrentElectronicsProblemsCnt();
+	Device.hudViewportData.TargetElectronicsProblemsCnt = TargetElectronicsProblemsCnt();
+
+	Device.hudViewportData.ActorHealth = GetfHealth();
+	Device.hudViewportData.ActorOutfitCondition = GetOutfit() != nullptr ? GetOutfit()->GetCondition() : -1.0f;
+
 	if (pWeapon)
 	{
 		bBlockSprint = pWeapon->NeedBlockSprint();
@@ -1336,6 +1350,8 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomFactor = pWeapon->GetZoomFactor();
 			Device.hudViewportData.renderZoomRotateFactor = pWeapon->GetAimFactor();
 			Device.hudViewportData.isRenderActive = pWeapon->IsScopeAttached() && (pWeapon->GetAimFactor() > 0.0f) && (pWeapon->GetZoomFactor() > 0.0f);
+			Device.hudViewportData.ActorWeaponCondition = pWeapon->GetCondition();
+			Device.hudViewportData.ActorWeaponLoading = 1.0f;
 		}
 	}
 	else
@@ -1349,6 +1365,8 @@ void CActor::UpdateCL()
 			Device.hudViewportData.renderZoomFactor = 1.0f;
 			Device.hudViewportData.renderZoomRotateFactor = 0.0f;
 			Device.hudViewportData.isRenderActive = false;
+			Device.hudViewportData.ActorWeaponCondition = -1.0f;
+			Device.hudViewportData.ActorWeaponLoading = 1.0f;
 
 			// Switch back to third-person if was forced
 			if (bLook_cam_fp_zoom && cam_active == eacFirstEye) {
@@ -2666,4 +2684,84 @@ CCustomDetector* CActor::GetDetector(bool in_slot)
 bool CActor::infinite_fire()
 {
 	return !!psActorFlags.test(AF_INFINITEFIRE);
+}
+
+
+void CActor::ResetElectronicsProblems()
+{
+	target_electronics_problems_counter = 0.0f;
+}
+
+void CActor::ResetElectronicsProblems_Full()
+{
+	ResetElectronicsProblems();
+	current_electronics_problems_counter = 0.0f;
+	previous_electronics_problems_counter = 0.0f;
+	last_problems_update_was_decrease = false;
+}
+
+float CActor::PreviousElectronicsProblemsCnt() const
+{
+	return previous_electronics_problems_counter;
+}
+
+bool CActor::ElectronicsProblemsImmediateApply()
+{
+	current_electronics_problems_counter = target_electronics_problems_counter;
+	return true;
+}
+
+bool CActor::ElectronicsProblemsInc()
+{
+	target_electronics_problems_counter += 1.0f;
+	return true;
+}
+
+float CActor::TargetElectronicsProblemsCnt() const
+{
+	return target_electronics_problems_counter;
+}
+
+float CActor::CurrentElectronicsProblemsCnt() const
+{
+	return current_electronics_problems_counter;
+}
+
+bool CActor::ElectronicsProblemsDec()
+{
+	if (target_electronics_problems_counter > 0.0f)
+	{
+		target_electronics_problems_counter -= 1.0f;
+		return true;
+	}
+	else
+		return false;
+}
+
+bool CActor::IsElectronicsProblemsDecreasing() const
+{
+	return last_problems_update_was_decrease;
+}
+
+void CActor::UpdateElectronicsProblemsCnt(u32 dt)
+{
+	float max_delta = static_cast<float>(dt) / 2000.0f;
+	float delta = target_electronics_problems_counter - current_electronics_problems_counter;
+
+	previous_electronics_problems_counter = current_electronics_problems_counter;
+
+	if (target_electronics_problems_counter == current_electronics_problems_counter)
+	{
+		return;
+	}
+
+	if (abs(delta) <= abs(max_delta))
+	{
+		current_electronics_problems_counter = target_electronics_problems_counter;
+	}
+	else
+	{
+		current_electronics_problems_counter += copysign(max_delta, delta);
+		last_problems_update_was_decrease = (delta < 0.0f);
+	}
 }
