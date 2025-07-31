@@ -112,6 +112,7 @@ void CArtefact::Load(LPCSTR section)
 	m_bCanSpawnZone			= !!pSettings->line_exist("artefact_spawn_zones", section);
 	m_af_rank				= pSettings->r_u8(section, "af_rank");
 	m_additional_weight		= pSettings->r_float(section,"additional_inventory_weight");
+	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
@@ -702,4 +703,10 @@ void CArtefact::OnHiddenItem ()
 	inherited::OnHiddenItem		();
 	SetState					(eHidden);
 	SetNextState				(eHidden);
+}
+
+u32 CArtefact::Cost() const
+{
+	u32 cost = inherited::Cost() * GetCondition();
+	return cost;
 }
