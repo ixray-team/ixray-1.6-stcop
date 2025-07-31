@@ -196,6 +196,7 @@ void xrServer::GetPooledState(xrClientData* xrCL)
 	pooled_client->ps->net_Export	(tmp_packet, TRUE);
 	tmp_packet.r_begin				(tmp_fake);
 	xrCL->ps->net_Import			(tmp_packet);
+	xrCL->ps->flags__ = 0;
 	xrCL->flags.bReconnect			= TRUE;
 	xr_delete						(pooled_client);
 }

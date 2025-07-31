@@ -2208,7 +2208,7 @@ void CWeaponMagazined::OnEvent(NET_Packet& P, u16 type)
 			u16 id = P.r_u16();
 			u16 boxSize = P.r_u16();
 			CWeaponAmmo* pA = smart_cast<CWeaponAmmo*>(Level().Objects.net_Find(id));
-			pA->m_boxCurr = boxSize;
+			if(pA != nullptr) pA->m_boxCurr = boxSize;
 		}
 	}break;
 	default:
