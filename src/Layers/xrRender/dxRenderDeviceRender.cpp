@@ -75,6 +75,12 @@ void dxRenderDeviceRender::updateGamma()
 void dxRenderDeviceRender::OnDeviceDestroy( BOOL bKeepTextures)
 {
 #ifndef _EDITOR
+#ifdef USE_DX11
+#ifdef DEBUG_DRAW
+	DebugRenderImpl.Shutdown();
+#endif // #ifdef DEBUG_DRAW
+#endif // USE_DX11
+
 	m_WireShader.destroy();
 	m_SelectionShader.destroy();
 
@@ -188,6 +194,12 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 		m_SelectionShader.create	("editor\\selection");
 
 		DUImpl.OnDeviceCreate			();
+#ifdef USE_DX11
+#ifdef DEBUG_DRAW
+		DebugRenderImpl.Init();
+#endif // DEBUG_DRAW
+#endif // USE_DX11
+
 	}
 //#endif
 #endif
@@ -205,45 +217,6 @@ void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 	fHeight_2 = Device.HalfTargetHeight;
 
 	Resources = new CResourceManager();
-
-#ifdef DEBUG_DRAW
-	CImGuiManager::Instance().Subscribe("dxDebugRenderer", CImGuiManager::ERenderPriority::eHight + 1,
-	[]()
-	{
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::DebugDraw)] || DebugRenderImpl.m_lines.empty() ||
-			(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
-			return;
-
-		constexpr auto DebugFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
-
-		ImGuiViewport* ViewPort = ImGui::GetMainViewport();
-
-		ImGui::SetNextWindowPos(ViewPort->WorkPos);
-		ImGui::SetNextWindowSize(ViewPort->WorkSize);
-		ImGui::SetNextWindowBgAlpha(0.0f);
-		ImGui::SetNextWindowViewport(ViewPort->ID);
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		if (ImGui::Begin("DebugRender", nullptr, DebugFlags))
-		{
-			ImDrawList& CmdList = *ImGui::GetWindowDrawList();
-			for (const auto& Line : DebugRenderImpl.m_lines)
-			{
-				CmdList.AddLine(
-					ImVec2(Line.x1, Line.y1),
-					ImVec2(Line.x2, Line.y2),
-					Line.color
-				);
-			}
-			DebugRenderImpl.m_lines.resize(0);
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-	});
-#endif
 #endif
 }
 
@@ -410,6 +383,7 @@ void dxRenderDeviceRender::Begin()
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
+	RCache.set_Z			(TRUE);
 #endif
 }
 
