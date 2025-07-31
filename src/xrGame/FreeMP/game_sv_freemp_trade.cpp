@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "game_sv_freemp.h"
 #include "Level.h"
 #include "trade.h"

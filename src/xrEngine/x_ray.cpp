@@ -255,7 +255,7 @@ ENGINE_API void EngineLoadStage5()
 	
 	destroyConsole();
 
-	//очищение памяти таблицы строк
+	//РѕС‡РёС‰РµРЅРёРµ РїР°РјСЏС‚Рё С‚Р°Р±Р»РёС†С‹ СЃС‚СЂРѕРє
 	CStringTable::Destroy();
 
 	destroySound();

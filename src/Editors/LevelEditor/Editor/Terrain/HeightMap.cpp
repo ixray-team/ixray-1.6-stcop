@@ -115,7 +115,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 		float globalMinH = FLT_MAX;
 		float globalMaxH = -FLT_MAX;
 
-		// Сканируем чанк-сетку и собираем базовую информацию
+		// РЎРєР°РЅРёСЂСѓРµРј С‡Р°РЅРє-СЃРµС‚РєСѓ Рё СЃРѕР±РёСЂР°РµРј Р±Р°Р·РѕРІСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ
 		for (u32 cz = 0; cz < chunkCountZ; ++cz)
 		{
 			for (u32 cx = 0; cx < chunkCountX; ++cx)
@@ -150,7 +150,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 
 		float CenterY = (globalMinH + globalMaxH) * 0.5f;
 
-		// Генерация чанков
+		// Р“РµРЅРµСЂР°С†РёСЏ С‡Р°РЅРєРѕРІ
 		for (u32 cz = 0; cz < chunkCountZ; ++cz)
 		{
 			for (u32 cx = 0; cx < chunkCountX; ++cx)
@@ -158,7 +158,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 				const ChunkInfo& info = chunkInfos[cz * chunkCountX + cx];
 				bool useFlat = info.isFlat;
 
-				// Проверка соседей
+				// РџСЂРѕРІРµСЂРєР° СЃРѕСЃРµРґРµР№
 				for (int dz = -1; dz <= 1 && useFlat; ++dz)
 				{
 					for (int dx = -1; dx <= 1 && useFlat; ++dx)
@@ -219,7 +219,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 	}
 	else
 	{
-		// Обновление существующих данных
+		// РћР±РЅРѕРІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… РґР°РЅРЅС‹С…
 		float globalMinH = FLT_MAX;
 		float globalMaxH = -FLT_MAX;
 		for (u32 z = 0; z < Height; ++z)
@@ -317,7 +317,7 @@ void SHeightMapRenderData::BuildFromHeightmap(const float* Heightmap, int width,
 			SHeightMapChunk chunk;
 			chunk.BBox.invalidate();
 
-			// Проверяем, можно ли чанк упростить (все высоты почти одинаковы)
+			// РџСЂРѕРІРµСЂСЏРµРј, РјРѕР¶РЅРѕ Р»Рё С‡Р°РЅРє СѓРїСЂРѕСЃС‚РёС‚СЊ (РІСЃРµ РІС‹СЃРѕС‚С‹ РїРѕС‡С‚Рё РѕРґРёРЅР°РєРѕРІС‹)
 			float min_h = FLT_MAX, max_h = -FLT_MAX;
 			for (int dz = 0; dz < SHeightMapRenderData::CHUNK_SIZE && (z + dz) < Height; ++dz)
 			{
@@ -330,13 +330,13 @@ void SHeightMapRenderData::BuildFromHeightmap(const float* Heightmap, int width,
 				}
 			}
 
-			// Если разница высот маленькая — чанк "плоский", можно упростить
+			// Р•СЃР»Рё СЂР°Р·РЅРёС†Р° РІС‹СЃРѕС‚ РјР°Р»РµРЅСЊРєР°СЏ вЂ” С‡Р°РЅРє "РїР»РѕСЃРєРёР№", РјРѕР¶РЅРѕ СѓРїСЂРѕСЃС‚РёС‚СЊ
 			chunk.IsFlat = (max_h - min_h < SHeightMapRenderData::FLAT_THRESHOLD);
 
-			// Генерация вершин для чанка
+			// Р“РµРЅРµСЂР°С†РёСЏ РІРµСЂС€РёРЅ РґР»СЏ С‡Р°РЅРєР°
 			if (chunk.IsFlat)
 			{
-				// Упрощённый вариант (4 вершины = 1 quad)
+				// РЈРїСЂРѕС‰С‘РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚ (4 РІРµСЂС€РёРЅС‹ = 1 quad)
 				float avg_h = (min_h + max_h) * 0.5f;
 				chunk.Vertices.push_back(Fvector(x, avg_h, z));
 				chunk.Vertices.push_back(Fvector(x + SHeightMapRenderData::CHUNK_SIZE, avg_h, z));
@@ -345,7 +345,7 @@ void SHeightMapRenderData::BuildFromHeightmap(const float* Heightmap, int width,
 			}
 			else
 			{
-				// Полная детализация (все вершины чанка)
+				// РџРѕР»РЅР°СЏ РґРµС‚Р°Р»РёР·Р°С†РёСЏ (РІСЃРµ РІРµСЂС€РёРЅС‹ С‡Р°РЅРєР°)
 				for (int dz = 0; dz <= SHeightMapRenderData::CHUNK_SIZE && (z + dz) < Height; ++dz)
 				{
 					for (int dx = 0; dx <= SHeightMapRenderData::CHUNK_SIZE && (x + dx) < width; ++dx)
@@ -365,13 +365,13 @@ bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& D
 {
 	if (!Data || Width == 0 || Height == 0) return false;
 
-	// Преобразование в локальные координаты
+	// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ Р»РѕРєР°Р»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 	Fvector LocalStart, LocalDir;
 	InvParent.transform_tiny(LocalStart, Start);
 	InvParent.transform_dir(LocalDir, Direction);
 	LocalDir.normalize();
 
-	// Bounding box карты высот
+	// Bounding box РєР°СЂС‚С‹ РІС‹СЃРѕС‚
 	Fbox HeightMapBox;
 
 	Fvector BBoxMin = Fvector().set(
@@ -389,12 +389,12 @@ bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& D
 	HeightMapBox.min = BBoxMin;
 	HeightMapBox.max = BBoxMax;
 
-	// Быстрая проверка пересечения с AABB
+	// Р‘С‹СЃС‚СЂР°СЏ РїСЂРѕРІРµСЂРєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ AABB
 	Fvector EntryPoint;
 	if (HeightMapBox.Pick2(LocalStart, LocalDir, EntryPoint) == Fbox::rpNone)
 		return false;
 
-	// Параметры DDA-алгоритма
+	// РџР°СЂР°РјРµС‚СЂС‹ DDA-Р°Р»РіРѕСЂРёС‚РјР°
 	const float CellSizeX = Size.x;
 	const float CellSizeZ = Size.z;
 
@@ -410,7 +410,7 @@ bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& D
 	float SideDistX = ((LocalDir.x > 0) ? (ceilf(X) - X) : (X - floorf(X))) * DeltaDistX;
 	float SideDistZ = ((LocalDir.z > 0) ? (ceilf(Z) - Z) : (Z - floorf(Z))) * DeltaDistZ;
 
-	// Основной цикл DDA
+	// РћСЃРЅРѕРІРЅРѕР№ С†РёРєР» DDA
 	while (X >= 0 && Z >= 0 && X < Width && Z < Height)
 	{
 		const float Height = GetHeight((u32)X, (u32)Z) * Size.y + Pos.y;
@@ -421,7 +421,7 @@ bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& D
 
 		const float RayY = LocalStart.y + T * LocalDir.y;
 
-		// Проверка пересечения с поверхностью
+		// РџСЂРѕРІРµСЂРєР° РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РїРѕРІРµСЂС…РЅРѕСЃС‚СЊСЋ
 		if (Height > 0 && RayY <= Height + EPS && T < Distance)
 		{
 			Distance = T;
@@ -433,7 +433,7 @@ bool SHeightMap::RayPick(float& Distance, const Fvector& Start, const Fvector& D
 			return true;
 		}
 
-		// Выбор следующей ячейки
+		// Р’С‹Р±РѕСЂ СЃР»РµРґСѓСЋС‰РµР№ СЏС‡РµР№РєРё
 		if (SideDistX < SideDistZ)
 		{
 			SideDistX += DeltaDistX;

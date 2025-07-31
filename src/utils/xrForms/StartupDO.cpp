@@ -10,7 +10,7 @@ static const char* h_str =
 "-? or -h	== this help\n"
 "-f<NAME>	== compile level in gamedata\\levels\\<NAME>\\\n"
 "-o			== modify build options\n"
-"-use_intel == включить Embree"
+"-use_intel == РІРєР»СЋС‡РёС‚СЊ Embree"
 "\n"
 "NOTE: The last key is required for any functionality\n";
 

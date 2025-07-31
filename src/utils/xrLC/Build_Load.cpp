@@ -344,7 +344,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$", xr_strconcat(th_name,N,".thm"));
  				IReader* THM	= FS.r_open(th_name);
- 				// se7kills Не трогать Можно нормально скипать отсуцтвие THM
+ 				// se7kills РќРµ С‚СЂРѕРіР°С‚СЊ РњРѕР¶РЅРѕ РЅРѕСЂРјР°Р»СЊРЅРѕ СЃРєРёРїР°С‚СЊ РѕС‚СЃСѓС†С‚РІРёРµ THM
 				if (!THM)
 				{
 					Msg("cannot find thm: %s", th_name);

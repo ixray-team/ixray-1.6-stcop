@@ -124,7 +124,7 @@ xr_string FloatTimeToStrTime(float v, bool _h, bool _m, bool _s, bool _ms)
 {
     xr_string buf;
     int h = 0, m = 0, s = 0, ms = 0;
-    char temp[8]; // Временный буфер для форматирования
+    char temp[8]; // Р’СЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
 
     if (_h) {
         h = iFloor(v / 3600);

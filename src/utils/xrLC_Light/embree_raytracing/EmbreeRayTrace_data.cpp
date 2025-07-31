@@ -8,7 +8,7 @@
 #include "EmbreeRayTrace.h"
 #include "xrMU_Model_Reference.h"
 #include "xrMU_Model.h"
-// Для Загрузки Геометрии
+// Р”Р»СЏ Р—Р°РіСЂСѓР·РєРё Р“РµРѕРјРµС‚СЂРёРё
 #include <../xrForms/CompilersUI.h>
 #include <base_face.h>
 extern CompilersMode gCompilerMode;
@@ -323,7 +323,7 @@ u32 TriangleContainer::find_or_add(Fvector& V)
 		for (auto& vertex : itHash->second)
 		{
 			if (vertex.V.Simular(new_vertex))
-				return vertex.vertID; // Нашли похожую вершину
+				return vertex.vertID; // РќР°С€Р»Рё РїРѕС…РѕР¶СѓСЋ РІРµСЂС€РёРЅСѓ
 		}
 	}
 

@@ -194,7 +194,7 @@ void CBuild::Flex2OGF()
 
 void CBuild::SaveOGF()
 {
-	return; // ме дндекюмн
+	return; // п╪п╣ п╢п╫п╢п╣п╨я▌п╪п╫
 
  	u32 BaseID = 0;
 

@@ -184,8 +184,8 @@
 #	include "smart_cover_object.h"
 #	include "EditorLevel.h"
 
-#include "..\xrGame\HolderEntityObject.h"
-#include "..\xrGame\ActorBackpack.h"
+#include "../xrGame/HolderEntityObject.h"
+#include "../xrGame/ActorBackpack.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME

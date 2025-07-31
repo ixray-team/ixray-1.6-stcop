@@ -163,7 +163,7 @@ void CBuild::xrPhase_UVmap()
 
 		while (TRUE)
 		{
-			// Сортировка списка в перед с больщими зонами.
+			// РЎРѕСЂС‚РёСЂРѕРІРєР° СЃРїРёСЃРєР° РІ РїРµСЂРµРґ СЃ Р±РѕР»СЊС‰РёРјРё Р·РѕРЅР°РјРё.
 			std::sort(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), sort_faces);
 			if (g_XSplit[SP] == nullptr)
 				break;
@@ -207,8 +207,8 @@ void CBuild::xrPhase_UVmap()
 					{
 						if (F->pDeflector != nullptr)
 						{
-							//xr_delete(F);   // Освобождаем память
-							return true;    // Убираем из контейнера
+							//xr_delete(F);   // РћСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ
+							return true;    // РЈР±РёСЂР°РµРј РёР· РєРѕРЅС‚РµР№РЅРµСЂР°
 						}
  						return false;
 					}

@@ -55,7 +55,7 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 		tNetPacket.w_float_q8(whealth, 0, 1);
 	}
 
-	// было все в Float Стало с квантованием (4 байт) было 16
+	// Р±С‹Р»Рѕ РІСЃРµ РІ Float РЎС‚Р°Р»Рѕ СЃ РєРІР°РЅС‚РѕРІР°РЅРёРµРј (4 Р±Р°Р№С‚) Р±С‹Р»Рѕ 16
 	tNetPacket.w_angle8(o_torso.pitch);
 	tNetPacket.w_angle8(o_torso.yaw);
 	tNetPacket.w_angle8(o_head.pitch);
@@ -64,7 +64,7 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 	// 9 BYTE
  	if (IsDead)
 	{
-		tNetPacket.w_vec3(Position);													// 12 + 6 = 18 для трупа
+		tNetPacket.w_vec3(Position);													// 12 + 6 = 18 РґР»СЏ С‚СЂСѓРїР°
 		return;
 	}
 
@@ -76,7 +76,7 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 		tNetPacket.w_u8(u_active_stripped);
 	}
 
-	if (phSyncFlag)		// 17 BYTE														// 11+17 = 28 Байт на нпс
+	if (phSyncFlag)		// 17 BYTE														// 11+17 = 28 Р‘Р°Р№С‚ РЅР° РЅРїСЃ
 	{
 		tNetPacket.w_vec3(physics_position);
 		tNetPacket.w_u32(PhysicDwTime);
@@ -117,7 +117,7 @@ void aistalker_state_net::CSE_StateRead(NET_Packet& tNetPacket)
 		return;
 	}
  
-	// Slot		5 Байт
+	// Slot		5 Р‘Р°Р№С‚
  	/* SINGLE */
 	u_active_slot = tNetPacket.r_u8();
 	if (u_active_slot != 0)
@@ -312,7 +312,7 @@ void aistalker_state_net::GetState(CAI_Stalker* stalker)
 		stalker->ApplyAnimation(motions_data);
 	}
  
-	if (Position.distance_to(stalker->Position()) > 10) // Апдейтим позицию по причине что не обновляемся )) (если не обновлять UpdateCL не запустится)
+	if (Position.distance_to(stalker->Position()) > 10) // РђРїРґРµР№С‚РёРј РїРѕР·РёС†РёСЋ РїРѕ РїСЂРёС‡РёРЅРµ С‡С‚Рѕ РЅРµ РѕР±РЅРѕРІР»СЏРµРјСЃСЏ )) (РµСЃР»Рё РЅРµ РѕР±РЅРѕРІР»СЏС‚СЊ UpdateCL РЅРµ Р·Р°РїСѓСЃС‚РёС‚СЃСЏ)
 	{
 		stalker->Position().set(Position);
 		stalker->character_physics_support()->movement()->SetPosition(Position); // we need it ?
@@ -348,7 +348,7 @@ void aistalker_state_net::GetStateCSE(CSE_ALifeHumanStalker* stalker)
 
 	stalker->o_Position = Position;
 
-	// Затычка чтобы много не жрало сети
+	// Р—Р°С‚С‹С‡РєР° С‡С‚РѕР±С‹ РјРЅРѕРіРѕ РЅРµ Р¶СЂР°Р»Рѕ СЃРµС‚Рё
 	CAI_Stalker* sta = smart_cast<CAI_Stalker*>(Level().Objects.net_Find(stalker->ID));
 	if (sta)
 	{
