@@ -45,4 +45,10 @@
 	<string id="st_can_use_weapon_now">
 		<text>Теперь можно достать оружие.</text>
 	</string>
+	<string id="ui_inv_effect_time">
+		<text>Время действия</text>
+	</string>
+	<string id="ui_inv_seconds_short">
+		<text>сек.</text>
+	</string>
 </string_table>
