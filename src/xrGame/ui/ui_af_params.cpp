@@ -49,6 +49,12 @@ LPCSTR af_immunity_section_names[] = // ALife::EInfluenceType
 	"chemical_burn_immunity",	// infl_acid=2
 	"telepatic_immunity",		// infl_psi=3
 	"shock_immunity",			// infl_electra=4
+
+	//Alundaio: Uncommented
+	"wound_immunity",		
+	"fire_wound_immunity",
+	"explosion_immunity",
+	"strike_immunity",
 };
 
 LPCSTR af_restore_section_names[] = // ALife::EConditionRestoreType
@@ -67,6 +73,12 @@ LPCSTR af_immunity_caption[] =  // ALife::EInfluenceType
 	"ui_inv_outfit_chemical_burn_protection",	// "(chemical_burn_imm)",
 	"ui_inv_outfit_telepatic_protection",		// "(telepatic_imm)",
 	"ui_inv_outfit_shock_protection",			// "(shock_imm)",
+
+	//Alundaio: Uncommented
+	"ui_inv_outfit_wound_protection",			// "(wound_imm)",
+	"ui_inv_outfit_explosion_protection",		// "(explosion_imm)",
+	"ui_inv_outfit_fire_wound_protection",		// "(fire_wound_imm)",
+	"ui_inv_outfit_strike_protection",			// "(strike_imm)",
 };
 
 LPCSTR af_restore_caption[] =  // ALife::EConditionRestoreType
