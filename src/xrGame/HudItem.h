@@ -114,8 +114,11 @@ public:
 	bool						TryPlayAnimIdle		();
 	virtual bool				MovingAnimAllowedNow ()				{return true;}
 
-	virtual void				PlayAnimIdleMoving	();
-	virtual void				PlayAnimIdleSprint	();
+	virtual void				PlayAnimIdleMoving();
+	virtual void				PlayAnimIdleMovingSlow();
+	virtual void				PlayAnimIdleMovingCrouch();
+	virtual void				PlayAnimIdleMovingCrouchSlow();
+	virtual void				PlayAnimIdleSprint();
 
 	virtual void				UpdateCL			();
 	virtual void				renderable_Render	();
