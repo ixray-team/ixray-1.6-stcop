@@ -16,31 +16,23 @@
 // INTIALIZE GEOMETRY, SCENE QUALITY TYPE
 // Инициализация Основных Фишек Embree
 
-#define USE_TRANSPARENT_GEOM
- 
 // INTEL DATA STRUCTURE
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
 int LastGeometryIDTransp = RTC_INVALID_GEOMETRY_ID;
 
-RTCSceneFlags scene_flags = RTC_SCENE_FLAG_ROBUST;
+RTCSceneFlags scene_flags = RTC_SCENE_FLAG_COMPACT;
 RTCBuildQuality scene_quality = RTC_BUILD_QUALITY_LOW;
 
 RTCDevice device	= 0;
 RTCScene IntelScene = 0;
 
 RTCGeometry IntelGeometryNormal = 0;
-RTCGeometry IntelGeometryTransparent = 0;
-
+ 
 /** NORMAL GEOM **/
 Embree::VertexEmbree* verticesNormal = 0;
 Embree::TriEmbree* trianglesNormal = 0;
 xr_vector<void*> TriNormal_Dummys;
-
-/** TRANSP GEOM **/
-Embree::VertexEmbree* verticesTransp = 0;
-Embree::TriEmbree* trianglesTransp = 0;
-xr_vector<void*> TriTransp_Dummys;
-
+ 
 // Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
 // Влияет на яркость на выходе (если близко к 0 будет занулятся)
 // можно и 0.10f Было раньше так
@@ -58,18 +50,7 @@ struct RayQueryContext
 };
 
 // Сделать потом переключалку
-
-ICF void* GetGeomBuff(int GeomID, int Prim)
-{
-	if (GeomID == 0 && Prim != RTC_INVALID_GEOMETRY_ID)
-		return TriNormal_Dummys[Prim];
-	if (GeomID == 1 && Prim != RTC_INVALID_GEOMETRY_ID)
-		return TriTransp_Dummys[Prim];
-
-	return nullptr;
-}
-
-ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float v)
+bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float v)
 {
 	// Перемещаем начало луча немного дальше пересечения
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
@@ -80,7 +61,7 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	B.set(1.0f - u - v, u, v);
 
 	//// calc UV
-	Fvector2* cuv = F->getTC0();
+	Fvector2*	cuv = F->getTC0();
 	Fvector2	uv;
 	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
 	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
@@ -88,8 +69,7 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
 	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
 	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
-
-
+ 
 	u32* raw = static_cast<u32*>(T.pSurface);
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
@@ -103,44 +83,33 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	return true;
 }
 
-// 27.01.2025 (для тестов 16 хитов только сделал)
-// Вообще рекомендовано для пересечния с прозрачностями 4-8
-// Если непрозрачные 1
-// LMAP стадия вроде быстрее если чисто искать Opacue (Внутри помещений вроде делает расщет)
-extern XRLC_LIGHT_API int StageMAXHits = 64;
-
-ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
+void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-	RTCRay* ray = (RTCRay*)args->ray;
 
-	// Собрать все
-	base_Face* F = (base_Face*)GetGeomBuff(hit->geomID, hit->primID);
+	R_ASSERT(hit->geomID == 0);
+
+ 	// Собрать все
+	base_Face* F = (base_Face*)TriNormal_Dummys[hit->primID];
+ 	if (F == ctxt->skip || !F) // SKIP делаем для таких
+	{
+		args->valid[0] = 0; return;
+	}
 
 	if (F->flags.bOpaque)
 	{
 		ctxt->energy = 0; return;
 	}
 
-	if (F == ctxt->skip || !F)
-	{
-		args->valid[0] = 0; return;
-	}
-
 	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
 		// При нахождении любого хита сразу все попали в непрозрачный Face.
 		ctxt->energy = 0;
-		ctxt->Hits += 1;
-		return;
+ 		return;
 	}
 
-	ctxt->Hits += 1;
-	if (ctxt->Hits > StageMAXHits)
-		return;
-
-	args->valid[0] = 0; // Задаем чтобы продолжил поиск
+ 	args->valid[0] = 0; // Задаем чтобы продолжил поиск
 }
 
 float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
@@ -152,10 +121,7 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 	data_hits.energy = 1.0f;
 	data_hits.Hits = 0;
 
-	/// Непрозрачные чекаем
-
-	// se7kills : 27.01.2025 0.001 -> 0.1
-	// Чуть сильнее сдвинул near
+	// se7kills : 07.02.2025 0.001 виноват BORDER 1 был поставил 4 
 	RTCRay ray;
 	Embree::SetRay1(ray, P, N, 0.001f, range);
 
@@ -164,106 +130,81 @@ float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, voi
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
-
+	 
 	// SET CONTEXT
 	data_hits.context = context;
 	args.context = &data_hits.context;
-	args.flags = RTC_RAY_QUERY_FLAG_INCOHERENT;
-
+	args.flags = RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER;
+	args.filter = &FilterRaytrace;
 	rtcOccluded1(IntelScene, &ray, &args);
+	
 	return data_hits.energy;
 }
-
-xr_vector<CDB::TRI*> GetTrianglesByType(CDB::TRI* CDB_tris, u32 Size, bool Transparent)
-{
-	xr_vector<CDB::TRI*> RETURN;
-
-	for (auto i = 0; i < Size; i++)
-	{
-		CDB::TRI* tri = (CDB::TRI*) convert_nax(CDB_tris[i].dummy);
-
-		base_Face* face = (base_Face*)tri;
-		if (!face)
-			continue;
-
-#ifdef USE_TRANSPARENT_GEOM
-		if (face->flags.bOpaque && !Transparent)
-			RETURN.push_back(&CDB_tris[i]);
-
-		if (!face->flags.bOpaque && Transparent)
-			RETURN.push_back(&CDB_tris[i]);
-#else 
-		RETURN.push_back(&CDB_tris[i]);
-#endif 
-	}
-
-	return RETURN;
-}
+ 
+// LOADING GEOMETRY
 
 struct GeomInfo
 {
-	u32 TriangleMemory;
-	u32 VertsMemory;
-	u32 DummyMemory;
+	size_t TriangleMemory;
+	size_t VertsMemory;
+	size_t DummyMemory;
 };
 
-GeomInfo InitializeGeometryAttach(bool isTransp, Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Size)
+
+size_t GetMemory()
+{
+	size_t used, free, reserved;
+	vminfo(&free, &reserved, &used);
+	return used;
+}
+
+GeomInfo InitializeGeometryAttach(bool useForOthers)
 {
 	GeomInfo geomInfoData;
+	
+	// Первый прогон без алокаций под что нибудь просто подсчитать размер  
+ 	
+ 	size_t Predcalculated = 0;
+  	Embree::GetGlobalData(Predcalculated, nullptr, nullptr, nullptr); // Без буферов !!!
+ 
+	AditionalData( "Precalculated: %u", Predcalculated );
 
+	// Реальная загрузка 
 	// Get Buffers By Type Geometry
-	xr_vector<void*>& dummy = isTransp ? TriTransp_Dummys : TriNormal_Dummys;
-
-	RTCGeometry& RtcGeometry = isTransp ? IntelGeometryTransparent : IntelGeometryNormal;
-	Embree::VertexEmbree* vertex_embree = isTransp ? verticesTransp : verticesNormal;
-	Embree::TriEmbree* tri_embree = isTransp ? trianglesTransp : trianglesNormal;
-
+	xr_vector<void*>& dummy					= TriNormal_Dummys;
+ 	RTCGeometry& RtcGeometry				= IntelGeometryNormal;
+	Embree::VertexEmbree* vertex_embree		= verticesNormal;
+	Embree::TriEmbree* tri_embree			= trianglesNormal;
+	
 	// RtcIntilize Geoms
 	RtcGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(RtcGeometry, scene_quality);
 
-	rtcSetGeometryOccludedFilterFunction(RtcGeometry, &FilterRaytrace);
-	rtcSetGeometryIntersectFilterFunction(RtcGeometry, &FilterRaytrace);
-
 	// GET TRIANGLE (COLLECTORs Data) 
+ 	vertex_embree = (Embree::VertexEmbree*)
+		rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(Embree::VertexEmbree), Predcalculated * 3);
+	geomInfoData.VertsMemory = sizeof(Embree::VertexEmbree) * Predcalculated * 3;
 
-	xr_vector<CDB::TRI*> TRIS = GetTrianglesByType(CDB_tris, TS_Size, isTransp);
-
-	vertex_embree = (Embree::VertexEmbree*)rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(Embree::VertexEmbree), TRIS.size() * 3);
-	tri_embree = (Embree::TriEmbree*)rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(Embree::TriEmbree), TRIS.size());
-
-	geomInfoData.TriangleMemory = TRIS.size() * sizeof(Embree::TriEmbree);
-	geomInfoData.VertsMemory    = (TRIS.size() * 3) * sizeof(Embree::VertexEmbree);
+	tri_embree = (Embree::TriEmbree*)
+		rtcSetNewGeometryBuffer(RtcGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(Embree::TriEmbree), Predcalculated);
+	geomInfoData.TriangleMemory = Predcalculated * sizeof(Embree::TriEmbree);
 
 	// FIX
 	dummy.clear();
-	dummy.resize(TRIS.size());
+	dummy.resize(Predcalculated);
+ 	geomInfoData.DummyMemory = Predcalculated * sizeof(void*);
 
-	size_t VertexIndexer = 0;
-	for (auto i = 0; i < TRIS.size(); i++)
-	{
-		tri_embree[i].SetVertexes(*TRIS[i], CDB_verts, vertex_embree, VertexIndexer);
-		dummy[i] = convert_nax (TRIS[i]->dummy);
-	}
-
-	geomInfoData.DummyMemory = sizeof(void*) * dummy.size();
-
+	// Set Buffer Data
+	size_t TrianglesSize = 0;
+	GetGlobalData(TrianglesSize, vertex_embree, tri_embree, &dummy, useForOthers); // Указать буферы !!!
 	rtcCommitGeometry(RtcGeometry);
-
-	if (isTransp)
-		LastGeometryIDTransp = rtcAttachGeometry(IntelScene, RtcGeometry);
-	else
-		LastGeometryID = rtcAttachGeometry(IntelScene, RtcGeometry);
-
-	
+	LastGeometryID = rtcAttachGeometry(IntelScene, RtcGeometry);
 
 	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(%s) By ID: %d, Traingles: %u",
-		isTransp ? "Transparent" : "Normal",
-		isTransp ? LastGeometryIDTransp : LastGeometryID,
-		TRIS.size());
-	TRIS.clear();
-
-
+		"Normal",
+		LastGeometryID,
+		TrianglesSize);
+	  
 	return geomInfoData;
 }
 
@@ -280,33 +221,14 @@ void RemoveGeoms()
 
 		LastGeometryID = RTC_INVALID_GEOMETRY_ID;
 	}
-
-	if (LastGeometryIDTransp != RTC_INVALID_GEOMETRY_ID)
-	{
-		rtcDetachGeometry(IntelScene, LastGeometryIDTransp);
-		rtcReleaseGeometry(IntelGeometryTransparent);
-
-		verticesTransp = 0;
-		trianglesTransp = 0;
-		TriTransp_Dummys.clear();
-
-		LastGeometryIDTransp = RTC_INVALID_GEOMETRY_ID;
-	}
 }
-
-size_t GetMemory()
+ 
+void IntelEmbereLOAD(bool useForOthers)
 {
-	size_t used, free, reserved;
-	vminfo(&free, &reserved, &used);
-	return used;
-}
+	Phase("Loading Embree");
 
-void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
-{
-	size_t used, free, reserv;
-	vminfo(&free, &reserv, &used);
+	clMsg("Intel Embree Loading| Memory: %u mb", u32(GetMemory()/1024/1024) );
 
-	clMsg("Intel Embree Loading| Memory: %u mb", u32(used/1024/1024) );
 	if (IntelScene != nullptr)
 	{
 		RemoveGeoms();
@@ -325,58 +247,46 @@ void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb)
 			config = "threads=16,isa=sse2";
 
 		device = rtcNewDevice(config);
-		rtcSetDeviceErrorFunction(device, Embree::errorFunction, NULL);
-
-
+		rtcSetDeviceErrorFunction(device, &Embree::errorFunction, NULL);
+		 
 		string128 phase;
 		sprintf(phase, "Intilized Intel Embree %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 		Status(phase);
 		Embree::IntelEmbreeSettings(device, avx_test, sse);
 
 		// Создание сцены и добавление геометрии
-		// Scene
 		IntelScene = rtcNewScene(device);
 		rtcSetSceneFlags(IntelScene, scene_flags);
 	}
-
-	auto GeomNormal = InitializeGeometryAttach(false, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS()); /// GeomID == 0
-#ifdef USE_TRANSPARENT_GEOM
-	auto GeomTransp = InitializeGeometryAttach(true, packed_cb.getV(), packed_cb.getT(), packed_cb.getTS());	/// GeomID == 1
-
 	
-#endif 
- 
-	size_t prev_used = GetMemory();
- 	rtcCommitScene(IntelScene);
- 	size_t mem = GetMemory() - prev_used;
 
-#ifdef USE_TRANSPARENT_GEOM
-	AditionalData("BVH:%u mb|V:%u mb|T:%u mb|D:%u mb", 
-		mem / 1024 / 1024,
-		(GeomNormal.VertsMemory / 1024 / 1024) + (GeomTransp.VertsMemory / 1024 / 1024),
-		(GeomNormal.TriangleMemory / 1024 / 1024) + (GeomTransp.TriangleMemory / 1024 / 1024),
-		(GeomNormal.DummyMemory / 1024 / 1024) + (GeomTransp.DummyMemory / 1024 / 1024) 
-	);
-#else 
-	AditionalData("BVH:%u mb|V:%u mb|T:%u mb|D:%u mb", 
-		mem / 1024 / 1024,
-		GeomNormal.VertsMemory / 1024 / 1024,
-		GeomNormal.TriangleMemory / 1024 / 1024,
-		GeomNormal.DummyMemory / 1024 / 1024
-	);
-#endif 
+// LOADING NORMAL GEOM
+	auto GeomNormal = InitializeGeometryAttach(useForOthers); /// GeomID == 0 
+
+// Пишем сколько памяти скушало: 
+	u32 MemoryNormalV = GeomNormal.TriangleMemory / 1024 / 1024;
+	u32 MemoryNormalT = GeomNormal.VertsMemory / 1024 / 1024;
+ 
+ 	size_t prev_used = GetMemory();
+ 	rtcCommitScene(IntelScene);
+  	AditionalData("BVH: %umb |V:%umb|T:%umb",
+		(GetMemory() - prev_used) / 1024 / 1024,
+		MemoryNormalV,
+		MemoryNormalT
+ 	);
+
+	Phase("Start RayTracing");
 }
 
 void IntelEmbereUNLOAD()
 {
-	size_t used, reserv, free;
-	vminfo(&free, &reserv, &used);
-
- 	clMsg("Intel Embree Releasing| Memory: %u mb", u32(used / 1024 / 1024));
+ 	clMsg("Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
 
 	RemoveGeoms();
 	rtcReleaseScene(IntelScene);
 	rtcReleaseDevice(device);
 	IntelScene = 0;
 	device = 0;
+
+	clMsg("Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
 }
