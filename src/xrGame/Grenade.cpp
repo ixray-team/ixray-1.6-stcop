@@ -47,6 +47,12 @@ void CGrenade::Load(LPCSTR section)
 		}
 	}
 
+	m_contact_grenade_params.SafeTime = READ_IF_EXISTS(pSettings, r_u32, section, "safe_time", 0);
+	m_contact_grenade_params.DelayTime = READ_IF_EXISTS(pSettings, r_u32, section, "delay_time", 0);
+	m_contact_grenade_params.ExplosionOnKick = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_kick", false);
+	m_contact_grenade_params.MinExplosionSpeed = READ_IF_EXISTS(pSettings, r_float, section, "min_explosion_speed", 0.0f);
+	m_contact_grenade_params.DeactivateOnLowSpeedContact = READ_IF_EXISTS(pSettings, r_bool, section, "deactivate_on_minimal_speed_contact", false);
+
 	//////////////////////////////////////
 	//время убирания оружия с уровня
 	if(pSettings->line_exist(section,"grenade_remove_time"))
