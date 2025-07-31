@@ -514,6 +514,9 @@ void xrServer::SendUpdatePacketsToAll()
 		}
 	};
 
+	if (GetServerClient() == nullptr)
+		return;
+
 	SenderFunctor temp_functor(this, m_update_packets, &m_updator, net_flags(FALSE, TRUE));
 	net_players.ForFoundClientsDo(ClientExcluderPredicate(GetServerClient()->ID), temp_functor);
 }
