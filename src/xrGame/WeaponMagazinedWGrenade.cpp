@@ -993,5 +993,25 @@ int CWeaponMagazinedWGrenade::GetAmmoCount2(u8 ammo2_type) const
 	return GetAmmoCount_forType(m_ammoTypes2[ammo2_type]);
 }
 
+u8 CWeaponMagazinedWGrenade::GetTargetAmmoType(bool for_grenade_mode) const
+{
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
+	{
+		return m_set_next_ammoType_on_reload;
+	}
 
+	return GetAmmoType(for_grenade_mode);
+}
+
+u8 CWeaponMagazinedWGrenade::GetAmmoType(bool for_grenade_mode) const
+{
+	if (for_grenade_mode)
+	{
+		return m_bGrenadeMode ? m_ammoType : m_ammoType2;
+	}
+	else
+	{
+		return m_bGrenadeMode ? m_ammoType2 : m_ammoType;
+	}
+}
 
