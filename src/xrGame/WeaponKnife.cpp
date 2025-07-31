@@ -49,8 +49,15 @@ void CWeaponKnife::Load	(LPCSTR section)
 	inherited::Load		(section);
 
 	fWallmarkSize = pSettings->r_float(section,"wm_size");
-	m_sounds.LoadSound(section,"snd_shoot"		, "sndShot"		, false, SOUND_TYPE_WEAPON_SHOOTING		);
+
+	m_sounds.LoadSound(section,"snd_shoot", "sndShot", false, SOUND_TYPE_WEAPON_SHOOTING);
 	
+	if (pSettings->line_exist(section, "snd_draw"))
+		m_sounds.LoadSound(section, "snd_draw", "SndShow", false, ESoundTypes(SOUND_TYPE_ITEM_TAKING));
+
+	if (pSettings->line_exist(section, "snd_holster"))
+		m_sounds.LoadSound(section, "snd_holster", "SndHide", false, ESoundTypes(SOUND_TYPE_ITEM_HIDING));
+
 	m_Hit1SpashDir		=	pSettings->r_fvector3(section, "splash1_direction");
 	m_Hit2SpashDir		=	pSettings->r_fvector3(section, "splash2_direction");
 
@@ -292,6 +299,8 @@ void CWeaponKnife::switch2_Hiding	()
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
 	PlayHUDMotion("anm_hide", TRUE, this, GetState());
+	if (m_sounds.FindSoundItem("SndHide", false))
+		PlaySound("SndHide", get_LastFP());
 }
 
 void CWeaponKnife::switch2_Hidden()
@@ -304,8 +313,27 @@ void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
 	PlayHUDMotion("anm_show", FALSE, this, GetState());
+	if (m_sounds.FindSoundItem("SndShow", false))
+		PlaySound("SndShow", get_LastFP());
 }
 
+void CWeaponKnife::UpdateCL()
+{
+	inherited::UpdateCL();
+
+	if (Device.dwFrame == dwUpdateSounds_Frame)
+		return;
+
+	dwUpdateSounds_Frame = Device.dwFrame;
+
+	Fvector P = get_LastFP();
+
+	if (m_sounds.FindSoundItem("SndShow", false))
+		m_sounds.SetPosition("SndShow", P);
+
+	if (m_sounds.FindSoundItem("SndHide", false))
+		m_sounds.SetPosition("SndHide", P);
+}
 
 void CWeaponKnife::FireStart()
 {	
