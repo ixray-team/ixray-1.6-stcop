@@ -100,7 +100,10 @@ void CControlRunAttack::on_event(ControlCom::EEventType type, ControlCom::IEvent
 
 			CBlend					*blend = m_man->animation().current_blend();
 			VERIFY					(blend);
-
+			if (blend == nullptr)
+			{
+				return;
+			}
 			// animation time
 			float					anim_time = blend->timeTotal / blend->speed;
 			
