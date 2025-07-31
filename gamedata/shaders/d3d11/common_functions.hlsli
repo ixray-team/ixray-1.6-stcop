@@ -161,7 +161,7 @@ float hashed_alpha_test(float3 position)
     return clamp(thresh, 0.063f, 1.0f);
 }
 
-#define IMAGE_BITRATE float3(0xff, 0xff, 0xff)
+#define IMAGE_BITRATE float3(1024.f, 1024.f, 1024.f)
 
 // Deband color function (by Hozar 2002) - may be huita
 float3 deband_color(float3 image, float2 uv)
