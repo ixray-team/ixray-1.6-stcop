@@ -210,38 +210,38 @@
 
 <!-- quick buttons -->
 
-<btn_pistol_ammo x="593" y="108" width="18" height="22" hint="ui_inv_ammo_pistol" accel="kQ" stretch="1">
+<btn_pistol_ammo x="502" y="108" width="18" height="22" hint="ui_inv_ammo_pistol" accel="kQ" stretch="1">
 	<window_name>btn_pistol_ammo</window_name>
 	<texture>ui_beltbut_patrons</texture>
 </btn_pistol_ammo>
 
-<btn_pistol_silencer x="574" y="108" width="18" height="22" hint="ui_inv_silencer_pistol" accel="kA" stretch="1">
+<btn_pistol_silencer x="594" y="108" width="18" height="22" hint="ui_inv_silencer_pistol" accel="kA" stretch="1">
 	<window_name>btn_pistol_silencer</window_name>
 	<texture>ui_beltbut_silencer</texture>
 </btn_pistol_silencer>
 
 
-<btn_rifle_ammo x="826" y="86" width="18" height="22" hint="ui_inv_ammo_rifle" accel="kW" stretch="1">
+<btn_rifle_ammo x="848" y="86" width="18" height="22" hint="ui_inv_ammo_rifle" accel="kW" stretch="1">
 	<window_name>btn_rifle_ammo</window_name>
 	<texture>ui_beltbut_patrons</texture>
 </btn_rifle_ammo>	
 
-<btn_rifle_ammo2 x="826" y="108" width="18" height="22" hint="ui_inv_granades_rifle" accel="kE" stretch="1">
+<btn_rifle_ammo2 x="848" y="108" width="18" height="22" hint="ui_inv_granades_rifle" accel="kE" stretch="1">
 	<window_name>btn_rifle_ammo2</window_name>
 	<texture>ui_beltbut_granadeBig</texture>
 </btn_rifle_ammo2>	
 
-<btn_rifle_silencer x="804" y="108" width="18" height="22" hint="ui_inv_silencer_rifle" accel="kF" stretch="1">
+<btn_rifle_silencer x="826" y="108" width="18" height="22" hint="ui_inv_silencer_rifle" accel="kF" stretch="1">
 	<window_name>btn_rifle_silencer</window_name>
 	<texture>ui_beltbut_silencer</texture>		
 </btn_rifle_silencer>
 
-<btn_rifle_scope x="786" y="108" width="18" height="22" hint="ui_inv_scope_rifle" accel="kS" stretch="1">
+<btn_rifle_scope x="108" y="108" width="18" height="22" hint="ui_inv_scope_rifle" accel="kS" stretch="1">
 	<window_name>btn_rifle_scope</window_name>
 	<texture>ui_beltbut_aim</texture>		
 </btn_rifle_scope>
 
-<btn_rifle_glauncher x="768" y="108" width="18" height="22" hint="ui_inv_granadelauncher_rifle" accel="kD" stretch="1">
+<btn_rifle_glauncher x="791" y="108" width="18" height="22" hint="ui_inv_granadelauncher_rifle" accel="kD" stretch="1">
 	<window_name>btn_rifle_glauncher</window_name>
 	<texture>ui_beltbut_granade</texture>
 </btn_rifle_glauncher>

@@ -1,6 +1,10 @@
 uniform	float4		screen_res;
 #ifdef USE_MSAA
+#ifndef USE_HBAO
 Texture2DMS<float4, MSAA_SAMPLES>	s_occ;
+#else
+uniform	Texture2D					s_occ;
+#endif
 #else
 uniform	Texture2D					s_occ;
 #endif
@@ -16,7 +20,7 @@ float ssao_blur_ps(int2 centerTC, int iSample)
 #ifndef USE_MSAA
    float2 centerData = s_occ.Sample( smp_nofilter, centerTC);
 #else
-   float2 centerData = s_occ.Load( centerTC, iSample);
+   float2 centerData = s_occ.Load( int3(centerTC, 0), iSample);
 #endif
 
    float  fOcclusion  = centerData.r * fSumWeight;
@@ -48,7 +52,7 @@ float ssao_blur_ps(int2 centerTC, int iSample)
      float2 sampleData = s_occ.Sample( smp_nofilter, sampleTC);
 #else
      int2	sampleTC   = centerTC + arrOffsets[i];
-     float2 sampleData = s_occ.Load(sampleTC, iSample);
+     float2 sampleData = s_occ.Load(int3(sampleTC, 0), iSample);
 #endif
 	 
 		float fDepth  = sampleData.g;
