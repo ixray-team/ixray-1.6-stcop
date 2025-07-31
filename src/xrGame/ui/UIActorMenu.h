@@ -254,7 +254,7 @@ protected:
 
 	void						ActivatePropertiesBox		();
 	void						TryHidePropertiesBox		();
-	void				ProcessPropertiesBoxClicked	(CUIWindow* w, void* d);
+	void				        ProcessPropertiesBoxClicked	(CUIWindow* w, void* d);
 	
 	void						CheckDistance				();
 	void						UpdateItemsPlace			();
@@ -276,7 +276,7 @@ protected:
 	void						UpdateOutfit				();
 	void						MoveArtefactsToBag			();
 	bool						TryActiveSlot				(CUICellItem* itm);
-	void				TryRepairItem				(CUIWindow* w, void* d);
+	void			  	        TryRepairItem				(CUIWindow* w, void* d);
 	bool						CanUpgradeItem				(PIItem item);
 
 	bool						ToActorTrade				(CUICellItem* itm, bool b_use_cursor_pos);
@@ -304,6 +304,7 @@ protected:
 	void						UpdatePrices				();
 	bool						CanMoveToPartner			(PIItem pItem);
 	void						TransferItems				(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
+	void						TransferItemsMp             (CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying);
 
 public:
 								CUIActorMenu				();
