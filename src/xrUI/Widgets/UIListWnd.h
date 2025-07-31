@@ -106,6 +106,8 @@ public:
 
     int GetListPosition() const { return m_iFirstShownIndex; }
 
+    virtual CUIWindow* ui_cast_window() { return this; }
+    virtual CUIListWnd* ui_cast_list() { return this; }
 
 protected:
     void create_active_back();

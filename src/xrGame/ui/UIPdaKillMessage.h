@@ -10,6 +10,9 @@ public:
 				CUIPdaKillMessage	();
 
 			void Init				(KillMessageStruct& msg, CGameFont* F);
+
+			virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			float InitText(CUITextWnd& refStatic, float x, PlayerInfo& info);
 			float InitIcon(CUIStatic& refStatic, float x, IconInfo& info);

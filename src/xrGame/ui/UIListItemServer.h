@@ -55,6 +55,9 @@ public:
 			int				Get_gs_index			()		{return m_srv_info.info.Index;}
 			LIST_SRV_ITEM*	GetInfo					()		{return &m_srv_info;};
 	
+		virtual CUIWindow* ui_cast_window() { return this; }
+		virtual CUIListBoxItem* ui_cast_list_box_item() { return this; }
+		virtual CUIListItemServer* ui_cast_list_item_server() { return this; }
 
 protected:
 	LIST_SRV_SIZES			m_sizes;

@@ -17,6 +17,9 @@ public:
 			void	SetPos			( float pos );
 	IC		float	GetPos			()	{	return m_pos;	}
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+
 private:
 	float		m_angle_begin;
 	float		m_angle_end;

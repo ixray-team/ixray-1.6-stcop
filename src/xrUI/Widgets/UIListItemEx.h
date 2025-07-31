@@ -23,6 +23,9 @@ public:
     virtual void SetSelectionColor(u32 dwColor);
     virtual void Draw();
 
+    virtual CUIWindow* ui_cast_window() { return this; }
+    virtual CUIListItem* ui_cast_list_item() { return this; }
+
 protected:
     u32 m_dwSelectionColor;
 };

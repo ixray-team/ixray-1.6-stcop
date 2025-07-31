@@ -48,6 +48,8 @@ public:
 	void				TryAddUpgradeInfo	(CInventoryItem& pInvItem);
 	void				TryAddBoosterInfo	(CInventoryItem& pInvItem);
 	
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 	virtual void		Draw				();
 	bool				m_b_FitToHeight;
 	u32					delay;

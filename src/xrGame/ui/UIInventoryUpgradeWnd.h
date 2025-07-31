@@ -75,6 +75,8 @@ public:
 			void			set_info_cur_upgrade( Upgrade_type* upgrade );
 	UIUpgrade*				FindUIUpgrade( Upgrade_type const* upgr );
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 			void			LoadCellsBacks( CUIXml& uiXml );
 			void			LoadCellStates( LPCSTR state_str, LPCSTR texture_name, LPCSTR texture_name2, u32 color );

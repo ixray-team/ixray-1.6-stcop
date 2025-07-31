@@ -65,6 +65,8 @@ public:
 	void				SetTradeMode		();
 	void				UpdateButtonsLayout	(bool b_disable_break, bool trade_enabled);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	CUIScrollView*			UIQuestionsList;
 	CUIScrollView*			UIAnswersList;
@@ -98,6 +100,8 @@ public:
 
 	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	void 	OnTextClicked			(CUIWindow* w, void*);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
 class CUIAnswerItem :public CUIWindow
@@ -121,5 +125,6 @@ class CUIAnswerItemIconed :public CUIAnswerItem
 public:
 					CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path);
 	void			Init					(LPCSTR text, LPCSTR name, LPCSTR texture_name);
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 };

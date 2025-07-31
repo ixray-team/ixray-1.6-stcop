@@ -112,4 +112,6 @@ public:
 							CUISelectable		()							:m_bSelected(false){}
 	bool					GetSelected			() const					{return m_bSelected;}
 	virtual void			SetSelected			(bool b)					{m_bSelected = b;};
+
+	virtual CUISelectable* ui_cast_selectable() { return this; }
 };

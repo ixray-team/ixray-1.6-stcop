@@ -17,6 +17,8 @@ public:
 			void 		SetMoneyChange			(LPCSTR money);
 			void 		AddBonusMoney			(KillMessageStruct& msg);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	CUIStatic			m_back;
 	CUITextWnd			m_money_amount;

@@ -14,6 +14,8 @@ public: // func
 			void		InitFromXml		( CUIXml& xml_doc, LPCSTR path );
 			void		SetTwoPos		( float cur_value, float compare_value );
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	CUIProgressBar		m_progress_one;
 	CUIProgressBar		m_progress_two;

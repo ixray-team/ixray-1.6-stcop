@@ -16,6 +16,8 @@ public:
 			void 	SetOrientation			(bool bVert)		{m_orientationVertical = bVert;};
 			void	CreateHint				();
 	
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 		shared_str	m_temp_id;
 
 		Fvector2	m_text_ident_normal;

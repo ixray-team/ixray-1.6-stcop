@@ -64,4 +64,6 @@ public:
 	virtual void				TryUsePreset				(ETradePreset idx)												=0;
 	virtual bool				IsIgnoreMoneyAndRank		()																=0;
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 };
