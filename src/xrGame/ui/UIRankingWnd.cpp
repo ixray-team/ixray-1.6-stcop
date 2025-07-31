@@ -160,9 +160,6 @@ void CUIRankingWnd::Init()
 		CUIXmlInit::InitScrollView(xml, "fraction_list", 0, m_factions_list);
 		m_factions_list->SetAutoDelete(true);
 		AttachChild(m_factions_list);
-	}
-	if (m_factions_list)
-	{
 		m_factions_list->SetWindowName("---fraction_list");
 		m_factions_list->m_sort_function = fastdelegate::MakeDelegate(this, &CUIRankingWnd::SortingLessFunction);
 
@@ -312,10 +309,13 @@ void CUIRankingWnd::get_statistic()
 	m_stat_info[0]->SetTextColor(color_rgba(170,170,170,255));
 	m_stat_info[0]->SetText(buf);
 
+	luabind::functor<LPCSTR> funct;
+
+	if (!ai().script_engine().functor("pda.get_stat", funct))
+		return;
+
 	for(u8 i = 1; i < m_stat_count; ++i)
 	{
-		luabind::functor<LPCSTR> funct;
-		R_ASSERT( ai().script_engine().functor("pda.get_stat", funct));
 		LPCSTR str = funct(i);
 		//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
 		m_stat_info[i]->SetTextST(str);
