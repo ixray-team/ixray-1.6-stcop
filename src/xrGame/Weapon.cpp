@@ -2693,7 +2693,7 @@ BOOL CWeapon::ParentIsActor	()
 
 void CWeapon::debug_draw_firedeps()
 {
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7)
 	{
 		CDebugRenderer			&render = Level().debug_renderer();
