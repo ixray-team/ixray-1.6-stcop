@@ -276,7 +276,7 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 
 	R_ASSERT2						(m_actor,"There is no ACTOR spawn point!");
 
-	if (!start_level_name)
+	if (!start_level_name || !xr_strlen(start_level_name))
 		return;
 
 	if (!xr_strcmp(*actor_level_name(),start_level_name))
