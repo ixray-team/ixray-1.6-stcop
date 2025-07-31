@@ -24,7 +24,6 @@ public:
 	virtual bool						shedule_Needed		()			{ return true; };
 			void						make_screenshot		(complete_callback_t cb);
 			void						set_draw_downloads	(bool draw);
-			void				jpeg_compress_cb	(long progress);
 private:
 	CMemoryWriter						m_result_writer;
 			void						make_jpeg_file		();
