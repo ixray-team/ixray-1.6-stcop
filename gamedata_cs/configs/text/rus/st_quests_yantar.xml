@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_actor_destroy_wave1">
+		<text>Место появления зомби</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_name">
+		<text>Не подпускать зомби к сталкерам на крыше.</text>
+	</string>
+	<string id="yan_actor_destroy_wave1_text">
+		<text>Необходимо прикрывать сталкеров на крыше, пока они работают с клапаном установки. Нельзя подпускать зомби к этой ремонтной команде.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2">
+		<text>Место появления зомби</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_name">
+		<text>Не подпускать зомби к сталкерам в ангаре.</text>
+	</string>
+	<string id="yan_actor_destroy_wave2_text">
+		<text>Необходимо прикрывать сталкеров в ангаре, пока они работают с клапаном установки. Нельзя подпускать зомби к этой ремонтной команде.</text>
+	</string>
+	<string id="yan_actor_go_base_defence">
+		<text>Защитить базу учёных</text>
+	</string>
+	<string id="yan_actor_go_base_defence_name">
+		<text>Защитить базу учёных</text>
+	</string>
+	<string id="yan_actor_go_base_defence_text">
+		<text>Защитить базу учёных</text>
+	</string>
+	<string id="yan_actor_go_base_science">
+		<text>Во время нападения зомби двери бункера учёных заблокированы. Необходимо отбить атаку зомби для того, чтобы попасть в бункер к учёным.</text>
+	</string>
+	<string id="yan_actor_go_base_science_name">
+		<text>Поговорить с Сахаровым</text>
+	</string>
+	<string id="yan_actor_go_base_science_text">
+		<text>Стрелок ушел к учёным на Янтарь. Необходимо добраться до Янтаря и поговорить с профессором Сахаровым - возможно, тот знает, где искать Стрелка.</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest">
+		<text>Открытый проход в Рыжий лес</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_name">
+		<text>Идти в Рыжий лес</text>
+	</string>
+	<string id="yan_actor_go_to_red_forest_text">
+		<text>Работа охлаждающей установки стабилизирована, уровень пси-излучения минимален. Проход к Рыжему лесу безопасен. Необходимо двигаться в сторону Рыжего леса - именно туда направляется Стрелок.</text>
+	</string>
+	<string id="yan_actor_go_to_stalker">
+		<text>Уточни позицию</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_name">
+		<text>Уточни позицию у лидера группы</text>
+	</string>
+	<string id="yan_actor_go_to_stalker_text">
+		<text>Уточни позицию у лидера группы</text>
+	</string>
+	<string id="yan_main_quest_line">
+		<text>Не дать погибнуть ремонтной команде</text>
+	</string>
+	<string id="yan_main_quest_line_name">
+		<text>Держать позицию!</text>
+	</string>
+	<string id="yan_main_quest_line_text">
+		<text>Держать позицию!</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy">
+		<text>Отнести документы Сахарову</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_name">
+		<text>Отнести документы Сахарову</text>
+	</string>
+	<string id="yan_otnesti_doc_saharavy_text">
+		<text>Отнести документы Сахарову. Возможно, они объяснят причину появления столь сильного пси-излучения на Янтаре.</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke">
+		<text>Прорваться к установке</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_name">
+		<text>Прорваться на территорию комплекса</text>
+	</string>
+	<string id="yan_proriv_k_ystanovke_text">
+		<text>Окрестности комплекса кишат зомби. Вместе с группой Левши необходимо пробиться на его территорию. Нужно спешить: уровень пси-излучения может достигнуть критической отметки в любой момент.</text>
+	</string>
+	<string id="yan_quest_doc">
+		<text>Найти документы</text>
+	</string>
+	<string id="yan_quest_doc_name">
+		<text>Найти КПК с документами</text>
+	</string>
+	<string id="yan_quest_doc_text">
+		<text>Группа сталкеров нашла на территории комплекса важные документы, которые могут помочь Сахарову выяснить причину появления мощного пси-излучения на Янтаре. Сигнал группы пропал на выходе с территории комплекса. Необходимо найти КПК с документами.</text>
+	</string>
+	<string id="yan_quest_levsha">
+		<text>Встретиться с Левшой</text>
+	</string>
+	<string id="yan_quest_levsha_name">
+		<text>Встретится с отрядом Левши</text>
+	</string>
+	<string id="yan_quest_levsha_text">
+		<text>Группа сталкеров готовится пробиваться на территорию комплекса во время спада уровня пси-излучения. Нужно встретится с командиром группы - Левшой.</text>
+	</string>
+	<string id="yan_repair_defend">
+		<text>Занять позицию на крыше ангара</text>
+	</string>
+	<string id="yan_repair_defend_name">
+		<text>Следовать за сталкером на крышу ангара.</text>
+	</string>
+	<string id="yan_repair_defend_text">
+		<text>Левша приказал всем занять позиции. Необходимо следовать за сталкером на крышу к своей позиции.</text>
+	</string>
+</string_table>

@@ -1,0 +1,79 @@
+;*****************************
+;********* sniper1 ***********
+
+[logic]
+active = camper@enter_work1
+on_death = death@work1
+relation = enemy
+post_combat_time = 0,0
+
+[death@work1]
+on_info = %-red_bridge_sniper_snd -red_bridge_sniper_spawn -red_bridge_sniper_work1 +red_bridge_sniper_work2 +red_bridge_sniper_task_complete%
+
+[camper@enter_work1]
+combat_ignore_cond = true
+;invulnerable = true
+path_walk = red_bridge_sniper_smart_exclusive_sniper_1_walk
+path_look = red_bridge_sniper_smart_sniper_signal_look
+radius = 0
+def_state_moving = sneak_run
+def_state_campering_fire = hide_sniper_fire
+def_state_standing = hide_na
+on_signal = action | camper@bridge_fire_work1
+wounded = wounded@work1
+
+[camper@sniper_fire_work1]
+;out_restr = red_bridge_sniper_3_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = red_bridge_sniper_smart_exclusive_sniper_1_walk
+path_look = red_bridge_sniper_smart_exclusive_sniper_fire_look
+radius = 0
+def_state_moving = sneak_run
+on_game_timer = 20 | camper@bridge_fire_work1
+on_info = {-red_bridge_sniper_fire} camper@actor_hunt_work1
+wounded = wounded@work1
+
+[camper@actor_hunt_work1]
+;out_restr = red_bridge_sniper_3_restr
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = red_bridge_sniper_smart_exclusive_sniper_2_walk
+path_look = red_bridge_sniper_smart_search_actor_look
+target = actor
+anim = hide_sniper_fire
+def_state_moving = sneak_run
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+radius = 0
+on_game_timer = 100 | %+red_bridge_sniper_snd%
+on_info = {+red_bridge_sniper_fire} camper@bridge_fire_work1
+
+[camper@bridge_fire_work1]
+;out_restr = red_bridge_sniper_3_restr
+combat_ignore_cond = {!enemy_in_zone(red_bridge_bridge_control)}
+path_walk = red_bridge_sniper_smart_exclusive_sniper_1_walk
+path_look = red_bridge_sniper_smart_exclusive_sniper_fire_look
+radius = 0
+def_state_moving = sneak_run
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {-red_bridge_sniper_fire} camper@actor_hunt_work1
+on_game_timer = 50 | %+red_bridge_sniper_target% 
+wounded = wounded@work1
+
+[remark@sniper_target_work1]
+out_restr = red_bridge_sniper_3_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_sniper_fire
+target = red_bridge_sniper_smart_exclusive_sniper_fire_look, 0
+on_info = {-red_bridge_sniper_fire} camper@actor_hunt_work1
+on_game_timer = 20 | camper@actor_hunt_work1 %+red_bridge_sniper_target%
+combat_type = camper
+
+[wounded@work1]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

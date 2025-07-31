@@ -1,0 +1,36 @@
+--'******************************************************
+--'*  Биндер объекта артефакт .
+--'******************************************************
+function printf()
+end
+
+function bind(obj)
+	obj:bind_object(artefact_binder(obj))
+end
+
+class "artefact_binder" (object_binder)
+function artefact_binder:__init(obj) super(obj)
+	db.storage[self.object:id()] = { }
+end
+function artefact_binder:net_spawn(server_object)
+	if not object_binder.net_spawn(self, server_object) then
+		return false
+	end
+	db.add_obj(self.object)
+	local artefact = self.object:get_artefact()
+	if bind_anomaly_zone.artefact_ways_by_id[self.object:id()] ~= nil then
+		local force_xz	= bind_anomaly_zone.parent_zones_by_artefact_id[self.object:id()].applying_force_xz
+		local force_y	= bind_anomaly_zone.parent_zones_by_artefact_id[self.object:id()].applying_force_y
+		artefact:FollowByPath(bind_anomaly_zone.artefact_ways_by_id[self.object:id()],0,vector():set(force_xz,force_y,force_xz))
+	end
+	
+	return true
+end
+function artefact_binder:update(delta)
+	object_binder.update(self, delta)
+	printf("pl:art [%s] pos %s", self.object:name(), vec_to_str(self.object:position()))
+end
+function artefact_binder:net_destroy(server_object)
+	db.del_obj(self.object)
+	object_binder.net_destroy(self)
+end

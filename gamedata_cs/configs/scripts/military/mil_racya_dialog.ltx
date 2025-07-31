@@ -1,0 +1,31 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+mil_racya_dialog_1} %=play_sound(mil_hog_to_freedom_3:freedom:mil_kostiuk_name)% sr_idle@2
+
+[sr_idle@2]
+on_signal = sound_end | sr_idle@3pre
+
+[sr_idle@3pre]
+on_game_timer = 10 | %+mil_racya_dialog_1_end% sr_idle@3
+
+[sr_idle@3]
+on_info = {+mil_racya_dialog_2} %=play_sound(mil_hog_to_freedom_5:freedom:mil_kostiuk_name)% sr_idle@4
+
+[sr_idle@4]
+on_signal = sound_end | sr_idle@5pre
+
+[sr_idle@5pre]
+on_game_timer = 10 | %+mil_racya_dialog_2_end% sr_idle@5
+
+[sr_idle@5]
+on_info = {+mil_racya_dialog_3} %=play_sound(mil_hog_to_freedom_7:freedom:mil_kostiuk_name)% sr_idle@6
+
+[sr_idle@6]
+on_signal = sound_end | sr_idle@7pre
+
+[sr_idle@7pre]
+on_game_timer = 10 | %+mil_racya_dialog_3_end% sr_idle@7
+
+[sr_idle@7]

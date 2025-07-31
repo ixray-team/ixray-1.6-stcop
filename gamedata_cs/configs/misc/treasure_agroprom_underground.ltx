@@ -1,0 +1,81 @@
+[list_treasure_agroprom_underground]
+agru_treasure_1
+agru_treasure_2
+;agru_treasure_3
+agru_treasure_4
+agru_treasure_5
+agru_quest_treasure_1
+agru_quest_treasure_2
+agru_quest_treasure_3
+agru_quest_treasure_4
+
+[agru_treasure_1] ; часть трубы в комнате управления насосной станции
+target = agru_treasure_1
+name = st_agru_treasure_1
+description = st_agru_treasure_1_descr
+items = ammo_12x70_buck, 10, medkit_army, 1
+condlist = {=actor_on_level(agroprom:agroprom_underground)} true, false
+
+[agru_treasure_2] ; рюкзак в аномалии в резервуаре
+target = agru_treasure_2
+name = st_agru_treasure_2
+description = st_agru_treasure_2_descr
+items = antirad, 1, ammo_12x70_buck, 10
+condlist = {=actor_on_level(agroprom:agroprom_underground)} true, false
+
+;[agru_treasure_3] ; шкавчик у винтовой лестницы
+;target = agru_treasure_3
+;name = st_agru_treasure_3
+;description = st_agru_treasure_3_descr
+;items = medkit
+;condlist = {=actor_on_level(agroprom:agroprom_underground)} true, false
+
+[agru_treasure_4] ; рюкзак у трупа в туннеле
+target = agru_treasure_4
+name = st_agru_treasure_4
+description = st_agru_treasure_4_descr
+items = medkit, 3, ammo_12x70_buck, 6
+condlist = {=actor_on_level(agroprom:agroprom_underground)} true, false
+
+[agru_treasure_5] ; рюкзак в аномалии под лестницей
+target = agru_treasure_5
+name = st_agru_treasure_5
+description = st_agru_treasure_5_descr
+items = medkit, 1, bandage, 1, antirad, 1
+condlist = {=actor_on_level(agroprom:agroprom_underground)} true, false
+
+[agru_quest_treasure_1]
+target = agru_q1_n
+name = st_agru_q1_n
+description = st_agru_q1_n_descr
+items = ammo_12x76_zhekan, 20, medkit, 1
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_zooman)} true, false
+treasure_cost = 250
+say_item_name = false
+
+[agru_quest_treasure_2]
+target = agru_q2_n
+name = st_agru_q2_n
+description = st_agru_q2_n_descr
+items = wpn_walther, ammo_9x19_fmj, 50
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_holeman)} true, false
+treasure_cost = 900
+say_item_name = false
+
+[agru_quest_treasure_3]
+target = agru_q3_t_a
+name = st_agru_q3_t_a
+description = st_agru_q3_t_a_descr
+items = ammo_og-7b, 1
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_stalker_secret_trader)} true, false
+treasure_cost = 400
+say_item_name = true
+
+[agru_quest_treasure_4]
+target = agru_q4_n
+name = st_agru_q4_n
+description = st_agru_q4_n_descr
+items = flesh_up_cd_pkm, 1, ammo_pkm_100, 200
+condlist = {=actor_on_level(agroprom) =check_npc_name(agr_duty_weaponmaster)} true, false
+treasure_cost = 5000
+say_item_name = true

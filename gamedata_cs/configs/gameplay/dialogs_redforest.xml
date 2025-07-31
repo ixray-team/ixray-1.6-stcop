@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+    <dialog id="red_leshiy_story_2">
+        <dont_has_info>red_bridge_actor_fail</dont_has_info>
+        <dont_has_info>red_leshiy_reward_1</dont_has_info>
+        <dont_has_info>red_leshiy_reward_2</dont_has_info>
+        <dont_has_info>red_leshiy_reward_3</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_leshiy_story_2_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>red_leshiy_story_2_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_leshiy_reward">
+        <phrase_list>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+                <next>16</next>
+            </phrase>
+            <phrase id="13">
+                <text>red_leshiy_reward_13</text>
+                <action>dialogs_red_forest.leshiy_reward_averge</action>
+                <dont_has_info>red_bridge_actor_fail</dont_has_info>
+                <dont_has_info>red_leshiy_reward_done</dont_has_info>
+                <give_info>red_leshiy_reward_done</give_info>
+                <has_info>red_leshiy_reward_3</has_info>
+            </phrase>
+            <phrase id="12">
+                <text>red_leshiy_reward_12</text>
+                <action>dialogs_red_forest.leshiy_reward_bead</action>
+                <dont_has_info>red_bridge_actor_fail</dont_has_info>
+                <dont_has_info>red_leshiy_reward_done</dont_has_info>
+                <give_info>red_leshiy_reward_done</give_info>
+                <has_info>red_leshiy_reward_2</has_info>
+            </phrase>
+            <phrase id="14">
+                <text>red_leshiy_reward_14</text>
+                <action>dialogs_red_forest.leshiy_reward_good</action>
+                <dont_has_info>red_bridge_actor_fail</dont_has_info>
+                <dont_has_info>red_leshiy_reward_done</dont_has_info>
+                <give_info>red_leshiy_reward_done</give_info>
+                <has_info>red_leshiy_reward_4</has_info>
+            </phrase>
+            <phrase id="16">
+                <text>red_leshiy_reward_16</text>
+                <has_info>red_leshiy_reward_done</has_info>
+            </phrase>
+            <phrase id="15">
+                <text>red_leshiy_reward_15</text>
+                <action>dialogs_red_forest.leshiy_reward_very_good</action>
+                <dont_has_info>red_bridge_actor_fail</dont_has_info>
+                <dont_has_info>red_leshiy_reward_done</dont_has_info>
+                <give_info>red_leshiy_reward_done</give_info>
+                <has_info>red_leshiy_reward_5</has_info>
+            </phrase>
+            <phrase id="11">
+                <text>red_leshiy_reward_11</text>
+                <dont_has_info>red_bridge_actor_fail</dont_has_info>
+                <dont_has_info>red_leshiy_reward_done</dont_has_info>
+                <give_info>red_leshiy_reward_done</give_info>
+                <has_info>red_leshiy_reward_1</has_info>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_leshiy_story_1">
+        <dont_has_info>red_leshiy_reward_1</dont_has_info>
+        <dont_has_info>red_bridge_actor_fail</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_leshiy_story_1_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>red_leshiy_story_1_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_artefact_hunters_reward_dialog">
+        <dont_has_info>red_artefact_hunters_task_complete</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_artefact_hunters_reward_dialog_11</text>
+                <action>dialogs_red_forest.ahuntesr_give_reward</action>
+                <give_info>red_artefact_hunters_task_complete</give_info>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_bounty_hunter_way">
+        <phrase_list>
+            <phrase id="11">
+                <text>red_bounty_hunter_way_11</text>
+                <dont_has_info>red_bounty_hunter_middle</dont_has_info>
+                <has_info>red_bounty_hunter_far</has_info>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_bounty_hunter_way_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>red_bounty_hunter_way_1111</text>
+            </phrase>
+            <phrase id="12">
+                <text>red_bounty_hunter_way_12</text>
+                <dont_has_info>red_bounty_hunter_forester_place</dont_has_info>
+                <has_info>red_bounty_hunter_middle</has_info>
+            </phrase>
+            <phrase id="13">
+                <text>red_bounty_hunter_way_13</text>
+                <dont_has_info>red_actor_find_forester</dont_has_info>
+                <has_info>red_bounty_hunter_forester_place</has_info>
+            </phrase>
+            <phrase id="15">
+                <text>red_bounty_hunter_way_15</text>
+                <has_info>red_actor_find_forester</has_info>
+            </phrase>
+            <phrase id="14">
+                <text>red_bounty_hunter_way_14</text>
+                <dont_has_info>red_bounty_hunter_far</dont_has_info>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_bounty_hunter_surrender">
+        <phrase_list>
+            <phrase id="31">
+                <text>red_bounty_hunter_surrender_31</text>
+                <next>311</next>
+                <next>312</next>
+            </phrase>
+            <phrase id="311">
+                <text>red_bounty_hunter_surrender_311</text>
+                <give_info>red_pursuit_bounty_hunters_hit</give_info>
+                <next>3111</next>
+            </phrase>
+            <phrase id="5">
+                <text>red_bounty_hunter_surrender_5</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="41">
+                <text>red_bounty_hunter_surrender_41</text>
+                <next>411</next>
+            </phrase>
+            <phrase id="411">
+                <text>red_bounty_hunter_surrender_411</text>
+                <next>4111</next>
+            </phrase>
+            <phrase id="4">
+                <text>red_bounty_hunter_surrender_4</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <action>dialog_manager.action_disable_phrase</action>
+                <has_info>red_pursuit_task_end</has_info>
+                <next>41</next>
+            </phrase>
+            <phrase id="3">
+                <text>red_bounty_hunter_surrender_3</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <action>dialog_manager.action_disable_phrase</action>
+                <has_info>red_pursuit_task_end</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="312">
+                <text>red_bounty_hunter_surrender_312</text>
+            </phrase>
+            <phrase id="1">
+                <text>red_bounty_hunter_surrender_1</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_bounty_hunter_surrender_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_bounty_hunter_surrender_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>red_bounty_hunter_surrender_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>red_bounty_hunter_surrender_11111</text>
+            </phrase>
+            <phrase id="3111">
+                <text>red_bounty_hunter_surrender_3111</text>
+                <next>31111</next>
+            </phrase>
+            <phrase id="31111">
+                <text>red_bounty_hunter_surrender_31111</text>
+            </phrase>
+            <phrase id="4111">
+                <text>red_bounty_hunter_surrender_4111</text>
+                <give_info>red_bounty_hunters_go_info</give_info>
+                <next>41111</next>
+            </phrase>
+            <phrase id="41111">
+                <text>red_bounty_hunter_surrender_41111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text>red_bounty_hunter_surrender_0</text>
+                <next>1</next>
+                <next>3</next>
+                <next>4</next>
+                <next>5</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_bounty_hunter_dialog">
+        <phrase_list>
+            <phrase id="111111">
+                <text>red_bounty_hunter_dialog_111111</text>
+                <next>1111111</next>
+            </phrase>
+            <phrase id="114">
+                <text>red_bounty_hunter_dialog_114</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1111">
+                <text>red_bounty_hunter_dialog_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="1131">
+                <text>red_bounty_hunter_dialog_1131</text>
+                <next>11311</next>
+            </phrase>
+            <phrase id="11111">
+                <text>red_bounty_hunter_dialog_11111</text>
+                <next>111111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_bounty_hunter_dialog_111</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111111">
+                <text>red_bounty_hunter_dialog_1111111</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11212">
+                <text>red_bounty_hunter_dialog_11212</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="112">
+                <text>red_bounty_hunter_dialog_112</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <next>1121</next>
+            </phrase>
+            <phrase id="113111">
+                <text>red_bounty_hunter_dialog_113111</text>
+                <next>1131111</next>
+            </phrase>
+            <phrase id="11311">
+                <text>red_bounty_hunter_dialog_11311</text>
+                <next>113111</next>
+            </phrase>
+            <phrase id="1131111">
+                <text>red_bounty_hunter_dialog_1131111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>red_bounty_hunters_go_info</give_info>
+            </phrase>
+            <phrase id="11">
+                <text>red_bounty_hunter_dialog_11</text>
+                <next>111</next>
+                <next>112</next>
+                <next>113</next>
+                <next>114</next>
+            </phrase>
+            <phrase id="113">
+                <text>red_bounty_hunter_dialog_113</text>
+                <next>1131</next>
+            </phrase>
+            <phrase id="1121">
+                <text>red_bounty_hunter_dialog_1121</text>
+                <next>11211</next>
+                <next>11212</next>
+            </phrase>
+            <phrase id="11211">
+                <text>red_bounty_hunter_dialog_11211</text>
+                <dont_has_info>red_bounty_hunters_give_treasure</dont_has_info>
+                <next>112111</next>
+            </phrase>
+            <phrase id="112111">
+                <text>red_bounty_hunter_dialog_112111</text>
+                <action>dialogs_red_forest.give_strelok_treasure</action>
+                <next>1121111</next>
+            </phrase>
+            <phrase id="1121111">
+                <text>red_bounty_hunter_dialog_1121111</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <give_info>red_bounty_hunters_give_treasure</give_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forest_gate_keepesr_dialog">
+        <phrase_list>
+            <phrase id="1">
+                <text />
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_forest_gate_keepesr_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_forest_gate_keepesr_dialog_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>red_forest_gate_keepesr_dialog_1111</text>
+                <next>11111</next>
+                <next>11112</next>
+            </phrase>
+            <phrase id="11112">
+                <text>red_forest_gate_keepesr_dialog_11112</text>
+                <give_info>red_forest_gate_keepers_dialog_end</give_info>
+            </phrase>
+            <phrase id="11111">
+                <text>red_forest_gate_keepesr_dialog_11111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>red_forest_gate_keepers_dialog_end</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_cheet">
+        <has_info>red_pursuit_task_end</has_info>
+        <dont_has_info>red_forester_actor_has_compas</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>red_forester_cheet_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>red_forester_cheet_1</text>
+                <give_info>red_bridge_scene_begin</give_info>
+                <give_info>forester_talked</give_info>
+                <give_info>red_forester_search_compas_task</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_who_are_you">
+        <dont_has_info>red_forester_who_are_you</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_forester_who_are_you_1</text>
+                <give_info>red_forester_who_are_you</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_who_are_you_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_need_to_limansk">
+        <has_info>red_pursuit_task_end</has_info>
+        <has_info>red_forester_who_are_you</has_info>
+        <dont_has_info>mil_start_storyline_info</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_forester_need_to_limansk_1</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>red_forester_need_to_limansk_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>red_forester_need_to_limansk_3</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="4">
+                <text>red_forester_need_to_limansk_4</text>
+                <next>5</next>
+            </phrase>
+            <phrase id="5">
+                <text>red_forester_need_to_limansk_5</text>
+                <next>6</next>
+            </phrase>
+            <phrase id="6">
+                <text>red_forester_need_to_limansk_6</text>
+                <next>7</next>
+            </phrase>
+            <phrase id="7">
+                <text>red_forester_need_to_limansk_7</text>
+                <next>8</next>
+            </phrase>
+            <phrase id="8">
+                <text>red_forester_need_to_limansk_8</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="9">
+                <text>red_forester_need_to_limansk_9</text>
+                <give_info>red_actor_find_forester</give_info>
+                <give_info>mil_start_storyline_info</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_need_to_limansk_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_limansk">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>mil_start_storyline_info</has_info>
+        <phrase_list>
+            <phrase id="12">
+                <text>red_forester_limansk_12</text>
+            </phrase>
+            <phrase id="11">
+                <text>red_forester_limansk_11</text>
+                <next>12</next>
+            </phrase>
+            <phrase id="1">
+                <text>red_forester_limansk_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_limansk_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_lost_stalkers">
+        <has_info>mil_actor_inside_wtower</has_info>
+        <dont_has_info>mil_actor_go_to_limansk</dont_has_info>
+        <dont_has_info>red_forester_search_compas_task</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_forester_lost_stalkers_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_forester_lost_stalkers_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1111111">
+                <text>red_forester_lost_stalkers_1111111</text>
+            </phrase>
+            <phrase id="111111">
+                <text>red_forester_lost_stalkers_111111</text>
+                <next>1111111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>red_forester_lost_stalkers_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="11111">
+                <text>red_forester_lost_stalkers_11111</text>
+                <give_info>red_forester_search_compas_task</give_info>
+                <next>111111</next>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_lost_stalkers_0</text>
+                <give_info>forester_talked_2</give_info>
+                <next>1</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_forester_lost_stalkers_111</text>
+                <next>1111</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_about_zone">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>red_forester_who_are_you</has_info>
+        <phrase_list>
+            <phrase id="11">
+                <text>red_forester_about_zone_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text>red_forester_about_zone_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_forester_about_zone_111</text>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_about_zone_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_about_limansk">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>red_strelok_task_end</has_info>
+        <phrase_list>
+            <phrase id="13">
+                <text />
+                <next>131</next>
+            </phrase>
+            <phrase id="14">
+                <text />
+                <next>141</next>
+            </phrase>
+            <phrase id="141">
+                <text />
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="1312">
+                <text />
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1313">
+                <text />
+                <next>121</next>
+                <next>122</next>
+            </phrase>
+            <phrase id="1311">
+                <text />
+                <action>dialogs.break_dialog</action>
+                <give_info>red_actor_choose_investigation</give_info>
+            </phrase>
+            <phrase id="131">
+                <text />
+                <next>1311</next>
+                <next>1312</next>
+                <next>1313</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_forester_about_limansk_11</text>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="1211">
+                <text />
+                <next>122</next>
+            </phrase>
+            <phrase id="121">
+                <text />
+                <next>1211</next>
+            </phrase>
+            <phrase id="12">
+                <text />
+                <next>121</next>
+                <next>122</next>
+            </phrase>
+            <phrase id="1111">
+                <text />
+                <next>112</next>
+            </phrase>
+            <phrase id="112">
+                <text />
+                <action>dialogs.break_dialog</action>
+                <give_info>red_actor_choose_dolg</give_info>
+            </phrase>
+            <phrase id="111">
+                <text>red_forester_about_limansk_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="122">
+                <text />
+                <action>dialogs.break_dialog</action>
+                <give_info>red_actor_choose_freedom</give_info>
+            </phrase>
+            <phrase id="1">
+                <text>red_forester_about_limansk_1</text>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_about_limansk_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_about_forest">
+        <has_info>red_forester_who_are_you</has_info>
+        <has_info>mil_start_storyline_info</has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_forester_about_forest_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_about_forest_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_artefact_hunters">
+        <phrase_list>
+            <phrase id="211">
+                <text>red_artefact_hunters_211</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="11112">
+                <text>red_artefact_hunters_11112</text>
+                <give_info>red_artefact_hunters_actor_refuse</give_info>
+                <next>111121</next>
+            </phrase>
+            <phrase id="11111">
+                <text>red_artefact_hunters_11111</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>red_artefact_hunters_go</give_info>
+            </phrase>
+            <phrase id="22">
+                <text>red_artefact_hunters_22</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="111121">
+                <text>red_artefact_hunters_111121</text>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <has_info>red_artefact_hunters_go</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="31">
+                <text>red_artefact_hunters_31</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="2">
+                <text></text>
+                <dont_has_info>red_artefact_hunters_go</dont_has_info>
+                <has_info>red_artefact_hunters_actor_refuse</has_info>
+                <next>21</next>
+            </phrase>
+            <phrase id="21">
+                <text>red_artefact_hunters_21</text>
+                <next>211</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_artefact_hunters_111</text>
+                <next>1111</next>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <dont_has_info>red_artefact_hunters_task_complete</dont_has_info>
+                <dont_has_info>red_artefact_hunters_actor_refuse</dont_has_info>
+                <dont_has_info>red_artefact_hunters_go</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="1111">
+                <text>red_artefact_hunters_1111</text>
+                <next>11111</next>
+                <next>11112</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_artefact_hunters_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_hello_dialog">
+        <phrase_list>
+            <phrase id="0">
+                <text>red_forester_hello_dialog_0</text>
+                <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+                <action>dialog_manager.action_disable_phrase</action>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="red_forester_has_compas">
+        <has_info>red_forester_actor_has_compas</has_info>
+        <has_info>red_forester_search_compas_task</has_info>
+        <dont_has_info>forester_telled_coordinates</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>red_forester_has_compas_1</text>
+                <action>dialogs_red_forest.give_compass</action>
+                <action>dialogs_red_forest.forester_reward_for_compass</action>
+                <give_info>red_forester_take_compas</give_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>red_forester_has_compas_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="111">
+                <text>red_forester_has_compas_111</text>
+                <give_info>forester_telled_coordinates</give_info>
+            </phrase>
+            <phrase id="0">
+                <text>red_forester_has_compas_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+</game_dialogs>

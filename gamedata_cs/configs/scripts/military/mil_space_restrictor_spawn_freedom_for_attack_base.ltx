@@ -1,0 +1,11 @@
+[logic]
+;active = sr_idle@spawnfirstsquad
+;
+;[sr_idle@spawnfirstsquad]
+;on_info = {=dist_to_actor_ge(150) -mil_merc_talked_i_hate_freedom +mil_merc_talked_f1_f2_wt1 !squad_exist(mil_freedom_attack_base_1)} sr_idle@refresh %=create_squad(mil_freedom_attack_base_1:mil_smart_terrain_7_8)%
+;
+;[sr_idle@refresh]
+;on_game_timer = 100 | sr_idle@spawnsecondsquad
+;
+;[sr_idle@spawnsecondsquad]
+;on_info = {=dist_to_actor_ge(150) -mil_merc_talked_i_hate_freedom +mil_merc_talked_f1_f2_wt1 !squad_exist(mil_freedom_attack_base_1) !squad_exist(mil_freedom_attack_base_2)} sr_idle@refresh %=create_squad(mil_freedom_attack_base_2:mil_smart_terrain_7_8)%

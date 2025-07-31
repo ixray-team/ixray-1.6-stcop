@@ -1,0 +1,28 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {=counter_greater(yan_zombie_roof:2)} sr_idle@1 %+yan_wave1_go%
+
+[sr_idle@1]
+on_info = {=counter_greater(yan_zombie_roof:5)} sr_idle@2 %+yan_wave_naval%
+
+[sr_idle@2]
+on_info = {=counter_greater(yan_zombie_roof:10)} sr_idle@3 %+yan_stalker_3_kaput +yan_roof_nores_stalker3 +yan_naprnik_roof_3 +yan_fast_zombi_cut6% ;--снимаем неу€звимость с первого сталкера
+on_info2 = {!counter_greater(yan_zombie_roof:7)} %-yan_stalker_3_kaput -yan_stalker_4_kaput% sr_idle@3
+on_info3 = {!counter_greater(yan_zombie_roof:5)} %+yan_wave_naval_roof1% sr_idle@3
+
+[sr_idle@3]
+on_game_timer = 150 | {=counter_greater(yan_zombie_roof:10)} sr_idle@4 %+yan_stalker_4_kaput +yan_roof_nores_stalker4 +yan_naprnik_roof_5% ;---через 5 секунд снимаем неу€звимость со второго сталкера
+on_info = {!counter_greater(yan_zombie_roof:7)} %-yan_stalker_3_kaput -yan_stalker_4_kaput% sr_idle@4 ;---меньше или равное кол-во зомби 5 сн€тие сигнала(добавление неу€звимости обратно)
+on_info2 = {!counter_greater(yan_zombie_roof:5)} %+yan_wave_naval_roof1% sr_idle@4
+
+[sr_idle@4]
+on_game_timer = 150 | {=counter_greater(yan_zombie_roof:10)} %+yan_stalker_5_kaput +yan_roof_nores_stalker5 +yan_naprnik_roof_1%
+on_info = {!counter_greater(yan_zombie_roof:7)}  %-yan_stalker_4_kaput -yan_stalker_3_kaput%   ;---меньше или равное кол-во зомби 5 сн€тие сигнала(добавление неу€звимости обратно)
+on_info2 = {!counter_greater(yan_zombie_roof:5)} sr_idle@naval_roof %+yan_wave_naval_roof1%
+
+[sr_idle@naval_roof]
+
+
+[sr_idle@stop]

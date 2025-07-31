@@ -1,0 +1,194 @@
+[up_sect_a_bandit_outfit]
+cost 		= 1000
+inv_weight	= 2.0
+value2		= st_upg_cevlar_body_armor_battle
+bones_koeff_protection = actor_armor_suit_1
+
+[up_sect_b_bandit_outfit]
+cost 		= 500
+value		= +5
+additional_inventory_weight		= 5		; +max_walk_weight
+additional_inventory_weight2	= 5	
+
+[up_sect_c_bandit_outfit]
+cost 		= 500
+value		= +20
+inv_weight	= 0.5
+strike_protection 			= 0.05	;0.1
+wound_protection			= 0.05	;0.1
+explosion_protection 		= 0.05	;0.1
+hit_fraction_actor			= -0.05
+
+[up_sect_d_bandit_outfit]
+cost 		= 500
+value		= +50
+burn_protection 			= 0.005 ;0.1
+shock_protection 			= 0.005 ;0.1
+
+[up_sect_e_bandit_outfit]
+cost 		= 500
+nightvision_sect = effector_nightvision_bad
+
+[up_sect_f_bandit_outfit]
+cost 		= 500
+value		= +50
+radiation_protection 		= 0.005 ;0.1
+chemical_burn_protection 	= 0.005 ;0.1
+
+[up_sect_g_bandit_outfit]
+cost 		= 500
+inv_weight	= 1.0
+artefact_count				= 1
+
+[up_a_bandit_outfit]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = 
+section                 = up_sect_a_bandit_outfit
+property                = prop_armor
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_cevlar_body_armor_battle
+description             = st_upg_cevlar_body_armor_battle_descr
+icon                    = ui_am_upgrade_04
+
+[up_b_bandit_outfit]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = 
+section                 = up_sect_b_bandit_outfit
+property                = prop_tonnage
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_outfit_a_stalk
+description             = st_upg_outfit_a_stalk_descr
+icon                    = ui_am_upgrade_01
+
+[up_c_bandit_outfit]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_c_bandit_outfit
+property                = prop_damage
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_slice_leather_battle
+description             = st_upg_slice_leather_battle_descr
+icon                    = ui_am_upgrade_13
+
+[up_d_bandit_outfit]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = 
+section                 = up_sect_d_bandit_outfit
+property                = prop_thermo_electro
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_brigandine_suit_stalk
+description             = st_upg_brigandine_suit_stalk_descr
+icon                    = ui_am_upgrade_09
+
+[up_e_bandit_outfit]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = 
+section                 = up_sect_e_bandit_outfit
+property                = prop_night_vision
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_night_vision_battle
+description             = st_upg_night_vision_battle_descr
+icon                    = ui_am_upgrade_22
+
+[up_f_bandit_outfit]
+scheme_index            = 0, 5
+known                   = 1
+effects                 = 
+section                 = up_sect_f_bandit_outfit
+property                = prop_radio_chem
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_anti_gas_stalk
+description             = st_upg_anti_gas_stalk_descr
+icon                    = ui_am_upgrade_18
+
+[up_g_bandit_outfit]
+scheme_index            = 0, 6
+known                   = 1
+effects                 = 
+section                 = up_sect_g_bandit_outfit
+property                = prop_artefact
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = a & b
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_artefact_slot
+description             = st_upg_artefact_slot_descr
+icon                    = ui_am_upgrade_05
+
+
+[up_gr_ab_bandit_outfit]
+elements                = up_a_bandit_outfit, up_b_bandit_outfit
+
+[up_gr_cd_bandit_outfit]
+elements                = up_c_bandit_outfit, up_d_bandit_outfit
+
+[up_gr_ef_bandit_outfit]
+elements                = up_e_bandit_outfit, up_f_bandit_outfit
+
+[up_gr_g_bandit_outfit]
+elements                = up_g_bandit_outfit

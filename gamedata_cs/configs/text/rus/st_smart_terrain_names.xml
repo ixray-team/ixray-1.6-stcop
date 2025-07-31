@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Опушка леса</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Лагерь на болоте</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Старая стоянка</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>База «Долга»</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Северный вход</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Восточный вход</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Красный уголок</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Стоянка у валуна</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Укрытие из камней</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Лагерь у базы</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Стоянка на обрыве</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Лагерь под вышкой</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Лагерь сталкеров</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>Площадь у перрона</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Задний выход</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Восточный блокпост</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>Блокпост на дороге</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Каменное кольцо</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Баррикады у вагона</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>Развилка</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>Блокпост у норы</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Вход в подземелья</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Тупик тоннеля</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Временный лагерь</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>Дорога на Свалку</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Стоянка на холме</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Подземелья Агропрома</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Тайный лагерь</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Холм за деревней</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Склон в лесу</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Центр деревни</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Костёр под деревом</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Склон холма</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Опушка под холмом</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Палатка в лесу</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>Военный блокпост</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Стоянка в холмах</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Стоянка в ложбине</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Костёр в лесу</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Костёр во впадине</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Лагерь у вагончика</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Палаточный лагерь</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Стоянка под мостом</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Костёр у моста</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Автобусная остановка</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Лагерь на холме</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Палатка сталкеров</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Дальний блокпост</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Костёр у дороги</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Привал на поляне</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>База нейтралов</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Элеватор</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Укрытие в камнях</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Лагерь в ельнике</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Развалины хутора</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Привал на склоне</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>Блокпост под мостом</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Временная стоянка</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>АТП</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Костёр у «железки»</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Холм за АТП</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Тихое укрытие</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Стоянка у полотна</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Стоянка в сосновом бору</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Костёр у тоннеля</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Дальняя стоянка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Баррикады</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Стоянка между холмами</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Укрытие у тропы</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Укрытие за трубами</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Укрытие в ложбине</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Стоянка диггеров</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Депо</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Привал у свалки</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Кладбище техники</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Стоянка за концлагерем</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Лагерь в ложбине</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Стоянка у крана</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Лагерь у депо</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Остановка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Склон свалки</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Стоянка возле бульдозера</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Перевалочный лагерь</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Северный блокпост</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Точка сбора</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Лагерь кладоискателей</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Обломки крана</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>Блокпост-приёмник</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Лагерь на задворках</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Барахолка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Укрепточка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Полевая стоянка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Укрытие в лесу</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Каменная россыпь</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Логово старателей</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Берег болотца</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Новая стоянка</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Защитный блокпост</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Волчий кут</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Стоянка на тропе</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Двор</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>Дорога к «пожарке»</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Дом на развилке</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Двор с терассой</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Баррикады в тупике</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Сквер у гаражей</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Дом на холме</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Укрытие у моста</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Стоянка у электрощитовой</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Лагерь на стройке</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Тупик</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Костёр на берегу</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Механизаторский двор</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Стоянка на болоте</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Южный хутор</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Стоянка у грузовика</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Северный хутор</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Развилка троп</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Лодочная станция</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Остров валунов</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Руины деревни</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Привал на бревне</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Россыпь камней</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Рыбацкий хутор</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Насосная станция</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Лысый остров</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Смотровая вышка</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Временный лагерь</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Баррикады на берегу</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Лодочный привал</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Стоянка под насыпью</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Стоянка на пустоши</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Старая церковь</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Стоянка в камышах</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Сгоревший хутор</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Перевалочная</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Костёр на отшибе</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>База «Чистого неба»</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Скрытый лагерь</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>База «Чистого неба»</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Лагерь в камнях</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Укрытие в сухом лесу</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Дальняя укрепточка</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Стоянка в низине</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Дальний хутор</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Упавший вертолёт</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Сторожка</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Бронепост</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Барьер</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Привал наёмников</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Водонапорная башня</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Кривая балка</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>Перекресток</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Привал на плитах</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Лагерь сталкеров</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Баррикады на холме</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Предбанник деревни</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Укрепточка на остановке</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>Грузовик на перекрёстке</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Избушка на болоте</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>Дорога между холмами</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Разрушенный трансформатор</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Лагерь в соснах</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Лагерь между бараками</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Вход на армейские склады</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Брошенный хутор</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Спортплощадка</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Задворки базы</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Заброшенный тоннель</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Навес</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Дальняя укрепточка</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Дальний хутор</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Водонапорная башня</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Привал наёмников</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Укрепточка у деревни</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Окраины Лиманска</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Лагерь у дороги</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Казармы в шахте</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>Лежбище кровососа</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Лагерь у капера</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Собачья стоянка</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Ведьмин круг</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Сталкерская лёжка</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Туманная поляна</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Чёртова стоянка</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Тёмный яр</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>Мост в Лиманск</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Лихая тропа</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Логово мутанта</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Логово в лесу</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Вход в Лиманск</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Укрепления бандитов</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Лагерь у бензоколонки</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Терраса на крыше</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Холл завода</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Баррикада у моста</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Стоянка на ферме</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Голая стоянка</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>Крайний блокпост</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Полевой лагерь</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Чахлая стоянка</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Лагерь под оврагом</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Стоянка в низинке</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Дальняя окраина</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>Блокпост у фермы</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Костёр на базе</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Ангар дядьки Яра</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Бар «Глоток свободы»</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>Блокпост у элеватора</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Лагерь на болоте</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Северные баррикады</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Остановка</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Остров</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Лагерь среди камней</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Выворотень</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Диспетчерская АЗС</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Стоянка под склоном</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Старый вагончик</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Дальний рубеж</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Задворки завода</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Проходная завода</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Ангар</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Низина артефактов</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Выворотень</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Вершина холма</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Трансформаторная будка</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Остров на болоте</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Проходная стоянка</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>Блокпост</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Стоянка за болотом</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Лагерь учёных</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Тайный вход</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Выход из комплекса</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Чёрный ход</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Привал под навесом</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Вышка на холме</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Сточная труба</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Угол завода</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Гаражи у периметра</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Выход из трубы</text>
+	</string>
+</string_table>

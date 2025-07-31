@@ -1,0 +1,16 @@
+[logic]
+active = nil
+
+
+[sr_idle]
+on_info = {+val_come_to_freedom_base_complete} sr_idle@2
+
+[sr_idle@2]
+on_game_timer = 30 | sr_idle@3
+
+[sr_idle@3]
+on_info = {!squad_exist(val_boar_lair_guard_9_2)} nil %+val_rush_boar_brake%
+on_info2 = {+val_destroy_boar_guard_9_2} sr_idle@quest %=give_inited_task(storyline:val_destroy_boar_guard_9_2:freedom)%
+
+[sr_idle@quest]
+on_info = {!squad_exist(val_boar_lair_guard_9_2)} nil %+val_destroy_boar_guard_9_2_complete +val_rush_boar_brake%

@@ -1,0 +1,44 @@
+[logic]
+active = walker@prisoner
+meet = meet
+on_death = death
+wounded = wounded
+
+[walker@prisoner]
+path_walk = esc_wolf_brother_walk_1
+path_look = esc_wolf_brother_look_1
+on_info2 = {+esc_wolf_brother_2} walker@run
+meet = meet
+on_info = {-esc_wolf_brother_info =squad_exist(esc_smart_terrain_9_10_bandit_other_squad)} walker@prisoner %=set_squad_goodwill_to_npc(esc_smart_terrain_9_10_bandit_other_squad:friend) +esc_wolf_brother_info%
+combat_ignore_cond = true
+
+[walker@run]
+path_walk = esc_wolf_brother_walk_2
+path_look = esc_wolf_brother_look_2
+def_state_moving = run
+meet = no_meet
+on_npc_in_zone = 429 | esc_space_restrictors_2_12_sr_defense | walker@walk
+on_actor_dist_ge_nvis = 100 | walker@death %+esc_wolf_brother_fail =kill_npc%
+
+[walker@walk]
+path_walk = esc_wolf_brother_walk_3
+path_look = esc_wolf_brother_look_3
+meet = meet
+def_state_moving = walk
+on_info = %+esc_wolf_brother_3%
+
+[walker@death]
+path_walk = esc_wolf_brother_walk_3
+path_look = esc_wolf_brother_look_3
+meet = meet
+def_state_moving = walk
+
+[death]
+on_info = %+esc_wolf_brother_fail%
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false

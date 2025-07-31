@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_info = {+agr_smart_terrain_4_2_simulation_task -agr_smart_terrain_4_2_simulation_task_complete =smart_squad_population(monster:agr_smart_terrain_4_2:2)} sr_idle@line_1 %=create_squad(agr_smart_terrain_4_2_snorks_4_lair:agr_smart_terrain_4_2)% 
+
+[sr_idle@line_1]
+on_info = sr_idle@line_2 %=give_inited_task(eliminate_smart:agr_smart_terrain_4_2:stalker)%
+
+[sr_idle@line_2]
+on_info = {+agr_smart_terrain_4_2_simulation_task_complete} sr_idle@line_0
+
+[sr_idle@line_3]

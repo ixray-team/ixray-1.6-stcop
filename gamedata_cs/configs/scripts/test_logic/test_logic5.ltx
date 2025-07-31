@@ -1,0 +1,17 @@
+[logic]
+active = walker
+on_death = death
+
+[death]
+on_info = %-lim_test_stalker_5% 
+
+[walker]
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+path_walk = walk_5
+path_look = look_5
+on_info = {+test_info_1} walker@2
+
+[walker@2]
+path_walk = walk_5
+path_look = look_5

@@ -1,0 +1,16 @@
+[logic]
+active = camper@wait
+
+[camper@wait]
+out_restr = lim_final_enemy_restr_2
+combat_ignore_cond = true
+path_walk = lim_final_enemy_wait_4_walk
+path_look = lim_final_enemy_wait_4_walk
+on_info = {=actor_in_zone(lim_final_enemy_restr_2)} camper@fire %=hit_npc_from_actor =make_actor_visible_to_npc%
+
+[camper@fire]
+out_restr = lim_final_enemy_restr_2
+path_walk = lim_final_enemy_fire_4_walk
+path_look = lim_final_enemy_fire_4_look
+def_state_moving = assault
+radius = 30

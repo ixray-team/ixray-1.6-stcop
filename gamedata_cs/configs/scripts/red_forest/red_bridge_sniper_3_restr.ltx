@@ -1,0 +1,22 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+red_bridge_sniper_snd} sr_idle@check %=play_sound(red_bridge_sniper:killer:red_ally_leshiy_name) %
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@check]
+on_game_timer = 50 | {+red_bridge_sniper_snd} %=play_sound(red_bridge_sniper:killer:red_ally_leshiy_name)%
+on_info = {-red_bridge_sniper_snd -red_bridge_sniper_first_task} sr_idle@1, {-red_bridge_sniper_snd +red_bridge_sniper_first_task} sr_idle@2
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@2]
+on_info = {+red_bridge_sniper_snd} sr_idle@check2 %=play_sound(red_bridge_sniper:killer:red_ally_leshiy_name) =give_inited_task(storyline:red_bridge_kill_sniper:csky)%
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@check2]
+on_game_timer = 50 | {+red_bridge_sniper_snd} %=play_sound(red_bridge_sniper:killer:red_ally_leshiy_name)%
+on_info = {-red_bridge_sniper_snd} sr_idle@2
+on_info2 = {+red_bridge_down_done} sr_idle@nil
+
+[sr_idle@nil]

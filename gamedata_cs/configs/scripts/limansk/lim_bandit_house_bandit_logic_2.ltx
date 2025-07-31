@@ -1,0 +1,18 @@
+[logic]
+active = camper@ambush
+relation = enemy
+
+[camper@ambush]
+out_restr = lim_bandit_house_zone_1
+combat_ignore_cond = {!enemy_in_zone(lim_bandit_house_zone_1)}
+path_walk = lim_bandit_house_bandit_2_walk
+path_look = lim_bandit_house_bandit_2_look
+def_state_campering = hide_na
+def_state_campering_fire = hide_fire
+radius = 5
+on_info = {+lim_bandit_house_attack2 =see_actor} walker@fire
+
+[walker@fire]
+out_restr = lim_bandit_house_zone_1
+path_walk = lim_bandit_house_bandit_2_walk
+path_look = lim_bandit_house_bandit_2_look 

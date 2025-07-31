@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_actor_inside = {+mil_start_after_red_forest -mil_village_sound_03} sr_idle@sound_stop %=play_sound(gunfire_1) +mil_village_sound_03%
+
+[sr_idle@sound_stop]

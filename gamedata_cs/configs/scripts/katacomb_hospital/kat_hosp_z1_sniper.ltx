@@ -1,0 +1,183 @@
+[logic]
+active = camper@wait_action
+combat_ignore = combat_ignore
+on_death = death
+on_hit = hit
+
+[death]
+on_info = %+sniper_off%
+
+[hit]
+on_info = camper@fire5
+
+[camper@wait_action]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_2_walk
+path_look = sniper_z1_1_look_hide
+radius = 1
+def_state_campering = hide_na
+on_info = {+hospital_z1_action} camper@fire
+on_info2 = {+rush_7} camper@fire4
+invulnerable = true
+
+[camper@actor_ignore]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_2_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@fire
+invulnerable = true
+on_info = {+rush_7} camper@fire4
+
+; Стреляет по барикаде
+[camper@fire]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = {!is_enemy_actor} always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {+sniper_fire_scene} camper@wait
+on_info2 = {+cover_fire_hide} camper@hide_pre
+on_info3 = {+rush_7} camper@fire4
+invulnerable = true
+on_actor_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@actor_ignore
+
+[camper@hide_pre]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look_hide
+radius = 1
+def_state_campering = hide_na
+on_info = {+sniper_fire_scene} camper@wait
+on_info2 = {+cover_fire_end} camper@fire
+on_info3 = {+rush_7} camper@fire4
+invulnerable = true
+
+[camper@wait]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_game_timer = 40 | remark
+invulnerable = true
+
+; Убийство жертвы
+[remark]
+out_restr = z1_sniper_restr
+combat_ignore_cond = always
+danger = danger_condition@2
+anim = hide_sniper_fire
+target = 201
+on_info = {+sniper_fire_scene_end } camper@fire2
+on_info2 = {+rush_7} camper@fire4
+invulnerable = true
+
+; Стреляет по игроку
+[camper@fire2]
+out_restr = z1_sniper_restr
+danger = danger_condition
+combat_ignore_cond = {!is_enemy_actor} always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {+rush_4} camper@fire3
+on_info2 = {+cover_fire_hide} camper@hide
+invulnerable = true
+on_actor_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@actor_ignore2
+
+[camper@actor_ignore2]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_2_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+on_actor_not_in_zone = kat_hosp_z1_sniper_ignore_restr | camper@fire2
+invulnerable = true
+
+; Прячется во время огня на прикрытие
+[camper@hide]
+out_restr = z1_sniper_restr
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look_hide
+radius = 1
+def_state_campering = hide_na
+on_info = {+rush_4} camper@fire3
+on_info2 = {+cover_fire_end} camper@fire2
+invulnerable = true
+
+; Переходит на вторую точку для прострела второго этажа
+[camper@fire3]
+out_restr = z1_sniper_restr
+danger = danger_condition
+combat_ignore_cond = {!is_enemy_actor} always
+path_walk = sniper_z1_2_walk
+path_look = sniper_z1_2_look
+radius = 0
+def_state_moving = sneak_run
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {+rush_7} camper@fire4
+invulnerable = true
+
+[camper@fire4]
+out_restr = z1_sniper_restr
+danger = danger_condition
+combat_ignore_cond = always
+path_walk = sniper_z1_1_walk
+path_look = sniper_z1_1_look
+radius = 1
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+wounded = wounded
+
+[camper@fire5]
+out_restr = z1_sniper_restr
+danger = danger_condition
+combat_ignore_cond = {!is_enemy_actor} always
+path_walk = sniper_z1_2_walk
+path_look = z1_sniper_final_look
+radius = 1
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+wounded = wounded
+
+[wounded]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_ distance_grenade = 0
+
+[danger_condition@2]
+ignore_distance = 0
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_ distance_grenade = 0
+
+[combat_ignore]

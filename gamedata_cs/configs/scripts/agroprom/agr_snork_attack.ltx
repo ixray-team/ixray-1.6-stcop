@@ -1,0 +1,110 @@
+[logic@work1]
+active = mob_walker@wait
+suitable = {=is_gulag_attacking_target(agr_smart_terrain_4_6) =check_npc_name(agr_snork_jumper_1) -snork_on_group_jump_1} true
+monster_job = true
+prior = 40
+
+[mob_walker@wait]
+path_walk = way_snork_1
+path_look = look_snork_1
+on_info = {+snork_on_group_jump_up_all} mob_jump@1 %=request_current_squad_stage(prepare)%
+
+[mob_jump@1]
+path_jump = jump_snork_1
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | %+snork_on_group_jump_1% mob_home@1
+
+[mob_home@1]
+path_home = jump_snork_1
+out_restr = agr_smart_terrain_4_6_def
+aggressive_home
+
+[logic@work2]
+active = mob_walker@wait2
+suitable = {=is_gulag_attacking_target(agr_smart_terrain_4_6) =check_npc_name(agr_snork_jumper_1) -snork_on_group_jump_2} true
+monster_job = true
+prior = 40
+
+[mob_walker@wait2]
+path_walk = way_snork_2
+path_look = look_snork_2
+on_info = {+snork_on_group_jump_up_all} mob_jump@2 %=request_current_squad_stage(prepare)%
+
+[mob_jump@2]
+path_jump = jump_snork_2
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | %+snork_on_group_jump_2% mob_home@2
+
+[mob_home@2]
+path_home = jump_snork_2
+out_restr = agr_smart_terrain_4_6_def
+aggressive_home
+
+[logic@work3]
+active = mob_walker@wait3
+suitable = {=is_gulag_attacking_target(agr_smart_terrain_4_6) =check_npc_name(agr_snork_jumper_1) -snork_on_group_jump_3} true
+monster_job = true
+prior = 40
+
+[mob_walker@wait3]
+path_walk = way_snork_3
+path_look = look_snork_3
+on_info = {+snork_on_group_jump_up_all} mob_jump@3 %=request_current_squad_stage(prepare)%
+
+[mob_jump@3]
+path_jump = jump_snork_3
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | %+snork_on_group_jump_3% mob_home@3
+
+[mob_home@3]
+path_home = jump_snork_3
+out_restr = agr_smart_terrain_4_6_def
+aggressive_home
+
+[logic@work4]
+active = mob_walker@wait4
+suitable = {=is_gulag_attacking_target(agr_smart_terrain_4_6) =check_npc_name(agr_snork_jumper_1) -snork_on_group_jump_4} true
+monster_job = true
+prior = 40
+
+[mob_walker@wait4]
+path_walk = way_snork_4
+path_look = look_snork_4
+on_info = {+snork_on_group_jump_up_all} mob_jump@4 %=request_current_squad_stage(prepare)%
+
+[mob_jump@4]
+path_jump = jump_snork_4
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | %+snork_on_group_jump_4% mob_home@4
+
+[mob_home@4]
+path_home = jump_snork_4
+out_restr = agr_smart_terrain_4_6_def
+aggressive_home
+
+[logic@work5]
+active = mob_walker@wait5
+suitable = {=is_gulag_attacking_target(agr_smart_terrain_4_6) =check_npc_name(agr_snork_jumper_1) -snork_on_group_jump_5} true
+monster_job = true
+prior = 40
+
+[mob_walker@wait5]
+path_walk = way_snork_5
+path_look = look_snork_5
+on_info = {+snork_on_group_jump_up_all} mob_jump@5 %=request_current_squad_stage(prepare)%
+
+[mob_jump@5]
+path_jump = jump_snork_5
+ph_jump_factor = 1.5
+offset = 0,0,0
+on_signal = jumped | %+snork_on_group_jump_5% mob_home@5
+
+[mob_home@5]
+path_home = jump_snork_5
+out_restr = agr_smart_terrain_4_6_def
+aggressive_home
+

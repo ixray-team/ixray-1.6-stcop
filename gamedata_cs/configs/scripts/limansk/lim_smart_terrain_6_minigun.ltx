@@ -1,0 +1,95 @@
+[logic]
+active = camper@sniper_1_work1
+on_death = death
+
+[death]
+on_info = %+lim_military_minigun_out%
+
+[camper@sniper_1_work1]
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_smart_terrain_6_spec_sniper_1_walk
+path_look = lim_smart_terrain_6_spec_sniper_1_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+radius = 15
+on_info = {=dist_to_actor_ge(15)} %=restore_health%
+on_info2 = {=health_le(0.5)} remark@medic_work1
+on_info3 = {+lim_canal_scene_begin} smartcover@minigun_fake_fire %=hit_npc_from_actor%
+
+[smartcover@minigun_fake_fire]
+use_in_combat = true
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_6_minigun_cover
+target_path = lim_smart_terrain_6_spec_sniper_1_fire_look
+cover_state = fire_target
+on_game_timer = 150 | smartcover@minigun_wait
+on_info = {=actor_in_zone(lim_smart_terrain_6_minigun_fire_restr)} camper@minigun_fire_actor %=hit_npc_from_actor =make_actor_visible_to_npc%
+on_info2 = {=dist_to_actor_le(5)} camper@fire_work1
+on_info3 = {=dist_to_actor_ge(15)} %=restore_health%
+
+[smartcover@minigun_wait]
+use_in_combat = true 
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_6_minigun_cover
+on_game_timer = 150 | smartcover@minigun_wait
+on_info = {=actor_in_zone(lim_smart_terrain_6_minigun_fire_restr)} camper@minigun_fire_actor %=hit_npc_from_actor =make_actor_visible_to_npc%
+on_info2 = {=dist_to_actor_le(5)} camper@fire_work1
+on_info3 = {=dist_to_actor_ge(15)} %=restore_health%
+
+[smartcover@minigun_fire_actor]
+use_in_combat = true
+combat_ignore_cond = {!is_enemy_actor}
+cover_name = lim_smart_terrain_6_minigun_cover
+;cover_state = fire_target
+;fire_target = actor
+on_info = {=actor_out_zone(lim_smart_terrain_6_minigun_fire_restr)} smartcover@minigun_wait
+on_info2 = {=dist_to_actor_ge(15)} %=restore_health%
+
+[camper@minigun_fire_actor]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = lim_smart_terrain_6_spec_sniper_1_walk
+path_look = lim_smart_terrain_6_spec_sniper_1_look
+def_state_moving = sneak_run
+on_signal = action | remark@minigun_fire_actor %=restore_health%
+
+[remark@minigun_fire_actor]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_fire
+target = actor
+on_game_timer = 50 | remark@minigun_wait_actor
+on_info = {=dist_to_actor_le(10)} camper@fire_work1
+on_info2 = {=health_le(0.3)} remark@medic_work1
+
+[remark@minigun_wait_actor]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide
+target = actor
+on_info = {=see_actor} remark@minigun_fire_actor
+on_info2 = {=dist_to_actor_le(10)} camper@fire_work1
+on_info3 = {=health_le(0.5)} remark@medic_work1
+
+[remark@medic_work1]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wounded
+on_game_timer = 30 | remark@minigun_fire_actor %=restore_health%
+
+[camper@fire_work1]
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_smart_terrain_6_spec_sniper_1_walk
+path_look = lim_smart_terrain_6_spec_sniper_1_fire_look
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+def_state_moving = assault
+radius = 15
+on_info = {=health_le(0.3)} remark@medic2_work1
+
+[remark@medic2_work1]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wounded
+on_game_timer = 30 | camper@sniper_1_work1 %=restore_health%

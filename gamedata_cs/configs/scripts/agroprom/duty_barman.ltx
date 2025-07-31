@@ -1,0 +1,96 @@
+[logic]
+active = remark@wait
+on_death = death
+on_hit = hit
+level_spot = quest_npc
+trade = misc\trade\trade_barmen_all.ltx
+
+[remark@enemy]
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = agr_smart_terrain_1_6_barman_1_walk
+path_look = agr_smart_terrain_1_6_barman_1_look
+out_restr = agr_in_restr_barman
+anim = hands_up
+target = actor
+meet = no_meet
+on_info = {!is_smart_in_combat(agr_smart_terrain_1_6)} remark@wait
+
+[remark@wait]
+path_walk = agr_smart_terrain_1_6_barman_1_walk
+path_look = agr_smart_terrain_1_6_barman_1_look
+out_restr = agr_in_restr_barman
+anim = wait
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = smartcover@near_table
+meet = meet
+
+[smartcover@near_table]
+cover_name = agr_smart_cover_barman_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+out_restr = agr_in_restr_barman
+on_timer = 13330 | smartcover@near_table2
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table2]
+cover_name = agr_smart_cover_barman_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = lookout_target
+out_restr = agr_in_restr_barman
+on_timer = 15000 | smartcover@near_table3
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table3]
+cover_name = agr_smart_cover_barman_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_no_lookout_target
+out_restr = agr_in_restr_barman
+on_timer = 4500 | smartcover@near_table4
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@near_table4]
+cover_name = agr_smart_cover_barman_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_target
+out_restr = agr_in_restr_barman
+on_timer = 6500 | smartcover@near_table
+def_state_moving = walk
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = {=actor_in_zone(agr_trader_tradezone)} smartcover@trade
+meet = meet
+
+[smartcover@trade]
+cover_name = agr_smart_cover_barman_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_target
+out_restr = agr_in_restr_barman
+def_state_moving = walk
+meet = meet
+on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} remark@enemy
+on_info2 = {!actor_in_zone(agr_trader_tradezone)} smartcover@near_table
+
+[death]
+on_info = %+agr_duty_barman_death%
+
+[hit]
+on_info = %=kill_npc%
+
+[meet]
+meet_state 		= 3|nil@nil
+victim			= 3|actor
+use			= true
+abuse			= false
+meet_state		= 3|nil@nil
+sound_start 		= agr_duty_barman_meet
+sound_stop 		= agr_duty_barman_meet_bye
+quest_npc	        = true

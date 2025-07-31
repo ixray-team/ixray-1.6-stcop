@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_ready_actor_cut2 !squad_exist(yan_default_stalker_1)} sr_idle@spawn1 %=create_squad(yan_default_stalker_1:yan_smart_terrain_1_6)%
+
+[sr_idle@spawn1]
+on_info = {!actor_in_zone(yan_space_restrictor_spawn_stalker_1_6) !squad_exist(yan_default_stalker_1)} sr_idle@spawn_2 %=create_squad(yan_default_stalker_1:yan_smart_terrain_1_6)%  
+
+[sr_idle@spawn_2]
+on_info = {+yan_default_stalker_1_death} sr_idle@retime
+
+[sr_idle@retime]
+on_game_timer = 2750 | sr_idle@spawn1

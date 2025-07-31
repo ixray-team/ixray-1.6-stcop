@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@check
+
+[sr_idle@check]
+on_info = {!squad_exist(red_bridge_bandit_groop_1) !squad_exist(red_bridge_bandit_groop_2) !squad_exist(red_bridge_bandit_groop_3) !squad_exist(red_bridge_bandit_groop_4)} sr_idle@check2 %+red_bridge_bandit_time_out%
+
+[sr_idle@check2]
+on_info = {=squad_exist(red_bridge_bandit_groop_1)} sr_idle@check %-red_bridge_bandit_time_out%
+on_info2 = {=squad_exist(red_bridge_bandit_groop_2)} sr_idle@check %-red_bridge_bandit_time_out%
+on_info3 = {=squad_exist(red_bridge_bandit_groop_3)} sr_idle@check %-red_bridge_bandit_time_out%
+on_info4 = {=squad_exist(red_bridge_bandit_groop_4)} sr_idle@check %-red_bridge_bandit_time_out%

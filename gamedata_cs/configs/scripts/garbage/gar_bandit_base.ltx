@@ -1,0 +1,55 @@
+[logic@commentator_1]
+active = walker@main_commentator_1
+suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) =npc_community(bandit)}
+prior = 110
+
+[walker@main_commentator_1]
+path_walk = bandit_commentator_1_walk
+path_look = bandit_commentator_1_look
+def_state_standing = sit_knee
+meet = meet
+on_info = {=check_crowkiller_state(started)} %=play_sound(gar_bandit_minigame_comment_prepare)%
+on_signal = sound_end | walker@finished_commentator_1 %+gar_bandit_base_commentator_response%
+
+[walker@finished_commentator_1]
+path_walk = bandit_commentator_1_walk
+path_look = bandit_commentator_1_look
+def_state_standing = sit_knee
+meet = meet
+on_info  = {=check_crowkiller_state(finished) =crowkiller_winned +gar_bandit_base_minigame_talked_at_end} walker@main_commentator_1 %=play_sound(gar_bandit_minigame_comment_win) -gar_bandit_base_minigame_talked_at_end%
+on_info2 = {=check_crowkiller_state(finished) !crowkiller_winned +gar_bandit_base_minigame_talked_at_end} walker@main_commentator_1 %=play_sound(gar_bandit_minigame_comment_lose) -gar_bandit_base_minigame_talked_at_end%
+on_info3 = {=check_crowkiller_state(breaked)} walker@main_commentator_1
+
+;------------------------------------------
+
+[logic@commentator_2]
+active = walker@main_commentator_2
+suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) =npc_community(bandit)}
+prior = 110
+
+[walker@main_commentator_2]
+path_walk = bandit_commentator_2_walk
+path_look = bandit_commentator_2_look
+def_state_standing = sit_ass
+meet = meet
+on_info = {+gar_bandit_base_commentator_response =check_crowkiller_state(started)} %=play_sound(gar_bandit_minigame_comment_prepare_response) -gar_bandit_base_commentator_response%
+on_signal = sound_end | walker@shooting_commentator_2
+
+[walker@shooting_commentator_2]
+path_walk = bandit_commentator_2_walk
+path_look = bandit_commentator_2_look
+def_state_standing = sit_ass
+meet = meet
+on_timer = 5000 | {=check_crowkiller_state(running)} %=play_sound(gar_bandit_minigame_comment_shooting)%, {=check_crowkiller_state(finished)} walker@main_commentator_2, {=check_crowkiller_state(breaked)} walker@main_commentator_2
+
+;------------------------------------------
+
+[meet]
+use_wpn	= {=check_crowkiller_state(valiable)} true, false
+use = {=check_crowkiller_state(valiable)} true, false
+victim = 50 | {=check_crowkiller_state(prepare)} actor, {=check_crowkiller_state(running)} actor
+victim_wpn = 50 | {=check_crowkiller_state(prepare)} actor, {=check_crowkiller_state(running)} actor
+meet_dialog = gar_bandit_commentators
+sound_start = nil
+sound_start_wpn = nil
+sound_stop = nil

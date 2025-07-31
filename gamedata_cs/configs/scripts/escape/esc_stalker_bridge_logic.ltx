@@ -1,0 +1,90 @@
+[logic@work1]
+active = walker@enter_work1
+suitable = {=check_npc_name(esc_stalker_guard_east_bridge)} true
+meet = meet
+
+[walker@enter_work1]
+path_walk = grd_3_walk
+path_look = grd_3_look
+on_actor_in_zone = esc_space_restrictor_nasip_bridge | remark@idle
+
+[remark@idle]
+anim = guard
+target = actor
+on_info = {+esc_actor_inside_traders_dung -esc_reach_stalker_base_complete} remark@yes_work1
+on_info2 = {-esc_actor_inside_traders_dung} remark@no_work1 %=play_sound(esc_railroadpost_no:stalker)%
+
+[remark@yes_work1]
+anim = hello_wpn
+target = actor
+on_info = walker@last_work1 %=play_sound(esc_railroadpost_yes:stalker)%
+
+[walker@last_work1]
+path_walk = grd_3_walk
+path_look = grd_3_look
+meet = meet
+
+[remark@no_work1]
+anim = backoff
+on_actor_in_zone = esc_space_restrictor_nasip_bridge_1 | walker@enter_work1 %=set_squad_goodwill(esc_smart_terrain_6_8_stalker_patrol:enemy) =set_squad_goodwill(esc_smart_terrain_6_8_stalker_sniper:enemy) =set_squad_goodwill(esc_smart_terrain_6_8_stalker:enemy) =set_squad_goodwill(esc_smart_terrain_4_8_stalker_2_squad:enemy)%
+on_info = {=actor_out_zone(esc_space_restrictor_nasip_bridge) =actor_out_zone(esc_space_restrictor_nasip_bridge_1)} walker@enter_work1
+snd = esc_railroadpost_no
+
+[meet]
+meet_state = 5| guard@meet_comander_start
+meet_state_wpn = 7| backoff@meet_weapon_wait
+victim = 10| nil| 5| actor
+victim_wpn = 10| nil| 5| actor
+use	= true
+use_wpn = false
+meet_dialog = esc_stalker_bridge_talk
+
+
+[logic@work2]
+active = walker@enter_work2
+suitable = {=check_npc_name(esc_stalker_guard_west_bridge)} true
+meet = meet@2
+
+[walker@enter_work2]
+path_walk = grd_2_walk
+path_look = grd_2_look
+meet = meet@2
+
+[meet@2]
+meet_state = 5| guard@meet_comander_start
+meet_state_wpn = 7| backoff@meet_weapon_wait
+victim = 10| nil| 5| actor
+victim_wpn = 10| nil| 5| actor
+use	= true
+use_wpn = false
+meet_dialog = esc_stalker_bridge_talk
+
+
+[logic@work3]
+active = camper@bridge_work3
+suitable = true
+
+[camper@bridge_work3]
+path_walk = snp_1_walk
+path_look = snp_1_look
+sniper = true
+
+
+[logic@work4]
+active = camper@bridge_work4
+suitable = true
+
+[camper@bridge_work4]
+path_walk = snp_1_1_walk
+path_look = snp_1_1_look
+sniper = true
+
+
+[logic@work5]
+active = camper@bridge_work5
+suitable = true
+
+[camper@bridge_work5]
+path_walk = snp_3_walk
+path_look = snp_3_look
+sniper = true

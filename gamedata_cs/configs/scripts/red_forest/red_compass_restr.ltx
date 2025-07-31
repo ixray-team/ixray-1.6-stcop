@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle@check_compass_1
+
+[sr_idle@check_compass_1]
+on_info = {=actor_has_item(af_compass)} sr_idle@check_compass_2 %+red_forester_actor_has_compas%
+
+[sr_idle@check_compass_2]
+on_info = {!actor_has_item(af_compass) -red_forester_take_compas} sr_idle@check_compass_1 %-red_forester_actor_has_compas%
+on_info2 = {+red_forester_take_compas} nil

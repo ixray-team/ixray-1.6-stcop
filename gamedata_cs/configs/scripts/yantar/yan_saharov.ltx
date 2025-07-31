@@ -1,0 +1,90 @@
+[logic]
+active = walker
+trade = misc\trade\trade_saharov.ltx
+
+[walker]
+meet = meet
+invulnerable = true
+path_walk = yan_walker_saharov_walk
+path_look = yan_walker_saharov_look
+on_info = {+yan_actor_away_saharov} camper@1
+combat_ignore_cond = always
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+def_state_standing = yan_professor_wait
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+[camper@1]
+meet = meet
+path_walk = yan_camper_saharov_walk
+path_look = yan_camper_saharov_look
+combat_ignore_cond = always
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+def_state_standing = yan_professor_wait
+;--on_info = {+yan_otnesti_doc_saharavy} camper@2
+;on_info = {+yan_vzyal_quest_doc} camper@3 ;last
+on_info = {-yan_actor_away_saharov} walker
+on_info2 = {+yan_quest_levsha !talking -yan_ui_disabled} remark@sakharov_start_operation %+yan_ui_disabled%
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+[camper@2]
+meet = meet
+path_walk = yan_camper_saharov_walk
+path_look = yan_camper_saharov_look
+combat_ignore_cond = always
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+def_state_standing = yan_professor_wait
+meet = meet@has_item
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+[camper@3]
+path_walk = yan_walker_saharov_walk
+path_look = yan_walker_saharov_look
+combat_ignore_cond = always
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+def_state_standing = yan_professor_wait
+meet = meet@has_no_item
+on_info = {+yan_actor_away_saharov} camper@3_1
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+
+[remark@sakharov_start_operation]
+anim = rac_sakharov
+target = actor
+meet = no_meet
+combat_ignore_cond = true
+on_signal = sound_end | camper@1 %=play_sound(yan_professr_reply_actor:stalker:yan_st_levsha_name)%
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+[camper@3_1]
+path_walk = yan_walker_saharov_walk
+path_look = yan_walker_saharov_look
+combat_ignore_cond = always
+def_state_moving1 = yan_professor_walk
+def_state_moving2 = yan_professor_walk
+def_state_moving3 = yan_professor_walk
+def_state_standing = yan_professor_wait
+meet = meet@has_no_item
+on_info = {-yan_actor_away_saharov} walker
+out_restr = yan_space_restrictor_no_weapon_actor_base_cut2
+
+[meet]
+meet_state = 5|nil@nil
+sound_start = yan_sakharov_meet
+sound_stop 	= yan_sakharov_meet_bye
+quest_npc = true
+
+[meet@has_item]:meet
+meet_dialog = yan_scientist_bring_documents
+
+[meet@has_no_item]:meet
+meet_dialog = yan_scientist_hello_dialog
+
+[dont_spawn_character_supplies]

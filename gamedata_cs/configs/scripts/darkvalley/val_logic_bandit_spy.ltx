@@ -1,0 +1,44 @@
+[logic@work1]
+active = walker@start_work1
+suitable =  {=check_npc_name(val_bandit_spy_1)}
+
+[walker@start_work1]
+path_walk = killer_spy_walker_1_walk
+path_look = killer_spy_walker_1_look
+on_actor_dist_le_nvis = 10 | walker@start_work1_1
+out_restr = val_in_restrictor_azs_dom
+
+[walker@start_work1_1]
+path_walk = killer_spy_walker1_1_walk
+path_look = killer_spy_walker1_1_look
+out_restr = val_in_restrictor_azs_dom
+
+
+[logic@work2]
+active = walker@start_work2
+suitable = {=check_npc_name(val_bandit_spy_1)}
+
+[walker@start_work2]
+path_walk = killer_spy_walker_2_walk
+path_look = killer_spy_walker_2_look
+out_restr = val_in_restrictor_azs_dom
+
+
+[logic@work3]
+active = walker@start_work3
+suitable = {=check_npc_name(val_bandit_spy_1)}
+
+[walker@start_work3]
+path_walk = killer_spy_walker_3_walk
+path_look = killer_spy_walker_3_look
+out_restr = val_in_restrictor_azs_dom
+
+
+[logic@work4]
+active = walker@start_work4
+suitable = {=check_npc_name(val_bandit_spy_1)}
+
+[walker@start_work4]
+path_walk = killer_spy_walker_4_walk
+path_look = killer_spy_walker_4_look
+out_restr = val_in_restrictor_azs_dom

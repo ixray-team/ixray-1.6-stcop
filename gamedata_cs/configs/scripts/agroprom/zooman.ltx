@@ -1,0 +1,20 @@
+[logic]
+active = walker
+on_death = death
+;level_spot = quest_npc
+
+[walker]
+path_walk = agr_duty_zooman_walk
+path_look = agr_duty_zooman_look
+meet = meet
+
+[meet]
+meet_state = 5| ward@nil | 3| wait@nil 
+meet_state_wpn = 5| ward@meet_weapon_wait
+victim = 5| actor
+victim_wpn = 10| actor
+use	= true
+use_wpn	= false
+
+[death]
+on_info = %+agr_zooman_dead%

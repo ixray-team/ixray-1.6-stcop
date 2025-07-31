@@ -1,0 +1,56 @@
+[logic]
+active = sr_idle@deactive
+
+[sr_idle@deactive]
+on_info = sr_idle@line_0 %=disable_anomaly(1350) =disable_anomaly(1351) =disable_anomaly(1352) =disable_anomaly(1353) =disable_anomaly(1354) =disable_anomaly(1355) =disable_anomaly(1356) =disable_anomaly(1357) =disable_anomaly(1358) =disable_anomaly(1359) =disable_anomaly(1360) =disable_anomaly(1361) =disable_anomaly(1362) =disable_anomaly(1363) =disable_anomaly(1364) =disable_anomaly(1365)%
+
+[sr_idle@line_0]
+on_info = {+agr_actor_inside_10 =actor_in_zone(agru_danger_zone) =actor_on_level(agroprom_underground)} %=enable_anomaly(1350) =play_sound(agru_sound_truba)% sr_idle@line_1
+
+[sr_idle@line_1]
+on_game_timer = 20 | %=enable_anomaly(1351) =play_sound(agru_sound_truba)% sr_idle@line_2
+
+[sr_idle@line_2]
+on_game_timer = 30 | %=enable_anomaly(1352) =play_sound(agru_sound_truba)% sr_idle@line_3
+
+[sr_idle@line_3]
+on_game_timer = 70 | %=enable_anomaly(1353) =play_sound(agru_sound_truba)% sr_idle@line_4
+
+[sr_idle@line_4]
+on_game_timer = 70 | %=enable_anomaly(1354) =play_sound(agru_sound_truba)% sr_idle@line_5
+
+[sr_idle@line_5]
+on_game_timer = 70 | %=enable_anomaly(1355) =play_sound(agru_sound_truba)% sr_idle@line_6
+
+[sr_idle@line_6]
+on_game_timer = 70 | %=enable_anomaly(1356) =play_sound(agru_sound_truba)% sr_idle@line_7
+
+[sr_idle@line_7]
+on_game_timer = 60 | %=enable_anomaly(1357) =play_sound(agru_sound_truba)% sr_idle@line_8
+
+[sr_idle@line_8]
+on_game_timer = 60 | %=enable_anomaly(1358) =play_sound(agru_sound_truba)% sr_idle@line_9
+
+[sr_idle@line_9]
+on_game_timer = 60 | %=enable_anomaly(1359) =play_sound(agru_sound_truba)% sr_idle@line_10
+
+[sr_idle@line_10]
+on_game_timer = 60 | %=enable_anomaly(1360) =play_sound(agru_sound_truba)% sr_idle@line_11
+
+[sr_idle@line_11]
+on_game_timer = 60 | %=enable_anomaly(1361) =play_sound(agru_sound_truba)% sr_idle@line_12
+
+[sr_idle@line_12]
+on_game_timer = 60 | %=enable_anomaly(1362) =play_sound(agru_sound_truba)% sr_idle@line_13
+
+[sr_idle@line_13]
+on_game_timer = 60 | %=enable_anomaly(1363) =play_sound(agru_sound_truba)% sr_idle@line_14
+
+[sr_idle@line_14]
+on_game_timer = 60 | %=enable_anomaly(1364) =play_sound(agru_sound_truba)% sr_idle@line_15
+
+[sr_idle@line_15]
+on_game_timer = 60 | %=enable_anomaly(1365) =play_sound(agru_sound_truba)% sr_idle@line_16
+
+[sr_idle@line_16]
+

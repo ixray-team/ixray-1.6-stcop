@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+val_freedom_join_enemy_wait +agr_duty_storyline_complete} sr_idle@timer
+
+[sr_idle@timer]
+;%=play_sound()%
+on_timer = 30000 | sr_idle@signal %%
+
+[sr_idle@signal]
+on_signal = sound_end | nil %=give_inited_task(storyline:val_join_freedom:freedom)%

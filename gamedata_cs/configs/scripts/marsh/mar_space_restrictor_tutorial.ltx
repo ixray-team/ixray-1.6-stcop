@@ -1,0 +1,20 @@
+[logic]
+active = sr_idle@anomaly
+
+[sr_idle@anomaly]
+on_actor_inside = {+mar_intro_talk_with_commander_1_tutorial} sr_idle@artefact_1 %=play_sound(mar_csky_commander_tutorial_anomalies:csky:mar_csky_commander_name) =set_counter(mar_tutorial_boars:3)%
+
+[sr_idle@artefact_1]
+on_actor_in_zone = mar_space_restrictor_tut_artefact | sr_idle@artefact_2
+
+[sr_idle@artefact_2]
+on_info = {!is_playing_sound} sr_idle@boars %=play_sound(mar_csky_commander_tutorial_artefacts:csky:mar_csky_commander_name)%
+
+[sr_idle@boars]
+on_actor_in_zone = mar_space_restrictor_tut_boars | sr_idle@dead_wait %=spawn_object(mar_tutorial_boar:mar_tutorial_boars_spawn_1) =spawn_object(mar_tutorial_boar:mar_tutorial_boars_spawn_5) +mar_tutorial_tower_top_shout%
+;=spawn_object(mar_tutorial_boar:mar_tutorial_boars_spawn_2) =spawn_object(mar_tutorial_boar:mar_tutorial_boars_spawn_3) =spawn_object(mar_tutorial_boar:mar_tutorial_boars_spawn_4)
+
+[sr_idle@dead_wait]
+on_info = {=counter_equal(mar_tutorial_boars:0)} sr_idle@end_section %+mar_tutorial_kill_boars_done%, {=actor_in_zone(mar_space_restrictor_tut_tower) -mar_tutorial_kill_boars_started} %+mar_tutorial_tower_top_done%
+
+[sr_idle@end_section]

@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle1 %+rush_2 =play_sound(clear_sky_well:csky:st_ui_pda_legend_squad)% 
+
+[sr_idle1]
+on_info = {-rush_2} sr_idle

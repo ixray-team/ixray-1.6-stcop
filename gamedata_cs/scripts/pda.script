@@ -1,0 +1,382 @@
+-- вызывается  1 раз в 3 секунды
+function fill_faction_state(state)
+	local board = sim_board.get_sim_board()
+	local faction = board.players[state.faction_id]
+	if(faction~=nil) then
+	    state.member_count = #faction.squads
+	    state.resource = faction.resource_level
+	    state.power = faction.absolute_power
+        state.bonus = 0
+	    state.actor_goodwill = relation_registry.community_relation(db.actor:character_community(), faction.player_name)+db.actor:community_goodwill(faction.player_name)
+	else
+	    state.member_count = 0
+	    state.resource = 0
+	    state.power = 0
+
+        state.war_state1 = "a"
+        state.war_state_hint1 = "1"
+		state.war_state2 = "3"
+		state.war_state_hint2 = "2"
+		state.war_state3 = "33"
+		state.war_state_hint3 = ""
+		state.war_state4 = "23"
+		state.war_state_hint4 = ""
+		state.war_state5 = "5"
+		state.war_state_hint5 = "5"
+
+        state.bonus = 0
+	    state.actor_goodwill = relation_registry.community_relation(db.actor:character_community(), state.faction_id)+db.actor:community_goodwill(state.faction_id)
+	end
+
+    if(state.faction_id=="actor") then
+--	    state.actor_goodwill = 200
+        state.name = ""
+        state.icon = ""
+        state.icon_big = "logos_big_empty"
+        state.target = game.translate_string("ui_st_no_faction")
+        state.target_desc = ""
+        state.location = ""
+
+    elseif(state.faction_id=="bandit") then
+        state.name = game.translate_string("ui_st_name_bandit")
+        state.icon = "bandit_wide"
+        state.icon_big = "bandit_big"
+        if faction ~= nil then
+        	state.target = faction:get_war_target_title()
+        	state.target_desc = faction:get_war_target_descr()
+        else
+        	state.target = ""
+        	state.target_desc = ""
+        end
+        state.location = game.translate_string("st_location_bandit")
+        state.war_state1 = faction:get_war_stage_icon(2)
+        state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state5 = ""
+		state.war_state_hint5 = ""
+
+    elseif(state.faction_id=="renegade") then
+        state.name = game.translate_string("ui_st_name_bandit_2")
+        state.icon = "renegade_wide"
+        state.icon_big = "renegade_big"
+        state.target = ""
+        state.target_desc = ""
+        state.location = game.translate_string("st_location_renegade")
+
+    elseif(state.faction_id=="csky") then
+        state.name = game.translate_string("ui_st_name_csky")
+        state.icon = "csky_wide"
+        state.icon_big = "csky_big"
+        if faction ~= nil then
+        	state.target = faction:get_war_target_title()
+        	state.target_desc = faction:get_war_target_descr()
+        else
+        	state.target = ""
+        	state.target_desc = ""
+        end
+        state.location = game.translate_string("st_location_csky")
+        state.war_state1 = faction:get_war_stage_icon(1)
+        state.war_state_hint1 = faction:get_war_stage_icon(1)
+		state.war_state2 = faction:get_war_stage_icon(2)
+		state.war_state_hint2 = faction:get_war_stage_icon(2)
+		state.war_state3 = faction:get_war_stage_icon(3)
+		state.war_state_hint3 = faction:get_war_stage_icon(3)
+		state.war_state4 = ""
+		state.war_state_hint4 = ""
+		state.war_state5 = ""
+		state.war_state_hint5 = ""
+
+    elseif(state.faction_id=="dolg") then
+--		state.actor_goodwill = 3000
+        state.name = game.translate_string("ui_st_name_dolg")
+        state.icon = "dolg_wide"
+        state.icon_big = "dolg_big"
+        if faction ~= nil then
+        	state.target = faction:get_war_target_title()
+        	state.target_desc = faction:get_war_target_descr()
+        else
+        	state.target = ""
+        	state.target_desc = ""
+        end
+        state.location = game.translate_string("st_location_dolg")
+
+        state.war_state1 = faction:get_war_stage_icon(2)
+        state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state5 = faction:get_war_stage_icon(6)
+		state.war_state_hint5 = faction:get_war_stage_icon(6)
+
+    elseif(state.faction_id=="freedom") then
+        state.name = game.translate_string("ui_st_name_freedom")
+        state.icon = "freedom_wide"
+        state.icon_big = "freedom_big"
+        if faction ~= nil then
+        	state.target = faction:get_war_target_title()
+        	state.target_desc = faction:get_war_target_descr()
+        else
+        	state.target = ""
+        	state.target_desc = ""
+        end
+        state.location = game.translate_string("st_location_freedom")
+
+        state.war_state1 = faction:get_war_stage_icon(4)
+        state.war_state_hint1 = faction:get_war_stage_icon(4)
+		state.war_state2 = faction:get_war_stage_icon(5)
+		state.war_state_hint2 = faction:get_war_stage_icon(5)
+		state.war_state3 = faction:get_war_stage_icon(6)
+		state.war_state_hint3 = faction:get_war_stage_icon(6)
+		state.war_state4 = faction:get_war_stage_icon(7)
+		state.war_state_hint4 = faction:get_war_stage_icon(7)
+		state.war_state5 = faction:get_war_stage_icon(8)
+		state.war_state_hint5 = faction:get_war_stage_icon(8)
+
+
+    elseif(state.faction_id=="stalker") then
+        state.name = game.translate_string("ui_st_name_stalker")
+        state.icon = "stalker_wide"
+        state.icon_big = "stalker_big"
+        if faction ~= nil then
+        	state.target = faction:get_war_target_title()
+        	state.target_desc = faction:get_war_target_descr()
+        else
+        	state.target = ""
+        	state.target_desc = ""
+        end
+
+        state.location = game.translate_string("st_location_stalker")
+        state.war_state1 = faction:get_war_stage_icon(2)
+        state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state5 = ""
+		state.war_state_hint5 = ""
+	else
+        assert(false)
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--int		get_max_member_count	();   ------ 1 раз в 3 секунды
+--float	get_max_resource();
+--float	get_max_power();
+
+function get_max_member_count()
+	local max_count = 0
+	for k,faction in pairs(sim_board.get_sim_board().players) do
+		local count = #faction.squads
+		if count > max_count then
+			max_count = count
+		end
+	end
+	return max_count
+end
+
+function get_max_resource()
+	local max_resource = 0
+	for k,faction in pairs(sim_board.get_sim_board().players) do
+		local resource = faction.resource_level
+		if resource > max_resource then
+			max_resource = resource
+		end
+	end
+	return max_resource
+end
+
+local checking_power = {"stalker", "bandit", "freedom", "dolg", "csky", "renegade"}
+function get_max_power()
+	local max_power = 0
+	local board_players = sim_board.get_sim_board().players
+
+	for k,faction in pairs(checking_power) do
+		if board_players[faction] then
+	        local power = board_players[faction].absolute_power
+	        if power > max_power then
+	            max_power = power
+	        end
+		else
+            max_power = 0
+		end
+	end
+	return max_power
+end
+
+
+-- потом это нужно стереть
+
+-- int mode:
+-- 0 = 	Undefined = закрыто
+-- 1 = 	Inventory
+-- 2 = 	Trade
+-- 3 = 	Upgrade
+-- 4 = 	DeadBodySearch
+-- 10 =  Talk dialog  show
+-- 11 =  Talk dialog  hide
+local last_mode = 0
+dialog_closed = false
+trade_closed = false
+upgrade_closed = false
+function actor_menu_mode(mode)
+	if(mode==0) then
+		if(last_mode==1) then
+			inventory_wnd_closed()
+		elseif(last_mode==2) then
+			trade_wnd_closed()
+		elseif(last_mode==3) then
+			upgrade_wnd_closed()
+		elseif(last_mode==4) then
+			dead_body_search_wnd_closed()
+		end
+		last_mode = 0
+	elseif(mode==1) then
+		last_mode = 1
+		inventory_wnd_opened()
+	elseif(mode==2) then
+		last_mode = 2
+		trade_wnd_opened()
+	elseif(mode==3) then
+		last_mode = 3
+		upgrade_wnd_opened()
+	elseif(mode==4) then
+		last_mode = 4
+		dead_body_search_wnd_opened()
+	elseif(mode==10) then
+        dialog_wnd_showed()
+	elseif(mode==11) then
+        dialog_wnd_closed()
+	end
+end
+
+function inventory_wnd_opened()
+	--printf("---:>Inventory opened")
+end
+
+function inventory_wnd_closed()
+	--printf("---:>Inventory closed")
+end
+
+function trade_wnd_opened()
+	dialog_closed = false
+	--printf("---:>Trade opened")
+end
+
+function trade_wnd_closed()
+	--printf("---:>Trade closed")
+	trade_closed = true
+end
+
+function upgrade_wnd_opened()
+	dialog_closed = false
+	--printf("---:>Upgrade opened")
+end
+
+function upgrade_wnd_closed()
+	--printf("---:>Upgrade closed")
+	upgrade_closed = true
+end
+
+function dead_body_search_wnd_opened()
+	--printf("---:>DeadBodySearch opened")
+end
+
+function dead_body_search_wnd_closed()
+	--printf("---:>DeadBodySearch closed")
+end
+
+function dialog_wnd_showed()
+	dialog_closed = false
+	for k,v in pairs(db.storage) do
+		local npc = v.object
+		if npc ~= nil then
+			local npc_id = npc:id()
+			if npc:is_talking() and npc_id ~= db.actor:id() then
+		        local sound_theme = xr_sound.sound_table[npc_id]
+		        if sound_theme and sound_theme.reset then
+		            sound_theme:reset(npc_id)
+		        end
+				break
+			end
+		end
+	end
+	--printf("---:>Talk Dialog show")
+end
+
+function dialog_wnd_closed()
+	--printf("---:>Talk Dialog hide")
+	dialog_closed = true
+end
+
+function get_stat(index) -- index= int        return string
+	if(index==0) then
+		return "00:00:00"
+	elseif(index==1) then
+		return tostring(xr_statistic.actor_statistic.founded_secrets)
+	elseif(index==2) then
+		return tostring(xr_statistic.actor_statistic.recieved_money).." RU"
+	elseif(index==3) then
+		return tostring(xr_statistic.actor_statistic.spent_money).." RU"
+	elseif(index==4) then
+		return tostring(xr_statistic.actor_statistic.recieved_quests)
+	elseif(index==5) then
+		return tostring(xr_statistic.actor_statistic.completed_quests)
+	elseif(index==6) then
+		return tostring(xr_statistic.actor_statistic.failed_quests)
+	elseif(index==7) then
+		return tostring(xr_statistic.actor_statistic.killed_stalkers)
+	elseif(index==8) then
+		return tostring(xr_statistic.actor_statistic.killed_monsters)
+	end
+end

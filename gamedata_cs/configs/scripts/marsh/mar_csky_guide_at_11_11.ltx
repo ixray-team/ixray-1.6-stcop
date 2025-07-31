@@ -1,0 +1,25 @@
+[logic@conductor]
+active = walker@main_conductor
+suitable = {=npc_community(csky)}
+prior = 130
+level_spot = guider
+
+[walker@main_conductor]
+path_walk = guide_walk
+path_look = guide_look
+meet = meet@conductor
+
+[meet@conductor]
+meet_state            = 30|hello_wpn|5|talk_default@meet_comander_wait
+meet_state_wpn        = 30|hello_wpn|5|threat@meet_weapon_wait
+victim                = 20|actor
+victim_wpn            = 20|actor
+sound_start		   = meet_comander_start
+sound_start_wpn	   = meet_weapon_start
+sound_stop			   = meet_comander_stop
+use                   = true
+use_wpn               = false
+meet_dialog = {-mar_story_go_to_escape_done =is_csky_at_expansion_3_or_higher} mar_csky_guide_at_base_dialog
+trade_enable = false
+precond               = visibility
+meet_only_at_path	   = true

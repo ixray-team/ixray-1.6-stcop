@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@alarm
+
+[sr_idle@alarm]
+on_info2 = {=dist_to_actor_le(150) -esc_alarm -esc_dead_megafon -esc_silence =smart_captured_by_faction(esc_smart_terrain_3_16:army)} sr_idle@wait %=play_sound(megafon)%
+on_info3 = {=dist_to_actor_le(150) +esc_alarm -esc_dead_megafon -esc_silence =smart_captured_by_faction(esc_smart_terrain_3_16:army)} sr_idle@wait %=play_sound(megafon_alarm)%
+on_info4 = {=dist_to_actor_le(350) +esc_alarm -esc_dead_megafon -esc_silence =smart_captured_by_faction(esc_smart_terrain_3_16:army)} sr_idle@wait %=play_sound(esc_comandir_megafon)%
+on_info = {+esc_dead_megafon} nil
+
+[sr_idle@wait]
+on_game_timer = 20 | sr_idle@alarm
+

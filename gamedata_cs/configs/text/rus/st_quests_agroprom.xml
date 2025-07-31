@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Найти хабар погибшего сталкера</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Найти хабар погибшего сталкера</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Найти пропавшего сталкера</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Найти пропавшего сталкера</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Поговорить с лидером «Долга»</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Поговорить с лидером «Долга». Генерал Крылов может знать, где располагается вход в подземку НИИ «Агропром» (именно там находится тайник группы сталекров, которые побывали в центре Зоны).</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Уничтожить лагерь бандитов</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Необходимо уничтожить лагерь бандитов в тоннеле. Отсюда бандиты организовывают нападения на лагерь сталкеров.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Уничтожить отряд бандитов</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Отряд бандитов сторожит один из выходов из подземки и время от времени помогает своим подниматься на поверхность. Необходимо уничтожить его.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Уничтожить логово мутантов</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>Пустырь перед базой сталкеров - дикая и опасная территория, кишащая монстрами. Необходимо устроить зачистку логова мутантов.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Защитить базу «Долга»</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>База «Долга» атакована! Если поможешь отразить атаку, получишь вознаграждение.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Защитить базу сталкеров.</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>База сталкеров в опасности. Если поможешь сталкерам отбить нападение, получишь вознаграждение.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Спуститься в подземку НИИ «Агропром»</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Необходимо спустится в подземку НИИ «Агропром». Единственная дорога в эти подземелья лежит через нору мутантов.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Поговорить с Сахаровым</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Переписка группы Стрелка, найденная в подземном тайнике, многое объяснила. Стрелок ушел к учёным на Янтарь, следовательно, необходимо добраться до Янтаря и поговорить с профессором Сахаровым. Возможно, тот подскажет, где искать Стрелка</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Добраться до норы</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Солдаты «Долга» заделали все входы-выходы подземки. Единственный шанс проникнуть внутрь - через норы мутантов, сквозь которые те вылезаюь на поверхность. Необходимо добраться до норы.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Найти КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Найти КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Принести КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Принести КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Найти КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Найти КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Принести КПК</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Принести КПК</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Найти тайник группы сталкеров</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>На КПК Клыка оказались координаты тайника группы сталкеров, которые побывали в центре Зоны и спровацирововали катаклизм. Это важная зацепка: там может оказатся очень ценная информация. Необходимо найти КПК в тайнике.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Найти карту миграции</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Найти карту миграции редких монстров Зоны</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Принести карту миграции</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Принести карту миграции Инквизитору</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Помочь сталкерам</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Группа сталкеров пробивается через топи к учёным на Янтарь. Помочь сталкерам преодолеть этот путь живыми.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Забрать награду</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Забрать награду у Платонова</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Поговорить с командиром блокпоста</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Получить информацию о ситуации на Агропроме у командира блокпоста</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Получить награду у Крылова</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Подземка затоплена и атаки мутантов на «Долг» на время прекратятся. Генерал Крылов готов хорошо вознаградить за успешно проведённую операцию. Получить награду у Крылова.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Найти информацию о балансировке автоматики пулемёта</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Техник Громов ищет способ увеличить скорострельность пулемёта путём новой балансировки его механизма. За информацию о ней он готов хорошо заплатить.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Найти информацию о модификации газоотвода пулемёта</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Громову не хватает совсем немногого для того, чтобы довести характеристики пулемёта до совершенства: немного свободного времени и некоторых технических даннных по газоотводам.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Найти информацию о дульном тормозе для пистолета</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Техник сталкеров на Агропроме ищет информацию о дульном тормозе для мощных пистолетов.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Найти информацию о помповых механизмах для боевых дробовиков</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Техник сталкеров на Агропроме ищет информацию о помповых механизмах боевых дробовиков.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Найти информацию о модификации ствола для пистолетов</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>Технику сталкеров не хватает опыта чтобы модифицировать ствол мощного пистолета. Он готов заплатить за нужную информацию.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Найти информацию о дульном тормозе для пулемёта</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>Техник «Долга» работает над усовершенствованным дульным тормозом для пулемёта, но ему не хватает технической информации по этому вопросу.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Уничтожить логово монстров</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Время от времени небольшие стаи мутантов атакуют сталкеров на заводе. Если устроить зачистку в логове мутантов к северу от завода, то это должно прекратить атаки.</text>
+	</string>
+</string_table>

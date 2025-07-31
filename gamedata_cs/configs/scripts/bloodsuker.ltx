@@ -1,0 +1,18 @@
+[logic]
+active = mob_walker
+
+[mob_walker]
+path_walk = blood_walk
+actor_friendly = true
+on_game_timer = 200 | mob_walker@2
+;no_reset = false
+npc_friendly = true
+state = vis
+
+[mob_walker@2]
+path_walk = blood_walk
+actor_friendly = true
+state = invis
+on_game_timer = 100 | mob_walker
+npc_friendly = true
+friendly = false

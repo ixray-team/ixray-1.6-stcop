@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@stop_sim
+
+[sr_idle@stop_sim]
+on_info = {+red_bridge_scene_begin} sr_idle@start_sim %=stop_sim =clear_smart_terrain(red_smart_terrain_bridge)%
+
+[sr_idle@start_sim]
+on_info = {+red_bridge_down_done} sr_idle@nil %=start_sim%
+on_info2 = {+red_bridge_actor_fail} sr_idle@nil %=start_sim%
+
+[sr_idle@nil]

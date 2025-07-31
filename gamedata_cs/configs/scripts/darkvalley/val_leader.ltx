@@ -1,0 +1,29 @@
+[dont_spawn_character_supplies]
+
+[logic]
+active = walker
+on_death = death
+
+[death]
+on_info = %+val_freedom_leader_ded%
+
+[walker]
+danger = danger_condition
+path_walk = val_smart_terrain_freedom_leader_walker_1_walk
+path_look = val_smart_terrain_freedom_leader_walker_1_look
+def_state_standing = wait
+faction = freedom
+out_restr = val_out_restrictor_freedom_leader
+meet = meet
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_grenade = 0
+ignore_distance_sound = 0
+
+[meet]
+meet_state 	= 3|nil@nil
+sound_start = val_freedom_leader_meet
+sound_stop 	= val_freedom_leader_meet_bye
+quest_npc = true

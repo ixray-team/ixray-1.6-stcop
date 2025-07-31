@@ -1,0 +1,24 @@
+[logic]
+active = sr_idle@place_choice
+
+[sr_idle@place_choice]
+;%=disable_ui =run_postprocess(mar_fade)%
+on_info = {+mar_csky_guide_teleport_to_base} sr_idle@to_base %=disable_ui =run_postprocess(mar_fade)%, {+mar_csky_guide_teleport_to_marsh} sr_idle@to_marsh %=disable_ui =run_postprocess(mar_fade)%, {+mar_csky_guide_teleport_to_escape} sr_idle@to_escape %=disable_ui =run_postprocess(mar_fade)%
+
+[sr_idle@to_base]
+on_timer = 2500 | sr_idle@ui %=teleport_actor(mar_smart_terrain_csky_base_teleport_walk:mar_smart_terrain_csky_base_teleport_look) -mar_csky_guide_teleport_to_base +mar_csky_guide_teleport_talk_base%
+
+[sr_idle@to_marsh]
+on_timer = 2500 | sr_idle@ui %=teleport_actor(mar_actor_teleport_at_marsh_walk:mar_actor_teleport_at_marsh_look) -mar_csky_guide_teleport_to_marsh +mar_story_go_to_marsh_done =play_sound(mar_csky_pathfinder_go_out:csky)%
+
+[sr_idle@to_escape]
+on_info = sr_idle@place_choice %=teleport_actor(mar_actor_teleport_to_escape_walk:mar_actor_teleport_to_escape_look) -mar_csky_guide_teleport_to_escape +mar_story_go_to_escape_done =enable_ui%
+
+[sr_idle@ui]
+on_timer = 2500 | {-mar_csky_guide_teleport_talk_marsh} sr_idle@sound_marsh %=enable_ui +mar_csky_guide_teleport_talk_marsh%, sr_idle@place_choice %=enable_ui%
+
+[sr_idle@sound_marsh]
+on_info = {!is_playing_sound} sr_idle@sound_commander
+
+[sr_idle@sound_commander]
+on_timer = 5000 | sr_idle@place_choice %=play_sound(mar_csky_arrive_on_open_marsh:csky:mar_csky_commander_name)%

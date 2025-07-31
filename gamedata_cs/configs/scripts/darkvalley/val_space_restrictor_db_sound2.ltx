@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_play_sound_gunfire_1_start} sr_idle@2 %=play_sound(gunfire_1)%
+
+[sr_idle@2]
+on_game_timer = 20 | nil %+val_play_sound_gunfire_1_done%
