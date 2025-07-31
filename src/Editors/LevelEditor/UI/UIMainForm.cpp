@@ -6,6 +6,7 @@
 #include "../xrEUI/ImGuizmo.h"
 
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
+#include "Editor/Terrain/HeightmapUtils.h"
 
 UIMainForm* MainForm = nullptr;
 
@@ -232,6 +233,19 @@ void UIMainForm::DrawContextMenu()
 		}
 		ImGui::EndMenu();
 	}
+
+	if (ImGui::MenuItem("Make Heightmap"))
+	{
+		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
+		CSceneObject* Obj =  (CSceneObject*)mt->LastSelected();
+		auto MeshObjects = Obj->Meshes();
+
+		for (auto Mesh : *MeshObjects)
+		{
+			XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
+		}
+	}
+
 	if(ImGui::BeginMenu("Locking"))
 	{
 		ESceneToolBase* SceneTool = Scene->GetTool(LTools->CurrentClassID());
