@@ -320,6 +320,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 //	float							fArmor;
 	float							fRadiation;
 	u8								weapon;
+	bool							IsWaunded;
 	///////////////////////////////////////////
 	u16								m_u16NumItems;
 	u16								m_holderID;
