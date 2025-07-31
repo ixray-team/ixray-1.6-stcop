@@ -5,6 +5,9 @@
 
 #include "xrECore/Splash.h"
 
+extern ECORE_API xr_token2* actions_token;
+extern xr_token2 actions_token_impl[];
+
 void BeginRender()
 {
 #define D3DCOLOR_RGBA(r,g,b,a) D3DCOLOR_ARGB(a,r,g,b)
@@ -50,7 +53,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     psDeviceFlags.set(rsFullscreen, false);
 
     splash::update(35, "Initializing Particle Tools");
-
+    actions_token = actions_token_impl;
     Tools = new CParticleTool();
     PTools = (CParticleTool*)Tools;
 
