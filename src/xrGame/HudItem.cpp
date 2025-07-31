@@ -489,6 +489,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_idle, HudAnimationExist("anm_hand_throw_idle"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_end, HudAnimationExist("anm_hand_throw_end"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_kick, HudAnimationExist("anm_kick") && HudAnimationExist("anm_kick2"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_lam, HudAnimationExist("anm_lam"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 }
 
