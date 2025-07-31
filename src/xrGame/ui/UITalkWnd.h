@@ -56,6 +56,8 @@ public:
 	void				SwitchToUpgrade			();
 	void				AddIconedMessage		(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	//диалог
 	void				InitTalkDialog			();

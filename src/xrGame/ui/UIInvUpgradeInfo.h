@@ -39,6 +39,8 @@ public:
 
 	virtual void		Draw();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	Upgrade_type*		m_upgrade;
 	CUIFrameWindow*		m_background;

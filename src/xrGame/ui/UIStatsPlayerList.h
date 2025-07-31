@@ -25,6 +25,9 @@ public:
 	virtual void 	AddWindow					(CUIWindow* pWnd, bool auto_delete = true);
 	virtual void 	Update						();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
+
 protected:
 			void	InitHeader					(CUIXml& xml_doc, LPCSTR path);
 			void	InitTeamHeader				(CUIXml& xml_doc, LPCSTR path);

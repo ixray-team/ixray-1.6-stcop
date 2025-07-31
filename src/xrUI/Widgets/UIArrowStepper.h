@@ -69,6 +69,8 @@ EStepperMode		GetStepperMode			() const { return m_mode; }
 			int		CurrentID				() const { return (m_i_val - 1); }
 			void	SetCurrentID			(int val_id) { m_i_val = val_id + 1;}
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			void	UpdateText				();
 			void	ChangeOnEnd				(bool bRight);

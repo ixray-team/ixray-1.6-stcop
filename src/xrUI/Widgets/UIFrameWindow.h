@@ -24,6 +24,9 @@ public:
 
 	virtual void	Draw						();
 	
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual ITextureOwner* ui_cast_texture_owner() { return this; }
+
 protected:
 	bool			m_bTextureVisible;
 

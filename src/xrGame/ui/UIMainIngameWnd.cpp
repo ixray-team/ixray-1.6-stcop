@@ -1040,8 +1040,8 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 	for (const auto& slot : m_quick_slots_icons)
 	{
 		++i;
-		CUIStatic* wnd = smart_cast<CUIStatic*>(slot->FindChild("counter"));
-		if (wnd)
+		CUIWindow* finded_child = slot->FindChild("counter");
+		if (CUIStatic* wnd = finded_child != nullptr ? finded_child->ui_cast_static() : nullptr)
 		{
 			shared_str item_name = g_quick_use_slots[i];
 			if (item_name.size())

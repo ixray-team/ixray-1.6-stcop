@@ -149,126 +149,142 @@ Fvector2 CUIDragDropListEx::GetDragItemPosition()
 	return m_drag_item->GetPosition();
 }
 
-
 void CUIDragDropListEx::OnDragEvent(CUIDragItem* drag_item, bool b_receive)
 {
-	if(m_f_drag_event)
+	if (m_f_drag_event)
+	{
 		m_f_drag_event(drag_item, b_receive);
+	}
 }
 
 void CUIDragDropListEx::OnItemStartDragging(CUIWindow* w, void* pData)
 {
-	OnItemSelected						(w, pData);
-	CUICellItem* itm		= smart_cast<CUICellItem*>(w);
+	OnItemSelected(w, pData);
+	CUICellItem* itm = w->ui_cast_cell_item();
 
-	if(itm!=m_selected_item)	return;
-	
-	if(m_f_item_start_drag && m_f_item_start_drag(itm) ) return;
+	if (itm != m_selected_item)
+	{
+		return;
+	}
 
-	CreateDragItem						(itm);
+	if (m_f_item_start_drag && m_f_item_start_drag(itm))
+	{
+		return;
+	}
+
+	CreateDragItem(itm);
 }
 
 void CUIDragDropListEx::OnItemDrop(CUIWindow* w, void* pData)
 {
-	OnItemSelected						(w, pData);
-	CUICellItem*		itm				= smart_cast<CUICellItem*>(w);
-	VERIFY								(itm->OwnerList() == itm->OwnerList());
+	OnItemSelected(w, pData);
+	CUICellItem* itm = w->ui_cast_cell_item();
+	VERIFY(itm->OwnerList() == itm->OwnerList());
 
-	if(m_f_item_drop && m_f_item_drop(itm) ){
-		DestroyDragItem						();
+	if (m_f_item_drop && m_f_item_drop(itm))
+	{
+		DestroyDragItem();
 		return;
 	}
 
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= m_drag_item->BackList();
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	CUIDragDropListEx* new_owner = m_drag_item->BackList();
 
-	bool b				= (old_owner==new_owner)&&!GetCustomPlacement();
+	bool b = (old_owner == new_owner) && !GetCustomPlacement();
 
-	if(old_owner&&new_owner && !b)
+	if (old_owner && new_owner && !b)
 	{
-		CUICellItem* i					= old_owner->RemoveItem(itm, (old_owner==new_owner) );
-		while(i->ChildsCount())
+		CUICellItem* i = old_owner->RemoveItem(itm, (old_owner == new_owner));
+		while (i->ChildsCount())
 		{
-			CUICellItem* _chld				= i->PopChild(nullptr);
-			new_owner->SetItem				(_chld, old_owner->GetDragItemPosition());
+			CUICellItem* _chld = i->PopChild(nullptr);
+			new_owner->SetItem(_chld, old_owner->GetDragItemPosition());
 		}
-		new_owner->SetItem				(i,old_owner->GetDragItemPosition());
+
+		new_owner->SetItem(i, old_owner->GetDragItemPosition());
 	}
-	DestroyDragItem						();
+
+	DestroyDragItem();
 }
 
 void CUIDragDropListEx::OnItemDBClick(CUIWindow* w, void* pData)
 {
-	OnItemSelected						(w, pData);
-	CUICellItem*		itm				= smart_cast<CUICellItem*>(w);
+	OnItemSelected(w, pData);
+	CUICellItem* itm = w->ui_cast_cell_item();
 
-	if(m_f_item_db_click && m_f_item_db_click(itm) ){
-		DestroyDragItem						();
+	if (m_f_item_db_click && m_f_item_db_click(itm))
+	{
+		DestroyDragItem();
 		return;
 	}
 
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	VERIFY								(m_drag_item==nullptr);
-	VERIFY								(old_owner == this);
+	CUIDragDropListEx* old_owner = itm->OwnerList();
+	VERIFY(m_drag_item == nullptr);
+	VERIFY(old_owner == this);
 
-	if(old_owner&&old_owner->GetCustomPlacement())
+	if (old_owner && old_owner->GetCustomPlacement())
 	{
-		CUICellItem* i					= old_owner->RemoveItem(itm, true);
-		old_owner->SetItem				(i);
+		CUICellItem* i = old_owner->RemoveItem(itm, true);
+		old_owner->SetItem(i);
 	}
 
-	DestroyDragItem						();
+	DestroyDragItem();
 }
 
 void CUIDragDropListEx::OnItemSelected(CUIWindow* w, void* pData)
 {
-	m_selected_item						= smart_cast<CUICellItem*>(w);
-	VERIFY								(m_selected_item);
-	if(m_f_item_selected)
+	m_selected_item = w->ui_cast_cell_item();
+	VERIFY(m_selected_item);
+
+	if (m_f_item_selected)
+	{
 		m_f_item_selected(m_selected_item);
+	}
 }
 
 void  CUIDragDropListEx::OnItemFocusReceived(CUIWindow* w, void* pData)
 {
-	if(m_f_item_focus_received)
+	if (m_f_item_focus_received)
 	{
-		CUICellItem* itm				= smart_cast<CUICellItem*>(w);
-		m_f_item_focus_received			(itm);
+		CUICellItem* itm = w->ui_cast_cell_item();
+		m_f_item_focus_received(itm);
 	}
 }
 
 void  CUIDragDropListEx::OnItemFocusLost(CUIWindow* w, void* pData)
 {
-	if(m_f_item_focus_lost)
+	if (m_f_item_focus_lost)
 	{
-		CUICellItem* itm				= smart_cast<CUICellItem*>(w);
-		m_f_item_focus_lost				(itm);
+		CUICellItem* itm = w->ui_cast_cell_item();
+		m_f_item_focus_lost(itm);
 	}
 }
 
 void  CUIDragDropListEx::OnItemFocusedUpdate(CUIWindow* w, void* pData)
 {
-	if(m_f_item_focused_update)
+	if (m_f_item_focused_update)
 	{
-		CUICellItem* itm				= smart_cast<CUICellItem*>(w);
-		m_f_item_focused_update			(itm);
+		CUICellItem* itm = w->ui_cast_cell_item();
+		m_f_item_focused_update(itm);
 	}
 }
 
 void CUIDragDropListEx::OnItemRButtonClick(CUIWindow* w, void* pData)
 {
-//*	OnItemSelected						(w, pData); // instead call function "SetCurrentItem(itm)";
-	CUICellItem*		itm				= smart_cast<CUICellItem*>(w);
-	if(m_f_item_rbutton_click) 
+	CUICellItem* itm = w->ui_cast_cell_item();
+	if (m_f_item_rbutton_click)
+	{
 		m_f_item_rbutton_click(itm);
+	}
 }
 
 void CUIDragDropListEx::OnItemLButtonClick(CUIWindow* w, void* pData)
 {
-	//*	OnItemSelected						(w, pData); // instead call function "SetCurrentItem(itm)";
-	CUICellItem*		itm				= smart_cast<CUICellItem*>(w);
-	if(m_f_item_lbutton_click) 
+	CUICellItem* itm = w->ui_cast_cell_item();
+	if (m_f_item_lbutton_click)
+	{
 		m_f_item_lbutton_click(itm);
+	}
 }
 
 void CUIDragDropListEx::GetClientArea(Frect& r)
@@ -290,18 +306,15 @@ void CUIDragDropListEx::ClearAll(bool bDestroy)
 void CUIDragDropListEx::Compact()
 {
 	xrCriticalSectionGuard guard(m_container->csUi);
-	CUIWindow::WINDOW_LIST&	wl		= m_container->GetChildWndList();
-	ClearAll						(false);
+	CUIWindow::WINDOW_LIST& wl = m_container->GetChildWndList();
+	ClearAll(false);
 
-	CUIWindow::WINDOW_LIST_it it	= wl.begin();
-	CUIWindow::WINDOW_LIST_it it_e	= wl.end();
-	for(;it!=it_e;++it)
+	for (CUIWindow* child : wl)
 	{
-		CUICellItem*	itm			= smart_cast<CUICellItem*>(*it);
-		SetItem						(itm);
+		CUICellItem* itm = child->ui_cast_cell_item();
+		SetItem(itm);
 	}
 }
-
 
 void CUIDragDropListEx::Draw()
 {
@@ -481,11 +494,13 @@ bool CUIDragDropListEx::IsOwner(CUICellItem* itm){
 
 CUICellItem* CUIDragDropListEx::GetItemIdx(u32 idx)
 {
-	R_ASSERT(idx<ItemsCount());
+	R_ASSERT(idx < ItemsCount());
+
 	xrCriticalSectionGuard guard(m_container->csUi);
 	WINDOW_LIST_it it = m_container->GetChildWndList().begin();
-	std::advance	(it, idx);
-	return smart_cast<CUICellItem*>(*it);
+	std::advance(it, idx);
+
+	return (*it)->ui_cast_cell_item();
 }
 
 void CUIDragDropListEx::clear_select_armament()
@@ -571,17 +586,20 @@ bool CUICellContainer::AddSimilar(CUICellItem* itm)
 CUICellItem* CUICellContainer::FindSimilar(CUICellItem* itm)
 {
 	xrCriticalSectionGuard guard(csUi);
-	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+	for (CUIWindow* child : m_ChildWndList)
 	{
 #ifdef DEBUG
-		CUICellItem* i = smart_cast<CUICellItem*>(*it);
+		CUICellItem* i = child->ui_cast_cell_item();
 #else
-		CUICellItem* i = (CUICellItem*)(*it);
+		CUICellItem* i = (CUICellItem*)(child);
 #endif
 		R_ASSERT(i != itm);
 		if (i->EqualTo(itm))
+		{
 			return i;
+		}
 	}
+
 	return nullptr;
 }
 
@@ -828,31 +846,34 @@ bool CUICellContainer::ValidCell(const Ivector2& pos) const
 void CUICellContainer::ClearAll(bool bDestroy)
 {
 	{
-		UI_CELLS_VEC_IT it		= m_cells.begin();
-		UI_CELLS_VEC_IT it_e	= m_cells.end();
-		for(;it!=it_e;++it)
-			(*it).Clear();
+		for (CUICell& cell : m_cells)
+		{
+			cell.Clear();
+		}
 	}
 
 	xrCriticalSectionGuard guard(csUi);
-	while( !m_ChildWndList.empty() )
+	while (!m_ChildWndList.empty())
 	{
-		CUIWindow* w			= m_ChildWndList.back();
-		CUICellItem* wc			= smart_cast<CUICellItem*>(w);
-		VERIFY					(!wc->IsAutoDelete());
-		DetachChild				(wc);	
-		
-		while( wc->ChildsCount() )
-		{
-			CUICellItem* ci		= wc->PopChild(nullptr);
-			R_ASSERT			(ci->ChildsCount()==0);
+		CUIWindow* w = m_ChildWndList.back();
+		CUICellItem* wc = w != nullptr ? w->ui_cast_cell_item() : nullptr;
+		VERIFY(!wc->IsAutoDelete());
+		DetachChild(wc);
 
-			if(bDestroy)
-				delete_data		(ci);
+		while (wc->ChildsCount())
+		{
+			CUICellItem* ci = wc->PopChild(nullptr);
+			R_ASSERT(ci->ChildsCount() == 0);
+
+			if (bDestroy)
+			{
+				delete_data(ci);
+			}
 		}
-		
-		if(bDestroy){
-			delete_data			(wc);
+
+		if (bDestroy)
+		{
+			delete_data(wc);
 		}
 	}
 

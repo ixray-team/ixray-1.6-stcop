@@ -42,5 +42,8 @@ public:
 				void		GetSelPlayerConfig();
 				void		KickSelPlayer();
 				void		BanSelPlayer();
+
+		virtual CUIWindow* ui_cast_window() { return this; }
+
 //				void		SetBanSelPlayerText();
 };

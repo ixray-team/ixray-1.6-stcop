@@ -36,6 +36,8 @@ public:
 				m_tex_rect[idx] = rect;
 			}
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	bool			bHorizontal;
 			bool					inc_pos(Frect& rect, int counter, int i, Fvector2& LTp, Fvector2& RBp, Fvector2& LTt, Fvector2& RBt);

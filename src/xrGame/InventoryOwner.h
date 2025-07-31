@@ -36,6 +36,7 @@ class CEntity;
 class CBaseMonster;
 class CCar;
 class CAI_Trader;
+class CPhraseDialogManager;
 
 class CInventoryOwner : public CAttachmentOwner {							
 public:
@@ -53,6 +54,7 @@ public:
 	virtual CBaseMonster*		cast_base_monster		()	{return nullptr;}
 	virtual CCar*				cast_car				()	{return nullptr;}
 	virtual CAI_Trader*			cast_trader				()  {return nullptr;}
+	virtual CPhraseDialogManager* cast_phrase_dialog_manager() {return nullptr;}
 public:
 
 	virtual DLL_Pure	*_construct				();

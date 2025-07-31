@@ -46,6 +46,7 @@ public:
 	virtual CParticlesPlayer*			cast_particles_player	()						{return this;}
 	virtual CScriptEntity*				cast_script_entity		()						{return this;}
 	virtual CAI_Trader*					cast_trader				()						{ return this; }
+	virtual CPhraseDialogManager*		cast_phrase_dialog_manager()					{ return this; }
 
 	virtual DLL_Pure	*_construct		();
 	virtual void		Load			( LPCSTR section );

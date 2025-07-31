@@ -39,6 +39,9 @@ public:
 	
 	void			OnRewindTypeSelected	(CUIWindow* w, void* d);
 	void			OnRewindPlayerSelected	(CUIWindow* w, void* d);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 	void					StopRewind				();
 	void					UIStartRewind			();
