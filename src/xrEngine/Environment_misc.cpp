@@ -266,6 +266,8 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	fog_density			= 0.0f;
 	fog_distance		= 400.0f;
 
+	rain_type			= "default";
+
 	rain_density		= 0.0f;
 	rain_color.set		(0,0,0);
 
@@ -329,6 +331,10 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	fog_color				= config.r_fvector3	(m_identifier.c_str(),"fog_color");
 	fog_density				= config.r_float	(m_identifier.c_str(),"fog_density");
 	fog_distance			= config.r_float	(m_identifier.c_str(),"fog_distance");
+
+	rain_type				= 
+		config.line_exist(m_identifier.c_str(), "rain_type") ? config.r_string(m_identifier.c_str(), "rain_type") : "default";
+
 	rain_density			= config.r_float	(m_identifier.c_str(),"rain_density");		clamp(rain_density,0.f,1.f);
 	rain_color				= config.r_fvector3	(m_identifier.c_str(),"rain_color");      
 
