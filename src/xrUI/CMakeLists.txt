@@ -83,7 +83,7 @@ source_group("widgets/other" FILES ${XRPU_SOURCE_ELEMENTS_FILES})
 list(APPEND XRPU_SRC_FILES ${XRPU_SOURCE_ALL_FILES})
 
 # Remove unused files
-list(FILTER XRPU_SRC_FILES EXCLUDE REGEX "Widgets/UITreeViewItem.*")
+#list(FILTER XRPU_SRC_FILES EXCLUDE REGEX "Widgets/UITreeViewItem.*")
 
 # xrUI project
 add_library(xrUI SHARED ${XRPU_SRC_FILES})
