@@ -12,10 +12,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("crypto")
     add_subdirectory("imgui")
     add_subdirectory("opcode")
-
-    if(IXRAY_MP)
-        add_subdirectory("cximage")
-    endif()
 endif()
 
 if(WIN32)
@@ -43,10 +39,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(opcode-prosectors PROPERTIES ${IXRAY_FOLDER_3RD})
-
-    if(IXRAY_MP)
-        set_target_properties(CxImage PROPERTIES ${IXRAY_FOLDER_3RD})
-    endif()
 endif()
 
 if(WIN32)

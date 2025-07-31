@@ -48,11 +48,11 @@ add_custom_command(TARGET ${PROJECT_NAME}
 )
 
 # RedImage
-target_link_libraries(xrDXT PUBLIC ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.lib)
-target_include_directories(xrDXT PUBLIC "${REDIMAGE_PATH}/build/native/include/")
+target_link_libraries(xrDXT PUBLIC ${REDIMAGE_LIB})
+target_include_directories(xrDXT PUBLIC "${REDIMAGE_INCL}")
 
 ## Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_PATH}/runtimes/win-x64/native/Release/RedImageTool.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )

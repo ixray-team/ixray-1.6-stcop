@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "HeightmapUtils.h"
-#include <RedImage.hpp>
+#include <RedImage/RedImage.hpp>
 
 void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Heightmap, CEditableObject* OutMesh, int ScaleY)
 {

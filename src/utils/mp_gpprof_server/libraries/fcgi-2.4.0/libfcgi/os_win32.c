@@ -1569,19 +1569,19 @@ static void printLastError(const char * text)
 {
     LPVOID buf;
 
-    FormatMessage( 
+    FormatMessageA( 
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM | 
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
         GetLastError(),
         0,
-        (LPTSTR) &buf,
+        (LPCSTR) &buf,
         0,
         NULL 
     );
     
-    fprintf(stderr, "%s: %s\n", text, (LPCTSTR) buf);
+    fprintf(stderr, "%s: %s\n", text, (LPCSTR) buf);
     LocalFree(buf);
 }
 
