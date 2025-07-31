@@ -149,6 +149,13 @@ public:
 	float				rain_density;
 	Fvector3			rain_color;
 
+	float				rain_angle;
+	float				rain_length;
+	float				rain_width;
+	float				rain_speed_min;
+	float				rain_speed_max;
+	float				rain_angle_rotation;
+
 	float				bolt_period;
 	float				bolt_duration;
 
@@ -373,6 +380,23 @@ public:
 	float						p_sky_color;
 	float						p_sun_color;
 	float						p_fog_color;
+
+	int							max_desired_items;
+
+	float						source_offset;
+	float						max_distance;
+	float						sink_offset;
+	float						drop_angle;
+	float						drop_max_angle;
+	float						drop_max_wind_vel;
+
+	int							max_particles;
+	int							particles_cache;
+	float						particles_time;
+
+	float						source_rain_radius_render;
+	float						add_const_dist_coefficient;
+	float						add_const_dist_coefficient_render;
 };
 
 ENGINE_API extern Flags32	psEnvFlags;

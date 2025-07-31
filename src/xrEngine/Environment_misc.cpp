@@ -269,6 +269,13 @@ CEnvDescriptor::CEnvDescriptor	(shared_str const& identifier) :
 	rain_density		= 0.0f;
 	rain_color.set		(0,0,0);
 
+	rain_angle			= 0.0f;
+	rain_length			= 5.0f;
+	rain_width			= 0.3f;
+	rain_speed_min		= 40.0f;
+	rain_speed_max		= 80.0f;
+	rain_angle_rotation = 0.f;
+
 	bolt_period			= 0.0f;
 	bolt_duration		= 0.0f;
 
@@ -323,7 +330,20 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config)
 	fog_density				= config.r_float	(m_identifier.c_str(),"fog_density");
 	fog_distance			= config.r_float	(m_identifier.c_str(),"fog_distance");
 	rain_density			= config.r_float	(m_identifier.c_str(),"rain_density");		clamp(rain_density,0.f,1.f);
-	rain_color				= config.r_fvector3	(m_identifier.c_str(),"rain_color");            
+	rain_color				= config.r_fvector3	(m_identifier.c_str(),"rain_color");      
+
+	rain_angle = config.line_exist(m_identifier.c_str(), "rain_angle") ? config.r_float(m_identifier.c_str(), "rain_angle") : 0.0f;
+	clampr(-30.0f, 30.0f, rain_angle);
+
+	rain_length = config.line_exist(m_identifier.c_str(), "rain_length") ? config.r_float(m_identifier.c_str(), "rain_length") : 5.0f;
+	rain_width = config.line_exist(m_identifier.c_str(), "rain_width") ? config.r_float(m_identifier.c_str(), "rain_width") : 0.3f;
+
+	rain_speed_min = config.line_exist(m_identifier.c_str(), "rain_speed_min") ? config.r_float(m_identifier.c_str(), "rain_speed_min") : 40.0f;
+	rain_speed_max = config.line_exist(m_identifier.c_str(), "rain_speed_max") ? config.r_float(m_identifier.c_str(), "rain_speed_max") : 80.0f;
+
+	rain_angle_rotation = deg2rad(config.line_exist(m_identifier.c_str(), "rain_angle_rotation") ? config.r_float(m_identifier.c_str(), "rain_angle_rotation") : 0.0f);
+	clampr(0.0f, 360.f, rain_angle_rotation);
+
 	wind_velocity			= config.r_float	(m_identifier.c_str(),"wind_velocity");
 	wind_direction			= deg2rad(config.r_float(m_identifier.c_str(),"wind_direction"));
 	ambient					= config.r_fvector3	(m_identifier.c_str(),"ambient_color");
@@ -525,6 +545,16 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	
 	rain_density = rain_fi * A.rain_density + rain_f * B.rain_density;
 	rain_color.lerp(A.rain_color, B.rain_color, rain_f);
+
+	rain_angle = fi * A.rain_angle + f * B.rain_angle;
+	rain_length = fi * A.rain_length + f * B.rain_length;
+	rain_width = fi * A.rain_width + f * B.rain_width;
+
+	rain_speed_min = fi * A.rain_speed_min + f * B.rain_speed_min;
+	rain_speed_max = fi * A.rain_speed_max + f * B.rain_speed_max;
+
+	rain_angle_rotation = fi * A.rain_angle_rotation + f * B.rain_angle_rotation;
+
 	bolt_period = rain_fi * A.bolt_period + rain_f * B.bolt_period;
 	bolt_duration = rain_fi * A.bolt_duration + rain_f * B.bolt_duration;
 
