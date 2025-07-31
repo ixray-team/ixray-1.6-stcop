@@ -97,6 +97,7 @@ public:
 	virtual MotionID					ID_FX_Safe		(LPCSTR  N) = 0;
 	virtual CBlend*						PlayFX			(LPCSTR  N, float power_scale) = 0;
 	virtual CBlend*						PlayFX			(MotionID M, float power_scale) = 0;
+	virtual CBlend*						PlayFX_Safe		(LPCSTR	 N, float power_scale) = 0;
 
 	virtual const CPartition&			partitions		() const = 0;
 

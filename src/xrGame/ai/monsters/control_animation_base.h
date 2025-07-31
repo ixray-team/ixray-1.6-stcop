@@ -91,9 +91,24 @@ public:
 			void		ScheduledInit	();
 
 	// создание карты анимаций (выполнять на Monster::Load)
-	void		AddAnim					(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam *vel, EPState p_s);
-	void		AddAnim					(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam *vel, EPState p_s, LPCSTR fx_front, LPCSTR fx_back, LPCSTR fx_left, LPCSTR fx_right);
+    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s);
 
+    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s);
+
+    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s, LPCSTR fx_front, LPCSTR fx_back,
+        LPCSTR fx_left, LPCSTR fx_right);
+
+    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
+        LPCSTR fx_front, LPCSTR fx_back,
+        LPCSTR fx_left, LPCSTR fx_right);
+
+    void AddAnim(EMotionAnim ma, std::pair<LPCSTR, bool> target, int s_id, SVelocityParam* vel, EPState p_s,
+        std::pair<LPCSTR, bool> fx_front, std::pair<LPCSTR, bool> fx_back,
+        std::pair<LPCSTR, bool> fx_left, std::pair<LPCSTR, bool> fx_right);
+
+    void AddAnim(EMotionAnim ma, LPCSTR tn, int s_id, SVelocityParam* vel, EPState p_s,
+        std::pair<LPCSTR, bool> fx_front, std::pair<LPCSTR, bool> fx_back,
+        std::pair<LPCSTR, bool> fx_left, std::pair<LPCSTR, bool> fx_right);
 	// -------------------------------------
 
 	// добавить анимацию перехода (A - Animation, S - Position)
