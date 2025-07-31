@@ -24,6 +24,10 @@ struct SectionData
 struct
 {
 	// weapon tab
+	bool sort_by_grenade_launcher{};
+	bool sort_by_scope_status{};
+	bool sort_by_silencer_status{};
+
 	bool sort_by_max_cost{};
 	bool weapon_sort_by_max_hit_power{};
 	bool weapon_sort_by_max_fire_distance{};
@@ -403,6 +407,32 @@ void RenderSpawnManagerWindow() {
 					}
 					};
 
+				ImGui::Columns(2, "##filter_columns", true);
+
+				// Left column - FILTERING (modifies data subset)
+				ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Active Filters");
+				ImGui::Separator();
+				if (ImGui::Checkbox("with grenade launcher##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_grenade_launcher))
+				{
+				}
+				ImGui::SetItemTooltip("Show only weapons with underbarrel grenade launcher capability");
+
+				if (ImGui::Checkbox("with scope##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_scope_status))
+				{
+				}
+				ImGui::SetItemTooltip("Show only weapons that support optical scopes");
+
+				if (ImGui::Checkbox("with silencer##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_silencer_status))
+				{
+				}
+				ImGui::SetItemTooltip("Show only weapons that support suppressors");
+
+				ImGui::NextColumn();
+
+				// Right column - SORTING (orders existing subset)
+				ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Sorting Methods");
+				ImGui::Separator();
+
 				if (ImGui::Checkbox("sort by max fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_fire_distance))
 				{
 					imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
@@ -434,6 +464,8 @@ void RenderSpawnManagerWindow() {
 					imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
 				}
 				ImGui::SetItemTooltip("Sorts items by minimal hit_power field for current game difficulty[%s]that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
+				
+				ImGui::Columns(1);
 
 				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
 				SectionStatistics(imgui_spawn_manager.WeaponsSections);
@@ -565,8 +597,58 @@ void RenderSpawnManagerWindow() {
 						});
 				}
 
+				Section filteredWeapons = imgui_spawn_manager.WeaponsSections.Sorted;
+
+				if (imgui_spawn_manager.sort_by_grenade_launcher ||
+					imgui_spawn_manager.sort_by_scope_status ||
+					imgui_spawn_manager.sort_by_silencer_status)
+				{
+					Section tempFiltered;
+
+					std::copy_if(
+						filteredWeapons.begin(),
+						filteredWeapons.end(),
+						std::back_inserter(tempFiltered),
+						[&](const auto& pair) {
+							if (!pair.second)
+								return false;
+
+							const char* section = pair.first.data();
+							bool meetsConditions = true;
+
+							if (imgui_spawn_manager.sort_by_grenade_launcher)
+							{
+								if (!pSettings->line_exist(section, "grenade_launcher_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "grenade_launcher_status") <= 0)
+									meetsConditions = false;
+							}
+
+							if (meetsConditions && imgui_spawn_manager.sort_by_scope_status)
+							{
+								if (!pSettings->line_exist(section, "scope_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "scope_status") <= 0)
+									meetsConditions = false;
+							}
+
+							if (meetsConditions && imgui_spawn_manager.sort_by_silencer_status)
+							{
+								if (!pSettings->line_exist(section, "silencer_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "silencer_status") <= 0)
+									meetsConditions = false;
+							}
+
+							return meetsConditions;
+						}
+					);
+
+					filteredWeapons = std::move(tempFiltered);
+				}
+
 				size_t number_imgui{};
-				SpawnManager_ProcessSections(imgui_spawn_manager.WeaponsSections.Sorted, number_imgui);
+				SpawnManager_ProcessSections(filteredWeapons, number_imgui);
 
 				if (imgui_spawn_manager.WeaponsSections.Unsorted.size() > 0)
 				{
@@ -783,13 +865,8 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 					}
 				}
 			}
-
-
-
 			ImGui::EndTable();
 		}
-
-
 	}
 	else
 	{
@@ -804,7 +881,6 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 			}
 		}
 	}
-
 
 	std::sort(sections.begin(), sections.end());
 }
