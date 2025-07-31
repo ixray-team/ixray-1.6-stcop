@@ -70,6 +70,11 @@ void CUIGameSP::OnFrame()
 			m_game_objective		= nullptr;
 		}
 	}
+
+#ifndef MASTER_GOLD
+	hud_draw_adjust_mode();
+	attach_draw_adjust_mode();
+#endif
 }
 
 bool CUIGameSP::IR_UIOnKeyboardPress(int dik) 
@@ -147,7 +152,5 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 void CUIGameSP::Render()
 {
 	inherited::Render();
-	hud_draw_adjust_mode();
-	attach_draw_adjust_mode();
 }
 #endif
