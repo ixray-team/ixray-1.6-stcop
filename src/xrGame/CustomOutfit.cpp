@@ -11,6 +11,8 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "player_hud.h"
 #include "ActorHelmet.h"
+#include "UIGameCustom.h"
+#include "UIActorMenu.h"
 
 
 CCustomOutfit::CCustomOutfit()
@@ -116,6 +118,11 @@ void CCustomOutfit::Load(LPCSTR section)
 
 	IsExo = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo", false);
 	IsExoProto = READ_IF_EXISTS(pSettings, r_bool, section, "is_exo_proto", false);
+
+	if (pSettings->line_exist(section, "character_portrait"))
+	{
+		m_character_portrait = pSettings->r_string(section, "character_portrait");
+	}
 }
 
 void CCustomOutfit::ReloadBonesProtection()
@@ -263,6 +270,17 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 
 		if (pActor == Level().CurrentViewEntity())
 		{
+			if (m_character_portrait.size() > 0)
+			{
+				pActor->SetIcon(m_character_portrait);
+				if (auto current_ui = CurrentGameUI())
+				{
+					if (current_ui->ActorMenu().IsShown())
+					{
+						current_ui->ActorMenu().ReloadActorInfo();
+					}
+				}
+			}
 			//g_player_hud->load(pSettings->r_string(cNameSect(),"player_hud_section"));
 			g_player_hud->m_need_reload = false;
 		}
@@ -270,6 +288,14 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 	{
 		if (!bHUDOnly && m_ActorVisual.size())
 		{
+			pActor->SetIcon("");
+			if (auto current_ui = CurrentGameUI())
+			{
+				if (current_ui->ActorMenu().IsShown())
+				{
+					current_ui->ActorMenu().ReloadActorInfo();
+				}
+			}
 			shared_str DefVisual	= pActor->GetDefaultVisualOutfit();
 			if (DefVisual.size())
 			{

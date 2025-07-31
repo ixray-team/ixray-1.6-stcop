@@ -35,6 +35,7 @@ protected:
 
 	shared_str				m_ActorVisual;
 	shared_str				m_full_icon_name;
+	shared_str				m_character_portrait;
 	SBoneProtections*		m_boneProtection;	
 protected:
 	u32						m_ef_equipment_type;
