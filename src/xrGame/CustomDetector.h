@@ -25,6 +25,7 @@ public:
 
 	virtual BOOL 	net_Spawn			(CSE_Abstract* DC);
 	virtual void 	Load				(LPCSTR section);
+	virtual void 	LoadSounds			(LPCSTR section);
 
 	virtual void 	OnH_A_Chield		();
 	virtual void 	OnH_B_Independent	(bool just_before_destroy);
