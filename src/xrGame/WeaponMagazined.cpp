@@ -599,28 +599,46 @@ void CWeaponMagazined::state_Fire(float dt)
 		p1.set(get_LastFP());
 		d.set(get_LastFD());
 
-		if (!H_Parent()) return;
-		if (smart_cast<CMPPlayersBag*>(H_Parent()) != nullptr)
+		if (!H_Parent())
 		{
-			Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+			StopShooting();
 			return;
 		}
-
-		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-		if(nullptr == io->inventory().ActiveItem())
+		CGameObject* GO = H_Parent()->cast_game_object();
+		if (!GO || GO->getDestroy())
 		{
-			Msg("current_state %d", GetState() );
-			Msg("next_state %d", GetNextState());
-			Msg("item_sect %s", cNameSect().c_str());
-			Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 			StopShooting();
 			return;
 		}
 
-		CEntity* E = smart_cast<CEntity*>(H_Parent());
-		E->g_fireParams	(this, p1,d);
+		if(!IsGameTypeSingle())
+		{
+			if (smart_cast<CMPPlayersBag*>(GO) != nullptr)
+			{
+				Msg("! WARNING: state_Fire of object [%d][%s] while parent is CMPPlayerBag...", ID(), cNameSect().c_str());
+				{
+					StopShooting();
+					return;
+				}
+			}
+		}
 
-		if( !E->g_stateFire() )
+		CEntity* entity = GO->cast_entity();
+		if (!entity)
+		{
+			StopShooting();
+			return;
+		}
+		CInventoryOwner* inventory_owner = entity->cast_inventory_owner();
+		if (!inventory_owner || !inventory_owner->m_inventory)
+		{
+			StopShooting();
+			return;
+		}
+
+		entity->g_fireParams	(this, p1,d);
+
+		if( !entity->g_stateFire() )
 			StopShooting();
 
 		if (m_iShotNum == 0)

@@ -109,7 +109,7 @@ void CWeapon::UpdateXForm	()
 		return;
 
 	// Get access to entity and its visual
-	CGameObject* go = smart_cast<CGameObject*>(H_Parent());
+	CGameObject* go = H_Parent()->cast_game_object();
 	if (go == nullptr)
 	{
 		return;
