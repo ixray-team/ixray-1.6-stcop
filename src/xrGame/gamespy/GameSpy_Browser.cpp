@@ -16,9 +16,6 @@ void __cdecl SBCallback(ServerBrowser sb, SBCallbackReason reason, SBServer serv
 EGameIDs ParseStringToGameType(LPCSTR str);
 
 CGameSpy_Browser::CGameSpy_Browser()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_refresh_lock(MUTEX_PROFILE_ID(CGameSpy_Browser::m_refresh_lock))
-#endif // PROFILE_CRITICAL_SECTIONS
 
 {
 	m_pQR2 = nullptr;

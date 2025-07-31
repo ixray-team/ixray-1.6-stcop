@@ -81,10 +81,8 @@ u32			lvInterpSteps		= 0;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
-#ifdef PROFILE_CRITICAL_SECTIONS
-	,DemoCS(MUTEX_PROFILE_ID(DemoCS))
-#endif // PROFILE_CRITICAL_SECTIONS
+CLevel::CLevel():
+	IPureClient(Device.GetTimerGlobal())
 {
 	g_bDebugEvents				= Core.ParamsData.test(ECoreParams::debug_ge);
 
