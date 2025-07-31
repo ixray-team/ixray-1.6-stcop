@@ -47,4 +47,5 @@ struct CompilersMode
 };
 
 void RenderMainUI();
+void RenderCompilerUI();
 void InitializeUIData();
