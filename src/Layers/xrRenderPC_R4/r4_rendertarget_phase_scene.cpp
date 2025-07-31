@@ -7,7 +7,7 @@ void CRenderTarget::phase_scene_forward() {
 // startup
 void	CRenderTarget::phase_scene_prepare	()
 {
-	PIX_EVENT(phase_scene_prepare);
+	GPU_EVENT(phase_scene_prepare);
 
 	//	TODO: DX10: Check if we need to set RT here.
 	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);

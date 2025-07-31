@@ -238,7 +238,7 @@ void dx103DFluidManager::Reset()
 
 void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 {
-	PIX_EVENT(simulate_fluid);
+	GPU_EVENT(simulate_fluid);
 
 	const dx103DFluidData::Settings &VolumeSettings = FluidData.GetSettings();
 	const bool bSimulateFire = (VolumeSettings.m_SimulationType == dx103DFluidData::ST_FIRE);
@@ -308,7 +308,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 
 void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 {
-	PIX_EVENT(AttachFluidData);
+	GPU_EVENT(AttachFluidData);
 
 	for (int i=0; i<dx103DFluidData::VP_NUM_TARGETS; ++i)
 	{
@@ -323,7 +323,7 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 
 void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 {
-	PIX_EVENT(DetachAndSwapFluidData);
+	GPU_EVENT(DetachAndSwapFluidData);
 
 	if (ID3DTexture3D* pTTarg = (ID3DTexture3D*)pRTTextures[RENDER_TARGET_COLOR]->surface_get())
 	{
@@ -354,7 +354,7 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 
 void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 {
-	PIX_EVENT(AdvectColorBFECC);
+	GPU_EVENT(AdvectColorBFECC);
 
 	float color[4] = {0, 0, 0, 0 };
 
@@ -418,7 +418,7 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 
 void dx103DFluidManager::AdvectColor( float timestep, bool bTeperature )
 {
-	PIX_EVENT(AdvectColor);
+	GPU_EVENT(AdvectColor);
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
 
 	if (bTeperature)
@@ -436,7 +436,7 @@ void dx103DFluidManager::AdvectColor( float timestep, bool bTeperature )
 
 void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 {
-	PIX_EVENT(AdvectVelocity);
+	GPU_EVENT(AdvectVelocity);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
 
@@ -457,7 +457,7 @@ void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 
 void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 {
-	PIX_EVENT(ApplyVorticityConfinement);
+	GPU_EVENT(ApplyVorticityConfinement);
 
 	// Compute vorticity
 	float color[4] = {0, 0, 0, 0 };
@@ -479,7 +479,7 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 
 void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData &FluidData, float timestep )
 {
-	PIX_EVENT(ApplyExternalForces);
+	GPU_EVENT(ApplyExternalForces);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
 	m_pEmittersHandler->RenderDensity(FluidData);
@@ -490,7 +490,7 @@ void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData &FluidData, f
 
 void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 {
-	PIX_EVENT(ComputeVelocityDivergence);
+	GPU_EVENT(ComputeVelocityDivergence);
 
 	float color[4] = {0, 0, 0, 0 };
 	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color );
@@ -503,7 +503,7 @@ void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 
 void dx103DFluidManager::ComputePressure( float timestep )
 {
-	PIX_EVENT(ComputePressure);
+	GPU_EVENT(ComputePressure);
 
 	float color[4] = {0, 0, 0, 0 };
 	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color );
@@ -532,7 +532,7 @@ void dx103DFluidManager::ComputePressure( float timestep )
 
 void dx103DFluidManager::ProjectVelocity( float timestep )
 {
-	PIX_EVENT(ProjectVelocity);
+	GPU_EVENT(ProjectVelocity);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY0]);
 	RCache.set_Element(m_SimulationTechnique[SS_Project]);
@@ -544,7 +544,7 @@ void dx103DFluidManager::ProjectVelocity( float timestep )
 void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 {
 //	return;
-	PIX_EVENT(render_fluid);
+	GPU_EVENT(render_fluid);
 
 	//	Bind input texture
 	ID3DTexture3D	*pT = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
@@ -566,7 +566,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 
 void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, float timestep )
 {
-	PIX_EVENT(Fluid_update_obstacles);
+	GPU_EVENT(Fluid_update_obstacles);
 	//	Reset data
 	float color[4] = {0, 0, 0, 0 };
 	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_OBSTACLES], color );

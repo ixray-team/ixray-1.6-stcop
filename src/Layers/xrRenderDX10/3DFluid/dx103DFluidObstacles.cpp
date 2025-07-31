@@ -102,7 +102,7 @@ void dx103DFluidObstacles::DestroyShaders()
 
 void dx103DFluidObstacles::ProcessObstacles( const dx103DFluidData &FluidData, float timestep )
 {
-	PIX_EVENT(ProcessObstacles);
+	GPU_EVENT(ProcessObstacles);
 
 	//	Prepare world-space to grid transform
 	Fmatrix WorldToFluid;
@@ -135,7 +135,7 @@ void dx103DFluidObstacles::ProcessObstacles( const dx103DFluidData &FluidData, f
 
 void dx103DFluidObstacles::RenderStaticOOBB( const Fmatrix &Transform)
 {
-	PIX_EVENT(RenderObstacle);
+	GPU_EVENT(RenderObstacle);
 
 	//	Shader must be already set up!
 	Fmatrix	InvTransform;
@@ -318,7 +318,7 @@ void dx103DFluidObstacles::RenderPhysicsElement( const IPhysicsElement &Element,
 /*
 void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep)
 {
-	PIX_EVENT(RenderDynamicObstacle);
+	GPU_EVENT(RenderDynamicObstacle);
 
 	//	dsdad;
 
@@ -387,7 +387,7 @@ void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, co
 
 void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsGeometry &Geometry, const Fmatrix &WorldToFluid, float timestep)
 {
-	PIX_EVENT(RenderDynamicObstacle);
+	GPU_EVENT(RenderDynamicObstacle);
 
 	//	dsdad;
 

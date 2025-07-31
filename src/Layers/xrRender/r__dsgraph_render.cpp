@@ -39,7 +39,7 @@ void __fastcall sorted_L1		(mapSorted_Node *N)
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
 	PROF_EVENT("r_dsgraph_render_graph");
-	//PIX_EVENT(r_dsgraph_render_graph);
+	//GPU_EVENT(r_dsgraph_render_graph);
 	CScopeTimer Timer(Device.Statistic->RenderDUMP);
 
 	// **************************************************** NORMAL
@@ -284,9 +284,9 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 void	R_dsgraph_structure::r_dsgraph_render_scope	()
 {
 #if	RENDER==R_R4
-	PIX_EVENT(SCOPE_BUFFER_RENDER);
+	GPU_EVENT(SCOPE_BUFFER_RENDER);
 	{
-		PIX_EVENT(ZBUFFER_COPY);
+		GPU_EVENT(ZBUFFER_COPY);
 		RCache.set_ZB(NULL);
 
 		ID3D11Resource* res{};
