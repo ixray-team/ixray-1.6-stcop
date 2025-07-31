@@ -376,6 +376,14 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, LPCSTR path, int index, CUILines* pLi
 	bool isGradient = xml_doc.ReadAttribInt(path, index, "gradient") ? true : false;
 	pLines->SetTextGradient(isGradient);
 
+	CGameFont::EGradientMode mode = CGameFont::gm_vert;
+	LPCSTR mode_str = xml_doc.ReadAttrib(path, index, "gradient_mode");
+	if (_stricmp(mode_str, "horz") == 0) { mode = CGameFont::gm_horz; }
+	else if (_stricmp(mode_str, "vert") == 0) { mode = CGameFont::gm_vert; }
+	else if (_stricmp(mode_str, "back") == 0) { mode = CGameFont::gm_back; }
+	else if (_stricmp(mode_str, "down") == 0) { mode = CGameFont::gm_down; }
+	pLines->SetTextGradientMode(mode);
+
 	shared_str text = xml_doc.Read(path, index, nullptr);
 	if (text.size())
 		pLines->SetText(g_pStringTable->translate(text).c_str());
