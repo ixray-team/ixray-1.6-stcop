@@ -39,6 +39,9 @@ public:
 			task_CS.Enter		();
 			Progress(float(ProgressData.load()) / float (lc_global_data()->g_deflectors().size()) );
 
+			if (ProgressData.load() % 8 == 0)
+				AditionalData("Deflectors: %u / %u", ProgressData.load(), lc_global_data()->g_deflectors().size() );
+
  			if (task_pool.empty())	
 			{
 				task_CS.Leave		();
@@ -65,6 +68,10 @@ public:
 	}
 };
 
+
+#include "../xrForms/CompilersUI.h"
+extern CompilersMode gCompilerMode;
+
 void	CBuild::LMapsLocal				()
 {
 		FPU::m64r		();
@@ -81,10 +88,10 @@ void	CBuild::LMapsLocal				()
 		// Main process (4 threads)
 		Status			("Lighting...");
 		CThreadManager	threads;
-		const	u32	thNUM	= CPU::ID.n_threads - 2;
-
-		CTimer	start_time;	start_time.Start();				
-		for				(int L=0; L<thNUM; L++)	threads.start(new CLMThread (L));
+ 		
+		CTimer	start_time;	
+		start_time.Start();				
+		for				(int L=0; L< gCompilerMode.ThreadsPerWork; L++)	threads.start(new CLMThread (L));
 		threads.wait	(500);
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
 }
@@ -93,21 +100,21 @@ void	CBuild::LMaps					()
 {
 	LMapsLocal();
 }
- 
-#define BUILDING_LIGHING
- 
+  
 void CBuild::BuildAdaptiveHT()
 {
-#ifdef BUILDING_LIGHING
 	//****************************************** HEMI-Tesselate
 	FPU::m64r();
 	Phase("Adaptive HT...");
  	xrPhase_AdaptiveHT();
-#endif 
 }
 
 #include "../xrLC_Light/xrFaceDefs.h"
 #include "../xrLC_Light/xrFace.h"
+
+#include "../xrForms/CompilersUI.h"
+extern CompilersMode gCompilerMode;
+
 void CBuild::Light()
 {
  	//****************************************** Resolve materials
@@ -126,7 +133,6 @@ void CBuild::Light()
 	lc_global_data()->vertices_isolate_and_pool_reload();
 	IsolateVertices(TRUE);
 
-#ifdef BUILDING_LIGHING
 	//****************************************** GLOBAL-RayCast model
 	Phase("Building rcast-CFORM model...");
 	Light_prepare();
@@ -134,12 +140,14 @@ void CBuild::Light()
 
  	//****************************************** Implicit
 	Phase("LIGHT: Implicit...");
-	EmbreeMain.AttachGeometrys(true);
+	if (gCompilerMode.Embree_SplitBVH)
+		EmbreeMain.AttachGeometrys(true);
  	ImplicitLighting();
  
 	//****************************************** LMAPS
  	Phase("LIGHT: LMaps...");
-	EmbreeMain.AttachGeometrys(false);
+	if (gCompilerMode.Embree_SplitBVH)
+		EmbreeMain.AttachGeometrys(false);
 	LMaps		();
 
  	//****************************************** Vertex
@@ -153,7 +161,6 @@ void CBuild::Light()
 	// Save Lmaps
 	Phase("LIGHT: Save lightmaps...");
 	xrPhase_SaveLmaps();
-#endif 	 
 
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
@@ -162,7 +169,8 @@ void CBuild::Light()
 	//****************************************** Starting MU
 	Phase("LIGHT: Starting MU...");
   	Light_prepare();
- 	EmbreeMain.AttachGeometrys(true);
+	if (gCompilerMode.Embree_SplitBVH)
+ 		EmbreeMain.AttachGeometrys(true);
 	StartMu();
 	 
 	//****************************************** Destroy RCast-model

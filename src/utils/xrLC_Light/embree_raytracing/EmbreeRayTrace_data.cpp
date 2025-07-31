@@ -26,9 +26,9 @@ void VertexEmbree::Set(Fvector& vertex)
 Fvector VertexEmbree::Get()
 {
 	Fvector vertex;
-	x = vertex.x;
-	y = vertex.y;
-	z = vertex.z;
+	vertex.x = x;
+	vertex.y = y;
+	vertex.z = z;
 	return vertex;
 }
 
@@ -210,125 +210,88 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	Status("Capturing MU-Ref Faces... Ended");
 }
 #include "../xrLC/Build.h"
+extern CBuild* pBuild;
+
 void EmbreeData::BuildRcast()
-{
-	Phase("Export Build.cform");
-	//TriangleContainer container;
-	 
-	CDB::CollectorPacked CPacked(pBuild->scene_bb, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
+{ 
+	/*
+	clMsg("Start Export Build.cform");
+	TriangleContainer container;
+	container.AddOther(static_geom);
+	container.AddOther(static_geom_transp);
+	container.AddOther(murefs_geom);
+	container.AddOther(murefs_geom_transp);
+ 
+	string_path				fn;
 
-	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
-  	for (auto F : lc_global_data()->g_faces())
-	{
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
-
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		// Collect
-		adjacent_vec.clear();
-		for (int vit = 0; vit < 3; ++vit)
-		{
-			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
-
-		// Unique
-		BOOL			bAlready = FALSE;
-
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
-		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)
-				continue;
-			if (!Test->flags.bProcessed)
-				continue;
-			if (FaceEqual__(*F, *Test))
-			{
-				bAlready = TRUE;
-				break;
-			}
-		}
-
-		if (!bAlready)
-		{
-			F->flags.bProcessed = true;
-			CPacked.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), 0);
-			//container.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
- 		}
-	}
-  
-	for (auto ref : lc_global_data()->mu_refs())
-	{
-		xr_vector<FaceDataIntel> temp_buffer;
-		ref->export_cform_rcast_new(temp_buffer);
-		for (auto pF : temp_buffer)
-		{
-			Face* F = (Face*) pF.ptr;
-			CPacked.add_face_D(pF.v1, pF.v2, pF.v3, convert_nax(F), 0);
-  			//container.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
-		}
- 	}
-   
- 	{
-		string_path				fn;
-
-		IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
-		xr_vector<b_rc_face>	rc_faces;
-		rc_faces.resize(CPacked.getTS());
+	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
+	xr_vector<b_rc_face>	rc_faces;
+	rc_faces.resize(container.faces_cnt());
 	
-		// Prepare faces
-		for (u32 k = 0; k < CPacked.getTS(); k++)
-		{
- 			base_Face* F		= convert_nax(k); //container.dummy[k];
+	// Prepare faces
+	for (u32 k = 0; k < container.faces_cnt(); k++)
+	{
+ 		base_Face* F		= container.dummy[k];
 		
-			b_rc_face& cf		= rc_faces[k];
-			cf.dwMaterial		= F->dwMaterial;
-			cf.dwMaterialGame	= F->dwMaterialGame;
+		b_rc_face& cf		= rc_faces[k];
+		cf.dwMaterial		= F->dwMaterial;
+		cf.dwMaterialGame	= F->dwMaterialGame;
 
-			Fvector2* cuv		= F->getTC0();
-			cf.t[0].set(cuv[0]);
-			cf.t[1].set(cuv[1]);
-			cf.t[2].set(cuv[2]);
-		}
- 		MFS->open_chunk(0);
-
-		// Header
-		hdrCFORM hdr;
-		hdr.version		= CFORM_CURRENT_VERSION;
-		hdr.vertcount	= (u32) CPacked.getVS();
-		hdr.facecount	= (u32) CPacked.getTS();
-		hdr.aabb		= pBuild->scene_bb;
-		
-		MFS->w(&hdr, sizeof(hdr));
-
-		// Data
- 		MFS->w(CPacked.getV(), (u32)CPacked.getVS() * sizeof(Fvector));
-		MFS->w(CPacked.getT(), (u32)CPacked.getTS() * sizeof(CDB::TRI));
-
-		MFS->close_chunk();
-
-		MFS->open_chunk(1);
-		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-		MFS->close_chunk();
-
-		FS.w_close(MFS);
+		Fvector2* cuv		= F->getTC0();
+		cf.t[0].set(cuv[0]);
+		cf.t[1].set(cuv[1]);
+		cf.t[2].set(cuv[2]);
 	}
+ 	MFS->open_chunk(0);
+
+	// Header
+	hdrCFORM hdr;
+	hdr.version		= CFORM_CURRENT_VERSION;
+	hdr.vertcount	= (u32) container.vertex_cnt();
+	hdr.facecount	= (u32) container.faces_cnt();
+	hdr.aabb		= pBuild->scene_bb;
+		
+	MFS->w(&hdr, sizeof(hdr));
+
+	// Data
+ 	size_t vertex_mem = container.vertex_cnt() * 12;
+	size_t faces_mem  = container.faces_cnt() * sizeof(CDB::TRI);
+	Msg("Memory Vertex need: %u mb", u32 ( vertex_mem / 1024 / 1024) );
+	Msg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
+
+	Msg("Vertex Count: %u", container.vertex_cnt());
+	Msg("Faces Count: %u", container.faces_cnt());
+
+	for (auto V : container.vertex())
+	{
+		auto Vert = V.Get();
+		MFS->w(&Vert, sizeof(Vert));
+	}
+
+	for (auto T : container.faces())
+	{
+		auto TRI = T.Get();
+		MFS->w(&TRI, sizeof(TRI));
+	}
+	 
+	MFS->close_chunk();
+
+	MFS->open_chunk(1);
+	MFS->w(&*rc_faces.begin(), size_t(rc_faces.size() * sizeof(b_rc_face)) );
+	MFS->close_chunk();
+
+	size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
+
+	Msg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
+
+	Msg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
+
+	FS.w_close(MFS);
+	*/
 }
 
 
-
-#include "../xrLC/Build.h"
-
-extern CBuild* pBuild;
- 
-u32 TriangleContainer::find_or_add(Fvector& V)
+u32 TriangleContainer::find_or_add(Fvector V)
 {
 	VertexEmbree new_vertex;
 	new_vertex.Set(V);
@@ -360,40 +323,42 @@ u32 TriangleContainer::find_or_add(Fvector& V)
 	hashTable[hashKey].push_back(data);
 	return VertexID;
 }
- 
-#define CompactingVertexes
-void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
+
+u32 TriangleContainer::find_or_add(VertexEmbree v)
 {
- 	int IDX = vertex().size();
-	
-	VertexEmbree vert1, vert2, vert3;
-	vert1.Set(v1), vert2.Set(v2), vert3.Set(v3);
-
-	TriEmbree triangle;
-
-#ifdef CompactingVertexes
-		triangle.point1 = find_or_add(v1);
-		triangle.point2 = find_or_add(v2);
-		triangle.point3 = find_or_add(v3);
-#else 
-		triangle.point1 = IDX;
-		triangle.point2 = IDX + 1;
-		triangle.point3 = IDX + 2;
-		vertex().push_back(vert1);
-		vertex().push_back(vert2);
-		vertex().push_back(vert3);
-#endif
-
-	faces().push_back(triangle);
-	dummy.push_back((Face*)F);
+	return find_or_add( v.Get() ) ;
 }
  
-// void EmbreeData::TriangleContainer::GetFace(int ID)
-// {
-// 	v1 = vertex()[faces()[ID].point1].Get();
-// 	v2 = vertex()[faces()[ID].point2].Get();
-// 	v3 = vertex()[faces()[ID].point3].Get();
-// }
+void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
+{	
+	TriEmbree triangle;
+ 	triangle.point1 = find_or_add(v1);
+	triangle.point2 = find_or_add(v2);
+	triangle.point3 = find_or_add(v3);
+ 	faces().push_back(triangle);
+	dummy.push_back((Face*)F);
+}
+
+void TriangleContainer::AddFaceCopy(int Index, TriangleContainer& container)
+{
+	auto& Face = container.faces_v[Index];
+	Fvector v1 = container.verts_v[Face.point1].Get();
+	Fvector v2 = container.verts_v[Face.point2].Get();
+	Fvector v3 = container.verts_v[Face.point3].Get();
+
+	TriEmbree triangle;
+	triangle.point1 = find_or_add(v1);
+	triangle.point2 = find_or_add(v2);
+	triangle.point3 = find_or_add(v3);
+	faces().push_back(triangle);
+ 	dummy.push_back(container.dummy[Index]);
+}
+ 
+void TriangleContainer::AddOther(TriangleContainer& container)
+{
+ 	for (int INDEX = 0; INDEX < container.faces_cnt(); INDEX++)
+ 		AddFaceCopy(INDEX, container);
+}
 
 void TriangleContainer::ClearAll()
 {
