@@ -19,5 +19,6 @@ void CUIEditBox::script_register(lua_State *L)
 		class_<CUIEditBox, CUICustomEdit>("CUIEditBox")
 		.def(						constructor<>())
 		.def("InitTexture",			&CUIEditBox::InitTexture)
+        .def("InitTexture",			+[](CUIEditBox* self, pcstr texture) { self->InitTexture(texture); })
 	];
 }

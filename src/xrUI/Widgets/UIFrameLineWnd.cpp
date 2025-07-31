@@ -9,10 +9,10 @@ CUIFrameLineWnd::CUIFrameLineWnd()
 	m_texture_color				= color_argb(255,255,255,255);
 }
 
-void CUIFrameLineWnd::InitFrameLineWnd(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal)
+bool CUIFrameLineWnd::InitFrameLineWnd(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal, bool fatal)
 {
 	InitFrameLineWnd(pos,size,horizontal);
-	InitTexture		(base_name,"hud\\default");
+	return InitTexture		(base_name,"hud\\default",fatal);
 }
 
 void CUIFrameLineWnd::InitFrameLineWnd(Fvector2 pos, Fvector2 size, bool horizontal)
@@ -23,23 +23,68 @@ void CUIFrameLineWnd::InitFrameLineWnd(Fvector2 pos, Fvector2 size, bool horizon
 	bHorizontal					= horizontal;
 }
 
-void CUIFrameLineWnd::InitTexture(LPCSTR texture, LPCSTR sh_name)
+bool CUIFrameLineWnd::InitTexture(pcstr texture, pcstr shader, bool fatal /*= true*/)
 {
-	m_bTextureVisible			= true;
-	dbg_tex_name				= texture;
-	string256					buf;
-	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_back"),	sh_name, m_shader, m_tex_rect[flBack]);
-	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_b"),	sh_name, m_shader, m_tex_rect[flFirst]);
-	CUITextureMaster::InitTexture(xr_strconcat( buf, texture,"_e"),	sh_name, m_shader, m_tex_rect[flSecond]);
-	if(bHorizontal)
-	{
-		R_ASSERT2(fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flSecond].height()), texture );
-		R_ASSERT2(fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flBack].height()),texture );
-	}else
-	{
-		R_ASSERT2(fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flSecond].width()), texture );
-		R_ASSERT2(fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flBack].width()),texture );
-	}
+    dbg_tex_name = texture;
+    string256 buf;
+
+    const bool back_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_back"), shader, m_shader, m_tex_rect[flBack]);
+    const bool b_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_b"), shader, m_shader, m_tex_rect[flFirst]);
+    const bool e_exist = CUITextureMaster::InitTexture(xr_strconcat(buf, texture, "_e"), shader, m_shader, m_tex_rect[flSecond]);
+
+    bool failed = false;
+
+    if (fatal)
+    {
+        R_ASSERT2(back_exist, texture);
+        R_ASSERT2(b_exist, texture);
+        R_ASSERT2(e_exist, texture);
+    }
+    /*else*/ // Always set failed flag to be able to play in debug
+    {
+        failed |= !back_exist;
+        failed |= !b_exist;
+        failed |= !e_exist;
+    }
+
+    const bool B_and_E_are_similar_by_height = fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flSecond].height());
+    const bool B_and_Back_are_similar_by_height = fsimilar(m_tex_rect[flFirst].height(), m_tex_rect[flBack].height());
+    const bool B_and_E_are_similar_by_width = fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flSecond].width());
+    const bool B_and_Back_are_similar_by_width = fsimilar(m_tex_rect[flFirst].width(), m_tex_rect[flBack].width());
+
+    if (fatal)
+    {
+        if (bHorizontal)
+        {
+            R_ASSERT2(B_and_E_are_similar_by_height, texture);
+            R_ASSERT2(B_and_Back_are_similar_by_height, texture);
+        }
+        else
+        {
+            R_ASSERT2(B_and_E_are_similar_by_width, texture);
+            R_ASSERT2(B_and_Back_are_similar_by_width, texture);
+        }
+    }
+    else
+    {
+        if (bHorizontal)
+        {
+            if (!B_and_E_are_similar_by_height && b_exist && e_exist)
+                Msg("! Textures %s_b and %s_e are not similar by height", texture, texture);
+            if (!B_and_Back_are_similar_by_height && b_exist && back_exist)
+                Msg("! Textures %s_b and %s_back are not similar by height", texture, texture);
+        }
+        else
+        {
+            if (!B_and_E_are_similar_by_width && b_exist && e_exist)
+                Msg("! Textures %s_b and %s_e are not similar by width", texture, texture);
+            if (!B_and_Back_are_similar_by_width && b_exist && back_exist)
+                Msg("! Textures %s_b and %s_back are not similar by width", texture, texture);
+        }
+    }
+
+    m_bTextureVisible = !failed;
+    return !failed;
 }
 
 void CUIFrameLineWnd::Draw()
