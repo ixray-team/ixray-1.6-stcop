@@ -401,10 +401,17 @@ u32	ILevelGraph::vertex_id(const Fvector& position) const
 {
 	VERIFY2(valid_vertex_position(position),make_string<const char*>("invalid position for ILevelGraph::vertex_id specified: [%f][%f][%f]",	VPUSH(position)));
 
-	CPosition			_vertex_position = vertex_position(position);
+	CPosition _vertex_position = vertex_position(position);
 	CVertex* B = m_nodes;
 	CVertex* E = m_nodes + header().vertex_count();
-	CVertex* I = std::lower_bound(B, E, _vertex_position.xz());
+	CVertex* I = std::lower_bound
+	(
+		B, E, _vertex_position.xz(), [](const CVertex& vertex, u32 xz_value)
+		{
+			return vertex.position().xz() < xz_value;
+		}
+	);
+
 	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
 		return			(u32(-1));
 
@@ -469,14 +476,21 @@ u32 ILevelGraph::guess_vertex_id(u32 const& current_vertex_id, Fvector const& po
 
 	CVertex const* B = m_nodes;
 	CVertex const* E = m_nodes + header().vertex_count();
-	u32						start_x = (u32)_max(0, int(x) - max_guess_vertex_count);
-	u32						stop_x = _min(max_x(), x + (u32)max_guess_vertex_count);
-	u32						start_z = (u32)_max(0, int(z) - max_guess_vertex_count);
-	u32						stop_z = _min(max_z(), z + (u32)max_guess_vertex_count);
-	for (u32 i = start_x; i <= stop_x; ++i) {
-		for (u32 j = start_z; j <= stop_z; ++j) {
-			u32				test_xz = i * m_row_length + j;
-			CVertex const* I = std::lower_bound(B, E, test_xz);
+	u32 start_x = (u32)_max(0, int(x) - max_guess_vertex_count);
+	u32 stop_x = _min(max_x(), x + (u32)max_guess_vertex_count);
+	u32 start_z = (u32)_max(0, int(z) - max_guess_vertex_count);
+	u32 stop_z = _min(max_z(), z + (u32)max_guess_vertex_count);
+
+	for (u32 i = start_x; i <= stop_x; ++i)
+	{
+		for (u32 j = start_z; j <= stop_z; ++j)
+		{
+			u32 test_xz = i * m_row_length + j;
+			CVertex const* I = std::lower_bound(B, E, test_xz, [](const CVertex& vertex, u32 xz_value)
+			{
+				return vertex.position().xz() < xz_value;
+			});
+
 			if (I == E)
 				continue;
 
