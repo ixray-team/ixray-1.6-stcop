@@ -6,9 +6,9 @@
       <texture>ui_statTwo</texture>
     </frame>
   
-    <frame class="frame_line" x="0" y="400" width="845" height="200" vertical="1">
+    <!--frame class="frame_line" x="0" y="400" width="845" height="200" vertical="1">
       <texture>ui_statTwo2</texture>
-    </frame>
+    </frame-->
 
     <!--This nodes will process by UITeamPanels::InitAllTeams(...)-->
     <team tname="greenteam" x="0" y="0" width="424" height="400">

@@ -11,7 +11,7 @@
 			<frame x="0" y="20" width="515" height="290">
 				<texture>ui_cb_listbox</texture>
 			</frame>
-			<list x="0" y="20" width="535" height="250" height2="140" item_height="18" always_show_scroll="1"/>
+			<list x="0" y="20" width="535" height="250" height2="140" item_height="18" always_show_scroll="1" can_select="1"/>
 			<list_item>
 				<text r="131" g="131" b="131" font="letterica16" complex_mode="0"/>
 			</list_item>
@@ -99,10 +99,10 @@
 
 		<radio_tab_network_connection x="16" y="40" width="400" height="18" radio="1">
 			<button x="0" y="2" width="32" height="21" id="internet">
-				<text font="letterica16" r="115" g="114" b="112" complex_mode="0">mm_mp_internet</text>
+				<text font="letterica16" r="115" g="114" b="112" complex_mode="0" align="l" x="40">mm_mp_internet</text>
 			</button>		
 			<button x="184" y="2" width="32" height="21" id="lan">
-				<text font="letterica16" r="115" g="114" b="112" complex_mode="0">mm_mp_lan</text>
+				<text font="letterica16" r="115" g="114" b="112" complex_mode="0" align="l" x="40">mm_mp_lan</text>
 			</button>		
 		</radio_tab_network_connection>
 		
