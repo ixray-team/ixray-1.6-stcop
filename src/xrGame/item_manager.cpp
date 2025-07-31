@@ -24,7 +24,7 @@ CItemManager::CItemManager			(CCustomMonster *object)
 	VERIFY					(object);
 	m_object				= object;
 
-	m_stalker				= smart_cast<CAI_Stalker*>( m_object );
+	m_stalker				= m_object->cast_stalker();
 }
 
 bool CItemManager::is_useful		(const CGameObject *object) const
@@ -62,8 +62,8 @@ bool CItemManager::useful			(const CGameObject *object) const
 
 	if (!m_object->movement().restrictions().accessible(object->ai_location().level_vertex_id()))
 		return				(false);
-
-	const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(object);
+	CGameObject* GO = const_cast<CGameObject*>(object);
+	const CInventoryItem	*inventory_item = GO ? GO->cast_inventory_item() : NULL;
 	if (inventory_item && !inventory_item->useful_for_NPC())
 		return				(false);
 
@@ -96,7 +96,8 @@ float CItemManager::do_evaluate		(const CGameObject *object) const
 
 float CItemManager::evaluate		(const CGameObject *object) const
 {
-	const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(object);
+	CGameObject* GO = const_cast<CGameObject*>(object);
+	const CInventoryItem	*inventory_item = GO ? GO->cast_inventory_item() : NULL;
 	VERIFY					(inventory_item);
 	VERIFY					(inventory_item->useful_for_NPC());
 	return					(1000000.f - (float)inventory_item->Cost());
@@ -135,7 +136,7 @@ void CItemManager::remove_links		(CObject *object)
 {
 	// since we use no members in CGameObject during search,
 	// we just use the pinter itself, we can just statically cast object
-	OBJECTS::iterator		I = std::find(m_objects.begin(),m_objects.end(),(CGameObject*)object);
+	OBJECTS::iterator		I = std::find(m_objects.begin(),m_objects.end(), object->cast_game_object());
 	if (I != m_objects.end())
 		m_objects.erase		(I);
 

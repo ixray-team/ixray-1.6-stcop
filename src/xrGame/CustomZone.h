@@ -7,27 +7,8 @@ class CActor;
 class CLAItem;
 class CParticlesObject;
 class CZoneEffector;
-
+struct SZoneObjectInfo;
 #define SMALL_OBJECT_RADIUS 0.6f
-
-//информация о объекте, находящемся в зоне
-struct SZoneObjectInfo
-{
-	SZoneObjectInfo():object(NULL),zone_ignore(false),dw_time_in_zone(0),f_time_affected(Device.fTimeGlobal),small_object(false),nonalive_object(false) {}
-	CGameObject*			object; 
-	bool					small_object;
-	bool					nonalive_object;
-	//игнорирование объекта в зоне
-	bool					zone_ignore;
-	//присоединенные партиклы
-	xr_vector<CParticlesObject*>	particles_vector;
-	//время прибывания в зоне
-	u32						dw_time_in_zone;
-	float					f_time_affected;
-
-	bool operator == (const CGameObject* O) const {return object==O;}
-};
-
 
 class CCustomZone :		public CSpaceRestrictor,
 						public Feel::Touch
@@ -80,6 +61,8 @@ public:
 				float	RelativePower					(float dist, float nearest_shape_radius);
 	//абсолютный размер
 				float	Power							(float dist, float nearest_shape_radius);
+
+	xr_vector<SZoneObjectInfo>& GetObjectInfoMap() { return m_ObjectInfoMap; }
 
 	virtual CCustomZone	*cast_custom_zone				()							{return this;}
 
@@ -272,10 +255,7 @@ protected:
 	void					UpdateBlowoutLight			();
 
 	//список партиклов для объетов внутри зоны
-	using OBJECT_INFO_VEC = xr_vector<SZoneObjectInfo>;
-	using OBJECT_INFO_VEC_IT = OBJECT_INFO_VEC::iterator;
-
-	OBJECT_INFO_VEC			m_ObjectInfoMap;
+	xr_vector<SZoneObjectInfo> m_ObjectInfoMap;
 
 	void					CreateHit					(	u16 id_to, 
 															u16 id_from, 
@@ -333,4 +313,49 @@ public:
 private:
 	virtual bool            light_in_slow_mode () { return true; }
 
+};
+
+//информация о объекте, находящемся в зоне
+struct SZoneObjectInfo
+{
+	SZoneObjectInfo() :object(NULL), zone_ignore(false), dw_time_in_zone(0), f_time_affected(Device.fTimeGlobal), small_object(false), nonalive_object(false) {}
+	CGameObject* object;
+	bool					small_object;
+	bool					nonalive_object;
+	//игнорирование объекта в зоне
+	bool					zone_ignore;
+	//присоединенные партиклы
+	xr_vector<CParticlesObject*>	particles_vector;
+	//время прибывания в зоне
+	u32						dw_time_in_zone;
+	float					f_time_affected;
+
+	static xr_vector<SZoneObjectInfo>::iterator find(CCustomZone* zone, CGameObject* GO)
+	{
+		xr_vector<SZoneObjectInfo>& zone_objects_map = zone->GetObjectInfoMap();
+		return std::find(zone_objects_map.begin(), zone_objects_map.end(), GO);
+	}
+
+	static bool get(CCustomZone* zone, CGameObject* GO)
+	{
+		xr_vector<SZoneObjectInfo>& zone_objects_map = zone->GetObjectInfoMap();
+		return std::find(zone_objects_map.begin(), zone_objects_map.end(), GO)!= zone_objects_map.end();
+	}
+
+	static void remove(CCustomZone* zone, CGameObject* GO)
+	{
+		xr_vector<SZoneObjectInfo>& zone_objects_map = zone->GetObjectInfoMap();
+
+		if (zone_objects_map.empty()) return;
+
+		xr_vector<SZoneObjectInfo>::iterator it = std::find(zone_objects_map.begin(), zone_objects_map.end(), GO);
+
+		if(it!= zone_objects_map.end())
+		{
+			zone->exit_Zone(*it);
+			zone_objects_map.erase(it);
+		}
+	}
+
+	bool operator == (const CGameObject* O) const { return object == O; }
 };

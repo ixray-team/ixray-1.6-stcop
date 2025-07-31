@@ -91,12 +91,11 @@ void CHudItem::renderable_Render()
 			on_renderable_Render		();
 			debug_draw_firedeps			();
 		}else
-		if (object().H_Parent()) 
+		if (m_object&&object().H_Parent())
 		{
-			CInventoryOwner	*owner = smart_cast<CInventoryOwner*>(object().H_Parent());
-			VERIFY			(owner);
-			CInventoryItem	*self = smart_cast<CInventoryItem*>(this);
-			if (owner->attached(self) ||
+			if ((m_object->H_Parent()->cast_inventory_owner() && 
+				m_object->H_Parent()->cast_inventory_owner()->attached(m_object->cast_inventory_item())) 
+				||
 				(item().BaseSlot() == INV_SLOT_3 /*|| item().BaseSlot() == INV_SLOT_2*/))
 				on_renderable_Render();
 		}
@@ -159,7 +158,7 @@ void CHudItem::OnStateSwitch(u32 S)
 
 void CHudItem::OnAnimationEnd(u32 state)
 {
-	if (CActor* pActor = smart_cast<CActor*>(object().H_Parent()))
+	if (CActor* pActor = m_object&&m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : NULL)
 	{
 		pActor->callback(GameObject::eActorHudAnimationEnd)(smart_cast<CGameObject*>(this)->lua_game_object(), hud_sect.c_str(), m_current_motion.c_str(), state, animation_slot());
 	}
@@ -220,7 +219,7 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 	if (!isInertion)
 		return;
 
-	CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+	CActor* pActor = m_object&&m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : NULL;
 	if (!pActor)
 		return;
 
@@ -614,9 +613,9 @@ void CHudItem::StopCurrentAnimWithoutCallback()
 
 BOOL CHudItem::GetHUDmode()
 {
-	if (object().H_Parent())
+	if (m_object && m_object->H_Parent())
 	{
-		CActor* A = smart_cast<CActor*>(object().H_Parent());
+		CActor* A = m_object->H_Parent()->cast_actor();
 		return (A && A->HUDview() && HudItemData());
 	}
 	else
@@ -634,7 +633,7 @@ bool CHudItem::TryPlayAnimIdle()
 {
 	if(MovingAnimAllowedNow())
 	{
-		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
+		CActor* pActor = m_object&&m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : NULL;
 		if (pActor)
 		{
 			u32 state = pActor->GetMovementState(eReal);
@@ -727,7 +726,7 @@ void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
 		HudItemData()->set_bone_visible(bone, show, TRUE);
 	}
 
-	if (IKinematics* pWeaponVisual = object().Visual()->dcast_PKinematics())
+	if (IKinematics* pWeaponVisual = m_object ? m_object->Visual()->dcast_PKinematics() : NULL)
 	{
 		if (auto BoneID = pWeaponVisual->LL_BoneID(bone); BoneID != BI_NONE)
 		{

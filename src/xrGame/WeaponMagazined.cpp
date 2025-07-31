@@ -186,13 +186,15 @@ void CWeaponMagazined::FireStart()
 	else
 	{
 		//misfire
+		if(H_Parent())
+		{
+			CGameObject* object = H_Parent()->cast_game_object();
+			if (object)
+				object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
 
-		CGameObject* object = smart_cast<CGameObject*>(H_Parent());
-		if (object)
-			object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
-
-		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
-			CurrentGameUI()->AddCustomStatic("gun_jammed",true);
+			if (H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
+				CurrentGameUI()->AddCustomStatic("gun_jammed", true);
+		}
 
 		OnEmptyClick();
 	}
@@ -203,10 +205,9 @@ void CWeaponMagazined::FireEnd()
 	inherited::FireEnd();
 
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
-	if (isAutoreload)
+	if (isAutoreload && H_Parent())
 	{
-		CActor *actor = smart_cast<CActor*>(H_Parent());
-		if (m_pInventory && !iAmmoElapsed && actor && GetState() != eReload)
+		if (m_pInventory && !iAmmoElapsed && H_Parent()->cast_actor() && GetState() != eReload)
 		{
 			Reload();
 		}
@@ -495,7 +496,6 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 void CWeaponMagazined::OnStateSwitch	(u32 S)
 {
 	inherited::OnStateSwitch(S);
-	CInventoryOwner* owner = smart_cast<CInventoryOwner*>(this->H_Parent());
 	switch (S)
 	{
 	case eIdle:
@@ -505,22 +505,22 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Fire	();
 		break;
 	case eMisfire:
-		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
+		if(H_Parent() && H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		break;
 	case eReload:
-		if(owner)
-			m_sounds_enabled = owner->CanPlayShHdRldSounds();
+		if(H_Parent() && H_Parent()->cast_inventory_owner())
+			m_sounds_enabled = H_Parent()->cast_inventory_owner()->CanPlayShHdRldSounds();
 		switch2_Reload	();
 		break;
 	case eShowing:
-		if(owner)
-			m_sounds_enabled = owner->CanPlayShHdRldSounds();
+		if (H_Parent() && H_Parent()->cast_inventory_owner())
+			m_sounds_enabled = H_Parent()->cast_inventory_owner()->CanPlayShHdRldSounds();
 		switch2_Showing	();
 		break;
 	case eHiding:
-		if(owner)
-			m_sounds_enabled = owner->CanPlayShHdRldSounds();
+		if (H_Parent() && H_Parent()->cast_inventory_owner())
+			m_sounds_enabled = H_Parent()->cast_inventory_owner()->CanPlayShHdRldSounds();
 		switch2_Hiding	();
 		break;
 	case eHidden:
@@ -745,10 +745,12 @@ void CWeaponMagazined::OnShot()
 	ForceUpdateFireParticles	();
 	StartSmokeParticles			(get_LastFP(), vel);
 
-	
-	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
-	if (object)
-		object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
+	if(H_Parent())
+	{
+		CGameObject* object = H_Parent()->cast_game_object();
+		if (object)
+			object->callback(GameObject::eOnWeaponFired)(object->lua_game_object(), this->lua_game_object(), iAmmoElapsed, m_ammoType);
+	}
 }
 
 
@@ -808,8 +810,9 @@ void CWeaponMagazined::switch2_Idle	()
 #endif
 void CWeaponMagazined::switch2_Fire	()
 {
-	CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-	CInventoryItem* ii		= smart_cast<CInventoryItem*>(this);
+	if (!H_Parent()) return;
+	CInventoryOwner* io		= H_Parent()->cast_inventory_owner();
+	CInventoryItem* ii		= cast_inventory_item();
 #ifdef DEBUG
 	if (!io)
 		return;
@@ -1341,22 +1344,25 @@ void CWeaponMagazined::OnZoomIn			()
 	if(GetState() == eIdle)
 		PlayAnimIdle();
 
-	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
-	if (object)
-		object->callback(GameObject::eOnWeaponZoomIn)(object->lua_game_object(), this->lua_game_object());
-
-	CActor* actor = smart_cast<CActor*>(H_Parent());
-	if (actor)
+	if(H_Parent())
 	{
-		CEffectorZoomInertion* effectorZoomInertion = smart_cast<CEffectorZoomInertion*>(actor->Cameras().GetCamEffector(eCEZoom));
-		if (!effectorZoomInertion)
-		{
-			effectorZoomInertion = (CEffectorZoomInertion*)actor->Cameras().AddCamEffector(new CEffectorZoomInertion());
-			effectorZoomInertion->Init(this);
-		};
+		CGameObject* object = H_Parent()->cast_game_object();
+		if (object)
+			object->callback(GameObject::eOnWeaponZoomIn)(object->lua_game_object(), this->lua_game_object());
 
-		effectorZoomInertion->SetRndSeed(actor->GetZoomRndSeed());
-		R_ASSERT(effectorZoomInertion);
+		CActor* actor = H_Parent()->cast_actor();
+		if (actor)
+		{
+			CEffectorZoomInertion* effectorZoomInertion = smart_cast<CEffectorZoomInertion*>(actor->Cameras().GetCamEffector(eCEZoom));
+			if (!effectorZoomInertion)
+			{
+				effectorZoomInertion = (CEffectorZoomInertion*)actor->Cameras().AddCamEffector(new CEffectorZoomInertion());
+				effectorZoomInertion->Init(this);
+			};
+
+			effectorZoomInertion->SetRndSeed(actor->GetZoomRndSeed());
+			R_ASSERT(effectorZoomInertion);
+		}
 	}
 
 	PlaySoundAim();
@@ -1372,13 +1378,16 @@ void CWeaponMagazined::OnZoomOut()
 	if(GetState()==eIdle)
 		PlayAnimIdle		();
 
-	CGameObject* object = smart_cast<CGameObject*>(H_Parent());
-	if (object)
-		object->callback(GameObject::eOnWeaponZoomOut)(object->lua_game_object(), this->lua_game_object());
+	if(H_Parent())
+	{
+		CGameObject* object = H_Parent()->cast_game_object();
+		if (object)
+			object->callback(GameObject::eOnWeaponZoomOut)(object->lua_game_object(), this->lua_game_object());
 
-	CActor* actor = smart_cast<CActor*>(H_Parent());
-	if (actor)
-		actor->Cameras().RemoveCamEffector(eCEZoom);
+		CActor* actor = H_Parent()->cast_actor();
+		if (actor)
+			actor->Cameras().RemoveCamEffector(eCEZoom);
+	}
 	
 	PlaySoundAim(false);
 }
@@ -1418,8 +1427,7 @@ void	CWeaponMagazined::OnH_A_Chield		()
 {
 	if (m_bHasDifferentFireModes)
 	{
-		CActor	*actor = smart_cast<CActor*>(H_Parent());
-		if (!actor) SetQueueSize(-1);
+		if (H_Parent() && !H_Parent()->cast_actor()) SetQueueSize(-1);
 		else SetQueueSize(GetCurrentFireMode());
 	};	
 	inherited::OnH_A_Chield();

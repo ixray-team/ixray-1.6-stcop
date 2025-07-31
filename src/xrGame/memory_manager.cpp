@@ -28,8 +28,8 @@
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)
 {
 	VERIFY				(entity_alive);
-	m_object			= smart_cast<CCustomMonster*>(entity_alive);
-	m_stalker			= smart_cast<CAI_Stalker*>(m_object);
+	m_object			= entity_alive ? entity_alive->cast_custom_monster() : NULL;
+	m_stalker			= m_object ? m_object->cast_stalker() : NULL;
 
 	if (m_stalker)
 		m_visual		= new CVisualMemoryManager(m_stalker);
@@ -99,8 +99,8 @@ void CMemoryManager::update_enemies	(const bool &registered_in_combat)
 			(
 				!enemy().selected() || 
 				(
-					smart_cast<const CAI_Stalker*>(enemy().selected()) && 
-					smart_cast<const CAI_Stalker*>(enemy().selected())->wounded()
+					const_cast<CEntityAlive*>(enemy().selected())->cast_stalker() &&
+					const_cast<CEntityAlive*>(enemy().selected())->cast_stalker()->wounded()
 				)
 			) &&
 			registered_in_combat
@@ -160,35 +160,43 @@ void CMemoryManager::update			(const xr_vector<T> &objects, bool add_enemies)
 {
 	PROF_EVENT("CMemoryManager::update");
 	squad_mask_type					mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : 0;
-	typename xr_vector<T>::const_iterator	I = objects.begin();
-	typename xr_vector<T>::const_iterator	E = objects.end();
-	for ( ; I != E; ++I) {
-		if (!(*I).m_enabled)
+
+	for (auto& member : objects)
+	{
+		if (!member.m_enabled)
 			continue;
 		
-		if (m_stalker && !(*I).m_squad_mask.test(mask))
+		if (m_stalker && !member.m_squad_mask.test(mask))
 			continue;
 
-		if (!(*I).m_object) {
+		if (!member.m_object)
 			continue;
-		}
 
-		if ((*I).m_object->getDestroy()) {
+		if (member.m_object->getDestroy())
 			continue;
-		}
-		danger().add				(*I);
+
+		danger().add(member);
 		
-		if (add_enemies) {
-			const CEntityAlive *entity_alive = smart_cast<const CEntityAlive*>((*I).m_object);
-			if (entity_alive && enemy().add(entity_alive))
-				continue;
+		CEntityAlive* entity_alive = NULL;
+		if constexpr (std::is_same_v<T, CVisibleObject> || std::is_same_v<T, CSoundObject>)
+			entity_alive = const_cast<CGameObject*>(member.m_object)->cast_entity_alive();
+		else
+			entity_alive = const_cast<CEntityAlive*>(member.m_object);
+
+		if (entity_alive)
+		{
+			if (add_enemies)
+			{
+				if (enemy().add(entity_alive))
+			continue;
 		}
 
-		const CAI_Stalker			*stalker = smart_cast<const CAI_Stalker*>((*I).m_object);
+			const CAI_Stalker* stalker = entity_alive->cast_stalker();
 		if (m_stalker && stalker)
 			continue;
+		}
 
-		item().add				((*I).m_object);
+		item().add(member.m_object);
 	}
 }
 
@@ -199,7 +207,7 @@ CMemoryInfo CMemoryManager::memory(const CObject *object) const
 		return						(result);
 
 	u32								level_time = 0;
-	const CGameObject				*game_object = smart_cast<const CGameObject*>(object);
+	const CGameObject				*game_object = object ? const_cast<CObject*>(object)->cast_game_object() : NULL;
 	VERIFY							(game_object);
 	squad_mask_type					mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : squad_mask_type(-1);
 
@@ -243,7 +251,7 @@ u32 CMemoryManager::memory_time(const CObject *object) const
 	if (!this->object().g_Alive())
 		return			(0);
 
-	const CGameObject	*game_object = smart_cast<const CGameObject*>(object);
+	const CGameObject	*game_object = object ? const_cast<CObject*>(object)->cast_game_object() : NULL;
 	VERIFY				(game_object);
 
 	{
@@ -274,7 +282,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	if (!this->object().g_Alive())
 		return			(result);
 
-	const CGameObject	*game_object = smart_cast<const CGameObject*>(object);
+	const CGameObject	*game_object = object ? const_cast<CObject*>(object)->cast_game_object() : NULL;
 	VERIFY				(game_object);
 
 	{

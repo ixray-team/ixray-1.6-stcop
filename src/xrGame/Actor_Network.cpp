@@ -816,11 +816,11 @@ void CActor::net_Relcase	(CObject* O)
 {
 	
  	VERIFY(O);
-	CGameObject* GO = smart_cast<CGameObject*>(O);
+	CGameObject* GO = O->cast_game_object();
 	if(GO&&m_pObjectWeLookingAt==GO){
 		m_pObjectWeLookingAt=nullptr;
 	}
-	CHolderCustom* HC=smart_cast<CHolderCustom*>(GO);
+	CHolderCustom* HC= GO->cast_holder_custom();
 	if(HC&&HC==m_pVehicleWeLookingAt){
 		m_pVehicleWeLookingAt=nullptr;
 	}
