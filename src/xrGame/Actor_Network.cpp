@@ -119,7 +119,6 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	P.w_float			(g_Radiation());
 
 	P.w_u8(u8(inventory().GetActiveSlot()));
-	P.w_u8(IsWaunded);
 	/////////////////////////////////////////////////
 	u16 NumItems		= PHGetSyncItemsNumber();
 	
@@ -297,7 +296,17 @@ void CActor::net_Import		(NET_Packet& P)					// import from server
 	//-----------------------------------------------
 	net_Import_Physic(P);
 	//-----------------------------------------------
-};
+}
+
+void CActor::SyncRead(NET_Packet& Packet)
+{
+	IsWaunded = Packet.r_u8();
+}
+
+void CActor::SyncWrite(NET_Packet& Packet)
+{
+	Packet.w_u8(IsWaunded);
+}
 
 void CActor::net_Import_Base( NET_Packet& P)
 {
@@ -364,8 +373,6 @@ void CActor::net_Import_Base( NET_Packet& P)
 			inventory().Activate(ActiveSlot);
 		}
 	}
-
-	IsWaunded = P.r_u8();
 
 	if (Local() && OnClient())
 		return;
@@ -797,7 +804,7 @@ void CActor::net_Destroy	()
 void CActor::net_Relcase	(CObject* O)
 {
 	
- 	VERIFY(O);
+	VERIFY(O);
 	CGameObject* GO = O->cast_game_object();
 	if(GO&&m_pObjectWeLookingAt==GO){
 		m_pObjectWeLookingAt=nullptr;

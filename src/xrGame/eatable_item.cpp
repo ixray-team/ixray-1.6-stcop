@@ -77,7 +77,6 @@ void CEatableItem::Load(LPCSTR section)
 	}
 }
 
-
 void CEatableItem::load(IReader& packet)
 {
 	inherited::load(packet);

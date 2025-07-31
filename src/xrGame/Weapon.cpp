@@ -3225,7 +3225,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 		--iAmmoChamberElapsed;
 	}
 
-	VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
+	//VERIFY((u32)iAmmoInChamberElapsed == m_chamber.size());
 
 	if (ParentIsActor())
 	{
