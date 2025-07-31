@@ -2691,6 +2691,9 @@ void CCC_RegisterCommands()
 	extern BOOL EnableDof;
 	CMD4(CCC_Integer, "enable_dof_reload", &EnableDof, FALSE, TRUE);
 
+	extern BOOL EnableTalkDof;
+	CMD4(CCC_Integer, "enable_dof_talk", &EnableTalkDof, FALSE, TRUE);
+
 #ifndef MASTER_GOLD
 	CMD1(CCC_StartTimeSingle, "start_time_single");
 	CMD4(CCC_TimeFactorSingle, "time_factor_single", &g_fTimeFactor, 0.f, 10000.0f);

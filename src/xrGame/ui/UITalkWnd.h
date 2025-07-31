@@ -84,4 +84,8 @@ protected:
 	DIALOG_SHARED_PTR	m_pCurrentDialog;
 	bool				TopicMode				();
 	void				ToTopicMode				();
+
+private:
+	Fvector4 m_TalkDof = {};
+	float m_talkFovScale;
 };

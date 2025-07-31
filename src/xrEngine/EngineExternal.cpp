@@ -189,3 +189,12 @@ bool CEngineExternal::ShadowOfChernobylMode() const
 	return m_platform_type == EEngineExternalPlatform::ShadowOfChernobyl;
 }
 
+Fvector4 CEngineExternal::GetTalkDof() const
+{
+	return READ_IF_EXISTS(pOptions, r_fvector4, "gameplay", "TalkDof", Fvector4().set(0.0f, 0.5f, 5.0f, 0.0f));
+}
+
+float CEngineExternal::GetTalkFovScale() const
+{
+	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "DialogFovScale", 0.7f);
+}
