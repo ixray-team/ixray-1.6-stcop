@@ -126,7 +126,7 @@ void CUILogsWnd::Init()
 	xr_strcat( buf, sizeof(buf), g_pStringTable->translate("ui_logs_center_caption").c_str() );
 	m_center_caption->SetText( buf );
 
-	CUIScrollBar* tmp_scroll = new CUIScrollBar();
+	CUIFixedScrollBar* tmp_scroll = new CUIFixedScrollBar();
 	m_list = new CUIScrollView(tmp_scroll);
 	m_list->SetAutoDelete( true );
 	AttachChild( m_list );
