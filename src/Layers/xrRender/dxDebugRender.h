@@ -9,6 +9,9 @@ class dxDebugRender : public IDebugRender
 public:
 					dxDebugRender		();
 
+			void	Init				();
+			void	Shutdown			();
+
 	virtual void	Render				();
 	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u32 const *pairs, u32 const &pair_count, u32 const &color);
 
@@ -36,18 +39,14 @@ private:
 	};
 
 public:
-	struct LineRenderPack {
-		float x1 = 0.0f, y1 = 0.0f;
-		float x2 = 0.0f, y2 = 0.0f;
-		u32 color = 0xffffffff;
-	};
-
-	xr_vector<LineRenderPack> m_lines;
+	xr_vector<std::pair<FVF::L, FVF::L>> m_lines;
 
 private:
-	ref_shader m_dbgShaders[dbgShaderCount];
+	ref_shader		m_dbgShaders[dbgShaderCount];
+	ref_geom		m_dbgGeom;
+	ID3DVertexBuffer* m_dbgVB;
 };
 
 extern dxDebugRender DebugRenderImpl;
-//extern dxDebugRender* rdebug_render;
+
 #endif // DEBUG
