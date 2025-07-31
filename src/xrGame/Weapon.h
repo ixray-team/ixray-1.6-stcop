@@ -583,7 +583,7 @@ protected:
 	virtual void			DeleteAmmoInChamber();
 
 public:
-	const xr_vector<shared_str>& getAmmoTypes(void) const { return m_ammoTypes; }
+	virtual const xr_vector<shared_str>& getAmmoTypes(bool for_grenade_mode = false) const { return m_ammoTypes; }
 	xr_vector<shared_str>	m_ammoTypes;
 /*
 	struct SScopes
