@@ -102,6 +102,7 @@ class CUILevelMap: public CUICustomMap
 	typedef  CUICustomMap inherited;
 
 	CUIMapWnd*					m_mapWnd;
+	bool						legacySpotScaling;
 	Frect						m_GlobalRect;			// virtual map size (meters)
 								CUILevelMap			(const CUILevelMap &obj) {}
 
