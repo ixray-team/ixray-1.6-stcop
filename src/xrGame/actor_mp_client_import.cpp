@@ -31,7 +31,8 @@ void CActorMP::net_Import	( NET_Packet &P)
 		if (GetfHealth() < new_health)
 		{
 			SetfHealth(new_health);
-		} else
+		}
+		else
 		{
 			if (!ps || !ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
 			{

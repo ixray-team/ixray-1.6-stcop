@@ -17,9 +17,9 @@ dump_verifyer::~dump_verifyer()
 
 configs_verifyer::configs_verifyer()
 {
-	m_original_config.start_dump	();
-	while (m_original_config.dump_one(m_orig_config_body)) {};
-	m_orig_config_end_pos			= m_orig_config_body.tell();
+	// m_original_config.start_dump	();
+	// while (m_original_config.dump_one(m_orig_config_body)) {};
+	// m_orig_config_end_pos			= m_orig_config_body.tell();
 }
 
 configs_verifyer::~configs_verifyer()

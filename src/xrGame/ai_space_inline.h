@@ -43,7 +43,7 @@ IC	const CALifeSimulator		&CAI_Space::alife					() const
 	return					(*m_alife_simulator);
 }
 
-IC	const CALifeSimulator		*CAI_Space::get_alife				() const
+IC	CALifeSimulator		*CAI_Space::get_alife				() const
 {
 	return					(m_alife_simulator);
 }
