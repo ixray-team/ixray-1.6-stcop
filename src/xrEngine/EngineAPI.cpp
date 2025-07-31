@@ -72,6 +72,20 @@ void CEngineAPI::InitializeNotDedicated()
 	}
 }
 
+void CEngineAPI::InitializeDedicated()
+{
+	LPCSTR			r1_name	= "xrRender_DS0.dll";
+	psDeviceFlags.set	(rsR4,FALSE);
+	psDeviceFlags.set	(rsR2,FALSE);
+	renderer_value		= 0; //con cmd
+
+	Msg("Loading DLL: %s",	r1_name);
+	hRender			= LoadLibraryA		(r1_name);
+	if (0==hRender)	R_CHK				(GetLastError());
+	//R_ASSERT		(hRender);
+	g_current_renderer	= 0;
+}
+
 extern ENGINE_API bool g_dedicated_server;
 
 void __cdecl Null_Factory_Destroy(DLL_Pure* O)
@@ -91,6 +105,8 @@ void CEngineAPI::Initialize(void)
 
 	if (!g_dedicated_server)
 		InitializeNotDedicated();
+	else
+		InitializeDedicated();
 
 	if (0==hRender)		
 	{
@@ -175,16 +191,19 @@ void CEngineAPI::CreateRendererList()
 		if(vid_quality_token != nullptr) 
 			return;
 		
+		bool bSupports_ds0 = false;
 		bool bSupports_r1 = false;
 		bool bSupports_r2 = false;
 		bool bSupports_r4 = false;
 
+		LPCSTR ds0_name	= "xrRender_DS0.dll";
 		LPCSTR r1_name	= "xrRender_R1.dll";
 		LPCSTR r2_name	= "xrRender_R2.dll";
 		LPCSTR r4_name	= "xrRender_R4.dll";
 
 		if (Core.ParamsData.test(ECoreParams::perfhud_hack))
 		{
+			bSupports_ds0 = true;
 			bSupports_r1 = true;
 			bSupports_r2 = true;
 			bSupports_r4 = true;
@@ -195,6 +214,7 @@ void CEngineAPI::CreateRendererList()
 			bSupports_r1 = std::filesystem::exists(dir / r1_name);
 			bSupports_r2 = std::filesystem::exists(dir / r2_name);
 			bSupports_r4 = std::filesystem::exists(dir / r4_name);
+			bSupports_ds0 = std::filesystem::exists(dir / ds0_name);
 		}
 
 		hRender = 0;
@@ -211,6 +231,10 @@ void CEngineAPI::CreateRendererList()
 		if (bSupports_r4)
 		{
 			_tmp.push_back(xr_strdup("renderer_r4"));
+		}
+		if (bSupports_ds0)
+		{
+			_tmp.push_back(xr_strdup("renderer_ds0"));
 		}
 
 		u32 _cnt = (u32) _tmp.size() + 1;
