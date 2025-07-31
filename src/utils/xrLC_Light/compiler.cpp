@@ -10,7 +10,7 @@
 
 #define NUM_THREADS		CPU::ID.n_threads
 
-std::atomic<int> IDX;
+xr_atomic_s32 IDX;
 
  
 void xrLight_Details()

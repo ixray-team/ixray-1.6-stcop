@@ -5,7 +5,7 @@
 #include "global_calculation_data.h"
 #include "mutex"
 
-std::atomic<int> atomic = 0;
+xr_atomic_s32 atomic = 0;
 u32 MAX_SIZE = 0;
 // u32 MIN_SIZE = 0;
 
