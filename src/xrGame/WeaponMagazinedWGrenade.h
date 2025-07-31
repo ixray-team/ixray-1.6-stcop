@@ -96,6 +96,7 @@ public:
 
 	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const override;
 	virtual u8				GetAmmoType(bool for_grenade_mode = false) const override;
+	virtual const xr_vector<shared_str>& getAmmoTypes(bool for_grenade_mode = false) const override;
 
 	virtual void UpdateGrenadeVisibility(bool visibility);
 };
