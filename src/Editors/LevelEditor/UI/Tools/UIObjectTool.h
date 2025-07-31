@@ -1,11 +1,15 @@
 #pragma once
 class ESceneObjectTool;
-class UIObjectTool :public UIToolCustom
+
+class UIObjectTool :
+	public UIToolCustom
 {
 public:
 	UIObjectTool();
 	virtual ~UIObjectTool();
 	virtual void Draw();
+
+	void DrawRandomAppend();
 
 	void DrawObjectsList();
 
@@ -13,26 +17,34 @@ public:
 	IC const char* Current() { return m_Current; }
 	virtual void OnDrawUI();
 	ESceneObjectTool* ParentTools;
+
 private:
 	void RefreshListInternal();
 	void OnItemFocused(ListItem*item);
 	void SelByRefObject(bool flag);
 	void MultiSelByRefObject(bool flag);
 	void ClearSurface(bool selected);
-	const char* m_Current;
+	void HandleDragDrop();
+	void LoadFromFile(xr_string& Outfile);
+
+private:
 	UIItemListForm* m_ObjectList;
+	UIPropertiesForm* m_Props;
+
 	bool m_MultiAppend;
 	bool m_PropRandom;
 	bool m_RandomAppend;
-	float m_selPercent;
 	bool m_Selection;
+	bool bDrawList = true;
+
+	float m_selPercent;
+
+	const char* m_Current;
 
 	xr_string RAIFile;
-private:
+
 	ref_texture m_TextureNull;
+
 	ImTextureID m_RealTexture;
 	ImTextureID m_RemoveTexture;
-	UIPropertiesForm* m_Props;
-
-	bool bDrawList = true;
 };
