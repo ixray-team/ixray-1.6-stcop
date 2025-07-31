@@ -99,8 +99,8 @@ protected:
 	CUIDragDropListEx*			m_pDeadBodyBagList;
 	CUIDragDropListEx*			m_pTrashList;
 
-	enum						{e_af_count = 5};
-	CUIStatic*					m_belt_list_over[e_af_count];
+	int							m_ArtefactSlotsCount = 5;
+	xr_vector<CUIStatic*>		m_belt_list_over;
 	CUIStatic*					m_HelmetOver;
 
 	u8							m_slot_count;
@@ -114,7 +114,7 @@ protected:
 	CUIStatic*					m_OutfitSlotHighlight;
 	CUIStatic*					m_DetectorSlotHighlight;
 	CUIStatic*					m_QuickSlotsHighlight[4];
-	CUIStatic*					m_ArtefactSlotsHighlight[e_af_count];
+	xr_vector<CUIStatic*>		m_ArtefactSlotsHighlight;
 
 	CUIInventoryUpgradeWnd*		m_pUpgradeWnd;
 	
