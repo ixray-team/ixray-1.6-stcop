@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <w>
-  <main_frame x="8" y="130" width="259" height="135" delay="400"/>
+  <main_frame x="93" y="130" width="259" height="135" delay="400"/>
   <!-- background_frame x="0" y="0" width="259" height="130">
     <texture>ui_temp_frame</texture>
   </background_frame1-->
@@ -9,7 +9,7 @@
     <text font="letterica18" r="238" g="155" b="23" complex_mode="0" align="l" vert_align="c"/>
   </static_name-->
 
-  <image_static x="8" y="13" width="205" height="123">
+  <image_static x="9" y="13" width="205" height="123">
   </image_static>
 
 </w>

@@ -1,16 +1,16 @@
 <w>
-  <main x="0" y="0" width="276" height="768">
-    <auto_static x="0" y="0" width="276" height="142" stretch="1">
+  <main x="0" y="0" width="400" height="768">
+    <auto_static x="85" y="0" width="276" height="142" stretch="1">
 		<texture>ui_inGame2_left_top</texture>
 	</auto_static>
-	<auto_static x="-85" y="0" width="85" height="768" stretch="1">
+	<auto_static x="0" y="0" width="85" height="768" stretch="1">
 		<texture>ui_inGame2_back_invw10_l</texture>
     </auto_static>
   </main>
-  <scheme x="0" y="280" width="276" height="488" />
-  <property x="42" y="15" width="16" height="19" />
+  <scheme x="85" y="280" width="276" height="488" />
+  <property x="127" y="15" width="16" height="19" />
   
-  <background x="0" y="141" width="276" height="627" stretch="1">
+  <background x="85" y="141" width="276" height="627" stretch="1">
     <texture>ui_inv_mechanic_back</texture>
   </background>
   
@@ -18,7 +18,7 @@
     <texture>ui_inv_delimiter</texture>
   </delimiter-->
   
-  <repair_button x="220" y="212" width="47" height="57" stretch="1">
+  <repair_button x="305" y="212" width="47" height="57" stretch="1">
     <window_name>repair_button</window_name>
 	<texture>ui_bt_repair</texture>
 	<hint_text delay="800">ui_repair_button_hint</hint_text>
