@@ -192,21 +192,27 @@ bool CGameTask::CheckInfo(const xr_vector<shared_str>& v) const
 bool CGameTask::CheckFunctions(const task_state_functors& v) const
 {
 	bool res = false;
-	task_state_functors::const_iterator it	= v.begin();
-	for(;it!=v.end();++it)
+	try
 	{
-		if( (*it).is_valid() ) res = (*it)(m_ID.c_str());
-		if(!res) break;
-	}
+		for (const luabind::functor<bool>& functor : v)
+		{
+			if (functor.is_valid()) res = functor(m_ID.c_str());
+			if (!res) break;
+		}
+	}catch (...) {}
+
 	return res;
 
 }
 void CGameTask::CallAllFuncs(const task_state_functors& v)
 {
-	task_state_functors::const_iterator it	= v.begin();
-	for(;it!=v.end();++it){
-		if( (*it).is_valid() ) (*it)(m_ID.c_str());
-	}
+	try
+	{
+		for (const luabind::functor<bool>& functor : v)
+		{
+			if (functor.is_valid()) functor(m_ID.c_str());
+		}
+	}catch(...){}
 }
 void CGameTask::SendInfo(const xr_vector<shared_str>& v)
 {

@@ -579,7 +579,7 @@ public:
 		VERIFY(StalkerOwner->inventory().ActiveItem()->object().ID() == ItemObject->ID());
 		if (!StalkerOwner->can_kill_member())
 		{
-			CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
+			CWeapon* weapon = StalkerOwner->inventory().ActiveItem() ? StalkerOwner->inventory().ActiveItem()->cast_weapon() : NULL;
 			if (!weapon || (weapon->GetState() != CWeapon::eFire)) StalkerOwner->inventory().Action(kWPN_FIRE, CMD_START);
 		}
 		else
@@ -613,7 +613,7 @@ public:
 		else StalkerOwner->inventory().Action(kWPN_FIRE, CMD_STOP);
 
 
-		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
+		CWeapon* weapon = StalkerOwner->inventory().ActiveItem() ? StalkerOwner->inventory().ActiveItem()->cast_weapon() : NULL;
 		if (weapon && (weapon->GetState() == CWeapon::eFire)) bFired = true;
 		else bFired = false;
 	}
@@ -633,7 +633,7 @@ public:
 
 		if (StalkerOwner->can_kill_member()) return;
 
-		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
+		CWeapon* weapon = StalkerOwner->inventory().ActiveItem() ? StalkerOwner->inventory().ActiveItem()->cast_weapon() : NULL;
 		if (!weapon || (weapon->GetState() != CWeapon::eFire)) StalkerOwner->inventory().Action(kWPN_FIRE, CMD_START);
 		if (weapon && (weapon->GetState() == CWeapon::eFire)) bFired = true;
 	}
@@ -701,7 +701,7 @@ public:
 				return (false);
 			};
 
-			TryAdvanceAmmo(*smart_cast<CWeapon*>(ItemObject));
+			TryAdvanceAmmo(*ItemObject->cast_weapon());
 		}
 
 		StalkerOwner->inventory().Action(kWPN_RELOAD, CMD_START);
@@ -712,7 +712,7 @@ public:
 
 		CAI_Stalker* StalkerOwner = GetOwner();
 
-		CWeapon* weapon = smart_cast<CWeapon*>(StalkerOwner->inventory().ActiveItem());
+		CWeapon* weapon = StalkerOwner->inventory().ActiveItem() ? StalkerOwner->inventory().ActiveItem()->cast_weapon() : NULL;
 		VERIFY(weapon);
 		if (weapon->IsPending()) return;
 
@@ -1273,7 +1273,7 @@ FRbmkObjectHandlerPlanner::FRbmkObjectHandlerPlanner(void* InOwner): bAimed1(fal
 void FRbmkObjectHandlerPlanner::AddObject(CWeapon* Weapon)
 {
 	static shared_str NAME_Target = "Target";
-	shared_str NAME_Weapon; NAME_Weapon.printf("Weapon_%d", static_cast<int32>(Weapon->ID()));
+	shared_str NAME_Weapon; NAME_Weapon.printf("Weapon_%d", Weapon->ID());
 
 	FRbmkObjectPropertyCurrentObject*PropertyWeapon =  GoapPlanner.AddProperty<FRbmkObjectPropertyCurrentObject>(NAME_Weapon);
 	PropertyWeapon->ItemObject = Weapon;
@@ -1299,7 +1299,7 @@ void FRbmkObjectHandlerPlanner::AddObject(CWeapon* Weapon)
 void FRbmkObjectHandlerPlanner::AddObject(CMissile* Missile)
 {
 	static shared_str NAME_Target = "Target";
-	shared_str NAME_Missile; NAME_Missile.printf("Missile_%d", static_cast<int32>(Missile->ID()));
+	shared_str NAME_Missile; NAME_Missile.printf("Missile_%d", Missile->ID());
 
 	FRbmkObjectPropertyCurrentObject*PropertyWeapon =  GoapPlanner.AddProperty<FRbmkObjectPropertyCurrentObject>(NAME_Missile);
 	PropertyWeapon->ItemObject = Missile;
@@ -1349,7 +1349,7 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 	CGameObject* LastTargetObject = TargetObject;
 	if (InGameObject && (MonsterSpace::eObjectActionDeactivate != ObjectAction))
 	{
-		CWeapon* Weapon = smart_cast<CWeapon*>(InGameObject);
+		CWeapon* Weapon = InGameObject->cast_weapon();
 		if (Weapon && (ObjectAction == MonsterSpace::eObjectActionStrapped) && !Weapon->can_be_strapped())
 		{
 			ObjectAction = MonsterSpace::eObjectActionIdle;
@@ -1362,57 +1362,57 @@ void FRbmkObjectHandlerPlanner::SetGoap(MonsterSpace::EObjectAction ObjectAction
 	
 	TargetObject = InGameObject;
 
-	shared_str ActionName;
+	static shared_str ActionName = "NoItemsIdle";
 	switch (ObjectAction)
 	{
 	case MonsterSpace::eObjectActionSwitch1:
-		ActionName.printf("Switch1");
+		ActionName = "Switch1";
 		break;
 	case MonsterSpace::eObjectActionSwitch2:
-		ActionName.printf("Switch2");
+		ActionName = "Switch2";
 		break;
 	case MonsterSpace::eObjectActionAim1:
-		ActionName.printf("AimingReady1");
+		ActionName = "AimingReady1";
 		break;
 	case MonsterSpace::eObjectActionAim2:
-		ActionName.printf("Aiming2");
+		ActionName = "Aiming2";
 		break;
 	case MonsterSpace::eObjectActionFire1:
-		ActionName.printf("Firing1");
+		ActionName = "Firing1";
 		break;
 	case MonsterSpace::eObjectActionFireNoReload:
-		ActionName.printf("FiringNoReload");
+		ActionName = "FiringNoReload";
 		break;
 	case MonsterSpace::eObjectActionFire2:
-		ActionName.printf("Firing2");
+		ActionName = "Firing2";
 		break;
 	case MonsterSpace::eObjectActionIdle:
-		ActionName.printf("Idle");
+		ActionName = "Idle";
 		break;
 	case MonsterSpace::eObjectActionStrapped:
-		ActionName.printf("IdleStrap");
+		ActionName = "IdleStrap";
 		break;
 	case MonsterSpace::eObjectActionDrop:
-		ActionName.printf("Dropped");
+		ActionName = "Dropped";
 		break;
 	case MonsterSpace::eObjectActionActivate:
-		ActionName.printf("Idle");
+		ActionName = "Idle";
 		break;
 	case MonsterSpace::eObjectActionDeactivate:
-		ActionName.printf("NoItemsIdle");
+		ActionName = "NoItemsIdle";
 		TargetObject = nullptr;
 		break;
 	case MonsterSpace::eObjectActionAimReady1:
-		ActionName.printf("AimingReady1");
+		ActionName = "AimingReady1";
 		break;
 	case MonsterSpace::eObjectActionAimReady2:
-		ActionName.printf("AimingReady2");
+		ActionName = "AimingReady2";
 		break;
 	case MonsterSpace::eObjectActionAimForceFull1:
-		ActionName.printf("AimForceFull1");
+		ActionName = "AimForceFull1";
 		break;
 	case MonsterSpace::eObjectActionAimForceFull2:
-		ActionName.printf("AimForceFull2");
+		ActionName = "AimForceFull2";
 		break;
 	default: {NODEFAULT; break;}
 	}
@@ -1540,13 +1540,15 @@ void FRbmkObjectHandlerPlanner::Initialize()
 
 void FRbmkObjectHandlerPlanner::AddObject(CInventoryItem* InventoryItem)
 {
-	CGameObject* GameActor = InventoryItem->cast_game_object();
-	if(CWeapon* Weapon = smart_cast<CWeapon*>(GameActor))
+	if(InventoryItem)
 	{
-		AddObject(Weapon);
-	}
-	else if(CMissile* Missile = smart_cast<CMissile*>(GameActor))
-	{
-		AddObject(Missile);
+		if (CWeapon* Weapon = InventoryItem->cast_weapon())
+		{
+			AddObject(Weapon);
+		}
+		else if (CMissile* Missile = InventoryItem->cast_missile())
+		{
+			AddObject(Missile);
+		}
 	}
 }

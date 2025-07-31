@@ -18,9 +18,9 @@ IC	CStalkerAnimationManager::EBodyState CStalkerAnimationManager::body_state	() 
 IC	void CStalkerAnimationManager::fill_object_info								()
 {
 	CInventoryItem			*item = object().inventory().ActiveItem();
-	VERIFY					(item);
-	m_weapon				= smart_cast<CWeapon*>	(item);
-	m_missile				= smart_cast<CMissile*>	(item);
+	if (!item) return;
+	m_weapon				= item->cast_weapon();
+	m_missile				= item->cast_missile();
 }
 
 IC	bool CStalkerAnimationManager::strapped										() const

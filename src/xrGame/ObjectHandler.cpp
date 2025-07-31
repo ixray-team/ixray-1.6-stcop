@@ -37,7 +37,7 @@ void CObjectHandler::reinit			(CAI_Stalker *object)
 	inherited::reinit			();
 	m_hammer_is_clutched		= false;
 	m_planner->Initialize();
-	IKinematics					*kinematics = smart_cast<IKinematics*>(m_planner->GetOwner()->Visual());
+	IKinematics					*kinematics = PKinematics(m_planner->GetOwner()->Visual());
 	m_r_hand					= kinematics->LL_BoneID(pSettings->r_string(*m_planner->GetOwner()->cNameSect(),"weapon_bone0"));
 	m_l_finger1					= kinematics->LL_BoneID(pSettings->r_string(*m_planner->GetOwner()->cNameSect(),"weapon_bone1"));
 	m_r_finger2					= kinematics->LL_BoneID(pSettings->r_string(*m_planner->GetOwner()->cNameSect(),"weapon_bone2"));
@@ -81,7 +81,7 @@ void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)
 		m_ammo_in_box_to_spawn	= 0;
 	}
 
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory_item);
+	CWeapon						*weapon = inventory_item ? inventory_item->cast_weapon() : NULL;
 	if (weapon)
 	{
 		CameraRecoil cam_recoil_copy;
@@ -144,7 +144,7 @@ bool CObjectHandler::goal_reached	()
 
 void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (!weapon || !m_planner->bStrapped) {
 		if (weapon)
 			weapon->strapped_mode	(false);
@@ -157,7 +157,7 @@ void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 	THROW3						(weapon->can_be_strapped(),"Cannot strap weapon",*weapon->cName());
 
 	if (weapon->ID() != m_strap_object_id) {
-		IKinematics				*kinematics = smart_cast<IKinematics*>(m_planner->GetOwner()->Visual());
+		IKinematics				*kinematics = PKinematics(m_planner->GetOwner()->Visual());
 		m_strap_bone0			= kinematics->LL_BoneID(weapon->strap_bone0());
 		m_strap_bone1			= kinematics->LL_BoneID(weapon->strap_bone1());
 		m_strap_object_id		= weapon->ID();
@@ -171,7 +171,7 @@ void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 
 bool CObjectHandler::weapon_strapped	() const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (!weapon)
 		return					(false);
 
@@ -225,7 +225,7 @@ bool CObjectHandler::weapon_strapped	(CWeapon *weapon) const
 
 bool CObjectHandler::weapon_unstrapped	() const
 {
-	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
+	CWeapon						*weapon = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : NULL;
 	if (!weapon) {
 //		Msg						( "[%6d][%s] no active item!!(%d)(%s)", Device.dwTimeGlobal, m_planner->GetOwner()->cName().c_str(), inventory().GetActiveSlot(), inventory().ItemFromSlot(3) ? inventory().ItemFromSlot(3)->object().cName().c_str() : "<no_item>" );
 		return					(true);
