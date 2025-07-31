@@ -5,7 +5,7 @@ static void ViewportFocusCallback()
 {
 	LUI->EndEState(esEditLibrary);
 	LUI->EndEState(esEditScene);
-	LUI->BeginEState(esEditMesh);
+	LUI->BeginEState(esEditCustom);
 }
 
 CViewportMesh::CViewportMesh()
@@ -16,15 +16,11 @@ CViewportMesh::CViewportMesh()
 
 CViewportMesh::~CViewportMesh()
 {
+	xr_delete(ViewMesh);
 }
 
 void CViewportMesh::Draw()
 {
-	if (ViewName.size() <= 0)
-	{
-		return;
-	}
-
 	if (!ImGui::Begin(*ViewName, &bOpen))
 	{
 		ImGui::End();
