@@ -122,7 +122,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 #ifdef		DEBUG
 			const b_BuildTexture	&build_texture  = gl_data.g_textures			[M.surfidx];
 
-			VERIFY( !!(build_texture.THM.HasSurface()) ==  !!(T.pSurface) );
+			VERIFY( !!(build_texture.HasSurface()) ==  !!(T.pSurface) );
 #endif
 
 			if (0==T.pSurface)	T.bHasAlpha = FALSE;

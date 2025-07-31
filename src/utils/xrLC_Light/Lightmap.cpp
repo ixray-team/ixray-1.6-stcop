@@ -7,7 +7,6 @@
 #include "Lightmap.h"
 #include "xrDeflector.h"
 #include "xrFace.h"
-#include "ETextureParams.h"
 #include <xrLC_GlobalData.h>
 #include <../xrLC/Build.h>
 //////////////////////////////////////////////////////////////////////

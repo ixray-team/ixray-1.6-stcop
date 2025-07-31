@@ -243,7 +243,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 #ifdef		DEBUG
 			const b_BuildTexture	&build_texture  = inlc_global_data()->textures()			[M.surfidx];
 
-			VERIFY( !!(build_texture.THM.HasSurface()) ==  !!(T.pSurface) );
+			VERIFY( !!(build_texture.HasSurface()) ==  !!(T.pSurface) );
 #endif
 			if (0==T.pSurface)	{
 				F->flags.bOpaque	= true;
