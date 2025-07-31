@@ -255,14 +255,47 @@ void CScriptEngine::load_common_scripts()
 	xr_delete			(l_tpIniFile);
 }
 
+LPCSTR ParseFolder(LPCSTR file_name, FS_FileSet& SET)
+{
+	bool Finded = false;
+
+	string_path path_to_file;
+
+	for (auto FOLDER : SET)
+	{
+		// GET NAME PATH
+		string128 name_file = { 0 }; 
+		
+		// PATCH BASE
+		FS.update_path(path_to_file, "$game_scripts$", FOLDER.name.c_str());
+		sprintf_s(name_file, "%s.script", file_name);
+		xr_strcat(path_to_file, name_file);
+		
+		// Check FOR FOLDERS
+		FS_FileSet test;
+		FS.file_list(test, path_to_file, FS_ListFolders);
+		if (test.size() > 0)
+			ParseFolder(file_name, test);
+
+		if (FS.exist(path_to_file))
+ 			Finded = true; break;
+ 	}
+
+	if (Finded)
+		return path_to_file;
+	else
+		return nullptr;
+}
+
 void CScriptEngine::process_file_if_exists	(LPCSTR file_name, bool warn_if_not_exist)
 {
-	u32						string_length = xr_strlen(file_name);
-	if (!warn_if_not_exist && no_file_exists(file_name,string_length))
+/* 	u32						string_length = xr_strlen(file_name);
+	if (!warn_if_not_exist && no_file_exists(file_name, string_length))
 		return;
 
 	string_path				S,S1;
-	if (m_reload_modules || (*file_name && !namespace_loaded(file_name))) {
+	if (m_reload_modules || (*file_name && !namespace_loaded(file_name))) 
+	{
 		FS.update_path		(S,"$game_scripts$", xr_strconcat(S1,file_name,".script"));
 		if (!warn_if_not_exist && !FS.exist(S))
 		{
@@ -281,6 +314,40 @@ void CScriptEngine::process_file_if_exists	(LPCSTR file_name, bool warn_if_not_e
 		m_reload_modules	= false;
 		load_file_into_namespace(S,*file_name ? file_name : "_G");
 	}
+*/ 
+	u32						string_length = xr_strlen(file_name);
+
+	string_path				S, S1;
+	if (m_reload_modules || (*file_name && !namespace_loaded(file_name)))
+	{
+		FS_FileSet SET;
+		FS.file_list(SET, "$game_scripts$", FS_ListFolders);
+		bool Finded = false;
+		LPCSTR path_to_file = ParseFolder(file_name, SET);
+		if (!path_to_file)
+		{
+			xr_sprintf(S1, "%s.script", file_name);
+			FS.update_path(S, "$game_scripts$", S1);
+			if (FS.exist(S))
+				Finded = true;
+		}
+		else
+		{
+			Finded = true;
+			xr_strcpy(S, path_to_file);
+		}
+
+		if (!Finded)
+			return;
+
+#ifndef MASTER_GOLD 		
+		Msg("* loading script directory: %s, filename: %s", S, file_name);
+#endif
+
+		m_reload_modules = false;
+		load_file_into_namespace(S, *file_name ? file_name : "_G");
+	}
+
 }
 
 void CScriptEngine::process_file	(LPCSTR file_name)
