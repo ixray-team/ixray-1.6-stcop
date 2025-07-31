@@ -147,7 +147,7 @@ namespace splash
 		
 		unsigned char* imageData = nullptr;
 
-		SDL_Surface* surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(idb), _T("PNG"));
+		SDL_Surface* surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(idb), TEXT("PNG"));
 		
 		if (!surface)
 		{
@@ -190,7 +190,7 @@ namespace splash
 			return;
 		}
 
-		SDL_Surface* fontSurface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), _T("PNG"));
+		SDL_Surface* fontSurface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), TEXT("PNG"));
 
 		if (!fontSurface)
 		{
