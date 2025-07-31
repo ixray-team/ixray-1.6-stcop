@@ -7,7 +7,7 @@
 #include "../xrLC_Light/xrFace.h"
 
 #include "../../xrCore/xrSyncronize.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 
 #define	GI_THREADS		2

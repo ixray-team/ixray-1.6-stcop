@@ -7,7 +7,7 @@
 #include "../MathUtils.h"
 #include "../console_vars.h"
 #include "../PHWorld.h"
-#include "../../xrCDB/xr_area.h"
+#include "../../xrCore/Collision/xr_area.h"
 #include "../../xrEngine/GameMtlLib.h"
 #ifdef DEBUG
 #include "../debug_output.h"

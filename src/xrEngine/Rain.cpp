@@ -11,7 +11,7 @@
 #else
     #include "Render.h"
     #include "IGame_Level.h"
-    #include "../xrCDB/xr_area.h"
+    #include "../xrCore/Collision/xr_area.h"
     #include "xr_object.h"
 #endif
 

@@ -130,7 +130,7 @@ void vfPerformOperations( int argc, char *argv[], char *caProjectFolder, bool bS
 	}
 }
 
-void __cdecl main( int argc, char *argv[], char *envp[])
+int __cdecl main( int argc, char *argv[], char *envp[])
 {
 	bfLoadIniFile(INI_FILE);
 	if (bfCheckForSwitch(argc, argv,"pa")) {
@@ -174,8 +174,10 @@ void __cdecl main( int argc, char *argv[], char *envp[])
 			if (argc > 1)
 				vfDualPrintF(" Project folder is not specified!\n\n");
 			vfShowHelpScreen();
-			return;
+			return 0;
 		}
 		vfPerformOperations(argc,argv,caProjectFolder);
 	}
+
+	return 0;
 }

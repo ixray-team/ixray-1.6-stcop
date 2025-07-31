@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 #pragma once
 
-#include "../../../xrCDB/Frustum.h"
+#include "../../../xrCore/Collision/Frustum.h"
 #include "../../../xrEngine/vis_common.h"
 #include "../../../xrEngine/Render.h"
 

@@ -1,7 +1,7 @@
 #ifndef _CPS_Instance_H_
 #define _CPS_Instance_H_
 
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "ISheduled.h"
 #include "IRenderable.h"
 

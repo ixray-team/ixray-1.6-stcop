@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-#include	"ik_foot_collider.h"
+#include "ik_foot_collider.h"
 
 #include "../xrEngine/GameMtlLib.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "../Include/xrRender/Kinematics.h"
 
 #include "Level.h"

@@ -6,7 +6,7 @@
 #include "ExtendedGeom.h"
 #include "IPhysicsShellHolder.h"
 
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/GameMtlLib.h"
 
 #include "tri-colliderknoopc/__aabb_tri.h"

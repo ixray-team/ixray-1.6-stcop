@@ -50,7 +50,6 @@ target_compile_definitions(xrAI PRIVATE dSINGLE)
 target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CHECKING>")
 
 # Linker list
-target_link_libraries(xrAI PUBLIC xrCDB)
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)
 target_link_libraries(xrAI PUBLIC xrAbstractions)

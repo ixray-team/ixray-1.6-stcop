@@ -3,7 +3,7 @@
 #include "base_color.h"
 #include "lm_layer.h"
 #include "uv_tri.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "xrDeflectorDefs.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
 

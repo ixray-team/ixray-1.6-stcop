@@ -44,9 +44,6 @@ source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
-# Remove unused files
-#list(FILTER SND_SRC_FILES EXCLUDE REGEX ".cpp$")
-
 # xrSound project
 add_library(xrSound SHARED ${SND_SRC_FILES})
 target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -58,7 +55,6 @@ target_compile_definitions(xrSound PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
-target_link_libraries(xrSound PUBLIC xrCDB)
 
 # Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME}
