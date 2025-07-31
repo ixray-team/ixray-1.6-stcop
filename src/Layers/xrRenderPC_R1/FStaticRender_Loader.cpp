@@ -277,7 +277,11 @@ void CRender::LoadLights(IReader *fs)
 
 	// glows
 	IReader			*chunk = fs->open_chunk(fsL_GLOWS);
-	R_ASSERT		(chunk && "Can't find glows");
+	if (chunk == nullptr)
+	{
+		return;
+	}
+
 	L_Glows->Load	(chunk);
 	chunk->close	();
 }
