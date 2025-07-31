@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifndef _EDITOR
 #include "Render.h"
-#endif
 
 #include "Environment.h"
 #include "xr_efflensflare.h"
@@ -13,14 +11,8 @@
 #include "perlin.h"
 
 #include "xr_input.h"
+#include "IGame_Level.h"
 
-//#include "resourcemanager.h"
-
-#ifndef _EDITOR
-	#include "IGame_Level.h"
-#endif
-
-//#include "D3DUtils.h"
 #include "../xrCore/xrCore.h"
 
 #include "../Include/xrRender/EnvironmentRender.h"
@@ -33,10 +25,6 @@
 //////////////////////////////////////////////////////////////////////
 ENGINE_API	float			psVisDistance	= 1.f;
 static const float			MAX_NOISE_FREQ	= 0.03f;
-
-#ifndef MASTER_GOLD
-#	define WEATHER_LOGGING
-#endif // #ifndef NDEBUG
 
 // real WEATHER->WFX transition time
 #define WFX_TRANS_TIME		5.f
@@ -263,9 +251,6 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
         {
             SelectEnvs(fGameTime);
         }
-#ifdef WEATHER_LOGGING
-        Msg("Starting Cycle: %s [%s]", *name, forced ? "forced" : "deferred");
-#endif
     }
     else
     {
@@ -317,11 +302,6 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 
 		Current[0]			= C0;
 		Current[1]			= C1;
-#ifdef WEATHER_LOGGING
-        Msg("Starting WFX: '%s' - %3.2f sec", *name, wfx_time);
-        // for (EnvIt l_it=CurrentWeather->begin(); l_it!=CurrentWeather->end(); l_it++)
-        // Msg(". Env: '%s' Tm: %3.2f",*(*l_it)->m_identifier.c_str(),(*l_it)->exec_time);
-#endif
     }
     else
     {
@@ -357,10 +337,6 @@ void CEnvironment::StopWFX	()
 
 	Current[0]->on_device_create();
 	Current[1]->on_device_create();
-
-#ifdef WEATHER_LOGGING
-	Msg						("WFX - end. Weather: '%s' Desc: '%s'/'%s' GameTime: %3.2f",CurrentWeatherName.c_str(),Current[0]->m_identifier.c_str(),Current[1]->m_identifier.c_str(),fGameTime);
-#endif
 }
 
 void CEnvironment::SetEnvDesc(LPCSTR weather_section, CEnvDescriptor*& e)
@@ -430,9 +406,6 @@ void CEnvironment::SelectEnvs(float gt)
 			Current[0]	= Current[1];
 			SelectEnv	(CurrentWeather,Current[1],gt);
 			Current[1]->on_device_create();
-#ifdef WEATHER_LOGGING
-			Msg			("Weather: '%s' Desc: '%s' Time: %3.2f/%3.2f",CurrentWeatherName.c_str(),Current[1]->m_identifier.c_str(),Current[1]->exec_time,fGameTime);
-#endif
 		}
     }
 }
@@ -498,28 +471,11 @@ void CEnvironment::OnFrame()
 	lerp					(current_weight);
 
     // Igor. Dynamic sun position.
-#ifdef _EDITOR
-    if (!::Render->is_sun_static())
-        calculate_dynamic_sun_dir();
-#else
     const static bool isReadSunConfig = EngineExternal()[EEngineExternalEnvironment::ReadSunConfig];
     if (!isReadSunConfig && !::Render->is_sun_static())
         calculate_dynamic_sun_dir();
-#endif
 
-#ifndef MASTER_GOLD
-	if(CurrentEnv->sun_dir.y>0)
-	{
-		Log("CurrentEnv->sun_dir", CurrentEnv->sun_dir);
-//		Log("current_weight", current_weight);
-//		Log("mpower", mpower);
-
-		Log("Current[0]->sun_dir", Current[0]->sun_dir);
-		Log("Current[1]->sun_dir", Current[1]->sun_dir);
-
-	}
-	VERIFY2						(CurrentEnv->sun_dir.y<0,"Invalid sun direction settings in lerp");
-#endif // #ifndef MASTER_GOLD
+	VERIFY2(CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings in lerp");
 
 	PerlinNoise1D->SetFrequency		(wind_gust_factor*MAX_NOISE_FREQ);
 	wind_strength_factor			= clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal)+0.5f,0.f,1.f); 

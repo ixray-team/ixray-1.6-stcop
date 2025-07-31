@@ -77,10 +77,8 @@ void CRenderDevice::Create	()
 	SetupGPU(m_pRender);
 	Log					("Starting RENDER device...");
 
-#ifdef _EDITOR
 	psCurrentVidMode[0]	= TargetWidth;
 	psCurrentVidMode[1] = TargetHeight;
-#endif // #ifdef _EDITOR
 
 	fFOV				= 90.f;
 	fASPECT				= 1.f;
