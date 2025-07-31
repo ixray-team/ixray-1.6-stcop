@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="lim_bandit_wounded_dialog_1_11">
+		<text>Help, fellas! Gimme a medkit, my buddy's dying.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_111">
+		<text>Here.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1111">
+		<text>Hold on, let me help my buddy first.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_112">
+		<text>Sorry, ain't got a medkit.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_1121">
+		<text>Shit, guys...</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_1_113">
+		<text>Screw you, you piece of shit.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_11">
+		<text>Thanks for saving my ass. Looks like you're going to town. Watch out - Red's people set up an ambush on the street ahead. They tied a wire next to a car - don't trip over it. Keep to the right side of the street and you'll pass unharmed.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_111">
+		<text>Who else is in town now?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1111">
+		<text>A whole bunch of people making a hell of a mess. Duty and Freedom both marched to the center of town - must be looking for a path to the center of the Zone. We saw a few choppers, so the military is visiting too. Some stalkers are also in town, but they are coming from the other side, from the center of the Zone.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_112">
+		<text>What's going on in town?</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_1121">
+		<text>Our boss and his men dug in in a house a little ways down the street. They won't go any further. If you want to get into town, you'll have to smoke them out of that house.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_113">
+		<text>Thanks for nothing. Beat it before I change my mind and shoot you.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_12">
+		<text>Hurry up, we gotta ditch this place.</text>
+	</string>
+	<string id="lim_bandit_wounded_dialog_2_121">
+		<text>That's it, go.</text>
+	</string>
+</string_table>

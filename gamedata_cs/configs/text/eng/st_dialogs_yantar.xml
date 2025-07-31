@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="yan_scientist_hello_dialog_11">
+		<text>Well, well... I seldom see a new face here! So, what would you like to know? </text>
+	</string>
+	<string id="yan_scientist_hello_dialog_12">
+		<text>Any luck?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_13">
+		<text>I am glad that we were able to assist each other. Is there something I can help you with?</text>
+	</string>
+	<string id="yan_scientist_hello_dialog_14">
+		<text>Please go to Lefty. He is waiting for you.</text>
+	</string>
+	<string id="yan_scientist_go_diggers_1">
+		<text>The group went missing in the north western part of the facility. That area is full of zombies. I cannot send any stalkers who are guarding the perimeter, seeing as we're barely holding out against the attacks as it is. The SOS signal coming from there is still active, so please try to get the stalkers out if they're still alive.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_1">
+		<text>It's a shame about those young men. I truly hope their sacrifice was not in vain. Let's look at the documents... Very interesting! Some of my suspicions are proving accurate... No, this is positively interesting!... Excellent! This provides answers to a multitude of questions, but we will need time to fully understand what is happening...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_111">
+		<text>In this instance it would appear that we are dealing with a man-made device. These documents are a manual for the cooling system of that device, which is located in the underground part of the facility. Its power consumption is quite astounding! So, the picture is becoming clearer... It seems that these bursts of psy-activity occur as a result of failure in the device's cooling system... If we could repair it, that would significantly reduce psy-emission levels. I will need some time to consider this matter, so please proceed towards the facility and join Lefty and his group of stalkers. I should have more information for you while you're making your way there. </text>
+	</string>
+	<string id="yan_scientist_about_zombie_1">
+		<text>They have been giving us problems from the day this laboratory was set up. The walls are strong, but the howling and other racket from the outside is awfully disruptive. As you can imagine, carrying out research or even sleeping under these conditions is no easy task. On top of that, sometimes we have to leave the bunker to collect samples.</text>
+	</string>
+	<string id="yan_scientist_about_zombie_111">
+		<text>We spent a long time considering this issue. Regardless of how much effort the military expended on clearing out the facility, zombies would always come back. It all became clear when a former assistant of mine, who went missing while taking measurements by the factory, was discovered among the zombies... It's the psy-field. Everyone who is affected by it loses his mind and turns into a zombie. This happens as a result of irreversible damage to the higher functioning of the human brain. Ergo, these creatures cease being human: they have no cognitive abilities, and so their behavior is the result of whatever remains of their purely animal instincts...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1">
+		<text>Yes, he visited us. He knew a great deal - far more than others. He even claimed to have been to the center of the Zone! Naturally, I didn't really believe him, even though he showed me some photographs...</text>
+	</string>
+	<string id="yan_scientist_about_strelok_111">
+		<text>We made a deal with him. He promised to conduct field testing on one of our promising experimental models: a psy-emission blocker and we promised to give him the final version in return. Strelok believed that the blocker would help him get through the Brain Scorcher.  We gave him the prototype and he went into the factory. That was the last we saw of Strelok and the prototype. We received some data via our satellite but the signal has been lost. It looks like Strelok was hit by a powerful emission at the factory.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11111">
+		<text>If Strelok is in the factory, getting inside without a psy-protection device is virtually impossible. We have been studying the psy-emissions originating from the factory for years; they have a pronounced pulse nature. When they are in their low phase, people go into the factory relatively safely. However, we are unable to predict when the next emission will take place, so going inside is like playing Russian roulette. If you decide to follow Strelok into the factory you will most likely end up with your brains melted like most of the zombies around here. There is something which I may be able to do for you, however. Some time ago, I was contacted by a group of stalkers who managed to come out of the factory alive. They came across a technical documentation archive in one of the buildings. Those documents could shed light on what the factory contains and help us uncover the source of such powerful psy-emissions. Help me find those documents and I'll help you get inside the factory.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_1">
+		<text>It's the deserted factory! It draws stalkers like a magnet, because it is one of the few buildings they haven't reached yet. They say very rare artifacts and valuable equipment can be found inside, so stalkers keep trying to get in, hoping to strike gold. The trouble is that it's like playing Russian roulette. The psy-field is extremely unstable - when it peaks, the emissions can melt a human brain in seconds.</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_11">
+		<text>Merc, I received information from Sakharov. Boy, what a mess. See that breach in the wall? That's our path - the shortest way to the machine. You follow me and don't jump ahead - my boys and I are a tight team, so you'd just get in the way. We clear?</text>
+	</string>
+	<string id="yan_levsha_hello_dialog_111">
+		<text>Clear.</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_0">
+		<text>What do stalkers do here?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_11">
+		<text>What about Lefty?</text>
+	</string>
+	<string id="yan_scientist_about_stalkers_111">
+		<text>Lefty is more intelligent than the others. His team works for us, helps us take measurements and collect samples. In exchange, we provide them with high quality medical assistance. I am sure that if we didn't help one another in this manner, we would have both perished here a long time ago.</text>
+	</string>
+	<string id="yan_scientist_about_strelok_0">
+		<text>I know that Strelok was here. What do you know about him?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_11">
+		<text>Where is Strelok now?</text>
+	</string>
+	<string id="yan_scientist_about_strelok_1111">
+		<text>How do I find Strelok?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_0">
+		<text>Do zombies attack you often?</text>
+	</string>
+	<string id="yan_scientist_about_zombie_11">
+		<text>If that is so, I wonder where zombies come from...</text>
+	</string>
+	<string id="yan_scientist_bring_documents_0">
+		<text>Stalkers turned out dead. I brought the documents.</text>
+	</string>
+	<string id="yan_scientist_bring_documents_11">
+		<text>Professor, can you be more specific?</text>
+	</string>
+	<string id="yan_scientist_go_diggers_0">
+		<text>I agree to obtain the documents. Tell me everything you know.</text>
+	</string>
+	<string id="yan_scientist_start_frase_1">
+		<text>I'll be just a minute!</text>
+	</string>
+	<string id="yan_scientist_start_frase_2">
+		<text>Just one moment!</text>
+	</string>
+</string_table>
