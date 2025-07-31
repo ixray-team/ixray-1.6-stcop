@@ -186,6 +186,7 @@ UIMainForm::~UIMainForm()
 	m_tArcBall.destroy();
 	m_tFreeFly.destroy();
 
+	Console->Execute("cfg_save");
 	ExecCommand(COMMAND_DESTROY, (u32)0, (u32)0);
 }
 
