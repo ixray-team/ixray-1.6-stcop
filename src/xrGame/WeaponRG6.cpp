@@ -152,9 +152,11 @@ void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
 	VERIFY2(_valid(launch_matrix),"CWeaponRG6::FireStart. Invalid launch_matrix");
 	CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
 
-	CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
-	VERIFY(pGrenade);
-	pGrenade->SetInitiator(H_Parent()->ID());
+	if (CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket()))
+	{
+		VERIFY(pGrenade);
+		pGrenade->SetInitiator(H_Parent()->ID());
+	}
 
 	if (OnServer())
 	{
