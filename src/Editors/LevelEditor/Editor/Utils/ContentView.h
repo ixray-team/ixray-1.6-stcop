@@ -44,12 +44,6 @@ private:
 		bool SetText{ false };
 	};
 
-	struct ParticleCache
-	{
-		shared_str Name;
-		void* Ptr;
-	};
-
 	enum class EViewMode
 	{
 		Tile,
@@ -135,7 +129,7 @@ private:
 
 	xr_hash_map<xr_string, IconData> Icons;
 
-	xr_hash_map<xr_string, xr_vector<ParticleCache>> ParticlesChace;
+	xr_hash_map<xr_string, void*> ParticlesCache;
 	xr_hash_map<xr_string, xr_string> ExtDesc;
 
 	bool IsDelWatcher = false;
