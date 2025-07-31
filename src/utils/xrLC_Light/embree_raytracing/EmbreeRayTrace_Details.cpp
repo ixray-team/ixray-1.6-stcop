@@ -1,20 +1,17 @@
 #include "stdafx.h"
 #include "EmbreeRayTrace.h"
 
-#include "../../xrcdb/xrcdb.h"
-
-#include "embree4/rtcore.h"
-#pragma comment(lib, "embree4.lib")
+#include "../../xrCDB/xrCDB.h"
 
 // INTEL DATA STRUCTURE
 int LastGeometryDetailsID = RTC_INVALID_GEOMETRY_ID;
 
 
-// Качество сцены желательно REFIT юзать на более низких может криво отработать 
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ REFIT пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 
-// Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
-// Влияет на яркость на выходе (если близко к 0 будет занулятся)
-// можно и 0.10f Было раньше так
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 0.01f пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 0 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+// пїЅпїЅпїЅпїЅпїЅ пїЅ 0.10f пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 
 RTCDevice DeviceDetails;
 RTCScene IntelSceneDetails;
@@ -41,7 +38,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 	}
 
 	auto& F = gl_data.g_rc_faces[PrimID];
-	// Перемещаем начало луча немного дальше пересечения
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	b_material& M = gl_data.g_materials[F.dwMaterial];
 	b_texture& T = gl_data.g_textures[M.surfidx];
 
@@ -72,7 +69,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
-	// Дополнение Контекста
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	energy *= opac;
 	if (energy < 0.01f)
 		return false;
@@ -99,19 +96,19 @@ ICF void FilterRaytraceDetails(const struct RTCFilterFunctionNArguments* args)
 
 	if (!CalculateEnergy(hit->geomID, hit->primID, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
-		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Face.
 		ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
 		return;
 	}
 
-	args->valid[0] = 0; // Задаем чтобы продолжил поиск
+	args->valid[0] = 0; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 }
 
 float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 {
 	// Msg("RayTrace");
-	// Структура для RayTracing
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ RayTracing
 	RayQueryContext data_hits;
 	data_hits.Light = &L;
 	data_hits.skip = 0;
@@ -192,7 +189,7 @@ void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 	Status(phase);
 	Embree::IntelEmbreeSettings(DeviceDetails, avx_test, sse);
 
-	// Создание сцены и добавление геометрии
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	// Scene
 	IntelSceneDetails = rtcNewScene(DeviceDetails);
 	rtcSetSceneFlags(IntelSceneDetails, RTCSceneFlags::RTC_SCENE_FLAG_ROBUST);
