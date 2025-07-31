@@ -12,6 +12,8 @@
 
 #include "ImUtils.h"
 
+extern bool hud_adj_crosshair;
+
 void ImGui_Render2DWidget(float grid_step=24.0f)
 {
 	static ImVec2 circlePos(100.0f, 100.0f);
@@ -146,7 +148,7 @@ void RenderHUDAdjustManager()
 
 						ImGui::Text("Mode: %s", p_hand);
 
-
+						ImGui::Checkbox("Show crosshair", &hud_adj_crosshair);
 
 						auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index) -> void {
 							if (p_item)
