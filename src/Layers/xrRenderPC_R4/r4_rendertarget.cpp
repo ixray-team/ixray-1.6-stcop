@@ -23,6 +23,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "FSR2Wrapper.h"
 #include "DLSSWrapper.h"
+#include "XESSWrapper.h"
 
 void	CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
 {
@@ -523,6 +524,7 @@ CRenderTarget::CRenderTarget()
 
 	init_fsr();
 	init_dlss();
+	init_xess();
 
 	// Scale
 	{
@@ -939,6 +941,7 @@ CRenderTarget::~CRenderTarget	()
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
+	g_XESSWrapper.Destroy();
 
 	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
 
