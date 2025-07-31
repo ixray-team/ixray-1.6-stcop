@@ -56,10 +56,10 @@ void StartupLC()
 	lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
 	lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
 	lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
-	lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
 
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+
 
 	// Load project
 	  
@@ -99,9 +99,14 @@ void StartupLC()
 	pBuild = new CBuild();
 	pBuild->Load(Params, *F);
 
-	g_params().m_lm_jitter_samples   = gCompilerMode.LC_JSample;
-	g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
-  
+	lc_global_data()->SetOverrideSettings(gCompilerMode.IsOverloadedSettings);
+
+	if (gCompilerMode.IsOverloadedSettings)
+	{
+		g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
+		g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
+		lc_global_data()->SetJitterMU(gCompilerMode.LC_JSampleMU);
+	} 
 
 	FS.r_close(F);
 
