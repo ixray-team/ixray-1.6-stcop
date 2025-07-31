@@ -7,6 +7,7 @@
 #pragma once
 
 #include "FoodItem.h"
+#include "../xrScripts/script_export_space.h"
 
 
 class CBottleItem: public CFoodItem
@@ -32,4 +33,5 @@ protected:
 	//партиклы разбивания бутылки
 	shared_str m_sBreakParticles;
 	ref_sound sndBreaking;
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
