@@ -9,7 +9,7 @@
 #include "../../xrScripts/script_engine.h"
 #include "../ai_space.h"
 #include "../../xrEngine/XR_IOConsole.h"
-#include "../UIGameCustom.h"
+#include "UIGameCustom.h"
 #include "UIActorMenu.h"
 #include "UIPdaWnd.h"
 #include "Actor.h"
