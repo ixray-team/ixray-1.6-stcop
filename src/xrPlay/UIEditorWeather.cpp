@@ -453,7 +453,7 @@ void RenderUIWeather() {
 		changed = true;
 	}
 
-	const std::unordered_set<xr_string> validRainTypes =
+	static std::unordered_set<xr_string> validRainTypes =
 	{
 		"default", 
 		"drizzle",
@@ -461,15 +461,16 @@ void RenderUIWeather() {
 		"spherical" 
 	};
 
-	xr_string previousRainType = cur->rain_type.c_str();
+	static xr_string previousRainType;
+	previousRainType = cur->rain_type.c_str();
 
-	char rainTypeBuffer[100];
+	static char rainTypeBuffer[100];
 	strcpy_s(rainTypeBuffer, previousRainType.c_str());
 
 	if (ImGui::InputText("rain_type", rainTypeBuffer, sizeof(rainTypeBuffer))) 
 	{
-		xr_string newRainType = rainTypeBuffer;
-
+		static xr_string newRainType;
+		newRainType = rainTypeBuffer;
 		if (validRainTypes.find(newRainType) != validRainTypes.end()) 
 		{
 			if (newRainType != previousRainType) 
