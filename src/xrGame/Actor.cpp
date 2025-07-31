@@ -1197,6 +1197,12 @@ void CActor::UpdateCL()
 	u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
 	_last_update_time = ct;
 	UpdateElectronicsProblemsCnt(dt);
+	g_player_hud->UpdateWeaponOffset(dt);
+
+	if (_jitter_time_remains > dt)
+		_jitter_time_remains = _jitter_time_remains - dt;
+	else
+		_jitter_time_remains = 0;
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
@@ -2771,4 +2777,16 @@ void CActor::UpdateElectronicsProblemsCnt(u32 dt)
 		current_electronics_problems_counter += copysign(max_delta, delta);
 		last_problems_update_was_decrease = (delta < 0.0f);
 	}
+}
+
+float CActor::GetHandJitterScale(CHudItem* itm) const
+{
+	u32 restore_time = itm->GetCurJitterParams().stop_time;
+
+	/*if (IsActorControlled() || itm->IsSuicideAnimPlaying() || IsControllerPreparing() || (_jitter_time_remains > restore_time))
+		return 1.0f;
+	else */if (_jitter_time_remains == 0)
+		return 0.0f;
+	else
+		return _jitter_time_remains / restore_time;
 }
