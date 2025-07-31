@@ -311,47 +311,59 @@ void CWeaponMagazined::Reload()
 	TryReload();
 }
 
-bool CWeaponMagazined::TryReload() 
+bool CWeaponMagazined::TryReload()
 {
-	if(m_pInventory) 
+	if (m_pInventory)
 	{
-		if(IsGameTypeSingle() && ParentIsActor())
+		if (IsGameTypeSingle() && ParentIsActor())
 		{
-			int	AC					= GetSuitableAmmoTotal();
+			int	AC = GetSuitableAmmoTotal();
 			Actor()->callback(GameObject::eWeaponNoAmmoAvailable)(lua_game_object(), AC);
 		}
 
-		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[m_ammoType].c_str() ));
-		
-		if(IsMisfire() && iAmmoElapsed)
+		m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[m_ammoType].c_str()));
+
+		if (IsMisfire() && iAmmoElapsed)
 		{
-			SetPending			(TRUE);
-			SwitchState			(eReload); 
-			return				true;
+			SetPending(TRUE);
+			SwitchState(eReload);
+			return true;
 		}
 
-		if(m_pCurrentAmmo || unlimited_ammo())  
+		if (m_pCurrentAmmo || unlimited_ammo())
 		{
-			SetPending			(TRUE);
-			SwitchState			(eReload); 
-			return				true;
-		} 
-		else for(u8 i = 0; i < u8(m_ammoTypes.size()); ++i) 
+			SetPending(TRUE);
+			SwitchState(eReload);
+			return true;
+		}
+		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed + iAmmoChamberElapsed == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
-			m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( m_ammoTypes[i].c_str() ));
-			if(m_pCurrentAmmo) 
-			{ 
-				m_set_next_ammoType_on_reload = i;
-				SetPending			(TRUE);
-				SwitchState			(eReload);
-				return				true;
+			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+			{
+				m_pCurrentAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(m_ammoTypes[i].c_str()));
+				if (m_pCurrentAmmo)
+				{
+					m_set_next_ammoType_on_reload = i;
+					SetPending(TRUE);
+					SwitchState(eReload);
+					return true;
+				}
 			}
+		}
+		else
+		{
+			m_set_next_ammoType_on_reload = undefined_ammo_type;
 		}
 
 	}
-	
-	if(GetState()!=eIdle)
+
+	if (GetState() != eIdle)
+	{
 		SwitchState(eIdle);
+	}
+
+	bAmmotypeKeyPressed = false;
+	bReloadKeyPressed = false;
 
 	return false;
 }
@@ -539,23 +551,43 @@ void CWeaponMagazined::ReloadMagazine()
 
 bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 {
-	if (unlimited_ammo())	return true;
-	if (!m_pInventory)		return false;
+	if (unlimited_ammo())
+	{
+		return true;
+	}
 
-	u32 ac = GetAmmoCount(m_ammoType);
-	if (ac < cnt)
+	if (!m_pInventory)
+	{
+		return false;
+	}
+
+	u32 ac = GetAmmoCount(GetTargetAmmoType());
+
+	if (m_set_next_ammoType_on_reload == undefined_ammo_type && ac < cnt && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 		{
-			if (m_ammoType == i) continue;
-			ac += GetAmmoCount(i);
+			if (m_ammoType == i)
+			{
+				continue;
+			}
+
+			ac = GetAmmoCount(i);
+
 			if (ac >= cnt)
 			{
-				m_ammoType = i;
+				m_set_next_ammoType_on_reload = i;
 				break;
 			}
 		}
 	}
+
+	if (ac < cnt)
+	{
+		bAmmotypeKeyPressed = false;
+		bReloadKeyPressed = false;
+	}
+
 	return ac >= cnt;
 }
 
