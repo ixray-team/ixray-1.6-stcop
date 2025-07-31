@@ -394,7 +394,7 @@ void CUIActorMenu::UpdatePartnerBag()
 	}
 	else if ( m_pPartnerInvOwner->InfinitiveMoney() ) 
 	{
-		m_PartnerMoney->SetText( "--- RU" );
+		m_PartnerMoney->SetText( "∞ RU" );
 	}
 	else
 	{
