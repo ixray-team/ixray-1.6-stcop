@@ -193,6 +193,17 @@ public:
 
 	bool	NeedBlockSprint						() const;
 
+
+	struct conditional_breaking_params
+	{
+		float start_condition = 0.0f;     // при каком состоянии начнутся проблемы
+		float end_condition = 0.0f;       // при каком состоянии отрубится вообще
+		float start_probability = 0.0f;   // вероятность проблем в стартовом состоянии
+	};
+
+	conditional_breaking_params CollimatorBreakingParams;
+	float m_fCollimatorLevelsProblem;
+
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
 
@@ -202,6 +213,7 @@ public:
 	bool m_bUseSilHud = false;
 	bool m_bUseScopeHud = false;
 	bool m_bUseGLHud = false;
+	bool m_bHideColimSightInAlter;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -265,7 +277,8 @@ private:
 
 	RStringVec m_bDefHideBones {}, m_bDefShowBones {}, m_bHideBonesOverride {}, m_bDefHideBonesGLAttached {},
 		m_bHideBonesGLAttached {}, m_bHideBonesSilAttached {}, m_bHideBonesScopeAttached {},
-		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{};
+		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
+		m_sCollimatorSightsBones{};
 
 	void HideOneUpgradeLevel(const char* section);
 	void LoadUpgradeBonesToHide(const char* section, const char* line);
@@ -629,4 +642,5 @@ public:
 
 	float GetAimFactor() const { return m_zoom_params.m_fZoomRotationFactor; }
 	bool GetScopeBack();
+	void UpdateCollimatorSight();
 };
