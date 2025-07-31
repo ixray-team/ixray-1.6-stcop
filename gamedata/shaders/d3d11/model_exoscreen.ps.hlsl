@@ -2,12 +2,11 @@
 
 struct 	v2p
 {
- 	float2 	tc0: 		TEXCOORD0;	// base
-// 	float2 	tc1: 		TEXCOORD1;	// lmap
-  	float4	c0:		COLOR0;		// sun
+	float2 	tc0: TEXCOORD0;	// base
+	float4	c0: COLOR0; // sun
 };
 
-uniform	float4 		m_affects;
+uniform	float4 m_affects;
 
 float get_noise(float2 co)
 {
@@ -18,7 +17,6 @@ float get_noise(float2 co)
 // Pixel
 float4 main( v2p I ) : SV_Target
 {
-//	float4	t_base 	= tex2D	(s_base,I.tc0);
 	float4	t_base 	= s_base.Sample( smp_base, I.tc0 );
 
 	// Шум при выбросе
@@ -27,6 +25,7 @@ float4 main( v2p I ) : SV_Target
 	t_base.g += noise;
 	t_base.b += noise;	
 	
-	// out
-	return  float4	(t_base.r,t_base.g,t_base.b,t_base.a * I.c0.a);
+	t_base.xyz = detonemap(t_base.xyz);
+	return float4(t_base.xyz,t_base.w * I.c0.w);
 }
+
