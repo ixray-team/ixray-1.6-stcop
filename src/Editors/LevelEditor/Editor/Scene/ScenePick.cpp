@@ -81,6 +81,16 @@ int EScene::BoxQuery(SPickQuery& PQ, const Fbox& bb, u32 flags, CDB::MODEL* mode
 	return PQ.r_count();
 }
 
+bool EScene::GetPlayInEditorRayPickCall()
+{
+    return !IsPlayInEditor() || IsPIERayPick;
+}
+
+void EScene::SetPlayInEditorRayPickCall(bool Value)
+{
+    IsPIERayPick = Value;
+}
+
 CCustomObject *EScene::RayPickObject(float nearest_dist, const Fvector& start, const Fvector& direction, ObjClassID classfilter, SRayPickInfo* pinf, ObjectList* from_list)
 {
 	if(!valid()) return 0;
