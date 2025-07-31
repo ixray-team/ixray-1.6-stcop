@@ -215,7 +215,9 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 
 void CUIMotionIcon::Draw()
 {
-	inherited::Draw();
+    const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
+    if (!disableMotionIcon)
+	    inherited::Draw();
 }
 
 void CUIMotionIcon::Update()
