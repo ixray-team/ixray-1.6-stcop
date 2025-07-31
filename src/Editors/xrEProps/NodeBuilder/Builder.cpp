@@ -26,6 +26,12 @@ int CNodeViewport::GetHoveredMode() const
 		if (ImNodes::IsNodeSelected(Node->NodeID))
 		{
 			HoveredNodeID = Node->NodeID;
+			if (LastSelectedNodeID != HoveredNodeID && NodeSelectCallback)
+			{
+				NodeSelectCallback(Node);
+			}
+			LastSelectedNodeID = HoveredNodeID;
+			break;
 		}
 	}
 
@@ -78,6 +84,7 @@ void CNodeViewport::Draw()
 		ImNodes::Link(LinkDrawCounter, p.first, p.second);
 	}
 
+	ImGui::SetWindowFontScale(0.9f); // ����������� ����������
 	ImNodes::MiniMap();
 	ImNodes::EndNodeEditor();
 
