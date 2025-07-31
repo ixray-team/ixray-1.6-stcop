@@ -41,7 +41,7 @@ function mp_options:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_options:cap_max_ping",	self)
 	
 	handler.check_public_server			= xml:InitCheck("tab_options:check_public_server", 			self)
-	handler.check_use_battleye			= xml:InitCheck("tab_options:check_use_battleye",			self)
+--	handler.check_use_battleye			= xml:InitCheck("tab_options:check_use_battleye",			self)
 --	handler.check_battleye_auto_update	= xml:InitCheck("tab_options:check_battleye_auto_update",	self)
 	
 --	handler.check_verify_cdkey			= xml:InitCheck("tab_options:check_verify_cdkey", 			self)
@@ -90,7 +90,7 @@ function mp_options:InitControls(x, y, xml, handler)
 	handler.spin_weather				= xml:InitComboBox("tab_options:spin_weather",				self)
 	
 	handler.check_spectator:SetDependControl(handler.spin_spectator)
-    handler.check_public_server:SetDependControl(handler.check_use_battleye)
+--  handler.check_public_server:SetDependControl(handler.check_use_battleye)
 	
 --	handler.check_public_server:SetDependControl(handler.check_verify_cdkey)	
 	
