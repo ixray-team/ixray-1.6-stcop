@@ -39,6 +39,7 @@ public:
 	virtual void	net_Relcase			(CObject *object);
 
 	virtual bool WpnCanShoot() const { return false; }
+	virtual bool UseScopeTexture() { return true; }
 
 protected:
 	CBinocularsVision*					m_binoc_vision;
