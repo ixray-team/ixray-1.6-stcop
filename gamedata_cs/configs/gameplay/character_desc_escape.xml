@@ -326,6 +326,7 @@
 #include "gameplay\character_drugs.xml"
     </supplies>
       <start_dialog>hello_dialog</start_dialog>
+	  <actor_dialog>treasure_dialog</actor_dialog>
 #include "gameplay\character_criticals_4.xml"
   </specific_character>
 
