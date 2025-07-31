@@ -40,7 +40,7 @@ static Fvector		GetPixel_7x7		(CDB::RESULT& rpinf)
 #ifdef		DEBUG
 	const b_BuildTexture	&build_texture  = pBuild->textures()			[M.surfidx];
 
-	VERIFY( !!(build_texture.THM.HasSurface()) ==  !!(T.pSurface) );
+	VERIFY(!!(build_texture.HasSurface()) == !!(T.pSurface));
 #endif
 
 	if (0==T.pSurface)									

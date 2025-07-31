@@ -18,27 +18,26 @@ const Shader_xrLC&	base_Face::Shader		()const
 	return shader( dwMaterial, inlc_global_data()->shaders(), inlc_global_data()->materials() );
 }
 
-void base_Face::CacheOpacity	()
+void base_Face::CacheOpacity()
 {
-	flags.bOpaque				= true;
-	VERIFY ( inlc_global_data() );
+	flags.bOpaque = true;
+	VERIFY(inlc_global_data());
 
-	b_material& M		= inlc_global_data()->materials()		[dwMaterial];
-	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
-	if (T.bHasAlpha)	
-		flags.bOpaque = false;
-	else			
-		flags.bOpaque = true;
+	b_material& M = inlc_global_data()->materials()[dwMaterial];
+	b_BuildTexture& T = inlc_global_data()->textures()[M.surfidx];
+	flags.bOpaque = !T.bHasAlpha;
 
-	if ( !flags.bOpaque && (!T.THM.HasSurface()) )	////	pSurface was possible deleted
+	// pSurface was possible deleted
+	if (!flags.bOpaque && (!T.HasSurface()))
 	{
-		flags.bOpaque	= true;
-		clMsg			("Strange face detected... Has alpha without texture... [%s]", T.name);
+		flags.bOpaque = true;
+		clMsg("Strange face detected... Has alpha without texture... [%s]", T.name);
 	}
 }
+
 static bool do_not_add_to_vector_in_global_data = false;
 
-bool			g_bUnregister = true;
+bool g_bUnregister = true;
 
 void destroy_vertex( Vertex* &v, bool unregister )
 {
@@ -96,11 +95,6 @@ Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 template<>
 Tface<DataVertex>::Tface()
 {
@@ -216,24 +210,21 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 	}
 }
 
-
-BOOL	DataFace::RenderEqualTo	(Face *F)
+BOOL DataFace::RenderEqualTo(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	
 		return FALSE;
  	return TRUE;
 }
 
-
-
-void	DataFace::AddChannel	(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3) 
+void DataFace::AddChannel(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3) 
 {
 	_TCF	TC;
 	TC.uv[0] = p1;	TC.uv[1] = p2;	TC.uv[2] = p3;
 	tc.push_back(TC);
 }
 
-BOOL	DataFace::hasImplicitLighting()
+BOOL DataFace::hasImplicitLighting()
 {
 	if (0==this)								return FALSE;
 	if (!Shader().flags.bRendering)				return FALSE;
