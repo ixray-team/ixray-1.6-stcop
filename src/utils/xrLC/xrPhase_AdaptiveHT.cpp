@@ -112,14 +112,14 @@ void CBuild::xrPhase_AdaptiveHT	()
  	}
 
 	// Prepare
-	Phase("AdaptiveHT : base hemisphere ...");
+	Status("AdaptiveHT : base hemisphere ...");
 	ThreadWorkID_Adaptive = 0;
 	for (u32 thID = 0; thID < MAX_THREADS; thID++)
 		precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 	precalc_base_hemi.wait();
 
  	//////////////////////////////////////////////////////////////////////////
-	Phase("AdaptiveHT : Gathering lighting information...");
+	Status("AdaptiveHT : Gathering lighting information...");
 	u_SmoothVertColors	(5);
 
 	if (lc_global_data()->GetIsIntelUse())

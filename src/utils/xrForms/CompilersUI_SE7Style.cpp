@@ -28,6 +28,11 @@ void InitializeUIData()
 	}
 }
 
+static bool autoScroll = true;
+static bool hideLogSection = true;
+static bool ResizeMaximal = true;
+
+
 void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
@@ -49,17 +54,14 @@ void RenderMainUI()
 		return;
 	}
 
-	if ( Size[0] != 1000 || Size[1] != 560 )
+	if ( Size[0] != 1000 || Size[1] != 650)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 650);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
-		 
-		//ImGui::Text("Levels:");
-
-		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 75) };
+		ImVec2 ListBoxSize = { float(Size[0] - 20), float ( Size[1] - 115) };
 		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
 			// 
@@ -74,7 +76,7 @@ void RenderMainUI()
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 			
-			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 115) };
+			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 155) };
 			if (  ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2)  )
 			{
 				ImGui::TableSetupColumn("Name");
@@ -119,6 +121,7 @@ void RenderMainUI()
 			ImGui::EndTable();  
 		}
 	}
+	 
 	auto BSize = ImGui::GetContentRegionAvail();
 
 	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
@@ -160,8 +163,37 @@ void RenderMainUI()
 		}
 
 	}
+	 
+	if (true)
+	{
+		ImGui::Separator();
 
+		if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
+		{
+			autoScroll = !autoScroll;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button(!ResizeMaximal ? "Maximal resize" : "Minimal resize"))
+		{
+			ResizeMaximal = !ResizeMaximal;
+		}
+
+		ImGui::SameLine();
+
+		size_t  w_free, w_reserved, w_committed;
+		vminfo(&w_free, &w_reserved, &w_committed);
+
+		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
+
+		ImGui::SameLine();
+
+		ImGui::Checkbox("ShowMain", &ShowMainUI);
+	}
+ 
 	ImGui::End();
+
 
 	/*
 		Якорный переход просчитывается по порядку.
@@ -370,8 +402,7 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
-		ImGui::Checkbox("Show Main", &ShowMainUI);
-
+		 
 		if (ImGui::InputInt("Threads Max", &gCompilerMode.ThreadsPerWork))
 		{
 			gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
@@ -480,9 +511,6 @@ const ImVec4 getLogColor(const char& c)
 void RenderCompilerUI(int X, int Y)
 {
 	//static const char* levelName = "LevelTextName";
-	static bool autoScroll = true;
-	static bool hideLogSection = false;
-	static bool ResizeMaximal = false;
 
 	// Set up the window
 	ImGui::Begin("Compile Split Screen", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
@@ -528,19 +556,35 @@ void RenderCompilerUI(int X, int Y)
 		MAX_TRABS = 10;
 
 	// Table
-	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
-		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
-		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
-		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
-		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-		ImGui::TableSetupColumn("Time Elapsed", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Remaining Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) 
+	{
+ 		if (ResizeMaximal)
+		{
+			ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
+			ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
+			ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 250.0f);
+			ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 40.f);
+			ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+			ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+			ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 25.0f);
+			ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 50.f);
+			ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 50.f);
+ 
+			ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthStretch);
+		}
+		else
+		{
+			ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
+			ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 50.f);
+			ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
+			ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+			ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+			ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+			ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
+			ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		}
 		
-		if (ResizeMaximal)
-			ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
 
 		ImGui::TableHeadersRow();
 

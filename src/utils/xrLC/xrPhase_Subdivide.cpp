@@ -66,9 +66,17 @@ void CBuild::xrPhase_Subdivide()
 		if		(size.z>c_SS_maxsize)					bSplit	= TRUE;
 		if		(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit	= TRUE;
 		CDeflector*	defl_base	= (CDeflector*)g_XSplit[X]->front()->pDeflector;
-		if		(!bSplit && defl_base)	{
-			if (defl_base->layer.width  >=	(getLMSIZE() - 2 * BORDER))	bSplit = TRUE;
-			if (defl_base->layer.height >=	(getLMSIZE() - 2 * BORDER))	bSplit	= TRUE;
+		if		(!bSplit && defl_base)
+		{
+			if (defl_base->layer.width >= (getLMSIZE() - 2 * BORDER))
+ 				bSplit = TRUE;
+ 			if (defl_base->layer.height >=	(getLMSIZE() - 2 * BORDER))
+				bSplit	= TRUE;
+
+			if (bSplit)
+			{
+				clMsg("Split[%u] is Size(%u, %u) set to split", X, defl_base->layer.width, defl_base->layer.height);
+			}
 		}
 
 		// perform subdivide if needed
