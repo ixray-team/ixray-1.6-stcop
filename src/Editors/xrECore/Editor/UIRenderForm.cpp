@@ -107,6 +107,13 @@ void UIRenderForm::Draw()
 		return;
 	}
 
+	DrawVP();
+
+	ImGui::End();
+}
+
+void UIRenderForm::DrawVP()
+{
 	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
 	{
 		if ((UI->IsPlayInEditor() && ViewportID == 0) || !UI->IsPlayInEditor())
@@ -185,11 +192,10 @@ void UIRenderForm::Draw()
 
 		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
 		{
-			ImGui::End();
 			return;
 		}
 
-		if(m_OnToolBar)
+		if (m_OnToolBar)
 			m_OnToolBar(canvas_pos, canvas_size);
 
 		if (ViewportID == UI->ViewID && !UI->IsPlayInEditor())
@@ -205,7 +211,7 @@ void UIRenderForm::Draw()
 
 				float calcSide = (canvas_size.x > canvas_size.y) ? canvas_size.y : canvas_size.x;
 
-				ImVec2 size{ calcSide*0.15f, calcSide * 0.15f };
+				ImVec2 size{ calcSide * 0.15f, calcSide * 0.15f };
 				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y };
 
 				//Device.mView for only read
@@ -220,15 +226,15 @@ void UIRenderForm::Draw()
 
 		if (ImGui::IsItemFocused())
 		{
-			if ((ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right)) && !m_mouse_down&& cursor_in_zone)
+			if ((ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right)) && !m_mouse_down && cursor_in_zone)
 			{
 				UI->MousePress(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 				m_mouse_down = true;
 			}
 
-			else  if ((ImGui::IsMouseReleased(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Right) )&& m_mouse_down)
+			else  if ((ImGui::IsMouseReleased(ImGuiMouseButton_Left) || ImGui::IsMouseReleased(ImGuiMouseButton_Right)) && m_mouse_down)
 			{
-				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) &&! ImGui::IsMouseDown(ImGuiMouseButton_Right))
+				if (!ImGui::IsMouseDown(ImGuiMouseButton_Left) && !ImGui::IsMouseDown(ImGuiMouseButton_Right))
 				{
 					UI->MouseRelease(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 					m_mouse_down = false;
@@ -240,7 +246,7 @@ void UIRenderForm::Draw()
 			{
 				UI->MouseMove(TShiftState(ShiftState), mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 				m_mouse_move = true;
-				m_shiftstate_down = m_shiftstate_down||( ShiftState & (ssShift | ssCtrl | ssAlt));
+				m_shiftstate_down = m_shiftstate_down || (ShiftState & (ssShift | ssCtrl | ssAlt));
 			}
 
 			if (ImGui::IsMouseReleased(ImGuiMouseButton_Left) && OnClickCallback)
@@ -261,7 +267,7 @@ void UIRenderForm::Draw()
 		m_mouse_position.set(mouse_pos.x - canvas_pos.x, mouse_pos.y - canvas_pos.y);
 
 
-		if (!m_OnContextMenu.empty()&& !curent_shiftstate_down && !UI->IsPlayInEditor())
+		if (!m_OnContextMenu.empty() && !curent_shiftstate_down && !UI->IsPlayInEditor())
 		{
 			if (ImGui::BeginPopupContextItem("Menu"))
 			{
@@ -283,7 +289,7 @@ void UIRenderForm::Draw()
 			if (ImGui::BeginChild("##renderloader", { 300, 65 }, true))
 			{
 				ImGui::Text(UI->ProgressStatusName.c_str());
-				ImGui::ProgressBar(UI->ProgressStatus / 100.f, {280, 25});
+				ImGui::ProgressBar(UI->ProgressStatus / 100.f, { 280, 25 });
 			}
 			ImGui::EndChild();
 		}
@@ -293,8 +299,6 @@ void UIRenderForm::Draw()
 			UI->ShowHint();
 		}
 	}
-
-	ImGui::End();
 }
 
 void UIRenderForm::HandleDragDrop(const ImVec2& canvas_pos)
