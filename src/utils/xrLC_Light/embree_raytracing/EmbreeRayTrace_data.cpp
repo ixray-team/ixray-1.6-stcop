@@ -214,8 +214,7 @@ extern CBuild* pBuild;
 
 void EmbreeData::BuildRcast()
 { 
-	/*
-	clMsg("Start Export Build.cform");
+ 	clMsg("Start Export Build.cform");
 	TriangleContainer container;
 	container.AddOther(static_geom);
 	container.AddOther(static_geom_transp);
@@ -254,14 +253,6 @@ void EmbreeData::BuildRcast()
 	MFS->w(&hdr, sizeof(hdr));
 
 	// Data
- 	size_t vertex_mem = container.vertex_cnt() * 12;
-	size_t faces_mem  = container.faces_cnt() * sizeof(CDB::TRI);
-	Msg("Memory Vertex need: %u mb", u32 ( vertex_mem / 1024 / 1024) );
-	Msg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
-
-	Msg("Vertex Count: %u", container.vertex_cnt());
-	Msg("Faces Count: %u", container.faces_cnt());
-
 	for (auto V : container.vertex())
 	{
 		auto Vert = V.Get();
@@ -281,13 +272,14 @@ void EmbreeData::BuildRcast()
 	MFS->close_chunk();
 
 	size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
-
-	Msg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
-
+	size_t vertex_mem = container.vertex_cnt() * sizeof(Fvector);
+	size_t faces_mem = container.faces_cnt() * sizeof(CDB::TRI);
+	Msg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
+	Msg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
+ 	Msg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
 	Msg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
 
 	FS.w_close(MFS);
-	*/
 }
 
 
