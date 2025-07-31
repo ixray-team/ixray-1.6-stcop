@@ -47,7 +47,7 @@ void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr us
 	if (dist > db().m_max_hear_dist)	return;
 
 	// ignore sounds if not from enemies and not help sounds
-	CEntityAlive* entity = smart_cast<CEntityAlive*> (who);
+	CEntityAlive* entity = who ? who->cast_entity_alive() : NULL;
 
 	// ignore sound if enemy drop a weapon on death
 	if (!entity && ((eType & SOUND_TYPE_ITEM_HIDING) == SOUND_TYPE_ITEM_HIDING)) return;
@@ -199,8 +199,9 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 BOOL  CBaseMonster::feel_vision_isRelevant(CObject* O)
 {
+	if(!O || O->getDestroy())		return FALSE;
 	if (!g_Alive())					return FALSE;
-	if (0==smart_cast<CEntity*>(O))	return FALSE;
+	if (!O->cast_entity())			return FALSE;
 	
 	if ((O->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI) 
 		return FALSE;
@@ -209,11 +210,13 @@ BOOL  CBaseMonster::feel_vision_isRelevant(CObject* O)
 	if (m_bSleep) return FALSE;
 	
 	// если не враг - не видит
-	CEntityAlive* entity = smart_cast<CEntityAlive*> (O);
-	if (entity && entity->g_Alive()) {
-		if (!EnemyMan.is_enemy(entity)) {
+	CEntityAlive* entity = O->cast_entity_alive();
+	if (entity && entity->g_Alive())
+	{
+		if (!EnemyMan.is_enemy(entity))
+		{
 			// если видит друга - проверить наличие у него врагов
-			CBaseMonster *monster = smart_cast<CBaseMonster *>(entity);
+			CBaseMonster *monster = entity->cast_base_monster();
 			if (monster && !m_skip_transfer_enemy) EnemyMan.transfer_enemy(monster);
 			return FALSE;
 		}

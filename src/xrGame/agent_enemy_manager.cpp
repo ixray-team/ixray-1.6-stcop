@@ -123,26 +123,31 @@ void CAgentEnemyManager::fill_enemies			()
 	m_only_wounded_left					= true;
 	m_is_any_wounded					= false;
 	{
-		CAgentMemoryManager				&memory = object().memory();
-		ENEMIES::iterator				I = enemies().begin();
-		ENEMIES::iterator				E = enemies().end();
-		for ( ; I != E; ++I) {
-			if (m_only_wounded_left) {
-				const CAI_Stalker			*stalker = smart_cast<const CAI_Stalker*>((*I).m_object);
-				if (!stalker || !stalker->wounded())
-					m_only_wounded_left	= false;
+		CAgentMemoryManager &memory = object().memory();
+		for (CMemberEnemy& enemy : enemies())
+		{
+			if(CEntityAlive* entity_alive = const_cast<CEntityAlive*>(enemy.m_object))
+			{
+				if (m_only_wounded_left)
+				{
+					CAI_Stalker* stalker = entity_alive->cast_stalker();
+					if (!stalker || !stalker->wounded())
+						m_only_wounded_left = false;
+					else
+						m_is_any_wounded = true;
+				}
 				else
-					m_is_any_wounded	= true;
-			}
-			else {
-				if (!m_is_any_wounded) {
-					const CAI_Stalker		*stalker = smart_cast<const CAI_Stalker*>((*I).m_object);
-					if (stalker && stalker->wounded())
-						m_is_any_wounded	= true;
+				{
+					if (!m_is_any_wounded)
+					{
+						CAI_Stalker* stalker = entity_alive->cast_stalker();
+						if (stalker && stalker->wounded())
+							m_is_any_wounded = true;
+					}
 				}
 			}
 
-			memory.object_information	((*I).m_object,(*I).m_level_time,(*I).m_enemy_position);
+			memory.object_information(enemy.m_object, enemy.m_level_time, enemy.m_enemy_position);
 		}
 	}
 
