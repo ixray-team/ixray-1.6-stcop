@@ -20,21 +20,6 @@ void  object_StrictB2F_1(EScene::mapObject_Node *N){RENDER_OBJECT(1,true);}
 void  object_StrictB2F_2(EScene::mapObject_Node *N){RENDER_OBJECT(2,true);}
 void  object_StrictB2F_3(EScene::mapObject_Node *N){RENDER_OBJECT(3,true);}
 
-#define RENDER_SCENE_TOOLS(P,B)\
-	{\
-		SceneMToolsIt s_it 	= scene_tools.begin();\
-		SceneMToolsIt s_end	= scene_tools.end();\
-        for (; s_it!=s_end; s_it++){\
-            EDevice->SetShader		(B?EDevice->m_SelectionShader:EDevice->m_WireShader);\
-            RCache.set_xform_world	(Fidentity);\
-            try{\
-            	(*s_it)->OnRenderRoot(P,B);\
-            }catch(...){\
-		        ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B] - Tools: '%s'",(*s_it)->ClassName());\
-            }\
-        }\
-    }
-
 struct tools_rp_pred
 {
     IC bool operator()(ESceneToolBase* x, ESceneToolBase* y) const
