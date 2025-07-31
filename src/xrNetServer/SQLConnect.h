@@ -66,7 +66,7 @@ public:
 	void							SaveInventory(int user_id, int item_id, u64 state);
 
 	xr_hash_map<xr_string, int>		LoadGame(shared_str need_field);
-
+	void							PushTask(const std::function<void()>& Functor);
 private:
 	void							UpdateInsertPropertyInternal(UserDBProperty data);
 	void							SaveInventoryInternal(int user_id, int item_id, u64 state);
