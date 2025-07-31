@@ -272,9 +272,10 @@ void CUIRankingWnd::get_favorite_weapon()
 	{
 		if(pSettings->section_exist(str) && pSettings->line_exist(str, "upgr_icon_x"))
 		{
-			m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader());
+			const char* upgrIconsTexture = READ_IF_EXISTS(pSettings, r_string, str, "upgr_icons_texture", nullptr);
+			m_favorite_weapon_icon->SetShader(InventoryUtilities::GetWeaponUpgradeIconsShader(upgrIconsTexture));
 			if(!xr_strcmp(str, "wpn_rpg7"))
-				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader());
+				m_favorite_weapon_icon->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
 
 			Frect				tex_rect;
 			tex_rect.x1			= float(pSettings->r_u32(str, "upgr_icon_x"));
