@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 project(IXRay)
 
 # CMake options
@@ -24,7 +24,7 @@ option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
 
 # CXX options
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
