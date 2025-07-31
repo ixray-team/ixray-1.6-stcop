@@ -8,7 +8,7 @@
     <text font="graffiti22" color="ui_6"  complex_mode="0"/>
   </name_static>
 
-	<rank_icon           x="14" y="23" width="38" height="47"/>
+	<rank_icon           x="14" y="23" width="38" height="47" stretch="1"/>
 	<commumity_icon      x="13" y="73" width="40" height="48" stretch="1"/>
     <commumity_icon_over x="13" y="73" width="40" height="48" stretch="1">
     	<texture>ui_fraction_overlay</texture>
