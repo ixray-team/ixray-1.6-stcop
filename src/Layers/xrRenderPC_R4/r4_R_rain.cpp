@@ -34,7 +34,7 @@ void CRender::render_rain() {
 	float	fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
 	if(fRainFactor < EPS_L)			return;
 
-	PIX_EVENT(render_rain);
+	GPU_EVENT(render_rain);
 
 	//	Use light as placeholder for rain data.
 	// нет необходимости создавать каждый кадр структуру размером почти в киллобайт на стеке.

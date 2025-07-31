@@ -329,7 +329,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	PROF_EVENT("Render Cascade: Accumulate");
 	Target->phase_accumulator();
 
-	PIX_EVENT(SE_SUN_NEAR);
+	GPU_EVENT(SE_SUN_NEAR);
 
 	if (cascade_ind == 0)
 		Target->accum_direct_cascade(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);

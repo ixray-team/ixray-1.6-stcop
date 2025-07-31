@@ -17,7 +17,7 @@ void CRenderTarget::init_dlss()
 
 bool CRenderTarget::phase_dlss()
 {
-	PIX_EVENT(DLSS);
+	GPU_EVENT(DLSS);
 
 	DLSSWrapper::DrawParameters dlssParams = {};
 	dlssParams.deviceContext = RContext;
