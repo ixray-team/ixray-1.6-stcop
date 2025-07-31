@@ -55,10 +55,6 @@ using CKeyQT32 = CKeyQTBase<float>;
 
 struct ENGINE_API anim_notify
 {
-	bool IsExternalTrigger = true;
-	shared_str GiveInfo = "";
-	shared_str DisableInfo = "";
-	shared_str Functor = "";
 	shared_str ExternalRef = "";
 };
 
