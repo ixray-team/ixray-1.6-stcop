@@ -42,6 +42,10 @@ protected:
 
 	UIHint*					m_hint_wnd;
 
+private:
+	bool m_isSetActiveSubdialog = false;
+	const char* m_onSetActiveSubdialog = {};
+
 public:
 	CUITaskWnd*				pUITaskWnd;
 	CUIFactionWarWnd*		pUIFactionWarWnd;

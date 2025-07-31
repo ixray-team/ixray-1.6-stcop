@@ -129,7 +129,8 @@ private:
 	// ALife
 private:
 	SBoneProtections*				m_boneHitProtection;
-
+	bool m_isUpdateBestWeapon = false;
+	const char* m_onUpdateBestWeaponName = {};
 	// weapon dispersion
 private:
 	float							m_disp_walk_stand;

@@ -105,6 +105,7 @@ ENGINE_API extern float		psHUD_FOV;
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
+	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
 	game_news_registry		= new CGameNewsRegistryWrapper();
 	// Cameras
 	cameras[eacFirstEye] = new CCameraFirstEye(this, CCameraBase::flKeepPitch);
@@ -680,7 +681,7 @@ void	CActor::Hit(SHit* pHDS)
 			HitMark			(HDS.damage(), HDS.dir, HDS.who, HDS.bone(), HDS.p_in_bone_space, HDS.impulse, HDS.hit_type);
 	}
 
-	if(IsGameTypeSingle())	
+	if (IsGameTypeSingle())
 	{
 		if (GodMode())
 		{
@@ -689,61 +690,43 @@ void	CActor::Hit(SHit* pHDS)
 			return;
 		}
 		else
-        {
-            float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-            HDS.power = hit_power;
-            HDS.add_wound = true;
-            if (g_Alive())
-            {
-				CScriptHit tLuaHit;
-
-				tLuaHit.m_fPower = HDS.power;
-				tLuaHit.m_fImpulse = HDS.impulse;
-				tLuaHit.m_tDirection = HDS.direction();
-				tLuaHit.m_tHitType = HDS.hit_type;
-				tLuaHit.m_tpDraftsman = smart_cast<const CGameObject*>(HDS.who)->lua_game_object();
-
-				luabind::functor<bool>	funct;
-				if (ai().script_engine().functor("_G.CActor__BeforeHitCallback", funct))
+		{
+			float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			HDS.power = hit_power;
+			HDS.add_wound = true;
+			if (m_isBeforeHitCallback)
+			{
+				if (g_Alive())
 				{
-					if ( !funct(smart_cast<CGameObject*>(this->lua_game_object()), &tLuaHit, HDS.boneID) )
-						return;
-				}
 
-				HDS.power = tLuaHit.m_fPower;
-				HDS.impulse = tLuaHit.m_fImpulse;
-				HDS.dir = tLuaHit.m_tDirection;
-				HDS.hit_type = (ALife::EHitType)(tLuaHit.m_tHitType);
-				//HDS.who = smart_cast<CObject*>(tLuaHit.m_tpDraftsman->object());
-				//HDS.whoID = tLuaHit.m_tpDraftsman->ID();
-				
-                /* AVO: send script callback*/
-                callback(GameObject::eHit)(
-                    this->lua_game_object(),
-                    HDS.damage(),
-                    HDS.direction(),
-                    smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
-                    HDS.boneID
-                    );
-            }
-			HitArtefactsCondition	(HDS);
-            inherited::Hit(&HDS);
-        }
-		/* AVO: rewritten above and added hit callback*/
-		/*float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
-		if(GodMode())
-		{
-			HDS.power				= 0.0f;
-			inherited::Hit			(&HDS);
-			return;
-		}else 
-		{
-			HDS.power				= hit_power;
-			HDS.add_wound			= true;
-			HitArtefactsCondition	(HDS);
-			inherited::Hit			(&HDS);
-		}*/
-	}else
+					CScriptHit tLuaHit;
+
+					tLuaHit.m_fPower = HDS.power;
+					tLuaHit.m_fImpulse = HDS.impulse;
+					tLuaHit.m_tDirection = HDS.direction();
+					tLuaHit.m_tHitType = HDS.hit_type;
+					tLuaHit.m_tpDraftsman = smart_cast<const CGameObject*>(HDS.who)->lua_game_object();
+
+					luabind::functor<bool>	funct;
+					R_ASSERT2(ai().script_engine().functor(m_onBeforeHitCallback, funct), "failed to get OnBeforeHitCallback functor");
+					if (!funct(lua_game_object()->cast_GameObject(), &tLuaHit, HDS.boneID))
+						return;
+					
+					HDS.power = tLuaHit.m_fPower;
+					HDS.impulse = tLuaHit.m_fImpulse;
+					HDS.dir = tLuaHit.m_tDirection;
+					HDS.hit_type = (ALife::EHitType)(tLuaHit.m_tHitType);
+				}
+			}
+
+			/* AVO: send script callback*/
+			callback(GameObject::eHit)(lua_game_object(), HDS.damage(), HDS.direction(), HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr, HDS.boneID);
+
+			HitArtefactsCondition(HDS);
+			inherited::Hit(&HDS);
+		}
+	}
+	else
 	{
 		m_bWasBackStabbed			= false;
 		if (HDS.hit_type == ALife::eHitTypeWound_2 && Check_for_BackStab_Bone(HDS.bone()))
