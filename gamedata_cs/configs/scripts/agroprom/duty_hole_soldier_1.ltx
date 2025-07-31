@@ -8,8 +8,49 @@ prior = 42
 path_walk = agr_duty_hole_soldier_1_walk
 path_look = agr_duty_hole_soldier_1_look
 on_info = {+snork} camper@def
+on_info2 = {+agr_actor_inside_4 -agr_actor_inside_11 -agr_hole_leader_death} remark@0
+;on_info2 = {+agr_racya_dialog_1} remark@1
 combat_ignore_cond = always
 out_restr = agr_out_restr_hole
+invulnerable = true
+
+[remark@0]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = {+agr_racya_dialog_1} remark@1
+meet = no_meet
+invulnerable = true
+
+[remark@1]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = sound_end | %+agr_racya_dialog_1_end% remark@2
+meet = no_meet
+snd = agr_base_leader_sergant_2
+invulnerable = true
+
+[remark@2]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info = {+agr_racya_dialog_2} remark@3
+meet = no_meet
+invulnerable = true
+
+[remark@3]
+target = actor
+anim = guard_rac
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = sound_end | %+agr_racya_dialog_2_end -agr_racya_dialog_1% walker
+meet = no_meet
+snd = agr_base_leader_sergant_4
+invulnerable = true
 
 [camper@def]
 path_walk = agr_duty_hole_soldier_1_walk
