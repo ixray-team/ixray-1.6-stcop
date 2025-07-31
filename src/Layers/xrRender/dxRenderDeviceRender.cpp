@@ -422,7 +422,15 @@ void DoAsyncScreenshot();
 void dxRenderDeviceRender::End()
 {
 #ifndef _EDITOR
+
 	VERIFY	(RDevice);
+
+#ifdef USE_DX11
+	{
+		GPU_EVENT(GAMMA_APPLY);
+		RImplementation.Target->PhaseGammaApply();
+	}
+#endif
 
 	RCache.OnFrameEnd();
 	{
@@ -460,6 +468,7 @@ void dxRenderDeviceRender::End()
 #endif
 
 #endif
+
 	PROF_EVENT("Present");
 #ifdef USE_DX11
 	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
@@ -492,7 +501,11 @@ void dxRenderDeviceRender::ClearTarget()
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
 #ifndef _EDITOR
+#ifdef USE_DX11
+	RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+#else
 	RCache.set_RT(RTarget);
+#endif
 	RCache.set_ZB(nullptr);
 #endif
 }
