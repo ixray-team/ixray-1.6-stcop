@@ -251,6 +251,52 @@ void EDetail::Save(IWriter& F)
 	F.close_chunk		();
 }
 
+bool EDetail::LoadLTX(CInifile& ini, LPCSTR sect_name)
+{
+	// check version
+	u32 version = ini.r_u32(sect_name, "version");
+
+	if (version != DETOBJ_VERSION) {
+		ELog.Msg(mtError, "EDetail: unsupported version.");
+		return false;
+	}
+
+	// scale
+	m_fMinScale = ini.r_float(sect_name, "scale_min"); 
+	if (fis_zero(m_fMinScale))	m_fMinScale = 0.1f;
+	m_fMaxScale = ini.r_float(sect_name, "scale_max"); 
+	if (m_fMaxScale < m_fMinScale)	m_fMaxScale = m_fMinScale;
+
+	// density factor
+	m_fDensityFactor = ini.r_float(sect_name, "density_factor");
+
+	// flags
+	m_Flags.assign(ini.r_u32(sect_name, "flags"));
+
+	// update object
+	// references
+	return Update(ini.r_string(sect_name, "reference"));
+}
+
+void EDetail::SaveLTX(CInifile& ini, LPCSTR sect_name)
+{
+	// version
+	ini.w_u32(sect_name, "version", DETOBJ_VERSION);
+
+	// reference
+	ini.w_string(sect_name, "reference", m_sRefs.c_str());
+
+	// scale
+	ini.w_float(sect_name, "scale_min", m_fMinScale);
+	ini.w_float(sect_name, "scale_max", m_fMaxScale);
+
+	// density factor
+	ini.w_float(sect_name, "density_factor", m_fDensityFactor);
+
+	// flags
+	ini.w_u32(sect_name, "flags", m_Flags.get());
+}
+
 void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
 {
 	R_ASSERT			(m_pRefs);
