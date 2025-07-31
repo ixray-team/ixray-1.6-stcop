@@ -192,7 +192,7 @@ function se_smart_terrain:read_params()
 	end
 	local filename = utils.cfg_get_string(self.ini, SMART_TERRAIN_SECT, "cfg", 				self, false, "")
 	local fs = getFS()
-	if filename then
+	if filename and filename~="" then
 		if fs:exist("$game_config$",filename) then
 			self.ini = ini_file(filename)
 		else
