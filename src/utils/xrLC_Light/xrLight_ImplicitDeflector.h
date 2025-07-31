@@ -1,9 +1,9 @@
-#ifndef	_XRLIGHT_IPLICIDDEFLECTOR
-#define	_XRLIGHT_IPLICIDDEFLECTOR
+#pragma once
 
 #include "lm_layer.h"
-#include "xrFaceDefs.h"
-struct  b_BuildTexture;
+#include "xrFace.h"
+
+struct b_BuildTexture;
 
 class ImplicitDeflector
 {
@@ -40,4 +40,3 @@ public:
 	void		Bounds_Summary	(Fbox2& bounds);
  
 };
-#endif
