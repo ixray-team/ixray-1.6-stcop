@@ -34,6 +34,12 @@ private:
 	Fvector2					m_prev_actor_pos;
 
 private:
+	bool m_isPropertyBoxClicked = false;
+	const char* m_onPropertyBoxClicked = {};
+	
+	bool m_isPropertyBoxAddProperties = false;
+	const char* m_onPropertyBoxAddProperties = {};
+
 	float						m_map_move_step;
 
 	float						m_currentZoom;

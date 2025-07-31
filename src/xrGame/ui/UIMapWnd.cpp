@@ -35,6 +35,8 @@ CUIMapWnd* GetMapWnd()
 
 CUIMapWnd::CUIMapWnd()
 {
+	LoadCallbackGlobals(m_isPropertyBoxClicked, m_onPropertyBoxClicked, "OnPropertyBoxClicked");
+	LoadCallbackGlobals(m_isPropertyBoxAddProperties, m_onPropertyBoxAddProperties, "OnPropertyBoxAddProperties");
 	m_tgtMap				= nullptr;
 	m_GlobalMap				= nullptr;
 	m_view_actor			= false;
@@ -522,9 +524,13 @@ void CUIMapWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 	if (pWnd == m_UIPropertiesBox && msg == PROPERTY_CLICKED && m_UIPropertiesBox->GetClickedItem())
 	{
-		luabind::functor<void> funct;
-		if (ai().script_engine().functor("pda.property_box_clicked", funct))
+		if (m_isPropertyBoxClicked)
+		{
+			luabind::functor<void> funct;
+			R_ASSERT2(ai().script_engine().functor(m_onPropertyBoxClicked, funct), "failed to get OnPropertyBoxClicked functor");
 			funct(m_UIPropertiesBox);
+		}
+
 		//-----------------------
 		switch (m_UIPropertiesBox->GetClickedItem()->GetTAG())
 		{
@@ -555,9 +561,11 @@ void CUIMapWnd::ActivatePropertiesBox(CUIWindow* w)
 
 	m_cur_location = sp->MapLocation();
 
-	luabind::functor<void> funct;
-	if (ai().script_engine().functor("pda.property_box_add_properties", funct))
+	if (m_isPropertyBoxAddProperties)
 	{
+		luabind::functor<void> funct;
+
+		R_ASSERT2(ai().script_engine().functor(m_onPropertyBoxAddProperties, funct), "failed to get OnPropertyBoxAddProperties functor");
 		funct(m_UIPropertiesBox, m_cur_location->ObjectID(), (LPCSTR)m_cur_location->GetLevelName().c_str());
 	}
 

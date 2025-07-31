@@ -127,4 +127,7 @@ public:
 
 private:
 	bool					m_registered_member;
+	bool					m_isSkipKillActor = false;
+	const char*				m_onSkipKillActor = {};
+
 };

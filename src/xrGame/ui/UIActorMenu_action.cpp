@@ -90,14 +90,17 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 	}
 	
 	if (old_owner == new_owner){
-		//Alundaio: Here we export the action of dragging one inventory item ontop of another! 
-		luabind::functor<bool> funct1;
-		if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_OnItemDropped", funct1))
+		
+		if (m_isItemDropped)
 		{
+			//Alundaio: Here we export the action of dragging one inventory item ontop of another!
+			luabind::functor<bool> funct1;
+			R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
+
 			//If list only has 1 item, get it, otherwise try to get item at current drag position
-			CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : NULL;
+			CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : 0;
 			if (!_citem)
-			{ 
+			{
 				CUICellContainer* c = old_owner->GetContainer();
 				Ivector2 c_pos = c->PickCell(old_owner->GetDragItemPosition());
 				if (c->ValidCell(c_pos))
@@ -108,15 +111,17 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 				}
 			}
 
-			PIItem _iitem = _citem ? (PIItem)_citem->m_pData : NULL;
+			PIItem _iitem = _citem ? (PIItem)_citem->m_pData : 0;
 
-			CGameObject* GO1 = smart_cast<CGameObject*>(CurrentIItem());
-			CGameObject* GO2 = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
+			CGameObject* GO1 = CurrentIItem()->cast_game_object();
+			CGameObject* GO2 = _iitem ? _iitem->cast_game_object() : 0;
 			if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
 				return false;
 		}
-		//-Alundaio
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 	switch(t_new)
@@ -177,10 +182,12 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 	OnItemDropped				(CurrentIItem(), new_owner, old_owner);
 
-	//Alundaio: Here we export the action of dragging one inventory item ontop of another! 
-	luabind::functor<bool> funct1;
-	if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_OnItemDropped", funct1))
+	if (m_isItemDropped)
 	{
+		//Alundaio: Here we export the action of dragging one inventory item ontop of another! 
+		luabind::functor<bool> funct1;
+		R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
+
 		//If list only has 1 item, get it, otherwise try to get item at current drag position
 		CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : NULL;
 		if (!_citem)
@@ -201,8 +208,9 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 		CGameObject* GO2 = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
 		if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
 			return false;
+
+		//-Alundaio
 	}
-	//-Alundaio
 
 	UpdateConditionProgressBars	();
 	UpdateItemsPlace			();
@@ -326,14 +334,16 @@ bool CUIActorMenu::OnItemFocusReceive(CUICellItem* itm)
 	itm->m_selected = true;
 	set_highlight_item( itm );
 
-	luabind::functor<bool> funct1;
-	if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_OnItemFocusReceive", funct1))
+	if (m_isItemFocusReceive)
 	{
+		luabind::functor<bool> funct1;
+		R_ASSERT2(ai().script_engine().functor(m_onItemFocusReceive, funct1), "failed to get OnItemFocusReceive functor");
 		PIItem _iitem = (PIItem)itm->m_pData;
 
-		CGameObject* GO = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
+		CGameObject* GO = _iitem ? _iitem->cast_game_object() : NULL;
 		if (GO)
 			funct1(GO->lua_game_object());
+		
 	}
 
 	return true;
@@ -348,14 +358,17 @@ bool CUIActorMenu::OnItemFocusLost(CUICellItem* itm)
 	InfoCurItem( nullptr );
 	clear_highlight_lists();
 
-	luabind::functor<bool> funct1;
-	if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_OnItemFocusLost", funct1))
+	if (m_isItemFocusLost)
 	{
-		PIItem _iitem = (PIItem)itm->m_pData;
+		luabind::functor<bool> funct1;
+		if (ai().script_engine().functor(m_onItemFocusLost, funct1))
+		{
+			PIItem _iitem = (PIItem)itm->m_pData;
 
-		CGameObject* GO = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
-		if (GO)
-			funct1(GO->lua_game_object());
+			CGameObject* GO = _iitem ? smart_cast<CGameObject*>(_iitem) : NULL;
+			if (GO)
+				funct1(GO->lua_game_object());
+		}
 	}
 
 	return true;
@@ -372,7 +385,7 @@ bool CUIActorMenu::OnItemFocusedUpdate(CUICellItem* itm)
 		}
 	}
 	VERIFY( m_ItemInfo );
-	if ( Device.dwTimeContinual < itm->FocusReceiveTime() + m_ItemInfo->delay )
+	if (itm != nullptr && Device.dwTimeContinual < itm->FocusReceiveTime() + m_ItemInfo->delay )
 	{
 		return true; //false
 	}

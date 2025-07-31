@@ -234,8 +234,8 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 	luabind::functor<bool> funct;
 
 	R_ASSERT2(
-		ai().script_engine().functor("inventory_upgrades.gunsl_can_disassemble_item", funct),
-		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_can_disassemble_item>, item = %s", item->m_section_id.c_str())
+		ai().script_engine().functor(m_onCanDisassembleItem, funct),
+		make_string<const char*>("Failed to get functor onCanDisassembleItem, item = %s", item->m_section_id.c_str())
 	);
 
 	bool can_disassemble = funct(item->m_section_id.c_str(), item->GetCondition(), partner);
@@ -243,8 +243,8 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 	luabind::functor<const char*> funct2;
 
 	R_ASSERT2(
-		ai().script_engine().functor("inventory_upgrades.gunsl_question_disassemble_item", funct2),
-		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_question_disassemble_item>, item = %s", item->m_section_id.c_str())
+		ai().script_engine().functor(m_onQuestionDisassembleItem, funct2),
+		make_string<const char*>("Failed to get functor onQuestionDisassembleItem, item = %s", item->m_section_id.c_str())
 	);
 
 	const char* question = funct2(item->m_section_id.c_str(), item->GetCondition(), can_disassemble, partner);
@@ -290,8 +290,8 @@ void CUIActorMenu::PerformDisassemble()
 	luabind::functor<void> funct;
 
 	R_ASSERT2(
-		ai().script_engine().functor("inventory_upgrades.gunsl_effect_disassemble", funct),
-		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_effect_disassemble>, item = %s", item->m_section_id.c_str())
+		ai().script_engine().functor(m_onEffectDisassemble, funct),
+		make_string<const char*>("Failed to get functor <onEffectDisassemble>, item = %s", item->m_section_id.c_str())
 	);
 
 	funct(item->m_section_id.c_str(), item->GetCondition(), partner);
@@ -306,7 +306,7 @@ bool CUIActorMenu::CanUpgradeItem( PIItem item )
 	LPCSTR item_name = item->m_section_id.c_str();
 	LPCSTR partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
 		
-	luabind::functor<bool> funct;
+	luabind::functor<bool> funct; 
 	R_ASSERT2(
 		ai().script_engine().functor( "inventory_upgrades.can_upgrade_item", funct ),
 		make_string<const char*>( "Failed to get functor <inventory_upgrades.can_upgrade_item>, item = %s, mechanic = %s", item_name, partner )

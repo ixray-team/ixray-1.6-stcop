@@ -41,6 +41,8 @@ CUIRankingWnd::CUIRankingWnd()
 	m_last_monster_icon_back	= "";
 	m_last_monster_icon			= "";
 	m_last_weapon_icon			= "";
+
+	LoadCallbackGlobals(m_isGetRankingsArraySize, m_onGetRankingsArraySize, "OnGetRankingsArraySize");
 }
 
 CUIRankingWnd::~CUIRankingWnd()
@@ -268,35 +270,36 @@ void CUIRankingWnd::Init()
 		m_coc_ranking->SetWindowName("coc_ranking_list");
 	}
 
-	u8 topRankCount = 50;
-	luabind::functor<u8> getRankingArraySize;
-
-	if (ai().script_engine().functor("pda.get_rankings_array_size", getRankingArraySize))
+	if (m_isGetRankingsArraySize)
 	{
+		u8 topRankCount = 50;
+		luabind::functor<u8> getRankingArraySize;
+
+		R_ASSERT2(ai().script_engine().functor(m_onGetRankingsArraySize, getRankingArraySize), "failed to get OnGetRankingsArraySize functor");
 		topRankCount = getRankingArraySize();
-	}
 
-	if (m_coc_ranking != nullptr)
-	{
-		for (u8 i = 1; i <= topRankCount; i++)
+		if (m_coc_ranking != nullptr)
 		{
-			CUIRankingsCoC* character_rank_item = new CUIRankingsCoC(m_coc_ranking);
-			character_rank_item->init_from_xml(xml, i, false);
-			m_coc_ranking_vec.push_back(character_rank_item);
+			for (u8 i = 1; i <= topRankCount; i++)
+			{
+				CUIRankingsCoC* character_rank_item = new CUIRankingsCoC(m_coc_ranking);
+				character_rank_item->init_from_xml(xml, i, false);
+				m_coc_ranking_vec.push_back(character_rank_item);
+			}
 		}
-	}
-	if (xml.NavigateToNode("coc_ranking_wnd_actor", 0))
-	{
-		m_coc_ranking_actor_view = new CUIScrollView();
-		CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd_actor", 0, m_coc_ranking_actor_view);
-		m_coc_ranking_actor_view->SetAutoDelete(true);
-		AttachChild(m_coc_ranking_actor_view);
-		m_coc_ranking_actor_view->SetWindowName("coc_ranking_list_actor");
+		if (xml.NavigateToNode("coc_ranking_wnd_actor", 0))
+		{
+			m_coc_ranking_actor_view = new CUIScrollView();
+			CUIXmlInit::InitScrollView(xml, "coc_ranking_wnd_actor", 0, m_coc_ranking_actor_view);
+			m_coc_ranking_actor_view->SetAutoDelete(true);
+			AttachChild(m_coc_ranking_actor_view);
+			m_coc_ranking_actor_view->SetWindowName("coc_ranking_list_actor");
 
-		m_coc_ranking_actor = new CUIRankingsCoC(m_coc_ranking_actor_view);
-		m_coc_ranking_actor->init_from_xml(xml, topRankCount + 1, true);
+			m_coc_ranking_actor = new CUIRankingsCoC(m_coc_ranking_actor_view);
+			m_coc_ranking_actor->init_from_xml(xml, topRankCount + 1, true);
+		}
+		//-Alundaio
 	}
-	//-Alundaio
 
 	xml.SetLocalRoot(stored_root);
 }

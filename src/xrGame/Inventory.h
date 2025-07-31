@@ -197,4 +197,10 @@ private:
 	bool				IsSlotBlocked(u16 slot_id) const;
 	void				TryActivatePrevSlot		();
 	void				TryDeactivateActiveSlot	();
+
+	const char* m_onItemAvailableToTrade = {};
+	bool m_isItemAvailableToTrade = false;
+
+	const char* m_onInventoryEat = {};
+	bool m_isInventoryEat = false;
 };

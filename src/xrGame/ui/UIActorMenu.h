@@ -176,6 +176,31 @@ protected:
 	bool						m_item_info_view;
 	bool						m_highlight_clear;
 	u32							m_trade_partner_inventory_state;
+
+private:
+	const char* m_onItemDropped = {};
+	bool m_isItemDropped = false;
+
+	const char* m_onCanMoveToPartner = {};
+	bool m_isCanMoveToPartner = false;
+
+	const char* m_onItemFocusReceive = {};
+	bool m_isItemFocusReceive = false;
+
+	const char* m_onItemFocusLost = {};
+	bool m_isItemFocusLost = false;
+
+	const char* m_onCanTake = {};
+	bool m_isCanTake = false;
+
+	const char* m_onCanDisassembleItem = {};
+	bool m_isCanDisassembleItem = false;
+
+	const char* m_onQuestionDisassembleItem = {};
+	bool m_isQuestionDisassembleItem = false;
+
+	const char* m_onEffectDisassemble = {};
+	bool m_isEffectDisassemble = false;
 public:
 	CUIDragDropReferenceList*	m_pQuickSlot;
 
