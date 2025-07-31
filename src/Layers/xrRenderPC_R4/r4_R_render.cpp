@@ -110,7 +110,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 			Fmatrix m_project;
 			m_project.build_projection(
 				deg2rad(Device.fFOV/* *Device.fASPECT*/), 
-				Device.fASPECT, VIEWPORT_NEAR, 
+				Device.fASPECT, Device.fViewportNear,
 				ps_r2_zfill * g_pGamePersistent->Environment().CurrentEnv->far_plane);
 			mftrans.mul(m_project,Device.mView);
 		}
@@ -438,7 +438,7 @@ void CRender::Render()
 		};
 
 		cProj.build_projection(PI_DIV_2 + 0.002f, 1.0f,
-		VIEWPORT_NEAR, CurrentEnv.far_plane * ps_r4_vslr_distance);
+			Device.fViewportNear, CurrentEnv.far_plane * ps_r4_vslr_distance);
 
 		cmDir[2].mul(Device.vCameraTop, +1.0f);
 		cmDir[3].mul(Device.vCameraTop, -1.0f);
