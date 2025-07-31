@@ -1,0 +1,517 @@
+[up_sect_a_ak74]
+cost		      		= 1600
+value					= +15
+rpm                     = 100
+
+[up_sect_b_ak74]
+cost		      		= 1600
+value					= +10
+fire_dispersion_base	= -0.08 	;0.8
+
+[up_sect_c_ak74]
+cost		      		= 1600
+value					= -30
+
+cam_dispersion              = -0.21		;0.7
+cam_dispersion_inc         	= -0.21		;0.7
+cam_step_angle_horz        	= -0.21		;0.7
+
+zoom_cam_dispersion          = -0.2		;0.6
+zoom_cam_dispersion_inc      = -0.2		;0.6
+zoom_cam_step_angle_horz     = -0.2 	;0.6
+
+[up_sect_d_ak74]
+cost		      		= 1600
+value					= -50
+value2					= st_upgr_rpm_lowered
+rpm                     = -200
+
+cam_dispersion              = -0.35		;0.7
+cam_dispersion_inc         	= -0.35		;0.7
+cam_step_angle_horz        	= -0.35		;0.7
+
+zoom_cam_dispersion          = -0.3		;0.6
+zoom_cam_dispersion_inc      = -0.3		;0.6
+zoom_cam_step_angle_horz     = -0.3		;0.6
+
+[up_sect_e_ak74]
+cost		      		= 1600
+grenade_launcher_status = 2
+grenade_launcher_name   = wpn_addon_grenade_launcher
+grenade_launcher_x      = 126
+grenade_launcher_y      = 24
+
+[up_sect_f_ak74]
+cost		      		= 1600
+value					= +50
+bullet_speed			= 200
+hit_power				= 0.45, 0.45, 0.45, 0.45
+
+[up_sect_g_ak74]
+cost	      	     	= 1600
+value					= +15
+control_inertion_factor	= -0.2
+inv_weight				= -0.3
+PDM_disp_vel_factor     = -0.3 ;1.7
+PDM_disp_accel_factor   = -0.3 ;1.7
+
+[up_sect_h_ak74]
+cost		      		= 1600
+value					= -10
+;***** 20% ******
+cam_dispersion              = -0.07		;0.7
+cam_dispersion_inc         	= -0.07		;0.7
+cam_step_angle_horz        	= -0.07		;0.7
+
+zoom_cam_dispersion          = -0.06	;0.6
+zoom_cam_dispersion_inc      = -0.06	;0.6
+zoom_cam_step_angle_horz     = -0.06	;0.6
+
+[up_sect_i_ak74]
+cost		      		= 1600
+value					= +15
+ammo_mag_size           = 15
+
+[up_sect_j_ak74]
+cost		      		= 1600
+value					= "x1.6"
+scope_status            = 2
+scope_name              = wpn_addon_scope
+scope_x                 = 47
+scope_y                 = 0
+
+[up_sect_k_ak74]
+cost		      		= 1600
+value					= "5.56x45"
+ammo_class				= ammo_5.56x45_ss190, ammo_5.56x45_ap
+
+[up_sect_ac_ak74]
+cost		      		= 2400
+value					= +25
+rpm						= 150
+
+[up_sect_bd_ak74]
+cost		      		= 2400
+value					= +50
+bullet_speed			= 200
+hit_power				= 0.5, 0.5, 0.5, 0.5
+
+[up_sect_eg_ak74]
+cost		      		= 2400
+value					= -20
+;***** 20% ******
+cam_dispersion              = -0.14		;0.7
+cam_dispersion_inc         	= -0.14		;0.7
+cam_step_angle_horz        	= -0.14		;0.7
+
+zoom_cam_dispersion          = -0.12	;0.6
+zoom_cam_dispersion_inc      = -0.12	;0.6
+zoom_cam_step_angle_horz     = -0.12	;0.6
+
+[up_sect_fh_ak74]
+cost		      		= 2400
+value					= +20
+fire_dispersion_base	= -0.16 ;0.8
+
+[up_sect_aceg_ak74]
+cost		      		= 4000
+value					= +30
+rpm						= 200
+
+[up_sect_bdfh_ak74]
+cost		      		= 4000
+value					= +30
+fire_dispersion_base	= -0.24 ;0.8
+
+[up_a_ak74]
+scheme_index            = 0, 0
+known                   = 1
+effects                 = up_gr_ac_ak74
+section                 = up_sect_a_ak74
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = on_weapon_upgrade_something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_a_ak74
+name                    = st_upg_zatvor_rpm
+description             = st_upg_zatvor_rpm_descr
+icon                    = ui_wp_upgrade_30
+
+;;...
+[up_b_ak74]
+scheme_index            = 0, 1
+known                   = 1
+effects                 = up_gr_bd_ak74
+section                 = up_sect_b_ak74
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_b_ak74
+name                    = st_upg_zatvor_recoil
+description             = st_upg_zatvor_recoil_descr
+icon                    = ui_wp_upgrade_31
+
+[up_c_ak74]
+scheme_index            = 0, 2
+known                   = 1
+effects                 = up_gr_ac_ak74
+section                 = up_sect_c_ak74
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_c_ak74
+name                    = st_upg_porsh_recoil
+description             = st_upg_porsh_recoil_descr
+icon                    = ui_wp_upgrade_41
+
+[up_d_ak74]
+scheme_index            = 0, 3
+known                   = 1
+effects                 = up_gr_bd_ak74
+section                 = up_sect_d_ak74
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_d_ak74
+name                    = st_upg_porsh_rpm
+description             = st_upg_porsh_rpm_descr
+icon                    = ui_wp_upgrade_42
+
+[up_e_ak74]
+scheme_index            = 0, 4
+known                   = 1
+effects                 = up_gr_eg_ak74
+section                 = up_sect_e_ak74
+property                = prop_underbarrel_slot
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_e_ak74
+name                    = st_upg_bind_grenade
+description             = st_upg_bind_grenade_descr
+icon                    = ui_wp_upgrade_35
+
+[up_f_ak74]
+scheme_index            = 0, 5
+known                   = 1
+effects                 = up_gr_fh_ak74
+section                 = up_sect_f_ak74
+property                = prop_bullet_speed
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_f_ak74
+name                    = st_upg_barrel_curved
+description             = st_upg_barrel_curved_descr
+icon                    = ui_wp_upgrade_25
+
+[up_g_ak74]
+scheme_index            = 0, 6
+known                   = 1
+effects                 = up_gr_eg_ak74
+section                 = up_sect_g_ak74
+property                = prop_inertion
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_g_ak74
+name                    = st_upg_butt_recoil2
+description             = st_upg_butt_recoil2_descr
+icon                    = ui_wp_upgrade_17
+
+[up_h_ak74]
+scheme_index            = 0, 7
+known                   = 1
+effects                 = up_gr_fh_ak74
+section                 = up_sect_h_ak74
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here_h
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_h_ak74
+name                    = st_upg_butt_recoil4
+description             = st_upg_butt_recoil4_descr
+icon                    = ui_wp_upgrade_16
+
+[up_i_ak74]
+scheme_index            = 0, 8
+known                   = 1
+effects                 = 
+section                 = up_sect_i_ak74
+property                = prop_ammo_size
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_i_ak74
+name                    = st_upg_charger_big
+description             = st_upg_charger_big_descr
+icon                    = ui_wp_upgrade_19
+
+[up_j_ak74]
+scheme_index            = 1, 4
+effects                 = 
+section                 = up_sect_j_ak74
+property                = prop_scope_1.6x    
+
+known                   = 1
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_j_ak74
+name                    = st_upg_bind_optic
+description             = st_upg_bind_optic_descr
+icon                    = ui_wp_upgrade_29
+
+[up_k_ak74]
+scheme_index            = 2, 2
+known                   = 1
+effects                 = 
+section                 = up_sect_k_ak74
+property                = prop_calibre
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_k_ak74
+name                    = st_upg_calibre_5_56
+description             = st_upg_calibre_5_56_descr
+icon                    = ui_wp_upgrade_21
+
+
+[up_ac_ak74]
+scheme_index            = 1, 0
+known                   = 1
+effects                 = up_gr_aceg_ak74
+section                 = up_sect_ac_ak74
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_ac_ak74
+name                    = st_upg_auto_rpm
+description             = st_upg_auto_rpm_descr
+icon                    = ui_wp_upgrade_38
+
+[up_bd_ak74]
+scheme_index            = 1, 1
+known                   = 1
+effects                 = up_gr_bdfh_ak74
+section                 = up_sect_bd_ak74
+property                = prop_bullet_speed
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+; ui
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_bd_ak74
+name                    = st_upg_hard_barrel_curved
+description             = st_upg_hard_barrel_curved_descr
+icon                    = ui_wp_upgrade_23
+
+[up_eg_ak74]
+scheme_index            = 1, 2
+known                   = 1
+effects                 = up_gr_aceg_ak74
+section                 = up_sect_eg_ak74
+property                = prop_recoil
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_eg_ak74
+name                    = st_upg_barrel_recoil
+description             = st_upg_barrel_recoil_descr
+icon                    = ui_wp_upgrade_24
+
+
+[up_fh_ak74]
+scheme_index            = 1, 3
+known                   = 1
+effects                 = up_gr_bdfh_ak74
+section                 = up_sect_fh_ak74
+property                = prop_dispersion
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = money(1000), item(habar)
+name                    = st_upg_trigger_accur
+description             = st_upg_trigger_accur_descr
+icon                    = ui_wp_upgrade_34
+
+[up_aceg_ak74]
+scheme_index            = 2, 0
+known                   = 1
+effects                 =
+section                 = up_sect_aceg_ak74
+property                = prop_rpm
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_aceg_ak74
+name                    = st_upg_gas_rpm
+description             = st_upg_gas_rpm_descr
+icon                    = ui_wp_upgrade_40
+
+[up_bdfh_ak74]
+scheme_index            = 2, 1
+known                   = 1
+effects                 =
+section                 = up_sect_bdfh_ak74
+property                = prop_dispersion
+
+
+precondition_functor    = inventory_upgrades.precondition_functor_a
+precondition_parameter  = true
+
+effect_functor          = inventory_upgrades.effect_functor_a
+effect_parameter        = something_here
+
+prereq_functor          = inventory_upgrades.prereq_functor_a
+prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
+prereq_params           = up_bdfh_ak74
+name                    = st_upg_gravi_accur
+description             = st_upg_gravi_accur_descr
+icon                    = ui_wp_upgrade_37
+
+
+[up_gr_ab_ak74]
+elements                = up_a_ak74, up_b_ak74
+
+[up_gr_cd_ak74]
+elements                = up_c_ak74, up_d_ak74
+
+[up_gr_ef_ak74]
+elements                = up_e_ak74, up_f_ak74
+
+[up_gr_gh_ak74]
+elements                = up_g_ak74, up_h_ak74
+
+[up_gr_i_ak74]
+elements                = up_i_ak74
+
+[up_gr_j_ak74]
+elements                = up_j_ak74
+
+[up_gr_k_ak74]
+elements                = up_k_ak74
+
+[up_gr_ac_ak74]
+elements                = up_ac_ak74
+
+[up_gr_bd_ak74]
+elements                = up_bd_ak74
+
+[up_gr_eg_ak74]
+elements                = up_eg_ak74
+
+[up_gr_fh_ak74]
+elements                = up_fh_ak74
+
+[up_gr_aceg_ak74]
+elements                = up_aceg_ak74
+
+[up_gr_bdfh_ak74]
+elements                = up_bdfh_ak74

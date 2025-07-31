@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<game_tasks_data>
+#include "gameplay\game_tasks_by_vendor.xml"
+
+	<game_task id="user_task">
+		<title>My map task</title>
+		<objective>
+			<text>user defined map location</text>
+			<icon x="350" y="50" width="50" height="50">ui\ui_icons_task</icon>
+		</objective>
+	</game_task>
+
+  <game_task id="hospital_task_general" prio="495">
+    <title>hospital_task_general_title</title>
+    <objective>
+      <text>hospital_task_general_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <infoportion_complete>hospital_general_task_complete</infoportion_complete>
+    </objective>
+    <objective>
+      <text>hospital_task_general_text</text>
+      <infoportion_complete>hospital_general_task_complete</infoportion_complete>
+    </objective>
+  </game_task>
+
+  <game_task id="katacomb_task_sniper_back" prio="490">
+    <title>katacomb_task_sniper_back_title</title>
+    <objective>
+      <text>katacomb_task_sniper_back_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <infoportion_complete>rush_7</infoportion_complete>
+    </objective>
+    
+    <objective>
+      <text>katacomb_task_sniper_back_objective_1</text>
+      <map_location_type hint="safe_place">green_location</map_location_type>
+      <object_story_id>kat_hosp_safe_restr_2</object_story_id>
+      <infoportion_complete>rush_2</infoportion_complete>
+    </objective>
+    
+    <objective>
+      <text>katacomb_task_sniper_back_objective_2</text>
+      <map_location_type hint="safe_place">green_location</map_location_type>
+      <object_story_id>kat_hosp_safe_restr_4</object_story_id>
+      <infoportion_complete>rush_4</infoportion_complete>
+    </objective>
+
+    <objective>
+      <text>katacomb_task_sniper_back_objective_3</text>
+      <map_location_type hint="safe_place">green_location</map_location_type>
+      <object_story_id>kat_hosp_safe_restr_6</object_story_id>
+      <infoportion_complete>rush_6</infoportion_complete>
+    </objective>
+
+   <objective>
+      <text>katacomb_task_sniper_back_objective_4</text>
+      <map_location_type hint="sniper_back">green_location</map_location_type>
+      <object_story_id>kat_hosp_z1_sniper_off_restr</object_story_id>
+      <infoportion_complete>rush_7</infoportion_complete>
+    </objective>
+    
+  </game_task>
+
+  <game_task id="katacomb_task_kill_sniper" prio="490">
+    <title>katacomb_task_kill_sniper_title</title>
+    <objective>
+      <text>katacomb_task_kill_sniper_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <map_location_type hint="enemy_sniper">green_location</map_location_type>
+      <object_story_id>kat_hosp_z1_sniper</object_story_id>
+      <infoportion_complete>sniper_off</infoportion_complete>
+    </objective>
+  </game_task>
+  
+
+  <game_task id="katacomb_task_helicopter" prio="490">
+    <title>katacomb_task_helicopter_title</title>
+    <objective>
+      <text>katacomb_task_helicopter_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <infoportion_complete>hospital_z2_heli_crash</infoportion_complete>
+    </objective>
+    <objective>
+      <text>katacomb_task_helicopter_text</text>
+      <infoportion_complete>hospital_z2_heli_crash</infoportion_complete>
+    </objective>
+   </game_task>
+  
+  <game_task id="katacomb_task_z2_exit" prio="490">
+    <title>katacomb_task_z2_exit_title</title>
+  <objective>
+      <text>katacomb_task_z2_exit_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <infoportion_complete>hospital_z2_exit</infoportion_complete>
+   </objective>
+   <objective>
+      <text>katacomb_task_z2_exit_text</text>
+      <map_location_type hint="exit">green_location</map_location_type>
+      <object_story_id>kat_hosp_z2_level_exit_restr</object_story_id>
+      <infoportion_complete>hospital_z2_exit</infoportion_complete>
+   </objective>
+  </game_task>
+
+  <game_task id="katacomb_task_3" prio="490">
+    <title>katacomb_task_3_title</title>
+    <objective>
+      <text>katacomb_task_3_text</text>
+      <icon>ui_iconsTotal_agroprom_get_military_documents</icon>
+      <infoportion_complete>hospital_cs_victory</infoportion_complete>
+    </objective>
+    
+    <objective>
+      <text>katacomb_task_3_objective_1</text>
+      <infoportion_complete>hospital_cs_entrance</infoportion_complete>
+    </objective>
+    
+    <objective>
+      <text>katacomb_task_3_objective_2</text>
+      <infoportion_complete>hospital_cs_victory</infoportion_complete>
+    </objective>
+  </game_task>
+
+</game_tasks_data>

@@ -1,0 +1,33 @@
+[logic]
+active = nil
+
+[sr_idle@rush]
+on_info = {+val_come_to_freedom_base_complete} sr_idle@spawn %=clear_smart_terrain(val_smart_terrain_9_2)%
+
+[sr_idle@spawn]
+on_game_timer = 10 | sr_idle@idle %=create_squad(val_boar_lair_9_2:val_smart_terrain_9_2)%
+
+[sr_idle@idle]
+
+
+
+[sr_idle@info2_brake]
+on_info = {+val_rush_boar_brake} nil, sr_idle@info2
+
+[sr_idle@info2]
+on_info = {+val_kill_flesh_complete !squad_exist(val_boar_lair_9_2)} sr_idle@info3_brake %=create_squad(val_boar_lair_9_2:val_smart_terrain_9_2)%, sr_idle@info2
+
+[sr_idle@info3_brake]
+on_info = {+val_rush_boar_brake} nil, sr_idle@info3
+
+[sr_idle@info3]
+on_info = {+val_go_to_freedom_leader_complete !squad_exist(val_boar_lair_9_2)} sr_idle@brake %=create_squad(val_boar_lair_9_2:val_smart_terrain_9_2)%, sr_idle@info2
+
+[sr_idle@brake]
+on_info = {+val_rush_boar_brake} nil, sr_idle
+
+[sr_idle]
+on_info = {=actor_in_zone(val_space_restrictor_quest_flesh) !squad_exist(val_boar_lair_9_2)} sr_idle@wait %=create_squad(val_boar_lair_9_2:val_smart_terrain_9_2)%, sr_idle@wait
+
+[sr_idle@wait]
+on_timer = 60000 | sr_idle@brake

@@ -1,0 +1,44 @@
+[logic]
+active = sr_idle@spawn_enemy
+
+[sr_idle@spawn_enemy]
+on_info =  sr_idle@spawn_enemy2 %=inc_counter(lim_square_enemy_count:3) =inc_counter(lim_square_enemy_count_all:3) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_1) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_6) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_10)%
+
+[sr_idle@spawn_enemy2]
+on_info =  {-lim_roof_sniper_1_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_1_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_1:lim_roof_sniper_spawn_1_way)%
+on_info2 = {-lim_roof_sniper_3_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_3_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_3:lim_roof_sniper_spawn_3_way)%
+on_info3 = {-lim_roof_sniper_5_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_5_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_5:lim_roof_sniper_spawn_5_way)%
+on_info4 = {+lim_condition5} sr_idle@check_spawn_count
+
+[sr_idle@check_spawn_count]
+on_game_timer = 50 | {=dist_to_actor_ge(35) !counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_2)%, {!counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_1)%
+on_info = {=counter_greater(lim_square_enemy_count:9)} sr_idle@spawn_enemy3
+
+[sr_idle@spawn_enemy3]
+on_info = sr_idle@spawn_enemy4 %=inc_counter(lim_square_enemy_count:2) =inc_counter(lim_square_enemy_count_all:2) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_2) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_3)% ; =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_4)%
+
+[sr_idle@spawn_enemy4]
+on_info =  {-lim_roof_sniper_2_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_2_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_1:lim_roof_sniper_spawn_2_way)%
+on_info2 = {-lim_roof_sniper_4_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_4_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_3:lim_roof_sniper_spawn_4_way)%
+on_info3 = {-lim_roof_sniper_6_off !counter_greater(lim_square_enemy_count:9)} sr_idle@spawn_enemy5 %+lim_roof_sniper_6_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_5:lim_roof_sniper_spawn_5_way)%
+
+[sr_idle@spawn_enemy5]
+on_info = {=dist_to_actor_ge(35) !counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_2)%, {!counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_1)%
+on_info2 = {=counter_greater(lim_square_enemy_count:9)} sr_idle@check_spawn_count2
+
+[sr_idle@check_spawn_count2]
+on_info = {!counter_greater(lim_square_enemy_count:9)} sr_idle@spawn_enemy6
+
+[sr_idle@spawn_enemy6]
+on_info = sr_idle@spawn_enemy7 %=inc_counter(lim_square_enemy_count:2) =inc_counter(lim_square_enemy_count_all:2) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_7) =spawn_npc_in_zone(lim_enemy_stalker_window:lim_winfire_zone_fountain_9)%
+
+[sr_idle@spawn_enemy7]
+on_info =  {-lim_roof_sniper_2_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_2_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_1:lim_roof_sniper_spawn_2_way)%
+on_info2 = {-lim_roof_sniper_3_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_3_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_3:lim_roof_sniper_spawn_3_way)%
+on_info3 = {-lim_roof_sniper_5_off !counter_greater(lim_square_enemy_count:9)} %+lim_roof_sniper_5_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_5:lim_roof_sniper_spawn_5_way)%
+on_info4 = {-lim_roof_sniper_6_off !counter_greater(lim_square_enemy_count:9)} sr_idle@spawn_enemy8 %+lim_roof_sniper_6_off =inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_enemy_sniper_stalker_5:lim_roof_sniper_spawn_6_way)%
+on_game_timer = 100 | sr_idle@spawn_enemy8 
+
+[sr_idle@spawn_enemy8]
+on_info = {=dist_to_actor_ge(35)  !counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_2)%, {!counter_greater(lim_square_enemy_count:9)} %=inc_counter(lim_square_enemy_count) =inc_counter(lim_square_enemy_count_all) =spawn_object(lim_square_enemy_assaulter:lim_square_enemy_spawn_way_1)%
+on_info2 = {=counter_equal(lim_square_enemy_count_all:25)} nil %+lim_condition6%

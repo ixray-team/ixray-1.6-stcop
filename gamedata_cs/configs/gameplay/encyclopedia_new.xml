@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+    <!-- INFO BACKGROUND -->
+    <left_frame_window x="76" y="62" width="448" height="475" a="80">
+		<texture>ui_pda_frame_sub</texture>
+        <base_texture>ui\ui_pda_frame_sub</base_texture>
+    </left_frame_window>
+
+    <!-- INFO BACKGROUND HEADER -->
+    <left_frame_line x="8" y="17" width="434" height="21">
+        <title x="10" y="1" width="435" height="18">
+            <text font="letterica16" r="255" g="255" b="255"></text>
+        </title>
+        <texture>ui_string_03</texture>
+        <base_texture>ui\ui_string_03</base_texture>
+    </left_frame_line>
+
+    <!-- CURRENT ARTICLE HEADER -->
+	<article_header_static x="22" y="48" width="430" height="22">
+		<text font="letterica25" r="225" g="225" b="250"></text>
+	</article_header_static>
+
+    <!-- LIST BACKGROUND -->
+    <right_frame_window x="539" y="62" width="298" height="475" a="80">
+		<texture>ui_pda_frame_sub</texture>
+        <base_texture>ui\ui_pda_frame_sub</base_texture>
+    </right_frame_window>
+
+    <!-- LIST HEADER -->
+    <right_frame_line x="8" y="16" width="284" height="27">
+        <title x="15" y="1" width="545" height="440">
+            <text font="letterica25" r="225" g="225" b="250">Encyclopedia</text>
+        </title>
+		<texture>ui_string_02</texture>
+        <base_texture>ui\ui_string_02</base_texture>
+    </right_frame_line>
+
+    <!-- FONT FOR TREE ROOT ITEMS -->
+	<tree_root_font font="letterica18" r="225" g="225" b="250">Encyclopedia</tree_root_font>
+    <!-- FONT FOR TREE ITEMS -->
+	<tree_item_font font="letterica16" r="255" g="255" b="255">Encyclopedia</tree_item_font>
+
+
+    <!-- ENCYCLOPEDIA INDEX LIST -->
+    <idx_list x="35" y="60" width="258" height="395" item_height="20">
+        <font font="letterica16" r="255" g="255" b="255"></font>
+    </idx_list>
+
+    <!--  ANIMATED STATIC -->
+    <a_static x="250" y="-3" width="32" height="32"
+            frames          = "16"
+            duration        = "1000"
+            columns         = "8"
+            frame_width     = "32"
+            frame_height    = "32"
+            cyclic          = "1"
+            autoplay        = "1"
+    >
+        <texture>ui\ui_pda_anims_04</texture>
+    </a_static>
+
+    <!-- ENCYCLOPEDIA INFO LIST -->
+    <info_list x="20" y="87" width="420" height="370" item_height="15">
+        <font font="letterica18" r="255" g="255" b="255"></font>
+    </info_list>
+
+    <!-- ENCYCLOPEDIA ITEM IMAGE INFO -->
+    <item_static x="210" y="91" width="200" height="220">
+        <!-- MASK -->
+        <mask_frame_window x="0" y="0" width="500" height="500" a="70">
+			<texture>ui_pda_frame_sub</texture>
+            <base_texture>ui\ui_pda_frame_sub</base_texture>
+        </mask_frame_window>
+    </item_static>
+  	
+  	<!-- AUTOSTATICS FOR LEFT FRAME WINDOW -->
+	
+	<!-- LEFT LADDER -->
+	<left_auto_static x="8" y="41" width="4" height="430">
+		<texture>ui\ui_pda_vertical_line_l_l</texture>
+	</left_auto_static>
+	<!-- RIGHT LADDER -->
+	<left_auto_static x="416" y="82" width="4" height="388">
+		<texture>ui\ui_pda_vertical_line_l_r</texture>
+	</left_auto_static>
+	<!-- UPPER HORISONTAL LINE -->
+	<left_auto_static x="14" y="78" width="405" height="2" stretch="1">
+		<texture>ui\ui_pda_horizontal_line</texture>
+	</left_auto_static>
+
+  	<!-- AUTOSTATICS FOR RIGHT FRAME WINDOW -->
+
+	<!-- LEFT LADDER -->
+	<right_auto_static x="8" y="52" width="4" height="420">
+		<texture>ui\ui_pda_vertical_line_r_l</texture>
+	</right_auto_static>
+	<!-- RIGHT LADDER -->
+	<right_auto_static x="269" y="52" width="4" height="420">
+		<texture>ui\ui_pda_vertical_line_r_r</texture>
+	</right_auto_static>
+   	<!-- UPPER EVENTS HORISONTAL LINE -->
+	<right_auto_static x="8" y="48" width="262" height="2" stretch="1">
+		<texture>ui\ui_pda_horizontal_line</texture>
+	</right_auto_static>
+
+</window>

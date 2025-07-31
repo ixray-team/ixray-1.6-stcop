@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@2 %+rush_7 -cover_fire +cover_fire_end =play_sound(clear_sky_kill_sniper:csky:st_ui_pda_legend_squad) +katacomb_task_kill_sniper%
+
+[sr_idle@2]
+on_game_timer = 150 | sr_idle@3
+
+[sr_idle@3]
+on_info = {-sniper_off} sr_idle@2 %=play_sound(clear_sky_kill_sniper_now:csky:st_ui_pda_legend_squad)%

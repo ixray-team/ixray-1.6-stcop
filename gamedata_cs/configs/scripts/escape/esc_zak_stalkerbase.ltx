@@ -1,0 +1,150 @@
+[logic]
+take_items = false
+active = walker
+meet = meet
+relation = enemy
+sympathy = 0
+
+[walker]
+path_walk = military_zak_walk
+path_look = military_zak_look
+on_info5 = {+esc_mission_2_stalker_leader_complete} walker@defeated
+on_info3 = {+esc_mission_military_eliminated_stalkerbase ~33} walker@base1, {+esc_mission_military_eliminated_stalkerbase ~33} walker@base2, {+esc_mission_military_eliminated_stalkerbase ~33} walker@base3
+meet = no_meet
+on_info4 = {=actor_in_zone(esc_space_restrictor_zak) -esc_mission_2_stalker_leader_complete +esc_stalker_leader_meet} walker@2
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+on_info2 = {-esc_comm_info} %=set_squad_goodwill_to_npc(esc_smart_terrain_5_7_stalker_2_squad_2:friend) =set_squad_goodwill_to_npc(esc_smart_terrain_5_7_stalker_2_squad:friend) +esc_comm_info%
+on_info = {+esc_zak_habar_complete} walker@end1
+
+[walker@2]
+path_walk = military_zak_walk_2
+path_look = military_zak_look_2
+def_state_moving = walk
+def_state_standing = wait
+on_info = {+esc_mission_2_stalker_leader_complete} walker@defeated
+on_info2 = {+esc_mission_military_eliminated_stalkerbase ~33} walker@base1, {+esc_mission_military_eliminated_stalkerbase ~33} walker@base2, {+esc_mission_military_eliminated_stalkerbase ~33} walker@base3
+meet = meet
+on_info3 = {!actor_in_zone(esc_space_restrictor_zak)} walker
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@defeated]
+path_walk = military_zak_walk
+path_look = military_zak_look
+on_info = {+esc_com_tell_about_habar -esc_habar_mill_spawn ~33} remark@mill, {+esc_com_tell_about_habar -esc_habar_tonnel_spawn ~66} remark@tonnel, {+esc_com_tell_about_habar -esc_habar_podval_spawn} remark@podval
+meet = no_meet
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@mill]
+anim = wait_trade
+on_game_timer = 10 | %=play_sound(esc_habar_location_1:army:esc_zak_stalkerbase_name) +esc_habar_mill_spawn +esc_zak_habar_complete% remark@end
+meet = no_meet
+target = 408
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@tonnel]
+anim = wait_trade
+on_game_timer = 10 | %=play_sound(esc_habar_location_2:army:esc_zak_stalkerbase_name) +esc_habar_tonnel_spawn +esc_zak_habar_complete% remark@end
+meet = no_meet
+target = 408
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@podval]
+anim = wait_trade
+on_game_timer = 10 | %=play_sound(esc_habar_location_3:army:esc_zak_stalkerbase_name) +esc_habar_podval_spawn +esc_zak_habar_complete% remark@end
+meet = no_meet
+target = 408
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@end]
+anim = wait_trade
+meet = no_meet
+on_signal = sound_end | %+esc_prisoner_complete_dialog% walker@end
+target = 408
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@end]
+path_walk = military_zak_walk
+path_look = military_zak_look
+meet = no_meet
+on_info = {+esc_prisoner_dialog_2} walker@end1
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@end1]
+path_walk = military_zak_walk
+path_look = military_zak_look
+meet = meet
+on_info = {=actor_in_zone(esc_space_restrictor_zak)} walker@end2
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@end2]
+path_walk = military_zak_walk_2
+path_look = military_zak_look_2
+meet = meet
+on_info = {!actor_in_zone(esc_space_restrictor_zak)} walker@end1
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@base1]
+path_walk = way_base_commandor
+on_info = nil %+esc_habar_mill_spawn%
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@base2]
+path_walk = way_base_commandor
+on_info = nil %+esc_habar_tonnel_spawn%
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@base3]
+path_walk = way_base_commandor
+on_info = nil %+esc_habar_podval_spawn%
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[meet]
+meet_state = 2|wait_trade
+meet_state_wpn = 2|wait_trade
+victim = 2|actor
+victim_wpn = 2|actor
+use	= true
+use_wpn	= true
+trade_enable = false
+sound_start		= esc_military_prisoner_meet
+sound_stop 		= esc_military_prisoner_meet_bye
+quest_npc = true

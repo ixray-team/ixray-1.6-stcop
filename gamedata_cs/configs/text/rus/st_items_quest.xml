@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_duty_bar_secret_1_descr">
+		<text>Секрет 1 описание</text>
+	</string>
+	<string id="agr_duty_bar_secret_1_name">
+		<text>Секрет 1</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_descr">
+		<text>Секрет 2 описание</text>
+	</string>
+	<string id="agr_duty_bar_secret_2_name">
+		<text>Секрет 2</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_descr">
+		<text>Секрет 3 описание</text>
+	</string>
+	<string id="agr_duty_bar_secret_3_name">
+		<text>Секрет 3</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_descr">
+		<text>Секрет 4 описание</text>
+	</string>
+	<string id="agr_duty_bar_secret_4_name">
+		<text>Секрет 4</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_descr">
+		<text>Секрет 5 описание</text>
+	</string>
+	<string id="agr_duty_bar_secret_5_name">
+		<text>Секрет 5</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_descr">
+		<text>Секрет 6 описание</text>
+	</string>
+	<string id="agr_duty_trader_secret_1_name">
+		<text>Секрет 6</text>
+	</string>
+	<string id="device_pda_old">
+		<text>Старый КПК Свежака</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_descr">
+		<text>Здесь у меня припрятаны вещи на чёрный день. Если наступит звиздец, мне непременно пригодятся эти запасы.</text>
+	</string>
+	<string id="esc_treasure_novice_stalker_name">
+		<text>Тайник новичка</text>
+	</string>
+	<string id="esc_treasure_weapon_box_descr">
+		<text>Оружие и патроны пригодятся в борьбе против военных и бандитов</text>
+	</string>
+	<string id="esc_treasure_weapon_box_name">
+		<text>Ящик с оружием и патронами</text>
+	</string>
+	<string id="st_agr_map_animals">
+		<text>КПК с картой миграции</text>
+	</string>
+	<string id="st_agr_map_animals_descr">
+		<text>Карта миграции помогает обнаружить редкие виды монстров и использовать их в научных целях.</text>
+	</string>
+	<string id="st_agr_mechanic_pda">
+		<text>КПК с данными модификаций оружия</text>
+	</string>
+	<string id="st_agr_mechanic_pda_descr">
+		<text>Электронные чертежи помогут усовершенствовать оружие.</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader">
+		<text>КПК с ценной информацией</text>
+	</string>
+	<string id="st_agr_pda_for_secret_trader_descr">
+		<text>Нет данных</text>
+	</string>
+	<string id="st_device_pda_fang">
+		<text>КПК Клыка</text>
+	</string>
+	<string id="st_device_pda_fang_descr">
+		<text>КПК Клыка</text>
+	</string>
+	<string id="st_device_pda_lost_squard_descr">
+		<text>Секретная информация о действиях военных на территории складов</text>
+	</string>
+	<string id="st_device_pda_lost_squard_fang">
+		<text>КПК командира отряда сталкеров</text>
+	</string>
+	<string id="st_device_pda_military">
+		<text>КПК Генерала</text>
+	</string>
+	<string id="st_device_pda_military_descr">
+		<text>КПК содержит секретную информацию о ближайших планах военных на Кордоне</text>
+	</string>
+	<string id="st_esc_device_pda_driver">
+		<text>КПК друга водителя</text>
+	</string>
+	<string id="st_esc_device_pda_driver_descr">
+		<text>КПК друга водителя.</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card">
+		<text>Информация об усовершенствовании оружия</text>
+	</string>
+	<string id="st_esc_mechanic_flash_card_descr">
+		<text>Информация об усовершенствовании оружия</text>
+	</string>
+	<string id="st_esc_military_documentation">
+		<text>Секретные данные военных</text>
+	</string>
+	<string id="st_esc_military_documentation_descr">
+		<text>Секретные данные</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard">
+		<text>КПК командира</text>
+	</string>
+	<string id="st_mil_device_pda_lost_squard_descr">
+		<text>КПК командира отряда сталкеров содержит ценную информацию о планах захвата бандитами территорий военных складов.</text>
+	</string>
+	<string id="st_red_forest_pda_map">
+		<text>КПК с картой Рыжего леса</text>
+	</string>
+	<string id="st_red_forest_pda_map_descr">
+		<text>В этом КПК есть карта Рыжего леса. Среди прочего на ней отмечена пространственная аномалия; судя по всему, последняя может перенести к месту обитания Лесника.</text>
+	</string>
+	<string id="device_pda_digger_descr">
+		<text>На этом КПК находится техническая документация, которая может помочь учёным разобраться в причине появления столь сильного пси-излучения на Янтаре</text>
+	</string>
+	<string id="device_pda_digger_name">
+		<text>КПК пропавшей экспедиции</text>
+	</string>
+	<string id="device_pda_garbage_traitor">
+		<text>КПК Контрабандиста</text>
+	</string>
+	<string id="device_pda_garbage_traitor_descr">
+		<text>КПК Контрабандиста, найденый среди вещей Авоськи</text>
+	</string>
+	<string id="device_pda_old_descr">
+		<text>Старый КПК, найденый под фальшивым дном ящика с инструменами в лагере Свежака</text>
+	</string>
+	<string id="flesh_up_a_novice_outfit_name">
+		<text>Флешка с данными о сверхлёгких кевларовых бронежилетах</text>
+	</string>
+	<string id="flesh_up_ab_pkm_name">
+		<text>Флешка с данными о балансировке автоматики пулемёта</text>
+	</string>
+	<string id="flesh_up_ab_svu_name">
+		<text>Флешка с данными о стволах для снайперских винтовок</text>
+	</string>
+	<string id="flesh_up_abcd_pkm_name">
+		<text>Флешка с данными о модификации газоотвода для пулемёта</text>
+	</string>
+	<string id="flesh_up_abcd_svu_name">
+		<text>Флешка с данными о электронном стабилизаторе для снайперских винтовок</text>
+	</string>
+	<string id="flesh_up_ac_ak74u_name">
+		<text>Флешка с данными о балансировке автоматики</text>
+	</string>
+	<string id="flesh_up_ac_desert_eagle_name">
+		<text>Флешка с данными о дульном тормозе для пистолета</text>
+	</string>
+	<string id="flesh_up_ac_mp5_name">
+		<text>Флешка с данными о дульном тормозе для пистолетов-пулемётов</text>
+	</string>
+	<string id="flesh_up_ac_spas12_name">
+		<text>Флешка с данными о помповых механизмах для боевых дробовиков</text>
+	</string>
+	<string id="flesh_up_ac_wincheaster1300_name">
+		<text>Флешка с данными о помповых механизмах для дробовиков</text>
+	</string>
+	<string id="flesh_up_aceg_scientific_outfit_name">
+		<text>Флешка с данными об усиленном армейском бронежилете</text>
+	</string>
+	<string id="flesh_up_bd_desert_eagle_name">
+		<text>Флешка с данными о модификации ствола для пистолетов</text>
+	</string>
+	<string id="flesh_up_bd_mp5_name">
+		<text>Флешка с данными о модификации ствола для пистолетов-пулемётов</text>
+	</string>
+	<string id="flesh_up_bd_wincheaster1300_name">
+		<text>Флешка с данными о системах электронной стабилизации для дробовиков</text>
+	</string>
+	<string id="flesh_up_bdfh_scientific_outfit_name">
+		<text>Флешка с данными о системе защиты от пси-излучения</text>
+	</string>
+	<string id="flesh_up_cd_pkm_name">
+		<text>Флешка с данными о дульном тормозе для пулемёта</text>
+	</string>
+	<string id="flesh_up_cd_svu_name">
+		<text>Флешка с данными о дульном тормозе для снайперских винтовок</text>
+	</string>
+	<string id="flesh_up_fh_scientific_outfit_name">
+		<text>Флешка с данными о замкнутой системе дыхания</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_desc">
+		<text>КПК с чертежами, разобраться в которых, похоже, сможет только настоящий гений.</text>
+	</string>
+	<string id="st_device_pda_bloodsucker_name">
+		<text>КПК друга дядьки Яра</text>
+	</string>
+	<string id="st_device_pda_comendant_desc">
+		<text>Личный КПК Коменданта. Помимо прочего, содержит информацию о сотрудничестве с наёмниками.</text>
+	</string>
+	<string id="st_device_pda_comendant_name">
+		<text>КПК Щукина</text>
+	</string>
+	<string id="st_device_pda_freedom">
+		<text>КПК сталкера «Свободы»</text>
+	</string>
+	<string id="st_device_pda_freedom_desc">
+		<text>КПК одного из бойцов «Свободы» с записью разговора тех, кто внезапно атаковал отряд.</text>
+	</string>
+	<string id="st_esc_trader_habar_desc">
+		<text>Чемоданчик с кодовым замком. Представляет исключительную ценность для Сидоровича.</text>
+	</string>
+	<string id="st_esc_trader_habar_name">
+		<text>Хабар</text>
+	</string>
+	<string id="st_pda_descr">
+		<text>Нет данных.</text>
+	</string>
+	<string id="st_pda_name">
+		<text>КПК</text>
+	</string>
+</string_table>

@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_strelok_task_end +red_pursuit_task_end =dist_to_actor_le(70)} sr_idle@2 %=play_sound(red_bloodsucker_growl) =spawn_object(red_stalker_gate_1:red_forest_stalkers_gate_1_walk) =spawn_object(red_stalker_gate_2:red_forest_stalkers_gate_2_walk) =spawn_object(red_stalker_gate_3:red_forest_stalkers_gate_3_walk) =spawn_object(red_stalker_gate_4:red_forest_stalkers_gate_4_walk)%
+
+[sr_idle@2]
+on_info = {=dist_to_actor_le(40)} nil %+red_forest_gate_staler_off%

@@ -1,0 +1,294 @@
+--------------------------------------------------------------------------------
+-- Guiders' teleport functions -------------------------------------------------
+-- Made by Peacemaker ----------------------------------------------------------
+-- 06.06.08 --------------------------------------------------------------------
+--------------------------------------------------------------------------------
+temp_points_table = {}
+selected_point = ""
+teleported_to_another_level = false
+teleport_point = nil
+teleport_look = nil
+level_changed = false
+local talked_npc_id = nil
+function init_guiders_dialog(dialog)
+-- where can you teleport me?
+    local phrase = dialog:AddPhrase("st_tm_guide_0", "0", "", -10000)
+--	action_fill_temp_teleport_points()
+    script = phrase:GetPhraseScript()
+	script:AddAction("guiders.action_fill_temp_teleport_points")
+-- nowhere
+    phrase = dialog:AddPhrase("st_tm_guide_1", "1", "0", -10000)
+    script = phrase:GetPhraseScript()
+	script:AddPrecondition("guiders.precondition_teleport_points_not_available")
+-- ya, but it will cost
+    phrase = dialog:AddPhrase("st_tm_guide_2", "2", "0", -10000)
+    local script = phrase:GetPhraseScript()
+	script:AddPrecondition("guiders.precondition_teleport_points_available")
+-- point_name
+	for k,v in pairs(guiders_table.teleport_points) do
+        phrase = dialog:AddPhrase("NO TEXT", k, "2", -10000)
+        script = phrase:GetPhraseScript()
+        script:AddPrecondition("guiders.precondition_teleport_to_point_available")
+        script:SetScriptText("guiders.set_phrase_text")
+        script:AddAction("guiders.select_point")
+-- ready?
+        phrase = dialog:AddPhrase("st_tm_guide_21", "21", k, -10000)
+	end
+-- yes
+    phrase = dialog:AddPhrase("st_tm_guide_211", "211", "21", -10000)
+    script = phrase:GetPhraseScript()
+    script:AddAction("guiders.action_payment")
+    script:AddAction("guiders.action_teleport_to_point")
+    script:AddAction("dialogs.break_dialog")
+-- no
+    phrase = dialog:AddPhrase("st_tm_guide_212", "212", "21", -10000)
+    script = phrase:GetPhraseScript()
+    script:AddAction("dialogs.break_dialog")
+end
+
+function action_fill_temp_teleport_points(fs, npc, dn, pi)
+	local was_dialog = true
+	if not talked_npc_id or talked_npc_id ~= npc:id() then
+		temp_points_table = {}
+		talked_npc_id = npc:id()
+		was_dialog = false
+	end
+	local board = sim_board.get_sim_board()
+	local smarts = board.smarts_by_names
+	local points_counter = 0
+	for k,v in pairs(guiders_table.teleport_points) do
+	    local smart = smarts[k]
+		local condlist = xr_logic.parse_condlist(nil, "guiders", "condlist", v.condlist)
+		local cond = xr_logic.pick_section_from_condlist(db.actor, db.actor, condlist)
+		if smart and cond == "true" then
+	        local npc_smart_id = alife():object(npc:id()).m_smart_terrain_id
+			if(npc_smart_id ~= 65535 and npc_smart_id ~= smart.id) or (npc:story_id() ~= 4294967296) then
+                local path = nil
+                local cost = 0
+		        local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
+		        if marsh_base_zone and marsh_base_zone:inside(db.actor:position()) then
+                    path = board:find_conductor_path(smarts["mar_smart_terrain_5_12"].id, smart.id, npc)
+                elseif k == "mar_smart_terrain_csky_base" then
+                    path = board:find_conductor_path(npc_smart_id, smarts["mar_smart_terrain_5_12"].id, npc)
+--[[
+                    local npc_level = level.name()
+                    if npc_level == "marsh" then
+                        cost = math.random(1000-100, 1000)
+                    elseif npc_level == "escape" then
+                        cost = math.random(2000-200, 2000)
+                    elseif npc_level == "garbage" then
+                        cost = math.random(3000-300, 3000)
+                    elseif npc_level == "agroprom" or npc_level == "darkvalley" then
+                        cost = math.random(4000-400, 4000)
+                    elseif npc_level == "yantar" then
+                        cost = math.random(4500-100, 4500+100)
+                    elseif npc_level == "red_forest" or npc_level == "military" then
+                        cost = math.random(5000-200, 5000+200)
+                    end
+                    if db.actor:character_community() == "actor_csky" then
+                        cost = 0
+                    end
+                    if cost <= db.actor:money() then
+                        if temp_points_table[k] == nil or not was_dialog then
+                            temp_points_table[k] = v
+                            temp_points_table[k].cost = cost
+                            points_counter = points_counter + 1
+                        end
+                    end
+]]
+                else
+                    path = board:find_conductor_path(npc_smart_id, smart.id, npc)
+                end
+
+                if path ~= nil and #path ~= 0 then
+                    cost = path[#path].value
+                    if v.level == level.name() then
+                        cost = math.abs(math.random(cost/10-50, cost/10+50))
+                    else
+                        cost = math.random(cost-50, cost+50)
+                    end
+                    if actor_in_faction() == npc:character_community() then
+                        cost = math.floor(cost/2)
+                    end
+                    if db.actor:character_community() == "actor_csky" then
+                        cost = 0
+                    end
+                    if cost <= db.actor:money() then
+                        if temp_points_table[k] == nil or not was_dialog then
+                            temp_points_table[k] = v
+							temp_points_table[k].cost = cost
+                            points_counter = points_counter + 1
+                        end
+                    end
+                end
+			end
+		end
+	end
+-- Exception: if we are on csky base and can't leave it
+	if points_counter == 0 then
+		local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
+		if marsh_base_zone and marsh_base_zone:inside(db.actor:position()) then
+            temp_points_table["mar_smart_terrain_5_12"] = {
+                                                            level = "marsh",
+                                                            point = "mar_actor_teleport_at_marsh_walk",
+                                                            look = "mar_actor_teleport_at_marsh_look",
+                                                            cost = 0,
+                                                           }
+		end
+	end
+end
+
+function actor_in_faction()
+	for k,v in pairs(sim_board.get_sim_board().players) do
+		if v.community_player == true then
+			return v.player_name
+		end
+	end
+end
+
+function precondition_teleport_points_not_available(fs, ss, dn, ppi, pi)
+	return not(precondition_teleport_points_available(fs, ss, dn, ppi, pi))
+end
+
+function precondition_teleport_points_available(fs, ss, dn, ppi, pi)
+	local n = 0
+	for k,v in pairs(temp_points_table) do
+		n = n + 1
+	end
+	return n>0
+end
+
+function precondition_teleport_to_point_available(fs, ss, dn, ppi, pi)
+    return temp_points_table[pi]~=nil
+end
+
+function set_phrase_text(fs, ss, dn, pi)
+	local smarts = sim_board.get_sim_board().smarts_by_names
+    local point_name = smarts[pi] and smart_names.get_smart_terrain_name(smarts[pi])
+    if point_name then
+        local string = game.translate_string(temp_points_table[pi].level)..". "..point_name..". "
+		if temp_points_table[pi].cost ~= 0 then
+			string = string..temp_points_table[pi].cost.." "..game.translate_string("st_rubles")
+--[[
+--            return string
+		else
+			if db.actor:character_community() == "actor_csky" then
+		        return string
+			else
+				return game.translate_string(temp_points_table[pi].level)..". "..game.translate_string(point_name).."."
+			end
+]]
+		end
+        return string
+    end
+    return "NO TEXT"
+end
+
+function select_point(fs, ss, dn, pi)
+	selected_point = pi
+end
+
+function action_payment(fs, npc, dn, pi)
+    local money = temp_points_table[selected_point].cost
+	dialogs.relocate_money(npc, money, "out")
+end
+
+function action_teleport_to_point(fs, ss, dn, pi)
+	if temp_points_table[selected_point] then
+        local level = level.name()
+        local level_to = temp_points_table[selected_point].level
+		if level_to == level then
+        	local point = temp_points_table[selected_point].point
+            local look = temp_points_table[selected_point].look
+            if not(point and look) then
+				local board = sim_board.get_sim_board()
+				local smart = board.smarts_by_names[selected_point]
+				if smart then
+	                point = selected_point.."_kamp_1"
+	                look = selected_point.."_kamp_1_task"
+				else
+					abort("No such smart %s on level %s", tostring(selected_point), tostring(level_to))
+				end
+			end
+            start_teleport(point, look)
+		else
+	        local point = guiders_table.cross_level_teleport[level] and guiders_table.cross_level_teleport[level][level_to]
+	        if point then
+	            start_teleport(point, nil)
+	        end
+			level_changed = true
+			return
+		end
+	    temp_points_table = {}
+	    selected_point = ""
+	    teleported_to_another_level = false
+	end
+end
+
+function start_teleport(point, look)
+    get_console():execute("hud_crosshair 0")
+    get_console():execute("hud_weapon 0")
+    level.disable_input()
+    level.hide_indicators_safe()
+    level.add_cam_effector("camera_effects\\empty.anm", 160608, false, "guiders.pp_effector_callback")
+    level.add_pp_effector("peace_fade.ppe", 160608, false)
+    teleport_point = point
+    teleport_look = look
+end
+
+function pp_effector_callback()
+	if level_changed then
+	    local point = patrol(teleport_point)
+        db.actor:set_actor_position(point:point(0))
+        teleported_to_another_level = true
+	    level.add_pp_effector("peace_unfade.ppe", 160608, false)
+	else
+	    local point = patrol(teleport_point)
+	    local look = patrol(teleport_point)
+	    db.actor:set_actor_position(point:point(0))
+	    local dir = look:point(0):sub(point:point(0))
+	    db.actor:set_actor_direction(-dir:getH())
+	    level.add_cam_effector("camera_effects\\empty.anm", 160608, false, "guiders.teleport_end")
+	    level.add_pp_effector("peace_unfade.ppe", 160608, false)
+	end
+end
+
+function teleport_end()
+    get_console():execute("hud_crosshair 1")
+    get_console():execute("hud_weapon 1")
+    level.enable_input()
+    level.show_indicators()
+    teleport_point = nil
+    teleport_look = nil
+	level_changed = false
+end
+
+function save(package)
+	set_save_marker(package, "save", false, "guiders")
+	package:w_stringZ(selected_point)
+	package:w_bool(teleported_to_another_level)
+	if temp_points_table[selected_point] then
+	    package:w_stringZ(temp_points_table[selected_point].level)
+	    package:w_stringZ(temp_points_table[selected_point].point)
+	    package:w_stringZ(temp_points_table[selected_point].look)
+	else
+	    package:w_stringZ("nil")
+	end
+	set_save_marker(package, "save", true, "guiders")
+end
+
+function load(package)
+	set_save_marker(package, "load", false, "guiders")
+	selected_point = package:r_stringZ()
+	teleported_to_another_level = package:r_bool()
+	temp_points_table = {}
+	local str = package:r_stringZ()
+	if str~="nil" then
+	    temp_points_table[selected_point] = {}
+	    temp_points_table[selected_point].level = str
+	    temp_points_table[selected_point].point = package:r_stringZ()
+	    temp_points_table[selected_point].look = package:r_stringZ()
+	end
+	set_save_marker(package, "load", true, "guiders")
+end
+

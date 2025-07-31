@@ -1,0 +1,23 @@
+[logic]
+active = sr_idle@spawn
+
+[sr_idle@spawn]
+on_info = sr_idle@check_actor %=create_squad(lim_allyes_recon_squad:lim_smart_terrain_10)%
+
+[sr_idle@check_actor]
+on_info = {=actor_in_zone(lim_construction_passed_restr)} sr_idle@hello3 %+lim_final_scene_begin%
+
+[sr_idle@hello2]
+on_game_timer = 20 | sr_idle@hello3
+
+[sr_idle@hello3]
+on_info = {+lim_recon_squad_go_1} sr_idle@spawn2 %=play_sound(lim_cs_reconnaissance_squad_to_actor)%
+
+[sr_idle@spawn2]
+on_info = {+lim_electro_fence_off !squad_exist(lim_allyes_final_squad2) !squad_exist(lim_allyes_final_squad3)} sr_idle@cs_spawner %=create_squad(lim_allyes_final_squad2:lim_smart_terrain_10) =create_squad(lim_allyes_final_squad3:lim_smart_terrain_10)%
+
+[sr_idle@cs_spawner]
+on_info = {+lim_final_squad_destroy !squad_exist(lim_allyes_final_squad)} sr_idle@spawn3 %=remove_squad(lim_allyes_final_squad)%
+
+[sr_idle@spawn3]
+on_game_timer = 3000 | {!squad_exist(lim_allyes_final_squad)} sr_idle@cs_spawner %=create_squad(lim_allyes_final_squad:lim_smart_terrain_10)%

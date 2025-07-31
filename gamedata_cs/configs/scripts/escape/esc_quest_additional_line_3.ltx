@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+esc_driver_friend_1} sr_idle@2 %=give_inited_task(storyline:esc_additional_quest_6a:army)%
+
+[sr_idle@2]
+on_info = {=actor_has_item(esc_device_pda_driver)} sr_idle@3 %+esc_driver_friend_2 =give_inited_task(storyline:esc_additional_quest_6b:army)%
+
+[sr_idle@3]

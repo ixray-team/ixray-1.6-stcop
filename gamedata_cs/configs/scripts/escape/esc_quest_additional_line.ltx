@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+esc_wolf_brother_1} sr_idle@1_1 %=give_inited_task(storyline:esc_additional_quest_4a:stalker) =clear_smart_terrain(esc_smart_terrain_9_10)%
+
+[sr_idle@1_1]
+on_info = sr_idle@2 %=create_squad(esc_smart_terrain_9_10_bandit_other_squad:esc_smart_terrain_9_10)%
+
+[sr_idle@2]
+on_info = {+esc_wolf_brother_2} sr_idle@3 %=give_inited_task(storyline:esc_additional_quest_4b:stalker)%
+
+[sr_idle@3]
+on_info = {+esc_wolf_brother_3} sr_idle@4 %=give_inited_task(storyline:esc_additional_quest_4c:stalker)%
+
+[sr_idle@4]

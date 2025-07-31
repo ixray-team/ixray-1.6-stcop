@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+	<info_portion id="val_freedom_join_talked_first"></info_portion>
+	<info_portion id="val_freedom_join_enemy_wait"></info_portion>
+
+    <info_portion id="val_test"></info_portion>
+  
+    <info_portion id="val_freedom_leader_ded"></info_portion>
+  
+    <info_portion id="val_temp_start_quest_done"></info_portion>
+    <info_portion id="val_temp_start_quest_complete"></info_portion>
+  
+    <info_portion id="val_talked_to_blockpost_leader_complete"></info_portion>
+    <info_portion id="val_come_to_freedom_blockpost_done"></info_portion>
+    <info_portion id="val_talked_to_blockpost_leader"></info_portion>
+    <info_portion id="val_blockpost_no_sound"></info_portion>
+    <info_portion id="val_actor_inside_blockpost"></info_portion>
+    <info_portion id="val_play_sound_gunfire_1_done"></info_portion>
+    <info_portion id="val_play_sound_gunfire_1_start"></info_portion>
+    <info_portion id="val_play_sound_gunfire_2_start"></info_portion>
+    <info_portion id="val_play_sound_gunfire_3_start"></info_portion>
+    <info_portion id="val_spawn_freedom_to_killer_base"></info_portion>
+    
+
+    <info_portion id="val_come_to_freedom_base_done"></info_portion>
+    <info_portion id="val_come_to_freedom_base"></info_portion>
+    <info_portion id="val_come_to_freedom_base_complete"></info_portion>
+    <info_portion id="val_come_to_freedom_base_east"></info_portion>
+    <info_portion id="val_come_to_freedom_base_west"></info_portion>
+  
+    <info_portion id="val_kill_flesh"></info_portion>
+    <info_portion id="val_kill_flesh_done"></info_portion>
+    <info_portion id="val_kill_flesh_complete"></info_portion>
+  
+    <info_portion id="val_come_back_comendant_to_revard_done"></info_portion>
+    <info_portion id="val_come_back_comendant_to_revard"></info_portion>
+  
+    <info_portion id="val_reply_to_sos"></info_portion>
+    <info_portion id="val_reply_to_sos_done"></info_portion>
+    <info_portion id="val_reply_to_sos_complete"></info_portion>
+    <info_portion id="val_check_blockpost_done"></info_portion>
+    <info_portion id="val_check_blockpost_complete"></info_portion>
+    <info_portion id="val_find_pda_done"></info_portion>
+    <info_portion id="val_find_pda_complete"></info_portion>
+
+    <info_portion id="val_come_to_deadblockpost_sound"></info_portion>
+    <info_portion id="val_come_to_killerblockpost_sound"></info_portion>
+
+    <info_portion id="val_come_to_comendant"></info_portion>
+    <info_portion id="val_come_to_comendant_complete"></info_portion>
+    <info_portion id="val_come_to_comendant_done"></info_portion>
+
+    <info_portion id="val_talked_to_comendat_1"></info_portion>
+
+    <info_portion id="val_go_to_trader"></info_portion>
+    <info_portion id="val_go_to_trader_done"></info_portion>
+    <info_portion id="val_go_to_trader_complete"></info_portion>
+    <info_portion id="val_talked_to_trader_dialog"></info_portion>
+    
+    <info_portion id="val_deliver_ammo_done"></info_portion>
+    <info_portion id="val_deliver_ammo_complete"></info_portion>
+
+    <info_portion id="val_deadblockpost_sos"></info_portion>
+
+    <info_portion id="val_go_to_freedom_leader_done"></info_portion>
+    <info_portion id="val_go_to_freedom_leader_complete"></info_portion>
+    <info_portion id="val_talked_to_freedom_leader"></info_portion>
+
+    <info_portion id="val_kill_komendant_done"></info_portion>
+    <info_portion id="val_kill_komendant_complete"></info_portion>
+
+    <info_portion id="val_pursuit_comendant_done"></info_portion>
+    <info_portion id="val_pursuit_comendant_complete"></info_portion>
+  
+    <info_portion id="val_killer_on_position"></info_portion>
+    <info_portion id="val_killer_on_position_pric"></info_portion>
+    <info_portion id="val_freedom_attack_info"></info_portion>
+    <info_portion id="val_freedom_attack_commander_di"></info_portion>
+    <info_portion id="val_freedom_attack_2"></info_portion>
+    <info_portion id="val_freedom_attack_brake"></info_portion>
+    <info_portion id="val_killer_base_under_attack"></info_portion>
+    <info_portion id="val_killer_base_under_attack_2"></info_portion>
+    <info_portion id="val_killer_base_boom"></info_portion>
+    <info_portion id="val_killer_1_1_dead"></info_portion>
+    <info_portion id="val_killer_1_3_dead"></info_portion>
+    <info_portion id="val_freedom_attack_done"></info_portion>
+    <info_portion id="val_freedom_attack_3"></info_portion>
+    <info_portion id="val_freedom_attack_combat"></info_portion>
+    
+    <info_portion id="val_base_alarm"></info_portion>
+    <info_portion id="val_brake_btr"></info_portion>
+
+    <info_portion id="val_kill_debill"></info_portion>
+    <info_portion id="val_kill_debill_spawn_freedom"></info_portion>
+
+    <info_portion id="val_attack_pric"></info_portion>
+    <info_portion id="val_freedom_attack_pric_info"></info_portion>
+
+    <info_portion id="val_help_freedom_done"></info_portion>
+  
+    <info_portion id="val_take_pda_done"></info_portion>
+    <info_portion id="val_take_pda_complete"></info_portion>
+
+    <info_portion id="val_deliver_pda_done"></info_portion>
+    <info_portion id="val_deliver_pda_complete"></info_portion>
+
+    <info_portion id="val_bring_to_fang_done"></info_portion>
+    <info_portion id="val_bring_to_fang_complete"></info_portion>
+
+    <info_portion id="val_freedom_attack_antenna"></info_portion>
+
+    <info_portion id="val_strike_antenna"></info_portion>
+    <info_portion id="val_strike_antenna_ready"></info_portion>
+    <info_portion id="val_strike_antenna_done"></info_portion>
+    <info_portion id="val_strike_antenna_complete"></info_portion>
+
+    <info_portion id="val_blockpost_ns_dead"></info_portion>
+
+    <info_portion id="val_spawn_attack_freedom_2"></info_portion>
+    
+    <info_portion id="val_destroy_killer_base_done"></info_portion>
+
+    <info_portion id="val_comeback_freedom_leader_done"></info_portion>
+
+    <info_portion id="val_rush_flesh_brake"></info_portion>
+    <info_portion id="val_rush_boar_brake"></info_portion>
+    <info_portion id="val_destroy_boar_guard_9_2"></info_portion>
+    <info_portion id="val_destroy_boar_guard_9_2_complete"></info_portion>
+    <info_portion id="val_destroy_boar_guard_9_2_done"></info_portion>
+    <info_portion id="val_destroy_boad_guard_9_2_check"></info_portion>
+
+    <info_portion id="val_rugan_1_played"></info_portion>
+    <info_portion id="val_rugan_2_played"></info_portion>
+    <info_portion id="val_rugan_3_played"></info_portion>
+     <info_portion id="val_strike_antenna_two_ready"></info_portion>
+    <info_portion id="val_strike_antenna_two_captured"></info_portion> 
+
+    <info_portion id="val_killer_on_position_2"></info_portion> 
+    
+    <info_portion id="val_unlock_1_3"></info_portion> 
+    <info_portion id="val_unlock_1_1"></info_portion> 
+    <info_portion id="val_unlock_1_2"></info_portion> 
+    <info_portion id="val_unlock_1_4"></info_portion> 
+    <info_portion id="val_unlock_1_5"></info_portion> 
+    <info_portion id="val_unlock_2_1"></info_portion>
+    <info_portion id="val_unlock_2_2"></info_portion>
+    <info_portion id="val_unlock_1_0"></info_portion> 
+    <info_portion id="val_unlock_6_4"></info_portion>
+    <info_portion id="val_unlock_9_2"></info_portion>
+    <info_portion id="val_unlock_9_4"></info_portion>
+    <info_portion id="val_unlock_10_9"></info_portion>
+    <info_portion id="val_unlock_10_10"></info_portion>
+    <info_portion id="val_unlock_7_0"></info_portion>
+    
+    
+    <info_portion id="val_be_info_bandit_spy"></info_portion>
+    <info_portion id="val_bandit_spy_die"></info_portion>
+    <info_portion id="val_bandit_spy_found"></info_portion>
+    
+    <info_portion id="val_pda_bandit_spy_onboard"></info_portion>
+    <info_portion id="val_bandit_pda_reward"></info_portion>
+    <info_portion id="val_bandit_spy_done"></info_portion>
+    <info_portion id="val_bandit_spy_complete"></info_portion>
+    
+    <info_portion id="val_night_bloodsucker_not_first_talk"></info_portion>
+    <info_portion id="val_night_bloodsucker_dialog_is_day"></info_portion>
+    <info_portion id="val_night_bloodsucker_started"></info_portion>
+    <info_portion id="val_night_bloodsucker_reward_complete"></info_portion>
+    <info_portion id="val_night_bloodsucker_complete"></info_portion>
+    <info_portion id="val_night_bloodsucker_fail"></info_portion>
+    <info_portion id="val_reward_for_destroy_killer_base"></info_portion>
+    <info_portion id="val_join_freedom_done"></info_portion>
+    
+    <info_portion id="val_test_spawn_1_npc"></info_portion>
+    <info_portion id="val_test_spawn_2_npc"></info_portion>
+
+</game_information_portions>

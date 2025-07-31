@@ -1,0 +1,118 @@
+[spawn]
+wpn_rpg7
+ammo_og-7b
+device_torch
+wpn_colt1911
+ammo_11.43x23_fmj
+
+[dont_spawn_character_supplies]
+
+
+[logic]
+active = camper
+
+[camper]
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_1
+path_look = z3_cs_grenadier_fire
+radius = 1
+def_state_moving = sneak_run
+invulnerable = true
+team = CS_squad
+on_signal = fire | camper@wait1 %=play_sound(clear_sky_start_block:csky:st_ui_pda_legend_squad)%
+
+[camper@wait1]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_1
+path_look = z3_cs_grenadier_fire
+radius = 1
+def_state_moving = sneak_run
+invulnerable = true
+team = CS_squad
+on_game_timer = 50 | remark@fire1
+
+[remark@fire1]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+combat_ignore_cond = always
+anim = threat_fire
+target = z3_cs_grenadier_fire, 0
+on_game_timer = 50 | camper@wait2 %+hospital_z3_cs_fire_1 -hospital_z3_spawn_1_on -hospital_z3_spawn_2_on =play_sound(clear_sky_block_1:csky:st_ui_pda_legend_squad)%
+invulnerable = true
+
+[camper@wait2]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_1
+path_look = z3_cs_grenadier_fire
+radius = 1
+def_state_moving = sneak_run
+invulnerable = true
+on_info = {+hospital_z3_cs_fire_2} camper2
+on_game_timer = 150 | camper2
+
+[camper2]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_2
+path_look = z3_cs_grenadier_fire
+radius = 0
+def_state_moving = sneak_run
+invulnerable = true
+team = CS_squad
+on_signal = fire | remark@fire2
+
+[remark@fire2]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+combat_ignore_cond = always
+anim = threat_fire
+target = z3_cs_grenadier_fire, 1
+on_game_timer = 30 | camper@wait3 %-hospital_z3_spawn_3_on -hospital_z3_spawn_4_on =play_sound(clear_sky_block_2)%
+invulnerable = true
+
+[camper@wait3]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_2
+path_look = z3_cs_grenadier_fire
+radius = 0
+def_state_moving = sneak_run
+invulnerable = true
+on_game_timer = 50 | camper3 %=play_sound(clear_sky_kill_dot:csky:st_ui_pda_legend_squad)%
+
+[camper3]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_walk_3
+path_look = z3_cs_grenadier_fire
+radius = 0
+def_state_moving = sneak_run
+invulnerable = true
+on_signal = fire | remark@fire3 ;%+hospital_z3_minigun_off%
+
+[remark@fire3]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_cs_floor_restr
+combat_ignore_cond = always
+anim = threat_fire
+target = z3_cs_grenadier_fire, 2
+on_game_timer = 60 | camper@final
+on_game_timer2 = 10 | %+hospital_z3_minigun_off%
+invulnerable = true
+
+[camper@final]
+post_combat_time = 0,0
+combat_ignore_cond = always
+out_restr = kat_hosp_z3_cs_floor_restr
+path_walk = z3_cs_grenadier_final_walk
+path_look = z3_cs_grenadier_look
+radius = 0
+def_state_moving = sneak_run

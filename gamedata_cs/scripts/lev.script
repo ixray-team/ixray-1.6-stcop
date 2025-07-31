@@ -1,0 +1,11 @@
+function main()
+local infos_table = {
+					"yan_ready_actor_cut2",
+					"yan_quest_doc",
+					"yan_otnesti_doc_saharavy",
+					"yan_quest_levsha"
+					} 
+	for k,v in pairs(infos_table) do
+		gi(v)
+	end	
+end

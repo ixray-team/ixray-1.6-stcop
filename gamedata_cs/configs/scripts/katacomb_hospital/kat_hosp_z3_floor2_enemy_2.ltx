@@ -1,0 +1,36 @@
+[logic]
+active = camper@floor_2
+combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %-hospital_z3_enemy_2 =dec_counter(hospital_z3_cout)%
+
+[camper@floor_2]
+post_combat_time = 0,0
+combat_ignore_cond = always
+danger = danger_condition@2
+out_restr = kat_hosp_z3_floor_left_restr
+path_walk = z3_enemy_left_2_walk
+path_look = z3_enemy_left_2_look
+radius = 1
+def_state_moving = assault
+on_signal = action | camper@floor_2_fire
+
+[camper@floor_2_fire]
+post_combat_time = 0,0
+danger = danger_condition
+out_restr = kat_hosp_z3_floor_left_restr
+path_walk = z3_enemy_left_2_walk
+path_look = z3_enemy_left_2_look
+radius = 5
+def_state_moving = assault
+
+
+[danger_condition]
+ignore_distance_corpse = 0
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

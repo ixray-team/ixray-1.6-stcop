@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Global Map">
+		<text>Глобальная карта</text>
+	</string>
+	<string id="Local Map">
+		<text>Локальная карта</text>
+	</string>
+	<string id="Time">
+		<text>Время</text>
+	</string>
+	<string id="actor">
+		<text>Наёмник</text>
+	</string>
+	<string id="actor_bandit">
+		<text>Бандит</text>
+	</string>
+	<string id="actor_csky">
+		<text>«Чистое небо»</text>
+	</string>
+	<string id="actor_dolg">
+		<text>«Долг»</text>
+	</string>
+	<string id="actor_freedom">
+		<text>«Свобода»</text>
+	</string>
+	<string id="actor_stalker">
+		<text>Одиночка</text>
+	</string>
+	<string id="agroprom">
+		<text>НИИ «Агропром»</text>
+	</string>
+	<string id="arena_enemy">
+		<text>Противник</text>
+	</string>
+	<string id="army">
+		<text>Военный</text>
+	</string>
+	<string id="bandit">
+		<text>Бандит</text>
+	</string>
+	<string id="csky">
+		<text>«Чистое небо»</text>
+	</string>
+	<string id="darkvalley">
+		<text>Тёмная долина</text>
+	</string>
+	<string id="dolg">
+		<text>«Долг»</text>
+	</string>
+	<string id="ecolog">
+		<text>Учёный</text>
+	</string>
+	<string id="escape">
+		<text>Кордон</text>
+	</string>
+	<string id="freedom">
+		<text>«Свобода»</text>
+	</string>
+	<string id="garbage">
+		<text>Свалка</text>
+	</string>
+	<string id="katacomb">
+		<text>Заброшенный госпиталь</text>
+	</string>
+	<string id="killer">
+		<text>Наёмник</text>
+	</string>
+	<string id="limansk">
+		<text>Лиманск</text>
+	</string>
+	<string id="marsh">
+		<text>Болота</text>
+	</string>
+	<string id="military">
+		<text>Военные склады</text>
+	</string>
+	<string id="monolith">
+		<text>«Монолит»</text>
+	</string>
+	<string id="monster">
+		<text>Мутант</text>
+	</string>
+	<string id="pda_btn_close">
+		<text>Выключить КПК</text>
+	</string>
+	<string id="pda_btn_fractionwar">
+		<text>Война Группировок</text>
+	</string>
+	<string id="pda_btn_fractionwar_hint">
+		<text>Информация по текущему состоянию Войны Группировок</text>
+	</string>
+	<string id="pda_btn_logs">
+		<text>История сообщений</text>
+	</string>
+	<string id="pda_btn_logs_hint">
+		<text>Показать историю сообщений</text>
+	</string>
+	<string id="pda_btn_off_hint">
+		<text>Выключить</text>
+	</string>
+	<string id="pda_btn_quests">
+		<text>Карта</text>
+	</string>
+	<string id="pda_btn_quests_hint">
+		<text>Показать карту Зоны</text>
+	</string>
+	<string id="pda_btn_ranking">
+		<text>Статистика</text>
+	</string>
+	<string id="pda_btn_ranking_hint">
+		<text>Показать информацию по группировкам</text>
+	</string>
+	<string id="pda_filter_news">
+		<text>Показать новости</text>
+	</string>
+	<string id="pda_filter_talk">
+		<text>Показать диалоги</text>
+	</string>
+	<string id="red_forest">
+		<text>Рыжий лес</text>
+	</string>
+	<string id="st_enemy">
+		<text>Враги</text>
+	</string>
+	<string id="st_faction_war_csky_capture_enemy_base">
+		<text>Захватить базу противника</text>
+	</string>
+	<string id="st_faction_war_csky_need_more_power">
+		<text>Усилить присутствие на Болотах</text>
+	</string>
+	<string id="st_faction_war_csky_relax">
+		<text>Противник повержен</text>
+	</string>
+	<string id="st_faction_war_csky_secure_level">
+		<text>Обезопасить подходы к Болотам</text>
+	</string>
+	<string id="st_fraction_state">
+		<text>Сила группировки</text>
+	</string>
+	<string id="st_friend">
+		<text>Друзья</text>
+	</string>
+	<string id="st_location">
+		<text>Местонахождение:</text>
+	</string>
+	<string id="st_location_bandit">
+		<text>Свалка</text>
+	</string>
+	<string id="st_location_csky">
+		<text>Болота</text>
+	</string>
+	<string id="st_location_dolg">
+		<text>НИИ «Агропром»</text>
+	</string>
+	<string id="st_location_freedom">
+		<text>Тёмная долина</text>
+	</string>
+	<string id="st_location_stalker">
+		<text>Кордон</text>
+	</string>
+	<string id="stalker">
+		<text>Одиночка</text>
+	</string>
+	<string id="stancia_2">
+		<text>ЧАЭС</text>
+	</string>
+	<string id="trader">
+		<text>Торговец</text>
+	</string>
+	<string id="ui_fraction_standing">
+		<text>Список группировок</text>
+	</string>
+	<string id="ui_no_fraction">
+		<text>Вы не состоите в группировках</text>
+	</string>
+	<string id="ui_pda_details">
+		<text># /детали</text>
+	</string>
+	<string id="ui_st_capture">
+		<text>Захватить:</text>
+	</string>
+	<string id="ui_st_defend">
+		<text>Удержать:</text>
+	</string>
+	<string id="ui_st_enemy_frac_info">
+		<text>Информация о группировке</text>
+	</string>
+	<string id="ui_st_enemy_mem_count">
+		<text>Количество отрядов вражеской группировки</text>
+	</string>
+	<string id="ui_st_enemy_resource">
+		<text>Количество ресурсов вражеской группировки</text>
+	</string>
+	<string id="ui_st_name_bandit">
+		<text>«Бандиты»</text>
+	</string>
+	<string id="ui_st_name_bandit_2">
+		<text>«Ренегаты»</text>
+	</string>
+	<string id="ui_st_name_csky">
+		<text>«Чистое небо»</text>
+	</string>
+	<string id="ui_st_name_dolg">
+		<text>«Долг»</text>
+	</string>
+	<string id="ui_st_name_freedom">
+		<text>«Свобода»</text>
+	</string>
+	<string id="ui_st_name_stalker">
+		<text>«Сталкеры»</text>
+	</string>
+	<string id="ui_st_no_faction">
+		<text>Вы не состоите в группировке</text>
+	</string>
+	<string id="ui_st_our_frac_info">
+		<text>Информация о группировке</text>
+	</string>
+	<string id="ui_st_our_mem_count">
+		<text>Количество отрядов вашей группировки</text>
+	</string>
+	<string id="ui_st_our_resource">
+		<text>Количество ресурсов вашей группировки</text>
+	</string>
+	<string id="ui_st_state_confrontation">
+		<text>Сила группировок</text>
+	</string>
+	<string id="ui_st_target_static">
+		<text>Текущая цель вашей группировки</text>
+	</string>
+	<string id="yantar">
+		<text>Янтарь</text>
+	</string>
+	<string id="zombied">
+		<text>Зомбированный</text>
+	</string>
+	<string id="zoom_in_btn_hint">
+		<text>масштаб +</text>
+	</string>
+	<string id="zoom_out_btn_hint">
+		<text>масштаб -</text>
+	</string>
+	<string id="month_april">
+		<text>Апрель</text>
+	</string>
+	<string id="month_august">
+		<text>Август</text>
+	</string>
+	<string id="month_december">
+		<text>Декабрь</text>
+	</string>
+	<string id="month_february">
+		<text>Февраль</text>
+	</string>
+	<string id="month_january">
+		<text>Январь</text>
+	</string>
+	<string id="month_july">
+		<text>Июль</text>
+	</string>
+	<string id="month_june">
+		<text>Июнь</text>
+	</string>
+	<string id="month_march">
+		<text>Март</text>
+	</string>
+	<string id="month_may">
+		<text>Май</text>
+	</string>
+	<string id="month_november">
+		<text>Ноябрь</text>
+	</string>
+	<string id="month_october">
+		<text>Октябрь</text>
+	</string>
+	<string id="month_september">
+		<text>Сентябрь</text>
+	</string>
+	<string id="pda_cur_time">
+		<text>Текущее время:</text>
+	</string>
+	<string id="pda_date_filter">
+		<text>Фильтр даты</text>
+	</string>
+	<string id="pda_legend_caption">
+		<text>Условные обозначения</text>
+	</string>
+	<string id="pda_logs_common">
+		<text>Сообщения:</text>
+	</string>
+	<string id="pda_logs_frags">
+		<text>Сообщения:</text>
+	</string>
+	<string id="pda_logs_list_caption">
+		<text>Сообщения:</text>
+	</string>
+	<string id="pda_logs_missions">
+		<text>Сообщения:</text>
+	</string>
+	<string id="pda_stat_1">
+		<text>Время игры:</text>
+	</string>
+	<string id="pda_stat_2">
+		<text>Найдено тайников:</text>
+	</string>
+	<string id="pda_stat_3">
+		<text>Получено денег:</text>
+	</string>
+	<string id="pda_stat_4">
+		<text>Потрачено денег:</text>
+	</string>
+	<string id="pda_stat_5">
+		<text>Получено:</text>
+	</string>
+	<string id="pda_stat_6">
+		<text>Выполнено:</text>
+	</string>
+	<string id="pda_stat_7">
+		<text>Провалено:</text>
+	</string>
+	<string id="pda_stat_8">
+		<text>Сталкеров:</text>
+	</string>
+	<string id="pda_stat_9">
+		<text>Монстров:</text>
+	</string>
+	<string id="pda_stat_common">
+		<text>Общее</text>
+	</string>
+	<string id="pda_stat_frags">
+		<text>Убито</text>
+	</string>
+	<string id="pda_stat_missions">
+		<text>Задания</text>
+	</string>
+	<string id="st_lchanger_to_aes">
+		<text>На ЧАЭС</text>
+	</string>
+	<string id="st_lchanger_to_agroprom">
+		<text>К НИИ «Агропром»</text>
+	</string>
+	<string id="st_lchanger_to_agroprom_und">
+		<text>В подземелья НИИ «Агропром»</text>
+	</string>
+	<string id="st_lchanger_to_darkvalley">
+		<text>В Тёмную долину</text>
+	</string>
+	<string id="st_lchanger_to_escape">
+		<text>На Кордон</text>
+	</string>
+	<string id="st_lchanger_to_garbage">
+		<text>На Свалку</text>
+	</string>
+	<string id="st_lchanger_to_hospital">
+		<text>В заброшенный госпиталь</text>
+	</string>
+	<string id="st_lchanger_to_limansk">
+		<text>В Лиманск</text>
+	</string>
+	<string id="st_lchanger_to_marsh">
+		<text>На болота</text>
+	</string>
+	<string id="st_lchanger_to_military">
+		<text>На военные склады</text>
+	</string>
+	<string id="st_lchanger_to_red_forest">
+		<text>В Рыжий лес</text>
+	</string>
+	<string id="st_lchanger_to_yantar">
+		<text>На Янтарь</text>
+	</string>
+	<string id="st_ui_pda_legend_additional_task">
+		<text>Второстепенные задания</text>
+	</string>
+	<string id="st_ui_pda_legend_base">
+		<text>Базы группировок</text>
+	</string>
+	<string id="st_ui_pda_legend_enemies">
+		<text>Враги</text>
+	</string>
+	<string id="st_ui_pda_legend_friends">
+		<text>Друзья</text>
+	</string>
+	<string id="st_ui_pda_legend_lchanger">
+		<text>Переходы между локациями</text>
+	</string>
+	<string id="st_ui_pda_legend_main_task">
+		<text>Главное задание</text>
+	</string>
+	<string id="st_ui_pda_legend_mechanic">
+		<text>Механик</text>
+	</string>
+	<string id="st_ui_pda_legend_neutrals">
+		<text>Нейтралы</text>
+	</string>
+	<string id="st_ui_pda_legend_scout">
+		<text>Проводник</text>
+	</string>
+	<string id="st_ui_pda_legend_secrets">
+		<text>Тайники</text>
+	</string>
+	<string id="st_ui_pda_legend_squad">
+		<text>Командир отряда</text>
+	</string>
+	<string id="st_ui_pda_legend_trader">
+		<text>Торговец</text>
+	</string>
+	<string id="st_ui_pda_legend_vip">
+		<text>Важные персонажи</text>
+	</string>
+	<string id="ui_logs_center_caption">
+		<text>История сообщения</text>
+	</string>
+	<string id="ui_map_btn_center">
+		<text>Центрировать на игроке</text>
+	</string>
+	<string id="ui_map_btn_down">
+		<text>Переместить вниз</text>
+	</string>
+	<string id="ui_map_btn_left">
+		<text>Переместить влево</text>
+	</string>
+	<string id="ui_map_btn_legend">
+		<text>Показать легенду</text>
+	</string>
+	<string id="ui_map_btn_right">
+		<text>Переместить вправо</text>
+	</string>
+	<string id="ui_map_btn_up">
+		<text>Переместить вверх</text>
+	</string>
+	<string id="ui_map_btn_zmreset">
+		<text>Максимальное отдаление</text>
+	</string>
+	<string id="ui_map_btn_zoom_in">
+		<text>Приблизить</text>
+	</string>
+	<string id="ui_map_btn_zoom_out">
+		<text>Отдалить</text>
+	</string>
+	<string id="ui_pda_secondary_task">
+		<text>Второстепенные задания</text>
+	</string>
+	<string id="ui_ranking_center_caption">
+		<text>Рейтинг группировок</text>
+	</string>
+	<string id="ui_show_second_task_wnd">
+		<text>Список дополнительных заданий</text>
+	</string>
+	<string id="ui_task_btn_focus_center">
+		<text>Центрировать карту на задании</text>
+	</string>
+	<string id="ui_task_btn_focus_center2">
+		<text>Центрировать карту на задании</text>
+	</string>
+	<string id="ui_task_btn_visible_map_spot">
+		<text>Отобразить отметку на карте</text>
+	</string>
+	<string id="ui_st_eliminate">
+		<text>Уничтожить:</text>
+	</string>
+	<string id="ui_st_capture_or">
+		<text>Или</text>
+	</string>
+	<string id="ui_st_capture_one_of">
+		<text>Захватить одну из позиций:</text>
+	</string>
+	<string id="st_faction_war_stalker_need_more_power">
+		<text>Получить превосходство в силе</text>
+	</string>
+	<string id="st_faction_war_stalker_secure_level">
+		<text>Обезопасить тропы со Свалки</text>
+	</string>
+	<string id="st_faction_war_stalker_capture_placdarm">
+		<text>Закрепиться на Свалке</text>
+	</string>
+	<string id="st_faction_war_stalker_near_base">
+		<text>Зажать бандитов на их базе</text>
+	</string>
+	<string id="st_faction_war_stalker_eliminate_base">
+		<text>Уничтожить базу бандитов</text>
+	</string>
+	<string id="st_faction_war_stalker_relax">
+		<text>Бандиты побеждены</text>
+	</string>
+	<string id="st_faction_war_bandit_need_more_power">
+		<text>Обеспечить превосходство в силе</text>
+	</string>
+	<string id="st_faction_war_bandit_secure_level">
+		<text>Контролировать тропы с Кордона</text>
+	</string>
+	<string id="st_faction_war_bandit_capture_placdarm">
+		<text>Закрепиться на Кордоне</text>
+	</string>
+	<string id="st_faction_war_bandit_near_base">
+		<text>Закрепиться у базы сталкеров</text>
+	</string>
+	<string id="st_faction_war_bandit_eliminate_base">
+		<text>Уничтожить базу сталкеров</text>
+	</string>
+	<string id="st_faction_war_bandit_relax">
+		<text>База сталкеров уничтожена</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_level">
+		<text>Обезопасить тропы со Свалки</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_garbage">
+		<text>Закрепиться на Свалке</text>
+	</string>
+	<string id="st_faction_war_freedom_secure_garbage">
+		<text>Добраться до дороги к НИИ «Агропром»</text>
+	</string>
+	<string id="st_faction_war_freedom_capture_agroprom">
+		<text>Укрепиться возле НИИ «Агропром»</text>
+	</string>
+	<string id="st_faction_war_freedom_eliminate_base">
+		<text>Уничтожить базу «Долга»</text>
+	</string>
+	<string id="st_faction_war_freedom_relax">
+		<text>База «Долга» уничтожена</text>
+	</string>
+	<string id="st_faction_war_duty_secure_level">
+		<text>Обезопасить тропы со Свалки</text>
+	</string>
+	<string id="st_faction_war_duty_capture_garbage">
+		<text>Закрепиться на Свалке</text>
+	</string>
+	<string id="st_faction_war_duty_secure_garbage">
+		<text>Добраться до тропы к Тёмной долине</text>
+	</string>
+	<string id="st_faction_war_duty_capture_darkvalley">
+		<text>Закрепиться в Тёмной долине</text>
+	</string>
+	<string id="st_faction_war_duty_eliminate_base">
+		<text>Уничтожить базу «Свободы»</text>
+	</string>
+	<string id="st_faction_war_duty_relax">
+		<text>База «Свободы» уничтожена</text>
+	</string>
+	<string id="st_stage_icon_csky_power_no">
+		<text>Превосходство в силе не обеспечено</text>
+	</string>
+	<string id="st_stage_icon_csky_power_yes">
+		<text>Превосходство в силе обеспечено</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_no">
+		<text>База ренегатов не уничтожена</text>
+	</string>
+	<string id="st_stage_icon_csky_capture_base_yes">
+		<text>База ренегатов уничтожена</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_no">
+		<text>Дорога на Кордон не под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_csky_secure_marsh_yes">
+		<text>Дорога на Кордон под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_no">
+		<text>Превосходство в силе не обеспечено</text>
+	</string>
+	<string id="st_stage_icon_stalker_power_yes">
+		<text>Превосходство в силе обеспечено</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_no">
+		<text>Подходы со Свалки не под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_stalker_secure_escape_yes">
+		<text>Подходы со Свалки под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_no">
+		<text>Плацдарм на Свалке не захвачен</text>
+	</string>
+	<string id="st_stage_icon_stalker_capture_garbage_yes">
+		<text>Плацдарм на Свалке захвачен</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_no">
+		<text>База бандитов не уничтожена</text>
+	</string>
+	<string id="st_stage_icon_stalker_eliminate_bandit_yes">
+		<text>База бандитов уничтожена</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_no">
+		<text>Превосходство в силе не обеспечено</text>
+	</string>
+	<string id="st_stage_icon_bandit_power_yes">
+		<text>Превосходство в силе обеспечено</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_no">
+		<text>Выходы к Кордону не под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_bandit_secure_garbage_yes">
+		<text>Выходы к Кордону под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_no">
+		<text>Плацдарм на Кордоне не захвачен</text>
+	</string>
+	<string id="st_stage_icon_bandit_capture_escape_yes">
+		<text>Плацдарм на Кордоне захвачен</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_no">
+		<text>База сталкеров не уничтожена</text>
+	</string>
+	<string id="st_stage_icon_bandit_eliminate_stalker_yes">
+		<text>База сталкеров уничтожена</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_no">
+		<text>Подходы со Свалки не под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_darkvalley_yes">
+		<text>Подходы со Свалки под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_no">
+		<text>Плацдарм на Свалке не захвачен</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_garbage_yes">
+		<text>Плацдарм на Свалке захвачен</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_no">
+		<text>Дорога на Агропром не захвачена</text>
+	</string>
+	<string id="st_stage_icon_freedom_secure_garbage_yes">
+		<text>Дорога на Агропром захвачена</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_no">
+		<text>Плацдарм на Агропроме не захвачен</text>
+	</string>
+	<string id="st_stage_icon_freedom_capture_agroprom_yes">
+		<text>Плацдарм на Агропроме захвачен</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_no">
+		<text>База «Долга» не уничтожена</text>
+	</string>
+	<string id="st_stage_icon_freedom_eliminate_duty_yes">
+		<text>База «Долга» уничтожена</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_no">
+		<text>Подходы со Свалки не под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_agroprom_yes">
+		<text>Подходы со Свалки под нашим контролем</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_no">
+		<text>Плацдарм на Свалке не захвачен</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_garbage_yes">
+		<text>Плацдарм на Свалке захвачен</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_no">
+		<text>Дорога в Тёмную долину не захвачена</text>
+	</string>
+	<string id="st_stage_icon_duty_secure_garbage_yes">
+		<text>Дорога в Тёмную долину захвачена</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_no">
+		<text>Плацдарм в Тёмной долине не захвачен</text>
+	</string>
+	<string id="st_stage_icon_duty_capture_darkvalley_yes">
+		<text>Плацдарм в Тёмной долине захвачен</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_no">
+		<text>База «Свободы» не уничтожена</text>
+	</string>
+	<string id="st_stage_icon_duty_eliminate_freedom_yes">
+		<text>База «Свободы» уничтожена</text>
+	</string>
+	<string id="st_location_renegade">
+		<text>Болота</text>
+	</string>
+	<string id="st_ui_pda_legend_leader">
+		<text>Лидер группировки</text>
+	</string>
+	<string id="st_target">
+		<text>Цель</text>
+	</string>
+</string_table>

@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+red_pursuit_scene_begin} sr_idle
+
+[sr_idle]
+on_actor_inside = nil %+red_pursuit_strelok_go%

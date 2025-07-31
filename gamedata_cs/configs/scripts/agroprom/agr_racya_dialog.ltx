@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+agr_racya_dialog_1} sr_idle@2 %=play_sound(agr_base_leader_sergant_2:dolg:agr_holeman_name)%
+
+[sr_idle@2]
+on_signal = sound_end | sr_idle@3 %+agr_racya_dialog_1_end%
+
+[sr_idle@3]
+on_info = {+agr_racya_dialog_2} sr_idle@4 %=play_sound(agr_base_leader_sergant_4:dolg:agr_holeman_name)%
+
+[sr_idle@4]
+on_signal = sound_end | sr_idle@5 %+agr_racya_dialog_2_end%
+
+[sr_idle@5]

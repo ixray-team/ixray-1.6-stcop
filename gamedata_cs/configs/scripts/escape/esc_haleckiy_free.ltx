@@ -1,0 +1,16 @@
+[logic@esc_zak_stalkerbase_2]
+active = walker@wait
+suitable = {=check_npc_name(esc_zak_stalkerbase_2)} true
+prior = 100
+
+[walker@wait]
+path_walk = esc_zak_stalkerbase_walk
+path_look = esc_zak_stalkerbase_look
+prior = 100
+on_actor_dist_le = 8 | walker@run
+on_info = {=npc_in_zone(esc_additional_quest_3_zone)} %=destroy_object%
+
+[walker@run]
+path_walk = esc_zak_stalkerbase_run_walk
+path_look = esc_zak_stalkerbase_run_look
+on_info = {=npc_in_zone(esc_additional_quest_3_zone)} %=destroy_object%

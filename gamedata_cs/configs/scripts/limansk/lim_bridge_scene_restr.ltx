@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle@spawn_squad
+
+[sr_idle@spawn_squad]
+on_info = sr_idle@abuse_smart6 %=create_squad(lim_csky_bridge_squad:lim_smart_terrain_5)%
+
+[sr_idle@abuse_smart6]
+on_actor_inside = sr_idle@cs_attack_1 %+lim_canal_scene_begin +lim_go_to_canal_complete%
+
+[sr_idle@cs_attack_1]
+on_info = {+lim_military_minigun_out =squad_exist(lim_csky_bridge_squad)} sr_idle@cs_attack_2
+
+[sr_idle@cs_attack_2]
+on_game_timer = 50 | sr_idle@nil %=play_sound(lim_cs_storm_troop2_leader_order3) =update_squad(lim_csky_bridge_squad)%
+
+[sr_idle@nil]  

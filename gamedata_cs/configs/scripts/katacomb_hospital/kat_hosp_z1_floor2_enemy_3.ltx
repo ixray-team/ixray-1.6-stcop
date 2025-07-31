@@ -1,0 +1,43 @@
+[logic]
+active = walker
+combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %-hospital_z1_enemy_3%
+
+[walker@inc]
+danger = danger_condition@2
+combat_ignore_cond = always
+path_walk = floor2_enemy_3_walk
+path_look = floor2l_enemy_3_look
+on_info = walker %=inc_counter(hospital_z1_cout)%
+group = 1
+
+;-- выбегают, из места подспауна
+;-- начинают стрелять по игроку
+[walker]
+combat_ignore_cond = {!is_enemy_actor} always
+out_restr = enemy_floor2r_restr
+path_walk = floor2_enemy_3_walk
+path_look = floor2l_enemy_3_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+on_info = {+sniper_off} walker@2
+group = 1
+
+;-- воюет с ЧН
+[walker@2]
+out_restr = enemy_floor2r_restr
+path_walk = floor2_enemy_3_walk
+path_look = floor2l_enemy_3_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+group = 1
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

@@ -1,0 +1,55 @@
+[logic]
+active = remark@scene_2_window_idle_2
+
+[remark@scene_2_window_idle_2]
+anim = mar_intro_2_window_idle
+on_timer = 10000 | remark@scene_2_walk_talk
+;lvl
+on_info = {+mar_lvl_sim} remark@scene_2_walk_talk
+meet = no_meet
+
+[remark@scene_2_walk_talk]
+;anim = mar_intro_2_window_walk
+anim = mar_intro_2_talk_idle
+on_timer = 1500 | remark@scene_2_walk_main %=play_sound(mar_intro_scene_2_lebedev:csky:mar_csky_commander_name)%
+;lvl
+on_info = {+mar_lvl_sim} remark@scene_2_talk_standing_1
+meet = no_meet
+
+[remark@scene_2_walk_main]
+;anim = mar_intro_2_window_walk
+anim = mar_intro_2_talk_idle
+on_signal = anim_end | remark@scene_2_talk_standing_1
+meet = no_meet
+
+; Общаемся с персонажем
+[remark@scene_2_talk_standing_1]
+anim = mar_intro_2_talk_idle
+on_info = {=talking} remark@scene_2_talk_standing_2
+meet = meet@talking
+
+; Общаемся с персонажем
+[remark@scene_2_talk_standing_2]
+anim = mar_intro_2_talk_idle
+on_info = {!talking} remark@scene_2_finish %=disable_ui_elements(input)%
+meet = meet@talking
+
+[remark@scene_2_finish]
+anim = mar_intro_2_walk_out
+meet = no_meet
+;lvl
+on_info = {+mar_lvl_sim} nil %=destroy_object%
+;{=in_zone_by_model_center(mar_intro_disappear)} 
+on_game_timer = 95 | nil %+mar_intro_scene_2_end =destroy_object%
+
+[meet@talking]
+meet_state = 0 | mar_intro_2_talk_idle
+meet_state_wpn = 0 | mar_intro_2_talk_idle
+victim = 0 | nil
+victim_wpn = 0 | nil
+use = self
+use_wpn = self
+precond = usability
+meet_only_at_path = false
+trade_enable = false
+allow_break = false

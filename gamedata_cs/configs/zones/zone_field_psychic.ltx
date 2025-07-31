@@ -1,0 +1,100 @@
+[zone_field_psychic]:zone_base
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\base\field_psychic"
+$def_sphere = 15
+;$prefetch 		= 16
+class			= Z_RADIO
+hit_impulse_scale	= .01
+effective_radius	= 1.00 ;размер радиуса в процентах от оригинального, где действует зона
+sound			= ;zone_mosquito_bald
+postprocess		= postprocess_psychic
+dof_enabled = true
+
+ef_anomaly_type			= 3
+ef_weapon_type			= 15
+
+artefacts		=
+BirthProbability = 0
+
+;----------- Anomaly settings -----------------------
+max_start_power		= 0
+attenuation			= 0.5
+period				= 1
+
+
+idle_particles		= ;zones\zone_electra_idle
+;blowout_particles	=
+
+;hit_small_particles			= damage_fx\burn_creatures
+;hit_big_particles			= damage_fx\burn_creatures00
+;idle_small_particles		= damage_fx\burn_creatures
+;idle_big_particles			= damage_fx\burn_creatures00
+
+idle_particles_dont_stop	= true;
+
+;idle_sound			= ambient\fire2					;iinoiyiiue caoe
+;blowout_sound		= anomaly\zhar_blow			;ai a?aiy aua?ina(oaa?a) a oaio?a aiiiaeee
+;hit_sound			= ambient\zhar								;ia ia?niia?a, eiaaa oio iieo?aao oeo
+;entrance_sound		= ambient\zhar									;i?e iiiaaaiee iauaeoa a aiiiaee?
+
+
+hit_type		= telepatic
+
+disable_time		= -1	;время игнорирования неживого объекта в зоне (-1 если не нужно)
+disable_time_small	= -1		;время игнорирования маленького неживого объекта в зоне (-1 если не нужно)
+disable_idle_time	= -1	;время отключения idle партиклов
+
+ignore_nonalive		= true;
+ignore_small		= false;
+ignore_artefacts	= true
+
+blowout_light		= off
+idle_light			= off
+
+awaking_time		= 100
+blowout_time		= 100
+accamulate_time		= 500
+
+visible_by_detector = on
+
+blowout_wind		= off
+
+shape_transp_color		= 200, 200, 0, 60
+shape_edge_color		= 32, 32, 32, 255
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;рождение артефактов во время срабатывания
+spawn_blowout_artefacts = off
+
+[zone_field_psychic_weak]:zone_field_psychic
+$spawn 			= "zones\field_psychic_weak"
+
+awaking_time		= 100
+blowout_time		= 100
+accamulate_time		= 100
+
+;----------- Anomaly settings -----------------------
+max_start_power		= 0.064
+
+
+
+[zone_field_psychic_average]:zone_field_psychic
+$spawn 			= "zones\field_psychic_average"
+awaking_time		= 100
+blowout_time		= 100
+accamulate_time		= 100
+
+;----------- Anomaly settings -----------------------
+max_start_power		= 0.115
+
+
+
+[zone_field_psychic_strong]:zone_field_psychic
+$spawn 			= "zones\field_psychic_strong"
+
+awaking_time		= 100
+blowout_time		= 100
+accamulate_time		= 100
+
+;----------- Anomaly settings -----------------------
+max_start_power		= 0.166

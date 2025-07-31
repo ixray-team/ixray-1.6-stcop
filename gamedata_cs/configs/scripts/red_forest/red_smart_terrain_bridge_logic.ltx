@@ -1,0 +1,14 @@
+;*****************************
+;********* csky solider 3 ***********
+[logic@sit_1]
+active = smartcover@sit_1
+suitable = {!is_smart_defending(red_smart_terrain_bridge)}
+prior = 55
+
+[smartcover@sit_1]
+path_walk = guard_1_walk
+out_restr = red_smart_terrain_bridge_sit_zone
+loophole_name = lead_sit_strong
+cover_name = red_smart_terrain_bridge_sit_cover
+cover_state = idle_target
+

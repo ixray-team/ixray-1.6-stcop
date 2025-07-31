@@ -1,0 +1,39 @@
+[meet]
+meet_state 		= 3|nil@nil
+sound_start 	= gar_bandit_tech_meet
+sound_stop 		= gar_bandit_tech_meet_bye
+use_wpn	= true
+use = true
+quest_npc = true
+
+[logic]
+active = walker@fixer
+;suitable = {=check_npc_name(gar_bandit_fixer)}
+;prior = 130
+level_spot = mechanic
+
+[walker@fixer]
+path_walk = gar_smart_terrain_3_5_bandit_fixer_walk
+path_look = gar_smart_terrain_3_5_bandit_fixer_look
+on_signal = turn_end | smartcover@sleep_mechanic_idle_fixer
+def_state_standing = ward_noweap
+out_restr = gar_space_restrictor_bandit_fixer_in
+meet = meet
+
+[smartcover@sleep_mechanic_idle_fixer]
+cover_name = gar_smart_cover_bandit_fixer_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = idle_target
+on_timer = 15000 | smartcover@sleep_mechanic_fire_fixer
+out_restr = gar_space_restrictor_bandit_fixer_in
+meet = meet
+;target_path = gar_smart_terrain_3_5_bandit_fixer_look
+
+[smartcover@sleep_mechanic_fire_fixer]
+cover_name = gar_smart_cover_bandit_fixer_lead_sit_sleep_mechanic
+loophole_name = lead_sit_sleep_mechanic
+cover_state = lookout_target
+on_timer = 15000 | smartcover@sleep_mechanic_idle_fixer
+out_restr = gar_space_restrictor_bandit_fixer_in
+meet = meet
+;target_path = gar_smart_terrain_3_5_bandit_fixer_look

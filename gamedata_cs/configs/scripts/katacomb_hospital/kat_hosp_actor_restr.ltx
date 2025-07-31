@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle2 %+hospital_z1_action%
+
+[sr_idle2]
+on_info = {+hospital_z1_komander_speak} sr_idle@stop_cam %=disable_ui =run_cam_effector_global(scenario_cam\hospital\cam_hosnital_mashigunner)%
+
+[sr_idle@wait_cam]
+on_game_timer = 20 | sr_idle@stop_cam %=disable_ui =run_cam_effector_global(scenario_cam\hospital\cam_hosnital_mashigunner)%
+
+[sr_idle@stop_cam]
+on_signal = cameff_end | sr_idle@nil %=enable_ui%
+
+[sr_idle@nil]

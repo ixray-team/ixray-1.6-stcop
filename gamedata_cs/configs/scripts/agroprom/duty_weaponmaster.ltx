@@ -1,0 +1,44 @@
+[logic]
+active = walker@1
+level_spot = quest_npc
+
+[walker@1]
+path_walk = agr_duty_weaponmaster_1_walk
+path_look = agr_duty_weaponmaster_1_look
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info={=is_shooting_finished} walker@2
+invulnerable = true
+out_restr = agr_in_restr_1
+meet = meet@main
+
+[walker@2]
+path_walk = agr_duty_weaponmaster_1_walk
+path_look = agr_duty_weaponmaster_1_look
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_info={!is_shooting_finished} walker@1
+invulnerable = true
+out_restr = agr_in_restr_1
+meet = meet@after_game
+
+[meet@main]
+meet_state = 2|nil@nil
+meet_state_wpn = 2|nil@nil
+trade_enable = false
+sound_start		= agr_duty_weaponmaster_meet
+;sound_stop 		= agr_duty_weaponmaster_meet_bye
+quest_npc 		= true
+
+[meet@after_game]
+meet_state = 2|nil@actor
+meet_state_wpn = 2|nil@actor
+victim = 2|actor
+victim_wpn = 2|actor
+use = {=dist_to_actor_le(2.5) +agr_shooting_door_exit} self %-agr_shooting_door_exit%
+use_wpn = {=dist_to_actor_le(2.5) +agr_shooting_door_exit} self %-agr_shooting_door_exit%
+precond = visibility
+allow_break = false
+trade_enable = false
+sound_stop 		= agr_duty_weaponmaster_meet_bye
+quest_npc 		= true

@@ -1,0 +1,54 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+red_pursuit_ambush_attack} sr_idle@check
+
+[sr_idle@check]
+on_actor_inside = sr_idle@2 %=barrel_explode(506) =barrel_explode(507) =run_cam_effector(kat_heli_down) +red_pursuit_bandits_enter +red_pursuit_explode%
+on_game_timer = 600 | sr_idle@2 %=barrel_explode(506) =barrel_explode(507) +red_pursuit_bandits_enter +red_pursuit_explode%
+on_info = {+red_pursuit_bounty_hunter_surrender_info} sr_idle@2 %=barrel_explode(506) =barrel_explode(507) +red_pursuit_bandits_enter +red_pursuit_explode%
+
+[sr_idle@2]
+on_game_timer = 1 | sr_idle@3 %=barrel_explode(508) =barrel_explode(509) +red_pursuit_tunnel_explode% 
+
+[sr_idle@3]
+on_game_timer = 1 | sr_idle@strelok_speak %=barrel_explode(510)%
+
+[sr_idle@strelok_speak]
+on_game_timer = 70 | sr_idle@wait2 %=play_sound(red_pursuit_strelok_spich:stalker:sim_strelok_name) +red_pursuit_strelok_spich%
+
+[sr_idle@wait2]
+;on_game_timer = 150 | sr_idle@csky_ask1
+on_signal = sound_end | sr_idle@csky_ask1
+
+[sr_idle@csky_ask1]
+;on_game_timer = 50 | {+red_strelok_task_end =actor_in_zone(red_pursuit_bridge_look)} sr_idle@actor_reply1 %+red_pursuit_camfly_begin =play_sound(red_pursuit_camfly_1)%
+on_game_timer = 50 | {+red_pursuit_ambush_task_end} sr_idle@actor_reply1 %+red_pursuit_camfly_begin =play_sound(red_pursuit_camfly_1:csky:mar_csky_commander_name)%
+on_info = {=actor_in_zone(red_pursuit_ambush_attack_line_2) +red_pursuit_ambush_task_end} sr_idle@actor_reply1 %+red_pursuit_camfly_begin =play_sound(red_pursuit_camfly_1:csky:mar_csky_commander_name)%
+
+[sr_idle@actor_reply1]
+;on_game_timer = 50 | sr_idle@csky_give_task1 %=play_sound(red_pursuit_actor_reply1)%
+on_signal = sound_end | sr_idle@csky_give_task1 %=play_sound(red_pursuit_camfly_2:csky:mar_csky_commander_name)%
+
+[sr_idle@csky_give_task1]
+;on_game_timer = 50 | {=actor_in_zone(red_pursuit_bridge_look)} sr_idle@actor_reply2 %=play_sound(red_pursuit_csky_give_task1)%
+on_signal = sound_end | sr_idle@actor_reply2 %=play_sound(red_pursuit_camfly_3:csky:mar_csky_commander_name)%
+
+[sr_idle@actor_reply2]
+;on_game_timer = 100 | sr_idle@csky_give_task2 %=play_sound(red_pursuit_actor_reply2)%
+on_signal = sound_end | sr_idle@csky_give_task2 %=play_sound(red_pursuit_camfly_4:csky:mar_csky_commander_name)%
+
+[sr_idle@csky_give_task2]
+;on_game_timer = 50 | sr_idle@wait3 %=play_sound(red_pursuit_csky_give_task2)%
+on_signal = sound_end | sr_idle@wait3 %=play_sound(red_pursuit_camfly_5:csky:mar_csky_commander_name)%
+
+[sr_idle@wait3]
+;on_game_timer = 50 | nil %+red_pursuit_csky_talk2%
+on_signal = sound_end | sr_idle@signal_sos_wait %+red_pursuit_csky_talk2 +red_pursuit_task_end%
+
+[sr_idle@signal_sos_wait]
+on_info = {+red_bloodsucker_first_spawn} sr_idle@signal_sos
+
+[sr_idle@signal_sos]
+on_game_timer = 20 | nil %+red_forest_stalker_sos =play_sound(red_stalker_sos)% 

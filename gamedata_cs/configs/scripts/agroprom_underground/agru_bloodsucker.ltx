@@ -1,0 +1,20 @@
+[logic]
+active = mob_walker@invis
+on_death = death
+
+[mob_walker@invis]
+path_walk = agru_bloodsucker_walk
+path_look = agru_bloodsucker_look
+state = invis
+on_info = {=dist_to_actor_le(5)} %=play_sound(red_bloodsucker_growl)% mob_walker@vis
+out_restr = agru_bloodsucker_out_restr
+
+[mob_walker@vis]
+path_walk = agru_bloodsucker_walk
+path_look = agru_bloodsucker_look
+state = vis
+on_info = {=dist_to_actor_ge(5)} mob_walker@invis
+out_restr = agru_bloodsucker_out_restr
+
+[death]
+on_info = %+agru_add_reward_1%

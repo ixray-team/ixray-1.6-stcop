@@ -1,0 +1,107 @@
+[logic]
+active = camper@wait
+on_hit = hit
+on_death = death
+
+[death]
+on_info = %+lim_final_sniper_off%
+
+[hit]
+on_info = %+lim_final_sniper_fire%
+
+[camper@wait]
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = true
+def_state_campering = threat_na
+def_state_campering_fire = threat_sniper_fire
+path_walk = lim_final_sniper_attack_walk
+path_look = lim_final_sniper_attack_walk
+on_info = {+lim_final_sniper_fire} remark@first_fire
+on_info2 = {=actor_in_zone(lim_final_transformer)} camper@walk2
+
+[remark@first_fire]
+invulnerable = true
+out_restr = lim_final_sniper_restr
+combat_ignore_keep_when_attacked = true
+combat_ignore_cond = true
+target = actor
+anim = threat_sniper_fire
+on_game_timer = 20 | remark@fire_actor %+lim_final_sniper_fire2%
+on_info = {=actor_in_zone(lim_final_transformer)} camper@walk2
+
+[camper@fire]
+invulnerable = true
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_final_sniper_attack_walk
+path_look = lim_final_sniper_attack_look
+radius = 0
+;sniper_anim = threat_na
+;def_state_moving = raid
+def_state_campering = threat_na
+def_state_campering_fire = threat_sniper_fire
+;on_timer = 1000 | {!see_actor} remark@search
+on_info = {=actor_in_zone(lim_final_transformer)} camper@walk2
+;on_info2 = {+lim_final_sniper_fire_actor} remark@search
+wounded = wounded@work1
+;sniper = true
+
+[remark@fire_actor]
+invulnerable = true
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = threat_sniper_fire
+target = actor
+on_game_timer = 50 | {!see_actor} remark@hide
+on_info = {=actor_in_zone(lim_final_transformer)} camper@walk2
+
+[remark@hide]
+invulnerable = true
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = hide_na
+on_game_timer = 20 | remark@fire_actor
+on_info = {=actor_in_zone(lim_final_transformer)} camper@walk2
+
+[camper@walk]
+invulnerable = true
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = lim_final_sniper_attack_walk
+path_look = lim_final_sniper_attack_look
+on_signal = action | remark@fire_actor
+def_state_moving = sneak_run
+wounded = wounded@work1
+
+[camper@walk2]
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = lim_final_sniper_attack_2_walk
+path_look = lim_final_sniper_attack_2_look
+on_signal = action | camper@fire2
+def_state_moving = sneak_run
+wounded = wounded@work1
+
+[camper@fire2]
+out_restr = lim_final_sniper_restr
+combat_ignore_cond = {!is_enemy_actor}
+path_walk = lim_final_sniper_attack_2_walk
+path_look = lim_final_sniper_attack_2_look
+radius = 0
+def_state_campering = hide_na
+def_state_campering_fire = hide_sniper_fire
+on_info = {!actor_in_zone(lim_final_transformer)} camper@walk
+wounded = wounded@work1
+
+[wounded@work1]
+hp_state        = 0|wounded_heavy@help_heavy
+hp_state_see    = 0|wounded_heavy@help_heavy
+hp_victim       = 0|nil
+hp_fight        = 0|false
+hp_cover        = 0|false
+
+

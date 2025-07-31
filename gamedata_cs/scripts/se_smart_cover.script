@@ -1,0 +1,38 @@
+--'******************************************************
+--'*  серверный класс объекта смарт кавер .
+--'******************************************************
+registered_smartcovers = {}
+registered_smartcovers_by_lv_id = {}
+
+class "se_smart_cover"	(cse_smart_cover)
+function se_smart_cover:__init (section) super (section)
+end
+function se_smart_cover:STATE_Write (packet)
+	cse_smart_cover.STATE_Write (self, packet)
+end
+function se_smart_cover:STATE_Read (packet, size)
+	cse_smart_cover.STATE_Read (self, packet, size)
+end
+function se_smart_cover:on_before_register()
+	cse_smart_cover.on_before_register( self )
+	registered_smartcovers[self:name()] = self
+end
+function se_smart_cover:on_register()
+	cse_smart_cover.on_register( self )
+	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	if registered_smartcovers_by_lv_id[level_id] == nil then
+		registered_smartcovers_by_lv_id[level_id] = {}
+	end
+	registered_smartcovers_by_lv_id[level_id][self.m_level_vertex_id] = self
+--	printf("smart_cover [%s] is registered lvlid [%s] lvid[%s]", self:name(), tostring(level_id), tostring(self.m_level_vertex_id))
+end
+function se_smart_cover:on_unregister()
+	registered_smartcovers[self:name()] = nil
+	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	registered_smartcovers_by_lv_id[level_id][self.m_level_vertex_id] = nil
+--	printf("smart_cover [%s] is unregistered", self:name())
+	cse_smart_cover.on_unregister(self)
+end
+function se_smart_cover:update()
+	cse_smart_cover.update(self)
+end

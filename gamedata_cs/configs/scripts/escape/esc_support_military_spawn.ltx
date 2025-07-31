@@ -1,0 +1,32 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {!squad_exist(esc_smart_terrain_3_16_military_2_squad_1)} sr_idle@1pre
+on_info2 = {!squad_exist(esc_smart_terrain_3_16_military_2_squad_2)} sr_idle@2pre
+on_info3 = {!squad_exist(esc_smart_terrain_3_16_military_2_squad_3)} sr_idle@3pre
+on_info4 = {!squad_exist(esc_smart_terrain_3_16_military_2_squad_4)} sr_idle@4pre
+
+[sr_idle@1pre]
+on_game_timer = 1200 | sr_idle@1
+
+[sr_idle@1]
+on_actor_dist_ge_nvis = 150 | {!is_smart_captured(esc_smart_terrain_4_13)} sr_idle %=create_squad(esc_smart_terrain_3_16_military_2_squad_1:esc_smart_terrain_3_16)%
+
+[sr_idle@2pre]
+on_game_timer = 1200 | sr_idle@2
+
+[sr_idle@2]
+on_actor_dist_ge_nvis = 150 | {!is_smart_captured(esc_smart_terrain_4_13)} sr_idle %=create_squad(esc_smart_terrain_3_16_military_2_squad_2:esc_smart_terrain_3_16)%
+
+[sr_idle@3pre]
+on_game_timer = 1200 | sr_idle@3
+
+[sr_idle@3]
+on_actor_dist_ge_nvis = 150 | {!is_smart_captured(esc_smart_terrain_2_14)} sr_idle %=create_squad(esc_smart_terrain_3_16_military_2_squad_3:esc_smart_terrain_3_16)%
+
+[sr_idle@4pre]
+on_game_timer = 1200 | sr_idle@4
+
+[sr_idle@4]
+on_actor_dist_ge_nvis = 150 | {!is_smart_captured(esc_smart_terrain_2_14)} sr_idle %=create_squad(esc_smart_terrain_3_16_military_2_squad_4:esc_smart_terrain_3_16)%

@@ -1,0 +1,55 @@
+[logic@work1]
+active = walker@main
+suitable = {=check_npc_name(gar_digger_traitor)}
+on_death = death
+
+[walker@main]
+path_walk = traitor_walk
+path_look = traitor_look
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_signal = arrived | remark@main
+
+[remark@main]
+target = actor
+anim = wait
+meet = meet
+on_info = {+gar_quest_kill_digger_traitor_explained} walker@caution %=set_squad_goodwill(gar_digger_traitor:enemy)%, {+gar_quest_kill_digger_traitor_going} walker@caution %=give_treasure(gar_treasure_quest_smuggler_weapons)%
+
+[walker@caution]
+path_walk = traitor_walk
+path_look = traitor_look
+on_info = {=dist_to_actor_ge(80) !actor_see_npc} walker@stop %+gar_quest_kill_digger_traitor_gone%
+meet = meet@end
+
+[walker@stop]
+path_walk = traitor_walk
+path_look = traitor_look
+meet = meet@end
+
+;[kamp@main]
+;center_point = kamp_1
+;path_walk = kamp_1_task
+;on_info = {=dist_to_actor_ge(70) !actor_see_npc} nil %+gar_quest_kill_digger_traitor_gone =destroy_object%
+
+[meet]
+meet_state 		= 40|hello@nil|15|wait@nil
+meet_state_wpn 	= 40|hello@nil|15|wait@nil
+use = true
+use_wpn = true
+victim = 50 | actor
+victim_wpn = 50 | actor
+sound_start = nil
+sound_start_wpn = nil
+sound_stop = nil
+
+[meet@end]
+use = true
+use_wpn = true
+sound_start = nil
+sound_start_wpn = nil
+sound_stop = nil
+
+[death]
+on_info = %+gar_quest_kill_digger_traitor_done%

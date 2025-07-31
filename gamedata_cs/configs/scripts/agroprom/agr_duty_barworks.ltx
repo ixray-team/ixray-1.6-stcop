@@ -1,0 +1,100 @@
+;Bar client 1
+
+[logic@bar_stalker_1]
+active = remark@work3
+suitable = {=check_npc_name(agr_bar_stalker_1) -agr_bar_actor_enemy} true
+prior = 42
+
+[remark@work3]
+path_walk = bar
+on_info = smartcover@3
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = wait
+
+[smartcover@3]
+cover_name = agr_duty_bar_anim_cover_1
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_fire
+meet = meet@3
+on_info = {=actor_enemy} smartcover@3 %+agr_bar_actor_enemy%
+
+[meet@3]
+meet_state        = 0| nil@nil
+victim                 = 0| nil
+use                = true
+abuse                = false
+
+;Bar client 2
+
+[logic@bar_stalker_2]
+active = remark@work4
+suitable = {=check_npc_name(agr_bar_stalker_2) -agr_bar_actor_enemy} true
+prior = 42
+
+[remark@work4]
+path_walk = bar
+on_info = smartcover@4
+anim = wait
+
+[smartcover@4]
+cover_name = agr_duty_bar_anim_cover_2
+loophole_name = lead_stand_lean_on_bar
+cover_state = fire_no_lookout_fire
+meet = meet@4
+on_info = {=actor_enemy} smartcover@3 %+agr_bar_actor_enemy%
+
+[meet@4]
+meet_state        = 0| nil@nil
+victim                 = 0| nil
+use                = true
+abuse                = false
+;Bar client 3
+
+[logic@bar_stalker_3]
+active = remark@work5
+suitable = {=check_npc_name(agr_bar_stalker_3) -agr_bar_actor_enemy} true
+prior = 42
+
+[remark@work5]
+path_walk = bar
+on_info = smartcover@5
+anim = wait
+
+[smartcover@5]
+cover_name = agr_duty_bar_anim_cover_3
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_fire_no_lookout
+meet = meet@5
+on_info = {=actor_enemy} smartcover@3 %+agr_bar_actor_enemy%
+
+[meet@5]
+meet_state        = 0| nil@nil
+victim                 = 0| nil
+use                = true
+abuse                = false
+
+;Bar client 4
+
+[logic@bar_stalker_4]
+active = remark@work6
+suitable = {=check_npc_name(agr_bar_stalker_4) -agr_bar_actor_enemy} true
+prior = 42
+
+[remark@work6]
+path_walk = bar
+on_info = smartcover@6
+anim = wait
+
+[smartcover@6]
+cover_name = agr_duty_bar_anim_cover_4
+loophole_name = lead_stand_lean_on_bar
+cover_state = idle_fire_no_lookout
+meet = meet@6
+on_info = {=actor_enemy} smartcover@3 %+agr_bar_actor_enemy%
+
+[meet@6]
+meet_state        = 0| nil@nil
+victim                 = 0| nil
+use                = true
+abuse                = false

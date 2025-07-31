@@ -1,0 +1,91 @@
+[logic]
+active = sr_idle@temp
+
+[sr_idle@temp]
+on_info = {+gar_story_got_info_from_digger} sr_idle@start ;%=give_inited_task(storyline:gar_story_go_to_freedom:csky)%
+
+[sr_idle@start]
+on_game_timer = 10 | sr_idle@come_to_freedom_blokpost %+val_temp_start_quest_complete =give_inited_task(storyline:val_come_to_freedom_blokpost:freedom)%
+
+[sr_idle@come_to_freedom_blokpost]
+on_info = {+val_come_to_freedom_blockpost_done} sr_idle@go_to_base %=give_inited_task(storyline:val_come_to_freedom_base:freedom)%
+on_info2 = {+val_blockpost_ns_dead} sr_idle@go_to_base %=give_inited_task(storyline:val_come_to_freedom_base:freedom)%
+on_info3 = {+val_come_to_freedom_base_complete} sr_idle@go_to_base %=give_inited_task(storyline:val_come_to_freedom_base:freedom)%
+
+
+[sr_idle@go_to_base]
+on_info = {+val_come_to_freedom_base_done} sr_idle@come_to_comendant %=give_inited_task(storyline:val_come_to_comendant:freedom) =play_sound(val_freedom_base_enter)% 
+
+[sr_idle@come_to_comendant]
+on_info = {+val_come_to_comendant_done =squad_exist(val_flesh_lair_guard_6_4)} sr_idle@kill_flesh %=give_inited_task(eliminate_smart:val_smart_terrain_6_4:freedom)%
+
+[sr_idle@kill_flesh]
+on_info = {+val_kill_flesh_done} sr_idle@val_come_back_comendant_to_revard %+val_rush_flesh_brake =give_inited_task(storyline:val_come_back_comendant_to_revard:freedom) =play_sound(val_comendant_come_back)%
+
+[sr_idle@val_come_back_comendant_to_revard]
+on_info = {+val_come_back_comendant_to_revard_done} sr_idle@go_to_trader %=give_inited_task(storyline:val_go_to_trader:freedom)%
+
+[sr_idle@go_to_trader]
+on_info = {+val_go_to_trader_done} sr_idle@deliver_ammo %=give_inited_task(storyline:val_deliver_ammo:freedom)%
+
+[sr_idle@deliver_ammo]
+on_info = {+val_deliver_ammo_done} sr_idle@check_blockpost %=give_inited_task(storyline:val_check_blockpost:freedom)%
+
+[sr_idle@check_blockpost]
+on_info = {+val_check_blockpost_done} sr_idle@find_pda %=give_inited_task(storyline:val_find_pda:freedom)%
+
+[sr_idle@find_pda]
+on_info = {+val_find_pda_done} sr_idle@val_go_to_freedom_leader %=give_inited_task(storyline:val_go_to_freedom_leader:freedom)%
+
+[sr_idle@val_go_to_freedom_leader]
+on_info = {+val_go_to_freedom_leader_done} sr_idle@val_pursuit_comendant %=give_inited_task(storyline:val_pursuit_comendant:freedom)%
+
+[sr_idle@val_pursuit_comendant]
+on_info = {+val_killer_on_position_pric} sr_idle@val_help_freedom %+val_pursuit_comendant_complete =give_inited_task(eliminate_smart:val_smart_terrain_4_0:freedom) =play_sound(val_freedom_attack_help)%
+
+[sr_idle@val_help_freedom]
+on_info = {+val_help_freedom_done} sr_idle@val_help_freedom_timer %=give_inited_task(storyline:val_take_pda:freedom)%
+
+[sr_idle@val_help_freedom_timer]
+on_game_timer = 40 | sr_idle@val_take_pda  %=play_sound(val_freedom_leader_pda_come_back)%
+
+[sr_idle@val_take_pda]
+on_info = {+val_take_pda_done} sr_idle@val_deliver_pda %=give_inited_task(storyline:val_deliver_pda:freedom)%
+
+[sr_idle@val_deliver_pda]
+on_info = {+val_deliver_pda_done} sr_idle@val_strike_antenna_task %=give_inited_task(storyline:gar_story_chase_pda_signal:freedom)%
+
+[sr_idle@val_strike_antenna_task]
+on_info = {+val_strike_antenna_ready} sr_idle@check_for_capture_two_antennes %=give_inited_task(capture_smart:val_smart_terrain_7_8:freedom) =give_inited_task(capture_smart:val_smart_terrain_4_0:freedom)%
+
+[sr_idle@check_for_capture_two_antennes]
+;on_info = {!get_task_by_smart(val_smart_terrain_7_8) !smart_captured_by_faction(val_smart_terrain_7_8:freedom)} %=give_inited_task(eliminate_smart:val_smart_terrain_7_8:freedom)% 
+;on_info2 = {!get_task_by_smart(val_smart_terrain_4_0) !smart_captured_by_faction(val_smart_terrain_4_0:freedom)} %=give_inited_task(eliminate_smart:val_smart_terrain_4_0:freedom)% 
+on_info = {=smart_captured_by_faction(val_smart_terrain_4_0:freedom) =smart_captured_by_faction(val_smart_terrain_7_8:freedom)} sr_idle@val_strike_antenna_two %+val_strike_antenna_two_captured%
+
+
+;[sr_idle@val_strike_antenna]
+;on_info = {+val_strike_antenna_two_ready} sr_idle@val_strike_antenna_two %=give_inited_task(capture_smart:val_smart_terrain_4_0:freedom) =play_sound(val_antenna_control)%
+
+[sr_idle@val_strike_antenna_two]
+on_info = sr_idle@val_strike_antenna_two_sound %=play_sound(val_antenna_finish)%
+
+[sr_idle@val_strike_antenna_two_sound]
+on_signal = sound_end | sr_idle@val_destroy_killer_base_sf %=play_sound(val_antenna_good)%
+
+[sr_idle@val_destroy_killer_base_sf] 
+on_signal = sound_end | sr_idle@destroy_killer_base_sf %+val_spawn_attack_freedom_2 =give_inited_task(eliminate_smart:val_smart_terrain_1_2:freedom)%
+
+[sr_idle@destroy_killer_base_sf]
+on_game_timer = 50 | sr_idle@destroy_killer_base_ai %+val_freedom_attack_info% 
+
+[sr_idle@destroy_killer_base_ai]
+on_info = {+val_destroy_killer_base_done} sr_idle@val_comeback_freedom_leader 
+
+[sr_idle@val_comeback_freedom_leader]
+on_timer = 4000 | sr_idle@val_finish_quest_line %=play_sound(val_quest_finish:freedom:val_freedom_leader_name)%
+
+[sr_idle@val_bring_to_fang]
+
+
+[sr_idle@val_finish_quest_line]

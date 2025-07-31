@@ -1,0 +1,18 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {+red_bridge_scene_begin} sr_idle@2 %+red_bridge_actor_in_position%
+on_info = {+red_bridge_actor_come +red_bridge_scene_begin} sr_idle@wait
+on_info2 = {+red_bridge_actor_fail} sr_idle@nil
+
+[sr_idle@wait]
+on_actor_inside = sr_idle@2 %+red_bridge_actor_in_position%
+on_game_timer = 1200 | sr_idle@nil %+red_bridge_ally_strike +stalker_help_csky +red_bridge_actor_in_position%
+on_info = {+red_bridge_actor_fail} sr_idle@nil
+
+[sr_idle@2]
+on_game_timer = 50 | sr_idle@nil %+red_bridge_ally_strike +stalker_help_csky%
+on_info = {+red_bridge_actor_fail} sr_idle@nil
+
+[sr_idle@nil]

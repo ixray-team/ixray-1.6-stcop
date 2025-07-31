@@ -1,0 +1,26 @@
+[logic]
+active = ph_button@prelocked
+
+[ph_button@prelocked]
+anim_blend = true
+anim = idle
+on_info = {+mil_militarybase_dead_1 +mil_militarybase_dead_2 +mil_militarybase_dead_3} ph_button@locked
+on_info2 = {+mil_alone_mission} ph_button@locked
+
+[ph_button@locked]
+anim_blend = true
+anim = idle
+on_press = ph_button@unlocked
+tooltip = tips_radio_tower
+
+[ph_button@unlocked]
+on_game_timer = 20 | sr_idle %+mil_actor_go_to_limansk =play_sound(mil_hires_in_bubble_thanks_1:killer)%
+anim_blend = true
+anim = off
+
+[sr_idle]
+on_signal = sound_end | sr_idle@end %+mil_sound_thanks%
+
+[sr_idle@end]
+
+

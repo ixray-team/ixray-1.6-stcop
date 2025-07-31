@@ -1,0 +1,34 @@
+[settings]
+science_0 = pl, 50, pl, 50
+science_1 = pl, 50, pl, 50
+science_2 = pl, 50, pl, 50
+science_3 = pl, 50, pl, 50
+
+glory_0 = 0
+glory_1 = 1
+glory_2 = 2
+glory_3 = 3
+glory_4 = 4
+glory_5 = 5
+
+
+[expansion_0]
+base_squad_number = 1
+switch_condition = {+test_info_1} expansion_0
+sim_prior = prior_0
+
+
+
+; Приоритеты это:
+; Тип_смарта = X, Y.
+; Тип смарта - это либо base либо science либо artefact либо имя смарта
+; X - сумма которая искусственно добавляется к оценке важности данного смарта
+; Y - Коэфициент влияния sim_value на оценку смарта. Формула: оценка = X * (1 + Y*(sim_value-1))
+
+
+[prior_0]
+base = 100, 0  
+science = 1, 0.2
+artefact = 1, 0.2
+
+

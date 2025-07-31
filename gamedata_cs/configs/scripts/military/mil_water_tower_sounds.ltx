@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@radio
+
+[sr_idle@radio]
+on_actor_in_zone = mil_space_restrictor_merc | {-mil_actor_inside_wtower +mil_start_after_red_forest} sr_idle@time %=play_sound(mil_stalker_radio_1:killer) +mil_water_tower_radio%
+
+[sr_idle@time]
+on_signal = sound_end | %+mil_actor_inside_wtower% sr_idle@end
+
+[sr_idle@end]

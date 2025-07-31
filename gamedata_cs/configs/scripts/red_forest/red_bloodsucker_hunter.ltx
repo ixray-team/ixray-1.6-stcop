@@ -1,0 +1,46 @@
+[logic]
+active = mob_home@sound
+on_death = mob_death
+
+[mob_death]
+on_info = %+red_bloodsucker_off -red_bloodsucker_spawn%
+
+[mob_home@sound]
+path_home = red_bloodsucker_swarm_4_2
+home_min_radius = 30
+home_max_radius = 50
+aggressive_home = true
+;actor_friendly = true
+;npc_friendly = true
+state = invis
+on_info = mob_home %=play_sound(red_bloodsucker_growl)%
+
+[mob_home]
+out_restr = red_forest_pda_map_zone
+path_home = red_bloodsucker_hunter_way
+home_min_radius = 30
+home_max_radius = 50
+;aggressive_home = true
+actor_friendly = true
+;npc_friendly = true
+state = vis
+on_game_timer = 500 | mob_walker
+on_info = {=dist_to_actor_le(15)} mob_walker
+
+[mob_walker]
+path_walk = red_bloodsucker_swarm_1_2
+actor_friendly = true
+npc_friendly = true
+braindead = true
+state = vis
+on_info = {=dist_to_actor_ge(10)} mob_walker@2
+on_signal = action | nil %-red_bloodsucker_spawn =destroy_object%
+
+[mob_walker@2]
+path_walk = red_bloodsucker_swarm_1_3
+actor_friendly = true
+npc_friendly = true
+braindead = true
+state = invis
+on_game_timer = 50 | nil %-red_bloodsucker_spawn =destroy_object%
+on_signal = action | nil %-red_bloodsucker_spawn =destroy_object%

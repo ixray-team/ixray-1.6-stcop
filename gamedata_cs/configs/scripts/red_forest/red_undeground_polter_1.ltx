@@ -1,0 +1,20 @@
+[logic]
+active = mob_walker
+on_death = mob_death
+
+[mob_death]
+on_info = %=dec_counter(red_polter_count) =inc_counter(red_polter_shoot_count) =destroy_object%
+
+[mob_walker]
+in_restr = red_smart_terrain_3_2_undeground_restr
+out_restr = red_smart_terrain_3_2_undeground_restr_2
+path_walk = red_undeground_polter_walk
+npc_friendly = true
+actor_friendly = true
+braindead = true
+on_game_timer = 200 | %=dec_counter(red_polter_count) =destroy_object%
+on_info = {=health_le(0.5)} %=dec_counter(red_polter_count) =inc_counter(red_polter_shoot_count) =destroy_object%
+
+[mob_remark]
+braindead = true
+on_game_timer = 20 | %=destroy_object%

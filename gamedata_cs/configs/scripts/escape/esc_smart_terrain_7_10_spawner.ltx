@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+esc_actor_mission_military_comm} sr_idle@go
+
+[sr_idle@go]
+on_info = sr_idle@end %=create_squad(esc_smart_terrain_7_10_military_2_squad_1_miss:esc_smart_terrain_7_10) =create_squad(esc_smart_terrain_7_10_military_2_squad_2_miss:esc_smart_terrain_7_10)%
+
+[sr_idle@end]
+
+

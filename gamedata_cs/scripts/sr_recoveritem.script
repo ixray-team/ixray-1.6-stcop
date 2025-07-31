@@ -1,0 +1,46 @@
+---------------------------------------------------------------------------------------------
+--' Space restrictor scheme for spawn recover item ---------------------------
+--' Made by Distemper ----------------------------------------------------------------
+--' 05.02.08 ----------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+
+target_sr = nil -- Space_retrictor
+
+class "CSRRecoveritem"
+-- Class constructor
+function CSRRecoveritem:__init(obj, storage)
+    self.object = obj
+    self.st = storage
+--    self.enabled = false
+end
+-- On scheme switch resets all self params
+function CSRRecoveritem:reset_scheme()
+--    self.enabled = false
+end
+-- Class update
+function CSRRecoveritem:update()
+
+end
+--------------------------------------------------------------------------------
+-- Standart functions
+--------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+    xr_logic.subscribe_action_for_events(npc, storage, CSRRecoveritem(npc, storage))
+end
+function set_scheme(obj, ini, scheme, section, gulag_name)
+-- standart lines: assigning new storage and binding our space restrictor
+    local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+    st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+
+	if db.storage.recoveritem_table == nil then
+		db.storage.recoveritem_table = {}
+	end
+	if db.storage.remember_target_for_recoveritem == nil then
+		db.storage.remember_target_for_recoveritem = {}
+	end
+	if db.storage.table_squad_for_recoveritem == nil then
+		db.storage.table_squad_for_recoveritem = {}
+	end
+--' записываем все обькты с данной схемой в таблицу
+	db.storage.recoveritem_table[obj:id()] = obj
+end

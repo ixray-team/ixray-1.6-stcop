@@ -1,0 +1,410 @@
+local rank_table = {}
+rank_table["novice"] = 0
+rank_table["stalker"] = 300
+rank_table["veteran"] = 600
+rank_table["master"] = 900
+local treasure_by_target = {}
+
+
+
+class "CTreasure"
+function CTreasure:__init(ini, section)
+	self.section		= section
+	self.target			= utils.cfg_get_string(ini, section, "target", nil, true, "")
+	self.name			= utils.cfg_get_string(ini, section, "name", nil, true, "")
+	self.description	= utils.cfg_get_string(ini, section, "description", nil, true, "")
+	local items 		= utils.cfg_get_string(ini, section, "items", nil, true, "", "nil")
+--    self.items_presence = {}
+	if items~="nil" then
+		self.items 		= utils.parse_spawns(items)
+	    if self.items == nil then
+	        abort("cant find 'items' in %s", id)
+	    end
+--[[
+        for k,v in pairs(self.items) do
+			self.items_presence[k] = {}
+            if ammo_section[v.section] == true then
+                table.insert(self.items_presence[k], {section = v.section, presence = true, count = v.prob})
+			else
+	            for i = 1, v.prob do
+	                table.insert(self.items_presence[k], {section = v.section, presence = true})
+	            end
+			end
+        end
+]]
+	end
+	self.rank			= utils.cfg_get_string(ini, section, "rank", nil, false, "", "novice")
+	self.treasure_cost	= utils.cfg_get_number(ini, section, "treasure_cost", nil, false, 0)	-- 24.04.08
+	self.say_item_name	= utils.cfg_get_bool(ini, section, "say_item_name", nil, false, true)	-- 24.04.08
+	local community		= parse_names(utils.cfg_get_string(ini, section, "community", nil, false, "", "stalker, bandit, dolg, freedom, csky, renegade"))
+	self.on_empty		= xr_logic.parse_condlist(db.actor, section, "on_empty", utils.cfg_get_string(ini, section, "on_empty", nil, false, "", "false"))
+	self.community = {}
+	for k,v in pairs(community) do
+		self.community[v] = true
+	end
+	if treasure_by_target[self.target] == nil then
+		treasure_by_target[self.target] = {}
+	end
+	table.insert(treasure_by_target[self.target], self)
+	self.condlist		= xr_logic.parse_condlist(db.actor, section, "condlist", utils.cfg_get_string(ini, section, "condlist", nil, false, "", "false"))
+end
+
+function CTreasure:give_treasure()
+	local obj = alife():object(self.target)
+	if obj ~= nil then
+		if(self.name==game.translate_string(self.name)) then
+			abort("Treasure name [%s] is not set in xml file", self.name)
+		end
+		if(self.description==game.translate_string(self.description)) then
+			abort("Treasure description [%s] is not set in xml file", self.description)
+		end
+
+		news_manager.send_treasure(self.name)
+
+		--' Пометить на карте
+		local text = "%c[255,238,155,23]"..game.translate_string(self.name).."\\n".."%c[default]"..game.translate_string(self.description)
+
+		level.map_add_object_spot_ser(obj.id, "treasure", text)
+		--' Сгенерить вещи
+		if self.items then
+	        for kk,vv in pairs(self.items) do
+	            if ammo_section[vv.section] == true then
+	                local t=se_respawn.create_ammo(vv.section,
+	                        obj.position,
+	                        obj.m_level_vertex_id,
+	                        obj.m_game_vertex_id,
+	                        obj.id,
+	                        vv.prob)
+	            else
+	                for i=1,vv.prob do
+	                    local t=alife():create(vv.section,
+	                            obj.position,
+	                            obj.m_level_vertex_id,
+	                            obj.m_game_vertex_id,
+	                            obj.id)
+	                end
+	            end
+	        end
+		end
+		--' Пометим тайник как выданный
+		self.active = true
+	else
+		printf("TREASURE [%s], target doesnt exist", self.section)
+	end
+end
+
+function CTreasure:check_rank_and_community(npc)
+	return (npc:character_rank()>rank_table[self.rank]) and (self.community[npc:character_community()]==true)
+end
+function CTreasure:check_for_used_target()
+	for k,v in pairs(treasure_by_target[self.target]) do
+		if v.active == true then
+			return false
+		end
+	end
+	return true
+end
+
+function CTreasure:reset_treasure()
+	printf("treasure_manager: reset_treasure [%s]", self.section)
+	self.active = false
+-- 24.04.08
+    if(self.treasure_cost>=0) then
+		self.treasure_cost = -1
+	end
+end
+
+function CTreasure:spawn_items()
+	local obj = alife():object(self.target)
+	if obj ~= nil then
+	    --' Сгенерить вещи
+	    if self.items then
+	        for kk,vv in pairs(self.items) do
+	            if ammo_section[vv.section] == true then
+	                se_respawn.create_ammo(vv.section,
+	                        obj.position,
+	                        obj.m_level_vertex_id,
+	                        obj.m_game_vertex_id,
+	                        obj.id,
+	                        vv.prob)
+	            else
+	                for i=1,vv.prob do
+	                    alife():create(vv.section,
+	                            obj.position,
+	                            obj.m_level_vertex_id,
+	                            obj.m_game_vertex_id,
+	                            obj.id)
+	                end
+	            end
+	        end
+	    end
+	end
+end
+
+function use_box(box, actor)
+--[[
+	if treasure_by_target[box:name()] then
+		if box:is_inv_box_empty() then
+	        for k,v in pairs(treasure_by_target[box:name()]) do
+	            if v.active == true then
+	                v:spawn_items()
+	            end
+	        end
+		else
+			treasure_empty(box, box:name())
+		end
+	end
+]]
+end
+
+
+function use(npc)
+	printf("treasure_manager: npc[%s] is used by actor", npc:name())
+	local available_treasures = {}
+	local selected_treasure = nil
+	for k,v in pairs(treasures) do
+--[[
+		printf("found treasure %s", tostring(v.section))
+		-- Проверить доступность по кондлисту.
+		printf("    condlist %s", tostring(xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)))
+		-- Проверить доступность по рангу.
+		printf("    rank %s", tostring(v:check_rank_and_community(npc)))
+		-- Проверить не выдан ли он уже.
+		printf("    active %s", tostring(v.active))
+		-- Проверить не выдан ли другой тайник на этот же таргет.
+		printf("    used %s", tostring(v:check_for_used_target()))
+		printf("    cost=%d", v.treasure_cost)
+]]
+		if xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist) == "true" and
+			v:check_rank_and_community(npc) == true and v.active ~= true and v:check_for_used_target() == true and (v.treasure_cost==0) then	-- 24.04.08
+			table.insert(available_treasures, v)
+		end
+	end
+	if #available_treasures == 0 or  math.random(100) < 16 then
+		return
+	end
+	selected_treasure = available_treasures[math.random(1, #available_treasures)]
+	selected_treasure:give_treasure()
+end
+
+function treasure_empty(box, box_story_id)
+	printf("!!! treasure empty")
+	local treasures = treasure_by_target[box_story_id] or treasure_by_target[box:name()]
+
+	if treasures == nil then
+		return
+	end
+
+	for k,v in pairs(treasures) do
+		if v.active then
+	        xr_logic.pick_section_from_condlist(db.actor, box, v.on_empty)
+	        v:reset_treasure()
+		end
+	end
+	if level.map_has_object_spot(box:id(), "treasure") ~= 0 then
+		level.map_remove_object_spot(box:id(), "treasure")
+	end
+    xr_statistic.inc_founded_secrets_counter()
+end
+
+function take_item_from_box(box, box_story_id, item)
+	printf("!!! take item from box")
+	if box:is_inv_box_empty() == true then
+		treasure_empty(box, box_story_id)
+	end
+--[[
+	local treasures = treasure_by_target[box_story_id] or treasure_by_target[box:name()]
+	if treasures then
+	    for k,v in pairs(treasures) do
+	        if v.active then
+	            for kk,vv in pairs(v.items_presence) do
+	                for i = 1,#vv do
+	                    if vv[i].section == item:section() and vv[i].presence then
+	                        if ammo_section[vv[i].section] == true then
+	                            local num_in_box = system_ini():r_u32(vv[i].section, "box_size")
+	                            vv[i].count = vv[i].count - num_in_box
+	                            if vv[i].count<=0 then
+	                                vv[i].presence = false
+	                                return
+	                            end
+	                        else
+	                            vv[i].presence = false
+	                            return
+	                        end
+	                    end
+	                end
+	            end
+	        end
+	    end
+	end
+]]
+end
+
+function load_treasures()
+	local treasure_ini = ini_file("misc\\treasure_manager.ltx")
+
+	--' Итерируемся по списку тем.
+    if not treasure_ini:section_exist("list") then
+		abort("There is no section [list] in treasure_manager.ltx")
+	end
+	local n = treasure_ini:line_count("list")
+	local id, value = "",""
+	local category = ""
+
+	--' начальная установка
+	treasures = {}
+
+	for i=0,n-1 do
+		result, section, value  = treasure_ini:r_line("list",i,"","")
+		treasures[section] = CTreasure(treasure_ini, section)
+    end
+end
+
+function save(thread)
+	set_save_marker(thread, "save", false, "treasure_manager")
+	for k,v in pairs(treasures) do
+		thread:w_bool(v.active==true)
+        thread:w_bool(v.treasure_cost == -1)
+--[[
+		if v.active then
+            for kk,vv in pairs(v.items_presence) do
+				for i = 1,#vv do
+	                thread:w_bool(vv[i].presence)
+					if vv[i].count then
+		                thread:w_u16(vv[i].count)
+					end
+				end
+            end
+		end
+]]
+	end
+	set_save_marker(thread, "save", true, "treasure_manager")
+end
+
+function load(thread)
+	set_save_marker(thread, "load", false, "treasure_manager")
+	for k,v in pairs(treasures) do
+		v.active = thread:r_bool()
+		local cost = thread:r_bool()
+		if cost == true then
+			v.treasure_cost = -1
+		end
+--[[
+		if v.active then
+            for kk,vv in pairs(v.items_presence) do
+				for i = 1,#vv do
+	                vv[i].presence = thread:r_bool()
+					if vv[i].count then
+		                vv[i].count = thread:r_u16()
+					end
+				end
+            end
+	        local obj = alife():object(v.target)
+			if obj then
+	            for kk,vv in pairs(v.items_presence) do
+					for i = 1,#vv do
+	                    if vv[i].presence then
+	                        if ammo_section[vv[i].section] == true then
+	                            se_respawn.create_ammo(vv[i].section,
+													   obj.position,
+													   obj.m_level_vertex_id,
+													   obj.m_game_vertex_id,
+													   obj.id,
+													   vv[i].count)
+	                        else
+                                alife():create(vv[i].section,
+											   obj.position,
+											   obj.m_level_vertex_id,
+											   obj.m_game_vertex_id,
+											   obj.id)
+	                        end
+	                    end
+					end
+				end
+            end
+		end
+]]
+	end
+	set_save_marker(thread, "load", true, "treasure_manager")
+end
+-- Функция для выдачи тайника из xr_effect-ов.
+function give_treasure(treasure_id)
+	if treasures[treasure_id] ~= nil then
+		if treasures[treasure_id].active ~= true then
+			treasures[treasure_id]:give_treasure()
+		else
+			local active_treasure = get_active_treasure_by_target(treasures[treasure_id].target)
+			abort("Unable to give treasure [%s] because inventory box is already in use by treasure [%s]", treasure_id, active_treasure)
+		end
+	else
+		abort("There is no treasure with id [%s]", treasure_id)
+	end
+end
+function get_active_treasure_by_target(target)
+	for k,v in pairs(treasure_by_target[target]) do
+		if v.active == true then
+			return v.section
+		end
+	end
+	return "nil"
+end
+--------------------------------------------------------------------------------
+-- 24.04.08
+local dt = nil
+function select_dialog_treasures(npc)
+	local available_treasures = {}
+	for k,v in pairs(treasures) do
+--[[
+		printf("found treasure %s", tostring(v.section))
+		printf("    condlist %s", tostring(xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)))
+		printf("    rank %s", tostring(v:check_rank_and_community(npc)))
+		printf("    active %s", tostring(v.active))
+		printf("    used %s", tostring(v:check_for_used_target()))
+		printf("    cost=%d", v.treasure_cost)
+]]
+		if xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)=="true" and
+			(v:check_rank_and_community(npc)) and not(v.active) and (v:check_for_used_target()) and (v.treasure_cost>0) then
+			table.insert(available_treasures, v)
+		end
+	end
+	if(#available_treasures==0) then
+		return nil
+	end
+	dt = available_treasures[math.random(1, #available_treasures)]
+	return dt
+end
+
+function is_dialog_treasure(npc,ss)
+	return select_dialog_treasures(npc)~=nil
+end
+
+function is_not_dialog_treasure(npc,ss)
+	return select_dialog_treasures(npc)==nil
+end
+
+function give_treasure_from_dialog(npc,ss)
+	dialogs.relocate_money(npc, dt.treasure_cost, "out")
+	dt:give_treasure()
+end
+
+function get_treasure_cost()
+	return tostring(dt.treasure_cost)
+end
+function have_money()
+	return dt.treasure_cost<=db.actor:money()
+end
+function have_no_money()
+	return dt.treasure_cost>db.actor:money()
+end
+function get_treasure_desc()
+	return game.translate_string(dt.description)
+end
+function is_item_name()
+	return dt.say_item_name
+end
+function is_not_item_name()
+	return not(dt.say_item_name)
+end
+function get_item_name()
+	return game.translate_string(system_ini():r_string(dt.items[1].section, "inv_name")).."."
+end

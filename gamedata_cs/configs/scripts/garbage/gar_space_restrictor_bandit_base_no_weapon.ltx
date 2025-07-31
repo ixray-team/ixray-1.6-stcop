@@ -1,0 +1,11 @@
+[logic]
+active = sr_no_weapon
+
+[sr_no_weapon]
+on_info = {=check_crowkiller_state(started)} sr_idle@2, {=check_crowkiller_state(running)} sr_idle@2, {=is_smart_in_combat(gar_smart_terrain_3_5)} sr_idle@1, {!is_smart_captured(gar_smart_terrain_3_5)} sr_idle@1
+
+[sr_idle@1]
+on_info = {!is_smart_in_combat(gar_smart_terrain_3_5) =is_smart_captured(gar_smart_terrain_3_5)} sr_no_weapon
+
+[sr_idle@2]
+on_info = {=check_crowkiller_state(finished)} sr_no_weapon, {=check_crowkiller_state(breaked)} sr_no_weapon

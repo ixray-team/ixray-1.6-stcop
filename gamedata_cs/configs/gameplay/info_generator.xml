@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+	<info_portion id="gen_start_fighting"/>
+
+  <info_portion id="gen_snork_anim_left_0_dead"/>
+  <info_portion id="gen_snork_anim_left_1_dead"/>
+  <info_portion id="gen_snork_anim_left_2_dead"/>
+  <info_portion id="gen_snork_anim_left_3_dead"/>
+  <info_portion id="gen_snork_anim_right_0_dead"/>
+  <info_portion id="gen_snork_anim_right_1_dead"/>
+  <info_portion id="gen_snork_anim_right_2_dead"/>
+  <info_portion id="gen_snork_anim_right_3_dead"/>
+  <info_portion id="gen_snork_anim_right_4_dead"/>
+
+  <info_portion id="gen_snork_anim_left_0_danger"/>
+  <info_portion id="gen_snork_anim_left_1_danger"/>
+  <info_portion id="gen_snork_anim_left_2_danger"/>
+  <info_portion id="gen_snork_anim_left_3_danger"/>
+  <info_portion id="gen_snork_anim_right_0_danger"/>
+  <info_portion id="gen_snork_anim_right_1_danger"/>
+  <info_portion id="gen_snork_anim_right_2_danger"/>
+  <info_portion id="gen_snork_anim_right_3_danger"/>
+  <info_portion id="gen_snork_anim_right_4_danger"/>
+  
+  <info_portion id="gen_cutscene_02"/>
+  <info_portion id="gen_cutscene_04"/>
+  <info_portion id="gen_cutscene_08"/>
+
+  <info_portion id="temp_anim_l0"/>
+  <info_portion id="temp_anim_l1"/>
+  <info_portion id="temp_anim_l2"/>
+  <info_portion id="temp_anim_l3"/>
+  <info_portion id="temp_anim_r0"/>
+  <info_portion id="temp_anim_r1"/>
+  <info_portion id="temp_anim_r2"/>
+  <info_portion id="temp_anim_r3"/>
+  <info_portion id="temp_anim_r4"/>
+</game_information_portions>

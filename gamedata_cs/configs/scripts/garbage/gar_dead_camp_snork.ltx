@@ -1,0 +1,26 @@
+[logic@snork]
+active = mob_walker@snork
+monster_job = true
+suitable = {=check_npc_name(gar_dead_camp_snork)}
+
+[mob_walker@snork]
+path_walk = snork_spawn
+path_look = snork_jump
+on_signal = arrived | mob_jump@snork
+out_restr = gar_space_restrictor_dead_camp_snork_in
+braindead = true
+combat_ignore_cond = true
+friendly = true
+agressive = true
+
+[mob_jump@snork]
+path_jump = snork_jump
+ph_jump_factor = 1
+offset = 0,0,0
+on_signal = jumped | mob_home@snork
+braindead = true
+combat_ignore_cond = true
+friendly = true
+
+[mob_home@snork]
+path_home = kamp_1
