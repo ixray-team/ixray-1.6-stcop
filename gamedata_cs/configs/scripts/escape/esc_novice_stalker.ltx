@@ -34,7 +34,7 @@ def_state_moving = run
 meet = no_meet
 on_info = {-esc_novice_info_enemy_dogs =squad_exist(esc_dogs_lair_guard_5_12)} %=set_squad_goodwill_to_npc(esc_dogs_lair_guard_5_12:enemy) +esc_novice_info_enemy_dogs%
 on_npc_in_zone = 433 | esc_space_restrictors_2_12_sr_defense | walker@walk
-on_actor_dist_ge_nvis = 100 | walker@death %+esc_stalker_novice_fail =kill_npc%
+on_actor_dist_ge_nvis = 100 | {-esc_wolf_novice_3} walker@death %+esc_stalker_novice_fail =kill_npc%
 
 [walker@death]
 wounded = wounded
