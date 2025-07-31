@@ -106,16 +106,16 @@ public:
 
 public:
 	virtual bool	SwitchMode				();
-	virtual bool	SingleShotMode			()			{return 1 == m_iQueueSize;}
-	virtual void	SetQueueSize			(int size);
-	IC		int		GetQueueSize			() const	{return m_iQueueSize;};
+	virtual bool	SingleShotMode			()			{ return m_iQueueSize == 1; }
+	virtual void	SetQueueSize			(s8 size)	{ m_iQueueSize = size; }
+	IC		s8		GetQueueSize			() const	{ return m_iQueueSize; }
 	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
-	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
+	virtual void	StopedAfterQueueFired	(bool value){ m_bStopedAfterQueueFired = value; }
 	virtual float	GetFireDispersion		(float cartridge_k, bool for_crosshair = false);
 
 protected:
 	//максимальный размер очереди, которой можно стрельнуть
-	int				m_iQueueSize;
+	s8				m_iQueueSize;
 	//количество реально выстреляных патронов
 	int				m_iShotNum;
 	//после какого патрона, при непрерывной стрельбе, начинается отдача (сделано из-за Абакана)
@@ -134,10 +134,8 @@ protected:
 	//(даже если очень быстро нажали на курок и вызвалось FireEnd)
 	bool			m_bFireSingleShot;
 	//режимы стрельбы
-	bool			m_bHasDifferentFireModes;
 	xr_vector<s8>	m_aFireModes;
-	int				m_iCurFireMode;
-	int				m_iPrefferedFireMode;
+	s8				m_iCurFireMode;
 
 	//переменная блокирует использование
 	//только разных типов патронов
@@ -146,9 +144,8 @@ protected:
 public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
-			void	OnNextFireMode		();
-			void	OnPrevFireMode		();
-			bool	HasFireModes		() { return m_bHasDifferentFireModes; };
+			void	ChangeFireMode		(u16 cmd);
+			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 
 	virtual void	save				(NET_Packet &output_packet);
