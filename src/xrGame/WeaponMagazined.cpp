@@ -205,6 +205,12 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_reload_jammed_last_detector", "sndReloadMisLastDet", true, m_eSoundReload);
 	}
 
+	if (SoundExist(section, "snd_changecartridgetype"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_reload_change, TRUE);
+		m_sounds.LoadSound(section, "snd_changecartridgetype", "sndChangeCartridgeType", true, m_eSoundReload);
+	}
+
 	if (SoundExist(section, "snd_aim_start"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_aim_start, TRUE);
@@ -1243,6 +1249,10 @@ void CWeaponMagazined::PlayReloadSound()
 	else if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_empty) && empty)
 	{
 		PlaySound("sndReloadEmpty", get_LastFP());
+	}
+	else if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_change) && IsChangeAmmoType())
+	{
+		PlaySound("sndChangeCartridgeType", get_LastFP());
 	}
 	else
 	{
