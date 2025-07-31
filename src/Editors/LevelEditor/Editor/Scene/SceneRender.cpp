@@ -133,6 +133,15 @@ void EScene::Render( const Fmatrix& camera )
     SceneMToolsIt s_it 	= scene_tools.begin();
     SceneMToolsIt s_end	= scene_tools.end();
     for (; s_it!=s_end; s_it++) (*s_it)->AfterRender();
+
+
+    {
+        PROF_EVENT("seqParallelBeforRender");
+        for (auto& it : Device.seqParallelBeforRender)
+            it();
+
+        Device.seqParallelBeforRender.clear();
+    }
 }
 
  
