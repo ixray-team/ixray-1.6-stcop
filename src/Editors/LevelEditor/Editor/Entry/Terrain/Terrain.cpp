@@ -98,6 +98,14 @@ void CTerrain::Render(int priority, bool strictB2F)
 		if (priority == 1 && !strictB2F)
 		{
 			HMap.Draw(ScaleY, 1.f);
+
+			if (Selected())
+			{
+				EDevice->SetShader(EDevice->m_WireShader);
+				RCache.set_xform_world(_Transform());
+				u32 clr = Locked() ? 0xFFFF0000 : 0xFFFFFFFF;
+				DU_impl.DrawSelectionBoxB(TerrainObject->GetBox(), &clr);
+			}
 		}
 	}
 	else

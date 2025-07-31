@@ -11,7 +11,7 @@ private:
 	XRay::Editor::HeightmapUtils::SHeightMap HMap;
 	CEditableObject* TerrainObject;
 	bool IsPreview = false;
-	int ScaleY = 100.f;
+	int ScaleY = 50.f;
 	Fbox m_TBBox;
 
 public:
