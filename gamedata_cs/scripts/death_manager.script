@@ -162,7 +162,7 @@ function keep_item(npc, item)
     end
 
     local item_id = item:id()
-    local item_in_slot = npc:item_in_slot(1)
+    local item_in_slot = npc:item_in_slot(2)
     if item_in_slot ~= nil and item_in_slot:id() == item_id
     then
 	--[[	if level.name() == "y_arena" then
@@ -178,7 +178,7 @@ function keep_item(npc, item)
 		printf("3")
         return
     end
-    item_in_slot = npc:item_in_slot(2)
+    item_in_slot = npc:item_in_slot(3)
     if item_in_slot ~= nil and item_in_slot:id() == item_id
     then
 	--[[	if level.name() == "y_arena" then
@@ -194,7 +194,7 @@ function keep_item(npc, item)
         return
     end
 --  npc:mark_item_dropped(item)
-    local item_in_slot = npc:item_in_slot(3)
+    local item_in_slot = npc:item_in_slot(4)
     if item_in_slot ~= nil and item_in_slot:id() == item_id
     then
 		printf("5")
