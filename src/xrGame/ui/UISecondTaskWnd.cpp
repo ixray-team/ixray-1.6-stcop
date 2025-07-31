@@ -33,7 +33,8 @@
 
 UITaskListWnd::UITaskListWnd()
 	: hint_wnd(nullptr), m_background(nullptr), m_list(nullptr),
-	m_caption(nullptr), m_bt_close(nullptr), m_orig_h(0) {}
+	m_caption(nullptr), m_bt_close(nullptr), m_orig_h(0), m_show_only_secondary_tasks(false) 
+{}
 
 UITaskListWnd::~UITaskListWnd()
 {
@@ -141,6 +142,9 @@ void UITaskListWnd::UpdateList()
 		CGameTask* task = (*itb).getGameTask();
 		if ( task && task->GetTaskState() == eTaskStateInProgress )
 		{
+			if (m_show_only_secondary_tasks && task->GetTaskType() == eTaskTypeStoryline)
+				continue;
+
 			UITaskListWndItem* item = new UITaskListWndItem();
 			if ( item->init_task( task, this ) )
 			{
