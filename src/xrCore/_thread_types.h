@@ -15,9 +15,11 @@
 #include <atomic>
 
 // Atomic types
+using xr_atomic_u8  = std::atomic_uint8_t;
 using xr_atomic_u32  = std::atomic_uint32_t;
 using xr_atomic_s32  = std::atomic_int;
 using xr_atomic_bool = std::atomic_bool;
+using xr_atomic_float = std::atomic<float>;
 
 // Tasks Redefinition
 #ifdef IXR_WINDOWS

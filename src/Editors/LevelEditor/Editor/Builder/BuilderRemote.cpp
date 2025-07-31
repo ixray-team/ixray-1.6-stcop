@@ -1,6 +1,5 @@
 #include "stdafx.h"
-
-
+#include "../Tools/Terrain/ESceneTerrainTools.h"
 // !!! использовать prefix если нужно имя !!! (Связано с группами)
 
 
@@ -621,12 +620,13 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
 		{
 			if (mesh->Parent()->Surfaces()[i] == sp_it->first)
 			{
-				surf = obj->m_Surfaces[i];
+				surf = obj ? obj->m_Surfaces[i] : sp_it->first;
 				break;
 			}
 		}
 		VERIFY(surf);
-		if(surf->m_GameMtlName=="materials\\occ")
+
+		if (surf->m_GameMtlName == "materials\\occ")
 			continue;
 												
 		int m_id			= BuildMaterial(surf,sect_num,!object->IsMUStatic());
@@ -764,46 +764,54 @@ BOOL SceneBuilder::BuildMesh(	const Fmatrix& parent,
 BOOL SceneBuilder::BuildObject(CSceneObject* obj)
 {
 	CEditableObject *O = obj->GetReference();
+	return BuildEditableObject(O, obj->_Transform(), obj);
+}
+
+bool SceneBuilder::BuildEditableObject(CEditableObject* obj, Fmatrix Transform, CSceneObject* Owner)
+{
 	xr_string temp = "Building object: ";
-	temp += obj->GetName();
+	temp += Owner ? Owner->GetName() : obj->GetName();
 
 	UI->SetStatus(temp.c_str());
 
-	Fmatrix T 			= obj->_Transform();
-	
-	Fmatrix cv 			= Fidentity;
+	Fmatrix T = Transform;
 
-	if(m_save_as_object)
+	Fmatrix cv = Fidentity;
+
+	if (m_save_as_object)
 	{
-		cv.k.z 			= -1.f;
+		cv.k.z = -1.f;
 
-		Fmatrix 	TM;
+		Fmatrix TM;
 
-		TM.mul		( Fmatrix().mul(cv,T), cv );
-		TM.mulB_44	( cv );
-		T 			= TM;
+		TM.mul(Fmatrix().mul(cv, T), cv);
+		TM.mulB_44(cv);
+		T = TM;
 	}
 
 	// parse mesh data
-	for(EditMeshIt M=O->FirstMesh();M!=O->LastMesh();M++){
-		CSector* S = PortalUtils.FindSector(obj,*M);
-		int sect_num = S?S->m_sector_num:m_iDefaultSectorNum;
-		if (!BuildMesh(T,O,*M,sect_num,l_verts,l_vert_cnt,l_vert_it,l_faces,l_face_cnt,l_face_it,l_smgroups,obj->_Transform(), obj))
-			return FALSE;
-		// fill DI vertices
-		for (u32 pt_id=0; pt_id<(*M)->GetVCount(); pt_id++)
-		{
-			Fvector						v_res1, v_res2;
-			const Fvector&	v_src 		= (*M)->m_Vertices[pt_id];
+	for (EditMeshIt M = obj->FirstMesh(); M != obj->LastMesh(); M++)
+	{
+		CSector* S = PortalUtils.FindSector(Owner, *M);
+		int sect_num = S ? S->m_sector_num : m_iDefaultSectorNum;
+		if (!BuildMesh(T, obj, *M, sect_num, l_verts, l_vert_cnt, l_vert_it, l_faces, l_face_cnt, l_face_it, l_smgroups, Transform, Owner))
+			return false;
 
-			Fvector 			tmp;
-			cv.transform_tiny	( tmp , 	v_src );
-			T.transform_tiny	( v_res1, 	tmp );
+		// fill DI vertices
+		for (u32 pt_id = 0; pt_id < (*M)->GetVCount(); pt_id++)
+		{
+			Fvector v_res1, v_res2;
+			const Fvector& v_src = (*M)->m_Vertices[pt_id];
+
+			Fvector tmp;
+			cv.transform_tiny(tmp, v_src);
+			T.transform_tiny(v_res1, tmp);
 
 			l_scene_stat->add_svert(v_res1);
 		}
 	}
-	return TRUE;
+
+	return true;
 }
 
 int	GetModelIdx( LPCSTR model_name )
@@ -1299,14 +1307,15 @@ BOOL SceneBuilder::ParseStaticObjects(ObjectList& lst, LPCSTR prefix, bool b_sel
 {
 	BOOL bResult = TRUE;
 	SPBItem* pb	= UI->ProgressStart(lst.size(),"Parse static objects...");
-	for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
+	for (ObjectIt _F = lst.begin(); _F != lst.end(); _F++)
 	{
 		pb->Inc((*_F)->GetName());
 		if (UI->NeedAbort()) break;
 		if(b_selected_only && !(*_F)->Selected())
 			continue;
 
-		switch((*_F)->FClassID){
+		switch((*_F)->FClassID)
+		{
 		case OBJCLASS_LIGHT:
 			bResult = BuildLight((CLight*)(*_F));
 			break;
@@ -1317,13 +1326,22 @@ BOOL SceneBuilder::ParseStaticObjects(ObjectList& lst, LPCSTR prefix, bool b_sel
 			l_portals.push_back(b_portal());
 			BuildPortal(&l_portals.back(),(CPortal*)(*_F));
 			break;
-		case OBJCLASS_SCENEOBJECT:{
+		case OBJCLASS_TERRAIN:
+		{
+			CTerrain* obj = (CTerrain*)(*_F);
+			bResult = BuildEditableObject(obj->GetReference(), obj->_Transform(), nullptr);
+			break;
+		}
+		case OBJCLASS_SCENEOBJECT:
+		{
 			CSceneObject *obj = (CSceneObject*)(*_F);
 			if (obj->IsStatic()) 		
 				bResult = BuildObject(obj);
 			else if (obj->IsMUStatic())
 				bResult = BuildMUObject(obj);
-		}break;
+
+			break;
+		}
 /*        case OBJCLASS_GROUP:{
 			CGroupObject* group = (CGroupObject*)(*_F);
 
@@ -1333,6 +1351,7 @@ BOOL SceneBuilder::ParseStaticObjects(ObjectList& lst, LPCSTR prefix, bool b_sel
 			bResult = ParseStaticObjects(grp_lst, group->Name, b_selected_only);
 		}break;   */
 		}// end switch
+
 		if (!bResult)
 		{
 			ELog.DlgMsg(mtError,"Failed to build object: '%s'",(*_F)->GetName());
@@ -1342,7 +1361,6 @@ BOOL SceneBuilder::ParseStaticObjects(ObjectList& lst, LPCSTR prefix, bool b_sel
 	UI->ProgressEnd(pb);
 	return bResult;
 }
-
 
 BOOL SceneBuilder::CompileStatic(bool b_selected_only)
 {
