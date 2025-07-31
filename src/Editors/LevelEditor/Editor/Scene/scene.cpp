@@ -273,13 +273,16 @@ void EScene::OnFrame( float dT )
 void EScene::Reset()
 {
 	// unload scene
-	Unload				(FALSE);
+	Unload(FALSE);
+	full_name.clear();
+
 	// reset tools
-	SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
-	SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-	for (; t_it!=t_end; t_it++)
-		if (t_it->second&&t_it->first!=OBJCLASS_DUMMY)
-			t_it->second->Reset	();
+	SceneToolsMapPairIt t_it = m_SceneTools.begin();
+	SceneToolsMapPairIt t_end = m_SceneTools.end();
+	for (; t_it != t_end; t_it++)
+		if (t_it->second && t_it->first != OBJCLASS_DUMMY)
+			t_it->second->Reset();
+
 	g_scene_physics.UpdateLevelCollision();
 }
 
