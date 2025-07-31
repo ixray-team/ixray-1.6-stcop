@@ -45,6 +45,7 @@ class CMissile;
 class CExplosiveRocket;
 class CGrenade;
 class CUsableScriptObject;
+class CBreakableObject;
 
 class IKinematics;
 class CAI_Trader;
@@ -98,6 +99,7 @@ public:
 	virtual CExplosiveRocket			*cast_explosive_rocket		()						{return nullptr;}
 	virtual CGrenade					*cast_grenade				()						{return nullptr;}
 	virtual CUsableScriptObject			*cast_usable_script_object	()						{return nullptr;}
+	virtual CBreakableObject			*cast_breakable_object		()						{return nullptr;}
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
 	virtual bool						use						(CGameObject* who_use)		{return CUsableScriptObject::use(who_use);};

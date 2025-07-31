@@ -82,14 +82,17 @@ bool CBaseGraviZone ::IdleState()
 	{
 		if(m_dwTeleTime> m_dwTimeToTele)
 		{
-			for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+			for (SZoneObjectInfo& info : m_ObjectInfoMap)
 			{
-				CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>( (*it).object );
-
-				if(GO && GO->PPhysicsShell() && Telekinesis().is_active_object(GO))
+				if(info.object && !info.object->getDestroy())
 				{
-					Telekinesis().deactivate(GO);
-					StopTeleParticles(GO);
+					CPhysicsShellHolder* GO = info.object->cast_physics_shell_holder();
+
+					if (GO && GO->PPhysicsShell() && Telekinesis().is_active_object(GO))
+					{
+						Telekinesis().deactivate(GO);
+						StopTeleParticles(GO);
+					}
 				}
 			}
 		}
@@ -97,14 +100,17 @@ bool CBaseGraviZone ::IdleState()
 		{
 			m_dwTeleTime = 0;
 
-			for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 
+			for (SZoneObjectInfo& info : m_ObjectInfoMap)
 			{
-				CPhysicsShellHolder * GO = smart_cast<CPhysicsShellHolder *>( (*it).object );
-
-				if(GO && GO->PPhysicsShell() && !Telekinesis().is_active_object(GO))
+				if (info.object && !info.object->getDestroy())
 				{
-					Telekinesis().activate(GO, 0.1f, m_fTeleHeight, m_dwTimeToTele);
-					PlayTeleParticles(GO);
+					CPhysicsShellHolder* GO = info.object->cast_physics_shell_holder();
+
+					if (GO && GO->PPhysicsShell() && !Telekinesis().is_active_object(GO))
+					{
+						Telekinesis().activate(GO, 0.1f, m_fTeleHeight, m_dwTimeToTele);
+						PlayTeleParticles(GO);
+					}
 				}
 			}
 		}
