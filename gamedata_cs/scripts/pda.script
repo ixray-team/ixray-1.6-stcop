@@ -49,14 +49,16 @@ function fill_faction_state(state)
         	state.target_desc = ""
         end
         state.location = game.translate_string("st_location_bandit")
-        state.war_state1 = faction:get_war_stage_icon(2)
-        state.war_state_hint1 = faction:get_war_stage_icon(2)
-		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
-		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
-		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		if faction ~= nil then
+			state.war_state1 = faction:get_war_stage_icon(2)
+			state.war_state_hint1 = faction:get_war_stage_icon(2)
+			state.war_state2 = faction:get_war_stage_icon(3)
+			state.war_state_hint2 = faction:get_war_stage_icon(3)
+			state.war_state3 = faction:get_war_stage_icon(4)
+			state.war_state_hint3 = faction:get_war_stage_icon(4)
+			state.war_state4 = faction:get_war_stage_icon(5)
+			state.war_state_hint4 = faction:get_war_stage_icon(5)
+		end
 		state.war_state5 = ""
 		state.war_state_hint5 = ""
 
@@ -80,12 +82,14 @@ function fill_faction_state(state)
         	state.target_desc = ""
         end
         state.location = game.translate_string("st_location_csky")
-        state.war_state1 = faction:get_war_stage_icon(1)
-        state.war_state_hint1 = faction:get_war_stage_icon(1)
-		state.war_state2 = faction:get_war_stage_icon(2)
-		state.war_state_hint2 = faction:get_war_stage_icon(2)
-		state.war_state3 = faction:get_war_stage_icon(3)
-		state.war_state_hint3 = faction:get_war_stage_icon(3)
+		if faction ~= nil then
+			state.war_state1 = faction:get_war_stage_icon(1)
+			state.war_state_hint1 = faction:get_war_stage_icon(1)
+			state.war_state2 = faction:get_war_stage_icon(2)
+			state.war_state_hint2 = faction:get_war_stage_icon(2)
+			state.war_state3 = faction:get_war_stage_icon(3)
+			state.war_state_hint3 = faction:get_war_stage_icon(3)
+		end
 		state.war_state4 = ""
 		state.war_state_hint4 = ""
 		state.war_state5 = ""
@@ -105,17 +109,19 @@ function fill_faction_state(state)
         end
         state.location = game.translate_string("st_location_dolg")
 
-        state.war_state1 = faction:get_war_stage_icon(2)
-        state.war_state_hint1 = faction:get_war_stage_icon(2)
-		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
-		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
-		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
-		state.war_state5 = faction:get_war_stage_icon(6)
-		state.war_state_hint5 = faction:get_war_stage_icon(6)
-
+		if faction ~= nil then
+			state.war_state1 = faction:get_war_stage_icon(2)
+			state.war_state_hint1 = faction:get_war_stage_icon(2)
+			state.war_state2 = faction:get_war_stage_icon(3)
+			state.war_state_hint2 = faction:get_war_stage_icon(3)
+			state.war_state3 = faction:get_war_stage_icon(4)
+			state.war_state_hint3 = faction:get_war_stage_icon(4)
+			state.war_state4 = faction:get_war_stage_icon(5)
+			state.war_state_hint4 = faction:get_war_stage_icon(5)
+			state.war_state5 = faction:get_war_stage_icon(6)
+			state.war_state_hint5 = faction:get_war_stage_icon(6)
+		end
+		
     elseif(state.faction_id=="freedom") then
         state.name = game.translate_string("ui_st_name_freedom")
         state.icon = "freedom_wide"
@@ -129,17 +135,18 @@ function fill_faction_state(state)
         end
         state.location = game.translate_string("st_location_freedom")
 
-        state.war_state1 = faction:get_war_stage_icon(4)
-        state.war_state_hint1 = faction:get_war_stage_icon(4)
-		state.war_state2 = faction:get_war_stage_icon(5)
-		state.war_state_hint2 = faction:get_war_stage_icon(5)
-		state.war_state3 = faction:get_war_stage_icon(6)
-		state.war_state_hint3 = faction:get_war_stage_icon(6)
-		state.war_state4 = faction:get_war_stage_icon(7)
-		state.war_state_hint4 = faction:get_war_stage_icon(7)
-		state.war_state5 = faction:get_war_stage_icon(8)
-		state.war_state_hint5 = faction:get_war_stage_icon(8)
-
+		if faction ~= nil then
+			state.war_state1 = faction:get_war_stage_icon(4)
+			state.war_state_hint1 = faction:get_war_stage_icon(4)
+			state.war_state2 = faction:get_war_stage_icon(5)
+			state.war_state_hint2 = faction:get_war_stage_icon(5)
+			state.war_state3 = faction:get_war_stage_icon(6)
+			state.war_state_hint3 = faction:get_war_stage_icon(6)
+			state.war_state4 = faction:get_war_stage_icon(7)
+			state.war_state_hint4 = faction:get_war_stage_icon(7)
+			state.war_state5 = faction:get_war_stage_icon(8)
+			state.war_state_hint5 = faction:get_war_stage_icon(8)
+		end
 
     elseif(state.faction_id=="stalker") then
         state.name = game.translate_string("ui_st_name_stalker")
@@ -154,14 +161,16 @@ function fill_faction_state(state)
         end
 
         state.location = game.translate_string("st_location_stalker")
-        state.war_state1 = faction:get_war_stage_icon(2)
-        state.war_state_hint1 = faction:get_war_stage_icon(2)
-		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
-		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
-		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		if faction ~= nil then
+			state.war_state1 = faction:get_war_stage_icon(2)
+			state.war_state_hint1 = faction:get_war_stage_icon(2)
+			state.war_state2 = faction:get_war_stage_icon(3)
+			state.war_state_hint2 = faction:get_war_stage_icon(3)
+			state.war_state3 = faction:get_war_stage_icon(4)
+			state.war_state_hint3 = faction:get_war_stage_icon(4)
+			state.war_state4 = faction:get_war_stage_icon(5)
+			state.war_state_hint4 = faction:get_war_stage_icon(5)
+		end
 		state.war_state5 = ""
 		state.war_state_hint5 = ""
 	else
