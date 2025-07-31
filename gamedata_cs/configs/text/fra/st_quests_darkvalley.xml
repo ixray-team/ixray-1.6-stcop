@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Dйcouvrir ce qui se passe а la station-service</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>D'йtranges lumiиres ont йtй aperзues de nuit а la station-service dйsaffectйe. Allez voir ce qu'il en est et йliminez toute menace.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Suivre le signal du PDA des Crocs</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Le technicien de la Libertй a piratй la frйquence du PDA des Crocs. Vous pouvez maintenant suivre ses dйplacements. D'aprиs le signal, les Crocs se trouve actuellement а la Dйcharge. Suivez-le.</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Trouver ce qui s'est passй а l'avant-poste</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Un avant-poste de la Libertй s'est encore fait attaquer. Trouvez ce qui s'est passй et voyez s'il reste des survivants.</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Aller voir le commandant</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Allez voir le commandant pour recevoir vos ordres.</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Parler au commandant</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Interrogez le commandant sur les Crocs.</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Trouver la base de la Libertй</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>D'aprиs les mineurs, les Crocs est parti pour la Vallйe obscure а la recherche de composants spйciaux. Rendez-vous dans la base de la Libertй pour vous renseigner sur les Crocs.</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Parler au commandant de l'avant-poste</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Parlez au commandant de l'avant-poste.</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Livrer les munitions а l'avant-poste</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Apportez les munitions а l'avant-poste.</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Apporter le PDA а Chekhov</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>Le PDA du commandant contient de nombreuses informations qui peuvent aider la Libertй а comprendre qui sont les mystйrieux agresseurs et comment ils pйnиtrent dans la Vallйe obscure. Apportez le PDA du commandant au chef de la Libertй.</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Dйtruire le repaire des sangliers</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Dйtruisez le repaire des sangliers.</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Йliminer les mercenaires</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>La base principale des mercenaires a йtй dйcouverte. Aidez la Libertй а la dйtruire pour faire cesser les attaques. La Libertй aura alors le contrфle absolu de la Vallйe obscure.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Trouver le PDA actif</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>Le PDA de l'un des combattants de la Libertй tuйs а l'avant-poste est toujours actif. Trouvez-le ! Il peut contenir des informations intйressantes.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Apporter le PDA а Chekhov</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>Le PDA de l'un des combattants de la Libertй tuйs а l'avant-poste contient un enregistrement d'une conversation entre les attaquants. Il permettra de les identifier. Apportez le PDA а Chekhov.</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Rйcupйrer les munitions auprиs d'Ashot</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Rйcupйrez les munitions pour l'avant-poste de la Libertй auprиs d'Ashot.</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Aider la Libertй а йliminer les mercenaires</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Aidez les membres de la Libertй а йliminer les mercenaires.</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Йliminer le pseudo-chien</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Tuez le pseudo-chien qui fait des misиres а la base de la Libertй.</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Tuer le commandant</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>Le PDA de l'avant-poste contenait l'enregistrement d'une conversation entre les attaquants. Apparemment, le commandant en personne leur vendait des informations qui leur permettaient d'attaquer les patrouilles de la Libertй. Trouvez le traоtre et livrez-le а Chekhov, mort ou vif !</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Trouver l'ami du technicien</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Apporter le composant au technicien</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Apportez le composant au technicien.</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Trouvez l'ami du technicien.</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Trouver le commandant</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Trouvez le commandant.</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Rйpondre au SOS</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Aidez а repousser l'attaque.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Capturer les antennes</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Capturez et gardez le contrфle des antennes pour scanner la rйgion.</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Capture l'antenne</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Capturez et gardez le contrфle des antennes pour scanner la rйgion.</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Prendre le PDA du commandant</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>Les amis du commandant l'ont tuй dиs que la Libertй a commencй а le chercher. Son PDA contient d'importantes informations sur les ennemis de la Libertй.</text>
+	</string>
+	<string id="val_test">
+		<text>Aide</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Йliminer le groupe de bandits</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Vous avez trouvй un groupe de bandits dans la station-service abandonnйe. Йliminez-les !</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Revenir pour la rйcompense</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Vous avez trouvй et йliminй un groupe de bandits dans la station-service abandonnйe. Allez le dire au barman !</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Trouver des infos sur les canons de fusil de prйcision</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Le technicien de la Libertй, Yar, est un spйcialiste des armes de prйcision. Il cherche des informations sur les canons de fusil de sniper.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Trouver des infos sur les stabilisateurs йlectroniques pour fusils de prйcision</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Yar le technicien vous rйcompensera grassement si vous lui apportez des informations sur les mйcanismes de stabilisation йlectronique des fusils de prйcision.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Trouver des infos sur les freins de bouche pour fusils de prйcision</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Yar a besoin d'informations sur les freins de bouche des fusils de prйcision. Il sera ensuite capable de vous en fabriquer un similaire.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Rapporter la lunette 8x</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Un des mecs du coin a une lunette de visйe de premiиre sur son flingue, le genre qu'on trouve pas dans la Zone... J'ai fait tout ce que j'ai pu, mais il refuse de me la vendre. Il est parti pour le Cordon avec l'une de nos patrouilles. Nos gars sont jamais revenus, donc je me dis que ce stalker a dы y rester. Rapporte-moi sa lunette, que je puisse l'offrir а Chekhov ! J'ai bien envie de passer commandant, moi !</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Rapporter la clй USB contenant des films</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Tu veux bien me filer un coup de main ? Ganja et moi, on йtait peinards, chez lui en train de mater un film sur son portable quand le commandant nous a chopйs et a commencй а nous faire un sermon comme quoi j'йtais en service, bla bla bla... Il voulait pйter le PC, mais on l'en a empкchй, alors il s'est contentй de prendre la clй USB et de la balancer de l'autre cфtй de la clфture, dans un coin radioactif... Si tu la rйcupиres, Ganja te dйdommagera. </text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Rapporter la guitare de Serega</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Quelqu'un a piquй la guitare de Serega ! T'y crois, toi ? C'est le seul qui sache jouer dans le coin et il se dйmerde pas mal, le gars, pas comme ces autres empaffйs... On a vite compris qui йtait le voleur, mais cet enfoirй l'a planquйe. Faut que tu me rapportes la guitare, ok ? Serega refuse de jouer sur un autre instrument...</text>
+	</string>
+</string_table>

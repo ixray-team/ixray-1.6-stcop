@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_additional_quest_1_name">
+		<text>Documentos de la base militar.</text>
+	</string>
+	<string id="esc_additional_quest_1_text">
+		<text>Documentos de la base militar.</text>
+	</string>
+	<string id="esc_additional_quest_2_name">
+		<text>Comida</text>
+	</string>
+	<string id="esc_additional_quest_2_text">
+		<text>Comida</text>
+	</string>
+	<string id="esc_bring_habar">
+		<text>Devuelve el botнn al comerciante.</text>
+	</string>
+	<string id="esc_bring_habar_text">
+		<text>Devuelve el maletнn con el botнn al comerciante.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_name">
+		<text>Defiende la base stalker.</text>
+	</string>
+	<string id="esc_defend_stalkers_base_text">
+		<text>Defiende del ataque la base stalker.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_name">
+		<text>Defiende a la patrulla.</text>
+	</string>
+	<string id="esc_defend_stalkers_bus_station_text">
+		<text>Defiende a la patrulla de stalkers cerca de la parada del autobъs.</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_name">
+		<text>Ayuda a rechazar el ataque.</text>
+	</string>
+	<string id="esc_defend_stalkers_tonnel_text">
+		<text>Ayuda a rechazar el ataque.</text>
+	</string>
+	<string id="esc_dopros">
+		<text>Interroga al comandante militar.</text>
+	</string>
+	<string id="esc_dopros_text">
+		<text>Interroga a Khaletskiy y averigua dуnde estб el maletнn con el botнn que necesita el comerciante.</text>
+	</string>
+	<string id="esc_driver_friend_1_name">
+		<text>Encuentra la PDA.</text>
+	</string>
+	<string id="esc_driver_friend_1_text">
+		<text>Encuentra la PDA con la informaciуn valiosa sobre el soldado que muriу en las anomalнas.</text>
+	</string>
+	<string id="esc_driver_friend_2_name">
+		<text>Devuelve la PDA.</text>
+	</string>
+	<string id="esc_driver_friend_2_text">
+		<text>Devuelve la PDA al sargento Lambee.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9">
+		<text>Elimina a los militares en el ascensor.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_5_9_text">
+		<text>Destruye a la unidad militar vista por los exploradores en el ascensor.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_name">
+		<text>Elimina a los bandidos.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_name">
+		<text>Obtйn tu recompensa.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_reward_text">
+		<text>Recibe tu recompensa del comerciante. Los bandidos han sido eliminados y el camino a la base estб despejado.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_6_6_text">
+		<text>Elimina a los bandidos de la granja abandonada. Asн dejarбn de robarles a los stalkers que traen el botнn de la Zona a la base de los stalkers.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11">
+		<text>Elimina a los militares en el depуsito.</text>
+	</string>
+	<string id="esc_eliminate_smart_military_7_11_text">
+		<text>Destruye al pelotуn militar visto por los exploradores en el depуsito. El pelotуn es la fuerza militar principal que han enviado para rescatar a Khaletskiy.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8">
+		<text>Elimina a los francotiradores.</text>
+	</string>
+	<string id="esc_eliminate_smart_stalker_6_8_text">
+		<text>Elimina a los francotiradores.</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7">
+		<text>Conquista la base de los stalkers.</text>
+	</string>
+	<string id="esc_eliminate_stalkerbase_5_7_text">
+		<text>Conquista la base de los stalkers.</text>
+	</string>
+	<string id="esc_find_upgrade_1_name">
+		<text>Encuentra la actualizaciуn.</text>
+	</string>
+	<string id="esc_find_upgrade_1_text">
+		<text>Uno de mis amigos tйcnicos me enviу a un tipo con una unidad de datos con informaciуn valiosa sobre una actualizaciуn de AK. Sin embargo, el mensajero se metiу en la guarida de un pseudoperro y muriу. Todos a los que les he pedido traerme esa unidad se han echado atrбs. їQuй me dices tъ? Te prometo que la recompensa valdrб la pena.</text>
+	</string>
+	<string id="esc_find_upgrade_2_name">
+		<text>Encuentra la actualizaciуn.</text>
+	</string>
+	<string id="esc_find_upgrade_2_text">
+		<text>Uno de mis amigos tйcnicos me enviу a un tipo con una unidad de datos con informaciуn valiosa sobre una actualizaciуn de escopeta. Sin embargo, el mensajero se metiу en la guarida de un pseudoperro y muriу. Todos a los que les he pedido traerme esa unidad se han echado atrбs. їQuй me dices tъ? Te prometo que la recompensa valdrб la pena.</text>
+	</string>
+	<string id="esc_novice_stalker_1_name">
+		<text>Ayuda al stalker.</text>
+	</string>
+	<string id="esc_novice_stalker_1_text">
+		<text>Ayuda al stalker a rechazar el ataque de la jaurнa de perros ciegos.</text>
+	</string>
+	<string id="esc_novice_stalker_2_name">
+		<text>Escolta al stalker.</text>
+	</string>
+	<string id="esc_novice_stalker_2_text">
+		<text>Escolta al stalker al pueblo de los novatos.</text>
+	</string>
+	<string id="esc_novice_stalker_3_name">
+		<text>Recibe tu recompensa.</text>
+	</string>
+	<string id="esc_novice_stalker_3_text">
+		<text>Recibe la recompensa de Wolf por salvar al stalker de la jaurнa de perros ciegos.</text>
+	</string>
+	<string id="esc_prapor">
+		<text>Reъnete el alfйrez.</text>
+	</string>
+	<string id="esc_prapor_text">
+		<text>Reъnete el alfйrez.</text>
+	</string>
+	<string id="esc_reach_garbage">
+		<text>Reъnete con el excavador en el vertedero.</text>
+	</string>
+	<string id="esc_reach_garbage_text">
+		<text>Reъnete con el excavador en el vertedero.</text>
+	</string>
+	<string id="esc_reach_stalker_base">
+		<text>Reъnete con los stalkers mбs allб del terraplйn.</text>
+	</string>
+	<string id="esc_reach_stalker_base_text">
+		<text>Habla con Valerian, el jefe de los stalkers. Puede que sepa algo del botнn que busca Sidorovich.</text>
+	</string>
+	<string id="esc_reach_trader">
+		<text>Habla con el comerciante.</text>
+	</string>
+	<string id="esc_reach_trader_text">
+		<text>Habla con el comerciante.</text>
+	</string>
+	<string id="esc_rescue_patrol">
+		<text>Ayuda a los stalkers.</text>
+	</string>
+	<string id="esc_rescue_patrol_text">
+		<text>Ayuda a los stalkers.</text>
+	</string>
+	<string id="esc_stalker_enemy_name">
+		<text>Recupera la confianza de los stalkers.</text>
+	</string>
+	<string id="esc_stalker_enemy_text">
+		<text>Tus relaciones con los stalkers estбn arruinadas. Debes recuperar su confianza con la ayuda de Sidorovich. </text>
+	</string>
+	<string id="esc_take_habar">
+		<text>Recoge el botнn.</text>
+	</string>
+	<string id="esc_take_habar_text">
+		<text>Recoge el botнn.</text>
+	</string>
+	<string id="esc_take_prisoner_secret">
+		<text>Encuentra el escondite de Khaletskiy.</text>
+	</string>
+	<string id="esc_take_prisoner_secret_text">
+		<text>Encuentra el escondite de Khaletskiy.</text>
+	</string>
+	<string id="esc_take_weapon_name">
+		<text>Recoge las armas.</text>
+	</string>
+	<string id="esc_take_weapon_text">
+		<text>Recoge las armas.</text>
+	</string>
+	<string id="esc_talk2_comm">
+		<text>Habla con Khaletskiy.</text>
+	</string>
+	<string id="esc_talk2_comm_text">
+		<text>Habla con Khaletskiy.</text>
+	</string>
+	<string id="esc_talk2_leader">
+		<text>Reъnete con el jefe de los stalkers.</text>
+	</string>
+	<string id="esc_talk2_leader_2">
+		<text>Habla con el jefe de los stalkers.</text>
+	</string>
+	<string id="esc_talk2_leader_2_text">
+		<text>Habla con el jefe de los stalkers.</text>
+	</string>
+	<string id="esc_talk2_leader_text">
+		<text>Reъnete con el jefe de los stalkers.</text>
+	</string>
+	<string id="esc_talk2_trader">
+		<text>Habla con el comerciante.</text>
+	</string>
+	<string id="esc_wolf_brother_1_name">
+		<text>Libera al hermano de Wolf.</text>
+	</string>
+	<string id="esc_wolf_brother_1_text">
+		<text>Libera al hermano de Wolf.</text>
+	</string>
+	<string id="esc_wolf_brother_2_name">
+		<text>Escolta al hermano de Wolf al pueblo de los novatos.</text>
+	</string>
+	<string id="esc_wolf_brother_2_text">
+		<text>Escolta al hermano de Wolf al pueblo de los novatos.</text>
+	</string>
+	<string id="esc_wolf_brother_3_name">
+		<text>Recoge tu recompensa.</text>
+	</string>
+	<string id="esc_wolf_brother_3_text">
+		<text>Recoge tu recompensa de Wolf.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_name">
+		<text>Encuentra informaciуn sobre el equilibrado de las partes automбticas</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_ak74u_text">
+		<text>Encuentra informaciуn sobre el equilibrado de las partes automбticas para Van, el tйcnico stalker cerca del Cordуn.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_name">
+		<text>Encuentra informaciуn sobre los mecanismos de recarga de las escopetas</text>
+	</string>
+	<string id="st_esc_find_flesh_up_ac_wincheaster1300_text">
+		<text>Con la informaciуn sobre los mecanismos de recarga, el tйcnico stalker serб capaz de aumentar significativamente la cadencia de disparo de una escopeta.</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_name">
+		<text>Encuentra informaciуn sobre la estabilizaciуn electrуnica</text>
+	</string>
+	<string id="st_esc_find_flesh_up_bd_wincheaster1300_text">
+		<text>El tйcnico stalker puede montar un dispositivo que aumenta la precisiуn de una escopeta, pero le falta informaciуn.</text>
+	</string>
+	<string id="esc_recover_item_1_name">
+		<text>Entrega el vodka "mбgico"</text>
+	</string>
+	<string id="esc_recover_item_1_text">
+		<text>Aquн en la Zona tenнamos un quнmico. La verdad es que no era quнmico, pero hacнa un vodka "mбgico". Realmente tenнa algo... Un par de tragos y te olvidabas de todo: Zona, mutantes y anomalнas, Ўde todo! No tenнas miedo y te importaba un carajo quiйn eras o quй te ocurrнa. Aunque nos metнan una clavada por йl, seguнa valiendo la pena. Pero un dнa alguien decidiу envenenar al quнmico, no se sabe muy bien si por envidia o por avaricia. Lo liquidaron, y con eso se acabу el suministro de vodka... Aunque he oнdo que el quнmico tenнa algunos alijos por la zona, y sй dуnde hay uno. Trбeme una botella de ese licor mбgico y te la pagarй generosamente.</text>
+	</string>
+	<string id="esc_recover_item_2_name">
+		<text>Recupera el AKM-47/2 de premio</text>
+	</string>
+	<string id="esc_recover_item_2_text">
+		<text>Mira colega, colecciono armas raras. Tengo tantas que llenarнa un museo, pero me sigue faltando una: un AKM-47/2 de premio. Ese AK no es solo una buena arma, es una pieza realmente rara, como nunca has visto, que se utilizaba para matar mutantes. Dicen que su dueсo no solamente era un buen tirador, sino toda una leyenda en la Zona que podнa librarse de todo y escapar de cualquier anomalнa... Hace tiempo que no sй nada de ese stalker, pero sн que he oнdo hablar del arma: estб escondida en un lugar secreto, difнcil de alcanzar para mн. Trбeme esa arma, mercenario.</text>
+	</string>
+	<string id="esc_recover_item_3_name">
+		<text>Recupera el detector "de la suerte"</text>
+	</string>
+	<string id="esc_recover_item_3_text">
+		<text>Ayъdame, mercenario. Hace poco me comprй un detector nuevo y mбs potente y tirй el viejo a una anomalнa para celebrarlo. Pero resulta que este nuevo detector no me trae mucha suerte: llevo tres semanas sin conseguir un artefacto. Supongo que el detector estб bien, pero quiero recuperar el viejo. Trбemelo y no te arrepentirбs.</text>
+	</string>
+	<string id="esc_recover_item_4_name">
+		<text>Entrega un botiquнn especial</text>
+	</string>
+	<string id="esc_recover_item_4_text">
+		<text>Mercenario, hace poco, un viejo amigo mнo escapу a los bandidos del vertedero. Esos hijos de puta le hicieron correr entre las anomalнas del terraplйn solamente para divertirse. Los niveles de radiaciуn ahн son casi letales. Ahora apenas puede moverse, y las medicinas normales antirradiaciуn no le sirven. Necesita algo mбs fuerte. Dicen que los chicos del ejйrcito tienen botiquines especiales que podrнan ayudarlo. Asн que, si me consigues uno, te estarй muy agradecido.</text>
+	</string>
+</string_table>

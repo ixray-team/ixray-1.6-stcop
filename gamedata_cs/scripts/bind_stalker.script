@@ -1,20 +1,20 @@
 function init    (obj)
-        xr_motivator.AddToMotivator(obj)
+				xr_motivator.AddToMotivator(obj)
 end
 
 function actor_init    (npc)
-        npc:bind_object(actor_binder(npc))
+				npc:bind_object(actor_binder(npc))
 end
 
 delayed_alife_release_objects = {}
 to_delayed_alife_release_objects = {}
 
 local game_difficulty_by_num = {
-        [0] = "gd_novice",
-        [1] = "gd_stalker",
-        [2] = "gd_veteran",
-        [3] = "gd_master"
-        }
+				[0] = "gd_novice",
+				[1] = "gd_stalker",
+				[2] = "gd_veteran",
+				[3] = "gd_master"
+				}
 
 lasthealth  = 0
 lasttime        = 0
@@ -24,53 +24,53 @@ local weapon_hide = {}
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:__init (obj) super(obj)
-        self.bCheckStart = false
-        self.weather_manager = level_weathers.get_weather_manager()
-        --self.actor_detector = xr_detector.actor_detector()
-        self.last_level_name = nil
+				self.bCheckStart = false
+				self.weather_manager = level_weathers.get_weather_manager()
+				--self.actor_detector = xr_detector.actor_detector()
+				self.last_level_name = nil
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
-        printf("actor net spawn")
+				printf("actor net spawn")
 
-        level.show_indicators()
+				level.show_indicators()
 
-        self.bCheckStart = true
-        self.weapon_hide = false -- спрятано или нет оружие при разговоре.
+				self.bCheckStart = true
+				self.weapon_hide = false -- спрятано или нет оружие при разговоре.
 		self.weapon_hide_in_dialog = false
-        weapon_hide = {} -- устанавливаем глобальный дефолтовый флаг.
+				weapon_hide = {} -- устанавливаем глобальный дефолтовый флаг.
 
-        if object_binder.net_spawn(self,data) == false then
-                return false
-        end
+				if object_binder.net_spawn(self,data) == false then
+								return false
+				end
 
-        db.add_actor(self.object)
+				db.add_actor(self.object)
 
-        if self.st.disable_input_time == nil then
-                level.enable_input()
-        end
-        xr_s.on_game_load()                                    --' Distemper 03.2008 --
-        self.weather_manager:reset()
+				if self.st.disable_input_time == nil then
+								level.enable_input()
+				end
+				xr_s.on_game_load()                                    --' Distemper 03.2008 --
+				self.weather_manager:reset()
 --        game_stats.initialize ()
 
 --        if(actor_stats.add_to_ranking~=nil)then
 --                actor_stats.add_to_ranking(self.object:id())
 --        end
 
-        --' Загружаем настройки дропа
-        death_manager.init_drop_settings()
+				--' Загружаем настройки дропа
+				death_manager.init_drop_settings()
 
-        --'Устанавливаем ссылку на таскменеджер
-        self.task_manager = task_manager.get_task_manager()
+				--'Устанавливаем ссылку на таскменеджер
+				self.task_manager = task_manager.get_task_manager()
 
-        -- Анремте это, чтобы пропустить интро на марше.
-        --self.object:give_info_portion("mar_lvl_sim")
-        if level.name() ~= "marsh" then
-        	sim_board.get_sim_board():start_sim()
-        end
+				-- Анремте это, чтобы пропустить интро на марше.
+				--self.object:give_info_portion("mar_lvl_sim")
+				if level.name() ~= "marsh" then
+					sim_board.get_sim_board():start_sim()
+				end
 
-        --spawn_items.main()
-        self.spawn_frame = device().frame
+				--spawn_items.main()
+				self.spawn_frame = device().frame
 		self.already_jumped = false
 		benchmark.main()							          --' Distemper 06.2008 --
 
@@ -78,141 +78,145 @@ function actor_binder:net_spawn(data)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
-         xr_sound.stop_sounds_by_id(self.object:id())
+		xr_sound.stop_sounds_by_id(self.object:id())
+		local board_factions = sim_board.get_sim_board().players
+		for k,v in pairs (board_factions) do
+			xr_sound.stop_sounds_by_id(v.id)
+		end
 		if(actor_stats.remove_from_ranking~=nil)then
-                actor_stats.remove_from_ranking(self.object:id())
-        end
+			actor_stats.remove_from_ranking(self.object:id())
+		end
 		xr_effects.stc_stop_particle_sounds()
-    get_console():execute("hud_crosshair 1")
-    get_console():execute("hud_weapon 1")
+		get_console():execute("hud_crosshair 1")
+		get_console():execute("hud_weapon 1")
 --    get_console():execute("r2_dof -0.250000,1.400000,200.000000")
---        game_stats.shutdown ()
-        db.del_actor(self.object)
+--     game_stats.shutdown ()
+				db.del_actor(self.object)
 
-        self.object:set_callback(callback.inventory_info, nil)
-        self.object:set_callback(callback.article_info, nil)
-        self.object:set_callback(callback.on_item_take, nil)
-        self.object:set_callback(callback.on_item_drop, nil)
-        --self.object:set_callback(callback.actor_sleep, nil)
-        self.object:set_callback(callback.task_state, nil)
-        self.object:set_callback(callback.level_border_enter, nil)
-        self.object:set_callback(callback.level_border_exit, nil)
-        self.object:set_callback(callback.take_item_from_box, nil)
+				self.object:set_callback(callback.inventory_info, nil)
+				self.object:set_callback(callback.article_info, nil)
+				self.object:set_callback(callback.on_item_take, nil)
+				self.object:set_callback(callback.on_item_drop, nil)
+				--self.object:set_callback(callback.actor_sleep, nil)
+				self.object:set_callback(callback.task_state, nil)
+				self.object:set_callback(callback.level_border_enter, nil)
+				self.object:set_callback(callback.level_border_exit, nil)
+				self.object:set_callback(callback.take_item_from_box, nil)
 
-        if sr_psy_antenna.psy_antenna then
-                sr_psy_antenna.psy_antenna:destroy()
-                sr_psy_antenna.psy_antenna = false
-        end
+				if sr_psy_antenna.psy_antenna then
+								sr_psy_antenna.psy_antenna:destroy()
+								sr_psy_antenna.psy_antenna = false
+				end
 		xrs_dyn_music.stop_sound()
-        object_binder.net_destroy(self)
+				object_binder.net_destroy(self)
 --		xr_sound.stop_all_sounds()
-        xr_s.on_actor_destroy()                                       --' Distemper 03.2008 --
+				xr_s.on_actor_destroy()                                       --' Distemper 03.2008 --
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:reinit()
-        object_binder.reinit(self)
+				object_binder.reinit(self)
 
-        local npc_id = self.object:id()
+				local npc_id = self.object:id()
 
-        db.storage[npc_id] = { }
+				db.storage[npc_id] = { }
 
-        self.st = db.storage[npc_id]
-        self.st.pstor = nil
+				self.st = db.storage[npc_id]
+				self.st.pstor = nil
 
-        self.next_restrictors_update_time = -10000
+				self.next_restrictors_update_time = -10000
 
-        self.object:set_callback(callback.inventory_info, self.info_callback, self)
-        self.object:set_callback(callback.article_info, self.article_callback, self)
-        self.object:set_callback(callback.on_item_take, self.on_item_take, self)
-        self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
-        self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
-        --self.object:set_callback(callback.actor_sleep, self.sleep_callback, self)
-        self.object:set_callback(callback.task_state, self.task_callback, self)
-        --self.object:set_callback(callback.map_location_added, self.map_location_added_callback, self)
-        self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
-        self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
-        self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+				self.object:set_callback(callback.inventory_info, self.info_callback, self)
+				self.object:set_callback(callback.article_info, self.article_callback, self)
+				self.object:set_callback(callback.on_item_take, self.on_item_take, self)
+				self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
+				self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
+				--self.object:set_callback(callback.actor_sleep, self.sleep_callback, self)
+				self.object:set_callback(callback.task_state, self.task_callback, self)
+				--self.object:set_callback(callback.map_location_added, self.map_location_added_callback, self)
+				self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
+				self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
+				self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
-    local box_name = box:name()
-    treasure_manager.take_item_from_box(box, box_name, item)
+		local box_name = box:name()
+		treasure_manager.take_item_from_box(box, box_name, item)
 
-    --local smart_name = string.sub(box_name, 1, string.len(box_name)-4)
+		--local smart_name = string.sub(box_name, 1, string.len(box_name)-4)
 	--if(sim_board.get_sim_board().smarts_by_names[smart_name]~=nil) then
-	  --  game_relations.set_gulag_relation_actor(smart_name, "enemy")
+		--  game_relations.set_gulag_relation_actor(smart_name, "enemy")
 	--end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:level_border_enter(npc, info_id)
-        --self.actor_detector:actor_enter()
+				--self.actor_detector:actor_enter()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:level_border_exit(npc, info_id)
-        --self.actor_detector:actor_exit()
+				--self.actor_detector:actor_exit()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:info_callback(npc, info_id)
-        printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
-        --' Сюжет
-        level_tasks.proceed(self.object)
-        -- Отметки на карте
-        level_tasks.process_info_portion(info_id)
+				printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
+				--' Сюжет
+				level_tasks.proceed(self.object)
+				-- Отметки на карте
+				level_tasks.process_info_portion(info_id)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_trade (item, sell_bye, money)
-    if sell_bye == true then
-       game_stats.money_trade_update (money)
-	   xr_statistic.inc_recieved_money_counter(money)
-    else
-       game_stats.money_trade_update (-money)
-	   xr_statistic.inc_spent_money_counter(money)
-    end
+		if sell_bye == true then
+			 game_stats.money_trade_update (money)
+		 xr_statistic.inc_recieved_money_counter(money)
+		else
+			 game_stats.money_trade_update (-money)
+		 xr_statistic.inc_spent_money_counter(money)
+		end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
-        --printf("article_callback [%s][%s]", group, name)
-        if device().precache_frame >1 then return end
+				--printf("article_callback [%s][%s]", group, name)
+				if device().precache_frame >1 then return end
 
-        if group == "Diary" then
-                news_manager.send_encyclopedy("diary", group)
-        else
-                news_manager.send_encyclopedy("encyclopedy", group)
-        end
+				if group == "Diary" then
+								news_manager.send_encyclopedy("diary", group)
+				else
+								news_manager.send_encyclopedy("encyclopedy", group)
+				end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take (obj)
-    level_tasks.proceed(self.object)
-    printf("on_item_take [%s]", obj:name())
-    if isArtefact(obj) then
-                bind_anomaly_zone.artefact_ways_by_id[obj:id()] = nil
-                local artefact =  obj:get_artefact()
-                artefact:FollowByPath("NULL",0,vector():set(500,500,500))
-                if bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()] ~= nil then
-                        bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]:on_artefact_take()
-                end
-        end
-        for k,v in pairs(task_manager:get_task_manager().task_info) do
-                if(v.type=="bring_item" and v.state~="finished") then
-                        v:on_item_take(obj)
-                end
-        end
-    --game_stats.update_take_item (obj, self.object)
+		level_tasks.proceed(self.object)
+		printf("on_item_take [%s]", obj:name())
+		if isArtefact(obj) then
+								bind_anomaly_zone.artefact_ways_by_id[obj:id()] = nil
+								local artefact =  obj:get_artefact()
+								artefact:FollowByPath("NULL",0,vector():set(500,500,500))
+								if bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()] ~= nil then
+												bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]:on_artefact_take()
+								end
+				end
+				for k,v in pairs(task_manager:get_task_manager().task_info) do
+								if(v.type=="bring_item" and v.state~="finished") then
+												v:on_item_take(obj)
+								end
+				end
+		--game_stats.update_take_item (obj, self.object)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop (obj)
-    level_tasks.proceed(self.object)
-        for k,v in pairs(task_manager:get_task_manager().task_info) do
-                if(v.type=="bring_item" and v.state~="finished") then
-                        v:on_item_drop(obj)
-                end
-        end
-    --game_stats.update_drop_item (obj, self.object)
+		level_tasks.proceed(self.object)
+				for k,v in pairs(task_manager:get_task_manager().task_info) do
+								if(v.type=="bring_item" and v.state~="finished") then
+												v:on_item_drop(obj)
+								end
+				end
+		--game_stats.update_drop_item (obj, self.object)
 end
 ----------------------------------------------------------------------------------------------------------------------
 
 function actor_binder:task_callback(_task, _state)
-    if _state ~= task.fail then
+		if _state ~= task.fail then
 		if _state == task.completed then
 			news_manager.send_task(db.actor, "complete", _task)
 		else
@@ -225,60 +229,60 @@ end
 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:map_location_added_callback(spot_type_str, object_id)
-        if (false==app_ready()) or (device().precache_frame>1) then return end
-        --'news_manager.send_task(db.actor, "new")
+				if (false==app_ready()) or (device().precache_frame>1) then return end
+				--'news_manager.send_task(db.actor, "new")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:update(delta)
-        object_binder.update(self, delta)
+				object_binder.update(self, delta)
 
-        if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
+				if self.already_jumped==false and jump_level.need_jump==true and (device().frame > self.spawn_frame+2000) then
 			jump_level.try_to_jump()
 			self.already_jumped = true
 		return
 	end
 
-        -- DEBUG slowdown
+				-- DEBUG slowdown
 --        slowdown.update()
 
-        local time = time_global()
+				local time = time_global()
 
-        game_stats.update (delta, self.object)
+				game_stats.update (delta, self.object)
 
-        -- апдейт погоды
-        self.weather_manager:update()
+				-- апдейт погоды
+				self.weather_manager:update()
 
-        -- апдейт схемы детектора
-        --self.actor_detector:update()
+				-- апдейт схемы детектора
+				--self.actor_detector:update()
 
-        --' Апдейт саундменеджера
-        xr_sound.update(self.object:id())
+				--' Апдейт саундменеджера
+				xr_sound.update(self.object:id())
 
-        --' Проверка потери жизни
+				--' Проверка потери жизни
 --[[
-        if self.object.health - lasthealth > 0.001 or
-           self.object.health - lasthealth < -0.001 then
-                printf("%f | %f", self.object.health, self.object.health - lasthealth, game.time() - lasttime)
-                lasthealth = self.object.health
-                lasttime = game.time()
-        end
+				if self.object.health - lasthealth > 0.001 or
+					 self.object.health - lasthealth < -0.001 then
+								printf("%f | %f", self.object.health, self.object.health - lasthealth, game.time() - lasttime)
+								lasthealth = self.object.health
+								lasttime = game.time()
+				end
 ]]
-        -- Обновление отключения ввода с клавиатуры.
-        if self.st.disable_input_time ~= nil and
-           game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
-        then
-               	level.enable_input()
-                self.st.disable_input_time = nil
-        end
-        -- Обновление сна с переносом чувака в указанную позицию
-        if self.st.sleep_relocate_time ~= nil and
-           game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle
-        then
-                self.object:set_actor_position(self.st.sleep_relocate_point)
-                local dir = self.st.sleep_relocate_point:sub(self.st.sleep_relocate_look)
-                self.object:set_actor_direction(dir:getH())
-                self.st.sleep_relocate_time = nil
-        end
+				-- Обновление отключения ввода с клавиатуры.
+				if self.st.disable_input_time ~= nil and
+					 game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
+				then
+								 level.enable_input()
+								self.st.disable_input_time = nil
+				end
+				-- Обновление сна с переносом чувака в указанную позицию
+				if self.st.sleep_relocate_time ~= nil and
+					 game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle
+				then
+								self.object:set_actor_position(self.st.sleep_relocate_point)
+								local dir = self.st.sleep_relocate_point:sub(self.st.sleep_relocate_look)
+								self.object:set_actor_direction(dir:getH())
+								self.st.sleep_relocate_time = nil
+				end
 		-- Апдейт прятание оружия игрока во время диалога
 		if self.object:is_talking() then
 			if self.weapon_hide_in_dialog == false then
@@ -294,52 +298,52 @@ function actor_binder:update(delta)
 				self.weapon_hide_in_dialog = false
 				--printf("PL:RESTORE_D2 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
 			end
-        end
+				end
 
 
-        -- Апдейт прятание оружия игрока в зоне sr_no_weapon
-        if check_for_weapon_hide_by_zones() == true then
-        	--printf("weapon_hide1 = [%s]", tostring(weapon_hide))
-                if self.weapon_hide == false then
-                		--printf("PL:HIDE_W1 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
-                        self.object:hide_weapon()
-                        self.weapon_hide = true
+				-- Апдейт прятание оружия игрока в зоне sr_no_weapon
+				if check_for_weapon_hide_by_zones() == true then
+					--printf("weapon_hide1 = [%s]", tostring(weapon_hide))
+								if self.weapon_hide == false then
+										--printf("PL:HIDE_W1 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
+												self.object:hide_weapon()
+												self.weapon_hide = true
 						--printf("PL:HIDE_W2 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
-                end
-        else
-        	--printf("weapon_hide3 = [%s]", tostring(weapon_hide))
-                if self.weapon_hide == true then
-                		--printf("PL:RESTORE_W1 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
-                        self.object:restore_weapon()
-                        self.weapon_hide = false
+								end
+				else
+					--printf("weapon_hide3 = [%s]", tostring(weapon_hide))
+								if self.weapon_hide == true then
+										--printf("PL:RESTORE_W1 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
+												self.object:restore_weapon()
+												self.weapon_hide = false
 						--printf("PL:RESTORE_W2 ---> self.weapon_hide = [%s] weapon_hide = [%s]", tostring(self.weapon_hide), tostring(weapon_hide))
-                end
-        end
+								end
+				end
 
-        -- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
-        if self.next_restrictors_update_time < time then
+				-- обновление рестрикторов, которые под логикой, срабатывает через интервалы времени
+				if self.next_restrictors_update_time < time then
 
-                self.next_restrictors_update_time = time + 200
+								self.next_restrictors_update_time = time + 200
 
-                self.task_manager:update()
-        end
+								self.task_manager:update()
+				end
 
-        -- обновление постпроцессов
-        if post_process ~= 0 then
-                if post_process:update () == true then
-                   post_process = 0
-                end
-        end
+				-- обновление постпроцессов
+				if post_process ~= 0 then
+								if post_process:update () == true then
+									 post_process = 0
+								end
+				end
 
-        -- обновление пси-антенны
-        if sr_psy_antenna.psy_antenna then
-                sr_psy_antenna.psy_antenna:update(delta)
-        end
+				-- обновление пси-антенны
+				if sr_psy_antenna.psy_antenna then
+								sr_psy_antenna.psy_antenna:update(delta)
+				end
 
-    --[[local hud_demo = get_hud()
+		--[[local hud_demo = get_hud()
 
-    local custom_static_demo = hud_demo:GetCustomStatic("cs_demo_play")
-    if custom_static_demo == nil then
+		local custom_static_demo = hud_demo:GetCustomStatic("cs_demo_play")
+		if custom_static_demo == nil then
 		hud_demo:AddCustomStatic("cs_demo_play", true)
 		if level.name() == "agroprom_underground" then
 			hud_demo:GetCustomStatic("cs_demo_play"):wnd():SetTextST("st_demo_agr")
@@ -348,9 +352,9 @@ function actor_binder:update(delta)
 		else
 			hud_demo:GetCustomStatic("cs_demo_play"):wnd():SetTextST("st_demo_play")
 		end
-    end
+		end
 
-    if jump_level.need_jump==true then
+		if jump_level.need_jump==true then
 		hud_demo:GetCustomStatic("cs_demo_play"):wnd():SetTextST("L: " .. level.name() .. " frame [" ..
 									tostring(device().frame) ..
 									"] delta[" ..
@@ -432,11 +436,11 @@ function actor_binder:update(delta)
 			self.last_level_name = name
 		else
 			if(name~=self.last_level_name) then
-	            self.last_level_name = name
+							self.last_level_name = name
 				local time = xr_surge_hide.surge_can_be_started(name)
 				if time then
-                    xr_surge_hide.activate_surge(time)
-	            end
+										xr_surge_hide.activate_surge(time)
+							end
 			end
 		end
 	end
@@ -446,43 +450,43 @@ function actor_binder:update(delta)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
-        set_save_marker(packet, "save", false, "actor_binder")
+				set_save_marker(packet, "save", false, "actor_binder")
 
-        object_binder.save(self, packet)
+				object_binder.save(self, packet)
 
-        --' Сохраняем уровень сложности
-        packet:w_u8(level.get_game_difficulty())
+				--' Сохраняем уровень сложности
+				packet:w_u8(level.get_game_difficulty())
 
 
-        --' Сохраняем данные об отключенном вводе
-        if self.st.disable_input_time == nil then
-                packet:w_bool(false)
-        else
-                packet:w_bool(true)
-                utils.w_CTime(packet, self.st.disable_input_time)
-        end
+				--' Сохраняем данные об отключенном вводе
+				if self.st.disable_input_time == nil then
+								packet:w_bool(false)
+				else
+								packet:w_bool(true)
+								utils.w_CTime(packet, self.st.disable_input_time)
+				end
 
-        xr_logic.pstor_save_all(self.object, packet)
-        self.weather_manager:save(packet)
-        release_body_manager.get_release_body_manager():save(packet) --' Distemper 12.02.2008
+				xr_logic.pstor_save_all(self.object, packet)
+				self.weather_manager:save(packet)
+				release_body_manager.get_release_body_manager():save(packet) --' Distemper 12.02.2008
 		xr_surge_hide.save(packet)
-        sr_psy_antenna.save( packet )
-        --self.actor_detector:save(packet)
+				sr_psy_antenna.save( packet )
+				--self.actor_detector:save(packet)
 
 		packet:w_bool(sim_board.get_sim_board().simulation_started)
 
-        -- Сохранение списка ожидания на команду атаки от игрока
-        local n = 0
-        for k,v in pairs(sim_combat.wait_for_combat) do
-                n = n + 1
-        end
-        packet:w_u8(n)
-        for k,v in pairs(sim_combat.wait_for_combat) do
-                packet:w_u16(k)
-                packet:w_stringZ(v)
-        end
-        xr_sound.actor_save(packet)
-    	packet:w_stringZ(tostring(self.last_level_name))
+				-- Сохранение списка ожидания на команду атаки от игрока
+				local n = 0
+				for k,v in pairs(sim_combat.wait_for_combat) do
+								n = n + 1
+				end
+				packet:w_u8(n)
+				for k,v in pairs(sim_combat.wait_for_combat) do
+								packet:w_u16(k)
+								packet:w_stringZ(v)
+				end
+				xr_sound.actor_save(packet)
+			packet:w_stringZ(tostring(self.last_level_name))
 		xr_statistic.save(packet)
 		guiders.save(packet)
 		treasure_manager.save(packet)
@@ -504,45 +508,46 @@ function actor_binder:save(packet)
 			packet:w_u16(k)
 			packet:w_stringZ(v)
 		end
-        set_save_marker(packet, "save", true, "actor_binder")
+--		minigames_manager.get_minigames_manager():save(packet)
+				set_save_marker(packet, "save", true, "actor_binder")
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:load(reader)
-        set_save_marker(reader, "load", false, "actor_binder")
+				set_save_marker(reader, "load", false, "actor_binder")
 
-        object_binder.load(self, reader)
+				object_binder.load(self, reader)
 
-        --' Загружаем уровень сложности
-        local game_difficulty = reader:r_u8()
-        printf("load game_difficulty %s", tostring(game_difficulty))
-        get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+				--' Загружаем уровень сложности
+				local game_difficulty = reader:r_u8()
+				printf("load game_difficulty %s", tostring(game_difficulty))
+				get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 
-        local stored_input_time = reader:r_u8()
-        if stored_input_time == true then
-                self.st.disable_input_time = utils.r_CTime(reader)
-        end
+				local stored_input_time = reader:r_u8()
+				if stored_input_time == true then
+								self.st.disable_input_time = utils.r_CTime(reader)
+				end
 
-        xr_logic.pstor_load_all(self.object, reader)
-        self.weather_manager:load(reader)
-        release_body_manager.get_release_body_manager():load(reader) --' Distemper 12.02.2008
+				xr_logic.pstor_load_all(self.object, reader)
+				self.weather_manager:load(reader)
+				release_body_manager.get_release_body_manager():load(reader) --' Distemper 12.02.2008
 		xr_surge_hide.load(reader)
-        sr_psy_antenna.load(reader)
-        --self.actor_detector:load(reader)
+				sr_psy_antenna.load(reader)
+				--self.actor_detector:load(reader)
 
 		sim_board.get_sim_board().simulation_started = reader:r_bool()
 
-        -- Загрузка списка ожидания на команду атаки от игрока
-        local n = reader:r_u8()
-        sim_combat.wait_for_combat = {}
-        for i = 1,n do
-                sim_combat.wait_for_combat[reader:r_u16()] = reader:r_stringZ()
-        end
+				-- Загрузка списка ожидания на команду атаки от игрока
+				local n = reader:r_u8()
+				sim_combat.wait_for_combat = {}
+				for i = 1,n do
+								sim_combat.wait_for_combat[reader:r_u16()] = reader:r_stringZ()
+				end
 
-        xr_sound.actor_load(reader)
-        local n = reader:r_stringZ()
-        if(n~="nil") then
-            self.last_level_name = n
-        end
+				xr_sound.actor_load(reader)
+				local n = reader:r_stringZ()
+				if(n~="nil") then
+						self.last_level_name = n
+				end
 		xr_statistic.load(reader)
 		guiders.load(reader)
 		treasure_manager.load(reader)
@@ -556,7 +561,8 @@ function actor_binder:load(reader)
 		for i = 1,n do
 			db.script_ids[reader:r_u16()] = reader:r_stringZ()
 		end
-        set_save_marker(reader, "load", true, "actor_binder")
+--		minigames_manager.get_minigames_manager():load(reader)
+				set_save_marker(reader, "load", true, "actor_binder")
 end
 ----------------------------------------------------------------------------------------------------------------------
 

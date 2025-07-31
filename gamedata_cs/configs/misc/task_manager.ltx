@@ -49,6 +49,7 @@ type = hide_from_surge
 task_type = additional
 spot = secondary_task_location_complex
 target_cond = true
+prior = 30
 ;icon = ui_mt_image_attack_tower
 ;spot = mar_capture_tower_location
 name = hide_from_surge_name
@@ -65,7 +66,7 @@ reward_money = {~50} 1000, 2000
 reward_item = wpn_ak74:wpn_groza:ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
 immediate_reward = true
 target_npc_or_box_name = mil_additional_quest_2_commander
-target_cond = {=check_npc_squad(test_freedom2) =actor_on_level(distemper_selo)} true
+target_cond = {=actor_on_level(distemper_selo)} true
 requested_items = mil_device_pda_lost_squard
 
 [test_recover_item2]
@@ -130,7 +131,7 @@ condlist_1 = {} fail
 
 [test_storyline_task]
 type = storyline
-task_type = storyline
+task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = true
 prior = 2
@@ -138,7 +139,7 @@ name = test_storyline_task_name
 text = test_storyline_task_text
 target_story_ids = 65000
 condlist_0 = {+test_info_1} complete
-spot = mar_capture_tower_location
+;spot = mar_capture_tower_location
 
 [test_storyline_task2]
 type = storyline

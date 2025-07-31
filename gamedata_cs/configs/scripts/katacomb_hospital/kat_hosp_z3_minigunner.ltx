@@ -8,7 +8,7 @@ active = camper@fire
 on_death = death
 
 [death]
-on_info = %+hospital_z3_last_door%
+on_info = %+hospital_z3_minigun_off%
 
 [camper@fire]
 combat_ignore_cond = always
@@ -19,8 +19,8 @@ path_look = z3_minigun_look
 radius = 0
 def_state_campering = threat
 shoot = terminal
-invulnerable = true
-on_info = {+hospital_z3_minigun_off} camper@fire2
+;invulnerable = true
+on_info = {+hospital_z3_last_door} camper@fire2
 
 [camper@fire2]
 combat_ignore_cond = always

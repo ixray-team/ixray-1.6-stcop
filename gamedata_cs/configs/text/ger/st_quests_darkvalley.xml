@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_bandit_spy_name">
+		<text>Schalte die potentielle Gefahr an der Tankstelle aus</text>
+	</string>
+	<string id="val_bandit_spy_text">
+		<text>In der Nacht wurden ein paar schwache Lichter bei der verlassenen Tankstelle gesehen. Untersuche den Ort und schalte jede potentielle Gefahr aus.</text>
+	</string>
+	<string id="val_bring_to_fang_name">
+		<text>Folge dem Signal von Fangs PDA</text>
+	</string>
+	<string id="val_bring_to_fang_text">
+		<text>Die Techniker der Freiheitler haben Fangs PDA-Frequenz geknackt. Du kannst jetzt Fangs Bewegungen verfolgen. Dem Signal zufolge hдlt sich Fang gerade bei der Mьllhalde auf. Folge dem Signal von Fangs PDA.</text>
+	</string>
+	<string id="val_check_blockpost_name">
+		<text>Finde heraus, was beim AuЯenposten passiert ist</text>
+	</string>
+	<string id="val_check_blockpost_text">
+		<text>Anscheinend wurde wieder einer der AuЯenposten der Freiheitler angegriffen. Finde heraus, was passiert ist, und suche beim AuЯenposten nach Ьberlebenden.</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_name">
+		<text>Hol dir Befehle vom Kommandanten</text>
+	</string>
+	<string id="val_come_back_comendant_to_revard_text">
+		<text>Hol dir Befehle vom Kommandanten.</text>
+	</string>
+	<string id="val_come_to_comendant_name">
+		<text>Rede mit dem Kommandanten</text>
+	</string>
+	<string id="val_come_to_comendant_text">
+		<text>Frage den Kommandanten nach Fang.</text>
+	</string>
+	<string id="val_come_to_freedom_base_name">
+		<text>Finde die Freiheitsbasis</text>
+	</string>
+	<string id="val_come_to_freedom_base_text">
+		<text>Nach Informationen der Mьllgrдber ist Fang ins Dunkle Tal gegangen, um dort nach den restlichen Komponenten zu suchen. Finde die Freiheitsbasis und frage dort nach Fang.</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_name">
+		<text>Rede mit dem Kommandanten des AuЯenpostens</text>
+	</string>
+	<string id="val_come_to_freedom_blokpost_text">
+		<text>Rede mit dem Kommandanten des AuЯenpostens.</text>
+	</string>
+	<string id="val_deliver_ammo_name">
+		<text>Bringe Munition zum AuЯenposten</text>
+	</string>
+	<string id="val_deliver_ammo_text">
+		<text>Bringe Munition zum AuЯenposten.</text>
+	</string>
+	<string id="val_deliver_pda_name">
+		<text>Ьberbringe Tschechow den PDA</text>
+	</string>
+	<string id="val_deliver_pda_text">
+		<text>Der PDA des Kommandanten enthдlt eine Fьlle von Informationen, die den Freiheitlern dabei helfen kann, herauszufinden, wer sie angreift und wie sie ins Dunkle Tal gelangen kцnnen. Ьberbringe dem Anfьhrer der Freiheitler den PDA.</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_name">
+		<text>Zerstцre den Wildschweinbau</text>
+	</string>
+	<string id="val_destroy_boar_guard_9_2_text">
+		<text>Zerstцre den Wildschweinbau.</text>
+	</string>
+	<string id="val_destroy_killer_base_name">
+		<text>Schalte die Sцldner aus</text>
+	</string>
+	<string id="val_destroy_killer_base_text">
+		<text>Die Hauptbasis der Sцldner wurde entdeckt. Hilf den Freiheitlern dabei, sie zu zerstцren. So kцnnen die Freiheitler den Angriffen ein Ende setzen und das gesamte Dunkle Tal kontrollieren.</text>
+	</string>
+	<string id="val_find_pda_name">
+		<text>Finde den aktiven PDA</text>
+	</string>
+	<string id="val_find_pda_text">
+		<text>Der PDA eines der toten Freiheitler ist noch aktiv. Finde den PDA - er kцnnte wertvolle Informationen enthalten.</text>
+	</string>
+	<string id="val_go_to_freedom_leader_name">
+		<text>Bringe den PDA zu Tschechow</text>
+	</string>
+	<string id="val_go_to_freedom_leader_text">
+		<text>Der PDA eines getцteten Freiheitlers beim AuЯenposten enthдlt die Aufnahme eines Gesprдchs zwischen den Angreifern. Die Aufnahme wird dabei helfen, die Angreifer zu identifizieren. Bringe den PDA zu Tschechow.</text>
+	</string>
+	<string id="val_go_to_trader_name">
+		<text>Hole Munition von Ashot</text>
+	</string>
+	<string id="val_go_to_trader_text">
+		<text>Hole Munition von Ashot fьr den AuЯenposten der Freiheitler.</text>
+	</string>
+	<string id="val_help_freedom_name">
+		<text>Hilf den Freiheitlern dabei, die Sцldner auszuschalten</text>
+	</string>
+	<string id="val_help_freedom_text">
+		<text>Hilf den Freiheitlern dabei, die Sцldner auszuschalten.</text>
+	</string>
+	<string id="val_kill_flesh_name">
+		<text>Tцte den Pseudohund</text>
+	</string>
+	<string id="val_kill_flesh_text">
+		<text>Tцte den Pseudohund, der in der Nдhe der Freiheitsbasis fьr Дrger sorgt.</text>
+	</string>
+	<string id="val_kill_komendant_name">
+		<text>Tцte den Kommandanten</text>
+	</string>
+	<string id="val_kill_komendant_text">
+		<text>Der PDA beim AuЯenposten enthielt eine Aufnahme eines Gesprдchs zwischen den Angreifern. Bei dem Gesprдch wird erwдhnt, dass der Kommandant die Informationen verkauft hat, die es den Angreifern ermцglicht haben, schnelle und unerwartete Angriffe gegen Patrouillen der Freiheitler durchzufьhren. Finde den Verrдter und bringe ihn zu Tschechow - tot oder lebendig.</text>
+	</string>
+	<string id="val_night_bloodsucker_name">
+		<text>Finde den Freund des Technikers</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_name">
+		<text>Bringe dem Techniker die Komponente</text>
+	</string>
+	<string id="val_night_bloodsucker_reward_text">
+		<text>Bringe dem Techniker die Komponente.</text>
+	</string>
+	<string id="val_night_bloodsucker_text">
+		<text>Finde den Freund des Technikers</text>
+	</string>
+	<string id="val_pursuit_comendant_name">
+		<text>Finde den Kommandanten</text>
+	</string>
+	<string id="val_pursuit_comendant_text">
+		<text>Finde den Kommandanten.</text>
+	</string>
+	<string id="val_reply_to_sos_name">
+		<text>Antworte auf das SOS-Signal</text>
+	</string>
+	<string id="val_reply_to_sos_text">
+		<text>Hilf dabei, den Angriff zurьckzuschlagen.</text>
+	</string>
+	<string id="val_strike_antenna_name">
+		<text>Sichere die Antennen</text>
+	</string>
+	<string id="val_strike_antenna_text">
+		<text>Sichere und halte die Antennen, um die Umgebung zu scannen.</text>
+	</string>
+	<string id="val_strike_antenna_two_name">
+		<text>Sichere die Antennen</text>
+	</string>
+	<string id="val_strike_antenna_two_text">
+		<text>Sichere und halte die Antennen, um die Umgebung zu scannen.</text>
+	</string>
+	<string id="val_take_pda_name">
+		<text>Hol den PDA des Kommandanten</text>
+	</string>
+	<string id="val_take_pda_text">
+		<text>Die Freunde des Kommandanten haben ihn getцtet, nachdem die Freiheitler nach ihm gesucht haben. Sein PDA enthдlt wichtige Informationen ьber die Leute, denen er geholfen hat.</text>
+	</string>
+	<string id="val_test">
+		<text>Hilfe</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_name">
+		<text>Schalte die Banditengruppe aus</text>
+	</string>
+	<string id="st_val_bandit_spy_kill_text">
+		<text>Du hast in der verlassenen Tankstelle eine Gruppe Banditen ausgemacht. Schalte sie aus.</text>
+	</string>
+	<string id="st_val_bandit_spy_return_name">
+		<text>Kehre zurьck und hole dir deine Belohnung</text>
+	</string>
+	<string id="st_val_bandit_spy_return_text">
+		<text>Du hast in der verlassenen Tankstelle eine Gruppe Banditen aufgespьrt und ausgeschaltet. Gehe zum Barkeeper und erzдhle ihm davon.</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_name">
+		<text>Finde Informationen ьber Lдufe von Scharfschьtzengewehren</text>
+	</string>
+	<string id="st_val_find_flesh_up_ab_svu_text">
+		<text>Jar, der Techniker der Freiheitler, hat sich auf Hochprдzisionswaffen spezialisiert. Er sucht nach Informationen ьber Lдufe von Scharfschьtzengewehren.</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_name">
+		<text>Finde Informationen ьber elektronische Stabilisatoren fьr Scharfschьtzengewehre</text>
+	</string>
+	<string id="st_val_find_flesh_up_abcd_svu_text">
+		<text>Jar, der Techniker, zahlt gut fьr genaue Informationen ьber elektronische Stabilisierungsmechanismen fьr Scharfschьtzengewehre.</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_name">
+		<text>Finde Informationen ьber Mьndungsbremsen fьr Scharfschьtzengewehre</text>
+	</string>
+	<string id="st_val_find_flesh_up_cd_svu_text">
+		<text>Jar, der Techniker, benцtigt Informationen ьber die Herstellung von Mьndungsbremsen fьr durchschlagskrдftige Scharfschьtzengewehre. Wenn er sie hat, ist er in der Lage, sie herzustellen.</text>
+	</string>
+	<string id="val_recover_item_1_name">
+		<text>Besorge das 8fach-Zielfernrohr</text>
+	</string>
+	<string id="val_recover_item_1_text">
+		<text>Hier ist vor kurzem ein Kerl mit einem richtig guten Zielfernrohr aufgetaucht... so ein Ding findet man sonst nirgendwo in der Zone. Ich habe alles versucht, konnte ihn aber nicht dazu bringen, es mir zu verkaufen. Irgendwann ist er dann schlieЯlich mit einer unserer Patrouillen zum Kordon aufgebrochen. Die Patrouille hat es leider nicht mehr zurьckgeschafft, daher nehme ich an, dass dieser Stalker ebenfalls irgendwo dort seinen letzten Frieden gefunden hat. Bringe mir dieses Zielfernrohr, damit ich es Tschechow schenken kann... vielleicht befцrdert er mich dann!</text>
+	</string>
+	<string id="val_recover_item_2_name">
+		<text>Bringe das USB-Laufwerk mit Filmen zurьck</text>
+	</string>
+	<string id="val_recover_item_2_text">
+		<text>Mein Freund, du musst mir helfen! Ganja und ich haben uns in aller Ruhe einen Film auf seinem Laptop angeschaut... leider hat uns der Kommandant dabei erwischt und dann angefangen, mich ьber meine Pflichten und so zu belehren. Er hдtte auch beinahe den Laptop auf den Boden geschleudert, aber wir haben ihn doch noch aufhalten kцnnen. Also hat er sich das USB-Laufwerk geschnappt und es ьber den Zaun in das radioaktive Gebiet geworfen. Bringe das Laufwerk zurьck und Ganja wird dich belohnen.</text>
+	</string>
+	<string id="val_recover_item_3_name">
+		<text>Bringe Seregas Gitarre zurьck</text>
+	</string>
+	<string id="val_recover_item_3_text">
+		<text>Irgendjemand hat Seregas Gitarre gestohlen, kannst du dir das vorstellen? Er ist der Einzige, der hier Gitarre spielen kann, und anders als alle anderen spielt er sogar gut. Wir haben dann recht schnell herausgefunden, wer der Dieb ist, aber der Wichser hat die Gitarre irgendwo versteckt. Bringe bitte diese Gitarre zurьck, denn Serega weigert sich, eine andere anzufassen. OK?</text>
+	</string>
+</string_table>

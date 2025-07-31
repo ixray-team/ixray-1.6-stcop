@@ -53,7 +53,7 @@ combat_ignore_cond = true
 cover_name = hosp_barricade_4_smartcover
 cover_state = idle_target
 on_info = {+cover_fire} smartcover@fire2
-on_info2 = {+sniper_off} camper@rush
+on_info2 = {+sniper_off +rush_6} camper@rush
 
 ;-- стреляет, прикрывает игрока
 [smartcover@fire2]
@@ -125,7 +125,7 @@ radius = 5
 no_retreat = true
 def_state_moving = sneak_run
 meet = no_meet
-on_signal = minigun | remark %=play_sound(clear_sky_kill_gunner:csky)%
+on_signal = minigun | {-minigun_off} remark %=play_sound(clear_sky_kill_gunner:csky)%, camper@final3
 invulnerable = true
 
 [remark]
@@ -134,6 +134,7 @@ combat_ignore_cond = true
 danger = danger_condition
 anim = search
 target = barricade_final_4_look,0
+on_info = {+minigun_off} camper@final2
 on_game_timer = 40 | %+minigun_off%
 on_game_timer2 = 50 | camper@final2 %=barrel_explode(208) +lim_z1_minigun_off_2%
 meet = no_meet

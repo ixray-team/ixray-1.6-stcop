@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding="windows-1251"?>
 
 <game_information_portions>
+	<info_portion id="mar_autosave"></info_portion>
+
     <info_portion id="mar_tower_defended"></info_portion>
     <info_portion id="mar_tower_captured"></info_portion>
     <info_portion id="mar_boar_killed"></info_portion>

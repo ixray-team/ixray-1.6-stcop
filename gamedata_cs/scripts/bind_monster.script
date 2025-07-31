@@ -48,7 +48,7 @@ function generic_object_binder:update(delta)
 		alife():release(alife():object(self.object:id()),true)
 	end
 
-    local object_alive = self.object:alive()
+		local object_alive = self.object:alive()
 	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
 	--'	self.object:name(), time_global())
 
@@ -74,13 +74,13 @@ function generic_object_binder:update(delta)
 			if squad.commander_id == self.object:id() then
 				squad:update()
 			end
-		end		
+		end
 	else
 		self.object:set_tip_text_default()
 	end
 
 --[[
-    self.object:info_clear()
+		self.object:info_clear()
 	if object_alive then
 		local active_section = db.storage[self.object:id()] and db.storage[self.object:id()].active_section
 		if active_section then
@@ -116,22 +116,22 @@ end
 function generic_object_binder:extrapolate_callback()
 	-- Проверяем, что объект еще в онлайне
 	if db.storage[self.object:id()] == nil or
-	   db.storage[self.object:id()].object == nil
+		 db.storage[self.object:id()].object == nil
 	then
 		return
 	end
 
 
 	local cur_pt = self.object:get_current_point_index()
-    if self.object:get_script()	== false then
-       return false
-    end
+		if self.object:get_script()	== false then
+			 return false
+		end
 
-    local patrol_path = self.object:patrol()
-    if not level.patrol_path_exists(patrol_path) then
+		local patrol_path = self.object:patrol()
+		if not level.patrol_path_exists(patrol_path) then
 		return false
-    	--abort("bind_monster:extrapolate_callback(). There is no patrol path [%s]", tostring(patrol_path))
-    end
+			--abort("bind_monster:extrapolate_callback(). There is no patrol path [%s]", tostring(patrol_path))
+		end
 	if patrol(patrol_path):flags(cur_pt):get() == 0 then
 		--printf("_bp: generic_object_binder: extrapolate_callback: cur_pt = %d: true", cur_pt)
 		return true
@@ -174,7 +174,9 @@ function generic_object_binder:death_callback(victim, who)
 	local obj_clsid = self.object:clsid()
 	if obj_clsid == clsid.poltergeist_s then
 		printf("releasing object ["..self.object:name().."]")
-	    alife():release(alife():object(self.object:name()), true)
+		if alife():object(self.object:name()) ~= nil then
+			alife():release(alife():object(self.object:name()), true)
+		end
 	end
 end
 
@@ -187,7 +189,7 @@ function generic_object_binder:hit_callback(obj, amount, local_direction, who, b
 
 	if amount > 0 then
 		printf("HIT_CALLBACK: %s amount=%s bone=%s who:id() = [%s] actor:id() = [%s]", obj:name(), amount, tostring(bone_index), who:id(), db.actor:id())
-     	sim_combat.hit_callback(self.object:id(),who:id())
+			 sim_combat.hit_callback(self.object:id(),who:id())
 	end
 
 	if string.find( obj:name(), "bloodsucker_jumper") ~= nil then
@@ -210,7 +212,7 @@ function generic_object_binder:net_spawn(sobject)
 	if alife():object(self.object:id()) == nil then
 		return false
 	end
-	
+
 --	local pos = self.object:position()
 --	printf("net_spawn mpos[%s][%s][%s]", tostring(pos.x), tostring(pos.y), tostring(pos.z))
 
@@ -231,7 +233,7 @@ function generic_object_binder:net_destroy()
 	self.object:set_callback(callback.death,				nil)
 	self.object:set_callback(callback.patrol_path_in_point, nil)
 	self.object:set_callback(callback.hit,					nil)
-    xr_sound.stop_sounds_by_id(self.object:id())
+		xr_sound.stop_sounds_by_id(self.object:id())
 
 	local st = db.storage[self.object:id()]
 	if st and st.active_scheme then
@@ -254,7 +256,7 @@ function generic_object_binder:net_save_relevant()
 end
 
 function generic_object_binder:save(packet)
-	
+
 	set_save_marker(packet, "save", false, "generic_object_binder")
 	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)

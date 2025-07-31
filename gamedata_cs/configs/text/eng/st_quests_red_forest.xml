@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="red_artefact_huntesr_capture_smart_name">
+		<text>Guard the stalkers on their way to the anomalous area</text>
+	</string>
+	<string id="red_artefact_huntesr_capture_smart_text">
+		<text>Guard the stalkers on their way to the anomalous area</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_name">
+		<text>Defend the stalkers in the anomalous area</text>
+	</string>
+	<string id="red_artefact_huntesr_defend_smart_text">
+		<text>Defend the stalkers in the anomalous area</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_name">
+		<text>Cover mercenaries</text>
+	</string>
+	<string id="red_bridge_cover_allyes_attack_text">
+		<text>The mercenaries are attacking bandits on the other side of the river. Provide covering fire and help them get in position</text>
+	</string>
+	<string id="red_bridge_cover_allyes_name">
+		<text>Destroy the bandits</text>
+	</string>
+	<string id="red_bridge_cover_allyes_text">
+		<text>The bandits are too many - they're preventing the mercenaries from lowering the bridge. Kill as many bandits as possible</text>
+	</string>
+	<string id="red_bridge_cover_bridge_name">
+		<text>Cover the mercenary near the control panel</text>
+	</string>
+	<string id="red_bridge_cover_bridge_text">
+		<text>A mercenary has secured a position near the bridge control panel. Provide covering fire while the mercenary lowers the bridge</text>
+	</string>
+	<string id="red_bridge_go_to_positon_name">
+		<text>Assume firing position</text>
+	</string>
+	<string id="red_bridge_go_to_positon_text">
+		<text>Assume a firing position on the first floor of the gatehouse. This is the most effective vantage point to fire at bandits</text>
+	</string>
+	<string id="red_bridge_kill_sniper_name">
+		<text>Eliminate the snipers on the hill</text>
+	</string>
+	<string id="red_bridge_kill_sniper_text">
+		<text>The snipers have the bridge control panel covered - with them alive the mercenaries have no chance of lowering the bridge. Eliminate the snipers on the hill</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_name">
+		<text>Talk to Lebedev</text>
+	</string>
+	<string id="red_bridge_talk_with_comander_text">
+		<text>The bridge has been lowered and the road to Limansk is clear. Talk to Lebedev</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_name">
+		<text>Wait until the stalker squad arrives</text>
+	</string>
+	<string id="red_bridge_wait_for_allyes_text">
+		<text>Wait until the stalker squad arrives</text>
+	</string>
+	<string id="red_bring_compass_name">
+		<text>Bring the Compass to Forester</text>
+	</string>
+	<string id="red_bring_compass_text">
+		<text>Thanks to the Compass, Forester managed to get out of a space bubble several days ago. The artifact should prove helpful once again to get the mercenaries out of their bubble. Bring Forester the Compass</text>
+	</string>
+	<string id="red_find_compass_name">
+		<text>Find the Compass artifact</text>
+	</string>
+	<string id="red_find_compass_text">
+		<text>Forester found a unique artifact in a space anomaly, which is very similar to the bubble that the mercenaries got themselves into near the military warehouses. On his way back, Forester was robbed by bandits and lost the artifact. Find the Compass</text>
+	</string>
+	<string id="red_find_forester_name">
+		<text>Talk to Forester</text>
+	</string>
+	<string id="red_find_forester_text">
+		<text>Forester lives in the deserted hut. He can help you find a way to get to Limansk. Talk to Forester</text>
+	</string>
+	<string id="red_find_teleport_name">
+		<text>Find the space anomaly</text>
+	</string>
+	<string id="red_find_teleport_text">
+		<text>The missing group's PDA had some notes about a path through the Red Forest. In its depths there is a space anomaly which leads to the old hut at the edge of the forest. That's where Forester lives. Find the space anomaly</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_name">
+		<text>Deliver the PDA with the map of the Red Forest</text>
+	</string>
+	<string id="red_forest_stalker_bring_map_text">
+		<text>Deliver the PDA with the map of the Red Forest</text>
+	</string>
+	<string id="red_go_to_signal_sos_name">
+		<text>Respond to the SOS signal</text>
+	</string>
+	<string id="red_go_to_signal_sos_text">
+		<text>The path to Forester through the Red Forest is unknown. There is a help signal coming from the Red Forest. Answer the signal</text>
+	</string>
+	<string id="red_help_with_bridge_name">
+		<text>Help Clear Sky capture the bridge</text>
+	</string>
+	<string id="red_help_with_bridge_text">
+		<text>A mercenary squad is approaching the bridge to Limansk. They will come out on the bandit side of the river, so the action at that bridge will get real hot real soon. Help Clear Sky lower the bridge to Limansk</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_name">
+		<text>Eliminate the ambush</text>
+	</string>
+	<string id="red_pursuit_destroy_ambush_text">
+		<text>Strelok is being covered by a group of stalkers. Eliminate the ambush</text>
+	</string>
+	<string id="red_pursuit_strelok_name">
+		<text>Stop Strelok</text>
+	</string>
+	<string id="red_pursuit_strelok_text">
+		<text>Strelok has gone into the tunnel. Go after him and make sure he doesn't advance to the center of the Zone</text>
+	</string>
+	<string id="red_pursuit_talk_csky_name">
+		<text>Stop Strelok</text>
+	</string>
+	<string id="red_pursuit_talk_csky_text">
+		<text>Strelok is somewhere very close, within 100 meters. Chase him down</text>
+	</string>
+	<string id="red_stalker_reinforced_name">
+		<text>Capture the old mine</text>
+	</string>
+	<string id="red_stalker_reinforced_text">
+		<text>Capture the old mine. That area has a high level of anomalous activity and plenty of rare artifacts</text>
+	</string>
+	<string id="red_go_to_military_base_name">
+		<text>Go to the army base</text>
+	</string>
+	<string id="red_go_to_military_base_text">
+		<text>The army base has a powerful transmitter, which we can use to send a signal to the group trapped in the space bubble near Limansk. Go to the military warehouses</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_name">
+		<text>Find a way to the anomalous area</text>
+	</string>
+	<string id="red_find_enter_to_anomal_place_text">
+		<text>The missing group's PDA had some notes about a path through the Red Forest. In its depths there is a space anomaly which leads to the old hut on the edge of the forest. That's where Forester lives. Find the space anomaly.</text>
+	</string>
+	<string id="red_find_signals_on_military_name">
+		<text>Receive radio message</text>
+	</string>
+	<string id="red_find_signals_on_military_text">
+		<text>Forester receives unintelligible bits and pieces of radio communications from an unidentified group that got trapped in a strange anomaly very near Limansk. The group may know an alternative way to Limansk. Go to the military warehouses and find a place suitable for receiving a clearer signal</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_name">
+		<text>Pick up PDA</text>
+	</string>
+	<string id="red_take_red_forest_map_pda_text">
+		<text>A dead stalker's PDA is still active. It may contain valuable information about the Red Forest. Pick up that PDA.</text>
+	</string>
+	<string id="red_recover_item_1_name">
+		<text>Bring back the PDA with a map of the Red Forest</text>
+	</string>
+	<string id="red_recover_item_1_text">
+		<text>Merc, we could use your help. We need an accurate map of the Red Forest. I heard that several groups of stalkers tried to explore the Forest but most of them vanished. Find their notes and bring them to me.</text>
+	</string>
+	<string id="red_recover_item_2_name">
+		<text>Bring back the tank machine gun</text>
+	</string>
+	<string id="red_recover_item_2_text">
+		<text>Here's a job for you. I heard from Forester that there's an old Soviet tank deep in the forest. Nobody knows how it got there, except that it appeared after the powerful emission. The thing is, the tank is pretty much intact. Sure, you couldn't drive it but you could remove the machine gun that's mounted on it. Bring me that machine gun and your efforts will be well rewarded.</text>
+	</string>
+	<string id="red_recover_item_3_name">
+		<text>Return the experimental device</text>
+	</string>
+	<string id="red_recover_item_3_text">
+		<text>There's something you can return for me. We were testing a prototype for the scientists, a small device used to measure anomaly strength. It's not much use at this stage - it took them two days just to teach us how to use it. We were collecting information in the old mine when something happened, something attacked us...all sorts of crap started flying at us and I was the only one to make it out alive. The device was left down there with the boys - they got thrown into some anomalies. That thing that attacked us is probably still down there too, so it won't be easy getting it back, but if you manage you'll get a good reward.</text>
+	</string>
+</string_table>

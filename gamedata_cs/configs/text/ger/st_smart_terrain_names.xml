@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_name_agr_smart_terrain_1_11">
+		<text>Waldrand</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_2">
+		<text>Sumpflager</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_3">
+		<text>Altes Lager</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6">
+		<text>Wдchterbasis</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_1">
+		<text>Nцrdlicher Eingang</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_6_near_2">
+		<text>Цstlicher Eingang</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_1_near_2">
+		<text>Rote Ecke</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_2">
+		<text>Lager bei Fels</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_3">
+		<text>Versteck unter Felsen</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_2_5">
+		<text>Lager neben der Basis</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_3_5">
+		<text>Lager am Hang</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_2">
+		<text>Lager unter Turm</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4">
+		<text>Stalkerlager</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_1">
+		<text>Gebiet neben dem Bahnsteig</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_2">
+		<text>Hinterausgang</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_4_near_3">
+		<text>Цstlicher AuЯenposten</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_4_6">
+		<text>AuЯenposten auf einer StraЯe</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_2">
+		<text>Steinkreis</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_3">
+		<text>Barrikaden bei einem Waggon</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_4">
+		<text>StraЯengabelung</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7">
+		<text>AuЯenposten beim Loch</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_5_7u">
+		<text>Eingang in den Untergrund</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_4">
+		<text>Totes Tunnelende</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_6_6">
+		<text>Notlager</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_4">
+		<text>StraЯe zur Mьllhalde</text>
+	</string>
+	<string id="st_name_agr_smart_terrain_7_5">
+		<text>Lager auf dem Hьgel</text>
+	</string>
+	<string id="st_name_agru_smart_terrain_1">
+		<text>Agroprom-Untergrund</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_11">
+		<text>Geheimes Lager</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_12">
+		<text>Hьgel hinter dem Dorf</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_1_16">
+		<text>Waldhьgel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_12">
+		<text>Dorfzentrum</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_14">
+		<text>Feuer unterm Baum </text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_2">
+		<text>Hьgel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_2_4">
+		<text>Waldrand am Vorhьgel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_14">
+		<text>Zelt im Wald</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_16">
+		<text>MilitдrauЯenposten</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_4">
+		<text>Lager in den Hьgeln</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_6">
+		<text>Lager im Tal</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_3_7">
+		<text>Feuer im Wald</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_10">
+		<text>Feuer in Mulde</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_11">
+		<text>Lager bei Eisenbahnwagen</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_13">
+		<text>Zeltlager</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_8">
+		<text>Lager unter Brьcke</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_4_9">
+		<text>Feuer bei Brьcke</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_10">
+		<text>Bushaltestelle</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_11">
+		<text>Lager auf Hьgel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_12">
+		<text>Stalkerzelt</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_2">
+		<text>Weit entfernter AuЯenposten</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_4">
+		<text>Feuer neben StraЯe</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_6">
+		<text>Lager auf Wiese</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_7">
+		<text>Neutrale Basis</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_5_9">
+		<text>Fahrstuhl</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_3">
+		<text>Versteck unter Felsen</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_5">
+		<text>Lager im Fichtenwald</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_6">
+		<text>Bauernhofruine</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_7">
+		<text>Lager am Hang</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_6_8">
+		<text>AuЯenposten unter Brьcke</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_10">
+		<text>Notlager</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_11">
+		<text>Parkplatz</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_7_9">
+		<text>Feuer bei Bahngleis</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_10">
+		<text>Hьgel hinter Parkplatz</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_6">
+		<text>Ruhiges Versteck</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_8">
+		<text>Lager nahe Bahndamm</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_8_9">
+		<text>Lager im Kiefernwald</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_10">
+		<text>Feuer beim Tunnel</text>
+	</string>
+	<string id="st_name_esc_smart_terrain_9_7">
+		<text>Weit entferntes Lager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_5">
+		<text>Barrikaden</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_1_7">
+		<text>Lager in den Hьgeln</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_3">
+		<text>Versteck bei Weg</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_2_4">
+		<text>Versteck hinter Rohren</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_2">
+		<text>Versteck in Mulde</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_3">
+		<text>Mьllgrдberlager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_5">
+		<text>Depot</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_6">
+		<text>Lager auf Schrottplatz</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_7">
+		<text>Autofriedhof</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_3_8">
+		<text>Lager hinter Sammellager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_2">
+		<text>Lager im Tal</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_3">
+		<text>Lager bei Kran</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_4">
+		<text>Lager bei Depot</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_5">
+		<text>Zwischenstopp</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_6">
+		<text>Neben dem Schrotthaufen</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_7">
+		<text>Lager bei Planierraupe</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_4_8">
+		<text>Lager bei Weganfang</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_2">
+		<text>Nцrdlicher AuЯenposten</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_4">
+		<text>Treffpunkt</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_5">
+		<text>Schatzjдgerlager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_6">
+		<text>Schrottreifer Kran</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_5_8">
+		<text>EmpfangsauЯenposten</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_1">
+		<text>Abgelegenes Waldlager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_3">
+		<text>Flohmarkt</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_4">
+		<text>Befestigung</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_5">
+		<text>Lager auf Feld</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_6">
+		<text>Versteck im Wald</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_6_7">
+		<text>Kiesgrube</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_2">
+		<text>Bergarbeiterunterkunft</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_3">
+		<text>Rand des kleinen Sumpfes</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_7_4">
+		<text>Neues Lager</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_3">
+		<text>Defensiver AuЯenposten</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_5">
+		<text>Lagune</text>
+	</string>
+	<string id="st_name_gar_smart_terrain_8_7">
+		<text>Lager auf Weg</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_1">
+		<text>Hof</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_10">
+		<text>StraЯe zur Feuerwache</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_2">
+		<text>Haus auf StraЯengabelung</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_3">
+		<text>Hof mit Terrasse</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_4">
+		<text>Barrikade in Sackgasse</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_5">
+		<text>Minipark neben Garagen</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_6">
+		<text>Haus auf Hьgel</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_7">
+		<text>Versteck bei Brьcke</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_8">
+		<text>Lager bei Schaltraum</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_9">
+		<text>Lager auf Baugelдnde</text>
+	</string>
+	<string id="st_name_lim_smart_terrain_help_smart">
+		<text>Sackgasse</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_10">
+		<text>Feuer am Ufer</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_5">
+		<text>Maschinenpark</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_10_7">
+		<text>Lager im Sumpf</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_11">
+		<text>Sьdlicher Bauernhof</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_11_3">
+		<text>Lager bei LKW</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_12_2">
+		<text>Nцrdlicher Bauernhof</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_10">
+		<text>Weggabelung</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_3">
+		<text>Bootsparkplatz</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_3_7">
+		<text>Felseninsel</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_5">
+		<text>Dorfruinen</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_4_7">
+		<text>Lager auf Baumstamm</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_10">
+		<text>Kiesgrube</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_12">
+		<text>Fischerdorf</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_5_8">
+		<text>Pumpstation</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_10">
+		<text>Kahle Insel</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_11">
+		<text>Aussichtsturm</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_4">
+		<text>Notlager</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_7">
+		<text>Uferbarrikaden</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_6_8">
+		<text>Bootslagerplatz</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_3">
+		<text>Lager unter Bahndamm</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_7_7">
+		<text>Lager im Цdland</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_11">
+		<text>Alte Kirche</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_4">
+		<text>Lager im Schilf</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_8">
+		<text>Abgebrannter Bauernhof</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_8_9">
+		<text>Weganfang</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_9_10">
+		<text>Einsames Feuer</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_base">
+		<text>"Clear Sky"-Basis</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_csky_respawn">
+		<text>Verstecktes Lager</text>
+	</string>
+	<string id="st_name_mar_smart_terrain_terrain_csky_base">
+		<text>"Clear Sky"-Basis</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_1">
+		<text>Lager zwischen Felsen</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_10">
+		<text>Versteck im Trockenholz</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_2">
+		<text>Weit entfernte Befestigung</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_3">
+		<text>Lager in Ebene</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_4">
+		<text>Weit entfernter Bauernhof</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_2_6">
+		<text>Abgestьrzter Helikopter</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_2">
+		<text>Wachhaus</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_5">
+		<text>Befestigter Posten</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_3_8">
+		<text>Barriere</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_2">
+		<text>Sцldnerlager</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_3">
+		<text>Wasserturm</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_5">
+		<text>Schiefer Balken</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_6">
+		<text>StraЯenkreuzung</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_7">
+		<text>Lager auf Betonplatten</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_4_8">
+		<text>Stalkerlager</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_2">
+		<text>Barrikaden auf Hьgel</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_4">
+		<text>Dorfeingang</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_5">
+		<text>Befestigung bei Haltestelle</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_6">
+		<text>LKW auf Kreuzung</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_5_8">
+		<text>Hьtte im Sumpf</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_6_4">
+		<text>StraЯe zwischen Hьgeln</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_10">
+		<text>Defekter Transformator</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_11">
+		<text>Lager im Kiefernwald</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_12">
+		<text>Lager zwischen Baracken</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_2">
+		<text>Eingang zu Armeelagerhдusern</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_4">
+		<text>Verlassener Bauernhof</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_7">
+		<text>Sportplatz</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_8">
+		<text>Hinterhofbasis</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_7_9">
+		<text>Verlassener Tunnel</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_8_3">
+		<text>Schuppen</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base2">
+		<text>Weit entfernte Befestigung</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base3">
+		<text>Weit entfernter Bauernhof</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base4">
+		<text>Wasserturm</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base5">
+		<text>Sцldnerlager</text>
+	</string>
+	<string id="st_name_mil_smart_terrain_base_monster">
+		<text>Befestigung bei Dorf</text>
+	</string>
+	<string id="st_name_red_bridge_ally_smart">
+		<text>Vorort von Limansk</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_1">
+		<text>Lager neben StraЯe</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_2">
+		<text>Baracken in Mine</text>
+	</string>
+	<string id="st_name_red_smart_terrain_3_3">
+		<text>Unterschlupf der Blutsauger</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_2">
+		<text>Lager bei Grubenlift</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_3">
+		<text>Hundelager</text>
+	</string>
+	<string id="st_name_red_smart_terrain_4_5">
+		<text>Hexenzirkel</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_5">
+		<text>Stalkerunterschlupf</text>
+	</string>
+	<string id="st_name_red_smart_terrain_5_6">
+		<text>Neblige Wiese</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_3">
+		<text>Teuflisches Lager</text>
+	</string>
+	<string id="st_name_red_smart_terrain_6_6">
+		<text>Dunkler Jar</text>
+	</string>
+	<string id="st_name_red_smart_terrain_bridge">
+		<text>Brьcke nach Limansk</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters">
+		<text>Berьchtigter Weg</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_2">
+		<text>Mutantenhцhle</text>
+	</string>
+	<string id="st_name_red_smart_terrain_monsters_3">
+		<text>Hцhle gegenьber Wald</text>
+	</string>
+	<string id="st_name_red_terrain_ally_smart">
+		<text>Eingang nach Limansk</text>
+	</string>
+	<string id="st_name_red_terrain_bandit_smart">
+		<text>Banditenbefestigungen</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_10">
+		<text>Lager bei Tankstelle</text>
+	</string>
+	<string id="st_name_val_smart_terrain_10_9">
+		<text>Dachterrasse</text>
+	</string>
+	<string id="st_name_val_smart_terrain_1_2">
+		<text>Fabrikeingangshalle</text>
+	</string>
+	<string id="st_name_val_smart_terrain_3_0">
+		<text>Barrikade bei Brьcke</text>
+	</string>
+	<string id="st_name_val_smart_terrain_4_0">
+		<text>Lager in Bauernhof</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_10">
+		<text>Offenes Lager</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_7">
+		<text>AuЯenposten am Ende</text>
+	</string>
+	<string id="st_name_val_smart_terrain_5_8">
+		<text>Feldlager</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_4">
+		<text>Zerklьftetes Lager</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_5">
+		<text>Lager auf dem Grund der Schlucht</text>
+	</string>
+	<string id="st_name_val_smart_terrain_6_6">
+		<text>Unteres Lager</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_0">
+		<text>Weit entfernter Vorort</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_11">
+		<text>AuЯenposten bei Bauernhof</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_3">
+		<text>Onkel Jars Hangar</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_4">
+		<text>Freiheitsbasis</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_5">
+		<text>Bar "Schluck der Freiheit"</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_6">
+		<text>AuЯenposten bei Fahrstuhl</text>
+	</string>
+	<string id="st_name_val_smart_terrain_7_8">
+		<text>Sumpflager</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_6">
+		<text>Nцrdliche Barrikaden</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_7">
+		<text>Haltestelle</text>
+	</string>
+	<string id="st_name_val_smart_terrain_8_9">
+		<text>Insel</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_10">
+		<text>Lager zwischen Felsen</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_2">
+		<text>Entwurzelter Baum</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_4">
+		<text>Tankstelle mit Sender</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_5">
+		<text>Lager am Vorhьgel</text>
+	</string>
+	<string id="st_name_val_smart_terrain_9_6">
+		<text>Kleiner alter Waggon</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_1_6">
+		<text>Weit entfernte Grenze</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_4">
+		<text>Fabrikhinterhof</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_2_5">
+		<text>Fabrikeingang</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_4">
+		<text>Hangar</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_3_6">
+		<text>Ebene mit Artefakten</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_2">
+		<text>Entwurzelter Baum</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_4">
+		<text>Hьgelspitze</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_4_5">
+		<text>Transformatorenhдuschen</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_3">
+		<text>Insel im Sumpf</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_5">
+		<text>Lager bei Passage</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_5_6">
+		<text>AuЯenposten</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_2">
+		<text>Lager hinter Sumpf</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_6_4">
+		<text>Lager der Wissenschaftler</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_for_squad_levsha">
+		<text>Geheimer Eingang</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_quest_saharov">
+		<text>Ausgang aus dem Komplex</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_saharov">
+		<text>Hinterausgang</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base1">
+		<text>Lager unter Schuppen</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base3">
+		<text>Turm auf Hьgel</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base4">
+		<text>Abflussrohr</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base5">
+		<text>Ecke in Fabrik</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_in_sci_base6">
+		<text>Garage bei Grenze</text>
+	</string>
+	<string id="st_name_yan_smart_terrain_zombi_spawn">
+		<text>Rohrцffnung</text>
+	</string>
+</string_table>

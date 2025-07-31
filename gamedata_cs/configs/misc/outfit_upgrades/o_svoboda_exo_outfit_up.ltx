@@ -20,7 +20,7 @@ explosion_protection 		= 0.05	;0.4
 
 [up_sect_d_svoboda_exo_outfit]
 cost 		= 5500
-value		= +20
+value		= +35
 inv_weight	= 0.5
 burn_protection 			= 0.012
 shock_protection 			= 0.012
@@ -32,7 +32,7 @@ immunities_sect		= sect_exo_outfit_immunities_1
 
 [up_sect_f_svoboda_exo_outfit]
 cost 		= 5500
-value		= +20
+value		= +35
 inv_weight	= 0.5
 burn_protection 			= 0.012
 shock_protection 			= 0.012
@@ -43,7 +43,7 @@ nightvision_sect = effector_nightvision_bad
 
 [up_sect_h_svoboda_exo_outfit]
 cost 		= 5500
-value		= +30
+value		= +35
 radiation_protection 		= 0.012
 chemical_burn_protection 	= 0.012
 
@@ -74,7 +74,7 @@ additional_inventory_weight2	= 10
 
 [up_sect_f2_svoboda_exo_outfit]
 cost 		= 8250
-value		= +30
+value		= +40
 burn_protection 			= 0.012
 shock_protection 			= 0.012
 
@@ -84,12 +84,13 @@ nightvision_sect = effector_nightvision_good
 
 [up_sect_h2_svoboda_exo_outfit]
 cost 		= 8250
-value		= +30
+value		= +35
 radiation_protection 		= 0.012
 chemical_burn_protection 	= 0.012
 
 [up_sect_ac2_svoboda_exo_outfit]
 cost 		= 11000
+value2 		= st_upg_composite_armor_battle
 bones_koeff_protection = actor_armor_exo
 
 [up_sect_bd2_svoboda_exo_outfit]
@@ -103,7 +104,7 @@ bleeding_restore_speed			= -0.006
 
 [up_sect_f2h2_svoboda_exo_outfit]
 cost 		= 11000
-value		= +30
+value		= +40
 radiation_protection 		= 0.012
 chemical_burn_protection 	= 0.012
 
@@ -213,7 +214,7 @@ scheme_index            = 0, 5
 known                   = 1
 effects                 = up_gr_f2_svoboda_exo_outfit
 section                 = up_sect_f_svoboda_exo_outfit
-property                = prop_tonnage
+property                = prop_thermo_electro
 
 precondition_functor    = inventory_upgrades.precondition_functor_a
 precondition_parameter  = a & b
@@ -224,8 +225,8 @@ effect_parameter        = something_here
 prereq_functor          = inventory_upgrades.prereq_functor_a
 prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
 prereq_params           = money(1000), item(habar)
-name                    = st_upg_outfit_b_stalk
-description             = st_upg_outfit_b_stalk_descr
+name                    = st_upg_spec_coating_stalk
+description             = st_upg_spec_coating_stalk_descr
 icon                    = ui_am_upgrade_11
 
 [up_g_svoboda_exo_outfit]
@@ -293,7 +294,7 @@ scheme_index            = 1, 0
 known                   = 1
 effects                 = up_gr_ac2_svoboda_exo_outfit
 section                 = up_sect_ac_svoboda_exo_outfit
-property                = prop_armor
+property                = prop_damage
 
 precondition_functor    = inventory_upgrades.precondition_functor_a
 precondition_parameter  = a & b
@@ -304,8 +305,8 @@ effect_parameter        = something_here
 prereq_functor          = inventory_upgrades.prereq_functor_a
 prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
 prereq_params           = money(1000), item(habar)
-name                    = st_upg_cevlars_armor_battle
-description             = st_upg_cevlars_armor_battle_descr
+name                    = st_upg_hard_elements_battle
+description             = st_upg_hard_elements_battle_descr
 icon                    = ui_am_upgrade_16
 
 [up_bd_svoboda_exo_outfit]
@@ -313,7 +314,7 @@ scheme_index            = 1, 1
 known                   = 1
 effects                 = up_gr_bd2_svoboda_exo_outfit
 section                 = up_sect_bd_svoboda_exo_outfit
-property                = prop_thermo_electro
+property                = prop_tonnage
 
 precondition_functor    = inventory_upgrades.precondition_functor_a
 precondition_parameter  = a & b
@@ -324,8 +325,8 @@ effect_parameter        = something_here
 prereq_functor          = inventory_upgrades.prereq_functor_a
 prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
 prereq_params           = money(1000), item(habar)
-name                    = st_upg_germetic_layer_stalk
-description             = st_upg_germetic_layer_stalk_descr
+name                    = st_upg_outfit_b_stalk
+description             = st_upg_outfit_b_stalk_descr
 icon                    = ui_am_upgrade_02
 
 [up_e2_svoboda_exo_outfit]
@@ -353,7 +354,7 @@ scheme_index            = 1, 3
 known                   = 1
 effects                 = up_gr_f2h2_svoboda_exo_outfit
 section                 = up_sect_f2_svoboda_exo_outfit
-property                = prop_radio_chem
+property                = prop_thermo_electro
 
 precondition_functor    = inventory_upgrades.precondition_functor_a
 precondition_parameter  = a & b
@@ -364,8 +365,8 @@ effect_parameter        = something_here
 prereq_functor          = inventory_upgrades.prereq_functor_a
 prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
 prereq_params           = money(1000), item(habar)
-name                    = st_upg_exsternal_filtering_sys_stalk
-description             = st_upg_exsternal_filtering_sys_stalk_descr
+name                    = st_upg_germetic_layer_stalk
+description             = st_upg_germetic_layer_stalk_descr
 icon                    = ui_am_upgrade_12
 
 [up_g2_svoboda_exo_outfit]
@@ -433,7 +434,7 @@ scheme_index            = 2, 1
 known                   = 1
 effects                 = 
 section                 = up_sect_bd2_svoboda_exo_outfit
-property                = prop_radio_chem
+property                = prop_psy
 
 precondition_functor    = inventory_upgrades.precondition_functor_a
 precondition_parameter  = a & b
@@ -444,8 +445,8 @@ effect_parameter        = something_here
 prereq_functor          = inventory_upgrades.prereq_functor_a
 prereq_tooltip_functor  = inventory_upgrades.prereq_tooltip_functor_a
 prereq_params           = money(1000), item(habar)
-name                    = st_upg_recycle_breathing_sys_stalk
-description             = st_upg_recycle_breathing_sys_stalk_descr
+name                    = st_upg_psy_shielding_stalk
+description             = st_upg_psy_shielding_stalk_descr
 icon                    = ui_am_upgrade_26
 
 [up_e3_svoboda_exo_outfit]

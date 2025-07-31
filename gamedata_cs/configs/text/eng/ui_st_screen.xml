@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>You're too exhausted to walk</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>You're too heavily loaded to continue</text>
+	</string>
+	<string id="car_character_use">
+		<text>Open the door ($$ACTION_USE$$)</text>
+	</string>
+	<string id="character_use">
+		<text>Talk ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Search body ($$ACTION_USE$$)</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Search body ($$ACTION_USE$$) \n Drag body (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Task complete:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Task failed:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Item received:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Money received:</text>
+	</string>
+	<string id="general_new_task">
+		<text>New task:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Item lost:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Money lost:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Task cancelled:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Task updated:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>The weapon has jammed.You need to reload.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Search ($$ACTION_USE$$)</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Pick up item ($$ACTION_USE$$)</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Move to another location?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Move object ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_autosave">
+		<text>Autosave</text>
+	</string>
+	<string id="st_codelock">
+		<text>Combination lock ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_demo_play">
+		<text>WORK IN PROGRESS</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Found information:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Game over</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Press ($$ACTION_JUMP$$) to exit to main menu</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pause</text>
+	</string>
+	<string id="st_game_saved">
+		<text>game saved</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Protection shutdown</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Critical psi-emission level. Leave the dangerous zone immediately.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Hazardous radiation level. Protection required to pass.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Search the stash ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_tip">
+		<text>Message</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Blocked</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Open the door ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Door blocked</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Press ($$ACTION_USE$$) to close the door</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>The door is locked by a code</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Press ($$ACTION_USE$$) to decode the door</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Decoding in progress</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>The door is locked</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Press ($$ACTION_USE$$) to open the door</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Press ($$ACTION_USE$$) to close the gate</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>The gate is blocked</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Press ($$ACTION_USE$$) to open the gate</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Grate blocked</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Permission needed to enter the hole.</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Rotate crane ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Transmit radio message ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Turn on the detonator ($$ACTION_USE$$)</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Strelok's stash ($$ACTION_USE$$)</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>You cannot traverse the marshes without a guide.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Fire!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>End of round! Return to master.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Time left:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Targets hit:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Your score:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Your time:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Leave the dangerous area!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Time to flooding:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Underground flooded</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>You can't find the way further.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Deactivate the generator ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text>ESRB Notice: Game Experience May Change During Online Play</text>
+	</string>
+	<string id="renegade">
+		<text>Renegades</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>ATTENTION! LEAVE HAZARDOUS AREA IMMEDIATELY</text>
+	</string>
+</string_table>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="ui_map_desc_mp_agroprom_large">
+		<text>Un lugar extraсo. Este silencioso edificio probablemente tiene sus propios secretos, pero los stalkers acuden aquн por otra razуn: un generoso suministro de artefactos en un бrea de elevado riesgo y recompensa. Piensa rбpido, actъa rбpido y probablemente la suerte estarб de tu lado.</text>
+	</string>
+	<string id="ui_map_desc_mp_agroprom_short">
+		<text>Un lugar extraсo. Este silencioso edificio probablemente tiene sus propios secretos, pero los stalkers acuden aquн por otra razуn: un generoso suministro de artefactos en un бrea de elevado riesgo y recompensa.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_large">
+		<text>Una cochera de autobuses situada en la entrada de la Zona. Hace tiempo que sus tractores, autobuses y camiones no funcionan. Hasta ahora nadie ha encontrado artefactos, pero es un lugar popular entre los stalkers veteranos, que dan caza a los novatos y les roban sus modestas posesiones. Ponte a cubierto tras los edificios y los vehнculos, y vigila a los enemigos en los tejados.</text>
+	</string>
+	<string id="ui_map_desc_mp_atp_short">
+		<text>Una cochera de autobuses situada en la entrada de la Zona. Hace tiempo que sus tractores, autobuses y camiones no funcionan.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_large">
+		<text>Un lugar enigmбtico y fascinante. Esta piscina se construyу para realizar experimentos con alguien o algo, pero su propуsito exacto siempre serб un misterio. No hay artefactos, asн que los stalkers solo vienen por los restos de extraсos dispositivos. Vigila los tejados y recuerda que esta бrea tiene niveles de radiaciуn extremadamente altos.</text>
+	</string>
+	<string id="ui_map_desc_mp_bath_short">
+		<text>Un lugar enigmбtico y fascinante. Esta piscina se construyу para realizar experimentos con alguien o algo, pero su propуsito exacto siempre serб un misterio.</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_large">
+		<text>Esta lъgubre fбbrica abandonada es el lugar de descanso de incontables stalkers. Una serie de anomalнas aguardan a los visitantes a cada paso, pero eso no parece detenerlos, los valiosos artefactos los atraen como un imбn. ЎCuidado con la radiaciуn!</text>
+	</string>
+	<string id="ui_map_desc_mp_factory_short">
+		<text>Esta lъgubre fбbrica abandonada es el lugar de descanso de incontables stalkers.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_large">
+		<text>Parte de un enorme y pestilente depуsito de chatarra donde se arrojaron montones de desperdicios radiactivos tras el desastre de 1986. Estб lleno de grъas decrйpitas y diverso equipamiento. Otros puntos de interйs son los edificios desvencijados y un enorme hangar. La cercanнa a la entrada de la Zona y la relativa abundancia de artefactos atrae a los stalkers que prefieren las cosas fбciles.</text>
+	</string>
+	<string id="ui_map_desc_mp_garbage_short">
+		<text>Parte de un enorme y pestilente depуsito de chatarra donde se arrojaron montones de desperdicios radiactivos tras el desastre de 1986. Estб lleno de grъas decrйpitas y diverso equipamiento.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_large">
+		<text>Un pueblo abandonado y perdido en las profundidades de la Zona. Hay un pequeсo lago seco con montones de vehнculos destrozados que evoca un miedo subconsciente a la realidad de la Zona. Ten cuidado con los francotiradores, pero recuerda: la Zona favorece a los valientes.</text>
+	</string>
+	<string id="ui_map_desc_mp_lost_village_short">
+		<text>Un pueblo abandonado y perdido en las profundidades de la Zona. Hay un pequeсo lago seco con montones de vehнculos destrozados que evoca un miedo subconsciente a la realidad de la Zona.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_large">
+		<text>Una base abandonada del ejйrcito con camiones y APC inmуviles, barracones y cuarteles generales desvencijados. Sin embargo, su aspecto abandonado es engaсoso: es una autйntica mina de oro de artefactos, asн que el enemigo puede estar acechando a la vuelta de cualquier esquina. ЎDemuйstrales que eres el mejor!</text>
+	</string>
+	<string id="ui_map_desc_mp_military_1_short">
+		<text>Una base abandonada del ejйrcito con camiones y APC inmуviles, barracones y cuarteles generales desvencijados.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_large">
+		<text>Este viejo pueblo es un lugar muy siniestro. Si eres lo bastante valiente como para venir aquн, prepбrate para evitar que te den la bienvenida con un balazo entre las cejas. Aquн no hay ningъn lugar seguro, asн que dependes de tu mira y de tu silenciador.</text>
+	</string>
+	<string id="ui_map_desc_mp_military_2_short">
+		<text>Este viejo pueblo es un lugar muy siniestro. Si eres lo bastante valiente como para venir aquн, prepбrate para evitar que te den la bienvenida con un balazo entre las cejas.</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_large">
+		<text>La ciudad de Pripyat es el antiguo lugar de residencia del personal de la central nuclear, o lo que queda de йl. Es un lugar industrial muy peligroso, asн que no bajes nunca la guardia.</text>
+	</string>
+	<string id="ui_map_desc_mp_prypiat_short">
+		<text>La ciudad de Pripyat, situada no muy lejos de la central nuclear, es el legado del desastre de Chernуbil.</text>
+	</string>
+	<string id="ui_map_desc_mp_railraod_short">
+		<text>Una pequeсa estaciуn de ferrocarril cerca de la fбbrica de Rostok.</text>
+	</string>
+	<string id="ui_map_desc_mp_railroad_large">
+		<text>Una pequeсa estaciуn de ferrocarril cerca de la fбbrica de Rostok, llena de vagones de tren y locomotoras oxidadas que no funcionan. Su abundancia de artefactos atrae a stalkers de todos los rincones de la Zona.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_large">
+		<text>Esta fбbrica, hundida bajo montones de metal y cemento, mantiene un peculiar silencio. El siglo pasado rebosaba de actividad, los trabajadores se apresuraban a cumplir sus turnos y los eslуganes soviйticos resonaban en sus altavoces. Esos tiempos han quedado atrбs y ahora la fбbrica estб abandonada.</text>
+	</string>
+	<string id="ui_map_desc_mp_rostok_short">
+		<text>Una vieja fбbrica abandonada, hundida bajo montones de metal y cemento, mantiene su profundo silencio.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_large">
+		<text>Esto eran las afueras de la fбbrica de Rostok antes de que Deber se instalase aquн. Un lugar espeluznante, aunque rico en artefactos. Cada hangar o almacйn estб lleno de peligros mortales. Ten mucho cuidado y no dejes de vigilar la torre blanca.</text>
+	</string>
+	<string id="ui_map_desc_mp_workshop_short">
+		<text>Esto eran las afueras de la fбbrica de Rostok antes de que Deber se instalase aquн. Un lugar espeluznante, aunque rico en artefactos.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_large">
+		<text>Depуsito abandonado y territorio adyacente. Aquн puedes encontrar algo de equipamiento y suministros si buscas bien. Ten cuidado con las potentes anomalнas y los tiradores en el tejado del depуsito, es un sitio excelente para vigilar todos los accesos.</text>
+	</string>
+	<string id="ui_map_desc_mp_autostation_short">
+		<text>Depуsito abandonado y territorio adyacente. Ten cuidado con las potentes anomalнas y los tiradores.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_large">
+		<text>La estaciуn de bomberos cuyo personal al completo acudiу al desastre de la central nuclear de Chernуbil en 1986. La torre es un punto de observaciуn excelente para vigilar los alrededores. Muy pocos visitan los pisos superiores de los edificios y los sуtanos, aunque puede que sea mejor asн. Las facciones de la Zona han estado luchando entre sн en esta бrea por algъn tiempo tratando de conseguir la mejor posiciуn estratйgica.</text>
+	</string>
+	<string id="ui_map_desc_mp_firestation_short">
+		<text>La estaciуn de bomberos cuyo personal al completo acudiу al desastre de la central nuclear de Chernуbil en 1986. La torre es un punto de observaciуn excelente...</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_large">
+		<text>Un pequeсo barrio de la enigmбtica ciudad de Limansk. Tiene apartamentos abandonados y un edificio a medio construir entre ellos. Cuando se encontraron varios artefactos valiosos aquн, las noticias se esparcieron por toda la Zona muy deprisa. Desde que se abrieron algunos caminos a Limansk, los tiroteos no han parado ni un minuto.</text>
+	</string>
+	<string id="ui_map_desc_mp_limansk_short">
+		<text>Un pequeсo barrio de la enigmбtica ciudad de Limansk. Tiene apartamentos abandonados y un edificio a medio construir entre ellos.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_large">
+		<text>Mбs que una piscina, es un baсo de sangre. En sus embaldosados corredores se oyen las balas, las explosiones y los gritos de la gente agonizante. Pocos stalkers saben cуmo venir aquн, pero aъn menos saben cуmo salir.</text>
+	</string>
+	<string id="ui_map_desc_mp_pool_short">
+		<text>Mбs que una piscina, es un baсo de sangre. En sus embaldosados corredores se oyen las balas, las explosiones y los gritos de la gente agonizante.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_large">
+		<text>Una base de reparaciones en las proximidades de un pequeсo pueblo. Todos los vehнculos en funcionamiento fueron confiscados tras el desastre de Chernуbil. Con el tiempo, el resto del equipamiento ha sido saqueado como piezas de repuesto. El бrea estб llena de peligros, como pantanos y juncos radiactivos. Si tienes suerte, puede que encuentres algo realmente valioso.</text>
+	</string>
+	<string id="ui_map_desc_mp_rembasa_short">
+		<text>Una base de reparaciones en las proximidades de un pequeсo pueblo. El бrea estб llena de peligros, como pantanos, juncos radiactivos y cosas asн.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_large">
+		<text>Un centro deportivo en Pripyat situado no muy lejos de la escuela abandonada. Los tipos de deporte practicados aquн han cambiado mucho desde 1986, asн como el nъmero de entusiastas dispuestos a participar en ellos. Los stalkers vienen aquн atraнdos por dudosa fama, botнn y artefactos... y algunos a veces se quedan para siempre.</text>
+	</string>
+	<string id="ui_map_desc_mp_sport_center_short">
+		<text>Un centro deportivo en Pripyat situado no muy lejos de la escuela abandonada.</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_large">
+		<text>Todo lo que queda de interйs en este peligroso lugar del Valle Oscuro es una larga calle y una academia abandonada. No se sabe quй enseсaban en esa academia, pero ahora puedes aprender a sobrevivir aquн. ЎY sн, ten mucho cuidado con las azoteas!</text>
+	</string>
+	<string id="ui_map_desc_mp_darkvalley_short">
+		<text>Todo lo que queda de interйs en este peligroso lugar del Valle Oscuro es una larga calle y una academia abandonada. </text>
+	</string>
+	<string id="mp_autostation">
+		<text>Depуsito abandonado</text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_short">
+		<text>Un lugar muy extraсo. Las anomalнas gravitacionales han deformado el terreno creando un paisaje alienнgena... </text>
+	</string>
+	<string id="ui_map_desc_mp_training_camp_large">
+		<text>Un lugar muy extraсo. Los stalkers que dicen haberlo visto reciben muchas burlas, pero existe de todas formas. Las anomalнas gravitacionales han deformado el terreno creando un paisaje alienнgena. La zona estб dominada por grandes torres, restos de material militar e islotes flotantes, arrancados del suelo.</text>
+	</string>
+</string_table>

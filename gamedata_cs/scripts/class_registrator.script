@@ -13,25 +13,26 @@ end
 function register(object_factory)
 	c_register	(object_factory, "ui_main_menu.main_menu",								"MAIN_MNU", "main_menu")
 
-	cs_register	(object_factory, "ce_smart_zone", "sim_faction.se_sim_faction",			"SFACTION",	"sim_faction")	
+	cs_register	(object_factory, "ce_smart_zone", "sim_faction.se_sim_faction",			"SFACTION",	"sim_faction")
 	cs_register	(object_factory, "ce_smart_zone", "smart_terrain.se_smart_terrain",		"SMRTTRRN",	"smart_terrain")
 	cs_register	(object_factory, "ce_smart_zone", "se_respawn.se_respawn",				"RE_SPAWN", "respawn")
-	cs_register	(object_factory, "ce_switcher.ce_switcher",	"se_switcher.cse_switcher",	"O_SWITCH",	"switcher")	
-	
-	
-	cs_register	(object_factory, "CActor", "se_actor.se_actor",					"S_ACTOR", "script_actor")
-	cs_register	(object_factory, "CAI_Stalker", "se_stalker.se_stalker",				"AI_STL_S", "script_stalker")
-	cs_register	(object_factory, "CAI_Trader", "se_stalker.se_trader",					"AI_TRD_S", "script_trader")
-	cs_register	(object_factory, "CHelicopter", "se_car.se_heli",						"C_HLCP_S", "script_heli")
-	
-	cs_register	(object_factory, "ce_smart_zone", "se_zones.se_restrictor",			"SPC_RS_S", "script_restr")
-	cs_register	(object_factory, "CPhysicObject", "se_item.se_physic",					"O_PHYS_S", "script_phys")
-	cs_register	(object_factory, "smart_cover_object",	"se_smart_cover.se_smart_cover",    "SMRT_C_S",	"smartcover_s")
-	
+	cs_register	(object_factory, "ce_switcher.ce_switcher",	"se_switcher.cse_switcher",	"O_SWITCH",	"switcher")
+	cs_register	(object_factory, "CLevelChanger",		"se_level_changer.se_level_changer","LVL_CHNG", "level_changer_s")
+
+
+	cs_register	(object_factory, "CActor", 				"se_actor.se_actor",		"S_ACTOR",	"script_actor")
+	cs_register	(object_factory, "CAI_Stalker", 		"se_stalker.se_stalker",	"AI_STL_S", "script_stalker")
+	cs_register	(object_factory, "CAI_Trader", 			"se_stalker.se_trader",		"AI_TRD_S", "script_trader")
+	cs_register	(object_factory, "CHelicopter", 		"se_car.se_heli",			"C_HLCP_S", "script_heli")
+
+	cs_register	(object_factory, "ce_smart_zone", 		"se_zones.se_restrictor",			"SPC_RS_S", "script_restr")
+	cs_register	(object_factory, "CPhysicObject", 		"se_item.se_physic", 				"O_PHYS_S", "script_phys")
+	cs_register	(object_factory, "smart_cover_object",	"se_smart_cover.se_smart_cover",	"SMRT_C_S", "smartcover_s")
+
 	cs_register (object_factory, "CElectricBall",   "se_artefact.se_artefact",  "SCRPTART", "artefact_s")
 
 	cs_register	(object_factory, "CCar",            "se_car.se_car",            "SCRPTCAR",	"car_s")
-		
+
 	cs_register	(object_factory, "CAI_Bloodsucker",	"se_monster.se_monster",    "SM_BLOOD",	"bloodsucker_s")
 	cs_register	(object_factory, "CAI_Boar",        "se_monster.se_monster",	"SM_BOARW",	"boar_s")
 	cs_register	(object_factory, "CAI_Dog",         "se_monster.se_monster",    "SM_DOG_S",	"dog_s")
@@ -49,11 +50,11 @@ function register(object_factory)
 	cs_register	(object_factory, "CTushkano",       "se_monster.se_monster",	"SM_TUSHK",	"tushkano_s")
 	cs_register	(object_factory, "CPsyDog",         "se_monster.se_monster",	"SM_DOG_P", "psy_dog_s")
 	cs_register	(object_factory, "CPsyDogPhantom",  "se_monster.se_monster",	"SM_DOG_F", "psy_dog_phantom_s")
-	
+
 	cs_register	(object_factory, "CTorch",          "se_item.se_item_torch",	"TORCH_S",  "device_torch_s")
 	cs_register	(object_factory, "CStalkerOutfit",  "se_item.se_outfit",		"E_STLK",	"equ_stalker_s")
 	cs_register	(object_factory, "CScope",			"se_item.se_item",			"WP_SCOPE",	"wpn_scope_s")
-	
+
 	cs_register	(object_factory, "CWeaponAK74",		"se_item.se_weapon_magazined_w_gl",		"WP_AK74",	"wpn_ak74_s")
 	cs_register	(object_factory, "CWeaponLR300",	"se_item.se_weapon_magazined",		"WP_LR300",	"wpn_lr300_s")
 	cs_register	(object_factory, "CWeaponBinoculars","se_item.se_weapon_magazined",		"WP_BINOC",	"wpn_binocular_s")
@@ -64,19 +65,19 @@ function register(object_factory)
 	cs_register	(object_factory, "CWeaponKnife",	"se_item.se_weapon",		"WP_KNIFE",	"wpn_knife_s")
 	cs_register	(object_factory, "CWeaponPM",		"se_item.se_weapon_magazined",		"WP_PM",	"wpn_pm_s")
 	cs_register	(object_factory, "CWeaponRG6",		"se_item.se_weapon_shotgun",		"WP_RG6",	"wpn_rg6_s")
-	
+
 	cs_register	(object_factory, "CWeaponRPG7",		"se_item.se_weapon_magazined",		"WP_RPG7",	"wpn_rpg7_s")
-	
+
 	cs_register	(object_factory, "CWeaponShotgun",	"se_item.se_weapon_shotgun",	"WP_SHOTG",	"wpn_shotgun_s")
-	
+
 --	cs_register	(object_factory, "CWeaponMagazined","se_item.se_weapon_magazined",	"WP_MAGAZ",	"wpn_magazined_s")
-	
+
 	cs_register	(object_factory, "CWeaponSVU",		"se_item.se_weapon_magazined",		"WP_SVU",	"wpn_svu_s")
 	cs_register	(object_factory, "CWeaponUSP45",	"se_item.se_weapon_magazined",		"WP_USP45",	"wpn_usp45_s")
 	cs_register	(object_factory, "CWeaponVal",		"se_item.se_weapon_magazined",		"WP_VAL",	"wpn_val_s")
 	cs_register	(object_factory, "CWeaponVintorez",	"se_item.se_weapon_magazined",		"WP_VINT",	"wpn_vintorez_s")
 	cs_register	(object_factory, "CWeaponWalther",	"se_item.se_weapon_magazined",		"WP_WALTH",	"wpn_walther_s")
-	
+
 	cs_register	(object_factory, "CHairsZone",		"se_zones.se_zone_visual",	"ZS_BFUZZ",	"zone_bfuzz_s")
 	cs_register	(object_factory, "CMosquitoBald",	"se_zones.se_zone_anom",	"ZS_MBALD",	"zone_mbald_s")
 	cs_register	(object_factory, "CMincer",			"se_zones.se_zone_anom",	"ZS_GALAN",	"zone_galant_s")

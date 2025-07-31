@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="val_freedom_blockpost_robbery_dialog_0">
+		<text>Also gut, Stalker, bleib stehen! Wer bist du und was machst du hier?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11">
+		<text>Wahrscheinlich ist er schon tot und ich rate dir, hier nicht allzu lange herumzulungern, sonst leistest du ihm bald Gesellschaft.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1111">
+		<text>Wir werden stдndig angegriffen. Es mьssen Profis sein, denn wir haben nie den Hauch einer Chance. Wir kontrollieren zwar die StraЯen, die ins Dunkle Tal fьhren, aber das verhindert die Ьbergriffe nicht im Geringsten. Nur in der Basis kann man sich einigermaЯen sicher fьhlen. Wenn du etwas ьber Fang wissen willst, bist du in der Freiheitsbasis genau richtig.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51">
+		<text>Hat dich der Hund also gut beschдftigt?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11">
+		<text>Hallo, mein Freund. Was brauchst du heute?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_21">
+		<text>Hey, mein Freund! Suchst gutes Geschдft, was?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11">
+		<text>Na endlich lernen wir uns mal kennen. Ich heiЯe Tschechow und ich bin der Boss hier. Die Aufnahmen auf dem PDA, den du gefunden hast, bringen etwas Licht in die Sache. Alle Ausgдnge aus dem Tal wurden blockiert, aber unsere AuЯenposten und Patrouillen wurden trotzdem stдndig angegriffen! Ein paar Mal wurden unsere Trupps sogar sofort, nachdem sie die Basis verlassen haben, niedergemetzelt! Die Leute denken langsam, dass wir die Zone irgendwie wьtend gemacht haben und das jetzt eine Art Strafe dafьr ist. Wir haben es sogar mit Schutzzaubern gegen Geister und diesem ganzen Zeug versucht. Aber jetzt wissen wir ja, dass es nichts Ьbernatьrliches ist - der Kommandeur hat all unsere Aktionen verraten! Verfluchte Ratte!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111">
+		<text>Das hдtte ich nie von ihm erwartet! Immerhin kenne ich ihn schon seit Ewigkeiten! Wir sind zusammen auf die Jagd nach unseren ersten Artefakten gegangen... verdammt nochmal, wir beide haben die Freiheitsgruppe zu dem gemacht, was sie heute ist! Ich habe ihm unsere gesamten Operationsplдne anvertraut, und er hat uns einfach verraten...</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111">
+		<text>Kurz nachdem das Gesprдch vom AuЯenposten auf unserer Funkfrequenz gesendet wurde, ist der Kommandeur verschwunden. Er hat gewusst, dass er in der Tinte steckt. Jetzt mьssen wir ihn finden. Er weiЯ zu viel... wenn nicht sogar alles! Alle Ausgдnge aus dem Tal sind gesichert, daher kann er nicht weit gekommen sein. Wir verfolgen seine PDA-Spur - er ist in der Nдhe der StraЯe zum Kordon. Ein paar unserer Trupps sind auf dem Weg dorthin.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111 ">
+		<text>Ja, da war mal so ein Stalker. Er hat sich ziemlich fьr seltene Ersatzteile und so interessiert. Er muss gewusst haben, dass wir die besten Mechaniker der ganzen Zone haben! Ich habe ihm das Teil verkauft, das er gesucht hat. Warum auch nicht? Er hat einen guten Preis bezahlt und nicht einmal gefeilscht. Aber ich weiЯ nicht, wofьr er das Ding gebraucht hat. Diese Teile wurden nur in alten Verschlьsselungsgerдten der Armee verwendet. Gleich darauf hat er die Basis verlassen und keiner hat ihn seitdem gesehen.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31">
+		<text>Danke fьr deine Hilfe! Nach der SchieЯerei bei der Farm wissen wir nun, dass hinter den Angriffen auf die Freiheitsgruppe Sцldner stecken. Die Informationen auf dem PDA des Kommandeurs bestдtigen das. Die Frage ist, warum zum Teufel tun sie das? Die Sцldner sind bisher immer neutral geblieben und haben mit allen Gruppen in der Zone kooperiert. Ich frage mich, wer ihr Auftraggeber sein kцnnte. Vielleicht waren es ja die Wдchter... oder die Armee. Momentan habe ich mehr Fragen als Antworten, aber ich werde das schon aufklдren. Darauf kannst du wetten!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_3111">
+		<text>Du hast dich an deinen Teil der Abmachung gehalten und jetzt verrate ich dir, was ich ьber Fang weiЯ. Er war hier auf der Suche nach seltenen Ersatzteilen und es hat mich neugierig gemacht, was er mit dem ganzen alten Zeug vorhat. Als ich ihn darauf angesprochen habe, hat er mir gesagt, dass ich mich um meine eigenen Angelegenheiten kьmmern soll. Na ja, sowas lasse ich mir natьrlich nicht gefallen. Ich habe einen unserer Techniker gebeten, sich in seine PDA-Frequenz einzuklinken; so konnten wir ihn einige Tage ьberwachen. Anscheinend ist er zur Mьllhalde gegangen - ich wьrde dort nach ihm suchen. Ьbrigens habe ich mir seine PDA-Frequenz notiert und dir auch schon ьbermittelt. Sein Aufenthaltsort wird nun auf deinem PDA angezeigt.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41">
+		<text>Bist du bereit, der Freiheitsgruppe ein weiteres Mal zu helfen?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111">
+		<text>Wir wissen jetzt zwar mehr, aber die Sцldner greifen uns weiterhin an... und wir haben schon zu viele Mдnner verloren! Ich weiЯ immer noch nicht, wie sie es ins Tal schaffen - wir haben alle StraЯen mit unseren AuЯenposten unter Kontrolle. Offenbar gibt es hier irgendwo einen Tunnel, den wir nicht kennen. So kцnnten die Sцldner ins Dunkle Tal gelangen. Wir mьssen diesen Tunnel finden und ihn in die Luft sprengen!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_71">
+		<text>Sцldner, wir mьssen die Antennen unter unsere Kontrolle bringen.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_51">
+		<text>Danke fьr deine Hilfe! Ich habe ehrlich gesagt nicht damit gerechnet, weil die meisten Leute in der Zone sich nur um ihren eigenen Dreck scheren. Ich schдtze, wir haben es den Sцldnern richtig gezeigt. Der Tunnel, durch den sie ins Tal gelangen konnten, ist jetzt nutzlos, aber die Jungs werden die ganze Anlage in die Luft jagen, damit nicht einmal eine verfluchte Ratte ohne unser Wissen ins Tal kommen kann! Wir mьssen zwar noch herausfinden, wer den Sцldnern den Auftrag gegeben hat, uns auf die Pelle zu rьcken, aber den erwischen wir sicher auch bald. Auf jeden Fall hast du hier deine Belohnung!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_61">
+		<text>Hey! Was fьhrt dich hierher?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111 ">
+		<text>Ja, ich werde dir helfen... natьrlich nur, wenn du mir hilfst. Nimm das nicht persцnlich, aber das sind schwere Zeiten und wenn sich die Lage nicht bald дndert, wird die Freiheit nicht ьber genьgend Mдnner zur Verteidigung vor den Banditenangriffen verfьgen! Hilf mir dabei, herauszufinden, wer hinter den Angriffen steckt, und ich erzдhle dir mehr ьber Fang.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_121">
+		<text>Finde den Kommandeur und bring ihn hierher, egal ob tot oder lebendig. Wenn du das erledigst, verrate ich dir, wo sich Fang aufhдlt. Ich habe die Koordinaten des Kommandeurs auf deinen PDA hochgeladen.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111 ">
+		<text>Es gibt einen alten Triangulator im Tal, der in Sowjetzeiten von Geodдten konstruiert wurde. Der Triangulator besteht aus drei Antennen. Sobald alle drei aktiviert werden, kann die Oberflдche des gesamten Tals ьberwacht werden. Wenn das funktioniert, kцnnen wir herausfinden, wie die Sцldner ins Tal gelangen.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111 ">
+		<text>Eine der Antennen steht hier in der Basis, aber die beiden anderen wurden von Sцldnern eingenommen. Hilf uns dabei, sie wieder unter unsere Kontrolle zu bringen!</text>
+	</string>
+	<string id="val_arena_master_about_rule_0">
+		<text>Wie lauten die Regeln in der Arena?</text>
+	</string>
+	<string id="val_arena_master_about_rule_1">
+		<text>Regeln? Drauflos schieЯen, das ist alles! Du musst jede Runde gewinnen und das hдngt von deinem Glьck ab. Ich meine, du brauchst verdammt viel Glьck, wenn du mit einer verrosteten Schrotflinte und in einem einfachen Pulli einem Typen gegenьberstehst, der volle Kцrperpanzerung trдgt und dessen Kanone einen Panzer aufhalten kцnnte! Und manchmal hast du es nicht nur mit einem Kerl zu tun, sondern mit zwei oder sogar drei. Wenn du dich fьr so etwas anmeldest, gibt es nur zwei Mцglichkeiten: Entweder gewinnst du und jubelst, oder du verlierst und beiЯt ins Gras, so einfach ist das. Du bekommst einen Preis, wenn du alle Runden gewinnst, aber wenn du das nicht schaffst, schuldest du mir etwas. Willst du also spielen?</text>
+	</string>
+	<string id="val_arena_master_comeback_0">
+		<text>Komm wieder, wenn du bereit dafьr bist.</text>
+	</string>
+	<string id="val_arena_master_darkvalley_0">
+		<text>Wo auЯer im Dunklen Tal bist du schon gewesen?</text>
+	</string>
+	<string id="val_arena_master_darkvalley_1">
+		<text>Nun, mein Freund, ich war schon ьberall in der Zone, das kannst du mir glauben. Was ich da alles erlebt habe... bah. Die Zone zu bereisen, ist nicht immer leicht; so gut wie nie, um genau zu sein. Auf der anderen Seite ist es hier nirgendwo einfach, auЯer der Kundige selbst hilft einem. Du hast schon von ihm gehцrt, oder? Nein? Oh Mann, das ist der erste Stalker ьberhaupt! Er war der erste, der in der gesamten Zone unterwegs war, und kennt sich wie kein Zweiter hier aus. Deswegen wird er der Kundige genannt. Selbst wenn sich die Zone nach einer Emission verдndert, kann dich der Kundige an dein Ziel fьhren, ohne sich zu verlaufen. Der Typ ist ein echtes Genie, hat wohl einen sechsten Sinn oder so etwas. Nur ist es schwierig, ihn ьberhaupt zu finden, und als ob das nicht reichen wьrde, hilft er auch nicht jedem... weiЯ der Teufel, warum er manchen hilft und manchen nicht. Aber eines ist sicher: Wenn er sich bereit erklдrt, dich irgendwohin zu fьhren, kannst du dich auf eine angenehme Reise freuen. Lehn dich einfach zurьck, entspanne dich und genieЯe die Zeit. Ich wьrde ihn auf jeden Fall verdammt gerne mal sprechen - ich wette, er weiЯ, wie es hinter dem Radar aussieht. Er dьrfte irgendwann schon dort gewesen sein, keine Frage.</text>
+	</string>
+	<string id="val_arena_master_good_fight_0">
+		<text>Gut gekдmpft. Hier hast du das Geld. Lust auf einen weiteren Versuch?</text>
+	</string>
+	<string id="val_arena_master_good_luck_0">
+		<text>Viel Glьck, Sцldner.</text>
+	</string>
+	<string id="val_arena_master_loozer_0">
+		<text>Pech gehabt, mein Freund. Keine Sorge, beim nдchsten Mal lдuft's bestimmt besser.</text>
+	</string>
+	<string id="val_arena_master_money_back_0">
+		<text>Komm wieder, wenn du genug Geld hast.</text>
+	</string>
+	<string id="val_barmen_about_barmen_0">
+		<text>Wie bist du Barmann geworden?</text>
+	</string>
+	<string id="val_barmen_about_barmen_1">
+		<text>Du stellst die falsche Frage, Bruder. Du solltest fragen, wie Ganja der Barmann, Ganja der Jointfreak, Ganja, der mit seinen Freunden keine Party auslieЯ, hier in der Zone gelandet ist. Aber darauf antworte ich nicht, Bruder, denn das ist eine negative Geschichte und ich bin ein positiver Typ. Eines Tages bin ich eben hier gelandet. Das ist doch die Hauptsache. Ich war auf mich alleine gestellt und habe eine gewaltige Einsamkeit in mir verspьrt. Ja, Mann, das war echt schlimm. Aber dann habe ich positive Energien gefьhlt... die stammten von der Freiheit! Ich habe sofort gewusst, dass wir perfekt zueinander passen wьrden. Ich hatte die Wahl, aber meine Zweifel waren wie weggewischt. Ich habe meine Freiheit entdeckt - und fьhre jetzt ein besseres Leben als die meisten Leute in der verrьckten Welt auЯerhalb der Zone. Hier habe ich genug zu trinken, genug zu rauchen, ich habe die Zone und die Menschen, die mir ihre Geschichten erzдhlen. Verdammt, das Gras hier ist wirklich erbдrmlich!</text>
+	</string>
+	<string id="val_barmen_about_zone_0">
+		<text>In Ordnung, lass mich eine deiner Geschichten ьber die Zone hцren.</text>
+	</string>
+	<string id="val_barmen_about_zone_1">
+		<text>Bruder, bei mir kannst du alles bekommen... Brot, Wasser, Wodka, einen fetten Trip... und natьrlich auch Geschichten ьber die Zone. Also, pass auf. Tief in der Zone gibt es geheime Labors - sie werden wohl noch benutzt, wie ich gehцrt habe. Seltsam, nicht wahr? Wie haben die Leute die Emission ьberlebt und kцnnen ohne Nahrung oder Strom weitermachen? Ich frage mich, ob es ьberhaupt Menschen sind, die in diesen Labors unterwegs sind. Mann, was ist, wenn es AuЯerirdische sind? Kalte, gnadenlose Aliens? Ein Bruder hat mir mal von einigen Funksprьchen erzдhlt, die er bei Jantar aufgeschnappt hat. Die Funksprьche waren wohl so merkwьrdig und Angst einflцЯend, dass er seinen Empfдnger sehr schnell wieder ausgeschaltet hat. Ein anderer Kumpel hat von einem halb-durchsichtigen Wesen in einem Schutzanzug berichtet, das er gesehen haben will. Der Anzug soll viel fortschrittlicher gewesen sein als alles, was die Stalker tragen. "Verschwinde. Wir arbeiten hier. Du stцrst uns!" soll das transparente Ding zu ihm gesagt haben. Na ja, das alles hat sich wohl direkt neben dem Radar zugetragen. Das heiЯt, man sollte nicht alles sofort glauben, Bruder. Aber wer weiЯ? Vielleicht hat die Zone diese Leute wirklich in pure Energie verwandelt...</text>
+	</string>
+	<string id="val_comendant_about_freedom_0">
+		<text>Kann ich mich der Freiheit anschlieЯen?</text>
+	</string>
+	<string id="val_comendant_about_freedom_1">
+		<text>Wie ich schon sagte: Woher soll ich wissen, wer du wirklich bist? Was, wenn dich irgendjemand hierher geschickt hat? In Zeiten wie diesen kцnnen wir niemandem trauen, deswegen kannst du dich uns nicht einfach so anschlieЯen. Wir mьssen dich prьfen, wirklich gut prьfen, um sicherzugehen, dass du nichts anderes im Schilde fьhrst. Bestehe die Prьfung, erledige ein paar Arbeiten fьr den Clan und danach wird sich Tschechow entscheiden, ob die Freiheit dich braucht oder nicht.</text>
+	</string>
+	<string id="val_comendant_about_news_0">
+		<text>Was gibt's Neues?</text>
+	</string>
+	<string id="val_comendant_about_news_1">
+		<text>Heute Morgen hat es geregnet, ist das neu genug fьr dich? Hцr mal, ich habe keine Zeit fьr eine Plauderstunde mit dir, das passt jetzt im Moment ьberhaupt nicht. Meine Mдnner werden ьberall von irgendwelchen Wichsern abgeknallt und ich habe nicht mehr viele! Also habe ich momentan Wichtigeres zu tun, als mich mit dir ьber Neuigkeiten zu unterhalten. Und woher soll ich ьberhaupt wissen, dass du nicht einer der Dreckskerle bist, die meine Jungs umnieten? Wenn du also auf der Suche nach Smalltalk bist, dann bist du hier an der falschen Adresse, Kumpel!</text>
+	</string>
+	<string id="val_fixer_about_benefit_0">
+		<text>Hast du irgendeine nьtzliche Information fьr einen Stalker?</text>
+	</string>
+	<string id="val_fixer_about_benefit_1">
+		<text>Nьtzlich? In unserem Metier ist etwas nьtzlich, wenn es dir beim Ьberleben hilft. Oder deine Gegner ausschaltet. Ich will dir von Artefakten berichten. Was ist ein Artefakt? Nun, so eine Konzentration anomaler Energie. Es gibt auch Artefakte, die Anomalien... дhhh... wie heiЯt das noch mal... ah, ja... ge-ne-rie-ren kцnnen! Ich glaube, Tschechow nennt das so. Wie auch immer... das einzige Problem besteht darin, dass ein Artefakt nutzlos ist, nachdem es eine Anomalie generiert hat. Die Anomalie selbst ist nicht so stark oder langlebig, aber sie reicht aus, um jemanden aufzuhalten oder ihn ganz abzuschьtteln.</text>
+	</string>
+	<string id="val_fixer_about_power_0">
+		<text>Und was ist dein Metier?</text>
+	</string>
+	<string id="val_fixer_about_power_1">
+		<text>Nun ja, ich fьhle mich in der Kьche heimisch, mit einer Gabel in der Hand! Hah! Kleiner Scherz, Kumpel. Ich bin ein Scharfschьtze. Ich kann selbst ziemlich gut schieЯen und kann auch anderen behilflich sein. Dein Sturmgewehr kann ich z.B. verbessern - wenn ich damit fertig bin, schieЯt es so gut wie ein Spetsnaz-SVD. Und wenn du ein echtes Scharfschьtzengewehr hast... oh, Mann - deine Gegner werden einen groЯen Bogen um dich machen, damit sie dir nicht in die Quere kommen. Darauf hast du mein Wort. Falls nцtig, kann ich auch deine Panzerung aufpeppen.</text>
+	</string>
+	<string id="val_fixer_about_weapons_0">
+		<text>Teile deine Erfahrung mit mir. Wie kann man Waffen und Panzerung am effektivsten verbessern?</text>
+	</string>
+	<string id="val_fixer_about_weapons_1">
+		<text>An Erfahrung fehlt es mir wirklich nicht. Mein Rat an dich ist: Versuch nicht, alles auf einmal zu verbessern. Wenn du auf der Suche nach der Waffe mit der hцchsten Schusskraft und grцЯten Zielgenauigkeit bist, kannst du noch lange suchen. Erhцhst du also die Durchschlagskraft deiner Waffe ein Mal, solltest du das beim nдchsten Mal erneut tun! Denn solche Verbesserungen lassen sich nicht mehr rьckgдngig machen. Wenn du also aus einer Waffe, deren Schusskraft du ausgebaut hast, ein Scharfschьtzengewehr machen willst, kannst du das vergessen. Deshalb musst du vorher gut ьber diese Verbesserungen nachdenken.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_11">
+		<text>Was geht?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_0">
+		<text>Gibt es Arbeit?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_1">
+		<text>Seit einigen Tagen sehe ich nachts Lichter im verlassenen Gebдude bei der Tankstelle. Kцnnte sich um Fackeln oder so etwas handeln, denke ich. Das sollte man mal ьberprьfen, oder? Ich meine, wenn's irgendetwas Bцses ist, werden wir damit fertig, aber wenn das die Mistkerle von der Mьllhalde sind, mьssen wir uns um sie kьmmern.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_11">
+		<text>OK, ich schaue mir das mal an.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_12">
+		<text>Das interessiert mich nicht.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_2">
+		<text>Was gab es nun bei der Tankstelle?</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_21">
+		<text>Banditen... ich glaube, sie haben dich beobachtet. Zuerst sind sie nicht sehr freundlich gewesen, aber ich konnte sie dann doch etwas "beruhigen".</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_212">
+		<text>Hmm, das ist merkwьrdig. Aber egal, hier hast du deine Belohnung. Danke vielmals!</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_213">
+		<text>Sag mir bescheid, wenn du weitere Geister siehst.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_214">
+		<text>Sie hatten etwas bei sich. Hier, schau mal.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_215">
+		<text>Sehr interessant! Bring diesen PDA zu Lingow. Die Banditen haben wohl Informationen gesammelt und er wird sicher sehr interessiert daran sein.\n</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_22">
+		<text>Das ist so radioaktiv, dass mein Strahlen schon sehr bald noch beeindruckender sein wird.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_3">
+		<text>Nein.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_1">
+		<text>Ich bin Sцldner und suche einen Stalker namens Fang.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_111">
+		<text>Warum tot? Was ist hier los?</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_11111">
+		<text>Danke fьr die Info.</text>
+	</string>
+	<string id="val_freedom_blockpost_robbery_dialog_21">
+		<text>Geh mir aus dem Fadenkreuz.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11">
+		<text>Du hast dir eine schlechte Gegend zum Spazierengehen ausgesucht, Kumpel. Wir werden hier Tag und Nacht angegriffen, weiЯt du das nicht? Es ist schon gefдhrlich genug, ьberhaupt in unserer Basis zu sein, aber wenn du dabei eine Freiheitsjacke trдgst, kannst du dir auch gleich ein Fadenkreuz auf die Stirn tдtowieren...</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111">
+		<text>Ich suche einen Stalker namens Fang. Sagt dir der Name was?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111">
+		<text>Ich kenne ihn nicht persцnlich. Vor ein paar Tagen ist hier so ein Penner aufgetaucht. Er und unser Boss haben sich ьber ein paar krumme Geschдfte unterhalten - natьrlich ohne Zeugen. Das kцnnte dein Typ gewesen sein, aber genau weiЯ ich das nicht.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111">
+		<text>Wie kann ich den Anfьhrer der Freiheitsfraktion treffen?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111">
+		<text>Hah! Du bist ja ein ganz Schneller! Hцr zu, den Boss zu sehen, kannst du vergessen, solange wir in Quarantдne sind. Immerhin bist du nur ein Sцldner. Aber wenn du mir einen Gefallen tust, lege ich vielleicht ein gutes Wort fьr dich beim Boss ein. Was hдltst du davon?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_1111111">
+		<text>Gut, was soll ich tun?</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_11111111">
+		<text>In der Nдhe der Basis hat sich ein Pseudohund eingenistet und macht uns das Leben zur Hцlle! Sobald er riecht, dass an der Bar gekocht wird, kannst du schon einpacken. Die Mдnner sind alle verdammt nervцs wegen diesem blцden Tier. Schaff zuerst dieses Problem fьr uns aus der Welt. Danach kommen wir zum wirklichen Geschдft.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_111111111">
+		<text>Ist schon so gut wie erledigt.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_511">
+		<text>Das spielt alles keine Rolle mehr, denn das Tier ist tot.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_5111">
+		<text>In Ordnung. Deine nдchste Aufgabe ist etwas schwieriger: Wir mьssen diese Munition zu unseren Jungs am hinteren AuЯenposten bringen. Geh gleich zu Ashot... er wird dir verraten, was genau du wohin schleppen musst.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_51111">
+		<text>Verstanden.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_512">
+		<text>Nicht jetzt.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_61">
+		<text>Ich hab dir doch gesagt, dass du zu Ashot gehen sollst!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_611">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_71">
+		<text>Du bist ja immer noch hier. Hast du mich nicht verstanden? Jede Sekunde zдhlt! Auf zum AuЯenposten! Sofort!</text>
+	</string>
+	<string id="val_freedom_comendant_hello_dialog_711">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_11">
+		<text>Verpiss dich. Wenn du irgendwelche Fragen hast, frag den Kommandeur.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_hello_dialog_111">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_11">
+		<text>Was machst du hier? Wir erwarten jeden Augenblick einen Angriff. Renn in unsere Basis und richte dem Kommandeur aus, dass uns die Munition ausgeht. Er muss uns Nachschub schicken.</text>
+	</string>
+	<string id="val_freedom_deadblockpost_pda_hello_dialog_111">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11">
+		<text>Hallo, Sцldner. Willst du etwas Geld verdienen?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_111">
+		<text>Immer doch.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1111">
+		<text>Also gut. Ein Freund von mir wollte mir einige seltene Diagramme mitbringen, aber er ist nie in der Basis angekommen. Er ist verschwunden, aber ich brauche die Diagramme wirklich dringend - und zwar noch vor Sonnenaufgang. Zeit ist Geld, wie du sicherlich weiЯt. Willst du mir dabei helfen?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11111">
+		<text>Sicher.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11112">
+		<text>Nein.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_1112">
+		<text>Es gibt da etwas, das erledigt werden mьsste - aber auf die stille Art und ohne Zeugen, wenn du verstehst... Melde dich bei mir, wenn es dunkel ist, so ungefдhr um 23 Uhr.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_11121">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_112">
+		<text>Nein, danke.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_12">
+		<text>Also, willst du vielleicht reich werden?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21">
+		<text>Was ist mit dem Teil?</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_211">
+		<text>Hier, bitte sehr. Deinen Freund kannst du aber abschreiben - die Blutsauger haben sich an ihm verkцstigt.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2111">
+		<text>Armes Schwein. Egal, hier hast du deine Belohnung.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21111">
+		<text>Wenn du mal wieder Geld ausgeben willst, melde dich bei mir.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_212">
+		<text>Nur mit der Ruhe, ich habe es noch nicht.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_2121">
+		<text>Ich werde bis morgen warten, aber beeil dich.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_21211">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_31">
+		<text>Hallo.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_311">
+		<text>Bis dann.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_41">
+		<text>Ich habe dir gesagt, dass du bei Einbruch der Dunkelheit zurьckkommen sollst.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_51">
+		<text>Du bist zu spдt. Der Kunde wird jetzt nicht bezahlen.</text>
+	</string>
+	<string id="val_freedom_fixer_hello_dialog_511">
+		<text>ScheiЯe!</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_0">
+		<text>Was macht euer Clan genau?</text>
+	</string>
+	<string id="val_freedom_leader_about_clan_1">
+		<text>Unser Clan lebt in der Zone und studiert sie, wenn man es so ausdrьcken will. Ich bin ьberzeugt davon, dass die Zone eine einzigartige wissenschaftliche Chance fьr die gesamte Menschheit darstellt. Schon seit einigen Jahren erzeugt die Zone Artefakte, die fantastisches Forschungsmaterial abgeben... und es werden jeden Tag mehr. Was Anomalien angeht: Man kann die experimentellen Bedingungen, die sie schaffen, in keinem Labor der Welt reproduzieren! Ohne Zweifel wird es im Laufe der kommenden Jahre dank unserer Forschungen hier in der Zone einen unglaublichen Sprung in der Wissenschaft und in anderen Gebieten des menschlichen Wissens geben. Jeder wird diesen Sprung spьren... selbst die Leute, fьr die ihr Mobiltelefon das Hцchste an Wissenschaft und Technologie darstellt!</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_0">
+		<text>Warum mцgt ihr die Wдchter nicht?</text>
+	</string>
+	<string id="val_freedom_leader_about_dolg_1">
+		<text>Nicht mцgen? Das hast du noch nett ausgedrьckt. Wir haben einfach nichts gemeinsam und meiner Meinung nach fьhrt ihr Kampf gegen die Zone nur dazu, dass sich die Zone immer stдrker wehrt. Wenn man sich die Sachlage mal anschaut, erkennt man schnell, dass, wo auch immer die Wдchter ihren heiligen Krieg gegen die Zone fьhren, dies nur noch mehr Mutanten und Anomalien hervorbringt. Anstatt die Zone zu studieren und eine Mцglichkeit der Koexistenz zu finden, verschlimmern die Wдchter die Lage nur. Je hдrter sie gegen die Zone vorgehen, desto heftiger schlдgt sie zurьck. Wenn die Wдchter damit weitermachen, wird das schon bald zu einer Katastrophe fьhren, die das Ende fьr uns alle bedeutet. Einfacher ausgedrьckt: Die Wдchter sind ein Haufen gewцhnlicher beschrдnkter Waffennarren, die nichts hцren, nichts sehen und nur wissen, wie man den Abzug drьckt. Schon seitdem wir hier angekommen sind, kдmpfen wir gegeneinander, und frьher oder spдter wird nur eine Fraktion ьbrigbleiben.</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_0">
+		<text>WeiЯt du irgendetwas Interessantes ьber die Zone?</text>
+	</string>
+	<string id="val_freedom_leader_about_zone_1">
+		<text>Wenn ich dir alles, was ich weiЯ, erzдhlen wьrde, brдuchtest du ein bisschen mehr Zeit als ein paar Minuten. Z.B. erforschen wir momentan Stalker, die die Zone auf intuitive Art erfassen und fьhlen. Sie tragen keine Metallwaffen oder elektronischen Gerдte. Sie sind der Meinung, dass Waffen und Elektronik die Zone irritieren - und im Gegenzug wьrde sie Monster auf die Leute hetzen, die sie tragen, und ihnen Anomalien in den Weg legen. Ihrer Meinung nach braucht man nichts weiter als seine eigenen Fдhigkeiten, um sich in der Zone wohl zu fьhlen. So gut wie alle von ihnen wurden von der Zone auf die eine oder Art in Mitleidenschaft gezogen, aber sie haben ьberlebt und sogar einige merkwьrdige Fдhigkeiten entwickelt! Einige von diesen Stalkern kцnnen instinktiv durch tцdliche Anomalien manцvrieren, andere finden sich auch in den dichtesten Wдldern zurecht, und ich habe gehцrt, dass einige wenige sogar Monster von sich fernhalten kцnnen. Gerьchte besagen, dass sich einer dieser Leute beim Agroprom-Institut aufhдlt.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111">
+		<text>Das ist unerfreulich.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111">
+		<text>Und wo befindet sich der Kommandeur jetzt?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111">
+		<text>Ich habe gehцrt, dass ein Stalker namens Fang hier gewesen ist.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_11111111">
+		<text>Ja, da war mal so ein Stalker. Er hat sich ziemlich fьr seltene Ersatzteile und so interessiert. Er muss gewusst haben, dass wir die besten Mechaniker der ganzen Zone haben! Ich habe ihm das Teil verkauft, das er gesucht hat. Warum auch nicht? Er hat einen guten Preis bezahlt und nicht einmal gefeilscht. Aber ich weiЯ nicht, wofьr er das Ding gebraucht hat: Diese Teile wurden nur in alten Verschlьsselungsgerдten der Armee verwendet. Gleich darauf hat er die Basis verlassen und keiner hat ihn seitdem gesehen.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_111111111">
+		<text>WeiЯt du, wohin Fang gegangen sein kцnnte?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1111111111">
+		<text>Ja, ich werde dir helfen... natьrlich nur, wenn du mir hilfst. Nimm das nicht persцnlich, aber das sind schwere Zeiten und wenn sich die Lage nicht bald дndert, wird die Freiheit nicht ьber genьgend Mдnner zur Verteidigung vor den Banditenangriffen verfьgen! Hilf mir dabei, herauszufinden, wer hinter den Angriffen steckt, und ich erzдhle dir mehr ьber Fang.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_12">
+		<text>Abgemacht. Was soll ich tun?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_1211">
+		<text>Einverstanden.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_21">
+		<text>Hцr mal, Sцldner, solange ich nicht weiЯ, wer uns von wo aus angreift, werde ich dir nichts ьber Fang verraten.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_311">
+		<text>Also, was ist mit Fang?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_31111">
+		<text>Danke fьr die Info.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411">
+		<text>Ich bin bereit.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111">
+		<text>Wie willst du herausfinden, auf welchem Weg die Sцldner reinkommen? Das Tal ist riesig! Das ist so, als ob man nach der Nadel im Heuhaufen sucht.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111">
+		<text>Es gibt einen Triangulator im Tal, der in Sowjetzeiten von Geodдten konstruiert wurde. Der Triangulator besteht aus drei Antennen. Sobald alle drei aktiviert werden, kann die Oberflдche des gesamten Tals ьberwacht werden. Wenn das funktioniert, kцnnen wir herausfinden, wie die Sцldner ins Tal gelangen.\n</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4111111">
+		<text>Was muss ich tun?</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_41111111">
+		<text>Eine der Antennen steht hier in der Basis, aber die beiden anderen wurden von Sцldnern eingenommen. Hilf uns dabei, sie wieder unter unsere Kontrolle zu bringen!</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_411111111">
+		<text>Einverstanden.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_412">
+		<text>Vielleicht ein anderes Mal.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_4121">
+		<text>Nun... viel Glьck, Stalker.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_511">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_leader_hello_dialog_711">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_0">
+		<text>Ich mцchte mich euch anschlieЯen.</text>
+	</string>
+	<string id="val_freedom_leader_join_first_1">
+		<text>Na ja, um dich aufzunehmen, mьssen wir uns mal zusammensetzen, uns unterhalten... damit ich einen Eindruck bekomme, wer du wirklich bist. Aber dafьr habe ich gerade keine Zeit und ich denke nicht, dass sich das дndern wird, solange diese Angriffe auf meine Mдnner weitergehen. Hilf mir und dann kцnnen wir reden.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_0">
+		<text>Ich mцchte mich der Freiheit anschlieЯen. Habe ich genug dafьr geleistet?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_1">
+		<text>Vielleicht, vielleicht aber auch nicht... auf jeden Fall kann ich dich nicht aufnehmen, solange die Angriffe auf meine Jungs nicht aufhцren. Hilf uns und dann kцnnen wir reden.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_2">
+		<text>Auf jeden Fall. Wer weiЯ, wie viele unserer Mдnner ohne deine Hilfe noch draufgegangen wдren? Aber ich kann dich dennoch momentan nicht aufnehmen. Frag nicht, warum... nennen wir es Aberglaube. Doch es wird die Zeit kommen, da wir dich mit offenen Armen willkommen heiЯen werden! Ich werde mich dann bei dir melden. Ich hoffe, du дnderst deine Meinung bis dahin nicht und willst dann immer noch einer von uns werden.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_3">
+		<text>Du bist wohl ein freier Stalker, was? Nun, die meisten meiner Mдnner waren auch mal Stalker. Unsere Fraktionen sind sich ziemlich дhnlich... aber es gibt auch Unterschiede. Du musst wissen, dass alles, was du bisher bei den Stalkern erreicht hast, Geschichte sein wird, wenn du dich der Freiheit anschlieЯt. Bist du bereit dafьr?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_4">
+		<text>Wenn ich mich nicht irre, bist du doch einer aus Yogas Bande, oder? Das ist lustig... es passiert nicht oft, dass sich einer von euch Banditen der Freiheit anschlieЯen mцchte. Aber wenn du das wirklich willst und bereit bist, die Freiheit von anderen zu respektieren und die Schдtze der Zone an die Menschen weiterzugeben... dann bist du bei uns herzlich willkommen. Aber du musst versprechen, dass du von nun an nichts mehr mit Yoga zu tun haben wirst. Abgemacht?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5">
+		<text>Was fьr eine blцde Frage! Ich wдre froh, einen echten Kerl wie dich in meinem Team zu haben, mein Freund. Bist du dabei?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51">
+		<text>Ich bin dabei. Endlich kann auch ich die sьЯe Freiheit kosten!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511">
+		<text>Ganz genau, Bruder, aber vergiss nicht: Die Freiheit ist eine Notwendigkeit, die wir anerkennen. WeiЯt du ьber unsere Grundsдtze bescheid?</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5111">
+		<text>Am besten erzдhlst du mir alles, nur fьr den Fall, dass ich etwas nicht mitbekommen habe.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51111">
+		<text>Wir respektieren die Freiheit unserer Kдmpfer und anderer Stalker und sind ьberzeugt davon, dass die Zone - das grцЯte Geschenk der Menschheit - jedem offen steht. Sie bietet uns allen die Chance fьr einen groЯen Sprung nach vorne! Die Wдchter streben danach, die Zone zu vernichten und sich ihre Geheimnisse unter den Nagel zu reiЯen. Wir mьssen sie aufhalten! Unser oberstes Ziel ist der Kampf gegen die Wдchter.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511111">
+		<text>Ich verstehe.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_5112">
+		<text>Ja, natьrlich!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_51121">
+		<text>Dann bist du von diesem Moment an einer von uns! Die Freiheitsbasis ist nun dein Zuhause. Ich werde einen Codec auf deinen PDA hochladen, mit dem du Funksprьche von anderen Freiheitseinheiten und -kдmpfern empfangen kannst. Zudem kannst du damit im taktischen Bereich den aktuellen Stand unseres Kampfes gegen die Wдchter einsehen.</text>
+	</string>
+	<string id="val_freedom_leader_join_main_511211">
+		<text>Die Tage der Wдchter sind gezдhlt... ich werde allen die Freiheit bringen!</text>
+	</string>
+	<string id="val_freedom_leader_join_main_52">
+		<text>Ich werde darьber nachdenken.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_0">
+		<text>Der Barmann hat gemeint, dass ich dir diesen PDA zeigen soll.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_1">
+		<text>Oh ja. Ich habe schon seit langem vermutet, dass die Banditen es auf unsere Basis abgesehen haben. Du hast gute Arbeit geleistet, Bruder. Hier hast du deine Belohnung.</text>
+	</string>
+	<string id="val_freedom_leader_questions_dialog_11">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111">
+		<text>Der Kommandeur schickt mich, wegen der Munition.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111">
+		<text>Ah, hat er also endlich einen Helden gefunden...</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_11111">
+		<text>Was meinst du damit? Warum einen Helden?</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_111111">
+		<text>Weil niemand es wagt, auch nur die Nase da rauszustrecken. In den letzten beiden Tagen gab es drei Angriffe auf unsere Stellungen und 15 Mдnner sind draufgegangen. Niemand hat eine Idee, wer dahinter stecken kцnnte. Wer auch immer das war... sie sind uns stets einen Schritt voraus. Sie wissen immer bescheid, wo sich unser Trupp aufhдlt, und planen ihre Angriffe dementsprechend genau. Ich habe das dumpfe Gefьhl, dass wir einen Maulwurf in unseren Reihen haben... aber na ja. Hier hast du das Paket fьr unsere Jungs. Ich habe die Koordinaten auf deinen PDA hochgeladen. Viel Glьck!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_1111111">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_12">
+		<text>Nichts.</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_31">
+		<text>Hey! Renn schnell zum AuЯenposten! Unsere Jungs kцnnen ohne Munition nicht mehr lange durchhalten!</text>
+	</string>
+	<string id="val_freedom_trader_hello_dialog_311">
+		<text>Bis spдter.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_0">
+		<text>Hast du Arbeit fьr mich?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_1">
+		<text>Die Basis wird stдndig von Mutanten angegriffen. Ihr Unterschlupf ist nicht weit von hier - zerstцre ihn! Das wird sie hoffentlich eine Zeit lang aufhalten.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_11">
+		<text>OK.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_12">
+		<text>Nein, das ist keine Arbeit fьr mich.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_2">
+		<text>Hast du dich um die Mutanten gekьmmert?</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_21">
+		<text>Ich habe sie ausgeschaltet.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_211">
+		<text>Hier ist deine Belohnung.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_22">
+		<text>Nein.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_221">
+		<text>Hmm, das ist nicht gut. Komm wieder, wenn die Schweine tot sind.</text>
+	</string>
+	<string id="val_freedom_trader_questions_dialog_3">
+		<text>Nein.</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_1">
+		<text>Ach, Bruder! Bei der Freiheit geht es... nun ja... darum, von allen Verpflichtungen frei zu sein. Jeder kann hier tun und lassen, was er will. Du mцchtest Artefakte sammeln? Nur zu! Lieber doch Handel treiben? Warum nicht. Du kannst sogar einen Schachclub grьnden, wenn dich das glьcklich macht! Unsere Grundregel lautet: Es gibt keine Einschrдnkungen... solange du nicht die Rechte der anderen Freiheitler einschrдnkst. Wir sind nicht nur eine Fraktion, Bruder - wir sind eine Gemeinschaft freier Stalker! Wir haben hier Kдmpfer, aber auch Kьnstler. Und unsere Handwerker und Techniker sind die besten der Zone, das wird dir jeder bestдtigen!</text>
+	</string>
+	<string id="val_freeedom_leader_about_clan_111">
+		<text>So ist das Leben, Bruder... diejenigen von uns, denen ihre persцnliche Freiheit etwas wert ist und die nicht von einem Haufen Bьrohengste regiert werden wollen, mьssen zusammenhalten, um zu ьberleben. Das ganze lдuft so ab, dass die GroЯen und Mдchtigen da drauЯen keinen FuЯ in die Zone setzen mцchten. Dadurch kцnnen wir all das tun, was wir schon immer wollten! Hier leben die Leute, die ihren Platz in der AuЯenwelt nicht finden konnten.</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_1">
+		<text>Bruder, die Zone ist ein Geschenk des Himmels! Schon seit Anbeginn der Zeit leidet die Menschheit unter Krankheiten und Seuchen. Und jetzt - sieh dir all diese Mцglichkeiten an! Diese heilenden Artefakte etwa... sie werden die Medizin revolutionieren! Und dann die Anomalien, die die Gesetze der Schwerkraft und alle Theorien ьber Magnetfelder auЯer Kraft setzen! Alleine der Bau einer Anlage fьr ein kleines Experiment hat doch bisher Jahre gedauert, nicht wahr? Aber jetzt haben wir die Zone... sie ist wie ein riesiges Forschungslabor, das schon bereit steht... von so etwas kцnnen die ganzen Wissenschaftszentren nur trдumen!</text>
+	</string>
+	<string id="val_freeedom_leader_about_zone_111">
+		<text>Natьrlich ist das gefдhrlich. Aber auch Feuer z.B. ist gefдhrlich und dennoch benutzen wir es, oder etwa nicht? Wenn wir es schaffen, die Reichtьmer der Zone auf die richtige Art und Weise einzusetzen, kцnnen wir die Zukunft der Menschheit in die richtige Bahn lenken; davon bin ich felsenfest ьberzeugt! Aus diesem Grund kдmpfen wir fьr einen freien Zugang zur Zone. Sie gehцrt allen Menschen und wir kцnnen nicht zulassen, dass nur eine kleine Gruppe von Auserwдhlten ihren Nutzen aus der Zone zieht, wдhrend alle anderen leer ausgehen.</text>
+	</string>
+	<string id="val_pressman_nickname_0">
+		<text>Wieso nennt man dich den "Journalist"?</text>
+	</string>
+	<string id="val_pressman_nickname_1">
+		<text>Ach, das hat mit meiner Vergangenheit zu tun. Ich war frьher Journalist, und ein recht guter dazu. In die Zone bin ich gekommen, um ьber das schwierige Leben beim Militдr hier zu schreiben. Die Armee hieЯ mich mit einer durchzechten Nacht willkommen, auf die eine Art Nachtausflug folgte. Ich erinnere mich nicht mehr wirklich an die Fahrt... ich hatte einen im Tee, um es mal vorsichtig auszudrьcken. Aber hier und da konnte ich einige Fotos schieЯen. Irgendwann dцste ich dann wohl ein... und kam erst am nдchsten Morgen wieder zu mir. Ich lag ganz alleine auf dem Boden, neben mir waren Fahrzeugspuren zu sehen... sie hцrten abrupt auf. Man konnte erkennen, wie das Fahrzeug normal gefahren war und dann - BAMM! Nichts mehr! Meine Tasche und Unterlagen waren auch verschwunden... aber ich glaube, die Zone hatte nichts gegen mich, denn sie lieЯ mich andere Menschen finden. Nur dieses Mal war es eine andere Gruppe - sie haben mich eingesperrt... ich wдre unerlaubt in die Zone eingedrungen und kцnne kontaminiert worden sein. Ich sollte einfach Geduld haben und warten, bis sie sich um die Angelegenheit kьmmern wьrden... oder einfach Geld zahlen, damit sie mich laufen lassen. Ich habe etliche Tage in dem Keller verbracht, bis endlich Ashot aufgetaucht ist und mich freigekauft hat. Jetzt bin ich bei der Freiheit und Ashot bis an mein Lebensende dankbar. Ich kenne Ashot jetzt schon sehr lange... und was wir bisher alles erlebt haben... ich bete zu Gott und zur Zone, dass wir auch noch viel mehr erleben werden, bevor unsere Zeit vorbei ist.</text>
+	</string>
+	<string id="val_pressman_story_0">
+		<text>Kannst du mir etwas Interessantes erzдhlen?</text>
+	</string>
+	<string id="val_pressman_story_1">
+		<text>Ich weiЯ nicht, ob du schon davon gehцrt hast... in der Zone tauchen immer mehr neue Mutanten auf. WeiЯt du auch warum? Nun, an einigen Orten ist eine neue Anomalieart entstanden. Jeder, der in solch eine Anomalie gerдt, verwandelt sich. Das Interessante ist, dass keine dieser Verwandlungen bisher zum Tode gefьhrt hat. Nun ja, wenigstens nicht direkt. Aber stell dir vor, du bist unterwegs und etwas absolut Widerwдrtiges springt dir aus dem Gebьsch entgegen. Wie sollst du wissen, dass das mal ein Mensch war und jetzt deine Hilfe braucht? Daher leben diese neuen Mutanten auch nicht lange... der erste Stalker, dem so ein armes Ding ьber den Weg lдuft, fackelt nicht lange.</text>
+	</string>
+	<string id="val_questman_about_zone_0">
+		<text>WeiЯt du irgendetwas Interessantes ьber die Zone?</text>
+	</string>
+	<string id="val_questman_about_zone_1">
+		<text>Es wird viel geredet. Manch einer glaubt, dass alles, was in der Zone passiert, und sogar die Zone selbst das Werk von AuЯerirdischen ist. Sie haben die Theorie aufgestellt, dass die Aliens ein Modul - den Schwarzen Monolithen - irgendwo im Zentrum zurьckgelassen haben, das dann alles in seiner Umgebung verдndert hat. Eine Art globales Experiment mit der Menschheit. Das ist fьr die wie eine Anlage zum Testen von Waffen, verstehst du? Die Stalker sammeln Artefakte und verkaufen sie, wodurch wohl so gut wie jedes grцЯere Forschungszentrum wenigstens ein paar davon hat. Und auf diese Weise vergrцЯert der Schwarze Monolith seinen Einflussbereich auf der ganzen Welt. Keiner kann die mцglichen Folgen abschдtzen. Vielleicht sind Artefakte ja in Wirklichkeit nichts weiter als nutzloser Schund? Vielleicht wirken sie sich aber doch irgendwie auf die Menschen aus? Vielleicht ist diese ganze Theorie einfach totaler Blцdsinn, aber wer kann schon wissen, ob die Zone diese Artefakte aus einem bestimmten Grund hervorbringt? Wenn wir nur ein paar Antworten von den Leuten bekommen kцnnten, die schon mal diesen verdammten Radar passiert haben! Sie kцnnten uns verraten, ob im Zentrum wirklich ein Monolith steht oder nicht - das wьrde einige Fragen beantworten.</text>
+	</string>
+	<string id="val_questman_dissatisfied_0">
+		<text>Warum bist du so betrьbt?</text>
+	</string>
+	<string id="val_questman_dissatisfied_1">
+		<text>Gibt es denn irgendeinen Grund, warum ich nicht betrьbt sein sollte, hд? Wie wьrde es dir denn gefallen, in einer so gut wie ungeschьtzten Basis festzustecken? Kannst du dir ьberhaupt vorstellen, wie viel Arbeit hier noch auf uns wartet? Neue Befestigungen, weitere Gebдude... aber die Bosse haben dafьr ja keine Zeit. Ich weiЯ wirklich nicht, was die sich dabei denken. Verflucht, ich weiЯ nicht mal, ob hier ьberhaupt irgendjemand denkt! So oder so, wir sind hier an einem lausigen Ort, weit ab vom Schuss. Mann, ich wьrde hier alles ganz schnell wieder in Ordnung bringen, aber sie wьrden das wohl kaum zulassen.</text>
+	</string>
+	<string id="val_trader_about_freedom_0">
+		<text>Wie ist das Leben bei der Freiheit so?</text>
+	</string>
+	<string id="val_trader_about_freedom_1">
+		<text>Es ist gut... sehr gut sogar. Ich kann mir kein besseres Leben vorstellen! WeiЯt du, ich habe keine Geschwister... um genau zu sein nicht mal eine richtige Familie. Aber hier ist so ziemlich jeder wie ein Bruder fьr mich... treue Freunde, auf die ich mich verlassen kann. Sie helfen mir, ich helfe ihnen. Ich bin ja ein Hдndler und weiЯ deswegen ьber viele Dinge bescheid, die in der Zone geschehen - mehr als die meisten Veteranen. Und das hat vielen unserer Jungs mehr als nur einmal das Leben gerettet.</text>
+	</string>
+	<string id="val_trader_about_said_0">
+		<text>Hast du in letzter Zeit interessante Gerьchte gehцrt?</text>
+	</string>
+	<string id="val_trader_about_said_1">
+		<text>Gerьchte? Also gut, ich habe eine nette Gutenachtgeschichte fьr dich und es geht darin sogar um Trдume. Hast du jemals versucht, tief in der Zone zu schlafen? Na ja, meiner Meinung nach solltest du das nicht tun, denn die Alptrдume, die du haben wirst, kannst du dir nicht einmal im Ansatz vorstellen. Ich habe schon einiges darьber gehцrt: Einem Typen hat's mitten im Schlaf das Herz zerrissen... ein schrecklicher Tod! Ein anderer ist zwar lebend aufgewacht, aber im Schlaf hatte er den Verstand verloren. Jetzt macht er nichts anderes, als sich vor irgendwelchen dunklen Stalkern zu verstecken, von denen er den ganzen Tag faselt. Da hast du also dein Gerьcht... wenn du wirklich mal Ruhe brauchst, dann hilft ein spezieller Helm mit einem feinen Drahtnetz innen. Es heiЯt, dass alle militдrischen Stalker solche Helme haben und vollkommen ohne Probleme schlafen kцnnen.</text>
+	</string>
+	<string id="val_trader_where_manufactured_0">
+		<text>Woher bekommst du deine Waren?</text>
+	</string>
+	<string id="val_trader_where_manufactured_1">
+		<text>Nun, ich habe meine Lieferanten, aber die verrate ich niemandem. Ich habe so schon genug Probleme: Meine Freundlichkeit wird mich noch irgendwann ins Grab bringen. Ich bin gut zu den Leuten und hцflich zu meinen Kunden; zudem ist die Auswahl in meinem Laden grцЯer und besser als in jedem Supermarkt. Und meine Preise sind so niedrig, als ob ich durchgehend Schlussverkauf hдtte. Deshalb bin ich ein beliebter Hдndler in der Zone. Allerdings nicht bei jedem. Die Asubers-Brьder vom Schwarzmarkt haben es auf mich abgesehen, weil ich ihr Konkurrent bin. WeiЯt du, wie viel sie auf meinen Kopf angesetzt haben? Mit dem Geld kцnntest du dich jede Nacht mit einem anderen Mдdchen vergnьgen, und das ein Jahr lang! Ein paar Typen hier hat das Angebot der Asubers-Brьder gefallen. Aber das hat ihnen nichts genьtzt... den Aasgeiern hat ihr Fleisch bestimmt geschmeckt. Die Jungs hier geben mir Rьckendeckung und ich bin auch nicht gerade ein Feigling.</text>
+	</string>
+	<string id="val_freedom_barmen_hello_dialog_0">
+		<text>Wie geht's, Kumpel?</text>
+	</string>
+	<string id="val_freedom_barmen_name">
+		<text>Ganja</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_0">
+		<text>Ich war bei der Tankstelle. Die Banditen haben sich dort eingenistet - scheint, als hдtten sie dich beobachtet.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_1">
+		<text>Gott, als ob es nicht schon schlimm genug wдre, aber nein - jetzt haben sich auch noch die Banditen gegen uns verschworen. Wie dem auch sei, hier ist deine Belohnung und danke fьr die harte Arbeit.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_11">
+		<text>Wenn du mal wieder einen Job zu vergeben hast, lass es mich wissen.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_12">
+		<text>Sie hatten dieses kleine Schmuckstьck dabei. Vielleicht hast du ja daran Interesse.</text>
+	</string>
+	<string id="val_freedom_barmen_questions_dialog_complete_121">
+		<text>Sehr schцn. Die Banditen haben auf diesem PDA ein paar Informationen gesammelt. Zeig ihn Tschechow - er ist bestimmt daran interessiert.</text>
+	</string>
+</string_table>

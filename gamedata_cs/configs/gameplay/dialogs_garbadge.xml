@@ -1249,267 +1249,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="gar_digger_leader_attack">
-        <has_info>gar_quest_speak_with_quester_done</has_info>
-        <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-        <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-        <phrase_list>
-            <phrase id="1112">
-                <text>gar_digger_leader_attack_1112</text>
-                <next>11121</next>
-            </phrase>
-            <phrase id="11121">
-                <text>gar_digger_leader_attack_11121</text>
-            </phrase>
-            <phrase id="1">
-                <text>gar_digger_leader_attack_1</text>
-                <dont_has_info>gar_quest_liberate_conc_camp_told</dont_has_info>
-                <next>11</next>
-            </phrase>
-            <phrase id="11">
-                <text>gar_digger_leader_attack_11</text>
-                <next>111</next>
-            </phrase>
-            <phrase id="111">
-                <text>gar_digger_leader_attack_111</text>
-                <give_info>gar_quest_liberate_conc_camp_told</give_info>
-                <next>1111</next>
-                <next>1112</next>
-            </phrase>
-            <phrase id="1111">
-                <text>gar_digger_leader_attack_1111</text>
-                <next>11111</next>
-            </phrase>
-            <phrase id="11111">
-                <text>gar_digger_leader_attack_11111</text>
-                <give_info>gar_quest_meet_with_digger_fighters_started</give_info>
-                <next>111111</next>
-            </phrase>
-            <phrase id="111111">
-                <text>gar_digger_leader_attack_111111</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="2">
-                <text>gar_digger_leader_attack_2</text>
-                <dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
-                <has_info>gar_quest_liberate_conc_camp_told</has_info>
-                <next>1111</next>
-                <next>1112</next>
-            </phrase>
-            <phrase id="0">
-                <text>gar_digger_leader_attack_0</text>
-                <next>1</next>
-                <next>2</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="gar_digger_leader_hello">
-        <phrase_list>
-            <phrase id="2">
-                <text />
-                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-                <dont_has_info>gar_quest_get_weapons_started</dont_has_info>
-                <has_info>gar_quest_bring_money_told</has_info>
-                <next>21</next>
-                <next>22</next>
-            </phrase>
-            <phrase id="3">
-                <text />
-                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-                <dont_has_info>gar_quest_speak_with_quester_done</dont_has_info>
-                <has_info>gar_quest_get_weapons_started</has_info>
-                <next>31</next>
-                <next>32</next>
-                <next>33</next>
-                <next>34</next>
-            </phrase>
-            <phrase id="12">
-                <text>gar_digger_leader_hello_12</text>
-                <dont_has_info>gar_quest_get_old_pda_asked</dont_has_info>
-                <has_info>gar_quest_get_old_pda_told</has_info>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="13">
-                <text>gar_digger_leader_hello_13</text>
-                <dont_has_info>gar_quest_get_old_pda_started</dont_has_info>
-                <has_info>gar_quest_get_old_pda_asked</has_info>
-            </phrase>
-            <phrase id="14">
-                <text>gar_digger_leader_hello_14</text>
-                <dont_has_info>gar_quest_get_old_pda_camp_told</dont_has_info>
-                <has_info>gar_quest_get_old_pda_started</has_info>
-            </phrase>
-            <phrase id="21">
-                <text>gar_digger_leader_hello_21</text>
-                <dont_has_info>gar_quest_bring_money_started</dont_has_info>
-            </phrase>
-            <phrase id="22">
-                <text>gar_digger_leader_hello_22</text>
-                <dont_has_info>gar_quest_get_weapons_started</dont_has_info>
-                <has_info>gar_quest_bring_money_started</has_info>
-            </phrase>
-            <phrase id="15">
-                <text>gar_digger_leader_hello_15</text>
-                <has_info>gar_quest_get_old_pda_camp_told</has_info>
-            </phrase>
-            <phrase id="32">
-                <text>gar_digger_leader_hello_32</text>
-                <dont_has_info>gar_quest_get_weapons_destroyed_ambush</dont_has_info>
-                <dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>
-                <has_info>gar_quest_get_weapons_arrived</has_info>
-                <next>321</next>
-            </phrase>
-            <phrase id="54">
-                <text>gar_digger_leader_hello_54</text>
-                <precondition>dialogs_garbage.is_digger_fighters_alive</precondition>
-                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-                <has_info>gar_quest_meet_with_digger_fighters_done</has_info>
-                <next>531</next>
-            </phrase>
-            <phrase id="51">
-                <text>gar_digger_leader_hello_51</text>
-                <dont_has_info>gar_quest_liberate_conc_camp_told</dont_has_info>
-            </phrase>
-            <phrase id="53">
-                <text>gar_digger_leader_hello_53</text>
-                <dont_has_info>gar_quest_meet_with_digger_fighters_done</dont_has_info>
-                <has_info>gar_quest_meet_with_digger_fighters_started</has_info>
-                <next>531</next>
-            </phrase>
-            <phrase id="31">
-                <text>gar_digger_leader_hello_31</text>
-                <dont_has_info>gar_quest_get_weapons_arrived</dont_has_info>
-                <dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>
-                <next>311</next>
-            </phrase>
-            <phrase id="7">
-                <text />
-                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-                <has_info>gar_flea_market_stop_quest_line</has_info>
-                <next>71</next>
-            </phrase>
-            <phrase id="6">
-                <text />
-                <has_info>gar_quest_liberate_conc_camp_done</has_info>
-                <next>61</next>
-            </phrase>
-            <phrase id="55">
-                <text>gar_digger_leader_hello_55</text>
-                <precondition>dialogs_garbage.is_digger_fighters_dead</precondition>
-                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-                <has_info>gar_quest_meet_with_digger_fighters_done</has_info>
-                <next>531</next>
-            </phrase>
-            <phrase id="61">
-                <text>gar_digger_leader_hello_61</text>
-            </phrase>
-            <phrase id="71">
-                <text>gar_digger_leader_hello_71</text>
-            </phrase>
-            <phrase id="311">
-                <text>gar_digger_leader_hello_311</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="321">
-                <text>gar_digger_leader_hello_321</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="5">
-                <text />
-                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-                <has_info>gar_quest_speak_with_quester_done</has_info>
-                <next>52</next>
-                <next>53</next>
-                <next>54</next>
-                <next>55</next>
-                <next>51</next>
-            </phrase>
-            <phrase id="52">
-                <text>gar_digger_leader_hello_52</text>
-                <dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
-                <has_info>gar_quest_liberate_conc_camp_told</has_info>
-            </phrase>
-            <phrase id="531">
-                <text>gar_digger_leader_hello_531</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="111">
-                <text>gar_digger_leader_hello_111</text>
-                <give_info>gar_quest_get_old_pda_asked</give_info>
-                <next>1111</next>
-            </phrase>
-            <phrase id="112">
-                <text>gar_digger_leader_hello_112</text>
-                <next>1121</next>
-            </phrase>
-            <phrase id="1111">
-                <text>gar_digger_leader_hello_1111</text>
-            </phrase>
-            <phrase id="1121">
-                <text>gar_digger_leader_hello_1121</text>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <dont_has_info>gar_quest_bring_money_told</dont_has_info>
-                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-                <next>11</next>
-                <next>12</next>
-                <next>13</next>
-                <next>14</next>
-                <next>15</next>
-            </phrase>
-            <phrase id="11">
-                <text>gar_digger_leader_hello_11</text>
-                <dont_has_info>gar_quest_get_old_pda_told</dont_has_info>
-                <give_info>gar_quest_get_old_pda_told</give_info>
-                <next>111</next>
-                <next>112</next>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-                <next>5</next>
-                <next>6</next>
-                <next>7</next>
-            </phrase>
-            <phrase id="341">
-                <text />
-                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-                <next>3411</next>
-            </phrase>
-            <phrase id="3411">
-                <text />
-            </phrase>
-            <phrase id="331">
-                <text>gar_digger_leader_hello_331</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="33">
-                <text>gar_digger_leader_hello_33</text>
-                <dont_has_info>gar_quest_get_weapons_got_traitor_pda</dont_has_info>
-                <has_info>gar_quest_get_weapons_destroyed_ambush</has_info>
-                <next>331</next>
-            </phrase>
-            <phrase id="342">
-                <text>gar_digger_leader_hello_342</text>
-                <has_info>gar_quest_liberate_conc_camp_done</has_info>
-                <next>61</next>
-            </phrase>
-            <phrase id="34">
-                <text>gar_digger_leader_hello_34</text>
-                <action>dialogs_garbage.give_traitor_pda</action>
-                <action>dialogs_garbage.reward_before_attack</action>
-                <give_info>gar_quest_speak_with_quester_done</give_info>
-                <has_info>gar_quest_get_weapons_got_traitor_pda</has_info>
-                <next>341</next>
-                <next>342</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="gar_bandit_leader_break">
         <phrase_list>
             <phrase id="0">
@@ -1852,21 +1591,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="gar_bandit_barman_bandit_secret">
-        <has_info>gar_quest_bandit_secret_started</has_info>
-        <dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
-        <dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>gar_bandit_barman_bandit_secret_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>gar_bandit_barman_bandit_secret_0</text>
-                <give_info>gar_quest_bandit_secret_barman</give_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="gar_bandit_leader_join_main">
         <precondition>dialogs.actor_not_in_bandit</precondition>
         <has_info>gar_bandit_join_talked_first</has_info>
@@ -1951,6 +1675,283 @@
                 <action>dialogs.actor_set_bandit</action>
                 <action>dialogs_garbage.bandit_join_reward</action>
                 <next>511211</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_bandit_barman_bandit_secret">
+        <has_info>gar_quest_bandit_secret_started</has_info>
+        <dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
+        <dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>gar_bandit_barman_bandit_secret_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>gar_bandit_barman_bandit_secret_0</text>
+                <give_info>gar_quest_bandit_secret_barman</give_info>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_digger_leader_attack">
+        <has_info>gar_quest_speak_with_quester_done</has_info>
+        <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+        <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+        <phrase_list>
+            <phrase id="1112">
+                <text>gar_digger_leader_attack_1112</text>
+                <next>11121</next>
+            </phrase>
+            <phrase id="11121">
+                <text>gar_digger_leader_attack_11121</text>
+            </phrase>
+            <phrase id="11111">
+                <text>gar_digger_leader_attack_11111</text>
+                <give_info>gar_quest_meet_with_digger_fighters_started</give_info>
+                <next>111111</next>
+            </phrase>
+            <phrase id="111111">
+                <text>gar_digger_leader_attack_111111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="2">
+                <text>gar_digger_leader_attack_2</text>
+                <dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
+                <has_info>gar_quest_liberate_conc_camp_told</has_info>
+                <next>1111</next>
+                <next>1112</next>
+            </phrase>
+            <phrase id="0">
+                <text>gar_digger_leader_attack_0</text>
+                <next>1</next>
+                <next>2</next>
+            </phrase>
+            <phrase id="1">
+                <text>gar_digger_leader_attack_1</text>
+                <dont_has_info>gar_quest_liberate_conc_camp_told</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_digger_leader_attack_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1111">
+                <text>gar_digger_leader_attack_1111</text>
+                <next>11111</next>
+            </phrase>
+            <phrase id="111">
+                <text>gar_digger_leader_attack_111</text>
+                <give_info>gar_quest_liberate_conc_camp_told</give_info>
+                <next>1111</next>
+                <next>1112</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="gar_digger_leader_hello">
+        <phrase_list>
+            <phrase id="2">
+                <text></text>
+                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+                <dont_has_info>gar_quest_get_weapons_started</dont_has_info>
+                <has_info>gar_quest_bring_money_told</has_info>
+                <next>21</next>
+                <next>22</next>
+            </phrase>
+            <phrase id="12">
+                <text>gar_digger_leader_hello_12</text>
+                <dont_has_info>gar_quest_get_old_pda_asked</dont_has_info>
+                <has_info>gar_quest_get_old_pda_told</has_info>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="13">
+                <text>gar_digger_leader_hello_13</text>
+                <dont_has_info>gar_quest_get_old_pda_started</dont_has_info>
+                <has_info>gar_quest_get_old_pda_asked</has_info>
+            </phrase>
+            <phrase id="14">
+                <text>gar_digger_leader_hello_14</text>
+                <dont_has_info>gar_quest_get_old_pda_camp_told</dont_has_info>
+                <has_info>gar_quest_get_old_pda_started</has_info>
+            </phrase>
+            <phrase id="21">
+                <text>gar_digger_leader_hello_21</text>
+                <dont_has_info>gar_quest_bring_money_started</dont_has_info>
+            </phrase>
+            <phrase id="22">
+                <text>gar_digger_leader_hello_22</text>
+                <dont_has_info>gar_quest_get_weapons_started</dont_has_info>
+                <has_info>gar_quest_bring_money_started</has_info>
+            </phrase>
+            <phrase id="15">
+                <text>gar_digger_leader_hello_15</text>
+                <has_info>gar_quest_get_old_pda_camp_told</has_info>
+            </phrase>
+            <phrase id="32">
+                <text>gar_digger_leader_hello_32</text>
+                <dont_has_info>gar_quest_get_weapons_destroyed_ambush</dont_has_info>
+                <dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>
+                <has_info>gar_quest_get_weapons_arrived</has_info>
+                <next>321</next>
+            </phrase>
+            <phrase id="54">
+                <text>gar_digger_leader_hello_54</text>
+                <precondition>dialogs_garbage.is_digger_fighters_alive</precondition>
+                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+                <has_info>gar_quest_meet_with_digger_fighters_done</has_info>
+                <next>531</next>
+            </phrase>
+            <phrase id="51">
+                <text>gar_digger_leader_hello_51</text>
+                <dont_has_info>gar_quest_liberate_conc_camp_told</dont_has_info>
+            </phrase>
+            <phrase id="53">
+                <text>gar_digger_leader_hello_53</text>
+                <dont_has_info>gar_quest_meet_with_digger_fighters_done</dont_has_info>
+                <has_info>gar_quest_meet_with_digger_fighters_started</has_info>
+                <next>531</next>
+            </phrase>
+            <phrase id="7">
+                <text></text>
+                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+                <has_info>gar_flea_market_stop_quest_line</has_info>
+                <next>71</next>
+            </phrase>
+            <phrase id="6">
+                <text></text>
+                <has_info>gar_quest_liberate_conc_camp_done</has_info>
+                <next>61</next>
+            </phrase>
+            <phrase id="55">
+                <text>gar_digger_leader_hello_55</text>
+                <precondition>dialogs_garbage.is_digger_fighters_dead</precondition>
+                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+                <has_info>gar_quest_meet_with_digger_fighters_done</has_info>
+                <next>531</next>
+            </phrase>
+            <phrase id="71">
+                <text>gar_digger_leader_hello_71</text>
+            </phrase>
+            <phrase id="311">
+                <text>gar_digger_leader_hello_311</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="321">
+                <text>gar_digger_leader_hello_321</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="531">
+                <text>gar_digger_leader_hello_531</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="112">
+                <text>gar_digger_leader_hello_112</text>
+                <next>1121</next>
+            </phrase>
+            <phrase id="1111">
+                <text>gar_digger_leader_hello_1111</text>
+            </phrase>
+            <phrase id="1121">
+                <text>gar_digger_leader_hello_1121</text>
+            </phrase>
+            <phrase id="1">
+                <text></text>
+                <dont_has_info>gar_quest_bring_money_told</dont_has_info>
+                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+                <next>11</next>
+                <next>12</next>
+                <next>13</next>
+                <next>14</next>
+                <next>15</next>
+            </phrase>
+            <phrase id="11">
+                <text>gar_digger_leader_hello_11</text>
+                <dont_has_info>gar_quest_get_old_pda_told</dont_has_info>
+                <give_info>gar_quest_get_old_pda_told</give_info>
+                <next>111</next>
+                <next>112</next>
+            </phrase>
+            <phrase id="331">
+                <text>gar_digger_leader_hello_331</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="33">
+                <text>gar_digger_leader_hello_33</text>
+                <dont_has_info>gar_quest_get_weapons_got_traitor_pda</dont_has_info>
+                <has_info>gar_quest_get_weapons_destroyed_ambush</has_info>
+                <next>331</next>
+            </phrase>
+            <phrase id="5">
+                <text></text>
+                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+                <has_info>gar_quest_speak_with_quester_done</has_info>
+                <next>52</next>
+                <next>53</next>
+                <next>54</next>
+                <next>55</next>
+                <next>51</next>
+            </phrase>
+            <phrase id="52">
+                <text>gar_digger_leader_hello_52</text>
+                <dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
+                <has_info>gar_quest_liberate_conc_camp_told</has_info>
+            </phrase>
+            <phrase id="0">
+                <text></text>
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>5</next>
+                <next>6</next>
+                <next>7</next>
+            </phrase>
+            <phrase id="111">
+                <text>gar_digger_leader_hello_111</text>
+                <give_info>gar_quest_get_old_pda_asked</give_info>
+                <next>1111</next>
+            </phrase>
+            <phrase id="3">
+                <text></text>
+                <dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+                <dont_has_info>gar_quest_speak_with_quester_done</dont_has_info>
+                <has_info>gar_quest_get_weapons_started</has_info>
+                <next>31</next>
+                <next>32</next>
+                <next>33</next>
+                <next>34</next>
+            </phrase>
+            <phrase id="31">
+                <text>gar_digger_leader_hello_31</text>
+                <dont_has_info>gar_quest_get_weapons_arrived</dont_has_info>
+                <dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>
+                <next>311</next>
+            </phrase>
+            <phrase id="341">
+                <text></text>
+                <dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+                <next>3411</next>
+            </phrase>
+            <phrase id="3411">
+                <text></text>
+            </phrase>
+            <phrase id="34">
+                <text>gar_digger_leader_hello_34</text>
+                <action>dialogs_garbage.give_traitor_pda</action>
+                <action>dialogs_garbage.reward_before_attack</action>
+                <give_info>gar_quest_speak_with_quester_done</give_info>
+                <has_info>gar_quest_get_weapons_got_traitor_pda</has_info>
+                <next>341</next>
+                <next>342</next>
+            </phrase>
+            <phrase id="61">
+                <text>gar_digger_leader_hello_61</text>
+            </phrase>
+            <phrase id="342">
+                <text>gar_digger_leader_hello_342</text>
+                <give_info>gar_quest_liberate_conc_camp_told</give_info>
+                <has_info>gar_quest_liberate_conc_camp_done</has_info>
+                <next>61</next>
             </phrase>
         </phrase_list>
     </dialog>

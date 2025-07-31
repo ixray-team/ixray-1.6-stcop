@@ -151,12 +151,7 @@ function action_smartcover_activity:reset_scheme(loading, npc)
 		end
 		printf("setting smartcover [%s] for stalker [%s] ", self.cover_name , object:name())
 		object:use_smart_covers_only(true)
-
-
-
 	--	state_mgr.set_state(object, self.st.moving)
-
-
 		object:set_movement_type(move.run)
 		object:set_dest_smart_cover(self.cover_name)
 		if self.st.loophole_name ~= nil then
@@ -244,8 +239,8 @@ function action_smartcover_activity:execute()
 	local need_cover_state = xr_logic.pick_section_from_condlist(db.actor, self.object ,self.cover_condlist)
 	if need_cover_state == "default_behaviour" or cover_substate_table[self.cover_state] ~= cover_substate_table[need_cover_state] then
 		self.cover_state = need_cover_state
-
 	end
+
 	self:check_target_selector()
 
 	if self.target_enemy ~= nil and self.object:in_smart_cover() then
@@ -282,9 +277,9 @@ end
 function add_to_binder(npc, ini, scheme, section, storage)
 	printf("DEBUG: add_to_binder: scheme='%s', section='%s'", scheme, section)
 	local operators	= {}
-		local properties  = {}
+	local properties  = {}
 
-		 local manager = npc:motivation_action_manager()
+	local manager = npc:motivation_action_manager()
 
 	properties["need_smartcover"] 			= xr_evaluators_id.smartcover_action + 1
 	properties["use_smartcover_in_combat"] 	= xr_evaluators_id.smartcover_action + 2
@@ -325,7 +320,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	new_action:add_precondition(world_property(properties["state_mgr_idle_smartcover"], true))
 	xr_motivator.addCommonPrecondition(new_action)
 	new_action:add_effect (world_property(properties["need_smartcover"], false))
-		 new_action:add_effect (world_property(stalker_ids.property_enemy,false))
+	new_action:add_effect (world_property(stalker_ids.property_enemy,false))
 	new_action:add_effect (world_property(stalker_ids.property_danger,false))
 --	new_action:add_effect (world_property(properties["state_mgr_idle_smartcover"], false))
 	manager:add_action(operators["action_combat_smartcover"], new_action)
@@ -360,8 +355,8 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.exit_body_state		= utils.cfg_get_string	(ini, section, "exit_body_state", 	npc ,false, "", "stand")
 	st.use_precalc_cover 	= utils.cfg_get_bool	(ini, section, "use_precalc_cover", npc, false, false)
 	st.use_in_combat	 	= utils.cfg_get_bool	(ini, section, "use_in_combat", 	npc, false, false)
-	st.moving  				= utils.cfg_get_string	(ini, section, "def_state_moving", npc, false, "", "sneak")
-	st.sound_idle			= utils.cfg_get_string	(ini, section, "sound_idle",npc, false, "")
+	st.moving  				= utils.cfg_get_string	(ini, section, "def_state_moving", 	npc, false, "", "sneak")
+	st.sound_idle			= utils.cfg_get_string	(ini, section, "sound_idle",		npc, false, "")
 
 	if st.use_precalc_cover == true then
 		local smart = sim_board.get_sim_board():get_smart_by_name(gulag_name)
@@ -375,21 +370,20 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 			st.target_position = tcover.look_pos
 		end
 	end
-
 end
 
 
 function init_global_evaluators(npc)
 	local manager = npc:motivation_action_manager()
 	local operators	= {}
-		local properties  = {}
+	local properties  = {}
 
-	properties["in_smart_cover"] 			= xr_evaluators_id.smartcover_action + 3
-	properties["in_combat_planner"] 		= xr_evaluators_id.smartcover_action + 4
-	operators["exit_in_smart_cover"] 		= xr_actions_id.smartcover_action + 3
+	properties["in_smart_cover"] 			= xr_evaluators_id.smartcover_action 	+ 3
+	properties["in_combat_planner"] 		= xr_evaluators_id.smartcover_action 	+ 4
+	operators["exit_in_smart_cover"] 		= xr_actions_id.smartcover_action 		+ 3
 
-	manager:add_evaluator(properties["in_smart_cover"], this.evaluator_in_smart_cover(nil, "in_smart_cover"))
-	manager:add_evaluator(properties["in_combat_planner"], this.evaluator_in_combat_planner(nil, "in_combat_planner"))
+	manager:add_evaluator(properties["in_smart_cover"]		, this.evaluator_in_smart_cover		(nil, "in_smart_cover"))
+	manager:add_evaluator(properties["in_combat_planner"]	, this.evaluator_in_combat_planner	(nil, "in_combat_planner"))
 
 	local new_action = this.action_exit_from_smart_cover(npc, "action_exit_from_smart_cover")
 	new_action:add_precondition(world_property(properties["in_smart_cover"], true))

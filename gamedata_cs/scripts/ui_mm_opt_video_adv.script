@@ -26,6 +26,12 @@ function only_12_mode(ctrl, _id, _ssample_val)
 	ctrl:Enable		(bEnabled)
 end
 
+-- >=R2a
+function only_2a_and_more_mode(ctrl, _id, _ssample_val)
+	local bEnabled	= _id>=1
+	ctrl:Enable		(bEnabled)
+end
+
 -- >=R2
 function only_2_and_more_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id>=2
@@ -95,12 +101,12 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_light_distance",		_st)
 	ctl				= xml:InitTrackBar			("video_adv:track_light_distance",		_st)
-	handler.m_preconditions[ctl]		= only_12_mode
+	handler.m_preconditions[ctl]		= only_2a_and_more_mode
 
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_particles_distance",	_st)
 	ctl				= xml:InitTrackBar			("video_adv:track_particles_distance",	_st)
-	handler.m_preconditions[ctl]		= only_12_mode
+	handler.m_preconditions[ctl]		= only_2a_and_more_mode
 
 	_st											= xml:InitStatic						("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_npc_torch",				_st)

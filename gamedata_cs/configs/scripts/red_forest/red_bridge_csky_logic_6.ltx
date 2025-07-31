@@ -16,7 +16,7 @@ cover_name = red_bridge_east_smartcover_6_2
 ;target_path = red_bridge_csky_smart_soldier_6_f2_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} smartcover@soldier_6_cover2
-;on_info3 = {=actor_in_zone(red_actor_position_restr)} camper@go_to_cover3
+on_info3 = {+red_bridge_bandit_out} walker@bridge_walk_work_6
 on_game_timer = 150 | {-red_bridge_bandit_time_out ~80} smartcover@soldier_6_wait_fire
 
 [smartcover@soldier_6_wait_fire]
@@ -29,6 +29,7 @@ cover_state = fire_target
 target_path = red_bridge_csky_smart_soldier_6_f1_fire_look
 on_info = {+red_bridge_clear_path -red_bridge_bandit_time_out} smartcover@clear_path_fire
 on_info2 = {+red_bridge_allyes_skirmish2} smartcover@soldier_6_cover2
+on_info3 = {+red_bridge_bandit_out} walker@bridge_walk_work_6
 on_game_timer = 50 | smartcover@soldier_6_wait
 
 [smartcover@clear_path_fire]
@@ -41,6 +42,7 @@ cover_state = fire_target
 target_path = red_bridge_csky_smart_soldier_6_f1_fire_look
 on_info = {+red_bridge_allyes_skirmish2} smartcover@soldier_6_cover2
 on_info2 = {=has_enemy_in_current_loopholes_fov()} smartcover@clear_path_fire2
+on_info3 = {+red_bridge_bandit_out} walker@bridge_walk_work_6
 
 [smartcover@clear_path_fire2]
 use_in_combat = true
@@ -52,18 +54,7 @@ cover_name = red_bridge_east_smartcover_6_2
 ;target_path = red_bridge_csky_smart_soldier_6_f1_fire_look
 on_info = {+red_bridge_allyes_skirmish2} smartcover@soldier_6_cover2
 on_info2 = {!has_enemy_in_current_loopholes_fov()} smartcover@clear_path_fire
-
-[camper@go_to_cover2]
-use_in_combat = true
-meet = no_meet
-out_restr = red_bridge_csky_restr
-invulnerable = true
-combat_ignore_cond = true
-path_walk = red_bridge_csky_smart_soldier_6_f2_walk
-path_look = red_bridge_csky_smart_soldier_6_f2_fire_look
-def_state_moving = rush
-on_signal = action | smartcover@soldier_6_cover2
-on_info = {=actor_in_zone(red_actor_position_restr)} camper@go_to_cover3
+on_info3 = {+red_bridge_bandit_out} walker@bridge_walk_work_6
 
 [smartcover@soldier_6_cover2]
 use_in_combat = true
@@ -82,16 +73,6 @@ meet = no_meet
 cover_name = red_bridge_east_smartcover_6_2
 on_info = {+red_bridge_bandit_out} walker@bridge_walk_work_6
 on_game_timer = 90 | smartcover@soldier_6_cover2
-
-[camper@go_to_cover3]
-meet = no_meet
-out_restr = red_bridge_csky_restr
-invulnerable = true
-combat_ignore_cond = true
-path_walk = red_bridge_csky_smart_soldier_6_f3_walk
-path_look = red_bridge_csky_smart_soldier_6_f3_fire_look
-def_state_moving = assault
-on_signal = action | smartcover@soldier_6_cover3
 
 [smartcover@soldier_6_cover3]
 use_in_combat = true
@@ -134,9 +115,9 @@ path_walk = red_bridge_csky_smart_bridge_walk
 def_state_moving1 = rush
 def_state_moving2 = rush
 def_state_moving3 = rush
-on_signal = action | camper@talk_work_6
+on_signal = action | camper@talk_work_6 %+red_bridge_cs_soldier_6_wait_1%
+on_info = {+red_bridge_cs_soldier_6_wait_1} camper@talk_work_6
 meet = no_meet
-
 
 [camper@talk_work_6]
 invulnerable = true
@@ -145,7 +126,7 @@ path_walk = red_bridge_csky_smart_soldier_6_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
 team = cs_squad
 on_signal = action | camper@wait_talk_work_6 %+red_bridge_cs6%
-
+on_info = {+red_bridge_cs6} camper@wait_talk_work_6
 
 [camper@wait_talk_work_6]
 invulnerable = true
@@ -160,7 +141,7 @@ out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_6_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
 on_game_timer = 40 | walker@wait_commander_work_6
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_6
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_6
 
 [remark@talk_work_6]
 invulnerable = true
@@ -168,7 +149,7 @@ out_restr = red_bridge_bandit_restr
 target = red_bridge_csky_smart_soldier_talk_look, 0
 anim = salut
 on_game_timer = 30 | walker@wait_commander_work_6
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_6
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_6
 meet = no_meet
 
 [walker@wait_commander_work_6]
@@ -176,7 +157,7 @@ invulnerable = true
 out_restr = red_bridge_bandit_restr
 path_walk = red_bridge_csky_smart_soldier_6_talk_walk
 path_look = red_bridge_csky_smart_soldier_talk_look
-on_info = {+red_bridge_csky_go_limansk} patrol@go_limansk_work_6
+on_info = {+red_bridge_csky_go_limansk_1} patrol@go_limansk_work_6
 
 [patrol@go_limansk_work_6]
 invulnerable = true
