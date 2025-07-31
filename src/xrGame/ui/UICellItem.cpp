@@ -309,12 +309,11 @@ void CUICellItem::UpdateConditionProgressBar()
 	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
 	{
 		PIItem itm = (PIItem)m_pData;
-		if (itm && itm->IsUsingCondition())
+		if (itm != nullptr && itm->IsUsingCondition())
 		{
 			float cond = itm->GetCondition();
 
-			CEatableItem* eitm = smart_cast<CEatableItem*>(itm);
-			if (eitm)
+			if (CEatableItem* eitm = itm->cast_eatable_item())
 			{
 				u8 max_uses = eitm->GetMaxUses();
 				if (max_uses > 0)

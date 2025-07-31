@@ -350,12 +350,12 @@ void CUIGameCTA::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 
 	TIItemContainer const & all_items = actor->inventory().m_all;  
 
-	for (TIItemContainer::const_iterator i = all_items.begin(),
-		ie = all_items.end(); i != ie; ++i)
+	for (const PIItem item : all_items)
 	{
-		CWeapon* tmp_weapon = smart_cast<CWeapon*>(*i);
-		if (tmp_weapon)
+		if (CWeapon* tmp_weapon = item->cast_weapon())
+		{
 			TryToDefuseWeapon(tmp_weapon, all_items, dest_ammo);
+		}
 	}
 }
 
@@ -364,27 +364,32 @@ struct AmmoSearcherPredicate
 	u16			additional_ammo_count;
 	shared_str	ammo_section;
 
-	AmmoSearcherPredicate(u16 ammo_elapsed, shared_str const & ammo_sect) :
-		additional_ammo_count(ammo_elapsed),
-		ammo_section(ammo_sect)
-	{
-	}
+	AmmoSearcherPredicate(u16 ammo_elapsed, shared_str const& ammo_sect) : additional_ammo_count(ammo_elapsed), ammo_section(ammo_sect)
+	{}
 
-	bool operator()(PIItem const & item)
+	bool operator()(PIItem const& item)
 	{
-		CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* temp_ammo = item->cast_weapon_ammo();
 		if (!temp_ammo)
+		{
 			return false;
-		
+		}
+
 		if (temp_ammo->m_boxCurr >= temp_ammo->m_boxSize)
+		{
 			return false;
-		
+		}
+
 		if (temp_ammo->cNameSect() != ammo_section)
+		{
 			return false;
+		}
 
 		if ((temp_ammo->m_boxCurr + additional_ammo_count) < temp_ammo->m_boxSize)
+		{
 			return false;
-		
+		}
+
 		return true;
 	}
 
@@ -531,10 +536,10 @@ void CUIGameCTA::BuyMenuItemInserter(PIItem const & item)
 	if (!item)
 		return;
 	
-	if (item->IsInvalid() || smart_cast<CWeaponKnife*>(&item->object()) )
+	if (item->IsInvalid() || item->object().cast_weapon_knife() != nullptr)
 		return;
 
-	CArtefact* pArtefact = smart_cast<CArtefact*>(item);
+	CArtefact* pArtefact = item->cast_artefact();
 	if (pArtefact)
 		return;
 
@@ -545,11 +550,11 @@ void CUIGameCTA::BuyMenuItemInserter(PIItem const & item)
 		return;
 	
 	u8 addons = 0;
-	CWeapon* pWeapon = smart_cast<CWeapon*>(item);
+	CWeapon* pWeapon = item->cast_weapon();
 	if (pWeapon)
 		addons = pWeapon->GetAddonsState();
 	
-	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(item);
+	CWeaponAmmo* pAmmo = item->cast_weapon_ammo();
 	if (pAmmo && (pAmmo->m_boxCurr != pAmmo->m_boxSize))
 		return;
 	
@@ -589,7 +594,8 @@ void CUIGameCTA::SetPlayerItemsToBuyMenu()
 	VERIFY(m_pCurBuyMenu);
 	game_PlayerState* ps = Game().local_player;
 	VERIFY2(ps, "local player not initialized");
-	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
+	CObject* finded_object = (Level().Objects.net_Find(ps->GameID));
+	CActor* actor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
 		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
@@ -646,7 +652,8 @@ void CUIGameCTA::SetPlayerParamsToBuyMenu()
 
 	game_PlayerState* ps = Game().local_player;
 	VERIFY2(ps, "local player not initialized");
-	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
+	CObject* finded_object = (Level().Objects.net_Find(ps->GameID));
+	CActor* actor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),  
 		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 

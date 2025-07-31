@@ -110,7 +110,7 @@ void CStepManager::reload(LPCSTR section)
 	LPCSTR				anim_name, val;
 	string16			cur_elem;
 
-	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 
 	VERIFY3(skeleton_animated, "object is not animated", m_object->cNameVisual().c_str());
 #ifdef	DEBUG
@@ -135,7 +135,7 @@ void CStepManager::reload(LPCSTR section)
 		{
 #ifdef	DEBUG
 
-			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+			IKinematicsAnimated *KA = m_object->Visual()->dcast_PKinematicsAnimated();
 			VERIFY( KA );
 			
 			Msg( "! (CStepManager::reload) no anim :%s object:%s, visual: %s, step_params section: %s ", anim_name, m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_section );
@@ -146,7 +146,7 @@ void CStepManager::reload(LPCSTR section)
 #ifdef	DEBUG
 		if( debug_step_info_load )
 		{
-			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+			IKinematicsAnimated *KA = m_object->Visual()->dcast_PKinematicsAnimated();
 			VERIFY( KA );
 			std::pair<LPCSTR,LPCSTR> anim_name_ = KA->LL_MotionDefName_dbg( motion_id );
 			Msg( "step_params loaded for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name_.first, anim_name_.second );
@@ -186,7 +186,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 #ifdef	DEBUG
 		if( debug_step_info )
 		{
-			IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+			IKinematicsAnimated *KA = m_object->Visual()->dcast_PKinematicsAnimated();
 			VERIFY( KA );
 			std::pair<LPCSTR,LPCSTR> anim_name = KA->LL_MotionDefName_dbg( motion_id );
 			Msg( "! no step_params found for object :%s, visual: %s, motion: %s, anim set: %s  ", m_object->cName().c_str(), m_object->cNameVisual().c_str(), anim_name.first, anim_name.second );
@@ -261,7 +261,7 @@ void CStepManager::update(bool b_hud_view)
 				PlayExoStep(b_hud_view);
 			}
 
-			CGameObject* object = smart_cast<CGameObject*>(m_object);
+			CGameObject* object = m_object->cast_game_object();
 			if (object)
 			{
 				object->FootStepCallback(m_step_info.params.step[i].power, b_play, is_on_ground(), b_hud_view);
@@ -324,33 +324,46 @@ Fvector	CStepManager::get_foot_position(ELegType leg_type)
 {
 	R_ASSERT2(m_foot_bones[leg_type] != BI_NONE, "foot bone had not been set");
 
-	IKinematics *pK					= smart_cast<IKinematics*>(m_object->Visual());
-	const Fmatrix& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;	
+	IKinematics* pK = PKinematics(m_object->Visual());
+	const Fmatrix& bone_transform = pK->LL_GetBoneInstance(m_foot_bones[leg_type]).mTransform;
 
-	Fmatrix					global_transform;
-	global_transform.mul_43	(m_object->XFORM(),bone_transform);
+	Fmatrix global_transform;
+	global_transform.mul_43(m_object->XFORM(), bone_transform);
 
 	return global_transform.c;
 }
 
-void CStepManager::load_foot_bones	(CInifile::Sect &data)
+void CStepManager::load_foot_bones(CInifile::Sect& data)
 {
-	for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); ++I){
-		const CInifile::Item& item	= *I;
+	for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); ++I)
+	{
+		const CInifile::Item& item = *I;
 
-		u16 index = smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(*item.second);
+		u16 index = PKinematics(m_object->Visual())->LL_BoneID(*item.second);
 		R_ASSERT3(index != BI_NONE, "foot bone not found", *item.second);
 
-		if (xr_strcmp(*item.first, "front_left") == 0) 			m_foot_bones[eFrontLeft]	= index;
-		else if (xr_strcmp(*item.first, "front_right")== 0)		m_foot_bones[eFrontRight]	= index;
-		else if (xr_strcmp(*item.first, "back_right")== 0)		m_foot_bones[eBackRight]	= index;
-		else if (xr_strcmp(*item.first, "back_left")== 0)		m_foot_bones[eBackLeft]		= index;
+		if (xr_strcmp(*item.first, "front_left") == 0) 
+		{
+			m_foot_bones[eFrontLeft] = index;
+		}
+		else if (xr_strcmp(*item.first, "front_right") == 0)
+		{
+			m_foot_bones[eFrontRight] = index;
+		}
+		else if (xr_strcmp(*item.first, "back_right") == 0)
+		{
+			m_foot_bones[eBackRight] = index;
+		}
+		else if (xr_strcmp(*item.first, "back_left") == 0)
+		{
+			m_foot_bones[eBackLeft] = index;
+		}
 	}
 }
 
 void CStepManager::reload_foot_bones()
 {
-	CInifile* ini = smart_cast<IKinematics*>(m_object->Visual())->LL_UserData();
+	CInifile* ini = PKinematics(m_object->Visual())->LL_UserData();
 
 	if (ini && ini->section_exist("foot_bones"))
 	{
