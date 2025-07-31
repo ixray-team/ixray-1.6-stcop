@@ -170,6 +170,7 @@ protected:
 	virtual shared_str SetCurrentReloadAnimation();
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
+	virtual shared_str SetCurrentAimAnimation();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
