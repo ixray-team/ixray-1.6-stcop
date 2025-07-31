@@ -43,6 +43,7 @@ enum class EditorUI : u8
 	Game_SpawnManager,
 	Game_WeaponManager,
 	Game_SearchManager,
+	Tools_OMFEditor,
 	Count
 };
 
