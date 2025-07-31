@@ -349,17 +349,26 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 	IBlendSetup(*B, part,channel, motion_ID, bMixing, blendAccrue, blendFalloff, Speed, noloop, Callback, CallbackParam );
 	for (u32 i = 0; i < P.bones.size(); i++)
 	{
+		B->notifies[(*bones)[P.bones[i]]->GetSelfID()] = {};
+	}
+	for (u32 i = 0; i < P.bones.size(); i++)
+	{
 		if (!(*bones)[P.bones[i]])
 		{
 			Debug.fatal(DEBUG_INFO, "! MODEL: missing bone/wrong armature? : %s", *getDebugName());
 		}
 		Bone_Motion_Start_IM((*bones)[P.bones[i]], B);
-	}
 
-	{
-		auto& Notify = m_Motions[motion_ID.slot].motions.motion_notify(motion_ID.idx);
-		B->notifyKeys.resize(Notify.order.size());
-		std::ranges::copy(Notify.order.begin(), Notify.order.end(), B->notifyKeys.begin());
+		auto& Notify = m_Motions[motion_ID.slot].motions.motion_notify(motion_ID.idx, (*bones)[P.bones[i]]->GetSelfID());
+		auto& BoneNotifySlot = B->notifies[(*bones)[P.bones[i]]->GetSelfID()];
+		BoneNotifySlot.keyframes.resize(Notify.order.size());
+		BoneNotifySlot.current_notify_index = B->speed > 0 ? 0 : Notify.order.size()-1;
+		for (u32 i = 0; i < Notify.order.size(); ++i)
+		{
+			auto& notify = BoneNotifySlot.keyframes[i];
+			notify.key = Notify.order[i];
+			notify.assigned = Notify.data[notify.key];
+		}
 	}
 
 	constexpr size_t MAX_CYCLES_IN_PART = MAX_BLENDED * MAX_CHANNELS;
@@ -525,35 +534,53 @@ void CKinematicsAnimated::LL_UpdateTracks( float dt, bool b_force, bool leave_bl
 				E = blend_cycles[part].end(); I--; 
 			}
 
-			if (B.trigger_notify)
+			for (auto& BoneNotify : B.notifies)
 			{
-				auto& Notifies = m_Motions[B.motionID.slot].motions.motion_notify(B.motionID.idx);
-				while (B.current_notify_index < B.notifyKeys.size() && B.timeCurrent > B.notifyKeys[B.current_notify_index])
+				if (!BoneNotify.second.keyframes.size())
 				{
-					VERIFY(B.current_notify_index < B.notifyKeys.size());
-					VERIFY(Notifies.data.contains(B.notifyKeys[B.current_notify_index]));
-					auto& CurrentNotify = Notifies.data[B.notifyKeys[B.current_notify_index]];
-					if (CurrentNotify.GiveInfo.size())
+					continue;
+				}
+				if (B.speed < 0)
+				{
+					for (s64 i = BoneNotify.second.current_notify_index; i >= 0; --i)
 					{
-						Msg("AnimNotify: give info %s", CurrentNotify.GiveInfo.c_str());
-						IAnimNotifyHandler::Get().TriggerGiveInfo(CurrentNotify.GiveInfo);
+						if (B.timeCurrent < BoneNotify.second.keyframes[i].key)
+						{
+							for (auto& elem : BoneNotify.second.keyframes[i].assigned)
+							{
+								Msg("AnimNotify: external ref %s", elem->ExternalRef.c_str());
+								auto message = new IAnimNotifyMessage();
+								message->bone_id = BoneNotify.first;
+								message->notify = elem->ExternalRef;
+								message->render_visual = this;
+								IAnimNotifyHandler::Get().TriggerNotify(message);
+							}
+							--BoneNotify.second.current_notify_index;
+						} else
+						{
+							break;
+						}
 					}
-					if (CurrentNotify.DisableInfo.size())
+				} else
+				{
+					for (; BoneNotify.second.current_notify_index < BoneNotify.second.keyframes.size(); ++BoneNotify.second.current_notify_index)
 					{
-						Msg("AnimNotify: disable info %s", CurrentNotify.DisableInfo.c_str());
-						IAnimNotifyHandler::Get().TriggerDisableInfo(CurrentNotify.DisableInfo);
+						if (B.timeCurrent > BoneNotify.second.keyframes[BoneNotify.second.current_notify_index].key)
+						{
+							for (auto& elem : BoneNotify.second.keyframes[BoneNotify.second.current_notify_index].assigned)
+							{
+								Msg("AnimNotify: external ref %s", elem->ExternalRef.c_str());
+								auto message = new IAnimNotifyMessage();
+								message->bone_id = BoneNotify.first;
+								message->notify = elem->ExternalRef;
+								message->render_visual = this;
+								IAnimNotifyHandler::Get().TriggerNotify(message);
+							}
+						} else
+						{
+							break;
+						}
 					}
-					if (CurrentNotify.Functor.size())
-					{
-						Msg("AnimNotify: functor %s", CurrentNotify.Functor.c_str());
-						IAnimNotifyHandler::Get().TriggerFunctor(CurrentNotify.Functor);
-					}
-					if (CurrentNotify.ExternalRef.size())
-					{
-						Msg("AnimNotify: external ref %s", CurrentNotify.ExternalRef.c_str());
-						IAnimNotifyHandler::Get().TriggerNotify(CurrentNotify.ExternalRef);
-					}
-					++B.current_notify_index;
 				}
 			}
 		}
@@ -697,7 +724,7 @@ void	CKinematicsAnimated::LL_SetChannelFactor (u16	channel,float factor)
 }
 void CKinematicsAnimated::IBlend_Startup	()
 {
-	CBlend B; ZeroMemory(&B,sizeof(B));
+	CBlend B;
 
 	B.set_free_state();
 

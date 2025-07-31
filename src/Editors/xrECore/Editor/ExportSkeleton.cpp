@@ -1026,6 +1026,9 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 	mTranslate.translate	(m_Source->a_vPosition);
 	mGT.mul					(mTranslate,mRotate);
 
+	NotifyVec PrefetchedData;
+	PrefetchedData.resize(m_Source->LastSMotion() - m_Source->FirstSMotion());
+	
 	for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); motion_it++, smot++)
 	{
 		CSMotion* cur_motion = *motion_it;
@@ -1276,21 +1279,52 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 		F.close_chunk				();
 		
 		F.open_chunk(m_Source->SMotionCount()+1+smot);
-		F.w_u32(cur_motion->notify.size());
-		for (auto& elem : cur_motion->notify)
+
+		auto index = motion_it - m_Source->FirstSMotion();
+		PrefetchedData[index] = {};
+		
+		for (int itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
 		{
-			F.w_float(elem.first);
-			F.w_u8(elem.second.IsExternalTrigger);
-			if (elem.second.IsExternalTrigger)
+			PrefetchedData[index][itm_idx] = {};
+			auto& BoneDatas = PrefetchedData[index];
+			auto& notifies = (*motion_it)->notify;
+			for (auto& BoneTrack : notifies.NotifyTracks)
 			{
-				F.w_stringZ(elem.second.ExternalRef);
-			} else
-			{
-				F.w_stringZ(elem.second.GiveInfo);
-				F.w_stringZ(elem.second.DisableInfo);
-				F.w_stringZ(elem.second.Functor);
+				if (m_Source->GetBoneIndexByWMap(BoneTrack.first.c_str()) != itm_idx)
+				{
+					continue;
+				}
+				auto& PrefetchedElem = BoneDatas[itm_idx];
+				for (auto& Track : BoneTrack.second)
+				{
+					for (auto TrackNotify : Track.Notifies)
+					{
+						if (!PrefetchedElem.data.contains(TrackNotify.first))
+						{
+							PrefetchedElem.data[TrackNotify.first] = {};
+						}
+						PrefetchedElem.data[TrackNotify.first].push_back(&TrackNotify.second);
+					}
+				}
 			}
 		}
+
+		F.w_u32(PrefetchedData[index].size());
+		for (auto& BoneTrack : PrefetchedData[index])
+		{
+			F.w_u16(BoneTrack.first);
+			F.w_u32(BoneTrack.second.data.size());
+			for (auto& Key : BoneTrack.second.data)
+			{
+				F.w_float(Key.first);
+				F.w_u32(Key.second.size());
+				for (auto& Notify : Key.second)
+				{
+					F.w_stringZ(Notify->ExternalRef);
+				}
+			}
+		}
+			
 		F.close_chunk();
 #if 1
 		pb->Inc						();
