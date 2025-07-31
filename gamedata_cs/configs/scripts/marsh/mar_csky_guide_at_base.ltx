@@ -47,8 +47,8 @@ meet = no_meet
 
 
 [meet@no]
-meet_state = 5 | talk_default@nil
-meet_state_wpn = 5 | talk_default@nil
+meet_state = 10 | talk_default@nil
+meet_state_wpn = 10 | talk_default@nil
 victim = 10 | actor
 victim_wpn = 10 | actor
 use = true
@@ -59,13 +59,13 @@ trade_enable = false
 [meet@guide_conductor]
 meet_state            = 30|hello_wpn|5|talk_default@meet_comander_wait
 meet_state_wpn        = 30|hello_wpn|5|threat@meet_weapon_wait
-victim                = 20|actor
-victim_wpn            = 20|actor
+victim                = 30|actor
+victim_wpn            = 30|actor
 sound_start		   = meet_comander_start
 sound_start_wpn	   = meet_weapon_start
 sound_stop			   = meet_comander_stop
 use                   = true
-use_wpn               = false
+use_wpn               = true
 meet_dialog = {-mar_story_go_to_marsh_done} mar_csky_guide_at_base_dialog
 trade_enable = false
 precond               = visibility

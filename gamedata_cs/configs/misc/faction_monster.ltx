@@ -1,17 +1,37 @@
 [settings]
-resource_0 = dog_weak, 30, dog_normal, 20, dog_strong, 10, pseudodog_weak, 10, pseudodog_normal, 10, pseudodog_strong, 10
-resource_1 = dog_strong, 20, pseudodog_weak, 10, pseudodog_normal, 10, pseudodog_strong, 10, psy_dog
-resource_2 = boar_weak, 30, boar_normal, 30, boar_strong, 30
-resource_3 = flesh_weak, 30, flesh_normal, 30, flesh_strong, 30
-resource_4 = snork_weak, 30, snork_normal, 20, snork_strong, 10
-resource_5 = bloodsucker_weak, 30, bloodsucker_normal, 20, bloodsucker_strong, 10
-
 glory_0 = 0
 glory_1 = 0
 glory_2 = 0
 glory_3 = 0
 glory_4 = 0
 glory_5 = 0
+
+[spawn_by_resource]
+0 = bloodsucker_marsh, 1
+1 = flesh_weak, 1, flesh_normal, 1, flesh_strong, 1
+2 = boar_weak, 1, boar_normal, 1, boar_strong, 1
+3 = dog_weak, 1, dog_normal, 1, dog_strong, 1, pseudodog_weak, 1, pseudodog_normal, 1, pseudodog_strong, 1
+4 = snork_weak, 1, snork_normal, 1, snork_strong, 1
+5 = bloodsucker_weak, 1, bloodsucker_normal, 1, bloodsucker_strong, 1
+6 = psy_dog, 1
+
+[spawn_by_level]
+marsh 		= bloodsucker_marsh, 100, flesh_weak, 70, flesh_normal, 30, boar_weak, 70, boar_normal, 30, dog_weak, 80, dog_normal, 20
+escape 		= flesh_weak, 60, flesh_normal, 40, boar_weak, 60, boar_normal, 40, dog_weak, 70, dog_normal, 30
+garbage 	= flesh_normal, 70, flesh_strong, 30, boar_normal, 70, boar_strong, 30, dog_normal, 60, dog_strong, 30, pseudodog_weak, 10, snork_weak, 100
+darkvalley	= flesh_normal, 60, flesh_strong, 40, boar_normal, 60, boar_strong, 40, dog_normal, 40, dog_strong, 30, pseudodog_weak, 20, pseudodog_normal, 10, snork_weak, 70, snork_normal, 30, bloodsucker_weak, 100
+agroprom 	= flesh_normal, 20, flesh_strong, 80, boar_normal, 20, boar_strong, 80, dog_normal, 30, dog_strong, 20, pseudodog_weak, 30, pseudodog_normal, 20, snork_weak, 60, snork_normal, 40, bloodsucker_weak, 70, bloodsucker_normal, 30
+yantar 		= dog_normal, 20, dog_strong, 30, pseudodog_normal, 30, pseudodog_strong, 20, snork_normal, 70, snork_strong, 30, bloodsucker_weak, 60, bloodsucker_normal, 40, psy_dog, 100
+red_forest 	= dog_normal, 10, dog_strong, 20, pseudodog_normal, 40, pseudodog_strong, 30, snork_normal, 60, snork_strong, 40
+military 	= flesh_normal, 20, flesh_strong, 80, boar_normal, 20, boar_strong, 80, dog_normal, 10, dog_strong, 20, pseudodog_normal, 40, pseudodog_strong, 30, snork_normal, 60, snork_strong, 40, bloodsucker_normal, 60, bloodsucker_strong, 40
+
+
+
+
+
+
+
+
 
 [expansion_0]
 base_squad_number = 5

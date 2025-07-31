@@ -282,33 +282,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="mar_csky_tehnik_about_dialog">
-        <phrase_list>
-            <phrase id="2">
-                <text>mar_csky_tehnik_about_dialog_2</text>
-                <next>3</next>
-            </phrase>
-            <phrase id="4">
-                <text>mar_csky_tehnik_about_dialog_4</text>
-                <next>5</next>
-            </phrase>
-            <phrase id="3">
-                <text>mar_csky_tehnik_about_dialog_3</text>
-                <next>4</next>
-            </phrase>
-            <phrase id="5">
-                <text>mar_csky_tehnik_about_dialog_5</text>
-            </phrase>
-            <phrase id="0">
-                <text>mar_csky_tehnik_about_dialog_0</text>
-                <next>1</next>
-            </phrase>
-            <phrase id="1">
-                <text>mar_csky_tehnik_about_dialog_1</text>
-                <next>2</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="mar_csky_tactic_about_me_dialog">
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
@@ -549,81 +522,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="mar_csky_leader_hello_dialog">
-        <phrase_list>
-            <phrase id="2">
-                <text />
-                <dont_has_info>mar_intro_talk_with_trader_done</dont_has_info>
-                <has_info>mar_intro_talk_with_barman_done</has_info>
-                <next>21</next>
-            </phrase>
-            <phrase id="111">
-                <text>mar_csky_leader_hello_dialog_111</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="211">
-                <text>mar_csky_leader_hello_dialog_211</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="3">
-                <text />
-                <dont_has_info>mar_intro_talk_with_guide_done</dont_has_info>
-                <has_info>mar_intro_talk_with_trader_done</has_info>
-                <next>31</next>
-            </phrase>
-            <phrase id="21">
-                <text>mar_csky_leader_hello_dialog_21</text>
-                <next>211</next>
-            </phrase>
-            <phrase id="31">
-                <text>mar_csky_leader_hello_dialog_31</text>
-                <next>311</next>
-            </phrase>
-            <phrase id="311">
-                <text>mar_csky_leader_hello_dialog_311</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="11">
-                <text>mar_csky_leader_hello_dialog_11</text>
-                <next>111</next>
-            </phrase>
-            <phrase id="1">
-                <text />
-                <dont_has_info>mar_intro_talk_with_barman_done</dont_has_info>
-                <next>11</next>
-            </phrase>
-            <phrase id="41">
-                <text>mar_csky_leader_hello_dialog_41</text>
-            </phrase>
-            <phrase id="4">
-                <text />
-                <dont_has_info>mar_intro_talk_with_commander_3_done</dont_has_info>
-                <has_info>mar_intro_talk_with_guide_done</has_info>
-                <next>41</next>
-            </phrase>
-            <phrase id="0">
-                <text />
-                <next>1</next>
-                <next>2</next>
-                <next>3</next>
-                <next>4</next>
-                <next>9</next>
-            </phrase>
-            <phrase id="9">
-                <text />
-                <has_info>mar_intro_talk_with_commander_3_done</has_info>
-                <next>91</next>
-            </phrase>
-            <phrase id="91">
-                <text>mar_csky_leader_hello_dialog_91</text>
-                <next>911</next>
-            </phrase>
-            <phrase id="911">
-                <text>mar_csky_leader_hello_dialog_911</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="mar_csky_tactic_hello_dialog">
         <phrase_list>
             <phrase id="51">
@@ -833,6 +731,129 @@
             </phrase>
         </phrase_list>
     </dialog>
+    <dialog id="mar_csky_trader_intro2_dialog">
+        <phrase_list>
+            <phrase id="5">
+                <text>mar_csky_trader_intro2_dialog_5</text>
+                <next>6</next>
+            </phrase>
+            <phrase id="6">
+                <text>mar_csky_trader_intro2_dialog_6</text>
+                <next>7</next>
+            </phrase>
+            <phrase id="7">
+                <text>mar_csky_trader_intro2_dialog_7</text>
+                <next>8</next>
+            </phrase>
+            <phrase id="8">
+                <text>mar_csky_trader_intro2_dialog_8</text>
+                <next>9</next>
+            </phrase>
+            <phrase id="1">
+                <text>mar_csky_trader_intro2_dialog_1</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="2">
+                <text>mar_csky_trader_intro2_dialog_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="3">
+                <text>mar_csky_trader_intro2_dialog_3</text>
+                <next>4</next>
+            </phrase>
+            <phrase id="4">
+                <text>mar_csky_trader_intro2_dialog_4</text>
+                <next>5</next>
+            </phrase>
+            <phrase id="9">
+                <text>mar_csky_trader_intro2_dialog_9</text>
+                <give_info>mar_csky_trader_first_talked</give_info>
+                <next>10</next>
+            </phrase>
+            <phrase id="10">
+                <text>mar_csky_trader_intro2_dialog_10</text>
+            </phrase>
+            <phrase id="0">
+                <text>mar_csky_trader_intro2_dialog_0</text>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="mar_csky_leader_hello_dialog">
+        <phrase_list>
+            <phrase id="2">
+                <text />
+                <dont_has_info>mar_intro_talk_with_trader_done</dont_has_info>
+                <has_info>mar_intro_talk_with_barman_done</has_info>
+                <next>21</next>
+            </phrase>
+            <phrase id="111">
+                <text>mar_csky_leader_hello_dialog_111</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="211">
+                <text>mar_csky_leader_hello_dialog_211</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="3">
+                <text />
+                <dont_has_info>mar_intro_talk_with_guide_done</dont_has_info>
+                <has_info>mar_intro_talk_with_trader_done</has_info>
+                <next>31</next>
+            </phrase>
+            <phrase id="21">
+                <text>mar_csky_leader_hello_dialog_21</text>
+                <next>211</next>
+            </phrase>
+            <phrase id="31">
+                <text>mar_csky_leader_hello_dialog_31</text>
+                <next>311</next>
+            </phrase>
+            <phrase id="311">
+                <text>mar_csky_leader_hello_dialog_311</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="11">
+                <text>mar_csky_leader_hello_dialog_11</text>
+                <next>111</next>
+            </phrase>
+            <phrase id="1">
+                <text />
+                <dont_has_info>mar_intro_talk_with_barman_done</dont_has_info>
+                <next>11</next>
+            </phrase>
+            <phrase id="41">
+                <text>mar_csky_leader_hello_dialog_41</text>
+            </phrase>
+            <phrase id="4">
+                <text />
+                <dont_has_info>mar_intro_talk_with_commander_3_done</dont_has_info>
+                <has_info>mar_intro_talk_with_guide_done</has_info>
+                <next>41</next>
+            </phrase>
+            <phrase id="9">
+                <text />
+                <has_info>mar_intro_talk_with_commander_3_done</has_info>
+                <next>91</next>
+            </phrase>
+            <phrase id="91">
+                <text>mar_csky_leader_hello_dialog_91</text>
+                <next>911</next>
+            </phrase>
+            <phrase id="911">
+                <text>mar_csky_leader_hello_dialog_911</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="0">
+                <text />
+                <next>1</next>
+                <next>2</next>
+                <next>3</next>
+                <next>4</next>
+                <next>9</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
     <dialog id="mar_csky_guide_at_base_dialog">
         <phrase_list>
             <phrase id="212">
@@ -883,13 +904,6 @@
                 <has_info>mar_intro_talk_with_guide_started</has_info>
                 <next>21</next>
             </phrase>
-            <phrase id="5111">
-                <text>mar_csky_guide_at_base_dialog_5111</text>
-                <dont_has_info>mar_story_guide_to_escape_talked</dont_has_info>
-                <give_info>mar_story_guide_to_escape_talked</give_info>
-                <next>51111</next>
-                <next>51112</next>
-            </phrase>
             <phrase id="5121">
                 <text>mar_csky_guide_at_base_dialog_5121</text>
                 <next>51211</next>
@@ -898,20 +912,6 @@
                 <text>mar_csky_guide_at_base_dialog_51211</text>
                 <action>dialogs.break_dialog</action>
                 <give_info>mar_csky_guide_teleport_to_base</give_info>
-            </phrase>
-            <phrase id="511111">
-                <text>mar_csky_guide_at_base_dialog_511111</text>
-                <next>5111111</next>
-            </phrase>
-            <phrase id="51111">
-                <text>mar_csky_guide_at_base_dialog_51111</text>
-                <next>511111</next>
-            </phrase>
-            <phrase id="5111111">
-                <text>mar_csky_guide_at_base_dialog_5111111</text>
-                <action>dialogs.break_dialog</action>
-                <action>dialogs.actor_clear_community</action>
-                <give_info>mar_csky_guide_teleport_to_escape</give_info>
             </phrase>
             <phrase id="41">
                 <text>mar_csky_guide_at_base_dialog_41</text>
@@ -966,6 +966,14 @@
                 <text>mar_csky_guide_at_base_dialog_311</text>
                 <action>dialogs.break_dialog</action>
             </phrase>
+            <phrase id="512">
+                <text>mar_csky_guide_at_base_dialog_512</text>
+                <next>5121</next>
+            </phrase>
+            <phrase id="517">
+                <text>mar_csky_guide_at_base_dialog_517</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
             <phrase id="0">
                 <text />
                 <next>1</next>
@@ -974,16 +982,16 @@
                 <next>4</next>
                 <next>5</next>
             </phrase>
+            <phrase id="5">
+                <text />
+                <has_info>mar_story_go_to_marsh_done</has_info>
+                <next>51</next>
+            </phrase>
             <phrase id="51">
                 <text>mar_csky_guide_at_base_dialog_51</text>
                 <next>511</next>
                 <next>512</next>
                 <next>517</next>
-            </phrase>
-            <phrase id="5">
-                <text />
-                <has_info>mar_story_go_to_marsh_done</has_info>
-                <next>51</next>
             </phrase>
             <phrase id="511">
                 <text>mar_csky_guide_at_base_dialog_511</text>
@@ -991,13 +999,25 @@
                 <next>5111</next>
                 <next>5112</next>
             </phrase>
-            <phrase id="512">
-                <text>mar_csky_guide_at_base_dialog_512</text>
-                <next>5121</next>
+            <phrase id="5111">
+                <text>mar_csky_guide_at_base_dialog_5111</text>
+                <dont_has_info>mar_story_guide_to_escape_talked</dont_has_info>
+                <give_info>mar_story_guide_to_escape_talked</give_info>
+                <next>51111</next>
+                <next>51112</next>
             </phrase>
-            <phrase id="517">
-                <text>mar_csky_guide_at_base_dialog_517</text>
+            <phrase id="51111">
+                <text>mar_csky_guide_at_base_dialog_51111</text>
+                <next>511111</next>
+            </phrase>
+            <phrase id="511111">
+                <text>mar_csky_guide_at_base_dialog_511111</text>
+                <next>5111111</next>
+            </phrase>
+            <phrase id="5111111">
+                <text>mar_csky_guide_at_base_dialog_5111111</text>
                 <action>dialogs.break_dialog</action>
+                <give_info>mar_csky_guide_teleport_to_escape</give_info>
             </phrase>
         </phrase_list>
     </dialog>
@@ -1051,50 +1071,31 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="mar_csky_trader_intro2_dialog">
+    <dialog id="mar_csky_tehnik_about_dialog">
+	<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
-            <phrase id="5">
-                <text>mar_csky_trader_intro2_dialog_5</text>
-                <next>6</next>
-            </phrase>
-            <phrase id="6">
-                <text>mar_csky_trader_intro2_dialog_6</text>
-                <next>7</next>
-            </phrase>
-            <phrase id="7">
-                <text>mar_csky_trader_intro2_dialog_7</text>
-                <next>8</next>
-            </phrase>
-            <phrase id="8">
-                <text>mar_csky_trader_intro2_dialog_8</text>
-                <next>9</next>
-            </phrase>
-            <phrase id="1">
-                <text>mar_csky_trader_intro2_dialog_1</text>
-                <next>2</next>
-            </phrase>
             <phrase id="2">
-                <text>mar_csky_trader_intro2_dialog_2</text>
+                <text>mar_csky_tehnik_about_dialog_2</text>
                 <next>3</next>
             </phrase>
-            <phrase id="3">
-                <text>mar_csky_trader_intro2_dialog_3</text>
-                <next>4</next>
-            </phrase>
             <phrase id="4">
-                <text>mar_csky_trader_intro2_dialog_4</text>
+                <text>mar_csky_tehnik_about_dialog_4</text>
                 <next>5</next>
             </phrase>
-            <phrase id="9">
-                <text>mar_csky_trader_intro2_dialog_9</text>
-                <give_info>mar_csky_trader_first_talked</give_info>
-                <next>10</next>
+            <phrase id="3">
+                <text>mar_csky_tehnik_about_dialog_3</text>
+                <next>4</next>
             </phrase>
-            <phrase id="10">
-                <text>mar_csky_trader_intro2_dialog_10</text>
+            <phrase id="5">
+                <text>mar_csky_tehnik_about_dialog_5</text>
+            </phrase>
+            <phrase id="1">
+                <text>mar_csky_tehnik_about_dialog_1</text>
+                <next>2</next>
             </phrase>
             <phrase id="0">
-                <text>mar_csky_trader_intro2_dialog_0</text>
+                <text>mar_csky_tehnik_about_dialog_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
                 <next>1</next>
             </phrase>
         </phrase_list>

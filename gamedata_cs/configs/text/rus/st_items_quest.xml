@@ -216,4 +216,130 @@
 	<string id="st_pda_name">
 		<text>КПК</text>
 	</string>
+	<string id="st_agr_quest_duty_abakan">
+		<text>Автомат долговца</text>
+	</string>
+	<string id="st_agr_quest_duty_abakan_descr">
+		<text>На автомате белой краской аккуратно выведен инвентарный номер. Такая предусмотрительность говорит о том, что он принадлежит солдату из Долга.</text>
+	</string>
+	<string id="st_agr_quest_duty_case">
+		<text>Кейс долговца</text>
+	</string>
+	<string id="st_agr_quest_duty_case_descr">
+		<text>Кейс закрыт на кодовый замок. Судя по звуку внутри несколько предметов. На крышке фломастером выведена надпись, в которой владелец кейса, указывает свой позывной в группировке Долг.</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda">
+		<text>КПК с секретной информацией</text>
+	</string>
+	<string id="st_agr_quest_duty_secret_pda_descr">
+		<text>На КПК есть несколько записей, из которых понятно, что он принадлежал долговцу. Вся остальная информация хорошо зашифрована.</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12">
+		<text>Дробовик «Потрошитель»</text>
+	</string>
+	<string id="st_agr_quest_wpn_spas12_descr">
+		<text>Судя по виду, это оружие долго втаптывали в землю. Заводская надпись на прикладе, гласит, что это дробовик из ограниченной партии, отличающейся более качественным воронением и устрашающим названием «Потрошитель».</text>
+	</string>
+	<string id="st_esc_quest_akm47">
+		<text>Трофейный АКМ-47/2</text>
+	</string>
+	<string id="st_esc_quest_akm47_descr">
+		<text>Старый потертый автомат, со следами чьих-то когтей на прикладе. Оружие, про которое ходят легенды.</text>
+	</string>
+	<string id="st_esc_quest_luky_detector">
+		<text>«Счастливый» детектор</text>
+	</string>
+	<string id="st_esc_quest_luky_detector_descr">
+		<text>Старый детектор, с наклейками от жевательной резинки и бананов. На вид - обычный детектор, странно, что кто-то считает его особенным.</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka">
+		<text>«Волшебная» водка</text>
+	</string>
+	<string id="st_esc_quest_magic_vodka_descr">
+		<text>Мутноватая жидкость с резким запахом спирта. Судя по запаху, в ней градусов 80 - 90. Вряд ли это стоит пить.</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit">
+		<text>Спец-аптечка НПР-21п</text>
+	</string>
+	<string id="st_esc_quest_spec_medkit_descr">
+		<text>На аптечке написано - «набор противорадиационных препаратов НПР-21п (тестовый образец)». Инструкция по применению содержит огромный список, малоприятных, побочных действий.</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit">
+		<text>Прочная кожаная куртка</text>
+	</string>
+	<string id="st_gar_quest_novice_outfit_descr">
+		<text>Похоже, что предыдущего владельца этой куртки разорвало в аномалии, странно, но куртка при этом выглядит абсолютно целой.</text>
+	</string>
+	<string id="st_gar_quest_vodka_2">
+		<text>Водка «Казаки 2»</text>
+	</string>
+	<string id="st_gar_quest_vodka_2_descr">
+		<text>Судя по криво наклеенной этикетке и непонятному осадку на дне бутылки, это водка палёная.</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle">
+		<text>Модифицированный ствол</text>
+	</string>
+	<string id="st_gar_quest_wpn_desert_eagle_descr">
+		<text>Оружие для настоящего плохого парня. Над этим пистолетом поработал техник, знающий свое дело, начальные характеристики существенно улучшены.</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm">
+		<text>Именной пистолет</text>
+	</string>
+	<string id="st_gar_quest_wpn_pm_descr">
+		<text>На рукоятке пистолета выгравирована надпись. Разобрать можно только «За отличн... сл..бу..» и чьи-то инициалы «А.С.».</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300">
+		<text>Бандитский «Чейзер-13»</text>
+	</string>
+	<string id="st_gar_quest_wpn_wincheaster1300_descr">
+		<text>На стволе дробовика нацарапаны несколько каракулей, очевидно изображающих убитых сталкеров.</text>
+	</string>
+	<string id="st_red_forest_pda_map_2">
+		<text>КПК с картой Рыжего леса</text>
+	</string>
+	<string id="st_red_forest_pda_map_2_descr">
+		<text>В этом КПК есть карта Рыжего леса с отметками. Бывший владелец отметил множестве мест с повышенной радиацией. Последняя запись сделана в 23:15: «Надо было переночевать возле моста, ночью мы из этого леса не выберемся».</text>
+	</string>
+	<string id="st_red_quest_prototipe_device">
+		<text>Экспериментальное устройство</text>
+	</string>
+	<string id="st_red_quest_prototipe_device_descr">
+		<text>Прибор с множеством переключателей и индикаторов. На нем нет надписей, по которым можно понять его предназначение.</text>
+	</string>
+	<string id="st_red_quest_tank_minigun">
+		<text>Танковый пулемет</text>
+	</string>
+	<string id="st_red_quest_tank_minigun_descr">
+		<text>Этот пулемет был предназначен для установки на башне танка, но вполне пригоден для использования в качестве ручного пулемета.</text>
+	</string>
+	<string id="st_val_quest_flash_movies">
+		<text>Флешка с фильмами</text>
+	</string>
+	<string id="st_val_quest_flash_movies_descr">
+		<text>На флешку записаны все последние новинки кино, но все в неподходящем для просмотра на КПК разрешении.</text>
+	</string>
+	<string id="st_val_quest_guitar_serg">
+		<text>Гитара Серёги</text>
+	</string>
+	<string id="st_val_quest_guitar_serg_descr">
+		<text>На гитаре шариковой ручкой сделана надпись, свидетельствующая о том, что эту гитару подарила какому-то Серёге его девушка.</text>
+	</string>
+	<string id="st_val_quest_scope_x8">
+		<text>8-кратный оптический прицел</text>
+	</string>
+	<string id="st_val_quest_scope_x8_descr">
+		<text>Отличная оптика со специальным креплением. Скорее всего её можно поставить только на охотничье ружье.</text>
+	</string>
+	<string id="st_yan_quest_granade">
+		<text>Граната-сувенир</text>
+	</string>
+	<string id="st_yan_quest_granade_descr">
+		<text>Учебная граната. К кольцу предохранителя, приделана цепочка и брелок для ключей в виде белого кролика.</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower">
+		<text>«Аленький цветочек»</text>
+	</string>
+	<string id="st_yan_quest_scarlet_flower_descr">
+		<text>Загадочный артефакт неизвестного происхождения. Не выделяет практически никакого излучения. Достоверно известно только о его магическом влиянии на женщин.</text>
+	</string>
 </string_table>

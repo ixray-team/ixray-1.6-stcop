@@ -56,10 +56,10 @@ function CCover_manager:calculate_covers(position)
 	for k,v in pairs(npc_table) do
 		local cover = v:find_best_cover(position)
 		if cover ~= nil then			
-			--printf("!!! %s: %s [%s]", v:id(), cover:level_vertex_id(), tostring(cover:is_smart_cover()))
+			--printf("!!! %s: %s [%s]", v:name(), cover:level_vertex_id(), tostring(cover:is_smart_cover()))
 			self.cover_table[v:id()] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(),
 										 look_pos = position, is_smart_cover = cover:is_smart_cover()}
-		else
+		--else
 			--printf("!!! nil")
 		end
 	end
@@ -128,7 +128,8 @@ end
 -- Есть ли у объекта выбранный смарт кавер
 function has_smart_cover(se_obj, smrttrn)
 	local cmanager = smrttrn.combat_manager.cover_manager
-	local cover = cmanager.cover_table[se_obj.id]	
+	local npc_id = se_obj.id
+	local cover = cmanager.cover_table[npc_id]	
 --	if se_obj.squad_id == "esc_smart_terrain_6_8_stalker_patrol_2" then
 --		printf("   HSC [%s] sid[%s]", tostring(se_obj.squad_id), tostring(cmanager.sid))
 --		print_table(cmanager.cover_table)
@@ -136,8 +137,29 @@ function has_smart_cover(se_obj, smrttrn)
 	if cover == nil then
 		return false
 	end
+
+	if cover.is_smart_cover ~= true then
+		return false
+	end
 	
-	return cover.is_smart_cover
+	local npc_storage = db.storage[npc_id]
+	if npc_storage == nil then
+		return false
+	end
+
+	local npc_obj = npc_storage.object
+	local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+	
+	local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+	if smrt_cover == nil then
+		return false
+	end	
+	local smrt_cover_object = bind_smart_cover.registered_smartcovers[smrt_cover:name()] 
+	if npc_obj:suitable_smart_cover(smrt_cover_object) then
+		return true
+	end
+	
+	return false
 end
 
 -- Есть ли у объекта выбранный кавер
@@ -152,7 +174,27 @@ function has_cover(se_obj, smrttrn)
 		return false
 	end
 	
-	return not cover.is_smart_cover
+	if cover.is_smart_cover then
+		local npc_storage = db.storage[npc_id]
+		if npc_storage == nil then
+			return true
+		end
+	
+		local npc_obj = npc_storage.object
+		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+		if smrt_cover == nil then
+			return true
+		end	
+			
+		local smrt_cover_object = bind_smart_cover.registered_smartcovers[smrt_cover:name()]
+		
+		if npc_obj:suitable_smart_cover(smrt_cover_object) then
+			return false
+		end	
+	end
+	
+	return true
 end
 -- Получить выбранный кавер объекта
 function get_cover(obj, smrttrn)

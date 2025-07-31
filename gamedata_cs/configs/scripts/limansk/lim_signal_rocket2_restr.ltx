@@ -1,0 +1,8 @@
+[logic]
+active=sr_idle
+
+[sr_idle]
+on_info = {!signal_rocket_flying(lim_signal_rocket_strojka)} sr_idle@1
+
+[sr_idle@1]
+on_timer = 10000| sr_idle %=launch_signal_rocket(lim_signal_rocket_strojka)%

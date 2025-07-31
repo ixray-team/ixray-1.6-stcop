@@ -68,14 +68,16 @@ wounded = wounded
 
 [remark@jump]
 anim = gar_digger_messenger_jump
-on_signal = anim_end | walker@no_dogs
+on_signal = anim_end | remark@no_dogs
 combat_ignore_cond = true
 meet = no_meet
 wounded = wounded
 
-[walker@no_dogs]
-path_walk = digger_messenger_no_dogs_walk
-path_look = digger_messenger_no_dogs_look
+[remark@no_dogs]
+;path_walk = digger_messenger_no_dogs_walk
+;path_look = digger_messenger_no_dogs_look
+target = actor
+anim = wait
 on_info = {-gar_story_digger_killed_or_hostile} %=play_sound(gar_digger_messenger_thanks:stalker:gar_digger_messenger_man_name)%, walker@no_dogs_stay
 on_signal = sound_end | walker@no_dogs_stay %+gar_story_got_info_from_digger%
 meet = no_meet

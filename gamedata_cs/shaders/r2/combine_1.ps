@@ -6,6 +6,8 @@
 #include "hmodel.h"
 
 #include "ssao.ps"
+#include "ssao_blur.ps"
+
 struct         _input      {
         float4         hpos        : POSITION        ;
 #ifdef        USE_VTF
@@ -22,6 +24,7 @@ struct        _out                {
 };
 
 uniform sampler1D         fog_table        ;
+
 _out         main                ( _input I )
 {
           // Sample the buffers:
@@ -59,8 +62,11 @@ _out         main                ( _input I )
         half3       hdiffuse,hspecular;
 
 	//  Calculate SSAO
+#ifdef USE_SSAO_BLUR
+	half occ = ssao_blur_ps(I.tc0);
+#else	
 	half occ = calc_ssao(P, N, I.tc0, I.tcJ);
-
+#endif
         hmodel		(hdiffuse, hspecular, mtl, N.w, D.w, P.xyz, N.xyz);
 //      hmodel		(hdiffuse, hspecular, mtl, 1, D.w, P.xyz, N.xyz);
 //	hdiffuse*=hdiffuse;			//. high contrast hemi
@@ -135,6 +141,7 @@ _out         main                ( _input I )
 #endif
 // color 		= N; //show normals
 // color 		= N.w; //show normals
+
         _out        	o;
         tonemap        	(o.low, o.high, color, tm_scale )	;
                         o.low.a         = skyblend	;
