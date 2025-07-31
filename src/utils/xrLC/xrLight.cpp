@@ -1,10 +1,13 @@
 #include "StdAfx.h"
 #include "Build.h"
 
-#include "../xrLC_Light/xrDeflector.h"
+#include "../xrForms/CompilersUI.h"
 #include "../xrForms/xrThread.h"
+
+#include "../xrLC_Light/xrDeflector.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/xrLightVertex.h"
+#include "../xrLC_Light/xrFace.h"
 
 #include "../../xrCore/xrSyncronize.h"
 
@@ -68,10 +71,6 @@ public:
 	}
 };
 
-
-#include "../xrForms/CompilersUI.h"
-extern CompilersMode gCompilerMode;
-
 void	CBuild::LMapsLocal				()
 {
 		FPU::m64r		();
@@ -111,12 +110,6 @@ void CBuild::BuildAdaptiveHT()
 		xrPhase_AdaptiveHT();
 	}
 }
-
-#include "../xrLC_Light/xrFaceDefs.h"
-#include "../xrLC_Light/xrFace.h"
-
-#include "../xrForms/CompilersUI.h"
-extern CompilersMode gCompilerMode;
 
 void CBuild::Light()
 {

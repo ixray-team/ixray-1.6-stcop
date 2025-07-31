@@ -7,12 +7,9 @@
 #pragma warning(disable:4995)
 #include <commctrl.h>
 #include <d3dx9.h>
-#include <io.h>
-#include <fcntl.h>
-#include <sys\stat.h>
 #pragma warning(default:4995)
 
-#include "_d3d_extensions.h"
+#include "../../xrEngine/_d3d_extensions.h"
 #include "../../Include/Editors/communicate.h"
 
 static const int	edge2idx3	[3][3]	= { {0,1,2},	{1,2,0},	{2,0,1}	};
