@@ -231,7 +231,7 @@ void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 			{
 				pstmt = con->prepareStatement
 				(
-					"UPDATE users_property SET health = ?, stamina = ?, radiation = ?, psy = ?, sleepiness = ?, hunger = ?, thirst = ?, wounds = ?, money = ?, community = ? WHERE user_id = ?"
+					"UPDATE users_property SET health = ?, stamina = ?, radiation = ?, psy = ?, sleepiness = ?, hunger = ?, thirst = ?, wounds = ?, money = ?, community = ?, position_x = ?, position_y = ?, position_z = ? WHERE user_id = ?"
 				);
 
 				pstmt->setDouble	(1, data.health);
@@ -244,14 +244,17 @@ void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 				pstmt->setDouble	(8, data.wounds);
 				pstmt->setInt		(9, data.money);
 				pstmt->setInt		(10, data.community);
-				pstmt->setInt		(11, data.id);
+				pstmt->setDouble	(11, data.position.x);
+				pstmt->setDouble	(12, data.position.y + 0.1f);
+				pstmt->setDouble	(13, data.position.z);
+				pstmt->setInt		(14, data.id);
 				pstmt->execute		();
 			}
 			else
 			{
 				pstmt = con->prepareStatement
 				(
-					"INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+					"INSERT INTO users_property (user_id, health, stamina, radiation, psy, sleepiness, hunger, thirst, wounds, money, community, position_x, position_y, position_z) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 				);
 
 				pstmt->setInt		(1, data.id);
@@ -265,6 +268,9 @@ void DBService::UpdateInsertPropertyInternal(UserDBProperty data)
 				pstmt->setDouble	(9, data.wounds);
 				pstmt->setInt		(10, data.money);
 				pstmt->setInt		(11, data.community);
+				pstmt->setDouble	(12, data.position.x);
+				pstmt->setDouble	(13, data.position.y + 0.1f);
+				pstmt->setDouble	(14, data.position.z);
 				pstmt->execute		();
 			}
 
@@ -382,6 +388,9 @@ DBService::UserDBProperty DBService::SelectProperty(int id)
 				res.wounds		= set->getDouble("wounds");
 				res.money		= set->getInt("money");
 				res.community	= set->getInt("community");
+				res.position.x = set->getDouble("position_x");
+				res.position.y = set->getDouble("position_y");
+				res.position.z = set->getDouble("position_z");
 			}
 
 			delete set;
