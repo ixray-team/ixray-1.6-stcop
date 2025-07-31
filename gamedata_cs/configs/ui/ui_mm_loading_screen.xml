@@ -5,16 +5,9 @@
         </auto_static>
 	</background>
     <loading_logo x="257" y="369" width="512" height="256" stretch="1"/>
-    <loading_progress x="379" y="726" width="268" height="37" mode="horz" min="0" max="100" pos="0" inertion="5.0" under_background="0">
-        <progress>
-            <texture>ui_mm_loading_progress_bar</texture>
-        </progress>
+    <loading_progress x="379" y="726" width="268" height="37" under_background="0" double_progress="1">
+        <texture>ui_mm_loading_progress_bar</texture>
     </loading_progress>
-    <loading_progress_right x="379" y="726" width="268" height="37" mode="back" min="0" max="100" pos="0" inertion="5.0" under_background="0">
-        <progress>
-            <texture>ui_mm_loading_progress_bar</texture>
-        </progress>
-    </loading_progress_right>
     <loading_stage x="310" y="700" width="405" height="20" stretch="1" always_show="1">
         <text align="c" r="157" g="140" b="120" font="graffiti19"/>
     </loading_stage>
