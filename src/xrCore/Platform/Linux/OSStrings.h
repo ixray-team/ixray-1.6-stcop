@@ -22,6 +22,15 @@ inline void itoa(float val, char* str, [[maybe_unused]]size_t size)
     strcpy(str, itoa(val));
 }
 
+inline void strupr(char* s)
+{
+    while (*s)
+    {
+        *s = static_cast<char>(std::toupper(static_cast<unsigned char>(*s)));
+        ++s;
+    }
+}
+
 #define _itoa itoa
 inline char* _strlwr(char *str)
 {
