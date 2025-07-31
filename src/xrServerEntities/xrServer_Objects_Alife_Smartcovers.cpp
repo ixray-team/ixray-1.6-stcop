@@ -78,7 +78,7 @@ CSE_SmartCover::CSE_SmartCover	(LPCSTR section) : CSE_ALifeDynamicObject(section
 	m_enter_min_enemy_distance	= pSettings->r_float(section, "enter_min_enemy_distance");
 	m_exit_min_enemy_distance	= pSettings->r_float(section, "exit_min_enemy_distance");
 	m_is_combat_cover			= pSettings->r_bool(section,  "is_combat_cover");
-	m_can_fire					= m_is_combat_cover ? true : pSettings->r_bool(section, "can_fire");
+	m_can_fire					= m_is_combat_cover ? true : READ_IF_EXISTS(pSettings, r_bool, section, "can_fire", false);
 	m_need_to_reparse_loopholes = true;
 }
 
@@ -147,6 +147,13 @@ void CSE_SmartCover::STATE_Read	(NET_Packet	&tNetPacket, u16 size)
 
 	if (m_wVersion >= 128)
 		m_can_fire				= tNetPacket.r_u8();
+	else
+	{
+		// I don't know how, but it seems that
+		// m_is_combat_cover can be changed
+		// in scripts. Let's just sync here.
+		m_can_fire = m_is_combat_cover;
+	}
 }
 
 void CSE_SmartCover::STATE_Write(NET_Packet	&tNetPacket)
