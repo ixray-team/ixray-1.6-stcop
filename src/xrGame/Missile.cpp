@@ -345,10 +345,31 @@ void CMissile::State(u32 state)
 			m_fThrowForce		= m_fMinForce;
 			PlaySoundIfExist("sndThrowBegin", Position());
 			PlayHUDMotion		("anm_throw_begin", TRUE, GetState());
+
+			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (CCustomDetector* det = actor->GetDetector())
+				{
+					if (det->CanThrowHand())
+					{
+						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowStart);
+					}
+				}
+			}
 		} break;
 	case eReady:
 		{
 			PlayHUDMotion		("anm_throw_idle", TRUE, GetState());
+			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (CCustomDetector* det = actor->GetDetector())
+				{
+					if (det->CanThrowHand())
+					{
+						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowIdle);
+					}
+				}
+			}
 		} break;
 	case eThrow:
 		{
@@ -356,6 +377,18 @@ void CMissile::State(u32 state)
 			m_throw				= false;
 			PlaySoundIfExist("sndThrow", Position());
 			PlayHUDMotion		("anm_throw", TRUE, GetState());
+
+			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+			{
+				if (CCustomDetector* det = actor->GetDetector())
+				{
+					if (det->CanThrowHand())
+					{
+						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowEnd);
+					}
+				}
+			}
+
 		} break;
 	case eThrowEnd:
 		{

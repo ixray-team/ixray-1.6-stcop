@@ -176,6 +176,7 @@ void CHudItem::OnEvent(NET_Packet& P, u16 type)
 
 void CHudItem::OnStateSwitch(u32 S)
 {
+	u32 old_state = GetState();
 	SetState			(S);
 	
 	if(object().Remote()) 
@@ -190,7 +191,7 @@ void CHudItem::OnStateSwitch(u32 S)
 			if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) != HudItemData())
 			{
 				CCustomDetector* det = smart_cast<CCustomDetector*>(g_player_hud->attached_item(1)->m_parent_hud_item);
-				if (det != nullptr && det->CanDrawHand())
+				if (det != nullptr && det->CanDrawHand() && old_state != CMissile::EMissileStates::eThrowEnd)
 				{
 					det->SwitchState(CCustomDetector::eHandDraw);
 				}
@@ -461,6 +462,9 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_finish_detector, HudAnimationExist("anm_finish_detector"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_draw, HudAnimationExist("anm_hand_draw"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_hide, HudAnimationExist("anm_hand_hide"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_start, HudAnimationExist("anm_hand_throw_start"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_idle, HudAnimationExist("anm_hand_throw_idle"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_throw_end, HudAnimationExist("anm_hand_throw_end"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 }
 
