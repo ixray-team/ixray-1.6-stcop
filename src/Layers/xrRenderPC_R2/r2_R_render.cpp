@@ -585,12 +585,12 @@ void CRender::Render()
 
 	// Postprocess
 	Target->phase_combine					();
-	VERIFY	(0==mapDistort.size());
+	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 }
 
 void CRender::render_forward				()
 {
-	VERIFY	(0==mapDistort.size());
+	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 	RImplementation.o.distortion				= RImplementation.o.distortion_enabled;	// enable distorion
 
 	//******* Main render - second order geometry (the one, that doesn't support deffering)

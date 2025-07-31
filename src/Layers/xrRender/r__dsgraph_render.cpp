@@ -292,6 +292,14 @@ void	R_dsgraph_structure::r_dsgraph_render_distort	()
 	// Sorted (back to front)
 	mapDistort.traverseRL	(sorted_L1);
 	mapDistort.clear		();
+
+	//	HACK: Calculate this only once
+	CHudInitializer initalizer(true);
+
+	rmNear();
+	mapHUDDistort.traverseLR(sorted_L1);
+	mapHUDDistort.clear();
+	rmNormal();
 }
 
 //////////////////////////////////////////////////////////////////////////

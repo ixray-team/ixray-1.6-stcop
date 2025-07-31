@@ -393,7 +393,7 @@ void CRender::Render		()
 	PIX_EVENT(CRender_Render);
 
 	g_r						= 1;
-	VERIFY					(0==mapDistort.size());
+	VERIFY					(0==mapDistort.size() + mapHUDDistort.size());
 
 //	rmNormal();
 
@@ -696,14 +696,14 @@ void CRender::Render		()
 		Target->phase_combine					();
 	}
 
-	VERIFY	(0==mapDistort.size());
+	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 
 	//HWOCC.occq_stats();
 }
 
 void CRender::render_forward				()
 {
-	VERIFY	(0==mapDistort.size());
+	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 	RImplementation.o.distortion				= RImplementation.o.distortion_enabled;	// enable distorion
 
 	//******* Main render - second order geometry (the one, that doesn't support deffering)
