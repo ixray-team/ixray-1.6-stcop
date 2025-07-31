@@ -1277,10 +1277,15 @@ void CActor::UpdateCL()
 		{
 			g_player_hud->m_need_reload = true;
 			CCustomOutfit* outfit = GetOutfit();
-			if (outfit != nullptr)
-				g_player_hud->load(pSettings->r_string(outfit->m_section_id.c_str(), "player_hud_section"));
+			if (g_player_hud->NextHUDSect.size() > 0)
+			{
+				g_player_hud->load(g_player_hud->NextHUDSect);
+				g_player_hud->NextHUDSect = 0;
+			}
 			else
+			{
 				g_player_hud->load_default();
+			}
 
 			u16 saved_old_slot = NO_ACTIVE_SLOT;
 
