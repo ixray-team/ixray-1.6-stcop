@@ -34,58 +34,60 @@ public:
 	};
 
 	template <typename T>
-	struct CFixedStorage 
+	struct CStorage
 	{
-		T						*m_objects;
-		T						*m_free;
-		u32						m_max_object_count;
+		T* m_free = nullptr;
+		u32 m_max_object_count = 0;
+		xr_vector<xr_unique_ptr<T>> m_blocks;
 
-		IC			CFixedStorage			(u32 max_object_count) :
-						m_max_object_count	(max_object_count)
+		explicit CStorage(u32 max_object_count) :
+			m_max_object_count(max_object_count)
 		{
-			m_objects			= xr_alloc<T>(m_max_object_count);
-			T					*B = 0;
-			T					*I = m_objects;
-			T					*E = m_objects + m_max_object_count;
-			for ( ; I != E; B = I, ++I)
-				I->next	()		= B;
-			m_free				= E - 1;
+			create_block();
 		}
 
-		virtual		~CFixedStorage			()
+		void create_block()
 		{
-			xr_free				(m_objects);
+			xr_unique_ptr<T>& block = m_blocks.emplace_back(xr_alloc<T>(m_max_object_count));
+			T* b = nullptr;
+			T* i = block.get();
+			T* e = i + m_max_object_count;
+			for (; i != e; b = i, ++i)
+			{
+				i->next() = b;
+			}
+
+			m_free = e - 1;
 		}
 
-		IC	T		*get_object				()
+		T* get_object()
 		{
-			VERIFY				(m_free);
-			T					*node = m_free;
-			m_free				= m_free->next();
-			ZeroMemory			(node,sizeof(T));
-			return				(node);
+			if (!m_free)
+			{
+				create_block();
+			}
+
+			T* node = m_free;
+			m_free = m_free->next();
+			ZeroMemory(node, sizeof(T));
+			return node;
 		}
 
-		IC	void	clear					()
+		void clear()
 		{
-			T					*B = 0;
-			T					*I = m_objects;
-			T					*E = m_objects + m_max_object_count;
-			m_free				= E - 1;
-			for ( ; I != E; ++I)
-				I->next()		= B;
+			m_blocks.clear();
 		}
 
-		IC	void	remove					(T *&node)
+		void remove(T*& node)
 		{
-			node->next()		= m_free;
-			m_free				= node;
-			node				= 0;
+			node->next() = m_free;
+			m_free = node;
+			node = 0;
 		}
 	};
 
-	typedef CFixedStorage<CQuadNode> CQuadNodeStorage;
-	typedef CFixedStorage<CListItem> CListItemStorage;
+	using CQuadNodeStorage = CStorage<CQuadNode>;
+	using CListItemStorage = CStorage<CListItem>;
 
 protected:
 	Fvector						m_center;
