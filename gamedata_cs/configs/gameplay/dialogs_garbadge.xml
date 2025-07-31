@@ -208,6 +208,7 @@
                 <text>gar_bandit_leader_kill_digger_traitor_told_1</text>
                 <give_info>gar_quest_kill_digger_traitor_started</give_info>
                 <give_info>gar_bandit_join_talked_first</give_info>
+                <give_info>gar_flea_market_stop_quest_line</give_info>
                 <next>11</next>
             </phrase>
             <phrase id="0">
@@ -1281,6 +1282,7 @@
                 <text>gar_bandit_leader_kill_digger_traitor_1</text>
                 <give_info>gar_quest_kill_digger_traitor_told</give_info>
                 <give_info>gar_bandit_join_talked_first</give_info>
+                <give_info>gar_flea_market_stop_quest_line</give_info>
                 <next>11</next>
                 <next>12</next>
             </phrase>
@@ -1579,6 +1581,7 @@
     <dialog id="gar_bandit_leader_join_first">
         <precondition>dialogs.actor_not_in_bandit</precondition>
         <dont_has_info>gar_bandit_join_talked_first</dont_has_info>
+        <dont_has_info>gar_bandit_block_quest_line</dont_has_info>
         <phrase_list>
             <phrase id="1">
                 <text>gar_bandit_leader_join_first_1</text>
