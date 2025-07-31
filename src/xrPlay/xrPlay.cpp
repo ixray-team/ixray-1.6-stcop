@@ -151,13 +151,14 @@ int APIENTRY WinMain
 		Console->Execute((std::string("renderer ") + Console->GetToken("renderer")).c_str());
 	}
 
-	LoadCustomSettings();
 	Engine.External.Initialize();
 
 	//Console->Execute("stat_memory");
 	Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
 
 	EngineLoadStage4();
+
+	LoadCustomSettings();
 
 	// Splash wnd => Game wnd
 	splash::hide();
