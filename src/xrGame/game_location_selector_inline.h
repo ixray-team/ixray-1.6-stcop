@@ -88,6 +88,9 @@ IC	void CGameLocationSelector::select_random_location(const _vertex_id_type star
 		if ((*i).vertex_id() == this->m_previous_vertex_id)
 			continue;
 
+		if (!this->m_graph->valid_vertex_id((*i).vertex_id()))
+			continue;
+
 		// * вершина на текущем уровне?
 		if ((this->m_graph->vertex((*i).vertex_id())->level_id() != ai().level_graph().level_id()))
 			continue;

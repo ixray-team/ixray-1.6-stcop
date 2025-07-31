@@ -498,6 +498,12 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeHelicopter,CSE_ALifeDynamicObjectVisual,CS
 	virtual bool					used_ai_locations			() const;
 	virtual CSE_Motion*		motion						();
 	virtual CSE_Abstract			*cast_abstract			() {return this;}
+	virtual BOOL					Net_Relevant() override;
+#if defined(XRGAME_EXPORTS)
+	Fvector Pos;
+	Fvector Rotate;
+	Fvector BodyHPB;
+#endif
 
 SERVER_ENTITY_DECLARE_END
 
