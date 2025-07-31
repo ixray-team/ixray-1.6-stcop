@@ -35,6 +35,7 @@ private:
 	CUITextWnd*			m_ui_weapon_ap_ammo;
 	CUITextWnd*			m_fire_mode;
 	CUITextWnd*			m_ui_grenade;
+	CUITextWnd*			m_ui_weapon_third_ammo; //Alundaio
 	II_BriefInfo		m_item_info;
 	
 	CUITextWnd*			m_ui_weapon_sign_ammo;
@@ -44,6 +45,9 @@ private:
 	CUIProgressBar*		m_ui_health_bar;
 	CUIProgressBar*		m_ui_armor_bar;
 	CUIProgressBar*		m_ui_stamina_bar;
+
+	u32					m_ui_weapon_ammo_color_active;
+	u32					m_ui_weapon_ammo_color_inactive;
 
 	CUIProgressShape*	m_progress_self;
 	CUIStatic*			m_radia_damage;
