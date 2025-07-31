@@ -1,7 +1,11 @@
-#include "CompilersUI.h"
+﻿#include "CompilersUI.h"
 #include <imgui.h>
 
 #include "../../xrCore/xrCore.h"
+#include "cl_log.h"
+#include <timeapi.h>
+
+#define enumToText(enum)
 
 static bool ShowMainUI = true;
 struct LevelFileData
@@ -35,15 +39,18 @@ void DrawLCConfig();
 
 void RenderMainUI()
 {
-	if (!ShowMainUI)
-		return;
-
 	int Size[2] = {};
 
 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
 	ImGui::SetNextWindowPos({ 0, 0 });
-	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1]});
+	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
+
+	if (!ShowMainUI) 
+	{
+		RenderCompilerUI();
+		return;
+	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
@@ -177,6 +184,7 @@ void RenderMainUI()
 
 		if (isReady)
 		{
+			ShowMainUI = false;
 			extern void StartCompile();
 			StartCompile();
 		}
@@ -311,4 +319,171 @@ void DrawCompilerConfig()
 		ImGui::EndChild();
 	}
 	
+}
+
+
+
+void RenderCompilerUI()
+{
+	//static const char* levelName = "LevelTextName";
+
+
+	static std::vector<std::string> logMessages = {
+		"[INFO] log",
+		"[WARNING] log",
+	};
+
+	// Set up the window
+	ImGui::Begin("Split Screen Example", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus);
+
+	// Calculate sizes for the top and bottom parts
+	ImVec2 windowSize = ImGui::GetContentRegionAvail();
+	float topHeight = windowSize.y * 0.35f;
+
+	// Top section
+	ImGui::BeginChild("TopSection", ImVec2(windowSize.x, topHeight), true);
+
+	// Level name
+	ImGui::Text("%s", gCompilerMode.level_name);
+	ImGui::Separator();
+	//ImGui::ProgressBar(0.00); надо бы сделать общий прогресс бар
+	//ImGui::Separator();
+
+	// Table
+	if (ImGui::BeginTable("IterationsTable", 8, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
+		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
+		ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		//ImGui::TableSetupColumn("Status1", ImGuiTableColumnFlags_WidthFixed, 100.f);
+		ImGui::TableHeadersRow();
+
+		for ( auto& row : GetIterationData()) {
+			ImGui::TableNextRow();
+
+			// Status icon
+			ImGui::TableSetColumnIndex(0);
+
+			// Это должна быть иконка, но я ещё не подготовил шрифт
+			ImGui::Text(" ");
+
+			// TASK
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%s", row.iterationName.c_str());
+
+			// PHASE
+			ImGui::TableSetColumnIndex(2);
+			if (row.status == Complited)
+				ImGui::Text(" ");
+			else
+				ImGui::Text("%s", row.PhaseName.c_str());
+
+			//PHASE %
+			auto pers = row.PhasePersent;
+
+			if (row.status != Complited) {
+				u32 dwCurrentTime = timeGetTime();
+				u32 dwTimeDiff = dwCurrentTime - GetPhaseStartTime();
+				u32 secElapsed = dwTimeDiff / 1000;
+				u32 secRemain = u32(float(secElapsed) / pers) - secElapsed;
+
+				row.elapsed_time = secElapsed;
+				if (pers>0.005f)
+					row.remain_time = secRemain;
+			}
+
+			//
+			if (pers > 1.f)			pers = 1;
+			else if (pers < 0.f)	pers = 0;
+
+			ImGui::TableSetColumnIndex(3);
+			ImGui::Text("%0.f", pers * 100);
+
+			// 
+			ImGui::TableSetColumnIndex(4);
+
+			if (row.PhaseName.empty() && row.status != Complited) 
+			{
+				ImGui::Text(" ");
+			}
+			else if (row.status == Complited) 
+			{
+				ImGui::Text("%s", row.remain_time);
+			}
+			else 
+			{
+				ImGui::Text("%s", make_time(row.elapsed_time).c_str());
+			}
+			//
+			ImGui::TableSetColumnIndex(5);
+
+			if (row.PhaseName.empty()) 
+			{
+				ImGui::Text(" ");
+			}
+			else 
+			{
+				ImGui::Text("%s", (row.remain_time == 0 ? "Calculating..." : make_time(row.remain_time).c_str()));
+			}
+				//
+			ImGui::TableSetColumnIndex(6);
+			ImGui::Text("%d", row.warnings);
+			// Status text
+			ImGui::TableSetColumnIndex(7);
+
+			xr_string statusText = "";
+
+			switch (row.status)
+			{
+			case Complited:	statusText = "Complited"; break;
+			case InProgress:statusText = "In Progress"; break;
+			case Pending:	statusText = "Pending"; break;
+			case Skip:		statusText = "Skip"; break;
+			default:
+				break;
+			}
+
+			ImGui::Text("%s", statusText);
+		}
+
+		ImGui::EndTable();
+	}
+
+	ImGui::EndChild();
+
+	// Bottom section (log)
+	ImGui::Separator();
+	static bool autoScroll = true;
+	if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight-35), true))
+	{
+		ImGuiListClipper clipper;
+
+		xrCriticalSectionGuard LogGuard(&csLog);
+
+		clipper.Begin(GetLogVector().size());
+
+		while (clipper.Step())
+		{
+			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+			{
+				ImGui::TextWrapped("%s", GetLogVector()[i].c_str());
+			}
+		}
+
+		if (autoScroll)
+			ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+		ImGui::EndChild();
+	}
+	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
+	{
+		autoScroll = !autoScroll;
+	}
+
+
+	ImGui::End();
 }
