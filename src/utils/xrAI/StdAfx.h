@@ -25,11 +25,6 @@
 #include <io.h>
 #include <stdio.h>
 
-#ifdef AI_COMPILER
-#	include "../../xrServerEntities/smart_cast.h"
-#endif
-// TODO: reference additional headers your program requires here
-
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value
 

@@ -208,10 +208,10 @@ void description::load_transitions	(shared_str const &table_id)
 		float					weight = smart_cover::detail::parse_float(LuatTable, "weight");
 
 		if (!m_transitions.vertex(vertex_0_id))
-			m_transitions.add_vertex(Loki::EmptyType(), vertex_0_id);
+			m_transitions.add_vertex(xr_empty(), vertex_0_id);
 
 		if (!m_transitions.vertex(vertex_1_id))
-			m_transitions.add_vertex(Loki::EmptyType(), vertex_1_id);
+			m_transitions.add_vertex(xr_empty(), vertex_1_id);
 
 		m_transitions.add_edge(vertex_0_id, vertex_1_id, weight);
 		TransitionGraph::CEdge* edge = m_transitions.edge(vertex_0_id, vertex_1_id);

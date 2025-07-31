@@ -8,13 +8,9 @@
 
 #pragma once
 
-#include <loki/emptytype.h>
-
-template <
-	typename _edge_weight_type,
-	typename _vertex_type
->
-class CEdgeBase {
+template <typename _edge_weight_type, typename _vertex_type>
+class CEdgeBase
+{
 public:
 	typedef _edge_weight_type						_edge_weight_type;
 	typedef _vertex_type							_vertex_type;
@@ -31,12 +27,10 @@ public:
 	IC		const _vertex_id_type	&vertex_id	() const;
 };
 
-template <
-	typename _edge_weight_type,
-	typename _vertex_type,
-	typename _edge_data_type
->
-class CEdge : public CEdgeBase<_edge_weight_type,_vertex_type> {
+template <typename _edge_weight_type, typename _vertex_type, typename _edge_data_type>
+class CEdge : 
+	public CEdgeBase<_edge_weight_type,_vertex_type> 
+{
 private:
 	typedef CEdgeBase<_edge_weight_type,_vertex_type>	inherited;
 
@@ -55,11 +49,9 @@ public:
 	}
 };
 
-template <
-	typename _edge_weight_type,
-	typename _vertex_type
->
-class CEdge<_edge_weight_type, _vertex_type, Loki::EmptyType> : public CEdgeBase<_edge_weight_type,_vertex_type> {
+template <typename _edge_weight_type, typename _vertex_type>
+class CEdge<_edge_weight_type, _vertex_type, xr_empty> : 
+	public CEdgeBase<_edge_weight_type,_vertex_type> {
 private:
 	typedef CEdgeBase<_edge_weight_type,_vertex_type>	inherited;
 	using _vertex_id_type = inherited::_vertex_id_type;

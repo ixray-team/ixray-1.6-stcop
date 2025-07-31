@@ -27,8 +27,6 @@
 namespace std { class exception; }
 namespace boost { void throw_exception( std::exception const& A ); }
 
-#include "smart_cast.h"
-
 #define READ_IF_EXISTS(ltx,method,section,name,default_value)\
 	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value
 
