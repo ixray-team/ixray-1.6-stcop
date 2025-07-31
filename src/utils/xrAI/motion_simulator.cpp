@@ -465,7 +465,7 @@ void msimulator_Simulate( Fvector& result, Fvector& start, Fvector& end, float _
 	Fvector			bbC,bbD;
 	bb.get_CD		(bbC,bbD);
 	IXRC.box_options	(0);
-	IXRC.box_query	(&Level,bbC,bbD);
+	IXRC.box_query	(LevelPtr.get(), bbC, bbD);
 	
 	// XForm everything to ellipsoid space
 	Fvector			xf;
@@ -497,7 +497,7 @@ void msimulator_Simulate( Fvector& result, Fvector& start, Fvector& end, float _
 			cl_tri& T			= clContactedT[i_t];
 			CDB::RESULT&		rp = IXRC.r_begin()[i_t];
 //			CDB::TRI&	O		= 
-				*(Level.get_tris()+rp.id);
+				*(LevelPtr->get_tris()+rp.id);
 
 			T.p[0].mul			(rp.verts[0],xf);
 			T.p[1].mul			(rp.verts[1],xf);

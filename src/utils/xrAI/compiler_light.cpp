@@ -19,14 +19,14 @@ IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light_Fast
 	}
 
 	// 2. Polygon doesn't pick - real database query
-	try { DB.ray_query(&Level,P,D,r); } catch (...) { Msg("* ERROR: Failed to trace ray"); }
+	try { DB.ray_query(LevelPtr.get(), P, D, r); } catch (...) { Msg("* ERROR: Failed to trace ray"); }
 	if (0==DB.r_count()) {
 		return false;
 	} else {
 		// cache polygon
 		CDB::RESULT&	rpinf	= *DB.r_begin();
 //		CDB::TRI&		T		= 
-			Level.get_tris()[rpinf.id];
+		LevelPtr->get_tris()[rpinf.id];
 		L.tri[0].set	(rpinf.verts[0]);
 		L.tri[1].set	(rpinf.verts[1]);
 		L.tri[2].set	(rpinf.verts[2]);

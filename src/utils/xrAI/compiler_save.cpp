@@ -186,4 +186,6 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	Msg				("%dK saved",SizeTotal/1024);
 
 	FS.w_close		(fs);
+
+	compressed_nodes.clear();
 }
