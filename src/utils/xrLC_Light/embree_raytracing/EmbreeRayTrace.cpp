@@ -106,16 +106,23 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
-	Face* F = hit->geomID == 2 ? EmbreeMain.static_geom_transp.dummy[hit->primID] : EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+	Face* F = nullptr; 
+	
+	if (hit->geomID == 2)
+		F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
+	else 
+		F = EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+	 
  	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v) && F != ctxt->skip)
 	{
  		ctxt->energy = 0;
 		args->valid[0] = -1;
  		return;
 	}
-	ctxt->Hits++;
- 	if (ctxt->Hits > 16)
-		return;
+	
+	// ctxt->Hits++;
+ 	// if (ctxt->Hits > 16)
+	// 	return;
 
 	args->valid[0] = 0;
 }
@@ -201,12 +208,8 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
   	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
 	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 2); 
 	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
-
-	if (addMU)
-	{
-		rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
-	}
-
+	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
+ 
 	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
 	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
 	size_t start = GetMemory();

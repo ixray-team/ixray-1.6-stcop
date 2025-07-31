@@ -273,14 +273,7 @@ void CBuild::Run	(LPCSTR P)
 	BuildCForm					();
 	BuildPortals				(*fs);
 
-	//****************************************** T-Basis
-	{
-		FPU::m64r					();
-		Phase						("Building tangent-basis...");
-		xrPhase_TangentBasis		();
-		mem_Compact					();
-	}
- 
+
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
 	{
@@ -307,6 +300,15 @@ extern CompilersMode gCompilerMode;
 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
+	//****************************************** T-Basis
+	{
+		FPU::m64r();
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
+		mem_Compact();
+	}
+
+
   	//****************************************** Convert to OGF
 	FPU::m64r					();
 	Phase						("Converting to OGFs...");
@@ -373,15 +375,19 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 
 	SaveTREE		(*fs);
 	SaveSectors		(*fs);
+	// Закрываем запись (а то бывает косяк что процесс закончился но файл не закрыло) 
+	FS.w_close(fs);
 
 	err_save		();
+
+
 
 	clMsg("File is Saved");
 
 	clMsg("Compilation is Ended");
 
-	// Закрываем запись (а то бывает косяк что процесс закончился но файл не закрыло) 
-	FS.w_close(fs);
+	
+
 }
 
 void CBuild::err_save	()

@@ -66,6 +66,8 @@ virtual	void Execute()
 				break;
 			}
 			ThreadWorkID_Adaptive++;
+
+			Progress(float(ThreadWorkID_Adaptive) / float( lc_global_data()->g_vertices().size() ) );
 			csA.Leave();
 
 			base_color_c		vC;
@@ -105,49 +107,25 @@ void CBuild::xrPhase_AdaptiveHT	()
 	{
  		Light_prepare();
  		// Build model
-		
- 		BuildRapid					(FALSE);
+  		BuildRapid					(FALSE);
 		EmbreeMain.AttachGeometrys	(false);
- 		// Prepare
+ 	
+		// Prepare
  		Status						("Precalculating : base hemisphere ...");
-  
-		ThreadWorkID_Adaptive = 0;
+ 		ThreadWorkID_Adaptive = 0;
 		for (u32 thID = 0; thID < MAX_THREADS; thID++)
 			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
-
 		precalc_base_hemi.wait();
+ 	}
 
-		if (lc_global_data()->GetIsIntelUse())
-		{
-			EmbreeMain.IntelEmbereUNLOAD();
-		}
-	}
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Adaptive tesselation...");
-	{
-		for (u32 fit=0; fit<g_faces.size(); fit++)	{					// clear split flag from all faces + calculate normals
-			g_faces[fit]->flags.bSplitted	= false;
-			g_faces[fit]->flags.bLocked		= true;
-		}
-		u_Tesselate		(callback_edge_error,0,callback_vertex_hemi);	// tesselate
-	}
-	*/
-
-	//////////////////////////////////////////////////////////////////////////
+ 	//////////////////////////////////////////////////////////////////////////
 	Status				("Gathering lighting information...");
 	u_SmoothVertColors	(5);
 
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Exporting to SMF...");
-	{
-		string_path			fn;
-		GSaveAsSMF			(strconcat(fn,pBuild->path,"hemi_source.smf"));
-	}
-	*/
+	if (lc_global_data()->GetIsIntelUse())
+		EmbreeMain.IntelEmbereUNLOAD();
 }
+
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
 {
 	xr_vector<Face*>			&adjacent_vec = reult;
@@ -324,18 +302,20 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 		Vertex					*V1,*V2;
 		CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
 		++counter_create;
-		if (0==(counter_create%10000))	
+		if (0==(counter_create%100000))	
 		{
-			for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
-					lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
-
-			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create,lc_global_data()->g_vertices().size(),cnt_verts);
+			Status				("Working: %d verts created, %d(now) ...",counter_create, lc_global_data()->g_vertices().size());
 			xrLogger::FlushLog			();
 		}
-
-		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
+ 		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
 	}
+
+	for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
+	if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+		lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[I]);
+	Status("Working: %d verts created, %d(now) / %d(was) ...", counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
+
+
 
 		// Cleanup
 		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
