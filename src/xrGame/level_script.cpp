@@ -45,9 +45,11 @@
 #include "ShootingObject.h"
 #include "Weapon.h"
 #include "raypick.h"
-
-
 #include "ai_object_location.h"
+
+#include "ActorHelmet.h"
+#include "PickupManager.h"
+#include "UIActorMenu.h"
 
 using namespace luabind;
 
@@ -1048,6 +1050,132 @@ void RefreshNamesNPC()
 	}
 }
 
+bool IsUIShown()
+{
+	return CurrentGameUI()->GameIndicatorsShown();
+}
+
+bool IndicatorsShown()
+{
+	if (!IsUIShown())
+		return false;
+
+	auto actor = Level().CurrentViewEntity()->cast_actor();
+	if (actor == nullptr)
+		return false;
+
+	if (actor->inventory().ActiveItem() == nullptr)
+	{
+		return false;
+	}
+
+	auto wpn = actor->inventory().ActiveItem()->cast_weapon();
+	if (wpn == nullptr)
+	{
+		return true;
+	}
+	
+	if (wpn->IsUIForceHiding())
+	{
+		return false;
+	}
+	else if (wpn->IsUIForceUnhiding())
+	{
+		return true;
+	}
+	else if (wpn->IsGrenadeMode())
+	{
+		return true;
+	}
+
+	if (wpn->IsZoomed() && (wpn->get_ScopeStatus() == 1 || (wpn->get_ScopeStatus() == 2 && wpn->IsScopeAttached())))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool InventoryShown()
+{
+	return CurrentGameUI()->ActorMenu().IsShown();
+}
+
+bool ElectronicsBreak()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+		return false; // TODO: IMPL actor->ElectronicsProblemsInc();
+
+	return false;
+}
+
+bool IsPickupMode()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+		return actor->GetPickupManager()->GetPickupMode();
+
+	return false;
+}
+
+bool IsActorBurned()
+{
+	return false;
+}
+
+bool IsElectronicsRestore()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+		return false; //actor->ElectronicsProblemsDec();
+
+	return false;
+}
+
+bool electronics_reset()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+	{
+		// IMPL: actor->ResetElectronicsProblems();
+		return true;
+	}
+
+	return false;
+}
+
+bool IsElectronicsApply()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+		return false; // IMPL: actor->ElectronicsProblemsImmediateApply();
+
+	return false;
+}
+
+int GetParameterUpgradedInt()
+{
+	return 0;
+}
+
+int ValidSavedGameInt(int number, const char* name)
+{
+	return 1;
+}
+
+bool IsTacticalHud()
+{
+	auto actor = Level().CurrentControlEntity()->cast_actor();
+	if (actor != nullptr)
+	{
+		if (CHelmet* helmet = smart_cast<CHelmet*>(actor->inventory().ItemFromSlot(HELMET_SLOT)))
+			return false; //helmet->m_fShowNearestEnemiesDistance > 0.0f;
+	}
+
+	return false;
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1190,7 +1318,20 @@ void CLevel::script_register(lua_State *L)
 		def("get_active_cam", &get_active_cam),
 		def("set_active_cam", &set_active_cam),
 		def("get_start_time", &get_start_time),
-		def("valid_vertex", &valid_vertex)
+		def("valid_vertex", &valid_vertex),
+		def("is_ui_shown", &IsUIShown),
+		def("is_actor_burned", &IsActorBurned),
+		def("indicators_shown", &IndicatorsShown),
+		def("inventory_shown", &InventoryShown),
+		def("pickup_mode", &IsPickupMode),
+		// TODO Guns: Drombeys to all: not impl
+		def("electronics_break", &ElectronicsBreak),
+		def("electronics_restore", &IsElectronicsRestore),
+		def("electronics_reset", &electronics_reset),
+		def("electronics_apply", &IsElectronicsApply),
+		def("get_parameter_upgraded_int", &GetParameterUpgradedInt),
+		def("valid_saved_game_int", &ValidSavedGameInt),
+		def("is_tactical_hud", &IsTacticalHud)
 	],
 	
 	module(L,"nearest")
