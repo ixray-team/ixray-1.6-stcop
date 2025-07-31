@@ -35,6 +35,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_gl(section, test);
 	result |= install_upgrade_bones		( section, test );
 	result |= install_upgrade_ammo_bones( section, test );
+	result |= install_upgrade_torch_laser( section, test );
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
 	return result;
@@ -571,6 +572,28 @@ bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
 			}
 		}
 	}
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
+{
+	bool result = false;
+
+	BOOL value = false;
+	bool result2 = process_if_exists_set(section, "torch_installed", &CInifile::r_bool, value, test);
+	if (result2 && !test)
+	{
+		m_HudLight.SetInstalled(value);
+		m_HudLight.NewTorchlight(section);
+
+		Fvector tmp_vector = { -1.0f, -1.0f, 0.0f };
+		tmp_vector = READ_IF_EXISTS(pSettings, r_fvector3, section, "torch_breaking_params", tmp_vector);
+		TorchBreakingParams.start_condition = tmp_vector.x;
+		TorchBreakingParams.end_condition = tmp_vector.y;
+		TorchBreakingParams.start_probability = tmp_vector.z;
+	}
+	result |= result2;
 
 	return result;
 }

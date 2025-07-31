@@ -121,6 +121,7 @@ public:
 		eSwitch,
 		eSwitchMode,
 		eEmptyClick,
+		eDevice,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -212,6 +213,8 @@ public:
 	void LoadOriginalScopesParams(LPCSTR section);
 	void LoadCurrentScopeParams(LPCSTR section);
 	const shared_str& GetSilencerName			() const{return m_sSilencerName;}
+	void UpdateTorch();
+	void SwitchTorch(bool status, bool forced = false);
 
 	IC void	ForceUpdateAmmo						()		{ m_BriefInfo_CalcFrame = 0; }
 
@@ -230,6 +233,8 @@ public:
 	};
 
 	conditional_breaking_params CollimatorBreakingParams;
+	conditional_breaking_params TorchBreakingParams;
+
 	float m_fCollimatorLevelsProblem;
 
 	bool bUpdateHUDBonesVisibility = false;
@@ -244,6 +249,7 @@ public:
 	bool m_bHideColimSightInAlter;
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil = false;
+	bool m_bTacticalTorchStatus = false;
 	bool m_bBlockUpdateAmmoBonesShooting = false;
 	bool m_bUseLastAmmoType = false;
 	
@@ -666,6 +672,8 @@ private:
 
 			bool			install_upgrade_bones		( LPCSTR section, bool test );
 			bool			install_upgrade_ammo_bones	( LPCSTR section, bool test );
+
+			bool			install_upgrade_torch_laser	( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
