@@ -18,7 +18,7 @@ void UIChooseForm::UpdateSelected(UIChooseFormItem*NewSelected)
 		if (E.flags.test(SChooseEvents::flClearTexture))
 		{
 			if (m_Texture)
-				m_Texture->Release();
+				((IDirect3DBaseTexture9*)(m_Texture))->Release();
 			m_Texture = 0;
 		}
 		if (!E.on_get_texture.empty())
@@ -82,7 +82,7 @@ UIChooseForm::UIChooseForm():m_Texture(nullptr),m_SelectedItem(nullptr), m_RootI
 UIChooseForm::~UIChooseForm()
 {
 	if (m_Texture)
-		m_Texture->Release();
+		((IDirect3DBaseTexture9*)(m_Texture))->Release();
 	if (!E.on_close.empty())
 	{
 		E.on_close();

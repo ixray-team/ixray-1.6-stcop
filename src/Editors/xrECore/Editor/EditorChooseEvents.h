@@ -82,11 +82,11 @@ namespace ChoseEvents
         EObjectThumbnail* thm = new EObjectThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update(ID);
+            thm->Update((ID3DBaseTexture*&)ID);
         }
         else if (ID)
         {
-            ID->Release();
+            IM_TEXTURE_RELEASE(ID);
             ID = 0;
         }
         xr_delete(thm);
@@ -112,11 +112,11 @@ namespace ChoseEvents
         EGroupThumbnail* thm = new EGroupThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update(ID);
+            thm->Update((ID3DBaseTexture*&)ID);
         }
         else if(ID)
         {
-            ID->Release();
+            IM_TEXTURE_RELEASE(ID);
             ID = 0;
         }
         xr_delete(thm);
@@ -166,7 +166,8 @@ namespace ChoseEvents
     void   FillGameAnim(ChooseItemVec& items, void* param)
     {
         FS_FileSet lst;
-        if (FS.file_list(lst, "$game_anims$", FS_ListFiles, "*.anm,*.anms")) {
+        if (FS.file_list(lst, "$game_anims$", FS_ListFiles, "*.anm,*.anms"))
+        {
             FS_FileSetIt	it = lst.begin();
             FS_FileSetIt	_E = lst.end();
             for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
@@ -190,7 +191,7 @@ namespace ChoseEvents
             ID3DTexture2D* pTexture = nullptr;
             if (Texture != nullptr)
             {
-                R_CHK(Texture->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
+                R_CHK(((ID3DBaseTexture*)Texture)->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
             }
             else
             {
@@ -302,7 +303,7 @@ namespace ChoseEvents
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(Texture);
+            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)Texture);
             xr_delete(thm);
         }
     }
@@ -322,7 +323,7 @@ namespace ChoseEvents
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update(ID);
+            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)ID);
             xr_delete(thm);
         }
     }
