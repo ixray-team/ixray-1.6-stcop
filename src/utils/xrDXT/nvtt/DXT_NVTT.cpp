@@ -75,7 +75,7 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	inOpt.setNormalizeMipmaps(false);
 
 	nvtt::CompressionOptions compOpt;
-	compOpt.setQuality(nvtt::Quality_Highest);
+	compOpt.setQuality(nvtt::Quality_Fastest);
 	compOpt.setQuantization(fmt->flags.is(STextureParams::flDitherColor), false, fmt->flags.is(STextureParams::flBinaryAlpha));
 
 	switch (fmt->fmt)

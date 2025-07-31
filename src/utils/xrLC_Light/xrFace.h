@@ -26,8 +26,7 @@ typedef map_v2v::iterator				map_v2v_it;
 struct  XRLC_LIGHT_API DataVertex	: public base_Vertex
 {
 public:
-	//vecAdj		m_adjacents;
-	typedef		DataFace			DataFaceType;
+ 	typedef		DataFace			DataFaceType;
 
 	IC	BOOL	 similar			( Tvertex<DataVertex> &V, float eps );
 
@@ -42,10 +41,8 @@ struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
 
-	//Vertex*					v[3];			// vertices
-	Fvector					N;				// face normal
-
-	svector<_TCF,2>			tc;				// TC
+ 	Fvector					N;				// face normal
+ 	svector<_TCF,2>			tc;				// TC
 
 	void*					pDeflector;		// does the face has LM-UV map?
 	CLightmap*				lmap_layer;
@@ -62,10 +59,6 @@ public:
 	virtual ~DataFace(){};
 };
 
-
-//struct Vertex;
-//struct DataVertex;
-//struct Face;
 class Material;
 class Edge;
 
@@ -75,13 +68,7 @@ namespace detail
 	typedef xr_vector<Vertex>::iterator	dummy_compiler_treatment;
 } // namespace detail
 
-
-
-
-
-
 #include		"xrUVpoint.h"
-
 #include		"xrFaceInline.h"
 
 

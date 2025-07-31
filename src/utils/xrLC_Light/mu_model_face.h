@@ -9,8 +9,7 @@
 struct	XRLC_LIGHT_API data_face	: public base_Face
 {
 public:
-	//_vertex*	v	[3];
-	Fvector2	tc	[3];
+ 	Fvector2	tc	[3];
 	Fvector		N;
 	u32			sm_group;
 public:

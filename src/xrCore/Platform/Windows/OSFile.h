@@ -3,6 +3,14 @@
 using FileHandle = HANDLE;
 class FS_Path;
 
+#if defined(_WIN64)
+#define xr_fseek _fseeki64
+#define xr_ftell _ftelli64
+#else
+#define xr_fseek fseek
+#define xr_ftell ftell
+#endif
+
 namespace Platform
 {
     IC const char* ValidPath(const char* In)

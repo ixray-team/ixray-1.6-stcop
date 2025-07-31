@@ -38,8 +38,10 @@ void RenderMainUI()
 	int Size[2] = {};
  	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
+
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
+	
 
 	if (!ShowMainUI) 
 	{
@@ -164,15 +166,15 @@ void RenderMainUI()
 
 int item_current_selected = 2;
 int item_current_jitter = 2;
-int item_current_jitter_mu = 5;
+int item_current_jitter_mu = 6;
 
 const char* items[] = { "1024", "2048", "4096", "8192" };
 const char* itemsJitter[] = { "1", "4", "9" };
-const char* itemsJitterMU[] = { "1", "2", "3", "4", "5", "6"};
+const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6"};
 
 void DrawLCConfig()
 {
-	if (ImGui::BeginChild("LC", { 200, 390 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
 	{
 		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
 		ImGui::Separator();
@@ -187,6 +189,7 @@ void DrawLCConfig()
 		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
 		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+ 
 
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::Combo("lmaps", &item_current_selected, items, 4))
@@ -200,13 +203,13 @@ void DrawLCConfig()
 		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
 		
 			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 6);
+			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
 			ImGui::SetNextItemWidth(100);
 			ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
  			ImGui::SetNextItemWidth(100);
 			ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
  			ImGui::SetNextItemWidth(100);
-			ImGui::InputFloat("Dist Weld", &gCompilerMode.MergeDistance);
+			ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
 
 			gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
 			gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
@@ -285,8 +288,13 @@ void DrawCompilerConfig()
 		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 		ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
 		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
- 		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+
+  		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
 		ImGui::Checkbox("Save cform to obj", &SaveCForm);
+		ImGui::Checkbox("ShowMain", &ShowMainUI);
+
 		ImGui::EndChild();
 	}
 	
@@ -420,9 +428,9 @@ void RenderCompilerUI(int X, int Y)
 
 	if (ResizeMaximal)
 	{
-		if (X != 1250 || Y != 800)
+		if (X != 1400 || Y != 925)
 		{
-			SDL_SetWindowSize(g_AppInfo.Window, 1250, 800);
+			SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
 		}
 	}
 	else
@@ -433,10 +441,12 @@ void RenderCompilerUI(int X, int Y)
 		}
 	}
 	
+	int MAX_TRABS = 9;
+	if (ResizeMaximal)
+		MAX_TRABS = 10;
 
-
-		// Table
-	if (ImGui::BeginTable("IterationsTable", 10, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+	// Table
+	if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
 		ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 		ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
 		ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
@@ -446,7 +456,9 @@ void RenderCompilerUI(int X, int Y)
 		ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 		ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
 		ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
-		ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
+		
+		if (ResizeMaximal)
+			ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
 
 		ImGui::TableHeadersRow();
 
@@ -544,8 +556,11 @@ void RenderCompilerUI(int X, int Y)
 				ImGui::TableSetColumnIndex(8);
 				ImGui::Text("%u MB", u32 ( size_t( phase.used_memory/ 1024/ 1024) ) );
 
-				ImGui::TableSetColumnIndex(9);
-				ImGui::Text("%s", phase.AdditionalData.c_str() );
+				if (ResizeMaximal)
+				{
+					ImGui::TableSetColumnIndex(9);
+					ImGui::Text("%s", phase.AdditionalData.c_str());
+				}
 			}
 		}
 
@@ -619,6 +634,10 @@ void RenderCompilerUI(int X, int Y)
 	vminfo(&w_free, &w_reserved, &w_committed);
  
 	ImGui::TextColored( ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
+
+	ImGui::SameLine();
+
+	ImGui::Checkbox("ShowMain", &ShowMainUI);
 
 	ImGui::End();
 }

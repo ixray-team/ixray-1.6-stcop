@@ -6,30 +6,66 @@
 #include "xrFace.h"
 #include "vector_clear.h"
 
-typedef poolSS<Vertex,8*1024>	poolVertices;
-typedef poolSS<Face,8*1024>		poolFaces;
+
+typedef poolSS<Vertex, 16 * 1024>	poolVertices;
+typedef poolSS<Face, 16 * 1024>		poolFaces;
 static poolVertices	_VertexPool;
 static poolFaces	_FacePool;
 
-Face* xrLC_GlobalData	::create_face	()		
+xrCriticalSection csDelete;
+
+Face* xrLC_GlobalData::create_face()
 {
 	return _FacePool.create();
 }
 
-void xrLC_GlobalData	::destroy_face	(Face* &f)
+void xrLC_GlobalData::destroy_face(Face*& f)
 {
-	_FacePool.destroy( f );
+ 	_FacePool.destroy(f);
 }
 
-Vertex* xrLC_GlobalData	::create_vertex	()		
+Vertex* xrLC_GlobalData::create_vertex()
 {
-	return _VertexPool.create();
+ 	//return _VertexPool.create();
+	return new Vertex();
 }
 
-void xrLC_GlobalData	::destroy_vertex	(Vertex* &f)
+void xrLC_GlobalData::destroy_vertex(Vertex*& f)
 {
-	_VertexPool.destroy( f );
+ 	xr_delete(f);
+  	//_VertexPool.destroy(f);
 }
+
+void xrLC_GlobalData::vertexes_allocated(size_t& mem, size_t& VertexCount)
+{
+//	mem			=	_VertexPool.used_memory;
+//	VertexCount =   _VertexPool.used_objects;
+}
+  
+void	xrLC_GlobalData::faces_allocated(size_t& mem, size_t& FacesCount)
+{
+//	mem			= _FacePool.used_memory;
+//	FacesCount	= _FacePool.used_objects;
+}
+
+// Face* xrLC_GlobalData	::create_face	()		
+// {
+// 	return new Face();
+// }
+// 
+// void xrLC_GlobalData	::destroy_face	(Face* &f)
+// {
+// 	xr_delete(f); 
+// }
+// 
+// Vertex* xrLC_GlobalData	::create_vertex	()		
+// {
+// 	return new Vertex();
+// }
+// void xrLC_GlobalData	::destroy_vertex	(Vertex* &f)
+// {
+// 	xr_delete(f); 
+// }
 
 static struct destruct_vertex_not_uregister
 {
@@ -49,19 +85,55 @@ static struct destruct_face_not_uregister
 
 void xrLC_GlobalData	::gl_mesh_clear	()
 {
-	vec_clear( _g_vertices, _destruct_vertex_not_uregister ); 
-	vec_clear( _g_faces, _destruct_face_not_uregister );
-	
+ 	_g_vertices.clear();
+  	_g_faces.clear();
+
 	_VertexPool.clear();
 	_FacePool.clear();
 }
+
+/*
+
+//////////////////////////////////////////////////////////////
+void	Vertex::isolate_pool_clear_read		( INetReader	&r )
+{
+	DataVertex::read( r );
+	r_pod_vector( r, m_adjacents );
+	for(u32 i= 0; i< m_adjacents.size();++i )
+	{
+		Face &f = *m_adjacents[i];
+		int v_i = -1;
+		r_pod( r, v_i );
+		R_ASSERT( v_i>=0 );
+		R_ASSERT( v_i<3 );
+		R_ASSERT( f.vertex( v_i ) == 0 );
+		f.raw_set_vertex( v_i, this );
+	}
+}
+void	Vertex::isolate_pool_clear_write	( IWriter	&w )const
+{
+	DataVertex::write( w );
+	w_pod_vector( w, m_adjacents );
+	for(u32 i= 0; i< m_adjacents.size();++i )
+	{
+		Face &f = *m_adjacents[i];
+		int v_i = f.VIndex( this );
+		R_ASSERT( v_i>=0 );
+		R_ASSERT( v_i<3 );
+		w_pod( w, v_i );
+		f.raw_set_vertex( v_i, 0 );
+	}
+}
+*/
 
 
 void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 {
 	/*
+	// Se7kills Понял для чего
+	// Сначала сохраняем все вертексы потом дестроем и загружаем по новой 
 	
-	const u32 inital_verts_count = (u32)_g_vertices.size();
+ 	const u32 inital_verts_count = (u32)_g_vertices.size();
 	u32 not_empty_verts = 0;
 
 	string_path path_name;
@@ -78,8 +150,7 @@ void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 				continue;
 			}
 			
-			// Se7kills Проверить для чего нужно было 
-			// v.isolate_pool_clear_write(*file);
+ 			v.isolate_pool_clear_write(*file);
 			::destroy_vertex(_g_vertices[i], false);
 			++not_empty_verts;
 		}
@@ -103,9 +174,7 @@ void xrLC_GlobalData::vertices_isolate_and_pool_reload()
 		{
 			Vertex*& v = _g_vertices[i];
 			v = _VertexPool.create();
-
-			// Se7kills Проверить для чего нужно было 
-			// v->isolate_pool_clear_read(r_verts);
+			v->isolate_pool_clear_read(r_verts);
 		}
 		b_vert_not_register = false;
 	}

@@ -6,19 +6,22 @@
 #include "xrLC_GlobalData.h"
 
 #include "EmbreeRayTrace.h"
-
-// Для Загрузки Геометрии
-#include "xrface.h"
 #include "xrMU_Model_Reference.h"
+#include "xrMU_Model.h"
+// Для Загрузки Геометрии
+#include <../xrForms/CompilersUI.h>
+#include <base_face.h>
+extern CompilersMode gCompilerMode;
 
-void Embree::VertexEmbree::Set(Fvector& vertex)
+
+void VertexEmbree::Set(Fvector& vertex)
 {
 	x = vertex.x;
 	y = vertex.y;
 	z = vertex.z;
 }
 
-Fvector Embree::VertexEmbree::Get()
+Fvector VertexEmbree::Get()
 {
 	Fvector vertex;
 	x = vertex.x;
@@ -27,37 +30,26 @@ Fvector Embree::VertexEmbree::Get()
 	return vertex;
 }
 
-void Embree::TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* emb_verts, size_t& last_index)
-{
+void TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* emb_verts, size_t& last_index)
+{	
 	point1 = last_index;
 	point2 = last_index + 1;
 	point3 = last_index + 2;
 
+
 	int v1 = triangle.verts[0];
 	int v2 = triangle.verts[1];
 	int v3 = triangle.verts[2];
-
-
+	
+	
 	emb_verts[last_index].Set(verts[v1]);
 	emb_verts[last_index + 1].Set(verts[v2]);
 	emb_verts[last_index + 2].Set(verts[v3]);
-
+	
 	last_index += 3;
 }
 
-void Embree::TriEmbree::SetVertexes(Fvector* Vs, VertexEmbree* emb_verts, size_t& INDEX)
-{
- 	point1 = INDEX;
-	point2 = INDEX + 1;
-	point3 = INDEX + 2;
-	emb_verts[INDEX].Set(Vs[0]);
-	emb_verts[INDEX + 1].Set(Vs[1]);
-	emb_verts[INDEX + 2].Set(Vs[2]);
- 	INDEX += 3;
-}
-
-
-void Embree::SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
+void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
 	rayhit.dir_x = dir.x;
 	rayhit.dir_y = dir.y;
@@ -71,7 +63,7 @@ void Embree::SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, fl
 	rayhit.flags = 0;
 }
 
-void Embree::SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
+void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
 	rayhit.ray.dir_x = dir.x;
 	rayhit.ray.dir_y = dir.y;
@@ -83,34 +75,20 @@ void Embree::SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_,
 	rayhit.ray.tfar = range;
 	rayhit.ray.mask = (unsigned int)(-1);
 	rayhit.ray.flags = 0;
+
+	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
+	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
+
+	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
+	rayhit.hit.instPrimID[0] = RTC_INVALID_GEOMETRY_ID;
 }
 
 // OFF PACKED PROCESSING
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
 {
-	clMsg("EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
+	clMsg(" - EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
 }
-
-void Embree::errorFunction(void* userPtr, RTCError error, const char* str)
-{
-	clMsg("error %d: %s", error, str);
-	DebugBreak();
-}
-
-
-void Embree::IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse)
-{
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED", device, RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED", device, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED", device, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED", device, RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", device, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
-}
-
+ 
 
 IC bool	FaceEqual__(Face& F1, Face& F2)
 {
@@ -123,27 +101,24 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 	if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
 	return false;
 }
-
-void Embree::GetGlobalData(
-	size_t& FaceIndex,
-	Embree::VertexEmbree* verts_embree, 
-	Embree::TriEmbree* faces_embree, 
-	xr_vector<void*>* dummy, bool useForOthers
-)
+  
+extern size_t GetMemory();
+void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 {
- 	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+	static_geom.ClearAll();
+	static_geom_transp.ClearAll();
+	murefs_geom.ClearAll();
+	murefs_geom_transp.ClearAll();
 
-	bool isCalculate = verts_embree == nullptr || faces_embree == nullptr || dummy == nullptr;
-
-	size_t count_verts = 0;
-	int FaceCurrent = 0;
+  	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+	
+	size_t s = GetMemory();
 	for (auto F : lc_global_data()->g_faces())
 	{
-		FaceCurrent++;
-
 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow)
 			continue;
+
 		b_material& M = lc_global_data()->materials()[F->dwMaterial];
 		// Collect
 		adjacent_vec.clear();
@@ -161,102 +136,134 @@ void Embree::GetGlobalData(
 		
 		// Unique
 		BOOL			bAlready = FALSE;
+		 
 		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
 		{
 			Face* Test = adjacent_vec[ait];
-			if (Test == F) continue;
-			if (!Test->flags.bProcessed) continue;
+			if (Test == F)
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
 			if (FaceEqual__(*F, *Test))
 			{
-				bAlready = TRUE; break;
+				bAlready = TRUE;
+				break;
 			}
 		}
-
+	 
 		if (!bAlready)
-		{
- 			if (!isCalculate)
+ 		{
+			F->flags.bProcessed = true;
+			if (F->flags.bOpaque)
 			{
-				F->flags.bProcessed = true;
-				Fvector verts[3];
-				verts[0] = F->v[0]->P; verts[1] = F->v[1]->P; verts[2] = F->v[2]->P;
-				faces_embree[FaceIndex].SetVertexes(verts, verts_embree, count_verts);
-				(*dummy)[FaceIndex] = F;
+ 				static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 			}
-			FaceIndex +=1;
-		}
+			else
+			{
+				static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+			}
 
-		Progress( float (FaceCurrent) / lc_global_data()->g_faces().size() );
+			//static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+		}
 	}
 
-	auto& mu_refs = lc_global_data()->mu_refs();
-	xr_vector<FaceDataIntel> temp_buffer;
-
-	int RefID = 0;
-	for (auto ref : mu_refs)
+	static_mem = GetMemory() - s;
+	Static_size = static_mem;
+  
+	s = GetMemory();
+	for (auto ref : lc_global_data()->mu_refs())
 	{
-		RefID++;
-		temp_buffer.clear();
-		ref->export_cform_rcast_new(temp_buffer);
-
+		xr_vector<FaceDataIntel> temp_buffer;
+  		ref->export_cform_rcast_new(temp_buffer);
 		for (auto F : temp_buffer)
 		{
-			if (!isCalculate)
-			{
-				Fvector verts[3];
-				verts[0] = F.v1; verts[1] = F.v2; verts[2] = F.v3;
-				(*dummy)[FaceIndex] = F.ptr;
-				faces_embree[FaceIndex].SetVertexes(verts, verts_embree, count_verts);
-			}
-			FaceIndex += 1;
+			Face* FFF = (Face*) F.ptr;
+			if (FFF->flags.bOpaque)
+				murefs_geom.AddFace(F.ptr, F.v1, F.v2, F.v3);
+			else
+				murefs_geom_transp.AddFace(F.ptr, F.v1, F.v2, F.v3);
+		
+			//static_geom.AddFace(F.ptr, F.v1, F.v2, F.v3);
 		}
+			
+ 	}
+	murefs_mem = GetMemory() - s;
+	MU_size = murefs_mem;
+}
 
-		Progress(float(RefID) / mu_refs.size());
+
+
+#include "../xrLC/Build.h"
+
+extern CBuild* pBuild;
+ 
+u32 EmbreeData::TriangleContainer::find_or_add(Fvector& V)
+{
+	VertexEmbree new_vertex;
+	new_vertex.Set(V);
+
+	u32 ix = iFloor(V.x);
+	u32 iy = iFloor(V.y);
+	u32 iz = iFloor(V.z);
+
+	// Generate hash key
+	size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
+	auto itHash = hashTable.find(hashKey);
+	if (itHash != hashTable.end())
+	{
+		Vertex* parsed = nullptr;
+		for (auto& vertex : itHash->second)
+		{
+			if (vertex.V.Simular(new_vertex))
+				return vertex.vertID; // Нашли похожую вершину
+		}
 	}
 
-	// if (useForOthers)
-	// {
-	// 	Status("Saving...");
-	// 	string_path				fn;
-	// 
-	// 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
-	// 	xr_vector<b_rc_face>	rc_faces;
-	// 	rc_faces.resize(FaceIndex);
-	// 	
-	// 	// Prepare faces
-	// 	for (u32 k = 0; k < FaceIndex; k++) 
-	// 	{
-	// 	  	base_Face* F = (base_Face*) (*dummy)[FaceIndex];;
-	// 		b_rc_face& cf = rc_faces[k];
-	// 		cf.dwMaterial = F->dwMaterial;
-	// 		cf.dwMaterialGame = F->dwMaterialGame;
-	// 		
-	// 		Fvector2* cuv = F->getTC0();
-	// 		cf.t[0].set(cuv[0]);
-	// 		cf.t[1].set(cuv[1]);
-	// 		cf.t[2].set(cuv[2]);
-	// 	}
-	// 	  
-	// 	MFS->open_chunk(0);
-	// 
-	// 	// Header
-	// 	hdrCFORM hdr;
-	// 	hdr.version = CFORM_CURRENT_VERSION;
-	// 	hdr.vertcount = (u32)CL.getVS();
-	// 	hdr.facecount = (u32)CL.getTS();
-	// 	hdr.aabb	  = scene_bb;
-	// 	MFS->w(&hdr, sizeof(hdr));
-	// 
-	// 	// Data
-	// 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
-	// 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
-	// 	MFS->close_chunk();
-	// 
-	// 	MFS->open_chunk(1);
-	// 	MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-	// 	MFS->close_chunk();
-	// 
-	// 	FS.w_close(MFS);
-	// 
-	// }
+	verts_v.push_back(new_vertex);
 
+	u32 VertexID = verts_v.size() - 1;
+
+	Compare data;
+	data.V = verts_v.back();
+	data.vertID = VertexID;
+	hashTable[hashKey].push_back(data);
+	return VertexID;
+}
+
+// #define CompactingVertexes
+void EmbreeData::TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
+{
+	int IDX = vertex().size();
+	
+	VertexEmbree vert1, vert2, vert3;
+	vert1.Set(v1), vert2.Set(v2), vert3.Set(v3);
+
+	TriEmbree triangle;
+
+#ifdef CompactingVertexes
+		triangle.point1 = find_or_add(v1);
+		triangle.point2 = find_or_add(v2);
+		triangle.point3 = find_or_add(v3);
+#else 
+		triangle.point1 = IDX;
+		triangle.point2 = IDX + 1;
+		triangle.point3 = IDX + 2;
+		vertex().push_back(vert1);
+		vertex().push_back(vert2);
+		vertex().push_back(vert3);
+#endif
+
+	faces().push_back(triangle);
+	dummy.push_back((Face*)F);
+}
+
+void EmbreeData::TriangleContainer::ClearAll()
+{
+ 	hashTable.clear();
+	dummy.clear();
+	faces_v.clear();
+	verts_v.clear();
+
+	faces_v.shrink_to_fit();
+	verts_v.shrink_to_fit();
 }
