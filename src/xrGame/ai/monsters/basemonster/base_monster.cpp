@@ -366,6 +366,11 @@ void CBaseMonster::UpdateCL()
 	control().update_frame();
 
 	m_pPhysics_support->in_UpdateCL();
+
+	if (OnClient() && g_pGamePersistent->GameType() == eGameIDFreeMP)
+	{
+		character_physics_support()->movement()->CollisionEnable(false);
+	}
 }
 
 void CBaseMonster::shedule_Update(u32 dt)
