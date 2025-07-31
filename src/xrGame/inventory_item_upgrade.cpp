@@ -204,13 +204,12 @@ void CInventoryItem::pre_install_upgrade()
 {
 	if (IsGameTypeSingleCompatible())
 	{
-		CWeaponMagazined* wm = smart_cast<CWeaponMagazined*>(this);
-		if (wm)
+
+		if (CWeaponMagazined* wm = cast_weapon_magazined())
 		{
 			wm->UnloadMagazine();
 			wm->UnloadChamber();
-			CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(this);
-			if (wg)
+			if (CWeaponMagazinedWGrenade* wg = cast_weapon_magazined_w_grenade())
 			{
 				if (wg->IsGrenadeLauncherAttached())
 				{
@@ -247,7 +246,7 @@ void CInventoryItem::pre_install_upgrade()
 
 		NET_Packet P;
 
-		CWeapon* weapon = smart_cast<CWeapon*>(this);
+		CWeapon* weapon = cast_weapon();
 		if (weapon)
 		{
 			// Send unload event
