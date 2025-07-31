@@ -108,11 +108,12 @@ EAXID2EFXPRESET EFXPresetTable[] =
 };
 
 //------------------------------------------------------------------------------
-CSHSoundEnvTools::CSHSoundEnvTools(const ISHInit& init):ISHTools(init)
+CSHSoundEnvTools::CSHSoundEnvTools(const ISHInit& init)
+	: ISHTools(init)
 {
-	m_Env	 			= 0;
-	m_SoundName			= "alexmx\\beep";
-	OnChangeWAV			(0);
+	m_Env = 0;
+	m_SoundName = "alexmx\\beep";
+	OnChangeWAV(0);
 }
 
 CSHSoundEnvTools::~CSHSoundEnvTools()
