@@ -4,6 +4,7 @@
 #include "../dx10BufferUtils.h"
 
 #include <FlexibleVertexFormat.h>
+#include <DirectXMath.h>
 
 using namespace FVF;
 using namespace DirectX;

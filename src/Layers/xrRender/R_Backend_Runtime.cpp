@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+#include <DirectXMath.h>
 using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
