@@ -73,6 +73,9 @@ void CHudItem::Load(LPCSTR section)
 
 	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
 
+	m_HudLight.SetInstalled(READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false));
+	m_HudLight.NewTorchlight(section);
+
 	LoadSounds(section);
 }
 
@@ -423,6 +426,8 @@ void CHudItem::UpdateCL()
 			}
 		}
 	}
+
+	m_HudLight.UpdateTorchFromObject(this);
 }
 
 void CHudItem::OnH_A_Chield		()

@@ -60,6 +60,8 @@ public:
 
 	void			SetHideAndRestore(bool val){m_bHideAndRestore = val;};
 
+	virtual void	OnMotionMark(u32 state, const motion_marks&) override;
+
 	virtual bool	can_be_attached		() const;
 	void PlayWpnFinishDetector();
 	void 	TurnDetectorInternal(bool b);
