@@ -5,7 +5,7 @@
 #include "../xrLC_Light/xrMU_Model_Reference.h"
 
 #include "../xrLC_Light/xrLC_GlobalData.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "../xrLC_Light/xrFace.h"
 
 //.#include "communicate.h"

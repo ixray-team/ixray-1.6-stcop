@@ -8,7 +8,7 @@
 #include "../xrLC_Light/xrFace.h"
 
 #include "../../xrCore/FS.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 
 int GetVertexIndex(Vertex *F)
 {

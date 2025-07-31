@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "mesh_data.h"
-#include "../../xrphysics/iphworld.h"
-#include "../../xrcdb/xr_area.h"
+#include "../../xrPhysics/IPHWorld.h"
+#include "../../xrCore/Collision/xr_area.h"
 
 CFormBuilder::CFormBuilder()
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../xrEngine/Render.h"
-#include "../../xrCDB/ISpatial.h"
+#include "../../xrCore/Collision/ISpatial.h"
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
 
