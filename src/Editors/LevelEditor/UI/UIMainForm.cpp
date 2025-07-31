@@ -234,18 +234,6 @@ void UIMainForm::DrawContextMenu()
 		ImGui::EndMenu();
 	}
 
-	if (ImGui::MenuItem("Make Heightmap"))
-	{
-		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
-		CSceneObject* Obj =  (CSceneObject*)mt->LastSelected();
-		auto MeshObjects = Obj->Meshes();
-
-		for (auto Mesh : *MeshObjects)
-		{
-			XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
-		}
-	}
-
 	if(ImGui::BeginMenu("Locking"))
 	{
 		ESceneToolBase* SceneTool = Scene->GetTool(LTools->CurrentClassID());
@@ -317,6 +305,18 @@ void UIMainForm::DrawContextMenu()
 	if (ImGui::MenuItem("Properties"))
 	{
 		ExecCommand(COMMAND_SHOW_PROPERTIES);
+	}
+
+	if (ImGui::MenuItem("Make Heightmap"))
+	{
+		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
+		CSceneObject* Obj = (CSceneObject*)mt->LastSelected();
+		auto MeshObjects = Obj->Meshes();
+
+		for (auto Mesh : *MeshObjects)
+		{
+			XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
+		}
 	}
 }
 
