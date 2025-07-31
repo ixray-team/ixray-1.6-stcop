@@ -1,503 +1,181 @@
-#include "StdAfx.h"
-#include "Build.h"
-#include "xrPhase_MergeLM_Rect.h"
-#include "../xrLC_Light/xrDeflector.h"
-
+#include "stdafx.h" 
+#include "xrPhase_MergeLM_Surface.h"
+#include <immintrin.h>
 #include <intrin.h>
-#include <mmintrin.h>
-#include <emmintrin.h>
-#include <atomic>
-#include <shared_mutex>
 
-//define USE_NEW_WAY
+#define MAX_GRID_SPACE_WRITE 0.85f	// 80% НАПОЛНЕНИЯ LMAP
+// Surfaces
 
-#ifdef USE_NEW_WAY
-extern int CurrentArea = 0;
-
-std::vector<BYTE>	surface_static;
-std::vector<bool>	occuped_Y;
-
-std::atomic<BYTE*>	surface = surface_static.data();
-
-std::mutex lock_mutex;
-
-
-const	u32		alpha_ref = 254 - BORDER;
-// Initialization
-void _InitSurface()
+void SurfacePlacePerpixel::RecalcY()
 {
-	surface_static.reserve(getLMSIZE() * getLMSIZE());
-	FillMemory(surface_static.data(), getLMSIZE() * getLMSIZE(), 0);
-	surface.store(surface_static.data());
-
-	occuped_Y = std::vector<bool>(getLMSIZE(), false);
-
-	CurrentArea = 0;
+	u32 _Y = 0;
+	while (occupied_y[_Y] > SurfaceGrid * MAX_GRID_SPACE_WRITE)
+	{
+		_Y++;
+	}
+ 	StartYPos = _Y;
 }
 
-// Rendering of rect
-void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
+void SurfacePlacePerpixel::_InitSurface_tbb()
 {
-	//	std::unique_lock<std::shared_mutex> lock(surface_mutex);
+	StartYPos   = 0;
+	SurfaceGrid = getLMSIZE();
+	surface_tbb = xr_alloc<u8>(SurfaceGrid * SurfaceGrid);
+	FillMemory(surface_tbb, SurfaceGrid * SurfaceGrid, 0);
 
+	occupied_y = xr_alloc<u16>(SurfaceGrid);
+	FillMemory(occupied_y, SurfaceGrid, 0);
+}
+
+void SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
+{
 	u8* lm = &*(D->marker.begin());
 	u32		s_x = D->width + 2 * BORDER;
 	u32		s_y = D->height + 2 * BORDER;
 
-	BYTE* atomicBuffer(reinterpret_cast<BYTE*>(surface.load()));
-
-	if (!bRotate)
+	// Normal (and fastest way)
+ 	for (u32 y = 0; y < s_y; y++)
 	{
-		// Normal (and fastest way)
-		for (u32 y = 0; y < s_y; y++)
+		u32 _Y = y + R.a.y;
+
+		BYTE* P = surface_tbb + _Y * SurfaceGrid + R.a.x;	// destination scan-line
+		u8* S = lm + y * s_x;
+		for (u32 x = 0; x < s_x; x++, P++, S++)
 		{
-			int INDEX = (y + R.a.y) * getLMSIZE() + R.a.x;
-			BYTE* P = atomicBuffer + INDEX;	// destination scan-line
-			// Считываем и записывем S и проверяем по 253 для альфы
-			u8* S = lm + y * s_x;
-			for (u32 x = 0; x < s_x; x++, P++, S++)
-				if (*S >= alpha_ref)
-				{
-					*P = 255;
-					CurrentArea++;
-				}
+			if (*S >= alpha_ref)
+			{
+				*P = 255;
+				occupied_y[_Y] += 1;
+			}
 		}
 	}
-	else
-	{
-		// Rotated :(
-		for (u32 y = 0; y < s_x; y++)
-		{
-			int INDEX = (y + R.a.y) * getLMSIZE() + R.a.x;
-			BYTE* P = atomicBuffer + INDEX;	// destination scan-line
-
-			// Считываем и записывем S и проверяем по 253 для альфы
-			for (u32 x = 0; x < s_y; x++, P++)
-				if (lm[x * s_x + y] >= alpha_ref)
-				{
-					*P = 255;
-					CurrentArea++;
-				}
-		}
-	}
-
-	surface.store(atomicBuffer);
-
-	// CurrentArea += s_x * s_y;
 }
-
-
-bool PlacePixel(lm_layer* D, L_rect& rect)
-{
-
-	u8* lm = &*(D->marker.begin());
-	int	s_x = D->width + 2 * BORDER;
-	int	s_y = D->height + 2 * BORDER;
-
-	int x_max = getLMSIZE() - rect.b.x;
-	int y_max = getLMSIZE() - rect.b.y;
-
-
-	for (int _Y = 0; _Y < y_max; _Y++)
-	{
-		BYTE* temp_surf = surface + _Y * getLMSIZE();
-		// remainder part
-		for (int _X = 0; _X < x_max; _X++)
-		{
-			if (temp_surf[_X])
-				continue;
-
-			L_rect R;
-			R.init(_X, _Y, _X + rect.b.x, _Y + rect.b.y);
-
-			// Normal (and fastest way)
-
-			bool Placed = true;
-			for (int y = 0; y < s_y; y++)
-			{
-				BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-				u8* S = lm + y * s_x;
-
-				// remainder part
-				for (int _X = 0; _X < s_x; _X++, P++, S++)
-					if ((*P) && (*S >= alpha_ref))
-					{
-						Placed = false;
-						break;
-					}
-
-				if (!Placed)
-					break;
-			}
-
-			if (Placed)
-			{
-				_rect_register(R, D, FALSE);
-				rect.set(R);
-				return TRUE;
-			}
-		}
-	}
-
-	return FALSE;
-}
-
-
-// Test of per-pixel intersection (surface test)
-bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
-{
-	//	std::shared_lock<std::shared_mutex> lock(surface_mutex);
-
-	u8* lm = &*(D->marker.begin());
-	int	s_x = D->width + 2 * BORDER;
-	int	s_y = D->height + 2 * BORDER;
-
-	//BYTE* SURFACE_LOCAL = surface.load();
-	BYTE* atomicBuffer(reinterpret_cast<BYTE*>(surface.load()));
-
-	// Ждем Пока зарегаем
-	if (!bRotate)
-	{
-		// Normal (and fastest way)
-		for (int y = 0; y < s_y; y++)
-		{
-			BYTE* P = atomicBuffer + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-			u8* S = lm + y * s_x;
-
-			// remainder part
-			for (int _X = 0; _X < s_x; _X++, P++, S++)
-				if ((*P) && (*S >= alpha_ref))
-				{
-					return false;
-				}
-		}
-	}
-	else
-	{
-		// Rotated :(
-		for (int y = 0; y < s_x; y++)
-		{
-			BYTE* P = atomicBuffer + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-			for (int _X = 0; _X < s_y; _X++, P++)
-				if ((*P) && (lm[_X * s_x + y] >= alpha_ref))
-				{
-					return false;
-				}
-		}
-	}
-
-	// It's OK to place it
-	return true;
-}
-
-
-// Check for intersection 
-// Проверка для очень быстрой растоновки (Моего ворианта)
-BOOL _rect_place_fast(L_rect& rect, lm_layer* D, int _X, int _Y)
-{
-	L_rect R;
-	R.init(_X, _Y,
-		_X + rect.b.x,
-		_Y + rect.b.y);
-
-	u32		s_x = D->width + 2 * BORDER;
-	u32		s_y = D->height + 2 * BORDER;
-	u32 INDEX = (s_y + R.a.y) * getLMSIZE() + R.a.x;
-	if (INDEX > getLMSIZE() * getLMSIZE())
-		return FALSE;
-	if (rect.b.y >= getLMSIZE() - 16)
-		return FALSE;
-
-	if (Place_Perpixel(R, D, FALSE))
-	{
-		_rect_register(R, D, FALSE);
-		rect.set(R);
-		return TRUE;
-	}
-
-
-	return FALSE;
-}
-
-// Оригенал с доработкой
-BOOL _rect_place(L_rect& r, lm_layer* D)
-{
-	BYTE* temp_surf;
-
-	// Normal
-	{
-		int x_max = getLMSIZE() - r.b.x;
-		int y_max = getLMSIZE() - r.b.y;
-
-		int part_lmap = getLMSIZE() / 16;
-
-		L_rect R;
-		for (int _Y = 0; _Y < y_max; _Y++)
-		{
-			temp_surf = surface + _Y * getLMSIZE();
-
-			if (occuped_Y[_Y])
-			{
-				_Y++;
-				continue;
-			}
-
-			u32 occuped_parts = 0;
-
-			// remainder part
-			for (int _X = 0; _X < x_max;)
-			{
-				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
-
-				// Сравниваем каждый байт с нулем
-				__m128i zeros = _mm_setzero_si128();
-				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
-
-				// Получаем маску ненулевых байтов
-				int mask = _mm_movemask_epi8(cmp);
-
-				// Если есть хотя бы один ненулевой байт
-				if (mask != 0xFFFF)
-				{
-					_X += 16;
-					occuped_parts++;
-					continue;
-				}
-
-				_X++;
-
-
-				// Msg("Start Process From X: %d", _X);
-
-				R.init(_X, _Y, _X + r.b.x, _Y + r.b.y);
-				if (Place_Perpixel(R, D, FALSE))
-				{
-					_rect_register(R, D, FALSE);
-					r.set(R);
-					return TRUE;
-				}
-			}
-
-
-			if (occuped_parts == part_lmap)	// Все занято заменяем
-			{
-				lock_mutex.lock();
-				occuped_Y[_Y] = true;
-				lock_mutex.unlock();
-			}
-
-		}
-
-
-	}
-
-
-	// Rotated
-	{
-		L_rect R;
-		int x_max = getLMSIZE() - r.b.y;
-		int y_max = getLMSIZE() - r.b.x;
-		for (int _Y = 0; _Y < y_max; _Y++)
-		{
-			temp_surf = surface + _Y * getLMSIZE();
-
-			if (occuped_Y[_Y])
-			{
-				_Y++;
-				continue;
-			}
-
-			// remainder part
-			for (int _X = 0; _X < x_max; )
-			{
-				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
-
-				// Сравниваем каждый байт с нулем
-				__m128i zeros = _mm_setzero_si128();
-				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
-
-				// Получаем маску ненулевых байтов
-				int mask = _mm_movemask_epi8(cmp);
-
-				// Если есть хотя бы один ненулевой байт
-				if (mask != 0xFFFF)
-				{
-					_X += 16;
-					continue;
-				}
-
-				_X++;
-
-
-				R.init(_X, _Y, _X + r.b.y, _Y + r.b.x);
-				if (Place_Perpixel(R, D, TRUE))
-				{
-					_rect_register(R, D, TRUE);
-					r.set(R);
-					return TRUE;
-				}
-			}
-		}
-
-	}
-	return FALSE;
-}
-#else 
  
-static	BYTE*	surface;
-
-u32		LastAllocatedSize = 0;
-const	u32		alpha_ref = 254 - BORDER;
-
-// Initialization
-void _InitSurface()
-{
-	LastAllocatedSize = getLMSIZE() * getLMSIZE();
-	surface = xr_alloc<BYTE>(getLMSIZE() * getLMSIZE());
-	FillMemory(surface, getLMSIZE() * getLMSIZE(), 0);
-}
-
-// Rendering of rect
-void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
-{
-	u8* lm = &*(D->marker.begin());
-	u32		s_x = D->width + 2 * BORDER;
-	u32		s_y = D->height + 2 * BORDER;
-
-	if (!bRotate) {
-		// Normal (and fastest way)
-		for (u32 y = 0; y < s_y; y++)
-		{
-			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-			u8* S = lm + y * s_x;
-			for (u32 x = 0; x < s_x; x++, P++, S++)
-				if (*S >= alpha_ref)			*P = 255;
-		}
-	}
-	else {
-		// Rotated :(
-		for (u32 y = 0; y < s_x; y++)
-		{
-			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-			for (u32 x = 0; x < s_y; x++, P++)
-				if (lm[x * s_x + y] >= alpha_ref)	*P = 255;
-		}
-	}
-}
-
-// Test of per-pixel intersection (surface test)
-bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
+bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 {
 	u8* lm = &*(D->marker.begin());
 	u32	s_x = D->width + 2 * BORDER;
 	u32	s_y = D->height + 2 * BORDER;
 
-	if (!bRotate) {
-		// Normal (and fastest way)
-		for (u32 y = 0; y < s_y; y++)
+	// Normal
+	const auto mm_alpha_ref256	= _mm256_set1_epi8(alpha_ref);	 
+	const auto mm_zero256		= _mm256_setzero_si256();		 
+
+	const auto mm_alpha_ref		= _mm_set1_epi8(alpha_ref);	 
+	const auto mm_zero			= _mm_setzero_si128();		 
+
+	for (u32 y = 0; y < s_y; y++)
+	{
+		if (s_x >= 32 && CPU::ID.hasFeature(CPUFeature::AVX) )
 		{
-			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
+			u8* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
+			u8* S = lm + y * s_x;
+
+ 			u32 x = 0;
+			// Проходим по 32 байт за итерацию
+ 			for (x = 0; x < s_x - 32; x += 32, P += 32, S += 32)
+			{
+				auto mm_reg_s	= _mm256_loadu_si256((__m256i*) S);
+				auto mm_reg_p	= _mm256_loadu_si256((__m256i*) P);
+				auto mm_max		= _mm256_max_epu8(mm_reg_s, mm_alpha_ref256);
+				auto mm_cmp		= _mm256_cmpeq_epi8(mm_max, mm_alpha_ref256);
+				auto mm_andn	= _mm256_andnot_si256(mm_cmp, mm_reg_p);
+				auto mm_sad		= _mm256_sad_epu8(mm_andn, mm_zero256);
+
+				__m128i lower_128 = _mm256_castsi256_si128(mm_sad); // взять младшие 128 бит
+				if (_mm_cvtsi128_si32(lower_128))
+					return false;
+			}
+			 
+			// Оставшееся 
+			for (; x < s_x; x++, P++, S++)
+			{
+				if ((*P) && (*S >= alpha_ref))
+					return false;
+			}
+		}
+		else if (s_x >= 16 && CPU::ID.hasFeature(CPUFeature::SSE))
+		{
+			u8* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
+			u8* S = lm + y * s_x;
+
+			u32 x = 0;
+			// Проходим по 16 байт за итерацию
+			for (x = 0; x < s_x - 16; x += 16, P += 16, S += 16)
+			{
+				auto mm_reg_s = _mm_loadu_si128((__m128i*) S);
+				auto mm_reg_p = _mm_loadu_si128((__m128i*) P);
+				auto mm_max = _mm_max_epu8(mm_reg_s, mm_alpha_ref);
+				auto mm_cmp = _mm_cmpeq_epi8(mm_max, mm_alpha_ref);
+				auto mm_andn = _mm_andnot_si128(mm_cmp, mm_reg_p);
+				auto mm_sad = _mm_sad_epu8(mm_andn, mm_zero);
+
+ 				if (_mm_cvtsi128_si32(mm_sad))
+					return false;
+			}
+ 
+			// Оставшееся 
+			for (; x < s_x; x++, P++, S++)
+			{
+				if ((*P) && (*S >= alpha_ref))
+					return false;
+			}
+		}
+		else
+		{
+			BYTE* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;	// destination scan-line
 			u8* S = lm + y * s_x;
 			for (u32 x = 0; x < s_x; x++, P++, S++)
-				if ((*P) && (*S >= alpha_ref))			return false;	// overlap
+			{
+				if ((*P) && (*S >= alpha_ref))
+					return false;
+			}
 		}
 	}
-	else {
-		// Rotated :(
-		for (u32 y = 0; y < s_x; y++)
-		{
-			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
-			for (u32 x = 0; x < s_y; x++, P++)
-				if ((*P) && (lm[x * s_x + y] >= alpha_ref))	return false;	// overlap
-		}
-	}
-
+ 
 	// It's OK to place it
 	return true;
 }
- 
-bool rectPlaceY(u32 y, L_rect& r, lm_layer* D, bool& rotated)
+
+bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 {
+	int SizeX = r.b.x;
+	int SizeY = r.b.y;
+
+	int x_max = SurfaceGrid - SizeX;
+	int y_max = SurfaceGrid - SizeY;
+
+	int y_max_line = SurfaceGrid * MAX_GRID_SPACE_WRITE;
+
 	L_rect R;
-
-	// Normal
-	u32 y_max = getLMSIZE() - r.b.y;
-	if (y < y_max) {
-		u32 x_max = getLMSIZE() - r.b.x;
-		for (u32 _X = 0; _X < x_max; _X++) {
-			if (surface[y * getLMSIZE() + _X])
-				continue;
-			R.init(_X, y, _X + r.b.x, y + r.b.y);
-			if (Place_Perpixel(R, D, FALSE)) {
-				r.set(R);
-				rotated = false;
-				return true;
-			}
-		}
-	}
-
-	// Rotated
-	y_max = getLMSIZE() - r.b.x;
-	if (y < y_max) {
-		u32 x_max = getLMSIZE() - r.b.y;
-		for (u32 _X = 0; _X < x_max; _X++) {
-			if (surface[y * getLMSIZE() + _X])
-				continue;
-
-			R.init(_X, y, _X + r.b.y, y + r.b.x);
-			if (Place_Perpixel(R, D, TRUE)) {
-				r.set(R);
-				rotated = true;
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-
-void fillSpace(BYTE* begin, BYTE* end)
-{
-	for (auto it = begin; it != end; ++it)
-		*it = 255;
-}
-
-bool checkFreeRect(BYTE* p, u32 size)
-{
-	for (u32 y = 0; y != size; y++) {
-		for (u32 x = 0; x != size; x++)
-			if (p[x] != 0)
-				return false;
-		p += getLMSIZE();
-	}
-	return true;
-}
-
-bool checkFreeSpace(u32 minCell)
-{
-	uint8_t* bLine = surface;
-	uint8_t* end = surface + LastAllocatedSize - minCell * getLMSIZE();
-
-	for (; bLine != end; bLine += getLMSIZE())
+	
+	for (int _Y = StartYPos; _Y < y_max; _Y++)
 	{
-		auto eLine = bLine + getLMSIZE() - minCell;
-		for (auto bFree = bLine; bFree != eLine;)
+		if (occupied_y[_Y] > y_max_line)			// Нет Места под заливку
+			continue;
+
+		if (occupied_y[_Y] > SurfaceGrid - SizeX)	// Нет Места под заливку
+			continue;
+
+		if (SurfaceGrid - occupied_y[_Y] < SizeX)   // Не влезет тупо
+			continue;
+  
+		BYTE* temp_surf = surface_tbb + _Y * SurfaceGrid;
+ 
+		// remainder part
+		for (int _X = 0; _X < x_max; _X++)
 		{
-			bFree = std::find(bLine, eLine, 0);
-			auto eFree = std::find(bFree, eLine, 255);
-			if (eFree - bFree < minCell)
-				fillSpace(bFree, eFree);
-			else {
-				for (auto it = bFree; it != eFree; ++it)
-					if (checkFreeRect(it, minCell))
-						return true;
-					else
-						fillSpace(it, it + 1);
+			R.init(_X, _Y, _X + SizeX, _Y + SizeY);
+			if (Place_Perpixel_tbb(R, D))
+			{
+				_rect_register_tbb(R, D);
+ 				r.set(R);
+				return TRUE;
 			}
-			bFree = eFree;
 		}
 	}
-	return false;
+	return FALSE;
 }
-#endif
+
+SurfacePlacePerpixel placer_perpixel;
+ 
