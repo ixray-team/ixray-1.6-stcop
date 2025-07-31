@@ -9,8 +9,8 @@
 #include "UI_ToolsCustom.h"
 #include "../xrEngine/Editor/XrEditorSceneInterface.h"
 
-// extern ENGINE_API BOOL bIsSndOnRoof;
-// extern ENGINE_API BOOL bIsRaindropCollision;
+extern ENGINE_API BOOL bIsSndOnRoof;
+extern ENGINE_API BOOL bIsRaindropCollision;
 extern ECORE_API bool  bIsShowSun              = false;
 extern ECORE_API bool  bIsUseSunDir            = false;
 extern ECORE_API bool  bIsUseHemi              = false;
@@ -20,8 +20,8 @@ UIWeatherPropForm::UIWeatherPropForm()
 {
     m_weather_properties = EDevice->Resources->_CreateTexture("ed\\bar\\WeatherProp");
     m_speed_time         = EPrefs->env_speed;
-    // m_snd_on_roof        = bIsSndOnRoof;
-    // m_raindrop_collision = bIsRaindropCollision;
+    m_snd_on_roof        = bIsSndOnRoof;
+    m_raindrop_collision = bIsRaindropCollision;
 
     m_sun_visible        = false;
     m_use_sun_dir        = false;
@@ -216,7 +216,7 @@ void UIWeatherPropForm::Draw()
                 // u8"Выкл/вкл использование погодного движения солнца.\n Если включить, то освещение солнцем будет сооответствовать положению солнца в погодных циклах,\n в ином случае солнце будет статично и соответствовать положению выставленному в глобальных настройках.");
             }
         }
-        // --------------------------------------------------------------------------------------------
+        /*/ --------------------------------------------------------------------------------------------
         ImGui::Spacing();
         ImGui::SameLine(10, 0);
         // --------------------------------------------------------------------------------------------
@@ -232,7 +232,7 @@ void UIWeatherPropForm::Draw()
                 ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
                 ImGui::SetTooltip("Turn Off/on using Hemi lighting.");
             }
-        }
+        }*/
     }
     // --------------------------------------------------------------------------------------------
     ImGui::Spacing();
@@ -247,7 +247,7 @@ void UIWeatherPropForm::Draw()
     ImGui::Spacing();
     ImGui::SameLine(10, 0);
     // --------------------------------------------------------------------------------------------
-    /*/ Коллизия дождя
+    // Коллизия дождя
     {
         if (ImGui::Checkbox("Collision of raindrops", &m_raindrop_collision))
         {
@@ -277,7 +277,7 @@ void UIWeatherPropForm::Draw()
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
             ImGui::SetTooltip("Turn On/Off sound of rain on roof.");
         }
-    }*/
+    }
     // --------------------------------------------------------------------------------------------
     ImGui::Spacing();
     ImGui::SameLine(10, 0);
@@ -445,7 +445,7 @@ void UIWeatherPropForm::IsUseHemiChanged() const
     else
         bIsUseHemi = false;
 }
-/*
+
 void UIWeatherPropForm::IsRaindropCollisionChanged() const
 {
     if (m_raindrop_collision && !bIsRaindropCollision)
@@ -460,4 +460,4 @@ void UIWeatherPropForm::IsSndOnRoofChanged() const
         bIsSndOnRoof = true;
     else
         bIsSndOnRoof = false;
-}*/
+}
