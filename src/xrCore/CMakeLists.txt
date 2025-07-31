@@ -55,6 +55,7 @@ file(GLOB CORE_SOURCE_STR_FILES
     "xrstring*.*"
     "shared_string.*"
     "xr_trims.*"
+    "stack_string.h"
 )
 
 file(GLOB CORE_SOURCE_FS_FILES
