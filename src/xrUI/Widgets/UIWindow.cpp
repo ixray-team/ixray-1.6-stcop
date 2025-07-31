@@ -127,8 +127,8 @@ CUIWindow::~CUIWindow()
 
 	DetachAll();
 
-	if(	GetPPMode() )
-		g_pGamePersistent->m_pMainMenu->UnregisterPPDraw	(this);
+	if (GetPPMode() && g_pGamePersistent != nullptr)
+		g_pGamePersistent->m_pMainMenu->UnregisterPPDraw(this);
 
 #ifdef LOG_ALL_WNDS
 	xr_vector<DBGList>::iterator _it = dbg_list_wnds.begin();
