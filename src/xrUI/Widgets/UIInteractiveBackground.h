@@ -122,3 +122,4 @@ void CUIInteractiveBackground<T>::SetHeight(float height)
 }
 
 typedef CUIInteractiveBackground<CUIFrameLineWnd> CUI_IB_FrameLineWnd;
+typedef CUIInteractiveBackground<CUIFrameWindow> CUI_IB_FrameWindow;

@@ -39,11 +39,18 @@ public:
 	bool			m_bUseTextColor[4]; // note: 0 index will be ignored
 
 
-	bool					m_frameline_mode;
+	enum EFrameMode
+	{
+		Framemode_None,
+		Framemode_Line,
+		Framemode_Window
+	};
+	EFrameMode				m_frameline_mode;
 	bool					vertical;
 	CUI_IB_Static*			m_background;
 	CUI_IB_FrameLineWnd*	m_back_frameline;
-private:	
+	CUI_IB_FrameWindow*		m_back_framewindow;
+private:
 			void		PlaySoundH					();
 			void		PlaySoundT					();
 
