@@ -2,7 +2,7 @@
 #include "RegistryFuncs.h"
 #include "../xrGameSpy/xrGameSpy_MainDefs.h"
 
-#define REGISTRY_BASE	HKEY_LOCAL_MACHINE
+#define REGISTRY_BASE HKEY_CURRENT_USER
 
 bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 {	
@@ -54,12 +54,20 @@ bool	ReadRegistryValue(LPCSTR rKeyName, DWORD rKeyType, void* value )
 	return true;
 };
 
-bool	WriteRegistryValue	(LPCSTR rKeyName, DWORD rKeyType, const void* value)
+bool WriteRegistryValue(LPCSTR rKeyName, DWORD rKeyType, const void* value)
 {
 	HKEY hKey;
 
-	long res = RegOpenKeyExA(REGISTRY_BASE, 
-		REGISTRY_PATH, 0, KEY_WRITE, &hKey);
+	long res = RegCreateKeyExA
+	(
+		REGISTRY_BASE,
+		REGISTRY_PATH,
+		0, nullptr , 0,
+		KEY_WRITE,
+		nullptr,
+		&hKey,
+		nullptr
+	);
 
 	if (res != ERROR_SUCCESS)
 	{
