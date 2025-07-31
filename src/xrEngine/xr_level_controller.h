@@ -83,6 +83,9 @@ enum EGameActions
 	kQUICK_LOAD,
 	kALIFE_CMD,
 
+	kUSE_BANDAGE,
+	kUSE_MEDKIT,
+
 	kCUSTOM1,
 	kCUSTOM2,
 	kCUSTOM3,
