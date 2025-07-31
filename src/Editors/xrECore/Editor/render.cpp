@@ -256,26 +256,26 @@ CRender::~CRender()
 	xr_delete(Target);
 }
 
-void					CRender::Initialize()
+void CRender::Initialize()
 {
 	PSLibrary.OnCreate();
 }
-void					CRender::ShutDown()
+void CRender::ShutDown()
 {
 	PSLibrary.OnDestroy();
 }
 
-void					CRender::OnDeviceCreate()
+void CRender::OnDeviceCreate()
 {
 	Models = new CModelPool();
-	Models->Logging(FALSE);
 }
-void					CRender::OnDeviceDestroy()
+
+void CRender::OnDeviceDestroy()
 {
 	xr_delete(Models);
 }
 
-ref_shader	CRender::getShader(int id) { return 0; }//VERIFY(id<int(Shaders.size()));	return Shaders[id];	}
+ref_shader	CRender::getShader(int id) { return 0; }
 
 BOOL CRender::occ_visible(Fbox& B)
 {
@@ -680,7 +680,6 @@ public:
 
 IRender_Glow* CRender::glow_create() { return new RGlow(); }
 void CRender::glow_destroy(IRender_Glow* p_) {  }
-void CRender::model_Logging(BOOL bEnable) {}
 void CRender::models_Prefetch() {}
 void CRender::models_Clear(BOOL b_complete) {}
 void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) {}

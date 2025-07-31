@@ -25,7 +25,7 @@
     #include "SkeletonAnimated.h"
 #endif
 
-dxRender_Visual*	CModelPool::Instance_Create(u32 type)
+dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
 	dxRender_Visual *V = nullptr;
 
@@ -120,10 +120,6 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	}
 	
 	// Actual loading
-#ifdef DEBUG
-	if (bLogging)		Msg		("- Uncached model loading: %s",fn);
-#endif // DEBUG
-
 	IReader*			data	= FS.r_open(fn);
 	ogf_header			H;
 	data->r_chunk_safe	(OGF_HEADER,&H,sizeof(H));
@@ -138,7 +134,7 @@ dxRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	return V;
 }
 
-dxRender_Visual*	CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allow_register)
+dxRender_Visual* CModelPool::Instance_Load(const char* name, IReader* data, BOOL allow_register)
 {
 	dxRender_Visual	*V;
 	
@@ -152,7 +148,7 @@ dxRender_Visual*	CModelPool::Instance_Load(LPCSTR name, IReader* data, BOOL allo
 	return V;
 }
 
-void		CModelPool::Instance_Register(LPCSTR N, dxRender_Visual* V)
+void CModelPool::Instance_Register(const char* N, dxRender_Visual* V)
 {
 	// Registration
 	ModelDef			M;
@@ -165,18 +161,16 @@ void		CModelPool::Instance_Register(LPCSTR N, dxRender_Visual* V)
 void CModelPool::Destroy()
 {
 	// Pool
-	Pool.clear			();
+	Pool.clear();
 
 	// Registry
-	while(!Registry.empty()){
+	while(!Registry.empty())
+	{
 		REGISTRY_IT it	= Registry.begin();
 		if (it == Registry.end())
 			break;
 
 		dxRender_Visual* V=(dxRender_Visual*)it->first;
-#ifdef _DEBUG
-		Msg				("ModelPool: Destroy object: '%s'",*V->dbg_name);
-#endif
 		DeleteInternal	(V,TRUE);
 	}
 
@@ -197,7 +191,6 @@ void CModelPool::Destroy()
 
 CModelPool::CModelPool()
 {
-	bLogging				= TRUE;
     bForceDiscard 			= FALSE;
     bAllowChildrenDuplicate	= TRUE; 
 	g_pMotionsContainer		= new motions_container();
@@ -209,7 +202,7 @@ CModelPool::~CModelPool()
 	xr_delete				(g_pMotionsContainer);
 }
 
-dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
+dxRender_Visual* CModelPool::Instance_Find(const char* N)
 {
 	dxRender_Visual*				Model=0;
 	xr_vector<ModelDef>::iterator	I;
@@ -311,7 +304,6 @@ void CModelPool::DeleteDeffered(dxRender_Visual* &V)
 		return;
 
 	xrCriticalSectionGuard guard(&deffered_del_lock);
-	auto Iter = std::find(ModelsToDeleteDeffer.begin(), ModelsToDeleteDeffer.end(), V);
 
 	ModelsToDeleteDeffer.insert(V);
 	V = nullptr;
@@ -352,67 +344,67 @@ void CModelPool::DeleteQueuedDeffer()
 	ModelsToDeleteDeffer.clear();
 }
 
-void CModelPool::Discard(dxRender_Visual* &V, BOOL b_complete)
+void CModelPool::Discard(dxRender_Visual*& V, BOOL b_complete)
 {
 	//
-	REGISTRY_IT	it		= Registry.find	(V);
-	if (it!=Registry.end())
+	REGISTRY_IT	it = Registry.find(V);
+	if (it != Registry.end())
 	{
-		// Pool - OK
+		// Base
+		const shared_str& name = it->second;
+		xr_vector<ModelDef>::iterator I = Models.begin();
+		xr_vector<ModelDef>::iterator I_e = Models.end();
 
-			// Base
-			const shared_str&	name	= it->second;
-			xr_vector<ModelDef>::iterator I = Models.begin();
-			xr_vector<ModelDef>::iterator I_e = Models.end();
-			
-			for (; I!=I_e; ++I)
+		for (; I != I_e; ++I)
+		{
+			if (I->name == name)
 			{
-				if (I->name==name)
+				if (b_complete || strchr(*name, '#'))
 				{
-					if(b_complete || strchr(*name,'#'))
+					VERIFY(I->refs > 0);
+					I->refs--;
+					if (0 == I->refs)
 					{
-						VERIFY(I->refs>0);
-            			I->refs--; 
-						if (0==I->refs)
-						{
-                			bForceDiscard		= TRUE;
-	            			I->model->Release	();
-							xr_delete			(I->model);	
-							Models.erase		(I);
-							bForceDiscard		= FALSE;
-						}
-						break;
-					}else{
-					if(I->refs>0)
+						bForceDiscard = TRUE;
+						I->model->Release();
+						xr_delete(I->model);
+						Models.erase(I);
+						bForceDiscard = FALSE;
+					}
+					break;
+				}
+				else {
+					if (I->refs > 0)
 						I->refs--;
 					break;
-					}
 				}
 			}
+		}
 		// Registry
-		xr_delete		(V);	
-//.		xr_free			(name);
-		Registry.erase	(it);
-	} else {
-		// Registry entry not-found - just special type of visual / particles / etc.
-		xr_delete		(V);
+		xr_delete(V);
+		Registry.erase(it);
 	}
-	V	=	nullptr;
+	else
+	{
+		// Registry entry not-found - just special type of visual / particles / etc.
+		xr_delete(V);
+	}
+
+	V = nullptr;
 }
 
 void CModelPool::Prefetch()
 {
-	Logging					(FALSE);
 	// prefetch visuals
 	string256 section;
-	xr_strconcat(section,"prefetch_visuals_",g_pGamePersistent->m_game_params.m_game_type);
-	CInifile::Sect& sect	= pSettings->r_section(section);
-	for (CInifile::SectCIt I=sect.Data.begin(); I!=sect.Data.end(); I++)	{
-		const CInifile::Item& item= *I;
-		dxRender_Visual* V	= Create(item.first.c_str());
-		Delete				(V,FALSE);
+	xr_strconcat(section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
+	CInifile::Sect& sect = pSettings->r_section(section);
+	for (CInifile::SectCIt I = sect.Data.begin(); I != sect.Data.end(); I++)
+	{
+		const CInifile::Item& item = *I;
+		dxRender_Visual* V = Create(item.first.c_str());
+		Delete(V, FALSE);
 	}
-	Logging					(TRUE);
 }
 
 void CModelPool::ClearPool( BOOL b_complete)
@@ -438,104 +430,6 @@ dxRender_Visual* CModelPool::CreatePG	(PS::CPGDef* source)
 	V->Compile		(source);
 	return V;
 }
-
-void CModelPool::dump()
-{
-	Log	("--- model pool --- begin:");
-	u32 sz					= 0;
-	u32 k					= 0;
-	for (xr_vector<ModelDef>::iterator I=Models.begin(); I!=Models.end(); I++) {
-		CKinematics* K		= PCKinematics(I->model);
-		if (K){
-			u32 cur			= K->mem_usage	(false);
-			sz				+= cur;
-			Msg("#%3d: [%3d/%5d Kb] - %s",k++,I->refs,cur/1024,I->name.c_str());
-		}
-	}
-	Msg ("--- models: %d, mem usage: %d Kb ",k,sz/1024);
-	sz						= 0;
-	k						= 0;
-	int free_cnt			= 0;
-	for (REGISTRY_IT it=Registry.begin(); it!=Registry.end(); it++)
-	{
-		CKinematics* K		= PCKinematics((dxRender_Visual*)it->first);
-		VERIFY				(K);
-		if (K){
-			u32 cur			= K->mem_usage	(true);
-			sz				+= cur;
-			bool b_free		= (Pool.find(it->second)!=Pool.end() );
-			if(b_free)		++free_cnt;
-			Msg("#%3d: [%s] [%5d Kb] - %s",k++, (b_free)?"free":"used", cur/1024,it->second.c_str());
-		}
-	}
-	Msg ("--- instances: %d, free %d, mem usage: %d Kb ",k, free_cnt, sz/1024);
-	Log	("--- model pool --- end.");
-}
-
-void CModelPool::memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system )
-{
-	vb_mem_video = 0;
-	vb_mem_system = 0;
-	ib_mem_video = 0;
-	ib_mem_system = 0;
-
-	xr_vector<ModelDef>::iterator		it = Models.begin();
-	xr_vector<ModelDef>::const_iterator	en = Models.end();
-
-	for(; it != en; ++it )
-	{
-		dxRender_Visual* ptr = it->model;
-		Fvisual* vis_ptr = dynamic_cast<Fvisual*> (ptr);
-
-		if( vis_ptr == nullptr )
-			continue;
-#ifndef USE_DX11
-		D3DINDEXBUFFER_DESC IB_desc;
-		D3DVERTEXBUFFER_DESC VB_desc;
-
-		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
-
-		if( IB_desc.Pool == D3DPOOL_DEFAULT ||
-			IB_desc.Pool == D3DPOOL_MANAGED )
-			ib_mem_video += IB_desc.Size;
-
-		if( IB_desc.Pool == D3DPOOL_MANAGED ||
-			IB_desc.Pool == D3DPOOL_SCRATCH )
-			ib_mem_system += IB_desc.Size;
-
-		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
-
-		if( VB_desc.Pool == D3DPOOL_DEFAULT ||
-			VB_desc.Pool == D3DPOOL_MANAGED )
-			vb_mem_video += IB_desc.Size;
-
-		if( VB_desc.Pool == D3DPOOL_MANAGED ||
-			VB_desc.Pool == D3DPOOL_SCRATCH )
-			vb_mem_system += IB_desc.Size;
-
-#else
-		D3D_BUFFER_DESC IB_desc;
-		D3D_BUFFER_DESC VB_desc;
-
-		vis_ptr->m_fast->p_rm_Indices->GetDesc( &IB_desc );
-
-		ib_mem_video += IB_desc.ByteWidth;
-		ib_mem_system += IB_desc.ByteWidth;
-
-		vis_ptr->m_fast->p_rm_Vertices->GetDesc( &VB_desc );
-
-		vb_mem_video += IB_desc.ByteWidth;
-		vb_mem_system += IB_desc.ByteWidth;
-
-#endif
-
-
-
-
-
-
-	}
-} 
 
 #ifdef _EDITOR
 IC bool	_IsBoxVisible(dxRender_Visual* visual, const Fmatrix& transform)

@@ -187,11 +187,6 @@ void CDS0_RenderInterface::model_Delete(IRenderVisual*& V, BOOL bDiscard)
 	V = nullptr;
 }
 
-void CDS0_RenderInterface::model_Logging(BOOL bEnable)
-{
-	GModelPool->Logging(bEnable);
-}
-
 void CDS0_RenderInterface::models_Prefetch()
 {
 	GModelPool->Prefetch();
