@@ -514,22 +514,28 @@ void CMissile::OnMotionMark(u32 state, const motion_marks& M)
 
 void CMissile::Throw() 
 {
-	if (!H_Parent()) return;
-	setup_throw_params					();
-	
-	m_fake_missile->m_throw_direction	= m_throw_direction;
-	m_fake_missile->m_throw_matrix		= m_throw_matrix;
-//.	m_fake_missile->m_throw				= true;
-//.	Msg("fm %d",m_fake_missile->ID());
-		
-	CInventoryOwner						*inventory_owner = H_Parent()->cast_inventory_owner();
-	VERIFY								(inventory_owner);
-	if (inventory_owner->use_default_throw_force())
-		m_fake_missile->m_fThrowForce	= m_constpower ? m_fConstForce : m_fThrowForce; 
-	else
-		m_fake_missile->m_fThrowForce	= inventory_owner->missile_throw_force(); 
-	
-	m_fThrowForce						= m_fMinForce;
+	if (!H_Parent()) 
+		return;
+
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+
+	if (pActor && pActor == Level().CurrentControlEntity() || Local())
+	{
+		VERIFY(smart_cast<CEntity*>(H_Parent()));
+		setup_throw_params();
+
+		m_fake_missile->m_throw_direction = m_throw_direction;
+		m_fake_missile->m_throw_matrix = m_throw_matrix;
+
+		CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
+		VERIFY(inventory_owner);
+		if (inventory_owner->use_default_throw_force())
+			m_fake_missile->m_fThrowForce = m_constpower ? m_fConstForce : m_fThrowForce;
+		else
+			m_fake_missile->m_fThrowForce = inventory_owner->missile_throw_force();
+
+		m_fThrowForce = m_fMinForce;
+	}
 
 	if (Local() && H_Parent()) {
 		NET_Packet						P;

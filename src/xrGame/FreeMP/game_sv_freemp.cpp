@@ -258,8 +258,8 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	CSE_ALifeCreatureActor* pA = smart_cast<CSE_ALifeCreatureActor*>(xrCData->owner);
 	if (!pA) return;
 
-	SpawnWeapon4Actor(pA->ID, "mp_players_rukzak", 0, ps->pItemList);
-	SpawnWeapon4Actor(pA->ID, "device_pda", 0, ps->pItemList);
+	SpawnItemToActor(pA->ID, "mp_players_rukzak");
+	SpawnItemToActor(pA->ID, "device_pda");
 
 }
 
