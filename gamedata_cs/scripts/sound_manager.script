@@ -35,6 +35,7 @@ function sound_manager:unregister_npc(npc_id)
 	then
 		-- Удаляется чувак, который щас говорит фразу. Нужно обрубить историю
 		self.story = nil
+		xr_sound.sound_table[self.last_playing_npc]:stop(npc_id)
 	end
 
 	if self.storyteller == npc_id then
@@ -70,6 +71,13 @@ function sound_manager:update()
 	--' Ждем пока не закончится уже начатый звук
 	if xr_sound.sound_table[self.last_playing_npc] ~= nil then
 		--printf("wait sound")
+
+		-- !!! Если в бою - обрубить звук и саундтему
+		if db.storage[self.last_playing_npc] and db.storage[self.last_playing_npc].object:best_enemy() ~= nil then
+			self.story = nil
+			xr_sound.sound_table[self.last_playing_npc]:stop(self.last_playing_npc)
+		end
+
 		return
 	end
 	--' Устанавливаем таймаут ожидания между фразами.
@@ -145,14 +153,25 @@ function sound_manager:update()
 		npc = self.npc[math.random(1,#self.npc)].npc_id
 	end
 
-	--printf("Speaking sm [%s] npc[%s] phrase[%s]", self.id, npc, next_phrase.theme)
+	if(npc==nil or db.storage[npc]==nil) then
+		return
+	end
+	-- !!! Если в бою - обрубить звук и саундтему
+	if db.storage[npc].object:best_enemy() ~= nil and xr_sound.sound_table[npc] ~= nil then
+		self.story = nil
+		xr_sound.sound_table[npc]:stop(npc)
+		return
+	end
+
+
+	printf("Speaking sm [%s] npc[%s] phrase[%s]", self.id, npc, next_phrase.theme)
 
 	--' Кешируем кто произносит фразу, чтобы отлавливать когда он закончит
 	self.last_playing_npc = npc
 
 	--' Произносим фразу
 	if next_phrase.theme ~= "nil" then
-		if(self.story.id=="squad_counter_attack") then
+		if(self.story and self.story.id=="squad_counter_attack") then
 			local npc = alife():object(npc)
 			local board = sim_board.get_sim_board()
 			if(npc) and (board) then
@@ -174,6 +193,8 @@ function sound_manager:update()
 				end
 			end
 		end
+
+
 	    xr_sound.set_sound_play(npc, next_phrase.theme)
 	end
 

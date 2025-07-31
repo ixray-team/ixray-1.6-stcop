@@ -80,8 +80,10 @@ end
 function actor_binder:net_destroy()
 		xr_sound.stop_sounds_by_id(self.object:id())
 		local board_factions = sim_board.get_sim_board().players
-		for k,v in pairs (board_factions) do
-			xr_sound.stop_sounds_by_id(v.id)
+		if(board_factions) then
+			for k,v in pairs (board_factions) do
+				xr_sound.stop_sounds_by_id(v.id)
+			end
 		end
 		if(actor_stats.remove_from_ranking~=nil)then
 			actor_stats.remove_from_ranking(self.object:id())
