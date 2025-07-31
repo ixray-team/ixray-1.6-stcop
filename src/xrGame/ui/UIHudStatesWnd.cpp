@@ -100,8 +100,10 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", this );
 	m_ui_stamina_bar  = UIHelper::CreateProgressBar( xml, "progress_bar_stamina", this );
 //	m_back_v          = UIHelper::CreateStatic( xml, "back_v", this );
-//	m_static_armor    = UIHelper::CreateStatic( xml, "static_armor", this );
-	
+	if (xml.NavigateToNode("static_armor", 0))
+	{
+		m_static_armor = UIHelper::CreateStatic(xml, "static_armor", this);
+	}
 /*
 	m_resist_back[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "resist_back_rad", this );
 	m_resist_back[ALife::infl_fire] = UIHelper::CreateStatic( xml, "resist_back_fire", this );
@@ -127,7 +129,10 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
 
-//	m_ui_armor_bar    = UIHelper::CreateProgressBar( xml, "progress_bar_armor", this );
+	if (xml.NavigateToNode("progress_bar_armor", 0))
+	{
+		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", this);
+	}
 
 //	m_progress_self = new CUIProgressShape();
 //	m_progress_self->SetAutoDelete(true);
@@ -232,7 +237,17 @@ void CUIHudStatesWnd::Update()
 
 void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 {
-	// FX: No need now
+	CCustomOutfit* outfit = actor->GetOutfit();
+	if (outfit && m_static_armor && m_ui_armor_bar)
+	{
+		m_static_armor->Show(true);
+		m_ui_armor_bar->Show(true);
+	}
+	else if (m_static_armor && m_ui_armor_bar)
+	{
+		m_static_armor->Show(false);
+		m_ui_armor_bar->Show(false);
+	}
 }
 
 void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
