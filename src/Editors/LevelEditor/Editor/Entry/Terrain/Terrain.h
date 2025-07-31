@@ -9,8 +9,9 @@ class CTerrain :
 
 private:
 	XRay::Editor::HeightmapUtils::SHeightMap HMap;
-	CEditableObject TerrainObject;
+	CEditableObject* TerrainObject;
 	bool IsPreview = false;
+	int ScaleY = 100.f;
 
 public:
 	CTerrain(LPVOID data, LPCSTR name);
@@ -33,11 +34,12 @@ public:
 	void OnChangeShader(PropValue* sender);
 
 	void OnChangeSurface(PropValue* sender);
+	bool OnChangeHMData(PropValue* sender, int& NewValue);
 
 	virtual void OnUpdateTransform() override;
 	
 	IC CEditableObject* GetReference()
 	{
-		return &TerrainObject;
+		return TerrainObject;
 	}
 };
