@@ -279,6 +279,8 @@ public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
 	u32 _last_update_time;
+	shared_str				m_sNVGAnimator;
+	shared_str				m_sHeadlampAnimator;
 
 	void					SetZoomRndSeed			(s32 Seed = 0);
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};

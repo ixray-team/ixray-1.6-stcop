@@ -493,6 +493,24 @@ if(!g_dedicated_server)
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
+
+	if (pGameGlobals->line_exist("night_vision", "night_vision_animator"))
+	{
+		LPCSTR nvg_animator = pGameGlobals->r_string("night_vision", "night_vision_animator");
+		if (pSettings->section_exist(nvg_animator))
+		{
+			m_sNVGAnimator = nvg_animator;
+		}
+	}
+
+	if (pGameGlobals->line_exist("headlamp", "headlamp_animator"))
+	{
+		LPCSTR headlamp_animator = pGameGlobals->r_string("headlamp", "headlamp_animator");
+		if (pSettings->section_exist(headlamp_animator))
+		{
+			m_sHeadlampAnimator = headlamp_animator;
+		}
+	}
 }
 
 void CActor::legs_shift_callback(CBoneInstance* B) {
