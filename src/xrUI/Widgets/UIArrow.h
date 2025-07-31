@@ -2,15 +2,15 @@
 
 #include "UIStatic.h"
 
-class UI_API UI_Arrow:
+class UI_API CUIArrow:
 	public CUIStatic
 {
 private:
 	typedef CUIStatic	inherited;
 
 public:
-					UI_Arrow		();
-	virtual			~UI_Arrow		();
+					CUIArrow		();
+	virtual			~CUIArrow		();
 
 			void	init_from_xml	( CUIXml& xml, LPCSTR path, CUIWindow* parent );
 			void	SetNewValue		( float new_value );

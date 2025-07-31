@@ -17,7 +17,7 @@
 #include "../../xrUI/Widgets/UIProgressShape.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
-#include "../../xrUI/Widgets/ui_arrow.h"
+#include "../../xrUI/Widgets/UIArrow.h"
 #include "UIInventoryUtilities.h"
 #include "CustomDetector.h"
 #include "../ai/monsters/basemonster/base_monster.h"
@@ -197,13 +197,13 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 
 	if (xml.NavigateToNode("arrow", 0))
 	{
-		m_arrow = new UI_Arrow();
+		m_arrow = new CUIArrow();
 		m_arrow->init_from_xml(xml, "arrow", this);
 	}
 
 	if (xml.NavigateToNode("arrow_shadow", 0))
 	{
-		m_arrow_shadow = new UI_Arrow();
+		m_arrow_shadow = new CUIArrow();
 		m_arrow_shadow->init_from_xml(xml, "arrow_shadow", this);
 	}
 
@@ -337,41 +337,41 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 
 void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 {
-    PIItem item = actor->inventory().ActiveItem();
-    if (item)
-    {
-        if (m_b_force_update)
-        {
-            if (item->cast_weapon())
-                item->cast_weapon()->ForceUpdateAmmo();
-            m_b_force_update = false;
-        }
+	PIItem item = actor->inventory().ActiveItem();
+	if (item)
+	{
+		if (m_b_force_update)
+		{
+			if (item->cast_weapon())
+				item->cast_weapon()->ForceUpdateAmmo();
+			m_b_force_update = false;
+		}
 
-        item->GetBriefInfo(m_item_info);
+		item->GetBriefInfo(m_item_info);
 
-        //		UIWeaponBack.SetText		( str_name.c_str() );
-        m_fire_mode->SetText(m_item_info.fire_mode.c_str());
-        SetAmmoIcon(m_item_info.icon.c_str());
+		//		UIWeaponBack.SetText		( str_name.c_str() );
+		m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+		SetAmmoIcon(m_item_info.icon.c_str());
 
-        if (m_ui_weapon_cur_ammo)
-        {
-            m_ui_weapon_cur_ammo->Show(true);
-            m_ui_weapon_cur_ammo->SetText(m_item_info.cur_ammo.c_str());
-        }
+		if (m_ui_weapon_cur_ammo)
+		{
+			m_ui_weapon_cur_ammo->Show(true);
+			m_ui_weapon_cur_ammo->SetText(m_item_info.cur_ammo.c_str());
+		}
 
-        if (m_ui_weapon_fmj_ammo)
-        {
-            m_ui_weapon_fmj_ammo->Show(true);
-            m_ui_weapon_fmj_ammo->SetText(m_item_info.fmj_ammo.c_str());
-            m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
-        }
+		if (m_ui_weapon_fmj_ammo)
+		{
+			m_ui_weapon_fmj_ammo->Show(true);
+			m_ui_weapon_fmj_ammo->SetText(m_item_info.fmj_ammo.c_str());
+			m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
+		}
 
-        if (m_ui_weapon_ap_ammo)
-        {
-            m_ui_weapon_ap_ammo->Show(true);
-            m_ui_weapon_ap_ammo->SetText(m_item_info.ap_ammo.c_str());
-            m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
-        }
+		if (m_ui_weapon_ap_ammo)
+		{
+			m_ui_weapon_ap_ammo->Show(true);
+			m_ui_weapon_ap_ammo->SetText(m_item_info.ap_ammo.c_str());
+			m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
+		}
 
 		if (m_ui_weapon_third_ammo)
 		{
@@ -401,58 +401,58 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			{
 				m_ui_weapon_sign_ammo->Show(false);
 			}
-        }
+		}
 
-        m_fire_mode->Show(true);
+		m_fire_mode->Show(true);
 
-        if (m_ui_grenade)
-        {
-            m_ui_grenade->Show(true);
+		if (m_ui_grenade)
+		{
+			m_ui_grenade->Show(true);
 
-            m_ui_grenade->SetText(m_item_info.grenade.c_str());
-            
-            CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
-            if (wpn && wpn->m_bGrenadeMode)
-                m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_active);
-            else
-                m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
-        }
+			m_ui_grenade->SetText(m_item_info.grenade.c_str());
+			
+			CWeaponMagazinedWGrenade* wpn = smart_cast<CWeaponMagazinedWGrenade*>(item);
+			if (wpn && wpn->m_bGrenadeMode)
+				m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_active);
+			else
+				m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
+		}
 
-        CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
-        if (wpnm)
-        {
-            if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
-                m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
-            else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
-                m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
+		CWeaponMagazined* wpnm = smart_cast<CWeaponMagazined*>(item);
+		if (wpnm)
+		{
+			if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
+				m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
+			else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
+				m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
 			else if (wpnm->m_ammoType == 2 && m_ui_weapon_third_ammo)
 				m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
 		}
-    }
-    else
-    {
-        m_ui_weapon_icon->Show(false);
+	}
+	else
+	{
+		m_ui_weapon_icon->Show(false);
 
-        if (m_ui_weapon_cur_ammo)
-            m_ui_weapon_cur_ammo->Show(false);
+		if (m_ui_weapon_cur_ammo)
+			m_ui_weapon_cur_ammo->Show(false);
 
-        if (m_ui_weapon_fmj_ammo)
-            m_ui_weapon_fmj_ammo->Show(false);
+		if (m_ui_weapon_fmj_ammo)
+			m_ui_weapon_fmj_ammo->Show(false);
 
-        if (m_ui_weapon_ap_ammo)
-            m_ui_weapon_ap_ammo->Show(false);
+		if (m_ui_weapon_ap_ammo)
+			m_ui_weapon_ap_ammo->Show(false);
 
-        if (m_ui_weapon_sign_ammo)
-            m_ui_weapon_sign_ammo->Show(false);
+		if (m_ui_weapon_sign_ammo)
+			m_ui_weapon_sign_ammo->Show(false);
 
 		if (m_ui_weapon_third_ammo)
 			m_ui_weapon_third_ammo->Show(false); //Alundaio: Third Ammo
 
-        m_fire_mode->Show(false);
+		m_fire_mode->Show(false);
 
-        if (m_ui_grenade)
-            m_ui_grenade->Show(false);
-    }
+		if (m_ui_grenade)
+			m_ui_grenade->Show(false);
+	}
 }
 
 void CUIHudStatesWnd::SetAmmoIcon(const shared_str& sect_name)
@@ -719,27 +719,27 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 //	protect = protect / max_power; // = 0..1
 	m_indik[type]->Show(true);
 
-    if (hit_power < EPS)
-    {
-        string256 greenTexture;
-        // If we have green texture and white is missing
-        // Assume it's CoP and use it's standard scheme
-        xr_sprintf(greenTexture, sizeof(greenTexture), "%s%s", texture, "green");
+	if (hit_power < EPS)
+	{
+		string256 greenTexture;
+		// If we have green texture and white is missing
+		// Assume it's CoP and use it's standard scheme
+		xr_sprintf(greenTexture, sizeof(greenTexture), "%s%s", texture, "green");
 
-        SwitchLA(false, type);
-        xr_sprintf(str, sizeof(str), "%s%s", texture, "white");
-        texture = str;
+		SwitchLA(false, type);
+		xr_sprintf(str, sizeof(str), "%s%s", texture, "white");
+		texture = str;
 
-        if (CUITextureMaster::ItemExist(texture))
-            m_indik[type]->InitTexture(texture);
-        else if (CUITextureMaster::ItemExist(greenTexture))
-            m_indik[type]->Show(false); // Use standard CoP scheme
-        else
-            m_indik[type]->SetTextureColor(c_white);
+		if (CUITextureMaster::ItemExist(texture))
+			m_indik[type]->InitTexture(texture);
+		else if (CUITextureMaster::ItemExist(greenTexture))
+			m_indik[type]->Show(false); // Use standard CoP scheme
+		else
+			m_indik[type]->SetTextureColor(c_white);
 
-        actor->conditions().SetZoneDanger(0.0f, type);
-        return;
-    }
+		actor->conditions().SetZoneDanger(0.0f, type);
+		return;
+	}
 
 	m_indik[type]->Show(true);
 	if ( hit_power <= protect )
