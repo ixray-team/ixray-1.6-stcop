@@ -1242,6 +1242,17 @@ void CWeaponMagazined::switch2_Device()
 		PlaySound(m_bTacticalTorchStatus ? "sndTorchOff" : "sndTorchOn", get_LastFP());
 		PlayHUDMotion(SetCurrentStateAnimation("anm_torch_on"), true, eDevice);
 	}
+
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+	R_ASSERT(pActor);
+
+	if (CCustomDetector* det = pActor->GetDetector())
+	{
+		if (det->CanLam())
+		{
+			det->SwitchState(CCustomDetector::EDetectorStates::eHandLam);
+		}
+	}
 }
 
 void CWeaponMagazined::PlayReloadSound()

@@ -269,6 +269,11 @@ void CCustomDetector::OnStateSwitch(u32 S)
 		PlayHUDMotion("anm_kick2", true, eHandKick2);
 		break;
 	}
+	case eHandLam:
+	{
+		PlayHUDMotion("anm_lam", true, eHandLam);
+		break;
+	}
 	}
 	m_old_state=S;
 }
@@ -304,6 +309,7 @@ void CCustomDetector::OnAnimationEnd(u32 state)
 	case eHandThrowEnd:
 	case eHandKick1:
 	case eHandKick2:
+	case eHandLam:
 		{
 			SwitchState					(eIdle);
 		} break;
@@ -347,6 +353,12 @@ bool CCustomDetector::CanKick() const
 {
 	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_kick) &&
 	(GetState() == eIdle || GetState() == eHandKick1 || GetState() == eHandKick2 || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
+}
+
+bool CCustomDetector::CanLam() const
+{
+	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_lam) &&
+	(GetState() == eIdle || GetState() == eHandLam || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
 }
 
 void CCustomDetector::UpdateXForm()
