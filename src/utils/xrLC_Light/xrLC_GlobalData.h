@@ -99,6 +99,10 @@ public:
 		xr_vector<xrMU_Reference*>	&mu_refs		()		{	return _mu_refs; }
 
 
+		shared_str					level_name;
+
+		void						SetLevelName(LPCSTR name) { level_name = name; }
+		LPCSTR						GetLavelName() { return level_name.c_str(); }
 
 		bool						b_nosun			()		{	return _b_nosun; }
 		bool						gl_linear		()		{	return _gl_linear; }

@@ -39,12 +39,13 @@ void StartupLC()
 //	_strlwr(cmd);
 	
 	
-
- 	g_build_options.b_radiosity = gCompilerMode.LC_GI;
+  	g_build_options.b_radiosity = gCompilerMode.LC_GI;
 	g_build_options.b_noise		= gCompilerMode.LC_Noise;
  	g_using_smooth_groups		= !gCompilerMode.LC_NoSMG;
 
 	VERIFY(lc_global_data());
+	
+	lc_global_data()->SetLevelName(gCompilerMode.level_name);
 	lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
 	lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
 	lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
