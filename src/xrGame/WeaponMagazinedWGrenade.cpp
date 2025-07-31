@@ -871,7 +871,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 			return false;
 	*/
 	string32 int_str;
-	int	ae = GetAmmoElapsed();
+	int	ae = GetAmmoElapsed() + (m_bGrenadeMode ? 0 : iAmmoChamberElapsed);
 	xr_sprintf(int_str, "%d", ae);
 	info.cur_ammo._set(int_str);
 
@@ -893,7 +893,7 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 	if (m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame)
 		return false;
 
-	const int at = GetSuitableAmmoTotal() - GetAmmoElapsed(); // update m_BriefInfo_CalcFrame
+	const int at = GetSuitableAmmoTotal() - (GetAmmoElapsed() + (m_bGrenadeMode ? 0 : iAmmoChamberElapsed)); // update m_BriefInfo_CalcFrame
 	xr_sprintf(int_str, "%d", at);
 	info.total_ammo = int_str;
 
@@ -934,15 +934,18 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 		//-Alundaio
 	}
 
-	if (ae != 0 && m_magazine.size() != 0)
+	auto& CurrVector = !m_bGrenadeMode && m_bAmmoInChamber ? m_chamber : m_magazine;
+	u8 CurrAmmoType = !m_bGrenadeMode && m_bAmmoInChamber ? m_ChamberAmmoType : m_ammoType;
+
+	if (ae != 0 && CurrVector.size() != 0)
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_magazine.back().m_LocalAmmoType].c_str();
+		LPCSTR ammo_type = m_ammoTypes[CurrVector.back().m_LocalAmmoType].c_str();
 		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}
 	else
 	{
-		LPCSTR ammo_type = m_ammoTypes[m_ammoType].c_str();
+		LPCSTR ammo_type = m_ammoTypes[CurrAmmoType].c_str();
 		info.name._set(g_pStringTable->translate(pSettings->r_string(ammo_type, "inv_name_short")));
 		info.icon._set(ammo_type);
 	}

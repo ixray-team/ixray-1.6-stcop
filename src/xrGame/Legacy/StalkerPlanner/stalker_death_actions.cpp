@@ -41,8 +41,8 @@ bool CStalkerActionDead::fire			() const
 	if (!weapon)
 		return							(false);
 
-	if (!weapon->GetAmmoElapsed())
-		return							(false);
+	if ((weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed()) == 0)
+		return (false);
 
 	if (!object().hammer_is_clutched())
 		return							(false);
@@ -74,7 +74,7 @@ void CStalkerActionDead::initialize		()
 		if (item) {
 			CWeaponMagazined*			weapon = smart_cast<CWeaponMagazined*>(item);
 			VERIFY						(weapon);
-			weapon->SetQueueSize		(weapon->GetAmmoElapsed());
+			weapon->SetQueueSize		(weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed());
 		}
 	}
 
