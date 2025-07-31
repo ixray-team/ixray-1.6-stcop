@@ -437,6 +437,9 @@ DEFAULT_MMAP_THRESHOLD       default: 256K
   disable mmap by setting to MAX_SIZE_T.
 
 */
+
+#pragma warning(push)
+#pragma warning(disable: 4312)
 #ifdef DEBUG
 #	undef DEBUG
 #endif // DEBUG
@@ -3223,7 +3226,6 @@ static void reset_on_error(mstate m) {
   init_bins(m);
 }
 #endif /* PROCEED_ON_ERROR */
-#pragma warning(push)
 #pragma warning(disable: 4267)
 /* Allocate chunk and prepend remainder with chunk in successor base. */
 static void* prepend_alloc(mstate m, char* newbase, char* oldbase,
