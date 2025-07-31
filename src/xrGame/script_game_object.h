@@ -970,6 +970,7 @@ public:
 	LPCSTR GetActorAnimatorSection();
 	bool IsAnimatorActive();
 	u8 GetActorAnimatorRestoredSlot();
+	float GetActorPowerBoostTime();
 
 	void IterateFeelTouch(const luabind::functor<bool>& functor);
 			bool IsActorLadder() const;
