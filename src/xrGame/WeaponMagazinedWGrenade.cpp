@@ -880,16 +880,14 @@ bool CWeaponMagazinedWGrenade::GetBriefInfo(II_BriefInfo& info)
 		info.cur_ammo = "∞";
 	}
 
-	if (HasFireModes())
+	if (m_iQueueSize == WEAPON_ININITE_QUEUE)
+		info.fire_mode._set("A");
+	else
 	{
-		if (m_iQueueSize == WEAPON_ININITE_QUEUE)
-			info.fire_mode._set("A");
-		else
-		{
-			xr_sprintf(int_str, "%d", m_iQueueSize);
-			info.fire_mode._set(int_str);
-		}
+		xr_sprintf(int_str, "%d", m_iQueueSize);
+		info.fire_mode._set(int_str);
 	}
+
 	if (m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame)
 		return false;
 
