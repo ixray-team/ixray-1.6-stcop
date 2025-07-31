@@ -18,31 +18,17 @@ void Help(const char*);
 
 void xrLight_Details();
  
-void StartupDO(LPSTR lpCmdLine) {
+#include "CompilersUI.h"
+extern CompilersMode gCompilerMode;
+
+void StartupDO() 
+{
 	bClose = FALSE;
 
-	char cmd[512], name[256];
-
-	bool bNet = false;
-	xr_strcpy(cmd, lpCmdLine);
-	_strlwr(cmd);
-
-	if (strstr(cmd, "-?") || strstr(cmd, "-h")) 
-	{
-		Help(h_str); 
-		return; 
-	}
-
-	if (strstr(cmd, "-f") == 0) 
-	{
-		Help(h_str); 
-		return; 
-	}
- 
+	char name[256];
+ 	strcpy(name, gCompilerMode.level_name);
 	// Load project
-	name[0] = 0;
-	sscanf(strstr(cmd, "-f") + 2, "%s", name);
-
+  
 	extern  HWND logWindow;
 	string256			temp;
 	xr_sprintf(temp, "%s - Detail Compiler", name);
@@ -51,10 +37,9 @@ void StartupDO(LPSTR lpCmdLine) {
 	FS.get_path("$level$")->_set(name);
 
 	Phase("Loading level...");
-	// gl_data.slots_data.Load();
-	gl_data.xrLoad();
+ 	gl_data.xrLoad();
 
-	gl_data.use_intel = strstr(cmd, "-use_intel");
+	gl_data.use_intel = gCompilerMode.Embree;
 
 	Phase("Lighting nodes...");
 	xrLight_Details();
