@@ -70,6 +70,7 @@ ShaderElement::ShaderElement()
 	flags.iPriority		= 1;
 	flags.bStrictB2F	= FALSE;
 	flags.bEmissive		= FALSE;
+	flags.bScopeMask	= FALSE;
 	flags.bDistort		= FALSE;
 	flags.bWmark		= FALSE;
 	flags.bLandscape	= FALSE;
@@ -80,6 +81,7 @@ BOOL ShaderElement::equal	(ShaderElement& S)
 	if (flags.iPriority		!= S.flags.iPriority)	return FALSE;
 	if (flags.bStrictB2F	!= S.flags.bStrictB2F)	return FALSE;
 	if (flags.bEmissive		!= S.flags.bEmissive)	return FALSE;
+	if (flags.bScopeMask	!= S.flags.bScopeMask)	return FALSE;
 	if (flags.bWmark		!= S.flags.bWmark)		return FALSE;
 	if (flags.bLandscape	!= S.flags.bLandscape)	return FALSE;
 	if (flags.bDistort		!= S.flags.bDistort)	return FALSE;
