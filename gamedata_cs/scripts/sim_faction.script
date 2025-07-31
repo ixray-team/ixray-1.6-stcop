@@ -157,7 +157,7 @@ function se_sim_faction:read_params()
 	end
 end
 function se_sim_faction:on_unregister()
-	cse_alife_smart_zone.on_unregister(self)
+		cse_alife_smart_zone.on_unregister(self)
 end
 --' «аполнение стартового расположени€
 function se_sim_faction:fill_start_position()

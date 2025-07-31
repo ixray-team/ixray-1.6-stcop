@@ -1,0 +1,3081 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_agr_stalker_leader_tip">
+		<text>Zsoldos, х itt Oreszt, a helyi stalkerek vezetхje! Ha beszйlgetni szeretnйl, keress meg a fхйpьlet elsх emeletйn!</text>
+	</string>
+	<string id="st_gar_bandit_lager_warning">
+		<text>Hй, te! Idegenek nem jцhetnek be ide, ez a mi placcunk! Figyelmeztetйs nйlkьl tьzelьnk!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_1">
+		<text>Ha, Most majd megmutatjuk nekik az biztos!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_2">
+		<text>Fъъ... Innйt mбr csak kцnnyebb lesz!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_come_3">
+		<text>Kцsz, haver! Most mбr szйtverjьk хket!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_1">
+		<text>У haver! Tйnyleg kisegнtettйl a bajban! Valamikor ugorj be a bбzisra a jutalmadйrt.</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_2">
+		<text>Kцszi haver! Ugorj be hozzбnk, hogy kimutathassuk hбlбnkat!</text>
+	</string>
+	<string id="stalker_alife_defence_actor_help_3">
+		<text>Ezer kцszцnet! Ha legkцzelebb a kцrnyйkьnkцn jбrsz, ugorj be a bбzisra a jutalomйrt!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_1">
+		<text>Ez majd megйrteti velьk, hogy ne menjenek oda, ahovб nem kaptak meghнvбst!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_2">
+		<text>Istennek hбla, feltartottuk хket!</text>
+	</string>
+	<string id="stalker_alife_defence_end_defence_3">
+		<text>Ebbхl a tбborbуl csak nйhбny golyуt zsбkmбnyoltak, a fejьkbe!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_bandit_1">
+		<text>Szorongatnak minket a fosztogatуk! Segнts haver, kйrlek!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_csky_1">
+		<text>Harcban бllunk a Tiszta Йgbolttal! Segнts, йs meghбlбljuk!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_dolg_1">
+		<text>A Szolgбlat kikйszнt minket! Segнts, vagy mind itt halunk meg!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_freedom_1">
+		<text>Hй stalker! Felmorzsolnak a Szabadsбg erхk! Mi lenne, ha megtanнtanбnk хket viselkedni?</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_military_1">
+		<text>Segнts haver! A hadsereg a stalkereket gyepбlja!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_mutant_1">
+		<text>Tйrdig gбzolunk a szцrnyekben. Segнts!</text>
+	</string>
+	<string id="stalker_alife_defence_request_help_vs_zombied_1">
+		<text>Haver, segнtened kell megцlni ezeket a zombikat!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_1">
+		<text>Megцlik az embereinket! Hol vagy?!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_2">
+		<text>Nem tudjuk feltartani хket! Siess!</text>
+	</string>
+	<string id="stalker_alife_defence_wait_help_3">
+		<text>Hamarosan mбr tъl kйsх lesz! Segнts!</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_1">
+		<text>... Mi tцrtйnt? Jelentkezz. Hallasz engem?</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_2">
+		<text>... Fiъk, mi folyik ott?</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_3">
+		<text>... Йletben van mйg valaki? Vбlaszoljatok!</text>
+	</string>
+	<string id="stalker_alife_counter_attack_check_4">
+		<text>... Hallotok? ... itt ...</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_1">
+		<text>Az egysйgьnk nem jelentkezik. Menjetek. Lehet, hogy segнtsйgre szorulnak.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_2">
+		<text>Nem sikerьl kapcsolatba lйpni a mieinkkel. Meg kell tudnunk, hogy mi tцrtйnt.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_counter_attack_begin_3">
+		<text>A tбrsaink eltйvedtek. Szedj цssze egy csapatot, йs keresd meg хket.</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_1">
+		<text>Nйzzьk meg, hogy mi folyik ott!</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_2">
+		<text>Йrtem! Mбr ъton vagyunk!</text>
+	</string>
+	<string id="stalker_alife_counter_attack_reply_3">
+		<text>Fogadok, hogy minden rendben. De jobb, ha megnйzzьk.</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_1">
+		<text>Vйge a jбtйknak szarhбziak!</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_2">
+		<text>Fedezzetek fiъk! Bemegyek!</text>
+	</string>
+	<string id="stalker_alife_attack_actor_in_battle_3">
+		<text>Valaki meg fog sйrьlni!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_1">
+		<text>Mindenki kйsz! Indulбs!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_2">
+		<text>Gyerьnk, itt az idх hхsnek lenni!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_begin_3">
+		<text>Felkйszьlni! Indulбs, emberek!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_1">
+		<text>Kйszьljetek a harcra! Szуrуdjatok szйt!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_2">
+		<text>Szуrуdjatok szйt fiъk! Indulunk!</text>
+	</string>
+	<string id="stalker_alife_attack_attack_ready_3">
+		<text>Szуrуdjatok szйt, йs foglaljбtok el a helyeteket!</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_1">
+		<text>Бhh, pont most akartam szundнtani egy kicsit...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_2">
+		<text>Mi? Mбr megint!</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_3">
+		<text>Miйrt nem szьlettem halva?...</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_4">
+		<text>Egyszer megehetem vйgre azt a kibaszott kajбt?</text>
+	</string>
+	<string id="stalker_alife_attack_begin_reply_5">
+		<text>Pedig mondtбk, hogy maradjak tбvol a Zуnбtуl...</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_1">
+		<text>Mi, ennyi? Most kezdtem belejцnni!</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_2">
+		<text>Ideje pihentetni a zбrуizmaitokat! Vйge!</text>
+	</string>
+	<string id="stalker_alife_attack_end_fight_3">
+		<text>Mi vagyunk a legjobbak! Megmutattuk nekik!</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_1">
+		<text>Bulizni fogunk! Ki akar szуrakozni egy kicsit?</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_2">
+		<text>Цsszecsapбs az ellensйggel. Indulunk!</text>
+	</string>
+	<string id="stalker_alife_attack_found_enemy_3">
+		<text>Lбtjuk az ellensйget. Felkйszьlьnk az цsszecsapбsra...</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_1">
+		<text>Senki ne feledje: csak parancsra lхhettek!</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_2">
+		<text>Felkйszьlni! Ha jelzek, tыz!</text>
+	</string>
+	<string id="stalker_alife_attack_prepare_attack_3">
+		<text>Semmi kezdemйnyezйs! Vбrjatok a jelemre!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_1">
+		<text>Йpp, amikor mбr hiбnyozni kezdtek... Lбtom az ellensйget!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_2">
+		<text>Ellensйg kцzvetlenьl jobbra!</text>
+	</string>
+	<string id="stalker_alife_attack_see_counter_3">
+		<text>Lбtom хket!</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_1">
+		<text>Elfoglaltuk a helyьnket!</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_2">
+		<text>Pozнciу elfoglalva.</text>
+	</string>
+	<string id="stalker_alife_attack_smart_captured_3">
+		<text>Minden az uralmunk alatt бll. Elfoglaltuk a cйlpontot.</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_1">
+		<text>Gyerьnk stalkerek! Szedjйtek le хket!</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_2">
+		<text>Lхjйtek le хket!</text>
+	</string>
+	<string id="stalker_alife_attack_start_fight_3">
+		<text>Tыz! TЫZ!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_1">
+		<text>Hй haver! Emlйkszel mйg rбnk?</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_2">
+		<text>Hй, hol vagy? Vбrunk...</text>
+	</string>
+	<string id="stalker_alife_attack_wait_again_3">
+		<text>Mйg mindig itt vagyunk, ha valakit йrdekel.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_1">
+		<text>Nem lesz vйge ilyen egyszerыen! Йn mondom neked.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_2">
+		<text>Tartsбtok nyitva a szemeteket, az ellensйg bбrmelyik percben itt lehet!</text>
+	</string>
+	<string id="stalker_alife_attack_wait_counter_3">
+		<text>Lehet, hogy semmi... De mindenesetre ellenхrizzйtek a fegyvereiteket.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_1">
+		<text>Kйszen vagyunk – parancsodra tбmadunk.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_2">
+		<text>Mind kйszen бllunk. Csak a parancsot vбrjuk.</text>
+	</string>
+	<string id="stalker_alife_attack_wait_signal_3">
+		<text>Minden pozнciу kйsz, vбrjuk a parancsodat!</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_1">
+		<text>Ъgy tыnik, meglбttak.</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_2">
+		<text>Ennyi. Nincs йrtelme a bujkбlбsnak.</text>
+	</string>
+	<string id="stalker_alife_attack_we_spotted_3">
+		<text>Egy meglepetйs tбmadбs mбr nem jцhet szуba.</text>
+	</string>
+	<string id="military_alife_patrol_run_1">
+		<text>Futуlйpйsben!</text>
+	</string>
+	<string id="military_alife_patrol_sneak_1">
+		<text>Kuss!</text>
+	</string>
+	<string id="military_alife_patrol_walk_1">
+		<text>Senki sem vonul vissza!</text>
+	</string>
+	<string id="military_alife_counter_attack_check_1">
+		<text>... Jelentйst! Vйge...</text>
+	</string>
+	<string id="military_alife_counter_attack_check_2">
+		<text>... Van ott valaki? Vбlaszolj, vйge!</text>
+	</string>
+	<string id="military_alife_counter_attack_check_3">
+		<text>... Mi a ... jelentkezz, бtkozott!</text>
+	</string>
+	<string id="military_alife_counter_attack_check_4">
+		<text>... A fenйbe, mind megsьketьltetek?</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_1">
+		<text>Figyelem! Megszakadt a kapcsolat az egyik egysйgьnkkel. Meg kell tudnunk, hogy mi tцrtйnt.</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_2">
+		<text>Menj, йs nйzd meg, hogy mi tцrtйnt. Az egysйg nem jelentkezik.</text>
+	</string>
+	<string id="military_alife_counter_attack_counter_attack_begin_3">
+		<text>Gyorsan, szedj цssze egy csapatot, йs nйzd meg, mi folyik ott! Valahogy megszakadt a kapcsolat. Lйgy уvatos!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_1">
+		<text>Igen, uram! Kutassбtok бt a kцrnyйket, йs lйtesнtsetek kapcsolatot!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_2">
+		<text>Igen, uram! Azonnal indulunk!</text>
+	</string>
+	<string id="military_alife_counter_attack_reply_3">
+		<text>Йrtettem! Бllнts цssze egy kutatуcsapatot!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_1">
+		<text>Elйg volt a pihenйsbхl! Indulunk!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_2">
+		<text>Szedjйtek цssze magatokat! Indulunk!</text>
+	</string>
+	<string id="military_alife_attack_attack_begin_3">
+		<text>Csapat, rendezхdjetek vonalba! </text>
+	</string>
+	<string id="military_alife_attack_attack_ready_1">
+		<text>Figyelem! Szуrуdjatok szйt!</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_2">
+		<text>Csapat! Foglaljбtok el a kiindulбsi pozнciуkat!</text>
+	</string>
+	<string id="military_alife_attack_attack_ready_3">
+		<text>Szйtszуrуdni!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_1">
+		<text>A fenйbe mбr megint... Mйg mindig csupa vйr vagyok az elхzх tбmadбs miatt!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_2">
+		<text>Mбr nagyon elegem van azokbуl a suttyуkbуl.</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_3">
+		<text>Ennyi, most mбr mйrges vagyok!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_4">
+		<text>Йs mйg tцbb harc! Na,neee!</text>
+	</string>
+	<string id="military_alife_attack_begin_reply_5">
+		<text>Ez mбr rйg tцbb, mint idegesнtх!</text>
+	</string>
+	<string id="military_alife_attack_start_fight_1">
+		<text>Tыz!</text>
+	</string>
+	<string id="military_alife_attack_start_fight_2">
+		<text>Tбmadбs!</text>
+	</string>
+	<string id="military_alife_attack_start_fight_3">
+		<text>Induljatok, tetы bagбzs!</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_1">
+		<text>Igeeen! Ez igazбn kedves tхled, tudod?</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_2">
+		<text>Бtkozottul цrьlцk, hogy lбtlak!</text>
+	</string>
+	<string id="freedom_alife_defence_actor_come_3">
+		<text>Jу, hogy lбtlak, haver! Most, hogy itt vagy, megmutatjuk neki, hogy mit tudunk!</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_1">
+		<text>У, tesу! Jуl megadtad nekik! Gyere el a bбzisunkra – megfelelх jutalmat kapsz majd, йs talбn mйg lazнthatunk is egy kicsit.</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_2">
+		<text>Ha nem lettйl volna, mбr a kukacok zabбlnбnak minket. Lбtogass meg minket a bбzison – megjutalmazunk egy kis aprуsбggal.</text>
+	</string>
+	<string id="freedom_alife_defence_actor_help_3">
+		<text>Mбr igen kцzel vagyunk a vйgsх szabadsбghoz. Ugorj be a bбzisra – tartozunk neked.</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_1">
+		<text>Akik AK-val йlnek, AK бltal halnak. Йrted, Szolgбlatos?</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_2">
+		<text>Nem igazбn йrtettem, hogy mit akartak mondani.</text>
+	</string>
+	<string id="freedom_alife_defence_end_defence_3">
+		<text>A szerencsйtleneknek esйlyьk sem volt – a taktikбnk egyszerыen tъl jу volt.</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_bandit_1">
+		<text>Testvйr!  Jцnnek a fosztogatуk – szьksйgьnk van a segнtsйgedre!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_csky_1">
+		<text>Szьksйg van a tбmogatбsodra haver! Ezek az бtkozott hуemberek teljesen ellepnek minket.</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_dolg_1">
+		<text>Segнts haver! A Szolgбlat be fog gyыjteni minket!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_military_1">
+		<text>Haver, segнts telepumpбlni уlommal nйhбny kemйnyfejыt!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_mutant_1">
+		<text>Hй stalker! Tiszta бllatkert van itt. Ha nem segнtesz, nem jutunk ki!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_stalker_1">
+		<text>Hй tesу, nйhбny stalker el akarja venni a szabadsбgunkat! Segнts!</text>
+	</string>
+	<string id="freedom_alife_defence_request_help_vs_zombied_1">
+		<text>Haver, segнts megбllнtani ezeket a zombikat!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_1">
+		<text>A tбrsaink haldokolnak! Gyorsan! Segнts!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_2">
+		<text>Segннннннtsйg! Vesztйsre бllunk!</text>
+	</string>
+	<string id="freedom_alife_defence_wait_help_3">
+		<text>Megfeledkeztetek rуlunk? Itt pusztulunk mind!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_1">
+		<text>... Mi a fene? Mi folyik ott?</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_2">
+		<text>... Ez mбr nem mуka... Nem viccelek...</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_3">
+		<text>... Emberek, mi folyik ott?</text>
+	</string>
+	<string id="freedom_alife_counter_attack_check_4">
+		<text>... Csapat, jelentkezz... a fenйbe!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_1">
+		<text>A fiъk nem jelentkeznek! Fйsьljйtek бt a terьletet йs legyetek rйsen!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_2">
+		<text>Бtkozott legyek, ha tudom, mi folyik itt. El kell mennьnk megnйzni, hogy a fiъk rendben vannak-e.</text>
+	</string>
+	<string id="freedom_alife_counter_attack_counter_attack_begin_3">
+		<text>Aggуdom az emberek miatt. Szedj цssze egy egysйget, йs fйsьld бt a terepet!</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_1">
+		<text>Igen, meg kell nйznьnk, hogy vannak a tбrsaink.</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_2">
+		<text>Megyьnk, megyьnk.</text>
+	</string>
+	<string id="freedom_alife_counter_attack_reply_3">
+		<text>Remйlem, nincsenek szorult helyzetben!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_1">
+		<text>Gyertek, йs kaptok extra adag уlmot!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_2">
+		<text>Йrezd a szeretetet, buzikбm!</text>
+	</string>
+	<string id="freedom_alife_attack_actor_in_battle_3">
+		<text>Elegem van belхled!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_1">
+		<text>Mindenki kйszьljцn fel! Van egy kis feladatunk!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_2">
+		<text>A cigiszьnetnek vйge! Mozogjatok!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_begin_3">
+		<text>Elйg a napozбsbуl! Bulizzunk!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_1">
+		<text>Szabad formбciу – tбmadбs kцzben tartsбtok a tбvolsбgot.</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_2">
+		<text>Szйtszуrуdni! Mindenki kйszьljцn!</text>
+	</string>
+	<string id="freedom_alife_attack_attack_ready_3">
+		<text>Pozнciуba, most!</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_1">
+		<text>A fenйbe! Azt hiszem elfogyott a lхszerem...</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_2">
+		<text>Mit is mondtбl, merre?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_3">
+		<text>Egy ъjabb nap, de ugyanaz a szar.</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_4">
+		<text>Ha ha ha! Nem... Hй, te nem viccelsz?</text>
+	</string>
+	<string id="freedom_alife_attack_begin_reply_5">
+		<text>Nem vбrhatnбnk mйg egy-kйt уrбt?</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_1">
+		<text>Ez tцrtйnik azokkal, akik ujjat hъznak a Szabadsбggal.</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_2">
+		<text>Rбjцttetek mбr, hogy kivel hъztatok ujjat? Ne felejtsйtek elmondani a barбtaitoknak is!</text>
+	</string>
+	<string id="freedom_alife_attack_end_fight_3">
+		<text>Kйsz, ennyi volt.</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_1">
+		<text>Ott van az ellensйg! Kйszьljetek a tбmadбsra!</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_2">
+		<text>Itt van az ellensйg! Csatlakozz a tбmadбshoz, ha elйg bбtor vagy.</text>
+	</string>
+	<string id="freedom_alife_attack_found_enemy_3">
+		<text>Lбtom az ellensйget! Ideje hбborъsdit jбtszani...</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_1">
+		<text>Ki ez a mбniбkus lцvцldцzх? Csak parancsra lхjetek!</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_2">
+		<text>Maradjatok nyugton! Csak a jelemre lхjetek!</text>
+	</string>
+	<string id="freedom_alife_attack_prepare_attack_3">
+		<text>Vбrjбtok a parancsot! Cйlra tarts!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_1">
+		<text>Itt vannak!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_2">
+		<text>Tбmadnak! Kйszenlйt!</text>
+	</string>
+	<string id="freedom_alife_attack_see_counter_3">
+		<text>Ellensйges erхk kцzelednek!</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_1">
+		<text>Leszedtьk mindet. Ez a pozнciу mбr a miйnk.</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_2">
+		<text>Az ellensйg halott. Biztosнtottuk a helyszнnt.</text>
+	</string>
+	<string id="freedom_alife_attack_smart_captured_3">
+		<text>Csapatunk elfoglalta a pozнciуt.</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_1">
+		<text>Gyerьnk, gyerьnk, gyerьnk!</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_2">
+		<text>Цljйtek meg mindet! Gyerьnk!</text>
+	</string>
+	<string id="freedom_alife_attack_start_fight_3">
+		<text>Tбmadбs! Tьzelj, tьzelj!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_1">
+		<text>Hй haver, velьnk vagy, nem?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_2">
+		<text>Egyedьl akarsz szуrakozni? Mire vбrunk?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_again_3">
+		<text>Csak egy dolgot mondj meg nekem – szabadon elmehetьnk, vagy szimplбn csak lassъ vagy?</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_1">
+		<text>A zsigereimben йrzem, hogy valami kopogtat az ajtуnkon!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_2">
+		<text>Nem alszik senki! Tбmadni fognak, fogadni mernйk!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_counter_3">
+		<text>Figyelem! Az ellensйg mбr most is a nyakunkon lehet!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_1">
+		<text>Az embereim kйszek a harcra. A parancsodra csatlakozunk a harchoz!</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_2">
+		<text>Alapvetхen minden kйsz – csak  a tбmadбsi parancsot vбrjuk.</text>
+	</string>
+	<string id="freedom_alife_attack_wait_signal_3">
+		<text>Elfoglaltuk a pozнciуkat. Vбrjuk a parancsaidat!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_1">
+		<text>Ennyit a meglepetйs erejйrхl – ezt elbaltбztuk!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_2">
+		<text>Jу terv volt, de elkaptak minket!</text>
+	</string>
+	<string id="freedom_alife_attack_we_spotted_3">
+		<text>Nincs йrtelme bujkбlni – felfedeztek minket!</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_1">
+		<text>Vйgre! A vilбgnak tцbb olyan emberre lenne szьksйge mint te!</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_2">
+		<text>Megйrkezett az erхsнtйs! Most majd megmutatjuk nekik...</text>
+	</string>
+	<string id="dolg_alife_defence_actor_come_3">
+		<text>Hй! Szerintem dolgozzunk цssze. Mit szуlsz?</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_1">
+		<text>Ъgh... Ez kцzel volt! Kцsz haver. Gyere el a bбzisunkra – A Szolgбlat nem feledi a jуtetteket.</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_2">
+		<text>Mбr alulrуl szagolnбnk az ibolyбt, ha nem segнtettйl volna. Gyere el a bбzisunkra, hadd tegyen valami szolgбlatot neked is a Szolgбlat.</text>
+	</string>
+	<string id="dolg_alife_defence_actor_help_3">
+		<text>Ilyen kцzel voltunk, hogy legyхzzenek minket! Gyere el a bбzisunkra, hogy illхen megkцszцnhessьk a segнtsйget!</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_1">
+		<text>Legyхztьk хket! Kцszцnцm mindenkinek!</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_2">
+		<text>Sikerьlt tartanunk a pozнciуnkat.</text>
+	</string>
+	<string id="dolg_alife_defence_end_defence_3">
+		<text>Sose menjetek kйssel tыzharcba, ostobбk!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_stalker_1">
+		<text>Hй zsoldos! Segнts a Szolgбlatnak legyхzni nйhбny seggfej stalkert!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_bandit_1">
+		<text>Segнts nekьnk, barбtom! A fosztogatуk a te ellensйgeid is!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_csky_1">
+		<text>Hй haver! Szьksйgьnk van a segнtsйgedre, hogy legyхzzьk azokat a takonypуc punkokat az Ingovбnyban.</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_freedom_1">
+		<text>Segнts megszabadulni azoktуl a sцpredйk Szabadsбg mocskoktуl!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_military_1">
+		<text>A hadsereg nagyon megnehezнti a dolgunkat! Szьksйgьnk van a segнtsйgedre, hogy legyхzzьk хket!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_mutant_1">
+		<text>Hй stalker! Szьksйgьnk van rбd a Zуna fattyai elleni harcban!</text>
+	</string>
+	<string id="dolg_alife_defence_request_help_vs_zombied_1">
+		<text>A zombik egyre kцzelebb jцnnek, szьksйgьnk van a segнtsйgedre!</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_1">
+		<text>Hol vagy! Szьksйgьnk van a segнtsйgedre!</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_2">
+		<text>Hol vagy, zsoldos?</text>
+	</string>
+	<string id="dolg_alife_defence_wait_help_3">
+		<text>Nem vбrhatunk rбd цrцkkй! Gyere ide!</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_1">
+		<text>... Mit tцrtйnt? Jelentйst!</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_2">
+		<text>... Itt a bбzis, azonnal vбlaszoljatok...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_3">
+		<text>... Szakasz! Mi van veletek?...</text>
+	</string>
+	<string id="dolg_alife_counter_attack_check_4">
+		<text>... Hallу! Kйrtek segнtsйget?</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_1">
+		<text>Figyelem! Nem tudjuk elйrni a csapatunkat – rajtad mъlik, hogy megtudd mi tцrtйnt velьk. Indulj.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_2">
+		<text>Lehet, hogy csak technikai problйma, de valami azt sъgja, hogy nem az. Ki kell derнtenьnk.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_counter_attack_begin_3">
+		<text>Rendben, kйszнts fel egy csapatot йs indulj. A fiъk nem vбlaszolnak.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_1">
+		<text>Mi a fen tцrtйnt ott? Meg kell tudnunk.</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_2">
+		<text>Emberek! Talpra, szaporбn!</text>
+	</string>
+	<string id="dolg_alife_counter_attack_reply_3">
+		<text>Igen, bбrmi tцrtйnhetett. Mozgбs!</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_1">
+		<text>Szolgбlat, tбmadбs!</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_2">
+		<text>Ezzel tartoztam neked!</text>
+	</string>
+	<string id="dolg_alife_attack_actor_in_battle_3">
+		<text>Szedjйtek le хket!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_1">
+		<text>Figyelem! Kйszьljetek a harcra!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_2">
+		<text>Mutassuk meg nekik, hogy milyen fбbуl faragtбk a Szolgбlatot! Kйszьljetek!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_begin_3">
+		<text>Ellenхrizzйtek a fegyvereket йs kцvessйtek vezetхiteket!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_1">
+		<text>Szйtszуrуdni!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_2">
+		<text>Figyelem! Mindenki foglalja el a helyйt!</text>
+	</string>
+	<string id="dolg_alife_attack_attack_ready_3">
+		<text>Szуrуdjatok szйt, йs kйszьljetek a harcra!</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_1">
+		<text>Vйget йr ez valaha?</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_2">
+		<text>Hнv a kцtelessйg, ideje vбlaszolni,!</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_3">
+		<text>Az ellensйg mindenhol ott van... egyre csak jцnnek... йs jцnnek... йs jцnnek...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_4">
+		<text>Egy magasabb cйl йrdekйben teszem... egy magasabb cйlйrt...</text>
+	</string>
+	<string id="dolg_alife_attack_begin_reply_5">
+		<text>Legalбbb hadd vegyem fel a csizmбmat...</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_1">
+		<text>A terьlet a miйnk!</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_2">
+		<text>Kiыztьk a szemeteket!</text>
+	</string>
+	<string id="dolg_alife_attack_end_fight_3">
+		<text>Ellensйg megsemmisнtve! Hurrб!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_1">
+		<text>Lбtom az ellensйget! Aki a jу ьgyйrt szeretne harcolni, most csatlakozzon!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_2">
+		<text>Ellensйg bemйrve! Tбmadni fogunk!</text>
+	</string>
+	<string id="dolg_alife_attack_found_enemy_3">
+		<text>Ellensйg! Kйszьljetek a harcra.</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_1">
+		<text>Vбrj... ne tьzelj, amнg nem szуlok!</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_2">
+		<text>Ha korбbban lхsz, mint ahogy parancsot adok, falбbbal mйsz haza!</text>
+	</string>
+	<string id="dolg_alife_attack_prepare_attack_3">
+		<text>Tartsбtok nyitva a szemeteket! A parancsomra tбmadjatok!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_1">
+		<text>Vizuбlis kapcsolat! Mindenki kйszenlйtbe!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_2">
+		<text>Lбtom az ellensйget!</text>
+	</string>
+	<string id="dolg_alife_attack_see_counter_3">
+		<text>Ellensйget lбtok!</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_1">
+		<text>Jelentйs: elkergettьk az ellensйget.</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_2">
+		<text>Vettem. A pozнciу az uralmunk alatt бll.</text>
+	</string>
+	<string id="dolg_alife_attack_smart_captured_3">
+		<text>Elfoglaltuk a pozнciуt, vбrjuk a tovбbbi parancsokat.</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_1">
+		<text>Tыz!</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_2">
+		<text>Tьzet nyiss!</text>
+	</string>
+	<string id="dolg_alife_attack_start_fight_3">
+		<text>Tыz!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_1">
+		<text>Zsoldos, a jeledre vбrunk! Vйge.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_2">
+		<text>Hй, minden rendben veled?</text>
+	</string>
+	<string id="dolg_alife_attack_wait_again_3">
+		<text>Nйzesd meg a fejed valamikor. Az emberek vбrnak.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_1">
+		<text>Mennyi lхszerьnk van mйg? Vendйgeket vбrunk.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_2">
+		<text>Folytassбtok az хrkцdйst! Lehet, hogy ellentбmadбst indнtanak!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_counter_3">
+		<text>Maradjatok йberek! Az ellensйg bбrmelyik percben tбmadhat!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_1">
+		<text>A csapat kйsz a harcra. Csak jelezd, hogy mikor!</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_2">
+		<text>A harcosok elfoglaltбk a helyeiket. Csak jelezned kell.</text>
+	</string>
+	<string id="dolg_alife_attack_wait_signal_3">
+		<text>Minden kйsz! Jelezz, hogy mikor kezdjьk!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_1">
+		<text>Figyelem! Йszrevettek minket!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_2">
+		<text>Az ellensйg felfedezett minket!</text>
+	</string>
+	<string id="dolg_alife_attack_we_spotted_3">
+		<text>Lebuktunk!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_1">
+		<text>Ez a, tanнtsuk meg хket harcolni!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_2">
+		<text>Szйp tхled, hogy eljцttйl! Nem lesz meleg fogadtatбsban rйszьk!</text>
+	</string>
+	<string id="csky_alife_defence_actor_come_3">
+		<text>Kцszцnjьk, hogy eljцttйl segнteni! Mutassuk meg nekik, hogy ki itt a fхnцk!</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_1">
+		<text>Kцszцnjьk a segнtsйget! Ugorj be valamikor a bбzisra – megtalбljuk a mуdjбt, hogy megkцszцnjьk, нgйrem!</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_2">
+		<text>Kцszцnjьk a segнtsйget! Ugorj be valamikor a bбzisra – meghбlбljuk a segнtsйget!</text>
+	</string>
+	<string id="csky_alife_defence_actor_help_3">
+		<text>Kцszцnjьk zsoldos! Sikerьlt megfordнtanod a csata kimenetelйt! A bбzisunkon vбr a jutalmad.</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_1">
+		<text>Alig tudjuk feltartуztatni хket.</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_2">
+		<text>Haver, ez aztбn szйp vйdekezйs volt!</text>
+	</string>
+	<string id="csky_alife_defence_end_defence_3">
+		<text>Visszavertьnk egy ъjabb tбmadбst!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_bandit_1">
+		<text>Zsoldos! Segнts a fosztogatуk elleni harcban!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_dolg_1">
+		<text>A Szolgбlat csapatai elsцpцrnek minket! Segнts elbбnni velьk!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_freedom_1">
+		<text>Hй haver! Ezek a Szabadsбg harcosok jуl megszorongatnak minket. Segнts!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_military_1">
+		<text>Ember, segнts harcolni a hadsereg ellen!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_mutant_1">
+		<text>Segнts zsoldos! Mindenfelй mutбnsok vannak!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_stalker_1">
+		<text>Hй haver! Segнts elintйzni nйhбny stalkert!</text>
+	</string>
+	<string id="csky_alife_defence_request_help_vs_zombied_1">
+		<text>Gyere ide! A zombik felйnk jцnnek!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_1">
+		<text>Gyorsan! Lemйszбrolnak minket!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_2">
+		<text>Mбr nem bнrjuk sokбig! Siess, segнts!</text>
+	</string>
+	<string id="csky_alife_defence_wait_help_3">
+		<text>Бtkozott! Hol a fenйben vagy?</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_1">
+		<text>... Figyelem... itt a bбzis... vбlaszoljatok...</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_2">
+		<text>... Mi a franc folyik ott?</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_3">
+		<text>... A fenйbe is! Vбlaszoljatok, most!</text>
+	</string>
+	<string id="csky_alife_counter_attack_check_4">
+		<text>... A fenйbe...</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_1">
+		<text>Indulj йs nйzd meg, hogy mi tцrtйnt a csapatunkkal. Nem vбlaszolnak a hнvбsra.</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_2">
+		<text>Elvesztettьk a kapcsolatot a fiъkkal. Ki kell menni megnйzni, hogy mi tцrtйnt velьk.</text>
+	</string>
+	<string id="csky_alife_counter_attack_counter_attack_begin_3">
+		<text>A fiъk nem vбlaszolnak. Valami biztosan tцrtйnt velьk.</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_1">
+		<text>A feladat egyйrtelmы! Vйgrehajtom.</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_2">
+		<text>Rajta vagyunk!</text>
+	</string>
+	<string id="csky_alife_counter_attack_reply_3">
+		<text>Kнvбncsi vagyok, kibe botlottak bele... Indulunk.</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_1">
+		<text>A barбtainkйrt!</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_2">
+		<text>Ezt kуstold meg, a papa kedvййrt!</text>
+	</string>
+	<string id="csky_alife_attack_actor_in_battle_3">
+		<text>Nesze, egy kis forrу уlom, seggfej!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_1">
+		<text>Csapat! Mozgбs!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_2">
+		<text>Az ellensйg sosem alszik! Kйszьljetek!</text>
+	</string>
+	<string id="csky_alife_attack_attack_begin_3">
+		<text>Csapat, utбnam!</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_1">
+		<text>Бlljatok lбncba! Kйszьljetek fel!</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_2">
+		<text>Mindenki szуrуdjon szйt!</text>
+	</string>
+	<string id="csky_alife_attack_attack_ready_3">
+		<text>Csapat! Foglaljбtok el a helyeteket!</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_1">
+		<text>Mбr megint kezdхdik...</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_2">
+		<text>Mikor lesz mбr vйge?</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_3">
+		<text>Haver, hogy unom mбr ezeket a kirбndulбsokat!</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_4">
+		<text>Istenemre, mйg kajбlni se hagyjбk az embert!</text>
+	</string>
+	<string id="csky_alife_attack_begin_reply_5">
+		<text>Mбr nem bнrom elviselni!</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_1">
+		<text>Jуl megadtuk nekik...</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_2">
+		<text>Darabokra szaggattuk хket...</text>
+	</string>
+	<string id="csky_alife_attack_end_fight_3">
+		<text>Hъъъ! Ez jу harc volt, nem igaz?</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_1">
+		<text>Ellensйg kцzelнt. Kйszьljetek a tбmadбsra.</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_2">
+		<text>Ellensйg a lбthatбron, kйszьljetek a tбmadбsra.</text>
+	</string>
+	<string id="csky_alife_attack_found_enemy_3">
+		<text>Felkйszьlьnk a tбmadбsra. Csatlakozz, ha van kedved.</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_1">
+		<text>A jelemre indul a tбmadбs!</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_2">
+		<text>Ne tбmadjatok, amнg parancsot nem adok!</text>
+	</string>
+	<string id="csky_alife_attack_prepare_attack_3">
+		<text>Csak parancsra lхjetek!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_1">
+		<text>Itt is vannak. Kйszьljetek!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_2">
+		<text>Ellensйg йszlelve!</text>
+	</string>
+	<string id="csky_alife_attack_see_counter_3">
+		<text>Lбtom a cйlpontot!</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_1">
+		<text>Bбzis, elfoglaltuk a cйlpontot.</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_2">
+		<text>Pozнciу elfoglalva. Vйge.</text>
+	</string>
+	<string id="csky_alife_attack_smart_captured_3">
+		<text>Bбzis, elыztьk az ellensйget.</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_1">
+		<text>Tбmadбs! Kapjuk el хket!</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_2">
+		<text>Tыz! Tбmadбs!</text>
+	</string>
+	<string id="csky_alife_attack_start_fight_3">
+		<text>Kaszбljбtok le хket! Tыz!</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_1">
+		<text>Йbren vagy? Rбd vбrunk.</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_2">
+		<text>Gyerьnk haver, ez nem vicces. Jelentkezzetek!</text>
+	</string>
+	<string id="csky_alife_attack_wait_again_3">
+		<text>Hй йltek mйg? Mi van?</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_1">
+		<text>Nincs pihenх! Ъgy tыnik, nemsokбra lбtogatуkat kapunk.</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_2">
+		<text>Figyeljetek minden aprу mozgбsra! Lehet, hogy az ellensйg mбr a nyakunkon van!</text>
+	</string>
+	<string id="csky_alife_attack_wait_counter_3">
+		<text>Folytassбtok az хrkцdйst! Tбmadбs vбrhatу!</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_1">
+		<text>Zsoldos, kйszek vagyunk, hogy a parancsodra csatlakozzunk!</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_2">
+		<text>Zsoldos, a jeledre tбmadunk!</text>
+	</string>
+	<string id="csky_alife_attack_wait_signal_3">
+		<text>Zsoldos, csak a jeledre vбrunk!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_1">
+		<text>A fenйbe! Йszrevettek!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_2">
+		<text>Nyнlt terepen kell harcolnunk!</text>
+	</string>
+	<string id="csky_alife_attack_we_spotted_3">
+		<text>Meglбttak minket! Ismйtlem, meglбttak minket!</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_1">
+		<text>Mi, ццц... Kedves tхled, йpp jуkor jцttйl!</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_2">
+		<text>Hй! Mi lenne, ha jу elvernйnk azokat a faszszopуkat?</text>
+	</string>
+	<string id="bandit_alife_defence_actor_come_3">
+		<text>Ууу!  Na most lesz бm csak izgi nekik!</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_1">
+		<text>Hыы! Mбr egy ideje nem lбttam ilyen durvбt... Ugorj be egyszer – adunk valamit a fбradozбsaidйrt.</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_2">
+		<text>Kцszцnцm! Egy pillanatra mбr azt hittem, hogy mind talбlkozni fogunk a teremtхnkkel... Ugorj be a bбzisra, hogy meg tudjuk hбlбlni.</text>
+	</string>
+	<string id="bandit_alife_defence_actor_help_3">
+		<text>Mбr majdnem meghaltam, de hй, megvagyunk. Gyere el a bбzisra a jutalmadйrt.</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_1">
+		<text>Jцtt, lбtott йs jуl megszнvta! Ha-ha-ha!</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_2">
+		<text>Jуl seggbe rъgtuk хket!</text>
+	</string>
+	<string id="bandit_alife_defence_end_defence_3">
+		<text>Vedd ъgy, hogy ez a reggeli. Na, ha valaki hasonlуval prуbбlkozik, belхle lesz a desszert!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_csky_1">
+		<text>Hй haver! Segнts elverni a Tiszta Йgbolt katonбit!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_dolg_1">
+		<text>Segнtened kell tesу! Nagy szarban vagyunk amiatt a szarhбziak miatt!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_freedom_1">
+		<text>Azok az anarchista seggfejek rommб vernek minket, segнts!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_military_1">
+		<text>Segнts tesу! El kell fenekelni nйhбny katonбt!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_mutant_1">
+		<text>Jу, tesу! Segнtened kell legyхzni nйhбny ocsmбny szцrnyet!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_stalker_1">
+		<text>Szьksйgьnk van rбd tesу! Nйhбny seggfej el akar intйzni minket!</text>
+	</string>
+	<string id="bandit_alife_defence_request_help_vs_zombied_1">
+		<text>Gyere gyorsan! A halottak цldцsik az йlхket!</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_1">
+		<text>Lхnek rбnk! Fйrfi vagy, vagy nem?</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_2">
+		<text>Itt fogunk megdцgleni, tesу! Gyere ide!</text>
+	</string>
+	<string id="bandit_alife_defence_wait_help_3">
+		<text>Hol a fenйben vagy? Le fognak mйszбrolni!</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_1">
+		<text>... Jуl van fiъk, figyeljetek...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_2">
+		<text>... Mйg nem egйszen vagy hulla, igaz?</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_3">
+		<text>... Gyerьnk, szбlljatok mбr fel...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_check_4">
+		<text>... Hй tesу... nem igazбn tiszta, hogy mi folyik itt...</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_1">
+		<text>Ъgy tыnik, eltйvedtek a fiъk. Meg kell tudnunk, hogy mi tцrtйnt.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_2">
+		<text>A testvйreink bajba kerьltek. Vonszoljбtok ide magatokat, йs бlljatok sorba.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_counter_attack_begin_3">
+		<text>A haverjaink megbъjtak valahol. Meg kell nйznьnk, hogy mi a helyzet.</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_1">
+		<text>Nem kцszi, Nekilбtunk!</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_2">
+		<text>Ne aggуdj fхnцk, megyьnk!</text>
+	</string>
+	<string id="bandit_alife_counter_attack_reply_3">
+		<text>Igen-igen, rajta vagyunk.</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_1">
+		<text>Nesze, ezt kapd el!</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_2">
+		<text>Бlljatok sorba seggfejek!</text>
+	</string>
+	<string id="bandit_alife_attack_actor_in_battle_3">
+		<text>Fьstцljйtek ki хket fiъk!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_1">
+		<text>Emeljйtek fel a seggeteket йs kцvessetek!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_2">
+		<text>Talpra йs mozgбs!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_begin_3">
+		<text>Ideje ropogtatni valamit! Morzsoljuk fel хket!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_1">
+		<text>Engedjйtek el egymбs kezйt! Futбs!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_2">
+		<text>Ideje kilyuggatni хket! Szуrуdjatok szйt, gyorsan!</text>
+	</string>
+	<string id="bandit_alife_attack_attack_ready_3">
+		<text>Ъgy mozogtok mit egy marhacsorda! Kifьstцljьk хket!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_1">
+		<text>Mбr tйnyleg az idegeimre mennek!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_2">
+		<text>Mi a...?! Йpp, amikor haraptam volna valamit!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_3">
+		<text>A fenйbe! Most meg mi van?</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_4">
+		<text>Elintйzem az цsszeset!</text>
+	</string>
+	<string id="bandit_alife_attack_begin_reply_5">
+		<text>Ez csak gyakorlat, igaz?</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_1">
+		<text>Lenyomtuk a vesztes bandбt!</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_2">
+		<text>A marhбk mind kiterьltek! Nйzd бt a zsebeiket tesу!</text>
+	</string>
+	<string id="bandit_alife_attack_end_fight_3">
+		<text>Jу kis sertйskotlett lesz belхlьk, mi?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_1">
+		<text>Nйzzйtek csak, a kis ribancok tйnyleg megjelentek! Kinek van kedve elfenekelni хket?</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_2">
+		<text>Jу, talбltunk nйhбny szerencsйtlent, akiket tele lehet pumpбlni уlommal. Gyere, szуrakozz egy kicsit!</text>
+	</string>
+	<string id="bandit_alife_attack_found_enemy_3">
+		<text>Jу, gyere csatlakoz hozzбnk йs nyнrjuk ki a ribancokat!</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_1">
+		<text>Akkor ugrasz, ha mondom, akkor lхsz, ha mondom! Йrtjьk egymбst?</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_2">
+		<text>Kifьstцljьk хket, ha szуlok! Йrted?</text>
+	</string>
+	<string id="bandit_alife_attack_prepare_attack_3">
+		<text>Csak akkor tьzelsz, ha mondom!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_1">
+		<text>Hъъъ. Van itt mйg egy kцvйr disznу, akit el kйne intйzni!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_2">
+		<text>Hй fiъk! Vendйgeink jцttek!</text>
+	</string>
+	<string id="bandit_alife_attack_see_counter_3">
+		<text>Nos, csapj a seggemre, йs hнvj Dollynak! Micsoda talбlkozбs!</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_1">
+		<text>Vйge a sok buzinak. Mienk a terep!</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_2">
+		<text>Elintйztьk a szemeteket. A terьlet a miйnk.</text>
+	</string>
+	<string id="bandit_alife_attack_smart_captured_3">
+		<text>Szent szar, vйge!  Hullбk hevernek mindenьtt!</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_1">
+		<text>Adjatok nekik! Hadd йrezzйk a fбjdalmat!</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_2">
+		<text>Elйg a recskбzбsbуl! Mozgбs!</text>
+	</string>
+	<string id="bandit_alife_attack_start_fight_3">
+		<text>Kapd be a skulуm, ribanc!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_1">
+		<text>Ne lassulj le, tesу! Minden remekьl halad, csak rбd vбrunk.</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_2">
+		<text>Mi a fenйt csinбlunk itt? Ideje kitombolnunk magunkat!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_again_3">
+		<text>He? Hogy meghъzzuk magunkat? Mikor megyьnk harcolni, mi?</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_1">
+		<text>Tartsбtok csukva a szбtok, йs nyitva a szemetek!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_2">
+		<text>Tъl korai mйg ьnnepelni! Ъjra tбmadni fognak!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_counter_3">
+		<text>Mosd le azt a vigyort az arcodrуl! Figyeljetek tovбbb!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_1">
+		<text>Minden OK, csak mondd, hogy mikor!</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_2">
+		<text>Pozнciуban vagyunk. Csak kiabбlj, ha indulsz.</text>
+	</string>
+	<string id="bandit_alife_attack_wait_signal_3">
+		<text>Itt vagyunk. Csцrцgj rбnk, okй?</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_1">
+		<text>Szent szar! Йszrevettek minket!</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_2">
+		<text>A fenйbe, kiszъrtak minket!</text>
+	</string>
+	<string id="bandit_alife_attack_we_spotted_3">
+		<text>A francba! Leцlnek minket, haver...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_1">
+		<text>Ne fйljetek, tartsбtok a pozнciуtokat!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_comander_to_squad_2">
+		<text>Ne izguljatok!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_1">
+		<text>A fenйbe! Hбt ez meg mi?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_2">
+		<text>Hallottad ezt?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_3">
+		<text>Mi volt az?</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_1">
+		<text>Rohadйk vйrszнvу!!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_2">
+		<text>Бtkozott mutбns...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_3">
+		<text>Az isten verje meg a korcsбt!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_4">
+		<text>Szent szar, hбt az meg mi az цrdцg???</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_5">
+		<text>Tartsбtok nyitva a szemeteket!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_after_6">
+		<text>Йbersйg, emberek...</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_1">
+		<text>Dцgцlj meg, vйrszнvу sцpredйk!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_fear_fire_2">
+		<text>Itt is van!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_1">
+		<text>Jaj, ne!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_2">
+		<text>Szorнtsatok!</text>
+	</string>
+	<string id="scenario_marsh_bloodsucker_squad_fear_3">
+		<text>Talбn csak hallucinбlok...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_1">
+		<text>Kitartбs, tartsбtok a pozнciуtokat!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_comander_to_squad_2">
+		<text>Ne izgulj!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_1">
+		<text>A fenйbe! Ez meg mi?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_2">
+		<text>Hallottad ezt?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_3">
+		<text>Ez meg mi volt?</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_1">
+		<text>Rohadйk vйrszнvу!!!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_2">
+		<text>Бtkozott mutбns...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_3">
+		<text>Az isten verje meg a korcsбt!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_4">
+		<text>Szent szar, hбt az meg mi az цrdцg???</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_5">
+		<text>Tartsбtok nyitva a szemeteket!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_after_6">
+		<text>Йbersйg, emberek...</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_1">
+		<text>Dцgцlj meg, vйrszнvу sцpredйk!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_fear_fire_2">
+		<text>Itt is van!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_1">
+		<text>Jaj, ne!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_2">
+		<text>Remйlem, tъlйljьk!</text>
+	</string>
+	<string id="scenario_agroprom_bloodsucker_squad_fear_3">
+		<text>Talбn semmi kьlцnцs?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_2">
+		<text>Szьksйg van kйt emberre a szelepeknйl, kettх pedig velem jцn. Zsoldos, te mбssz fцl a hangбr tetejйre, йs fedezd mindkйt egysйget.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad1_ready">
+		<text>A szelepeknйl vagyunk, йs vбrjuk a parancsot.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad2_ready">
+		<text>A szelep pozнciуja beбllнtva. Indulhat az aktivбlбs!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_building_wave">
+		<text>Vigyбzat! Zombik az йpьlet bal oldalбnбl!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_truck_wave">
+		<text>Vigyбzat! Zombik a teherautуnбl!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_roof">
+		<text>A tetхn vannak!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_alarm_hangar">
+		<text>Zombik a hangбrban!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_1">
+		<text>Eddig jуk vagyunk Ne hagyjбtok abba!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_2">
+		<text>Csak нgy tovбbb!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_repealed_3">
+		<text>Egy ъjabb kilхve!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_freezer_fixed">
+		<text>Nagyszerы! A hыtхбllomбs ъjra mыkцdik. A pszichikus mezх stabil. Ideje elhъznunk innen...</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced">
+		<text>Megcsinбltad! Az йrzйkelхim szerint a pszi kisugбrzбs mйrtйke csцkken! Ez azt jelenti, hogy a hыtхrendszer stabil. Nagyon remйlem, hogy Jantar ezutбn sokkal nyugodtabb hely lesz!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_psy_reduced_reply">
+		<text>Jу hнrek professzor! Ъton vagyunk vissza a bunkerbe.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_red_forest">
+		<text>Kцszцnjьk, zsoldos. Mellesleg erхs jeleket fogok Sztreloktуl. Ъgy tыnik, nincs messze tхled, egyenesen a Vцrцs-erdх felй tart.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_assemble">
+		<text>Indulбs!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_go_to_roof">
+		<text>Zsoldos, neked a tetхn a helyed! Kцvesd a stalkert!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_not_go_to_roof">
+		<text>Ne hъzd az idхt. Kцvess!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_actor_on_roof">
+		<text>Okй, most jу helyen vagy. Tartsd a pozнciуt.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_prikritie">
+		<text>Majd йn fedezlek.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_ready">
+		<text>A cйlnбl vagyunk. A tetх tiszta. Javнtjuk a szelepet.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave1_go">
+		<text>A fenйbe! Zombik jцnnek minden oldalrуl!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval">
+		<text>Sokan vannak! Elleptйk az egйsz helyet! Бббббббб!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker3">
+		<text>Ббббб! Tъl sokan vannak! Segнtsйg!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker4">
+		<text>Segнtsйget kйrьnk. Nyъjtsatok tбmogatу tьzet!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_roof_nores_stalker5">
+		<text>Бббб! Mindenhol ott vannak! Mind itt pusztulunk!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_clear_roof">
+		<text>A zombik megprуbбlnak betцrni a hangбrba! Tъl sokan vannak!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof2">
+		<text>Megцlnek mindenkit!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_wave_naval_roof1">
+		<text>Fъ, visszavertьk хket... remйlem, innentхl kцnnyebb lesz.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_group_in_angar">
+		<text>A hangбrban vagyunk! Javнtjuk a szelepet.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_1">
+		<text>Ezt kapjбtok ki, zombi korcsok!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_2">
+		<text>Na ez hogy tetszik?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_3">
+		<text>Tetszik, ahogy mыkцdik a cucc?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_4">
+		<text>Nesze egy kis уlom, ezt csуcsбld!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_roof_5">
+		<text>Feltartom хket!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_begin">
+		<text>Francba! Mбr a nyakunkon vannak!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_1">
+		<text>Ennek sosem lesz vйge?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_naprnik_angar_2">
+		<text>Gyertek csak, rohadйkok!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_help_base_sci">
+		<text>A tudуsok bunkere tбmadбs alatt бll! Ha hallja valaki – kйrem segнtsenek!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_before_attack">
+		<text>Kцszцnjьk, hogy a segнtsйgьnkre jцtt! Vegyen fel lхбllбst, йs szabadon tьzelhet!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levwa_perimetr_after_attack">
+		<text>Kцszцnjьk a segнtsйget, zsoldos! A zombik tбmadбsa megszaporodott az utуbbi idхben. Ha a tudуsokkal akarsz beszйlni, a bunkerben megtalбlod хket.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_hello_actor">
+		<text>Hogy s mint zsoldos? A kьldetйs sorбn azt csinбlod, amit mondok, amikor mondom. Йrthetх?</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_1">
+		<text>Ellensйg jobbra!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_1">
+		<text>Egy mбsik balra!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_right_2">
+		<text>Ellensйg jobbra lent!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_left_2">
+		<text>Ellensйg balra lent!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_take_position">
+		<text>Foglald el a pozнciуdat, йs vйdd a hбtunkat! Ti ketten, adjatok nekik!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_clear">
+		<text>Tiszta! Indulбs!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_actor">
+		<text>Legkedvesebb Balga. Nйhбny ъj adat birtokбba jutottam. Ъgy tыnik, stabilizбlni tudjuk a pszichikus kisugбrzбst. Ъtban van egy fiatalember felйd. Kйrlek, vбrd meg хt, йs a tovбbbi utasнtбsokat.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professr_reply_actor">
+		<text>Igen, professzor. Vбrom az utasнtбsokat.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_about_switcher">
+		<text>Balga. Az adatok szerint a pszichikus kisugбrzбst egy ismeretlen berendezйs termeli valahol a gyбrtelep alatt. A pszichikus mezх instabil, mivel a berendezйs hыtхrendszere meghibбsodott. A feladatod a hыtхrendszer ъjraindнtбsa. Бtkьldtem minden fontos informбciуt a PDA-dra. Az бbra kйt szelepet mutat, melyek segнtsйgйvel be lehet indнtani a rendszert. Minkйt szelepre szьksйg van. Kerьlj pozнciуba, йs majd tudatom, ha a pszichikus kisugбrzбs mйrtйke a biztonsбgos szintre csцkken.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_reply_switcher">
+		<text>Professzor, kйszen бllunk, a jelzйsйre vбrunk.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_professor_start_operation">
+		<text>Balga, jelenleg a pszichikus kisugбrzбs mйrtйke minimбlis! Kйrem, lбsson hozzб! Minden remйnyьnk magбban van! Sok sikert!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_squad_diary">
+		<text>Бббббб, a fejem... szйtrobban a fejem, nem tudok йrtelmesen gondolkodni!... Ivбn... hirtelen megtбmadtak minket... ббб... a hangok a fejemben, az az бtkozott pszichikus kisugбrzбs... legalбbb a dokumentumok megvannak...mбr csak Szakarovhoz kell eljutnunk vele... a fenйbe, a kutyбk a nyomunkban vannak... nem akarok... neeeeeee... у istenem!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_give_orders_1">
+		<text>Mбr majdnem ott vagyunk. Ismйtlem, feladatunk megjavнtani a 2 szelepet a megadott helyen, йs ъjraindнtani a hыtхrendszert.</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_1">
+		<text>Azonnal ott vagyok!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_scientist_start_frase_2">
+		<text>Csak egy perc!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_1">
+		<text>Zsoldos, vissza a helyedre, hullunk, mint a legyek!</text>
+	</string>
+	<string id="characters_voice_scenario_yantar_yan_levsha_check_actor_position_2">
+		<text>Elvesztettьk az egysйget. A berendezйs irбnyнthatatlannб vбlt. Jцn a kisugбrzбs! Бббббббббббббббббб!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_1">
+		<text>Цrьlцk, hogy lбtlak zsoldos. Megcsinбltuk a lehetetlent – bejutottunk a Zуna kцzepйbe, az erхmыbe. Ezt rйszben neked kцszцnhetjьk.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_talk_2">
+		<text>Petrenkу, ellenхrizd Sztrelok PDA-jбnak frekvenciбjбt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_petrenko_talk_1">
+		<text>Parancsnok, Sztrelok nagyon kцzel van.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_scout_talk_1">
+		<text>Lebegyev, itt a felderнtх egysйg. Lбtjuk Sztrelokot.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_1">
+		<text>Zsoldos. Mбssz be a hхvezetйkbe, йs fogd el Sztrelokot! Mi a fцldrхl fedezьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_first_scene_objective_talk_2">
+		<text>Zsoldos, ez egy elektromбgneses fegyver prototнpusa. Segнtsйgйvel kiiktathatod Sztrelok pszichikus vйdelmйt, йs megбllнthatod. Vйdelem nйlkьl Sztrelok nem sokбig bнrja majd ki a kisugбrzбst. Mйg a mi vйdхruhбink is alig tudjбk semlegesнteni a mezхt. Kerьlj Sztrelok kцzelйbe, йs iktasd ki a vйdelmйt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_1">
+		<text>Tьzelj a gauss puskбval Sztrelokra, hogy meggyengьljцn a pszichikus vйdelme!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_2">
+		<text>Ne tцkцlj annyit, lхj Sztrelokra!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_3">
+		<text>Zsoldos, a cйl Sztrelok.. Mozogj йs ereszd bele a tбrad.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_4">
+		<text>Zsoldos, vedd le a lбbad a fйkrхl! Kapd el Sztrelokot vagy elmenekьl.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_5">
+		<text>Sztrelok elmenekьl. Csinбlj valamit!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_strelok_kill_reminder_6">
+		<text>Sztrelok pszichikus vйdelme mбr majdnem nullбra csцkkent. Mбr nem kell sok, йs teljesen kikapcsol.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_1">
+		<text>Figyelem! Vonjuk el a Monolitiak figyelmйt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_2">
+		<text>Gyerьnk, fiъk! Fedezzetek!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_3">
+		<text>Zъzzбtok be, az бtkozott zombik koponyбit!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_4">
+		<text>Szemetek! Kinyнrni mind!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_5">
+		<text>Ne engedjйtek, hogy oldalunkba kerьljenek!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_6">
+		<text>Ellensйg a bal oldalon!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_7">
+		<text>Minden egysйgnek, gyorstьzelйs!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_8">
+		<text>Ezt kapjбtok ki, seggfejek!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_9">
+		<text>У, Mama, engem mбr ne vбrj haza, ъj otthonom a tenger alja!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_10">
+		<text>Petrovics, fedezd a hбtunkat, rendben?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_11">
+		<text>Fйrfikйnt viseljйtek! Бlljбtok kemйnyen!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_12">
+		<text>Az ember csak egyszer halhat meg, testvйreim!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_13">
+		<text>Jobbrуl jцnnek! Bбrki is van ott, nyisson fedezхtьzet!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_14">
+		<text>Fogy a lхszerem! Hъzуdjunk vissza az anomбliбhoz!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_15">
+		<text>Srбcok, indulunk – tartsбtok fel хket!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_16">
+		<text>A fenйbe, srбcok, nekem annyi!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_17">
+		<text>Gyыlцllek!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_18">
+		<text>Majd йn megmutatom neked!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_19">
+		<text>Ennyi volt fiъk, lejбrt az idхm! Viszlбt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_20">
+		<text>Цljйtek meg ezeket az бtkozottakat!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_21">
+		<text>Valaki lхje mбr ki, azt a kurva mesterlцvйszt!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_22">
+		<text>Balra, уvatosan!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_23">
+		<text>Elхre, gyerьnk, gyerьnk, gyerьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_24">
+		<text>Megprуbбlom oldalba kapni хket!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_25">
+		<text>Eltalбltak, a fenйbe, eltalбltak!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_26">
+		<text>Haldoklom!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_27">
+		<text>Moszkitуnak annyi!  Бtveszem a parancsnoksбgot!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_28">
+		<text>Csak нgy tovбbb, цljьk meg хket!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_29">
+		<text>Mossuk fel velьk a padlуt! Tбmadбs!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_30">
+		<text>Azt hiszem, szбmomra itt a vйg... sajnбlom testvйrek!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_31">
+		<text>Йl mйg bбrki az йn szektoromban? Ne... ббrg!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_32">
+		<text>Alex? Ott vagy? Jelentkezz, a fenйbe is!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_33">
+		<text>Tartsd хket, Igor!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_34">
+		<text>Grбnбtot nekik, Paulie!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_35">
+		<text>Ott fent! A faszszopу odafent bъjkбl!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_background_battle_snd_36">
+		<text>Honnan a fenйbхl jцn ennyi?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_1">
+		<text>Sztrelok pszichikus vйdelme цsszeomlott – ez majd megбllнtja хt. Mбr csak vбrnunk kell, hogy mi tцrtйnik...</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_2">
+		<text>Milyenek az eredmйnyek? Csцkkent mбr az anomбlia йrtйke?</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_3">
+		<text>У baszki, ilyesmire nem szбmнtottam! Az anomбlia йrtйke a plafonon van!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_4">
+		<text>Hisz a Zуnбnak le kellett volna nyugodnia!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_5">
+		<text>Ббббб... mi a fene folyik itt... a fejem... szйtrobban... Бббб!</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_1">
+		<text>Hagytuk Sztrelokot meglйpni. Mбr az erхmыben van.</text>
+	</string>
+	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_2">
+		<text>Jцn a kisugбrzбs... az йrtйkek az йgben jбrnak... mindenki keressen fedezйket... Ббббб!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_locate_strelok">
+		<text>Zsoldos, siess! Nagyon kцzel vagy Sztrelokhoz!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_bounty_hunters_attack">
+		<text>Х az! Szedjйtek le!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_1">
+		<text>Ne engedjйtek az alagъtba!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_defend_tunel_2">
+		<text>Tartsбtok fel, amнg Sztrelok kijцn az alagъtbуl!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_spich">
+		<text>Zsoldos, felrobbantom az alagutat. Nem tudsz megбllнtani. El fogom йrni a Zуna kцzepйt, bбrmibe is kerьl.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_1">
+		<text>Sztrelok jele eltыnt. Elvesztettьk.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_2">
+		<text>A Perzselх irбnyбba ment, onnan pedig nincs messze a Zуna kцzpontja. Nekьnk цngyilkossбg lenne бtkelni a Perzselхn a tudуsok prototнpusa nйlkьl.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_3">
+		<text>Az egyetlen remйnyьnk, hogy elkapjuk Sztrelokot, ha keresztьl megyьnk Limanszkon. Ismerek egy alagutat ami oda vezet – A hнdon tъl indul.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_4">
+		<text>Ez az egyetlen ismert ъt a vбroshoz. A hidat a mбsik oldalrуl lehet leereszteni, de az mбr a fosztogatуk terьlete.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_camfly_5">
+		<text>A francba... Valahogy csak бt lehet jutni! Talбn van egy mбsik ъt a mбsik oldalra... Nos, ha van, aki segнteni tud bejutni Limanszkba, az Erdйsz. Azt mondjбk, az цreg olyan helyeken is kйpes biztonsбgos ъtvonalakat talбlni, ahol mйg soha nem jбrt azelхtt. Az цreg hбza a Vцrцs-erdх szйlйn van. Zsoldos, keresd meg Erdйszt!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_forester_greet_1">
+		<text>Hellу zsoldos. Mi jбratban vagy?</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_hail">
+		<text>Zsoldos, ide! Gyorsan! Lesij egysйge mбr majdnem itt van!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_come">
+		<text>Kцzeledik Lesij egysйge. A mi feladatunk fedezni хket, amнg бtkelnek a hнdon. Vegyetek fel lхбllбsokat a torony mбsodik szintjйn, йs kйszьljetek!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_start">
+		<text>... Itt Lesij. Megkцzelнtjьk a hidat.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_leshiy_reply">
+		<text>Lesij, itt Lebegyev. Vбrjuk a talбlkozбst!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_clear_path">
+		<text>Figyelem, minden harcosnak! Tisztнtsuk meg az utat Lesij elхtt! Tыz!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_assault_start">
+		<text>Itt Lesij, biztosнtottuk a helyzetьnket a hнd mellett.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_start_lower">
+		<text>Megprуbбljuk leengedni a hidat. Parancsnok, fedezzenek!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_1">
+		<text>Kцzlegйny, menjen a hнd vezйrlхjйhez, most!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_2">
+		<text>Katona, fusson a hнd vezйrlхpaneljйhez!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_go_lever_3">
+		<text>Kцzlegйny, menjen a hнd vezйrlхpaneljйhez!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_attention_control">
+		<text>Lebegyev, fedezze az emberemet a vezйrlхpanelnйl! A fosztogatуk  megprуbбljбk elkapni.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_first">
+		<text>A fenйbe! Mesterlцvйszek fedezik a panelt. Amнg йlnek, nem tudjuk leereszteni a hidat.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_1">
+		<text>A fenйbe! Van egy mesterlцvйsz a hegyen! Szedjйtek le!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lever_killed_2">
+		<text>Mi a fenйt csinбlsz? Szedd le a mesterlцvйszt, most!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_1">
+		<text>Mesterlцvйsz a dombon!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_2">
+		<text>Szedd le azt a mesterlцvйszt!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_sniper_3">
+		<text>Цld meg azt a mesterlцvйszt!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_1">
+		<text>Tъl sok a fosztogatу – mozdulni sem tudunk.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_2">
+		<text>A fosztogatуk beszorнtottak minket! Tбmogatу tьzet kйrьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_bandits_3">
+		<text>Lebegyev, lхjйtek azokat a fosztogatуkat – moccanni sem hagynak minket!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_flee">
+		<text>Zsoldos, vissza a helyedre! Le kell eresztenьnk azt a hidat!!!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_fail">
+		<text>Figyelem minden egysйgnek! Ъjabb erхteljes kisugбrzбs kцzelнt. Ъgy tыnik, hogy Sztrelok elйrte a Zуna kцzepйt. Nem sikerьlt megбllнtanunk! Hъzуdjanak fedezйkbe. MOST! GYERЬNK, GYERЬNK, GYERЬNK!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_lowered">
+		<text>A hнd leйrt, tбmadбs!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy">
+		<text>Kцszцnjьk Lesij! Tutira jцvьnk neked eggyel.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply1">
+		<text>Kцszцnd a zsoldosnak. Ha х nem lett volna, mйg mindig abban a buborйkban ьlnйnk.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply2">
+		<text>Akбrhogy is, tartozunk neked.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply3">
+		<text>Nem fogom elfelejteni. Sok szerencsйt!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_thanks_leshiy_reply4">
+		<text>Megegyeztьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_finished">
+		<text>Tiszta Йgbolt harcosai, sikeresen teljesнtettьnk egy feladatot! A hidat sikerьlt leereszteni, йs a Limanszkba vezetх ъt nyitva бll. Elхretolt egysйg: induljatok Limanszkba, йs keressetek biztonsбgos utat a vбroson бt. Tцbbiek: tartsбtok a hidat, amнg a fхerхk meg nem jцnnek!</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_actor_last_call">
+		<text>Zsoldos, azonnal tйrj vissza a pozнciуdba. Lesij egysйge mбr alig tartja magбt. Ha nem tudjuk leereszteni azt a hidat, elbuktunk.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_bridge_task_for_player">
+		<text>Zsoldos, kцvesd az elхretolt egysйget a vбrosba – biztonsбgos utat kell talбlnod Limanszkon keresztьl a fхerх szбmбra. Lйgy уvatos, igazi hбborъ tцrt ki a vбrosban.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_pursuit_strelok_threat">
+		<text>Hagyj fel a keresйssel, zsoldos... vagy meghalsz.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest">
+		<text>Nincs informбciуm a Vцrцs-erdхn бtvezetх ъtrуl. Sokat pletykбlnak arrуl az erdхrхl, de nincs mбs vбlasztбsunk – Бt kell jutnunk a Vцrцs-erdхn йs meg kell talбlnunk Erdйszt.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_lebedev_about_red_forest_2">
+		<text>Nagyszerы zsoldos – бtjutottбl a Vцrцs-erdхn. Erdйsz kunyhуja mбr nincs messze.</text>
+	</string>
+	<string id="characters_voice_scenario_red_forest_red_stalker_greeting">
+		<text>Jу ideje nem lбttam szцrnyeken kнvьl bбrki mбst kijцnni a Vцrцs-erdхbхl. No, gyere csak ide nagyfiъ – beszйlgessьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_1">
+		<text>... Segнtsйg, SOS... hall engem valaki...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_2">
+		<text>... Nem tudjuk elhagyni a 84-es kvadrбnst... meghajlott... visszajцn...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_3">
+		<text>... Bбzis jelentkezz... Bбzis... jelentkezz...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_6">
+		<text>... Vigyenek ki minket innen...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_7">
+		<text>... tъlйltьk a kisugбrzбst... elvesztettьk az irбnyt...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_rnd_radio_8">
+		<text>... Olyan mint egy labirintus...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_enter_first_1">
+		<text>Hosszъ ideje, hogy bбrki is бtjцtt volna a Vцrцs-erdхn! Gyere ide zsoldos, йs elmondok mindent!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_bs_dead">
+		<text>Sosem gondoltam volna, hogy sikerьl elintйzned azt a vйrszнvуt!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_stalker_radio_1">
+		<text>Ha hallanak engem... anomбliбban ragadtunk... nem tudunk kijutni... Olyan, mintha meghajlott volna a tйr... bбrmerre is megyьnk... nem tudunk mozogni... a felszerelйs lecsъszott a sнnekrхl... a tбvolban lбtjuk egy vбros kцrvonalait... a koordinбtбink... 51... 10... 3... 1... 2... Van ott valaki?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_1">
+		<text>Zsoldos, itt Erdйsz. Kйszнtettem egy kis бbrбt, ami megmutatja, hogyan lehet kijutni a Buborйkbуl. Бtkьldцm a koordinбtбkat. Amint megkapja a szakasz, gond nйlkьl ki fog tudni jutni.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_greetings">
+		<text>Ha beszйlni akarsz, tedd le a fegyvert йs szйpen lassan gyere ide.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_2">
+		<text>Kosztyan, itt Hog. Emlйkszel rбm? Nagyon ajбnlom, mert nйhбny hete megmentettem, a seggedet.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_3">
+		<text>Persze Hog, Mit tehetek йrted?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_4">
+		<text>Kosztyan. Segнtenem kell egy havernak, hogy eljusson a katonai bбzison lйvх antennбhoz. Ъgy hallottam, hogy a kцrnyйken vagy, igaz ez?</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_5">
+		<text>Igen. Megprуbбljuk elfoglalni a raktбrakat. Gyertek ide, йs majd egyьtt szйtrъgunk nйhбny katona segget.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_6">
+		<text>Most nem Kosztyan, sajnбlom. Nem lбthatjбk meg, hogy a hadsereg ellen harcolunk. Csak egyetlen embert kьldhetek.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_freedom_7">
+		<text>Egyel tцbb harcos sosem бrthat... vбrni fogjuk...</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hog_to_actor">
+		<text>Zsoldos, menj el Kosztyanhoz. Х majd segнt elйrni az adуt.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_task">
+		<text>Zsoldos, a fхhadiszбllбs mellett ragadtunk! A hadsereg beбsta oda magбt, йs fedezi az egйsz terьletet – egy centit sem tudunk haladni! Segнts elfoglalni a fхhadiszбllбst.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_finish_task">
+		<text>Tбmadбs! Vйgezzetek azokkal a szemйt katonбkkal!</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_freedom_com_radio">
+		<text>Уriбsi! Most mбr a miйnk a katonai bбzis! A Szabadsбg egy ъj bбzist fog itt lйtrehozni, йs lezбrhatjбk a hatбrt egyszer s mindenkorra! Kцszцnjьk a segнtsйget. Menj, az adу csak a tiйd.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_hires_in_bubble_thanks_1">
+		<text>Megkaptuk a koordinбtбkat, йs megprуbбlunk kijutni a Buborйkbуl... okй, itt balra... hatvan lбb ebbe az irбnyba... Az istenit! Szabadok vagyunk! Hallatok minket? Kijutottunk az anomбliбbуl! Elindulunk Limanszk felй.</text>
+	</string>
+	<string id="characters_voice_scenario_military_mil_meet_4n_com_task">
+		<text>Itt Lebegyev. A hнdnбl vagyunk, vбrjuk a fosztogatуk tбbora felхl йrkezх zsoldosokat. Bбrmikor itt lehetnek. Gyere vissza hнdhoz, itt van rбd szьksйg – hamarosan nagyon forrу lesz itt a helyzet.</text>
+	</string>
+	<string id="characters_voice_scenario_military_esc_forester_pda_talk">
+		<text>A lehallgatott beszйlgetйs sok mindent megmagyarбz. Gyere vissza a kunyhуmba – van egy kйt цtletem, hogyan juttassuk ki a zsoldosokat a buborйkbуl.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured">
+		<text>Feladat teljesнtve! A torony a mi ellenхrzйsьnk alatt бll. Most mбr csak meg kell tudni tartanunk!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tower_captured_to_actor">
+		<text>Zsoldos! Menj a toronyhoz, йs tartsd nyitva a szemed!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_defend_tower">
+		<text>Ellensйg kцzeledik a romos templom irбnyбbуl. Kйszьljetek!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_capture_plant">
+		<text>Most, hogy miйnk a torony, elkezdhetjьk megtisztнtani a gyбrhoz vezetх utat. Nyisd ki a PDA-t, йs improvizбlj.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_scan">
+		<text>Bбzis, itt null-huszonegyes. Lбtok egy zsoldost a mocsбrban. Mi az utasнtбs? Vйge.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_attack">
+		<text>Null-huszonegyes, itt a bбzis. Цljйtek meg!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_attack_confirm">
+		<text>Igenis, bбzis. Vйgrehajtom.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_lost">
+		<text>A fenйbe! A szemйt elrejtхzцtt a nбdasban. Semmi esйlyьnk megtalбlni, hacsak nem йgetjьk fel az egйszet.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_base_moveout">
+		<text>Null-huszonegyes, itt a bбzis. Folytassa a jбrхrцzйst.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_helicopter_moveout_confirm">
+		<text>Vettem, bбzis.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_boars_killed">
+		<text>Nagyszerы! A gyбrhoz vezetх ъt tiszta. Indulunk.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_plant_captured">
+		<text>Szйp munka, emberek! A mocsбri szivattyъ ъjra miйnk.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_barman_0">
+		<text>Hй, Rideg, ne zaklasd a zsoldost a mocskos vicceiddel. Beszйlnem kell vele.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_barman_reply_0">
+		<text>Nos, testvйr, ha Lebegyev azt mondja, lбtni akar, akkor nincs vita. Menj csak... majd kйsхbb beszйlьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_to_trader_0">
+		<text>Kereskedх, egy harcos tart felйd. Lбsd el a kьldetйshez szьksйges felszerelйssel!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_trader_reply_0">
+		<text>Йrtettem.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_hurry_player_0">
+		<text>Siess, zsoldos!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_hide_in_tower_0">
+		<text>Fuss a toronyhoz, a szцrnyek ott nem kaphatnak el!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_player_in_tower_0">
+		<text>Fъ, mйg idхben йrkeztйl tesу, mбr alig van lхszerem. Intйzzьk el хket egyьtt!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_leader_starting_surge_0">
+		<text>Figyelem, minden harcosnak! Kцzeledik a kisugбrzбs! Mindenki vonuljon fedezйkbe. MOST!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_forpost_sos">
+		<text>Itt a mбsodik бllomбs, megtбmadtak minket. Ismйtlem, megtбmadtak minket, segнtsйget kйrьnk...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_anomalies">
+		<text>Anomбliбk vannak elхtted, lйgy уvatos! Ne feledd: ne mozdulj, amнg nem dobtбl magad elй egy csavart</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_commander_tutorial_artefacts">
+		<text>У, йs egyйbkйnt nйha ereklyйket is talбlhatsz az anomбliбkban. Nem lбtni хket, de a detektorok kцnnyen kimutatjбk. Ha elйg kцzel tudsz jutni, a detektor megmutatja az ereklye pontos helyйt. Aztбn csak fel kell venned – ennyi az egйsz. Ne feledd, hogy a nбlad lйvх detektor nem йpp csъcskategуriбs. Csak az ereklye tбvolsбgбt mutatja meg.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_0_up">
+		<text>Nagyon jу. Megerхsнtettьk pozнciуnkat az Ingovбnyban. Jуl seggbe rъghatjuk a renegбtokat! A kцvetkezх lйpйs a fхbбzisuk lesz.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_up">
+		<text>Elfoglaltuk a renegбtok barlangjбt. Mбr csak az Ingovбny felй vezetх utak felett kell visszaszerezni az uralmat.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_1_down">
+		<text>A fenйbe! A renegбtok erхsebbek, mint mi! Tennьnk kell valamit, mielхtt elveszнtjьk a hбborъt!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_up">
+		<text>Az Ingovбny mбr a mi uralmunk alatt бll! Jуl van fiъk, szйp munka volt! Minden egysйgnek: бssбtok be magatokat, йs tartsбtok a pozнciуtokat tovбbbi utasнtбsig.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_2_down">
+		<text>A renegбtoknak sikerьlt visszaszerezniьk a barlangot! Nem engedhetjьk, hogy ezek a mocskok a szomszйdunkban йljenek. Bбrmibe is kerьl, ki kell хket fьstцlni!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_expansion_3_down">
+		<text>Figyelem, elvesztettьk az uralmat az Ingovбnyba vezetх utak felett. Ha nem foglaljuk vissza хket, az Ingovбny ъjra a sцpredйk melegбgya lesz!</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_00">
+		<text>Legfontosabb ъtmutatуd a Kьldetйsek szekciу.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_01">
+		<text>Itt jelenik meg a fх kьldetйsed...</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_02">
+		<text>Egy kijelцlt mellйkkьldetйssel egyьtt.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_03">
+		<text>Szбmos mellйkkьldetйs lehet, amik kцzцtt ezekkel a gombbal tudsz vбltani.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_04">
+		<text>A legtцbb kьldetйs a tйrkйpen is megjelenik, eltekintve attуl a nйhбny kьldetйsrхl, melynek helyйt nem lehet meghatбrozni.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_05">
+		<text>Nem csak az ellensйg elpusztнtбsбhoz van szьksйgьnk a segнtsйgedre, hanem hogy elfoglalj kulcsfontossбgъ helyeket is. Ezekben az esetekben harcosaink hбlбsak lesznek, ha fedezed хket mikцzben хk megprуbбlnak elfoglalni valamit. Ne hagyd figyelmen kнvьl a segйlykйrйseket – a tбrsaink йlete forog kockбn.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_06">
+		<text>Ha az egeret a tйrkйpen lйvх jel fцlй viszed, tovбbbi informбciуk jelennek meg.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_07">
+		<text>A kьldetйsek mellett a barбti egysйgek йs az azonosнtott ellensйges egysйgek is megjelennek a tйrkйpen.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_08">
+		<text>Remйlem йrthetх, hogy a fх kьldetйsьnk az Ingovбny fцlцtti uralom megszerzйse. Tehбt hбborъban бllunk a behatolуkkal.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_09">
+		<text>Ebben a szekciуban lбthatod a harci tevйkenysйgekre vonatkozу taktikai informбciуkat.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_10">
+		<text>A bal oldalon az aktuбlis harcolу frkciуrуl jelennek meg adatok. Ez jelenleg minket mutat: Tiszta Йgbolt.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_11">
+		<text>A jobb oldalon jelennek meg az ellensйgre vonatkozу adatok.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_12">
+		<text>Ez mutatja hozzбvetхleges harci erхnket.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_13">
+		<text>Ez mutatja, hogy hбny harcosunk van.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_14">
+		<text>Ez pedig a felszerelйs ellбtmбnyunk.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_15">
+		<text>A jobbra lent lбthatу jelek a felszerelйs kьlцnleges kйpessйgeit mutatjбk.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_16">
+		<text>Hasonlу jelek mutatjбk az ellensйgek kйpessйgeit is.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_17">
+		<text>Vйgьl, ez a mezх mutatja az aktuбlis stratйgiai kьldetйst, valamint a rйszfeladatokat, melyeket el kell vйgezni, hogy a stratйgiai kьldetйs sikeres legyen.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_18">
+		<text>Alul jelennek meg a befejezett stratйgiai kьldetйsek.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_19">
+		<text>Az utolsу fьl hasznбlatбval tekintheted meg, hogy jelenleg milyen viszonyban бllsz a kьlцnbцzх frakciуkkal, valamint a azok erхviszonyait is.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_20">
+		<text>Itt jelennek meg a szemйlyes adataid is.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_tactic_pda_tutorial_21">
+		<text>Nagyjбbуl ennyi.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_out_1">
+		<text>Ott vagyunk, leveheted a kцtйst. Ne is prуbбlj kцvetni, nem fog sikerьlni! Ha vissza akarsz jцnni a bбzisra, keresd meg az egyik vezetхt a halбszfaluban.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_pathfinder_go_in_1">
+		<text>Otthon, йdes otthon! Menj elхre, йs vedd le a kцtйst a szemedrхl. Itt megtalбlsz, ha vissza akarsz menni az Ingovбnyba.</text>
+	</string>
+	<string id="characters_voice_scenario_marsh_mar_csky_arrive_on_open_marsh_1">
+		<text>Zsoldos! Ъgy tыnik, hogy a Nagy Ingovбnynбl vagy. Legyйl nagyon-nagyon уvatos, йs ne akarj hхskцdni! Ellenхrizd a PDA-dat, megtalбlod rajta az egysйgeink helyzetйt. Azt javaslom, hogy menj бt a halбszfaluba – most ott vannak.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_limansk_intro">
+		<text>Nagyszerы, zsoldos – Eljutottбl Limanszkba. Ott most hбborъ folyik, ezйrt lйgy nagyon, nagyon уvatos. Segнts az elхretolt egysйgnek biztonsбgos бtjбrуt talбlni a vбroson keresztьl!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_request_help">
+		<text>A francba! Lхnek rбnk, vesztesйgeink vannak! Segнtsйget kйrьnk azonnal!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_spich">
+		<text>Zsoldos, gyere ide.  Йs hъzd le a fejed!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_hint">
+		<text>Haver, nagy bajban vagyok. Igazi utcai harcok folynak itt. A bal oldali йpьlet erkйlyйn van egy gйppuskafйszek. Nem fogjбk vissza maguk – ide vagyunk szцgezve. Ha le tudjuk szedni a gйppuskбst, elхre tudnбnk nyomulni. Elvonom a figyelmйt, te pedig indulj az йpьlet felй, йs intйzd el azt a gйppuskбt. A jelemre indulj!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_1">
+		<text>Gyerьnk zsoldos, indulj!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_2">
+		<text>Gyerьnk, mozgasd a segged!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_stalker_oreder_3">
+		<text>Mi a fenйre vбrsz mйg? Gyerьnk, gyerьnk, gyerьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_clear_street">
+		<text>Itt Szerov kapitбny beszйl, a Tiszta Йgbolt egysйg parancsnoka. Kцzeledьnk a keresztezхdйshez. Tarts ki zsoldos, jцn a segнtsйg.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor1">
+		<text>Ellensйg elintйzve! Zsoldos! Gyere ide eligazнtбsra.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_to_actor2">
+		<text>Tovбbb kell nyomulnunk a vбrosba. A fiъk a csatorna mellett ragadtak, a tйr mцgцtt. Ъton vagyunk, hogy segнtsьnk nekik. Ъgy lбtom, tudsz magadra vigyбzni – miйrt nem csatlakozol hozzбnk? Mindkettхnk szбmбra kцnnyebb lenne.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order1">
+		<text>Minden tiszta. Indulбs!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_order2">
+		<text>Minden oldalrуl tбmadnak! Vegyetek fel vйdelmi pozнciуt!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_nerves">
+		<text>A fenйbe! Hбnyan vannak?</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay1">
+		<text>A francba! Hбnyan jцnnek mйg? Minden irбnybуl jцnnek! Zsoldos, haladj tovбbb a csatorna irбnyбba! Mi feltartjuk az ellensйget.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop_leader_stay2">
+		<text>Zsoldos! Tыnj innen! Ne pazarold a lхszert!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley1">
+		<text>Alfa, tartsd a pozнciуd!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_parley2">
+		<text>Parancsnok, tыz alatt vagyunk! Segнtsйget kйrьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order1">
+		<text>Tartsatok ki! Adjatok nekik!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor1">
+		<text>Jobbkor nem is jцhettйl volna, zsoldos. Szorult helyzetben vagyunk. Az ellensйg a csatorna mбsik oldalбn lйvх йpьletben van. Kцnnyы cйlpont vagyunk a szбmukra. Lebegyev elrendelte, hogy foglaljuk el a hidat. Meg kell tisztнtanunk azt az йpьletet, kerьl amibe kerьl.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor2">
+		<text>Az ellensйg az йpьletben van, a mбsik oldalon. Itt kцnnyы cйlpontot nyъjtunk a szбmukra – nincs йrtelme a tбmadбsnak, a semmiйrt halnбnk meg.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor3">
+		<text>Lefoglaljuk хket, addig te fedezйkbхl fedezйkbe rohanva elйrheted az йpьletet. Amint ott vagy, tudni fogod, mi a dolgod – цld meg azt a szemйt gйppuskбst! Azok a mocskok mбr нgy is elйg sok vesztesйget okoztak nekьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor4">
+		<text>Уh, йs mйg valami – csak nyugodtan. Fedezйkbхl fedezйkbe rohanj, йs csakis az йn parancsomra!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order2">
+		<text>Szakasz, fedezzйtek a zsoldost! Tыz!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_military_1">
+		<text>Baszki, az йpьletben van!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_order3">
+		<text>A gйppuskafйszek megsemmisьlt! Gyerьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor5">
+		<text>Foglaljatok el бllбsokat az йpьletben. Nem is kнvбnhatnбnk jobb stratйgiai helyet.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_storm_troop2_leader_to_actor6">
+		<text>Kцszцnjьk a segнtsйget, zsoldos. Mi itt maradunk, йs szemmel tartjuk a hidat, amнg a fх erхk meg nem йrkeznek. Neked tovбbb kell menned. A tйrkйp szerint mбr kцzel vagyunk Limanszk szйlйhez. A koordinбtбk a PDA-ban vannak.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_alert">
+		<text>Hй, zsoldos!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_clear">
+		<text>Jу lбtni tйged.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_to_actor">
+		<text>A Limanszkbуl kivezetх ъt kцzel van, de nekьnk rйsen kell lennьnk, йs уvatosan kell haladnunk.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_sniper_alert">
+		<text>Mesterlцvйsz a toronyban! Fedezйkbe!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_order1">
+		<text>Vaszilenkу! Kцzelнtsd meg, йs fьstцld ki azt a lцvйszt! Menj!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electro_fence">
+		<text>Бtkozottak! Azok a szemetek felhъztak egy kerнtйst, йs mйg бramot is vezettek bele!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_confused">
+		<text>A vбrosnak nincs energia ellбtбsa. Ez azt jelenti, hogy valahol lennie kell egy generбtornak, ami ellбtja бrammal a kerнtйst.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_destroy_generator">
+		<text>A kбbelek a jobb oldali йpьletbe vezetnek. Elvonjuk a mesterlцvйsz figyelmйt, te addig juss be a hбzba, йs kapcsold le a generбtort!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_reconnaissance_squad_electricity_off">
+		<text>Nagyszerы. A kerнtйs бramellбtбsa megszыnt. Elхre!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report1">
+		<text>Lebegyev, az ellensйget megsemmisнtettьk! Vбrjuk a tovбbbi parancsokat!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report2">
+		<text>Lebegyev, elfoglaltuk a hidat. Remйnykedjьnk, hogy nem prуbбljбk meg visszafoglalni.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_report3">
+		<text>Itt Szerov kapitбny! Visszavertьk a tбmadбst. Azt ъt tiszta.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_leader_next_task">
+		<text>Szйp munka. A fхerхk kйszen бllnak, hogy бthaladjanak Limanszkon. Elхretolt egysйg: a feladatuk, hogy megtalбljбk a Pripjat fцld alatti komplexumba vezetх bejбratot. A bejбrat a Limanszk szйlйn talбlhatу rйgi kуrhбzban van. A koordinбtбkat бtkьldtem a PDA-jukra. </text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_attention">
+		<text>Beljebb megyьnk. Mindenki legyen rйsen.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_see_target">
+		<text>Cйlpont 11 уrбnбl.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_check">
+		<text>Gyerьnk, nйzzьk meg!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_help">
+		<text>Segнtsйg! Segнtsйg!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire1">
+		<text>Nem szбmнtottam fosztogatуkra errefelй. Szedjьk le хket!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_dont_shoot">
+		<text>Ne lхjetek! Elmondok mindent a fosztogatуk csapdбjбrуl.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat1">
+		<text>Csicseregj, йs talбn megkнmйljьk az йletedet.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit1">
+		<text>Adjatok egy elsхsegйly csomagot a barбtomnak.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_threat2">
+		<text>Anйlkьl kell meglenned. Van egy perced. Mondd el, hol lesz a rajtaьtйs, vagy lelхlek mint egy kutyбt.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_medkit2">
+		<text>Adjatok egy elsхsegйly csomagot!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_fire2">
+		<text>Vйgezzetek vele!</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_senks">
+		<text>Kцszцnцm a csomagot.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_bandit_wounded_about_ambush">
+		<text>A rajtaьtйs kцzel van. Hadd jelцljem meg a PDA-don.</text>
+	</string>
+	<string id="characters_voice_scenario_limansk_lim_cs_enter_squad_bandit_free">
+		<text>Йletben hagylak, de ne kerьlj ъjra a szemem elй!</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_1">
+		<text>... anйlkьl, hogy rйszletekbe bocsбtkoznйk, azt kell hogy mondjam, hogy mйg sohasem lбttam ilyet azelхtt. Az enkefalogrбf szerint sъlyosan megsйrьlt az idegrendszere, de mбs йrtйkei nem is lehetnйnek jobbak. Megdцbbentх!</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_2">
+		<text>Talбn a kisugбrzбshoz van valami kцze?</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_3">
+		<text>Minden bizonnyal! Ennek ellenйre ezidбig kйptelen voltam racionбlis magyarбzattal szolgбlni a jelensйgre.</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_4">
+		<text>Nйzd, йbredezik!</text>
+	</string>
+	<string id="characters_voice_scenario_intro_mar_intro_5">
+		<text>Йbren vagy? Az jу.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_hall">
+		<text>Istennek hбla valaki jelentkezett! Figyelem, egy mesterlцvйsz йs egy gйppuskбs van az elхtйr mбsik oldalбn. Mйg csak mozdulni sem tudunk!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_about_sniper">
+		<text>A fenйbe, ъjabb vesztesйg... Zsoldos, segнts elintйzni azt a mesterlцvйszt, mielхtt mind itt pusztulunk! Elvonjuk a gйppuskбs figyelmйt, hogy el tudj indulni.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_arrived">
+		<text>Jуl csinбltad haver, sikerьlt. Innйt mбr vйgьk.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_1">
+		<text>Mire vбrsz? Ъjra megprуbбljuk visszaszorнtani хket.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_2">
+		<text>Йbredj! Nem tudjuk цrцkre lefoglalni хket.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_3">
+		<text>HЙ... ne vesztegesd az idхt!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_1">
+		<text>Mi a fenйre vбrsz? Megprуbбljuk ъjra visszaszorнtani хket – kйszьlj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_2">
+		<text>Йbredj! Nem tudjuk цrцkre lefoglalni хket.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_badly_pda_3">
+		<text>HЙ... ne vesztegesd az idхt!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_1">
+		<text>Egy megvan! Mйg van egy mбsik, indulj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_block_2">
+		<text>Megvan a mбsodik is! Mindkйt irбnybуl tiszta.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_cover_us">
+		<text>Stalker! Fedezz!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_danger">
+		<text>Egy gйppuska vйdi az alsу szintet. Maradj itt, amнg parancsot nem adok!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go">
+		<text>Indulj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_go_pda">
+		<text>Indulj!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_gunner_killed">
+		<text>A gйppuskбnak vйge! Tiszta a terep!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_hold_on">
+		<text>Tarts ki! Mбr ъton vagyunk!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_dot">
+		<text>Petrу, intйzd el azt a gйppuskбst a fцldszinten!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_gunner">
+		<text>Nesze egy grбnбt, te szemйt!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper">
+		<text>Megcsinбltad!  Most mбr a mesterlцvйsz hбtбba tudsz kerьlni. Intйzd el gyorsan!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_1">
+		<text>Цld meg, vagy mind halottak vagyunk!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_kill_sniper_now_2">
+		<text>Kapd el a mesterlцvйszt! Gyorsan!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_request_help">
+		<text>Segнtsйg, a bejбratnбl beszorultuk!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_runner_killed">
+		<text>Бббббб...</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_block">
+		<text>Zбrjбtok el a folyosуkat, hogy ne tudjanak erхsнtйst hнvni!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_start_raid">
+		<text>Nagyszerы. A mesterlцvйsznek annyi. Tiszta az ъt. Elхrenyomulunk, йs megprуbбljuk felrobbantani azt a gйppuskafйszket.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_suicide">
+		<text>Fedezz! Megprуbбlom kilхni!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_thanks_actor">
+		<text>Gyerьnk! Feltartjuk az ellensйget!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory">
+		<text>Bбzis, a katakombбk bejбratбnбl vagyunk! Hogyan tovбbb?</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_victory_reply">
+		<text>Remek!  Vegyetek fel vйdelmi pozнciуt, йs tartsбtok a bejбratot. A fхerхk mбr ъton vannak.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait">
+		<text>Parancsomra!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_wait_pda">
+		<text>Parancsomra!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_clear_sky_well">
+		<text>Nagyon jу! Csak нgy tovбbb!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_enemy_see_helicopter">
+		<text>A francba... az egy katonai helikopter! Szedjйtek le! A fьlkйre cйlozzatok!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_kill_order">
+		<text>Null-huszonegyes, mindenkit цljetek meg!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_killed">
+		<text>A franca, eltalбltak, eltalбltak! Vissza, vissza!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_see_enemy">
+		<text>Bбzis, itt null-huszonegyes. Egy ellensйges szakaszt, йs egy azonosнtatlan stalkert lбtok. Utasнtбst kйrek.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_helicopter_start_attack">
+		<text>Vettem, bбzis. Megkezdem a tбmadбst!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor">
+		<text>Megprуbбl бtjutni!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_kill_actor_intercept">
+		<text>Бllнtsбtok meg!</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_apply">
+		<text>Йrtem. Rajta vagyunk.</text>
+	</string>
+	<string id="characters_voice_scenario_hospital_hospital_z3_csky_com_order">
+		<text>Zsoldos! Mi feltartjuk a Monolitiakat, amнg te lemйsz a katakombбkba.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_dead_digger_leader_rec">
+		<text>Odaadtam Agyarnak azt az alkatrйszt, amit a rejtekhelyen talбltunk. Folyamatosan szitkozуdott, йs azt hajtogatta, hogy addig nem fizet, amнg meg nem talбljuk a tцbbi alkatrйszt. Megbeszйltьk a dolgot, йs ъgy dцntцttьnk, hogy elkьldjьk hozzб Vбszjбt. Neki jуl forog a nyelve. Ъgy gondoltuk, hogy х rб tudja beszйlni, hogy legalбbb a pйnz egy rйszйt fizesse ki. Csak remйlni tudom, hogy nem akadt gondja ъt kцzben...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_warning">
+		<text>Hй haver, vigyбzz! Egy halom kutya уlбlkodik a kцrnyйken! Gyorsan mбssz fel a sziklбkra!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_1">
+		<text>Hй, takarodjatok innen!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_2">
+		<text>Hagyjatok bйkйn, a fenйbe is!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_shout_3">
+		<text>Hъzzatok innen, бtkozott bolhazsбkok!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_thanks">
+		<text>Kцsz haver, megmentetted az йletem! A nevem Vбszja. Kйpzeld: йpp ъton voltam nyugat felй, hogy utolйrjem ezt a stalkert, csak a sajбt dolgommal foglalkoztam, amikor ezek a szem nйlkьli bestiбk elхbukkantak a semmibхl! Hбrom tбrat eresztettem bele ezekbe az бtkozottakba, de csak jцttek tovбbb, йs idбig ьldцztek. Mбr tuti, hogy nem fogom utolйrni azt a stalkert, mostanra mбr biztosan Sцtйtvцlgyben van.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_messenger_pda_rec">
+		<text>Egy csapat kutya elvбgta az utamat Agyartуl. Ъgy tыnik, hogy keletre ment, a Sцtйtvцlgybe.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_1">
+		<text>Ez a hely marha jу. Nйzd ezt a rengeteg stalkert ahogy itt nyьzsцgnek, mint legyek a mйzen. Kнvбncsi vagyok, hogy mit keresnek itt...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_2">
+		<text>У, de kбr, hogy a csуrikбm elmenekьlt!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_3">
+		<text>Le van sajnбlva! A lйnyeg, hogy elejtette, ami nбla volt.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_ambush_talk_4">
+		<text>Igen, szedjьk цssze a legjobbakat йs hъzzunk el innen...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_fang_pda_rec">
+		<text>Nos, Agyar, a helyzet megvбltozott. Valaki megtudta, hogy elйrtьk a Zуna kцzйppontjбt, йs most minket figyelnek. Mennьnk kell, mйghozzб gyorsan. A rejtekhelyen megtalбlod a terv rйszletes leнrбsбt. Megvбltoztattam a kуdot.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_find_fang_pda">
+		<text>Mйg mindig velьnk vagy, zsoldos? Nagyszerы. Agyar PDA-ja itt van valahol a kцzelben. Keresd meg!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_csky_leader_goto_agroprom">
+		<text>Zsoldos, Lebegyev vagyok. Agyar PDA-jбban talбlt informбciуk alбtбmasztottбk a gyanъmat. Stalkerek egy ismeretlen csoportja meglбtogatta a Zуna kцzpontjбt. Nem tudom, hogyan, de sikerьlt tъlйlniьk a nagymйrtйkы kisugбrzбst. Pedig jobb lett volna, ha nem йlik tъl. A Zуna nem lesz bйkйs addig, amнg a kцzpontjбba vezetх ъt nem lesz ъjra titok. Kйt dolog lehetsйges: vagy mi бllнtjuk meg ezeket a stalkereket, vagy a Zуna mйg tцbb kisugбrzбst fog kibocsбtani, ami mindent elpusztнt bent.. йs talбn kнnt is. Nyilvбn jobb lenne, ha magunk csinбlnбnk, de gyorsan kell cselekednьnk, ha azt akarjuk, hogy sikerrel jбrjunk. Agyar PDA-ja tartalmazta a rejtekhely koordinбtбit – biztos vagyok benne, hogy ott talбlunk informбciуkat a tervьkre vonatkozуan...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_1">
+		<text>Hй, te dцntesz... Szabadon eljбtszhatod a szerencsйdet!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_2">
+		<text>Kapd цssze magad, йs azonnal hъzz vissza ide!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_return_3">
+		<text>Hй haver, ugye nem tojtбl be?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_1">
+		<text>Hй haver, tedd le azt a csъzlit, йs gyere ide – beszйlnьnk kell.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_2">
+		<text>Miйrt nem ereszted le azt a fegyvert, йs vonszolod ide a segged, цreg harcos?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_come_here_3">
+		<text>Figyelj, beszйlnьnk kell. De elхbb tedd le a fegyvert!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_1">
+		<text>Бllj meg ahol vagy! Tartsd a kezed ъgy, hogy lбssam!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_2">
+		<text>Бllj! Mйg csak ne is бlmodj rуla, hogy elхveszed a fegyvered.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stop_3">
+		<text>Ne mozdulj, цreg! Tartsd a fegyvered a fцld felй, йs meg ne mozdulj!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_1">
+		<text>Jуl van fiъ, maradj ott, ahol vagy!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_2">
+		<text>Jу, jу... йs semmi hirtelen mozdulat!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_stand_still_3">
+		<text>Maradj ott, цreg!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_1">
+		<text>Figyelj, ember – ha бt akarsz menni, fizetned kell. Gyere ide, йs megbeszйljьk.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_see_actor_2">
+		<text>Ne csak бlldogбlj ott, vonszold ide magad!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_1">
+		<text>Mozogj mбr, a fenйbe, mozogj!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_2">
+		<text>Sьket vagy, vagy mi? Kopj le!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_3">
+		<text>Ide figyelj, fogd a felszerelйsed, mielхtt szйtrъgom a segged!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_pay_4">
+		<text>Hбt, te akartad... Nyнrjбtok ki, srбcok!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_1">
+		<text>Figyelj, te, tыnj a szemem elхl!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_2">
+		<text>Egy kicsit lassъ a felfogбsod haver. Kopj le!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_after_reject_3">
+		<text>Ahogy akarod... Цljйtek meg!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_1">
+		<text>Nyнrjбtok ki!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_kill_actor_2">
+		<text>Цljйtek meg a szemetet!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_1">
+		<text>Egy moccanбst se!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_move_2">
+		<text>Ne mozdulj, gyцkйr!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_1">
+		<text>Tedd el azt a fegyvert, seggfej!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_robbery_scene_last_warning_weap_2">
+		<text>Hй haver! Jobb, ha elrejted azt a csъzlit!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_traitor_attack">
+		<text>Nyomjбtok le az ьrgйt – lуvй van nбla!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor">
+		<text>A csempйsz PDA-ja? Kьldd el a legutуbbi bejegyzйseket! Aha, megvan a fegyverraktбr koordinбtбja. Azonnal odakьldцm az embereimet. Lбtogass meg... Van valami, amit szemйlyesen kell megbeszйlnьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_captive_leader_reward">
+		<text>Ember, mбr biztos voltam benne, hogy itt pusztulok, mint egy kutya. Nem is tudom, hogyan kцszцnjem meg... Vбrj! Mйgis tudom. Megadom annak a helynek a koordinбtбit, ahova йn йs a haverok a zsбkmбnyt szoktuk rejteni mйg mielхtt elkaptak йs idehurcoltak. A haveroknak ъgysincs rб szьksйgьk, ott ahol most vannak. Nyugodjanak bйkйben, йn meg most azonnal elhъzok a Zуnбbуl. Asszem, mindenhol jobb mint itt...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_attack">
+		<text>Zsoldos, valami megtбmadta a fiъkat, nem messze innen. Annyi nekik, ha nem kapnak idхben segнtsйget!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_gone">
+		<text>A fenйbe! A fiъk halottak, йs bбrmi is цlte meg хket, a nyakamat rб, hogy mбr nincs itt... Haver, nйha nagy szнvбs az йlet.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_killed">
+		<text>Ember, te egy hхs vagy! Megfizettйl nekik a haverokйrt, nyugodjanak bйkйben... De egy szimpla „Kцszцnцm” nem йr sokat. Ugorj be hozzбm a bolhapiacon, van valamim a szбmodra.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_go_away">
+		<text>Tыnj el innen, цreg! Hajlamosak vagyunk idegessй vбlni. Szуval vigyбzz, ha nem akarsz bekapni egy "eltйvedt" golyуt...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_conc_camp_blockpost">
+		<text>Figyelj, seggfej. Ez itt a mi terьletьnk йs a mi tбborunk. Miйrt nem keresel olyan utat magadnak, ami nem egy sнrba vezet?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_1">
+		<text>Na ezt nevezem igazi fйrfinak! Ez hihetetlen volt!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_2">
+		<text>Hы, haver... igazi mesterlцvйsz vagy!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_win_3">
+		<text>A fenйbe is, lбttad ezt? Ez aztбn jу volt!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_1">
+		<text>Tanulj meg lхni, fakezы!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_2">
+		<text>Hбt ez elйg szar volt! Ennyi erхvel legkцzelebb magad is lelхhetnйd!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_lose_3">
+		<text>Biztosan mбsnapos, ha ilyen bйnбn lх.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_1">
+		<text>Gyerьnk, csinбld!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_2">
+		<text>Szedd le хket!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_3">
+		<text>Tudod egyбltalбn, hogyan kell hasznбlni?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_4">
+		<text>Gyerьnk mбr, haver, йn hiszek benned!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_shooting_5">
+		<text>A szбrnyakra cйlozz, a szбббrnyakraaaa!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_1">
+		<text>Na jу, legyen. Megkockбztatom. Цtvenet teszek arra az emberre...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_2">
+		<text>Nincs az az isten, hogy arra a vesztesre tegyek!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_3">
+		<text>Ez aztбn йrdekes lesz!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_1">
+		<text>Nйzzьk, hogy egyбltalбn egyenesen tudja e tartani a fegyvert.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_2">
+		<text>Ha-ha! Annak a bйnбnak esйlye sincs!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_comment_prepare_response_3">
+		<text>Ъgy tыnik, akбr mйg sikerьlhet is neki, tudod...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_first">
+		<text>Hъъ, megdцntцtted a rekordomat! Le vagyok nyыgцzve... tessйk, ez a tiйd...</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_player">
+		<text>Haver, megdцntцtted a rekordomat. Itt a jutalmad.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_win_npc">
+		<text>Haver, te vagy az ъj bajnok! Igyunk a gyхztesre!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_1">
+		<text>Elhagyott a szerencsйd. Prуbбld ъjra!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_2">
+		<text>Prуbбld ъjra, haver! Most sikerьlni fog.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_lose_3">
+		<text>Megesik az ilyen. Prуbбld ъjra.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_1">
+		<text>Hй, haver! Hova hova? Nem akarsz ъjra jбtszani?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_2">
+		<text>Hй haver! Gyere vissza! Tцk jуl csinбltad.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_minigame_man_gone_3">
+		<text>Gyere vissza! Szavamra, ez a te napod!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_ambush">
+		<text>Micsoda? Sztringov csapdбba csalt titeket? Hmm... az a rohadйk mйg megfizet ezйrt!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_digger_leader_traitor_dead">
+		<text>A rohadйk tйnyleg fыbe harapott? Esetleg megnйzhetnйd, hбtha van nбla valami йrtйkes.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_join_message">
+		<text>Mizu tesу, itt Jуga! Lбtom, nem vagy szнvbajos. Ha legkцzelebb a kцzelьnkben jбrsz, nйzz be! A csapat tagja lehetsz.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_destroy_flea_market_done">
+		<text>Csak nem elintйzted azokat a fickуkat a bolhapiacnбl? Igazi fйrfimunka, haver. Ez nem semmi, ha Jуga mondja! Csapj bele! Protkуnбl van a rйszed, ahogy szoktuk.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_a">
+		<text>A PDA jelzйse alapjбn Sztringov halott. Fogtуl megkaphatod a jutalmadat. Asszem, ezutбn kemйnyebb melуkat is adhatok.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done_b">
+		<text>Figyelj, zsoldos, a fiъk most intйztйk el Sztringrovot, amikor el akarta hagyni a Szemйtdombot. Ъgy tыnik, hogy berezelt, йs ъgy dцntцtt, hogy lelйp. Szуval nem a te hibбd. Inkбbb adok neked egy mбsik melуt, mit szуlsz?</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_done">
+		<text>Nйzd, Sztringov szokott nйha infуkat hozni az бsatуkrуl. Ъgy tыnik, rбjцttek, нgy mбr hasznбlhatatlannб vбlt szбmomra az utуbbi idхben. Bбr az utolsу informбciуi hasznosnak bizonyultak. Amennyire tudni lehet, az бsatуk talбlkozni akarnak valami seggfejjel a Szemйtdombtуl йszakra, hogy fegyvereket vegyenek. Tegyйl rуla, hogy senki, se Mr. seggfej, se az бsatуk ne йljйk tъl a talбlkozбst. Feltцltцttem a talбlkozу koordinбtбit a PDA-ra.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_digger_traitor_call">
+		<text>Sztringov? Ne csak lуgasd a lбbad! Sйtбlj бt szйpen a megбllуba! Most kьldtem oda egy havert, hogy lerendezze veled a dolgokat.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_leader_kill_smuggler_done">
+		<text>Mindenki megkapta a rйszйt? Nagyszerы! Protkуtуl megkapod a jutalmadat. Amъgy szйpen tцrsz elхre a rangsorban. Alбd rendelek 5 embert. Azt akarom, hogy az бsatуk mйg csak ne is gondoljanak fegyveres ellenбllбsra. Te йs az embereid mutassбtok meg nekik , hogy ki itt a fхnцk. A cйlpont a bolhapiac. Amint vйgeztйl az бsatуkkal, tegyйl rуla, hogy a fiъk biztosнtsбk a kцrnyйket, йs ne engedjenek be senkit. A csapatod mбr a helyйn van, de nem tesznek semmit a parancsod nйlkьl.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_0_up">
+		<text>Szйp volt emberek! Mбtуl jobb йletet fogunk йlni! Ideje megszerezni az uralmat a Szemйtdomb minden bejбrata fцlцtt – fizessenek a mocskok, ha relikviбkat akarnak keresni.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_up">
+		<text>Ha ha ha! A Szemйtdomb immбr Jуga terьlete! Csontra megfejjьk azokat a stalkereket! Bбr mйg van nekik egy bбzisuk a Kordon mellett – azt hiszem meg is kйne lбtogatnunk хket, csak hogy tudjбk, hol a helyьk az tбplбlйklбncban.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_1_down">
+		<text>Skacok, bukуra бllunk! Kapjбtok цssze magatokat, йs mutassбtok meg nekik, hogy milyen fбbуl faragtak minket!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_up">
+		<text>Igazi tцkцs csбvуk vagyunk, az tuti! A Kordon mбr a miйnk, йs gondoskodni fogunk rуla, hogy a stalkerek „megosszбk” velьnk mindenьket, ha itt akarnak lenni! Facsarjuk ki хket, hogy mйg az orrukat se akarjбk kidugni bбzisaikrуl!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_2_down">
+		<text>Mi a fenйt csinбltok idiуtбk? A stalkerek megszereztйk a Kordon fцlцtti uralmat. Azt akarjбtok, hogy csak ъgy simбn kivigyenek innen minden relikviбt? Azt akarom, hogy menjetek йs foglaljбtok vissza azt az бtkozott utat!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_up">
+		<text>Na ez mбr valami. Igazбn bьszke vagyok rбtok! Kцrbevettьk a csуtбnyokat, mбr csak agyon kell taposni хket. Kйszьljetek a tбmadбsra!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_3_down">
+		<text>A francba! A fiъkat elzavartбk a Kordontуl. Ъgy hallottam, hogy egy egйsz halom stalker tart arra. Meg kell mutatnunk nekik, hogy ki az ъr a vidйken.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_up">
+		<text>Most mбr jobb lesz az йletьnk! Kifacsarhatjuk az utolsу fillйrt is a stalkerekbхl, йs nem tehetnek ellene semmit! Azt mondom, keressьnk egy kis pйnzt, majd lйpjьnk le innen, йs kьldjьnk egy kйpeslapot Riуbуl.</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_4_down">
+		<text>A fenйbe! Azok a szemйt stalkerek egyre szemtelenebbй vбlnak! Leszedtйk az embereinket a bбzisuk mellett! Ha a kцzelben vagy, mutasd meg azoknak a faszszopуknak, hogyan szуrakozzanak!</text>
+	</string>
+	<string id="characters_voice_scenario_garbage_gar_bandit_expansion_5_down">
+		<text>Tesуk, a stalkerek elkenik a szбnkat! Megtisztнtottбk a Kordon kцrnyйkйt, йs mбr хk az urak a kakasdombon. Kapjбtok цssze magatokat, menjetek oda йs mutassбtok meg nekik, hogy ki irбnyнtja errefelй a dolgokat!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_start_pda">
+		<text>Mбr rйgуta senkit sem lбttam az Ingovбny felхl jцnni. Te meg pont a hadsereg бllomбsa mellett jцttйl el. Egy stalker csak egy dologra szбmнthat a hadseregtхl – egy golyуra. Szуval, a helyedben уvatosabb lennйk.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_detected">
+		<text>Riadу! Egy stalker! Tыz!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mil_target_lost">
+		<text>Elvesztettьk a cйlpontot! Hadnagy, vigye ki az embereit, йs tisztнtsa meg a terьletet!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_wolf_call">
+		<text>Hй zsoldos, mi szйl hozott erre? Gyere ide, beszйlgessьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_call">
+		<text>Meglйptйl a hadsereg elхl? Szerencsйs flуtбs vagy. Ъgy йrzem, nem vйletlenьl vagy itt. Ugorj be hozzбm, ha a kцrnyйken jбrsz!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_first">
+		<text>Hйj! Цrьlцk, hogy talбlkoztunk! Nos... beszйlhetьnk az ьzletrхl?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_greet_habar">
+		<text>Szуval vйgьl megszerezted? Tudtam, hogy szбmнthatok rбd!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_1">
+		<text>Mi ъjsбg azzal, amirхl korбbban beszйlgettьnk?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_2">
+		<text>Megszerezted nekem a tбskбt?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_greet_3">
+		<text>Hogyan alakul az a tбska dolog?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_1">
+		<text>Haladjon az a tбska ьgy, okй?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_2">
+		<text>Hozd el nekem azt a tбskбt, amint megtalбltad.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_habar_3">
+		<text>Ne feledd, mйg mindig szьksйgem van arra a tбskбra.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_1">
+		<text>Sok szerencsйt.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_driver_treat">
+		<text>Ne lхjцn! Kйrem, ne lхjцn...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_1">
+		<text>Bбzis, segнtsйgre van szьksйgьnk! Megtбmadott minket a hadsereg.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_patrol_help_2">
+		<text>Testvйrek, segнtsetek!  Mбr nem hъzzuk sokбig!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_1">
+		<text>Menj, gyorsan! A kereskedх szуlt nйhбny szуt az йrdekedben.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_2">
+		<text>Gyerьnk, mozogj mбr! Mбr vбrnak rбd a bбzison.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_yes_3">
+		<text>Ne бlldogбlj ott a kezedet tцrdelve! Menj el a bбzisra!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_1">
+		<text>El innen, zsoldos! Ez stalker terьlet!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_2">
+		<text>Ne gyere kцzelebb, vagy tьzet nyitunk!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_railroadpost_no_3">
+		<text>Itt nem lбtnak szнvesen, zsoldos.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_1">
+		<text>Bandzsa, itt Valerjan! Hol az цrdцgben voltбl az elmъlt kйt napban? Hъzуs itt a helyzet. Minden fegyverre szьksйgьnk van!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_1_2">
+		<text>Hбt, itt nem jutunk бt. Az anomбliбk elzбrjбk az utat. Keresnьnk kell egy kerьlх utat.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_1">
+		<text>Vaszilнj, emlйkszel, azt нgйrted, hozol nekem nйhбny fegyvert?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_2">
+		<text>Nem ez a gond, Valerjan! De gondolj csak bele: a hadsereg majd tudni akarja, miйrt adok el fegyvereket a stalkereknek...</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_3">
+		<text>Te meg abba gondolj bele, Vaszilнj: ha nem sikerьl azonnal befыtenьnk azoknak a katonбknak, simбn kivйreztetnek minket!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_2_4">
+		<text>Rendben. Holnap az emberem elvisz neked mindent, amim csak van.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_1">
+		<text>Valerjan, itt Pocak. Igaz, hogy megprуbбlod цsszeszedni a stalkereket?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_2">
+		<text>Igen, igaz. A hadsereg teljesen felborнtotta a szabбlyokat. Mйg fosztogatуkat is volt kйpьk utбnunk kьldeni. Ъgy dцntцttьnk, hogy visszavбgunk.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_3">
+		<text>Йn is benne vagyok! Megvan a magam elintйzetlen ьgye velьk... Holnap ott leszek, йs viszek magammal hбrom mбsik embert.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_3_4">
+		<text>Nagyszerы, kцszцnцm. Akkor viszlбt kйsхbb.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_1">
+		<text>Hй Goblin! Van valami ъjsбg?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_2">
+		<text>A hadsereg йpp most lцvцldцzцtt valakikre. De nem tбvolodnak el nagyon a bбzisuktуl, mert tъlsбgosan fйlnek.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_assemble_4_3">
+		<text>Nos, szуlj, ha van valami.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalkerbase_guard_redirect">
+		<text>Ember, mбr rйgуta vбrunk rбd. Menj, йs keresd meg a vezetхnket!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_mill_complete_reply">
+		<text>Nagyszerы!  A katonбkat elintйztьk. Йszrevettьnk egy mбsodik egysйget a depуnбl. Zsoldos! Menj oda!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_dead_military_pda_request">
+		<text>Nagyszerы! A katonбkat elintйztьk. Most, hogy a haverjai halottak Kaletszkij tudni fogja, hogy hiбba vбr segнtsйget. Az a patkбny hamarosan beadja a derekбt, ez biztos! Zsoldos! Menj vissza a bбzisra!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_jail_monologue">
+		<text>Lбtod, hogy mi az eredmйnye annak, ha makacskodsz? A barбtaid halottak, йs te mйg itt vagy – senki sem jцn megmenteni. Mondd el, hovб rejtetted a tбskбt?</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_1">
+		<text>... Jуl van, elmondom... szemetek... az цreg malomban van, a tetх alatt.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_2">
+		<text>... Jуl van, elmondom... szemetek... az alagъtban van, a felborult autуban.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_location_3">
+		<text>... Jуl van, elmondom... szemetek... egy hбzban van, nem messze innen, a padlбson.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_habar_founded">
+		<text>No nйzd csak? A kis szaros ъgy tцrt meg, mint egy tojбs! A koordinбtбkat betбplбltam a PDA-dba. Vidd el a cuccot Szidorovicsnak, mбr nagyon vбrja.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_habar_request">
+		<text>Jуl van zsoldos – vбrni foglak, йs a tбskбt is.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_2">
+		<text>Viszlбt kйsхbb... remйlhetхleg.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_3">
+		<text>Nos, vigyбzz magadra.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_trader_bye_give_habar">
+		<text>Hй! Hovб mйgy? Add ide a tбskбt!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_can_join_stalker_1">
+		<text>Zsoldos, itt Valerjan. A stalker klбn ajtaja nyitva бll elхtted. Ha mйg mindig kцzйnk akarsz бllni, vбrlak a bбzisunknбl.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_0_up">
+		<text>Nagyszerы! Mбr elйg erхsek vagyunk, hogy megvйdjьk magunkat. Figyelj, el kell foglalnunk a Kordonhoz vezetх utakat. Ha sikerьl. a fosztogatуk nem tudnak majd a bбzisunk kцzelйbe jutni.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_up">
+		<text>Na, most mбr a fosztogatуk sem fognak egykцnnyen a Kordon kцzelйbe jutni. De mйgy nincs vйge. Fel kell kйszьlnьnk, hogy a Szemйtdomb ellen vonuljunk. Olyan leckйt kapnak azok a seggfejek, amit hosszъ ideig nem felejtenek el.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_1_down">
+		<text>A francba! A fosztogatуk erхsebbek mint mi! Ha nem egyenlнtjьk ki az erхviszonyokat, hamarosan rabszolgбk leszьnk a Szemйtdombon.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_up">
+		<text>Csak нgy tovбbb! Sikerьlt elfoglalnunk a Szemйtdombot! Ismйtlem: a Szemйtdombhoz vezetх ъt tiszta. Mбr nem kell azйrt fizetnetek, hogy bejussatok. Mбr csak egy dolog maradt hбtra: lerohanni a fх bбzisukat йs megmutatni nekik, hogy ki a fхnцk.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_2_down">
+		<text>Figyelem! A fosztogatуk lйtrehoztak egy бllomбst a Kordonnбl! Ha nem szerezzьk vissza a Kordon fцlцtti uralmat, ezt a helyet hamarosan ellepik a fosztogatуk.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_up">
+		<text>Jу hнrek! Sikerьlt elzбrnunk a fosztogatуk bбzisбnak egyetlen kijбratбt. Kйszьljetek a vйgsх csatбra!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_3_down">
+		<text>A francba! Elvesztettьk a Szemйtdombot. De ne aggуdjatok fiъk. Цsszeszedjьk magunk, йs ъjra megprуbбljuk.</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_up">
+		<text>Ez a nap ъgy vonul majd be a Zуna tцrtйnelmйbe, mint az a nap, amikor a stalkerek legyхztйk a fosztogatуkat! Nem fizetьnk tцbbй az бthaladбsйrt, йs nincs tцbb pofon! Hбla nektek, stalkerek!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_4_down">
+		<text>Figyelem! A fosztogatуk megindultak йs elintйztйk a tбrsainkat a bбzis kцzelйben. Biztosнtanunk kell a bбzisukrуl kivezetх utat, mielхtt ъjra erхre kapnak!</text>
+	</string>
+	<string id="characters_voice_scenario_escape_esc_stalker_expansion_5_down">
+		<text>Figyelem stalkerek! Itt Valerjan! A fosztogatуk ъjra lerohantбk a Szemйtdombot. Isten tudja, honnan jцttek, de nyьzsцgnek mint a hangyбk. Legyetek йberek!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_enter">
+		<text>Бllj! A Sцtйtvцlgy karantйn alatt бll! Tedd le a fegyvert, йs nagyon lassan gyere ide! Csak semmi hirtelen mozdulat. Csak beszйlgetni akarok veled...</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_1">
+		<text>Gyere ide! Nyugalom, nem akarunk lelхni.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_2">
+		<text>Hй te! Gyere ide! Gyerьnk mбr! Csak ellenхrizni akarunk.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_wait_3">
+		<text>Mit бcsorogsz ott? Gyere mб' ide!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stop">
+		<text>Бllj! Tedd le a fegyvert, йs maradj nyugodtan. Egy hirtelen mozdulat, йs azonnal meghalsz.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_return">
+		<text>Gyere ide! Nyugalom, nem akarunk lelхni.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_stand_still">
+		<text>Ne mozogj tesу, nem fog fбjni.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_kill_actor">
+		<text>Lхjйtek le azt a seggfejet!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_robbery_after_pay">
+		<text>Lelйphet.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_done">
+		<text>Minden csendesnek tыnik.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos_1">
+		<text>Delta, itt Alfa, Mi volt az a lцvцldцzйs? Mi folyik ott?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_blockpost_reply_sos">
+		<text>A fenйbe. Egy ъjabb tбmadбs! Zsoldos! Nйzd meg, hogy vannak-e tъlйlхk az бllomбson!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_1">
+		<text>Hй! Mi folyik ott? Vбlaszoljatok!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_2">
+		<text>Delta jбrхr, jelentkezz!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_dead_squad_3">
+		<text>Vбlaszoljatok a fenйbe is!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_base_enter">
+		<text>Stalker! A Szabadsбg terьletйn vagy. Ez azt jelenti, hogy  csak semmi trьkk. Gyere el hozzбm, ha van valami kйrdйsed.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_comendant_come_back">
+		<text>Remek volt! Jуl megmutattad azoknak a szemйt mutбnsoknak! Gyere vissza, ha tovбbbi feladatokat szeretnйl.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_help">
+		<text>Zsoldos, itt Csehov. Az бllomбst megtбmadtбk... nem tudom, hogy vannak-e mйg tъlйlхk, de az egyik PDA mйg aktнv. Talбn van benne nйmi hasznos infу. Keresd meg, йs hozd ide!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_attack_help">
+		<text>Figyelem, minden Szabadsбg egysйgnek! Az цreg tanya mellett zsoldosokba botlottunk. Erхs az ellenбllбs, segнtsйgre van szьksйgьnk! Ismйtlem: azonnal erхsнtйsre van szьksйgьnk!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_leader_pda_come_back">
+		<text>A szбnalmas kis parancsnokunk nem jutott tъl messzire! Az ъj barбtai szйp helyet talбltak a szбmбra – egy fбn. Okй, fogd annak a seggfejnek a PDA-jбt, йs gyere vissza.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_control">
+		<text>Rendben! Mбr miйnk az elsх йs a mбsodik antenna! Mбr csak a harmadikat kell elfoglalnunk.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_finish">
+		<text>Nagyszerы! Mi irбnyнtjuk az antennбkat. Indнtom a keresйst.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_antenna_good">
+		<text>Megvannak az alagъt koordinбtбi – az elhagyatott gyбrйpьlet kцzelйben van. Hбt нgy jutnak be a zsoldosok a Sцtйtvцlgybe! Figyelem, minden egysйgnek! Keressйtek meg, йs robbantsбtok be az alagutat!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_help">
+		<text>Az цreg gyбr kцzelйben vagyunk. A fenйbe is! Ezen a helyen nyьzsцgnek a zsoldosok! Segнtsйg!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task">
+		<text>Kцszцnjьk, hogy eljцttйl zsoldos! Az udvaron rekedtьnk kemйny tыz alatt. Segнts leszedni le a tetхn lйvх zsoldosokat!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_quest_finish">
+		<text>Kinyнrtuk a faszszopуkat, akik annyi cimborбnk halбlбt okoztбk. A Szabadsбg megint megmutatta, hogy aki a legjobbakkal kezd ki, meghal, mint a tцbbi. Hamarosan eljцn a nap amikor, a Zуna szabad lesz. Ugorj be valamikor a jutalmadйrt!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_1">
+		<text>Hй, ti vagбny arcok, йs nagyarcъ vagбnyok! Ha elismerйsre vбgytok,  йs hogy csalбdtagkйnt bбnjanak veletek, a Szabadsбgban a helyetek! Semmi hбzimunka, semmi agymosбs, йs semmi reggeli gyakorlat! Ha igazi stalker vagy, aki szereti a szabad йletet, meg a jу piбt igazi haverok kцrйben, csatlakozz hozzбnk! Mindig van egy ьveg italunk az ъjak szбmбra!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_2">
+		<text>Stalker! Az йlet csodбlatos lehetхsйget adott, hogy a Szabadsбgban igaz barбtokra lelj! Csak kцzцttьnk talбlsz olyan tбrsakat, akik mindig fedeznek, йs megosztjбk veled az utolsу szelet kenyerьket is.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_3">
+		<text>Veterбnok йs kopaszok! Ha a szabadsбg fontos szбmodra, йs hozzбd hasonlу emberek kцzцtt akarsz lenni, csatlakozz hozzбnk! A Szabadsбg цrцmmel fogad mindenkit, aki a megjбrta Zуnбt, hogy rбnk leljen!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_4">
+		<text>Szeretnйd elnyerni mбs stalkerek megbecsьlйsйt? Szeretnйl hыsйges tбrsakra lelni, akik a bajban is melletted бllnak? Arrуl бlmodsz, hogy nйhбny a Szolgбlatos seggbe rъghass? Mindez, йs szбmos mбs lehetхsйg vбr rбd a Szabadsбg soraiban!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_5">
+		<text>Itt a lehetхsйg, hogy csatlakozz a Zуna legjobb stalker klбnjбhoz! Hol mбshol fogadnбnak el annak, ami valуjбban vagy? Ne engedj a szabadsбgbуl – csatlakozz hozzбnk!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_6">
+		<text>A Zуna a stalkerekrхl szуl, stalker lйt pedig a szabadsбgrуl. Legyйl mindцrцkkй stalker: csatlakozz a Szabadsбghoz!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_megafon_7">
+		<text>Legyйl te is a Szabadsбg tagja! Kцzцs erхvel meg fogjuk menteni a Zуnбt – mi, a Fцld egyetlen valуban szabad nйpe!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_1">
+		<text>Hй fiъk, mit robbantgattok ott? Vбlaszoljatok!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_2">
+		<text>Mi folyik ott, emberek? Vйtel!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_3">
+		<text>Mit szуrakoztok ott?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_a_4">
+		<text>Szьksйg van segнtsйgre, fiъk? Vйtel.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_1">
+		<text>... Jelentkezz, jelentkezz! Vбlaszolj!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_2">
+		<text>... Vбlaszolj, jelentkezz!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_3">
+		<text>... Miйrt nem vбlaszoltok? Jelentkezzetek fiъk!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_4">
+		<text>... Mi a fene folyik ott? Jelentkezz!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_1">
+		<text>... A fenйbe! Nincs jel... Mi tцrtйnt?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_2">
+		<text>... Nem vбlaszolnak. Mit fogunk tenni?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_3">
+		<text>... Jelentkezzetek, csessze meg! Jelentkezzetek!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_4">
+		<text>... Hol a fenйben lehetnek?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_1">
+		<text>Figyelem minden egysйgnek! Ъjabb egysйget veszнtettьnk. Tartsбtok nyitva a szemeteket!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_2">
+		<text>Egy ъjabb egysйg nem jelentkezett be. Mi az isten folyik itt?</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_3">
+		<text>Elvesztettьk a kapcsolatot az хrjбrattal. Minden egysйgnek: kьlцnцs йbersйggel haladjatok folyamatos kйszьltsйgben!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_4">
+		<text>Figyelem katonбk! Egy ъjabb egysйggel szakadt meg a kapcsolat. Attуl tartok, azok a fiъk nem tйrnek haza ma este. Legyetek rйsen, hogy veletek ez ne tцrtйnhessen meg! Ne feledjйtek: az ellensйg bбrmely sarok mцgцtt ott уlбlkodhat!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_ambush_in_yard">
+		<text>Minden oldalrуl цmlenek. Zsoldos, megprуbбljuk feltartani хket az udvaron, amнg te бtmйsz a hбzon.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_leader_join_freedom">
+		<text>Zsoldos, itt Csehov. Ha mйg mindig csatlakoznбl hozzбnk, gyere йs keress meg a Szabadsбg bбzisбn. A Szabadsбg kйsz befogadni.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_0_up">
+		<text>Jу hнrek fiъk! Immбr mi felьgyeljьk az цsszes utat a vцlgyben! A kцvetkezх terv, hogy meglбtogatjuk a Szolgбlatot. Ha csatlakozni akartok, a Szemйtdomb felй indulunk.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_up">
+		<text>Szйp munka volt! Sikerьlt biztosнtani a Szemйtdombot. Tovбbb kell indulnunk Agroprom felй! Mйg vйletlenьl se lхjetek semleges stalkerekre!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_1_down">
+		<text>Az ellensйg megprуbбl bejutni Sцtйtvцlgybe! Gyerьnk fiъk, vйdjьk meg a szabadsбgunkat!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_up">
+		<text>Na errхl beszйltem! Csapatainknak sikerьlt biztosнtani az Agropromba vezetх utat! Mбr csak kopogtatnunk kell a Szolgбlat ajtajбn!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_2_down">
+		<text>Elvesztettьnk egy egysйget a Szemйtdombnбl. A Sцtйtvцlgybe  vezetх ъt vйdtelen!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_up">
+		<text>Agroprom szabad! Ha йrtitek mire gondolok! Nagyszerы munka volt! Itt az ideje, hogy kifьstцljьk a Szolgбlat embereit a bбzisukrуl!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_3_down">
+		<text>Rossz hнrek йrkeztek. Az Agroprom felй vezetх utat vйdх tбrsaink halottak. Biztosнtanunk kell azt az utat, bбrmibe is kerьl.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_up">
+		<text>Bravу! Sikerьlt elpusztнtanunk a Szolgбlat bбzisбt! Nem mostanбban fognak ebbхl a veresйgbхl felйpьlni! Vйgre megpihenhetьnk, йs йlvezhetjьk a szabadsбgot!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_4_down">
+		<text>Ъgy tыnik, a Szolgбlat ellentбmadбst indнtott, йs visszafoglalta Agropromot. Ez нgy nem lesz jу, emberek! Ha ez нgy folyik tovбbb, a hбborъ nagyon el fog hъzуdni!</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_freedom_expansion_5_down">
+		<text>Nos, ki бll kйszen egy kis harcra? Ъgy hallottam, hogy a Szolgбlat visszatйrt! Helikopterekkel jцttek, visszafoglaltбk a bбzisukat, йs kilхttek mindenkit, aki csak йlt йs mozgott Agroprom kцrnyйkйn.</text>
+	</string>
+	<string id="characters_voice_scenario_darkvalley_val_zavod_task_sniper_dead">
+		<text>A tetх tiszta, indulok.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_dolg_pda">
+		<text>Itt Krilov ezredes. Figyelj, az alsуbb szinteket elцzцnlцttйk a mutбnsok – tartsd nyitva a szemed! A tйrkйp szerint a szivattyъбllomбs vezйrlхje egy szinttel alattad van. Бtkьldtem a koordinбtбit. Vigyбzz nagyon... йs sok sikert.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_underground_agru_leader_clear_sky_pda">
+		<text>Zsoldos, Lebegyev vagyok. A rejtekhelyen talбlt levelezйs sok mindent megmagyarбz. Most mбr tudjuk, hogy Sztrelok csapata eljutott a kцzpontba, йs azt is tudjuk, hogy ъjra megprуbбlnak eljutni oda. Vakmerх bolondok! Ha sikerьl nekik, elindнthatnak egy mбsodik kisugбrzбst – egy akkorбt, ami porrб йget mindenkit a Zуnбn belьl, maga a Zуna pedig instabillб vбltozhat. Ezt nem tцrtйnhet meg! Sztrelok jelenleg a Jantar-tуnбl tartуzkodik. Te vagy a legkцzelebb hozzб – prуbбld meg ott elkapni, mi pedig majd elintйzzьk Agyart йs Szellemet.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_shout_1">
+		<text>Hй, zsoldos! Mi a fenйt csinбlsz itt?! Tыnj el innen amнg lehet – a mutбnsok bбrmikor ideйrhetnek!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_blokpost_dialog">
+		<text>No nйzd csak! Hol van a felszerelйsed, fiъ? Ez veszйlyes hely! Megfelelх цltцzet йs jу fegyver nйlkьl nem jutsz messzire. A szцrnyek egyre бdбzabbak mostanбban, Minden segнtsйg jуl jцn, amнg a Zуnбban harcolunk. Ha egy kis pйnzt is akarsz keresni, ugorj be a Tбbornokhoz. Az egyik egysйgьnk йpp arra tart. Menj velьk, йs maradj ki a bajbуl.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_1">
+		<text>Nesztek, mutбns korcsok!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_2">
+		<text>Ezek a szipkбk! Kapjuk el хket fiъk!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_squad_snorks_attack_3">
+		<text>Csak nyugodtan! Rцvid sorozatokat lхjetek!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_1">
+		<text>Csernobil veterбnjai, csatlakozzatok a Szolgбlathoz! Sъlyos felelхssйg nyugszik vбllainkon. Ha mi nem vйdjьk meg a vilбgot a terjeszkedх Zуnбtуl, akkor ki fogja?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_2">
+		<text>Szabad stalkerek, veterбnok йs vadбszok – csatlakozzatok a Szolgбlathoz! Mindannyiunk kцzцs feladata megvйdeni a vilбgot a fertхzх Zуnбtуl!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_3">
+		<text>Stalkerek! Jelentkezzetek a Szolgбlat kцtelйkйbe! Vegyetek rйszt a vilбg vйdelmйben!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_4">
+		<text>A vilбg reszket, ahogy szembenйz a Zуnбbуl terjeszkedх betegsйggel. Csatlakozzatok a Szolgбlat kцtelйkйbe, йs vйdjйtek meg az бrtatlanokat!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_5">
+		<text>Halбlos anomбliбk, veszйlyes mutбnsok, anarchistбk йs fosztogatуk nem tudjбk megakadбlyozni, hogy a Szolgбlat gyхzelmet arasson, йs megvйdje a bolygуt йs lakosait.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_6">
+		<text>A Szolgбlat minden ъjonca remek felszerelйst kap. De ennйl is fontosabb, hogy a mutбnsok elleni harc цrцk dicsхsйget hoz szбmodra, йs beнrja neved a tцrtйnelembe!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_dolg_megafon_7">
+		<text>Hiszьnk a gyхzelemben! Kisцpцrjьk a szennyet a Zуnбbуl!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_1">
+		<text>Hй katona!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_2">
+		<text>Цrцmmel lбtom, hogy йlsz!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_dolg_3">
+		<text>Ьdvцzцllek!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_1">
+		<text>Hй, zцldfьlы! Csatlakozz a Szolgбlat soraiba!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_2">
+		<text>Hй, stalker! Csak semmi ьgyeskedйs amнg a Szolgбlat terьletйn vagy! Megйrtetted?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_kpp_nodolg_3">
+		<text>Kцvesd a szabбlyokat, йs nem lesz semmi bajod.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_1">
+		<text>Hellу! Ne lйgy szйgyenlхs – gyere mбr ide!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_2">
+		<text>Ne csak бlldogбlj ott, gyere ide!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_3">
+		<text>Katona! Hъzza ki magбt!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_1">
+		<text>Neivajka хrmester! Elkьldцk felйd egy zsoldost. Le fog menni a fцld alatti jбratokba. Tegyйl rуla, hogy elйrje a gцdrцt!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_2">
+		<text>Tбbornok, valaki tйnyleg arra vбllalkozott, hogy lemegy azokba az aknбkba?</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_3">
+		<text>Нgy van. Gondoskodjon rуla, hogy elйg lхszerrel indul ъtnak!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_4">
+		<text>Igen, uram!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_5">
+		<text>Nos... sok szerencsйt. Az хrmestertхl megkapod a szьksйges felszerelйst йs nйhбny jу tanбcsot is. Mбr бtkьldtem neked a hely koordinбtбit.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_1">
+		<text>Figyelem emberek! Bбrmikor kitцrhetnek!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_2">
+		<text>Koncentrбljatok! Cйlozzatok a jбratra!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_wait_3">
+		<text>Figyelem emberek!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_hole_attack_1">
+		<text>Jцnnek kifelй! Tыz!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_base_commander_reward_pda">
+		<text>Nagyszerы munka stalker! Most, hogy a jбratokat elцntцtte a vнz, az йlet kicsit kцnnyebb lesz. Tartozunk neked! Gyere, йs vedd бt a jutalmadat.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_hello_1">
+		<text>Hellу. Lбssuk, mennyire vagy jуban a fegyverekkel!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_win_1">
+		<text>Nem rossz. Gyere, vedd бt a jutalmad.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_lose_1">
+		<text>Legkцzelebb tцbb szerencsйd lesz. Gyere, beszйlgessьnk.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_stalker_tir_bye_1">
+		<text>Ugorj be, ha lцvцldцzni akarsz egy kicsit.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_0_up">
+		<text>Figyelem minden egysйgnek. Sikerьlt biztosнtanunk Agropromot. Jelenleg is formбlуdik az az цnkйntesekbхl бllу csoport, akik megtбmadjбk a Szabadsбgot. Az elsхdleges cйl, hogy megvessьk lбbunkat a Szemйtdombon.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_up">
+		<text>Nos, sikerьlt megvetnьnk lбbunkat a Szemйtdombon. A kцvetkezх lйpйs, hogy biztosнtsuk a Sцtйtvцlgybe vezetх utat. Ne tбmadjбtok meg a semleges stalkereket.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_1_down">
+		<text>Ellensйges csapatok hatoltak be Agroprom terьletйre. Nem harcolhatunk a Szabadsбg ellen, amнg a sajбt bбzisunk nincs biztosнtva! Semmisнtsйtek meg az ellensйget, йs biztosнtsatok minden utat az Agropromhoz.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_up">
+		<text>Kйszen бllunk, hogy megtбmadjuk Sцtйtvцlgyet. Minden egysйgnek, maradjatok teljes harckйszьltsйgben.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_2_down">
+		<text>Figyelem minden egysйgnek: elveszнtettьk бllбsainkat a Szemйtdombon. Szьksйgьnk van rб, hogy tбmadбst tudjunk indнtani a Szabadsбg bбzisa ellen – vissza kell foglalni!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_up">
+		<text>Jу hнrek йrkeztek! Elхretolt egysйgeink elfoglaltak egy бllomбst a Sцtйtvцlgyben!  Most mбr semmi sem бllhat a Szabadsбg bбzisa elleni tбmadбsunk ъtjбba!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_3_down">
+		<text>Minden egysйgnek, az ellensйg megtбmadta a Szemйtdombnбl бllomбsozу egysйgeinket. Elvesztettьk az uralmat a Sцtйtvцlgybe vezetх ъt fцlцtt.</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_up">
+		<text>Minden egysйgnek: elfoglaltuk a Szabadsбg bбzisбt! Az anarchistбkat legyхztьk, йs tцbbй nem fognak zaklatni minket a Zуna ellen folytatott harcok sorбn. Gratulбlok mindenkinek aki hozzбjбrult e jelentхs gyхzelemhez!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_4_down">
+		<text>Lerohantбk a Sцtйtvцlgyben бllomбsozу csapatainkat. Az emberek visszatйrtek a Szemйtdombra. Meg kell vetnьnk a lбbunkat Sцtйtvцlgyben, ha meg akarjuk tбmadni a Szabadsбg bбzisбt!</text>
+	</string>
+	<string id="characters_voice_scenario_agroprom_agr_dolg_expansion_5_down">
+		<text>Figyelem minden egysйgnek! A felderнtхk jelentettйk, hogy egy nagy lйtszбmъ Szabadsбg egysйg elfoglalta a bбzist, йs most хk uraljбk Sцtйtvцlgyet. Ideje visszazavarni хket oda, ahonnan jцttek.</text>
+	</string>
+</string_table>

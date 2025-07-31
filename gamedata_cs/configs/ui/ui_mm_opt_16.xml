@@ -404,6 +404,17 @@
     <track_ssample x="162" y="0" width="200" height="21" step="1" is_integer="1">
       <options_item entry="r__supersample" group="mm_opt_video_adv" depend="vid"/>
     </track_ssample>
+    <combo_ssample x="162" y="0" width="200" height="21" list_length="4" always_show_scroll="0">
+      <options_item entry="r3_msaa" group="mm_opt_video_adv" depend="vid"/>
+      <text_color>
+        <e r="216" g="186" b="140"/>
+        <d color="ui_gray"/>
+      </text_color>
+      <list_font_s r="240" g="217" b="182"/>
+      <list_font	 r="216" g="186" b="140" font="letterica16"/>
+    </combo_ssample>
+
+
 
     <cap_r2_sun x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_r2_sun</text>
@@ -551,12 +562,19 @@
       <options_item entry="r2_volumetric_lights" group="mm_opt_video_adv" depend="restart"/>
     </check_volumetric_light>
 
-    <!-- cap_r3_msaa_alphatest x="17" y="0" width="119" height="21">
+    <cap_r3_msaa_alphatest x="17" y="0" width="119" height="21">
       <text font="letterica16" color="ui_6">ui_mm_msaa_alphatest</text>
     </cap_r3_msaa_alphatest>
     <check_r3_msaa_alphatest x="162" y="0" width="27" height="21" stretch="1">
       <options_item entry="r3_msaa_alphatest" group="mm_opt_video_adv" depend="vid"/>
-    </check_r3_msaa_alphatest -->
+    </check_r3_msaa_alphatest>
+
+    <cap_r3_msaa_opt x="17" y="0" width="119" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_r3_DX10_1</text>
+    </cap_r3_msaa_opt>
+    <check_r3_msaa_opt x="162" y="0" width="27" height="21" stretch="1">
+      <options_item entry="r3_msaa_opt" group="mm_opt_video_adv" depend="vid"/>
+    </check_r3_msaa_opt>
 
     <btn_to_simply x="265" y="325" width="111" height="29">
       <text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>

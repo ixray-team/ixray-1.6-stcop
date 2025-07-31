@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_capture_plant">
+		<text>Foglald el az ipari gйpet!</text>
+	</string>
+	<string id="mar_capture_plant_text">
+		<text>Foglald el az ipari gйpet, amivel az anomбliбs anyagokat vontбk ki a mocsarak aljбrуl!</text>
+	</string>
+	<string id="mar_capture_tower">
+		<text>Foglald el az хrtornyot!</text>
+	</string>
+	<string id="mar_capture_tower_text">
+		<text>Segнts a Tiszta Йgbolt osztagnak elfoglalni a fosztogatуk kezйn lйvх хrtornyot!</text>
+	</string>
+	<string id="mar_defend_tower">
+		<text>Verd vissza a fosztogatуk torony elleni tбmadбsбt!</text>
+	</string>
+	<string id="mar_defend_tower_text">
+		<text>Verd vissza a fosztogatуk ellentбmadбsбt az хrtorony ellen!</text>
+	</string>
+	<string id="mar_story_capture_bandit_base">
+		<text>Foglald el az йszakkeleti tanyбt!</text>
+	</string>
+	<string id="mar_story_capture_bandit_base_text">
+		<text>Foglald el az Ingovбny йszakkeleti rйszйn lйvх tanyбt a fosztogatуk legyхzйsйvel!</text>
+	</string>
+	<string id="mar_story_capture_levelchangers">
+		<text>Foglald el a kinti vilбgba vezetх utakat!</text>
+	</string>
+	<string id="mar_story_capture_levelchangers_text">
+		<text>Biztosнtsd a Kordonba йs Agropromba vezetх utakat a hatбros pozнciуk elfoglalбsбval!</text>
+	</string>
+	<string id="mar_story_empower_csky">
+		<text>Erхsнtsd meg a Tiszta Йgbolt befolyбsбt az Ingovбnyban!</text>
+	</string>
+	<string id="mar_story_empower_csky_text">
+		<text>Erхsнtsd meg a Tiszta Йgbolt befolyбsбt az Ingovбnyban az ellensйges erхk legyхzйsйvel!</text>
+	</string>
+	<string id="mar_story_go_to_escape">
+		<text>Menj a kнsйrхvel a Kordonba!</text>
+	</string>
+	<string id="mar_story_go_to_escape_text">
+		<text>Talбlkozz a kнsйrхvel, йs menj el vele a Kordonba!</text>
+	</string>
+	<string id="mar_story_go_to_marsh">
+		<text>Menj a kнsйrхvel az Ingovбnyba!</text>
+	</string>
+	<string id="mar_story_go_to_marsh_text">
+		<text>Kйrd meg a kнsйrхt, hogy vigyen el az Ingovбnyba!</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh">
+		<text>Foglald el az Ingovбnyt!</text>
+	</string>
+	<string id="mar_story_take_control_over_marsh_text">
+		<text>Foglald el az Ingovбnyt, hogy biztonsбgossб tedd az utakat a kнsйrхk szбmбra!</text>
+	</string>
+	<string id="mar_story_talk_with_barman">
+		<text>Beszйlj a csapossal!</text>
+	</string>
+	<string id="mar_story_talk_with_barman_text">
+		<text>Йrdeklхdj a csaposnбl a Tiszta Йgbolt bбzisбrуl!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1">
+		<text>Beszйlj Lebegyevvel!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_1_text">
+		<text>Derнtsd ki, mit akart Lebegyev!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2">
+		<text>Kйrdezd meg Lebegyevtхl, hogy mi tцrtйnt!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_2_text">
+		<text>Kйrdezd meg Lebegyevtхl, hogy mi tцrtйnt a mбsodik kisugбrzбs utбn!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3">
+		<text>Бllapodj meg Lebegyevvel, hogy kisegнtitek egymбst!</text>
+	</string>
+	<string id="mar_story_talk_with_commander_3_text">
+		<text>Gyхzd meg Lebegyevet, hogy segнtsen elhagynod az Ingovбnyt!</text>
+	</string>
+	<string id="mar_story_talk_with_guide">
+		<text>Menj a kнsйrхvel a helyхrsйgre!</text>
+	</string>
+	<string id="mar_story_talk_with_guide_text">
+		<text>Kйrd meg a kнsйrхt, hogy vigyen el a helyхrsйgre!</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych">
+		<text>Beszйlj Szidoroviccsal!</text>
+	</string>
+	<string id="mar_story_talk_with_sidorovych_text">
+		<text>Kйrdezd meg Szidorovicsot a kьlцnleges alkatrйszek felхl йrdeklхdх stalkerrхl! Ez az egyetlen mуdja, hogy a Tiszta Йgbolt kiderнtse, miйrt rбzzбk meg kisugбrzбsok a Zуnбt.</text>
+	</string>
+	<string id="mar_story_talk_with_trader">
+		<text>Szerezz felszerelйst a kereskedхtхl!</text>
+	</string>
+	<string id="mar_story_talk_with_trader_text">
+		<text>Szerezz nйhбny felszerelйst a kereskedхtхl!</text>
+	</string>
+	<string id="mar_tutorial_help">
+		<text>Segнts a helyхrsйgnek!</text>
+	</string>
+	<string id="mar_tutorial_help_text">
+		<text>Vбlaszolj a Tiszta Йgbolt helyхrsйgйrхl йrkezх segйlyhнvбsra!</text>
+	</string>
+	<string id="mar_tutorial_kill_boars">
+		<text>Цld meg a vadkanokat!</text>
+	</string>
+	<string id="mar_tutorial_kill_boars_text">
+		<text>Цld meg a Tiszta Йgbolt helyхrsйget tбmadу vadkanokat!</text>
+	</string>
+	<string id="mar_tutorial_return_to_base">
+		<text>Tйrj vissza a Tiszta Йgbolt bбzisra!</text>
+	</string>
+	<string id="mar_tutorial_return_to_base_text">
+		<text>Keress menedйket a Tiszta Йgbolt bбzisбn, mielхtt kitцrne a kisugбrzбs!</text>
+	</string>
+	<string id="mar_tutorial_tower_top">
+		<text>Menj fel a toronyba!</text>
+	</string>
+	<string id="mar_tutorial_tower_top_text">
+		<text>Menj fel a toronyba, hogy megszцkj a szцrnyek elхl!</text>
+	</string>
+	<string id="st_bring_item_1_name">
+		<text>Vigyйl grбnбtokat!</text>
+	</string>
+	<string id="st_bring_item_1_text">
+		<text>A Tiszta Йgbolt osztagnak szьksйge lenne nйhбny grбnбtra.</text>
+	</string>
+	<string id="st_bring_item_2_name">
+		<text>Vigyйl gyуgyбszati ellбtmбnyokat!</text>
+	</string>
+	<string id="st_bring_item_2_text">
+		<text>A Tiszta Йgbolt osztagnak йgetх szьksйge lenne gyуgyбszati ellбtmбnyokra!</text>
+	</string>
+	<string id="st_bring_item_3_name">
+		<text>Vigyйl lхszert!</text>
+	</string>
+	<string id="st_bring_item_3_text">
+		<text>A Tiszta Йgbolt osztagnak szьksйge lenne sцrйtes lхszerre!</text>
+	</string>
+	<string id="st_bring_item_4_name">
+		<text>Vigyйl lхszert!</text>
+	</string>
+	<string id="st_bring_item_4_text">
+		<text>A Tiszta Йgbolt osztagnak szьksйge lenne pisztolylхszerre!</text>
+	</string>
+	<string id="st_bring_item_5_name">
+		<text>Vigyйl lхszert!</text>
+	</string>
+	<string id="st_bring_item_5_text">
+		<text>A Tiszta Йgbolt osztagnak szьksйge gйpkarabйly lхszerre!</text>
+	</string>
+	<string id="st_recover_item_1_name">
+		<text>Juttasd vissza a PMm-et!</text>
+	</string>
+	<string id="st_recover_item_1_text">
+		<text>Йjszakai kьldetйsьk alatt a Tiszta Йgbolt osztaga belebotlott egy vadkanodъba. Valуszнnыleg mбr tъl kйsх, hogy megmentsd az embereket, de az osztagparancsnoknak volt egy mуdosнtott PMm-je. A pisztoly mйg hasznбra vбlhat a frakciуnak. Juttasd vissza hozzбjuk!</text>
+	</string>
+	<string id="st_recover_item_2_name">
+		<text>Juttasd vissza az AK74/2u-t!</text>
+	</string>
+	<string id="st_recover_item_2_text">
+		<text>Nйhбny napja renegбtok tбmadtбk meg a Tiszta Йgbolt osztagбt, amikor fegyvereket vбsбroltak a hadseregtхl. A legtцbb fegyvert megszereztйk a renegбtok, de a legjobb gйpkarabйlyt elrejtettйk. Vissza kell szerezned!</text>
+	</string>
+	<string id="st_recover_item_3_name">
+		<text>Szerezd meg a relikviбt!</text>
+	</string>
+	<string id="st_recover_item_3_text">
+		<text>A Tiszta Йgbolt osztaga segйlyhнvбst kapott egy stalkertхl, aki talбlt egy ritka relikviбt, de nem tud kijutni egy anomбliбs terьletrхl. Az osztag nem йrt oda idхben, йs eltыnt a jelzйs. Meg kell szerezned a relikviбt!</text>
+	</string>
+	<string id="st_recover_item_4_name">
+		<text>Vidd vissza a PDA-t!</text>
+	</string>
+	<string id="st_recover_item_4_text">
+		<text>Az egyik legjobb felderнtхnk eltыnt egy йjszakai kьldetйs sorбn. Legalбbb a felderнtх PDA-jбt hozd vissza, hogy ne vesszen kбrba a megszerzett informбciу!</text>
+	</string>
+	<string id="st_recover_item_5_name">
+		<text>Vidd vissza az цltцzйket!</text>
+	</string>
+	<string id="st_recover_item_5_text">
+		<text>A renegбtok nemrйg elfoglaltak egy kisebb ipari objektumot az Ingovбnyban, ahol йppen egy kнsйrletet hajtottak vйgre. Egy цltцzйket бtitatott az anomбliбs anyag. Hozd vissza az цltцzйket, hogy a tudуsaink kiйrtйkelhessйk a kнsйrletet!</text>
+	</string>
+	<string id="st_sim_sos_name">
+		<text>Segнts!</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_name">
+		<text>Keress informбciуkat a kevlбr pбncйlzatrуl!</text>
+	</string>
+	<string id="st_mar_find_flesh_up_a_novice_outfit_text">
+		<text>A pбncйlzat fejlesztйsйhez Novikovnak informбciуkra van szьksйge a kevlбr pбncйlzatokrуl.</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_name">
+		<text>Keress informбciуkat a csхszбjfйkekrхl!</text>
+	</string>
+	<string id="st_mar_find_flesh_up_ac_mp5_text">
+		<text>Novikov el akar kйszнteni egy speciбlis csхszбjfйket, de nem tud eleget a mыkцdйsьkrхl. Keress ezzel kapcsolatban informбciуkat, йs vidd el neki!</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_name">
+		<text>Keress informбciуkat a csхmуdosнtбsokrуl!</text>
+	</string>
+	<string id="st_mar_find_flesh_up_bd_mp5_text">
+		<text>Novikov kйszнthetne egy csцvet, ami fejlesztenй egy fegyver jellemzхit, de hiбnyzik mйg hozzб nйhбny adata.</text>
+	</string>
+	<string id="st_mar_leader_notify_actor">
+		<text>Koncentrбlj, zsoldos! A cйlunk, hogy бtvegyьk az Ingovбny irбnyнtбsбt. Ha nem tudod, mi a dolgod, nйzd meg a PDA-dban az aktнv feladatokat!</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_desc">
+		<text>Egy PDA tele informбciуkkal, amiket a Tiszta Йgbolt felderнtхje gyыjtцtt цssze az Ingovбnyrуl.</text>
+	</string>
+	<string id="st_mar_quest_scout_pda_name">
+		<text>TЙ felderнtх PDA-ja</text>
+	</string>
+</string_table>

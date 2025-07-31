@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_upg_zatvor_rpm">
+		<text>Zбvбrzat-mуdosнtбs</text>
+	</string>
+	<string id="st_upg_zatvor_rpm_descr">
+		<text>A zбvбrzat mыszaki mуdosнtбsa nagyobb tыzgyorsasбgot tesz lehetхvй.</text>
+	</string>
+	<string id="st_upg_zatvor_recoil">
+		<text>Zбvбrzat-mуdosнtбs</text>
+	</string>
+	<string id="st_upg_zatvor_recoil_descr">
+		<text>A zбvбrzat kйzi finomhangolбsa nagyobb tьzelйsi pontossбgot tesz lehetхvй.</text>
+	</string>
+	<string id="st_upg_porsh_rpm">
+		<text>Tolуzбr-mуdosнtбs</text>
+	</string>
+	<string id="st_upg_porsh_rpm_descr">
+		<text>A tolуzбr sъlyбnak a csцkkentйsйvel gyengнthetх a fegyver visszarъgбsa, a tыzgyorsasбg csцkkenйsйnek бrбn.</text>
+	</string>
+	<string id="st_upg_porsh_recoil">
+		<text>Tolуzбr-mуdosнtбs</text>
+	</string>
+	<string id="st_upg_porsh_recoil_descr">
+		<text>A tolуzбr kisъlyozбsбval gyengнthetх a fegyver visszarъgбsa.</text>
+	</string>
+	<string id="st_upg_barrel_weight">
+		<text>Csхmуdosнtбs</text>
+	</string>
+	<string id="st_upg_barrel_weight_descr">
+		<text>A szabvбnyos csх cserйje egy kцnnyнtett vбltozatra.</text>
+	</string>
+	<string id="st_upg_barrel_curved">
+		<text>Csхmуdosнtбs</text>
+	</string>
+	<string id="st_upg_barrel_curved_descr">
+		<text>A csх meghosszabbнtбsбval nцvelhetх a lцvedйk kezdхsebessйge.</text>
+	</string>
+	<string id="st_upg_barrel_recoil">
+		<text>Csхmуdosнtбs</text>
+	</string>
+	<string id="st_upg_barrel_recoil_descr">
+		<text>Egy csхszбjfйk felhelyezйsйvel jelentхsen gyengнthetх a fegyver visszarъgбsa.</text>
+	</string>
+	<string id="st_upg_barrel_rifled">
+		<text>Csхmуdosнtбs</text>
+	</string>
+	<string id="st_upg_barrel_rifled_descr">
+		<text>Egy huzagolбs kialakнtбsбval a fegyver messzebbre kйpes hordani a nagy kaliberы sцrйtet йs a nyilacskбkat, viszont sima sцrйtet tцbbй nem lehet beletцlteni.</text>
+	</string>
+	<string id="st_upg_butt_recoil">
+		<text>Arcpбrna</text>
+	</string>
+	<string id="st_upg_butt_recoil_descr">
+		<text>Egy szabvбnyos gumi arcpбrna, amivel a tus hossza a lцvйsz magassбgбhoz бllнthatу.</text>
+	</string>
+	<string id="st_upg_butt_recoil2">
+		<text>Polimer puskatus</text>
+	</string>
+	<string id="st_upg_butt_recoil2_descr">
+		<text>A szabvбnyos tus polimerre vбltбsбval csцkkenthetх a fegyver sъlya.</text>
+	</string>
+	<string id="st_upg_butt_recoil3_descr">
+		<text>A szabvбnyos tus cserйje egy kцnnyнtett vбltozatra.</text>
+	</string>
+	<string id="st_upg_butt_recoil4_descr">
+		<text>A puskatus kьlцnleges kialakнtбsa miatt jelentхsen csцkken a fegyver visszarъgбsa.</text>
+	</string>
+	<string id="st_upg_auto_rpm">
+		<text>Elsьtхszerkezet sъlyozбsa</text>
+	</string>
+	<string id="st_upg_auto_rpm_descr">
+		<text>Az elsьtхszerkezet mozgу alkatrйszeinek pontosabb kisъlyozбsбval jelentхsen nцvelhetх a fegyver tыzgyorsasбga.</text>
+	</string>
+	<string id="st_upg_auto_rpm2">
+		<text>Elsьtхszerkezet cserйje</text>
+	</string>
+	<string id="st_upg_auto_rpm2_descr">
+		<text>A fйlautomata elsьtхszerkezet automatбra cserйlйsйvel jelentхsen megnцvekszik a tыzgyorsasбg.</text>
+	</string>
+	<string id="st_upg_poly_weight">
+		<text>Polimer alkatrйszek</text>
+	</string>
+	<string id="st_upg_poly_weight_descr">
+		<text>A polimer alkatrйszek hasznбlatбval jelentхsen csцkkenthetх a fegyver sъlya.</text>
+	</string>
+	<string id="st_upg_barrel_rpm">
+		<text>Fegyvercsх hыtйse</text>
+	</string>
+	<string id="st_upg_barrel_rpm_descr">
+		<text>Ha egy hыtхrendszert szerelьnk a fegyver csцvйre, azzal tovбbb nцvelhetх a tыzgyorsasбg, a fegyvercsх deformбlуdбsбnak a veszйlye nйlkьl.</text>
+	</string>
+	<string id="st_upg_trigger_accur">
+		<text>Finomabb ravasz</text>
+	</string>
+	<string id="st_upg_trigger_accur_descr">
+		<text>A ravasz simбbb meghъzбsбval nцvelhetх a tьzelйsi pontossбg.</text>
+	</string>
+	<string id="st_upg_charger_assault">
+		<text>Rohamtбr</text>
+	</string>
+	<string id="st_upg_charger_assault_descr">
+		<text>A tбrmйretet jelentхsen megnцveltйk, kifejezetten tбmadу hadmыveletek igйnyeihez.</text>
+	</string>
+	<string id="st_upg_charger_big">
+		<text>Megnцvelt tбr</text>
+	</string>
+	<string id="st_upg_charger_big_descr">
+		<text>A tбrmйret nцvelйse egyedi megoldбsokkal.</text>
+	</string>
+	<string id="st_upg_charger_small">
+		<text>Kцnnyнtett tбr</text>
+	</string>
+	<string id="st_upg_charger_small_descr">
+		<text>A fegyver kцnnyнtйsйt a tбr mйretйnek a csцkkentйsйvel йrik el. Kцnnyebb lesz a cйlzott lцvйsek leadбsa.</text>
+	</string>
+	<string id="st_upg_gas_rpm">
+		<text>Gбzrendszer-mуdosнtбs</text>
+	</string>
+	<string id="st_upg_gas_rpm_descr">
+		<text>Egy modernebb gбzrendszer lehetхvй teszi a nagyobb tыzgyorsasбgot.</text>
+	</string>
+	<string id="st_upg_gravi_accur">
+		<text>Gravitбciуs stabilizбlбs</text>
+	</string>
+	<string id="st_upg_gravi_accur_descr">
+		<text>Gravitбciуs relikviбk hasznбlatбval javнthatу a tцltйnyek rцppбlyбja, нgy javul a pontossбguk.</text>
+	</string>
+	<string id="st_upg_electro_accur">
+		<text>Elektromos stabilizбlбs</text>
+	</string>
+	<string id="st_upg_electro_accur_descr">
+		<text>Automatikusan бllнtja a lцvedйkek hajtуerejйt, нgy javнt a tыzgyorsasбgon.</text>
+	</string>
+	<string id="st_upg_bind_grenade">
+		<text>Csх alatti foglalat</text>
+	</string>
+	<string id="st_upg_bind_grenade_descr">
+		<text>Lehetхvй teszi egy csх alatti grбnбtvetх rцgzнtйsйt a fegyverre.</text>
+	</string>
+	<string id="st_upg_bind_optic">
+		<text>Tбvcsхfoglalat</text>
+	</string>
+	<string id="st_upg_bind_optic_descr">
+		<text>Lehetхvй teszi kьlцnbцzх tбvcsцvek rцgzнtйsйt a fegyverre.</text>
+	</string>
+	<string id="st_upg_bind_silencer">
+		<text>Hangtompнtу-foglalat</text>
+	</string>
+	<string id="st_upg_bind_silencer_descr">
+		<text>Lehetхvй teszi egy hangtompнtу rцgzнtйsйt a fegyverre.</text>
+	</string>
+	<string id="st_upg_handle_accur">
+		<text>Tapadу markolat</text>
+	</string>
+	<string id="st_upg_handle_accur_descr">
+		<text>A jу minхsйgы gumival bevont markolat javнtja a fegyver kezelhetхsйgi jellemzхit.</text>
+	</string>
+	<string id="st_upg_handle_accur2">
+		<text>Ergonomikus markolat</text>
+	</string>
+	<string id="st_upg_handle_accur2_descr">
+		<text>Kifejezetten a te kezed formбjбra kйszнtett markolat.</text>
+	</string>
+	<string id="st_upg_accel_curved">
+		<text>Pneumatikus gyorsнtу</text>
+	</string>
+	<string id="st_upg_accel_curved_descr">
+		<text>A belsх pneumatikus gyorsнtу megnцveli a lхszer kezdхsebessйgйt.</text>
+	</string>
+	<string id="st_upg_accel_curved2">
+		<text>Mбgneses gyorsнtу</text>
+	</string>
+	<string id="st_upg_accel_curved2_descr">
+		<text>Egy vбltozу mбgneses mezхvel megnцveli a lхszer kezdхsebessйgйt.</text>
+	</string>
+	<string id="st_upg_barrel_curved2">
+		<text>Egysйges csх</text>
+	</string>
+	<string id="st_upg_barrel_curved2_descr">
+		<text>Egy fejlesztйs a beйpнtett hangtompнtуval rendelkezх fegyverek szбmбra. Lecserйli a hangtompнtуval ellбtott csцvet egy egysйges csхre.</text>
+	</string>
+	<string id="st_upg_pomp_rpm">
+		<text>Javнtott pumpбs mechanika</text>
+	</string>
+	<string id="st_upg_pomp_rpm_descr">
+		<text>Az ъjratцltх mechanika aprу mуdosнtбsa йs finomhangolбsa.</text>
+	</string>
+	<string id="st_upg_head_misfire">
+		<text>Ьtхszeg cserйje</text>
+	</string>
+	<string id="st_upg_head_misfire_descr">
+		<text>Javнtja a fegyver megbнzhatуsбgбt, йs csцkkenti a fegyver besьlйsйnek az esйlyйt.</text>
+	</string>
+	<string id="st_upg_mat_wear">
+		<text>Tartуs anyagok</text>
+	</string>
+	<string id="st_upg_mat_wear_descr">
+		<text>A fegyvert a fizikai sйrьlйsektхl vйdх belsх anyagok tartуsabbra йs idхjбrбsбllуra cserйlйse.</text>
+	</string>
+	<string id="st_upg_surf_wear">
+		<text>Vйdett adagolу</text>
+	</string>
+	<string id="st_upg_surf_wear_descr">
+		<text>Egy gyйmбnt adagolу, ami megakadбlyozza a mozgу alkatrйszek elkopбsбt йs anyagfбradбsбt.</text>
+	</string>
+	<string id="st_upg_group_kuchn">
+		<text>Javнtott precнziу</text>
+	</string>
+	<string id="st_upg_group_kuchn_descr">
+		<text>Egy csхtoldalйk, ami javнtja a lцvйsek pontossбgбt.</text>
+	</string>
+	<string id="st_upg_staple_rpm">
+		<text>Ravaszzбr eltбvolнtбsa</text>
+	</string>
+	<string id="st_upg_staple_rpm_descr">
+		<text>Egy nйpszerы йs egyszerы mыvelet, ami nцveli a duplacsцvы sцrйtesek tыzgyorsasбgбt.</text>
+	</string>
+	<string id="st_prop_ammo_size">
+		<text>tбrmйret</text>
+	</string>
+	<string id="st_prop_armor">
+		<text>pбncйlzat</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>relikviatartу</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>lapossбg</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>kaliber</text>
+	</string>
+	<string id="st_prop_damage">
+		<text>йpsйg</text>
+	</string>
+	<string id="st_prop_dispersion">
+		<text>pontossбg</text>
+	</string>
+	<string id="st_prop_durability">
+		<text>tartуssбg</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>csх alatti grбnбtvetх</text>
+	</string>
+	<string id="st_prop_inertion">
+		<text>kezelhetхsйg</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>йjjellбtу kйszьlйk</text>
+	</string>
+	<string id="st_prop_power">
+		<text>erх-regenerбlбs</text>
+	</string>
+	<string id="st_prop_psy">
+		<text>pszichikus vйdelem</text>
+	</string>
+	<string id="st_prop_radio_chem">
+		<text>radiokйmiai vйdelem</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>visszarъgбs</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>megbнzhatуsбg</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>sebgyуgyulбs</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>egйszsйg-regenerбlбs</text>
+	</string>
+	<string id="st_prop_rpm">
+		<text>tыzgyorsasбg</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>optikai tбvcsх</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>beйpнtett tбvcsх</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>hangtompнtу</text>
+	</string>
+	<string id="st_prop_thermo_electro">
+		<text>hхelektromos vйdelem</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>csх alatti foglalat</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>sъly</text>
+	</string>
+	<string id="st_tonnage">
+		<text>maximбlis sъly</text>
+	</string>
+	<string id="st_upg_active_filter_stalk">
+		<text>Aktнv szыrхk</text>
+	</string>
+	<string id="st_upg_active_filter_stalk_descr">
+		<text>Mйg hatйkonyabb szыrхrendszer.</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm">
+		<text>Lхszeradagolу rendszer</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm_descr">
+		<text>Felgyorsнtja a lхszer tбrba jutбsбt, ami nagymйrtйkben nцveli a tыzgyorsasбgot.</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk">
+		<text>Gбzбlarc</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk_descr">
+		<text>A gбzбlarc az elsхdleges vйdelem a radioaktнv por йs a kбros vegyszerek ellen.</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk">
+		<text>Antisztatikus bevonat</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk_descr">
+		<text>A permet megakadбlyozza a radioaktнv por йs a vegyszerek цltцzйkre tapadбsбt.</text>
+	</string>
+	<string id="st_upg_artefact_slot">
+		<text>Relikviatartу</text>
+	</string>
+	<string id="st_upg_artefact_slot_descr">
+		<text>Egy tartу, ami tovбbbi relikviбk tбrolбsбt teszi lehetхvй.</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk">
+		<text>Vнzhatlan цltцzйk</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk_descr">
+		<text>Megfelelх vйdelmet nyъjt a tыz йs az elektromossбg ellen.</text>
+	</string>
+	<string id="st_upg_butt_recoil3">
+		<text>Sъlytalan agy.</text>
+	</string>
+	<string id="st_upg_butt_recoil4">
+		<text>Pneumatikus agy.</text>
+	</string>
+	<string id="st_upg_calibre_5_45">
+		<text>5.45x39 mm-es kaliber</text>
+	</string>
+	<string id="st_upg_calibre_5_45_descr">
+		<text>A csцvet kicserйlik, a fegyver rйszeit pedig az ъj kaliberhez igazнtjбk. Ez a csere csak egyszer hajthatу vйgre.</text>
+	</string>
+	<string id="st_upg_calibre_5_56">
+		<text>5.56x45 mm-es kaliber</text>
+	</string>
+	<string id="st_upg_calibre_5_56_descr">
+		<text>A csцvet kicserйlik, a fegyver rйszeit pedig az ъj kaliberhez igazнtjбk. Ez a csere csak egyszer hajthatу vйgre.</text>
+	</string>
+	<string id="st_upg_calibre_9_18">
+		<text>9x18 mm-es kaliber</text>
+	</string>
+	<string id="st_upg_calibre_9_18_descr">
+		<text>A csцvet kicserйlik, a fegyver rйszeit pedig az ъj kaliberhez igazнtjбk. Ez a csere csak egyszer hajthatу vйgre.</text>
+	</string>
+	<string id="st_upg_calibre_9_19">
+		<text>9x19 mm-es kaliber</text>
+	</string>
+	<string id="st_upg_calibre_9_19_descr">
+		<text>A csцvet kicserйlik, a fegyver rйszeit pedig az ъj kaliberhez igazнtjбk. Ez a csere csak egyszer hajthatу vйgre.</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle">
+		<text>Kevlбr pбncйlzat</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle_descr">
+		<text>Tцbbrйtegы kevlбr pбncйlzat alapanyag.</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle">
+		<text>Kevlбr lemezek</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle_descr">
+		<text>Kevlбr lemezeket helyeznek a pбncйlzatba, amivel nцvelik a vйdelmйt.</text>
+	</string>
+	<string id="st_upg_composite_armor_battle">
+		<text>Kompozit lemezek</text>
+	</string>
+	<string id="st_upg_composite_armor_battle_descr">
+		<text>A kompozit lemezek maximбlis vйdelmet nyъjtanak a kйzi lхfegyverek ellen.</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle">
+		<text>Duplarйtegы pбncйlzat</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle_descr">
+		<text>Mйg ha egy pбncйlrйteg meg is sйrьl, a mбsodik tovбbbra is elegendх vйdelmet biztosнt.</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle">
+		<text>Elektrostimulбnsok</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle_descr">
+		<text>A stimulбnsok mikropulzusok kivбltбsбval segнtik a fiziolуgiai folyamatokat.</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk">
+		<text>Kьlsх szыrхrendszer</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk_descr">
+		<text>A gбzбlarc szыrхi leszerelhetхk, йs adott esetben bхvнthetхk is.</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk">
+		<text>Lйgmentes szigetelх-bevonat</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk_descr">
+		<text>A speciбlis szigetelх-bevonat megvйdi az цltцzйket a tыztхl йs az elektromossбgtуl.</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved">
+		<text>Tartalйk csх</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved_descr">
+		<text>A tartуs acйlcsх ellenбll a deformбciуnak, йs nцveli a lцvedйk gyorsulбsбt.</text>
+	</string>
+	<string id="st_upg_hard_elements_battle">
+		<text>Szilбrd elemek</text>
+	</string>
+	<string id="st_upg_hard_elements_battle_descr">
+		<text>A kцnnyыfйm цtvцzetы vбz elnyeli a lцvedйkek erejйnek nagy rйszйt.</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle">
+		<text>Йletfenntartу rendszer</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle_descr">
+		<text>A csuklуn hordhatу kйszьlйk intravйnбsan nyugtatуkat йs stimulбnsokat fecskendez sйrьlйskor viselхjйbe.</text>
+	</string>
+	<string id="st_upg_night_vision_battle">
+		<text>Йjjellбtу kйszьlйk</text>
+	</string>
+	<string id="st_upg_night_vision_battle_descr">
+		<text>Elsх generбciуs йjjellбtу kйszьlйk.</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk">
+		<text>Kцnnyнtх mellйny</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk_descr">
+		<text>A kцnnyнtх mellйny segнt a viselхje terhйt hordani a sъly ъjraelosztбsa бltal.</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk">
+		<text>Kцnnyы hбtizsбk</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk_descr">
+		<text>A speciбlis szнjaknak kцszцnhetхen kцnnyebbй vбlik a hбtizsбk cipelйse, ami nцveli a teherbнrбst.</text>
+	</string>
+	<string id="st_upg_plastic_components_battle">
+		<text>Mыanyag цsszetevхk</text>
+	</string>
+	<string id="st_upg_plastic_components_battle_descr">
+		<text>A mыanyag цsszetevхk ellenбllуbbб teszik az цltцzйket.</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk">
+		<text>Polimer kezelйs</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk_descr">
+		<text>A folyйkony polimerrel bevont anyag ellenбllуbbб vбlik a tыzzel йs az elektromossбggal szemben.</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle">
+		<text>Polimer vaskosнtу</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle_descr">
+		<text>A tйrfogatnцvelх anyag hatйkonyan elnyeli a lцvedйkek erejйt.</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk">
+		<text>Polimer цltцzйk</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk_descr">
+		<text>A polimer anyagok jу vйdelmet nyъjtanak a hх йs az бramьtйs ellen.</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle">
+		<text>Megerхsнtett vбz</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle_descr">
+		<text>A hozzбadott vбzelemek nцvelik a kьlsх vбz erejйt.</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle">
+		<text>Felerхsнtett szervomotorok</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle_descr">
+		<text>A szervomotorok magasabb feszьltsйgre бllнtбsa megnцveli az erejьket.</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk">
+		<text>Цltцzйk бrnyйkolбs</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk_descr">
+		<text>Az бrnyйkolу kбbelek цsszetett rendszere korlбtozott pszichikus vйdelmet biztosнt.</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk">
+		<text>Zбrt ciklusъ lйgzхmodul</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk_descr">
+		<text>A recirkulбciуs rendszer gond nйlkьl megtisztнtja a fertхzцtt levegхt.</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk">
+		<text>Teherelosztбsi цltцzйk</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk_descr">
+		<text>Az цltцzйk rugalmas anyaga megkцnnyнti viselхje szбmбra a huzamosabb fizikai igйnybevйtelt.</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt">
+		<text>Beйpнtett 1.6x-os tбvcsх</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt_descr">
+		<text>Az 1.6x-os tбvcsх a tбmadу mыveletekhez legideбlisabb mйretыre csцkkenti a lцvйsz lбtуterйt.</text>
+	</string>
+	<string id="st_upg_scope_4x_opt">
+		<text>Beйpнtett 4x-es tбvcsх</text>
+	</string>
+	<string id="st_upg_scope_4x_opt_descr">
+		<text>4x-es tбvcsхvel minden fegyver alkalmas a mesterlцvйszetre.</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle">
+		<text>Szintetikus vaskosнtу</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle_descr">
+		<text>A pбncйlzat alб helyezett tйrfogatnцvelх szцvet hatйkonyan csцkkenti a sйrьlйs mйrtйkйt.</text>
+	</string>
+	<string id="st_upg_slice_leather_battle">
+		<text>Kemйny bхr berakбsok</text>
+	</string>
+	<string id="st_upg_slice_leather_battle_descr">
+		<text>Valamelyest tompнtjбk a lцvedйk becsapуdбst.</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk">
+		<text>Speciбlis bevonat</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk_descr">
+		<text>A kьlцnleges eljбrбssal, kizбrуlag Zуnбban talбlhatу anyagokbуl kйszьlt bevonat vйdelmet nyъjt a tыz йs az elektromos anomбliбk ellen.</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle">
+		<text>Spektrum pбncйlzat</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle_descr">
+		<text>A megerхsнtett katonai pбncйlzat vйdelmet nyъjt a gйpkarabйly tыzereje ellen.</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle">
+		<text>Mбsodik generбciуs йjjellбtу kйszьlйk</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle_descr">
+		<text>A mбsodik generбciуs йjellбtу kйszьlйk tisztбbb kйpet biztosнt kisebb interferencia mellett.</text>
+	</string>
+	<string id="st_upgr_ammunition">
+		<text>lхszer</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>nincs adat a fejlesztйsrхl</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Бr</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Nem szerelhetх fel</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>nincs elйg pйnzed:</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>Az цsszetevхt mбr fejlesztetted</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Felszerelve</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>Mбs fejlesztйsek szьksйgesek a felszerelйsйhez</text>
+	</string>
+	<string id="st_upgr_rpm_lowered">
+		<text>RPM csцkkentve</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Biztos, hogy fel szeretnйd szerelni:</text>
+	</string>
+</string_table>

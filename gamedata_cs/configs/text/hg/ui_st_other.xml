@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Btn_Cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="Btn_No">
+		<text>Nem</text>
+	</string>
+	<string id="Btn_OK">
+		<text>Rendben</text>
+	</string>
+	<string id="Btn_Yes">
+		<text>Igen</text>
+	</string>
+	<string id="bad">
+		<text>rossz</text>
+	</string>
+	<string id="enemy">
+		<text>ellensйg</text>
+	</string>
+	<string id="excellent">
+		<text>kivбlу</text>
+	</string>
+	<string id="experienced">
+		<text>Tapasztalt</text>
+	</string>
+	<string id="friendly">
+		<text>barбt</text>
+	</string>
+	<string id="global_map">
+		<text>A Zуna tйrkйpe</text>
+	</string>
+	<string id="good">
+		<text>jу</text>
+	</string>
+	<string id="id_mp_money">
+		<text>Pйnz</text>
+	</string>
+	<string id="indifferent">
+		<text>kцzйpszerы</text>
+	</string>
+	<string id="master">
+		<text>mester</text>
+	</string>
+	<string id="mm_mp_pda_hunt">
+		<text>PDA bуnusz</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>Csak egy aktнv szavazat engedйlyezett</text>
+	</string>
+	<string id="neutral">
+		<text>semleges</text>
+	</string>
+	<string id="novice">
+		<text>Kopasz</text>
+	</string>
+	<string id="st_audio">
+		<text>Hang</text>
+	</string>
+	<string id="st_bolt">
+		<text>Csavar</text>
+	</string>
+	<string id="st_client_connecting_to">
+		<text>KLIENS: Kapcsolуdбs ehhez:</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>KLIENS: Lehelyezйs</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>KLIENS: Szinkronizбlбs</text>
+	</string>
+	<string id="st_controll">
+		<text>Irбnyнtбs</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Ъj jбtйk lйtrehozбsa</text>
+	</string>
+	<string id="st_drink">
+		<text>ivбs</text>
+	</string>
+	<string id="st_game">
+		<text>Jбtйk</text>
+	</string>
+	<string id="st_item_used">
+		<text>Hasznбlt</text>
+	</string>
+	<string id="st_items">
+		<text>Tбrgyak</text>
+	</string>
+	<string id="st_level">
+		<text>Szint</text>
+	</string>
+	<string id="st_loading_ai_objects">
+		<text>MI objektumok betцltйse</text>
+	</string>
+	<string id="st_loading_alife_simulator">
+		<text>SZERVER: Alife szimulбtor betцltйse</text>
+	</string>
+	<string id="st_loading_cform">
+		<text>CFORM betцltйse</text>
+	</string>
+	<string id="st_loading_details">
+		<text>Rйszletek betцltйse</text>
+	</string>
+	<string id="st_loading_geometry">
+		<text>Geometria betцltйse</text>
+	</string>
+	<string id="st_loading_saved_game">
+		<text>Mentett jбtйk betцltйse</text>
+	</string>
+	<string id="st_loading_sectors_portals">
+		<text>Szektorok йs portбlok betцltйse</text>
+	</string>
+	<string id="st_loading_shaders">
+		<text>Бrnyйkolуk betцltйse</text>
+	</string>
+	<string id="st_loading_spatial_db">
+		<text>Tйradatbбzis betцltйse</text>
+	</string>
+	<string id="st_loading_textures">
+		<text>Textъrбk betцltйse</text>
+	</string>
+	<string id="st_mp_direct_ip">
+		<text>Kцzvetlen IP</text>
+	</string>
+	<string id="st_no_active_task">
+		<text>Nincs aktнv feladat</text>
+	</string>
+	<string id="st_not_enough_money">
+		<text>Nincs elйg pйnz</text>
+	</string>
+	<string id="st_not_enough_money_npc">
+		<text>az NJK-nak nincs elйg pйnze</text>
+	</string>
+	<string id="st_opening_stream">
+		<text>Adatfolyam megnyitбsa</text>
+	</string>
+	<string id="st_prefetching_objects">
+		<text>Objektumok lehнvбsa</text>
+	</string>
+	<string id="st_server_connecting">
+		<text>SZERVER: Kapcsolуdбs</text>
+	</string>
+	<string id="st_server_starting">
+		<text>SZERVER: Kezdйs</text>
+	</string>
+	<string id="st_validating_cdkey">
+		<text>CD kulcs йrvйnyesнtйse</text>
+	</string>
+	<string id="st_video">
+		<text>Megjelenнtйs</text>
+	</string>
+	<string id="terrible">
+		<text>szцrnyы</text>
+	</string>
+	<string id="ui_st_btn_cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="ui_st_btn_no">
+		<text>Nem</text>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text>Rendben</text>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text>Igen</text>
+	</string>
+	<string id="ui_st_cant_run_r2">
+		<text>Nem futtathatу a Lekйpezх 2 a PC-den</text>
+	</string>
+	<string id="ui_st_community">
+		<text>Frakciу</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Kapcsolуdбsi hiba: A CD kulcsodat letiltottбk. Lйpj kapcsolatba a vevхszolgбlattal!</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Kapcsolуdбsi hiba: A CD kulcsodat mбr hasznбljбk.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Kapcsolуdбsi hiba: Йrvйnytelen CD kulcs.</text>
+	</string>
+	<string id="ui_st_conn_invalid_host">
+		<text>Kapcsolуdбsi hiba: Йrvйnytelen lйtrehozу.</text>
+	</string>
+	<string id="ui_st_conn_invalid_pass">
+		<text>Kapcsolуdбsi hiba: Йrvйnytelen jelszу.</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>Ъj frissнtйs elйrhetх.\n Verziу: %s\n Elйrйsi ъt: %s\nLe szeretnйd most tцlteni?</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>Egyelхre nem йrhetх el ъj frissнtйs.</text>
+	</string>
+	<string id="ui_st_conn_rejected_server">
+		<text>Kapcsolуdбsi hiba: A kapcsolatot visszautasнtotta a szerver.</text>
+	</string>
+	<string id="ui_st_conn_sess_full">
+		<text>Kapcsolуdбsi hiba: A jбtйk megtelt.</text>
+	</string>
+	<string id="ui_st_conn_version_differs">
+		<text>Kapcsolуdбsi hiba: Eltйrх verziу.</text>
+	</string>
+	<string id="ui_st_connecting_to_masterserver">
+		<text>Kapcsolуdбs a fхszerverhez</text>
+	</string>
+	<string id="ui_st_days">
+		<text>Nap</text>
+	</string>
+	<string id="ui_st_error">
+		<text>Hiba</text>
+	</string>
+	<string id="ui_st_error_loading">
+		<text>Betцltйsi hiba</text>
+	</string>
+	<string id="ui_st_file_exist_owerwrite_q">
+		<text>Mбr lйtezik ilyen nevы бllomбny. Szeretnйd felьlнrni?</text>
+	</string>
+	<string id="ui_st_file_name_is_empty">
+		<text>Az бllomбny neve ьres</text>
+	</string>
+	<string id="ui_st_hours">
+		<text>уra</text>
+	</string>
+	<string id="ui_st_kicked_by_server">
+		<text>Kirъgott a szerver</text>
+	</string>
+	<string id="ui_st_leave">
+		<text>Elhagyбs</text>
+	</string>
+	<string id="ui_st_load_game_confirm">
+		<text>A jбtйk betцltйse esetйn elvesznek a mentetlen adatok. Folytatod?</text>
+	</string>
+	<string id="ui_st_mins">
+		<text>perc</text>
+	</string>
+	<string id="ui_st_months">
+		<text>hуnap</text>
+	</string>
+	<string id="ui_st_opponent_items">
+		<text>Hбtizsбk</text>
+	</string>
+	<string id="ui_st_params">
+		<text>Paramйterek</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Nem sikerьlt letцlteni a frissнtйst.</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Frissнtйs sikeresen letцltve. Szeretnйd telepнteni?</text>
+	</string>
+	<string id="ui_st_price">
+		<text>Бr</text>
+	</string>
+	<string id="ui_st_rank">
+		<text>Rang</text>
+	</string>
+	<string id="ui_st_relation">
+		<text>magatartбs</text>
+	</string>
+	<string id="ui_st_reputation">
+		<text>hнrnйv</text>
+	</string>
+	<string id="ui_st_secs">
+		<text>mp</text>
+	</string>
+	<string id="ui_st_select_one_map">
+		<text>Kйrlek, vбlassz legalбbb egy tйrkйpet</text>
+	</string>
+	<string id="ui_st_take_all">
+		<text>Цsszes felvйtele</text>
+	</string>
+	<string id="ui_st_time_remains">
+		<text>Hбtralevх</text>
+	</string>
+	<string id="ui_st_trade">
+		<text>Kereskedйs</text>
+	</string>
+	<string id="ui_st_upgrade">
+		<text>Fejlesztйs</text>
+	</string>
+	<string id="ui_st_voting_disabled">
+		<text>A szavazбst letiltottбk</text>
+	</string>
+	<string id="ui_st_want_to_leave_game_q">
+		<text>Biztos, hogy el akarod hagyni a jбtйkot?</text>
+	</string>
+	<string id="ui_st_your_items">
+		<text>A tбrgyaid</text>
+	</string>
+	<string id="very_bad">
+		<text>nagyon rossz</text>
+	</string>
+	<string id="very_good">
+		<text>nagyon jу</text>
+	</string>
+	<string id="veteran">
+		<text>veterбn</text>
+	</string>
+	<string id="st_no_buck">
+		<text>nem hasznбl sцrйtet</text>
+	</string>
+	<string id="st_rubles">
+		<text>rubel.</text>
+	</string>
+	<string id="ui_inv_repair">
+		<text>Javнtбs</text>
+	</string>
+	<string id="ui_repair_button_hint">
+		<text>Javнtбs</text>
+	</string>
+	<string id="ui_total_price">
+		<text>Цsszesen</text>
+	</string>
+	<string id="lim_bandit_ambush_spot">
+		<text>Fosztogatу rajtaьtйs</text>
+	</string>
+	<string id="ui_st_kicked_by_battleye">
+		<text>felhasznбlуt kirъgta a BattlEye:</text>
+	</string>
+</string_table>

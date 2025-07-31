@@ -30,6 +30,7 @@
 
     <start_dialog>gar_digger_messenger_hello_dialog</start_dialog>
     <actor_dialog>treasure_dialog</actor_dialog>
+	<actor_dialog>guiders_dialog</actor_dialog>
   </specific_character>
 
   <specific_character id="gar_bandit_leader" team_default = "1">

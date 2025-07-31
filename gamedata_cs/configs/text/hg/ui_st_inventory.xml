@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_activate_artefact">
+		<text>relikvia aktivбlбsa</text>
+	</string>
+	<string id="st_attach_gl_to_rifle">
+		<text>grбnбtvetх puskбra rцgzнtйse</text>
+	</string>
+	<string id="st_attach_scope_to_pistol">
+		<text>tбvcsх pisztolyra rцgzнtйse</text>
+	</string>
+	<string id="st_attach_scope_to_rifle">
+		<text>tбvcsх puskбra rцgzнtйse</text>
+	</string>
+	<string id="st_attach_silencer_to_pistol">
+		<text>hangtompнtу pisztolyra rцgzнtйse</text>
+	</string>
+	<string id="st_attach_silencer_to_rifle">
+		<text>hangtompнtу puskбra rцgzнtйse</text>
+	</string>
+	<string id="st_base_cost">
+		<text>бr</text>
+	</string>
+	<string id="st_community">
+		<text>Csapat:</text>
+	</string>
+	<string id="st_condition">
+		<text>Бllapot</text>
+	</string>
+	<string id="st_detach_gl">
+		<text>grбnбtvetх leszerelйse</text>
+	</string>
+	<string id="st_detach_scope">
+		<text>tбvcsх leszerelйse</text>
+	</string>
+	<string id="st_detach_silencer">
+		<text>hangtompнtу leszerelйse</text>
+	</string>
+	<string id="st_dress_outfit">
+		<text>цltцzйk viselйse</text>
+	</string>
+	<string id="st_drop">
+		<text>eldobбs</text>
+	</string>
+	<string id="st_drop_all">
+		<text>цsszes eldobбsa</text>
+	</string>
+	<string id="st_eat">
+		<text>elfogyasztбs</text>
+	</string>
+	<string id="st_kg">
+		<text>kg</text>
+	</string>
+	<string id="st_move_on_belt">
+		<text>цvre akasztбs</text>
+	</string>
+	<string id="st_move_to_bag">
+		<text>hбtizsбkba helyezйs</text>
+	</string>
+	<string id="st_move_to_slot">
+		<text>rekeszbe helyezйs</text>
+	</string>
+	<string id="st_sell_item">
+		<text>tбrgy eladбsa</text>
+	</string>
+	<string id="st_ui_acid_sensor">
+		<text>Vegyi vйdelem</text>
+	</string>
+	<string id="st_ui_armor_static">
+		<text>Pбncйlzatбllapot</text>
+	</string>
+	<string id="st_ui_fire_sensor">
+		<text>Tыzvйdelem</text>
+	</string>
+	<string id="st_ui_health_static">
+		<text>Egйszsйg</text>
+	</string>
+	<string id="st_ui_main_sensor">
+		<text>Radioaktнv\nfertхzцttsйg</text>
+	</string>
+	<string id="st_ui_psi_sensor">
+		<text>Pszichikus vйdelem</text>
+	</string>
+	<string id="st_ui_radia_sensor">
+		<text>Sugбrzбsvйdelem</text>
+	</string>
+	<string id="st_ui_stamina_state">
+		<text>Бllуkйpessйg</text>
+	</string>
+	<string id="st_undress_outfit">
+		<text>цltцzйk levetйse</text>
+	</string>
+	<string id="st_unload_magazine">
+		<text>kiьrнtйs</text>
+	</string>
+	<string id="st_use">
+		<text>hasznбlat</text>
+	</string>
+	<string id="st_weight">
+		<text>sъly</text>
+	</string>
+	<string id="ui_inv_accuracy">
+		<text>Pontossбg</text>
+	</string>
+	<string id="ui_inv_ammo_pistol">
+		<text>Szabvбny pisztolylхszer vбsбrlбsa (Q)</text>
+	</string>
+	<string id="ui_inv_ammo_rifle">
+		<text>Puskalхszer vбsбrlбsa (W)</text>
+	</string>
+	<string id="ui_inv_bag">
+		<text>Hбtizsбk</text>
+	</string>
+	<string id="ui_inv_belt">
+		<text>Цv</text>
+	</string>
+	<string id="ui_inv_bleeding">
+		<text>Vйrzйs</text>
+	</string>
+	<string id="ui_inv_cancel">
+		<text>Mйgsem</text>
+	</string>
+	<string id="ui_inv_cant_buy_item">
+		<text>Nem tudod megvenni a tбrgyat</text>
+	</string>
+	<string id="ui_inv_clear">
+		<text>Tцrlйs</text>
+	</string>
+	<string id="ui_inv_count_restr">
+		<text>Mennyisйgkorlбt</text>
+	</string>
+	<string id="ui_inv_damage">
+		<text>Sebzйs</text>
+	</string>
+	<string id="ui_inv_default(F5)">
+		<text>Alapйrtelmezett (F5)</text>
+	</string>
+	<string id="ui_inv_description">
+		<text>Leнrбs</text>
+	</string>
+	<string id="ui_inv_drop">
+		<text>Eltбvolнtбs</text>
+	</string>
+	<string id="ui_inv_equipment">
+		<text>Felszerelйs</text>
+	</string>
+	<string id="ui_inv_exit">
+		<text>Kilйpйs</text>
+	</string>
+	<string id="ui_inv_granadelauncher_rifle">
+		<text>Grбnбtvetх vбsбrlбsa puskбhoz (D)</text>
+	</string>
+	<string id="ui_inv_granades">
+		<text>Grбnбtok</text>
+	</string>
+	<string id="ui_inv_granades_rifle">
+		<text>Puskagrбnбt vбsбrlбsa (E)</text>
+	</string>
+	<string id="ui_inv_handling">
+		<text>Kezelhetхsйg</text>
+	</string>
+	<string id="ui_inv_has">
+		<text>most</text>
+	</string>
+	<string id="ui_inv_health">
+		<text>Egйszsйg</text>
+	</string>
+	<string id="ui_inv_heavy_weapons">
+		<text>Nehйz</text>
+	</string>
+	<string id="ui_inv_items_list">
+		<text>Tбrgylista</text>
+	</string>
+	<string id="ui_inv_last_buy">
+		<text>Elхzх tйtelek vбsбrlбsa</text>
+	</string>
+	<string id="ui_inv_last_buy(F4)">
+		<text>Elхzх (F4)</text>
+	</string>
+	<string id="ui_inv_money">
+		<text>Pйnz</text>
+	</string>
+	<string id="ui_inv_need">
+		<text>szьksйges</text>
+	</string>
+	<string id="ui_inv_not_enought_money">
+		<text>Nincs elйg pйnz</text>
+	</string>
+	<string id="ui_inv_ok">
+		<text>Rendben</text>
+	</string>
+	<string id="ui_inv_outfit_burn_protection">
+		<text>Йgйs</text>
+	</string>
+	<string id="ui_inv_outfit_chemical_burn_protection">
+		<text>Vegyi</text>
+	</string>
+	<string id="ui_inv_outfit_explosion_protection">
+		<text>Robbanбs</text>
+	</string>
+	<string id="ui_inv_outfit_fire_wound_protection">
+		<text>Golyубllу</text>
+	</string>
+	<string id="ui_inv_outfit_params">
+		<text>Paramйterek</text>
+	</string>
+	<string id="ui_inv_outfit_radiation_protection">
+		<text>Sugбrzбs</text>
+	</string>
+	<string id="ui_inv_outfit_shock_protection">
+		<text>Бram</text>
+	</string>
+	<string id="ui_inv_outfit_strike_protection">
+		<text>Becsapуdбs</text>
+	</string>
+	<string id="ui_inv_outfit_telepatic_protection">
+		<text>Telepбtia</text>
+	</string>
+	<string id="ui_inv_outfit_wound_protection">
+		<text>Szakadбs</text>
+	</string>
+	<string id="ui_inv_outfits">
+		<text>Цltцzйkek</text>
+	</string>
+	<string id="ui_inv_personal">
+		<text>Цltцzйk</text>
+	</string>
+	<string id="ui_inv_pistols">
+		<text>Pisztolyok</text>
+	</string>
+	<string id="ui_inv_power">
+		<text>Kitartбs</text>
+	</string>
+	<string id="ui_inv_preset1(F1)">
+		<text>1-es tйtel (F1)</text>
+	</string>
+	<string id="ui_inv_preset2(F2)">
+		<text>2-es tйtel (F2)</text>
+	</string>
+	<string id="ui_inv_preset3(F3)">
+		<text>3-as tйtel (F3)</text>
+	</string>
+	<string id="ui_inv_primary_weapons">
+		<text>Elsхdleges</text>
+	</string>
+	<string id="ui_inv_radiation">
+		<text>Sugбrzбs</text>
+	</string>
+	<string id="ui_inv_rank_restr">
+		<text>Rangkorlбt</text>
+	</string>
+	<string id="ui_inv_rate_of_fire">
+		<text>Tыzgyorsasбg</text>
+	</string>
+	<string id="ui_inv_reset_items(C)">
+		<text>Visszaбllнtбs (C)</text>
+	</string>
+	<string id="ui_inv_rest">
+		<text>Pihenйs</text>
+	</string>
+	<string id="ui_inv_rifles">
+		<text>Gйp</text>
+	</string>
+	<string id="ui_inv_satiety">
+		<text>Йhsйg</text>
+	</string>
+	<string id="ui_inv_scope_rifle">
+		<text>Optikai tбvcsх vбsбrlбsa puskбhoz (S)</text>
+	</string>
+	<string id="ui_inv_sell_items(X)">
+		<text>Hбtizsбk цsszes tбrgyбnak eladбsa (X)</text>
+	</string>
+	<string id="ui_inv_shop">
+		<text>Kereskedйs</text>
+	</string>
+	<string id="ui_inv_shotguns">
+		<text>Sцrйtes puskбk</text>
+	</string>
+	<string id="ui_inv_silencer_pistol">
+		<text>Hangtompнtу vбsбrlбsa pisztolyhoz (A)</text>
+	</string>
+	<string id="ui_inv_silencer_rifle">
+		<text>Hangtompнtу vбsбrlбsa puskбhoz (F)</text>
+	</string>
+	<string id="ui_inv_sniper_rifles">
+		<text>Mesterlцvйsz puskбk</text>
+	</string>
+	<string id="ui_inv_time">
+		<text>Idх</text>
+	</string>
+	<string id="ui_inv_total_money">
+		<text>Цsszes pйnz</text>
+	</string>
+	<string id="ui_inv_weight">
+		<text>Sъly</text>
+	</string>
+	<string id="ui_inv_you_already_have">
+		<text>Mбr van nбlad</text>
+	</string>
+	<string id="ui_st_err_gs_not_available">
+		<text>A S.T.A.L.K.E.R. online szolgбltatбsai nem elйrhetхek.</text>
+	</string>
+	<string id="ui_st_err_sb_master_server_conn_fail">
+		<text>Nem sikerьlt csatlakozni a fхszerverhez</text>
+	</string>
+	<string id="ui_st_outfit_protect">
+		<text>Vйdelem</text>
+	</string>
+	<string id="ui_st_preset_def">
+		<text>Tйtelek цsszeбll.</text>
+	</string>
+	<string id="ui_st_preset_stored_to">
+		<text>Vбsбrolt tйtelek elnevezйse:</text>
+	</string>
+	<string id="ui_total_weight">
+		<text>Sъly цsszesen:</text>
+	</string>
+	<string id="not_enough_money_partner">
+		<text>A karakterednek nincs elйg pйnze.</text>
+	</string>
+	<string id="not_enough_money_actor">
+		<text>Nincs elйg pйnzed.</text>
+	</string>
+	<string id="ui_inv_outfit_additional_weight">
+		<text>Max. sъly</text>
+	</string>
+</string_table>

@@ -1,0 +1,792 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="esc_comm_talk_11">
+		<text>Mit bбmulsz, seggfej?</text>
+	</string>
+	<string id="esc_comm_talk_1111">
+		<text>Nevess csak! ... Ha azйrt vagy itt, hogy megtudd, hovб rejtettem a tбskбt a zsбkmбnnyal, hбt nagyot fogsz csalуdni. Menj vissza az imбdott Zуnбdba! Az embereim nemsokбra ъgyis eltцrlik a szбnalmas kis csoportodat! Ami pedig a fхnцkцdet illeti – felakasztjuk a hнdra, hogy mindenki lбssa, mi jбr annak, aki ujjat hъz a hadsereggel!</text>
+	</string>
+	<string id="esc_comm_talk_111111">
+		<text>У, tйnyleg?! Hmm... Йs mennyit kйrnйl a szolgбlataidйrt? … Mit szуlnбl, ha arra kйrnйlek, hogy segнts a fiъknak elintйzni a vasъti tцltйsnйl lйvх mesterlцvйszeket?</text>
+	</string>
+	<string id="esc_leader_what_happens_1">
+		<text>Hogy is fejezzem ki magam... A stalkerek йs a hadsereg valaha egyьtt dolgozott. Хk adtбk a fegyvert, mi adtuk a pйnzt. Mindenki boldog volt. Nйha szуltak, ha egy ъjabb anomбlia csomуpont bukkant fel valahol. Бm egyszer a parancsnokuk tъl kapzsivб vбlt. Цsszeбllt a fosztogatуkkal, йs eladta nekik a pozнciуinkat. Eleinte ъgy gondoltuk, hogy a fosztogatуk csak szerencsйsek, de kйsхbb rбjцttьnk, hogy titokban a katonбkkal ьzletelnek. Ekkor jцttьnk цssze, йs dцntцttьk el, hogy itt az ideje visszavбgni.</text>
+	</string>
+	<string id="esc_leader_talk_11">
+		<text>Hogy s mint, zsoldos! Nem sokat lбtni tйged itt a Kordonon... Mi szйl hozott erre?</text>
+	</string>
+	<string id="esc_leader_talk_22">
+		<text>Nos, megtudtбl valami hasznosat?</text>
+	</string>
+	<string id="esc_leader_talk_33">
+		<text>Hы, ennek a tцrtйnetnek vйgre jу a vйge. Most majd a hadsereg vйgre az бllomбsok mцgцtt marad.</text>
+	</string>
+	<string id="esc_leader_talk_44">
+		<text>Zsoldos, a parancsnok haverjaival lesz majd dolgod.</text>
+	</string>
+	<string id="esc_leader_talk_55">
+		<text>Mi a fenйt fogunk tenni a parancsnokkal?</text>
+	</string>
+	<string id="esc_leader_talk_1111">
+		<text>Azt mondod Szidorovicstуl van... szуval te is tudsz a parancsnokrуl? Rendben, хszinte leszek veled. Rйgen egyьttmыkцdtьnk a hadsereggel. Megengedtйk, hogy biztonsбgosan fuvarozzunk az бllomбsokon keresztьl, йs megosztottak nйhбny hasznos informбciуt. Jуl megfizettьk a szolgбlataikat. De kйsхbb rбjцttьnk, hogy az a szemйt parancsnok mindkйt fйllel ьzletel – elmondta a fosztogatуknak, hogy merre vagyunk! Aztбn kйt emberьnket eladta rabszolgбnak a Szemйtdombon! Ez volt az utolsу csepp a pohбrban.</text>
+	</string>
+	<string id="esc_leader_talk_111111">
+		<text>Okй, egy kicsit talбn elragadtattuk magunkat... nem tudom, hogyan tovбbb. Tъszkйnt tartjuk fogva a parancsnokot, ami egy ideig garantбlja, hogy a hadsereg nem fog minket visszabombбzni a kхkorszakba a helikoptereivel. De nem цlhetjьk meg, йs el sem engedhetjьk... Ez a mocsadйk tudja, hogy йlve van rб szьksйgьnk, йs nem tцrik meg. A gond az, hogy х az egyetlen aki tudja, hogy hovб van elrejtve a zsбkmбny. Ha nem visszьk el a zsбkmбnyt Szidorovicsnak, tцbbй nem fog velьnk ьzletelni. Ha sikerьlne elйrni, hogy ez a tetы a mi szabбlyaink szerint jбtsszon, egйsz mбskйnt alakulna a jбtszma, nekem elhiheted.</text>
+	</string>
+	<string id="esc_leader_talk_2222">
+		<text>Termйszetesen meg fogjбk menteni – az a patkбny egy halom lуvйval jцn nekik! Szemйlyesen irбnyнtotta az akciуikat, a pйnzt meg elбsta valahol. Figyelj, van egy цtletem. A parancsnoknak csak kйt embere van, akikre szбmнthat – egyьtt szolgбltak az бllomбsukon. Mivel хket is bevette az ьzletbe, mindent megtennйnek, hogy kiszabadнtsбk. Ha ezt a kettхt elintйzzьk, a mocsadйk rб fog jцnni, hogy senki nem jцn йrte. Meg fog tцrni, mi pedig kiverjьk belхle a zsбkmбny helyйt. Elosztjuk a pйnzt, Szidorovics pedig megkapja a tбskбt. Na, mit szуlsz?</text>
+	</string>
+	<string id="esc_leader_talk_222222">
+		<text>Van egy olyan йrzйsem, hogy nem kell megkeresnьnk хket. Kaletszkij emberei valahol errefelй уlбlkodnak. Azt tervezik, hogy megtбmadnak. Egy kisebb egysйget йszleltьnk a felvonу kцrnyйkйn. Segнts elintйzni хket!</text>
+	</string>
+	<string id="esc_trader_meet_11">
+		<text>Hellу zsoldos. Mondd csak, mi szйl hozott erre?</text>
+	</string>
+	<string id="esc_trader_meet_22">
+		<text>Kцszцnцm, hogy visszahoztad a tбskбt. Most mбr elrendezhetem a dolgot az ьgyfelemmel. Azйrt maradtam йletben ilyen sokбig a Zуnбban, mert mindig megtartom a szavam. Ha itt бtversz valakit, biztos lehetsz benne, hogy hamarosan kйssel a hбtadban talбlnak rбd. De ennyi elйg is volt rуlam... ami tйged illet – itt volt a fickу. A neve Agyar. Csцves erхsнtхket йs mбs rйgi elektromos alkatrйszeket keresett... de йn nem йrtek ezekhez. Eladtam neki az erхsнtхt, a tцbbi cucc viszont nekem sem volt. Mondtam neki, hogy keresse meg az бsatуkat a Szemйtdombon. Nйhбny stalker nemrйg kiбsott valami rйgi berendezйst, ami mйg a csernobili baleset utбnrуl szбrmazik. Most mindenfelй rйgi alkatrйszek hevernek. Ott keresd a fickуt! Йs ne feledd: ha ьzletelni akarsz, йn vagyok a te embered.</text>
+	</string>
+	<string id="esc_trader_meet_44">
+		<text>Hй zsoldos! Mйg mindig vбrok arra a tбskбra. Azt javaslom, tartsd йszben!</text>
+	</string>
+	<string id="esc_trader_meet_55">
+		<text>Szуval, mi dolgod van erre?</text>
+	</string>
+	<string id="esc_trader_meet_2222">
+		<text>Ha szьksйged van bбrmi mбsra, mindig hozzбm gyere. Mivel segнtettйl legyхzni a katonбkat, цrцkцs бrengedmйnyt kapsz.</text>
+	</string>
+	<string id="esc_trader_meet_1111">
+		<text>Hmm... Rengeteg stalker fordul meg erre, nehйz mindegyikьkre emlйkezni. Van valami oka, hogy megerхltessem az agyamat?</text>
+	</string>
+	<string id="esc_trader_meet_111111">
+		<text>Na, ezt mбr szeretem. Nos, a helyzet a kцvetkezх: mбr itt йlek egy ideje, az ьzletem virбgzik, itt is, ott is kapok kьlцnfйle megbнzatбsokat, az emberek pedig bнznak bennem. De van egy kis gondom a legutуbbi megbнzatбsommal. A megbнzу nagyon fontos szemйly, a cucc, amit keres pedig nagyon ritka. Minden rendben ment – a stalkerek megszereztйk volna a zsбkmбnyt a Zуnбbуl, a hadsereg pedig biztosнtotta volna, hogy kihozzбk onnan. Nos, a kйt fйl egyszer csak egymбsnak esett, йs az egйsz hely megхrьlt! Most a stalkerek a hadsereggel harcolnak, йs senki sem tudja, hogy merre van a cucc. Ez nekem egyбltalбn nem jу, mert a megrendelйst teljesнteni kell. Segнts megszerezni a tбskбt, йs cserйbe elmondok mindent arrуl a stalkerrхl йs az alkatrйszeirхl. Бll az alku?</text>
+	</string>
+	<string id="esc_trader_meet_11111111">
+		<text>Lбtogasd meg a tцltйs kцzelйben lйvх stalkereket. Van ott valami bбzisuk is. Ott tartjбk fogva az elrabolt katonai parancsnokot, Kaletszkнjt. Nem йrdekel, hogy mit csinбlsz a bбzison, az sem йrdekel, ha azok a bolondok Robin Hood boldog csapatбnak kйpzelik magukat. Nekem csak a tбska, йs a benne lйvх cucc kell. Ami a stalkereket illeti, prуbбlj meg beszйlni Valerjannal, х a stalkerek vezetхje. Tudatom vele, hogy йn kьldtelek oda.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_1">
+		<text>Nos, tartozom neked. Hadd mondjak valamit – tudom, hogy nйhбny stalker megprуbбlja elйrni a Zуna kцzepйt. Lбttam rйgi katonai tйrkйpeket, йs kiderьlt, hogy a Zуna kцzpontja az a hely, ahol rйgen a csernobili atomerхmы бllt. Lehet, hogy vйletlen, de a helyedben йszben tartanбm. A gond az, hogy azt a terьletet mйg a katonai mыholdak sem lбtjбk. Mбr nem is repьlnek бt felette, mert olyan nagy az interferencia, hogy spontбn kiйgnek. Termйszetesen ez mind szigorъan titkos, de az egyik haverom, aki a rakйtбsoknбl szolgбl, egy ьveg ital mellett elmondta nekem. Fogadd meg a tanбcsom – maradj tбvol a Zуna kцzepйtхl.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1">
+		<text>Asszed vicces vagy? Mбs kцrьlmйnyek kцzцtt, mбs vбlaszt kapnбl... elegem van ebbхl a szarbуl... A srбcok, akikkel a hadseregnйl kezdtem, mind megkaptбk a fйnyes kis csillagjaikat, csinos egyenruhбkat, йs sokkal jobb helyen szolgбlnak mint ez... Azt hiszed, nincs jobb dolgom, mint hozzбd hasonlу embereket kergetni a Zуnбban. Elegem van ebbхl az egйszbхl – ebbхl a pцcegцdцrbхl, az бtkozott Zуnбbуl, a szemйt stalkerekbхl, meg abbуl a faszszopу Szidorovicsbуl... a mutбnsokrуl nem is beszйlve... Egйsz йletьnkben хket akarjuk megбllнtani, de azok csak jцnnek йs jцnnek. A kнvьlбllуk meg mind azzal jцnnek, hogy „meg kell vйdenьnk a vilбgot a Zуna szцrnyыsйgeitхl” meg, hogy „nem engedjьk, hogy megtцrtйnjen”... tбbornokok, azok az idiуtбk a tйvйben... Az ember belefullad a hьlyesйgeikbe. Йs vajon a magas rangъ tisztek kцzьl hбnyan voltak valaha bevetйsen, hason kъszva az anomбliбk kцzцtt? Hбnyan tцltцttйk egy teljes napjukat azzal, hogy megtisztнtsanak egy szektort, vagy egy stalkert ьldцzzenek az Ingovбnyban? Ezek csak arra hasznбljбk a hadsereget, hogy betцmjйk a legpiszkosabb lyukakat.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_111">
+		<text>Na йs mi van, ha бtengedem a zsбkmбnyt a kordonon egy kis pйnzйrt cserйbe? Йlek, йs hagyok mбsokat is йlni, йrted? Tudod te egyбltalбn, hogy mennyi a hivatalos fizetйsem, seggfej? Pontosan, prуbбlj meg abbуl megйlni! Nem fizetnek meg, йs azt akarjбk, hogy legyek bьszke a munkбmra meg az orszбgomra... A fхnцkцk igyekeznek megйlni a Zуnбbуl, mint mindenki mбs. Akkor йn miйrt ne? A feladatom parancsokat teljesнteni, йs tъlйlni. Ъgyhogy ezt teszem. Az цrdцgbe ezzel az egйsz hellyel, йs minden seggfejjel... nem is tudom, hogy хket lхjem-e le, vagy inkбbb magamat.</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11111">
+		<text>Csalбs? Йs akkor mi van? Le se szarom a magadfajtбt. Nem is szabadna itt lenned. Le kellett volna lхni titeket, amint бtlйptйtek a Zуna hatбrбt. Nem viccelek, tйnyleg ezek a parancsaim. A gond az, hogy egy hullбbуl nem sok hasznod van, nekem pedig kompenzбlnom kell a szolgбlataimat. A hadsereg nem fizeti meg, нgy magamnak kell elvennem, amit tudok. Ami az frakciуk kцzцtti viszбlyokat illeti – semennyire nem is йrdekel. Ъgy цldцsitek halomra egymбst ahogy akarjбtok – йn nem fogok panaszkodni.</text>
+	</string>
+	<string id="esc_comm_talk_33">
+		<text>Stalker. Lehet, hogy elvesztettem a zsбkmбnyt, йs a haverjaim is halottak, de mбr kemйnyebb helyzetbхl is kijutottam! Tudni akarod, hogy hol van a rejtekhelyem?</text>
+	</string>
+	<string id="esc_comm_talk_3333">
+		<text>Segнts kijutnom innen! Csak adj egy pisztolyt, amikor senki sem figyel. A tцbbi az йn dolgom.</text>
+	</string>
+	<string id="esc_comm_talk_333333">
+		<text>Хszinte leszek veled. A rejtekhely egy csхben van, nem messze az anomбliбtуl.</text>
+	</string>
+	<string id="esc_comm_talk_44">
+		<text>Kцszцnцm, hogy ideadtad a fegyvered.</text>
+	</string>
+	<string id="esc_comm_talk_5555">
+		<text>Mit akarsz mйg?</text>
+	</string>
+	<string id="esc_leader_about_home_1">
+		<text>Elйg jуl, azt mondod? Йn azt mondanбm igazбn jуl. Bбr megvan ennek is az бra. Azok a szemйt katonбk egyfolytбban sanyargatnak minket, rajtaьtйseket szerveznek ellenьnk, йs a helikopterekbхl lцvцldцzik az embereinket.\nХk irбnyнtottбk a teljes kereskedelmet, ha rajtakaptak, hogy zsбkmбny van nбlad, egyszerыen elvettйk. Ugyanakkor ha nekik dolgoztбl, nem igazбn йrte meg, bagуt fizettek, ha egyбltalбn fizettek valamit. De az igazsбg mйg a Zуnбban is igazsбg! Amikor Kaletszkij eladott minket a banditбknak, ъgy dцntцttьnk, hogy elegьnk van a szarakodбsbуl, йs foglyul ejtettьk хt. A tцbbi katona meg teleszarta a gatyбjбt – azуta nem zargatnak minket, most, hogy a parancsnokuk nбlunk van.\nНgy alapvetхen kikapartunk magunknak egy szйp kis helyet itt a Zуnбban, йs ezt semmi sem tudja megvбltoztatni!  Йrtйkelni kell a fejlхdйst. Felбllнtottunk egy stalker bбzist, a Kordon pedig jу kezekben van. Йs innйt mбr csak egyre csak jobb lesz, meglбtod.</text>
+	</string>
+	<string id="esc_leader_about_home_111">
+		<text>Nos barбtom, sokkal tцbb tervьnk van, mint magбnak Mindenhatуnak a teremtйs elsх napjбn! Be kell fejeznьnk a bбzis йpнtйsйt – ez a legfontosabb. Azutбn ъjabb embereket kell toboroznunk...  de maguktуl is jцnni fognak, majd meglбtod! Az emberek tudjбk, hogy igaz ьgyйrt harcolunk. Amint megfelelх haderхnk lesz, megmutatjuk a fosztogatуknak, hogy ki az ъr a kцrnyйken. Mбr йvek уta el kell viselnьnk a szarakodбsaikat, йs a Zуnбban nincs szбmukra hely. Azutбn pedig... nos, eljцn az a nap amikor beljebb nyomulunk a Zуnбba. Talбn mйg a kцzpontot is elйrjьk – minden stalker бlmбt! Nagyszerы dolgok vбrnak rбnk, йn mondom haver!</text>
+	</string>
+	<string id="esc_leader_about_home_11111">
+		<text>Ahogy lбtod, nagyon sok dolgunk van... De йn хszintйn hiszem, hogy ha boldog vagy azzal amid van, sokkal tцbbet kapsz majd! Mбr elkezdtьnk valamit, йs ez a legfontosabb dolog! Mбr van technikusunk йs egy kereskedхnk is. Хk jу emberek – bбrmikor meglбtogathatod хket, segнteni fognak neked. Ha mйg tцbb emberьnk lesz, felpцrцgnek majd az esemйnyek! Tudom, hogy kйpes vagyok az embereket nagy dolgok felй vezetni! Ne feledd, ez mйg csak a kezdet!</text>
+	</string>
+	<string id="esc_leader_about_prisoner_1">
+		<text>Elszцkцtt!  Az a faszszopу megцlt kйt хrt, йs bemenekьlt az erdхbe! Nem talбljuk sehol! Fogalmam sincs, hogy juthatott fegyverhez.</text>
+	</string>
+	<string id="esc_trader_about_other_1">
+		<text>Hadd magyarбzzam el ъjra! Elhozod nekem azt a zsбkmбnyt, amin a stalkerek йs a hadsereg marakodnak, йn pedig vбlaszolok minden kйrdйsedre.</text>
+	</string>
+	<string id="esc_comm_about_info_0">
+		<text>Mit tehetek йrted?</text>
+	</string>
+	<string id="esc_comm_about_info_1">
+		<text>Minden йrtйkes informбciуra vevх vagyok. Mit tudsz?</text>
+	</string>
+	<string id="esc_comm_about_info_11">
+		<text>Semmit.</text>
+	</string>
+	<string id="esc_comm_about_info_2">
+		<text>Megцltem egy katonai parancsnokot йs elvettem a PDA-jбt. Szнvesen megvбlnйk tхle.</text>
+	</string>
+	<string id="esc_comm_about_info_22">
+		<text>Jelenleg nincs semmilyen йrtйkes informбciуm.</text>
+	</string>
+	<string id="esc_comm_about_info_3">
+		<text>A PDA йrdekel, megveszem tхled.</text>
+	</string>
+	<string id="esc_comm_about_info_4">
+		<text>A tied.</text>
+	</string>
+	<string id="esc_comm_about_info_5">
+		<text>Meggondoltam magam.</text>
+	</string>
+	<string id="esc_comm_about_life_in_zone_0">
+		<text>Hallottбl valami йrdekeset mostansбg?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_0">
+		<text>Йs, hogy kцtцttйl ki a stalkerek bцrtцnйben?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_11">
+		<text>Ha annyira eleged van belхlьnk, akkor miйrt engedйlyezed mйg mindig a csempйszetet?</text>
+	</string>
+	<string id="esc_comm_about_prisoner_1111">
+		<text>Hogy erkцlcsцs vagy? Akkor miйrt бrultбl a fosztogatуknak informбciуkat a stalkerekrхl? Ez elйg erkцlcstelenьl hangzik...</text>
+	</string>
+	<string id="esc_comm_talk_111">
+		<text>Furcsa a hadsereg egy parancsnokбt rбcs mцgцtt lбtni.</text>
+	</string>
+	<string id="esc_comm_talk_11111">
+		<text>Х nem a fхnцkцm, zsoldos vagyok.</text>
+	</string>
+	<string id="esc_comm_talk_1111111">
+		<text>Tъl drбga egy magadfajta patkбnynak.</text>
+	</string>
+	<string id="esc_comm_talk_11111122">
+		<text>A fenйbe... A fejemet rб, hogy Szidorovics volt! Tudtam, hogy elхbb-utуbb a hбtam mцgцtt fog ьzletelni. Nem mondom, бtkozottul jуl idхzнtett a hбtbadцfйssel!... У, nos, hozzбm soha nem is volt йs nem is lesz kegyes az йlet. Figyelj, kйt osztag бll kйszen a tбmadбsra, egyik a raktбrйpьletnйl, a mбsik a malomnбl! Szokolov irбnyнtja хket a raktбrйpьletbхl. Menj el hozzб, йs mondd meg neki, hogy йletben vagyok, mert a stalkereknek nincs merszьk vйgezni velem! Mondd meg neki, hogy kezdje meg a tбmadбst!</text>
+	</string>
+	<string id="esc_comm_talk_111121">
+		<text>A fenйbe... A fejemet rб, hogy Szidorovics volt! Tudtam, hogy elхbb-utуbb a hбtam mцgцtt fog ьzletelni. Nem mondom, бtkozottul jуl idхzнtett a hбtbadцfйssel!... У, nos, hozzбm soha nem is volt йs nem is lesz kegyes az йlet. Figyelj, kйt osztag бll kйszen a tбmadбsra, egyik a raktбrйpьletnйl, a mбsik a malomnбl! Szokolov irбnyнtja хket a raktбrйpьletbхl. Menj el hozzб, йs mondd meg neki, hogy йletben vagyok, mert a stalkereknek nincs merszьk vйgezni velem! Mondd meg neki, hogy kezdje meg a tбmadбst!</text>
+	</string>
+	<string id="esc_comm_talk_21">
+		<text>Termйszetesen, az embereim istenkйnt tisztelik a parancsnokukat! Habozбs nйlkьl meghalnбnak йrtem!</text>
+	</string>
+	<string id="esc_comm_talk_333">
+		<text>Megteszem, йs mit kйrsz cserйbe?</text>
+	</string>
+	<string id="esc_comm_talk_33333">
+		<text>Itt egy pisztoly, de ha elkapnбnak szцkйs kцzben... mi nem is talбlkoztunk.</text>
+	</string>
+	<string id="esc_comm_talk_3333333">
+		<text>Remйlem, nem vertйl бt!</text>
+	</string>
+	<string id="esc_comm_talk_33334">
+		<text>Бlmodozz csak, cimbora! Nem adom neked a stukkeremet.</text>
+	</string>
+	<string id="esc_comm_talk_334">
+		<text>Nem szьksйgem a rohadt pйnzedre! Te csak egy patkбny vagy, nem segнtek rajtad!</text>
+	</string>
+	<string id="esc_comm_talk_444">
+		<text>Nem gond.</text>
+	</string>
+	<string id="esc_comm_talk_55">
+		<text>Ezъttal mit akarsz?</text>
+	</string>
+	<string id="esc_comm_talk_555">
+		<text>Nos...</text>
+	</string>
+	<string id="esc_comm_talk_6666">
+		<text>Mit akarsz?</text>
+	</string>
+	<string id="esc_driver_about_you_0">
+		<text>Hogy kerьltйl ide a Zуnбba?</text>
+	</string>
+	<string id="esc_driver_about_you_1">
+		<text>Hogy kerьltem ide? Mint a legtцbbьnk, idevezйnyeltek. Azt hittem, hogy egy vбrosomhoz kцzeli egysйghez kerьlцk, ehelyett a Zуnбba kьldtek. Itt aztбn elfelejtheted a levйlнrбst йs a nyaralбst. Napkцzben nincs is semmi kьlцnleges: parancsok, menetelйs, tisztelgйs... de amikor leszбll az este, jobban teszed, ha imбdkozol, mert ijesztхvй vбlik a helyzet. Mint pйldбul, amikor kikьldenek este, hogy хrizd a terьletet, йs egyfolytбban ьvцltйseket hallasz... egyre kцzelebbrхl йs kцzelebbrхl. Nйha mйg magбt a szцrnyet is lбtod. Egy pillanat alatt elfehйredtem attуl a szartуl... az цregebb katonбk kцzьl pedig mindenki egy pцcs, este felйbresztenek, йs azt mondjбk, hogy hozzбl nekik vodkбt. Engem nem йrdekel, ha megцlnek, de a tцrtйntek utбn, йn este ki nem teszem a lбbam errхl a bбzisrуl... Vicska, egy srбc, akivel egyьtt vezйnyeltek ide, megtette, amit mondtak neki. Mбsnap reggel talбltбk rб, teljesen elkйkьlt, a szemei pedig akkorбk voltak, mint egy teherautу kerekei... annyira megijedt, hogy megrepedt a szнve, йs ott azonnal meghalt...</text>
+	</string>
+	<string id="esc_driver_fear_0">
+		<text>Kйrlek, ne цlj meg!</text>
+	</string>
+	<string id="esc_driver_fear_11">
+		<text>Mindennek megvan a maga oka. A parancsnokkal йppen a kerьletet ellenхriztьk, amikor rбnk tбmadtak. Az хrцket megцltйk йs foglyul ejtettйk a parancsnokot. Йn is majdnem ott maradtam...</text>
+	</string>
+	<string id="esc_driver_fear_111">
+		<text>Йs miйrt nem mйsz vissza az egysйgedhez, katona?</text>
+	</string>
+	<string id="esc_driver_fear_1111">
+		<text>Hogy is mehetnйk vissza? Egy pillanat alatt bнrуsбg elхtt talбlnбm magam, amiйrt cserbenhagytam a parancsnokot.</text>
+	</string>
+	<string id="esc_driver_quest_0">
+		<text>Segнthetek valamiben?</text>
+	</string>
+	<string id="esc_driver_quest_1">
+		<text>Egy jу barбtom a stalkerek elхl menekьlt, йs ъgy dцntцtt, hogy elbъjik egy alagъtban. Sikerьlt is bejutnia, de visszafelй mбr nem tudott kijutni, йs szomjan halt. Prуbбltam neki vizet vinni, de hiбba. Nagyon furcsa ott bent, lбttam, hogy ott бll elхttem, mйgsem tudtam eljutni hozzб. Elhoznбd nekem a dolgait? Szeretnйk valamit, ami emlйkeztetne rб. De mielхtt kйrdeznйd, nem tudom, hogy lehet oda eljutni, szуval inkбbb kйrdezd meg a stalkereket. Хk sokkal tцbbet tudnak a Zуnбrуl, mint mi, katonбk.</text>
+	</string>
+	<string id="esc_driver_quest_11">
+		<text>Nem hiszem, hogy tudnбl.</text>
+	</string>
+	<string id="esc_driver_quest_2">
+		<text>Rendben, megprуbбlom!</text>
+	</string>
+	<string id="esc_driver_quest_22">
+		<text>Nincs nekem erre idхm!</text>
+	</string>
+	<string id="esc_driver_quest_complete_0">
+		<text>A munkбrуl van szу.</text>
+	</string>
+	<string id="esc_driver_quest_complete_1">
+		<text>Szуval, hogy ment?</text>
+	</string>
+	<string id="esc_driver_quest_complete_2">
+		<text>Elhoztam a PDA-jбt. Ez volt az egyetlen dolog, ami nбla volt.</text>
+	</string>
+	<string id="esc_driver_quest_complete_22">
+		<text>Egyelхre semmi.</text>
+	</string>
+	<string id="esc_driver_quest_complete_222">
+		<text>Kбr! Ne feledd, hogy szбmнtok rбd!</text>
+	</string>
+	<string id="esc_driver_quest_complete_3">
+		<text>Kцszцnцm, zsoldos! Itt egy kis aprуsбg a segнtsйgedйrt!</text>
+	</string>
+	<string id="esc_driver_who_are_you_0">
+		<text>Ki vagy te?</text>
+	</string>
+	<string id="esc_driver_who_are_you_1">
+		<text>Szimeon... Avicskin... kцzlegйny... йn voltam Kaletszkij parancsnok sofхre. Beszйlni akart a stalkerekkel, ezйrt utasнtott, hogy vigyem el hozzбjuk. Gond nйlkьl el is jutottunk a partra, de amikor kцzelebb йrt hozzбjuk, megkцtцztйk, йn pedig elhъztam a csнkot.</text>
+	</string>
+	<string id="esc_driver_who_are_you_2">
+		<text>Йs most mit fogsz csinбlni?</text>
+	</string>
+	<string id="esc_driver_who_are_you_3">
+		<text>Hogy is mehetnйk vissza? Egy pillanat alatt bнrуsбg elхtt talбlnбm magam, amiйrt cserbenhagytam a parancsnokot.</text>
+	</string>
+	<string id="esc_driver_who_are_you_4">
+		<text>Gyere velem! Elintйzzьk a stalkereket, kiszabadнtjuk Kaletszkijt йs elosztjuk a zsбkmбnyt!</text>
+	</string>
+	<string id="esc_driver_who_are_you_44">
+		<text>Йrtem!</text>
+	</string>
+	<string id="esc_driver_who_are_you_5">
+		<text>Remek цtlet, pajtбs, de nincs fegyverem! Adj egy pisztolyt, йs veled megyek!</text>
+	</string>
+	<string id="esc_driver_who_are_you_6">
+		<text>Tessйk, fogd! Fegyver nйlkьl nem sok hasznodat vennйm.</text>
+	</string>
+	<string id="esc_driver_who_are_you_66">
+		<text>Azt mбr nem! Mйg a vйgйn hбtba lхnйl!</text>
+	</string>
+	<string id="esc_leader_about_home_0">
+		<text>Lбtom, vйgleg letelepedtetek ide.</text>
+	</string>
+	<string id="esc_leader_about_home_11">
+		<text>Цrьlцk neked, йn sem rajongok tъlsбgosan a hadseregйrt. Mihez fogsz kezdeni?</text>
+	</string>
+	<string id="esc_leader_about_home_1111">
+		<text>Mesйlj a bбzisotokrуl!</text>
+	</string>
+	<string id="esc_leader_about_prisoner_0">
+		<text>Hol tartjбtok fogva Kaletszkij хrnagyot?</text>
+	</string>
+	<string id="esc_leader_about_you_0">
+		<text>Miуta vagy stalker?</text>
+	</string>
+	<string id="esc_leader_about_you_1">
+		<text>Egy ideje mбr itt vagyok. A srбcokkal mйg 2000-ben йrkeztьnk, hogy fйmhulladйkot gyыjtsьnk az ъjrafeldolgozбshoz. Йs akkor megjelent a Zуna. Elхszцr alaposan megijedtьnk, de mйgis ъgy dцntцttьnk, hogy maradunk. Folytattuk is a fйmhulladйk gyыjtйsйt, amнg meg nem talбltuk az elsх relikviбnkat. Йs bumm! Kiderьlt, hogy megйri a sъlyбt aranyban. Kйpzeld csak el, manapsбg mбr nem sok relikvia van, de akkor mйg szinte senki nem tudott a lйtezйsьkrхl! Amennyi pйnzt mi azon az ьzleten kerestьnk... ha csak rбgondolok цsszefut a nyбl a szбmban. Mбra minden megvбltozott...</text>
+	</string>
+	<string id="esc_leader_about_you_11">
+		<text>Mit csinбlsz a Kordonban?</text>
+	</string>
+	<string id="esc_leader_about_you_111">
+		<text>Mifйle kйrdйs ez? A Kordon lйnyegйben a Zуna fхbejбrata. A stalkerek gyakran jцnnek ide. Kivбlу hely arra, hogy lazнtsunk egy kicsit, feltцltsьk a lхszerkйszletьnket, йs jу pйnzйrt cserйbe eladjuk Szidorovicsnak a zsбkmбnyainkat. Rбadбsul, ha szьksйged lenne egy tбrsra, a Kordonban tцbb ъjonc is van, akik tыzцn-vнzen бtmennйnek egy veterбn kedvййrt. Szбmukra mi йlх legendбk vagyunk.</text>
+	</string>
+	<string id="esc_leader_about_zone_0">
+		<text>Mesйlj a Zуnбrуl!</text>
+	</string>
+	<string id="esc_leader_about_zone_1">
+		<text>Hogy йn? Miйrt nem kйred meg valamelyik okostojбst, хk vizsgбljбk mikroszkуpokkal йs rцntgennel! Йn nem sok mindent tudok a Zуnбrуl... Szбmomra csak egy jуl jцvedelmezх pйnzkereseti lehetхsйg. Nem akarok mбst, csak eleget keresni ahhoz, hogy nйhбny йv mъlva a tengerparti nyaralуmban hыsцlhessek.</text>
+	</string>
+	<string id="esc_leader_first_join_0">
+		<text>Hogy csatlakozhatok a klбnotokhoz?</text>
+	</string>
+	<string id="esc_leader_first_join_1">
+		<text>Megkцnnyнtem a dolgodat. Bizonyнtsd be, hogy egy rendes, megbнzhatу fickу vagy, йs akkor szнves-цrцmest a testvйrьnkkй fogadlak! De ismered a mondбst, bajban mutatkozik meg az igazi barбt. Nos, bajbуl kijutott nekьnk bхven, szуval, ha kisegнtesz minket, kitыnх minхsнtйssel zбrod a prуbбd!</text>
+	</string>
+	<string id="esc_leader_first_join_11">
+		<text>Йrtem!</text>
+	</string>
+	<string id="esc_leader_good_job_0">
+		<text>Hogy segнthetnйk mйg a stalkereken?</text>
+	</string>
+	<string id="esc_leader_good_job_1">
+		<text>A raktбrйpьletnйl tartуzkodу katonai osztagot egy megbнzott parancsnok irбnyнtja a Kordonban. Van nбla egy PDA, amin йrtйkes informбciуk vannak.</text>
+	</string>
+	<string id="esc_leader_good_job_11">
+		<text>Rendben!</text>
+	</string>
+	<string id="esc_leader_good_job_12">
+		<text>Egyelхre semmi.</text>
+	</string>
+	<string id="esc_leader_good_job_2">
+		<text>Megцltem a katonai parancsnokot, йs elvettem a PDA-jбt. Remйlem, hasznodra vбlik!</text>
+	</string>
+	<string id="esc_leader_good_job_3">
+		<text>Kivбlу, stalker! A PDA rengeteg hasznos informбciуt tartalmaz, kцszцnцm! Itt a jutalmad.</text>
+	</string>
+	<string id="esc_leader_good_job_4">
+		<text>Kцszцnцm!</text>
+	</string>
+	<string id="esc_leader_join_stalker_0">
+		<text>Csatlakozhatok a klбnodhoz? Eleget tettem mбr ahhoz, hogy kцzйtek tartozzak?</text>
+	</string>
+	<string id="esc_leader_join_stalker_1">
+		<text>Nagy segнtsйg voltбl, ez nem vitбs, de... mi stalkerek vagyunk, йs nincs mйg elйg tapasztalatod ehhez az йlethez. Menj le mйlyebbre a Zуnбban йs tanulmбnyozd!...Amнg odavagy, elrendezem ezt a kis nйzeteltйrйst a hadsereggel. Amint vйgeztem, szуlok neked!</text>
+	</string>
+	<string id="esc_leader_join_stalker_2">
+		<text>Цregem, alig lбtszunk ki a megoldatlan problйmбkbуl... tъl korai mйg ezen gondolkodni. Mit szуlnбl hozzб, ha elхbb elrendeznйnk ezeket, йs majd utбna visszatйrnйnk rб?</text>
+	</string>
+	<string id="esc_leader_join_stalker_3">
+		<text>Szolgбlatos vagy, igaz? Meg kell йrtened, hogy a testvйrisйgьnk mбshogy tekint a Zуnбra, mint a parancsnokaid. Ha tйnyleg csatlakozni szeretnйl hozzбnk, magad mцgцtt kell hagynod a szolgбlatos mъltadat! Rendben?</text>
+	</string>
+	<string id="esc_leader_join_stalker_33">
+		<text>Persze! Nincs is jobb dolog a szabad stalker йletnйl, nem igaz?</text>
+	</string>
+	<string id="esc_leader_join_stalker_333">
+		<text>Mi? Йs egy hideg sцr egy homokos tengerparton? Ne is tцrхdj velem...  Remйlem, mбr ismered a stalkerek alapelveit!</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333">
+		<text>Szerintem, az lenne a legjobb, ha elmondanбd, hбtha kimaradtam valamibхl!</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333">
+		<text>Igazбbуl egйsz egyszerы. Stalkernek lenni annyit jelent, mint embernek lenni. Nehйz idхkben segнts a barбtaidon, ne verd бt, йs ne dцfd hбtba хket. Oszd meg velьk az elsхsegйlycsomagjaidat йs az йteled, harcban vйdd meg хket, йs aludj velьk egy fedйl alatt! Legfхbb ellensйgeink az бtkozott fosztogatуk, az йlхskцdхk a testьnkцn. Cйlunk egyszer йs mindenkorra kiirtani a mocskokat a Zуna terьletйrхl. Tedd ezt, йs mindenki boldog lesz!</text>
+	</string>
+	<string id="esc_leader_join_stalker_333333">
+		<text>Йrtem!</text>
+	</string>
+	<string id="esc_leader_join_stalker_3333333">
+		<text>Nos, akkor meg is volnбnk. Isten hozott barбti kцzцssйgьnkben! Mutбnsoktуl йs anomбliбktуl mentes utakat kнvбnok, stalker! Aktivбltam egy dekуdolуt a PDA-don, нgy most mбr kaphatsz ьzeneteket a klбn tцbbi stalkerйtхl, valamint a taktikai szekciуban megnйzheted a fosztogatуkkal folytatott harcunk jelenlegi helyzetйt. Isten hozott mйg egyszer!</text>
+	</string>
+	<string id="esc_leader_join_stalker_33333333">
+		<text>Йrtem! Most, ha megbocsбtasz, vissza kell tйrnem a stalker teendхimhez...</text>
+	</string>
+	<string id="esc_leader_join_stalker_33334">
+		<text>Persze! Elйg rйgуta vagyok mбr a Zуnбban.</text>
+	</string>
+	<string id="esc_leader_join_stalker_3334">
+		<text>Бtgondolom.</text>
+	</string>
+	<string id="esc_leader_join_stalker_4">
+		<text>Lбm, lбm! Az йlet a Szabadsбgban mйgsem olyan szabad? Meg szeretnйd tapasztalni a stalkerek valуdi szabadsбgбt? Rendben van, de azt ne felejtsd el, hogy bбr mindannyiunknak vannak barбtai a Szabadsбgban, mindkettхnknek megvannak a magunk dolgai! Ha csatlakozni szeretnйl hozzбnk, ki kell lйpned a klбnjukbуl! Rendben?</text>
+	</string>
+	<string id="esc_leader_join_stalker_5">
+		<text>Termйszetesen! Mбr a kezdetektхl fogva szimpatikus voltбl nekem, de gondolom, megйrted, hogy elхbb mйg prуbбra kellett tennьnk! Azok utбn, amit tettйl, цrцmmel beveszlek most azonnal! Na, mit mondasz?</text>
+	</string>
+	<string id="esc_leader_talk_111">
+		<text>Szidorovics kьldцtt.</text>
+	</string>
+	<string id="esc_leader_talk_11111">
+		<text>Йs megtбmadtad a hadsereget?</text>
+	</string>
+	<string id="esc_leader_talk_1111111">
+		<text>Megyek, csevegek egy kicsit a parancsnokkal. Hбtha megtцrik, йs elmondja, hol a zsбkmбny.</text>
+	</string>
+	<string id="esc_leader_talk_222">
+		<text>Az a seggfej makacs, mint egy цszvйr! Egy szуt sem hajlandу mondani a lбdбrуl. Бllandуan csak azt hajtja, hogy a haverjai nem hagyjбk cserben, йs biztos, hogy eljцnnek kiszabadнtani хt.</text>
+	</string>
+	<string id="esc_leader_talk_22222">
+		<text>Ez is egy lehetхsйg. Nem tudod vйletlenьl, hol talбlhatnбm meg Kaletszkij barбtait?</text>
+	</string>
+	<string id="esc_leader_talk_2222222">
+		<text>Megteszem, amit lehet!</text>
+	</string>
+	<string id="esc_leader_talk_66">
+		<text>Hбt akkor menj, йs beszйlj a parancsnokkal...</text>
+	</string>
+	<string id="esc_leader_what_happens_0">
+		<text>Mit tцrtйnt itt?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_0">
+		<text>Mit akarsz?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1">
+		<text>Hol van Kaletszkij хrnagy, a fickу, akit tъszkйnt tartotok fogva? Nem lбtom хt sehol...</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_11">
+		<text>Elmenekьlt.</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_111">
+		<text>Hogy tцrtйnt?</text>
+	</string>
+	<string id="esc_stalker_about_prisoner_1111">
+		<text>Mбr magam sem tudom, hogy miуta хrkцdhettem ьltцmben, amikor hirtelen rбm tцrt a fбradtsбg, йs kйt percre lehunytam a szemem. Mire feleszmйltem mбr "bumm!" Eltыnt.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_0">
+		<text>Hagyj bйkйn, szolgбlatban vagyok!</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1">
+		<text>Csak egy kйrdйs: mit хriztek?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_11">
+		<text>Az ъj stalker terьletet figyeljьk.</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_111">
+		<text>Ъj? Ezt kifejtenйd?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_1111">
+		<text>Menj el a bбzisunkra, йs kйrdezd meg! Nem йrek rб!</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_2">
+		<text>Rendben van!</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_3">
+		<text>Mi az a "fekete lyuk" a hнdon?</text>
+	</string>
+	<string id="esc_stalker_bridge_talk_33">
+		<text>Цregem, mi sem tudjuk, de bбrmit hajнtunk bele, azonnal eltыnik. Tцbbnyire a szemetьnket dobjuk bele, tudod, hogy vйdjьk a kцrnyezetьnket. Kйsхbb azonban belebotlottunk a halmokba egy alagъt anomбliбjбban. Nagyon furcsa dolgok tцrtйnnek a Zуnбban. Хrьlet az egйsz!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_0">
+		<text>Mesйlj egy kicsit magadrуl!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1">
+		<text>Szeretek fьggetlen lenni, eddig kizбrуlag csak egyedьl, sajбt magamnak dolgoztam. De amikor meghallottam, hogy a stalkerek nyomбst gyakorolnak a hadseregre, йs sajбt bбzist lйtesнtenek, gondolkodбs nйlkьl idejцttem. Tudod, rengeteg fйle emberrel talбlkoztam a Zуnбban, йs kцzьlьk magasan a stalkerek a kedvenceim. Velьk nincs semmi baj, йrted? Nincsenek ostoba elхнrбsaik, szabбlyaik йs mбs szarsбgaik, mint a tцbbi frakciуnak. Ha engem kйrdezel, egyedьl stalkereknek szabadna a Zуnбban lenniьk. Ъgy nekьnk, kereskedхknek, is jobban menne az ьzlet, йs a dolgok is szйpen lecsillapodnбnak. Mindegy, szуval ezйrt segнtek ezeknek a fickуknak.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11">
+		<text>Ritkбn lбtni technikusokat a Zуnбban. Mondd el, mihez йrtesz!</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_111">
+		<text>Ha azt vбrod, hogy mindenfйle divatos kьtyьvel йs bonyolult szerkezettel lбtlak el, ki kell, hogy бbrбndнtsalak! De szorult belйm nйmi йrtelem, йs jу vagyok abban, amit csinбlok. Azon sem lepхdnйk meg, ha egyszer a szakйrtelmemnek kцszцnhetхen maradnбl йletben. A legtцbb idхmet fegyverek йs pбncйlzatok javнtбsбval tцltцm, de a megfelelх цsszetevхkkel fejleszthetem a fegyveredet йs felszerelйsedet is. Ha tudni szeretnйd, hogy pontosan miket is tudok feljavнtani, vess egy pillantбst a fejlesztйsekre! Biztos sikerьl majd dцntened.</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_1111">
+		<text>Gondolom, sok mindent megйltйl mбr a Zуnбban. Lбttбl valami szokatlant?</text>
+	</string>
+	<string id="esc_stalker_mechanic_about_you_11111">
+		<text>Szokatlant? Azutбn a hatalmas kisugбrzбs utбn йppen idefelй tartottam Agroprombуl, amikor valami nagyon furcsa dolog tцrtйnt. Egy fцlddarab, ami elхtte teljesen szokvбnyos volt, megvбltozott. Mintha eltorzult volna. A sugбrzбsmйrхm mбr azelхtt megbolondult, hogy kцzel йrtem volna hozzб. Kйsхbb a fiъk elmondtбk, hogy, amit lбttam egyike volt a legerхsebb anomбliбknak. Az onnan kiszivбrgу energia tцbb hйtig бram alatt tartana egy egйsz lakуnegyedet! Iszonyatosan veszйlyes az a hely, de igen ritka relikviбkat lehet talбlni annбl a tornбdуnбl. Mindenesetre, ha egyszer egy ilyen helyre bukkannбl, lйgy nagyon уvatos!</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_0">
+		<text>Figyelj, pajtбs, nemrйg lбttuk, hogy a hadsereg egy fegyverekkel йs lхszerrel teli lбdбt szбllнt a raktбrйpьlethez! Nekьnk nincs rб szьksйgьnk, de gondoltam, tйged talбn йrdekelhet.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_1">
+		<text>Az a hely valуszнnыleg tцmve van katonбkkal. Megйr ennyit a lхszer?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_2">
+		<text>Csak gondolj bele! A helyi kereskedхknйl бltalбban nincs 5.45-цs kaliberы lхszer. Ritkбn adуdik ilyen alkalom, rбadбsul a stukkerek is ъjak. Tudom, hogy ez nem egy emberes melу, ъgyhogy segнtьnk neked a srбcokkal egy kis pйnz ellenйben. Mondjuk 500 rubelйrt. Ennyit fizetsz nekьnk, amit pedig a raktбrйpьletnйl talбlsz, mind a tied. Бll az alku?</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_3">
+		<text>Jуl van, bбr meg kell mondjam, tцbbnyire йn vagyok az, akinek fizetnek a munkбйrt.</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_33">
+		<text>Nem, megoldom egyedьl is. Kцszцnцm a tippet!</text>
+	</string>
+	<string id="esc_stalker_support_attack_atp_4">
+		<text>Semmisйg, rйgen йn is zsoldos voltam. Tudod, a szokбs hatalma.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_0">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_1">
+		<text>Kereskedх vagyok, igaz csak nemrйg уta. Amint lбthatod, mйg csak most йrkeztьnk. Valerjan atya szerint bбrmi lehet belхlьnk, amit csak akarunk, йs йn ъgy dцntцttem, hogy бrus leszek. Йs miйrt ne? Van hozzб tehetsйgem, annyira pedig ismerem Szidorovicsot, hogy йn is tudjam azt csinбlni, amit х. Hiszen бltalбnos iskolбban pйnzйrt adtam kцlcsцn kйpregйnyeket a diбkoknak. Azok voltak бm a szйp idхk! Tudod, йn affйle szьletett ьzletember lennйk. Jelenleg mйg Szidorovicstуl veszem a kйszleteimet, нgy az бraim nem a legjobbak, de azйrt van pбr dolgom, ami talбn йrdekelhet. A srбcaink hoztбk хket a portyбikrуl.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_111">
+		<text>У, testvйrem, innentхl lesz csak igazбn szйp az йlet! A tetves hadsereg vйgre bйkйn hagy minket, a stalkerek pedig learatjбk a babйrokat. Egy hosszabb portyбzбs utбn minхsйgi fejlesztйseket szerezhetьnk a Kordonban, a felszerelйsek minхsйge pedig nagymйrtйkben javul majd. Rбadбsul remek pйnzt fogunk kapni a zsбkmбnyйrt, nem ъgy, mint azelхtt, amikor a hadsereg elszedte a hasznunkat, йs egy vasunk sem maradt. Csak vбrd ki, remekьl elszуrakozunk majd azokkal a mocskokkal! Talбn majd odadurrantunk pбrszor йjszaka, csak hogy йberen tartsuk хket. Remekьl hangzik, nem igaz? Mindenesetre, bбrhogy is alakuljon, most mбr sok minden mбskйnt lesz.</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_2">
+		<text>Tehбt szerinted mбs йlet lesz a Kordonban, mint most?</text>
+	</string>
+	<string id="esc_stalker_trader_about_you_3">
+		<text>У, testvйrem, innentхl lesz csak igazбn szйp az йlet! A tetves hadsereg vйgre bйkйn hagy minket, a stalkerek pedig learatjбk a babйrokat. Egy hosszabb portyбzбs utбn minхsйgi fejlesztйseket szerezhetьnk a Kordonban, a felszerelйsek minхsйge pedig nagymйrtйkben javul majd. Rбadбsul remek pйnzt fogunk kapni a zsбkmбnyйrt, nem ъgy, mint azelхtt, amikor a hadsereg elszedte a hasznunkat, йs egy vasunk sem maradt. Csak vбrd ki, remekьl elszуrakozunk majd azokkal a mocskokkal! Talбn majd odadurrantunk pбrszor йjszaka, csak hogy йberen tartsuk хket. Remekьl hangzik, nem igaz? Mindenesetre, bбrhogy is alakuljon, most mбr sok minden mбskйnt lesz.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_0">
+		<text>Segнthetek?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_1">
+		<text>Segнteni? Nos, talбn tudsz. Tudod, mйg csak nemrйg vertьnk itt tбbort, йs mйg mielхtt lehetхsйgьnk lett volna biztosнtani a terьletet, a fosztogatуk lecsaptak, mint lйgy a szarra! Kiraboljбk a stalkereket, akik a zsбkmбnyukat hoznбk nekem. Ha ez нgy folytatуdik, hamarosan lehъzhatom a rolуt. Megjelent egy mбsik fosztogatу csapat is a tбborunk mellett. Megleckйztetnйd хket a kedvemйrt? </text>
+	</string>
+	<string id="esc_stalker_trader_quest_11">
+		<text>Nincs most semmi, amiben segнteni tudnбl.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_2">
+		<text>Nem gond. Нgйrem, ъgy elintйzem хket, hogy azt mйg jу pбr йvig nem fogjбk elfelejteni!</text>
+	</string>
+	<string id="esc_stalker_trader_quest_22">
+		<text>Talбn majd mбskor.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_0">
+		<text>A fosztogatуkrуl van szу.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_1">
+		<text>Szуval, hogy ment?</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_2">
+		<text>Elintйztem a fosztogatуkat.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_22">
+		<text>Egyelхre sehogy.</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_222">
+		<text>Sьrget az idх, zsoldos!</text>
+	</string>
+	<string id="esc_stalker_trader_quest_complete_3">
+		<text>Kцszцnцm! Itt a jutalmad.</text>
+	</string>
+	<string id="esc_trader_about_other_0">
+		<text>Tudnбl mondani valami йrdekeset?</text>
+	</string>
+	<string id="esc_trader_about_questions_0">
+		<text>Vбlaszolnбl pбr kйrdйsemre?</text>
+	</string>
+	<string id="esc_trader_about_questions_1">
+		<text>Nos, komoly fickуnak tыnsz, йs йn szнvesen vбlaszolok egy komoly fickу kйrdйseire! Kйrdezz csak...</text>
+	</string>
+	<string id="esc_trader_about_questions_11">
+		<text>Rйgуta vagy itt?</text>
+	</string>
+	<string id="esc_trader_about_questions_111">
+		<text>Rйgуta, nagyon rйgуta. Az elsхk kцzцtt йrkeztem a Zуnбba. Akkoriban mйg nem volt sugбrzбsmйrхnk йs vйdхruhбnk, нgy a vбrhatу йlettartam nagyon rцvid volt. Nem is voltam a Szemйtdombon tъl egyszer sem. Az nem az йn vilбgom. Nekem megadott, hogy egy mбsfajta ьzlethez konyнtsak. Olyan vagyok, mint motorolaj, nйlkьlem akadozik a gйpezet, ekkor pedig az emberek harcolni kezdenek. Ahol viszont ott vagyok, mindenki boldog. Bбr csodбkkal teli a Zуna, a kereslet mindig nagyobb, mint a kнnбlat a kormбnyok, kьlцnleges szervek, privбt ьgynцksйgek йs a nagymenх gyыjtхk miatt. Йn vagyok a kapocs, ami цsszekцti хket ezzel a hellyel. Elхsegнtem a kereskedйst a Zуna йs a kinti vilбg kцzцtt. Minden fontosabb embert ismerek, йs gyakorlatilag bбrmilyen problйmбt meg tudok oldani anйlkьl, hogy kimozdulnйk ebbхl a szobбbуl. Kцrьlbelьl ennyit йrdemes tudni rуlam.</text>
+	</string>
+	<string id="esc_trader_about_questions_22">
+		<text>De miйrt pont ezt a helyet vбlasztottad az otthonodnak?</text>
+	</string>
+	<string id="esc_trader_about_questions_222">
+		<text>Miйrt vagyok itt? Nos, kedvelem az idхjбrбst йs a tбj is gyцnyцrы. Az igazsбg az, hogy tъl цreg vagyok ahhoz, hogy stalkerkйnt jбrjam a Zуnбt. Йs aligha vagyok az a fajta, aki tъlйlne egy цsszecsapбst. Itt nyugalom van, ez a legfхbb oka. Az emberek bбrmikor megtalбlhatnak, nem szбmнt, hol vagyok. Ha valakinek fontos rendelйse van vagy minхsйgi termйkekre van szьksйge, kizбrуlag hozzбm jцn. Sхt nйha mйg sorba бllni is hajlandуak. Hogy miйrt? Mert, ha йn nem tudok zsбkmбnyt бtjuttatni a Kordonon, akkor senki sem.</text>
+	</string>
+	<string id="esc_trader_about_questions_33">
+		<text>Mesйlj a Zуnбrуl!</text>
+	</string>
+	<string id="esc_trader_about_questions_333">
+		<text>Nyugtalansбg uralkodik mostansбg. Nйhбny nappal ezelхtt egy kisugбrzбs rбzta meg az egйsz Zуnбt. Eddig csak egyszer lбttam ekkora kisugбrzбst... amikor kialakult a Zуna. Akkoriban a hadsereg цsszegyыjtцtte erхit, йs megindult a Zуna kцzepйbe, hogy atommal felrobbantsa az egйsz kуcerбjt. Amint kцzel йrtek, eltalбlta хket egy kisugбrzбs, amitхl ъgy repkedtek a levegхben a tankok, mint a makettek. Legtцbbjьk meghalt a robbanбsban, a tъlйlхket pedig hбtrahagytбk a Zуna kцzepйben. Hiбba kйrtek rбdiуn segнtsйget... a tбbornokok nem mertek mйg egy csapatot bekьldeni. A tъlйlхk hamar meghaltak vйdхfelszerelйs nйlkьl, az anomбliбk kцzцtt. \nFogalmam sincs, hogy miйrt volt mйg egy ekkora kisugбrzбs. Talбn a Zуna dьhцs valakire? A hadseregre biztos nem, a legutуbbi alkalom уta ki sem teszik a lбbukat a Kordonbуl. Egyedьl a stalkerek jбrjбk be a terьletet, de eddig ъgy tыnt, hogy a Zуna nem nagyon foglalkozik velьk... de mйgis kisugбrzбs kisugбrzбst kцvet, йs egyre erхsebbek. Rossz elхйrzetem van ezzel az egйsszel kapcsolatban...</text>
+	</string>
+	<string id="esc_trader_about_questions_44">
+		<text>Hallottбl valami йrdekes pletykбt a Zуna mйlyйrхl?</text>
+	</string>
+	<string id="esc_trader_about_questions_444">
+		<text>Mindig lehet hallani valami йrdekessйget. Nйhбny stalker tartozik nekem, ezйrt cserйbe idхnkйnt ellбtnak a legfrissebb hнrekkel. A legnagyobb ъjsбg odakint, hogy megnyнltak a Zуna ъj terьleteihez vezetх utak. Mйg csak nem is hallott senki ezekrхl a helyekrхl, nemhogy jбrtak is volna ott. Az utakat halбlos anomбliбk zбrtбk el, de most mбr kevesebb van belхlьk. Mйg нgy is nehйz бtjutni, de mбr lehetsйges. El tudod kйpzelni, hogy mit jelent ez szбmomra? Ъj terьletek ъj, valуszнnыleg eddig nem ismert, relikviбkat jelentenek. Йs ki lesz az, aki rб fogja tenni a vйn, rбncos kis mancsбt arra a sok fцldi jуsбgra? Pontosan, szemйlyesen!</text>
+	</string>
+	<string id="esc_trader_about_situation_0">
+		<text>Mi folyik itt?</text>
+	</string>
+	<string id="esc_trader_about_situation_1">
+		<text>Egy szуban: kбosz. Stalkerek harcolnak a hadsereggel. Rйgebben szabбlyok voltak. A hadsereg irбnyнtotta a terьletet, felvettйk a rйszьket йs hagytбk, hogy az emberek бrut csempйsszenek. Idхnkйnt azйrt rбszбlltak a stalkerekre, hogy fenntartsбk a lбtszatot, de csak ennyi volt. Nos, ezek a szabбlyok elmъltak. A stalkerek ъgy gondoljбk, хk vannak elхnyцsebb helyzetben, mert egy kicsit gyarapodott a lйtszбmuk йs хk irбnyнtjбk a Kordont. Az ostoba bolondok ъgy lбtszik, nem akarnak messzebb lбtni az orruknбl. Na nem mintha ennyivel megъsznбk. Persze a katonбk is gyбvбk ahhoz, hogy jelentsйk a fхhadiszбllбsnak a tцrtйnteket, hiszen akkor napvilбgra kerьlnйnek a piszkos kis ьgyleteik, de elхbb vagy utуbb ellenхrizni fogjбk a helyхrsйget, йs akkor mindenre fйny derьl. Akkor pedig... nos, mindannyian tudjuk, hogy akkor mi fog tцrtйnni, egy speciбlis katonai hadmыvelet. Higgy nekem, ha egy Szpecnaz szakasz idelбtogat, egy бrva lйlek sem marad ezen a helyen. У, йs a bхrfejыeket is levбltjбk a helyхrsйgen. Ami azt jelenti, hogy elvesztem a kapcsolataimat, йs akkor, hogy fogok kereskedni йs csempйszni, ha ez megtцrtйnik? A stalkerek most az egyszer elvetettйk a sulykot...</text>
+	</string>
+	<string id="esc_trader_about_you_0">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="esc_trader_about_you_1">
+		<text>Mit mondhatnйk? Цreg vagyok йs beteg, ъgyhogy csak szйpen csendben elьldцgйlek itt, йs eladok pбr elsхsegйlycsomagot йs kolbбszt a fiъknak... Nem sok, de mйg mindig jobb, mint бllami nyugdнjon йlni, az egyszer mбr biztos!</text>
+	</string>
+	<string id="esc_trader_about_you_11">
+		<text>Szerintem, csak szerйny vagy. Sok mindent lehet hallani rуlad.</text>
+	</string>
+	<string id="esc_trader_about_you_111">
+		<text>Nos, sok mindent lehet hallani, de a legtцbb valуtlan. A pokolba, hiszen mйg csak nem is ismerlek! Kцssьnk ьzletet! Bizonyнts a tetteid, nem pedig a szavaid rйvйn, йs akkor talбn megered a nyelvem. Na, hogy hangzik?</text>
+	</string>
+	<string id="esc_trader_about_zone_1">
+		<text>Szeretnйl hallani stalkeres tцrtйneteket? Jуl van, kйrdezz csak!</text>
+	</string>
+	<string id="esc_trader_about_zone_111">
+		<text>Ember, az volt aztбn a kisugбrzбs... erхsebb volt, mint korбbban, az egyszer mбr biztos! Olyan hatalmas volt, hogy szйtpukkant az ьveg a bunkeremben, pedig a Zуna szйlйn van! Fogalmam sincs, hogy miйrt tцrtйnt, de az hйtszentsйg, hogy megvбltoztatott valamit! Az informбtoraim szerint talбltak egy utat, ami Limanszk rйgi vбrosбba vezet. Kйpzeld csak el! A stalkerek йvekig bolyongtak az erdхben, hogy valahogy бtjussanak az anomбliбk falбn, erre egyszer csak elхtыnik a semmibхl! Mйg csak nincs is sugбrzбs sehol az ъt mentйn! Ugyanaz, mint az Ingovбnynбl. Korбbban csak katonai helikopterrel lehetett odajutni, de manapsбg akбr mбr te is odamehetnйl, ha nem fйlnйl, hogy vizes lesz a lбbad.</text>
+	</string>
+	<string id="esc_trader_about_zone_121">
+		<text>Hбborъ? A hбborъ mindenhol ugyanolyan, bбrhova is mйsz, ez alуl a Zуna sem kivйtel. Persze, az emberek mindig talбlnak indokot a harcra, legyen az zsбkmбny vagy hitbeli eltйrйs, de mindig rend volt, mindenki tudta, hol a helye! Ez most megvбltozott a kisugбrzбs utбn... amнg a Szolgбlat йs a Szabadsбg Limanszkйrt harcol, mint kйt йhes kutya a csontйrt, a fosztogatуk vйrszemet kaptak йs nyomбs alб helyeztйk a stalkereket...</text>
+	</string>
+	<string id="esc_trader_about_zone_131">
+		<text>A Zуna kцzepe? Sokan prуbбltak mбr eljutni a kцzepйre, de eddig mйg senki sem tйrt vissza. Az egyetlen ъt az Agyperzselхn бt vezet, йs egy бrva lйlek nincs a Zуnбban, aki tudnб, hogy lehet megkerьlni. A fenйbe, hiszen mйg ha valaki ki is derнtenй, ъgysem mondanб el senkinek! Kйpzeld csak el, ha te felfedeznйd Aladdin barlangjбt, az lenne az elsх dolgod, hogy szйtkьrtцld mindenkinek a pontos helyйt? Йn йs nйhбny kollйgбm, pontosabban mбs kereskedхk, rйgуta prуbбlunk utat talбlni a Perzselхn бt, de egy lйpйssel nem jutottunk kцzelebb annбl, mint ahol elkezdtьk.</text>
+	</string>
+	<string id="esc_trader_about_zone_13111">
+		<text>Isten tudja, mi lehet az... Нgy hнvjбk a stalkerek a katonai raktбraktуl йszakra elterьlх erdхt. Бllнtуlag igazi agyforralу hely... szу szerint! Mйg egy egйszsйges fickу sem hъznб tнz percnйl tovбbb abban az erdхben. Pedig jу pйnzt ajбnlottunk a stalkereknek, hogy szerezzenek pontos informбciуkat a Perzselхrхl, de eddig mйg senki sem talбlt semmit. Nйha-nйha eltыnik egy fickу, hogy aztбn kйsхbb holtan... vagy zombikйnt elхkerьljцn.</text>
+	</string>
+	<string id="esc_trader_community_0">
+		<text>Megromlott a viszonyom a stalkerekkel. Нgy nem fogom tudni megtalбlni a zsбkmбnyt, hogy idehozzam neked!</text>
+	</string>
+	<string id="esc_trader_community_1">
+		<text>Hogy engedhetted ezt meg, zsoldos?! Mindegy, egy kis pйnzйrt cserйbe elrendezem a dolgot.</text>
+	</string>
+	<string id="esc_trader_community_2">
+		<text>Йrtem. Tessйk, itt a pйnz!</text>
+	</string>
+	<string id="esc_trader_community_22">
+		<text>Nem kell, majd йn elrendezem.</text>
+	</string>
+	<string id="esc_trader_community_222">
+		<text>Nincs most ennyi pйnzem.</text>
+	</string>
+	<string id="esc_trader_community_3">
+		<text>A stalkerek ezъttal megbocsбtanak, de mйg egyszer ez ne forduljon elх!</text>
+	</string>
+	<string id="esc_trader_community_33">
+		<text>A temetйsed, pajtбs.</text>
+	</string>
+	<string id="esc_trader_community_333">
+		<text>Gyere vissza, ha mбr lesz!</text>
+	</string>
+	<string id="esc_trader_meet_111">
+		<text>Azt mondjбk, nemrйg jбrt itt egy stalker, ritka цsszetevхket keresett. Emlйkszel rб?</text>
+	</string>
+	<string id="esc_trader_meet_11111">
+		<text>Mivel frissнthetnйm fel a memуriбdat?</text>
+	</string>
+	<string id="esc_trader_meet_1111111">
+		<text>Igen, mire gondoltбl pontosan?</text>
+	</string>
+	<string id="esc_trader_meet_111111111">
+		<text>Megegyeztьnk!</text>
+	</string>
+	<string id="esc_trader_meet_222">
+		<text>Nos, kцszцnцm az informбciуt!</text>
+	</string>
+	<string id="esc_wolf_about_around_0">
+		<text>Van itt valami йrdekessйg?</text>
+	</string>
+	<string id="esc_wolf_about_around_1">
+		<text>Ez itt Kopaszfalu. A falu szйlйn talбlod Szidorovics ьzletйt. Tбvolabb pedig ott a katonai helyхrsйg, de azt mбr tudod, hiszen onnan jцttйl. A helyхrsйg mбsik oldala felй tartу ъt pedig a Zуna mйlyйre vezet.</text>
+	</string>
+	<string id="esc_wolf_about_around_11">
+		<text>Mesйlj Kopaszfalurуl!</text>
+	</string>
+	<string id="esc_wolf_about_around_111">
+		<text>Nos, mit is mondhatnйk Kopaszfalurуl? Az okosabbak felpakolnak Szidorovics ьzletйben annyit, amivel kihъzzбk egy darabig, йs elindulnak a Szemйtdomb felй. Ott mбr talбlni jobbfajta relikviбkat, rбadбsul nem is mindig olyan veszйlyes. Бltalбban ott is maradnak, hogy tapasztalatot szerezzenek. Akik pedig vйgleg ott maradnak... nos, azok komplett idiуtбk. Nйhбny itteni fickу is... бtkozott hippik a papucsukkal йs hбlуs tбskбjukkal, akik "kalandra" vбgynak. Vagy nyamvadt laborpatkбnyok, akik mйg mikroszkуpon kнvьl semmit nem fogtak a kis lбnyos kezьkben. Ezek a magamutogatуk nem sokбig hъzzбk itt. Nйhanapjбn azйrt tapasztalt stalkerek is betйvednek ide vagy csak pбran bejцnnek, hogy rбsуzzбk a zsбkmбnyukat Szidorovicsra йs lazнtsanak pбr napot.</text>
+	</string>
+	<string id="esc_wolf_about_around_1111">
+		<text>Szйp kis kйszletet halmoztбl fel. Nem tartasz a hadseregtхl?</text>
+	</string>
+	<string id="esc_wolf_about_around_11111">
+		<text>Kisebb gondja is nagyobb annбl a hadseregnek, mintsem, hogy velьnk foglalkozzon. Egyszer mйg hallottam is, ahogy azt mondjбk: "Minek pazarolnбnk a lхszert stalkerekre? Ъgyis meghalnak az anomбliбkban." Йs mi sem keressьk a bajt, ha ьldцznek valakit, nem бllunk az ъtjukba. Ha razziбznak vagy ellenхrzйs van a helyхrsйgen, meghъzzuk magunkat az alagsorban йs csendben maradunk. Tudod, nem szeretjьk a konfliktusokat.</text>
+	</string>
+	<string id="esc_wolf_about_around_22">
+		<text>Mesйlj Szidorovicsrуl!</text>
+	</string>
+	<string id="esc_wolf_about_around_222">
+		<text>Kьlцnцs kйrdйs ez tхled. Nem az elsх napod mбr ez a Zуnбban, mйgis Szidorovicsrуl kйrdezel? A pokolba, hiszen mindenki ismeri Szidorovicsot! Х a Zуna legelismertebb kereskedхje. Ha х nem tudja teljesнteni a kйrйsedet, akkor senki!</text>
+	</string>
+	<string id="esc_wolf_about_you_0">
+		<text>Mesйlj magadrуl!</text>
+	</string>
+	<string id="esc_wolf_about_you_1">
+		<text>Йn vagyok itt a fхnцk. A zцldfьlыeket йs a nyбmnyilбkat tanнtgatom, hogyan ne etessйk meg magukat az elsх ъtjuk sorбn a mutбnsokkal. Tudod, egyбltalбn nem kцnnyы. Az йletem huzamosabb rйszйt a Zуnбban tцltцttem, йs most mбr egy ideje ki akarok jutni... Isten tudja, mennyi idхt tцltцttem a Kordonban... de ez a hely egyszerыen nem akar elengedni. Vagy egy katonai rajtaьtйs vagy egy ъjabb kisugбrzбs vagy egy jцvedelmezх munka... йs mindig azt mondom magamnak, hogy "Rendben, mйg ezt az egyet йs mбr itt sem vagyok," de mйg mindig itt vagyok.</text>
+	</string>
+	<string id="esc_wolf_about_zone_0">
+		<text>Mesйlj errхl a helyrхl!</text>
+	</string>
+	<string id="esc_wolf_about_zone_1">
+		<text>A Kordonban vagyunk. A kinti vilбg kцzvetlenьl a katonai helyхrsйg utбn van, tъloldalt pedig minden a Zуnбhoz tartozik. Habбr rбnйzйsre nem gondolnб az ember, de kevйs itt az anomбlia йs a relikvia, rбadбsul szцrnyeket is ritkбn lбtni. Csendes kis kцrnyйk ez, legalбbbis a Zуna tцbbi rйszйhez viszonyнtva, mert a hadsereg megprуbбl mindent az irбnyнtбsa alatt tartani.</text>
+	</string>
+	<string id="esc_wolf_about_zone_111">
+		<text>Ez itt Kopaszfalu. A falu szйlйn talбlod Szidorovics ьzletйt. Tбvolabb pedig ott a katonai helyхrsйg, de azt mбr tudod, hiszen onnan jцttйl. A helyхrsйg mбsik oldala felй tartу ъt pedig a Zуna mйlyйre vezet.</text>
+	</string>
+	<string id="esc_wolf_brother_0">
+		<text>Farkas kьldцtt йrted. A testvйre vagy, igaz?</text>
+	</string>
+	<string id="esc_wolf_brother_1">
+		<text>Igen, az vagyok. Valamiйrt ъgy йrzem, hogy azonnal el kell hagynom ezt a helyet. Csak az a gond, hogy nincs stukkerem... megtennйd, hogy adsz valamit?</text>
+	</string>
+	<string id="esc_wolf_brother_2">
+		<text>Tessйk, fogd ezt a pisztolyt!</text>
+	</string>
+	<string id="esc_wolf_brother_22">
+		<text>Tessйk, fogd ezt a sцrйtes puskбt!</text>
+	</string>
+	<string id="esc_wolf_brother_222">
+		<text>Tessйk, fogd ezt a gйpkarabйlyt!</text>
+	</string>
+	<string id="esc_wolf_brother_2222">
+		<text>Nincs nбlam semmi.</text>
+	</string>
+	<string id="esc_wolf_brother_55">
+		<text>text in default</text>
+	</string>
+	<string id="esc_wolf_brother_complete_0">
+		<text>Kihoztam a testvйredet.</text>
+	</string>
+	<string id="esc_wolf_brother_complete_1">
+		<text>Nagyszerы! Itt a jutalmad.</text>
+	</string>
+	<string id="esc_wolf_novice_complete_0">
+		<text>Kцvettem azt a stalkert, ahogy kйrted!</text>
+	</string>
+	<string id="esc_wolf_novice_complete_1">
+		<text>Szйp munka, stalker! Remйlem, ez tanнtott neki nйmi alбzatot!</text>
+	</string>
+	<string id="esc_wolf_novice_fail_0">
+		<text>Sajnos, nem sikerьlt megvйdenem, йs meghalt!</text>
+	</string>
+	<string id="esc_wolf_novice_fail_1">
+		<text>A fenйbe! Nekem kellett volna mennem! Lehet, felhъzta volna magбt, de legalбbb йletben lenne. Цregem, egy nagyon нgйretes stalkert veszнtettьnk el!</text>
+	</string>
+	<string id="esc_wolf_novice_thank_you_0">
+		<text>Kцszцnцm, hogy kihъztбl a bajbуl, stalker! Mбr azt hittem, hogy darabokra tйpnek a kutyбk az erdхben. Soha tцbbй nem megyek egyedьl az erdхbe!</text>
+	</string>
+	<string id="esc_wolf_other_works_0">
+		<text>Van valami munkбd szбmomra?</text>
+	</string>
+	<string id="esc_wolf_other_works_1">
+		<text>Van. A fosztogatуk tъszul ejtettйk a testvйremet, йs hatalmas vбltsбgdнjat kцvetelnek! Mйg csak kцzel sincs annyi pйnzьnk, йs ezekkel az ъjoncokkal nem fogunk tudni annyit цsszeszedni ilyen rцvid idх alatt. De mйg, ha sikerьlni is, mi garantбlja, hogy nem цlik meg a testvйremet, miutбn бtadtuk?</text>
+	</string>
+	<string id="esc_wolf_other_works_11">
+		<text>Mйg nincs.</text>
+	</string>
+	<string id="esc_wolf_other_works_111">
+		<text>Az egyik srбcom ъgy tыnik, nem bнrja elviselni, hogy mбsok ъjoncnak gondoljбk, йs egy kutyafalka elintйzйsйvel akar bizonyнtani. Йles eszы kis legйny йs remekьl is lх, de, tudod, mйg fiatal. Aggуdom йrte. Esetleg segнtenйl neki?</text>
+	</string>
+	<string id="esc_wolf_other_works_1111">
+		<text>Innentхl mбr egyedьl is boldogulunk. Gyere vissza kйsхbb, mйg szьksйgьnk lehet a segнtsйgedre!</text>
+	</string>
+	<string id="esc_wolf_other_works_11111">
+		<text>Nem.</text>
+	</string>
+	<string id="esc_wolf_other_works_1112">
+		<text>Nem problйma, hol talбlom?</text>
+	</string>
+	<string id="esc_wolf_other_works_11121">
+		<text>Itt vannak a koordinбtбk.</text>
+	</string>
+	<string id="esc_wolf_other_works_1113">
+		<text>Sajnбlom, most nem!</text>
+	</string>
+	<string id="esc_wolf_other_works_11131">
+		<text>Ti, zsoldosok, mind egyformбk vagytok, magasrуl szartok mindenkire!</text>
+	</string>
+	<string id="esc_wolf_other_works_2">
+		<text>Йrtettem, megprуbбlom йlve kihozni a testvйredet!</text>
+	</string>
+	<string id="esc_wolf_other_works_22">
+		<text>Kцszцnцm, zsoldos! Tudtam, hogy szбmнthatok rбd. Itt vannak a tбboruk koordinбtбi! Lйgy уvatos, йs sok szerencsйt!</text>
+	</string>
+	<string id="esc_wolf_other_works_3">
+		<text>Sajnбlom, nem segнthetek!</text>
+	</string>
+	<string id="esc_wolf_other_works_4">
+		<text>Ez nem az йn problйmбm.</text>
+	</string>
+	<string id="esc_wolf_other_works_44">
+		<text>Akkor hъzz el innen!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_0">
+		<text>Nos, forrуfejыkйm, meguntad mбr a hхskцdйst?</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11">
+		<text>Menj innen! Egyedьl intйzem el ezeket a bestiбkat! Most majd megmutatom nekik! Soha tцbbй nem fognak ъjoncnak nevezni!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1112">
+		<text>Fйlek!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112">
+		<text>Tessйk, fogd ezt a pisztolyt!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_1122">
+		<text>Tessйk, fogd ezt a sцrйtes puskбt!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_11222">
+		<text>Tessйk, fogd ezt a gйpkarabйlyt!</text>
+	</string>
+	<string id="esc_wolf_stalker_novice_112222">
+		<text>Majd йn elintйzem хket!</text>
+	</string>
+	<string id="esc_wolf_talk_0">
+		<text>Ez egy ъjonc falu, nem pedig egy zsoldos tбbor, pajtбs.</text>
+	</string>
+	<string id="esc_wolf_talk_1">
+		<text>Szidorovicshoz jцttem!</text>
+	</string>
+	<string id="esc_wolf_talk_11">
+		<text>A bunkerben van, kцzvetlenьl a falun kнvьl!</text>
+	</string>
+	<string id="esc_wolf_talk_111">
+		<text>Kцszцnцm, indulok is hozzб!</text>
+	</string>
+	<string id="esc_wolf_talk_2">
+		<text>Kaptam egy munkбt Szidorovicstуl. Be kell ugranom a stalker bбzisra!</text>
+	</string>
+	<string id="esc_wolf_talk_22">
+		<text>Nos, a bбzisuk kцzvetlenьl a vasъti tцltйsen tъl van. Igazi stalker paradicsom az a hely.</text>
+	</string>
+	<string id="esc_wolf_talk_222">
+		<text>Kцsz!</text>
+	</string>
+</string_table>

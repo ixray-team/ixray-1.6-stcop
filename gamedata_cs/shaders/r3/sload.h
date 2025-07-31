@@ -3,6 +3,19 @@
 
 #include "common.h"
 
+#if ( defined( MSAA_ALPHATEST ) && defined( MSAA_OPTIMIZATION ) )
+#if MSAA_SAMPLES == 2
+static const float2 MSAAOffsets[2] = { float2(4,4), float2(-4,-4) };
+#endif
+#if MSAA_SAMPLES == 4
+static const float2 MSAAOffsets[4] = { float2(-2,-6), float2(6,-2), float2(-6,2), float2(2,6) };
+#endif
+#if MSAA_SAMPLES == 8
+static const float2 MSAAOffsets[4] = { float2(1,-3), float2(-1,3), float2(5,1), float2(-3,-5), 
+								               float2(-5,5), float2(-7,-1), float2(3,7), float2(7,-7) };
+#endif
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Bumped surface loader                //
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -148,6 +161,11 @@ surface_bumped sload_i( p_bumped I)
 surface_bumped sload_i( p_bumped I, float2 pixeloffset )
 {
 	surface_bumped	S;
+   
+   // apply offset
+#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+   I.tcdh.xy += pixeloffset.x * ddx(I.tcdh.xy) + pixeloffset.y * ddy(I.tcdh.xy);
+#endif
 
 	UpdateTC(I);	//	All kinds of parallax are applied here.
 
@@ -162,6 +180,11 @@ surface_bumped sload_i( p_bumped I, float2 pixeloffset )
 
 #ifdef        USE_TDETAIL
 #ifdef        USE_TDETAIL_BUMP
+#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+#if ( (!defined(ALLOW_STEEPPARALLAX) ) && defined(USE_STEEPPARALLAX) )
+   I.tcdbump.xy += pixeloffset.x * ddx(I.tcdbump.xy) + pixeloffset.y * ddy(I.tcdbump.xy);
+#endif
+#endif
 
 	float4 NDetail		= s_detailBump.Sample( smp_base, I.tcdbump);
 	float4 NDetailX		= s_detailBumpX.Sample( smp_base, I.tcdbump);
@@ -174,6 +197,9 @@ surface_bumped sload_i( p_bumped I, float2 pixeloffset )
 
 //	S.base.rgb			= float3(1,0,0);
 #else        //	USE_TDETAIL_BUMP
+#if ( defined(MSAA_ALPHATEST) && defined(MSAA_OPTIMIZATION) ) 
+   I.tcdbump.xy += pixeloffset.x * ddx(I.tcdbump.xy) + pixeloffset.y * ddy(I.tcdbump.xy);
+#endif
 	float4 detail		= s_detail.Sample( smp_base, I.tcdbump);
 	S.base.rgb			= S.base.rgb * detail.rgb * 2;
 	S.gloss				= S.gloss * detail.w * 2;

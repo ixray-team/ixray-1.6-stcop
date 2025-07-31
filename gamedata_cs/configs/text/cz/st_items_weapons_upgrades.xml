@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_upg_zatvor_rpm">
+		<text>Modifikace mechanismu zбvмru</text>
+	</string>
+	<string id="st_upg_zatvor_rpm_descr">
+		<text>Technologickб modifikace mechanismu zбvмru umoћтuje rychlejљн stшelbu.</text>
+	</string>
+	<string id="st_upg_zatvor_recoil">
+		<text>Modifikace mechanismu zбvмru</text>
+	</string>
+	<string id="st_upg_zatvor_recoil_descr">
+		<text>Peиlivй nastavenн a ъprava mechanismu zбvмru zvyљuje pшesnost zbranм.</text>
+	</string>
+	<string id="st_upg_porsh_rpm">
+		<text>Modifikace nabijбku</text>
+	</string>
+	<string id="st_upg_porsh_rpm_descr">
+		<text>Snнћenн hmotnosti nabijбku sniћuje zpмtnэ rбz na ъkor kadence zbranм.</text>
+	</string>
+	<string id="st_upg_porsh_recoil">
+		<text>Modifikace nabijбku</text>
+	</string>
+	<string id="st_upg_porsh_recoil_descr">
+		<text>Dнky instalaci kompenzбtoru nabijбku se sniћuje zpмtnэ rбz zbranм.</text>
+	</string>
+	<string id="st_upg_barrel_weight">
+		<text>Modifikace hlavnм</text>
+	</string>
+	<string id="st_upg_barrel_weight_descr">
+		<text>Nahrazuje standardnн hlaveт lehин verzн.</text>
+	</string>
+	<string id="st_upg_barrel_curved">
+		<text>Modifikace hlavnм</text>
+	</string>
+	<string id="st_upg_barrel_curved_descr">
+		<text>Vylepљenн, kterй prodluћuje hlaveт a rozљiшuje ъstн.</text>
+	</string>
+	<string id="st_upg_barrel_recoil">
+		<text>Modifikace hlavnм</text>
+	</string>
+	<string id="st_upg_barrel_recoil_descr">
+		<text>Dнky instalaci ъsќovй brzdy se sniћuje zpмtnэ rбz zbranм.</text>
+	</string>
+	<string id="st_upg_barrel_rifled">
+		<text>Modifikace hlavnм</text>
+	</string>
+	<string id="st_upg_barrel_rifled_descr">
+		<text>Vrtбnн hlavnм zvyљuje ъиinnэ dostшel zbranм.</text>
+	</string>
+	<string id="st_upg_butt_recoil">
+		<text>Krytka</text>
+	</string>
+	<string id="st_upg_butt_recoil_descr">
+		<text>Gumovб krytka, kterou se upravuje dйlka paћby, aby stшelci lнp sedмla.</text>
+	</string>
+	<string id="st_upg_butt_recoil2">
+		<text>Polymerovб paћba</text>
+	</string>
+	<string id="st_upg_butt_recoil2_descr">
+		<text>Vэmмnou standardnн paћby za plastovou se zbraт odlehин.</text>
+	</string>
+	<string id="st_upg_butt_recoil3_descr">
+		<text>Standardnн paћba je nahrazena lehин variantou.</text>
+	</string>
+	<string id="st_upg_butt_recoil4_descr">
+		<text>Speciбlnн design paћby umoћтuje znaиnй snнћenн zpмtnйho rбzu zbranм.</text>
+	</string>
+	<string id="st_upg_auto_rpm">
+		<text>Vylepљenн rovnovбhy mechanismu</text>
+	</string>
+	<string id="st_upg_auto_rpm_descr">
+		<text>Lepљн vyvбћenн nмkterэch mechanickэch souибstek umoћтuje znaиnй zvэљenн kadence zbranм.</text>
+	</string>
+	<string id="st_upg_auto_rpm2">
+		<text>Vэmмna mechanismu</text>
+	</string>
+	<string id="st_upg_auto_rpm2_descr">
+		<text>Vэmмna poloautomatickйho mechanismu za plnм automatickэ.</text>
+	</string>
+	<string id="st_upg_poly_weight">
+		<text>Polymerovй souибsti</text>
+	</string>
+	<string id="st_upg_poly_weight_descr">
+		<text>Pouћitн polymerovэch souибstн sniћuje hmotnost zbranм.</text>
+	</string>
+	<string id="st_upg_barrel_rpm">
+		<text>Chlazenн hlavnм</text>
+	</string>
+	<string id="st_upg_barrel_rpm_descr">
+		<text>Systйm chlazenн hlavnм umoћтuje dalљн zvэљenн kadence, aniћ by hrozilo riziko deformace hlavnм.</text>
+	</string>
+	<string id="st_upg_trigger_accur">
+		<text>Jemnб spouљќ</text>
+	</string>
+	<string id="st_upg_trigger_accur_descr">
+		<text>Hladkэ chod spouљtм umoћтuje zvэљenн pшesnosti stшelby.</text>
+	</string>
+	<string id="st_upg_charger_assault">
+		<text>Ъtoиnэ zбsobnнk</text>
+	</string>
+	<string id="st_upg_charger_assault_descr">
+		<text>Mnohem vмtљн zбsobnнk, navrћenэ speciбlnм pro ъtoиnй operace.</text>
+	</string>
+	<string id="st_upg_charger_big">
+		<text>Prodlouћenэ zбsobnнk</text>
+	</string>
+	<string id="st_upg_charger_big_descr">
+		<text>Improvizovanй zvэљenн kapacity zбsobnнku.</text>
+	</string>
+	<string id="st_upg_charger_small">
+		<text>Odlehиenэ zбsobnнk</text>
+	</string>
+	<string id="st_upg_charger_small_descr">
+		<text>Sniћuje celkovou hmotnost zbranм dнky zmenљenн zбsobnнku. Usnadтuje mншenн.</text>
+	</string>
+	<string id="st_upg_gas_rpm">
+		<text>Modifikace plynovйho systйmu</text>
+	</string>
+	<string id="st_upg_gas_rpm_descr">
+		<text>Modernizovanэ plynovэ systйm umoћтuje zvэљenн kadence.</text>
+	</string>
+	<string id="st_upg_gravi_accur">
+		<text>Gravitaиnн stabilizбtor</text>
+	</string>
+	<string id="st_upg_gravi_accur_descr">
+		<text>Zvyљuje pшesnost pomocн stabilizace kulky prostшednictvнm gravitaиnнch artefaktщ.</text>
+	</string>
+	<string id="st_upg_electro_accur">
+		<text>Elektronickэ stabilizбtor</text>
+	</string>
+	<string id="st_upg_electro_accur_descr">
+		<text>Automaticky upravuje moment hybnosti kulky a znaиnм zvyљuje pшesnost stшelby.</text>
+	</string>
+	<string id="st_upg_bind_grenade">
+		<text>Zбvмs pod hlaveт</text>
+	</string>
+	<string id="st_upg_bind_grenade_descr">
+		<text>Umoћтuje namontovat na zbraт podvмљenэ granбtomet.</text>
+	</string>
+	<string id="st_upg_bind_optic">
+		<text>Ъchyt pro zamмшovaи</text>
+	</string>
+	<string id="st_upg_bind_optic_descr">
+		<text>Umoћтuje namontovat na zbraт rщznй optickй zamмшovaиe.</text>
+	</string>
+	<string id="st_upg_bind_silencer">
+		<text>Ъchyt pro tlumiи</text>
+	</string>
+	<string id="st_upg_bind_silencer_descr">
+		<text>Umoћтuje namontovat na zbraт tlumiи.</text>
+	</string>
+	<string id="st_upg_handle_accur">
+		<text>Protiskluzovй paћbiиky</text>
+	</string>
+	<string id="st_upg_handle_accur_descr">
+		<text>Kvalitnн gumovй paћbiиky, dнky kterэm se zbraт mnohem lйpe drћн.</text>
+	</string>
+	<string id="st_upg_handle_accur2">
+		<text>Anatomickэ ъchop</text>
+	</string>
+	<string id="st_upg_handle_accur2_descr">
+		<text>Na mнru љitэ, ergonomickэ ъchop, vyrobenэ speciбlnм pro tebe.</text>
+	</string>
+	<string id="st_upg_accel_curved">
+		<text>Tlakovэ posilovaи</text>
+	</string>
+	<string id="st_upg_accel_curved_descr">
+		<text>Vestavмnнm vnitшnнho pneumatickйho posilovaиe se zvyљuje ъsќovб rychlost stшely.</text>
+	</string>
+	<string id="st_upg_accel_curved2">
+		<text>Magnetickэ posilovaи</text>
+	</string>
+	<string id="st_upg_accel_curved2_descr">
+		<text>Zvyљuje rychlost kulky pomocн alternujнcнho magnetickйho pole.</text>
+	</string>
+	<string id="st_upg_barrel_curved2">
+		<text>Pevnб hlaveт</text>
+	</string>
+	<string id="st_upg_barrel_curved2_descr">
+		<text>Vylepљenн pro zbranм s vestavмnэm tlumiиem. Nahrazuje hlaveт kombinovanou s tlumiиem za pevnou hlaveт.</text>
+	</string>
+	<string id="st_upg_pomp_rpm">
+		<text>Zlepљenэ pumpovacн mechanismus</text>
+	</string>
+	<string id="st_upg_pomp_rpm_descr">
+		<text>Jemnй doladмnн a manuбlnн ъprava mechanismu pumpovacнho dobнjenн.</text>
+	</string>
+	<string id="st_upg_head_misfire">
+		<text>Vэmмna ъdernнku</text>
+	</string>
+	<string id="st_upg_head_misfire_descr">
+		<text>Zvyљuje spolehlivost zbranм a sniћuje riziko selhбnн zbranм.</text>
+	</string>
+	<string id="st_upg_mat_wear">
+		<text>Trvanlivй materiбly</text>
+	</string>
+	<string id="st_upg_mat_wear_descr">
+		<text>Nбhrada vnмjљнho obalu, kterэ zbraт chrбnн pшed fyzickэm poљkozenнm, za odolnмjљн a trvanlivмjљн materiбly.</text>
+	</string>
+	<string id="st_upg_surf_wear">
+		<text>Ochrannэ nбtмr</text>
+	</string>
+	<string id="st_upg_surf_wear_descr">
+		<text>Vrstva napaшenйho diamantovйho prбљku, kterб chrбnн mechanickй souибstky pшed poљkozenнm a opotшebovбnнm.</text>
+	</string>
+	<string id="st_upg_group_kuchn">
+		<text>Zvэљenб pшesnost</text>
+	</string>
+	<string id="st_upg_group_kuchn_descr">
+		<text>Ъprava ъstн hlavnм, kterб umoћтuje pшesnмjљн stшelbu.</text>
+	</string>
+	<string id="st_upg_staple_rpm">
+		<text>Odstranмnн pojistky spouљtм</text>
+	</string>
+	<string id="st_upg_staple_rpm_descr">
+		<text>Jednoduchб a oblнbenб ъprava, kterб zvyљuje rychlost stшelby z dvouhlavтovй brokovnice.</text>
+	</string>
+	<string id="st_prop_ammo_size">
+		<text>velikost zбsobnнku</text>
+	</string>
+	<string id="st_prop_armor">
+		<text>zbroj</text>
+	</string>
+	<string id="st_prop_artefact">
+		<text>schrбnka na artefakty</text>
+	</string>
+	<string id="st_prop_bullet_speed">
+		<text>plochost kшivky</text>
+	</string>
+	<string id="st_prop_calibre">
+		<text>rбћe</text>
+	</string>
+	<string id="st_prop_damage">
+		<text>stav</text>
+	</string>
+	<string id="st_prop_dispersion">
+		<text>pшesnost</text>
+	</string>
+	<string id="st_prop_durability">
+		<text>ћivotnost</text>
+	</string>
+	<string id="st_prop_grenade_launcher">
+		<text>podvмљenэ granбtomet</text>
+	</string>
+	<string id="st_prop_inertion">
+		<text>ovlбdбnн</text>
+	</string>
+	<string id="st_prop_night_vision">
+		<text>noиnн vidмnн</text>
+	</string>
+	<string id="st_prop_power">
+		<text>obnova sнly</text>
+	</string>
+	<string id="st_prop_psy">
+		<text>psychickб ochrana</text>
+	</string>
+	<string id="st_prop_radio_chem">
+		<text>radiochemickб ochrana</text>
+	</string>
+	<string id="st_prop_recoil">
+		<text>zpмtnэ rбz</text>
+	</string>
+	<string id="st_prop_reliability">
+		<text>spolehlivost</text>
+	</string>
+	<string id="st_prop_restore_bleeding">
+		<text>lйиba zranмnн</text>
+	</string>
+	<string id="st_prop_restore_health">
+		<text>obnova zdravн</text>
+	</string>
+	<string id="st_prop_rpm">
+		<text>kadence</text>
+	</string>
+	<string id="st_prop_scope_1.6x">
+		<text>optickй hledн</text>
+	</string>
+	<string id="st_prop_scope_4x">
+		<text>zabudovanй hledн</text>
+	</string>
+	<string id="st_prop_silencer">
+		<text>tlumiи</text>
+	</string>
+	<string id="st_prop_thermo_electro">
+		<text>termoelektrickб ochrana</text>
+	</string>
+	<string id="st_prop_underbarrel_slot">
+		<text>zбvмs pod hlaveт</text>
+	</string>
+	<string id="st_prop_weight">
+		<text>vбha</text>
+	</string>
+	<string id="st_tonnage">
+		<text>maximбlnн vбha</text>
+	</string>
+	<string id="st_upg_active_filter_stalk">
+		<text>Aktivnн filtry</text>
+	</string>
+	<string id="st_upg_active_filter_stalk_descr">
+		<text>Pouћнt ъиinnмjљн systйm filtrovбnн.</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm">
+		<text>Systйm podбvбnн munice</text>
+	</string>
+	<string id="st_upg_ammo_sysytem_rpm_descr">
+		<text>Urychluje podбvбnн munice do komory, coћ vede k razantnм zvэљenй kadenci.</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk">
+		<text>Plynovб maska</text>
+	</string>
+	<string id="st_upg_anti_gas_stalk_descr">
+		<text>Tato maska poskytuje hlavnн ochranu pшed radioaktivnнm prachem a toxickэmi plyny.</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk">
+		<text>Antistatickэ postшik</text>
+	</string>
+	<string id="st_upg_antistatic_coating_stalk_descr">
+		<text>Tento postшik brбnн zachycovбnн radioaktivnнho prachu a chemikбliн na љatech.</text>
+	</string>
+	<string id="st_upg_artefact_slot">
+		<text>Schrбnka na artefakty</text>
+	</string>
+	<string id="st_upg_artefact_slot_descr">
+		<text>Schrбnka k noљenн dalљнch artefaktщ.</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk">
+		<text>Celtovб kombinйza</text>
+	</string>
+	<string id="st_upg_brigandine_suit_stalk_descr">
+		<text>Poskytuje rozumnou ochranu pшed ohnмm a elektшinou.</text>
+	</string>
+	<string id="st_upg_butt_recoil3">
+		<text>Odlehиenб paћba.</text>
+	</string>
+	<string id="st_upg_butt_recoil4">
+		<text>Pneumatickб paћba.</text>
+	</string>
+	<string id="st_upg_calibre_5_45">
+		<text>rбћe 5,45x39 mm</text>
+	</string>
+	<string id="st_upg_calibre_5_45_descr">
+		<text>Hlaveт je vymмnмna a souибstky jsou pшenastaveny na novou rбћi. Tuto vэmмnu lze provйst jen jednou.</text>
+	</string>
+	<string id="st_upg_calibre_5_56">
+		<text>rбћe 5,45x45 mm</text>
+	</string>
+	<string id="st_upg_calibre_5_56_descr">
+		<text>Hlaveт je vymмnмna a souибstky jsou pшenastaveny na novou rбћi. Tuto vэmмnu lze provйst jen jednou.</text>
+	</string>
+	<string id="st_upg_calibre_9_18">
+		<text>rбћe 9x18 mm</text>
+	</string>
+	<string id="st_upg_calibre_9_18_descr">
+		<text>Hlaveт je vymмnмna a souибstky jsou pшenastaveny na novou rбћi. Tuto vэmмnu lze provйst jen jednou.</text>
+	</string>
+	<string id="st_upg_calibre_9_19">
+		<text>rбћe 9x19 mm</text>
+	</string>
+	<string id="st_upg_calibre_9_19_descr">
+		<text>Hlaveт je vymмnмna a souибstky jsou pшenastaveny na novou rбћi. Tuto vэmмnu lze provйst jen jednou.</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle">
+		<text>Kevlarovб vesta</text>
+	</string>
+	<string id="st_upg_cevlar_body_armor_battle_descr">
+		<text>Materiбl na vнcevrstvй kevlarovй vesty</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle">
+		<text>Kevlarovй destiиky</text>
+	</string>
+	<string id="st_upg_cevlars_armor_battle_descr">
+		<text>Kevlarovй destiиky se vklбdajн do neprщstшelnэch vest pro lepљн ochranu.</text>
+	</string>
+	<string id="st_upg_composite_armor_battle">
+		<text>Kompozitnн destiиky</text>
+	</string>
+	<string id="st_upg_composite_armor_battle_descr">
+		<text>Kompozitnн destiиky poskytujн maximбlnн ochranu pшed palbou z ruиnнch zbranн.</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle">
+		<text>Dvouvrstvб vesta</text>
+	</string>
+	<string id="st_upg_double_layer_body_armor_battle_descr">
+		<text>I kdyby byla jedna vrstva poљkozena, ta druhб stбle poskytuje dostateиnou ochranu.</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle">
+		<text>Elektrostimulanty</text>
+	</string>
+	<string id="st_upg_electro_stimulant_battle_descr">
+		<text>Tyto stimulanty vyvolбvajн mikroimpulzy pro ulehиenн fyziologickэch aktivit.</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk">
+		<text>Externн filtrovacн systйm</text>
+	</string>
+	<string id="st_upg_exsternal_filtering_sys_stalk_descr">
+		<text>Kdyћ se filtry oddмlн od plynovй masky, lze jich pouћнvat vнce najednou.</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk">
+		<text>Neprodyљnэ izolaиnн nбstшik</text>
+	</string>
+	<string id="st_upg_germetic_layer_stalk_descr">
+		<text>Tento speciбlnн neprodyљnэ nбstшik slouћн k izolaci љatщ pшed ohnмm иi elektшinou.</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved">
+		<text>Vэmмnnб hlaveт</text>
+	</string>
+	<string id="st_upg_hard_barrel_curved_descr">
+		<text>Tato pevnб ocelovб hlaveт nepodlйhб deformacнm a slouћн k vyљљн akceleraci kulek.</text>
+	</string>
+	<string id="st_upg_hard_elements_battle">
+		<text>Tvrdй prvky</text>
+	</string>
+	<string id="st_upg_hard_elements_battle_descr">
+		<text>Tento rбm z lehkэch slitin pohlcuje vмtљinu energie vэstшelщ.</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle">
+		<text>Podpщrnэ zdravotnн systйm</text>
+	</string>
+	<string id="st_upg_health_sustaining_sys_battle_descr">
+		<text>Toto zaшнzenн se nosн na zбpмstн, a bude-li majitel zranмn, automaticky mu do ћil vstшikuje stimulanty a lйky proti љoku.</text>
+	</string>
+	<string id="st_upg_night_vision_battle">
+		<text>Zaшнzenн pro noиnн vidмnн</text>
+	</string>
+	<string id="st_upg_night_vision_battle_descr">
+		<text>Zaшнzenн pro noиnн vidмnн, prvnн generace.</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk">
+		<text>Odlehиovacн vesta</text>
+	</string>
+	<string id="st_upg_outfit_a_stalk_descr">
+		<text>Odlehиovacн vesta pomбhб lйpe rozdмlit vбhu na jednotlivй ибsti tмla a tнm usnadтuje noљenн nбkladu.</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk">
+		<text>Odlehиovacн batoh</text>
+	</string>
+	<string id="st_upg_outfit_b_stalk_descr">
+		<text>Dнky speciбlnнm popruhщm se tento batoh snadno nosн, takћe v nмm lze pшenбљet tмћљн nбklad.</text>
+	</string>
+	<string id="st_upg_plastic_components_battle">
+		<text>Plastovй souибstky</text>
+	</string>
+	<string id="st_upg_plastic_components_battle_descr">
+		<text>Plastovй souибstky prodluћujн ћivotnost kombinйzy.</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk">
+		<text>Polymerovэ nбstшik</text>
+	</string>
+	<string id="st_upg_polymer_coating_stalk_descr">
+		<text>Materiбl nastшнkanэ tнmto roztokem tekutэch polymerщ mб vмtљн vэdrћ vщиi ohni a elektшinм.</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle">
+		<text>Polymerovэ zahuљќovaи</text>
+	</string>
+	<string id="st_upg_polymer_pillow_battle_descr">
+		<text>Tato zahuљќovacн tkanina efektivnм pohlcuje energii vэstшelщ.</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk">
+		<text>Polymerovб vesta</text>
+	</string>
+	<string id="st_upg_polymer_suit_stalk_descr">
+		<text>Polymerovй materiбly nabнzejн dobrou ochranu pшed teplem a elektrickэm љokem.</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle">
+		<text>Vyztuћenэ rбm</text>
+	</string>
+	<string id="st_upg_powered_carcass_battle_descr">
+		<text>Dodateиnй souибstky rбmu zvyљujн sнlu exoskeletu.</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle">
+		<text>Zesilujнcн servomotory</text>
+	</string>
+	<string id="st_upg_powered_servo_motor_battle_descr">
+		<text>Vyљљн elektrickэ proud zvyљuje vэkon servomotorщ.</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk">
+		<text>Monitorovбnн kombinйzy</text>
+	</string>
+	<string id="st_upg_psy_shielding_stalk_descr">
+		<text>Komplexnн systйm monitorovacнch kabelщ poskytuje omezenou psychickou ochranu.</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk">
+		<text>Uzavшenэ dэchacн modul</text>
+	</string>
+	<string id="st_upg_recycle_breathing_sys_stalk_descr">
+		<text>Recirkulaиnн systйm se sбm starб o иiљtмnн kontaminovanйho vzduchu.</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk">
+		<text>Odlehиovacн kombinйza</text>
+	</string>
+	<string id="st_upg_relax_suit_stalk_descr">
+		<text>Dнky elastickэm tkaninбm tйto kombinйzy vydrћн jejн majitel vнce tмlesnйho tlaku.</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt">
+		<text>Zabudovanй hledн 1,6x</text>
+	</string>
+	<string id="st_upg_scope_1_6x_opt_descr">
+		<text>1,6nбsobnй hledн minimбlnм omezuje stшelcovo pole viditelnosti, a je tudнћ ideбlnн pro ъtoиnй akce.</text>
+	</string>
+	<string id="st_upg_scope_4x_opt">
+		<text>Zabudovanй hledн 4x</text>
+	</string>
+	<string id="st_upg_scope_4x_opt_descr">
+		<text>Se 4nбsobnм zvмtљujнcнm hledнm se z kaћdй zbranм stбvб odstшelovaиka.</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle">
+		<text>Syntetickй zahuљќovadlo</text>
+	</string>
+	<string id="st_upg_sintetic_pillow_battle_descr">
+		<text>Tato zahuљќovacн tkanina se nosн pod neprщstшelnou vestou a efektivnм sniћuje zranмnн.</text>
+	</string>
+	<string id="st_upg_slice_leather_battle">
+		<text>Vloћky z tvrzenй kщћe</text>
+	</string>
+	<string id="st_upg_slice_leather_battle_descr">
+		<text>Ибsteиnм zmнrтujн nбrazy kulek.</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk">
+		<text>Zvlбљtnн nбstшik</text>
+	</string>
+	<string id="st_upg_spec_coating_stalk_descr">
+		<text>Tento nбstшik na bбzi speciбlnнho roztoku vyrobenйho z materiбlщ ze Zуny poskytuje ochranu pшed ohnмm a elektrickэmi anomбliemi.</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle">
+		<text>Vesta Spectra</text>
+	</string>
+	<string id="st_upg_spectra_body_armor_battle_descr">
+		<text>Tato vyztuћenб armбdnн neprщstшelnб vesta poskytuje ochranu pшed vэstшely z ъtoиnэch puљek.</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle">
+		<text>Zaшнzenн pro noиnн vidмnн, druhб generace</text>
+	</string>
+	<string id="st_upg_upgrade_night_vision_battle_descr">
+		<text>Noиnн vidмnн druhй generace nabнzн jasnмjљн obraz s menљнm mnoћstvнm љumu.</text>
+	</string>
+	<string id="st_upgr_ammunition">
+		<text>munice</text>
+	</string>
+	<string id="st_upgr_condlist">
+		<text>ћбdnб data o modifikacнch</text>
+	</string>
+	<string id="st_upgr_cost">
+		<text>Cena</text>
+	</string>
+	<string id="st_upgr_disable">
+		<text>Nelze nainstalovat</text>
+	</string>
+	<string id="st_upgr_enough_money">
+		<text>nedostatek penмz:</text>
+	</string>
+	<string id="st_upgr_group">
+		<text>Tato komponenta jiћ byla modifikovбna</text>
+	</string>
+	<string id="st_upgr_installed">
+		<text>Nainstalovбno</text>
+	</string>
+	<string id="st_upgr_parents">
+		<text>K nainstalovбnн jsou zapotшebн i jinй modifikace</text>
+	</string>
+	<string id="st_upgr_rpm_lowered">
+		<text>Snнћenб kadence</text>
+	</string>
+	<string id="st_upgrade_install">
+		<text>Opravdu si pшejeљ nainstalovat:</text>
+	</string>
+</string_table>

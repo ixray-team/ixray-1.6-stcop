@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="cant_walk">
+		<text>Jesteњ zbyt wyczerpany, їeby iњж.</text>
+	</string>
+	<string id="cant_walk_weight">
+		<text>Jesteњ zbyt obci№їony, їeby iњж dalej.</text>
+	</string>
+	<string id="car_character_use">
+		<text>Otwуrz drzwi ($$ACTION_USE$$).</text>
+	</string>
+	<string id="character_use">
+		<text>Rozmawiaj ($$ACTION_USE$$).</text>
+	</string>
+	<string id="dead_character_use">
+		<text>Przeszukaj ciaіo ($$ACTION_USE$$).</text>
+	</string>
+	<string id="dead_character_use_or_drag">
+		<text>Przeszukaj ciaіo ($$ACTION_USE$$). \n Wlecz ciaіo (SHIFT+$$ACTION_USE$$).</text>
+	</string>
+	<string id="general_complete_task">
+		<text>Zadanie wykonane:</text>
+	</string>
+	<string id="general_fail_task">
+		<text>Zadanie nie powiodіo siк:</text>
+	</string>
+	<string id="general_in_item">
+		<text>Otrzymany przedmiot:</text>
+	</string>
+	<string id="general_in_money">
+		<text>Otrzymane pieni№dze:</text>
+	</string>
+	<string id="general_new_task">
+		<text>Nowe zadanie:</text>
+	</string>
+	<string id="general_out_item">
+		<text>Utracony przedmiot:</text>
+	</string>
+	<string id="general_out_money">
+		<text>Utracona kasa:</text>
+	</string>
+	<string id="general_reverse_task">
+		<text>Zadanie anulowane:</text>
+	</string>
+	<string id="general_update_task">
+		<text>Nowe informacje o zadaniu:</text>
+	</string>
+	<string id="gun_jammed">
+		<text>Broс siк zaciкіa. Musisz przeіadowaж.</text>
+	</string>
+	<string id="inventory_box_use">
+		<text>Przeszukaj ($$ACTION_USE$$).</text>
+	</string>
+	<string id="inventory_item_use">
+		<text>Weџ przedmiot ($$ACTION_USE$$).</text>
+	</string>
+	<string id="level_changer_invitation">
+		<text>Przejњж w inne miejsce?</text>
+	</string>
+	<string id="physic_shell_use">
+		<text>Przesuс obiekt ($$ACTION_USE$$).</text>
+	</string>
+	<string id="st_autosave">
+		<text>Autozapis</text>
+	</string>
+	<string id="st_codelock">
+		<text>Zamek szyfrowy ($$ACTION_USE$$).</text>
+	</string>
+	<string id="st_demo_play">
+		<text>WERSJA ROBOCZA</text>
+	</string>
+	<string id="st_found_new_pda">
+		<text>Zdobyte informacje:</text>
+	</string>
+	<string id="st_game_over">
+		<text>Koniec gry</text>
+	</string>
+	<string id="st_game_over_press_jump">
+		<text>Wciњnij ($$ACTION_JUMP$$), їeby wyjњж do menu gіуwnego.</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pauza</text>
+	</string>
+	<string id="st_game_saved">
+		<text>gra zapisana</text>
+	</string>
+	<string id="st_helmet_countdown">
+		<text>Wyі№czenie ochrony</text>
+	</string>
+	<string id="st_psy_danger">
+		<text>Krytyczny poziom emisji psionicznych. Natychmiast opuњж niebezpieczn№ strefк.</text>
+	</string>
+	<string id="st_radiation_danger">
+		<text>Niebezpieczny poziom promieniowania. Їeby przejњж, konieczna jest ochrona.</text>
+	</string>
+	<string id="st_search_treasure">
+		<text>Przeszukaj schowek ($$ACTION_USE$$).</text>
+	</string>
+	<string id="st_tip">
+		<text>Wiadomoњж</text>
+	</string>
+	<string id="tip_car_locked">
+		<text>Zablokowane</text>
+	</string>
+	<string id="tip_car_use">
+		<text>Otwуrz drzwi ($$ACTION_USE$$).</text>
+	</string>
+	<string id="tip_door_blocked">
+		<text>Drzwi zablokowane</text>
+	</string>
+	<string id="tip_door_close">
+		<text>Wciњnij ($$ACTION_USE$$), їeby zamkn№ж drzwi.</text>
+	</string>
+	<string id="tip_door_coded">
+		<text>Drzwi s№ zamkniкte na zamek szyfrowy.</text>
+	</string>
+	<string id="tip_door_decode">
+		<text>Wciњnij ($$ACTION_USE$$), їeby otworzyж zamek szyfrowy..</text>
+	</string>
+	<string id="tip_door_decoding">
+		<text>Trwa otwieranie zamka szyfrowego.</text>
+	</string>
+	<string id="tip_door_locked">
+		<text>Drzwi s№ zamkniкte.</text>
+	</string>
+	<string id="tip_door_open">
+		<text>Wciњnij ($$ACTION_USE$$), їeby otworzyж drzwi.</text>
+	</string>
+	<string id="tip_gate_close">
+		<text>Wciњnij ($$ACTION_USE$$), їeby zamkn№ж bramк.</text>
+	</string>
+	<string id="tip_gate_locked">
+		<text>Brama jest zablokowana.</text>
+	</string>
+	<string id="tip_gate_open">
+		<text>Wciњnij ($$ACTION_USE$$), їeby otworzyж bramк.</text>
+	</string>
+	<string id="tip_grate_blocked">
+		<text>Krata zablokowana</text>
+	</string>
+	<string id="tips_agroprom_undeground">
+		<text>Potrzebne zezwolenie na wejњcie.</text>
+	</string>
+	<string id="tips_kran_press">
+		<text>Obrуж dџwig ($$ACTION_USE$$).</text>
+	</string>
+	<string id="tips_radio_tower">
+		<text>Przeњlij wiadomoњж przez radio ($$ACTION_USE$$).</text>
+	</string>
+	<string id="tips_red_dynamit_undeground">
+		<text>Wі№cz detonator ($$ACTION_USE$$).</text>
+	</string>
+	<string id="tips_secret_strelka">
+		<text>Schowek Strieloka ($$ACTION_USE$$).</text>
+	</string>
+	<string id="mar_disabled_level_changer">
+		<text>Nie moїesz chodziж po moczarach bez przewodnika.</text>
+	</string>
+	<string id="shooting_fire">
+		<text>Ognia!</text>
+	</string>
+	<string id="shooting_round_over">
+		<text>Koniec rundy! Wracaj do mistrza.</text>
+	</string>
+	<string id="shooting_time_left">
+		<text>Pozostaіy czas:</text>
+	</string>
+	<string id="shooting_your_count">
+		<text>Trafione cele:</text>
+	</string>
+	<string id="shooting_your_points">
+		<text>Twуj wynik:</text>
+	</string>
+	<string id="shooting_your_time">
+		<text>Twуj czas:</text>
+	</string>
+	<string id="st_agru_warning_go_out">
+		<text>Opuњж niebezpieczny obszar!</text>
+	</string>
+	<string id="st_agru_warning_time_left">
+		<text>Czas do zalania:</text>
+	</string>
+	<string id="tips_agroprom_undeground2">
+		<text>Podziemia zalane</text>
+	</string>
+	<string id="level_changer_disabled">
+		<text>Nie potrafisz odszukaж dalszej drogi.</text>
+	</string>
+	<string id="tips_tranformer_off">
+		<text>Dezaktywuj generator ($$ACTION_USE$$)</text>
+	</string>
+	<string id="ui_st_mp_experience_grow">
+		<text>Uwaga: Rozgrywka moїe ulec zmianie podczas gry online.</text>
+	</string>
+	<string id="renegade">
+		<text>Renegaci</text>
+	</string>
+	<string id="agru_cs_warning">
+		<text>UWAGA! NALEЇY NATYCHMIAST OPUЊCIЖ NIEBEZPIECZNY OBSZAR</text>
+	</string>
+</string_table>

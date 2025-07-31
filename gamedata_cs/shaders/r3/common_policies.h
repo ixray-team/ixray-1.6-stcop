@@ -6,6 +6,12 @@
 #define ISAMPLE 0
 #endif	//	ISAMPLE
 
+//	redefine sample index
+#ifdef 	MSAA_OPTIMIZATION
+#undef	ISAMPLE
+#define ISAMPLE	iSample
+#endif	//	MSAA_OPTIMIZATION
+
 /////////////////////////////////////////////////////////////////////////////
 // GLD_P - gbuffer_load_data
 #ifdef	GBUFFER_OPTIMIZATION

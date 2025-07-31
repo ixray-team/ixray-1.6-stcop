@@ -5,7 +5,11 @@
 #define SUN_FARPLANE 100.f
 
 #ifdef USE_SUNFILTER
+#ifdef MSAA_OPTIMIZATION
+float4 main( v2p_TL2uv I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
+#else
 float4 main( v2p_TL2uv I  ) : SV_Target
+#endif
 {
 //  float4 	_P	= tex2D 	(s_position, 	tc);
 
@@ -26,7 +30,11 @@ float4 main( v2p_TL2uv I  ) : SV_Target
 	return 	s	;
 }
 #else
+#ifdef MSAA_OPTIMIZATION
+float4 main ( v2p_TL2uv I, uint iSample : SV_SAMPLEINDEX ) : SV_Target
+#else
 float4 main ( v2p_TL2uv I ) : SV_Target
+#endif
 {
 //  float4 _P		= tex2D 	(s_position, 	tc);
 //  float4  _N		= tex2D 	(s_normal,   	tc);

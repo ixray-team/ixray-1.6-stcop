@@ -3,7 +3,7 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 	local npc = who_is_npc(first_speaker, second_speaker)
 	local npc_id = npc:id()
 
-	if npc:clsid() == clsid.script_trader then return true end
+	if npc:clsid() == clsid.script_trader then return false end
 
 	local st = db.storage[npc_id].meet
 
@@ -42,19 +42,19 @@ function get_money_then_leave(first_speaker, second_speaker)
 end
 
 function is_wounded(first_speaker, second_speaker, dn)
-    if db.storage[first_speaker:id()].wounded ~= nil and
-       db.storage[first_speaker:id()].wounded.wound_manager.can_use_medkit == true
-    then
-        return false
-    end
+		if db.storage[first_speaker:id()].wounded ~= nil and
+			 db.storage[first_speaker:id()].wounded.wound_manager.can_use_medkit == true
+		then
+				return false
+		end
 	return xr_wounded.is_wounded(first_speaker)
 end
 function is_opp_wounded(first_speaker, second_speaker, dialog_id)
-    if db.storage[second_speaker:id()].wounded ~= nil and
-       db.storage[second_speaker:id()].wounded.wound_manager.can_use_medkit == true
-    then
-        return false
-    end
+		if db.storage[second_speaker:id()].wounded ~= nil and
+			 db.storage[second_speaker:id()].wounded.wound_manager.can_use_medkit == true
+		then
+				return false
+		end
 	return	xr_wounded.is_wounded(second_speaker)
 end
 function is_not_wounded(first_speaker, second_speaker, dn)
@@ -62,8 +62,8 @@ function is_not_wounded(first_speaker, second_speaker, dn)
 end
 function actor_have_medkit(first_speaker, second_speaker)
 	return first_speaker:object("medkit") ~= nil or
-		   first_speaker:object("medkit_army") ~= nil or
-		   first_speaker:object("medkit_scientic") ~= nil
+			 first_speaker:object("medkit_army") ~= nil or
+			 first_speaker:object("medkit_scientic") ~= nil
 end
 function actor_hasnt_medkit(first_speaker, second_speaker)
 	return actor_have_medkit(first_speaker, second_speaker) == false
@@ -109,7 +109,7 @@ function relocate_item_section(victim, section, type, amount)
 					victim:transfer_item(victim:object(section), db.actor)
 				else
 					alife():create(section,
-						    db.actor:position(),
+								db.actor:position(),
 							db.actor:level_vertex_id(),
 							db.actor:game_vertex_id(),
 							db.actor:id())
@@ -422,9 +422,9 @@ end
 --------------------------------------------------------------------------------
 function transfer_any_pistol_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_pistol, npc)
+		db.actor:iterate_inventory(is_pistol, npc)
 	if(db.actor.pistol~=nil) then
-	    db.actor:transfer_item(db.actor:object(db.actor.pistol), npc)
+			db.actor:transfer_item(db.actor:object(db.actor.pistol), npc)
 		news_manager.relocate_item(db.actor, "out", db.actor.pistol)
 		db.actor.pistol = nil
 	end
@@ -447,7 +447,7 @@ end
 
 function have_actor_any_pistol(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_pistol, npc)
+		db.actor:iterate_inventory(is_pistol, npc)
 	if(db.actor.pistol~=nil) then
 		return true
 	else
@@ -458,9 +458,9 @@ end
 --------------------------------------------------------------------------------
 function transfer_any_gun_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_gun, npc)
+		db.actor:iterate_inventory(is_gun, npc)
 	if(db.actor.gun~=nil) then
-	    db.actor:transfer_item(db.actor:object(db.actor.gun), npc)
+			db.actor:transfer_item(db.actor:object(db.actor.gun), npc)
 		news_manager.relocate_item(db.actor, "out", db.actor.gun)
 		db.actor.gun = nil
 	end
@@ -480,7 +480,7 @@ end
 
 function have_actor_any_gun(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_gun, npc)
+		db.actor:iterate_inventory(is_gun, npc)
 	if(db.actor.gun~=nil) then
 		return true
 	else
@@ -491,9 +491,9 @@ end
 --------------------------------------------------------------------------------
 function transfer_any_shootgun_from_actor(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_shootgun, npc)
+		db.actor:iterate_inventory(is_shootgun, npc)
 	if(db.actor.shootgun~=nil) then
-	    db.actor:transfer_item(db.actor:object(db.actor.shootgun), npc)
+			db.actor:transfer_item(db.actor:object(db.actor.shootgun), npc)
 		news_manager.relocate_item(db.actor, "out", db.actor.shootgun)
 		db.actor.shootgun = nil
 	end
@@ -511,7 +511,7 @@ end
 
 function have_actor_any_shootgun(first_speaker, second_speaker)
 	local npc = who_is_npc(first_speaker, second_speaker)
-    db.actor:iterate_inventory(is_shootgun, npc)
+		db.actor:iterate_inventory(is_shootgun, npc)
 	if(db.actor.shootgun~=nil) then
 		return true
 	else

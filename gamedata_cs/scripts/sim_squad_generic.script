@@ -350,13 +350,24 @@ function sim_squad_generic:on_npc_death(npc)
 	if self.npc_count == 0 then
 		printf("REMOVING DEAD SQUAD %s", tostring(self.squad_id))
 		--' Если игрок был с квестом от отряда - фейлить его
+		print_table(self.random_tasks)
 		for k,v in pairs(self.random_tasks) do
 			local task = tm:get_task_by_entity_id(v)
-			--printf("failing task %s status %s", tostring(task.id), tostring(task.status) )
-			if task.status == "selected" then
-				if task.type ~= "recover_item" then
-					task.last_check_task = "fail"
-				end	
+			if task == nil then
+            	self.random_tasks[k] = nil
+			else
+				printf("failing task [%s] e_i [%s] status [%s]", tostring(task.base_id), tostring(task.entity_id), tostring(task.status))
+	            if task.status == "selected" then
+					if task.type == "recover_item" then
+						if task.squad_id == self.squad_id then
+		                    task.last_check_task = "fail"
+						else
+			            	self.random_tasks[k] = nil
+						end
+					else
+                        task.last_check_task = "fail"
+					end
+	            end
 			end
 		end
 
@@ -393,6 +404,14 @@ function sim_squad_generic:assign_smart(smart)
 
 			if smart ~= nil then
 				smart:register_npc(obj)
+			end
+		else
+			self.squad_npc[k] = nil
+			if self.commander_id == k then
+				for kk,vv in pairs(self.squad_npc) do
+					self.commander_id = kk
+					break
+				end
 			end
 		end
 	end
@@ -1360,12 +1379,21 @@ function sim_attack_point:make()
 	squad.current_action = self
 
 	--' Пересчитываем Team, Squad, Group
+	--' Пересчитываем Team, Squad, Group
 	for k,v in pairs(squad.squad_npc) do
 		local obj = alife():object(k)
-		self.board:setup_squad_and_group(obj)
-
-		-- Говорим членам отряда принудительно обновить работы.
-		src_smart:update_jobs(obj)
+		if obj ~= nil then
+			self.board:setup_squad_and_group(obj)
+			src_smart:update_jobs(obj)
+		else
+			squad.squad_npc[k] = nil
+			if squad.commander_id == k then
+				for kk,vv in pairs(squad.squad_npc) do
+					squad.commander_id = kk
+					break
+				end
+			end
+		end
 	end
 
 	squad.last_action_timer = game.get_game_time()

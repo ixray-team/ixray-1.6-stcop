@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_antirad">
+		<text>Protiradiaиnн lйky</text>
+	</string>
+	<string id="st_antirad_descr">
+		<text>Balниek pilulek s aktivnнmi souибstmi, kterй dokбћн zrychlit vyluиovбnн radioaktivnнch prvkщ z tмla. Nechrбnн tмlo pшed radiacн, pouze sniћujн obdrћenou radiaиnн dбvku.</text>
+	</string>
+	<string id="st_bread">
+		<text>Chleba</text>
+	</string>
+	<string id="st_bread_descr">
+		<text>Tмћko шнct, komu se daшн v Zуnм pйct chleba, ale nenн kontaminovanэ a dб se jнst. Alespoт si zatнm ћбdnэ ze stalkerщ nestмћoval.</text>
+	</string>
+	<string id="st_conserva">
+		<text>"Turistova snнdanм"</text>
+	</string>
+	<string id="st_conserva_descr">
+		<text>Konzervovanй jнdlo z armбdnнho skladiљtм uloupenй stalkery. Doba zбruиnн lhщty jeљtм nevyprљela, pokud se tomu инslu tedy dб vмшit.</text>
+	</string>
+	<string id="st_kolbasa">
+		<text>Dietnн pбrek</text>
+	</string>
+	<string id="st_kolbasa_descr">
+		<text>Dietnн pбrek z kuшecнho masa a sуji je иasto dнky nedostatku dalљнch moћnostн stalkerova snнdanм, obмd i veиeшe.</text>
+	</string>
+	<string id="st_medkit">
+		<text>Lйkбrniиka</text>
+	</string>
+	<string id="st_medkit_descr">
+		<text>Univerzбlnн lйkбrniиka. Pouћнvб se pro oљetшovбnн rщznэch druhщ zranмnн, spбlenin, otrav a podobnм.</text>
+	</string>
+	<string id="st_medkit_army">
+		<text>Armбdnн lйkбrniиka</text>
+	</string>
+	<string id="st_medkit_army_descr">
+		<text>Lйkбrniиka specializovanб na lйиenн vбћnэch fyzickэch zranмnн a ztrбty krve. Obsahuje lйиiva pro zvэљenн srбћlivosti krve, antibiotika, stimulбtory a anestetika.</text>
+	</string>
+	<string id="st_medkit_science">
+		<text>Vмdeckб lйkбrniиka</text>
+	</string>
+	<string id="st_medkit_science_descr">
+		<text>Lйkбrniиka vytvoшenб speciбlnм pro pobyt v Zуnм. Obsahuje lйиiva na oљetшovбnн zranмnн i protiradiaиnн lбtky, zabraтujнcн vzniku nemoci z ozбшenн a sniћuje ъroveт ozбшenн organismu.</text>
+	</string>
+	<string id="st_vodka">
+		<text>Vodka Cossacks</text>
+	</string>
+	<string id="st_vodka_descr">
+		<text>Vodka vyrбbмnб firmou GSC. Je jemnб a znaиnм sniћuje ъиinek radiace, ale z pochopitelnэch dщvodщ by se takovб prevence nemмla pшehбnмt.</text>
+	</string>
+	<string id="st_bandage">
+		<text>Obvaz</text>
+	</string>
+	<string id="st_bandage_descr">
+		<text>Obvazy. Pomбhajн zastavit krvбcenн.</text>
+	</string>
+	<string id="st_energy_drink">
+		<text>Energy drink</text>
+	</string>
+	<string id="st_energy_drink_descr">
+		<text>Stalkeшi tento drink иasto pijн v pшнpadech, ћe se nemщћou zastavit a odpoиinout si. Drink obsahuje snadno stravitelnй cukry a takй lбtky podporujнcн produkci adrenalinu.</text>
+	</string>
+	<string id="st_detector1">
+		<text>Detektor "Echo"</text>
+	</string>
+	<string id="st_detector1_descr">
+		<text>Zaшнzenн pro detekci anomбliн a poruch se zabudovanэm geigerovэm poинtaиem. Upozorтuje na pшнtomnost anomбliн zvukovэm signбlem. Dokбћe takй odhalit pшнtomnost artefaktщ a vzdбlenost k nejbliћљнmu. Zavшenй zaшнzenн pouze registruje radiaci a anomбlie. Pro pшepnutн do reћimu hledбnн artefaktщ je nutnй otevшнt pшednн panel zaшнzenн.</text>
+	</string>
+	<string id="st_detector2">
+		<text>Detektor "Bear"</text>
+	</string>
+	<string id="st_detector2_descr">
+		<text>Zaшнzenн pro detekci anomбliн a poruch, se zabudovanэm geigerovэm poинtaиem. Upozorтuje na pшнtomnost anomбliн zvukovэm signбlem. Dokбћe takй odhalit pшнtomnost artefaktщ a kromм vzdбlenosti k nejbliћљнmu takй ukбzat smмr. Zavшenй zaшнzenн pouze registruje radiaci a anomбlie. Pro pшepnutн do reћimu hledбnн artefaktщ je nutnй otevшнt pшednн panel zaшнzenн.</text>
+	</string>
+	<string id="st_detector3">
+		<text>Detektor "Veles"</text>
+	</string>
+	<string id="st_detector3_descr">
+		<text>Nejmodernмjљн detektor urиenэ pшedevљнm pro hledбnн artefaktщ. Jejich pozice se zobrazuje na speciбlnнm displeji. Zaшнzenн je vybaveno i geigerovэm poинtaиem a dokбћe varovat pшed pшнtomnostн anomбliн. Zavшenй zaшнzenн pouze registruje radiaci a anomбlie. Pro pшepnutн do reћimu hledбnн artefaktщ je nutnй otevшнt pшednн panel zaшнzenн.</text>
+	</string>
+	<string id="st_cordon_case">
+		<text>Stшнbrnб skшнnka</text>
+	</string>
+	<string id="st_cordon_case_descr">
+		<text>Malб skшнnka uzamиenб na kуd. Obsahuje cennй informace o dщvмryhodnэch pшekupnнcнch, kterэm je moћnй prodбvat artefakty.</text>
+	</string>
+	<string id="st_fang_pda">
+		<text>Tesбkovo PDA</text>
+	</string>
+	<string id="st_fang_pda_descr">
+		<text>Kapesnн PC, v Zуnм pouћнvбno jako zбpisnнk, navigaиnн a komunikaиnн zaшнzenн a diktafon. Kaћdй PDA mб unikбtnн ID, kterй je moћnй sledovat.</text>
+	</string>
+	<string id="st_shukin_pda">
+		<text>Lingovo PDA</text>
+	</string>
+	<string id="st_shukin_pda_descr">
+		<text>Kapesnн PC, v Zуnм pouћнvбno jako zбpisnнk, navigaиnн a komunikaиnн zaшнzenн a diktafon. Kaћdй PDA mб unikбtnн ID, kterй je moћnй sledovat.</text>
+	</string>
+	<string id="st_recorder">
+		<text>Diktafon</text>
+	</string>
+	<string id="st_cooler_docs">
+		<text>Popis chladicнho zaшнzenн.</text>
+	</string>
+	<string id="st_cooler_docs_descr">
+		<text>Soubor obsahuje detailnн popisy a nбvody k ovlбdбnн chladicнho systйmu umнstмnйho v tovбrnм.</text>
+	</string>
+	<string id="st_compass">
+		<text>"Kompas"</text>
+	</string>
+	<string id="st_compass_descr">
+		<text>Vzбcnэ artefakt, takovэ byl nalezen jen pшed nмkolika lety. Dokбћe lokalizovat dнry mezi polemi anomбliн a v podstatм tak funguje jako kompas. Teoreticky by se s nнm mмlo dбt prochбzet i velmi sloћitэmi anomбliemi bez nebezpeин. Ale jen mбlokdo vн, jak s nнm zachбzet.</text>
+	</string>
+	<string id="st_guitar_descr">
+		<text>Sedmistrunnб kytara</text>
+	</string>
+	<string id="st_guitar_name">
+		<text>Kytara</text>
+	</string>
+</string_table>

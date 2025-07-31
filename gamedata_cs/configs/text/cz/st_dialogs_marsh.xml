@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="mar_csky_leader_intro_dialog_0">
+		<text>Vнtej zpбtky ve svмtм ћivэch, stalkere. Jak se cнtнљ?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_2">
+		<text>Pamatujeљ si, co se ti stalo?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_4">
+		<text>Mбљ chuќ vtipkovat, co? Vypadб to, ћe se brzo vzpamatujeљ. Jsem Lebedмv, vedoucн skupiny, a jsem tady za vљechny zodpovмdnэ... a to vиetnм tebe, dokud jsi tady. Шнkбme si Jasnб obloha a ty jsi teп v naљн zбkladnм. Sebrali jsme tм v baћinм chvнli po emisi...</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_6">
+		<text>Љtмstн? Hm... pochybuju. Fakty jsou tyhle: pшeћil jsi emisi. To je prvnн vмc, kterou nedokбћu vysvмtlit. Za druhй: naљe hlнdka tм naљla v baћinм, coћ je v podstatм nekoneиnэ lбn pohyblivэch pнskщ. A za tшetн: mбlem tм rozervali na kusy pseudopsi, ale naљi chlapi se k tobм dostali vиas. Takovэ sled udбlostн podle mм znamenб, ћe to nenн jen љtмstн. Ale co, musнm dokonиit, co prбvм dмlбm, takћe v tomhle hovoru budeme pokraиovat pozdмji.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_0">
+		<text>Nazdar! Zatнmco jsi byl venku, stala se z tebe skoro legenda - ani ty sбm bys nevмшil nмkterэm vмcem, kterй jsem slyљel... ha! Ale co, pro takovэho љќastlivce mбme drink na ъиet podniku! Aspoт se trochu zrelaxujeљ a povyprбvнљ mi o svэch pшнhodбch, protoћe umнrбm zvмdavostн!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_2">
+		<text>Tak jo, napij se a jб ti o tom nмco шeknu. Dшнv tady bejval celkem klid - mмli jsme vyљlapanй cestiиky, prozkoumanэ ty sprбvnэ mнsta a pшнstup pokrytэ. Samozшejmм baћiny nejsou zrovna materiбl prvnн tшнdy, ale nebylo to zas tak љpatnэ. Jo, nebylo to љpatnэ, aћ do poslednн emise - nejvмtљн, jakou jsme tady vidмli. V poslednн dobм se chlapi modlej k bohovi i ke vљem иertщm vћdycky, neћ vystrиej nos ze zбkladny, protoћe vrбtit se ћivej, to je pomalu zбzrak! Ale zatнm se drћнme pohromadм, protoћe chlapi tady nejsou kvщli prachщm, bojujou za dobrou vмc...</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_4">
+		<text>Sbнral jsem flaљky, jednu za druhou, a to mм pшivedlo sem... hahaha! Dмlбm si prdel! Pravda je, ћe venku pro mм prostм nenн mнsto, svмt mм nechce. Tak jsem nakonec pшiљel sem... nejdшнv do Zуny a pak k Jasnэ obloze. Chlapi jsou v pohodм, a potшebujou mм tady. Vrбtмj se z mise, jб jim naleju drink, шeknu pбr sprostejch vtipщ a hned je lнp - je to jednoduchэ, ale funguje to. Mimochodem, шнkaj mi Mrбz. </text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_6">
+		<text>V naљн zбkladnм. Jak vidнљ, je to malб, rozpadajнcн se farma uprostшed romantickэch nekoneиnэch baћin. Nemщћu ti шнct, kde to pшesnм je, ale je to poslednн mнsto v Zуnм, kde mщћeљ potkat opravdovэ lidi: chlapi, kteшн s tebou nevyjebou, nebodnou tм do zad nebo tм nenechajн vykrvбcet, jen aby uљetшili lйkбrniиku!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_8">
+		<text>Vнљ, proи jsi o tom nikdy neslyљel? Protoћe o nбs chce vмdмt aћ moc lidн a инm vнc opravdu vн, tнm lнp! \nLebedмv je nбљ љйf - ten chlap je tvrdej jako skбla. Lepidlo, kterэ drћн celou partu pohromadм. \nPak tady mбme Beanpoleva, profesora Beanpoleva. Ten je jako chodнcн encyklopedie zkшнћenб s kalkulaиkou, vн o Zуnм vнc neћ... no, kdokoli... \nNбљ technik se jmenuje Љedivбk, dokбћe udмlat bouchaиku i s nбbojema z prбzdnэ plechovky. Moћnб by pouћil pбr souибstek, ale fakt jenom pбr... \nNo a nakonec Suslov. Je to kљeftaш, ale nenн jako ostatnн pшekupnнci. Nezkusн tм obrat nebo s tebou vydrbat - vн, co musн stalkeшi udмlat, aby se k svэ koшisti dostali, a respektuje to.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_1">
+		<text>Uћ asi celkem chбpeљ zбkladnн vмci, ale ostatnн potшebujou detailnмjљн vysvмtlenн. Zvlбљtnн fakt je to, ћe na tebe dvakrбt zapщsobila emise a tys to pшeћil. Samozшejmм jsi nebyl vystavenэ maximбlnн ъrovni emisн, jinak bys byl na mнstм mrtvэ, ale vypadб to, ћe dokбћeљ pшeћнt ъrovnм, kterй jsou pro ostatnн smrtнcн. To je struиnм shrnuto to, co se stalo.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_3">
+		<text>Je to pravda - nмkterй z tvэch schopnostн, jako pohybovй dovednosti, reakce a vэdrћ, se po emisi znaиnм zlepљily. Vypadб to, ћe emise dodala tvйmu tмlu energii... Ale ta krбtkodobб zvэљenб ъroveт je hned nбsledovanб prudkэm poklesem zdravн, coћ si zaћнvбљ prбvм teп. \nNo a nakonec ti mщћu шнct nмco, co uћ vнљ: emise niин tvщj nervovэ systйm. Pokud budou pokraиovat - zemшeљ. Nebo, coћ je jeљtм horљн, ztratнљ inteligenci a svй "jб".</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_5">
+		<text>Bohuћel ne. Nejlepљн, co pro tebe mщћu udмlat, je snнћit negativnн nбsledky emisн na tvй tмlo. Prбvм provбdнm sйrii testщ a aћ vэsledky potvrdн Lebedмv, budu moct provйst nezbytnй procedury. Ale rбd bych ti jeљtм jednou pшipomnмl, ћe to nenн vљelйk a problйm to nevyшeљн. Jenom zнskбљ trochu vнc иasu, neћ se tvщj nervovэ systйm zaиne rozpadat.</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_7">
+		<text>To je bohuћel vљe. Jedinб dalљн vмc, co pro tebe mщћu udмlat, je odpovмdмt ti na nмjakй otбzky.</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_1">
+		<text>Lidй se pletou ve svй vншe, ћe chбpou esenci toho, co pшedstavuje Zуnu. Nмkteшн ji povaћujн za univerzбlnн zlo, jinн za zбzrak seslanэ lidstvu, jinн zase jenom za zdroj bohatstvн... Vљichni se pletou. Zуnu nenн moћnй pochopit, pokud se na ni dнvбљ lidskэm vidмnнm. Navнc je pшнliљ brzo, neћ aby se o to lidй vщbec mohli pokouљet. Ergo jsou иiny vlбdy i stalkerщ s ohledem na Zуnu nerozumnй a jб se bojнm potenciбlnнch nбsledkщ, kterй by mohly... nebo spнљe kterй opravdu jsou naprosto nepшedvнdatelnй. To pochopitelnм pшedstavuje velikй nebezpeин...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_1">
+		<text>Mladнku, kdybych jen tuhle otбzku dokбzal odpovмdмt... pilnм studujeme Zуnu a doufбme, ћe to najdeme! \nZуna se objevila jako nбsledek иinщ... шнkejme jim tшeba "nerozumnй" lidskй иiny, a my teп nejsme schopnн navrбtit vљe do statu quo. Zуnu nenн moћnй zniиit ani sama o sobм nezmizн. My, Jasnб obloha, vмшнme, ћe jedinэm zpщsobem je spojit иlovмka se Zуnou: klниem je koexistence.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_3">
+		<text>Jak to jen nejlйpe vysvмtlit? Zkusнme to takhle: jakэkoli komplikovanэ systйm v pшнrodм, a to zahrnuje i Zуnu, v nepшнtomnosti destabilizujнcнch externнch elementщ automaticky mншн ke stavu rovnovбhy... A teп? Teп jsme zaћili gigantickou emisi, kterб zmмnila tvбш Zуny. Systйm se stal nestabilnн a naruљenэ... prostм doљlo k poruљe. Zуna vytvбшн emisi za emisн a pшi kaћdй se naplтuje energiн, tak moc, ћe ukazatele na mэch senzorech oscilujн neuvмшitelnou rychlostн! A pokud nenajdeme zpщsob, jak ten trend zvrбtit, nбsledkem mщћe bэt katastrofa nesrovnatelnм vмtљн neћ nehoda z roku 1986. \nNejdщleћitмjљн lekcн je vљak, ћe ta "chyba" nenн vэsledkem pшirozenэch procesщ. Je to prбce lidн...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_5">
+		<text>To se pokouљнme zjistit. Moћnб kdyћ zjistнme, kdo naruљil rovnovбhu Zуny, dostaneme tak љanci odvrбtit katastrofu.</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_7">
+		<text>Jelikoћ ten prщser zpщsobil иlovмk, moћnб je иlovмk jedinб sнla, kterб to zase mщћe dбt do poшбdku. Jб v to rozhodnм doufбm...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_9">
+		<text>Obбvбm se, ћe na tuhle otбzku nemбm odpovмп. Navrhuji, aby ses na to zeptal Lebedмva. </text>
+	</string>
+	<string id="mar_csky_doctor_hello_dialog_0">
+		<text>Rбd tм vidнm, mladнku. Vypadбљ mnohem lйpe.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1">
+		<text>Naneљtмstн ano. Takћe, pomщћeљ nбm?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_0">
+		<text>Nadэchal ses trochy иistйho vzduchu? No, vypadбљ lнp. \nШeknu ti nмco o situaci. \nJsi na zбkladnм Jasnэ oblohy. Nesnaћ se vzpomenout, kdo jsme - nikdy jsi o nбs neslyљel a mб to dobrэ dщvod. Naљнm cнlem je vэzkum Zуny. \nVмшнme, ћe Zуnu je potшeba studovat a pochopit, aby lidstvo vмdмlo, proti иemu tady stojн. Pochopenн je klниem ke koexistenci se Zуnou, protoћe kdyћ se nad tнm zamyslнљ, je Zуna ten nejъћasnмjљн fenomйn, na kterэ lidstvo za celou svou historii narazilo!</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_10">
+		<text>V poslednн dobм tady mбme celkem tvrdй иasy. Emise snнћila poиet anomбliн v baћinбch, dнky иemuћ je teп oblast snбz pшнstupnб banditщm a dalљнm mizerщm. Je jich tolik, ћe se brzy utбboшн pшнmo v naљн zбkladnм, pokud s tнm nмco neudмlбme! Ale problйm je, ћe my nejsme zrovna bojovб parta, takћe poшбd ztrбcнme ъzemн, ale ty... staин se na tebe podнvat a je vidмt, ћe jsi profнk! Tvoje zkuљenosti by mohly zachrбnit ћivoty spousty mэch chlapщ.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_2">
+		<text>Jak jsem шнkal: vэzkumnнci. Snaћнme se odhalit povahu Zуny, urиit, co ji vyvolalo, a zjistit pravidla, kterб шнdн jejн existenci. Nejdeme po penмzнch, nehledбme artefakty, nemбme zбjem o vбlky o ъzemн s ostatnнmi frakcemi. Proto se schovбvбme tady v baћinм a soustшeпujeme se na vэzkum. \nNaљн silnou strбnkou nenн boj, ale znalosti - znalosti Zуny, zнskanй za dlouhй roky vэzkumu. Vнme o nн vнc neћ stalkeшi a vlбda dohromady, a nбљ vэzkum se koneиnм zaиal blнћit k vytvoшenн jasnйho, rozumnйho celkovйho obrazu... aћ do masivnн emise pшed nмkolika dny...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_4">
+		<text>Ne, ta emise byla neuvмшitelnм silnб, nestaиila nбm na ni stupnice. Byla jako hurikбn, kterэ se prohnal celou Zуnou a zmмnil ji. Vљechno je jinak: znбmб a relativnм bezpeиnб mнsta jsou najednou silnм radioaktivnн a plnб anomбliн, ale teп je moћnй dostat se do ибstн Zуny, kterй byly lйta nepшнstupnй. Ani ti nejdrsnмjљн stalkeшi nevмdн, co je na jejich oblнbenй cestм иekб. \nA dalљн vмc, kterou zmмnila, jsou lidi. To se stalo zjevnэm hned. Emise zniиila kшehkou rovnovбhu mezi frakcemi a ty teп spolu bojujн o teritorium... \nJinэmi slovy, stala se spousta podivnэch vмcн a jб jeљtм poшбd nechбpu vљechny dщsledky tмch zmмn... od emise uplynulo teprve pбr dnн. No a podle mм je vщbec nejpodivnмjљн to, ћe jsi to dokбzal pшeћнt. </text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_6">
+		<text>Aha. Jak ti mщћu pomoct?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_8">
+		<text>Dostat se odsud nenн snadnй, to ani nбhodou. Baћiny jsou opravdovй bludiљtм z rбkosн a radioaktivnнho tekutйho pнsku, plnй hroznэch pшнљer a lidskэch zrщd... a opravdu nevнm, kdo z nich je ten horљн. Bezpeиnм tм mщћe provйst jenom cviиenэ prщvodce, mбme jich jenom pбr, chlapy, kterэm bych svмшil svщj ћivot bez zavбhбnн. Naneљtмstн to nenн tak snadnй, protoћe kdyћ tм nechбm jнt, nezщstane naљe pшнtomnost tady tajemstvнm dlouho.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_0">
+		<text>Zase jsi pшeћil emisi! Ani mм to nepшekvapuje! Naљi chlapi tм sebrali kousek od vмћe, kdyћ se to trochu uklidnilo. \nVнљ, Beanpolev mмl pravdu: na tebe prostм nemбme vмdeckй vysvмtlenн. Vмшн, ћe jsi zнskal... шeknмme "nezvyklй" schopnosti, kterй ti pomбhajн pшeћнt anomбlnн aktivity, kterй by kohokoli jinйho doslova rozervaly na atomy. A taky to vypadб, ћe nмco zvyљuje vэkon tvйho tмla hned v nмkolika oblastech, aћ na ъroveт, kdy ukazatele naљeho monitorovacнho zaшнzenн pшechбzн mimo stupnici. Poиkej, poиkej, nevzruљuj se tak. Vћdycky to mб nмjakэ hбиek: kaћdб emise niин tvщj nervovэ systйm a pokud to bude pokraиovat - zemшeљ.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_10">
+		<text>Mбљ pravdu, ale vнme, jak zabrбnit katastrofм a zastavit emise. A to uћ nмco znamenб...</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_12">
+		<text>Musнme zjistit, kdo byl v centru Zуny a zastavit je za KAЋDOU cenu.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_14">
+		<text>Mezi tebou a Zуnou existuje podivnй spojenн. Na jednu stranu tм kaћdб dalљн emise pomalu zabнjн. Na druhou stranu, pшeћijeљ v situacнch, kde jinн nemajн љanci. Mбm pocit, ћe tvй schopnosti, tvщj dar, prokletн, шнkej si tomu, jak chceљ, znamenб, ћe se mщћeљ dostat na mнsta, o kterэch se jinэm ani nesnн. A zrovna teп musнme jednat opravdu rychle.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_16">
+		<text>Vмdмl jsem, ћe se na to zeptбљ. Odpovмп je jednoduchб: pokud emise nezastavнme, tvщj nervovэ systйm pomalu shoшн a ty zemшeљ. Pomoz nбm a zachrбnнљ se. Jб vнm, znн to jako hlбљka ze љpatnйho filmu, ale opravdu nemбљ moc na vэbмr.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_2">
+		<text>Normбlnн emise je uvolnмnн energie akumulovanй v Zуnм, v podstatм vybitн, vэboj. Ale co se dмje teп, je nмco ъplnм jinйho! \nPodle mм zvyљujнcн se pravidelnost emisн je odpovмп Zуny na nмjakou vбћnou hrozbu, podobnм jako reaguje lidskэ imunitnн systйm. Je obtнћnй racionбlnм vysvмtlit koexistenci mezi lidmi a Zуnou. Zуna nбs v nмkterэch oblastech toleruje, ale do jinэch nбm zabraтuje pшнstup. To, co se nachбzн za Vypalovaиem a dбl smмrem k centru Zуny, je tabu, mнsto, kam stalkeшi nesmн. Myslнm, ћe nedбvnй udбlosti v Zуnм se vztahujн k faktu, ћe tabu nмkdo poruљil a dostal se pшes Vypalovaи mozku.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_4">
+		<text>Tмћko шнct. Pro odpovмп na tu otбzku bych potшeboval vмdмt, co je v centru Zуny. Podle nмkterэch Monolit, podle jinэch plniи pшбnн... ti jednoduљљн snн o hromadбch vzбcnэch artefaktщ... Sбm jsem kdysi v elektrбrnм byl, jako mladэ specialista, ale nevнm, co tam je teп. Ale mщћu s jistotou шнct, ћe se Vypalovaи neobjevil jen tak nбhodou. Zabraтuje v pшнstupu ke stшedu Zуny. Lidй se za Vypalovaи mozku prostм nemohou dostat.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_6">
+		<text>Nemyslel jsem si to aћ do velkй emise. Sakra, nikoho to nenapadlo. Ale pokud budeme povaћovat emise za obrannou reakci, pak je odpovмп jasnб: nмkdo se dostal pшes Vypalovaи a Zуna odpovмdмla emisн. A jelikoћ emise nepшestaly, tak ten nмkdo musн bэt poшбd naћivu. Zуna se ho snaћн dostat a pшitom zabнjн vљe ћivй.</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_8">
+		<text>O Zуnм toho vнm spoustu, ale nemщћu se s tebou podмlit o vљechno. V nмkterэch vмcech mi prostм budeљ muset vмшit. \nSystйm, jakэkoli systйm, potшebuje rovnovбhu. Zуna je teп nestabilnн a nestabilita se stбle zvмtљuje. Pokud nezastavнme ty neustбlй emise, stane se Zуna tak nestabilnн, ћe dojde k dalљн katastrofм. Coћ nбs pшivбdн k tomu, co dмlб Jasnб obloha - snaћнme se tй katastrofм zabrбnit.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_0">
+		<text>Dost kecщ! Doљlo k dalљнmu ъtoku na naљe postavenн... pomoz nбm ho odrazit! \nPokud ti to pomщћe v rozhodovбnн, jsou tam nмkteшн z chlapщ, kteшн tм zachrбnili. \nPamatujeљ si jeљtм, jak pшeћнt v Zуnм?</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_21">
+		<text>Vэbornм! Jdi k obchodnнkovi, on ti dб nмjakй zбkladnн vybavenн. A pak zamiш pшнmo k naљн pozici. Jakmile budeљ mimo zбkladnu, poslouchej mй rady, pokusнm se tм provйst tнm nejhorљнm.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_1">
+		<text>Podнvej se sбm. Nemбme moc vybavenн - je to skoro jako ћivot po atomovэ vбlce! Pokud se nбm nмco dostane do rukou, stejnм to brzy selћe a nбhradnн dнly tady prostм nejsou nebo stojн za hovno. Proto se snaћнm upravit, co mбm, a vyuћнt to jak nejlнp dokбћu... Minulej tejden jsem potшeboval udмlat rбdiovej pшijнmaи. Co myslнљ, ћe jsem pouћil jako zбklad? Jo, zatracenou ledniиku! Ha! Fakt nevнm, jestli se mбm smбt, nebo breиet...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_3">
+		<text>Jo, tady nenн nic moc, z иeho by mмlo smysl bejt odvбzanej. Nenн to jako Smeќбk... prej tam vyhrabali starэ sovмtskэ sklady! Po havбrce v иernobylskэ elektrбrnм tam poslali konvoje s kontaminovanejma vozidlama, vybavenнm a dalљнma krбmama... mysleli si, ћe uћ je to jen odpad, protoћe to bylo radioaktivnн. Ale to bylo tehdб! Dneska by to za radiaci ani nikdo neoznaиil, takћe je tam teп ъplnб zlatб horeиka. Stalkeшi se tam sbнhaj z celэ Zуny, aby si vyhrabali nмjakou koшist. Љkoda ћe se jen mбloco z toho dostane sem, jedinм ћe by Lebedмv poslal pбr chlapщ pro nмjakэ specifickэ souибstky...</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_5">
+		<text>Nic zvlбљtnнho. Opravuju a vylepљuju obleky a zbranм... V podstatм dмlбm vљechno, co je potшeba. Pokud potшebujeљ nмco opravit - pшijп za mnou. \nEh, kdybych se tak jen mohl dostat k nмjakэm souибstkбm, mohl bych chlapщm udмlat fakt hezkэ hraиky - zbranм, brnмnн, vybavenн - vytбhl bych to na ъplnм novou ъroveт! \nPamatuj, pokud narazнљ na nмco uћiteиnэho, pшines mi to sem a jб s tнm dokбћu zбzraky, uvidнљ.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_0">
+		<text>Vнtej, cizinиe ze vzdбlenэch zemн! Co pшinбљнљ? Kabelu praskajнcн ve љvech, naplnмnou exotickэmi zбzraky?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_10">
+		<text>Jo, jб vнm. No co, poslouchej, uћ jsem ti шekl vљechno, co potшebujeљ. Иas jsou penнze, takћe pokud chceљ obchodovat, hurб do toho, pokud ne, tak se uvidнme pozdмji.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_2">
+		<text>Jo, slyљel jsem tvщj pшнbмh. Шekl bych, ћe hlavnн na tom je jedna vмc, furt ћijeљ... vмci se daj snadno nahradit, pokud je ti Zуna pшнznivб. Tak co, budem obchodovat, nebo se jeљtм chceљ na nмco zeptat?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_4">
+		<text>Pшesnм takovн lidi jsme! Dalљнch patnбct minut ћivota nebo nбhradnн hlavu si koupit nemщћeљ, ale nбs obchodnнkщ je potшeba vљude. Dokonce i v Zуnм, dokonce i v baћinбch a podzemн. \nTo, ћe je Zуna pod zбmkem a armбda drћн vљechny cesty dovnitш i ven, je jen iluze. Mysli na to, dneska mщћeљ najнt artefakty a vzбcnй druhy ze Zуny na celйm svмtм, a stalkerщm nikdy nechybн konzervy, vodka, munice ani vybavenн - za to vљechno musн bэt nмkdo zodpovмdnэ, ne? No a ten nмkdo jsme my. Tady to nenн jako prodбvat kopнrovanэ cйdйиka na trћnici a rozhlнћet se, jestli uћ nepшiљla policejnн љќбra! \nTady je situace fakt jednoduchб: vnмjљн svмt mб zбjem o Zуnu a naopak, ale je to oficiбlnм zakбzanэ, omezovanэ a podobnм! A tak jsme tady my... starбme se, aby byly splnмny zбjmy vљech na obou stranбch a vљichni byli љќastnн. Mezi pшekupnнkama se vyprбvн vtip, ћe kdyћ na tebe nмkdo zamншн bouchaиkou, tak je nejlepљн zkusit ji od nмj koupit! </text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_6">
+		<text>Nebudem o tom mluvit! Nemбљ tuљenн, jak mм unavuje ty krбmy pшeprodбvat! Venku je tuna bмћnejch artefaktщ, ale ty nejlepљн kousky prochбzej tudy. A jб nemмl na skladм unikбtnн kousek uћ celэ vмky.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_8">
+		<text>Kdo vн? Moћnб stalkeшi uћ naљli vљechno, co se dб najнt... Sakra, dostat se za Vypalovaи, to by byl ъplnej sen. Slyљel jsem, ћe se tam dб sehnat dost artefaktщ, aby sis mohl ћнt pohodlnм do konce ћivota... pokud teda nechcнpneљ pшнmo tam. Je na иase, abychom se my pшekupnнci spojili, vyuћili naљe kontakty, a zkusili se pшes ten krбm dostat...</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_0">
+		<text>Koneиnм! Na, vezmi si tohle zбkladnн vybavenн - je urиenэ pro hlнdkovэ mise.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_2">
+		<text>Dostal jsem pшнkaz vydat ti nмjakэ vybavenн. Na otбzky nenн иas, chlapi tм potшebujou teп hned!</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111">
+		<text>Tak pozornм poslouchej. Vyuћili jsme vљechny svй kontakty v Zуnм. Dнky tomu jsme se dozvмdмli, ћe se jeden stalker vyptбval v Kordonu Sidoroviиe na celkem divnй souибstky. Vнc nemбme, ale je to stopa.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11111">
+		<text>Pшes baћiny, jak jinak? Ale pamatuj co jsem шнkal: po emisi se v oblasti objevila celб armбda nejrщznмjљнch љmejdщ. Teп tam ovlбdajн skoro vљechno, jsme v obleћenн, a to opravdu nepшehбnнm. Nehodlбm riskovat ћivoty svэch prщvodcщ, takћe neћ ti budem moct pomoct dostat se do Kordonu, musнme zнskat kontrolu nad baћinami. A na to budeme potшebovat tvou pomoc.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_211">
+		<text>No, jeљtм mбљ иas si to rozmyslet. Ale ne moc dlouho. Vraќ se, aћ budeљ pшipravenэ.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_11">
+		<text>Stav se za barmanem. Dej si drink a pak se vraќ. Teп nemб smysl se s tebou bavit, vypadбљ, jako by se ti v mozku pohrabal kontrolйr. </text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_21">
+		<text>Co tady jeљtм dмlбљ? Hned si jdi za Suslovem pro vybavenн!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_31">
+		<text>Mбљ vybavenн? Tak pшestaт plэtvat иasem a zamiш k opevnмnн, pronto!</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_41">
+		<text>Pomoct nбm je v tvйm zбjmu. Pokud pochopitelnм nechceљ strбvit zbytek ћivota jako tмlo bez mozku.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_91">
+		<text>Tak mluv.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_11">
+		<text>Asi bys mмl jнt za Lebedмvem, nevolб lidi jen tak pro nic za nic.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_21">
+		<text>Teп nenн vhodnej иas na rozmluvu, kбmo. Copak jsi to neslyљel? Zaъtoиili na druhэ postavenн. Co kdybys jim љel pomoct, co?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_31">
+		<text>No nazdar, pane "dvм emise a jб jsem furt na nohбch"! Myslнm, ћe si s tebou chtмl promluvit Lebedмv. Tak co kdyby ses za nнm stavil, neћ do tebe prбskne tшetн emise? Ha-ha! </text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_41">
+		<text>Co novэho?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_11">
+		<text>Sakra, kбmo, ty vypadбљ jako smrtka! Potшebujeљ na иerstvej vzduch nebo nмco takovэho. Mбme tady bar pod otevшenou oblohou, to by ti mohlo pomoct.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_21">
+		<text>Myslнm, ћe tм hledal Lebedмv. Asi bys za nнm mмl zajнt. Jб mezitнm opravнm pбr bouchaиek... se souибstkama vyhrabanэma ze љrotu jako obvykle.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_31">
+		<text>Slyљels to volбnн o pomoc z druhэho postavenн, ne? Tak jim bмћ pomoct!</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_41">
+		<text>Zdravниko, zбzraku Zуny! Lebedмv se prej chtмl ohшбt v auшe tvэ neporazitelnosti! Tak se za nнm zastav.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_91">
+		<text>Jak se vede?</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_11">
+		<text>No ty krбvo! Seљ bledej jako upнr! Ty potшebujeљ zajнt do baru a dбt si pбr panбkщ!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_21">
+		<text>Vypadбљ celkem dobшe... na nмkoho, kdo pшeћil emisi. V kaћdэm pшнpadм by ses mмl stavit za Lebedмvem a hodit s nнm шeи...</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_31">
+		<text>Pokecбme pozdмji. Potшebujou tм u postavenн, tak bмћ!</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_41">
+		<text>No sakra! Ty bys mмl zajнt za Lebedмvem, tohle drink nespravн. </text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_91">
+		<text>Chceљ kљeftovat?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_211">
+		<text>A co si myslнљ, ћe dмlбm?</text>
+	</string>
+	<string id="mar_csky_barman_hello_dialog_311">
+		<text>Sakra, to byl jen blbej vtip... NEBYL!</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_1">
+		<text>Co bych ti povнdal. Vedl jsem skupinku vмdcщ pшes blata, kdyћ nбs chytla emise. Pak uћ si nic nepamatuju... Z bezvмdomн jsem se probral aћ tady. Tak, a teп povмz ty mм, co se stalo.</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_3">
+		<text>Jak ses sem vщbec dostal?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_5">
+		<text>No, co se tэиe tohohle mнsta... Mohl bys mi, prosнm, prozradit, kde vщbec jsme?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_7">
+		<text>Vyznбm se v Zуnм dobшe, ale o Jasnй obloze jsem jeљtм neslyљel. Jak to tady chodн?</text>
+	</string>
+	<string id="mar_csky_barman_intro_dialog_9">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_0">
+		<text>Co se mi stalo?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_2">
+		<text>Jo, nenн mi zrovna nejlнp...</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_4">
+		<text>Mohl bys mi pшestat niиit nervy?</text>
+	</string>
+	<string id="mar_csky_doctor_about_me_6">
+		<text>Mщћeљ pro mм jeљtм nмco udмlat?</text>
+	</string>
+	<string id="mar_csky_doctor_about_people_0">
+		<text>Vidмl jsem v Zуnм nejrщznмjљн lidi. Nмkteшн se tu honн za svэm snem, jinн v Zуnм hledajн zбzraky a dalљн jsou tu иistм kvщli koшisti. Proи Jasnб obloha studuje Zуnu?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_0">
+		<text>Takћe, co je Zуna zaи?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_2">
+		<text>Proи dochбzн v Zуnм k otшesщm? Vнљ o tom nмco?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_4">
+		<text>Pшбl bych si vмdмt, ин to je...</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_6">
+		<text>Je to skuteиnм v lidskэch silбch?</text>
+	</string>
+	<string id="mar_csky_doctor_about_zone_8">
+		<text>Jak pшesnм, jakэm zpщsobem? V иem spoинvб ten "zбchrannэ plбn"?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_11">
+		<text>Nemмl by ses tu jen tak poflakovat, иlovмиe. Mбљ nмjakй kљefty s Lebedмvem? Tak udмlej, co шнkб. Teиka.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_111">
+		<text>Promluvнm si s nнm, dнky.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21">
+		<text>Tak co, jsi pшipraven vyrazit na zбkladnu?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_211">
+		<text>Jsem pшipravenэ.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2111">
+		<text>V poшбdku. Zavбћu ti oиi, dokud tam nedorazнme. Urиitм to chбpeљ - musнme dodrћovat utajenн trasy.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_212">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_2121">
+		<text>Tak si pospмљ.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_21211">
+		<text>Rozkaz.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_31">
+		<text>Jб tм pшes ty baћiny neprovedu. Lebedмvщv rozkaz.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_311">
+		<text>Aha.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41">
+		<text>Tak co, chceљ, abych tм zavedl do velkejch mokшin?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_411">
+		<text>Ano.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_4111">
+		<text>Pravidla znбљ. Pщjdeљ poslepu. Poшбd mi drћ ruku na rameni a budeљ v pohodм.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_41111">
+		<text>Dobшe.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_412">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11">
+		<text>Vэbornм. Chceљ, abych tм zavedl na zбkladnu?</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_111">
+		<text>Ano.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_1111">
+		<text>Dobшe, tak si dej tuhle pбsku pшes oиi a nespouљtмj mi ruku z ramene, dokud ti neшeknu.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_11111">
+		<text>Pojпme.</text>
+	</string>
+	<string id="mar_csky_guide_at_marsh_dialog_112">
+		<text>Jeљtм ne.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_0">
+		<text>Nezdб se, ћe bych mмl moc na vybranou.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_11">
+		<text>Ano. </text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_1111">
+		<text>To bude dobrй. Jak se dostanu do Kordonu?</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_111111">
+		<text>Rozumнm.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_21">
+		<text>Ne, potшebuju trochu иasu, abych si to rozmyslel.</text>
+	</string>
+	<string id="mar_csky_leader_choose_dialog_2111">
+		<text>Domluveno.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_111">
+		<text>Chбpu tм.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_211">
+		<text>Dobшe.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_311">
+		<text>Jo.</text>
+	</string>
+	<string id="mar_csky_leader_hello_dialog_911">
+		<text>Jen jsem se na chvilku zastavil. Mмl bych zase jнt.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_1">
+		<text>Proи se schovбvбte?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_11">
+		<text>...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_3">
+		<text>K иemu tolik povyku? Zбшenн jsme uћ zaћili hodnмkrбt...</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_5">
+		<text>Kdybych vмdмl, jak jsem to pшeћil, tak ti to klidnм povнm. Ale pamatuju si houby.</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_7">
+		<text>Snad abych љel. Jsem trochu potluиenej, ale poшбd chodнm a zbraт taky udrћнm. Kudy se dostanu ven?</text>
+	</string>
+	<string id="mar_csky_leader_intro2_dialog_9">
+		<text>Naznaиujeљ nмco?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_1">
+		<text>Proи se zбшenн objevuje tak иasto?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_11">
+		<text>Kurбћ ti zrovna neschбzн, co? Tak jak znн plбn?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_13">
+		<text>A proи to шнkбљ zrovna mnм?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_15">
+		<text>Hmm... nemщћu шнct, ћe bych se do toho zrovna hrnul. Proи mм potшebujete?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_3">
+		<text>Nмkdo se dostal pшes Vypalovaи? Znamenб to nмjakэ nebezpeин pro Zуnu?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_5">
+		<text>Dб se pшes Vypalovaи vщbec dostat? Aspoт teoreticky?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_7">
+		<text>Иemu mщћe tak иastэ zбшenн љkodit?</text>
+	</string>
+	<string id="mar_csky_leader_intro3_dialog_9">
+		<text>Pшedejнt katastrofм? Vћdyќ ty se ani nedokбћeљ vypoшбdat s bandity.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_1">
+		<text>Motб se mi hlava... a asi mi kaћdou chvнli praskne. Cнtнm se vбћnм fit.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_3">
+		<text>Fajn... pamatuju si, ћe jsem vedl expedici nмkde v baћinбch. Se mnou љli vмdci. Pak... pшiљlo zбшenн... a nic vнc. Kde to jsem, v nebi? A jestli jo, tak proи to tu vypadб stejnм jak v Zуnм?</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_5">
+		<text>Aha. Tak to jsem asi mмl љtмstн...</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_111">
+		<text>Fajn.</text>
+	</string>
+	<string id="mar_csky_leader_tutorial_dialog_2">
+		<text>Pamatuju si leda ъtrћky.</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_0">
+		<text>Co tu dмlбљ?</text>
+	</string>
+	<string id="mar_csky_tactic_about_me_dialog_1">
+		<text>Snaћнm se odpoинvat. Sklбdбm si ty kousky informacн, kterэ mi hoљi pшinбљej. Radнm se s naљim stateиnэm vщdcem. My prщvodci fungujeme v baћinбch jako oиi a uљi Jasnэ oblohy.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_11">
+		<text>Ty vole, jб uћ tшi dny nespal... anebo иtyшi? Nevadн, kdyћ si trochu zdшнmnu?</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_111">
+		<text>Neva.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_21">
+		<text>Ty vole, prosнm...</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_211">
+		<text>Fajn, fajn, vyspi se.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_31">
+		<text>Moment. Dojнt k velkэm baћinбm je jeљtм snadnэ – naљi prщvodci tм tam dovedou. Ale jestli tam chceљ pшeћнt, potшebujeљ pochopit momentбlnн taktickou situaci a taky se nauиit zachбzet s PDAиkem. Takћe kdybys nмco nevмdмl, klidnм se ptej.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_41">
+		<text>Prakticky celэ baћiny se hemћн pшнљerama nebo banditama. Jsme tu vlastnм v obleћenн.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_51">
+		<text>Jo, vybudovali jsme si ve velkэch baћinбch pшedmostн, ale zatнm je jenom prќavэ. Obиas tam bejvб celkem horko, to mi vмш.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_61">
+		<text>Baћiny jsou bezpeиnэ, teda samozшejmм v mezнch. To samэ se uћ ale nedб шнct o pшнstupovэch cestбch k nim.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_71">
+		<text>Jsi docela vytrvalej, hochu. Docela nбs to zaujalo, dokonce i prщvodce. Kdyby ses chtмl dostat ven z Kordonu, jeden z naљich tм bude иekat ve vesnici na jihovэchodnн stranм baћin.</text>
+	</string>
+	<string id="mar_csky_tactic_hello_dialog_81">
+		<text>Vљechno v cajku? Tak to zase mщћu zabrat...</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_0">
+		<text>Jak vypadб taktickб situace?</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_1">
+		<text>Struиnм шeиeno, pмknм na hovno. Naљi lidi se u velkэch baћin dokбћou sotva udrћet – neustбle je zatlaиujou banditi a pшнљery. Nepшнtel mб solidnн pшesilu.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_2">
+		<text>Uћ jsme se v baћinбch celkem zabydleli, ale banditi nбs furt jeљtм otravujou. Sнdlej na statku na severozбpad odsud a poшбdaj jeden nбjezd za druhэm... je to celkem otravnэ.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_3">
+		<text>Baћiny jsou aћ na pбr mнst naљe. Bohuћel k tмmhle mнstщm patшн i cesty, kterэ nбs spojujou s okolnнm svмtem. Poшбd jeљtм jsou pod nepшнtelovou kontrolou.</text>
+	</string>
+	<string id="mar_csky_tactic_situation_dialog_4">
+		<text>Jednнm slovem: ъћasnм. Banditi a pшнљery sice иas od иasu vystrин rщћky, ale v porovnбnнm s tнm, jak vypadaly jeљtм nedбvno, jsou dneska baћiny rajskou zahradou.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_0">
+		<text>Co je tшeba udмlat pro ovlбdnutн baћin?</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_1">
+		<text>Zredukovat poиty nepшбtel. Шeиeno selskэm jazykem, zabнt co nejvнc tмch љmejdщ, co po nбs stшнlej. Kdyћ to neudмlбme, naљi lidi nikdy baћiny nezajistн.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_2">
+		<text>Dobэt severovэchodnн statek. Banditi se tam producнrujou uћ moc dlouho.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_3">
+		<text>Dobэt kopec, ze kterэho je vэhled na cesty vedoucн k Agropromu a Kordonu. Bez nich jsme prakticky odшнznutэ od zbytku svмta.</text>
+	</string>
+	<string id="mar_csky_tactic_task_dialog_4">
+		<text>Uћ ses vyspal? Vstбvej, baћiny jsou naљe.</text>
+	</string>
+	<string id="mar_csky_tactic_tutorial_dialog_0">
+		<text>Vysvмtli mi, jak funguje PDA.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_0">
+		<text>Hej! Jak se vede panu opravбшi?</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_2">
+		<text>He, иekal jsem nмco jednoduљљнho.</text>
+	</string>
+	<string id="mar_csky_tehnik_about_dialog_4">
+		<text>No a jak se daшн tobм osobnм?</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_111">
+		<text>Chбpu, kam mншнљ.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_211">
+		<text>Aha.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_311">
+		<text>Jo.</text>
+	</string>
+	<string id="mar_csky_tehnik_hello_dialog_411">
+		<text>Fajn.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_111">
+		<text>Fajn myљlenka.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_211">
+		<text>Dobrej nбpad.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_311">
+		<text>Aha.</text>
+	</string>
+	<string id="mar_csky_trader_hello_dialog_411">
+		<text>Parбda, dнk za radu.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_1">
+		<text>Bohuћel ani jedno. Dostalo mм zбшenн a mбlem jsem to nepшeћil. Nemбm teп vщbec nic. Zбшenн mi rozhбzelo vercajk vљude po baћinбch...</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_101">
+		<text>Mмj se.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_3">
+		<text>Jу, jу... V tмhle nejistэch podmнnkбch se vћdycky najde mнsto pro kupce, dokonce i v baћinбch. Co ty vнљ?</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_5">
+		<text>Jasnм. Akorбt se mi zdб, ћe ti nмjak nejedou kљefty.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_7">
+		<text>Moc velikej vэbмr zrovna nemбљ.</text>
+	</string>
+	<string id="mar_csky_trader_intro2_dialog_9">
+		<text>Nejsi jedinej, kdo na to mб zбlusk.</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_1">
+		<text>Dнky. Hele, to je tu vћdycky takhle horko?</text>
+	</string>
+	<string id="mar_csky_trader_intro_dialog_3">
+		<text>Super. Tak abych љel.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51">
+		<text>Hej! Kam tм mбm zavйst?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511">
+		<text>Do Kordonu.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111">
+		<text>Kamarбde, klobouk dolщ za to, jak jsi pomohl naљim klukщm. Uћ jsem doиista zapomnмl, jakэ to je chodit po baћinбch bezpeиnм... nebo aspoт tak bezpeиnм, jak to jen v moибle na kraji Zуny jde. No nic, zpмt k prбci. Pщjdeme?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51111">
+		<text>Jo.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_511111">
+		<text>Tentokrбt se obejdeme bez pбsky pшes oиi. To pro pшнpad, ћe bys љlбpl do tekutэho pнsku. Umнrбnн je zбћivnмjљн, kdyћ na nмj dobшe vidнљ... dмlбm si srandu! Mмj oиi na stopkбch a pamatuj si, kudy pщjdem pшes baћiny – pшнљtм uћ budeљ muset jнt sбm.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5111111">
+		<text>Jasnм.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51112">
+		<text>Ne, jeљtм si musнm nмco vyшнdit.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5112">
+		<text>Hmm, to je odsud dost daleko... No nic. Prosekбme se?</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_512">
+		<text>K vaљн zбkladnм.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_5121">
+		<text>Dobrб. Nasaп si pшes oиi pбsku a nepouљtмj se mэho ramene.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_51211">
+		<text>Pojпme.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_513">
+		<text>Do rybбшskэ osady.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_514">
+		<text>Do rozvalin vesnice.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_515">
+		<text>K vypбlenэmu statku.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_516">
+		<text>Na jiћnн statek.</text>
+	</string>
+	<string id="mar_csky_guide_at_base_dialog_517">
+		<text>Nikam. Stavнm se pozdмji.</text>
+	</string>
+	<string id="mar_csky_leader_intro_dialog_7">
+		<text>...</text>
+	</string>
+</string_table>

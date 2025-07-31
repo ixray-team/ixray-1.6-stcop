@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="agr_additional_quest_1_name">
+		<text>Najdi skrэљ mrtvйho stalkera</text>
+	</string>
+	<string id="agr_additional_quest_1_text">
+		<text>Najdi skrэљ mrtvйho stalkera</text>
+	</string>
+	<string id="agr_additional_quest_3_name">
+		<text>Najdi ztracenйho stalkera</text>
+	</string>
+	<string id="agr_additional_quest_3_text">
+		<text>Najdi ztracenйho stalkera</text>
+	</string>
+	<string id="agr_at_blokpost_name">
+		<text>Promluv si s vщdcem Povinnosti</text>
+	</string>
+	<string id="agr_at_blokpost_text">
+		<text>Promluv si s vщdcem Povinnosti. Generбl Krylov snad bude vмdмt, kde se nachбzн vchod do podzemн Agropromu. Prбvм tam ukryli svщj lup stalkeшi, kteшн pronikli aћ do centra Zуny.</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_name">
+		<text>Zniи tбbor banditщ</text>
+	</string>
+	<string id="agr_attack_bandits_group_1_text">
+		<text>Je nezbytnй zniиit tбbor banditщ v tunelu. Banditй odsud poшбdajн nбjezdy na tбbor stalkerщ.</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_name">
+		<text>Zniи tбbor banditщ</text>
+	</string>
+	<string id="agr_attack_bandits_group_2_text">
+		<text>Vэstup z podzemн stшeћн skupinka banditщ, kterб zde иas od иasu pomбhб nмkterэm svэm pшнvrћencщm vylйzat na povrch. Tato skupina musн bэt zniиena.</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_name">
+		<text>Zniи doupм mutantщ</text>
+	</string>
+	<string id="agr_attack_bandits_group_3_text">
+		<text>Pustina kolem tбbora stalkerщ se doslova hemћн pшнљerami – je zde divoko a nebezpeиno. Musнљ zniиit doupм mutantщ.</text>
+	</string>
+	<string id="agr_defend_duty_base_1_name">
+		<text>Braт zбkladnu Povinnosti</text>
+	</string>
+	<string id="agr_defend_duty_base_1_text">
+		<text>Zбkladna Povinnosti byla pшepadena. Pomoz odrazit ъtok a budeљ odmмnмn. </text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_name">
+		<text>Braт zбkladnu stalkerщ</text>
+	</string>
+	<string id="agr_defend_stalkers_base_1_text">
+		<text>Zбkladna stalkerщ je v ohroћenн. Pomoz stalkerщm odrazit ъtoиnнky a dostaneљ odmмnu.</text>
+	</string>
+	<string id="agr_go_in_hole_name">
+		<text>Sestup do podzemн Agropromu</text>
+	</string>
+	<string id="agr_go_in_hole_text">
+		<text>Musнљ sestoupit do podzemн Agropromu. Jedinб cesta dovnitш pшitom vede skrz brloh mutantщ.</text>
+	</string>
+	<string id="agr_go_out_hole_name">
+		<text>Promluv si se Sacharovem</text>
+	</string>
+	<string id="agr_go_out_hole_text">
+		<text>Pшepisy rozhovorщ Stшelcovy skupiny, kterй jsi nalezl v podzemnн skrэљi, leccos objasтujн. Stшelec se vydal navљtнvit vмdce z Jantaru. Dojdi do Jantaru a promluv si s profesorem Sacharovem. Moћnб bude vмdмt, kde Stшelce najнt.</text>
+	</string>
+	<string id="agr_go_to_hole_name">
+		<text>Dostaт se do dнry</text>
+	</string>
+	<string id="agr_go_to_hole_text">
+		<text>Vojбci Povinnosti dщkladnм zapeиetili veљkerй vchody do podzemн i vэchody ven. Jedinб cesta dovnitш tak vede skrze dнry, kterэmi na povrch vylйzajн mutanti. Dostaт se do dнry.</text>
+	</string>
+	<string id="agr_mechanic_pda_1_name">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_1_text">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_name">
+		<text>Doruи PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_2_text">
+		<text>Doruи PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_name">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_1_text">
+		<text>Najdi PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_name">
+		<text>Doruи PDA</text>
+	</string>
+	<string id="agr_mechanic_pda_for_secret_trader_2_text">
+		<text>Doruи PDA</text>
+	</string>
+	<string id="agr_no_task_name">
+		<text>Najdi skrэљ skupiny stalkerщ</text>
+	</string>
+	<string id="agr_no_task_text">
+		<text>Tesбkovo PDA obsahovalo souшadnice skrэљe, v nнћ si svй vмci schovala skupina stalkerщ, kterб pronikla aћ do stшedu Zуny, a tнm napomohla katastrofм. Jde o dщleћitй zjiљtмnн, protoћe v tйto skrэљi se mohou ukrэvat dщleћitй informace. Najdi skrэљ a v nн PDA.</text>
+	</string>
+	<string id="agr_pda_map_animals_1_name">
+		<text>Najdi mapu migracн</text>
+	</string>
+	<string id="agr_pda_map_animals_1_text">
+		<text>Najdi mapu zachycujнcн migraиnн trasy vzбcnэch druhщ monster v Zуnм.</text>
+	</string>
+	<string id="agr_pda_map_animals_2_name">
+		<text>Doruи mapu migracн</text>
+	</string>
+	<string id="agr_pda_map_animals_2_text">
+		<text>Doruи mapu migracн Inkvizitorovi</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_name">
+		<text>Pomoz stalkerщm</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_1_text">
+		<text>Skupina stalkerщ se snaћн proniknout baћinou aћ k vмdcщm do Jantaru. Pomoz stalkerщm vyvбznout z baћiny naћivu.</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_name">
+		<text>Vyzvedni si odmмnu</text>
+	</string>
+	<string id="agr_stalker_scientist_quest_2_text">
+		<text>Vyzvedni si odmмnu od Platonova.</text>
+	</string>
+	<string id="agr_start_name">
+		<text>Promluv si s velitelem stanoviљtм</text>
+	</string>
+	<string id="agr_start_text">
+		<text>Zнskej od velitele stanoviљtм informace o situaci v Agropromu.</text>
+	</string>
+	<string id="agr_take_reward_name">
+		<text>Vyzvedni si odmмnu od Krylova</text>
+	</string>
+	<string id="agr_take_reward_text">
+		<text>Podzemн je zaplaveno vodou a ъtoky mutantщ proti Povinnosti by teп mohly na nмjakou dobu pшestat. Generбl Krylov se ti za splnмnн mise bohatм odmмnн. Vyzvedni si od Krylova svou odmмnu.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_name">
+		<text>Najdi informace o vyvaћovбnн automatickэch souибstek kulometu.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ab_pkm_text">
+		<text>Technik Thunderov hledб zpщsob, jak by mohl vyvбћenнm automatickэch souибstek zvэљit kadenci kulometu. Za jakйkoliv informace zaplatн nemalou ибstku.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_name">
+		<text>Najdi informace o modifikacнch plynovй vэpusti kulometu</text>
+	</string>
+	<string id="st_agr_find_flesh_up_abcd_pkm_text">
+		<text>Thunderov uћ vyladil vlastnosti kulometu tйmмш k dokonalosti. Teп uћ potшebuje jen trochu volnйho иasu a jistй technickй ъdaje o vэpusti plynщ.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_name">
+		<text>Najdi informace o ъsќovэch brzdбch pistolн</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_desert_eagle_text">
+		<text>Stalkerskэ technik z Agropromu hledб podrobnй informace o ъsќovэch brzdбch pro ъиinnй velkorбћovй pistole.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_name">
+		<text>Najdi informace o pumpovacнch mechanismech pro vojenskй brokovnice</text>
+	</string>
+	<string id="st_agr_find_flesh_up_ac_spas12_text">
+		<text>Stalkerskэ technik z Agropromu hledб informace o pumpovacнch mechanismech pro vojenskй brokovnice.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_name">
+		<text>Najdi informace o modifikacнch pistolovэch hlavnн</text>
+	</string>
+	<string id="st_agr_find_flesh_up_bd_desert_eagle_text">
+		<text>Stalkerskэ technik nemб dostatek zkuљenostн k ъpravм hlavnм silnй pistole. Za pшнsluљnй informace dobшe zaplatн.</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_name">
+		<text>Najdi informace o ъsќovэch brzdбch kulometщ</text>
+	</string>
+	<string id="st_agr_find_flesh_up_cd_pkm_text">
+		<text>Technik Povinnosti pracuje na vylepљenй ъsќovй brzdм pro kulomet, ale postrбdб jistй technickй informace.</text>
+	</string>
+	<string id="agr_attack_monster_group_name">
+		<text>Zniи doupм mutantщ</text>
+	</string>
+	<string id="agr_attack_monster_group_text">
+		<text>Иas od иasu zaъtoин na stalkery u tovбrny mutanti. Kdyћ pobijeљ mutanty v jejich doupмti na sever od tovбrny, moћnб ъtoky zastavнљ.</text>
+	</string>
+	<string id="agr_recover_item_1_name">
+		<text>Vraќ иlenovi Povinnosti brokovnici</text>
+	</string>
+	<string id="agr_recover_item_1_text">
+		<text>Vyrazili jsme na misi, vyиistit oblast od mutantщ a naљli jsme fakt velkou potvoru. Bojovali jsme nejmнт hodinu a uћ nбm dochбzela munice, ale ta svinм furt nechtмla chcнpnout. Dal jsem rozkaz stбhnout se, ale zщstal jsem pozadu, abych kryl svэ chlapy, neћ se dostanou dost daleko. Vystшнlel jsem vљechny nбboje, a pak jsem na tu svini hodil aspoт prбzdnou brokovnici. A vнљ, co se stalo? To zmutovanэ hovado zaиalo brokovnici ћrбt a mм nechalo na pokoji. Pшines mi tu brokбrnu, zachrбnila mi ћivot!</text>
+	</string>
+	<string id="agr_recover_item_2_name">
+		<text>Pшines PDA s tajnэmi informacemi</text>
+	</string>
+	<string id="agr_recover_item_2_text">
+		<text>Ћoldбku, na Smetiљti mм okradli banditi. Vzali mi vљechno, prachy, zbranм, munici i lйky. A co je nejhorљн, sebrali mi PDA, ve kterэm byly informace o lokacнch banditщ na Smetiљti. Pokud ty informace Krylovovi nepшinesu, pohшbн mм zaћiva. Pomoz mi, pшines mi to PDA!</text>
+	</string>
+	<string id="agr_recover_item_3_name">
+		<text>Pшines krabici иlena Povinnosti</text>
+	</string>
+	<string id="agr_recover_item_3_text">
+		<text>Hele, kdyћ se v podzemн objevili mutanti, museli jsme opustit pozice a stбhnout se. Musel jsem tam nechat svou krabici se zbranмma, munici, lйиivy a detektorem. Nemмl jsem иas, љlo mi o kejhбk. Pomoz mi, pшines mi tu krabici.</text>
+	</string>
+	<string id="agr_recover_item_4_name">
+		<text>Pшines ъtoиnou puљku иlena Povinnosti</text>
+	</string>
+	<string id="agr_recover_item_4_text">
+		<text>Zbyteиnм jsem se pohбdal s prщvodcem, kvщli blbosti, a on mм teп nechce zavйst za stalkerama! Prej uћ mм tady nechce ani vidмt a jб si sбm po Zуnм chodit netroufбm. Kdyћ jsem byl u stalkerщ minulej tejden na nбvљtмvм, nechal jsem u nich svou bouchaиku. Jeden z naљich byl povэљenej, tak jsme to poшбdnм zapнjeli. Seћral jsem se jako hovado, chlapi mм museli do kasбren donэst, ale bouchaиku tam zapomnмli. Mohl bys mi ji pшinэst? Bez bouchaиky jsem vojбk na hovno.</text>
+	</string>
+</string_table>
