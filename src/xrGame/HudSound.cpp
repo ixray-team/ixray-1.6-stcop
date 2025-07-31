@@ -153,19 +153,27 @@ HUD_SOUND_ITEM* HUD_SOUND_COLLECTION::FindSoundItem(LPCSTR alias, bool b_assert)
 	}
 }
 
-void HUD_SOUND_COLLECTION::PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent,
-	bool hud_mode, bool looped, bool allowOverlap, u8 index) {
-	xr_vector<HUD_SOUND_ITEM>::iterator it		= m_sound_items.begin();
-	xr_vector<HUD_SOUND_ITEM>::iterator it_e	= m_sound_items.end();
-	for(;it!=it_e;++it)
+void HUD_SOUND_COLLECTION::PlaySound(HUD_SOUND_ITEM* snd_item, const Fvector& position, const CObject* parent, bool hud_mode, bool looped, bool allowOverlap, u8 index)
+{
+	for (HUD_SOUND_ITEM& Item : m_sound_items)
 	{
-		if(it->m_b_exclusive)
-			HUD_SOUND_ITEM::StopSound	(*it);
+		if (Item.m_b_exclusive)
+			HUD_SOUND_ITEM::StopSound(Item);
 	}
 
+	HUD_SOUND_ITEM::PlaySound(*snd_item, position, parent, hud_mode, looped, allowOverlap, index);
+}
 
-	HUD_SOUND_ITEM* snd_item		= FindSoundItem(alias, true);
-	HUD_SOUND_ITEM::PlaySound		(*snd_item, position, parent, hud_mode, looped, allowOverlap, index);
+void HUD_SOUND_COLLECTION::PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped, bool allowOverlap, u8 index)
+{
+	for (HUD_SOUND_ITEM& Item : m_sound_items)
+	{
+		if (Item.m_b_exclusive)
+			HUD_SOUND_ITEM::StopSound(Item);
+	}
+
+	HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, true);
+	HUD_SOUND_ITEM::PlaySound(*snd_item, position, parent, hud_mode, looped, allowOverlap, index);
 }
 
 void HUD_SOUND_COLLECTION::StopSound(LPCSTR alias)

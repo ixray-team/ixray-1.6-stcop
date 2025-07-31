@@ -144,6 +144,8 @@ public:
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore; }
 
+	void PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allowOverlap = false);
+
 protected:
 
 	IC		void				SetPending			(BOOL H)			{ m_huditem_flags.set(fl_pending, H);}
