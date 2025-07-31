@@ -356,15 +356,13 @@ void CUIActorMenu::UpdateActor()
 		UpdateActorMoneyMP();
 	}
 	
-	CActor* actor = smart_cast<CActor*>( m_pActorInvOwner );
-	if ( actor )
+	if (CActor* actor = m_pActorInvOwner->cast_actor())
 	{
-		CWeapon* wp = smart_cast<CWeapon*>( actor->inventory().ActiveItem() );
-		if ( wp ) 
+		if (CWeapon* wp = actor->inventory().ActiveItem() ? actor->inventory().ActiveItem()->cast_weapon() : nullptr)
 		{
 			wp->ForceUpdateAmmo();
 		}
-	}//actor
+	}
 
 	InventoryUtilities::UpdateWeightStr( *m_ActorWeight, *m_ActorWeightMax, m_pActorInvOwner );
 	
@@ -610,7 +608,7 @@ void CUIActorMenu::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropList
 	if (pSellList->ItemsCount() == 0)
 		return;
 
-	CGameObject* pPlayer = smart_cast<CGameObject*>(pTrade->pPartner.inv_owner);
+	CGameObject* pPlayer = pTrade->pPartner.inv_owner ? pTrade->pPartner.inv_owner->cast_game_object() : nullptr;
 	R_ASSERT(!!smart_cast<CActor*>(pPlayer));
 
 	NET_Packet P;

@@ -14,6 +14,8 @@
 #include "CharacterPhysicsSupport.h"
 #include "ActorEffector.h"
 #include "player_hud.h"
+#include "Artefact.h"
+#include "CustomOutfit.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -490,8 +492,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 	unaffected_r_torso.pitch	= r_torso.pitch;
 	unaffected_r_torso.roll		= r_torso.roll;
 
-	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot()) : nullptr);
+	CWeaponMagazined* pWM = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
 	if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
 	{
 		Fvector dangle = weapon_recoil_last_delta();
@@ -531,8 +532,7 @@ void CActor::g_sv_Orientate(u32 /**mstate_rl/**/, float /**dt/**/)
 	r_torso.pitch	=	unaffected_r_torso.pitch;
 	r_torso.roll	=	unaffected_r_torso.roll;
 
-	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot()) : nullptr);
+	CWeaponMagazined* pWM = inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
 	if (pWM && pWM->GetCurrentFireMode() == 1/* && eacFirstEye != cam_active*/)
 	{
 		Fvector dangle = weapon_recoil_last_delta();
@@ -639,7 +639,6 @@ bool CActor::is_jump()
 }
 
 //максимальный переносимы вес
-#include "CustomOutfit.h"
 float CActor::MaxCarryWeight () const
 {
 	float res = inventory().GetMaxWeight();
@@ -653,7 +652,7 @@ float CActor::MaxWalkWeight() const
 	max_w      += get_additional_weight();
 	return max_w;
 }
-#include "Artefact.h"
+
 float CActor::get_additional_weight() const
 {
 	float res = 0.0f ;

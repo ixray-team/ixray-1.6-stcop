@@ -24,290 +24,339 @@
 #include "trade_parameters.h"
 #include "clsid_game.h"
 
-extern u32 get_rank								(const shared_str &section);
+extern u32 get_rank(const shared_str& section);
 
 static const int MAX_AMMO_ATTACH_COUNT = 1;
 static const int enough_ammo_box_count = 1;
 
-IC	bool CAI_Stalker::CTradeItem::operator<		(const CTradeItem &trade_item) const
+IC bool CAI_Stalker::CTradeItem::operator<(const CTradeItem& trade_item) const
 {
-	return			(m_item->object().ID() < trade_item.m_item->object().ID());
+	return m_item->object().ID() < trade_item.m_item->object().ID();
 }
 
-IC	bool CAI_Stalker::CTradeItem::operator==	(u16 id) const
+IC bool CAI_Stalker::CTradeItem::operator==(u16 id) const
 {
-	return			(m_item->object().ID() == id);
+	return m_item->object().ID() == id;
 }
 
-bool CAI_Stalker::tradable_item					(CInventoryItem *inventory_item, const u16 &current_owner_id)
+bool CAI_Stalker::tradable_item(CInventoryItem* inventory_item, const u16& current_owner_id)
 {
 	if (!inventory_item->useful_for_NPC())
-		return			(false);
+	{
+		return false;
+	}
 
-	if (CLSID_DEVICE_PDA == inventory_item->object().CLS_ID) {
-		CPda			*pda = smart_cast<CPda*>(inventory_item);
-		VERIFY			(pda);
+	if (CLSID_DEVICE_PDA == inventory_item->object().CLS_ID)
+	{
+		CPda* pda = inventory_item->cast_pda();
+		VERIFY(pda);
+
 		if (pda->GetOriginalOwnerID() == current_owner_id)
-			return		(false);
+		{
+			return false;
+		}
 	}
 
-	return				(
-		trade_parameters().enabled(
-			CTradeParameters::action_sell(0),
-			inventory_item->object().cNameSect()
-		)
-	);
+	return (trade_parameters().enabled(CTradeParameters::action_sell(0), inventory_item->object().cNameSect()));
 }
 
-u32 CAI_Stalker::fill_items						(CInventory &inventory, CGameObject *old_owner, ALife::_OBJECT_ID new_owner_id)
+u32 CAI_Stalker::fill_items(CInventory& inventory, CGameObject* old_owner, ALife::_OBJECT_ID new_owner_id)
 {
-	u32							result = 0;
-	TIItemContainer::iterator	I = inventory.m_all.begin();
-	TIItemContainer::iterator	E = inventory.m_all.end();
-	for ( ; I != E; ++I) {
-		if (!tradable_item(*I,old_owner->ID()))
+	u32 result = 0;
+
+	for (PIItem item : inventory.m_all)
+	{
+		if (!tradable_item(item, old_owner->ID()))
+		{
 			continue;
-		
-		m_temp_items.push_back	(CTradeItem(*I,old_owner->ID(),new_owner_id));
-		result					+= (*I)->Cost();
+		}
+
+		m_temp_items.push_back(CTradeItem(item, old_owner->ID(), new_owner_id));
+		result += item->Cost();
 	}
 
-	return						(result);
+	return result;
 }
 
-void CAI_Stalker::transfer_item					(CInventoryItem *item, CGameObject *old_owner, CGameObject *new_owner)
+void CAI_Stalker::transfer_item(CInventoryItem* item, CGameObject* old_owner, CGameObject* new_owner)
 {
-	NET_Packet			P;
-	CGameObject			*O = old_owner;
-	O->u_EventGen		(P,GE_TRADE_SELL,O->ID());
-	P.w_u16				(u16(item->object().ID()));
-	O->u_EventSend		(P);
+	NET_Packet P;
+	CGameObject* O = old_owner;
+	O->u_EventGen(P, GE_TRADE_SELL, O->ID());
+	P.w_u16(u16(item->object().ID()));
+	O->u_EventSend(P);
 
-	O					= new_owner;
-	O->u_EventGen		(P,GE_TRADE_BUY,O->ID());
-	P.w_u16				(u16(item->object().ID()));
-	O->u_EventSend		(P);
+	O = new_owner;
+	O->u_EventGen(P, GE_TRADE_BUY, O->ID());
+	P.w_u16(u16(item->object().ID()));
+	O->u_EventSend(P);
 }
 
-IC	void CAI_Stalker::buy_item_virtual			(CTradeItem &item)
+IC void CAI_Stalker::buy_item_virtual(CTradeItem& item)
 {
-	item.m_new_owner_id			= ID();
-	m_total_money				-= item.m_item->Cost();
+	item.m_new_owner_id = ID();
+	m_total_money -= item.m_item->Cost();
+
 	if (m_current_trader)
+	{
 		m_current_trader->set_money(m_current_trader->get_money() + item.m_item->Cost(), true);
+	}
 }
 
-void CAI_Stalker::choose_food					()
+void CAI_Stalker::choose_food()
 {
 	// stalker cannot change food due to the game design :-(((
 	return;
 }
 
-void CAI_Stalker::attach_available_ammo			(CWeapon *weapon)
+void CAI_Stalker::attach_available_ammo(CWeapon* weapon)
 {
 	if (!weapon || weapon->m_ammoTypes.empty())
+	{
 		return;
+	}
 
-	u32							count = 0;
-	xr_vector<CTradeItem>::iterator	I = m_temp_items.begin();
-	xr_vector<CTradeItem>::iterator	E = m_temp_items.end();
-	for ( ; I != E; ++I) {
-		if (m_total_money < (*I).m_item->Cost())
+	u32 count = 0;
+	for (CTradeItem trade_item : m_temp_items)
+	{
+		if (m_total_money < trade_item.m_item->Cost())
+		{
 			continue;
+		}
 
-		if (
-			std::find(
-				weapon->m_ammoTypes.begin(),
-				weapon->m_ammoTypes.end(),
-				(*I).m_item->object().cNameSect()
-			) == 
-			weapon->m_ammoTypes.end()
-		)
+		if (std::find(weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end(), trade_item.m_item->object().cNameSect()) == weapon->m_ammoTypes.end())
+		{
 			continue;
+		}
 
-		buy_item_virtual			(*I);
+		buy_item_virtual(trade_item);
 
 		++count;
 		if (count >= MAX_AMMO_ATTACH_COUNT)
+		{
 			break;
+		}
 	}
 }
 
-void CAI_Stalker::choose_weapon					(ALife::EWeaponPriorityType weapon_priority_type)
+void CAI_Stalker::choose_weapon(ALife::EWeaponPriorityType weapon_priority_type)
 {
-	CTradeItem						*best_weapon	= 0;
-	float							best_value		= -1.f;
-	ai().ef_storage().non_alife().member()	= this;
+	CTradeItem* best_weapon = nullptr;
+	float best_value = -1.f;
+	ai().ef_storage().non_alife().member() = this;
 
-	xr_vector<CTradeItem>::iterator	I = m_temp_items.begin();
-	xr_vector<CTradeItem>::iterator	E = m_temp_items.end();
-	for ( ; I != E; ++I) {
-		if (m_total_money < (*I).m_item->Cost())
+	for (CTradeItem trade_item : m_temp_items)
+	{
+		if (m_total_money < trade_item.m_item->Cost())
+		{
 			continue;
-
-		ai().ef_storage().non_alife().member_item() = &(*I).m_item->object();
-
-		int						j = ai().ef_storage().m_pfPersonalWeaponType->dwfGetWeaponType();
-		float					current_value = -1.f;
-		switch (weapon_priority_type) {
-			case ALife::eWeaponPriorityTypeKnife : {
-				if (1 != j)
-					continue;
-				current_value		= ai().ef_storage().m_pfItemValue->ffGetValue();
-				if(I->m_item->m_ItemCurrPlace.type==eItemPlaceSlot)
-					current_value += 10.0f;
-				
-				break;
-			}
-			case ALife::eWeaponPriorityTypeSecondary : {
-				if (5 != j)
-					continue;
-				current_value		= ai().ef_storage().m_pfSmallWeaponValue->ffGetValue();
-				if(I->m_item->m_ItemCurrPlace.type==eItemPlaceSlot)
-					current_value += 10.0f;
-				break;
-			}
-			case ALife::eWeaponPriorityTypePrimary : {
-				if ((6 != j) && (7 != j) && (8 != j) && (9 != j) && (11 != j) && (12 != j))
-					continue;
-				current_value		= ai().ef_storage().m_pfMainWeaponValue->ffGetValue();
-				if(I->m_item->m_ItemCurrPlace.type==eItemPlaceSlot)
-					current_value += 10.0f;
-				break;
-			}
-			case ALife::eWeaponPriorityTypeGrenade : {
-				if (4 != j)
-					continue;
-				current_value		= ai().ef_storage().m_pfItemValue->ffGetValue();
-				if(I->m_item->m_ItemCurrPlace.type==eItemPlaceSlot)
-					current_value += 10.0f;
-				break;
-			}
-			default : NODEFAULT;
 		}
-		
-		if ((current_value > best_value)) {
-			best_value	= current_value;
-			best_weapon = &*I;
+
+		ai().ef_storage().non_alife().member_item() = &trade_item.m_item->object();
+
+		int j = ai().ef_storage().m_pfPersonalWeaponType->dwfGetWeaponType();
+		float current_value = -1.f;
+		switch (weapon_priority_type)
+		{
+		case ALife::eWeaponPriorityTypeKnife:
+		{
+			if (1 != j)
+			{
+				continue;
+			}
+			current_value = ai().ef_storage().m_pfItemValue->ffGetValue();
+			if (trade_item.m_item->m_ItemCurrPlace.type == eItemPlaceSlot)
+			{
+				current_value += 10.0f;
+			}
+
+			break;
+		}
+		case ALife::eWeaponPriorityTypeSecondary:
+		{
+			if (5 != j)
+			{
+				continue;
+			}
+			current_value = ai().ef_storage().m_pfSmallWeaponValue->ffGetValue();
+			if (trade_item.m_item->m_ItemCurrPlace.type == eItemPlaceSlot)
+			{
+				current_value += 10.0f;
+			}
+			break;
+		}
+		case ALife::eWeaponPriorityTypePrimary:
+		{
+			if ((6 != j) && (7 != j) && (8 != j) && (9 != j) && (11 != j) && (12 != j))
+			{
+				continue;
+			}
+			current_value = ai().ef_storage().m_pfMainWeaponValue->ffGetValue();
+			if (trade_item.m_item->m_ItemCurrPlace.type == eItemPlaceSlot)
+			{
+				current_value += 10.0f;
+			}
+			break;
+		}
+		case ALife::eWeaponPriorityTypeGrenade:
+		{
+			if (4 != j)
+			{
+				continue;
+			}
+			current_value = ai().ef_storage().m_pfItemValue->ffGetValue();
+			if (trade_item.m_item->m_ItemCurrPlace.type == eItemPlaceSlot)
+			{
+				current_value += 10.0f;
+			}
+			break;
+		}
+		default: NODEFAULT;
+		}
+
+		if ((current_value > best_value))
+		{
+			best_value = current_value;
+			best_weapon = &trade_item;
 		}
 	}
-	if (best_weapon && best_weapon->m_item) {
-		buy_item_virtual			(*best_weapon);
-		attach_available_ammo		(best_weapon->m_item->cast_weapon());
+
+	if (best_weapon && best_weapon->m_item)
+	{
+		buy_item_virtual(*best_weapon);
+		attach_available_ammo(best_weapon->m_item->cast_weapon());
 	}
 }
 
-void CAI_Stalker::choose_medikit				()
+void CAI_Stalker::choose_medikit()
 {
 	// stalker cannot change medikit due to the game design :-(((
 	return;
 }
 
-void CAI_Stalker::choose_detector				()
+void CAI_Stalker::choose_detector()
 {
-	CTradeItem					*best_detector	= 0;
-	float						best_value		= -1.f;
-	ai().ef_storage().non_alife().member()	= this;
-	xr_vector<CTradeItem>::iterator	I = m_temp_items.begin();
-	xr_vector<CTradeItem>::iterator	E = m_temp_items.end();
-	for ( ; I != E; ++I) {
-		if (m_total_money < (*I).m_item->Cost())
-			continue;
+	CTradeItem* best_detector = nullptr;
+	float best_value = -1.f;
+	ai().ef_storage().non_alife().member() = this;
 
-		CCustomDetector			*detector = smart_cast<CCustomDetector*>((*I).m_item);
-		if (!detector)
+	for (CTradeItem trade_item : m_temp_items)
+	{
+		if (trade_item.m_item && m_total_money < trade_item.m_item->Cost())
+		{
 			continue;
+		}
+
+		CCustomDetector* detector = trade_item.m_item ? trade_item.m_item->cast_custom_detector() : nullptr;
+		if (!detector)
+		{
+			continue;
+		}
 
 		// evaluating item
 		ai().ef_storage().non_alife().member_item() = detector;
-		float					current_value = ai().ef_storage().m_pfDetectorType->ffGetValue();
+		float current_value = ai().ef_storage().m_pfDetectorType->ffGetValue();
 		// choosing the best item
-		if ((current_value > best_value)) {
-			best_detector		= &*I;
-			best_value			= current_value;
+		if ((current_value > best_value))
+		{
+			best_detector = &trade_item;
+			best_value = current_value;
 		}
 	}
+
 	if (best_detector)
-		buy_item_virtual		(*best_detector);
+	{
+		buy_item_virtual(*best_detector);
+	}
 }
 
-void CAI_Stalker::choose_equipment				()
+void CAI_Stalker::choose_equipment()
 {
 	// stalker cannot change their equipment due to the game design :-(((
 	return;
 }
 
-void CAI_Stalker::select_items						()
+void CAI_Stalker::select_items()
 {
 	if (!m_can_select_items)
+	{
 		return;
+	}
 
-	choose_food			();
-	choose_weapon		(ALife::eWeaponPriorityTypeKnife);
-	choose_weapon		(ALife::eWeaponPriorityTypeSecondary);
-	choose_weapon		(ALife::eWeaponPriorityTypePrimary);
-	choose_weapon		(ALife::eWeaponPriorityTypeGrenade);
-	choose_medikit		();
-	choose_detector		();
-	choose_equipment	();
+	choose_food();
+	choose_weapon(ALife::eWeaponPriorityTypeKnife);
+	choose_weapon(ALife::eWeaponPriorityTypeSecondary);
+	choose_weapon(ALife::eWeaponPriorityTypePrimary);
+	choose_weapon(ALife::eWeaponPriorityTypeGrenade);
+	choose_medikit();
+	choose_detector();
+	choose_equipment();
 }
 
-void CAI_Stalker::update_sell_info					()
+void CAI_Stalker::update_sell_info()
 {
-//	if (m_sell_info_actuality)
-//		return;
+	m_sell_info_actuality = true;
+	m_temp_items.clear();
+	m_current_trader = 0;
+	m_total_money = get_money();
+	u32	money_delta = fill_items(inventory(), this, ALife::_OBJECT_ID(-1));
+	m_total_money += money_delta;
+	std::sort(m_temp_items.begin(), m_temp_items.end());
+	select_items();
 
-	m_sell_info_actuality	= true;
-	m_temp_items.clear		();
-	m_current_trader		= 0;
-	m_total_money			= get_money();
-	u32						money_delta = fill_items(inventory(),this,ALife::_OBJECT_ID(-1));
-	m_total_money			+= money_delta;
-	std::sort				(m_temp_items.begin(),m_temp_items.end());
-	select_items			();
-
-	TIItemContainer::iterator	I = inventory().m_all.begin();
-	TIItemContainer::iterator	E = inventory().m_all.end();
-	for ( ; I != E; ++I) {
-		if (!tradable_item(*I,ID()))
-			m_temp_items.push_back	(CTradeItem(*I,ID(),ID()));
+	for (PIItem item : inventory().m_all)
+	{
+		if (!tradable_item(item, ID()))
+		{
+			m_temp_items.push_back(CTradeItem(item, ID(), ID()));
+		}
 	}
 }
 
-bool CAI_Stalker::can_sell							(CInventoryItem* item)
+bool CAI_Stalker::can_sell(CInventoryItem* item)
 {
 	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "is_trader", false))
-		return				(tradable_item(item, ID()));
+	{
+		return tradable_item(item, ID());
+	}
 
-	update_sell_info		();
-	xr_vector<CTradeItem>::const_iterator	I = std::find(m_temp_items.begin(),m_temp_items.end(),item->object().ID());
-	VERIFY					(I != m_temp_items.end());
-	return					((*I).m_new_owner_id != ID());
+	update_sell_info();
+	xr_vector<CTradeItem>::const_iterator I = std::find(m_temp_items.begin(), m_temp_items.end(), item->object().ID());
+	VERIFY(I != m_temp_items.end());
+	return (*I).m_new_owner_id != ID();
 }
 
-bool CAI_Stalker::AllowItemToTrade 					(CInventoryItem const * item, const SInvItemPlace& place) const
+bool CAI_Stalker::AllowItemToTrade(CInventoryItem const* item, const SInvItemPlace& place) const
 {
 	if (!g_Alive())
-		return				(trade_parameters().enabled(CTradeParameters::action_show(0),item->object().cNameSect()));
+	{
+		return trade_parameters().enabled(CTradeParameters::action_show(0), item->object().cNameSect());
+	}
 
-	return					(const_cast<CAI_Stalker*>(this)->can_sell(const_cast<CInventoryItem*>(item)));
+	return const_cast<CAI_Stalker*>(this)->can_sell(const_cast<CInventoryItem*>(item));
 }
 
-bool CAI_Stalker::non_conflicted					(const CInventoryItem *item, const CWeapon *new_weapon) const
+bool CAI_Stalker::non_conflicted(const CInventoryItem* item, const CWeapon* new_weapon) const
 {
 	CInventoryItem* II = const_cast<CInventoryItem*>(item);
 
 	if (!II)
-		return				(true);
+	{
+		return true;
+	}
 
 	if (item == new_weapon)
-		return				(true);
+	{
+		return true;
+	}
 
-	const CWeapon			*weapon = II->cast_weapon();
+	const CWeapon* weapon = II->cast_weapon();
 	if (!weapon)
-		return				(true);
+	{
+		return true;
+	}
 
-	return					(weapon->ef_weapon_type() != new_weapon->ef_weapon_type());
+	return weapon->ef_weapon_type() != new_weapon->ef_weapon_type();
 }
 
 bool CAI_Stalker::enough_ammo						(const CWeapon *new_weapon) const
@@ -328,60 +377,85 @@ bool CAI_Stalker::enough_ammo						(const CWeapon *new_weapon) const
 	return					(false);
 }
 
-bool CAI_Stalker::conflicted						(const CInventoryItem *item, const CWeapon *new_weapon, bool new_wepon_enough_ammo, int new_weapon_rank) const
+bool CAI_Stalker::conflicted(const CInventoryItem* item, const CWeapon* new_weapon, bool new_wepon_enough_ammo, int new_weapon_rank) const
 {
-	if (non_conflicted(item,new_weapon))
-		return				(false);
+	if (non_conflicted(item, new_weapon))
+	{
+		return false;
+	}
+
 	CInventoryItem* II = const_cast<CInventoryItem*>(item);
 
 	if (!II)
-		return				(true);
+	{
+		return true;
+	}
 
-	const CWeapon			*weapon = II->cast_weapon();
-	VERIFY					(weapon);
+	const CWeapon* weapon = II->cast_weapon();
+	VERIFY(weapon);
 
-	bool					current_weapon_enough_ammo = enough_ammo(weapon);
+	bool current_weapon_enough_ammo = enough_ammo(weapon);
 	if (current_weapon_enough_ammo && !new_wepon_enough_ammo)
-		return				(true);
+	{
+		return true;
+	}
 
 	if (!current_weapon_enough_ammo && new_wepon_enough_ammo)
-		return				(false);
+	{
+		return false;
+	}
 
-	if (!fsimilar(weapon->GetCondition(),new_weapon->GetCondition(),.05f))
-		return				(weapon->GetCondition() >= new_weapon->GetCondition());
+	if (!fsimilar(weapon->GetCondition(), new_weapon->GetCondition(), .05f))
+	{
+		return weapon->GetCondition() >= new_weapon->GetCondition();
+	}
 
 	if (weapon->ef_weapon_type() != new_weapon->ef_weapon_type())
-		return				(weapon->Cost() >= new_weapon->Cost());
+	{
+		return weapon->Cost() >= new_weapon->Cost();
+	}
 
-	u32						weapon_rank = get_rank(weapon->cNameSect());
+	u32 weapon_rank = get_rank(weapon->cNameSect());
 
 	if (weapon_rank != (u32)new_weapon_rank)
-		return				(weapon_rank >= (u32)new_weapon_rank);
+	{
+		return weapon_rank >= (u32)new_weapon_rank;
+	}
 
-	return					(true);
+	return true;
 }
 
-bool CAI_Stalker::can_take							(CInventoryItem const * item)
+bool CAI_Stalker::can_take(CInventoryItem const* item)
 {
 	if (!item)
-		return					(false);
+	{
+		return false;
+	}
+
 	CInventoryItem* II = const_cast<CInventoryItem*>(item);
 	if (!II || II->object().getDestroy())
-		return					(false);
-	const CWeapon				*new_weapon = II->cast_weapon();
+	{
+		return false;
+	}
+
+	const CWeapon* new_weapon = II->cast_weapon();
 	if (!new_weapon)
-		return					(false);
+	{
+		return false;
+	}
 
-	bool						new_weapon_enough_ammo = enough_ammo(new_weapon);
-	u32							new_weapon_rank = get_rank(new_weapon->cNameSect());
+	bool new_weapon_enough_ammo = enough_ammo(new_weapon);
+	u32	new_weapon_rank = get_rank(new_weapon->cNameSect());
 
-	TIItemContainer::iterator	I = inventory().m_all.begin();
-	TIItemContainer::iterator	E = inventory().m_all.end();
-	for ( ; I != E; ++I)
-		if (conflicted(*I,new_weapon,new_weapon_enough_ammo,new_weapon_rank))
-			return				(false);
+	for (PIItem item : inventory().m_all)
+	{
+		if (conflicted(item, new_weapon, new_weapon_enough_ammo, new_weapon_rank))
+		{
+			return false;
+		}
+	}
 
-	return						(true);
+	return true;
 }
 
 void CAI_Stalker::remove_personal_only_ammo			(const CInventoryItem *item)
@@ -427,36 +501,48 @@ void CAI_Stalker::remove_personal_only_ammo			(const CInventoryItem *item)
 	}
 }
 
-void CAI_Stalker::update_conflicted					(CInventoryItem *item, const CWeapon *new_weapon)
+void CAI_Stalker::update_conflicted(CInventoryItem* item, const CWeapon* new_weapon)
 {
-	if (non_conflicted(item,new_weapon))
+	if (non_conflicted(item, new_weapon))
+	{
 		return;
+	}
 
-	remove_personal_only_ammo	(item);
-	item->SetDropManual			(TRUE);
+	remove_personal_only_ammo(item);
+	item->SetDropManual(TRUE);
 }
 
-void CAI_Stalker::on_after_take						(const CGameObject *object)
+void CAI_Stalker::on_after_take(const CGameObject* object)
 {
 	if (!object)
+	{
 		return;
+	}
 
 	if (!g_Alive())
+	{
 		return;
+	}
 
-	if (!READ_IF_EXISTS(pSettings,r_bool,cNameSect(),"use_single_item_rule",true))
+	if (!READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "use_single_item_rule", true))
+	{
 		return;
+	}
 
 	CGameObject* GO = const_cast<CGameObject*>(object);
 	if (!GO)
+	{
 		return;
+	}
 
-	const CWeapon				*new_weapon = GO->cast_weapon();
+	const CWeapon* new_weapon = GO->cast_weapon();
 	if (!new_weapon)
+	{
 		return;
+	}
 
-	TIItemContainer::iterator	I = inventory().m_all.begin();
-	TIItemContainer::iterator	E = inventory().m_all.end();
-	for ( ; I != E; ++I)
-		update_conflicted		(*I,new_weapon);
+	for (PIItem item : inventory().m_all)
+	{
+		update_conflicted(item, new_weapon);
+	}
 }

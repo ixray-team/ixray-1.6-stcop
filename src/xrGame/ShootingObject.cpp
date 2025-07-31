@@ -198,8 +198,7 @@ void CShootingObject::Light_Render	(const Fvector& P)
 // Particles
 //////////////////////////////////////////////////////////////////////////
 
-void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR particles_name, 
-									 const Fvector& pos, const  Fvector& vel, bool auto_remove_flag)
+void CShootingObject::StartParticles(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const  Fvector& vel, bool auto_remove_flag)
 {
 	if(!particles_name) return;
 
@@ -213,15 +212,15 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 	pParticles->SetLiveUpdate(TRUE);
 
 	UpdateParticles(pParticles, pos, vel);
-	CSpectator* tmp_spectr = IsGameTypeSingle() ? NULL : smart_cast<CSpectator*>(Level().CurrentControlEntity());
+	CSpectator* tmp_spectr = IsGameTypeSingle() ? nullptr : Level().CurrentControlEntity()->cast_spectator();
 	bool in_hud_mode = IsHudModeNow();
-	if (in_hud_mode && tmp_spectr &&
-		(tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
+	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 	{
 		in_hud_mode = false;
 	}
 	pParticles->Play(in_hud_mode);
 }
+
 void CShootingObject::StopParticles (CParticlesObject*&	pParticles)
 {
 	if(pParticles == nullptr) return;
@@ -286,8 +285,7 @@ void CShootingObject::LoadFlameParticles (LPCSTR section, LPCSTR prefix)
 }
 
 
-void CShootingObject::OnShellDrop	(const Fvector& play_pos,
-									 const Fvector& parent_vel)
+void CShootingObject::OnShellDrop(const Fvector& play_pos, const Fvector& parent_vel)
 {
 	if(!m_sShellParticles) return;
 	if( Device.vCameraPosition.distance_to_sqr(play_pos)>2*2 ) return;
@@ -300,10 +298,9 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 	particles_pos.c.set		(play_pos);
 
 	pShellParticles->UpdateParent		(particles_pos, parent_vel);
-	CSpectator* tmp_spectr = IsGameTypeSingle() ? NULL : smart_cast<CSpectator*>(Level().CurrentControlEntity());
+	CSpectator* tmp_spectr = IsGameTypeSingle() ? nullptr : Level().CurrentControlEntity()->cast_spectator();
 	bool in_hud_mode = IsHudModeNow();
-	if (in_hud_mode && tmp_spectr &&
-		(tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
+	if (in_hud_mode && tmp_spectr && (tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))
 	{
 		in_hud_mode = false;
 	}
@@ -339,7 +336,7 @@ void CShootingObject::StartFlameParticles	()
 	UpdateFlameParticles();
 	
 	
-	CSpectator* tmp_spectr = IsGameTypeSingle() ? NULL : smart_cast<CSpectator*>(Level().CurrentControlEntity());
+	CSpectator* tmp_spectr = IsGameTypeSingle() ? nullptr : Level().CurrentControlEntity()->cast_spectator();
 	bool in_hud_mode = IsHudModeNow();
 	if (in_hud_mode && tmp_spectr &&
 		(tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))

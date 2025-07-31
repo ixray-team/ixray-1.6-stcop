@@ -150,9 +150,9 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	SetWndSize( pos );
 }
 
-void CUIOutfitInfo::UpdateInfo( CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit )
+void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit)
 {
-	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
+	CActor* actor = Level().CurrentViewEntity()->cast_actor();
 	if ( !actor || !cur_outfit )
 	{
 		return;
@@ -182,7 +182,7 @@ void CUIOutfitInfo::UpdateInfo( CCustomOutfit* cur_outfit, CCustomOutfit* slot_o
 
 	if ( m_items[ALife::eHitTypeFireWound] )
 	{
-		IKinematics* ikv = smart_cast<IKinematics*>( actor->Visual() );
+		IKinematics* ikv = PKinematics(actor->Visual());
 		VERIFY( ikv );
 		u16 spine_bone = ikv->LL_BoneID( "bip01_spine" );
 
@@ -211,9 +211,9 @@ void CUIOutfitInfo::UpdateInfo( CCustomOutfit* cur_outfit, CCustomOutfit* slot_o
 }
 
 
-void CUIOutfitInfo::UpdateInfo( CHelmet* cur_helmet, CHelmet* slot_helmet )
+void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 {
-	CActor* actor = smart_cast<CActor*>( Level().CurrentViewEntity() );
+	CActor* actor = Level().CurrentViewEntity()->cast_actor();
 	if ( !actor || !cur_helmet )
 	{
 		return;
@@ -243,7 +243,7 @@ void CUIOutfitInfo::UpdateInfo( CHelmet* cur_helmet, CHelmet* slot_helmet )
 
 	if ( m_items[ALife::eHitTypeFireWound] )
 	{
-		IKinematics* ikv = smart_cast<IKinematics*>( actor->Visual() );
+		IKinematics* ikv = PKinematics(actor->Visual());
 		VERIFY( ikv );
 		u16 spine_bone = ikv->LL_BoneID( "bip01_head" );
 
