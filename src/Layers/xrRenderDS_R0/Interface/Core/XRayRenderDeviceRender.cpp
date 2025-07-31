@@ -159,6 +159,15 @@ void XRayRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u
 
 void XRayRenderDeviceRender::Reset(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
 {
+	SDL_SetWindowFullscreen(g_AppInfo.Window, 0);
+	SDL_SetWindowSize(window, psCurrentVidMode[0], psCurrentVidMode[0]);
+	dwWidth = psCurrentVidMode[0];
+	dwHeight = psCurrentVidMode[1];
+
+	const bool bCentered = !Core.ParamsData.test(ECoreParams::no_center_screen);
+	if (bCentered) {
+		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	}
 }
 
 void XRayRenderDeviceRender::Create(SDL_Window* window, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool)
