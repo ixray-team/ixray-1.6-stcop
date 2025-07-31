@@ -394,17 +394,17 @@ void CExportSkeleton::SSplit::Save(IWriter& F)
 */    
 }
 
-
+VIMP_Processor processor_skeleton;
 
 void CExportSkeleton::SSplit::MakeProgressive()
 {
-	VIPM_Init	();
+	processor_skeleton.VIPM_Init	();
 	for (SkelVertIt vert_it=m_Verts.begin(); vert_it!=m_Verts.end(); vert_it++)
-		VIPM_AppendVertex(vert_it->offs,vert_it->uv);
+		processor_skeleton.VIPM_AppendVertex(vert_it->offs,vert_it->uv);
 	for (SkelFaceIt f_it=m_Faces.begin(); f_it!=m_Faces.end(); f_it++)
-		VIPM_AppendFace(f_it->v[0],f_it->v[1],f_it->v[2]);       
+		processor_skeleton.VIPM_AppendFace(f_it->v[0],f_it->v[1],f_it->v[2]);
 
-	VIPM_Result* R = VIPM_Convert(u32(-1),1.f,1);
+	VIPM_Result* R = processor_skeleton.VIPM_Convert(u32(-1),1.f,1);
 
 	if (R){
 		// Permute vertices
@@ -430,7 +430,7 @@ void CExportSkeleton::SSplit::MakeProgressive()
 	}
 	
 	// cleanup
-	VIPM_Destroy		();
+	processor_skeleton.VIPM_Destroy		();
 }
 
 void CExportSkeleton::SSplit::MakeStripify()

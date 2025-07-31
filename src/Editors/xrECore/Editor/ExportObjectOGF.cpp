@@ -190,17 +190,19 @@ void CExportObjectOGF::SSplit::Save(IWriter& F, int& chunk_id)
     }
 }
 
+
+VIMP_Processor processor_ogf;
 void CObjectOGFCollectorPacked::MakeProgressive()
 {
-    VIPM_Init();
+    processor_ogf.VIPM_Init();
 
     for (OGFVertIt vert_it = m_Verts.begin(); vert_it != m_Verts.end(); ++vert_it)
-        VIPM_AppendVertex(vert_it->P, vert_it->UV);
+        processor_ogf.VIPM_AppendVertex(vert_it->P, vert_it->UV);
 
     for (OGFFaceIt f_it = m_Faces.begin(); f_it != m_Faces.end(); ++f_it)
-        VIPM_AppendFace(f_it->v[0], f_it->v[1], f_it->v[2]);
+        processor_ogf.VIPM_AppendFace(f_it->v[0], f_it->v[1], f_it->v[2]);
 
-    VIPM_Result* R = VIPM_Convert(u32(-1), 1.f, 1);
+    VIPM_Result* R = processor_ogf.VIPM_Convert(u32(-1), 1.f, 1);
     if (R)
     {
         // Permute vertices
@@ -227,7 +229,7 @@ void CObjectOGFCollectorPacked::MakeProgressive()
     }
 
     // cleanup
-    VIPM_Destroy();
+    processor_ogf.VIPM_Destroy();
 }
 
 void CObjectOGFCollectorPacked:: OptimizeTextureCoordinates()
