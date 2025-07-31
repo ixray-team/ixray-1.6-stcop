@@ -2,16 +2,12 @@
 
 #include "../Shader_xrLC.h"
 #include "../../xrCore/xrPool.h"
-//#include "xrface.h"
-#include "xrFaceDefs.h"
+#include "xrFace.h"
 #include "xrDeflectorDefs.h"
 #include "b_build_texture.h"
 #include "base_lighting.h"
 #include "../../Include/Editors/communicate.h"
-//#include "mu_model_face.h"
-//#include "mu_model_face_defs.h"
-//struct _face;
-//struct _vertex;
+
 namespace CDB{
 class MODEL;
 class CollectorPacked;

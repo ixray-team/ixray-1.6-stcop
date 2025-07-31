@@ -11,9 +11,7 @@
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/mu_model_light.h"
 
-
-#include <../xrForms/CompilersUI.h>
-extern CompilersMode gCompilerMode;
+#include "../xrForms/CompilersUI.h"
 
 //#include "../xrLC_Light/lcnet_task_manager.h"
 void	calc_ogf		( xrMU_Model &	mu_model );
@@ -115,8 +113,6 @@ void CBuild::Light_prepare()
 #include "../xrLC_Light/Lightmap.h"
 #include "../xrLC_Light/xrDeflectorDefs.h"
 
-
-#include <windows.h>
 #include <psapi.h>
 
 size_t last_update_memory = 0;
@@ -136,6 +132,8 @@ size_t GetHeapMemory()
 		last_update_memory = pmc.PrivateUsage;
 		return pmc.PrivateUsage;
 	}
+
+	return 0;
 };
 
 size_t GetMemoryUsed()

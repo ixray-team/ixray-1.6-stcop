@@ -276,6 +276,8 @@ const xr_vector<CNotYetVisibleObject>& CScriptGameObject::not_yet_visible_object
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot access class member not_yet_visible_objects!");
 	NODEFAULT;
+
+	return {};
 }
 
 float CScriptGameObject::visibility_threshold() const
