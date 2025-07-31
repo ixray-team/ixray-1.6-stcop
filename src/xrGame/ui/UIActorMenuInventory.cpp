@@ -37,6 +37,9 @@
 #include "../actor_defs.h"
 #include "../InventoryBox.h"
 
+#include "../game_sv_single.h"
+#include "ai_object_location.h"
+
 
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 
@@ -853,6 +856,7 @@ void CUIActorMenu::ActivatePropertiesBox()
 		PropertiesBoxForAddon(item, b_show);
 		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
+		PropertiesBoxForParse(item, b_show);
 		PropertiesBoxForDrop(cell_item, item, b_show);
 	}
 	else if(m_currMenuMode == mmUpgrade) {
@@ -1162,6 +1166,15 @@ void CUIActorMenu::PropertiesBoxForRepair( PIItem item, bool& b_show )
 	}
 }
 
+void CUIActorMenu::PropertiesBoxForParse(PIItem item, bool& b_show)
+{
+	if (!item->m_parse_params.m_items.empty() && !item->m_parse_params.m_chances.empty())
+	{
+		m_UIPropertiesBox->AddItem("st_parse", nullptr, INVENTORY_PARSE_ITEM);
+		b_show = true;
+	}
+}
+
 void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 {
 	PIItem			item		= CurrentIItem();
@@ -1317,6 +1330,43 @@ void CUIActorMenu::ProcessPropertiesBoxClicked( CUIWindow* w, void* d )
 			pPda->PlayScriptFunction();
 			break;
 		}
+	case INVENTORY_PARSE_ITEM:
+	{
+		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+		if (tpGame == nullptr) {
+			break;
+		}
+
+		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor == nullptr) {
+			break;
+		}
+
+		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
+
+		int Count = item->m_parse_params.m_items.size();
+		int Count2 = item->m_parse_params.m_chances.size();
+
+		for (int i = 0; i < Count; ++i)
+		{
+			float chance = 0.0f;
+
+			if (i >= Count2)
+			{
+				chance = item->m_parse_params.m_chances.back();
+			}
+			else
+			{
+				chance = item->m_parse_params.m_chances[i];
+			}
+
+			if (chance >= ::Random.randF(0.0f, 1.0f))
+			{
+				CALifeSimulator__spawn_item2(&tpGame->alife(), *item->m_parse_params.m_items[i], actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
+			}
+		}
+		item->object().DestroyObject();
+	}break;
 	}//switch
 
 	SetCurrentItem( nullptr );

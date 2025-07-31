@@ -161,6 +161,11 @@ public:
 
 	SInvItemPlace				m_ItemCurrPlace;
 
+	struct SParseItem
+	{
+		RStringVec m_items = {};
+		FloatVec m_chances = {};
+	} m_parse_params;
 
 	virtual void				OnMoveToSlot		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};
