@@ -128,6 +128,12 @@ public:
 	virtual void			net_Export_Sounds(NET_Packet& P);
 	virtual void			net_Import_Sounds(NET_Packet& P);
 
+	//NET MP simple Sync
+
+	virtual bool			HasCustomSyncFlag() const { return false; }
+	virtual u8				GetCustomSyncFlag() const { return 0; }
+	virtual void			ProcessCustomSyncFlag_CL(u8 flags) {};
+
 	//save/load server serialization
 	virtual void			save							(NET_Packet &output_packet) {inherited::save(output_packet);}
 	virtual void			load							(IReader &input_packet)		{inherited::load(input_packet);}
