@@ -1992,7 +1992,9 @@ void CSE_ALifeMonsterBase::SyncWrite(NET_Packet& Packet)
 
 	if (phSyncFlag) 
 	{
+#ifdef XRGAME_EXPORTS
 		physics_state->write(Packet);
+#endif
 	}
 	else 
 	{
@@ -2030,8 +2032,10 @@ void CSE_ALifeMonsterBase::SyncRead(NET_Packet& Packet)
 
 	if (phSyncFlag)
 	{
+#ifdef XRGAME_EXPORTS
 		physics_state->read(Packet);
 		o_Position.set(physics_state->physics_position);
+#endif
 	}
 	else
 	{
