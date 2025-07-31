@@ -38,18 +38,22 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 {	
 	bool IsDead = health <= 0;
 
- 	u8 flags = 0;
-	u32 curvalue = 0;
-	write_bits<u8>(1, m_wounded, curvalue, flags);
-	write_bits<u8>(1, phSyncFlag, curvalue, flags);
-	write_bits<u8>(1, IsDead, curvalue, flags);
-	write_bits<u8>(1, canOpenDialog, curvalue, flags);
-	tNetPacket.w_u8(flags);
+	std::bitset<8> Mask;
+	Mask.set(0, m_wounded);
+	Mask.set(1, phSyncFlag);
+	Mask.set(2, IsDead);
+	Mask.set(3, canOpenDialog);
+	Mask.set(4, physics_state_enabled);
 
-	float whealth = health;
-	clamp(whealth, 0.f, 1.f);
+	tNetPacket.w_u8((u8)Mask.to_ulong());
 
-	tNetPacket.w_float_q8(whealth, 0, 1);												// 2
+	if (!IsDead)
+	{
+		float whealth = health;
+		clamp(whealth, 0.f, 1.f);
+
+		tNetPacket.w_float_q8(whealth, 0, 1);
+	}
 
 	// было все в Float Стало с квантованием (4 байт) было 16
 	tNetPacket.w_angle8(o_torso.pitch);
@@ -65,7 +69,7 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 	}
 
 	// Slot
-	tNetPacket.w_u16(u_active_slot);													// 6 + 5 = 11
+	tNetPacket.w_u8((u8)u_active_slot);													// 6 + 5 = 11
  	if (u_active_slot != 0)
 	{
 		tNetPacket.w_u16(u_active_id);
@@ -74,7 +78,6 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 
 	if (phSyncFlag)		// 17 BYTE														// 11+17 = 28 Байт на нпс
 	{
-		tNetPacket.w_u8(physics_state_enabled);
 		tNetPacket.w_vec3(physics_position);
 		tNetPacket.w_u32(PhysicDwTime);
 	}
@@ -84,18 +87,24 @@ void aistalker_state_net::CSE_StateWrite(NET_Packet& tNetPacket)
 
 void aistalker_state_net::CSE_StateRead(NET_Packet& tNetPacket)
 {
-	u32 curvalue = 0;
-	u8 flags = 0;
-	tNetPacket.r_u8(flags);
+	u8 BitRawData = tNetPacket.r_u8();
 
-	m_wounded = read_bits<u8>(1, curvalue, flags);
-	phSyncFlag = read_bits<u8>(1, curvalue, flags);
-	bool IsDead = read_bits<u8>(1, curvalue, flags);
-	canOpenDialog = read_bits<u8>(1, curvalue, flags);
-	
-	tNetPacket.r_float_q8(health, 0, 1);
- 	if (IsDead)
+	std::bitset<8> Mask(BitRawData);
+
+	m_wounded = Mask.test(0);
+	phSyncFlag = Mask.test(1);
+	bool IsDead = Mask.test(2);
+	canOpenDialog = Mask.test(3);
+	bool TmpPhStateEnable = Mask.test(4);
+
+	if (IsDead)
+	{
 		health = 0;
+	}
+	else
+	{
+		tNetPacket.r_float_q8(health, 0, 1);
+	}
 
 	tNetPacket.r_angle8(o_torso.pitch);
 	tNetPacket.r_angle8(o_torso.yaw);
@@ -110,16 +119,16 @@ void aistalker_state_net::CSE_StateRead(NET_Packet& tNetPacket)
  
 	// Slot		5 Байт
  	/* SINGLE */
-	tNetPacket.r_u16(u_active_slot);
+	u_active_slot = tNetPacket.r_u8();
 	if (u_active_slot != 0)
 	{
 		tNetPacket.r_u16(u_active_id);
 		tNetPacket.r_u8(u_active_stripped);
 	}
  
-	if (phSyncFlag)		// Метод Fvector 1+12+4 = 17 байт
+	if (phSyncFlag)
 	{
-		physics_state_enabled = tNetPacket.r_u8();
+		physics_state_enabled = TmpPhStateEnable;
 		tNetPacket.r_vec3(physics_position);
 		PhysicDwTime = tNetPacket.r_u32();
 		Position.set(physics_position);
@@ -338,16 +347,6 @@ void aistalker_state_net::GetStateCSE(CSE_ALifeHumanStalker* stalker)
 	stalker->o_torso = o_torso;
 
 	stalker->o_Position = Position;
-
-//	stalker->s_team = id_TeamCSE;
-//	stalker->s_group = id_GroupCSE;
-//	stalker->s_squad = id_SquadCSE;
-//
-//	stalker->m_tNextGraphID = graph_vertex_id;
-//	stalker->m_tPrevGraphID = graph_vertex_id;
-//
-//	stalker->m_fDistanceFromPoint = distance_lvgraph;
-//	stalker->m_fDistanceToPoint = distance_lvgraph;
 
 	// Затычка чтобы много не жрало сети
 	CAI_Stalker* sta = smart_cast<CAI_Stalker*>(Level().Objects.net_Find(stalker->ID));

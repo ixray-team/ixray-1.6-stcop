@@ -380,6 +380,7 @@ void CObjectList::net_Import		(NET_Packet* Packet)
 	{
 		u16 ID;		Packet->r_u16	(ID);
 		u8  size;	Packet->r_u8	(size);
+
 		CObject* P  = net_Find		(ID);
 		if (P)		
 		{
@@ -391,6 +392,11 @@ void CObjectList::net_Import		(NET_Packet* Packet)
 			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
 			{
 				P->SyncRead(*Packet);
+			}
+
+			if ((Packet->r_tell() - rsize) != size)
+			{
+				Debug.fatal(DEBUG_INFO, "BEER");
 			}
 
 			if (g_Dump_Import_Obj) Msg("* %s : %d - %d", *(P->cNameSect()), size, Packet->r_tell() - rsize);

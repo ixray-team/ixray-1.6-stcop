@@ -20,6 +20,11 @@ BOOL CAI_Stalker::net_SaveRelevant()
 
 void CAI_Stalker::net_Export(NET_Packet& P)
 {
+	if (!IsGameTypeSingle())
+	{
+		return;
+	}
+
 	R_ASSERT(Local());
 
 	// export last known packet
@@ -63,6 +68,11 @@ void CAI_Stalker::net_Export(NET_Packet& P)
 
 void CAI_Stalker::net_Import(NET_Packet& P)
 {
+	if (!IsGameTypeSingle())
+	{
+		return;
+	}
+
 	R_ASSERT(Remote());
 	u8 flags;
 
@@ -479,8 +489,9 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 	if (data.id.idx > 4096)
 		return;
 
+#ifdef _DEBUG
 	Msg("UpdateScriptAnim Type[%u] Motion[%u] Slot[%u] IDX[%u]", TYPE, data.id.idx, data.id.slot, data.IDX);
-
+#endif
 	 
 	if (TYPE == 1) // TORSO
 	{
