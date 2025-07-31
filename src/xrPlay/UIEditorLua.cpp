@@ -150,6 +150,7 @@ void EditorLuaCodespace()
 
 void EditorLuaInit()
 {
+    PROF_EVENT("EditorLuaInit");
     SNIPPET_JSON_NAME(jsonSnippetsPath);
 
     if (FS.exist(jsonSnippetsPath))

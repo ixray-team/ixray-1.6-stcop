@@ -183,6 +183,7 @@ bool CRenderDevice::InitRenderDeviceEditor()
 
 bool CRenderDevice::InitRenderDevice(APILevel API)
 {
+	PROF_EVENT("InitRenderDevice");
 	fill_vid_mode_list();
 
 	CImGuiManager& ImManager = CImGuiManager::Instance();

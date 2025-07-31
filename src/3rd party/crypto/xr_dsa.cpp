@@ -30,6 +30,7 @@ shared_str const xr_dsa::sign		(private_key_t const & priv_key,
 									 u8 const* data,
 									 u32 const data_size)
 {
+	PROF_EVENT("crypto::xr_dsa::sign");
 	BN_bin2bn(priv_key.m_value, sizeof(priv_key.m_value), m_dsa->priv_key);
 
 	unsigned int	sign_size = DSA_size(m_dsa);
