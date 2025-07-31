@@ -11,6 +11,7 @@
 #include "../../xrEUI/imgui_EditorEx.h"
 
 #include "Plugins/PluginManager.h"
+#include "Plugins/PluginsUIRun.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -554,7 +555,19 @@ void UIMainMenuForm::Draw()
 			{
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))
 				{
-					Plug->Run();
+					if (Plug->IsSimple())
+					{
+						Plug->Run();
+					}
+					else
+					{
+						UI->Push(new CPluginUIRun(Plug));
+					}
+				}
+				
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip(Plug->Desc.c_str());
 				}
 			}
 			ImGui::EndMenu();
