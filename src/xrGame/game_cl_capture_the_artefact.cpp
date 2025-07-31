@@ -686,7 +686,8 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	m_bSkinSelected					= TRUE;
 	m_bSpectatorSelected			= FALSE;
 	Msg("* player [%s][%d] changed skin to %d", local_player->getName(), local_player->GameID, local_player->skin);
-	ReInitRewardGenerator			(local_player);
+	if (EngineExternal().CallOfPripyatMode())
+		ReInitRewardGenerator			(local_player);
 	//SpawnMe();
 }
 
@@ -1152,7 +1153,8 @@ void game_cl_CaptureTheArtefact::OnTeamChanged()
 	m_game_ui->SetRank			(static_cast<ETeam>(local_player->team),
 									local_player->rank);
 	m_game_ui->ReInitPlayerDefItems	();
-	ReInitRewardGenerator			(local_player);
+	if (EngineExternal().CallOfPripyatMode())
+		ReInitRewardGenerator			(local_player);
 	UpdateMapLocations				();
 }
 

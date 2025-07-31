@@ -5,6 +5,7 @@
 #include "Level.h"
 #include "game_cl_artefacthunt.h"
 #include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIMoneyIndicator.h"
@@ -35,16 +36,23 @@ void CUIGameAHunt::Init	(int stage)
 		uiXml.Load						(CONFIG_PATH, UI_PATH, "ui_game_ahunt.xml");
 
 		CUIXmlInit::InitWindow			(uiXml, "global", 0,		m_window);
-		CUIXmlInit::InitTextWnd			(uiXml, "fraglimit",0,		m_pFragLimitIndicator);
+		CUIXmlInit::InitStatic			(uiXml, "fraglimit",0,		m_pFragLimitIndicator);
 
-		m_pReinforcementInidcator		= new CUITextWnd();
-		m_pReinforcementInidcator->SetAutoDelete(true);
-		CUIXmlInit::InitTextWnd			(uiXml, "reinforcement", 0, m_pReinforcementInidcator);		
-
+		if (EngineExternal().CallOfPripyatMode())
+		{
+			m_pReinforcementInidcator = new CUITextWnd();
+			m_pReinforcementInidcator->SetAutoDelete(true);
+			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
+		}
+		else
+		{
+			m_pReinforcementInidcator_old = new CUIProgressShape();
+			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
+		}
 		CUIXmlInit::InitStatic			(uiXml, "team1_icon", 0,	m_team1_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team2_icon", 0,	m_team2_icon);
-		CUIXmlInit::InitTextWnd			(uiXml, "team1_score", 0,	m_team1_score);
-		CUIXmlInit::InitTextWnd			(uiXml, "team2_score", 0,	m_team2_score);
+		CUIXmlInit::InitStatic			(uiXml, "team1_score", 0,	m_team1_score);
+		CUIXmlInit::InitStatic			(uiXml, "team2_score", 0,	m_team2_score);
 
 		m_pMoneyIndicator->InitFromXML	(uiXml);
 		m_pRankIndicator->InitFromXml	(uiXml);
@@ -52,7 +60,8 @@ void CUIGameAHunt::Init	(int stage)
 	if(stage==2)
 	{ //after
 		inherited::Init					(stage);
-		m_window->AttachChild			(m_pReinforcementInidcator);
+		if (m_pReinforcementInidcator)
+			m_window->AttachChild			(m_pReinforcementInidcator);
 	}
 };
 
@@ -63,6 +72,8 @@ void CUIGameAHunt::UnLoad()
 
 CUIGameAHunt::~CUIGameAHunt()
 {
+	if (m_pReinforcementInidcator_old)
+		xr_delete(m_pReinforcementInidcator_old);
 	delete_data			(m_pBuySpawnMsgBox);
 }
 
@@ -85,4 +96,18 @@ void CUIGameAHunt::SetClGame (game_cl_GameState* g)
 void CUIGameAHunt::SetBuyMsgCaption(LPCSTR str)
 {
 	m_buy_msg_caption->SetTextST(str);
+}
+
+void CUIGameAHunt::Render()
+{
+	if (m_pReinforcementInidcator_old)
+		m_pReinforcementInidcator_old->Draw();
+	inherited::Render();
+}
+
+void CUIGameAHunt::OnFrame()
+{
+	inherited::OnFrame();
+	if (m_pReinforcementInidcator_old)
+		m_pReinforcementInidcator_old->Update();
 }

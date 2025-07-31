@@ -32,7 +32,7 @@ private:
 	CUIStatic*			m_team2_icon;
 	CUITextWnd*			m_team1_score;
 	CUITextWnd*			m_team2_score;
-	CUITextWnd*			m_pFragLimitIndicator;
+	CUIStatic*			m_pFragLimitIndicator;
 	game_cl_CaptureTheArtefact*			m_game;
 
 	CUIMoneyIndicator*				m_pMoneyIndicator;

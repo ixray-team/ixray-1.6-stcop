@@ -1149,7 +1149,8 @@ void				game_cl_Deathmatch::OnGameRoundStarted				()
 		if (pCurBuyMenu && pCurPresetItems)
 		{
 			LoadTeamDefaultPresetItems(GetTeamMenu(local_player->team), pCurBuyMenu, pCurPresetItems);
-			ReInitRewardGenerator(local_player);
+			if (EngineExternal().CallOfPripyatMode())
+				ReInitRewardGenerator(local_player);
 		}
 	}
 	if (pCurBuyMenu) pCurBuyMenu->ClearPreset(_preset_idx_last);
@@ -1214,7 +1215,8 @@ void game_cl_Deathmatch::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 	SetCurrentSkinMenu				();
 	if (pCurSkinMenu)				pCurSkinMenu->SetCurSkin(local_player->skin);
 	SetCurrentBuyMenu				();
-	ReInitRewardGenerator			(local_player);
+	if (EngineExternal().CallOfPripyatMode())
+		ReInitRewardGenerator			(local_player);
 	m_bSpectatorSelected			= FALSE;
 	
 	if (m_bMenuCalledFromReady)

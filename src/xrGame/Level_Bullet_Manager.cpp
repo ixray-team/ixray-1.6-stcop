@@ -121,7 +121,7 @@ CBulletManager::~CBulletManager()
 void CBulletManager::Load		()
 {
 	char const * bullet_manager_sect = "bullet_manager";
-	if (!IsGameTypeSingle())
+	if (!IsGameTypeSingle() && EngineExternal().CallOfPripyatMode())
 	{
 		bullet_manager_sect = "mp_bullet_manager";
 	}

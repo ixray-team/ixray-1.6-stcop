@@ -67,7 +67,7 @@ void	CUIGameDM::Init(int stage)
 		m_pMoneyIndicator->SetAutoDelete(true);
 		m_pRankIndicator				= new CUIRankIndicator();
 		m_pRankIndicator->SetAutoDelete	(true);
-		m_pFragLimitIndicator			= new CUITextWnd();
+		m_pFragLimitIndicator			= new CUIStatic();
 		m_pFragLimitIndicator->SetAutoDelete(true);
 		
 		inherited::Init					(stage);
@@ -89,7 +89,7 @@ void	CUIGameDM::Init(int stage)
 		CUIXmlInit::InitWindow			(uiXml,"global", 0, m_window);
 		m_pMoneyIndicator->InitFromXML	(uiXml);
 		m_pRankIndicator->InitFromXml	(uiXml);
-		CUIXmlInit::InitTextWnd			(uiXml,"fraglimit",0, m_pFragLimitIndicator);
+		CUIXmlInit::InitStatic			(uiXml,"fraglimit",0, m_pFragLimitIndicator);
 	}
 	if(stage==2)
 	{ //after
