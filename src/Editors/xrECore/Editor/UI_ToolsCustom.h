@@ -241,6 +241,12 @@ public:
 
     virtual void SetAxis(ETAxis axis);
 
+    virtual void PlayCurrent(int idx = -1) {};
+    virtual void StopCurrent(bool bFinishPlaying) {};
+    virtual void SelectEffect(LPCSTR name) {};
+    virtual void RemoveAction(u32 idx, bool bForced = false) {};
+    virtual void SetCurrentPG(PS::CPGDef* P) {};
+
     ETAxis GetAxis() const
     {
         return m_Axis;
