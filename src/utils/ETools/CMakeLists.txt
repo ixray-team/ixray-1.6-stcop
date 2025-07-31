@@ -29,7 +29,6 @@ target_compile_definitions(ETools PRIVATE _USRDLL)
 target_link_libraries(ETools PUBLIC xrCore)
 target_link_libraries(ETools PUBLIC xrCDB)
 target_link_libraries(ETools PUBLIC xrSound)
-target_link_libraries(ETools PUBLIC QSlim)
 target_link_libraries(ETools PUBLIC imgui)
 
 # DirectX SDK
