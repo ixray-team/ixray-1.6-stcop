@@ -67,7 +67,7 @@
 		<texture>ui_hud_icon_artefact</texture>
 	</artefact_static>
 
-	<disk_io x="760" y="750" width="14" height="16" stretch="1">
+	<disk_io x="760" y="750" width="12" height="16" stretch="1">
 		<texture>ui\ui_disk_io</texture>
 	</disk_io>
 
@@ -81,13 +81,13 @@
 
 	<new_contact_snd>detectors\contact_1</new_contact_snd>	
 
-	<hud_states x="802" y="647" width="222" height="121">
+	<hud_states x="802.5" y="647.5" width="222" height="121">
 
 		<back x="0" y="0" width="222" height="121" stretch="1">
 			<texture>ui_hud2_rad01_back</texture>
 			<!--text x ="10" y="0" align="c" font="letterica16" r="238" g="155" b="225" a="0"/-->
 		</back>
-		<back_v x="203" y="-219" width="19" height="219" stretch="1">
+		<back_v x="203" y="-218" width="19" height="219" stretch="1">
 			<texture>ui_hud2_rad01_back2v</texture>
 		</back_v>
 		<back_over_arrow x="150" y="70" width="55" height="51" stretch="1">
@@ -146,12 +146,14 @@
 			<texture>ui_hud2_res_eat</texture>
 		</indicator_starvation>
 
-		<progress_bar_health x="29" y="56" width="95" height="9" horz="1" min="0" max="100" pos="0">
+		<progress_bar_health x="29" y="56" width="95" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerHealth * 55.0) / 55.0">
 			<progress>
 				<texture>ui_hud_shk_health</texture>
 			</progress>
 		</progress_bar_health>
-		<progress_bar_armor x="29" y="37" width="95" height="9" horz="1" min="0" max="100" pos="0">
+		<progress_bar_armor x="29" y="37" width="95" height="9" horz="1" min="0" max="1" pos="0"
+		expression="floor(fltPlayerArmor * 55.0) / 55.0">
 			<progress>
 				<texture>ui_hud_shk_armour</texture>
 			</progress>
@@ -163,12 +165,13 @@
 			</__auto_static>
 		</static_armor>
 
-    <progress_bar_stamina x="150" y="85" width="57" height="14" horz="1" min="0" max="100" pos="0">
+    <progress_bar_stamina x="150" y="85" width="57" height="14" horz="1" min="0" max="1" pos="0"
+	expression="floor(fltPlayerPower * 55.0) / 55.0">
       <progress>
         <texture>ui_hud_shk_stamina_new</texture>
       </progress>
     </progress_bar_stamina>
-*
+
     <static_ammo x="66" y="80" width="60" height="28" stretch="1">
 			<text align="r" complex_mode="0" font="graffiti22" color="ui_7">Ammo</text>
 		</static_ammo>
