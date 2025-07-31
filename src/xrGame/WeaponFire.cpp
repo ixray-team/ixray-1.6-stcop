@@ -142,7 +142,7 @@ void CWeapon::StopShooting()
 		StopFlameParticles	();	
 
 	SwitchState(eIdle);
-
+	
 	bWorking = false;
 }
 
