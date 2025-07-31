@@ -27,4 +27,7 @@
 	    <texture id="ui_flag_russia_t" x="0" y="0" width="256" height="256" />
 	    <texture id="ui_flag_russia_d" x="0" y="0" width="256" height="256" />
    </file>
+   <file name="ui\ui_actor_newsmanager_icons">
+    <texture id="ui_ixray_spawn_icon"     	x="332" y="423" width="83" height="47" />
+   </file>
 </w>
