@@ -28,9 +28,10 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     
     // Create temp-surface
     IDirect3DSurface9* pFB = nullptr;
-    D3DLOCKED_RECT D;
-    ScratchImage scratchImage;
-    ScratchImage smallScratchImage;
+    D3DLOCKED_RECT D = {};
+    ScratchImage scratchImage = {};
+    ScratchImage smallScratchImage = {};
+    Blob saved = {};
 
     HRESULT hr = RDevice->CreateOffscreenPlainSurface(RCache.get_width(), RCache.get_height(), D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &pFB, nullptr);
     if (hr != D3D_OK) {
@@ -76,51 +77,32 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     }
 
     hr = pFB->UnlockRect();
-    if (hr != D3D_OK) {
+    if (hr != D3D_OK)
         goto _end_;
-    }
 
     // Save
     switch (mode) {
     case IRender_interface::SM_FOR_GAMESAVE:
     {
-        // Create a smaller texture
-        hr = Resize(*scratchImage.GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE, 
-            TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, smallScratchImage);
-        if (FAILED(hr))
-            goto _end_;
+        R_CHK(Resize(*scratchImage.GetImage(0, 0, 0), GAMESAVE_SIZE, GAMESAVE_SIZE,
+            TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, smallScratchImage));
 
-        // Save to memory
-        Blob saved;
-        auto hr = SaveToDDSMemory(*smallScratchImage.GetImage(0, 0, 0), DirectX::DDS_FLAGS_NONE, saved);
-        if (hr == D3D_OK) {
-            auto fs = FS.w_open(name);
-            if (fs) {
-                fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
-                FS.w_close(fs);
-            }
-        }
+        R_CHK(SaveToDDSMemory(*smallScratchImage.GetImage(0, 0, 0), DirectX::DDS_FLAGS_NONE, saved));
+        auto fs = FS.w_open(name);  R_ASSERT(fs);
+        fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
+        FS.w_close(fs);
     }
     break;
     case IRender_interface::SM_FOR_MPSENDING:
     {
-        // Create a smaller texture
-        Resize(*scratchImage.GetImage(0, 0, 0), SM_FOR_SEND_WIDTH, SM_FOR_SEND_HEIGHT, 
-            TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, smallScratchImage);
+        R_CHK(Resize(*scratchImage.GetImage(0, 0, 0), SM_FOR_SEND_WIDTH, SM_FOR_SEND_HEIGHT,
+            TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, smallScratchImage));
+        R_CHK(SaveToDDSMemory(*smallScratchImage.GetImage(0, 0, 0), DDS_FLAGS::DDS_FLAGS_NONE, saved));
 
-        // Save to memory
-        Blob saved;
-        auto hr = SaveToDDSMemory(*smallScratchImage.GetImage(0, 0, 0), DDS_FLAGS::DDS_FLAGS_NONE, saved);
-
-        if (hr != D3D_OK) {
-            goto _end_;
-        }
         if (!memory_writer) {
-            auto fs = FS.w_open(name);
-            if (fs) {
-                fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
-                FS.w_close(fs);
-            }
+            auto fs = FS.w_open(name);  R_ASSERT(fs);
+            fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
+            FS.w_close(fs);
         }
         else {
             memory_writer->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
@@ -128,40 +110,28 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
     }break;
     case IRender_interface::SM_NORMAL:
     {
-        string64 t_stemp;
-        string_path buf;
-        Blob saved;
-        IWriter* fs;
+        string64 t_stemp = {};
+        string_path buf = {};
+
         if (ps_screenshot_format == 0) // jpg screenshots - default one
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).jpg", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
             R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, saved));
-
-            fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
-            fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
-            FS.w_close(fs);
-
         }
         else if (ps_screenshot_format == 1) // tga screenshots
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).tga", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
-
-            SaveToTGAMemory(*scratchImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_NONE, saved);
-
-            fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
-            fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
-            FS.w_close(fs);
+            R_CHK(SaveToTGAMemory(*scratchImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_NONE, saved));
         }
         else if (ps_screenshot_format == 2) // png screenshots
         {
             xr_sprintf(buf, sizeof(buf), "ss_%s_%s_(%s).png", Core.UserName, timestamp(t_stemp), (g_pGameLevel) ? g_pGameLevel->name().c_str() : "mainmenu");
-
             R_CHK(SaveToWICMemory(*scratchImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, GUID_ContainerFormatPng, saved));
-
-            fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
-            fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
-            FS.w_close(fs);
         }
+
+        auto fs = FS.w_open("$screenshots$", buf); R_ASSERT(fs);
+        fs->w(saved.GetBufferPointer(), (u32)saved.GetBufferSize());
+        FS.w_close(fs);
     }
     break;
     case IRender_interface::SM_FOR_LEVELMAP:
@@ -177,13 +147,12 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         //	TODO: DX10: This is totally incorrect but mimics 
         //	original behavior. Fix later.
         hr = pFB->LockRect(&D, 0, D3DLOCK_NOSYSLOCK);
-        if (hr != D3D_OK) {
-            return;
-        }
-        hr = pFB->UnlockRect();
-        if (hr != D3D_OK) {
+        if (hr != D3D_OK)
             goto _end_;
-        }
+
+        hr = pFB->UnlockRect();
+        if (hr != D3D_OK)
+            goto _end_;
 
         // save
         u32* data = (u32*)xr_malloc(RCache.get_height() * RCache.get_height() * 4);
