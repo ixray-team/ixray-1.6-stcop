@@ -122,6 +122,8 @@ protected:
 	int				m_iBaseDispersionedBulletsCount;
 	//скорость вылета патронов, на которые не влияет отдача (сделано из-за Абакана)
 	float			m_fBaseDispersionedBulletsSpeed;
+	float			m_fBaseDispersionedBulletsTimeDelta;
+	float			m_fSingleShootsTimeDelta;
 	//скорость вылета остальных патронов
 	float			m_fOldBulletSpeed;
 	Fvector			m_vStartPos, m_vStartDir;
