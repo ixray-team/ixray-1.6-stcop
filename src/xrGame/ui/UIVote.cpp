@@ -19,7 +19,7 @@ CUIVote::CUIVote()
 	for (int i = 0; i<3; i++)
 	{
 		cap[i]			= new CUITextWnd();		cap[i]->SetAutoDelete(true);	AttachChild(cap[i]);
-//		frame[i]		= new CUIFrameWindow();	frame[i]->SetAutoDelete(true);	AttachChild(frame[i]);
+		frame[i]		= new CUIFrameWindow();	frame[i]->SetAutoDelete(true);	AttachChild(frame[i]);
 		list[i]			= new CUIListBox();		list[i]->SetAutoDelete(true);	AttachChild(list[i]);
 	}	
 
@@ -44,8 +44,8 @@ void CUIVote::Init()
 	{
 		xr_sprintf						(path, "vote:list_cap_%d", i+1);
 		CUIXmlInit::InitTextWnd			(xml_doc, path, 0, cap[i]);
-//		xr_sprintf						(path, "vote:list_back_%d", i+1);
-//		CUIXmlInit::InitFrameWindow		(xml_doc, path, 0, frame[i]);
+		xr_sprintf						(path, "vote:list_back_%d", i+1);
+		CUIXmlInit::InitFrameWindow		(xml_doc, path, 0, frame[i], false);
 		xr_sprintf						(path, "vote:list_%d", i+1);
 		CUIXmlInit::InitListBox			(xml_doc, path, 0, list[i]);
 	}	
