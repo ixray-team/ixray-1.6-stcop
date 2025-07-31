@@ -5,6 +5,7 @@
 #include "../xrEngine/IGame_Actor.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrServerEntities/clsid_game.h"
+#include "../xrECore/Editor/UILogForm.h"
 
 EScene* Scene;
 
@@ -718,6 +719,11 @@ void EScene::Play()
 {
 	if (IsPlayInEditor())
 		return;
+
+	if (UILogForm::ClearInPIE())
+	{
+		UILogForm::Clear();
+	}
 
 	if (MainForm->GetTopBarForm()->UseCameraPosForActor)
 	{
