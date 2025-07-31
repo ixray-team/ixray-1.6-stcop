@@ -168,6 +168,8 @@ public:
 	virtual bool 	RayPick			(float& dist, const Fvector& start, const Fvector& dir, SRayPickInfo* pinf=NULL){ return false; };
 	virtual bool 	FrustumPick		(const CFrustum& frustum){ return false; };
 	virtual bool 	SpherePick		(const Fvector& center, float radius){ return false; };
+	virtual void 	BoxQuery		(SPickQuery& pinf) {};
+	virtual void	RayQuery		(SPickQuery& pinf) {};
 
 	void			ResetTransform	(){
 						FScale.set				(1,1,1);
