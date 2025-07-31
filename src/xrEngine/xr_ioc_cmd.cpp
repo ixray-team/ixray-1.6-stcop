@@ -794,6 +794,9 @@ void CCC_Register()
 
 	extern int g_svDedicateServerUpdateReate;
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
+	
+	extern float SheduleScaleDedicated;
+	CMD4(CCC_Float, "sv_shedule_scale", &SheduleScaleDedicated, 0, 5);
 
 	CMD1(CCC_HideConsole,		"hide");
 
