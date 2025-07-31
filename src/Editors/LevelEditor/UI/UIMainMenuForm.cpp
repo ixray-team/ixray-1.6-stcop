@@ -10,6 +10,7 @@
 
 #include "../../xrEUI/imgui_EditorEx.h"
 
+#include "Plugins/PluginManager.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -544,6 +545,18 @@ void UIMainMenuForm::Draw()
 				UI->Push(&CUIHelp::Instance(), false);
 			}
 
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Plugins", ""))
+		{
+			for (IPluginBase* Plug : CPluginsManagers::Instance().Plugins)
+			{
+				if (ImGui::MenuItem(Plug->Name.c_str(), ""))
+				{
+					Plug->Run();
+				}
+			}
 			ImGui::EndMenu();
 		}
 

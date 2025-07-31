@@ -782,8 +782,7 @@ bool EScene::LoadLTX(LPCSTR map_name, bool bUndo)
 		SDL_SetWindowTitle(g_AppInfo.Window, Name.c_str());
 	}
 
-	xr_string 		full_name;
-	full_name 		= map_name;
+	full_name = map_name;
 
 	ELog.Msg( mtInformation, "EScene: loading '%s'", map_name);
 		;
