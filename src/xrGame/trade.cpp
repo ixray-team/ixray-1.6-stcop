@@ -12,6 +12,7 @@
 #include "Level.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
+#include "../xrScripts/script_callback_ex.h"
 
 class CInventoryOwner;
 

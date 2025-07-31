@@ -13,6 +13,7 @@
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "trade_parameters.h"
+#include "../xrScripts/script_callback_ex.h"
 
 bool CTrade::CanTrade()
 {
