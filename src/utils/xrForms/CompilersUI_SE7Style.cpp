@@ -231,7 +231,7 @@ void DrawLCConfig()
 		ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
 
 		gCompilerMode.LC_JSample   = atoi(itemsJitter[item_current_jitter]);
-		gCompilerMode.LC_JSampleMU = atoi(itemsJitter[item_current_jitter_mu]);
+		gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
  
 		ImGui::EndDisabled();
 		ImGui::EndDisabled();
