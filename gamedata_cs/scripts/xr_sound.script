@@ -14,7 +14,7 @@ function set_sound_play(npc_id, sound, faction, point)
 		return
 	end
 	if sound_theme.theme[sound] == nil then
-		--abort("set_sound_play. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
+		abort("set_sound_play. Wrong sound theme [%s], npc[%s]", tostring(sound), npc_id)
 		return
 	end
 	local snd_theme = sound_theme.theme[sound]
@@ -54,7 +54,7 @@ function update(npc_id)
 --				sound_table[npc_id] = sound_theme.theme[sound_table[npc_id]]
 --			end
 
-	        printf("SOUND_CALLBACK from [%s]",npc_id)
+					--printf("SOUND_CALLBACK from [%s] sound_path [%s]",npc_id,sound_table[npc_id].path)
 	        sound_table[npc_id]:callback(npc_id)
 	        sound_table[npc_id] = nil
 		end
@@ -70,6 +70,9 @@ function play_sound_looped(npc_id, sound)
 	end
 	if snd_theme.class_id ~= "looped_sound" then
 		abort("You trying to play sound [%s] which type is not looped", sound)
+	end
+	if looped_sound[npc_id] ~= nil and looped_sound[npc_id][sound] ~= nil and looped_sound[npc_id][sound]:is_playing(npc_id) then
+		return
 	end
 	if snd_theme:play(npc_id) then
 	    printf("PLAY2. looped theme[%s] object[%s]", tostring(sound), npc_id)
@@ -222,13 +225,13 @@ end
 function stop_sounds_by_id(obj_id)
 	local sound = sound_table[obj_id]
 	if sound and sound.stop then
-		sound:stop()
+		sound:stop(obj_id)
 	end
 	local looped_snd = looped_sound[obj_id]
 	if looped_snd then
 		for k,v in pairs(looped_snd) do
 			if v and v:is_playing(obj_id) then
-				v:stop()
+				v:stop(obj_id)
 			end
 		end
 	end
