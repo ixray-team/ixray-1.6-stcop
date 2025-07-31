@@ -136,8 +136,6 @@ void CBuild::xrPhase_MergeLM()
 {
  	vecDefl			Layer;
 
-	setLMSIZE(8192);
-
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
