@@ -27,6 +27,8 @@
 #define		r2_RT_generic1		"$user$generic1"		// ---
 #define		r2_RT_generic2		"$user$generic2"		// ---	//	Igor: for volumetric lights
 
+#define		r2_RT_generic0_prev "$user$generic0_prev"
+
 #define		r2_RT_env			"$user$sky"
 #define		r2_RT_env_depth		"$user$sky_depth"
 #define		r2_RT_env_temp		"$user$sky_1temp"
