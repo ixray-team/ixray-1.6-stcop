@@ -216,6 +216,11 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 	if (!::Render->occ_visible(bb)) return;
 	// render
 	RCache.set_xform_world(parent);
+	float bias = -0.00005f;
+	float slopeBias = -1.0f;
+
+	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&slopeBias);
+	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
 	if (s){
 		SurfFacesPairIt sp_it = m_SurfFaces.find(s);
 		if (sp_it!=m_SurfFaces.end()) RenderList(parent,color,false,sp_it->second);
@@ -228,6 +233,9 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 		}
 		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
 	}
+	float zero = 0.0f;
+	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&zero);
+	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&zero);
 }
 //----------------------------------------------------
 
@@ -238,6 +246,11 @@ void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
 	RCache.set_xform_world(parent);
 	EDevice->SetShader(EDevice->m_WireShader);
 	EDevice->RenderNearer(0.001);
+	float bias = -0.00005f;
+	float slopeBias = -1.0f;
+	
+	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&slopeBias);
+	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&bias);
 
 	// render
 	EDevice->SetRS(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
@@ -254,6 +267,9 @@ void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
 		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
 	}
 	EDevice->SetRS(D3DRS_FILLMODE,EDevice->dwFillMode);
+	float zero = 0.0f;
+	EDevice->SetRS(D3DRS_SLOPESCALEDEPTHBIAS, *(DWORD*)&zero);
+	EDevice->SetRS(D3DRS_DEPTHBIAS, *(DWORD*)&zero);
 	EDevice->ResetNearer();
 }
 //----------------------------------------------------

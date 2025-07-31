@@ -450,6 +450,15 @@ CCommandVar CommandCleanLibrary(CCommandVar p1, CCommandVar p2)
 CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 {
 	Lib.ReloadObjects	();
+
+	ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
+	ObjectIt _E = Scene->LastObj(OBJCLASS_SECTOR);
+	for (; _F != _E; _F++)
+	{
+		CSector* _S = (CSector*)(*_F);
+		_S->ReloadObjectsReferences();
+	}
+
 	return 				TRUE;
 }
 
