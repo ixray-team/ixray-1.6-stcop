@@ -79,6 +79,8 @@ static void	SaveGEOMs		(LPCSTR fn, VBContainer& vb, IBContainer& ib, SWIContaine
 	file->open_chunk	(fsL_SWIS);
 	swi.Save			(*file);
 	file->close_chunk	();
+
+	FS.w_close(file);
 }
 
 void CBuild::SaveTREE	(IWriter &fs)

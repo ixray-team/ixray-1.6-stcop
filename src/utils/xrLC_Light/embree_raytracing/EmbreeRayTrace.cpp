@@ -16,7 +16,7 @@
 // INTIALIZE GEOMETRY, SCENE QUALITY TYPE
 // Инициализация Основных Фишек Embree
 
-// #define USE_TRANSPARENT_GEOM
+#define USE_TRANSPARENT_GEOM
  
 // INTEL DATA STRUCTURE
 int LastGeometryID = RTC_INVALID_GEOMETRY_ID;
@@ -100,7 +100,7 @@ ICF bool CalculateEnergy(base_Face* F, Fvector& B, float& energy, float u, float
 	return true;
 }
 
-extern XRLC_LIGHT_API int StageMAXHits = 32;
+extern XRLC_LIGHT_API int StageMAXHits = 128;
 
 ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
