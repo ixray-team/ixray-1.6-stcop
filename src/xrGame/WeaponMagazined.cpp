@@ -1090,10 +1090,26 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				{
 					m_bIsReloaded = true;
 					ReloadMagazine();
-
+					
 					if (!IsGrenadeMode())
 					{
 						m_bJustAfterReload = true;
+					}
+
+					if (m_pCurrentAmmo->m_boxCurr!=NULL)
+					{
+						xr_map<u16, u16> ammos_to_sync;
+						ammos_to_sync[m_pCurrentAmmo->ID()] = m_pCurrentAmmo->m_boxCurr;
+						NET_Packet	P;
+						CGameObject::u_EventGen(P, GE_WPN_UPDATE_AMMO, ID());
+						
+						P.w_u32(ammos_to_sync.size());
+						for (xr_map<u16, u16>::iterator _it = ammos_to_sync.begin(); ammos_to_sync.end() != _it; ++_it)
+						{
+							P.w_u16(_it->first);
+							P.w_u16(_it->second);
+						}
+						CGameObject::u_EventSend(P);
 					}
 				}
 				GiveAmmoFromMagToChamber();
