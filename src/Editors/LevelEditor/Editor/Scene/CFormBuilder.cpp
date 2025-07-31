@@ -38,22 +38,13 @@ bool CFormBuilder::build()
 	build_data.l_faces = m_Faces.data();
 	build_data.l_verts = m_Vertex.data();
 
-
-
-	bool bResult = false;
 	t_it = Scene->FirstTool();
 	t_end = Scene->LastTool();
-	for (; t_it != t_end; ++t_it)
-	{
-		ESceneToolBase* mt = t_it->second;
-		if (mt)
-		{
-			if (!mt->GetStaticCformData(build_data, false))
-			{
-				bResult = false; break;
-			}
-		}
-	}
+
+	// Build level CForm
+	Scene->GetTool(OBJCLASS_SCENEOBJECT)->GetStaticCformData(build_data, false);
+	Scene->GetTool(OBJCLASS_TERRAIN)->GetStaticCformData(build_data, false);
+
 	if (build_data.l_face_it == 0)
 	{
 		build_data.l_faces = 0;
