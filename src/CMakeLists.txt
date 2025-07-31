@@ -19,7 +19,10 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 endif()
 
 if(NOT IXRAY_COMPRESSOR_ONLY)
-    if(IXRAY_USE_R1 OR IXRAY_MP)
+    if(IXRAY_MP)
+        add_subdirectory("Layers/xrRenderDS_R0")
+    endif()
+    if(IXRAY_USE_R1)
         add_subdirectory("Layers/xrRenderPC_R1")
     endif()
 
@@ -57,6 +60,10 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 
     if(IXR_TEST_CI)
         set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
+    endif()
+    
+    if(IXRAY_MP)
+        set_target_properties(xrRender_DS0 PROPERTIES ${IXRAY_FOLDER_RENDER})
     endif()
 endif()
 
