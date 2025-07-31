@@ -16,6 +16,10 @@ void CPluginLua::Run()
 {
 	lua_State* L = g_pScriptEngine->lua();
 
+	size_t ExtPos = Scene->full_name.find(".level");
+	if (ExtPos == xr_string::npos)
+		return;
+
 	if (luaL_dofile(L, Path.c_str()))
 	{
 		Msg("Error loading plugin: %s, code: %s", Name.c_str(), lua_tostring(L, -1));
@@ -30,7 +34,8 @@ void CPluginLua::Run()
 		return;
 	}
 
-	lua_pushstring(L, Scene->full_name.c_str());
+	xr_string LevelDir = Scene->full_name.substr(0, ExtPos) + "\\";
+	lua_pushstring(L, LevelDir.c_str());
 	lua_pcall(L, 1, 1, 0);
 
 	lua_pop(L, 1);
