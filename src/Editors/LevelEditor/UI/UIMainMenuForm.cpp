@@ -449,15 +449,26 @@ void UIMainMenuForm::Draw()
 					UI->RedrawScene();
 				}
 			}
+            // Погода
 			{
 				if (ImGui::BeginMenu("Environment"))
 				{
+                    {
+                        if (ImGui::Button("Weather properties"))
+                        {
+                            ExecCommand(COMMAND_WEATHER_PROPERTIES);
+                        }
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    }
 					bool selected = !psDeviceFlags.test(rsEnvironment);
 					if (ImGui::MenuItem("None", "", &selected))
 					{
 						psDeviceFlags.set(rsEnvironment, false);
 						UI->RedrawScene();
 					}
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					ImGui::Separator();
 					for (auto& i : g_pGamePersistent->Environment().WeatherCycles)
 					{
@@ -468,6 +479,8 @@ void UIMainMenuForm::Draw()
 							g_pGamePersistent->Environment().SetWeather(i.first.c_str(), true);
 							UI->RedrawScene();
 						}
+                        if (ImGui::IsItemHovered())
+                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 					}
 
 					ImGui::EndMenu();
