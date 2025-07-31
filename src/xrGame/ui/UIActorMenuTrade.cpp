@@ -609,7 +609,7 @@ void CUIActorMenu::TransferItemsMp(CUIDragDropListEx* pSellList, CUIDragDropList
 		return;
 
 	CGameObject* pPlayer = pTrade->pPartner.inv_owner ? pTrade->pPartner.inv_owner->cast_game_object() : nullptr;
-	R_ASSERT(!!smart_cast<CActor*>(pPlayer));
+	R_ASSERT(!!pPlayer->cast_actor());
 
 	NET_Packet P;
 	pPlayer->u_EventGen(P, GE_GAME_EVENT, pPlayer->ID());

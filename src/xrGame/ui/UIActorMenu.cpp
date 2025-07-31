@@ -75,15 +75,15 @@ void CUIActorMenu::SetPartner(CInventoryOwner* io)
 	R_ASSERT(!IsShown());
 	m_pPartnerInvOwner = io;
 
-	if (m_pPartnerInvOwner)
+	if (m_pPartnerInvOwner != nullptr)
 	{
-		CBaseMonster* pMonster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
+		CBaseMonster* pMonster = m_pPartnerInvOwner->cast_base_monster();
 
-		if (pMonster || m_pPartnerInvOwner->use_simplified_visual())
+		if (pMonster != nullptr || m_pPartnerInvOwner->use_simplified_visual())
 		{
 			m_PartnerCharacterInfo->ClearInfo();
 
-			if (pMonster)
+			if (pMonster != nullptr)
 			{
 				const char* icon = "npc_icon_unknown_data";
 
