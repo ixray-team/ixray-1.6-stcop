@@ -53,7 +53,7 @@ void CRender::render_rain() {
 	{
 		//	
 		const float fRainFar = ps_r3_dyn_wet_surf_far;
-		ex_project.build_projection(deg2rad(Device.fFOV/* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
+		ex_project.build_projection(deg2rad(Device.fFOV/* *Device.fASPECT*/), Device.fASPECT, Device.fViewportNear, fRainFar);
 		ex_full.mul(ex_project, Device.mView);
 		ex_full_inverse.invert44(ex_full);
 
