@@ -1,0 +1,29 @@
+[logic]
+active = remark@scene_1_talk_1_timer
+
+[remark@scene_1_talk_1_timer]
+anim = mar_intro_1_kalancha
+on_timer = 10000 | remark@scene_1_talk_1_start
+meet = no_meet
+
+[remark@scene_1_talk_1_start]
+anim = mar_intro_1_kalancha
+on_info = remark@scene_1_talk_3_wait %=play_sound(mar_intro_scene_1_kalancha_1:csky:mar_csky_scientist_name) +mar_intro_scene_1_talked_1%
+meet = no_meet
+
+[remark@scene_1_talk_3_wait]
+anim = mar_intro_1_kalancha
+on_info = {+mar_intro_scene_1_talked_2} remark@scene_1_talk_3_timer
+meet = no_meet
+
+[remark@scene_1_talk_3_timer]
+anim = mar_intro_1_kalancha
+on_timer = 2000 | remark@scene_1_end %=play_sound(mar_intro_scene_1_kalancha_3:csky:mar_csky_scientist_name) +mar_intro_scene_1_talked_3%
+;ToDo remove lvl
+on_info = {+mar_intro_scene_1_talked_3} remark@scene_1_end
+meet = no_meet
+
+[remark@scene_1_end]
+anim = mar_intro_1_kalancha
+on_info = {+mar_intro_scene_1_end} nil %=destroy_object%
+meet = no_meet

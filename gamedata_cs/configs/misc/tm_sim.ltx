@@ -1,0 +1,331 @@
+[list_tm_sim]
+sim_take_reward
+sim_take_reward_bandit
+sim_take_reward_dolg
+sim_take_reward_freedom
+sim_take_reward_stalker
+
+sim_defend_smart
+sim_defend_smart_delay
+sim_capture_smart
+sim_eliminate_smart
+sim_eliminate_resource_smart
+sim_eliminate_path_smart
+
+sim_defend_smart_csky
+sim_defend_smart_delay_csky
+sim_capture_smart_csky
+sim_eliminate_smart_csky
+sim_eliminate_resource_smart_csky
+sim_eliminate_path_smart_csky
+
+sim_defend_smart_stalker
+sim_defend_smart_delay_stalker
+sim_capture_smart_stalker
+sim_eliminate_smart_stalker
+sim_eliminate_resource_smart_stalker
+sim_eliminate_path_smart_stalker
+
+sim_defend_smart_bandit
+sim_defend_smart_delay_bandit
+sim_capture_smart_bandit
+sim_eliminate_smart_bandit
+sim_eliminate_resource_smart_bandit
+sim_eliminate_path_smart_bandit
+
+sim_defend_smart_freedom
+sim_defend_smart_delay_freedom
+sim_capture_smart_freedom
+sim_eliminate_smart_freedom
+sim_eliminate_resource_smart_freedom
+sim_eliminate_path_smart_freedom
+
+sim_defend_smart_dolg
+sim_defend_smart_delay_dolg
+sim_capture_smart_dolg
+sim_eliminate_smart_dolg
+sim_eliminate_resource_smart_dolg
+sim_eliminate_path_smart_dolg
+
+;-------------------------------------------------------------------
+
+[sim_take_reward]
+type = take_reward
+icon = ui_iconsTotal_found_thing
+text = sim_take_reward_text
+auto_faction = true
+name = sim_take_reward
+
+[sim_take_reward_bandit]:sim_take_reward
+prior = 1
+faction = bandit
+condlist_0 = {=gulag_enemy_actor(gar_smart_terrain_3_5)} fail
+
+[sim_take_reward_dolg]:sim_take_reward
+prior = 1
+faction = dolg
+condlist_0 = {=gulag_enemy_actor(agr_smart_terrain_1_6_near_2)} fail
+
+[sim_take_reward_freedom]:sim_take_reward
+prior = 1
+faction = freedom
+condlist_0 = {=gulag_enemy_actor(val_smart_terrain_7_4)} fail
+
+[sim_take_reward_stalker]:sim_take_reward
+prior = 1
+faction = stalker
+condlist_0 = {=gulag_enemy_actor(agr_smart_terrain_4_4)} fail, {=gulag_enemy_actor(esc_smart_terrain_5_7)} fail
+;-------------------------------------------------------------------
+
+[sim_defend_smart]
+type = defend_smart
+target_cond = true
+name = sim_defend_smart
+text = sim_defend_smart_text
+reward_money = 750
+community_relation_delta_complete = 150
+wait_time = 5
+auto_faction = true
+
+[sim_defend_smart_delay]
+type = defend_smart_delay
+target_cond = true
+name = sim_defend_smart_delay
+text = sim_defend_smart_delay_text
+wait_time = 5
+reward_money = 750
+community_relation_delta_complete = 150
+auto_faction = true
+
+[sim_capture_smart]
+type = capture_smart
+target_cond = true
+name = sim_capture_smart
+text = sim_capture_smart_text
+spot = secondary_task_location_complex
+reward_money = 600
+community_relation_delta_complete = 125
+auto_faction = true
+
+[sim_eliminate_smart]
+type = eliminate_smart
+task_type = additional
+target_cond = true
+name = sim_eliminate_smart
+text = sim_eliminate_smart_text
+reward_money = 500
+community_relation_delta_complete = 100
+auto_faction = true
+
+[sim_eliminate_resource_smart]
+type = eliminate_smart
+task_type = additional
+prior = 3
+target_cond = {=target_resource_smart} true, false
+name = st_sim_eliminate_resource_smart
+text = st_sim_eliminate_resource_text
+reward_money = 500
+community_relation_delta_complete = 100
+auto_faction = true
+
+[sim_eliminate_path_smart]
+type = eliminate_smart
+task_type = additional
+prior = 2
+support_attack = false
+target_cond = {=target_path_smart} true, false
+name = st_sim_eliminate_path_smart
+text = st_sim_eliminate_path_text
+reward_money = 500
+community_relation_delta_complete = 100
+auto_faction = true
+
+;-------------------------------------------------------------------
+
+[sim_defend_smart_csky]:sim_defend_smart
+faction = csky
+prior = 2
+reward_money = {~50} 750, 500
+reward_item = {~50} grenade_rgd5:ammo_9x19_pbp:ammo_9x19_pbp, medkit:antirad
+
+[sim_defend_smart_delay_csky]:sim_defend_smart_delay
+faction = csky
+prior = 2
+reward_money = {~50} 750, 500
+reward_item = {~50} grenade_rgd5:ammo_9x19_pbp:ammo_9x19_pbp, medkit:antirad
+
+[sim_capture_smart_csky]:sim_capture_smart
+faction = csky
+prior = 2
+reward_money = {~50} 600, 350
+reward_item = {~50} grenade_rgd5:ammo_9x18_pmm, medkit:bandage
+
+[sim_eliminate_smart_csky]:sim_eliminate_smart
+faction = csky
+prior = 2
+reward_money = {~50} 500, 250
+reward_item = {~50} ammo_9x19_pbp:ammo_9x18_pmm, medkit
+
+[sim_eliminate_resource_smart_csky]:sim_eliminate_resource_smart
+faction = csky
+prior = 4
+reward_money = {~50} 500, 250
+reward_item = {~50} ammo_9x19_pbp:ammo_9x18_pmm, medkit
+
+[sim_eliminate_path_smart_csky]:sim_eliminate_path_smart
+faction = csky
+prior = 3
+reward_money = {~50} 500, 250
+reward_item = {~50} ammo_9x19_pbp:ammo_9x18_pmm, medkit
+
+;-------------------------------------------------------------------
+
+[sim_defend_smart_stalker]:sim_defend_smart
+faction = stalker
+prior = 2
+reward_money = {~50} 1000, 750
+reward_item = {~50} grenade_rgd5:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:antirad
+
+[sim_defend_smart_delay_stalker]:sim_defend_smart_delay
+faction = stalker
+prior = 2
+reward_money = {~50} 1000, 750
+reward_item = {~50} grenade_rgd5:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:antirad
+
+[sim_capture_smart_stalker]:sim_capture_smart
+faction = stalker
+prior = 2
+reward_money = {~50} 900, 650
+reward_item = {~50} grenade_rgd5:ammo_9x19_pbp:ammo_9x19_pbp, medkit:bandage
+
+[sim_eliminate_smart_stalker]:sim_eliminate_smart
+faction = stalker
+prior = 2
+reward_money = {~50} 750, 500
+reward_item = {~50} ammo_9x19_pbp:ammo_9x19_pbp:ammo_12x76_dart:ammo_12x76_dart, medkit
+
+[sim_eliminate_resource_smart_stalker]:sim_eliminate_resource_smart
+faction = stalker
+prior = 4
+reward_money = {~50} 750, 500
+reward_item = {~50} ammo_9x19_pbp:ammo_9x19_pbp:ammo_12x76_dart:ammo_12x76_dart, medkit
+
+[sim_eliminate_path_smart_stalker]:sim_eliminate_path_smart
+faction = stalker
+prior = 3
+reward_money = {~50} 750, 500
+reward_item = {~50} ammo_9x19_pbp:ammo_9x19_pbp:ammo_12x76_dart:ammo_12x76_dart, medkit
+
+;-------------------------------------------------------------------
+
+[sim_defend_smart_bandit]:sim_defend_smart
+faction = bandit
+prior = 2
+reward_money = {~50} 2000, 1500
+reward_item = {~50} grenade_rgd5:grenade_rgd5:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:antirad
+
+[sim_defend_smart_delay_bandit]:sim_defend_smart_delay
+faction = bandit
+prior = 2
+reward_money = {~50} 2000, 1500
+reward_item = {~50} grenade_rgd5:grenade_rgd5:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:antirad
+
+[sim_capture_smart_bandit]:sim_capture_smart
+faction = bandit
+prior = 2
+reward_money = {~50} 1750, 1250
+reward_item = {~50} grenade_rgd5:ammo_11.43x23_hydro:ammo_11.43x23_hydro, medkit:bandage:bandage:bandage:bandage
+
+[sim_eliminate_smart_bandit]:sim_eliminate_smart
+faction = bandit
+prior = 2
+reward_money = {~50} 1500, 1000
+reward_item = {~50} ammo_11.43x23_hydro:ammo_11.43x23_hydro:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:bandage:bandage:bandage
+
+[sim_eliminate_resource_smart_bandit]:sim_eliminate_resource_smart
+faction = bandit
+prior = 4
+reward_money = {~50} 1500, 1000
+reward_item = {~50} ammo_11.43x23_hydro:ammo_11.43x23_hydro:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:bandage:bandage:bandage
+
+[sim_eliminate_path_smart_bandit]:sim_eliminate_path_smart
+faction = bandit
+prior = 3
+reward_money = {~50} 1500, 1000
+reward_item = {~50} ammo_11.43x23_hydro:ammo_11.43x23_hydro:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart:ammo_12x76_dart, medkit:bandage:bandage:bandage
+
+;-------------------------------------------------------------------
+
+[sim_defend_smart_freedom]:sim_defend_smart
+faction = freedom
+prior = 2
+reward_money = {~50} 2500, 2000
+reward_item = {~50} grenade_f1:ammo_7.62x54_7h1, medkit:medkit:antirad
+
+[sim_defend_smart_delay_freedom]:sim_defend_smart_delay
+faction = freedom
+prior = 2
+reward_money = {~50} 2500, 2000
+reward_item = {~50} grenade_f1:ammo_7.62x54_7h1, medkit:medkit:antirad
+
+[sim_capture_smart_freedom]:sim_capture_smart
+faction = freedom
+prior = 2
+reward_money = {~50} 2250, 1750
+reward_item = {~50} ammo_5.56x45_ap:ammo_m209:ammo_m209:ammo_m209, medkit:medkit:bandage:bandage:bandage
+
+[sim_eliminate_smart_freedom]:sim_eliminate_smart
+faction = freedom
+prior = 2
+reward_money = {~50} 2000, 1500
+reward_item = {~50} grenade_f1:ammo_5.45x39_ap, medkit:medkit:bandage:bandage
+
+[sim_eliminate_resource_smart_freedom]:sim_eliminate_resource_smart
+faction = freedom
+prior = 4
+reward_money = {~50} 2000, 1500
+reward_item = {~50} grenade_f1:ammo_5.45x39_ap, medkit:medkit:bandage:bandage
+
+[sim_eliminate_path_smart_freedom]:sim_eliminate_path_smart
+faction = freedom
+prior = 3
+reward_money = {~50} 2000, 1500
+reward_item = {~50} grenade_f1:ammo_5.45x39_ap, medkit:medkit:bandage:bandage
+
+;-------------------------------------------------------------------
+
+[sim_defend_smart_dolg]:sim_defend_smart
+faction = dolg
+prior = 2
+reward_money = {~50} 3000, 2500
+reward_item = {~50} grenade_f1:ammo_pkm_100, medkit_army:medkit_army:antirad
+
+[sim_defend_smart_delay_dolg]:sim_defend_smart_delay
+faction = dolg
+prior = 2
+reward_money = {~50} 3000, 2500
+reward_item = {~50} grenade_f1:ammo_pkm_100, medkit_army:medkit_army:antirad
+
+[sim_capture_smart_dolg]:sim_capture_smart
+faction = dolg
+prior = 2
+reward_money = {~50} 2750, 2250
+reward_item = {~50} ammo_9x39_ap:ammo_vog-25:ammo_vog-25:ammo_vog-25, medkit_army:medkit_army
+
+[sim_eliminate_smart_dolg]:sim_eliminate_smart
+faction = dolg
+prior = 2
+reward_money = {~50} 2500, 2000
+reward_item = {~50} grenade_f1:ammo_9x39_ap, medkit_army:antirad
+
+[sim_eliminate_resource_smart_dolg]:sim_eliminate_resource_smart
+faction = dolg
+prior = 4
+reward_money = {~50} 2500, 2000
+reward_item = {~50} grenade_f1:ammo_9x39_ap, medkit_army:antirad
+
+[sim_eliminate_path_smart_dolg]:sim_eliminate_path_smart
+faction = dolg
+prior = 3
+reward_money = {~50} 2500, 2000
+reward_item = {~50} grenade_f1:ammo_9x39_ap, medkit_army:antirad

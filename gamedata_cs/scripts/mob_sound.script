@@ -1,0 +1,148 @@
+----------------------------------------------------------------------------------------------------
+-- Озвучка монстров
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Andrey Fidrya (Zmey) af@svitonline.com
+-- Исходный скрипт (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+----------------------------------------------------------------------------------------------------
+
+local snd = {
+	trader_come_here = {
+		-- Подойди-ка... Надо бы ситуацию прояснить.
+	},
+
+	trader_come_here2 = {
+		-- Ну, че стоишь? Подходи - не кусаюсь.
+	},
+
+	trader_monolog1 = {
+	},
+
+	trader_tut_choice = {
+	},
+
+	trader_map_quest_1 = {
+	},
+
+	trader_pda_on_1 = {
+	},
+
+	trader_pda_on_2 = {
+	},
+
+	trader_pda_on_3 = {
+	},
+
+	trader_pda_1 = {
+	},
+
+	trader_map_on_1 = {
+	},
+
+	trader_map_on_2 = {
+	},
+
+	trader_map_on_3 = {
+	},
+
+	trader_tutorial_alarm = {
+	},
+
+	trader_go_help_tolik = {
+	},
+
+    trader_greet_first = {
+	[[characters_voice\scenario\escape\esc_trader_greet_first]]
+    },
+
+    trader_greet_habar = {
+        [[characters_voice\scenario\escape\esc_trader_greet_habar]]
+    },
+
+    trader_wait = {
+        [[characters_voice\scenario\escape\esc_trader_wait_1]],
+        [[characters_voice\scenario\escape\esc_trader_wait_2]],
+        [[characters_voice\scenario\escape\esc_trader_wait_3]],
+        [[characters_voice\scenario\escape\esc_trader_wait_4]]
+    },
+
+    trader_wait_habar_greet = {
+        [[characters_voice\scenario\escape\esc_trader_habar_greet_1]],
+        [[characters_voice\scenario\escape\esc_trader_habar_greet_2]],
+        [[characters_voice\scenario\escape\esc_trader_habar_greet_3]]
+    },
+
+    trader_wait_habar_bye = {
+        [[characters_voice\scenario\escape\esc_trader_bye_habar_1]],
+        [[characters_voice\scenario\escape\esc_trader_bye_habar_2]],
+        [[characters_voice\scenario\escape\esc_trader_bye_habar_3]]
+    },
+
+  trader_bye_garbage = {
+        [[characters_voice\scenario\escape\esc_trader_bye_1]]
+    },
+
+   trader_bye_give_habar = {
+        [[characters_voice\scenario\escape\esc_trader_bye_give_habar]]
+    },
+
+	trader_hello_what_have_you_got = {
+	[[characters_voice\scenario\escape\esc_trader_greet_1]],
+	[[characters_voice\scenario\escape\esc_trader_greet_2]],
+	[[characters_voice\scenario\escape\esc_trader_greet_3]],
+	[[characters_voice\scenario\escape\esc_trader_greet_4]]
+	},
+
+	trader_bye = {
+	},
+
+	trader_exchanged = {
+	},
+
+	trader_good_trade = {
+	},
+
+	trader_bad_trade = {
+	},
+
+	-- UNUSED:
+	go_out = {
+	},
+
+	monolog2 = {
+	},
+
+	monolog3 = {
+	},
+
+	red_forester_meet = {
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_0]],
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_1]],
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_2]]
+	},
+	red_forester_meet_bye = {
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_0]],
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_1]],
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_2]]
+	},
+
+}
+
+function pick_sound_from_set(npc, set, last_sound_info)
+	local sndset = snd[set]
+	if not sndset then
+		printf("_bp: no sndset")
+		return nil
+	end
+	-- 1) Выбираем случайный звук из набора:               
+	local chance = 1
+	local picked_snd = nil
+	for n, s in pairs(snd[set]) do
+		if math.random(chance) == 1 then
+			picked_snd = s
+		end
+		chance = chance + 1
+	end
+	printf("_bp: picked_snd")
+	return picked_snd
+end
+

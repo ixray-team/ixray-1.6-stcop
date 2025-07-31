@@ -1,0 +1,98 @@
+[logic]
+active = walker@wait_help
+relation = friend
+
+[walker@wait_help]
+combat_ignore_cond = true
+path_walk = lim_merc_helper_walk
+path_look = lim_merc_helper_look
+meet = no_meet
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+on_signal = action | smartcover@lookout 
+
+[smartcover@lookout]
+meet = no_meet
+use_in_combat = true
+combat_ignore_cond = true
+cover_name = lim_merc_helper_cover
+;target_path = lim_merc_helper_fire_point
+;cover_state = lookout_target
+on_info = {=dist_to_actor_le(5)} smartcover@idle %=play_sound(lim_cs_stalker_hint)%
+on_info2 = {+lim_bandit_house_attack2} walker@fire
+;on_info3 = {+lim_bandit_house_attack1} ;%=play_sound(lim_cs_stalker_spich)%
+
+[smartcover@idle]
+meet = no_meet
+use_in_combat = true
+combat_ignore_cond = true
+cover_name = lim_merc_helper_cover
+;target_path = lim_merc_helper_fire_point
+cover_state = idle_target
+;on_signal = sound_end | camper@go_fire %+lim_destroy_bandit_minigun_task%
+on_signal = sound_end | smartcover@wait %+lim_destroy_bandit_minigun_task%
+
+[smartcover@wait]
+meet = no_meet
+use_in_combat = true
+combat_ignore_cond = true
+cover_name = lim_merc_helper_cover
+target_path = lim_merc_helper_fire_point
+cover_state = fire_target
+on_game_timer = 20 | smartcover@fire %=play_sound(lim_cs_stalker_oreder_1)%
+
+[camper@go_fire]
+meet = no_meet
+combat_ignore_cond = true
+path_walk = lim_merc_helper_go_fire_walk
+path_look = lim_merc_helper_go_fire_walk
+radius = 5
+def_state_moving = sneak_run
+on_signal = action | smartcover@fire %=play_sound(lim_cs_stalker_oreder_1)%
+
+[smartcover@fire]
+meet = no_meet
+use_in_combat = true
+combat_ignore_cond = true
+cover_name = lim_merc_helper_cover ;lim_merc_helper_cover2
+target_path = lim_merc_helper_fire_point
+cover_state = fire_target
+on_info = {+lim_bandit_house_go} walker@fire
+
+[walker@fire]
+out_restr = lim_smart_terrain_2_attack
+combat_ignore_cond = {=enemy_in_zone(lim_smart_terrain_3_defence)}
+path_walk = lim_merc_helper_fire_walk
+path_look = lim_merc_helper_fire_look
+on_info = {+lim_bandit_house_attackers} walker@wait_actor %=kill_npc%
+
+[walker@wait_actor]
+out_restr = lim_smart_terrain_2_attack
+combat_ignore_cond = {=enemy_in_zone(lim_smart_terrain_3_defence)}
+path_walk = lim_merc_helper_fire_walk
+path_look = lim_merc_helper_fire_look
+on_signal = action | remark@greet_actor
+
+[remark@greet_actor]
+anim = hello_wpn
+target = actor
+meet = meet@merc_help
+on_info = {+lim_merc_helper_sanks}
+on_game_timer = 600 | walker@out
+
+[walker@out]
+path_walk = lim_merc_helper_help_walk
+path_look = lim_merc_helper_help_walk
+on_info = {=dist_to_actor_ge(50) !actor_see_npc()} %=destroy_object%
+meet = meet@merc_help
+
+[meet@merc_help]
+;meet_state = 10 | wait@nil
+;meet_state_wpn = 10 | wait@nil
+;victim = 15 | actor
+;victim_wpn = 15 | actor
+;use	= true
+;use_wpn	= true
+meet_dialog = lim_merc_helper_dialog
+trade_enable = false

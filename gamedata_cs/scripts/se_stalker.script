@@ -1,0 +1,278 @@
+--[[
+Изменения script_version:
+	3 - сохранение поля job_online
+	5 - сохранение поля was_in_smart_terrain
+	6 - сохранение поля death_droped
+]]
+
+class "se_stalker"	(cse_alife_human_stalker)
+--------------------
+function se_stalker:__init (section) super (section)
+	self.ini = nil
+	self.ini_initialized = false
+
+	self.smart_terrain_conditions = nil
+	self.smart_terrain_conditions_initialized = false
+
+	-- этот флаг берётся из работы смарта
+	-- true     = всегда в онлайне
+	-- false    = всегда в офлайне
+	-- condlist = условие, которое отпределяет true или false
+	-- nil      = смарту всё равно
+	self.job_online          = nil
+	self.job_online_condlist = nil
+
+	self.death_droped = false --'Генерил ли персонаж выпадаемые предметы или нет.
+
+    self.squad_id = nil --' ID Отряда, в котором зареген чувак.
+
+	self.m_registred = false
+	self.sim_forced_online = false
+end
+--------------------
+function se_stalker:get_ini()
+	if not self.ini_initialized then
+		self.ini             = self:spawn_ini()
+		self.ini_initialized = true
+
+		if self.ini:section_exist("spawner") then
+			self.spawner = xr_logic.parse_condlist(db.actor, "spawner", "cond", self.ini:r_string("spawner", "cond"))
+		end
+	end
+end
+--------------------
+function se_stalker:can_switch_offline()
+	if(xr_surge_hide.stalker_can_switch_offline(self)) then
+		return true
+	end
+
+	--printf("cse[%s], sim_forced_online[%s]", tostring(self.squad_id), tostring(self.sim_forced_online))
+	if self.sim_forced_online == true then
+		return false
+	end
+
+	if self.job_online_condlist ~= nil then
+		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) ~= true
+	end
+
+	return cse_alife_human_stalker.can_switch_offline(self)
+end
+--------------------
+function se_stalker:can_switch_online()
+	if(xr_surge_hide.stalker_can_switch_offline(self)) then
+		return false
+	end
+
+	if self.sim_forced_online == true then
+		return true
+	end
+
+	if self.job_online_condlist ~= nil then
+		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) == true
+	end
+
+	if self.ini == nil or self.spawner == nil then
+		return cse_alife_human_stalker.can_switch_online(self)
+	end
+
+    if db.actor ~= nil and db.actor:alive () == false then
+		return self.online
+    end
+
+	if self.online == false then
+	    return (xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil) and
+	    		cse_alife_human_stalker.can_switch_online(self)
+    else
+        if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then
+            return true
+        end
+        return false
+    end
+end
+function se_stalker:switch_online()
+	cse_alife_human_stalker.switch_online(self)
+    if self.squad_id ~= nil then
+    	local squad = self.board.squads[self.squad_id]
+        squad:switch_online(true, self.id)
+    end
+end
+function se_stalker:switch_offline()
+	cse_alife_human_stalker.switch_offline(self)
+    if self.squad_id ~= nil then
+    	local squad = self.board.squads[self.squad_id]
+        squad:switch_online(false, self.id)
+    end
+end
+--------------------
+function se_stalker:STATE_Write(packet)
+	cse_alife_human_stalker.STATE_Write (self, packet)
+
+--	if self.m_registred ~= true then
+--		return
+--	end
+
+	if self.job_online == true then
+		packet:w_u8(0)
+	elseif self.job_online == false then
+		packet:w_u8(1)
+	elseif self.job_online == nil then
+		packet:w_u8(2)
+	else
+		packet:w_u8(3)
+		packet:w_stringZ(self.job_online_condlist)
+	end
+
+	packet:w_bool(self.death_droped )
+--	log(string.format("WRITE: object %s squad_id is [%s]", self:name(), tostring(self.squad_id)))
+	if self.squad_id == nil then
+--		printf("WRITE: object %s squad_id is [nil]", self:name())
+		packet:w_stringZ("nil")
+	else
+		packet:w_stringZ(tostring(self.squad_id))
+	end
+
+
+	packet:w_bool(self.sim_forced_online)
+end
+--------------------
+function se_stalker:STATE_Read(packet, size)
+	cse_alife_human_stalker.STATE_Read (self, packet, size)
+
+--	if self.m_registred ~= true then
+--		return
+--	end
+
+	local t = packet:r_u8()
+
+	if t == 0 then
+		self.job_online = true
+	elseif t == 1 then
+		self.job_online = false
+	elseif t == 2 then
+		self.job_online = nil
+	else
+		self.job_online_condlist = packet:r_stringZ()
+		self.job_online = xr_logic.parse_condlist(nil, "se_stalker:STATE_Read", "job_online", self.job_online_condlist)
+	end
+
+	self.death_droped = packet:r_bool()
+	if self.script_version >= 7 then
+		self.squad_id = packet:r_stringZ()
+	--	printf("READ: object %s squad_id is [%s]", self:name(), tostring(self.squad_id))
+		if self.squad_id == "nil" or tostring(self.squad_id) == "0" or tostring(self.squad_id) == "" then
+	--		printf("READ: object [%s] squad_id is [nil]", self:name())
+			self.squad_id = nil
+		end
+	end
+
+	if self.script_version >= 8 then
+		self.sim_forced_online = packet:r_bool()
+	end
+end
+--------------------
+function se_stalker:on_before_register()
+	self:fill_exclusives()
+end
+--------------------
+function se_stalker:on_register()
+	cse_alife_human_stalker.on_register( self )
+
+	self.board 	= sim_board.get_sim_board()
+	self.tm		= task_manager.get_task_manager()
+    local obj_ini = self:spawn_ini()
+    self.m_registred = true
+	--' Проверяем может ли сталкер быть спец персонажем по заданиям.
+	if obj_ini:section_exist("task_manager") then
+		--' Проверяем от имени кого он может выдавать награду
+		local reward = utils.cfg_get_string(obj_ini, "task_manager", "reward", self, false, "", nil)
+		if reward ~= nil then
+			--' Регистрируем себя как выдавателя наград!
+			task_manager.get_task_manager():register_rewarder(self.id, reward)
+		end
+
+		--' Проверяем от имени кого он может выдавать квесты
+		local task = utils.cfg_get_string(obj_ini, "task_manager", "task", self, false, "", nil)
+		if task ~= nil then
+			--' Регистрируем себя как выдавателя квестов!
+			task_manager.get_task_manager():register_tasker(self.id, task)
+		end
+
+	end
+
+
+	printf("registering stalker %s ", self:name())
+	--' Отключаем старый метод выбора смарттеррейнов.
+	self:brain():can_choose_alife_tasks(false)
+
+    --' Выбор смарта
+    local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
+    local smart_obj = self.board:get_smart_by_name(smart)
+    if smart_obj == nil then
+        return
+    end
+    alife():object(smart_obj.id):register_npc(self)
+end
+--------------------
+function se_stalker:on_unregister()
+	local strn_id = self:smart_terrain_id()
+	if strn_id ~= 65535 then
+		local smart = alife():object(strn_id)
+		if smart ~= nil then
+			smart:unregister_npc(self)
+		end
+	end
+	cse_alife_human_stalker.on_unregister(self)
+end
+--------------------
+function se_stalker:on_spawn()
+	cse_alife_human_stalker.on_spawn(self)
+end
+--------------------
+function se_stalker:on_death(killer)
+	cse_alife_human_stalker.on_death(self, killer)
+
+	smart_terrain.on_death(self)
+
+    if self.squad_id ~= nil then
+    	local squad = self.board.squads[self.squad_id]
+		if squad == nil then
+			--printf("sim_board squads")
+			--print_table(self.board.squads)
+			abort("There is no squad with ID [%s]", self.squad_id)
+		end
+        squad:on_npc_death(self)
+    end
+end
+--------------------
+function se_stalker:fill_exclusives()
+	self:get_ini()
+	self.smart_terrain_conditions             = smart_terrain.read_smart_terrain_conditions( self )
+
+	if self.smart_terrain_conditions then
+		for name, condlist in pairs(self.smart_terrain_conditions) do
+			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1
+		end
+	end
+end
+
+function se_stalker:update()
+	cse_alife_human_stalker.update(self)
+	
+	-- Тут мы попробуем вызвать апдейт отряда
+	if self.squad_id ~= nil then
+		local squad = self.board.squads[self.squad_id]
+		if squad.commander_id == self.id then
+			squad:update()
+		end
+	end
+end
+
+
+
+--'Торговец
+class "se_trader" (cse_alife_trader)
+function se_trader:__init (section) super (section)
+end
+function se_trader:keep_saved_data_anyway()
+	return true
+end

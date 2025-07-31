@@ -1,0 +1,27 @@
+[logic]
+active = walker
+combat_ignore = combat_ignore
+on_combat = combat
+
+[combat]
+combat_type = zombied
+
+[combat_ignore]
+
+[walker]
+path_walk = zombie_front
+on_signal = arrived | walker@fight1
+combat_ignore_cond = always
+group = 1
+
+[walker@fight1]
+path_walk = zombie_front
+group = 1
+combat_ignore_cond = {=fighting_dist_ge(10)} walker@free_fight
+def_state_moving1 = assault_fire
+def_state_moving2 = assault_fire
+def_state_moving3 = assault_fire
+
+[walker@free_fight]
+path_walk = zombie_front
+group = 1

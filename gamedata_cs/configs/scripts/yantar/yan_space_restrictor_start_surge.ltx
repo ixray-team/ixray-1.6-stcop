@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+yan_ready_actor_cut2} sr_idle@start_surge
+
+[sr_idle@start_surge]
+on_game_timer = 3600 | sr_idle@stop %+start_surge -yan_ready_actor_cut2 =stc_boom% 
+on_info = {+yan_quest_levsha} sr_idle@stop_surge
+
+[sr_idle@stop]
+on_game_timer = 150 |  sr_idle@start_surge %-start_surge% 
+
+[sr_idle@stop_surge]

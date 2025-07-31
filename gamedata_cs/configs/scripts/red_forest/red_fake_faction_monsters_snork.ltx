@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@spawn_monster
+
+[sr_idle@spawn_monster]
+on_info = {!is_smart_captured(red_smart_terrain_3_2) !squad_exist(red_forest_monsters_snork_1) =dist_to_actor_ge(70) ~50} sr_idle@spawn_wait %=create_squad(red_forest_monsters_snork_1:red_smart_terrain_3_2)%
+
+[sr_idle@spawn_wait]
+on_game_timer = 3600 | sr_idle@spawn_monster

@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+  <info_portion id="lim_bandit_ambush"/>
+  <info_portion id="lim_no_bandit_ambush"/>
+  <info_portion id="lim_bandit_ambush_destroy"/>
+  <info_portion id="lim_bandit_away"/>
+  
+  <info_portion id="lim_cs_enter_squad_fire1"/>
+  <info_portion id="lim_bandit_wounded_dont_shoot"/>
+  
+  <info_portion id="lim_bandit_wounded_medkit1"/>
+  <info_portion id="lim_cs_enter_squad_threat1"/>
+  <info_portion id="lim_cs_enter_squad_threat2"/>
+  
+  
+  <info_portion id="lim_bandit_have_medkit"/>
+  <info_portion id="lim_bandit_say_abaut_ambush"/>
+  <info_portion id="lim_bandit_wounded_dialog" />
+  <info_portion id="lim_bandit_wounded_go"/>
+  <info_portion id="lim_bandit_wounded_go2"/>
+  <info_portion id="lim_bandit_wonded_1_out"/>
+  <info_portion id="lim_bandit_wonded_2_out"/>
+  <info_portion id="lim_bandit_health_restore"/>
+  <info_portion id="lim_bandit_house_attack1" />
+  <info_portion id="lim_bandit_house_attack2" />
+  <info_portion id="lim_bandit_house_go" />
+  <info_portion id="lim_bandit_house_attackers"/>
+  <info_portion id="lim_destroy_bandit_minigun_task" />
+  <info_portion id="lim_merc_helper_sanks"/>
+  <info_portion id="lim_barricade_attack"/>
+    
+  <info_portion id="lim_roof_sniper_1_off"/>
+  <info_portion id="lim_roof_sniper_2_off"/>
+  <info_portion id="lim_roof_sniper_3_off"/>
+  <info_portion id="lim_roof_sniper_4_off"/>
+  <info_portion id="lim_roof_sniper_5_off"/>
+  <info_portion id="lim_roof_sniper_6_off"/>
+  
+  <info_portion id="lim_csky_enter_danger"/>
+  <info_portion id="lim_condition1"/>
+  <info_portion id="lim_condition2"/>
+  <info_portion id="lim_csky_go_to_smart_3" />
+  <info_portion id="lim_cs_go_to_squere" />
+  <info_portion id="lim_condition3"/>
+  <info_portion id="lim_condition4"/>
+  <info_portion id="lim_condition5"/>
+  <info_portion id="lim_condition6"/>
+  
+  <info_portion id="lim_find_bridge_squad_comander_complete"/>
+  
+  <info_portion id="lim_csky_square_wait"/>
+  <info_portion id="lim_smart_3_captured"/>
+  <info_portion id="lim_csky_in_ambush"/>
+  <info_portion id="lim_ambush2"/>
+  <info_portion id="lim_canal_scene_begin" />
+  <info_portion id="lim_go_to_canal_task"/>
+  <info_portion id="lim_military_minigun_task"/>
+  <info_portion id="lim_go_to_canal_complete"/>
+  <info_portion id="lim_bridge_csky_fire" />
+  <info_portion id="lim_military_minigun_out"/>
+  <info_portion id="lim_military_minigun2_out"/>
+  <info_portion id="lim_construction_enemy_1"/>
+  <info_portion id="lim_construction_enemy_2"/>
+  <info_portion id="lim_construction_enemy_3"/>
+  <info_portion id="lim_construction_enemy_4"/>
+  <info_portion id="lim_construction_enemy_5"/>
+  <info_portion id="lim_construction_enemy_6"/>
+  <info_portion id="lim_construction_passed"/>
+  <info_portion id="lim_final_scene_begin"/>
+  <info_portion id="lim_final_allyes_recognize_actor"/>
+  <info_portion id="lim_final_allyes_cover_fire"/>
+  <info_portion id="lim_final_sniper_fire"/>
+  <info_portion id="lim_final_sniper_fire2" />
+  <info_portion id="lim_final_sniper_fire_actor"/>
+  <info_portion id="lim_shut_transformer_task" />
+  <info_portion id="lim_electro_fence_off"/>
+  <info_portion id="lim_go_to_hospital" />
+  <info_portion id="lim_recon_squad_go_1" />
+  <info_portion id="lim_recon_squad_wait" />
+  
+  <info_portion id="lim_recon_squad_order_1"/>
+  <info_portion id="lim_electro_fence_actor_come"/>
+  <info_portion id="lim_final_squad_destroy"/>
+      
+  <info_portion id="lim_test_stalker_1" />
+  <info_portion id="lim_test_stalker_2" />
+  <info_portion id="lim_test_stalker_3" />
+  <info_portion id="lim_test_stalker_4" />
+  <info_portion id="lim_test_stalker_5" />
+  
+  <info_portion id="lim_actor_skip_military_minigun_task" />
+  
+  <info_portion id="lim_final_sniper_off" />
+  <info_portion id="lim_final_actor_find_transformer" />
+  
+</game_information_portions>

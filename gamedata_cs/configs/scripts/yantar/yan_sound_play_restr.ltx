@@ -1,0 +1,54 @@
+[logic]
+active = sr_idle@ventil
+
+[sr_idle@start]
+on_info= {+yan_ready_actor2_cut6} sr_idle@yan_group_in_angar 
+
+[sr_idle@yan_group_in_angar]
+on_game_timer = 60 | sr_idle@ventil %+yan_group_in_angar%
+
+[sr_idle@ventil]
+on_info = {+yan_ready_vikl_cut6} sr_idle@per 
+
+[sr_idle@per]
+on_game_timer = 150 | {+yan_start_remove} sr_idle@wave %+yan_squad2_ready%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop_wave
+
+[sr_idle@wave]
+on_info = {+yan_warning_zombie_cut6} sr_idle@yan_wave_repealed_1 %=play_sound(yan_building_wave:stalker)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop_wave
+
+[sr_idle@yan_wave_repealed_1]
+on_info = {+yan_start_frase_cut6} sr_idle@yan_truck_wave %=play_sound(yan_wave_repealed_2:stalker)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop_wave
+
+[sr_idle@yan_truck_wave]
+on_info = {+yan_start_frase2_cut6} sr_idle@yan_wave_repealed_2 %=play_sound(yan_truck_wave:stalker)% 
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop_wave
+
+[sr_idle@yan_wave_repealed_2]
+on_info = {+yan_warning_zombie2_cut6} sr_idle@wave %=play_sound(yan_wave_repealed_1:stalker)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop_wave
+
+[sr_idle@stop_wave]
+on_info = {+yan_start_monologa_cut6} sr_idle@professor %=play_sound(yan_freezer_fixed:stalker:yan_st_levsha_name)% 
+
+[sr_idle@professor]
+on_info = {+yan_professor_cut6} sr_idle@stalker_replay %=play_sound(yan_psy_reduced:ecolog:yan_st_sakharov_name)%
+
+[sr_idle@stalker_replay]
+on_info = {+yan_otvet_stalkera_cut6} sr_idle@go_red_forest %=play_sound(yan_psy_reduced_reply:stalker:yan_st_levsha_name)%
+
+[sr_idle@go_red_forest]
+on_info = {+yan_go_to_red_forest_cut6} sr_idle@otryad_go_home %=play_sound(yan_go_red_forest:ecolog:yan_st_sakharov_name)%
+
+[sr_idle@otryad_go_home]
+on_info = {+yan_otryad_go_home_cut6} sr_idle@stop %=play_sound(yan_squad_assemble:stalker:yan_st_levsha_name)%
+
+[sr_idle@stop]
+
+
+
+
+
+

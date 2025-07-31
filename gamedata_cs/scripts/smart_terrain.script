@@ -1,0 +1,1050 @@
+local SMART_SECTION_NAME = "smart_terrains"
+local JOB_POSITION_THRESHOLD = 200
+local DEATH_IDLE_TIME = 10*60 -- секунд
+
+local smart_terrains_by_name = {}
+
+local path_fields = { "path_walk", "path_main", "path_home", "center_point" }
+
+local valid_territory = {
+	default = true,
+	base = true,
+	resource = true,
+	territory = true
+}
+
+--' Проверка, что нпс подходит работе
+local function job_avail_to_npc(npc_info, job_info, smart)
+	--printf("job_avail_to_npc %s job %s smart %s", npc_info.se_obj:name(), tostring(job_info.job_id), smart:name())
+	local job = smart.job_data[job_info.job_id]
+	if job ~= nil then
+		job = job.section
+	end
+
+	if smart.dead_time[job_info.job_id] ~= nil then
+		return false
+	end
+
+	-- Проверка условия "монстровости"
+	if job_info._precondition_is_monster ~= nil and job_info._precondition_is_monster ~= npc_info.is_monster then
+		return false
+	end
+
+	-- Проверка условия текущего сквад экшна
+	if job_info._current_squad_action ~= nil then
+		local board = smart.board
+		local squad = npc_info.se_obj.squad_id
+		if squad == nil then
+			return false
+		end
+		local squad_action = board.squads[squad] and board.squads[squad].current_action
+		if squad_action == nil then
+			return false
+		end
+		if job_info._current_squad_action ~= squad_action.name then
+			return false
+		end
+
+		-- Проверка атакуемой цели
+		if job_info._squad_attack_point ~= nil then
+			local attack_point = smart.board.smarts[squad_action.dest_smrt_id].smrt:name()
+			if job_info._squad_attack_point ~= attack_point then
+				return false
+			end
+		end
+	end
+
+	--' Проверяем подходит ли нпс по предикату
+	if job_info._precondition_function ~= nil then
+		if not job_info._precondition_function(npc_info.se_obj, smart, job_info._precondition_params, npc_info) then
+			return false
+		end
+	end
+	return true
+end
+
+
+-- Итерируемся по НПС, начинаем со свободных нпс, потом НПС на низкоприоритетных работах, потом на высокоприоритетных.
+-- Для каждого конкретного НПС ищем работу.
+-- Отсеиваем в поиске работы, приоритет которых ниже, чем у текущей.
+local function job_iterator(jobs, npc_data, selected_job_prior, smart)
+	--printf("  iterate")
+	-- итерируемся по работам
+	local current_job_prior = selected_job_prior
+	local selected_job_id = nil
+	local selected_job_link = nil
+	for k,v in pairs(jobs) do
+		-- Если приоритет у проверяемой работы ниже, чем приоритет текущей выбранной работы НПС - завершаем выполнение
+		if current_job_prior > v._prior then
+			return selected_job_id, current_job_prior, selected_job_link
+		end
+		-- Проверяем, может ли НПС занять данную работу
+		if job_avail_to_npc(npc_data, v, smart) then
+			-- Это работа-кластер или работа-описание.
+			if v.job_id == nil then
+				-- Вызываем рекурсивно себя для списка работ кластера
+				selected_job_id, current_job_prior, selected_job_link = job_iterator(v.jobs, npc_data, selected_job_prior, smart)
+			else
+				-- Если работа пустая или ее занимаем мы сами - выбираем ее.
+				--printf("    job %s section %s npc_id %s", v.job_id, self.job_data[v.job_id].section, tostring(v.npc_id))
+				if v.npc_id == nil then
+					return v.job_id, v._prior, v
+				elseif v.job_id == npc_data.job_id then
+					return v.job_id, v._prior, v
+				end
+			end
+		end
+	end
+	return selected_job_id, current_job_prior, selected_job_link
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- Класс "se_smart_terrain". Обеспечивает поддержку smart terrain в ОФЛАЙНЕ.
+----------------------------------------------------------------------------------------------------------------------
+class "se_smart_terrain" (cse_alife_smart_zone)
+function se_smart_terrain:__init(section) super(section)
+	self.initialized = false
+	self.b_registred = false
+
+	self.npc_to_register = {}
+	self.npc_by_job_section = {}
+	self.dead_time = {}
+
+	-- Таблица для хранения зарегистренных НПС
+	self.npc_info  = {}
+end
+function se_smart_terrain:on_before_register()
+	cse_alife_smart_zone.on_before_register(self)
+	self.board = sim_board.get_sim_board()
+	self.board:register_smart(self)
+	self.smart_level	= alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
+	--printf("SMARTLEVEL %s level %s", self:name(), tostring(self.smart_level))
+end
+-- регистрация объекта в симуляторе.
+-- вызывается симулятором.
+function se_smart_terrain:on_register()
+	cse_alife_smart_zone.on_register(self)
+
+	printf("register smart %s", self:name())
+
+	self.board:build_cross_table(self)
+	self:show()
+
+	if self.combat_manager == nil then
+		self.combat_manager = sim_combat.CCombat_manager(self, self.board)
+	end
+
+	smart_terrains_by_name[self:name()] = self
+	self.b_registred = true
+
+	self:load_jobs()
+
+	self.board:init_smart(self)
+
+	if self.need_init_npc == true then
+		self.need_init_npc = false
+		self:init_npc_after_load()
+	end
+
+	-- Регистрим персонажей, которые добавили до регистрации смарта. (отложенный список)
+	self:register_delayed_npc()
+
+	self.check_time = time_global()
+end
+-- анрегистрация объекта в симуляторе.
+-- вызывается симулятором.
+function se_smart_terrain:on_unregister()
+	cse_alife_smart_zone.on_unregister(self)
+	self.board:unregister_smart(self)
+	smart_terrains_by_name[self:name()] = nil
+end
+-- чтение custom data.
+function se_smart_terrain:read_params()
+	local ini  = self:spawn_ini()
+	local sect = "smart_terrain"
+
+	if not ini:section_exist( sect ) then
+		printf( "[smart_terrain %s] no configuration!", self:name() )
+		self.disabled = true
+		return
+	end
+
+	--' Вычитка симуляционных свойств
+	self.sim_type		= utils.cfg_get_string(ini, "smart_terrain", "sim_type", self, false, "", "default")
+
+	if valid_territory[self.sim_type] == nil then
+		abort("Wrong sim_type value [%s] in smart [%s]", self.sim_type, self:name())
+	end
+
+	self.squad_capacity	= utils.cfg_get_number(ini, "smart_terrain", "squad_capacity", self, false, 1)
+	self.player_name	= "none"  --' Хранится имя игрока, владеющего данным смартом. Для оптимизации.
+	self.squad_id		= utils.cfg_get_number(ini, "smart_terrain", "squad_id", self, false, 0)
+	self.respawn_sector = utils.cfg_get_string(ini, "smart_terrain", "respawn_sector", self, false, "")
+	self.respawn_radius  = utils.cfg_get_number(ini, "smart_terrain", "respawn_radius", self, false, 150)
+	if self.respawn_sector ~= nil then
+		if self.respawn_sector == "default" then
+			self.respawn_sector = "all"
+		end
+		self.respawn_sector = xr_logic.parse_condlist(nil, sect, "respawn_sector", self.respawn_sector)
+	end
+
+
+	self.important_point = utils.cfg_get_bool(ini, "smart_terrain", "important_point", self, false)
+	self.mutant_lair 		= utils.cfg_get_bool(ini, "smart_terrain", "mutant_lair", self, false)
+	self.no_mutant 			= utils.cfg_get_bool(ini, "smart_terrain", "no_mutant", self, false)
+	if self.no_mutant == true then
+		printf("Found no mutant point %s", self:name())
+	end
+	self.forbidden_point 	= utils.cfg_get_string(ini, "smart_terrain", "forbidden_point", self, false, "")
+
+	--' Рестрикторы для симуляции
+	self.def_restr		= utils.cfg_get_string(ini, "smart_terrain", "def_restr", self, false, "", nil)
+	self.att_restr		= utils.cfg_get_string(ini, "smart_terrain", "att_restr", self, false, "", nil)
+
+	self.spawn_point	= utils.cfg_get_string(ini, "smart_terrain", "spawn_point", self, false, "")
+
+	self.sim_avail		= utils.cfg_get_string(ini, "smart_terrain", "sim_avail", self, false, "")
+	if self.sim_avail ~= nil then
+		self.sim_avail = xr_logic.parse_condlist(nil, sect, "sim_avail", self.sim_avail)
+	end
+
+	self.respawn     	= utils.cfg_get_string(ini, "smart_terrain", "respawn", self, false, "", nil)
+
+    self.surge_hide_avaliable = utils.cfg_get_bool(ini, "smart_terrain", "surge_hide_avaliable", self, false, false)
+    local hides = utils.cfg_get_string(ini, "smart_terrain", "actor_hides", self, false, "")
+	if(hides~=nil) then
+		self.actor_hides = utils.parse_names(hides)
+	end
+end
+
+--*******************************************************
+-- МЕТОДЫ ДЛЯ РАБОТЫ С НПС
+--*******************************************************
+-- заполнить информацию о персонаже
+-- у монстров нету метода profile_name()
+function se_smart_terrain:fill_npc_info(obj)
+	local npc_info = {}
+	printf("filling npc_info for obj [%s]", tostring(obj:name()))
+
+	local is_stalker = IsStalker(obj)
+	npc_info.se_obj			= obj
+	npc_info.is_monster		= not is_stalker
+	npc_info.need_job		= "nil"	-- Специально для смены гвардов. Указывает на какую работу хочет данный чувак.
+	npc_info.job_prior		= -1
+	npc_info.job_id			= -1
+	npc_info.begin_job		= false
+
+	if is_stalker then
+		npc_info.stype = modules.stype_stalker
+	else
+		npc_info.stype = modules.stype_mobile
+	end
+
+	return npc_info
+end
+
+-- добавить npc в smart terrain.
+function se_smart_terrain:register_npc(obj)
+	printf("[smart_terrain %s] register called obj=%s", self:name(), obj:name())
+
+	if self.b_registred == false then
+		table.insert(self.npc_to_register, obj)
+		return
+	end
+
+	self.npc_info[obj.id] = self:fill_npc_info(obj)
+
+	obj.m_smart_terrain_id = self.id
+
+
+	-- Затычка на случай если мы регистримся в смарт, из которого только что сами вынесли всех врагов.
+	self.dead_time = {}
+
+	-- тут надо найти чуваку работу
+	self:update_jobs(obj)
+end
+-- Регистрация НПС в список отложенных. Осуществляется на загрузке или на регистрации НПС, пока не зарегистрен смарт
+function se_smart_terrain:register_delayed_npc()
+	for k,v in pairs(self.npc_to_register) do
+		self:register_npc(v)
+	end
+	self.npc_to_register = {}
+end
+-- отпустить npc
+function se_smart_terrain:unregister_npc(obj)
+	--callstack()
+	printf("smart [%s] unregister npc [%s]", self:name(), obj:name())
+
+	local n = self.npc_info[obj.id]
+
+	if n == nil then
+		abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
+	end
+
+	-- TODO: Тут надо выгнать чувака с занимаемой им работы
+	self.npc_info[obj.id].job_link.npc_id = nil
+	self.npc_info[obj.id] = nil
+
+	obj:clear_smart_terrain()
+end
+-- Убрать убитого
+function se_smart_terrain:clear_dead(obj)
+	local n = self.npc_info[obj.id]
+
+	if n == nil then
+		abort("self.npc_info[obj.id] = nil !!! obj.id=%d", obj.id)
+	end
+
+	-- Устанавливаем таймер смерти на работе
+	self.dead_time[self.npc_info[obj.id].job_id] = game.get_game_time()
+
+	self.npc_info[obj.id].job_link.npc_id = nil
+	self.npc_info[obj.id] = nil
+
+	obj:clear_smart_terrain()
+end
+-- выдать объекту задание.
+function se_smart_terrain:task(obj)
+	local job_data = self.job_data[self.npc_info[obj.id].job_id]
+
+	if not job_data then
+		abort("[smart_terrain %s] task: obj=%s job_path=nil, CLEARING. job_id = %s", self:name(), obj:name(), tostring(self.npc_info[obj.id].job_id))
+		self:unregister_npc(obj) --'Затычка против вылета.
+		return CALifeSmartTerrainTask("simulation_default_path", 0)
+	end
+
+	obj.attack_position = job_data.attack_position
+
+	--printf("SEETING TASK PATH %s = %s(%s)", obj:name(), job_data.alife_path, job_data.alife_point)
+	return CALifeSmartTerrainTask(job_data.alife_path, job_data.alife_point)
+end
+
+
+--*******************************************************
+-- Функции для работы с работами
+--*******************************************************
+-- Загрузка работ (из gulag_general)
+function se_smart_terrain:load_jobs()
+	--printf("LOAD JOBS %s", self:name())
+	-- Загружаем иерархию работ
+	self.jobs = gulag_general.load_job(self)
+
+	-- Загружаем ltx работ.
+	self.ltx, self.ltx_name = xr_gulag.loadLtx(self:name())
+	-- Сортируем всю иерархию по уменьшению приоритета
+	-- Рекурсивная функция сортировки
+	local function sort_jobs(jobs)
+		for k,v in pairs(jobs) do
+			if v.jobs ~= nil then
+				sort_jobs(v.jobs)
+			end
+		end
+		table.sort(jobs, function(a,b) return a._prior > b._prior end )
+	end
+
+--	printf("before sort")
+--	store_table(self.jobs)
+
+	sort_jobs(self.jobs)
+
+--	printf("after sort")
+--	store_table(self.jobs)
+
+
+	-- Надо сделать постобработку работ. Проинитить все неиниченные поля
+	-- Для более быстрого доступа нужно вычленить параметры работ в отдельную таблицу вида:
+	--self.job_data[job_id] = {}
+	local id = 0
+	self.job_data = {}
+	local function get_jobs_data(jobs)
+		for k,v in pairs(jobs) do
+			if v.jobs ~= nil then
+				get_jobs_data(v.jobs)
+			else
+				if v.job_id == nil then
+					print_table(self.jobs)
+					abort("Incorrect job table")
+				end
+				self.job_data[id] = v.job_id
+				if v._attack_job == true then
+					self.job_data[id].attack_position = true
+				end
+				self.job_data[id]._prior = v._prior -- Кешируем для проверки
+				v.job_id = id
+				id = id + 1
+			end
+		end
+	end
+
+	get_jobs_data(self.jobs)
+	-- Пробегаемся по работам и высчитываем для каждой работы alife_path
+	for k,v in pairs(self.job_data) do
+		local section = v.section
+		local ltx = v.ini_file or self.ltx
+		if not ltx:line_exist(section, "active") then
+			abort("gulag: ltx=%s  no 'active' in section %s", self.ltx_name, section)
+		end
+		local active_section = ltx:r_string(section, "active")
+		local path_field
+		for i,vv in pairs(path_fields) do
+			if ltx:line_exist(active_section, vv) then
+				path_field = vv
+				break
+			end
+		end
+		if not path_field then
+			abort("gulag: ltx=%s, there is no path in section %s", self.ltx_name, active_section)
+		end
+
+		if path_field == "center_point" then --' TODO убрать затык
+			local path_name = "_" .. ltx:r_string(active_section, path_field)
+
+			if v.prefix_name ~= nil then
+				path_name = v.prefix_name .. path_name
+			else
+				path_name = self:name() .. path_name
+			end
+
+			if level.patrol_path_exists(path_name .. "_task") then
+				v.alife_path = path_name .. "_task"
+			else
+				v.alife_path = path_name
+			end
+
+		else
+			if v.prefix_name ~= nil then
+				v.alife_path = v.prefix_name .. "_" .. ltx:r_string(active_section, path_field)
+			else
+				v.alife_path = self:name() .. "_" .. ltx:r_string(active_section, path_field)
+			end
+		end
+
+		local patrol = patrol(v.alife_path)
+		--printf("5a %s", tostring(v.alife_path))
+		v.game_vertex_id = patrol:game_vertex_id(0)
+		--printf("5b")
+		v.level_id		 = game_graph():vertex(v.game_vertex_id):level_id()
+		--printf("5c")
+		v.position       = patrol:point(0)
+		--printf("5d")
+
+		-- Высчитываем точку, на которую нужно отправлять в оффлайне
+		local parsed_path = utils.path_parse_waypoints(v.alife_path)
+		v.alife_point = 0
+		local need_check = false
+		for kk,vv in pairs(parsed_path) do
+			if vv.sig == "arrive_to_wait" then
+				v.alife_point = kk
+				need_check = true
+				break
+			end
+		end
+
+		if v.attack_position == true then
+			v.attack_position = patrol:point(v.alife_point)
+		end
+
+--[[
+		if v._prior == 55 then
+			-- Проверка валидности сигнала
+			if need_check == false then
+				abort("Incorrect attack path %s", v.alife_path)
+			else
+				-- Дебаговая проверка. Проверяем расстояние между вершиной патрульного пути и графпоинтом, которому она принадлежит.
+				local arrive_vertex_id = patrol:game_vertex_id(v.alife_point)
+				local arrive_vertex_position = game_graph():vertex(arrive_vertex_id):level_point()
+				if arrive_vertex_position:distance_to_sqr(v.attack_position) > 25 then
+					printf("graph [%s][%s][%s] point [%s][%s][%s]",
+							arrive_vertex_position.x,
+							arrive_vertex_position.y,
+							arrive_vertex_position.z,
+							v.attack_position.x,
+							v.attack_position.y,
+							v.attack_position.z)
+					abort("!There is no graph in 'arrive_to_wait' point ["..v.alife_path.."] num [%s]", tostring(v.alife_point))
+				end
+			end
+		end
+]]
+	end
+end
+
+-- Апдейт работ смарттеррейна.
+-- Если передается object, то значит нужно найти только для него
+function se_smart_terrain:update_jobs(object)
+	-- Сортируем НПС по увеличению приоритета занимаемой работы
+	if object ~= nil then
+		--printf("UPDATE NPC %s", object:name())
+		local npc_info = self.npc_info[object.id]
+		-- Выбираем работу
+		local selected_job_id, selected_job_prior, selected_job_link = job_iterator(self.jobs, npc_info, 0, self)
+		if selected_job_id == nil then
+			print_table(self.jobs)
+			abort("Insufficient smart_terrain jobs %s", self:name())
+		end
+
+		-- Назначаем работу
+		--if selected_job_id ~= nil and selected_job_prior > npc_info.job_prior then
+		if selected_job_id ~= npc_info.job_id and selected_job_link ~= nil then
+			-- Установить себе выбранную работу
+			--printf("NPC %s FOUND JOB %s SECTION %s", npc_info.se_obj:name(), selected_job_id, self.job_data[selected_job_link.job_id].section)
+			-- Если НПС был на работе - выгоняем его с нее.
+			if npc_info.job_link ~= nil then
+				self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = nil
+				npc_info.job_link.npc_id = nil
+			end
+
+			selected_job_link.npc_id = npc_info.se_obj.id
+			self.npc_by_job_section[self.job_data[selected_job_link.job_id].section] = selected_job_link.npc_id
+
+			npc_info.job_id = selected_job_link.job_id
+			npc_info.job_prior = selected_job_link._prior
+			npc_info.begin_job = false
+			-- сохраняем ссылку на работу, для облегчения удаления
+			npc_info.job_link = selected_job_link
+
+			-- завершаем текущую работу
+			local obj_storage = db.storage[npc_info.se_obj.id]
+			if obj_storage ~= nil then
+				xr_logic.switch_to_section(obj_storage.object, self.ltx, "nil")
+				--xr_logic.activate_by_section(obj_storage.object, self.ltx, "nil", self:name(), false)
+			end
+		end
+
+		if npc_info.begin_job ~= true then
+			-- Проверяем, дошел ли персонаж до работы (то есть может ли он начать ее выполнение)
+			local job_data = self.job_data[npc_info.job_id]
+			--if job_data == nil then
+				--printf("Couldnt find job, id %s", tostring(npc_info.job_id))
+				--print_table(self.jobs)
+			--end
+			if self:distance_to_job_location(npc_info.se_obj, job_data) < JOB_POSITION_THRESHOLD then
+				-- Начинаем выполнять работу
+				--printf("[smart_terrain %s] gulag: beginJob: obj=%s job= %s", self:name(), npc_info.se_obj:name(), job_data.section)
+
+				npc_info.begin_job = true
+				if npc_info.stype == modules.stype_mobile then
+					npc_info.se_obj:smart_terrain_task_activate()
+				end
+
+				local obj_storage = db.storage[npc_info.se_obj.id]
+				if obj_storage ~= nil then
+					self:setup_logic(obj_storage.object)
+				end
+			end
+		end
+		return
+	end
+
+	--printf("UPDATE JOBS %s", self:name())
+	table.sort(self.npc_info, function(a,b) return a.job_prior < b.job_prior end )
+	for k,v in pairs(self.npc_info) do
+		-- Выбираем работу
+		local selected_job_id, selected_job_prior, selected_job_link = job_iterator(self.jobs, v, 0, self)
+		-- Назначаем работу
+		--if selected_job_id ~= nil and selected_job_prior > v.job_prior then
+		if selected_job_id ~= v.job_id and selected_job_link ~= nil then
+			-- Установить себе выбранную работу
+			--printf("NPC %s FOUND JOB %s SECTION %s", v.se_obj:name(), selected_job_id, self.job_data[selected_job_link.job_id].section)
+			-- Если НПС был на работе - выгоняем его с нее.
+			if v.job_link ~= nil then
+				self.npc_by_job_section[self.job_data[v.job_link.job_id].section] = nil
+				v.job_link.npc_id = nil
+			end
+
+			selected_job_link.npc_id = v.se_obj.id
+			self.npc_by_job_section[self.job_data[selected_job_link.job_id].section] = selected_job_link.npc_id
+
+			v.job_id = selected_job_link.job_id
+			v.job_prior = selected_job_link._prior
+			v.begin_job = false
+			-- сохраняем ссылку на работу, для облегчения удаления
+			v.job_link = selected_job_link
+
+			-- завершаем текущую работу
+			local obj_storage = db.storage[v.se_obj.id]
+			if obj_storage ~= nil then
+				xr_logic.switch_to_section(obj_storage.object, self.ltx, "nil")
+				--xr_logic.activate_by_section(obj_storage.object, self.ltx, "nil", self:name(), false)
+			end
+		end
+
+		if v.begin_job ~= true then
+			-- Проверяем, дошел ли персонаж до работы (то есть может ли он начать ее выполнение)
+			local job_data = self.job_data[v.job_id]
+			if self:distance_to_job_location(v.se_obj, job_data) < JOB_POSITION_THRESHOLD then
+				-- Начинаем выполнять работу
+				--printf("[smart_terrain %s] gulag: beginJob: obj=%s job= %s", self:name(), v.se_obj:name(), job_data.section)
+
+				v.begin_job = true
+				if v.stype == modules.stype_mobile then
+					v.se_obj:smart_terrain_task_activate()
+				end
+
+				local obj_storage = db.storage[v.se_obj.id]
+				if obj_storage ~= nil then
+					self:setup_logic(obj_storage.object)
+				end
+			end
+		end
+	end
+end
+-- настроить логику для объекта, который в онлайне.
+function se_smart_terrain:setup_logic(obj)
+	--printf("setup npc logic %s", obj:name())
+--	callstack()
+	local npc_data = self.npc_info[obj:id()]
+	local job = self.job_data[npc_data.job_id]
+	local ltx = job.ini_file or self.ltx
+	local ltx_name = job.ini_path or self.ltx_name
+
+	xr_logic.configure_schemes(obj, ltx, ltx_name, npc_data.stype, job.section, job.prefix_name or self:name())
+
+	local sect = xr_logic.determine_section_to_activate(obj, ltx, job.section, db.actor)
+	if utils.get_scheme_by_section(job.section) == "nil" then
+		abort("[smart_terrain %s] section=%s, don't use section 'nil'!", self:name(), sect)
+	end
+
+
+	xr_logic.activate_by_section(obj, ltx, sect, job.prefix_name or self:name(), false)
+end
+-- получить работу, которую занимает объект
+function se_smart_terrain:getJob(obj_id)
+	return self.job_data[self.npc_info[obj_id].job_id]
+end
+-- Расстояние до работы
+function se_smart_terrain:distance_to_job_location(obj, job)
+	local obj_gv, obj_pos
+
+	local storage = db.storage[obj.id]
+
+	if storage == nil then
+		obj_gv, obj_pos = game_graph():vertex(obj.m_game_vertex_id), obj.position
+	else
+		local obj = db.storage[obj.id].object
+		obj_gv, obj_pos = game_graph():vertex(obj:game_vertex_id()), obj:position()
+	end
+
+	local job_gv = game_graph():vertex(job.game_vertex_id)
+
+	if obj_gv:level_id() == job_gv:level_id() then
+		return obj_pos:distance_to(job.position)
+	else
+		return 10000
+	end
+end
+-- Получение персонажа, который занимает указанную работу.
+function se_smart_terrain:idNPCOnJob(job_name)
+	return self.npc_by_job_section[job_name]
+end
+function se_smart_terrain:switch_to_desired_job(npc)
+	-- Берем текущую работу НПС
+	local npc_id = npc:id()
+	local npc_info = self.npc_info[npc_id]
+
+	--printf("***** %s -> %s", npc:name(), tostring(npc_info.need_job))
+	local changing_npc_id = self.npc_by_job_section[npc_info.need_job]
+	--printf("changing_npc_id %s", tostring(changing_npc_id))
+
+	if changing_npc_id == nil then
+		-- Мы не нашли с кем меняться, просто ресетим себя
+		self.npc_info[npc_id].job_link = nil
+		self.npc_info[npc_id].job_id = -1
+		self.npc_info[npc_id].job_prior = -1
+		self:update_jobs(self.npc_info[npc_id].se_obj)
+
+		--print_table(self.npc_by_job_section)
+		--abort("ERROR during channging NPC")
+		return
+	end
+
+	if self.npc_info[changing_npc_id] == nil then
+		-- Мы не нашли с кем меняться, просто ресетим себя
+		self.npc_info[npc_id].job_link = nil
+		self.npc_info[npc_id].job_id = -1
+		self.npc_info[npc_id].job_prior = -1
+		self:update_jobs(self.npc_info[npc_id].se_obj)
+
+		--print_table(self.npc_by_job_section)
+		--abort("ERROR during channging NPC")
+		return	
+	end
+
+	local desired_job = self.npc_info[changing_npc_id].job_id
+
+	-- Переключаем НПС на желаемую работу
+	if npc_info.job_link ~= nil then
+		self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = nil
+		npc_info.job_link.npc_id = nil
+	end
+
+	local selected_job_link = self.npc_info[changing_npc_id].job_link
+
+	selected_job_link.npc_id = npc_info.se_obj.id
+
+	self.npc_by_job_section[self.job_data[selected_job_link.job_id].section] = selected_job_link.npc_id
+
+	npc_info.job_id = selected_job_link.job_id
+	npc_info.job_prior = selected_job_link._prior
+	npc_info.begin_job = true
+
+	-- сохраняем ссылку на работу, для облегчения удаления
+	npc_info.job_link = selected_job_link
+	npc_info.need_job = "nil"
+
+	local obj_storage = db.storage[npc_id]
+	if obj_storage ~= nil then
+		self:setup_logic(obj_storage.object)
+	end
+
+	-- Освобождаем НПС, который занимает желаемую работу и говорим ему перевыбрать работу
+	self.npc_info[changing_npc_id].job_link = nil
+	self.npc_info[changing_npc_id].job_id = -1
+	self.npc_info[changing_npc_id].job_prior = -1
+	self:update_jobs(self.npc_info[changing_npc_id].se_obj)
+end
+
+
+--*******************************************************
+-- СЕЙВ/ЛОАД
+--*******************************************************
+-- сохранение
+function se_smart_terrain:STATE_Write(packet)
+	cse_alife_smart_zone.STATE_Write(self, packet)
+
+	set_save_marker(packet, "save", false, "se_smart_terrain")
+
+	if self.combat_manager == nil then
+		self.combat_manager = sim_combat.CCombat_manager(self, sim_board.get_sim_board())
+	end
+	self.combat_manager:save(packet)
+
+	-- Информацию о НПС в смарте
+	local n = 0
+	for k,v in pairs(self.npc_info) do
+		n = n + 1
+	end
+
+	packet:w_u8(n)
+	for k,v in pairs(self.npc_info) do
+		packet:w_u16(k)
+		packet:w_u8(v.job_prior)
+		packet:w_u8(v.job_id)
+		packet:w_bool(v.begin_job)
+		packet:w_stringZ(v.need_job)
+	end
+
+	n = 0
+	for k,v in pairs(self.dead_time) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k,v in pairs(self.dead_time) do
+		packet:w_u8(k)
+		utils.w_CTime(packet, v)
+	end
+
+
+	set_save_marker(packet, "save", true, "se_smart_terrain")
+end
+
+-- восстановление
+function se_smart_terrain:STATE_Read(packet, size)
+	cse_alife_smart_zone.STATE_Read(self, packet, size)
+
+	-- под LevelEditor не пытаться читать из пакета ничего
+	if editor() then
+		return
+	end
+
+	set_save_marker(packet, "load", false, "se_smart_terrain")
+	self:read_params()
+
+	if self.combat_manager == nil then
+		self.combat_manager = sim_combat.CCombat_manager(self, sim_board.get_sim_board())
+	end
+	self.combat_manager:load(packet)
+
+	-- Информацию о НПС в смарте
+	local n = packet:r_u8()
+	--printf("load %s npc", tostring(n))
+	self.npc_info = {}
+	for i = 1,n do
+		local id = packet:r_u16()
+		--printf("__ id %s", tostring(id))
+		self.npc_info[id] = {}
+		local npc_info = self.npc_info[id]
+
+		npc_info.job_prior = packet:r_u8()
+		--printf("__ job_prior %s", tostring(npc_info.job_prior))
+		if npc_info.job_prior == 255 then
+			npc_info.job_prior = -1
+		end
+		npc_info.job_id = packet:r_u8()
+		--printf("__ job_id %s", tostring(npc_info.job_id))
+		if npc_info.job_id == 255 then
+			npc_info.job_id = -1
+		end
+		npc_info.begin_job = packet:r_bool()
+		--printf("__ begin_job %s", tostring(npc_info.begin_job))
+		npc_info.need_job = packet:r_stringZ()
+	end
+
+	n = packet:r_u8()
+	self.dead_time = {}
+	--printf("load %s dead_time", tostring(n))
+	for i =1,n do
+		local job_id = packet:r_u8()
+		--printf("__ job_id %s", tostring(job_id))
+		local dead_time = utils.r_CTime(packet)
+		self.dead_time[job_id] = dead_time
+	end
+
+	self.need_init_npc = true
+
+	set_save_marker(packet, "load", true, "se_smart_terrain")
+end
+-- Инициализация НПС после загрузки.
+function se_smart_terrain:init_npc_after_load()
+	local function find_job(jobs, npc_info)
+		for k,v in pairs(jobs) do
+			if v.jobs ~= nil then
+				find_job(v.jobs, npc_info)
+			else
+				if v.job_id == npc_info.job_id then
+					npc_info.job_link = v
+					v.npc_id = npc_info.se_obj.id
+					return
+				end
+			end
+		end
+	end
+
+
+	local sim = alife()
+	--printf("[%s] init_npc_after_load", self:name())
+	for k,v in pairs(self.npc_info) do
+		local npc_info = self:fill_npc_info(sim:object(k))
+
+		npc_info.job_prior = v.job_prior
+		npc_info.job_id = v.job_id
+		npc_info.begin_job = v.begin_job
+		npc_info.need_job = v.need_job
+
+		--Теперь надо найти данную работу и выставить ссылку на нее.
+		find_job(self.jobs, npc_info)
+
+		self.npc_info[k] = npc_info
+		if npc_info.job_link ~= nil then
+			self.npc_by_job_section[self.job_data[npc_info.job_link.job_id].section] = k
+		end
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+-- Положить предмет в инвентори бокс смарта, при условии что он существует
+function se_smart_terrain:call_respawn()
+	if self.respawn then
+		-- TODO: Вставить появление вещей в инвентори боксе
+	end
+end
+
+--' Возвращает отформатированную строку свойств смарта
+function se_smart_terrain:get_smart_props()
+	local props = smart_names.get_smart_terrain_name(self)
+	if(props==nil) or (_G.dev_debug) then
+		props = self:name().."  ["..self.id.."]\\n"..
+				  "player = "..self.player_name.."\\n"..
+				  self.sim_type.." : "..tostring(self.sim_value).."\\n"..
+				  "squad_id = "..tostring(self.squad_id).."\\n"..
+				  "capacity = "..tostring(self.squad_capacity).." ("..
+				  sim_board.get_sim_board():get_smart_population(self)..")\\n"
+
+	    if self.respawn_sector ~= nil then
+    	    props = props.."\\nrespawn_sector: "..tostring(self.respawn_sector).."\\n"
+    	end
+
+	    --' Добавляем информацию о находящихся в смарте отрядах
+	    for k,v in pairs(sim_board.get_sim_board().smarts[self.id].squads) do
+	        power = tostring(v.squad_power)
+	        props = props .. tostring(v.squad_id) .. " : " .. power .. "\\n"
+	    end
+	end
+	return props
+end
+
+
+
+--' Отрисовка смарта на игровом поле
+function se_smart_terrain:show()
+    local time = time_global()
+	if(self.showtime~=nil) and (self.showtime+200>=time) then
+		return
+	end
+	self.showtime = time
+
+	local player = self.player_name
+	local spot = "none"
+	if(player~="none") then
+		local relation = 0
+	    if(db.actor) then
+	        relation = db.actor:community_goodwill(player)+game_relations.get_factions_community(player, alife():actor():community())
+	    else
+	        relation = game_relations.get_factions_community(player, alife():actor():community())
+	    end
+		if(relation==self.relation) then
+			return
+		else
+	        if(relation>=1000) then
+	            spot = "friend"
+	        elseif(relation<=-1000) then
+	            spot = "enemy"
+	        else
+	            spot = "neutral"
+	        end
+		end
+		self.relation = relation
+	end
+
+    if(self.smrt_showed_spot==spot) then
+		level.map_change_spot_hint(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot, self:get_smart_props())
+		return
+    end
+    if(_G.dev_debug) then
+    	if(self.smrt_showed_spot~=nil) then
+	        level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
+		end
+        level.map_add_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..spot, self:get_smart_props())
+        self.smrt_showed_spot = spot
+	else
+--[[
+		if(self.sim_type=="base") then
+	        if(self.smrt_showed_spot~=nil) then
+	            level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
+	        end
+	        level.map_add_object_spot(self.id, "alife_presentation_smart_base_"..spot, self:get_smart_props())
+	        self.smrt_showed_spot = spot
+		else
+]]
+	        if(self.smrt_showed_spot~=nil) and
+			  (level.map_has_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)~=0)
+			then
+	            level.map_remove_object_spot(self.id, "alife_presentation_smart_base_"..self.smrt_showed_spot)
+	        end
+--		end
+	end
+end
+--' Обновление информации о смарте на игровом поле
+function se_smart_terrain:refresh()
+    self:show()
+end
+--' Убирание отрисовки смарта на игровом поле
+function se_smart_terrain:hide()
+	if self.smrt_showed_spot == nil then
+		return
+	end
+    level.map_remove_object_spot(self.id, "alife_presentation_smart_"..self.sim_type.."_"..self.smrt_showed_spot)
+end
+
+-- Обновление.
+-- В онлайне вызывается через binder.
+-- Также может вызваться принудительно из xr_effects
+function se_smart_terrain:update()
+	cse_alife_smart_zone.update( self )
+
+	self.combat_manager:update()
+
+	local current_time = time_global()
+	if self.check_time~=nil and current_time < self.check_time then
+		return
+	end
+	if db.actor ~= nil then
+		local distance = db.actor:position():distance_to_sqr(self.position)
+		local idle_time = math.max(60, 0.003 * distance)
+		self.check_time = current_time + idle_time
+	else
+		self.check_time = current_time + 10
+	end
+
+	-- Проверяем, не истек ли запрет на занимание работы, на которой убили НПС
+	local current_time = game.get_game_time()
+	for k,v in pairs(self.dead_time) do
+		if current_time:diffSec(v) >= DEATH_IDLE_TIME then
+			self.dead_time[k] = nil
+		end
+	end
+
+	-- Перевыбор работ
+	self:update_jobs()
+end
+
+
+
+-- установить логику и сообщить смарту, что объект перешёл в онлайн.
+-- вызывается из net_spawn() объектов
+function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
+	local sim = alife()
+	if sim then
+		local strn_id = sobject.m_smart_terrain_id
+		printf( "setup_gulag_and_logic_on_spawn obj=%s, strn_id=%s, loaded=%s", obj:name(), tostring(strn_id), tostring(loaded))
+
+		if strn_id ~= nil and strn_id ~= 65535 then
+			local strn                   = sim:object(strn_id)
+			local need_setup_logic       = strn.npc_info[obj:id()].begin_job == true and not loaded
+
+			if need_setup_logic then
+				strn:setup_logic(obj)
+			else
+				xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+			end
+		else
+			xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+		end
+	else
+		xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+	end
+end
+
+-- Убираем объект из смарта при смерти
+function on_death(obj)
+	local sim = alife()
+	if sim then
+		local obj = sim:object(obj.id)
+		if obj == nil then return end
+		local strn_id = obj:smart_terrain_id()
+		if strn_id ~= 65535 then
+			printf("clear dead object %s", obj:name())
+			sim:object(strn_id):clear_dead(obj)
+		end
+	end
+end
+
+--------------------
+-- прочитать секцию [smart_terrains]
+-- вызывается объектами, которые могут ходить под smart terrain
+function read_smart_terrain_conditions( self )
+	if self.ini and self.ini:section_exist(SMART_SECTION_NAME) then
+		local conds = {}
+		local accepts = false
+		local result, field, str
+		local n = self.ini:line_count(SMART_SECTION_NAME)
+		if n > 0 then
+			for i = 0, n-1 do
+				result, field, str = self.ini:r_line(SMART_SECTION_NAME, i, "", "" )
+				conds[field] = xr_logic.parse_condlist(self, SMART_SECTION_NAME, field, str)
+			end
+			return conds
+		end
+	end
+	return nil
+end

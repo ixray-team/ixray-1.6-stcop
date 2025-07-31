@@ -1,0 +1,148 @@
+[logic]
+active = walker@wait
+level_spot = quest_npc
+
+[walker@wait]
+path_walk = esc_leader_stalkerbase_walk
+path_look = esc_leader_stalkerbase_look
+on_info = {+esc_mission_2_stalker_leader_complete -esc_com_tell_about_habar} walker@dopros
+meet = meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_4
+
+[smartcover@sit]
+path_walk = esc_leader_stalkerbase_walk
+path_look = esc_leader_stalkerbase_look
+cover_name = esc_smart_cover_stalker_leader
+loophole_name = lead_sit_sleep_write
+cover_state = fire_target
+on_info = {+esc_mission_2_stalker_leader_complete -esc_com_tell_about_habar} walker@dopros
+meet = meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_4
+
+[walker@dopros]
+path_walk = esc_leader_dopros_walk
+path_look = esc_leader_dopros_look
+on_actor_in_zone = esc_space_restrictor_zak | walker@dopros_1
+def_state_moving = sprint
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@dopros_1]
+path_walk = esc_leader_dopros_walk
+path_look = esc_leader_dopros_look
+on_actor_dist_le_nvis = 3 | remark
+def_state_moving = walk
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark]
+anim = ward
+target = 409
+on_info = %=play_sound(esc_jail_monologue:stalker:esc_leader_stalkerbase_name)% remark@wait
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@wait]
+on_signal = sound_end | %+esc_com_tell_about_habar%
+anim = ward
+target = 409
+on_info = {+esc_habar_mill_spawn} remark@wait1
+on_info2 = {+esc_habar_tonnel_spawn} remark@wait1
+on_info3 = {+esc_habar_podval_spawn} remark@wait1
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@wait1]
+on_info = {+esc_prisoner_complete_dialog} remark@preend
+anim = ward
+target = 409
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@preend]
+on_game_timer = 10 | %=play_sound(esc_habar_founded:stalker:agr_stalker_base_leader_name)% remark@end
+anim = ward
+target = actor
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@end]
+anim = ward
+target = actor
+on_signal = sound_end | remark@end2
+meet = no_meet
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[remark@end2]
+anim = ward
+target = actor
+meet = no_meet
+on_game_timer = 30 | walker@2
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_1
+
+[walker@2]
+path_walk = esc_leader_stalkerbase_walk
+path_look = esc_leader_stalkerbase_look
+meet = meet
+def_state_moving = walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_4
+on_npc_not_in_zone = 408 | esc_space_restrictor_zak | walker@3
+
+[walker@3]
+path_walk = esc_leader_stalkerbase_walk
+path_look = esc_leader_stalkerbase_look
+meet = meet
+def_state_moving = walk
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
+out_restr = esc_space_restrictor_in_restr_4
+on_info = %+esc_prisoner_dialog_2%
+on_game_timer = 30 | walker@wait
+
+[meet]
+meet_state	= 4| ward@nil
+meet_state_wpn	= 4| ward@nil
+meet_dialog = esc_leader_talk
+victim 		= 4| actor
+victim_wpn 	= 4| actor
+;use		= {!is_playing_sound} true, false
+use_wpn		= false
+abuse		= false
+trade_enable 	= false
+;sound_start = esc_stalker_leader_meet
+;sound_stop 	= esc_stalker_leader_meet_bye
+quest_npc = true

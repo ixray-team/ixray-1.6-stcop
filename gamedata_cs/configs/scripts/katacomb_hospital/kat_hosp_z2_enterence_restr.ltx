@@ -1,0 +1,14 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = sr_idle@1
+
+[sr_idle@1]
+on_game_timer = 10 | sr_idle@2 %+hospital_z2_enter%
+
+[sr_idle@2]
+on_actor_in_zone = kat_hosp_z2_se_restr | %+hospital_z2_actor_se -hospital_z2_actor_ne -hospital_z2_actor_sw -hospital_z2_actor_nw%
+on_actor_in_zone2 = kat_hosp_z2_nw_restr | %-hospital_z2_actor_se -hospital_z2_actor_ne -hospital_z2_actor_sw +hospital_z2_actor_nw%
+on_actor_in_zone3 = kat_hosp_z2_sw_restr | %-hospital_z2_actor_se -hospital_z2_actor_ne +hospital_z2_actor_sw -hospital_z2_actor_nw%
+on_actor_in_zone4 = kat_hosp_z2_ne_restr | %-hospital_z2_actor_se +hospital_z2_actor_ne -hospital_z2_actor_sw -hospital_z2_actor_nw%

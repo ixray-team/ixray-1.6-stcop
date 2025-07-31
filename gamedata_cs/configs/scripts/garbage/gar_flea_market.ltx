@@ -1,0 +1,324 @@
+[logic@work1] ;night trader
+active = walker@trade_work1
+suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 120
+trade = misc\trade\trade_trader_gar_digger_3.ltx
+level_spot = trader
+
+[walker@trade_work1]
+path_walk = unique_trader_night_trading_walk
+path_look = unique_trader_night_trading_look
+on_info = {!is_dark_night} walker@rest_work1
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@trade_work1
+
+[walker@rest_work1]
+path_walk = unique_trader_night_sleeping_walk
+path_look = unique_trader_night_sleeping_look
+on_info = {=is_dark_night} walker@trade_work1
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@rest_work1
+
+
+[meet@trade_work1]
+meet_dialog = gar_flea_market_night_trader_trade
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+
+[meet@rest_work1]
+meet_dialog = gar_flea_market_night_trader_rest
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+trade_enable = false
+
+;-------------------------------------------
+
+[logic@work2] ;evening trader & fixer
+active = walker@trade_work2
+suitable = {-gar_flea_market_fixer_dead =check_npc_name(gar_digger_fixer) !is_smart_in_combat(gar_smart_terrain_6_3)}, {+gar_flea_market_fixer_dead =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 128
+on_death = death@work2
+trade = misc\trade\trade_trader_gar_digger_2.ltx
+level_spot = {-gar_flea_market_fixer_dead} mechanic, trader
+
+[walker@trade_work2]
+path_walk = unique_trader_evening_trading_walk
+path_look = unique_trader_evening_trading_look
+on_info = {=is_day} walker@rest_work2
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@trade_work2
+
+[walker@rest_work2]
+path_walk = unique_trader_evening_sleeping_walk
+path_look = unique_trader_evening_sleeping_look
+on_info = {!is_day} walker@trade_work2
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@rest_work2
+
+
+[meet@trade_work2]
+meet_dialog = gar_flea_market_evening_trader_trade
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+
+[meet@rest_work2]
+meet_dialog = gar_flea_market_evening_trader_rest
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+trade_enable = false
+
+[death@work2]
+on_info = nil %+gar_flea_market_fixer_dead%
+
+;-------------------------------------------
+
+[logic@work3] ;24h trader
+active = walker@trade_work3
+suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 119
+trade = misc\trade\trade_trader_gar_digger_1.ltx
+level_spot = trader
+
+[walker@trade_work3]
+path_walk = unique_trader_24h_trading_walk
+path_look = unique_trader_24h_trading_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@work3
+
+[meet@work3]
+meet_dialog = gar_flea_market_24h_trader_hello
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+
+;-------------------------------------------
+
+[logic@work4] ;traitor
+active = walker@quest_work4
+suitable = {=check_npc_name(gar_digger_traitor) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 129
+on_death = death@work4
+job_online = true
+
+[death@work4]
+on_info = %+gar_flea_market_stop_quest_line%
+
+[walker@quest_work4]
+path_walk = unique_quest_giver_night_walk
+path_look = unique_quest_giver_night_look
+on_info = {!is_dark_night} walker@rest_work4, {+gar_quest_kill_digger_traitor_call} nil %=destroy_object%, {+gar_quest_bring_old_pda_started} nil %=destroy_object%
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@work4
+
+[walker@rest_work4]
+path_walk = unique_quest_giver_night_rest_walk
+path_look = unique_quest_giver_night_rest_look
+on_info = {=is_dark_night} walker@quest_work4, {+gar_quest_kill_digger_traitor_call} nil %=destroy_object%, {+gar_quest_bring_old_pda_started} nil %=destroy_object%
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@work4
+
+[meet@work4]
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+
+;-------------------------------------------
+
+[logic@work5] ;digger leader
+active = walker@old_pda_work5
+suitable = {=check_npc_name(gar_digger_quester) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 130
+on_death = death@work5
+job_online = true
+level_spot = quest_npc
+
+[death@work5]
+on_info = %+gar_flea_market_stop_quest_line%
+
+[walker@old_pda_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_info = {+gar_quest_get_old_pda_box_started} walker@start_work5, {=actor_in_zone(gar_smart_terrain_5_5_defence) +gar_quest_get_old_pda_started} walker@start_work5 %+gar_quest_get_old_pda_box_started%
+meet = meet@work5
+
+[walker@start_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_info = {+gar_quest_get_weapons_ambush_start} walker@get_weapons_ambush_work5
+meet = meet@work5
+
+[walker@get_weapons_ambush_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+;ToDO gar_digger_leader_ambush
+on_timer = 7000 | walker@get_weapons_ambush_catch_work5 %=play_sound(gar_digger_leader_ambush:stalker:gar_digger_quester_name)%
+meet = meet@work5
+
+[walker@get_weapons_ambush_catch_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_signal = sound_end | walker@get_weapons_pda_work5 %+gar_quest_get_weapons_destroy_ambush_told%
+meet = meet@work5
+
+[walker@get_weapons_pda_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+;ToDo gar_digger_leader_traitor_dead
+on_timer = 1000 | {+gar_quest_get_weapons_destroyed_ambush} walker@get_weapons_pda_catch_work5 %=play_sound(gar_digger_leader_traitor_dead:stalker:gar_digger_quester_name)%
+meet = meet@work5
+
+[walker@get_weapons_pda_catch_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_signal = sound_end | walker@get_weapons_traitor_work5 %+gar_quest_get_weapons_get_pda_told%
+meet = meet@work5
+
+[walker@get_weapons_traitor_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+;ToDo gar_digger_leader_traitor
+on_timer = 1000 | {+gar_quest_get_weapons_got_traitor_pda} walker@get_weapons_catch_sound_work5 %=play_sound(gar_digger_leader_traitor:stalker:gar_digger_quester_name)%
+meet = meet@work5
+
+[walker@get_weapons_catch_sound_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+on_signal = sound_end | walker@no_quest_work5 %+gar_quest_get_weapons_quester_talked%
+meet = meet@work5
+
+[walker@no_quest_work5]
+path_walk = unique_quest_giver_24h_walk
+path_look = unique_quest_giver_24h_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+meet = meet@work5
+
+[meet@work5]
+meet_state = 4 | nil@nil
+victim = 5 | actor
+victim_wpn = 5 | actor
+sound_start = gar_digger_leader_meet
+sound_start_wpn = nil
+sound_stop = gar_digger_leader_meet_bye
+quest_npc = true
+use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, true
+;use = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, {is_playing_sound} false, true
+;use_wpn = {=is_smart_in_combat(gar_smart_terrain_6_3)} false, {is_playing_sound} false, true
+precond = visibility
+allow_break = false
+trade_enable = false
+
+;-------------------------------------------
+
+[logic@work6] ;buyer from night trader
+active = walker@work6
+suitable = {=is_dark_night =npc_community(stalker) =time_period(50:25) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 117
+
+[walker@work6]
+path_walk = unique_buyer_from_night_trader_walk
+path_look = unique_buyer_from_night_trader_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+
+;-------------------------------------------
+
+[logic@work7] ;buyer from evening trader
+active = walker@work7
+suitable = {!is_day =npc_community(stalker) =time_period(40:20) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 116
+
+[walker@work7]
+path_walk = unique_buyer_from_evening_trader_walk
+path_look = unique_buyer_from_evening_trader_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+
+;-------------------------------------------
+
+[logic@work8] ;buyer from 24h trader
+active = walker@work8
+suitable = {=npc_community(stalker) =time_period(30:15) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 118
+
+[walker@work8]
+path_walk = unique_buyer_from_24h_trader_walk
+path_look = unique_buyer_from_24h_trader_look
+def_state_moving1 = walk
+def_state_moving2 = walk
+def_state_moving3 = walk
+
+;-------------------------------------------
+
+[logic@work9] ; unique kamp work
+active = kamp
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 115
+
+[logic@work10] ; unique kamp work
+active = kamp
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 115
+
+[logic@work11] ; unique kamp work
+active = kamp
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 115
+
+[logic@work12] ; unique kamp work
+active = kamp
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 115
+
+[logic@work13] ; unique kamp work
+active = kamp
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+prior = 115
+
+
+[kamp]
+center_point = kamp_1
+path_walk = kamp_1_task
+def_state_moving = walk
+
+;-------------------------------------------

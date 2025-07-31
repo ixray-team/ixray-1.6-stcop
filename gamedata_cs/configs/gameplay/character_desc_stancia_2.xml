@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<specific_character id="stc_strelok" team_default = "1">
+		<name>sim_strelok_name</name>
+		<icon>ui_npc_u_actor</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>stc_strelok</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<rank>600</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_hero\stalker_hero_stc_strelok</visual>
+
+		<supplies>
+			[spawn] \n
+			wpn_beretta = 1 \n
+			device_torch \n
+			wpn_sig550 \n
+			grenade_f1 = 10 \n
+			ammo_5.56x45_ss190 = 1 \n
+			ammo_9x19_fmj = 1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+
+	<specific_character id="stc_monolith_1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>stc_monolith_1</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<rank>920</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_monolith\stalker_monolith_1</visual>
+
+		<supplies>
+			[spawn] \n
+			wpn_beretta = 1 \n
+			device_torch \n
+			wpn_sig550 \n
+			grenade_f1 = 10 \n
+			ammo_5.56x45_ss190 = 1 \n
+			ammo_9x19_fmj = 1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+<specific_character id="stc_csky_leader" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_nebo_2_face_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>stc_csky_leader</class>
+		<community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+
+		<rank>1050</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_nebo\stalker_nebo_2_face_1</visual>
+
+		<supplies>
+			[spawn] \n
+			wpn_beretta = 1 \n
+			device_torch \n
+			wpn_sig550 \n
+			grenade_f1 = 10 \n
+			ammo_5.56x45_ss190 = 1 \n
+			ammo_9x19_fmj = 1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+	<specific_character id="stc_monolith_sniper_1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>Опытный сталкер. Детальная информация отсутствует.</bio>
+
+		<class>stc_monolith_sniper</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<rank>920</rank>
+		<reputation>0</reputation>
+
+		<visual>actors\stalker_monolith\stalker_monolith_1</visual>
+
+		<supplies>
+		[spawn] \n
+		wpn_beretta = 1 \n
+		device_torch \n
+		wpn_svd \n
+		ammo_7.62x54_7h1 \n
+		grenade_f1 = 10 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+
+		<start_dialog>hello_dialog</start_dialog>
+	</specific_character>
+</xml>

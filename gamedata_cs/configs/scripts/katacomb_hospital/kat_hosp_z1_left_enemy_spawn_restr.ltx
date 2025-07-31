@@ -1,0 +1,28 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+rush_5} sr_idle@2 %+hospital_z1_enemy_4 +hospital_z1_enemy_5 =spawn_object(kat_hosp_z1_enemy_floor2l_1:enemy_floor2l_start_walk_1)%
+
+[sr_idle@spawn1]
+on_actor_inside = sr_idle@2
+on_info = {-hospital_z1_enemy_4} sr_idle@spawn2 %+hospital_z1_enemy_4 =inc_counter(hospital_z1_left_cout) =spawn_object(kat_hosp_z1_enemy_floor2l_1:enemy_floor2l_start_walk_1)%, sr_idle@spawn2
+
+
+[sr_idle@spawn2]
+on_actor_inside = sr_idle@2
+on_info = {-hospital_z1_enemy_5} sr_idle@wait %+hospital_z1_enemy_5 =inc_counter(hospital_z1_left_cout) =spawn_object(kat_hosp_z1_enemy_floor2l_2:enemy_floor2l_start_walk_2)%, sr_idle@wait
+
+
+[sr_idle@wait]
+on_actor_inside = sr_idle@2
+on_info = {=counter_greater(hospital_z1_left_cout:2)} sr_idle@2, sr_idle@spawn1
+
+
+[sr_idle@2]
+on_info = {+sniper_off} sr_idle@spawn_last_wave %=spawn_object(kat_hosp_z1_enemy_floor2l_1:enemy_floor2l_start_walk_1) =spawn_object(kat_hosp_z1_enemy_floor2l_2:enemy_floor2l_start_walk_2)%
+
+[sr_idle@spawn_last_wave]
+on_info = {+hospital_last_wave_spawn} sr_idle@3 %=spawn_object(kat_hosp_z1_enemy_floor2l_1:z1_enemy_floor2l_walk_1) =spawn_object(kat_hosp_z1_enemy_floor2l_1:z1_enemy_floor2l_walk_1) =spawn_object(kat_hosp_z1_enemy_floor2l_2:z1_enemy_floor2l_walk_2)%
+
+[sr_idle@3]

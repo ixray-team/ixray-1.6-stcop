@@ -1,0 +1,28 @@
+[logic]
+active = walker@fire
+combat_ignore = combat_ignore
+
+[walker@fire]
+danger = danger_condition
+combat_ignore_cond = always
+;out_restr = z3_defender_restr
+path_walk = z1_minigunner_walk
+path_look = z1_minigunner_look
+invulnerable = true
+on_info = {+minigun_off} walker
+group = 1
+
+[walker]
+on_info = {+lim_z1_minigun_off_2} %=hit_npc(205:bip01_head:500:50)%
+path_walk = z1_minigunner_walk
+path_look = z1_minigunner_look
+danger = danger_condition
+combat_ignore_cond = always
+group = 1
+
+[danger_condition]
+ignore_distance = 0
+ignore_ distance_grenade = 0
+ignore_ distance_corpse = 0
+ignore_ distance_hit = 0
+ignore_ distance_sound = 0

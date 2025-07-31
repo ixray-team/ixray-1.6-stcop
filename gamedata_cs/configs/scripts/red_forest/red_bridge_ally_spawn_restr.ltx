@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_bridge_ally_strike} sr_idle@2 %=create_squad(red_allyes_recon_squad_1:red_bridge_ally_smart) =set_factions_community(killer:renegade:enemy) =set_factions_community(renegade:killer:enemy) =inc_counter(bridge_allyes_cout:5)%
+
+[sr_idle@2]
+on_info = {+red_bridge_bandit_out} sr_idle@nil %=set_factions_community(killer:renegade:neutral) =set_factions_community(renegade:killer:neutral)%
+
+[sr_idle@nil] 
+
+

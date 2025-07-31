@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+;on_info = {+val_be_info_bandit_spy} sr_idle@2
+
+[sr_idle@2]
+on_info = {=actor_has_item(device_pda_bandit_spy)} nil %+val_pda_bandit_spy_onboard%

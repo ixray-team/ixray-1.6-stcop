@@ -1,0 +1,27 @@
+[logic]
+active = sr_idle@see_enemy
+
+;-- вертолет замечает врагов и переговаривается с базой
+[sr_idle@see_enemy]
+on_info = {+hospital_heli_see_enemy} sr_idle@order %=play_sound(helicopter_see_enemy:army:lname_stalker_243)%
+;on_info = {+hospital_z2_enter} sr_idle@order %=play_sound(helicopter_see_enemy)%
+
+[sr_idle@order]
+on_game_timer = 80 | sr_idle@start_attack %=play_sound(helicopter_kill_order:army:lname_stalker_243)%
+
+;-- вертолет начинает всех мочить
+[sr_idle@start_attack]
+on_game_timer = 30 | sr_idle@wait3 %=play_sound(helicopter_start_attack:army:lname_stalker_243) +hospital_heli_start_attack%
+
+;-- враги паникуют из-за вертолета
+[sr_idle@enemy_see_helicopter]
+on_game_timer = 40 | sr_idle@wait3 %=play_sound(enemy_see_helicopter) +katacomb_task_helicopter% 
+
+;-- выход кросавчега с РПГ
+[sr_idle@spawn_rpg]
+on_game_timer = 600 | sr_idle@spawn_rpg2 %+hospital_z2_rpg_run%
+
+[sr_idle@spawn_rpg2]
+on_game_timer = 50 | sr_idle@wait3 %=spawn_object(kat_hosp_z2_enemy_rpg:z2_spawn_rpg_way)%
+
+[sr_idle@wait3]

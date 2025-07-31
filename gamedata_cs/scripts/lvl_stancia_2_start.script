@@ -1,0 +1,27 @@
+function main ()
+
+lvl_hospital_start.main()
+
+local infos_table = {
+"hospital_general_task_complete",
+"rush_2",
+"rush_4",
+"rush_6",
+"rush_7",
+"sniper_off",
+"hospital_z2_heli_crash",
+"hospital_z2_exit",
+"hospital_cs_entrance",
+"hospital_cs_victory"
+}
+local actor = db.actor
+
+for k,v in pairs(infos_table) do
+	actor:give_info_portion(v)
+end
+
+--if level.name() == "stancia_2" then
+--	xr_effects.give_inited_task(nil, nil, {"storyline", "", ""})
+--end
+
+end

@@ -1,0 +1,40 @@
+[logic]
+active = sr_idle@leshiy_start
+
+[sr_idle@leshiy_start]
+on_info = {+red_bridge_ally_strike +red_bridge_actor_come} sr_idle@leshiy_reply %=play_sound(red_bridge_leshiy_start:killer:red_ally_leshiy_name)%
+
+[sr_idle@leshiy_reply]
+on_signal = sound_end | sr_idle@clear_path %=play_sound(red_bridge_leshiy_reply:csky:mar_csky_commander_name)%
+
+[sr_idle@clear_path]
+on_signal = sound_end | sr_idle@bandits_near_bridge %=play_sound(red_bridge_clear_path:csky:mar_csky_commander_name) +red_bridge_clear_path +red_bridge_bandits_task%
+
+[sr_idle@bandits_near_bridge]
+on_info = {=squad_exist(red_bridge_bandit_groop_1) =squad_exist(red_bridge_bandit_groop_2) =squad_exist(red_bridge_bandit_groop_3) =squad_exist(red_bridge_bandit_groop_4)} sr_idle@wait, sr_idle@allyes_by_bridge %+red_bridge_cover_allyes_complete +red_bridge_allyes_skirmish +red_bridge_allyes_skirmish2%
+
+[sr_idle@wait]
+on_game_timer = 10 | sr_idle@bandits_near_bridge
+
+[sr_idle@allyes_by_bridge]
+on_info = {+red_bridge_allyes_by_bridge} sr_idle@bridge_bandits %=play_sound(red_bridge_assault_start:killer:red_ally_leshiy_name) +red_bridge_cover_allyes_complete%
+
+[sr_idle@ally_try_lower_wait]
+on_signal = sound_end | sr_idle@ally_try_lower
+
+[sr_idle@ally_try_lower]
+on_game_timer = 50 | sr_idle@bridge_bandits %=play_sound(red_bridge_start_lower:killer:red_ally_leshiy_name) +red_bridge_allyes_try_pull_down  =give_inited_task(storyline:red_bridge_cover_bridge:csky)%
+
+[sr_idle@bridge_bandits]
+on_game_timer = 150 | {-red_bridge_sniper_spawn -red_bridge_allyes_try_pull_down} sr_idle@bandit_squad_check
+on_info = {+red_bridge_down_done} sr_idle@nil %=play_sound(red_bridge_lowered:csky:mar_csky_commander_name)%
+
+[sr_idle@bandit_squad_check]
+on_info = {=squad_exist(red_bridge_bandit_groop_1) =squad_exist(red_bridge_bandit_groop_2) =squad_exist(red_bridge_bandit_groop_3) =squad_exist(red_bridge_bandit_groop_4)}  sr_idle@bridge_bandits %=play_sound(red_bridge_bandits:killer:red_ally_leshiy_name) -red_bridge_cover_allyes2_complete +red_bridge_bandits_task%, sr_idle@wait_bridge %+red_bridge_allyes_try_pull_down -red_bridge_bandits_task +red_bridge_cover_allyes2_complete -red_bridge_allyes_out =play_sound(red_bridge_attention_control:killer:red_ally_leshiy_name) =give_inited_task(storyline:red_bridge_cover_bridge:csky)% ;запуск солдата опускать мост  
+on_info2 = {+red_bridge_down_done} sr_idle@nil %=play_sound(red_bridge_lowered:csky:mar_csky_commander_name)%
+
+[sr_idle@wait_bridge]
+on_info = {-red_bridge_allyes_try_pull_down} sr_idle@bridge_bandits
+on_info2 = {+red_bridge_down_done} sr_idle@nil %=play_sound(red_bridge_lowered:csky:mar_csky_commander_name)%
+
+[sr_idle@nil]

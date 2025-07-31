@@ -1,0 +1,32 @@
+[dont_spawn_character_supplies]
+
+[logic]
+active = walker
+
+[walker]
+danger = danger_condition
+combat_ignore_cond = true
+path_walk = val_smart_terrain_freedom_comendant_walker_1_walk
+path_look = val_smart_terrain_freedom_comendant_walker_1_look
+faction = freedom
+def_state_standing = wait
+out_restr = val_out_restrictor_comendant
+on_info = {+val_find_pda_done} %=destroy_object%
+meet = meet@1
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_grenade = 0
+ignore_distance_sound = 0
+
+[meet@1]
+meet_state = 3 | wait@nil
+meet_state_wpn = 3 | wait@nil
+;use	= {!is_playing_sound} true, false
+use_wpn = false
+victim = 10 | actor
+victim_wpn = 10 | actor
+sound_start = val_freedom_comendant_meet
+sound_stop 	= val_freedom_comendant_meet_bye
+quest_npc = true

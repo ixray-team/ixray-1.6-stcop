@@ -1,0 +1,68 @@
+---------------------------------------------------------------------------------
+-- Mob alife manager
+---------------------------------------------------------------------------------
+
+disable_scheme = 1
+reset_scheme = 2
+continue_execution = 3
+
+function cfg_get_mode(ini, section, npc)
+	local alife = {}
+	alife.actor_friendly  = utils.cfg_get_bool(ini, section, "actor_friendly", npc, false)
+	alife.npc_friendly    = utils.cfg_get_bool(ini, section, "npc_friendly", npc, false)
+	alife.friendly        = utils.cfg_get_bool(ini, section, "friendly", npc, false)
+	alife.braindead       = utils.cfg_get_bool(ini, section, "braindead", npc, false)
+	return alife
+end
+
+function issue_combat_event(obj)
+	--printf("_bp: issue_combat_event?")
+	local st = db.storage[obj:id()]
+	if st.mob_combat then
+		printf("_bp: alife_control: issuing event combat_callback")
+		xr_logic.issue_event(obj, st.mob_combat, "combat_callback")
+	end
+end
+
+function alife_control(obj, actor, mode)
+	-- Мертвые монстры сразу отпускаются под alife
+	if not obj:alive() then
+		xr_logic.mob_release(obj)
+		return true
+	end
+
+	-- Монстры, у которых есть враг - также должны работать в alife
+	local enemy = obj:get_enemy()
+	if enemy then
+		--printf("_bp: got enemy")
+		if not mode.braindead and
+		   not mode.friendly and
+		   (not mode.actor_friendly or enemy:id () ~= actor:id ()) and
+		   (not mode.npc_friendly or enemy:id() == actor:id()) then
+			issue_combat_event(obj)
+			xr_logic.mob_release(obj)
+			return true
+		end
+	end
+	
+	-- Отпускать в alife монстров, которых обстреляли
+	local h = obj:get_monster_hit_info()
+	if h.who and h.time ~= 0 then
+		if mode.braindead then
+			-- Braindead монстры не уходят из под скрипта даже если их обстрелять
+			return false
+		end
+		if h.who:id() == actor:id() and mode.actor_friendly then
+			-- Если хотя бы раз был атакован actor-ом, то больше не дружественен к нему
+			mode.actor_friendly = false
+		end
+		--printf("_bp [%s]: h.who:name() = %s", obj:name(), h.who:name())
+		issue_combat_event(obj)
+		xr_logic.mob_release(obj)
+		return true
+	end
+
+	-- Остальные монстры работают под схемой
+	return false
+end
+

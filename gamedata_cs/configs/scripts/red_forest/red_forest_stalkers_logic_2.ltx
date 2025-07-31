@@ -1,0 +1,14 @@
+;**********************************
+;********* stalker 2 ***********
+
+[logic]
+active = walker@open_gate
+
+[walker@open_gate]
+post_combat_time = 0,0
+combat_ignore_cond = {!npc_in_zone(red_forest_pda_map_zone)}
+out_restr = red_forest_pda_map_zone
+path_walk = red_forest_stalkers_gate_2_walk
+path_look = red_forest_stalkers_gate_2_walk
+def_state_standing = threat_fire
+on_game_timer = 50 | %=hit_npc(red_forest_stalkers_gate_1_walk:bip01_spine:100:100)%

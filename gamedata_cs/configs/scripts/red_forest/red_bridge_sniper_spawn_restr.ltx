@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_bridge_sniper_fire} sr_idle@check  %+red_bridge_sniper_work1 +red_bridge_sniper_spawn =spawn_object(red_bridge_bandit_sniper:bridge_sniper_spawn_way_1)%
+
+[sr_idle@check]
+on_info = {-red_bridge_sniper_spawn +red_bridge_sniper_fire} sr_idle@wait_spawn
+on_info2 = {+red_bridge_down_done} nil
+on_info3 = {+red_bridge_actor_fail} nil
+
+[sr_idle@wait_spawn]
+on_game_timer = 200 | sr_idle@check %+red_bridge_sniper_spawn =spawn_object(red_bridge_bandit_sniper2:bridge_sniper_spawn_way_1)%
+on_info = {+red_bridge_down_done} nil
+on_info2 = {+red_bridge_actor_fail} nil

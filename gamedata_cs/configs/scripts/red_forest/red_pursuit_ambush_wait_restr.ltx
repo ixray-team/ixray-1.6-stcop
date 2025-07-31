@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+red_strelok_task_end} sr_idle@wait
+
+[sr_idle@wait]
+on_game_timer = 50 | %+red_pursuit_ambush_task_end%

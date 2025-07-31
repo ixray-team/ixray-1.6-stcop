@@ -1,0 +1,40 @@
+[logic]
+active = sr_idle@actor_inside_check
+
+[sr_idle@actor_inside_check]
+on_actor_inside = sr_idle@actor_inside_check_1_effect %=stc_create_some_monolith_stalkers(stc_first_teleport_monolith_spawn_1:stc_monolith_stalker_teleport_1:3:6) +stc_first_teleport_monolith_spawn_1 =give_inited_task(storyline:stc_follow_to_teleport_1:csky)%
+
+[sr_idle@actor_inside_check_1_effect]
+on_timer = 1 | sr_idle@actor_inside_check_2 %=stc_activate_weapon(wpn_fn2000)%
+
+
+;-----------------------------------
+[sr_idle@actor_inside_check_2]
+on_info = {=actor_in_zone(stc_first_teleport_spawn_zone_1)} sr_idle@actor_inside_check_2_effect %=stc_create_some_monolith_stalkers(stc_first_teleport_monolith_spawn_1_1:stc_monolith_stalker_teleport_1:2:6) +stc_first_teleport_monolith_spawn_2%
+
+[sr_idle@actor_inside_check_2_effect]
+on_timer = 1 | sr_idle@actor_inside_check_3 ;%=stc_boom%
+
+[sr_idle@actor_inside_check_3]
+on_info = {=actor_in_zone(stc_first_teleport_spawn_zone_2)} sr_idle@actor_inside_check_3_effect %=stc_create_some_monolith_stalkers(stc_first_teleport_monolith_spawn_1_2:stc_monolith_stalker_teleport_1:3:6) +stc_first_teleport_monolith_spawn_3%
+;-------------------------------------
+
+
+[sr_idle@actor_inside_check_3_effect]
+on_timer = 2500 | sr_idle@actor_inside_check_4 ;%=stc_boom%
+
+[sr_idle@actor_inside_check_4]
+on_info = {=actor_in_zone(stc_second_teleport_floor)} sr_idle@actor_inside_check_4_effect %=stc_create_some_monolith_stalkers(stc_second_teleport_monolith_spawn_1:stc_monolith_stalker_teleport_4:5:6) +stc_first_teleport_monolith_spawn_4 =give_inited_task(storyline:stc_follow_to_teleport_2:csky)%
+on_info2 = {!actor_in_zone(stc_first_teleport_out_restr_1) -stc_strelok_can_run_2} %+stc_strelok_can_run_2 =stc_activate_weapon(wpn_gauss_aes)%
+on_info3 = {=stc_check_actor_position(4)} %=play_sound(stc_strelok_kill_reminder_2)%
+on_info4 = {=actor_in_zone(stc_first_teleport_spawn_zone_3) -stc_first_teleport_spawn_3} %=stc_create_some_monolith_stalkers(stc_strelok_way_enemies_3_spawn:stc_monolith_stalker_strelok_way_enemy_3:1:5) +stc_first_teleport_spawn_3%
+on_info5 = {!actor_in_zone(stc_first_teleport_out_restr_1) -stc_additional_q1} %+stc_additional_q1%
+
+[sr_idle@actor_inside_check_4_effect]
+on_timer = 1 | sr_idle@actor_inside_check_5 %=stc_activate_weapon(wpn_fn2000)%
+
+[sr_idle@actor_inside_check_5]
+on_info = {=actor_in_zone(stc_roof_actor_checker) -stc_strelok_can_run_3} %+stc_strelok_can_run_3 =play_sound(stc_strelok_kill_reminder_3)%
+on_info2 = {=actor_in_zone(stc_second_teleport_spawn_zone_1) -stc_second_teleport_spawn_2} %=stc_create_some_monolith_stalkers(stc_second_teleport_monolith_spawn_1_1:stc_monolith_stalker_teleport_4:4:6) +stc_second_teleport_spawn_2%
+on_info3 = {=actor_in_zone(stc_second_teleport_spawn_zone_2) -stc_second_teleport_spawn_3} %=stc_create_some_monolith_stalkers(stc_second_teleport_monolith_spawn_1_2:stc_monolith_stalker_teleport_4:3:6) +stc_second_teleport_spawn_3%
+on_info4 = {=actor_in_zone(stc_actor_teleport_2_check) -stc_second_teleport_actor_out} %+stc_second_teleport_actor_out%

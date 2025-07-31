@@ -1,0 +1,34 @@
+[logic]
+active = remark
+combat_ignore = combat_ignore
+on_death = death
+
+[death]
+on_info = %-hospital_z3_enemy_4% ;-- =dec_counter(hospital_z3_cout)%
+
+[remark]
+post_combat_time = 0,0
+combat_ignore_cond = always
+path_walk = z3_enemy_floor1_4_walk
+danger = danger_condition@2
+anim = jump_down_2
+on_signal = anim_end | walker@floor_1
+;invulnerable = true
+
+[walker@floor_1]
+post_combat_time = 0,0
+out_restr = kat_hosp_z3_floor1_restr
+path_walk = z3_enemy_floor1_4_walk
+path_look = z3_enemy_floor1_1_look
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+
+[danger_condition]
+ignore_distance_corpse = 0
+
+[danger_condition@2]
+ignore_distance = 0
+
+[combat_ignore]

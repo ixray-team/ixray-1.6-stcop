@@ -1,0 +1,490 @@
+[list_esc]
+esc_trader_start_pda
+esc_mil_target_detected
+esc_mil_target_lost
+;esc_trader_spot
+esc_trader_call
+esc_trader_greet
+esc_driver_talk
+esc_driver_treat
+esc_habar_location_1
+esc_habar_location_2
+esc_habar_location_3
+esc_jail_monologue
+esc_mill_complete_reply
+esc_railroadpost_no
+esc_railroadpost_yes
+esc_stalkerbase_guard_redirect
+esc_trader_habar_request
+esc_dead_military_pda_request
+megafon
+megafon_alarm
+esc_stalker_patrol_help
+esc_habar_founded
+esc_comandir_megafon
+esc_stalker_assemble_1_1
+esc_stalker_assemble_1_2
+esc_stalker_assemble_2_1
+esc_stalker_assemble_2_2
+esc_stalker_assemble_2_3
+esc_stalker_assemble_2_4
+esc_stalker_assemble_3_1
+esc_stalker_assemble_3_2
+esc_stalker_assemble_3_3
+esc_stalker_assemble_3_4
+esc_stalker_assemble_4_1
+esc_stalker_assemble_4_2
+esc_stalker_assemble_4_3
+esc_trader_bye_give_habar
+esc_wolf_call
+
+esc_stalker_mechanic_meet
+esc_stalker_mechanic_meet_bye
+esc_stalker_trader_meet
+esc_stalker_trader_meet_bye
+esc_stalker_leader_meet
+esc_stalker_leader_meet_bye
+esc_military_prisoner_meet
+esc_military_prisoner_meet_bye
+
+
+esc_stalker_expansion_1_up
+esc_stalker_expansion_2_up
+esc_stalker_expansion_2_down
+esc_stalker_expansion_3_up
+esc_stalker_expansion_3_down
+esc_stalker_expansion_4_up
+esc_stalker_expansion_4_down
+esc_stalker_expansion_5_down
+
+
+
+;***********ESCAPE**
+;********************
+
+[esc_stalker_mechanic_meet]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_mechanic_meet_
+shuffle = rnd
+idle = 3,5,100
+
+[esc_stalker_mechanic_meet_bye]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_mechanic_meet_bye_
+shuffle = rnd
+idle = 1,1,100
+
+[esc_stalker_trader_meet]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_trader_meet_
+shuffle = rnd
+idle = 3,5,100
+
+[esc_stalker_trader_meet_bye]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_trader_meet_bye_
+shuffle = rnd
+idle = 1,1,100
+
+[esc_stalker_leader_meet]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_leader_meet_
+shuffle = rnd
+idle = 3,5,100
+
+[esc_stalker_leader_meet_bye]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_stalker_leader_meet_bye_
+shuffle = rnd
+idle = 1,1,100
+
+[esc_military_prisoner_meet]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_military_prisoner_meet_
+shuffle = rnd
+idle = 3,5,100
+
+[esc_military_prisoner_meet_bye]
+type = npc
+actor_stereo = false
+npc_prefix = false
+path = scenario\escape\esc_military_prisoner_meet_bye_
+shuffle = rnd
+idle = 1,1,100
+
+[esc_wolf_call]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_wolf_call
+shuffle = rnd
+idle = 20,30,100
+
+[esc_trader_spot]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_spot
+shuffle = seq
+idle = 1,1,100
+
+[esc_trader_call]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_call
+shuffle = seq
+idle = 1,1,100
+
+[esc_trader_habar_greeting]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\trader\trader_script1a_3
+shuffle = seq
+idle = 1,1,100
+
+[esc_driver_talk]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_driver_talk_
+shuffle = rnd
+idle = 1,1,100
+
+[esc_habar_location_1]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_habar_location_1
+shuffle = seq
+idle = 1,1,100
+
+[esc_habar_location_2]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_habar_location_2
+shuffle = rnd
+idle = 1,1,100
+
+[esc_habar_location_3]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_habar_location_3
+shuffle = seq
+idle = 1,1,100
+
+[esc_jail_monologue]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_jail_monologue
+shuffle = seq
+idle = 1,1,100
+
+[esc_mill_complete_reply]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_mill_complete_reply
+shuffle = seq
+idle = 1,1,100
+
+[esc_railroadpost_no]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_railroadpost_no_
+shuffle = rnd
+idle = 10,15,100
+
+[esc_railroadpost_yes]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_railroadpost_yes_
+shuffle = rnd
+idle = 20,25,100
+
+[esc_stalkerbase_guard_redirect]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_stalkerbase_guard_redirect
+shuffle = seq
+idle = 1,1,100
+
+[esc_trader_habar_request]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_habar_request
+shuffle = seq
+idle = 1,1,100
+
+[esc_dead_military_pda_request]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_dead_military_pda_request
+shuffle = seq
+idle = 1,1,100
+
+[megafon]
+type = 3d
+path = characters_voice\scenario\escape\megafon_
+shuffle = rnd
+idle = 1,1,20
+
+[megafon_alarm]
+type = 3d
+path = characters_voice\scenario\escape\megafon_alarm_
+shuffle = rnd
+idle = 10,15,100
+
+[esc_mil_target_lost]
+type = 3d
+path = characters_voice\scenario\escape\esc_mil_target_lost
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_patrol_help]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_patrol_help_
+shuffle = seq
+idle = 1,1,100
+
+[esc_mil_target_detected]
+type = 3d
+path = characters_voice\scenario\escape\esc_mil_target_detected
+shuffle = seq
+idle = 1,10,100
+
+[esc_habar_founded]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_habar_founded
+shuffle = seq
+
+[esc_trader_start_pda]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_start_pda
+shuffle = seq
+idle = 1,10,100
+
+[esc_trader_greet]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_greet_
+shuffle = seq
+idle = 1,10,100
+
+[esc_driver_treat]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_driver_treat
+shuffle = seq
+idle = 1,10,100
+
+[esc_comandir_megafon]
+type = 3d
+actor_stereo = false
+path = characters_voice\scenario\escape\comandir_megafon_
+shuffle = seq
+idle = 1,10,100
+
+[esc_stalker_assemble_1_1]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_1_1
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_1_2]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_1_2
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_2_1]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_2_1
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_2_2]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_2_2
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_2_3]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_2_3
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_2_4]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_2_4
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_3_1]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_3_1
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_3_2]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_3_2
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_3_3]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_3_3
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_3_4]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_3_4
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_4_1]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_4_1
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_4_2]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_4_2
+shuffle = seq
+idle = 1,1,100
+
+[esc_stalker_assemble_4_3]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_assemble_4_3
+shuffle = seq
+idle = 1,1,100
+
+[esc_trader_bye_give_habar]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_trader_bye_give_habar
+shuffle = seq
+idle = 1,1,100
+
+[esc_hello_stalker_leader]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_hello_stalker_leader_
+shuffle = seq
+idle = 3,5,100
+
+[esc_hello_stalker_trader]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_hello_stalker_trader_
+shuffle = seq
+idle = 3,5,100
+
+[esc_hello_stalker_mechanic]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_hello_stalker_mechanic_
+shuffle = seq
+idle = 3,5,100
+
+[esc_hello_military_prisoner]
+type = npc
+actor_stereo = false
+path = scenario\escape\esc_hello_military_prisoner_
+shuffle = seq
+idle = 3,5,100
+
+
+
+
+[esc_stalker_expansion_1_up]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_0_up
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_2_up]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_1_up
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_2_down]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_1_down
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_3_up]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_2_up
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_3_down]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_2_down
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_4_up]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_4_up
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_4_down]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_3_down
+shuffle = rnd
+idle = 1,1,100
+play_always = true
+
+[esc_stalker_expansion_5_down]
+type = actor
+actor_stereo = false
+path = characters_voice\scenario\escape\esc_stalker_expansion_5_down
+shuffle = rnd
+idle = 1,1,100
+play_always = true

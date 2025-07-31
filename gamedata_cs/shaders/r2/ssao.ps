@@ -1,0 +1,161 @@
+#include "common.h"
+
+#ifndef	SSAO_QUALITY
+
+half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
+{
+	return 1.0h;
+}
+
+#else	//	SSAO_QUALITY
+
+#if SSAO_QUALITY==1
+//	#define NUM_RINGS	1
+//	#define NUM_TAPS	6
+	#define ITERATE_RINGS	for (int a=2; a<3; ++a)
+	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
+#elif SSAO_QUALITY==2
+//	#define NUM_RINGS	2
+//	#define NUM_TAPS	6
+	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
+	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
+#elif SSAO_QUALITY==3
+//	#define NUM_RINGS	2
+//	#define NUM_TAPS	12
+	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
+	#define	ITERATE_TAPS	for (int i=0; i<12; i++)
+#endif
+
+float4 ssao_params;
+
+/*
+static const half2 poisson_disc12[12] = 
+{
+	half2(-0.326212f , -0.405810f),
+	half2(-0.840144f , -0.073580f),
+	half2(-0.695914f ,  0.457137f),
+	half2(-0.203345f ,  0.620716f),
+	half2( 0.962340f , -0.194983f),
+	half2( 0.473434f , -0.480026f),
+	half2( 0.519456f ,  0.767022f),
+	half2( 0.185461f , -0.893124f),
+	half2( 0.507431f ,  0.064425f),
+	half2( 0.896420f ,  0.412458f),
+	half2(-0.321940f , -0.932615f),
+	half2(-0.791559f , -0.597710f)
+};
+*/
+
+static const half2 poisson_disc12[12] = 
+{
+	half2(-0.326212f , -0.405810f)*0.68,
+	half2(-0.840144f , -0.073580f)*0.92,
+	half2(-0.695914f ,  0.457137f)*0.75,
+	half2(-0.203345f ,  0.620716f)*0.95,
+	half2( 0.962340f , -0.194983f)*0.63,
+	half2( 0.473434f , -0.480026f)*0.93,
+	half2( 0.519456f ,  0.767022f)*0.73,
+	half2( 0.185461f , -0.893124f)*0.98,
+	half2( 0.507431f ,  0.064425f)*0.65,
+	half2( 0.896420f ,  0.412458f)*0.9,
+	half2(-0.321940f , -0.932615f)*0.70,
+	half2(-0.791559f , -0.597710f)
+};
+
+uniform sampler2D 	jitter0;
+
+//	Screen space ambient occlusion
+//	P	screen space position of the original point
+//	N	screen space normal of the original point
+//	tc	G-buffer coordinates of the original point
+half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
+{
+	const float ssao_noise_tile_factor = ssao_params.x;
+	const float ssao_kernel_size = ssao_params.y;
+
+	half point_depth = P.z;
+	if (point_depth<0.01) point_depth = 100000.0h;	//	filter for the sky
+//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*100/point_depth;
+//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*100/max(point_depth,1.3);
+//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*70/point_depth;
+//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*150/max(point_depth,1.3);
+//	Looks better but triggers some strange hardware(?) bug.
+	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*ssao_kernel_size/max(point_depth,1.3);
+//	half2 	scale 	= half2	(.5f / 1024.h, .5f / 768.h)*min( ssao_kernel_size/point_depth , ssao_kernel_size/1.3 );
+
+	// sample 
+	half 	occ	= 0.1h;	
+	half num_dir	= 0.1h;
+//	half 	occ	= 1.0h;
+//	half num_dir	= 1.0h;
+
+////////////////////////////////
+//	jittering
+
+//	half2	Mirror = tex2D( jitter0, tcJ );
+//	half2	Mirror = half2(1,1);
+	float3 tc1	= mul( m_v2w, float4(P,1) );
+	tc1 *= ssao_noise_tile_factor;
+//	tc1 *= 2;
+//	tc1 *= 4;
+	tc1.xz += tc1.y;
+	half2	Mirror = tex2D( jitter0, tc1.xz );
+	Mirror	= normalize(Mirror);
+
+//	for (int a=1; a<3; ++a)
+ITERATE_RINGS
+{
+	half2	scale_tmp = scale*a;
+	//	for (int i=0; i<12; i++)
+	ITERATE_TAPS
+	{
+//		float2 	tap 	= tc + poisson_disc12[i]*scale_tmp;
+		float2 	tap 	= poisson_disc12[i];
+				tap		-= 2*dot(Mirror,tap)*Mirror;
+				tap		*= scale_tmp;
+				tap		+= tc;
+		half3	tap_pos	= tex2D	(s_position,tap);
+		half3 	dir 	= tap_pos-P.xyz;
+		half	dist	= length(dir);
+			dir 	= normalize(dir);
+		half 	infl 	= saturate(dot( dir, N.xyz));
+		half 	occ_factor = saturate(dist);
+
+		{
+//			occ += lerp( 1, occ_factor, infl);
+//			num_dir += 1;		
+
+			occ += (infl+0.01)*lerp( 1, occ_factor, infl)/(occ_factor+0.1);
+			num_dir += (infl+0.01)/(occ_factor+0.1);
+
+//			occ += (infl+0.1)*lerp( 1, occ_factor, infl)/(occ_factor+0.1);
+//			num_dir += (infl+0.1)/(occ_factor+0.1);
+
+//			occ += (infl+0.1)*lerp( 1, occ_factor, infl);
+//			num_dir += (infl+0.1);
+		}
+	}
+}
+	occ /= num_dir;
+
+//	occ = lerp(1, occ, saturate(point_depth/1.5f));
+
+	occ = saturate(occ);
+//	occ = Contrast(occ,2);
+//	occ = occ*1.5 - 0.5;
+//	occ = occ*occ;
+//	occ = occ*0.5+0.5;
+#if SSAO_QUALITY==1
+	occ = (occ+0.3)/(1+0.3);
+#else	//	SSAO_QUALITY==1
+	occ = (occ+0.2)/(1+0.2);
+#endif	//	SSAO_QUALITY==1
+//	occ = 1;
+
+	float WeaponAttenuation = smoothstep( 0.8, 0.9, length( P.xyz ));
+	occ = lerp( 1, occ, WeaponAttenuation );
+
+	return occ;
+}
+
+#endif	//	SSAO_QUALITY

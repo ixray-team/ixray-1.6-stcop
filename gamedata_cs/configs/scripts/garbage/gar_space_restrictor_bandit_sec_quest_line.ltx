@@ -1,0 +1,55 @@
+[logic]
+active = sr_idle@kill_digger_traitor_spawn_1
+
+
+[sr_idle@kill_digger_traitor_spawn_1]
+on_info = {+gar_quest_kill_digger_traitor_started} sr_idle@kill_digger_traitor_spawn_2 %=clear_smart_terrain(gar_smart_terrain_4_5)%
+
+[sr_idle@kill_digger_traitor_spawn_2]
+;on_info = {!is_smart_captured(gar_smart_terrain_4_5)}
+on_timer = 2000 | sr_idle@kill_digger_traitor_start %=create_squad(gar_digger_traitor:gar_smart_terrain_4_5)%
+
+[sr_idle@kill_digger_traitor_start]
+on_info = sr_idle@kill_smuggler_spawn_1 %=give_inited_task(storyline:gar_quest_kill_digger_traitor:bandit)%
+
+
+[sr_idle@kill_smuggler_spawn_1]
+on_info = {+gar_quest_kill_smuggler_prepare} sr_idle@kill_smuggler_spawn_2 %=clear_smart_terrain(gar_smart_terrain_4_2)%
+
+[sr_idle@kill_smuggler_spawn_2]
+;on_info = {!is_smart_captured(gar_smart_terrain_4_2)}
+on_timer = 2000 | sr_idle@kill_smuggler_spawn_3 %=create_squad(gar_digger_smuggler:gar_smart_terrain_4_2)%
+
+[sr_idle@kill_smuggler_spawn_3]
+on_info = {=smart_captured_by_faction(gar_smart_terrain_4_2:stalker)} sr_idle@kill_smuggler_start %=set_squad_goodwill(gar_digger_smuggler:enemy)%
+
+[sr_idle@kill_smuggler_start]
+on_info = {+gar_quest_kill_smuggler_told} sr_idle@destroy_flea_market_spawn_1 %=give_inited_task(eliminate_smart:gar_smart_terrain_4_2:bandit)%
+
+
+[sr_idle@destroy_flea_market_spawn_1]
+on_info = {+gar_quest_kill_smuggler_done} sr_idle@destroy_flea_market_spawn_2
+
+[sr_idle@destroy_flea_market_spawn_2]
+on_info = {=smart_captured_by_faction(gar_smart_terrain_6_3:stalker)} sr_idle@destroy_flea_market_spawn_3, sr_idle@destroy_flea_market_spawn_3 %+gar_flea_market_fixer_dead =clear_smart_terrain(gar_smart_terrain_6_3) =create_squad(gar_stalkers_flea_market_squad_1:gar_smart_terrain_6_3) =create_squad(gar_stalkers_flea_market_squad_2_destroy:gar_smart_terrain_6_3)%
+
+[sr_idle@destroy_flea_market_spawn_3]
+on_info = sr_idle@destroy_flea_market_spawn_4 %=clear_smart_terrain(gar_smart_terrain_6_4)%
+
+[sr_idle@destroy_flea_market_spawn_4]
+;on_info = {!is_smart_captured(gar_smart_terrain_6_4)}
+on_timer = 2000 | sr_idle@destroy_flea_market_start %=create_squad(gar_bandit_brigade:gar_smart_terrain_6_4) =set_gulag_relation_actor(gar_smart_terrain_6_3:enemy)%
+
+[sr_idle@destroy_flea_market_start]
+on_info = {+gar_quest_destroy_flea_market_told} sr_idle@bandit_reward_start %=give_inited_task(capture_smart:gar_smart_terrain_6_3:bandit)%
+
+[sr_idle@bandit_reward_start]
+on_info = {+gar_quest_bandit_reward_started} sr_idle@more_reward_start %=give_inited_task(storyline:gar_quest_bandit_reward:bandit)%
+
+[sr_idle@more_reward_start]
+on_info = {+gar_quest_more_reward_started} sr_idle@bandit_secret_start %=give_inited_task(storyline:gar_quest_more_reward:bandit)%
+
+[sr_idle@bandit_secret_start]
+on_info = {+gar_quest_bandit_secret_started} sr_idle@end_section %=give_treasure(gar_treasure_quest_reward_in_anomaly) =give_inited_task(storyline:gar_quest_bandit_secret:bandit)%
+
+[sr_idle@end_section]

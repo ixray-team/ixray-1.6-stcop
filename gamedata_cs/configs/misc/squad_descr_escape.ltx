@@ -1,0 +1,222 @@
+;Stalkers
+
+[esc_smart_terrain_5_7_stalker_2_squad]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_7
+
+[esc_smart_terrain_5_7_stalker_2_squad_2]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_7
+
+[esc_smart_terrain_4_8_stalker_2_squad]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_4_8
+
+[esc_smart_terrain_2_12_stalker_2_squad_1]
+faction = stalker
+npc = esc_wolf, sim_default_stalker_1, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0
+target_smart = esc_smart_terrain_2_12 
+
+[esc_smart_terrain_2_12_stalker_2_squad_2]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_2_12
+
+[esc_smart_terrain_6_8_stalker]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0
+target_smart = {+esc_take_habar_complete} nil, {+esc_actor_mission_stalker_leader_done} esc_smart_terrain_5_9:esc_smart_terrain_6_8, esc_smart_terrain_6_8
+attack_power = 400
+
+[esc_smart_terrain_6_8_stalker_sniper]
+faction = stalker
+npc = esc_stalker_guard_east_bridge, esc_stalker_guard_west_bridge, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_6_8
+on_death = %+esc_stalker_sniper_dead%
+
+[esc_smart_terrain_6_8_stalker_patrol]
+faction = stalker
+npc = sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, {+esc_reach_trader_complete -mil_squad_1_5_9_dead} esc_smart_terrain_5_10, esc_smart_terrain_5_10:esc_smart_terrain_6_8:loop
+attack_power = 400
+
+[esc_smart_terrain_6_8_stalker_patrol_2]
+faction = stalker
+npc = sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_0
+;target_smart = {+esc_take_habar_complete} nil, {+mil_squad_1_5_9_dead} esc_smart_terrain_5_10:esc_smart_terrain_6_8:loop, esc_smart_terrain_5_10
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_10
+on_death = %+esc_stalker_patrol_dead%
+attack_power = 400
+
+[esc_smart_terrain_7_10_stalker_mission_squad]
+faction = stalker
+npc = sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, {+esc_mission_stalker_leader_complete} esc_smart_terrain_7_11, esc_smart_terrain_7_10
+attack_power = 400
+
+[esc_smart_terrain_1_11_stalker_squad]
+faction = stalker
+npc = sim_default_stalker_0, sim_default_stalker_0, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_1_11
+
+[esc_stalker_squad_5_11]
+faction = stalker
+npc = sim_default_stalker_2, sim_default_stalker_2, sim_default_stalker_1, sim_default_stalker_1, sim_default_stalker_1
+target_smart = {+esc_take_habar_complete} nil, {+esc_support_squad_attack} esc_smart_terrain_7_11, esc_smart_terrain_5_11
+
+
+;Army
+
+[esc_smart_terrain_3_16_military_2_squad_0]
+faction = army
+npc = sim_default_military_2
+target_smart = esc_smart_terrain_3_16
+
+[esc_smart_terrain_3_16_military_2_squad_1]
+faction = army
+npc = sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2
+target_smart = esc_smart_terrain_3_16
+spawn_point = esc_smart_terrain_4_13_spawn_point
+
+[esc_smart_terrain_3_16_military_2_squad_2]
+faction = army
+npc = sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2
+target_smart = esc_smart_terrain_3_16
+spawn_point = esc_smart_terrain_4_13_spawn_point
+
+[esc_smart_terrain_3_16_military_2_squad_3]
+faction = army
+npc = sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2, sim_default_military_2
+target_smart = esc_smart_terrain_3_16
+spawn_point = esc_smart_terrain_2_14_spawn_point
+
+[esc_smart_terrain_3_16_military_2_squad_4]
+faction = army
+npc = sim_default_military_2, sim_default_military_3, sim_default_military_3, sim_default_military_3, sim_default_military_3
+target_smart = esc_smart_terrain_3_16
+spawn_point = esc_smart_terrain_2_14_spawn_point
+
+[esc_smart_terrain_7_11_military_2_squad]
+faction = army
+npc = sim_default_military_1, sim_default_military_1, sim_default_military_1, sim_default_military_0, sim_default_military_0
+target_smart = esc_smart_terrain_7_11
+on_death = %+esc_7_11_mil_1_dead%
+
+[esc_smart_terrain_7_11_military_2_squad_2]
+faction = army
+npc = esc_military_general, sim_default_military_1, sim_default_military_1, sim_default_military_0, sim_default_military_0
+target_smart = esc_smart_terrain_7_11
+on_death = %+esc_7_11_mil_2_dead%
+
+[esc_smart_terrain_7_11_military_2_squad_3]
+faction = army
+npc = sim_default_military_1, sim_default_military_1, sim_default_military_1, sim_default_military_0, sim_default_military_0
+target_smart = esc_smart_terrain_7_11
+on_death = %+esc_7_11_mil_3_dead%
+
+[esc_smart_terrain_5_2_military_2_squad]
+faction = army
+npc = sim_default_military_2, sim_default_military_1, sim_default_military_1, sim_default_military_0, sim_default_military_0
+target_smart = esc_smart_terrain_5_2
+
+[esc_smart_terrain_5_9_military_2_squad]
+faction = army
+npc = sim_default_military_0, sim_default_military_0, sim_default_military_0, sim_default_military_0, sim_default_military_0
+target_smart = {=smart_captured_by_faction(esc_smart_terrain_5_10:stalker)} esc_smart_terrain_5_10, esc_smart_terrain_5_9
+on_death = %+mil_squad_1_5_9_dead%
+attack_power = 400
+
+[esc_smart_terrain_5_9_military_2_squad_2]
+faction = army
+npc = sim_default_military_0, sim_default_military_0, sim_default_military_0, sim_default_military_0, sim_default_military_0
+target_smart = esc_smart_terrain_5_9
+on_death = %+mil_squad_2_5_9_dead%
+
+
+;Bandits
+
+[esc_smart_terrain_6_6_bandit_squad]
+faction = bandit
+npc = sim_default_bandit_2, sim_default_bandit_1, sim_default_bandit_1, sim_default_bandit_0, sim_default_bandit_0
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_6_6 
+sympathy = 0
+relationship = enemy
+on_death = %+esc_trader_bandits_2%
+
+[esc_smart_terrain_4_9_bandit]
+faction = bandit
+npc = sim_default_bandit_1, sim_default_bandit_0, sim_default_bandit_0, sim_default_bandit_0, sim_default_bandit_0
+target_smart = {+esc_actor_mission_stalker_leader} esc_smart_terrain_4_8, esc_smart_terrain_4_9
+sympathy = 0
+relationship = enemy
+
+[esc_smart_terrain_9_10_bandit_other_squad]
+faction = bandit
+npc = sim_default_bandit_0, sim_default_bandit_0, sim_default_bandit_0, sim_default_bandit_1, sim_default_bandit_1
+target_smart = esc_smart_terrain_9_10
+sympathy = 0
+relationship = enemy
+
+
+;Dogs
+
+[esc_dogs_lair_guard_2_14]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = {+esc_wolf_novice_2} esc_smart_terrain_2_14:esc_smart_terrain_4_13:esc_smart_terrain_5_12:loop, esc_smart_terrain_2_14:esc_smart_terrain_4_13:loop
+
+[esc_dogs_lair_guard_5_12]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_12
+
+[esc_dogs_lair_guard_3_4]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_3_4
+
+[esc_dogs_lair_guard_6_3]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_6_3
+
+[esc_dogs_lair_8_6]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_8_6
+
+[esc_dogs_lair_9_7]
+faction = monster
+npc = dog_normal, dog_normal, dog_normal, dog_normal, dog_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_9_7
+
+
+;Boars
+
+[esc_boars_lair_guard_3_10]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = esc_smart_terrain_4_10:esc_smart_terrain_4_11:loop
+
+[esc_boars_lair_guard_5_6]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_6
+
+[esc_boars_lair_guard_6_5]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_6_5
+
+[esc_boars_lair_guard_5_4]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_4
+
+[esc_boars_lair_guard_8_10]
+faction = monster
+npc = boar_normal, boar_normal, boar_normal, boar_normal, boar_normal
+target_smart = {+esc_wolf_brother_fail} nil, {+esc_wolf_brother_3} nil, {+esc_wolf_brother_2} esc_smart_terrain_9_10, esc_smart_terrain_8_10

@@ -1,0 +1,319 @@
+[list_tm_red_forest]
+red_pursuit_strelok_task
+red_pursuit_destroy_ambush
+red_pursuit_talk_csky
+red_find_forester
+red_go_to_signal_sos
+red_take_red_forest_map_pda
+red_find_teleport
+red_find_teleport_2
+red_find_signals_on_military
+red_find_compass
+red_bring_compass
+red_go_to_military_base
+red_help_with_bridge
+red_bridge_talk_with_comander
+red_bridge_go_to_positon
+red_bridge_wait_for_allyes
+red_bridge_cover_allyes
+red_bridge_cover_allyes2
+red_bridge_cover_bridge
+red_bridge_kill_sniper
+red_artefact_hunters_defend_squad
+red_artefact_huntesr_defend_smart
+red_forest_stalker_bring_map
+red_stalker_reinforced
+
+[red_pursuit_strelok_task]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 5
+name = red_pursuit_strelok_name
+text = red_pursuit_strelok_text
+target_story_ids = 505
+condlist_0 = {+red_pursuit_csky_talk2} fail
+;on_complete = %+red_pursuit_task_end%
+
+[red_pursuit_destroy_ambush]
+type = storyline
+task_type = additional
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 5
+name = red_pursuit_destroy_ambush_name
+text = red_pursuit_destroy_ambush_text
+target_story_ids = 511
+;condlist_0 = {+red_pursuit_strelok_spich +red_pursuit_tunnel_explode} complete
+condlist_0 = {+red_pursuit_bounty_hunter_surrender_info} complete, {!squad_exist(red_pursuit_bounty_hunters_squad_1) !squad_exist(red_pursuit_bounty_hunters_squad_2)} complete, {+red_bounty_hunters_free} reversed
+;condlist_1 = {!squad_exist(red_pursuit_bounty_hunters_squad_2)} complete
+on_complete = %+red_strelok_task_end%
+on_reversed = %+red_strelok_task_end%
+	
+[red_pursuit_talk_csky]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 5
+name = red_pursuit_strelok_name
+text = red_pursuit_strelok_text
+target_story_ids = 512
+condlist_0 = {+red_pursuit_csky_talk2} complete
+on_complete = %+red_pursuit_task_end%
+
+[red_go_to_signal_sos]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_go_to_signal_sos_name
+text = red_go_to_signal_sos_text
+target_story_ids = 521
+condlist_0 = {+red_go_to_sos_signal_task_complete} reversed
+condlist_1 = {+red_actor_find_forester} reversed
+
+[red_take_red_forest_map_pda]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_take_red_forest_map_pda_name
+text = red_take_red_forest_map_pda_text
+target_story_ids = 521
+condlist_0 = {+red_teleport_way} complete
+condlist_1 = {+red_actor_find_forester} reversed
+
+[red_find_teleport]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_find_enter_to_anomal_place_name
+text = red_find_enter_to_anomal_place_text
+target_story_ids = 525
+condlist_0 = {+red_teleport_way_2} complete
+condlist_1 = {+red_actor_find_forester} reversed
+
+[red_find_teleport_2]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_find_teleport_name
+text = red_find_teleport_text
+target_story_ids = 522
+condlist_0 = {+red_actor_find_teleport} complete
+condlist_1 = {+red_actor_find_forester} reversed
+
+[red_find_forester]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_find_forester_name
+text = red_find_forester_text
+target_story_ids = 515
+;target_story_ids = 521
+condlist_0 = {+red_actor_find_forester} complete
+on_complete = %+red_forest_open%
+
+[red_find_compass]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = {-red_forester_actor_has_compas} true
+prior = 10
+name = red_find_compass_name
+text = red_find_compass_text
+target_story_ids = 517
+condlist_0 = {+red_forester_actor_has_compas} complete
+
+[red_bring_compass]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_bring_compass_name
+text = red_bring_compass_text
+target_story_ids = 515
+condlist_0 = {+red_forester_take_compas} complete
+
+[red_help_with_bridge]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 10
+name = red_help_with_bridge_name
+text = red_help_with_bridge_text
+target_story_ids = 500
+condlist_0 = {+red_bridge_finished} complete
+condlist_1 = {+red_bridge_actor_fail} fail
+community_relation_delta_complete = 5000
+community_relation_delta_fail = -100
+reward_money = 10000
+reward_item = cs_heavy_outfit
+
+[red_bridge_talk_with_comander]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_talk_with_comander_name
+text = red_bridge_talk_with_comander_text
+target_story_ids = 501
+condlist_0 = {+red_bridge_actor_come} complete
+condlist_1 = {+red_bridge_clear_path} complete
+
+[red_bridge_go_to_positon]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_go_to_positon_name
+text = red_bridge_go_to_positon_text
+target_story_ids = 502
+condlist_0 = {+red_bridge_actor_in_position} complete
+condlist_1 = {+red_bridge_clear_path} complete
+
+[red_bridge_wait_for_allyes]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_wait_for_allyes_name
+text = red_bridge_wait_for_allyes_text
+target_story_ids = 502
+spot = red_bridge_wait_for_allyes_location
+condlist_0 = {+red_bridge_clear_path} complete
+
+[red_bridge_cover_allyes]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_cover_allyes_attack_name
+text = red_bridge_cover_allyes_attack_text
+target_story_ids = 503
+condlist_0 = {+red_bridge_cover_allyes_complete} complete
+
+[red_bridge_cover_allyes2]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_cover_allyes_name
+text = red_bridge_cover_allyes_text
+target_story_ids = 503
+spot = red_bridge_cover_allyes2_location
+condlist_0 = {+red_bridge_cover_allyes2_complete} complete
+
+[red_bridge_cover_bridge]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = true
+prior = 11
+name = red_bridge_cover_bridge_name
+text = red_bridge_cover_bridge_text
+target_story_ids = 503
+spot = red_bridge_cover_bridge_location
+condlist_0 = {+red_bridge_down_done} complete
+condlist_1 = {+red_bridge_allyes_out} fail
+
+[red_bridge_kill_sniper]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_attack_tower
+target_cond = {-red_bridge_sniper_task_complete} true
+prior = 12
+name = red_bridge_kill_sniper_name
+text = red_bridge_kill_sniper_text
+target_story_ids = 504
+condlist_0 = {+red_bridge_sniper_task_complete} complete
+
+;************* connect with military level *****************
+
+[red_find_signals_on_military]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+name = red_find_signals_on_military_name
+text = red_find_signals_on_military_text
+target_story_ids = 1209
+condlist_0 = {+mil_actor_inside_wtower} complete
+
+[red_go_to_military_base]
+type = storyline
+task_type = storyline
+icon = ui_mt_image_defend_tower
+spot = red_go_to_military_base_location
+name = red_go_to_military_base_name
+text = red_go_to_military_base_text
+target_story_ids = 1215
+condlist_0 = {+forester_talked_2 =actor_on_level(military)} complete
+on_complete = %+red_bridge_scene_begin%
+
+;*********** additional quest **********************
+
+[red_artefact_hunters_defend_squad]
+type = storyline
+task_type = additional
+icon = ui_mt_image_attack_tower
+target_cond = {+red_artefact_hunters_go -red_artefact_hunters_task_complete} true
+prior = 5
+name = red_artefact_huntesr_capture_smart_name
+text = red_artefact_huntesr_capture_smart_text
+target_story_ids = 519
+spot = secondary_task_location_complex
+condlist_0 = {+red_artefact_hunters_task_complete} complete
+condlist_1 = {+red_artefact_hunters_task_fail} fail
+play_regard = nil
+
+[red_artefact_huntesr_defend_smart]
+type = defend_smart
+task_type = additional
+icon = ui_mt_image_attack_tower
+target_cond = {=squad_exist(red_stalker_artefact_hunters_1) !is_smart_defending(red_smart_terrain_6_3) =target_smart_name(red_smart_terrain_6_3) -red_artefact_hunters_task_2_complete +red_artefact_hunters_task_complete} true
+prior = 3
+name = red_artefact_huntesr_defend_smart_name
+text = red_artefact_huntesr_defend_smart_text
+on_complete = % +red_artefact_hunters_task_2_complete%
+;reward_money = 2500
+reward_item = af_cristall_flower
+
+[red_forest_stalker_bring_map]
+type = recover_item
+task_type = additional
+icon = ui_mt_image_attack_tower
+target_cond = {-red_forest_allyes_have_map =check_npc_squad(red_stalker_artefact_hunters_1)}
+prior = 5
+name = red_forest_stalker_bring_map_name
+text = red_forest_stalker_bring_map_text
+requested_items = red_forest_pda_map
+on_complete = %+red_forest_allyes_have_map%
+reward_money = 1000
+
+[red_stalker_reinforced]
+type = capture_smart
+task_type = additional
+icon = ui_mt_image_attack_tower
+target_cond = {=target_smart_name(red_smart_terrain_3_2) =actor_on_level(red_forest) -red_capture_undeground_camp_done}
+prior = 5
+name = red_stalker_reinforced_name
+text = red_stalker_reinforced_text
+on_complete = %+red_capture_undeground_camp_done%
+reward_money = 3000

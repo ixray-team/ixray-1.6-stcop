@@ -1,0 +1,19 @@
+[logic]
+active = walker@battle
+
+[walker@defence]
+path_walk = stc_monolith_defence_walk
+out_restr = stc_monolith_defend_restr_1
+on_info = {+stc_monolith_to_battle} walker@battle
+invulnerable = true
+
+[walker@battle]
+path_walk = stc_battle_walk
+out_restr = stc_battle_restr_1
+;on_info = {-stc_monolith_to_battle} walker@defence
+invulnerable = true
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=is_enemy_actor}
+combat_ignore_keep_when_attacked = true

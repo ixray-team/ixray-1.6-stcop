@@ -1,0 +1,37 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_actor_in_zone = agr_snork_start_attack | {+snork +agr_actor_inside_5} sr_idle@line_1 %=spawn_object(agr_snork_hole_1:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_01]
+on_info = %+snork% sr_idle@line_0
+
+[sr_idle@line_1]
+on_game_timer = 10 | sr_idle@line_2 %=spawn_object(agr_snork_hole_2:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_2] 
+on_game_timer = 10 | sr_idle@line_3 %=spawn_object(agr_snork_hole_3:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_3]
+on_game_timer = 10 | sr_idle@line_4 %=spawn_object(agr_snork_hole_4:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_4]
+on_game_timer = 20 | sr_idle@line_5 %=spawn_object(agr_snork_hole_5:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_5]
+on_game_timer = 10 | sr_idle@line_6 %=spawn_object(agr_snork_hole_6:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_6]
+on_game_timer = 20 | sr_idle@line_7 %=spawn_object(agr_snork_hole_7:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_7]
+on_game_timer = 10 | sr_idle@line_8 %=spawn_object(agr_snork_hole_8:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_8]
+on_game_timer = 10 | sr_idle@line_9 %=spawn_object(agr_snork_hole_9:agr_hole_snork_1_walk:0)%
+
+[sr_idle@line_9]
+
+
+

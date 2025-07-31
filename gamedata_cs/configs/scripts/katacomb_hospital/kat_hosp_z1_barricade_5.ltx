@@ -1,0 +1,150 @@
+;-- командир отряда ЧН
+
+[logic]
+active = remark@weapon_unstrapped
+post_combat_time = 0,0 
+
+;-- прячется до появления игрока
+[remark@weapon_unstrapped]
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+path_walk = barricade_hide_5_walk
+anim = threat
+on_game_timer = 30 | smartcover@hide 
+
+[smartcover@hide]
+use_in_combat = true
+invulnerable = true
+path_walk = barricade_hide_5_walk
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+cover_state = idle_target
+loophole_name = br_com
+on_actor_dist_le_nvis = 7 | smartcover@hide2 %+hospital_z1_komander_speak =play_sound(clear_sky_about_hall:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[smartcover@hide2]
+use_in_combat = true
+invulnerable = true
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+cover_state = fire_target
+loophole_name = br_com
+;target_path = actor
+on_info = {+sniper_fire_scene} smartcover@hide3
+meet = no_meet
+
+[smartcover@hide3]
+use_in_combat = true
+invulnerable = true
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+cover_state = lookout_target
+loophole_name = br_com
+on_info = {+sniper_fire_scene_end} smartcover@hide4 %=play_sound(clear_sky_about_sniper:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[smartcover@hide4]
+use_in_combat = true
+invulnerable = true
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+cover_state = fire_target
+loophole_name = br_com
+;target_path = actor
+;on_game_timer = 100 | camper@hide5 %+katacomb_task_sniper_back =play_sound(clear_sky_wait)%
+on_signal = sound_end | smartcover@hide5 %+katacomb_task_sniper_back =play_sound(clear_sky_wait:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[smartcover@hide5]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+cover_state = lookout_target
+loophole_name = br_com
+on_info = {+cover_fire_go} smartcover@hide6 %=play_sound(clear_sky_go:csky:st_ui_pda_legend_squad)%
+on_info2 = {+sniper_off} camper@rush %=play_sound(clear_sky_start_raid:csky:st_ui_pda_legend_squad)%
+
+[smartcover@hide6]
+use_in_combat = true
+meet = no_meet
+invulnerable = true
+combat_ignore_cond = true
+cover_name = hosp_barricade_commander_smartcover
+;cover_state = lookout_target
+loophole_name = br_com
+on_info = {+hospital_z1_badly} smartcover@hide5 %-hospital_z1_badly =play_sound(clear_sky_badly:csky:st_ui_pda_legend_squad)%
+on_info2 = {+sniper_off} camper@rush %=play_sound(clear_sky_start_raid:csky:st_ui_pda_legend_squad)%
+
+;-- проход отряда ЧН по второму этажу
+[camper@rush]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_2_walk
+path_look = barricade_rush_2_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_info = {+door_blow_up} camper@final_wait
+invulnerable = true
+meet = no_meet
+
+[camper@rush2]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_2_walk
+path_look = barricade_rush_2_look
+radius = 5
+no_retreat = true
+def_state_moving = sneak_run
+on_info = {+door_blow_up} camper@final_wait
+invulnerable = true
+meet = no_meet
+
+[camper@final_wait]
+out_restr = kat_hosp_z1_cs_rush_restr
+danger = danger_condition
+path_walk = barricade_rush_2_walk
+path_look = barricade_rush_2_look
+radius = 0
+no_retreat = true
+def_state_moving = sneak_run
+on_game_timer = 5 | camper@final
+invulnerable = true
+meet = no_meet
+
+;-- отряд ЧН занимает финальные точки перед проломом
+[camper@final]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_3_walk
+path_look = barricade_final_3_look
+radius = 0
+no_retreat = true
+def_state_moving = sneak_run
+def_state_campering = threat_na
+def_state_campering_fire = threat_sniper_fire
+on_info = {+hospital_last_wave_spawn} camper@final2 %=play_sound(clear_sky_thanks_actor:csky:st_ui_pda_legend_squad)%
+invulnerable = true
+meet = no_meet
+
+[camper@final2]
+out_restr = kat_hosp_z1_cs_final_restr
+danger = danger_condition
+path_walk = barricade_final_3_walk
+path_look = barricade_final_3_look
+radius = 0
+def_state_campering = threat_na
+def_state_campering_fire = threat_fire
+no_retreat = true
+invulnerable = true
+meet = no_meet
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+ignore_distance_grenade = 0

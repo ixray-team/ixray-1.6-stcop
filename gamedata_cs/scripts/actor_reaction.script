@@ -1,0 +1,181 @@
+---------------------------------------------------------------------------------------------------------------------
+--Evaluators
+----------------------------------------------------------------------------------------------------------------------
+-- Константа
+class "evaluator_actor_reaction" (property_evaluator)
+function evaluator_actor_reaction:__init(name) super (nil, name)
+end
+function evaluator_actor_reaction:evaluate ()
+	return true
+end
+
+----------------------------------------------------------------------------------------------------------------------
+--Actions
+----------------------------------------------------------------------------------------------------------------------
+-- Обычное поведение
+class "action_actor_reaction" (action_base)
+function action_actor_reaction:__init (npc, action_name) super(nil, action_name)
+	self.npc = npc		
+end
+function action_actor_reaction:initialize()
+	action_base.initialize(self)
+	self.reaction_manager = db.storage[db.storage[self.npc:id()].robbery_zone_id].robbery_manager
+	self.commander_npc = self.reaction_manager.commander_npc
+	self.def_restr = sim_board.get_sim_board().smarts[alife():object(self.npc:id()).m_smart_terrain_id].smrt.def_restr
+	self.npc:remove_restrictions(self.def_restr, "")		
+	self:set_random_position()
+	
+end
+function action_actor_reaction:check_distance()
+	if self.npc:id() == self.commander_npc:id() then
+		if db.actor:position():distance_to(self.npc:position()) < 1.5 then
+			return true
+		end
+	else
+		if self.random_position:distance_to_sqr(self.npc:position()) <= 0.4 then
+			return true
+		end
+	end	
+	return false
+end
+
+function action_actor_reaction:execute()
+	action_base.execute(self)
+	if self.npc:is_talking() and (self.npc:general_goodwill(db.actor) <= -1000) then 
+		self.npc:stop_talk()
+		db.actor:stop_talk()		
+	end
+	if self:check_distance() and self.comed == nil then
+			local state_table = {"threat"}
+			state_mgr.set_state(self.npc, state_table[math.random(1,#state_table)], nil, nil, {look_object = db.actor}, nil, nil)
+			self.comed = true
+			if self.npc:id() == self.commander_npc:id() and not (self.npc:general_goodwill(db.actor) <= -1000) then
+				printf("setting start dialog!!!")
+				self.npc:enable_talk()
+				self.npc:set_start_dialog(self.reaction_manager.scene_manager.st.dialog)
+				db.actor:run_talk_dialog(self.commander_npc,true)
+				--level.enable_input()
+			end
+			
+	end
+	
+	if self.npc:id() == self.commander_npc:id() and self.comed == nil then
+		if self.reaction_manager.scene_manager.stand_still == true then
+			self.npc:set_dest_level_vertex_id(db.actor:level_vertex_id())
+		--	printf("actor position is %s comander position is %s",  vec_to_str(db.actor:position()), vec_to_str(self.commander_npc:position()))
+		--	local desired_direction = vector():sub(db.actor:position(),self.commander_npc:position())
+		--	printf("desired_direction = %s", vec_to_str(desired_direction))
+		--	self.npc:set_desired_direction(desired_direction)
+			self.npc:set_path_type(game_object.level_path)
+			local state_table = {"raid"}
+			local rnd_anim = state_table[math.random(1,#state_table)]
+			state_mgr.set_state(self.npc, rnd_anim, nil, nil, {look_object = db.actor}, {animation = true})
+		end
+	end
+	
+	
+				
+end
+function action_actor_reaction:finalize()
+   	action_base.finalize(self)
+   	self.reaction_manager = nil
+   	self.commander_npc = nil
+   	self.comed = nil
+   	self.random_position = nil
+   	self.base_vertex_id = nil
+	self.npc:add_restrictions(self.def_restr, "")
+	printf("finalize!!!!!")
+end
+
+
+function action_actor_reaction:set_random_position()
+		
+		print_table(self.reaction_manager.npc_position)
+		if self.npc:id() == self.commander_npc:id() then
+			self.random_position = self.npc:position()
+			self.base_vertex_id =  self.npc:level_vertex_id()
+		else
+			if self.reaction_manager.npc_position[self.npc:id()] == nil then
+				self.random_position = self.npc:position()
+				self.base_vertex_id =  self.npc:level_vertex_id()
+			else
+			
+				self.base_vertex_id = self.reaction_manager.npc_position[self.npc:id()].vertex
+				self.random_position = self.reaction_manager.npc_position[self.npc:id()].position
+				printf("for npc[%s] vertex [%s] position [%s:%s:%s]", self.npc:name(), tostring(self.base_vertex_id),
+					tostring(self.random_position.x), tostring(self.random_position.y), tostring(self.random_position.z))
+			end
+			if not self.npc:accessible(self.random_position) then
+				local ttp = vector():set(0,0,0)
+				self.base_vertex_id = self.npc:accessible_nearest(self.random_position, ttp)
+				self.random_position = level.vertex_position(self.base_vertex_id)
+			end
+		end
+		self.npc:set_dest_level_vertex_id(self.base_vertex_id)
+	--	printf("actor position is %s comander position is %s",  vec_to_str(self.random_position), vec_to_str(self.commander_npc:position()))
+	--	local desired_direction = vector():sub(self.random_position,self.commander_npc:position())
+	--	printf("desired_direction = %s", vec_to_str(desired_direction))		
+	--	self.npc:set_desired_direction(desired_direction)
+		self.npc:set_path_type(game_object.level_path)
+		local state_table = {"raid"}
+		local rnd_anim = state_table[math.random(1,#state_table)]
+		if self.npc:id() == self.commander_npc:id() then
+			state_mgr.set_state(self.npc, "threat",nil, nil, {look_object = db.actor}, {animation = true})
+		else
+			state_mgr.set_state(self.npc, "threat_na",nil, nil, {look_object = db.actor}, {animation = true})
+		end
+end
+
+function action_actor_reaction:check_danger_distance()
+	if self.reaction_manager.check_danger_dist == true and db.actor:position():distance_to_sqr(self.npc:position()) <= 4 then
+			printf("check_danger_dist!!!")
+		sr_robbery.disable_squad_reaction_in_dialog(db.actor, self.npc)
+		local gulag = xr_gulag.get_npc_gulag( self.npc )
+		xr_gulag.setGulagEnemy(gulag.name , db.actor)
+	end	
+end
+
+
+
+function add_actor_reactions(npc)
+  	local operators    = {}
+  	local properties  = {}
+
+  	local manager = npc:motivation_action_manager()
+
+  	properties["need_actor_reaction"]   	= xr_evaluators_id.actor_reaction + 1
+	
+  	operators["actor_reaction"]   		= xr_actions_id.actor_reaction + 1
+
+  	--evaluators
+  	manager:add_evaluator (properties["need_actor_reaction"],   this.evaluator_actor_reaction("need_actor_reaction"))
+
+  	local action = this.action_actor_reaction(npc, "action_actor_reaction")
+  	action:add_precondition(world_property(stalker_ids.property_alive,true))
+	action:add_precondition(world_property(stalker_ids.property_danger,false))
+	action:add_precondition(world_property(stalker_ids.property_enemy,false))
+	action:add_precondition(world_property(stalker_ids.property_anomaly,false))
+	--action:add_precondition		(world_property(xr_evaluators_id.sidor_wounded_base + 0,false))
+  	--action:add_precondition		(world_property(stalker_ids.property_alive,   	true))
+ 	action:add_effect(world_property(properties["need_actor_reaction"], false))
+  	manager:add_action(operators["actor_reaction"], action)
+end
+
+
+function enabled_actor_reaction(npc, target)
+	local goal = world_state()			
+	goal:add_property(world_property(xr_evaluators_id.actor_reaction + 1,false))
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+	target_obj = target
+	--'printf("!!!!!")		
+end
+
+function disable_actor_reaction(npc)
+	npc:restore_default_start_dialog()
+	local goal = world_state()			
+	goal:add_property(world_property(stalker_ids.property_puzzle_solved,true))
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+	printf("disable!!!!!")
+end

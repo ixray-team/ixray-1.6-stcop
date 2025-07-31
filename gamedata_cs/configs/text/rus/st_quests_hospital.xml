@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="hosp_task_general_name">
+		<text>Найти дорогу к ЧАЭС</text>
+	</string>
+	<string id="hosp_task_general_text">
+		<text>Путь к ЧАЭС лежит через разрушенный госпиталь. Нужно спешить: если Стрелок прошел Выжигатель, он уже очень близок к станции. Необходимо найти вход в катакомбы.</text>
+	</string>
+	<string id="hosp_task_heli_name">
+		<text>Сбить вертолёт</text>
+	</string>
+	<string id="hosp_task_heli_text">
+		<text>Сбить военный вертолёт</text>
+	</string>
+	<string id="hosp_task_kill_sniper_name">
+		<text>Убить снайпера</text>
+	</string>
+	<string id="hosp_task_kill_sniper_text">
+		<text>С этой позиции снайпер не защищён. Необходимо убить его.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_name">
+		<text>Подобраться к снайперу</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_1_text">
+		<text>Зал госпиталя простреливают снайпер и пулемётная точка. Позиция снайпера хорошо защищена. Отряд «Чистого неба» отвлечёт огонь на себя. Необходимо пройти на другую сторону зала, чтобы снять снайпера.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_name">
+		<text>Пройти на другую сторону зала</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_2_text">
+		<text>Пулемётчик ведет шквальный огонь на нижнем уроне, а снайпер контролирует верхний. Отряд «Чистого неба» может ненадолго отвлечь огонь на себя. Необходимо продвигаться только по команде командира отряда.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_name">
+		<text>Добраться до моста</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_3_text">
+		<text>Необходимо добраться до моста. Двигаться по команде командира отряда «Чистого неба», когда те отвлекут огонь на себя.</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_name">
+		<text>Перейти через мост</text>
+	</string>
+	<string id="hosp_task_sniper_back_rush_4_text">
+		<text>Перейти через мост. Двигаться по команде командира отряда «Чистого неба», когда те отвлекут огонь на себя.</text>
+	</string>
+	<string id="hosp_task_z2_exit_name">
+		<text>Двигаться в следующий зал</text>
+	</string>
+	<string id="hosp_task_z2_exit_text">
+		<text>Взрыв от падающего вертолёта обвалил перекрытия и открыл проход в следующий зал. Необходимо двигаться дальше.</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_name">
+		<text>Прикрыть отряд «Чистого неба»</text>
+	</string>
+	<string id="hosp_task_z3_help_csky_squad_text">
+		<text>Отряд «Чистого неба» продвигается вперёд для того, чтобы подорвать пулемётную точку. Необходимо прикрывать его от атак «Монолита».</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_name">
+		<text>Продержаться до подхода подмоги</text>
+	</string>
+	<string id="hosp_task_z3_hold_out_text">
+		<text>Отряд «Чистого неба» уже на подходе. Необходимо продержаться до их подхода.</text>
+	</string>
+</string_table>

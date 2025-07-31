@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {!black_screen} sr_cutscene@cam
+
+[sr_cutscene@cam]
+point = mil_nv_camera_walk
+look = mil_nv_camera_look
+cam_effector = scenario_cam\mp_military_weather\mp_military_weather
+on_signal = cameff_end | sr_cutscene@cam %=exit_game%
+on_timer = 862000 | %=run_postprocess(agr_u_fade)%
+

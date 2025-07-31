@@ -1,0 +1,238 @@
+;**********************************
+;********* enemy attack ***********
+
+[logic@enemy_work1]
+active = walker@attack_work1
+suitable = {=check_npc_name(lim_barricade_enemy_1) -lim_condition3} true
+prior = 200
+
+[walker@attack_work1]
+combat_ignore_cond = true
+path_walk = to_2_walk_1
+on_signal = arrive_to_wait | smartcover@work1
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[smartcover@work1]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = true
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_1_smartcover
+target_path = lim_smart_3_to_2_cover_1_fire
+cover_state = idle_target
+on_info = {+lim_bandit_house_attack1} smartcover@fire_work1 %=request_current_squad_stage(prepare)%
+
+[smartcover@fire_work1]
+use_in_combat = true
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_1_smartcover
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_1_fire
+cover_state = fire_target
+on_info = {+lim_barricade_attack} walker@fire_work1, {+lim_bandit_house_go} walker@fire2_work1 %=make_actor_visible_to_npc%
+on_info2 = {=actor_in_zone(lim_bandit_fire)} walker@fire_work1
+on_info3 = {=hit_by_actor()} walker@fire_work1
+
+[walker@fire_work1]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+path_walk = to_2_walk_1
+path_look = to_2_walk_1
+on_info = {+lim_bandit_house_go} walker@fire2_work1 %=make_actor_visible_to_npc%
+
+[walker@fire2_work1]
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_2_walk_1
+path_look = to_2_walk_1
+
+;***********************************
+
+[logic@enemy_work2]
+active = walker@attack_work2
+suitable = {=check_npc_name(lim_barricade_enemy_2) -lim_condition3} true
+prior = 200
+
+[walker@attack_work2]
+combat_ignore_cond = true
+path_walk = to_2_walk_2
+on_signal = arrive_to_wait | smartcover@work2 ;%=request_current_squad_stage(prepare)%
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[smartcover@work2]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = true
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_2_fire
+cover_state = idle_target
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_2_smartcover
+on_info = {+lim_bandit_house_attack1} smartcover@fire_work2
+
+[smartcover@fire_work2]
+use_in_combat = true
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_2_smartcover
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_2_fire
+cover_state = fire_target
+on_info = {+lim_barricade_attack} walker@fire_work2, {+lim_bandit_house_go} walker@fire_work2 %=make_actor_visible_to_npc%
+on_info2 = {=actor_in_zone(lim_bandit_fire)} walker@fire_work2
+on_info3 = {=hit_by_actor()} walker@fire_work2
+
+[walker@fire_work2]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+path_walk = to_2_walk_2
+path_look = to_2_walk_2
+on_info = {+lim_bandit_house_go} walker@fire2_work2 %=make_actor_visible_to_npc%
+
+[walker@fire2_work2]
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_2_walk_2
+path_look = to_2_walk_2
+
+;***********************************
+
+[logic@enemy_work3]
+active = walker@attack_work3
+suitable = {=check_npc_name(lim_barricade_enemy_3) -lim_condition3} true
+prior = 200
+
+[walker@attack_work3]
+combat_ignore_cond = true
+path_walk = to_2_walk_3
+on_signal = arrive_to_wait | smartcover@work3 ;%=request_current_squad_stage(prepare)%
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[smartcover@work3]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = true
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_3_fire
+cover_state = idle_target
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_3_smartcover
+on_info = {+lim_bandit_house_attack1} smartcover@fire_work3
+
+[smartcover@fire_work3]
+use_in_combat = true
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_3_smartcover
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_3_fire
+cover_state = fire_target
+on_info = {+lim_barricade_attack} walker@fire_work3, {+lim_bandit_house_go} walker@fire_work3 %=make_actor_visible_to_npc%
+on_info2 = {=actor_in_zone(lim_bandit_fire)} walker@fire_work3
+on_info3 = {=hit_by_actor()} walker@fire_work3
+
+[walker@fire_work3]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+path_walk = to_2_walk_3
+path_look = to_2_walk_3
+on_info = {+lim_bandit_house_go} walker@fire2_work3 %=make_actor_visible_to_npc%
+
+[walker@fire2_work3]
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_2_walk_3
+path_look = to_2_walk_3
+;***********************************
+
+[logic@enemy_work4]
+active = walker@attack_work4
+suitable = {=check_npc_name(lim_barricade_enemy_4) -lim_condition3} true
+prior = 200
+
+[walker@attack_work4]
+combat_ignore_cond = true
+path_walk = to_2_walk_4
+on_signal = arrive_to_wait | smartcover@work4 ;%=request_current_squad_stage(prepare)%
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[smartcover@work4]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = true
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_4_fire
+cover_state = idle_target
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_4_smartcover
+on_info = {+lim_bandit_house_attack1} smartcover@fire_work4
+
+[smartcover@fire_work4]
+use_in_combat = true
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_4_smartcover
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_4_fire
+cover_state = fire_target
+on_info = {+lim_barricade_attack} walker@fire_work4, {+lim_bandit_house_go} walker@fire_work4 %=make_actor_visible_to_npc%
+on_info2 = {=actor_in_zone(lim_bandit_fire)} walker@fire_work4
+on_info3 = {=hit_by_actor()} walker@fire_work4
+
+[walker@fire_work4]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+path_walk = to_2_walk_4
+path_look = to_2_walk_4
+on_info = {+lim_bandit_house_go} walker@fire2_work4 %=make_actor_visible_to_npc%
+
+[walker@fire2_work4]
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_2_walk_4
+path_look = to_2_walk_4
+
+;***********************************
+
+[logic@enemy_work5]
+active = walker@attack_work5
+suitable = {=check_npc_name(lim_barricade_enemy_5) -lim_condition3} true
+prior = 200
+
+[walker@attack_work5]
+combat_ignore_cond = true
+path_walk = to_2_walk_5
+on_signal = arrive_to_wait | smartcover@work5 ;%=request_current_squad_stage(prepare)%
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+
+[smartcover@work5]
+combat_ignore_cond = true
+out_restr = lim_smart_2_3_bufer_zone
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_5_fire
+cover_state = idle_target
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_5_smartcover
+on_info = {+lim_bandit_house_attack1} smartcover@fire_work5
+
+[smartcover@fire_work5]
+use_in_combat = true
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+cover_name = lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_wait_5_smartcover
+;loophole_name = lh_2
+target_path = lim_smart_3_to_2_cover_5_fire
+cover_state = fire_target
+on_info = {+lim_barricade_attack} walker@fire_work5, {+lim_bandit_house_go} walker@fire_work5 %=make_actor_visible_to_npc%
+on_info2 = {=actor_in_zone(lim_bandit_fire)} walker@fire_work5
+on_info3 = {=hit_by_actor()} walker@fire_work5
+
+[walker@fire_work5]
+out_restr = lim_smart_2_3_bufer_zone
+combat_ignore_cond = {=enemy_in_zone(lim_bandit_minigun_zone)}
+path_walk = to_2_walk_5
+path_look = to_2_walk_5
+on_info = {+lim_bandit_house_go} walker@fire2_work5 %=make_actor_visible_to_npc%
+
+[walker@fire2_work5]
+out_restr = lim_smart_2_3_bufer_zone
+path_walk = to_2_walk_5
+path_look = to_2_walk_5
