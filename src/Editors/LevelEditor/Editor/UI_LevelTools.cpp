@@ -521,7 +521,7 @@ void  CLevelTool::Render()
         }
 	break;
 	case esBuildLevel: Builder.OnRender(); break;
-	case esEditMesh:
+	case esEditCustom:
 	{
 		for (IViewport* VP : Viewlist)
 		{
