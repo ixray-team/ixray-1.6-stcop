@@ -191,6 +191,7 @@ CScriptEntityAction *CScriptEntity::GetCurrentAction()
 void  ActionCallback(IKinematics *tpKinematics)
 {
 	// sounds
+	if (!tpKinematics->GetUpdateCallbackParam()) return;
 	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY			(l_tpScriptMonster);
 	if (!l_tpScriptMonster->GetCurrentAction())
@@ -201,6 +202,7 @@ void  ActionCallback(IKinematics *tpKinematics)
 
 void CScriptEntity::vfUpdateParticles()
 {
+	if (!GetCurrentAction()) return;
 	CScriptParticleAction	&l_tParticleAction = GetCurrentAction()->m_tParticleAction;
 	if (xr_strlen(l_tParticleAction.m_caBoneName)) {
 		xr_shared_ptr<CParticlesObject> l_tpParticlesObject = l_tParticleAction.m_tpParticleSystem;
