@@ -16,7 +16,7 @@
 #include "object_broker.h"
 
 #include "UIHelperGame.h"
-#include "../../xrUI/Widgets/ui_arrow.h"
+#include "../../xrUI/Widgets/UIArrow.h"
 #include "UIHudStatesWnd.h"
 
 #include "../Level.h"
@@ -126,13 +126,13 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 		m_state[stt_sleep]->set_progress(value);
 	}
 
-    value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed);
-    m_state[stt_stamina]->set_text(value); // 0..0.99
+	value = actor->GetRestoreSpeed(ALife::ePowerRestoreSpeed);
+	m_state[stt_stamina]->set_text(value); // 0..0.99
 
-    // show bleeding icon
-    value = actor->conditions().BleedingSpeed();
-    m_state[stt_health]->show_static((value > 0.01f)); // Bleeding icon in Clear Sky
-    
+	// show bleeding icon
+	value = actor->conditions().BleedingSpeed();
+	m_state[stt_health]->show_static((value > 0.01f)); // Bleeding icon in Clear Sky
+	
 	m_state[stt_bleeding]->show_static(false, 1);
 	m_state[stt_bleeding]->show_static(false, 2);
 	m_state[stt_bleeding]->show_static(false, 3);
@@ -296,16 +296,16 @@ void ui_actor_state_wnd::UpdateActorInfo( CInventoryOwner* owner )
 
 void ui_actor_state_wnd::update_round_states(EStateType stt_type, float initial, float max_power)
 {
-    auto state = m_state[stt_type];
+	auto state = m_state[stt_type];
 
-    const float progress = floor(initial / max_power * 31) / 31; // number of sticks in progress bar
-    const float arrow = initial / max_power; //  = 0..1
+	const float progress = floor(initial / max_power * 31) / 31; // number of sticks in progress bar
+	const float arrow = initial / max_power; //  = 0..1
 
-    if (!state->set_progress(progress))
-    {
-        //state->set_progress_shape(arrow);
-        state->set_arrow(arrow); // 0..1
-        state->set_text(arrow); // 0..1
+	if (!state->set_progress(progress))
+	{
+		//state->set_progress_shape(arrow);
+		state->set_arrow(arrow); // 0..1
+		state->set_text(arrow); // 0..1
 	}
 }
 
@@ -385,12 +385,12 @@ void ui_actor_state_item::init_from_xml( CUIXml& xml, LPCSTR path )
 	}
 	if ( xml.NavigateToNode( "arrow", 0 ) )	
 	{
-		m_arrow = new UI_Arrow();
+		m_arrow = new CUIArrow();
 		m_arrow->init_from_xml( xml, "arrow", this );
 	}
 	if ( xml.NavigateToNode( "arrow_shadow", 0 ) )	
 	{
-		m_arrow_shadow = new UI_Arrow();
+		m_arrow_shadow = new CUIArrow();
 		m_arrow_shadow->init_from_xml( xml, "arrow_shadow", this );
 	}
 	if ( xml.NavigateToNode( "icon", 0 ) )	
