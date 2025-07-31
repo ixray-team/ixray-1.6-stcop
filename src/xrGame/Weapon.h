@@ -15,6 +15,7 @@
 #include "CameraRecoil.h"
 #include "Actor.h"
 #include "script_game_object.h"
+#include "Scope.h"
 
 class CEntity;
 class ENGINE_API CMotionDef;
@@ -99,6 +100,7 @@ public:
 	bool IsCollimatorInstalled() const;
 	bool IsHudModelForceUnhide() const;
 	bool IsUIForceUnhiding() const;
+	bool ScopeFit(CScope*) const;
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
