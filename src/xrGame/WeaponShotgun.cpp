@@ -146,6 +146,9 @@ void CWeaponShotgun::OnStateSwitch(u32 S)
 
 void CWeaponShotgun::switch2_StartReload()
 {
+	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
+
 	PlaySound			("sndOpen",get_LastFP());
 	PlayAnimOpenWeapon	();
 	SetPending			(TRUE);
@@ -160,6 +163,7 @@ void CWeaponShotgun::switch2_AddCartgidge	()
 
 void CWeaponShotgun::switch2_EndReload	()
 {
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
 	SetPending			(FALSE);
 	PlaySound			("sndClose",get_LastFP());
 	PlayAnimCloseWeapon	();
