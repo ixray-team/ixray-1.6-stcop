@@ -233,7 +233,7 @@
 
     <class>esc_wolf</class>
     <community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
-    <snd_config>characters_voice\human_02\stalker\</snd_config>
+    <snd_config>characters_voice\human_03\stalker\</snd_config>
 
     <rank>300</rank>
     <reputation>0</reputation>
