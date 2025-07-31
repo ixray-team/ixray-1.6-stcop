@@ -173,5 +173,3 @@ void ESceneObjectTool::GetStaticDesc(int& v_cnt, int& f_cnt, bool b_selected_onl
         }
     }
 }
-
-
