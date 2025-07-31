@@ -86,6 +86,9 @@ private:
 	LPCSTR				m_last_monster_icon;
 	LPCSTR				m_last_weapon_icon;
 
+	bool m_isGetRankingsArraySize = false;
+	const char* m_onGetRankingsArraySize = {};
+
 public:
 						CUIRankingWnd			();
 	virtual				~CUIRankingWnd			();

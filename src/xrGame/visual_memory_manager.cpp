@@ -111,6 +111,8 @@ CVisualMemoryManager::CVisualMemoryManager		(vision_client *client)
 
 void CVisualMemoryManager::initialize			()
 {
+	LoadCallbackGlobals(m_isGetVisibleValue, m_onGetVisibleValue, "OnGetVisibleValue");
+
 	m_max_object_count	= 128;
 	m_enabled			= true;
 	m_objects			= 0;
@@ -332,11 +334,15 @@ float CVisualMemoryManager::get_visible_value(const CGameObject *game_object, fl
 	if (distance <= always_visible_distance + EPS_L)
 		return							(current_state().m_visibility_threshold);
 
-	//Alundaio: hijack not_yet_visible_object to lua
-	luabind::functor<float>	funct;
-	if (ai().script_engine().functor("visual_memory_manager.get_visible_value", funct))
+	if (m_isGetVisibleValue)
+	{
+		// Alundaio: hijack not_yet_visible_object to lua
+		luabind::functor<float>	funct;
+
+		R_ASSERT2(ai().script_engine().functor(m_onGetVisibleValue, funct), "failed to get OnGetVisibleValue functor");
 		return (funct(m_object ? m_object->lua_game_object() : 0, game_object ? game_object->lua_game_object() : 0, time_delta, current_state().m_time_quant, luminocity, current_state().m_velocity_factor, object_velocity, distance, object_distance, always_visible_distance));
-	//-Alundaio
+		//-Alundaio
+	}
 
 	return								(
 		time_delta / 
