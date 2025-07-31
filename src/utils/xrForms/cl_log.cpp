@@ -141,9 +141,8 @@ void AditionalData(const char* format, ...)
 	csLog.Leave();
 }
 
-// TODO: windows specific stuff, dunno about Linux
-HWND logWindow=0;
-void logThread(void* dummy) {
+void logThread(void* dummy) 
+{
 	extern void Startup(LPSTR lpCmdLine);
 	
 	xrLogger::AddLogCallback(MyLogCallback);

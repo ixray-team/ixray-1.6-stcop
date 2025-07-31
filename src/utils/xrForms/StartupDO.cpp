@@ -34,10 +34,10 @@ void StartupDO()
 		strcpy(name, Name.data());
 		// Load project
 
-		extern HWND logWindow;
 		string256 temp;
 		xr_sprintf(temp, "%s - Detail Compiler", name);
-		SetWindowTextA(logWindow, temp);
+
+		SDL_SetWindowTitle(g_AppInfo.Window, temp);
 
 		FS.get_path("$level$")->_set(name);
 
