@@ -221,11 +221,11 @@ LPCSTR CScriptGameObject::WhoHitName()
 {
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(&object());
 	if (entity_alive)
-		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cName()):nullptr;
+		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cName()):0;
 	else 
 	{
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member  WhoHitName()");
-		return			nullptr;
+		return			0;
 	}
 }
 
@@ -233,11 +233,11 @@ LPCSTR CScriptGameObject::WhoHitSectionName()
 {
 	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(&object());
 	if (entity_alive)
-		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()):nullptr;
+		return			entity_alive->conditions().GetWhoHitLastTime()?(*entity_alive->conditions().GetWhoHitLastTime()->cNameSect()):0;
 	else 
 	{
 		ai().script_engine().script_log			(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject : cannot access class member  WhoHitName()");
-		return			nullptr;
+		return			0;
 	}
 }
 

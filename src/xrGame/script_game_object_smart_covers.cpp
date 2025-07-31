@@ -14,415 +14,442 @@
 #include "smart_cover.h"
 #include "../xrScripts/script_callback_ex.h"
 
-bool CScriptGameObject::use_smart_covers_only		() const
+bool CScriptGameObject::use_smart_covers_only() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member use_smart_covers_only!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->use_smart_covers_only();
 	}
 
-	return								(stalker->use_smart_covers_only());
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member use_smart_covers_only!");
+	return false;
 }
 
-void CScriptGameObject::use_smart_covers_only		(bool value)
+void CScriptGameObject::use_smart_covers_only(bool value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member use_smart_covers_only!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->use_smart_covers_only(value);
 	}
-
-	stalker->use_smart_covers_only		(value);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member use_smart_covers_only!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_selector	()
+void CScriptGameObject::set_smart_cover_target_selector()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_selector(CScriptCallbackEx<void>());
 	}
-
-	stalker->movement().target_selector	(CScriptCallbackEx<void>());
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_selector	(luabind::functor<void> functor)
+void CScriptGameObject::set_smart_cover_target_selector(luabind::functor<void> functor)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		CScriptCallbackEx<void> callback;
+		callback.set(functor);
+		stalker->movement().target_selector(callback);
 	}
-
-	CScriptCallbackEx<void>				callback;
-	callback.set						(functor);
-	stalker->movement().target_selector	(callback);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_selector	(luabind::functor<void> functor, luabind::object object)
+void CScriptGameObject::set_smart_cover_target_selector(luabind::functor<void> functor, luabind::object object)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&this->object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
-		return;
+	if (CAI_Stalker* stalker = this->object().cast_stalker())
+	{
+		CScriptCallbackEx<void> callback;
+		callback.set(functor, object);
+		stalker->movement().target_selector(callback);
 	}
-
-	CScriptCallbackEx<void>				callback;
-	callback.set						(functor, object);
-	stalker->movement().target_selector	(callback);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target_selector!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_idle		()
+void CScriptGameObject::set_smart_cover_target_idle()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member smart_cover_setup_idle_target!");
-		return;
-	}
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		if (!stalker->g_Alive())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : do not call smart_cover_setup_idle_target when stalker is dead!");
+			return;
+		}
 
-	if (!stalker->g_Alive()) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : do not call smart_cover_setup_idle_target when stalker is dead!");
-		return;
+		stalker->movement().target_idle();
 	}
-
-	stalker->movement().target_idle		();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_setup_idle_target!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_lookout	()
+void CScriptGameObject::set_smart_cover_target_lookout()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member smart_cover_setup_lookout_target!");
-		return;
-	}
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		if (!stalker->g_Alive())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : do not call smart_cover_setup_lookout_target when stalker is dead!");
+			return;
+		}
 
-	if (!stalker->g_Alive()) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : do not call smart_cover_setup_lookout_target when stalker is dead!");
-		return;
+		stalker->movement().target_lookout();
 	}
-
-	stalker->movement().target_lookout	();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_setup_lookout_target!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_fire		()
+void CScriptGameObject::set_smart_cover_target_fire()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member smart_cover_setup_fire_target!");
-		return;
-	}
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		if (!stalker->g_Alive())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : do not call smart_cover_setup_fire_target when stalker is dead!");
+			return;
+		}
 
-	if (!stalker->g_Alive()) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : do not call smart_cover_setup_fire_target when stalker is dead!");
-		return;
+		stalker->movement().target_fire();
 	}
-
-	stalker->movement().target_fire		();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_setup_fire_target!");
+	}
 }
 
 void CScriptGameObject::set_smart_cover_target_fire_no_lookout()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member smart_cover_setup_fire_no_lookout_target!");
-		return;
-	}
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		if (!stalker->g_Alive())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : do not call set_smart_cover_target_fire_no_lookout when stalker is dead!");
+			return;
+		}
 
-	if (!stalker->g_Alive()) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : do not call set_smart_cover_target_fire_no_lookout when stalker is dead!");
-		return;
+		stalker->movement().target_fire_no_lookout();
 	}
-
-	stalker->movement().target_fire_no_lookout	();
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_setup_fire_no_lookout_target!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target_default		(bool value)
+void CScriptGameObject::set_smart_cover_target_default(bool value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target_default!");
-		return;
-	}
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		if (!stalker->g_Alive())
+		{
+			ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : do not call set_smart_cover_target_default when stalker is dead!");
+			return;
+		}
 
-	if (!stalker->g_Alive()) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : do not call set_smart_cover_target_default when stalker is dead!");
-		return;
+		stalker->movement().target_default(value);
 	}
-
-	stalker->movement().target_default	(value);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target_default!");
+	}
 }
 
-bool CScriptGameObject::in_smart_cover						() const
+bool CScriptGameObject::in_smart_cover() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member in_smart_cover_mode!");
-		return							("");
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().in_smart_cover();
 	}
 
-	return								(stalker->movement().in_smart_cover());
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member in_smart_cover_mode!");
+	return false;
 }
 
-void CScriptGameObject::set_dest_smart_cover						(LPCSTR cover_id)
+void CScriptGameObject::set_dest_smart_cover(LPCSTR cover_id)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_dest_smart_cover!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_id(cover_id);
 	}
-
-	stalker->movement().target_params().cover_id(cover_id);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_dest_smart_cover!");
+	}
 }
 
-void CScriptGameObject::set_dest_smart_cover						()
+void CScriptGameObject::set_dest_smart_cover()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_dest_smart_cover!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_id("");
 	}
-
-	stalker->movement().target_params().cover_id("");
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_dest_smart_cover!");
+	}
 }
 
-CCoverPoint const* CScriptGameObject::get_dest_smart_cover			()
+CCoverPoint const* CScriptGameObject::get_dest_smart_cover()
 {
-	CAI_Stalker*						stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member get_dest_smart_cover!");
-		return							(0);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().target_params().cover();
 	}
 
-	return								(stalker->movement().target_params().cover());
-}
-LPCSTR CScriptGameObject::get_dest_smart_cover_name		()
-{
-	CAI_Stalker*						stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member get_dest_smart_cover!");
-		return							(0);
-	}
-
-	return								(stalker->movement().target_params().cover_id().c_str());
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member get_dest_smart_cover!");
+	return 0;
 }
 
-void CScriptGameObject::set_dest_loophole							(LPCSTR loophole_id)
+LPCSTR CScriptGameObject::get_dest_smart_cover_name()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_dest_loophole!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return *stalker->movement().target_params().cover_id();
 	}
 
-	stalker->movement().target_params().cover_loophole_id(loophole_id);
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member get_dest_smart_cover!");
+	return 0;
 }
 
-void CScriptGameObject::set_dest_loophole							()
+void CScriptGameObject::set_dest_loophole(LPCSTR loophole_id)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_dest_loophole!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_loophole_id(loophole_id);
 	}
-
-	stalker->movement().target_params().cover_loophole_id("");
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_dest_loophole!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target						(Fvector value)
+void CScriptGameObject::set_dest_loophole()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_loophole_id("");
 	}
-
-	stalker->movement().target_params().cover_fire_position		(&value);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_dest_loophole!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target						()
+void CScriptGameObject::set_smart_cover_target(Fvector value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_fire_position(&value);
 	}
-
-	stalker->movement().target_params().cover_fire_position		(0);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target!");
+	}
 }
 
-void CScriptGameObject::set_smart_cover_target						(CScriptGameObject *enemy_object)
+void CScriptGameObject::set_smart_cover_target()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError,"CAI_Stalker : cannot access class member set_smart_cover_target!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_fire_position(0);
 	}
-
-	stalker->movement().target_params().cover_fire_object		(&enemy_object->object());
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target!");
+	}
 }
 
-bool CScriptGameObject::in_loophole_fov					(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
+void CScriptGameObject::set_smart_cover_target(CScriptGameObject *enemy_object)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_fov!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().target_params().cover_fire_object(&enemy_object->object());
 	}
-
-	return								(stalker->movement().in_fov(cover_id, loophole_id, object_position));
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member set_smart_cover_target!");
+	}
 }
 
-bool CScriptGameObject::in_current_loophole_fov			(Fvector object_position) const
+bool CScriptGameObject::in_loophole_fov(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_fov!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().in_fov(cover_id, loophole_id, object_position);
 	}
 
-	return								(stalker->movement().in_current_loophole_fov (object_position));
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_fov!");
+	return false;
 }
 
-bool CScriptGameObject::in_loophole_range				(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
+bool CScriptGameObject::in_current_loophole_fov(Fvector object_position) const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_range!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().in_current_loophole_fov(object_position);
 	}
 
-	return								(stalker->movement().in_range (cover_id, loophole_id, object_position));
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_fov!");
+	return false;
 }
 
-bool CScriptGameObject::in_current_loophole_range				(Fvector object_position) const
+bool CScriptGameObject::in_loophole_range(LPCSTR cover_id, LPCSTR loophole_id, Fvector object_position) const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_range!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().in_range(cover_id, loophole_id, object_position);
 	}
 
-	return								(stalker->movement().in_current_loophole_range (object_position));
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_range!");
+	return false;
 }
 
-float const CScriptGameObject::idle_min_time					() const
+bool CScriptGameObject::in_current_loophole_range(Fvector object_position) const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_min_time!");
-		return							(flt_max);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().in_current_loophole_range(object_position);
 	}
 
-	return								(stalker->movement().idle_min_time());
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member object_in_loophole_range!");
+	return false;
 }
 
-void CScriptGameObject::idle_min_time							(float value)
+float const CScriptGameObject::idle_min_time() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_min_time!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().idle_min_time();
 	}
 
-	stalker->movement().idle_min_time	(value);
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_min_time!");
+	return flt_max;
 }
 
-float const CScriptGameObject::idle_max_time					() const
+void CScriptGameObject::idle_min_time(float value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_max_time!");
-		return							(flt_max);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().idle_min_time(value);
 	}
-
-	return								(stalker->movement().idle_max_time());
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_min_time!");
+	}
 }
 
-void CScriptGameObject::idle_max_time							(float value)
+float const CScriptGameObject::idle_max_time() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_max_time!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().idle_max_time();
 	}
 
-	stalker->movement().idle_max_time	(value);
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_max_time!");
+	return flt_max;
 }
 
-float const CScriptGameObject::lookout_min_time					() const
+void CScriptGameObject::idle_max_time(float value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_min_time!");
-		return							(flt_max);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().idle_max_time(value);
 	}
-
-	return								(stalker->movement().lookout_min_time());
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member idle_max_time!");
+	}
 }
 
-void CScriptGameObject::lookout_min_time						(float value)
+float const CScriptGameObject::lookout_min_time() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_min_time!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().lookout_min_time();
 	}
 
-	stalker->movement().lookout_min_time(value);
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_min_time!");
+	return flt_max;
 }
 
-float const CScriptGameObject::lookout_max_time					() const
+void CScriptGameObject::lookout_min_time(float value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_max_time!");
-		return							(flt_max);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().lookout_min_time(value);
 	}
-
-	return								(stalker->movement().lookout_max_time());
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_min_time!");
+	}
 }
 
-void CScriptGameObject::lookout_max_time						(float value)
+float const CScriptGameObject::lookout_max_time() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_max_time!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().lookout_max_time();
 	}
 
-	stalker->movement().lookout_max_time(value);
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_max_time!");
+	return flt_max;
+}
+
+void CScriptGameObject::lookout_max_time(float value)
+{
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().lookout_max_time(value);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member lookout_max_time!");
+	}
 }
 
 float CScriptGameObject::apply_loophole_direction_distance() const
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_enter_distance!");
-		return							(flt_max);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().apply_loophole_direction_distance();
 	}
 
-	return								(stalker->movement().apply_loophole_direction_distance());
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_enter_distance!");
+	return flt_max;
 }
 
-void CScriptGameObject::apply_loophole_direction_distance		(float value)
+void CScriptGameObject::apply_loophole_direction_distance(float value)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_enter_distance!");
-		return;
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		stalker->movement().apply_loophole_direction_distance(value);
 	}
-
-	stalker->movement().apply_loophole_direction_distance	(value);
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member smart_cover_enter_distance!");
+	}
 }
 
-bool CScriptGameObject::movement_target_reached					()
+bool CScriptGameObject::movement_target_reached()
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(&object());
-	if (!stalker) {
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement_target_reached!");
-		return							(false);
+	if (CAI_Stalker* stalker = object().cast_stalker())
+	{
+		return stalker->movement().current_params().equal_to_target(stalker->movement().target_params());
 	}
 
-	return								(stalker->movement().current_params().equal_to_target(stalker->movement().target_params()));
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member movement_target_reached!");
+	return false;
 }
