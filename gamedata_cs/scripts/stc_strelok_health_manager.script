@@ -128,11 +128,6 @@ function save(packet)
 	else
 		packet:w_stringZ(tostring(strelok_hp))
 	end
-	if strelok_last_hit_time == nil then
-		packet:w_stringZ("nil")
-	else
-		packet:w_stringZ(tostring(strelok_last_hit_time))
-	end	
 	set_save_marker(packet, "save", true, "strelok_health")
 end
 
@@ -147,16 +142,8 @@ function load(packet)
 	else
 		strelok_hp = tonumber(r_strelok_hp)
 	end
-	if r_strelok_last_hit_time == "nil" then
-		strelok_last_hit_time = nil
-	else
-		strelok_last_hit_time = tonumber(r_strelok_last_hit_time)
-	end
+
+	strelok_last_hit_time = nil
+
 	set_save_marker(packet, "load", true, "strelok_health")		
 end
-
-
-
-
-
-
