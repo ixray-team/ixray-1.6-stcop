@@ -184,7 +184,7 @@ public:
 		g_full_memory_stats_callback = &full_memory_stats;
 	};
 	virtual void Execute(LPCSTR args) {
-		full_memory_stats();
+		//full_memory_stats();
 	}
 };
 
