@@ -64,6 +64,15 @@ xr_token							aa_type_token[] = {
 #endif // DEBUG
 	{ 0,							0												}
 };
+
+u32			ps_screenshot_format = 0;			//	=	0;
+xr_token							screenshot_format_token[] = {
+	{ "ss_jpg",						0												},
+	{ "ss_tga",						1												},
+	{ "ss_png",						2												},
+	{ 0,							0												}
+};
+
 // Common
 extern int			psSkeletonUpdate;
 extern float		r__dtex_range;
@@ -746,6 +755,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
 	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
 	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
+	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
 
 	CMD3(CCC_Mask, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
 
