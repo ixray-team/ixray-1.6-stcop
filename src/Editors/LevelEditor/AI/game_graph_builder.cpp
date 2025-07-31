@@ -12,7 +12,6 @@
 #include "graph_abstract.h"
 #include "graph_vertex.h"
 #include "game_level_cross_table.h"
-#include "..\XrECore\Engine\guid_generator.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../../xrServerEntities/xrServer_Objects.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife.h"

@@ -15,7 +15,6 @@
 #include "xrServer_Object_Base.h"
 #include "spawn_constructor_space.h"
 #include "server_entity_wrapper.h"
-#include "guid_generator.h"
 
 class CSE_Abstract;
 class CLevelSpawnConstructor;

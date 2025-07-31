@@ -14,7 +14,7 @@
 #define ECORE_API
 #define XR_EPROPS_API
 #include "../../xrCore/clsid.h"
-#include "defines.h"
+#include "../../xrEngine/defines.h"
 #include "../xrForms/cl_log.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "_d3d_extensions.h"
