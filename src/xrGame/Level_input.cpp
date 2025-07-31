@@ -131,6 +131,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		return;
 	}
+	if (_curr == kSCREENSHOT)
+	{
+		Render->Screenshot();
+		return;
+	}
 
 	if(	g_bDisableAllInput )	return;
 
@@ -139,10 +144,6 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	switch ( _curr ) 
 	{
-	case kSCREENSHOT:
-		Render->Screenshot();
-		return;
-		break;
 
 	case kCONSOLE:
 		Console->Show				();
