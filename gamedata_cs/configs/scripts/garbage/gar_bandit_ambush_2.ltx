@@ -5,12 +5,16 @@ active = walker@wait_2
 path_walk = gar_bandit_ambush_2_walk
 path_look = gar_bandit_ambush_2_look
 combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
 on_info = {+gar_story_ambush_talk_1_played} walker@talk_2
 
 [walker@talk_2]
 path_walk = gar_bandit_ambush_2_walk
 path_look = gar_bandit_ambush_2_look
 combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
 on_timer = 300 | %=play_sound(gar_bandit_ambush_talk_2:bandit)%
 on_signal = theme_end | walker@wait_4 %+gar_story_ambush_talk_2_played%
 
@@ -18,12 +22,16 @@ on_signal = theme_end | walker@wait_4 %+gar_story_ambush_talk_2_played%
 path_walk = gar_bandit_ambush_2_walk
 path_look = gar_bandit_ambush_2_look
 combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
 on_info = {+gar_story_ambush_talk_3_played} walker@talk_4
 
 [walker@talk_4]
 path_walk = gar_bandit_ambush_2_walk
 path_look = gar_bandit_ambush_2_look
 combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
 on_timer = 300 | %=play_sound(gar_bandit_ambush_talk_4:bandit)%
 on_signal = theme_end | walker@stop %+gar_story_ambush_talk_4_played%
 
@@ -32,3 +40,5 @@ path_walk = gar_bandit_ambush_2_walk
 path_look = gar_bandit_ambush_2_look
 on_info = {+gar_story_ambush_remove} nil %=destroy_object%
 combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+invulnerable = true
