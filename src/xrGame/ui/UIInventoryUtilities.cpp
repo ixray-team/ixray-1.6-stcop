@@ -21,11 +21,6 @@
 
 #include "../Include/xrRender/UIShader.h"
 
-constexpr const char* BUY_MENU_TEXTURE = "ui\\ui_mp_buy_menu";
-constexpr const char* CHAR_ICONS = "ui\\ui_icons_npc";
-constexpr const char* MAP_ICONS = "ui\\ui_icons_map";
-constexpr const char* MP_CHAR_ICONS = "ui\\ui_models_multiplayer";
-
 const LPCSTR relationsLtxSection	= "game_relations";
 const LPCSTR ratingField			= "rating_names";
 const LPCSTR reputationgField		= "reputation_names";
@@ -125,7 +120,7 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
 
 		return				false;
 	}
-   	return					false;
+	return					false;
 }
 
 bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _item, int width, int height)
