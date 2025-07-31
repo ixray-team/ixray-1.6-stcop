@@ -10,6 +10,7 @@
 #include "../Layers/xrRender/ResourceManager.h"
 #include "../Layers/xrRender/dxRenderDeviceRender.h"
 #include "UI_ToolsCustom.h"
+#include "SoundProcessor.h"
 
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
@@ -152,6 +153,16 @@ void CEditorRenderDevice::Initialize()
 		SDL_MaximizeWindow(g_AppInfo.Window);
 	
 	SDL_ShowWindow(g_AppInfo.Window);
+
+
+	if (psDeviceFlags.test(mtSound))
+	{
+		Device.seqFrameMT.Add(&SoundProcessor);
+	}
+	else
+	{
+		Device.seqFrame.Add(&SoundProcessor);
+	}
 }
 
 void CEditorRenderDevice::ShutDown()
@@ -162,7 +173,16 @@ void CEditorRenderDevice::ShutDown()
 	ShaderXRLC.Unload	();
 
 	// destroy context
-	Destroy				();
+	Destroy();
+
+	if (psDeviceFlags.test(mtSound))
+	{
+		Device.seqFrameMT.Remove(&SoundProcessor);
+	}
+	else
+	{
+		Device.seqFrame.Remove(&SoundProcessor);
+	}
 }
 
 void CEditorRenderDevice::InitTimer()
