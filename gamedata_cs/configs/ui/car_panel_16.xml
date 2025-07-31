@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<w>
+	<car_panel x="0" y="0" width="1024" height="768">
+	    <car_static x="840" y="525" width="175" height="100" stretch="1">
+			<texture>ui_car_panel_back</texture>
+		</car_static>
+	     <car_health_progress_bar x="45" y="12" width="114" height="12" horz="1" min="0" max="1" pos="0">
+		    	    <progress stretch="1">
+		        		<texture r="194" g="8" b="8" a="200">ui_inGame2_inventory_progress_bar</texture>
+			        </progress>
+		</car_health_progress_bar>
+	     <car_fuel_progress_bar x="45" y="30" width="114" height="12" horz="1" min="0" max="100" pos="0">
+		    	    <progress stretch="1">
+		        		<texture r="8" g="122" b="122" a="200">ui_inGame2_inventory_progress_bar</texture>
+			        </progress>
+		</car_fuel_progress_bar>
+
+		<car_engine_lamp>
+			<on x="26" y="47" width="16" height="16" stretch="1">
+				<texture r="122" g="122" b="8">ui_car_panel_engine</texture>
+			</on>
+			<off x="26" y="47" width="16" height="16" stretch="1">
+				<texture a="120">ui_car_panel_engine</texture>
+			</off>
+		</car_engine_lamp>
+		
+		<car_light_lamp>
+			<on x="44" y="47" width="14" height="12" stretch="1">
+				<texture r="122" g="122" b="8">ui_car_panel_light</texture>
+			</on>
+			<off x="44" y="47" width="14" height="12" stretch="1">
+				<texture>ui_car_panel_light</texture>
+			</off>
+		</car_light_lamp>
+
+		<car_speed_mode x="30" y="77" width="16" height="16" stretch="1">
+			<text font="font_graffiti" />
+		</car_speed_mode>
+	</car_panel>
+</w>
