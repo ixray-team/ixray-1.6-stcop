@@ -10,9 +10,9 @@
 
 
 
-#define OFFSET_POS 1
+#define OFFSET_POS 2
 
-// #define USE_NEW_WAY
+#define USE_NEW_WAY
 
 #ifdef USE_NEW_WAY
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
@@ -22,46 +22,46 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	u32 BorderUpdate = ((2 * BORDER) + OFFSET_POS);
 
 	int _X = BorderUpdate, _Y = BorderUpdate;
- 	int _Max_y = 0;
+	int _Max_y = 0;
 
- 	for (int it = 0; it < Layer.size(); it++)
+	for (int it = 0; it < Layer.size(); it++)
 	{
- 		if (0 == (it % 1024))
-			AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
+		// if (0 == (it % 1024))
+		AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
 
 		if (_Y > getLMSIZE() - 32)
-  			break;
+			break;
 
 		lm_layer& L = Layer[it]->layer;
- 
-		u32 WIDTH   = L.width  + (2 * BORDER);
-		u32 HEIGHT  = L.height + (2 * BORDER);
+
+		u32 WIDTH = L.width + (2 * BORDER);
+		u32 HEIGHT = L.height + (2 * BORDER);
 
 		if (_Max_y < HEIGHT)
 			_Max_y = HEIGHT;
-		 
-		if (_X + WIDTH > getLMSIZE() - 32 )
+
+		if (_X + WIDTH > getLMSIZE() - 32)
 		{
-			_X  = BorderUpdate;
+			_X = BorderUpdate;
 			_Y += _Max_y + BorderUpdate;
 			_Max_y = 0;
 		}
 
- 		L_rect		rT, rS;
- 		rS.a.set(_X, _Y);
+		L_rect		rT, rS;
+		rS.a.set(_X, _Y);
 		rS.b.set(_X + WIDTH, _Y + HEIGHT);
-		rS.iArea = L.Area();  
+		rS.iArea = L.Area();
 		rT = rS;
 
 		// Нужен только в оригенальной LMerge
-		BOOL		bRotated = false;  
- 		if (_Y < getLMSIZE() - HEIGHT)
+		BOOL		bRotated = false;
+		if (_Y < getLMSIZE() - HEIGHT)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
 			Layer[it]->bMerged = TRUE;
 			MERGED++;
 		}
- 		
+
 		_X += WIDTH + BorderUpdate;
 		Progress(float(it) / float(g_XSplit.size()));
 	}
