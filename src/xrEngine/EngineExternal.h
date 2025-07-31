@@ -5,6 +5,7 @@ enum class EEngineExternalUI {
 	DisableCharacterInfo,
 	DisableInventoryGrid,
 	ShowLoadingStages,
+	DisableMotionIcon,
 	None
 };
 
