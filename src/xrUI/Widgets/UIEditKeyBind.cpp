@@ -4,6 +4,7 @@
 #include "../../xrServerEntities/object_broker.h"
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../UIFontDefines.h"
+#include "../../xrUI/UITextureMaster.h"
 
 CUIEditKeyBind::CUIEditKeyBind(bool bPrim)
 {
@@ -59,7 +60,14 @@ void CUIEditKeyBind::InitKeyBind(Fvector2 pos, Fvector2 size)
 {
 	CUIStatic::SetWndPos	(pos);
 	CUIStatic::SetWndSize	(size);
-	InitTexture				("ui_listline2");
+
+	if (CUITextureMaster::ItemExist("ui_listline2")) // cop
+		InitTexture("ui_listline2");
+	else if (CUITextureMaster::ItemExist("ui_options_string")) // soc
+		InitTexture("ui_options_string");
+	else if (CUITextureMaster::ItemExist("ui_options_string_back")) // cs (exists in soc also, that's why it's last)
+		InitTexture("ui_options_string_back");
+
 	TextItemControl()->SetFont	(UI().Font().GetFont(LETTERICA16_FONT_NAME));
 	SetStretchTexture		(true);
 	SetEditMode				(false);
