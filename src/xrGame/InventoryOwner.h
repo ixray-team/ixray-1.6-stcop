@@ -34,6 +34,7 @@ class CActor;
 class CAI_Stalker;
 class CEntity;
 class CBaseMonster;
+class CCar;
 
 class CInventoryOwner : public CAttachmentOwner {							
 public:
@@ -49,6 +50,7 @@ public:
 	virtual CAI_Stalker*		cast_stalker			()	{return nullptr;}
 	virtual CGameObject*		cast_game_object		()	{return nullptr;}
 	virtual CBaseMonster*		cast_base_monster		()	{return nullptr;}
+	virtual CCar*				cast_car				()	{return nullptr;}
 public:
 
 	virtual DLL_Pure	*_construct				();

@@ -23,7 +23,11 @@ public:
 							CHolderCustom()		{ m_owner = nullptr; m_ownerActor = nullptr; m_bEnterLocked = false; m_bExitLocked = false; }
 	virtual					~CHolderCustom		()				{;}
 	virtual	void			UpdateEx			(float fov){}; //called by owner
-	virtual CHolderCustom	*cast_holder_custom	()				{return this;}
+
+	virtual CHolderCustom*	cast_holder_custom	()				{ return this; }
+	virtual CCar*			cast_car			()				{ return nullptr; }
+	virtual CGameObject*	cast_game_object	()				{ return nullptr; }
+
 			bool			Engaged				()				{return m_owner!= nullptr;}
 	virtual void			OnMouseMove			(int x, int y)	= 0;
 	virtual void			OnKeyboardPress		(int dik)		= 0;
