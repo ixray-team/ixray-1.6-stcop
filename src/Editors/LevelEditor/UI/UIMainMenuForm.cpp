@@ -82,6 +82,8 @@ void UIMainMenuForm::Draw()
 {
 	if (IXBeginMainMenuBar())
 	{
+		DrawLevelName();
+
 		if (ImGui::BeginMenu("File"))
 		{
 			DrawMenuItem("Clear", COMMAND_CLEAR);
@@ -107,7 +109,7 @@ void UIMainMenuForm::Draw()
 			DrawMenuItem("Quit", COMMAND_QUIT);
 			ImGui::EndMenu();
 		}
-		
+
 		if (ImGui::BeginMenu("Scene"))
 		{
 			{
@@ -647,6 +649,27 @@ void UIMainMenuForm::Draw()
 
 		IXEndMainMenuBar();
 	}
+}
+
+void UIMainMenuForm::DrawLevelName()
+{
+	if (Scene->full_name.empty())
+		return;
+
+	ImVec4 CheckMarkColor = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
+	shared_str LevelPath = xr_path(Scene->full_name).stem().string().c_str();
+	
+
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 7);
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
+	ImGui::PushStyleColor(ImGuiCol_Text, CheckMarkColor);
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3, 0));
+	ImGui::Button(*LevelPath, ImVec2(0, 20));
+	ImGui::PopStyleVar();
+	ImGui::PopStyleColor();
+	ImGui::SameLine();
+	//ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 5);
 }
 
 void UIMainMenuForm::ExportLevelAsArchive()
