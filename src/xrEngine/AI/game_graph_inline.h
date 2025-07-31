@@ -62,7 +62,7 @@ IC	void IGameGraph::begin(u32 const vertex_id, const_iterator& start, const_iter
 {
 	if (m_edges == nullptr)
 	{
-		end = (start = (const CEdge*)(m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
+		end = (start = (const CEdge*)((BYTE*)m_nodes + vertex(_GRAPH_ID(vertex_id))->edge_offset())) + vertex(_GRAPH_ID(vertex_id))->edge_count();
 	}
 	else
 	{
