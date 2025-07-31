@@ -17,7 +17,7 @@ function reward_for_money(first_speaker, second_speaker)
 end
 
 function reward_for_flea_market(first_speaker, second_speaker)
-	dialogs.relocate_money(first_speaker, 1000, out)
+	dialogs.relocate_money(first_speaker, 1000,"out")
 end
 
 function reward_before_attack(first_speaker, second_speaker)
@@ -35,20 +35,20 @@ function hasnt_money_for_digger(first_speaker, second_speaker)
 end
 
 function give_money_to_digger(first_speaker, second_speaker)
-	dialogs.relocate_money(second_speaker, money_for_digger, out)
+	dialogs.relocate_money(second_speaker, money_for_digger, "out")
 end
 
 function is_digger_fighters_alive(first_speaker, second_speaker)
-	return xr_conditions.squad_exist(gar_digger_fighters)
+	return xr_conditions.squad_exist(nil , nil , {"gar_digger_fighters"})
 end
 
 function is_digger_fighters_dead(first_speaker, second_speaker)
-	return is_digger_fighters_alive == false
+	return not is_digger_fighters_alive(first_speaker, second_speaker)
 end
 
 function is_dark_night(first_speaker, second_speaker)
-    return level.get_time_hours() < 3 or level.get_time_hours() > 22
-end  
+		return level.get_time_hours() < 3 or level.get_time_hours() > 22
+end
 
 function isnt_dark_night(first_speaker, second_speaker)
 	return is_dark_night(first_speaker, second_speaker) == false
@@ -76,4 +76,14 @@ end
 
 function give_traitor_pda(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_garbage_traitor")
+end
+
+function always_false()
+	return false
+end
+
+function bandit_join_reward(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "grenade_rgd5", 9)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "grenade_f1", 7)
+	dialogs.relocate_money(first_speaker, 5000, "in")
 end

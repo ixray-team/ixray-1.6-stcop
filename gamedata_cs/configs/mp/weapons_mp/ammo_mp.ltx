@@ -17,7 +17,7 @@
 [mp_ammo_12x70_buck]:ammo_12x70_buck
 	$spawn							 = "network\ammo\mp_ammo_12x70_buck"
     k_ap                             = 0.3       
-    k_hit                            = 1
+    k_hit                            = 0.9;1
 	k_disp							 = 8
     k_air_resistance                 = 2.4       
     tracers                          = off     
@@ -26,8 +26,8 @@
 
 [mp_ammo_12x76_dart]:ammo_12x76_dart
 	$spawn							 = "network\ammo\mp_ammo_12x76_dart"
-    k_ap                             = 0.8     
-    k_hit                            = 12
+    k_ap                             = 0.65;0.8     
+    k_hit                            = 10.8;12
 	k_disp							 = 4
     k_air_resistance                 = 2.4
     tracers                          = off     
@@ -36,7 +36,7 @@
 [mp_ammo_12x76_zhekan]:ammo_12x76_zhekan
 	$spawn							 = "network\ammo\mp_ammo_12x76_zhekan"
     k_ap                             = 0.8       
-    k_hit                            = 12
+    k_hit                            = 10.8;12
 	k_disp							 = 4
     k_air_resistance                 = 1.5       
     tracers                          = off     
@@ -46,32 +46,32 @@
 	$spawn							 = "network\ammo\mp_ammo_5.45x39_ap"
     k_ap                             = 0.8
     k_hit                            = 0.504;0.72       
-    k_air_resistance                 = 2.2       
-    tracers                          = on      
+    k_air_resistance                 = 1.6;2.2       
+    tracers                          = off      
 
 
 [mp_ammo_5.45x39_fmj]:ammo_5.45x39_fmj
 	$spawn							 = "network\ammo\mp_ammo_5.45x39_fmj"
     k_ap                             = 0.38       
     k_hit                            = 0.7;1       
-    k_air_resistance                 = 2.2
-    tracers                          = on      
+    k_air_resistance                 = 1.5;2.2
+    tracers                          = off      
 
 
 [mp_ammo_5.56x45_ap]:ammo_5.56x45_ap
 	$spawn							 = "network\ammo\mp_ammo_5.56x45_ap"
     k_ap                             = 0.8     
     k_hit                            = 0.504;0.72       
-    k_air_resistance                 = 2
-    tracers                          = on      
+    k_air_resistance                 = 1.8
+    tracers                          = off      
 
 
 [mp_ammo_5.56x45_ss190]:ammo_5.56x45_ss190
 	$spawn							 = "network\ammo\mp_ammo_5.56x45_ss190"
     k_ap                             = 0.38       
     k_hit                            = 0.7;1       
-    k_air_resistance                 = 2
-    tracers                          = on      
+    k_air_resistance                 = 1.7
+    tracers                          = off      
 
 
 [mp_ammo_7.62x54_7h1]:ammo_7.62x54_7h1
@@ -79,7 +79,7 @@
     k_ap                             = 0.8       
     k_hit                            = 1       
     k_air_resistance                 = 1
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_7.62x54_ap]:ammo_7.62x54_7h1	;оставлено для обратной совместимости и для балансера
@@ -87,7 +87,7 @@
     k_ap                             = 0.9     
     k_hit                            = 1.2     
     k_air_resistance                 = 0       
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_9x18_fmj]:ammo_9x18_fmj
@@ -111,7 +111,11 @@
     k_ap                             = 0.3       
     k_hit                            = 1       
     k_air_resistance                 = 2.8
-    tracers                          = on      
+    tracers                          = off      
+
+[mp_ammo_9x19_fmj_4mp5]:mp_ammo_9x19_fmj
+	$spawn							 = "network\ammo\mp_ammo_9x19_fmj_4mp5"
+	k_air_resistance                 = 1.7
 
 
 [mp_ammo_9x19_pbp]:ammo_9x19_pbp
@@ -119,25 +123,28 @@
     k_ap                             = 0.8
     k_hit                            = 0.72     
     k_air_resistance                 = 2.8       
-    tracers                          = on      
+    tracers                          = off      
 
+[mp_ammo_9x19_pbp_4mp5]:mp_ammo_9x19_pbp
+	$spawn							 	 = "network\ammo\mp_ammo_9x19_pbp_4mp5"
+	k_air_resistance                 = 1.8
 
 [mp_ammo_9x39_ap]:ammo_9x39_ap
 	$spawn							 = "network\ammo\mp_ammo_9x39_ap"
     k_ap                             = 0.8     
     k_hit                            = 0.504;0.72     
-    k_air_resistance                 = 1.7     
+    k_air_resistance                 = 1.6     
     tracer_color_ID                  = 3       
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_9x39_pab9]:ammo_9x39_pab9
 	$spawn							 = "network\ammo\mp_ammo_9x39_pab9"
     k_ap                             = 0.38       
     k_hit                            = 0.7;1       
-    k_air_resistance                 = 1.7
+    k_air_resistance                 = 1.5
     tracer_color_ID                  = 0       
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_gauss]:ammo_gauss
@@ -145,14 +152,15 @@
     k_ap                             = 1       
     k_hit                            = 1    
     k_air_resistance                 = 0       
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_m209]:ammo_m209
 	$spawn							 = "network\ammo\mp_ammo_m209"
-    k_ap                             = 0.3    
-    k_hit                            = 0.75
+    k_ap                             = 1.0   
+    k_hit                            = 1.0
 	can_be_unlimited                 = false
+	fake_grenade_name 				 = mp_wpn_fake_missile2
 
 
 [mp_ammo_og-7b]:ammo_og-7b
@@ -166,21 +174,61 @@
 	$spawn							 = "network\ammo\mp_ammo_pkm_100"
     k_ap                             = 0.8     
     k_hit                            = 1.0     
-    k_air_resistance                 = 1.5
+    k_air_resistance                 = 1
     tracer_color_ID                  = 2       
-    tracers                          = on      
+    tracers                          = off      
 
 
 [mp_ammo_vog-25]:ammo_vog-25
 	$spawn							 = "network\ammo\mp_ammo_vog-25"
-    k_ap                             = 0.3    
-    k_hit                            = 0.75       
+    k_ap                             = 1.0
+    k_hit                            = 1.0
 	can_be_unlimited                 = false
+	fake_grenade_name 				 = mp_wpn_fake_missile
 
 [mp_ammo_vog-25p]:ammo_vog-25p
 	$spawn							 = "network\ammo\mp_ammo_vog-25p"
-    k_ap                             = 0.8
-    k_hit                            = 0.75
+    k_ap                             = 1.0
+    k_hit                            = 1.0
 	can_be_unlimited                 = false
+	fake_grenade_name 				 = mp_wpn_fake_missile1
+
+[mp_wpn_fake_missile]:wpn_fake_missile
+	$spawn				= "network\ammo\mp_wpn_fake_missile"
+	blast				= 1.75
+	blast_r				= 4
+	blast_impulse		= 250
+	blast_impulse_factor = 1
+
+	frags				= 10
+	frags_r				= 10
+	frag_hit			= 0.5
+	frag_hit_impulse	= 50
+
+
+[mp_wpn_fake_missile1]:wpn_fake_missile1
+	$spawn				= "network\ammo\mp_wpn_fake_missile1"
+	blast				= 1.75
+	blast_r				= 4
+	blast_impulse		= 250
+	blast_impulse_factor = 1
+
+	frags				= 15
+	frags_r				= 10
+	frag_hit			= 0.5
+	frag_hit_impulse	= 50
+
+[mp_wpn_fake_missile2]:wpn_fake_missile2
+	$spawn				= "network\ammo\mp_wpn_fake_missile2"
+	blast				= 1.75
+	blast_r				= 4
+	blast_impulse		= 250
+	blast_impulse_factor = 1
+
+	frags				= 10
+	frags_r				= 10
+	frag_hit			= 0.5
+	frag_hit_impulse	= 50
+
 
 

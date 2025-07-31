@@ -45,7 +45,7 @@ function is_factions_friends(faction, faction_to)
 		return relation_registry.community_relation(faction, faction_to)>=FRIENDS
 	else
 		--printf("No such faction community: "..tostring(faction))
-		return nil
+		return false
 	end
 end
 
@@ -54,7 +54,7 @@ function is_factions_enemies(faction, faction_to)
 		return relation_registry.community_relation(faction, faction_to)<=ENEMIES
 	else
 		--printf("No such faction community: "..tostring(faction))
-		return nil
+		return false
 	end
 end
 

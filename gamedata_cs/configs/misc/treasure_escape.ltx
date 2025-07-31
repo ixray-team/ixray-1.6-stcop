@@ -7,7 +7,7 @@ esc_treasure_2
 esc_treasure_3
 esc_treasure_4
 esc_treasure_5
-esc_treasure_6
+;esc_treasure_6
 esc_treasure_7
 esc_treasure_8
 esc_treasure_9
@@ -42,7 +42,7 @@ condlist = false
 target = esc_treasure_weapon_prisoner
 name = esc_treasure_weapon_prisoner_name
 description = esc_treasure_weapon_prisoner_descr
-items = medkit_army, medkit_army, grenade_rgd5, grenade_rgd5, grenade_rgd5
+items = medkit_army, 2, grenade_rgd5, 3
 community = military
 condlist = false
 
@@ -198,7 +198,7 @@ say_item_name = true
 target = esc_q3_t_l 
 name = st_esc_q3_t_l
 description = st_esc_q3_t_l_descr
-items = flesh_up_ac_wincheaster1300, ammo_5.45x39_fmj, 60, grenade_rgd5
+items = flesh_up_ac_wincheaster1300, 1, ammo_5.45x39_fmj, 60, grenade_rgd5, 1
 condlist = {=actor_on_level(escape) =check_npc_name(esc_stalker_trader)} true, false
 treasure_cost = 1000
 say_item_name = true
@@ -208,7 +208,7 @@ target = esc_q4_t_a
 name = st_esc_q4_t_a
 description = st_esc_q4_t_a_descr
 items = wpn_mp5, 1, ammo_9x19_pbp, 30
-condlist = {=actor_on_level(escape) =check_npc_name(esc_stalker_mechanic)} true, false
+condlist = {=actor_on_level(escape) =check_npc_name(esc_stalker_trader)} true, false
 treasure_cost = 2000
 say_item_name = true
 
@@ -217,7 +217,7 @@ target = esc_q5_n
 name = st_esc_q5_n
 description = st_esc_q5_n_descr
 community = military
-items = nil
+items = ammo_9x19_pbp, 1
 condlist = {=actor_on_level(escape) =check_npc_name(esc_driver)} true, false
 treasure_cost = 2000
 say_item_name = false
@@ -236,7 +236,7 @@ say_item_name = false
 target = esc_q7_n 
 name = st_esc_q7_n
 description = st_esc_q7_n_descr
-items = medkit_army
+items = medkit_army, 1
 condlist = {=actor_on_level(escape) =check_npc_name(esc_military_secret_trader)} true, false
 treasure_cost = 350
 say_item_name = true
@@ -245,7 +245,7 @@ say_item_name = true
 target = esc_q8_n 
 name = st_esc_q8_n
 description = st_esc_q8_n_descr
-items = ammo_12x76_zhekan, 20, grenade_rgd5
+items = ammo_12x76_zhekan, 20, grenade_rgd5, 1
 condlist = {=actor_on_level(escape) =check_npc_name(esc_wolf_brother)} true, false
 treasure_cost = 200
 say_item_name = false
@@ -254,7 +254,7 @@ say_item_name = false
 target = esc_q9_t_a
 name = st_esc_q9_t_a
 description = st_esc_q9_t_a_descr
-items = flesh_up_bd_wincheaster1300, ammo_12x70_buck, 20, grenade_rgd5
+items = flesh_up_bd_wincheaster1300, 1, ammo_12x70_buck, 20, grenade_rgd5, 1
 condlist = {=actor_on_level(escape) =check_npc_name(esc_stalker_novice_quest)} true, false
 treasure_cost = 800
 say_item_name = true

@@ -120,9 +120,9 @@ function create_items(obj, section, number, rnd)
 
 			if number > 0 then
 				local position = vector():set(0,0,0)
-				position.x = obj:position().x + math.random(-30,30)/100
-				position.z = obj:position().z + math.random(-30,30)/100
-				position.y = obj:position().y + math.random(30,50)/100
+				position.x = obj:position().x --+ math.random(-30,30)/100
+				position.z = obj:position().z --+ math.random(-30,30)/100
+				position.y = obj:position().y --+ math.random(30,50)/100
 
 				se_respawn.create_ammo(section,
 					    position,
@@ -137,9 +137,9 @@ function create_items(obj, section, number, rnd)
 			--' Проверяем вероятность появить каждый объект в отдельности
             if math.random(100) <=  rnd then
 				local position = vector():set(0,0,0)
-				position.x = obj:position().x + math.random(-30,30)/100
-				position.z = obj:position().z + math.random(-30,30)/100
-				position.y = obj:position().y + math.random(30,50)/100
+				position.x = obj:position().x --+ math.random(-30,30)/100
+				position.z = obj:position().z --+ math.random(-30,30)/100
+				position.y = obj:position().y --+ math.random(30,50)/100
 
 				alife():create(section,
 					    position,
@@ -200,9 +200,9 @@ function create_obligatory_items(obj, item , count)
 	printf("creating %s(%s)", item, count)
 	for i = 1,count do
 				local position = vector():set(0,0,0)
-				position.x = obj:position().x + math.random(-30,30)/100
-				position.z = obj:position().z + math.random(-30,30)/100
-				position.y = obj:position().y + math.random(30,50)/100 + 2
+				position.x = obj:position().x --+ math.random(-30,30)/100
+				position.z = obj:position().z --+ math.random(-30,30)/100
+				position.y = obj:position().y --+ math.random(30,50)/100 + 2
 
 				printf(" at pos [%s][%s][%s]", position.x, position.y, position.z)
 				alife():create(item,

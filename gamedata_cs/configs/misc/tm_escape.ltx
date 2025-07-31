@@ -27,6 +27,16 @@ esc_additional_quest_6b
 esc_eliminate_smart_military_6_6
 esc_eliminate_smart_military_6_6_reward
 
+;esc_bring_item_1
+;esc_bring_item_2
+;esc_bring_item_3
+;esc_bring_item_4
+;esc_bring_item_5
+
+esc_recover_item
+esc_recover_item_1
+esc_recover_item_2
+esc_recover_item_3
 
 [esc_stalker_enemy]
 type = storyline
@@ -181,7 +191,7 @@ reward_item = ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 wait_time = 30
-prior = 4
+prior = 10
 auto_faction = true
 
 [esc_defend_stalkers_tonnel]
@@ -195,7 +205,7 @@ reward_item = ammo_9x18_fmj:ammo_9x18_fmj:ammo_5.45x39_fmj:ammo_5.45x39_fmj
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 wait_time = 0
-prior = 4
+prior = 10
 auto_faction = true
 
 [esc_defend_stalkers_base]
@@ -209,7 +219,7 @@ reward_item = ammo_12x70_buck:ammo_12x70_buck:ammo_5.45x39_fmj:ammo_5.45x39_fmj
 community_relation_delta_fail=-200
 community_relation_delta_complete=+200
 wait_time = 0
-prior = 4
+prior = 10
 auto_faction = true
 
 [esc_take_weapon]
@@ -220,7 +230,7 @@ name = esc_take_weapon_name
 text = esc_take_weapon_text
 target_story_ids = 427
 condlist_0 = {+esc_take_weapon_complete} complete
-prior = 2
+prior = 7
 auto_faction = true
 
 ; additioan
@@ -234,7 +244,7 @@ text = esc_wolf_brother_1_text
 target_story_ids = 429
 condlist_0 = {+esc_wolf_brother_2} complete
 condlist_1 = {+esc_wolf_brother_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
-prior = 2
+prior = 8
 wait_time = -1
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
@@ -248,7 +258,7 @@ text = esc_wolf_brother_2_text
 target_story_ids = 429
 condlist_0 = {+esc_wolf_brother_3} complete
 condlist_1 = {+esc_wolf_brother_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
-prior = 2
+prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
 community_relation_delta_complete=+50
@@ -263,7 +273,7 @@ target_story_ids = 431
 condlist_0 = {+esc_wolf_brother_4} complete
 condlist_1 = {+esc_wolf_brother_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
 immediate_reward = true
-prior = 2
+prior = 8
 wait_time = -1
 reward_money = 1500
 
@@ -277,7 +287,7 @@ text = esc_novice_stalker_1_text
 target_story_ids = 433
 condlist_0 = {+esc_wolf_novice_2} complete
 condlist_1 = {+esc_stalker_novice_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
-prior = 2
+prior = 8
 wait_time = -1
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
@@ -291,7 +301,7 @@ text = esc_novice_stalker_2_text
 target_story_ids = 433
 condlist_0 = {+esc_wolf_novice_3} complete
 condlist_1 = {+esc_stalker_novice_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
-prior = 2
+prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
 community_relation_delta_complete=+50
@@ -305,7 +315,7 @@ text = esc_novice_stalker_3_text
 target_story_ids = 431
 condlist_0 = {+esc_wolf_novice_4} complete
 condlist_1 = {+esc_stalker_novice_fail} fail, {=gulag_enemy_actor(esc_smart_terrain_2_12)} fail
-prior = 2
+prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
 community_relation_delta_complete=+50
@@ -322,7 +332,7 @@ text = esc_driver_friend_1_text
 target_story_ids = 434
 condlist_0 = {+esc_driver_friend_2} complete
 condlist_1 = {+esc_driver_dead} fail
-prior = 2
+prior = 8
 wait_time = -1
 
 [esc_additional_quest_6b] ;Друг водителя - принести предмет
@@ -335,7 +345,7 @@ target_story_ids = 435
 condlist_0 = {+esc_driver_friend_3} complete
 condlist_1 = {+esc_driver_dead} fail
 immediate_reward = true
-prior = 2
+prior = 8
 wait_time = -1
 reward_item = medkit_army
 
@@ -345,7 +355,7 @@ task_type = additional
 icon = ui_mt_image_defend_tower
 name = esc_eliminate_smart_military_6_6_name
 text = esc_eliminate_smart_military_6_6_text
-prior = 4
+prior = 9
 target_cond = {+esc_trader_bandits_1 -esc_trader_bandits_2 =target_smart_name(esc_smart_terrain_6_6)} true
 wait_time = -1
 condlist_0 = {+esc_trader_bandits_2} complete
@@ -369,3 +379,138 @@ condlist_1 = {=gulag_enemy_actor(esc_smart_terrain_5_7)} fail
 reward_money = 1000
 immediate_reward = true
 prior = 2
+
+
+;Bring Items
+
+[esc_bring_item_1]
+auto_name = false
+type = bring_item
+task_type = additional
+name = esc_bring_item_1_name
+text = esc_bring_item_1_text
+target_cond = {~20 =actor_on_level(escape)} true
+prior = 5
+faction = stalker
+requested_items = medkit_army
+community_relation_delta_complete = 100
+reward_money = {~50} 500, {~50}, 750, 500
+
+[esc_bring_item_2]
+auto_name = false
+type = bring_item
+task_type = additional
+name = esc_bring_item_2_name
+text = esc_bring_item_2_text
+target_cond = {~20 =actor_on_level(escape)} true
+prior = 5
+faction = stalker
+requested_items = wpn_lr300
+community_relation_delta_complete = 100
+reward_money = {~50} 500, {~50}, 800, 1200
+
+[esc_bring_item_3]
+auto_name = false
+type = bring_item
+task_type = additional
+name = esc_bring_item_3_name
+text = esc_bring_item_3_text
+target_cond = {~20 =actor_on_level(escape)} true
+prior = 5
+faction = stalker
+requested_items = wpn_vintorez
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50}, 1500, 2000
+
+[esc_bring_item_4]
+auto_name = false
+type = bring_item
+task_type = additional
+name = esc_bring_item_4_name
+text = esc_bring_item_4_text
+target_cond = {~20 =actor_on_level(escape)} true
+prior = 5
+faction = stalker
+requested_items = wpn_spas12, ammo_12x76_zhekan, ammo_12x76_zhekan
+community_relation_delta_complete = 100
+reward_money = {~50} 500, {~50}, 750, 1000
+
+[esc_bring_item_5]
+auto_name = false
+type = bring_item
+task_type = additional
+name = esc_bring_item_5_name
+text = esc_bring_item_5_text
+target_cond = {~20 =actor_on_level(escape)} true
+prior = 5
+faction = stalker
+requested_items = wpn_ak74, ammo_5.45x39_fmj, ammo_5.45x39_fmj
+community_relation_delta_complete = 100
+reward_money = {~50} 500, {~50}, 750, 1000
+
+
+;Recover Items
+
+[esc_recover_item_1]   ;Принести «волшебную водку»
+type = recover_item
+task_type = additional
+name = esc_recover_item_1_name
+text = esc_recover_item_1_text
+target_npc_or_box_name = esc_treasure_6
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(escape) -esc_recover_item_1_done} true, false
+on_init = %+esc_recover_item_1_done%
+requested_items = esc_quest_magic_vodka
+community_relation_delta_complete = 100
+reward_money = 200
+auto_faction = true
+
+[esc_recover_item_2]   ;Принести трофейный АКМ-47/2
+type = recover_item
+task_type = additional
+name = esc_recover_item_2_name
+text = esc_recover_item_2_text
+target_npc_or_box_name = esc_recover_item_2_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(escape) -esc_recover_item_2_done} true, false
+on_init = %+esc_recover_item_2_done%
+requested_items = esc_quest_akm47
+community_relation_delta_complete = 100
+reward_money = 1200
+auto_faction = true
+
+[esc_recover_item_3]   ;Вернуть «счастливый» детектор
+type = recover_item
+task_type = additional
+name = esc_recover_item_3_name
+text = esc_recover_item_3_text
+target_npc_or_box_name = esc_recover_item_3_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(escape) -esc_recover_item_3_done} true, false
+on_init = %+esc_recover_item_3_done%
+requested_items = esc_quest_luky_detector
+community_relation_delta_complete = 100
+reward_money = 550
+auto_faction = true
+
+[esc_recover_item]   ;Принести спецаптечку
+type = recover_item
+task_type = additional
+name = esc_recover_item_4_name
+text = esc_recover_item_4_text
+target_npc_or_box_name = esc_recover_item_4_corpse
+distanse = 100
+prior = 2
+faction = stalker
+target_cond = {=actor_on_level(escape) -esc_recover_item_4_done} true, false
+on_init = %+esc_recover_item_4_done%
+requested_items = esc_quest_spec_medkit
+community_relation_delta_complete = 100
+reward_money = 2500
+auto_faction = true

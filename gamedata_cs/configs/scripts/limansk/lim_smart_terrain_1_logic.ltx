@@ -33,7 +33,6 @@ radius = 0
 def_state_moving = raid
 on_info = {+lim_bandit_away} remark@fire_work1
 on_info2 = {+lim_bandit_have_medkit} camper@danger2_work1
-on_info2 = {=hit_by_actor} camper@fire_work1
 on_signal = action | remark@danger_work1 %=play_sound(lim_cs_enter_squad_fire1)%
 
 [remark@danger_work1]
@@ -121,7 +120,7 @@ on_info = {+lim_bandit_wonded_1_out +lim_bandit_wonded_2_out} camper@wait2_work1
 combat_ignore_cond = {!is_enemy_actor}
 path_walk = wait_1_walk
 path_look = wait_1_look
-on_info = {+lim_bandit_away} camper@fire_work1
+on_info = {+lim_bandit_away} walker@fire_work1
 
 [camper@wait2_work1]
 combat_ignore_cond = {!is_enemy_actor}

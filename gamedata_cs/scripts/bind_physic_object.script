@@ -182,6 +182,10 @@ end
 function generic_physics_binder:use_callback(obj, who)
 	--xr_use.notify_on_use(obj, who)
     if obj:clsid() == clsid.inventory_box then
+	    local box_name = obj:name()
+	    if box_name == "gar_smart_terrain_5_6_box" and db.actor:has_info("gar_quest_redemption_started") then
+	        db.actor:give_info_portion("gar_quest_redemption_done")
+	    end
         treasure_manager.use_box(obj, who)
     end
 	if self.st.active_section then

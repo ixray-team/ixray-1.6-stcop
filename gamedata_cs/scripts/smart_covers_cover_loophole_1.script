@@ -10,25 +10,25 @@ function get_smart_cover_cover_loophole_1()
 				smart_covers_loophole_1.get_loophole_1("lh_1",	vector():set(-0.9,0,-0.4))
 			},
 
-	
+
 			transitions = {
 			--' Анимации входа в бойницы
 			{
 				vertex0 = "",
 				vertex1 = "lh_1",
 				weight = 1.0,
-                actions =	{
+				actions =	{
 							{
-                                precondition_functor = "smart_covers.script_functor_true",
-                                precondition_params = "",
-                                actions =	{
+								precondition_functor = "smart_covers.script_functor_true",
+								precondition_params = "",
+								actions =	{
 											{
 												animation = "loophole_1_in_front_0",
 												position = vector():set(0,0,0),
 												body_state = move.crouch, movement_type = move.run,
 											},
 											},
-                            }
+														}
 							}
 			},
 
@@ -39,16 +39,21 @@ function get_smart_cover_cover_loophole_1()
 				vertex1 = "",
 				weight = 1.1,
 				actions =	{
---[[							{
-									animation = "loophole_1_jump_0",
-									position = vector():set(0,0,2),
-									precondition_functor = "smart_covers.exit_random",
-									precondition_params = "50"
-							},]]--
+							{
+								precondition_functor = "smart_covers.script_functor_jump",
+								precondition_params = "",
+								actions =	{
+											{
+												animation = "loophole_1_jump_0",
+												position = vector():set(3,0,0),
+												body_state = move.standing, movement_type = move.run,
+											},
+											},
+							},
 							{
 								precondition_functor = "smart_covers.script_functor_true",
-                                precondition_params = "",
-                                actions =	{
+								precondition_params = "",
+								actions =	{
 											{
 												animation = "",
 												position = vector():set(0,0,0),

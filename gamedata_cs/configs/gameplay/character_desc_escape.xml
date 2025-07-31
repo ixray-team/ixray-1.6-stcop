@@ -112,7 +112,6 @@
     <actor_dialog>esc_stalker_mechanic_about_you</actor_dialog>
     <actor_dialog>tm_upgr_task</actor_dialog>
     <actor_dialog>find_upgrade_task</actor_dialog>    
-    <actor_dialog>treasure_dialog</actor_dialog>
   </specific_character>
 
   <specific_character id="esc_zak_stalkerbase" team_default = "1">

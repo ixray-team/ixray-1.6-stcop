@@ -14,13 +14,13 @@ on_info3 = {+val_come_to_freedom_base_complete} sr_idle@go_to_base %=give_inited
 
 
 [sr_idle@go_to_base]
-on_info = {+val_come_to_freedom_base_done} sr_idle@come_to_comendant %=give_inited_task(storyline:val_come_to_comendant:freedom) =play_sound(val_freedom_base_enter)% 
+on_info = {+val_come_to_freedom_base_done} sr_idle@come_to_comendant %=give_inited_task(storyline:val_come_to_comendant:freedom) =play_sound(val_freedom_base_enter:freedom:val_smart_terrain_7_4)% 
 
 [sr_idle@come_to_comendant]
 on_info = {+val_come_to_comendant_done =squad_exist(val_flesh_lair_guard_6_4)} sr_idle@kill_flesh %=give_inited_task(eliminate_smart:val_smart_terrain_6_4:freedom)%
 
 [sr_idle@kill_flesh]
-on_info = {+val_kill_flesh_done} sr_idle@val_come_back_comendant_to_revard %+val_rush_flesh_brake =give_inited_task(storyline:val_come_back_comendant_to_revard:freedom) =play_sound(val_comendant_come_back)%
+on_info = {+val_kill_flesh_done} sr_idle@val_come_back_comendant_to_revard %+val_rush_flesh_brake =give_inited_task(storyline:val_come_back_comendant_to_revard:freedom) =play_sound(val_comendant_come_back:freedom:val_smart_terrain_7_4)%
 
 [sr_idle@val_come_back_comendant_to_revard]
 on_info = {+val_come_back_comendant_to_revard_done} sr_idle@go_to_trader %=give_inited_task(storyline:val_go_to_trader:freedom)%
@@ -80,12 +80,13 @@ on_signal = sound_end | sr_idle@destroy_killer_base_sf %+val_spawn_attack_freedo
 on_game_timer = 50 | sr_idle@destroy_killer_base_ai %+val_freedom_attack_info% 
 
 [sr_idle@destroy_killer_base_ai]
-on_info = {+val_destroy_killer_base_done} sr_idle@val_comeback_freedom_leader 
+on_info = {+val_destroy_killer_base_done} sr_idle@val_comeback_freedom_leader %+val_freedom_join_talked_first% 
 
 [sr_idle@val_comeback_freedom_leader]
-on_timer = 4000 | sr_idle@val_finish_quest_line %=play_sound(val_quest_finish:freedom:val_freedom_leader_name)%
+on_timer = 4000 | %=play_sound(val_quest_finish:freedom:val_freedom_leader_name)%
+on_signal = sound_end | sr_idle@join_freedom
 
-[sr_idle@val_bring_to_fang]
-
+[sr_idle@join_freedom]
+on_timer = 2000 | {+val_freedom_join_need_sound +agru_open_story_door !is_faction_enemy_to_actor(freedom)} sr_idle@val_finish_quest_line %=play_sound(val_leader_join_freedom:freedom:val_freedom_leader_name)%
 
 [sr_idle@val_finish_quest_line]

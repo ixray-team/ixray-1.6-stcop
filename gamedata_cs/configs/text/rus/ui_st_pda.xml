@@ -406,7 +406,7 @@
 		<text>Торговец</text>
 	</string>
 	<string id="st_ui_pda_legend_vip">
-		<text>Важные персонажи</text>
+		<text>Важный персонаж</text>
 	</string>
 	<string id="ui_logs_center_caption">
 		<text>История сообщения</text>
@@ -671,5 +671,14 @@
 	</string>
 	<string id="st_target">
 		<text>Цель</text>
+	</string>
+	<string id="st_technic_specialization">
+		<text>Специализация:</text>
+	</string>
+	<string id="st_technic_specialization_none">
+		<text>отсутствует</text>
+	</string>
+	<string id="hospital">
+		<text>Заброшенный госпиталь</text>
 	</string>
 </string_table>

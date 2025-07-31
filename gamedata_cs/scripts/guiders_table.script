@@ -5,6 +5,7 @@
 --------------------------------------------------------------------------------
 --mar_actor_teleport_at_marsh_walk
 --mar_actor_teleport_at_marsh_look
+
 teleport_points = {
 ---------------------------------- MARSH ---------------------------------------
 					mar_smart_terrain_4_5 = {
@@ -30,6 +31,12 @@ teleport_points = {
 	                                            condlist = "true",
 	                                            point = "mar_smart_terrain_11_11_teleport_walk",
 	                                            look = "mar_smart_terrain_11_11_teleport_look",
+											  },
+					mar_smart_terrain_10_5 = {
+	                                            level = "marsh",
+	                                            condlist = "true",
+	                                            point = "mar_smart_terrain_10_5_teleport_walk",
+	                                            look = "mar_smart_terrain_10_5_teleport_look",
 											  },
 					mar_smart_terrain_csky_base = {
 	                                                level = "marsh",
@@ -76,17 +83,23 @@ teleport_points = {
 	                                            look = "gar_smart_terrain_5_8_teleport_look",
 											},
 ---------------------------------- DARKVALLEY ----------------------------------
-					val_smart_terrain_7_4 = {
+					val_smart_terrain_7_3 = {
 	                                            level = "darkvalley",
 	                                            condlist = "{+val_temp_start_quest_complete} true",
-	                                            point = "val_smart_terrain_7_4_teleport_walk",
-	                                            look = "val_smart_terrain_7_4_teleport_look",
+	                                            point = "val_smart_terrain_7_3_teleport_walk",
+	                                            look = "val_smart_terrain_7_3_teleport_look",
 											},
 					val_smart_terrain_4_0 = {
 	                                            level = "darkvalley",
 	                                            condlist = "{+val_temp_start_quest_complete} true",
 	                                            point = "val_smart_terrain_4_0_teleport_walk",
 	                                            look = "val_smart_terrain_4_0_teleport_look",
+											},
+					val_smart_terrain_1_2 = {
+	                                            level = "darkvalley",
+	                                            condlist = "{+val_temp_start_quest_complete} true",
+	                                            point = "val_smart_terrain_1_2_teleport_walk",
+	                                            look = "val_smart_terrain_1_2_teleport_look",
 											},
 ---------------------------------- AGROPROM ------------------------------------
 					agr_smart_terrain_4_4 = {

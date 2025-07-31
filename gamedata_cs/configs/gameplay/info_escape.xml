@@ -3,8 +3,8 @@
 <game_information_portions>
 
   <!-- First Scene - Military Base -->
-   <info_portion id="esc_actor_inside"></info_portion>
-    <info_portion id="esc_minigunner"></info_portion>
+  <info_portion id="esc_actor_inside"></info_portion>
+  <info_portion id="esc_minigunner"></info_portion>
   <info_portion id="esc_minigun_fire_on"></info_portion>
   <info_portion id="esc_alarm"></info_portion>
   <info_portion id="esc_alarm_alarm"></info_portion>
@@ -164,7 +164,13 @@
   <info_portion id="esc_military_atp_smartcover_1"></info_portion>
   <info_portion id="esc_military_atp_smartcover_2"></info_portion>
   <info_portion id="esc_zak_habar_complete"></info_portion>
-  
   <info_portion id="esc_actor_kill_driver"></info_portion>
   <info_portion id="esc_driver_dialog_fight"></info_portion>
+  <info_portion id="esc_recover_item_1_done"></info_portion>
+  <info_portion id="esc_recover_item_2_done"></info_portion>
+  <info_portion id="esc_recover_item_3_done"></info_portion>
+  <info_portion id="esc_recover_item_4_done"></info_portion>
+
+  <!-- Faction join -->
+  <info_portion id="esc_join_need_sound"></info_portion>
 </game_information_portions>

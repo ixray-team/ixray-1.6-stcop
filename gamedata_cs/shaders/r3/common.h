@@ -4,6 +4,7 @@
 #include "shared\common.h"
 
 #include "common_defines.h"
+#include "common_policies.h"
 #include "common_iostructs.h"
 #include "common_samplers.h"
 #include "common_cbuffers.h"
@@ -13,9 +14,9 @@
 
 
 #ifdef        USE_R2_STATIC_SUN
-#  define xmaterial half(1.0h/4.h)
+#  define xmaterial float(1.0h/4.h)
 #else
-#  define xmaterial half(L_material.w)
+#  define xmaterial float(L_material.w)
 #endif
 
 /*
@@ -50,15 +51,15 @@
 // #define DBG_TMAPPING
 //////////////////////////////////////////////////////////////////////////////////////////
 
-uniform half4                J_direct        [6];
-uniform half4                J_spot                [6];
+uniform float4                J_direct        [6];
+uniform float4                J_spot                [6];
 
-half2         calc_detail                (half3 w_pos)      {
+float2         calc_detail                (float3 w_pos)      {
         float                 dtl        = distance                (w_pos,eye_position)*dt_params.w;
                               dtl        = min              (dtl*dtl, 1);
-        half                  dt_mul     = 1  - dtl;        // dt*  [1 ..  0 ]
-        half                  dt_add     = .5 * dtl;        // dt+  [0 .. 0.5]
-        return                half2      (dt_mul,dt_add);
+        float                  dt_mul     = 1  - dtl;        // dt*  [1 ..  0 ]
+        float                  dt_add     = .5 * dtl;        // dt+  [0 .. 0.5]
+        return                float2      (dt_mul,dt_add);
 }
 
 

@@ -114,10 +114,19 @@ function reset_show_spot(npc, scheme, st, section)
 	            hint = "st_ui_pda_legend_trader"
 	        elseif map_spot == "mechanic" then
 	            map_location = "ui_pda2_mechanic_location"
-	            hint = "st_ui_pda_legend_mechanic"
+	            hint = game.translate_string("st_ui_pda_legend_mechanic").."\\n"..inventory_upgrades.get_technic_specialization(npc:section())
 	        elseif map_spot == "guider" then
 	            map_location = "ui_pda2_scout_location"
 	            hint = "st_ui_pda_legend_scout"
+	            local smarts_tbl = sim_board.get_sim_board().smarts
+	            local npc_smrt_id = obj.m_smart_terrain_id
+	            if npc_smrt_id ~= 65535 and npc_smrt_id ~= nil then
+	                local npc_smart = smarts_tbl[npc_smrt_id].smrt
+	                if npc_smart then
+	                    local smart_name = smart_names.get_smart_terrain_name(npc_smart)
+	                    hint = game.translate_string(hint).."\\n"..game.translate_string("st_location").." "..smart_name
+	                end
+	            end
 	        elseif map_spot == "quest_npc" then
 	            map_location = "ui_pda2_quest_npc_location"
 	            hint = "st_ui_pda_legend_vip"

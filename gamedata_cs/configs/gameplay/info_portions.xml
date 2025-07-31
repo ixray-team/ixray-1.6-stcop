@@ -110,14 +110,15 @@
     <info_portion id="test_info_22"></info_portion>
     <info_portion id="test_info_23"></info_portion>
   
-  
-  
     <info_portion id="arena_first_battle_begin"></info_portion>
     <info_portion id="arena_camera_begin"></info_portion>
     <info_portion id="arena_final_battle"></info_portion>
     <info_portion id="arena_rupor_off"></info_portion>
     <info_portion id="arena_fourth_battle"></info_portion>
 	
-	<info_portion id="ui_talk_show"></info_portion>
+	<info_portion id="sim_capture_enemy_base_stalker_done"></info_portion>
+	<info_portion id="sim_capture_enemy_base_bandit_done"></info_portion>
+	<info_portion id="sim_capture_enemy_base_freedom_done"></info_portion>
+	<info_portion id="sim_capture_enemy_base_dolg_done"></info_portion>
  
 </game_information_portions>

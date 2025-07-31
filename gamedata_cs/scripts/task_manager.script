@@ -126,6 +126,7 @@ function CRandomTask:save(packet)
 	end
 	packet:w_u16(n)
 	for k,v in pairs(self.inited_tasks) do
+		printf("saving TASK [%s] E_id [%s]", v.base_id, k)
 		packet:w_stringZ(v.base_id)
 		packet:w_stringZ(k)
 		packet:w_u16(task_id_by_type[v.type])
@@ -181,10 +182,10 @@ function CRandomTask:load(reader)
 	local n = reader:r_u16()
 	self.task_info = {}
 	self.inited_tasks = {}
-    self.inited_find_upgrade_tasks = {}
+		self.inited_find_upgrade_tasks = {}
 	for i=1,n do
-	local base_id = reader:r_stringZ()
-	local id = reader:r_stringZ()
+		local base_id = reader:r_stringZ()
+		local id = reader:r_stringZ()
 		local t = task_type_by_id[reader:r_u16()]
 		local obj = nil
 		if t == "storyline" then
@@ -212,8 +213,9 @@ function CRandomTask:load(reader)
 		end
 		if(obj~=nil) then
 			obj:load(reader)
+			printf("LOAD:TASK [%s] status [%s] e_id [%s]", obj.base_id, obj.status, tostring(obj.entity_id))
 			self.inited_tasks[id] = obj
-			if(obj.status~="normal") then
+			if(obj.status=="selected") then
 				self.task_info[tostring(obj.entity_id)] = obj
 			end
 			if(t=="eliminate_smart") or (t=="capture_smart") or (t=="defend_smart") or (t=="defend_smart_delay") then
@@ -281,11 +283,17 @@ function CRandomTask:task_complete(p1)
 end
 --' Проверяем, не профейлен ли таск
 function CRandomTask:task_fail(p1)
-	--printf("***tf %s", tostring(p1))
+	--if last_ch_time == nil or time_global() - last_ch_time < 5000 then
+	--	printf("***tf %s", tostring(p1))
+	--	printf("tname inited %s", tostring(self.inited_tasks[p1]))
+	--	last_ch_time = time_global()
+	--end
 	if self.task_info[p1] == nil then
+	--	printf("***tf2 %s", tostring(p1))
 		return false
 	end
 	self.task_info[p1]:check_task(self)
+	--printf("tname %s", tostring(self.task_info[p1].base_id))
 	--printf("   %s", tostring(self.task_info[p1].last_check_task))
 	if(self.task_info[p1].last_check_task=="fail") then
 		xr_statistic.inc_failed_quests_counter()
@@ -297,7 +305,11 @@ function CRandomTask:task_callback(task, completed)
 	--' Если задание выполнилось - надо выдать с него награду!
 	local task_id = task:get_id()
 	local delta
-		printf("task_callback2")
+	--print_table(self.task_info)
+	if self.task_info[task_id] == nil then
+		return
+	end
+	printf("task_callback2: [%s]", task:get_title())
 	if completed == true then
 		printf("Task %s completed", tostring(task_id))
 		self.task_info[task_id]:init_reward()
@@ -306,7 +318,7 @@ function CRandomTask:task_callback(task, completed)
 		printf("Task %s failed", tostring(task_id))
 		delta = self.task_info[task_id].community_relation_delta_fail
 	end
-    local relation = db.actor:community_goodwill(self.task_info[task_id].community) + delta
+		local relation = db.actor:community_goodwill(self.task_info[task_id].community) + delta
 	if(relation>1000) then
 		relation = 1000
 	elseif(relation<-3000) then
@@ -369,7 +381,7 @@ function CRandomTask:select_task(type, obj, faction)
 	elseif type == "find_upgrade" then
 		task_table = self.find_upgrade_tasks
 		key = tostring(faction).."_find_upgrade_"..obj
-    elseif type == "hide_from_surge" then
+		elseif type == "hide_from_surge" then
 		task_table = self.hide_from_surge
 		key = tostring(faction).."_hide_from_surge_"..obj
 	elseif type == "eliminate_squad" then
@@ -392,7 +404,9 @@ function CRandomTask:select_task(type, obj, faction)
 		printf("!!!Return inited task type[%s] for %s, key[%s], entity_id[%s]", tostring(type), tostring(faction), tostring(key), self.inited_tasks[key].entity_id)
 		return self.inited_tasks[key]
 	end
+	printf("new_EId for "..key)
 	local new_EId = self.id_generator:get_id()
+	printf("new_EId [%s]", tostring(new_EId))
 
 	local max_prior = -1
 	local selected_task = nil
@@ -432,7 +446,7 @@ function CRandomTask:select_find_upgrade_task(obj, faction)
 			local task = v:get_inited_task(obj, faction, self.id_generator:get_id())
 			if self.inited_find_upgrade_tasks[obj:id()][task.id] == nil then
 				self.inited_find_upgrade_tasks[obj:id()][task.id] = task
-	            self.inited_tasks[tostring(faction).."_find_upgrade_"..task.entity_id] = task
+							self.inited_tasks[tostring(faction).."_find_upgrade_"..task.entity_id] = task
 			end
 		end
 	end
@@ -466,7 +480,7 @@ function CRandomTask:get_task_by_key(type, obj, faction)
 --		key = tostring(faction).."_recover_item_"..obj
 	elseif type == "find_upgrade" then
 		key = tostring(faction).."_find_upgrade_"..obj
-    elseif type == "hide_from_surge" then
+		elseif type == "hide_from_surge" then
 		key = tostring(faction).."_hide_from_surge_"..obj
 	elseif type == "eliminate_squad" then
 		key = tostring(faction).."_eliminate_squad_"..obj.squad_id

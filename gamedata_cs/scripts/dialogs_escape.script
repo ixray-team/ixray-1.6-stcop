@@ -17,12 +17,13 @@ end
 function show_money_for_relation(first_speaker, second_speaker)
 	local news_caption = game.translate_string("st_upgr_cost")..": "
 	local news_text = tostring(money_for_relation).." "..game.translate_string("st_rubles")
-    db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_money", "iconed_answer_item")
+		db.actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_money", "iconed_answer_item")
 end
 
 
 function transfer_detector_advanced(first_speaker, second_speaker)
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "detector_advanced")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "antirad", 5)
 end
 
 
@@ -40,67 +41,67 @@ end
 -- transfer functions
 
 function actor_has_habar(first_speaker, second_speaker)
-    return first_speaker:object("esc_trader_habar") ~= nil
+		return first_speaker:object("esc_trader_habar") ~= nil
 end
 
 function actor_hasnt_habar(first_speaker, second_speaker)
-    return not actor_has_habar(first_speaker, second_speaker)
+		return not actor_has_habar(first_speaker, second_speaker)
 end
 
 function transfer_habar(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_trader_habar")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_trader_habar")
 end
 
 function transfer_pistol(first_speaker, second_speaker)
-    dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_pistol_driver(first_speaker, second_speaker)
-    dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_gun(first_speaker, second_speaker)
-    dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_leader_pda(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_military")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_military")
 end
 
 function actor_has_general_pda(first_speaker, second_speaker)
-    return first_speaker:object("device_pda_military") ~= nil
+		return first_speaker:object("device_pda_military") ~= nil
 end
 
 function actor_hasnt_general_pda(first_speaker, second_speaker)
-    return not actor_has_general_pda(first_speaker, second_speaker)
+		return not actor_has_general_pda(first_speaker, second_speaker)
 end
 
 function transfer_prisoner_pistol(first_speaker, second_speaker)
-    dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_prisoner_shootgun(first_speaker, second_speaker)
-    dialogs.transfer_any_shootgun_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_shootgun_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_prisoner_gun(first_speaker, second_speaker)
-    dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
+		dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
 end
 
 function transfer_device_pda_driver(first_speaker, second_speaker)
-    dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_device_pda_driver")
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_device_pda_driver")
 end
 
 function actor_has_device_pda_driver(first_speaker, second_speaker)
-    return first_speaker:object("esc_device_pda_driver") ~= nil
+		return first_speaker:object("esc_device_pda_driver") ~= nil
 end
 
 function actor_hasnt_device_pda_driver(first_speaker, second_speaker)
-    return not actor_has_device_pda_driver(first_speaker, second_speaker)
+		return not actor_has_device_pda_driver(first_speaker, second_speaker)
 end
 
 function give_money_for_support(first_speaker, second_speaker)
-    dialogs.relocate_money(first_speaker, 500, "out")
+		dialogs.relocate_money(first_speaker, 500, "out")
 end
 
 

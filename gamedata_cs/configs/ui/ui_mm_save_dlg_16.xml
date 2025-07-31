@@ -36,9 +36,9 @@
       <text font="graffiti22" r="184" g="168" b="131">ui_mm_save_game</text>
     </caption>
 
-    <edit x="54" y="55" width="204" height="23">
+    <edit x="54" y="55" width="204" height="23" file_name_mode="1">
       <texture>ui_linetext_e</texture>
-      <text font="letterica18" r="240" g="217" b="182"/>
+      <text x="3" font="letterica18" r="240" g="217" b="182"/>
     </edit>
 
     <list_frame x="54" y="96" width="374" height="307">

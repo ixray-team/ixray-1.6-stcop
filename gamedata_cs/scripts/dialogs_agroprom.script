@@ -9,6 +9,13 @@ function transfer_ammo(first_speaker, second_speaker)
 	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_12x76_zhekan", 3)
 end
 
+function transfer_items_dolg(first_speaker, second_speaker)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "dolg_outfit")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_abakan_up2")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_5.45x39_fmj", 3)
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_addon_grenade_launcher")
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "ammo_vog-25", 5)
+end
 
 
 -- task reward

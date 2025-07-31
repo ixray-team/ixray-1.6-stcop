@@ -1,4 +1,4 @@
-class "action_robbery" 
+class "action_robbery"
 
 function action_robbery:__init( obj , storage)
     self.object = obj
@@ -47,14 +47,14 @@ function action_robbery:enable_squad_reaction()
 	for k,v in pairs(squads) do
 		printf("setting squad sympathy [0] for squad [%s]", k)
 		v:set_squad_sympathy(0)
-	end	
-end
-function action_robbery:disable_reaction_final()	
-	for k,v in pairs(db.storage[self.object:id()].robbery_manager.npc_squad) do		
-				actor_reaction.disable_actor_reaction(v)			
 	end
-	for k,v in pairs(db.storage[self.object:id()].robbery_manager.rest_of_gulag) do		
-		actor_reaction.disable_actor_reaction(v)			
+end
+function action_robbery:disable_reaction_final()
+	for k,v in pairs(db.storage[self.object:id()].robbery_manager.npc_squad) do
+				actor_reaction.disable_actor_reaction(v)
+	end
+	for k,v in pairs(db.storage[self.object:id()].robbery_manager.rest_of_gulag) do
+		actor_reaction.disable_actor_reaction(v)
 	end
 	db.storage[self.object:id()].robbery_manager = nil
 	local sim_board = sim_board.get_sim_board()
@@ -63,23 +63,25 @@ function action_robbery:disable_reaction_final()
 	for k,v in pairs(squads) do
 		printf("setting default squad sympathy for squad [%s]", k)
 		v:set_squad_sympathy()
-	end		
+	end
 	self:reset_scheme()
 end
 function action_robbery:abuse_gulag ()
 			self.gulag_abused = true
 			local gulag = xr_gulag.get_gulag_by_name(self.st.gulag)
 			for k,v in pairs(gulag.npc_info) do
-				local object = 	db.storage[v.se_obj.id].object				
-				local h = hit()
-				h.power = 0.0
-				h.direction = object:direction()
-				h.draftsman = db.actor 
-				h.impulse = 0
-				h.type = hit.wound
-				object:hit(h)	
+				if db.storage[v.se_obj.id] ~= nil then
+					local object = 	db.storage[v.se_obj.id].object
+					local h = hit()
+					h.power = 0.0
+					h.direction = object:direction()
+					h.draftsman = db.actor
+					h.impulse = 0
+					h.type = hit.wound
+					object:hit(h)
+				end 
 			end
-			-- self:disable_reaction_final()	
+			-- self:disable_reaction_final()
 			-- db.storage[self.object:id()].robbery_manager:set_danger_dist_check(false)
 			-- db.storage[self.object:id()].robbery_manager  = nil
 end
@@ -93,7 +95,7 @@ function is_gulag_enemy(gulag_name)
 		if is_enemy then
 			return true
 		end
-	end	
+	end
 	return false
 end
 
@@ -105,7 +107,7 @@ function action_robbery:gulag_present()
 	end
 	local gulag_smart = sim_board.get_sim_board():get_smart_by_name(self.st.gulag)
 	local is_gulag_present = gulag_smart ~= nil
-	if is_gulag_present and gulag_smart.player_name ~= "none" and not is_gulag_enemy(self.st.gulag) then 
+	if is_gulag_present and gulag_smart.player_name ~= "none" and not is_gulag_enemy(self.st.gulag) then
 		return true
 	end
 	printf("gulag ~= nil [%s] name %s gulag_smart.player_name = [%s] is_gulag_enemy(self.st.gulag) = [%s]", tostring(is_gulag_present), gulag_smart:name(), gulag_smart.player_name, tostring(is_gulag_enemy(self.st.gulag)))
@@ -116,7 +118,7 @@ function action_robbery:actor_nomove_nowpn()
 	if (not isWeapon(db.actor:active_item()) and db.actor:position():distance_to(self.actor_check_position) < 1) or db.actor:is_talking() then
 		return true
 	end
-	return false	
+	return false
 end
 
 
@@ -137,16 +139,16 @@ function action_robbery:update( delta )
 			--printf("update4!!!")
 			db.storage[self.object:id()].robbery_manager = nil
 		end
-	--printf("update5!!!")	
-	return
-	
+		--printf("update5!!!")
+		return
+
  	end
 	if db.storage[self.object:id()].robbery_manager ~= nil then
 		--printf("update6!!!")
 		local manager = db.storage[self.object:id()].robbery_manager
 		local commander_signals = db.storage[self.commander_obj:id()][db.storage[self.commander_obj:id()].active_scheme].signals
-		
-		if self.move_check_started == nil then  
+
+		if self.move_check_started == nil then
 			if self.pda_snd_obj ~= nil then
 				self.pda_snd_obj:stop()
 			end
@@ -155,14 +157,14 @@ function action_robbery:update( delta )
 			end
 			xr_sound.set_sound_play(self.commander_obj:id(), self.st.stop_snd)
 			--printf("move_check_snd_started!!!!!")
-			if commander_signals["sound_end"] == true then		
+			if commander_signals["sound_end"] == true then
 				commander_signals["sound_end"] = false
 				self.actor_check_position = db.actor:position()
 				self.move_check_started = true
 				self.after_move_check_idle = 1500 + time_global()
 				--printf("move_check_STARTED!!!!!")
 			end
-		end			
+		end
 		if self.move_check_started and not self:actor_nomove_nowpn() and manager.robbery_end ~= true and self.after_move_check_idle < time_global() then
 			self.actor_enemy = true
 			self.move_check_started = false
@@ -171,8 +173,8 @@ function action_robbery:update( delta )
 		elseif self.move_check_started and self:actor_nomove_nowpn() and manager.robbery_end ~= true and self.after_move_check_idle < time_global() then
 			self.stand_still_snd = xr_sound.set_sound_play(self.commander_obj:id(), self.st.stand_still_snd)
 			self.stand_still = true
-			--printf("Move_check snd playing!!!!!")	
-		end			
+			--printf("Move_check snd playing!!!!!")
+		end
 		if manager.robbery_end == true and self.reaction_zone:inside( db.actor:position() ) then
 			xr_sound.set_sound_play(self.commander_obj:id(), self.st.after_pay_snd)
 			--printf("after_pay_snd_started")
@@ -184,7 +186,7 @@ function action_robbery:update( delta )
 				--printf("after_pay_snd_finished")
 				return
 			end
-		end		
+		end
 		if (manager.robbery_end ~= true and self.attack_zone:inside( db.actor:position() )) or self.actor_enemy then
 			if self.commander_obj:alive() == true then
 				self.commander_obj:set_sound_mask(-1)
@@ -200,15 +202,15 @@ function action_robbery:update( delta )
 				--printf("kill_actor_finished")
 				return
 			end
-		end		
+		end
 		if not self.reaction_zone:inside( db.actor:position() ) then
-			self:disable_reaction_final()	
+			self:disable_reaction_final()
 			return
 		end
-		
+
 		manager:update()
-	end		
-	if self.object:inside( db.actor:position() ) and self.is_actor_inside == nil and not self.gulag_abused then		
+	end
+	if self.object:inside( db.actor:position() ) and self.is_actor_inside == nil and not self.gulag_abused then
 		self.is_actor_inside = true
 		if xr_gulag.get_gulag_by_name(self.st.gulag) ~= nil and self.gulag_selected == false then
 			self.gulag = xr_gulag.get_gulag_by_name(self.st.gulag)
@@ -232,28 +234,31 @@ function action_robbery:update( delta )
 		self.squad = self:find_nearest_npc_from_selected_gulag()
 		self:enable_squad_reaction()
 	elseif self.is_actor_inside == true and not self.object:inside( db.actor:position() ) then
-		self.is_actor_inside = false 
+		self.is_actor_inside = false
 	end
 	if self.is_actor_inside == nil and not self.gulag_abused then
 		if self.reaction_zone:inside( db.actor:position() ) and self.return_snd_obj == nil then
-			self.pda_snd_obj = xr_sound.set_sound_play(self.object:id(), self.st.pda_snd)			
-			self.can_play_return_snd = true	
-			self.return_snd_obj = nil		
+			printf("pl:check_1")
+			self.pda_snd_obj = xr_sound.set_sound_play(self.object:id(), self.st.pda_snd)
+			self.can_play_return_snd = true
+			self.return_snd_obj = nil
 		elseif self.can_play_return_snd == true or self.return_snd_obj ~= nil then
+			printf("pl:check_2")
 			if self.return_snd_obj == nil then
 				self.return_snd_obj = xr_sound.set_sound_play(self.object:id(), self.st.pda_return_snd)
 			end
 			local zone_signals = self.st.signals
 			if zone_signals["sound_end"] == true and self.return_snd_obj ~= nil then
+				printf("pl:check_3")
 				zone_signals["sound_end"] = false
-				self:reset_scheme()		
+				self:reset_scheme()
 				return
 			end
-			
+
 		end
 	end
-	
-    
+
+
 end
 
 function action_robbery:find_nearest_npc_for_commander_job()
@@ -263,7 +268,7 @@ function action_robbery:find_nearest_npc_for_commander_job()
 		local dist = db.actor:position():distance_to_sqr(v.se_obj.position)
 		if dist < min_dist then
 			min_dist = dist
-			nearest_npc = v.se_obj				
+			nearest_npc = v.se_obj
 		end
 	end
 	if nearest_npc == nil or db.storage[nearest_npc.id] == nil then
@@ -272,7 +277,7 @@ function action_robbery:find_nearest_npc_for_commander_job()
 	return db.storage[nearest_npc.id].object
 end
 
-function action_robbery:find_nearest_npc_from_selected_gulag()	
+function action_robbery:find_nearest_npc_from_selected_gulag()
 	local gulag_objects = {}
 	utils.copy_table(gulag_objects, self.gulag.npc_info)
 	local selected_objects = {}
@@ -283,13 +288,13 @@ function action_robbery:find_nearest_npc_from_selected_gulag()
 			local dist = db.actor:position():distance_to_sqr(v.se_obj.position)
 			if dist < min_dist and v.se_obj.id ~= self.commander_obj:id() then
 				min_dist = dist
-				nearest_npc = v.se_obj				
+				nearest_npc = v.se_obj
 			end
 		end
 		if nearest_npc ~= nil then
 			selected_objects[nearest_npc.id] = db.storage[nearest_npc.id].object
 			gulag_objects[nearest_npc.id] = nil
-			printf("adding npc ["..nearest_npc.id.."]")			
+			printf("adding npc ["..nearest_npc.id.."]")
 		end
 	end
 	selected_objects[self.commander_obj:id()] = self.commander_obj
@@ -317,7 +322,7 @@ function action_robbery:find_commanders_objects()
 		local npc_on_job = self.gulag:idNPCOnJob("logic@"..self.st.gulag.."_"..vv)
 		if npc_on_job and db.storage[npc_on_job] then
 			table.insert(commanders_table, db.storage[npc_on_job].object)
-		end	
+		end
 	end
 	return commanders_table
 end
@@ -333,7 +338,7 @@ end
 
 function set_scheme( obj, ini, scheme, section, gulag_name )
 	local st = xr_logic.assign_storage_and_bind( obj, ini, scheme, section )
-	st.logic = xr_logic.cfg_get_switch_conditions( ini, section, obj )	
+	st.logic = xr_logic.cfg_get_switch_conditions( ini, section, obj )
     st.gulag = utils.cfg_get_string( ini, section, "smart_name", obj, false, "", nil )
     st.money = utils.cfg_get_string( ini, section, "money", obj, false, "", "all" )
     st.dialog = utils.cfg_get_string( ini, section, "dialog", obj, false, "", "default_robbery_dialog" )
@@ -346,20 +351,20 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
     st.kill_actor_snd = utils.cfg_get_string( ini, section, "kill_actor_snd", obj, false, "", "gar_robbery_scene_kill_actor" )
     st.commander_job = utils.cfg_get_string( ini, section, "commander_job", obj, false, "", nil )
     if st.commander_job ~= nil then
-		st.commanders_table    = parse_names(st.commander_job)	
+		st.commanders_table    = parse_names(st.commander_job)
     end
-    st.inv_box = utils.cfg_get_string( ini, section, "inv_box", obj, false, "", "100" )    
+    st.inv_box = utils.cfg_get_string( ini, section, "inv_box", obj, false, "", "100" )
 end
 
-    
+
 
 -- А тут я опишу менеджер реакции сквада попавшего в засаду болотной твари.
 
 
 class "robbery_manager"
 
-function robbery_manager:__init ( obj, sr_robbery)	
-	self.obj = obj		
+function robbery_manager:__init ( obj, sr_robbery)
+	self.obj = obj
 	self.squad_npc_state = {}
 	self.squad = {}
 	self.squad_objs = {}
@@ -369,7 +374,7 @@ function robbery_manager:__init ( obj, sr_robbery)
 	self.npc_squad = self.scene_manager.squad
 	self.npc_position = {}
 	self.actor_direction = vector():sub(self.commander_npc:position(),db.actor:position())
-	
+
 	--db.actor:set_actor_direction(-self.actor_direction:getH())
 	 --level.disable_input()
 	 --db.actor:hide_weapon()
@@ -378,8 +383,8 @@ function robbery_manager:__init ( obj, sr_robbery)
 	local vvv = vector_cross(self.actor_direction, vector():set(0, 0, 1))
     if vvv.y < 0 then
        self.yaw = -self.yaw
-    end    
-	-- поворачиваем направления для поиска доступных точек на угол yaw 
+    end
+	-- поворачиваем направления для поиска доступных точек на угол yaw
 	self.position = {
 	{dir = vector_rotate_y(vector():set(1, 0, 1),self.yaw),used = nil, vertex = nil, position = nil},
 	{dir = vector_rotate_y(vector():set(1, 0, 4),self.yaw),used = nil, vertex = nil, position = nil},
@@ -387,49 +392,51 @@ function robbery_manager:__init ( obj, sr_robbery)
 	{dir = vector_rotate_y(vector():set(-1, 0, 2),self.yaw),used = nil, vertex = nil, position = nil},
 	{dir = vector_rotate_y(vector():set(1, 0, 2),self.yaw),used = nil, vertex = nil, position = nil},
 					}
-					
+
 	self:calculate_positions()
 	print_table(self.position)
 	for k,v in pairs(self.npc_squad) do
 			self.squad[v:id()] = v
-			self.squad_objs[v:id()] = v		
-	end	
+			self.squad_objs[v:id()] = v
+	end
 	self:set_npc_positions()
-	print_table(self.npc_position)		
-	for k,v in pairs(self.npc_squad) do		
-		actor_reaction.enabled_actor_reaction(v, self.current)	
+	print_table(self.npc_position)
+	for k,v in pairs(self.npc_squad) do
+		actor_reaction.enabled_actor_reaction(v, self.current)
 		db.storage[v:id()].robbery_zone_id = self.obj:id()
 	end
 	self.rest_of_gulag = {}
-	
+
 	for k,v in pairs(self.scene_manager.gulag.npc_info) do
-		if self.npc_squad[v.se_obj.id] == nil then	
-			self.rest_of_gulag[v.se_obj.id] = db.storage[v.se_obj.id].object
-			actor_reaction.enabled_actor_reaction(db.storage[v.se_obj.id].object, self.current)
-			db.storage[v.se_obj.id].robbery_zone_id = self.obj:id()
-		end	
-	end		
+		if self.npc_squad[v.se_obj.id] == nil then
+			if db.storage[v.se_obj.id] ~= nil then
+				self.rest_of_gulag[v.se_obj.id] = db.storage[v.se_obj.id].object
+				actor_reaction.enabled_actor_reaction(db.storage[v.se_obj.id].object, self.current)
+				db.storage[v.se_obj.id].robbery_zone_id = self.obj:id()
+			end
+		end
+	end
 end
 
-function robbery_manager:calculate_positions()			
-	local base_point = db.actor:level_vertex_id()	
+function robbery_manager:calculate_positions()
+	local base_point = db.actor:level_vertex_id()
 	for k,v in pairs(self.position) do
-		local dist = 1.5 
+		local dist = 1.5
 		if self.commander_point_finished then
 			dist = 10
 		else
-			v.used = "commander"				
-		end		
+			v.used = "commander"
+		end
 		local direction_vector = v.dir
 		self.base_vertex_id = level.vertex_in_direction(base_point, direction_vector, dist)
 		printf("vertex_position")
 		self.random_position = level.vertex_position(self.base_vertex_id)
 
-	
-		v.vertex = self.base_vertex_id 
-		v.position = self.random_position	
+
+		v.vertex = self.base_vertex_id
+		v.position = self.random_position
 		self.commander_point_finished = true
-	end	
+	end
 end
 
 function robbery_manager:set_npc_positions()
@@ -442,7 +449,7 @@ function robbery_manager:set_npc_positions()
 			if nearest_npc ~= nil then
 				self.npc_position[nearest_npc:id()] = {vertex = v.vertex, position = v.position}
 				self.squad[nearest_npc:id()] = nil
-			end	
+			end
 		end
 	end
 end
@@ -457,7 +464,7 @@ function robbery_manager:find_nearest_npc_on_position(pos)
 			nearest_npc = v
 		end
 	end
-	return nearest_npc	
+	return nearest_npc
 end
 
 function robbery_manager:set_danger_dist_check(val)
@@ -479,7 +486,7 @@ function robbery_end(first_speaker, second_speaker)
 	second_speaker:restore_default_start_dialog()
 	if db.storage[db.storage[second_speaker:id()].robbery_zone_id].robbery_manager ~= nil then
 		db.storage[db.storage[second_speaker:id()].robbery_zone_id].robbery_manager:set_reaction_zone_dist_check()
-	end	
+	end
 end
 
 
@@ -497,7 +504,7 @@ local pistol_ammo_tbl = {
 }
 
 
-local actor_inventory = {} 
+local actor_inventory = {}
 
 local function get_actor_inv(release_item)
 	actor_inventory[release_item:id()] = release_item
@@ -511,11 +518,11 @@ function actor_give_money(first_speaker, second_speaker)
 		first_speaker:stop_talk()
 		second_speaker:stop_talk()
 		return
-	end	
+	end
 	commander = second_speaker
 	local money = 0
 	if manager_st.money == "all" then
-		money = db.actor:money()	
+		money = db.actor:money()
 	else
 		money = tonumber(manager_st.money)
 		if db.actor:money() < money then
@@ -524,7 +531,7 @@ function actor_give_money(first_speaker, second_speaker)
 	end
 	db.actor:give_money(-money)
 	news_manager.relocate_money(db.actor, "out", money)
-    db.actor:inventory_for_each(get_actor_inv)	
+   --[[  db.actor:inventory_for_each(get_actor_inv)
 	local cost = 0
 	local most_expensive_pistol_id = nil
 	local most_expensive_pistol_section = nil
@@ -541,7 +548,7 @@ function actor_give_money(first_speaker, second_speaker)
 	local inv_box_1 = level_object_by_sid(tonumber(manager_st.inv_box))
 	if inv_box_1 == nil then
 		abort("there is no inv_box with story_id [%s]", manager_st.inv_box)
-	end 
+	end
 	for k,v in pairs(actor_inventory) do
 		if pistol_ammo_tbl[v:section()] ~= nil and pistol_ammo_tbl[v:section()][most_expensive_pistol_section] == true then
 		else
@@ -549,7 +556,7 @@ function actor_give_money(first_speaker, second_speaker)
 			news_manager.relocate_item(db.actor, "out", v:section())
 		end
 	end
-	actor_inventory = {}
+	actor_inventory = {} ]]--
 end
 
 function is_pistol(item)
