@@ -18,7 +18,7 @@ on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
 
 ; Если уже есть деньги - перейти к квесту на встречу с контрабандистом, иначе дать квест на сбор денег
 [sr_idle@bring_money_start]
-on_info = {+gar_quest_bring_money_done} sr_idle@get_weapon_start, {+gar_quest_bring_money_started} sr_idle@get_weapon_start %=give_inited_task(storyline:gar_quest_bring_money:stalker)%
+on_info = {+gar_quest_bring_money_done} sr_idle@get_weapon_start, {+gar_quest_bring_money_started} sr_idle@get_weapon_start %+gar_bandit_block_quest_line =give_inited_task(storyline:gar_quest_bring_money:stalker)%
 on_info2 = {+gar_flea_market_stop_quest_line} sr_idle@end_section
 
 ; Дать квест на встречу с контрабандистом
