@@ -4,9 +4,9 @@
 #include "../Include/xrRender/DrawUtils.h"
 //#include "xr_effgamma.h"
 #include "Render.h"
-#include "../xrCDB/xrXRC.h"
+#include "../xrCore/Collision/xrXRC.h"
 
-extern XRCDB_API BOOL *cdb_bDebug;
+extern XRCORE_API BOOL *cdb_bDebug;
 
 void	SetupGPU(IRenderDeviceRender *pRender)
 {

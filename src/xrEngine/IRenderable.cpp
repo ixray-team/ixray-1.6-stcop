@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "IRenderable.h"
 #include "ICollidable.h"
 

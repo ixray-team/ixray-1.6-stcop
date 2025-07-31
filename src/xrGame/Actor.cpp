@@ -46,7 +46,7 @@
 #include "xrMessages.h"
 #include "../xrEngine/string_table.h"
 #include "UsableScriptObject.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 //#include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
 #include "../Include/xrRender/Kinematics.h"

@@ -2,7 +2,7 @@
 #include "GameFont.h"
 #pragma hdrstop
 
-#include "../xrCDB/ISpatial.h"
+#include "../xrCore/Collision/ISpatial.h"
 #include "IGame_Persistent.h"
 #include "Render.h"
 #include "xr_object.h"

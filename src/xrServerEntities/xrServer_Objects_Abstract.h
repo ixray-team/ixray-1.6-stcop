@@ -11,7 +11,7 @@
 
 #pragma pack(push,4)
 #include "xrServer_Space.h"
-#	include "../xrCDB/xrCDB.h"
+#	include "../xrCore/Collision/xrCDB.h"
 #include "ShapeData.h"
 #include "gametype_chooser.h"
 

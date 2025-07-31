@@ -14,9 +14,6 @@ source_group("core" FILES ${XRP_SOURCE_ALL_FILES})
 # Apply list
 list(APPEND XRP_SRC_FILES ${XRP_SOURCE_ALL_FILES})
 
-# Remove unused files
-#list(FILTER XRP_SRC_FILES EXCLUDE REGEX ".*")
-
 # xrParticles project
 add_library(xrParticles SHARED ${XRP_SRC_FILES})
 target_precompile_headers(xrParticles PUBLIC "stdafx.h")
@@ -31,5 +28,4 @@ target_compile_definitions(xrParticles PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrParticles PUBLIC xrCore)
-target_link_libraries(xrParticles PUBLIC xrCDB)
 target_link_libraries(xrParticles PUBLIC xrAbstractions)

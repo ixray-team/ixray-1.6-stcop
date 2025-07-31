@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "XRaySkeletonX.h"
-#include "../../xrCDB/xrCDB.h"
+#include "../../xrCore/Collision/xrCDB.h"
 #include "XRayKinematics.h"
 #include "../xrRender/cl_intersect.h"
 
