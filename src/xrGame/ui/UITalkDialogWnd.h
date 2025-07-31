@@ -45,11 +45,15 @@ public:
 	shared_str			m_ClickedQuestionID;
 
 	//список вопросов, которые мы можем задавать персонажу
+	CUIStatic* UIDialogFrameTop;
+	CUIStatic* UIDialogFrameBottom;
 
-//	Fvector2			m_btn_pos[3];
+	Fvector2			m_btn_pos[3];
 	CUI3tButton			UIToTradeButton;
-//	CUI3tButton			UIToExitButton;
+	CUI3tButton*		UIToExitButton;
 
+	CUIStatic* UIOurIcon;
+	CUIStatic* UIOthersIcon;
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
 
