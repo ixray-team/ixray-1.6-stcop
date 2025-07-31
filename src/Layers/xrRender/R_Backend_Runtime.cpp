@@ -46,7 +46,7 @@ void CBackend::OnFrameBegin	()
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
-		set_RT				(RTarget);
+		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
 		set_ZB				(nullptr);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));

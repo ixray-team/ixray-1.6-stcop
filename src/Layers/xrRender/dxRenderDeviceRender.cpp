@@ -10,6 +10,7 @@
 #include "imgui.h"
 #endif
 
+bool bNeedUpdateGammaLUT = true;
 #ifdef USE_DX11
 #include "imgui_impl_dx11.h"
 #else
@@ -70,6 +71,7 @@ void dxRenderDeviceRender::updateGamma()
 #ifndef _EDITOR
 	m_Gamma.Update();
 #endif
+	bNeedUpdateGammaLUT = true;
 }
 
 void dxRenderDeviceRender::OnDeviceDestroy( BOOL bKeepTextures)
@@ -422,7 +424,22 @@ void DoAsyncScreenshot();
 void dxRenderDeviceRender::End()
 {
 #ifndef _EDITOR
+
 	VERIFY	(RDevice);
+
+#ifdef USE_DX11
+	if (bNeedUpdateGammaLUT)
+	{
+		GPU_EVENT(GAMMA_GENERATE_LUT);
+		RImplementation.Target->PhaseGammaGenerateLUT();
+		bNeedUpdateGammaLUT = false;
+	}
+
+	{
+		GPU_EVENT(GAMMA_APPLY);
+		RImplementation.Target->PhaseGammaApply();
+	}
+#endif
 
 	RCache.OnFrameEnd();
 	{
@@ -460,6 +477,7 @@ void dxRenderDeviceRender::End()
 #endif
 
 #endif
+
 	PROF_EVENT("Present");
 #ifdef USE_DX11
 	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
@@ -492,7 +510,11 @@ void dxRenderDeviceRender::ClearTarget()
 void dxRenderDeviceRender::SetupDefaultTarget()
 {
 #ifndef _EDITOR
+#ifdef USE_DX11
+	RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+#else
 	RCache.set_RT(RTarget);
+#endif
 	RCache.set_ZB(nullptr);
 #endif
 }

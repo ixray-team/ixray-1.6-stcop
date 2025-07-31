@@ -323,7 +323,7 @@ void CRender::render_menu() {
 	}
 
 	// Actual Display
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, nullptr);
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	rmNormal();
 
 	RCache.set_Shader(Target->s_menu);
@@ -375,7 +375,7 @@ void CRender::Render()
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
 	if (!(g_pGameLevel && g_hud) || bMenu) {
-		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, nullptr, nullptr, nullptr);
+		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 		return;
 	}
 
