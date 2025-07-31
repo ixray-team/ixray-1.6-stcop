@@ -8,9 +8,9 @@ class UI_API CUIFrameLineWnd:
 	typedef CUIWindow inherited;
 public:
 				 CUIFrameLineWnd	();
-			void InitFrameLineWnd	(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal = true);
+			bool InitFrameLineWnd	(LPCSTR base_name, Fvector2 pos, Fvector2 size, bool horizontal = true, bool fatal = true);
 			void InitFrameLineWnd	(Fvector2 pos, Fvector2 size, bool horizontal = true);
-			void InitTexture		(LPCSTR tex_name,LPCSTR sh_name="hud\\default");
+			bool InitTexture		(LPCSTR tex_name,LPCSTR sh_name="hud\\default", bool fatal = true);
 	virtual void Draw				();
 
 			float GetTextureHeight	() const						{return m_tex_rect[0].height();}
