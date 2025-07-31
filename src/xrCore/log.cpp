@@ -62,7 +62,7 @@ void xrLogger::Msg(LPCSTR Msg, va_list argList)
 	return;
 #endif
 
-	//if (IsDebuggerPresent() && bFastDebugLog)
+	if (IsDebuggerPresent() && bFastDebugLog)
 	{
 		OutputDebugStringA(formattedMessage);
 		OutputDebugStringA("\n");
