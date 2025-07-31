@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>déplacer vers la case</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Le marchand n'est pas intéressé par ce genre d'objets.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>Cet objet est en trop mauvais état pour pouvoir être vendu.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>vendre l'objet</text>
 	</string>

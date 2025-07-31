@@ -16,6 +16,10 @@
 		<text font="letterica18" color="ui_7" align="r"/>
 	</static_cost>
 
+	<static_no_trade x="20" y="60" width="280" height="20">
+		<text align="r" font="letterica16" r="196" g="18" b="18" complex_mode="1"/>
+	</static_no_trade>
+
 	<descr_list x="13" y="63" width="288" height="131" always_show_scroll="0" right_ident="10" left_ident="20" fit_to_height="1">
 		<font font="letterica16"  color="ui_6"/>
 	</descr_list>

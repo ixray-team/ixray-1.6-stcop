@@ -60,6 +60,12 @@
 	<string id="st_move_to_slot">
 		<text>pøesunout na pozici</text>
 	</string>
+	<string id="st_no_trade_tip_1">
+		<text>Tento obchodník nemá o takové vìci zájem.</text>
+	</string>
+	<string id="st_no_trade_tip_2">
+		<text>Takhle poškozené pøedmìty se prodat nedají.</text>
+	</string>
 	<string id="st_sell_item">
 		<text>prodat pøedmìt</text>
 	</string>
