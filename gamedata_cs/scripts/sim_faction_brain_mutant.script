@@ -1,9 +1,9 @@
 --'******************************************************
---'*	Объект группировки.
+--'*	РћР±СЉРµРєС‚ РіСЂСѓРїРїРёСЂРѕРІРєРё.
 --'******************************************************
 
--- В дневное время старается держаться своего логова
--- В ночное время нападает на отряды сталкеров
+-- Р’ РґРЅРµРІРЅРѕРµ РІСЂРµРјСЏ СЃС‚Р°СЂР°РµС‚СЃСЏ РґРµСЂР¶Р°С‚СЊСЃСЏ СЃРІРѕРµРіРѕ Р»РѕРіРѕРІР°
+-- Р’ РЅРѕС‡РЅРѕРµ РІСЂРµРјСЏ РЅР°РїР°РґР°РµС‚ РЅР° РѕС‚СЂСЏРґС‹ СЃС‚Р°Р»РєРµСЂРѕРІ
 
 class "faction_brain_mutant"
 function faction_brain_mutant:__init(faction)
@@ -31,26 +31,26 @@ function faction_brain_mutant:calculate_current_expansion()
 	for k, expansion in pairs(faction.expansion_level) do
 		--printf("check %s, current %s", k, faction.current_expansion_level)
 		if faction.current_expansion_level > k then
-			-- Если проверяемый уровень экспансии ниже, чем текущий
+			-- Р•СЃР»Рё РїСЂРѕРІРµСЂСЏРµРјС‹Р№ СѓСЂРѕРІРµРЅСЊ СЌРєСЃРїР°РЅСЃРёРё РЅРёР¶Рµ, С‡РµРј С‚РµРєСѓС‰РёР№
 			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
 			
-			-- Проверяем все ли условия выполняются
+			-- РџСЂРѕРІРµСЂСЏРµРј РІСЃРµ Р»Рё СѓСЃР»РѕРІРёСЏ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ
 			if not cond_valid then
 				faction.current_expansion_level = k
 				break
 			end
 
 		elseif faction.current_expansion_level == k then
-			-- Если проверяемый уровень равен текущему.
-			-- Проверяем, все ли условия выполняются.
+			-- Р•СЃР»Рё РїСЂРѕРІРµСЂСЏРµРјС‹Р№ СѓСЂРѕРІРµРЅСЊ СЂР°РІРµРЅ С‚РµРєСѓС‰РµРјСѓ.
+			-- РџСЂРѕРІРµСЂСЏРµРј, РІСЃРµ Р»Рё СѓСЃР»РѕРІРёСЏ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ.
 			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
 			
 			if not cond_valid then
-				-- Если не выполняются - прекращаем работу цикла.
+				-- Р•СЃР»Рё РЅРµ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ - РїСЂРµРєСЂР°С‰Р°РµРј СЂР°Р±РѕС‚Сѓ С†РёРєР»Р°.
 				break
 			end
 		else
-			-- Если проверяемый уровень выше текущего.
+			-- Р•СЃР»Рё РїСЂРѕРІРµСЂСЏРµРјС‹Р№ СѓСЂРѕРІРµРЅСЊ РІС‹С€Рµ С‚РµРєСѓС‰РµРіРѕ.
 			faction.current_expansion_level = k
 			break
 		end
@@ -58,7 +58,7 @@ function faction_brain_mutant:calculate_current_expansion()
 	
 	self:calculate_expansion_targets()
 end
---' Просчет мозгов.
+--' РџСЂРѕСЃС‡РµС‚ РјРѕР·РіРѕРІ.
 function faction_brain_mutant:calculate_expansion_targets()
 	local faction = self.faction
 	faction.target_smart_value = {}
@@ -77,23 +77,23 @@ function faction_brain_mutant:calculate_expansion_targets()
 --		end
 --	end
 	
-	--' Считаем максимальный потолок отрядов.
+	--' РЎС‡РёС‚Р°РµРј РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ РїРѕС‚РѕР»РѕРє РѕС‚СЂСЏРґРѕРІ.
 	faction:calculate_total_squads()
-	-- Раздаем цели
+	-- Р Р°Р·РґР°РµРј С†РµР»Рё
 	faction:calculate_squad_tasks()
 end
--- Ночной выбор работ. Охотимся на сталкеров
+-- РќРѕС‡РЅРѕР№ РІС‹Р±РѕСЂ СЂР°Р±РѕС‚. РћС…РѕС‚РёРјСЃСЏ РЅР° СЃС‚Р°Р»РєРµСЂРѕРІ
 function faction_brain_mutant:register_night_point()
 	--printf("NIGHT")
-	-- Итерируемся по смартам, где есть отряды - человеки.
+	-- РС‚РµСЂРёСЂСѓРµРјСЃСЏ РїРѕ СЃРјР°СЂС‚Р°Рј, РіРґРµ РµСЃС‚СЊ РѕС‚СЂСЏРґС‹ - С‡РµР»РѕРІРµРєРё.
 	for k,v in pairs(self.faction.board.smarts) do
 		if v.smrt.player_name ~= "none" and self.faction.board.players[v.smrt.player_name].brain.human == true then
-			-- По каждой точке создаем задание.
+			-- РџРѕ РєР°Р¶РґРѕР№ С‚РѕС‡РєРµ СЃРѕР·РґР°РµРј Р·Р°РґР°РЅРёРµ.
 			self:register_target_point(v.smrt)
 		end	
 	end	
 end
--- Дневной выбор работ. Тяготеем к логову.
+-- Р”РЅРµРІРЅРѕР№ РІС‹Р±РѕСЂ СЂР°Р±РѕС‚. РўСЏРіРѕС‚РµРµРј Рє Р»РѕРіРѕРІСѓ.
 function faction_brain_mutant:register_day_point()
 	--printf("DAY")
 	for k,v in pairs(self.faction.board.mutant_lair) do
@@ -101,7 +101,7 @@ function faction_brain_mutant:register_day_point()
 	end
 end
 
--- Регистрит таргет смарт. При этом может изменить его капасити
+-- Р РµРіРёСЃС‚СЂРёС‚ С‚Р°СЂРіРµС‚ СЃРјР°СЂС‚. РџСЂРё СЌС‚РѕРј РјРѕР¶РµС‚ РёР·РјРµРЅРёС‚СЊ РµРіРѕ РєР°РїР°СЃРёС‚Рё
 function faction_brain_mutant:register_target_point(smart_obj)
 	if not sim_board.is_point_avail(smart_obj, self.faction.player_name) then
 		return
@@ -110,12 +110,12 @@ function faction_brain_mutant:register_target_point(smart_obj)
 	local point_capacity = smart_obj.squad_capacity
 	
 	if smart_obj.player_name == self.faction.player_name or smart_obj.player_name == "none" then
-		-- Если точка - место появления отряда, то оставляем окошко в 1, чтобы мог появиться новый отряд.
+		-- Р•СЃР»Рё С‚РѕС‡РєР° - РјРµСЃС‚Рѕ РїРѕСЏРІР»РµРЅРёСЏ РѕС‚СЂСЏРґР°, С‚Рѕ РѕСЃС‚Р°РІР»СЏРµРј РѕРєРѕС€РєРѕ РІ 1, С‡С‚РѕР±С‹ РјРѕРі РїРѕСЏРІРёС‚СЊСЃСЏ РЅРѕРІС‹Р№ РѕС‚СЂСЏРґ.
 		if smart_obj.respawn_sector ~= nil then
 			point_capacity = point_capacity - 1
 		end
 	end
-	-- Специально увеличиваем капасити, чтобы даже если в логове нет мест - монстры тяготели к логову.
+	-- РЎРїРµС†РёР°Р»СЊРЅРѕ СѓРІРµР»РёС‡РёРІР°РµРј РєР°РїР°СЃРёС‚Рё, С‡С‚РѕР±С‹ РґР°Р¶Рµ РµСЃР»Рё РІ Р»РѕРіРѕРІРµ РЅРµС‚ РјРµСЃС‚ - РјРѕРЅСЃС‚СЂС‹ С‚СЏРіРѕС‚РµР»Рё Рє Р»РѕРіРѕРІСѓ.
 	self.faction.target_smart_value[smart_obj.id] = {smart = smart_obj, cap = 2*point_capacity, num = 0, smart_name = smart_obj:name(), smart_id = smart_obj.id}
 	
 	--printf("register target point %s", smart_obj:name())

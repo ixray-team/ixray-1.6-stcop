@@ -351,7 +351,7 @@ function add_to_binder( npc, ini, scheme, section, storage )
 
 	local new_action = bloodsucker_attack(npc, storage)
 
-	-- Зарегистрировать все actions, в которых должен быть вызван метод reset_scheme при изменении настроек схемы:
+	-- Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ РІСЃРµ actions, РІ РєРѕС‚РѕСЂС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІС‹Р·РІР°РЅ РјРµС‚РѕРґ reset_scheme РїСЂРё РёР·РјРµРЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє СЃС…РµРјС‹:
 	xr_logic.subscribe_action_for_events( npc, storage, new_action )
 end
 
@@ -362,7 +362,7 @@ function set_scheme( obj, ini, scheme, section, gulag_name )
 
 		st.snd_obj 				= utils.cfg_get_string( ini, section, "snd", obj, false, "", nil )
 	st.delay   				= utils.cfg_get_number( ini, section, "delay",    obj, false, 0 )
-	st.idle    				= utils.cfg_get_number( ini, section, "idle",     obj, false, 30 ) * 10000 -- секунды->мс
+	st.idle    				= utils.cfg_get_number( ini, section, "idle",     obj, false, 30 ) * 10000 -- СЃРµРєСѓРЅРґС‹->РјСЃ
 	local path 				= utils.cfg_get_string( ini, section, "sound_path", obj, false, "", nil )
 	st.path_table    		= parse_names(path)
 --	st.monster 				= utils.cfg_get_string( ini, section, "monster_section", obj, false, "", "bloodsucker_jumper" )
@@ -393,7 +393,7 @@ function death_hit(sucker, npc)
 end
 
 
--- А тут я опишу менеджер реакции сквада попавшего в засаду болотной твари.
+-- Рђ С‚СѓС‚ СЏ РѕРїРёС€Сѓ РјРµРЅРµРґР¶РµСЂ СЂРµР°РєС†РёРё СЃРєРІР°РґР° РїРѕРїР°РІС€РµРіРѕ РІ Р·Р°СЃР°РґСѓ Р±РѕР»РѕС‚РЅРѕР№ С‚РІР°СЂРё.
 
 
 class "reaction_manager"
@@ -410,11 +410,11 @@ function reaction_manager:__init ( obj, sr_blood)
 	self.npc_position 			= {}
 	self.target_npc_direction 	= self.target_npc:direction()
 
-	-- считаем отклонение направления командира от оси Х
+	-- СЃС‡РёС‚Р°РµРј РѕС‚РєР»РѕРЅРµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ РєРѕРјР°РЅРґРёСЂР° РѕС‚ РѕСЃРё РҐ
 
 	local yaw 					= yaw(vector():set(1, 0, 0), self.target_npc_direction)
 
-	-- поворачиваем направления для поиска доступных точек на угол yaw
+	-- РїРѕРІРѕСЂР°С‡РёРІР°РµРј РЅР°РїСЂР°РІР»РµРЅРёСЏ РґР»СЏ РїРѕРёСЃРєР° РґРѕСЃС‚СѓРїРЅС‹С… С‚РѕС‡РµРє РЅР° СѓРіРѕР» yaw
 
 	self.position = {
 	{dir = vector_rotate_y(vector():set(1, 0, 1),yaw),used = nil, vertex = nil, position = nil},

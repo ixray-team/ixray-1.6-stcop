@@ -1,5 +1,5 @@
 --'******************************************************
---'*	Менеджер для выбора каверов в текущем смарте.
+--'*	РњРµРЅРµРґР¶РµСЂ РґР»СЏ РІС‹Р±РѕСЂР° РєР°РІРµСЂРѕРІ РІ С‚РµРєСѓС‰РµРј СЃРјР°СЂС‚Рµ.
 --'******************************************************
 
 class "CCover_manager"
@@ -74,7 +74,7 @@ function CCover_manager:save(packet)
 
 	packet:w_bool(self.is_valid)
 
-	-- сохранять регистренные сквады
+	-- СЃРѕС…СЂР°РЅСЏС‚СЊ СЂРµРіРёСЃС‚СЂРµРЅРЅС‹Рµ СЃРєРІР°РґС‹
 	local n = 0
 	for k,v in pairs(self.cover_table) do
 		n = n + 1
@@ -125,7 +125,7 @@ end
 
 
 
--- Есть ли у объекта выбранный смарт кавер
+-- Р•СЃС‚СЊ Р»Рё Сѓ РѕР±СЉРµРєС‚Р° РІС‹Р±СЂР°РЅРЅС‹Р№ СЃРјР°СЂС‚ РєР°РІРµСЂ
 function has_smart_cover(se_obj, smrttrn)
 	local cmanager = smrttrn.combat_manager.cover_manager
 	local npc_id = se_obj.id
@@ -162,7 +162,7 @@ function has_smart_cover(se_obj, smrttrn)
 	return false
 end
 
--- Есть ли у объекта выбранный кавер
+-- Р•СЃС‚СЊ Р»Рё Сѓ РѕР±СЉРµРєС‚Р° РІС‹Р±СЂР°РЅРЅС‹Р№ РєР°РІРµСЂ
 function has_cover(se_obj, smrttrn)
 	local cmanager = smrttrn.combat_manager.cover_manager	
 	local cover = cmanager.cover_table[se_obj.id]	
@@ -196,7 +196,7 @@ function has_cover(se_obj, smrttrn)
 	
 	return true
 end
--- Получить выбранный кавер объекта
+-- РџРѕР»СѓС‡РёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Р№ РєР°РІРµСЂ РѕР±СЉРµРєС‚Р°
 function get_cover(obj, smrttrn)
 	local cmanager = smrttrn.combat_manager.cover_manager
 	return cmanager.cover_table[obj:id()]

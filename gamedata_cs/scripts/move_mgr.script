@@ -7,7 +7,7 @@ local dist_run = 2500
 local walk_min_time = 3000
 local run_min_time = 2000
 
-local keep_state_min_time = 1500 -- переключившись в состояние (бег, ходьба, спринт), не переключаться в другое N ms
+local keep_state_min_time = 1500 -- РїРµСЂРµРєР»СЋС‡РёРІС€РёСЃСЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРµ (Р±РµРі, С…РѕРґСЊР±Р°, СЃРїСЂРёРЅС‚), РЅРµ РїРµСЂРµРєР»СЋС‡Р°С‚СЊСЃСЏ РІ РґСЂСѓРіРѕРµ N ms
 
 local default_wait_time = 10000
 local default_state_standing = "guard"
@@ -25,23 +25,23 @@ local state_standing = 2
 local sync = {}
 -------------------------------------------------------------------------------------------------------------------------
 function choose_look_point(patrol_look, path_look_info, search_for)
-	local this_val -- значение флагов текущей точки
-	local pts_found_total_weight = 0 -- количество найденных точек (с нужными флагами)
-	local pt_chosen_idx = nil -- индекс выбранной точки
+	local this_val -- Р·РЅР°С‡РµРЅРёРµ С„Р»Р°РіРѕРІ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё
+	local pts_found_total_weight = 0 -- РєРѕР»РёС‡РµСЃС‚РІРѕ РЅР°Р№РґРµРЅРЅС‹С… С‚РѕС‡РµРє (СЃ РЅСѓР¶РЅС‹РјРё С„Р»Р°РіР°РјРё)
+	local pt_chosen_idx = nil -- РёРЅРґРµРєСЃ РІС‹Р±СЂР°РЅРЅРѕР№ С‚РѕС‡РєРё
 	local r
 	local num_equal_pts = 0
 	for look_idx = 0, patrol_look:count() - 1 do
 		this_val = path_look_info[look_idx].flags
 		if this_val:equal(search_for) then
 			num_equal_pts = num_equal_pts + 1
-			-- Нашли точку с нужными флагами, но поскольку в пути могут быть еще такие-же
-			-- точки, возьмем текущую только с некоторой вероятностью:
-			-- Шанс, с которым на точку посмотрит персонаж:
+			-- РќР°С€Р»Рё С‚РѕС‡РєСѓ СЃ РЅСѓР¶РЅС‹РјРё С„Р»Р°РіР°РјРё, РЅРѕ РїРѕСЃРєРѕР»СЊРєСѓ РІ РїСѓС‚Рё РјРѕРіСѓС‚ Р±С‹С‚СЊ РµС‰Рµ С‚Р°РєРёРµ-Р¶Рµ
+			-- С‚РѕС‡РєРё, РІРѕР·СЊРјРµРј С‚РµРєСѓС‰СѓСЋ С‚РѕР»СЊРєРѕ СЃ РЅРµРєРѕС‚РѕСЂРѕР№ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊСЋ:
+			-- РЁР°РЅСЃ, СЃ РєРѕС‚РѕСЂС‹Рј РЅР° С‚РѕС‡РєСѓ РїРѕСЃРјРѕС‚СЂРёС‚ РїРµСЂСЃРѕРЅР°Р¶:
 			local point_look_weight = path_look_info[look_idx]["p"]
 			if point_look_weight then
 				point_look_weight = tonumber(point_look_weight)
 			else
-				point_look_weight = 100 -- по умолчанию у всех точек вес = 100
+				point_look_weight = 100 -- РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Сѓ РІСЃРµС… С‚РѕС‡РµРє РІРµСЃ = 100
 			end
 			pts_found_total_weight = pts_found_total_weight + point_look_weight
 			r = math.random(1, pts_found_total_weight)
@@ -70,7 +70,7 @@ function move_mgr:initialize(npc)
 
 	self.object:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
 end
---' Удостоверяется, что пути и флажки на них проставлены корректно
+--' РЈРґРѕСЃС‚РѕРІРµСЂСЏРµС‚СЃСЏ, С‡С‚Рѕ РїСѓС‚Рё Рё С„Р»Р°Р¶РєРё РЅР° РЅРёС… РїСЂРѕСЃС‚Р°РІР»РµРЅС‹ РєРѕСЂСЂРµРєС‚РЅРѕ
 function move_mgr:validate_paths()
 	if self.no_validation then
 		return
@@ -101,25 +101,25 @@ function move_mgr:standing_on_terminal_waypoint()
 	return false
 end
 
---' Может быть вызвано внешним скриптом после вызова reset() и до вызова finalize()
---' Возвращает true, если персонаж прибыл в конечную точку пути
+--' РњРѕР¶РµС‚ Р±С‹С‚СЊ РІС‹Р·РІР°РЅРѕ РІРЅРµС€РЅРёРј СЃРєСЂРёРїС‚РѕРј РїРѕСЃР»Рµ РІС‹Р·РѕРІР° reset() Рё РґРѕ РІС‹Р·РѕРІР° finalize()
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РїРµСЂСЃРѕРЅР°Р¶ РїСЂРёР±С‹Р» РІ РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ РїСѓС‚Рё
 function move_mgr:at_terminal_waypoint()
 	return self.at_terminal_waypoint_flag
 end
 
---' Из move_cb вернуть true, чтобы приостановить работу схемы. Чтобы продолжить движение,
---' нужно вызвать метод set_movement_state, который включит перемещение по вейпоинтам с нужной
---' скоростью.
+--' РР· move_cb РІРµСЂРЅСѓС‚СЊ true, С‡С‚РѕР±С‹ РїСЂРёРѕСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°Р±РѕС‚Сѓ СЃС…РµРјС‹. Р§С‚РѕР±С‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ РґРІРёР¶РµРЅРёРµ,
+--' РЅСѓР¶РЅРѕ РІС‹Р·РІР°С‚СЊ РјРµС‚РѕРґ set_movement_state, РєРѕС‚РѕСЂС‹Р№ РІРєР»СЋС‡РёС‚ РїРµСЂРµРјРµС‰РµРЅРёРµ РїРѕ РІРµР№РїРѕРёРЅС‚Р°Рј СЃ РЅСѓР¶РЅРѕР№
+--' СЃРєРѕСЂРѕСЃС‚СЊСЋ.
 function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, team, suggested_state, move_cb_info, no_validation, continue, use_default_sound)
 	printf("move_mgr:reset() [%s]", self.object:name())
 
-	--' сколько ждать в точке, где играем анимацию 
+	--' СЃРєРѕР»СЊРєРѕ Р¶РґР°С‚СЊ РІ С‚РѕС‡РєРµ, РіРґРµ РёРіСЂР°РµРј Р°РЅРёРјР°С†РёСЋ 
 	self.pt_wait_time = default_wait_time
 
-	--' Запоминаем массив целиком на случай, если придется себя сбросить, повторно
-	--' вызвав reset():
+	--' Р—Р°РїРѕРјРёРЅР°РµРј РјР°СЃСЃРёРІ С†РµР»РёРєРѕРј РЅР° СЃР»СѓС‡Р°Р№, РµСЃР»Рё РїСЂРёРґРµС‚СЃСЏ СЃРµР±СЏ СЃР±СЂРѕСЃРёС‚СЊ, РїРѕРІС‚РѕСЂРЅРѕ
+	--' РІС‹Р·РІР°РІ reset():
 	self.suggested_state = suggested_state
-	--' После этого распарсиваем массив:
+	--' РџРѕСЃР»Рµ СЌС‚РѕРіРѕ СЂР°СЃРїР°СЂСЃРёРІР°РµРј РјР°СЃСЃРёРІ:
 	if not suggested_state then
 		self.default_state_standing = default_state_standing
 		self.default_state_moving1 = default_state_moving1
@@ -137,16 +137,16 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 	self.default_state_moving2  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving2)
 	self.default_state_moving3  = xr_logic.parse_condlist(self.object, "move_mgr", "def_state", self.default_state_moving3)
 
-	--' С момента включения схемы должна пройти как минимум секунда, прежде чем
-	--' проверять состояние синхронизации с другими сталкерами (иначе после лоада
-	--' они могут не успеть заспавниться).
+	--' РЎ РјРѕРјРµРЅС‚Р° РІРєР»СЋС‡РµРЅРёСЏ СЃС…РµРјС‹ РґРѕР»Р¶РЅР° РїСЂРѕР№С‚Рё РєР°Рє РјРёРЅРёРјСѓРј СЃРµРєСѓРЅРґР°, РїСЂРµР¶РґРµ С‡РµРј
+	--' РїСЂРѕРІРµСЂСЏС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё СЃ РґСЂСѓРіРёРјРё СЃС‚Р°Р»РєРµСЂР°РјРё (РёРЅР°С‡Рµ РїРѕСЃР»Рµ Р»РѕР°РґР°
+	--' РѕРЅРё РјРѕРіСѓС‚ РЅРµ СѓСЃРїРµС‚СЊ Р·Р°СЃРїР°РІРЅРёС‚СЊСЃСЏ).
 	self.syn_signal_set_tm = time_global() + 1000
 	self.syn_signal = nil
 
 	self.move_cb_info = move_cb_info
 	 
-	--' Возможные изменения
-	--' Изменилась команда
+	--' Р’РѕР·РјРѕР¶РЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ
+	--' РР·РјРµРЅРёР»Р°СЃСЊ РєРѕРјР°РЅРґР°
 	if team ~= self.team then
 		self.team = team
 		if self.team then
@@ -159,7 +159,7 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 		end
 	end
 
-	--' Изменились пути
+	--' РР·РјРµРЅРёР»РёСЃСЊ РїСѓС‚Рё
 	if self.path_walk ~= path_walk or self.path_look ~= path_look then
 
 		self.no_validation = no_validation
@@ -202,8 +202,8 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 		self.retval_after_rotation = nil
 		self.sound_after_anim_start = nil
 
-		--' Пока этот флаг не станет true (он будет установлен в extrapolate_callback), нельзя использовать
-		--' значение, которое возвращает get_current_point_index().
+		--' РџРѕРєР° СЌС‚РѕС‚ С„Р»Р°Рі РЅРµ СЃС‚Р°РЅРµС‚ true (РѕРЅ Р±СѓРґРµС‚ СѓСЃС‚Р°РЅРѕРІР»РµРЅ РІ extrapolate_callback), РЅРµР»СЊР·СЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
+		--' Р·РЅР°С‡РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РІРѕР·РІСЂР°С‰Р°РµС‚ get_current_point_index().
 		self.can_use_get_current_point_index = false
 		self.current_point_index = nil
 		self.walk_until = time_global() + walk_min_time
@@ -221,8 +221,8 @@ function move_mgr:reset(path_walk, path_walk_info, path_look, path_look_info, te
 	self:setup_movement_by_patrol_path()
 end
 
---' продолжить движение со следующей точки, а не с ближайшей.
---' состояние move manager-a не сбрасывается.
+--' РїСЂРѕРґРѕР»Р¶РёС‚СЊ РґРІРёР¶РµРЅРёРµ СЃРѕ СЃР»РµРґСѓСЋС‰РµР№ С‚РѕС‡РєРё, Р° РЅРµ СЃ Р±Р»РёР¶Р°Р№С€РµР№.
+--' СЃРѕСЃС‚РѕСЏРЅРёРµ move manager-a РЅРµ СЃР±СЂР°СЃС‹РІР°РµС‚СЃСЏ.
 function move_mgr:continue()
 	printf("_bp: object '%s': continue moving", self.object:name())
 	self:setup_movement_by_patrol_path()
@@ -244,10 +244,10 @@ function move_mgr:setup_movement_by_patrol_path()
 	local is_term, idx = self:standing_on_terminal_waypoint()
 	if is_term then
 		printf("_bp: object '%s': TERMINAL WAYPOINT", self.object:name())
-		-- Стоим на терминальной вершине пути  - сразу иммитировать прибытие
+		-- РЎС‚РѕРёРј РЅР° С‚РµСЂРјРёРЅР°Р»СЊРЅРѕР№ РІРµСЂС€РёРЅРµ РїСѓС‚Рё  - СЃСЂР°Р·Сѓ РёРјРјРёС‚РёСЂРѕРІР°С‚СЊ РїСЂРёР±С‹С‚РёРµ
 		self:waypoint_callback(self.object, nil, idx)
 	else
-		-- Реально идем в вершину
+		-- Р РµР°Р»СЊРЅРѕ РёРґРµРј РІ РІРµСЂС€РёРЅСѓ
 		self:update_movement_state()
 	end
 
@@ -259,8 +259,8 @@ function move_mgr:arrived_to_first_waypoint()
 end
 
 
---' Проверка синхронизации с остальными солдатами на пути.
---' Возвращает true, если дальнейшее движение разрешено.
+--' РџСЂРѕРІРµСЂРєР° СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё СЃ РѕСЃС‚Р°Р»СЊРЅС‹РјРё СЃРѕР»РґР°С‚Р°РјРё РЅР° РїСѓС‚Рё.
+--' Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РґР°Р»СЊРЅРµР№С€РµРµ РґРІРёР¶РµРЅРёРµ СЂР°Р·СЂРµС€РµРЅРѕ.
 function move_mgr:sync_ok()
 	if self.team then
 		local s = sync[self.team]
@@ -297,8 +297,8 @@ function move_mgr:update()
 			self.keep_state_until = t + keep_state_min_time
 
 			local cur_pt = self.current_point_index
-			-- self.patrol_walk здесь по идее то же самое, что вернет patrol(self.object:patrol()),
-			-- поэтому использую его для оптимизации.
+			-- self.patrol_walk Р·РґРµСЃСЊ РїРѕ РёРґРµРµ С‚Рѕ Р¶Рµ СЃР°РјРѕРµ, С‡С‚Рѕ РІРµСЂРЅРµС‚ patrol(self.object:patrol()),
+			-- РїРѕСЌС‚РѕРјСѓ РёСЃРїРѕР»СЊР·СѓСЋ РµРіРѕ РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё.
 			local dist = self.object:position():distance_to(self.patrol_walk:point(cur_pt))
 			--printf("_bp: move_mgr: distance to destination waypoint: %d", dist)
 			if dist <= dist_walk or t < self.walk_until then
@@ -323,7 +323,7 @@ function move_mgr:finalize(npc)
 	if self.team then
 		sync[self.team][self.object:id()] = nil
 	end
-	-- чтобы избежать дальнейшего движения по пути при установке рестрикторов
+	-- С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РґР°Р»СЊРЅРµР№С€РµРіРѕ РґРІРёР¶РµРЅРёСЏ РїРѕ РїСѓС‚Рё РїСЂРё СѓСЃС‚Р°РЅРѕРІРєРµ СЂРµСЃС‚СЂРёРєС‚РѕСЂРѕРІ
 	self.object:set_path_type(game_object.level_path)
 end
 
@@ -351,22 +351,22 @@ function move_mgr:time_callback()
 	if sigtm then
 		self:scheme_set_signal(sigtm)
 	end
-	--' Если нет активной схемы - игнорировать.
+	--' Р•СЃР»Рё РЅРµС‚ Р°РєС‚РёРІРЅРѕР№ СЃС…РµРјС‹ - РёРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ.
 	if db.storage[self.object:id()].active_scheme == nil then
 		return
 	end
 	if self.last_index and self.patrol_walk:terminal(self.last_index) then
 		if utils.stalker_at_waypoint(self.object, self.patrol_walk, self.last_index) then
-			--' Если стоим на конечной точке пути и с нее никуда не сдвинулись,
-			--' сразу иммитируем callback на прибытие, чтобы включить look.
+			--' Р•СЃР»Рё СЃС‚РѕРёРј РЅР° РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРµ РїСѓС‚Рё Рё СЃ РЅРµРµ РЅРёРєСѓРґР° РЅРµ СЃРґРІРёРЅСѓР»РёСЃСЊ,
+			--' СЃСЂР°Р·Сѓ РёРјРјРёС‚РёСЂСѓРµРј callback РЅР° РїСЂРёР±С‹С‚РёРµ, С‡С‚РѕР±С‹ РІРєР»СЋС‡РёС‚СЊ look.
 			self:waypoint_callback(self.object, nil, self.last_index)
 			return
 		end
-		--' Стоим на конечной точке пути, но неточно. Чтобы вернуться на ближайшую
-		--' точку пути, сбрасываем схему. Обратите внимаине, что здесь нельзя
-		--' просто вызвать update_movement_state, потому что мы УЖЕ были в
-		--' конечной точке пути и дальше идти некуда, а reset_scheme сбросит
-		--' настройки movement manager-а и выберет ближайшую точку, куда и пойдет.
+		--' РЎС‚РѕРёРј РЅР° РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРµ РїСѓС‚Рё, РЅРѕ РЅРµС‚РѕС‡РЅРѕ. Р§С‚РѕР±С‹ РІРµСЂРЅСѓС‚СЊСЃСЏ РЅР° Р±Р»РёР¶Р°Р№С€СѓСЋ
+		--' С‚РѕС‡РєСѓ РїСѓС‚Рё, СЃР±СЂР°СЃС‹РІР°РµРј СЃС…РµРјСѓ. РћР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РёРЅРµ, С‡С‚Рѕ Р·РґРµСЃСЊ РЅРµР»СЊР·СЏ
+		--' РїСЂРѕСЃС‚Рѕ РІС‹Р·РІР°С‚СЊ update_movement_state, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РјС‹ РЈР–Р• Р±С‹Р»Рё РІ
+		--' РєРѕРЅРµС‡РЅРѕР№ С‚РѕС‡РєРµ РїСѓС‚Рё Рё РґР°Р»СЊС€Рµ РёРґС‚Рё РЅРµРєСѓРґР°, Р° reset_scheme СЃР±СЂРѕСЃРёС‚
+		--' РЅР°СЃС‚СЂРѕР№РєРё movement manager-Р° Рё РІС‹Р±РµСЂРµС‚ Р±Р»РёР¶Р°Р№С€СѓСЋ С‚РѕС‡РєСѓ, РєСѓРґР° Рё РїРѕР№РґРµС‚.
 		self:reset(self.path_walk, self.path_walk_info,
 			self.path_look, self.path_look_info,
 			self.team,
@@ -374,7 +374,7 @@ function move_mgr:time_callback()
 			self.move_cb_info,
 			self.no_validation)
 	else
-		self:update_movement_state() -- идти дальше
+		self:update_movement_state() -- РёРґС‚Рё РґР°Р»СЊС€Рµ
 		local syn = self.path_look_info[self.last_look_index]["syn"]
 		if syn then
 			abort("object '%s': path_walk '%s': syn flag used on non-terminal waypoint",
@@ -404,7 +404,7 @@ function move_mgr:turn_end_callback()
 			abort("object '%s': path_look '%s': syn flag uset without sig flag", self.object:name(), self.path_look)
 		end
 
-		-- Отметить, что мы сами уже прибыли в точку синхронизации:		
+		-- РћС‚РјРµС‚РёС‚СЊ, С‡С‚Рѕ РјС‹ СЃР°РјРё СѓР¶Рµ РїСЂРёР±С‹Р»Рё РІ С‚РѕС‡РєСѓ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё:		
 		if self.team then
 			sync[self.team][self.object:id()] = true
 		end
@@ -420,7 +420,7 @@ function move_mgr:turn_end_callback()
 
 	local anim_synced_snd = nil
 	if self.sound_after_anim_start then
-		-- Проиграть звук сразу после окончания поворота:
+		-- РџСЂРѕРёРіСЂР°С‚СЊ Р·РІСѓРє СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ РѕРєРѕРЅС‡Р°РЅРёСЏ РїРѕРІРѕСЂРѕС‚Р°:
 		anim_synced_snd = self.sound_after_anim_start
 		self.sound_after_anim_start = nil
 	end
@@ -431,16 +431,16 @@ function move_mgr:turn_end_callback()
 				"callback function wasn't registered in move_mgr:reset()",
 				self.object:name(), self.path_look)
 		end
-		--' Отключаем таймер путем установки того же самого состояния, но без таймера,
-		--' затем вызываем callback.
-		--' Если callback вернул false, т.е. решил не вмешиваться в перемещение,
-		--' то включаем опять таймер.
-		--' Если callback вернул true - не восстанавливаем таймер т.к. это могли сделать в
-		--' самом callback-е.
+		--' РћС‚РєР»СЋС‡Р°РµРј С‚Р°Р№РјРµСЂ РїСѓС‚РµРј СѓСЃС‚Р°РЅРѕРІРєРё С‚РѕРіРѕ Р¶Рµ СЃР°РјРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ, РЅРѕ Р±РµР· С‚Р°Р№РјРµСЂР°,
+		--' Р·Р°С‚РµРј РІС‹Р·С‹РІР°РµРј callback.
+		--' Р•СЃР»Рё callback РІРµСЂРЅСѓР» false, С‚.Рµ. СЂРµС€РёР» РЅРµ РІРјРµС€РёРІР°С‚СЊСЃСЏ РІ РїРµСЂРµРјРµС‰РµРЅРёРµ,
+		--' С‚Рѕ РІРєР»СЋС‡Р°РµРј РѕРїСЏС‚СЊ С‚Р°Р№РјРµСЂ.
+		--' Р•СЃР»Рё callback РІРµСЂРЅСѓР» true - РЅРµ РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚Р°Р№РјРµСЂ С‚.Рє. СЌС‚Рѕ РјРѕРіР»Рё СЃРґРµР»Р°С‚СЊ РІ
+		--' СЃР°РјРѕРј callback-Рµ.
 		
-		--' 1) Отключаем таймер
+		--' 1) РћС‚РєР»СЋС‡Р°РµРј С‚Р°Р№РјРµСЂ
 		state_mgr.set_state(self.object, self.cur_state_standing, nil, nil, nil)
-		--' 2) Вызываем callback
+		--' 2) Р’С‹Р·С‹РІР°РµРј callback
 		if not self.move_cb_info then
 			abort("object '%s': path_look '%s': ret flag is set, but " ..
 				"callback function wasn't registered in move_mgr:reset()",
@@ -449,10 +449,10 @@ function move_mgr:turn_end_callback()
 
 		if self.move_cb_info.func(self.move_cb_info.obj, this.arrival_after_rotation, self.retval_after_rotation, self.last_index)
 		then
-			--' Callback решил перехватить управление перемещением, не восстанавливаем таймер
+			--' Callback СЂРµС€РёР» РїРµСЂРµС…РІР°С‚РёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РїРµСЂРµРјРµС‰РµРЅРёРµРј, РЅРµ РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚Р°Р№РјРµСЂ
 			return
 		end
-		--' Callback не перехватил управление, нужно восстановить таймер:
+		--' Callback РЅРµ РїРµСЂРµС…РІР°С‚РёР» СѓРїСЂР°РІР»РµРЅРёРµ, РЅСѓР¶РЅРѕ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С‚Р°Р№РјРµСЂ:
 		local look_pos = self.patrol_look:point(self.last_look_index)
 		self:update_standing_state(look_pos, anim_synced_snd)
 	end
@@ -513,15 +513,15 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 	
 	if not self.patrol_look or
 	   (stop_probability and tonumber(stop_probability) < math.random(1, 100)) then
-		self:update_movement_state() --' идти дальше
+		self:update_movement_state() --' РёРґС‚Рё РґР°Р»СЊС€Рµ
 		return
 	end
 
-	-- Значение флагов точки, которую будем искать:
+	-- Р—РЅР°С‡РµРЅРёРµ С„Р»Р°РіРѕРІ С‚РѕС‡РєРё, РєРѕС‚РѕСЂСѓСЋ Р±СѓРґРµРј РёСЃРєР°С‚СЊ:
 	local search_for = self.path_walk_info[index].flags
 
 	if search_for:get() == 0 then
-		self:update_movement_state() --' идти дальше
+		self:update_movement_state() --' РёРґС‚Рё РґР°Р»СЊС€Рµ
 		return
 	end
 
@@ -564,8 +564,8 @@ function move_mgr:waypoint_callback(obj, action_type, index)
 
 		self.state = state_standing
 
-		--' Сразу же стартовать update, не ждать execute. Тогда, если мы уже смотрим
-		--' в нужную сторону - не будет паузы в несколько миллисекунд на поворот.
+		--' РЎСЂР°Р·Сѓ Р¶Рµ СЃС‚Р°СЂС‚РѕРІР°С‚СЊ update, РЅРµ Р¶РґР°С‚СЊ execute. РўРѕРіРґР°, РµСЃР»Рё РјС‹ СѓР¶Рµ СЃРјРѕС‚СЂРёРј
+		--' РІ РЅСѓР¶РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ - РЅРµ Р±СѓРґРµС‚ РїР°СѓР·С‹ РІ РЅРµСЃРєРѕР»СЊРєРѕ РјРёР»Р»РёСЃРµРєСѓРЅРґ РЅР° РїРѕРІРѕСЂРѕС‚.
 		self:update()
 	else
 		abort("object '%s': path_walk '%s', index %d: cannot find corresponding point(s) on path_look '%s'",

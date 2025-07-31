@@ -12,7 +12,7 @@ function get_smart_cover_loophole_lesnik()
 
 	
 			transitions = {
-			--' Анимации входа в бойницы
+			--' РђРЅРёРјР°С†РёРё РІС…РѕРґР° РІ Р±РѕР№РЅРёС†С‹
 			{
 				vertex0 = "",
 				vertex1 = "lesnik_sit",
@@ -33,7 +33,7 @@ function get_smart_cover_loophole_lesnik()
 			},
 
 
-			--' Анимации выхода из бойниц.
+			--' РђРЅРёРјР°С†РёРё РІС‹С…РѕРґР° РёР· Р±РѕР№РЅРёС†.
 			{
 				vertex0 = "lesnik_sit",
 				vertex1 = "",

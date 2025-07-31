@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------------------------------
 -- Companion
 ----------------------------------------------------------------------------------------------------
--- Разработчик: Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
--- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
+-- Р Р°Р·СЂР°Р±РѕС‚С‡РёРє: Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
+-- Р”РѕСЂР°Р±РѕС‚РєРё: Andrey Fidrya (Zmey) af@svitonline.com
 ----------------------------------------------------------------------------------------------------
 
 local desired_distance = 3
 local min_distance = 1.5
 
-local keep_state_min_time = 1000 -- переключившись в состояние (бег, ходьба, спринт), не переключаться в другое N ms
+local keep_state_min_time = 1000 -- РїРµСЂРµРєР»СЋС‡РёРІС€РёСЃСЊ РІ СЃРѕСЃС‚РѕСЏРЅРёРµ (Р±РµРі, С…РѕРґСЊР±Р°, СЃРїСЂРёРЅС‚), РЅРµ РїРµСЂРµРєР»СЋС‡Р°С‚СЊСЃСЏ РІ РґСЂСѓРіРѕРµ N ms
 
 local dist_walk = 6 -- < dist_run
 local dist_run = 20
@@ -16,7 +16,7 @@ local dist_run = 20
 
 local sound_wait = "weather,state"
 
--- Модели поведения:
+-- РњРѕРґРµР»Рё РїРѕРІРµРґРµРЅРёСЏ:
 beh_walk_simple = 0
 beh_walk_near = 1
 beh_walk_ignore = 2
@@ -97,7 +97,7 @@ function action_companion_activity:beh_walk_simple()
 		end
 	--end
 	
-	-- 1. Если мы находимся за большим радиусом - необходимо выбрать новую точку
+	-- 1. Р•СЃР»Рё РјС‹ РЅР°С…РѕРґРёРјСЃСЏ Р·Р° Р±РѕР»СЊС€РёРј СЂР°РґРёСѓСЃРѕРј - РЅРµРѕР±С…РѕРґРёРјРѕ РІС‹Р±СЂР°С‚СЊ РЅРѕРІСѓСЋ С‚РѕС‡РєСѓ
 	if select_new_pt then
 		self.assist_point = select_position(self.object, self.st)
 		if not self.assist_point then
@@ -107,7 +107,7 @@ function action_companion_activity:beh_walk_simple()
 		return
 	end
 
-	-- 2. Двигаемся на точку: если точка далеко - бежим, иначе идем
+	-- 2. Р”РІРёРіР°РµРјСЃСЏ РЅР° С‚РѕС‡РєСѓ: РµСЃР»Рё С‚РѕС‡РєР° РґР°Р»РµРєРѕ - Р±РµР¶РёРј, РёРЅР°С‡Рµ РёРґРµРј
 	self.object:set_path_type(game_object.level_path)
 	self.object:set_dest_level_vertex_id(self.assist_point)
 
@@ -119,8 +119,8 @@ function action_companion_activity:beh_walk_simple()
 	local new_state
 
 	if self.object:level_vertex_id() == self.assist_point then
-		-- Уже пришли на точку отхода, разрешить еще раз начать отход
-		-- (случай, когда игрок подошел слишком близко к ассистенту)
+		-- РЈР¶Рµ РїСЂРёС€Р»Рё РЅР° С‚РѕС‡РєСѓ РѕС‚С…РѕРґР°, СЂР°Р·СЂРµС€РёС‚СЊ РµС‰Рµ СЂР°Р· РЅР°С‡Р°С‚СЊ РѕС‚С…РѕРґ
+		-- (СЃР»СѓС‡Р°Р№, РєРѕРіРґР° РёРіСЂРѕРє РїРѕРґРѕС€РµР» СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ Рє Р°СЃСЃРёСЃС‚РµРЅС‚Сѓ)
 		--self.dir_approaching = true
 
 		new_state = "guard_na"
@@ -146,7 +146,7 @@ function action_companion_activity:beh_walk_simple()
 		self.last_state = new_state
 	end 
 
-	-- 4. Если стоим на точке - петь песенки и прочую херню
+	-- 4. Р•СЃР»Рё СЃС‚РѕРёРј РЅР° С‚РѕС‡РєРµ - РїРµС‚СЊ РїРµСЃРµРЅРєРё Рё РїСЂРѕС‡СѓСЋ С…РµСЂРЅСЋ
 --	xr_sound.set_sound(self.object, sound_wait) 
 end
 
@@ -160,7 +160,7 @@ function action_companion_activity:beh_wait_simple()
 		self.last_state = new_state
 	end 
 
-	-- 4. Если стоим на точке - петь песенки и прочую херню
+	-- 4. Р•СЃР»Рё СЃС‚РѕРёРј РЅР° С‚РѕС‡РєРµ - РїРµС‚СЊ РїРµСЃРµРЅРєРё Рё РїСЂРѕС‡СѓСЋ С…РµСЂРЅСЋ
 --	xr_sound.set_sound(self.object, sound_wait) 
 end
 
@@ -185,7 +185,7 @@ function action_companion_activity:finalize()
 	action_base.finalize(self)
 end
 
---' Выбор новой позиции
+--' Р’С‹Р±РѕСЂ РЅРѕРІРѕР№ РїРѕР·РёС†РёРё
 function select_position(npc, st)
 	local node_1_vertex_id = nil
 	local node_1_distance = nil
@@ -194,7 +194,7 @@ function select_position(npc, st)
 
 	local actor = db.actor
 
-	-- проверяем точку слева от актера
+	-- РїСЂРѕРІРµСЂСЏРµРј С‚РѕС‡РєСѓ СЃР»РµРІР° РѕС‚ Р°РєС‚РµСЂР°
 	desired_direction = vector_rotate_y(actor:direction(), math.random(50,60) )
 	node_1_vertex_id = level.vertex_in_direction(actor:level_vertex_id(),
 		desired_direction,
@@ -202,7 +202,7 @@ function select_position(npc, st)
 	if npc:accessible(node_1_vertex_id) ~= true or node_1_vertex_id == actor:level_vertex_id() then			
 		node_1_vertex_id = nil
 	end
-	-- проверяем точку справа от актера
+	-- РїСЂРѕРІРµСЂСЏРµРј С‚РѕС‡РєСѓ СЃРїСЂР°РІР° РѕС‚ Р°РєС‚РµСЂР°
 	desired_direction = vector_rotate_y(actor:direction(), -math.random(50,60) )
 	node_2_vertex_id = level.vertex_in_direction (  actor:level_vertex_id(),
 		desired_direction,
@@ -211,7 +211,7 @@ function select_position(npc, st)
 		node_2_vertex_id = nil
 	end
 	
-	-- Проверяем растояния до точек
+	-- РџСЂРѕРІРµСЂСЏРµРј СЂР°СЃС‚РѕСЏРЅРёСЏ РґРѕ С‚РѕС‡РµРє
 	if node_1_vertex_id ~= nil then
 		node_1_distance = npc:position():distance_to_sqr(level.vertex_position(node_1_vertex_id))
 	else
@@ -223,9 +223,9 @@ function select_position(npc, st)
 		node_2_distance = -1
 	end
 	
-	-- Выбираем ближайшую из существующих
+	-- Р’С‹Р±РёСЂР°РµРј Р±Р»РёР¶Р°Р№С€СѓСЋ РёР· СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС…
 	if node_1_distance == -1 and node_2_distance == -1 then
-		--' Не смогли найти точку, ругаться
+		--' РќРµ СЃРјРѕРіР»Рё РЅР°Р№С‚Рё С‚РѕС‡РєСѓ, СЂСѓРіР°С‚СЊСЃСЏ
 		return nil
 	end
 	if node_1_distance == -1 then
@@ -242,7 +242,7 @@ function select_position(npc, st)
 end
 
 --[[
-ПОТЕНЦИАЛЬНО УСТАРЕЛО
+РџРћРўР•РќР¦РРђР›Р¬РќРћ РЈРЎРўРђР Р•Р›Рћ
 function get_sound_for_enemy(enemy)
 	local otype = enemy:clsid()
 

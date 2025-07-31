@@ -1,4 +1,4 @@
--- вызывается  1 раз в 3 секунды
+-- РІС‹Р·С‹РІР°РµС‚СЃСЏ  1 СЂР°Р· РІ 3 СЃРµРєСѓРЅРґС‹
 function fill_faction_state(state)
 	local board = sim_board.get_sim_board()
 	local faction = board.players[state.faction_id]
@@ -210,7 +210,7 @@ end
 
 
 
---int		get_max_member_count	();   ------ 1 раз в 3 секунды
+--int		get_max_member_count	();   ------ 1 СЂР°Р· РІ 3 СЃРµРєСѓРЅРґС‹
 --float	get_max_resource();
 --float	get_max_power();
 
@@ -255,10 +255,10 @@ function get_max_power()
 end
 
 
--- потом это нужно стереть
+-- РїРѕС‚РѕРј СЌС‚Рѕ РЅСѓР¶РЅРѕ СЃС‚РµСЂРµС‚СЊ
 
 -- int mode:
--- 0 = 	Undefined = закрыто
+-- 0 = 	Undefined = Р·Р°РєСЂС‹С‚Рѕ
 -- 1 = 	Inventory
 -- 2 = 	Trade
 -- 3 = 	Upgrade
