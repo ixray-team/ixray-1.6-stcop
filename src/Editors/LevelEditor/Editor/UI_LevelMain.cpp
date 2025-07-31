@@ -359,12 +359,14 @@ CCommandVar CommandClearDebugDraw(CCommandVar p1, CCommandVar p2)
 	UI->RedrawScene				();
 	return 						TRUE;
 }
+
+#include "Utils/ClipMaker.h"
 CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
 {
-/*	if(g_clip_maker==NULL)
-	   g_clip_maker = TClipMaker::CreateForm();
+	if(g_clip_maker==NULL)
+	   g_clip_maker = new TClipMaker();
 
-	if(!g_clip_maker->Visible)	
+	//if(!g_clip_maker->)	
 	{
 		ESceneCustomOTool* st = Scene->GetOTool(OBJCLASS_SPAWNPOINT);
 
@@ -387,10 +389,12 @@ CCommandVar CommandShowClipEditor(CCommandVar p1, CCommandVar p2)
 		CSpawnPoint* sp = smart_cast<CSpawnPoint*>(CO);
 
 		
-		CKinematicsAnimated* KA 	= PKinematicsAnimated(sp->m_SpawnData.m_Visual->visual);
-		R_ASSERT					(KA);
-		g_clip_maker->ShowEditor	(KA);
-	}*/
+		if (CKinematicsAnimated* KA = PKinematicsAnimated(sp->m_SpawnData.m_Visual->visual))
+		{
+			g_clip_maker->ShowEditor(KA);
+			UI->Push(g_clip_maker);
+		}
+	}
 	return 							TRUE;
 }
 
