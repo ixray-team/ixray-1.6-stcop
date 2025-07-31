@@ -46,6 +46,8 @@ function smart_terrain_binder:net_spawn( server_object )
 end
 
 function smart_terrain_binder:net_destroy()
+	xr_sound.stop_sounds_by_id(self.object:id())
+	
 	db.del_zone( self.object )
 	db.del_smart_terrain( self.se_smart_terrain )
 
