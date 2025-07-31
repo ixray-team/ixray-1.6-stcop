@@ -36,7 +36,7 @@ u64 const day2ms			= u64( 24 * 60 * 60 * 1000 );
 
 CUILogsWnd::CUILogsWnd()
 {
-//	m_actor_ch_info			= nullptr;
+	m_actor_ch_info			= nullptr;
 	m_previous_time			= Device.dwTimeGlobal;
 	m_selected_period		= 0;
 }
@@ -53,6 +53,8 @@ void CUILogsWnd::Show( bool status )
 	m_ctrl_press = false;
 	if ( status )
 	{
+		if (m_actor_ch_info)
+			m_actor_ch_info->InitCharacter(Actor());
 		m_selected_period = GetShiftPeriod( Level().GetGameTime(), 0 );
 		m_need_reload = true;
 		Update();
@@ -65,8 +67,19 @@ void CUILogsWnd::Update()
 	inherited::Update();
 	if( m_need_reload )
 		ReLoadNews();
+	if (IsShown() && m_date && m_date_caption)
+	{
+		if (Device.dwTimeGlobal - m_previous_time > 1000)
+		{
+			m_previous_time = Device.dwTimeGlobal;
+			m_date->SetText(InventoryUtilities::Get_GameTimeAndDate_AsString().c_str());
 
-
+			m_date_caption->AdjustWidthToText();
+			Fvector2 pos = m_date_caption->GetWndPos();
+			pos.x = m_date->GetWndPos().x - m_date_caption->GetWidth() - 5.0f;
+			m_date_caption->SetWndPos(pos);
+		}
+	}
 	if(!m_items_ready.empty())
 	{
 		WINDOW_LIST::iterator it = m_items_ready.begin();
@@ -90,8 +103,21 @@ void CUILogsWnd::Init()
 
 	CUIXmlInit::InitWindow( m_uiXml, "main_wnd", 0, this );
 
-	m_background				= UIHelper::CreateFrameWindow(m_uiXml, "background", this);
-	m_center_background			= UIHelper::CreateFrameWindow(m_uiXml, "center_background", this);
+	m_background = UIHelper::CreateFrameWindow(m_uiXml, "background", this, false);
+	if (!m_background)
+		m_background2 = UIHelper::CreateFrameLine(m_uiXml, "background", this, false);
+	m_center_background = UIHelper::CreateFrameWindow(m_uiXml, "center_background", this, false);
+
+	if (m_uiXml.NavigateToNode("actor_ch_info"))
+	{
+		m_actor_ch_info = new CUICharacterInfo();
+		m_actor_ch_info->SetAutoDelete(true);
+		AttachChild(m_actor_ch_info);
+		m_actor_ch_info->InitCharacterInfo(&m_uiXml, "actor_ch_info");
+	}
+
+	if (!m_center_background && m_uiXml.NavigateToNode("center_background"))
+		m_center_background2 = UIHelper::CreateStatic(m_uiXml, "center_background", this);
 
 	m_center_caption	= UIHelper::CreateTextWnd( m_uiXml, "center_caption", this );
 
@@ -100,7 +126,7 @@ void CUILogsWnd::Init()
 	xr_strcat( buf, sizeof(buf), g_pStringTable->translate("ui_logs_center_caption").c_str() );
 	m_center_caption->SetText( buf );
 
-	CUIFixedScrollBar* tmp_scroll = new CUIFixedScrollBar();
+	CUIScrollBar* tmp_scroll = new CUIScrollBar();
 	m_list = new CUIScrollView(tmp_scroll);
 	m_list->SetAutoDelete( true );
 	AttachChild( m_list );
@@ -111,8 +137,20 @@ void CUILogsWnd::Init()
 	m_filter_news->SetCheck( true );
 	m_filter_talk->SetCheck( true );
 
+	if (m_uiXml.NavigateToNode("date_caption"))
+		m_date_caption = UIHelper::CreateTextWnd(m_uiXml, "date_caption", this);
+
+	if (m_uiXml.NavigateToNode("date"))
+		m_date = UIHelper::CreateTextWnd(m_uiXml, "date", this);
+
+	if (m_date || m_date_caption)
+	{
+		R_ASSERT3(m_date && m_date_caption,
+			"Please, provide both [date] and [date_caption] tags in xml file", m_uiXml.m_xml_file_name);
+	}
+
 	m_period_caption = UIHelper::CreateTextWnd( m_uiXml, "period_caption", this );
-	m_period         = UIHelper::CreateTextWnd( m_uiXml, "period", this );
+	m_period         = UIHelper::CreateStatic( m_uiXml, "period", this );
 
 	m_prev_period = UIHelper::Create3tButton( m_uiXml, "btn_prev_period", this );
 	m_next_period = UIHelper::Create3tButton( m_uiXml, "btn_next_period", this );
@@ -146,7 +184,7 @@ void CUILogsWnd::ReLoadNews() {
 	}
 
 	LPCSTR date_str = InventoryUtilities::GetDateAsString(m_selected_period, InventoryUtilities::edpDateToDay).c_str();
-	m_period->SetText(date_str);
+	m_period->TextItemControl()->SetText(date_str);
 	Fvector2 pos = m_period_caption->GetWndPos();
 	pos.x = m_period->GetWndPos().x - m_period_caption->GetWidth() - m_prev_period->GetWidth() - 5.0f;
 	m_period_caption->SetWndPos(pos);
