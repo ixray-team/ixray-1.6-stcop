@@ -6,6 +6,7 @@ class ECORE_API	R_xforms
 {
 public:
 	Fmatrix			m_invw;		// derived	- world2local, cached
+	Fmatrix			m_invv;
 
 	Fmatrix			m_w;		// Basic	- world
 	Fmatrix			m_v;		// Basic	- view
@@ -22,6 +23,7 @@ public:
 	Fmatrix			m_wvp_old;	// Derived	- world2view2projection old frame
 	
 	R_constant*		c_invw;
+	R_constant*		c_invv;
 
 	R_constant*		c_w;
 	R_constant*		c_v;
@@ -59,6 +61,7 @@ public:
 	IC const Fmatrix&	get_P_old () { return m_p_old; }
 
 	IC void			set_c_invw	(R_constant* C);
+	IC void			set_c_invv	(R_constant* C);
 
 	IC void			set_c_w		(R_constant* C);
 	IC void			set_c_v		(R_constant* C);
@@ -76,5 +79,6 @@ public:
 
 private:
 	void			apply_invw	();
+	void			apply_invv	();
 };
 #endif
