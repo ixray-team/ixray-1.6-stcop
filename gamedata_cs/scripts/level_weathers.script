@@ -3,8 +3,11 @@ local weather_manager = nil
 
 class "WeatherManager"
 function WeatherManager:__init()
+	self.wfx_time = 0
+	self.weather_fx = nil
 	self.update_time = 0
 	self.update_level = ""
+	self.forced_weather_change_on_time_change = false
 	self.last_hour = 0
     self.state={}
 	self.graphs={}
@@ -37,9 +40,16 @@ function WeatherManager:reset()
 	self:select_weather(true)
 	self.last_hour=level.get_time_hours()
 end
-
+function WeatherManager:forced_weather_change()
+	self.forced_weather_change_on_time_change = true
+end
 -- Обновляем погоду раз в час.
 function WeatherManager:update()
+	if(level.is_wfx_playing()) then
+		self.weather_fx = level.get_weather()
+	else
+		self.weather_fx = nil
+	end
 	if not benchmark.weather then
 		if self.last_hour~=level.get_time_hours() then
 		    self.last_hour=level.get_time_hours()
@@ -75,7 +85,18 @@ function WeatherManager:select_weather(now)
 	    --weather_section_name="dw_"..st.current_state.."_"..st.next_state.."_"..level.get_time_hours()
 	    weather_section_name="default_"..st.current_state
 	end
-	level.set_weather(weather_section_name,now);
+	if now then
+		self.last_hour=level.get_time_hours()
+	end
+	if self.forced_weather_change_on_time_change then
+		now = true
+		self.forced_weather_change_on_time_change = false
+	end
+	if not(self.weather_fx) then
+		level.set_weather(weather_section_name,now)
+	else
+		level.start_weather_fx_from_time(self.weather_fx, self.wfx_time)
+	end
 	printf("WEATHER: '%s' now '%s'", weather_section_name, tostring(now))
 	-- if xrs_news then
 		-- xrs_news.news_call(1,1,nil,nil,weather_section_name,nil)
@@ -186,6 +207,11 @@ function WeatherManager:load(F)
 	end
 	self:set_state_as_string(state_string)
 	self.update_time = F:r_u32();
+	local str = F:r_stringZ()
+	if(str~="nil") then
+		self.weather_fx = str
+		self.wfx_time = F:r_float()
+	end
 	set_save_marker(F, "load", true, "WeatherManager")
 end
 
@@ -199,6 +225,10 @@ function WeatherManager:save(F)
 	end
 	F:w_stringZ(self:get_state_as_string())
 	F:w_u32(self.update_time)
+	F:w_stringZ(tostring(self.weather_fx))
+	if(self.weather_fx) then
+		F:w_float(level.get_wfx_time())
+	end
 	set_save_marker(F, "save", true, "WeatherManager")
 end
 
