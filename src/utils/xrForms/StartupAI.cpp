@@ -77,11 +77,21 @@ void StartupAI()
 		if (xr_strlen(name))
 			name[xr_strlen(name) - 1] = 0;
 
-		char* output = gCompilerMode.AI_spawn_name;
+		xr_string output = gCompilerMode.AI_spawn_name;
+
+		if (output.empty())
+		{
+			output = "new";
+		}
+
 		char* start_level = gCompilerMode.AI_StartActor;
+		if (!xr_strlen(start_level))
+		{
+			start_level = nullptr;
+		}
 
  		clear_temp_folder();
-		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output, start_level, gCompilerMode.AI_NoSeparatorCheck);
+		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
 	
 }
