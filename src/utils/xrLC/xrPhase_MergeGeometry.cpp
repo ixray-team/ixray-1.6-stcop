@@ -556,7 +556,7 @@ IC BOOL	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, 
 #include <tbb/parallel_for.h>
  
 
-/* ForeserX чет сломал !!!!
+/* ForserX чет сломал !!!!
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
@@ -653,7 +653,7 @@ void xrPhase_MergeGeometry_Tbb()
 }
 */
 
-
+// ForserX Не трогай то что и так работает :)
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
