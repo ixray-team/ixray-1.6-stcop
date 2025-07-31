@@ -1046,36 +1046,17 @@ void		CLevel::UpdateDeltaUpd	( u32 LastTime )
 		}
 };
 
-void		CLevel::ReculcInterpolationSteps ()
+void CLevel::ReculcInterpolationSteps ()
 {
 	lvInterpSteps			= iFloor(float(m_dwDeltaUpdate) / (fixed_step*1000));
 	if (lvInterpSteps > 60) lvInterpSteps = 60;
 	if (lvInterpSteps < 3)	lvInterpSteps = 3;
 };
 
-bool		CLevel::InterpolationDisabled	()
+bool CLevel::InterpolationDisabled	()
 {
 	return g_cl_lvInterp < 0; 
-};
-
-void 		CLevel::PhisStepsCallback		( u32 Time0, u32 Time1 )
-{
-	if (!Level().game)				return;
-	if (IsGameTypeSingle())	return;
-
-//#pragma todo("Oles to all: highly inefficient and slow!!!")
-//fixed (Andy)
-	/*
-	for (xr_vector<CObject*>::iterator O=Level().Objects.objects.begin(); O!=Level().Objects.objects.end(); ++O) 
-	{
-		if( smart_cast<CActor*>((*O)){
-			CActor* pActor = smart_cast<CActor*>(*O);
-			if (!pActor || pActor->Remote()) continue;
-				pActor->UpdatePosStack(Time0, Time1);
-		}
-	};
-	*/
-};
+}
 
 void CLevel::SetNumCrSteps(u32 NumSteps)
 {

@@ -104,7 +104,6 @@ CPHWorld::CPHWorld() :
 	m_update_callback(&empty_update_callback),
 	m_default_contact_shotmark(0),
 	m_default_character_contact_shotmark(0),
-	physics_step_time_callback(0),
 	m_object_space(0),
 	m_level_objects(0)
 {
@@ -219,8 +218,6 @@ void CPHWorld::OnFrame()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-static u32 start_time=0;
-
 void CPHWorld::Step()
 {
 	PROF_EVENT("CPHWorld::Step");
@@ -376,12 +373,6 @@ void CPHWorld::Step()
 	dJointGroupEmpty(ContactGroup);//this is to be called after PhDataUpdate!!!-the order is critical!!!
 	ContactFeedBacks.empty();
 	ContactEffectors.empty();
-
-	if(physics_step_time_callback) 
-	{
-		physics_step_time_callback(start_time,start_time+u32(fixed_step*1000));	
-		start_time += u32(fixed_step*1000);
-	};
 }
 
 void CPHWorld::StepTouch()
@@ -471,7 +462,6 @@ void CPHWorld::FrameStep(dReal step)
 
 	b_processing = true;
 
-	start_time = Device.dwTimeGlobal;
 	if (ph_console::g_bDebugDumpPhysicsStep && it_number > 20)
 		Msg("!!!TOO MANY PHYSICS STEPS PER FRAME = %d !!!", it_number);
 

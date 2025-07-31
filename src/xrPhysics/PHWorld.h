@@ -72,7 +72,6 @@ public:
 private:
 	ContactCallbackFun*			m_default_contact_shotmark;
 	ContactCallbackFun*			m_default_character_contact_shotmark;
-	PhysicsStepTimeCallback*	physics_step_time_callback;
 
 public:
 								CPHWorld						( )							;
@@ -126,7 +125,6 @@ ContactCallbackFun				*default_character_contact_shotmark()						{ return m_defa
 private:
 	void						StepNumIterations				( int num_it )				;
 	iphysics_scripted			&get_scripted					()							{ return *this; }
-	void						set_step_time_callback			(PhysicsStepTimeCallback* cb ){ physics_step_time_callback = cb; }
 	void						set_update_callback				( IPHWorldUpdateCallbck* cb ){ VERIFY( cb ); m_update_callback	= cb; }
 };
 
