@@ -119,16 +119,24 @@ void CBuild::Light_prepare()
 #include <windows.h>
 #include <psapi.h>
 
+size_t last_update_memory = 0;
+CTimer tMemory;
 size_t GetHeapMemory()
 {
-	PROCESS_MEMORY_COUNTERS_EX pmc{};
-	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	// Не слишком часто обновляться
+	if (tMemory.GetElapsed_ms() < 2000)
 	{
-		return pmc.PrivateUsage;
+		return last_update_memory;
 	}
 
-	return 0;
-}
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	{
+		tMemory.Start();
+		last_update_memory = pmc.PrivateUsage;
+		return pmc.PrivateUsage;
+	}
+};
 
 size_t GetMemoryUsed()
 {
@@ -341,8 +349,8 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
  	{
 		Progress(mRID / mu_refs().size());
 		export_ogf(*mu_refs()[mRID]);
- 		if (index.load() % 1024 == 0)
-			clMsg("[MT] Export MUOgf: %u/%u", mRID, mu_refs().size());
+ 		// if (index.load() % 1024 == 0)
+		// 	clMsg("[MT] Export MUOgf: %u/%u", mRID, mu_refs().size());
 		index.fetch_add(1);
 	}
 

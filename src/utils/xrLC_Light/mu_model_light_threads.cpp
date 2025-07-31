@@ -42,7 +42,7 @@ public:
 
 			ThreadTaskID++;
 
-			if (ID % 64 == 0)
+			if (ID % 512 == 0)
 				Status("Models %d/%d", ID, inlc_global_data()->mu_refs().size());
 			thProgress = (float(ID) / float(inlc_global_data()->mu_refs().size()));
 
@@ -80,7 +80,7 @@ public:
 			// Light references
 			inlc_global_data()->mu_models()[ID]->calc_materials();
 			thProgress = (float(ID) / float(inlc_global_data()->mu_models().size()));
-			if (ID%64 == 0)
+			if (ID%512 == 0)
 				Status("Models %d/%d", ID, inlc_global_data()->mu_models().size());
 			csMUMAPS_LOCKS.Leave();
  
