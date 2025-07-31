@@ -26,7 +26,7 @@ list(APPEND SQL_Gen_SRC_FILES ${SQL_Gen_SOURCE_ALL_FILES})
 list(APPEND SQL_Gen_SRC_FILES ${SQL_Gen_SOURCE_IMGUI_FILES})
 
 # SQL_Gen project
-add_executable(SQL_Gen ${SQL_Gen_SRC_FILES})
+add_executable(SQL_Gen WIN32 ${SQL_Gen_SRC_FILES})
 target_include_directories(SQL_Gen PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_directories(SQL_Gen PUBLIC "${IXRAY_SDK_LIB}/")
 
