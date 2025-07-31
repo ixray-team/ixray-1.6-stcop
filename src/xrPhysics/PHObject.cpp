@@ -130,7 +130,7 @@ void CPHObject::CollideDynamics()
 	qResultIt i = result.begin(), e = result.end();
 	for (; i != e; ++i) {
 		CPHObject* obj2 = (*i)->dcast_CPHObject();
-		if (obj2 == this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || obj2->m_flags.test(fl_collision_disable))		continue;
+		if (obj2 == this || !obj2->m_flags.test(st_dirty) || m_flags.test(fl_collision_disable) || m_flags.test(fl_collision_disable_dynamic) || obj2->m_flags.test(fl_collision_disable))		continue;
 		if (CPHCollideValidator::DoCollide(*this, *obj2)) NearCallback(this, obj2, dSpacedGeom(), obj2->dSpacedGeom());
 	}
 }
@@ -225,6 +225,17 @@ void CPHObject::collision_enable()
 {
 	spatial_register();
 	m_flags.set(fl_collision_disable,FALSE);
+}
+
+void CPHObject::collision_dynamic_enable()
+{
+	spatial_register();
+	m_flags.set(fl_collision_disable_dynamic, FALSE);
+}
+void CPHObject::collision_dynamic_disable()
+{
+	spatial_unregister();
+	m_flags.set(fl_collision_disable_dynamic, TRUE);
 }
 
 void CPHObject::Freeze()
