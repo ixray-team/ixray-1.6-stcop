@@ -103,23 +103,23 @@ void CBuild::xrPhase_AdaptiveHT	()
 	}
 
 	// Tesselate + calculate
-	Status			("Precalculating...");
+	Status			("Building RayTrace Model...");
 	{
  		Light_prepare();
  		// Build model
   		BuildRapid					(FALSE);
 		EmbreeMain.AttachGeometrys	(false);
- 	
-		// Prepare
- 		Status						("Precalculating : base hemisphere ...");
- 		ThreadWorkID_Adaptive = 0;
-		for (u32 thID = 0; thID < MAX_THREADS; thID++)
-			precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
-		precalc_base_hemi.wait();
  	}
 
+	// Prepare
+	Phase("AdaptiveHT : base hemisphere ...");
+	ThreadWorkID_Adaptive = 0;
+	for (u32 thID = 0; thID < MAX_THREADS; thID++)
+		precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
+	precalc_base_hemi.wait();
+
  	//////////////////////////////////////////////////////////////////////////
-	Status				("Gathering lighting information...");
+	Phase("AdaptiveHT : Gathering lighting information...");
 	u_SmoothVertColors	(5);
 
 	if (lc_global_data()->GetIsIntelUse())
@@ -317,18 +317,18 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 
 
 
-		// Cleanup
-		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
-			if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
-				lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
+	// Cleanup
+	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
+	if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
+		lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
 
-		for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-			if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())				
-				lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+	for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
+	if (lc_global_data()->g_vertices()[I] && lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+		lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
 
-		lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
-		lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
-		g_bUnregister		= true;
+	lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
+	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
+	g_bUnregister		= true;
 }
 
 void CBuild::u_SmoothVertColors(int count)

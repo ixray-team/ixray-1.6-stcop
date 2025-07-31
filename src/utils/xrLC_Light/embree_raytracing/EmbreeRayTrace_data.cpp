@@ -8,9 +8,11 @@
 #include "EmbreeRayTrace.h"
 #include "xrMU_Model_Reference.h"
 #include "xrMU_Model.h"
+
+#include <base_face.h>
+
 // Для Загрузки Геометрии
 #include <../xrForms/CompilersUI.h>
-#include <base_face.h>
 extern CompilersMode gCompilerMode;
 
 
@@ -161,7 +163,10 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 		if (!bAlready)
  		{
 			F->flags.bProcessed = true;
-			if (F->flags.bOpaque)
+			 
+			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+			b_texture& T = inlc_global_data()->textures()[M.surfidx];
+ 			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
 			{
  				static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 			}
@@ -189,7 +194,10 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 		for (auto pF : temp_buffer)
 		{
 			Face* F = (Face*) pF.ptr;
-			if (F->flags.bOpaque)
+
+			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+			b_texture& T = inlc_global_data()->textures()[M.surfidx];
+			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
 				murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
 			else
 				murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
