@@ -288,7 +288,8 @@ public:
 	int  			GetQueryObjects(ObjectList& objset, ObjClassID classfilter, int iSel = 1, int iVis = 1, int iLock = 0);
 	const Fvector&	GetCameraPosition() const;
 
-public:
+	bool GetPlayInEditorRayPickCall();
+	virtual void SetPlayInEditorRayPickCall(bool Value) override;
 
 	void 			OnCreate();
 	void 			OnDestroy();
@@ -360,6 +361,7 @@ public:
 	xr_string full_name;
 
 private:
+	bool IsPIERayPick = false;
 	CLevelGraphEditor m_level_graph;
 	CGameGraphEditor m_game_graph;
 	CMemoryWriter	m_spawn_data;
