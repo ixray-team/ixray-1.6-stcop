@@ -38,7 +38,6 @@ private:
 	xr_set<dxRender_Visual*>	ModelsToDeleteDeffer;		// 
 	REGISTRY					Registry;			// Just pairing of pointer / Name
 	POOL						Pool;				// Unused / Inactive
-	BOOL						bLogging;
     BOOL						bForceDiscard;
     BOOL						bAllowChildrenDuplicate;
 	xrCriticalSection			deffered_del_lock;
@@ -46,32 +45,27 @@ private:
 public:
                             CModelPool			();
 	virtual 				~CModelPool			();
-	dxRender_Visual*			Instance_Create		(u32 Type);
-	dxRender_Visual*			Instance_Duplicate	(dxRender_Visual* V);
-	dxRender_Visual*			Instance_Load		(LPCSTR N, BOOL allow_register);
-	dxRender_Visual*			Instance_Load		(LPCSTR N, IReader* data, BOOL allow_register);
-	void					Instance_Register	(LPCSTR N, dxRender_Visual* V);
-	dxRender_Visual*			Instance_Find		(LPCSTR N);
+	dxRender_Visual*		Instance_Create		(u32 Type);
+	dxRender_Visual*		Instance_Duplicate	(dxRender_Visual* V);
+	dxRender_Visual*		Instance_Load		(const char* N, BOOL allow_register);
+	dxRender_Visual*		Instance_Load		(const char* N, IReader* data, BOOL allow_register);
+	void					Instance_Register	(const char* N, dxRender_Visual* V);
+	dxRender_Visual*		Instance_Find		(const char* N);
 
-	dxRender_Visual*			CreatePE			(PS::CPEDef* source);
-	dxRender_Visual*			CreatePG			(PS::CPGDef* source);
-	dxRender_Visual*			Create				(LPCSTR name, IReader* data=0);
-	dxRender_Visual*			CreateChild			(LPCSTR name, IReader* data);
+	dxRender_Visual*		CreatePE			(PS::CPEDef* source);
+	dxRender_Visual*		CreatePG			(PS::CPGDef* source);
+	dxRender_Visual*		Create				(const char* name, IReader* data=0);
+	dxRender_Visual*		CreateChild			(const char* name, IReader* data);
 	void					Delete				(dxRender_Visual* &V, BOOL bDiscard=FALSE);
 	void					DeleteDeffered		(dxRender_Visual* &V);
 	void					Discard				(dxRender_Visual* &V, BOOL b_complete);
 	void					DeleteInternal		(dxRender_Visual* &V, BOOL bDiscard=FALSE);
 	void					DeleteQueue			();
 	void					DeleteQueuedDeffer	();
-
-	void					Logging				(BOOL bEnable)	{ bLogging=bEnable; }
 	
 	void					Prefetch			();
 	void					ClearPool			( BOOL b_complete );
 
-	void					dump 				();
-
-	void					memory_stats		( u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem_video, u32& ib_mem_system );
 #ifdef _EDITOR    
 	void					OnDeviceDestroy		();
 	void 					Render				(dxRender_Visual* m_pVisual, const Fmatrix& mTransform, int priority, bool strictB2F, float m_fLOD);
