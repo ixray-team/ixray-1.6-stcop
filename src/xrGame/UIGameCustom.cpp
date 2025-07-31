@@ -21,6 +21,7 @@
 #include "game_cl_base.h"
 
 #include "../xrEngine/x_ray.h"
+#include "ui\UICellItem.h" //Alundaio
 
 EGameIDs ParseStringToGameType(LPCSTR str);
 
@@ -42,13 +43,12 @@ struct predicate_find_stat
 CUIGameCustom::CUIGameCustom()
 	: m_msgs_xml(nullptr),		m_ActorMenu(nullptr), 
 	  m_PdaMenu(nullptr),		m_window(nullptr), 
-	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr)
+	  UIMainIngameWnd(nullptr), m_pMessagesWnd(nullptr), TalkMenu(nullptr)
 {
 	ShowGameIndicators		(true);
 	ShowCrosshair			(true);
 
 	g_pGameCustom = this;
-	TalkMenu = new CUITalkWnd();
 }
 
 bool g_b_ClearGameCaptions = false;
@@ -228,6 +228,35 @@ void CUIGameCustom::HideActorMenu()
 	}
 }
 
+//Alundaio:
+void CUIGameCustom::UpdateActorMenu()
+{
+	if (m_ActorMenu->IsShown())
+	{
+		m_ActorMenu->UpdateActor();
+		m_ActorMenu->RefreshCurrentItemCell();
+	}
+}
+
+CScriptGameObject* CUIGameCustom::CurrentItemAtCell()
+{
+	CUICellItem* itm = m_ActorMenu->CurrentItem();
+	if (!itm->m_pData)
+		return (0);
+
+	PIItem IItm = (PIItem)itm->m_pData;
+	if (!IItm)
+		return (0);
+
+	CGameObject* GO = smart_cast<CGameObject*>(IItm);
+
+	if (GO)
+		return GO->lua_game_object();
+
+	return (0);
+}
+//-Alundaio
+
 void CUIGameCustom::HideMessagesWindow()
 {
 	if ( m_pMessagesWnd->IsShown() )
@@ -333,6 +362,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_window);
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(m_pMessagesWnd);
+	xr_delete					(TalkMenu);
 }
 
 void CUIGameCustom::Load()
@@ -342,6 +372,9 @@ void CUIGameCustom::Load()
 		R_ASSERT				(nullptr==m_msgs_xml);
 		m_msgs_xml				= new CUIXml();
 		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT				(nullptr==TalkMenu);
+		TalkMenu				= new CUITalkWnd();
 
 		R_ASSERT				(nullptr==m_ActorMenu);
 		m_ActorMenu				= new CUIActorMenu		();
@@ -358,6 +391,7 @@ void CUIGameCustom::Load()
 
 		R_ASSERT				(nullptr==m_pMessagesWnd);
 		m_pMessagesWnd			= new CUIMessagesWindow();
+
 		
 		Init					(0);
 		Init					(1);
