@@ -75,7 +75,7 @@ void CHudItem::Load(LPCSTR section)
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
 {
-	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false , allowOverlap);
+	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap);
 }
 
 void CHudItem::renderable_Render()
@@ -792,7 +792,7 @@ void CHudItem::PlaySoundIfExist(LPCSTR alias, const Fvector& position, bool allo
 	HUD_SOUND_ITEM* SndIter = m_sounds.FindSoundItem(alias, false);
 	if (SndIter != nullptr)
 	{
-		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap);
+		m_sounds.PlaySound(SndIter, position, object().H_Root(), !!GetHUDmode(), false, allowOverlap, u8(-1));
 	}
 }
 
