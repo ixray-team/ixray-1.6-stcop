@@ -21,7 +21,7 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-
+#include "../fast_dynamic_cast/fast_dynamic_cast.hpp"
 #include <luabind/lua_include.hpp>
 #include <luabind/wrapper_base.hpp>
 
@@ -41,12 +41,12 @@ namespace luabind {
     {     
        static wrap_base const* extract(T const* ptr)
         {
-            return dynamic_cast<wrap_base const*>(get_pointer(*ptr));
+            return fast_dynamic_cast<wrap_base const*>(get_pointer(*ptr));
         }
 
         static wrap_base* extract(T* ptr)
         {
-            return dynamic_cast<wrap_base*>(get_pointer(*ptr));
+            return fast_dynamic_cast<wrap_base*>(get_pointer(*ptr));
         }
     };
 
