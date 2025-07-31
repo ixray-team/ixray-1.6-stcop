@@ -65,6 +65,8 @@ public:
 			void			TextureOn				()							{ m_bTextureEnable = true; }
 			void			TextureOff				()							{ m_bTextureEnable = false; }
 			void			SetTextOffset			(float x, float y)			{ TextItemControl()->m_TextOffset.x = x; TextItemControl()->m_TextOffset.y = y; }
+			void			HighlightText			(bool bHighlight)			{ m_bEnableTextHighlighting = bHighlight; }
+	virtual bool			IsHighlightText			();
 
 			void			SetTextX				(float x)					{TextItemControl()->m_TextOffset.x = x;}
 			float			GetTextX				()							{return TextItemControl()->m_TextOffset.x;}
@@ -73,11 +75,14 @@ public:
 
 
 	// own
+	virtual void			SetHighlightColor		(const u32 uColor)			{ m_HighlightColor = uColor; }
+			void			EnableTextHighlighting	(bool value)				{ m_bEnableTextHighlighting = value; }
 			void			SetXformLightAnim		(LPCSTR lanim, bool bCyclic);
 			void			ResetXformAnimation		();
 
 	virtual void			DrawTexture				();
 	virtual void			DrawText				();
+	virtual void			DrawHighlightedText		();
 
 			void 			AdjustHeightToText		();
 			void 			AdjustWidthToText		();
@@ -103,6 +108,9 @@ public:
 
 protected:
 	CUILines*		m_pTextControl;
+	bool			m_bEnableTextHighlighting;
+	// Цвет подсветки
+	u32				m_HighlightColor;
 
 	bool			m_bStretchTexture;
 	bool			m_bTextureEnable;
@@ -127,10 +135,14 @@ class UI_API CUITextWnd :
 {
 	typedef CUIWindow	inherited;
 	CUILines			m_lines;
+	bool			m_bEnableTextHighlighting;
+	// Цвет подсветки
+	u32				m_HighlightColor;
 public:
 						CUITextWnd				();
 	virtual				~CUITextWnd				(){};
 	virtual void		Draw					();
+	virtual void		DrawHighlightedText		();
 	virtual void		Update					();
 
 			void 		AdjustHeightToText		();
@@ -149,6 +161,11 @@ public:
 			void		SetEllipsis				(bool mode)					{TextItemControl().SetEllipsis(mode);}
 			void		SetCutWordsMode			(bool mode)					{TextItemControl().SetCutWordsMode(mode);}
 			void		SetTextOffset			(float x, float y)			{TextItemControl().m_TextOffset.x = x; TextItemControl().m_TextOffset.y = y;}
+			void		HighlightText			(bool bHighlight)			{ m_bEnableTextHighlighting = bHighlight; }
+	virtual bool		IsHighlightText			();
+
+	virtual void		SetHighlightColor		(const u32 uColor)			{ m_HighlightColor = uColor; }
+			void		EnableTextHighlighting	(bool value)				{ m_bEnableTextHighlighting = value; }
 
 	virtual void		ColorAnimationSetTextColor(u32 color, bool only_alpha);
 
