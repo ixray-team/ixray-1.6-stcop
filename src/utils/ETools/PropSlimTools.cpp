@@ -1,28 +1,17 @@
 #include "StdAfx.h"
 #include "PropSlimTools.h"
-#include "object.h"
 #include "object_sliding.h"
 
-#pragma warning(disable:4018)
-
-static Object*					g_pObject						= 0;
-static ArbitraryList<MeshPt*>	g_ppTempPts						= 0;
-static float					g_fSlidingWindowErrorTolerance	= 0.1f;
-static BOOL						g_bOptimiseVertexOrder			= FALSE;
-static u32						g_bMaxSlidingWindow				= u32(-1);
-static VIPM_Result*				g_pResult						= 0;
-
-ETOOLS_API void			 __stdcall VIPM_Init			()
+void VIMP_Processor::VIPM_Init			()
 {
-//.	OutputDebugString("VIPM_INIT-------------------\n");
-	R_ASSERT2	(0==g_pObject,"VIPM already in use!");
+ 	R_ASSERT2	(0==g_pObject,"VIPM already in use!");
 	g_pObject							= new Object();
 	g_pResult							= new VIPM_Result();
 	g_pObject->iNumCollapses			= 0;
 	g_pObject->iCurSlidingWindowLevel	= 0;
 }
 
-ETOOLS_API void			 __stdcall VIPM_AppendVertex	(const Fvector3& p, const Fvector2& uv)
+void VIMP_Processor::VIPM_AppendVertex	(const Fvector3& p, const Fvector2& uv)
 {
 	MeshPt* pt			= new MeshPt	(&g_pObject->CurPtRoot);
 	g_ppTempPts.push_back(pt);
@@ -32,12 +21,12 @@ ETOOLS_API void			 __stdcall VIPM_AppendVertex	(const Fvector3& p, const Fvector
 	pt->mypt.dwIndex	= g_ppTempPts.size()-1;
 }
 
-ETOOLS_API void			 __stdcall VIPM_AppendFace		(u16 v0, u16 v1, u16 v2)
+void VIMP_Processor::VIPM_AppendFace		(u16 v0, u16 v1, u16 v2)
 {
 	new MeshTri(g_ppTempPts[v0],g_ppTempPts[v1],g_ppTempPts[v2], &g_pObject->CurTriRoot, &g_pObject->CurEdgeRoot );
 }
 
-void CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window=u32(-1), float m_fSlidingWindowErrorTolerance=1.f)
+void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window, float m_fSlidingWindowErrorTolerance)
 {
 	m_pObject->BinEdgeCollapse();
 	while (true){
@@ -125,16 +114,16 @@ void CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window=u32(-1), fl
 	}
 }
 
-ETOOLS_API VIPM_Result*	 __stdcall VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
+VIPM_Result* VIMP_Processor::VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
 {
 	g_pObject->Initialize	();
 	if (!g_pObject->Valid())return NULL;
 	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
-	if (CalculateSW(g_pObject,g_pResult,optimize_vertex_order)) return g_pResult;
+	if (CalculateSW(g_pObject, g_pResult, optimize_vertex_order)) return g_pResult;
 	else					return NULL;
 }
 
-ETOOLS_API void			 __stdcall VIPM_Destroy		()
+void VIMP_Processor::VIPM_Destroy		()
 {
 //.	OutputDebugString	("VIPM_DESTROY-------------------\n");
 	xr_delete			(g_pResult);
