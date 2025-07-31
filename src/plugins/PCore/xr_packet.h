@@ -187,7 +187,7 @@ template<typename T> inline void xr_ini_packet::write(const T& value){
 
 template<typename T> inline void xr_ini_packet::write_number(const T& value){
 	int n = xr_snprintf(m_key_buffer, sizeof(m_key_buffer), "%06d", ++m_counter);
-	n = xr_snprintf(m_temp_buffer, sizeof(m_temp_buffer), "%d", value);
+	n = xr_snprintf(m_temp_buffer, sizeof(m_temp_buffer), "%d", (unsigned int)value);
 	w->write(m_key_buffer, m_temp_buffer, false);
 	w_seek(w_tell() + sizeof(T));
 }

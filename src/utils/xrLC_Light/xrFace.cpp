@@ -24,12 +24,15 @@ void			base_Face::CacheOpacity	()
 
 	b_material& M		= inlc_global_data()->materials()		[dwMaterial];
 	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
-	if (T.bHasAlpha)	flags.bOpaque = false;
-	else				flags.bOpaque = true;
-	if ( !flags.bOpaque && !(T.THM.HasSurface()) )	//(0==T.pSurface)//	pSurface was possible deleted
+	if (T.bHasAlpha)	
+		flags.bOpaque = false;
+	else			
+		flags.bOpaque = true;
+
+	if ( !flags.bOpaque && (!T.THM.HasSurface()) )	////	pSurface was possible deleted
 	{
 		flags.bOpaque	= true;
-		clMsg			("Strange face detected... Has alpha without texture...");
+		clMsg			("Strange face detected... Has alpha without texture... [%s]", T.name);
 	}
 }
 static bool do_not_add_to_vector_in_global_data = false;
@@ -196,7 +199,7 @@ void start_unwarp_recursion()
 	affected				= 1;
 }
 
-void Face::OA_Unwarp( CDeflector *D )
+void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 { 
 	// range: no recursive method realisation
 	xr_stack<Face*> st;
@@ -216,6 +219,7 @@ void Face::OA_Unwarp( CDeflector *D )
 
 				affected++;
 				st.push(it);
+				faces.push_back(it);
 			}
 		}
 

@@ -11,6 +11,13 @@ using namespace		Opcode;
 class _MM_ALIGN16 cform_ray_collider
 {
 public:
+	// Intersection Filter
+	bool			UseIntersectionFilter = false;
+	bool			continue_work = true;
+	OpcodeContext*	ctxt = 0;
+
+	// Старый код
+
 	COLLIDER*		dest;
 	TRI*			tris;
 	Fvector*		verts;
@@ -37,6 +44,22 @@ public:
 		ray.fwd_dir.set	(D);
 		rRange			= R;
 		rRange2			= R*R;
+	}
+
+	IC void _init_intersection(COLLIDER* CL, CDB::MODEL* model, const Fvector& C, const Fvector& D, float R)
+	{
+		tris = model->get_tris();
+		verts = model->get_verts();
+
+		dest = CL;
+ 		ray.pos.set(C);
+		ray.inv_dir.set(1.f, 1.f, 1.f).div(D);
+		ray.fwd_dir.set(D);
+		rRange = R;
+		rRange2 = R * R;
+
+		if (ctxt)
+			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
 	}
 
 	// sse
@@ -123,7 +146,21 @@ public:
 				rRange		= r;
 				rRange2		= r*r;
 			}
-		} else {
+		}
+		else
+ 		{
+			if (UseIntersectionFilter)
+			{
+				// OpcodeArgs  data;
+				ctxt->result->hit_struct.u = u;
+				ctxt->result->hit_struct.v = v;
+				ctxt->result->hit_struct.prim = prim;
+				ctxt->result->hit_struct.dist = r;
+				ctxt->filterIntersect(ctxt->result);
+				continue_work = ctxt->result->valid;
+				return;
+			}
+
 			RESULT& R	= dest->r_add();
 			R.id		= prim;
 			R.range		= r;
@@ -139,8 +176,8 @@ public:
 	void _stab(const AABBNoLeafNode* node)
 	{
 		// Intersection filter stoping 
-		//if (!continue_work)
-		//	return;
+		if (!continue_work)
+			return;
 
 		// Actual ray/aabb test
 		// use SSE
@@ -198,5 +235,23 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	// Binary dispatcher
 	cform_ray_collider RC(CPU::ID.hasFeature(CPUFeature::SSE), !!(ray_mode&OPT_CULL), !!(ray_mode&OPT_ONLYFIRST), !!(ray_mode&OPT_ONLYNEAREST));
 	RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
+	RC._stab(N);
+}
+
+
+ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
+{
+	MODEL* MDL = static_cast<MODEL*>(context->result->MDL);
+
+	MDL->syncronize();
+
+	// Get nodes
+	const AABBNoLeafTree* T = (const AABBNoLeafTree*)MDL->tree->GetTree();
+	const AABBNoLeafNode* N = T->GetNodes();
+	r_clear();
+
+	cform_ray_collider RC(CPU::ID.hasFeature(CPUFeature::SSE), true, false, false);
+	RC.ctxt = context;
+	RC._init_intersection(this, MDL, context->r_start, context->r_dir, context->r_range);
 	RC._stab(N);
 }
