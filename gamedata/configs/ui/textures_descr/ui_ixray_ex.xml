@@ -16,17 +16,15 @@
         <texture id="ui_inGame2_spin_box_button_horz_bottom_h" x="268" y="21" width="12" height="19" />
         <texture id="ui_inGame2_spin_box_button_horz_bottom_t" x="268" y="42" width="12" height="19" />
   </file>
-   <file name="ui\ui_flag_usa">
-    	<texture id="ui_flag_usa_e" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_usa_h" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_usa_t" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_usa_d" x="0" y="0" width="256" height="256" />
-   </file>
-   <file name="ui\ui_flag_russia">
-    	<texture id="ui_flag_russia_e" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_russia_h" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_russia_t" x="0" y="0" width="256" height="256" />
-	    <texture id="ui_flag_russia_d" x="0" y="0" width="256" height="256" />
+   <file name="ui\ui_flags">
+    	<texture id="ui_flag_usa_e" x="0" y="128" width="128" height="128" />
+	    <texture id="ui_flag_usa_h" x="0" y="128" width="128" height="128" />
+	    <texture id="ui_flag_usa_t" x="0" y="128" width="128" height="128" />
+	    <texture id="ui_flag_usa_d" x="0" y="128" width="128" height="128" />
+    	<texture id="ui_flag_russia_e" x="0" y="0" width="128" height="128" />
+	    <texture id="ui_flag_russia_h" x="0" y="0" width="128" height="128" />
+	    <texture id="ui_flag_russia_t" x="0" y="0" width="128" height="128" />
+	    <texture id="ui_flag_russia_d" x="0" y="0" width="128" height="128" />
    </file>
    <file name="ui\ui_actor_newsmanager_icons">
     <texture id="ui_ixray_spawn_icon"     	x="332" y="423" width="83" height="47" />
