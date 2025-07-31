@@ -23,6 +23,8 @@
 
 #include "UIInventoryUpgradeWnd.h"
 #include "Level.h"
+#include "UIActorMenu.h"
+#include "UIInvUpgradeInfo.h"
 
 UIUpgrade::UIUpgrade( CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder) :
 	m_point(nullptr)
@@ -202,6 +204,30 @@ void UIUpgrade::Update()
 		m_point->Show(get_upgrade()->get_highlight());
 }
 
+bool UIUpgrade::OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state)
+{
+	if (active_upgrade == nullptr || my_upgrade == nullptr)
+		return false;
+
+	// Эта функция вызывается для обновлений, на которые курсор не наведен.
+	// Чтобы переопределить состояние, запишите новое состояние в new_state и верните true.
+
+	bool result = false;
+
+	// Получаем группы для текущего апгрейда и активного апгрейда
+	const char* active_group = active_upgrade->parent_group()->id_str();
+	const char* my_group = my_upgrade->parent_group()->id_str();
+
+	// Проверяем, что оба апгрейда принадлежат одной группе и они не одинаковы
+	if (active_group != nullptr && my_group != nullptr && my_upgrade != active_upgrade && active_group == my_group)
+	{
+		result = true;
+		new_state = STATE_DISABLED_GROUP;  // Устанавливаем новое состояние для кнопки
+	}
+
+	return result;
+}
+
 void UIUpgrade::update_upgrade_state()
 {
     if (m_bCursorOverWindow || m_point && m_point->CursorOverWindow())
@@ -221,17 +247,32 @@ void UIUpgrade::update_upgrade_state()
 	switch ( m_button_state )
 	{
 	case BUTTON_FREE:
-		if(m_state==STATE_ENABLED || m_state==STATE_FOCUSED)
-			m_state = STATE_ENABLED;
-		else
-			m_state = STATE_DISABLED_FOCUSED;
+	{
+		bool locked = false;
+		CUIActorMenu* pActorMenu = dynamic_cast<CUIActorMenu*>(m_parent_wnd->GetParent());
+		if (pActorMenu != nullptr && pActorMenu->GetUpgradeInfo() != nullptr)
+		{
+			ViewState temp_state;
+			if (OverrideFreeButtonState(get_upgrade(), pActorMenu->GetUpgradeInfo()->get_upgrade(), temp_state))
+			{
+				m_state = temp_state;
+				locked = true;
+			}
+		}
 
-		break;
+		if (!locked)
+		{
+			if (m_state == STATE_ENABLED || m_state == STATE_FOCUSED)
+				m_state = STATE_ENABLED;
+			else
+				m_state = STATE_DISABLED_FOCUSED;
+		}
+	}break;
 	case BUTTON_FOCUSED:
 		if(m_state==STATE_ENABLED || m_state==STATE_FOCUSED)
 			m_state = STATE_FOCUSED;
 		else
-			m_state = STATE_DISABLED_FOCUSED;
+			m_state = STATE_DISABLED_GROUP;
 		break;
 	case BUTTON_PRESSED:
 	case BUTTON_DPRESSED:
