@@ -5,7 +5,7 @@
 
 #include "../Actor.h"
 #include "../trade.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "../PDA.h"
 #include "../../xrServerEntities/character_info.h"
 #include "../Level.h"

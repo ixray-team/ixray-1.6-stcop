@@ -23,7 +23,7 @@
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "../ai_space.h"
 #include "../../xrScripts/script_engine.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "UITalkWnd.h"
 #include "Car.h"
 

@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
-#include "../UIGameCustom.h"
+#include "UIGameCustom.h"
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "UICellItemFactory.h"

@@ -6,7 +6,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "object_broker.h"
 #include "../../xrEngine/xr_input.h"
-#include "../UIGameSP.h"
+#include "UIGameSP.h"
 #include "../Level.h"
 #include "UIPdaWnd.h"
 #include "UIActorMenu.h"
