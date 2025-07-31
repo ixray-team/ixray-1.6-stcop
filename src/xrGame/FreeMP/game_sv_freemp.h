@@ -3,7 +3,9 @@
 #include "game_sv_mp.h"
 #include "../../xrEngine/pure_relcase.h"
 
-class game_sv_freemp : public game_sv_mp, private pure_relcase
+class game_sv_freemp :
+	public game_sv_mp, 
+	private pure_relcase
 {
 	using inherited = game_sv_mp;
 	xr_hash_map<xr_string, int> map_quest;
@@ -46,4 +48,7 @@ public:
 	BOOL			 	            OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
 	void			             	OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
 
+private:
+	xr_hash_map<u64, xr_vector<shared_str>> DoSpawnList;
+	xrCriticalSection SpawnGuard;
 };
