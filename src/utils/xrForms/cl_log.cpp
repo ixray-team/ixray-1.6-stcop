@@ -93,8 +93,8 @@ IterationData* GetActiveIteration()
 void SetActiveIteration(IterationData* i)
 {
 	if (auto* p = (ActiveIteration ? &ActiveIteration->phases : nullptr);
-		p && p->size() > 0 && (*p)[p->size() - 1].status != Complited)
-		(*p)[p->size() - 1].status = Complited;
+		p && p->size() > 0 && (*p)[p->size() - 1].status != Complete)
+		(*p)[p->size() - 1].status = Complete;
 
 	ActiveIteration = i;
 }
@@ -113,7 +113,7 @@ void Phase(const char* phase_name)
 		vminfo(&w_free, &w_reserved, &w_committed);
 
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complete;
 
 		GetMemoryUsedStorage();
 	}

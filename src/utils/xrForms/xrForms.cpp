@@ -75,7 +75,7 @@ void Startup(LPSTR lpCmdLine)
 
 		dwTimeLC = (timeGetTime() - dwTimeLC) / 1000;
 
-		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->status = Complete;
 		GetActiveIteration()->elapsed_time = dwTimeLC;
 	}
 	else
@@ -98,7 +98,7 @@ void Startup(LPSTR lpCmdLine)
 		DestroyFactory();
 		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
 
-		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->status = Complete;
 		GetActiveIteration()->elapsed_time = dwTimeLC;
 	}
 	else
@@ -115,7 +115,7 @@ void Startup(LPSTR lpCmdLine)
 		StartupDO();
 		dwTimeDO = (timeGetTime() - dwTimeDO) / 1000;
 
-		GetActiveIteration()->status = Complited;
+		GetActiveIteration()->status = Complete;
 		GetActiveIteration()->elapsed_time = dwTimeLC;
 	}
 	else
@@ -139,7 +139,7 @@ void Startup(LPSTR lpCmdLine)
 
 	if (!gCompilerMode.Silent)
 	{
-		MessageBoxA(nullptr, stats, "Congratulation!", MB_OK | MB_ICONINFORMATION);
+		MessageBoxA(nullptr, stats, "Congratulations!", MB_OK | MB_ICONINFORMATION);
 	}
 
 	extern volatile BOOL bClose;
@@ -164,7 +164,7 @@ void SDL_Application()
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-	g_AppInfo.Window = SDL_CreateWindow("IXR Level Builder", 1000, 560, window_flags);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Level Builder", 1000, 560, window_flags);
 	SDL_Renderer* renderer = SDL_CreateRenderer(g_AppInfo.Window, NULL, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
 	SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
