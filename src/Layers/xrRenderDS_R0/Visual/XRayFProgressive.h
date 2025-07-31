@@ -1,16 +1,17 @@
 #pragma once
 #include "XRayFVisual.h"
 
-class XRayFProgressive:public XRayFVisual
+class CDS0_FProgressive:
+	public CDS0_FVisual
 {
 protected:
 	FSlideWindowItem* xSWI;
-	u32					last_lod;
+	u32 last_lod;
+
 public:
-	XRayFProgressive();
-	virtual ~XRayFProgressive();
-	virtual void				Load(const char* N, IReader* data, u32 dwFlags);
-	virtual void				Copy(XRayRenderVisual* from);
-	virtual void 		Release();
-	//virtual bool Render(float LOD, EShaderElement SEType, XRayObjectRender& Item);
+	CDS0_FProgressive();
+	virtual ~CDS0_FProgressive();
+	virtual void Load(const char* N, IReader* data, u32 dwFlags);
+	virtual void Copy(CDS0_RenderVisual* from);
+	virtual void Release();
 };
