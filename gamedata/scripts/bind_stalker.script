@@ -84,6 +84,9 @@ function actor_binder:net_destroy()
 	self.object:set_callback(callback.level_border_exit, nil)
 	self.object:set_callback(callback.take_item_from_box, nil)
 	self.object:set_callback(callback.use_object, nil)
+	-- IX-Ray 
+	self.object:set_callback(callback.actor_before_death, nil)
+    -- END IX-Ray
 
 	log("--------->"..tostring(_G.amb_vol))
 	log("--------->"..tostring(_G.mus_vol))
@@ -118,7 +121,19 @@ function actor_binder:reinit()
 	self.object:set_callback(callback.task_state, self.task_callback, self)
 	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
 	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
+	-- IX-Ray 
+	self.object:set_callback(callback.actor_before_death, self.on_actor_before_death, self)
+    -- END IX-Ray 
 end
+
+-- IX-Ray 
+-- actor before death callback
+-- IMPORTANT: if you wish to kill actor you need to call db.actor:kill(level.object_by_id(whoID), true) in actor_before_death callback, to ensure all objects are properly destroyed.
+function actor_binder:on_actor_before_death(whoID)
+	local killer = level.object_by_id(whoID) or db.actor
+	db.actor:kill(killer, true)
+end
+-- END IX-Ray 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
 	local box_name = box:name()
