@@ -1,0 +1,69 @@
+[general]
+Platform = cs ; Platform mode. Supported values: cop (Call of Pripyat), cs (Clear Sky)
+title = st_ixray_title ; Mod name
+SaveImageSize = 128, 128
+
+[shaders_options]
+USE_LEGACY_LIGHT = 1
+
+; Hozar: For PBS pipeline
+; IBL_FAKE_IRRADANCE = 1
+; IBL_REMAP_IRRADANCE = 1
+; IBL_REMAP_REFLECTIONS = 1
+; IBL_REMAP_POSITIVE_Y = 1
+; IBL_MAX_LOD = 10
+; USE_FULL_SKY_SPHERE = 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Engine features
+
+[ui]
+HQIcons = false
+DisableCharacterInfo = false
+DisableInventoryGrid = false ; Uses ui\ui_grid_alt.dds instead of ui\ui_grid.dds
+WeaponIconScale = 0.65 ; Scale factor for static_wpn_icon in maingame.xml. For CoP it's 0.8, for CS - 0.65, for SoC - 0.9
+ShowLoadingStages = true ; Loading stages from CS/SoC
+DisableMotionIcon = true
+PdaRearrangeTabButtons = true ; for CS style buttons, where their size depends on text
+
+[physics]
+DeadBodyRagdoll = false
+
+[gameplay]
+EnableThirst = false
+EnableSleepiness = false
+EnableAiDieInAnomaly = false
+EnableNPCLookAtActor = false
+EnableAutoreload = false
+EnableMonstersInventory = true
+EnableWeaponInertion = false            ; Gunslinger Mod Style
+EnableWeaponCollision = false           ; Shoker Mod Style
+EnableActorStepWallmarks = false        ; AIW Style
+EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.
+EnableInventoryPistolSlot = true ; 2nd slot for pistols only (like in CS/SoC)
+; Dialogs
+DialogFovScale = 0.75 ; Increasing fov during dialogue
+TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
+; Sprint
+EnableBlockSprintInReload = true
+DisableSprintWhileOverweight = false
+SprintFovFactor = 7.0
+
+[render]
+DisableLoadScreenTips = true
+FontAtlasSize = 4096
+
+[environment]
+ReadSunConfig = false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extended sections
+
+[player_hud]
+PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your omf file pathes 
+
+; Need [gameplay]:EnableActorStepWallmarks
+[step_wallmark] 
+materials = earth, test1    ; Material names
+left_mark = l_foot          ; left foot wallmark section
+right_mark = r_foot         ; right foot wallmark section
