@@ -17,18 +17,17 @@ bool CHairsZone::BlowoutState()
 
 void CHairsZone::CheckForAwaking()
 {
-	for(OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin(); 
-		m_ObjectInfoMap.end() != it; ++it) 
+	for (SZoneObjectInfo& info : m_ObjectInfoMap)
 	{
-		CObject* pObject = (*it).object;
-		if (!pObject) continue;
-
-		CEntityAlive* pEnt = smart_cast<CEntityAlive*>(pObject);
-		if(pEnt){
-			float sp = pEnt->character_physics_support()->movement()->GetVelocityActual();
-			if(sp>m_min_speed_to_react){
-				SwitchZoneState				(eZoneStateAwaking);
-				return;
+		if (info.object && !info.object->getDestroy())
+		{
+			if (CEntityAlive* pEnt = info.object->cast_entity_alive())
+			{
+				float sp = pEnt->character_physics_support()->movement()->GetVelocityActual();
+				if (sp > m_min_speed_to_react) {
+					SwitchZoneState(eZoneStateAwaking);
+					return;
+				}
 			}
 		}
 	}
