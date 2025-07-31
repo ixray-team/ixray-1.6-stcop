@@ -72,18 +72,11 @@ void	CBuild::LMapsLocal				()
 		mem_Compact		();
 
 		// Randomize deflectors
-#ifndef NET_CMP
 		std::shuffle(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), rng);
-#endif
 
-#ifndef NET_CMP	
-for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
-		task_pool.push_back(dit);
-#else
-		task_pool.push_back(14);
-		task_pool.push_back(16);
-#endif
-		
+		for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
+			task_pool.push_back(dit);
+	
 
 		// Main process (4 threads)
 		Status			("Lighting...");
@@ -116,8 +109,8 @@ void CBuild::BuildAdaptiveHT()
 #include "../xrLC_Light/xrFaceDefs.h"
 #include "../xrLC_Light/xrFace.h"
 void CBuild::Light()
-{ 
-	//****************************************** Resolve materials
+{
+ 	//****************************************** Resolve materials
  	Phase("Resolving materials...");
  	xrPhase_ResolveMaterials();
 	IsolateVertices(TRUE);
@@ -161,6 +154,7 @@ void CBuild::Light()
 	Phase("LIGHT: Save lightmaps...");
 	xrPhase_SaveLmaps();
 #endif 	 
+
 	//****************************************** Merge geometry
 	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();

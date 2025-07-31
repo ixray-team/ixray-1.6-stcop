@@ -207,7 +207,7 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 	return NEW_ApplyBorders( lm, ref );
 }
 
-float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip, BOOL bUseFaceDisable)
+float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip)
 {
 	u32		tris_count	= DB->r_count();
 	float	scale		= 1.f;
@@ -281,8 +281,48 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 }
 
 // CDB RAY TRACE FILTER
+void CalculateEnergy(OpcodeArgs* context, base_Face* F)
+{
+ 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
+	if (T.pSurface == nullptr)
+	{
+		F->flags.bOpaque = true;
+		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
+		context->valid = false;
+		context->energy = 0;
+		return;
+	}
 
+	// barycentric coords
+	// note: W,U,V order
+	Fvector B;
+	B.set(1.0f - context->hit_struct.u - context->hit_struct.v, context->hit_struct.u, context->hit_struct.v);
+
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
+	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;
+	if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;
+	if (V < 0) V += T.dwHeight;
+
+ 	u32 pixel = T.pSurface[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+ 	context->energy *= opac;
+
+	// Energy Dead
+	if (context->energy < 0.1f)
+		context->valid = false;
+}
+ 
 // NEW CDB_RAY
 void FilterIntersection(OpcodeArgs* context)
 {
@@ -312,47 +352,8 @@ void FilterIntersection(OpcodeArgs* context)
 		context->energy = 0;
 		return;
 	}
-
-	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-	if (T.pSurface == nullptr)
-	{
-		F->flags.bOpaque = true;
-		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
-		context->valid = false;
- 		context->energy = 0;
-		return;
-	}
-
-	// barycentric coords
-	// note: W,U,V order
-	Fvector B;
-	B.set(1.0f - context->hit_struct.u - context->hit_struct.v, context->hit_struct.u, context->hit_struct.v);
-
-	// calc UV
-	Fvector2* cuv = F->getTC0();
-	Fvector2	uv;
-	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;
-	if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;
-	if (V < 0) V += T.dwHeight;
-
-	u32* raw = static_cast<u32*>(T.pSurface);
-	u32 pixel = raw[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-	context->energy *= opac;
-
-	// Energy Dead
-	if (context->energy < 0.1f)
-		context->valid = false;
+	 
+	CalculateEnergy(context, F);
 };
 
 float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
@@ -371,8 +372,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	ctxt.r_dir = D;
 	ctxt.r_start = P;
 	ctxt.r_range = R;
-
-
+	
 	OpcodeArgs args;
 	args.energy = 1.0f;
 	args.Light = (void*)&L;
@@ -381,9 +381,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	args.valid = true;
 	args.pos = P;
 
-	// args.IntersectContinue = true;
-
-	ctxt.result = &args;
+ 	ctxt.result = &args;
 
 	ctxt.filterIntersect = &FilterIntersection;
 
@@ -392,19 +390,39 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	return ctxt.result->energy;
 }
 
+float rayTraceOriginal(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
+{
+	R_ASSERT(DB);
+
+	// 1. Check cached polygon	 
+	float _u, _v, range;
+	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
+	if (res && range > 0 && range < R)
+		return 0;
+
+	// 2. Polygon doesn't pick - real database query
+	DB->ray_options(0);
+ 	DB->ray_query(MDL, P, D, R);
+
+	if (DB->r_count() == 0)
+		return 1;
+  
+	return getLastRP_Scale(DB, MDL, L, skip);
+}
+
 // Embree
+#include <../xrForms/CompilersUI.h>
+extern CompilersMode gCompilerMode;
 
-extern float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
-
-float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
+float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 {
 	if (MDL)
 	{
-		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
+		return rayTraceOriginal(DB, MDL, L, P, D, R, skip);
 	}
 	else
 	{
-		return RaytraceEmbreeProcess(L, P, D, R, skip);
+		return EmbreeMain.RaytraceEmbreeProcess(L, P, D, R, skip);
 	}
 }
 
@@ -431,7 +449,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 					if( D <=0 ) continue;
 
 					// Trace Light
-					float scale	=	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable);
+					float scale	=	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip);
 					C.rgb.x		+=	scale * L->diffuse.x; 
 					C.rgb.y		+=	scale * L->diffuse.y;
 					C.rgb.z		+=	scale * L->diffuse.z;
@@ -451,7 +469,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 
 					// Trace Light
 					float R		= _sqrt(sqD);
-					float scale = D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
+					float scale = D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip);
 					float A		;
 					if ( inlc_global_data()->gl_linear() )
 						A	= 1-R/L->range;
@@ -489,7 +507,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 					Fvector	Psave	= L->position, Pdir;
 					L->position.mad	(Pdir.random_dir(L->direction,PI_DIV_4),.05f);
 					float R			= _sqrt(sqD);
-					float scale		= powf(D, 1.f/8.f)*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
+					float scale		= powf(D, 1.f/8.f)*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip);
 					float A			= scale * (1-R/L->range);
 					L->position		= Psave;
 
@@ -514,7 +532,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew, Ldir, 1000.f, skip,bUseFaceDisable);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew, Ldir, 1000.f, skip);
 				C.sun		+=	scale;
 			} else {
 				// Distance
@@ -529,7 +547,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew, Ldir, R, skip,bUseFaceDisable);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew, Ldir, R, skip);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.sun		+=	A;
@@ -539,6 +557,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 	
 	if (0==(flags&LP_dont_hemi))
 	{
+		DB->ray_options(0);
 		R_Light	*L	= &*lights.hemi.begin(), *E = &*lights.hemi.end();
 		for (;L!=E; L++)
 		{
@@ -553,7 +572,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 				Fvector		PMoved;
 				PMoved.mad	(Pnew,Ldir,0.001f);
 
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip);
 				C.hemi		+=	scale;
 			}
 			else
@@ -571,7 +590,7 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P,
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.hemi		+=	A;
