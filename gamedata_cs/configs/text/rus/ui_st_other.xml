@@ -315,4 +315,7 @@
 	<string id="lim_bandit_ambush_spot">
 		<text>Засада бандитов</text>
 	</string>
+	<string id="ui_st_kicked_by_battleye">
+		<text>был отключён защитой BattlEye:</text>
+	</string>
 </string_table>

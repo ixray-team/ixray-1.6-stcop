@@ -195,5 +195,7 @@
 	<string id="renegade">
 		<text>╚пЕМЕЦЮРШ╩</text>
 	</string>
-	 
+	<string id="agru_cs_warning">
+		<text>бмхлюмхе! онйхмэре ноюямсч гнмс!</text>
+	</string>
 </string_table>

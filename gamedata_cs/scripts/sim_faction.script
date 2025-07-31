@@ -20,6 +20,7 @@ function se_sim_faction:__init (section) super (section)
 
 	--' Спонсекции в зависимости от уровня ресурсов группировки
 	self.spawn_by_resource = {}
+	self.spawn_by_level = {}
 	self.squads_by_glory = {}
 
 	self.community_player = false -- Флажок, является ли игрок членом данной группировки.
@@ -84,10 +85,19 @@ function se_sim_faction:read_params()
 	self.setting_ini = ini_file(utils.cfg_get_string(ini, "faction", "settings", self, true, ""))
 	--' Заполняем спон секции в зависимости от техуровня группировки.
 	local i = 0
-	while self.setting_ini:line_exist("settings", "resource_"..tostring(i)) do
-		self.spawn_by_resource[i] = utils.parse_spawns(utils.cfg_get_string(self.setting_ini, "settings", "resource_"..tostring(i), self, true, ""))
+	while self.setting_ini:line_exist("spawn_by_resource", tostring(i)) do
+		self.spawn_by_resource[i] = utils.parse_spawns(utils.cfg_get_string(self.setting_ini, "spawn_by_resource", tostring(i), self, true, ""))
 		i = i + 1
 	end
+	
+	local n = self.setting_ini:line_count("spawn_by_level")
+	for i=0,n-1 do
+		result, id, value = self.setting_ini:r_line("spawn_by_level",i,"","")		
+		self.spawn_by_level[id] = utils.parse_spawns(value)
+	end
+
+
+	
 	--' Заполняем зависимость кол-ва дополнительных отрядов от финансов
 	i = 0
 	while self.setting_ini:line_exist("settings", "glory_"..tostring(i)) do
@@ -180,6 +190,7 @@ function se_sim_faction:fill_start_position()
 				squad = self.board:create_squad(self.player_name, sim_squad_scripted.sim_squad_scripted, smart, id)
 			end
 			self.board:enter_smart(squad, smart.id)
+			--squad:update()
 		end
 	end
 end
@@ -225,6 +236,8 @@ function se_sim_faction:update()
 					--' Спауним
 					local squad = self.board:create_squad(self.player_name, sim_squad_generic.sim_squad_generic, spawn_smart)
 					self.board:enter_smart(squad, spawn_smart.id)
+					squad:update()
+					
 					--' Пересчитываем Team, Squad, Group
 					for k,v in pairs(squad.squad_npc) do
 						local obj = alife():object(k)
@@ -257,29 +270,61 @@ function se_sim_faction:update()
 	self:refresh()
 end
 --' Возвращает секцию, кого нужно заспаунить
-function se_sim_faction:get_spawn_section(custom_resource)
-	local spawn_data
+function se_sim_faction:get_spawn_section(spawn_smart, custom_resource)
+	local resource_spawn_data
 	if custom_resource ~= nil then
-		spawn_data = self.spawn_by_resource[custom_resource]
+		resource_spawn_data = self.spawn_by_resource[custom_resource]
 	else
-		spawn_data = self.spawn_by_resource[self.resource_level]
+		resource_spawn_data = self.spawn_by_resource[self.resource_level]
 	end
 
-	if spawn_data == nil then
+	-- Выбираем, кого мы можем спаунить в зависимости от уровня ресурсов
+	if resource_spawn_data == nil then
 		--' Не найдена настройка для текущего уровня. Нужно брать последний доступный.
 		local n = self.resource_level
 		while n >= 0 do
-			spawn_data = self.spawn_by_resource[n]
-            if spawn_data ~= nil then
-
+			resource_spawn_data = self.spawn_by_resource[n]
+            if resource_spawn_data ~= nil then
                 break
             end
 			n = n - 1
 		end
-		if spawn_data == nil then
-			abort("Couldn't find spawn_data for %s, science = %s", self:name(), tostring(self.resource_level))
+		if resource_spawn_data == nil then
+			abort("Couldn't find spawn_data for %s, science = %s", self:name(), tostring(custom_resource or self.resource_level))
 		end
 	end
+
+
+	-- Теперь выбираем, кого мы можем спаунить в зависимости от левела
+	local level_name = alife():level_name(game_graph():vertex(spawn_smart.m_game_vertex_id):level_id())
+	
+	local level_spawn_data = self.spawn_by_level[level_name]
+
+	if level_spawn_data == nil then
+		abort("Couldn't find level_spawn_data for %s, level = %s", self:name(), tostring(level_name))
+		return
+	end
+
+	--printf("!-----------------")
+	--print_table(resource_spawn_data)
+	--printf("!-----------------")
+	--print_table(level_spawn_data)
+	--printf("!-----------------")
+
+	-- Выбираем пересечение двух таблица в spawn_data
+	local spawn_data = {}
+	for k,v in pairs(resource_spawn_data) do
+		for kk,vv in pairs(level_spawn_data) do
+			if v.section == vv.section then
+				table.insert(spawn_data, {section = v.section, prob = v.prob * vv.prob})				
+				break
+			end
+		end
+	end
+
+	--print_table(spawn_data)
+	--printf("!-----------------")
+
 
 	local spawn_section = nil
 	local sum = 0
@@ -297,7 +342,7 @@ function se_sim_faction:get_spawn_section(custom_resource)
 			end
 	end
 	if spawn_section == nil then
-		abort("Couldn't find spawn_section for %s, science = %s", self:name(), tostring(self.resource_level))
+		abort("Couldn't find spawn_section for %s, science = %s", self:name(), tostring(custom_resource or self.resource_level))
 	end
 	return spawn_section
 end
@@ -543,20 +588,23 @@ function se_sim_faction:calculate_absolute_power()
 
 	self.npc_count = 0
 	self.npc_power = 0
+	self.absolute_power = 0
+	
 	for k,v in pairs(self.squads) do
 		--' Количество НПС(территориальные точки)
 		self.npc_count = self.npc_count + v.npc_count
 		--' Качество НПС(денежные точки)
-		self.npc_power = self.npc_power + v.squad_power
+		--self.npc_power = self.npc_power + v.squad_power		
+		self.absolute_power = self.absolute_power + v.squad_power
 	end
 
-	if self.npc_count ~= 0 then
-		self.npc_power = self.npc_power/self.npc_count
-	end
+--	if self.npc_count ~= 0 then
+--		self.npc_power = self.npc_power/self.npc_count
+--	end
 
 	--' Количество ресерчей.
 
-	self.absolute_power = self.npc_count * self.npc_power
+	--self.absolute_power = self.npc_count * self.npc_power
 end
 
 
@@ -567,6 +615,7 @@ end
 
 --' Возвращает относительную силу группировки.
 function se_sim_faction:get_relative_power()
+	self:calculate_absolute_power()
 	local rel_enemy = sim_board.sim_fight[self.player_name]
 	if rel_enemy == nil then
 		return self.absolute_power * 0.0001
@@ -613,25 +662,26 @@ function se_sim_faction:get_war_target_descr()
 		return ""
 	end  
 	for k,v in pairs(self.target_smart_value) do
-		if v.smart.player_name ~= self.player_name then
-			if v.num > 0 then
-				if capture_exist == false then
-					capture_descr = capture_descr..game.translate_string("ui_st_capture").." "
-					capture_exist = true
-				else
-					capture_descr = capture_descr..", "
+		if v.no_task ~= true then	
+			if v.smart.player_name ~= self.player_name then
+				if v.num > 0 then
+					if capture_exist == false then
+						capture_descr = capture_descr..game.translate_string("ui_st_capture").." "
+						capture_exist = true
+					else
+						capture_descr = capture_descr..", "
+					end
+					capture_descr = capture_descr..smart_names.get_smart_terrain_name(v.smart)
 				end
-				capture_descr = capture_descr..smart_names.get_smart_terrain_name(v.smart)
-			end
-		else
-			if defend_exist == false then
-				defend_descr = defend_descr..game.translate_string("ui_st_defend").." "
-				defend_exist = true
 			else
-				defend_descr = defend_descr..", "
+				if defend_exist == false then
+					defend_descr = defend_descr..game.translate_string("ui_st_defend").." "
+					defend_exist = true
+				else
+					defend_descr = defend_descr..", "
+				end
+				defend_descr = defend_descr..smart_names.get_smart_terrain_name(v.smart)
 			end
-			defend_descr = defend_descr..smart_names.get_smart_terrain_name(v.smart)
-
 		end
 	end
 	if defend_exist == true then
@@ -665,7 +715,6 @@ function se_sim_faction:get_player_props()
                   "value = " .. tostring(self:get_relative_power()) .. "\\n" ..
                   "power = " .. tostring(self:get_absolute_power()) .. "\\n" ..
                   "   npc = " .. tostring(self.npc_count) .. "\\n" ..
-                  "   pow = " .. tostring(self.npc_power) .. "\\n" ..
 				  "expansion = " .. tostring(self.current_expansion_level) .. "\\n" ..
                   "max_pop = " .. tostring(self.squad_population_max) .. "("..tostring(#self.squads)..")\\n" ..
                   "resource = " .. tostring(self.resource_level) .. "\\n" ..

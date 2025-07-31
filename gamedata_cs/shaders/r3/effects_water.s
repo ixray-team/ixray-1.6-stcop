@@ -4,6 +4,10 @@ local tex_dist                = "water\\water_dudv"
 local tex_env0                = "$user$sky0"         -- "sky\\sky_8_cube"
 local tex_env1                = "$user$sky1"         -- "sky\\sky_8_cube"
 
+--local tex_leaves              = "decal\\decal_listja"
+--local tex_leaves              = "decal\\decal_listja_vetki"
+local tex_leaves              = "water\\water_foam"
+
 function normal                (shader, t_base, t_second, t_detail)
 	shader	:begin		("water_soft","water_soft")
     		:sorting	(2, false)
@@ -22,6 +26,8 @@ function normal                (shader, t_base, t_second, t_detail)
 	shader:dx10texture	("s_env0",		tex_env0)
 	shader:dx10texture	("s_env1",		tex_env1)
 	shader:dx10texture	("s_position",	"$user$position")
+
+	shader:dx10texture	("s_leaves",	tex_leaves)
 
 	shader:dx10sampler	("smp_base")
 	shader:dx10sampler	("smp_nofilter")

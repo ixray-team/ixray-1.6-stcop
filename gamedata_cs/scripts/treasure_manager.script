@@ -14,24 +14,11 @@ function CTreasure:__init(ini, section)
 	self.name			= utils.cfg_get_string(ini, section, "name", nil, true, "")
 	self.description	= utils.cfg_get_string(ini, section, "description", nil, true, "")
 	local items 		= utils.cfg_get_string(ini, section, "items", nil, true, "", "nil")
---    self.items_presence = {}
 	if items~="nil" then
 		self.items 		= utils.parse_spawns(items)
 	    if self.items == nil then
 	        abort("cant find 'items' in %s", id)
 	    end
---[[
-        for k,v in pairs(self.items) do
-			self.items_presence[k] = {}
-            if ammo_section[v.section] == true then
-                table.insert(self.items_presence[k], {section = v.section, presence = true, count = v.prob})
-			else
-	            for i = 1, v.prob do
-	                table.insert(self.items_presence[k], {section = v.section, presence = true})
-	            end
-			end
-        end
-]]
 	end
 	self.rank			= utils.cfg_get_string(ini, section, "rank", nil, false, "", "novice")
 	self.treasure_cost	= utils.cfg_get_number(ini, section, "treasure_cost", nil, false, 0)	-- 24.04.08
@@ -114,49 +101,8 @@ function CTreasure:reset_treasure()
 	end
 end
 
-function CTreasure:spawn_items()
-	local obj = alife():object(self.target)
-	if obj ~= nil then
-	    --' —генерить вещи
-	    if self.items then
-	        for kk,vv in pairs(self.items) do
-	            if ammo_section[vv.section] == true then
-	                se_respawn.create_ammo(vv.section,
-	                        obj.position,
-	                        obj.m_level_vertex_id,
-	                        obj.m_game_vertex_id,
-	                        obj.id,
-	                        vv.prob)
-	            else
-	                for i=1,vv.prob do
-	                    alife():create(vv.section,
-	                            obj.position,
-	                            obj.m_level_vertex_id,
-	                            obj.m_game_vertex_id,
-	                            obj.id)
-	                end
-	            end
-	        end
-	    end
-	end
-end
-
 function use_box(box, actor)
---[[
-	if treasure_by_target[box:name()] then
-		if box:is_inv_box_empty() then
-	        for k,v in pairs(treasure_by_target[box:name()]) do
-	            if v.active == true then
-	                v:spawn_items()
-	            end
-	        end
-		else
-			treasure_empty(box, box:name())
-		end
-	end
-]]
 end
-
 
 function use(npc)
 	printf("treasure_manager: npc[%s] is used by actor", npc:name())
@@ -180,7 +126,7 @@ function use(npc)
 			table.insert(available_treasures, v)
 		end
 	end
-	if #available_treasures == 0 or  math.random(100) < 16 then
+	if #available_treasures == 0 or math.random(100) > 20 then
 		return
 	end
 	selected_treasure = available_treasures[math.random(1, #available_treasures)]
@@ -212,32 +158,6 @@ function take_item_from_box(box, box_story_id, item)
 	if box:is_inv_box_empty() == true then
 		treasure_empty(box, box_story_id)
 	end
---[[
-	local treasures = treasure_by_target[box_story_id] or treasure_by_target[box:name()]
-	if treasures then
-	    for k,v in pairs(treasures) do
-	        if v.active then
-	            for kk,vv in pairs(v.items_presence) do
-	                for i = 1,#vv do
-	                    if vv[i].section == item:section() and vv[i].presence then
-	                        if ammo_section[vv[i].section] == true then
-	                            local num_in_box = system_ini():r_u32(vv[i].section, "box_size")
-	                            vv[i].count = vv[i].count - num_in_box
-	                            if vv[i].count<=0 then
-	                                vv[i].presence = false
-	                                return
-	                            end
-	                        else
-	                            vv[i].presence = false
-	                            return
-	                        end
-	                    end
-	                end
-	            end
-	        end
-	    end
-	end
-]]
 end
 
 function load_treasures()
@@ -265,18 +185,6 @@ function save(thread)
 	for k,v in pairs(treasures) do
 		thread:w_bool(v.active==true)
         thread:w_bool(v.treasure_cost == -1)
---[[
-		if v.active then
-            for kk,vv in pairs(v.items_presence) do
-				for i = 1,#vv do
-	                thread:w_bool(vv[i].presence)
-					if vv[i].count then
-		                thread:w_u16(vv[i].count)
-					end
-				end
-            end
-		end
-]]
 	end
 	set_save_marker(thread, "save", true, "treasure_manager")
 end
@@ -289,41 +197,6 @@ function load(thread)
 		if cost == true then
 			v.treasure_cost = -1
 		end
---[[
-		if v.active then
-            for kk,vv in pairs(v.items_presence) do
-				for i = 1,#vv do
-	                vv[i].presence = thread:r_bool()
-					if vv[i].count then
-		                vv[i].count = thread:r_u16()
-					end
-				end
-            end
-	        local obj = alife():object(v.target)
-			if obj then
-	            for kk,vv in pairs(v.items_presence) do
-					for i = 1,#vv do
-	                    if vv[i].presence then
-	                        if ammo_section[vv[i].section] == true then
-	                            se_respawn.create_ammo(vv[i].section,
-													   obj.position,
-													   obj.m_level_vertex_id,
-													   obj.m_game_vertex_id,
-													   obj.id,
-													   vv[i].count)
-	                        else
-                                alife():create(vv[i].section,
-											   obj.position,
-											   obj.m_level_vertex_id,
-											   obj.m_game_vertex_id,
-											   obj.id)
-	                        end
-	                    end
-					end
-				end
-            end
-		end
-]]
 	end
 	set_save_marker(thread, "load", true, "treasure_manager")
 end
@@ -406,5 +279,17 @@ function is_not_item_name()
 	return not(dt.say_item_name)
 end
 function get_item_name()
-	return game.translate_string(system_ini():r_string(dt.items[1].section, "inv_name")).."."
+	local ini = system_ini()
+	if dt.items then
+        local str = game.translate_string(ini:r_string(dt.items[1].section, "inv_name"))
+        for i = 2,#dt.items do
+            str = str..", "..game.translate_string(ini:r_string(dt.items[i].section, "inv_name"))
+        end
+        str = str.."."
+        return str
+	else
+		printf("ERROR! items are not set in treasure [%s]", dt.section)
+        return game.translate_string("treasure_dialog_11131")
+	end
+--	return game.translate_string(system_ini():r_string(dt.items[1].section, "inv_name"))
 end

@@ -539,8 +539,14 @@
       <options_item entry="r2_volumetric_lights" group="mm_opt_video_adv" depend="restart"/>
     </check_volumetric_light>
 
-    
-    
+    <!-- cap_r3_msaa_alphatest x="20" y="0" width="143" height="21">
+      <text font="letterica16" color="ui_6">ui_mm_msaa_alphatest</text>
+    </cap_r3_msaa_alphatest>
+    <check_r3_msaa_alphatest x="194" y="0" width="30" height="21">
+      <options_item entry="r3_msaa_alphatest" group="mm_opt_video_adv" depend="vid"/>
+    </check_r3_msaa_alphatest -->
+
+
     <btn_to_simply x="342" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>	
 			<texture>ui_button_ordinary</texture>			

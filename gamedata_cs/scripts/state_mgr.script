@@ -420,12 +420,12 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	
 		--' Проверка на необходимость special_danger_move
 		if state_lib.states[state_name].special_danger_move == true then
-			printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
+			--printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
 			if self.npc:special_danger_move() ~= true then
 				self.npc:special_danger_move(true)
 			end	
 		else
-			printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
+			--printf("SPECIAL DANGER MOVE %s for stalker [%s]", tostring(self.npc:special_danger_move()), self.npc:name())
 			if self.npc:special_danger_move() == true then
 				self.npc:special_danger_move(false)
 			end	

@@ -12,6 +12,7 @@
 
 [list]:list_treasure_garbage, list_treasure_escape, list_treasure_red_forest, list_treasure_military, list_treasure_marsh, list_treasure_agroprom, list_treasure_agroprom_underground, list_treasure_dark_valley, list_treasure_hospital, list_treasure_limansk, list_treasure_yantar
 test_treasure
+artefact_test_treasure
 ;test_treasure2
 ;test_treasure3
 ;test_treasure4
@@ -22,7 +23,7 @@ target = smart_terrain_1_box
 name = st_lim_pipe_02_2
 description = st_lim_pipe_02_2_descr
 items = wpn_ak74, 2, vodka, 2, ammo_9x19_pbp, 75
-community = bandit
+community = csky
 ;treasure_cost = 2000
 ;say_item_name = false
 ;condlist = {=check_npc_name(barman)} true
@@ -59,3 +60,10 @@ description = abracadabra_descr5
 items = wpn_val
 community = arena_enemy
 condlist = true
+
+[artefact_test_treasure]
+target = artefact_test_treasure
+name = st_mar_nichka_0011
+description = st_mar_nichka_0011_descr
+items = medkit, 1, bandage, 5, wpn_toz34, 1
+condlist = {=actor_on_level(artefact_test)} true, false

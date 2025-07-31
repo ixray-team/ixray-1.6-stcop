@@ -15,32 +15,37 @@ r3		= 4
 ]]
 
 -- R1 only
-function only_1_mode(ctrl, _id)
+function only_1_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id==0
 	ctrl:Enable		(bEnabled)
 end
 
 --R1 && R2a
-function only_12_mode(ctrl, _id)
+function only_12_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id<=1
 	ctrl:Enable		(bEnabled)
 end
 
 -- >=R2
-function only_2_and_more_mode(ctrl, _id)
+function only_2_and_more_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id>=2
 	ctrl:Enable		(bEnabled)
 end
 
 -- >=R2.5
-function only_25_and_more_mode(ctrl, _id)
+function only_25_and_more_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id>=3
 	ctrl:Enable		(bEnabled)
 end
 
 -- >=R3
-function only_3_and_more_mode(ctrl, _id)
+function only_3_and_more_mode(ctrl, _id, _ssample_val)
 	local bEnabled	= _id>=4
+	ctrl:Enable		(bEnabled)
+end
+
+function supersample_more_than_1(ctrl, _id, _ssample_val)
+	local bEnabled	= _ssample_val>1
 	ctrl:Enable		(bEnabled)
 end
 
@@ -74,7 +79,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_ssample",				_st)
-	xml:InitTrackBar							("video_adv:track_ssample",				_st)
+	handler.ss_trb	= xml:InitTrackBar			("video_adv:track_ssample",				_st)
+	handler:Register(handler.ss_trb, "trb_ssample")
 
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_detail_density",		_st)
@@ -163,7 +169,12 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_r3_volumetric_smoke",	_st)
 	ctl			= xml:InitCheck					("video_adv:check_r3_volumetric_smoke",_st)
-	handler.m_preconditions[ctl]		= only_3_and_more_mode
+	handler.m_preconditions[ctl]				= only_3_and_more_mode
+
+--	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
+--	xml:InitStatic								("video_adv:cap_r3_msaa_alphatest",	_st)
+--	ctl			= xml:InitCheck					("video_adv:check_r3_msaa_alphatest",_st)
+--	handler.m_preconditions[ctl]		= supersample_more_than_1
 
 	_st				= xml:InitStatic			("video_adv:templ_item",				self.scroll_v)
 	xml:InitStatic								("video_adv:cap_vsync",					_st)

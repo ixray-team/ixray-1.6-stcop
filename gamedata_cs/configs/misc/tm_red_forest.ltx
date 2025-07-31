@@ -21,8 +21,11 @@ red_bridge_cover_bridge
 red_bridge_kill_sniper
 red_artefact_hunters_defend_squad
 red_artefact_huntesr_defend_smart
-red_forest_stalker_bring_map
+;red_forest_stalker_bring_map
 red_stalker_reinforced
+red_recover_item_1
+red_recover_item_2
+red_recover_item_3
 
 [red_pursuit_strelok_task]
 type = storyline
@@ -41,7 +44,7 @@ type = storyline
 task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = true
-prior = 5
+prior = 20
 name = red_pursuit_destroy_ambush_name
 text = red_pursuit_destroy_ambush_text
 target_story_ids = 511
@@ -274,7 +277,7 @@ type = storyline
 task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = {+red_artefact_hunters_go -red_artefact_hunters_task_complete} true
-prior = 5
+prior = 9
 name = red_artefact_huntesr_capture_smart_name
 text = red_artefact_huntesr_capture_smart_text
 target_story_ids = 519
@@ -288,7 +291,7 @@ type = defend_smart
 task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = {=squad_exist(red_stalker_artefact_hunters_1) !is_smart_defending(red_smart_terrain_6_3) =target_smart_name(red_smart_terrain_6_3) -red_artefact_hunters_task_2_complete +red_artefact_hunters_task_complete} true
-prior = 3
+prior = 7
 name = red_artefact_huntesr_defend_smart_name
 text = red_artefact_huntesr_defend_smart_text
 on_complete = % +red_artefact_hunters_task_2_complete%
@@ -300,7 +303,7 @@ type = recover_item
 task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = {-red_forest_allyes_have_map =check_npc_squad(red_stalker_artefact_hunters_1)}
-prior = 5
+prior = 9
 name = red_forest_stalker_bring_map_name
 text = red_forest_stalker_bring_map_text
 requested_items = red_forest_pda_map
@@ -312,8 +315,56 @@ type = capture_smart
 task_type = additional
 icon = ui_mt_image_attack_tower
 target_cond = {=target_smart_name(red_smart_terrain_3_2) =actor_on_level(red_forest) -red_capture_undeground_camp_done}
-prior = 5
+prior = 7
 name = red_stalker_reinforced_name
 text = red_stalker_reinforced_text
 on_complete = %+red_capture_undeground_camp_done%
 reward_money = 3000
+
+
+;Recover Items
+
+[red_recover_item_1]   ;Принести КПК с картой Рыжего леса
+type = recover_item
+task_type = additional
+name = red_recover_item_1_name
+text = red_recover_item_1_text
+target_npc_or_box_name = red_recover_item_1_spawn
+distanse = 100
+prior = 2
+target_cond = {=actor_on_level(red_forest) -red_recover_item_1_done} true, false
+on_init = %+red_recover_item_1_done%
+requested_items = red_forest_pda_map_2
+community_relation_delta_complete = 100
+reward_money = 1500
+auto_faction = true
+
+[red_recover_item_2]   ;Принести пулемет из танка
+type = recover_item
+task_type = additional
+name = red_recover_item_2_name
+text = red_recover_item_2_text
+target_npc_or_box_name = red_recover_item_2_spawn
+distanse = 100
+prior = 2
+target_cond = {=actor_on_level(red_forest) -red_recover_item_2_done} true, false
+on_init = %+red_recover_item_2_done%
+requested_items = red_quest_tank_minigun
+community_relation_delta_complete = 100
+reward_money = 7500
+auto_faction = true
+
+[red_recover_item_3]   ;Вернуть экспериментальное устройство
+type = recover_item
+task_type = additional
+name = red_recover_item_3_name
+text = red_recover_item_3_text
+target_npc_or_box_name = red_recover_item_3_spawn
+distanse = 100
+prior = 2
+target_cond = {=actor_on_level(red_forest) -red_recover_item_3_done} true, false
+on_init = %+red_recover_item_3_done%
+requested_items = red_quest_prototipe_device
+community_relation_delta_complete = 100
+reward_money = 3500
+auto_faction = true

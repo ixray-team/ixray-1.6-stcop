@@ -172,4 +172,9 @@
 	<shooting_get_ready  x="212" y="300" width="600" height="68" complex_mode="1" light_anim="ui_slow_blinking_alpha">
 		<text font="graffiti32"  r="240" g="217" b="182" a="255" align="c"/>
 	</shooting_get_ready>
+
+
+	<text_on_screen_center x="212" y="300" width="600" height="68" complex_mode="1" light_anim="ui_slow_blinking_alpha">
+		<text font="graffiti32"  r="240" g="217" b="182" a="255" align="c"/>
+	</text_on_screen_center>
 </header>

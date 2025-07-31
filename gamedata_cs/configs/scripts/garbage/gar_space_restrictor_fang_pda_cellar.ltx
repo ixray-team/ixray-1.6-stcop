@@ -12,7 +12,7 @@ on_timer = 2000 | sr_idle@unconscious_talk_4 %+gar_story_spawn_ambush_bandits =r
 on_info = {+gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
 
 [sr_idle@unconscious_talk_4_time]
-on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(718) +gar_story_ambush_remove =disable_anomaly(700) =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
+on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(727) +gar_story_ambush_remove =disable_anomaly(700) =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
 
 [sr_idle@unconscious_stop_1]
 on_timer = 1000 | sr_idle@unconscious_stop_2 %=play_sound(pda_alarm)%

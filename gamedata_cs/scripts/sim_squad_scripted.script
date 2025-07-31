@@ -255,6 +255,9 @@ function sim_squad_scripted:update()
 		--' Если у нас нет текущей цели - просим выдать нам задание.
 		self:get_next_action()
 	end
+	if not self.items_spawned and self.smart_id ~= nil then
+		self:spawn_box_items(self.smart_id)
+	end
 end
 function sim_squad_scripted:save(packet)
 	sim_squad_generic.sim_squad_generic.save(self, packet)

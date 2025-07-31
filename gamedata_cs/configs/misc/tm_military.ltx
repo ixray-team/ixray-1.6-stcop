@@ -16,6 +16,18 @@ mil_additional_quest_2
 mil_additional_quest_3
 mil_additional_quest_4
 mil_additional_quest_5
+;mil_bring_item_1
+;mil_bring_item_2
+;mil_bring_item_3
+;mil_bring_item_4
+;mil_bring_item_5
+;mil_bring_item_6
+;mil_bring_item_7
+;mil_bring_item_8
+;mil_bring_item_9
+;mil_bring_item_10
+;mil_bring_item_11
+;mil_bring_item_12
 
 [mil_blockpost] ;--поговорить с командиром блокпоста
 type = storyline
@@ -26,9 +38,11 @@ text = mil_blockpost_text
 target_story_ids = 1218
 condlist_0 = {+mil_actor_bridge} complete
 condlist_1 = {+mil_freedom_speaker_death} fail
-condlist_2 = {+mil_actor_inside_wtower} reversed
+condlist_2 = {+mil_actor_inside_wtower} reversed, {=is_squad_enemy_to_actor(mil_smart_terrain_2_2_freedom_squad_1)} reversed
 prior = 10
 auto_faction = false
+on_reversed = %+mil_actor_bridge%
+on_fail = %+mil_actor_bridge%
 
 [mil_hires] ;--идти к отряду
 type = storyline
@@ -39,8 +53,10 @@ text = mil_hires_text
 target_story_ids = 1207
 condlist_0 = {+mil_merc_talked} complete
 condlist_1 = {+mil_hog_death} fail
-condlist_2 = {+mil_actor_inside_wtower} reversed
+condlist_2 = {+mil_actor_inside_wtower} reversed, {=is_squad_enemy_to_actor(mil_killer_invaders)} reversed
 on_complete = %+mil_reach_merc_done%
+on_reversed = %+mil_reach_merc_done%
+on_fail = %+mil_reach_merc_done%
 prior = 10
 auto_faction = false
 
@@ -51,7 +67,7 @@ auto_name = false
 icon = ui_mt_image_defend_tower
 name = mil_kill_bs
 text = mil_kill_bs_text
-prior = 10
+prior = 25
 wait_time = -1
 target_cond = {=target_smart_name(mil_smart_terrain_4_3)} true
 condlist_0 = {+mil_bs_dead} complete
@@ -126,7 +142,7 @@ auto_name = false
 icon = ui_mt_image_attack_tower
 name = mil_elim_military
 text = mil_elim_military_text
-prior = 10
+prior = 25
 target_cond = {=target_smart_name(mil_smart_terrain_7_7)} true
 condlist_1 = {=is_squad_enemy_to_actor(mil_freedom_attack_base_1)} reversed
 wait_time = -1
@@ -184,7 +200,7 @@ task_type = additional
 name = mil_additional_quest_1_name
 text = mil_additional_quest_1_text
 target_cond = {+mil_start_after_red_forest -mil_additional_quest_1_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
-prior = 4
+prior = 2
 target_npc_or_box_name = mil_additional_quest_1_box
 wait_time = -1
 immediate_reward = true
@@ -201,7 +217,7 @@ task_type = additional
 name = mil_additional_quest_2_name
 text = mil_additional_quest_2_text
 target_cond = {-mil_additional_quest_2_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_2)} true
-prior = 4
+prior = 2
 target_npc_or_box_name = mil_additional_quest_2_commander
 wait_time = -1
 immediate_reward = true
@@ -218,7 +234,7 @@ task_type = additional
 name = mil_additional_quest_3_name
 text = mil_additional_quest_3_text
 target_cond = {-mil_additional_quest_3_info_complete =check_npc_squad(mil_smart_terrain_7_4_freedom_base_squad_1)} true
-prior = 4
+prior = 2
 target_npc_or_box_name = mil_additional_quest_3_soldier_1, mil_additional_quest_3_soldier_2, mil_additional_quest_3_soldier_3, mil_additional_quest_3_soldier_4
 wait_time = -1
 immediate_reward = true
@@ -235,7 +251,7 @@ task_type = additional
 name = mil_additional_quest_4_name
 text = mil_additional_quest_4_text
 target_cond = {-mil_additional_quest_4_info_complete =check_npc_squad(mil_smart_terrain_2_4_stalker_squad_1)} true
-prior = 4
+prior = 2
 target_npc_or_box_name = mil_additional_quest_4_lost_soldier
 wait_time = -1
 immediate_reward = true
@@ -253,7 +269,7 @@ task_type = additional
 name = mil_additional_quest_5_name
 text = mil_additional_quest_5_text
 target_cond = {+mil_start_after_red_forest -mil_additional_quest_5_info_complete =check_npc_squad(mil_smart_terrain_5_2_freedom_squad_1)} true
-prior = 4
+prior = 2
 target_npc_or_box_name = mil_additional_quest_5_soldier
 wait_time = -1
 immediate_reward = true
@@ -263,3 +279,162 @@ on_complete = %+mil_additional_quest_5_info_complete%
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 auto_faction = false
+
+
+;Bring items
+
+[mil_bring_item_1]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_1_name
+text = mil_bring_item_1_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = freedom
+requested_items = wpn_val, ammo_9x39_ap
+community_relation_delta_complete = 100
+reward_money = {~50} 1500, {~50}, 2000, 1000
+
+[mil_bring_item_2]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_2_name
+text = mil_bring_item_2_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = freedom
+requested_items = medkit_army, medkit_army, medkit_army
+community_relation_delta_complete = 100
+reward_money = {~50} 1500, {~50}, 2000, 1000
+
+[mil_bring_item_3]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_3_name
+text = mil_bring_item_3_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = freedom
+requested_items = wpn_lr300, ammo_m209
+community_relation_delta_complete = 100
+reward_money = {~50} 1500, {~50}, 2000, 1000
+
+[mil_bring_item_4]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_4_name
+text = mil_bring_item_4_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = stalker
+requested_items = medkit_scientic, medkit_scientic
+community_relation_delta_complete = 100
+reward_money = 1000
+
+[mil_bring_item_5]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_5_name
+text = mil_bring_item_5_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = stalker
+requested_items = detector_elite
+community_relation_delta_complete = 100
+reward_money = {~50} 750, {~50}, 1200, 1000
+
+[mil_bring_item_6]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_6_name
+text = mil_bring_item_6_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = stalker
+requested_items = wpn_vintorez, ammo_9x39_ap, ammo_9x39_ap
+community_relation_delta_complete = 100
+reward_money = {~50} 1500, {~50}, 2500, 2000
+
+[mil_bring_item_7]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_7_name
+text = mil_bring_item_7_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = dolg
+requested_items = wpn_groza
+community_relation_delta_complete = 100
+reward_money = {~50} 1500, {~50}, 2500, 2000
+
+[mil_bring_item_8]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_8_name
+text = mil_bring_item_8_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = dolg
+requested_items = wpn_pkm
+community_relation_delta_complete = 100
+reward_money = {~50} 4000, {~50}, 5000, 4500
+
+[mil_bring_item_9]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_9_name
+text = mil_bring_item_9_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = dolg
+requested_items = wpn_rpg7
+community_relation_delta_complete = 100
+reward_money = {~50} 3500, {~50}, 2500, 3000
+
+[mil_bring_item_10]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_10_name
+text = mil_bring_item_10_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = bandit
+requested_items = vodka, vodka, vodka, vodka, vodka, vodka, vodka, vodka, vodka, vodka
+community_relation_delta_complete = 100
+reward_money = 500
+
+[mil_bring_item_11]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_11_name
+text = mil_bring_item_11_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = bandit
+requested_items = wpn_spas12, ammo_12x76_dart, ammo_12x76_dart
+community_relation_delta_complete = 100
+reward_money = {~50} 1000, {~50}, 2000, 1500
+
+[mil_bring_item_12]
+auto_name = false
+type = bring_item
+task_type = additional
+name = mil_bring_item_12_name
+text = mil_bring_item_12_text
+target_cond = {~20 =actor_on_level(military)} true
+prior = 2
+faction = bandit
+requested_items = wpn_desert_eagle, ammo_11.43x23_hydro
+community_relation_delta_complete = 100
+reward_money = {~50} 500, {~50}, 1000, 750

@@ -595,6 +595,12 @@ function object_sound:play(obj_id, faction, point, msg)
 	end
 --	printf("object played_id = %s", self.played_id)
 	local snd = self.sound[self.played_id]
+	local f = getFS()
+	if snd and f:exist("$game_sounds$", snd.."_pda.ogg") ~= nil and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
+		self.pda_snd_obj = sound_object(snd.."_pda")
+		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+		self.pda_snd_obj.volume = 0.8
+	end	
 	self.snd_obj = sound_object(snd)
 	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d)
 	local snd_st, num_copy = string.gsub(snd, "\\", "_")
@@ -657,6 +663,10 @@ function object_sound:stop()
 	if self.snd_obj ~= nil then
 		self.snd_obj:stop()
 	end
+	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+		self.pda_snd_obj:stop()
+		self.pda_snd_obj = nil
+	end	
 end
 function object_sound:save(thread)
 --	set_save_marker(thread, "save", false, "object_sound")

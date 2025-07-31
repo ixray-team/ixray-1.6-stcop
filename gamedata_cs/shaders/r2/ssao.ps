@@ -9,58 +9,66 @@ half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
 
 #else	//	SSAO_QUALITY
 
-#if SSAO_QUALITY==1
-//	#define NUM_RINGS	1
-//	#define NUM_TAPS	6
-	#define ITERATE_RINGS	for (int a=2; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
-#elif SSAO_QUALITY==2
-//	#define NUM_RINGS	2
-//	#define NUM_TAPS	6
-	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=a%2; i<12; i+=2)
-#elif SSAO_QUALITY==3
-//	#define NUM_RINGS	2
-//	#define NUM_TAPS	12
-	#define ITERATE_RINGS	for (int a=1; a<3; ++a)
-	#define	ITERATE_TAPS	for (int i=0; i<12; i++)
+#if SSAO_QUALITY == 3
+#define RINGS 3
+#define DIRS 8
+static const half rads[4] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.20000f,
+	0.57735f,
+	0.81650f,
+	1.00000f
+};
+static const half angles[9] =
+{
+	0.0000f,
+	0.7854f,
+	1.5708f,
+	2.3562f,
+	3.1416f,
+	3.9267f,
+	4.7124f,
+	5.4978f,
+	6.2832f
+};
+#elif SSAO_QUALITY == 2
+#define RINGS  3
+#define DIRS 4
+static const half rads[4] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.20000f,
+	0.57735f,
+	0.81650f,
+	1.00000f
+};
+static const half angles[5] =
+{
+	0.0000f,
+	1.5708f,
+	3.1416f,
+	4.7124f,
+	6.2832f
+};
+#elif SSAO_QUALITY == 1
+#define RINGS 2
+#define DIRS 4
+static const half rads[3] =
+{ //I know it will be more focused in the cener, but that's OK
+    0.2000f,
+    0.7071f,
+	1.0000f,
+};
+static const half angles[5] =
+{
+	0.0000f,
+	1.5708f,
+	3.1416f,
+	4.7124f,
+	6.2832f
+};
 #endif
 
 float4 ssao_params;
-
-/*
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f),
-	half2(-0.840144f , -0.073580f),
-	half2(-0.695914f ,  0.457137f),
-	half2(-0.203345f ,  0.620716f),
-	half2( 0.962340f , -0.194983f),
-	half2( 0.473434f , -0.480026f),
-	half2( 0.519456f ,  0.767022f),
-	half2( 0.185461f , -0.893124f),
-	half2( 0.507431f ,  0.064425f),
-	half2( 0.896420f ,  0.412458f),
-	half2(-0.321940f , -0.932615f),
-	half2(-0.791559f , -0.597710f)
-};
-*/
-
-static const half2 poisson_disc12[12] = 
-{
-	half2(-0.326212f , -0.405810f)*0.68,
-	half2(-0.840144f , -0.073580f)*0.92,
-	half2(-0.695914f ,  0.457137f)*0.75,
-	half2(-0.203345f ,  0.620716f)*0.95,
-	half2( 0.962340f , -0.194983f)*0.63,
-	half2( 0.473434f , -0.480026f)*0.93,
-	half2( 0.519456f ,  0.767022f)*0.73,
-	half2( 0.185461f , -0.893124f)*0.98,
-	half2( 0.507431f ,  0.064425f)*0.65,
-	half2( 0.896420f ,  0.412458f)*0.9,
-	half2(-0.321940f , -0.932615f)*0.70,
-	half2(-0.791559f , -0.597710f)
-};
 
 uniform sampler2D 	jitter0;
 
@@ -99,20 +107,23 @@ half	calc_ssao( half3 P, half3 N, half2 tc, half2 tcJ)
 //	tc1 *= 2;
 //	tc1 *= 4;
 	tc1.xz += tc1.y;
-	half2	Mirror = tex2D( jitter0, tc1.xz );
-	Mirror	= normalize(Mirror);
+	half2	SmallTap = tex2D( jitter0, tc1.xz );
+//	half2	Mirror = tex2D( jitter0, tc1.xz );
+//	Mirror	= normalize(Mirror);
 
-//	for (int a=1; a<3; ++a)
-ITERATE_RINGS
+for (int rad=0; rad < RINGS; rad++)
 {
-	half2	scale_tmp = scale*a;
-	//	for (int i=0; i<12; i++)
-	ITERATE_TAPS
+	for (int dir=0; dir < DIRS; dir++)
 	{
-//		float2 	tap 	= tc + poisson_disc12[i]*scale_tmp;
-		float2 	tap 	= poisson_disc12[i];
-				tap		-= 2*dot(Mirror,tap)*Mirror;
-				tap		*= scale_tmp;
+		SmallTap.x += 0.31337f;
+		SmallTap.y += 0.73313f;
+		SmallTap = frac(SmallTap);
+		float	r		= lerp(rads[rad]*1.3, rads[rad+1]*1.3, SmallTap.x);
+		float   a		= lerp(angles[dir], angles[dir+1], SmallTap.y);
+		float s, c;
+		sincos( a, s, c );
+		float2	tap = float2( r * c, r * s );
+				tap		*= scale;
 				tap		+= tc;
 		half3	tap_pos	= tex2D	(s_position,tap);
 		half3 	dir 	= tap_pos-P.xyz;

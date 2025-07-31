@@ -451,7 +451,7 @@ function motivator_binder:update(delta)
 	else
 		object:set_tip_text_default()
 	end
-]]	
+]]
 end
 
 function motivator_binder:reload(section)

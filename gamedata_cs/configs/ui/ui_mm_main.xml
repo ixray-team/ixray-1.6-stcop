@@ -6,8 +6,8 @@
     <auto_static x="0" y="0" width="1024" height="768">
       <texture>ui_menu2_backgraund</texture>
     </auto_static>
-   <auto_static x="406" y="512" width="256" height="256">
-      <texture>ui\ui_mm2_pautina</texture>
+   <auto_static x="407" y="512" width="256" height="256">
+     <texture x="1" y="1" width="254" height="254">ui\ui_mm2_pautina</texture>
     </auto_static>
     <auto_static x="483" y="420" width="249" height="156" light_anim="mm_flicker_01" la_alpha="1">
       <texture>ui_menu2_ray_01</texture>
@@ -25,9 +25,6 @@
       <texture>ui_menu2_fog_01</texture>
     </auto_static>
     <auto_static x="427" y="719" width="268" height="76" light_anim="mm_flicker_01" la_alpha="1">
-      <texture>ui_menu2_fog_02</texture>
-    </auto_static>
-    <auto_static x="-81" y="703" width="268" height="76" light_anim="mm_flicker_02" la_alpha="1">
       <texture>ui_menu2_fog_02</texture>
     </auto_static>
   </background>

@@ -8,7 +8,7 @@
       <texture>ui_inGame2_back_02</texture>
     </auto_static>
     <auto_static x="130" y="512" width="256" height="256">
-      <texture>ui\ui_mm_newspaper</texture>
+      <texture x="1" y="1" width="254" height="254">ui\ui_mm_newspaper</texture>
     </auto_static>
   </background>
   

@@ -630,27 +630,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="esc_leader_first_join">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <precondition>dialogs.actor_not_in_stalker</precondition>
-        <dont_has_info>esc_first_join_stalker</dont_has_info>
-        <phrase_list>
-            <phrase id="11">
-                <text>esc_leader_first_join_11</text>
-                <action>dialogs.break_dialog</action>
-                <give_info>esc_first_join_stalker</give_info>
-            </phrase>
-            <phrase id="1">
-                <text>esc_leader_first_join_1</text>
-                <next>11</next>
-            </phrase>
-            <phrase id="0">
-                <text>esc_leader_first_join_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="esc_wolf_about_around">
         <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
         <phrase_list>
@@ -1009,55 +988,6 @@
             </phrase>
         </phrase_list>
     </dialog>
-    <dialog id="esc_driver_who_are_you">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <phrase_list>
-            <phrase id="2">
-                <text>esc_driver_who_are_you_2</text>
-                <next>3</next>
-            </phrase>
-            <phrase id="5">
-                <text>esc_driver_who_are_you_5</text>
-                <next>6</next>
-                <next>66</next>
-            </phrase>
-            <phrase id="66">
-                <text>esc_driver_who_are_you_66</text>
-                <action>dialogs.break_dialog</action>
-            </phrase>
-            <phrase id="44">
-                <text>esc_driver_who_are_you_44</text>
-            </phrase>
-            <phrase id="4">
-                <text>esc_driver_who_are_you_4</text>
-                <dont_has_info>esc_help_prisoner</dont_has_info>
-                <dont_has_info>esc_driver_fight</dont_has_info>
-                <next>5</next>
-            </phrase>
-            <phrase id="6">
-                <text>esc_driver_who_are_you_6</text>
-                <precondition>dialogs.have_actor_any_pistol</precondition>
-                <action>dialogs_escape.transfer_pistol_driver</action>
-                <action>dialogs.break_dialog</action>
-                <give_info>esc_driver_fight</give_info>
-            </phrase>
-            <phrase id="0">
-                <text>esc_driver_who_are_you_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
-                <next>1</next>
-            </phrase>
-            <phrase id="3">
-                <text>esc_driver_who_are_you_3</text>
-                <give_info>esc_driver_dialog_fight</give_info>
-                <next>4</next>
-                <next>44</next>
-            </phrase>
-            <phrase id="1">
-                <text>esc_driver_who_are_you_1</text>
-                <next>2</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
     <dialog id="esc_wolf_novice_complete">
         <has_info>esc_wolf_novice_3</has_info>
         <dont_has_info>esc_wolf_novice_4</dont_has_info>
@@ -1130,20 +1060,6 @@
                 <text>esc_comm_about_life_in_zone_0</text>
                 <action>dialog_manager.action_disable_phrase</action>
                 <has_info>esc_help_prisoner</has_info>
-                <next>1</next>
-            </phrase>
-        </phrase_list>
-    </dialog>
-    <dialog id="esc_leader_about_prisoner">
-        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-        <has_info>esc_prisoner_go_out</has_info>
-        <phrase_list>
-            <phrase id="1">
-                <text>esc_leader_about_prisoner_1</text>
-            </phrase>
-            <phrase id="0">
-                <text>esc_leader_about_prisoner_0</text>
-                <action>dialog_manager.action_disable_phrase</action>
                 <next>1</next>
             </phrase>
         </phrase_list>
@@ -1278,6 +1194,77 @@
             </phrase>
         </phrase_list>
     </dialog>
+    <dialog id="esc_leader_first_join">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <precondition>dialogs.actor_not_in_stalker</precondition>
+        <dont_has_info>esc_first_join_stalker</dont_has_info>
+        <phrase_list>
+            <phrase id="0">
+                <text>esc_leader_first_join_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+            <phrase id="1">
+                <text>esc_leader_first_join_1</text>
+                <next>11</next>
+            </phrase>
+            <phrase id="11">
+                <text>esc_leader_first_join_11</text>
+                <action>dialogs.break_dialog</action>
+                <give_info>esc_first_join_stalker</give_info>
+                <give_info>esc_join_need_sound</give_info>
+            </phrase>
+        </phrase_list>
+    </dialog>
+    <dialog id="esc_driver_who_are_you">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <phrase_list>
+            <phrase id="2">
+                <text>esc_driver_who_are_you_2</text>
+                <next>3</next>
+            </phrase>
+            <phrase id="5">
+                <text>esc_driver_who_are_you_5</text>
+                <next>6</next>
+                <next>66</next>
+            </phrase>
+            <phrase id="66">
+                <text>esc_driver_who_are_you_66</text>
+                <action>dialogs.break_dialog</action>
+            </phrase>
+            <phrase id="44">
+                <text>esc_driver_who_are_you_44</text>
+            </phrase>
+            <phrase id="4">
+                <text>esc_driver_who_are_you_4</text>
+                <dont_has_info>esc_help_prisoner</dont_has_info>
+                <dont_has_info>esc_driver_fight</dont_has_info>
+                <next>5</next>
+            </phrase>
+            <phrase id="6">
+                <text>esc_driver_who_are_you_6</text>
+                <precondition>dialogs.have_actor_any_pistol</precondition>
+                <action>dialogs_escape.transfer_pistol_driver</action>
+                <action>dialogs.break_dialog</action>
+                <give_info>esc_driver_fight</give_info>
+            </phrase>
+            <phrase id="3">
+                <text>esc_driver_who_are_you_3</text>
+                <give_info>esc_driver_dialog_fight</give_info>
+                <next>4</next>
+                <next>44</next>
+            </phrase>
+            <phrase id="1">
+                <text>esc_driver_who_are_you_1</text>
+                <next>2</next>
+            </phrase>
+            <phrase id="0">
+                <text>esc_driver_who_are_you_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
     <dialog id="esc_comm_about_info">
         <phrase_list>
             <phrase id="11">
@@ -1320,25 +1307,34 @@
             </phrase>
         </phrase_list>
     </dialog>
+    <dialog id="esc_leader_about_prisoner">
+        <precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+        <has_info>esc_prisoner_go_out</has_info>
+        <phrase_list>
+            <phrase id="1">
+                <text>esc_leader_about_prisoner_1</text>
+            </phrase>
+            <phrase id="0">
+                <text>esc_leader_about_prisoner_0</text>
+                <action>dialog_manager.action_disable_phrase</action>
+                <next>1</next>
+            </phrase>
+        </phrase_list>
+    </dialog>
     <dialog id="esc_leader_join_stalker">
         <precondition>dialogs.actor_not_in_stalker</precondition>
         <has_info>esc_first_join_stalker</has_info>
         <phrase_list>
-            <phrase id="33334">
-                <text>esc_leader_join_stalker_33334</text>
-            </phrase>
-            <phrase id="33">
-                <text>esc_leader_join_stalker_33</text>
-                <next>333</next>
-            </phrase>
-            <phrase id="333">
-                <text>esc_leader_join_stalker_333</text>
-                <next>3333</next>
-                <next>3334</next>
-            </phrase>
             <phrase id="2">
                 <text>esc_leader_join_stalker_2</text>
                 <dont_has_info>esc_join_stalker_on</dont_has_info>
+            </phrase>
+            <phrase id="4">
+                <text>esc_leader_join_stalker_4</text>
+                <precondition>dialogs.actor_in_freedom</precondition>
+                <has_info>esc_join_stalker_on</has_info>
+                <next>33</next>
+                <next>3334</next>
             </phrase>
             <phrase id="5">
                 <text>esc_leader_join_stalker_5</text>
@@ -1346,18 +1342,33 @@
                 <precondition>dialogs.actor_not_in_freedom</precondition>
                 <has_info>esc_join_stalker_on</has_info>
                 <next>33</next>
+                <next>3334</next>
             </phrase>
-            <phrase id="4">
-                <text>esc_leader_join_stalker_4</text>
-                <precondition>dialogs.actor_in_freedom</precondition>
-                <has_info>esc_join_stalker_on</has_info>
-                <next>33</next>
+            <phrase id="3334">
+                <text>esc_leader_join_stalker_3334</text>
             </phrase>
             <phrase id="3">
                 <text>esc_leader_join_stalker_3</text>
                 <precondition>dialogs.actor_in_dolg</precondition>
                 <has_info>esc_join_stalker_on</has_info>
                 <next>33</next>
+                <next>3334</next>
+            </phrase>
+            <phrase id="33">
+                <text>esc_leader_join_stalker_33</text>
+                <next>333</next>
+            </phrase>
+            <phrase id="3333">
+                <text>esc_leader_join_stalker_3333</text>
+                <next>33333</next>
+            </phrase>
+            <phrase id="33333">
+                <text>esc_leader_join_stalker_33333</text>
+                <next>333333</next>
+            </phrase>
+            <phrase id="333333">
+                <text>esc_leader_join_stalker_333333</text>
+                <next>3333333</next>
             </phrase>
             <phrase id="0">
                 <text>esc_leader_join_stalker_0</text>
@@ -1367,30 +1378,23 @@
                 <next>4</next>
                 <next>5</next>
             </phrase>
-            <phrase id="33333333">
-                <text>esc_leader_join_stalker_33333333</text>
+            <phrase id="333">
+                <text>esc_leader_join_stalker_333</text>
+                <next>3333</next>
+                <next>33334</next>
+            </phrase>
+            <phrase id="33334">
+                <text>esc_leader_join_stalker_33334</text>
+                <next>3333333</next>
             </phrase>
             <phrase id="3333333">
                 <text>esc_leader_join_stalker_3333333</text>
-                <next>33333333</next>
-            </phrase>
-            <phrase id="333333">
-                <text>esc_leader_join_stalker_333333</text>
-                <next>3333333</next>
-            </phrase>
-            <phrase id="3334">
-                <text>esc_leader_join_stalker_3334</text>
-            </phrase>
-            <phrase id="33333">
-                <text>esc_leader_join_stalker_33333</text>
-                <next>333333</next>
-                <next>33334</next>
-            </phrase>
-            <phrase id="3333">
-                <text>esc_leader_join_stalker_3333</text>
                 <action>dialogs.actor_set_stalker</action>
                 <action>dialogs_escape.transfer_detector_advanced</action>
-                <next>33333</next>
+                <next>33333333</next>
+            </phrase>
+            <phrase id="33333333">
+                <text>esc_leader_join_stalker_33333333</text>
             </phrase>
         </phrase_list>
     </dialog>
