@@ -1487,6 +1487,7 @@ void CSE_ALifeCreatureActor::UPDATE_Read	(NET_Packet	&tNetPacket)
 	tNetPacket.r_sdir			(velocity	);
 	tNetPacket.r_float			(fRadiation	);
 	tNetPacket.r_u8				(weapon		);
+	IsWaunded = tNetPacket.r_u8();
 	////////////////////////////////////////////////////
 	tNetPacket.r_u16			(m_u16NumItems);
 
@@ -1528,9 +1529,11 @@ void CSE_ALifeCreatureActor::UPDATE_Write	(NET_Packet	&tNetPacket)
 	tNetPacket.w_sdir			(velocity	);
 	tNetPacket.w_float			(fRadiation	);
 	tNetPacket.w_u8				(weapon		);
+	tNetPacket.w_u8				(IsWaunded);
 	////////////////////////////////////////////////////
 	tNetPacket.w_u16			(m_u16NumItems);
-	if (!m_u16NumItems) return;	
+	if (!m_u16NumItems)
+		return;	
 
 	if (m_u16NumItems == 1)
 	{
