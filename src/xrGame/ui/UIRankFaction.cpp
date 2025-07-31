@@ -9,13 +9,13 @@
 #include "pch_script.h"
 #include "UIRankFaction.h"
 
-#include "UIXmlInit.h"
-#include "UIProgressBar.h"
-#include "UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/UIHelper.h"
 
 #include "../Actor.h"
 #include "../ai_space.h"
-#include "../../xrServerEntities/script_engine.h"
+#include "../../xrScripts/script_engine.h"
 #include "../character_community.h"
 #include "../character_reputation.h"
 #include "../relation_registry.h"
