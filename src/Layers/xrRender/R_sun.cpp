@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/IRenderable.h"
-#include "FBasicVisual.h"
 
+#include "FBasicVisual.h"
 #include "R_sun_support.h"
+
+#include <DirectXMath.h>
 
 using namespace DirectX;
 
