@@ -41,6 +41,9 @@ protected:
 	u32						m_artefact_count;
 
 public:
+	bool IsExo = false;
+	bool IsExoProto = false;
+
 	float					m_fPowerLoss;
 	float					m_additional_weight;
 	float					m_additional_weight2;
