@@ -965,8 +965,13 @@ public:
 			float       GetActorRunBackCoef() const;
 			void        SetActorRunBackCoef(float run_back_coef);
 			void		SetCharacterIcon(LPCSTR iconName);
+	void StartActorAnimator(LPCSTR section);
+	void StopActorAnimator();
+	LPCSTR GetActorAnimatorSection();
+	bool IsAnimatorActive();
+	u8 GetActorAnimatorRestoredSlot();
 
-			void IterateFeelTouch(const luabind::functor<bool>& functor);
+	void IterateFeelTouch(const luabind::functor<bool>& functor);
 			bool IsActorLadder() const;
 	doors::door*				m_door;
 
