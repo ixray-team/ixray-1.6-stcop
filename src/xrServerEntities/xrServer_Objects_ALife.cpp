@@ -1747,16 +1747,39 @@ void CSE_ALifeHelicopter::STATE_Write		(NET_Packet	&tNetPacket)
     tNetPacket.w_stringZ			(engine_sound);
 }
 
-void CSE_ALifeHelicopter::UPDATE_Read		(NET_Packet	&tNetPacket)
+BOOL CSE_ALifeHelicopter::Net_Relevant()
 {
-	inherited1::UPDATE_Read		(tNetPacket);
-	inherited3::UPDATE_Read		(tNetPacket);
+	return !IsGameTypeSingle();
+}
+
+void CSE_ALifeHelicopter::UPDATE_Read(NET_Packet& tNetPacket)
+{
+	inherited1::UPDATE_Read(tNetPacket);
+	inherited3::UPDATE_Read(tNetPacket);
+
+#if defined(XRGAME_EXPORTS)
+	if (!IsGameTypeSingle())
+	{
+		Pos = tNetPacket.r_vec3();
+		Rotate = tNetPacket.r_vec3();
+		BodyHPB = tNetPacket.r_vec3();
+	}
+#endif
 }
 
 void CSE_ALifeHelicopter::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited1::UPDATE_Write		(tNetPacket);
 	inherited3::UPDATE_Write		(tNetPacket);
+
+#if defined(XRGAME_EXPORTS)
+	if (!IsGameTypeSingle())
+	{
+		tNetPacket.w_vec3(Pos);
+		tNetPacket.w_vec3(Rotate);
+		tNetPacket.w_vec3(BodyHPB);
+	}
+#endif
 }
 
 void CSE_ALifeHelicopter::load		(NET_Packet &tNetPacket)
@@ -1764,9 +1787,10 @@ void CSE_ALifeHelicopter::load		(NET_Packet &tNetPacket)
 	inherited1::load(tNetPacket);
 	inherited3::load(tNetPacket);
 }
+
 bool CSE_ALifeHelicopter::can_save() const
 {
-	return						CSE_PHSkeleton::need_save();
+	return CSE_PHSkeleton::need_save();
 }
 
 #ifndef XRGAME_EXPORTS

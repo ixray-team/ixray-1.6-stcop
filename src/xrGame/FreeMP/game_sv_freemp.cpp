@@ -174,8 +174,13 @@ void game_sv_freemp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	CSE_Visual* pV = smart_cast<CSE_Visual*>(E);
 	if (!pV) return;
 	//-------------------------------------------
-	string256 SkinName;
-	xr_strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
+	string256 SkinName = {};
+
+	if (pSettings->section_exist("mp_skins_path") && pSettings->line_exist("mp_skins_path", "skin_path"))
+	{
+		xr_strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
+	}
+
 	//загружены ли скины для этой комманды
 //	if (SkinID != -1) ID = u16(SkinID);
 
@@ -217,7 +222,7 @@ void game_sv_freemp::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	R_ASSERT2(len < 64, "Skin Name is too LONG!!!");
 	pV->set_visual(SkinName);
 	//-------------------------------------------
-};
+}
 
 void game_sv_freemp::OnPlayerReady(ClientID id_who)
 {
