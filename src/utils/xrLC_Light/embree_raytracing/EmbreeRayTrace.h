@@ -5,9 +5,7 @@
 #include "base_color.h"
 #include "../../XrCDB/xrCDB.h"
 
-
-#include "embree4/rtcore.h"
-#pragma comment(lib, "embree4.lib")
+#include <embree4/rtcore.h>
 
 
 // Vertex, Tri Buffers
@@ -37,4 +35,4 @@ namespace Embree
 	void errorFunction(void* userPtr, enum RTCError error, const char* str);
 	void IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse);
 
-} 
+}
