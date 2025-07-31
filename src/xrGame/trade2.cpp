@@ -227,6 +227,9 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 		_max(trade_factors.enemy_factor(),trade_factors.friend_factor())
 	);
 	
+	if (action_factor == 0)
+		return 0;
+
 	// computing deficit_factor
 #if 0
 	float					deficit_factor = partner.inv_owner->deficit_factor(pItem->object().cNameSect());
