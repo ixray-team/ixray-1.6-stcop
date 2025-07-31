@@ -337,7 +337,7 @@ void CUITalkWnd::SwitchToTrade()
 
 void CUITalkWnd::SwitchToUpgrade()
 {
-  	if (CurrentGameUI())
+	if (CurrentGameUI() && m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled())
 	{
 		CurrentGameUI()->StartUpgrade(m_pOurInvOwner, m_pOthersInvOwner);
 	}
