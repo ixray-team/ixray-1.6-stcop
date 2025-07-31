@@ -38,6 +38,8 @@ extern CompilersMode gCompilerMode;
 void StartupAI()
 {
 	// Load project
+	FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
+
 
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
@@ -59,8 +61,6 @@ void StartupAI()
 			can_use_name = true;
 			FS.update_path(prjName, "$game_levels$", name);
 		}
-
-		FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
 
 		if (gCompilerMode.AI_BuildLevel)
 		{
