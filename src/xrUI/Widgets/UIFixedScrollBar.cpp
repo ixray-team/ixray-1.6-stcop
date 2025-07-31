@@ -51,9 +51,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
 
 		xr_strconcat(_path, profile, ":back");
-		if (xml_doc.NavigateToNode(_path))
-			CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
-		else
+		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))
 			return false;
 
 		m_ScrollWorkArea = _max(0,iFloor(GetWidth()-2*height));
@@ -72,9 +70,7 @@ bool CUIFixedScrollBar::InitScrollBar(Fvector2 pos, bool horizontal, LPCSTR prof
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, m_ScrollBox);
 
 		xr_strconcat(_path, profile, ":back_v");
-		if (xml_doc.NavigateToNode(_path))
-			CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground);
-		else
+		if (!CUIXmlInit::InitFrameLine(xml_doc, _path, 0, m_FrameBackground, false))
 			return false;
 
 		m_ScrollWorkArea = _max(0,iFloor(GetHeight()-2*width_v));
