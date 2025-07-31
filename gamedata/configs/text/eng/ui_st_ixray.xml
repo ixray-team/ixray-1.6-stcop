@@ -36,6 +36,9 @@
     <string id="smaa">
         <text>SMAA</text>
     </string>
+    <string id="taa">
+        <text>TAA</text>
+    </string>
     <string id="ui_mm_r_scale_mode">
         <text>Scaling</text>
     </string>

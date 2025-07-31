@@ -489,7 +489,7 @@ void CRender::Render()
 		phase = PHASE_NORMAL;
 	}
 
-	if(ps_r_scale_mode > 1) {
+	if(ps_r_scale_mode > 1 || ps_r2_aa_type == 3) {
 		int32_t jitterPhaseCount = ffxFsr2GetJitterPhaseCount((int32_t)RCache.get_width(), (int32_t)RCache.get_target_width());
 		ffxFsr2GetJitterOffset(&ps_r_taa_jitter_full.x, &ps_r_taa_jitter_full.y, Device.dwFrame, jitterPhaseCount);
 
