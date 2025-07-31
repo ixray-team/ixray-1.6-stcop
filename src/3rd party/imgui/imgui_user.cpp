@@ -1,7 +1,7 @@
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "stdafx.h"
+
 #include "imgui_internal.h"
 
 float ImGui::GetWindowBarHeight()
@@ -64,7 +64,7 @@ bool ImGui::BeginPopupModal(const char* name, bool* p_open, ImGuiWindowFlags fla
             OpenPopupEx(id);
         }
     }
-   return  ImGui::BeginPopupModal(name, p_open, flags);
+    return  ImGui::BeginPopupModal(name, p_open, flags);
 }
 
 IMGUI_API bool ImGui::ArrowButton(const char* str_id, ImGuiDir dir, ImVec2 size, ImGuiButtonFlags flags)

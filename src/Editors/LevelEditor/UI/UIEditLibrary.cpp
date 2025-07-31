@@ -41,7 +41,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 
 		if (m_Thm && m_Thm->_FaceCount() != 0 && m_Thm->_VertexCount() != 0)
 		{
-			m_Thm->Update(m_RealTexture);
+			m_Thm->Update((ID3DBaseTexture*&)m_RealTexture);
 			m_Thm->FillInfo(Info);
 			m_Props->AssignItems(Info);
 		}
