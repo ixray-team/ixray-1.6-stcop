@@ -21,22 +21,22 @@ private:
 	typedef CUIWindow						inherited;
 //-	typedef ALife::EInfluenceType	EIndicatorType;
 
-	CUIStatic*			m_back_v;
-	CUIStatic*			m_back_over_arrow;
-	CUIStatic*			m_static_armor;
-	CUIStatic*			m_bleeding;
+	CUIStatic*			m_back_v = nullptr;
+	CUIStatic*			m_back_over_arrow = nullptr;
+	CUIStatic*			m_static_armor = nullptr;
+	CUIStatic*			m_bleeding = nullptr;
 
 	CUIStatic*			m_resist_back[it_max];
 	CUIStatic*			m_indik[it_max];
-	CUIStatic*			m_ind_starvation;
-	CUIStatic*			m_resist_back_starvation;
+	CUIStatic*			m_ind_starvation = nullptr;
+	CUIStatic*			m_resist_back_starvation = nullptr;
 
-	CUITextWnd*			m_ui_weapon_sign_ammo;
+	CUITextWnd*			m_ui_weapon_sign_ammo = nullptr;
 	Frect				m_ui_weapon_icon_rect;
 
-	CUIProgressShape*	m_progress_self;
-	CUIArrow*			m_arrow;
-	CUIArrow*			m_arrow_shadow;
+	CUIProgressShape*	m_progress_self = nullptr;
+	CUIArrow*			m_arrow = nullptr;
+	CUIArrow*			m_arrow_shadow = nullptr;
 	
 	float				m_last_health;
 	float				m_health_blink;
@@ -63,20 +63,20 @@ private:
 	const char*			m_onZoneTouch = {};
 public:
 	
-	CUITextWnd*			m_ui_weapon_cur_ammo;
-	CUITextWnd*			m_ui_weapon_fmj_ammo;
-	CUITextWnd*			m_ui_weapon_ap_ammo;
-	CUITextWnd*			m_fire_mode;
-	CUITextWnd*			m_ui_grenade;
+	CUITextWnd*			m_ui_weapon_cur_ammo = nullptr;
+	CUITextWnd*			m_ui_weapon_fmj_ammo = nullptr;
+	CUITextWnd*			m_ui_weapon_ap_ammo = nullptr;
+	CUITextWnd*			m_fire_mode = nullptr;
+	CUITextWnd*			m_ui_grenade = nullptr;
 	II_BriefInfo		m_item_info;
-	CUIStatic*			m_radia_damage;
+	CUIStatic*			m_radia_damage = nullptr;
 	
-	CUIProgressBar*		m_ui_health_bar;
-	CUIProgressBar*		m_ui_armor_bar;
-	CUIProgressBar*		m_ui_stamina_bar;
-	CUIStatic*			m_ui_weapon_icon;
-	CUIStatic*			m_back;
-	CUITextWnd*			m_ui_weapon_third_ammo; //Alundaio
+	CUIProgressBar*		m_ui_health_bar = nullptr;
+	CUIProgressBar*		m_ui_armor_bar = nullptr;
+	CUIProgressBar*		m_ui_stamina_bar = nullptr;
+	CUIStatic*			m_ui_weapon_icon = nullptr;
+	CUIStatic*			m_back = nullptr;
+	CUITextWnd*			m_ui_weapon_third_ammo = nullptr; //Alundaio
 
 	u32					m_ui_weapon_ammo_color_active;
 	u32					m_ui_weapon_ammo_color_inactive;
