@@ -247,7 +247,7 @@ extern bool isGodMode();
 
 void CEntity::KillEntity(u16 whoID)
 {
-	if (ID() == Actor()->ID())
+	if (IsGameTypeSingle() && (this->ID() == Actor()->ID()))
 	{
 #ifndef MASTER_GOLD
 		if (isGodMode())
