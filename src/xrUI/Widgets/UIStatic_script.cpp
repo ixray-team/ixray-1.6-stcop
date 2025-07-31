@@ -49,6 +49,7 @@ void CUIStatic::script_register(lua_State *L)
         .def("InitTexture",			+[](CUIStatic* self, pcstr texture) { self->InitTexture(texture); })
         .def("InitTextureEx",		&CUIStatic::InitTextureEx)
         .def("InitTextureEx",		+[](CUIStatic* self, pcstr texture, pcstr shader) { self->InitTextureEx(texture, shader); })
+        .def("ResetOriginalRect", &CUIStatic::ResetOriginalRect)
 
 		.def("SetTextureOffset",	&CUIStatic::SetTextureOffset)
 
