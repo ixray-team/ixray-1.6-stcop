@@ -249,6 +249,12 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 			C.r_dx10Texture("s_dn_g", xr_strconcat(mask, oG_Name, "_bump"));
 			C.r_dx10Texture("s_dn_b", xr_strconcat(mask, oB_Name, "_bump"));
 			C.r_dx10Texture("s_dn_a", xr_strconcat(mask, oA_Name, "_bump"));
+
+			//LVutner: Maybe load these only when PBR flag is detected?
+			C.r_dx10Texture("s_dn_rX", xr_strconcat(mask, oR_Name, "_bump#"));
+			C.r_dx10Texture("s_dn_gX", xr_strconcat(mask, oG_Name, "_bump#"));
+			C.r_dx10Texture("s_dn_bX", xr_strconcat(mask, oB_Name, "_bump#"));
+			C.r_dx10Texture("s_dn_aX", xr_strconcat(mask, oA_Name, "_bump#"));
 		}
 
 		C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
