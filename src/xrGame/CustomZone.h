@@ -65,7 +65,9 @@ public:
 
 	xr_vector<SZoneObjectInfo>& GetObjectInfoMap() { return m_ObjectInfoMap; }
 
-	virtual CCustomZone	*cast_custom_zone				()							{return this;}
+	virtual CCustomZone* cast_custom_zone() {return this;}
+	virtual CSpaceRestrictor* cast_restrictor() {return this;}
+	virtual CGameObject* cast_game_object() { return this; }
 
 	//различные состояния в которых может находиться зона
 	typedef enum {
