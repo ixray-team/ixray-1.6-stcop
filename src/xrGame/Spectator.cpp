@@ -258,7 +258,11 @@ void CSpectator::IR_OnKeyboardRelease(int cmd)
 
 void CSpectator::IR_OnKeyboardHold(int cmd)
 {
-	if (Remote())		return;
+	if (Remote())
+		return;
+
+	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+		return;
 
 	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
 	game_PlayerState* PS = Game().local_player;
@@ -299,7 +303,12 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 
 void CSpectator::IR_OnMouseMove(int dx, int dy)
 {
-	if (Remote())	return;
+	if (Remote())
+		return;
+
+	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+		return;
+
 	CCameraBase* C	= cameras	[cam_active];
 	float scale		= (C->f_fov/g_fov)*psMouseSens * psMouseSensScale/50.f;
 	if (dx){
