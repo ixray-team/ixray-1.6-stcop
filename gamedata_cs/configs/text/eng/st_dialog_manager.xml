@@ -1,0 +1,1653 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="dm_intro_1">
+		<text>What's up! You don't hear too many greetings around here. These days you're more likely to get a bullet in the back.</text>
+	</string>
+	<string id="dm_intro_2">
+		<text>Welcome! So nice to see a human being, instead of more reeds and monsters.</text>
+	</string>
+	<string id="dm_intro_3">
+		<text>Hiya! You new to the Swamps? I wandered over here after the Emission, and now I can't seem to find my way back.</text>
+	</string>
+	<string id="dm_intro_4">
+		<text>A new face in this dump! Welcome!</text>
+	</string>
+	<string id="dm_intro_5">
+		<text>Hi! You got a minute? I'm bored out of my mind...</text>
+	</string>
+	<string id="dm_intro_6">
+		<text>High-five, brother! You really look like a nice fella!</text>
+	</string>
+	<string id="dm_intro_7">
+		<text>Like the landscape much? It's the same damn thing for five miles each way, with only ruins and monsters to break it up. </text>
+	</string>
+	<string id="dm_intro_8">
+		<text>So, you ended up in this damned place too, huh? You better hire a guide if you wanna get outta here.</text>
+	</string>
+	<string id="dm_intro_9">
+		<text>Hey! So, you're new here? Take my advice - watch out for the marshlands, they can swallow you whole. Don't roam the trailways either, unless you're looking to catch a bullet.</text>
+	</string>
+	<string id="dm_intro_10">
+		<text>I haven't been here long, but I'm already sick and tired of this place. Unfortunately, getting out ain't as easy as getting in.</text>
+	</string>
+	<string id="dm_intro_11">
+		<text>Hello, my good man! Are you hiding too? Everyone around me is hiding - some from the past, some from themselves...</text>
+	</string>
+	<string id="dm_intro_12">
+		<text>Your first time at the Swamps? Then you listen up. Above all else, it's the humans you gotta watch out for. Monsters and quicksand are a distant second. Stick to reed beds and you'll live longer.</text>
+	</string>
+	<string id="dm_about_0">
+		<text>Damn these mosquitoes! There's an anomaly for you - they bite through a rubber coat! And the other local attractions ain't better, believe me. There's this swamp critter around that will really make you "hit rock bottom," you catch my drift?</text>
+	</string>
+	<string id="dm_about_1">
+		<text>The Zone is a tough place to survive alone, but this area is the worst. I'm tired of being scared every minute of every day. I wanna join some faction, but there aren't many options - either some gang or those blue-wearing stalkers. I'm not too keen on bandits - they aren't bandits for nothing, right? One day they'll stab you just for the hell of it, and that'll be that. I'd much rather go with those stalkers. You think they'll take me? Then again, how would you know?</text>
+	</string>
+	<string id="dm_about_2">
+		<text>This joint is mostly a home to turncoats, ones that even the Zone's bandits don't want. A couple of times I saw these stalker patrols in blue camouflage - they're called Blue Sky or Clear Sky or something. Those guys are too serious and need to lighten up! They keep their camp location a secret - I wouldn't mind checking out what they're hiding there.</text>
+	</string>
+	<string id="dm_about_3">
+		<text>Oh, man! My socks are wet, my feet are covered in leeches, and my sweater is about to decompose from all this moisture. What I wouldn't give right now for a hot broad, a hot bath, some dry clothes and a glass of cognac next to a fireplace! Except all that's waitin' for me is a shot of vodka by the campfire and the whining of other losers like myself. And not even that - unless I join some gang.</text>
+	</string>
+	<string id="dm_about_4">
+		<text>Do you know about Clear Sky? That damn clan is so cryptic you'd think they're all secret agents or something. I only learned about them through bits and pieces of some radiochat. That and other stalkers' stories.</text>
+	</string>
+	<string id="dm_about_5">
+		<text>The Swamps are the lowest a stalker can go. The only folks you'll find here are those that are running from problems more serious than marshlands, mutants or consumption. On the outside, most of 'em would be rotting either in prison or six feet under. Me, I didn't get along with the army guys, so I had to run around the Zone for a while until the Emission opened up the way to these parts. This here's a good place to hide.</text>
+	</string>
+	<string id="dm_about_6">
+		<text>I tell ya, friend, if there's a place on this Earth to get "lost" in, it's the Swamps. You can spend weeks here just going around in circles. Only some wouldn't want to. If the monsters don't get ya, the marshes will - and we got plenty of both. I've been hanging around here since this path was first discovered, and it's the best hideout there is - as long as you stay alive.</text>
+	</string>
+	<string id="dm_about_7">
+		<text>These swamps are full of life, and I don't just mean the mutants. Lots of stalkers around - some hiding from the law, others from former buddies. And they've come to the right place! The gaps in anomaly fields have only just been discovered, so there's still a lot of uncharted territory. Only it hasn't made living here easier. Too many rotten apples around here these days - they'll gun you down and loot your cold corpse without batting an eye.</text>
+	</string>
+	<string id="dm_about_8">
+		<text>The monsters, the marshes, the whole goddamn Zone! I'm sick and tired of roaming these swamps! I didn't come here to shit my pants every time a reed rustles, or the water splashes, or a chopper rattles in the sky. Maybe we should gather up into some kind of clan and grab ourselves a drier spot? Ain't it better when you got friends watching your back and the campfire crackling at night? Especially with some canned soup on it, or a flesh barbeque. Add some guitar tunes and there's your heaven on Earth!</text>
+	</string>
+	<string id="dm_about_9">
+		<text>Here it's the same thing every day: lowlifes hiding in the reeds, people drowning in the marshes, choppers circling in the sky and shooting stalkers down. Oh, and sometimes there's guys in blue camouflage - those are from Clear Sky. Interesting how the clan's been around for a while, but no one's ever heard of them until recently.</text>
+	</string>
+	<string id="dm_about_10">
+		<text>Before the Emission, stalkers thought twice about coming here. Too many anomalies and marshes, too much moisture and even more stench. Then you've got the monsters, and the mosquitoes that are even worse, and these damn reed beds everywhere you turn. Why the hell bother, right? It all changed after the Emission. Anomalies shifted around and all the factions went off on their vendettas, fighting for new territories. So now lots of folks manage to make a better living here, as funny as that sounds. Mostly ragtag, like me - and a few fools who think that someday they'll own the place.</text>
+	</string>
+	<string id="dm_about_11">
+		<text>Oh man, am I tired of ranging these swamps! Sure, I'd go back, but I got some old sins that don't let me, let's leave it at that. I wouldn't mind joining a clan, but there ain't none around to speak of - just a bunch of bandits.</text>
+	</string>
+	<string id="dm_about_12">
+		<text>These Swamps are no paradise, that's for sure - more like the armpit of the Earth, even by the Zone's standards. But that's actually why I came here. Some people thought I owed them something and just couldn't wait to collect. So here I am, with a much better chance of survival than anywhere else. No way they'll find me in these reeds in a hundred years!</text>
+	</string>
+	<string id="dm_about_13">
+		<text>A new local faction has sprung up recently, called Clear Sky. No idea what they're all about but I've seen enough people in my life to tell you - these guys are complete nerds! What do you mean what do I mean? They're scientists, or some sort of eggheads anyway. Then again that doesn't stop them from being able to handle weapons pretty good. And if a man's got a brain and a gun, I'd think twice before getting in his way.</text>
+	</string>
+	<string id="dm_action_info_0">
+		<text>Yo, dawg, don't be askin' too many questions around here, you'll live longer. That's just from personal experience. I used to do just that until I learned a little too much. Now I gotta hide in this dump. Actually, I was lucky to wind up here, thanks to the Emission. You can roam 'round these swamps for weeks and not see a soul, 'cept for boars and flesh.</text>
+	</string>
+	<string id="dm_action_info_1">
+		<text>Damn it all! So much for my luck... I always got the best of life, but now it's getting the best of me. You think it was my idea to end up in this dump? No sir, I was doing great in the Zone. I was riding the gravy train all right, making good money. But I had to split when my pals got the idea of sticking a knife in my back. What for? That's none of your business.</text>
+	</string>
+	<string id="dm_action_info_2">
+		<text>I got a bad beat in a card game with some local thieves. I went all-in - bet my own life. I didn't really feel like paying up, so I skedaddled down here. Got into a fight with the army boys along the way, too. Now I'm stuck here, rolling with all kinds of riff-raff.</text>
+	</string>
+	<string id="dm_action_info_3">
+		<text>Before I came here, I was doing time 'cause this one son of a bitch set me up. Rotting in prison wasn't exactly my idea of living it up, so me and a couple of other cats decided to jump ship. We popped one of the guards, took his gun and ran straight to the Zone. Once we made it here, that's the last they saw of me. I want nothing to do with those boys - they're rotten as these swamps. So this is where I'm hiding out.</text>
+	</string>
+	<string id="dm_action_info_4">
+		<text>What's with all the questions, huh? How do I know you're not some snitch? Okay, okay, calm down. I know no one can find me here... All right, listen up. I was stupid enough to rob some thieves. When I realized they'd do anything, and I mean anything, to get back their dough, I bolted straight for the Zone. But the greedy bastards tracked me down and sent a couple of hitmen my way. I was lucky enough to take care of their guys, with God's help. Now I'm thinking of putting together my own gang. We'll make it big some day, I can feel it.</text>
+	</string>
+	<string id="dm_action_info_5">
+		<text>I couldn’t get enough of action movies. That's why I came to the Zone, trying to act like a Hollywood hero. Of course, trouble shortly followed... and followed and followed - everywhere I turned there were enemies. Eventually I had to flee to this rathole. Sure, dying here is easy as pie, but you can also vanish into the reeds any time you like. This ain't the movies though - just a lot of blood and guts.</text>
+	</string>
+	<string id="dm_action_info_6">
+		<text>It's a simple story - I crossed some big shot and he put a price on my head. That's when I learned how many bounty hunters the Zone has. To get away from curious eyes, I escaped here. As soon as things settle down, I'll find the bastard and have a chat with him, man to man.</text>
+	</string>
+	<string id="dm_intro_13">
+		<text>Nice to see you!</text>
+	</string>
+	<string id="dm_intro_14">
+		<text>Greetings!</text>
+	</string>
+	<string id="dm_intro_15">
+		<text>Hi!</text>
+	</string>
+	<string id="dm_intro_16">
+		<text>Yes?</text>
+	</string>
+	<string id="dm_intro_17">
+		<text>Are you looking for help?</text>
+	</string>
+	<string id="dm_intro_18">
+		<text>Can I help you?</text>
+	</string>
+	<string id="dm_intro_19">
+		<text>Welcome to the Swamps!</text>
+	</string>
+	<string id="dm_intro_20">
+		<text>Take my advice - watch out for marshes and monsters.</text>
+	</string>
+	<string id="dm_intro_21">
+		<text>A new face around here!</text>
+	</string>
+	<string id="dm_intro_22">
+		<text>Trust my advice, friend, and stick to the reeds.</text>
+	</string>
+	<string id="dm_intro_23">
+		<text>If you want to get out of these swamps, find a guide first.</text>
+	</string>
+	<string id="dm_about_14">
+		<text>For a long while, the Swamps were closed off to most stalkers. We made a peaceful living exploring the terrain and keeping mutants at bay. The Emission changed everything. Anomalies shifted around and new faces started pouring in. They mostly come from across the Cordon. I guess there must be something worth escaping to want to come to a place like this...</text>
+	</string>
+	<string id="dm_about_15">
+		<text>The Swamps are a haven for renegades of every kind. All types of people drop in here - random loners, outcasts from various factions, and just plain criminals. We welcome them all, only some get the open-arms treatment, and some the feet-first kind.</text>
+	</string>
+	<string id="dm_about_16">
+		<text>We gotta do something, or it will be too late! The Zone seems to be waking up from a long dream. The last emission was so strong, it felt like the whole world was coming to end. We can't just dig in and sit here waiting for a real disaster. I don't feel like even imagining the aftermath. Suffice it to say, the original Chernobyl explosion would seem like a child's firecracker in comparison.</text>
+	</string>
+	<string id="dm_about_17">
+		<text>We research local anomalous activity. The Swamps are a perfect place to do that. We've already located a number of hot spots and are finding new ones every day. If only we had more funds...</text>
+	</string>
+	<string id="dm_about_18">
+		<text>This place isn't anything like the Zone. It's got a lot of monsters, sure, but very few anomalies. Other than that, it's a perfectly normal swamp, just like any other.</text>
+	</string>
+	<string id="dm_about_19">
+		<text>The Swamps used to be a peaceful place. No one disturbed us, no one came looking for artifacts. At the same time, there were just as many opportunities to die as anywhere else in the Zone. This jungle of reeds and marshes never attracted anyone. But times change. I have no idea what's going on outside the Swamps, but all kinds of reckless folks are just pouring in from there.</text>
+	</string>
+	<string id="dm_about_20">
+		<text>There ain't much to tell - you got just marshes, reeds and monsters. That and giant mosquitoes, of course. The Cordon is northwest of here, and Agroprom is up north. To the south and west, beyond the Zone's borders, is clean land.</text>
+	</string>
+	<string id="dm_about_21">
+		<text>Until recently, this used to be a quiet place. It was just us, the swamps, boars and flesh. Now it's getting crowded, and it's the wrong kind of crowd if you ask me. Good people have no business here. Now now, don't take offense - you're an exception.</text>
+	</string>
+	<string id="dm_about_22">
+		<text>We have only our leaders, Lebedev and Beanpolev, to thank for our predicament. Our camp is a former village, which got flooded back in Soviet times when the water reservoir was built. It's not registered on any maps, so trying to find us without a guide is a really foolish idea.</text>
+	</string>
+	<string id="dm_about_23">
+		<text>We came here to escape unwanted attention. Why? There were reasons. Lebedev or Beanpolev will tell you, if they feel like it. Here we are hidden even from visitors to the Swamps. If you want to get to the base, don’t go alone - find a guide. Much safer that way.</text>
+	</string>
+	<string id="dm_about_24">
+		<text>This place is wet, cold, miserable and stinky as hell. What else do you want to know about? Wanna hear about getting pulled down to the bottom of the swamp by some beast? Or about sinking into quicksand in a minute flat?</text>
+	</string>
+	<string id="dm_about_25">
+		<text>This here's a good place to hide. From whom? From anyone:  bandits, the military, or anyone else who's got their sights on you. Just jump into the reeds and you're as good as gone. Of course, if you want to lay low, don't do it literally. There's too many treacherous places waiting to trap you, and plenty of nasty creatures around. Take one wrong step and it's hasta la vista, baby!</text>
+	</string>
+	<string id="dm_about_26">
+		<text>You could roam these marshes for days on end and never get anywhere. It all looks the same: water, reeds and the occasional vegetation. I guess that's why Lebedev and Beanpolev chose this place for a camp. Even the army with their choppers can't spot us down here. That's how we've managed to do our business freely, away from prying eyes.</text>
+	</string>
+	<string id="dm_about_27">
+		<text>We've been hiding here so long that sometimes I feel like the whole world is one big swamp. I heard a story once that this used to be normal land, with villages and fields and everything. Then they started building a dam for the hydro power station, and ended up flooding the area. Either they miscalculated or just plain screwed up, but there was just too much water. Lots of folks weren't even evacuated in time. So now it's all a huge swamp.</text>
+	</string>
+	<string id="dm_about_28">
+		<text>Take a look around. Now you've seen everything there is to see at the Swamps. Same damn thing wherever you turn - reeds, half-sunk buildings and patches of dry land. And forget about finding our base, even if you know what you're looking for. And given the number of people who know about Clear Sky, we're not worried about being discovered.</text>
+	</string>
+	<string id="dm_about_29">
+		<text>We're based here for a reason. Before the Emission, this was the most desolate and inaccessible part of the Zone. Of course, you could always go deeper into the center, but no one would survive that trip. Consider this the outskirts. The Cordon is to the east of here, Agroprom is to the north, and the other directions...that's where the Zone ends.</text>
+	</string>
+	<string id="dm_about_30">
+		<text>Yep, you're asking the right person. No one knows the Swamps like Clear Sky. We've been here since...heh, who knows? It's hard to keep track of time in a place like this. Down here the flow of time is about as dreary and gloomy as the scenery. Pretty soon you'll lose count of days. Anyway, if you wanna get out of here, you'll have to find a guide from among the Clear Sky people - giving you directions would be utterly useless.</text>
+	</string>
+	<string id="dm_action_info_7">
+		<text>This is our job. The Emission sure kept us busy. Truth be told, we really aren't fighters, but in times like these, if you want to survive you better know how to handle a gun. I've a feeling that mine will soon see plenty of action.</text>
+	</string>
+	<string id="dm_action_info_8">
+		<text>I'm on a mission from Lebedev. Sorry, but my lips are sealed - private clan business.</text>
+	</string>
+	<string id="dm_action_info_9">
+		<text>I'm getting ready for my next assignment. There're too many bad people at the Swamps nowadays. Everyone thinks might makes right. They forget that for every force there's an even stronger opposing force.</text>
+	</string>
+	<string id="dm_action_info_10">
+		<text>I'm just idling around, but not for long. Clear Sky always has plenty of work to do, now more so than ever.</text>
+	</string>
+	<string id="dm_action_info_11">
+		<text>I'm getting ready for an assignment in the deeper parts of the Swamps. The Zone is getting very restless, so we have to get our asses up and moving. Mark my words, stalker: great changes are coming.</text>
+	</string>
+	<string id="dm_action_info_12">
+		<text>Like the rest of us, I explore the Zone. It's the most amazing thing humankind has ever encountered. We shouldn't fight the Zone - we should research it, try to understand it and coexist peacefully. The Zone is here to stay, mark my words.</text>
+	</string>
+	<string id="dm_action_info_13">
+		<text>We are all doing the same thing - scientific research. The Zone must be studied. Every day it finds a new way to amaze me. There are just as many wonderful things as there are terrible ones. Artifacts don't even begin to describe it. Seasoned stalkers talk about a Monolith in the center of the Zone that can grant you any wish. I wish I could find it some day.</text>
+	</string>
+	<string id="dm_action_info_14">
+		<text>My instruments registered a very high concentration of energy, which means a great chance of artifacts or anomalies springing up here. I took the measurements and sent them to Beanpolev. Now I'm waiting for further orders.</text>
+	</string>
+	<string id="dm_action_info_15">
+		<text>Right now, nothing at all, but I have lots of responsibilities. We are scientists, technicians and soldiers all in one. Today we fight, tomorrow we go on a science expedition - that's what it's like.</text>
+	</string>
+	<string id="dm_action_info_16">
+		<text>I joined Clear Sky by accident. I was sinking in a marsh one day when these guys pulled me out and took me to their base. I had a chat with Lebedev, and the man made a lot of sense. He knows more about the Zone than others would care to hear about. The clan seems to have a worthy goal, so I joined up and started doing what I could to help.</text>
+	</string>
+	<string id="dm_action_info_17">
+		<text>I'm a long-standing member - one of the first in the clan. I've been studying the Zone at the Swamps from the very beginning. I take various measurements, plot graphs, maintain equipment and so on. I've shot a few monsters - for research purposes, of course. We're having to take up our guns more and more these days.</text>
+	</string>
+	<string id="dm_action_info_18">
+		<text>Like everyone else here, we observe and collect data. I think Beanpolev and Lebedev have learned more about the Zone than the rest of us combined. They rarely tell us, common soldiers, about it though. We just worry about our immediate priorities, while they keep track of the bigger picture.</text>
+	</string>
+	<string id="dm_action_info_19">
+		<text>Waiting for news from our guys. They're deep in the Swamps on a mission. In times like these, they might need our help.</text>
+	</string>
+	<string id="dm_cool_info_0">
+		<text>Lots is new. The Emission, for one...it changed more than just the Zone. All of us have changed. There's more anger in us, or something. One moment you're friends with a man, and next thing you know he's pointing a gun at your head. Oh, I don't know what I'm talking about. You better ask Lebedev.</text>
+	</string>
+	<string id="dm_cool_info_1">
+		<text>More and more emissions are happening - I've never seen anything like this. The Zone is shaking up, changing everything around us. Familiar pathways are being drowned in deathly anomalies, and new, formerly closed territories are opening up. The Swamps are also becoming more accessible. I bet all the factions will soon start a ruckus over these lands.</text>
+	</string>
+	<string id="dm_cool_info_2">
+		<text>How would I know what's new? We live on these swamps like on a different planet. You better ask the non-locals.</text>
+	</string>
+	<string id="dm_cool_info_3">
+		<text>They say the Emission has made ways to many different places, not just the Swamps. The usual stalker habitats have turned into anomaly mazes, and the places no one could go to before are now open for exploration and looting.</text>
+	</string>
+	<string id="dm_cool_info_4">
+		<text>According to all our research, the ever more frequent emissions have got nothing good in store for us. The Zone has become unstable. These new changes will prompt more fights for new lands, which had previously been inaccessible due to anomalies. Something is bound to happen, and that something cannot be good.</text>
+	</string>
+	<string id="dm_cool_info_5">
+		<text>I've heard that stalkers at the Cordon gave the army boys a good thrashing. I don't see how they possibly could, but that's rumors for you, right? Let's see what else... They found a cache of old vehicles, equipment and other goodies at the Garbage - stuff that dates back all the way back to 1986, the time of the original accident. It was thought to be contaminated, but now it's become literally invaluable. A real gold rush's broken out, which obviously brought in a whole bunch of bandits. They've got the Garbage by the balls now, skinning our stalker brothers alive.</text>
+	</string>
+	<string id="dm_cool_info_6">
+		<text>The Emission has brought some disturbing news. It was followed by a few days of calm, but that was just the quiet before the storm, we can see that now. Many factions are about to start fighting, including ours. They'll be fighting for land though and our cause is very, very different...</text>
+	</string>
+	<string id="dm_intro_24">
+		<text>Hey brother!</text>
+	</string>
+	<string id="dm_intro_25">
+		<text>Got a question? I'm here to help.</text>
+	</string>
+	<string id="dm_intro_26">
+		<text>Ask away - while I'm in the mood to answer questions.</text>
+	</string>
+	<string id="dm_intro_27">
+		<text>Hi stalker! Welcome to the Cordon!</text>
+	</string>
+	<string id="dm_intro_28">
+		<text>It's been a while since I saw a seasoned merc at the Cordon. You're one of them, ain't you?</text>
+	</string>
+	<string id="dm_intro_29">
+		<text>Hello brother! Welcome to our neck of the woods!</text>
+	</string>
+	<string id="dm_intro_30">
+		<text>Nice to meet a brother in arms!</text>
+	</string>
+	<string id="dm_intro_31">
+		<text>Hi! Stay close to us stalkers, 'cause the bandits and the army are too uptight these days.</text>
+	</string>
+	<string id="dm_about_31">
+		<text>The Cordon is what it is - the backwoods of the Zone, and even that's stretching it. We have few anomalies, almost no artifacts to speak of, and the monsters are basically harmless. There are roads to the Garbage and the Dark Valley. You could also make your way to the Swamps, but why the hell would you want to?</text>
+	</string>
+	<string id="dm_about_32">
+		<text>This place used to be pretty tame. There was an established routine: newbies kept to what they knew, stalkers gathered artifacts to sell to Sidorovich, and the military provided "protection" from the bandits. The army boys were mostly decent people. But then everything changed. A bunch of goons came our way from the Garbage and started doing business with the commander. Now there's no longer any order, and the military cannot be trusted. Yet, bad luck often brings good luck. Stalkers have now joined forces, so the army can no longer push us around.</text>
+	</string>
+	<string id="dm_about_33">
+		<text>You kidding me? No way an old dog like you has never heard of the Cordon. This is the starting point for most greenies. It leads to more dangerous spots, like the Garbage, the Dark Valley and the Swamps. The only dangers we got here are bandits and the army, who are getting too big for their boots. But we'll deal with them soon enough - stalkers have recently joined forces to do just that.</text>
+	</string>
+	<string id="dm_about_34">
+		<text>Okay, here's how it is. There, beyond the outpost, is the edge of the Zone - the past we all came from. No anomalies or monsters there, but you already knew that. To the west are the Swamps. That over there is the way to the rookie village and the old transport depot where the military are based. A stalker camp is just past that bridge, and beyond that is bandit and Freedom territory - the Garbage and the Dark Valley. That's about it.</text>
+	</string>
+	<string id="dm_about_35">
+		<text>The army's nothing but a bunch of dirty rotten crooks. Their job is to seal the Zone tight and shut off all access. But have you ever wondered how we manage to get all kinds of goods from the outside, and the outside world gets artifacts and other illegal items from the Zone? Of course, it all goes through the army boys, and you can be sure they're lining their pockets well with each transaction. It used to be that you would wet their beak and they would keep their word, but no longer. Pay or no pay, you just can't be safe with them. What happened was that stalkers, who could have just stuck their heads in the sand like they always did, actually began to stand up to the military. It's even rumored that they've taken the outpost commander hostage.</text>
+	</string>
+	<string id="dm_about_36">
+		<text>It's about the same as every other place. Some stalkers looking for loot, others looking for stalkers to loot. We risk our lives exploring anomalies and battling monsters for a piece of bread, and what for? Only to have them take it right from our hands. You don't know who I'm talking about? Why, the military, of course. Nowadays they're sitting tight though, 'cause we took their commander hostage. They can't report it to the general staff - that would lead to an inspection, and the last thing they want is their dirty tricks brought to light. That's how we put them on a humble pie diet.</text>
+	</string>
+	<string id="dm_about_37">
+		<text>Stalkers are uniting. When the going gets tough, it's no use trying to go it alone. We got the army baring its teeth on one side and bandits choking us on the other. So, caught between a rock and a hard place, we finally made our stand. Let them come if they like - we'll have an answer.</text>
+	</string>
+	<string id="dm_about_38">
+		<text>I'll drop the traditional stalker bullshit about anomalies, radiation and monsters; here's the real news. Stalkers and the army got into a conflict after someone got done out of a huge share of loot. So the stalkers took the army commander hostage. The soldiers lost all of their morale pretty quick. Of course, their chief had been smart enough to hide the goods from his squad. Now they're stuck: can't call for support from the outside and can't attack the stalkers without losing their commander and the money with him. Other than that, we are seeing more and more thugs from the Garbage. That about sums it up, I think. Take care of yourself.</text>
+	</string>
+	<string id="dm_about_39">
+		<text>So much has been going on lately. Believe it or not, stalkers got the Cordon under their control for the first time ever. They even turned the old farm into a base. Who ever thought this would come to pass? If it lasts, the whole Zone will be ruled by stalkers. As it should.</text>
+	</string>
+	<string id="dm_about_40">
+		<text>Life at the Cordon is pretty rough now. We're up against the military and the bandits and getting really fed up with both of them. The army boys are bugging the living shit out of us and the greedy goons have got their sights set on our lands. Still, it's safer here than in many other places.</text>
+	</string>
+	<string id="dm_about_41">
+		<text>The Zone's factions are at war with each other, fighting for new territories and artifact fields. The Cordon is no exception. The army, the bandits and the stalkers - that's us - are pitting their strength against each other. So far we're coming out on top.</text>
+	</string>
+	<string id="dm_about_42">
+		<text>The Zone begins at the Cordon. Any newbie starts off here and spends a month or two learning the ropes. Unless he's a complete moron, of course. But this is no news to you, is it, pal? You don't look like a rookie to me.</text>
+	</string>
+	<string id="dm_about_43">
+		<text>We and the military used to cooperate. We collected and smuggled artifacts and they turned a blind eye to our business - for a fee. Then they started getting too big for their britches. They'd pocket our loot and even put bandits on our trail. We had what you might call a "falling out." Now we got a war on both fronts - the army and the bandits.</text>
+	</string>
+	<string id="dm_about_44">
+		<text>A little while ago, our guys dug up a real valuable artifact. It took five of them dead to bring it here, and the ones that made it didn't look much better. The customer must've been a real big shot, 'cause Sidorovich kept real quiet about it. The boys were this close to delivering it, but the outpost commander suddenly decided that he wanted more than his fair share. The son of a bitch tipped off some bandits, who set up an ambush. Now our boys are gone and so is the loot. At first we wanted to waste the commander, but then decided to take him hostage instead. We just want what's ours, and sooner or later we'll beat it out of him.</text>
+	</string>
+	<string id="dm_action_info_20">
+		<text>I'm just like everybody else - trying to make ends meet and maybe an extra buck or two in the process. I can't wait until we start running the show here at the Cordon! I always knew that eventually the army and the thugs would get what's coming to them! And besides, dealing in artifacts will get much easier.</text>
+	</string>
+	<string id="dm_action_info_21">
+		<text>For now I'm just gaining experience and saving up some coin. As soon as I have enough, I'll buy me a good shooter and armor, and head straight for the center of the Zone. Rumor has it some guys already made it there and found the Wish Granter. That's where I'm gonna go. And when I find it, I won't go wrong with my wish, you can bet on that!</text>
+	</string>
+	<string id="dm_action_info_22">
+		<text>I listened to a bunch of fairytales about the Zone and was foolish enough to believe them. But, as I quickly learned, it's a lot different when you're on the inside. I turned out to be a softer cookie than I thought. Dying is easy here, and collecting artifacts is not. But what's really killing me is that there's not a peaceful spot in the whole damn Zone. Even when I fall asleep, half of me stays awake.</text>
+	</string>
+	<string id="dm_action_info_23">
+		<text>The Zone enchanted me. I was just passing by, kind of like a tourist, and got hooked. The thing is, the people here are real, be they friend or foe. The danger, the feeling that death lurks behind every corner - that's what makes us city slickers feel alive! And I enjoy every minute of it.</text>
+	</string>
+	<string id="dm_action_info_24">
+		<text>I'm here to meet a buddy of mine. He's bringing some loot we found, only we took different paths and I got here a little earlier. Nah, he couldn't have gotten lost - he's a real trooper. I guess he took a roundabout way or something. Or maybe he ran into an old friend. Anyway, I'm not worried, he'll be here any minute now...</text>
+	</string>
+	<string id="dm_action_info_25">
+		<text>Some douche bag sold me a map of some cache, and I'm starting to think it's a fake. I've crisscrossed the whole area and there's not a single goddamn artifact around. I'll kill the scumbag when I find him!</text>
+	</string>
+	<string id="dm_action_info_26">
+		<text>I'm taking it easy after the last looting trip. We went almost all the way to the Barrier and set up some defenses against the beasts that are flowing in from the center. We had a great team - Shaggy Alex, Lesha Homeboy, Moldey - all bang-up fellas. I picked up some nice loot, sold it for a good chunk of green and decided to take a break. This is as nice a place to relax as any.</text>
+	</string>
+	<string id="dm_cool_info_7">
+		<text>I heard that a group of stalkers fought their way to the center of the Zone. That was right before the Emission hit. I wonder if they managed to reach the Wish Granter in time...</text>
+	</string>
+	<string id="dm_cool_info_8">
+		<text>Getting loot never used to be this difficult. Even if you escape the monsters' claws and make it through the anomaly fields, you've still got the bandits guarding the way, and then the military. Nowadays it ain't rare to come home with less than you started with. Someone needs to do something about these leeches! Maybe stalkers will finally teach them a lesson...</text>
+	</string>
+	<string id="dm_cool_info_9">
+		<text>Have you heard what's going at the Garbage? As soon as stalkers discovered some valuable equipment and started digging it out of those heaps of trash, bandits came flocking like flies to shit. They even set up a base in the area - all to make skinning our stalker brothers easier. It's real bad down there these days. Diggers are robbed and murdered left and right, and anyone who objects is thrown into a concentration camp. And that may be a fate far worse than even death - the prisoners are forced to dig in the Garbage's most contaminated areas. The poor bastards die by the dozens from radiation and anomalies, and the bandits get rich off their deaths. The bottom line, friend - be careful at the Garbage.</text>
+	</string>
+	<string id="dm_cool_info_10">
+		<text>There's some sort of a Scorcher just past the Barrier. Anyone who goes near it gets his brains fried, and - ta-da! - we have a new zombie. It seems no one has ever made it through alive. There're also stories about a Wish Granter, but I don't believe a word of it.</text>
+	</string>
+	<string id="dm_intro_32">
+		<text>Stick your good manners where the sun don't shine and cut to the chase! Whaddaya want?</text>
+	</string>
+	<string id="dm_intro_33">
+		<text>Bugger off, punk!</text>
+	</string>
+	<string id="dm_intro_34">
+		<text>Suppose I said "hi" back. Now what?</text>
+	</string>
+	<string id="dm_intro_35">
+		<text>What up my man?</text>
+	</string>
+	<string id="dm_intro_36">
+		<text>Yo, got a smoke?</text>
+	</string>
+	<string id="dm_intro_37">
+		<text>How goes it?</text>
+	</string>
+	<string id="dm_intro_38">
+		<text>Take it easy on the handshakes. Whatcha looking for?</text>
+	</string>
+	<string id="dm_intro_39">
+		<text>Holy cow! Where did you come from? C'mon, spill the beans.</text>
+	</string>
+	<string id="dm_intro_40">
+		<text>Lookie here, a new mugshot just walked in! How's it going?</text>
+	</string>
+	<string id="dm_intro_41">
+		<text>Wassup, brother! You here to make a killing? Come right in, we got plenty to go around.</text>
+	</string>
+	<string id="dm_intro_42">
+		<text>Hello to you too. Got a question?</text>
+	</string>
+	<string id="dm_intro_43">
+		<text>Sup. Let's just keep it cool - no funny business, aight?</text>
+	</string>
+	<string id="dm_intro_44">
+		<text>I'm hiding from my parole officer, and you?</text>
+	</string>
+	<string id="dm_intro_45">
+		<text>Howdy-do? I'm taking a vacation from the joint, and you?</text>
+	</string>
+	<string id="dm_intro_46">
+		<text>Hey-hey, nice to see you're alone with no tail.</text>
+	</string>
+	<string id="dm_intro_47">
+		<text>Sup, man! You must be in some serious trouble to be comin' here.</text>
+	</string>
+	<string id="dm_intro_48">
+		<text>Look who we got here! The Garbage welcomes all except, well, garbage.</text>
+	</string>
+	<string id="dm_intro_49">
+		<text>Well, I'll be horn-swoggled! Where're you from, buddy? Sit-sit, let's have a chat.</text>
+	</string>
+	<string id="dm_intro_50">
+		<text>Holy ball sack! You got any smokes to share?</text>
+	</string>
+	<string id="dm_intro_51">
+		<text>Yowza! Thank God I saw you're a man, else I was gonna slug you dead. Alright, calm down and talk to me.</text>
+	</string>
+	<string id="dm_intro_52">
+		<text>Shiver my timbers! Ain't you afraid of walking alone?</text>
+	</string>
+	<string id="dm_intro_53">
+		<text>Timmy, long time no see! I was just thinking of you.</text>
+	</string>
+	<string id="dm_intro_54">
+		<text>Blimey, look who's here! Alright, start talking.</text>
+	</string>
+	<string id="dm_intro_55">
+		<text>Hey yourself. Now come on over here and tell me something new.</text>
+	</string>
+	<string id="dm_intro_56">
+		<text>Holy crap on a stick! A fresh face in the Zone! Mi casa su casa, amigo!</text>
+	</string>
+	<string id="dm_intro_57">
+		<text>Yo, keep it down, will ya? We're gonna have a quick 'n' dirty chat and split when I say, got it?</text>
+	</string>
+	<string id="dm_intro_58">
+		<text>What's up, bud? Whatcha doing in these here parts? C'mon, speak up now.</text>
+	</string>
+	<string id="dm_intro_59">
+		<text>Hey there, sucker! Cut to the chase or get on outta here.</text>
+	</string>
+	<string id="dm_intro_60">
+		<text>Hey, you looking too uptight, you a cop or something?</text>
+	</string>
+	<string id="dm_intro_61">
+		<text>Whatcha wanna talk about, little loser?</text>
+	</string>
+	<string id="dm_about_45">
+		<text>These stalkers are real pussies. Game doesn't get any easier than this - they stroll around and we just shake 'em down.</text>
+	</string>
+	<string id="dm_about_46">
+		<text>What am I, an information desk? This ain't no library, punk.</text>
+	</string>
+	<string id="dm_about_47">
+		<text>You better keep walking, sucker. I don't talk with peeps like you, but my gun here just might...</text>
+	</string>
+	<string id="dm_about_48">
+		<text>If you want stories, go ask a flesh or a blind dog. I don't talk to strangers, especially punks like you.</text>
+	</string>
+	<string id="dm_about_49">
+		<text>Ah, what the hell - I'll tell you all about it. The local boss' name is Yoga, and he's the authority around here. Got his own den at the base all full of expensive stuff. Then there's Borov - he's the barkeep and a real aristocrat-wannabe. Further up is Agroprom, that's where the stalker rabble and the Duty boys defend us from monsters, hehe. If you go the other way, that's where folks peddle their stuff on the black market. The market offers more variety come nighttime, but more dangers as well, the biggest being the Asubers brothers. Farther that way you'll find Freedom in the Dark Valley.</text>
+	</string>
+	<string id="dm_about_50">
+		<text>Dude, the Garbage is where the reds once dumped all kinds of contaminated crap. Transistors, shmansitors, rotors, shmotors... you get the idea. Of course, they'd be no use to anybody if it weren't for our beloved Zone. You've probably noticed there're no hardware stores and no mechanics' stations, but we still gotta fix up our gear somehow. That makes this crap a gold mine! As for radiation, no one gives a damn about it anymore, so everyone and their dog is flocking here for some easy pickings. Some dig the stuff, some trade it, and some collect their dues - that's us.</text>
+	</string>
+	<string id="dm_about_51">
+		<text>I don't care one bit for schooling greenies like you. The short story is like this: this depot is our base; Agroprom west of here is home to Duty and the stalker rabble; and to the east you've got Freedom - those guys are OK but we got our own beef with them. You don't want to head north - ever since the Emission the place is riddled with anomalies. And down south is the Cordon, that's where the army and small-time stalkers are duking it out amongst themselves.</text>
+	</string>
+	<string id="dm_about_52">
+		<text>The Garbage is the coolest place in the Zone, I swear. S'long as you're strong and cunning you're sure to do well here. As soon as they found caches of goods in these dumps, stalkers came flying as if pulled by a magnet. That's when the good times started, at least for us. Stalkers come here, dig the stuff up from the most horrendous pits, and pretty much hand us their loot - we ain't gotta lift a finger. We tax the manageable ones, but those who make a fuss or get out of line we enslave and throw into a concentration camp.</text>
+	</string>
+	<string id="dm_about_53">
+		<text>This party is for top dogs! No suckers, just us - made men and career criminals. Sure, we got some stooges of our own - after all, a real thief needs underlings to do the dirty work. Only thing we ain't got is broads.</text>
+	</string>
+	<string id="dm_about_54">
+		<text>We make the laws at the Garbage, and others live by them. The basic law is - you gotta share your loot. If you don't wanna, we'll make you. And trust me, anyone who tries to take a stand ends up regretting it real soon.</text>
+	</string>
+	<string id="dm_about_55">
+		<text>This here's where we herd our stalker diggers. Some folks try to be too smart for their own good. Wanna go looking for loot - fine, but don't forget the Garbage is ours! We only ask that our hospitality be rewarded. So don't hold it against us that you got frisked at the entrance. That's just how it works here.</text>
+	</string>
+	<string id="dm_about_56">
+		<text>Hey, ass-hat, get lost! Go chat with the digging kind, they'll tell you what's what.</text>
+	</string>
+	<string id="dm_about_57">
+		<text>Our job is to pinch the suckers around here. They squeeze our land for profit, and we squeeze them back. We keep the Garbage civil and everything stays calm, is that clear?</text>
+	</string>
+	<string id="dm_about_58">
+		<text>This is where real men make serious cash. And it's made off suckers like you, how you like that? A loser like you comes here, got no money, got nowhere to go, so we make him bust his ass to earn for us. These punks sift the trash for loot and then our traders sell it. That's how we do it around here.</text>
+	</string>
+	<string id="dm_about_59">
+		<text>What are you, some kind of journalist? Gonna write about me in tomorrow's newspaper? Ha-ha-ha! All right, listen here, boyo. We're the knights of the road and we rule the Garbage. You cut us some juice and we mind our own business. You don't pay up - you're in deep shit. This is a gold rush of sorts. That's 'cause these Soviet trinkets buried in this dump are now worth their weight in gold. So if you get into debt with us or try to be a hero, we'll send your ass straight to the camp. Working down there is about as much fun as mining uranium, what with all the anomalies and radiation. But hey, the good news is that at least your troubles would soon be over... along with your life.</text>
+	</string>
+	<string id="dm_about_60">
+		<text>We are the ones who look after law and order in this here place. You see, too many people wanna grab a piece of the Garbage's riches. We just take our toll, fair and square. We provide safe working conditions and guarantee security, but that has its costs, as you understand. What about the concentration camp, you ask? Well, it's a place where losers end up, practically of their own volition. Their kind is useless and washed-up - we merely enforce natural selection!</text>
+	</string>
+	<string id="dm_about_61">
+		<text>It's us who calls the shots around here, you feel me? We did time in this joint before the first stalker ever set foot in it. Hahaha, "time" in the "joint" - ain't that funny! Now that's what you call a play on words.</text>
+	</string>
+	<string id="dm_action_info_27">
+		<text>What are you, my lawyer? You ask a question like that on the street and it just might be your last...</text>
+	</string>
+	<string id="dm_action_info_28">
+		<text>The less you know, the better you'll sleep at night.</text>
+	</string>
+	<string id="dm_action_info_29">
+		<text>What do you care, anyways? My business is my own and no one else's.</text>
+	</string>
+	<string id="dm_action_info_30">
+		<text>You want your brains blown out now or should I explain what was wrong with your question first?</text>
+	</string>
+	<string id="dm_action_info_31">
+		<text>I'm getting big things done in this joint. I see a pussy, I pinch him, split the cash with my boys, cut a few points to Yoga - out of sheer respect - and that's that. Sometimes we pull more serious capers, but don't expect me to yap about it to you.</text>
+	</string>
+	<string id="dm_action_info_32">
+		<text>You mean what do I do in the Zone? I'm hiding from some nosy former pals of mine. Back on the outside they would go on and on with their questions and lectures on life... So we had an... altercation. I hope you're not here to start all that morality shit again, are you? No? Good, then just keep walking.</text>
+	</string>
+	<string id="dm_action_info_33">
+		<text>What's hard to understand about this? It's paradise for fellas who know what they're doing. Guards and suckers are easy to handle - riding the gravy train doesn't get any easier than this. You do your job right and you'll make a killing.</text>
+	</string>
+	<string id="dm_action_info_34">
+		<text>I used to toil as a stalker. Me and my friend roamed the Zone, looking for loot and barely surviving. One day we ran into a controller, and only I was lucky enough to escape. I made sure my bud wouldn't stay a zombie, but promised myself to never go back there. Now I'm here with these reservoir dogs. You can make it alright here, as long as you're careful - they're not the kind to "forgive and forget," if you know what I mean.</text>
+	</string>
+	<string id="dm_action_info_35">
+		<text>What's it to you, huh? One look at you tells me you've got your own problems. Around these parts knowing too much can help you kick the bucket long before you're due. By the way, your bucket looks mighty nice - wanna trade before you walk upon an anomaly? Ah c'mon,  get your panties out of the bunch - I'm just putting you on.</text>
+	</string>
+	<string id="dm_action_info_36">
+		<text>Everyone at the Garbage, including myself, is busy doing the same thing - making a bit of coin to retire on. The diggers toil away, stalkers comb the lands for loot, and we juice 'em for keeping order in this place. It's a cake job, but it's got its nuances.</text>
+	</string>
+	<string id="dm_action_info_37">
+		<text>You must think you're some big shot to be asking questions like that? What I do and what I talk about are two different things.</text>
+	</string>
+	<string id="dm_action_info_38">
+		<text>I fleece local stalkers and diggers. They hoe our dump looking for loot and I grab my slice of it.</text>
+	</string>
+	<string id="dm_action_info_39">
+		<text>My pals and I want to head for the Dark Valley and take a bite out of those Freedom cats. Only we can't do that without Yoga's permission - he's the boss around here. I don't feel too comfortable stepping up to him, so we're still mulling it over for now.</text>
+	</string>
+	<string id="dm_action_info_40">
+		<text>I joined the bandits by accident. I was supposed to become a stalker but it just didn't work out. That's alright though. I'm gonna save up some cash, make some connections and get my share of loot at the Garbage.</text>
+	</string>
+	<string id="dm_action_info_41">
+		<text>You talkin' to me? Have you lost your damn mind asking me that? Lemme call some of my boys over - we'll show you what we do with toothless cubs who think they got bite.</text>
+	</string>
+	<string id="dm_cool_info_11">
+		<text>I've seen all kinds of slammers before, but this one trumps them all. The heart of the Zone is right here at the Garbage. Here we make our own laws. You wanna live - you pay, and if you don't, you get a bunk in the camp or a chunk of lead in the chest. Do I make myself clear?</text>
+	</string>
+	<string id="dm_cool_info_12">
+		<text>Which Zone are you asking about? This one? This is just a children's playground compared to some other joints I've been in. A real paradise for a thief. Barbed wire and armed soldiers? Well, that's nothing. We got our own army. Move around all you want, get unlimited packages from the outside, and get hammered all you like - it's nothing but a joyride! Only problem is - no women. They don't like it here. Sometimes I get a craving so bad that even mutants start looking hot to me...</text>
+	</string>
+	<string id="dm_cool_info_13">
+		<text>You've got guts to ask a question like that. Now bugger off.</text>
+	</string>
+	<string id="dm_intro_62">
+		<text>You chose a bad time to show up at the Garbage, brother.</text>
+	</string>
+	<string id="dm_intro_63">
+		<text>Hey, buddy! If only you knew how tired I am of these bandit mugs...</text>
+	</string>
+	<string id="dm_intro_64">
+		<text>Good to see you, brother!</text>
+	</string>
+	<string id="dm_intro_65">
+		<text>Good going, brother!</text>
+	</string>
+	<string id="dm_intro_66">
+		<text>Break a leg, buddy! Stay away from bullets and anomalies!</text>
+	</string>
+	<string id="dm_intro_67">
+		<text>Nice to see a brother in arms!</text>
+	</string>
+	<string id="dm_about_62">
+		<text>I heard that there was a massive pit here before the first accident. After the explosion at the power plant, they started bringing contaminated vehicles, equipment and other junk here, and dumping it in the pit. There was so much of it that they filled the pit completely and then some. So here we are, digging through all this goodness.</text>
+	</string>
+	<string id="dm_about_63">
+		<text>There's a camp not far from here, where the bandits hold stalkers like us. I'd rather die than end up there - they make you dig 16 hours a day and send you to the most dangerous and radioactive parts of the Zone without any protection or equipment. They feed you scraps, beat you... You get the picture - to them you're nothing but goddamn cattle.</text>
+	</string>
+	<string id="dm_about_64">
+		<text>It ain't easy here for newbies. The beasts in this place would have you for breakfast, and the traders would love nothing more than to rip off the new guy. On top of that, the bandits give everyone a hard time, and even fellow stalkers ain't too keen on sharing their secrets with you. </text>
+	</string>
+	<string id="dm_about_65">
+		<text>Either stalkers like us stick together at the Garbage or the bandits will take us for all we've got and more. Once you owe 'em, it's a one-way ticket to their camp. As their slave. Nobody lasts long down there - a day's digging in a radiation pocket and you're as good as dead. </text>
+	</string>
+	<string id="dm_about_66">
+		<text>Nowadays the bandits rule the Garbage. They got us by the balls so tight we can't take a leak without their say-so. Wanna enter? That'll cost you. Wanna come out again? That'll cost you more. Even if you find something valuable that don't mean you'll be able to get it out of the Garbage. Bump into a group of bandits and you got two options: either they take everything or you take a bullet. Or worse, they'll send you to dig through trash until you meet your end in an anomaly or die from the radiation. </text>
+	</string>
+	<string id="dm_about_67">
+		<text>This place used to be a dump for radioactive trash.  They'd bring everything that glowed in the dark here, and nobody gave two shits about it until the Zone appeared. And now, cans of meat, lamps with transistors and spare parts are all worth their weight in gold, which is why stalkers come here to dig. But the bandits caught on fast enough, and now they rule this little roost. In the end, they get all the cash - we just do the legwork and don't get nothing back.  </text>
+	</string>
+	<string id="dm_about_68">
+		<text>The bandits control everything here. They set the rules, they collect taxes from the diggers and profit from the labors of others. Stalkers go through radioactive trash and dig up legacies of the Soviet era, but the bandits get all the rewards. You should know...You had to pay to get in, right? Well, on your way out they'll want even more, you'll see.</text>
+	</string>
+	<string id="dm_about_69">
+		<text>The only good thing you can do at the Garbage is get the hell out. There ain't nothing here for an honest stalker: even if you get lucky and find something, either the bandits will take it off you or you'll get a healthy dose of radiation digging through all that crap. Much better to go east to Freedom in the Dark Valley or west to Duty and normal stalkers at Agroprom. That's our Zone, the stalker's Zone. This is criminal territory, and there ain't nothing for you here, trust me.</text>
+	</string>
+	<string id="dm_about_70">
+		<text>You can get rich here, that's for sure. Why not? Just the other day I heard about a stalker who found a whole load of valuable stuff at the Garbage. I don't know exactly what it was he found - way too many different versions to know which is right - but he got rich, no doubt about it. I'm going to find something too, and then I'll buy decent equipment and move beyond the wild territory - that's where the best artifacts are. </text>
+	</string>
+	<string id="dm_about_71">
+		<text>This Garbage and its stupid gold rush! The worst thing that ever happened was some lucky bastard finding something valuable in these piles of trash! The gangs moved in right away and brought every stalker in this place to heel. It's shameful that our brotherhood has allowed this scum to dominate the Zone and dominate us. They even have a concentration camp, where the biggest offenders are sent. There you must dig through radioactive waste in exchange for food. We need to get outta here, believe you me. </text>
+	</string>
+	<string id="dm_about_72">
+		<text>Listen pal, the sooner you get clear of this place the better. There ain't nothing here for you except taxes and humiliation from the bandits, a knife in the back or a nice little spot in a concentration camp. I'd get out of here if I were you, and I'd do it fast.</text>
+	</string>
+	<string id="dm_about_73">
+		<text>This place is our version of Klondike. Understand this, friend - everything in the Zone is under lock and key, the military got it sealed pretty tight. Sometimes you struggle to get your hands on a can of meat, let alone spares or equipment. And even if the traders have something, it don't come cheap. This place is different. Inside these piles of trash you can find valuable things for free. They dumped everything here after the accident at the Chernobyl NPP. Sure, there's a bit of radiation here, and you'll have to pay the bandits their cut on anything you find...but you can still find a lot and all at once! So, friend, grab yourself a shovel, get digging and keep digging 'till you find your own "gold" vein.</text>
+	</string>
+	<string id="dm_about_74">
+		<text>If you still don't know what the Garbage is, I can tell you. Stalkers dig stuff up and bandits take it off them. They even built themselves a base in the old depot. They're living a whole different life now that they control the whole Garbage - they don't do shit, just rip off the diggers and get rich. Bastards! The other thing you can find here is a sort of flea market. The traders buy from the diggers and sell useful, sometimes even unique, items. Most of the trading goes on at night, so keep your eyes peeled - some of the dealers would love nothing more than to slip you a piece of junk in the dark. They're quite proficient in such "trades."</text>
+	</string>
+	<string id="dm_about_75">
+		<text>This is a place where the greedy and strong live off the greedy and foolish. It so happens that these piles of contaminated trash contain, amidst a whole lot of useless crap, certain items that are very valuable in the Zone. Naturally, this draws fools with big dreams of striking it rich. The trouble is that only the strong get rich here. I was foolish and I paid for my foolishness in full.</text>
+	</string>
+	<string id="dm_action_info_42">
+		<text>I mostly dig, but you have to be really careful these days, because everyone seems to want a piece of that which ain't theirs. The bandits used to be the only problem, but now a fellow stalker can be just as dangerous. It's not like in the good old days when you could give away your last can of meat to the stalker next to you and know that, if the need arises, he will do the same for you. But now... Ugh!</text>
+	</string>
+	<string id="dm_action_info_43">
+		<text>Nothing much. Just like the other diggers I'm doing my best to stay alive and get enough cash for some bread, a can of meat and a few rounds of ammo. If I'm lucky I'll get rich and get the hell out of this place, but first I want to visit the Wish Granter - there's something I've been wanting for a long time.</text>
+	</string>
+	<string id="dm_action_info_44">
+		<text>I'm new here...still trying to decide on what I want to do. I have to be real careful, new guys aren't considered human in this place. People talk about mountains of gold, but I don't see much cash around here. Maybe I should just forget all this and join Duty instead...</text>
+	</string>
+	<string id="dm_action_info_45">
+		<text>I'm like everyone here: hoping for a miracle. Maybe I can dig up something so valuable that I can buy my freedom from the bandits and have enough left to be rich. What, you think I'm dreamin'? Well, it's happened before, it can happen again. I heard about a digger who came across a bunch of military radios. They say he's a respected stalker now, with cash to splash and good equipment. I've never met him tho', it all happened before I got here.</text>
+	</string>
+	<string id="dm_action_info_46">
+		<text>I'm looking for something valuable among all this trash. There's a whole lot of stuff here from Soviet times, everything from canned meat to diesel engines. Things like that fetch a pretty penny here in the Zone, all you need is patience and plenty of antirad meds.</text>
+	</string>
+	<string id="dm_action_info_47">
+		<text>I've got a debt to pay. If I don't find a load of loot for the bandits, they'll make me their slave and force me to dig in the most dangerous places, and that ain't fun.</text>
+	</string>
+	<string id="dm_action_info_48">
+		<text>I was on my way to the Dark Valley when these scumbags took my cash at the entry. I'll need to pay to get out as well. I don't want to look like a penniless loser in the eyes of fellow stalkers, so I'm trying to make a little cash here before moving on. Trouble is, the more I work the bigger my debts seem to get. But it's OK, I'll get outta here soon.</text>
+	</string>
+	<string id="dm_action_info_49">
+		<text>I wanted to link up with Duty at Agroprom. This guy said he'd help me get there, but when we reached the Garbage he made off with my cash. Now I'm hanging around here, trying to scrape up for decent equipment and weapons. It ain't easy, let me tell you. The bandits know that letting diggers get their hands on weapons ain't too clever, so they're clamping down on it real bad. Getting a shooter and ammo around here is hard as nails.</text>
+	</string>
+	<string id="dm_action_info_50">
+		<text>Me and a buddy of mine were headed for the Barrier to meet up with some stalkers we know, but we got stopped at the Garbage. My friend was stupid enough to refuse to pay, started arguing with the bandits. They didn't argue back, just took him for their slave, and that's that. So here I am working my ass off to get his out and move on. I've even got the road worked out, and I have some experience now, but getting enough cash together ain't easy - the taxes here are tough, and on top of that getting weapons and ammo is next to impossible, seeing as the bandits confiscate them at the entry points.</text>
+	</string>
+	<string id="dm_action_info_51">
+		<text>My brother went missing in the Zone. I went looking for him, but the bandits stopped me. I had a chat with a few local stalkers and they say my bro hung around here for a while. Now I'm trying to find out as much as I can...hopefully I can find him. Who knows, he might even be alive...</text>
+	</string>
+	<string id="dm_action_info_52">
+		<text>I've been here for ages trying to find something more valuable than an old can of meat. No luck so far, but Mitya Big Ears over there found a conveyor motor and some oiled bearings right next to where I was working. That's a good find alright, would be even better if he could find someone to sell them to! Ha-ha! Ah well, I'll dig up something handy soon enough.</text>
+	</string>
+	<string id="dm_action_info_53">
+		<text>I was actually on my way to Agroprom, but got caught up in the gold rush here. I found a couple of decent items that sold pretty well - and doing that is a hell of a lot easier and safer than trying to fish artifacts out of anomalies. The main thing is remembering to keep an eye on the rad counter or you'll shine in the dark like a Christmas tree for the remainder of your short-ass life...</text>
+	</string>
+	<string id="dm_action_info_54">
+		<text>I'm looking for loot. We came here as a group from the rookie village after we heard the rumor that they found old valuables at the Garbage. We figured that by the time we learned to find artifacts, we'd miss out on all the fun. Looking back, we really should've just stayed in the village; two guys died straight away and another is working in the camp... who knows, he could be dead from the radiation by now. Man, if I could get my hands on a piece I'd show these bandits... they seem stupid, but they got this place worked out alright. They keep us all divided, and finding any weapons around here is next to impossible. Dig all you like, but don't get into groups of more than 3. I'm telling you man, we stalkers need to get our act together and chase these bastards outta here.</text>
+	</string>
+	<string id="dm_cool_info_14">
+		<text>I heard from some stalkers I know, who spent some time around Agroprom, that Duty is having a rough time with monsters. Some catacombs caved in or something and all sorts of nasty shit is crawling out.</text>
+	</string>
+	<string id="dm_cool_info_15">
+		<text>I went to the military warehouses with a buddy of mine - it's gotten real bad after the Emission. The military took a big hit; Freedom is trying to take over their base, while Monolith fighters and monsters are coming out from the center of the Zone, killing everything in their path. You can hear fragments of conversations on the radio, but the people themselves are nowhere to be found. The moral of the story is: the further into the Zone you get, the bigger the problems you gotta deal with.</text>
+	</string>
+	<string id="dm_cool_info_16">
+		<text>They say that after the Emission, the places you couldn't get to before because of anomalies, like the Red Forest and the Swamps, are now accessible. At the same time, some of the areas you could reach before are now unreachable. There's no way to get to Rostok now... and there were a lot of stalkers there before the Emission... nobody knows what happened to them.</text>
+	</string>
+	<string id="dm_intro_68">
+		<text>Hey!</text>
+	</string>
+	<string id="dm_intro_69">
+		<text>Hey, merc. If you are here to fight the Zone's spawns, then Duty is your ally.</text>
+	</string>
+	<string id="dm_intro_70">
+		<text>Hey! Join Duty - the faction for real men.</text>
+	</string>
+	<string id="dm_intro_71">
+		<text>Be careful around here and stick to the main roads. One wrong move and some beast will have you for breakfast.</text>
+	</string>
+	<string id="dm_intro_72">
+		<text>Hey!</text>
+	</string>
+	<string id="dm_intro_73">
+		<text>Hello, friend. I suggest you stay on your toes around here. Being attacked three-four times a night ain't as much fun as it sounds.</text>
+	</string>
+	<string id="dm_intro_74">
+		<text>This ain't a great time to be here, stalker. We've got a real war on our hands.</text>
+	</string>
+	<string id="dm_intro_75">
+		<text>Hey! Keep your eyes peeled, 'cause the beasts around here are real smart, drop your guard and you won't know what hit ya!</text>
+	</string>
+	<string id="dm_intro_76">
+		<text>Hello, friend. Always good to see a fellow stalker.</text>
+	</string>
+	<string id="dm_intro_77">
+		<text>Wassup? Here's a big Ukrainian welcome for ya.</text>
+	</string>
+	<string id="dm_intro_78">
+		<text>Hey bro! If you want to ask something, ask away.</text>
+	</string>
+	<string id="dm_about_76">
+		<text>What's there to say? Look around and you'll see everything there is to know.</text>
+	</string>
+	<string id="dm_about_77">
+		<text>These damn monsters are coming at us from all sides - it seems like the more we kill the more appear! Ah well, victory will still be ours. We just need some decent weapons and a few good fighters. If we had that we'd sort this place out in no time, and avenge our fallen brothers. </text>
+	</string>
+	<string id="dm_about_78">
+		<text>This place is cursed, I'm telling you. Not just Agroprom, but the Zone itself. We keep fighting, but who are we fighting against? Normal monsters can't reproduce this fast! We slaughter them today, but there are more of them tomorrow.</text>
+	</string>
+	<string id="dm_about_79">
+		<text>Look, you ain't gonna catch anything here 'cept a bullet. At night the mutants come out at us in huge numbers, and we hold them back. Our base in the former Research Institute building is another story. There you'll find a bar, a trader, a repair shop and other stuff - you'll see for yourself. You can also get some rest and fix up your guns at the neutral territory, s'long as you're cool with the locals. Orest is their boss, if I'm not mistaken. And if you wanna get outta this place, then head east for the Garbage, south for the Swamps, or north for Lake Yantar and the scientists' base.</text>
+	</string>
+	<string id="dm_about_80">
+		<text>There used to be a research institute here called...well, Agroprom Research Institute. Whatever it was used for before, now it serves as our base. Our commander is General Krylov, but we just call him Commodore. Not to his face, naturally. There's also a neutral base around here, at the deserted factory. If you head south you'll come to the Swamps. The bandits have taken over the Garbage to the east - the bastards are taking advantage of the fact that we're busy and can't deal with them right now. To the north is Lake Yantar. They say that there are some sort of emissions up there turning people into zombies. The fact that they attack us from there in large numbers would seem to support that theory. </text>
+	</string>
+	<string id="dm_about_81">
+		<text>You wanna hear tales of stalker adventures? Well, you've come to the wrong place, kiddo. Right here is as real as it gets. Come nighttime there are so many monsters we can't wash our pants fast enough. You see those holes? Right there, those gaps in the ground? Well, 'soon as it gets dark, that's where they climb out of, and let me tell you, son, it ain't pretty. They don't come out alone or even by the dozens... when they come out to party they don't hold back, that's for damn sure. We kill as many as we can, but it don't seem to do much good - there must be a friggin' incubator underground somewhere... nuking this whole place to hell wouldn't be too bad an idea!</text>
+	</string>
+	<string id="dm_about_82">
+		<text>It gets pretty hot here, son, I shit you not! Last week we went back to our base and left some of our guys here. At night they were attacked, which is normal for this place, but when we got back in the morning there was nothing here. No sign of our guys, no bodies, no dead monsters... only blood, empties, torn up body armor and marks in the ground. </text>
+	</string>
+	<string id="dm_about_83">
+		<text>I'm tired of this place. We've been here for God knows how many weeks now and it only gets worse with each monster attack. It feels like I ain't got enough anger left in me to fight them, let alone ammo. Sometimes I just wanna drop my shooter and crush the bastards with my bare hands. Maybe that's just the monsters messing with our heads? Ah well, we'll kill 'em all sooner or later.</text>
+	</string>
+	<string id="dm_about_84">
+		<text>This one time after a raid we received a message from our boys here at Agroprom - "SOS! Help, we're being overrun!" and we hear gunfire, screams and bellowing over the radio. Within minutes we had twenty fellas on their way there to help, but by the time we got there it was all dead quiet, and not a soul in sight. Just a flashlight on the ground, flickering. When the sun came up we tried to follow the tracks, but they lead into the institute underground. And after a recent raid when the tunnel collapsed, we were too afraid to go inside. Needless to say, that's the last we've seen of our boys. </text>
+	</string>
+	<string id="dm_about_85">
+		<text>Take your questions and shove 'em, buddy. I feel bad enough as it is. We're losing friends every night - some go down in battle, others go missing. Sometimes you come to relieve an outpost in the morning and there ain't nobody there, just a smoldering campfire and dead silence. That's a real scary sight, let me tell you. So go annoy someone else with your questions - us Duty fighters don't need your help to go crazy.</text>
+	</string>
+	<string id="dm_about_86">
+		<text>We got our outposts all over this place. Every night these beasts crawl out of the woodwork, and there are so many you don't need to aim - just spray and pray! They climb out of those holes in the ground, and we try to hold them back. Where do they come from? Ah, who the hell knows...</text>
+	</string>
+	<string id="dm_about_87">
+		<text>Mutants are crawling out from underneath Agroprom. I figure that when our boys tried to blow up the underground passages, the tunnels collapsed into their lair. We've lost count of how many we've slaughtered. Say, you ain't from Freedom by any chance, are you? Your mug sure as hell reminds me of a fella I used to know... Alright, watch yourself now. </text>
+	</string>
+	<string id="dm_about_88">
+		<text>Your first time at Agroprom, heh? Well, listen up then. We're based in the former research institute. The old factory is held by neutral stalkers. Sometimes the zombies from Lake Yantar attack us from the north and the monsters come out from underground. Further to the east you'll find the Garbage and if you head south you'll come to the Swamps.</text>
+	</string>
+	<string id="dm_about_89">
+		<text>We got a decent base here, no doubt about it. A shooting gallery, a zoo, the Peaceful Atom - that's the local bar - everything a man could ask for. But we don't mess around either, the discipline here is top notch!</text>
+	</string>
+	<string id="dm_about_90">
+		<text>Agroprom is a former research institute. Obviously, after the Zone appeared there ain't much research going on here no more. Ha-ha. Instead, we're using the building as our base to fight off the Zone's spawns. We're holding the line against the monsters that come out from underground. We fight to save the lives of other stalkers, sometimes at the cost of our own. </text>
+	</string>
+	<string id="dm_about_91">
+		<text>It used to be easier here, you know? Sure, there were monsters back then, but we handled them no problem. Nowadays tho' it's gotten real bad. Every night we kill dozens of these beasts, and the more we kill the more come the very next night. We're dropping like flies.</text>
+	</string>
+	<string id="dm_about_92">
+		<text>We - meaning Duty - are fighting the monsters that are trying to make their way to the surface, so we ain't got much time to chat, I'm sure you understand. You can go on to the neutral base at the deserted factory if you want an easy ride or you can stay and help us - experienced fighters are always welcome here. Our commander will pay you well for any assistance you give to Duty. </text>
+	</string>
+	<string id="dm_action_info_55">
+		<text>You're a nosy type, eh? You want to know why we're against the Zone? Because! It's a holy war, nothing more, nothing less! We either win or we lose, there ain't no "in between," you can't negotiate with the Zone. The bottom line is you're either with us or against us.</text>
+	</string>
+	<string id="dm_action_info_56">
+		<text>What does it look like? I've got nothing better to do, so I've taken up painting as a hobby, just wait until it gets dark and the paint will arrive. Son, there's a war going on against the mutants, a real war... blood and guts and all. We need to make one last push and finish off this filthy mutant scum. I mean, there must be an end to their numbers, right?</text>
+	</string>
+	<string id="dm_action_info_57">
+		<text>I'm fighting the Zone. You wanna know why? Well, imagine some freak comes into your home, shacks up in the corner, and starts to gradually force you and your family out. What would you do in that situation? You'd grab the sorry son of a bitch and throw him the hell out, no? That's pretty much what Duty is doing here. Our mission is to chase the Zone back to wherever it came from, and the best way to do that is open war. What, like you got a better idea?</text>
+	</string>
+	<string id="dm_action_info_58">
+		<text>I'm fighting the things that prevent all of us from sleeping at night. I think that it is every stalker's job to destroy the Zone's manifestations. I cannot understand why anyone wouldn't want to. Leave an ulcer untreated and your whole body will get sick, right? And then this vermin will spread all over the planet. Imagine what the future will be like for our children: look left - a monster, look right - an anomaly, now choose your poison.  </text>
+	</string>
+	<string id="dm_action_info_59">
+		<text>The Zone is evil, son. An evil that hangs over our planet like an executioner's axe over a condemned man's neck. Trouble is, not everyone understands that. The few who do have come together and formed Duty, a group that aims to prevent this evil from spreading further. You've seen how many mutants we purge every day, imagine what would happen if we let them walk out of the Zone. In short, we're humanity's last line of defense on this planet, son, and I honestly don't understand why there are those who oppose us and fail to understand such basic facts.</text>
+	</string>
+	<string id="dm_action_info_60">
+		<text>I'm fulfilling my duty to humanity, and that ain't just pretty words either, it's the truth. What am I saving it from? From the Zone and its wretched spawns. We have to destroy this source of evil and disease before it destroys us.</text>
+	</string>
+	<string id="dm_action_info_61">
+		<text>I'm fighting beside my comrades against the mutants. There's enough of them to go around these days. On top of that, packs of zombies sometimes come down from Lake Yantar, and we have to deal with them as well. So if you want to join the best fighting clan out there, then Duty is for you.</text>
+	</string>
+	<string id="dm_action_info_62">
+		<text>Trying to decide which beast to bring the Inquisitor. He runs a zoo at our base where he holds specimens of the local fauna. I'd love to stick a controller in there, but he'd probably make us all into zombies even if we could get our hands on one. </text>
+	</string>
+	<string id="dm_action_info_63">
+		<text>I joined Duty only recently, and it's the best decision I've ever made in my life. The guys here are all pros, the clan is disciplined and well-organized. </text>
+	</string>
+	<string id="dm_action_info_64">
+		<text>I'm new here, still trying to work things out. I used to wander the Zone on my own, and now I'm learning to cover the backs of those who are sharing these tough times with me. </text>
+	</string>
+	<string id="dm_action_info_65">
+		<text>I do what I'm ordered to do. It's like in the army - we have a commander, officers and GIs. Everything is crystal clear. Follow orders and you might actually stay alive. </text>
+	</string>
+	<string id="dm_action_info_66">
+		<text>I'm fighting these damn monsters. What can I say? I'm tired of being attacked at night, but that's alright, we'll tough it out. Eventually we are going to find the heart of the Zone and put an end to this abomination once and for all.</text>
+	</string>
+	<string id="dm_action_info_67">
+		<text>Many of my buddies were in Duty, so I joined up as well. It took me a few months to make the decision, I wasn't sure it was the right thing to do, but now I look back at my doubts and laugh! Being in Duty is great and a lot safer than wandering the Zone on your own.</text>
+	</string>
+	<string id="dm_cool_info_17">
+		<text>Nothing good. It gets worse every day, especially after the large emission. The Zone got stirred up and became even harsher to humans. The monsters are faster, angrier and even more merciless. Add to that the fact that the clans began warring with one another, and it don't look too good. A few of our groups have made a move into the Zone...they say paths to new territories have opened up there.</text>
+	</string>
+	<string id="dm_cool_info_18">
+		<text>The Zone is always different. There's always something new, but it's also chaotic. It's about time Duty enforced some order in the Zone. As soon as the Zone was changed by the Emission, the fighting started - to determine who controls what. If we took over the new territories, we'd establish equal access for all groups. Well, maybe except for Freedom. Anyway, almost half our boys have left to go deeper into the Zone.</text>
+	</string>
+	<string id="dm_cool_info_19">
+		<text>I heard there's a new mutant that lives around swamps. They say it looks like a bloodsucker, but it's even more dangerous. It moves silently in the bushes, looking for prey, then "bam!" - and it's got a limp body in its claws. The worst bit is that they used to live exclusively around swamps, but a couple have been spotted around here too. </text>
+	</string>
+	<string id="dm_cool_info_20">
+		<text>I heard that many anomalies and artifacts are no longer visible. I figure the emissions pump the Zone full of anomalous energy, which gives anomalies and artifacts new properties. I'd be careful if I were you, you can't just run around the Zone no more. Nowadays a detector can mean the difference between life and death, but if you want the juicy tidbits, you'd better grab yourself a really good one. Keep that in mind and take care.</text>
+	</string>
+	<string id="dm_intro_79">
+		<text>Hey, man!</text>
+	</string>
+	<string id="dm_intro_80">
+		<text>Wassup, bro'?</text>
+	</string>
+	<string id="dm_intro_81">
+		<text>Guten tag! Nicht schiessen...we're all friends here.</text>
+	</string>
+	<string id="dm_intro_82">
+		<text>Got a question for me, stalker?</text>
+	</string>
+	<string id="dm_intro_83">
+		<text>Looking for advice?</text>
+	</string>
+	<string id="dm_intro_84">
+		<text>Regards, friend.</text>
+	</string>
+	<string id="dm_intro_85">
+		<text>What can I do for you?</text>
+	</string>
+	<string id="dm_intro_86">
+		<text>If it's your first time in the Dark Valley, pay a visit to Freedom's base. That's where the fun is at, especially the arguments between the mechanic and Ashot.</text>
+	</string>
+	<string id="dm_intro_87">
+		<text>Yo, brother!</text>
+	</string>
+	<string id="dm_intro_88">
+		<text>Welcome, friend!</text>
+	</string>
+	<string id="dm_intro_89">
+		<text>Welcome to the lands of the free stalkers!</text>
+	</string>
+	<string id="dm_about_93">
+		<text>This is the best place in the Zone because this is where Freedom's base is. Who cares about mutants and anomalies? After a good drink, even a vortex ain't a problem, and if a drink is what you're after then you've come to the right place! </text>
+	</string>
+	<string id="dm_about_94">
+		<text>The Dark Valley is a haven for free stalkers. Here nobody's gonna preach to you about duty and the code. At the deserted factory you'll find the best clan in the Zone, and you've got a real shot at joining it! We have a good spot here. To the west is the Garbage, the Cordon is to the south, and to the north you'll find the military warehouses.</text>
+	</string>
+	<string id="dm_about_95">
+		<text>The main attraction in the Valley is Freedom's base. You can't miss it - just look for a huge factory. Nobody will repair your shooter or armor like Uncle Yar. If you're looking for a good deal on equipment, then Ashot is your man, but if you wanna take a well-earned break, visit the Gulp of Freedom. The Gulp is known throughout the Zone for its generous servings, and it's a good place to pick up a job if you're up for it.</text>
+	</string>
+	<string id="dm_about_96">
+		<text>We're in a bit of a mess at the moment - someone is killing our boys by the dozen. All Freedom members who are not otherwise engaged have been urgently summoned to the Valley to help identify the enemy. We’ve started guarding the entrances too...you can never be too careful these days.</text>
+	</string>
+	<string id="dm_about_97">
+		<text>The Valley is full of old deserted factories and I even heard that there are scientific labs underground, also deserted, of course. Well, I can't be sure about below, but above ground we established our base in one of those factories. Visit our bar when you can - you'll have a good time, that's for sure.</text>
+	</string>
+	<string id="dm_about_98">
+		<text>About the Dark Valley? What's there to say? I ain't good at telling stories either. Why don't you ask Ashot or Ganja? That's the trader and the bartender at our base, if you didn't know. </text>
+	</string>
+	<string id="dm_about_99">
+		<text>There's nothing special about the valley itself. You can find a bit of everything here: monsters, anomalies and even a few artifacts, if you know where to look. Apart from that it's no different from anywhere else, but the deserted industrial buildings came in real handy - they're perfectly suited for our base. </text>
+	</string>
+	<string id="dm_about_100">
+		<text>This is a good place for a rookie stalker; it's close to the Cordon and anomalies are few and far between. Even monsters are quite rare! Not only that, if you're lucky enough you can find decent loot around here, and then sell it at our base, where you'll be safe. The hardest part is getting here through the military outposts and the Garbage, while avoiding having your balls fried by radiation.</text>
+	</string>
+	<string id="dm_about_101">
+		<text>The Dark Valley lets rookies master the stalker profession and find their first artifacts, while experienced pros can catch a breather from the nightmare that is the "real" Zone, and gather their strength before jumping back in. Both can relax at the Gulp of Freedom, repair their equipment or haggle with Ashot in his store, all within the confines of our base.</text>
+	</string>
+	<string id="dm_about_102">
+		<text>My main interest in this place is the Gulp of Freedom. It's a cool bar and the owner is called Ganja...very fitting, know what I mean? You can chill there as good as on the outside...I don't know what else to tell you, 'cause I don't really give a shit about much else here.</text>
+	</string>
+	<string id="dm_about_103">
+		<text>There's a technician at the Freedom base who can make you an AA gun out of a rusty AK. I'm telling you, man, the guy is a genius, and the trader is a nice fella too.</text>
+	</string>
+	<string id="dm_about_104">
+		<text>There's something strange going on lately. Someone is killing our boys real quiet and killing them dead. We got all the roads in the valley covered with outposts, but it don't help one bit. Now and again one of our groups gets hit so quick it's all over by the time we get there. And we got no idea who it is; we're even starting to suspect our own. </text>
+	</string>
+	<string id="dm_about_105">
+		<text>The Valley is like a hornet's nest nowadays. Everybody's jumpy and a new face always causes suspicion. You see, someone's been knocking off our outposts like nobody's business, and we haven't got the slightest idea who it is. That's why we have a hard time trusting anyone, including our own people. The boys are pissed, 'cause we've all lost friends in these attacks.</text>
+	</string>
+	<string id="dm_about_106">
+		<text>And why do you wanna know? Don't take it personal, but some bastards have been messing with us for a while now: they attack our outposts and patrols, and when help arrives all they find is our boys' bodies. No clues, no nothing...that's why we're looking for rats in our own ranks. </text>
+	</string>
+	<string id="dm_about_174">
+		<text>There ain't nothing good happening here right now. Somebody is killing Freedom fighters, but nobody knows who it is. Thing is, these attackers always seem to strike at our weakest link, as if they know where it is beforehand. Man, I'm scared to count how many people we've lost already, and we can't do jack about it. We just sit and wait, and as soon as we relax a little we get a SOS signal from one of our outposts. And when we get there the only thing we ever find is bodies. Our boys' bodies. </text>
+	</string>
+	<string id="dm_about_175">
+		<text>I reckon there's a mole in Freedom. Someone's leaking intel to our enemies, and they're taking full advantage of it. They attack quietly, kill our guys and vanish without a trace. The clan has taken heavy losses, which has really gotten in the way of us capturing the military warehouses...well, never mind that... I swear, if I ever get my hands on that mole, I'm going to pay the bastard back for every friend I've lost, with interest. </text>
+	</string>
+	<string id="dm_about_176">
+		<text>If you're asking about things in general, then this place ain't no different from anywhere else in the Zone. We search for loot, fight, die and make plans for the future. If you're asking about specific events, then I gotta tell you that things ain't exactly healthy here. That's why we ain't too keen on chitchatting with outsiders. </text>
+	</string>
+	<string id="dm_action_info_68">
+		<text>Everything a stalker can do: search for loot, kill mutants and party with my buddies at the base when I get an extra coin. Sometimes I bury friends, when there's enough of them left to bury. </text>
+	</string>
+	<string id="dm_action_info_69">
+		<text>I'm waiting for this asshole former friend here. We found some loot together, and ran into a pack of pseudodogs on the way back. I started blasting 'em and didn't even notice that the bastard made off with my backpack. He just left me on my own and took my share to boot. I barely made it out! So now I'm waiting for him to make sure he don't - he's bound to come through here at some point. </text>
+	</string>
+	<string id="dm_action_info_70">
+		<text>I've wanted to join Freedom for a while, but I could never get 'round to actually doing it. And now you're looking at a full member of the group, and save your jokes about "full members", OK? No, I'm not insecure, I'm just tired of the same ol' retarded jokes. </text>
+	</string>
+	<string id="dm_action_info_71">
+		<text>Talking to you at the moment, what does it look like? But seriously, I'm a stalker. If you know what stalkers do, you know what I do.</text>
+	</string>
+	<string id="dm_action_info_72">
+		<text>Well, it's a difficult concept for you to grasp but...I live here! I also work here as a stalker. And we have a base here. Maybe you've heard of a clan called Freedom? Well, the Dark Valley is our territory. What do you think a Freedom member is doing on Freedom territory?</text>
+	</string>
+	<string id="dm_action_info_73">
+		<text>I try to pull artifacts out of anomalies and stay alive while doing it.</text>
+	</string>
+	<string id="dm_action_info_74">
+		<text>I'm trying to ambush this one dog. Don't laugh! You don't know how smart this bitch is! It crawls up to the camp at night and howls. If you take a shot at it it runs off, then comes 'round the back and starts up again. I ain't slept in three days. If I find where it lives I'll strangle the little shit with my bare hands!</text>
+	</string>
+	<string id="dm_action_info_75">
+		<text>Me and the boys are guarding this area in case of a surprise attack. You've probably heard that someone's been hitting our outposts and patrols? It's a shame, those guys were good stalkers.</text>
+	</string>
+	<string id="dm_action_info_76">
+		<text>Well, there really ain't all that much to do in the Zone: search for loot, fight or explore its secrets. Well, that and ensure that everyone has equal access to those secrets. That's what I'm busy doing. </text>
+	</string>
+	<string id="dm_action_info_77">
+		<text>You ever hear of the Jellyfish artifact? Well, my mission is to find this little gem and sell it to Ashot for some serious coin. Now leave me alone and let me think where I can get one.</text>
+	</string>
+	<string id="dm_action_info_78">
+		<text>Did you know that Freedom is studying the Zone too? We're not scientists, that's true, but we also want to know what created this nature's miracle. Everything here is a gift to humanity: all these anomalies, artifacts and mysterious emissions. What were we talking about? Oh, yes, you asked me what I'm doing here. I'm collecting data for research - taking measurements of background radiation, temperature, humidity and noting the presence of monsters and anomalies... Now, if you don't mind, I'd like to get on with exactly that.</text>
+	</string>
+	<string id="dm_action_info_79">
+		<text>Well, this here is actually our base, if you didn't notice, and everything I do is directly related to that obvious fact. That is, even if I'm hanging around doing nothing, I am actually performing two crucial tasks: creating the impression that we have large numbers of people here and allowing another fighter to rest.</text>
+	</string>
+	<string id="dm_action_info_80">
+		<text>I'm looking for adventure in the Zone, and I get plenty of that here in the Dark Valley. I have the opportunity to do that thanks to Freedom, and I don't care how pompous that may sound. </text>
+	</string>
+	<string id="dm_about_107">
+		<text>The main force in the valley is Freedom. That said, they've been taking quite a hit lately. Every so often remote outposts get overrun - the defenders die and nobody sees a thing, nobody knows how the attackers manage to avoid Freedom patrols or who they are. I was thinking about joining the clan, but dying for nothing just ain't part of my plans, so I'm not in a hurry.</text>
+	</string>
+	<string id="dm_about_108">
+		<text>This place ain't no different from any other - no better, no worse. Anomalies, monsters, radiation and crumbling Soviet buildings. Farms, factories and stuff like that. The only difference is the Freedom base. The guys there are pretty cool, but they seem on edge lately. Can't say I blame 'em, given their recent problems. </text>
+	</string>
+	<string id="dm_about_109">
+		<text>Until recently the Dark Valley was one of the most pleasant areas of the Zone, if the word "pleasant" could even be used to describe any part of it. The valley was as dangerous as any other place, but there were always enough half-decent artifacts to go around, and no bandits, no military presence, no Brain Scorcher or other crap. However, recently someone has started to really piss Freedom off, and things ain't as rosy as they used to be. It's not unusual for a bystander to catch a wayward bullet intended for a clan member. </text>
+	</string>
+	<string id="dm_about_110">
+		<text>The Dark Valley is out of the way of the main paths into the Zone's center. The only places you can reach from here are the Cordon and the Garbage. That's probably why there's not a constant stream of people coming and going, like you see in other places, and that's why Freedom chose this area for its base. I doubt I can tell you anything about the clan that you don't know already.</text>
+	</string>
+	<string id="dm_about_111">
+		<text>This is one of the best areas of the Zone for a neutral stalker. This place is free of the military, bandits and the most dangerous mutants. All you gotta do is collect loot and avoid anomalies, that's what being a stalker is all about.</text>
+	</string>
+	<string id="dm_about_112">
+		<text>I've seen places that make the Dark Valley look like kindergarten. Pseudodogs and anomalies - hah! You spend as much time wandering the Zone as I have and you'll see what I mean! Wait till a controller crawls into your head or a bloodsucker jumps out at you out of nowhere - now that's when you can crap your pants without shame. And that ain't even the half of it - ever hear of the Brain Scorcher? That thing spells real trouble. You can't see it, you can't touch it and you sure as hell can't kill it, while it has no problem doing its nasty business on you.</text>
+	</string>
+	<string id="dm_about_113">
+		<text>Freedom might control everything around here, but they don't go overboard like the bandits. You can walk around the valley without restriction, collect artifacts, and you ain't gotta pay no tolls or tributes to no one. Best place in the Zone by a mile, if you ask me.</text>
+	</string>
+	<string id="dm_about_114">
+		<text>Freedom guys will tell you about it better than me. Why don't you go over to their base and ask? I ain't been here that long and I mostly follow the same routes. The only thing I know is how to get from the Garbage to the Freedom base, and from there to the farm that's to the south.</text>
+	</string>
+	<string id="dm_about_115">
+		<text>The first few weeks you think that this here's the best place in the Zone. It's relatively safe and the Freedom boys are good fellas - you can befriend them easy enough and they won't screw you on a trade. After a while, though, you get bored, 'cause the valley is quite far from the main roads and nothing much happens here. It's a good place to get some R&R before diving back into the chaos that is the Zone, but living here will only make you lazy and weak. For me, the Garbage to the west is a better option, or failing that you can go to the Cordon and piss off the military. </text>
+	</string>
+	<string id="dm_about_116">
+		<text>If you're healthy and smart, this is a place where you can make a decent chunk of cash doing Freedom missions or simply collecting loot. Freedom don't have a joint pool of dough like the bandits or an assistance fund like Duty; here you get what you earn - whatever you find is yours to keep. You can make occasional voluntary donations...on holidays or for the commander's birthday, but if you don't like something, you can always take off for the Cordon or, if you're feeling especially generous and willing to "donate" your hard-earned cash to the bandits, to the Garbage in the west. </text>
+	</string>
+	<string id="dm_about_117">
+		<text>If you don't feel like messing with controllers and bloodsuckers, then the Dark Valley is the place for you. The only monsters here are boars, flesh and dogs. As for anomalies, just stay alert and walk around them. </text>
+	</string>
+	<string id="dm_action_info_81">
+		<text>I came to the valley to collect artifacts, but it turned out that Freedom's got its base here. I've liked them for a while now and wanted to join, but they're not accepting anyone right now because of the attacks on their outposts. They're pissed and suspicious - and screen everyone to the point of running 'em through x-rays. I'm kidding, of course, where would you get an x-ray machine around here? Anyway, the boys are real worried, so I've had to put my application on hold.</text>
+	</string>
+	<string id="dm_action_info_82">
+		<text>I came to join up with Freedom - they need fresh blood nowadays. But they're real careful about who they let in, seems that they got themselves a rat problem.</text>
+	</string>
+	<string id="dm_action_info_83">
+		<text>I'm looking for loot, and this is one of the safest places around. Here you ain't gotta worry about extortionate taxes like at the Garbage, hordes of mutants like at Agroprom, and there ain't no corrupt military for miles. Anomalies and the occasional monster ain't too bad, especially when compared to other places.</text>
+	</string>
+	<string id="dm_action_info_84">
+		<text>Hunting mutants. Traders and scientists pay pretty well for some of their organs. Don't believe me? Go ask them yourself. </text>
+	</string>
+	<string id="dm_action_info_85">
+		<text>This is my home. The boys and I've set up a sort of camp of our own. We kick back and catch our breath between trips into the Zone, and this place ain't too bad for that sort of thing.</text>
+	</string>
+	<string id="dm_action_info_86">
+		<text>I came here to escape the toils and hardships of other parts of the Zone. The military at the warehouses and the Cordon treat us stalkers like shit, the bandits at the Garbage do whatever the hell they please, and Duty at Agroprom tries to brainwash you into fighting everyone who ain't with them. Here you are free and equal, and often drunk too, which suits me just fine.</text>
+	</string>
+	<string id="dm_action_info_87">
+		<text>I got separated from my group at the Garbage. We had ourselves a disagreement with the bandits, 'cause we didn't wanna pay their tolls, and they don't take too kindly to stuff like that. We gave them a real good thrashing, but then their reinforcements arrived and we had to bail. I went east and ended up here, in the Dark Valley. I don't wanna risk going back through the Garbage, so I'm hoping that some of the others make it here. Then we'll decide what to do next. </text>
+	</string>
+	<string id="dm_action_info_88">
+		<text>I haven't been in the Zone very long, the only other places I've seen are the Cordon and the Garbage. I'm just trying to get my feet wet and maybe find some loot to sell in the process.</text>
+	</string>
+	<string id="dm_action_info_89">
+		<text>I was told that you can find plenty of loot here in the Dark Valley, and sell it to the Freedom trader straight away. I've been here awhile now, but so far I've not found a whole lot of anything. I guess I'm just unlucky or maybe I'm looking in the wrong places? I don't know...</text>
+	</string>
+	<string id="dm_action_info_90">
+		<text>Ashot has some good body armor for sale, but I'm a bit short on cash. So I decided to look around for some loot, 'cause a smart fella can always get by in the Valley. Trouble is, I always seem to come up just a hair short. Sometimes I spend too much on ammo or meds and sometimes I just squander all my coin on booze at the Gulp of Freedom.</text>
+	</string>
+	<string id="dm_cool_info_21">
+		<text>After the Emission everything seems new. The safe and familiar paths are no longer safe and familiar, and you have to look for new ones in the swamp. The other side of the coin is that you can now reach new parts of the Zone, and who knows what secrets can be uncovered there? They say there's even a small town deep in the Zone, untouched from Soviet times; as soon as our boss heard about that, he sent a large group to check it out. Then he found out that Duty sent a party there as well, so he told our boys to get a move on. If everything pans out, then I'll have something new to tell you, that's for sure.</text>
+	</string>
+	<string id="dm_cool_info_22">
+		<text>They say the emissions that shook the Zone recently were triggered by a group of stalkers who were able to get past the Brain Scorcher and right through to the center of the Zone. Imagine that, they made it through the Scorcher! Hell, they even got back in one piece. I wonder what causes the emissions...maybe the Zone itself is taking its revenge?</text>
+	</string>
+	<string id="dm_cool_info_23">
+		<text>Anomalies have become deadlier. They're no longer small pockets of anomalous energy, they've become larger and much more harmful. These days throwing a bolt here and there won't save you - if you want to survive the radiation and toxic vapors, you gotta put on some hardcore protective gear and think twice before taking every step.</text>
+	</string>
+	<string id="dm_intro_90">
+		<text>Watch out for zombies coming from the factory - there's a shitstorm of 'em out there!</text>
+	</string>
+	<string id="dm_intro_91">
+		<text>Phew, man. You look so much like a zombie I nearly blew your head off right there.</text>
+	</string>
+	<string id="dm_intro_92">
+		<text>Welcome to Yantar lake, where you can catch a hake. Ha-ha! You get it? It rhymes! Ha-ha!</text>
+	</string>
+	<string id="dm_intro_93">
+		<text>Welcome to Yantar, brother.</text>
+	</string>
+	<string id="dm_intro_94">
+		<text>You're on the right path, stalker - we could use your help around here.</text>
+	</string>
+	<string id="dm_intro_95">
+		<text>Hey, man!</text>
+	</string>
+	<string id="dm_about_118">
+		<text>Just remember to stay the hell away from the factory, 'cause nobody ever makes it out of there. Heck, you start going crazy before you even get to the entrance, and only the Zone knows what goes on inside.</text>
+	</string>
+	<string id="dm_about_119">
+		<text>Dude, this is one scary-ass place, let me tell you. Zombies are coming at us from the factory all the time and we slaughter them by the dozen, but nobody who tried to get inside and find out what's going on has ever come out again. I tried approaching the factory myself once, but as soon as I got a little closer than usual I could feel my brain melting! I couldn't move, felt dizzy and could hear something in my head - dude, I nearly shat myself there and then! I bolted back straight away, but the noises in my head wouldn't go away for most of that day. I can only imagine the piles of bodies of all those who made it further than me.</text>
+	</string>
+	<string id="dm_about_120">
+		<text>There used to be a lake here called Yantar, but these days it's just a large puddle of stinking waste. The scientists have a camp on the shore; they carry out research in their bunkers and go on expeditions from time to time. Sometimes they even give us work. If you're lucky you can find an artifact or two around here or get a shooter off a dead zombie. That's one thing there's no shortage of here - zombies. The trouble is, they can come here from the old factory, but we can't even get close to it. As soon as you start approaching it something starts messing with your head real good. All the brave fellas went missing a long time ago and only the cautious remain. </text>
+	</string>
+	<string id="dm_about_121">
+		<text>I don't get this place. Me and a buddy of mine tried to get inside the factory, 'cause it's one of the few untouched parts of the Zone - we figured there's bound to be some quality loot inside. Hah! As soon as we got to the gate I got real dizzy, started hearing strange noises and whispering and seeing things. My buddy was right behind me, and he managed to get us out: as soon as he saw me going limp, he grabbed me and dragged me out. To add insult to injury, we nearly got mistaken for zombies and gunned down by our fellow stalkers when we got back. </text>
+	</string>
+	<string id="dm_about_122">
+		<text>The scientists have a camp next to the dry lake, while stalkers are fighting endless hordes of zombies from fortified positions. Nobody knows what's happening at the old factory, but as soon as you get close to it you start hearing voices and noise in your head, feeling dizzy and weak - even the nerds don't know what's going on.</text>
+	</string>
+	<string id="dm_about_123">
+		<text>This area is called Yantar. Now, this may've been a lake once, but if you're looking for a holiday, this ain't the place. All we got now is a muddy puddle, radiation and a ton of zombies, and if that ain't enough just pay a visit to the old factory. Not that you'll get anywhere near it - people go crazy before they even pass the gate. </text>
+	</string>
+	<string id="dm_about_124">
+		<text>The most dangerous place around here is the factory. The area around it was affected by some unknown type of emission, and everyone who has tried to get inside tells strange stories about voices and noise heard in their heads. A few tried and went crazy, and those who had the balls to actually go inside never made it out.  </text>
+	</string>
+	<string id="dm_about_125">
+		<text>We're buddying it up with the scientists here. We defend them against the constant stream of zombies from the deserted factory and in exchange they help us out with medication, equipment and sometimes even work. Few people ever get into the factory itself, because there's some sort of emission there that hits your brain like a truck. Then again, those who managed it during the quiet periods and came out alive brought back some real valuable loot.</text>
+	</string>
+	<string id="dm_about_126">
+		<text>I'm sure there's something really valuable inside the factory - I bet Sakharov and his scientists would part with a stash of cash for it. Trouble is, getting inside ain't easy and nobody has managed so far. Either you get a nice friendly welcome from the zombies or... Something strange happens to people's heads when they get close; they start seeing things and getting dizzy. If you don't turn back in time, you're a goner. I lost a few buddies like that...they all wanted to uncover the factory's secrets a little too much!</text>
+	</string>
+	<string id="dm_about_127">
+		<text>There used to be a lake here before the first accident, called Yantar. When they were building the factory they screwed something up underground and the water drained from the lake, leaving a stinking puddle. Right now the scientists have a camp next to what's left of the lake, and that same factory is still causing trouble a bit further up the road. Your brain goes haywire as soon as you get close and you can't think for shit. The only people still trying to get inside are suicidal - everyone else just kills off zombified stalkers who come out of the factory, and helps the scientists. </text>
+	</string>
+	<string id="dm_about_128">
+		<text>Scientists are researching the Zone here at Lake Yantar. The main local attraction is the factory, and a hell of a lot of people have gone missing there because of the emissions. Nobody who goes inside ever comes out and we ain't got the slightest idea what happens to them.</text>
+	</string>
+	<string id="dm_about_129">
+		<text>The scientists have a base here and stalkers use the fortified positions to shoot zombies. To the south is Agroprom, where Duty is fighting mutants, and to the north you'll find the Red Forest. We don't know what's there, because nobody has come back yet. </text>
+	</string>
+	<string id="dm_action_info_91">
+		<text>I'm helping the scientists carry out their research. Not directly, of course. Me and the boys defend them against zombies, guard their expeditions, and bring Sakharov various artifacts, mutant organs and other crap he asks for. In turn, they're studying the emissions that melt people's brains at the factory. Once they find a way around them, everyone and his dog is gonna be looking for loot inside the factory, just you watch.</text>
+	</string>
+	<string id="dm_action_info_92">
+		<text>I'm waiting for the nerds to find a way of dealing with the emissions which stop us from getting inside the factory. What's stopping us? Go over there and see for yourself. Something starts messing with your head so much that you don't know which end to hold your gun by. Plenty of stalkers have gone in there...only to never come out. </text>
+	</string>
+	<string id="dm_action_info_93">
+		<text>I volunteered to help the scientists. That means mainly defending them against wave after wave of zombie attacks. That's a good deal, considering they help us out with bandages, medication and ammo. This place ain't too bad, s'long as you keep a low profile. </text>
+	</string>
+	<string id="dm_action_info_94">
+		<text>A veteran stalker sold me a map of all the stashes in this area. I memorized them all and burned the map, so wasting me won't help you. Anyway, I've already cleaned out all the stashes outside the factory, and they were exactly where the map said they were, but the best ones are inside the factory. Once Sakharov and his team work out how to deal with the emissions, I'll be over there in a flash.</text>
+	</string>
+	<string id="dm_action_info_95">
+		<text>I'm taking some readings for Sakharov. He's short of assistants, and that's why he's paying stalkers to do the odd job for him.</text>
+	</string>
+	<string id="dm_action_info_96">
+		<text>A trader I know told me that a buddy of mine from my army days is hanging around here. I came to find him. When we hook up again we'll work the Zone together.</text>
+	</string>
+	<string id="dm_action_info_97">
+		<text>Man, I'm tired. I'm tired of trying to get loot out of the Zone, tired of fighting monsters and tired of competing with bandits for a place under the Sun. I'm taking a little break here. All I gotta do is shoot the occasional zombie, and the scientists pay me for it. I'm gonna laze about here for a little while longer, and then head off for more dangerous areas. The rule of thumb in the Zone is that the greater the danger, the better the loot.</text>
+	</string>
+	<string id="dm_action_info_98">
+		<text>After the Emission I decided to do a little tour of the Zone and see what's new. I've been everywhere from the Swamps to the Scorcher itself, and seen more than you can imagine. I came here to sell some loot, and ended up meeting some decent guys. Now we fight together.</text>
+	</string>
+	<string id="dm_action_info_99">
+		<text>I'm recovering from our last gunfight. There were so many zombies we barely managed to put them down - if they had been normal people we wouldn't be having this conversation. Thankfully, zombies are dumb as nails, no tactics, no anything. Even so, we had a real battle on our hands and I caught a stray bullet. It's only a flesh wound, though, so I'll be OK.</text>
+	</string>
+	<string id="dm_action_info_100">
+		<text>I want to get inside the factory, but I'm in two minds about it. On the one hand I'm scared shitless, but on the other hand I really wanna know what's inside. Someone is going to uncover its secrets sooner or later, so why not me?</text>
+	</string>
+	<string id="dm_action_info_101">
+		<text>I'm trying to put together enough coin for a good weapon. I work for the scientists - preventing the zombies from getting close to their camp. Once I have enough, I'll buy that shooter I'm after and move on to wander the Zone.</text>
+	</string>
+	<string id="dm_action_info_102">
+		<text>I came here from Agroprom after spending some time fighting in Orest's clan. It was time for a change of scenery. Now I really want to check out the Red Forest, but there's no way to get there because of the Brain Scorcher at the factory. Just getting close is a mission in itself.</text>
+	</string>
+	<string id="dm_action_info_103">
+		<text>I was helping Duty deal with mutants at Agroprom when a bunch of zombies came from Yantar. We put together a group to take care of the problem, and I asked to be part of it. Anyway, we came here, cleaned up everything on the way, and the Duty boys started heading back. I spotted a good protective suit for sale at the scientists' lab and decided to stay here and save up for it.</text>
+	</string>
+	<string id="dm_action_info_104">
+		<text>LEAVE ME ALONE!!! What?! No, not you. I'm going crazy, man. I was stupid enough to visit the factory, wanted to see what it's like for myself. And now here we are. My head is totally screwed up...thank God the guys got me out at all. I'm talking to you now and hearing voices whispering inside my head. Shut up, damn you! No, not you. Err...never mind.</text>
+	</string>
+	<string id="dm_cool_info_24">
+		<text>I heard a group of stalkers tried to break through to the Zone's center. Some say they made it, some say they didn't, but everyone thinks that there's a link between their trip and the latest emission. I wonder if they found the Wish Granter and wished for something?</text>
+	</string>
+	<string id="dm_cool_info_25">
+		<text>I heard a whole faction went missing in the Zone. You ever heard of Monolith? Well, they used to protect the Zone from others, but they made a move towards the center right before the Emission. Nobody has heard from them since, but recently some real aggressive stalkers have been attacking from where the Scorcher is, killing everyone and asking no questions. I know because I saw them myself around the military warehouses, and I reckon they might be those same Monolithians who disappeared. It wouldn't surprise me, because their uniforms looked real similar. </text>
+	</string>
+	<string id="dm_cool_info_26">
+		<text>Everything changed after the Emission. It's like a whole different Zone now. The clans are fighting, the monsters are crawling out of every hole, new territories are being discovered, while the paths to known ones are being blocked by anomalies. We're even seeing new artifacts around...what can I say? I feel like a rookie again.</text>
+	</string>
+	<string id="dm_cool_info_27">
+		<text>The other day I heard that the military are having a real hard time at the warehouses after the Emission. Apparently, Freedom's got the hots for their territory, and all they can do now is hide out in their base and pray. The military are weakened, but they know that their base is key. The other thing on everyone's lips is that Monolithians are coming back from the center. We were all positive they copped it. Man, I sure as hell would like to meet one of them and ask him what it's like in the center.</text>
+	</string>
+	<string id="dm_cool_info_28">
+		<text>I heard that a path to the Red Forest appeared behind Lake Yantar. All sorts of strange stories are circulating about it, like the whole forest became red and covered with mist in the space of a single day. Ever since then it's considered a real dangerous place...lots of people went missing around there, and after a while even the paths leading to it disappeared. I'd think twice before heading that way.</text>
+	</string>
+	<string id="dm_cool_info_29">
+		<text>Man, there's so much going on it's hard to keep up. I thought Yantar was right on the edge of what we have explored in the Zone, but the Emission was so powerful that paths to the Red Forest and Limansk, that's the lost town, have opened up. A few of our guys went there via the factory, but I don't know if they even got past it. I also heard that Duty and Freedom, the two most powerful clans in the Zone, are battling it out for control of Limansk.</text>
+	</string>
+	<string id="dm_intro_96">
+		<text>You again? What's new this time?</text>
+	</string>
+	<string id="dm_intro_97">
+		<text>A decisive hello to you, stalker.</text>
+	</string>
+	<string id="dm_intro_98">
+		<text>Hello, young man!</text>
+	</string>
+	<string id="dm_intro_99">
+		<text>Hello! What do you want?</text>
+	</string>
+	<string id="dm_intro_100">
+		<text>You want to trade or get a job?</text>
+	</string>
+	<string id="dm_intro_101">
+		<text>You're probably interested in information. I'll answer all your questions as best I can.</text>
+	</string>
+	<string id="dm_intro_102">
+		<text>How are you doing, buddy?</text>
+	</string>
+	<string id="dm_intro_103">
+		<text>Here's a real Freedom greeting for a really free stalker.</text>
+	</string>
+	<string id="dm_intro_104">
+		<text>Hey, stalker.</text>
+	</string>
+	<string id="dm_intro_105">
+		<text>You look like you have a thousand questions. Ask away! </text>
+	</string>
+	<string id="dm_about_130">
+		<text>This is a key area of the Zone - from here you can reach the Scorcher, the Red Forest, Limansk and beyond...not that anyone knows what's there. There's also an old military base around here, which the army set up before the large emission. These days they've only got about 20 people holding it, and capturing the base would give us control over the adjacent territories. We just need to give the military a helping hand with their evacuation, if you know what I mean...</text>
+	</string>
+	<string id="dm_about_131">
+		<text>The way to the north is as good as blocked because of the Brain Scorcher. That doesn't seem to stop Monolith fighters from coming here though, and they ain't too friendly lately. They shoot first and don't even bother to ask questions later. If you head south you'll come to the Dark Valley, and to the west you'll find the Red Forest. It ain't the nicest part of the Zone, but there's less shooting going on over there. They've also found a road to Limansk behind the forest. The town is small, but strategically important, which is why Duty and our boys are spilling each others' blood over it.</text>
+	</string>
+	<string id="dm_about_132">
+		<text>There used to be a military base and army warehouses here, but the emission hit them real hard. Those who survived ain't so cocky no more - they're hiding from stalkers in their base, scared shitless of showing their faces. They keep requesting an evacuation team from their HQ, but nobody is coming to help them. I figure they ain't having themselves too good a time outside the Zone either. That or the signal simply ain't getting through. I almost feel sorry for the poor bastards - they're rats and all, but even rats should stick up for their own.</text>
+	</string>
+	<string id="dm_about_133">
+		<text>The military held the warehouses for a long time, but the last emission changed all that. It got so rough that only a few survived, mainly those who hid inside the base. Everyone who was in the open died there and then. How do I know? Well, brother, Freedom has an intelligence service too, and we control the situation now; and now the lone stalkers have got together to contain the monsters coming from the Brain Scorcher. </text>
+	</string>
+	<string id="dm_about_134">
+		<text>When we first got here it was chaos. The military gave up on defending the Barrier and dug in inside their base. Trouble is, the Barrier needs to be protected at all times, otherwise all kinds of monsters start flooding in and wiping everyone out. That's why we're trying to defend it ourselves, and we need all the help we can get, because if the Barrier falls - everyone's gonna suffer.</text>
+	</string>
+	<string id="dm_about_135">
+		<text>There's a former military base on the hill and we're hoping to make it ours real soon. A bit further down there's a small farmstead, just a couple of buildings, and there's also a log cabin at the radioactive swamp. The other things you'll find around here are a couple of deserted villages and our outposts. The main ones are on the roads leading to the Red Forest and the Dark Valley. Stalkers are defending the Barrier on their own, trying to hold back waves of Monolithians and mutants. It's a wonder - I ain't never seen stalkers joining forces for something other than money!</text>
+	</string>
+	<string id="dm_about_136">
+		<text>If you head north you'll come to the Barrier, where stalkers are trying to hold the line against mutants coming from the Scorcher. To the right of the Barrier you'll find a swamp with a cabin on stilts. You'd best stay away from there, 'cause the radiation levels there are pretty damn high. Further on from the swamp is the military base. Our western outpost guards the road to the Red Forest and Limansk - that's where most of the clan is headed at the moment - and the southern outpost protects the path to the Dark Valley.</text>
+	</string>
+	<string id="dm_about_137">
+		<text>Everything is changing around here and changing fast. The military warehouses are soon to become Freedom warehouses. Our outposts and fortified positions held by lone stalkers protect the key passages to this area. The Barrier to the north stops monsters and mutants from getting out of the center of the Zone. Thankfully, stalkers are guarding the Barrier - we'd be in a real tough spot here if it weren't for them. Our outpost to the west covers the road to Limansk through the Red Forest, and the one to the south ensures safe passage into the Dark Valley, where our main base is at the moment. This place is full of all sorts of stalkers right now - they're enjoying the freedom we provide by pinning the military down in their base. I reckon there are some good artifacts and other stuff to be had in the deserted villages and farmsteads.</text>
+	</string>
+	<string id="dm_about_138">
+		<text>After the military lost their hold on this area, a whole load of stalkers appeared, hoping to get past the Brain Scorcher. Dumbasses! I can tell you right now that getting through the Scorcher simply ain't possible. Not a single person who tried ever came back. Freedom is here to get rid of the military and set up a base. After all, if we're to hold the Barrier, we need to have a base close by.</text>
+	</string>
+	<string id="dm_about_139">
+		<text>This place is home to a real stalker brotherhood. The best guys have all gathered by the military warehouses, looking for a way to get past the Scorcher. Morale is high, and everyone's got a wish or twenty for when they get to the center and reach the Wish Granter. Idiots! They were smart enough to get as far as the warehouses, but they don't have the brains to see that only death awaits them beyond the Scorcher. What they should be doing is helping us hold the Barrier, 'cause if it falls the only thing that'll be able to save us is the Wish Granter itself!</text>
+	</string>
+	<string id="dm_about_140">
+		<text>Things are changing by the minute. Fanatical Monolithians and mutants attack in waves from the Scorcher. Then there are these fragments of radio transmissions that really give me the creeps. I figure during the Emission a lot of people went missing here, but instead of dying they just got lost, if you know what I mean. It's as if nothing has changed, but they just can't get out. Maybe it's a new anomaly that you can't escape...who knows? I feel sorry for those guys, but I haven't got a clue how to help them.</text>
+	</string>
+	<string id="dm_action_info_105">
+		<text>All we gotta do here is hold the Barrier and squeeze the military out of their base. Our leader is smart as a whip - it never occurred to me that defending the Barrier would be a hell of a lot easier if we had a base nearby. That's why he's leading Freedom and I'm here talking to you. Then again, I ain't got his headaches and I can get as shit-faced as I want, and no one cares!</text>
+	</string>
+	<string id="dm_action_info_106">
+		<text>Holding the Barrier as best we can. The military stopped defending it after the Emission, and so many monsters broke through there that even we in the Dark Valley shat our pants. That's when our boss organized the expedition. The other thing that's happened is that the first Monolithians from the missing squad have made it back from beyond the Barrier. I guess it wasn't as "missing" as we thought. </text>
+	</string>
+	<string id="dm_action_info_107">
+		<text>I'm looking for our recon squad. They left in this direction before the Emission, and nobody has seen them since. We receive fragments of their communications from time to time, where they're asking for help and saying that their supplies are running out. It's strange, man - the missing squad is somewhere close, they can even see the tower at the military base, but wherever they go they don't advance a foot. It's like they're stuck on a Mobius band. So here I am, racking my brains, trying to figure out what to do. </text>
+	</string>
+	<string id="dm_action_info_108">
+		<text>We've arranged a little deal with the military. They take our bullets and we take their base. Sounds fair to me. Me and the boys are "negotiating" as best we can.</text>
+	</string>
+	<string id="dm_action_info_109">
+		<text>When we're not fighting, which doesn't happen too often, I usually hang out and tell stories and jokes by the campfire, cracking a bottle or two with the boys. Once we're done with our business here and in Limansk - two untouched areas of the Zone - we might be able to find a way of getting to the center of the Zone. That's where the Monolithians are coming from.</text>
+	</string>
+	<string id="dm_action_info_110">
+		<text>I'm enjoying myself: boozing, partying and joking around with my buddies. Who knows what will happen to me in a day, an hour or even a minute? I might step into an anomaly or catch a bullet. You gotta have fun while you're still alive.</text>
+	</string>
+	<string id="dm_action_info_111">
+		<text>I decided to be a hero. Given the situation in Freedom at the moment you can easily move up the ranks in the clan and secure your place in history through your achievements in battle. You just gotta be a smart hero, unless you're after a purple heart. Don't hide behind others, but don't be asking for a bullet either.</text>
+	</string>
+	<string id="dm_action_info_112">
+		<text>I came here from the Dark Valley as a volunteer to put some heat on the military. I wanted some action and a change of scenery - I was sick and tired of sitting in one place.</text>
+	</string>
+	<string id="dm_action_info_113">
+		<text>I'm completing tasks assigned to me by the commander. What, did you think Duty is the only clan that can follow orders? We can be disciplined too, when the situation warrants. You gotta be a moron to really believe that Freedom is full of junkies and drunks. Think about it, if that were true our whole clan would've been dead and buried a long time ago.</text>
+	</string>
+	<string id="dm_action_info_114">
+		<text>Everyone went off to fight, so what was I gonna do? I ain't craven and I sure as hell ain't a traitor either! We're fighting for a common cause here. There's a time to goof around and there's a time to be serious. And these days you can't relax for a second.</text>
+	</string>
+	<string id="dm_action_info_115">
+		<text>Fighting. Who against? Well, against everyone who's against us. We ain't just a collection of anarchists - we've got damn good order in our clan and we don't mess around. It may not be as apparent as with the military or Duty, 'cause we joined the clan to enjoy freedom and equality, but we can always get together and get shit done. So brace yourself, friend, you're about to see the real Freedom in action.</text>
+	</string>
+	<string id="dm_cool_info_30">
+		<text>Freedom is having a tough time at the moment. Just as we recovered from bandits' attacks and found the mole, Limansk appeared behind the Red Forest and the military started losing their grip on the warehouses here. So we picked a few fights simultaneously and now we've got an enemy on every front. Hopefully we don't stretch ourselves too far.</text>
+	</string>
+	<string id="dm_cool_info_31">
+		<text>After the Emission the Zone seems to have gotten split up into bubbles. Lots of people vanished around these parts, and it looks like they're stuck in a space bubble with no way out - whichever way they go they can't move! Some real good fellas got sucked into these bubbles, and if you get to higher ground you can hear fragments of their screams for help. You watch yourself now, lest you want to join them.</text>
+	</string>
+	<string id="dm_cool_info_32">
+		<text>After the Emission it turned out that many important roads to the Zone's center pass through the warehouses. Our advanced groups reached Limansk the other day, a town nobody ever heard of before. Maybe you can go on from there to other places as well, but what I'm really hoping for is that someone finally solves the Scorcher's secret and opens the path up north!</text>
+	</string>
+	<string id="dm_cool_info_33">
+		<text>We recently caught the rat who was leaking information to the bandits, who used it to slaughter our boys like cattle. Guess who it was! That's right, our commandant! You look like that ain't news to you - who told you? Anyway, he's a real sorry son of a bitch betraying his own clan like that! It's a pity I didn't waste the bastard myself!</text>
+	</string>
+	<string id="dm_cool_info_34">
+		<text>Dude, the Zone is about to become free, and the name of my clan will be heard in every corner! We're going to deal with Duty at Limansk and capture this base as well. After that we should be able to break through the Scorcher and go north. The Monolithians managed, so why can't we, right? I don't know what they found over there, but they sure are fighting like it's something important.</text>
+	</string>
+	<string id="dm_cool_info_35">
+		<text>Brother, we are on the verge of great changes! The military warehouses and all of this area are about to become Freedom property. Our outposts already cover all the main roads and it won't be long before we settle down at the military base. There's a road here that leads north, straight to the center of the Zone, and once we deal with the Brain Scorcher we'll be the first to find out whether there's actually anything to this...Wish Granter.</text>
+	</string>
+	<string id="dm_intro_106">
+		<text>Hello, stranger!</text>
+	</string>
+	<string id="dm_intro_107">
+		<text>Hello and welcome, stalker!</text>
+	</string>
+	<string id="dm_intro_108">
+		<text>Hey!</text>
+	</string>
+	<string id="dm_about_141">
+		<text>This is the last inhabited part of the Zone before the Brain Scorcher. Only madmen go any further, and none of them come back. Even the area around the warehouses is rife with bloodthirsty monsters and lethal dangers, but nobody even knows what's beyond it. A new path to some unexplored areas was found in the Red Forest recently; I heard stories of a small town being discovered, but I ain't never seen it myself. </text>
+	</string>
+	<string id="dm_about_142">
+		<text>I'd say the most important thing around here is the military base. Freedom is fighting the military for it, because the army is down to bare bones after the last Emission. There are also a couple of villages around here. They're nothing special, but you can find some loot in the ruins of old huts. To the north is the Barrier, built by stalkers to hold the monsters coming from the Brain Scorcher. If you want to leave this place, just head south for the Dark Valley, or if you want to see Duty fighting most of Freedom's forces for the right to new territories, then go west to the Red Forest.</text>
+	</string>
+	<string id="dm_about_143">
+		<text>The main thing happening here is small groups of stalkers trying to contain the monsters and zombies coming from the Scorcher. Freedom's and Duty's main forces are battling it out somewhere beyond the Red Forest. I hear a path to a small town from before the Zone, called Limansk, was discovered there.</text>
+	</string>
+	<string id="dm_about_144">
+		<text>This place is heating up, man. After the large Emission stalkers found a road to Limansk through the Red Forest. The road leads through the military warehouses, and as soon as word got out both Duty and Freedom moved in. It's also getting pretty feisty at the Barrier, because waves of monsters are no longer the only problem. Believe it or not, Monolithians are also attacking through there... I didn't even think the stories about them were true until now!</text>
+	</string>
+	<string id="dm_about_145">
+		<text>The Zone is changing so fast lately that I am not sure what I know about it is even true anymore. On top of that, I haven't been here that long, so I'm kind of short on info. They say that there's something called the Brain Scorcher north of here, and I heard that the Red Forest and Limansk are to the west, where Freedom and Duty are rumored to be at each others' throats. </text>
+	</string>
+	<string id="dm_about_146">
+		<text>When we got here Freedom was already working the military pretty good, and they didn't seem to be wearing themselves out. We're sitting on the fence for now - don't want to upset one side, but the other don't seem to have anything for us either. Eh, it's not really what we're here for anyway.</text>
+	</string>
+	<string id="dm_about_147">
+		<text>Everything that happens here happens because of the army base. Its position in the area is damn important, as it's the best place to control the adjacent territories from. The farmsteads and villages you'll see around here are small potatoes in comparison. That's why Freedom is doing everything it can to capture it - they've already set up outposts on the roads leading to the Dark Valley and the Red Forest. Those boys sure know what they're doing. Lone stalkers are holding the northern outpost for now, trying to contain the mutant onslaught, but I have a feeling Freedom will move right into the area once they've dealt with the base.</text>
+	</string>
+	<string id="dm_about_148">
+		<text>It looks like this area is gonna be Freedom territory pretty soon. They've really stepped up their fight here ever since they sorted out their internal problems. They have a presence here and in Limansk, and they're still holding onto the Dark Valley. I say "still" because they've spread themselves pretty damn thin: they're fighting for Limansk, the military base and they've also got their HQ in the Dark Valley. I have a strong feeling the bandits are gonna start pushing them out of there. Think about it: all you need is one brainy bandit to grasp the situation and take full advantage by putting a good squeeze on Freedom. That's what I'd do if I were them.</text>
+	</string>
+	<string id="dm_about_149">
+		<text>This place is enchanted with some really shitty magic, buddy. All we do is go 'round in circles looking for our missing friends, but so far we ain't found nothing but monsters. If you get to higher ground you can sometimes hear fragments of their radio comms, but it's impossible to make any sense of them. And that ain't the half of it! How do you explain the appearance of Monolithians from beyond the Barrier? I saw one of them once. He was wounded, his eyes were glazed over and he was mumbling the same words over and over: "Defend the Monolith!" I don't think he could feel pain, 'cause he wouldn't stop trying to grab my buddy's throat until we emptied a few clips into him. What do they want? What made them come back after the Emission? I ain't got nothing but questions, friend...</text>
+	</string>
+	<string id="dm_action_info_116">
+		<text>We're looking for our boys who were last seen around here before the Emission. We can sometimes hear bitty radio transmissions from hilltops, but apart from that there's no sign of them at all! I ain't got the slightest clue where to start looking for them.</text>
+	</string>
+	<string id="dm_action_info_117">
+		<text>We're on a kind of rescue mission to save one of our squads. The Emission caught them somewhere around this area, and we lost all comms with them. We've been sent here to find our boys... or what's left of them.</text>
+	</string>
+	<string id="dm_action_info_118">
+		<text>Everyone's heading for the center of the Zone these days, trying to solve its secrets. I wouldn't mind some answers to a few questions myself, 'cause I'm trying to work out how to get through the Brain Scorcher. They're finding new paths all the time now, and I reckon one of them might lead straight into the heart of the Zone. I'm not gonna be the first to jump in and explore a new road - I ain't that dumb! But I wouldn't mind knowing what's going on - maybe someone will find a way of getting to the Truth after all.</text>
+	</string>
+	<string id="dm_action_info_119">
+		<text>I'm keeping my ear to the ground here, although our main job in this place is to find the missing squad. They got caught out here by the Emission and we ain't seen them since. They try to establish communications once in a while, but it hasn't worked out so far. We've looked under every rock in this place and nothing! It freaks me out, man!</text>
+	</string>
+	<string id="dm_action_info_120">
+		<text>We ain't no different from anyone else here, man - just waiting for some nice fella to find a way through the Brain Scorcher. Once that happens we'll take the easy road to the center of the Zone and help ourselves to the best artifacts. Not being the first people to get there won't make too much difference 'cause we'll be a lot more likely to stay alive. I ain't a coward, I'm just careful. You'll understand when you get a bit older.</text>
+	</string>
+	<string id="dm_action_info_121">
+		<text>Chasing ghosts. Don't believe me? Well, to tell you the truth I wouldn't have believed it myself either! Basically, we're hearing fragments of communications transmitted by a missing squad, we even recognize the voices but we can't find our boys, talk to them or even work out where the signal is coming from. That's why I said we're chasing ghosts...damn that Emission!</text>
+	</string>
+	<string id="dm_action_info_122">
+		<text>I'm waiting for the boss to give the order. Subordination and all that. We're here to save Leshiy's group, but it's a bit tough given that we can't find the poor sons of bitches! To make matters worse we lost our radio operator in the village by the water tower. We went there to get a better radio signal, and some invisible squid came out of nowhere and slaughtered him. We couldn't do shit about it because we ain't trained to fight monsters - these days our main enemy is other humans.</text>
+	</string>
+	<string id="dm_action_info_123">
+		<text>Leshiy's group completed a really important assignment right before the Emission - they found a very rare artifact. We even contacted the client to let him know the goods are on their way, but Leshiy never made it back. We're mercenaries and we got a code - without it we're nothing. A contract must be executed. Period. If we screw up a job that's our reputation down the toilet, and no serious client will ever give us work again! That'd leave us wandering the Zone as stalkers again. </text>
+	</string>
+	<string id="dm_cool_info_36">
+		<text>I wish I knew something old about it. We're mercenaries, buddy. We go into the Zone to complete a specific mission, and rely on careful planning and outstanding preparation to achieve our objectives. </text>
+	</string>
+	<string id="dm_cool_info_37">
+		<text>I heard a stalker clan by the name of Monolith that was supposed to have gone missing reappeared. One day they stopped messing around, like everyone else in this place, and all made a move for the center of the Zone to look for the Wish Granter. Nobody heard a word from them for a long time, and now they're back. Thing is, nobody is all that happy to see them, because all they do is shout moronic slogans and attack everyone on sight.</text>
+	</string>
+	<string id="dm_cool_info_38">
+		<text>The road to Limansk through the Red Forest was discovered recently, and Freedom has already made it there. Duty is trying to do the same. I reckon there's already a bloodbath there as we speak, 'cause they both want control of that shitty town and neither will let the other clan have it. Freedom is in expansive mood at the moment - they're trying to capture the military base as well! I ain't no friend of the army, but I do feel sorry for them. They got hit pretty hard by the Emission, and now stalkers are pinning them in real bad as well.</text>
+	</string>
+	<string id="dm_cool_info_39">
+		<text>I heard that Duty had a hard time dealing with the mutant problem at Agroprom. They screwed something up underground and couldn't contain the monsters for shit. It was trader heaven for a while with all that demand for ammo. Anyway, I hear a single stalker helped them by flooding the underground, all on his own! No idea if it's true, but if it is then that stalker must be a real badass. There ain't many people in this place who can go into a mutant lair, give the Zone the finger and get away with it. If I ever meet that stalker in person, I'll buy a hat just so I can tip it off to him.</text>
+	</string>
+	<string id="dm_intro_109">
+		<text>It's an honor to make your wrinkled acquaintance.</text>
+	</string>
+	<string id="dm_intro_110">
+		<text>I bet you got some handshake on you, big guy!</text>
+	</string>
+	<string id="dm_intro_111">
+		<text>Welcome to the warehouses.</text>
+	</string>
+	<string id="dm_about_150">
+		<text>This is the last area of the Zone that has been explored by stalkers. You can find the military warehouses here, but if you keep going you'll come across the Brain Scorcher - they say that anyone who is affected by it loses his mind there and then! That's all speculation though, because nobody who has gone there has ever come back! The path to the Scorcher from the warehouses is blocked by the Barrier, which is used to hold waves of monsters coming from the center. After the large Emission Monolithians have started appearing as well. I wonder what they're after in this part of the Zone...maybe they've come to kill those who threaten their fictitious Monolith?</text>
+	</string>
+	<string id="dm_about_151">
+		<text>The military showed their true colors after the Emission - they abandoned their outposts and hid in their base like rats. Then again, there's only 20 of them left now, seeing as they were the closest to the center, so you could understand them. Once the military lost control over the warehouses everyone and their dog started coming here: stalkers, mercs, Duty and Freedom. It's a good thing stalkers had the sense to join forces to protect the Barrier. If waves of mutants and Monolithians aren't held, we're all gonna suffer, even the army at the Cordon. </text>
+	</string>
+	<string id="dm_about_152">
+		<text>You've probably already heard about the military base and the Barrier from everyone else? Well, there's not a great deal else around here except a couple of villages and a farmstead. They ain't much to talk about, but a deserted house can be used as a hiding place or even a base of operations, provided a mutant hasn't got there first. Watch out - there's quite a few of 'em around these parts.</text>
+	</string>
+	<string id="dm_about_153">
+		<text>It took a couple of minutes of an active Emission for the military warehouses to become the property of stalkers. Those cocky army boys are now hiding from Freedom deep inside their base, afraid to take a peek outside. Monolith, on the other hand, seems to be afraid of no one. We thought they all died a long time ago, but they're alive and kicking - coming at us from the Scorcher and blasting everything in their sight!</text>
+	</string>
+	<string id="dm_about_154">
+		<text>Something really weird is going on around these parts. There's a horde of different stalkers here now that the military are weakened from the Emission. Everyone's hoping to get to the center of the Zone. Some of them want to get their greasy paws on rare artifacts, others want to visit the Wish Granter and others still are looking for some alien Monolith... I reckon they've all gone bonkers, maybe the Scorcher's roasting their brains already?</text>
+	</string>
+	<string id="dm_about_155">
+		<text>I can tell you everything in detail, 'cause I've been to every nook and cranny of this area on my search for artifacts. The main reference point in these parts is the military base. It's on a hill, so you can see it from a good distance. To the north of it is the Barrier, and the Dark Valley is to the south. If you choose to head west via the village you'll come to the Red Forest. There are also a couple of farmsteads and a cabin by the swamp, but I'd steer clear of it if I were you - the radiation there is pretty deadly. </text>
+	</string>
+	<string id="dm_about_156">
+		<text>There's a good share of valuable stuff left here by the military. Trouble is, I reckon Freedom is gonna get it all, 'cause they've got their eye on the military base. All we got are the barricades on the road to the Scorcher and the artifacts that can be found lying around. Oh, there are also a couple of deserted villages where you can settle down in a home of your choice. If you're lucky you'll even get an invisible roommate with tentacles and all.</text>
+	</string>
+	<string id="dm_about_157">
+		<text>The military don't control this area no more. Freedom's about to "resolve" the military issue once and for all, and then this place will be as good as the Dark Valley. Meanwhile we've got our own mission: protecting the Barrier. Once I saw the crap that's coming at us from beyond the Barrier I lost all my taste for adventure. I prefer to let other suckers meet their end trying to get past the Scorcher.</text>
+	</string>
+	<string id="dm_about_158">
+		<text>We found out about the Barrier at Freedom's base in the Dark Valley. Rumor was that the military got kicked outta here and regular stalkers joined forces to defend this area against the Monolith. We set out with a whole squad, thinking we'd come and help our brothers, but in the end I was the only one that made it. Some of the boys got sidetracked, a few died on the road and some actually kept on going...</text>
+	</string>
+	<string id="dm_about_159">
+		<text>The military's grasp over this place is slipping fast. Not so long ago stalkers took over the warehouses and together with Freedom they're holding most of the key points in this area. We got together to keep watch over the Barrier and repel the attacks of insane Monolithians and horrible mutants coming at us from the Radar. Freedom controls the western and southern parts of this area, and they're making the military base their own real fast. Oh, we've also seen some mercs around here, looking for a lost squad of theirs or something.</text>
+	</string>
+	<string id="dm_action_info_124">
+		<text>Take a guess. Collecting loot, that's what. The military no longer rule the roost so we can do what we like. I'm also getting ready to make a move to the center of the Zone. Obviously, I have to help defend the Barrier from time to time, but that's partly for my own safety, and sometimes you can even pick up a decent weapon and ammo after the shooting is over. </text>
+	</string>
+	<string id="dm_action_info_125">
+		<text>I came to fight at the Barrier. A friend of mine at the Duty bar told me that this is where some guys set up defenses to fight mutants. He said there's always someone to shoot at down here, so I took off in the middle of the night to join in and have a bit of fun!</text>
+	</string>
+	<string id="dm_action_info_126">
+		<text>I've always been drawn to new territories. I mean, I came to the Zone because I got tired of monotonous routine on the outside, and in these parts there are always secrets to uncover. The other thing is the cash. You need food and ammo, but you can only get coin for loot. I'm also hoping someone finds a way of getting past the Scorcher, 'cause as soon as they do I'll be the first one to the center of the Zone. I've only got one sacred wish - for the Zone to disappear.  </text>
+	</string>
+	<string id="dm_action_info_127">
+		<text>Trying to keep up with Freedom. I wanted to go to Limansk with them, but showed up late at the Dark Valley and they'd already left. Ashot said they're gonna take this road, but by the time I got here they had already got through the Red Forest. Now I'm never gonna catch up with them! I ain't about to take that road on my own, and I don't know of any groups heading there soon.</text>
+	</string>
+	<string id="dm_action_info_128">
+		<text>I'm just catching a breather up here before heading into the Red Forest. I want to know what's there, on the other side of Limansk. Who cares if others haven't come back? Maybe they haven't come back because they found something. I mean, look at the Monolithians: nobody hears from them for months and then they suddenly reappear... God knows what they found there.</text>
+	</string>
+	<string id="dm_action_info_129">
+		<text>I just got back empty-handed from the Red Forest. We tried to get through it with some friends, but we all got real scared for no reason. Man, we shat ourselves so bad we kept running until we reached the Barrier; it's a miracle none of us stepped into an anomaly. Funny thing is, we still don't know what scared us! Anyhow, that forest is weird as hell.</text>
+	</string>
+	<string id="dm_action_info_130">
+		<text>I want to see all of the Zone. I've reached the warehouses now but before that I visited the Cordon, the Swamps, Agroprom and the Dark Valley. I even spent some time as the bandits' slave at the Garbage. Once I check this place out I'll move on somewhere else.</text>
+	</string>
+	<string id="dm_action_info_131">
+		<text>There aren't many territories that aren't already controlled by other clans or factions, and a lone stalker can't do much at Agroprom or the Garbage. Even with Limansk - they only just found it but look how many people are headed there right now. It's different at the warehouses because the situation is unclear: they don't belong to the military anymore, but they're not quite Freedom property yet either. On top of that, this area is pretty close to the newly explored territories, and if you get there your life is made - that's where all the rarest artifacts are at.</text>
+	</string>
+	<string id="dm_action_info_132">
+		<text>I'm looking for a valuable artifact. Sidorovich asked me to get it, and I couldn't find it at the Cordon or in the Dark Valley. Searching for loot at the Garbage is more trouble than it's worth, and there's two stalker clans cleaning everything up at Agroprom, especially after some hero flooded the underground there, meaning Duty no longer has to spend most of its time fighting mutants. But while this place is all in a frenzy I may just find what I'm looking for.</text>
+	</string>
+	<string id="dm_action_info_133">
+		<text>I was sent here from the Dark Valley to deliver an important message to the commander of a local Freedom squad. I received my reward and decided to stick around. Why not? The boys here are pretty decent, and nobody's been trying to enforce their rules on this place yet. Sure there's plenty of shooting and anomalies, and the Monolithians keep us up at night, but that's the Zone for you!</text>
+	</string>
+	<string id="dm_action_info_134">
+		<text>I'm planning to head north via the Scorcher. They say the Monolithians made it and some other stalkers actually reached the Wish Granter and got back in one piece. Nobody knows why they came back. Maybe they ran outta ammo or took a dose of radiation. It doesn't matter - if others made it so can I, and I don't care what anyone says!</text>
+	</string>
+	<string id="dm_action_info_135">
+		<text>You look like you've been in the Zone a long time, stalker. I would have thought you would've learned that asking questions like that ain't too smart by now. It just ain't your business. If I felt like sharing that sort of thing I'd share it myself. With the person I wanted to share it with. Try another question.</text>
+	</string>
+	<string id="dm_cool_info_40">
+		<text>After the Monolithians started flooding back from beyond the Barrier we had the idea to catch one alive and find out how to get through the Scorcher and into the center of the Zone. Man, it took a lot of lives and even more ammo, but we did it. This guy took half a clip right in the chest but he was still pretty lively: grunting, struggling and trying to grab at our leader. We asked him nice and we asked him rough but he didn't tell us shit, just kept screaming "Defend the Monolith" over and over... I figure something must have happened to them on the other side. So we didn't really find out how to get past the Scorcher, but then again if they're coming from beyond the Barrier there must be a way, right? What do you think?</text>
+	</string>
+	<string id="dm_cool_info_41">
+		<text>The latest news is that they found a road to the town of Limansk behind the Red Forest, and now Duty and Freedom are slaughtering each other over it. Must be a precious little town if they're willing to start such a bloodbath because of it.</text>
+	</string>
+	<string id="dm_cool_info_42">
+		<text>I heard a merc really helped the stalkers at the Cordon by solving a problem they had with the military. After that, the military don't hassle them no more, 'cause they're afraid of the response. Now, judging by the description of that merc... well, it's you! Don't be shy, buddy. Here, let me shake your manly hand! You da man!</text>
+	</string>
+	<string id="dm_cool_info_43">
+		<text>The emissions happen so often now that it's a real problem. This hasn't happened for a long time. I mean, they occur one after another, and the Zone changes every time. Sometimes you can find new anomalies after an emission, and sometimes you'll discover a way through an existing anomaly field. That's how they found the road to Limansk, even though most stalkers had never even heard of it. This whole situation is causing a lot of deaths, and it's not just the emissions either. There's a real war going on for control of the new territories, and it ain't pretty.</text>
+	</string>
+	<string id="dm_cool_info_44">
+		<text>How can there be anything new here? Think of this place as kindergarten - preschool even. Then again, if you don't stick around here to learn the ropes and go straight into the Zone, you'll be dead before you know it. That's why the smart ones stay here awhile before moving on. Besides, you can get your hands on some decent weapons and equipment here - everyone does.</text>
+	</string>
+	<string id="dm_action_info_136">
+		<text>Nothing. Trying to stay alive - that's about it.</text>
+	</string>
+	<string id="dm_about_160">
+		<text>I can't believe this shit, I nearly copped it an hour ago! I was here about six months back and it was all peace and quiet, but now there's a jarhead waiting for you under every bush! It's crazy, man...</text>
+	</string>
+	<string id="dm_cool_info_45">
+		<text>What? What do you want to know? I'll tell you this much: Duty might be cops, but they know how to maintain order, that's for sure. Still, I don't like them much. They think they own everything: "don't take this, don't take that". On top of that, they've already decided what you're allowed to say on the outside and what you're supposed to keep quiet! I even heard they actually want to destroy the Zone, little by little. Well that doesn't surprise me, they're former soldiers after all....damn dreamers. The trouble is I hear their support comes all the way from the top.</text>
+	</string>
+	<string id="dm_about_161">
+		<text>This territory is now controlled by Duty, and Duty rules are the law of the land. We control the borders of the Zone and cool off hot heads: the dreamy idiots come here in whole groups...and then die in their dozens on the first day.</text>
+	</string>
+	<string id="dm_about_162">
+		<text>Head to the camp - you'll hear all the rumors there. Rookies like you usually drop by to pick up some pointers or rest awhile. There are soldiers around here but don't worry about them too much. Then again you don't want to get in their way either 'cause they don't think twice about shooting one of us down...There's a nice and peaceful little place near the trader where you can rest. </text>
+	</string>
+	<string id="dm_cool_info_46">
+		<text>Did you hear that Duty is recruiting new members? I thought about it for a minute, but then decided I can't be bothered with it. It'll be like being back in the army: discipline and all that crap... I did my two years military service and that was enough to last me a lifetime...</text>
+	</string>
+	<string id="dm_action_info_137">
+		<text>Well I was thinking of going to Yantar, but changed my mind. The eggheads set up a full-on scientific base in those parts. They're researching the devil-knows-what while zombies are romping around outside their lab. An idyllic picture, no?</text>
+	</string>
+	<string id="dm_cool_info_47">
+		<text>We had to clean up the area around Lake Yantar recently and we cleaned it up real good! There are research laboratories there, but there's a ton of zombies in that area as well, so we have to help the scientists out from time to time.</text>
+	</string>
+	<string id="dm_cool_info_48">
+		<text>You know what, let Duty, Freedom and looters fight it out for this land. What is it to me? To hell with it all...</text>
+	</string>
+	<string id="dm_action_info_138">
+		<text>We're working here now, stalker. Not only is there a shitload of mutants, but there are also those mercenary assholes and the retards from Freedom giving us trouble...</text>
+	</string>
+	<string id="dm_cool_info_49">
+		<text>Nothing. I don't know diddlysquat. I take what I can when I can and try to make enough to get by. I don't feel like going deeper into the Zone, to hell with it!.. There's no work where I'm from, and the wife's on my back... Gotta make a living somehow, you know? Spend a day looking for loot here at the Garbage and you can find a few basic artifacts, which is enough for a decent meal and something to wash it down with.</text>
+	</string>
+	<string id="dm_cool_info_50">
+		<text>Well, you know...Some fellas have settled down at the Garbage collecting junk, others went deeper into the Zone. Sure, you can find some real good stuff there, but it's not for everyone. Rookies without experience struggle to survive in those parts and if you ain't got decent equipment you sure as hell don't stand a chance. </text>
+	</string>
+	<string id="dm_action_info_141">
+		<text>None of your business... Don't hassle people with stupid questions, and no one will hassle you either.</text>
+	</string>
+	<string id="dm_cool_info_51">
+		<text>I'm loving our scientists, man! They're funny guys, that's for damn sure! Usually they don't stick their nerdy little noses out of the bunker, but when they do, like the other day... all hell breaks loose! Troops everywhere, choppers, APCs! Next time, they might as well haul a battleship here, or at least an armored train...</text>
+	</string>
+	<string id="dm_cool_info_52">
+		<text>New? There ain't nothing new here but there's so much old shit that you could drown in it. The bandits are so cocky it's unbelievable! We are the ones who risk our lives walking through anomalies trying to find artifacts, and they reap the rewards... Dickheads! Just stay away from the Garbage - that's exactly their kind of place.</text>
+	</string>
+	<string id="dm_action_info_139">
+		<text>I'm stuck here, you see? I want to go home, but they won't let me. That's all the news... The guys that go deep into the Zone - the pros - talk about all kinds of things. Sometimes they bring loot that makes your mouth water. They say there are riches everywhere - all for the taking. Not many will get there though, and even fewer will make it back.</text>
+	</string>
+	<string id="dm_cool_info_53">
+		<text>Well, I'm not really up to speed on recent events.</text>
+	</string>
+	<string id="dm_cool_info_54">
+		<text>Have you heard the rumor that the Zone is growing? I think it's true 'cause I've seen real scary mutants near the perimeter, ones that you could only meet near the center of the Zone before. Not good, eh?</text>
+	</string>
+	<string id="dm_cool_info_55">
+		<text>Well, maybe all that talk about bloodsuckers by the border of the Zone is true. But what does that have to do with the Zone growing? Just because a pack of them managed to get to the border... I guess we must have let them get through. Not surprising given that we sometimes work day and night! We're coping alright though - you don't hear people yelling "Help, we're surrounded by mutants!" outside the perimeter, do you?</text>
+	</string>
+	<string id="dm_about_167">
+		<text>Be careful, these walking corpses have flooded the entire area. They are quite brainless but very aggressive. We are under constant siege here, day and night. To sum up, it's quite dangerous here, young man.</text>
+	</string>
+	<string id="dm_about_168">
+		<text>I don't know what to tell you... There is always something happening, but that is normal here. They don't believe that outside, of course, but we are in an anomalous zone after all.</text>
+	</string>
+	<string id="dm_cool_info_56">
+		<text>You want rumors? I'll tell you without any rumors: soon there'll be more order. We'll purge the Zone of mutants, and of certain other jerks too...</text>
+	</string>
+	<string id="dm_cool_info_57">
+		<text>Have you heard what the Duty boys are saying they'll do to us? They're promising to grind us to dust, and that's just for starters. I'm pretty worried about the whole thing ... Especially given that they're said to have re-equipped themselves with some top notch hardware.</text>
+	</string>
+	<string id="dm_cool_info_58">
+		<text>News, huh? Who cares what people say? You can't believe every story you hear or you'll go crazy. For example, they say that some tough diehard stalker came back from the center, brought something that ain't never been seen before, and earned tons of coin... Well, I can make up a hundred stories like that myself!</text>
+	</string>
+	<string id="dm_help_12">
+		<text>Thank you very much.</text>
+	</string>
+	<string id="dm_about_169">
+		<text>What are you doing here without protection? Tired of life, is that it? There's an anomaly behind every bush in these parts. Nobody takes a leak here without protection 'cause you'll get a "healthy" dose of radiation before you're done.</text>
+	</string>
+	<string id="dm_about_170">
+		<text>Seems you don't know your way around here yet, so I'll give you a friendly tip: stay away from the military. As soon as you spot them, get the hell out of there because they're as dumb as they come. They'll put a few rounds into you first, and then check your papers to see who you were.</text>
+	</string>
+	<string id="dm_intro_112">
+		<text>Good day.</text>
+	</string>
+	<string id="dm_intro_113">
+		<text>Good day.</text>
+	</string>
+	<string id="dm_intro_114">
+		<text>Hey, what's up?</text>
+	</string>
+	<string id="dm_intro_115">
+		<text>Hey dude!</text>
+	</string>
+	<string id="dm_intro_116">
+		<text>Hey.</text>
+	</string>
+	<string id="dm_intro_117">
+		<text>Oh, hi!</text>
+	</string>
+	<string id="dm_intro_118">
+		<text>Hello.</text>
+	</string>
+	<string id="dm_intro_119">
+		<text>Greetings!</text>
+	</string>
+	<string id="dm_intro_120">
+		<text>Hello, stalker.</text>
+	</string>
+	<string id="dm_intro_121">
+		<text>Greetings, stalker.</text>
+	</string>
+	<string id="dm_intro_122">
+		<text>Hey you, stalker!</text>
+	</string>
+	<string id="dm_intro_123">
+		<text>Wassup?</text>
+	</string>
+	<string id="dm_intro_124">
+		<text>Well, look who we have here!</text>
+	</string>
+	<string id="dm_intro_125">
+		<text>And who is this we have here?</text>
+	</string>
+	<string id="dm_intro_126">
+		<text>Hello, man.</text>
+	</string>
+	<string id="dm_about_165">
+		<text>It's like walking through a minefield, only worse. Some of the stuff that happens here sometimes...you can't relax for a second!</text>
+	</string>
+	<string id="dm_about_171">
+		<text>I suggest you keep on your toes. Once you are on your toes, you stay on your toes 'cause the second you relax, you're a goner.</text>
+	</string>
+	<string id="dm_about_172">
+		<text>You have to keep your eyes peeled in this place, even when you sleep 'cause nasty shit can happen at any moment.</text>
+	</string>
+	<string id="dm_about_173">
+		<text>Be careful with the bastards! They're like a swarm of locusts!</text>
+	</string>
+	<string id="dm_help_0">
+		<text>Help bro!</text>
+	</string>
+	<string id="dm_help_1">
+		<text>Somebody help!</text>
+	</string>
+	<string id="dm_help_2">
+		<text>Guards! I'm wounded! Come here!</text>
+	</string>
+	<string id="dm_help_3">
+		<text>Help! I'm dying!</text>
+	</string>
+	<string id="dm_help_4">
+		<text>Guys, I need a medkit!</text>
+	</string>
+	<string id="dm_help_5">
+		<text>Bring me a medkit!</text>
+	</string>
+	<string id="dm_help_6">
+		<text>I need first aid, guys! Hurry up!</text>
+	</string>
+	<string id="dm_help_7">
+		<text>I need a medkit, fellas!</text>
+	</string>
+	<string id="dm_help_8">
+		<text>Somebody, give me a medkit!</text>
+	</string>
+	<string id="dm_help_9">
+		<text>Friend, I need a medkit...a medkit.</text>
+	</string>
+	<string id="dm_help_10">
+		<text>Help me, dude!</text>
+	</string>
+	<string id="dm_help_11">
+		<text>Hey pal, spare a medkit for me, would you?</text>
+	</string>
+	<string id="dm_cool_info_59">
+		<text>I heard those turkeys at the Cordon gave the soldiers a good smacking and put their chump of a chief in a cage. I wouldn't mind taking a look at that freakshow. I mean, what a disgrace!</text>
+	</string>
+	<string id="dm_cool_info_60">
+		<text>This shit with the emissions is no joke! If it don't fry you on the spot, it's got a zillion other ways of killin' ya! The real nice places we had here are now filled with friggin' anomalies. Anywhere you go you're scared shitless of getting zapped in the ass!</text>
+	</string>
+	<string id="dm_cool_info_61">
+		<text>We've got this golden rash... or is it golden rush? Anyway, stalkers shovel through mountains of radioactive crap, finding some useful loot here and there, and we make sure no one starts any trouble.</text>
+	</string>
+	<string id="dm_cool_info_62">
+		<text>A few days back Kolyan and his pals got hit by an emission, so now someone else is wearing his boots if you know what I mean. See, that's what you get for wandering out of the base. Stick to the camp and you'll be safe.</text>
+	</string>
+	<string id="dm_cool_info_63">
+		<text>Some stalker scum at Agroprom put together some sort of a gang. The wily sons of bitches coaxed a few of our guys out and tied them down. They ain't got the balls to kill them - they know we'd come after them hard to avenge our boys.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_enemy">
+		<text>What? The enemy is near and you're giving me all this crap.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_friend">
+		<text>What do you want? We're going to meet up with our boys, they set up camp near here.</text>
+	</string>
+	<string id="dm_sim_action_attack_point_none">
+		<text>There's a nice unoccupied spot nearby, that's where we're going.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_enemy_near">
+		<text>What's up with you? We're sitting around, keeping guard over the camp and all, with all kinds of enemies close by. So you just bugger off with your questions.</text>
+	</string>
+	<string id="dm_sim_action_stay_point_none_near">
+		<text>What's your problem? We're just sitting here, taking a little break. It's nice and quiet, no one around...</text>
+	</string>
+	<string id="dm_actor_news_1">
+		<text>Any news?</text>
+	</string>
+	<string id="dm_actor_news_2">
+		<text>What's new?</text>
+	</string>
+	<string id="dm_actor_news_3">
+		<text>Heard any news?</text>
+	</string>
+	<string id="dm_army_no_news_1">
+		<text>If you want news, go find a TV - all we got here is the daily grind. Bo-o-o-ring...</text>
+	</string>
+	<string id="dm_army_no_news_2">
+		<text>Screw you! Want news, huh? Go get a newspaper at the newstand, it's just around the corner!</text>
+	</string>
+	<string id="dm_army_no_news_3">
+		<text>Sure, we got lots of news...to last a greenie his whole first week. After that it's nothing but drag.</text>
+	</string>
+	<string id="dm_army_no_news_4">
+		<text>If you run into anything new, send it my way, eh? Hah! Listen, let's barter instead - got anything of value?</text>
+	</string>
+	<string id="dm_bandit_no_news_1">
+		<text>What can possibly be new here? Same shit, different day!</text>
+	</string>
+	<string id="dm_bandit_no_news_2">
+		<text>That's a good one, pal! You don't really think we get lots of news in this shithole, do ya?</text>
+	</string>
+	<string id="dm_bandit_no_news_3">
+		<text>Life is shit...only that ain't no news.</text>
+	</string>
+	<string id="dm_bandit_no_news_4">
+		<text>News my ass!.. Hey, you got anything to trade?</text>
+	</string>
+	<string id="dm_csky_no_news_1">
+		<text>News you say? ... Well, we're working our butts off over here. Hopefully we'll soon be able to walk the Zone like normal people and not freak out from anomalies at every step.</text>
+	</string>
+	<string id="dm_csky_no_news_2">
+		<text>I ain't heard of any news. It's the same old thing every day: go this place, watch that place...We're just hoping it's all worthwhile.</text>
+	</string>
+	<string id="dm_csky_no_news_3">
+		<text>There's only one news item here: the Zone isn't a joke. We study it, but it can devour us whole at any moment...Listen, you got any useful artifacts by chance?</text>
+	</string>
+	<string id="dm_csky_no_news_4">
+		<text>Dunno...can't think of any news. But what do you say we do some trading?</text>
+	</string>
+	<string id="dm_default_no_news_1">
+		<text>I ain't got time for news! News'll always find you, if it has to. Here we just run around like hamsters in an exercise wheel...</text>
+	</string>
+	<string id="dm_default_no_news_2">
+		<text>I ain't heard no news, and thank God for that. Anything new we get here is the bad kind of new, if you know what I mean. So - knock on wood - let's hope it stays old.</text>
+	</string>
+	<string id="dm_default_no_news_3">
+		<text>Why do you even care about news? Just watch yourself and try to stay in one piece!.. By the way, you got anything you wanna trade?</text>
+	</string>
+	<string id="dm_default_no_news_4">
+		<text>How should I know? Now, how about trading some? Let's pool our possessions and each takes what he likes, eh?</text>
+	</string>
+	<string id="dm_dolg_no_news_1">
+		<text>Soon as we clear this place out, that'll be the big news. Until then, it's all work and no play...</text>
+	</string>
+	<string id="dm_dolg_no_news_2">
+		<text>You're still in the Zone - there's news for you. You know, I don't get stalkers - is it really so much fun taking your gun and armor with you when you go for a piss in the bushes?..</text>
+	</string>
+	<string id="dm_dolg_no_news_3">
+		<text>We're not so big on news here, buddy. You'd have to go back to the outside for that. But we are big on trading...tell me, have you anything valuable to barter?</text>
+	</string>
+	<string id="dm_dolg_no_news_4">
+		<text>News, huh? Another pack of idiots ran into an anomaly, some more got torn to pieces by some beasts, same ol'...Listen, you got any loot? Anything for sale at all?</text>
+	</string>
+	<string id="dm_freedom_no_news_1">
+		<text>Dude, what the hell you need news for? Relax! Just take it easy and have fun...</text>
+	</string>
+	<string id="dm_freedom_no_news_2">
+		<text>We got lots of sun, fresh air and grass...really good grass...c'mon, dude, stop worrying and just enjoy it!</text>
+	</string>
+	<string id="dm_freedom_no_news_3">
+		<text>Much good news are in these parts...I don't follow news, period. Now you tell me - you got anything to trade? Let's do some business.</text>
+	</string>
+	<string id="dm_freedom_no_news_4">
+		<text>Listen, pally, I don't know...We don't really get news in here. Let's think in more practical terms. For instance, if you got something to sell, I could buy it from you...</text>
+	</string>
+</string_table>
