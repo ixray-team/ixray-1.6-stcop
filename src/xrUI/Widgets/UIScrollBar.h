@@ -82,4 +82,6 @@ public:
 	
 	void			TryScrollInc		(bool by_scrollbox=false);
 	void			TryScrollDec		(bool by_scrollbox=false);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

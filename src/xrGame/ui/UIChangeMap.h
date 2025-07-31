@@ -23,6 +23,8 @@ public:
 	void 			OnBtnCancel				();
 	void 			OnItemSelect			();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			void	FillUpList				();
 

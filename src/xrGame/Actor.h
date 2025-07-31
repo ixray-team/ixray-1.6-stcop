@@ -102,6 +102,7 @@ public:
 	virtual IInputReceiver*				cast_input_receiver			()						{return this;}
 	virtual CEntityAlive*				cast_entity_alive			()						{return this;}
 	virtual CEntity*					cast_entity					()						{return this;}
+	virtual CPhraseDialogManager*		cast_phrase_dialog_manager	()						{return this;}
 	virtual	CCharacterPhysicsSupport*	character_physics_support	()						{return m_pPhysics_support;}
 	virtual	CCharacterPhysicsSupport*	character_physics_support	() const				{return m_pPhysics_support;}
 	virtual CPHDestroyable*				ph_destroyable				()						;

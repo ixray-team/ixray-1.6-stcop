@@ -16,6 +16,9 @@ public:
 			void 	SetSelectedState	(bool state);
 			bool 	GetSelectedState	();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIStatic* ui_cast_static() { return this; }
+
 private:
 	bool			m_bSelected;
 	void			start_anim			();

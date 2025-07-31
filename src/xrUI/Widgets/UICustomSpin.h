@@ -37,6 +37,8 @@ public:
 			void	SetTextColor		(u32 color);
 			void	SetTextColorD		(u32 color);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	virtual bool		CanPressUp			()	= 0;
 	virtual bool		CanPressDown		()	= 0;

@@ -20,6 +20,8 @@ public:
 	virtual void	Init				(float x, float y, float width, float height);
 	virtual void	InitCharacter		(CInventoryOwner* pInvOwner);
 	
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 	void*					m_data;
 protected:
 	//информация о персонаже

@@ -20,6 +20,9 @@ public:
 			void InitDebugFonts		(Frect r);
 	virtual bool OnKeyboardAction			(int dik, EUIMessages keyboard_action);
 			void FillUpList			();
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 	CUIStatic  m_background;
 };

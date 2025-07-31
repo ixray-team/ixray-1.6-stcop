@@ -14,6 +14,8 @@ public:
 			void InitMap			(LPCSTR map_name, LPCSTR map_ver);
 		LPCSTR	 GetLargeDesc		();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 protected:
 	CUIScrollView*	m_view;

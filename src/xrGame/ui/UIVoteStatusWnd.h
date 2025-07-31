@@ -14,4 +14,6 @@ public:
 	void	InitFromXML				(CUIXml& xml_doc);
 	void	SetVoteTimeResultMsg	(LPCSTR s);
 	void	SetVoteMsg				(LPCSTR s);
+
+	virtual CUIWindow* ui_cast_window() { return this; }
 };

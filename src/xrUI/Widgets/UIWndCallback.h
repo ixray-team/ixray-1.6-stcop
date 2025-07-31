@@ -23,4 +23,6 @@ public:
 			void				Register			(CUIWindow* pChild);
 			void				AddCallback			(CUIWindow* pWnd, s16 evt, const void_function &f);
 			void				AddCallbackStr		(const shared_str& control_id, s16 evt, const void_function &f);
+
+	virtual CUIWindow* ui_cast_window() { return nullptr; }
 };

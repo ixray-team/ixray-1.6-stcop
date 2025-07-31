@@ -73,4 +73,5 @@ public:
 				void		ShowChangeGameLimitsBtns();
 				void		OnBackBtn();
 				bool		IsBackBtnShown() {return m_pBackBtn->IsShown();};
+		virtual CUIWindow* ui_cast_window() { return this; }
 };

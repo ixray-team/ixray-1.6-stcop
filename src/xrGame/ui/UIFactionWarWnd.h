@@ -112,6 +112,9 @@ public:
 			void		set_amount_enemy_bonus	( int value );
 
 			UIHint*		hint_wnd;
+
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			int			get_max_member_count	();
 			float		get_max_resource		();

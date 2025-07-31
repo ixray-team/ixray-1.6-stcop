@@ -22,6 +22,7 @@ public:
 	virtual bool		NeedCursor			()const {return false;}
 	virtual void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
+	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
 	CUIEditBox*			UIEditBox;

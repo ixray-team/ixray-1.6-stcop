@@ -63,6 +63,8 @@ ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
 public:
 		IC	void	SetDrawingValue			(bool value) { m_bDrawValue = value; }
 
+		virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			void 	UpdatePos				();
 			void 	UpdatePosRelativeToMouse();

@@ -78,6 +78,9 @@ IC			bool	NeedShowScrollBar	();		// no comment
 			float	Scroll2ViewV		();		// calculate scale for scroll position
 	CUIScrollBar*	ScrollBar		() {return m_VScrollBar;}
 	
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIScrollView* ui_cast_scroll_view() { return this; }
+
 	typedef xr_delegate<bool(CUIWindow*,CUIWindow*)>		cmp_function;
 	cmp_function	m_sort_function;
 };

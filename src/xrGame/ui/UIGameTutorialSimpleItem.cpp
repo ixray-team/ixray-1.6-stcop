@@ -118,9 +118,10 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		_si->m_start				= xml->ReadAttribFlt("auto_static", i, "start_time", 0);
 		_si->m_length				= xml->ReadAttribFlt("auto_static", i, "length_sec", 0);
 
-		_si->m_visible				= false;
-		_si->m_wnd					= smart_cast<CUIStatic*>(find_child_window(m_UIWindow, sname)); 
-		VERIFY						(_si->m_wnd);
+		_si->m_visible = false;
+		CUIWindow* finded_child = find_child_window(m_UIWindow, sname);
+		_si->m_wnd = finded_child != nullptr ? finded_child->ui_cast_static() : nullptr;
+		VERIFY(_si->m_wnd);
 
 		_si->m_wnd->TextItemControl()->SetTextComplexMode(true);
 		_si->m_wnd->Show			(false);

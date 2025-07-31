@@ -37,6 +37,9 @@ public:
     virtual bool IsHighlightText();
     virtual void SetHighlightText(bool Highlight) { m_bHighlightText = Highlight; }
 
+    virtual CUIWindow* ui_cast_window() { return this; }
+    virtual CUIListItem* ui_cast_list_item() { return this; }
+
 protected:
     //указатель на произвольные данные, которые могут
     //присоедениены к элементу

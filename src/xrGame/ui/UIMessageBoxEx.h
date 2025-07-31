@@ -28,5 +28,7 @@ public:
 	virtual bool	OnKeyboardAction			(int dik, EUIMessages keyboard_action);
 	virtual bool	NeedCenterCursor	()const	 {return false;}
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
     CUIMessageBox*						m_pMessageBox;
 };

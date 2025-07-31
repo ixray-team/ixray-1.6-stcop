@@ -61,6 +61,8 @@ public:
 	virtual void			Draw					();
 	virtual void			Show					( bool status );
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 private:
 			void			update_round_states		(EStateType stt_type, float initial, float max_power);
 
@@ -91,6 +93,7 @@ public:
 			int		set_arrow				( float value ); // 0..1
 			bool	show_static				( bool status, u8 number=1 );
 
+	virtual CUIWindow* ui_cast_window() { return this; }
 }; // class ui_actor_state_item
 
 #endif // UI_ACTOR_STATE_INFO_H_INCLUDED

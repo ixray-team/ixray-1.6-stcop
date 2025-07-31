@@ -20,6 +20,8 @@ public:
 			void		InitPlayerInfo		(Fvector2 pos, Fvector2 size);
 	virtual void		Update				();
 
+	virtual CUIWindow* ui_cast_window() { return this; }
+
 protected:
 			void		AddField			(float len, CGameFont* pF, u32 text_col, bool icon);
 	const char*			GetInfoByID			(const char* id);
