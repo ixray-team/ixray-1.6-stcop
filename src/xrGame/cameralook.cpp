@@ -73,16 +73,21 @@ ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 			if (!pMissile->Useful())
 				return TRUE;
 		}
-
-		if (CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity()))
+		CObject* current_entity = Level().CurrentEntity();
+		if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
 		{
 			if (result.O == pActor)
-				return TRUE;
-			if (pActor->Holder())
 			{
-				CCar* car = smart_cast<CCar*>(pActor->Holder());
+				return TRUE;
+			}
+
+			if (CHolderCustom* get_holder = pActor->Holder())
+			{
+				CCar* car = get_holder != nullptr ? get_holder->cast_car() : nullptr;
 				if (car && result.O == car)
+				{
 					return TRUE;
+				}
 			}
 		}
 	}
@@ -90,8 +95,10 @@ ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 	{
 		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
 		SGameMtl* pMtl = GMLib.GetMaterialByIdx(T->material);
-		if (pMtl && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+		if (pMtl != nullptr && (pMtl->Flags.is(SGameMtl::flPassable) || pMtl->Flags.is(SGameMtl::flActorObstacle)))
+		{
 			return TRUE;
+		}
 	}
 
 	*RQ = result;

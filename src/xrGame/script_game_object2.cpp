@@ -364,7 +364,8 @@ void CScriptGameObject::SetActorPosition(Fvector pos)
 {
 	if (CActor* actor = object().cast_actor())
 	{
-		if (CCar* car = smart_cast<CCar*>(actor->Holder()))
+		CHolderCustom* holder = actor->Holder();
+		if (CCar* car = holder != nullptr ? holder->cast_car() : nullptr)
 		{
 			car->DoExit();
 		}
@@ -530,7 +531,7 @@ float CScriptGameObject::max_ignore_monster_distance() const
 
 CCar* CScriptGameObject::get_car()
 {
-	if (CCar* car = smart_cast<CCar*>(&object()))
+	if (CCar* car = object().cast_car())
 	{
 		return car;
 	}

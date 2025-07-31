@@ -381,10 +381,10 @@ void CUIActorMenu::UpdatePartnerBag()
 {
 	string64 buf;
 
-	CBaseMonster* monster = smart_cast<CBaseMonster*>(m_pPartnerInvOwner);
-	CCar* pCar = smart_cast<CCar*>(m_pPartnerInvOwner);
+	CBaseMonster* monster = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_base_monster() : nullptr;
+	CCar* pCar = m_pPartnerInvOwner != nullptr ? m_pPartnerInvOwner->cast_car() : nullptr;
 
-	if (pCar || monster || m_pPartnerInvOwner->use_simplified_visual() )
+	if (pCar != nullptr || monster != nullptr || m_pPartnerInvOwner->use_simplified_visual())
 	{
 		m_PartnerWeight->SetText( "" );
 	}
