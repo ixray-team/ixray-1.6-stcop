@@ -68,6 +68,7 @@ public:
 public:
 	void				Initialize	();
 	void				InitializeNotDedicated();
+	void				InitializeDedicated();
 	void				Destroy		();
 
 	void				CreateRendererList();
