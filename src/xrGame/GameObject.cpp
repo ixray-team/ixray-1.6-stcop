@@ -1109,14 +1109,19 @@ void CGameObject::OnRender			()
 	if (!ai().get_level_graph())
 		return;
 
-	CDebugRenderer					&renderer = Level().debug_renderer();
-	if (/**bDebug && /**/Visual()) {
-		float						half_cell_size = 1.f*ai().level_graph().header().cell_size()*.5f;
-		Fvector						additional = Fvector().set(half_cell_size,half_cell_size,half_cell_size);
+	if (Visual() == nullptr)
+		return;
 
-		render_box					(Visual(),XFORM(),Fvector().set(0.f,0.f,0.f),true,color_rgba(0,0,255,255));
-		render_box					(Visual(),XFORM(),additional,false,color_rgba(0,255,0,255));
-	}
+	if (Visual()->getVisData().hom_frame != Device.dwFrame)
+		return;
+
+	CDebugRenderer					&renderer = Level().debug_renderer();
+	float						half_cell_size = 1.f*ai().level_graph().header().cell_size()*.5f;
+	Fvector						additional = Fvector().set(half_cell_size,half_cell_size,half_cell_size);
+
+	render_box					(Visual(),XFORM(),Fvector().set(0.f,0.f,0.f),true,color_rgba(0,0,255,255));
+	render_box					(Visual(),XFORM(),additional,false,color_rgba(0,255,0,255));
+
 
 	if (0) {
 		Fvector						bc,bd; 
