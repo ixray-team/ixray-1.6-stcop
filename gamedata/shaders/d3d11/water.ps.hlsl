@@ -55,7 +55,29 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	float fresnel = saturate(dot(vreflect, v2point));
 
 #ifdef USE_SSLR_ON_WATER
-	float4 sslr = calc_reflections(pos2d.xy, I.tctexgen.z, vreflect);
+    float3 WaterPoint = I.tctexgen.z * float3(pos2d.xy * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+	float3 Reflect = mul((float3x3)m_V, vreflect);
+	
+    float4 sslr = ScreenSpaceLocalReflections(WaterPoint, Reflect);
+	
+	#ifdef USE_OFFSCREEN_REFLECTIONS
+		float4 vslr = FastViewReflections(WaterPoint, Reflect);
+		
+		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
+		vslr.w *= 1.f - Fog * Fog;
+		
+		vslr.xyz = s_env.SampleLevel(smp_rtlinear, vslr.xyz, 0.0f);
+		vslr.xyz *= rcp(1.00001f - vslr.xyz);
+	#endif
+#else
+	#ifdef USE_OFFSCREEN_REFLECTIONS
+		float3 Reflect = mul((float3x3)m_V, vreflect);
+		float4 vslr = s_env.SampleLevel(smp_rtlinear, Reflect.xyz, 0.0f);
+		vslr.xyz *= rcp(1.00001f - vslr.xyz);
+		
+		float Fog = saturate(vslr.w * fog_params.w + fog_params.x);
+		vslr.w = 1.f - Fog * Fog;
+	#endif
 #endif
 
 	float2 rotation = 0.0f;
@@ -71,6 +93,10 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	
 	float3 env = lerp(env0, env1, L_ambient.w) * L_sky_color.xyz;
 
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	env.xyz = lerp(env, PopGamma(vslr.xyz), vslr.w);
+#endif
+	
 #ifdef USE_SSLR_ON_WATER
 	env = lerp(env, PopGamma(sslr.xyz), sslr.w);
 #endif
