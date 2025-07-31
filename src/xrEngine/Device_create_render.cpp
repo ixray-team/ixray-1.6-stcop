@@ -244,7 +244,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 			{
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
-
+			#if defined(IXRAY_PROFILER)
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
 					PROF_START_CAPTURE();
@@ -253,8 +253,19 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				if (ImGui::MenuItem("Optick Stop Capture"))
 				{
 					PROF_STOP_CAPTURE();
-					PROF_SAVE_CAPTURE("ixr.opt");
+
+					string256 currentDate{};
+					string256 currentTime{};
+
+					Time time{};
+					xr_strconcat(currentDate, time.GetYearString().c_str(), ".", time.GetMonthString().c_str(), ".", time.GetDayString().c_str());
+					xr_strconcat(currentTime, time.GetHoursString().c_str(), ".", time.GetMinutesString().c_str(), ".", time.GetSecondsString().c_str());
+					string_path optickFileName{};
+					xr_strconcat(optickFileName, "ixray-optick-", currentDate, "-", currentTime, "-", Core.UserName, ".opt");
+
+					PROF_SAVE_CAPTURE(optickFileName);
 				}
+			#endif
 				
 				ImGui::EndMenu();
 			}
@@ -274,7 +285,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::EndMenu();
 			}
 
-			ImGui::MenuItem("Click `Alt+I` (English language layout)");
+			ImGui::MenuItem("Click `Alt`");
 			ImGui::EndMainMenuBar();
 		}
 
