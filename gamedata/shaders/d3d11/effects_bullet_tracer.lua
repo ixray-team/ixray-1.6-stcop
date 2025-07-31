@@ -1,11 +1,7 @@
 function normal(shader, t_base, t_second, t_detail)
-    shader:begin("stub_default", "stub_default")
-        :zb(true, false)
-        :blend(true, blend.one, blend.one)
-
-    --	Decouple sampler and texture
-    --	shader:sampler	("s_base")	: texture(t_base)	: clamp() : f_linear ()
-    --	TODO: DX10: move stub_default to smp_rtlinear
+    shader:begin("stub_default", "stub_srgb")
+	:zb(true, false)
+	:blend(true, blend.one, blend.one)
     shader:dx10texture("s_base", t_base)
     shader:dx10sampler("smp_base")
 end
