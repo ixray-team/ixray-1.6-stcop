@@ -133,7 +133,8 @@ void CScriptBinder::net_Destroy		()
 
 void CScriptBinder::set_object		(CScriptBinderObject *object)
 {
-	if (OnServer()) {
+	if (IsGameTypeSingleCompatible())
+	{
 		VERIFY2				(!m_object,"Cannot bind to the object twice!");
 #ifdef _DEBUG
 		Msg					("* Core object %s is binded with the script object",smart_cast<CGameObject*>(this) ? *smart_cast<CGameObject*>(this)->cName() : "");
