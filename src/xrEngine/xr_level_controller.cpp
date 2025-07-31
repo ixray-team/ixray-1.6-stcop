@@ -53,6 +53,13 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_firemode_prev",	kWPN_FIREMODE_PREV		,_both},	
 	{ "wpn_firemode_next",	kWPN_FIREMODE_NEXT		,_both},	
 	{ "clear_gasmask",		kCLEARGASMASK			,_both},
+	{ "wpn_torch",			kTACTICALTORCH			,_both},
+	{ "wpn_laser",			kLASER					,_both},
+	{ "wpn_zoom_alter",		kWPN_ZOOM_ALTER			,_both},
+	{ "scope_brightness_plus",kBRIGHTNESS_PLUS		,_both},
+	{ "scope_brightness_minus",kBRIGHTNESS_MINUS	,_both},
+	{ "quick_grenade",		kQUICK_GRENADE			,_both},
+	{ "quick_kick",			kQUICK_KICK				,_both},
 															
 	{ "pause",				kPAUSE					,_both},	
 	{ "drop",				kDROP					,_both},	
