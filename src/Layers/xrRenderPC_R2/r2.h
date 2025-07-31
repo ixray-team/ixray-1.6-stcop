@@ -125,7 +125,6 @@ public:
 	xr_vector<sun::cascade>										m_sun_cascades;
 
 	xr_list<light*>												v_all_lights_dque;
-	xr_list<light*>												v_all_lights;
 
 private:
 	// Loading / Unloading
