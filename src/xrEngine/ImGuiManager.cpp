@@ -310,7 +310,7 @@ void CImGuiManager::UpdateCapture()
     {
         SDL_ShowCursor();
     }
-    else
+    else if (!g_dedicated_server)
     {
         SDL_HideCursor();
     }
