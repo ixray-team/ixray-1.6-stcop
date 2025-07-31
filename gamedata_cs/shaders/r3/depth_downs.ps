@@ -13,6 +13,12 @@ struct	_input
 	float4	pos2d	: SV_Position;
 };
 
+//#define HDAO
+
+#ifdef HDAO
+#include "ssao_hdao.ps"
+#endif
+
 float4 main ( _input I ) : SV_Target0
 {
 	//gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d * 2, ISAMPLE) );
@@ -29,15 +35,27 @@ float4 main ( _input I ) : SV_Target0
 	if (gbd2.P.z < gbd.P.z) gbd = gbd2;	
 	if (gbd3.P.z < gbd.P.z) gbd = gbd3;
 
+//	gbd.P.z = (gbd0.P.z + gbd1.P.z + gbd2.P.z + gbd3.P.z)  * 0.25f;
+
 	float4	P = float4( gbd.P, gbd.mtl );	// position.(mtl or sun)
 
 //	SSAO_OPT_DATA == 2	for half-res data
 //	SSAO_OPT_DATA == 1	for full-res data
 
+#ifndef HDAO // AMDs hdao turned off
 #if SSAO_OPT_DATA == 2	
 	return  float4(P.zzzz);
 #else	//	SSAO_OPT_DATA == 2
 	gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d, ISAMPLE) );
 	return  float4(gbd.P.zzzz);
 #endif	//	SSAO_OPT_DATA == 2
+#else
+#if SSAO_OPT_DATA == 2	
+	return  float4(P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz );
+#else	//	SSAO_OPT_DATA == 2
+	gbd = gbuffer_load_data( GLD_P(I.tc0.xy, I.pos2d, ISAMPLE) );
+	return  float4(gbd.P.zzzz + g_fHDAOZDispScale * gbd.N.zzzz);
+#endif	//	SSAO_OPT_DATA == 2
+#endif
 }
+

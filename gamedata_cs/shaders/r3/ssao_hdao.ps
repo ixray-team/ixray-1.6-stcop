@@ -1,0 +1,273 @@
+//--------------------------------------------------------------------------------------
+// Gather pattern
+//--------------------------------------------------------------------------------------
+
+static float g_fHDAOZDispScale = 0.03f;			    // SSAO param
+
+#ifdef USE_HDAO_CODE
+
+static float g_fSSAORejectRadius = 0.13f;			    // SSAO param
+static float g_fSSAOIntensity = 2.0f;					// SSAO param
+static float g_fSSAOAcceptRadius = 0.0001f;				// SSAO param
+
+// Gather defines
+#define RING_0	(1)
+#define RING_1	(2)
+#define RING_2	(3)
+#define NUM_RING_0_GATHERS	(2)
+#define NUM_RING_1_GATHERS	(6)
+#define NUM_RING_2_GATHERS	(12)
+
+#if SSAO_QUALITY == 3
+static const int g_iNumRingGathers = NUM_RING_2_GATHERS;
+static const int g_iNumRings 	   = RING_2;
+static const int g_iNumNormals     = NUM_RING_0_GATHERS;
+#elif SSAO_QUALITY == 2
+static const int g_iNumRingGathers = NUM_RING_1_GATHERS;
+static const int g_iNumRings 	   = RING_1;
+static const int g_iNumNormals     = NUM_RING_0_GATHERS;
+#elif SSAO_QUALITY == 1
+static const int g_iNumRingGathers = NUM_RING_0_GATHERS;
+static const int g_iNumRings 	   = RING_0;
+static const int g_iNumNormals     = 0;
+#endif
+
+// Ring sample pattern
+static const float2 g_f2SSAORingPattern[NUM_RING_2_GATHERS] = 
+{
+	// Ring 0
+	{ 1, -1 },
+	{ 0, 1 },
+	
+	// Ring 1
+	{ 0, 3 },
+	{ 2, 1 },
+	{ 3, -1 },
+	{ 1, -3 },
+		
+	// Ring 2
+	{ 1, -5 },
+	{ 3, -3 },
+	{ 5, -1 },
+	{ 4, 1 },
+	{ 2, 3 },
+	{ 0, 5 },
+};
+
+// Ring weights
+static const float4 g_f4SSAORingWeight[NUM_RING_2_GATHERS] = 
+{
+	// Ring 0 (Sum = 5.30864)
+	{ 1.00000, 0.50000, 0.44721, 0.70711 },
+	{ 0.50000, 0.44721, 0.70711, 1.00000 },
+	
+	// Ring 1 (Sum = 6.08746)
+	{ 0.30000, 0.29104, 0.37947, 0.40000 },
+	{ 0.42426, 0.33282, 0.37947, 0.53666 },
+	{ 0.40000, 0.30000, 0.29104, 0.37947 },
+	{ 0.53666, 0.42426, 0.33282, 0.37947 },
+	
+	// Ring 2 (Sum = 6.53067)
+	{ 0.31530, 0.29069, 0.24140, 0.25495 },
+	{ 0.36056, 0.29069, 0.26000, 0.30641 },
+	{ 0.26000, 0.21667, 0.21372, 0.25495 },
+	{ 0.29069, 0.24140, 0.25495, 0.31530 },
+	{ 0.29069, 0.26000, 0.30641, 0.36056 },
+	{ 0.21667, 0.21372, 0.25495, 0.26000 },	
+};
+
+static const float g_fRingWeightsTotal[RING_2] =
+{
+	5.30864,
+	11.39610,
+	17.92677,
+};
+
+
+//----------------------------------------------------------------------------------------
+// Helper function to Gather samples in 10.1 and 10.0 modes 
+//----------------------------------------------------------------------------------------
+
+#ifndef GBUFFER_OPTIMIZATION
+float4 GatherZSamples( Texture2D Tex, float2 f2TexCoord, float2 tc )
+#else
+float4 GatherZSamples( Texture2D Tex, float2 f2TexCoord, float2 tc, float pos2d )
+#endif
+{
+	float4 f4Ret;
+
+#ifndef SSAO_OPT_DATA
+	float f2InvRTSize = 1.0f / pos_decompression_params2.xy;
+#ifdef USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+	gbuffer_data gbdx = gbuffer_load_data_offset( tc, f2TexCoord+float2( 0, 1 )*f2InvRTSize, pos2d, iSample ); 
+	gbuffer_data gbdy = gbuffer_load_data_offset( tc, f2TexCoord+float2( 1, 1 )*f2InvRTSize, pos2d, iSample ); 
+	gbuffer_data gbdz = gbuffer_load_data_offset( tc, f2TexCoord+float2( 1, 0 )*f2InvRTSize, pos2d, iSample ); 
+	gbuffer_data gbdw = gbuffer_load_data_offset( tc, f2TexCoord+float2( 0, 0 )*f2InvRTSize, pos2d, iSample ); 
+#else
+	gbuffer_data gbdx = gbuffer_load_data( f2TexCoord+float2( 0, 1 )*f2InvRTSize, iSample );
+	gbuffer_data gbdy = gbuffer_load_data( f2TexCoord+float2( 1, 1 )*f2InvRTSize, iSample );
+	gbuffer_data gbdz = gbuffer_load_data( f2TexCoord+float2( 1, 0 )*f2InvRTSize, iSample );
+	gbuffer_data gbdw = gbuffer_load_data( f2TexCoord+float2( 0, 0 )*f2InvRTSize, iSample );
+#endif // GBUFFER_OPTIMIZATION
+#else  // !USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+	gbuffer_data gbdx = gbuffer_load_data_offset( tc, f2TexCoord+float2( 0, 1 )*f2InvRTSize, pos2d );
+	gbuffer_data gbdy = gbuffer_load_data_offset( tc, f2TexCoord+float2( 1, 1 )*f2InvRTSize, pos2d );
+	gbuffer_data gbdz = gbuffer_load_data_offset( tc, f2TexCoord+float2( 1, 0 )*f2InvRTSize, pos2d );
+	gbuffer_data gbdw = gbuffer_load_data_offset( tc, f2TexCoord+float2( 0, 0 )*f2InvRTSize, pos2d );
+#else
+	gbuffer_data gbdx = gbuffer_load_data( f2TexCoord+float2( 0, 1 )*f2InvRTSize );
+	gbuffer_data gbdy = gbuffer_load_data( f2TexCoord+float2( 1, 1 )*f2InvRTSize );
+	gbuffer_data gbdz = gbuffer_load_data( f2TexCoord+float2( 1, 0 )*f2InvRTSize );
+	gbuffer_data gbdw = gbuffer_load_data( f2TexCoord+float2( 0, 0 )*f2InvRTSize );
+#endif // GBUFFER_OPTIMIZATION
+#endif // USE_MSAA
+
+    f4Ret.x = gbdx.P.z + g_fHDAOZDispScale * gbdx.N.z;  
+    f4Ret.y = gbdy.P.z + g_fHDAOZDispScale * gbdy.N.z;  
+    f4Ret.z = gbdz.P.z + g_fHDAOZDispScale * gbdz.N.z;  
+    f4Ret.w = gbdw.P.z + g_fHDAOZDispScale * gbdw.N.z;  
+      
+#else // SSAO_OPT_DATA	
+#ifdef SM_4_1
+	f4Ret   = Tex.Gather( smp_nofilter, f2TexCoord );
+#else 
+	f4Ret.x = Tex.SampleLevel( smp_nofilter, f2TexCoord, 0, float2( 0, 1 ) ).x;
+	f4Ret.y = Tex.SampleLevel( smp_nofilter, f2TexCoord, 0, float2( 1, 1 ) ).x;
+	f4Ret.z = Tex.SampleLevel( smp_nofilter, f2TexCoord, 0, float2( 1, 0 ) ).x;
+	f4Ret.w = Tex.SampleLevel( smp_nofilter, f2TexCoord, 0, float2( 0, 0 ) ).x;
+#endif
+#endif // SSAO_OPT_DATA	
+
+	return f4Ret;
+}
+
+float3 uv_to_shifted_eye(float2 uv, float eye_z)
+{
+    uv = (uv * float2(2.0, 2.0) ) - float2(1.0, 1.0);
+    return float3( ( uv * pos_decompression_params.xy * eye_z), eye_z);
+}
+
+#ifndef USE_MSAA
+#ifdef GBUFFER_OPTIMIZATION
+float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d )
+#else
+float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ )
+#endif
+#else
+#ifdef GBUFFER_OPTIMIZATION
+float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, float4 pos2d, uint iSample )
+#else
+float	calc_hdao( float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
+#endif
+#endif
+#ifndef	SSAO_QUALITY
+{
+	return 1.0f;
+}
+#else
+{ 
+	// Locals
+	int2   i2ScreenCoord;
+	float2 f2ScreenCoord;
+	float2 f2MirrorScreenCoord;
+	float2 f2TexCoord;
+	float2 f2MirrorTexCoord;
+	float2 f2InvRTSize;
+	float4 f4PosZ;
+	float  ZDisp;
+	float3 f3D0;
+	float3 f3D1;
+	float4 f4Diff;
+	float4 f4Compare[2];
+	float4 f4Occlusion = 0.0f;
+	float  fOcclusion = 0.0f;
+			
+	// Compute integer screen coord, and store off the inverse of the RT Size
+#ifdef SSAO_OPT_DATA
+#if SSAO_OPT_DATA == 1
+	f2InvRTSize	  = 1.0f / pos_decompression_params2.xy;
+	f2ScreenCoord = tc * pos_decompression_params2.xy;
+#else
+	f2InvRTSize	  = 1.0f / ( 0.5f * pos_decompression_params2.xy );
+	f2ScreenCoord = tc * 0.5f * pos_decompression_params2.xy;
+#endif
+#else
+	f2InvRTSize	  = 1.0f / pos_decompression_params2.xy;
+	f2ScreenCoord = tc * pos_decompression_params2.xy;
+#endif
+	i2ScreenCoord = int2( f2ScreenCoord );
+	
+	ZDisp = P.z + g_fHDAOZDispScale * N.z;
+	
+	// For Gather we need to snap the screen coords
+#ifdef SM_4_1
+	f2ScreenCoord = float2( i2ScreenCoord );
+#endif
+
+	// Sample the center pixel for camera Z
+	f2TexCoord = float2( f2ScreenCoord * f2InvRTSize );
+
+	float  fClip = saturate( P.z * 0.2f );
+
+#ifdef SSAO_OPT_DATA
+#if SSAO_OPT_DATA == 1
+	fClip = ( 1.0f - fClip ) * ( -0.99f ) + fClip * ( -0.1f );
+#else
+	fClip = ( 1.0f - fClip ) * ( -0.88f ) + fClip * ( 0.0f );
+#endif
+#else
+	fClip = ( 1.0f - fClip ) * ( -0.99f ) + fClip * ( -0.1f );
+#endif
+
+	// Loop through each gather location, and compare with its mirrored location
+#ifdef SM_4_1
+	[unroll]for( int iGather=0; iGather<g_iNumRingGathers; ++iGather )
+#else
+	for( int iGather=0; iGather<g_iNumRingGathers; ++iGather )
+#endif
+	{
+		f2MirrorScreenCoord = ( g_f2SSAORingPattern[iGather] + float2( 1.0f, 1.0f ) ) * float2( -1.0f, -1.0f );
+		
+		#ifdef SM_4_1
+			f2TexCoord = float2( ( f2ScreenCoord + ( g_f2SSAORingPattern[iGather] + float2( 1.0f, 1.0f ) ) ) * f2InvRTSize );
+			f2MirrorTexCoord = float2( ( f2ScreenCoord + ( f2MirrorScreenCoord + float2( 1.0f, 1.0f ) ) ) * f2InvRTSize );
+		#else
+			f2TexCoord = float2( ( f2ScreenCoord + g_f2SSAORingPattern[iGather] ) * f2InvRTSize );
+			f2MirrorTexCoord = float2( ( f2ScreenCoord + ( f2MirrorScreenCoord ) ) * f2InvRTSize );
+		#endif	
+		
+#ifdef GBUFFER_OPTIMIZATION
+		f4PosZ		  = GatherZSamples( s_half_depth, f2TexCoord, tc, pos2d );
+#else
+		f4PosZ		  = GatherZSamples( s_half_depth, f2TexCoord, tc );
+#endif
+		f4Diff		  = ZDisp.xxxx - f4PosZ;
+		f4Compare[0]  = ( f4Diff < g_fSSAORejectRadius.xxxx ) ? ( 1.0f ) : ( 0.0f );
+		f4Compare[0] *= ( f4Diff > g_fSSAOAcceptRadius.xxxx ) ? ( 1.0f ) : ( 0.0f );
+		
+		f3D0.xyz  = uv_to_shifted_eye( f2TexCoord, f4PosZ.w ) - P;
+		f3D0.xyz /= length( f3D0.xyz );
+		
+#ifdef GBUFFER_OPTIMIZATION
+		f4PosZ		  = GatherZSamples( s_half_depth, f2MirrorTexCoord, tc, pos2d );
+#else
+		f4PosZ		  = GatherZSamples( s_half_depth, f2MirrorTexCoord, tc );
+#endif
+		f4Diff		  = ZDisp.xxxx - f4PosZ;
+		f4Compare[1]  = ( f4Diff < g_fSSAORejectRadius.xxxx ) ? ( 1.0f ) : ( 0.0f );
+		f4Compare[1] *= ( f4Diff > g_fSSAOAcceptRadius.xxxx ) ? ( 1.0f ) : ( 0.0f );
+
+		f3D1.xyz  = uv_to_shifted_eye( f2MirrorTexCoord + f2InvRTSize, f4PosZ.y ) - P;
+		f3D1.xyz /= length( f3D1.xyz );
+		
+		f4Occlusion.xyzw += ( g_f4SSAORingWeight[iGather].xyzw * ( ( dot( f3D0.xyz, f3D1.xyz ) < fClip ) ? (0.0f).xxxx : (1.0f).xxxx ) ) * ( f4Compare[0].xyzw * f4Compare[1].zwxy );
+	}
+	
+	fOcclusion  = dot( f4Occlusion, g_fSSAOIntensity.xxxx ) / ( 2.0f * g_fRingWeightsTotal[g_iNumRings-1] );
+	fOcclusion  = 1.0f - saturate( fOcclusion );
+	return fOcclusion.xxxx;
+}
+#endif
+#endif
