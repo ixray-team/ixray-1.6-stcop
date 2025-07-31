@@ -62,7 +62,9 @@ IC	void CStalkerAnimationManager::play_script_impl			()
 	torso().reset			();
 	legs().reset			();
 
-	const CStalkerAnimationScript	&selected = assign_script_animation();
+	const CStalkerAnimationScript& selected = assign_script_animation();
+	MotionID motion = selected.animation();
+
 	script().animation		(selected.animation());
 	if (selected.use_movement_controller()) {
 		script().target_matrix	(selected.transform(object()));
@@ -82,8 +84,18 @@ IC	void CStalkerAnimationManager::play_script_impl			()
 		m_script_bone_part_mask
 	);
 
+	if (script().m_just_started)
+	{
+		Fmatrix matrix = script().m_target_matrix_impl;
+		object().OnAnimationChangeScript(m_script_bone_part_mask, motion, false, selected.use_movement_controller(), selected.local_animation(), &matrix);
+	}
+
 	head().animation		(assign_head_animation());
 	head().play				(m_skeleton_animated,head_play_callback,false,false);
+
+
+	if (head().m_just_started)
+		object().OnAnimationChangeHead(motion, true, true, false, false);
 }
 #else // USE_HEAD_BONE_PART_FAKE
 IC	void CStalkerAnimationManager::play_script_impl			()
@@ -137,11 +149,17 @@ IC	void CStalkerAnimationManager::play_global_impl			(const MotionID &animation,
 		true
 	);
 
+	if (global().m_just_started)
+		object().OnAnimationChangeGlobal(m_script_bone_part_mask, (MotionID)animation, false, animation_movement_controller, true, 0);
+
 	if (m_global_modifier)
 		m_global_modifier	(global().blend());
 
 	head().animation		(assign_head_animation());
 	head().play				(m_skeleton_animated,head_play_callback,false,false);
+
+	if (head().m_just_started)
+		object().OnAnimationChangeHead(animation, true, true, false, false);
 }
 #else // USE_HEAD_BONE_PART_FAKE
 IC	void CStalkerAnimationManager::play_global_impl			(const MotionID &animation, bool const &animation_movement_controller)
@@ -170,43 +188,52 @@ bool CStalkerAnimationManager::play_global					()
 	return					(true);
 }
 
-IC	void CStalkerAnimationManager::play_head				()
+IC	void CStalkerAnimationManager::play_head()
 {
-	head().animation		(assign_head_animation());
-	head().play				(m_skeleton_animated,head_play_callback,false,false);
+	head().animation(assign_head_animation());
+	head().play(m_skeleton_animated, head_play_callback, false, false);
+
+	if (head().m_just_started)
+		object().OnAnimationChangeHead(assign_head_animation(), true, true, false, false);
 }
 
-IC	void CStalkerAnimationManager::play_torso				()
+IC	void CStalkerAnimationManager::play_torso()
 {
-	torso().animation		(assign_torso_animation());
-	torso().play			(m_skeleton_animated,torso_play_callback,false,false);
+	torso().animation(assign_torso_animation());
+	torso().play(m_skeleton_animated, torso_play_callback, false, false);
+
+	if (torso().m_just_started)
+		object().OnAnimationChangeTorso(assign_torso_animation(), true, true, false, false);
 }
 
-void CStalkerAnimationManager::play_legs					()
+void CStalkerAnimationManager::play_legs()
 {
-	float					speed = 0.f;
-	bool					first_time = !legs().animation();
-	bool					result = legs().animation(assign_legs_animation());
-	
+	float speed = 0.f;
+	bool first_time = !legs().animation();
+	bool result = legs().animation(assign_legs_animation());
+
 	if (!first_time && !result && legs().blend()) {
 		float				amount = legs().blend()->blendAmount;
-		m_previous_speed	= (m_target_speed - m_previous_speed)*amount + m_previous_speed;
+		m_previous_speed = (m_target_speed - m_previous_speed) * amount + m_previous_speed;
 	}
 
-	legs().play				(m_skeleton_animated,legs_play_callback,false,false,!fis_zero(m_target_speed));
-	
+	legs().play(m_skeleton_animated, legs_play_callback, false, false, !fis_zero(m_target_speed));
+
+	if (legs().m_just_started)
+		object().OnAnimationChangeLegs(assign_legs_animation(), true, !fis_zero(m_target_speed), true, false);
+
 	if (result && legs().blend()) {
 		float				amount = legs().blend()->blendAmount;
-		speed				= (m_target_speed - m_previous_speed)*amount + m_previous_speed;
+		speed = (m_target_speed - m_previous_speed) * amount + m_previous_speed;
 	}
 
 	if (fis_zero(speed))
 		return;
-	
+
 	if (!legs().blend())
 		return;
 
-	object().movement().setup_speed_from_animation	(speed);
+	object().movement().setup_speed_from_animation(speed);
 }
 
 void CStalkerAnimationManager::update_impl					()
@@ -218,10 +245,18 @@ void CStalkerAnimationManager::update_impl					()
 	play_delayed_callbacks	();
 
 	if (play_script())
+	{
+		IsGlobalOrScriptPlaying = true;
 		return;
+	}
 
-	if (play_global()) 
+	if (play_global())
+	{
+		IsGlobalOrScriptPlaying = true;
 		return;
+	}
+
+	IsGlobalOrScriptPlaying = false;
 
 	play_head				();
 	play_torso				();
