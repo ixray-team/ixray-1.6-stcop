@@ -541,13 +541,15 @@ DWORD CRender::get_dx_level()
 	return 90;
 }
 
-static class cl_lighting_enable : public R_constant_setup {
-	virtual void setup(R_constant* C) {
+static class cl_lighting_enable : 
+	public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
 		float is_lighting_enable = 0.0f;
-		if(g_pGamePersistent && g_pGameLevel) {
-			if(g_pGamePersistent->Environment().Current[0] && g_pGamePersistent->Environment().Current[1]) {
-				is_lighting_enable = 1.0f;
-			}
+		if(g_pGamePersistent && psDeviceFlags.test(rsEnvironment))
+		{
+			is_lighting_enable = (int)g_pGamePersistent->Environment().Current[0] && g_pGamePersistent->Environment().Current[1];
 		}
 		RCache.set_c(C, is_lighting_enable, is_lighting_enable, is_lighting_enable, is_lighting_enable);
 	}
