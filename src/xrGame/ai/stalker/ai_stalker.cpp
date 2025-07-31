@@ -950,7 +950,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 #if USE_OLD_OBJECT_PLANNER
 	if (!CObjectHandler::planner().initialized()) 
 #else
-	if (!m_planner->GoapPlanner.GetCurrentAction())
+	if (!m_planner->GoapPlanner.GetCurrentAction() && OnServer())
 #endif
 	{
 		START_PROFILE("stalker/client_update/object_handler")
