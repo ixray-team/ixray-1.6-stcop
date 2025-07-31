@@ -40,6 +40,7 @@ void PreviewModel::Draw()
 		}
 
 		bOpen = false;
+		UI->Remove(this);
 	}
 }
 
@@ -52,7 +53,8 @@ void PreviewModel::Clear()
 void PreviewModel::SelectObject()
 {
 	UIChooseForm::SelectItem(smObject, 1, 0, 0, 0, 0, 0, 0);
-	UI->Push(this);
+	UI->Push(this, false);
+	bOpen = true;
 }
 
 void PreviewModel::SetPreferences()
@@ -83,7 +85,7 @@ void PreviewModel::Render()
 		R.rotateY(angle);
 		T.translate(m_vPosition);
 		T.mulA_43(R);
-		m_pObject->RenderSingle(T);
+		m_pObject->RenderSkeletonSingle(T);
 	}
 }
 
