@@ -37,11 +37,15 @@ void RearrangeTabButtons(CUITabControl* pTab);
 
 CUIPdaWnd::CUIPdaWnd()
 {
+	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
+
 	pUITaskWnd       = nullptr;
 	pUIFactionWarWnd = nullptr;
 	pUIRankingWnd    = nullptr;
 	pUILogsWnd       = nullptr;
 	m_hint_wnd       = nullptr;
+
+	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
 	Init();
 }
 
@@ -207,26 +211,39 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	{
 		m_pActiveDialog = pUILogsWnd;
 	}
-
-	luabind::functor<CUIDialogWndEx*> funct;
-	if (ai().script_engine().functor("pda.set_active_subdialog", funct))
+	if (m_isSetActiveSubdialog)
 	{
+		luabind::functor<CUIDialogWndEx*> funct;
+		R_ASSERT2(ai().script_engine().functor(m_onSetActiveSubdialog, funct), "failed to get OnSetActiveSubdialog functor");
+
 		CUIDialogWndEx* ret = funct((LPCSTR)section.c_str());
 		CUIWindow* pScriptWnd = ret ? smart_cast<CUIWindow*>(ret) : (0);
 		if (pScriptWnd)
 			m_pActiveDialog = pScriptWnd;
+		
+			if (m_pActiveDialog)
+			{
+				if (!UIMainPdaFrame->IsChild(m_pActiveDialog))
+					UIMainPdaFrame->AttachChild(m_pActiveDialog);
+				m_pActiveDialog->Show(true);
+				m_sActiveSection = section;
+				SetActiveCaption();
+			}
+			else {
+				m_sActiveSection = "";
+			}
 	}
-
-	if (m_pActiveDialog)
+	else
 	{
-		if (!UIMainPdaFrame->IsChild(m_pActiveDialog))
-			UIMainPdaFrame->AttachChild(m_pActiveDialog);
+		UIMainPdaFrame->AttachChild(m_pActiveDialog);
 		m_pActiveDialog->Show(true);
+
+		if (UITabControl->GetActiveId() != section)
+		{
+			UITabControl->SetActiveTab(section);
+		}
 		m_sActiveSection = section;
 		SetActiveCaption();
-	}
-	else {
-		m_sActiveSection = "";
 	}
 }
 

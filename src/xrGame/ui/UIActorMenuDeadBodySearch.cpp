@@ -154,20 +154,18 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 		{
 			return false;
 		}
-		if (m_pPartnerInvOwner->is_alive())
+		if (m_isCanMoveToPartner && m_pPartnerInvOwner->is_alive())
 		{
-			//Alundaio: 
-			luabind::functor<bool> funct;
-			if (ai().script_engine().functor("actor_menu_inventory.CUIActorMenu_CanMoveToPartner", funct))
-			{
-				float itmWeight = quest_item->Weight();
-				float partner_inv_weight = m_pPartnerInvOwner->inventory().CalcTotalWeight();
-				float partner_max_weight = m_pPartnerInvOwner->MaxCarryWeight();
 
-				if (funct(m_pPartnerInvOwner->cast_game_object()->lua_game_object(), quest_item->object().lua_game_object(), 0, 0, itmWeight, partner_inv_weight, partner_max_weight) == false)
-					return false;
-			}
-			//-Alundaio
+			luabind::functor<bool> funct;
+			R_ASSERT2(ai().script_engine().functor(m_onCanMoveToPartner, funct), "failed to get OnCanMoveToPartner functor");
+			float itmWeight = quest_item->Weight();
+			float partner_inv_weight = m_pPartnerInvOwner->inventory().CalcTotalWeight();
+			float partner_max_weight = m_pPartnerInvOwner->MaxCarryWeight();
+
+			if (funct(m_pPartnerInvOwner->cast_game_object()->lua_game_object(), quest_item->object().lua_game_object(), 0, 0, itmWeight, partner_inv_weight, partner_max_weight) == false)
+				return false;
+			
 		}
 	}
 	else // box
@@ -177,9 +175,11 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 			return false;
 		}
 
-		luabind::functor<bool> funct;
-		if (ai().script_engine().functor("_G.CInventoryBox_CanTake", funct))
+		if (m_isCanTake)
 		{
+			luabind::functor<bool> funct;
+			R_ASSERT2(ai().script_engine().functor(m_onCanTake, funct), "failed to get OnCanTake functor");
+
 			if (funct(m_pInvBox->cast_game_object()->lua_game_object(), quest_item->cast_game_object()->lua_game_object()) == false)
 			{
 				return false;

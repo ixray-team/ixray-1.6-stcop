@@ -628,15 +628,20 @@ void CUIHudStatesWnd::UpdateZones()
 		
 		if (zone_info.snd_time > zone_info.cur_period)
 		{
- 			zone_info.snd_time = 0.0f;
+			zone_info.snd_time = 0.0f;
+
+			bool UseTochSound = true;
 			if (m_isZoneTouch) 
 			{
 				luabind::functor<bool> funct;
 				R_ASSERT2(ai().script_engine().functor(m_onZoneTouch, funct), "Not found callback: OnZoneTouch");
-				funct(pZone->lua_game_object());
+				UseTochSound = funct(pZone->lua_game_object());
 			}
 
-			HUD_SOUND_ITEM::PlaySound(zone_type->detect_snds, Fvector().set(0, 0, 0), nullptr, true, false);
+			if (UseTochSound)
+			{
+				HUD_SOUND_ITEM::PlaySound(zone_type->detect_snds, Fvector().set(0, 0, 0), nullptr, true, false);
+			}
 		}
 		else
 		{
