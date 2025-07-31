@@ -260,6 +260,10 @@ private:
 	Flags8			m_Flags;
 public:
 	st_MeshOptions	m_Ops;
+	VMapVec		    m_VMaps;
+	VMRefsVec	    m_VMRefs;
+	st_Face* m_Faces;    // + some array size!!!
+
 protected:
 	Fbox			m_Box;
 
@@ -280,10 +284,7 @@ protected:
 	Fvector*		m_VertexNormals;	// | *3
 	Fvector*        m_Normals;    // | *3
 	st_SVert*		m_SVertices;// | *3
-	st_Face*	    m_Faces;    // + some array size!!!
 	SurfFaces	    m_SurfFaces;
-	VMapVec		    m_VMaps;
-	VMRefsVec	    m_VMRefs;
 
 #if 1
 	CDB::MODEL*		m_CFModel;
@@ -305,6 +306,7 @@ public:
 	virtual         ~CEditableMesh			();
 	void			Construct				();
 	void			Clear					();
+	void			Create					(st_Face* faces, u32 face_count, Fvector* vertices, u32 vertex_count, Fvector* normals, u32 normal_count);
 
 	IC void			SetName					(LPCSTR name){m_Name=name;}
 	IC shared_str	Name					(){return m_Name;}
