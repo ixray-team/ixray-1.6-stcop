@@ -15,6 +15,7 @@
 #include "Widgets/UIListBox.h"
 #include "Widgets/UIComboBox.h"
 #include "Widgets/UITrackBar.h"
+#include "Widgets/UIArrowStepper.h"
 #include "Widgets/UIHint.h"
 #include "Widgets/UILoadingScreenProgress.h"
 #include "Widgets/UIListWnd.h"
@@ -1317,6 +1318,7 @@ bool CUIXmlInit::InitListWnd(CUIXml& xml_doc, pcstr path, int index, CUIListWnd*
 
 	return true;
 }
+
 bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackBar* pWnd)
 {
 	InitWindow			(xml_doc, path, 0, pWnd);
@@ -1394,6 +1396,49 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackB
 			pUIButton->SetBtnStaticClrH(color);
 		}
 	}
+	return true;
+}
+
+bool CUIXmlInit::InitArrowStepper(CUIXml& xml_doc, LPCSTR path, int index, CUIArrowStepper* pWnd)
+{
+	InitWindow(xml_doc, path, 0, pWnd);
+	InitOptionsItem(xml_doc, path, 0, pWnd);
+	pWnd->SetInvert(xml_doc.ReadAttribInt(path, index, "invert", 0) == 1);
+
+	shared_str mode = xml_doc.ReadAttrib(path, index, "mode", "float");
+	if (0 == xr_strcmp(mode, "flag"))
+		pWnd->SetStepperMode(eStepperModeBool);
+	else if (0 == xr_strcmp(mode, "integer"))
+		pWnd->SetStepperMode(eStepperModeInt);
+	else if (0 == xr_strcmp(mode, "float"))
+		pWnd->SetStepperMode(eStepperModeFloat);
+	else if (0 == xr_strcmp(mode, "token"))
+		pWnd->SetStepperMode(eStepperModeToken);
+
+	switch (pWnd->GetStepperMode())
+	{
+	case eStepperModeInt:
+	case eStepperModeFloat:
+	{
+		if (pWnd->IsFltMode())
+		{
+			pWnd->SetNumOfSigns(xml_doc.ReadAttribInt(path, index, "out_num_of_signs", 1));
+		}
+		pWnd->SetStep(xml_doc.ReadAttribFlt(path, index, "step", 0.1f));
+	}break;
+	case eStepperModeToken:
+	{
+		pWnd->SetTokenValues(pWnd->GetOptToken());
+	}break;
+	case eStepperModeBool:
+	{
+		pWnd->SetOptIBounds(0, 1); // hack, idk why for bool GetOptIntegerValue() returns INFINITY here
+	}break;
+	}
+	pWnd->InitArrowStepper(pWnd->GetWndPos(), pWnd->GetWndSize());
+
+	pWnd->SetWindowNodeName(path);
+
 	return true;
 }
 
