@@ -146,6 +146,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 	m_info["t_hint_text"]->SetWndPos(pos);
 		
 	
+	if ( task->GetTaskType() == eTaskTypeStoryline )
 	{
 		m_info["t_icon"]->Show( true );
 		float w = m_info["t_time"]->GetWidth();
@@ -171,6 +172,24 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		pos_.y = _max( pos_.y, m_info["t_icon"]->GetWndPos().y + m_info["t_icon"]->GetWndSize().y + 7 );
 		m_info["t_hint_text"]->SetWndPos( pos_ );
 	}
+	else if ( task->GetTaskType() == eTaskTypeAdditional )
+	{
+		m_info["t_icon"]->Show( false );
+		float w = m_info["t_hint_text"]->GetWidth();
+
+		Fvector2 pos_ = m_info["t_caption"]->GetWndPos();
+		pos_.x        = m_posx_icon;
+		m_info["t_caption"]->SetWndPos( pos_ );
+		m_info["t_caption"]->SetWidth( w );
+
+		pos_   = m_info["t_time"]->GetWndPos();
+		pos_.x = m_posx_icon;
+		m_info["t_time"]->SetWndPos( pos_ );
+
+		pos_   = m_info["t_time_rem"]->GetWndPos();
+		pos_.x = m_posx_icon;
+		m_info["t_time_rem"]->SetWndPos( pos_ );
+	}													   
 
 	pos.x = m_info["t_hint_text"]->GetWndPos().x + m_info["t_hint_text"]->GetWndSize().x + 20.0f;
 	pos.y = m_info["t_hint_text"]->GetWndPos().y + m_info["t_hint_text"]->GetWndSize().y + 20.0f;
