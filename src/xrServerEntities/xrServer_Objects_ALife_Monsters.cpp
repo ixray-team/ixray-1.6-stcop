@@ -2226,18 +2226,47 @@ void CSE_ALifeHumanStalker::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 		tNetPacket.r_u8			();
 }
 
-void CSE_ALifeHumanStalker::UPDATE_Write	(NET_Packet &tNetPacket)
+void CSE_ALifeHumanStalker::UPDATE_Write(NET_Packet& tNetPacket)
 {
-	inherited1::UPDATE_Write	(tNetPacket);
-	inherited2::UPDATE_Write	(tNetPacket);
-	tNetPacket.w_stringZ		(m_start_dialog);
+#ifdef XRGAME_EXPORTS
+	if (g_pGamePersistent->GameType() == eGameIDSingle)
+#endif
+	{
+		inherited1::UPDATE_Write(tNetPacket);
+		inherited2::UPDATE_Write(tNetPacket);
+		tNetPacket.w_stringZ(m_start_dialog);
+	}
+#ifdef XRGAME_EXPORTS
+	else
+	{
+		m_state_mngr.FillStateCSE(this);
+		m_state_mngr.CSE_StateWrite(tNetPacket);
+	}
+#endif
 }
 
-void CSE_ALifeHumanStalker::UPDATE_Read		(NET_Packet &tNetPacket)
+void CSE_ALifeHumanStalker::UPDATE_Read(NET_Packet& tNetPacket)
 {
-	inherited1::UPDATE_Read		(tNetPacket);
-	inherited2::UPDATE_Read		(tNetPacket);
-	tNetPacket.r_stringZ		(m_start_dialog);
+#ifdef XRGAME_EXPORTS
+	if (g_pGamePersistent->GameType() == eGameIDSingle)
+#endif
+	{
+		inherited1::UPDATE_Read(tNetPacket);
+		inherited2::UPDATE_Read(tNetPacket);
+		tNetPacket.r_stringZ(m_start_dialog);
+	}
+#ifdef XRGAME_EXPORTS
+	else
+	{
+		m_state_mngr.CSE_StateRead(tNetPacket);
+		m_state_mngr.GetStateCSE(this);
+	}
+#endif
+}
+
+BOOL CSE_ALifeHumanStalker::Net_Relevant()
+{
+	return g_Alive();
 }
 
 void CSE_ALifeHumanStalker::load			(NET_Packet &tNetPacket)

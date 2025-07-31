@@ -86,6 +86,21 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 
 			break;
 		}
+
+		case GE_STALKER_ANIMATION:
+		{
+			UpdateScriptAnim(P);
+		}break;
+
+		case GE_STALKER_DIALOG:
+		{
+			shared_str start_dialog;
+			P.r_stringZ(start_dialog);
+
+			if (OnClient())
+				SetStartDialog(start_dialog);
+		}break;
+
 	}
 }
 
