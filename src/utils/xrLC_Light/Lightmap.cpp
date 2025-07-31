@@ -192,6 +192,6 @@ void CLightmap::Save( LPCSTR path )
 
 	clMsg("[Lightmap] Save Hemi: %u ms", t.GetElapsed_ms());
 
-	GetMemoryUsed();
+	GetHeapMemory();
 }
  

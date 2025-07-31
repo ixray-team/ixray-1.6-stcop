@@ -23,9 +23,7 @@ typedef void	tesscb_face			(Face*		F);	// new face
 typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 
 class  base_lighting;
-
-
-extern size_t GetMemoryUsed();
+extern size_t GetHeapMemory();
   
 //////////////////////////////////////////////////////////////////////////
 class CBuild  
