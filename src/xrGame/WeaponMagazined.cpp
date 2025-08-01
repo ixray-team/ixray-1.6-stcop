@@ -248,42 +248,60 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 void CWeaponMagazined::FireStart()
 {
 	u32 CurrentState = GetState();
+	bool IsActor = ParentIsActor();
+	CObject* parent = H_Parent();
+
 	if (!IsMisfire())
 	{
-
-		bool is_empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
-
-		if (!is_empty)
+		if (iAmmoElapsed + iAmmoChamberElapsed > 0)
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
 				if (CurrentState == eReload || CurrentState == eShowing || CurrentState == eHiding || CurrentState == eMisfire)
+				{
 					return;
+				}
 
 				inherited::FireStart();
-				R_ASSERT(H_Parent());
+				R_ASSERT(parent);
 				SwitchState(eFire);
 			}
 		}
 		else if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 		{
-			SwitchState(eEmptyClick);
+			if (IsActor && m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
+			{
+				SwitchState(eEmptyClick);
+			}
+			else
+			{
+				OnEmptyClick();
+			}
 		}
 	}
 	else if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
 	{
-		if (H_Parent())
+		if (parent != nullptr)
 		{
-			if (CGameObject* object = H_Parent()->cast_game_object())
+			if (CGameObject* object = parent->cast_game_object())
 			{
 				object->callback(GameObject::eOnWeaponJammed)(object->lua_game_object(), this->lua_game_object());
 			}
 
-			if (H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
+			if (IsActor)
+			{
 				CurrentGameUI()->AddCustomStatic("gun_jammed", true);
+			}
 		}
 
-		SwitchState(eEmptyClick);
+		if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
+		{
+			SwitchState(eEmptyClick);
+		}
+		else
+		{
+			OnEmptyClick();
+		}
 	}
 }
 
@@ -1271,42 +1289,18 @@ void CWeaponMagazined::switch2_Empty()
 {
 	auto play_motion_if_exists = [&](const shared_str& motion_name)
 	{
-		if (HudAnimationExist(motion_name))
-		{
-			SetPending(TRUE);
-			m_bBlockEmptyClick = true;
-			PlayHUDMotion(SetCurrentStateAnimation(motion_name), true, eEmptyClick);
-		}
-		else
-		{
-			SwitchState(eIdle);
-		}
+		SetPending(TRUE);
+		m_bBlockEmptyClick = true;
+		PlayHUDMotion(SetCurrentStateAnimation(motion_name), true, eEmptyClick);
+		OnEmptyClick();
 	};
 
-	shared_str name = "anm_fakeshoot";
-
-	if (ParentIsActor())
-	{
-		if (IsZoomed())
-		{
-			name.printf("%s%s", *name, "_aim");
-		}
-
-		if (IsMisfire())
-		{
-			name.printf("%s%s", *name, "_jammed");
-		}
-		else
-		{
-			name.printf("%s%s", *name, "_empty");
-		}
-	}
+	shared_str name = "anm_empty_click";
 
 	const static bool isAutoreload = EngineExternal()[EEngineExternalGame::EnableAutoreload];
 
 	if (!isAutoreload)
 	{
-		OnEmptyClick();
 		play_motion_if_exists(name);
 	}
 	else
@@ -1315,8 +1309,7 @@ void CWeaponMagazined::switch2_Empty()
 		{
 			if (!TryReload())
 			{
-				OnEmptyClick();
-				play_motion_if_exists(name);
+				play_motion_if_exists("anm_empty_click");
 			}
 			else
 			{
@@ -1327,8 +1320,7 @@ void CWeaponMagazined::switch2_Empty()
 		{
 			if (!HaveCartridgeInInventory(1))
 			{
-				OnEmptyClick();
-				play_motion_if_exists(name);
+				play_motion_if_exists("anm_empty_click");
 			}
 			else
 			{

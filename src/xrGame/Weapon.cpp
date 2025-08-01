@@ -1102,6 +1102,7 @@ void CWeapon::OnHiddenItem ()
 	inherited::OnHiddenItem		();
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
+	m_bBlockEmptyClick = false;
 }
 
 bool CWeapon::SendDeactivateItem()
@@ -1136,6 +1137,7 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
+	m_bBlockEmptyClick = false;
 }
 
 extern u32 hud_adj_mode;
