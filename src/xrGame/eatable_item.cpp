@@ -287,6 +287,10 @@ float CEatableItem::Weight() const
 	return res;
 }
 
+void CEatableItem::Hit(SHit* pHDS)
+{
+	//Предмет получает урон и не стакается по использованиям, поэтому функция пустая
+}
 
 using namespace luabind;
 

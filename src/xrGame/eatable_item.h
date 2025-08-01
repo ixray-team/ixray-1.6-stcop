@@ -43,6 +43,7 @@ public:
 	virtual	bool			UseBy(CEntityAlive* npc);
 	virtual float			Weight() const;
 	virtual void			EatableEffects();
+	virtual	void			Hit(SHit* pHDS);
 
 	bool Empty() const { return m_iRemainingUses == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
