@@ -42,6 +42,8 @@ public:
 	virtual void			OnH_A_Independent();
 	virtual	bool			UseBy(CEntityAlive* npc);
 	virtual float			Weight() const;
+	
+	virtual	void			Hit(SHit* pHDS);
 
 	IC bool Empty() const { return GetRemainingUses() == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
