@@ -350,23 +350,39 @@ void CWeaponMagazinedWGrenade::FireStart()
 		return;
 	}
 
-	if (GetState() != eIdle)
-		return;
-
-	if (IsPending())
-		return;
+	u32 CurrentState = GetState();
 
 	if (!iAmmoElapsed)
 	{
 		if (!infinite_fire())
 		{
-			switch2_Empty();
+			if (CurrentState == eIdle || CurrentState == eEmptyClick && !m_bBlockEmptyClick)
+			{
+				if (m_eAnimationsFlags.test(EAnimationsFlags::af_empty_click))
+				{
+					SwitchState(eEmptyClick);
+				}
+				else
+				{
+					OnEmptyClick();
+				}
+			}
 			return;
 		}
 		else
 		{
 			ReloadMagazine();
 		}
+	}
+
+	if (GetState() != eIdle)
+	{
+		return;
+	}
+
+	if (IsPending())
+	{
+		return;
 	}
 
 	CWeapon::FireStart();

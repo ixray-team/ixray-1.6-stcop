@@ -204,6 +204,7 @@ public:
 		af_det_hand_lam = (1 << 12),
 		af_bore = (1 << 13),
 		af_firemode = (1 << 14),
+		af_empty_click = (1 << 15),
 	};
 
 	enum ESoundsFlags
