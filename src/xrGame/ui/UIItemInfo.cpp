@@ -49,6 +49,7 @@ CUIItemInfo::CUIItemInfo()
 	UIBoosterInfo				= nullptr;
 	UIArtefactParams			= nullptr;
 	UIOutfitParams				= nullptr;
+	UIBackpackParams			= nullptr;
 	UIName						= nullptr;
 	UIBackground				= nullptr;
 	m_pInvItem					= nullptr;
@@ -63,6 +64,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete	(UIKnifeParams);
 	xr_delete	(UIArtefactParams);
 	xr_delete	(UIOutfitParams);
+	xr_delete	(UIBackpackParams);
 	xr_delete	(UIProperties);
 	xr_delete	(UIOutfitInfo);
 	xr_delete	(UIBoosterInfo);
@@ -146,6 +148,9 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 
 		UIOutfitParams = new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeOutfit);
 		UIOutfitParams->InitFromXml(uiXml);
+
+		UIBackpackParams = new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeBackpack);
+		UIBackpackParams->InitFromXml(uiXml);
 
 		UIBoosterInfo					= new CUIBoosterInfo();
 		UIBoosterInfo->InitFromXml		(uiXml);
@@ -413,6 +418,8 @@ void CUIItemInfo::TryAddOutfitInfo(CInventoryItem& pInvItem, CInventoryItem* pCo
 {
 	CCustomOutfit* outfit = pInvItem.cast_outfit();
 	CHelmet* helmet = pInvItem.cast_helmet();
+	CBackpack* backpack = pInvItem.cast_backpack();
+
 	if (outfit && UIOutfitInfo)
 	{
 		CCustomOutfit* comp_outfit = pCompareItem ? pCompareItem->cast_outfit() : nullptr;
@@ -431,6 +438,12 @@ void CUIItemInfo::TryAddOutfitInfo(CInventoryItem& pInvItem, CInventoryItem* pCo
 	{
 		UIOutfitParams->SetInfo(pInvItem);
 		UIDesc->AddWindow(UIOutfitParams, false);
+	}
+
+	if (UIBackpackParams && backpack)
+	{
+		UIBackpackParams->SetInfo(pInvItem);
+		UIDesc->AddWindow(UIBackpackParams, false);
 	}
 }
 

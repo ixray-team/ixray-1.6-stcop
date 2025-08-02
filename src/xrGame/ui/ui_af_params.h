@@ -15,7 +15,8 @@ public:
 	enum class CParamType
 	{
 		eParamTypeOutfit,
-		eParamTypeArtefact
+		eParamTypeArtefact,
+		eParamTypeBackpack
 	};
 
 					CUIArtefactParams		(const CParamType& type);
@@ -38,6 +39,7 @@ protected:
 	CParamType				object_type;
 
 	bool is_artefact() const { return object_type == CParamType::eParamTypeArtefact; }
+	bool is_backpack() const { return object_type == CParamType::eParamTypeBackpack; }
 
 }; // class CUIArtefactParams
 

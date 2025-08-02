@@ -300,4 +300,10 @@
 	<string id="st_dress_helmet">
 		<text>надеть шлем</text>
 	</string>
+	<string id="st_undress_backpack">
+		<text>снять рюкзак</text>
+	</string>
+	<string id="st_dress_backpack">
+		<text>надеть рюкзак</text>
+	</string>
 </string_table>

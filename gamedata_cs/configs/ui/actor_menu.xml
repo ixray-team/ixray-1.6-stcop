@@ -113,6 +113,8 @@
 		</slot>
 		<slot> <!-- Helmet -->
 		</slot>
+		<slot> <!-- Backpack -->
+		</slot>
 	</inventory_slot_wnd>
 	
 	<artefact_slot_highlight x="358" y="94" width="58" height="58" dy="65" stretch="1">

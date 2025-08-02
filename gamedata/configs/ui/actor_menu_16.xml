@@ -188,6 +188,8 @@
 				cell_width="33" cell_height="41" rows_num="2" cols_num="2" custom_placement="0" a="0" virtual_cells="1" 
 				vc_vert_align="c" vc_horiz_align="c" />
 		</slot>
+		<slot> <!-- Backpack -->
+		</slot>
 	</inventory_slot_wnd>
 
 	<quick_slot_highlight x="387" y="398" width="52" height="59" dx="64" stretch="1">
