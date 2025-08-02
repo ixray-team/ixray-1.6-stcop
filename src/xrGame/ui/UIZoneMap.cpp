@@ -50,7 +50,7 @@ void CUIZoneMap::Init()
 
 	if (IsGameTypeSingle() && uiXml.NavigateToNode("minimap:background:dist_text", 0))
 	{
-		m_pointerDistanceText = UIHelper::CreateTextWnd(uiXml, "minimap:background:dist_text", &m_background);
+		m_pointerDistanceText = UIHelper::CreateStatic(uiXml, "minimap:background:dist_text", &m_background);
 	}
 
 	m_activeMap						= new CUIMiniMap();
@@ -122,8 +122,8 @@ void CUIZoneMap::Init()
 		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, m_Counter);
 		m_background.AttachChild	(m_Counter);
 
-		m_Counter_text = new CUITextWnd();
-		xml_init.InitTextWnd		(uiXml, "minimap:static_counter:text_static", 0, m_Counter_text);
+		m_Counter_text = new CUIStatic();
+		xml_init.InitStatic		(uiXml, "minimap:static_counter:text_static", 0, m_Counter_text);
 		m_Counter_text->SetText( "" );
 		m_Counter->AttachChild		(m_Counter_text);
 

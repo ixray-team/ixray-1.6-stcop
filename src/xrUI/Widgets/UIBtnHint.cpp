@@ -28,10 +28,10 @@ CUIButtonHint::CUIButtonHint	()
 		AttachChild(m_border);
 		xml_init.InitFrameLine(uiXml, "button_hint:frame_line", 0, m_border);
 	}
-	m_text						= new CUITextWnd();
+	m_text						= new CUIStatic();
 	m_text->SetAutoDelete		(true);
 	AttachChild					(m_text);
-	xml_init.InitTextWnd		(uiXml,"button_hint:description",0,m_text);
+	xml_init.InitStatic		(uiXml,"button_hint:description",0,m_text);
 }
 
 CUIButtonHint::~CUIButtonHint	()
