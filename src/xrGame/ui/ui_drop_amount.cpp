@@ -47,7 +47,7 @@ void CUIItemDropAmountWnd::InitDropAmount()
 	}
 
 	xr_strconcat(str, base, ":text_hint");
-	m_UIStaticText = UIHelper::CreateTextWnd(uiXml, str, m_UIBackground);
+	m_UIStaticText = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
 
 	xr_strconcat(str, base, ":button_yes");
 	m_UIButtonYes = UIHelper::Create3tButton(uiXml, str, m_UIBackground);
@@ -65,10 +65,10 @@ void CUIItemDropAmountWnd::InitDropAmount()
 	m_UITrackBar->SaveBackUpOptValue();
 
 	xr_strconcat(str, base, ":value_min");
-	m_UIStaticValueMin = UIHelper::CreateTextWnd(uiXml, str, m_UIBackground);
+	m_UIStaticValueMin = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
 
 	xr_strconcat(str, base, ":value_max");
-	m_UIStaticValueMax = UIHelper::CreateTextWnd(uiXml, str, m_UIBackground);
+	m_UIStaticValueMax = UIHelper::CreateStatic(uiXml, str, m_UIBackground);
 }
 
 void CUIItemDropAmountWnd::ShowDropAmount(u32 max, EDropMode mode)

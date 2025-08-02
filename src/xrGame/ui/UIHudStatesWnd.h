@@ -6,7 +6,6 @@
 #include "../actor_defs.h"
 
 class CUIStatic;
-class CUITextWnd;
 class CUIProgressBar;
 class CUIProgressShape;
 class CUIXml;
@@ -81,15 +80,15 @@ private:
 	CUIStackPanel*		UIStackPanelDangers;
 public:
 	
-	CUITextWnd*			m_ui_weapon_cur_ammo = nullptr;
-	CUITextWnd*			m_ui_weapon_fmj_ammo = nullptr;
-	CUITextWnd*			m_ui_weapon_ap_ammo = nullptr;
-	CUITextWnd*			m_fire_mode = nullptr;
-	CUITextWnd*			m_ui_grenade = nullptr;
+	CUIStatic*			m_ui_weapon_cur_ammo = nullptr;
+	CUIStatic*			m_ui_weapon_fmj_ammo = nullptr;
+	CUIStatic*			m_ui_weapon_ap_ammo = nullptr;
+	CUIStatic*			m_fire_mode = nullptr;
+	CUIStatic*			m_ui_grenade = nullptr;
 	II_BriefInfo		m_item_info;
 	CUIStatic*			m_radia_damage = nullptr;
 	Frect				m_ui_weapon_icon_rect;
-	CUITextWnd*			m_ui_weapon_sign_ammo = nullptr;
+	CUIStatic*			m_ui_weapon_sign_ammo = nullptr;
 	CUIStatic*			m_static_armor = nullptr;
 	CUIStatic*			m_static_health = nullptr;
 	CUIStatic*			m_static_weapon = nullptr;
@@ -99,7 +98,7 @@ public:
 	CUIProgressBar*		m_ui_stamina_bar = nullptr;
 	CUIStatic*			m_ui_weapon_icon = nullptr;
 	CUIStatic*			m_back = nullptr;
-	CUITextWnd*			m_ui_weapon_third_ammo = nullptr; //Alundaio
+	CUIStatic*			m_ui_weapon_third_ammo = nullptr; //Alundaio
 
 	u32					m_ui_weapon_ammo_color_active;
 	u32					m_ui_weapon_ammo_color_inactive;

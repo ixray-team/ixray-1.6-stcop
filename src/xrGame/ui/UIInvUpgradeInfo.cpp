@@ -42,13 +42,13 @@ void UIInvUpgradeInfo::init_from_xml(LPCSTR xml_name)
 	xml_init.InitWindow(ui_xml, "main_frame", 0, this);
 
 	m_background = UIHelper::CreateFrameWindow(ui_xml, "background_frame", this);
-	m_name = UIHelper::CreateTextWnd(ui_xml, "info_name", this);
+	m_name = UIHelper::CreateStatic(ui_xml, "info_name", this);
 
 	if (ui_xml.NavigateToNode("info_cost"))
-		m_cost = UIHelper::CreateTextWnd(ui_xml, "info_cost", this);
+		m_cost = UIHelper::CreateStatic(ui_xml, "info_cost", this);
 
-	m_desc = UIHelper::CreateTextWnd(ui_xml, "info_desc", this);
-	m_prereq = UIHelper::CreateTextWnd(ui_xml, "info_prerequisites", this);
+	m_desc = UIHelper::CreateStatic(ui_xml, "info_desc", this);
+	m_prereq = UIHelper::CreateStatic(ui_xml, "info_prerequisites", this);
 
 	m_properties_wnd = new UIInvUpgPropertiesWnd();
 	AttachChild(m_properties_wnd);

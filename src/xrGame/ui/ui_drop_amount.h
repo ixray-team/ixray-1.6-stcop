@@ -9,7 +9,6 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 
-class CUITextWnd;
 class CUIStatic;
 class CUIWindow;
 class CUITrackBar;
@@ -36,12 +35,12 @@ public:
 private:
 	CUIStatic*					m_UIBackground;
 	CUIStatic*					m_UIStaticPicture;
-	CUITextWnd*					m_UIStaticText;
+	CUIStatic*					m_UIStaticText;
 	CUI3tButton*				m_UIButtonYes;
 	CUI3tButton*				m_UIButtonNo;
 	CUITrackBar*				m_UITrackBar;
-	CUITextWnd*					m_UIStaticValueMin;
-	CUITextWnd*					m_UIStaticValueMax;
+	CUIStatic*					m_UIStaticValueMin;
+	CUIStatic*					m_UIStaticValueMax;
 
 	EDropMode					m_dropMode;
 

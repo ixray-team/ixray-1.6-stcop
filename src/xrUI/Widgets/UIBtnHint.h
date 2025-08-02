@@ -1,7 +1,7 @@
 #pragma once
 #include "UIFrameWindow.h"
 
-class CUITextWnd;
+class CUIStatic;
 class CUIFrameLineWnd;
 
 class UI_API CUIButtonHint :
@@ -9,7 +9,7 @@ class UI_API CUIButtonHint :
 {
 	CUIWindow*			m_ownerWnd;
 
-	CUITextWnd*			m_text;
+	CUIStatic*			m_text;
 	CUIFrameLineWnd*	m_border;
 
 	bool				m_enabledOnFrame;
