@@ -14,7 +14,7 @@ CUIChangeWeather::CUIChangeWeather(){
 	bkgrnd->SetAutoDelete(true);
 	AttachChild(bkgrnd);
 
-	header = new CUITextWnd();
+	header = new CUIStatic();
 	header->SetAutoDelete(true);
 	AttachChild(header);
 
@@ -28,7 +28,7 @@ CUIChangeWeather::CUIChangeWeather(){
 		btn[i]->SetAutoDelete(true);
 		AttachChild(btn[i]);
 
-		m_data[i].m_text = new CUITextWnd();
+		m_data[i].m_text = new CUIStatic();
 		m_data[i].m_text->SetAutoDelete(true);
 		AttachChild(m_data[i].m_text);
 	}
@@ -40,7 +40,7 @@ void CUIChangeWeather::InitChangeWeather(CUIXml& xml_doc)
 {
 	CUIXmlInit::InitWindow(xml_doc, "change_weather", 0, this);
 
-	CUIXmlInit::InitTextWnd(xml_doc, "change_weather:header", 0, header);
+	CUIXmlInit::InitStatic(xml_doc, "change_weather:header", 0, header);
 	CUIXmlInit::InitStatic(xml_doc, "change_weather:background", 0, bkgrnd);
 
 	string256 _path;
@@ -48,7 +48,7 @@ void CUIChangeWeather::InitChangeWeather(CUIXml& xml_doc)
 		xr_sprintf(_path, "change_weather:btn_%d", i + 1);
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, btn[i]);
 		xr_sprintf(_path, "change_weather:txt_%d", i + 1);
-		CUIXmlInit::InitTextWnd(xml_doc, _path, 0, m_data[i].m_text);
+		CUIXmlInit::InitStatic(xml_doc, _path, 0, m_data[i].m_text);
 	}
 
 	CUIXmlInit::Init3tButton(xml_doc, "change_weather:btn_cancel", 0, btn_cancel);
@@ -127,7 +127,7 @@ void CUIChangeGameType::InitChangeGameType(CUIXml& xml_doc)
 {
 	CUIXmlInit::InitWindow(xml_doc, "change_gametype", 0, this);
 
-	CUIXmlInit::InitTextWnd(xml_doc, "change_gametype:header", 0, header);
+	CUIXmlInit::InitStatic(xml_doc, "change_gametype:header", 0, header);
 	CUIXmlInit::InitStatic(xml_doc, "change_gametype:background", 0, bkgrnd);
 
 	string256 _path;
@@ -136,7 +136,7 @@ void CUIChangeGameType::InitChangeGameType(CUIXml& xml_doc)
 		xr_sprintf(_path, "change_gametype:btn_%d", i + 1);
 		CUIXmlInit::Init3tButton(xml_doc, _path, 0, btn[i]);
 		xr_sprintf(_path, "change_gametype:txt_%d", i + 1);
-		CUIXmlInit::InitTextWnd(xml_doc, _path, 0, m_data[i].m_text);
+		CUIXmlInit::InitStatic(xml_doc, _path, 0, m_data[i].m_text);
 		m_data[i].m_weather_name = xml_doc.ReadAttrib(_path,0,"id");
 	}
 
