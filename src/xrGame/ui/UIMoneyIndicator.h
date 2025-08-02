@@ -21,7 +21,7 @@ public:
 
 protected:
 	CUIStatic			m_back;
-	CUITextWnd			m_money_amount;
-	CUITextWnd			m_money_change;
+	CUIStatic			m_money_amount;
+	CUIStatic			m_money_change;
 	CUIGameLog*			m_pBonusMoney;
 };

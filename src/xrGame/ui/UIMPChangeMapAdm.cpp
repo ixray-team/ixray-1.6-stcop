@@ -22,7 +22,7 @@ CUIMpChangeMapAdm::CUIMpChangeMapAdm()
 	map_frame->SetAutoDelete(true);
 	AttachChild(map_frame);
 	
-	map_version = new CUITextWnd(); 
+	map_version = new CUIStatic();
 	map_version->SetAutoDelete(true);
 	AttachChild(map_version);
 
@@ -43,7 +43,7 @@ void CUIMpChangeMapAdm::Init(CUIXml& xml_doc)
 {
 	CUIXmlInit::InitWindow(xml_doc, "change_map_adm", 0, this);
 	CUIXmlInit::InitStatic(xml_doc, "change_map_adm:map_frame", 0, map_frame);
-	CUIXmlInit::InitTextWnd(xml_doc, "change_map_adm:map_ver_txt", 0, map_version);
+	CUIXmlInit::InitStatic(xml_doc, "change_map_adm:map_ver_txt", 0, map_version);
 	CUIXmlInit::InitStatic(xml_doc, "change_map_adm:map_pic", 0, map_pic); 
 	CUIXmlInit::InitListBox(xml_doc, "change_map_adm:list", 0, lst);
 	CUIXmlInit::Init3tButton(xml_doc, "change_map_adm:btn_ok", 0, btn_ok);

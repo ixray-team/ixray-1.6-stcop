@@ -145,55 +145,55 @@ void	CUIGameDM::Init(int stage)
 		
 		inherited::Init					(stage);
 		if (m_msgs_xml->NavigateToNode("mp_timelimit"))
-			m_time_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_timelimit", m_window);
+			m_time_caption				= UIHelper::CreateStatic(*m_msgs_xml, "mp_timelimit", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_time_caption_legacy, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TIME_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_spetatormode"))
-			m_spectrmode_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spetatormode", m_window);
+			m_spectrmode_caption		= UIHelper::CreateStatic(*m_msgs_xml, "mp_spetatormode", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_spectrmode_caption_legacy, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, SPECTRMODE_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_spectator"))
-			m_spectator_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spectator", m_window);
+			m_spectator_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_spectator", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_spectator_caption_legacy, DI2PX(0.0f), DI2PY(0.0f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_pressjump"))
-			m_pressjump_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressjump", m_window);
+			m_pressjump_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_pressjump", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_pressjump_caption_legacy, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_pressbuy"))
-			m_pressbuy_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressbuy", m_window);
+			m_pressbuy_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_pressbuy", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_pressbuy_caption_legacy, DI2PX(0.0f), DI2PY(0.95f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_round_result"))
-			m_round_result_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_round_result", m_window);
+			m_round_result_caption		= UIHelper::CreateStatic(*m_msgs_xml, "mp_round_result", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_round_result_caption_legacy, DI2PX(0.0f), DI2PY(-0.1f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, ROUND_RESULT_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_force_respawn_time"))
-			m_force_respawn_time_caption	= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_force_respawn_time", m_window);
+			m_force_respawn_time_caption	= UIHelper::CreateStatic(*m_msgs_xml, "mp_force_respawn_time", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_force_respawn_time_caption_legacy, DI2PX(0.0f), DI2PY(-0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_demo_play"))
-			m_demo_play_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_demo_play", m_window);
+			m_demo_play_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_demo_play", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_demo_play_caption_legacy, DI2PX(-1.0f), DI2PY(-0.95f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alLeft, DEMOPLAY_COLOR, "");
 		}
 		if (m_msgs_xml->NavigateToNode("mp_warm_up"))
-			m_warm_up_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_warm_up", m_window);
+			m_warm_up_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_warm_up", m_window);
 		else
 		{
 			GameCaptions()->addCustomMessage(m_warm_up_caption_legacy, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, WARM_UP_COLOR, "");
