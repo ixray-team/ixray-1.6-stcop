@@ -52,18 +52,6 @@ CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow
 	return ui;
 }
 
-CUITextWnd* UIHelper::CreateTextWnd( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
-{
-	CUITextWnd* ui			= new CUITextWnd();
-	if(parent)
-	{
-		parent->AttachChild	( ui );
-		ui->SetAutoDelete	( true );
-	}
-	CUIXmlInit::InitTextWnd	( xml, ui_path, 0, ui );
-	return ui;
-}
-
 CUIEditBox* UIHelper::CreateEditBox( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
 	CUIEditBox* ui			= new CUIEditBox();

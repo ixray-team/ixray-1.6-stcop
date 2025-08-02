@@ -23,7 +23,7 @@ CUIChangeMap::CUIChangeMap()
 	bkgrnd = new CUIStatic(); bkgrnd->SetAutoDelete(true);
 	AttachChild(bkgrnd);
 
-	header = new CUITextWnd(); header->SetAutoDelete(true);
+	header = new CUIStatic(); header->SetAutoDelete(true);
 	AttachChild(header);
 
 	map_pic = new CUIStatic(); map_pic->SetAutoDelete(true);
@@ -57,16 +57,16 @@ CUIChangeMap::~CUIChangeMap()
 void CUIChangeMap::InitChangeMap(CUIXml& xml_doc)
 {
 	CUIXmlInit::InitWindow				(xml_doc,			"change_map", 0, this);
-	CUIXmlInit::InitTextWnd				(xml_doc,			"change_map:header", 0, header);
+	CUIXmlInit::InitStatic				(xml_doc,			"change_map:header", 0, header);
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:background", 0, bkgrnd);
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:map_frame", 0, map_frame);
 
 	if (xml_doc.NavigateToNode("change_map:map_ver_txt"))
 	{
-		map_version = new CUITextWnd(); 
+		map_version = new CUIStatic(); 
 		map_version->SetAutoDelete(true);
 		AttachChild(map_version);
-		CUIXmlInit::InitTextWnd(xml_doc, "change_map:map_ver_txt", 0, map_version);
+		CUIXmlInit::InitStatic(xml_doc, "change_map:map_ver_txt", 0, map_version);
 	}
 
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:map_pic", 0, map_pic); 

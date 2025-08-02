@@ -3,7 +3,6 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
-class CUITextWnd;
 class CUI3tButton;
 class CUIListBox;
 class CUIFrameWindow;
@@ -26,8 +25,8 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	CUITextWnd*		msg;
-	CUITextWnd*		cap[3];
+	CUIStatic*		msg;
+	CUIStatic*		cap[3];
 	CUIFrameWindow* frame[3];
 	CUIListBox*		list[3];
 

@@ -29,12 +29,12 @@ protected:
 	CUIStatic				m_icon_han;
 	CUIStatic				m_icon_dist;
 
-	CUITextWnd				m_textHandling;
-	CUITextWnd				m_textDamage;
-	CUITextWnd				m_textDist;
-	CUITextWnd				m_textDist1Value;
-	CUITextWnd				m_textDist2Value;
-	CUITextWnd				m_meters_name;
-	CUITextWnd				m_textDistDelimiter;
+	CUIStatic				m_textHandling;
+	CUIStatic				m_textDamage;
+	CUIStatic				m_textDist;
+	CUIStatic				m_textDist1Value;
+	CUIStatic				m_textDist2Value;
+	CUIStatic				m_meters_name;
+	CUIStatic				m_textDistDelimiter;
 	CUIStatic				m_Prop_line;
 };
