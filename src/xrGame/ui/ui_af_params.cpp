@@ -249,7 +249,7 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			AttachChild(m_restore_item[i]);
 		}
 	}
-	else
+	else if (!is_backpack())
 	{
 		u32 count = READ_IF_EXISTS(pSettings, r_u32, af_section, "artefact_count", 0);
 		if (count > 0 && m_af_slots)
