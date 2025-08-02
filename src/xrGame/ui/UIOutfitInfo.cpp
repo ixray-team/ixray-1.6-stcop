@@ -69,7 +69,7 @@ bool CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_t
 	m_progress.InitFromXml( xml_doc, buf );
 	
 	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":static_value" );
-	m_value = UIHelper::CreateTextWnd(xml_doc, buf, this);
+	m_value = UIHelper::CreateStatic(xml_doc, buf, this);
 
 	m_magnitude = xml_doc.ReadAttribFlt( buf, 0, "magnitude", 1.0f );
 

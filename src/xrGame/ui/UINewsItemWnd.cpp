@@ -26,12 +26,12 @@ void CUINewsItemWnd::Init(CUIXml& uiXml, LPCSTR start_from)
 	m_UIImage					= UIHelper::CreateStatic( uiXml, "image", this );
 
 	if (uiXml.NavigateToNode("caption_static"))
-		m_UICaption = UIHelper::CreateTextWnd(uiXml, "caption_static", this);
+		m_UICaption = UIHelper::CreateStatic(uiXml, "caption_static", this);
 	else
 		m_legacyMode = true;
 
-	m_UIText					= UIHelper::CreateTextWnd( uiXml, uiXml.NavigateToNode("text_static") ? "text_static" : "text_cont", this);
-	m_UIDate					= UIHelper::CreateTextWnd( uiXml, uiXml.NavigateToNode("date_static") ? "date_static" : "date_text_cont", this);
+	m_UIText					= UIHelper::CreateStatic( uiXml, uiXml.NavigateToNode("text_static") ? "text_static" : "text_cont", this);
+	m_UIDate					= UIHelper::CreateStatic( uiXml, uiXml.NavigateToNode("date_static") ? "date_static" : "date_text_cont", this);
 
 	uiXml.SetLocalRoot( stored_root );
 }
