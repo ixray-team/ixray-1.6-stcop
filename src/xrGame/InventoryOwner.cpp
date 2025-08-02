@@ -28,6 +28,7 @@
 #include "Bolt.h"
 #include "actor_mp_server.h"
 #include "ActorHelmet.h"
+#include "ActorBackpack.h"
 #include "../xrScripts/script_callback_ex.h"
 
 CInventoryOwner::CInventoryOwner			()
@@ -379,13 +380,21 @@ float CInventoryOwner::GetWeaponAccuracy	() const
 }
 
 //максимальный переносимы вес
-float  CInventoryOwner::MaxCarryWeight () const
+float CInventoryOwner::MaxCarryWeight() const
 {
-	float ret =  inventory().GetMaxWeight();
+	float ret = inventory().GetMaxWeight();
 
-	const CCustomOutfit* outfit	= GetOutfit();
-	if(outfit)
+	const CCustomOutfit* outfit = GetOutfit();
+	if (outfit)
+	{
 		ret += outfit->m_additional_weight2;
+	}
+
+	const CBackpack* backpack = GetBackpack();
+	if (backpack)
+	{
+		ret += backpack->m_additional_weight2;
+	}
 
 	return ret;
 }
@@ -584,6 +593,13 @@ CHelmet* CInventoryOwner::GetHelmet() const
 	PIItem item_from_slot = inventory().ItemFromSlot(HELMET_SLOT);
 	return item_from_slot ? item_from_slot->cast_helmet() : nullptr;
 }
+
+CBackpack* CInventoryOwner::GetBackpack() const
+{
+	PIItem item_from_slot = inventory().ItemFromSlot(BACKPACK_SLOT);
+	return item_from_slot ? item_from_slot->cast_backpack() : nullptr;
+}
+
 
 void CInventoryOwner::on_weapon_shot_start		(CWeapon *weapon)
 {

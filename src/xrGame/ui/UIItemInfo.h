@@ -68,6 +68,7 @@ public:
 	CUIKnifeParams*			UIKnifeParams;
 	CUIArtefactParams*		UIArtefactParams;
 	CUIArtefactParams*		UIOutfitParams;
+	CUIArtefactParams*		UIBackpackParams;
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;

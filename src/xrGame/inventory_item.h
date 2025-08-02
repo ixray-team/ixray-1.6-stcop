@@ -330,6 +330,7 @@ public:
 	virtual CScope* cast_addon_scope() {return nullptr;}
 	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
+	virtual CBackpack* cast_backpack() { return nullptr; }
 
 	////////// upgrades //////////////////////////////////////////////////
 public:
