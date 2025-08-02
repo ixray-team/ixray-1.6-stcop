@@ -17,7 +17,6 @@ class ui_actor_state_wnd;
 class CUIItemInfo;
 class CUIFrameLineWnd;
 class CUIStatic;
-class CUITextWnd;
 class CUI3tButton;
 class CInventoryOwner;
 class CInventoryBox;
@@ -131,12 +130,12 @@ protected:
 	CInventoryOwner*			m_pPartnerInvOwner = nullptr;
 	CInventoryBox*				m_pInvBox = nullptr;
 
-	CUITextWnd*					m_ActorMoney = nullptr;
-	CUITextWnd*					m_PartnerMoney = nullptr;
-	CUITextWnd*					m_QuickSlot1= nullptr;
-	CUITextWnd*					m_QuickSlot2= nullptr;
-	CUITextWnd*					m_QuickSlot3= nullptr;
-	CUITextWnd*					m_QuickSlot4= nullptr;
+	CUIStatic*					m_ActorMoney = nullptr;
+	CUIStatic*					m_PartnerMoney = nullptr;
+	CUIStatic*					m_QuickSlot1= nullptr;
+	CUIStatic*					m_QuickSlot2= nullptr;
+	CUIStatic*					m_QuickSlot3= nullptr;
+	CUIStatic*					m_QuickSlot4= nullptr;
 	
 	CUIProgressBar*				m_WeaponSlot1_progress = nullptr;
 	CUIProgressBar*				m_WeaponSlot2_progress = nullptr;
@@ -144,24 +143,24 @@ protected:
 	CUIProgressBar*				m_Outfit_progress = nullptr;
 	// bottom ---------------------------------
 	CUIStatic*					m_ActorBottomInfo = nullptr;
-	CUITextWnd*					m_ActorWeight = nullptr;
-	CUITextWnd*					m_ActorWeightMax = nullptr;
+	CUIStatic*					m_ActorWeight = nullptr;
+	CUIStatic*					m_ActorWeightMax = nullptr;
 	
 	CUIStatic*					m_PartnerBottomInfo = nullptr;
-	CUITextWnd*					m_PartnerWeight = nullptr;
+	CUIStatic*					m_PartnerWeight = nullptr;
 	float						m_PartnerWeight_end_x;
 //*	CUIStatic*					m_PartnerWeightMax;
 
 	// delimiter ------------------------------
 	CUIStatic*					m_LeftDelimiter = nullptr;
-	CUITextWnd*					m_PartnerTradeCaption = nullptr;
-	CUITextWnd*					m_PartnerTradePrice = nullptr;
-	CUITextWnd*					m_PartnerTradeWeightMax = nullptr;
+	CUIStatic*					m_PartnerTradeCaption = nullptr;
+	CUIStatic*					m_PartnerTradePrice = nullptr;
+	CUIStatic*					m_PartnerTradeWeightMax = nullptr;
 
 	CUIStatic*					m_RightDelimiter = nullptr;
-	CUITextWnd*					m_ActorTradeCaption = nullptr;
-	CUITextWnd*					m_ActorTradePrice = nullptr;
-	CUITextWnd*					m_ActorTradeWeightMax = nullptr;
+	CUIStatic*					m_ActorTradeCaption = nullptr;
+	CUIStatic*					m_ActorTradePrice = nullptr;
+	CUIStatic*					m_ActorTradeWeightMax = nullptr;
 
 	CTrade*						m_actor_trade = nullptr;
 	CTrade*						m_partner_trade = nullptr;

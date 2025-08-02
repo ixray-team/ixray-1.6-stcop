@@ -18,7 +18,7 @@ void CUICarPanel::Init()
     UIStaticCarHealth = UIHelper::CreateStatic(uiXml, "car_panel:car_static", this);
     UIStaticCarHealth->SetAutoDelete(true);
 
-    UIEngineSpeedMode = UIHelper::CreateTextWnd(uiXml, "car_panel:car_speed_mode", UIStaticCarHealth);
+    UIEngineSpeedMode = UIHelper::CreateStatic(uiXml, "car_panel:car_speed_mode", UIStaticCarHealth);
     UIEngineSpeedMode->SetAutoDelete(true);
 
     UIEngineLamp = UIHelper::CreateStatic(uiXml, "car_panel:car_engine_lamp:on", UIStaticCarHealth);

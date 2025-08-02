@@ -10,7 +10,7 @@
 class CUIAHuntFragList;
 class CUIAHuntPlayerList;
 class game_cl_ArtefactHunt;
-class CUITextWnd;
+class CUIStatic;
 class CUIProgressShape;
 class CUIMessageBoxEx;
 
@@ -21,7 +21,7 @@ private:
 	typedef CUIGameTDM inherited;
 
 public:
-	CUITextWnd*	m_pReinforcementInidcator;
+	CUIStatic*	m_pReinforcementInidcator;
 	CUIProgressShape* m_pReinforcementInidcator_old;
 	CUIMessageBoxEx*	m_pBuySpawnMsgBox;
 
@@ -37,5 +37,5 @@ public:
 	virtual void		OnFrame					();
 
 protected:
-	CUITextWnd*	m_buy_msg_caption;		
+	CUIStatic*	m_buy_msg_caption;
 };

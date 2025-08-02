@@ -97,29 +97,29 @@ void CUIActorMenu::Construct()
 
 	if (uiXml.NavigateToNode("right_delimiter:trade_caption", 0))
 	{
-		m_ActorTradeCaption = UIHelper::CreateTextWnd(uiXml, "right_delimiter:trade_caption", m_RightDelimiter);
+		m_ActorTradeCaption = UIHelper::CreateStatic(uiXml, "right_delimiter:trade_caption", m_RightDelimiter);
 		m_ActorTradeCaption->AdjustWidthToText();
 	}
-	m_ActorTradePrice			= UIHelper::CreateTextWnd(uiXml, "right_delimiter:trade_price", m_RightDelimiter);
-	m_ActorTradeWeightMax		= UIHelper::CreateTextWnd(uiXml, "right_delimiter:trade_weight_max", m_RightDelimiter);
+	m_ActorTradePrice			= UIHelper::CreateStatic(uiXml, "right_delimiter:trade_price", m_RightDelimiter);
+	m_ActorTradeWeightMax		= UIHelper::CreateStatic(uiXml, "right_delimiter:trade_weight_max", m_RightDelimiter);
 	
 	m_LeftDelimiter				= UIHelper::CreateStatic(uiXml, "left_delimiter", this);
 
 	if (uiXml.NavigateToNode("left_delimiter:trade_caption", 0))
 	{
-		m_PartnerTradeCaption		= UIHelper::CreateTextWnd(uiXml, "left_delimiter:trade_caption", m_LeftDelimiter);
+		m_PartnerTradeCaption		= UIHelper::CreateStatic(uiXml, "left_delimiter:trade_caption", m_LeftDelimiter);
 		m_PartnerTradeCaption->AdjustWidthToText();
 	}
-	m_PartnerTradePrice			= UIHelper::CreateTextWnd(uiXml, "left_delimiter:trade_price", m_LeftDelimiter);
-	m_PartnerTradeWeightMax		= UIHelper::CreateTextWnd(uiXml, "left_delimiter:trade_weight_max", m_LeftDelimiter);
+	m_PartnerTradePrice			= UIHelper::CreateStatic(uiXml, "left_delimiter:trade_price", m_LeftDelimiter);
+	m_PartnerTradeWeightMax		= UIHelper::CreateStatic(uiXml, "left_delimiter:trade_weight_max", m_LeftDelimiter);
 
 	m_ActorBottomInfo			= UIHelper::CreateStatic(uiXml, "actor_weight_caption", this);
-	m_ActorWeight				= UIHelper::CreateTextWnd(uiXml, "actor_weight", this);
-	m_ActorWeightMax			= UIHelper::CreateTextWnd(uiXml, "actor_weight_max", this);
+	m_ActorWeight				= UIHelper::CreateStatic(uiXml, "actor_weight", this);
+	m_ActorWeightMax			= UIHelper::CreateStatic(uiXml, "actor_weight_max", this);
 	m_ActorBottomInfo->AdjustWidthToText();
 
 	m_PartnerBottomInfo			= UIHelper::CreateStatic(uiXml, "partner_weight_caption", this);
-	m_PartnerWeight				= UIHelper::CreateTextWnd(uiXml, "partner_weight", this);
+	m_PartnerWeight				= UIHelper::CreateStatic(uiXml, "partner_weight", this);
 	m_PartnerBottomInfo->AdjustWidthToText();
 	m_PartnerWeight_end_x		= m_PartnerWeight->GetWndPos().x;
 
@@ -287,20 +287,20 @@ void CUIActorMenu::Construct()
 		m_HelmetOver->Show(false);
 	}
 
-	m_ActorMoney	= UIHelper::CreateTextWnd(uiXml, "actor_money_static", this);
-	m_PartnerMoney	= UIHelper::CreateTextWnd(uiXml, "partner_money_static", this);
+	m_ActorMoney	= UIHelper::CreateStatic(uiXml, "actor_money_static", this);
+	m_PartnerMoney	= UIHelper::CreateStatic(uiXml, "partner_money_static", this);
 
 	if (uiXml.NavigateToNode("quick_slot1_text"))
-		m_QuickSlot1	= UIHelper::CreateTextWnd(uiXml, "quick_slot1_text", this);
+		m_QuickSlot1	= UIHelper::CreateStatic(uiXml, "quick_slot1_text", this);
 
 	if (uiXml.NavigateToNode("quick_slot2_text"))
-		m_QuickSlot2	= UIHelper::CreateTextWnd(uiXml, "quick_slot2_text", this);
+		m_QuickSlot2	= UIHelper::CreateStatic(uiXml, "quick_slot2_text", this);
 
 	if (uiXml.NavigateToNode("quick_slot3_text"))
-		m_QuickSlot3	= UIHelper::CreateTextWnd(uiXml, "quick_slot3_text", this);
+		m_QuickSlot3	= UIHelper::CreateStatic(uiXml, "quick_slot3_text", this);
 
 	if (uiXml.NavigateToNode("quick_slot4_text"))
-		m_QuickSlot4	= UIHelper::CreateTextWnd(uiXml, "quick_slot4_text", this);
+		m_QuickSlot4	= UIHelper::CreateStatic(uiXml, "quick_slot4_text", this);
 
 	if (uiXml.NavigateToNode("trade_button", 0))
 		m_trade_button = UIHelper::Create3tButton(uiXml, "trade_button", this);

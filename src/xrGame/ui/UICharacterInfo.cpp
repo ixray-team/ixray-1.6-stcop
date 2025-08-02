@@ -175,7 +175,7 @@ void CUICharacterInfo::InitCharacter(CInventoryOwner* invOwner)
 		pUIBio->Clear();
 		if (chInfo.Bio().size())
 		{
-			CUITextWnd* pItem = new CUITextWnd();
+			CUIStatic* pItem = new CUIStatic();
 			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
 			pItem->SetText(chInfo.Bio().c_str());
 			pItem->AdjustHeightToText();
@@ -271,7 +271,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 		pUIBio->Clear();
 		if (chInfo.Bio().size())
 		{
-			CUITextWnd* pItem = new CUITextWnd();
+			CUIStatic* pItem = new CUIStatic();
 			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
 			pItem->SetText(chInfo.Bio().c_str());
 			pItem->AdjustHeightToText();

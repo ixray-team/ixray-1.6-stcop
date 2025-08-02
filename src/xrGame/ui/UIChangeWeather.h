@@ -3,7 +3,6 @@
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
-class CUITextWnd;
 class CUI3tButton;
 class CUIKickPlayer;
 class CUIChangeMap;
@@ -29,12 +28,12 @@ protected:
 	u32				weather_counter;
 
 	struct SWeatherData{
-		CUITextWnd*	m_text;
+		CUIStatic*	m_text;
 		shared_str	m_weather_name;
 		shared_str	m_weather_time;
 	};
 
-	CUITextWnd*		header;
+	CUIStatic*		header;
 	CUI3tButton*	btn[4];
 	SWeatherData	m_data[4];
 	CUIStatic*		bkgrnd;

@@ -26,7 +26,7 @@ void CUIGameAHunt::Init	(int stage)
 	if(stage==0)
 	{ // shared
 		inherited::Init					(stage);
-		m_buy_msg_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_ah_buy", m_window);
+		m_buy_msg_caption				= UIHelper::CreateStatic(*m_msgs_xml, "mp_ah_buy", m_window);
 	}
 	if(stage==1)
 	{ //unique
@@ -45,9 +45,9 @@ void CUIGameAHunt::Init	(int stage)
 		}
 		else
 		{
-			m_pReinforcementInidcator = new CUITextWnd();
+			m_pReinforcementInidcator = new CUIStatic();
 			m_pReinforcementInidcator->SetAutoDelete(true);
-			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
+			CUIXmlInit::InitStatic(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
 		}
 		CUIXmlInit::InitStatic			(uiXml, "team1_icon", 0,	m_team1_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team2_icon", 0,	m_team2_icon);

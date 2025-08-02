@@ -128,9 +128,9 @@ void CUIRankingWnd::Init()
 		if (xml.NavigateToNode("actor_icon_over", 0))
 			m_icon_overlay = UIHelper::CreateFrameWindow(xml, "actor_icon_over", this, false);
 		if (xml.NavigateToNode("money_caption", 0))
-			m_money_caption = UIHelper::CreateTextWnd(xml, "money_caption", this);
+			m_money_caption = UIHelper::CreateStatic(xml, "money_caption", this);
 		if (xml.NavigateToNode("money_value", 0))
-			m_money_value = UIHelper::CreateTextWnd(xml, "money_value", this);
+			m_money_value = UIHelper::CreateStatic(xml, "money_value", this);
 
 		if (m_money_caption)
 		{
@@ -142,7 +142,7 @@ void CUIRankingWnd::Init()
 			m_money_value->SetWndPos(pos);
 
 		if (xml.NavigateToNode("center_caption", 0))
-			m_center_caption = UIHelper::CreateTextWnd(xml, "center_caption", this);
+			m_center_caption = UIHelper::CreateStatic(xml, "center_caption", this);
 
 		if (xml.NavigateToNode("fraction_static"))
 			m_faction_static = UIHelper::CreateStatic(xml, "fraction_static", this);
@@ -161,18 +161,18 @@ void CUIRankingWnd::Init()
 
 	for ( u8 i = 0; i < m_stat_count; ++i )
 	{
-		m_stat_caption[i]		= new CUITextWnd();
+		m_stat_caption[i]		= new CUIStatic();
 		AttachChild				( m_stat_caption[i] );
 		m_stat_caption[i]->SetAutoDelete( true );
 
-		if (CUIXmlInit::InitTextWnd(xml, "stat", i, m_stat_caption[i]))
+		if (CUIXmlInit::InitStatic(xml, "stat", i, m_stat_caption[i]))
 		{
 			m_stat_caption[i]->AdjustWidthToText();
 
-			m_stat_info[i] = new CUITextWnd();
+			m_stat_info[i] = new CUIStatic();
 			AttachChild(m_stat_info[i]);
 			m_stat_info[i]->SetAutoDelete(true);
-			CUIXmlInit::InitTextWnd(xml, "stat", i, m_stat_info[i]);
+			CUIXmlInit::InitStatic(xml, "stat", i, m_stat_info[i]);
 
 			m_stat_info[i]->SetTextColor(value_color);
 
@@ -424,8 +424,8 @@ void CUIRankingWnd::get_statistic()
 		if (ai().script_engine().functor("pda.get_stat", funct))
 		{
 			LPCSTR str = funct(i);
-			// m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
-			m_stat_info[i]->TextItemControl().SetColoringMode(true);
+			//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
+			m_stat_info[i]->TextItemControl()->SetColoringMode(true);
 			m_stat_info[i]->SetTextST(str);
 		}
 	}
