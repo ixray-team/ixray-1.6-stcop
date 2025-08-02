@@ -72,6 +72,7 @@
 #include "ui/UIMotionIcon.h"
 #include "ui/UIActorMenu.h"
 #include "ActorHelmet.h"
+#include "ActorBackpack.h"
 #include "ui/UIDragDropReferenceList.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
@@ -1831,7 +1832,7 @@ void CActor::UpdateConditionArtefacts()
 			val = artefact->AdditionalInventoryWeight();
 			if (val > 0.0f)
 			{
-				float diff = inventory().TotalWeight() - conditions().MaxWalkWeight() - (GetOutfit() ? GetOutfit()->m_additional_weight2 : 0.0f);
+				float diff = inventory().TotalWeight() - conditions().MaxWalkWeight() - (GetOutfit() ? GetOutfit()->m_additional_weight2 : 0.0f) - (GetBackpack() ? GetBackpack()->m_additional_weight2 : 0.0f);
 				if (diff > 0.0f)
 					cond_loss += ((diff * 0.0001f) / val);
 			}

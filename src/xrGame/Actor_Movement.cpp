@@ -16,6 +16,7 @@
 #include "player_hud.h"
 #include "Artefact.h"
 #include "CustomOutfit.h"
+#include "ActorBackpack.h"
 
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -660,6 +661,11 @@ float CActor::get_additional_weight() const
 	if (CCustomOutfit* outfit = GetOutfit())
 	{
 		res += outfit->m_additional_weight;
+	}
+
+	if (CBackpack* backpack = GetBackpack())
+	{
+		res += backpack->m_additional_weight;
 	}
 
 	for (const PIItem item : inventory().m_belt)
