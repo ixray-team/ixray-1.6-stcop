@@ -40,11 +40,11 @@ void CUIGameTDM::Init (int stage)
 		m_team1_score->SetAutoDelete	(true);
 		m_team2_score					= new CUIStatic();
 		m_team2_score->SetAutoDelete	(true);
-		m_buy_msg_caption				= new CUITextWnd();
+		m_buy_msg_caption				= new CUIStatic();
 		m_buy_msg_caption->SetAutoDelete(true);
 
 		inherited::Init					(stage);
-		CUIXmlInit::InitTextWnd			(*m_msgs_xml, "mp_tdm_buy",0,		m_buy_msg_caption);
+		CUIXmlInit::InitStatic			(*m_msgs_xml, "mp_tdm_buy",0,		m_buy_msg_caption);
 	}
 	if(stage==1)
 	{ //unique
