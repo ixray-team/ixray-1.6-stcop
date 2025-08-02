@@ -2,7 +2,7 @@
 
 #include "UIGameMP.h"
 
-class CUITextWnd;
+class CUIStatic;
 class game_cl_freemp;
 
 class CUIGameFMP :
@@ -12,7 +12,7 @@ private:
 	game_cl_freemp* m_game;
 	typedef UIGameMP inherited;
 protected:
-	CUITextWnd* m_stats;
+	CUIStatic* m_stats;
 public:
 	CUIGameFMP();
 	virtual ~CUIGameFMP();

@@ -3,7 +3,6 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 
 class CUIStatic;
-class CUITextWnd;
 class CUIXml;
 class CUIScrollView;
 class CMMSound;
@@ -52,7 +51,7 @@ protected:
 	void 				ProcessEvent			(EVENT ev);
 
 	bool 				IsButton				(CUIWindow* st);
-	void 				CreateList				(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path, bool required = true);
+	void 				CreateList				(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path);
 	void 				ShowMain				();
 	void 				ShowNewGame				();
 	float				pos						(float x1, float x2, u32 t);
@@ -74,8 +73,8 @@ public:
 	float				m_offset;
 	u32					m_run_speed;
 
-	xr_vector<CUITextWnd*>	m_buttons;
-	xr_vector<CUITextWnd*>	m_buttons_new;
+	xr_vector<CUIStatic*>	m_buttons;
+	xr_vector<CUIStatic*>	m_buttons_new;
 
 	int						m_selected_btn;
 	enum_page_id			m_page;

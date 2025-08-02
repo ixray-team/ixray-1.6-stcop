@@ -27,15 +27,15 @@ void CUIPdaMsgListItem::InitPdaMsgListItem(const Fvector2& size)
 	if (uiXml.NavigateToNode("time_static"))
 	{
 		AttachChild(&UITimeText);
-		xml_init.InitTextWnd(uiXml, "time_static", 0, &UITimeText);
+		xml_init.InitStatic(uiXml, "time_static", 0, &UITimeText);
 	}
 
 	if (uiXml.NavigateToNode("caption_static"))
 	{
-		UICaptionText = new CUITextWnd();
+		UICaptionText = new CUIStatic();
 		AttachChild(UICaptionText);
-		xml_init.InitTextWnd(uiXml, "caption_static", 0, UICaptionText);
+		xml_init.InitStatic(uiXml, "caption_static", 0, UICaptionText);
 	}
 	AttachChild				(&UIMsgText);
-	xml_init.InitTextWnd	(uiXml, uiXml.NavigateToNode("msg_static") ? "msg_static" : "text_static", 0, &UIMsgText);
+	xml_init.InitStatic	(uiXml, uiXml.NavigateToNode("msg_static") ? "msg_static" : "text_static", 0, &UIMsgText);
 }

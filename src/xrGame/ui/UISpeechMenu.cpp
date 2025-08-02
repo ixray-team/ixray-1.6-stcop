@@ -30,7 +30,7 @@ CUISpeechMenu::~CUISpeechMenu()
 void CUISpeechMenu::InitList(LPCSTR section_name)
 {
 	R_ASSERT2(pSettings->section_exist(section_name), section_name);
-	CUITextWnd* pItem = nullptr;
+	CUIStatic* pItem = nullptr;
 
 	string64 phrase;
 	string256 str;

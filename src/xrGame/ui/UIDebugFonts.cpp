@@ -44,7 +44,7 @@ void CUIDebugFonts::FillUpList(){
 	string256		str;
 	for(;it!=it_e;++it){
 		CGameFont* F					= *(*it);
-		CUITextWnd* pItem				= new CUITextWnd();
+		CUIStatic* pItem				= new CUIStatic();
 		pItem->SetWndPos				(pos);
 		pItem->SetWndSize				(sz);
 		xr_sprintf						(str, "%s:%s", F->m_font_name.c_str(), g_pStringTable->translate("Test_Font_String").c_str());

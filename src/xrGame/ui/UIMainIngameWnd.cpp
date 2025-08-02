@@ -169,7 +169,7 @@ void CUIMainIngameWnd::Init()
 	UIZoneMap->Init();
 
 	// Подсказки, которые возникают при наведении прицела на объект
-	UIStaticQuickHelp = UIHelper::CreateTextWnd(uiXml, "quick_info", this);
+	UIStaticQuickHelp = UIHelper::CreateStatic(uiXml, "quick_info", this);
 
 	uiXml.SetLocalRoot(uiXml.GetRoot());
 
@@ -270,7 +270,7 @@ void CUIMainIngameWnd::Init()
 		}
 		if (uiXml.NavigateToNode("voice_distance"))
 		{
-			m_voice_distance = UIHelper::CreateTextWnd(uiXml, "voice_distance", this);
+			m_voice_distance = UIHelper::CreateStatic(uiXml, "voice_distance", this);
 		}
 
 		SetActiveVoiceIcon(false);
@@ -469,13 +469,13 @@ void CUIMainIngameWnd::Init()
 		}
 	}
 	if (uiXml.NavigateToNode("quick_slot0_text", 0))
-		m_QuickSlotText1 = UIHelper::CreateTextWnd(uiXml, "quick_slot0_text", this);
+		m_QuickSlotText1 = UIHelper::CreateStatic(uiXml, "quick_slot0_text", this);
 	if (uiXml.NavigateToNode("quick_slot1_text", 0))
-		m_QuickSlotText2 = UIHelper::CreateTextWnd(uiXml, "quick_slot1_text", this);
+		m_QuickSlotText2 = UIHelper::CreateStatic(uiXml, "quick_slot1_text", this);
 	if (uiXml.NavigateToNode("quick_slot2_text", 0))
-		m_QuickSlotText3 = UIHelper::CreateTextWnd(uiXml, "quick_slot2_text", this);
+		m_QuickSlotText3 = UIHelper::CreateStatic(uiXml, "quick_slot2_text", this);
 	if (uiXml.NavigateToNode("quick_slot3_text", 0))
-		m_QuickSlotText4 = UIHelper::CreateTextWnd(uiXml, "quick_slot3_text", this);
+		m_QuickSlotText4 = UIHelper::CreateStatic(uiXml, "quick_slot3_text", this);
 
 	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 

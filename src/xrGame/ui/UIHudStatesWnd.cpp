@@ -169,26 +169,26 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		if (m_static_weapon)
 			ammoSignParent = m_static_weapon;
 
-		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", ammoSignParent);
+		m_ui_weapon_sign_ammo = UIHelper::CreateStatic(xml, "static_ammo", ammoSignParent);
 	}
 
 	if (xml.NavigateToNode("static_cur_ammo", 0))
 	{
-		m_ui_weapon_cur_ammo = UIHelper::CreateTextWnd(xml, "static_cur_ammo", this);
+		m_ui_weapon_cur_ammo = UIHelper::CreateStatic(xml, "static_cur_ammo", this);
 	}
 
 	if (xml.NavigateToNode("static_fmj_ammo", 0))
 	{
-		m_ui_weapon_fmj_ammo = UIHelper::CreateTextWnd(xml, "static_fmj_ammo", this);
+		m_ui_weapon_fmj_ammo = UIHelper::CreateStatic(xml, "static_fmj_ammo", this);
 	}
 	if (xml.NavigateToNode("static_ap_ammo", 0))
 	{
-		m_ui_weapon_ap_ammo = UIHelper::CreateTextWnd(xml, "static_ap_ammo", this);
+		m_ui_weapon_ap_ammo = UIHelper::CreateStatic(xml, "static_ap_ammo", this);
 	}
 
 	//Alundaio: Option to display a third ammo type
 	if (xml.NavigateToNode("static_third_ammo", 0))
-		m_ui_weapon_third_ammo = UIHelper::CreateTextWnd(xml, "static_third_ammo", this);
+		m_ui_weapon_third_ammo = UIHelper::CreateStatic(xml, "static_third_ammo", this);
 	//-Alundaio
 
 	// Adaptive ammo count widget: displays current magazine ammo count and backpack ammo count
@@ -341,7 +341,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	// Check if fire mode icon mode is enabled
 	if (xml.NavigateToNode("static_fire_mode", 0))
 	{
-		m_fire_mode = UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
+		m_fire_mode = UIHelper::CreateStatic( xml, "static_fire_mode", this );
 		int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
 		if (use_icon == 1)
 		{
@@ -390,7 +390,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	
 	if (xml.NavigateToNode("static_grenade", 0))
 	{
-		m_ui_grenade = UIHelper::CreateTextWnd(xml, "static_grenade", this);
+		m_ui_grenade = UIHelper::CreateStatic(xml, "static_grenade", this);
 	}
 	
 	CUIWindow* wpnIconParent = this;

@@ -16,7 +16,7 @@ namespace inventory::upgrade
 	class Upgrade;
 }
 
-class CUITextWnd;
+class CUIStatic;
 class CUIFrameWindow;
 class UIInvUpgPropertiesWnd;
 class CInventoryItem;
@@ -46,10 +46,10 @@ protected:
 
 	UIInvUpgPropertiesWnd* m_properties_wnd = nullptr;
 
-	CUITextWnd* m_name = nullptr;
-	CUITextWnd* m_cost = nullptr;
-	CUITextWnd* m_desc = nullptr;
-	CUITextWnd* m_prereq = nullptr;
+	CUIStatic* m_name = nullptr;
+	CUIStatic* m_cost = nullptr;
+	CUIStatic* m_desc = nullptr;
+	CUIStatic* m_prereq = nullptr;
 	bool m_legacy_mode = false;
 
 }; // class UIInvUpgradeInfo

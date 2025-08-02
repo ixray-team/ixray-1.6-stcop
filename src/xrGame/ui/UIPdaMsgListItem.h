@@ -12,7 +12,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 	CUIStatic			UIIcon;
-	CUITextWnd			UITimeText;
-	CUITextWnd*			UICaptionText;
-	CUITextWnd			UIMsgText;
+	CUIStatic			UITimeText;
+	CUIStatic*			UICaptionText;
+	CUIStatic			UIMsgText;
 };

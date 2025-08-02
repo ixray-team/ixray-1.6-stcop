@@ -29,7 +29,7 @@ void UIHint::init_from_xml( CUIXml& xml, LPCSTR path )
 	xml.SetLocalRoot			( new_root );
 
 	m_background = UIHelper::CreateFrameWindow	( xml, "background", this );
-	m_text       = UIHelper::CreateTextWnd		( xml, "text", this );
+	m_text       = UIHelper::CreateStatic		( xml, "text", this );
 	m_border     = xml.ReadAttribFlt			( "background", 0, "border", 0.0f );
 
 	xml.SetLocalRoot( stored_root );

@@ -49,8 +49,6 @@ public:
 	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
-	virtual	void		SetFont					(CGameFont* F)				{CUIWindow::SetFont(F); TextItemControl()->SetFont(F);}
-	virtual	CGameFont*	GetFont					()							{return TextItemControl()->GetFont();}
 	void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) override;
 	bool isSVGPresented(void) const override;
 	LPCSTR getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index = 0) override;
@@ -92,6 +90,12 @@ public:
 			void			TextureOn				()							{ m_bTextureEnable = true; }
 			void			TextureOff				()							{ m_bTextureEnable = false; }
 			void			SetTextOffset			(float x, float y)			{ TextItemControl()->m_TextOffset.x = x; TextItemControl()->m_TextOffset.y = y; }
+			void			SetTextAlignment		(ETextAlignment al)			{TextItemControl()->SetTextAlignment(al);}
+			void			SetTextComplexMode		(bool mode = true)			{TextItemControl()->SetTextComplexMode(mode);}
+			void			SetVTextAlignment		(EVTextAlignment al)		{TextItemControl()->SetVTextAlignment(al);}
+	virtual void			SetFont					(CGameFont* pFont);
+	virtual CGameFont*		GetFont					();
+			u32				GetTextColor			()							{return TextItemControl()->GetTextColor();}
 			void			HighlightText			(bool bHighlight)			{ m_bEnableTextHighlighting = bHighlight; }
 	virtual bool			IsHighlightText			();
 
@@ -121,6 +125,7 @@ public:
 			void			SetStretchTexture		(bool stretch_texture)	{m_bStretchTexture = stretch_texture;}
 			bool			GetStretchTexture		()						{return m_bStretchTexture;}
 			void			SetEllipsis				(int pos, int indent)	{ TextItemControl()->SetEllipsis(pos != 0); }
+			void			SetEllipsis_script		(bool mode)				{ TextItemControl()->SetEllipsis(mode); }
 
 			void			SetHeading				(float f)				{m_fHeading = f;};
 			float			GetHeading				()						{return m_fHeading;}
@@ -159,50 +164,4 @@ public:
 	shared_str		m_stat_hint_text;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-};
-
-class UI_API CUITextWnd :
-	public CUIWindow, 
-	public CUILightAnimColorConrollerImpl
-{
-	typedef CUIWindow	inherited;
-	CUILines			m_lines;
-	bool			m_bEnableTextHighlighting;
-	// Цвет подсветки
-	u32				m_HighlightColor;
-public:
-						CUITextWnd				();
-	virtual				~CUITextWnd				(){};
-	virtual void		Draw					();
-	virtual void		DrawHighlightedText		();
-	virtual void		Update					();
-
-			void 		AdjustHeightToText		();
-			void 		AdjustWidthToText		();
-
-			void		SetText					(LPCSTR txt)				{TextItemControl().SetText(txt);}
-			void		SetTextST				(LPCSTR txt)				{TextItemControl().SetTextST(txt);}
-			LPCSTR		GetText					()							{return TextItemControl().GetText();}
-			void		SetFont					(CGameFont* F)				{TextItemControl().SetFont(F);}
-			CGameFont*	GetFont					()							{return TextItemControl().GetFont();}
-			void		SetTextColor			(u32 color)					{TextItemControl().SetTextColor(color);}
-			u32			GetTextColor			()							{return TextItemControl().GetTextColor();}
-			void		SetTextComplexMode		(bool mode = true)			{TextItemControl().SetTextComplexMode(mode);}
-			void		SetTextAlignment		(ETextAlignment al)			{TextItemControl().SetTextAlignment(al);}
-			void		SetVTextAlignment		(EVTextAlignment al)		{TextItemControl().SetVTextAlignment(al);}
-			void		SetEllipsis				(bool mode)					{TextItemControl().SetEllipsis(mode);}
-			void		SetCutWordsMode			(bool mode)					{TextItemControl().SetCutWordsMode(mode);}
-			void		SetTextOffset			(float x, float y)			{TextItemControl().m_TextOffset.x = x; TextItemControl().m_TextOffset.y = y;}
-			void		HighlightText			(bool bHighlight)			{ m_bEnableTextHighlighting = bHighlight; }
-	virtual bool		IsHighlightText			();
-
-	virtual void		SetHighlightColor		(const u32 uColor)			{ m_HighlightColor = uColor; }
-			void		EnableTextHighlighting	(bool value)				{ m_bEnableTextHighlighting = value; }
-
-	virtual void		ColorAnimationSetTextColor(u32 color, bool only_alpha);
-
-	CUILines&			TextItemControl			()							{return m_lines;}
-
-	virtual CUIWindow* ui_cast_window() { return this; }
-	virtual CUILightAnimColorConroller* ui_cast_light_anim_color_controller() { return this; }
 };

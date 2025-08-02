@@ -36,8 +36,8 @@ void CUIRankingsCoC::init_from_xml(CUIXml& xml, u8 index, bool bUnique)
 	xml.SetLocalRoot(node);
 
 	m_index		= index;
-	m_name		= UIHelper::CreateTextWnd	(xml, "name", this);
-	m_descr		= UIHelper::CreateTextWnd	(xml, "descr", this);
+	m_name		= UIHelper::CreateStatic	(xml, "name", this);
+	m_descr		= UIHelper::CreateStatic	(xml, "descr", this);
 	m_icon		= UIHelper::CreateStatic	(xml, "icon", this);
 	m_hint		= UIHelper::CreateHint		(xml, "hint_wnd");
 	//m_border	= UIHelper::CreateStatic(xml, "border", this);
@@ -117,15 +117,15 @@ bool CUIRankingsCoC::ParentHasMe()
 }
 void CUIRankingsCoC::SetName(LPCSTR name)
 {
-	m_name->TextItemControl().SetColoringMode(true);
-	m_name->TextItemControl().SetUseNewLineMode(true);
+	m_name->TextItemControl()->SetColoringMode(true);
+	m_name->TextItemControl()->SetUseNewLineMode(true);
 	m_name->SetText(name);
 }
 
 void CUIRankingsCoC::SetDescription(LPCSTR desc)
 {
-	m_descr->TextItemControl().SetColoringMode(true);
-	m_descr->TextItemControl().SetUseNewLineMode(true);
+	m_descr->TextItemControl()->SetColoringMode(true);
+	m_descr->TextItemControl()->SetUseNewLineMode(true);
 	m_descr->SetText(desc);
 	m_descr->AdjustHeightToText();
 	Fvector2 descr_size = m_descr->GetWndSize();

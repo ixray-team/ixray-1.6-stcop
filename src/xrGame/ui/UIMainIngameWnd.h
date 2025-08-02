@@ -37,7 +37,7 @@ protected:
 	CUIStatic* m_ind_thirst = nullptr;
 
 	CUIStatic* m_icon_microphone = nullptr;
-	CUITextWnd* m_voice_distance = nullptr;
+	CUIStatic*			m_voice_distance = nullptr;
 public:
 	CUIStatic* m_ind_boost_psy;
 	CUIStatic* m_ind_boost_radia;
@@ -58,7 +58,7 @@ public:
 	CUIStatic* m_ind_starvation;
 
 	CUIStatic* UIStaticDiskIO;
-	CUITextWnd* UIStaticQuickHelp;
+	CUIStatic*			UIStaticQuickHelp;
 	CUIMotionIcon* UIMotionIcon;
 	CUIZoneMap* UIZoneMap;
 
@@ -87,10 +87,10 @@ public:
 	void				OnSectorChanged(int sector);
 
 	xr_vector<CUIStatic* > m_quick_slots_icons;
-	CUITextWnd* m_QuickSlotText1;
-	CUITextWnd* m_QuickSlotText2;
-	CUITextWnd* m_QuickSlotText3;
-	CUITextWnd* m_QuickSlotText4;
+	CUIStatic* m_QuickSlotText1;
+	CUIStatic* m_QuickSlotText2;
+	CUIStatic* m_QuickSlotText3;
+	CUIStatic* m_QuickSlotText4;
 
 protected:
 	// Panel fade state
