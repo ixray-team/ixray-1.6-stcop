@@ -21,7 +21,7 @@ class CUIProgressShape;
 class CUIMessageBoxEx;
 class UIVoteStatusWnd;
 class game_cl_CaptureTheArtefact;
-class CUITextWnd;
+class CUIStatic;
 
 /// This class used to control UI part of client for Capture the Artefact mp game mode.
 class CUIGameCTA final : public UIGameMP
@@ -38,7 +38,7 @@ private:
 	CUIMapDesc*						m_pMapDesc;
 	CUIMoneyIndicator*				m_pMoneyIndicator;
 	CUIRankIndicator*				m_pRankIndicator;
-	CUITextWnd*						m_pReinforcementInidcator;
+	CUIStatic*						m_pReinforcementInidcator;
 	CUIProgressShape*				m_pReinforcementInidcator_old;
 	CUIMessageBoxEx*				m_pBuySpawnMsgBox;
 	UIVoteStatusWnd*				m_voteStatusWnd;
@@ -54,15 +54,15 @@ private:
 	bool							m_team_panels_shown;
 
 
-	CUITextWnd*						m_spectator_caption;
-	CUITextWnd*						m_pressjump_caption;
-	CUITextWnd*						m_pressbuy_caption;
-	CUITextWnd*						m_round_result_caption;	
-	CUITextWnd*						m_force_respawn_time_caption;
-	CUITextWnd*						m_spectrmode_caption;
-	CUITextWnd*						m_warm_up_caption;
-	CUITextWnd*						m_time_caption;
-	CUITextWnd*						m_demo_play_caption;
+	CUIStatic*						m_spectator_caption;
+	CUIStatic*						m_pressjump_caption;
+	CUIStatic*						m_pressbuy_caption;
+	CUIStatic*						m_round_result_caption;
+	CUIStatic*						m_force_respawn_time_caption;
+	CUIStatic*						m_spectrmode_caption;
+	CUIStatic*						m_warm_up_caption;
+	CUIStatic*						m_time_caption;
+	CUIStatic*						m_demo_play_caption;
 
 	struct PresetItem
 	{

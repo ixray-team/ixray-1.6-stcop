@@ -30,13 +30,13 @@ void CUIGameFMP::Init(int stage)
 	if (stage == 0)
 	{
 		//shared
-		m_stats = new CUITextWnd();
+		m_stats = new CUIStatic();
 		m_stats->SetAutoDelete(true);
 
 		inherited::Init(stage);
 
 		CUIXmlInit::InitWindow(uiXml, "global", 0, m_window);
-		CUIXmlInit::InitTextWnd(uiXml, "stats", 0, m_stats);
+		CUIXmlInit::InitStatic(uiXml, "stats", 0, m_stats);
 	}
 	else if (stage == 1)
 	{
