@@ -453,12 +453,25 @@ void CKinematics::Release		()
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
 	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone: %s, bone_id: %d", dbg_name.c_str(), LL_BoneName_dbg(bone_id), bone_id));
+
+	if (bone_id == BI_NONE || bone_id >= LL_BoneCount())
+		return;
+
 	visimask.set(bone_id, val);
 
-	if(!visimask.is(bone_id)) {
+	if(!visimask.is(bone_id))
+	{
         bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
+
+		u16 parentID = LL_GetData(bone_id).GetParentID();
+		if (parentID != BI_NONE)
+		{
+			CBoneInstance& BI = LL_GetBoneInstance(parentID);
+			bone_instances[bone_id].mTransform.c = BI.mTransform.c;
+		}
 	}
-	else {
+	else
+	{
 		CalculateBones_Invalidate();
 	}
 

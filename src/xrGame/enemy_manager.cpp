@@ -406,7 +406,11 @@ void CEnemyManager::try_change_enemy		()
 	}
 
 	if (selected() != previous_selected)
+	{
 		m_object->on_enemy_change	(previous_selected);
+
+		m_object->callback(GameObject::eOnBestEnemySelected)(selected() ? selected()->lua_game_object() : nullptr);
+	}
 }
 
 void CEnemyManager::update					()

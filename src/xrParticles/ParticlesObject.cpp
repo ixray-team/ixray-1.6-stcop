@@ -270,7 +270,7 @@ bool CParticlesObject::IsAutoRemove			()
 }
 void CParticlesObject::SetAutoRemove		(bool auto_remove)
 {
-	VERIFY(m_bStopping || !IsLooped());
+	VERIFY(!IsLooped());
 	m_bAutoRemove = auto_remove;
 }
 

@@ -2970,3 +2970,21 @@ float CActor::GetHandJitterScale(CHudItem* itm) const
 	else
 		return _jitter_time_remains / restore_time;
 }
+
+void CActor::SetBestEnemy(CScriptGameObject* enemy)
+{
+	m_pBestEnemy = enemy;
+}
+
+CScriptGameObject* CActor::GetBestEnemy()
+{
+	return m_pBestEnemy;
+}
+
+void CScriptGameObject::SetCharacterMaxWeight(float value)
+{
+	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+		pInventoryOwner->inventory().SetMaxWeight(value);
+	else
+		Msg("! SetCharacterMaxWeight(...): pInventoryOwner is nullptr!");
+}

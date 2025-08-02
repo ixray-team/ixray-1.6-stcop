@@ -87,6 +87,9 @@ if(dbg_draw_doors)
 	DBG_ClosedCashedDraw( 50000000 );
 }
 #endif	
+	//PHObjectPositionUpdate();
+	//PPhysicsShell()->applyImpulse(Fvector().set(0.f, -1.0f, 0.f), 0.5f * PPhysicsShell()->getMass());
+
 	return TRUE;
 
 }

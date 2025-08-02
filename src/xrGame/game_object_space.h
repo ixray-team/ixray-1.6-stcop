@@ -75,6 +75,7 @@ namespace GameObject {
 
 		eActorBeforeDeath,
 		eActorHudAnimationEnd,
+		eOnBestEnemySelected,
 
 		eDummy = u32(-1),
 	};

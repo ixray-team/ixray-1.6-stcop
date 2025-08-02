@@ -409,6 +409,9 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("get_hud_animator_restored_slot", &CScriptGameObject::GetActorAnimatorRestoredSlot)
 		.def("get_hud_animator_force_hide_items", &CScriptGameObject::GetAnimatorForceHideItems)
 		.def("set_hud_animator_force_hide_items", &CScriptGameObject::SetAnimatorForceHideItems)
+			
+		.def("SetCharacterMaxWeight",			&CScriptGameObject::SetCharacterMaxWeight)
+
 		.property("mechanic",					&CScriptGameObject::getMechanic, &CScriptGameObject::setMechanic)
 	;
 }
