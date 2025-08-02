@@ -26,7 +26,7 @@
 void UIProperty::init_from_xml(CUIXml& ui_xml)
 {
 	m_ui_icon = new CUIStatic();
-	m_ui_text = new CUITextWnd();
+	m_ui_text = new CUIStatic();
 	AttachChild(m_ui_icon);
 	AttachChild(m_ui_text);
 	m_ui_icon->SetAutoDelete(true);
@@ -35,7 +35,7 @@ void UIProperty::init_from_xml(CUIXml& ui_xml)
 	CUIXmlInit::InitWindow(ui_xml, "properties", 0, this);
 	SetWndPos(Fvector2().set(0, 0));
 	CUIXmlInit::InitStatic(ui_xml, "properties:icon", 0, m_ui_icon);
-	CUIXmlInit::InitTextWnd(ui_xml, "properties:text", 0, m_ui_text);
+	CUIXmlInit::InitStatic(ui_xml, "properties:text", 0, m_ui_text);
 }
 
 bool UIProperty::init_property(shared_str const& property_id)

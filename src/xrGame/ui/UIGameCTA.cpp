@@ -62,14 +62,14 @@ void CUIGameCTA::Init(int stage)
 {
 	if(stage==0)
 	{
-		m_round_result_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_round_result", m_window);
-		m_pressbuy_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressbuy", m_window);
-		m_pressjump_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_pressjump", m_window);
-		m_spectator_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spectator", m_window);
-		m_spectrmode_caption		= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_spetatormode", m_window);
-		m_warm_up_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_warm_up", m_window);
-		m_time_caption				= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_timelimit", m_window);
-		m_demo_play_caption			= UIHelper::CreateTextWnd(*m_msgs_xml, "mp_demo_play", m_window);
+		m_round_result_caption		= UIHelper::CreateStatic(*m_msgs_xml, "mp_round_result", m_window);
+		m_pressbuy_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_pressbuy", m_window);
+		m_pressjump_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_pressjump", m_window);
+		m_spectator_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_spectator", m_window);
+		m_spectrmode_caption		= UIHelper::CreateStatic(*m_msgs_xml, "mp_spetatormode", m_window);
+		m_warm_up_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_warm_up", m_window);
+		m_time_caption				= UIHelper::CreateStatic(*m_msgs_xml, "mp_timelimit", m_window);
+		m_demo_play_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_demo_play", m_window);
 
 		teamPanels					= new UITeamPanels();
 		teamPanels->Init			(TEAM_PANELS_XML_NAME, "team_panels_wnd");
@@ -95,9 +95,9 @@ void CUIGameCTA::Init(int stage)
 		}
 		else
 		{
-			m_pReinforcementInidcator = new CUITextWnd();
+			m_pReinforcementInidcator = new CUIStatic();
 			m_pReinforcementInidcator->SetAutoDelete(true);
-			CUIXmlInit::InitTextWnd(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
+			CUIXmlInit::InitStatic(uiXml, "reinforcement", 0, m_pReinforcementInidcator);
 		}
 
 		m_team1_icon					= new CUIStatic();

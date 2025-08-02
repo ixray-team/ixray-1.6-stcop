@@ -296,7 +296,7 @@ void UIBoosterInfoItem::Init(CUIXml& xml, LPCSTR section)
 	xml.SetLocalRoot(xml.NavigateToNode(section));
 
 	m_caption   = UIHelper::CreateStatic(xml, "caption", this);
-	m_value     = UIHelper::CreateTextWnd(xml, "value",   this);
+	m_value     = UIHelper::CreateStatic(xml, "value",   this);
 	m_magnitude = xml.ReadAttribFlt("value", 0, "magnitude", 1.0f);
 	m_sign_inverse = (xml.ReadAttribInt( "value", 0, "sign_inverse", 0 ) == 1);
 	m_show_sign = (xml.ReadAttribInt("value", 0, "show_sign", 1) == 1);

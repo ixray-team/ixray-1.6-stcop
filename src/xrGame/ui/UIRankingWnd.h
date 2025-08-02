@@ -35,13 +35,13 @@ private:
 
 	CUICharacterInfo*	m_actor_ch_info = nullptr;
 
-	CUITextWnd*			m_money_caption = nullptr;
-	CUITextWnd*			m_money_value = nullptr;
+	CUIStatic*			m_money_caption = nullptr;
+	CUIStatic*			m_money_value = nullptr;
 
-	CUITextWnd*			m_center_caption = nullptr;
+	CUIStatic*			m_center_caption = nullptr;
 	CUIStatic*			m_faction_static = nullptr;
-	CUIFrameLineWnd*	m_faction_line1= nullptr;
-	CUIFrameLineWnd*	m_faction_line2= nullptr;
+	CUIFrameLineWnd*	m_faction_line1 = nullptr;
+	CUIFrameLineWnd*	m_faction_line2 = nullptr;
 
 	CUIScrollView*		m_factions_list = nullptr;
 
@@ -76,8 +76,8 @@ private:
 	//-Alundaio
 
 	enum { max_stat_info = 32 };
-	CUITextWnd*			m_stat_caption[max_stat_info];
-	CUITextWnd*			m_stat_info[max_stat_info];
+	CUIStatic*			m_stat_caption[max_stat_info];
+	CUIStatic*			m_stat_info[max_stat_info];
 
 	u32					m_delay;
 	u32					m_previous_time;

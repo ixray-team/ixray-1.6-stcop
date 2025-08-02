@@ -74,15 +74,15 @@ void CUIKnifeParams::InitFromXml(CUIXml& xml_doc)
 	CUIXmlInit::InitStatic			(xml_doc, "knife_params:static_damage",		  0, &m_icon_dam);
 	CUIXmlInit::InitStatic			(xml_doc, "knife_params:static_handling",	  0, &m_icon_han);
 
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:cap_damage",		  0, &m_textDamage);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:cap_handling",		  0, &m_textHandling);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:cap_damage",		  0, &m_textDamage);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:cap_handling",		  0, &m_textHandling);
 
 	CUIXmlInit::InitStatic			(xml_doc, "knife_params:static_dist",		  0, &m_icon_dist);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:cap_dist",			  0, &m_textDist);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:value_dist1",		  0, &m_textDist1Value);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:value_dist2",		  0, &m_textDist2Value);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:value_dist_delimiter",0, &m_textDistDelimiter);
-	CUIXmlInit::InitTextWnd			(xml_doc, "knife_params:meters_name",		  0, &m_meters_name);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:cap_dist",			  0, &m_textDist);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:value_dist1",		  0, &m_textDist1Value);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:value_dist2",		  0, &m_textDist2Value);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:value_dist_delimiter",0, &m_textDistDelimiter);
+	CUIXmlInit::InitStatic			(xml_doc, "knife_params:meters_name",		  0, &m_meters_name);
 
 	m_progressDamage.InitFromXml	( xml_doc, "knife_params:progress_damage" );
 	m_progressHandling.InitFromXml	( xml_doc, "knife_params:progress_handling" );

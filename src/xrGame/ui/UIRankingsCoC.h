@@ -3,7 +3,6 @@
 
 class CUIXml;
 class CUIStatic;
-class CUITextWnd;
 class UIHint;
 class CUIScrollView;
 
@@ -12,8 +11,8 @@ class CUIRankingsCoC final : public CUIWindow
 	typedef CUIWindow inherited;
 private:
 	CUIScrollView*				m_parent;
-	CUITextWnd*					m_name;
-	CUITextWnd*					m_descr;
+	CUIStatic*					m_name;
+	CUIStatic*					m_descr;
 	CUIStatic*					m_icon;
 	//CUIStatic*					m_border;
 	UIHint*						m_hint;

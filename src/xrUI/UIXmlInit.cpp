@@ -254,52 +254,6 @@ bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStac
 	return RetVal;
 }
 
-bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd* pWnd)
-{
-	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
-
-	if (!ValidNode)
-		return false;
-
-	InitWindow			(xml_doc, path, index, pWnd);
-
-	string256			buf;
-	InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, &pWnd->TextItemControl());
-
-	LPCSTR str_flag			= xml_doc.ReadAttrib(path, index, "light_anim",		"");
-	int flag_cyclic			= xml_doc.ReadAttribInt(path, index, "la_cyclic",	1);
-	int flag_alpha			= xml_doc.ReadAttribInt(path, index, "la_alpha",	0);
-	
-	u8 flags				= LA_TEXTCOLOR ;
-	if(flag_cyclic)			flags |= LA_CYCLIC;
-	if(flag_alpha)			flags |= LA_ONLYALPHA;
-	pWnd->SetColorAnimation	(str_flag, flags);	
-
-	int flag_highlight_txt = xml_doc.ReadAttribInt(path, index, "highlight_text", 0);
-	if (flag_highlight_txt) {
-		pWnd->HighlightText(true);
-
-		u32 hA = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hA", 255));
-		u32 hR = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hR", 255));
-		u32 hG = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hG", 255));
-		u32 hB = static_cast<u32>(xml_doc.ReadAttribInt(path, index, "hB", 255));
-		pWnd->SetHighlightColor(color_argb(hA, hR, hG, hB));
-
-	}
-
-
-	bool bComplexMode = xml_doc.ReadAttribInt(path, index, "complex_mode",0)?true:false;
-	if(bComplexMode)
-		pWnd->SetTextComplexMode(bComplexMode);
-
-	xr_strconcat(buf,path,":texture");
-	R_ASSERT3( nullptr==xml_doc.NavigateToNode(buf,index), xml_doc.m_xml_file_name, buf );
-
-	R_ASSERT(pWnd->GetChildNum() == 0);
-	return true;
-}
-
 bool CUIXmlInit::InitCheck(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButton* pWnd)
 {
 	InitStatic(xml_doc, path, index, pWnd);
@@ -1322,8 +1276,8 @@ bool CUIXmlInit::InitScrollView	(CUIXml& xml_doc, LPCSTR path, int index, CUIScr
 
 	for (int i = 0; i < tabsCount; ++i)
 	{
-		CUITextWnd* newText				= new CUITextWnd();
-		InitText						(xml_doc, "text", i, &newText->TextItemControl());
+		CUIStatic* newText				= new CUIStatic();
+		InitText						(xml_doc, "text", i, newText->TextItemControl());
 		newText->SetTextComplexMode		(true);
 		newText->SetWidth				(pWnd->GetDesiredChildWidth());
 		newText->AdjustHeightToText		();

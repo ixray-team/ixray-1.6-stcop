@@ -110,7 +110,7 @@ void CUIPdaWnd::Init()
 	}
 
 	if (uiXml.NavigateToNode("clock_wnd"))
-		m_clock					= UIHelper::CreateTextWnd	( uiXml, "clock_wnd", this );
+		m_clock					= UIHelper::CreateStatic	( uiXml, "clock_wnd", this );
 
 	CUIWindow* tabControlParent = this;
 	if (uiXml.NavigateToNode("mbbackground_frame_line"))
@@ -355,7 +355,7 @@ void CUIPdaWnd::Update()
 	if (m_pActiveDialog)
 		m_pActiveDialog->Update();
 	if (m_clock)
-		m_clock->TextItemControl().SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
+		m_clock->SetText(InventoryUtilities::GetGameTimeAsString(InventoryUtilities::etpTimeToMinutes).c_str());
 	UpdateDateTime();
 
 	if (pUILogsWnd)

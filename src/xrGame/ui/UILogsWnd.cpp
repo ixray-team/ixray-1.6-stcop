@@ -119,7 +119,7 @@ void CUILogsWnd::Init()
 	if (!m_center_background && m_uiXml.NavigateToNode("center_background"))
 		m_center_background2 = UIHelper::CreateStatic(m_uiXml, "center_background", this);
 
-	m_center_caption	= UIHelper::CreateTextWnd( m_uiXml, "center_caption", this );
+	m_center_caption	= UIHelper::CreateStatic( m_uiXml, "center_caption", this );
 
 	string256 buf;
 	xr_strcpy( buf, sizeof(buf), m_center_caption->GetText() );
@@ -138,10 +138,10 @@ void CUILogsWnd::Init()
 	m_filter_talk->SetCheck( true );
 
 	if (m_uiXml.NavigateToNode("date_caption"))
-		m_date_caption = UIHelper::CreateTextWnd(m_uiXml, "date_caption", this);
+		m_date_caption = UIHelper::CreateStatic(m_uiXml, "date_caption", this);
 
 	if (m_uiXml.NavigateToNode("date"))
-		m_date = UIHelper::CreateTextWnd(m_uiXml, "date", this);
+		m_date = UIHelper::CreateStatic(m_uiXml, "date", this);
 
 	if (m_date || m_date_caption)
 	{
@@ -149,7 +149,7 @@ void CUILogsWnd::Init()
 			"Please, provide both [date] and [date_caption] tags in xml file", m_uiXml.m_xml_file_name);
 	}
 
-	m_period_caption = UIHelper::CreateTextWnd( m_uiXml, "period_caption", this );
+	m_period_caption = UIHelper::CreateStatic( m_uiXml, "period_caption", this );
 	m_period         = UIHelper::CreateStatic( m_uiXml, "period", this );
 
 	m_prev_period = UIHelper::Create3tButton( m_uiXml, "btn_prev_period", this );

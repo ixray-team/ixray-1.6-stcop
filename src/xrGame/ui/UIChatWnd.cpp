@@ -38,7 +38,7 @@ void CUIChatWnd::PendingMode(bool const is_pending_mode)
 
 void CUIChatWnd::Init(CUIXml& uiXml)
 {
-	UIPrefix					= UIHelper::CreateTextWnd(uiXml, "chat_prefix", this);
+	UIPrefix					= UIHelper::CreateStatic(uiXml, "chat_prefix", this);
 	inprogress_prefix_rect		= UIPrefix->GetWndRect();
 
 	UIEditBox					= UIHelper::CreateEditBox(uiXml, "chat_edit_box", this);
