@@ -1510,7 +1510,7 @@ bool CScriptGameObject::movement_enabled()
 bool CScriptGameObject::can_throw_grenades() const
 {
 	CAI_Stalker* stalker = object().cast_stalker();
-	if (!stalker)
+	if (stalker)
 	{
 		return stalker->can_throw_grenades();
 	}
