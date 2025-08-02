@@ -14,6 +14,10 @@ Texture2D s_snow;
 	#endif
 #endif
 
+#ifndef DYNAMIC_SNOW_COLOR
+#define DYNAMIC_SNOW_COLOR float3(0.75f, 0.75f, 0.75f)
+#endif
+
 void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, uint idx)
 {
 	float3x3 TBN = float3x3(I.M1, I.M2, I.M3);
@@ -174,7 +178,7 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 	float4 Snow = s_snow.Sample(smp_base, I.tcdh.xy);
     Snow.y *= smoothstep(0.2, 0.3, hemi_cube_pos_faces.y);
 
-	M.Color.xyz = lerp(M.Color.xyz, 0.75f, Snow.y);
+	M.Color.xyz = lerp(M.Color.xyz, DYNAMIC_SNOW_COLOR, Snow.y);
     M.Roughness = lerp(M.Roughness, Snow.x, Snow.y);
     M.Metalness = lerp(M.Metalness, Snow.z, Snow.y);
 #endif
@@ -195,5 +199,6 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
     M.Roughness = max(0.02f, M.Roughness);
 #endif
 }
+
 
 #endif
