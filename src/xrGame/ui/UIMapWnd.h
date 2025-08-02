@@ -57,7 +57,7 @@ private:
 
 	CUIMapLocationHint*			m_map_location_hint;
 	CUIPdaSpot*					m_UserSpotWnd;
-	CUITextWnd*					m_text_hint;
+	CUIStatic*					m_text_hint;
 
 	enum EBtnPos
 	{
