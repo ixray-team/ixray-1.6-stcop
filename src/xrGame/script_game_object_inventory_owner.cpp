@@ -50,6 +50,7 @@
 #include "GametaskManager.h"
 #include "player_hud.h"
 #include "CustomOutfit.h"
+#include "ActorBackpack.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -2049,7 +2050,12 @@ float CScriptGameObject::GetAdditionalMaxWeight() const
 		return outfit->m_additional_weight2;
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit : cannot access class member GetAdditionalMaxWeight!");
+	if (CBackpack* backpack = object().cast_backpack())
+	{
+		return backpack->m_additional_weight2;
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit | CBackpack : cannot access class member GetAdditionalMaxWeight!");
 	return 0.0f;
 }
 
@@ -2060,7 +2066,12 @@ float CScriptGameObject::GetAdditionalMaxWalkWeight() const
 		return outfit->m_additional_weight;
 	}
 
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit : cannot access class member GetAdditionalMaxWalkWeight!");
+	if (CBackpack* backpack = object().cast_backpack())
+	{
+		return backpack->m_additional_weight;
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit | CBackpack : cannot access class member GetAdditionalMaxWalkWeight!");
 	return 0.0f;
 }
 
@@ -2070,9 +2081,13 @@ void CScriptGameObject::SetAdditionalMaxWeight(float add_max_weight)
 	{
 		outfit->m_additional_weight2 = add_max_weight;
 	}
+	else if (CBackpack* backpack = object().cast_backpack())
+	{
+		backpack->m_additional_weight2 = add_max_weight;
+	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit : cannot access class member SetAdditionalMaxWeight!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit | CBackpack : cannot access class member SetAdditionalMaxWeight!");
 	}
 }
 
@@ -2082,9 +2097,13 @@ void CScriptGameObject::SetAdditionalMaxWalkWeight(float add_max_walk_weight)
 	{
 		outfit->m_additional_weight = add_max_walk_weight;
 	}
+	else if (CBackpack* backpack = object().cast_backpack())
+	{
+		backpack->m_additional_weight = add_max_walk_weight;
+	}
 	else
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit : cannot access class member SetAdditionalMaxWalkWeight!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CCustomOutfit | CBackpack : cannot access class member SetAdditionalMaxWalkWeight!");
 	}
 }
 

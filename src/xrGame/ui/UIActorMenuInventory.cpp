@@ -980,67 +980,84 @@ void CUIActorMenu::ActivatePropertiesBox()
 	}
 }
 
-void CUIActorMenu::PropertiesBoxForSlots( PIItem item, bool& b_show )
+void CUIActorMenu::PropertiesBoxForSlots(PIItem item, bool& b_show)
 {
-	if(item->parent_id() != m_pActorInvOwner->object_id()) {
+	if (item->parent_id() != m_pActorInvOwner->object_id())
+	{
 		return;
 	}
 
-	CCustomOutfit* pOutfit	= item->cast_outfit();
+	CCustomOutfit* pOutfit = item->cast_outfit();
 	CHelmet* pHelmet = item->cast_helmet();
+	CBackpack* pBackpack = item->cast_backpack();
 	CInventory& inv = m_pActorInvOwner->inventory();
 
 	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
-	bool bAlreadyDressed	= false;
-	u16 cur_slot			= item->BaseSlot();
+	bool bAlreadyDressed = false;
+	u16 cur_slot = item->BaseSlot();
 
-	if(cur_slot == GRENADE_SLOT) {
+	if (cur_slot == GRENADE_SLOT)
+	{
 		return;
 	}
 
-	if (	!pOutfit && !pHelmet &&
-			cur_slot != NO_ACTIVE_SLOT &&
-			!inv.SlotIsPersistent(cur_slot) &&
-			inv.CanPutInSlot(item, cur_slot) )
+	if (!pOutfit && !pHelmet && !pBackpack && cur_slot != NO_ACTIVE_SLOT && !inv.SlotIsPersistent(cur_slot) && inv.CanPutInSlot(item, cur_slot))
 	{
-		m_UIPropertiesBox->AddItem( "st_move_to_slot",  nullptr, INVENTORY_TO_SLOT_ACTION );
+		m_UIPropertiesBox->AddItem("st_move_to_slot", nullptr, INVENTORY_TO_SLOT_ACTION);
 		b_show = true;
 	}
-	if (	item->Belt() &&
-			inv.CanPutInBelt( item ) )
+	if (item->Belt() && inv.CanPutInBelt(item))
 	{
-		m_UIPropertiesBox->AddItem( "st_move_on_belt",  nullptr, INVENTORY_TO_BELT_ACTION );
+		m_UIPropertiesBox->AddItem("st_move_on_belt", nullptr, INVENTORY_TO_BELT_ACTION);
 		b_show = true;
 	}
 
-	if (	item->Ruck() &&
-			inv.CanPutInRuck(item) &&
-			( cur_slot == NO_ACTIVE_SLOT || !inv.SlotIsPersistent(cur_slot) ) )
+	if (item->Ruck() && inv.CanPutInRuck(item) && (cur_slot == NO_ACTIVE_SLOT || !inv.SlotIsPersistent(cur_slot)))
 	{
-		if( !pOutfit )
+		if (!pOutfit)
 		{
-			if( !pHelmet )
-				m_UIPropertiesBox->AddItem( "st_move_to_bag",  nullptr, INVENTORY_TO_BAG_ACTION );
+			if (!pHelmet)
+			{
+				if (!pBackpack)
+				{
+					m_UIPropertiesBox->AddItem("st_undress_backpack", nullptr, INVENTORY_TO_BAG_ACTION);
+				}
+				else
+				{
+					m_UIPropertiesBox->AddItem("st_move_to_bag", nullptr, INVENTORY_TO_BAG_ACTION);
+				}
+			}
 			else
-				m_UIPropertiesBox->AddItem( "st_undress_helmet",  nullptr, INVENTORY_TO_BAG_ACTION );
+			{
+				m_UIPropertiesBox->AddItem("st_undress_helmet", nullptr, INVENTORY_TO_BAG_ACTION);
+			}
 		}
 		else
-			m_UIPropertiesBox->AddItem( "st_undress_outfit",  nullptr, INVENTORY_TO_BAG_ACTION );
+		{
+			m_UIPropertiesBox->AddItem("st_undress_outfit", nullptr, INVENTORY_TO_BAG_ACTION);
+		}
 
 		bAlreadyDressed = true;
-		b_show			= true;
+		b_show = true;
 	}
-	if ( pOutfit && !bAlreadyDressed )
+
+	if (pOutfit && !bAlreadyDressed)
 	{
-		m_UIPropertiesBox->AddItem( "st_dress_outfit",  nullptr, INVENTORY_TO_SLOT_ACTION );
-		b_show			= true;
+		m_UIPropertiesBox->AddItem("st_dress_outfit", nullptr, INVENTORY_TO_SLOT_ACTION);
+		b_show = true;
 	}
 
 	CCustomOutfit* outfit_in_slot = m_pActorInvOwner->GetOutfit();
-	if ( pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->bIsHelmetAvaliable))
+	if (pHelmet && !bAlreadyDressed && (!outfit_in_slot || outfit_in_slot->bIsHelmetAvaliable))
 	{
-		m_UIPropertiesBox->AddItem( "st_dress_helmet",  nullptr, INVENTORY_TO_SLOT_ACTION );
-		b_show			= true;
+		m_UIPropertiesBox->AddItem("st_dress_helmet", nullptr, INVENTORY_TO_SLOT_ACTION);
+		b_show = true;
+	}
+
+	if (pBackpack && !bAlreadyDressed)
+	{
+		m_UIPropertiesBox->AddItem("st_dress_backpack", nullptr, INVENTORY_TO_SLOT_ACTION);
+		b_show = true;
 	}
 }
 
