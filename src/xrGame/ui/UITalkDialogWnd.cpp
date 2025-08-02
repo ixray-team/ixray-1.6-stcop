@@ -450,7 +450,7 @@ CUIQuestionItem::CUIQuestionItem(CUIXml* xml_doc, LPCSTR path)
 
 	xr_strconcat(str, path, ":num_text");
 	if (xml_doc->NavigateToNode(str))
-		m_num_text = UIHelper::CreateTextWnd(*xml_doc, str, this);
+		m_num_text = UIHelper::CreateStatic(*xml_doc, str, this);
 }
 
 void CUIQuestionItem::Init			(LPCSTR val, LPCSTR text)
@@ -478,10 +478,10 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 	string512 str;
 
 	xr_strconcat(str,path,":content_text");
-	m_text = UIHelper::CreateTextWnd(*xml_doc, str, this);
+	m_text = UIHelper::CreateStatic(*xml_doc, str, this);
 
 	xr_strconcat(str,path,":name_caption");
-	m_name = UIHelper::CreateTextWnd(*xml_doc, str, this);
+	m_name = UIHelper::CreateStatic(*xml_doc, str, this);
 
 	SetAutoDelete					(true);
 }

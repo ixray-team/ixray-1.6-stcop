@@ -171,8 +171,8 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	xr_strconcat(pth, start_from, ":main_wnd:text_hint");
 	if (uiXml.NavigateToNode(pth))
 	{
-		m_text_hint = new CUITextWnd();
-		xml_init.InitTextWnd(uiXml, pth, 0, m_text_hint);
+		m_text_hint = new CUIStatic();
+		xml_init.InitStatic(uiXml, pth, 0, m_text_hint);
 	}
 
 // Load maps

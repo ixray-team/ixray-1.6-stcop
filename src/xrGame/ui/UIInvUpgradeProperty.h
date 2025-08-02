@@ -31,7 +31,7 @@ protected:
 	shared_str m_property_id;
 
 	CUIStatic* m_ui_icon = nullptr;
-	CUITextWnd* m_ui_text = nullptr;
+	CUIStatic* m_ui_text = nullptr;
 	string256 m_text = {};
 
 public:

@@ -116,7 +116,7 @@ void CUIMMShniaga::OnDeviceReset()
 {
 }
 
-void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path, bool required)
+void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path)
 {
 	CGameFont* pF;
 	u32	color;
@@ -124,27 +124,23 @@ void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCS
 	float button_height				= xml_doc.ReadAttribFlt("button", 0, "h", button_height_legacy);
 
 	CUIXmlInit::InitFont			(xml_doc, path, 0, color, pF);
-	if (!pF)
-	{
-		R_ASSERT(!required);
-		return;
-	}
+	R_ASSERT						(pF);
 
 	int nodes_num					= xml_doc.GetNodesNum(path, 0, "btn");
 
 	XML_NODE* tab_node				= xml_doc.NavigateToNode(path,0);
 	xml_doc.SetLocalRoot			(tab_node);
 
-	CUITextWnd* st;
+	CUIStatic* st;
 
 	for (int i = 0; i < nodes_num; ++i)
 	{		
-		st							= new CUITextWnd();
+		st							= new CUIStatic();
 		st->SetWndPos				(Fvector2().set(0,0));
 		st->SetWndSize				(Fvector2().set(m_view->GetDesiredChildWidth(), button_height));
-		st->SetFont					(pF);
 		st->SetTextComplexMode		(false);
 		st->SetTextST				(xml_doc.ReadAttrib	("btn", i, "caption"));
+		st->SetFont					(pF);
 
 //		float font_height			= st->GetFont()->GetHeight();
 //		UI().ClientToScreenScaledHeight(font_height);
@@ -166,7 +162,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCS
 void CUIMMShniaga::SetPage		(enum_page_id page_id, LPCSTR xml_file, LPCSTR xml_path)
 {
 	VERIFY(m_page != page_id);
-	xr_vector<CUITextWnd*>*		lst = nullptr;
+	xr_vector<CUIStatic*>*		lst = nullptr;
 	switch (page_id)
 	{
 	case epi_main:
