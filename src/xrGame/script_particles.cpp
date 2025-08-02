@@ -106,7 +106,12 @@ CScriptParticles::~CScriptParticles()
 	{
 		// destroy particles
 		m_particles->remove_owner	();
-		m_particles->PSI_destroy	();
+
+		if (!m_particles->IsLooped() && m_particles->IsPlaying())
+			m_particles->SetAutoRemove(true);
+		else
+			m_particles->PSI_destroy();
+
 		m_particles					= 0;
 	}
 }
