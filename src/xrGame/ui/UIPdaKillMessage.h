@@ -14,11 +14,11 @@ public:
 			virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-			float InitText(CUITextWnd& refStatic, float x, PlayerInfo& info);
+			float InitText(CUIStatic& refStatic, float x, PlayerInfo& info);
 			float InitIcon(CUIStatic& refStatic, float x, IconInfo& info);
 
-    CUITextWnd	m_victim_name;
+    CUIStatic	m_victim_name;
 	CUIStatic	m_initiator;
-	CUITextWnd	m_killer_name;
+	CUIStatic	m_killer_name;
 	CUIStatic	m_ext_info;
 };
