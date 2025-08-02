@@ -196,6 +196,11 @@ CScriptGameObject::operator CObject*()
 
 CScriptGameObject* CScriptGameObject::GetBestEnemy()
 {
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->GetBestEnemy();
+	}
+
 	if (const CCustomMonster* monster = object().cast_custom_monster())
 	{
 		if (monster->memory().enemy().selected())
@@ -205,6 +210,17 @@ CScriptGameObject* CScriptGameObject::GetBestEnemy()
 	}
 
 	return 0;
+}
+
+void CScriptGameObject::SetBestEnemy(CScriptGameObject* lua_game_object)
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->SetBestEnemy(lua_game_object);
+		return;
+	}
+
+	Msg("! SetBestEnemy(): method applicable only for actor!");
 }
 
 const CDangerObject* CScriptGameObject::GetBestDanger()
