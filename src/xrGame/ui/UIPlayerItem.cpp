@@ -65,11 +65,11 @@ void UIPlayerItem::InitTextParams(CUIXml& uiXml)
 			break;
 		LPCSTR param_name = uiXml.ReadAttrib(text_param_node, "name", 
 			"param_name_not_set_in_name_attribute");
-		CUITextWnd* temp_static = new CUITextWnd();
+		CUIStatic* temp_static = new CUIStatic();
 		VERIFY(temp_static);
 		this->AttachChild(temp_static);
 		temp_static->SetAutoDelete(true);
-		CUIXmlInit::InitTextWnd(uiXml, TEXTPARAM_NODE_NAME, i, temp_static);
+		CUIXmlInit::InitStatic(uiXml, TEXTPARAM_NODE_NAME, i, temp_static);
 		m_text_params.insert(std::make_pair(shared_str(param_name), temp_static));
 	}
 }

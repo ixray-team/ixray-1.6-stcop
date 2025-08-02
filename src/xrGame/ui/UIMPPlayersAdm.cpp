@@ -54,7 +54,7 @@ CUIMpPlayersAdm::CUIMpPlayersAdm()
 	m_pPingLimitTrack->SetAutoDelete(true);
 	AttachChild(m_pPingLimitTrack);
 
-	m_pPingLimitText = new CUITextWnd();
+	m_pPingLimitText = new CUIStatic();
 	m_pPingLimitText->SetAutoDelete(true);
 	AttachChild(m_pPingLimitText);
 
@@ -100,7 +100,7 @@ void CUIMpPlayersAdm::Init(CUIXml& xml_doc)
 	CUIXmlInit::Init3tButton(xml_doc, "players_adm:config_all_button", 0, m_pConfigAllBtn);
 	CUIXmlInit::Init3tButton(xml_doc, "players_adm:max_ping_limit_button", 0, m_pPingLimitBtn);
 	CUIXmlInit::InitTrackBar(xml_doc, "players_adm:max_ping_limit_track", 0, m_pPingLimitTrack);
-	CUIXmlInit::InitTextWnd(xml_doc, "players_adm:max_ping_limit_text", 0, m_pPingLimitText);
+	CUIXmlInit::InitStatic(xml_doc, "players_adm:max_ping_limit_text", 0, m_pPingLimitText);
 	CUIXmlInit::Init3tButton(xml_doc, "players_adm:screen_player_button", 0, m_pScreenPlayerBtn);
 	CUIXmlInit::Init3tButton(xml_doc, "players_adm:config_player_button", 0, m_pConfigPlayerBtn);
 	CUIXmlInit::Init3tButton(xml_doc, "players_adm:kick_player_button", 0, m_pKickPlayerBtn);
