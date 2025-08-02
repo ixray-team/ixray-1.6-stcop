@@ -138,13 +138,27 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		return;
 	}
-	if (_curr == kSCREENSHOT)
+	if (g_bDisableAllInput)
 	{
-		Render->Screenshot();
+		if (_curr == kQUIT)
+		{
+			Console->Execute("main_menu");
+		}
+		else if (_curr == kSCREENSHOT)
+		{
+			Render->Screenshot();
+		}
+
 		return;
 	}
-
-	if(	g_bDisableAllInput )	return;
+	else
+	{
+		if (_curr == kSCREENSHOT)
+		{
+			Render->Screenshot();
+			return;
+		}
+	}
 
 	if (g_actor)
 		g_actor->callback(GameObject::eKeyPress)(key);
