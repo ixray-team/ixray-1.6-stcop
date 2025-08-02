@@ -12,7 +12,7 @@ private:
     CUIProgressBar* UICarHealthBar;
     CUIProgressBar* UICarFuelBar;
 
-    CUITextWnd* UIEngineSpeedMode;
+    CUIStatic* UIEngineSpeedMode;
     CUIStatic* UIEngineLamp;
     CUIStatic* UIEngineLampOff;
 

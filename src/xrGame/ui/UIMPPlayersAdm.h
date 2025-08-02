@@ -7,7 +7,7 @@ class CUIXml;
 class CUIListBox;
 class CUI3tButton;
 class CUITrackBar;
-class CUITextWnd;
+class CUIStatic;
 class CUIComboBox;
 
 class CUIMpPlayersAdm final :
@@ -21,7 +21,7 @@ class CUIMpPlayersAdm final :
 		CUI3tButton*		m_pConfigAllBtn;
 		CUI3tButton*		m_pPingLimitBtn;
 		CUITrackBar*		m_pPingLimitTrack;
-		CUITextWnd*			m_pPingLimitText;
+		CUIStatic*			m_pPingLimitText;
 		CUI3tButton*		m_pScreenPlayerBtn;
 		CUI3tButton*		m_pConfigPlayerBtn;
 		CUI3tButton*		m_pKickPlayerBtn;

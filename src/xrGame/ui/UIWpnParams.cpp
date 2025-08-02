@@ -83,10 +83,10 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 	if (xml_doc.NavigateToNode("wpn_params:static_rpm"))
 		m_icon_rpm = UIHelper::CreateStatic(xml_doc, "wpn_params:static_rpm", this);
 
-	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_accuracy",		0, &m_textAccuracy);
-	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_damage",			0, &m_textDamage);
-	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_handling",		0, &m_textHandling);
-	CUIXmlInit::InitTextWnd			(xml_doc, "wpn_params:cap_rpm",				0, &m_textRPM);
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_accuracy",		0, &m_textAccuracy);
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_damage",			0, &m_textDamage);
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_handling",		0, &m_textHandling);
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_rpm",				0, &m_textRPM);
 
 	m_progressAccuracy.InitFromXml	( xml_doc, "wpn_params:progress_accuracy" );
 	m_progressDamage.InitFromXml	( xml_doc, "wpn_params:progress_damage" );
@@ -98,13 +98,13 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo"))
 			m_stAmmo = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo", this);
 		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_count"))
-			m_textAmmoCount = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_count", this);
+			m_textAmmoCount = UIHelper::CreateStatic(xml_doc, "wpn_params:cap_ammo_count", this);
 		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_count2"))
-			m_textAmmoCount2 = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_count2", this);
+			m_textAmmoCount2 = UIHelper::CreateStatic(xml_doc, "wpn_params:cap_ammo_count2", this);
 		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_types"))
-			m_textAmmoTypes = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_types", this);
+			m_textAmmoTypes = UIHelper::CreateStatic(xml_doc, "wpn_params:cap_ammo_types", this);
 		if (xml_doc.NavigateToNode("wpn_params:cap_ammo_used_type"))
-			m_textAmmoUsedType = UIHelper::CreateTextWnd(xml_doc, "wpn_params:cap_ammo_used_type", this);
+			m_textAmmoUsedType = UIHelper::CreateStatic(xml_doc, "wpn_params:cap_ammo_used_type", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type1"))
 			m_stAmmoType1 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type1", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type2"))
