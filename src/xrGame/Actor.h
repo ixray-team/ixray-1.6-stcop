@@ -694,8 +694,6 @@ private:
 protected:
 		CStatGraph				*pStatGraph;
 
-		shared_str				m_DefaultVisualOutfit;
-
 		LPCSTR					invincibility_fire_shield_3rd;
 		LPCSTR					invincibility_fire_shield_1st;
 		shared_str				m_sHeadShotParticle;
@@ -709,6 +707,8 @@ protected:
 		void							Check_for_AutoPickUp			();
 		void							SelectBestWeapon				(CObject* O);
 public:
+		shared_str				m_DefaultVisualOutfit;
+
 		void							SetWeaponHideState				(u16 State, bool bSet);
 private://IPhysicsShellHolder
 
@@ -833,7 +833,13 @@ private:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 
+private:
+	CScriptGameObject* m_pBestEnemy = nullptr;
+
 public:
+	void SetBestEnemy(CScriptGameObject* enemy);
+	CScriptGameObject* GetBestEnemy();
+
 	bool OnLadder = false;
 	IC bool is_ladder() const { return OnLadder; };
 
