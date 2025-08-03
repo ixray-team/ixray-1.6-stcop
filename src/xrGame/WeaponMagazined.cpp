@@ -1212,8 +1212,6 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			SwitchState(eIdle);
 			break;
 		}
-		case eFire:
-		case eFire2:
 		case eShowing:
 		case eSwitchMode:
 		case eDevice:
