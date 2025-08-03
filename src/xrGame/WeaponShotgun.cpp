@@ -177,12 +177,18 @@ void CWeaponShotgun::OnStateSwitch(u32 S)
 	{
 	case eSubstateReloadBegin:
 	{
-		switch2_StartReload();
+		if (HaveCartridgeInInventory(1))
+		{
+			switch2_StartReload();
+		}
 		break;
 	}
 	case eSubstateReloadInProcess:
 	{
-		switch2_AddCartgidge();
+		if (HaveCartridgeInInventory(1))
+		{
+			switch2_AddCartgidge();
+		}
 		break;
 	}
 	case eSubstateReloadEnd:
