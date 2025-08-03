@@ -69,6 +69,13 @@ public:
 	virtual void				ActivateExplosionBox	(const Fvector &size,Fvector &in_out_pos);
 			void				SetExplosionSize		(const Fvector &new_size);
 	virtual bool				Useful					() const;
+
+			float				GetBlastHit				() {return m_fBlastHit;}
+			float				GetBlastRadius			() {return m_fBlastRadius;}
+
+			int					GetFragsCount			() {return m_iFragsNum;}
+			float				GetFragsHit				() {return m_fFragHit;}
+			float				GetFragsRadius			() {return m_fFragsRadius;}
 protected:
 			bool				IsSoundPlaying			(){return (sndExplode.is_playing());}
 			bool				IsExploded				(){return !!m_explosion_flags.test(flExploded);}
