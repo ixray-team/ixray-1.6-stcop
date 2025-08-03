@@ -129,20 +129,10 @@ void CExplosive::Load(CInifile const *ini,LPCSTR section)
 		m_wallmark_manager.Load(ini->r_string(section, "wallmark_section"));
 	}
 
-	m_bHideInExplosion = TRUE;
-	if (ini->line_exist(section, "hide_in_explosion"))
-	{
-		m_bHideInExplosion = ini->r_bool(section, "hide_in_explosion");
-		m_fExplodeHideDurationMax = 0;
-		if (ini->line_exist(section, "explode_hide_duration"))
-		{
-			m_fExplodeHideDurationMax = ini->r_float(section, "explode_hide_duration");
-		}
-	}
+	m_bHideInExplosion = READ_IF_EXISTS(ini, r_bool, section, "hide_in_explosion", TRUE);
+	m_fExplodeHideDurationMax = READ_IF_EXISTS(ini, r_float, section, "explode_hide_duration", 0);
 
-	m_bDynamicParticles	 = FALSE;
-	if (ini->line_exist(section, "dynamic_explosion_particles"))
-		m_bDynamicParticles = ini->r_bool(section, "dynamic_explosion_particles");
+	m_bDynamicParticles	 = READ_IF_EXISTS(ini, r_bool, section, "dynamic_explosion_particles", FALSE);
 }
 
 void CExplosive::net_Destroy	()

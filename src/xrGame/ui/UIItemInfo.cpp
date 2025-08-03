@@ -26,6 +26,7 @@
 #include "../ActorHelmet.h"
 #include "../eatable_item.h"
 #include "UICellItem.h"
+#include "UIGrenadeParams.h"
 
 extern const LPCSTR g_inventory_upgrade_xml;
 
@@ -44,6 +45,7 @@ CUIItemInfo::CUIItemInfo()
 	UIConditionWnd				= nullptr;
 	UIWpnParams					= nullptr;
 	UIKnifeParams				= nullptr;
+	UIGrenadeParams				= nullptr;
 	UIProperties				= nullptr;
 	UIOutfitInfo				= nullptr;
 	UIBoosterInfo				= nullptr;
@@ -62,6 +64,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete	(UIConditionWnd);
 	xr_delete	(UIWpnParams);
 	xr_delete	(UIKnifeParams);
+	xr_delete	(UIGrenadeParams);
 	xr_delete	(UIArtefactParams);
 	xr_delete	(UIOutfitParams);
 	xr_delete	(UIBackpackParams);
@@ -142,6 +145,8 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		UIWpnParams->InitFromXml		(uiXml);
 		UIKnifeParams					= new CUIKnifeParams();
 		UIKnifeParams->InitFromXml		(uiXml);
+		UIGrenadeParams					= new CUIGrenadeParams();
+		UIGrenadeParams->InitFromXml	(uiXml);
 
 		UIArtefactParams				= new CUIArtefactParams(CUIArtefactParams::CParamType::eParamTypeArtefact);
 		UIArtefactParams->InitFromXml	(uiXml);
@@ -321,6 +326,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		TryAddConditionInfo					(*pInvItem, pCompareItem);
 		TryAddWpnInfo						(*pInvItem, pCompareItem);
 		TryAddKnifeInfo						(*pInvItem, pCompareItem);
+		TryAddGrenadeInfo					(*pInvItem, pCompareItem);
 		TryAddArtefactInfo					(*pInvItem);
 		TryAddOutfitInfo					(*pInvItem, pCompareItem);
 		TryAddUpgradeInfo					(*pInvItem);
@@ -401,7 +407,16 @@ void CUIItemInfo::TryAddKnifeInfo(CInventoryItem& pInvItem, CInventoryItem* pCom
 	}
 }
 
-void CUIItemInfo::TryAddArtefactInfo(CInventoryItem& pInvItem)
+void CUIItemInfo::TryAddGrenadeInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)
+{
+	if (UIGrenadeParams->Check(pInvItem))
+	{
+		UIGrenadeParams->SetInfo(pCompareItem, pInvItem);
+		UIDesc->AddWindow(UIGrenadeParams, false);
+	}
+}
+
+void CUIItemInfo::TryAddArtefactInfo	(CInventoryItem& pInvItem)
 {
 	if (UIArtefactParams->Check(pInvItem.object().cNameSect()))
 	{
