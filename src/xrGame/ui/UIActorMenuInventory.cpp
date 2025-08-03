@@ -1020,11 +1020,11 @@ void CUIActorMenu::PropertiesBoxForSlots(PIItem item, bool& b_show)
 			{
 				if (!pBackpack)
 				{
-					m_UIPropertiesBox->AddItem("st_undress_backpack", nullptr, INVENTORY_TO_BAG_ACTION);
+					m_UIPropertiesBox->AddItem("st_move_to_bag", nullptr, INVENTORY_TO_BAG_ACTION);
 				}
 				else
 				{
-					m_UIPropertiesBox->AddItem("st_move_to_bag", nullptr, INVENTORY_TO_BAG_ACTION);
+					m_UIPropertiesBox->AddItem("st_undress_backpack", nullptr, INVENTORY_TO_BAG_ACTION);
 				}
 			}
 			else
