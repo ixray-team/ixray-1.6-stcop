@@ -436,4 +436,19 @@
 	<string id="st_ui_settings">
 		<text>User interface</text>
 	</string>
+	<string id="st_grenade_blast_hit">
+		<text>Blast damage</text>
+	</string>
+	<string id="st_grenade_blast_radius">
+		<text>Blast radius</text>
+	</string>
+	<string id="st_grenade_frags_count">
+		<text>Frags count</text>
+	</string>
+	<string id="st_grenade_frags_radius">
+		<text>Frag radius</text>
+	</string>
+	<string id="st_grenade_frags_hit">
+		<text>Frag damage</text>
+	</string>
 </string_table>
