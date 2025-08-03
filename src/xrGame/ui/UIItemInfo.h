@@ -16,6 +16,7 @@ class UIInvUpgPropertiesWnd;
 class CUIOutfitInfo;
 class CUIBoosterInfo;
 class CUICellItem;
+class CUIGrenadeParams;
 
 extern const char * const 		fieldsCaptionColor;
 
@@ -43,6 +44,7 @@ public:
 	void				TryAddConditionInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddWpnInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddKnifeInfo		(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
+	void				TryAddGrenadeInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddArtefactInfo	(CInventoryItem& pInvItem);
 	void				TryAddOutfitInfo	(CInventoryItem& pInvItem, CInventoryItem* pCompareItem);
 	void				TryAddUpgradeInfo	(CInventoryItem& pInvItem);
@@ -72,6 +74,7 @@ public:
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;
+	CUIGrenadeParams*		UIGrenadeParams;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

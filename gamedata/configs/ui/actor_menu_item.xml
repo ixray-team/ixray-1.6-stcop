@@ -192,6 +192,58 @@
 			<text font="letterica16" color="ui_2" align="l"/>
 		</meters_name>
 	</knife_params>
+	
+	<grenade_params x="0" y="0" width="265" height="100">
+		<prop_line x="0" y="0" width="260" height="9" stretch="1">
+			<texture>ui_inGame2_hint_wnd_Properties</texture>
+		</prop_line>
+		<static_blast_hit x="0" y="8" width="18" height="18" stretch="1">
+			<texture>ui_wp_prop_damage</texture>
+		</static_blast_hit>
+		<cap_blast_hit x="22" y="8" width="80" height="8">
+			<text font="letterica16" r="124" g="119" b="115" align="l">st_grenade_blast_hit</text>
+		</cap_blast_hit>
+		<static_blast_radius x="0" y="26" width="18" height="18" stretch="1">
+			<texture>ui_am_prop_scanner</texture>
+		</static_blast_radius>
+		<cap_blast_radius x="22" y="26" width="80" height="8">
+			<text font="letterica16" r="124" g="119" b="115" align="l">st_grenade_blast_radius</text>
+		</cap_blast_radius>
+		<static_frags_count x="0" y="44" width="18" height="18" stretch="1">
+			<texture>ui_wp_prop_nastilnost</texture>
+		</static_frags_count>
+		<cap_frags_count x="22" y="44" width="80" height="8">
+			<text font="letterica16" r="124" g="119" b="115" align="l">st_grenade_frags_count</text>
+		</cap_frags_count>
+		<static_frags_radius x="0" y="62" width="18" height="18" stretch="1">
+			<texture>ui_am_prop_scanner</texture>
+		</static_frags_radius>
+		<cap_frags_radius x="22" y="62" width="80" height="8">
+			<text font="letterica16" r="124" g="119" b="115" align="l">st_grenade_frags_radius</text>
+		</cap_frags_radius>
+		<static_frags_hit x="0" y="80" width="18" height="18" stretch="1">
+			<texture>ui_wp_prop_damage</texture>
+		</static_frags_hit>
+		<cap_frags_hit x="22" y="80" width="80" height="8">
+			<text font="letterica16" r="124" g="119" b="115" align="l">st_grenade_frags_hit</text>
+		</cap_frags_hit>
+		
+		<value_blast_hit x="130" y="8" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_blast_hit>
+		<value_blast_radius x="130" y="26" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_blast_radius>
+		<value_frags_count x="130" y="44" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_frags_count>
+		<value_frags_radius x="130" y="62" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_frags_radius>
+		<value_frags_hit x="130" y="80" width="10" height="8">
+			<text font="letterica16" align="l"/>
+		</value_frags_hit>
+	</grenade_params>
 
 #include "ui\af_params.xml"
 #include "ui\booster_params.xml"
