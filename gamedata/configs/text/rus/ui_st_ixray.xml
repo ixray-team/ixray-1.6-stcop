@@ -442,4 +442,19 @@
 	<string id="st_ui_settings">
 		<text>Интерфейс</text>
 	</string>
+	<string id="st_grenade_blast_hit">
+		<text>Урон от взрыва</text>
+	</string>
+	<string id="st_grenade_blast_radius">
+		<text>Радиус взрыва</text>
+	</string>
+	<string id="st_grenade_frags_count">
+		<text>Кол-во осколков</text>
+	</string>
+	<string id="st_grenade_frags_radius">
+		<text>Разброс осколков</text>
+	</string>
+	<string id="st_grenade_frags_hit">
+		<text>Урон от осколков</text>
+	</string>
 </string_table>
