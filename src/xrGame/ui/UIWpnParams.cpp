@@ -109,6 +109,8 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc)
 			m_stAmmoType1 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type1", this);
 		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type2"))
 			m_stAmmoType2 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type2", this);
+		if (xml_doc.NavigateToNode("wpn_params:static_ammo_type3"))
+			m_stAmmoType3 = UIHelper::CreateStatic(xml_doc, "wpn_params:static_ammo_type3", this);
 	}
 
 }
@@ -239,6 +241,32 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 				m_stAmmoType2->SetStretchTexture(true);
 				m_stAmmoType2->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / scaleIcon, (tex_rect.y2 - tex_rect.y1) / scaleIcon));
 
+			}
+			
+			bool enable_ammo_type_3 = ammo_types.size() > 2;
+			if (m_stAmmoType3)
+				m_stAmmoType3->Show(enable_ammo_type_3);
+
+			if (enable_ammo_type_3 && m_stAmmoType3)
+			{
+				Frect tex_rect = {};
+
+				const char* icons_texture1 = nullptr; // St4lker0k765: small hack for weapons with only 1 ammo type (like BM-16 in vanilla CoP)
+				if (ammo_types.size() >= 3)
+					icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[2].c_str(), "icons_texture", nullptr);
+
+				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "inv_scale", 1.0f);
+				m_stAmmoType3->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
+				tex_rect.x1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.rb.add(tex_rect.lt);
+				m_stAmmoType3->SetTextureRect(tex_rect);
+				m_stAmmoType3->TextureOn();
+				m_stAmmoType3->SetStretchTexture(true);
+
+				m_stAmmoType3->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / scaleIcon, (tex_rect.y2 - tex_rect.y1) / scaleIcon));
 			}
 		}
 	}

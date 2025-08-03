@@ -119,6 +119,7 @@
 		</cap_ammo_used_type>
 	    <static_ammo_type1 x="12" y="117" width="80" height="40" />
 	    <static_ammo_type2 x="84" y="117" width="80" height="40" />
+	    <static_ammo_type3 x="156" y="117" width="80" height="40" />
 	</wpn_params>
 
 	<knife_params x="0" y="0" width="212" height="70">
