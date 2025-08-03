@@ -45,6 +45,7 @@ protected:
 	CUITextWnd*				m_textAmmoCount2;
 	CUIStatic*				m_stAmmoType1;
 	CUIStatic*				m_stAmmoType2;
+	CUIStatic*				m_stAmmoType3;
 	CUIStatic*				m_Prop_line;
 };
 
