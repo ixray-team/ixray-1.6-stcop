@@ -59,6 +59,7 @@ public:
 	CUIStatic* UIOthersIcon;
 	CUICharacterInfo	UICharacterInfoLeft;
 	CUICharacterInfo	UICharacterInfoRight;
+	bool				swapCharacterNames = false;
 
 	void				AddQuestion			(LPCSTR str, LPCSTR value, int number, SPhraseInfo &phInfo);
 	void				AddAnswer			(LPCSTR SpeakerName, const char* str, bool bActor);

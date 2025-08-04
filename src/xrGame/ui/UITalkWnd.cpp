@@ -90,16 +90,16 @@ void CUITalkWnd::InitTalkDialog()
 	//имена собеседников
 	if (UITalkDialogWnd->UIDialogFrameTop)
 		UITalkDialogWnd->UIDialogFrameTop->SetTextIfNodeExist(m_pOthersInvOwner->Name());
-	else
+	else if (UITalkDialogWnd->UIDialogFrame)
 		UITalkDialogWnd->UIDialogFrame->UITitleText.SetTextIfNodeExist(m_pOthersInvOwner->Name());
 
 	if (UITalkDialogWnd->UIDialogFrameBottom)
 		UITalkDialogWnd->UIDialogFrameBottom->SetTextIfNodeExist(m_pOurInvOwner->Name());
-	else
+	else if (UITalkDialogWnd->UIOurPhrasesFrame)
 		UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetTextIfNodeExist(m_pOurInvOwner->Name());
 
-	bool swapCharacterNames = !&CurrentGameUI()->ActorMenu();
-	if (swapCharacterNames)
+	UITalkDialogWnd->swapCharacterNames = !&CurrentGameUI()->ActorMenu();
+	if (UITalkDialogWnd->swapCharacterNames)
 	{
 		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOurInvOwner);
 		UITalkDialogWnd->UICharacterInfoLeft.InitCharacter(m_pOthersInvOwner);
