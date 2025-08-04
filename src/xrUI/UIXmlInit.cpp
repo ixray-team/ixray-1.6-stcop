@@ -175,7 +175,7 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* 
 	pWnd->InitSVG(xml_doc, path, index);
 
 	string256			buf;
-	InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
+	pWnd->m_text_control_exists	= InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
 	InitTexture			(xml_doc, path, index, pWnd);
 	InitTextureOffset	(xml_doc,path,index,pWnd);
 
