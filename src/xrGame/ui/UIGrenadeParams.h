@@ -24,6 +24,7 @@ public:
 	bool 					Check				(CInventoryItem& cur_wpn);
 
 protected:
+	bool					initialized = false;
 	CUIStatic*				m_iconBlastHit = nullptr;
 	CUIStatic*				m_iconBlastRadius = nullptr;
 	CUIStatic*				m_iconFragsCount = nullptr;
