@@ -13,12 +13,27 @@
 #include "UIHelperGame.h"
 #include "UITeamPanels.h"
 #include "object_broker.h"
+#include "../../xrUI/Widgets/UIMultiTextStatic.h"
+#include "../../xrUI/UIFontDefines.h"
+
+#define MSGS_OFFS 510
+#define TEAM_PANELS_TDM_XML_NAME "ui_team_panels_tdm.xml"
+
+#define BUY_MSG_COLOR		0xffffff00
+#define SCORE_MSG_COLOR		0xffffffff
+#define REINFORCEMENT_MSG_COLOR		0xff8080ff
+#define TODO_MSG_COLOR		0xff00ff00
+
+#define DI2PX(x) float(iFloor((x+1)*float(UI_BASE_WIDTH)*0.5f))
+#define DI2PY(y) float(iFloor((y+1)*float(UI_BASE_HEIGHT)*0.5f))
+#define SZ(x) x*UI_BASE_WIDTH
 
 #define TEAM_PANELS_AHUNT_XML_NAME "ui_team_panels_ahunt.xml"
 
 CUIGameAHunt::CUIGameAHunt()
 :m_game(nullptr),m_pBuySpawnMsgBox(nullptr)
 {
+	m_buy_msg_caption = nullptr;
 }
 
 void CUIGameAHunt::Init	(int stage)
@@ -26,13 +41,22 @@ void CUIGameAHunt::Init	(int stage)
 	if(stage==0)
 	{ // shared
 		inherited::Init					(stage);
-		m_buy_msg_caption				= UIHelper::CreateStatic(*m_msgs_xml, "mp_ah_buy", m_window);
+		if (m_msgs_xml->NavigateToNode("mp_ah_buy"))
+			m_buy_msg_caption			= UIHelper::CreateStatic(*m_msgs_xml, "mp_ah_buy", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_buy_msg_caption_legacy, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, BUY_MSG_COLOR, "");
+		}
 	}
 	if(stage==1)
 	{ //unique
-		m_pTeamPanels->Init				(TEAM_PANELS_AHUNT_XML_NAME, "team_panels_wnd");
-
 		CUIXml							uiXml;
+		if (uiXml.Load(CONFIG_PATH, UI_PATH, TEAM_PANELS_AHUNT_XML_NAME))
+		{
+			m_pTeamPanels = new UITeamPanels();
+			m_pTeamPanels->Init(TEAM_PANELS_AHUNT_XML_NAME, "team_panels_wnd");
+		}
+
 		uiXml.Load						(CONFIG_PATH, UI_PATH, "ui_game_ahunt.xml");
 
 		CUIXmlInit::InitWindow			(uiXml, "global", 0,		m_window);
@@ -95,7 +119,10 @@ void CUIGameAHunt::SetClGame (game_cl_GameState* g)
 
 void CUIGameAHunt::SetBuyMsgCaption(LPCSTR str)
 {
-	m_buy_msg_caption->SetTextST(str);
+	if (m_buy_msg_caption)
+		m_buy_msg_caption->SetTextST(str);
+	else
+		GameCaptions()->setCaption(m_buy_msg_caption_legacy, str, BUY_MSG_COLOR, true);
 }
 
 void CUIGameAHunt::Render()

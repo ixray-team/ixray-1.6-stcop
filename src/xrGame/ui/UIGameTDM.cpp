@@ -8,18 +8,30 @@
 #include "ui/TeamInfo.h"
 
 #include "object_broker.h"
-
+#include "../../xrUI/UIHelper.h"
 #include "UITeamPanels.h"
 #include "ui/UIMoneyIndicator.h"
 #include "ui/UIRankIndicator.h"
+#include "../../xrUI/Widgets/UIMultiTextStatic.h"
+#include "../../xrUI/UIFontDefines.h"
 
 #define MSGS_OFFS 510
 #define TEAM_PANELS_TDM_XML_NAME "ui_team_panels_tdm.xml"
+
+#define BUY_MSG_COLOR		0xffffff00
+#define SCORE_MSG_COLOR		0xffffffff
+#define REINFORCEMENT_MSG_COLOR		0xff8080ff
+#define TODO_MSG_COLOR		0xff00ff00
+
+#define DI2PX(x) float(iFloor((x+1)*float(UI_BASE_WIDTH)*0.5f))
+#define DI2PY(y) float(iFloor((y+1)*float(UI_BASE_HEIGHT)*0.5f))
+#define SZ(x) x*UI_BASE_WIDTH
 
 //--------------------------------------------------------------------
 CUIGameTDM::CUIGameTDM()
 :m_game(nullptr)
 {
+	m_buy_msg_caption = nullptr;
 }
 
 void CUIGameTDM::SetClGame (game_cl_GameState* g)
@@ -40,20 +52,33 @@ void CUIGameTDM::Init (int stage)
 		m_team1_score->SetAutoDelete	(true);
 		m_team2_score					= new CUIStatic();
 		m_team2_score->SetAutoDelete	(true);
-		m_buy_msg_caption				= new CUIStatic();
-		m_buy_msg_caption->SetAutoDelete(true);
 
 		inherited::Init					(stage);
-		CUIXmlInit::InitStatic			(*m_msgs_xml, "mp_tdm_buy",0,		m_buy_msg_caption);
+
+		if (m_msgs_xml->NavigateToNode("mp_tdm_buy"))
+			m_buy_msg_caption				= UIHelper::CreateStatic(*m_msgs_xml, "mp_tdm_buy", m_window);
+		else
+		{
+			GameCaptions()->addCustomMessage(m_buy_msg_caption_legacy, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, BUY_MSG_COLOR, "");
+		}
 	}
 	if(stage==1)
 	{ //unique
-		m_pTeamPanels->Init				(TEAM_PANELS_TDM_XML_NAME, "team_panels_wnd");
-
-		CUIXml							uiXml, xml2;
+		CUIXml							uiXml, xml2, xml_test;
+		if (xml_test.Load(CONFIG_PATH, UI_PATH, TEAM_PANELS_TDM_XML_NAME))
+		{
+			m_pTeamPanels = new UITeamPanels();
+			m_pTeamPanels->Init(TEAM_PANELS_TDM_XML_NAME, "team_panels_wnd");
+		}
 		uiXml.Load						(CONFIG_PATH, UI_PATH, "ui_game_tdm.xml");
 
-		CUIXmlInit::InitWindow			(uiXml, "global",		0,  m_window);
+		if (uiXml.NavigateToNode("global"))
+			CUIXmlInit::InitWindow			(uiXml, "global",		0,  m_window);
+		else
+		{
+			m_window->SetWndPos(Fvector2().set(0, 0));
+			m_window->SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
+		}
 		CUIXmlInit::InitStatic			(uiXml, "team1_icon",	0,	m_team1_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team2_icon",	0,	m_team2_icon);
 		CUIXmlInit::InitStatic			(uiXml, "team1_score",	0,	m_team1_score);
@@ -68,7 +93,6 @@ void CUIGameTDM::Init (int stage)
 		inherited::Init(stage);
 		m_window->AttachChild			(m_team1_score);
 		m_window->AttachChild			(m_team2_score);
-		m_window->AttachChild			(m_buy_msg_caption);
 	}
 }
 
@@ -158,8 +182,15 @@ void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 
 void CUIGameTDM::SetBuyMsgCaption(LPCSTR str)
 {
-	if (!str)
-		m_buy_msg_caption->SetText("");
+	if (m_buy_msg_caption)
+	{
+		if (!str)
+			m_buy_msg_caption->SetText("");
+		else
+			m_buy_msg_caption->SetTextST(str);
+	}
 	else
-		m_buy_msg_caption->SetTextST(str);
+	{
+		GameCaptions()->setCaption(m_buy_msg_caption_legacy, str, BUY_MSG_COLOR, true);
+	}
 }
