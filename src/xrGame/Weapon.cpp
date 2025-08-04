@@ -4008,10 +4008,13 @@ void CWeapon::LoadCurrentScopeParams(LPCSTR section)
 		{
 			m_UIScope = new CUIStatic();
 			bool result = createWpnScopeXML();
-			if (result)
+			if (result && pWpnScopeXml->NavigateToNode(scope_tex_name.c_str()))
 				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
 			else
 			{
+				if (result)
+					Msg("! Missing scope [%s] in scopes.xml. Trying to use scope as texture.", scope_tex_name.c_str());
+
 				m_UIScope->InitTexture(scope_tex_name.c_str());
 				m_UIScope->SetStretchTexture(true);
 				m_UIScope->SetWndPos(Fvector2().set(0, 0));
