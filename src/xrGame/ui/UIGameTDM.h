@@ -30,6 +30,7 @@ protected:
 	CUIStatic*			m_team1_score;
 	CUIStatic*			m_team2_score;
 	CUIStatic*			m_buy_msg_caption;
+	shared_str			m_buy_msg_caption_legacy = "tdm_buy";
 public:
 	CUIGameTDM			();
 	virtual 			~CUIGameTDM				();
