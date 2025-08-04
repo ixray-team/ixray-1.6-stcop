@@ -17,15 +17,8 @@ void RenderActorInfos()
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::ActorInfos)])
 		return;
 
-	if (g_pIGameActor == nullptr) {
-		return;
-	}
-
-	if (g_pGameLevel == nullptr) {
-		return;
-	}
-
-	if (!g_pGameLevel->bReady) {
+	if (!g_pIGameActor || !(g_pGameLevel && g_pGameLevel->bReady))
+	{
 		return;
 	}
 
@@ -34,7 +27,7 @@ void RenderActorInfos()
 		return;
 	}
 
-	const auto& Data = g_pIGameActor->GetKnowedPortions();
+	const auto& Data = g_pIGameActor->GetKnownPortions();
 
 	static char buffer[128]{};
 	ImGui::Text("Filter:");
@@ -69,8 +62,69 @@ void RenderActorInfos()
 
 		if (is_need_to_show)
 		{
-			if (ImGui::Button(Str.c_str())) {
+			if (ImGui::Button(Str.c_str())) 
+			{
 				g_pIGameActor->DisableInfoPortion(Str.c_str());
+			}
+			if (ImGui::IsItemHovered())
+			{
+				xr_string hint = "";
+
+				auto dialogsVec = g_pIGameActor->GetKnownPortionDialogs(Str.c_str());
+				if (dialogsVec.size())
+					hint += "Dialogs:";
+
+				for (const auto& dialogStr : dialogsVec)
+				{
+					hint += "\n";
+					hint += dialogStr;
+				}
+
+				auto disablePortionsVec = g_pIGameActor->GetKnownPortionDisable(Str.c_str());
+				if (disablePortionsVec.size())
+					hint += "Disables portions:";
+
+				for (const auto& disablePortion : disablePortionsVec)
+				{
+					hint += "\n";
+					hint += disablePortion;
+				}
+
+				auto articlesVec = g_pIGameActor->GetKnownPortionArticles(Str.c_str());
+				if (articlesVec.size())
+					hint += "Articles:";
+
+				for (const auto& articleStr : articlesVec)
+				{
+					hint += "\n";
+					hint += articleStr;
+				}
+				
+				auto articlesDisableVec = g_pIGameActor->GetKnownPortionArticlesDisable(Str.c_str());
+				if (articlesDisableVec.size())
+					hint += "Disables articles:";
+
+				for (const auto& articleDisableStr : articlesDisableVec)
+				{
+					hint += "\n";
+					hint += articleDisableStr;
+				}
+
+				auto tasksVec = g_pIGameActor->GetKnownPortionTasks(Str.c_str());
+				if (tasksVec.size())
+					hint += "Tasks:";
+
+				for (const auto& taskStr : tasksVec)
+				{
+					hint += "\n";
+					hint += taskStr;
+				}
+
+				if (hint.empty())
+					hint = "No properties for this info portion";
+
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				ImGui::SetTooltip(hint.c_str());
 			}
 		}
 	}
