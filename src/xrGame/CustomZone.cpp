@@ -273,9 +273,9 @@ void CCustomZone::Load(LPCSTR section)
 		LPCSTR light_anim		= pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim			= LALib.FindItem(light_anim);
 		m_fIdleLightHeight		= pSettings->r_float(section,"idle_light_height");
-		m_zone_flags.set(eIdleLightVolumetric,pSettings->r_bool (section, "idle_light_volumetric") );
-		m_zone_flags.set(eIdleLightShadow,pSettings->r_bool (section, "idle_light_shadow") );
-		m_zone_flags.set(eIdleLightR1,pSettings->r_bool (section, "idle_light_r1") );
+		m_zone_flags.set(eIdleLightVolumetric,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false) );
+		m_zone_flags.set(eIdleLightShadow,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true) );
+		m_zone_flags.set(eIdleLightR1,READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", true) );
 	}
 
 	bool use = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_secondary_hit", false);
