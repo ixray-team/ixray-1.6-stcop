@@ -38,4 +38,5 @@ public:
 
 protected:
 	CUIStatic*	m_buy_msg_caption;
+	shared_str	m_buy_msg_caption_legacy = "ah_buy";
 };
