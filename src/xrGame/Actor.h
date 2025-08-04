@@ -108,7 +108,12 @@ public:
 	virtual CPHDestroyable*				ph_destroyable				()						;
 			CHolderCustom*				Holder						()						{return m_holder;}
 public:
-	virtual xr_vector<xr_string>		GetKnowedPortions() const ;
+	virtual xr_vector<xr_string>		GetKnownPortions() const ;
+	virtual xr_vector<xr_string>		GetKnownPortionDialogs(shared_str id) const ;
+	virtual xr_vector<xr_string>		GetKnownPortionDisable(shared_str id) const;
+	virtual xr_vector<xr_string>		GetKnownPortionArticles(shared_str id) const;
+	virtual xr_vector<xr_string>		GetKnownPortionArticlesDisable(shared_str id) const;
+	virtual xr_vector<xr_string>		GetKnownPortionTasks(shared_str id) const;
 	virtual void						Load				( LPCSTR section );
 
 	virtual void						shedule_Update		( u32 T );
