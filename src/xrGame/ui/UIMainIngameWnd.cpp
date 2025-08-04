@@ -92,6 +92,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIStarvationIcon			= nullptr;
 	UIRadiaitionIcon			= nullptr;
 	UIWoundIcon					= nullptr;
+	UIPdaOnline					= nullptr;
 	UIStackPanelBoosters		= nullptr;
 	UIStackPanelIndicators		= nullptr;
 	m_ind_bleeding_svg_inited = false;
