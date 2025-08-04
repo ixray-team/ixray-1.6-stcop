@@ -381,3 +381,16 @@ CGameFont* CUIStatic::GetFont()
 {
 	return TextItemControl()->GetFont();
 }
+
+void CUIStatic::SetText(LPCSTR txt)
+{
+	TextItemControl()->SetText(txt); 
+}
+
+void CUIStatic::SetTextIfNodeExist(LPCSTR txt)
+{
+	if (!m_text_control_exists)
+		return;
+
+	TextItemControl()->SetText(txt);
+}
