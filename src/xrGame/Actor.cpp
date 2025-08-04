@@ -27,6 +27,7 @@
 #include "Grenade.h"
 #include "Torch.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "InfoPortion.h"
 
 // breakpoints
 #include "../xrEngine/xr_input.h"
@@ -297,7 +298,7 @@ void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
 	mc.SetBox		(box_num,bb);
 }
 
-xr_vector<xr_string> CActor::GetKnowedPortions() const
+xr_vector<xr_string> CActor::GetKnownPortions() const
 {
 	static xr_vector<xr_string> SafeVector;
 	SafeVector.clear();
@@ -311,6 +312,116 @@ xr_vector<xr_string> CActor::GetKnowedPortions() const
 	for (auto& Info : *KnownInfos)
 	{
 		SafeVector.push_back(Info.info_id.c_str());
+	}
+
+	return SafeVector;
+}
+
+xr_vector<xr_string> CActor::GetKnownPortionDialogs(shared_str id) const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	CInfoPortion infoPortion;
+	infoPortion.Load(id);
+
+	auto KnownDialogs = infoPortion.DialogNames();
+
+	if (KnownDialogs.empty()) {
+		return {};
+	}
+
+	for (auto Dialog : KnownDialogs)
+	{
+		SafeVector.push_back(Dialog.c_str());
+	}
+
+	return SafeVector;
+}
+
+xr_vector<xr_string> CActor::GetKnownPortionDisable(shared_str id) const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	CInfoPortion infoPortion;
+	infoPortion.Load(id);
+
+	auto disableInfos = infoPortion.DisableInfos();
+
+	if (disableInfos.empty()) {
+		return {};
+	}
+
+	for (auto Info : disableInfos)
+	{
+		SafeVector.push_back(Info.c_str());
+	}
+
+	return SafeVector;
+}
+
+xr_vector<xr_string> CActor::GetKnownPortionArticles(shared_str id) const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	CInfoPortion infoPortion;
+	infoPortion.Load(id);
+
+	auto KnownArticles = infoPortion.Articles();
+
+	if (KnownArticles.empty()) {
+		return {};
+	}
+
+	for (auto Article : KnownArticles)
+	{
+		SafeVector.push_back(Article.c_str());
+	}
+
+	return SafeVector;
+}
+
+xr_vector<xr_string> CActor::GetKnownPortionArticlesDisable(shared_str id) const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	CInfoPortion infoPortion;
+	infoPortion.Load(id);
+
+	auto KnownArticlesDisable = infoPortion.ArticlesDisable();
+
+	if (KnownArticlesDisable.empty()) {
+		return {};
+	}
+
+	for (auto ArticleDisable : KnownArticlesDisable)
+	{
+		SafeVector.push_back(ArticleDisable.c_str());
+	}
+
+	return SafeVector;
+}
+
+xr_vector<xr_string> CActor::GetKnownPortionTasks(shared_str id) const
+{
+	static xr_vector<xr_string> SafeVector;
+	SafeVector.clear();
+
+	CInfoPortion infoPortion;
+	infoPortion.Load(id);
+
+	auto KnownTasks = infoPortion.GameTasks();
+
+	if (KnownTasks.empty()) {
+		return {};
+	}
+
+	for (auto Task : KnownTasks)
+	{
+		SafeVector.push_back(Task.c_str());
 	}
 
 	return SafeVector;

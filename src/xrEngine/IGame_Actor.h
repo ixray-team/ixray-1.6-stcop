@@ -7,7 +7,12 @@ class IGame_Actor:
 	public IInputReceiver
 {
 public:
-	virtual xr_vector<xr_string> GetKnowedPortions() const = 0;
+	virtual xr_vector<xr_string> GetKnownPortions() const = 0;
+	virtual xr_vector<xr_string> GetKnownPortionDialogs(shared_str id) const = 0;
+	virtual xr_vector<xr_string> GetKnownPortionDisable(shared_str id) const = 0;
+	virtual xr_vector<xr_string> GetKnownPortionArticles(shared_str id) const = 0;
+	virtual xr_vector<xr_string> GetKnownPortionArticlesDisable(shared_str id) const = 0;
+	virtual xr_vector<xr_string> GetKnownPortionTasks(shared_str id) const = 0;
 
 	virtual void GiveInfoPortion(const char* infoPortion) = 0;
 	virtual void DisableInfoPortion(const char* info_id) = 0;
