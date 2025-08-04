@@ -50,10 +50,14 @@ void CUIGrenadeParams::InitFromXml(CUIXml& xml_doc)
 	m_textFragsCount				= UIHelper::CreateStatic(xml_doc, "grenade_params:value_frags_count", this);
 	m_textFragsRadius				= UIHelper::CreateStatic(xml_doc, "grenade_params:value_frags_radius", this);
 	m_textFragsHit					= UIHelper::CreateStatic(xml_doc, "grenade_params:value_frags_hit", this);
+	initialized = true;
 }
 
 void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 {
+	if (!initialized)
+		return;
+
 	LPCSTR cur_section = cur_wpn.object().cNameSect().c_str();
 	string2048 str_upgrades;
 	str_upgrades[0] = 0;
