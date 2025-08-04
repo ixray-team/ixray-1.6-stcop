@@ -319,14 +319,16 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	news_data.news_text	= res.c_str();
 
 	news_data.m_type				= GAME_NEWS_DATA::eTalk;
-	CUICharacterInfo& ci			= bActor ? UICharacterInfoLeft : UICharacterInfoRight; 
+	CUICharacterInfo* ci			= bActor ? &UICharacterInfoLeft : &UICharacterInfoRight; 
+	if (swapCharacterNames)
+		ci = bActor ? &UICharacterInfoRight : &UICharacterInfoLeft;
 
-	news_data.texture_name			= ci.IconName();
+	news_data.texture_name			= ci->IconName();
 
 	Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
 	if (!news_data.tex_rect.cmp(emptyRect))
 	{
-		news_data.tex_rect = ci.UIIcon().GetUIStaticItem().GetTextureRect();
+		news_data.tex_rect = ci->UIIcon().GetUIStaticItem().GetTextureRect();
 		news_data.tex_rect.x2 = news_data.tex_rect.width();
 		news_data.tex_rect.y2 = news_data.tex_rect.height();
 	}
