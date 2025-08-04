@@ -46,7 +46,8 @@ public:
 	virtual void			OnFocusLost				();
 	bool InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name) override;
 	virtual pcstr GetText() { return TextItemControl()->GetText(); }
-	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
+	virtual void SetText(LPCSTR txt);
+			void SetTextIfNodeExist(LPCSTR txt);
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) override;
@@ -158,6 +159,7 @@ protected:
 	float			m_fHeading;
 
 	Fvector2		m_TextureOffset;
+	bool			m_text_control_exists;
 
 public:
 	CUILines*		TextItemControl						();
