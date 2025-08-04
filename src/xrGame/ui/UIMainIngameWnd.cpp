@@ -92,6 +92,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIStarvationIcon			= nullptr;
 	UIRadiaitionIcon			= nullptr;
 	UIWoundIcon					= nullptr;
+	UIPdaOnline					= nullptr;
 	m_ind_bleeding_svg_inited = false;
 	m_ind_weapon_broken_svg_inited = false;
 	m_ind_helmet_broken_svg_inited = false;
