@@ -232,9 +232,9 @@
 	<!-- partner  -->
 	<left_delimiter x="102" y="226" width="273" height="163" stretch="1">
 		<texture>ui_inGame2_center_trade_devider</texture>
-		<trade_caption x="118" y="74" width="48" height="16">
+		<!--trade_caption x="123" y="74" width="48" height="16">
 			<text align="l" font="letterica16" color="ui_3">ui_total_price</text>
-		</trade_caption>
+		</trade_caption-->
 		<trade_price x="166" y="74" width="13" height="16">
 			<text align="l" font="letterica16"/>
 		</trade_price>
@@ -245,9 +245,9 @@
 	<!-- actor -->
 	<right_delimiter x="648" y="226" width="273" height="163" stretch="1">
 	    <texture>ui_inGame2_center_trade_devider</texture>
-	    <trade_caption x="118" y="74" width="48" height="16">
+	    <!--trade_caption x="123" y="74" width="48" height="16">
 	    	<text align="r" font="letterica16" color="ui_3">ui_total_price</text>
-	    </trade_caption>
+	    </trade_caption-->
 	    <trade_price x="166" y="74" width="40" height="16">
 		    <text align="c" font="letterica16"/>
 	    </trade_price>
