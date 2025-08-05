@@ -427,9 +427,7 @@ ENGINE_API void EngineLoadStage2()
 	damn_keys_filter filter;
 	(void)filter;
 
-	FPU::m24r();
 	InitEngine();
-
 	InitInput();
 
 	g_pStringTable = new CStringTable();
