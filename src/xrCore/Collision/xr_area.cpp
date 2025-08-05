@@ -115,11 +115,6 @@ void CObjectSpace::Load(IReader* F, CDB::build_callback build_callback)
 	}
 	else
 	{
-		if (pReaderCache != nullptr)
-		{
-			FS.r_close(pReaderCache);
-		}
-
 		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
 		pWriterCache->w_u32(crc);
 		Create(verts, tris, H, build_callback, pWriterCache, false);

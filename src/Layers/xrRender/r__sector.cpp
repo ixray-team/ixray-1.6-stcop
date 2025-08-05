@@ -36,43 +36,38 @@ void CPortal::OnRender	()
 }
 #endif
 //
-void	CPortal::Setup	(Fvector* V, int vcnt, CSector* face, CSector* back)
+void CPortal::Setup(Fvector* V, int vcnt, CSector* face, CSector* back)
 {
 	// calc sphere
-	Fbox				BB;
-	BB.invalidate		();
-	for (int v=0; v<vcnt; v++)
-		BB.modify		(V[v]);
-	BB.getsphere		(S.P,S.R);
+	Fbox BB;
+	BB.invalidate();
+	for (int v = 0; v < vcnt; v++)
+		BB.modify(V[v]);
+	BB.getsphere(S.P, S.R);
 
 	// 
-	poly.assign			(V,vcnt);
-	pFace				= face; 
-	pBack				= back;
-	marker				= 0xffffffff; 
+	poly.assign(V, vcnt);
+	pFace = face;
+	pBack = back;
+	marker = 0xffffffff;
 
-	Fvector				N,T;
-	N.set				(0,0,0);
+	Fvector N, T;
 
-	FPU::m64r();
-	u32	_cnt			= 0;
-	for (int i=2; i<vcnt; i++) {
-		T.mknormal_non_normalized		(poly[0],poly[i-1],poly[i]);
-		float		m	= T.magnitude	();
-		if (m>EPS_S)	{
-			N.add		(T.div(m))	;
-			_cnt		++			;
+	u32	_cnt = 0;
+	for (int i = 2; i < vcnt; i++)
+	{
+		T.mknormal_non_normalized(poly[0], poly[i - 1], poly[i]);
+		float m = T.magnitude();
+		if (m > EPS_S)
+		{
+			N.add(T.div(m));
+			_cnt++;
 		}
 	}
-	R_ASSERT2	(_cnt, "Invalid portal detected");
-	N.div		(float(_cnt));
-	P.build		(poly[0],N);
-	FPU::m24r	();
 
-	/*
-	if (_abs(1-P.n.magnitude())<EPS)
-	Debug.fatal		(DEBUG_INFO,"Degenerated portal found at {%3.2f,%3.2f,%3.2f}.",VPUSH(poly[0]));
-	*/
+	R_ASSERT2(_cnt, "Invalid portal detected");
+	N.div(float(_cnt));
+	P.build(poly[0], N);
 }
 
 //
