@@ -22,6 +22,7 @@ class XRLC_LIGHT_API CDeflector
 {
 
 public:
+	xrCriticalSection csDefl;
 	bool ApplyLmap = false;
 	bool ApplyEdge = false;
 	bool ApplyResolution = false;
@@ -37,7 +38,7 @@ public:
 	Fsphere				Sphere;
 
 	// se7kills Освещение на GPU
-	xr_hash_map<size_t, base_color_c>		def_color_map;
+	xr_concurrent_unordered_map<size_t, base_color_c>		def_color_map;
 	xr_hash_map<size_t, u8>					def_FacesCount;
 	 
 
