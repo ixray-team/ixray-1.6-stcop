@@ -249,13 +249,17 @@ void CDeflector::ApplyColors()
 
 void CDeflector::ApplyColor(size_t key, base_color_c& C)
 {
-	lm_layer& lm = layer;
- 	u32 U = GPUTaskinSystem.GetU(key);
-	u32 V = GPUTaskinSystem.GetV(key);
- 	def_color_map[key].add(C); 	 
- 
-	if (ColorsRecvested != 0 && ColorsRecvested == ColorsApply)
-		ApplyColors();
+ 	lm_layer& lm = layer;
+ 	u32 U		 = GPUTaskinSystem.GetU(key);
+	u32 V		 = GPUTaskinSystem.GetV(key);
+ 	
+	def_color_map[key].add(C); 	 
+	// if (ColorsRecvested != 0 && ColorsRecvested == ColorsApply)
+	// {
+	// 	csDefl.Enter();
+	// 	ApplyColors();
+	// 	csDefl.Leave();
+	// }
 }
 
 // Перерасчет в более сжатый формат
