@@ -535,9 +535,6 @@ void CAgentEnemyManager::assign_wounded			()
 		}
 #endif
 
-//		VERIFY						(enemy);
-//		VERIFY						(processor);
-		
 		// this situation is possible
 		// for example
 		// 2 soldiers in group
@@ -558,8 +555,6 @@ void CAgentEnemyManager::assign_wounded			()
 		if (!enemy)
 			return;
 
-//		Msg							("wounded enemy [%s] is assigned to member [%s]",*enemy->m_object->cName(),*processor->cName());
-
 		if (wounded_processor(enemy->m_object) == ALife::_OBJECT_ID(-1))
 			wounded_processor		(enemy->m_object,processor->ID());
 
@@ -568,12 +563,6 @@ void CAgentEnemyManager::assign_wounded			()
 		VERIFY						((assigned | mask) != assigned);
 		assigned					|= mask;
 	}
-
-//	Msg								("[%6d] assigned = %x",Device.dwTimeGlobal,assigned);
-//	ENEMIES::iterator				I = m_enemies.begin();
-//	ENEMIES::iterator				E = m_enemies.end();
-//	for ( ; I != E; ++I)
-//		Msg							("[%6d] [%s] = %x",Device.dwTimeGlobal,*(*I).m_object->cName(),(*I).m_distribute_mask.get());
 }
 
 void CAgentEnemyManager::distribute_enemies		()

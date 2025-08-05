@@ -73,8 +73,6 @@ public:
 
 void	CBuild::LMapsLocal				()
 {
-		FPU::m64r		();
-		
 		mem_Compact		();
 
 		// Randomize deflectors
@@ -105,7 +103,6 @@ void CBuild::BuildAdaptiveHT()
 	if (!gCompilerMode.LC_BackingDisabled)
 	{
 		//****************************************** HEMI-Tesselate
-		FPU::m64r();
 		Phase("Adaptive HT...");
 		xrPhase_AdaptiveHT();
 	}

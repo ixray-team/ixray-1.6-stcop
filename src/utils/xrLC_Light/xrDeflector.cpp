@@ -123,7 +123,6 @@ void CDeflector::OA_Export()
 
 	// Correct normal
 	//  (semi-proportional to pixel density)
-	FPU::m64r		();
 	Fvector			tN;
 	tN.set			(0,0,0);
 	float density	= 0;

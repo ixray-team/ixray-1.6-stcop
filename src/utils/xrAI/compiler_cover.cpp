@@ -308,8 +308,6 @@ public:
 			cache.assign	(g_nodes.size()*2,rc);
 		}
 
-		FPU::m24r		();
-
 		Q.Begin			(g_nodes.size());
 		for (u32 N=Nstart; N<Nend; N++) {
 			// initialize process

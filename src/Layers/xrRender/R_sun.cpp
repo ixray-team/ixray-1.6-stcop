@@ -96,7 +96,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		// Compute volume(s) - something like a frustum for infinite directional light
 		// Also compute virtual light position and sector it is inside
 		{
-			FPU::m64r();
 			// Lets begin from base frustum
 			Fmatrix		fullxform_inv = ex_full_inverse;
 #ifdef	_DEBUG
@@ -278,9 +277,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 			fuckingsun->X.D.maxX = limit;
 			fuckingsun->X.D.minY = 0;
 			fuckingsun->X.D.maxY = limit;
-
-			// full-xform
-			FPU::m24r();
 		}
 	}
 
