@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 #include "R_Backend.h"
 
 #ifdef USE_DX11

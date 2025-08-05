@@ -1,7 +1,7 @@
 // file: D3DUtils.cpp
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include <FlexibleVertexFormat.h>
 

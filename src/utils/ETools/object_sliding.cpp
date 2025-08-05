@@ -8,7 +8,7 @@
  * "Portions Copyright (C) Tom Forsyth, 2001"
  */
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #pragma warning(push)
 #pragma warning(disable:4995)

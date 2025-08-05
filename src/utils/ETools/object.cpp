@@ -8,7 +8,7 @@
  * "Portions Copyright (C) Tom Forsyth, 2001"
  */
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "object.h"
 #include "quad.h"

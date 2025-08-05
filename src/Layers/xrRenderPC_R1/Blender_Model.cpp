@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "Blender_Model.h"
 #include "../xrRender/uber_deffer.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "../Layers/xrRenderDX9/dx9ShaderUtils.h"
 #include "render.h"

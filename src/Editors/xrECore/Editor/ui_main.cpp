@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "../xrEngine/xr_input.h"
 #include "UI_ToolsCustom.h"

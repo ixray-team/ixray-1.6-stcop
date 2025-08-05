@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 #include "../Editor/UI_MainCommand.h"
 #include "XrGameMaterialLibraryEditors.h"
 //#include "../include/xrapi/xrapi.h"

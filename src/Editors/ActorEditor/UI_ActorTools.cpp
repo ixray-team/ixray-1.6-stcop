@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
-#pragma hdrstop
+
 #define dSINGLE
 #include "../../Include/xrRender/animation_blend.h"
 #include "../../xrPhysics/Physics.h"

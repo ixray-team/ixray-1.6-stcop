@@ -2,7 +2,7 @@
 //
 #include "stdafx.h"
 #include "FormatParsers/XML/Expression.h"
-#pragma hdrstop
+
 
 #ifdef IXR_WINDOWS
 #include <mmsystem.h>

@@ -8,7 +8,7 @@
 // and may not be copied or disclosed except in accordance with the terms of
 // that agreement.
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "WmlEigen.h"
 #include "WmlMath.h"

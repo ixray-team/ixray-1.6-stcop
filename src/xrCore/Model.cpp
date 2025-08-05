@@ -7,7 +7,7 @@
 #include "stdafx.h"
 #include <string.h>
 #include "PPMd.h"
-#pragma hdrstop
+
 #include "Coder.hpp"
 #include "SubAlloc.hpp"
 

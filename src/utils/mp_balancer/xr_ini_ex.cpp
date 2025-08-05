@@ -1,5 +1,5 @@
 #include "pch.h"
-#pragma hdrstop
+
 
 #include "xr_ini_ex.h"
 #include "../../xrCore/FS_internal.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 #include <regex>
 
 #include "FS_internal.h"

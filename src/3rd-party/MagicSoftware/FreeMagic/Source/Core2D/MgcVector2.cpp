@@ -10,7 +10,7 @@
 // FREE SOURCE CODE
 // http://www.magic-software.com/License/free.pdf
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "MgcVector2.h"
 using namespace Mgc;

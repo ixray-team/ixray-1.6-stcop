@@ -8,7 +8,7 @@
 // and may not be copied or disclosed except in accordance with the terms of
 // that agreement.
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "WmlSystem.h"
 using namespace Wml;
