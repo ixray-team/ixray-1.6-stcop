@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "BlenderDefault.h"
 #include "../xrRender/uber_deffer.h"

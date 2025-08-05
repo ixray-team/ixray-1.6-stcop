@@ -1,6 +1,6 @@
 // file: targasaver.cpp
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "tga.h"
 

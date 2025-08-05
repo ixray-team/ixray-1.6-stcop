@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "UI_ActorTools.h"
 #include "../xrECore/Editor/ui_main.h"

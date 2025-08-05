@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "D3DUtils.h"
 #include "ui_main.h"

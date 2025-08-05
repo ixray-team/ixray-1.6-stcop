@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "UI_shadertools.h"
 #include "../../xrEngine/GameMtlLib.h"

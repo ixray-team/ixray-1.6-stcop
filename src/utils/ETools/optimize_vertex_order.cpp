@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "ArbitraryList.h"
 #include "BinaryHeap.h"

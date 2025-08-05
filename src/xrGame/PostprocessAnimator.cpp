@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "PostprocessAnimator.h"
 #ifndef _PP_EDITOR_

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#pragma hdrstop
+
 
 #include "memory_alloc_pure.h"
 #include "memory_alloc_xr.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "UI_Camera.h"
 #include "ui_main.h"

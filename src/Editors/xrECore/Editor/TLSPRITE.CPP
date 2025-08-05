@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "tlsprite.h"
 #include "ui_main.h"
