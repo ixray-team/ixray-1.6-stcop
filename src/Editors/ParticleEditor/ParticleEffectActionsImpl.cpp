@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "../xrECore/Editor/ParticleEffectActions.h"
 #include "../xrEProps/FolderLib.h"

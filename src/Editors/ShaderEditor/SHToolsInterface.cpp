@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "SHToolsInterface.h"
 #include "../xrEProps/FolderLib.h"

@@ -3,7 +3,7 @@
 //----------------------------------------------------
                 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "EditMesh.h"
 #include "EditObject.h"

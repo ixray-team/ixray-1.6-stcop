@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "../xrSound/ai_sounds.h"
 

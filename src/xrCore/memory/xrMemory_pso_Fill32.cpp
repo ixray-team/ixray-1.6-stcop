@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 void  xrMemFill32_x86(LPVOID dest, size_t value, size_t count)
 {

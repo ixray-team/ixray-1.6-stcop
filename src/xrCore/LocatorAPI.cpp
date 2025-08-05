@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include <fstream>
-#pragma hdrstop
+
 
 #include "FS_internal.h"
 #include "stream_reader.h"

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "UI_ToolsCustom.h"
 #include "EditObject.h"
