@@ -7,7 +7,6 @@ void CThread::startup(void* P)
 	CThread* T = (CThread*)P;
 
 	if (T->thMessages)	clMsg("* THREAD #%d: Started.", T->thID);
-	FPU::m64r();
 
 	DWORD_PTR affinityMask = 1ull << T->thID;
 	HANDLE threadHandle = Platform::GetCurrentThread();

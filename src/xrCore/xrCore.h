@@ -4,14 +4,10 @@
 #include "Platform/Platform.h"
 
 // Our headers
-#ifdef XRCORE_STATIC
-#	define XRCORE_API
+#ifdef XRCORE_EXPORTS
+#	define XRCORE_API __declspec(dllexport)
 #else
-#	ifdef XRCORE_EXPORTS
-#		define XRCORE_API __declspec(dllexport)
-#	else
-#		define XRCORE_API __declspec(dllimport)
-#	endif
+#	define XRCORE_API __declspec(dllimport)
 #endif
 
 #define IC inline

@@ -4,10 +4,7 @@
 //	Author		: Evgeniy Sokolov
 //	Description : Camera Recoil struct
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef CAMERA_RECOIL_H_INCLUDED
-#define CAMERA_RECOIL_H_INCLUDED
-
+#pragma once
 //отдача при стрельбе
 struct CameraRecoil
 {
@@ -57,6 +54,4 @@ struct CameraRecoil
 		VERIFY( !fis_zero(MaxAngleVert)  );
 		VERIFY( !fis_zero(MaxAngleHorz)  );
 	}
-}; //struct CameraRecoil
-
-#endif // CAMERA_RECOIL_H_INCLUDED
+};

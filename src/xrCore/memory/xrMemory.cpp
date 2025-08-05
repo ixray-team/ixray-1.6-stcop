@@ -6,14 +6,13 @@
 #include "memory_alloc_xr.h"
 #include "memory_alloc_mimalloc.h"
 
-#include	"xrsharedmem.h"
-#include	"xrMemory_pure.h"
+#include "xrsharedmem.h"
 
 // HACK: ForserX: Хак для установки уровня инициализации переменной в глобальном пространстве
 #pragma section(".Hook",read)
 
-BOOL		mem_initialized	= FALSE;
-bool		shared_str_initialized	= false;
+BOOL mem_initialized	= FALSE;
+bool shared_str_initialized	= false;
 
 //fake fix of memory corruptions in multiplayer game :(
 XRCORE_API	bool g_allow_heap_min = true;

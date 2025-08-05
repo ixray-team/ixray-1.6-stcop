@@ -277,7 +277,6 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_vertex* cb_V)
 {
 	// main process
-	FPU::m64r					();
 	Status						("Tesselating...");
 	g_bUnregister				= false;
 

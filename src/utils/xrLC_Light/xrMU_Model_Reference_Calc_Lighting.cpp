@@ -134,7 +134,6 @@ void xrMU_Reference::calc_lighting()
 	// A*C + D = B
 	// build data
 	{
-		FPU::m64r();
 		xr_vector<double> A;	A.resize(color.size());
 		xr_vector<double> B;	B.resize(color.size());
 		float* _s = (float*)&c_scale;

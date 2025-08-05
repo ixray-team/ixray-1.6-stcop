@@ -257,7 +257,6 @@ void CBuild::Run(LPCSTR P)
 
 	// Collision DB
 	//should be after normals, so that double-sided faces gets separated
-	FPU::m64r();
 	Phase("Building collision database (CFORM)...");
 	mem_Compact();
 
@@ -269,7 +268,6 @@ void CBuild::Run(LPCSTR P)
 	// GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)
 	{
-		FPU::m64r();
 		Phase("Radiosity-Solver...");
 		mem_Compact();
 		Light_prepare();
@@ -288,19 +286,16 @@ void CBuild::StartMu()
 
 void CBuild::RunAfterLight(IWriter* fs)
 {
-	FPU::m64r();
 	Phase("Building tangent-basis...");
 	xrPhase_TangentBasis();
 	mem_Compact();
 
 	//****************************************** Convert to OGF
-	FPU::m64r();
 	Phase("Converting to OGFs...");
 	mem_Compact();
 	Flex2OGF();
 
 	//****************************************** Export MU-models
-	FPU::m64r();
 	Phase("Converting MU-models to OGFs...");
 	mem_Compact();
 	{
@@ -324,13 +319,11 @@ void CBuild::RunAfterLight(IWriter* fs)
 	}
 
 	//****************************************** Build sectors
-	FPU::m64r();
 	Phase("Building sectors...");
 	mem_Compact();
 	BuildSectors();
 
 	//****************************************** Saving MISC stuff
-	FPU::m64r();
 	Phase("Saving...");
 	mem_Compact();
 	SaveLights(*fs);
