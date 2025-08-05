@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 #include "../../Layers/xrRender/KinematicAnimatedDefs.h"
 #include "../../Layers/xrRender/SkeletonAnimated.h"
 //------------------------------------------------------------------------------

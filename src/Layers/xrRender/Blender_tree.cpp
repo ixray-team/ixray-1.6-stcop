@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "Blender_tree.h"
 #include "uber_deffer.h"
