@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "ExportObjectOGF.h"
 #include "EditObject.h"

@@ -1,10 +1,9 @@
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "Frustum.h"
 
 //////////////////////////////////////////////////////////////////////
-void			CFrustum::fplane::cache	()	{
+void CFrustum::fplane::cache()
+{
 	if(positive(n.x)) {
 		if(positive(n.y)) {
 			if(positive(n.z))	aabb_overlap_id	= 0;

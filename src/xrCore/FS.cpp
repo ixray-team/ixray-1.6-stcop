@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "FS_internal.h"
 #include "lzhuf.h"

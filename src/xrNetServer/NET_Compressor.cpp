@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "NET_Common.h"
 #include "NET_Compressor.h"

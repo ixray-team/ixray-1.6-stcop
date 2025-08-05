@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "../xrEngine/bone.h"
 #include "../xrEngine/envelope.h"
