@@ -17,13 +17,13 @@
 
 #include "stack_string.h"
 
-XRCORE_API		xrCore	Core;
-XRCORE_API		u32		build_id;
-XRCORE_API		LPCSTR	build_date;
+XRCORE_API xrCore	Core;
+XRCORE_API u32		build_id;
+XRCORE_API LPCSTR	build_date;
 
 namespace CPU
 {
-	extern	void			Detect	();
+	extern void Detect();
 };
 
 static u32	init_counter	= 0;
@@ -38,13 +38,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 	xr_strcpy					(ApplicationName,_ApplicationName);
 	if (0==init_counter) 
 	{
-#ifdef XRCORE_STATIC	
-		_clear87	();
-		_control87	( _PC_53,   MCW_PC );
-		_control87	( _RC_CHOP, MCW_RC );
-		_control87	( _RC_NEAR, MCW_RC );
-		_control87	( _MCW_EM,  MCW_EM );
-#endif
 		// Init COM so we can use CoCreateInstance
 #ifdef IXR_WINDOWS
         CoInitializeEx	(nullptr, COINIT_MULTITHREADED);

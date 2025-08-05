@@ -358,7 +358,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 	base_color		amount;
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
-	FPU::m64r		();
+
 	for (int x=-LIGHT_Count; x<=LIGHT_Count; x++) 
 	{
 		Fvector		P;

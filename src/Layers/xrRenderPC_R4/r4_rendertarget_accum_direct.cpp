@@ -108,23 +108,22 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		};
 
 		// compute xforms
-		FPU::m64r			();
 		Fmatrix				xf_invview;		xf_invview.invert	(Device.mView)	;
 
 		// shadow xform
-		Fmatrix				m_shadow;
+		Fmatrix m_shadow;
 		{
-			Fmatrix			xf_project;		xf_project.mul		(m_TexelAdjust,fuckingsun->X.D.combine);
-			m_shadow.mul	(xf_project,	xf_invview);
+			Fmatrix xf_project;
+			xf_project.mul(m_TexelAdjust, fuckingsun->X.D.combine);
+			m_shadow.mul(xf_project, xf_invview);
 
 			// tsm-bias
-			if ( (SE_SUN_FAR == sub_phase) && (RImplementation.o.HW_smap) )
+			if (SE_SUN_FAR == sub_phase && RImplementation.o.HW_smap)
 			{
-				Fvector		bias;	bias.mul		(L_dir,ps_r2_sun_bias);
-				Fmatrix		bias_t;	bias_t.translate(bias);
-				m_shadow.mulB_44	(bias_t);
+				Fvector bias;	bias.mul(L_dir, ps_r2_sun_bias);
+				Fmatrix bias_t;	bias_t.translate(bias);
+				m_shadow.mulB_44(bias_t);
 			}
-			FPU::m24r		();
 		}
 
 		// clouds xform
