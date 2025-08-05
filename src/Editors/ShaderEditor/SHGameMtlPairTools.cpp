@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "SHGameMtlPairTools.h"
 #include "UI_shadertools.h"

@@ -2,7 +2,7 @@
 // file: TempObject.cpp
 //----------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "PS_instance.h"
 #include "IGame_Persistent.h"

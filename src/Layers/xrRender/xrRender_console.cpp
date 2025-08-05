@@ -1,10 +1,8 @@
-#include	"stdafx.h"
-#pragma		hdrstop
+#include "stdafx.h"
+#include "xrRender_console.h"
+#include "dxRenderDeviceRender.h"
 
-#include	"xrRender_console.h"
-#include	"dxRenderDeviceRender.h"
-
-u32			ps_Preset				=	2	;
+u32 ps_Preset =	2;
 xr_token							qpreset_token							[ ]={
 	{ "Minimum",					0											},
 	{ "Low",						1											},

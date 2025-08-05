@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "CameraFirstEye.h"
 #include "../xrEngine/xr_level_controller.h"

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #pragma warning(disable:4995)
 void xrMemCopy_x86(LPVOID dest, const void* src, size_t n)

@@ -2,7 +2,7 @@
 // file: CEditableObject.cpp
 //----------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "EditObject.h"
 

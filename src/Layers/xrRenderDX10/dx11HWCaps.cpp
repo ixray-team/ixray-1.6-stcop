@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "../xrRender/HWCaps.h"
 #include "../xrRender/HW.h"

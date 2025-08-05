@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
-#pragma hdrstop
+
 #include "../xrEngine/GameFont.h"
 #include <sal.h>
 #include "ImageManager.h"

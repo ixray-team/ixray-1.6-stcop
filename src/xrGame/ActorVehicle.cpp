@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#pragma hdrstop
+
 
 #include "Actor.h"
 #include "../xrEngine/CameraBase.h"

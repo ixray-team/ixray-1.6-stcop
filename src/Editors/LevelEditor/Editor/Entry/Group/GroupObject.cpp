@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "GroupObject.h"
 #include "../../Scene/scene.h"
