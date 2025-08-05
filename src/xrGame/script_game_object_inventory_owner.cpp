@@ -2384,3 +2384,14 @@ void CScriptGameObject::SetInvulnerable(bool value)
 		Msg("! SetInvulnerable(): method applicable only for actor!");
 	}
 }
+
+void CScriptGameObject::SetFire(bool value)
+{
+	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+	{
+		pInventoryOwner->inventory().Action((u16)kWPN_FIRE, value ? CMD_START : CMD_STOP);
+		return;
+	}
+
+	Msg("! SetFire(): pInventoryOwner is nullptr!");
+}

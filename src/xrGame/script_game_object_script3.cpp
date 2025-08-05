@@ -485,5 +485,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_cutscene_visual",			&CScriptGameObject::GetCutsceneVisual)
 		.def("set_invulnerable",			&CScriptGameObject::SetInvulnerable)
 		.def("set_best_enemy",				&CScriptGameObject::SetBestEnemy)
+		.def("set_fire",					&CScriptGameObject::SetFire)
 	;
 }
