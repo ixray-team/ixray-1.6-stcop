@@ -976,6 +976,7 @@ public:
 	float GetActorPowerBoostTime();
 	LPCSTR GetCutsceneVisual();
 	void SetInvulnerable(bool value);
+	void SetFire(bool value);
 	bool GetAnimatorForceHideItems();
 	void SetAnimatorForceHideItems(bool status);
 
