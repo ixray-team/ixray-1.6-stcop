@@ -15,8 +15,8 @@ enum LGroup : u8
 };
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024	* 50			// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	1024 * 1024				    // Кол-во задач которое может обработать GPU за 1 заход
+#define MAX_RAYS_PER_TASK   1024 * 1024					// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_GPU	128  * 1024					// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
 
 // Recvest Class
 
@@ -111,6 +111,7 @@ public:
 	// tasks	
 	xr_concurrent_vector<RayRecvestIndex>																task_pools;			// BASIC UV
 
+	xrCriticalSection csEnter;
 };
 
 extern PackedLighting GPUTaskinSystem;

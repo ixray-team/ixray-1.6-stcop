@@ -79,22 +79,22 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 	GPUTaskinSystem.LightPointPackedDeflectorsRun();
 	
 	// for (auto& D : lc_global_data()->g_deflectors())
-	for (auto Dindex = Begin; Dindex < End; Dindex ++ )
+	xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
 	{
-		auto& D = lc_global_data()->g_deflectors()[Dindex];
+		auto& D = lc_global_data()->g_deflectors()[taskID];
 		if (D != nullptr)
 			D->ApplyColors();
-	}
+	});
 
  	 
 	if (Stage == 2 && !isFirst)
 	{
-		for (size_t INDEX = Begin; INDEX < End; INDEX++)
+		xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
 		{
-			auto D = lc_global_data()->g_deflectors()[INDEX];
+			auto D = lc_global_data()->g_deflectors()[taskID];
 			if (D != nullptr)
 				D->ApplyExpadBordersGPU();
-		}
+		});
   		clMsg("Deflectors: Merging lightmaps...");
 		xrPhase_MergeLM(Begin, End);
 	}
