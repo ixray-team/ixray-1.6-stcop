@@ -25,7 +25,6 @@ CUIComboBox::~CUIComboBox()
 
 void CUIComboBox::SetListLength(int length)
 {
-	R_ASSERT(0 == m_iListHeight);
 	m_iListHeight = length;
 }
 

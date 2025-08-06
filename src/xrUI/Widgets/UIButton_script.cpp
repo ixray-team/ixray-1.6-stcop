@@ -12,6 +12,26 @@
 
 using namespace luabind;
 
+void AssignProps_script_track(CUITrackBar* track, LPCSTR entry, LPCSTR group) 
+{ 
+	track->AssignProps(entry, group); 
+}
+
+void AssignProps_script_check(CUICheckButton* btn, LPCSTR entry, LPCSTR group)
+{
+	btn->AssignProps(entry, group);
+}
+
+void SetSystemDepends_script_track(CUITrackBar* track, int depend)
+{
+	track->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
+}
+
+void SetSystemDepends_script_check(CUICheckButton* btn, int depend)
+{
+	btn->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
+}
+
 #pragma optimize("s",on)
 void CUIButton::script_register(lua_State *L)
 {
@@ -32,7 +52,9 @@ void CUIButton::script_register(lua_State *L)
 		.def(							constructor<>())
 		.def("GetCheck",				&CUICheckButton::GetCheck)
 		.def("SetCheck",				&CUICheckButton::SetCheck)
-		.def("SetDependControl",		&CUICheckButton::SetDependControl),
+		.def("SetDependControl",		&CUICheckButton::SetDependControl)
+		.def("AssignProps",				&AssignProps_script_check)
+		.def("SetSystemDepends",		&SetSystemDepends_script_check),
 
 		class_<CUICustomSpin, CUIWindow>("CUICustomSpin")
 		.def("GetText",				&CUICustomSpin::GetText),
@@ -58,7 +80,13 @@ void CUIButton::script_register(lua_State *L)
 		.def("SetOptFBounds",			&CUITrackBar::SetOptFBounds)
 		.def("SetCurrentValue",			&CUITrackBar::SetCurrentOptValue)
 		.def("CurrentID",				&CUITrackBar::CurrentID)
-		.def("SetCurrentID",			&CUITrackBar::SetCurrentID),
+		.def("SetCurrentID",			&CUITrackBar::SetCurrentID)
+		.def("AssignProps",				&AssignProps_script_track)
+		.def("SetStep",					&CUITrackBar::SetStep)
+		.def("GetInvert",				&CUITrackBar::GetInvert)
+		.def("SetInvert",				&CUITrackBar::SetInvert)
+		.def("SetDrawingValue",			&CUITrackBar::SetDrawingValue)
+		.def("SetSystemDepends",		&SetSystemDepends_script_track),
 
 		class_<CUIArrowStepper, CUIWindow>("CUIArrowStepper")
 		.def(							constructor<>())
