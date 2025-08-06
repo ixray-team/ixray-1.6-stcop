@@ -14,6 +14,16 @@
 #include <luabind/luabind.hpp>
 using namespace luabind;
 
+void AssignProps_script_combo(CUIComboBox* cb, LPCSTR entry, LPCSTR group)
+{
+	cb->AssignProps(entry, group);
+}
+
+void SetSystemDepends_script_combo(CUIComboBox* cb, int depend)
+{
+	cb->SetSystemDepends((CUIOptionsItem::ESystemDepends)depend);
+}
+
 #pragma optimize("s",on)
 void CUIComboBox::script_register(lua_State *L)
 {
@@ -35,6 +45,8 @@ void CUIComboBox::script_register(lua_State *L)
 		.def("SetCurrentOptValue",	&CUIComboBox::SetCurrentOptValue)
 		.def("SetCurrentIdx",		&CUIComboBox::SetSelectedIDX)
 		.def("GetCurrentIdx",		&CUIComboBox::GetSelectedIDX)
+		.def("AssignProps",			&AssignProps_script_combo)
+		.def("SetSystemDepends",	&SetSystemDepends_script_combo)
 
 	];
 }
