@@ -425,7 +425,7 @@ void CUIRankingWnd::get_statistic()
 		if (ai().script_engine().functor("pda.get_stat", funct))
 		{
 			LPCSTR str = funct(i);
-			m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
+			//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
 			m_stat_info[i]->TextItemControl().SetColoringMode(true);
 			m_stat_info[i]->SetTextST(str);
 		}
