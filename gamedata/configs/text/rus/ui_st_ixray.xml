@@ -430,4 +430,7 @@
 	<string id="ui_mm_r2_use_rain_drops">
 		<text>Капли на стекле</text>
 	</string>
+	<string id="ui_mm_mouse_sense_ui">
+		<text>Чувствительность мыши в UI</text>
+	</string>
 </string_table>

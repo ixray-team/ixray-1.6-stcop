@@ -193,7 +193,7 @@ void CUITrackBar::UpdateText()
 {
 	CUIStatic* pUIStatic = m_pSlider->GetBtnStatic();
 	std::string out_str = "";
-	if (pUIStatic && m_b_draw_value)
+	if (m_b_draw_value)
 	{
 		switch (m_mode)
 		{
@@ -209,15 +209,19 @@ void CUITrackBar::UpdateText()
 			{
 				xr_token* tok = GetOptToken();
 				LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
-				out_str = *CStringTable().translate(cur_val);
-			}break;
+				out_str = g_pStringTable->translate(cur_val).c_str();
+			}
+			break;
 			case eTrackBarModeBool:
 			{
-				out_str = m_i_val == m_i_min ? *CStringTable().translate("st_track_opt_off") : *CStringTable().translate("st_track_opt_on");
-			}break;
+				out_str = m_i_val == m_i_min ? g_pStringTable->translate("st_track_opt_off").c_str() : g_pStringTable->translate("st_track_opt_on").c_str();
+			}
+			break;
 		}
-		pUIStatic->SetText(out_str.c_str());
 	}
+
+	if (pUIStatic)
+		pUIStatic->SetText(out_str.c_str());
 }
 
 void CUITrackBar::SetCurrentOptValue()
