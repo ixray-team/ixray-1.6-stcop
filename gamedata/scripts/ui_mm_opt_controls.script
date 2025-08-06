@@ -18,13 +18,13 @@ function opt_controls:InitControls(x, y, xml, handler)
 
 	xml:InitStatic		("tab_controls:cap_mousesens",			self)
 	xml:InitTrackBar	("tab_controls:track_mousesens",		self)
-    xml:InitStatic		("tab_controls:cap_mousesens_ui",			self)
+    xml:InitStatic		("tab_controls:cap_mousesens_ui",		self)
 	xml:InitTrackBar	("tab_controls:track_mousesens_ui",		self)
-	xml:InitFrameLine	("tab_controls:cap_keyboardsetup",		self)
 	xml:InitFrameLine	("tab_controls:cap_keyboardsetup",		self)
 	xml:InitStatic		("tab_controls:cap_check_mouseinvert",	self)
 	xml:InitCheck		("tab_controls:check_mouseinvert",		self)
 	xml:InitKeyBinding	("tab_controls:key_binding",			self)
+
 
 	local btn
 	btn = xml:Init3tButton("tab_controls:btn_default", 			self)
