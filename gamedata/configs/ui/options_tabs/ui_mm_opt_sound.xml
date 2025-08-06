@@ -1,0 +1,43 @@
+   <tab_sound>
+        <cap_mastervolume x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_master_volume</text>
+        </cap_mastervolume>
+        <track_mastervolume x="190" y="0.5" width="235" height="16" step="0.01" show_value="1">
+            <options_item entry="snd_volume_eff" group="mm_opt_sound"/>
+        </track_mastervolume>
+
+        <cap_musicvolume x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_music_volume</text>
+        </cap_musicvolume>
+        <track_musicvolume x="190" y="0.5" width="235" height="16" step="0.01" show_value="1">
+            <options_item entry="snd_volume_music" group="mm_opt_sound"/>
+        </track_musicvolume>
+
+        <cap_snd_device x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_snd_device</text>
+        </cap_snd_device>
+        <list_snd_device x="190" y="0.5" width="235" height="20" always_show_scroll="1">
+            <options_item entry="snd_device" group="mm_opt_sound" depend="restart"/>
+            <list_font r="170" g="170" b="170" font="letterica16"/>
+            <text_color>
+	            <e r="170" g="170" b="170"/>
+	            <d r="70" g="70" b="70"/>
+            </text_color>
+        </list_snd_device>
+
+        <cap_check_eax x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_eax</text>
+        </cap_check_eax>
+        <check_eax x="177" y="0.5" width="44" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="snd_efx" group="mm_opt_sound" depend="snd"/>
+        </check_eax>
+
+        <cap_check_dynamic_music x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_dynamic_music</text>
+        </cap_check_dynamic_music>
+        <check_dynamic_music x="177" y="0.5" width="44" height="29">
+	        <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="g_dynamic_music" group="mm_opt_sound" depend="snd"/>
+        </check_dynamic_music>
+    </tab_sound>

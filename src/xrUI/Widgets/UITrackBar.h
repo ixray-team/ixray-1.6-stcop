@@ -27,7 +27,7 @@ public:
 	virtual void	SaveOptValue			();	// current->opt
 	virtual void	UndoOptValue			();	// backup->current
 	virtual bool	IsChangedOptValue		() const;	// backup!=current
-	
+
 	virtual void	Draw					();
 	virtual void	Update					();
 	virtual bool	OnMouseAction			(float x, float y, EUIMessages mouse_action);

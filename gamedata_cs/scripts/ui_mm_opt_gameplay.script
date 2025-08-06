@@ -32,6 +32,19 @@ function opt_gameplay:InitControls(x, y, xml, handler)
     addControl(_st)
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_bobbing_factor", _st)
+    xml:InitTrackBar("tab_gameplay:track_bobbing_factor", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitCheck("tab_gameplay:check_hit_slowmo", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitCheck("tab_gameplay:check_wpn_aim_toggle", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
     xml:InitCheck("tab_gameplay:check_crosshair", _st)
     addControl(_st)
 
