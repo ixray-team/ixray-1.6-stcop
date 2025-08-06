@@ -14,7 +14,10 @@
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UITabControl.h"
-
+#include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UITrackBar.h"
+#include "../../xrUI/Widgets/UIComboBox.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
 #include "uiscriptwnd_script.h"
 
 using namespace luabind;
@@ -45,16 +48,18 @@ export_class script_register_ui_window1(export_class &&instance)
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
 
+		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)
 		.def("Register",		(void (BaseType::*)(CUIWindow*,LPCSTR))&BaseType::Register)
-		.def("GetStatic", (CUIStatic * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIStatic>)
-		.def("GetEditBox", (CUIEditBox * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIEditBox>)
-		.def("GetDialogWnd", (CUIDialogWnd * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIDialogWnd>)
-		.def("GetFrameWindow", (CUIFrameWindow * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIFrameWindow>)
+		.def("GetStatic",		(CUIStatic * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIStatic>)
+		.def("GetEditBox",		(CUIEditBox * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIEditBox>)
+		.def("GetDialogWnd",	(CUIDialogWnd * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIDialogWnd>)
+		.def("GetFrameWindow",	(CUIFrameWindow * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIFrameWindow>)
 		.def("GetFrameLineWnd", (CUIFrameLineWnd * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIFrameLineWnd>)
-		.def("GetProgressBar", (CUIProgressBar * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIProgressBar>)
-		.def("GetTabControl", (CUITabControl * (BaseType::*)(pcstr)) & BaseType::GetControl<CUITabControl>)
-		// XXX: ListWnd and ListBox has the same functionality but different function prototypes
-		// We should not use ListBox for CS and SOC, we should return ListWnd class
-		//.def("GetListWnd", (CUIListBox* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListBox>)
+		.def("GetProgressBar",	(CUIProgressBar * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIProgressBar>)
+		.def("GetTabControl",	(CUITabControl * (BaseType::*)(pcstr)) & BaseType::GetControl<CUITabControl>)
+		.def("GetListWnd",		(CUIListWnd* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListWnd>)
+		.def("GetTrackBar",		(CUITrackBar* (BaseType::*)(pcstr)) &BaseType::GetControl<CUITrackBar>)
+		.def("GetComboBox",		(CUIComboBox* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIComboBox>)
+		.def("GetCheck",		(CUICheckButton* (BaseType::*)(pcstr)) &BaseType::GetControl<CUICheckButton>)
 	;
 }
