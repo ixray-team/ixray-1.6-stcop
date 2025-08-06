@@ -227,7 +227,7 @@ void CUIRankingWnd::get_statistic()
 		luabind::functor<LPCSTR> funct;
 		R_ASSERT( ai().script_engine().functor("pda.get_stat", funct));
 		LPCSTR str = funct(i);
-		m_stat_info[i]->SetTextColor(color_rgba(170,170,170,255));
+		//m_stat_info[i]->SetTextColor(color_rgba(170, 170, 170, 255));
 		m_stat_info[i]->SetTextST(str);
 	}
 
