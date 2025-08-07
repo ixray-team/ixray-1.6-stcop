@@ -2036,7 +2036,7 @@ void CWeaponMagazined::PlayAnimIdle()
 
 	if (IsZoomed())
 	{
-		if (!m_bIsAimStarted && HudAnimationExist("anm_idle_aim_start"))
+		if (!m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 		{
 			m_bIsAimStarted = true;
 			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_start"), true, GetState());
@@ -2047,7 +2047,7 @@ void CWeaponMagazined::PlayAnimIdle()
 	}
 	else
 	{
-		if (m_bIsAimStarted && HudAnimationExist("anm_idle_aim_end"))
+		if (m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 		{
 			m_bIsAimStarted = false;
 			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_end"), true, GetState());

@@ -494,6 +494,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_bore, HudAnimationExist("anm_bore"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_empty_click, HudAnimationExist("anm_empty_click"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_aim_in_out, (HudAnimationExist("anm_idle_aim_start") && HudAnimationExist("anm_idle_aim_end")));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)
