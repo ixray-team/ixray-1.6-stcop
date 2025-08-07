@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIStatic.h"
+#include "../../xrScripts/script_export_space.h"
 
 class UI_API CUIArrow:
 	public CUIStatic
@@ -28,5 +29,5 @@ private:
 
 	float		m_temp_pos;
 	float		m_pos;
-
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
