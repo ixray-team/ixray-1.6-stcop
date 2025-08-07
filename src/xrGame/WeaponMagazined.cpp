@@ -2209,14 +2209,7 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 void CWeaponMagazined::OnH_A_Chield()
 {
-	if (HasFireModes())
-	{
-		SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
-	}
-	else
-	{
-		SetQueueSize(1);
-	}
+	SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
 
 	inherited::OnH_A_Chield();
 };
