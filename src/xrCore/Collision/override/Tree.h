@@ -12,7 +12,7 @@ public:
 	~CDB_OptimizeTree();
 
 	void Store(IWriter* pWriter);
-	bool Restore(CStreamReader* pReader);
+	bool Restore(IReader* pReader);
 
 	bool Build(Opcode::AABBTree* tree);
 };

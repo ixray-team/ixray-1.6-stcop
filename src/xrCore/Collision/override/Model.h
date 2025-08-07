@@ -14,7 +14,7 @@ public:
 	virtual ~CDB_Model();
 
 	void Store(IWriter* pWriter);
-	bool Restore(CStreamReader* pReader);
+	bool Restore(IReader* pReader);
 
 	// Overload for using CDB_OptimizeTree into Build Model 
 	bool Build(const Opcode::OPCODECREATE& create);

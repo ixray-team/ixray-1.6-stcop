@@ -124,7 +124,7 @@ void CHOM::Load()
 	// Make cache
 	string_path LevelName;
 	xr_strconcat(LevelName, "level_cache\\", FS.get_path("$level$")->m_Add, "HOM.cache");
-	CStreamReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
+	IReader* pReaderCache = CDB::GetModelCache(LevelName, crc);
 
 	// Create AABB-tree
 	m_pModel = new CDB::MODEL();

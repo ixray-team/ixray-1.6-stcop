@@ -87,7 +87,7 @@ namespace CDB
 	typedef void build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
 	// Model definition
-	XRCORE_API CStreamReader* GetModelCache(string_path Name, u32 crc);
+	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
 	
 	class XRCORE_API MODEL
 	{
