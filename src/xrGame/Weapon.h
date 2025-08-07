@@ -374,7 +374,7 @@ public:
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_zoom_params.m_fZoomRotationFactor<1.f);}
 
-	virtual	u8				GetCurrentHudOffsetIdx ();
+	u8 GetCurrentHudOffsetIdx() const;
 
 	virtual float				Weight			() const;		
 	virtual	u32					Cost			() const;
@@ -419,8 +419,6 @@ protected:
 	virtual void UpdatePosition(const Fmatrix& transform);
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
-
-	u8 GetCurrentHudOffsetIdx() const;
 
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
