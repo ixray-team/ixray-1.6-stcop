@@ -10,18 +10,16 @@ namespace Opcode
 #	include <OPC_Model.h>
 }
 
-#include "../stream_reader.h"
-
 using namespace CDB;
 using namespace Opcode;
 
-XRCORE_API CStreamReader* CDB::GetModelCache(string_path LevelName, u32 crc)
+XRCORE_API IReader* CDB::GetModelCache(string_path LevelName, u32 crc)
 {
-	CStreamReader* pReaderCache = nullptr;
+	IReader* pReaderCache = nullptr;
 
 	if (FS.exist("$app_data_root$", LevelName))
 	{
-		pReaderCache = FS.rs_open("$app_data_root$", LevelName);
+		pReaderCache = FS.r_open("$app_data_root$", LevelName);
 
 		if (pReaderCache->length() <= 4 || pReaderCache->r_u32() != crc)
 		{
@@ -83,7 +81,7 @@ void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callbac
 
 	if (pRW != nullptr && RWMode)
 	{
-		CStreamReader* pReader = (CStreamReader*)(pRW);
+		IReader* pReader = (IReader*)(pRW);
 		tree = new CDB_Model();
 
 		if (tree->Restore(pReader))

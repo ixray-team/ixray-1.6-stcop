@@ -3,7 +3,6 @@
 
 #include <OPC_TreeBuilders.h>
 #include <Opcode.h>
-#include "../../stream_reader.h"
 
 // FX: private function from opcode
 extern void _BuildNoLeafTree(Opcode::AABBNoLeafNode* linear, const udword box_id, udword& current_id, const Opcode::AABBTreeNode* current_node);
@@ -24,7 +23,7 @@ void CDB_OptimizeTree::Store(IWriter* pWriter)
 	pWriter->w(mNodes, mNbNodes * sizeof(Opcode::AABBNoLeafNode));
 }
 
-bool CDB_OptimizeTree::Restore(CStreamReader* pReader)
+bool CDB_OptimizeTree::Restore(IReader* pReader)
 {
 	// Read nodes
 	if (pReader->elapsed() < sizeof(s64))
