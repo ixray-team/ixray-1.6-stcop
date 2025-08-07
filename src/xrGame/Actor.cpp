@@ -724,7 +724,7 @@ void	CActor::Hit(SHit* pHDS)
 
 					luabind::functor<bool>	funct;
 					R_ASSERT2(ai().script_engine().functor(m_onBeforeHitCallback, funct), "failed to get OnBeforeHitCallback functor");
-					if (!funct((lua_game_object()->cast_GameObject(), &tLuaHit, HDS.boneID)))
+					if (!funct(lua_game_object()->cast_GameObject(), &tLuaHit, HDS.boneID))
 						return;
 					
 					HDS.power = tLuaHit.m_fPower;
