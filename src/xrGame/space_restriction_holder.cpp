@@ -29,7 +29,6 @@ CSpaceRestrictionHolder::~CSpaceRestrictionHolder			()
 
 void CSpaceRestrictionHolder::clear							()
 {
-#define IXR_ASAN
 #ifdef IXR_ASAN
 	// FX: Сначала нужно удалять групповые рестрикторы, 
 	// т.к. они используют ref_counter. Если чистить простые, то в IntrusivePtr остаются битые указатели
@@ -167,13 +166,13 @@ void CSpaceRestrictionHolder::register_restrictor				(CSpaceRestrictor *space_re
 	
 	CSpaceRestrictionShape	*shape = new CSpaceRestrictionShape(space_restrictor,restrictor_type != RestrictionSpace::eDefaultRestrictorTypeNone);
 
-	if (shape->border().empty())
-	{
-		Msg("* [%s]: change restrictor_type of %s to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName().c_str());
-		space_restrictor->change_restrictor_type(RestrictionSpace::eRestrictorTypeNone);
-		xr_delete(shape);
-		return;
-	}
+	//if (shape->border().empty())
+	//{
+	//	Msg("* [%s]: change restrictor_type of %s to eRestrictorTypeNone because border().empty()", __FUNCTION__, space_restrictor->cName().c_str());
+	//	space_restrictor->change_restrictor_type(RestrictionSpace::eRestrictorTypeNone);
+	//	xr_delete(shape);
+	//	return;
+	//}
 
 	RESTRICTIONS::iterator	I = m_restrictions.find(space_restrictors);
 	if (I == m_restrictions.end()) {
