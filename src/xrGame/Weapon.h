@@ -17,8 +17,6 @@
 #include "script_game_object.h"
 #include "Scope.h"
 
-#include "../xrCore/FixedMap.h"
-
 class CEntity;
 class ENGINE_API CMotionDef;
 class CSE_ALifeItemWeapon;
@@ -183,13 +181,13 @@ public:
 		{
 			for (auto& it : ConfigurationMap)
 			{
-				it.val.second.clear();
+				it.second.second.clear();
 			}
 			ConfigurationMap.clear();
 			AllBones.clear();
 		}
 		u8 AmmoType = undefined_ammo_type;
-		FixedMAP<u32, std::pair<shared_str, RStringVec>> ConfigurationMap{};
+		xr_hash_map<u32, std::pair<shared_str, RStringVec>> ConfigurationMap{};
 		RStringVec AllBones{};
 		void Load(const shared_str& section, u32 size);
 	};

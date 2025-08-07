@@ -700,9 +700,9 @@ void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
 	{
 		for (auto& node : ConfigurationMap)
 		{
-			if (!node.val.second.empty())
+			if (!node.second.second.empty())
 			{
-				node.val.second.clear();
+				node.second.second.clear();
 			}
 		}
 	}
@@ -711,9 +711,9 @@ void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
 
 	for (u32 i = 0; i < size; ++i)
 	{
-		auto ConfigNode = ConfigurationMap.insert(i);
+		auto& ConfigNode = ConfigurationMap[i];
 		configuration.printf("configuration_%d", i);
-		ConfigNode->val.first = configuration;
+		ConfigNode.first = configuration;
 		if (pSettings->line_exist(section, configuration))
 		{
 			LPCSTR S = pSettings->r_string(section, *configuration);
@@ -723,7 +723,7 @@ void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
 				u32 count = _GetItemCount(S);
 				for (u32 it = 0; it < count; ++it)
 				{
-					ConfigNode->val.second.push_back(_GetItem(S, it, Item));
+					ConfigNode.second.push_back(_GetItem(S, it, Item));
 				}
 			}
 		}
@@ -3384,7 +3384,7 @@ void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8
 		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
 		{
 			auto& Node = bone_param->ConfigurationMap[idx];
-			for (const auto& configuration_bone : Node.val.second)
+			for (const auto& configuration_bone : Node.second)
 			{
 				u16 bone_id = kin->LL_BoneID(configuration_bone);
 				if (bone_id != BI_NONE)
@@ -3422,7 +3422,7 @@ void CWeapon::UpdateShellBones(u32 idx, u8 type)
 		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
 		{
 			auto& Node = bone_param->ConfigurationMap[idx];
-			if (Node.val.second.empty())
+			if (Node.second.empty())
 			{
 				for (const auto& bone_name : bone_param->AllBones)
 				{
@@ -3431,7 +3431,7 @@ void CWeapon::UpdateShellBones(u32 idx, u8 type)
 			}
 			else
 			{
-				for (const auto& configuration_bone : Node.val.second)
+				for (const auto& configuration_bone : Node.second)
 				{
 					kin->LL_SetBoneVisible(kin->LL_BoneID(configuration_bone), TRUE, FALSE);
 				}
