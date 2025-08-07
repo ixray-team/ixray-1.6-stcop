@@ -2,6 +2,7 @@
 
 #include "UIArrow.h"
 #include "../UIXmlInit.h"
+#include <luabind/luabind.hpp>
 
 CUIArrow::CUIArrow()
 {
@@ -64,4 +65,19 @@ void CUIArrow::SetPos( float pos )
 {
 	m_pos = pos;
 	inherited::SetHeading( m_angle_begin + m_pos * m_angle_range );
+}
+
+using namespace luabind;
+#pragma optimize("s",on)
+void CUIArrow::script_register(lua_State* L)
+{
+	module(L)
+		[
+			class_<CUIArrow, CUIStatic>("CUIArrow")
+				.def(constructor<>())
+				.def("SetNewValue", &CUIArrow::SetNewValue)
+				.def("SetPos",		&CUIArrow::SetPos)
+				.def("GetPos",		&CUIArrow::GetPos)
+
+		];
 }
