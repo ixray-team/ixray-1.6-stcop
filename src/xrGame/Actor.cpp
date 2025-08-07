@@ -727,18 +727,15 @@ void	CActor::Hit(SHit* pHDS)
 					if (!funct((lua_game_object()->cast_GameObject(), &tLuaHit, HDS.boneID)))
 						return;
 					
-
 					HDS.power = tLuaHit.m_fPower;
 					HDS.impulse = tLuaHit.m_fImpulse;
 					HDS.dir = tLuaHit.m_tDirection;
 					HDS.hit_type = (ALife::EHitType)(tLuaHit.m_tHitType);
-					//HDS.who = smart_cast<CObject*>(tLuaHit.m_tpDraftsman->object());
-					//HDS.whoID = tLuaHit.m_tpDraftsman->ID();
-
-					/* AVO: send script callback*/
-					callback(GameObject::eHit)(lua_game_object(), HDS.damage(), HDS.direction(), HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr, HDS.boneID);
 				}
 			}
+
+			/* AVO: send script callback*/
+			callback(GameObject::eHit)(lua_game_object(), HDS.damage(), HDS.direction(), HDS.who != nullptr ? HDS.who->cast_game_object()->lua_game_object() : nullptr, HDS.boneID);
 
 			HitArtefactsCondition(HDS);
 			inherited::Hit(&HDS);
