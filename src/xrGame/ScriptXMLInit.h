@@ -32,6 +32,7 @@ class CUIListBox;
 class CUIProgressBar;
 class CUIListWnd;
 class CUIStackPanel;
+class CUIArrow;
 
 class CScriptXmlInit 
 {
@@ -78,6 +79,7 @@ public:
 	CUIScrollView*		InitScrollView(LPCSTR path, CUIWindow* parent);
 	CUIListBox*			InitListBox(LPCSTR path, CUIWindow* parent);
 	CUIProgressBar*		InitProgressBar(LPCSTR path, CUIWindow* parent);
+	CUIArrow*			InitArrow(LPCSTR path, CUIWindow* parent);
 protected:
 	CUIXml	m_xml;
 public:
