@@ -2451,66 +2451,78 @@ bool CWeapon::ready_to_kill() const
 	return (!IsMisfire() && ((GetState() == eIdle) || (GetState() == eFire) || (GetState() == eFire2)) && (GetAmmoElapsed() + GetAmmoChamberElapsed()) > 0);
 }
 
-u8 CWeapon::GetCurrentHudOffsetIdx() const {
-	auto pActor = smart_cast<const CActor*>(H_Parent());
+u8 CWeapon::GetCurrentHudOffsetIdx() const
+{
+	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
 	if (!pActor)
+	{
 		return 0;
+	}
 
-	bool b_aiming =
-		((IsZoomed() && /*m_zoom_params.*/ m_zoom_params.m_fZoomRotationFactor <= 1.f) ||
-			(!IsZoomed() && /*m_zoom_params.*/ m_zoom_params.m_fZoomRotationFactor > 0.f));
+	bool b_aiming = ((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f));
 
 	if (!b_aiming)
+	{
 		return 0;
-	// else if (IsGrenadeMode())
-	//	return 2;
+	}
+	else if (IsGrenadeMode())
+	{
+		return 2;
+	}
 	else
+	{
 		return 1;
+	}
 }
 
-void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
+void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
-	CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : NULL;
-	if(!pActor)		return;
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+	if (pActor == nullptr)
+	{
+		return;
+	}
 
 	u8 idx = GetCurrentHudOffsetIdx();
 
 	attachable_hud_item* hi = HudItemData();
-	if(!hi)
-		return;
-
-	if(		(IsZoomed() && m_zoom_params.m_fZoomRotationFactor<=1.f) ||
-			(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f))
+	if (hi == nullptr)
 	{
-		Fvector						curr_offs, curr_rot;
-		curr_offs					= hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
-		curr_rot					= hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
-		curr_offs.mul				(m_zoom_params.m_fZoomRotationFactor);
-		curr_rot.mul				(m_zoom_params.m_fZoomRotationFactor);
-
-		Fmatrix						hud_rotation;
-		hud_rotation.identity		();
-		hud_rotation.rotateX		(curr_rot.x);
-
-		Fmatrix						hud_rotation_y;
-		hud_rotation_y.identity		();
-		hud_rotation_y.rotateY		(curr_rot.y);
-		hud_rotation.mulA_43		(hud_rotation_y);
-
-		hud_rotation_y.identity		();
-		hud_rotation_y.rotateZ		(curr_rot.z);
-		hud_rotation.mulA_43		(hud_rotation_y);
-
-		hud_rotation.translate_over	(curr_offs);
-		trans.mulB_43				(hud_rotation);
-
-		if(pActor->IsZoomAimingMode())
-			m_zoom_params.m_fZoomRotationFactor += Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
-		else
-			m_zoom_params.m_fZoomRotationFactor -= Device.fTimeDelta/m_zoom_params.m_fZoomRotateTime;
-
-		clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
+		return;
 	}
+
+	Fvector curr_offs, curr_rot;
+	curr_offs = hi->m_measures.m_hands_positions.hands_offsets[0][idx];//pos,aim
+	curr_rot = hi->m_measures.m_hands_positions.hands_offsets[1][idx];//rot,aim
+	curr_offs.mul(m_zoom_params.m_fZoomRotationFactor);
+	curr_rot.mul(m_zoom_params.m_fZoomRotationFactor);
+
+	Fmatrix	hud_rotation;
+	hud_rotation.identity();
+	hud_rotation.rotateX(curr_rot.x);
+
+	Fmatrix	hud_rotation_y;
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateY(curr_rot.y);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation_y.identity();
+	hud_rotation_y.rotateZ(curr_rot.z);
+	hud_rotation.mulA_43(hud_rotation_y);
+
+	hud_rotation.translate_over(curr_offs);
+	trans.mulB_43(hud_rotation);
+
+	if (pActor->IsZoomAimingMode())
+	{
+		m_zoom_params.m_fZoomRotationFactor += Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
+	}
+	else
+	{
+		m_zoom_params.m_fZoomRotationFactor -= Device.fTimeDelta / m_zoom_params.m_fZoomRotateTime;
+	}
+
+	clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
@@ -2784,22 +2796,9 @@ void CWeapon::SetSilencerY(int value)
 bool CWeapon::NeedBlockSprint() const
 {
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
+	u32 state = GetState();
 
-	return GetState() == eFire || GetState() == eFire2 || GetState() == eSprintEnd || isBlockSprintInReload && GetState() == eReload;
-}
-
-u8 CWeapon::GetCurrentHudOffsetIdx()
-{
-	CActor* pActor	= H_Parent() ? H_Parent()->cast_actor() : NULL;
-	if(!pActor)		return 0;
-	
-	bool b_aiming		= 	((IsZoomed() && m_zoom_params.m_fZoomRotationFactor<=1.f) ||
-							(!IsZoomed() && m_zoom_params.m_fZoomRotationFactor>0.f));
-
-	if(!b_aiming)
-		return		0;
-	else
-		return		1;
+	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload;
 }
 
 void CWeapon::render_hud_mode()
