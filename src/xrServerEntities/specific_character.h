@@ -162,6 +162,9 @@ public:
 	const shared_str&			IconName				() const	{return data()->m_icon_name;};
 #endif
 	shared_str					terrain_sect			() const;
+
+	virtual void				save					(NET_Packet &output_packet);
+	virtual void				load					(IReader &input_packet);
 };
 
 
