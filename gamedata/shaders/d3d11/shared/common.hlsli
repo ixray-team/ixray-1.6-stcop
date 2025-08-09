@@ -63,6 +63,8 @@ cbuffer static_globals
     uniform float4 parallax;
 
     uniform float4 m_taa_jitter;
+
+    uniform float4 vslr_params;
 }
 
 float calc_cyclic(float x)
