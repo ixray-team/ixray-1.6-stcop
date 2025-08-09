@@ -537,9 +537,9 @@ CRenderTarget::CRenderTarget()
 		u32 RefSize = 256;
 		auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
 
-		//LVutner: I'm not sure why there's two RTs for ENV cubemap... gonna remove one later
-		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
-		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
+		//LVutner: I'm not sure if we really need to apply previous frame reflections in forward... TBD: Remove temp cubemap
+		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, flags);
+		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, flags);
 
 		//LVutner: Create everything by hand. CRT/CRTC sucks.
 		{
