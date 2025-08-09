@@ -70,7 +70,7 @@ float4 main(PSInput I) : SV_Target
 	float3 ViewVec = O.View;
 	
 	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
-	Jitter.y *= 0.3f; // Bias like screen space stochastic reflections 2015
+	Jitter.y *= 0.5f; // Bias like screen space stochastic reflections 2015
 	
 	// O.Roughness = saturate(O.Roughness * 1.1f - 0.1f);
 	

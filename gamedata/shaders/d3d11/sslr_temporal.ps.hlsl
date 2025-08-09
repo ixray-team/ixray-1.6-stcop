@@ -108,7 +108,6 @@ float4 main(PSInput I) : SV_Target
 	
 	float4 SSLRMain = rcp(9) * (SSLR0 + SSLR1 + SSLR2 + SSLR3 + SSLR4 + SSLR5 + SSLR6 + SSLR7 + SSLR8);
 	
-	
 	float3 Point = gbuf_unpack_position(I.texcoord.xy, O.PointReal.z);
 	float3 View = normalize(Point);
 	

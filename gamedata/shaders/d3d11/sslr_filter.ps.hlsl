@@ -135,8 +135,12 @@ float4 main(PSInput I) : SV_Target
 	Color.xyz *= rcp(1.00001f - Color.xyz);
 	Color.xyz = PopGamma(Color.xyz);
 	
+	Color.w = length(cubemap_depth_to_vector(SSLRMain.xyz, s_env_depth.SampleLevel(smp_linear, SSLRMain.xyz, 0.0f)));
+	
 	Image = lerp(Color, Image, SSLRMain.w);
 	SSLRMain.w = 1.0f;
+	
+	O.Hemi = lerp(saturate(O.Hemi * 20), O.Hemi, saturate(Image.w * fog_params.w + fog_params.x));
 #endif
 	
 	if(O.Depth < 0.02f) {
