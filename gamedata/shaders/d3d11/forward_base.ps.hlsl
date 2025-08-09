@@ -120,10 +120,5 @@ void main(p_bumped_new I, out f_forward O)
 
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
     O.Reactive = O.Color.w * 0.9f;
-	
-#ifdef USE_LENGTH_BUFFER
-	O.Color.w = ViewLength;
-	O.Color.xyz = saturate(O.Color.xyz * rcp(1.0f + O.Color.xyz));
-#endif
 }
 

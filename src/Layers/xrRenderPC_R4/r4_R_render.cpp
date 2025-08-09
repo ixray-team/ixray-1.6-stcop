@@ -390,18 +390,11 @@ void CRender::Render()
 		GPU_EVENT(FORWARD_REFLECTIONS);
 
 		is_render_cubemap = true;
-		static Fmatrix cProj{}, cView{}, cTrans{};
+		static Fmatrix cProj{}, cView[6]{}, cTrans{};
 		static Fvector cmNorm[6]{}, cmDir[6]{};
 
 		auto& CurrentEnv = *g_pGamePersistent->Environment().CurrentEnv;
 		u32 RefSize = Target->rt_Reflection->dwSize;
-
-		Fvector4 fog_color4 = {
-			CurrentEnv.fog_color.x / (1.0f + CurrentEnv.fog_color.x),
-			CurrentEnv.fog_color.y / (1.0f + CurrentEnv.fog_color.y),
-			CurrentEnv.fog_color.z / (1.0f + CurrentEnv.fog_color.z),
-			CurrentEnv.far_plane
-		};
 
 		cProj.build_projection(PI_DIV_2 + 0.002f, 1.0f,
 			Device.fViewportNear, CurrentEnv.far_plane * ps_r4_vslr_distance);
@@ -435,31 +428,37 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 		
 		Fvector PointPos = Device.vCameraPosition;
-		RContext->CopyResource(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
 
 		for(auto i = 0; i < 6; ++i) {
 			GPU_EVENT(FORWARD_REFLECTION_SIDE);
 
-			cView.build_camera_dir(PointPos, cmDir[i], cmNorm[i]);
-			cTrans.mul(cProj, cView);
+			cView[i].build_camera_dir(PointPos, cmDir[i], cmNorm[i]);
+			cTrans.mul(cProj, cView[i]);
 
 			r_dsgraph_render_subspace(pLastSector, cTrans, PointPos, FALSE, FALSE);
 
-			RCache.set_xform_view(cView);
+			RCache.set_xform_view(cView[i]);
 			mapWmark.clear();
 
-			RContext->ClearRenderTargetView(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
 			RContext->ClearDepthStencilView(Target->cubemap_zbuffer_dsv[i], D3D_CLEAR_DEPTH, 1.0f, 0);
-
-			Target->u_setrt(RefSize, RefSize,
-				Target->rt_Reflection->pRT[i], NULL, NULL, Target->cubemap_zbuffer_dsv[i]);
+			Target->u_setrt(RefSize, RefSize, Target->rt_Reflection_temp->pRT[i], NULL, NULL, Target->cubemap_zbuffer_dsv[i]);
 			
 			RImplementation.rmNormal();
-
 			RCache.set_Stencil(FALSE);
+
 			RCache.set_ColorWriteEnable();
 
 			r_dsgraph_render_graph(0);
+		}
+
+		for (auto i = 0; i < 6; ++i)
+		{
+			RCache.set_xform_view(cView[i]);
+
+			Target->u_setrt(RefSize, RefSize, Target->rt_Reflection->pRT[i], NULL, NULL, NULL);
+
+			RImplementation.rmNormal();
+			Target->phase_vslr_combine();
 		}
 
 		RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());

@@ -278,6 +278,7 @@ public:
 	void						phase_cas				();
 	void						phase_gtao				();
 	void						phase_sslr				();
+	void						phase_vslr_combine		();
 
 	void						phase_puddles			();
 

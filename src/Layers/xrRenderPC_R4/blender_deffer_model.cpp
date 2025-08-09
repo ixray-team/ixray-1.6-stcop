@@ -72,7 +72,7 @@ void	CBlender_deffer_model::Compile(CBlender_Compile& C)
 			C.r_dx10Texture("sky_s0", r2_T_sky0);
 			C.r_dx10Texture("sky_s1", r2_T_sky1);
 
-			C.r_dx10Texture("s_env", r2_RT_env_temp);
+			C.r_dx10Texture("s_env", r2_RT_env);
 
 			C.r_dx10Sampler("smp_material");
 			C.r_End();

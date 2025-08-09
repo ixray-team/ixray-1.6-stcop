@@ -33,7 +33,7 @@
 
 #define		r2_RT_env			"$user$sky"
 #define		r2_RT_env_depth		"$user$sky_depth"
-#define		r2_RT_env_temp		"$user$sky_1temp"
+#define		r2_RT_env_temp		"$user$sky_temp"
 
 #define		r2_RT_sslr			"$user$sslr"
 #define		r2_RT_sslr_old		"$user$sslr_old"

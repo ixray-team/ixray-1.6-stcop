@@ -539,7 +539,7 @@ CRenderTarget::CRenderTarget()
 
 		//LVutner: I'm not sure if we really need to apply previous frame reflections in forward... TBD: Remove temp cubemap
 		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, flags);
-		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT, flags);
+		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R11G11B10_FLOAT);
 
 		//LVutner: Create everything by hand. CRT/CRTC sucks.
 		{
