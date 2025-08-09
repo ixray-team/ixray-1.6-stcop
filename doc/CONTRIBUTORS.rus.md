@@ -7,21 +7,15 @@
 ## Контрибьюторы
 
 - IX-Ray Team:
-  - acidicMercury8
   - Drombeys
   - Hozar2002
   - MayLay
   - Mortan (Shitposting Goddess)
   - Misery (Shtrecker)
-  - johncurley
-  - OldSerpskiStalker
   - ForserX
   - v2v3v4
   - ggGhosTt
   - ugozapad
-  - morrazzzz
-  - Z3SA
-  - DJYar
   - K0cTep (ice[icicle)
   - Red Panda (isobolevskiy)
   - LVutner
@@ -30,38 +24,36 @@
   - St4lker0k765
   - wh1t3lord
   - GladiatorVS
+  - Se7kills (DimaKuzmin)
+  - Romann
+  - mnelenpridumivat
+  - MiX225
+  - kola2451
 
-- IX-Ray Community:
+- IX-Ray Partners:
   - _V_O_IN_
   - Воскресенский (ЛилЖук)
-  - Sin!
-  - Se7kills (DimaKuzmin)
   - borshig
-  - pavelspitsin
   - Seakad
   - KWAN
-  - nuclearfag
-  - Baryshev194
   - Oswald
-  - MiX225
-  - Romann
   - krairon
-  - kola2451
-  - mnelenpridumivat
+  - Kuprin
+  - Viнt@rь
+  - after_glow
+  - MafiosiGhost
+  - Mawrak
 
 - IX-Ray Testers:
   - Kystman
   - Makson2097
   - Sinner
-  - after_glow
   - PastKNIGHT
   - mannewil_
   - YOUASSBEE
   - mox.creative (Pitarda2007)
   - ROOZBAN
   - moof1x
-  - MafiosiGhost
-  - Mawrak
   - Georgiy-Timoshin
 
 ## Помощники сообщества
@@ -83,3 +75,16 @@
 - ShokerStlk
 - vadvalskiy
 - Karlan
+- nuclearfag
+- Sin!
+- pavelspitsin
+- Baryshev194
+
+## Бывшие участники
+
+- acidicMercury8
+- johncurley
+- OldSerpskiStalker
+- Z3SA
+- DJYar
+- morrazzzz

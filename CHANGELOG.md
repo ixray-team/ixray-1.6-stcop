@@ -4,6 +4,64 @@ English | [Русский](./doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.2.2 (August 2025)
+
+### Common
+
+- Updated root documents (@Drombeys)
+- Updated DLSS to version 310.2.1.0 (@ForserX)
+
+### Engine
+
+- Added parameter to hide debug panel (@St4lker0k765, @Drombeys)
+- Added security checks for voice chat (@St4lker0k765)
+- Adjusted ImGui font scaling for high-DPI displays (@ViHtarb)
+- Fixed console input reset behavior during script execution (@ForserX)
+- Fixed messages duplication in MSVC Debugger (@St4lker0k765)
+- Fixed saving files to addons (@Drombeys)
+- Implemented invalid symlink recovery (@ForserX)
+- Improved logging of script errors (@Drombeys)
+- Removed verification in physics and CDB (@Drombeys)
+- Used lowercase letters to include paths in configs (@Drombeys)
+
+### Gameplay
+
+- Fixed crash if `hud_step_sound_vol_k` is absent (@St4lker0k765)
+- Fixed crash if trade item section doesn't exist (@St4lker0k765)
+- Fixed exception with delete map spot (@ForserX)
+- Fixed for incorrect UI behavior when hiding (@Shtrecker)
+- Fixed in-game hints rendering issues (@mnelenpridumivat, @Drombeys)
+- Fixed letter spacing for colored text (@ForserX)
+- Fixed restriction type ignoring (@ForserX)
+- Fixed vertical text positioning in UI elements (@ViHtarb)
+- Improved console output formatting (@ViHtarb)
+- Improved logging in `Artefact` module (@Drombeys)
+- Improved logging in `Weapon` module (@Drombeys)
+- Improved logging of missing bones at light sources (@Drombeys)
+- Restored original detector behavior (@Shtrecker)
+
+### Graphics (renders, shaders)
+
+- Added hack for specular brightness on r2 (@Drombeys)
+- Added logging of missing bumps and detail textures in `.thm` file (@Drombeys)
+- Added more info to AGS error (@ForserX)
+- Added shading error logging (@Drombeys, @Hozar2002)
+- Applied reflections for puddles (@Hozar2002)
+- Fixed flickering geometry in lightplane shader (@ForserX, @Hozar2002)
+- Fixed incorret shading with broken thm (@Drombeys, @Hozar2002)
+- Fixed loading of non-existent bumps (@Drombeys)
+- Fixed missing characters after font rendering (@ForserX)
+- Fixed texture preview not updating on subsequent game saves (@Drombeys, @Hozar2002)
+- Improved logging of loaded textures (@Drombeys)
+- Returned smooth loadscreen progressbar from original (@St4lker0k765)
+
+### Toolchain (in-game tools, editors)
+
+- Added text corrections in editors (@St4lker0k765)
+- Adjusted `UITopBarForm` scaling for high-DPI displays (@ViHtarb)
+- Fixed rendering of last row in spawner table (@Drombeys)
+- Reworked distribution of items from multiplayer to spawner (@Drombeys)
+
 ## Release 1.2.1 (June 2025)
 
 ### Common
