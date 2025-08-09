@@ -222,6 +222,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		C.r_dx10Texture("s_snow", Path);
 	}
 
+	C.r_dx10Texture("s_smap_sun", r2_RT_smap_depth_sun);
+	C.r_dx10Sampler("smp_smap");
+
 	C.r_dx10Sampler("smp_base");
 	C.r_dx10Sampler("smp_linear");
 	C.r_dx10Sampler("smp_rtlinear");
