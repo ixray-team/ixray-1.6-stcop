@@ -491,7 +491,7 @@ IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, con
 	d3dDesc.Width = Desc.Width;
 	d3dDesc.Height = Desc.Height;
 	d3dDesc.MipLevels = Desc.MipLevels;
-	d3dDesc.ArraySize = 1;
+	d3dDesc.ArraySize = Desc.ArraySize;
 	d3dDesc.Format = DXGI_FORMAT(Desc.Format);
 	d3dDesc.SampleDesc.Count = 1;
 	d3dDesc.SampleDesc.Quality = 0;
