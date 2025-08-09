@@ -266,28 +266,6 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
     return float4(Color, Fade);
 }
 
-float3 BiteralReflectionsFiler(float2 TexCoord) {
-    float4 Reflections = s_refl.SampleLevel(smp_rtlinear, TexCoord, 0.0f);
-	
-	float FinalWeight = 2.0f; float Devider = rcp(Reflections.w);
-	float3 SpecularIrradance = Reflections.xyz * FinalWeight;
-
-	for(int dx = -1; dx <= 1; ++dx) {
-		for(int dy = -1; dy <= 1; ++dy) {
-			float2 Offset = TexCoord + scaled_screen_res.zw * (float2(dx, dy) * 2.0f + 0.5f);
-			float4 Sample = s_refl.SampleLevel(smp_rtlinear, Offset, 0.0f);
-			float SampleWeight = 25.0f * abs(Sample.w - Reflections.w);
-			SampleWeight = 1.0f - saturate(SampleWeight * Devider);
-			FinalWeight += SampleWeight; SpecularIrradance += SampleWeight * Sample.xyz;
-		}
-	}
-
-	SpecularIrradance *= rcp(FinalWeight);
-	SpecularIrradance *= rcp(1.00001f - SpecularIrradance.xyz);
-	
-	return SpecularIrradance;
-}
-
 float4 calc_reflections(float2 pos2d, float zpos, float3 vreflect)
 {
     float3 Point = zpos * float3(pos2d * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
