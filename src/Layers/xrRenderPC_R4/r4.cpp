@@ -145,9 +145,6 @@ static class cl_m_shadow_sun : public R_constant_setup
 {	
 	virtual void setup	(R_constant* C)
 	{
-		Fmatrix xf_invview;
-		xf_invview.invert(Device.mView);
-
 		for(int i = 0; i < 3; i++)
 		{
 			Fmatrix m_TexelAdjust = 
@@ -158,15 +155,8 @@ static class cl_m_shadow_sun : public R_constant_setup
 				0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1.0f
 			};
 
-			// shadow xform
-			Fmatrix m_shadow_sun;
-			{
-				Fmatrix xf_project; 
-				xf_project.mul(m_TexelAdjust, RImplementation.m_sun_cascades[i].xform);
-				m_shadow_sun.mul(xf_project, xf_invview);
-			}
-
-			RCache.set_ca(C, i, m_shadow_sun);
+			Fmatrix xf_project; xf_project.mul(m_TexelAdjust, RImplementation.m_sun_cascades[i].xform);
+			RCache.set_ca(C, i, xf_project);
 		}
 	}
 }	binder_m_shadow_sun;

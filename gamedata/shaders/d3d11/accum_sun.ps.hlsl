@@ -27,7 +27,7 @@ float4 main(PSInput I) : SV_Target
 	//Sample cascades
 	int cascade_index;
 	float3 smap_texcoord;
-	bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+	bool is_in_bounds = calc_cascades(mul(m_invV, Point).xyz, m_shadow_sun, cascade_index, smap_texcoord);
 
 	float Shadow = 1.0;
 
