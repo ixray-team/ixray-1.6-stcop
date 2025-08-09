@@ -89,14 +89,13 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     //	Just slow down effect.
     fAngleFactor *= 0.5;
 
-    float3 waterFallX = GetWaterNMap(s_waterFall, float2(tc1.z, tc1.y + timers.x * fAngleFactor));
-    float3 waterFallZ = GetWaterNMap(s_waterFall, float2(tc1.x, tc1.y + timers.x * fAngleFactor));
+    float3 waterFallX = GetWaterNMap(s_waterFall, float2(tc1.z, tc1.y + timers.x * 0.5f));
+    float3 waterFallZ = GetWaterNMap(s_waterFall, float2(tc1.x, tc1.y + timers.x * 0.5f));
 
     float2 IsDir = (float2(fIsZ, fIsX));
 
     IsDir = normalize(IsDir);
 
-    float3 waterFall = GetWaterNMap(s_waterFall, float2(dot(tc1.xz, IsDir), tc1.y + timers.x));
     float WeaponAttenuation = O.Depth > 0.2 ? 1.0f : 0.0f;
     float ApplyNormalCoeff = s * WeaponAttenuation;
 

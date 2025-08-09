@@ -92,7 +92,16 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 	}
 
 	if(!bUseAsDepth) {
-		if(CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG) {
+		if (CreationFlags & CRT::CRTCreationFlags::AUTOMIP_RT_FLAG)
+		{
+			desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
+
+			auto dwSize = std::min(dwWidth, dwHeight);
+			desc.MipLevels = log2(dwSize) + 1;
+		}
+
+		if(CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG)
+		{
 			auto dwSize = std::min(dwWidth, dwHeight);
 
 			while((dwSize /= 2) >= 4) {
@@ -250,7 +259,7 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 	desc.BindFlags = D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET;
 	desc.MiscFlags = D3D_RESOURCE_MISC_TEXTURECUBE;
 
-	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG) {
+	if(CreationFlags & CRT::CRTCreationFlags::AUTOMIP_RT_FLAG) {
 		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 		desc.MipLevels = log2(dwSize) + 1;
 	}
