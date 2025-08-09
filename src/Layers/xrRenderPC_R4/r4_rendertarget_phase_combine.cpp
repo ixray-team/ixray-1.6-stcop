@@ -93,82 +93,66 @@ void CRenderTarget::phase_combine()
 	if (!_menu_pp)
 	{
 		GPU_EVENT(combine_1);
-		// Compute params
-		Fmatrix		m_v2w;			m_v2w.invert				(Device.mView		);
-		CEnvDescriptorMixer& envdesc= *g_pGamePersistent->Environment().CurrentEnv		;
-		const float minamb			= 0.001f;
-		Fvector4	ambclr			= { _max(envdesc.ambient.x*2,minamb),	_max(envdesc.ambient.y*2,minamb),			_max(envdesc.ambient.z*2,minamb),	0	};
-					ambclr.mul		(ps_r2_sun_lumscale_amb);
 
-        Fvector4 envclr;
-        if (envdesc.old_style)
-        {
-            envclr =
-            {
-                envdesc.sky_color.x * 2 + EPS, envdesc.sky_color.y * 2 + EPS,
-                envdesc.sky_color.z * 2 + EPS, envdesc.weight
-            };
-        }
-        else
-        {
-            envclr =
-            {
-                envdesc.hemi_color.x * 2 + EPS, envdesc.hemi_color.y * 2 + EPS,
-                envdesc.hemi_color.z * 2 + EPS, envdesc.weight
-            };
-        }
+		light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
+		Fmatrix m_clouds_shadow{};
 
-		Fvector4	fogclr			= { envdesc.fog_color.x,	envdesc.fog_color.y,	envdesc.fog_color.z,		0	};
-					envclr.x		*= 2*ps_r2_sun_lumscale_hemi; 
-					envclr.y		*= 2*ps_r2_sun_lumscale_hemi; 
-					envclr.z		*= 2*ps_r2_sun_lumscale_hemi;
-		Fvector4	sunclr,sundir;
+		{
+			static float w_shift = 0.0f;
 
-		float		fSSAONoise = 2.0f;
-					fSSAONoise *= tan(deg2rad(67.5f/2.0f));
-					fSSAONoise /= tan(deg2rad(Device.fFOV/2.0f));
+			Fvector normal;
+			normal.setHP(g_pGamePersistent->Environment().CurrentEnv->wind_direction, 0);
+			w_shift += 0.003f * Device.fTimeDelta;
 
-		float		fSSAOKernelSize = 150.0f;
-					fSSAOKernelSize *= tan(deg2rad(67.5f/2.0f));
-					fSSAOKernelSize /= tan(deg2rad(Device.fFOV/2.0f));
+			Fvector position;
+			position.set(0, 0, 0);
 
+			Fmatrix m_xform;
+			m_xform.build_camera_dir(position, fuckingsun->direction, normal);
+
+			Fvector localnormal;
+			m_xform.transform_dir(localnormal, normal);
+			localnormal.normalize();
+
+			m_clouds_shadow.mul(m_xform, RCache.xforms.m_invv);
+			m_xform.scale(0.002f, 0.002f, 1.f);
+			m_clouds_shadow.mulA_44(m_xform);
+			m_xform.translate(localnormal.mul(w_shift));
+			m_clouds_shadow.mulA_44(m_xform);
+		}
+
+		Fvector4 sunclr, sundir;
 
 		// sun-params
 		{
-			light*		fuckingsun		= (light*)RImplementation.Lights.sun_adapted._get()	;
-			Fvector		L_dir,L_clr;	float L_spec;
-			L_clr.set					(fuckingsun->color.r,fuckingsun->color.g,fuckingsun->color.b);
-			L_spec						= u_diffuse2s	(L_clr);
-			Device.mView.transform_dir	(L_dir,fuckingsun->direction);
-			L_dir.normalize				();
+			Fvector L_dir, L_clr;
+			L_clr.set(fuckingsun->color.r, fuckingsun->color.g, fuckingsun->color.b);
 
-			sunclr.set				(L_clr.x,L_clr.y,L_clr.z,L_spec);
-			sundir.set				(L_dir.x,L_dir.y,L_dir.z,0);
+			Device.mView.transform_dir(L_dir, fuckingsun->direction);
+			L_dir.normalize ();
+
+			sunclr.set(L_clr.x, L_clr.y, L_clr.z, u_diffuse2s(L_clr));
+			sundir.set(L_dir.x, L_dir.y, L_dir.z, 0);
 		}
 
+		CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
 		IRHISurface* e0 = _menu_pp ? 0 : envdescren.sky_r_textures_env[0].second->surface_get();
 		IRHISurface* e1 = _menu_pp ? 0 : envdescren.sky_r_textures_env[1].second->surface_get();
+
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
 		// Draw
-		RCache.set_Element			(s_combine->E[0]	);
-		RCache.set_Geometry			(FSTriangleGeom);
+		RCache.set_Element (s_combine->E[0]);
+		RCache.set_Geometry (FSTriangleGeom);
 
-		RCache.set_c				("m_v2w",			m_v2w	);
-		RCache.set_c				("L_ambient",		ambclr	);
+		RCache.set_c ("Ldynamic_color", sunclr);
+		RCache.set_c ("Ldynamic_dir", sundir);
 
-		RCache.set_c				("Ldynamic_color",	sunclr	);
-		RCache.set_c				("Ldynamic_dir",	sundir	);
-
-		RCache.set_c				("env_color",		envclr	);
-		RCache.set_c				("fog_color",		fogclr	);
-
-		RCache.set_c				("ssao_noise_tile_factor",	fSSAONoise	);
-		RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
+		RCache.set_c ("m_sunmask", m_clouds_shadow);
 
 		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	}

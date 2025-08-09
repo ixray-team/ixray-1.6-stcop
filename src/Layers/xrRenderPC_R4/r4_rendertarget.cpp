@@ -71,7 +71,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	}
 	else
 	{
-		VERIFY(zb->GetDimension() == ERHI_DSV_DIMENSION::TEXTURE2D);
+		VERIFY(zb->GetSurface() != nullptr);
 		dwWidth = zb->GetSurface()->GetWidth();
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
@@ -612,6 +612,40 @@ CRenderTarget::CRenderTarget()
 
 	s_accum_direct_volumetric.create("accum_volumetric_sun");
 
+	{
+		RHITextureDesc TextureDesc = {};
+		TextureDesc.Width = size;
+		TextureDesc.Height = size;
+		TextureDesc.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL | ERHI_BIND_FLAG::SHADER_RESOURCE;
+		TextureDesc.Format = ERHI_FORMAT::R32_TYPELESS;
+		TextureDesc.ArraySize = 3;
+		TextureDesc.MipLevels = 1;
+		TextureDesc.CPUAccessFlags = 0;
+		TextureDesc.SampleDescCount = 1;
+		TextureDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+
+		//creating a texture
+		RHISubResource Subres = {};
+		rt_smap_depth_sun_tex = GRHI->CreateTexture2D(TextureDesc, Subres);
+
+		//Create DSV for each slice
+		RHIDepthStencilViewDesc depthStencilViewDesc = {};
+		depthStencilViewDesc.ViewDimension = ERHI_DSV_DIMENSION::TEXTURE2DARRAY;
+		depthStencilViewDesc.Format = ERHI_FORMAT::D32_FLOAT;
+		depthStencilViewDesc.ArraySize = 1;
+		depthStencilViewDesc.MipSlice = 0;
+
+		for(int dsv_idx = 0; dsv_idx < 3; dsv_idx++)
+		{
+			depthStencilViewDesc.FirstArraySlice = dsv_idx;
+			rt_smap_depth_sun_dsv[dsv_idx] = GRHI->CreateDepthStencilView(rt_smap_depth_sun_tex, depthStencilViewDesc);
+		}
+
+		//Now bind create SRV for it
+		rt_smap_depth_sun.create(r2_RT_smap_depth_sun);
+		rt_smap_depth_sun->surface_set(rt_smap_depth_sun_tex);
+	}
+
 	//	RAIN
 	//	TODO: DX10: Create resources only when DX10 rain is enabled.
 	//	Or make DX10 rain switch dynamic?
@@ -912,6 +946,14 @@ CRenderTarget::~CRenderTarget	()
 {
 	_RELEASE					(t_ss_async);
 
+	rt_smap_depth_sun->surface_set(nullptr);
+	_RELEASE(rt_smap_depth_sun_tex);
+
+	for(auto i = 0; i < 3; ++i)
+	{
+		_RELEASE(rt_smap_depth_sun_dsv[i]);
+	}
+	
 	// Textures
 	t_material->surface_set		(nullptr);
 
