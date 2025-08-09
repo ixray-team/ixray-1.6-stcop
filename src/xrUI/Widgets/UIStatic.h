@@ -90,6 +90,8 @@ public:
 			Fvector2		GetTextureOffeset		() const					{ return m_TextureOffset; }
 			void			TextureOn				()							{ m_bTextureEnable = true; }
 			void			TextureOff				()							{ m_bTextureEnable = false; }
+			void			TextOn				()								{ m_bTextEnable = true; }
+			void			TextOff				()								{ m_bTextEnable = false; }
 			void			SetTextOffset			(float x, float y)			{ TextItemControl()->m_TextOffset.x = x; TextItemControl()->m_TextOffset.y = y; }
 			void			SetTextAlignment		(ETextAlignment al)			{TextItemControl()->SetTextAlignment(al);}
 			void			SetTextComplexMode		(bool mode = true)			{TextItemControl()->SetTextComplexMode(mode);}
@@ -152,6 +154,7 @@ protected:
 
 	bool			m_bStretchTexture;
 	bool			m_bTextureEnable;
+	bool			m_bTextEnable;
 	CUIStaticItem	m_UIStaticItem;
 
 	bool			m_bHeading;
