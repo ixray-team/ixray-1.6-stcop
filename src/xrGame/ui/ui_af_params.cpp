@@ -44,15 +44,15 @@ CUIArtefactParams::~CUIArtefactParams()
 constexpr std::tuple<ALife::EHitType, LPCSTR, LPCSTR, float, bool, LPCSTR> af_immunity[] =
 {
     //{ ALife::eHitType,			"section",                  "caption",                                  magnitude, sign_inverse, "unit" }
-    { ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            1.0f,      false,        "%" },
-    { ALife::eHitTypeShock,			"shock_immunity",           "ui_inv_outfit_shock_protection",           1.0f,      false,        "%" },
-    { ALife::eHitTypeChemicalBurn,	"chemical_burn_immunity",   "ui_inv_outfit_chemical_burn_protection",   1.0f,      false,        "%" },
-    { ALife::eHitTypeRadiation,		"radiation_immunity",       "ui_inv_outfit_radiation_protection",       -1.0f,     true,        "%" },
-    { ALife::eHitTypeTelepatic,		"telepatic_immunity",       "ui_inv_outfit_telepatic_protection",       1.0f,      false,        "%" },
-    { ALife::eHitTypeWound,			"wound_immunity",           "ui_inv_outfit_wound_protection",           1.0f,      false,        "%" },
-    { ALife::eHitTypeFireWound,		"fire_wound_immunity",      "ui_inv_outfit_fire_wound_protection",      1.0f,      false,        "%" },
-    { ALife::eHitTypeStrike,		"strike_immunity",          "ui_inv_outfit_strike_protection",          1.0f,      false,        "%" },
-    { ALife::eHitTypeExplosion,		"explosion_immunity",       "ui_inv_outfit_explosion_protection",       1.0f,      false,        "%" },
+    { ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      false,        "%" },
+    { ALife::eHitTypeShock,			"shock_immunity",           "ui_inv_outfit_shock_protection",           100.0f,      false,        "%" },
+    { ALife::eHitTypeChemicalBurn,	"chemical_burn_immunity",   "ui_inv_outfit_chemical_burn_protection",   100.0f,      false,        "%" },
+    { ALife::eHitTypeRadiation,		"radiation_immunity",       "ui_inv_outfit_radiation_protection",       -100.0f,     true,        "%" },
+    { ALife::eHitTypeTelepatic,		"telepatic_immunity",       "ui_inv_outfit_telepatic_protection",       100.0f,      false,        "%" },
+    { ALife::eHitTypeWound,			"wound_immunity",           "ui_inv_outfit_wound_protection",           100.0f,      false,        "%" },
+    { ALife::eHitTypeFireWound,		"fire_wound_immunity",      "ui_inv_outfit_fire_wound_protection",      100.0f,      false,        "%" },
+    { ALife::eHitTypeStrike,		"strike_immunity",          "ui_inv_outfit_strike_protection",          100.0f,      false,        "%" },
+    { ALife::eHitTypeExplosion,		"explosion_immunity",       "ui_inv_outfit_explosion_protection",       100.0f,      false,        "%" },
 };
 
 constexpr std::tuple<ALife::EConditionRestoreType, LPCSTR, LPCSTR, float, bool, LPCSTR> af_restore[] =
@@ -220,7 +220,6 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			else
 			{
 				val = (1.0f - val);
-				val *= 100.0f;
 			}
 			setValue(m_immunity_item[id], val * pInvItem.GetCondition());
 		}

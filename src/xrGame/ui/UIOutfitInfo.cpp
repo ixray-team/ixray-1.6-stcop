@@ -13,76 +13,99 @@
 #include "../../xrEngine/string_table.h"
 
 
-LPCSTR immunity_names[]=
+constexpr std::tuple<ALife::EHitType, LPCSTR, LPCSTR, float, LPCSTR> outfit_immunity[] =
 {
-	"burn_immunity",
-	"shock_immunity",
-	"chemical_burn_immunity",
-	"radiation_immunity",
-	"telepatic_immunity",
-	"wound_immunity",		
-	"fire_wound_immunity",
-	"strike_immunity",
-	"explosion_immunity",
-};
 
-LPCSTR immunity_st_names[]=
-{
-	"ui_inv_outfit_burn_protection",
-	"ui_inv_outfit_shock_protection",
-	"ui_inv_outfit_chemical_burn_protection",
-	"ui_inv_outfit_radiation_protection",
-	"ui_inv_outfit_telepatic_protection",
-	"ui_inv_outfit_wound_protection",
-	"ui_inv_outfit_fire_wound_protection",
-	"ui_inv_outfit_strike_protection",
-	"ui_inv_outfit_explosion_protection",
+	{ ALife::eHitTypeBurn,			"burn_immunity",            "ui_inv_outfit_burn_protection",            100.0f,      "%" },
+	{ ALife::eHitTypeShock,			"shock_immunity",           "ui_inv_outfit_shock_protection",           100.0f,      "%" },
+	{ ALife::eHitTypeChemicalBurn,	"chemical_burn_immunity",   "ui_inv_outfit_chemical_burn_protection",   100.0f,      "%" },
+	{ ALife::eHitTypeRadiation,		"radiation_immunity",       "ui_inv_outfit_radiation_protection",       100.0f,	   "%" },
+	{ ALife::eHitTypeTelepatic,		"telepatic_immunity",       "ui_inv_outfit_telepatic_protection",       100.0f,      "%" },
+	{ ALife::eHitTypeWound,			"wound_immunity",           "ui_inv_outfit_wound_protection",           100.0f,      "%" },
+	{ ALife::eHitTypeFireWound,		"fire_wound_immunity",      "ui_inv_outfit_fire_wound_protection",      100.0f,      "%" },
+	{ ALife::eHitTypeStrike,		"strike_immunity",          "ui_inv_outfit_strike_protection",          100.0f,      "%" },
+	{ ALife::eHitTypeExplosion,		"explosion_immunity",       "ui_inv_outfit_explosion_protection",       100.0f,      "%" },
 };
 
 CUIOutfitImmunity::CUIOutfitImmunity()
 {
-	AttachChild(&m_name);
-	AttachChild(&m_progress);
 	m_unit_str._set("");
 	m_value = nullptr;
 	m_magnitude = 1.0f;
+	m_name = nullptr;
+	m_progress = nullptr;
+	m_text_legacy = nullptr;
 }
 
 CUIOutfitImmunity::~CUIOutfitImmunity()
 {
 }
 
-bool CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type )
+LPCSTR outfit_info = "outfit_info";
+CUIOutfitImmunity::InitResult CUIOutfitImmunity::Init( CUIXml& xml_doc, LPCSTR section )
 {
-	CUIXmlInit::InitWindow( xml_doc, base_str, 0, this );
+	if(!CUIXmlInit::InitStatic(xml_doc, section, 0, this, false))
+		return InitPlain(xml_doc, section);
 
-	string256 buf;
+	m_name = UIHelper::CreateStatic(xml_doc, section, this);
+	m_name->TextureOff();
 	
-	xr_strconcat(buf, base_str, ":", immunity_names[hit_type] );
-	if (!CUIXmlInit::InitWindow( xml_doc, buf, 0, this, false ))
-		return false;
+	XML_NODE* base_node = xml_doc.GetLocalRoot();
+	xml_doc.SetLocalRoot(xml_doc.NavigateToNode(section));
 
-	CUIXmlInit::InitStatic( xml_doc, buf, 0, &m_name );
-	m_name.TextItemControl()->SetTextST( immunity_st_names[hit_type] );
 
-	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":progress_immunity" );
-	m_progress.InitFromXml( xml_doc, buf );
+	if (xml_doc.NavigateToNode("progress_immunity"))
+	{
+		m_progress = new CUIDoubleProgressBar();
+		AttachChild(m_progress);
+		m_progress->InitFromXml(xml_doc, "progress_immunity");
+	}
 	
-	xr_strconcat(buf, base_str, ":", immunity_names[hit_type], ":static_value" );
-	m_value = UIHelper::CreateStatic(xml_doc, buf, this);
+	m_value = UIHelper::CreateStatic(xml_doc, "static_value", this);
 
-	m_magnitude = xml_doc.ReadAttribFlt( buf, 0, "magnitude", 1.0f );
+	m_magnitude = xml_doc.ReadAttribFlt( "static_value", 0, "magnitude", 1.0f);
 
-	LPCSTR unit_str = xml_doc.ReadAttrib(buf, 0, "unit_str", "");
+	LPCSTR unit_str = xml_doc.ReadAttrib("static_value", 0, "unit_str", "");
 	m_unit_str._set(g_pStringTable->translate(unit_str));
-	return true;
+
+	xml_doc.SetLocalRoot(base_node);
+	return InitResult::Normal;
+}
+
+CUIOutfitImmunity::InitResult CUIOutfitImmunity::InitPlain(CUIXml& xml, pcstr section)
+{
+    string256 buf;
+    xr_strconcat(buf, "static_", section);
+	if (!CUIXmlInit::InitStatic(xml, buf, 0, this, false))
+	{
+		return InitResult::Failed;
+	}
+	m_name = new CUIStatic();
+	m_name->SetAutoDelete(true);
+	AttachChild(m_name);
+	m_name->Show(false); // hack
+
+    m_value = new CUIStatic();
+    m_value->SetAutoDelete(true);
+    AttachChild(m_value);
+    m_value->Show(false); // hack
+
+	TextOff();
+	m_text_legacy = UIHelper::CreateStatic(xml, buf, this);
+	m_text_legacy->TextureOff();
+	m_text_legacy->SetWidth(1000.f); // St4lker0k765: hack for complex mode
+
+	m_legacy_mode = true;
+
+    return InitResult::Plain;
 }
 
 void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 {
 	cur *= m_magnitude;
 	comp *= m_magnitude;
-	m_progress.SetTwoPos(cur, comp);
+	if (m_progress)
+		m_progress->SetTwoPos(cur, comp);
 
 	string32 buf;
 	xr_sprintf(buf, "%.0f", cur);
@@ -94,6 +117,30 @@ void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
 		xr_strconcat(str, buf);
 
 	m_value->SetText(str);
+
+	// hack
+	if (m_legacy_mode)
+	{
+		int sz = xr_sprintf(str, "%s %s %+3.0f%%", m_name->GetText(), (cur > 0.0f) ? "%c[green]" : "%c[red]", cur);
+		if (!fis_zero(m_af_value))
+		{
+			sz += xr_sprintf(str + sz, sizeof(str) - sz, " %s %+3.0f%%", (m_af_value > 0.0f) ? "%c[green]" : "%c[red]", m_af_value*100.f);
+		}
+
+		m_text_legacy->SetText(str);
+	}
+}
+
+
+void CUIOutfitImmunity::SetDefaultValuesPlain(float magnitude, const shared_str& unit)
+{
+	m_magnitude = magnitude;
+	m_unit_str = unit;
+}
+
+void CUIOutfitImmunity::SetCaption(LPCSTR name)
+{
+	m_name->TextItemControl()->SetText(name);
 }
 
 // ===========================================================================================
@@ -106,10 +153,6 @@ CUIOutfitInfo::CUIOutfitInfo()
 	{
 		m_items[i] = nullptr;
 	}
-	for (u32 i = 0; i < max_count; ++i)
-	{
-		m_items_legacy[i] = nullptr;
-	}
 }
 
 CUIOutfitInfo::~CUIOutfitInfo()
@@ -118,40 +161,26 @@ CUIOutfitInfo::~CUIOutfitInfo()
 	{
 		xr_delete( m_items[i] );
 	}
-	for ( u32 i = 0; i < max_count; ++i )
-	{
-		xr_delete( m_items_legacy[i] );
-	}
 }
 
 void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 {
-	LPCSTR base_str	= "outfit_info";
-
-	CUIXmlInit::InitWindow( xml_doc, base_str, 0, this );
+	XML_NODE* stored_root = xml_doc.GetLocalRoot();
+	XML_NODE* base_node = xml_doc.NavigateToNode(outfit_info, 0);
+	if (!base_node)
+	{
+		return;
+	}
+	CUIXmlInit::InitWindow( xml_doc, outfit_info, 0, this );
+	xml_doc.SetLocalRoot(base_node);
 	
 	string256 buf;
 
-	xr_strconcat(buf, base_str, ":scroll_view");
-	if (xml_doc.NavigateToNode(buf))
-	{
-		m_listWnd = new CUIScrollView();
-		m_listWnd->SetAutoDelete(true);
-		AttachChild(m_listWnd);
-		CUIXmlInit::InitScrollView(xml_doc, buf, 0, m_listWnd);
-	}
+	m_listWnd = UIHelper::CreateScrollView(xml_doc, "scroll_view", this, false);
 
-	xr_strconcat(buf, base_str, ":caption");
-	if (xml_doc.NavigateToNode(buf))
-	{
-		m_caption = UIHelper::CreateStatic(xml_doc, buf, this);
-	}
+	m_caption = UIHelper::CreateStatic(xml_doc, "caption", this, false);
 
-	xr_strconcat(buf, base_str, ":", "prop_line");
-	if (xml_doc.NavigateToNode(buf))
-	{
-		m_Prop_line = UIHelper::CreateStatic(xml_doc, buf, this);
-	}
+	m_Prop_line = UIHelper::CreateStatic(xml_doc, "prop_line", this, false);
 
 	Fvector2 pos;
 	if (m_Prop_line)
@@ -159,30 +188,43 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	else if (m_caption)
 		pos.set(0.0f, m_caption->GetWndSize().y);
 
-	for ( u32 i = 0; i < max_count; ++i )
+	for (auto [id, section, caption, magnitude, unit] : outfit_immunity)
 	{
-		m_items[i] = new CUIOutfitImmunity();
-		if (m_items[i]->InitFromXml(xml_doc, base_str, i))
+		m_items[id] = CreateItem(xml_doc, section, magnitude, unit, caption);
+		if (m_items[id] && !m_listWnd)
 		{
-			AttachChild(m_items[i]);
-			m_items[i]->SetWndPos(pos);
-			pos.y += m_items[i]->GetWndSize().y;
-		}
-		else
-		{
-			xr_delete(m_items[i]);
-			xr_strconcat(buf, base_str, ":static_", immunity_names[i]);
-			if (xml_doc.NavigateToNode(buf))
-			{
-				m_items_legacy[i] = new CUIStatic();
-				CUIStatic* _s = m_items_legacy[i];
-				_s->SetAutoDelete(false);
-				CUIXmlInit::InitStatic(xml_doc, buf, 0, _s);
-			}
+			AttachChild(m_items[id]);
+			m_items[id]->SetWndPos(pos);
+			pos.y += m_items[id]->GetWndSize().y;
 		}
 	}
 	pos.x = GetWndSize().x;
 	SetWndSize( pos );
+	xml_doc.SetLocalRoot(stored_root);
+}
+
+CUIOutfitImmunity* CUIOutfitInfo::CreateItem(CUIXml& uiXml, pcstr section,
+    float magnitude, const shared_str& unit,
+    shared_str translationId)
+		{
+	CUIOutfitImmunity* item = new CUIOutfitImmunity();
+
+	const CUIOutfitImmunity::InitResult result = item->Init(uiXml, section);
+	switch (result)
+			{
+	case CUIOutfitImmunity::InitResult::Failed:
+		xr_delete(item);
+		return nullptr;
+
+	case CUIOutfitImmunity::InitResult::Plain:
+		item->SetDefaultValuesPlain(magnitude, unit);
+		break;
+			}
+
+	item->SetCaption(g_pStringTable->translate(translationId).c_str());
+
+	item->SetAutoDelete(false);
+	return item;
 }
 
 void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit)
@@ -192,19 +234,27 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 	{
 		for (u32 i = 0; i < max_count; ++i)
 		{
-			if (m_items_legacy[i])
-				SetItem(nullptr, i, false);
+			if (m_items[i] && m_items[i]->GetLegacyMode())
+			{
+				float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, (ALife::EHitType)i);
+				_val_af = 1.0f - _val_af;
+
+				m_items[i]->SetAfValue(_val_af);
+				m_items[i]->SetProgressValue(0.0f, 0.0f);
+
+				if (!m_items[i]->GetParent() && !fis_zero(_val_af))
+				{
+					m_listWnd->AddWindow(m_items[i], false);
+				}
+				else if (m_items[i]->GetParent() && fis_zero(_val_af))
+					m_listWnd->RemoveWindow(m_items[i]);
+			}
 		}
 		return;
 	}
 	for ( u32 i = 0; i < max_count; ++i )
 	{	
-		if (m_items_legacy[i])
-		{
-			SetItem(cur_outfit, i, false);
-		}
-
-		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
+		if ( !m_items[i] || (i == ALife::eHitTypeFireWound && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode()))
 		{
 			continue;
 		}
@@ -214,17 +264,35 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 
 		float cur = cur_outfit->GetDefHitTypeProtection( hit_type );
 		cur /= max_power; // = 0..1
+		if (m_items[i]->GetLegacyMode())
+			cur = 1 - cur;
 		float slot = cur;
 		
 		if ( slot_outfit )
 		{
 			slot = slot_outfit->GetDefHitTypeProtection( hit_type );
 			slot /= max_power; //  = 0..1
+			if (m_items[i]->GetLegacyMode())
+				slot = 1 - slot;
 		}
+
+		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
+		_val_af = 1.0f - _val_af;
+
+		m_items[i]->SetAfValue(_val_af);
 		m_items[i]->SetProgressValue( cur, slot );
+
+		if (m_listWnd)
+		{
+			if (m_items[i]->GetParent())
+				m_listWnd->RemoveWindow(m_items[i]);
+
+			if (!fis_zero(_val_af) || !fis_zero(cur))
+				m_listWnd->AddWindow(m_items[i], false);
+		}
 	}
 
-	if ( m_items[ALife::eHitTypeFireWound] )
+	if ( m_items[ALife::eHitTypeFireWound] && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode() )
 	{
 		IKinematics* ikv = PKinematics(actor->Visual());
 		VERIFY( ikv );
@@ -240,7 +308,21 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		float max_power = actor->conditions().GetMaxFireWoundProtection();
 		cur /= max_power;
 		slot /= max_power;
+
+		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, ALife::eHitTypeFireWound);
+		_val_af = 1.0f - _val_af;
+
+		m_items[ALife::eHitTypeFireWound]->SetAfValue(_val_af);
 		m_items[ALife::eHitTypeFireWound]->SetProgressValue( cur, slot );
+
+		if (m_listWnd)
+		{
+			if (m_items[ALife::eHitTypeFireWound]->GetParent())
+				m_listWnd->RemoveWindow(m_items[ALife::eHitTypeFireWound]);
+
+			if (!fis_zero(_val_af) || !fis_zero(cur))
+				m_listWnd->AddWindow(m_items[ALife::eHitTypeFireWound], false);
+		}
 	}
 }
 
@@ -287,57 +369,4 @@ void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 		m_items[ALife::eHitTypeFireWound]->SetProgressValue( cur, slot );
 	}
 
-}
-
-void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
-{
-    string128  _buff;
-    float      _val_outfit = 0.0f;
-    float      _val_af     = 0.0f;
-
-    CUIStatic* _s          = m_items_legacy[hitType];
-
-	ALife::EHitType hit_type = (ALife::EHitType)hitType;
-	float max_power		   = Actor()->conditions().GetZoneMaxPower(hit_type);
-
-	if (hitType != ALife::eHitTypeFireWound)
-	{
-		_val_outfit = outfit ? outfit->GetDefHitTypeProtection(hit_type) : 0.f;
-		_val_outfit /= max_power; // = 0..1
-	}
-	else
-	{
-		IKinematics* ikv = smart_cast<IKinematics*>( Actor()->Visual());
-		VERIFY( ikv );
-		u16 spine_bone = ikv->LL_BoneID( "bip01_spine" );
-
-		_val_outfit = outfit ? outfit->GetBoneArmor( spine_bone )*outfit->GetCondition() : 0.f;
-		float max_power = Actor()->conditions().GetMaxFireWoundProtection();
-		_val_outfit /= max_power;
-	}
-
-    _val_af                = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
-	_val_af                = 1.0f - _val_af;
-
-    if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
-    {
-        if (_s->GetParent())
-            m_listWnd->RemoveWindow(_s);
-        return;
-    }
-
-    // LPCSTR _clr_outfit, _clr_af;
-    LPCSTR _imm_name = *g_pStringTable->translate(immunity_st_names[hitType]);
-
-    int    _sz       = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
-    _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_outfit > 0.0f) ? "%c[green]" : "%c[red]", _val_outfit * 100.0f);
-
-    if (!fsimilar(_val_af, 0.0f))
-    {
-        _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af * 100.0f);
-    }
-    _s->SetText(_buff);
-
-    if (!_s->GetParent())
-        m_listWnd->AddWindow(_s, false);
 }

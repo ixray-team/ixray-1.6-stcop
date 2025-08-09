@@ -28,6 +28,7 @@ void lanim_cont_xf::set_defaults()
 
 CUIStatic:: CUIStatic()
 :m_bTextureEnable(true),
+m_bTextEnable(true),
 m_bStretchTexture(false),
 m_bHeading(false),
 m_bConstHeading(false),
@@ -139,6 +140,9 @@ void  CUIStatic::Draw()
 
 void CUIStatic::DrawText()
 {
+	if (!m_bTextEnable)
+		return;
+
 	if (m_pTextControl)
 	{
 		if( !fsimilar(m_pTextControl->m_wndSize.x, m_wndSize.x) || !fsimilar(m_pTextControl->m_wndSize.y, m_wndSize.y))
