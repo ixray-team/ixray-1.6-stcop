@@ -23,16 +23,6 @@ void	CBlender_accum_direct_mask::Compile(CBlender_Compile& C) {
 		C.r_ColorWriteEnable(false, false, false, false);
 		C.r_End();
 		break;
-		case SE_MASK_DIRECT:	// stencil mask for directional light
-		C.r_Pass("stub_notransform_t_scaled", "accum_sun_mask", false, FALSE, FALSE, TRUE, D3DBLEND_ZERO, D3DBLEND_ONE, TRUE, 1);
-		C.r_dx10Texture("s_diffuse", r2_RT_albedo);
-		C.r_dx10Texture("s_surface", r2_RT_S);
-		C.r_dx10Texture("s_normal", r2_RT_N);
-		C.r_dx10Texture("s_position", r2_RT_P);
-		C.r_dx10Sampler("smp_nofilter");
-		C.r_ColorWriteEnable(false, false, false, false);
-		C.r_End();
-		break;
 		case SE_MASK_ACCUM_VOL:	// copy accumulator (temp -> real), volumetric (usually after blend)
 		C.r_Pass("accum_volume", "copy_p", false, FALSE, FALSE);
 		C.r_dx10Texture("s_generic", r2_RT_accum_temp);
