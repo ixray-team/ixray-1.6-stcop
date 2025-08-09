@@ -8,6 +8,7 @@
 
 #include "metalic_roughness_light.hlsli"
 #include "metalic_roughness_ambient.hlsli"
+#include "shadow.hlsli"
 
 void main(p_bumped_new I, out f_forward O)
 {
@@ -63,6 +64,35 @@ void main(p_bumped_new I, out f_forward O)
 		M.Roughness = Specular;
     #endif
 #endif
+
+    float4 Point = float4(M.Point.xyz, 1.f);
+    Point.xyz += M.Normal * 0.025f;
+
+	Point.xyz = mul(m_invV, Point).xyz;
+
+	//Sample cascades
+	int cascade_index;
+	float3 smap_texcoord;
+	bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+
+	float Shadow = 1.0;
+
+	if(is_in_bounds) {
+		Shadow = pcf_5x5(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
+	}
+
+	//Hozar's far cascade tricks!
+	//Imperfect port, fix it later.
+	if(cascade_index == 3)
+	{
+		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
+		float Fade = Factor.x * Factor.y * Factor.z;
+
+		float FarShadow = saturate(M.Hemi * 8.0f - 2.0f);
+		Shadow = lerp(FarShadow, Shadow, Fade);
+	}
+	
+	M.Sun = Shadow;
 
 	float4 LightColor = float4(L_sun_color.xyz, 0.5f);
 	
