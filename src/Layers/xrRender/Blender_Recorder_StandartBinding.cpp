@@ -579,6 +579,22 @@ static class cl_digiclock : public R_constant_setup
 	}
 } binder_digiclock;
 
+static class cl_vslr_params : public R_constant_setup
+{
+	virtual void setup(R_constant* C)
+	{
+		//From: https://stackoverflow.com/questions/10786951/omnidirectional-shadow-mapping-with-depth-cubemap/
+
+		float near_plane = RDEVICE.fViewportNear;
+		float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane * ps_r4_vslr_distance;
+
+		float pt1 = (far_plane + near_plane) / (far_plane - near_plane);
+		float pt2 = (2.0 * far_plane * near_plane) / (far_plane - near_plane);
+
+		RCache.set_c(C, pt1, pt2, 1.0f, 1.0f);
+	}
+} binder_vslr_params;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping()
 {
@@ -670,6 +686,9 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("m_timearrow", &binder_m_timearrow);
 	r_Constant("m_timearrow2", &binder_m_timearrow2);
 	r_Constant("m_digiclock", &binder_digiclock);
+
+	//VSLR
+	r_Constant("vslr_params", &binder_vslr_params);
 
 	// detail
 	//if (bDetail	&& detail_scaler)

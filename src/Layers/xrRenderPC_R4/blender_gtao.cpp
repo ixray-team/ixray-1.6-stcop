@@ -42,7 +42,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_half_depth", r2_RT_half_depth);
 
         C.r_dx10Texture("s_env", r2_RT_env);
-
+        C.r_dx10Texture("s_env_depth", r2_RT_env_depth);
         C.r_dx10Texture("sky_s0", r2_T_sky0);
         C.r_dx10Texture("sky_s1", r2_T_sky1);
         C.r_dx10Texture("env_s0", r2_T_envs0);
@@ -69,6 +69,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
 
         C.r_dx10Texture("s_refl", r2_RT_sslr);
         C.r_dx10Texture("s_env", r2_RT_env);
+        C.r_dx10Texture("s_env_depth", r2_RT_env_depth);
 
         C.r_dx10Texture("s_image", r2_RT_generic);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);

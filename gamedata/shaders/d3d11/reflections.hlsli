@@ -36,6 +36,14 @@ float2 gbuf_unpack_uv(float3 position)
     return saturate(position.xy * 0.5 + 0.5);
 }
 
+float vector_to_cubemap_depth(float3 in_vec)
+{
+	float3 abs_vec = abs(in_vec);
+	float z = max(abs_vec.x, max(abs_vec.y, abs_vec.z));
+	float normalized_z = vslr_params.x - vslr_params.y / z;
+	return (normalized_z + 1.0) * 0.5;
+}
+
 #define SSLR_STEPS 30
 #define MAX_FIND_STEP 5
 
@@ -46,16 +54,14 @@ float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 	[unroll(MAX_FIND_STEP)]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
-		HitDepth *= HitDepth;
-		
+		HitDepth = s_env_depth.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
+
 		Reflect *= 0.5f;
-		EndProj += dot(EndProj, EndProj) > HitDepth ? -Reflect : Reflect;
+		EndProj += vector_to_cubemap_depth(EndProj) > HitDepth ? -Reflect : Reflect;
 	}
 	
-	HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
-	HitDepth *= HitDepth;
-	
+	HitDepth = s_env_depth.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
+
 	return HitDepth;
 }
 
@@ -109,10 +115,9 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		
 		SamplePoint.xyz = Point.xyz + Reflect * L;
 		
-		SampleHitPointLen = s_env.SampleLevel(smp_rtlinear, SamplePoint.xyz, 0).w;
-		SampleHitPointLen *= SampleHitPointLen;
-		
-		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
+		SampleHitPointLen = s_env_depth.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).x;
+
+		Delta = vector_to_cubemap_depth(SamplePoint) - SampleHitPointLen;
 		
 		if (Delta > 0 /*&& Delta <= JStep * 0.8f*/)
 		{
@@ -120,7 +125,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 			SamplePoint.xyz -= JReflect;
 			
 			SampleHitPointLen = BinaryRefinement(SamplePoint.xyz, JReflect);
-			Delta = dot(SamplePoint.xyz, SamplePoint.xyz) - SampleHitPointLen;
+			Delta = vector_to_cubemap_depth(SamplePoint) - SampleHitPointLen;
 			Fade = abs(Delta * rcp(L * L + 1.0f)) < 0.15f;
 
 #ifdef VSLR_SLOW_BREAK
@@ -130,7 +135,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		}
 	}
 	
-	SamplePoint = normalize(SamplePoint) * sqrt(SampleHitPointLen);
+	SamplePoint = normalize(SamplePoint);
 	return float4(SamplePoint, Fade);
 }
 
