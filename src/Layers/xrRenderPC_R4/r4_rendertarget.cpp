@@ -665,6 +665,42 @@ CRenderTarget::CRenderTarget()
 		s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
 
 		s_accum_direct_volumetric.create("accum_volumetric_sun");
+
+		{
+			D3D11_TEXTURE2D_DESC textureDesc;
+			ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+			textureDesc.Width = size;
+			textureDesc.Height = size;
+			textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+			textureDesc.ArraySize = 3;
+			textureDesc.MipLevels = 1;
+			textureDesc.CPUAccessFlags = 0;
+			textureDesc.SampleDesc.Count = 1;
+			textureDesc.SampleDesc.Quality = 0;
+			textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+			//creating a texture
+			R_CHK(RDevice->CreateTexture2D(&textureDesc, nullptr, &rt_smap_depth_sun_tex));
+
+			//Create DSV for each slice
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+			ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			depthStencilViewDesc.Texture2DArray.ArraySize = 1;
+			depthStencilViewDesc.Texture2DArray.MipSlice = 0;
+
+			for(int dsv_idx = 0; dsv_idx < 3; dsv_idx++)
+			{
+				depthStencilViewDesc.Texture2DArray.FirstArraySlice = dsv_idx;
+				R_CHK(RDevice->CreateDepthStencilView(rt_smap_depth_sun_tex, &depthStencilViewDesc, &rt_smap_depth_sun_dsv[dsv_idx]));
+			}
+
+			//Now bind create SRV for it
+			rt_smap_depth_sun.create(r2_RT_smap_depth_sun);
+			rt_smap_depth_sun->surface_set(rt_smap_depth_sun_tex);
+		}
 	}
 
 	//	RAIN
@@ -952,6 +988,14 @@ CRenderTarget::~CRenderTarget	()
 		{
 			_RELEASE(cubemap_zbuffer_dsv[i]);
 		}
+	}
+
+	rt_smap_depth_sun->surface_set(nullptr);
+	_RELEASE(rt_smap_depth_sun_tex);
+
+	for(auto i = 0; i < 3; ++i)
+	{
+		_RELEASE(rt_smap_depth_sun_dsv[i]);
 	}
 
 	// Textures

@@ -77,6 +77,10 @@ public:
 	ID3D11DepthStencilView*		cubemap_zbuffer_dsv[6];
 	ref_texture					cubemap_zbuffer;
 
+	ID3DTexture2D*				rt_smap_depth_sun_tex;
+	ID3D11DepthStencilView*		rt_smap_depth_sun_dsv[3];
+	ref_texture					rt_smap_depth_sun;
+
 	// 
 	ref_rt						rt_Accumulator;		// 64bit		(r,g,b,specular)
 	ref_rt						rt_Generic_0;		// 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
@@ -314,8 +318,8 @@ public:
 	void						disable_aniso			();
 
 	void						draw_volume				(light* L);
-	void						accum_direct_cascade	(u32	sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias );
-	void						accum_direct_volumetric	(u32	sub_phase, const u32 Offset, const u32 i_offset, const Fmatrix &mShadow);
+	void						accum_direct_cascade	();
+	void						accum_direct_volumetric	();
 	void						accum_point				(light* L);
 	void						accum_spot				(light* L);
 	void						accum_reflected			(light* L);

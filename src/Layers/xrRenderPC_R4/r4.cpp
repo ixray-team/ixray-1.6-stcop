@@ -141,6 +141,36 @@ static class cl_alpha_ref	: public R_constant_setup
 	}
 } binder_alpha_ref;
 
+static class cl_m_shadow_sun : public R_constant_setup		
+{	
+	virtual void setup	(R_constant* C)
+	{
+		Fmatrix xf_invview;
+		xf_invview.invert(Device.mView);
+
+		for(int i = 0; i < 3; i++)
+		{
+			Fmatrix m_TexelAdjust = 
+			{
+				0.5f, 0.0f, 0.0f, 0.0f,
+				0.0f, -0.5f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0, 0.0f,
+				0.5f, 0.5f, RImplementation.m_sun_cascades[i].bias, 1.0f
+			};
+
+			// shadow xform
+			Fmatrix m_shadow_sun;
+			{
+				Fmatrix xf_project; 
+				xf_project.mul(m_TexelAdjust, RImplementation.m_sun_cascades[i].xform);
+				m_shadow_sun.mul(xf_project, xf_invview);
+			}
+
+			RCache.set_ca(C, i, m_shadow_sun);
+		}
+	}
+}	binder_m_shadow_sun;
+
 //////////////////////////////////////////////////////////////////////////
 // Just two static storage
 void CRender::create()
@@ -219,6 +249,7 @@ void CRender::create()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params_hud", &binder_pos_decompress_params_hud);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("depth_unpack", &binder_depth_unpack);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
+	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("m_shadow_sun", &binder_m_shadow_sun);
 
 	c_lmaterial = "L_material";
 	c_sbase = "s_base";
