@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
+#include "shadow.hlsli"
 
 struct vf
 {
@@ -53,10 +54,10 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	float3 v2point = normalize(I.v2point);
 	float3 vreflect = reflect(v2point, Nw);
 
+    float3 WaterPoint = I.tctexgen.z * float3(pos2d.xy * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
 	float fresnel = saturate(dot(vreflect, v2point));
 
 #ifdef USE_SSLR_ON_WATER
-    float3 WaterPoint = I.tctexgen.z * float3(pos2d.xy * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
 	float3 Reflect = mul((float3x3)m_V, vreflect);
 	
     float4 sslr = ScreenSpaceLocalReflections(WaterPoint, Reflect);
@@ -139,7 +140,30 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	
 	float fLeavesFactor = smoothstep(0.025f, 0.05f, calc_depth);
 	fLeavesFactor *= smoothstep(0.1f, 0.075f, calc_depth);
-	float4 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0);
+	
+	float Shadow = 1.0f;
+	
+#ifndef USE_R2_STATIC_SUN
+	int cascade_index;
+	float3 smap_texcoord;
+	
+	bool is_in_bounds = calc_cascades(mul(m_invV, float4(WaterPoint, 1.0f)).xyz, m_shadow_sun, cascade_index, smap_texcoord);
+	
+	if(is_in_bounds) 
+	{
+		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
+	}
+
+	if(cascade_index >= 2)
+	{
+		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
+		float Fade = Factor.x * Factor.y * Factor.z;
+		
+		Shadow = lerp(1.0f, Shadow, Fade);
+	}
+#endif
+
+	float3 Light = s_accumulator.Load(int3(pos2d.xy, 0), 0).xyz;
 	Light *= 1.0f - base.w;
 	
 	float2 CausticTexcoord = mul(m_invV, float4(Point.xyz, 1.0f)).xz * 0.45f;
@@ -150,8 +174,8 @@ float4 main(vf I, float4 pos2d : SV_POSITION) : SV_Target
 	Caustic += ddx(Caustic) * float3(1.25, 0.0, -1.25); 
 	Caustic += ddy(Caustic) * float3(1.25, 0.0, -1.25);
 
-	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Light.w;
-	final += Caustic * Light.xyz * 0.25f;
+	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Shadow;
+	final += Caustic * Light * 0.25f;
 	
 	final = lerp(final, leaves.xyz, leaves.w * fLeavesFactor);
 	alpha = max(alpha, leaves.w * fLeavesFactor);
