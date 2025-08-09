@@ -7,8 +7,6 @@ struct PSInput
     float2 texcoord : TEXCOORD0;
 };
 
-Texture3D s_blue_noise;
-
 // TODO: Это можно упростить потом
 float3 TangentToWorld(in float3 N, in float3 H)
 {

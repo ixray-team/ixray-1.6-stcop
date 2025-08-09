@@ -44,6 +44,8 @@ TextureCube env_s1;
 TextureCube sky_s0;
 TextureCube sky_s1;
 
+Texture3D s_blue_noise;
+
 // Lighting/shadowing phase                     //
 
 sampler smp_material;

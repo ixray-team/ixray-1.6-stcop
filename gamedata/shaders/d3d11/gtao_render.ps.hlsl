@@ -151,7 +151,6 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 	return saturate(1.0 - occ_weight.x * 2.0);
 }
 
-Texture3D s_blue_noise;
 uint main(PSInput I) : SV_Target
 {
 	//Sample depth buffer
