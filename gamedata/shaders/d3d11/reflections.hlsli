@@ -40,8 +40,18 @@ float vector_to_cubemap_depth(float3 in_vec)
 {
 	float3 abs_vec = abs(in_vec);
 	float z = max(abs_vec.x, max(abs_vec.y, abs_vec.z));
-	float normalized_z = vslr_params.x - vslr_params.y / z;
-	return (normalized_z + 1.0) * 0.5;
+	
+	return saturate(vslr_params.x * rcp(z) + vslr_params.y);
+}
+
+float3 cubemap_depth_to_vector(float3 in_vec, float depth)
+{
+	// So make it unit square
+	float3 abs_vec = abs(in_vec);
+	in_vec *= rcp(max(abs_vec.x, max(abs_vec.y, abs_vec.z)));
+	
+	in_vec *= depth > 0.9999f ? fog_params.z : vslr_params.x * rcp(depth - vslr_params.y);
+	return in_vec;
 }
 
 #define SSLR_STEPS 30
@@ -135,7 +145,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		}
 	}
 	
-	SamplePoint = normalize(SamplePoint);
+	SamplePoint = cubemap_depth_to_vector(SamplePoint, SampleHitPointLen);
 	return float4(SamplePoint, Fade);
 }
 
