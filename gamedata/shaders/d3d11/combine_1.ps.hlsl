@@ -31,8 +31,7 @@ float4 main(_input I) : SV_Target
 
 #ifndef USE_LEGACY_LIGHT
 	#ifdef USE_SSLR_REFLECTIONS
-		float2 motion_vectors = s_velocity.SampleLevel(smp_nofilter, I.tc0, 0.0).xy * float2(0.5, -0.5);
-		float3 SpecularIrradance = s_refl.SampleLevel(smp_rtlinear, I.tc0 - motion_vectors, 0.0).xyz;
+		float3 SpecularIrradance = s_refl.SampleLevel(smp_rtlinear, I.tc0, 0.0).xyz;
 		SpecularIrradance *= rcp(1.00001f - SpecularIrradance);
 	#else
 		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), O.Hemi, O.Roughness);
