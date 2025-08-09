@@ -273,6 +273,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 		{
 			CUIStatic* pItem = new CUIStatic();
 			pItem->SetWidth(pUIBio->GetDesiredChildWidth());
+			pItem->SetTextComplexMode(true);
 			pItem->SetText(chInfo.Bio().c_str());
 			pItem->AdjustHeightToText();
 			pUIBio->AddWindow(pItem, true);
