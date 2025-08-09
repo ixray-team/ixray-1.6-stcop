@@ -96,18 +96,18 @@ public:
 	void Present();
 	xr_vector<shared_str> DisplaySizeArray();
 
-	IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, RHISubResource* SubResource);
-	IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource);
-	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
-	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
-	IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
-	IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* surface, const RHIShaderResourceViewDesc* desc);
-	IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc);
-	IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
-	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
-	IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
-	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
-	IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
+	[[nodiscard]] IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, RHISubResource* SubResource);
+	[[nodiscard]] IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource);
+	[[nodiscard]] IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
+	[[nodiscard]] IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
+	[[nodiscard]] IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
+	[[nodiscard]] IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* surface, const RHIShaderResourceViewDesc* desc);
+	[[nodiscard]] IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc);
+	[[nodiscard]] IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
+	[[nodiscard]] IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
+	[[nodiscard]] IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
+	[[nodiscard]] IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
+	[[nodiscard]] IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
 
 	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
