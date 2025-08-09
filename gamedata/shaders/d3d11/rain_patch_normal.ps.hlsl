@@ -106,7 +106,6 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 
     //	Translate NM to view space
     water.xyz = mul((float3x3)m_V, water.xyz);
-    s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
 
     N += water.xyz;
     N = normalize(N);
@@ -118,6 +117,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 #else
     N.z = lerp(O.Roughness, 0.03f, saturate(s * 4.0f)); 
 #endif
+    s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
 
 	// N.z = 0.1f;
 

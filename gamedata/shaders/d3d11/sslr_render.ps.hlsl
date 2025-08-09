@@ -75,12 +75,12 @@ float4 main(PSInput I) : SV_Target
 	Jitter.y *= 0.5f; // Bias like screen space stochastic reflections 2015
 	
 	// O.Normal.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));
-	float4 H = ImportanceSampleGGX(O.Normal, Jitter, O.Roughness);
+	float4 H = ImportanceSampleGGX(O.Normal, Jitter, 1);
 	
 	// H.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));
 	// H.xyz = O.Normal;
 	
-	float3 RefRef = reflect(ViewVec, H.xyz);
+	float3 RefRef = H.xyz; //reflect(ViewVec, H.xyz);
 	
 #ifdef USE_JITTER_FOR_ENV
 	Enviroment = RefRef * fog_params.z;

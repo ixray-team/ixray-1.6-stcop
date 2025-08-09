@@ -14,6 +14,8 @@ float4 main(PSInput I) : SV_Target
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 	
+	return s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
+	
 	if(O.Depth >= 1.0f) {
 		return float2(0.0f, O.Depth).xxxy;
 	}
