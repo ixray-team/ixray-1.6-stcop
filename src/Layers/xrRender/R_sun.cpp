@@ -66,8 +66,36 @@ void CRender::render_sun_cascades()
 	if ( b_need_to_render_sunshafts )
 		m_sun_cascades[m_sun_cascades.size()-1].reset_chain = true;
 
+#ifndef USE_DX11
 	for( u32 i = 0; i < m_sun_cascades.size(); ++i )
 		render_sun_cascade ( i );
+#else
+	//Set viewport for shadow rendering
+	D3D11_VIEWPORT viewport =
+	{
+		0.f, 0.f, (float)RImplementation.o.smapsize, (float)RImplementation.o.smapsize, 0.f, 1.f
+	};
+	RContext->RSSetViewports(1, &viewport);
+
+	//Fill shadow array
+	for( u32 i = 0; i < m_sun_cascades.size(); ++i )
+	{
+		render_sun_cascade ( i );	
+	}
+
+	//Restore xforms
+	RCache.set_xform_world(Fidentity);
+	RCache.set_xform_view(Device.mView);
+	RCache.set_xform_project(Device.mProject);
+
+	//Restore viewport
+	viewport.Width = (float)RCache.get_width();
+	viewport.Height = (float)RCache.get_height();
+	RContext->RSSetViewports(1, &viewport);
+
+	//Draw direct shading
+	Target->accum_direct_cascade();
+#endif
 
 	if ( b_need_to_render_sunshafts )
 		m_sun_cascades[m_sun_cascades.size()-1].reset_chain = last_cascade_chain_mode;
@@ -301,7 +329,12 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 		bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
 		if (bNormal || bSpecial) {
+		#ifndef USE_DX11
 			Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
+		#else
+			RContext->ClearDepthStencilView(Target->rt_smap_depth_sun_dsv[cascade_ind], D3D_CLEAR_DEPTH, 1.0f, 0L);
+			Target->u_setrt(nullptr, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
+		#endif
 			RCache.set_xform_world(Fidentity);
 			RCache.set_xform_view(Fidentity);
 			RCache.set_xform_project(fuckingsun->X.D.combine);
@@ -323,11 +356,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	// End SMAP-render
 	r_pmask(true, false);
 
+#ifndef USE_DX11
 	// Accumulate
 	PROF_EVENT("Render Cascade: Accumulate");
 	Target->phase_accumulator();
 
 	GPU_EVENT(SE_SUN_NEAR);
+
 
 	if (cascade_ind == 0)
 		Target->accum_direct_cascade(SE_SUN_NEAR, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].xform, m_sun_cascades[cascade_ind].bias);
@@ -340,4 +375,5 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	RCache.set_xform_world(Fidentity);
 	RCache.set_xform_view(Device.mView);
 	RCache.set_xform_project(Device.mProject);
+#endif
 }

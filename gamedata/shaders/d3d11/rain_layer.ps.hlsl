@@ -12,7 +12,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_POS
     float4 P = GbufferGetPoint(pos2d.xy);
     float4 PS = mul(m_shadow, P);
 
-    float s = shadow(PS);
+    float s = shadow_rain(PS.xyz / PS.w);
     float2 tc1 = mul(m_sunmask, P).xy;
 
     float4 water = s_water.SampleLevel(smp_linear, frac(tc1 * 0.5f), 0);

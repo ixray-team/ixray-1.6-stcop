@@ -59,7 +59,8 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
     float3 WorldP = mul(m_sunmask, _P);
     float3 WorldN = mul(m_sunmask, _N.xyz);
 
-    float s = shadow_rain(PS, WorldP.xz * 2);
+	//LVutner: We gonna reuse 3x3 filter
+    float s = shadow_rain(PS.xyz / PS.w);
 
     //	Apply distance falloff
     float fAtten = 1 - smoothstep(10, 30, length(_P.xyz));
