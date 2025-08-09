@@ -51,7 +51,7 @@ float4 main(PSInput I) : SV_Target
     Light += SimpleTranslucency(Ldynamic_color.xyz, Ldynamic_dir.xyz, O.Normal) * O.SSS * O.Color;
 
 	//Trace SSS in first cascade
-    if (cascade_index == 0 && O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > 0.0001f)
+    if (O.Depth < 0.02f && dot(Shadow.xxx, Light.xyz) > 0.0001f)
         RayTraceContactShadow(I.texcoord, O.PointHud, Ldynamic_dir.xyz, Light);
 
     Shadow *= sunmask(Point);
