@@ -63,6 +63,9 @@ public:
 		u32		Tshadows			: 1;						// transluent shadows
 		u32		disasm				: 1;
 
+		u32		offscreen_reflecitons : 1;
+		u32		deffered_reflecitons : 1;
+
 		u32		forcegloss			: 1;
 		u32		forceskinw			: 1;
 		float	forcegloss_v		;

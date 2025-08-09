@@ -37,6 +37,9 @@ public:
 		u32		forceskinw			: 1;	// config
 		u32		no_detail_textures	: 1;	// config
 		u32		no_ram_textures		: 1;    // don't keep textures in RAM
+
+		u32		offscreen_reflecitons : 1;
+		u32		deffered_reflecitons : 1;
 	}			o;
 	struct		_stats		{
 		u32		o_queries,	o_culled;
