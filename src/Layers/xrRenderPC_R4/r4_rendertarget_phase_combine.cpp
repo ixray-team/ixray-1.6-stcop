@@ -75,9 +75,6 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
-	if(RImplementation.o.deffered_reflecitons) {
-		phase_sslr();
-	}
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
@@ -190,6 +187,10 @@ void CRenderTarget::phase_combine()
 		RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	}
+
+	if(RImplementation.o.deffered_reflecitons) {
+		phase_sslr();
 	}
 
 	if(ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
