@@ -37,7 +37,10 @@ function normal(shader, t_base, t_second, t_detail)
 
     shader:dx10texture("s_leaves", tex_leaves)
     shader:dx10texture("s_caustic", tex_caustic)
+	
+    shader:dx10texture("s_smap_sun", "$user$smap_depth_sun")
 
+    shader:dx10sampler("smp_smap")
     shader:dx10sampler("smp_base")
     shader:dx10sampler("smp_nofilter")
     shader:dx10sampler("smp_rtlinear")

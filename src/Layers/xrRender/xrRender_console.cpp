@@ -46,10 +46,12 @@ xr_token							qsun_quality_token							[ ]={
 	{ "st_opt_low",					0												},
 	{ "st_opt_medium",				1												},
 	{ "st_opt_high",				2												},
+/*
 #ifdef USE_DX11
 	{ "st_opt_ultra",				3												},
 	{ "st_opt_extreme",				4												},
 #endif //USE_DX11
+*/
 	{ 0,							0												}
 };
 
@@ -788,3 +790,4 @@ void xrRender_apply_tf() {
 }
 
 #endif
+
