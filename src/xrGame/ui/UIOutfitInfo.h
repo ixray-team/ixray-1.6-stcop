@@ -1,33 +1,49 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIDoubleProgressBar.h"
 #include "../../xrEngine/AI/alife_space.h"
 
 class CCustomOutfit;
 class CHelmet;
-class CUIStatic;
 class CUIDoubleProgressBar;
 class CUIXml;
 class CUIScrollView;
 
-class CUIOutfitImmunity final : public CUIWindow
+class CUIOutfitImmunity final : public CUIStatic
 {
 public:
 					CUIOutfitImmunity	();
 	virtual			~CUIOutfitImmunity	();
 
-			bool	InitFromXml			( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type );
+	enum class InitResult
+	{
+		Failed,
+		Normal,
+		Plain
+	};
+
+		InitResult	Init				( CUIXml& xml_doc, LPCSTR section );
+			void	SetCaption			( LPCSTR name );
 			void	SetProgressValue	( float cur, float comp );
+			void	SetDefaultValuesPlain(float magnitude, const shared_str& unit);
+			bool	GetLegacyMode		() { return m_legacy_mode; }
+			void	SetAfValue			( float val ) { m_af_value = val;}
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	CUIStatic				m_name; // texture + name
-	CUIDoubleProgressBar	m_progress;
+	bool					m_legacy_mode = false;
+	CUIStatic*				m_name; // texture + name
+	CUIDoubleProgressBar*	m_progress;
 	CUIStatic*				m_value; // 100%
+	CUIStatic*				m_text_legacy; // 100%
 	float					m_magnitude;
+	float					m_af_value = 0.0f;
 	shared_str				m_unit_str;
+
+	InitResult	InitPlain(CUIXml& xml, pcstr section);
 
 }; // class CUIOutfitImmunity
 
@@ -42,7 +58,11 @@ public:
 			void 	InitFromXml			( CUIXml& xml_doc );
 			void 	UpdateInfo			( CCustomOutfit* cur_outfit, CCustomOutfit* slot_outfit = NULL );	
 			void 	UpdateInfo			( CHelmet* cur_helmet, CHelmet* slot_helmet = NULL );
-			void	SetItem				(CCustomOutfit* outfit, u32 hitType, bool force_add);
+//			void	SetItem				(CCustomOutfit* outfit, u32 hitType, bool force_add);
+
+    CUIOutfitImmunity* CreateItem(CUIXml& uiXml, pcstr section,
+        float magnitude, const shared_str& unit,
+        shared_str translationId);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -52,7 +72,6 @@ protected:
 	CUIStatic*			m_caption;
 	CUIStatic*			m_Prop_line;
 	CUIOutfitImmunity*	m_items[max_count];
-	CUIStatic*			m_items_legacy[max_count];
 	CUIScrollView*		m_listWnd;
 
 }; // class CUIOutfitInfo
