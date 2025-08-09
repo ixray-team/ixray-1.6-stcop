@@ -1,12 +1,9 @@
 #include "common.hlsli"
 #include "shadow.hlsli"
 
-#ifndef USE_SUNMASK
-float3x4 m_sunmask; // ortho-projection
-#endif
-
 Texture3D s_water;
 Texture2D s_waterFall;
+
 float4 RainDensity; //	float
 float4 RainFallof;
 float4 WorldX; //	Float3
@@ -60,7 +57,8 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 
     // Read rain projection with some jetter. Also adding pixel normal
     // factor to jitter to make rain strips more realistic.
-    float s = shadow_hw(PS) * saturate(O.Hemi * 10.0f);
+	//LVutner: We gonna reuse 3x3 filter
+    float s = shadow_rain(PS.xyz / PS.w) * saturate(O.Hemi * 10.0f);
 
     //	Apply distance falloff
     // Using fixed fallof factors according to float16 depth coordinate precision.
