@@ -87,6 +87,10 @@ void CDS0_RenderInterface::set_HUD(BOOL V)
 {
 }
 
+void CDS0_RenderInterface::set_UI(BOOL V)
+{
+}
+
 BOOL CDS0_RenderInterface::get_HUD()
 {
 	return 0;
@@ -264,6 +268,10 @@ u32 CDS0_RenderInterface::active_phase()
 void CDS0_RenderInterface::Render()
 {
 	GModelPool->Render();
+}
+
+void CDS0_RenderInterface::RenderUI()
+{
 }
 
 void CDS0_RenderInterface::OnFrame()

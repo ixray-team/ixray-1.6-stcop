@@ -127,6 +127,10 @@ float4 main(PSInput I) : SV_Target
 	Image.xyz = PopGamma(Image.xyz);
 	Image.w = L;
 	
+#ifdef USE_JITTER_FOR_ENV
+	O.Roughness = 0.0f;
+#endif
+	
 	float4 Enviroment = CompureSpecularIrradance(SSLRMain.xyz, O.Hemi, O.Roughness).xyzz;
 	Enviroment.w = fog_params.z;
 	

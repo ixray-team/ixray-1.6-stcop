@@ -19,6 +19,8 @@ float4 main(PSInput I) : SV_Target
 	}
 	
 	float4 SSLRMain = float4(BiteralReflectionsFiler(I.texcoord, s_image), O.Depth);
+	
+	// return SSLRMain;
 
 	
 	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);

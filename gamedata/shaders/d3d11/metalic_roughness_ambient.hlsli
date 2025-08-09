@@ -100,9 +100,9 @@ float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
 #ifdef USE_VIEW_REFLECTIONS
 	float4 SampleRef = s_env.SampleLevel(smp_linear, R, 8.0f * Roughness);
 	SampleRef.xyz *= rcp(1.00001f - SampleRef.xyz);
+	SampleRef = PopGamma(SampleRef);
 	
-    float fog = saturate(SampleRef.w * fog_params.w + fog_params.x);
-	Irradance = lerp(PopGamma(SampleRef.xyz), Irradance, fog);
+	return SampleRef * Hemi;
 #endif
 
 	return Irradance * Hemi;

@@ -3,6 +3,8 @@
 
 void main(p_shadow _I, out IXrayGbufferPack O)
 {
+	
+	discard;
     IXrayGbuffer G;
     p_bumped_new I;
 

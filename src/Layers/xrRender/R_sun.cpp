@@ -111,6 +111,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	PROF_EVENT("Render Cascade");
 	light* fuckingsun = (light*)Lights.sun_adapted._get();
 
+	Fvector cam_dir = Device.vCameraDirection;
+
+	if (cascade_ind == (m_sun_cascades.size() - 1) 
+		&& !!RImplementation.o.deffered_reflecitons && !!RImplementation.o.offscreen_reflecitons) {
+		cam_dir.mad(Fidentity.c, fuckingsun->direction, -1.0f);
+	}
+
 	CFrustum					cull_frustum;
 	xr_vector<Fplane>			cull_planes;
 	Fvector3					cull_COP;
@@ -187,7 +194,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 					light_cuboid.view_frustum_rays = m_sun_cascades[cascade_ind].rays;
 
 				light_cuboid.view_ray.P = Device.vCameraPosition;
-				light_cuboid.view_ray.D = Device.vCameraDirection;
+				light_cuboid.view_ray.D = cam_dir;
 				light_cuboid.light_ray.P = L_pos;
 				light_cuboid.light_ray.D = L_dir;
 			}
@@ -238,7 +245,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
 			Fvector lightXZshift;
 			light_cuboid.compute_caster_model_fixed(cull_planes, lightXZshift, m_sun_cascades[cascade_ind].size, m_sun_cascades[cascade_ind].reset_chain);
-			Fvector proj_view = Device.vCameraDirection;
+			Fvector proj_view = cam_dir;
 			proj_view.y = 0;
 			proj_view.normalize();
 			//			lightXZshift.mad(proj_view, 20);

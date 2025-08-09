@@ -172,7 +172,7 @@ float3 deband_color(float3 image, float2 uv)
     float3 pq = frac(color);
 
     color -= pq;
-    pq = step(dither, pq);
+    pq = step(pq, dither);
 
     color += pq;
     color *= rcp(IMAGE_BITRATE);

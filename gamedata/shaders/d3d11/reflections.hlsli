@@ -3,8 +3,9 @@
 
 // Screen Space Sky Reflections off
 #define SKYBLED_FADE
-#define USE_BASE_HUD_REFLECTIONS
+// #define USE_BASE_HUD_REFLECTIONS
 
+#define USE_JITTER_FOR_ENV
 #define USE_VASYAN_CUTOFF
 // #define VSLR_SLOW_BREAK
 // #define SSLR_SLOW_BREAK
@@ -54,51 +55,39 @@ float3 cubemap_depth_to_vector(float3 in_vec, float depth)
 	return in_vec;
 }
 
-#define SSLR_STEPS 30
-#define MAX_FIND_STEP 5
+#define SSLR_STEPS 20
+#define MAX_FIND_STEP 3
 
-float BinaryRefinement(inout float3 EndProj, float3 Reflect)
+void BinaryRefinement(inout float3 EndProj, inout float HitDepth, float3 Reflect)
 {
-	float HitDepth = 0.0f;
-	
 	[unroll(MAX_FIND_STEP)]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_env_depth.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
-
 		Reflect *= 0.5f;
 		EndProj += vector_to_cubemap_depth(EndProj) > HitDepth ? -Reflect : Reflect;
+		
+		HitDepth = s_env_depth.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
 	}
-	
-	HitDepth = s_env_depth.SampleLevel(smp_nofilter, EndProj.xyz, 0).x;
-
-	return HitDepth;
 }
 
-float BinaryRefinementHUD(inout float3 EndProj, float3 Reflect)
+void BinaryRefinementHUD(inout float3 EndProj, inout float HitDepth, float3 Reflect)
 {
-	float HitDepth = 0.0f;
-	
 	[unroll(MAX_FIND_STEP)]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
-		
 		Reflect *= 0.5f;
 		EndProj += EndProj.z > HitDepth ? -Reflect : Reflect;
+		
+		HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
 	}
-	
-	HitDepth = s_position.SampleLevel(smp_nofilter, EndProj.xy, 0).x;
-	
-	return HitDepth;
 }
 
 float4 FastViewReflections(float3 Point, float3 Reflect)
 {
 	float3 SamplePoint = Reflect;
 	
-	float SampleHitPointLen = 0;
-	float Step = rcp(SSLR_STEPS + 1) * 0.01f;
+	float HitDepth = 0;
+	float Step = rcp(SSLR_STEPS + 1) * 0.04f;
 	float L = 0.011f;
 	
 	float RadiusS = fog_params.z * fog_params.z;
@@ -118,25 +107,23 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(SamplePoint.xyz * timers.x), float3(12.989, 42.364, 78.233))));
+		float JStep = Step * lerp(0.5f, 1.5f, Hash(dot(sin(SamplePoint.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
-		Step *= 1.25f;
+		Step *= 1.2888f;
 		
 		SamplePoint.xyz = Point.xyz + Reflect * L;
 		
-		SampleHitPointLen = s_env_depth.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).x;
+		HitDepth = s_env_depth.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).x;
 
-		Delta = vector_to_cubemap_depth(SamplePoint) - SampleHitPointLen;
+		Delta = vector_to_cubemap_depth(SamplePoint) - HitDepth;
 		
-		if (Delta > 0 /*&& Delta <= JStep * 0.8f*/)
+		if (Delta > 0.0f)
 		{
-			float3 JReflect = Reflect * JStep * 0.5f;
-			SamplePoint.xyz -= JReflect;
+			BinaryRefinement(SamplePoint.xyz, HitDepth, Reflect * JStep);
+			Delta = vector_to_cubemap_depth(SamplePoint) - HitDepth;
 			
-			SampleHitPointLen = BinaryRefinement(SamplePoint.xyz, JReflect);
-			Delta = vector_to_cubemap_depth(SamplePoint) - SampleHitPointLen;
-			Fade = abs(Delta * rcp(L * L + 1.0f)) < 0.15f;
+			Fade = abs(Delta) * rcp(max(HitDepth, 0.0001f)) < 0.1f;
 
 #ifdef VSLR_SLOW_BREAK
 			if(Fade)
@@ -145,7 +132,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		}
 	}
 	
-	SamplePoint = cubemap_depth_to_vector(SamplePoint, SampleHitPointLen);
+	SamplePoint = cubemap_depth_to_vector(SamplePoint, HitDepth);
 	return float4(SamplePoint, Fade);
 }
 
@@ -178,13 +165,13 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 	
 	float L = 0.001f;
 	
-	Step *= is_hud ? 0.2f : 1.0f;
-	float StepScale = is_hud ? 1.095f : 1.0f;
+	Step *= is_hud ? 0.143f : 0.2f;
+	float StepScale = is_hud ? 1.18016f : 1.1525f;
 	
 	[loop]
 	for(uint i = 0; i < SSLR_STEPS; ++i)
 	{
-		float JStep = Step * lerp(0.8f, 1.2f, Hash(dot(sin(EndProj.xyz * timers.x), float3(12.989, 42.364, 78.233))));
+		float JStep = Step * lerp(0.5f, 1.5f, Hash(dot(sin(EndProj.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		L += JStep;
 		
 		Step *= StepScale;
@@ -199,7 +186,7 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 			float3 JReflect = Reflect * JStep * 0.5f;
 			EndProj.xyz -= JReflect;
 			
-			HitDepth = BinaryRefinementHUD(EndProj.xyz, JReflect);
+			BinaryRefinementHUD(EndProj.xyz, HitDepth, JReflect);
 			Delta = EndProj.z - HitDepth;
 			
 			Fade = is_hud || abs(Delta) * rcp(max(HitDepth, 0.001f)) < 0.007f;
@@ -298,7 +285,7 @@ float3 BiteralReflectionsFiler(float2 TexCoord, Texture2D image) {
 	}
 
 	SpecularIrradance *= rcp(FinalWeight);
-	SpecularIrradance *= rcp(1.00001f - SpecularIrradance.xyz);
+	//SpecularIrradance *= rcp(1.00001f - SpecularIrradance.xyz);
 	
 	return SpecularIrradance;
 }

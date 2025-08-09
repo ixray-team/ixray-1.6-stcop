@@ -137,6 +137,7 @@ class	ECORE_API CRender : public IRender_interface
 	CRenderTarget* Target;
 	Fmatrix					current_matrix;
 	BOOL val_bInvisible;
+	BOOL val_bUI;
 	u32 dwFrameCalc = 0;
 public:
 	// options
@@ -172,6 +173,7 @@ public:
 
 	virtual	void					Calculate();
 	virtual void					Render();
+	virtual void					RenderUI();
 
 	virtual void					set_Transform(Fmatrix* M);
 	virtual void					add_Visual(IRenderVisual* visual);
@@ -258,6 +260,7 @@ public:
 
 	// Main 
 	IC		void					set_Frustum(CFrustum* O) { VERIFY(O);	View = O; }
+	virtual	void					set_UI(BOOL 		V);
 	virtual void					set_HUD(BOOL 		V);
 	virtual BOOL					get_HUD();
 	virtual void					set_Invisible(BOOL 		V);

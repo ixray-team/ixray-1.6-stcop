@@ -98,6 +98,10 @@ float3 NormalDecode(float2 InNormal)
 
 void GbufferPack(inout IXrayGbufferPack O, inout IXrayMaterial M)
 {
+	float3 jitter = Hash33(cos(M.Point.xyz * timers.x) * 1245.0f);
+	M.Normal.xyz += normalize(jitter) * 0.003f;
+	M.Normal.xyz = normalize(M.Normal.xyz);
+	
     O.Normal.xy = NormalEncode(M.Normal.xyz);
     O.Normal.z = M.Roughness;
     O.Normal.w = M.SnowMask;

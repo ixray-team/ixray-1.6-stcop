@@ -131,9 +131,11 @@ float4 main(PSInput I) : SV_Target
 	if(O.Depth < 0.02f) {
 		Fade = 0.95f - Fog * 0.1f;
 		
-		DepthClamp = 1.0f - saturate(80.0f * abs(SSLR_OldDiffyse.w - O.Depth) * rcp(O.Depth) - 0.5f);
+		DepthClamp = abs(SSLR_OldDiffyse.w - O.Depth) * rcp(min(SSLR_OldDiffyse.w, O.Depth)) < parallax.x;
 		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR4.xyz, GetBorderAtten(PrevDiffuseUV));
-		SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_OldDiffyse.xyz, DepthClamp * 0.98f * Fade);
+		SSLRMain.xyzw = lerp(SSLRMain.xyzw, SSLR_OldDiffyse.xyzw, DepthClamp * 0.95f);
+		
+		// SSLRMain.xyz = saturate(DepthClamp) * 0.5f;
 		
 		return saturate(SSLRMain);
 	}

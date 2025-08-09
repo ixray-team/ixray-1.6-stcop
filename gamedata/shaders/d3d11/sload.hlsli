@@ -42,11 +42,7 @@ void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, 
 		float2 texcoordDelta = viewDir.xy * layerDepth * PARALLAX_HEIGHT;
 		
 		float currDepthMapVal = 1.0f - height;
-		float currLayerDepth = 0.5f;
-		
-#ifdef USE_PBR
-		currLayerDepth = 0.0f;
-#endif
+		float currLayerDepth =  idx > 0 ? 0.5f : 0.0f;
 		
 		[loop] while(currLayerDepth < currDepthMapVal)
 		{
@@ -87,14 +83,12 @@ void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, 
 #endif
 }
 
-void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
+inline void SloadLegasy(inout p_bumped_new I, inout IXrayMaterial M, in bool use_parralax)
 {
-#if defined(USE_STEEPPARALLAX) && defined(USE_HIGH_QUALITY)
-    #ifdef USE_PBR
-		UpdateTC(I, I.tcdh.xy, s_bump, 0);
-    #else
+#if defined(USE_HIGH_QUALITY)
+	if(use_parralax) {
 		UpdateTC(I, I.tcdh.xy, s_bumpX, 3);
-	#endif
+	}
 #endif
 
     M.Color = s_base.Sample(smp_base, I.tcdh.xy);
@@ -104,30 +98,18 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
     float4 Bump = s_bump.Sample(smp_base, I.tcdh.xy);
     float4 BumpX = s_bumpX.Sample(smp_base, I.tcdh.xy);
 
-    #ifdef USE_PBR
-		M.Normal.xy = Bump.wy - 128.0f / 255.0f;
-		M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
+	M.Normal = Bump.wzy + BumpX.xyz - 1.0f;
 
-		M.Metalness = BumpX.x;
-		M.Roughness = BumpX.y;
-
-		M.SSS = BumpX.z;
-		M.AO = BumpX.w;
-    #else
-		M.Normal = Bump.wzy + BumpX.xyz - 1.0f;
-
-		M.Metalness = 0.0f;
-		M.Roughness = Bump.x;
+	M.Metalness = 0.0f;
+	M.Roughness = Bump.x;
 
 #ifdef USE_LEGACY_LIGHT
-		M.Roughness *= M.Roughness;
+	M.Roughness *= M.Roughness;
 #endif
 
-		M.SSS = 0.0;
-		M.AO = 1.0;
-    #endif
+	M.SSS = 0.0;
+	M.AO = 1.0;
 #else
-	
     M.Normal = float3(0.0f, 0.0f, 1.0f);
 
     M.Roughness = def_gloss;
@@ -135,10 +117,65 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 
     M.SSS = 0.0f;
     M.AO = 1.0f;
+	
+#endif
 
-    #ifdef USE_PBR
-    M.Roughness = 1.0f - M.Roughness;
-    #endif
+#ifdef USE_TDETAIL
+    float2 tcdbump = I.tcdh.xy * dt_params.xy;
+    float4 Detail = s_detail.Sample(smp_base, tcdbump);
+	
+    M.Color.xyz *= Detail.xyz * 2.0f;
+	M.Roughness *= Detail.w * 2.0f;
+	
+	#ifdef USE_TDETAIL_BUMP
+		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
+		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
+		M.Normal += DetailBump.wzy + DetailBumpX.xyz - 1.0f;
+	#endif
+#endif
+
+#ifndef USE_TRUE_NORMAL_MAP
+	M.Normal.z *= 0.5f;
+#endif
+
+#ifndef USE_LEGACY_LIGHT
+	// Aprox GSC material to PBS
+	M.Roughness = 1.0f - M.Roughness;
+	M.Roughness = 0.1f + 0.9f * M.Roughness * M.Roughness;
+#endif
+}
+
+inline void SloadPBR(inout p_bumped_new I, inout IXrayMaterial M, in bool use_parralax)
+{
+#if defined(USE_HIGH_QUALITY)
+	if(use_parralax) {
+		UpdateTC(I, I.tcdh.xy, s_bumpX, 3);
+	}
+#endif
+
+    M.Color = s_base.Sample(smp_base, I.tcdh.xy);
+	M.SnowMask = smoothstep(0.7f, 0.8f, I.snow_mask);
+
+#ifdef USE_BUMP
+    float4 Bump = s_bump.Sample(smp_base, I.tcdh.xy);
+    float4 BumpX = s_bumpX.Sample(smp_base, I.tcdh.xy);
+
+	M.Normal.xy = Bump.wy - 128.0f / 255.0f;
+	M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
+
+	M.Metalness = BumpX.x;
+	M.Roughness = BumpX.y;
+
+	M.SSS = BumpX.z;
+	M.AO = BumpX.w;
+#else	
+    M.Normal = float3(0.0f, 0.0f, 1.0f);
+    M.Metalness = 0.0f;
+
+    M.SSS = 0.0f;
+    M.AO = 1.0f;
+
+    M.Roughness = 1.0f - def_gloss;
 #endif
 
 #ifdef USE_TDETAIL
@@ -146,32 +183,23 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
     float4 Detail = s_detail.Sample(smp_base, tcdbump);
     M.Color.xyz *= Detail.xyz * 2.0f;
 
-    #ifndef USE_PBR
+	#ifdef USE_TDETAIL_BUMP
+		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
+		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
+
+		float3 DetailNormal = DetailBump.wyy - 128.0f / 255.0f;
+		DetailNormal.z = sqrt(1.0f - dot(DetailNormal.xy, DetailNormal.xy));
+
+		M.Normal += DetailNormal;
+
+		M.Metalness *= DetailBumpX.x * 2.0f;
+		M.Roughness *= DetailBumpX.y * 2.0f;
+
+		M.SSS *= DetailBumpX.z;
+		M.AO *= DetailBumpX.w;
+	#else
 		M.Roughness *= Detail.w * 2.0f;
-		#ifdef USE_TDETAIL_BUMP
-			float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
-			float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
-			M.Normal += DetailBump.wzy + DetailBumpX.xyz - 1.0f;
-		#endif
-    #else
-        #ifdef USE_TDETAIL_BUMP
-			float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
-			float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
-
-			float3 DetailNormal = DetailBump.wyy - 128.0f / 255.0f;
-			DetailNormal.z = sqrt(1.0f - dot(DetailNormal.xy, DetailNormal.xy));
-
-			M.Normal += DetailNormal;
-
-			M.Metalness *= DetailBumpX.x * 2.0f;
-			M.Roughness *= DetailBumpX.y * 2.0f;
-
-			M.SSS *= DetailBumpX.z;
-			M.AO *= DetailBumpX.w;
-        #else
-			M.Roughness *= Detail.w * 2.0f;
-        #endif
-    #endif
+	#endif
 #endif
 
 #ifdef USE_SNOW_TEXTURE
@@ -193,12 +221,14 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 		M.Roughness = 0.1f + 0.9f * M.Roughness * M.Roughness;
     #endif
 #else
-	#ifndef USE_DX_NORMAL_MAP
-		M.Normal.y *= -1.0f;
-	#endif
-    M.Roughness = max(0.02f, M.Roughness);
+	bool use_parralax = false;
 #endif
+	
+	#ifdef USE_PBR
+		SloadPBR(I, M, use_parralax);
+	#else 
+		SloadLegasy(I, M, use_parralax);
+	#endif
 }
-
 
 #endif

@@ -504,10 +504,10 @@ CRenderTarget::CRenderTarget()
 		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
 
 		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
 		rt_SurfaceTemp.create(r2_RT_S"_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_NormalTemp.create(r2_RT_N"_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM);
+		rt_NormalTemp.create(r2_RT_N"_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
 		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);

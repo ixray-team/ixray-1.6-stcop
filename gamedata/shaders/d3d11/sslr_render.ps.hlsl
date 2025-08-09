@@ -52,14 +52,18 @@ float4 main(PSInput I) : SV_Target
 		return float4(O.PointReal.xyz, 0.0f);
 	}
 	
+	// O.Normal.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));
+	// O.Normal.xyz = normalize(O.Normal.xyz);	
+	
 	float3 Enviroment = reflect(O.View, O.Normal) * fog_params.z;
+	O.Roughness = O.Roughness * 0.85f + 0.15f;
 	
 #ifdef USE_VASYAN_CUTOFF
-	O.Roughness = min(O.Roughness, 0.5f);
+	// O.Roughness = min(O.Roughness, 0.5f);
 #endif
 	
 #ifndef USE_JITTER_FOR_ENV
-	if(O.Depth > 0.02f && O.Roughness > 0.5f) {
+	if(O.Depth > 0.02f && O.Roughness > 1.5f) {
 		return float4(Enviroment, 0.0f);
 	}
 #endif
@@ -69,8 +73,6 @@ float4 main(PSInput I) : SV_Target
 	
 	float2 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)].xy;
 	Jitter.y *= 0.5f; // Bias like screen space stochastic reflections 2015
-	
-	// O.Roughness = saturate(O.Roughness * 1.1f - 0.1f);
 	
 	// O.Normal.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));
 	float4 H = ImportanceSampleGGX(O.Normal, Jitter, O.Roughness);
@@ -83,7 +85,7 @@ float4 main(PSInput I) : SV_Target
 #ifdef USE_JITTER_FOR_ENV
 	Enviroment = RefRef * fog_params.z;
 	
-	if(O.Depth > 0.02f && O.Roughness > 0.5f) {
+	if(O.Depth > 0.02f && O.Roughness > 1.5f) {
 		return float4(Enviroment, 0.0f);
 	}
 #endif

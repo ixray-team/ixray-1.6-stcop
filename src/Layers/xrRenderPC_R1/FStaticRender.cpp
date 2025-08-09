@@ -597,6 +597,20 @@ void	CRender::rmNormal	()
 }
 
 extern u32 g_r;
+
+void CRender::RenderUI() 
+{
+	//CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+	//rmNormal();
+//	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), Target->rt_Position->pRT, RTarget, NULL, RDepth);
+	r_dsgraph_render_ui();
+
+//	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, 0, 0, RDepth);
+	r_dsgraph_render_sorted_ui();
+
+	marker++;
+}
+
 void	CRender::Render		()
 {
 	RDevice->SetRenderTarget(0, RTarget);

@@ -22,6 +22,8 @@ BOOL stored_red_text;
 CDemoRecord * xrDemoRecord = 0;
 CDemoRecord::force_position CDemoRecord:: g_position = { false, { 0, 0, 0 } };
 
+ENGINE_API Frect m_icon_screen_size = {0, 0, 1, 1};
+
 Fbox curr_lm_fbox;
 void setup_lm_screenshot_matrices()
 {

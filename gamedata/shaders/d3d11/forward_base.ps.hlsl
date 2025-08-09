@@ -10,6 +10,8 @@
 #include "metalic_roughness_ambient.hlsli"
 #include "shadow.hlsli"
 
+uniform float4 rain_params;
+
 void main(p_bumped_new I, out f_forward O)
 {
     IXrayMaterial M;
@@ -65,6 +67,14 @@ void main(p_bumped_new I, out f_forward O)
     #endif
 #endif
 
+    float RainGloss = rain_params.x * dot(M.Color.xyz, float3(0.33, 0.33, 0.33)) * saturate(M.Hemi * 8.0f);
+	M.Roughness = lerp(M.Roughness, 0.03f, saturate(4.0f * RainGloss));
+	
+    float ColorIntencity = 1.0f - sqrt(RainGloss);
+    ColorIntencity = max(ColorIntencity, 0.5f);
+	
+	M.Color.xyz *= PushGamma(ColorIntencity);
+
     float4 Point = float4(M.Point.xyz, 1.f);
     Point.xyz += M.Normal * 0.025f;
 
@@ -73,7 +83,14 @@ void main(p_bumped_new I, out f_forward O)
 	//Sample cascades
 	int cascade_index;
 	float3 smap_texcoord;
+	
+#ifndef USE_LENGTH_BUFFER
 	bool is_in_bounds = calc_cascades(Point.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+#else
+	bool is_in_bounds = true; cascade_index = 3;
+	float4 temp = mul(m_shadow_sun[2], float4(Point.xyz, 1.0));
+	smap_texcoord = temp.xyz / temp.w;
+#endif
 
 	float Shadow = 1.0;
 

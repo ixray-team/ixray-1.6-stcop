@@ -354,6 +354,30 @@ void CRender::render_menu() {
 Fvector3 ps_r_taa_jitter_full = {0,0,0};
 
 extern u32 g_r;
+extern ENGINE_API Frect m_icon_screen_size;
+
+void CRender::RenderUI()
+{
+	ps_r_taa_jitter.set(0, 0, -1);
+	ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+
+	D3D_VIEWPORT VP = { m_icon_screen_size.x1,m_icon_screen_size.y1,m_icon_screen_size.width(),m_icon_screen_size.height(),0,1.f};
+
+	RContext->RSSetViewports(1, &VP);
+
+	RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+	//rmNormal();
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, NULL, NULL, NULL);
+	r_dsgraph_render_ui();
+
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RTarget, NULL, NULL, NULL);
+	r_dsgraph_render_sorted_ui();
+
+	marker++;
+
+	rmNormal();
+}
+
 bool is_render_cubemap = false;
 
 void CRender::Render()

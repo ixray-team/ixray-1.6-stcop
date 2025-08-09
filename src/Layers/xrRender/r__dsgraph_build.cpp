@@ -72,7 +72,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	// Select shader
 	ShaderElement*	sh		=	RImplementation.rimp_select_sh_dynamic	(pVisual,distSQ);
 	if (0==sh)								return;
-	if (!pmask[sh->flags.iPriority/2])		return;
+	if (!pmask[sh->flags.iPriority/2] && !RI.val_bUI)		return;
 
 	// Create common node
 	// NOTE: Invisible elements exist only in R1
@@ -91,6 +91,25 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 #if RENDER!=R_R1
 			if (sh->flags.bEmissive) 
 				mapHUDEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
+#endif	//	RENDER!=R_R1
+			return;
+		}
+	}
+
+	// UI rendering
+	if (RI.val_bUI)
+	{
+		if (sh->flags.bStrictB2F)
+		{
+			mapUISorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+			return;
+		}
+		else
+		{
+			mapUI.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
+#if RENDER!=R_R1
+			if (sh->flags.bEmissive)
+				mapUIEmissive.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh_d });
 #endif	//	RENDER!=R_R1
 			return;
 		}

@@ -20,12 +20,13 @@ float4 main(PSInput I) : SV_Target
 		return float2(0.0f, O.Depth).xxxy;
 	}
 
-	float3 ViewD = -O.View; float3 ViewR, ViewN = float2(0.0, 1.0).xyx;
+	float3 ViewD = O.View; float3 ViewR, ViewN = float2(0.0, 1.0).xyx;
+	float3 Center = O.PointReal * 0.996f;
 	
     ViewR = normalize(cross(ViewN, ViewD));
     ViewN = normalize(cross(ViewD, ViewR));
 	
-	float4 Jitter = s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)] - 0.5f;
+	float4 Jitter = 0.5f - Hash(dot(frac(Center.xyz * timers.x), float3(12.989, 42.364, 78.233))); //s_blue_noise[uint3(uint2(I.hpos.xy) % 128, uint(m_taa_jitter.w) % 32)];
 	
 	float2 Direction = 0.0f;
 	sincos(Jitter.y * 6.2831853f, Direction.x, Direction.y);
@@ -44,7 +45,7 @@ float4 main(PSInput I) : SV_Target
 		L += Step * lerp(0.5f, 1.5f, Hash(dot(sin(LastSample.xyz * timers.x), float3(12.989, 42.364, 78.233))));
 		
 		float3 Sample = UnPackNormalVector(Direction * L);
-		Sample = Sample.x * ViewR + Sample.y * ViewN + Sample.z * ViewD;
+		Sample = Sample.x * ViewR - Sample.y * ViewN - Sample.z * ViewD;
 		
 		float envDepth = s_env_depth.SampleLevel(smp_rtlinear, Sample, 0).x;
 		
@@ -62,11 +63,11 @@ float4 main(PSInput I) : SV_Target
 		
 		float3 Normal = normalize(cross(ddx(Sample), ddy(Sample)));
 		
-		float3 LDir = Sample - O.PointReal;
+		float3 LDir = Sample - Center;
 		float Shadow = dot(LDir, LDir);
 		float Scale = rsqrt(Shadow);
 		float Delta = dot(LDir * Scale, O.Normal);
-		float Weight = length(Sample); //length(LastSample - Sample);
+		float Weight = 1; //length(Sample); //length(LastSample - Sample);
 		
 		if(Delta >= MaxDelta && rcp(Scale) > 0.01f) {
 			float3 envColor = s_env.SampleLevel(smp_rtlinear, Sample, 0).xyz;
@@ -74,24 +75,23 @@ float4 main(PSInput I) : SV_Target
 			envColor.xyz = PopGamma(envColor.xyz);
 
 			float3 Image = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy).xyz;
-			Image.xyz = PopGamma(Image.xyz);
+		 	Image.xyz = PopGamma(Image.xyz);
 			
 			Image = lerp(Image, envColor, ErrFade * 0.1f);
 			envColor = lerp(envColor, Image, Fade);
 		
 			float Fog = 1.0f - saturate(dot(Normal, -LDir * Scale) * 100);
-			Fog *= 1.0f - saturate(rcp(Scale) * fog_params.w + fog_params.x);
+			Fog *= lerp(rcp(sqrt(Shadow) + 1.0f), 0.8f, saturate(rcp(Scale) * fog_params.w + fog_params.x));
 			
-			Global.xyz += rcp(Shadow + 1.0f) * envColor * Weight * saturate(Delta) * Fog;
+			Global.xyz += envColor * Weight * saturate(Delta) * Fog; /// * Fog;
 			MaxDelta = Delta;
-				
 		}
 		
 		Global.w += Weight;	
 		LastSample = Sample;
 	}
 	
-	Global.xyz *= rcp(1.0f + Global.xyz);
+	Global.xyz *= rcp(1.0f + Global.w);
 	return float4(Global.xyz, O.Depth);
 }
 

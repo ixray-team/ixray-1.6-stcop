@@ -117,8 +117,10 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR,
 #ifdef USE_LEGACY_LIGHT
     N.z = 0.8f * s + O.Roughness;
 #else
-    N.z = lerp(O.Roughness, 0.01f, saturate(s * 4.0f)); 
+    N.z = lerp(O.Roughness, 0.03f, saturate(s * 4.0f)); 
 #endif
+
+	// N.z = 0.1f;
 
     return float4(N, s);
 }
