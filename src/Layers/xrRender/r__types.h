@@ -36,6 +36,9 @@
 #define		r2_RT_env_temp		"$user$sky_temp"
 
 #define		r2_RT_sslr			"$user$sslr"
+#define		r2_RT_ssgi			"$user$ssgi"
+#define		r2_RT_ssgi_old		"$user$ssgi_old"
+
 #define		r2_RT_sslr_old		"$user$sslr_old"
 #define		r2_RT_sslr_temp		"$user$sslr_temp"
 

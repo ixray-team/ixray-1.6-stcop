@@ -77,6 +77,7 @@ void CRenderTarget::phase_combine()
 
 	if(RImplementation.o.deffered_reflecitons) {
 		phase_sslr();
+		phase_ssgi();
 	}
 
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};

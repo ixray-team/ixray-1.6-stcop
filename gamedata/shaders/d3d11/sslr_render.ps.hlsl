@@ -72,6 +72,7 @@ float4 main(PSInput I) : SV_Target
 	
 	// O.Roughness = saturate(O.Roughness * 1.1f - 0.1f);
 	
+	// O.Normal.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));
 	float4 H = ImportanceSampleGGX(O.Normal, Jitter, O.Roughness);
 	
 	// H.xyz = normalize(cross(ddx(O.PointReal.xyz), ddy(O.PointReal.xyz)));

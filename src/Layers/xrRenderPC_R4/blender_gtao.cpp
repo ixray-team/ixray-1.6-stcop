@@ -74,6 +74,8 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_image", r2_RT_generic);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
+        C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
+
         C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_rtlinear");
         C.r_dx10Sampler("smp_nofilter");

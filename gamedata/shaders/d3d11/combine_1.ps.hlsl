@@ -37,7 +37,9 @@ float4 main(_input I) : SV_Target
 		float3 SpecularIrradance = CompureSpecularIrradance(reflect(O.View, O.Normal), O.Hemi, O.Roughness);
 	#endif
 
-	float3 DiffuseIrradance = CompureDiffuseIrradance(O.Normal, O.Hemi) + L_ambient.xyz;	
+	float3 DiffuseIrradance = BiteralReflectionsFiler(I.tc0.xy, s_image);
+		
+	DiffuseIrradance += CompureDiffuseIrradance(O.Normal, O.Hemi); // + BiteralReflectionsFiler(I.tc0.xy, s_image);	
     float3 Ambient = AmbientLighting(DiffuseIrradance, SpecularIrradance, max(0.0, dot(O.Normal, -O.View.xyz)), O.Color, O.Metalness, O.Roughness, O.F0);
 #else
     float3 Ambient = AmbientLighting(O.View, O.Normal, O.Color, O.Metalness, O.Roughness, O.Hemi, O.F0);

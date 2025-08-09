@@ -440,7 +440,7 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_Normal);
 		DisplayRT(rt_Position);
 		DisplayRT(rt_sslr);
-		DisplayRT(rt_sslr_temp);
+		DisplayRT(rt_ssgi);
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
 		DisplayRT(rt_GammaLUT);
@@ -529,7 +529,11 @@ CRenderTarget::CRenderTarget()
 	if(RImplementation.o.deffered_reflecitons) {
 		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+
 		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+		rt_ssgi.create(r2_RT_ssgi, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_ssgi_old.create(r2_RT_ssgi_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
 
 	if(RImplementation.o.offscreen_reflecitons)

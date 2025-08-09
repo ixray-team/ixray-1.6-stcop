@@ -31,6 +31,11 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);
 		C.r_dx10Texture		("s_half_depth",	r2_RT_half_depth	);
 		C.r_dx10Texture		("s_refl",			r2_RT_sslr			);
+		C.r_dx10Texture		("s_image",			r2_RT_ssgi			);
+
+		C.r_dx10Texture		("s_blue_noise", "shaders\\blue_noise_3x3");
+        C.r_dx10Texture		("s_env_depth", r2_RT_env_depth);
+
 		jitter(C);
 
 		C.r_dx10Sampler		("smp_nofilter");
