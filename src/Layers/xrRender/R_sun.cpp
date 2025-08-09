@@ -61,10 +61,13 @@ void CRender::init_cacades()
 
 void CRender::render_sun_cascades()
 {
-	bool b_need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
+	bool b_need_to_reset_chain = !!RImplementation.o.offscreen_reflecitons || RImplementation.Target->need_to_render_sunshafts();
 	bool last_cascade_chain_mode = m_sun_cascades.back().reset_chain;
-	if ( b_need_to_render_sunshafts )
-		m_sun_cascades[m_sun_cascades.size()-1].reset_chain = true;
+
+	if (b_need_to_reset_chain)
+	{
+		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
+	}
 
 #ifndef USE_DX11
 	for( u32 i = 0; i < m_sun_cascades.size(); ++i )
@@ -97,8 +100,10 @@ void CRender::render_sun_cascades()
 	Target->accum_direct_cascade();
 #endif
 
-	if ( b_need_to_render_sunshafts )
-		m_sun_cascades[m_sun_cascades.size()-1].reset_chain = last_cascade_chain_mode;
+	if (b_need_to_reset_chain)
+	{
+		m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+	}
 }
 
 void CRender::render_sun_cascade(u32 cascade_ind)
