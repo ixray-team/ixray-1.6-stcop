@@ -532,15 +532,52 @@ CRenderTarget::CRenderTarget()
 		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
 
-	if(RImplementation.o.offscreen_reflecitons) {
+	if(RImplementation.o.offscreen_reflecitons)
+	{
 		u32 RefSize = 256;
 		auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
 
-		// TODO: Optimize memory using
+		//LVutner: I'm not sure why there's two RTs for ENV cubemap... gonna remove one later
 		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
 		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
 
-		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
+		//LVutner: Create everything by hand. CRT/CRTC sucks.
+		{
+			D3D11_TEXTURE2D_DESC textureDesc;
+			ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+			textureDesc.Width = RefSize;
+			textureDesc.Height = RefSize;
+			textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+			textureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+			textureDesc.ArraySize = 6;
+			textureDesc.MipLevels = 1;
+			textureDesc.CPUAccessFlags = 0;
+			textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+			textureDesc.SampleDesc.Count = 1;
+			textureDesc.SampleDesc.Quality = 0;
+			textureDesc.Usage = D3D11_USAGE_DEFAULT;
+
+			//creating a texture
+			R_CHK(RDevice->CreateTexture2D(&textureDesc, nullptr, &cubemap_zbuffer_tex));
+
+			//Create DSV for each slice
+			D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+			ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+			depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			depthStencilViewDesc.Texture2DArray.ArraySize = 1;
+			depthStencilViewDesc.Texture2DArray.MipSlice = 0;
+
+			for(int dsv_idx = 0; dsv_idx < 6; dsv_idx++)
+			{
+				depthStencilViewDesc.Texture2DArray.FirstArraySlice = dsv_idx;
+				R_CHK(RDevice->CreateDepthStencilView(cubemap_zbuffer_tex, &depthStencilViewDesc, &cubemap_zbuffer_dsv[dsv_idx]));
+			}
+
+			//Now bind create SRV for it
+			cubemap_zbuffer.create(r2_RT_env_depth);
+			cubemap_zbuffer->surface_set(cubemap_zbuffer_tex);
+		}
 	}
 
 	init_fsr();
@@ -904,6 +941,18 @@ CRenderTarget::CRenderTarget()
 CRenderTarget::~CRenderTarget	()
 {
 	_RELEASE					(t_ss_async);
+
+	//D3D11
+	if (cubemap_zbuffer != nullptr)
+	{
+		cubemap_zbuffer->surface_set(nullptr);
+		_RELEASE(cubemap_zbuffer_tex);
+		
+		for(auto i = 0; i < 6; ++i)
+		{
+			_RELEASE(cubemap_zbuffer_dsv[i]);
+		}
+	}
 
 	// Textures
 	t_material->surface_set		(nullptr);

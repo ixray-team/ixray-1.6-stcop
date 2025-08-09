@@ -449,10 +449,10 @@ void CRender::Render()
 			mapWmark.clear();
 
 			RContext->ClearRenderTargetView(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
-			RContext->ClearDepthStencilView(Target->rt_Depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0);
+			RContext->ClearDepthStencilView(Target->cubemap_zbuffer_dsv[i], D3D_CLEAR_DEPTH, 1.0f, 0);
 
 			Target->u_setrt(RefSize, RefSize,
-				Target->rt_Reflection->pRT[i], NULL, NULL, Target->rt_Depth->pZRT);
+				Target->rt_Reflection->pRT[i], NULL, NULL, Target->cubemap_zbuffer_dsv[i]);
 			
 			RImplementation.rmNormal();
 
