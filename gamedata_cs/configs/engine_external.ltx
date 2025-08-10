@@ -6,6 +6,9 @@ SaveImageSize = 128, 128
 [shaders_options]
 USE_LEGACY_LIGHT = 1
 
+; Hozar: Use normal on Hemi calc
+; USE_NORMAL_HEMI_DISTRIBUTION = 1
+
 ; Hozar: For PBS pipeline
 ; IBL_FAKE_IRRADANCE = 1
 ; IBL_REMAP_IRRADANCE = 1
@@ -33,7 +36,7 @@ DeadBodyRagdoll = false
 EnableThirst = false
 EnableSleepiness = false
 EnableAiDieInAnomaly = false
-EnableNPCLookAtActor = false
+EnableNPCLookAtActor = true
 EnableAutoreload = false
 EnableMonstersInventory = true
 EnableWeaponInertion = false            ; Gunslinger Mod Style
@@ -51,6 +54,7 @@ SprintFovFactor = 7.0
 
 [render]
 DisableLoadScreenTips = true
+UseDynamicSnowMask = false
 FontAtlasSize = 4096
 
 [environment]
@@ -67,3 +71,4 @@ PlayerHudOmfAdditional = dynamics\weapons\hud_hands_animation\*.omf ; Place your
 materials = earth, test1    ; Material names
 left_mark = l_foot          ; left foot wallmark section
 right_mark = r_foot         ; right foot wallmark section
+

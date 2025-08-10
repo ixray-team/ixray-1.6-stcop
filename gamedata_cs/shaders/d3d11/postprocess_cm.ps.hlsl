@@ -34,7 +34,5 @@ float4 main(p_postpr I) : SV_Target
     image = lerp(noised, image, I.Color.w);
     image = (image * I.Color.xyz + c_brightness.xyz) * 2.0f;
 
-    image = deband_color(image, I.Tex0.xy);
     return float4(image, 1.0h);
 }
-
