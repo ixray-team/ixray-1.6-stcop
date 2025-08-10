@@ -49,6 +49,8 @@ void main(in p_bilbord I, out IXrayGbufferPack O)
     M.Roughness = def_gloss;
 #endif
 
+	M.SnowMask = 0.95f;
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
+	
     GbufferPack(O, M);
 }

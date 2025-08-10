@@ -20,6 +20,8 @@ vf main(v_static v)
     float fade = abs(dot(dir_v, norm_v));
     o.c0 = fade;
 
+    o.hpos.xy += m_taa_jitter.xy * o.hpos.w;
+    
     return o;
 }
 
