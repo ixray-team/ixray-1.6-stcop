@@ -9,7 +9,7 @@ float4 main(p_TL I, float4 pos2d : SV_POSITION) : SV_Target
     GbufferUnpack(I.Tex0, pos2d.xy, O);
 
     // float4 NH = float4(O.Normal, O.Hemi);
-    float L = O.Hemi - 0.003f + O.SSS;
+    float L = O.Hemi + O.SSS;
 
     clip(L);
 
