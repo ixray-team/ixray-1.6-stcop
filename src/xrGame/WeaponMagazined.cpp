@@ -1937,9 +1937,6 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 
-	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
-
 	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
 	if (ParentIsActor())
 	{
