@@ -208,7 +208,7 @@ public:
 		af_aim_in_out = (1 << 16),
 	};
 
-	enum ESoundsFlags
+	enum ESoundsFlags : u64
 	{
 		sf_headlamp = (1 << 0),
 		sf_nv = (1 << 1),
@@ -240,11 +240,13 @@ public:
 		sf_reload_change = (1 << 27),
 		sf_tacticaltorch = (1 << 28),
 		sf_laser = (1 << 29),
+		sf_breechblock = (1 << 30),
+		sf_jam = (1 << 31),
 	};
 
 	Flags32 m_eDevicesFlags;
 	Flags32 m_eAnimationsFlags;
-	Flags32 m_eSoundsFlags;
+	Flags64 m_eSoundsFlags;
 
 	bool bDisablePrepareAnimation = false;
 
