@@ -18,8 +18,10 @@ struct IXrayMaterial
 	float Hemi;
 	float Sun;
 
-	float SSS;
-	float AO;
+    float SSS;
+    float AO;
+	
+	float SnowMask;
 };
 
 struct IXrayGbufferPack
@@ -53,6 +55,7 @@ struct IXrayGbuffer
 
 	float SSS;
 	float AO;
+	float SnowMask;
 };
 
 float2 PackNormalVector(float3 Vector) {
@@ -97,7 +100,7 @@ void GbufferPack(inout IXrayGbufferPack O, inout IXrayMaterial M)
 {
     O.Normal.xy = NormalEncode(M.Normal.xyz);
     O.Normal.z = M.Roughness;
-    O.Normal.w = 0.0f;
+    O.Normal.w = M.SnowMask;
 
     O.Color.xyz = M.Color.xyz;
     O.Color.w = M.SSS;
@@ -156,7 +159,7 @@ void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
     float4 ColorSSS = s_diffuse.Load(int3(HPos, 0));
 
     O.Depth = s_position.Load(int3(HPos, 0)).x;
-	
+    
     HPos = HPos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
 
     float3 P = float3(HPos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
@@ -181,6 +184,8 @@ void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
 	
 	O.AO = PushGamma(Material.z);
 	O.F0 = 0.002f + 0.018f * Material.w;
+
+	O.SnowMask = NormalHemi.w;
 }
 
 void GbufferUnpack(in float2 TexCoord, inout IXrayGbuffer O)
@@ -218,6 +223,8 @@ void GbufferUnpack(in float2 TexCoord, inout IXrayGbuffer O)
 	
 	O.AO = PushGamma(Material.z);
 	O.F0 = 0.002f + 0.018f * Material.w;
+
+	O.SnowMask = NormalHemi.w;
 }
 
 #endif

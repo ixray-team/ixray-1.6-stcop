@@ -54,6 +54,7 @@ p_bumped_new main(in InputPatch<p_bumped_new, 3> ip, in uint i : SV_OutputContro
     ouput.hpos_old = ip[i].hpos_old;
 
     ouput.hpos = ip[i].hpos;
+    ouput.snow_mask = ip[i].snow_mask;
 
     return ouput;
 }
