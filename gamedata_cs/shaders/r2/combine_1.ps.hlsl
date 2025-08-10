@@ -50,6 +50,7 @@ float4 main(_input I) : COLOR0
     float4 light = float4(L.xyz + hdiffuse, L.w);
     float4 C = D * light;
     float3 spec = C.www + hspecular;
+    spec *= 0.4f;
 
     float3 color = C.xyz + spec;
 

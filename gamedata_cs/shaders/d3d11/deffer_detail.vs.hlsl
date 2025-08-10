@@ -98,4 +98,7 @@ void main(in v_detail I, out p_bumped_new O)
 #else
     O.hpos_curr = O.hpos_old = O.hpos;
 #endif
-};
+
+    O.snow_mask = 0.0f;
+}
+

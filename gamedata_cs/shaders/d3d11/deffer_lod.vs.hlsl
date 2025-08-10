@@ -82,5 +82,7 @@ void main(in v_tree I, out p_bumped_new O)
     O.hpos_old = mul(m_VP_old, pos_old);
 
     O.hpos.xy += m_taa_jitter.xy * O.hpos.w;
+	
+    O.snow_mask = normalize(mul(m_xform, N)).y;
 }
 

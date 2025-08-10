@@ -18,6 +18,10 @@ float3 CompureDiffuseIrradance(float3 N, float Hemi)
 	RemapVector(LightDirection);
 #endif
 
+#ifdef USE_NORMAL_HEMI_DISTRIBUTION
+	Hemi = min(Hemi, LightDirection.y * 0.375f + 0.375f);
+#endif
+
 	float3 SampleLast = env_s0.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 	float3 SampleNext = env_s1.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 
