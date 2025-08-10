@@ -243,6 +243,18 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_torch_on", "sndTorchOn", true, m_eSoundEmptyClick);
 		m_sounds.LoadSound(section, "snd_torch_off", "sndTorchOff", true, m_eSoundEmptyClick);
 	}
+
+	if (SoundExist(section, "snd_breechblock"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_breechblock, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock", "sndPump", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_jam"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags::sf_jam, TRUE);
+		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundEmptyClick);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1111,6 +1123,18 @@ void CWeaponMagazined::SelectShotSound()
 		HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(factor);
 		PlaySound("sndMagShot", get_LastFP());
 		HUD_SOUND_ITEM::SetHudSndGlobalVolumeFactor(1.0f);
+	}
+
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_breechblock))
+	{
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_jam) && IsMisfire())
+		{
+			PlaySound("sndJam", get_LastFP());
+		}
+		else
+		{
+			PlaySound("sndPump", get_LastFP());
+		}
 	}
 }
 
