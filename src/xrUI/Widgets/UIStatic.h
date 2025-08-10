@@ -48,6 +48,8 @@ public:
 	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
+	virtual	void		SetFont					(CGameFont* F)				{CUIWindow::SetFont(F); TextItemControl()->SetFont(F);}
+	virtual	CGameFont*	GetFont					()							{return TextItemControl()->GetFont();}
 
 	void SetTextColor_script(int a, int r, int g, int b)
 	{
