@@ -60,6 +60,17 @@ bool CWeapon::install_upgrade_ammo_class( LPCSTR section, bool test )
 			m_ammoTypes.push_back( ammoItem );
 		}
 		m_ammoType = 0;
+
+		m_mags_capacity.clear();
+		for (int i = 0; i < m_ammoTypes.size(); i++)
+		{
+			static shared_str capacity_value;
+			capacity_value.printf("ammo_mag_size_for_type_%d", i);
+			if (pSettings->line_exist(*m_section_id, *capacity_value))
+			{
+				m_mags_capacity.emplace_back(static_cast<u8>(i), pSettings->r_u32(*m_section_id, *capacity_value));
+			}
+		}
 	}
 	result |= result2;
 

@@ -653,6 +653,17 @@ void CWeapon::Load		(LPCSTR section)
 	light_misfire.startprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_probability", 1.0f);
 	light_misfire.endprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_probability", 0.0f);
 
+	m_mags_capacity.clear();
+	for (int i = 0; i < m_ammoTypes.size(); i++)
+	{
+		static shared_str capacity_value;
+		capacity_value.printf("ammo_mag_size_for_type_%d", i);
+		if (pSettings->line_exist(section, *capacity_value))
+		{
+			m_mags_capacity.emplace_back(static_cast<u8>(i), pSettings->r_u32(section, *capacity_value));
+		}
+	}
+
 	if (pSettings->line_exist(hud_sect, "shell_params_section"))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
@@ -3465,7 +3476,7 @@ u32 CWeapon::FakeReload()
 {
 	if (unlimited_ammo())
 	{
-		return iMagazineSize;
+		return GetMagCapacity();
 	}
 
 	u32 in_box = GetAmmoCount(GetTargetAmmoType(IsGrenadeMode()));
@@ -3598,4 +3609,22 @@ bool CWeapon::ScopeFit(CScope* pIItem) const
 	}
 
 	return false;
+}
+
+int CWeapon::GetMagCapacity()
+{
+	int size = iMagazineSize;
+
+	if (!IsGrenadeMode())
+	{
+		for (auto& ammo_pair : m_mags_capacity)
+		{
+			if (ammo_pair.first == GetTargetAmmoType())
+			{
+				size = ammo_pair.second;
+			}
+		}
+	}
+
+	return size;
 }

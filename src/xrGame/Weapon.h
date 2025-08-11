@@ -264,6 +264,8 @@ public:
 	bool bUpdateHUDBonesVisibility = false;
 	u32 _last_update_time;
 
+	xr_vector<std::pair<u8, u32>> m_mags_capacity{};
+
 	bool bReloadKeyPressed = false;
 	bool bAmmotypeKeyPressed = false;
 	bool bStopReloadSignal = false;
@@ -618,6 +620,7 @@ protected:
 
 	virtual void			GiveAmmoFromMagToChamber();
 	virtual void			DeleteAmmoInChamber();
+	virtual int				GetMagCapacity();
 
 public:
 	virtual const xr_vector<shared_str>& getAmmoTypes(bool for_grenade_mode = false) const { return m_ammoTypes; }
