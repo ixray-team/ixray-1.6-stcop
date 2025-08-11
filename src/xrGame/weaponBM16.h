@@ -22,5 +22,9 @@ protected:
 
 	virtual CWeaponBM16* cast_weapon_bm16() { return this; }
 
+	virtual int GetMagCapacity() override { int size = m_iAmmoCountToReload; m_iAmmoCountToReload = 2; return size; }
+
+	int m_iAmmoCountToReload = 2;
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

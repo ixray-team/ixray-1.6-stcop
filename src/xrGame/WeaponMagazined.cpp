@@ -1252,8 +1252,12 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				if (!m_bIsReloaded)
 				{
 					m_bIsReloaded = true;
+					int base_mag_size = iMagazineSize;
+					int new_mag_size = GetMagCapacity();
+					iMagazineSize = new_mag_size;
 					ReloadMagazine();
-					
+					iMagazineSize = base_mag_size;
+
 					if (!IsGrenadeMode())
 					{
 						m_bJustAfterReload = true;
@@ -1587,10 +1591,12 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		{
 			if (flags & CMD_START && (m_bBlockReload && GetState() == eIdle || !m_bBlockReload))
 			{
-				if (iAmmoElapsed < iMagazineSize || IsMisfire())
+				if (iAmmoElapsed < GetMagCapacity() || IsMisfire())
 				{
 					if (!bReloadKeyPressed || !bAmmotypeKeyPressed)
+					{
 						bReloadKeyPressed = true;
+					}
 
 					Reload();
 				}
@@ -2588,7 +2594,12 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& mark)
 		}
 		else
 		{
+			int base_mag_size = iMagazineSize;
+			int new_mag_size = GetMagCapacity();
+			iMagazineSize = new_mag_size;
 			ReloadMagazine();
+			iMagazineSize = base_mag_size;
+
 			GiveAmmoFromMagToChamber();
 		}
 
