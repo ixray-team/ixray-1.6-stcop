@@ -177,6 +177,11 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("switch_to_talk",				&CScriptGameObject::SwitchToTalk)
 		.def("run_talk_dialog",				&CScriptGameObject::RunTalkDialog)
 		.def("allow_break_talk_dialog",		&CScriptGameObject::AllowBreakTalkDialog)
+
+		.def("set_pda_disabled",			&CScriptGameObject::SetPdaDisabled)
+		.def("is_pda_disabled",				&CScriptGameObject::IsPdaDisabled)
+		.def("set_inventory_disabled",		&CScriptGameObject::SetInventoryDisabled)
+		.def("is_inventory_disabled",		&CScriptGameObject::IsInventoryDisabled)
 		
 		.def("hide_weapon",					&CScriptGameObject::HideWeapon)
 		.def("hide_detector",				&CScriptGameObject::HideDetector)

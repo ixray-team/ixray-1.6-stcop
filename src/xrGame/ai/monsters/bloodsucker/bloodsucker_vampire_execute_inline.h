@@ -54,6 +54,7 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 		Actor()->u_EventSend(P);
 
 		Actor()->set_inventory_disabled(true);
+		Actor()->set_pda_disabled(true);
 	}
 	else
 	{
@@ -139,7 +140,7 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::cleanup()
 {
 	if (IsGameTypeSingle())
-		Actor()->set_inventory_disabled(false);
+		Actor()->set_pda_disabled(false);
 	else
 		this->object->sendToStopVampire();
 	if ( this->object->com_man().ta_is_active() )
