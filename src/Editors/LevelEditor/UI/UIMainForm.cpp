@@ -244,19 +244,19 @@ void UIMainForm::DrawContextMenu()
 		ImGui::BeginDisabled(!CanLock);
 		if(ImGui::MenuItem("Lock selection"))
 		{
-            ExecCommand(COMMAND_LOCK_SEL, TRUE);
+			ExecCommand(COMMAND_LOCK_SEL, TRUE);
 		}
-        if(ImGui::MenuItem("Lock unselected"))
+		if(ImGui::MenuItem("Lock unselected"))
 		{
-            ExecCommand(COMMAND_LOCK_UNSEL, TRUE);
+			ExecCommand(COMMAND_LOCK_UNSEL, TRUE);
 		}
-        if(ImGui::MenuItem("Lock all"))
+		if(ImGui::MenuItem("Lock all"))
 		{
 			ExecCommand(COMMAND_LOCK_ALL, TRUE);
 		}
 		ImGui::EndDisabled();
 
-        ImGui::Separator();
+		ImGui::Separator();
 
 		ImGui::BeginDisabled(!CanUnlock);
 		if(ImGui::MenuItem("Unlock selection"))
@@ -384,26 +384,26 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 						UI->RedrawScene();
 					}
 				}
-                // Погода
+				// Погода
 				{
 					if (ImGui::BeginMenu("Environment"))
 					{
-                        {
-                            if (ImGui::Button("Weather properties"))
-                            {
-                                ExecCommand(COMMAND_WEATHER_PROPERTIES);
-                            }
-                            if (ImGui::IsItemHovered())
-                                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-                        }
+						if (ImGui::MenuItem("Properties"))
+						{
+							ExecCommand(COMMAND_WEATHER_PROPERTIES);
+						}
+						if (ImGui::IsItemHovered())
+						{
+							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						}
 						bool selected = !psDeviceFlags.test(rsEnvironment);
 						if (ImGui::MenuItem("None", "", &selected))
 						{
 							psDeviceFlags.set(rsEnvironment, false);
 							UI->RedrawScene();
 						}
-                        if (ImGui::IsItemHovered())
-                            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						if (ImGui::IsItemHovered())
+							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 						ImGui::Separator();
 						for (auto& i : g_pGamePersistent->Environment().WeatherCycles)
 						{
@@ -414,8 +414,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 								g_pGamePersistent->Environment().SetWeather(i.first.c_str(), true);
 								UI->RedrawScene();
 							}
-                            if (ImGui::IsItemHovered())
-                                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+							if (ImGui::IsItemHovered())
+								ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 						}
 						ImGui::EndMenu();
 					}

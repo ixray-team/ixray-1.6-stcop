@@ -125,8 +125,6 @@ void CEditorRenderDevice::Initialize()
 	DRender = &DebugRenderImpl;
 #endif
 
-	SDL_Init(0);
-
 	// compiler shader
     string_path fn;
     FS.update_path(fn,_game_data_,"shaders_xrlc.xr");
