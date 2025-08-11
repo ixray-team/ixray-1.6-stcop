@@ -143,12 +143,12 @@ void XrUIManager::ResetBegin()
 		Ptr->ResetBegin();
 	}
 
-	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplDX9_InvalidateDeviceObjects();
 }
 
 void XrUIManager::ResetEnd(void* NewDevice)
 {
-	ImGui_ImplDX9_Init((IDirect3DDevice9*)NewDevice);
+	ImGui_ImplDX9_CreateDeviceObjects();
 
 	for (auto Ptr : m_UIArray)
 	{
