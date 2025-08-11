@@ -129,6 +129,7 @@ void CHudAnimatorManager::StartAnimator(const shared_str& section)
 		CurrentGameUI()->TopInputReceiver()->HideDialog();
 	}
 	m_actor->set_inventory_disabled(true);
+	m_actor->set_pda_disabled(true);
 }
 
 void CHudAnimatorManager::PlayMotion()
@@ -246,6 +247,7 @@ void CHudAnimatorManager::StopAnimator()
 {
 	m_bIsPlaying = false;
 	m_actor->set_inventory_disabled(false);
+	m_actor->set_pda_disabled(false);
 	m_sounds.StopAllSounds();
 	g_player_hud->delete_animator_item();
 

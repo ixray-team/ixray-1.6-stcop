@@ -1127,6 +1127,52 @@ void CScriptGameObject::enable_night_vision(bool value)
 	}
 }
 
+void CScriptGameObject::SetPdaDisabled(bool value)
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->set_pda_disabled(value);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member set_pda_disabled!");
+	}
+}
+
+bool CScriptGameObject::IsPdaDisabled()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->pda_disabled();
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member is_pda_disabled!");
+	return false;
+}
+
+void CScriptGameObject::SetInventoryDisabled(bool value)
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->set_inventory_disabled(value);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member set_inventory_disabled!");
+	}
+}
+
+bool CScriptGameObject::IsInventoryDisabled()
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		return actor->inventory_disabled();
+	}
+
+	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member is_inventory_disabled!");
+	return false;
+}
+
 bool CScriptGameObject::night_vision_enabled() const
 {
 	if (CActor* actor = object().cast_actor())
