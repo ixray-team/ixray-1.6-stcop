@@ -415,6 +415,11 @@ public:
 			void				RestoreWeapon		();
 			void				AllowSprint			(bool b);
 
+			void				SetPdaDisabled		(bool b);
+			bool				IsPdaDisabled		();
+			void				SetInventoryDisabled(bool b);
+			bool				IsInventoryDisabled	();
+
 			bool				Weapon_IsGrenadeLauncherAttached();
 			bool				Weapon_IsScopeAttached			();
 			bool				Weapon_IsSilencerAttached		();
