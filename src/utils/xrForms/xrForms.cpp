@@ -6,7 +6,7 @@
 #include <luabind/luabind.hpp>
 #include <imgui.h>
 
-#include "imgui_impl_sdl3.h"
+#include "../../editors/xrEUI/imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
 
 #include "CompilerIcons.h"
