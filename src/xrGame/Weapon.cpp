@@ -3050,11 +3050,17 @@ bool CWeapon::IsUIForceHiding()
 	CWeaponBinoculars* bino = cast_weapon_binoculars();
 
 	if (bino && IsZoomed())
+	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+	}
 	else if (get_ScopeStatus() == 1 && IsZoomed())
+	{
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
+	}
 	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
+	{
 		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
+	}
 
 	return false;
 }
@@ -3066,14 +3072,10 @@ bool CWeapon::IsCollimatorInstalled() const
 		return false;
 	}
 
-	shared_str scope = GetScopeName();
-	if (pSettings->line_exist(scope, "scope_name"))
-	{
-		scope = pSettings->r_string(scope, "scope_name");
-		return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
-	}
+	shared_str scope = GetCurrentScopeSection();
+	scope = pSettings->r_string(scope, "scope_name");
 
-	return false;
+	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
 }
 
 bool CWeapon::IsHudModelForceUnhide() const
@@ -3095,12 +3097,7 @@ bool CWeapon::IsUIForceUnhiding() const
 		}
 		else if (get_ScopeStatus() == 2 && IsScopeAttached())
 		{
-			shared_str scope = GetScopeName();
-			if (pSettings->line_exist(scope, "scope_name"))
-			{
-				scope = pSettings->r_string(scope, "scope_name");
-				result = !READ_IF_EXISTS(pSettings, r_bool, scope, "zoom_hide_ui", false);
-			}
+			result = !READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
 		}
 	}
 
