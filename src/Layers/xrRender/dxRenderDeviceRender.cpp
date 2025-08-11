@@ -33,7 +33,7 @@ dxRenderDeviceRender::dxRenderDeviceRender()
 	ImUI.HardwareDrawDataCallback	= []() { ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); };
 	ImUI.HardwareDestroyCallback	= ImGui_ImplDX9_Shutdown;
 	ImUI.HardwareNewFrameCallback	= ImGui_ImplDX9_NewFrame;
-	ImUI.HardwareResetCallback		= ImGui_ImplDX9_InvalidateDeviceObjects;
+	ImUI.HardwareResetCallback		= []() { ImGui_ImplDX9_InvalidateDeviceObjects(); /*ImGui_ImplDX9_CreateDeviceObjects(); */};
 #endif
 }
 #else
