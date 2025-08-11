@@ -50,8 +50,10 @@ protected:
 	virtual void	switch2_Hidden	();
 	virtual void	switch2_Showing	();
 	virtual void	switch2_FireMode();
+	virtual void	switch2_LightMis();
 	
 	virtual void	OnShot			();
+			void	OnShotJammed	();
 			void	SelectShotSound ();
 	
 	virtual void	OnEmptyClick	();
@@ -72,7 +74,6 @@ protected:
 
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
-	virtual void	state_Misfire	(float dt);
 public:
 					CWeaponMagazined	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazined	();
