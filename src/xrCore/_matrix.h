@@ -739,6 +739,38 @@ public:
 	    m[3][3] = 1.0f;
 	    return *this;
 	}
+
+	void Decompose(Tvector& scale, Tvector& rotation, Tvector& position)
+	{
+		position = c;
+
+		// Масштаб — длины осей
+		scale.x = i.magnitude();
+		scale.y = j.magnitude();
+		scale.z = k.magnitude();
+
+		// Извлекаем чистую матрицу поворота (без масштаба)
+		Self rotMatrix;
+		rotMatrix.i.x = i.x / scale.x;
+		rotMatrix.i.y = i.y / scale.x;
+		rotMatrix.i.z = i.z / scale.x;
+
+		rotMatrix.j.x = j.x / scale.y;
+		rotMatrix.j.y = j.y / scale.y;
+		rotMatrix.j.z = j.z / scale.y;
+
+		rotMatrix.k.x = k.x / scale.z;
+		rotMatrix.k.y = k.y / scale.z;
+		rotMatrix.k.z = k.z / scale.z;
+
+		// Матрица для поворота без позиции
+		rotMatrix.c.set(0.f, 0.f, 0.f);
+
+		// Конвертируем поворот в углы Эйлера
+		rotation.y = atan2f(rotMatrix.i.z, rotMatrix.k.z); // yaw
+		rotation.x = asinf(-rotMatrix.j.z);                // pitch
+		rotation.z = atan2f(rotMatrix.j.x, rotMatrix.j.y); // roll
+	}
 };
 
 typedef		_matrix<float>	Fmatrix;
