@@ -1041,6 +1041,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 			sound().play(CAI_Bloodsucker::eVampireGrasp);
 			m_client_effector = false;
 			Actor()->set_inventory_disabled(true);
+			Actor()->set_pda_disabled(true);
 		}
 		break;
 	}
@@ -1059,6 +1060,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 
 			sound().play(CAI_Bloodsucker::eVampireHit);
 			Actor()->set_inventory_disabled(false);
+			Actor()->set_pda_disabled(false);
 		}
 		break;
 	}
