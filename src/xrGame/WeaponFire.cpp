@@ -226,7 +226,10 @@ void CWeapon::StopShooting()
 	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
 		StopFlameParticles	();	
 
-	SwitchState(eIdle);
+	if (!ParentIsActor())
+	{
+		SwitchState(eIdle);
+	}
 
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);

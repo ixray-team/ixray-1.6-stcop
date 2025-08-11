@@ -636,6 +636,23 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
 
+	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
+
+	m_bNoJamFirstShot = READ_IF_EXISTS(pSettings, r_bool, section, "no_jam_in_first_shot", false);
+	m_bActorCanShoot = READ_IF_EXISTS(pSettings, r_bool, section, "actor_can_shoot", true);
+
+	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
+	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
+
+	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
+
+	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isImproveMis);
+
+	light_misfire.startcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_condition", 1.0f);
+	light_misfire.endcond = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_condition", 0.0f);
+	light_misfire.startprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_start_probability", 1.0f);
+	light_misfire.endprob = READ_IF_EXISTS(pSettings, r_float, section, "light_misfire_end_probability", 0.0f);
+
 	if (pSettings->line_exist(hud_sect, "shell_params_section"))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
@@ -1103,6 +1120,7 @@ void CWeapon::OnHiddenItem ()
 
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_bBlockEmptyClick = false;
+	bWorking = false;
 }
 
 bool CWeapon::SendDeactivateItem()
@@ -1138,6 +1156,8 @@ void CWeapon::OnH_B_Chield		()
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_bBlockEmptyClick = false;
+	bWorking = false;
+	SetState(eHidden);
 }
 
 extern u32 hud_adj_mode;
@@ -1256,7 +1276,7 @@ void CWeapon::ForceUpdateHUD()
 	ProcessScope();
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
-	UpdateShellBones(iAmmoElapsed, m_ammoType);
+	UpdateShellBones(iAmmoElapsed, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
 }
 
 void CWeapon::SwitchTorch(bool status, bool forced)
@@ -1818,39 +1838,156 @@ float CWeapon::GetConditionMisfireProbability() const
 	return mis;
 }
 
-BOOL CWeapon::CheckForMisfire()
+bool CWeapon::IsJamProhibited()
+{
+	// [bug] в классе РГ-6 выстрел ракеты происходит до заклина оружия, что может мешать.
+	//if (smart_cast<CWeaponRG6*>(this) != nullptr && m_bJamNotShot)
+	//{
+	//	if (rg6_misfire_assign_allowed)
+	//		return true;
+	//}
+
+	if (IsGrenadeMode())
+	{
+		return false;
+	}
+
+	// Запрет клина в первом выстреле после перезарядки
+	if (m_bJustAfterReload && m_bNoJamFirstShot)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool CWeapon::OnWeaponJam()
+{
+	CActor* pActor = H_Parent()->cast_actor();
+
+	SetMisfireStatus(true);
+	//_wanim_force_assign = true;
+
+	//if (pActor->IsActorSuicideNow())
+	//{
+	//	SetMisfireStatus(false);
+	//	return false;
+	//}
+
+	if (m_bUseLightMis && !(pActor->GetDetector() != nullptr && m_bDisableLightMisDet))
+	{
+		float curcond = GetCondition();
+		float startcond = light_misfire.startcond;
+		float endcond = light_misfire.endcond;
+		float startprob = light_misfire.startprob;
+		float endprob = light_misfire.endprob;
+
+		float curprob = 0.0f;
+
+		if (curcond < endcond)
+		{
+			curprob = endprob;
+		}
+		else if (curcond > startcond)
+		{
+			curprob = 0.0f;
+		}
+		else
+		{
+			curprob = endprob + curcond * (startprob - endprob) / (startcond - endcond);
+		}
+
+		if (::Random.randF(0.0f, 1.0f) < curprob)
+		{
+			SetMisfireStatus(false);
+			//ApplyLensRecoil(GetMisfireRecoil());
+			SwitchState(eLightMis);
+			return true;
+		}
+	}
+
+	if (m_bJamNotShot)
+	{
+		SwitchState(eMisfire);
+		return true;
+	}
+
+	return false;
+}
+
+bool CWeapon::CheckForMisfire_validate_NoMisfire()
+{
+	if (CActor* pActor = H_Parent()->cast_actor())
+	{
+		float problems_lvl = m_fMisfireAfterProblemsLevel;
+
+		if (problems_lvl > 0.0f && pActor->CurrentElectronicsProblemsCnt() >= problems_lvl)
+		{
+			return OnWeaponJam();
+		}
+
+		if (!m_bActorCanShoot)
+		{
+			SwitchState(eMisfire);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CWeapon::CheckForMisfire()
 {
 	if (OnClient())
 	{
-		return FALSE;
+		return false;
 	}
 
 	if (!ParentIsActor())
 	{
-		return FALSE;
+		return false;
 	}
 
-	float rnd = ::Random.randF(0.f,1.f);
+	float rnd = ::Random.randF(0.f, 1.f);
 	float mp = GetConditionMisfireProbability();
-	if(rnd < mp)
+
+	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
+
+	if (rnd < mp)
 	{
 		FireEnd();
 
-		bMisfire = true;
-		SwitchState(eMisfire);		
-		
-		return TRUE;
+		if (!isImproveMis)
+		{
+			SetMisfireStatus(true);
+			SwitchState(eMisfire);
+			return true;
+		}
+
+		if (IsJamProhibited())
+		{
+			SetMisfireStatus(false);
+			return false;
+		}
+		else
+		{
+			return OnWeaponJam();
+		}
 	}
-	else
+	else if (isImproveMis)
 	{
-		return FALSE;
+		return CheckForMisfire_validate_NoMisfire();
 	}
+
+	return false;
 }
 
-BOOL CWeapon::IsMisfire() const
+
+bool CWeapon::IsMisfire() const
 {	
 	return bMisfire;
 }
+
 void CWeapon::Reload()
 {
 	OnZoomOut();

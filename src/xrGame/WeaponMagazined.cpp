@@ -250,10 +250,17 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_breechblock", "sndPump", true, m_eSoundEmptyClick);
 	}
 
+	//Only for improve misfire external!
 	if (SoundExist(section, "snd_jam"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_jam, TRUE);
 		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundEmptyClick);
+	}
+
+	//Only for improve misfire external!
+	if (SoundExist(section, "snd_light_misfire"))
+	{
+		m_sounds.LoadSound(section, "snd_light_misfire", "sndLightMisfire", true, m_eSoundEmptyClick);
 	}
 }
 
@@ -423,6 +430,11 @@ bool CWeaponMagazined::IsAmmoAvailable()
 
 void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 {
+	if (!IsGrenadeMode())
+	{
+		SetMisfireStatus(false);
+	}
+
 	xr_map<LPCSTR, u16> l_ammo;
 	xr_map< u16, u16> ammos_to_sync;
 	while(!m_magazine.empty()) 
@@ -472,7 +484,10 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
 	}
 
-	m_bJustAfterReload = false;
+	if (!IsGrenadeMode())
+	{
+		m_bJustAfterReload = false;
+	}
 
 	if (!IsGameTypeSingle())
 	{
@@ -711,9 +726,28 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Fire	();
 		break;
 	case eMisfire:
-		if(H_Parent() && H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
+	{
+		if (H_Parent() && H_Parent()->cast_actor() && (Level().CurrentViewEntity() == H_Parent()))
+		{
 			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
+		}
+
+		SetMisfireStatus(true);
+
+		const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
+
+		if (isImproveMis)
+		{
+			OnShotJammed();
+		}
+		else
+		{
+			OnEmptyClick();
+			SwitchState(eIdle);
+		}
+
 		break;
+	}
 	case eReload:
 		if(H_Parent() && H_Parent()->cast_inventory_owner())
 			m_sounds_enabled = H_Parent()->cast_inventory_owner()->CanPlayShHdRldSounds();
@@ -745,6 +779,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	case eDevice:
 	{
 		switch2_Device();
+		break;
+	}
+	case eLightMis:
+	{
+		switch2_LightMis();
 		break;
 	}
 	}
@@ -779,7 +818,6 @@ void CWeaponMagazined::UpdateCL			()
 				else
 					state_Fire		(dt);
 			}break;
-		case eMisfire:		state_Misfire	(dt);	break;
 		case eHidden:		break;
 		}
 	}
@@ -1040,16 +1078,6 @@ void CWeaponMagazined::state_FireChamber(float dt)
 	}
 }
 
-void CWeaponMagazined::state_Misfire	(float dt)
-{
-	OnEmptyClick			();
-	SwitchState				(eIdle);
-	
-	bMisfire				= true;
-
-	UpdateSounds			();
-}
-
 void CWeaponMagazined::SetDefaults	()
 {
 	CWeapon::SetDefaults		();
@@ -1169,6 +1197,16 @@ void CWeaponMagazined::OnShot()
 	}
 }
 
+void CWeaponMagazined::OnShotJammed()
+{
+	if (m_eSoundsFlags.test(ESoundsFlags::sf_jam))
+	{
+		PlaySound("sndJam", get_LastFP());
+	}
+
+	PlayAnimShoot();
+}
+
 void CWeaponMagazined::OnEmptyClick()
 {
 	PlaySound("sndEmptyClick", get_LastFP());
@@ -1236,9 +1274,20 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			SwitchState(eIdle);
 			break;
 		}
+		case eFire:
+		{
+			if (ParentIsActor())
+			{
+				bWorking = false;
+				SwitchState(eIdle);
+			}
+			break;
+		}
 		case eShowing:
 		case eSwitchMode:
 		case eDevice:
+		case eLightMis:
+		case eMisfire:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1498,6 +1547,13 @@ void CWeaponMagazined::switch2_FireMode()
 	{
 		PlayHUDMotion(SetCurrentStateAnimation("anm_firemode"), true, eSwitchMode);
 	}
+}
+void CWeaponMagazined::switch2_LightMis()
+{
+	//SendMessage("gunsl_light_misfire", gd_novice);
+	SetPending(TRUE);
+	PlaySound("sndLightMisfire", get_LastFP());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), TRUE, eLightMis);
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
