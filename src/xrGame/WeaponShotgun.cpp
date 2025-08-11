@@ -110,7 +110,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 	}break;
 	case eSubstateReloadInProcess:
 	{
-		if ((!ParentIsActor() && 0 != AddCartridge(1)) || (!m_bIsReloaded && 0 != AddCartridge(1) || bStopReloadSignal))
+		if ((!ParentIsActor() && 0 != AddCartridge(1)) || ParentIsActor() && (!m_bIsReloaded && 0 != AddCartridge(1) || bStopReloadSignal))
 		{
 			m_bIsReloaded = true;
 			m_sub_state = eSubstateReloadEnd;
