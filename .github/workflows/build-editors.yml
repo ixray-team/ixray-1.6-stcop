@@ -175,13 +175,13 @@ jobs:
 
     steps:
       - name: Get editors
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: editors-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
 
       - name: Get assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: editors-assets-${{ github.sha }}
           path: ./

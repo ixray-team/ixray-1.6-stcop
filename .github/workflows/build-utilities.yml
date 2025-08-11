@@ -253,13 +253,13 @@ jobs:
 
     steps:
       - name: Get utilities
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: utilities-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/
 
       - name: Get assets
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: utilities-assets-${{ github.sha }}
           path: ./
