@@ -191,6 +191,12 @@ shared_str CWeaponBM16::SetCurrentShootAnimation()
 	{
 		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
 
+		if (IsMisfire() && IsZoomed())
+		{
+			AddSuffixName(anim, "_aim_misfire", new_suffix);
+			AddSuffixName(anim, "_aim_jammed", new_suffix);
+		}
+
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim", new_suffix);
