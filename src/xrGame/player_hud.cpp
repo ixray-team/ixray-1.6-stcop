@@ -248,7 +248,7 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 	}
 	bVisibleNow		= m_model->LL_GetBoneVisible	(bone_id);
 	if(bVisibleNow!=bVisibility)
-		m_model->LL_SetBoneVisible	(bone_id,bVisibility, TRUE);
+		m_model->LL_SetBoneVisible	(bone_id,bVisibility, FALSE);
 }
 
 void attachable_hud_item::update(bool bForce)
