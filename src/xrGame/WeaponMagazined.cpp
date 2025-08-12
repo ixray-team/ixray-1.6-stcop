@@ -276,7 +276,7 @@ void CWeaponMagazined::FireStart()
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
-				if (CurrentState == eReload || CurrentState == eShowing || CurrentState == eHiding || CurrentState == eMisfire)
+				if (CurrentState == eReload || CurrentState == eShowing || CurrentState == eHiding || CurrentState == eMisfire || CurrentState == eLightMis)
 				{
 					return;
 				}
@@ -807,6 +807,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eIdle:
 		case eSwitchMode:
 		case eEmptyClick:
+		case eLightMis:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
