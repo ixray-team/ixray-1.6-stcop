@@ -194,7 +194,7 @@ void UIPropertiesItem::DrawProp()
 		}
 		ImGui::SameLine();
 
-		if (ImGui::Button("X", ImVec2(-1, 0)))
+		if (ImGui::Button("X##clear_shortcut", ImVec2(-1, 0)))
 		{
 			xr_shortcut val;
 			if (V->ApplyValue(val))PropertiesFrom->Modified();

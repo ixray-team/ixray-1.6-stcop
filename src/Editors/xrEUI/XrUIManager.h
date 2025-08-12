@@ -31,7 +31,7 @@ public:
 
 	void BeginFrame();
 	void EndFrame();
-
+	void MDIUpdate();
 
 	void ResetBegin();
 	void ResetEnd(void* NewDevice);

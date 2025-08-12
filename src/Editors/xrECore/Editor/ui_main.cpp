@@ -547,6 +547,7 @@ void TUI::Redraw()
 
 				UI->EndFrame();
 				EDevice->End();
+				UI->MDIUpdate();
 			}
 #ifndef DEBUG
 			catch (...)
