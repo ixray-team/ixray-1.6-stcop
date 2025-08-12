@@ -79,8 +79,7 @@ void UILogForm::Update()
 		ImGui::Checkbox("Auto Scroll", &bAutoScroll); 
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-1);
-		ImGui::InputText("Filter", m_Filter, sizeof(m_Filter));;
-	
+		ImGui::InputTextWithHint("##SearchFilter", "Search", m_Filter, sizeof(m_Filter));
 
 		ImGui::Spacing();
 		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
