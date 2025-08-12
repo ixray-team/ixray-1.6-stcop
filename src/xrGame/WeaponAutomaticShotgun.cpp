@@ -150,6 +150,7 @@ void CWeaponAutomaticShotgun::OnStateSwitch	(u32 S)
 	if (!m_bTriStateReload || S != eReload || is_misfire)
 	{
 		bStopReloadSignal = false;
+		m_bIsPreloaded = false;
 		inherited::OnStateSwitch(S);
 		return;
 	}
