@@ -1626,7 +1626,7 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 		return false;
 	}
 
-	if (IsMisfire())
+	if (IsMisfire() && !IsGrenadeMode())
 	{
 		return false;
 	}
