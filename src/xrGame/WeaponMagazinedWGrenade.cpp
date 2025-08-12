@@ -777,6 +777,12 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 
 		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
 
+		if (IsZoomed() && IsMisfire())
+		{
+			AddSuffixName(anim, "_aim_misfire");
+			AddSuffixName(anim, "_aim_jammed");
+		}
+
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim", end_suffix);
