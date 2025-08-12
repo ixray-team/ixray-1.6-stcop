@@ -188,6 +188,11 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
 		if (IsMisfire())
 		{
+			if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
+			{
+				AddSuffixName(anim, "_jammed_ammochange", end_suffix);
+			}
+
 			if (empty)
 			{
 				AddSuffixName(anim, "_misfire_last", end_suffix);
@@ -201,6 +206,11 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		}
 		else if (empty)
 		{
+			if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
+			{
+				AddSuffixName(anim, "_empty_ammochange", end_suffix);
+			}
+
 			AddSuffixName(anim, "_empty", end_suffix);
 		}
 
