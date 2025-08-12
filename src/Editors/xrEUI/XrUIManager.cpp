@@ -80,7 +80,8 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 		ImCurrentFont = OldFont;
 	}
 
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	//io.Fonts->Build();
 
 	//ImGui_ImplWin32_Init(hWnd);
@@ -133,6 +134,16 @@ void XrUIManager::EndFrame()
 			i = m_UIArray.size();
 			if (i == 0)return;
 		}
+	}
+}
+
+void XrUIManager::MDIUpdate()
+{
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
 	}
 }
 

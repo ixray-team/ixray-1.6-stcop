@@ -14,37 +14,32 @@ void UIKeyPressForm::Draw()
 	if (!bOpen)
 		return;
 
-	if (!ImGui::BeginPopupModal("Press any key", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
+	if (ImGui::BeginPopupModal("Press any key", 0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))
 	{
-		ImGui::EndPopup();
-		return;
-	}
+		if (fmod(m_TimeGlobal * 1000, 1000.f) > 500.f)
+		{
+			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Press any key to continue.");
+		}
+		else
+		{
+			ImGui::Text("Press any key to continue.");
+		}
 
-	if (fmod(m_TimeGlobal*1000, 1000.f) >500.f)
-	{
-		ImGui::TextColored(ImVec4(1,0,0,1),"Press any key to continue.");
+		if (ImGui::Button("Cancel", ImVec2(-1, 0)))
+		{
+			m_Ok = false;
+			bOpen = false;
+		}
+		ImGui::EndPopup();
 	}
-	else
-	{
-		ImGui::Text("Press any key to continue.");
-	}
-	if (ImGui::Button("Cancel", ImVec2(-1, 0)))
-	{
-		m_Ok = false;
-		bOpen = false;
-	}
-	ImGui::EndPopup();
-	/*else
-	{
-		;
-		ImGui::CloseCurrentPopup();
-	}*/
 }
 
 void UIKeyPressForm::Update(float timeGlobal)
 {
 	if (Form)
 	{
+		ImGui::OpenPopup("Press any key");
+
 		Form->m_TimeGlobal = timeGlobal;
 		Form->Draw();
 	}
@@ -52,7 +47,6 @@ void UIKeyPressForm::Update(float timeGlobal)
 
 void UIKeyPressForm::Show()
 {
-	VERIFY(!Form);
 	Form = new UIKeyPressForm();
 }
 

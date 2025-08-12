@@ -150,31 +150,31 @@ void ESceneLightTool::FillProp(LPCSTR pref, PropItemVec& items)
     ButtonValue *B = 0;
     PropValue* V = 0;
     // hemisphere
-    PHelper().CreateRToken32(items, PrepareKey(pref, "Common\\Hemisphere\\Light Control"), &m_HemiControl, &*lcontrols.begin(), lcontrols.size());
+    PHelper().CreateRToken32(items, PrepareKey(pref, "Hemisphere\\Light Control"), &m_HemiControl, &*lcontrols.begin(), lcontrols.size());
 	
 	// sun
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Visible"), &m_Flags, flShowSun);
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Visible"), &m_Flags, flShowSun);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 
-    PHelper().CreateAngle(items, PrepareKey(pref, "Common\\Sun Shadow\\Altitude"), &m_SunShadowDir.x, -PI_DIV_2, 0);
-    PHelper().CreateAngle(items, PrepareKey(pref, "Common\\Sun Shadow\\Longitude"), &m_SunShadowDir.y, 0, PI_MUL_2);
+    PHelper().CreateAngle(items, PrepareKey(pref, "Sun Shadow\\Altitude"), &m_SunShadowDir.x, -PI_DIV_2, 0);
+    PHelper().CreateAngle(items, PrepareKey(pref, "Sun Shadow\\Longitude"), &m_SunShadowDir.y, 0, PI_MUL_2);
     // weather simulation
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Weather Simulation\\Use Sun Dir"), &m_Flags, flWthrSunDir);
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Sun Dir"), &m_Flags, flWthrSunDir);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
-    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Common\\Sun Shadow\\Weather Simulation\\Use Hemi"), &m_Flags, flWthrHemi);
+    V = PHelper().CreateFlag32(items, PrepareKey(pref, "Sun Shadow\\Weather Simulation\\Use Hemi"), &m_Flags, flWthrHemi);
     V->OnChangeEvent.bind(this, &ESceneLightTool::OnLightSunChanged);
 	// light controls
-	PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Controls\\Draw Name"),			&m_Flags,			flShowControlName);
-	PHelper().CreateCaption	(items,PrepareKey(pref,"Common\\Controls\\Count"),				shared_str().printf("%d",lcontrols.size()));
-//	B=PHelper().CreateButton(items,PHelper().PrepareKey(pref,"Common\\Controls\\Edit"),	"Append",	ButtonValue::flFirstOnly);
+	PHelper().CreateFlag32	(items, PrepareKey(pref,"Controls\\Draw Name"),			&m_Flags,			flShowControlName);
+	PHelper().CreateCaption	(items,PrepareKey(pref,"Controls\\Count"),				shared_str().printf("%d",lcontrols.size()));
+//	B=PHelper().CreateButton(items,PHelper().PrepareKey(pref,"Controls\\Edit"),	"Append",	ButtonValue::flFirstOnly);
 //	B->OnBtnClickEvent	= OnControlAppendClick;
 	RTokenVecIt		_I 	= lcontrols.begin();
 	RTokenVecIt		_E 	= lcontrols.end();
 	for (;_I!=_E; _I++){
 		if (_I->equal(LCONTROL_HEMI)||_I->equal(LCONTROL_STATIC)||_I->equal(LCONTROL_SUN)){
-			PHelper().CreateCaption(items,	PrepareKey(pref,"Common\\Controls\\System",*_I->name),"");
+			PHelper().CreateCaption(items,	PrepareKey(pref,"Controls\\System",*_I->name),"");
 		}else{
-			B=PHelper().CreateButton(items,	PrepareKey(pref,"Common\\Controls\\User",*_I->name),"Rename,Remove",ButtonValue::flFirstOnly);
+			B=PHelper().CreateButton(items,	PrepareKey(pref,"Controls\\User",*_I->name),"Rename,Remove",ButtonValue::flFirstOnly);
 			B->OnBtnClickEvent.bind		(this,&ESceneLightTool::OnControlRenameRemoveClick);
 		}
 	}                              
