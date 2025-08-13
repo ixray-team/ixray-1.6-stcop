@@ -2953,7 +2953,7 @@ bool CWeapon::NeedBlockSprint() const
 	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 	u32 state = GetState();
 
-	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload;
+	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload || m_bIsAimAnimationPlaying;
 }
 
 void CWeapon::render_hud_mode()

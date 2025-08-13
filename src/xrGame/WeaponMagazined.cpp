@@ -2117,13 +2117,18 @@ void CWeaponMagazined::PlaySoundAim(bool in)
 void CWeaponMagazined::PlayAnimIdle()
 {
 	if (GetState() != eIdle)
+	{
 		return;
+	}
+
+	m_bIsAimAnimationPlaying = false;
 
 	if (IsZoomed())
 	{
-		if (!m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
+		if (ParentIsActor() && !m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 		{
 			m_bIsAimStarted = true;
+			m_bIsAimAnimationPlaying = true;
 			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_start"), true, GetState());
 			return;
 		}
@@ -2132,9 +2137,10 @@ void CWeaponMagazined::PlayAnimIdle()
 	}
 	else
 	{
-		if (m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
+		if (ParentIsActor() && m_bIsAimStarted && m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
 		{
 			m_bIsAimStarted = false;
+			m_bIsAimAnimationPlaying = true;
 			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_end"), true, GetState());
 			return;
 		}
