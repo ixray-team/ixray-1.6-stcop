@@ -288,6 +288,7 @@ public:
 	bool m_bDisableLightMisDet = false;
 	bool m_bNoJamFirstShot = false;
 	bool m_bActorCanShoot = true;
+	bool m_bIsAimAnimationPlaying = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
