@@ -212,6 +212,24 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
+	if (ImGui::BeginMenu("Create"))
+	{
+		if (ImGui::BeginMenu("Shape"))
+		{
+			if (ImGui::MenuItem("Box"))
+			{
+				ExecCommand(COMMAND_CREATE_SHAPE_BOX);
+			}
+
+			if (ImGui::MenuItem("Sphere"))
+			{
+				ExecCommand(COMMAND_CREATE_SHAPE_SPHERE);
+			}
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenu();
+	}
 	if (ImGui::BeginMenu("Visiblity"))
 	{
 		if (ImGui::MenuItem("Hide Selected"))
