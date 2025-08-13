@@ -10,6 +10,18 @@
 
 #include "../../xrCore/xrCore.h"
 
+enum class EDragDropType : u8
+{
+	Folder,
+	File,
+	Viewport,
+	RandomAppend,
+	Details,
+	Logic,
+
+	None
+};
+
 #include "EditorWnd.h"
 #include "XrUIManager.h"
 
