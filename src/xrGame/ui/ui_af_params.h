@@ -78,6 +78,7 @@ protected:
 private:
 	CUIStatic*	m_caption;
 	CUIStatic*	m_value;
+	CUIStatic*	m_text_legacy; // 100%
 	float		m_magnitude;
 	bool		m_sign_inverse;
 	shared_str	m_unit_str;
