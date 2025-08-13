@@ -273,18 +273,11 @@ void CGameTaskManager::UpdateTasks						()
 		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(i));
 		if (activeTask)
 		{
-			CMapLocation* ml = activeTask->LinkedMapLocation();
+			SGameTaskObjective obj = activeTask->ActiveObjective();
+			CMapLocation* ml = obj.LinkedMapLocation();
 			if (ml && !ml->PointerEnabled())
 				ml->EnablePointer();
 		}
-	}
-	SGameTaskObjective* obj = ActiveObjective();
-	if (obj)
-	{
-		Level().MapManager().DisableAllPointers();
-		CMapLocation* ml = obj->LinkedMapLocation();
-		if (ml && !ml->PointerEnabled())
-			ml->EnablePointer();
 	}
 
 	if(	m_flags.test(eChanged) )
@@ -296,16 +289,61 @@ void CGameTaskManager::UpdateActiveTask()
 {
 	std::stable_sort			(GetGameTasks().begin(), GetGameTasks().end(), task_prio_pred);
 
-    for (u32 i = eTaskTypeStoryline; i < eTaskTypeCount; ++i)
-    {
-        CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(i));
-        if (!activeTask)
-        {
-            CGameTask* frontTask = IterateGet(nullptr, eTaskStateInProgress, static_cast<ETaskType>(i), true);
-            if (frontTask)
-                SetActiveTask(frontTask);
-        }
-    }
+	bool bHasSpotPointer						= false;
+
+	for (u32 tType = eTaskTypeStoryline; tType < eTaskTypeCount; ++tType)
+	{
+		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
+
+		if (activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
+			continue;
+
+		for (u32 i = 0; i < activeTask->GetObjectivesCount(); ++i)
+		{
+			SGameTaskObjective& obj = activeTask->Objective(i);
+
+			if (i == 0)
+				continue;
+
+			//1-st enable hidden locations
+			if ((!obj.m_def_location_enabled) &&
+				(obj.GetTaskState() == eTaskStateInProgress) &&
+				(activeTask->Objective(i - 1).GetTaskState() == eTaskStateCompleted))
+			{
+				if (obj.m_map_object_id != u16(-1) && *obj.m_map_location)
+				{
+					CMapLocation* ml = Level().MapManager().AddMapLocation(obj.m_map_location, obj.m_map_object_id);
+					if (obj.m_map_hint.size())
+						ml->SetHint(obj.m_map_hint);
+					ml->DisablePointer();
+					ml->SetSerializable(true);
+				}
+			}
+			bHasSpotPointer = bHasSpotPointer || (ActiveObjective() == &activeTask->Objective(i));
+		}
+	}
+	// highlight new spot pointer
+	if( !bHasSpotPointer )
+	{
+		bool bDone								=false;
+		for (u32 tType = eTaskTypeStoryline; tType < eTaskTypeCount; ++tType)
+		{
+			CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
+			
+			if(activeTask->Objective(0).GetTaskState()!=eTaskStateInProgress)
+				continue;
+			
+			for(u16 i = 0; (i < activeTask->GetObjectivesCount())&&(!bDone) ;++i)
+			{
+				if( (i == 0) || (activeTask->Objective(i).GetTaskState() != eTaskStateInProgress) )
+					continue;
+				
+				SetActiveTask					(activeTask);
+				activeTask->SetActiveObjective	(i);
+				bDone						= true;
+			}
+		}
+	}
 
 	m_flags.set					(eChanged, FALSE);
 	m_actual_frame				= Device.dwFrame;
