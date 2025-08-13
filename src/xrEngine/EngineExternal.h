@@ -31,6 +31,7 @@ enum class EEngineExternalGame
 	EnableAlternateZoomFovCalc,
 	EnableInventoryPistolSlot,
 	EnableImproveWeaponMisfire,
+	EnableDelayedWeaponActions,
 };
 
 enum class EEngineExternalRender 
