@@ -93,6 +93,8 @@ public:
 	Fvector m_CurrentRStart;
 	Fvector m_CurrentRDir;
 
+	Fvector m_ContextRStart;
+	Fvector m_ContextRDir;
 
 	Fvector m_StartRStart;
 	Fvector m_StartRDir;
