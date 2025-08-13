@@ -34,6 +34,7 @@ enum EPropType{
     PROP_SH_TOKEN,
 	PROP_TEXTURE2,
     PROP_GAMETYPE,
+    PROP_CHOOSE_TEXTURE
 };
 
 // refs
@@ -64,9 +65,8 @@ class PropValue
 {
 	friend class		CPropHelper;
     friend class		PropItem;
-protected:
-	PropItem*			m_Owner;
 public:
+    PropItem* m_Owner;
 	size_t					tag;
 public:
 	// base events
@@ -151,6 +151,7 @@ public:
 	u32					prop_color;
 	u32					val_color;
     Irect				draw_rect;
+    bool                IsTextureItem = false;
 public:
     enum{
     	flDisabled		= (1<<0),
@@ -438,6 +439,49 @@ public:
 }
 public:
 						ChooseValue			(shared_str* val, u32 cid, LPCSTR path, void* param, u32 sub_item_count, u32 choose_flags):RTextValue(val),m_ChooseID(cid),m_StartPath(path),subitem(sub_item_count),m_Items(0),m_FillParam(param),OnChooseFillEvent(0),/*OnDrawThumbnailEvent(0),*/m_ChooseFlags(choose_flags){}
+};
+
+class MultiChooseValue:
+    public PropValue
+{
+
+public:
+    xr_vector<ChooseValue*> Values;
+
+    MultiChooseValue() = default;
+    ~MultiChooseValue()
+    {
+        for (ChooseValue* Val : Values)
+        {
+            xr_delete(Val);
+        }
+    }
+
+    virtual void ResetValue()
+    {
+        for (ChooseValue* Val : Values)
+        {
+            Val->ResetValue();
+        }
+    }
+
+    virtual bool Equal(PropValue* prop)
+    {
+        return false;
+    };
+
+    ChooseValue* CreateValue(shared_str Key, shared_str* Value, u32 cid)
+    {
+        PropItem* Item = new PropItem(PROP_CHOOSE);
+        Item->SetName(Key);
+
+        ChooseValue* ItemValue = new ChooseValue(Value, cid, 0, 0, 1, cfAllowNone);
+        Item->AppendValue(ItemValue);
+        ItemValue->m_Owner = Item;
+        return Values.emplace_back(ItemValue);
+    };
+
+    virtual xr_string GetDrawText(TOnDrawTextEvent OnDrawText) { return ""; };
 };
 
 using BOOLValue = CustomValue<BOOL>;

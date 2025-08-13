@@ -899,11 +899,17 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 
 	bool WeCanDrag = false;
 
-	
 	if (FilePath.has_extension()) //File DnD
 	{
 		xr_string Extension = FilePath.extension().string().c_str();
 		WeCanDrag = Extension == ".object" || Extension == ".group" || Extension == ".r16" || Extension == ".ise" || Extension == ".dti" || Extension == ".rai";
+		
+		bool IsGameLogicFile = false;
+		if (FilePath.xstring().Contains("scripts\\") && Extension == ".ltx")
+		{
+			WeCanDrag = true;
+			IsGameLogicFile = true;
+		}
 
 		if (!ImGui::BeginDragDropSource())
 		{
@@ -929,15 +935,17 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 			{
 				PayloadName = "OTHR";
 			}
-			
-			if (FilePath.xstring().ends_with(".dti"))
+			else if (FilePath.xstring().ends_with(".dti"))
 			{
 				PayloadName += "#dti";
 			}
-			
-			if (FilePath.xstring().ends_with(".rai"))
+			else if (FilePath.xstring().ends_with(".rai"))
 			{
 				PayloadName += "#rai";
+			}
+			else if (IsGameLogicFile)
+			{
+				PayloadName += "#cd";
 			}
 
 			ImGui::SetDragDropPayload(PayloadName.c_str(), &Data, sizeof(DragDropData));

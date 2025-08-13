@@ -57,7 +57,19 @@ void UIPropertiesItem::Draw()
 	}
 	else
 	{
-		ImGui::TreeNodeEx(Name.c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
+		constexpr size_t Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth;
+		if (IsTexture)
+		{
+			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
+			ImTextureID Image = GUIManager->LoadTexture(Prop->Values[0]->GetValue().c_str());
+			ImGui::Image(Image, { 100, 100 });
+			//ImGui::TreeNodeEx((xr_string("##tree_") + *Name).c_str(), Flags);
+		}
+		else
+		{
+			ImGui::TreeNodeEx(*Name, Flags);
+		}
+
 		ImGui::TableNextColumn();
 		DrawItem();
 	}
