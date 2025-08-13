@@ -495,6 +495,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode, (HudAnimationExist("anm_firemode") || HudAnimationExist("anm_changefiremode_from_1_to_a") || HudAnimationExist("anm_changefiremode_from_a_to_1")));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_empty_click, HudAnimationExist("anm_empty_click"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_aim_in_out, (HudAnimationExist("anm_idle_aim_start") && HudAnimationExist("anm_idle_aim_end")));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_sprint_in_out, (HudAnimationExist("anm_idle_sprint_start") && HudAnimationExist("anm_idle_sprint_end")));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)
@@ -649,7 +650,7 @@ bool CHudItem::TryPlayAnimIdle()
 			u32 state = pActor->GetMovementState(eReal);
 			if (state & ACTOR_DEFS::EMoveCommand::mcSprint)
 			{
-				if (!m_bSwitchSprint && HudAnimationExist("anm_idle_sprint_start"))
+				if (!m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 				{
 					SwitchState(eSprintStart);
 					return true;
@@ -658,7 +659,7 @@ bool CHudItem::TryPlayAnimIdle()
 				PlayAnimIdleSprint();
 				return true;
 			}
-			else if (m_bSwitchSprint && HudAnimationExist("anm_idle_sprint_end"))
+			else if (m_bSwitchSprint && m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out))
 			{
 				SwitchState(eSprintEnd);
 				return true;
@@ -668,18 +669,26 @@ bool CHudItem::TryPlayAnimIdle()
 				if (state & ACTOR_DEFS::EMoveCommand::mcCrouch && (HudAnimationExist("anm_idle_moving_crouch_slow") || HudAnimationExist("anm_idle_moving_crouch")))
 				{
 					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_crouch_slow"))
+					{
 						PlayAnimIdleMovingCrouchSlow();
+					}
 					else
+					{
 						PlayAnimIdleMovingCrouch();
+					}
 
 					return true;
 				}
 				else
 				{
 					if (state & ACTOR_DEFS::EMoveCommand::mcAccel && HudAnimationExist("anm_idle_moving_slow"))
+					{
 						PlayAnimIdleMovingSlow();
+					}
 					else
+					{
 						PlayAnimIdleMoving();
+					}
 
 					return true;
 				}
