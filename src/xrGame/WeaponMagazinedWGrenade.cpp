@@ -304,6 +304,11 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 	if (!IsGrenadeLauncherAttached())
 		return false;
 
+	if (!SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfGLAUNCHSWITCH))
+	{
+		return false;
+	}
+
 	bool bUsefulStateToSwitch = (!IsPending() && !IsZoomed() && (GetState() == eIdle || GetState() == eMisfire));
 
 	if (!bUsefulStateToSwitch)

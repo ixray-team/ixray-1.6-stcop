@@ -1313,22 +1313,29 @@ void CActor::UpdateCL()
 		CheckFlyhack();
 	}
 
+	PIItem active_item = inventory().ActiveItem();
+	CHudItem* item = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+
 	u32 ct = Device.dwTimeGlobal;
 	u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
 	_last_update_time = ct;
 	UpdateElectronicsProblemsCnt(dt);
 	g_player_hud->UpdateWeaponOffset(dt);
+	ProcessKeys(item);
 
 	if (_jitter_time_remains > dt)
+	{
 		_jitter_time_remains = _jitter_time_remains - dt;
+	}
 	else
+	{
 		_jitter_time_remains = 0;
+	}
 
 	CCustomDetector* det = GetDetector();
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
-		CHudItem* item = inventory().ActiveItem() ? inventory().ActiveItem()->cast_hud_item() : nullptr;
 
 		if (item != nullptr || det != nullptr)
 		{
@@ -1428,11 +1435,11 @@ void CActor::UpdateCL()
 	PickupModeUpdate_COD();
 
 	SetZoomAimingMode		(false);
-	CWeapon* pWeapon		= inventory().ActiveItem() ? inventory().ActiveItem()->cast_weapon() : nullptr;
+	CWeapon* pWeapon = item != nullptr ? item->cast_weapon() : nullptr;
+	CMissile* pMissile = item != nullptr ? item->cast_missile() : nullptr;
 
 	cam_Update(float(Device.dwTimeDelta)/1000.0f, currentFOV());
 
-	if(Level().CurrentEntity() && this->ID()==Level().CurrentEntity()->ID() )
 	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
 	{
 		psHUD_Flags.set(HUD_CROSSHAIR_RT2, true);
@@ -1451,7 +1458,9 @@ void CActor::UpdateCL()
 	Device.hudViewportData.ActorHealth = GetfHealth();
 	Device.hudViewportData.ActorOutfitCondition = GetOutfit() != nullptr ? GetOutfit()->GetCondition() : -1.0f;
 
-	bBlockSprint = pWeapon != nullptr && pWeapon->NeedBlockSprint() || det != nullptr && det->NeedBlockSprint();
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || det != nullptr && det->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
 	if (pWeapon)
 	{
@@ -2445,8 +2454,6 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 	CWeapon* weapon	= inventory_item->cast_weapon();
 	if(weapon && inventory_item->m_ItemCurrPlace.type==eItemPlaceSlot)
 	{
-		weapon->bReloadKeyPressed = false;
-		weapon->bAmmotypeKeyPressed = false;
 		weapon->OnZoomOut();
 	}
 

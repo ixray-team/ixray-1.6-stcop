@@ -34,6 +34,8 @@
 #include "Weapon.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ActorHelmet.h"
+#include "HudItem.h"
+#include "../xrEngine/XR_IOConsole.h"
 
 extern u32 hud_adj_mode;
 
@@ -478,7 +480,166 @@ void CActor::IR_GamepadKeyPress(int id)
 	}
 }
 
-#include "HudItem.h"
+static bool IsKeyPressed(int dik)
+{
+	if (pInput != nullptr)
+	{
+		return pInput->iGetAsyncKeyState(dik);
+	}
+
+	return false;
+}
+
+static bool IsActionKeyPressed(const EGameActions& EGameAction)
+{
+	int key1 = get_action_dik(EGameAction, 0);
+	int key2 = get_action_dik(EGameAction, 1);
+
+	return ((key1 != 0) && IsKeyPressed(key1)) || ((key2 != 0) && IsKeyPressed(key2));
+}
+
+static bool IsActionKeyPressedInGame(const EGameActions& EGameAction)
+{
+	return IsActionKeyPressed(EGameAction) && !Console->bVisible && CurrentGameUI() != nullptr && !CurrentGameUI()->TopInputReceiver() && g_pGameLevel && g_pGameLevel->Cameras().GetCamEffector(cefDemo) == nullptr;
+}
+
+void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, bool ignore_suicide)
+{
+	//if (!ignore_suicide && IsActorSuicideNow())
+	//{
+	//	return;
+	//}
+
+	if (state)
+	{
+		m_iKeyFlags |= mask;
+	}
+	else
+	{
+		m_iKeyFlags &= ~mask;
+	}
+}
+
+extern BOOL b_toggle_weapon_aim;
+
+void CActor::ProcessKeys(CHudItem* itm)
+{
+	if (itm == nullptr)
+	{
+		m_iKeyFlags = 0;
+		return;
+	}
+
+	if ((m_iKeyFlags & kfHEADLAMP) != 0 && itm->CanStartAction(this))
+	{
+		SwitchTorch();
+		SetActorKeyRepeatFlag(kfHEADLAMP, false);
+	}
+
+	if ((m_iKeyFlags & kfNIGHTVISION) != 0 && itm->CanStartAction(this))
+	{
+		SwitchNightVision();
+		SetActorKeyRepeatFlag(kfNIGHTVISION, false);
+	}
+
+	if ((m_iKeyFlags & kfCLEARMASK) != 0 && itm->CanStartAction(this))
+	{
+		ClearMask();
+		SetActorKeyRepeatFlag(kfCLEARMASK, false);
+	}
+
+	CWeapon* wpn = itm->cast_weapon();
+	if (wpn == nullptr)
+	{
+		return;
+	}
+	
+	if (IsActionKeyPressedInGame(kWPN_ZOOM) && (wpn->GetState() == CWeapon::eIdle || wpn->GetState() == CWeapon::eFire))
+	{
+		if (!b_toggle_weapon_aim && wpn->CanAimNow() && !wpn->IsZoomed())
+		{
+			wpn->Action(kWPN_ZOOM, CMD_START);
+			SetActorKeyRepeatFlag(kfUNZOOM, false);
+		}
+	}
+
+	if ((m_iKeyFlags & kfUNZOOM) != 0)
+	{
+		if (wpn->IsZoomed())
+		{
+			if (wpn->CanLeaveAimNow())
+			{
+				if (b_toggle_weapon_aim)
+				{
+					wpn->Action(kWPN_ZOOM, CMD_START);
+				}
+				else
+				{
+					wpn->Action(kWPN_ZOOM, CMD_STOP);
+				}
+			}
+		}
+		else
+		{
+			SetActorKeyRepeatFlag(kfUNZOOM, false);
+		}
+	}
+
+	/*if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (GetMovementState(eReal) & mcSprint) == 0 && (m_iKeyFlags & kfFIRE) != 0)
+	{
+		wpn->Action(kWPN_FIRE, CMD_START);
+
+		if (!IsActionKeyPressed(kWPN_FIRE))
+		{
+			wpn->Action(kWPN_FIRE, CMD_STOP);
+		}
+
+		SetActorKeyRepeatFlag(kfFIRE, false);
+	}*/
+
+	if ((m_iKeyFlags & kfGLAUNCHSWITCH) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_FUNC, CMD_START);
+		SetActorKeyRepeatFlag(kfGLAUNCHSWITCH, false);
+	}
+
+	if ((m_iKeyFlags & kfNEXTFIREMODE) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_FIREMODE_NEXT, CMD_START);
+		SetActorKeyRepeatFlag(kfNEXTFIREMODE, false);
+	}
+
+	if ((m_iKeyFlags & kfPREVFIREMODE) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_FIREMODE_PREV, CMD_START);
+		SetActorKeyRepeatFlag(kfPREVFIREMODE, false);
+	}
+
+	if ((m_iKeyFlags & kfRELOAD) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_RELOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfRELOAD, false);
+	}
+
+	if ((m_iKeyFlags & kfNEXTAMMO) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_NEXT, CMD_START);
+		SetActorKeyRepeatFlag(kfNEXTAMMO, false);
+	}
+
+	if ((m_iKeyFlags & kfTACTICALTORCH) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kTACTICALTORCH, CMD_START);
+		SetActorKeyRepeatFlag(kfTACTICALTORCH, false);
+	}
+
+	if ((m_iKeyFlags & kfLASER) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kLASER, CMD_START);
+		SetActorKeyRepeatFlag(kfLASER, false);
+	}
+}
+
 bool CActor::use_Holder(CHolderCustom* holder)
 {
 	if (CHolderCustom* get_holder = m_holder)
@@ -793,6 +954,11 @@ void CActor::SwitchNightVision()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_nvg) && det->m_eAnimationsFlags.test(CCustomDetector::EAnimationsFlags::af_nvg))
 		{
+			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfNIGHTVISION))
+			{
+				return;
+			}
+
 			if (itm->GetState() != CHUDState::eIdle || det->GetState() != CCustomDetector::eIdle)
 			{
 				return;
@@ -815,6 +981,11 @@ void CActor::SwitchNightVision()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_nvg))
 		{
+			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfNIGHTVISION))
+			{
+				return;
+			}
+
 			if (itm->GetState() != CHUDState::eIdle)
 			{
 				return;
@@ -883,6 +1054,11 @@ void CActor::SwitchTorch()
 
 			if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_nvg) && det->m_eAnimationsFlags.test(CCustomDetector::EAnimationsFlags::af_nvg))
 			{
+				if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfHEADLAMP))
+				{
+					return;
+				}
+
 				if (itm->GetState() != CHUDState::eIdle || det->GetState() != CCustomDetector::eIdle)
 				{
 					return;
@@ -905,6 +1081,11 @@ void CActor::SwitchTorch()
 
 			if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_torch))
 			{
+				if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfHEADLAMP))
+				{
+					return;
+				}
+
 				if (itm->GetState() != CHUDState::eIdle)
 				{
 					return;
@@ -969,6 +1150,11 @@ void CActor::ClearMask()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_clear_mask) && det->m_eAnimationsFlags.test(CCustomDetector::EAnimationsFlags::af_clear_mask))
 		{
+			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCLEARMASK))
+			{
+				return;
+			}
+
 			if (itm->GetState() != CHUDState::eIdle || det->GetState() != CCustomDetector::eIdle)
 			{
 				return;
@@ -991,6 +1177,11 @@ void CActor::ClearMask()
 
 		if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_clear_mask))
 		{
+			if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCLEARMASK))
+			{
+				return;
+			}
+
 			if (itm->GetState() != CHUDState::eIdle)
 			{
 				return;

@@ -93,8 +93,6 @@ CWeapon::CWeapon()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_crosshair_inertion	= 0.f;
 	m_cur_scope				= 0;
-	bReloadKeyPressed		= false;
-	bAmmotypeKeyPressed		= false;
 	m_HudFovZoom = 0.0f;
 	_last_update_time = Device.dwTimeGlobal;
 	useLegacyMisfire = false;
@@ -1108,8 +1106,6 @@ void CWeapon::OnActiveItem ()
 	SwitchState					(eShowing);
 //-
 
-	bReloadKeyPressed = false;
-	bAmmotypeKeyPressed = false;
 	bStopReloadSignal = false;
 
 	inherited::OnActiveItem		();
@@ -1221,23 +1217,6 @@ void CWeapon::UpdateCL		()
 		if (GetNightVision() && !GetNightVision()->IsActive() && !need_renderable())
 		{
 			GetNightVision()->SwitchNightVision(true);
-		}
-
-		if (Actor()->GetDetector() && (Actor()->GetDetector()->GetState() == CCustomDetector::eIdle || !Actor()->GetDetector()->NeedActivation()))
-		{
-			if (bAmmotypeKeyPressed || bReloadKeyPressed)
-			{
-				if (bReloadKeyPressed)
-				{
-					bReloadKeyPressed = false;
-					Action(kWPN_RELOAD, CMD_START);
-				}
-				else
-				{
-					bAmmotypeKeyPressed = false;
-					Action(kWPN_NEXT, CMD_START);
-				}
-			}
 		}
 	}
 
@@ -1566,41 +1545,97 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				return SwitchAmmoType(flags);
 			} 
 		case kWPN_ZOOM:
-			if(IsZoomEnabled())
+			if (IsZoomEnabled())
 			{
-				if(b_toggle_weapon_aim)
+				if (b_toggle_weapon_aim)
 				{
-					if(flags&CMD_START)
+					if (flags & CMD_START)
 					{
-						if(!IsZoomed())
+						if (!IsZoomed())
 						{
-							if(!IsPending())
+							if (!IsPending())
 							{
-								if(GetState()!=eIdle)
+								if (!CanAimNow())
+								{
+									CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+									if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
+									{
+										pActor->SetMovementState(eWishful, mcSprint, false);
+									}
+
+									return false;
+								}
+
+								if (GetState() != eIdle)
+								{
 									SwitchState(eIdle);
-								OnZoomIn	();
+								}
+
+								OnZoomIn();
 							}
-						}else
-							OnZoomOut	();
-					}
-				}else
-				{
-					if(flags&CMD_START)
-					{
-						if(!IsZoomed() && !IsPending())
-						{
-							if(GetState()!=eIdle)
-								SwitchState(eIdle);
-							OnZoomIn	();
 						}
-					}else 
-						if(IsZoomed())
-							OnZoomOut	();
+						else
+						{
+							if (!CanLeaveAimNow())
+							{
+								if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+								{
+									pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
+								}
+								return false;
+							}
+
+							OnZoomOut();
+						}
+					}
+				}
+				else
+				{
+					if (flags & CMD_START)
+					{
+						if (!CanAimNow())
+						{
+							CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+							if (pActor && !b_toggle_weapon_aim && pActor->GetMovementState(eReal) & mcSprint)
+							{
+								pActor->SetMovementState(eWishful, mcSprint, false);
+							}
+
+							return false;
+						}
+
+						if (!IsZoomed() && !IsPending())
+						{
+							if (GetState() != eIdle)
+							{
+								SwitchState(eIdle);
+							}
+
+							OnZoomIn();
+						}
+					}
+					else if (IsZoomed())
+					{
+						if (!CanLeaveAimNow())
+						{
+							if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+							{
+								pActor->SetActorKeyRepeatFlag(kfUNZOOM, true);
+							}
+							return false;
+						}
+
+						OnZoomOut();
+					}
 				}
 				return true;
-			}else 
+			}
+			else
+			{
 				return false;
-
+			}
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 			if (IsZoomEnabled() && IsZoomed() && (flags & CMD_START))
@@ -1614,13 +1649,12 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	return false;
 }
 
-bool CWeapon::SwitchAmmoType( u32 flags ) 
+bool CWeapon::SwitchAmmoType(u32 flags)
 {
-	if ( IsPending() || OnClient() )
+	if (OnClient() || !(flags & CMD_START))
+	{
 		return false;
-
-	if ( !(flags & CMD_START) )
-		return false;
+	}
 
 	if (m_bBlockReload && GetState() != eIdle)
 	{
@@ -1633,37 +1667,33 @@ bool CWeapon::SwitchAmmoType( u32 flags )
 	}
 
 	if (IsTriStateReload() && iAmmoElapsed == iMagazineSize)
+	{
 		return false;
+	}
 
-	if (bReloadKeyPressed || bAmmotypeKeyPressed)
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	if (!isDelayedWeaponActions && IsPending())
+	{
 		return false;
-
-	bAmmotypeKeyPressed = true;
-
-	if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
-		return false;
+	}
 
 	u8 l_newType = m_ammoType;
 	bool b1, b2;
-	do 
+	do
 	{
-		l_newType = u8( (u32(l_newType+1)) % m_ammoTypes.size() );
+		l_newType = u8((u32(l_newType + 1)) % m_ammoTypes.size());
 		b1 = (l_newType != m_ammoType);
-		b2 = unlimited_ammo() ? false : ( !m_pInventory->GetAny( m_ammoTypes[l_newType].c_str() ) );						
-	} while( b1 && b2 );
+		b2 = unlimited_ammo() ? false : (!m_pInventory->GetAny(m_ammoTypes[l_newType].c_str()));
+	} while (b1 && b2);
 
-	if ( l_newType != m_ammoType )
+	if (l_newType != m_ammoType)
 	{
-		m_set_next_ammoType_on_reload = l_newType;					
-		if ( OnServer() )
+		m_set_next_ammoType_on_reload = l_newType;
+		if (OnServer() && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfNEXTAMMO))
 		{
 			Reload();
 		}
-	}
-	else
-	{
-		bAmmotypeKeyPressed = false;
-		bReloadKeyPressed = false;
 	}
 
 	return true;
@@ -2306,6 +2336,84 @@ void CWeapon::InitAddons()
 {
 }
 
+bool CWeapon::CanAimNow()
+{
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return true;
+	}
+
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	if (!isDelayedWeaponActions)
+	{
+		return true;
+	}
+
+	bool result = true;
+
+	if (pActor && pActor->GetDetector() != nullptr)
+	{
+		result = !!(pActor->GetDetector()->GetState() == CCustomDetector::eIdle);
+	}
+
+	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() == eSprintStart || GetState() == eSprintEnd || m_bSwitchSprint))
+	{
+		result = false;
+	}
+
+	if (result)
+	{
+		if (IsGrenadeLauncherAttached() && IsGrenadeMode())
+		{
+			shared_str sect = HudSection();
+
+			if (IsScopeAttached())
+			{
+				sect = GetCurrentScopeSection();
+			}
+
+			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
+			{
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}
+
+bool CWeapon::CanLeaveAimNow()
+{
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
+	{
+		return true;
+	}
+
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	if (!isDelayedWeaponActions)
+	{
+		return true;
+	}
+
+	//if (pActor->IsActorSuicideNow() || pActor->IsActorPlanningSuicide() || pActor->IsControllerPreparing())
+	//{
+	//	return true;
+	//}
+
+	if (IsActionProcessing() || m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) && GetState() != eIdle)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 float CWeapon::CurrentZoomFactor()
 {
 	return IsScopeAttached() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
@@ -2317,6 +2425,7 @@ float LastZoomFactor = 0.f;
 
 void CWeapon::OnZoomIn()
 {
+	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
 	if (m_zoom_params.m_bUseDynamicZoom && IsScopeAttached())
 	{
@@ -2951,8 +3060,15 @@ void CWeapon::SetSilencerY(int value)
 
 bool CWeapon::NeedBlockSprint() const
 {
-	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 	u32 state = GetState();
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	if (isDelayedWeaponActions)
+	{
+		return state != eIdle && state != eSprintStart || m_bIsAimAnimationPlaying;
+	}
+
+	const static bool isBlockSprintInReload = EngineExternal()[EEngineExternalGame::EnableBlockSprintInReload];
 
 	return state == eFire || state == eFire2 || state == eSprintEnd || isBlockSprintInReload && state == eReload || m_bIsAimAnimationPlaying;
 }
@@ -3668,4 +3784,10 @@ int CWeapon::GetMagCapacity()
 	}
 
 	return size;
+}
+
+bool CWeapon::IsActionProcessing() const
+{
+	const static bool is_suicide = false;
+	return is_suicide;
 }
