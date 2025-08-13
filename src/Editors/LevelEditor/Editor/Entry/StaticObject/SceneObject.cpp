@@ -323,13 +323,67 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
             {
                 if ((*s_it)->m_GameMtlName != occ_name)
                 {
-                    PropValue* V;
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-                    auto VA = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); VA->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface); VA->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+#if 1
+                    MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
+
+                    ChooseValue* Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Tex"), &(*s_it)->m_Texture, smTexture);
+                    Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+
+                    Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);
+                    Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+
+                    Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader);
+                    Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+
+                    Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial);
+                    Val->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+                    Val->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+#else
+                    MultiChooseValue* MultiValue = PHelper().CreateChooseTexture(items, PrepareKey(Pref2.c_str(), "TextureView"));
+                    ChooseValue* Val = MultiValue->CreateValue(PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);
+                    {
+                        PropItem* Item = new PropItem(PROP_CHOOSE);
+                        Item->SetName(PrepareKey(Pref2.c_str(), "Texture"));
+
+                        ChooseValue* ItemValue = new ChooseValue(&(*s_it)->m_Texture, smTexture, 0, 0, 1, cfAllowNone);
+                        Item->AppendValue(ItemValue);
+                        ItemValue->m_Owner = Item;
+                        ItemValue->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                        MultiValue->Values.push_back(ItemValue);
+                    }
+                    {
+                        PropItem* Item = new PropItem(PROP_CHOOSE);
+                        Item->SetName(PrepareKey(Pref2.c_str(), "Shader"));
+
+                        ChooseValue* ItemValue = new ChooseValue(&(*s_it)->m_ShaderName, smEShader, 0, 0, 1, cfAllowNone);
+                        Item->AppendValue(ItemValue);
+                        ItemValue->m_Owner = Item;
+                        ItemValue->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                        MultiValue->Values.push_back(ItemValue);
+                    }
+                    {
+                        PropItem* Item = new PropItem(PROP_CHOOSE);
+                        Item->SetName(PrepareKey(Pref2.c_str(), "Compile"));
+
+                        ChooseValue* ItemValue = new ChooseValue(&(*s_it)->m_ShaderXRLCName, smCShader, 0, 0, 1, cfAllowNone);
+                        Item->AppendValue(ItemValue);
+                        ItemValue->m_Owner = Item;
+                        ItemValue->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+                        MultiValue->Values.push_back(ItemValue);
+                    }
+                    {
+                        PropItem* Item = new PropItem(PROP_CHOOSE);
+                        Item->SetName(PrepareKey(Pref2.c_str(), "Game Mtl"));
+
+                        ChooseValue* ItemValue = new ChooseValue(&(*s_it)->m_GameMtlName, smGameMaterial, 0, 0, 1, cfAllowNone);
+                        Item->AppendValue(ItemValue);
+                        ItemValue->m_Owner = Item;
+                        ItemValue->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+                        ItemValue->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+                        MultiValue->Values.push_back(ItemValue);
+                    }
+#endif
                 }
-               
             }
         }
         PHelper().CreateButton(items, PrepareKey(Pref1.c_str(),"Action"), "Clear", ButtonValue::flFirstOnly)->OnBtnClickEvent.bind(this, &CSceneObject::OnClickClearSurface);
