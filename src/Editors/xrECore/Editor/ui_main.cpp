@@ -67,6 +67,8 @@ TUI::TUI()
 	ViewID = 0;
 
 	m_Size.set(DisplayX, DisplayY);
+
+	GUIManager = this;
 }
 //---------------------------------------------------------------------------
 TUI::~TUI()
@@ -79,6 +81,11 @@ TUI::~TUI()
 	TRelease(m_WinRes);
 	TRelease(m_WinMax);
 	TRelease(m_WinClose);
+}
+
+ImTextureID TUI::LoadTexture(const char* Texture) const
+{
+	return (void*)EDevice->Resources->_CreateTexture(Texture)->pSurface;
 }
 
 void TUI::OnDeviceCreate()

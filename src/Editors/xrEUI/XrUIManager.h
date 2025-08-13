@@ -40,12 +40,10 @@ public:
 	inline float GetMenuBarHeight()const { return m_MenuBarHeight; }
 	inline TShiftState GetShiftState()const { return m_ShiftState; };
 	virtual bool IsPlayInEditor() { return false; }
+	void ApplyShortCutInput(DWORD Key);
 
 protected:
 	virtual void OnDrawUI();
-
-public:
-	void ApplyShortCutInput(DWORD Key);
 
 private:
 	float m_MenuBarHeight;
@@ -69,5 +67,8 @@ public:
 	}
 
 	bool IsEnableInput = true;
+
+	virtual void* LoadTexture(const char*) const { return nullptr; };
 };
 
+extern XREUI_API XrUIManager* GUIManager;
