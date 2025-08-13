@@ -71,6 +71,7 @@ void UIPropertiesItem::RemoveMixed()
 		if (V->ApplyValue(val))change = true;
 	}
 	break;
+	case PROP_CHOOSE_TEXTURE:
 	case PROP_CHOOSE:
 	{
 

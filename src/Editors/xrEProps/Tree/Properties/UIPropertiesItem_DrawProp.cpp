@@ -334,12 +334,54 @@ void UIPropertiesItem::DrawProp()
 		}
 	}
 	break;
+	case PROP_CHOOSE_TEXTURE:
+	{
+		MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
+
+		for (ChooseValue* ChooseItem: Prop->Values)
+		{
+			xr_string text = ChooseItem->Owner()->Key();
+			xr_string TextValue = ChooseItem->Owner()->GetDrawText();
+			if (TextValue.empty())
+			{
+				text = NONE_CAPTION;
+			}
+			else
+			{
+				xr_path ExtractName = text;
+				text = ExtractName.xfilename() + ": " + TextValue;
+			}
+
+			if (ImGui::Button(text.c_str(), ImVec2(-1, 0)))
+			{
+				ChooseValue* V = dynamic_cast<ChooseValue*>(ChooseItem->Owner()->GetFrontValue()); VERIFY(V);
+				shared_str	edit_val = V->GetValue();
+				if (!edit_val.size())
+					edit_val = V->m_StartPath;
+
+				ChooseItem->Owner()->BeforeEdit<ChooseValue, shared_str>(edit_val);
+
+				ChooseItemVec Items;
+				if (!V->OnChooseFillEvent.empty())
+				{
+					V->m_Items = &Items;
+					V->OnChooseFillEvent(V);
+				}
+				UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
+				PropertiesFrom->m_EditChooseValue = ChooseItem->Owner();
+			}
+		}
+		break;
+	}
 	case PROP_CHOOSE:
 	{
+		xr_string text = PItem->GetDrawText();
+		if (text.empty())
+		{
+			text = NONE_CAPTION;
+		}
 
-		xr_string text = PItem->GetDrawText().c_str();
-		if (!text[0])text = "<none>";
-		if (ImGui::Button(text.c_str(),ImVec2(-1,0)))
+		if (ImGui::Button(text.c_str(), ImVec2(-1, 0)))
 		{
 			PropItem* prop = PItem;
 
@@ -358,9 +400,7 @@ void UIPropertiesItem::DrawProp()
 			}
 			UIChooseForm::SelectItem(V->m_ChooseID, V->subitem, edit_val.c_str(), 0, V->m_FillParam, 0, !Items.empty() ? &Items : 0, V->m_ChooseFlags);
 			PropertiesFrom->m_EditChooseValue = prop;
-
 		}
-
 	}
 	break;
 	case PROP_TOKEN:
@@ -517,7 +557,7 @@ void UIPropertiesItem::DrawProp()
 		{
 			RTextValue* V = dynamic_cast<RTextValue*>(PItem->GetFrontValue()); R_ASSERT(V);
 			{
-				string128 Str;
+				string256 Str;
 				xr_string Source = PItem->GetDrawText();
 				strncpy_s(Str, Source.c_str(), sizeof(string128) - 4);
 				if (Source.size() > 128 && strrchr(Str, '\n'))
@@ -528,10 +568,46 @@ void UIPropertiesItem::DrawProp()
 				if (ImGui::Button(Platform::ANSI_TO_UTF8(Str).data(), ImVec2(-1, 0)))
 				{
 				}
+
+				xr_string KeyValue = PItem->Key();
+				if (KeyValue.ends_with("Custom data") && ImGui::BeginDragDropTarget())
+				{
+					auto ImData = ImGui::AcceptDragDropPayload("TEST#cd");
+
+					if (ImData == nullptr)
+					{
+						ImGui::EndDragDropTarget();
+						return;
+					}
+					struct DragDropData
+					{
+						xr_string FileName;
+					}
+					Data = *(DragDropData*)ImData->Data;
+
+					xr_string NewLogicString = "[logic]\r\ncfg = ";
+
+					size_t Index = Data.FileName.find("scripts\\");
+					NewLogicString += Data.FileName.substr(Index);
+
+					shared_str out = NewLogicString.c_str();
+					if (PItem->AfterEdit<RTextValue, shared_str>(out))
+					{
+						if (PItem->ApplyValue<RTextValue, shared_str>(out))
+						{
+							PropertiesFrom->Modified();
+						}
+					}
+
+					ImGui::EndDragDropTarget();
+				}
 			}
 			if (ImGui::OpenPopupOnItemClick2("EditText", 0))
 			{
-				if (PropertiesFrom->m_EditTextValueData)xr_delete(PropertiesFrom->m_EditTextValueData);
+				if (PropertiesFrom->m_EditTextValueData)
+				{
+					xr_delete(PropertiesFrom->m_EditTextValueData);
+				}
 				PropertiesFrom->m_EditTextValueData = xr_strdup(V->GetValue().c_str()? V->GetValue().c_str():"");
 				PropertiesFrom->m_EditTextValueDataSize = xr_strlen(PropertiesFrom->m_EditTextValueData) + 1;
 				PropertiesFrom->m_EditTextValue = PItem;

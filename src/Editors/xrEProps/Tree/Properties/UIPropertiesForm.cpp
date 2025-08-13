@@ -108,12 +108,13 @@ void UIPropertiesForm::AssignItemsAsync(PropItemVec items)
 	bAsyncUpdated = false;
 
 	m_Items = items;
-	for (PropItem* item : items)
+	for (PropItem* PItem : items)
 	{
-		item->m_Owner = this;
-		UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.AppendItem(item->Key()));
+		PItem->m_Owner = this;
+		UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(m_Root.AppendItem(PItem->Key()));
 		VERIFY(Item);
-		Item->PItem = item;
+		Item->PItem = PItem;
+		Item->IsTexture = PItem->IsTextureItem;
 	}
 
 	bAsyncUpdated = true;

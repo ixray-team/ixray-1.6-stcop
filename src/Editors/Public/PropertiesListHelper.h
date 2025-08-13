@@ -7,7 +7,9 @@
 class ListItem;
 
 //---------------------------------------------------------------------------
-class CPropHelper:public IPropHelper{
+class CPropHelper:
+    public IPropHelper
+{
 	PropItem*								CreateItem			(PropItemVec& items, const shared_str& key, EPropType type, u32 item_flags=0);
     PropValue*								AppendValue			(PropItemVec& items, const shared_str& key, PropValue* val, EPropType type, u32 item_flags=0);
 public:
@@ -34,6 +36,7 @@ public:
     virtual CanvasValue*			CreateCanvas	    (PropItemVec& items, shared_str key, shared_str val, int height);
     virtual ButtonValue*			CreateButton	    (PropItemVec& items, shared_str key, shared_str val, u32 flags, ButtonValue::TOnBtnClick onclick=0);
     virtual ChooseValue*			CreateChoose	    (PropItemVec& items, shared_str key, shared_str* val, u32 mode, LPCSTR path=0, void* fill_param=0, u32 sub_item_count=1, u32 choose_flags=cfAllowNone);
+    virtual MultiChooseValue*   	CreateChooseTexture (PropItemVec& items, shared_str key);
     virtual S8Value* 				CreateS8		    (PropItemVec& items, shared_str key, s8* val, s8 mn=0, s8 mx=100, s8 inc=1);
     virtual S16Value* 				CreateS16		    (PropItemVec& items, shared_str key, s16* val, s16 mn=0, s16 mx=100, s16 inc=1);
     virtual S32Value* 	 			CreateS32		    (PropItemVec& items, shared_str key, s32* val, s32 mn=0, s32 mx=100, s32 inc=1);
