@@ -24,6 +24,23 @@ enum EActorCameras {
 };
 enum EDamages {DAMAGE_FX_COUNT = 12};
 
+enum EActorKeyflags
+{
+	kfFIRE = (1ul << 0ul),
+	kfUNZOOM = (1ul << 1ul),
+	kfHEADLAMP = (1ul << 2ul),
+	kfNIGHTVISION = (1ul << 3ul),
+	kfCLEARMASK = (1ul << 4ul),
+	kfQUICKKICK = (1ul << 5ul),
+	kfGLAUNCHSWITCH = (1ul << 6ul),
+	kfNEXTFIREMODE = (1ul << 7ul),
+	kfPREVFIREMODE = (1ul << 8ul),
+	kfRELOAD = (1ul << 9ul),
+	kfNEXTAMMO = (1ul << 10ul),
+	kfTACTICALTORCH = (1ul << 11ul),
+	kfLASER = (1ul << 12ul),
+};
+
 enum EMovementStates
 {
 	eOld = 0,
