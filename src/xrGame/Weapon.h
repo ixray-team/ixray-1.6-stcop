@@ -240,6 +240,10 @@ public:
 	bool OnWeaponJam();
 	bool CheckForMisfire_validate_NoMisfire();
 
+	bool IsActionProcessing() const;
+	bool CanAimNow();
+	bool CanLeaveAimNow();
+
 	struct conditional_breaking_params
 	{
 		float start_condition = 0.0f;     // при каком состоянии начнутся проблемы
@@ -266,8 +270,6 @@ public:
 
 	xr_vector<std::pair<u8, u32>> m_mags_capacity{};
 
-	bool bReloadKeyPressed = false;
-	bool bAmmotypeKeyPressed = false;
 	bool bStopReloadSignal = false;
 	bool m_bUseSilHud = false;
 	bool m_bUseScopeHud = false;

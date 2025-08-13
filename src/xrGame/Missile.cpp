@@ -949,3 +949,15 @@ bool CMissile::GetBriefInfo( II_BriefInfo& info )
 	info.name._set( m_nameShort );
 	return true;
 }
+
+bool CMissile::NeedBlockSprint() const
+{
+	u32 state = GetState();
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+	if (isDelayedWeaponActions)
+	{
+		return state != eIdle && state != eSprintStart;
+	}
+
+	return state == eSprintEnd;
+}
