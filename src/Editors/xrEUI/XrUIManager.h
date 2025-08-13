@@ -67,7 +67,7 @@ public:
 	}
 
 	bool IsEnableInput = true;
-
+	EDragDropType DnDType = EDragDropType::None;
 	virtual void* LoadTexture(const char*) const { return nullptr; };
 };
 

@@ -570,36 +570,45 @@ void UIPropertiesItem::DrawProp()
 				}
 
 				xr_string KeyValue = PItem->Key();
-				if (KeyValue.ends_with("Custom data") && ImGui::BeginDragDropTarget())
+				if (KeyValue.ends_with("Custom data"))
 				{
-					auto ImData = ImGui::AcceptDragDropPayload("TEST#cd");
+					const ImGuiPayload* payload = ImGui::GetDragDropPayload();
 
-					if (ImData == nullptr)
+					if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Logic)
 					{
-						ImGui::EndDragDropTarget();
-						return;
+						ImDrawList* draw_list = ImGui::GetWindowDrawList();
+						ImVec2 p_min = ImGui::GetItemRectMin();
+						ImVec2 p_max = ImGui::GetItemRectMax();
+						draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
+						draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
 					}
-					struct DragDropData
+
+					if (ImGui::BeginDragDropTarget())
 					{
-						xr_string FileName;
-					}
-					Data = *(DragDropData*)ImData->Data;
-
-					xr_string NewLogicString = "[logic]\r\ncfg = ";
-
-					size_t Index = Data.FileName.find("scripts\\");
-					NewLogicString += Data.FileName.substr(Index);
-
-					shared_str out = NewLogicString.c_str();
-					if (PItem->AfterEdit<RTextValue, shared_str>(out))
-					{
-						if (PItem->ApplyValue<RTextValue, shared_str>(out))
+						if (auto ImData = ImGui::AcceptDragDropPayload("TEST#cd"))
 						{
-							PropertiesFrom->Modified();
-						}
-					}
+							struct DragDropData
+							{
+								xr_string FileName;
+							}
+							Data = *(DragDropData*)ImData->Data;
 
-					ImGui::EndDragDropTarget();
+							xr_string NewLogicString = "[logic]\r\ncfg = ";
+
+							size_t Index = Data.FileName.find("scripts\\");
+							NewLogicString += Data.FileName.substr(Index);
+
+							shared_str out = NewLogicString.c_str();
+							if (PItem->AfterEdit<RTextValue, shared_str>(out))
+							{
+								if (PItem->ApplyValue<RTextValue, shared_str>(out))
+								{
+									PropertiesFrom->Modified();
+								}
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
 				}
 			}
 			if (ImGui::OpenPopupOnItemClick2("EditText", 0))

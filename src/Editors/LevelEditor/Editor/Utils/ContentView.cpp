@@ -93,9 +93,21 @@ void CContentView::Draw()
 		}
 
 		ImGui::EndChild();
+		const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+
+		if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+		{
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			ImVec2 p_min = ImGui::GetItemRectMin();
+			ImVec2 p_max = ImGui::GetItemRectMax();
+			draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
+			draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
+		}
+
 	}
 
 	ImGui::End();
+
 
 	ThmPropWnd.Draw();
 }
@@ -857,7 +869,7 @@ void CContentView::AcceptDragDropAction(const CContentView::FileOptData& InitFil
 	{
 		return;
 	}
-	
+
 	auto ImData = ImGui::AcceptDragDropPayload("TEST");
 
 	if (ImData == nullptr)
@@ -931,21 +943,27 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 			}
 
 			xr_string PayloadName = "TEST";
+			GUIManager->DnDType = EDragDropType::Viewport;
+
 			if (SelectedObjects.size() != 1)
 			{
 				PayloadName = "OTHR";
+				GUIManager->DnDType = EDragDropType::File;
 			}
 			else if (FilePath.xstring().ends_with(".dti"))
 			{
 				PayloadName += "#dti";
+				GUIManager->DnDType = EDragDropType::Details;
 			}
 			else if (FilePath.xstring().ends_with(".rai"))
 			{
 				PayloadName += "#rai";
+				GUIManager->DnDType = EDragDropType::RandomAppend;
 			}
 			else if (IsGameLogicFile)
 			{
 				PayloadName += "#cd";
+				GUIManager->DnDType = EDragDropType::Logic;
 			}
 
 			ImGui::SetDragDropPayload(PayloadName.c_str(), &Data, sizeof(DragDropData));
@@ -969,6 +987,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 		}
 
 		Data.FileName = FilePath;
+		GUIManager->DnDType = EDragDropType::Folder;
 		ImGui::SetDragDropPayload("FLDR", &Data, sizeof(DragDropData));
 	}
 
