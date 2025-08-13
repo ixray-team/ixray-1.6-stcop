@@ -88,7 +88,7 @@ bool TUI_CustomControl::HiddenMode()
 void DragDrop(const xr_string& Path, int Type)
 {
 	Fvector p, n;
-	if (LUI->PickGround(p, UI->m_CurrentRStart, UI->m_CurrentRDir, 1, &n))
+	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
 	{
 		// before callback
 		SBeforeAppendCallbackParams P;
