@@ -341,9 +341,6 @@ void CWeaponMagazined::FireEnd()
 
 void CWeaponMagazined::Reload() 
 {
-	if (ParentIsActor() && Actor()->GetDetector() && Actor()->GetDetector()->GetState() != CCustomDetector::eIdle)
-		return;
-
 	inherited::Reload();
 	TryReload();
 }
@@ -401,9 +398,6 @@ bool CWeaponMagazined::TryReload()
 	{
 		SwitchState(eIdle);
 	}
-
-	bAmmotypeKeyPressed = false;
-	bReloadKeyPressed = false;
 
 	return false;
 }
@@ -644,12 +638,6 @@ bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 				break;
 			}
 		}
-	}
-
-	if (ac < cnt)
-	{
-		bAmmotypeKeyPressed = false;
-		bReloadKeyPressed = false;
 	}
 
 	return ac >= cnt;
@@ -1219,12 +1207,6 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 	{
 		case eReload:
 		{
-			if (!IsTriStateReload())
-			{
-				bReloadKeyPressed = false;
-				bAmmotypeKeyPressed = false;
-			}
-
 			if (bMisfireReload)
 			{
 				bMisfire = false;
@@ -1563,22 +1545,27 @@ void CWeaponMagazined::switch2_LightMis()
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
-	
-	//если оружие чем-то занято, то ничего не делать
-	if(IsPending()) return false;
-	
+	if (inherited::Action(cmd, flags))
+	{
+		return true;
+	}
+
 	switch(cmd) 
 	{
 	case kWPN_RELOAD:
 		{
 			if (flags & CMD_START && (m_bBlockReload && GetState() == eIdle || !m_bBlockReload))
 			{
-				if (iAmmoElapsed < GetMagCapacity() || IsMisfire())
+				if ((iAmmoElapsed < GetMagCapacity() || IsMisfire()))
 				{
-					if (!bReloadKeyPressed || !bAmmotypeKeyPressed)
+					if (!SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfRELOAD))
 					{
-						bReloadKeyPressed = true;
+						return false;
+					}
+
+					if (IsPending())
+					{
+						return false;
 					}
 
 					Reload();
@@ -1597,7 +1584,7 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 	}break;
 	case kTACTICALTORCH:
 	{
-		if (flags & CMD_START && m_HudLight.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
+		if (flags & CMD_START && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfTACTICALTORCH) && m_HudLight.GetTorchInstalled() && !IsZoomed() && GetState() == eIdle)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
 			SwitchState(eDevice);
@@ -2273,7 +2260,17 @@ bool CWeaponMagazined::SwitchMode()
  
 void CWeaponMagazined::ChangeFireMode(u16 cmd)
 {
-	if (!HasFireModes() || GetState() != eIdle || IsZoomed() && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode) && m_bDisableFireModeAim)
+	if (!HasFireModes() || GetState() != eIdle)
+	{
+		return;
+	}
+
+	if (IsZoomed() && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode) && m_bDisableFireModeAim)
+	{
+		return;
+	}
+
+	if (!SetKeyRepeatFlag(cmd == kWPN_FIREMODE_NEXT ? ACTOR_DEFS::EActorKeyflags::kfNEXTFIREMODE : ACTOR_DEFS::EActorKeyflags::kfPREVFIREMODE))
 	{
 		return;
 	}

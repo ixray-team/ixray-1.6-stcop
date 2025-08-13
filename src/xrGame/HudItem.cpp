@@ -15,6 +15,7 @@
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "Weapon.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -941,4 +942,64 @@ bool CHudItem::SoundExist(LPCSTR section, LPCSTR sound_name)
 	}
 
 	return true;
+}
+
+bool CHudItem::CanStartAction(CActor* pActor)
+{
+	if (pActor == nullptr)
+	{
+		return true;
+	}
+
+	if (CCustomDetector* pDetector = pActor->GetDetector(true))
+	{
+		if (pDetector->GetState() != CCustomDetector::eIdle && !pDetector->IsHidden() || pDetector->NeedActivation())
+		{
+			return false;
+		}
+	}
+
+	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+	if (!isDelayedWeaponActions)
+	{
+		return true;
+	}
+
+	if (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
+	{
+		return false;
+	}
+
+	if (IsPending())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
+{
+	CActor* pActor = object().H_Parent() != nullptr ? object().H_Parent()->cast_actor() : nullptr;
+	if (pActor == nullptr)
+	{
+		return true;
+	}
+
+	bool result = CanStartAction(pActor);
+	if (!result)
+	{
+		CCustomDetector* pDetector = pActor->GetDetector(true);
+
+		const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
+
+		if (isDelayedWeaponActions && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
+		|| pDetector != nullptr && (pDetector->GetState() != CCustomDetector::eIdle && !pDetector->IsHidden() || pDetector->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
+		{
+			Actor()->SetActorKeyRepeatFlag((ACTOR_DEFS::EActorKeyflags)kfACTTYPE, true);
+		}
+	}
+
+	return result;
 }
