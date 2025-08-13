@@ -8,6 +8,8 @@
 #include "ImGuizmo.h"
 #include "imgui_internal.h"
 
+XREUI_API XrUIManager* GUIManager = nullptr;
+
 XrUIManager::XrUIManager()
 {
 }
