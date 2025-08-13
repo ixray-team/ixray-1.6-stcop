@@ -274,6 +274,11 @@ void UIRenderForm::DrawVP()
 				m_OnContextMenu();
 				ImGui::EndPopup();
 			}
+			else
+			{
+				UI->m_ContextRDir = UI->m_CurrentRDir;
+				UI->m_ContextRStart = UI->m_CurrentRStart;
+			}
 		}
 
 		HandleDragDrop(canvas_pos);

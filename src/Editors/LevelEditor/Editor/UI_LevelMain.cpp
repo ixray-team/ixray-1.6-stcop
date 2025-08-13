@@ -926,6 +926,62 @@ CCommandVar CommandHideSel(CCommandVar p1, CCommandVar p2)
 		return 					FALSE;
 	}
 }
+
+CCommandVar CommandCreateShapeSphere(CCommandVar p1, CCommandVar p2)
+{
+	Fvector p, n;
+	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
+	{
+		// before callback
+		string256 namebuffer;
+		Scene->GenObjectName(OBJCLASS_SHAPE, namebuffer, Scene->LevelPrefix().c_str());
+		auto obj = Scene->GetOTool(OBJCLASS_SHAPE)->CreateObject(nullptr, namebuffer);
+		if (!obj->Valid())
+		{
+			xr_delete(obj);
+			return 0;
+		}
+
+		CEditShape* shape = static_cast<CEditShape*>(obj);
+		Fsphere M;
+		M.identity();
+		shape->add_sphere(M);
+		obj->MoveTo(p, n);
+		Scene->SelectObjects(false, OBJCLASS_SHAPE);
+		Scene->AppendObject(obj);
+		ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SHAPE);
+	}
+
+	return TRUE;
+}
+
+CCommandVar CommandCreateShapeBox(CCommandVar p1, CCommandVar p2)
+{
+	Fvector p, n;
+	if (LUI->PickGround(p, UI->m_ContextRStart, UI->m_ContextRDir, 1, &n))
+	{
+		// before callback
+		string256 namebuffer;
+		Scene->GenObjectName(OBJCLASS_SHAPE, namebuffer, Scene->LevelPrefix().c_str());
+		auto obj = Scene->GetOTool(OBJCLASS_SHAPE)->CreateObject(nullptr, namebuffer);
+		if (!obj->Valid())
+		{
+			xr_delete(obj);
+			return 0;
+		}
+
+		CEditShape* shape = static_cast<CEditShape*>(obj);
+		Fmatrix M;
+		M.identity();
+		shape->add_box(M);
+		obj->MoveTo(p, n);
+		Scene->SelectObjects(false, OBJCLASS_SHAPE);
+		Scene->AppendObject(obj);
+		ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SHAPE);
+	}
+	return TRUE;
+}
+
 CCommandVar CommandHideAll(CCommandVar p1, CCommandVar p2)
 {
 	if( !Scene->locked() ){
@@ -1177,6 +1233,8 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_HIDE_UNSEL,              	"Visibility\\Hide Unselected",	CommandHideUnsel,false);
 	REGISTER_CMD_SE	    (COMMAND_HIDE_SEL,              	"Visibility\\Hide Selected", 	CommandHideSel,false);
 	REGISTER_CMD_SE	    (COMMAND_HIDE_ALL,              	"Visibility\\Hide All", 		CommandHideAll,false);
+	REGISTER_CMD_SE	    (COMMAND_CREATE_SHAPE_BOX,         	"Create\\Box", 					CommandCreateShapeBox,false);
+	REGISTER_CMD_SE	    (COMMAND_CREATE_SHAPE_SPHERE,      	"Create\\Sphere", 				CommandCreateShapeSphere,false);
 	REGISTER_CMD_S	    (COMMAND_LOCK_ALL,              	CommandLockAll);
 	REGISTER_CMD_S	    (COMMAND_LOCK_SEL,					CommandLockSel);
 	REGISTER_CMD_S	    (COMMAND_LOCK_UNSEL,              	CommandLockUnsel);
