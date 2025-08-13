@@ -2274,7 +2274,7 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 
 	m_iPrevFireMode = GetQueueSize();
 
-	if (cmd == kWPN_NEXT)
+	if (cmd == kWPN_FIREMODE_NEXT)
 	{
 		m_iCurFireMode = (m_iCurFireMode + 1 + m_aFireModes.size()) % (s8)m_aFireModes.size();
 	}
