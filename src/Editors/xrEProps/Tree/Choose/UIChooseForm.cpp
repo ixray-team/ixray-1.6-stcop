@@ -226,8 +226,9 @@ void UIChooseForm::SetNullTexture(ImTextureID Texture)
 void UIChooseForm::Update()
 {
 	// ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
-	if (Form&& !Form->IsClosed())
+	if (Form && !Form->IsClosed())
 	{
+		ImGui::OpenPopup("Choose form");
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
 		if (ImGui::BeginPopupModal("Choose form", nullptr,0))
 		{
