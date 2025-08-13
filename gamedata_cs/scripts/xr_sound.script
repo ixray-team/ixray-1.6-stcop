@@ -236,3 +236,25 @@ function stop_sounds_by_id(obj_id)
 		end
 	end
 end
+
+-- FFx0001 restore functions
+local sound_object_by_path = {}
+
+function stop_all_sound_object()
+	for k,v in pairs(sound_object_by_path) do
+		if v:playing() then
+			v:stop()
+		end
+	end
+end
+
+function clear_all_sound_object()
+	sound_object_by_theme = {}
+end
+
+function get_safe_sound_object(path)
+	if sound_object_by_path[path] == nil then
+		sound_object_by_path[path] = sound_object(path)
+	end
+	return sound_object_by_path[path]
+end
