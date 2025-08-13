@@ -226,7 +226,8 @@ void CScriptStorage::print_stack() {
 	lua_State* L = lua();
 
 	if (lua_isstring(L, -1)) {
-		Msg("[LUA] Error: %s\n", lua_tostring(L, -1));
+		lua_last_error = lua_tostring(L, -1);
+		Msg("[LUA] Error: %s\n", lua_last_error);
 		//lua_pop(L, 1);
 	}
 
@@ -527,7 +528,7 @@ struct raii_guard
 		if (!m_error_code)
 			return;
 
-		R_ASSERT2(!m_error_code, m_error_description);
+		R_ASSERT3(!m_error_code, m_error_description, *g_pScriptEngine->lua_last_error);
 	}
 }; // struct raii_guard
 

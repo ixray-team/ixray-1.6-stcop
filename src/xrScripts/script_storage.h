@@ -22,6 +22,8 @@ private:
 	lua_State					*m_virtual_machine	;
 	CScriptThread				*m_current_thread	;
 	BOOL						m_jit				;
+public:
+	shared_str					lua_last_error		;
 
 protected:
 	CMemoryWriter				m_output;
