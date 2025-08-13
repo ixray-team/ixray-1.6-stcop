@@ -41,6 +41,17 @@ UIObjectTool::~UIObjectTool()
 
 void UIObjectTool::HandleDragDrop()
 {
+	const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+
+	if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::RandomAppend)
+	{
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		ImVec2 p_min = ImGui::GetItemRectMin();
+		ImVec2 p_max = ImGui::GetItemRectMax();
+		draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
+		draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
+	}
+
 	if (!ImGui::BeginDragDropTarget())
 		return;
 
