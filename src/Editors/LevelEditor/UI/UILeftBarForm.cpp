@@ -14,91 +14,134 @@ UILeftBarForm::~UILeftBarForm()
 {
 }
 
+// Вспомогательная функция для рендеринга кнопки инструмента
+void RenderToolButton(ESceneToolBase * tool, ObjClassID tool_id)
+{
+	if (!tool) return;
+
+	bool visible = tool->IsVisible();
+	ImGui::PushID(tool->ClassName());
+	ImGui::BeginDisabled(!tool->IsEnabled());
+
+	// Кнопка видимости
+	xr_string icon = visible ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
+	icon += tool->ClassName();
+
+	auto col = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
+	if (!visible) col.w = 0.5f;
+
+	ImGui::PushStyleColor(ImGuiCol_Text, col);
+	if (ImGui::Button(icon.c_str(), { 20, 15 }))
+	{
+		visible = !visible;
+		tool->m_EditFlags.set(ESceneToolBase::flVisible, visible);
+		UI->RedrawScene();
+	}
+	ImGui::PopStyleColor();
+
+	ImGui::SameLine();
+
+	// Кнопка выбора инструмента
+	auto col_tool = ImGui::GetStyle().Colors[ImGuiCol_Button];
+	if (LTools->GetTarget() == tool_id)
+		col_tool = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+
+	ImGui::PushStyleColor(ImGuiCol_Button, col_tool);
+	if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 15)))
+	{
+		ExecCommand(COMMAND_CHANGE_TARGET, tool_id);
+	}
+	ImGui::PopStyleColor();
+
+	ImGui::EndDisabled();
+	ImGui::PopID();
+}
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("Edit Mode", 0))
+	ImGuiStyle& Style = ImGui::GetStyle();
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 4));
+	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0, 0));
+
+	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
 		static ObjClassID Tools[OBJCLASS_COUNT + 1] = {
-													OBJCLASS_SCENEOBJECT,
-													OBJCLASS_LIGHT,
-													OBJCLASS_SOUND_SRC,
-													OBJCLASS_SOUND_ENV,OBJCLASS_GLOW,
-													OBJCLASS_SHAPE,
-													OBJCLASS_SPAWNPOINT,
-													OBJCLASS_WAY,
-													OBJCLASS_SECTOR,
-													OBJCLASS_PORTAL,
-													OBJCLASS_GROUP,
-													OBJCLASS_PS,
-													OBJCLASS_DO,
-													OBJCLASS_AIMAP,
-													OBJCLASS_WM,
-													OBJCLASS_FOG_VOL,
-													OBJCLASS_PUDDLES,
-													OBJCLASS_TERRAIN,
-													OBJCLASS_force_dword
+			OBJCLASS_SCENEOBJECT,
+			OBJCLASS_LIGHT,
+			OBJCLASS_SOUND_SRC,
+			OBJCLASS_SOUND_ENV, OBJCLASS_GLOW,
+			OBJCLASS_SHAPE,
+			OBJCLASS_SPAWNPOINT,
+			OBJCLASS_WAY,
+			OBJCLASS_TERRAIN, // End left
+			OBJCLASS_SECTOR,
+			OBJCLASS_PORTAL,
+			OBJCLASS_GROUP,
+			OBJCLASS_PS,
+			OBJCLASS_DO,
+			OBJCLASS_AIMAP,
+			OBJCLASS_WM,
+			OBJCLASS_FOG_VOL,
+			OBJCLASS_PUDDLES, // End right
+			OBJCLASS_force_dword
 		};
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 1));
-		ImGui::Columns(2);
-		for (u32 i = 0; Tools[i] != OBJCLASS_force_dword; i++)
+		if (ImGui::BeginTable("EditModeTable", 2, ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoPadOuterX | ImGuiTableFlags_NoPadInnerX))
 		{
-			u32 id = 0;
-			if (i % 2)
-				id = ((OBJCLASS_COUNT + 1) / 2) + (i / 2);
-			else
-				id = (i / 2);
-			ESceneToolBase* tool = Scene->GetTool(Tools[id]);
-			bool visble = tool->IsVisible();
-			ImGui::PushID(tool->ClassName());
+			const float column_width = ImGui::GetContentRegionAvail().x * 0.5f;
+			ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, column_width);
+			ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthFixed, column_width);
 
-			ImGui::BeginDisabled(!tool->IsEnabled());
-
-			xr_string icon = visble ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
-			icon+= std::to_string(i);
-
-			auto col = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
-
-			if (!visble)
-				col.w = 0.5;
-
-			ImGui::PushStyleColor(ImGuiCol_Text, col);
-
-			if (ImGui::Button(icon.c_str(), {20,15}))
+			for (u32 i = 0; Tools[i] != OBJCLASS_force_dword; i++)
 			{
-				visble = !visble;
-				tool->m_EditFlags.set(ESceneToolBase::flVisible, visble);
-				UI->RedrawScene();
+				const u32 id = (i % 2) ? ((OBJCLASS_COUNT + 1) / 2 + (i / 2)) : (i / 2);
+				ESceneToolBase* tool = Scene->GetTool(Tools[id]);
+
+				if (i % 2 == 0)
+					ImGui::TableNextRow(ImGuiTableRowFlags_None, 0.0f);
+
+				ImGui::TableSetColumnIndex(i % 2);
+
+				ImGui::PushID(tool->ClassName());
+				ImGui::BeginDisabled(!tool->IsEnabled());
+
+				const bool IsVisible = tool->IsVisible();
+				const xr_string Icon = IsVisible ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
+				ImVec4 IconColor = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
+				if (!IsVisible) IconColor.w = 0.5f;
+
+				ImGui::PushStyleColor(ImGuiCol_Text, IconColor);
+				if (ImGui::Button(Icon.c_str(), ImVec2(20, 15)))
+				{
+					tool->m_EditFlags.set(ESceneToolBase::flVisible, !IsVisible);
+					UI->RedrawScene();
+				}
+				ImGui::PopStyleColor();
+
+				ImGui::SameLine(0, 0);
+
+				const bool IsActive = (LTools->GetTarget() == Tools[id]);
+				ImVec4 BtnColor = IsActive ? Style.Colors[ImGuiCol_ButtonActive] : Style.Colors[ImGuiCol_Button];
+
+				ImGui::PushStyleColor(ImGuiCol_Button, BtnColor);
+				if (ImGui::Button(tool->ClassDesc(), ImVec2(-1, 15)))
+				{
+					ExecCommand(COMMAND_CHANGE_TARGET, Tools[id]);
+				}
+				ImGui::PopStyleColor();
+
+				ImGui::EndDisabled();
+				ImGui::PopID();
 			}
 
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine();
-
-			auto col_tool = ImGui::GetStyle().Colors[ImGuiCol_Button];
-
-
-			if (LTools->GetTarget() == Tools[id])
-				col_tool = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
-
-			ImGui::PushStyleColor(ImGuiCol_Button, col_tool);
-
-			if (ImGui::Button(tool->ClassDesc(), {-1,15}))
-			//if (ImGui::RadioButton(tool->ClassDesc(), LTools->GetTarget() == Tools[id]))
-			{
-				ExecCommand(COMMAND_CHANGE_TARGET, Tools[id]);
-			}
-			ImGui::PopStyleColor();
-
-			ImGui::EndDisabled();
-			ImGui::PopID();
-			ImGui::NextColumn();
+			ImGui::EndTable();
 		}
-		ImGui::Columns(1);
-		ImGui::PopStyleVar(2);
+
 	}
 	ImGui::End();
+	ImGui::PopStyleVar(4);
 
 	if (LTools->GetToolForm())
 	{
