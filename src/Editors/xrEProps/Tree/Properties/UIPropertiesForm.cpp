@@ -1,5 +1,8 @@
 #include "stdafx.h"
-UIPropertiesForm::UIPropertiesForm():m_Root("",this)
+#include "UIPropertiesForm.h"
+
+UIPropertiesForm::UIPropertiesForm() :
+	m_Root("", this)
 {
 	m_bModified = false;
 	m_EditChooseValue = nullptr;
@@ -21,82 +24,91 @@ void UIPropertiesForm::Draw()
 	{
 		return;
 	}
+
+	if (m_EditChooseValue)
 	{
-		if (m_EditChooseValue)
+		shared_str result;
+		bool is_result;
+		if (UIChooseForm::GetResult(is_result, result))
 		{
-			shared_str result;
-			bool is_result;
-			if (UIChooseForm::GetResult(is_result, result))
+			if (is_result)
 			{
-				if (is_result)
+				if (m_EditChooseValue->AfterEdit<ChooseValue, shared_str>(result))
+					if (m_EditChooseValue->ApplyValue<ChooseValue, shared_str>(result))
+					{
+						Modified();
+					}
+			}
+			m_EditChooseValue = nullptr;
+		}
+
+		UIChooseForm::Update();
+	}
+	if (m_EditTextureValue)
+	{
+		shared_str result;
+		bool is_result;
+		if (UIChooseForm::GetResult(is_result, result))
+		{
+			if (is_result)
+			{
+				if (result.c_str() == nullptr)
 				{
-					if (m_EditChooseValue->AfterEdit<ChooseValue, shared_str>(result))
-						if (m_EditChooseValue->ApplyValue<ChooseValue, shared_str>(result))
+					xr_string result_as_str = "$null";
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+						if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
 						{
 							Modified();
 						}
 				}
-				m_EditChooseValue = nullptr;
-			}
-
-			UIChooseForm::Update();
-		}
-		if (m_EditTextureValue)
-		{
-			shared_str result;
-			bool is_result;
-			if (UIChooseForm::GetResult(is_result, result))
-			{
-				if (is_result)
+				else
 				{
-					if (result.c_str() == nullptr)
-					{
-						xr_string result_as_str = "$null";
-						if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-							if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
-							{
-								Modified();
-							}
-					}
-					else
-					{
-						xr_string result_as_str = result.c_str();
-						if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
-							if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
-							{
-								Modified();
-							}
-					}
-
-				}
-				m_EditTextureValue = nullptr;
-			}
-			UIChooseForm::Update();
-		}
-		if (m_EditShortcutValue)
-		{
-			xr_shortcut result;
-			bool ok;
-			if (UIKeyPressForm::GetResult(ok, result))
-			{
-				if (ok)
-				{
-					if (m_EditShortcutValue->AfterEdit<ShortcutValue, xr_shortcut>(result))
-						if (m_EditShortcutValue->ApplyValue<ShortcutValue, xr_shortcut>(result))
+					xr_string result_as_str = result.c_str();
+					if (m_EditTextureValue->AfterEdit<CTextValue, xr_string>(result_as_str))
+						if (m_EditTextureValue->ApplyValue<CTextValue, LPCSTR>(result_as_str.c_str()))
 						{
 							Modified();
 						}
 				}
-				m_EditShortcutValue = nullptr;
+
 			}
+			m_EditTextureValue = nullptr;
+		}
+		UIChooseForm::Update();
+	}
+	if (m_EditShortcutValue)
+	{
+		xr_shortcut result;
+		bool ok;
+		if (UIKeyPressForm::GetResult(ok, result))
+		{
+			if (ok)
+			{
+				if (m_EditShortcutValue->AfterEdit<ShortcutValue, xr_shortcut>(result))
+					if (m_EditShortcutValue->ApplyValue<ShortcutValue, xr_shortcut>(result))
+					{
+						Modified();
+					}
+			}
+			m_EditShortcutValue = nullptr;
 		}
 	}
 
-    static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
-	if (ImGui::BeginTable("props", 2, flags))
+	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
+	ImGuiTableFlags Flags = DefFlags;
+	if (IsFitMode)
 	{
-		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
-		ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthFixed);
+		Flags |= ImGuiTableFlags_SizingFixedFit;
+	}
+	else
+	{
+		Flags |= ImGuiTableFlags_Resizable;
+	}
+
+	if (ImGui::BeginTable("props", 2, Flags))
+	{
+		ImGui::TableSetupColumn("Name");
+		ImGui::TableSetupColumn("Prop");
 		ImGui::TableHeadersRow();
 		m_Root.DrawRoot();
 		ImGui::EndTable();

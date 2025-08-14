@@ -19,6 +19,7 @@ UIObjectTool::UIObjectTool()
 	m_TextureNull->Load();
 
 	m_Props = new UIPropertiesForm();
+	m_Props->SetFitMode(true);
 	RefreshList();
 }
 

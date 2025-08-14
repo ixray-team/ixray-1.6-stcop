@@ -112,15 +112,15 @@ void EObjectThumbnail::Save(int age, LPCSTR path)
 
 void EObjectThumbnail::FillProp(PropItemVec& items)
 {
-    PHelper().CreateCaption	(items, "Face Count",				std::to_string(face_count).c_str());
-    PHelper().CreateCaption	(items, "Vertex Count",				std::to_string(vertex_count).c_str());
+    PHelper().CreateCaption	(items, "Faces",				std::to_string(face_count).c_str());
+    PHelper().CreateCaption	(items, "Vertexes",				std::to_string(vertex_count).c_str());
 }
 //------------------------------------------------------------------------------
 
 void EObjectThumbnail::FillInfo(PropItemVec& items)
 {
-    PHelper().CreateCaption	(items, "Face Count",				std::to_string(face_count).c_str());
-    PHelper().CreateCaption	(items, "Vertex Count",				std::to_string(vertex_count).c_str());
+    PHelper().CreateCaption	(items, "Faces",				std::to_string(face_count).c_str());
+    PHelper().CreateCaption	(items, "Vertexes",				std::to_string(vertex_count).c_str());
 }
 //------------------------------------------------------------------------------
 
