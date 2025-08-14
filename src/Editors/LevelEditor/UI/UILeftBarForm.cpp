@@ -55,17 +55,17 @@ void UILeftBarForm::Draw()
 
 			ImGui::BeginDisabled(!tool->IsEnabled());
 
-			xr_string icon = ICON_FA_EYE"##";
+			xr_string icon = visble ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
 			icon+= std::to_string(i);
 
-			auto col = ImGui::GetStyle().Colors[ImGuiCol_Text];
+			auto col = ImGui::GetStyle().Colors[ImGuiCol_CheckMark];
 
 			if (!visble)
 				col.w = 0.5;
 
 			ImGui::PushStyleColor(ImGuiCol_Text, col);
 
-			if (ImGui::Button(icon.c_str(), {18,15}))
+			if (ImGui::Button(icon.c_str(), {20,15}))
 			{
 				visble = !visble;
 				tool->m_EditFlags.set(ESceneToolBase::flVisible, visble);
