@@ -289,7 +289,7 @@ this->MenuIcon.p_ was nullptr.
 	*/
 
 	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 }))
-	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB", { 15, 15} ))
+	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB" ))
 	{
 		ImGui::OpenPopup("MenuCBPpp");
 	}
