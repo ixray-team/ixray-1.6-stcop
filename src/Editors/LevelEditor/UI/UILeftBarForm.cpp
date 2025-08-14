@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "IconsFontAwesome6.h"
 
 UILeftBarForm::UILeftBarForm()
 {
@@ -54,11 +55,25 @@ void UILeftBarForm::Draw()
 
 			ImGui::BeginDisabled(!tool->IsEnabled());
 
-			if (ImGui::Checkbox("##value", &visble)) 
-			{ 
-				tool->m_EditFlags.set(ESceneToolBase::flVisible, visble); 
-				UI->RedrawScene(); 
-			}; 
+			xr_string icon = ICON_FA_EYE"##";
+			icon+= std::to_string(i);
+
+			auto col = ImGui::GetStyle().Colors[ImGuiCol_Text];
+
+			if (!visble)
+				col.w = 0.5;
+
+			ImGui::PushStyleColor(ImGuiCol_Text, col);
+
+			if (ImGui::Button(icon.c_str(), {18,15}))
+			{
+				visble = !visble;
+				tool->m_EditFlags.set(ESceneToolBase::flVisible, visble);
+				UI->RedrawScene();
+			}
+
+			ImGui::PopStyleColor();
+
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(tool->ClassDesc(), LTools->GetTarget() == Tools[id]))
