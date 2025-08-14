@@ -687,7 +687,7 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Custom data"),	&m_LevelOp.m_BOPText);
 	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Map version"),					&m_LevelOp.m_map_version);
 
-	m_LevelOp.m_mapUsage.FillProp("Scene\\Usage", items);
+	m_LevelOp.m_mapUsage.FillProp("Scene", items);
 
 	// common
 	ButtonValue* B;
