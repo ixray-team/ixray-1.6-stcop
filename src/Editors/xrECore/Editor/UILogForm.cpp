@@ -112,7 +112,10 @@ void UILogForm::Update()
 				}
 
 				ImGui::PushStyleColor(ImGuiCol_Text, Color);
-				if (strlen(Str) > 0 && ImGui::Selectable(Str))
+				string256 StrLog = {};
+				xr_sprintf(StrLog, "%s##%d", Str, i);
+
+				if (strlen(Str) > 0 && ImGui::Selectable(StrLog))
 				{
 					os_clipboard::copy_to_clipboard(Str);
 				}
