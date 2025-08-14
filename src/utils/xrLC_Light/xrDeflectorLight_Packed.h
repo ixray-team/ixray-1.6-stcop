@@ -18,11 +18,6 @@ enum LGroup : u8
 #define MAX_RAYS_PER_TASK   1024 * 1024					// Общее кол-во Задач (на запуск GPU)
 #define MAX_RAYS_PER_GPU	128  * 1024					// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
 
-// Recvest Class
-
-// 	xrMU_Reference* xrMODEL;
-
-
 struct RayRecvestIndex
 {
 	void* Owner = 0;
