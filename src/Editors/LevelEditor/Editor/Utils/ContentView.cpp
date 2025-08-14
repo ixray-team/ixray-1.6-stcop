@@ -82,6 +82,10 @@ void CContentView::Draw()
 				DrawRootDir(HorBtnIter, IterCount, NextDir);
 			}
 
+			//He y6upaTb!!! 6e3 eTo7o ContentBrowser pa6oTaeT HeCTA6u/\bHO!!!! \
+					Expression: (0) && "Code uses SetCursorPos()/SetCursorScreenPos() to extend window/parent boundaries.\nPlease submit an item e.g. Dummy() afterwards in order to grow window/parent boundaries."
+			ImGui::Dummy({ 0,0 });
+
 			CurrentDir = NextDir;
 			xr_strlwr(CurrentDir);
 		}
