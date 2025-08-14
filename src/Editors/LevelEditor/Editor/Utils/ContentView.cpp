@@ -7,6 +7,7 @@
 
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
+#include "IconsFontAwesome6.h"
 
 CContentView* GContentView = nullptr;
 
@@ -282,7 +283,9 @@ void CContentView::DrawHeader()
 	Exception thrown: read access violation.
 this->MenuIcon.p_ was nullptr.
 	*/
-	if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 }))
+
+	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 }))
+	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB", { 15, 15} ))
 	{
 		ImGui::OpenPopup("MenuCBPpp");
 	}
