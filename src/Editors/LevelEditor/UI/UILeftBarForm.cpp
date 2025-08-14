@@ -76,10 +76,21 @@ void UILeftBarForm::Draw()
 
 			ImGui::SameLine();
 
-			if (ImGui::RadioButton(tool->ClassDesc(), LTools->GetTarget() == Tools[id]))
+			auto col_tool = ImGui::GetStyle().Colors[ImGuiCol_Button];
+
+
+			if (LTools->GetTarget() == Tools[id])
+				col_tool = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];
+
+			ImGui::PushStyleColor(ImGuiCol_Button, col_tool);
+
+			if (ImGui::Button(tool->ClassDesc(), {-1,15}))
+			//if (ImGui::RadioButton(tool->ClassDesc(), LTools->GetTarget() == Tools[id]))
 			{
 				ExecCommand(COMMAND_CHANGE_TARGET, Tools[id]);
 			}
+			ImGui::PopStyleColor();
+
 			ImGui::EndDisabled();
 			ImGui::PopID();
 			ImGui::NextColumn();

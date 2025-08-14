@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "UITopBarForm.h"
 #include <shellapi.h>
-
+#include "IconsFontAwesome6.h"
 UITopBarForm::UITopBarForm()
 {
-    m_tUndo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Undo");
+    //m_tUndo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Undo");
     m_timeUndo               = 0;
-    m_tRedo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Redo");
+    //m_tRedo                  = EDevice->Resources->_CreateTexture("ed\\bar\\Redo");
     m_timeRedo               = 0;
-    m_tNew                   = EDevice->Resources->_CreateTexture("ed\\bar\\new");
-    m_tOpen                  = EDevice->Resources->_CreateTexture("ed\\bar\\open");
-    m_tSave                  = EDevice->Resources->_CreateTexture("ed\\bar\\save");
+    //m_tNew                   = EDevice->Resources->_CreateTexture("ed\\bar\\new");
+    //m_tOpen                  = EDevice->Resources->_CreateTexture("ed\\bar\\open");
+    //m_tSave                  = EDevice->Resources->_CreateTexture("ed\\bar\\save");
     m_tCForm                 = EDevice->Resources->_CreateTexture("ed\\bar\\CForm");
     m_tAIMap                 = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
     m_tGGraph                = EDevice->Resources->_CreateTexture("ed\\bar\\GGraph");
@@ -21,7 +21,7 @@ UITopBarForm::UITopBarForm()
     m_tTerminated            = EDevice->Resources->_CreateTexture("ed\\bar\\terminated");
 
     m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
-    m_tOpenGameData          = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
+    //m_tOpenGameData          = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
     m_VerifySpaceRestrictors = false;
     m_Simulate               = false;
 
@@ -48,6 +48,29 @@ UITopBarForm::~UITopBarForm() {}
 				Callback(); \
 				Timer = EDevice->TimerAsync() + 130;\
 			} \
+			if (ImGui::IsItemHovered()) \
+			{ \
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
+				ImGui::SetTooltip(Hint); \
+			} \
+			ImGui::SameLine()
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#define IMGUI_HINT_AF_BUTTON_EX(Name, Timer, Hint, Callback) \
+			if (ImGui::Button(Name"##" STR(__LINE__) , ImVec2(yMaxSize, yMaxSize))) \
+			{ \
+				Callback(); \
+				Timer = EDevice->TimerAsync() + 130;\
+			} \
+			if (ImGui::IsItemHovered()) \
+			{ \
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
+				ImGui::SetTooltip(Hint); \
+			} \
+			ImGui::SameLine()
+#define IMGUI_HINT_AF_BUTTON(Name, Hint, Callback) \
+			if (ImGui::Button(Name"##" STR(__LINE__), ImVec2(yMaxSize, yMaxSize))) \
+				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
@@ -95,18 +118,20 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Physics");
 			ImGui::TableSetupColumn("Preferences");
 
+			auto yMaxSize = ImGui::GetContentRegionAvail().y;
+
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON_EX("Undo", m_tUndo, m_timeUndo, "Undo the last action", ClickUndo);
-				IMGUI_HINT_BUTTON_EX("Redo", m_tRedo, m_timeRedo, "Repeat the last action", ClickRedo);
+				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
+				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
 			}
 
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("New", m_tNew, "Clear/New Scene", ClickNew);
-				IMGUI_HINT_BUTTON("Open", m_tOpen, "Open level", ClickOpen);
-				IMGUI_HINT_BUTTON("Save", m_tSave, "Save level", ClickSave);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE, "Clear/New Scene", ClickNew);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_IMPORT, "Open level", ClickOpen);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_FLOPPY_DISK, "Save level", ClickSave);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -169,7 +194,7 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("OpenGamedata", m_tOpenGameData, "Open 'gamedata' folder", ClickOpenGameData);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_FOLDER_OPEN, "Open 'gamedata' folder", ClickOpenGameData);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -212,7 +237,7 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("Preferences", m_PreferencesIcon, "Preferences", ClickPreferences);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_SLIDERS, "Preferences", ClickPreferences);
 			}
         }
 		ImGui::EndTable();
