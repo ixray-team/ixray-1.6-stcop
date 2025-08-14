@@ -13,48 +13,50 @@
 
 #include "../xrLC_Light/mu_model_light.h"
  
-void ProcessLMAPS_CPU()
+void CBuild::ProcessLMAPS_CPU()
 {
 	thread_local HASH			H;
 	thread_local CDB::COLLIDER	DB;
 	thread_local base_lighting	LightsSelected;
  
 	u32 CurrentIndex = 0;
-	static xrCriticalSection task_CS;
+	static std::mutex task_CS;
 
 	xr_parallel_for(0, gCompilerMode.ThreadsPerWork, [&](int THREAD)
 		{
-			// Get task
-			task_CS.Enter();
-
-			Progress(float(CurrentIndex) / float(lc_global_data()->g_deflectors().size()));
-
-			if (CurrentIndex % 8 == 0)
-				AditionalData("Deflectors: %u / %u", CurrentIndex, lc_global_data()->g_deflectors().size());
- 
-			if (CurrentIndex >= lc_global_data()->g_deflectors().size())
+			while (true)
 			{
-				task_CS.Leave();
-				return;
-			}
+				// Get task
+				u32 IndexTask = 0;
+				
+				{
+					std::lock_guard lock(task_CS);
+ 					IndexTask = CurrentIndex;
+					CurrentIndex++;
+ 					Progress(float(CurrentIndex) / float(lc_global_data()->g_deflectors().size()));
+ 				}
 
- 			CDeflector * D = lc_global_data()->g_deflectors()[CurrentIndex];
- 			CurrentIndex++;
+				if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
 
-			task_CS.Leave();
+ 				CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
+ 				if (IndexTask % 8 == 0)
+					AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
 
- 
-			// Perform operation
-			try
-			{
-				D->Light(&DB, &LightsSelected, H);
-			}
-			catch (...)
-			{
-				clMsg("* ERROR: CLMThread::Execute - light");
-			}
+
+				// Perform operation
+				try
+				{
+					D->Light(&DB, &LightsSelected, H);
+				}
+				catch (...)
+				{
+					clMsg("* ERROR: CLMThread::Execute - light");
+				}
+			}			
 		}
 	);
+
+	xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
 };
 
 
@@ -65,35 +67,47 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 	thread_local HASH			H;
 	GPUTaskinSystem.RestartALL();
  
-	xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
 	{
-		CDeflector* D = lc_global_data()->g_deflectors()[taskID];
-		if (Stage == 1)
-			isFirst ? D->LightGPU(H) : D->LowerResolutionGPU(H);
-		if (Stage == 2)
-			D->EdgesLighting(H);
+		xr_atomic_u32 IndexTaskID = 0;
+		xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
+			{
+				CDeflector* D = lc_global_data()->g_deflectors()[taskID];
+				if (Stage == 1)
+					isFirst ? D->LightGPU(H) : D->LowerResolutionGPU(H);
+				if (Stage == 2)
+					D->EdgesLighting(H);
 
- 		AditionalData("*** [LMAPS] Ready [%u] total [%u]", taskID, lc_global_data()->g_deflectors().size());
-	});
+				AditionalData("*** [LMAPS] Ready [%u] total [%u]", IndexTaskID.load(), lc_global_data()->g_deflectors().size());
+				IndexTaskID.fetch_add(1);
+			});
+		GPUTaskinSystem.LightPointPackedDeflectorsRun();
+	}
 
-	GPUTaskinSystem.LightPointPackedDeflectorsRun();
-	
-	// for (auto& D : lc_global_data()->g_deflectors())
-	xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
 	{
-		auto& D = lc_global_data()->g_deflectors()[taskID];
-		if (D != nullptr)
-			D->ApplyColors();
-	});
+		xr_atomic_u32 IndexTaskID = 0;
+		xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
+			{
+				auto& D = lc_global_data()->g_deflectors()[taskID];
+				if (D != nullptr)
+					D->ApplyColors();
 
- 	 
+				AditionalData("*** [LMAPS] Apply Colors [%u] total [%u]", IndexTaskID.load(), lc_global_data()->g_deflectors().size());
+				IndexTaskID.fetch_add(1);
+
+			});
+	}
+	 
 	if (Stage == 2 && !isFirst)
 	{
+		xr_atomic_u32 IndexTaskID = 0;
 		xr_parallel_for(size_t(Begin), size_t(End), [&](size_t taskID)
 		{
 			auto D = lc_global_data()->g_deflectors()[taskID];
 			if (D != nullptr)
 				D->ApplyExpadBordersGPU();
+
+			AditionalData("*** [LMAPS] Apply Borders [%u] total [%u]", IndexTaskID.load(), lc_global_data()->g_deflectors().size());
+			IndexTaskID.fetch_add(1);
 		});
   		clMsg("Deflectors: Merging lightmaps...");
 		xrPhase_MergeLM(Begin, End);
@@ -112,7 +126,7 @@ void	CBuild::LMaps					()
 
 		CTimer start_time; start_time.Start();
 
-		size_t SPLIT = 512 * 1024;
+		size_t SPLIT = 1024 * 1024;
 		for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size();)
 		{
 			size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
@@ -125,16 +139,6 @@ void	CBuild::LMaps					()
 			LmapsStageGPU(2, false, INDEX, end);
 			INDEX += SPLIT;
 		}
-
-		size_t BUCKETS = 0;
-		for (auto& D : lc_global_data()->g_deflectors())
-		{
-			BUCKETS += D->size_of_colors();
-		}
-		BUCKETS /= (1024 * 1024);
-		clMsg("$ Deflectors size colors: %u mb", BUCKETS);
-
-
 		clMsg("%f seconds", start_time.GetElapsed_sec());
 	}
 	else
@@ -207,6 +211,7 @@ void CBuild::Light()
 	Phase("LIGHT: Vertex...");
 	LightVertex();
  
+
 	//****************************************** Merge LMAPS
 	// Phase("LIGHT: Merging lightmaps...");
 	// xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());

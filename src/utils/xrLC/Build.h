@@ -92,8 +92,13 @@ public:
 	void	Light_prepare			();
 	void	Light					();
  
+
+	// Lmaps Processing 
+	void	ProcessLMAPS_CPU		();
 	void	LmapsStageGPU			(int Stage, bool isFirst, size_t Begin, size_t End);
 	void	LMaps					();
+
+
 	//void	Light_R2				();
 	void	LightVertex				();
 	void	xrPhase_MergeLM			(size_t start, size_t end);
