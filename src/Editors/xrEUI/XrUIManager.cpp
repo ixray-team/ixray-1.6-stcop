@@ -7,6 +7,8 @@
 #include "xrUITheme.h"
 #include "ImGuizmo.h"
 #include "imgui_internal.h"
+#include "font/fa.h"
+#include "IconsFontAwesome6.h"
 
 XREUI_API XrUIManager* GUIManager = nullptr;
 
@@ -84,6 +86,12 @@ void XrUIManager::Initialize(HWND hWnd, IDirect3DDevice9* device, const char* in
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	ImFontConfig icons_config = {};
+	icons_config.MergeMode = true;
+	FontsStorage["_fa"] = io.Fonts->AddFontFromMemoryCompressedTTF(FontAwesome_compressed_data, FontAwesome_compressed_size, 16.0f, &icons_config, icons_ranges);
+
 	//io.Fonts->Build();
 
 	//ImGui_ImplWin32_Init(hWnd);
@@ -288,6 +296,7 @@ void XrUIManager::Draw()
 	ImGui::NewFrame();
     ImGuizmo::BeginFrame();
 
+	ImGui::PushFont(FontsStorage["_fa"]);
 	ImGui::PushFont(FontsStorage[ImCurrentFont]);
 	//ImGui::DockSpaceOverViewport();
 	{
@@ -340,6 +349,7 @@ void XrUIManager::Draw()
 		ImGui::PopItemFlag();
 	}
 
+	ImGui::PopFont();
 	ImGui::PopFont();
 	//ImGui::EndFrame();
 
