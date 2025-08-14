@@ -8,6 +8,8 @@
 #include "Editor/Utils/Gizmo/IM_Manipulator.h"
 #include "Editor/Terrain/HeightmapUtils.h"
 
+#include "IconsFontAwesome6.h"
+
 UIMainForm* MainForm = nullptr;
 
 static void ViewportFocusCallback()
@@ -343,7 +345,7 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 	// Меню
 	{
 		ImGui::BeginGroup();
-		m_tMenu->Load();
+		//m_tMenu->Load();
 		{
 			if (ImGui::BeginPopupContextItem("MenuScene"))
 			{
@@ -530,7 +532,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				}
 				ImGui::EndPopup();
 			}
-			if (ImGui::ImageButton("##DrawRenderToolBar512",m_tMenu->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			if (ImGui::Button(ICON_FA_BARS))
+			//if (ImGui::ImageButton("##DrawRenderToolBar512",m_tMenu->pSurface, ImVec2(16, ImGui::GetFontSize())))
 			{
 				ImGui::OpenPopup("MenuScene");
 			}
@@ -556,8 +559,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			m_tSelect->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar542", m_tSelect->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			//m_tSelect->Load();
+			//if (ImGui::ImageButton("##DrawRenderToolBar542", m_tSelect->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			if (ImGui::Button(ICON_FA_ARROW_POINTER))
 			{
 				LTools->SetAction(etaSelect);
 			}
@@ -584,6 +588,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 			}
 			m_tAdd->Load();
 			if (ImGui::ImageButton("##DrawRenderToolBar568", m_tAdd->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			// The T.E.A.P.O.T. glyph is absent from the font set. ☠️
+			//if (ImGui::Button(ICON_FA_SQUARE_PLUS))
 			{
 				LTools->SetAction(etaAdd);
 			}
@@ -608,8 +614,10 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			m_tMove->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar594", m_tMove->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			//m_tMove->Load();
+			//if (ImGui::ImageButton("##DrawRenderToolBar594", m_tMove->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			//
+			if (ImGui::Button(ICON_FA_ARROWS_UP_DOWN_LEFT_RIGHT))
 			{
 				LTools->SetAction(etaMove);
 			}
@@ -634,8 +642,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			m_tScale->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar620", m_tScale->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			//m_tScale->Load();
+			//if (ImGui::ImageButton("##DrawRenderToolBar620", m_tScale->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			if (ImGui::Button(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER))
 			{
 				LTools->SetAction(etaScale);
 			}
@@ -660,8 +669,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			m_tRotate->Load();
-			if (ImGui::ImageButton("##DrawRenderToolBar646", m_tRotate->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			//m_tRotate->Load();
+			//if (ImGui::ImageButton("##DrawRenderToolBar646", m_tRotate->pSurface, ImVec2(16, ImGui::GetFontSize())))
+			if (ImGui::Button(ICON_FA_ROTATE))
 			{
 				LTools->SetAction(etaRotate);
 			}
@@ -873,8 +883,9 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 					ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				}
-				m_tGrid->Load();
-				if (ImGui::ImageButton("##DrawRenderToolBar859", m_tGrid->pSurface, ImVec2(16, ImGui::GetFontSize())))
+				//m_tGrid->Load();
+				//if (ImGui::ImageButton("##DrawRenderToolBar859", m_tGrid->pSurface, ImVec2(16, ImGui::GetFontSize())))
+				if (ImGui::Button(ICON_FA_TABLE_CELLS))
 				{
 					ExecCommand(COMMAND_SET_SETTINGS, etfMSnap, !Tools->GetSettings(etfMSnap));
 				}
