@@ -183,6 +183,15 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
+		}
+
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
@@ -272,6 +281,20 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim");
+		}
+
+		if (IsScopeAttached() && !IsGrenadeMode())
+		{
+			AddSuffixName(anim, "_scope");
+		}
+
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
 		}
 
 		if (IsMisfire())
@@ -787,6 +810,15 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
+		}
+
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 
