@@ -119,11 +119,14 @@ void CContentView::Draw()
 
 void CContentView::DrawHeader()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
 	BtnSize = (ViewMode == EViewMode::Tile) ? ImVec2(64.f, 64.f) : ImVec2(32.f, 32.f);
 	if (ImGui::Button("root"))
 	{
 		CurrentDir = RootDir;
 		IsSpawnElement = false;
+		IsParticles = false;
 		IsFindResult = false;
 		std::memset(FindStr, 0, sizeof(FindStr));
 		VirtualPath.clear();
@@ -140,17 +143,16 @@ void CContentView::DrawHeader()
 
 		for (const xr_string& Path : Pathes)
 		{
-			ImGui::SameLine();
+			ImGui::SameLine(0, 0);
+
 			if (ImGui::Button(Platform::ANSI_TO_UTF8(Path).data()))
 			{
-				xr_string NewPath = "";
+				xr_string NewPath;
 				for (const xr_string& LocPath : Pathes)
 				{
 					NewPath += LocPath;
-
 					if (LocPath == Path)
 						break;
-
 					NewPath += "\\";
 				}
 
@@ -171,15 +173,19 @@ void CContentView::DrawHeader()
 				}
 			}
 
-			ImGui::SameLine();
-			ImGui::Text("/");
+			if (&Path != &Pathes.back())
+			{
+				ImGui::SameLine(0, 0);
+				ImGui::TextUnformatted("/");
+			}
 		}
 	};
+
 
 	if (IsSpawnElement || IsParticles)
 	{
 		ImGui::SameLine();
-		shared_str DirPartialName = IsSpawnElement ? "Spawn Element" : "Particles";
+		shared_str DirPartialName = IsSpawnElement ? "spawn element" : "particles";
 
 		if (ImGui::Button(*DirPartialName))
 		{
@@ -206,6 +212,8 @@ void CContentView::DrawHeader()
 	{
 		DrawByPathLambda(CurrentDir);
 	}
+
+	ImGui::PopStyleVar();
 
 
 	int FindStartPosX = (int)ImGui::GetWindowSize().x;
@@ -514,12 +522,12 @@ void CContentView::DrawRootDir(size_t& HorBtnIter, const size_t& IterCount, xr_s
 	FS.update_path(FSEntry, "$game_data$", "");
 	PathClickLambda();
 
-	if (DrawItem({ "Particles", true }, HorBtnIter, IterCount))
+	if (DrawItem({ "particles", true }, HorBtnIter, IterCount))
 	{
 		RescanParticlesDirectory("");
 	}
 
-	if (DrawItem({ "Spawn Elements", true }, HorBtnIter, IterCount))
+	if (DrawItem({ "spawn elements", true }, HorBtnIter, IterCount))
 	{
 		RescanISEDirectory("");
 	}

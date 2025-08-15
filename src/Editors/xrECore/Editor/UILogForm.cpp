@@ -136,18 +136,22 @@ void UILogForm::Update()
 			FirstRun = true;
 		}
 		ImGui::EndChild();
-		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue ;
-		if (ImGui::InputText("Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
+
+		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
+		if (ImGui::InputTextWithHint("##Exec", "Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
 		{
 			if (m_Exec[0])
 			{
 				Msg("~ Exec %s", m_Exec);
 				Console->Execute(m_Exec);
 			}
-		
 		}
-		ImGui::SameLine();
+
+		float checkboxWidth = ImGui::CalcTextSize("Clear in PIE").x + ImGui::GetStyle().FramePadding.x * 2 + ImGui::GetStyle().ItemInnerSpacing.x * 2 + 10;
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - checkboxWidth + ImGui::GetCursorPosX());
+
 		ImGui::Checkbox("Clear in PIE", &bClearInPIE);
+
 		ImGui::End();
 	}
 	else
