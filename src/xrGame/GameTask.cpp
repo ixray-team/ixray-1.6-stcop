@@ -508,7 +508,7 @@ void SGameTaskObjective::ChangeMapLocation( LPCSTR new_map_location, u16 new_map
 
 void SGameTaskObjective::ChangeStateCallback()
 {
-	Actor()->callback(GameObject::eTaskStateChange)(GetParent(), this, GetTaskState());
+	Actor()->callback(GameObject::eTaskStateChange)(GetParent(), this, static_cast<u16>(GetTaskState()));
 }
 
 void CGameTask::ChangeStateCallback()
