@@ -115,6 +115,28 @@ function CALifeStorageManager_before_save(fname)
 end 
 
 -- called from engine!
+function CALifeStorageManager_after_save(fname)
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	
+	local _path = getFS():update_path('$game_saves$', '')
+	
+	SendScriptCallback("save_file_created", _path, fname)
+end
+
+-- called from engine!
+function CALifeStorageManager_new_game(fname)
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	
+	local _path = getFS():update_path('$game_saves$', '')
+	
+	SendScriptCallback("new_game_created", _path, fname)
+end
+
+-- called from engine!
 function CALifeStorageManager_save(fname)
 	--printf("CALifeStorageManager_save START FINISHED")
 end 
@@ -150,6 +172,12 @@ function CALifeStorageManager_load(fname)
 	--alun_utils.print_table(m_data,"m_data_on_load ("..path..")")
 
 	SendScriptCallback("load_state",m_data)
+	
+	if ffx_path_utils then
+		fname = ffx_path_utils.get_file_name(fname, false)
+	end
+	local _path = getFS():update_path('$game_saves$', '')
+	SendScriptCallback("save_file_loaded", _path, fname)
 	
 	--alun_utils.debug_write(strformat("CALifeStorageManager_load END"))
 end
