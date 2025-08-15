@@ -173,6 +173,7 @@ public:
 	Fvector2					m_custom_text_offset;
 	CGameFont*					m_custom_text_font;
 	u32							m_custom_text_clr_inv;
+	u32							m_last_dropped_owner_id = 65535;
 //	u32							m_custom_text_clr_hud; // used for pick_up_item on CUICellItem class
 	bool						m_custom_mark;
 	shared_str					m_custom_mark_texture;
