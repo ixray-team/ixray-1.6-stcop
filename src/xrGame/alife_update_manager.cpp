@@ -291,6 +291,12 @@ void CALifeUpdateManager::new_game			(LPCSTR save_name)
 #endif // #ifdef DEBUG
 
 	Msg									("* New game is successfully created!");
+
+	luabind::functor<void> funct;
+	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_new_game", funct))
+	{
+		funct((LPCSTR)save_name);
+	}
 }
 
 void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_only)
