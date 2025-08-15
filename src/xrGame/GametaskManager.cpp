@@ -237,6 +237,10 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
 				}
 			}
 		}
+		else
+		{
+			R_ASSERT(false && "report to developers because it supposed that this code is unreachable for platforms >SOC");
+		}
 	}
     else if (!isRoot && isActiveObj && objective_id != t->GetObjectivesCount(true))
     { // not last objective
