@@ -241,6 +241,8 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy, bool dont
 	VERIFY								(pIItem->m_pInventory);
 	VERIFY								(pIItem->m_pInventory==this);
 	VERIFY								(pIItem->m_ItemCurrPlace.type!=eItemPlaceUndefined);
+
+	pIItem->m_last_dropped_owner_id = pIItem->parent_id();
 	
 	pIItem->object().processing_activate(); 
 	
