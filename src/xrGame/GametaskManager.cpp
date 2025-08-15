@@ -200,10 +200,44 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     const bool isRoot      = objective_id == ROOT_TASK_OBJECTIVE;
     const bool isActiveObj = t->ActiveObjectiveIdx() == objective_id;
 
-    if ((isRoot || !t->HasObjectiveInProgress()) && ActiveTask() == t)
+	CGameTask* pActiveTask = ActiveTask();
+    if ((pActiveTask && ((isRoot || !t->HasObjectiveInProgress()) && ActiveTask() == t)))
     {
-        g_active_task_id[type] = "";
+		g_active_task_id[type] = "";
     }
+	else if (isRoot && !t->HasObjectiveInProgress())
+	{
+		if (EngineExternal().ShadowOfChernobylMode())
+		{
+			// we must be sure that we clear current task and our current task was completed fully
+			if (g_active_task_id[type] == t->m_ID)
+			{
+				g_active_task_id[type] = "";
+
+				// sadly we can't obtain active task since we finished it off
+				if (!pActiveTask)
+				{
+					vGameTasks& tasks = GetGameTasks();
+
+					for (SGameTaskKey& task : tasks)
+					{
+						if (task.getGameTask())
+						{
+							CGameTask* pTask = task.getGameTask();
+
+							bool isAvaiable = pTask->HasObjectiveInProgress();
+
+							if (isAvaiable)
+							{
+								SetActiveTask(pTask);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
     else if (!isRoot && isActiveObj && objective_id != t->GetObjectivesCount(true))
     { // not last objective
         t->SetActiveObjective(objective_id + 1);
