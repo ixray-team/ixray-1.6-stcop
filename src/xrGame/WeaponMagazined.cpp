@@ -1540,7 +1540,7 @@ void CWeaponMagazined::switch2_LightMis()
 	//SendMessage("gunsl_light_misfire", gd_novice);
 	SetPending(TRUE);
 	PlaySound("sndLightMisfire", get_LastFP());
-	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), TRUE, eLightMis);
+	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), TRUE, GetState());
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
