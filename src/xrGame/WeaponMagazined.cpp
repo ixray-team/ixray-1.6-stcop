@@ -1928,6 +1928,15 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
+		}
+
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 		if (IsMisfire())
 		{
@@ -1982,6 +1991,15 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim");
+		}
+
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
 		}
 
 		if (IsMisfire())
@@ -2153,6 +2171,20 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim");
+		}
+
+		if (IsScopeAttached())
+		{
+			AddSuffixName(anim, "_scope");
+		}
+
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
 		}
 
 		if (IsMisfire())
