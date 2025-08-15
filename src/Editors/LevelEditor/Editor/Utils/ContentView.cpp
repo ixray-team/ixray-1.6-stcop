@@ -979,6 +979,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 		{
 			Data.FileName = FilePath;
 			ImGui::SetDragDropPayload("OTHR", &Data, sizeof(DragDropData));
+			GUIManager->DnDType = EDragDropType::File;
 		}
 	}
 	else
@@ -1823,10 +1824,16 @@ void CContentView::CheckFileNameRecursive(xr_path& FilePath, const xr_string& po
 
 void CContentView::PasteAction(const xr_string& Path) /*const*/
 {
-	xr_path OutDir;
-	for (auto obj : CopiedObjects)
+	xr_path OutPath = Path;
+	if (Path != ".." && !std::filesystem::is_directory(OutPath))
 	{
-		OutDir = ((Path == "..") ? CurrentDir / xr_path(Path) : xr_path(Path)) / obj.xfilename().c_str();
+		OutPath = OutPath.parent_path();
+	}
+
+	xr_path OutDir;
+	for (const xr_path& obj : CopiedObjects)
+	{
+		OutDir = ((Path == "..") ? CurrentDir / OutPath : OutPath) / obj.xfilename().c_str();
 
 		if (obj == OutDir || std::filesystem::exists(OutDir))
 		{
