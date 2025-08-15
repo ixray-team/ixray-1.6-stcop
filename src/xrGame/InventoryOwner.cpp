@@ -357,7 +357,8 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 {
 	CGameObject	*object = cast_game_object();
 	VERIFY		(object);
-	object->callback(GameObject::eOnItemTake)(inventory_item->object().lua_game_object());
+	object->callback(GameObject::eOnItemTake)(inventory_item->object().lua_game_object(), inventory_item->m_last_dropped_owner_id);
+	inventory_item->m_last_dropped_owner_id = 65535;
 
 	attach		(inventory_item);
 
