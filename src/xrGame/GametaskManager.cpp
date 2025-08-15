@@ -200,10 +200,48 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     const bool isRoot      = objective_id == ROOT_TASK_OBJECTIVE;
     const bool isActiveObj = t->ActiveObjectiveIdx() == objective_id;
 
-    if ((isRoot || !t->HasObjectiveInProgress()) && ActiveTask() == t)
+	CGameTask* pActiveTask = ActiveTask();
+    if ((pActiveTask && ((isRoot || !t->HasObjectiveInProgress()) && ActiveTask() == t)))
     {
-        g_active_task_id[type] = "";
+		g_active_task_id[type] = "";
     }
+	else if (isRoot && !t->HasObjectiveInProgress())
+	{
+		if (EngineExternal().ShadowOfChernobylMode())
+		{
+			// we must be sure that we clear current task and our current task was completed fully
+			if (g_active_task_id[type] == t->m_ID)
+			{
+				g_active_task_id[type] = "";
+
+				// sadly we can't obtain active task since we finished it off
+				if (!pActiveTask)
+				{
+					vGameTasks& tasks = GetGameTasks();
+
+					for (SGameTaskKey& task : tasks)
+					{
+						if (task.getGameTask())
+						{
+							CGameTask* pTask = task.getGameTask();
+
+							bool isAvaiable = pTask->HasObjectiveInProgress();
+
+							if (isAvaiable)
+							{
+								SetActiveTask(pTask);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			R_ASSERT(false && "report to developers because it supposed that this code is unreachable for platforms >SOC");
+		}
+	}
     else if (!isRoot && isActiveObj && objective_id != t->GetObjectivesCount(true))
     { // not last objective
         t->SetActiveObjective(objective_id + 1);
@@ -295,7 +333,7 @@ void CGameTaskManager::UpdateActiveTask()
 	{
 		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
 
-		if (activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
+		if (!activeTask || activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
 			continue;
 
 		for (u32 i = 0; i < activeTask->GetObjectivesCount(); ++i)
@@ -330,7 +368,7 @@ void CGameTaskManager::UpdateActiveTask()
 		{
 			CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
 			
-			if(activeTask->Objective(0).GetTaskState()!=eTaskStateInProgress)
+			if(!activeTask || activeTask->Objective(0).GetTaskState()!=eTaskStateInProgress)
 				continue;
 			
 			for(u16 i = 0; (i < activeTask->GetObjectivesCount())&&(!bDone) ;++i)

@@ -119,7 +119,7 @@ void CGameTask::Load(const shared_str& id)
 	static bool successfulLoading = false;
 	if (!g_gameTaskXml)
 	{
-		g_gameTaskXml = new CUIXml();
+ 		g_gameTaskXml = new CUIXml();
 		successfulLoading = g_gameTaskXml->Load(CONFIG_PATH, "gameplay", "game_tasks.xml");
 	}
 	if (!successfulLoading)
@@ -508,7 +508,7 @@ void SGameTaskObjective::ChangeMapLocation( LPCSTR new_map_location, u16 new_map
 
 void SGameTaskObjective::ChangeStateCallback()
 {
-	Actor()->callback(GameObject::eTaskStateChange)(GetParent(), this, GetTaskState());
+	Actor()->callback(GameObject::eTaskStateChange)(GetParent(), this, static_cast<u16>(GetTaskState()));
 }
 
 void CGameTask::ChangeStateCallback()
@@ -578,7 +578,18 @@ bool SGameTaskObjective::CheckFunctions(const task_state_functors& v) const
 	{
 		for (const luabind::functor<bool>& functor : v)
 		{
-			if (functor.is_valid()) res = functor(m_parent->m_ID.c_str());
+			if (EngineExternal().ShadowOfChernobylMode())
+			{
+				if (functor.is_valid())
+					res = functor(m_parent->m_ID.c_str(), m_idx);
+			}
+			else
+			{
+				if (functor.is_valid()) 
+					res = functor(m_parent->m_ID.c_str());
+			}
+
+
 			if (!res) break;
 		}
 	}catch (...) {}
@@ -681,6 +692,12 @@ void CGameTask::save(IWriter& stream)
 void CGameTask::load(IReader& stream)
 {
 	load_data				(m_ID, stream);
+
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		Load(m_ID);
+	}
+
 	load_data				(m_priority,		stream);
 	SGameTaskObjective::load(stream);
 
@@ -696,6 +713,15 @@ void CGameTask::load(IReader& stream)
 	load_data				(m_active_objective, stream);
 
 	CommitScriptHelperContents();
+
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		for (SGameTaskObjective& obj : m_Objectives)
+		{
+			obj.CommitScriptHelperContents();
+		}
+	}
+
 	CreateMapLocation		(true);
 }
 
@@ -708,10 +734,18 @@ void SGameTaskObjective::SetIconName_script(pcstr tex)
 
 void SGameTaskObjective::CommitScriptHelperContents()
 {
-	m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_complete_lua_functions,	m_complete_lua_functions);
-	m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_fail_lua_functions,		m_fail_lua_functions);
-	m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_complete,	m_lua_functions_on_complete);
-	m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_fail,		m_lua_functions_on_fail);
+	// fetch only those that have content otherwise no sense
+	if (!m_pScriptHelper.m_s_complete_lua_functions.empty())
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_complete_lua_functions,	m_complete_lua_functions);
+
+	if (!m_pScriptHelper.m_s_fail_lua_functions.empty())
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_fail_lua_functions,		m_fail_lua_functions);
+
+	if (!m_pScriptHelper.m_s_lua_functions_on_complete.empty())
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_complete,	m_lua_functions_on_complete);
+
+	if (!m_pScriptHelper.m_s_lua_functions_on_fail.empty())
+		m_pScriptHelper.init_functors	(m_pScriptHelper.m_s_lua_functions_on_fail,		m_lua_functions_on_fail);
 }
 
 
