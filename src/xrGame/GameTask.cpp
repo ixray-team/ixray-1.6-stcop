@@ -578,7 +578,18 @@ bool SGameTaskObjective::CheckFunctions(const task_state_functors& v) const
 	{
 		for (const luabind::functor<bool>& functor : v)
 		{
-			if (functor.is_valid()) res = functor(m_parent->m_ID.c_str());
+			if (EngineExternal().ShadowOfChernobylMode())
+			{
+				if (functor.is_valid())
+					res = functor(m_parent->m_ID.c_str(), m_idx);
+			}
+			else
+			{
+				if (functor.is_valid()) 
+					res = functor(m_parent->m_ID.c_str());
+			}
+
+
 			if (!res) break;
 		}
 	}catch (...) {}
@@ -696,6 +707,15 @@ void CGameTask::load(IReader& stream)
 	load_data				(m_active_objective, stream);
 
 	CommitScriptHelperContents();
+
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		for (SGameTaskObjective& obj : m_Objectives)
+		{
+			obj.CommitScriptHelperContents();
+		}
+	}
+
 	CreateMapLocation		(true);
 }
 
