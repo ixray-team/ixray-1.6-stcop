@@ -105,6 +105,13 @@ void CALifeStorageManager::save(LPCSTR save_name_no_check, bool update_name)
 		funct2((LPCSTR)m_save_name);
 	}
 
+	// To get the savegame fname to make our own custom save states
+	luabind::functor<void> funct3;
+	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_after_save", funct3))
+	{
+		funct3((LPCSTR)m_save_name);
+	}
+
 	if (!update_name)
 		xr_strcpy					(m_save_name,saveBackup);
 }
