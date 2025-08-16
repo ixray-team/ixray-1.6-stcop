@@ -539,6 +539,14 @@ void CUIPdaWnd::DrawHint()
 	{
 		pUITaskWnd->DrawHint();
 	}
+	if (m_sActiveSection == "eptQuests")
+	{
+		pUIEventsWnd->DrawHint();
+	}
+	else if (m_sActiveSection == "eptMap")
+	{
+		pUIMapWnd->DrawHint();
+	}
 	else if (m_sActiveSection == "eptFractionWar")
 	{
 		//m_hint_wnd->Draw();
