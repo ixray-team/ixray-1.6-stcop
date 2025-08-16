@@ -51,8 +51,7 @@ void StartupLC()
 		lc_global_data()->SetSkipTHM(gCompilerMode.SkipTHM);
 
 		// Se7kills
-		lc_global_data()->SetIsIntelUse(gCompilerMode.Embree);
-		lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
+ 		lc_global_data()->SetSkipWeld(gCompilerMode.LC_skipWeld);
 		lc_global_data()->SetLmapsSize(gCompilerMode.LC_sizeLmaps);
 
 		lc_global_data()->SetLevelName(Name.data());
