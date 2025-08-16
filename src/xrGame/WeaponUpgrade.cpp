@@ -36,6 +36,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_bones		( section, test );
 	result |= install_upgrade_ammo_bones( section, test );
 	result |= install_upgrade_torch_laser( section, test );
+	result |= install_upgrade_scope_zoom( section, test );
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
 	return result;
@@ -318,6 +319,7 @@ bool CWeapon::install_upgrade_addon( LPCSTR section, bool test )
 				InitAddons();
 		}
 	}
+
 	result |= result2;
 	return result;
 }
@@ -694,6 +696,131 @@ bool CWeapon::install_upgrade_torch_laser(LPCSTR section, bool test)
 		TorchBreakingParams.start_probability = tmp_vector.z;
 	}
 	result |= result2;
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_scope_zoom(LPCSTR section, bool test)
+{
+	bool result = false;
+
+	float value = 0.0f;
+	BOOL value2 = 0;
+	bool result2 = process_if_exists_set(section, "lens_factor_levels_count", &CInifile::r_float, value, test);
+
+	if (result2 && !test && value != 0.0f)
+	{
+		m_lens_zoom_params.delta = 1.0f / value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "min_lens_factor", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.factor_min = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "max_lens_factor", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.factor_max = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "lens_speed", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.speed = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "lens_gyro_sound_period", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.gyro_period = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "lens_factor_levels_count", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.lens_factor_levels_count = value;
+		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "force_zoom_sound", &CInifile::r_bool, value2, test);
+	if (result2 && !test)
+	{
+		m_lens_zoom_params.force_zoom_sound = value2;
+	}
+	result |= result2;
+
+	SetLensParams(m_lens_zoom_params);
+
+	stepped_params last = m_lens_night_brightness;
+
+	result2 = process_if_exists_set(section, "max_night_brightness", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.max_value = value / 3.0f;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "min_night_brightness", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.min_value = value / 3.0f;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "steps_brightness", &CInifile::r_s32, value2, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.steps = value2;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "steps_brightness", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.jitter = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "scope_nightvision_min_factor", &CInifile::r_float, value, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.min_factor = value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "default_brightness_step", &CInifile::r_s32, value2, test);
+	if (result2 && !test)
+	{
+		m_lens_night_brightness.cur_step = value2;
+	}
+	result |= result2;
+
+	bool b_r2 = !!psDeviceFlags.test(rsR2);
+	b_r2 |= !!psDeviceFlags.test(rsR4);
+
+	if (!b_r2 && m_lens_night_brightness.max_value > 1.0f)
+	{
+		m_lens_night_brightness.max_value = 1.0f;
+	}
+
+	if (abs(m_lens_night_brightness.max_value - last.max_value) > EPS || fabs(m_lens_night_brightness.min_value - last.min_value) > EPS || m_lens_night_brightness.steps != last.steps)
+	{
+		if (m_lens_night_brightness.lens_night_brightness_saved_step >= 0)
+		{
+			m_lens_night_brightness.cur_step = m_lens_night_brightness.lens_night_brightness_saved_step;
+			m_lens_night_brightness.lens_night_brightness_saved_step = -1;
+		}
+
+		SetNightBrightness(m_lens_night_brightness.cur_step, false);
+	}
 
 	return result;
 }
