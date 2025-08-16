@@ -26,9 +26,6 @@ struct global_claculation_data
 
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
 	void	xrLoad						( );
-
-public:
-	bool use_intel = false;
 };
 extern global_claculation_data	gl_data;
 //-----------------------------------------------------------------
