@@ -44,6 +44,7 @@ public:
 	bool						GetDescriptionMode		();
 	void						ShowDescription			(CGameTask* t, int idx);
 	bool						ItemHasDescription		(CUITaskItemLegacy*);
+	void						DrawHint				();
 public:
 
 								CUIEventsWnd			();
