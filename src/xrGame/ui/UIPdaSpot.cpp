@@ -18,7 +18,17 @@ CUIPdaSpot::CUIPdaSpot()
 	m_position = Fvector();
 
 	m_spotID = u16(-1);
+
 	m_spotType = READ_IF_EXISTS(pSettings, r_string, "user_spots", "spot_type", "treasure");
+	// FFx0001 override spot section from global config
+	if (pGameGlobals->section_exist("pda_map") && pGameGlobals->line_exist("pda_map", "hand_spot_icon_xml_section"))
+	{
+		shared_str override_spot_name = pGameGlobals->r_string("pda_map", "hand_spot_icon_xml_section");
+
+		if (override_spot_name.c_str() != nullptr) {
+			m_spotType = override_spot_name;
+		}
+	}
 
 	InitControls();
 }
