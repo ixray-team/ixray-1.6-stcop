@@ -333,7 +333,7 @@ void CGameTaskManager::UpdateActiveTask()
 	{
 		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
 
-		if (activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
+		if (!activeTask || activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
 			continue;
 
 		for (u32 i = 0; i < activeTask->GetObjectivesCount(); ++i)
@@ -368,7 +368,7 @@ void CGameTaskManager::UpdateActiveTask()
 		{
 			CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
 			
-			if(activeTask->Objective(0).GetTaskState()!=eTaskStateInProgress)
+			if(!activeTask || activeTask->Objective(0).GetTaskState()!=eTaskStateInProgress)
 				continue;
 			
 			for(u16 i = 0; (i < activeTask->GetObjectivesCount())&&(!bDone) ;++i)
