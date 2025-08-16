@@ -284,13 +284,14 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	const float SprintFov = m_SprintFovFactor * fSprintFactor;
 
+	PIItem active_item = inventory().ActiveItem();
+	CHudItem* pItem = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
+
 	// HUD FOV Update
 	if (this == Level().CurrentControlEntity())
 	{
 		if (eacFirstEye == cam_active)
 		{
-			PIItem active_item = inventory().ActiveItem();
-			CHudItem* pItem = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 			CCustomDetector* pDevice = GetDetector(true);
 
 			if (pItem && pItem->HudItemData() && pDevice && pDevice->HudItemData())
@@ -395,6 +396,11 @@ void CActor::cam_Update(float dt, float fFOV)
 	}
 
 	Cameras().UpdateFromCamera(C);
+
+	if (pItem != nullptr)
+	{
+		UpdateLensFOV(pItem->cast_weapon(), Cameras().Fov());
+	}
 
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
