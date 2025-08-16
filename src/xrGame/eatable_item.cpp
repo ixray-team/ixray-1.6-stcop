@@ -46,7 +46,15 @@ void CEatableItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	bUseHUDAnim = (pSettings->line_exist(section, "animator_sect"));
+	if (pSettings->line_exist(section, "animator_sect"))
+	{
+		m_sUseAnimator = pSettings->r_string(section, "animator_sect");
+
+		if (pSettings->line_exist(m_sUseAnimator, "last_use_section"))
+		{
+			m_sLastUseAnimator = pSettings->r_string(m_sUseAnimator, "last_use_section");
+		}
+	}
 
 	if (pSettings->line_exist(section, "eat_portions_num"))
 	{
@@ -143,12 +151,14 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 
 	CActor* actor = smart_cast<CActor*>(IO);
 
-	if (!bUseHUDAnim || bUseHUDAnim && !actor)
+	bool use_animator = m_sUseAnimator.size() > 0;
+
+	if (!use_animator || use_animator && !actor)
 	{
 		SMedicineInfluenceValues V;
 		V.Load(m_physic_item->cNameSect());
 
-		entity_alive->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), !bUseHUDAnim);
+		entity_alive->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), !use_animator);
 
 		for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
 		{
@@ -156,18 +166,18 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 			{
 				SBooster B;
 				B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
-				entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect(), !bUseHUDAnim);
+				entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect(), !use_animator);
 			}
 		}
 	}
 
 	if (!g_dedicated_server)
 	{
-		if (bUseHUDAnim)
+		if (use_animator)
 		{
 			if (actor && actor->HudAnimator())
 			{
-				actor->HudAnimator()->StartAnimator(pSettings->r_string(m_physic_item->cNameSect(), "animator_sect"));
+				actor->HudAnimator()->StartAnimator(m_iMaxUses > 1 && m_iRemainingUses == 1 && m_sLastUseAnimator.size() > 0 ? m_sLastUseAnimator : m_sUseAnimator);
 				actor->HudAnimator()->SetLeftCallback({this, &CEatableItem::EatableEffects});
 			}
 		}
@@ -181,7 +191,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 		Level().Send(tmp_packet);
 	}
 
-	if (!bUseHUDAnim || bUseHUDAnim && !actor)
+	if (!use_animator || use_animator && !actor)
 	{
 		// If uses 255, then skip the decrement for infinite usages
 		if (m_iRemainingUses != (-1))
@@ -225,7 +235,7 @@ void CEatableItem::EatableEffects()
 	SMedicineInfluenceValues V;
 	V.Load(m_physic_item->cNameSect());
 
-	actor->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), !bUseHUDAnim);
+	actor->conditions().ApplyInfluence(V, m_physic_item->cNameSect(), false);
 
 	for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
 	{
@@ -233,7 +243,7 @@ void CEatableItem::EatableEffects()
 		{
 			SBooster B;
 			B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
-			actor->conditions().ApplyBooster(B, m_physic_item->cNameSect(), !bUseHUDAnim);
+			actor->conditions().ApplyBooster(B, m_physic_item->cNameSect(), false);
 		}
 	}
 
