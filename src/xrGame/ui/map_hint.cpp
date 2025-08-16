@@ -108,7 +108,7 @@ void CUIMapLocationHint::SetInfoMSpot(CMapSpot* spot)
 	CMapLocation* ml		= spot->MapLocation();
 
 	CGameTask* gt			= Level().GameTaskManager()->HasGameTask(ml, true);
-	if(gt)
+	if(gt && m_info["t_icon"])
 		SetInfoTask			(gt);
 	else
 		SetInfoStr			(ml->GetHint());
@@ -116,9 +116,6 @@ void CUIMapLocationHint::SetInfoMSpot(CMapSpot* spot)
 
 void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 {
-	if (!m_info["t_icon"])
-		return;
-
 	SetInfoMode						(2);
 	CUIStatic* S					= m_info["t_icon"];
 	
