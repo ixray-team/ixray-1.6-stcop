@@ -121,6 +121,9 @@ CMapManager::~CMapManager()
 
 CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 {
+	if (HasMapLocation(spot_type, id))
+		return GetMapLocation(spot_type, id);
+
 	CMapLocation* l = new CMapLocation(spot_type.c_str(), id);
 	Locations().push_back( SLocationKey(spot_type, id) );
 	Locations().back().location = l;
