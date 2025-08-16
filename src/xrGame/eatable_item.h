@@ -18,7 +18,8 @@ protected:
 	BOOL m_bConsumeChargeOnUse;
 	float m_fWeightFull;
 	float m_fWeightEmpty;
-	bool bUseHUDAnim = false;
+	shared_str m_sUseAnimator;
+	shared_str m_sLastUseAnimator;
 
 public:
 	shared_str UseText;
