@@ -305,3 +305,8 @@ void CUIEventsWnd::Reset()
 	inherited::Reset	();
 	Reload				();
 }
+
+void CUIEventsWnd::DrawHint()
+{
+	m_UIMapWnd->DrawHint();
+}
