@@ -15,42 +15,6 @@
 #include <../xrForms/CompilersUI.h>
 extern CompilersMode gCompilerMode;
 
-
-void VertexEmbree::Set(Fvector& vertex)
-{
-	x = vertex.x;
-	y = vertex.y;
-	z = vertex.z;
-}
-
-Fvector VertexEmbree::Get()
-{
-	Fvector vertex;
-	vertex.x = x;
-	vertex.y = y;
-	vertex.z = z;
-	return vertex;
-}
-
-void TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* emb_verts, size_t& last_index)
-{	
-	point1 = last_index;
-	point2 = last_index + 1;
-	point3 = last_index + 2;
-
-
-	int v1 = triangle.verts[0];
-	int v2 = triangle.verts[1];
-	int v3 = triangle.verts[2];
-	
-	
-	emb_verts[last_index].Set(verts[v1]);
-	emb_verts[last_index + 1].Set(verts[v2]);
-	emb_verts[last_index + 2].Set(verts[v3]);
-	
-	last_index += 3;
-}
-
 void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
 	rayhit.dir_x = dir.x;
@@ -104,22 +68,13 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 	return false;
 }
   
-extern size_t GetMemory();
-void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
+void EmbreeData::BuildRaytraceModel( )
 {
 	static_geom.ClearAll();
 	static_geom_transp.ClearAll();
-	murefs_geom.ClearAll();
-	murefs_geom_transp.ClearAll();
-
-  	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
-	
-	size_t s = GetMemory();
-
+ 	
+	CTimer t;	t.Start();
 	Status("[RcastModel] Capturing Faces...");
-
-	CTimer t; t.Start();
-
 	for (auto F : lc_global_data()->g_faces())
 	{
 		const Shader_xrLC& SH = F->Shader();
@@ -133,15 +88,7 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
  			static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
  	}
 
-	Status("[RcastModel] Capturing Faces End [%u ms]", t.GetElapsed_ms());
-
-	static_mem = GetMemory() - s;
-	Static_size = static_mem;
-  
-	s = GetMemory();
-	Status("[RcastModel] Capturing MU-Ref Faces...");
-
-	t.Start();
+ 
 	for (auto ref : lc_global_data()->mu_refs())
 	{
 		xr_vector<FaceDataIntel> temp_buffer;
@@ -152,17 +99,41 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
  			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 			b_texture& T = inlc_global_data()->textures()[M.surfidx];
 			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
-				murefs_geom.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+				static_geom.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 			else
-				murefs_geom_transp.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+				static_geom_transp.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 		}
 			
  	}
-	murefs_mem = GetMemory() - s;
-	MU_size = murefs_mem;
+	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
-	Status("[RcastModel] Capturing MU Faces End [%u ms]", t.GetElapsed_ms());
+ 	static_geom.RemoveDublicates();
+	static_geom_transp.RemoveDublicates();
+}
 
+void EmbreeData::BuildRaytraceModel_2()
+{
+	CTimer t; t.Start();
+	// Тут уже будет отфильтровано 
+	static_geom.ClearAll();
+ 	static_geom.verts_v.swap(build_data.build_verts);
+	static_geom.faces_v.resize(build_data.build_fcnt);
+
+ 	for (auto Fid = 0; Fid < build_data.build_faces.size(); Fid++ )
+	{
+		auto& FCDB = build_data.build_faces[Fid];
+		static_geom.faces_v[Fid].point1 = FCDB.verts[0];
+		static_geom.faces_v[Fid].point2 = FCDB.verts[1];
+		static_geom.faces_v[Fid].point3 = FCDB.verts[2];
+ 	}
+
+	// Чистим вектора
+	build_data.build_faces.clear();
+ 	build_data.build_faces.shrink_to_fit();
+ 	build_data.build_fcnt = 0;
+	build_data.build_vcnt = 0;
+
+	clMsg("$[Embree] Loading Geometry Time: %u ms", t.GetElapsed_ms());
 }
 
 #include "../xrLC/Build.h"
@@ -172,17 +143,35 @@ void EmbreeData::BuildRcast()
 { 
 	Status("Start Export Build.cform");
 
-	CTimer t; t.Start();
- 
+   
 	TriangleContainer container;
-	container.AddOther(static_geom);
-	container.AddOther(static_geom_transp);
-	container.AddOther(murefs_geom);
-	container.AddOther(murefs_geom_transp);
+ 
+	CTimer t;	t.Start();
+	Status("[RcastModel] Capturing Faces...");
+	for (auto F : lc_global_data()->g_faces())
+	{
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)	continue;
+  		container.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+	}
+
+
+	for (auto ref : lc_global_data()->mu_refs())
+	{
+		xr_vector<FaceDataIntel> temp_buffer;
+		ref->export_cform_rcast_new(temp_buffer);
+		for (auto& FaceIntel : temp_buffer)
+		{
+			Face* F = (Face*)FaceIntel.ptr;
+			container.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+		}
+ 	}
+	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
+ 
+	container.RemoveDublicates();
 
 	
-	Status("Ended Capturing Faces : [%u ms]", t.GetElapsed_ms());
-	t.Start();
+ 	t.Start();
 
 	string_path				fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
@@ -215,10 +204,9 @@ void EmbreeData::BuildRcast()
 	MFS->w(&hdr, sizeof(hdr));
 
 	// Data
-	for (auto V : container.vertex())
+	for (auto Vert : container.vertex())
 	{
-		auto Vert = V.Get();
-		MFS->w(&Vert, sizeof(Vert));
+ 		MFS->w(&Vert, sizeof(Vert));
 	}
 
 	for (auto T : container.faces())
@@ -246,84 +234,3 @@ void EmbreeData::BuildRcast()
 	Status("Ended Saving Faces: [%u ms]", t.GetElapsed_ms());
 }
 
-
-u32 TriangleContainer::find_or_add(Fvector V)
-{
-	VertexEmbree new_vertex;
-	new_vertex.Set(V);
-
-	u32 ix = iFloor(V.x);
-	u32 iy = iFloor(V.y);
-	u32 iz = iFloor(V.z);
-
-	// Generate hash key
-	size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
-	auto itHash = hashTable.find(hashKey);
-	if (itHash != hashTable.end())
-	{
-		Vertex* parsed = nullptr;
-		for (auto& vertex : itHash->second)
-		{
-			if (vertex.V.Simular(new_vertex))
-				return vertex.vertID; // Нашли похожую вершину
-		}
-	}
-
-	verts_v.push_back(new_vertex);
-
-	u32 VertexID = verts_v.size() - 1;
-
-	Compare data;
-	data.V = verts_v.back();
-	data.vertID = VertexID;
-	hashTable[hashKey].push_back(data);
-	return VertexID;
-}
-
-u32 TriangleContainer::find_or_add(VertexEmbree v)
-{
-	return find_or_add( v.Get() ) ;
-}
- 
-void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
-{	
-	TriEmbree triangle;
- 	triangle.point1 = find_or_add(v1);
-	triangle.point2 = find_or_add(v2);
-	triangle.point3 = find_or_add(v3);
- 	faces().push_back(triangle);
-	dummy.push_back((Face*)F);
-}
-
-void TriangleContainer::AddFaceCopy(int Index, TriangleContainer& container)
-{
-	auto& Face = container.faces_v[Index];
-	Fvector v1 = container.verts_v[Face.point1].Get();
-	Fvector v2 = container.verts_v[Face.point2].Get();
-	Fvector v3 = container.verts_v[Face.point3].Get();
-
-	TriEmbree triangle;
-	triangle.point1 = find_or_add(v1);
-	triangle.point2 = find_or_add(v2);
-	triangle.point3 = find_or_add(v3);
-	faces().push_back(triangle);
- 	dummy.push_back(container.dummy[Index]);
-}
- 
-void TriangleContainer::AddOther(TriangleContainer& container)
-{
- 	for (int INDEX = 0; INDEX < container.faces_cnt(); INDEX++)
- 		AddFaceCopy(INDEX, container);
-}
-
-void TriangleContainer::ClearAll()
-{
- 	hashTable.clear();
-	dummy.clear();
-	faces_v.clear();
-	verts_v.clear();
-
-	faces_v.shrink_to_fit();
-	verts_v.shrink_to_fit();
-}
- 
