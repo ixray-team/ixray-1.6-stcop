@@ -126,6 +126,8 @@ public:
 	void					ApplyDevice				(float _viewport_near);
 	static void				ResetPP					();
 
+			void			SetCameraFov			(float value) { m_cam_info.fFov = value; }
+
 	bool					AbsolutePositioning();
 
 							CCameraManager			(bool bApplyOnUpdate);
