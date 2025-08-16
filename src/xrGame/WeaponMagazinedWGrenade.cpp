@@ -283,7 +283,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 			AddSuffixName(anim, "_aim");
 		}
 
-		if (IsScopeAttached())
+		if (IsScopeAttached() && !IsGrenadeMode())
 		{
 			AddSuffixName(anim, "_scope");
 		}
