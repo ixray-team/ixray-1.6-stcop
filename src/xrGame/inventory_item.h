@@ -182,7 +182,7 @@ public:
 	LPCSTR						m_custom_mark_lanim;
 
 	SInvItemPlace				m_ItemCurrPlace;
-
+	xr_vector<shared_str>		m_HiglightRelatedItemSections; // FFx0001 ++
 
 	virtual void				OnMoveToSlot		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};
