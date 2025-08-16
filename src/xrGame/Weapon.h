@@ -262,6 +262,43 @@ public:
 		float endprob = 0.0f;
 	} light_misfire;
 
+	struct lens_zoom_params
+	{
+		float delta = 0.0f;
+		float target_position = 0.0f;
+		float speed = 0.0f;
+		float factor_min = 0.0f;
+		float factor_max = 0.0f;
+		float gyro_period = 0.0f;
+		float real_position = 0.0f;
+		float lens_factor_levels_count = 5.0f;
+		u32   last_gyro_snd_time = 0;
+		bool  need_lens_frame = false;
+		bool  force_zoom_sound = false;
+	} m_lens_zoom_params;
+
+	struct stepped_params
+	{
+		float max_value = 1.0f;
+		float min_value = 0.0f;
+		float cur_value = 0.5f;
+		int cur_step = 1;
+		int steps = 2;
+		float jitter = 0.1f;
+		float min_factor = 0.0f;
+		s32 lens_night_brightness_saved_step = -1;
+	} m_lens_night_brightness;
+
+	bool IsLensedScopeInstalled() const { return m_lens_zoom_params.need_lens_frame; }
+	float GetLensFOV() const;
+	void LoadNightBrightnessParamsFromSection(shared_str sect);
+	void ChangeNightBrightness(int steps);
+	void SetNightBrightness(int steps, bool use_sound);
+	void UpdateZoomCrosshairUI();
+	void SetLensParams(lens_zoom_params& params);
+	void UpdateLensFactor(u32 timedelta);
+	float GetNightPPEFactor();
+
 	float m_fCollimatorLevelsProblem = 0.0f;
 	float m_fMisfireAfterProblemsLevel = 10.0f;
 
@@ -711,6 +748,7 @@ private:
 			bool			install_upgrade_ammo_bones	( LPCSTR section, bool test );
 
 			bool			install_upgrade_torch_laser	( LPCSTR section, bool test );
+			bool			install_upgrade_scope_zoom( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
