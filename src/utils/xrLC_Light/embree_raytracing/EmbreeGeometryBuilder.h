@@ -24,6 +24,35 @@ struct TriEmbree
 	}
 };
 
+struct IndexedTri
+{
+	uint32_t i1, i2, i3;
+	uint32_t originalIndex;
+
+	IndexedTri(const TriEmbree& tri, uint32_t idx)		: originalIndex(idx)
+	{
+		// нормализуем пор€док вершин (сортировка трЄх чисел)
+		i1 = tri.point1;
+		i2 = tri.point2;
+		i3 = tri.point3;
+
+		if (i1 > i2) std::swap(i1, i2);
+		if (i2 > i3) std::swap(i2, i3);
+		if (i1 > i2) std::swap(i1, i2);
+	}
+
+	bool operator<(const IndexedTri& other) const
+	{
+		if (i1 != other.i1) return i1 < other.i1;
+		if (i2 != other.i2) return i2 < other.i2;
+		return i3 < other.i3;
+	}
+
+	bool similar(const IndexedTri& other) const
+	{
+		return i1 == other.i1 && i2 == other.i2 && i3 == other.i3;
+	}
+};
 
 struct TriangleContainer
 {
@@ -61,4 +90,5 @@ struct TriangleContainer
 		raw_faces.push_back({ {v1, v2, v3}, F });
 	};
 	void RemoveDublicates();
+	void RemoveDublicatesFaces();
 };

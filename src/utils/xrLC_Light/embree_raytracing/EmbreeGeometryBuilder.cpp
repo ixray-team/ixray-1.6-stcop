@@ -4,6 +4,7 @@
 #include "xrFace.h"
 
 #include <execution>
+#include <array>
 
 void TriangleContainer::RemoveDublicates()
 {
@@ -82,11 +83,108 @@ void TriangleContainer::RemoveDublicates()
     raw_faces.clear();
     raw_faces.shrink_to_fit();
 
-    clMsg("$ Remove Dublicates: %u ms | Vertex Now: %u | Vertex Pre : %u",
+    clMsg("$ Remove Dublicates: %u ms | Vertex Now: CAP: %u| SIZE: %u | Vertex Pre : %u",
         tStats.GetElapsed_ms(),
-        verts_v.size(),
+        verts_v.capacity(), verts_v.size(),
         VertexStart);
-};
+}
+
+
+void TriangleContainer::RemoveDublicatesFaces()
+{
+    /*
+    
+    // 6. Убираем дубликаты треугольников
+    struct TriKey
+    {
+        std::array<uint32_t, 3> idx;
+
+        TriKey(uint32_t a, uint32_t b, uint32_t c) {
+            idx = { a, b, c };
+            std::sort(idx.begin(), idx.end()); // нормализация порядка
+        }
+
+        bool operator==(const TriKey& other) const {
+            return idx == other.idx;
+        }
+    };
+
+    struct TriHash {
+        size_t operator()(const TriKey& t) const {
+            return std::hash<uint32_t>()(t.idx[0]) ^
+                (std::hash<uint32_t>()(t.idx[1]) << 1) ^
+                (std::hash<uint32_t>()(t.idx[2]) << 2);
+        }
+    };
+
+    std::unordered_map<TriKey, size_t, TriHash> seen;
+    xr_vector<TriEmbree> new_faces;
+    xr_vector<Face*> new_dummy;
+
+    new_faces.reserve(faces_v.size());
+    new_dummy.reserve(dummy.size());
+
+    for (size_t i = 0; i < faces_v.size(); ++i)
+    {
+        TriEmbree& tri = faces_v[i];
+        TriKey key(tri.point1, tri.point2, tri.point3);
+
+        if (seen.find(key) == seen.end()) {
+            seen[key] = i;
+            new_faces.push_back(tri);
+            new_dummy.push_back(dummy[i]);
+        }
+    }
+    
+    u32 pFaces = faces_v.size();
+
+    faces_v.swap(new_faces);
+    dummy.swap(new_dummy);
+
+    clMsg("$ Triangles : Compacted From %u to %u", pFaces, faces_v.size());
+    */
+
+    CTimer t; 
+    t.Start();
+
+    // 1. Убираем дубликаты треугольников через сортировку
+    xr_vector<IndexedTri> temp;
+    temp.reserve(faces_v.size());
+
+    for (size_t i = 0; i < faces_v.size(); ++i)
+    {
+        temp.emplace_back(faces_v[i], static_cast<uint32_t>(i));
+    }
+
+    std::sort(std::execution::par, temp.begin(), temp.end());
+
+    // создаём новые массивы
+    xr_vector<TriEmbree> new_faces;
+    xr_vector<decltype(dummy)::value_type> new_dummy;
+    new_faces.reserve(faces_v.size());
+    new_dummy.reserve(dummy.size());
+
+    // первый всегда берём
+    new_faces.push_back(faces_v[temp[0].originalIndex]);
+    new_dummy.push_back(dummy[temp[0].originalIndex]);
+
+    for (size_t i = 1; i < temp.size(); ++i)
+    {
+        if (!temp[i].similar(temp[i - 1]))
+        {
+            new_faces.push_back(faces_v[temp[i].originalIndex]);
+            new_dummy.push_back(dummy[temp[i].originalIndex]);
+        }
+    }
+ 
+    u32 pFaces = faces_v.size();
+    // меняем местами
+    faces_v.swap(new_faces);
+    dummy.swap(new_dummy);
+
+    clMsg("$ Triangles : Compacted From %u to (CAP: %u | SIZE: %u) | %u ms", pFaces, faces_v.capacity(), faces_v.size(), t.GetElapsed_ms());
+}
+
 
 size_t TriangleContainer::AddVertex(Fvector& V)
 {

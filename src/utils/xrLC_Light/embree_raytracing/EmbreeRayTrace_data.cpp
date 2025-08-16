@@ -109,7 +109,15 @@ void EmbreeData::BuildRaytraceModel( )
 
  	static_geom.RemoveDublicates();
 	static_geom_transp.RemoveDublicates();
+
+	static_geom.RemoveDublicatesFaces();
+	static_geom_transp.RemoveDublicatesFaces();
+
 }
+
+#include "global_calculation_data.h"
+#include "xrLC_GlobalData.h"
+extern global_claculation_data	gl_data;
 
 void EmbreeData::BuildRaytraceModel_2()
 {
@@ -118,10 +126,15 @@ void EmbreeData::BuildRaytraceModel_2()
 	static_geom.ClearAll();
  	static_geom.verts_v.swap(build_data.build_verts);
 	static_geom.faces_v.resize(build_data.build_fcnt);
+	static_geom.dummy.resize(build_data.build_fcnt);
 
  	for (auto Fid = 0; Fid < build_data.build_faces.size(); Fid++ )
 	{
 		auto& FCDB = build_data.build_faces[Fid];
+		auto& F    = gl_data.g_rc_faces[Fid];
+		 
+		
+
 		static_geom.faces_v[Fid].point1 = FCDB.verts[0];
 		static_geom.faces_v[Fid].point2 = FCDB.verts[1];
 		static_geom.faces_v[Fid].point3 = FCDB.verts[2];
@@ -169,6 +182,7 @@ void EmbreeData::BuildRcast()
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
  
 	container.RemoveDublicates();
+	container.RemoveDublicatesFaces();
 
 	
  	t.Start();
