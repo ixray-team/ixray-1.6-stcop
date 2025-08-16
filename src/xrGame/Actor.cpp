@@ -103,6 +103,7 @@ static Fvector	vFootExt;
 Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON};
 
 ENGINE_API extern float		psHUD_FOV;
+ENGINE_API extern bool g_3d_scopes;
 
 
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
@@ -1303,6 +1304,25 @@ bool hovering_checker(CActor* who)
 
 	return false;
 }
+
+void CActor::UpdateLensFOV(CWeapon* wpn, float value)
+{
+	if (wpn == nullptr)
+	{
+		return;
+	}
+
+	if (!g_3d_scopes)
+	{
+		if (wpn->GetAimFactor() > 0.999f && !wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled()/* && !IsAlterZoomMode()*/)
+		{
+			value = wpn->GetLensFOV();
+		}
+	}
+
+	Cameras().SetCameraFov(value);
+}
+
 #include "game_sv_mp.h"
 void CActor::UpdateCL()
 {
@@ -1415,9 +1435,12 @@ void CActor::UpdateCL()
 			}
 		}
 	}
+
+	float current_fov = currentFOV();
+
 	if (m_holder)
 	{
-		m_holder->UpdateEx(currentFOV());
+		m_holder->UpdateEx(current_fov);
 	}
 	else if (g_Alive())
 	{
@@ -1438,7 +1461,7 @@ void CActor::UpdateCL()
 	CWeapon* pWeapon = item != nullptr ? item->cast_weapon() : nullptr;
 	CMissile* pMissile = item != nullptr ? item->cast_missile() : nullptr;
 
-	cam_Update(float(Device.dwTimeDelta)/1000.0f, currentFOV());
+	cam_Update(float(Device.dwTimeDelta)/1000.0f, current_fov);
 
 	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
 	{

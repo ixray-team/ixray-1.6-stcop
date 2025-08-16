@@ -114,6 +114,7 @@ public:
 	virtual void						shedule_Update		( u32 T );
 	void PlayRainOnHelmetSound();
 	virtual void						UpdateCL			( );
+			void						UpdateLensFOV		(CWeapon* wpn, float value);
 	void CheckFlyhack();
 			void						UpdatePlayerView	( );
 

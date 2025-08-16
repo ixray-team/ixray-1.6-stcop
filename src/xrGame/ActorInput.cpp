@@ -341,35 +341,53 @@ void CActor::IR_OnKeyboardHold(int cmd)
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
 
-	if(hud_adj_mode)
+	if (hud_adj_mode)
 	{
-		g_player_hud->tune	(Ivector().set(dx,dy,0));
+		g_player_hud->tune(Ivector().set(dx, dy, 0));
 		return;
 	}
 
 	PIItem iitem = inventory().ActiveItem();
-	if(iitem && iitem->cast_hud_item())
-		iitem->cast_hud_item()->ResetSubStateTime();
-
-	if (Remote())		return;
-
-	if(m_holder) 
+	if (iitem != nullptr && iitem->cast_hud_item())
 	{
-		m_holder->OnMouseMove(dx,dy);
+		iitem->cast_hud_item()->ResetSubStateTime();
+	}
+
+	if (Remote())
+	{
+		return;
+	}
+
+	if (m_holder)
+	{
+		m_holder->OnMouseMove(dx, dy);
 		return;
 	}
 
 	float LookFactor = GetLookFactor();
 
-	CCameraBase* C	= cameras	[cam_active];
-	float scale		= (C->f_fov/g_fov)*psMouseSens * psMouseSensScale/50.f  / LookFactor;
-	if (dx){
-		float d = float(dx)*scale;
-		cam_Active()->Move((d<0)?kLEFT:kRIGHT, _abs(d));
+	CCameraBase* C = cameras[cam_active];
+	float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.0f / LookFactor;
+
+	if (CWeapon* wpn = iitem != nullptr ? iitem->cast_weapon() : nullptr)
+	{
+		if (!wpn->IsGrenadeMode() && wpn->IsLensedScopeInstalled())
+		{
+			float zoom_scale = scale * (wpn->GetLensFOV() * 0.02f);
+			scale = _lerp(scale, zoom_scale, wpn->GetAimFactor());
+		}
 	}
-	if (dy){
-		float d = ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*3.f/4.f;
-		cam_Active()->Move((d>0)?kUP:kDOWN, _abs(d));
+
+	if (dx)
+	{
+		float d = float(dx) * scale;
+		cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
+	}
+
+	if (dy)
+	{
+		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
+		cam_Active()->Move((d > 0) ? kUP : kDOWN, _abs(d));
 	}
 }
 
