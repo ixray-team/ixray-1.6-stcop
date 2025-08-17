@@ -130,7 +130,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
-			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_LastShotAmmoType);
+			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 		}
 	}
 
@@ -211,7 +212,8 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
-			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_LastShotAmmoType);
+			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+			UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 		}
 	}
 

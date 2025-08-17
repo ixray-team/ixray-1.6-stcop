@@ -631,6 +631,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false);
 	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);
+	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_chamber", false);
 
 	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
 
@@ -3694,7 +3695,14 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	}
 
 	if (GetState() == eIdle)
+	{
 		SwitchState(eIdle);
+	}
+
+	if (!IsGrenadeMode() && m_bUseChamberInUpdateBones && m_bAmmoInChamber)
+	{
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+	}
 }
 
 bool CWeapon::GetScopeBack()
@@ -3795,23 +3803,33 @@ void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8
 		return;
 	}
 
-	attachable_hud_item* HID = HudItemData();
-	if (HID == nullptr)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
 	{
-		return;
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
+
+	if (m_bUseChamberInUpdateBones)
+	{
+		idx += iAmmoChamberElapsed;
 	}
 
-	IKinematics* kin = HID->m_model;
+	attachable_hud_item* HID = HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
 
 	for (const auto& bone_param : lVector)
 	{
 		for (const auto& bone_name : bone_param->AllBones)
 		{
-			u16 bone_id = kin->LL_BoneID(bone_name);
-			if (bone_id != BI_NONE)
-			{
-				kin->LL_SetBoneVisible(bone_id, FALSE, FALSE);
-			}
+			SetVisible(hud_kin, bone_name, FALSE);
+			SetVisible(world_kin, bone_name, FALSE);
 		}
 	}
 
@@ -3822,34 +3840,49 @@ void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8
 			auto& Node = bone_param->ConfigurationMap[idx];
 			for (const auto& configuration_bone : Node.second)
 			{
-				u16 bone_id = kin->LL_BoneID(configuration_bone);
-				if (bone_id != BI_NONE)
-				{
-					kin->LL_SetBoneVisible(bone_id, TRUE, FALSE);
-				}
+				SetVisible(hud_kin, configuration_bone, TRUE);
+				SetVisible(world_kin, configuration_bone, TRUE);
 			}
 		}
 	}
 
-	kin->CalculateBones_Invalidate();
-	kin->CalculateBones(TRUE);
+	if (world_kin != nullptr)
+	{
+		world_kin->CalculateBones_Invalidate();
+		world_kin->CalculateBones(TRUE);
+	}
+
+	if (hud_kin != nullptr)
+	{
+		hud_kin->CalculateBones_Invalidate();
+		hud_kin->CalculateBones(TRUE);
+	}
 }
 
 void CWeapon::UpdateShellBones(u32 idx, u8 type)
 {
-	attachable_hud_item* HID = HudItemData();
-	if (HID == nullptr)
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
 	{
-		return;
-	}
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
 
-	IKinematics* kin = HID->m_model;
+	attachable_hud_item* HID = HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
 
 	for (const auto& bone_param : m_shell_bones)
 	{
 		for (const auto& bone_name : bone_param->AllBones)
 		{
-			kin->LL_SetBoneVisible(kin->LL_BoneID(bone_name), FALSE, FALSE);
+			SetVisible(hud_kin, bone_name, FALSE);
+			SetVisible(world_kin, bone_name, FALSE);
 		}
 	}
 
@@ -3862,21 +3895,32 @@ void CWeapon::UpdateShellBones(u32 idx, u8 type)
 			{
 				for (const auto& bone_name : bone_param->AllBones)
 				{
-					kin->LL_SetBoneVisible(kin->LL_BoneID(bone_name), TRUE, FALSE);
+					SetVisible(hud_kin, bone_name, TRUE);
+					SetVisible(world_kin, bone_name, TRUE);
 				}
 			}
 			else
 			{
 				for (const auto& configuration_bone : Node.second)
 				{
-					kin->LL_SetBoneVisible(kin->LL_BoneID(configuration_bone), TRUE, FALSE);
+					SetVisible(hud_kin, configuration_bone, TRUE);
+					SetVisible(world_kin, configuration_bone, TRUE);
 				}
 			}
 		}
 	}
 
-	kin->CalculateBones_Invalidate();
-	kin->CalculateBones(TRUE);
+	if (world_kin != nullptr)
+	{
+		world_kin->CalculateBones_Invalidate();
+		world_kin->CalculateBones(TRUE);
+	}
+
+	if (hud_kin != nullptr)
+	{
+		hud_kin->CalculateBones_Invalidate();
+		hud_kin->CalculateBones(TRUE);
+	}
 }
 
 bool CWeapon::ScopeFit(CScope* pIItem) const
