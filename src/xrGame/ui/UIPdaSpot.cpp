@@ -23,7 +23,7 @@ CUIPdaSpot::CUIPdaSpot()
 	// FFx0001 override spot section from global config
 	if (pGameGlobals->section_exist("pda_map") && pGameGlobals->line_exist("pda_map", "hand_spot_icon_xml_section"))
 	{
-		shared_str override_spot_name = pGameGlobals->r_string("pda_map", "hand_spot_icon_xml_section");
+		const shared_str override_spot_name = pGameGlobals->r_string("pda_map", "hand_spot_icon_xml_section");
 
 		if (override_spot_name.c_str() != nullptr) {
 			m_spotType = override_spot_name;
