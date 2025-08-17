@@ -1821,43 +1821,79 @@ void CWeaponMagazined::LoadAddons()
 */
 void CWeaponMagazined::InitAddons()
 {
-	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
-	if ( IsScopeAttached() )
+	shared_str get_scope_section = cNameSect();
+
+	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "ironsight_zoom_factor", 50.0f);
+
+	if (IsScopeAttached())
 	{
-		if ( m_eScopeStatus == ALife::eAddonAttachable )
+		if (m_eScopeStatus == ALife::eAddonAttachable)
 		{
-			LoadCurrentScopeParams(GetScopeName().c_str());
+			get_scope_section = GetScopeName();
+			LoadCurrentScopeParams(*get_scope_section);
+
+			m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
+			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
+			m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
+
+			m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
+			m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
+			m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
+			m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
+
+			m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
+			m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
+
+			m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
+
+			LoadNightBrightnessParamsFromSection(get_scope_section);
 		}
 	}
 	else
 	{
-		if ( m_UIScope )
+		if (m_UIScope)
 		{
-			xr_delete( m_UIScope );
+			xr_delete(m_UIScope);
 		}
-		
-		if ( IsZoomEnabled() )
+
+		if (IsZoomEnabled())
 		{
-			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float( cNameSect(), "scope_zoom_factor" );
+			m_zoom_params.m_fIronSightZoomFactor = pSettings->r_float(get_scope_section, "scope_zoom_factor");
 		}
+
+		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.need_lens_frame = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "need_lens_frame", false);
+
+		m_lens_zoom_params.factor_min = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "min_lens_factor", 1.0f);
+		m_lens_zoom_params.factor_max = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "max_lens_factor", 1.0f);
+		m_lens_zoom_params.speed = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_speed", 0.0f);
+		m_lens_zoom_params.gyro_period = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_gyro_sound_period", 0.0f);
+
+		m_lens_zoom_params.lens_factor_levels_count = READ_IF_EXISTS(pSettings, r_float, get_scope_section, "lens_factor_levels_count", 5.0f);
+		m_lens_zoom_params.delta = 1.0f / m_lens_zoom_params.lens_factor_levels_count;
+
+		m_lens_zoom_params.force_zoom_sound = READ_IF_EXISTS(pSettings, r_bool, get_scope_section, "force_zoom_sound", false);
+
+		LoadNightBrightnessParamsFromSection(get_scope_section);
 	}
 
-	if ( IsSilencerAttached()/* && SilencerAttachable() */)
-	{		
-		m_sFlameParticlesCurrent	= m_sSilencerFlameParticles;
-		m_sSmokeParticlesCurrent	= m_sSilencerSmokeParticles;
+	if (IsSilencerAttached())
+	{
+		m_sFlameParticlesCurrent = m_sSilencerFlameParticles;
+		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
 
 		//подсветка от выстрела
-		LoadLights					(*cNameSect(), "silencer_");
-		ApplySilencerKoeffs			();
+		LoadLights(*cNameSect(), "silencer_");
+		ApplySilencerKoeffs();
 	}
 	else
 	{
-		m_sFlameParticlesCurrent	= m_sFlameParticles;
-		m_sSmokeParticlesCurrent	= m_sSmokeParticles;
+		m_sFlameParticlesCurrent = m_sFlameParticles;
+		m_sSmokeParticlesCurrent = m_sSmokeParticles;
 
 		//подсветка от выстрела
-		LoadLights		(*cNameSect(), "");
+		LoadLights(*cNameSect(), "");
 		ResetSilencerKoeffs();
 	}
 
@@ -1928,6 +1964,15 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
+		}
+
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 		if (IsMisfire())
 		{
@@ -1982,6 +2027,15 @@ shared_str CWeaponMagazined::SetCurrentStateAnimation(const shared_str& first_na
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim");
+		}
+
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
 		}
 
 		if (IsMisfire())
@@ -2153,6 +2207,20 @@ shared_str CWeaponMagazined::SetCurrentShootAnimation()
 		if (IsZoomed())
 		{
 			AddSuffixName(anim, "_aim");
+		}
+
+		if (IsScopeAttached())
+		{
+			AddSuffixName(anim, "_scope");
+		}
+
+		if (GetQueueSize() == -1)
+		{
+			AddSuffixName(anim, "_auto");
+		}
+		else if (GetQueueSize() == 3)
+		{
+			AddSuffixName(anim, "_triple");
 		}
 
 		if (IsMisfire())

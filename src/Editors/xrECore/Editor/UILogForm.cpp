@@ -84,47 +84,54 @@ void UILogForm::Update()
 		ImGui::Spacing();
 		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
 		{
+			ImGuiListClipper clipper;
+			clipper.Begin(GetList()->size());
+
 			xr_string CopyLog;
-			for (int i = 0; i < GetList()->size(); i++)
+
+			while (clipper.Step())
 			{
-				CUIThemeManager& theme_manager = CUIThemeManager::Get();
-				ImVec4 Color = theme_manager.log_color_default;
-				const char* Str = GetList()->at(i).c_str();
+				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+				{
+					CUIThemeManager& theme_manager = CUIThemeManager::Get();
+					ImVec4 Color = theme_manager.log_color_default;
+					const char* Str = GetList()->at(i).c_str();
 
-				if (Str == nullptr || xr_strlen(Str) == 0)
-					continue;
+					if (Str == nullptr || xr_strlen(Str) == 0)
+						continue;
 
-				if (m_Filter[0] && strstr(Str, m_Filter)==0)
-				{
-					continue;
-				}
-				if (strncmp(Str, "! ", 2) == 0)
-				{
-					Color = theme_manager.log_color_error;
-				}
-				if (strncmp(Str, "~ ", 2) == 0)
-				{
-					Color = theme_manager.log_color_warning;
-				}
-				if (strncmp(Str, "* ", 2) == 0)
-				{
-					Color = theme_manager.log_color_debug;
-				}
+					if (m_Filter[0] && strstr(Str, m_Filter) == 0)
+					{
+						continue;
+					}
+					if (strncmp(Str, "! ", 2) == 0)
+					{
+						Color = theme_manager.log_color_error;
+					}
+					if (strncmp(Str, "~ ", 2) == 0)
+					{
+						Color = theme_manager.log_color_warning;
+					}
+					if (strncmp(Str, "* ", 2) == 0)
+					{
+						Color = theme_manager.log_color_debug;
+					}
 
-				ImGui::PushStyleColor(ImGuiCol_Text, Color);
-				string256 StrLog = {};
-				xr_sprintf(StrLog, "%s##%d", Str, i);
+					ImGui::PushStyleColor(ImGuiCol_Text, Color);
+					string256 StrLog = {};
+					xr_sprintf(StrLog, "%s##%d", Str, i);
 
-				if (strlen(Str) > 0 && ImGui::Selectable(StrLog))
-				{
-					os_clipboard::copy_to_clipboard(Str);
+					if (strlen(Str) > 0 && ImGui::Selectable(StrLog))
+					{
+						os_clipboard::copy_to_clipboard(Str);
+					}
+					else
+					{
+						if (NeedCopy)
+							CopyLog.append(Str).append("\r\n");
+					}
+					ImGui::PopStyleColor();
 				}
-				else
-				{
-					if (NeedCopy)
-						CopyLog.append(Str).append("\r\n");
-				}
-				ImGui::PopStyleColor();
 			}
 
 			if (NeedCopy)
@@ -136,18 +143,22 @@ void UILogForm::Update()
 			FirstRun = true;
 		}
 		ImGui::EndChild();
-		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue ;
-		if (ImGui::InputText("Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
+
+		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
+		if (ImGui::InputTextWithHint("##Exec", "Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
 		{
 			if (m_Exec[0])
 			{
 				Msg("~ Exec %s", m_Exec);
 				Console->Execute(m_Exec);
 			}
-		
 		}
-		ImGui::SameLine();
+
+		float checkboxWidth = ImGui::CalcTextSize("Clear in PIE").x + ImGui::GetStyle().FramePadding.x * 2 + ImGui::GetStyle().ItemInnerSpacing.x * 2 + 10;
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - checkboxWidth + ImGui::GetCursorPosX());
+
 		ImGui::Checkbox("Clear in PIE", &bClearInPIE);
+
 		ImGui::End();
 	}
 	else

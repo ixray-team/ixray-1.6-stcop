@@ -301,7 +301,7 @@ void XrUIManager::Draw()
 	//ImGui::DockSpaceOverViewport();
 	{
 		m_MenuBarHeight = 32;
-		int headerSize = 6;
+		int headerSize = 8;
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + m_MenuBarHeight - headerSize));
 		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, viewport->Size.y - headerSize));
