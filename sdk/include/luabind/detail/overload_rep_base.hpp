@@ -75,11 +75,7 @@ namespace luabind::detail
 		{ 
 			m_get_signature_fun = f; 
 		}
-#endif
 
-	protected:
-
-#ifndef LUABIND_NO_ERROR_CHECKING
 		get_sig_ptr m_get_signature_fun;
 #endif
 
