@@ -112,7 +112,7 @@ void CInventoryItem::Load(LPCSTR section)
 	m_HiglightRelatedItemSections.clear();
 	if (pSettings->line_exist(section, "highlight_related_sections"))
 	{
-		LPCSTR separated_sections = pSettings->r_string(section, "highlight_related_sections");
+		const char* separated_sections = pSettings->r_string(section, "highlight_related_sections");
 		for (int it = 0, count = _GetItemCount(separated_sections); it < count; ++it)
 		{
 			string128 higlight_section;
