@@ -240,6 +240,7 @@ private:
 	void						highlight_weapons_for_ammo	(PIItem ammo_item, CUIDragDropListEx* ddlist);
 	bool						highlight_addons_for_weapon	(PIItem weapon_item, CUICellItem* ci);
 	void						highlight_weapons_for_addon	(PIItem addon_item, CUIDragDropListEx* ddlist);
+	void						highlight_related_config_sections (PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
 
 protected:			
 	void						Construct					();
