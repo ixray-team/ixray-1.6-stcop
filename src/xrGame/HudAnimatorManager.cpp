@@ -26,6 +26,7 @@ void CHudAnimatorManager::Load()
 	}
 
 	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov", 0.0f);
+	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov_factor", 1.0f);
 
 	m_bBlend = READ_IF_EXISTS(pSettings, r_bool, m_section, "blend", false);
 
@@ -411,8 +412,8 @@ float CHudAnimatorManager::GetHudFov() const
 {
 	if (!m_fHudFov || !m_bIsPlaying)
 	{
-		return psHUD_FOV_def;
+		return psHUD_FOV_def * m_fHudFovFactor;
 	}
 
-	return m_fHudFov;
+	return m_fHudFov * m_fHudFovFactor;
 }
