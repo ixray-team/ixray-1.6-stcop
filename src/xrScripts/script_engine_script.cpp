@@ -223,6 +223,94 @@ void lua_debug_print(LPCSTR str)
 	Msg("$ DBG:[%lu] %s", Device.dwTimeGlobal, str);
 }
 
+void DumpLuaExports()
+{
+	lua_State* L = g_pScriptEngine->lua();
+	using namespace luabind::detail;
+
+	class_registry* Registry = class_registry::get_registry(L);
+	auto GetArgTypeName = [](const auto info) -> xr_string
+	{
+		if (!info)
+		{
+			return "unknown";
+		}
+
+		xr_string Result = (*info).name();
+	
+		const xr_vector<xr_string> Need2Remove = { "class ", "struct ", " __ptr64" };
+		for (const auto& Str : Need2Remove)
+		{
+			size_t Pos = 0;
+			while ((Pos = Result.find(Str, Pos)) != xr_string::npos)
+			{
+				Result.erase(Pos, Str.length());
+			}
+		}
+	
+		return Result;
+	};
+
+	Registry->iterate_classes(L, [&](lua_State* st, class_rep* crep)
+	{
+		if (!crep->bases().empty())
+		{
+			xr_string OutStr = "C++ class ";
+			OutStr += crep->name();
+			OutStr += " : ";
+			bool IsFirstStep = true;
+			for (const class_rep::base_info& BaseClassInfo : crep->bases())
+			{
+				if (!IsFirstStep)
+				{
+					OutStr += ", ";
+				}
+				
+				OutStr += BaseClassInfo.base->name();
+				IsFirstStep = false;
+			}
+			Msg("C++ class %s", OutStr.c_str());
+		}
+		else
+		{
+			Msg("C++ class %s", crep->name());
+		}
+
+		Msg("{");
+
+		for (const auto&[Name, _] : crep->m_getters)
+		{
+			Msg("\tproperty %s;", Name);
+		}
+
+		for (const auto& Method : crep->m_methods)
+		{
+			for (const auto& Overload : Method.overloads())
+			{
+				int ArgsCount = Overload.m_arity;
+				xr_string args;
+				bool IsPrinted = false;
+				for (int i = 0; i < ArgsCount; ++i)
+				{
+					if (Overload.m_params_.size() > i)
+					{
+						if (IsPrinted)
+						{
+							args += ", ";
+						}
+
+						args += GetArgTypeName(Overload.m_params_[i]);
+						IsPrinted = true;
+					}
+				}
+				Msg("\tfunction %s(%s);", Method.name, args.c_str());
+			}
+		}
+
+		Msg("};\n");
+	});
+}
+
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -250,6 +338,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("time_global_async",				&script_time_global_async),
 		def("IsSupportMP",						&CheckMP),
 		def("IsEditor",							&IsEditorMode),
+		def("help",								&DumpLuaExports),
 		def("try_load_file",					&TryLoadFile)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
