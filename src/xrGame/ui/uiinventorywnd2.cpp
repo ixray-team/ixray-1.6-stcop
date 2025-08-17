@@ -29,9 +29,9 @@ PIItem CUIInventoryWnd::CurrentIItem()
 
 void CUIInventoryWnd::SetCurrentItem(CUICellItem* itm)
 {
-	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
 	UIItemInfo.InitItem			(CurrentItem(), nullptr, CurrentIItem() ? CurrentIItem()->Cost() : u32(-1));
+	TryHidePropertiesBox();
 }
 
 void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
@@ -695,4 +695,21 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIOutfitList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
 	m_pUIAutomaticList->ClearAll			(true);
+}
+
+void CUIInventoryWnd::DropAllCurrentItem(u32 item_amount)
+{
+	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	if ( CurrentIItem() && !CurrentIItem()->IsQuestItem() )
+	{
+		for( u32 i = 0; i < item_amount; ++i )
+		{
+			CUICellItem*	itm  = CurrentItem()->PopChild(nullptr);
+			PIItem			iitm = (PIItem)itm->m_pData;
+			SendEvent_Item_Drop( iitm, pInvOwner->object_id() );
+		}
+
+		SendEvent_Item_Drop( CurrentIItem(), pInvOwner->object_id() );
+	}
+	SetCurrentItem								(nullptr);
 }
