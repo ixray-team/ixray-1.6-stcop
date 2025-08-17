@@ -367,6 +367,28 @@ u32 CScriptGameObject::GetAmmoElapsed()
 	return 0;
 }
 
+//FFx0001++
+u32 CScriptGameObject::GetAmmoElapsedWithChamber()
+{
+	if (const CWeapon* weapon = object().cast_weapon())
+	{
+		return weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed();
+	}
+
+	return 0;
+}
+
+//FFx0001++
+bool CScriptGameObject::IsWeaponUseChamber()
+{
+	if (const CWeapon* weapon = object().cast_weapon())
+	{
+		return weapon->IsChamber();
+	}
+
+	return false;
+}
+
 void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 {
 	if (CWeapon* weapon = object().cast_weapon())
