@@ -297,7 +297,7 @@ void DrawLCConfig()
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
  
 		ImGui::Separator();
-
+		
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::Combo("lmaps", &item_current_selected, lightmap_resolution, max_resolution))
  			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
