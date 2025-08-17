@@ -131,7 +131,7 @@ public:
 				CDB::COLLIDER	DB;
 				DB.ray_options	(0);
 
-				u32 flags = (lc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_dont_hemi;
+				u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
   				LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), flags, 0);
 
 				vC._tmp_			= v_trans;
@@ -171,7 +171,7 @@ void LightVertex()
 
 			if (GetTranslucency(V, v_trans))
 			{
- 				u32 flags = (lc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_dont_hemi;
+ 				u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
  				GPUTaskinSystem.LightPointPacked(INDEX, 0, V->P, V->N, flags, 0);
 			}
 

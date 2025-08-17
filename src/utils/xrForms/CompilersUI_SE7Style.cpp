@@ -33,7 +33,6 @@ static bool autoScroll = true;
 static bool hideLogSection = true;
 static bool ResizeMaximal = false;
 
-
 void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
@@ -45,11 +44,9 @@ void RenderMainUI()
 	int Size[2] = {};
  	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 
-
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
 	
-
 	if (!ShowMainUI) 
 	{
 		RenderCompilerUI(Size[0], Size[1]);
@@ -105,21 +102,17 @@ void RenderMainUI()
 			}
 
 			ImGui::TableNextColumn();
-			
 			DrawCompilerConfig();
 			
 			ImGui::TableNextColumn();
 			
 			DrawLCConfig();
-
 			ImGui::TableNextColumn();
 
 			DrawAIConfig();
-
 			ImGui::TableNextColumn();
 
 			DrawDOConfig();
-
 			ImGui::EndTable();  
 		}
 	}
@@ -185,11 +178,8 @@ void RenderMainUI()
 		}
 
 		ImGui::SameLine();
-		 
 		ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
-
 		ImGui::SameLine();
-
 		ImGui::Checkbox("ShowMain", &ShowMainUI);
 	}
  
@@ -332,97 +322,78 @@ void DrawLCConfig()
 
 void DrawDOConfig()
 {
-	//if (ImGui::BeginChild("DO", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
-	{
-		ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
-		ImGui::Separator();
+	ImGui::Checkbox("Details Compiler", &gCompilerMode.DO);
+	ImGui::Separator();
 
-		ImGui::BeginDisabled(!gCompilerMode.DO);
-		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-		ImGui::EndDisabled();
-		//ImGui::EndChild();
-	}
-	
+	ImGui::BeginDisabled(!gCompilerMode.DO);
+	ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+	ImGui::EndDisabled();
 }
 
 void DrawAIConfig()
 {
-	//if (ImGui::BeginChild("AI", { 200, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
-	{
-			ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
-		
-			ImGui::BeginDisabled(!gCompilerMode.AI);
+	ImGui::Checkbox("AI Compiler", &gCompilerMode.AI);
 
-			ImGui::Separator();
+	ImGui::BeginDisabled(!gCompilerMode.AI);
+	ImGui::Separator();
 
-			ImGui::Checkbox("AI Compiler ai.level", &gCompilerMode.AI_BuildLevel);
-		 
-				ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
+	ImGui::Checkbox("AI Compiler ai.level", &gCompilerMode.AI_BuildLevel);
+	ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
 
-				ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
-				ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
-				ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
-				ImGui::Checkbox("Verbose", &gCompilerMode.AI_Verbose);
-	  
-				ImGui::EndDisabled();
-		
-			ImGui::Separator();
+	ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
+	ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
+	ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
+	ImGui::Checkbox("Verbose", &gCompilerMode.AI_Verbose);
 
-			ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
-				ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
-				
-				ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
+	ImGui::EndDisabled();
+	ImGui::Separator();
 
-				ImGui::Text("Name all.spawn :");
-				ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
-				ImGui::Text("Name level start:");
-				ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
- 
-				ImGui::EndDisabled();
+	ImGui::Checkbox("AI Compiler all.spawn", &gCompilerMode.AI_BuildSpawn);
+	ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
 
-			ImGui::EndDisabled();
-			//ImGui::EndChild();
-	}
+	ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
+
+	ImGui::Text("Name all.spawn :");
+	ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
+	ImGui::Text("Name level start:");
+	ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+
+	ImGui::EndDisabled();
+	ImGui::EndDisabled();
 }
 
 extern bool SaveCForm;
 
 void DrawCompilerConfig()
 {
-	//if (ImGui::BeginChild("Settings", { 170, 370 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
-	{
-		ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-		ImGui::Checkbox("Use Intel Embree", &gCompilerMode.Embree);
+	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
+	ImGui::Checkbox("Use Intel Embree", &gCompilerMode.Embree);
 #ifdef LCCUDA_BUILD
-		ImGui::Checkbox("Use Nvidia CUDA", &gCompilerMode.CUDA);
+	ImGui::Checkbox("Use Nvidia CUDA", &gCompilerMode.CUDA);
 #endif
-		ImGui::Separator();
+	ImGui::Separator();
 
-		ImGui::TextColored(ImVec4(RGBAColor(204, 102, 102, 255)), "(Warning Disable MU in raycast)");
+	ImGui::TextColored(ImVec4(RGBAColor(204, 102, 102, 255)), "(Warning Disable MU in raycast)");
 
-		ImGui::Checkbox("Embree Optimized", &gCompilerMode.Embree_SplitBVH);
+	ImGui::Checkbox("Embree Optimized", &gCompilerMode.Embree_SplitBVH);
 
-		ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
-		ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
-		ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
+	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
+	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
 
-		ImGui::Separator();
+	ImGui::Separator();
 
-		ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
-		ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
-		ImGui::Checkbox("Save cform to obj", &SaveCForm);
-		
-		ImGui::Separator();
-		ImGui::Text("Threads Max");
+	ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
+	ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
+	ImGui::Checkbox("Save cform to obj", &SaveCForm);
 
-		if (ImGui::InputInt("##Threads Max", &gCompilerMode.ThreadsPerWork))
-		{
-			gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
-		}
+	ImGui::Separator();
+	ImGui::Text("Threads Max");
 
-		//ImGui::EndChild();
+	if (ImGui::InputInt("##Threads Max", &gCompilerMode.ThreadsPerWork))
+	{
+		gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
 	}
-	
 }
 
 void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
@@ -525,22 +496,6 @@ void RenderCompilerUI(int X, int Y)
 	ImGui::Separator();
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-
-	// if (ResizeMaximal)
-	// {
-	// 	if (X != 1400 || Y != 640)
-	// 	{
-	// 		//SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
-	// 		SDL_SetWindowSize(g_AppInfo.Window, 1400, 700);
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (X != 1000 || Y != 560)
-	// 	{
-	// 		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
-	// 	}
-	// }
 
 	int MAX_TRABS = 9;
 	if (ResizeMaximal)
