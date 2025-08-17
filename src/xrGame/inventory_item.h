@@ -182,6 +182,7 @@ public:
 	LPCSTR						m_custom_mark_lanim;
 
 	SInvItemPlace				m_ItemCurrPlace;
+	RStringVec					m_HiglightRelatedItemSections; // FFx0001 ++
 
 	struct SParseItem
 	{

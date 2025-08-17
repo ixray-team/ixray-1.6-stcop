@@ -107,6 +107,21 @@ void CInventoryItem::Load(LPCSTR section)
 {
 	CHitImmunity::LoadImmunities	(pSettings->r_string(section,"immunities_sect"),pSettings);
 
+	// FFx0001 ++ begin
+	// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory
+	m_HiglightRelatedItemSections.clear();
+	if (pSettings->line_exist(section, "highlight_related_sections"))
+	{
+		const char* separated_sections = pSettings->r_string(section, "highlight_related_sections");
+		for (int it = 0, count = _GetItemCount(separated_sections); it < count; ++it)
+		{
+			string128 higlight_section;
+			_GetItem(separated_sections, it, higlight_section);
+			m_HiglightRelatedItemSections.push_back(higlight_section);
+		}
+	}
+	// FFx0001 ++ end
+
 	m_parse_params.m_chances.clear();
 	m_parse_params.m_items.clear();
 
