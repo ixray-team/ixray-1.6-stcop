@@ -12,6 +12,8 @@ class CUI3tButton;
 class CUICellItem;
 class CInventoryBox;
 class CInventoryOwner;
+class CUIItemDropAmountWnd;
+class CWeaponMagazined;
 
 class CUICarBodyWnd: public CUIDialogWnd
 {
@@ -41,6 +43,9 @@ public:
 	void					UpdateLists_delayed			();
 
 	void					clear_highlight_lists		();
+
+	void					MoveAllCurrentItem			(u32 item_amount);
+	void					TakeAllCurrentItem			(u32 item_amount);
 protected:
 	CInventoryOwner*		m_pOurObject;
 
@@ -67,6 +72,9 @@ protected:
 	CUICharacterInfo*		m_pUICharacterInfoRight;
 	CUIPropertiesBox*		m_pUIPropertiesBox;
 	CUI3tButton*			m_pUITakeAll;
+	CUI3tButton*			m_pUIPutAll;
+
+	CUIItemDropAmountWnd*	m_pItemDropAmountWnd;
 
 	CUICellItem*			m_pCurrentCellItem;
 	bool					m_highlight_clear;
@@ -74,6 +82,8 @@ protected:
 	void					UpdateLists					();
 
 	void					ActivatePropertiesBox		();
+	void					TryHidePropertiesBox		();
+	void					ProcessPropertiesBoxClicked	();
 
 	void					set_highlight_item			(CUICellItem* cell_item);
 	void					highlight_armament			(PIItem item, CUIDragDropListEx* ddlist);
@@ -93,7 +103,7 @@ protected:
 
 	// Взять все
 	void					TakeAll						();
-
+	void					PutAll						();
 
 	bool					OnItemDrop					(CUICellItem* itm);
 	bool					OnItemStartDrag				(CUICellItem* itm);
@@ -104,7 +114,45 @@ protected:
 	bool					OnItemFocusLost				(CUICellItem* itm);
 	bool					OnItemFocusedUpdate			(CUICellItem* itm);
 
+	bool					ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
 	bool					TransferItem				(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check);
 	void					BindDragDropListEnents		(CUIDragDropListEx* lst);
+private:
+	const char* m_onCanTake = {};
+	bool m_isCanTake = false;
 
+	const char* m_onCanMoveToPartner = {};
+	bool m_isCanMoveToPartner = false;
+private:
+	void					PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
+	void					PropertiesBoxForAddon		(PIItem item, bool& b_show);
+	void					PropertiesBoxForUsing		(PIItem item, bool& b_show);
+	void					PropertiesBoxForPlaying		(PIItem item, bool& b_show);
+	void					PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
+	void					PropertiesBoxForParse		(PIItem item, bool& b_show);
+
+protected:
+	void					DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
+
+	void					UnloadWeapon				(CWeaponMagazined* pWnp);
+	bool					TryUseItem					(CUICellItem* itm);
+
+	void					SendEvent_Item_Eat			(PIItem	pItem, u16 parent);
+	void					SendEvent_Item2Ruck			(PIItem	pItem, u16 parent);
+
+	bool					ToBag						(CUICellItem* itm, bool b_use_cursor_pos);
+
+	enum eCarBodySndAction{	eSndOpen	=0,
+								eSndClose,
+								eItemToSlot,
+								eItemToBelt,
+								eItemToRuck,
+								eProperties,
+								eDropItem,
+								eAttachAddon,
+								eDetachAddon,
+								eItemUse,
+								eSndMax};
+	ref_sound				sounds					[eSndMax];
+	void					PlaySnd					(eCarBodySndAction a);
 };
