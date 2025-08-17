@@ -54,6 +54,7 @@ private:
 	bool m_bNeedActivated = false;
 	bool m_bIsPlaying = false;
 	float m_fHudFov = 0.0f;
+	float m_fHudFovFactor = 1.0f;
 	bool m_bBlend = false;
 	bool m_bForceHideItems = false;
 	bool m_bCanSprint = false;
