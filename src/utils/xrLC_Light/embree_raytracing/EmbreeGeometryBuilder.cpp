@@ -178,9 +178,14 @@ void TriangleContainer::RemoveDublicatesFaces()
     }
  
     u32 pFaces = faces_v.size();
+
+    new_faces.shrink_to_fit();
+    new_dummy.shrink_to_fit();
+
     // меняем местами
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
+
 
     clMsg("$ Triangles : Compacted From %u to (CAP: %u | SIZE: %u) | %u ms", pFaces, faces_v.capacity(), faces_v.size(), t.GetElapsed_ms());
 }
