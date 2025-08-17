@@ -29,6 +29,7 @@ private:
 public:
 	CJsonSerializer(shared_str FileName);
 	~CJsonSerializer();
+	void Save() const;
 
 	template <XRay::Concepts::Arithmetic T>
 	void Read(shared_str Section, T& Value) const
