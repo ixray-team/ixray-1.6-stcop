@@ -84,6 +84,12 @@ namespace luabind::detail
 
 		bool has_static() const { return static_cast<bool>(call_fun_static); }
 
+
+		// the types of the parameter it takes
+#pragma warning(push)
+#pragma warning(disable:4251)
+		vector_class<LUABIND_TYPE_INFO> m_params_;
+#pragma warning(pop)
 	private:
         template <int ResInit, typename... Args, typename... Policies>
         overload_rep(const bool isConst, const imdexlib::typelist<Args...>, const std::integral_constant<int, ResInit>, const policy_cons<Policies...>)
@@ -109,12 +115,6 @@ namespace luabind::detail
 #pragma warning(push)
 #pragma warning(disable:4251)
 		std::function<int(lua_State*)> call_fun_static;
-#pragma warning(pop)
-
-		// the types of the parameter it takes
-#pragma warning(push)
-#pragma warning(disable:4251)
-		vector_class<LUABIND_TYPE_INFO> m_params_;
 #pragma warning(pop)
 		// is true if the overload is const (this is a part of the signature)
 		bool m_const;

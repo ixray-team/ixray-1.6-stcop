@@ -309,6 +309,27 @@ namespace luabind { namespace detail
 		};
 		
 		typedef map_class<const char*, int, ltstr> STATIC_CONSTANTS;
+
+#pragma warning(push)
+#pragma warning(disable:4251)
+		// ***** the maps below contains all members in this class *****
+		// FX: Moved to public for make debug printing functional (IXR 18.08.2025)
+
+		// list of methods. pointers into this list is put
+		// in the m_table_ref and m_default_table_ref
+		// for access. The struct contains the function-
+		// signatures for every overload
+		list_class<method_rep> m_methods;
+
+
+		// datamembers, some members may be readonly, and
+		// only have a getter function
+		map_class<const char*, callback, ltstr> m_getters;
+		map_class<const char*, callback, ltstr> m_setters;
+
+		vector_class<operator_callback> m_operators[number_of_operators]; // the operators in lua
+#pragma warning(pop)
+
 	private:
 
 		void cache_operators(lua_State*);
@@ -405,27 +426,6 @@ namespace luabind { namespace detail
 		// that is to be used as meta table for all instances
 		// of this class.
 		int m_instance_metatable;
-
-		// ***** the maps below contains all members in this class *****
-
-		// list of methods. pointers into this list is put
-		// in the m_table_ref and m_default_table_ref
-		// for access. The struct contains the function-
-		// signatures for every overload
-#pragma warning(push)
-#pragma warning(disable:4251)
-		list_class<method_rep> m_methods;
-#pragma warning(pop)
-
-		// datamembers, some members may be readonly, and
-		// only have a getter function
-#pragma warning(push)
-#pragma warning(disable:4251)
-		map_class<const char*, callback, ltstr> m_getters;
-		map_class<const char*, callback, ltstr> m_setters;
-
-		vector_class<operator_callback> m_operators[number_of_operators]; // the operators in lua
-#pragma warning(pop)
 
 		void(*m_destructor)(void*);
 		void(*m_const_holder_destructor)(void*);
