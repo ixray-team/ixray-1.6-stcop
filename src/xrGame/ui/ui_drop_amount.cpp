@@ -14,6 +14,8 @@
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIGameCustom.h"
 #include "UIActorMenu.h"
+#include "UIInventoryWnd.h"
+#include "UICarBodyWnd.h"
 
 CUIItemDropAmountWnd::CUIItemDropAmountWnd()
 {
@@ -100,17 +102,38 @@ void CUIItemDropAmountWnd::PerformDrop()
 	{
 	case eModeDrop:
 	{
-		CurrentGameUI()->ActorMenu().DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		if (&CurrentGameUI()->ActorMenu())
+		{
+			CurrentGameUI()->ActorMenu().DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
+		else
+		{
+			CurrentGameUI()->InventoryWnd().DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
 		break;
 	}
 	case eModeMove:
 	{
-		CurrentGameUI()->ActorMenu().MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		if (&CurrentGameUI()->ActorMenu())
+		{
+			CurrentGameUI()->ActorMenu().MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
+		else
+		{
+			CurrentGameUI()->CarBodyWnd().MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
 		break;
 	}
 	case eModeTake:
 	{
-		CurrentGameUI()->ActorMenu().TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		if (&CurrentGameUI()->ActorMenu())
+		{
+			CurrentGameUI()->ActorMenu().TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
+		else
+		{
+			CurrentGameUI()->CarBodyWnd().TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+		}
 		break;
 	}
 	}
@@ -129,7 +152,7 @@ void CUIItemDropAmountWnd::OnBtnNoClicked(CUIWindow* w, void* d)
 
 bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) )
+	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) || is_binded(kQUIT, dik) )
 	{
 		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
@@ -137,15 +160,6 @@ bool CUIItemDropAmountWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action
 		}
 		return true;
 	}	
-
-	if ( is_binded(kQUIT, dik) )
-	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action )
-		{
-			HideDialog();
-		}
-		return true;
-	}
 
 	if( CUIDialogWnd::OnKeyboardAction(dik,keyboard_action) )
 		return true;
