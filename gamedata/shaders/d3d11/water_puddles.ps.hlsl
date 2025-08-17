@@ -82,7 +82,13 @@ float4 main(PSInput I) : SV_Target
 	float3 env0 = s_env0.Sample(smp_rtlinear, vreflect).xyz;
 	float3 env1 = s_env1.Sample(smp_rtlinear, vreflect).xyz;
 	
-	float3 env = lerp(env0, env1, L_ambient.w) * L_sky_color.xyz;
+	float3 env = lerp(env0, env1, L_ambient.w);
+	
+#ifdef USE_BGRA_SKYCOLOR
+   	env *= L_sky_color.zyx;
+#else
+    env *= L_sky_color.xyz;
+#endif
 
 #ifdef USE_OFFSCREEN_REFLECTIONS
 	env.xyz = lerp(env, PopGamma(vslr.xyz), vslr.w);

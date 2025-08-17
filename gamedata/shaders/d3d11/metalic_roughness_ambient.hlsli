@@ -28,7 +28,11 @@ float3 CompureDiffuseIrradance(float3 N, float Hemi)
 	float3 Irradance = lerp(SampleLast, SampleNext, L_hemi_color.w);
 
 #ifdef USE_DIFFUSE_SKY_COLOR
-	Irradance *= L_sky_color.xyz;
+	#ifdef USE_BGRA_SKYCOLOR
+	   	Irradance *= L_sky_color.zyx;
+	#else
+	    Irradance *= L_sky_color.xyz;
+	#endif
 #else
 	Irradance *= L_hemi_color.xyz;
 #endif
@@ -86,7 +90,11 @@ float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
 #ifdef USE_SPECULAR_HEMI_COLOR
 	Irradance *= L_hemi_color.xyz;
 #else
-	Irradance *= L_sky_color.xyz;
+	#ifdef USE_BGRA_SKYCOLOR
+	   	Irradance *= L_sky_color.zyx;
+	#else
+	    Irradance *= L_sky_color.xyz;
+	#endif
 #endif
 
 #ifdef USE_VIEW_REFLECTIONS
