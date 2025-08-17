@@ -18,6 +18,7 @@ class CArtefact;
 class CUI3tButton;
 class CUIDragDropListEx;
 class CUICellItem;
+class CUIItemDropAmountWnd;
 
 class CUIInventoryWnd: public CUIDialogWnd
 {
@@ -48,6 +49,7 @@ public:
 
 	void					AddItemToBag				(PIItem pItem);
 
+	void					DropAllCurrentItem			(u32 item_amount);
 protected:
 	enum eInventorySndAction{	eInvSndOpen	=0,
 								eInvSndClose,
@@ -88,6 +90,10 @@ protected:
 	CUIDragDropListEx*			m_pUIPistolList;
 	CUIDragDropListEx*			m_pUIAutomaticList;
 	CUIOutfitDragDropList*		m_pUIOutfitList;
+
+	CUIItemDropAmountWnd*		m_pItemDropAmountWnd;
+
+
 	void						ClearAllLists				();
 	void						BindDragDropListEnents		(CUIDragDropListEx* lst);
 	
@@ -135,6 +141,7 @@ protected:
 
 	void						ProcessPropertiesBoxClicked	();
 	void						ActivatePropertiesBox		();
+	void						TryHidePropertiesBox		();
 
 	void						clear_highlight_lists		();
 	void						set_highlight_item			(CUICellItem* cell_item);
@@ -154,7 +161,9 @@ protected:
 
 
 	void						AttachAddon					(PIItem item_to_upgrade);
-	void						DetachAddon					(const char* addon_name);
+	void						DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
+
+	void						UnloadWeapon				(CWeaponMagazined* pWnp);
 
 	void						SetCurrentItem				(CUICellItem* itm);
 	CUICellItem*				CurrentItem					();
@@ -162,5 +171,14 @@ protected:
 
 	TIItemContainer				ruck_list;
 	u32							m_iCurrentActiveSlot;
+
+private:
+	void						PropertiesBoxForSlots		(PIItem item, bool& b_show);
+	void						PropertiesBoxForWeapon		(CUICellItem* cell_item, PIItem item, bool& b_show);
+	void						PropertiesBoxForAddon		(PIItem item, bool& b_show);
+	void						PropertiesBoxForUsing		(PIItem item, bool& b_show);
+	void						PropertiesBoxForPlaying		(PIItem item, bool& b_show);
+	void						PropertiesBoxForDrop		(CUICellItem* cell_item, PIItem item, bool& b_show);
+	void						PropertiesBoxForParse		(PIItem item, bool& b_show);
 
 };
