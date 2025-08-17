@@ -148,6 +148,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("patrol",						&CScriptGameObject::GetPatrolPathName)
 
 		.def("get_ammo_in_magazine",		&CScriptGameObject::GetAmmoElapsed)
+		.def("get_ammo_in_magazine_and_chabmer", &CScriptGameObject::GetAmmoElapsedWithChamber) //FFx0001++
 		.def("get_ammo_total",				&CScriptGameObject::GetSuitableAmmoTotal)
 		.def("set_ammo_elapsed",			&CScriptGameObject::SetAmmoElapsed)
 		//Alundaio
