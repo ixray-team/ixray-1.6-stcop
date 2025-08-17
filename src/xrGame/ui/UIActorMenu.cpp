@@ -678,6 +678,40 @@ void CUIActorMenu::highlight_armament( PIItem item, CUIDragDropListEx* ddlist )
 	highlight_ammo_for_weapon( item, ddlist );
 	highlight_weapons_for_ammo( item, ddlist );
 	highlight_weapons_for_addon( item, ddlist );
+	highlight_related_config_sections(item, ddlist); // FFx001 ++
+}
+
+// FFx0001 ++
+// Highlight separated by delimeter ',' related item sections on mouseover from the actor's inventory is item config include line highlight_related_sections with separated sections
+void CUIActorMenu::highlight_related_config_sections(PIItem item, CUIDragDropListEx* ddlist)
+{
+	VERIFY(item);
+	VERIFY(ddlist);
+
+	if (!item->m_HiglightRelatedItemSections.empty())
+	{
+		u32 const cnt = ddlist->ItemsCount();
+		for (size_t j = 0; j < item->m_HiglightRelatedItemSections.size(); ++j)
+		{
+			for (u32 i = 0; i < cnt; ++i)
+			{
+				CUICellItem* ci = ddlist->GetItemIdx(i);
+				PIItem _item = (PIItem)ci->m_pData;
+				if (!_item)
+				{
+					continue;
+				}
+
+				const shared_str item_section = _item->object().cNameSect();
+				const shared_str to_higlight_section = item->m_HiglightRelatedItemSections[j];
+
+				if (item_section.c_str() != nullptr && to_higlight_section.c_str() != nullptr && xr_strcmp(to_higlight_section, item_section) == 0)
+				{
+					ci->m_select_armament = true;
+				}
+			}
+		}
+	}
 }
 
 void CUIActorMenu::highlight_ammo_for_weapon(PIItem weapon_item, CUIDragDropListEx* ddlist)
