@@ -117,7 +117,8 @@ protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
 	ALife::_TIME_ID			m_dwWeaponIndependencyTime;
-	float m_HudFovZoom;
+	float m_fHudFovZoomFactor;
+	float m_fHudFovGLZoomFactor;
 	virtual bool			IsHudModeNow		();
 public:
 	void					signal_HideComplete	();

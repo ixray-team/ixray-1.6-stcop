@@ -57,6 +57,7 @@ void CHudItem::Load(LPCSTR section)
 	m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
 
 	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
+	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_factor", 1.0f);
 
 	m_current_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_r", PITCH_OFFSET_R);
 	m_current_inertion.PitchOffsetD = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_pitch_offset_d", PITCH_OFFSET_D);
@@ -821,7 +822,6 @@ float CHudItem::GetHudFov()
 		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
 		if (isCollision)
 		{
-
 			float src = m_nearwall_speed_mod * Device.fTimeDelta;
 			clamp(src, 0.f, 1.f);
 
@@ -829,10 +829,12 @@ float CHudItem::GetHudFov()
 			m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1.f - src) + fTrgFov * src;
 		}
 		else
+		{
 			m_nearwall_last_hud_fov = fBaseFov;
+		}
 	}
 
-	return m_nearwall_last_hud_fov;
+	return m_nearwall_last_hud_fov * m_fHudFovFactor;
 }
 
 void CHudItem::SetModelBoneStatus(const char* bone, BOOL show)
