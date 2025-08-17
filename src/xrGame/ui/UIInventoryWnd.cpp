@@ -32,6 +32,8 @@ using namespace InventoryUtilities;
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "ui_drop_amount.h"
+#include "../WeaponMagazined.h"
 
 #define				INVENTORY_ITEM_XML		"inventory_item.xml"
 #define				INVENTORY_XML			"inventory_new.xml"
@@ -163,6 +165,10 @@ void CUIInventoryWnd::Init()
 	UIExitButton						= new CUI3tButton();UIExitButton->SetAutoDelete(true);
 	AttachChild							(UIExitButton);
 	xml_init.Init3tButton				(uiXml, "exit_button", 0, UIExitButton);
+	
+	m_pItemDropAmountWnd				= new CUIItemDropAmountWnd();
+	m_pItemDropAmountWnd->SetAutoDelete	(true);
+	m_pItemDropAmountWnd->InitDropAmount();
 
 //Load sounds
 
@@ -371,27 +377,43 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 	SetCurrentItem								(nullptr);
 }
 
-void CUIInventoryWnd::DetachAddon(const char* addon_name)
+void CUIInventoryWnd::DetachAddon(LPCSTR addon_name, PIItem itm)
 {
 	PlaySnd										(eInvDetachAddon);
 	if (OnClient())
 	{
 		NET_Packet								P;
-		CurrentIItem()->object().u_EventGen		(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
-		P.w_stringZ								(addon_name);
-		CurrentIItem()->object().u_EventSend	(P);
-	};
-	CurrentIItem()->Detach						(addon_name, true);
+		if(itm==nullptr)
+			CGameObject::u_EventGen				(P, GE_ADDON_DETACH, CurrentIItem()->object().ID());
+		else
+			CGameObject::u_EventGen				(P, GE_ADDON_DETACH, itm->object().ID());
 
-	//спрятать вещь из активного слота в инвентарь на время вызова менюшки
-	CActor *pActor								= smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor && CurrentIItem() == pActor->inventory().ActiveItem())
-	{
-			m_iCurrentActiveSlot				= pActor->inventory().GetActiveSlot();
-			pActor->inventory().Activate		(NO_ACTIVE_SLOT);
+		P.w_stringZ								(addon_name);
+		CGameObject::u_EventSend				(P);
+		return;
 	}
+	if(itm==nullptr)
+		CurrentIItem()->Detach					(addon_name, true);
+	else
+		itm->Detach								(addon_name, true);
 }
 
+void CUIInventoryWnd::UnloadWeapon(CWeaponMagazined* pWpn)
+{
+	if (!pWpn) return;
+
+	if (IsGameTypeSingle())
+	{
+		pWpn->UnloadMagazine();
+	}
+	else
+	{
+		NET_Packet	P;
+		CGameObject::u_EventGen(P, GE_WPN_UNLOAD_AMMO, pWpn->ID());
+		P.w_u8(0);
+		CGameObject::u_EventSend(P);
+	}
+}
 
 void CUIInventoryWnd::SendEvent_ActivateSlot(u16 slot, u16 recipient)
 {
