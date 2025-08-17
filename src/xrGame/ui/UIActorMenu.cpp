@@ -688,7 +688,7 @@ void CUIActorMenu::highlight_related_config_sections(PIItem item, CUIDragDropLis
 	VERIFY(item);
 	VERIFY(ddlist);
 
-	if (item->m_HiglightRelatedItemSections.size() > 0)
+  if (!item->m_HiglightRelatedItemSections.empty())
 	{
 		u32 const cnt = ddlist->ItemsCount();
 		for (size_t j = 0; j < item->m_HiglightRelatedItemSections.size(); ++j)
