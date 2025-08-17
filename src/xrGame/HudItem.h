@@ -288,6 +288,7 @@ protected:
 	float						m_nearwall_target_hud_fov;
 	float						m_nearwall_speed_mod;
 	float						m_fHudFov;
+	float						m_fHudFovFactor;
 
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;

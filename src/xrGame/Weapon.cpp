@@ -93,7 +93,6 @@ CWeapon::CWeapon()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_crosshair_inertion	= 0.f;
 	m_cur_scope				= 0;
-	m_HudFovZoom = 0.0f;
 	_last_update_time = Device.dwTimeGlobal;
 	useLegacyMisfire = false;
 
@@ -443,7 +442,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_pdm.m_fPDM_disp_crouch		= pSettings->r_float( section, "PDM_disp_crouch"		);
 	m_pdm.m_fPDM_disp_crouch_no_acc	= pSettings->r_float( section, "PDM_disp_crouch_no_acc" );
 	m_crosshair_inertion			= READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion",	5.91f);
-	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
 
 	m_first_bullet_controller.load	(section);
 	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
@@ -569,13 +567,22 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseGLHud = READ_IF_EXISTS(pSettings, r_bool, section, "hud_when_gl_is_attached", false);
 
 	if (m_bUseSilHud)
+	{
 		hud_silencer = pSettings->r_string(section, "hud_silencer");
+	}
 
 	if (m_bUseScopeHud)
+	{
 		hud_scope = pSettings->r_string(section, "hud_scope");
+	}
 
 	if (m_bUseGLHud)
+	{
 		hud_gl = pSettings->r_string(section, "hud_gl");
+	}
+
+	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
+	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -2427,6 +2434,28 @@ void CWeapon::UpdateAddonsVisibility()
 
 void CWeapon::InitAddons()
 {
+	if (ScopeAttachable())
+	{
+		shared_str section = m_section_id;
+
+		if (IsScopeAttached())
+		{
+			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, GetScopeName(), "hud_fov_zoom_factor", m_fHudFovZoomFactor);
+		}
+		else
+		{
+			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov_zoom_factor", m_fHudFovFactor);
+		}
+
+		if (IsScopeAttached())
+		{
+			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, GetScopeName(), "hud_fov_gl_zoom_factor", m_fHudFovGLZoomFactor);
+		}
+		else
+		{
+			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
+		}
+	}
 }
 
 bool CWeapon::CanAimNow()
@@ -3323,11 +3352,18 @@ u32 CWeapon::Cost() const
 	return res;
 }
 
-float CWeapon::GetHudFov() {
-	auto base = inherited::GetHudFov();
-	auto zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
-	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
-	return base;
+float CWeapon::GetHudFov()
+{
+	float get = inherited::GetHudFov() / m_fHudFovFactor;
+	float hud_fov = m_fHudFovFactor;
+	float zoom_fov = IsGrenadeMode() ? m_fHudFovGLZoomFactor : m_fHudFovZoomFactor;
+
+	if (((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f)))
+	{
+		hud_fov = hud_fov - (hud_fov - zoom_fov) * m_zoom_params.m_fZoomRotationFactor;
+	}
+
+	return get * hud_fov;
 }
 
 const CameraRecoil& CWeapon::getCameraRecoil(void) const
