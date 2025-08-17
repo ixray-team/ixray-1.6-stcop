@@ -69,7 +69,7 @@ void TriangleContainer::RemoveDublicates()
 
     for (size_t i = 0; i < raw_faces.size(); ++i)
     {
-        TriEmbree tri;
+        Triangle tri;
         tri.point1 = remap[i * 3 + 0];
         tri.point2 = remap[i * 3 + 1];
         tri.point3 = remap[i * 3 + 2];
@@ -159,7 +159,7 @@ void TriangleContainer::RemoveDublicatesFaces()
     std::sort(std::execution::par, temp.begin(), temp.end());
 
     // создаём новые массивы
-    xr_vector<TriEmbree> new_faces;
+    xr_vector<Triangle> new_faces;
     xr_vector<decltype(dummy)::value_type> new_dummy;
     new_faces.reserve(faces_v.size());
     new_dummy.reserve(dummy.size());
@@ -199,7 +199,7 @@ size_t TriangleContainer::AddVertex(Fvector& V)
 
 void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
 {
-    TriEmbree triangle;
+    Triangle triangle;
     triangle.point1 = AddVertex(v1);
     triangle.point2 = AddVertex(v2);
     triangle.point3 = AddVertex(v3);
@@ -217,5 +217,6 @@ void TriangleContainer::ClearAll()
 
     faces_v.shrink_to_fit();
     verts_v.shrink_to_fit();
+    dummy.shrink_to_fit();
 }
 
