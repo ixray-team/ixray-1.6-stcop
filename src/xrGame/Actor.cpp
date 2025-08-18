@@ -868,7 +868,7 @@ void	CActor::Hit(SHit* pHDS)
 		}
 		else
 		{
-			float hit_power = HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			float hit_power = EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 			HDS.power = hit_power;
 			HDS.add_wound = true;
 			if (m_isBeforeHitCallback)
@@ -931,7 +931,7 @@ void	CActor::Hit(SHit* pHDS)
 		if (m_bWasBackStabbed) 
 			hit_power				= (HDS.damage() == 0) ? 0 : 100000.0f;
 		else 
-			hit_power				= HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
+			hit_power				= EngineExternal().ShadowOfChernobylMode() ? HitArtefactsOnBeltLegacy(HDS.damage(), HDS.hit_type) : HitArtefactsOnBelt(HDS.damage(), HDS.hit_type);
 
 		HDS.power					= hit_power;
 		HDS.add_wound				= true;
