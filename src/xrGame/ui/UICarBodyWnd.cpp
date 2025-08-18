@@ -40,7 +40,6 @@
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
 
-void move_item (u16 from_id, u16 to_id, u16 what_id);
 void move_item_from_to(u16 from_id, u16 to_id, u16 what_id);
 bool RemoveItemFromList(CUIDragDropListEx* lst, PIItem pItem);
 
@@ -290,13 +289,16 @@ void CUICarBodyWnd::UpdateLists()
 
 void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	if (BUTTON_CLICKED == msg && m_pUITakeAll == pWnd)
+	if (BUTTON_CLICKED == msg)
 	{
-		TakeAll					();
-	}
-	if (BUTTON_CLICKED == msg && m_pUIPutAll == pWnd)
-	{
-		PutAll					();
+		if (m_pUITakeAll == pWnd)
+		{
+			TakeAll();
+		}
+		else if (m_pUIPutAll == pWnd)
+		{
+			PutAll();
+		}
 	}
 	else if(pWnd == m_pUIPropertiesBox &&	msg == PROPERTY_CLICKED)
 	{
@@ -396,7 +398,7 @@ void CUICarBodyWnd::TakeAll()
 			if(m_pOthersObject)
 				TransferItem	(_itm, m_pOthersObject, m_pOurObject, false);
 			else{
-				move_item		(m_pInventoryBox->ID(), tmp_id, _itm->object().ID());
+				move_item_from_to		(m_pInventoryBox->ID(), tmp_id, _itm->object().ID());
 //.				Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
 			}
 		
@@ -405,7 +407,7 @@ void CUICarBodyWnd::TakeAll()
 		if(m_pOthersObject)
 			TransferItem	(itm, m_pOthersObject, m_pOurObject, false);
 		else{
-			move_item		(m_pInventoryBox->ID(), tmp_id, itm->object().ID());
+			move_item_from_to		(m_pInventoryBox->ID(), tmp_id, itm->object().ID());
 //.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
 		}
 
@@ -569,7 +571,7 @@ void CUICarBodyWnd::EatItem()
 	{
 		u16 owner_id				= (m_pInventoryBox)?m_pInventoryBox->ID():smart_cast<CGameObject*>(m_pOthersObject)->ID();
 
-		move_item(	owner_id, //from
+		move_item_from_to(	owner_id, //from
 					Actor()->ID(), //to
 					CurrentIItem()->object().ID());
 	}
@@ -608,7 +610,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
-		move_item				(
+		move_item_from_to		(
 								bMoveDirection?m_pInventoryBox->ID():tmp_id,
 								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
 								CurrentIItem()->object().ID());
@@ -636,23 +638,18 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 
 	if(m_pOthersObject)
 	{
-		if( TransferItem		(	CurrentIItem(),
-								(old_owner==m_pUIOthersBagList)?m_pOthersObject:m_pOurObject, 
-								(old_owner==m_pUIOurBagList)?m_pOthersObject:m_pOurObject, 
-								(old_owner==m_pUIOurBagList)
-								)
-			)
-		{
-			CUICellItem* ci			= old_owner->RemoveItem(CurrentItem(), false);
-			new_owner->SetItem		(ci);
-		}
-	}else
+		if ((old_owner == m_pUIOurBagList))
+			ToDeadBodyBag(CurrentItem(), false);
+		else
+			ToBag(CurrentItem(), false);
+	}
+	else
 	{
 		if(false && old_owner==m_pUIOurBagList) return true;
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
 		u16 tmp_id				= (smart_cast<CGameObject*>(m_pOurObject))->ID();
-		move_item				(
+		move_item_from_to		(
 								bMoveDirection?m_pInventoryBox->ID():tmp_id,
 								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
 								CurrentIItem()->object().ID());
@@ -677,27 +674,6 @@ bool CUICarBodyWnd::OnItemRButtonClick(CUICellItem* itm)
 	return						false;
 }
 
-void move_item (u16 from_id, u16 to_id, u16 what_id)
-{
-	NET_Packet P;
-	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_REJECT,
-												from_id
-											);
-
-	P.w_u16									(what_id);
-	CGameObject::u_EventSend				(P);
-
-	//другому инвентарю - взять вещь 
-	CGameObject::u_EventGen					(	P,
-												GE_OWNERSHIP_TAKE,
-												to_id
-											);
-	P.w_u16									(what_id);
-	CGameObject::u_EventSend				(P);
-	CUICarBodyWnd().clear_highlight_lists	();
-}
-
 bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check)
 {
 	VERIFY									(nullptr==m_pInventoryBox);
@@ -713,7 +689,7 @@ bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInven
 		if(invWeight+itmWeight >=maxWeight)	return false;
 	}
 
-	move_item(go_from->ID(), go_to->ID(), itm->object().ID());
+	move_item_from_to(go_from->ID(), go_to->ID(), itm->object().ID());
 
 	return true;
 }
