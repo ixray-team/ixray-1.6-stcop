@@ -251,6 +251,8 @@ void CUIGameCustom::OnInventoryAction(PIItem item, u16 action_type)
 		m_ActorMenu->OnInventoryAction( item, action_type );
 	else if (m_InventoryMenu != nullptr && m_InventoryMenu->IsShown())
 		m_InventoryMenu->InitInventory_delayed();
+	else if (m_CarBodyMenu && m_CarBodyMenu->IsShown())
+		m_CarBodyMenu->UpdateLists_delayed();
 }
 
 #include "ui/UIGameTutorial.h"
