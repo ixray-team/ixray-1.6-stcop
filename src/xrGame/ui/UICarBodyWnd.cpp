@@ -636,26 +636,11 @@ bool CUICarBodyWnd::OnItemDbClick(CUICellItem* itm)
 	CUIDragDropListEx*	old_owner		= itm->OwnerList();
 	CUIDragDropListEx*	new_owner		= (old_owner==m_pUIOthersBagList)?m_pUIOurBagList:m_pUIOthersBagList;
 
-	if(m_pOthersObject)
-	{
-		if ((old_owner == m_pUIOurBagList))
-			ToDeadBodyBag(CurrentItem(), false);
-		else
-			ToBag(CurrentItem(), false);
-	}
+	if (old_owner == m_pUIOurBagList)
+		ToDeadBodyBag(CurrentItem(), false);
 	else
-	{
-		if(false && old_owner==m_pUIOurBagList) return true;
-		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
+		ToBag(CurrentItem(), false);
 
-		u16 tmp_id				= (smart_cast<CGameObject*>(m_pOurObject))->ID();
-		move_item_from_to		(
-								bMoveDirection?m_pInventoryBox->ID():tmp_id,
-								bMoveDirection?tmp_id:m_pInventoryBox->ID(),
-								CurrentIItem()->object().ID());
-//.		Actor()->callback		(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), CurrentIItem()->object().lua_game_object() );
-
-	}
 	SetCurrentItem				(nullptr);
 
 	return						true;
@@ -1648,7 +1633,7 @@ bool CUICarBodyWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 	if(b_use_cursor_pos)
 	{
 			new_owner					= CUIDragDropListEx::m_drag_item->BackList();
-			VERIFY						(GetListType(new_owner)==iActorBag);
+			VERIFY						(new_owner==m_pUIOurBagList);
 	}else
 			new_owner					= m_pUIOurBagList;
 
