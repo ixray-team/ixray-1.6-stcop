@@ -208,9 +208,8 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 			m_pUICharacterInfoRight->ClearInfo		();
 			if(monster)
 			{
-				shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(),"icon");
-				m_pUICharacterInfoRight->UIIcon().InitTexture(monster_tex_name.c_str());
-				m_pUICharacterInfoRight->UIIcon().SetStretchTexture(true);
+				LPCSTR monster_tex_name = READ_IF_EXISTS(pSettings, r_string, monster->cNameSect(), "icon", "npc_icon_unknown_data");
+				m_pUICharacterInfoRight->InitCharacter("", monster_tex_name);
 			}
 		}else 
 		{
