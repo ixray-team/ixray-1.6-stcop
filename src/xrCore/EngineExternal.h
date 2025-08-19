@@ -53,6 +53,7 @@ enum class EEngineExternalGame
 	EnableImproveWeaponMisfire,
 	EnableDelayedWeaponActions,
 	EnableLegacyUpgradeSystem,
+	EnableEngineArtefactSpawn,
 };
 
 enum class EEngineExternalRender 
