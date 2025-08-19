@@ -56,8 +56,10 @@ void CRenderDevice::_Create	(LPCSTR shName)
 
 void CRenderDevice::ConnectToRender()
 {
+	R_ASSERT2(RenderFactory, "Render factory is empty!");
+
 	if (!m_pRender)
-		m_pRender			= RenderFactory->CreateRenderDeviceRender();
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
 }
 
 void CRenderDevice::Create	() 
