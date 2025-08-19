@@ -46,15 +46,15 @@ CSE_ALifeDynamicObject *CSE_ALifeAnomalousZone::tpfGetBestDetector()
 	return						(0);
 #endif
 }
-/*
+
 void CSE_ALifeAnomalousZone::spawn_artefacts				()
 {
 	VERIFY2					(!m_bOnline,"Cannot spawn artefacts in online!");
 
-	float					m_min_start_power	= pSettings->r_float(name(),"min_start_power");
-	float					m_max_start_power	= pSettings->r_float(name(),"max_start_power");
-	u32						m_min_artefact_count= pSettings->r_u32	(name(),"min_artefact_count");;
-	u32						m_max_artefact_count= pSettings->r_u32	(name(),"max_artefact_count");;
+	float					m_min_start_power	= READ_IF_EXISTS(pSettings, r_float, name(), "min_start_power", 0.f);
+	float					m_max_start_power	= READ_IF_EXISTS(pSettings, r_float, name(), "max_start_power", 0.f);
+	u32						m_min_artefact_count= READ_IF_EXISTS(pSettings, r_u32, name(), "min_artefact_count", 0);
+	u32						m_max_artefact_count= READ_IF_EXISTS(pSettings, r_u32, name(), "max_artefact_count", 0);
     u32						m_artefact_count;
 
 	if (m_min_artefact_count == m_max_artefact_count)
@@ -66,6 +66,10 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 		m_maxPower			= m_min_start_power;
 	else
 		m_maxPower			= randF(m_min_start_power,m_max_start_power);
+
+	const static bool isEngineArtefactSpawn = EngineExternal()[EEngineExternalGame::EnableEngineArtefactSpawn];
+	if (!isEngineArtefactSpawn)
+		return;
 
 	LPCSTR					artefacts = pSettings->r_string(name(),"artefacts");
 	u32						n = _GetItemCount(artefacts);
@@ -94,11 +98,18 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 	for (u32 ii=0; ii<m_artefact_count; ++ii) {
 		float fProbability		= randF(1.f);
 		float fSum				= 0.f;
-		for (u16 p=0; p<n; ++p) {
+		u16 p = 0;
+		for (; p<n; ++p) {
 			fSum				+= weights[p].second;
 			if (fSum > fProbability)
 				break;
 		}
+
+		if (weights[p].first.size() > 0 && !pSettings->section_exist(weights[p].first))
+		{
+			continue;
+		}
+
 		if (p < n) {
 			CSE_Abstract		*l_tpSE_Abstract = alife().spawn_item(*weights[p].first,position(),m_tNodeID,m_tGraphID,0xffff);
 			R_ASSERT3			(l_tpSE_Abstract,"Can't spawn artefact ",*weights[p].first);
@@ -123,12 +134,12 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 			l_tpALifeItemArtefact->m_fAnomalyValue = m_maxPower*(1.f - i->o_Position.distance_to(o_Position)/m_offline_interactive_radius);
 		}
 	}
-}*/
+}
 
 void CSE_ALifeAnomalousZone::on_spawn						()
 {
 	inherited::on_spawn		();
-//	spawn_artefacts			();
+	spawn_artefacts			();
 }
 
 bool CSE_ALifeAnomalousZone::keep_saved_data_anyway() const
