@@ -405,16 +405,16 @@ void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 				MoveMemory	(szDumpPath,szDumpPath+5,strlen(szDumpPath));
 				hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
 			}
-			if (hFile!=INVALID_HANDLE_VALUE)
+			if (hFile != INVALID_HANDLE_VALUE)
 			{
 				_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 
-				ExInfo.ThreadId				= ::GetCurrentThreadId();
-				ExInfo.ExceptionPointers	= pExceptionInfo;
-				ExInfo.ClientPointers		= false;
+				ExInfo.ThreadId = ::GetCurrentThreadId();
+				ExInfo.ExceptionPointers = pExceptionInfo;
+				ExInfo.ClientPointers = false;
 
 				// write the dump
-				MINIDUMP_TYPE	dump_flags	= MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory );
+				MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
 
 				BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
 				if (bOK)
