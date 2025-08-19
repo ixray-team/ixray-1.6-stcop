@@ -363,8 +363,9 @@ void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect t
     UIAnswersList->ScrollToEnd();
 
     GAME_NEWS_DATA news_data;
-    news_data.news_caption = text;
-    news_data.news_text = "";
+    news_data.news_caption = "";
+    news_data.news_text = text;
+	news_data.tex_rect = texture_rect;
 
     news_data.m_type = GAME_NEWS_DATA::eTalk;
     news_data.texture_name = texture_name;
