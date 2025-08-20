@@ -122,7 +122,7 @@ endif()
 # Apply CUDA/OptiX
 if(OptiX_FOUND)
 	target_include_directories(xrLC_Light PUBLIC ${OptiX_INCLUDE_DIRS})
-	target_link_libraries(xrLC_Light PRIVATE ${OptiX_LIBRARIES} CUDA::cudart CUDA::cuda_driver)
+	target_link_libraries(xrLC_Light PRIVATE ${OptiX_LIBRARIES} CUDA::cudart_static CUDA::cuda_driver)
 	set_target_properties(xrLC_Light PROPERTIES
 		CUDA_SEPARABLE_COMPILATION ON
 		CUDA_RESOLVE_DEVICE_SYMBOLS ON
