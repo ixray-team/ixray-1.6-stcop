@@ -54,7 +54,9 @@ void   CLevelDebug::draw_debug_text ()
 	int y_start = 50;
 	int x_start = 5;
 
-	if ( !smart_cast<CBaseMonster*>( Level().CurrentEntity() ) )
+	CObject* current_entity = Level().CurrentEntity();
+
+	if (current_entity != nullptr && current_entity->cast_base_monster() == nullptr || current_entity == nullptr)
 	{
 		bool debug_actor_view	=	false;
 		if ( !ai_dbg::get_var("actor_view", debug_actor_view) )

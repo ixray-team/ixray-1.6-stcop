@@ -390,7 +390,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 #endif // DEBUG
 		return;
 	}
-	CGameObject* GO = smart_cast<CGameObject*>(O);
+	CGameObject* GO = O->cast_game_object();
 	if (!GO)		{
 #ifndef MASTER_GOLD
 		Msg("! ERROR: c_EVENT[%d] : non-game-object",dest);
@@ -427,7 +427,7 @@ void CLevel::cl_Process_Event				(u16 dest, u16 type, NET_Packet& P)
 			ok			= false;
 		}
 
-		CGameObject		*GD = smart_cast<CGameObject*>(D);
+		CGameObject		*GD = D->cast_game_object();
 		if (!GD)		{
 #ifndef MASTER_GOLD
 			Msg			("! ERROR: c_EVENT[%d] : non-game-object",id);
@@ -480,15 +480,20 @@ void CLevel::ProcessGameEvents		()
 				{
 					PROF_EVENT("M_MOVE_PLAYERS");
 					u8 Count = P.r_u8();
-					for (u8 i=0; i<Count; i++)
+					for (u8 i = 0; i < Count; i++)
 					{
 						u16 ID_ = P.r_u16();					
 						Fvector NewPos, NewDir;
 						P.r_vec3(NewPos);
 						P.r_vec3(NewDir);
 
-						CActor*	OActor	= smart_cast<CActor*>(Objects.net_Find		(ID_));
-						if (0 == OActor)		break;
+						CObject* finded_player = Objects.net_Find(ID_);
+						CActor*	OActor = finded_player != nullptr ? finded_player->cast_actor() : nullptr;
+						if (OActor == nullptr)
+						{
+							break;
+						}
+
 						OActor->MoveActor(NewPos, NewDir);
 					};
 
@@ -771,52 +776,67 @@ void CLevel::OnRender()
 	test_precise_path		();
 #endif
 
-	CAI_Stalker				*stalker = smart_cast<CAI_Stalker*>(Level().CurrentEntity());
-	if (stalker)
-		stalker->OnRender	();
+	CObject* current_entity = CurrentEntity();
 
-	if (bDebug)	{
-		for (u32 I=0; I < Level().Objects.o_count(); I++) {
-			CObject*	_O		= Level().Objects.o_get_by_iterator(I);
+	if (CAI_Stalker* stalker = current_entity != nullptr ? current_entity->cast_stalker() : nullptr)
+	{
+		stalker->OnRender();
+	}
 
-			CAI_Stalker*		stalker_ = smart_cast<CAI_Stalker*>(_O);
-			if (stalker_)
-				stalker_->OnRender	();
+	if (bDebug)
+	{
+		for (u32 I = 0; I < Level().Objects.o_count(); I++)
+		{
+			CObject* _O = Level().Objects.o_get_by_iterator(I);
 
-			CCustomMonster*		monster = smart_cast<CCustomMonster*>(_O);
-			if (monster)
-				monster->OnRender	();
+			if (CAI_Stalker* stalker = _O != nullptr ? _O->cast_stalker() : nullptr)
+			{
+				stalker->OnRender();
+			}
 
-			CPhysicObject		*physic_object = smart_cast<CPhysicObject*>(_O);
-			if (physic_object)
+			if (CCustomMonster* monster = _O != nullptr ? _O->cast_custom_monster() : nullptr)
+			{
+				monster->OnRender();
+			}
+
+			if (CPhysicObject* physic_object = _O != nullptr ? _O->cast_physics_object() : nullptr)
+			{
 				physic_object->OnRender();
+			}
 
-			CSpaceRestrictor	*space_restrictor = smart_cast<CSpaceRestrictor*>	(_O);
-			if (space_restrictor)
+			if (CSpaceRestrictor* space_restrictor = _O != nullptr ? _O->cast_restrictor() : nullptr)
+			{
 				space_restrictor->OnRender();
+			}
 
-			CLevelChanger* lchanger = smart_cast<CLevelChanger*>	(_O);
-			if (lchanger)
+			if (CLevelChanger* lchanger = _O != nullptr ? _O->cast_level_changer() : nullptr)
+			{
 				lchanger->OnRender();
+			}
 
-			CClimableObject		*climable		  = smart_cast<CClimableObject*>	(_O);
-			if(climable)
+			if (CClimableObject* climable = _O != nullptr ? _O->cast_climable_object() : nullptr)
+			{
 				climable->OnRender();
-			CTeamBaseZone	*team_base_zone = smart_cast<CTeamBaseZone*>(_O);
-			if (team_base_zone)
+			}
+
+			if (CTeamBaseZone* team_base_zone = _O != nullptr ? _O->cast_team_base_zone() : nullptr)
+			{
 				team_base_zone->OnRender();
-			
+			}
+
 			if (!IsGameTypeSingle())
 			{
-				CInventoryItem* pIItem = smart_cast<CInventoryItem*>(_O);
-				if (pIItem) pIItem->OnRender();
+				if (PIItem pIItem = _O != nullptr ? _O->cast_inventory_item() : nullptr)
+				{
+					pIItem->OnRender();
+				}
 			}
 
 #ifdef DEBUG
 			if (dbg_net_Draw_Flags.test(dbg_draw_skeleton)) //draw skeleton
 			{
-				CGameObject* pGO = smart_cast<CGameObject*>	(_O);
-				if (pGO && pGO != Level().CurrentViewEntity() && !pGO->H_Parent())
+				CGameObject* pGO = _O != nullptr ? _O->cast_game_object() : nullptr;
+				if (pGO != nullptr && pGO != Level().CurrentViewEntity() && !pGO->H_Parent())
 				{
 					if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
 					{
@@ -854,38 +874,47 @@ void CLevel::OnRender()
 
 #ifdef DEBUG
 	if (bDebug) {
-		DBG().draw_object_info				();
-		DBG().draw_text						();
-		DBG().draw_level_info				();
+		DBG().draw_object_info();
+		DBG().draw_text();
+		DBG().draw_level_info();
 	}
 
-	debug_renderer().render					();
+	debug_renderer().render();
 	
 	DBG().draw_debug_text();
 
-	if (psAI_Flags.is(aiVision)) {
-		for (u32 I=0; I < Level().Objects.o_count(); I++) {
-			CObject						*object = Objects.o_get_by_iterator(I);
-			CAI_Stalker					*stalker_ = smart_cast<CAI_Stalker*>(object);
-			if (!stalker_)
+	if (psAI_Flags.is(aiVision))
+	{
+		for (u32 I=0; I < Level().Objects.o_count(); I++)
+		{
+			CObject* object = Objects.o_get_by_iterator(I);
+			CAI_Stalker* stalker_ = object != nullptr ? object->cast_stalker() : nullptr;
+			if (stalker_ == nullptr)
+			{
 				continue;
-			stalker_->dbg_draw_vision	();
+			}
+
+			stalker_->dbg_draw_vision();
 		}
 	}
 
 
-	if (psAI_Flags.test(aiDrawVisibilityRays)) {
-		for (u32 I=0; I < Level().Objects.o_count(); I++) {
-			CObject						*object = Objects.o_get_by_iterator(I);
-			CAI_Stalker					*stalker_ = smart_cast<CAI_Stalker*>(object);
-			if (!stalker_)
+	if (psAI_Flags.test(aiDrawVisibilityRays))
+	{
+		for (u32 I=0; I < Level().Objects.o_count(); I++)
+		{
+			CObject* object = Objects.o_get_by_iterator(I);
+			CAI_Stalker* stalker_ = object != nullptr ? object->cast_stalker() : nullptr;
+			if (stalker_ == nullptr)
+			{
 				continue;
+			}
 
-			stalker_->dbg_draw_visibility_rays	();
+			stalker_->dbg_draw_visibility_rays();
 		}
 	}
 #elif defined(DEBUG_DRAW)
-	debug_renderer().render					();
+	debug_renderer().render();
 #endif
 }
 
@@ -912,24 +941,45 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 	} else return;
 }
 
-void	CLevel::AddObject_To_Objects4CrPr	(CGameObject* pObj)
+void CLevel::AddObject_To_Objects4CrPr(CGameObject* pObj)
 {
-	if (!pObj) return;
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+	if (pObj == nullptr)
 	{
-		if (*OIt == pObj) return;
+		return;
 	}
+
+	for (OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
+	{
+		if (*OIt == pObj)
+		{
+			return;
+		}
+	}
+
 	pObjects4CrPr.push_back(pObj);
 
 }
-void	CLevel::AddActor_To_Actors4CrPr		(CGameObject* pActor)
+
+void CLevel::AddActor_To_Actors4CrPr(CGameObject* pActor)
 {
-	if (!pActor) return;
-	if (!smart_cast<CActor*>(pActor)) return;
-	for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
+	if (pActor == nullptr)
 	{
-		if (*AIt == pActor) return;
+		return;
 	}
+
+	if (pActor->cast_actor() == nullptr)
+	{
+		return;
+	}
+
+	for (OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
+	{
+		if (*AIt == pActor)
+		{
+			return;
+		}
+	}
+
 	pActors4CrPr.push_back(pActor);
 }
 
