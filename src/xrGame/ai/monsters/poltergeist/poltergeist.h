@@ -47,6 +47,8 @@ class CPoltergeist final :	public CBaseMonster ,
 	float					m_detection_success_level;
 	float					m_detection_max_level;
 
+	bool					m_enable_corpse_on_death;
+
 public:
 	bool					m_detect_without_sight;
 
