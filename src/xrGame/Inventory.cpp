@@ -759,7 +759,7 @@ bool CInventory::Action(u16 cmd, u32 flags)
 			attachable_hud_item* i0 = g_player_hud->attached_item(0);
 			if (i0)
 			{
-				CWeapon* pWpn = smart_cast<CWeapon*>(i0->m_parent_hud_item);
+				CWeapon* pWpn = i0->m_parent_hud_item->cast_weapon();
 				if (pWpn && pWpn->IsZoomed())
 				{
 					return false;
@@ -777,7 +777,7 @@ bool CInventory::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
-				CCustomDetector* pDetector = smart_cast<CCustomDetector*>(pHudItem);
+				CCustomDetector* pDetector = pHudItem->cast_custom_detector();
 				if (pDetector)
 				{
 					PIItem pItem = ItemFromSlot(slot);

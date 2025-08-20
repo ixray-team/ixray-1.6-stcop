@@ -137,10 +137,12 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 		}
 	}
 
-	CActor* l_tpActor = smart_cast<CActor*>(tpObject);
+	CActor* l_tpActor = tpObject != nullptr ? tpObject->cast_actor() : nullptr;
 	VERIFY(l_tpActor);
 	if (!l_tpActor->g_Alive())
+	{
 		return;
+	}
 
 	if (m_bSilentMode)
 	{
@@ -191,35 +193,42 @@ bool CLevelChanger::get_reject_pos(Fvector& p, Fvector& r)
 		return false;
 }
 
-BOOL CLevelChanger::feel_touch_contact	(CObject *object)
+BOOL CLevelChanger::feel_touch_contact(CObject* object)
 {
-	BOOL bRes	= (((CCF_Shape*)CFORM())->Contact(object));
-	bRes		= bRes && smart_cast<CActor*>(object) && smart_cast<CActor*>(object)->g_Alive();
-	return		bRes;
+	BOOL bRes = (((CCF_Shape*)CFORM())->Contact(object));
+	CActor* pActor = object != nullptr ? object->cast_actor() : nullptr;
+	bRes = bRes && pActor != nullptr && pActor->g_Alive();
+	return bRes;
 }
 
 void CLevelChanger::update_actor_invitation()
 {
-	if (m_bSilentMode || !condWork)						return;
+	if (m_bSilentMode || !condWork)
+	{
+		return;
+	}
 
-	xr_vector<CObject*>::iterator it		= feel_touch.begin();
-	xr_vector<CObject*>::iterator it_e		= feel_touch.end();
+	for (CObject* object : feel_touch)
+	{
+		CActor* l_tpActor = object->cast_actor();
+		VERIFY(l_tpActor);
 
-	for(;it!=it_e;++it){
-		CActor*			l_tpActor = smart_cast<CActor*>(*it);
-		VERIFY			(l_tpActor);
-		
-		if(!l_tpActor->g_Alive())
+		if (!l_tpActor->g_Alive())
+		{
 			continue;
+		}
 
-		if(m_entrance_time+5.0f < Device.fTimeGlobal){
- 			Fvector p,r;
-			bool b = get_reject_pos(p,r);
-			
-			if(CurrentGameUI())
+		if (m_entrance_time + 5.0f < Device.fTimeGlobal)
+		{
+			Fvector p, r;
+			bool b = get_reject_pos(p, r);
+
+			if (CurrentGameUI())
+			{
 				CurrentGameUI()->ChangeLevel(m_game_vertex_id, m_level_vertex_id, m_position, m_angles, p, r, b, m_invite_str, m_b_enabled);
+			}
 
-			m_entrance_time		= Device.fTimeGlobal;
+			m_entrance_time = Device.fTimeGlobal;
 		}
 	}
 }

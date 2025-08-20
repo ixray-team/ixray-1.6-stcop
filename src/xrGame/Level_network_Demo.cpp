@@ -257,8 +257,7 @@ void CLevel::SpawnDemoSpectator()
 
 void CLevel::SetDemoSpectator(CObject* spectator)
 {
-	R_ASSERT2	(smart_cast<CSpectator*>(spectator),
-		"tried to set not an spectator object to demo spectator");
+	R_ASSERT2(spectator->cast_spectator(), "tried to set not an spectator object to demo spectator");
 	m_current_spectator = spectator;
 }
 
@@ -372,5 +371,5 @@ void  CLevel::MSpawnsCatchCallback(u32 message, u32 subtype, NET_Packet & packet
 
 CObject* CLevel::GetDemoSpectator()	
 { 
-	return smart_cast<CGameObject*>(m_current_spectator); 
+	return m_current_spectator; 
 };
