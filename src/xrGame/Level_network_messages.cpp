@@ -166,18 +166,31 @@ void CLevel::ClientReceive()
 					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
 					break;
 				}*/
-				if (OnClient()) break;
-				P->r_u16		(ID);
+				if (OnClient())
+				{
+					break;
+				}
+
+				P->r_u16(ID);
 				u32 Ping = P->r_u32();
-				CGameObject*	O	= smart_cast<CGameObject*>(Objects.net_Find		(ID));
-				if (0 == O)		break;
+				CObject* finded = Objects.net_Find(ID);
+				CGameObject* O = finded != nullptr ? finded->cast_game_object() : nullptr;
+				if (O == nullptr)
+				{
+					break;
+				}
 				O->net_Import(*P);
 		//---------------------------------------------------
 				UpdateDeltaUpd(timeServer());
 				if (pObjects4CrPr.empty() && pActors4CrPr.empty())
+				{
 					break;
-				if (!smart_cast<CActor*>(O))
+				}
+
+				if (O->cast_actor() == nullptr)
+				{
 					break;
+				}
 
 				u32 dTime = 0;
 				if ((Level().timeServer() + Ping) < P->timeReceive)
@@ -215,13 +228,18 @@ void CLevel::ClientReceive()
 					break;
 				}*/
 				u8 Count = P->r_u8();
-				for (u8 i=0; i<Count; ++i)
+				for (u8 i = 0; i < Count; ++i)
 				{
-					u16 ID_ = P->r_u16();					
+					u16 ID_ = P->r_u16();
 					Fvector NewPos;
 					P->r_vec3(NewPos);
-					CArtefact * OArtefact = smart_cast<CArtefact*>(Objects.net_Find(ID_));
-					if (!OArtefact)		break;
+					CObject* finded = Objects.net_Find(ID_);
+					CArtefact* OArtefact = finded != nullptr ? finded->cast_artefact() : nullptr;
+					if (!OArtefact)
+					{
+						break;
+					}
+
 					OArtefact->MoveTo(NewPos);
 					//destroy_physics_shell(OArtefact->PPhysicsShell());
 				};

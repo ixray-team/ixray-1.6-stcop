@@ -34,6 +34,8 @@ public:
 	virtual float	Radius				() const;
 ////////////////////////////////////////////////////////////////////
 	virtual IPhysicsShellHolder			*cast_IPhysicsShellHolder	(){ return this; }
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder() { return this; }
+	virtual CClimableObject*			cast_climable_object() { return this; }
 
 #ifdef DEBUG_DRAW
 	virtual void	OnRender			();

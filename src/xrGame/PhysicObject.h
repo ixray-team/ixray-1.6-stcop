@@ -75,6 +75,10 @@ private:
 			void						unset_door_ignore_dynamics		( );
 public:
 			bool						get_door_vectors				( Fvector& closed, Fvector& open ) const;
+
+			virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+			virtual CPhysicObject*		 cast_physics_object() { return this; }
+
 public:
 			CPhysicObject(void);
 	virtual ~CPhysicObject(void);

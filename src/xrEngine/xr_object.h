@@ -63,6 +63,9 @@ class CGrenade;
 class CCustomMonster;
 class CPhraseDialogManager;
 class CBackpack;
+class CClimableObject;
+class CPhysicObject;
+class CTeamBaseZone;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -234,6 +237,9 @@ public:
 	virtual CCustomMonster* cast_custom_monster() { return nullptr; }
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
+	virtual CClimableObject* cast_climable_object() { return nullptr; }
+	virtual CPhysicObject* cast_physics_object() { return nullptr; }
+	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

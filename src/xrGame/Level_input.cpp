@@ -383,17 +383,23 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		if (i < n) {
 			j = i;
 			bOk = false;
-			for (++i; i <n; ++i) {
-				CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
-				if (tpEntityAlive) {
+			for (++i; i <n; ++i)
+			{
+				CObject* finded = Objects.o_get_by_iterator(i);
+				CEntityAlive* tpEntityAlive = finded != nullptr ? finded->cast_entity_alive() : nullptr;
+				if (tpEntityAlive)
+				{
 					bOk = true;
 					break;
 				}
 			}
 			if (!bOk)
-				for (i = 0; i <j; ++i) {
-					CEntityAlive* tpEntityAlive = smart_cast<CEntityAlive*>(Objects.o_get_by_iterator(i));
-					if (tpEntityAlive) {
+				for (i = 0; i <j; ++i)
+				{
+					CObject* finded = Objects.o_get_by_iterator(i);
+					CEntityAlive* tpEntityAlive = finded != nullptr ? finded->cast_entity_alive() : nullptr;
+					if (tpEntityAlive)
+					{
 						bOk = true;
 						break;
 					}
@@ -406,9 +412,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 				SetEntity(*I);
 				if (tpObject != *I)
 				{
-					CActor* pActor = smart_cast<CActor*> (tpObject);
-					if (pActor)
+					CActor* pActor = tpObject != nullptr ? tpObject->cast_actor() : nullptr;
+					if (pActor != nullptr)
+					{
 						pActor->inventory().Items_SetCurrentEntityHud(false);
+					}
 				}
 				if (tpObject)
 				{
@@ -418,12 +426,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 				Engine.Sheduler.Unregister	(*I);
 				Engine.Sheduler.Register	(*I, TRUE);
 
-				CActor* pActor = smart_cast<CActor*> (*I);
+				CActor* pActor = (*I) != nullptr ? (*I)->cast_actor() : nullptr;
 				if (pActor)
 				{
 					pActor->inventory().Items_SetCurrentEntityHud(true);
 
-					CHudItem* pHudItem = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
+					CHudItem* pHudItem = pActor->inventory().ActiveItem() != nullptr ? pActor->inventory().ActiveItem()->cast_hud_item() : nullptr;
 					if (pHudItem) 
 					{
 						pHudItem->OnStateSwitch(pHudItem->GetState());
@@ -436,7 +444,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	// Lain: added
 	case SDL_SCANCODE_F5: 
 	{
-		if ( CBaseMonster* pBM = smart_cast<CBaseMonster*>(CurrentEntity()))
+		if (CBaseMonster* pBM = CurrentEntity() != nullptr ? CurrentEntity()->cast_base_monster() : nullptr)
 		{
 			DBG().log_debug_info();			
 		}
@@ -447,11 +455,16 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		if (!IsGameTypeSingle())
 			break;
 
-		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT)) {
-			if (smart_cast<CActor*>(CurrentEntity()))
-				try_change_current_entity	();
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT))
+		{
+			if (CurrentEntity() != nullptr && CurrentEntity()->cast_actor() != nullptr)
+			{
+				try_change_current_entity();
+			}
 			else
-				restore_actor				();
+			{
+				restore_actor();
+			}
 			return;
 		}
 		break;
@@ -482,10 +495,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	#ifdef _DEBUG
 		CObject *obj = Level().Objects.FindObjectByName("monster");
-		if (obj) {
-			CBaseMonster *monster = smart_cast<CBaseMonster *>(obj);
+		if (obj)
+		{
+			CBaseMonster* monster = obj->cast_base_monster();
 			if (monster) 
+			{
 				monster->debug_on_key(key);
+			}
 		}
 	#endif
 }
@@ -522,16 +538,24 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-	auto bind = get_binded_action(key);
-	if (bind != kNOTBINDED) {
-		if (is_block_action(static_cast<int>(bind))) {
+	EGameActions bind = get_binded_action(key);
+	if (bind != kNOTBINDED)
+	{
+		if (is_block_action(static_cast<int>(bind)))
+		{
 			return;
 		}
 	}
-	if(g_bDisableAllInput) return;
+
+	if (g_bDisableAllInput)
+	{
+		return;
+	}
 
 	if (g_actor)
+	{
 		g_actor->callback(GameObject::eKeyHold)(key);
+	}
 
 #ifdef DEBUG
 	// Lain: added
@@ -540,7 +564,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 		static u32 time = Device.dwTimeGlobal;
 		if ( Device.dwTimeGlobal - time > 20 )
 		{
-			if ( CBaseMonster* pBM = smart_cast<CBaseMonster*>(CurrentEntity()) )
+			if (CBaseMonster* pBM = CurrentEntity() != nullptr ? CurrentEntity()->cast_base_monster() : nullptr)
 			{
 				DBG().debug_info_up();
 				time = Device.dwTimeGlobal;
@@ -552,7 +576,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 		static u32 time = Device.dwTimeGlobal;
 		if ( Device.dwTimeGlobal - time > 20 )
 		{
-			if ( CBaseMonster* pBM = smart_cast<CBaseMonster*>(CurrentEntity()) )
+			if (CBaseMonster* pBM = CurrentEntity() != nullptr ? CurrentEntity()->cast_base_monster() : nullptr)
 			{
 				DBG().debug_info_down();
 				time = Device.dwTimeGlobal;
@@ -568,9 +592,11 @@ void CLevel::IR_OnKeyboardHold(int key)
 		&& !psActorFlags.test(AF_NO_CLIP)
 #endif //DEBUG
 		) return;
-	if (CURRENT_ENTITY())		{
-		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
-		if (IR != nullptr) {
+	if (CURRENT_ENTITY())
+	{
+		IInputReceiver*	IR	= smart_cast<IInputReceiver*>(smart_cast<CGameObject*>(CURRENT_ENTITY()));
+		if (IR != nullptr)
+		{
 			IR->IR_OnKeyboardHold(bind);
 		}
 	}
