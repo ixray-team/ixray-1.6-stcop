@@ -403,7 +403,7 @@ void CWeaponAutomaticShotgun::OnMotionMark(u32 state, const motion_marks& mark)
 {
 	inherited::OnMotionMark(state, mark);
 
-	if (m_bTriStateReload && state == eReload && mark.name == "Right")
+	if (ParentIsActor() && m_bTriStateReload && state == eReload && mark.name == "Right")
 	{
 		if (m_sub_state == EWeaponSubStates::eSubstateReloadBegin)
 		{
