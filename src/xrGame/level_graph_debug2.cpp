@@ -45,7 +45,8 @@
 
 void CLevelGraph::draw_nodes	()
 {
-	CGameObject*	O	= smart_cast<CGameObject*> (Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CGameObject* O = current_entity->cast_game_object();
 	Fvector	POSITION	= O->Position();
 	POSITION.y += 0.5f;
 
@@ -322,30 +323,33 @@ void CLevelGraph::draw_covers	()
 	}
 }
 
-void CLevelGraph::draw_objects	()
+void CLevelGraph::draw_objects()
 {
-	u32					I = 0;
-	u32					E = Level().Objects.o_count	();
-	for ( ; I < E; ++I) {
-		CObject			*_O = Level().Objects.o_get_by_iterator(I);
-		CTeamBaseZone	*team_base_zone = smart_cast<CTeamBaseZone*>(_O);
-		if (team_base_zone) {
+	u32	I = 0;
+	u32	E = Level().Objects.o_count();
+	for (; I < E; ++I)
+	{
+		CObject* _O = Level().Objects.o_get_by_iterator(I);
+		if (CTeamBaseZone* team_base_zone = _O != nullptr ? _O->cast_team_base_zone() : nullptr)
+		{
 			team_base_zone->OnRender();
 			continue;
 		}
 
-		CCustomMonster	*tpCustomMonster = smart_cast<CCustomMonster*>(_O);
-		if (tpCustomMonster) {
+		if (CCustomMonster* tpCustomMonster = _O != nullptr ? _O->cast_custom_monster() : nullptr)
+		{
 			tpCustomMonster->OnRender();
-			if (!tpCustomMonster->movement().detail().path().empty()) {
-				Fvector				temp = tpCustomMonster->movement().detail().path()[tpCustomMonster->movement().detail().path().size() - 1].position;
-				Level().debug_renderer().draw_aabb	(temp,1.f,1.f,1.f,color_xrgb(0,0,255));
+			if (!tpCustomMonster->movement().detail().path().empty())
+			{
+				Fvector temp = tpCustomMonster->movement().detail().path()[tpCustomMonster->movement().detail().path().size() - 1].position;
+				Level().debug_renderer().draw_aabb(temp, 1.f, 1.f, 1.f, color_xrgb(0, 0, 255));
 			}
 		}
 
-		smart_cover::object	*smart_cover = smart_cast<smart_cover::object*>(_O);
-		if (smart_cover) {
-			smart_cover->OnRender	();
+		smart_cover::object* smart_cover = smart_cast<smart_cover::object*>(_O);
+		if (smart_cover)
+		{
+			smart_cover->OnRender();
 			continue;
 		}
 	}

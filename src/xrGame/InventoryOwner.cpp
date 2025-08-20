@@ -141,7 +141,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 		//-------------------------------------
 
 
-		CAI_PhraseDialogManager* dialog_manager = smart_cast<CAI_PhraseDialogManager*>(this);
+		CAI_PhraseDialogManager* dialog_manager = cast_ai_phrase_dialog_manager();
 		if( dialog_manager && !dialog_manager->GetStartDialog().size() )
 		{
 			dialog_manager->SetStartDialog(CharacterInfo().StartDialog());

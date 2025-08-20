@@ -127,8 +127,11 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 			{
 				if (CurrentEntity() != nullptr) 
 				{
-					CGameObject* pGO = smart_cast<CGameObject*>(CurrentEntity());
-					if (pGO) pGO->On_B_NotCurrentEntity();
+					CGameObject* pGO = CurrentEntity()->cast_game_object();
+					if (pGO)
+					{
+						pGO->On_B_NotCurrentEntity();
+					}
 				}
 				SetControlEntity	(O);
 				SetEntity			(O);	//do not switch !!!

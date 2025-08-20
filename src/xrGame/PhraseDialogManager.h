@@ -3,6 +3,7 @@
 #include "PhraseDialogDefs.h"
 
 class CInventoryOwner;
+class CAI_PhraseDialogManager;
 
 class CPhraseDialogManager
 {
@@ -32,6 +33,7 @@ public:
 
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return this; }
 	virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
+	virtual CAI_PhraseDialogManager* cast_ai_phrase_dialog_manager() { return nullptr; }
 
 protected:
 	virtual bool					AddAvailableDialog	(shared_str dialog_id, CPhraseDialogManager* partner);
