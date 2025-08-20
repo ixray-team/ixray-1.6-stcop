@@ -136,6 +136,8 @@ void CPoltergeist::Load(LPCSTR section)
 	m_last_detection_time				= 	0;
 	m_detection_pp_type_index			= 	0;
 
+	m_enable_corpse_on_death			= READ_IF_EXISTS(pSettings, r_bool, section, "enable_corpse_on_death", false);
+
 	PostLoad					(section);	
 }
 
@@ -368,19 +370,23 @@ void CPoltergeist::net_Destroy()
 
 void CPoltergeist::Die(CObject* who)
 {
-// 	if (m_tele) {
-// 		if (state_invisible) {
-// 			setVisible(true);
-// 
-// 			if (PPhysicsShell()) {
-// 				Fmatrix M;
-// 				M.set							(XFORM());
-// 				M.translate_over				(m_current_position);
-// 				PPhysicsShell()->SetTransform	(M);
-// 			} else 
-// 				Position() = m_current_position;
-// 		}
-// 	}
+ 	if (m_tele && m_enable_corpse_on_death)
+	{
+ 		if (state_invisible) 
+		{
+ 			setVisible(true);
+ 
+ 			if (PPhysicsShell()) 
+			{
+ 				Fmatrix M;
+ 				M.set							(XFORM());
+ 				M.translate_over				(m_current_position);
+ 				PPhysicsShell()->SetTransform	(M, mh_clear);
+ 			} 
+			else 
+ 				Position() = m_current_position;
+ 		}
+ 	}
 
 	inherited::Die				(who);
 	Energy::disable				();
