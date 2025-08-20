@@ -75,6 +75,9 @@ class CHelicopter;
 class CHangingLamp;
 class CPhraseDialogManager;
 class CBackpack;
+class CClimableObject;
+class CPhysicObject;
+class CTeamBaseZone;
 
 class IKinematics;
 class CAI_Trader;
@@ -158,6 +161,9 @@ public:
 	virtual CHangingLamp* cast_hanging_lamp() { return nullptr; }
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
+	virtual CClimableObject* cast_climable_object() { return nullptr; }
+	virtual CPhysicObject* cast_physics_object() { return nullptr; }
+	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}
