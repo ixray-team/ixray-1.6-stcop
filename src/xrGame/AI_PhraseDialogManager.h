@@ -29,6 +29,7 @@ public:
 	virtual void				RestoreDefaultStartDialog	();
 
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return this; }
+	virtual CAI_PhraseDialogManager* cast_ai_phrase_dialog_manager() { return this; }
 
 protected:
 	//диалог, если не NULL, то его персонаж запустит

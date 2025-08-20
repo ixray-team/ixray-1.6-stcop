@@ -332,10 +332,14 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 	case GE_ADDON_ATTACH:
 		{
 			u16 ItemID;
-			P.r_u16			(ItemID);
-			CInventoryItem*	 ItemToAttach	= smart_cast<CInventoryItem*>(Level().Objects.net_Find(ItemID));
-			if (!ItemToAttach) break;
-			Attach(ItemToAttach,true);
+			P.r_u16(ItemID);
+			CObject* finded = Level().Objects.net_Find(ItemID);
+			PIItem ItemToAttach = finded != nullptr ? finded->cast_inventory_item() : nullptr;
+			if (ItemToAttach == nullptr)
+			{
+				break;
+			}
+			Attach(ItemToAttach, true);
 		}break;
 	case GE_ADDON_DETACH:
 		{
@@ -716,7 +720,7 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 		//Optimization, as I can't think of very many cases where we need update condition change when item is not actor's
 		if (g_actor && this->parent_id() == g_actor->ID())
 		{
-			CGameObject* obj = smart_cast<CGameObject*>(this);
+			CGameObject* obj = cast_game_object();
 			NET_Packet stpk;
 			obj->u_EventGen(stpk, GE_SYNC_ALIFEITEM, obj->ID());
 			stpk.w_float(m_fCondition);
@@ -1240,8 +1244,9 @@ bool CInventoryItem::ready_to_kill		() const
 
 void CInventoryItem::activate_physic_shell()
 {
-	CEntityAlive*	E		= smart_cast<CEntityAlive*>(object().H_Parent());
-	if (!E) {
+	CEntityAlive* E = object().H_Parent() != nullptr ? object().H_Parent()->cast_entity_alive() : nullptr;
+	if (E == nullptr)
+	{
 		on_activate_physic_shell();
 		return;
 	};
@@ -1256,57 +1261,77 @@ void CInventoryItem::setControlInertionFactor(float value)
 	m_fControlInertionFactor = value;
 }
 
-void CInventoryItem::UpdateXForm	()
+void CInventoryItem::UpdateXForm()
 {
-	if (0==object().H_Parent())	return;
+	CObject* obj_parent = object().H_Parent();
+	if (obj_parent == nullptr)
+	{
+		return;
+	}
 
 	// Get access to entity and its visual
-	CEntityAlive*	E		= smart_cast<CEntityAlive*>(object().H_Parent());
-	if (!E) return;
-	
-	if (E->cast_base_monster()) return;
-
-	const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
-	if (parent && parent->use_simplified_visual())
+	CEntityAlive* E = obj_parent->cast_entity_alive();
+	if (E == nullptr)
+	{
 		return;
+	}
+
+	if (E->cast_base_monster())
+	{
+		return;
+	}
+
+	const CInventoryOwner* parent = E->cast_inventory_owner();
+	
+	if (parent == nullptr)
+	{
+		return;
+	}
+
+	if (parent->use_simplified_visual())
+	{
+		return;
+	}
 
 	if (parent->attached(this))
+	{
 		return;
+	}
 
-	R_ASSERT		(E);
-	IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
-	VERIFY			(V);
+	R_ASSERT(E);
+	IKinematics* V = PKinematics(E->Visual());
+	VERIFY(V);
 
 	// Get matrices
 	int						boneL = -1, boneR = -1, boneR2 = -1;
-	E->g_WeaponBones(boneL,boneR,boneR2);
+	E->g_WeaponBones(boneL, boneR, boneR2);
 	if (boneR == -1)	return;
 	//	if ((HandDependence() == hd1Hand) || (STATE == eReload) || (!E->g_Alive()))
 	//		boneL = boneR2;
 #pragma todo("TO ALL: serious performance problem")
-	V->CalculateBones	();
-	Fmatrix& mL			= V->LL_GetTransform(u16(boneL));
-	Fmatrix& mR			= V->LL_GetTransform(u16(boneR));
+	V->CalculateBones();
+	Fmatrix& mL = V->LL_GetTransform(u16(boneL));
+	Fmatrix& mR = V->LL_GetTransform(u16(boneR));
 	// Calculate
 	Fmatrix			mRes;
-	Fvector			R,D,N;
-	D.sub			(mL.c,mR.c);	D.normalize_safe();
+	Fvector			R, D, N;
+	D.sub(mL.c, mR.c);	D.normalize_safe();
 
-	if(fis_zero(D.magnitude()))
+	if (fis_zero(D.magnitude()))
 	{
 		mRes.set(E->XFORM());
 		mRes.c.set(mR.c);
 	}
 	else
-	{		
+	{
 		D.normalize();
-		R.crossproduct	(mR.j,D);
+		R.crossproduct(mR.j, D);
 
-		N.crossproduct	(D,R);
+		N.crossproduct(D, R);
 		N.normalize();
 
-		mRes.set		(R,N,D,mR.c);
-		mRes.mulA_43	(E->XFORM());
+		mRes.set(R, N, D, mR.c);
+		mRes.mulA_43(E->XFORM());
 	}
 
 	//	UpdatePosition	(mRes);
