@@ -258,6 +258,7 @@ void DumpLuaExports()
 			xr_string OutStr = "C++ class ";
 			OutStr += crep->name();
 			OutStr += " : ";
+
 			bool IsFirstStep = true;
 			for (const class_rep::base_info& BaseClassInfo : crep->bases())
 			{
@@ -269,6 +270,7 @@ void DumpLuaExports()
 				OutStr += BaseClassInfo.base->name();
 				IsFirstStep = false;
 			}
+
 			Msg("C++ class %s", OutStr.c_str());
 		}
 		else
@@ -281,6 +283,11 @@ void DumpLuaExports()
 		for (const auto&[Name, _] : crep->m_getters)
 		{
 			Msg("\tproperty %s;", Name);
+		}
+
+		for (const auto& [Name, Value] : crep->static_constants())
+		{
+			Msg("\tconst %s = %d;", Name, Value);
 		}
 
 		for (const auto& Method : crep->m_methods)
