@@ -83,6 +83,11 @@ void CLevel::ClientReceive()
 		u16			m_type;
 		u16			ID;
 		P->r_begin	(m_type);
+
+#ifdef DEBUG
+		Msg("Process package %d", m_type);
+#endif
+
 		switch (m_type)
 		{
 		case M_SPAWN:			
@@ -95,32 +100,16 @@ void CLevel::ClientReceive()
 						deny_m_spawn ? "true" : "false");
 					break;
 				}
-				/*/
-				cl_Process_Spawn(*P);
-				/*/
-				//Msg("--- Client received M_SPAWN message...");
 				game_events->insert		(*P);
 				if (g_bDebugEvents)		ProcessGameEvents();
-				//*/
 			}
 			break;
 		case M_EVENT:
-			/*if (!game_configured)
-			{
-				Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-				break;
-			}*/
-			//Msg("Client received M_EVENT message...");
 			game_events->insert		(*P);
 			if (g_bDebugEvents)		ProcessGameEvents();
 			break;
 		case M_EVENT_PACK:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				NET_Packet	tmpP;
 				while (!P->r_eof())
 				{
@@ -161,11 +150,6 @@ void CLevel::ClientReceive()
 			}break;
 		case M_CL_UPDATE:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				if (OnClient())
 				{
 					break;
@@ -195,9 +179,6 @@ void CLevel::ClientReceive()
 				u32 dTime = 0;
 				if ((Level().timeServer() + Ping) < P->timeReceive)
 				{
-#ifdef DEBUG
-//					Msg("! TimeServer[%d] < TimeReceive[%d]", Level().timeServer(), P->timeReceive);
-#endif
 					dTime = Ping;
 				}
 				else					
@@ -211,22 +192,12 @@ void CLevel::ClientReceive()
 			}break;
 		case M_MOVE_PLAYERS:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				game_events->insert		(*P);
 				if (g_bDebugEvents)		ProcessGameEvents();
 			}break;
 		// [08.11.07] Alexander Maniluk: added new message handler for moving artefacts.
 		case M_MOVE_ARTEFACTS:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				u8 Count = P->r_u8();
 				for (u8 i = 0; i < Count; ++i)
 				{
@@ -241,20 +212,11 @@ void CLevel::ClientReceive()
 					}
 
 					OArtefact->MoveTo(NewPos);
-					//destroy_physics_shell(OArtefact->PPhysicsShell());
 				};
-				/*NET_Packet PRespond;
-				PRespond.w_begin(M_MOVE_ARTEFACTS_RESPOND);
-				Send(PRespond, net_flags(TRUE, TRUE));*/
 			}break;
 		//------------------------------------------------
 		case M_CL_INPUT:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				P->r_u16		(ID);
 				CObject*	O	= Objects.net_Find		(ID);
 				if (0 == O)		break;
@@ -270,9 +232,6 @@ void CLevel::ClientReceive()
 		case M_SV_CONFIG_FINISHED:
 			{
 				game_configured			= TRUE;
-	#ifdef DEBUG
-				Msg("- Game configuring : Finished ");
-	#endif // #ifdef DEBUG
 				if (IsDemoPlayStarted() && !m_current_spectator)
 				{
 					SpawnDemoSpectator();
@@ -290,11 +249,6 @@ void CLevel::ClientReceive()
 			break;
 		case M_CHAT:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				char	buffer[256];
 				P->r_stringZ(buffer);
 				Msg		("- %s",buffer);
@@ -302,11 +256,6 @@ void CLevel::ClientReceive()
 			break;
 		case M_GAMEMESSAGE:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				if (!game) break;
 				game_events->insert		(*P);
 				if (g_bDebugEvents)		ProcessGameEvents();
@@ -315,9 +264,6 @@ void CLevel::ClientReceive()
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
 			{
-#ifdef DEBUG
-				Msg("--- Changing level message received...");
-#endif // #ifdef DEBUG
 				if(m_type==M_LOAD_GAME)
 				{
 					string256						saved_name;
@@ -354,11 +300,6 @@ void CLevel::ClientReceive()
 			}break;
 		case M_CHAT_MESSAGE:
 			{
-				/*if (!game_configured)
-				{
-					Msg("! WARNING: ignoring game event [%d] - game not configured...", m_type);
-					break;
-				}*/
 				if (!game) break;
 				Game().OnChatMessage(P);
 			}break;
@@ -410,27 +351,6 @@ void CLevel::ClientReceive()
 					P->r_stringZ(LevelVersion);
 					P->r_stringZ(GameType);
 
-					/*
-					u32 str_start = P->r_tell();
-					P->skip_stringZ();
-					u32 str_end = P->r_tell();
-
-					u32 temp_str_size = str_end - str_start;
-					R_ASSERT2(temp_str_size < 256, "level name too big");
-					LevelName = static_cast<char*>(_alloca(temp_str_size + 1));
-					P->r_seek(str_start);
-					P->r_stringZ(LevelName);
-
-										
-					str_start = P->r_tell();
-					P->skip_stringZ();
-					str_end = P->r_tell();
-					temp_str_size = str_end - str_start;
-					R_ASSERT2(temp_str_size < 256, "incorect game type");
-					GameType = static_cast<char*>(_alloca(temp_str_size + 1));
-					P->r_seek(str_start);
-					P->r_stringZ(GameType);*/
-
 					string4096 NewServerOptions = "";
 					xr_sprintf(NewServerOptions, "%s/%s/%s%s",
 						LevelName.c_str(),
@@ -469,10 +389,6 @@ void CLevel::ClientReceive()
 			}break;
 		case M_STATISTIC_UPDATE_RESPOND: //deprecated, see  xrServer::OnMessage
 			{
-				/*Msg("--- CL: On Update Respond");
-				if (!game) break;
-				if (!IsGameTypeSingle())
-					Game().m_WeaponUsageStatistic->OnUpdateRespond(P);*/
 			}break;
 		case M_FILE_TRANSFER:
 			{

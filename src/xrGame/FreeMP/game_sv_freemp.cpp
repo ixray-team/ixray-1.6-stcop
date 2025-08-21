@@ -292,6 +292,11 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	const char* N = nullptr;
 	const char* V = nullptr;
 
+	if (!Ini.section_exist("spawn"))
+	{
+		return;
+	}
+
 	for (u32 k = 0; Ini.r_line("spawn", k, &N, &V); k++)
 	{
 		u32 Value = 1;
