@@ -1280,6 +1280,15 @@ void send_script_event_broadcast(NET_Packet& P)
 	Level().Server->SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 }
 
+ScriptEvent* get_front_server_event()
+{
+	return Level().Server->GetFrontServerScriptEvent();
+}
+void pop_front_server_event()
+{
+	Level().Server->PopFrontServerScriptEvent();
+}
+
 ScriptEvent* get_last_server_event()
 {
 	return Level().Server->GetLastServerScriptEvent();
@@ -1633,8 +1642,13 @@ void CLevel::script_register(lua_State *L)
 
 		def("get_last_server_event", &get_last_server_event),
 		def("pop_last_server_event", &pop_last_server_event),
+		def("get_front_server_event", &get_front_server_event),
+		def("pop_front_server_event", &pop_front_server_event),
 		def("get_size_server_events", &get_size_server_events)
 	];
+
+	luabind::object script_events = luabind::get_globals(L)["script_events"];
+	script_events["M_SCRIPT_EVENT"] = M_SCRIPT_EVENT;
 
 	module(L,"game")
 	[
