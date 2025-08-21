@@ -401,6 +401,11 @@ void CEffect_Rain::Render()
 // startup _new_ particle system
 void CEffect_Rain::Hit(Fvector& pos)
 {
+	if (g_dedicated_server)
+	{
+		return;
+	}
+
 	if (0!=::Random.randI(2))
 		return;
 

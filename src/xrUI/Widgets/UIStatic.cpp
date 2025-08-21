@@ -69,6 +69,11 @@ void CUIStatic::CreateShader(const char* tex, const char* sh)
 
 bool CUIStatic::InitTextureEx(pcstr texture, pcstr shader, bool fatal)
 {
+	if (texture == nullptr)
+	{
+		return false;
+	}
+
     LPCSTR res_shname = UIRender->UpdateShaderName(texture, shader);
     bool result = CUITextureMaster::InitTexture(texture, &m_UIStaticItem, res_shname, fatal);
 

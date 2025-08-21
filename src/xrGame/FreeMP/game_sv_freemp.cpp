@@ -282,12 +282,17 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	if (!pA) return;
 
 
-	SpawnItemToActor(pA->ID, "mp_players_rukzak");
-	SpawnItemToActor(pA->ID, "device_pda");
-
 	string_path fname = {};
 	FS.update_path(fname, "$game_config$", "mp\\fmp_respawn_items.ltx");
 	CInifile Ini(fname, TRUE);
+
+	if (!Ini.section_exist("spawn"))
+	{
+		SpawnItemToActor(pA->ID, "mp_players_rukzak");
+		SpawnItemToActor(pA->ID, "device_pda");
+
+		return;
+	}
 
 	const char* N = nullptr;
 	const char* V = nullptr;
