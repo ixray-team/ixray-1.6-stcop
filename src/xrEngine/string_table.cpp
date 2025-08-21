@@ -38,7 +38,7 @@ inline static int CountFiles(const char* path, const char* mask)
 
 // Если у нас не указаны доступные языки, то будем
 // брать всё из папки text
-inline static const char* FillLanguages()
+inline static shared_str FillLanguages()
 {
 	FS_FileSet langSet = {};
 	string_path path = {};
