@@ -177,6 +177,15 @@ float CCustomOutfit::GetBoneArmor(s16 element)
 
 float CCustomOutfit::HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
 {
+	if (EngineExternal().ShadowOfChernobylMode())
+	{
+		float BoneArmour = m_boneProtection->getBoneArmor(element) * GetCondition() * (1 - ap);
+		float NewHitPower = hit_power - BoneArmour;
+		if (NewHitPower < hit_power * m_boneProtection->m_fHitFracNpc) return hit_power * m_boneProtection->m_fHitFracNpc;
+		return NewHitPower;
+	}
+	else
+	{
 	float NewHitPower = hit_power;
 	if (hit_type == ALife::eHitTypeFireWound)
 	{
@@ -229,6 +238,7 @@ float CCustomOutfit::HitThroughArmor(float hit_power, s16 element, float ap, boo
 	Hit(hit_power, hit_type);
 
 	return NewHitPower;
+	}
 }
 
 BOOL CCustomOutfit::BonePassBullet(int boneID)
