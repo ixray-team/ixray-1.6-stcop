@@ -20,6 +20,7 @@ protected:
 public:
 						CScriptIniFile		(IReader *F, LPCSTR path=0);
 						CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE, LPCSTR path=nullptr);
+						CScriptIniFile		(bool read, LPCSTR filepath, LPCSTR game_path, bool loadOnStart = true);
 
 	virtual 			~CScriptIniFile		();
 			bool		line_exist			(LPCSTR S, LPCSTR L);
@@ -35,6 +36,8 @@ public:
 			int			r_s32				(LPCSTR S, LPCSTR L);
 			float		r_float				(LPCSTR S, LPCSTR L);
 			Fvector		r_fvector3			(LPCSTR S, LPCSTR L);
+
+			LPCSTR      update_custom_path(LPCSTR path, LPCSTR file_name);
 
 			void w_bool(LPCSTR S, LPCSTR L, bool V, LPCSTR comment /* = 0 */);
 			void w_color(LPCSTR S, LPCSTR L, u32 V, LPCSTR comment /* = 0 */);
