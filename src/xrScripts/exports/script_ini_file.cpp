@@ -22,6 +22,11 @@ CScriptIniFile::CScriptIniFile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtSta
 {
 }
 
+CScriptIniFile::CScriptIniFile(bool read, LPCSTR filepath, LPCSTR game_path, bool loadOnStart)
+    : inherited(update_custom_path(game_path, filepath), read, loadOnStart)
+{
+}
+
 CScriptIniFile::~CScriptIniFile		()
 {
 }
@@ -252,4 +257,11 @@ void CScriptIniFile::close()
 u32 CScriptIniFile::section_count()
 {
     return (inherited::section_count());
+}
+
+LPCSTR CScriptIniFile::update_custom_path(LPCSTR path, LPCSTR file_name)
+{
+    string_path S1 = {};
+    FS.update_path(S1, path, file_name);
+    return (*shared_str(S1));
 }
