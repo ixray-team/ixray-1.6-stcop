@@ -85,6 +85,17 @@ void section_for_each(CScriptIniFile* self, luabind::functor<bool> functor)
 	}
 }
 
+CScriptIniFile* create_ini(LPCSTR path, LPCSTR ini_file)
+{
+	return new CScriptIniFile(false, ini_file, path, false);
+}
+
+
+CScriptIniFile* read_ini(LPCSTR path, LPCSTR ini_file)
+{
+	return new CScriptIniFile(true, ini_file, path, true);
+}
+
 #pragma optimize("s",on)
 void CScriptIniFile::script_register(lua_State *L)
 {
@@ -134,6 +145,8 @@ void CScriptIniFile::script_register(lua_State *L)
 
 		def("system_ini",			&get_system_ini),
 		def("reload_system_ini",	&reload_system_ini),
+		def("create_ini",			&create_ini),
+		def("read_ini",				&read_ini),
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
 #endif // XRGAME_EXPORTS
