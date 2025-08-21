@@ -152,10 +152,14 @@ void CALifeGraphRegistry::add	(CSE_ALifeDynamicObject *object, GameGraph::_GRAPH
 		Msg						("[LSS] adding object [%s][%d] to graph point %d",object->name_replace(),object->ID,game_vertex_id);
 	}
 #endif
-	if (!object->m_bOnline && object->used_ai_locations() /**&& object->interactive()/**/) {
-		VERIFY					(ai().game_graph().valid_vertex_id(game_vertex_id));
-		m_objects[game_vertex_id].objects().add(object->ID,object);
-		object->m_tGraphID		= game_vertex_id;
+	if (!object->m_bOnline && object->used_ai_locations())
+	{
+		VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
+		if (ai().game_graph().valid_vertex_id(game_vertex_id))
+		{
+			m_objects[game_vertex_id].objects().add(object->ID, object);
+			object->m_tGraphID = game_vertex_id;
+		}
 	}
 	else
 		if (!m_level && update) {
