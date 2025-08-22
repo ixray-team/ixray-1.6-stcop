@@ -3,6 +3,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"
 #include "Level.h"
+#include "../xrEngine/GameMtlLib.h"
 
 float SBoneProtections::getBoneProtection(s16 bone_id)
 {
@@ -48,15 +49,26 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
 	VERIFY(kinematics);
 	m_bones_koeff.clear();
 
-	float defaultHitFraction = 0.1f;
-	if (pSettings->line_exist(bone_sect, "hit_fraction_npc"))
-	{
-		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction_npc", defaultHitFraction);
-	}
-	else
-	{
-		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction", defaultHitFraction);
-	}
+    if (m_hitFracType != HitFractionActorCS && m_hitFracType != HitFractionActorCOP)
+    {
+        if (pSettings->line_exist(bone_sect, HIT_FRACTION_NPC))
+        {
+            m_hitFracType = HitFractionNPC;
+            m_fHitFrac = pSettings->r_float(bone_sect, HIT_FRACTION_NPC);
+        }
+        else if (pSettings->line_exist(bone_sect, HIT_FRACTION))
+        {
+            m_hitFracType = HitFraction;
+            m_fHitFrac = pSettings->r_float(bone_sect, HIT_FRACTION);
+        }
+        else
+        {
+			const bool is_cop = GMLib.GetLibraryVersion() >= GAMEMTL_VERSION_COP;
+
+			m_hitFracType = is_cop ? HitFractionNPC : HitFraction;
+            m_fHitFrac = 0.1f;
+        }
+    }
 
 	m_default.koeff = 1.0f;
 	m_default.armor = 0.0f;
@@ -79,10 +91,10 @@ void SBoneProtections::reload(const shared_str& bone_sect, IKinematics* kinemati
 		}
 		else
 		{
-			if (!xr_strcmp(i->first.c_str(), "hit_fraction"))
-			{
+			if (xr_strcmp(i->first.c_str(), HIT_FRACTION) == 0)
 				continue;
-			}
+			if (xr_strcmp(i->first.c_str(), HIT_FRACTION_NPC) == 0)
+				continue;
 
 			u16	bone_id = kinematics->LL_BoneID(i->first);
 			//VERIFY2(BI_NONE != bone_id, i->first.c_str());
@@ -101,22 +113,18 @@ void SBoneProtections::add(const shared_str& bone_sect, IKinematics* kinematics)
 	VERIFY(kinematics);
 	float defaultHitFraction = 0.0f;
 
-	if (pSettings->line_exist(bone_sect, "hit_fraction_npc"))
-	{
-		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction_npc", defaultHitFraction);
-	}
-	else
-	{
-		m_fHitFracNpc = READ_IF_EXISTS(pSettings, r_float, bone_sect, "hit_fraction", defaultHitFraction);
-	}
+	if (m_hitFracType == HitFractionNPC)
+		m_fHitFrac += pSettings->read_if_exists<float>(bone_sect, HIT_FRACTION_NPC, 0.0f);
+	else if (m_hitFracType == HitFraction)
+		m_fHitFrac += pSettings->read_if_exists<float>(bone_sect, HIT_FRACTION, 0.0f);
 
 	CInifile::Sect& protections = pSettings->r_section(bone_sect);
 	for (const auto& data : protections.Data)
 	{
-		if (!xr_strcmp(data.first.c_str(), "hit_fraction"))
-		{
+		if (!xr_strcmp(data.first.c_str(), HIT_FRACTION))
 			continue;
-		}
+		if (!xr_strcmp(data.first.c_str(), HIT_FRACTION_NPC))
+			continue;
 
 		string256 buffer = {};
 		if (!xr_strcmp(data.first.c_str(), "default"))
