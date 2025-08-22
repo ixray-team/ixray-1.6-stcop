@@ -462,7 +462,7 @@ void CBaseMonster::Hit(SHit* pHDS)
 		if(!critically_wounded()) 
 			update_critical_wounded(pHDS->boneID,pHDS->power);
 	
-	if(pHDS->hit_type == ALife::eHitTypeFireWound && !EngineExternal().ClearSkyMode())
+	if(pHDS->hit_type == ALife::eHitTypeFireWound && has_protections_sect)
 	{
 		float &hit_power = pHDS->power;
 		float ap = pHDS->armor_piercing;

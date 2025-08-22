@@ -4,9 +4,6 @@
 
 class ButtonValue;
 
-#define GAMEMTL_CURRENT_VERSION			0x0001
-//----------------------------------------------------
-
 #define GAMEMTLS_CHUNK_VERSION        	0x1000
 #define GAMEMTLS_CHUNK_AUTOINC	        0x1001
 #define GAMEMTLS_CHUNK_MTLS	        	0x1002
@@ -36,6 +33,25 @@ class ButtonValue;
 #define GAMEMTL_NONE_ID					u32(-1)
 #define GAMEMTL_NONE_IDX				u16(-1)
 #define GAMEMTL_FILENAME				"gamemtl.xr"
+
+enum EGameMtlVersion : s32
+{
+    // The big issue is that GSC had version 1 in SOC,
+    // then they introduced a significant change in CS,
+    // but didn't change the version number...
+    // In fact, they NEVER have changed the number
+    // since the system was introduced in 2002.
+    // So, we introduce virtual values:
+    GAMEMTL_VERSION_SOC     = -2,
+    GAMEMTL_VERSION_CS      = -1,
+
+    GAMEMTL_VERSION_UNKNOWN = 0,
+
+    // Real version numbers in GAMEMTL_FILENAME:
+    GAMEMTL_VERSION_COP     = 1,
+
+    GAMEMTL_CURRENT_VERSION = GAMEMTL_VERSION_COP,
+};
 
 #ifdef _EDITOR
 #define GM_NON_GAME
@@ -125,7 +141,7 @@ public:
         fPHBouncing				= 0.1f;
 		fDensityFactor			= 0.0f;
 	}
-    void 				Load			(IReader& fs);
+    EGameMtlVersion		Load			(IReader& fs);
     void 				Save			(IWriter& fs);
     IC int				GetID			(){return ID;}
 #ifdef _EDITOR
@@ -233,6 +249,7 @@ protected:
     u32					material_count;
     GameMtlPairVec		material_pairs_rt;
 
+    EGameMtlVersion     m_version{};
 public:
 	CGameMtlLibrary		();
 	~CGameMtlLibrary	()
@@ -332,6 +349,10 @@ public:
 	IC GameMtlPairIt	FirstMaterialPair	(){return material_pairs.begin();}
 	IC GameMtlPairIt	LastMaterialPair	(){return material_pairs.end();}
 
+    auto GetLibraryVersion() const noexcept
+    {
+        return m_version;
+    }
 	// IO routines
 	void				Load				();
 	bool				Save				();
