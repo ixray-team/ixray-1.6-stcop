@@ -466,7 +466,8 @@ IC	void					wake_up				(){m_bSleep = false;}
 
 private:
 	bool					ignore_collision_hit;	
-	
+	bool					has_protections_sect{};
+
 public:
 	IC	void				set_ignore_collision_hit (bool value) {ignore_collision_hit = value;}
 	// -----------------------------------------------------------------------------
