@@ -41,7 +41,7 @@
 #include "../xrEngine/xr_object.h"
 
 #define SND_HRTF_SLOT_COUNT (512)
-#define DEFAULT_SLOT_COUNT (2048)
+#define DEFAULT_SLOT_COUNT (4096)
 #define CACHE_LINES_COUNT (2048)
 #define CACHE_LINE_WIDTH (9)
 #define CACHE_LINE_ENTRY_COUNT (32)
@@ -158,6 +158,31 @@ struct sound_mixer_state
 static sound_mixer_state mixer = {};
 
 #ifndef DISABLE_STEAM_AUDIO
+void ConvertReverbSettings(
+    const sound_reverb_settings* reverb_in,
+    IPLReflectionEffectParams* reverb_out,
+    IPLint32 sampleRate)
+{
+    // Set the effect type to parametric, as it aligns with the EAX parameters.
+    reverb_out->type = IPL_REFLECTIONEFFECTTYPE_PARAMETRIC;
+
+    // Map decay times.
+    // Mid-frequency decay time (RT60)
+    reverb_out->reverbTimes[1] = reverb_in->decay_time;
+    // High-frequency decay time (RT60)
+    reverb_out->reverbTimes[2] = reverb_in->decay_time * reverb_in->decay_hf_ratio;
+    // Low-frequency decay time (RT60) - approximation
+    reverb_out->reverbTimes[0] = reverb_in->decay_time;
+
+    // Map the reverb delay to samples.
+    // This assumes reverb_in->reverb_delay is in seconds. If it's in ms, divide by 1000.
+    reverb_out->delay = (IPLint32)(reverb_in->reverb_delay * sampleRate);
+
+    // Other parameters not directly mapped or are handled by the SDK's internal logic.
+    // For example, 'air_absorption_hf' can influence EQ or filter settings,
+    // and 'room' or 'reverb' are gain controls often applied at a higher level.
+}
+
 static IPLReflectionEffectParams
 Snd_EngineToIPLParams(const sound_reverb_settings& settings)
 {
@@ -710,7 +735,7 @@ Snd_ProcessSlot(u32 slot_idx, float** data)
 
     u32 output_frames = SND_BLOCKSIZE;
     float scaled_frames = (float)output_frames * pitch * mixer.time_factor;
-    u32 input_frames = (u32)scaled_frames;//ceilf(scaled_frames - 1e-6f);
+    u32 input_frames = std::min((u32)scaled_frames, (u32)SND_BLOCKSIZE);//ceilf(scaled_frames - 1e-6f);
 
     bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
@@ -850,11 +875,22 @@ Snd_MixerRenderCallback(float* buffer)
         }
 
         if (!mixer.sources.contains(mixer.slots[i].sound_name.c_str())) {
+            MixerNewState(i + 1, Mixer::State::Stopped);
             continue;
         }
 
+        auto& slot = mixer.slots[i];
+        auto& source = mixer.sources.at(mixer.slots[i].sound_name);
+
         float occ_volume = 1.0f;
         if (!Snd_SlotOcclusion(i + 1, dt, &occ_volume)) {
+            // TODO: hack for simulated sounds
+            slot.position = std::min(slot.position + SND_BLOCKSIZE, source.pub.frames_total);
+            if (slot.position == source.pub.frames_total) {
+                MixerNewState(i + 1, Mixer::State::Stopped);
+                continue;
+            }
+
             continue;
         }
 
@@ -866,11 +902,10 @@ Snd_MixerRenderCallback(float* buffer)
         Snd_ProcessSlot(i + 1, process_buffer);
 
         if (!mixer.sources.contains(mixer.slots[i].sound_name)) {
+            MixerNewState(i + 1, Mixer::State::Stopped);
             continue;
         }
 
-        auto& source = mixer.sources.at(mixer.slots[i].sound_name);
-        auto& slot = mixer.slots[i];
         Fvector& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
         Fvector& volumes = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel];
         float begin_factor = 1.0f, end_factor = 1.0f;
@@ -896,15 +931,18 @@ Snd_MixerRenderCallback(float* buffer)
         end_factor *= volume_final;
 
         // Spatial processing
-        if (slot.flags & (u32)Mixer::Flags::Spatial && source.pub.channels_count == 1) {
+        if (!(slot.flags & (u32)Mixer::Flags::Intro) && source.pub.channels_count == 1) {
             PROF_EVENT("Slot Spatial");
+            if (slot.flags & (u32)Mixer::Flags::Spatial) {
 #ifndef DISABLE_STEAM_AUDIO
-            if (psSoundFlags.is(ss_HRTF) && mixer.ipl_hrtf_enabled) {
-                Snd_PhononSpatialProcess(process_buffer, i + 1);
-            } else 
+                if (psSoundFlags.is(ss_HRTF) && mixer.ipl_hrtf_enabled) {
+                    Snd_PhononSpatialProcess(process_buffer, i + 1);
+                }
+                else
 #endif
-            {
-                DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
+                {
+                    DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
+                }
             }
 
             if (mixer.editor_zone)
@@ -912,8 +950,9 @@ Snd_MixerRenderCallback(float* buffer)
                 slot.zone_idx = 1;
             }
 
-            if (slot.zone_idx) {
-                sound_zone_params& zone = mixer.zones.at(slot.zone_idx - 1);
+            u32 slot_idx = slot.zone_idx;// ((slot.flags & (u32)Mixer::Flags::Spatial) ? slot.zone_idx : );
+            if (slot_idx) {
+                sound_zone_params& zone = mixer.zones.at(slot_idx - 1);
                 zone.use_count++;
                 zone.last_use_ms = Snd_Milliseconds();
 
@@ -942,11 +981,13 @@ Snd_MixerRenderCallback(float* buffer)
         process_buffer[i] = _process_buffer[i];
     }
 
-#ifndef DISABLE_STEAM_AUDIO
     // Reverb mixing
     if (psSoundFlags.is(ss_EFX)) {
         for (auto& zone : mixer.zones) {
             if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds()) {
+                for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+                    //zone.position[ch] = 0;
+                }
                 continue;
             }
 
@@ -957,28 +998,41 @@ Snd_MixerRenderCallback(float* buffer)
             for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
                 reverb_buffer[ch] = zone.data[ch];
                 bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
-
-                IPLAudioBuffer reverb_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch] };
-                IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
-                IPLReflectionEffectParams params = Snd_EngineToIPLParams(zone.settings);
-
-                iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
-
-               // applyRoomFilter(process_buffer[ch], zone.settings.room, zone.settings.room_hf);
             }
 
-            DSP_MixBuffer(bus_buffer, process_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
+#if 0
+            DSP_AlgorithmicReverb(zone.state, zone.settings, reverb_buffer, process_buffer, SND_BLOCKSIZE);
+            DSP_MixBuffer(bus_buffer, process_buffer, zone.settings.reverb * 0.5, zone.settings.reverb * 0.5, SND_BLOCKSIZE);
+            DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, bus_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope);
+#else
+
+#ifndef DISABLE_STEAM_AUDIO
+            for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+                IPLAudioBuffer reverb_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &reverb_buffer[ch] };
+                IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
+                IPLReflectionEffectParams params = {};
+                ConvertReverbSettings(&zone.settings, &params, SND_SAMPLERATE);
+                iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
+            }
+#endif
+
+            DSP_MixBuffer(bus_buffer, process_buffer, zone.settings.reflections, zone.settings.reflections, SND_BLOCKSIZE);
+#endif
         }
     }
-#endif
 
     {
         PROF_EVENT("Sound Mixing");
         float* master_buffer[SND_CHANNEL_COUNT] = {};
         for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+#if 0
+            master_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
+#else
             master_buffer[ch] = mixer.buses[SND_BUS_MASTER].data[ch];
+#endif
         }
 
+#if 1
         // Master mixing
         for (size_t i = 0; i < SND_BUS_COUNT; i++) {
             float* bus_buffer[SND_CHANNEL_COUNT] = {};
@@ -988,6 +1042,7 @@ Snd_MixerRenderCallback(float* buffer)
 
             DSP_MixBuffer(master_buffer, bus_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
         }
+#endif
 
         DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
 
@@ -1214,8 +1269,8 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
         auto& slot = mixer.slots[i];
         if (slot.flags & (u16)Flags::NoFeedback && slot.state == State::Stopped) {
             Destroy(i + 1);
-        } else if (slot.flags & (u16)Flags::Spatial && slot.state == State::Playing) {
-            auto& pos = slot.parameters[(u32)Mixer::ParameterId::Position];
+        } else if (((slot.flags & (u16)Flags::Intro) == 0) && slot.state == State::Playing) {
+            Fvector pos = (slot.flags & (u16)Flags::Spatial) ? slot.parameters[(u32)Mixer::ParameterId::Position] : mixer.P ;
             float dist = mixer.P.distance_to(pos);
             if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y) {
                 float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
@@ -1682,6 +1737,13 @@ Mixer::AddZone(sound_zone_params& params)
     }
 #endif
 
+    params.state.early_reflections_line.buffer = xr_alloc<float>(SND_REBERB_BUFFER_SIZE);
+    params.state.early_reflections_line.frames = SND_REBERB_BUFFER_SIZE;
+    for (size_t line = 0; line < SND_REBERB_LINE_COUNT; line++) {
+        params.state.lines[line].frames = SND_REBERB_BUFFER_SIZE;
+        params.state.lines[line].buffer = xr_alloc<float>(SND_REBERB_BUFFER_SIZE);
+    }
+
     mixer.zones.emplace_back(std::move(params));
 }
 
@@ -1693,6 +1755,11 @@ Mixer::ResetZones()
             if (zone.effect[ch] != nullptr) {
                 iplReflectionEffectRelease(&zone.effect[ch]);
             }
+        }
+
+        xr_free(zone.state.early_reflections_line.buffer);
+        for (size_t line = 0; line < SND_REBERB_LINE_COUNT+4; line++) {
+            xr_free(zone.state.lines[line].buffer);
         }
     }
 
