@@ -243,55 +243,67 @@ void CAI_Stalker::Hit(SHit* pHDS)
 	
 	float hit_power = HDS.power * m_fRankImmunity;
 
-	if(m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
-	{
-		float BoneArmor = m_boneHitProtection->getBoneArmor(HDS.bone());
-		float ap = HDS.armor_piercing;
+    if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound)
+    {
+        const float BoneArmor = m_boneHitProtection->getBoneArmor(HDS.bone());
 
-		if (EngineExternal().ClearSkyMode())
-		{
-			if (ap > EPS && ap > BoneArmor)
-			{
-				const float d_ap = ap - BoneArmor;
-				hit_power *= (d_ap / ap);
+        if (wounded()) // уже лежит => добивание
+        {
+            hit_power = 1000.f;
+        }
+        else if (m_boneHitProtection->m_hitFracType == SBoneProtections::HitFractionNPC) // COP
+        {
+            if (!fis_zero(BoneArmor, EPS))
+            {
+                const float ap = HDS.armor_piercing;
 
-				if (hit_power < m_boneHitProtection->m_fHitFracNpc)
-				{
-					hit_power = m_boneHitProtection->m_fHitFracNpc;
-				}
-				if (hit_power < 0.0f) {
-					hit_power = 0.0f;
-				}
-			}
-			else
-			{
-				hit_power *= m_boneHitProtection->m_fHitFracNpc;
-				HDS.add_wound = false;
-			}
-		}
-		else if(!fis_zero(BoneArmor, EPS))
-		{
-			if(ap > BoneArmor)
-			{
-				float d_hit_power = (ap - BoneArmor) / ap;
-				if(d_hit_power < m_boneHitProtection->m_fHitFracNpc)
-					d_hit_power = m_boneHitProtection->m_fHitFracNpc;
+                if (ap > BoneArmor)
+                {
+                    float d_hit_power = (ap - BoneArmor) / ap;
+                    if (d_hit_power < m_boneHitProtection->m_fHitFrac)
+                        d_hit_power = m_boneHitProtection->m_fHitFrac;
 
-				hit_power *= d_hit_power;
-				VERIFY(hit_power>=0.0f);
-			}
-			else
-			{
-				hit_power *= m_boneHitProtection->m_fHitFracNpc;
-				HDS.add_wound = false;
-			}
-		}
+                    hit_power *= d_hit_power;
+                    VERIFY(hit_power >= 0.0f);
+                }
+                else
+                {
+                    hit_power *= m_boneHitProtection->m_fHitFrac;
+                    HDS.add_wound = false;
+                }
+            }
+        }
+        else if (GMLib.GetLibraryVersion() >= GAMEMTL_VERSION_CS)
+        {
+            const float ap = HDS.armor_piercing;
 
-		if ( wounded() ) //уже лежит => добивание
-		{
-			hit_power = 1000.f;
-		}
-	}
+            if (ap > EPS && ap > BoneArmor)
+            {
+                const float d_ap = ap - BoneArmor;
+                hit_power *= (d_ap / ap);
+
+                if (hit_power < m_boneHitProtection->m_fHitFrac)
+                    hit_power = m_boneHitProtection->m_fHitFrac;
+
+                if (hit_power < 0.0f)
+                    hit_power = 0.0f;
+            }
+            else
+            {
+                hit_power *= m_boneHitProtection->m_fHitFrac;
+                HDS.add_wound = false;
+            }
+        }
+        else if (GMLib.GetLibraryVersion() == GAMEMTL_VERSION_SOC)
+        {
+            const float NewHitPower = HDS.damage() - BoneArmor;
+
+            if (NewHitPower < HDS.power * m_boneHitProtection->m_fHitFrac)
+                hit_power = HDS.power * m_boneHitProtection->m_fHitFrac;
+            else
+                hit_power = NewHitPower;
+        }
+    }
 	HDS.power = hit_power;
 
 	if (g_Alive())

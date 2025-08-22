@@ -24,6 +24,10 @@ public:
 	float GetDefHitTypeProtection(ALife::EHitType hit_type);
 	float GetBoneArmor(s16 element);
 
+	//коэффициент на который домножается потеря силы
+    //если на персонаже надет костюм
+    float					GetPowerLoss				();
+
 	float HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
 
 	virtual void OnMoveToSlot(const SInvItemPlace& prev) override final;
