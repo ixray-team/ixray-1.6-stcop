@@ -32,6 +32,8 @@
 #define SND_CHANNEL_COUNT (2)
 #define SND_SAMPLERATE (44100)
 #define SND_BLOCKSIZE (1 << 10)
+#define SND_REBERB_BUFFER_SIZE (SND_SAMPLERATE*8)
+#define SND_REBERB_LINE_COUNT (8*2+2)
 
 #define SND_BUS_MASTER 0
 #define SND_BUS_REVERB 1
@@ -131,9 +133,24 @@ struct sound_reverb_settings
     float air_absorption_hf;
 };
 
+struct sound_reverb_line_state
+{
+    u32 offset;
+    u32 frames;
+    float* buffer;
+    float iir_state;
+};
+
+struct sound_reberb_state
+{
+    sound_reverb_line_state early_reflections_line;
+    sound_reverb_line_state lines[SND_REBERB_LINE_COUNT];
+};
+
 struct sound_zone_params
 {
     float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
+    float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
     u32 version;
     u32	environment;
     u32 use_count;
@@ -144,7 +161,8 @@ struct sound_zone_params
     Fvector size;
     shared_str name;
     sound_reverb_settings settings;
+    sound_reberb_state state;
 #ifndef DISABLE_STEAM_AUDIO
-    IPLReflectionEffect effect[SND_CHANNEL_COUNT];
+    IPLReflectionEffect effect[SND_CHANNEL_COUNT] = { 0 };
 #endif
 };
