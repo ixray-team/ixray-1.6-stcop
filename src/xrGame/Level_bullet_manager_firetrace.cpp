@@ -436,12 +436,11 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	float shoot_factor = 0.0f; //default >> пуля НЕ пробила материал!
 	float ap = bullet->armor_piercing;
 
-	if ( ap > EPS && ap >= mtl_ap )
+	if ( ap > EPS && ap >= mtl_ap)
 	{
 		//пуля пробила материал
 		shoot_factor = (( ap - mtl_ap ) / ap);
 	}
-
 	hit_res->impulse = 0.0f;
 	float speed_scale = 0.0f;
 
