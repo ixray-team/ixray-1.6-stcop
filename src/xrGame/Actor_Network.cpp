@@ -832,7 +832,7 @@ void CActor::net_Relcase(CObject* O)
 	m_pPhysics_support->in_NetRelcase(O);
 	HUD().net_Relcase	(O);
 
-	if (OnClient())
+	if (OnClient() || IsGameTypeSingle())
 	{
 		auto Iter = std::find(q_nearest.begin(), q_nearest.end(), O);
 		if (Iter != q_nearest.end())
