@@ -82,8 +82,20 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_HitTypeProtection[ALife::eHitTypeFireWound]	= READ_IF_EXISTS(pSettings, r_float, section,"fire_wound_protection", 0.f);
 	m_HitTypeProtection[ALife::eHitTypePhysicStrike]= READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", m_HitTypeProtection[ALife::eHitTypeStrike]);
 	m_HitTypeProtection[ALife::eHitTypeLightBurn] = m_HitTypeProtection[ALife::eHitTypeBurn];
-	m_boneProtection->m_fHitFracActor = READ_IF_EXISTS(pSettings, r_float, section, "hit_fraction_actor", 0.1f);
+ 
+    if (pSettings->line_exist(section, "hit_fraction_actor"))
+    {
+        m_boneProtection->m_fHitFrac = pSettings->r_float(section, "hit_fraction_actor");
 
+        // Since hit_fraction_actor exists both in CS and COP, but fire_wound_protection was removed in COP,
+        // We can use this hacky solution to determine which damage formula to use.
+        // It not robust for mods, because they can have fire_wound_protection in configs, despite that
+        // original COP engine doesn't read it.
+        if (pSettings->line_exist(section, "fire_wound_protection"))
+            m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCS;
+        else
+            m_boneProtection->m_hitFracType = SBoneProtections::HitFractionActorCOP;
+    }
 	if (pSettings->line_exist(section, "nightvision_sect"))
 	{
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
@@ -160,14 +172,23 @@ void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
 
 float CCustomOutfit::GetDefHitTypeProtection(ALife::EHitType hit_type)
 {
-	return m_HitTypeProtection[hit_type] * GetCondition();
+    float base = m_HitTypeProtection[hit_type] * GetCondition();
+
+    if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+        return 1.0f - base; // SOC
+
+    return base; // CS/COP
 }
 
 float CCustomOutfit::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 {
-	float fBase = m_HitTypeProtection[hit_type] * GetCondition();
-	float bone = m_boneProtection->getBoneProtection(element);
-	return fBase * bone;
+    float base = m_HitTypeProtection[hit_type] * GetCondition();
+    float bone = m_boneProtection->getBoneProtection(element);
+
+    if (m_boneProtection->m_hitFracType == SBoneProtections::HitFraction)
+        return 1.0f - base * bone; // SOC
+
+    return base * bone; // CS/COP
 }
 
 float CCustomOutfit::GetBoneArmor(s16 element)
@@ -177,68 +198,134 @@ float CCustomOutfit::GetBoneArmor(s16 element)
 
 float CCustomOutfit::HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
 {
-	if (EngineExternal().ShadowOfChernobylMode())
-	{
-		float BoneArmour = m_boneProtection->getBoneArmor(element) * GetCondition() * (1 - ap);
-		float NewHitPower = hit_power - BoneArmour;
-		if (NewHitPower < hit_power * m_boneProtection->m_fHitFracNpc) return hit_power * m_boneProtection->m_fHitFracNpc;
-		return NewHitPower;
-	}
-	else
-	{
-	float NewHitPower = hit_power;
-	if (hit_type == ALife::eHitTypeFireWound)
-	{
-		float ba = GetBoneArmor(element);
-		if (ba < 0.0f)
-		{
-			return NewHitPower;
-		}
+    float NewHitPower = hit_power;
 
-		float BoneArmor = ba * GetCondition();
-		if (/*!fis_zero(ba, EPS) && */(ap > BoneArmor))
-		{
-			//пуля пробила бронь
-			if (!IsGameTypeSingle())
-			{
-				float hit_fraction = (ap - BoneArmor) / ap;
-				if (hit_fraction < m_boneProtection->m_fHitFracActor)
-					hit_fraction = m_boneProtection->m_fHitFracActor;
+    switch (m_boneProtection->m_hitFracType)
+    {
+    default:
+    case SBoneProtections::HitFractionActorCOP:
+    {
+        if (hit_type == ALife::eHitTypeFireWound)
+        {
+            const float ba = GetBoneArmor(element);
+            if (ba < 0.0f)
+                return NewHitPower;
 
-				NewHitPower *= hit_fraction;
-				NewHitPower *= m_boneProtection->getBoneProtection(element);
-			}
+            float BoneArmor = ba * GetCondition();
+            if (/*!fis_zero(ba, EPS) &&*/ ap > BoneArmor)
+            {
+                //пуля пробила бронь
+                if (!IsGameTypeSingle())
+                {
+                    float hit_fraction = (ap - BoneArmor) / ap;
+                    if (hit_fraction < m_boneProtection->m_fHitFrac)
+                        hit_fraction = m_boneProtection->m_fHitFrac;
 
-			VERIFY(NewHitPower >= 0.0f);
-		}
-		else
-		{
-			//пуля НЕ пробила бронь
-			NewHitPower *= m_boneProtection->m_fHitFracActor;
-			add_wound = false; 	//раны нет
-		}
-	}
-	else
-	{
-		float one = 0.1f;
-		if (hit_type == ALife::eHitTypeStrike ||
-			hit_type == ALife::eHitTypeWound ||
-			hit_type == ALife::eHitTypeWound_2 ||
-			hit_type == ALife::eHitTypeExplosion)
-		{
-			one = 1.0f;
-		}
-		float protect = GetDefHitTypeProtection(hit_type);
-		NewHitPower -= protect * one;
+                    NewHitPower *= hit_fraction;
+                    NewHitPower *= m_boneProtection->getBoneProtection(element);
+                }
 
-		if (NewHitPower < 0.f)
-			NewHitPower = 0.f;
-	}
-	//увеличить изношенность костюма
-	Hit(hit_power, hit_type);
+                VERIFY(NewHitPower >= 0.0f);
+            }
+            else
+            {
+                //пуля НЕ пробила бронь
+                NewHitPower *= m_boneProtection->m_fHitFrac;
+                add_wound = false; 	//раны нет
+            }
+        }
+        else
+        {
+            float one = 0.1f;
+            if (hit_type == ALife::eHitTypeStrike ||
+                hit_type == ALife::eHitTypeWound ||
+                hit_type == ALife::eHitTypeWound_2 ||
+                hit_type == ALife::eHitTypeExplosion)
+            {
+                one = 1.0f;
+            }
+            const float protect = GetDefHitTypeProtection(hit_type);
+            NewHitPower -= protect * one;
 
-	return NewHitPower;
-	}
+            if (NewHitPower < 0.f)
+                NewHitPower = 0.f;
+        }
+
+        //увеличить изношенность костюма
+        Hit(hit_power, hit_type);
+        break;
+    }
+    case SBoneProtections::HitFractionActorCS:
+    {
+        if (hit_type == ALife::eHitTypeFireWound)
+        {
+            const float BoneArmor = m_boneProtection->getBoneArmor(element) * GetCondition();
+
+            if (ap > EPS && ap > BoneArmor)
+            {
+                //пуля пробила бронь
+                const float d_ap = ap - BoneArmor;
+                NewHitPower *= (d_ap / ap);
+
+                if (NewHitPower < m_boneProtection->m_fHitFrac)
+                    NewHitPower = m_boneProtection->m_fHitFrac;
+
+                if (!IsGameTypeSingle())
+                {
+                    NewHitPower *= m_boneProtection->getBoneProtection(element);
+                }
+
+                if (NewHitPower < 0.0f)
+                    NewHitPower = 0.0f;
+            }
+            else
+            {
+                //пуля НЕ пробила бронь
+                NewHitPower *= m_boneProtection->m_fHitFrac;
+                add_wound = false; //раны нет
+            }
+        }
+        else
+        {
+            float one = 0.1f;
+            if (hit_type == ALife::eHitTypeWound ||
+                hit_type == ALife::eHitTypeWound_2 ||
+                hit_type == ALife::eHitTypeExplosion)
+            {
+                one = 1.0f;
+            }
+
+            const float protect = GetHitTypeProtection(hit_type, element);
+            NewHitPower -= protect * one;
+            if (NewHitPower < 0.0f)
+                NewHitPower = 0.0f;
+        }
+
+        //увеличить изношенность костюма
+        Hit(NewHitPower, hit_type);
+        break;
+    }
+    case SBoneProtections::HitFraction:
+    {
+        if (hit_type == ALife::eHitTypeFireWound)
+        {
+            const float BoneArmor = m_boneProtection->getBoneArmor(element) * GetCondition() * (1 - ap);
+            NewHitPower -= BoneArmor;
+            if (NewHitPower < hit_power * m_boneProtection->m_fHitFrac)
+                NewHitPower = hit_power * m_boneProtection->m_fHitFrac;
+        }
+        else
+        {
+            NewHitPower *= GetHitTypeProtection(hit_type, element);
+        }
+
+        //увеличить изношенность костюма
+        Hit(hit_power, hit_type);
+        break;
+    }
+    } // switch (m_boneProtection->m_hitFracType)
+
+    return NewHitPower;
 }
 
 BOOL CCustomOutfit::BonePassBullet(int boneID)
@@ -365,6 +452,21 @@ u32	CCustomOutfit::ef_equipment_type() const
 	return m_ef_equipment_type;
 }
 
+float CCustomOutfit::GetPowerLoss()
+{
+    // Hit fraction and power loss are unrelated,
+    // but it's the only way we can distinguish between SOC/CS and COP.
+    // Sorry.
+    if (m_boneProtection->m_hitFracType != SBoneProtections::HitFractionActorCOP)
+    {
+        if (m_fPowerLoss < 1 && GetCondition() <= 0)
+        {
+            return 1.0f;
+        }
+    }
+    return m_fPowerLoss;
+};
+
 bool CCustomOutfit::install_upgrade_impl(LPCSTR section, bool test)
 {
 	bool result = inherited::install_upgrade_impl(section, test);
@@ -402,7 +504,11 @@ bool CCustomOutfit::install_upgrade_impl(LPCSTR section, bool test)
 	}
 
 	result |= result2;
-	result |= process_if_exists(section, "hit_fraction_actor", &CInifile::r_float, m_boneProtection->m_fHitFracActor, test);
+    if (m_boneProtection->m_hitFracType == SBoneProtections::HitFractionActorCS ||
+        m_boneProtection->m_hitFracType == SBoneProtections::HitFractionActorCOP)
+    {
+        result |= process_if_exists(section, "hit_fraction_actor", &CInifile::r_float, m_boneProtection->m_fHitFrac, test);
+    }
 
 	result |= process_if_exists(section, "additional_inventory_weight", &CInifile::r_float, m_additional_weight, test);
 	result |= process_if_exists(section, "additional_inventory_weight2", &CInifile::r_float, m_additional_weight2, test);
