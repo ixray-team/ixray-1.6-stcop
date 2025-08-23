@@ -60,6 +60,7 @@ struct
 
 	xr_unique_ptr<CScriptSound> sound_tip;
 	string_path sound_tip_path{};
+	bool legacyNewsMode{false};
 } imgui_spawn_manager;
 
 
@@ -93,6 +94,10 @@ void InitSections()
 		return;
 	}
 
+	CUIXml xml_test;
+	xml_test.Load(CONFIG_PATH, UI_PATH, "maingame_pda_msg.xml");
+	imgui_spawn_manager.legacyNewsMode = !xml_test.NavigateToNode("caption_static");
+
 	string_path	file_path;
 	FS.update_path(file_path, "$game_config$", "misc\\script_sound.ltx");
 	CInifile ini(file_path);
@@ -110,6 +115,11 @@ void InitSections()
 		{
 			memcpy_s(imgui_spawn_manager.sound_tip_path, sizeof(imgui_spawn_manager.sound_tip_path), pSoundRelativeName, strlen(pSoundRelativeName));
 		}
+	}
+	else
+	{
+		string128 sndName = "device\\pda\\pda_tip";
+		memcpy_s(imgui_spawn_manager.sound_tip_path, sizeof(imgui_spawn_manager.sound_tip_path), sndName, sizeof(sndName));
 	}
 
 	//xr_set<xr_string> classes = {};
@@ -1194,7 +1204,15 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 			imgui_spawn_manager.sound_tip->PlayAtPos(Actor()->lua_game_object(), Fvector().set(0.0f, 0.0f, 0.0f), 0.0f, sm_2D);
 		}
 
-		char text_news[128]{};
+		xr_string text_news_final = "";
+		if (imgui_spawn_manager.legacyNewsMode)
+		{
+			text_news_final += "%c[255,160,160,160]";
+			text_news_final += g_pStringTable->translate("general_in_item").c_str();
+			text_news_final += "\\n%c[default]";
+		}
+
+		string128 text_news;
 		if (section->line_exist("inv_name"))
 		{
 			const char* name = g_pStringTable->translate(pSettings->r_string(section->Name.c_str(), "inv_name")).c_str();
@@ -1204,11 +1222,12 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		{
 			sprintf_s(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
 		}
+		text_news_final += text_news;
 
 		GAME_NEWS_DATA				news_data;
 		news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
 		news_data.news_caption = g_pStringTable->translate("general_in_item");
-		news_data.news_text = text_news;
+		news_data.news_text = text_news_final.c_str();
 		news_data.show_time = 3000;
 		news_data.texture_name = "ui_ixray_spawn_icon";
 		Actor()->AddGameNews(news_data);
