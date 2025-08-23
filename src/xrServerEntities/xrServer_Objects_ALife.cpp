@@ -201,7 +201,9 @@ void	SFillPropData::load			()
 #endif // XRGAME_EXPORTS
 
 	luabind::object			table;
-	R_ASSERT				(ai().script_engine().function_object("smart_covers.descriptions", table, LUA_TTABLE));
+	if (!ai().script_engine().function_object("smart_covers.descriptions", table, LUA_TTABLE))
+		return;
+
 	luabind::object::iterator I = table.begin();
 	luabind::object::iterator E = table.end();
 	for ( ; I != E; ++I)
