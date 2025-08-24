@@ -634,6 +634,11 @@ PIItem CInventory::ItemFromSlot(u16 slot) const
 	}
 
 	const auto& Slot = m_slots.find(slot);
+	if (Slot == m_slots.end())
+	{
+		return nullptr;
+	}
+
 	return (*Slot).second.m_pIItem;
 }
 
