@@ -389,43 +389,45 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 
 void CHudItem::UpdateCL()
 {
-	if(m_current_motion_def)
+	if (m_current_motion_def)
 	{
-		if(m_bStopAtEndAnimIsRunning)
+		if (m_bStopAtEndAnimIsRunning)
 		{
-			const xr_vector<motion_marks>&	marks = m_current_motion_def->marks;
-			if(!marks.empty())
+			const xr_vector<motion_marks>& marks = m_current_motion_def->marks;
+			if (GetState() != eHidden && !marks.empty())
 			{
-				float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm)/1000.0f;
-				float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm)/1000.0f;
-				
-				xr_vector<motion_marks>::const_iterator it = marks.begin();
-				xr_vector<motion_marks>::const_iterator it_e = marks.end();
-				for(;it!=it_e;++it)
+				float motion_prev_time = ((float)m_dwMotionCurrTm - (float)m_dwMotionStartTm) / 1000.0f;
+				float motion_curr_time = ((float)Device.dwTimeGlobal - (float)m_dwMotionStartTm) / 1000.0f;
+
+				for (auto& M : marks)
 				{
-					const motion_marks&	M = (*it);
-					if(M.is_empty())
-						continue;
-	
-					const motion_marks::interval* Iprev = M.pick_mark(motion_prev_time);
-					const motion_marks::interval* Icurr = M.pick_mark(motion_curr_time);
-					if(Iprev==nullptr && Icurr!=nullptr /* || M.is_mark_between(motion_prev_time, motion_curr_time)*/)
+					if (M.is_empty())
 					{
-						OnMotionMark				(m_startedMotionState, M);
+						continue;
+					}
+
+					auto Iprev = M.pick_mark(motion_prev_time);
+					auto Icurr = M.pick_mark(motion_curr_time);
+					if (Iprev == nullptr && Icurr != nullptr)
+					{
+						OnMotionMark(m_startedMotionState, M);
 					}
 				}
-			
+
 			}
 
-			m_dwMotionCurrTm					= Device.dwTimeGlobal;
-			if(m_dwMotionCurrTm > m_dwMotionEndTm)
+			m_dwMotionCurrTm = Device.dwTimeGlobal;
+			if (m_dwMotionCurrTm > m_dwMotionEndTm)
 			{
-				m_current_motion_def				= nullptr;
-				m_dwMotionStartTm					= 0;
-				m_dwMotionEndTm						= 0;
-				m_dwMotionCurrTm					= 0;
-				m_bStopAtEndAnimIsRunning			= false;
-				OnAnimationEnd						(m_startedMotionState);
+				m_current_motion_def = nullptr;
+				m_dwMotionStartTm = 0;
+				m_dwMotionEndTm = 0;
+				m_dwMotionCurrTm = 0;
+				m_bStopAtEndAnimIsRunning = false;
+				if (GetState() != eHidden)
+				{
+					OnAnimationEnd(m_startedMotionState);
+				}
 			}
 		}
 	}
