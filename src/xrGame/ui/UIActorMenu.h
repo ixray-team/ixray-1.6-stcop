@@ -194,6 +194,12 @@ private:
 	const char* m_onCanTake = {};
 	bool m_isCanTake = false;
 
+	const char* m_onInvBoxCanTakeItem = {};	// FFx0001
+	bool m_isInvBoxCanTakeItem = false;		// FFx0001
+
+	const char* m_onInvBoxCanPlaceItem = {};	// FFx0001
+	bool m_isInvBoxCanPlaceItem = false;		// FFx0001
+
 	const char* m_onCanDisassembleItem = {};
 	bool m_isCanDisassembleItem = false;
 
@@ -322,6 +328,8 @@ protected:
 	bool						ToPartnerTrade				(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToPartnerTradeBag			(CUICellItem* itm, bool b_use_cursor_pos);
 	bool						ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
+	bool						IsAllowTakeFromInvBox		(CUICellItem* itm); // FFx0001
+	bool						IsAllowPlaceToInvBox		(CUICellItem* itm); // FFx0001
 
 	void						AttachAddon					(PIItem item_to_upgrade);
 	void						DetachAddon					(LPCSTR addon_name, PIItem itm = NULL);
