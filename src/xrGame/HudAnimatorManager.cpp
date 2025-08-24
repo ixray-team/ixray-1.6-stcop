@@ -52,25 +52,37 @@ void CHudAnimatorManager::Update()
 		else
 		{
 			CHudItem* active_item = m_actor->inventory().ActiveItem() ? m_actor->inventory().ActiveItem()->cast_hud_item() : nullptr;
-			if (active_item && active_item->GetState() != CHUDState::eHiding)
+			if (active_item != nullptr)
 			{
 				u16 slot = m_actor->inventory().GetActiveSlot();
 				m_iRestoreSlot = slot;
-				m_actor->inventory().Activate(NO_ACTIVE_SLOT);
+
 				if (m_bForceHideItems)
 				{
+					m_actor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 					active_item->SwitchState(CHUDState::EHudStates::eHidden);
+					active_item->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(0);
+				}
+				else if (active_item->GetState() != CHUDState::EHudStates::eHiding)
+				{
+					m_actor->inventory().Activate(NO_ACTIVE_SLOT);
 				}
 			}
 
-			if (m_actor->GetDetector() && m_actor->GetDetector()->GetState() != CHUDState::eHiding)
+			if (CCustomDetector* det = m_actor->GetDetector())
 			{
 				m_bRestoreDetector = true;
-				m_actor->GetDetector()->HideDetector(true, true);
+
 				if (m_bForceHideItems)
 				{
+					det->SwitchState(CHUDState::EHudStates::eHidden);
+					det->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(1);
+				}
+				else if (det->GetState() != CHUDState::EHudStates::eHiding)
+				{
+					det->HideDetector(true, true);
 				}
 			}
 		}
