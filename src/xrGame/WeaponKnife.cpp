@@ -224,7 +224,10 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	iAmmoElapsed					= (u32)m_magazine.size();
 	bool SendHit					= SendHitAllowed(H_Parent());
 
-	//PlaySoundIfExist("sndShot", pos);
+	if (!m_eSoundsFlags.test(ESoundsFlags::sf_kick))
+	{
+		PlaySound("sndShot", pos);
+	}
 
 	CActor* actor = H_Parent()->cast_actor();
 	if (actor && actor->active_cam() != eacFirstEye) {
