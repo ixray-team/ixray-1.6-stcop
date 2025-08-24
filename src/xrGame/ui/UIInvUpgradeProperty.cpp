@@ -188,29 +188,29 @@ void UIInvUpgPropertiesWnd::init_from_xml(LPCSTR xml_name)
 
 	LPCSTR properties_section = "upgrades_properties";
 
-	VERIFY2(pSettings->section_exist(properties_section), make_string<const char*>("Section [%s] does not exist !", properties_section));
-	VERIFY2(pSettings->line_count(properties_section), make_string<const char*>("Section [%s] is empty !", properties_section));
 	shared_str property_id;
 
-	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
-
-	for (const auto& section_data : inv_section.Data)
+	if (pSettings->section_exist(properties_section))
 	{
-		UIProperty* ui_property = new UIProperty(); // load one time !!
-		ui_property->init_from_xml(ui_xml);
+		CInifile::Sect& inv_section = pSettings->r_section(properties_section);
 
-		property_id._set(section_data.first);
-		if (!ui_property->init_property(property_id))
+		for (const auto& section_data : inv_section.Data)
 		{
-			Msg("! Invalid property <%s> in inventory upgrade manager!", property_id.c_str());
-			xr_delete(ui_property);
-			continue;
-		}
+			UIProperty* ui_property = new UIProperty(); // load one time !!
+			ui_property->init_from_xml(ui_xml);
 
-		m_properties_ui.push_back(ui_property);
-		AttachChild(ui_property);
-	} // for ib
+			property_id._set(section_data.first);
+			if (!ui_property->init_property(property_id))
+			{
+				Msg("! Invalid property <%s> in inventory upgrade manager!", property_id.c_str());
+				xr_delete(ui_property);
+				continue;
+			}
 
+			m_properties_ui.push_back(ui_property);
+			AttachChild(ui_property);
+		} // for ib
+	}
 	ui_xml.SetLocalRoot(stored_root);
 }
 
