@@ -14,6 +14,9 @@ struct clsid_manager
 	void add_item(CLASS_ID id);
 	bool is_item(CLASS_ID id);
 
+	void add_item_used(CLASS_ID id);
+	bool is_item_used(CLASS_ID id);
+
 	void add_outfit(CLASS_ID id);
 	bool is_outfit(CLASS_ID id);
 
@@ -123,25 +126,25 @@ struct clsid_manager
 	CLASS_ID item_medkit = TEXT2CLSID("S_MEDKI");
 	CLASS_ID item_bandage = TEXT2CLSID("S_BANDG");
 	CLASS_ID item_antirad = TEXT2CLSID("S_ANTIR");
-	CLASS_ID item_food = TEXT2CLSID("S_FOOD");
 	CLASS_ID item_bottle = TEXT2CLSID("S_BOTTL");
 
 	CLASS_ID item_ii_explo = TEXT2CLSID("II_EXPLO");
 	CLASS_ID item_ii_doc = TEXT2CLSID("II_DOC");
-	CLASS_ID item_ii_elite = TEXT2CLSID("D_ELITE");
-	CLASS_ID item_ii_advanc = TEXT2CLSID("D_ADVANC");
-	CLASS_ID item_ii_flare = TEXT2CLSID("D_FLARE");
+	CLASS_ID item_d_elite = TEXT2CLSID("D_ELITE");
+	CLASS_ID item_d_advanc = TEXT2CLSID("D_ADVANC");
+	CLASS_ID item_d_flare = TEXT2CLSID("D_FLARE");
 	CLASS_ID item_ii_bttch = TEXT2CLSID("II_BTTCH");
 	CLASS_ID item_nw_attch = TEXT2CLSID("NW_ATTCH");
 	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
+	CLASS_ID item_ii_bolt = CLSID_IITEM_BOLT;
 
-	// Use items
-	CLASS_ID item_ii_antir = TEXT2CLSID("II_ANTIR");
-	CLASS_ID item_ii_bolt = TEXT2CLSID("II_BOLT");
-	CLASS_ID item_ii_medki = TEXT2CLSID("II_MEDKI");
-	CLASS_ID item_ii_bandg = TEXT2CLSID("II_BANDG");
-	CLASS_ID item_ii_food = TEXT2CLSID("II_FOOD");
-	CLASS_ID item_ii_bottl = TEXT2CLSID("II_BOTTL");
+	// Items used
+	CLASS_ID item_food = TEXT2CLSID("S_FOOD");
+	CLASS_ID item_ii_antir = CLSID_IITEM_ANTIRAD;
+	CLASS_ID item_ii_medki = CLSID_IITEM_MEDKIT;
+	CLASS_ID item_ii_bandg = CLSID_IITEM_BANDAGE;
+	CLASS_ID item_ii_food = CLSID_IITEM_FOOD;
+	CLASS_ID item_ii_bottl = CLSID_IITEM_BOTTLE;
 
 
 	CLASS_ID mp_out_scientific = CLSID_EQUIPMENT_SCIENTIFIC;
@@ -202,6 +205,7 @@ private:
 	xr_set<CLASS_ID> monsters;
 	xr_set<CLASS_ID> zones;
 	xr_set<CLASS_ID> items;
+	xr_set<CLASS_ID> items_used;
 	xr_set<CLASS_ID> outfits;
 	xr_set<CLASS_ID> ammo;
 	xr_set<CLASS_ID> addons;

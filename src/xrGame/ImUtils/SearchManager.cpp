@@ -521,27 +521,26 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_medkit);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_bandage);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_antirad);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_food);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_bottle);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_attch);
 
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_explo);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_doc);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_elite);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_advanc);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_flare);
+	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_elite);
+	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_advanc);
+	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_flare);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bttch);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_nw_attch);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_s_explo);
-
-	// Use items
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_antir);
+	//imgui_clsid_manager.add_item(imgui_clsid_manager.item_s_explo);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bolt);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_medki);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bandg);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_food);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bottl);
 
+	// Items used
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_food);
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_ii_antir);
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_ii_medki);
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_ii_bandg);
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_ii_food);
+	imgui_clsid_manager.add_item_used(imgui_clsid_manager.item_ii_bottl);
 
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_base);
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_vog25);
