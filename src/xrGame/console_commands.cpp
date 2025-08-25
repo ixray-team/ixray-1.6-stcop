@@ -538,10 +538,14 @@ public:
 #ifdef DEBUG
 		Msg("Game save overhead  : %f milliseconds", timer.GetElapsed_sec() * 1000.f);
 #endif
-        SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("game_saved", true, 3.0f);
-		string256 save_name;
-		xr_strconcat(save_name, g_pStringTable->translate("st_game_saved").c_str(), ": ", S);
-		_s->wnd()->TextItemControl()->SetText(save_name);
+
+		if (EngineExternal()[EEngineExternalUI::UseSavedGameStatic])
+		{
+			SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("game_saved", true, 3.0f);
+			string256 save_name;
+			xr_strconcat(save_name, g_pStringTable->translate("st_game_saved").c_str(), ": ", S);
+			_s->wnd()->TextItemControl()->SetText(save_name);
+		}
 
 		xr_strcat(S, ".dds");
 		FS.update_path(S1, "$game_saves$", S);
