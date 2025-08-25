@@ -1,16 +1,19 @@
 #pragma once
 
-enum class EEngineExternalUI {
+enum class EEngineExternalUI
+{
 	HQIcons,
 	DisableCharacterInfo,
 	DisableInventoryGrid,
 	ShowLoadingStages,
 	DisableMotionIcon,
 	PdaRearrangeTabButtons,
+	UseSavedGameStatic,
 	None
 };
 
-enum class EEngineExternalPhysical {
+enum class EEngineExternalPhysical
+{
 	DeadBodyRagdoll,
 	None
 };
