@@ -324,6 +324,15 @@ bool clsid_manager::is_item_used(CLASS_ID id) {
 	return items_used.find(id) != items_used.end();
 }
 
+void clsid_manager::add_device(CLASS_ID id) {
+	if (!is_device(id))
+		devices.insert(id);
+}
+
+bool clsid_manager::is_device(CLASS_ID id) {
+	return devices.find(id) != devices.end();
+}
+
 void clsid_manager::add_outfit(CLASS_ID id) {
 	if (!is_outfit(id))
 		outfits.insert(id);
