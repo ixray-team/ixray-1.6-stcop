@@ -41,6 +41,7 @@ struct
 
 	SectionData WeaponsSections = {};
 	SectionData ItemsSections = {};
+	SectionData ItemsUsedSections = {};
 	SectionData AmmoSections = {};
 	SectionData OutfitSections = {};
 	SectionData AddonSections = {};
@@ -189,6 +190,20 @@ void InitSections()
 			else
 			{
 				imgui_spawn_manager.ItemsSections.Unsorted.push_back({ name, pSection });
+			}
+		}
+		else if (g_pClsidManager->is_item_used(classId))
+		{
+			if (!pSection->line_exist("immunities_sect"))
+				continue;
+
+			if (isInvItem)
+			{
+				imgui_spawn_manager.ItemsUsedSections.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.ItemsUsedSections.Unsorted.push_back({ name, pSection });
 			}
 		}
 		else if (g_pClsidManager->is_ammo(classId))
@@ -357,26 +372,61 @@ void RenderSpawnManagerWindow() {
 
 		if (ImGui::BeginTabBar("##TabBar_InGameSpawnManager"))
 		{
-			if (ImGui::BeginTabItem("Items"))
+			if (ImGui::BeginTabItem("Inventory Stuff"))
 			{
-				size_t number_imgui{};
-				SectionStatistics(imgui_spawn_manager.ItemsSections);
-				SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Sorted, number_imgui);
+				if (ImGui::BeginTabBar("##TabBarItems_InGameSpawnManager"))
+				{
+					if (ImGui::BeginTabItem("Used"))
+					{
+						size_t number_imgui{};
+						SectionStatistics(imgui_spawn_manager.ItemsUsedSections);
+						SpawnManager_ProcessSections(imgui_spawn_manager.ItemsUsedSections.Sorted, number_imgui);
 
-				if (imgui_spawn_manager.sort_by_max_cost)
-				{
-					maxSortCost(imgui_spawn_manager.ItemsSections.Sorted);
-				}
-				else if (imgui_spawn_manager.sort_by_min_cost)
-				{
-					minSortCost(imgui_spawn_manager.ItemsSections.Sorted);
-				}
+						if (imgui_spawn_manager.sort_by_max_cost)
+						{
+							maxSortCost(imgui_spawn_manager.ItemsUsedSections.Sorted);
+						}
+						else if (imgui_spawn_manager.sort_by_min_cost)
+						{
+							minSortCost(imgui_spawn_manager.ItemsUsedSections.Sorted);
+						}
 
-				if (imgui_spawn_manager.ItemsSections.Unsorted.size() > 0)
-				{
-					ImGui::SeparatorText("Unsorted");
-					SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Unsorted, number_imgui);
+						if (imgui_spawn_manager.ItemsUsedSections.Unsorted.size() > 0)
+						{
+							ImGui::SeparatorText("Unsorted");
+							SpawnManager_ProcessSections(imgui_spawn_manager.ItemsUsedSections.Unsorted, number_imgui);
+						}
+
+						ImGui::EndTabItem();
+					}
+
+					if (ImGui::BeginTabItem("Items"))
+					{
+						size_t number_imgui{};
+						SectionStatistics(imgui_spawn_manager.ItemsSections);
+						SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Sorted, number_imgui);
+
+						if (imgui_spawn_manager.sort_by_max_cost)
+						{
+							maxSortCost(imgui_spawn_manager.ItemsSections.Sorted);
+						}
+						else if (imgui_spawn_manager.sort_by_min_cost)
+						{
+							minSortCost(imgui_spawn_manager.ItemsSections.Sorted);
+						}
+
+						if (imgui_spawn_manager.ItemsSections.Unsorted.size() > 0)
+						{
+							ImGui::SeparatorText("Unsorted");
+							SpawnManager_ProcessSections(imgui_spawn_manager.ItemsSections.Unsorted, number_imgui);
+						}
+
+						ImGui::EndTabItem();
+					}
+
+					ImGui::EndTabBar();
 				}
+				
 
 				ImGui::EndTabItem();
 			}
