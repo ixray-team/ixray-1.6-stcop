@@ -315,6 +315,15 @@ bool clsid_manager::is_item(CLASS_ID id) {
 	return items.find(id) != items.end();
 }
 
+void clsid_manager::add_item_used(CLASS_ID id) {
+	if (!is_item_used(id))
+		items_used.insert(id);
+}
+
+bool clsid_manager::is_item_used(CLASS_ID id) {
+	return items_used.find(id) != items_used.end();
+}
+
 void clsid_manager::add_outfit(CLASS_ID id) {
 	if (!is_outfit(id))
 		outfits.insert(id);
