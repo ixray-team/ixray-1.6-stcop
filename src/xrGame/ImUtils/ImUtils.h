@@ -126,6 +126,24 @@ struct clsid_manager
 	CLASS_ID item_food = TEXT2CLSID("S_FOOD");
 	CLASS_ID item_bottle = TEXT2CLSID("S_BOTTL");
 
+	CLASS_ID item_ii_explo = TEXT2CLSID("II_EXPLO");
+	CLASS_ID item_ii_doc = TEXT2CLSID("II_DOC");
+	CLASS_ID item_ii_elite = TEXT2CLSID("D_ELITE");
+	CLASS_ID item_ii_advanc = TEXT2CLSID("D_ADVANC");
+	CLASS_ID item_ii_flare = TEXT2CLSID("D_FLARE");
+	CLASS_ID item_ii_bttch = TEXT2CLSID("II_BTTCH");
+	CLASS_ID item_nw_attch = TEXT2CLSID("NW_ATTCH");
+	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
+
+	// Use items
+	CLASS_ID item_ii_antir = TEXT2CLSID("II_ANTIR");
+	CLASS_ID item_ii_bolt = TEXT2CLSID("II_BOLT");
+	CLASS_ID item_ii_medki = TEXT2CLSID("II_MEDKI");
+	CLASS_ID item_ii_bandg = TEXT2CLSID("II_BANDG");
+	CLASS_ID item_ii_food = TEXT2CLSID("II_FOOD");
+	CLASS_ID item_ii_bottl = TEXT2CLSID("II_BOTTL");
+
+
 	CLASS_ID mp_out_scientific = CLSID_EQUIPMENT_SCIENTIFIC;
 	CLASS_ID mp_out_stalker = CLSID_EQUIPMENT_STALKER;
 	CLASS_ID mp_out_military = CLSID_EQUIPMENT_MILITARY;
