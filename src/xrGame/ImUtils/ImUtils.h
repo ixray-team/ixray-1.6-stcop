@@ -17,6 +17,9 @@ struct clsid_manager
 	void add_item_used(CLASS_ID id);
 	bool is_item_used(CLASS_ID id);
 
+	void add_device(CLASS_ID id);
+	bool is_device(CLASS_ID id);
+
 	void add_outfit(CLASS_ID id);
 	bool is_outfit(CLASS_ID id);
 
@@ -116,10 +119,6 @@ struct clsid_manager
 	CLASS_ID addon_glaun = TEXT2CLSID("WP_GLAUN");
 
 	CLASS_ID item_torch = TEXT2CLSID("TORCH_S");
-	CLASS_ID item_detector_scientific = TEXT2CLSID("DET_SCIE");
-	CLASS_ID item_detector_elite = TEXT2CLSID("DET_ELIT");
-	CLASS_ID item_detector_advanced = TEXT2CLSID("DET_ADVA");
-	CLASS_ID item_detector_simple = TEXT2CLSID("DET_SIMP");
 	CLASS_ID item_pda = TEXT2CLSID("S_PDA");
 	CLASS_ID item_d_pda = TEXT2CLSID("D_PDA");
 	CLASS_ID item_ii_attch = TEXT2CLSID("II_ATTCH");
@@ -130,9 +129,6 @@ struct clsid_manager
 
 	CLASS_ID item_ii_explo = TEXT2CLSID("II_EXPLO");
 	CLASS_ID item_ii_doc = TEXT2CLSID("II_DOC");
-	CLASS_ID item_d_elite = TEXT2CLSID("D_ELITE");
-	CLASS_ID item_d_advanc = TEXT2CLSID("D_ADVANC");
-	CLASS_ID item_d_flare = TEXT2CLSID("D_FLARE");
 	CLASS_ID item_ii_bttch = TEXT2CLSID("II_BTTCH");
 	CLASS_ID item_nw_attch = TEXT2CLSID("NW_ATTCH");
 	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
@@ -146,6 +142,18 @@ struct clsid_manager
 	CLASS_ID item_ii_food = CLSID_IITEM_FOOD;
 	CLASS_ID item_ii_bottl = CLSID_IITEM_BOTTLE;
 
+	// Detectors
+	CLASS_ID item_detector_scientific = TEXT2CLSID("DET_SCIE");
+	CLASS_ID item_detector_elite = TEXT2CLSID("DET_ELIT");
+	CLASS_ID item_detector_advanced = TEXT2CLSID("DET_ADVA");
+	CLASS_ID item_detector_simple = TEXT2CLSID("DET_SIMP");
+	CLASS_ID item_d_elite = CLSID_DETECTOR_ELITE;
+	CLASS_ID item_d_scientific = CLSID_DETECTOR_SCIENTIFIC;
+	CLASS_ID item_d_advanc = CLSID_DETECTOR_ADVANCED;
+	CLASS_ID item_d_flare = TEXT2CLSID("D_FLARE");
+	CLASS_ID item_d_simple = CLSID_DETECTOR_SIMPLE;
+	CLASS_ID item_d_smetr = TEXT2CLSID("D_DSMETR");
+	CLASS_ID item_d_custom = TEXT2CLSID("D_CUSTOM");
 
 	CLASS_ID mp_out_scientific = CLSID_EQUIPMENT_SCIENTIFIC;
 	CLASS_ID mp_out_stalker = CLSID_EQUIPMENT_STALKER;
@@ -206,6 +214,7 @@ private:
 	xr_set<CLASS_ID> zones;
 	xr_set<CLASS_ID> items;
 	xr_set<CLASS_ID> items_used;
+	xr_set<CLASS_ID> devices;
 	xr_set<CLASS_ID> outfits;
 	xr_set<CLASS_ID> ammo;
 	xr_set<CLASS_ID> addons;

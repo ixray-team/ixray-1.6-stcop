@@ -512,10 +512,6 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_stationary_machine_gun);
 
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_torch);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_detector_scientific);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_detector_elite);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_detector_advanced);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_detector_simple);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_pda);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_pda);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_medkit);
@@ -526,9 +522,6 @@ void InitImGuiCLSIDInGame()
 
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_explo);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_doc);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_elite);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_advanc);
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_flare);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bttch);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_nw_attch);
 	//imgui_clsid_manager.add_item(imgui_clsid_manager.item_s_explo);
@@ -615,6 +608,18 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.mp_addon_scope);
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.mp_addon_silen);
 	imgui_clsid_manager.add_addon(imgui_clsid_manager.mp_addon_glaun);
+
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_detector_scientific);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_detector_elite);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_detector_advanced);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_detector_simple);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_elite);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_scientific);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_advanc);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_flare);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_simple);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_smetr);
+	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_custom);
 
 	g_pClsidManager = &imgui_clsid_manager;
 }
