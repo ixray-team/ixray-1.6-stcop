@@ -559,9 +559,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
 			}
-			//m_tSelect->Load();
-			//if (ImGui::ImageButton("##DrawRenderToolBar542", m_tSelect->pSurface, ImVec2(16, ImGui::GetFontSize())))
-			if (ImGui::Button(ICON_FA_ARROW_POINTER))
+
+			if (ImGui::Button(ICON_FA_ARROW_POINTER, ImVec2(22, 20)))
 			{
 				LTools->SetAction(etaSelect);
 			}
