@@ -142,6 +142,55 @@ void CUIActorMenu::DeInitDeadBodySearchMode()
 	}
 }
 
+// FFx0001 
+bool CUIActorMenu::IsAllowTakeFromInvBox(CUICellItem* itm)
+{
+	if (!m_isInvBoxCanTakeItem) {
+		return true;
+	}
+
+	// inv box
+	if (m_pInvBox) {
+		luabind::functor<bool> funct;
+		R_ASSERT2(ai().script_engine().functor(m_onInvBoxCanTakeItem, funct), make_string<const char*>("failed to get %s functor", m_onInvBoxCanTakeItem));
+
+		if (funct(m_pInvBox->cast_game_object()->lua_game_object(), ((PIItem)itm->m_pData)->cast_game_object()->lua_game_object()) == false)
+		{
+			return false;
+		}
+	}
+	else {
+		// npc
+	}
+
+	return true;
+}
+
+// FFx0001
+bool CUIActorMenu::IsAllowPlaceToInvBox(CUICellItem* itm)
+{
+	if (!m_isInvBoxCanPlaceItem) {
+		return true;
+	}
+
+	// inv box
+	if (m_pInvBox) {
+		luabind::functor<bool> funct;
+		R_ASSERT2(ai().script_engine().functor(m_onInvBoxCanPlaceItem, funct), make_string<const char*>("failed to get %s functor", m_onInvBoxCanPlaceItem));
+
+		if (funct(m_pInvBox->cast_game_object()->lua_game_object(), ((PIItem)itm->m_pData)->cast_game_object()->lua_game_object()) == false)
+		{
+			return false;
+		}
+	}
+	else {
+		// npc
+	}
+
+	return true;
+}
+
+
 bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
 	PIItem quest_item = (PIItem)itm->m_pData;
@@ -184,6 +233,11 @@ bool CUIActorMenu::ToDeadBodyBag(CUICellItem* itm, bool b_use_cursor_pos)
 			{
 				return false;
 			}
+
+		}
+
+		if (!IsAllowPlaceToInvBox(itm)) {
+			return false;
 		}
 	}
 
@@ -272,26 +326,39 @@ void CUIActorMenu::TakeAllFromPartner(CUIWindow* w, void* d)
 		}
 		PIItem item = (PIItem)(ci->m_pData);
 		move_item_check( item, m_pPartnerInvOwner, m_pActorInvOwner, false );
-	}//for i
-	m_pDeadBodyBagList->ClearAll( true ); // false
+	}
+
+	m_pDeadBodyBagList->ClearAll(true); // false
 }
 
 void CUIActorMenu::TakeAllFromInventoryBox()
 {
 	u16 actor_id = m_pActorInvOwner->object_id();
+	xr_vector<u16> IgnoredItemsIds = {};
 
 	u32 const cnt = m_pDeadBodyBagList->ItemsCount();
 	for ( u32 i = 0; i < cnt; ++i )
 	{
 		CUICellItem* ci = m_pDeadBodyBagList->GetItemIdx(i);
+		PIItem item = (PIItem)(ci->m_pData);
+
+		// FFx0001
+		if (!IsAllowTakeFromInvBox(ci)) { 
+			IgnoredItemsIds.push_back(item->object_id());
+
+			continue;
+		}
+
 		for ( u32 j = 0; j < ci->ChildsCount(); ++j )
 		{
 			PIItem j_item = (PIItem)(ci->Child(j)->m_pData);
 			move_item_from_to( m_pInvBox->ID(), actor_id, j_item->object_id() );
 		}
 
-		PIItem item = (PIItem)(ci->m_pData);
+		
 		move_item_from_to( m_pInvBox->ID(), actor_id, item->object_id() );
-	}//for i
-	m_pDeadBodyBagList->ClearAll( true ); // false
+	}
+
+	m_pDeadBodyBagList->ClearAll(true, IgnoredItemsIds); // FFx0001
+	IgnoredItemsIds.clear();
 }
