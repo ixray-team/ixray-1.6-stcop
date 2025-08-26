@@ -456,7 +456,6 @@ void RenderSearchManagerWindow()
 					}
 				}
 
-
 				ImGui::EndTabItem();
 			}
 
@@ -489,6 +488,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_tushkano);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_psydog);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_psydogphantom);
+	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_crow);
 
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_binocular);
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_knife);
