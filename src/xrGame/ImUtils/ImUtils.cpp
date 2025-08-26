@@ -379,12 +379,21 @@ void clsid_manager::add_artefact(CLASS_ID id) {
 bool clsid_manager::is_artefact(CLASS_ID id) {
 	return artefacts.contains(id);
 }
+
 void clsid_manager::add_vehicle(CLASS_ID id) {
 	vehicles.insert(id);
 }
 
 bool clsid_manager::is_vehicle(CLASS_ID id) {
 	return vehicles.contains(id);
+}
+
+void clsid_manager::add_explo(CLASS_ID id) {
+	explosives.insert(id);
+}
+
+bool clsid_manager::is_explo(CLASS_ID id) {
+	return explosives.contains(id);
 }
 
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
