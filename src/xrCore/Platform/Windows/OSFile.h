@@ -157,4 +157,27 @@ namespace Platform
     }
 
     size_t Stat(const char* path, time_t& Time);
+
+    static constexpr size_t INVALID_READ_SIZE = (size_t)-1;
+
+    IC std::uint32_t SetFilePointer(FileHandle hFile, std::uint32_t lDistanceToMove, std::uint32_t dwMoveMethod)
+    {
+        LARGE_INTEGER liDistance;
+        liDistance.QuadPart = lDistanceToMove;
+
+        LARGE_INTEGER liNewPosition;
+        if (!::SetFilePointerEx(hFile, liDistance, &liNewPosition, dwMoveMethod))
+            return INVALID_SET_FILE_POINTER;
+
+        return (std::uint32_t)liNewPosition.QuadPart;
+    }
+
+    IC size_t ReadFile(FileHandle hFile, void* lpBuffer, size_t nNumberOfBytesToRead)
+    {
+        DWORD bytesRead = 0;
+        if (!::ReadFile(hFile, lpBuffer, (DWORD)nNumberOfBytesToRead, &bytesRead, nullptr))
+            return INVALID_READ_SIZE;
+
+        return bytesRead;
+    }
 }
