@@ -1450,20 +1450,21 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				if(item->parent_id() == m_pActorInvOwner->object_id()) {
 					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
 
-					if (IsAllowPlaceToInvBox(cell_item)) {
-						if(d_ == (void*)33) {
-							for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
-								CUICellItem* child_itm = cell_item->Child(i);
-								PIItem child_iitm = (PIItem)(child_itm->m_pData);
-								if (IsAllowPlaceToInvBox(cell_item)) {
-									move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
-								}
+					if(d_ == (void*)33 && IsAllowPlaceToInvBox(cell_item)) {
+						for(u32 i = 0; i < cell_item->ChildsCount(); ++i) {
+							CUICellItem* child_itm = cell_item->Child(i);
+							PIItem child_iitm = (PIItem)(child_itm->m_pData);
+
+							if (IsAllowPlaceToInvBox(cell_item)) {
+								move_item_from_to(item->parent_id(), ownerID, child_iitm->object_id());
 							}
 						}
-						if (IsAllowPlaceToInvBox(cell_item)) {
-							move_item_from_to(item->parent_id(), ownerID, item->object_id());
-						}
 					}
+
+					if (IsAllowPlaceToInvBox(cell_item)) {
+						move_item_from_to(item->parent_id(), ownerID, item->object_id());
+					}
+					
 				}
 				else {
 					auto ownerID = m_pPartnerInvOwner ? m_pPartnerInvOwner->object_id() : m_pInvBox->ID();
