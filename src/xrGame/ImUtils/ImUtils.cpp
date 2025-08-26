@@ -333,6 +333,15 @@ bool clsid_manager::is_device(CLASS_ID id) {
 	return devices.find(id) != devices.end();
 }
 
+void clsid_manager::add_dynamic_object(CLASS_ID id) {
+	if (!is_dynamic_object(id))
+		dynamic_objects.insert(id);
+}
+
+bool clsid_manager::is_dynamic_object(CLASS_ID id) {
+	return dynamic_objects.find(id) != dynamic_objects.end();
+}
+
 void clsid_manager::add_outfit(CLASS_ID id) {
 	if (!is_outfit(id))
 		outfits.insert(id);
