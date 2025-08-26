@@ -139,8 +139,13 @@ void InitSections()
 		}
 
 		bool isInvItem = pSection->line_exist("cost") && pSection->line_exist("inv_weight");
+		bool isFakeItem = pSection->line_exist("inv_grid_width") && pSettings->r_u32(name.data(), "inv_grid_width") <= 0 &&
+						  pSection->line_exist("inv_grid_height") && pSettings->r_u32(name.data(), "inv_grid_height") <= 0;
+
+		isInvItem &= !isFakeItem;
+
 		size_t mp_index = name.find("mp_");
-		if (g_pClsidManager->is_mp_stuff(classId) || (mp_index != std::string_view::npos && mp_index == 0))
+		if (g_pClsidManager->is_mp_stuff(classId) || (mp_index != xr_string_view::npos && mp_index == 0))
 		{
 			if (isInvItem)
 			{
