@@ -293,7 +293,7 @@ const char* CImGuiGameSearchManager::getTranslatedString(eSelectedType type)
 }
 
 void clsid_manager::add_mp_stuff(CLASS_ID id) {
-	if (!is_item(id))
+	if (!is_mp_stuff(id))
 		mp_stuffs.insert(id);
 }
 
