@@ -294,10 +294,11 @@ void CUIDragDropListEx::GetClientArea(Frect& r)
 		r.x2 -= m_vScrollBar->GetWidth	();
 }
 
-void CUIDragDropListEx::ClearAll(bool bDestroy)
+// FFx0001
+void CUIDragDropListEx::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 {
 	DestroyDragItem			();
-	m_container->ClearAll	(bDestroy);
+	m_container->ClearAll	(bDestroy, IgnoredItemsIds); // FFx0001
 	m_selected_item			= nullptr;
 	m_container->SetWndPos	(Fvector2().set(0,0));
 	ResetCellsCapacity		();
@@ -843,40 +844,94 @@ bool CUICellContainer::ValidCell(const Ivector2& pos) const
 	return !(pos.x<0 || pos.y<0 || pos.x>=m_cellsCapacity.x || pos.y>=m_cellsCapacity.y);
 }
 
-void CUICellContainer::ClearAll(bool bDestroy)
+// FFx0001 add support ignore items by ids
+void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 {
+	bool DeepSearch = false;
+	size_t cnt = IgnoredItemsIds.size();
+
+	if (!IgnoredItemsIds.empty()) {
+		DeepSearch = true;
+	}
+
 	{
 		for (CUICell& cell : m_cells)
 		{
-			cell.Clear();
+			bool IsIgnored = false;
+			CUICellItem* ci = cell.m_item;
+			if (ci) {
+				PIItem item = (PIItem)(ci->m_pData);
+				if (item) {
+					u16 ItemId = item->object_id();
+					if (DeepSearch) {
+						for (size_t i = 0; i < cnt; i++)
+						{
+							if (IgnoredItemsIds[i] == ItemId)
+							{
+								IsIgnored = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (!IsIgnored) {
+				cell.Clear();
+			}
 		}
 	}
 
 	xrCriticalSectionGuard guard(csUi);
-	while (!m_ChildWndList.empty())
+
+	auto it = m_ChildWndList.rbegin();
+
+	while (it != m_ChildWndList.rend())
 	{
-		CUIWindow* w = m_ChildWndList.back();
+		CUIWindow* w = *it;
 		CUICellItem* wc = w != nullptr ? w->ui_cast_cell_item() : nullptr;
 		VERIFY(!wc->IsAutoDelete());
-		DetachChild(wc);
+		
+		if (!wc) {
+			++it;
+			continue;
+		}
 
-		while (wc->ChildsCount())
-		{
-			CUICellItem* ci = wc->PopChild(nullptr);
-			R_ASSERT(ci->ChildsCount() == 0);
-
-			if (bDestroy)
+		bool IsIgnored = false;
+		if (DeepSearch) {
+			u16 ItemId = ((PIItem)(wc->m_pData))->object_id();
+			for (size_t i = 0; i < cnt; i++)
 			{
-				delete_data(ci);
+				if (IgnoredItemsIds[i] == ItemId)
+				{
+					IsIgnored = true;
+					break;
+				}
 			}
 		}
 
-		if (bDestroy)
-		{
-			delete_data(wc);
-		}
-	}
+		if (!IsIgnored) {
+			DetachChild(wc);
 
+			while (wc->ChildsCount())
+			{
+				CUICellItem* ci = wc->PopChild(nullptr);
+				R_ASSERT(ci->ChildsCount() == 0);
+
+				if (bDestroy)
+				{
+					delete_data(ci);
+				}
+			}
+
+			if (bDestroy)
+			{
+				delete_data(wc);
+			}
+		}
+
+		++it;
+	}
 }
 
 Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
