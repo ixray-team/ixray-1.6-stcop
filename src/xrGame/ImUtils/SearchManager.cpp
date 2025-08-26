@@ -520,7 +520,6 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_bottle);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_attch);
 
-	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_explo);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_doc);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bttch);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_nw_attch);
@@ -633,7 +632,8 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.s_invbox);
 
 	// Explo
-	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.item_s_explo);
+	imgui_clsid_manager.add_explo(imgui_clsid_manager.item_s_explo);
+	imgui_clsid_manager.add_explo(imgui_clsid_manager.item_ii_explo);
 
 	g_pClsidManager = &imgui_clsid_manager;
 }
