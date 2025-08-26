@@ -47,6 +47,9 @@ struct clsid_manager
 	void add_explo(CLASS_ID id);
 	bool is_explo(CLASS_ID id);
 
+	void add_npc(CLASS_ID id);
+	bool is_npc(CLASS_ID id);
+
 	const xr_set<CLASS_ID>& get_items(void) const { return items; }
 	const xr_set<CLASS_ID>& get_outfits(void) const { return outfits; }
 	const xr_set<CLASS_ID>& get_ammo(void) const { return ammo; }
@@ -245,6 +248,7 @@ private:
 	xr_set<CLASS_ID> mp_stuffs;
 	xr_set<CLASS_ID> dynamic_objects;
 	xr_set<CLASS_ID> explosives;
+	xr_set<CLASS_ID> npc_list;
 };
 
 enum eSelectedType {
