@@ -14,7 +14,7 @@
 #include "script_sound.h"
 #include "../../xrCore/xr_ini.h"
 
-using Section = xr_vector<std::pair<std::string_view, CInifile::Sect*>>;
+using Section = xr_vector<xr_pair<xr_string_view, CInifile::Sect*>>;
 struct SectionData
 {
 	Section Sorted{};
@@ -50,7 +50,7 @@ struct
 	Section Vehicles{};
 	Section Others{};
 
-	std::unique_ptr<CScriptSound> sound_tip;
+	xr_unique_ptr<CScriptSound> sound_tip;
 	string_path sound_tip_path{};
 } imgui_spawn_manager;
 
@@ -109,7 +109,7 @@ void InitSections()
 		if (pSection == nullptr)
 			continue;
 
-		std::string_view name = pSection->Name.c_str();
+		xr_string_view name = pSection->Name.c_str();
 
 		if (name.empty())
 			continue;
@@ -121,7 +121,7 @@ void InitSections()
 
 		if (pSection->line_exist("visual"))
 		{
-			std::string_view visual = pSettings->r_string(name.data(), "visual");
+			xr_string_view visual = pSettings->r_string(name.data(), "visual");
 			shared_str full_path;
 
 			if (visual.find(".ogf") == xr_string::npos)
@@ -258,7 +258,7 @@ void RenderSpawnManagerWindow() {
 
 	if (imgui_spawn_manager.sound_tip.get() == nullptr)
 	{
-		imgui_spawn_manager.sound_tip = std::make_unique<CScriptSound>(imgui_spawn_manager.sound_tip_path);
+		imgui_spawn_manager.sound_tip = xr_make_unique<CScriptSound>(imgui_spawn_manager.sound_tip_path);
 		imgui_spawn_manager.sound_tip->SetVolume(0.8f);
 	}
 
@@ -803,7 +803,7 @@ void RenderSpawnManagerWindow() {
 
 void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 {
-	auto sm_process_button = [](bool is_table, const std::string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
+	auto sm_process_button = [](bool is_table, const xr_string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
 		char imname[kSpawnManagerMaxSectionName]{};
 		memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
 
@@ -850,7 +850,7 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 
 						const auto& pair = sections[current_section_index];
 
-						const std::string_view& section_name = pair.first;
+						const xr_string_view& section_name = pair.first;
 						CInifile::Sect* pSection = pair.second;
 
 						if (!section_name.empty() && pSection)
@@ -939,18 +939,13 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		Actor()->AddGameNews(news_data);
 	}
 
-
 	xr_string cmd = "g_spawn_inv ";
 	bool isInvItem = section->line_exist("cost") && section->line_exist("inv_weight");
 
-
 	bool spawn_on_level = imgui_spawn_manager.spawn_on_level;
-	if (pInput)
+	if (pInput != nullptr && pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL))
 	{
-		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LCTRL))
-		{
-			spawn_on_level = !imgui_spawn_manager.spawn_on_level;
-		}
+		spawn_on_level = !imgui_spawn_manager.spawn_on_level;
 	}
 
 	if (spawn_on_level || !isInvItem)
@@ -1018,20 +1013,20 @@ float SpawnManager_ParseHitPower(const shared_str& hit_str) {
 
 	Fvector4 fvHitPower{};
 	string32 buffer{};
-	fvHitPower[egdMaster] = (float)atof(_GetItem(*hit_str, 0, buffer));//первый параметр - это хит для уровня игры мастер
-	fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];//изначально параметры для других уровней сложности такие же
-	int num_game_diff_param = _GetItemCount(*hit_str);//узнаём колличество параметров для хитов
-	if (num_game_diff_param > 1)//если задан второй параметр хита
+	fvHitPower[egdMaster] = (float)atof(_GetItem(*hit_str, 0, buffer));
+	fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];
+	int num_game_diff_param = _GetItemCount(*hit_str);
+	if (num_game_diff_param > 1)
 	{
-		fvHitPower[egdVeteran] = (float)atof(_GetItem(*hit_str, 1, buffer));//то вычитываем его для уровня ветерана
+		fvHitPower[egdVeteran] = (float)atof(_GetItem(*hit_str, 1, buffer));
 	}
-	if (num_game_diff_param > 2)//если задан третий параметр хита
+	if (num_game_diff_param > 2)
 	{
-		fvHitPower[egdStalker] = (float)atof(_GetItem(*hit_str, 2, buffer));//то вычитываем его для уровня сталкера
+		fvHitPower[egdStalker] = (float)atof(_GetItem(*hit_str, 2, buffer));
 	}
-	if (num_game_diff_param > 3)//если задан четвёртый параметр хита
+	if (num_game_diff_param > 3)
 	{
-		fvHitPower[egdNovice] = (float)atof(_GetItem(*hit_str, 3, buffer));//то вычитываем его для уровня новичка
+		fvHitPower[egdNovice] = (float)atof(_GetItem(*hit_str, 3, buffer));
 	}
 
 	return fvHitPower[g_SingleGameDifficulty];
