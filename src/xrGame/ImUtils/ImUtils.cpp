@@ -396,6 +396,14 @@ bool clsid_manager::is_explo(CLASS_ID id) {
 	return explosives.contains(id);
 }
 
+void clsid_manager::add_npc(CLASS_ID id) {
+	npc_list.insert(id);
+}
+
+bool clsid_manager::is_npc(CLASS_ID id) {
+	return npc_list.contains(id);
+}
+
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	char name[16]{};
 	CLSID2TEXT(id, name);
