@@ -50,6 +50,7 @@ struct
 	SectionData MpStuffSections = {};
 
 	Section Vehicles{};
+	Section DynamicObjects{};
 	Section Others{};
 
 	xr_unique_ptr<CScriptSound> sound_tip;
@@ -268,6 +269,10 @@ void InitSections()
 		else if (g_pClsidManager->is_vehicle(classId))
 		{
 			imgui_spawn_manager.Vehicles.push_back({ name, pSection });
+		}
+		else if (g_pClsidManager->is_dynamic_object(classId))
+		{
+			imgui_spawn_manager.DynamicObjects.push_back({ name, pSection });
 		}
 		else {
 			//string32 temp; CLSID2TEXT(classId, temp);
@@ -871,6 +876,18 @@ void RenderSpawnManagerWindow() {
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Vehicles.size());
 					SpawnManager_ProcessSections(imgui_spawn_manager.Vehicles, number_imgui);
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			if (imgui_spawn_manager.DynamicObjects.size() > 0)
+			{
+				if (ImGui::BeginTabItem("Dynamic Objects"))
+				{
+					size_t number_imgui{};
+					ImGui::Text("total sections count: %d", imgui_spawn_manager.DynamicObjects.size());
+					SpawnManager_ProcessSections(imgui_spawn_manager.DynamicObjects, number_imgui);
 
 					ImGui::EndTabItem();
 				}
