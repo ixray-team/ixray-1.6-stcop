@@ -91,6 +91,7 @@ struct clsid_manager
 	CLASS_ID monster_tushkano = TEXT2CLSID("SM_TUSHK");
 	CLASS_ID monster_psydog = TEXT2CLSID("SM_DOG_P");
 	CLASS_ID monster_psydogphantom = TEXT2CLSID("SM_DOG_F");
+	CLASS_ID monster_crow = TEXT2CLSID("AI_CROW");
 
 	CLASS_ID weapon_binocular = TEXT2CLSID("WP_BINOC");
 	CLASS_ID weapon_knife = TEXT2CLSID("WP_KNIFE");
