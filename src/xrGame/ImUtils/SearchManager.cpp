@@ -118,8 +118,8 @@ void RenderSearchManagerWindow()
 								{
 									if (pCasted && pObject)
 									{
-										std::string_view cname = pObject->cName().c_str();
-										std::string_view translate_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str();
+										xr_string_view cname = pObject->cName().c_str();
+										xr_string_view translate_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(pCasted->Name()).c_str()).c_str();
 
 										if (cname.find(imgui_search_manager.search_string) == xr_string::npos && translate_name.find(imgui_search_manager.search_string) == xr_string::npos)
 										{
@@ -337,9 +337,9 @@ void RenderSearchManagerWindow()
 										bool filter_by_s_name = true;
 										if (pServerObject->name_replace())
 										{
-											std::string_view cname = pServerObject->name_replace();
+											xr_string_view cname = pServerObject->name_replace();
 											const xr_string& translated_by_cname = Platform::ANSI_TO_UTF8(g_pStringTable->translate(cname.data()).c_str());
-											if (cname.find(imgui_search_manager.search_string) == std::string_view::npos && translated_by_cname.find(imgui_search_manager.search_string) == xr_string::npos)
+											if (cname.find(imgui_search_manager.search_string) == xr_string_view::npos && translated_by_cname.find(imgui_search_manager.search_string) == xr_string::npos)
 											{
 												filter_by_cname = false;
 											}
@@ -351,11 +351,11 @@ void RenderSearchManagerWindow()
 
 										if (pAbstract->s_name.c_str())
 										{
-											std::string_view s_name = pAbstract->s_name.c_str();
+											xr_string_view s_name = pAbstract->s_name.c_str();
 
 											const xr_string& translated_by_s_name = Platform::ANSI_TO_UTF8(g_pStringTable->translate(s_name.data()).c_str());
 
-											if (s_name.find(imgui_search_manager.search_string) == std::string_view::npos && translated_by_s_name.find(imgui_search_manager.search_string) == xr_string::npos)
+											if (s_name.find(imgui_search_manager.search_string) == xr_string_view::npos && translated_by_s_name.find(imgui_search_manager.search_string) == xr_string::npos)
 											{
 												filter_by_s_name = false;
 											}
