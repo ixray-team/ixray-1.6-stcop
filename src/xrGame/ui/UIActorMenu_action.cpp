@@ -235,10 +235,19 @@ bool CUIActorMenu::OnItemDbClick(CUICellItem* itm)
 	{
 	case iActorSlot:
 		{
-			if ( m_currMenuMode == mmDeadBodySearch )
-				ToDeadBodyBag	( itm, false );
-			else
-				ToBag			( itm, false );
+			if (m_currMenuMode == mmDeadBodySearch) {
+				// FFx0001
+				if (IsAllowPlaceToInvBox(itm)) {
+					ToDeadBodyBag(itm, false);
+				}
+			}
+			else 
+			{
+				// FFx0001
+				if (IsAllowTakeFromInvBox(itm)) {
+					ToBag(itm, false);
+				}
+			}
 			break;
 		}
 	case iActorBag:
