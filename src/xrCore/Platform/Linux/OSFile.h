@@ -33,6 +33,12 @@ using errno_t = int;
 #define xr_fseek fseeko
 #define xr_ftell ftello
 
+static constexpr std::uint32_t FILE_BEGIN = 0;
+static constexpr std::uint32_t FILE_CURRENT = 1;
+static constexpr std::uint32_t FILE_END = 2;
+
+static constexpr std::uint32_t INVALID_SET_FILE_POINTER = (std::uint32_t)-1;
+
 using __int64 = int64_t;
 using __time64_t = __int64;
 using __time32_t = long;
@@ -263,7 +269,7 @@ namespace Platform
         return sysconf(_SC_PAGE_SIZE);
     }
 
-    inline int Unlink(const char *path)
+    IC int Unlink(const char *path)
     {
         const char* conv_fn = ValidPath(path);
         int result = unlink(conv_fn);
@@ -271,6 +277,34 @@ namespace Platform
     }
 
     size_t Stat(const char* path, time_t& Time);
+
+    static constexpr size_t INVALID_READ_SIZE = (size_t)-1;
+    IC std::uint32_t SetFilePointer(FileHandle hFile, std::uint32_t lDistanceToMove, std::uint32_t dwMoveMethod)
+    {
+        int whence;
+        switch (dwMoveMethod)
+        {
+            case FILE_BEGIN: whence = SEEK_SET; break;
+            case FILE_CURRENT: whence = SEEK_CUR; break;
+            case FILE_END: whence = SEEK_END; break;
+            default: return INVALID_SET_FILE_POINTER;
+        }
+
+        off_t result = lseek(hFile, lDistanceToMove, whence);
+        if (result == (off_t)-1)
+            return INVALID_SET_FILE_POINTER;
+
+        return (std::uint32_t)result;
+    }
+
+    IC size_t ReadFile(FileHandle hFile, void* lpBuffer, size_t nNumberOfBytesToRead)
+    {
+        ssize_t bytesRead = read(hFile, lpBuffer, nNumberOfBytesToRead);
+        if (bytesRead == -1)
+            return INVALID_READ_SIZE;
+
+        return (size_t)bytesRead;
+    }
 }
 
 inline int _rmdir(const char *path)
