@@ -524,7 +524,6 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_doc);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bttch);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_nw_attch);
-	//imgui_clsid_manager.add_item(imgui_clsid_manager.item_s_explo);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_ii_bolt);
 
 	// Items used
@@ -620,6 +619,19 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_simple);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_smetr);
 	imgui_clsid_manager.add_device(imgui_clsid_manager.item_d_custom);
+
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_dstr_s);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.o_physic_s);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_object_item_std);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_object_breakable);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_object_climable);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_object_holder_ent);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_ph_skeleton_object);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_object_physic);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_physics_destr);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_invbox);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.s_invbox);
+	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.item_s_explo);
 
 	g_pClsidManager = &imgui_clsid_manager;
 }

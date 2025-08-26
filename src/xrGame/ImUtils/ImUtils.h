@@ -41,6 +41,9 @@ struct clsid_manager
 	void add_vehicle(CLASS_ID id);
 	bool is_vehicle(CLASS_ID id);
 
+	void add_dynamic_object(CLASS_ID id);
+	bool is_dynamic_object(CLASS_ID id);
+
 	const xr_set<CLASS_ID>& get_items(void) const { return items; }
 	const xr_set<CLASS_ID>& get_outfits(void) const { return outfits; }
 	const xr_set<CLASS_ID>& get_ammo(void) const { return ammo; }
@@ -131,7 +134,6 @@ struct clsid_manager
 	CLASS_ID item_ii_doc = TEXT2CLSID("II_DOC");
 	CLASS_ID item_ii_bttch = TEXT2CLSID("II_BTTCH");
 	CLASS_ID item_nw_attch = TEXT2CLSID("NW_ATTCH");
-	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
 	CLASS_ID item_ii_bolt = CLSID_IITEM_BOLT;
 
 	// Items used
@@ -208,6 +210,20 @@ struct clsid_manager
 	CLASS_ID mp_art_gravi = CLSID_AF_GRAVI;
 	CLASS_ID mp_art_cta = CLSID_AF_CTA;
 
+	// Dynamic objects
+	CLASS_ID do_dstr_s = TEXT2CLSID("O_DSTR_S");
+	CLASS_ID o_physic_s = TEXT2CLSID("O_PHYS_S");
+	CLASS_ID do_object_item_std = CLSID_OBJECT_ITEM_STD;
+	CLASS_ID do_object_breakable = CLSID_OBJECT_BREAKABLE;
+	CLASS_ID do_object_climable = CLSID_OBJECT_CLIMABLE;
+	CLASS_ID do_object_holder_ent = CLSID_OBJECT_HOLDER_ENT;
+	CLASS_ID do_ph_skeleton_object = CLSID_PH_SKELETON_OBJECT;
+	CLASS_ID do_object_physic = CLSID_OBJECT_PHYSIC;
+	CLASS_ID do_physics_destr = CLSID_PHYSICS_DESTROYABLE;
+	CLASS_ID do_invbox = CLSID_INVENTORY_BOX;
+	CLASS_ID s_invbox = TEXT2CLSID("S_INVBOX");
+	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
+
 private:
 	xr_set<CLASS_ID> weapons;
 	xr_set<CLASS_ID> monsters;
@@ -221,6 +237,7 @@ private:
 	xr_set<CLASS_ID> artefacts;
 	xr_set<CLASS_ID> vehicles;
 	xr_set<CLASS_ID> mp_stuffs;
+	xr_set<CLASS_ID> dynamic_objects;
 };
 
 enum eSelectedType {
