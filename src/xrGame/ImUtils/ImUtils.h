@@ -44,6 +44,9 @@ struct clsid_manager
 	void add_dynamic_object(CLASS_ID id);
 	bool is_dynamic_object(CLASS_ID id);
 
+	void add_explo(CLASS_ID id);
+	bool is_explo(CLASS_ID id);
+
 	const xr_set<CLASS_ID>& get_items(void) const { return items; }
 	const xr_set<CLASS_ID>& get_outfits(void) const { return outfits; }
 	const xr_set<CLASS_ID>& get_ammo(void) const { return ammo; }
@@ -222,6 +225,8 @@ struct clsid_manager
 	CLASS_ID do_physics_destr = CLSID_PHYSICS_DESTROYABLE;
 	CLASS_ID do_invbox = CLSID_INVENTORY_BOX;
 	CLASS_ID s_invbox = TEXT2CLSID("S_INVBOX");
+
+	// Explo
 	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
 
 private:
@@ -238,6 +243,7 @@ private:
 	xr_set<CLASS_ID> vehicles;
 	xr_set<CLASS_ID> mp_stuffs;
 	xr_set<CLASS_ID> dynamic_objects;
+	xr_set<CLASS_ID> explosives;
 };
 
 enum eSelectedType {
