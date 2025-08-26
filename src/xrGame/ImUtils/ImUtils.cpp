@@ -178,7 +178,7 @@ void CImGuiGameSearchManager::init()
 	type_to_class[eSelectedType::kSelectedType_Weapon_Magazine] = g_pClsidManager->weapon_magazine;
 	type_to_class[eSelectedType::kSelectedType_Weapon_StationaryMachineGun] = g_pClsidManager->weapon_stationary_machine_gun;
 
-	for (const std::pair<eSelectedType, CLASS_ID>& pair : type_to_class)
+	for (const xr_pair<eSelectedType, CLASS_ID>& pair : type_to_class)
 	{
 		class_to_type[pair.second] = pair.first;
 	}
