@@ -471,6 +471,8 @@ clsid_manager imgui_clsid_manager;
 
 void InitImGuiCLSIDInGame()
 {
+	imgui_clsid_manager.add_npc(imgui_clsid_manager.stalker);
+
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_bloodsucker);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_boar);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_dog);
