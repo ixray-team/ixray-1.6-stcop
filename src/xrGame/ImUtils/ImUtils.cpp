@@ -298,106 +298,95 @@ const char* CImGuiGameSearchManager::getTranslatedString(eSelectedType type)
 }
 
 void clsid_manager::add_mp_stuff(CLASS_ID id) {
-	if (!is_mp_stuff(id))
-		mp_stuffs.insert(id);
+	mp_stuffs.insert(id);
 }
 
 bool clsid_manager::is_mp_stuff(CLASS_ID id) {
-	return mp_stuffs.find(id) != mp_stuffs.end();
+	return mp_stuffs.contains(id);
 }
 
 void clsid_manager::add_item(CLASS_ID id) {
-	if (!is_item(id))
-		items.insert(id);
+	items.insert(id);
 }
 
 bool clsid_manager::is_item(CLASS_ID id) {
-	return items.find(id) != items.end();
+	return items.contains(id);
 }
 
 void clsid_manager::add_item_used(CLASS_ID id) {
-	if (!is_item_used(id))
-		items_used.insert(id);
+	items_used.insert(id);
 }
 
 bool clsid_manager::is_item_used(CLASS_ID id) {
-	return items_used.find(id) != items_used.end();
+	return items_used.contains(id);
 }
 
 void clsid_manager::add_device(CLASS_ID id) {
-	if (!is_device(id))
-		devices.insert(id);
+	devices.insert(id);
 }
 
 bool clsid_manager::is_device(CLASS_ID id) {
-	return devices.find(id) != devices.end();
+	return devices.contains(id);
 }
 
 void clsid_manager::add_dynamic_object(CLASS_ID id) {
-	if (!is_dynamic_object(id))
-		dynamic_objects.insert(id);
+	dynamic_objects.insert(id);
 }
 
 bool clsid_manager::is_dynamic_object(CLASS_ID id) {
-	return dynamic_objects.find(id) != dynamic_objects.end();
+	return dynamic_objects.contains(id);
 }
 
 void clsid_manager::add_outfit(CLASS_ID id) {
-	if (!is_outfit(id))
-		outfits.insert(id);
+	outfits.insert(id);
 }
 
 bool clsid_manager::is_outfit(CLASS_ID id) {
-	return outfits.find(id) != outfits.end();
+	return outfits.contains(id);
 }
 void clsid_manager::add_ammo(CLASS_ID id) {
-	if (!is_ammo(id))
-		ammo.insert(id);
+	ammo.insert(id);
 }
 
 bool clsid_manager::is_ammo(CLASS_ID id) {
-	return ammo.find(id) != ammo.end();
+	return ammo.contains(id);
 }
 void clsid_manager::add_weapon(CLASS_ID id) {
-	if (!is_weapon(id))
-		weapons.insert(id);
+	weapons.insert(id);
 }
 
 bool clsid_manager::is_weapon(CLASS_ID id) {
-	return weapons.find(id) != weapons.end();
+	return weapons.contains(id);
 }
 void clsid_manager::add_monster(CLASS_ID id) {
-	if (!is_monster(id))
-		monsters.insert(id);
+	monsters.insert(id);
 }
 
 bool clsid_manager::is_monster(CLASS_ID id) {
-	return monsters.find(id) != monsters.end();
+	return monsters.contains(id);
 }
 void clsid_manager::add_addon(CLASS_ID id) {
-	if (!is_addon(id))
-		addons.insert(id);
+	addons.insert(id);
 }
 
 bool clsid_manager::is_addon(CLASS_ID id) {
-	return addons.find(id) != addons.end();
+	return addons.contains(id);
 }
 void clsid_manager::add_artefact(CLASS_ID id) {
-	if (!is_artefact(id))
-		artefacts.insert(id);
+	artefacts.insert(id);
 }
 
 bool clsid_manager::is_artefact(CLASS_ID id) {
-	return artefacts.find(id) != artefacts.end();
+	return artefacts.contains(id);
 }
 void clsid_manager::add_vehicle(CLASS_ID id) {
-	if (!is_vehicle(id))
-		vehicles.insert(id);
+	vehicles.insert(id);
 }
 
 bool clsid_manager::is_vehicle(CLASS_ID id) {
-	return vehicles.find(id) != vehicles.end();
+	return vehicles.contains(id);
 }
+
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	char name[16]{};
 	CLSID2TEXT(id, name);
