@@ -631,6 +631,8 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_physics_destr);
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.do_invbox);
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.s_invbox);
+
+	// Explo
 	imgui_clsid_manager.add_dynamic_object(imgui_clsid_manager.item_s_explo);
 
 	g_pClsidManager = &imgui_clsid_manager;
