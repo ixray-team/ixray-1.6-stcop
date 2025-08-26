@@ -956,6 +956,13 @@ float g_get_target_dist()
 	return (0);
 }
 
+u32 g_get_material_id_by_element(int element)
+{
+	CDB::TRI const& triangle = *(Level().ObjectSpace.GetStaticTris() + element);
+
+	return triangle.material;
+}
+
 u32 g_get_target_element()
 {
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
@@ -1524,6 +1531,7 @@ void CLevel::script_register(lua_State *L)
 		def("send", &g_send2), //allow the ability to send netpacket to level
 		def("get_target_obj", &g_get_target_obj), //intentionally named to what is in xray extensions
 		def("get_target_dist", &g_get_target_dist),
+		def("get_material_id_by_element", &g_get_material_id_by_element), //FFx0001 ++
 		def("press_action", &LevelPressAction),
 		def("release_action", &LevelReleaseAction),
 		def("hold_action", &LevelHoldAction),
