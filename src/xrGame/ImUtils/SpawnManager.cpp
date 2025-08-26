@@ -49,6 +49,7 @@ struct
 	SectionData ArtefactSections = {};
 	SectionData MpStuffSections = {};
 
+	Section Monsters{};
 	Section Vehicles{};
 	Section DynamicObjects{};
 	Section Explosives{};
@@ -266,6 +267,10 @@ void InitSections()
 			{
 				imgui_spawn_manager.ArtefactSections.Unsorted.push_back({ name, pSection });
 			}
+		}
+		else if (g_pClsidManager->is_monster(classId))
+		{
+			imgui_spawn_manager.Monsters.push_back({ name, pSection });
 		}
 		else if (g_pClsidManager->is_vehicle(classId))
 		{
@@ -872,6 +877,18 @@ void RenderSpawnManagerWindow() {
 				}
 
 				ImGui::EndTabItem();
+			}
+
+			if (imgui_spawn_manager.Monsters.size() > 0)
+			{
+				if (ImGui::BeginTabItem("Monsters"))
+				{
+					size_t number_imgui{};
+					ImGui::Text("total sections count: %d", imgui_spawn_manager.Monsters.size());
+					SpawnManager_ProcessSections(imgui_spawn_manager.Monsters, number_imgui);
+
+					ImGui::EndTabItem();
+				}
 			}
 
 			if (imgui_spawn_manager.Vehicles.size() > 0)
