@@ -39,6 +39,9 @@ CUIActorMenu::CUIActorMenu()
 	LoadCallbackGlobals(m_isEffectDisassemble, m_onEffectDisassemble, "OnEffectDisassemble");
 	LoadCallbackGlobals(m_isDonateCurrentItem, m_onDonateCurrentItem, "OnDonateCurrentItem");
 
+	LoadCallbackGlobals(m_isInvBoxCanTakeItem, m_onInvBoxCanTakeItem, "OnInvBoxCanTakeItem");		// FFx0001
+	LoadCallbackGlobals(m_isInvBoxCanPlaceItem, m_onInvBoxCanPlaceItem, "OnInvBoxCanPlaceItem");	// FFx0001
+
 	Construct						();
 }
 
