@@ -144,10 +144,19 @@ class "evaluator_danger" (property_evaluator)
 function evaluator_danger:__init(name, storage, npc) super (nil, name)
 	self.a = storage
 end
+
 function evaluator_danger:evaluate()
 	--printf("evaluator danger %s",  self.object:name())
 	if self.mgr == nil then
 		self.mgr = self.object:motivation_action_manager()
+	end
+
+	local flags_into_callbacks = {ret_value = true}
+	SendScriptCallback("npc_on_eval_danger", self.object, flags_into_callbacks)
+	if flags_into_callbacks.ret_value == false then
+		db.storage[self.object:id()].danger_flag = flags_into_callbacks.ret_value
+		
+		return false 
 	end
 
 	-- инерция возврата
@@ -178,6 +187,7 @@ function evaluator_danger:evaluate()
 	if se_obj and se_obj.m_smart_terrain_id ~= 65535 then
 		alife():object(se_obj.m_smart_terrain_id):set_alarm()
 	end
+	
 	--printf(" [%s] return true %s", tostring(time_global()), self.object:name())
 	return true
 end
