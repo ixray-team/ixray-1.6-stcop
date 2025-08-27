@@ -73,9 +73,14 @@ function hear_callback(obj, who_id, sound_type, sound_position, sound_power)
 	local st = db.storage[obj:id()]
 	local s_type = get_sound_type(sound_type)
 	local story_id = get_object_story_id(who_id) or "any"
+	local sound_dist = sound_position:distance_to_sqr(obj:position())
+	
 	if st.hear_sounds == nil then
 		return
 	end
+	
+	SendScriptCallback("npc_on_hear_callback", obj, who_id, s_type, sound_dist, sound_power, sound_position, sound_type)
+	
 	if st.hear_sounds[story_id] and st.hear_sounds[story_id][s_type] then
 		local hear_sound_params = st.hear_sounds[story_id][s_type]
 		if hear_sound_params.dist >= sound_position:distance_to(obj:position()) and sound_power >= hear_sound_params.power then

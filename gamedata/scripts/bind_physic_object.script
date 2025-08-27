@@ -147,15 +147,28 @@ function generic_physics_binder:use_callback(obj, who)
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 	end
+	
+	if obj and obj:id() then
+		SendScriptCallback("physic_object_on_use", obj, who)
+		SendScriptCallback("physic_object_on_use_callback", obj, who)
+	end
 end
 
 function generic_physics_binder:hit_callback(obj, amount, local_direction, who, bone_index)
 	printf("_bp: generic_physics_binder:hit_callback: obj='%s'", obj:name())
+	
 	if self.st.ph_on_hit then
 		xr_logic.issue_event(self.object, self.st.ph_on_hit, "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
+	
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
+	end
+	
+	SendScriptCallback("physic_object_on_hit_callback", obj, amount, local_direction, who, bone_index)
+	
+	if obj and obj:id() then
+		SendScriptCallback("physic_object_on_hit", obj, amount, local_direction, who, bone_index)
 	end
 end
 
@@ -171,5 +184,9 @@ function generic_physics_binder:death_callback(victim, who)
 
 	if self.object:spawn_ini() ~= nil and self.object:spawn_ini():section_exist("drop_box") == true then
 		self.box_items:spawn_items()
+	end
+	
+	if victim and victim:id() then
+		SendScriptCallback("physic_object_on_death", victim, who)
 	end
 end
