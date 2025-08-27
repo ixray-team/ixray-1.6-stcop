@@ -46,10 +46,12 @@ CDetailManager::CDetailManager()
 {
 	dtFS 		= 0;
 	dtSlots		= 0;
-	hw_Geom		= 0;
 	hw_BatchSize= 0;
+#ifndef USE_DX11
+	hw_Geom		= 0;
 	hw_VB		= 0;
 	hw_IB		= 0;
+#endif
 	m_time_rot_1 = 0;
 	m_time_rot_2 = 0;
 	m_time_pos	= 0;
@@ -165,6 +167,17 @@ void CDetailManager::Unload		()
 
 	FS.r_close(dtFS);
 	dtFS = 0;
+
+	//LVutner: Release buffers	
+#ifdef USE_DX11
+	for(auto& it : detailBuffer_map)
+		_RELEASE(it.second);
+	detailBuffer_map.clear();
+
+	for(auto& its : detailSRV_map)
+		_RELEASE(its.second);
+	detailSRV_map.clear();
+#endif		
 }
 
 extern ECORE_API float r_ssaDISCARD;

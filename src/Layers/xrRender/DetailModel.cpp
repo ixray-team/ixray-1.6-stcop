@@ -1,6 +1,24 @@
 #include "stdafx.h"
 
 #include "DetailModel.h"
+#include "DetailManager.h"
+
+#ifdef USE_DX11
+	#include "../xrRenderDX10/dx10BufferUtils.h"
+#endif
+
+struct	vertHW
+{
+	Fvector4 pos_frac;
+	Fvector2 uv;
+};
+
+static D3DVERTEXELEMENT9 dwDecl[] =
+{
+	{ 0, 0,  D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // pos.frac
+	{ 0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 }, // uv
+	D3DDECL_END()
+};
 
 CDetail::~CDetail()
 {
@@ -14,6 +32,13 @@ void CDetail::Unload	()
 	if (vertices)		{ xr_free(vertices);	vertices=0; }
 	if (indices)		{ xr_free(indices);		indices=0;	}
 	shader.destroy		();
+
+	//LVutner: Release (per-object) IB/VB
+#ifdef USE_DX11
+	_RELEASE(hw_VB);
+	_RELEASE(hw_IB);
+	hw_Geom.destroy();
+#endif
 }
 
 void CDetail::transfer	(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
@@ -111,6 +136,28 @@ void CDetail::Load		(IReader* S)
 	for (u32 i=0; i<number_vertices; i++)
 		bv_bb.modify	(vertices[i].P);
 	bv_bb.getsphere		(bv_sphere.P,bv_sphere.R);
+
+	//LVutner: Create vertex and index buffers
+#ifdef USE_DX11
+	{
+		xr_vector<vertHW> pV;
+		for (u32 v = 0; v < number_vertices; v++)
+		{
+			vertHW V;
+			V.pos_frac.x = vertices[v].P.x;
+			V.pos_frac.y = vertices[v].P.y;
+			V.pos_frac.z = vertices[v].P.z;
+			V.pos_frac.w = vertices[v].P.y / (bv_bb.max.y - bv_bb.min.y);
+
+			V.uv.x = vertices[v].u;
+			V.uv.y = vertices[v].v;
+			pV.push_back(V);
+		}
+		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
+		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
+		hw_Geom.create(dwDecl, hw_VB, hw_IB);
+	}
+#endif
 
 #ifndef _EDITOR
 	Optimize	();
