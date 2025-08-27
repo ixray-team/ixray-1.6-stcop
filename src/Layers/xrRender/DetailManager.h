@@ -1,24 +1,12 @@
 // DetailManager.h: interface for the CDetailManager class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef DetailManagerH
-#define DetailManagerH
 #pragma once
 
 #include "../../xrCore/xrPool.h"
 #include "DetailFormat.h"
 #include "DetailModel.h"
 #include "light.h"
-
-//#undef IXR_WINDOWS
-#ifdef IXR_WINDOWS
-#include <ppl.h>
-#else
-#include <future>
-#include <thread>
-#endif
-
 
 #ifdef _EDITOR
 //.	#include	"ESceneClassList.h"
@@ -137,10 +125,13 @@ public:
 	virtual ObjectList* 			GetSnapList		()=0;
 #endif
 
-	ref_geom						hw_Geom;
+
 	u32								hw_BatchSize;
+#ifndef USE_DX11	
+	ref_geom						hw_Geom;	
 	ID3DVertexBuffer*				hw_VB;
 	ID3DIndexBuffer*				hw_IB;
+#endif
 	ref_constant					hwc_consts;
 	ref_constant					hwc_wave;
 	ref_constant					hwc_wind;
@@ -156,6 +147,9 @@ public:
 	void							hw_Render		(light*L=NULL);
 
 #ifdef USE_DX11
+	xr_map<u32, ID3D11ShaderResourceView*> detailSRV_map;
+	xr_map<u32, ID3D11Buffer*> detailBuffer_map;
+
 	void							hw_Render_dump	(const Fvector4 &consts, const Fvector4 &wave, const Fvector4 &wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light*L=NULL);
 #else //USE_DX11
 	void							hw_Render_dump	(ref_constant array, u32 var_id, u32 lod_id, light*L=NULL);
@@ -188,5 +182,3 @@ public:
 	CDetailManager					();
 	virtual ~CDetailManager			();
 };
-
-#endif //DetailManagerH
