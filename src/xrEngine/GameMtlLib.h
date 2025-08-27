@@ -340,6 +340,7 @@ public:
 
 	// IO routines
 	void				Load				();
+	void				Load				(const shared_str& filename);
 	bool				Save				();
 };
 
