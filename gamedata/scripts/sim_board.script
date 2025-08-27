@@ -237,8 +237,13 @@ function sim_board:create_squad(spawn_smart, sq_id)
 	--' Пересчитываем Team, Squad, Group
 	for k in squad:squad_members() do
 		local obj = k.object
-		squad.board:setup_squad_and_group(obj)
+		
+		if (obj) then
+			squad.board:setup_squad_and_group(obj)
+			SendScriptCallback("squad_on_npc_creation", squad, obj, spawn_smart)
+		end
 	end
+	
 	return squad
 end
 --' Удалить отряд
@@ -279,6 +284,8 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
 	if old_smart_id ~= nil and self.smarts[old_smart_id] ~= nil then
 		self.smarts[old_smart_id].squads[squad.id] = nil
 		self.smarts[old_smart_id].smrt:refresh()
+		
+		SendScriptCallback("squad_on_leave_smart", squad, self.smarts[old_smart_id].smrt)
 	end
 
 	if smart_id == nil then
@@ -292,6 +299,8 @@ function sim_board:assign_squad_to_smart(squad, smart_id)
 	self.smarts[smart_id].squads[squad.id] = squad
 
 	self.smarts[smart_id].smrt:refresh()
+	
+	SendScriptCallback("squad_on_enter_smart", squad, self.smarts[smart_id].smrt)
 end
 --' Отряд покидает смарт (уменьшаются ресурсы)
 function sim_board:exit_smart(squad, smart_id)
@@ -384,6 +393,8 @@ end
 
 --' Заполнение стартового расположения
 function sim_board:fill_start_position()
+	SendScriptCallback("fill_start_position")
+
 	if self.start_position_filled == true then
 		return
 	end

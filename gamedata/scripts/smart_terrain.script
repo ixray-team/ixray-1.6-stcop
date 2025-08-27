@@ -142,6 +142,9 @@ end
 
 function se_smart_terrain:on_register()
 	cse_alife_smart_zone.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_smart_terrain")
+	
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
@@ -175,6 +178,7 @@ end
 -- анрегистрация объекта в симуляторе.
 -- вызывается симулятором.
 function se_smart_terrain:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_smart_terrain")
 	cse_alife_smart_zone.on_unregister(self)
 	self.board:unregister_smart(self)
 	smart_terrains_by_name[self:name()] = nil
@@ -1030,6 +1034,11 @@ function se_smart_terrain:update()
 
 	if simulation_objects.is_on_the_same_level(self, alife():actor()) then
 		local dist_to_actor = self.position:distance_to(alife():actor().position)
+		
+		if (dist_to_actor <= 50) then
+			SendScriptCallback("actor_on_interaction", "smarts", self, self:name())
+		end	
+		
 		local old_dist_to_actor = (nearest_to_actor_smart.id == nil and nearest_to_actor_smart.dist) or alife():object(nearest_to_actor_smart.id).position:distance_to(alife():actor().position)
 		if dist_to_actor < old_dist_to_actor then
 			nearest_to_actor_smart.id = self.id
@@ -1081,6 +1090,8 @@ function se_smart_terrain:update()
 	end
 	-- Апдейт доступности для симуляции.
 	simulation_objects.get_sim_obj_registry():update_avaliability(self)
+	
+	SendScriptCallback("smart_terrain_on_update", self)
 end
 -- Переведение смарта в напряженное состояние
 function se_smart_terrain:set_alarm()
@@ -1416,7 +1427,7 @@ function se_smart_terrain:try_respawn()
         disabled = false
     }
     
-    --SendScriptCallback("on_try_respawn", self, flags)
+    SendScriptCallback("on_try_respawn", self, flags)
     
     if self.disabled or flags.disabled then
         return

@@ -61,37 +61,68 @@ end
 -- 10 =  Talk dialog  show
 -- 11 =  Talk dialog  hide
 local last_mode = 0
-dialog_closed = false
-trade_closed = false
-upgrade_closed = false
+local dialog_closed = false
+local trade_closed = false
+local upgrade_closed = false
+local npc_dlg_id = nil
 function actor_menu_mode(mode)
+	SendScriptCallback("on_actor_wnd_mode_switch", mode)
+	
+	if(mode==0) then
+		SendScriptCallback("on_actor_wnd_closed", mode)
+	else
+		SendScriptCallback("on_actor_wnd_opened", mode)
+	end
+	
 	if(mode==0) then
 		if(last_mode==1) then
 			inventory_wnd_closed()
+			SendScriptCallback("on_actor_inventory_wnd_closed", mode)
 		elseif(last_mode==2) then
 			trade_wnd_closed()
+			SendScriptCallback("on_actor_trade_wnd_closed", mode)
 		elseif(last_mode==3) then
 			upgrade_wnd_closed()
+			SendScriptCallback("on_actor_upgrade_wnd_closed", mode)
 		elseif(last_mode==4) then
 			dead_body_search_wnd_closed()
+			SendScriptCallback("on_actor_dead_body_search_wnd_closed", mode)
 		end
 		last_mode = 0
 	elseif(mode==1) then
 		last_mode = 1
 		inventory_wnd_opened()
+		SendScriptCallback("on_actor_inventory_wnd_opened", mode)
 	elseif(mode==2) then
 		last_mode = 2
 		trade_wnd_opened()
+		SendScriptCallback("on_actor_trade_wnd_opened", mode)
 	elseif(mode==3) then
 		last_mode = 3
 		upgrade_wnd_opened()
+		SendScriptCallback("on_actor_upgrade_wnd_opened", mode)
 	elseif(mode==4) then
 		last_mode = 4
 		dead_body_search_wnd_opened()
+		SendScriptCallback("on_actor_dead_body_search_wnd_opened", mode)
 	elseif(mode==10) then
+		-- coc export begin
+		for k,st in pairs(db.storage) do
+			if (st.object and st.object:is_talking() and st.object:id() ~= AC_ID) then
+				npc_dlg_id = st.object:id()
+				SetRegistryValue("used_npc_id", st.object:id())
+				break
+			end
+		end
+		-- coc export end
 		dialog_wnd_showed()
+		SendScriptCallback("on_actor_dialog_wnd_showed", mode, npc_dlg_id)
 	elseif(mode==11) then
+		SendScriptCallback("actor_on_leave_dialog", GetRegistryValue("used_npc_id"))
+		SetRegistryValue("used_npc_id", nil)
 		dialog_wnd_closed()
+		SendScriptCallback("on_actor_dialog_wnd_closed", mode, npc_dlg_id)
+		npc_dlg_id = nil
 	end
 end
 
@@ -394,6 +425,13 @@ end
 -- UI returned must be CUIScriptWnd
 function set_active_subdialog(section)
 	--printf("section=%s",section)
+	local tbl_dialog = {ui_wnd = nil}
+	SendScriptCallback("on_pda_set_active_subdialog", this, section, tbl_dialog)
+	
+	if tbl_dialog["ui_wnd"] ~= nil then
+		return tbl_dialog["ui_wnd"]
+	end
+	
 	if (section == "eptTasks") then 
 	
 	elseif (section == "eptRanking") then 
@@ -412,10 +450,19 @@ end
 
 function property_box_clicked(property_ui)
 	-- See CoC for implmentation
+	local list_item = property_ui:GetSelectedItem()
+	if not (list_item) then 
+		return 
+	end
+	local textControl = list_item:GetTextItem()
+	local prop = textControl:GetText()
+	
+	SendScriptCallback("map_spot_menu_property_clicked", property_ui ,map_spot_property.id, map_spot_property.level_name, prop)
 end 
 
-function property_box_add_properties(property_ui,id,level_name,hint)
+function property_box_add_properties(property_ui, id, level_name, hint)
 	-- See CoC for implmentation
+	SendScriptCallback("map_spot_menu_add_property", property_ui, id, level_name, hint)
 end
 
 -- called from engine! It's how many character rankings to display! u8 (max 255)

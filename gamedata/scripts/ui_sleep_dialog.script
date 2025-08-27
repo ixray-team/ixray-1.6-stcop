@@ -130,8 +130,10 @@ function sleep_dialog:OnMessageBoxOk()
 end
 --------------------------------------------------------------------------------
 function dream_callback()
-	level.add_cam_effector("camera_effects\\sleep.anm", 10, false, "ui_sleep_dialog.dream_callback2")
 	local hours = sleep_control.time_track:GetIValue()
+	SendScriptCallback("actor_on_before_sleep", hours)
+	
+	level.add_cam_effector("camera_effects\\sleep.anm", 10, false, "ui_sleep_dialog.dream_callback2")
 	level.change_game_time(0,hours,0)
 	level_weathers.get_weather_manager():forced_weather_change()
 	surge_manager.get_surge_manager().time_forwarded = true
@@ -142,6 +144,8 @@ function dream_callback()
 	end
 	db.actor.power = 1
     printf("dream_callback: time forwarded on [%d]", hours)
+	
+	SendScriptCallback("actor_on_sleep", hours)
 end
 
 function dream_callback2()

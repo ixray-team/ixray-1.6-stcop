@@ -1,0 +1,60 @@
+
+
+local is_actor_loaded = false
+
+function on_game_start()
+	RegisterScriptCallback("on_key_press", this.on_key_press)
+	RegisterScriptCallback("CInventoryBox_OnInvBoxCanTakeItem", this.on_inv_box_can_take_item)
+	RegisterScriptCallback("CInventoryBox_OnInvBoxCanPlaceItem", this.on_inv_box_can_palce_item)
+
+	
+	RegisterScriptCallback("on_init_ixr_options", function (_ref)
+		
+		_ref.register_option(nil, "float_track_bar", "Пример трек бара", _ref.track_bar(23.0, 0.0, 100.0, 1.0), this.on_change_value)
+		
+		_ref.register_option(nil, "float_picker", "Пример числового пикера", _ref.numeric_up_down(0.0, -1.0, 1.0, 0.25), this.on_change_value)
+	
+		_ref.register_option(nil, "color_picker", "Пример комбо бокса", _ref.combo_box(1, {
+			{["option_display_name"] = "Не задан", 	["option_return_value"] = {255, 255, 255}}, --// в возвращаемое значение можно положить любой lua тип даже функцию
+			{["option_display_name"] = "Красный", 	["option_return_value"] = {255, 0, 0}}, 	--// в возвращаемое значение можно положить любой lua тип даже функцию
+			{["option_display_name"] = "Зеленый", 	["option_return_value"] = {0, 255, 0}}, 	--// в возвращаемое значение можно положить любой lua тип даже функцию
+			{["option_display_name"] = "Синий", 	["option_return_value"] = {0, 0, 255}}, 	--// в возвращаемое значение можно положить любой lua тип даже функцию
+		}), this.on_change_value)
+		
+		_ref.register_option(nil, "gg_name", "Пример текстового поля ввода", _ref.text_box("Меченый"), this.on_change_value)
+		_ref.register_option(nil, "var_2", "Чекбокс 2", _ref.check_box(false), this.on_change_value)
+		_ref.register_option(nil, "var_3", "Чекбокс 3", _ref.check_box(true), this.on_change_value)
+		
+		_ref.register_option("Группа 1", "var_4", "Чекбокс 4", _ref.check_box(false), this.on_change_value)
+		_ref.register_option("Группа 1", "var_5", "Чекбокс 5", _ref.check_box(false), this.on_change_value)
+		_ref.register_option("Группа 1", "var_6", "Чекбокс 6", _ref.check_box(true), this.on_change_value)
+		_ref.register_option("Группа 1", "var_7", "Чекбокс 7", _ref.check_box(true), this.on_change_value)
+		_ref.register_option("Группа 1", "var_8", "Чекбокс 8", _ref.check_box(false), this.on_change_value)
+		
+		_ref.register_option("Группа 2", "var_9", "Чекбокс 9", _ref.check_box(true), this.on_change_value)
+		_ref.register_option("Группа 2", "var_10", "Чекбокс 10", _ref.check_box(true), this.on_change_value)
+		_ref.register_option("Группа 3", "var_11", "Чекбокс 11", _ref.check_box(false), this.on_change_value)
+		
+		_ref.register_option("Группа 3", "var_12", "Чекбокс 12", _ref.check_box(true), this.on_change_value)
+		_ref.register_option("Группа 3", "var_13", "Чекбокс 13", _ref.check_box(true), this.on_change_value)
+	end)
+end
+
+function on_change_value(group, name, value)
+	--SemiLog(tostring(script_name()) .. ".script [option change]: group:" .. tostring(group) .." name:".. tostring(name) .. " value:" .. tostring(ffx_json_lib.json_encode(value)))
+end
+
+function on_inv_box_can_take_item(box_game_object, item_game_object, flags_table)
+	ffx_dump_utils.send_message(script_name() .. ":: + on_inv_box_can_take_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
+end
+
+function on_inv_box_can_palce_item(box_game_object, item_game_object, flags_table)
+	ffx_dump_utils.send_message(script_name() .. ":: - on_inv_box_can_palce_item:  box:" .. tostring(box_game_object:section()) .. " item:" .. tostring(item_game_object:section()))
+end
+
+
+function on_key_press(key)
+	if (key == DIK_keys.DIK_B) then
+		
+	end
+end
