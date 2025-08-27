@@ -148,6 +148,15 @@ function CSurgeManager:update()
 	if(device().precache_frame > 1) then
 		return
 	end
+	
+	local flags = {allow = true}
+	SendScriptCallback("on_before_surge", flags)
+	
+	if not flags.allow then
+		log("skip surge")
+		return
+	end
+	
 	if not(self.started) then
 		local g_time = game.get_game_time()
 		if(self.time_forwarded) then
@@ -293,14 +302,20 @@ function CSurgeManager:start(manual)
 
 	diff_sec = math.ceil(game.get_game_time():diffSec(self.inited_time)/level.get_time_factor())
 	log("--->start diff_sec="..tostring(diff_sec))
+	
+	
+	local flags = {allow = true}
+	SendScriptCallback("on_before_surge", flags)
+	
 	local level_name = level.name()
-	if(level_name=="labx8" or level_name=="jupiter_underground") then
+	if (level_name=="labx8" or level_name=="jupiter_underground" or flags.allow == false) then
 		printf("Surge skipped because of level!")
 		self.skip_message = true
 		self:skip_surge()
 		return
 	end
-	if(diff_sec+6>self.surge_time)then
+	
+	if (diff_sec+6>self.surge_time) then
 		printf("Surge skipped while time forwarding!")
 		self:skip_surge()
 	else
@@ -310,6 +325,8 @@ function CSurgeManager:start(manual)
 		if not has_alife_info("pri_b305_fifth_cam_end") or has_alife_info("pri_a28_actor_in_zone_stay") then
 			xr_effects.scenario_autosave(nil,nil,{"st_save_uni_surge_start"})
 		end
+		
+		SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_start")
 	end
 end
 
@@ -332,15 +349,26 @@ function CSurgeManager:skip_surge()
 	self.blowout_sound			= false
 	prev_sec				= 0
 
+	SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_end")
+
 	self:respawn_artefacts_and_replace_anomaly_zone()
 	xr_statistic.inc_surges_counter()
 	if (not self.skip_message) then
 		news_manager.send_tip(db.actor, "st_surge_while_asleep", nil, "recent_surge", nil, nil)
 		self.skip_message = true
 	end
+	
+	if self.skip_message then
+		SendScriptCallback("actor_on_interaction", "anomalies", nil, "emissions")
+	end
 end
 
 function CSurgeManager:end_surge(manual)
+	if (self.started) then 
+		SendScriptCallback("actor_on_interaction", "anomalies", nil, "emissions")
+		SendScriptCallback("actor_on_interaction", "anomalies", nil, "emission_end")
+	end
+	
 	self.started 			= false
 	self.finished 			= true
 	self.levels_respawn 	= {zaton = true, jupiter = true, pripyat = true}

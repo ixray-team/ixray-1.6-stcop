@@ -600,6 +600,28 @@ function w_CTime( p, t )
 	--set_save_marker(p, "save", true, "CTIME")
 end
 
+-- Упаковка CTime в таблицу
+function get_table_CTime(t)
+	local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
+		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
+		
+	return {
+		Y = Y - 2000,
+		M = M,
+		D = D,
+		h = h,
+		m = m,
+		s = s,
+		ms = ms
+	}
+end
+
+-- Распаковка CTime из таблицы
+function get_CTime_from_table(c_time_tbl)
+	local tm = game.CTime()
+	return tm:set(c_time_tbl.Y + 2000,  c_time_tbl.M, c_time_tbl.D, c_time_tbl.h, c_time_tbl.m, c_time_tbl.s, c_time_tbl.ms)
+end
+
 -- чтение CTime из пакета
 function r_CTime( p )
 	--set_save_marker(p, "load", false, "CTIME")

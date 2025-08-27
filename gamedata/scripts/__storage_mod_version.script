@@ -1,0 +1,5 @@
+
+-- increment this value is need make before saved lua data non actual on new mod version after relise new mod version
+function get_version()
+	return "1.0.0"
+end

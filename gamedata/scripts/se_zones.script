@@ -28,6 +28,7 @@ function se_zone_anom:__init (section) super (section)
 end
 function se_zone_anom:on_register()
 	cse_anomalous_zone.on_register(self)
+	SendScriptCallback("server_entity_on_register", self, "se_zone_anom")
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 
@@ -88,12 +89,20 @@ function se_zone_anom:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_anom:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_zone_anom")
+	cse_anomalous_zone.on_unregister(self)
+end
+
 class "se_zone_torrid" (cse_torrid_zone)
 function se_zone_torrid:__init (section) super (section)
 	self.m_registred = false
 end
 function se_zone_torrid:on_register()
 	cse_torrid_zone.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_zone_torrid")
+	
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 
@@ -154,12 +163,19 @@ function se_zone_torrid:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_torrid:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_zone_torrid")
+	cse_custom_zone.on_unregister(self)
+end
 
 class "se_zone_visual" (cse_zone_visual)
 function se_zone_visual:__init (section) super (section)
 end
 function se_zone_visual:on_register()
 	cse_zone_visual.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_zone_visual")
+	
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 
@@ -213,7 +229,10 @@ function se_zone_visual:STATE_Read( packet, size )
 	end
 end
 
-
+function se_zone_visual:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_zone_visual")
+	cse_anomalous_zone.on_unregister(self)
+end
 
 --' Рестрикторы
 class "se_restrictor" (cse_alife_space_restrictor)
@@ -222,6 +241,8 @@ end
 
 function se_restrictor:on_register()
 	cse_alife_space_restrictor.on_register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_restrictor")
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 
@@ -230,4 +251,9 @@ end
 
 function se_restrictor:keep_saved_data_anyway()
 	return true
+end
+
+function se_restrictor:on_unregister()
+	SendScriptCallback("server_entity_on_unregister", self, "se_restrictor")
+	cse_alife_space_restrictor.on_unregister(self)
 end

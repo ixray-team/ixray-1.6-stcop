@@ -10,41 +10,49 @@ class "main_menu" (CUIScriptWnd)
 
 function main_menu:__init() super()
 	self.mbox_mode = 0
+	self.main_xml = CScriptXmlInit()
+	self.main_xml:ParseFile("ui_mm_main.xml")
+
+	SendScriptCallback("main_menu_on_init", self)
+
     self:InitControls()
+
     self:InitCallBacks()
+	
+	RegisterScriptCallback("on_localization_change", self)
+	
     xr_s.on_main_menu_on()     						 --' Distemper 03.2008 --
+end
+
+function main_menu:Update()
+	CUIScriptWnd.Update(self)
+	SendScriptCallback("main_menu_update", self)
 end
 
 function main_menu:__finalize()
 end
 
 function main_menu:InitControls()
-	self:SetWndRect					(Frect():set(0,0,1024,768))
+	self:SetWndRect	(Frect():set(0,0,1024,768))
 
-    local xml						= CScriptXmlInit()
-    xml:ParseFile					("ui_mm_main.xml")
+    self.main_xml:InitStatic("background", self)
+    self.shniaga = self.main_xml:InitMMShniaga("shniaga_wnd", self);
 
-    xml:InitStatic					("background", self)
-    self.shniaga					= xml:InitMMShniaga("shniaga_wnd",self);
+	self.message_box = CUIMessageBoxEx()
+	self:Register(self.message_box, "msg_box")
 
-	self.message_box				= CUIMessageBoxEx()
-	self:Register					(self.message_box, "msg_box")
-
-	local _ver = xml:InitStatic		("static_version",self)
-	local mm						= _G.main_menu.get_main_menu()
-	_ver:TextControl():SetText		("ver. " .. mm:GetGSVer())
+	local _ver = self.main_xml:InitStatic("static_version", self)
+	local mm = _G.main_menu.get_main_menu()
+	_ver:TextControl():SetText("ver. " .. mm:GetGSVer())
 	
 	-- IX-Ray start
-	local btn
-	if xml:NodeExist("english_lang", 0) then
-		btn = xml:Init3tButton("english_lang", self)
-		self:Register(btn, "english_lang")
-	end
+	self.eng_lang_btn = self.main_xml:Init3tButton("english_lang", self)
+	self:Register(self.eng_lang_btn, "english_lang")
 	
-	if xml:NodeExist("russian_lang", 0) then
-		btn = xml:Init3tButton("russian_lang", self)
-		self:Register(btn, "russian_lang")
-	end
+	self.ru_lang_btn = self.main_xml:Init3tButton("russian_lang", self)
+	self:Register(self.ru_lang_btn, "russian_lang")
+
+	SendScriptCallback("main_menu_on_init_controlls", self)
 	-- IX-Ray end
 end
 
@@ -99,6 +107,8 @@ function main_menu:InitCallBacks()
 
 	self:Register(self, "self")
 	self:AddCallback("self",	ui_events.MAIN_MENU_RELOADED, self.OnMenuReloaded, self)
+	
+	SendScriptCallback("main_menu_on_init_callbacks", self)
 end
 function main_menu:OnMsgOk()
 	self.mbox_mode = 0
@@ -180,6 +190,7 @@ function main_menu:OnButton_return_game()
 	local console = get_console()
 	console:execute("main_menu off")
 	xr_s.on_main_menu_off()      						--' Distemper 03.2008 --
+	SendScriptCallback("main_menu_on_quit", self)
 end
 
 function main_menu:OnButton_new_novice_game()
@@ -350,6 +361,8 @@ function main_menu:OnKeyboard(dik, keyboard_action)  --virtual function
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	local bind = dik_to_bind(dik)
 	local console = get_console()
+	
+	SendScriptCallback("main_menu_on_keyboard", dik, keyboard_action, self, level.present())
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then

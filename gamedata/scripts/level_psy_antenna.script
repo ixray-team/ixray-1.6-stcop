@@ -1,8 +1,16 @@
+function has_actor()
+	return db and db.actor
+end
+
 class "PsyAntennaPP" (effector)
 function PsyAntennaPP:__init() super(1001,10000000)
 	self.params							= effector_params();
 end
 function PsyAntennaPP:process(pp)
+	if not has_actor() then
+		return false
+	end
+	
 	pp:assign		(self.params);
     effector.process(self,pp);
     return          true;
@@ -16,6 +24,9 @@ pa_phase={
 	phStopping							= 3
 }
 function PsyAntenna:__init				()
+	if not has_actor() then
+		return false
+	end
 -- ----------------------------------------------------------------------------------------
 -- settings
 -- ----------------------------------------------------------------------------------------
