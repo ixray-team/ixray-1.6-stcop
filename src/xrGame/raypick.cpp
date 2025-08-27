@@ -8,28 +8,34 @@ CRayPick::CRayPick()
 	direction.set(0,0,0); 
 	range = 0; 
 	flags = collide::rq_target::rqtNone; 
-	ignore = NULL;
+	ignore = nullptr;
 };
 
 CRayPick::CRayPick(const Fvector& P, const Fvector& D, float R, collide::rq_target F, CScriptGameObject* I)
 {
-	start_position.set(P); 
+	start_position.set(P);
 	direction.set(D);
-	range = R; 
-	flags = F; 
-	ignore = NULL;
-	if (I)
-		ignore = smart_cast<CObject*>(&(I->object()));
-};
+	range = R;
+	flags = F;
+	ignore = nullptr;
 
-bool	CRayPick::query		()
+	if (I)
+	{
+		ignore = smart_cast<CObject*>(&(I->object()));
+	}
+}
+
+bool CRayPick::query()
 {
-	collide::rq_result		R;
-	if (Level().ObjectSpace.RayPick		(start_position, direction, range, flags, R, ignore))
+	collide::rq_result R;
+	if (Level().ObjectSpace.RayPick(start_position, direction, range, flags, R, ignore))
 	{
 		result.set(R);
+		const CDB::TRI* Triangle = Level().ObjectSpace.GetStaticTris() + R.element;
+
+		material = (u16)Triangle->material;
 		return true;
-	} 
-	else 
-		return false;
+	}
+
+	return false;
 }
