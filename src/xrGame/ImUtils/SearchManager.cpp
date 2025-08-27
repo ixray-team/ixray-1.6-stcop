@@ -650,6 +650,8 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_radio);
 	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_teambs);
 
+	imgui_clsid_manager.add_squad(imgui_clsid_manager.sim_squad_scripted);
+
 	g_pClsidManager = &imgui_clsid_manager;
 }
 

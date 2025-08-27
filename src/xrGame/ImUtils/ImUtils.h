@@ -53,6 +53,9 @@ struct clsid_manager
 	void add_anomaly(CLASS_ID id);
 	bool is_anomaly(CLASS_ID id);
 
+	bool is_squad(CLASS_ID id);
+	void add_squad(CLASS_ID id);
+
 	const xr_set<CLASS_ID>& get_items(void) const { return items; }
 	const xr_set<CLASS_ID>& get_outfits(void) const { return outfits; }
 	const xr_set<CLASS_ID>& get_ammo(void) const { return ammo; }
@@ -265,6 +268,7 @@ private:
 	xr_set<CLASS_ID> explosives;
 	xr_set<CLASS_ID> npc_list;
 	xr_set<CLASS_ID> anomalies;
+	xr_set<CLASS_ID> squads;
 };
 
 enum eSelectedType {
@@ -381,13 +385,6 @@ struct CHudAdjustManager
 		Fvector3 item_rotation_default;
 		char data_of_save[32];
 	};
-	
-
-
-
-
-
-
 
 	bool is_initialized;
 	Settings settings;
