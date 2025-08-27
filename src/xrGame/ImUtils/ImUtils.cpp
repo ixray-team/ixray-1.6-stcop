@@ -411,6 +411,13 @@ void clsid_manager::add_anomaly(CLASS_ID id) {
 	anomalies.insert(id);
 }
 
+bool clsid_manager::is_squad(CLASS_ID id) {
+	return squads.contains(id);
+}
+void clsid_manager::add_squad(CLASS_ID id) {
+	squads.insert(id);
+}
+
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	char name[16]{};
 	CLSID2TEXT(id, name);

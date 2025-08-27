@@ -50,6 +50,7 @@ struct
 	SectionData MpStuffSections = {};
 
 	Section NpcList{};
+	SectionData Squads{};
 	Section Monsters{};
 	Section Vehicles{};
 	Section DynamicObjects{};
@@ -271,6 +272,17 @@ void InitSections()
 		else if (g_pClsidManager->is_npc(classId))
 		{
 			imgui_spawn_manager.NpcList.push_back({ name, pSection });
+		}
+		else if (g_pClsidManager->is_squad(classId))
+		{
+			if (pSection->line_exist("faction") && (pSection->line_exist("npc") || pSection->line_exist("npc_in_squad")))
+			{
+				imgui_spawn_manager.Squads.Sorted.push_back({ name, pSection });
+			}
+			else
+			{
+				imgui_spawn_manager.Squads.Unsorted.push_back({ name, pSection });
+			}
 		}
 		else if (g_pClsidManager->is_monster(classId))
 		{
@@ -958,6 +970,25 @@ void RenderSpawnManagerWindow() {
 				}
 			}
 
+			if (ImGui::BeginTabItem("Squads"))
+			{
+				size_t number_imgui{};
+				SectionStatistics(imgui_spawn_manager.Squads);
+				static char searchBuffer[128] = "";
+				ImGui::InputText("Search##Squads", searchBuffer, IM_ARRAYSIZE(searchBuffer));
+
+				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Squads.Sorted, searchBuffer);
+				SpawnManager_ProcessSections(filteredList, number_imgui);
+
+				if (imgui_spawn_manager.Squads.Unsorted.size() > 0)
+				{
+					ImGui::SeparatorText("Unsorted");
+					SpawnManager_ProcessSections(imgui_spawn_manager.Squads.Unsorted, number_imgui);
+				}
+
+				ImGui::EndTabItem();
+			}
+
 			if (imgui_spawn_manager.Anomalies.size() > 0)
 			{
 				if (ImGui::BeginTabItem("Anomalies"))
@@ -1195,6 +1226,11 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 	if (spawn_on_level || !isInvItem)
 	{
 		cmd = "g_spawn ";
+	}
+
+	if (g_pClsidManager->is_squad(pSettings->r_clsid(section->Name.c_str(), "class")))
+	{
+		cmd = "g_spawn_squad ";
 	}
 
 	cmd += section->Name.c_str();
