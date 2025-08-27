@@ -637,6 +637,19 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_explo(imgui_clsid_manager.item_s_explo);
 	imgui_clsid_manager.add_explo(imgui_clsid_manager.item_ii_explo);
 
+	// Anomalies
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_bfuzz);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_galan);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_mbald);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_mince);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_radio);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.zs_torrd);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_cfire);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_mbald);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_nograv);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_radio);
+	imgui_clsid_manager.add_anomaly(imgui_clsid_manager.z_teambs);
+
 	g_pClsidManager = &imgui_clsid_manager;
 }
 
