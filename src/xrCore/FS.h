@@ -10,6 +10,8 @@
 
 XRCORE_API void VerifyPath	(LPCSTR path);
 
+#include "Concepts.h"
+
 //------------------------------------------------------------------------------------
 // Write
 //------------------------------------------------------------------------------------
@@ -272,6 +274,47 @@ public:
 	void			r_stringZ	(char *dest, u32 tgt_sz);
 	void			r_stringZ	(shared_str& dest);
 	void			r_stringZ	(xr_string& dest);
+
+private:
+
+	size_t lastStringLen = 0;
+
+	void skip_string(bool forward)
+	{
+		if (forward)
+		{
+			size_t start = Pos;
+			while (Pos < Size && data[Pos] != '\0') Pos++;
+			Pos = (Pos + 1 <= Size) ? Pos + 1 : Size;
+			lastStringLen = Pos - start;
+		}
+		else
+		{
+			Pos = (Pos >= lastStringLen) ? Pos - lastStringLen : 0;
+		}
+	}
+
+	template <XRay::Concepts::FixedType T>
+	void skip_fixed(bool forward)
+	{
+		Pos = forward ? ((Pos + sizeof(T) <= Size) ? Pos + sizeof(T) : Size) : ((Pos >= sizeof(T)) ? Pos - sizeof(T) : 0);
+	}
+
+public:
+
+	template <typename T>
+	void skip(bool forward = true)
+	{
+		if constexpr (std::is_same_v<T, char*>) {
+			skip_string(forward);
+		}
+		else if constexpr (XRay::Concepts::FixedType<T>) {
+			skip_fixed<T>(forward);
+		}
+		else {
+			static_assert(std::is_same_v<T, void>, "skip<T> supports only char* or fixed types");
+		}
+	}
 
 public:
 	void			close		();
