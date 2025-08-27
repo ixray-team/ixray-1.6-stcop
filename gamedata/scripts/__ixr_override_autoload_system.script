@@ -1,0 +1,16 @@
+
+--[[
+	IX-Ray override script
+	Version: 1.0
+	Author: FFx0001
+	Script: __ixr_override_autoload_system.script
+	Description: Override configure autoload scripts system before init
+]]
+
+function configure(_ref_ixr_autoloader)
+
+	-- single ignore by file names
+	-- Игнорирование файлов скриптов из системы поиска автозагрузчика коллбеков
+	_ref_ixr_autoloader.ignore_script("bind_*")
+	_ref_ixr_autoloader.ignore_script("smart_*")
+end

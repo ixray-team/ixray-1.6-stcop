@@ -8,6 +8,37 @@ load
 net_spawn
 --------------------------------------------------------------------------------------------------------------------]]
 
+--[[
+ IXR FFx0001 все коллбеки определять здесь (автоматическая регистрация - снатие событий)
+ Отсутствие коллбека в движке не вызывает вылет
+ Отсутсвие вызываемого метода в биндере не вызывает вылет
+--]] 
+local use_callback_logs = false -- логирование подписки и отписки для коллбеков
+local all_callbacks = {
+	["hit"] 				= "hit_callback",
+	["death"] 				= "death_callback",
+	["use_object"] 			= "use_callback",
+	["sound"] 				= "hear_callback",
+	["on_item_drop"]		= "on_item_drop",
+	["on_item_take"]		= "on_item_take",
+	["take_item_from_box"] 	= "on_take_item_from_box",
+}
+
+-- IXR FFx0001 Упрощенная система подписки и отписки от коллбеков
+function manage_callbacks(_ref_binder, is_set)
+	local _script_name = script_name()
+	
+	ixr_callback_binder.manage_callbacks(_script_name, all_callbacks, _ref_binder, is_set, use_callback_logs,
+		function (obj_id)
+			_ref_binder.object:set_patrol_extrapolate_callback(_ref_binder["extrapolate_callback"], _ref_binder)
+			ixr_callback_binder.custom_log("set callback:[extrapolate_callback]", is_set, use_callback_logs, _script_name, _ref_binder.object:id())
+		end,
+		function (obj_id)
+			_ref_binder.object:set_patrol_extrapolate_callback(nil)
+			ixr_callback_binder.custom_log("unset callback:[extrapolate_callback]", is_set, use_callback_logs, _script_name, _ref_binder.object:id())
+		end
+	)
+end
 
 ----------------------------------------------------------------------------------------------------------------------
 class "motivator_binder" (object_binder)
@@ -20,6 +51,28 @@ function motivator_binder:__init (obj) super(obj)
 --	self.need_relation_update = false
 
 	self.opened_doors = {} --Хранит таблицу дверей, открытых данным персонажем (чтобы потом закрыть)
+end
+
+function motivator_binder:on_take_item_from_box(box, item)
+	if not (self.object) then return end
+	
+	SendScriptCallback("npc_on_item_take_from_box", self.object, box, item)
+end
+
+function motivator_binder:on_item_take(item)
+	if not (self.object) then return end
+
+	SendScriptCallback("npc_on_item_take", self.object, item)
+end
+
+function motivator_binder:on_item_drop(item)
+	if not (self.object) then return end
+
+	SendScriptCallback("npc_on_item_drop", self.object, item)
+end
+
+function motivator_binder:net_spawn(sobject)
+
 end
 
 function motivator_binder:extrapolate_callback(cur_pt)
@@ -60,6 +113,7 @@ function motivator_binder:reinit()
 	--memusage.collect_info(self.object, "after_statemgr")
 	--memusage.collect_info(self.object, "reinit_end")
 end
+
 ----------------------------------------------------------------------------------------------------------------------
 function motivator_binder:net_spawn(sobject)
 	printf("motivator_binder:net_spawn(): self.object:name()='%s'", self.object:name())
@@ -81,11 +135,7 @@ function motivator_binder:net_spawn(sobject)
 	db.add_obj(self.object)
 
 	-- Все CALLBACK-и ставить здесь:
-	self.object:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
-	self.object:set_callback(callback.hit, motivator_binder.hit_callback, self)
-	self.object:set_callback(callback.death, motivator_binder.death_callback, self)
-	self.object:set_callback(callback.use_object, motivator_binder.use_callback, self)
-	self.object:set_callback(callback.sound, motivator_binder.hear_callback, self)
+	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
 	--memusage.collect_info(self.object, "after__callback")
 
 	-- ставим дефолтное расстояние входа в смарткаверы
@@ -175,10 +225,15 @@ function motivator_binder:net_spawn(sobject)
 
 	self.object:group_throw_time_interval(2000)
 
+	SendScriptCallback("npc_on_net_spawn", self.object, se_obj)
+	
 	return true
 end
 
 function motivator_binder:net_destroy()
+	if self.object then
+		SendScriptCallback("npc_on_net_destroy", self.object)
+	end
 	--printf("motivator_binder:net_destroy(): self.object:name()='%s'", self.object:name())
 	xrs_dyn_music.npc_table[self.object:id()] = nil
 
@@ -197,31 +252,25 @@ function motivator_binder:net_destroy()
 	if on_offline_condlist ~= nil then
 		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
 	end
--- Запоминаем позицию и активную секцию --------
-if db.offline_objects[self.object:id()] then
-	db.offline_objects[self.object:id()].level_vertex_id = self.object:level_vertex_id()
-	db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section
-end
-------------------------------------------------
+	
+	-- Запоминаем позицию и активную секцию --------
+	if db.offline_objects[self.object:id()] then
+		db.offline_objects[self.object:id()].level_vertex_id = self.object:level_vertex_id()
+		db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section
+	end
+	------------------------------------------------
 
 	db.del_obj(self.object)
 
 	db.storage[self.object:id()] = nil
 
-	self:clear_callbacks()
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 
 	if self.e_index ~= nil then
 		db.delete_enemy( self.e_index )
 	end
 
 	object_binder.net_destroy(self)
-end
-
-function motivator_binder:clear_callbacks()
-	self.object:set_patrol_extrapolate_callback(nil)
-	self.object:set_callback(callback.hit, nil)
-	self.object:set_callback(callback.death, nil)
-	self.object:set_callback(callback.sound, nil)
 end
 
 function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_index)
@@ -250,6 +299,7 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 			end
 		end
 	end
+	
 	if self.st.active_section then
 		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "hit_callback", obj, amount, local_direction, who, bone_index)
 	end
@@ -269,16 +319,19 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 		self.object.health = 0.15
 	end
 
-
 	if amount > 0 then
 		printf("HIT_CALLBACK: %s amount=%s bone=%s", obj:name(), amount, tostring(bone_index))
 --		self.need_relation_update = who:id() == db.actor:id()
 		xr_wounded.hit_callback(obj:id())
+		
+		SendScriptCallback("npc_on_hit_callback", obj, amount, local_direction, who, bone_index)
 	end
 end
 
 function motivator_binder:death_callback(victim, who)
 	self:hit_callback(victim, 1, vector():set(0,0,0), who, "from_death_callback")
+
+	SendScriptCallback("npc_on_death_callback", victim, who)
 
 	xrs_dyn_music.npc_table[self.object:id()] = nil
 	xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] = nil
@@ -317,7 +370,7 @@ function motivator_binder:death_callback(victim, who)
 	death_manager.drop_manager(self.object):create_release_item()
 	db.delete_enemy( self.e_index )
 
-	self:clear_callbacks()
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 	--' Наносим небольшой импульс вперед.
 	if(actor_stats.remove_from_ranking~=nil)then
 		local community = character_community(self.object)
@@ -334,6 +387,7 @@ end
 
 function motivator_binder:use_callback(obj, who)
 	printf("motivator_binder:use_callback(obj, who)")
+	
 	if self.object:alive() then
 		inventory_upgrades.need_victim(obj)
 		xr_meet.notify_on_use(obj, who)
@@ -341,7 +395,13 @@ function motivator_binder:use_callback(obj, who)
 		if self.st.active_section then
 			xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "use_callback", obj, who)
 		end
+	else
+		local comm = character_community(obj)
+		SendScriptCallback("actor_on_interaction", "factions", nil, comm)
 	end
+	
+	SetRegistryValue("used_npc_id", obj:id())
+	SendScriptCallback("npc_on_use", obj, who)
 end
 
 function motivator_binder:update(delta)
@@ -396,7 +456,6 @@ function motivator_binder:update(delta)
 		end
 	end
 
-
 	if object_alive then
 		--' Апдейт саундменеджера
 		xr_sound.update(object:id())
@@ -407,9 +466,6 @@ function motivator_binder:update(delta)
 		-- Апдейт безсмертия
 		stalker_generic.update_invulnerability(self.object)
 	end
-
-
-
 
 	-- Апдейт отряда
 	local squad = get_object_squad(self.object)
@@ -449,16 +505,10 @@ function motivator_binder:update(delta)
 	else
 		object:set_tip_text_default()
 	end
---[[
--- Полечилось в двигле...
-	if self.need_relation_update then
-		local squad = get_object_squad(self.object)
-		local obj_relation_to_actor =  game_relations.game_relations_by_num[self.object:relation(db.actor)]
-		if squad ~= nil and (game_relations.get_squad_goodwill_to_actor_by_id(squad.id) ~= obj_relation_to_actor) then
-			game_relations.set_squad_goodwill(squad.id, obj_relation_to_actor)
-		end
-		self.need_relation_update = false
-	end]]--
+	
+	if object then
+		SendScriptCallback("npc_on_update", object, db.storage[self.object:id()])
+	end
 end
 
 function motivator_binder:reload(section)

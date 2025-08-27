@@ -282,22 +282,28 @@ end
 
 local transfer_to_npc = nil
 
-function get_item(npc, item)
+function get_item(dead_npc, item)
+	SendScriptCallback("npc_on_get_all_from_corpse", transfer_to_npc, dead_npc, item, (lootable_table[item:section()] or false))
+	
 	if lootable_table[item:section()] == true then
-		npc:transfer_item(item, transfer_to_npc)
+		dead_npc:transfer_item(item, transfer_to_npc)
 	end
 end
 
 function get_all_from_corpse(npc)
+	if not (db.actor) then 
+		return 
+	end
+	
 	printf("GET ALL FROM CORPSE")
 
 	local corpse_npc_id = db.storage[npc:id()].corpse_detection.selected_corpse_id
 	local corpse_npc = db.storage[corpse_npc_id] and db.storage[corpse_npc_id].object
 
-	if corpse_npc == nil then
+	if corpse_npc == nil or corpse_npc:alive() == true then
 		return
 	end
-
+	
 	transfer_to_npc = npc
 	corpse_npc:iterate_inventory(get_item, corpse_npc)
 	
