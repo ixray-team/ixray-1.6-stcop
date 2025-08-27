@@ -191,16 +191,49 @@ bool g_initialize_cpu_called = false;
 #ifdef IXR_WINDOWS
 using SetThreadDescriptionDesc = HRESULT(WINAPI*)(HANDLE, PCWSTR);
 static SetThreadDescriptionDesc SetThreadDescriptionProc;
+
+bool IsRunningInWine()
+{
+	const char* WineVersion = std::getenv("WINELOADER");
+	const char* WinePrefix = std::getenv("WINEPREFIX");
+	return WineVersion != nullptr || WinePrefix != nullptr;
+}
+
+bool IsRunningInProton()
+{
+	if (!IsRunningInWine())
+	{
+		return false;
+	}
+
+	const char* SteamGameId = std::getenv("SteamGameId");
+	const char* SteamAppId = std::getenv("SteamAppId");
+	const char* SteamRuntime = std::getenv("STEAM_RUNTIME");
+
+	return SteamGameId != nullptr || SteamAppId != nullptr || SteamRuntime != nullptr;
+}
 #endif
 
 //------------------------------------------------------------------------------------
 void _initialize_cpu	(void) 
 {
-		Msg("* Detected CPU: %s [%s], F%d/M%d/S%d",
+	Msg
+	(
+		"* Detected CPU: %s [%s], F%d/M%d/S%d",
 		CPU::ID.modelName, CPU::ID.vendor,
 		CPU::ID.family,CPU::ID.model,CPU::ID.stepping
     );
 #ifdef IXR_WINDOWS
+
+	if (IsRunningInProton())
+	{
+		Msg("Running under Proton (Steam Play)!");
+	}
+	else if (IsRunningInWine())
+	{
+		Msg("Running under standard Wine!");
+	}
+
 	string256 features;
 	xr_strcpy(features, sizeof(features), "RDTSC");
 
