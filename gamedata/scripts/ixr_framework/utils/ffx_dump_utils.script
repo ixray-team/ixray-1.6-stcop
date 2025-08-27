@@ -1,0 +1,207 @@
+local CONST_TRACE_LEVEL = 3
+local CONST_LOG_FOLDER = nil
+local CONST_LOG_FILE_NAME_POSTFIX = ".txt"
+
+--[[
+Description:
+  Retrieves a string representation of a function's argument list.
+Parameters:
+  func (function) - the function to inspect.
+Returns: string - formatted argument list.
+]]
+local function get_function_args_str(func)
+    local info = debug.getinfo(func, "u")
+	
+    if not info then return "() (no data)" end
+	
+    local nparams = info.nparams or 0
+    local is_vararg = info.isvararg
+
+    local args = {}
+	
+    for i = 1, nparams do
+        table.insert(args, "param"..i)
+    end
+	
+    if is_vararg then
+        table.insert(args, "...")
+    end
+	
+    return "(" .. table.concat(args, ", ") .. ")"
+end
+
+--[[
+Description:
+  Generates a string dump of a table, handling recursion and function arguments.
+Parameters:
+  tbl (table) - the table to dump.
+  indent (number or nil) - current indentation level.
+  visited (table or nil) - internally used to track visited tables.
+  is_subtable (boolean or nil) - internal flag for subtable detection.
+Returns: string - formatted dump of the table.
+]]
+function var_export(tbl, indent, visited, is_subtable)
+	if type(tbl) ~= "table" then
+		tbl = {tbl}
+	end
+	
+    indent = indent or 0
+    visited = visited or {}
+
+    local indent_str = string.rep("  ", indent)
+    if visited[tbl] then
+        return indent_str .. "*<recursive-link>*\n"
+    end
+    
+    visited[tbl] = true
+    local result = {}
+
+    if not is_subtable then
+        table.insert(result, indent_str .. "{\n")
+    end
+
+    for k, v in pairs(tbl) do
+        local key_str = "[" .. tostring(k) .. "] (" .. type(v) .. "): "
+        if type(v) == "table" then
+            table.insert(result, string.rep("  ", indent + 1) .. key_str .. "{\n")
+            table.insert(result, var_export(v, indent + 2, visited, true))
+            table.insert(result, string.rep("  ", indent + 1) .. "}\n")
+        elseif type(v) == "function" then
+            local args_str = get_function_args_str(v)
+            table.insert(result, string.rep("  ", indent + 1) .. key_str .. "function " .. args_str .. "\n")
+        else
+            table.insert(result, string.rep("  ", indent + 1) .. key_str .. tostring(v) .. "\n")
+        end
+    end
+
+    if not is_subtable then
+        table.insert(result, indent_str .. "}\n")
+    end
+
+    return table.concat(result)
+end
+
+--[[
+Description:
+  Dumps an object to the game console log with an optional prefix.
+Parameters:
+  object (any) - the object to dump.
+  log_prefix (string or nil) - optional prefix for the log entry.
+Returns: boolean - always true.
+]]
+function var_dump_to_console_log(object, log_prefix)
+	if log_prefix == nil then
+		log_prefix = tostring(ffx_callable_utils.find_caller_source(CONST_TRACE_LEVEL))
+	end
+	
+	SemiLog("[DUMP]::("..log_prefix.."):\n"..var_export(object))
+	
+	return true
+end
+
+--[[
+Description:
+  Writes text to the game console log with an optional prefix.
+Parameters:
+  text (string) - the text to write.
+  log_prefix (string or nil) - optional prefix for the log entry.
+Returns: boolean - always true.
+]]
+function write_to_console_log(text, log_prefix)
+	if log_prefix == nil then
+		log_prefix = tostring(ffx_callable_utils.find_caller_source(CONST_TRACE_LEVEL))
+	end
+	
+	SemiLog("[DUMP]::("..log_prefix.."): "..tostring(text))
+	
+	return true
+end
+
+--[[
+Description:
+  Dumps an object as text to a file log.
+Parameters:
+  object (any) - the object to dump.
+  overwrite (boolean or nil) - whether to overwrite the file.
+  log_prefix (string or nil) - optional prefix for the log filename.
+Returns: boolean - true if write succeeded, false otherwise.
+]]
+function var_dump_to_file_log(object, overwrite, log_prefix)
+	return write_to_file_log(var_export(object), overwrite, log_prefix)
+end
+
+--[[
+Description:
+  Writes text directly to a file log.
+Parameters:
+  text (string) - the text to write.
+  overwrite (boolean or nil) - whether to overwrite the file.
+  log_prefix (string or nil) - optional prefix for the log filename.
+Returns: boolean - true if write succeeded, false otherwise.
+]]
+function write_to_file_log(text, overwrite, log_prefix)
+	if CONST_LOG_FOLDER == nil then
+		CONST_LOG_FOLDER = getFS():update_path('$logs$', '')
+	end
+	
+	local mode = "a+"
+	
+	if log_prefix == nil then
+		log_prefix = tostring(ffx_callable_utils.find_caller_source(CONST_TRACE_LEVEL))
+	end
+	
+	if overwrite == nil then
+		overwrite = false
+	end
+	
+	if overwrite then
+		mode = "w+"
+	end
+	
+	local file = io.open(tostring(CONST_LOG_FOLDER) .. tostring(log_prefix) .. tostring(CONST_LOG_FILE_NAME_POSTFIX), mode)
+	if file then
+		file:write(text.."\n")
+		file:close()
+		
+		return true
+	end
+	
+	return false
+end
+
+--[[
+Description:
+  Sends a message tip to the current actor if alive.
+Parameters:
+  text (string) - the message text.
+Returns: nil
+]]
+function send_message(text)
+	if db.actor then
+		news_manager.send_tip(db.actor, tostring(text))
+	end
+end
+
+--[[
+Description:
+  Logs an error message with caller information and triggers error handling.
+Parameters:
+  level (number) - the stack level to identify the caller.
+  error_source (string) - source identifier of the error.
+  error_message (string) - the error message.
+Returns: nil
+]]
+function AssertWithCaller(level, error_source, error_message)
+	local caller = tostring(ffx_callable_utils.find_caller_source(level))
+	local text = string.format(
+		"! ERROR :: %s : Called by script [%s] : %s",
+		tostring(error_source),
+		tostring(caller),
+		tostring(error_message)
+	)
+	
+	SemiLog(text)
+	--callstack()
+	assert(false, text)
+	exit(0)
+end

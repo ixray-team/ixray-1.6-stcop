@@ -1,0 +1,13 @@
+
+local actor_loaded = false
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", this.on_update)
+end
+
+function on_update()
+	if not actor_loaded and db.actor and db.actor:alive() then
+		actor_loaded = true
+		SendScriptCallback("actor_on_spawn")
+	end
+end
