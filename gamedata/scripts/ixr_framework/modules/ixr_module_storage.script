@@ -1,0 +1,335 @@
+
+--[[
+	IX-Ray Module Storage
+	Version: 1.0
+	Author: FFx0001
+	Script: ixr_module_storage.script
+	Description: Module for centralized save and load variables isolated by script names
+	
+	Public exports:
+		get_module_info()
+		init()
+		is_initialized()
+		has_var(cell_name, var_name)
+		get_var(cell_name, var_name, def_value)
+		set_var(cell_name, var_name, var_value, var_type)
+		remove_var(cell_name, var_name)
+]]
+
+local ixr_store = {
+	log_name = "IXR_STORAGE",
+	use_log = true,
+	first_log_record = true,
+	save_ext = ".ixr",
+	dynamic_vars = {
+		storage_loaded = false,
+		mod_version = "1.0.0",
+		initialized = false,
+		m_storage = {},
+	}
+}
+
+-- automaticaly casts -- not completed implementation!!!
+local casts = {
+	["vector"] = {
+		getter = function (var_value) return vector():set(var_value.x, var_value.y, var_value.z) end,
+		setter = function (var_value) return {x=var_value.x, y=var_value.y, z=var_value.z} end,
+	},
+}
+
+
+-- ################################
+-- #		   PUBLIC METHODS	  #
+-- ################################
+
+--[[
+Description: Module management. Returns metadata about the module.
+Return: (table) - A table containing module information such as alias name, category, version, authors, and description.
+]]
+function get_module_info()
+	return {
+		-- (string) constant module name independent of the script name, which will be centralized via ixr_framework.get_module("alias_name") to maintain module versioning without the need to access the script name during integration.
+		alias_name = "ixr_storage",
+		
+		-- (string) use once value at range or custom latin snake case name default categories: ["ixr_system", "sub_system", "sub_gameplay", "sub_utils"] use for ordering init calls at 1 to last ASC
+		category = "ixr_system",
+		
+		-- (float) value for controll versions
+		version = 1.0,
+		
+		-- (string) public exposed function name, allowed in this script for auto init module
+		init_function_name = "init",
+		
+		-- (string|string[]) code author(s) nick name(s)
+		authors = "FFx0001",
+		
+		-- (string) short description about module
+		description = "Module for centralized save and load variables isolated by script names",
+	}
+end
+
+--[[
+Description: Initializes the module and sets up necessary configurations.
+Return: (bool) - Returns true if the module was successfully initialized.
+]]
+function init()
+	RegisterScriptCallback("save_file_loaded", this.on_save_file_loaded)
+	RegisterScriptCallback("save_file_created", this.on_save_file_created)
+	RegisterScriptCallback("new_game_created", this.on_new_game)
+	
+	return ixr_store.init()
+end
+
+--[[
+Description: Checks whether the module has been initialized.
+Return: (bool) - Returns true if the module is initialized, otherwise false.
+]]
+function is_initialized()
+	return ixr_store.dynamic_vars.initialized
+end
+
+--[[
+Description: Checks if a specified variable exists in the storage for a given cell.
+Parameters:
+  cell_name (string)(required) - The name of the cell where the variable is stored.
+  var_name (string)(required) - The name of the variable to check.
+Return: (bool) - Returns true if the variable exists, otherwise false.
+]]
+function has_var(cell_name, var_name)
+	return ixr_store.has_var(cell_name, var_name)
+end
+
+--[[
+Description: Retrieves the value of a specified variable from the storage for a given cell.
+Parameters:
+  cell_name (string)(required) - The name of the cell where the variable is stored.
+  var_name (string)(required) - The name of the variable to retrieve.
+  def_value (any)(optional) - The default value to return if the variable does not exist.
+Return: (mixed) - Returns the value of the variable if it exists, otherwise returns def_value.
+]]
+function get_var(cell_name, var_name, def_value)
+	return ixr_store.get_var(cell_name, var_name, def_value)
+end
+
+--[[
+Description: Sets the value of a specified variable in the storage for a given cell.
+Parameters:
+  cell_name (string)(required) - The name of the cell where the variable will be stored.
+  var_name (string)(required) - The name of the variable to set.
+  var_value (any)(required) - The value to assign to the variable.
+  var_type (string)(optional) - The type of the variable (e.g., "string", "number", "table").
+Return: (bool) - Returns true if the variable was successfully set, otherwise false.
+]]
+function set_var(cell_name, var_name, var_value, var_type)
+	return ixr_store.set_var(cell_name, var_name, var_value, var_type)
+end
+
+--[[
+Description: Removes a specified variable from the storage for a given cell.
+Parameters:
+  cell_name (string)(required) - The name of the cell where the variable is stored.
+  var_name (string)(required) - The name of the variable to remove.
+Return: (void) - This function does not return a value.
+]]
+function remove_var(cell_name, var_name)
+	return ixr_store.remove_var(cell_name, var_name)
+end
+
+
+-- ################################
+-- #	 	 SYSTEM METHODS	  	  #
+-- ################################
+function on_save_file_loaded(save_directory_path, save_file_name)
+	ixr_store.save_log("[on_save_file_loaded]")
+	ixr_store.load_storage(save_directory_path, save_file_name)
+end
+
+function on_save_file_created(save_directory_path, save_file_name)
+	ixr_store.first_log_record = true
+	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	ixr_store.save_log("[on_save_file_created]")
+	ixr_store.save_storage(save_directory_path, save_file_name, false)
+end
+
+function on_new_game(save_directory_path, save_file_name)
+	ixr_store.first_log_record = true
+	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	ixr_store.save_log("[on_new_game]")
+	ixr_store.save_storage(save_directory_path, save_file_name, true)
+end
+
+function ixr_store.init()
+	if ixr_store.dynamic_vars.initialized then
+		return true
+	end
+	
+	if __storage_mod_version then 
+		ixr_store.dynamic_vars.mod_version = __storage_mod_version.get_version()
+	end
+	
+	ixr_store.dynamic_vars.m_storage = ixr_store.default_storage()
+	ixr_store.dynamic_vars.initialized = true
+	
+	return true
+end
+
+function ixr_store.is_storage_loaded()
+	return ixr_store.dynamic_vars.storage_loaded
+end
+
+function ixr_store.build_path(save_directory_path, save_file_name)
+	return save_directory_path .. ffx_path_utils.get_file_name(save_file_name, true) .. ixr_store.save_ext 
+end
+	
+function ixr_store.save_storage(save_directory_path, save_file_name, is_new_game)
+	local packed = marshal.encode(ixr_store.dynamic_vars.m_storage)
+	ffx_io_utils.write_binary_file(packed, ixr_store.build_path(save_directory_path, save_file_name))
+	
+	local postfix = ""
+	if is_new_game then
+		postfix = "[NEW GAME] "
+	end
+	
+	ixr_store.save_log(postfix .. "[WRITE] FILE:" .. tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+	
+	if is_new_game then
+		ixr_store.load_storage(save_directory_path, save_file_name)
+	else
+		ixr_store.save_log("[DUMP STORED DATA][SAVED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
+		ixr_store.save_log("[STORAGE SAVED]")
+	end
+end
+
+function ixr_store.get_mod_version()
+	return ixr_store.dynamic_vars.mod_version
+end
+
+function ixr_store.load_storage(save_directory_path, save_file_name)
+	ixr_store.save_log("[mod_version]:"..tostring(ixr_store.dynamic_vars.mod_version)) 
+	local stored = ffx_io_utils.read_binary_file(ixr_store.build_path(save_directory_path, save_file_name), false)
+	if stored then
+		ixr_store.dynamic_vars.m_storage = marshal.decode(stored)
+		ixr_store.save_log("[READ] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+	else
+		ixr_store.dynamic_vars.m_storage = ixr_store.default_storage()
+		ixr_store.save_log("[NOT FOUND] FILE: " ..tostring(ixr_store.build_path(save_directory_path, save_file_name)))
+	end
+	
+	ixr_store.save_log("[DUMP STORED DATA][LOADED]:" .. ffx_dump_utils.var_export(ixr_store.dynamic_vars.m_storage))
+	
+	ixr_store.dynamic_vars.storage_loaded = true
+	ixr_store.save_log("[STORAGE LOADED]")
+end
+
+function ixr_store.default_storage()
+	return {
+		mod_version = ixr_store.get_mod_version(),
+		chunks = {}
+	}
+end
+
+function ixr_store.get_var(cell_name, var_name, def_value)
+	if not ixr_store.is_storage_loaded() then
+		ffx_dump_utils.AssertWithCaller(5, "IXR_STORAGE", "FAILURE CALL GET VALUE BEFORE LOADING STORAGE")
+	end
+
+	if ixr_store.dynamic_vars.m_storage == nil then
+		return def_value
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name] == nil then
+		return def_value
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] == nil then
+		return def_value
+	end
+	
+	local var_value = ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name].var_value
+	local var_type = ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name].var_type
+	
+	if casts and casts[var_type] ~= nil then
+		var_value = casts[var_type].getter(var_value)
+	end
+	
+	return var_value
+end
+
+function ixr_store.set_var(cell_name, var_name, var_value, var_type)
+	if not ixr_store.is_storage_loaded() then
+		ffx_dump_utils.AssertWithCaller(5, "IXR_STORAGE", "FAILURE CALL SET VALUE BEFORE LOADING STORAGE")
+	end
+	
+	if var_value == nil then
+		ixr_store.remove_var(cell_name, var_name)
+		return false
+	end
+	
+	if ixr_store.dynamic_vars.m_storage == nil then
+		return false
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name] == nil then
+		ixr_store.dynamic_vars.m_storage.chunks[cell_name] = {}
+	end
+	
+	if var_type == nil then
+		var_type = tostring(type(var_value))
+	end
+	
+	if casts and casts[var_type] ~= nil then
+		var_value = casts[var_type].setter(var_value)
+		var_type = tostring(type(var_value))
+		if var_value == nil then
+			ixr_store.remove_var(cell_name, var_name)
+			return false
+		end
+	end
+	
+	if var_type == "function" or var_type == "userdata" or var_type == "nil" then
+		ixr_store.remove_var(cell_name, var_name)
+		return false
+	end
+	
+	ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] = {
+		var_type = var_type,
+		var_value = var_value
+	}
+	
+	return true
+end
+
+function ixr_store.remove_var(cell_name, var_name)
+	if ixr_store.dynamic_vars.m_storage == nil then
+		return
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name] == nil then
+		return
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] ~= nil then
+		ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] = nil
+	end
+end
+
+function ixr_store.has_var(cell_name, var_name)
+	if ixr_store.dynamic_vars.m_storage == nil then
+		return false
+	end
+	
+	if ixr_store.dynamic_vars.m_storage.chunks[cell_name] == nil then
+		return false
+	end
+	
+	return ixr_store.dynamic_vars.m_storage.chunks[cell_name][var_name] ~= nil
+end
+
+function ixr_store.save_log(text)
+	if not ixr_store.use_log then
+		return
+	end
+	
+	ffx_dump_utils.write_to_file_log(tostring(text), ixr_store.first_log_record)
+	ixr_store.first_log_record = false
+end

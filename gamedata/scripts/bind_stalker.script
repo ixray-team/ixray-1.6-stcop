@@ -1,20 +1,67 @@
-function init    (obj)
-				xr_motivator.AddToMotivator(obj)
-end
-
-function actor_init    (npc)
-				npc:bind_object(actor_binder(npc))
-end
-
-local game_difficulty_by_num = {
-				[0] = "gd_novice",
-				[1] = "gd_stalker",
-				[2] = "gd_veteran",
-				[3] = "gd_master"
-				}
 
 local weapon_hide = {}
 local primary_objects_filled = false
+local game_difficulty_by_num = {
+	[0] = "gd_novice",
+	[1] = "gd_stalker",
+	[2] = "gd_veteran",
+	[3] = "gd_master"
+}
+
+local marshalLog = false
+
+--[[
+ IXR FFx0001 все коллбеки определять здесь (автоматическая регистрация - снатие событий)
+ Отсутствие коллбека в движке не вызывает вылет
+ Отсутсвие вызываемого метода в биндере не вызывает вылет
+--]] 
+local use_callback_logs = false -- логирование подписки и отписки для коллбеков
+local all_callbacks = {
+	["inventory_info"] 			= "info_callback",
+	["on_item_take"] 			= "on_item_take",
+	["on_item_drop"] 			= "on_item_drop",
+	["trade_sell_buy_item"] 	= "on_trade",
+	["task_state"] 				= "task_callback",
+	["take_item_from_box"] 		= "take_item_from_box",
+	["use_object"] 				= "use_inventory_item",
+	["weapon_fired"]			= "on_weapon_fired", 
+	["weapon_jammed"]			= "on_weapon_jammed",
+	["weapon_zoom_in"]			= "on_weapon_zoom_in",
+	["weapon_zoom_out"]			= "on_weapon_zoom_out",
+	["weapon_magazine_empty"]	= "on_weapon_magazine_empty",
+	["weapon_no_ammo"]			= "on_weapon_no_avialable_ammo", -- eWeaponNoAmmoAvailable
+	["actor_before_death"] 		= "on_actor_before_death",
+	["death"]					= "on_death",
+	["key_press"]				= "on_key_press",
+	["key_release"]				= "on_key_release",
+	["key_hold"]				= "on_key_hold",
+	["mouse_move"]				= "on_mouse_move",
+	["mouse_wheel"]				= "on_mouse_wheel",
+	["on_foot_step"]			= "actor_on_foot_step",
+	["item_to_belt"]			= "actor_item_to_belt",
+	["item_to_slot"]			= "actor_item_to_slot",
+	["item_to_ruck"]			= "actor_item_to_ruck",
+	["on_attach_vehicle"]		= "actor_on_attach_vehicle",
+	["on_detach_vehicle"]		= "actor_on_detach_vehicle",
+	["on_use_vehicle"]			= "actor_on_use_vehicle",
+	
+	["hud_animation_end"]		= "actor_on_hud_animation_end",
+}
+
+
+-- IXR FFx0001 Упрощенная система подписки и отписки от коллбеков
+function manage_callbacks(_ref_binder, is_set)
+	ixr_callback_binder.manage_callbacks(script_name(), all_callbacks, _ref_binder, is_set, use_callback_logs)
+end
+
+function init(obj)
+	xr_motivator.AddToMotivator(obj)
+end
+
+function actor_init(npc)
+	npc:bind_object(actor_binder(npc))
+end
+
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
@@ -30,7 +77,10 @@ function actor_binder:__init (obj) super(obj)
 	self.loaded_slot_applied = false
 	self.last_detective_achievement_spawn_time 	= nil
 	self.last_mutant_hunter_achievement_spawn_time	= nil
+	self.first_update = true
+	SendScriptCallback("actor_on_init", self) -- IX-Ray
 end
+
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
 --	printf("actor net spawn")
@@ -58,10 +108,15 @@ function actor_binder:net_spawn(data)
 	self.already_jumped = false
 	-- self.loaded = false
 	benchmark.main()							          --' Distemper 06.2008 --
+	
+	SendScriptCallback("on_game_load", binder)
+	
 	return true
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
+	SendScriptCallback("actor_on_net_destroy", self) -- IX-Ray
+	
 	xr_sound.stop_sounds_by_id(self.object:id())
 	local board_factions = sim_board.get_sim_board().players
 	if(board_factions) then
@@ -75,18 +130,7 @@ function actor_binder:net_destroy()
 	level.show_weapon(true)
 	db.del_actor(self.object)
 
-	self.object:set_callback(callback.inventory_info, nil)
-	self.object:set_callback(callback.article_info, nil)
-	self.object:set_callback(callback.on_item_take, nil)
-	self.object:set_callback(callback.on_item_drop, nil)
-	self.object:set_callback(callback.task_state, nil)
-	self.object:set_callback(callback.level_border_enter, nil)
-	self.object:set_callback(callback.level_border_exit, nil)
-	self.object:set_callback(callback.take_item_from_box, nil)
-	self.object:set_callback(callback.use_object, nil)
-	-- IX-Ray 
-	self.object:set_callback(callback.actor_before_death, nil)
-    -- END IX-Ray
+	manage_callbacks(self, false) -- IX-Ray UNSET CALLBACKS
 
 	log("--------->"..tostring(_G.amb_vol))
 	log("--------->"..tostring(_G.mus_vol))
@@ -104,9 +148,11 @@ function actor_binder:net_destroy()
 	end
 	xrs_dyn_music.finish_theme()
 	xr_s.on_actor_destroy()
+	
 	object_binder.net_destroy(self)
 end
 ----------------------------------------------------------------------------------------------------------------------
+
 function actor_binder:reinit()
 	object_binder.reinit(self)
 	local npc_id = self.object:id()
@@ -114,29 +160,31 @@ function actor_binder:reinit()
 	self.st = db.storage[npc_id]
 	self.st.pstor = nil
 
-	self.object:set_callback(callback.inventory_info, self.info_callback, self)
-	self.object:set_callback(callback.on_item_take, self.on_item_take, self)
-	self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
-	self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
-	self.object:set_callback(callback.task_state, self.task_callback, self)
-	self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
-	self.object:set_callback(callback.use_object, self.use_inventory_item, self)
-	-- IX-Ray 
-	self.object:set_callback(callback.actor_before_death, self.on_actor_before_death, self)
-    -- END IX-Ray 
+	manage_callbacks(self, true) -- IX-Ray SET CALLBACKS
+	SendScriptCallback("actor_on_reinit", self) -- IX-Ray
 end
 
 -- IX-Ray 
 -- actor before death callback
 -- IMPORTANT: if you wish to kill actor you need to call db.actor:kill(level.object_by_id(whoID), true) in actor_before_death callback, to ensure all objects are properly destroyed.
 function actor_binder:on_actor_before_death(whoID)
-	local killer = level.object_by_id(whoID) or db.actor
-	db.actor:kill(killer, true)
+	local flags = { ret_value = true }
+	SendScriptCallback("actor_on_before_death", whoID, flags) -- IX-Ray
+	
+	if flags.ret_value then
+		local killer = level.object_by_id(whoID) or db.actor
+		db.actor:kill(killer, true)
+	end
 end
 -- END IX-Ray 
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
+	if not box or not item then
+		return
+	end
+	
 	local box_name = box:name()
+	SendScriptCallback("actor_on_item_take_from_box", box, item) -- IX-Ray
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -144,20 +192,51 @@ function actor_binder:info_callback(npc, info_id)
 	printf("*INFO*: npc='%s' id='%s'", npc:name(), info_id)
 	--' Сюжет
 	-- Отметки на карте
+	
+	if not npc or not info_id then
+		return
+	end
+	
+	SendScriptCallback("actor_on_info_callback", npc, info_id) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_trade (item, sell_bye, money)
+function actor_binder:on_trade(item, sell_bye, money)
 	if sell_bye == true then
 		 game_stats.money_trade_update (money)
 	else
 		 game_stats.money_trade_update (-money)
 	end
+	
+	if not item then
+		return
+	end
+	
+	SendScriptCallback("actor_on_trade", item, sell_bye, money) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:article_callback(npc, group, name)
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_take (obj)
+function actor_binder:on_item_take(obj, m_last_dropped_owner_id)
+	if obj and obj:id() then 
+		SendScriptCallback("on_item_take", obj, db.actor ~= nil)
+		
+		if db.actor then
+			local is_take_from_ground = (m_last_dropped_owner_id == 65535 or m_last_dropped_owner_id == db.actor:id())
+			local before_transfer_parent_id = nil
+			
+			if not is_take_from_ground then
+				before_transfer_parent_id = m_last_dropped_owner_id
+			end
+			
+			SendScriptCallback("actor_on_item_take", obj, before_transfer_parent_id, is_take_from_ground)
+			
+			if is_take_from_ground then
+				SendScriptCallback("actor_on_item_take_from_ground", obj)
+			end
+		end
+	end
+
 	printf("on_item_take [%s]", obj:name())
 	if isArtefact(obj) then
 		local anomal_zone = bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]
@@ -181,52 +260,23 @@ function actor_binder:on_item_take (obj)
 	treasure_manager.get_treasure_manager():on_item_take(obj:id())
 end
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:on_item_drop (obj)
+function actor_binder:on_item_drop(obj)
+	if obj and obj:id() then 
+		SendScriptCallback("on_item_drop", obj, db.actor ~= nil)
+		
+		if db.actor then 
+			SendScriptCallback("actor_on_item_drop", obj)
+		end
+	end
 end
 
+----------------------------------------------------------------------------------------------------------------------
 function actor_binder:use_inventory_item(obj)
-	if(obj) then
-		local s_obj = alife():object(obj:id())
-		if(s_obj) and (s_obj:section_name()=="drug_anabiotic") then
-			xr_effects.disable_ui_only(db.actor, nil)
-			level.add_cam_effector("camera_effects\\surge_02.anm", 10, false, "bind_stalker.anabiotic_callback")
-			level.add_pp_effector("surge_fade.ppe", 11, false)
-			give_info("anabiotic_in_process")
-			_G.mus_vol = get_console():get_float("snd_volume_music")
-			_G.amb_vol = get_console():get_float("snd_volume_eff")
-			get_console():execute("snd_volume_music 0")
-			get_console():execute("snd_volume_eff 0")
-		end
+	if obj and obj:id() then
+		SendScriptCallback("actor_on_item_use", obj, obj:section())
 	end
 end
 
-function anabiotic_callback()
-	level.add_cam_effector("camera_effects\\surge_01.anm", 10, false, "bind_stalker.anabiotic_callback2")
-	local rnd = math.random(35,45)
-	local m = surge_manager.get_surge_manager()
-	if(m.started) then
-		local tf = level.get_time_factor()
-		local diff_sec = math.ceil(game.get_game_time():diffSec(m.inited_time)/tf)
-			if(rnd>(m.surge_time-diff_sec)*tf/60) then
-			m.time_forwarded = true
-			m.ui_disabled = true
-			m:kill_all_unhided()
-			m:end_surge()
-		end
-	end
-	level.change_game_time(0,0,rnd)
-	level_weathers.get_weather_manager():forced_weather_change()
-	printf("anabiotic_callback: time forwarded on [%d]", rnd)
-end
-
-function anabiotic_callback2()
-	xr_effects.enable_ui(db.actor, nil)
-    get_console():execute("snd_volume_music "..tostring(_G.mus_vol))
-	get_console():execute("snd_volume_eff "..tostring(_G.amb_vol))
-	_G.amb_vol = 0
-	_G.mus_vol = 0
-	disable_info("anabiotic_in_process")
-end
 ----------------------------------------------------------------------------------------------------------------------
 
 function actor_binder:task_callback(_task, _state)
@@ -241,7 +291,108 @@ function actor_binder:task_callback(_task, _state)
 end
 
 ----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_death(victim, who)
+	SendScriptCallback("actor_on_death", victim, who)
+end
 
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_hud_animation_end(item, hud_section, m_current_motion_str, state_number, animation_slot_number)
+	SendScriptCallback("actor_on_hud_animation_end", item, hud_section, m_current_motion_str, state_number, animation_slot_number)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_attach_vehicle(gobj)
+	SendScriptCallback("actor_on_attach_vehicle", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_detach_vehicle(gobj)
+	SendScriptCallback("actor_on_detach_vehicle", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_use_vehicle(gobj)
+	SendScriptCallback("actor_on_use_vehicle", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_item_to_belt(gobj)
+	SendScriptCallback("actor_item_to_belt", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_item_to_slot(gobj)
+	SendScriptCallback("actor_item_to_slot", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_item_to_ruck(gobj)
+	SendScriptCallback("actor_item_to_ruck", gobj)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:actor_on_foot_step(gobj, power, b_play, b_on_ground, b_hud_view)
+	SendScriptCallback("actor_on_foot_step", gobj, power, b_play, b_on_ground, b_hud_view)
+	SendScriptCallback("actor_on_footstep", gobj, power, b_play, b_on_ground, b_hud_view)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key_press(dik_key)
+	SendScriptCallback("on_key_press", dik_key)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key_release(dik_key)
+	SendScriptCallback("on_key_release", dik_key)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_key_hold(dik_key)
+	SendScriptCallback("on_key_hold", dik_key)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_mouse_move(dx, dy)
+	SendScriptCallback("on_mouse_move", dx, dy)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_mouse_wheel(direction)
+	SendScriptCallback("on_mouse_wheel", direction)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_magazine_empty(wpn, ammo_total)
+	SendScriptCallback("actor_on_weapon_no_ammo", wpn, ammo_total)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_zoom_in(obj, wpn)
+	SendScriptCallback("actor_on_weapon_zoom_in", wpn)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_zoom_out(obj, wpn)
+	SendScriptCallback("actor_on_weapon_zoom_out", wpn)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_fired(npc, wpn, iAmmoElapsed, m_ammoType)
+	SendScriptCallback("actor_on_weapon_fired", npc, wpn, iAmmoElapsed, m_ammoType)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_jammed(npc, wpn)
+	SendScriptCallback("actor_on_weapon_jammed", wpn)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_weapon_no_avialable_ammo(wpn, suitable_ammo_total)
+	SendScriptCallback("actor_on_weapon_no_avialable_ammo", wpn, suitable_ammo_total)
+	SendScriptCallback("actor_on_weapon_reload", wpn, suitable_ammo_total)
+end
+
+----------------------------------------------------------------------------------------------------------------------
 function actor_binder:update(delta)
 	object_binder.update(self, delta)
 
@@ -381,134 +532,150 @@ function actor_binder:update(delta)
 	end
 	pda.fill_sleep_zones()
 	
-	SendScriptCallback("update") -- IX-Ray
+	if self.first_update then
+		self.first_update = false
+		SendScriptCallback("actor_on_first_update", self, delta) -- IX-Ray
+	end
+	
+	SendScriptCallback("update", delta) -- IX-Ray
+	SendScriptCallback("actor_on_update", self, delta) -- IX-Ray
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:save(packet)
 	set_save_marker(packet, "save", false, "actor_binder")
 	object_binder.save(self, packet)
-	--' Сохраняем уровень сложности
-	packet:w_u8(level.get_game_difficulty())
-	--' Сохраняем данные об отключенном вводе
-	if self.st.disable_input_time == nil then
-		packet:w_bool(false)
-	else
-		packet:w_bool(true)
-		utils.w_CTime(packet, self.st.disable_input_time)
+	
+	if (utils.level_changing()) then
+		SendScriptCallback("on_level_changing")
+		SendScriptCallback("actor_on_level_changing")
 	end
-	xr_logic.pstor_save_all(self.object, packet)
-	self.weather_manager:save(packet)
-	release_body_manager.get_release_body_manager():save(packet)
-	self.surge_manager:save(packet)
-	sr_psy_antenna.save( packet )
-	packet:w_bool(sim_board.get_sim_board().simulation_started)
+	
+	-- Сохраняем уровень сложности
+	bind_stalker_marshal.game_difficulty(self, true)
+	
+	-- Сохраняем данные об отключенном вводе
+	bind_stalker_marshal.disable_input_time(self, true)
 
+	-- Сохраняем PSTOR 
+	xr_logic.pstor_save_all(self.object, packet)
+	
+	-- Сохраняем погоду
+	self.weather_manager:save(packet)
+	
+	-- Сохраняем менеджер уборщика трупов
+	release_body_manager.get_release_body_manager():save(packet)
+	
+	-- Сохраняем менеджер выбросов
+	self.surge_manager:save(packet)
+	
+	-- Сохраняем пси антены
+	sr_psy_antenna.save( packet )
+	
+	-- Сохраняем симуляцию
+	bind_stalker_marshal.simboard(self, true)
+
+	-- Сохраняем звуковые схемы
 	xr_sound.actor_save(packet)
-	packet:w_stringZ(tostring(self.last_level_name))
+	
+	-- Сохраняем название уровня
+	bind_stalker_marshal.level_name(self, true)
+	
+	-- Сохраняем статистику
 	xr_statistic.save(packet)
+	
+	-- Сохраняем менеджер тайников
 	treasure_manager.get_treasure_manager():save(packet)
 
-	local n = 0
-	for k,v in pairs(db.script_ids) do
-		n = n + 1
-	end
-	packet:w_u8(n)
-	for k,v in pairs (db.script_ids) do
-		packet:w_u16(k)
-		packet:w_stringZ(v)
-	end
+	-- Сохраняем скрипты
+	bind_stalker_marshal.script_ids(self, true)
+	
+	-- Сохраняем задания
 	task_manager.get_task_manager():save(packet)
 
---	packet:w_bool(self.actor_weapon_on_start)
+	-- Сохраняем активный слот
+	bind_stalker_marshal.active_slot(self, true)
+
+	-- Сохраняем демиос
+	bind_stalker_marshal.deimos(self, true)
+
+	-- Сохраняем ачивку детектива
+	bind_stalker_marshal.detective_achivement(self, true)
 	
-	packet:w_u8(self.object:active_slot())
-
-
-	local deimos_exist = false
-	for k,v in pairs(db.zone_by_name) do
-		if(db.storage[v:id()] and db.storage[v:id()].active_scheme=="sr_deimos") then
-			deimos_exist = true
-			packet:w_bool(true)
-			packet:w_float(db.storage[v:id()].sr_deimos.intensity)
-		end
-	end
-	if not deimos_exist then
-		packet:w_bool(false)
-	end
-
-	if self.last_detective_achievement_spawn_time == nil then
-		packet:w_bool(false)
-	else
-		packet:w_bool(true)
-		utils.w_CTime(packet, self.last_detective_achievement_spawn_time)
-	end
-	if self.last_mutant_hunter_achievement_spawn_time == nil then
-		packet:w_bool(false)
-	else
-		packet:w_bool(true)
-		utils.w_CTime(packet, self.last_mutant_hunter_achievement_spawn_time)
-	end
+	-- Сохраняем ачивку охотника
+	bind_stalker_marshal.hunter_achivement(self, true)
+	
 	set_save_marker(packet, "save", true, "actor_binder")
 	
 	SendScriptCallback("save", packet) -- IX-Ray
+	SendScriptCallback("actor_on_save", reader) -- IX-Ray
 end
+
+
 ----------------------------------------------------------------------------------------------------------------------
+
 function actor_binder:load(reader)
 	set_save_marker(reader, "load", false, "actor_binder")
 	object_binder.load(self, reader)
+	
 	--' Загружаем уровень сложности
-	local game_difficulty = reader:r_u8()
-	printf("load game_difficulty %s", tostring(game_difficulty))
-	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
-	local stored_input_time = reader:r_u8()
-	if stored_input_time == true then
-		self.st.disable_input_time = utils.r_CTime(reader)
-	end
+	bind_stalker_marshal.game_difficulty(self, false)
+	
+	--' Загружаем данные об отключенном вводе
+	bind_stalker_marshal.disable_input_time(self, false)
+	
+	-- Загружаем PSTOR 
 	xr_logic.pstor_load_all(self.object, reader)
+	
+	-- Загружаем погоду
 	self.weather_manager:load(reader)
+	
+	-- Загружаем менеджер уборщика трупов
 	release_body_manager.get_release_body_manager():load(reader)
---	self.surge_manager:initialize()
+	
+	-- Загружаем менеджер выбросов
 	self.surge_manager:load(reader)
 	self.f_surge_manager_loaded = true
+	
+	-- Загружаем пси антены
 	sr_psy_antenna.load(reader)
-	sim_board.get_sim_board().simulation_started = reader:r_bool()
+	
+	-- Загружаем симуляцию
+	bind_stalker_marshal.simboard(self, false)
 
+	-- Загружаем звуковые схемы
 	xr_sound.actor_load(reader)
-	local n = reader:r_stringZ()
-	if(n~="nil") then
-		self.last_level_name = n
-	end
+	
+	-- Загружаем название уровня
+	bind_stalker_marshal.level_name(self, false)
+	
+	-- Загружаем статистику
 	xr_statistic.load(reader)
+	
+	-- Загружаем менеджер тайников
 	treasure_manager.get_treasure_manager():load(reader)
-	n = reader:r_u8()
-	for i = 1,n do
-		db.script_ids[reader:r_u16()] = reader:r_stringZ()
-	end
+	
+	-- Загружаем скрипты
+	bind_stalker_marshal.script_ids(self, false)
 
+	-- Загружаем задания
 	task_manager.get_task_manager():load(reader)
 
---	self.actor_weapon_on_start = reader:r_bool()
-	
-	self.loaded_active_slot = reader:r_u8()
-	
-	self.loaded_slot_applied = false
+	-- Загружаем активный слот
+	bind_stalker_marshal.active_slot(self, false)
 
-	local b = reader:r_bool()
-	if(b) then
-		self.deimos_intensity = reader:r_float()
-	end
+	-- Загружаем демиос
+	bind_stalker_marshal.deimos(self, false)
 
-	local stored_achievement_time = reader:r_bool()
-	if stored_achievement_time == true then
-		self.last_detective_achievement_spawn_time = utils.r_CTime(reader)
-	end
-	stored_achievement_time = reader:r_bool()
-	if stored_achievement_time == true then
-		self.last_mutant_hunter_achievement_spawn_time = utils.r_CTime(reader)
-	end
+	-- Загружаем ачивку детектива
+	bind_stalker_marshal.detective_achivement(self, false)
+	
+	-- Загружаем ачивку охотника
+	bind_stalker_marshal.hunter_achivement(self, false)
+	
 	set_save_marker(reader, "load", true, "actor_binder")
 
 	SendScriptCallback("load", reader) -- IX-Ray
+	SendScriptCallback("actor_on_load", reader) -- IX-Ray
 end
 
 --*************************************************************

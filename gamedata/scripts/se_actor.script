@@ -7,8 +7,14 @@ end
 
 function se_actor:on_register()
 	cse_alife_creature_actor.on_register(self)
+	
+	SendScriptCallback("se_actor_on_register", self)
+	
 	story_objects.get_story_objects_registry():register(self.id, "actor", true)
 	simulation_objects.get_sim_obj_registry():register(self)
+	
+	SendScriptCallback("server_entity_on_register", self, "se_actor")
+	
 	self.m_registred = true
 	if not self.start_position_filled then
 		sim_board.get_sim_board():fill_start_position()
@@ -17,6 +23,8 @@ function se_actor:on_register()
 end
 
 function se_actor:on_unregister()
+	SendScriptCallback("se_actor_on_unregister", self)
+	SendScriptCallback("server_entity_on_unregister", self, "se_actor")
 	cse_alife_creature_actor.on_unregister(self)
 	unregister_story_object_by_id(self.id)
 	simulation_objects.get_sim_obj_registry():unregister(self)
@@ -24,7 +32,10 @@ end
 
 --------------------
 function se_actor:STATE_Write(packet)
+	SendScriptCallback("se_actor_on_STATE_Write", self, packet)
+	
 	cse_alife_creature_actor.STATE_Write(self, packet)
+
 --	if self.m_registred ~= true then
 --		return
 --	end
@@ -35,6 +46,8 @@ function se_actor:STATE_Write(packet)
 end
 --------------------
 function se_actor:STATE_Read(packet, size)
+	SendScriptCallback("se_actor_on_STATE_Read", self, packet, size)
+	
 	cse_alife_creature_actor.STATE_Read(self, packet, size)
 	-- под LevelEditor не пытаться читать из пакета ничего
 	if editor() then
