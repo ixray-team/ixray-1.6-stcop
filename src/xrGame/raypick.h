@@ -32,6 +32,7 @@ struct CRayPick
 	collide::rq_target		flags;
 	script_rq_result		result;
 	CObject*				ignore;
+	u16						material = std::numeric_limits<u16>::max();
 
 	CRayPick();
 	CRayPick(const Fvector& P, const Fvector& D, float R, collide::rq_target F, CScriptGameObject* I);
@@ -48,4 +49,5 @@ struct CRayPick
 	IC CScriptGameObject*	get_object		()		{return result.O;};
 	IC float				get_distance	()		{return result.range;};
 	IC int					get_element		()		{return result.element;};
+	IC u16					get_material	()		{return material;};
 };
