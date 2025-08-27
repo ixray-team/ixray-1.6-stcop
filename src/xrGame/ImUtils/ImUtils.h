@@ -50,6 +50,9 @@ struct clsid_manager
 	void add_npc(CLASS_ID id);
 	bool is_npc(CLASS_ID id);
 
+	void add_anomaly(CLASS_ID id);
+	bool is_anomaly(CLASS_ID id);
+
 	const xr_set<CLASS_ID>& get_items(void) const { return items; }
 	const xr_set<CLASS_ID>& get_outfits(void) const { return outfits; }
 	const xr_set<CLASS_ID>& get_ammo(void) const { return ammo; }
@@ -233,6 +236,18 @@ struct clsid_manager
 	// Explo
 	CLASS_ID item_s_explo = TEXT2CLSID("S_EXPLO");
 
+	CLASS_ID zs_bfuzz = TEXT2CLSID("ZS_BFUZZ");
+	CLASS_ID zs_galan = TEXT2CLSID("ZS_GALAN");
+	CLASS_ID zs_mbald = TEXT2CLSID("ZS_MBALD");
+	CLASS_ID zs_mince = TEXT2CLSID("ZS_MINCE");
+	CLASS_ID zs_radio = TEXT2CLSID("ZS_RADIO");
+	CLASS_ID zs_torrd = TEXT2CLSID("ZS_TORRD");
+	CLASS_ID z_cfire = TEXT2CLSID("Z_CFIRE");
+	CLASS_ID z_mbald = TEXT2CLSID("Z_MBALD");
+	CLASS_ID z_nograv = TEXT2CLSID("Z_NOGRAV");
+	CLASS_ID z_radio = TEXT2CLSID("Z_RADIO");
+	CLASS_ID z_teambs = TEXT2CLSID("Z_TEAMBS");
+
 private:
 	xr_set<CLASS_ID> weapons;
 	xr_set<CLASS_ID> monsters;
@@ -249,6 +264,7 @@ private:
 	xr_set<CLASS_ID> dynamic_objects;
 	xr_set<CLASS_ID> explosives;
 	xr_set<CLASS_ID> npc_list;
+	xr_set<CLASS_ID> anomalies;
 };
 
 enum eSelectedType {

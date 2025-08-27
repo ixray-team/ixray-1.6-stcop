@@ -404,6 +404,13 @@ bool clsid_manager::is_npc(CLASS_ID id) {
 	return npc_list.contains(id);
 }
 
+bool clsid_manager::is_anomaly(CLASS_ID id) {
+	return anomalies.contains(id);
+}
+void clsid_manager::add_anomaly(CLASS_ID id) {
+	anomalies.insert(id);
+}
+
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	char name[16]{};
 	CLSID2TEXT(id, name);
