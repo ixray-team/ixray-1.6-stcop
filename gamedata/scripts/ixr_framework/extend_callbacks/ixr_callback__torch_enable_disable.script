@@ -1,0 +1,51 @@
+
+local torch_enabled = false
+local send_event = true
+local last_torch_object = nil
+local iTimer = 0
+local timer_increment = 250
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", this.on_update)
+end
+
+function on_update()
+	if iTimer <= time_global() then 
+		iTimer = time_global() + timer_increment
+		
+		process_torch()
+	end
+end
+
+function process_torch()
+	if db.actor then
+		last_torch_object = db.actor:object("device_torch")
+		
+		if last_torch_object and last_torch_object:id() then
+			local _torch_enabled = last_torch_object:torch_enabled()
+			if _torch_enabled ~= torch_enabled then
+				torch_enabled = _torch_enabled
+				send_event = true
+			end
+		else
+			if torch_enabled ~= false then
+				torch_enabled = false
+				send_event = true
+			end
+		end
+		
+		process_events()
+	end
+end
+
+function process_events()
+	if send_event then
+		send_event = false
+		
+		if torch_enabled then
+			SendScriptCallback("actor_on_torch_enabled", last_torch_object)
+		else
+			SendScriptCallback("actor_on_torch_disabled", last_torch_object)
+		end
+	end
+end
