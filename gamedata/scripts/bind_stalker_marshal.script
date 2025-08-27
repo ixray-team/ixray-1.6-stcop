@@ -1,0 +1,164 @@
+
+local marshalLog = true
+
+function __log(text, ...)
+	if marshalLog then
+		printf("-- [IXR MARHALIZE]:" .. text, ...)
+		SemiLog("-- [IXR MARHALIZE]:" .. string.format(text, ...))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function game_difficulty(_binder, is_save_mode)
+	local game_difficulty_by_num = {
+		[0] = "gd_novice",
+		[1] = "gd_stalker",
+		[2] = "gd_veteran",
+		[3] = "gd_master"
+	}
+
+	if is_save_mode then
+		local game_difficulty = level.get_game_difficulty()
+		SetStorageObjectVar(_binder.object:id(), "game_difficulty", game_difficulty)
+		__log("[save] game_difficulty [%s]", tostring(game_difficulty))
+		
+	else
+		local game_difficulty = GetStorageObjectVar(_binder.object:id(), "game_difficulty", 0)
+		get_console():execute("g_game_difficulty " .. game_difficulty_by_num[game_difficulty])
+		__log("[load] game_difficulty [%s]", tostring(game_difficulty))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function disable_input_time(_binder, is_save_mode)
+	if is_save_mode then
+		local stored_input_time = false
+		if _binder.st.disable_input_time ~= nil then
+			 stored_input_time = utils.get_table_CTime(_binder.st.disable_input_time)
+		end
+		
+		SetStorageObjectVar(_binder.object:id(), "disable_input_time", stored_input_time)
+		__log("[save] disable_input_time [%s]", tostring(ffx_json_lib.json_encode(stored_input_time)))
+	else
+		local stored_input_time = GetStorageObjectVar(_binder.object:id(), "disable_input_time", false)
+		if stored_input_time then
+			_binder.st.disable_input_time = utils.get_CTime_from_table(stored_input_time)
+		else
+			_binder.st.disable_input_time = nil
+		end
+		__log("[load] disable_input_time [%s]", tostring(ffx_json_lib.json_encode(stored_input_time)))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function level_name(_binder, is_save_mode)
+	if is_save_mode then
+		SetStorageObjectVar(_binder.object:id(), "last_level_name", tostring(_binder.last_level_name))
+		__log("[save] last_level_name [%s]", tostring(ffx_json_lib.json_encode(_binder.last_level_name)))
+	else
+		_binder.last_level_name = GetStorageObjectVar(_binder.object:id(), "last_level_name", nil)
+		__log("[load] last_level_name [%s]", tostring(ffx_json_lib.json_encode(_binder.last_level_name)))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function simboard(_binder, is_save_mode)
+	if is_save_mode then
+		SetStorageObjectVar(_binder.object:id(), "simulation_started", sim_board.get_sim_board().simulation_started)
+		__log("[save] simulation_started [%s]", tostring(ffx_json_lib.json_encode(sim_board.get_sim_board().simulation_started)))
+	else
+		sim_board.get_sim_board().simulation_started = GetStorageObjectVar(_binder.object:id(), "simulation_started", false)
+		__log("[load] simulation_started [%s]", tostring(ffx_json_lib.json_encode(sim_board.get_sim_board().simulation_started)))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function script_ids(_binder, is_save_mode)
+	if is_save_mode then
+		SetStorageObjectVar(_binder.object:id(), "script_ids", db.script_ids)
+		__log("[save] script_ids [%s]", tostring(ffx_json_lib.json_encode( db.script_ids )))
+	else
+		sim_board.get_sim_board().simulation_started = GetStorageObjectVar(_binder.object:id(), "script_ids", {})
+		__log("[load] script_ids [%s]", tostring(ffx_json_lib.json_encode( db.script_ids )))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function active_slot(_binder, is_save_mode)
+	if is_save_mode then
+		SetStorageObjectVar(_binder.object:id(), "active_slot", _binder.object:active_slot())
+		__log("[save] active_slot [%s]", tostring(ffx_json_lib.json_encode( _binder.object:active_slot() )))
+	else
+		_binder.loaded_active_slot = GetStorageObjectVar(_binder.object:id(), "active_slot", 0)
+		_binder.loaded_slot_applied = false
+		__log("[load] active_slot [%s]", tostring(ffx_json_lib.json_encode( _binder.loaded_active_slot )))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function deimos(_binder, is_save_mode)
+	if is_save_mode then
+		local deimos_objects = {}
+		for k,v in pairs(db.zone_by_name) do
+			if db.storage[v:id()] and db.storage[v:id()].active_scheme == "sr_deimos" then
+				deimos_objects[v:id()] = db.storage[v:id()].sr_deimos.intensity
+			end
+		end
+		
+		SetStorageObjectVar(_binder.object:id(), "deimos_objects", deimos_objects)
+		__log("[save] deimos_objects [%s]", tostring(ffx_json_lib.json_encode( deimos_objects )))
+	else
+		local deimos_objects = GetStorageObjectVar(_binder.object:id(), "deimos_objects", {})
+		for k, v in pairs(deimos_objects) do
+			if (db.storage[k] and db.storage[k].active_scheme == "sr_deimos") then
+				db.storage[k].sr_deimos.intensity = v
+				_binder.deimos_intensity = v
+			end
+		end
+		__log("[load] deimos_objects [%s]", tostring(ffx_json_lib.json_encode( deimos_objects )))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function detective_achivement(_binder, is_save_mode)
+	if is_save_mode then
+		local last_detective_achievement_spawn_time = false
+		if _binder.last_detective_achievement_spawn_time ~= nil then
+			last_detective_achievement_spawn_time = utils.get_table_CTime(_binder.last_detective_achievement_spawn_time)
+		end
+		
+		SetStorageObjectVar(_binder.object:id(), "last_detective_achievement_spawn_time", last_detective_achievement_spawn_time)
+		__log("[save] last_detective_achievement_spawn_time [%s]", tostring(ffx_json_lib.json_encode(last_detective_achievement_spawn_time)))
+	else
+		local last_detective_achievement_spawn_time = GetStorageObjectVar(_binder.object:id(), "last_detective_achievement_spawn_time", false)
+		if last_detective_achievement_spawn_time then
+			_binder.last_detective_achievement_spawn_time = utils.get_CTime_from_table(last_detective_achievement_spawn_time)
+		else
+			_binder.last_detective_achievement_spawn_time = nil
+		end
+		
+		__log("[load] last_detective_achievement_spawn_time [%s]", tostring(ffx_json_lib.json_encode(_binder.last_detective_achievement_spawn_time)))
+	end
+end
+
+----------------------------------------------------------------------------------------------------------------------
+function hunter_achivement(_binder, is_save_mode)
+	if is_save_mode then
+		local last_mutant_hunter_achievement_spawn_time = false
+		if _binder.last_mutant_hunter_achievement_spawn_time ~= nil then
+			last_mutant_hunter_achievement_spawn_time = utils.get_table_CTime(_binder.last_mutant_hunter_achievement_spawn_time)
+		end
+		
+		SetStorageObjectVar(_binder.object:id(), "last_mutant_hunter_achievement_spawn_time", last_mutant_hunter_achievement_spawn_time)
+		__log("[save] last_mutant_hunter_achievement_spawn_time [%s]", tostring(ffx_json_lib.json_encode(last_mutant_hunter_achievement_spawn_time)))
+	else
+		local last_mutant_hunter_achievement_spawn_time = GetStorageObjectVar(_binder.object:id(), "last_mutant_hunter_achievement_spawn_time", false)
+		if last_mutant_hunter_achievement_spawn_time then
+			_binder.last_mutant_hunter_achievement_spawn_time = utils.get_CTime_from_table(last_mutant_hunter_achievement_spawn_time)
+		else
+			_binder.last_mutant_hunter_achievement_spawn_time = nil
+		end
+		
+		__log("[load] last_mutant_hunter_achievement_spawn_time [%s]", tostring(ffx_json_lib.json_encode(_binder.last_mutant_hunter_achievement_spawn_time)))
+	end
+end

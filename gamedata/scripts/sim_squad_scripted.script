@@ -7,6 +7,7 @@
 --'******************************************************
 local squad_behaviour_ini 	= ini_file("misc\\squad_behaviours.ltx")
 local locations_ini			= ini_file("misc\\smart_terrain_masks.ltx")
+
 --function printf()
 --end
 
@@ -24,10 +25,11 @@ function sim_squad_scripted:__init(section) super (section)
 
 	--' Текущее действие
 	self.current_action 	= nil
-
 	self.current_target_id	= nil
-
 	self.assigned_target_id	= nil
+	self.first_update 		= false
+	self.last_gvid			= nil
+	self.level_name			= nil
 
 	--' Саундменеджер отряда
 	self.sound_manager 		= sound_manager.get_sound_manager("squad_"..self:section_name() )
@@ -162,6 +164,13 @@ function sim_squad_scripted:update()
 	cse_alife_online_offline_group.update (self)
 	self:refresh()
 
+	if not (self.first_update) then 
+		self.first_update = true 
+		SendScriptCallback("squad_on_first_update", self)
+	end
+	
+	SendScriptCallback("squad_on_update", self)
+	
 	-- Апдейт доступности для симуляции.
 	simulation_objects.get_sim_obj_registry():update_avaliability(self)
 
@@ -240,6 +249,18 @@ function sim_squad_scripted:update()
 	if self.need_to_reset_location_masks then
 		self:set_location_types()
 		self.need_to_reset_location_masks = false
+	end
+
+	local cur_lvl = alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id()) 
+	
+	if not (self.last_gvid == self.m_game_vertex_id) then
+		SendScriptCallback("squad_on_after_game_vertex_change", self, self.last_gvid, self.m_game_vertex_id, not (cur_lvl == self.level_name))
+		self.last_gvid = self.m_game_vertex_id
+	end
+	
+	if not (cur_lvl == self.level_name) then
+		SendScriptCallback("squad_on_after_level_change", self, self.level_name, cur_lvl)
+		self.level_name = cur_lvl
 	end
 end
 
@@ -389,19 +410,23 @@ function sim_squad_scripted:remove_squad()
 	self:hide()
 --	alife():release(self, true)
 end
+
 --' Удаление конкретного персонажа отряда
 function sim_squad_scripted:remove_npc(npc_id)
-	local npc = alife():object(npc_id)
-	self:on_npc_death(npc)
-	--printf("releasing object ["..npc:name().."]")
-	alife():release(npc, true)
+	local se_npc = alife():object(npc_id)
+	self:on_npc_death(se_npc, nil)
+	--printf("releasing object ["..se_npc:name().."]")
+	alife():release(se_npc, true)
 end
---' Убийство НПС
-function sim_squad_scripted:on_npc_death(npc)
-	printf("Squad %s. Killed member %s", tostring(self.id), npc.id)
 
-	self.sound_manager:unregister_npc(npc.id)
-	self:unregister_member(npc.id)
+--' Убийство НПС
+function sim_squad_scripted:on_npc_death(se_npc, se_killer)
+	printf("Squad %s. Killed member %s", tostring(self.id), se_npc.id)
+
+	SendScriptCallback("squad_on_npc_death", self, se_npc, se_killer)
+
+	self.sound_manager:unregister_npc(se_npc.id)
+	self:unregister_member(se_npc.id)
 
 	if self:npc_count() == 0 then
 		printf("REMOVING DEAD SQUAD %s", tostring(self.id))
@@ -418,6 +443,7 @@ function sim_squad_scripted:on_npc_death(npc)
 	end
 	self:refresh()
 end
+
 function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_smart_id)
 	local obj = alife():object(member_id)
 	if obj ~= nil then
@@ -435,6 +461,7 @@ function sim_squad_scripted:assign_squad_member_to_smart(member_id, smart, old_s
 		end
 	end
 end
+
 --' Назначение смарта
 function sim_squad_scripted:assign_smart(smart)
 	local old_smart = self.smart_id
@@ -471,6 +498,7 @@ function sim_squad_scripted:set_location_types_section (section)
 		self:add_location_type(id)
 	end
 end
+
 function sim_squad_scripted:set_location_types(new_smart_name)
 	local default_location = "stalker_terrain"
 	printf("set_location_types for squad [%s]", self:name())
@@ -531,6 +559,8 @@ function sim_squad_scripted:add_squad_member(spawn_section, spawn_position, lv_i
 	if simulation_objects.is_on_the_same_level(obj, alife():actor()) and position:distance_to_sqr(alife():actor().position) <= alife():switch_distance()^2 then
 		db.spawned_vertex_by_id[obj.id] = lv_id
 	end
+
+	SendScriptCallback("squad_on_add_npc", self, obj, spawn_section, spawn_position, lv_id, gv_id)
 
 	return obj.id
 end
@@ -610,6 +640,7 @@ function sim_squad_scripted:set_squad_sympathy(sympathy)
 		end
 	end
 end
+
 local function set_relation(npc1, npc2, new_relation)
 	local goodwill = 0
 	if(new_relation=="enemy") then
@@ -623,6 +654,7 @@ local function set_relation(npc1, npc2, new_relation)
 		abort("Npc not set in goodwill function!!!")
 	end
 end
+
 function sim_squad_scripted:set_squad_relation(relation)
 	local rel = relation or self.relationship
 	if(rel~=nil) then
@@ -721,6 +753,7 @@ function sim_squad_scripted:STATE_Write(packet)
 
 	set_save_marker(packet, "save", true, "sim_squad_scripted")
 end
+
 function sim_squad_scripted:STATE_Read(packet, size)
 	cse_alife_online_offline_group.STATE_Read (self, packet, size)
 	set_save_marker(packet, "load", false, "sim_squad_scripted")
@@ -751,18 +784,26 @@ function sim_squad_scripted:STATE_Read(packet, size)
 	self:init_squad_on_load()
 	set_save_marker(packet, "load", true, "sim_squad_scripted")
 end
+
 --***********************************************************************************************
 --*										SERVER_OBJECT											*
 --***********************************************************************************************
 
 function sim_squad_scripted:on_register()
 	cse_alife_online_offline_group.on_register( self )
+	
+	SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
+	
 	self.board.squads[self.id] = self
 	-- Проверяем кастомдату обьекта на наличие стори айди.
 	story_objects.check_spawn_ini_for_story_id(self)
 	simulation_objects.get_sim_obj_registry():register(self)
+	SendScriptCallback("squad_on_register", self)
 end
+
 function sim_squad_scripted:on_unregister()
+	SendScriptCallback("server_entity_on_register", self, "sim_squad_scripted")
+	SendScriptCallback("squad_on_unregister", self)
 	--' Отрегистрация в таскменеджере
 	unregister_story_object_by_id(self.id)
 		--' Удалить отряд
@@ -779,9 +820,11 @@ function sim_squad_scripted:on_unregister()
 		smart.already_spawned[self.respawn_point_prop_section].num = smart.already_spawned[self.respawn_point_prop_section].num - 1
 	end
 end
+
 function sim_squad_scripted:can_switch_offline()
 	return cse_alife_online_offline_group.can_switch_offline(self)
 end
+
 function sim_squad_scripted:can_switch_online()
 	return cse_alife_online_offline_group.can_switch_online(self)
 end
