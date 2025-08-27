@@ -54,6 +54,7 @@ struct
 	Section Vehicles{};
 	Section DynamicObjects{};
 	Section Explosives{};
+	Section Anomalies{};
 	Section Others{};
 
 	xr_unique_ptr<CScriptSound> sound_tip;
@@ -144,9 +145,6 @@ void InitSections()
 				Msg("! SpawnManager: failed to spawn [%s] visual not found: %s", name.data(), full_path.c_str());
 				continue;
 			}
-		}
-		else {
-			continue;
 		}
 
 		bool isInvItem = pSection->line_exist("cost") && pSection->line_exist("inv_weight");
@@ -277,6 +275,10 @@ void InitSections()
 		else if (g_pClsidManager->is_monster(classId))
 		{
 			imgui_spawn_manager.Monsters.push_back({ name, pSection });
+		}
+		else if (g_pClsidManager->is_anomaly(classId))
+		{
+			imgui_spawn_manager.Anomalies.push_back({ name, pSection });
 		}
 		else if (g_pClsidManager->is_vehicle(classId))
 		{
@@ -950,6 +952,22 @@ void RenderSpawnManagerWindow() {
 					ImGui::InputText("Search##Monsters", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Monsters, searchBuffer);
+					SpawnManager_ProcessSections(filteredList, number_imgui);
+
+					ImGui::EndTabItem();
+				}
+			}
+
+			if (imgui_spawn_manager.Anomalies.size() > 0)
+			{
+				if (ImGui::BeginTabItem("Anomalies"))
+				{
+					size_t number_imgui{};
+					ImGui::Text("total sections count: %d", imgui_spawn_manager.Anomalies.size());
+					static char searchBuffer[128] = "";
+					ImGui::InputText("Search##Anomalies", searchBuffer, IM_ARRAYSIZE(searchBuffer));
+
+					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Anomalies, searchBuffer);
 					SpawnManager_ProcessSections(filteredList, number_imgui);
 
 					ImGui::EndTabItem();
