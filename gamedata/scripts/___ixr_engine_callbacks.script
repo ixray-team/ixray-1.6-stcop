@@ -1,0 +1,195 @@
+
+--[[
+	IX-Ray engine callbacks script
+	Version: 1.0
+	Author: FFx0001
+	Script: ___ixr_engine_callbacks.script
+	Description: Script for collect exterbal engine calls
+]]
+
+------------------------------------------------------------------------------------------------------
+-- ENGINE EXPORTS!!!
+------------------------------------------------------------------------------------------------------
+-- called when an inventory item is eaten/used
+-- returning false will prevent the item from being used
+function CInventory__eat(npc_gobj, item_gobj)
+	local flags = { ret_value = true }
+	
+	if npc_gobj and npc_gobj:id() == db.actor:id() then
+		SendScriptCallback("actor_on_item_before_use", npc_gobj, item_gobj, flags)
+	else
+		SendScriptCallback("on_before_item_use", npc_gobj, item_gobj, flags)
+	end
+	
+	return flags.ret_value
+end
+
+-- Called before actor hit callback
+-- returning false will ignore the hit completely
+function CActor__BeforeHitCallback(actor, shit, bone_id)
+	local flags = { ret_value = true }
+	
+	SendScriptCallback("actor_on_before_hit", shit, bone_id, flags)
+	
+	return flags.ret_value
+end
+
+-- called in CSE_ALifeDynamicObject::on_unregister()
+-- good place to remove ids from persistent tables
+function CSE_ALifeDynamicObject_on_unregister(id)
+
+end
+
+function CALifeUpdateManager__on_before_change_level(packet)
+--[[
+	C++:
+	net_packet.r					(&graph().actor()->m_tGraphID,sizeof(graph().actor()->m_tGraphID));
+	net_packet.r					(&graph().actor()->m_tNodeID,sizeof(graph().actor()->m_tNodeID));
+	net_packet.r_vec3				(graph().actor()->o_Position);
+	net_packet.r_vec3				(graph().actor()->o_Angle);
+--]]
+
+	SendScriptCallback("on_before_level_changing", packet)
+
+end
+
+function CUIActorMenu_CanMoveToPartner(npc_gobj, item_gobj, zero_a, zero_b, itmWeight, partner_inv_weight, partner_max_weight)
+	local flags = { ret_value = true }
+	
+	if npc_gobj and npc_gobj:id() and item_gobj and item_gobj:id() then
+		SendScriptCallback("CUIActorMenu_CanMoveToPartner", npc_gobj, item_gobj, itmWeight, partner_inv_weight, partner_max_weight, flags)
+	end
+	
+	return flags.ret_value
+end
+
+ -- called from engine! -- bugs
+function CInventoryBox_CanTake(box, item)
+	local flags = { ret_value = true }
+	
+	SendScriptCallback("CInventoryBox_CanTake", box, item, flags)
+	
+	return flags.ret_value
+end
+
+
+-- called from engine!
+function CInventoryBox_OnInvBoxCanTakeItem(box, item)
+
+	local flags = { ret_value = true }
+
+	if box and box:id() and item and item:id() then
+		SendScriptCallback("CInventoryBox_OnInvBoxCanTakeItem", box, item, flags)
+	end
+
+	return flags.ret_value
+end
+
+-- called from engine!
+function CInventoryBox_OnInvBoxCanPlaceItem(box, item)
+
+	local flags = { ret_value = true }
+	
+	if box and box:id() and item and item:id() then
+		SendScriptCallback("CInventoryBox_OnInvBoxCanPlaceItem", box, item, flags)
+	end
+
+	return flags.ret_value
+end
+
+-- called from engine!
+--[[
+ Refers to when an icon is dragged onto another icon in Actor Inventory Menu
+ 
+ passed parameters:
+	first_item is the object being dragged; may be nil
+	second_item is the object the item is being dragged onto; may be nil
+	from_slot is the number value of the slot first_item is being dragged from;  0 or EDDListType.iInvalid is invalid 
+	to_slot is the number value of the slot second_item is occupying;  0 or EDDListType.iInvalid is invalid 
+	
+from_slot and to_slot values:
+		EDDListType.iInvalid			= 0
+		EDDListType.iActorSlot			= 1
+		EDDListType.iActorBag			= 2
+		EDDListType.iActorBelt			= 3
+
+		EDDListType.iActorTrade			= 4
+		EDDListType.iPartnerTradeBag	= 5
+		EDDListType.iPartnerTrade		= 6
+		EDDListType.iDeadBodyBag		= 7
+		EDDListType.iQuickSlot			= 8
+		EDDListType.iTrashSlot			= 9
+	
+--]]
+function CUIActorMenu_OnItemDropped(first_item, second_item, from_slot, to_slot)
+	if not db.actor then
+		return true;
+	end
+	
+	local first_item_id = nil
+	local first_item_section = nil
+	if first_item then
+		first_item_id = first_item:id() 
+		first_item_section = first_item:section()
+	end
+	
+	local second_item_id = nil
+	local second_item_section = nil
+	if second_item then
+		second_item_id = second_item:id() 
+		second_item_section = second_item:section()
+	end
+	
+	if (first_item and second_item) then
+		SendScriptCallback("CUIActorMenu_OnItemDropped", first_item, second_item, from_slot, to_slot)
+		SendScriptCallback("ActorMenu_on_item_drag_drop", first_item, second_item, from_slot, to_slot)
+	end
+	
+	if not first_item or not second_item or first_item:id() == second_item:id() then
+		SendScriptCallback("actor_on_nil_drag_drop_item_on_item", first_item, second_item, from_slot, to_slot)
+		
+		return true
+	end
+	
+	local actor_id = db.actor:id()
+	if (first_item:parent() and first_item:parent():id() and first_item:parent():id() ~= actor_id) or (second_item:parent() and second_item:parent():id() and second_item:parent():id() ~= actor_id) then
+		SendScriptCallback("actor_on_npc_drag_drop_item_on_item", first_item, second_item, from_slot, to_slot)
+	else
+		SendScriptCallback("actor_on_actor_drag_drop_item_on_item", first_item, second_item, from_slot, to_slot)
+	end
+	
+	return true
+end
+
+-- called from engine!
+function CUIActorMenu_OnItemFocusReceive(item_gobj)
+	SendScriptCallback("CUIActorMenu_OnItemFocusReceive", item_gobj)
+	SendScriptCallback("ActorMenu_on_item_focus_receive", item_gobj)
+end
+
+-- called from engine!
+function CUIActorMenu_OnItemFocusLost(item_gobj)
+	SendScriptCallback("CUIActorMenu_OnItemFocusLost", item_gobj)
+	SendScriptCallback("ActorMenu_on_item_focus_lost", item_gobj)
+end
+
+-- called from engine!
+-- useful for when doing npc:use(db.actor) when NPC is alive
+-- basically what is available in the corpse loot menu while npc is alive
+function CInventory_ItemAvailableToTrade(npc, item)
+	
+	local flags = { ret_value = true }
+	
+	SendScriptCallback("CInventory_ItemAvailableToTrade", npc, item, flags)
+	
+	return flags.ret_value
+end
+
+-- called from engine!
+function level_on_key_press(dik,bind)
+	if (level.present() and db.actor) then	
+		SendScriptCallback("level_input_on_key_press", dik, bind)
+	end
+	
+	return false
+end
