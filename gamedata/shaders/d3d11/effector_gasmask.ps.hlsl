@@ -8,9 +8,9 @@
 #define VIS_GLASS_RADIUS 0.32f
 #define VIS_GLASS_INTENSITY 0.45f
 
-uniform float4 screen_res;
-uniform Texture2D s_gasmask;
-uniform Texture2D s_breath;
+float4 screen_res;
+Texture2D s_gasmask;
+Texture2D s_breath;
 
 float3 calc_visor_reflect(float3 color, float2 tc)
 {
@@ -42,11 +42,14 @@ float3 calc_visor_reflect(float3 color, float2 tc)
 
 float4 main(float2 tc0 : TEXCOORD0) : SV_Target
 {
-	float4 maskTex = s_gasmask.Sample(smp_rtlinear, tc0.xy);
-	float4 breathTex = s_breath.Sample(smp_rtlinear, tc0.xy);
-	float2 tc_offset = tc0.xy + (maskTex.xy - (127.0f / 255.0f)) * def_distort;
+	float4 mask = s_gasmask.SampleLevel(smp_rtlinear, tc0, 0.0);
+	float4 breath = s_breath.SampleLevel(smp_rtlinear, tc0, 0.0);
 
-	float4 color = s_image.Load(int3(tc_offset * screen_res.xy, 0), 0);
-	color.rgb = calc_visor_reflect(color.rgb, tc_offset);
-	return color + (maskTex.a * 0.2) + (breathTex.a * abs(timers.w));
+	float2 tc0_shift = tc0 + (mask.xy - 0.5) * 0.035; //LV: 0.035 looks better
+
+	float4 img = s_image.SampleLevel(smp_rtlinear, tc0_shift, 0.0);
+	img.xyz = calc_visor_reflect(img.xyz, tc0_shift);
+	img.xyz += (mask.w * 0.2) + (breath.w * abs(timers.w));
+
+	return img; //LV: in case we store something in alpha channel
 }
