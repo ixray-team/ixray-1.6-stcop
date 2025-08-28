@@ -1463,10 +1463,17 @@ void CActor::UpdateCL()
 
 	cam_Update(float(Device.dwTimeDelta)/1000.0f, current_fov);
 
-	if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
+	if (Level().CurrentEntity() == this)
 	{
 		psHUD_Flags.set(HUD_CROSSHAIR_RT2, true);
 		psHUD_Flags.set(HUD_DRAW_RT, true);
+
+		g_pGamePersistent->ShaderParams.HelmetCondition = -1;
+
+		if (PIItem Helmet = inventory().ItemFromSlot(HELMET_SLOT))
+		{
+			g_pGamePersistent->ShaderParams.HelmetCondition = Helmet->GetCondition();
+		}
 	}
 
 	if (HudAnimator())
