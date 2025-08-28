@@ -16,6 +16,8 @@
 #include "blender_cas.h"
 #include "blender_gtao.h"
 #include "blender_taa.h"
+#include "BlenderGasmask.h"
+
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
@@ -559,8 +561,11 @@ CRenderTarget::CRenderTarget()
 
 	// Screen Post Process
 	{
-		b_spp = new CBlender_SPP();
+		b_spp = new CBlender_SPP;
 		s_spp.create(b_spp);
+
+		b_gasmask = new CBlenderGasMask;
+		s_gasmask.create(b_gasmask);
 	}
 
 	// SMAA
@@ -959,6 +964,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_smaa);
 	xr_delete(b_gamma);
 	xr_delete(b_spp);
+	xr_delete(b_gasmask);
 	xr_delete(b_accum_mask);
 	xr_delete(b_occq);
 	xr_delete(b_cas);
