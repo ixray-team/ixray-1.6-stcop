@@ -777,6 +777,8 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 	}
 }
 
+static bool is_shooting_end_callback = false;
+
 void CWeaponMagazined::UpdateCL			()
 {
 	PROF_EVENT("CWeaponMagazined::UpdateCL")
@@ -949,6 +951,13 @@ void CWeaponMagazined::state_Fire(float dt)
 			OnMagazineEmpty();
 
 		StopShooting();
+
+		if (ParentIsActor() && is_shooting_end_callback)
+		{
+			is_shooting_end_callback = false;
+			bWorking = false;
+			SwitchState(eIdle);
+		}
 	}
 	else
 	{
@@ -1060,6 +1069,13 @@ void CWeaponMagazined::state_FireChamber(float dt)
 			OnMagazineEmpty();
 
 		StopShooting();
+
+		if (ParentIsActor() && is_shooting_end_callback)
+		{
+			is_shooting_end_callback = false;
+			bWorking = false;
+			SwitchState(eIdle);
+		}
 	}
 	else
 	{
@@ -1265,8 +1281,9 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		{
 			if (ParentIsActor())
 			{
-				bWorking = false;
-				SwitchState(eIdle);
+				//bWorking = false;
+				//SwitchState(eIdle);
+				is_shooting_end_callback = true;
 			}
 			break;
 		}
