@@ -583,6 +583,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
 	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
+	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -3355,6 +3356,9 @@ u32 CWeapon::Cost() const
 float CWeapon::GetHudFov()
 {
 	float get = inherited::GetHudFov() / m_fHudFovFactor;
+	float zoom = m_HudFovZoom ? m_HudFovZoom : (get * Device.fFOV / g_fov);
+	get += (zoom - get) * m_zoom_params.m_fZoomRotationFactor;
+
 	float hud_fov = m_fHudFovFactor;
 	float zoom_fov = IsGrenadeMode() ? m_fHudFovGLZoomFactor : m_fHudFovZoomFactor;
 
