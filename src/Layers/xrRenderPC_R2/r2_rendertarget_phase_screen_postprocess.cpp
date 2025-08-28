@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../xrEngine/IGame_Persistent.h"
 
 bool UseGasmak = false;
 
@@ -48,4 +49,20 @@ void CRenderTarget::PhaseVignette() {
 
 void CRenderTarget::PhaseSaturation() {
 	RenderEffect(ScreenPostProcessType::Saturation);
+}
+
+void CRenderTarget::PhaseRaindrops()
+{
+	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+	if (condition < 0)
+	{
+		return;
+	}
+
+	if (g_pGamePersistent->Environment().wetness_factor < EPS_L)
+	{
+		return;
+	}
+
+	RenderEffect(ScreenPostProcessType::Raindrops);
 }
