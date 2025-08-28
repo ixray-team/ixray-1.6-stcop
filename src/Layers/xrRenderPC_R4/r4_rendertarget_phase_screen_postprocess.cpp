@@ -1,55 +1,102 @@
 #include "stdafx.h"
+#include "../../xrEngine/IGame_Persistent.h"
 
-void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode) {
-    u32 Offset = 0;
-    float d_Z = EPS_S;
-    float d_W = 1.0f;
-    constexpr u32 color = color_rgba(0, 0, 0, 255);
+bool UseGasmak = false;
 
-    // Set render target
-    if (postProcessMode) {
-        u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
-    }
+void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool postProcessMode)
+{
+	u32 Offset = 0;
+	float d_Z = EPS_S;
+	float d_W = 1.0f;
+	constexpr u32 color = color_rgba(0, 0, 0, 255);
 
-    // Configure rendering settings
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_Stencil(false);
+	// Set render target
+	if (postProcessMode) {
+		u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+	}
 
-    // Lock and set vertices
-    FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-    pv->set(0.f, (float)Device.TargetHeight, d_Z, d_W, color, 0.f, 1.f); pv++;
-    pv->set(0.f, 0.f, d_Z, d_W, color, 0.f, 0.f); pv++;
-    pv->set((float)Device.TargetWidth, (float)Device.TargetHeight, d_Z, d_W, color, 1.f, 1.f); pv++;
-    pv->set((float)Device.TargetWidth, 0.f, d_Z, d_W, color, 1.f, 0.f); pv++;
-    RCache.Vertex.Unlock(4, g_combine->vb_stride);
+	// Configure rendering settings
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(false);
 
-    // Set shader and geometry
-    RCache.set_Element(s_spp->E[postProcessType]);
-    RCache.set_Geometry(g_combine);
+	// Lock and set vertices
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	pv->set(0.f, (float)Device.TargetHeight, d_Z, d_W, color, 0.f, 1.f); pv++;
+	pv->set(0.f, 0.f, d_Z, d_W, color, 0.f, 0.f); pv++;
+	pv->set((float)Device.TargetWidth, (float)Device.TargetHeight, d_Z, d_W, color, 1.f, 1.f); pv++;
+	pv->set((float)Device.TargetWidth, 0.f, d_Z, d_W, color, 1.f, 0.f); pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
-    // Render
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	// Set shader and geometry
+	RCache.set_Element(s_spp->E[postProcessType]);
+	RCache.set_Geometry(g_combine);
 
-    // Copy resource
-    if (postProcessMode) {
-        RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
-    }
+	// Render
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+	// Copy resource
+	if (postProcessMode) {
+		RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+	}
 }
 
 void CRenderTarget::PhaseAberration() {
-    RenderEffect(ScreenPostProcessType::Aberration);
+	RenderEffect(ScreenPostProcessType::Aberration);
 }
 
 void CRenderTarget::PhaseVignette() {
-    RenderEffect(ScreenPostProcessType::Vignette);
+	RenderEffect(ScreenPostProcessType::Vignette);
 }
 
 void CRenderTarget::PhaseSaturation() {
-    RenderEffect(ScreenPostProcessType::Saturation);
+	RenderEffect(ScreenPostProcessType::Saturation);
 }
 
-void CRenderTarget::PhaseWinter() {
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_world_old(Fidentity);
-    RenderEffect(ScreenPostProcessType::Winter, false);
+void CRenderTarget::PhaseGasmask()
+{
+	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+	if (condition < 0)
+	{
+		return;
+	}
+
+	u32 Offset = 0;
+	float d_Z = EPS_S;
+	float d_W = 1.0f;
+	constexpr u32 color = color_rgba(0, 0, 0, 255);
+
+	size_t currentState = 4 - ((1.f * condition) * 4);
+	clamp(currentState, 0ull, 3ull);
+
+	// Set render target
+	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
+
+	// Configure rendering settings
+	RCache.set_CullMode(CULL_NONE);
+	RCache.set_Stencil(false);
+
+	// Lock and set vertices
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	pv->set(0.f, (float)Device.TargetHeight, d_Z, d_W, color, 0.f, 1.f); pv++;
+	pv->set(0.f, 0.f, d_Z, d_W, color, 0.f, 0.f); pv++;
+	pv->set((float)Device.TargetWidth, (float)Device.TargetHeight, d_Z, d_W, color, 1.f, 1.f); pv++;
+	pv->set((float)Device.TargetWidth, 0.f, d_Z, d_W, color, 1.f, 0.f); pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
+
+	// Set shader and geometry
+	RCache.set_Element(s_gasmask->E[currentState]);
+	RCache.set_Geometry(g_combine);
+
+	// Render
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+
+	// Copy resource
+	RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+}
+
+void CRenderTarget::PhaseWinter()
+{
+	RCache.set_xform_world(Fidentity);
+	RCache.set_xform_world_old(Fidentity);
+	RenderEffect(ScreenPostProcessType::Winter, false);
 }
