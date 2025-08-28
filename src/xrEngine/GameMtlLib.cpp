@@ -88,6 +88,8 @@ void CGameMtlLibrary::Load(const shared_str& filename)
         return;
     }
 
+    bool is_new_file = filename != GAMEMTL_FILENAME;
+
     IReader* F = FS.r_open(name);
     IReader& fs = *F;
 
@@ -104,6 +106,8 @@ void CGameMtlLibrary::Load(const shared_str& filename)
     R_ASSERT(fs.find_chunk(GAMEMTLS_CHUNK_AUTOINC));
     material_index = fs.r_u32();
     material_pair_index = fs.r_u32();
+
+    xr_vector<std::pair<u32, u32>> old_id_new_id = {};
 
     IReader* OBJ = fs.open_chunk(GAMEMTLS_CHUNK_MTLS);
     if (OBJ)
@@ -130,12 +134,24 @@ void CGameMtlLibrary::Load(const shared_str& filename)
 
             if (need_rewrite)
             {
+                u32 old_id = M->ID;
                 M->Load(*O);
+                M->ID = old_id;
+
+                old_id_new_id.push_back({ old_id, M->ID });
             }
             else
             {
                 M = new SGameMtl();
                 M->Load(*O);
+                if (is_new_file)
+                {
+                    u32 old_id = M->ID;
+                    M->ID = materials.back()->ID + 1;
+                    
+                    old_id_new_id.push_back({ old_id, M->ID});
+                }
+
                 materials.push_back(M);
             }
         }
@@ -166,12 +182,31 @@ void CGameMtlLibrary::Load(const shared_str& filename)
 
             if (need_rewrite)
             {
+                u32 old_id = M->ID;
                 M->Load(*O);
+                M->ID = old_id;
             }
             else
             {
                 M = new SGameMtlPair(this);
                 M->Load(*O);
+                if (is_new_file)
+                {
+                    M->ID = material_pairs.back()->ID + 1;
+
+                    for (auto& id_pair : old_id_new_id)
+                    {
+                        if (M->mtl0 == id_pair.first)
+                        {
+                            M->mtl0 = id_pair.second;
+                        }
+
+                        if (M->mtl1 == id_pair.first)
+                        {
+                            M->mtl1 = id_pair.second;
+                        }
+                    }
+                }
                 material_pairs.push_back(M);
             }
         }
