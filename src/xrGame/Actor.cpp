@@ -1469,10 +1469,28 @@ void CActor::UpdateCL()
 		psHUD_Flags.set(HUD_DRAW_RT, true);
 
 		g_pGamePersistent->ShaderParams.HelmetCondition = -1;
+		g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = true;
+		g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = true;
 
 		if (PIItem Helmet = inventory().ItemFromSlot(HELMET_SLOT))
 		{
 			g_pGamePersistent->ShaderParams.HelmetCondition = Helmet->GetCondition();
+			CHelmet* CHM = Helmet->cast_helmet();
+
+			if (CHM) {
+				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = CHM->bIsHudGasMaskAvialable;
+				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = CHM->bIsHudRainDropsAvialable;
+			}
+		}
+		else if (PIItem Outfit = inventory().ItemFromSlot(OUTFIT_SLOT))
+		{
+			CCustomOutfit* COF = Outfit->cast_outfit();
+
+			if (COF && !COF->bIsHelmetAvaliable) {
+				g_pGamePersistent->ShaderParams.HelmetCondition = Outfit->GetCondition();
+				g_pGamePersistent->ShaderParams.ItemCfgHudGasMaskAvialable = COF->bIsHudGasMaskAvialable;
+				g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable = COF->bIsHudRainDropsAvialable;
+			}
 		}
 	}
 
