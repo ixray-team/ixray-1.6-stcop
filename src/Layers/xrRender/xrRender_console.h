@@ -129,6 +129,8 @@ extern  float					ps_r__test_exp_to_shaders_2;
 extern  float					ps_r__test_exp_to_shaders_3;
 extern  float					ps_r__test_exp_to_shaders_4;
 
+extern bool UseGasmak;
+
 extern ECORE_API int opt_static;
 extern ECORE_API int opt_dynamic;
 

@@ -18,8 +18,10 @@ class ENGINE_API IGame_Persistent	:
 	public pureFrame
 {
 public:
-	union params {
-		struct {
+	union params
+	{
+		struct
+		{
 			string256	m_game_or_spawn;
 			string256	m_game_type;
 			string256	m_alife;
@@ -27,23 +29,34 @@ public:
 			EGameIDs	m_e_game_type;
 		};
 		string256		m_params[4];
-						params		()	{	reset();	}
-		void			reset		()
+
+		params() { reset(); }
+
+		void reset()
 		{
-			for (int i=0; i<4; ++i)
-				xr_strcpy	(m_params[i],"");
+			for (int i = 0; i < 4; ++i)
+				xr_strcpy(m_params[i], "");
 		}
-		void						parse_cmd_line		(LPCSTR cmd_line)
+
+		void parse_cmd_line(LPCSTR cmd_line)
 		{
-			reset					();
-			int						n = _min(4,_GetItemCount(cmd_line,'/'));
-			for (int i=0; i<n; ++i) {
-				_GetItem			(cmd_line,i,m_params[i],'/');
-				_strlwr				(m_params[i]);
+			reset();
+			int n = _min(4, _GetItemCount(cmd_line, '/'));
+			for (int i = 0; i < n; ++i)
+			{
+				_GetItem(cmd_line, i, m_params[i], '/');
+				_strlwr(m_params[i]);
 			}
 		}
 	};
-	params							m_game_params;
+
+	struct ShaderParamsData
+	{
+		float HelmetCondition = 0;
+	};
+
+	params m_game_params;
+	ShaderParamsData ShaderParams;
 
 public:
 	xr_vector<xr_shared_ptr<CPS_Instance>> ps_active;
