@@ -373,10 +373,6 @@ void DrawCompilerConfig()
 #endif
 	ImGui::Separator();
 
-	ImGui::TextColored(ImVec4(RGBAColor(204, 102, 102, 255)), "(Warning Disable MU in raycast)");
-
-	ImGui::Checkbox("Embree Optimized", &gCompilerMode.Embree_SplitBVH);
-
 	ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
 	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
