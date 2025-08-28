@@ -40,6 +40,9 @@ public:
 	float					m_fPowerRestoreSpeed;
 	float					m_fBleedingRestoreSpeed;
 
+	bool					bIsHudGasMaskAvialable;		// FFx0001 ++
+	bool					bIsHudRainDropsAvialable;	// FFx0001 ++
+
 	float					m_fShowNearestEnemiesDistance;
 
 	void					ReloadBonesProtection	();
