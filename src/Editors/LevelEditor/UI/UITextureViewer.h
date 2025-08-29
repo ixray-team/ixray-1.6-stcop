@@ -26,7 +26,10 @@ private:
 		Channel_B = 1 << 2,
 		Channel_A = 1 << 3
 	};
+	
+	xr_string CurrentFileName;
 
+	float Zoom = 1.f;
 	u8 ChannelMask = Channel_R | Channel_G | Channel_B | Channel_A;
 	bool GrayMode = false;
 };
