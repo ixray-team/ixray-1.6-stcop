@@ -4,6 +4,7 @@
 CUITextureViewer::CUITextureViewer()
 {
 	Texture = new CTexture;
+	Zoom = 1.0f;
 }
 
 CUITextureViewer::~CUITextureViewer()
@@ -17,9 +18,10 @@ void CUITextureViewer::Draw()
 		return;
 	}
 
+	ImGui::SetNextWindowSizeConstraints(ImVec2(450, 450), ImVec2(FLT_MAX, FLT_MAX));
 	ImGui::Begin("Texture Viewer", &bOpen);
 
-	ImVec2 buttonSize(30, 30);
+	static const ImVec2 buttonSize(22, 22);
 
 	auto DrawButtonLambda = [&](const char* label, u8 bit, ImVec4 color)
 	{
@@ -48,26 +50,64 @@ void CUITextureViewer::Draw()
 	ImVec4 col = GrayMode ? ImVec4(0.7f, 0.7f, 0.7f, 1.0f) : ImVec4(0.3f, 0.3f, 0.3f, 1.0f);
 	ImGui::SameLine(0.0f, 10.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, col);
-	if (ImGui::Button("Gray", buttonSize))
+	if (ImGui::Button("Gray", {35, 22}))
 	{
 		GrayMode = !GrayMode;
 		UpdateTexture();
 	}
 	ImGui::PopStyleColor();
+
+	ImGui::SameLine(0.0f, 10.0f);
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1);
+
+	ImGui::SetNextItemWidth(100.0f);
+	ImGui::SliderFloat("Zoom", &Zoom, 0.1f, 5.0f, "%.1f");
+
+	ImGui::SameLine();
+	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
+	if (!CurrentFileName.empty())
+	{
+		ImVec2 WindowPos = ImGui::GetWindowPos();
+		ImVec2 WindowSize = ImGui::GetWindowSize();
+		ImVec2 TextSize = ImGui::CalcTextSize(CurrentFileName.c_str());
+
+		ImGui::SetCursorPosX(WindowSize.x - TextSize.x - 10);
+		ImGui::Text(CurrentFileName.c_str());
+	}
 	ImGui::Separator();
 
-	if (Texture)
+	if (Texture && Texture->pSurface)
 	{
 		ImVec2 avail = ImGui::GetContentRegionAvail();
-		ImGui::Image((void*)Texture->pSurface, avail);
+		ImVec2 textureSize((float)SrcData.W, (float)SrcData.H);
+		
+		textureSize.x *= Zoom;
+		textureSize.y *= Zoom;
+		
+		if (textureSize.x > avail.x || textureSize.y > avail.y)
+		{
+			float scaleX = avail.x / textureSize.x;
+			float scaleY = avail.y / textureSize.y;
+			float scale = std::min(scaleX, scaleY);
+			
+			textureSize.x *= scale;
+			textureSize.y *= scale;
+		}
+		
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		pos.x += (avail.x - textureSize.x) * 0.5f;
+		pos.y += (avail.y - textureSize.y) * 0.5f;
+		
+		ImGui::SetCursorScreenPos(pos);
+		ImGui::Image((void*)Texture->pSurface, textureSize);
 	}
 
 	ImGui::End();
 }
 
-
 void CUITextureViewer::LoadFromFile(const xr_path& File)
 {
+	CurrentFileName = File.xfilename();
 	SrcData = DXTUtils::GitPixels(File.xstring().c_str());
 
 	IDirect3DTexture9* pTex = nullptr;
