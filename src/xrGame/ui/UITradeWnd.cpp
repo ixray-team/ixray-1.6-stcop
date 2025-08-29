@@ -30,6 +30,7 @@
 #include "../WeaponBinoculars.h"
 #include "../WeaponKnife.h"
 #include "../WeaponMagazinedWGrenade.h"
+#include "../inventory_item.h"
 
 
 #define				TRADE_XML			"trade.xml"
@@ -862,4 +863,16 @@ void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
 {
 	if(!b)
 		itm->SetTextureColor				(color_rgba(255,100,100,255));
+	else
+	{
+		PIItem IItm = (PIItem)itm->m_pData;
+		if (IItm->CurrSlot() && !itm->ChildsCount())
+		{
+			itm->SetTextureColor(color_rgba(100, 255, 100, 255));
+		}
+		else
+		{
+			itm->SetTextureColor(color_rgba(255, 255, 255, 255));
+		}
+	}
 }
