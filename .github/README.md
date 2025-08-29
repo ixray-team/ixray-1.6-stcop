@@ -6,19 +6,19 @@
   <p>
     English
     |
-    <a href="./doc/README.rus.md">
+    <a href="../doc/README.rus.md">
       Русский
     </a>
   </p>
 
   <p>
     <a href="https://github.com/ixray-team">
-      <img src="./src/Assets/Splash_long.png" alt="IX-Ray 1.6" />
+      <img src="../src/Assets/Splash_long.png" alt="IX-Ray 1.6" />
     </a>
   </p>
 
   <p>
-    <a href="./LICENSE.md">
+    <a href="../LICENSE.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/latest">

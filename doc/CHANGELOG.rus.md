@@ -1,6 +1,6 @@
 # Список изменений
 
-[English](../CHANGELOG.md) | Русский
+[English](../.github/CHANGELOG.md) | Русский
 
 Полный список изменений проекта _IX-Ray_ 1.6
 

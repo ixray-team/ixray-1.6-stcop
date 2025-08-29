@@ -1,6 +1,6 @@
 # Changelog
 
-English | [Русский](./doc/CHANGELOG.rus.md)
+English | [Русский](../doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 

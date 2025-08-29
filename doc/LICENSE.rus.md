@@ -1,6 +1,6 @@
 # IX-Ray
 
-[English](../LICENSE.md) | Русский
+[English](../.github/LICENSE.md) | Русский
 
 Подробный текст лицензии проекта IX-Ray
 
