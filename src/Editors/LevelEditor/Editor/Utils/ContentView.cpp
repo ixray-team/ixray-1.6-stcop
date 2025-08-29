@@ -8,6 +8,7 @@
 #include "Viewports/ViewportMesh.h"
 #include "Viewports/ViewportParticle.h"
 #include "IconsFontAwesome6.h"
+#include "../../UI/UITextureViewer.h"
 
 CContentView* GContentView = nullptr;
 
@@ -1470,13 +1471,25 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 	}
 
-	if (Path.has_extension() && Path.extension().string() == ".wav")
+	if (Path.has_extension())
 	{
-		if (ImGui::MenuItem("Open"))
+		if (Path.extension().string() == ".wav")
 		{
-			ExecCommand(COMMAND_SOUND_EDITOR, xr_path(Path.stem()).xstring());
+			if (ImGui::MenuItem("Open"))
+			{
+				ExecCommand(COMMAND_SOUND_EDITOR, xr_path(Path.stem()).xstring());
+			}
 		}
+		else if (Path.extension().string() == ".dds")
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+				CUITextureViewer* TexView = new CUITextureViewer;
+				TexView->LoadFromFile(Path);
 
+				UI->Push(TexView);
+			}
+		}
 		ImGui::Separator();
 	}
 
