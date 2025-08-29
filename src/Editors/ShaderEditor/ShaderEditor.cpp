@@ -4,7 +4,7 @@
 #include "../../xrEngine/xr_input.h"
 #include "xrECore/Splash.h"
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS))
 	{
@@ -20,8 +20,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	splash::update(15, "Initializing Core System");
 
-	const char* FSName = "fs.ltx";
-	Core._initialize("Shader", ELogCallback, 1, FSName);
+    const char* FSName = "fs.ltx";
+    LPCSTR fsgame_ltx_name = "-fsltx ";
+    string_path fsgame = "";
+
+    if (strstr(pCmdLine, fsgame_ltx_name)) {
+        int						sz = xr_strlen(fsgame_ltx_name);
+        sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+    }
+
+    Core._initialize("Shader", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	splash::update(35, "Initializing Shader Tools");
 
