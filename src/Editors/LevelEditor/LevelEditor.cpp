@@ -22,7 +22,7 @@
 ECORE_API extern bool bIsLevelEditor;
 void DragDrop(const xr_string&, int);
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
 	bIsLevelEditor = true;
 
@@ -41,7 +41,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	splash::update(10, "Initializing Core System");
 
 	const char* FSName = "fs.ltx";
-	Core._initialize("LevelEditor", ELogCallback, 1, FSName);
+	LPCSTR fsgame_ltx_name = "-fsltx ";
+	string_path fsgame = "";
+
+	if (strstr(pCmdLine, fsgame_ltx_name)) {
+		int						sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+	}
+
+	Core._initialize("LevelEditor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	splash::update(20, "Initializing Level Tools");
 
