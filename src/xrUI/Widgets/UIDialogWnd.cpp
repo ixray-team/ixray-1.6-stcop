@@ -73,7 +73,7 @@ bool CUIDialogWnd::IR_process()
 
 UI_API CDialogHolder* CurrentDialogHolder()
 {
-	if (g_pGamePersistent->m_pMainMenu->IsActive())
+	if (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
 		return g_pGamePersistent->m_pMainMenu->GetDialogHolder();
 
 	return g_pGameCustom->GetDialogHolder();
