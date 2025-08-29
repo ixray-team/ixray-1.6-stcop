@@ -1,6 +1,6 @@
 # Руководство по внесению вклада
 
-[English](../CONTRIBUTING.md) | Русский
+[English](../.github/CONTRIBUTING.md) | Русский
 
 Руководство по __внесению вклада__ проекта __IX-Ray__
 

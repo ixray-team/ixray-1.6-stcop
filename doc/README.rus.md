@@ -4,7 +4,7 @@
   <h4>Стабильный репозиторий модернизированного игрового движка <i>X-Ray 1.6</i></h4>
 
   <p>
-    <a href="../README.md">
+    <a href="../.github/README.md">
       English
     </a>
     |
@@ -18,7 +18,7 @@
   </p>
 
   <p>
-    <a href="./LICENSE.rus.md">
+    <a href="../LICENSE.rus.md">
       <img src="https://img.shields.io/badge/License-Non--commercial-red.svg" alt="License" />
     </a>
     <a href="https://github.com/ixray-team/ixray-1.6-stcop/releases/latest">
