@@ -14,7 +14,7 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
     {
         static auto texture_name = pSettings->section_exist("custom_textures")
             && pSettings->line_exist("custom_textures", "snow_texture")
-            ? pSettings->r_string("custom_textures", "snow_texture") : "mtl\\mtl_pod_green";
+            ? pSettings->r_string("custom_textures", "snow_texture") : "shaders\\snowmask\\snow";
 
         C.L_textures.resize(std::max(C.L_textures.size(), (size_t)1));
         C.L_textures[0]._set(texture_name);
