@@ -244,7 +244,7 @@ void CApplication::LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3)
 void CApplication::LoadStage()
 {
 	VERIFY(ll_dwReference);
-	Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());	phase_timer.Start();
+	// Msg("* phase time: %d ms", phase_timer.GetElapsed_ms());	phase_timer.Start();
 	// Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
 	if (g_pGamePersistent->GameType() == 1 && !xr_strcmp(g_pGamePersistent->m_game_params.m_alife, "alife"))
@@ -336,12 +336,22 @@ void CApplication::Level_Set(u32 L)
 		int count = 0;
 		while (true)
 		{
-			string_path			temp2;
+			string_path temp2;
 			gen_logo_name(path, Levels[L].folder, count);
-			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds"))
+
+			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) {
 				count++;
-			else
+			} else {
+				string_path temp3;
+				xr_strconcat(path, "intro\\intro_", Levels[L].folder);
+				path[xr_strlen(path) - 1] = 0;
+
+				string_path nm;
+				xr_strconcat(nm, path, ".dds");
+				FS.update_path(temp3, "$game_textures$", nm);
+
 				break;
+		}
 		}
 
 		if (count)
