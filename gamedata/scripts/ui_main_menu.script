@@ -36,11 +36,15 @@ function main_menu:InitControls()
 	
 	-- IX-Ray start
 	local btn
-	btn = xml:Init3tButton		("english_lang", self)
-	self:Register				(btn, "english_lang")
+	if xml:NodeExist("english_lang", 0) then
+		btn = xml:Init3tButton("english_lang", self)
+		self:Register(btn, "english_lang")
+	end
 	
-	btn = xml:Init3tButton		("russian_lang", self)
-	self:Register				(btn, "russian_lang")
+	if xml:NodeExist("russian_lang", 0) then
+		btn = xml:Init3tButton("russian_lang", self)
+		self:Register(btn, "russian_lang")
+	end
 	-- IX-Ray end
 end
 

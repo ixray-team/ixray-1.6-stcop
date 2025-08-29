@@ -165,8 +165,8 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 
 	if (m_Doc.Error())
 	{
-		string1024 str;
-		xr_sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
+		Msg("XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorStr());
+
 		return false;
 	}
 

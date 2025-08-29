@@ -850,35 +850,36 @@ void CUICellContainer::ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds)
 	bool DeepSearch = false;
 	size_t cnt = IgnoredItemsIds.size();
 
-	if (!IgnoredItemsIds.empty()) {
+	if (!IgnoredItemsIds.empty())
+	{
 		DeepSearch = true;
 	}
 
+	for (CUICell& cell : m_cells)
 	{
-		for (CUICell& cell : m_cells)
+		bool IsIgnored = false;
+		if (DeepSearch)
 		{
-			bool IsIgnored = false;
-			CUICellItem* ci = cell.m_item;
-			if (ci) {
-				PIItem item = (PIItem)(ci->m_pData);
-				if (item) {
+			if (CUICellItem* ci = cell.m_item)
+			{
+				if (PIItem item = (PIItem)(ci->m_pData))
+				{
 					u16 ItemId = item->object_id();
-					if (DeepSearch) {
-						for (size_t i = 0; i < cnt; i++)
+					for (size_t i = 0; i < cnt; i++)
+					{
+						if (IgnoredItemsIds[i] == ItemId)
 						{
-							if (IgnoredItemsIds[i] == ItemId)
-							{
-								IsIgnored = true;
-								break;
-							}
+							IsIgnored = true;
+							break;
 						}
 					}
 				}
 			}
+		}
 
-			if (!IsIgnored) {
-				cell.Clear();
-			}
+		if (!IsIgnored)
+		{
+			cell.Clear();
 		}
 	}
 
