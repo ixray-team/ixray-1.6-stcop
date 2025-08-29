@@ -344,4 +344,28 @@
     <string id="ui_mm_grass_distance">
         <text>Дальность видимости травы</text>
     </string>
+    <string id="ui_mm_screenshot_format">
+        <text>Формат скриншотов</text>
+    </string>
+    <string id="ss_jpg">
+        <text>.jpg</text>
+    </string>
+    <string id="ss_tga">
+        <text>.tga</text>
+    </string>
+    <string id="ss_png">
+        <text>.png</text>
+    </string>
+	<string id="st_client_connecting_to">
+		<text>Клиент: Соединение с</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>Клиент: Создание</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>Клиент: Синхронизация</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Создание новой игры</text>
+	</string>
 </string_table>
