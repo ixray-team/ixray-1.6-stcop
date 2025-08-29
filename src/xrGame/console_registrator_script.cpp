@@ -42,7 +42,7 @@ void console_registrator::script_register(lua_State *L)
 		def("get_console",					&console),
 
 		class_<CConsole>("CConsole")
-			.def("execute",					&execute_console_command_deferred)
+			.def("execute", &CConsole::Execute)
 			.def("execute_script",			&CConsole::ExecuteScript)
 			.def("show",					&CConsole::Show)
 			.def("hide",					&CConsole::Hide)
