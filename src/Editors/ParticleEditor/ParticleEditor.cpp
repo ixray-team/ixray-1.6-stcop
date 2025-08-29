@@ -8,7 +8,7 @@
 extern ECORE_API xr_token2* actions_token;
 extern xr_token2 actions_token_impl[];
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS))
 	{
@@ -23,6 +23,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	Debug._initialize(false);
 
 	const char* FSName = "fs.ltx";
+    LPCSTR fsgame_ltx_name = "-fsltx ";
+    string_path fsgame = "";
+
+    if (strstr(pCmdLine, fsgame_ltx_name)) {
+        int						sz = xr_strlen(fsgame_ltx_name);
+        sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+    }
+
 
 	splash::update(10, "Initializing COM Library");
 
@@ -30,7 +38,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	splash::update(20, "Core Initialization");
 
-	Core._initialize("Patricle", ELogCallback, 1, FSName);
+    Core._initialize("Patricle", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	psDeviceFlags.set(rsFullscreen, false);
 

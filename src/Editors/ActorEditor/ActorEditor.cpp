@@ -81,7 +81,7 @@ void DragFile(xr_string File)
 	}
 }
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLine, int nCmdShow)
 {
 	if (!SDL_Init(SDL_INIT_AUDIO))
 	{
@@ -98,7 +98,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	splash::update(5, "Core Initialization");
 
 	const char* FSName = "fs.ltx";
-	Core._initialize("Actor", ELogCallback, 1, FSName);
+	LPCSTR fsgame_ltx_name = "-fsltx ";
+	string_path fsgame = "";
+
+	if (strstr(pCmdLine, fsgame_ltx_name)) {
+		int						sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(pCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+	}
+
+	Core._initialize("Actor", ELogCallback, 1, fsgame[0] ? fsgame : FSName);
 
 	splash::update(20, "Initializing Actor Tools");
 
