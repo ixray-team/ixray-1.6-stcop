@@ -102,7 +102,7 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 			if (!_citem)
 			{
 				CUICellContainer* c = old_owner->GetContainer();
-				Ivector2 c_pos = c->PickCell(old_owner->GetDragItemPosition());
+				Ivector2 c_pos = c->PickCell(UI().GetUICursor().GetCursorPosition());
 				if (c->ValidCell(c_pos))
 				{
 					CUICell& ui_cell = c->GetCellAt(c_pos);
