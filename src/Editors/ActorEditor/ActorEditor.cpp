@@ -151,17 +151,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 				EDevice->MaximizedWindow();
 				break;
 			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-				EPrefs->SaveConfig();
-				NeedExit = true;
-				break;
+			{
 
-			case SDL_EVENT_WINDOW_RESIZED:
-				if (UI && REDevice)
+				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
+				if (Event.window.windowID == MainWndID)
 				{
-					UI->Resize(Event.window.data1, Event.window.data2, true);
 					EPrefs->SaveConfig();
+					NeedExit = true;
 				}
 				break;
+			}
+			case SDL_EVENT_WINDOW_RESIZED:
+			{
+				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
+				if (UI && REDevice && Event.window.windowID == MainWndID)
+				{
+					if (UI && REDevice)
+					{
+						UI->Resize(Event.window.data1, Event.window.data2, true);
+						EPrefs->SaveConfig();
+					}
+				}
+				break;
+			}
 			case SDL_EVENT_WINDOW_SHOWN:
 			case SDL_EVENT_WINDOW_MOUSE_ENTER:
 				Device.b_is_Active = true;
