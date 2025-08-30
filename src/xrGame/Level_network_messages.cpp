@@ -84,7 +84,7 @@ void CLevel::ClientReceive()
 		u16			ID;
 		P->r_begin	(m_type);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		Msg("Process package %d", m_type);
 #endif
 
