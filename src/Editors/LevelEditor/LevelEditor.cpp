@@ -136,7 +136,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 				break;
 			}
-
 			case SDL_EVENT_WINDOW_RESIZED:
 			{
 				SDL_WindowID MainWndID = SDL_GetWindowID(g_AppInfo.Window);
