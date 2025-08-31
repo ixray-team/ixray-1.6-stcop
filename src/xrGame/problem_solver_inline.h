@@ -118,6 +118,7 @@ IC void CProblemSolverAbstract::validate_properties(const CState& conditions) co
 	{
 		if (evaluators().find((*I).condition()) == evaluators().end())
 		{
+			g_pScriptEngine->print_stack();
 			Msg("! cannot find corresponding evaluator to the property with id %d", (*I).condition());
 			THROW(evaluators().find((*I).condition()) != evaluators().end());
 		}
