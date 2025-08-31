@@ -183,7 +183,13 @@ public:
 	LPCSTR						m_custom_mark_lanim;
 
 	SInvItemPlace				m_ItemCurrPlace;
-	xr_vector<shared_str>		m_HiglightRelatedItemSections; // FFx0001 ++
+	RStringVec		m_HiglightRelatedItemSections; // FFx0001 ++
+
+	struct SParseItem
+	{
+		RStringVec m_items = {};
+		FloatVec m_chances = {};
+	} m_parse_params;
 
 	virtual void				OnMoveToSlot		(const SInvItemPlace& prev) {};
 	virtual void				OnMoveToBelt		(const SInvItemPlace& prev) {};

@@ -955,8 +955,8 @@ void CUIActorMenu::ActivatePropertiesBox()
 		PropertiesBoxForAddon(item, b_show);
 		PropertiesBoxForUsing(item, b_show);
 		PropertiesBoxForPlaying(item, b_show);
-		PropertiesBoxForDrop(cell_item, item, b_show);
 		PropertiesBoxForParse(item, b_show);
+		PropertiesBoxForDrop(cell_item, item, b_show);
 	}
 	else if(m_currMenuMode == mmUpgrade) 
 	{
@@ -1345,7 +1345,7 @@ void CUIActorMenu::PropertiesBoxForDonate(PIItem item, bool& b_show)
 
 void CUIActorMenu::PropertiesBoxForParse(PIItem item, bool& b_show)
 {
-	if (pSettings->line_exist(item->m_section_id, "parse_spawn_items") && pSettings->line_exist(item->m_section_id, "parse_spawn_chances"))
+	if (!item->m_parse_params.m_items.empty() && !item->m_parse_params.m_chances.empty())
 	{
 		m_UIPropertiesBox->AddItem("st_parse", nullptr, INVENTORY_PARSE_ITEM);
 		b_show = true;
@@ -1590,35 +1590,33 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			break;
 		}
 
-		CActor* actor = Level().CurrentEntity()->cast_actor();
+		CActor* actor = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (actor == nullptr) {
 			break;
 		}
 
-		shared_str SpawnList = pSettings->r_string(item->m_section_id, "parse_spawn_items");
-		shared_str ChanceList = pSettings->r_string(item->m_section_id, "parse_spawn_chances");
-
-		int Count = _GetItemCount(SpawnList.c_str());
-		int Count2 = _GetItemCount(ChanceList.c_str());
-
 		extern CSE_Abstract* CALifeSimulator__spawn_item2(CALifeSimulator* self_, LPCSTR section, const Fvector& position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, ALife::_OBJECT_ID id_parent);
-		
-		string128 sItem;
-		string16 sItem2;
+
+		int Count = item->m_parse_params.m_items.size();
+		int Count2 = item->m_parse_params.m_chances.size();
 
 		for (int i = 0; i < Count; ++i)
 		{
-			_GetItem(SpawnList.c_str(), i, sItem);
+			float chance = 0.0f;
 
-			if (i < Count2)
-				_GetItem(ChanceList.c_str(), i, sItem2);
+			if (i >= Count2)
+			{
+				chance = item->m_parse_params.m_chances.back();
+			}
 			else
-				_GetItem(ChanceList.c_str(), Count2 - 1, sItem2);
-
-			float chance = static_cast<float>(atof(sItem2));
+			{
+				chance = item->m_parse_params.m_chances[i];
+			}
 
 			if (chance >= ::Random.randF(0.0f, 1.0f))
-				CALifeSimulator__spawn_item2(&tpGame->alife(), sItem, actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
+			{
+				CALifeSimulator__spawn_item2(&tpGame->alife(), *item->m_parse_params.m_items[i], actor->Position(), actor->ai_location().level_vertex_id(), actor->ai_location().game_vertex_id(), actor->ID());
+			}
 		}
 		item->object().DestroyObject();
 	}break;
