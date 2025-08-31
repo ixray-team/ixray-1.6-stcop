@@ -74,11 +74,6 @@ namespace CDB
 		faces.push_back(T);
 	}
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 #pragma pack(push,1)
 	struct edge
 	{

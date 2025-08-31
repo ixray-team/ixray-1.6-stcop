@@ -3,9 +3,9 @@
 #include "lzhuf.h"
 #include <fcntl.h>
 
-void*			FileDownload	(LPCSTR fn, u32* pdwSize=nullptr);
-void			FileCompress	(const char *fn, const char* sign, void* data, u32 size);
-void * 			FileDecompress	(const char *fn, const char* sign, u32* size=nullptr);
+void*			FileDownload	(LPCSTR fn, intptr_t& pdwSize);
+void			FileCompress	(const char *fn, const char* sign, void* data, intptr_t size);
+void * 			FileDecompress	(const char *fn, const char* sign, intptr_t& size);
 
 class CFileWriter : public IWriter
 {
@@ -92,14 +92,14 @@ public:
 class CTempReader : public IReader
 {
 public:
-				CTempReader(void *_data, int _size, int _iterpos) : IReader(_data,_size,_iterpos)	{}
+				CTempReader(void *_data, intptr_t _size, intptr_t _iterpos) : IReader(_data,_size,_iterpos)	{}
 	virtual		~CTempReader();
 };
 class CPackReader : public IReader
 {
 	void*		base_address;
 public:
-				CPackReader(void* _base, void* _data, int _size) : IReader(_data,_size){base_address=_base;}
+				CPackReader(void* _base, void* _data, intptr_t _size) : IReader(_data,_size){base_address=_base;}
 	virtual		~CPackReader();
 };
 class XRCORE_API CFileReader : public IReader

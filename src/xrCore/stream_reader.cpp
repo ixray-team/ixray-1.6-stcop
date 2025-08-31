@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "stream_reader.h"
 
-void CStreamReader::construct				(
+void CStreamReader::construct
+(
 		const FileHandle &file_mapping_handle,
-		const u32 &start_offset,
-		const u32 &file_size,
-		const u32 &archive_size,
-		const u32 &window_size
-	)
+		const intptr_t start_offset,
+		const intptr_t file_size,
+		const intptr_t archive_size,
+		const intptr_t window_size
+)
 {
 	m_file_mapping_handle		= file_mapping_handle;
 	m_start_offset				= start_offset;
@@ -18,12 +19,12 @@ void CStreamReader::construct				(
 	map							(0);
 }
 
-void CStreamReader::destroy					()
+void CStreamReader::destroy()
 {
-	unmap						();
+	unmap();
 }
 
-void CStreamReader::map						(const u32 &new_offset)
+void CStreamReader::map(const intptr_t&new_offset)
 {
 	VERIFY						(new_offset <= m_file_size);
 	m_current_offset_from_start	= new_offset;
@@ -53,73 +54,74 @@ void CStreamReader::map						(const u32 &new_offset)
 	m_start_pointer				= m_current_pointer;
 }
 
-void CStreamReader::advance					(int offset)
+void CStreamReader::advance(intptr_t offset)
 {
-	VERIFY						(m_current_pointer >= m_start_pointer);
-	VERIFY						(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
+	VERIFY(m_current_pointer >= m_start_pointer);
+	VERIFY(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
 	int							offset_inside_window = int(m_current_pointer - m_start_pointer);
 	if (offset_inside_window + offset >= (int)m_current_window_size) {
-		remap					(m_current_offset_from_start + offset_inside_window + offset);
+		remap(m_current_offset_from_start + offset_inside_window + offset);
 		return;
 	}
 
 	if (offset_inside_window + offset < 0) {
-		remap					(m_current_offset_from_start + offset_inside_window + offset);
+		remap(m_current_offset_from_start + offset_inside_window + offset);
 		return;
 	}
 
-	m_current_pointer			+= offset;
+	m_current_pointer += offset;
 }
 
-void CStreamReader::r						(void *_buffer, u32 buffer_size)
+void CStreamReader::r(void* _buffer, intptr_t buffer_size)
 {
-	VERIFY						(m_current_pointer >= m_start_pointer);
-	VERIFY						(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
+	VERIFY(m_current_pointer >= m_start_pointer);
+	VERIFY(m_current_pointer - m_start_pointer <= m_current_window_size);
 
-	int							offset_inside_window = int(m_current_pointer - m_start_pointer);
-	if (offset_inside_window + buffer_size < m_current_window_size) {
-		Memory.mem_copy			(_buffer,m_current_pointer,buffer_size);
-		m_current_pointer		+= buffer_size;
+	int offset_inside_window = intptr_t(m_current_pointer - m_start_pointer);
+	if (offset_inside_window + buffer_size < m_current_window_size)
+	{
+		Memory.mem_copy(_buffer, m_current_pointer, buffer_size);
+		m_current_pointer += buffer_size;
 		return;
 	}
 
-	u8							*buffer = (u8*)_buffer;
-	u32							elapsed_in_window = m_current_window_size - u32(m_current_pointer - m_start_pointer);
+	u8* buffer = (u8*)_buffer;
+	intptr_t elapsed_in_window = m_current_window_size - u32(m_current_pointer - m_start_pointer);
 
-	do {
-		Memory.mem_copy			(buffer,m_current_pointer,elapsed_in_window);
-		buffer					+= elapsed_in_window;
-		buffer_size				-= elapsed_in_window;
-		advance					(elapsed_in_window);
+	do
+	{
+		Memory.mem_copy(buffer, m_current_pointer, elapsed_in_window);
+		buffer += elapsed_in_window;
+		buffer_size -= elapsed_in_window;
+		advance(elapsed_in_window);
 
-		elapsed_in_window		= m_current_window_size;
-	}
-	while (m_current_window_size < buffer_size);
+		elapsed_in_window = m_current_window_size;
+	} while (m_current_window_size < buffer_size);
 
-	Memory.mem_copy				(buffer,m_current_pointer,buffer_size);
-	advance						(buffer_size);
+	Memory.mem_copy(buffer, m_current_pointer, buffer_size);
+	advance(buffer_size);
 }
 
-CStreamReader *CStreamReader::open_chunk	(const u32 &chunk_id)
+CStreamReader* CStreamReader::open_chunk(const u32& chunk_id)
 {
-	BOOL						compressed;
-	u32							size = find_chunk(chunk_id,&compressed);
+	BOOL compressed;
+	intptr_t size = find_chunk(chunk_id, &compressed);
 	if (!size)
-		return					(0);
+		return(0);
 
-	R_ASSERT2					(!compressed,"cannot use CStreamReader on compressed chunks");
-	CStreamReader				*result = new CStreamReader();
-	result->construct			(file_mapping_handle(),m_start_offset + tell(),size,m_archive_size,m_window_size);
-	return						(result);
+	R_ASSERT2(!compressed, "cannot use CStreamReader on compressed chunks");
+	CStreamReader* result = new CStreamReader();
+	result->construct(file_mapping_handle(), m_start_offset + tell(), size, m_archive_size, m_window_size);
+	return (result);
 }
 
 #include "FS_impl.h"
-u32 CStreamReader::find_chunk				(u32 ID, BOOL* bCompressed)
+intptr_t CStreamReader::find_chunk(u32 ID, BOOL* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
 }
 
-void CStreamReader::r_stringZ				(shared_str& dest)
+void CStreamReader::r_stringZ(shared_str& dest)
 {
 	char*	dest_str		= nullptr;
 	u32	current_str_size	= 0;
@@ -145,7 +147,7 @@ void CStreamReader::r_stringZ				(shared_str& dest)
 		if (!dest_str)	//first iteration 
 			dest_str = static_cast<char*>(_alloca(4096));
 
-		u32	current_chunk_size = static_cast<u32>(end_ptr - m_current_pointer);
+		intptr_t current_chunk_size = static_cast<intptr_t>(end_ptr - m_current_pointer);
 		R_ASSERT(current_str_size + current_chunk_size <= 4096);
 		
 		CopyMemory(dest_str, m_current_pointer, current_chunk_size);

@@ -87,6 +87,7 @@ void CHOM::Load()
 	{
 		HOM_poly P;
 		S->r(&P, sizeof(P));
+
 		CL.add_face_packed_D(P.v1, P.v2, P.v3, P.flags, 0.01f);
 	}
 
@@ -95,8 +96,8 @@ void CHOM::Load()
 	CL.calc_adjacency(adjacency);
 
 	// Create RASTER-triangles
-	m_pTris = xr_alloc<occTri>(u32(CL.getTS()));
-	for (u32 it = 0; it < CL.getTS(); it++)
+	m_pTris = xr_alloc<occTri>(CL.getTS());
+	for (size_t it = 0; it < CL.getTS(); it++)
 	{
 		CDB::TRI& clT = CL.getT()[it];
 		occTri& rT = m_pTris[it];
@@ -131,13 +132,13 @@ void CHOM::Load()
 
 	if (pReaderCache != nullptr)
 	{
-		m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pReaderCache, true);
+		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
 	}
 	else
 	{
 		IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
 		pWriterCache->w_u32(crc);
-		m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pWriterCache, false);
+		m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
 	}
 
 	bEnabled = TRUE;
