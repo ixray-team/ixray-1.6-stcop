@@ -574,8 +574,8 @@ bool CLocatorAPI::Recurse(const char* path)
 	return true;
 }
 
-bool file_handle_internal	(LPCSTR file_name, u32 &size, int &file_handle);
-void *FileDownload			(LPCSTR file_name, const int &file_handle, u32 &file_size);
+bool file_handle_internal	(LPCSTR file_name, intptr_t&size, int &file_handle);
+void *FileDownload			(LPCSTR file_name, const int &file_handle, intptr_t&file_size);
 
 void CLocatorAPI::setup_fs_path		(LPCSTR fs_name, string_path &fs_path)
 {
@@ -654,7 +654,7 @@ IReader *CLocatorAPI::setup_fs_ltx	(LPCSTR fs_name)
 	Msg("using fs-ltx %s", fs_file_name);
 
 	int				file_handle;
-	u32				file_size;
+	intptr_t		file_size;
 	IReader			*result = 0;
 	CHECK_OR_EXIT	(
 		file_handle_internal(fs_file_name, file_size, file_handle),

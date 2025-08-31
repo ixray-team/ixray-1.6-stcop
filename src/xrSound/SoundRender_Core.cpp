@@ -191,8 +191,9 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 		if (P.b2sided)
 			CL.add_face_packed_D(P.v3,P.v2,P.v1,*(u32*)&P.occ,0.01f);
 	}
-	geom_SOM			= new CDB::MODEL();
-	geom_SOM->build		(CL.getV(),int(CL.getVS()),CL.getT(),int(CL.getTS()));
+
+	geom_SOM = new CDB::MODEL();
+	geom_SOM->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
 
 	geom->close();
 }
