@@ -66,7 +66,8 @@ void CAI_Stalker::script_register(lua_State *L)
 				luabind::value("property_pure_enemy",						StalkerDecisionSpace::eWorldPropertyPureEnemy),
 				
 				luabind::value("property_in_smart_cover",					StalkerDecisionSpace::eWorldPropertyInSmartCover),
-				luabind::value("property_script",							StalkerDecisionSpace::eWorldPropertyScript)
+				luabind::value("property_script",							StalkerDecisionSpace::eWorldPropertyScript),
+				luabind::value("_nil", 0)
 			]
 			
 			.enum_("action")
