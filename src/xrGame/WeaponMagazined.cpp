@@ -1281,9 +1281,15 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		{
 			if (ParentIsActor())
 			{
-				//bWorking = false;
-				//SwitchState(eIdle);
-				is_shooting_end_callback = true;
+				if (IsGrenadeMode())
+				{
+					bWorking = false;
+					SwitchState(eIdle);
+				}
+				else
+				{
+					is_shooting_end_callback = true;
+				}
 			}
 			break;
 		}
