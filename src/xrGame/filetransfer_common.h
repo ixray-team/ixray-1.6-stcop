@@ -33,8 +33,8 @@ enum ft_command_t		//command byte to M_FILE_TRANSFER message ...
 typedef xr_delegate<void(sending_status_t, u32, u32)> sending_state_callback_t;
 typedef xr_delegate<void(receiving_status_t, u32, u32)> receiving_state_callback_t;
 
-typedef std::pair<u8*, u32 const>			mutable_buffer_t;
-typedef std::pair<u8 const*, u32 const>		const_buffer_t;
+typedef std::pair<u8*, size_t const>		mutable_buffer_t;
+typedef std::pair<u8 const*, size_t const>	const_buffer_t;
 
 
 

@@ -86,7 +86,7 @@ void  _sound_event		(ref_sound_data_ptr S, float range)
 {
 	if ( g_pGameLevel && S && S->feedback )	g_pGameLevel->SoundEvent_Register	(S,range);
 }
-static void 	build_callback	(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params)
+static void 	build_callback	(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params)
 {
 	g_pGameLevel->Load_GameSpecific_CFORM( T, Tcnt );
 }

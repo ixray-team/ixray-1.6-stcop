@@ -21,7 +21,7 @@ CLevelEditor::~CLevelEditor()
 {
 }
 extern pureFrame* g_pNetProcessor;
-static void build_callback(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params)
+static void build_callback(Fvector* V, size_t Vcnt, CDB::TRI* T, size_t Tcnt, void* params)
 {
 	g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt);
 }

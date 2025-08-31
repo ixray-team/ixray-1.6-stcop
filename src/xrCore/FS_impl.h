@@ -8,13 +8,14 @@
 struct IReaderBase_Test {};
 #pragma warning (disable:4701)
 
-IC	u32 IReaderBase::find_chunk	(u32 ID, BOOL* bCompressed)	
+IC intptr_t IReaderBase::find_chunk(u32 ID, BOOL* bCompressed)
 {
 #ifdef FIND_CHUNK_BENCHMARK_ENABLE
 	find_chunk_auto_timer timer;
 #endif // FIND_CHUNK_BENCHMARK_ENABLE
 
-	u32	dwSize, dwType;
+	u32	dwType;
+	intptr_t dwSize;
 
 	bool success = false;
 
@@ -55,11 +56,11 @@ IC	u32 IReaderBase::find_chunk	(u32 ID, BOOL* bCompressed)
 		}
 	}
 
-	VERIFY ((u32)tell() + dwSize <= (u32)length());
+	VERIFY (tell() + dwSize <= length());
 	if (bCompressed) *bCompressed = dwType & CFS_CompressMark;
 
 	const int dwPos = tell();
-	if ( dwPos + dwSize < (u32)length() )
+	if ( dwPos + dwSize < length() )
 	{
 		m_last_pos = dwPos + dwSize;
 	}
