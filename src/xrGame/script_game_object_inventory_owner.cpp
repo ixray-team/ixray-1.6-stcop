@@ -1571,8 +1571,10 @@ void CScriptGameObject::can_throw_grenades(bool can_throw_grenades)
 	{
 		stalker->can_throw_grenades(can_throw_grenades);
 	}
-
-	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member can_throw_grenades!");
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CAI_Stalker : cannot access class member can_throw_grenades!");
+	}
 }
 
 u32 CScriptGameObject::throw_time_interval() const
