@@ -523,6 +523,27 @@ void CInventoryOwner::ChangeReputation	(CHARACTER_REPUTATION_VALUE delta)
 	SetReputation(Reputation() + delta);
 }
 
+void CInventoryOwner::SetIcon(const shared_str& iconName, bool is_outfit_icon)
+{
+	if (!is_outfit_icon)
+	{
+		CharacterInfo().m_SpecificCharacter.data()->m_prev_icon_name = iconName;
+	}
+
+	const shared_str& prev = CharacterInfo().m_SpecificCharacter.data()->m_prev_icon_name;
+	const shared_str& saved = CharacterInfo().m_SpecificCharacter.data()->m_saved_icon_name;
+	const shared_str& cur = CharacterInfo().m_SpecificCharacter.data()->m_icon_name;
+
+	if (CCustomOutfit* outfit = GetOutfit())
+	{
+		if (cur == outfit->GetPortrait())
+		{
+			return;
+		}
+	}
+	
+	CharacterInfo().m_SpecificCharacter.data()->m_icon_name = iconName.size() > 0 ? iconName : prev.size() > 0 ? prev : saved;
+}
 
 void CInventoryOwner::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy)
 {

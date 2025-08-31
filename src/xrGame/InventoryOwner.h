@@ -197,10 +197,7 @@ public:
 	virtual void			SetReputation	(CHARACTER_REPUTATION_VALUE);
 	virtual void			ChangeReputation(CHARACTER_REPUTATION_VALUE);
 
-	virtual void			SetIcon(const shared_str& iconName)
-	{
-		CharacterInfo().m_SpecificCharacter.data()->m_icon_name = (iconName.size() > 0) ? iconName : CharacterInfo().m_SpecificCharacter.data()->m_saved_icon_name;
-	}
+	virtual void			SetIcon(const shared_str& iconName, bool is_outfit_icon = false);
 
 	//для работы с relation system
 	u16								object_id	() const;

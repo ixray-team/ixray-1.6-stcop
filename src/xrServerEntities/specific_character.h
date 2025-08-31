@@ -61,6 +61,7 @@ struct SSpecificCharacterData : CSharedResource
 	DIALOG_ID_VECTOR			m_ActorDialogs;
 
 	shared_str					m_saved_icon_name;
+	shared_str					m_prev_icon_name;
 	shared_str					m_icon_name;
 	//команда 
 	CHARACTER_COMMUNITY			m_Community;

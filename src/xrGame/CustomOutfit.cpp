@@ -280,7 +280,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 		{
 			if (m_character_portrait.size() > 0)
 			{
-				pActor->SetIcon(m_character_portrait);
+				pActor->SetIcon(m_character_portrait, true);
 				if (auto current_ui = CurrentGameUI())
 				{
 					if (current_ui->ActorMenu().IsShown())
@@ -298,7 +298,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 	{
 		if (!bHUDOnly && m_ActorVisual.size())
 		{
-			pActor->SetIcon("");
+			pActor->SetIcon("", true);
 			if (auto current_ui = CurrentGameUI())
 			{
 				if (current_ui->ActorMenu().IsShown())
