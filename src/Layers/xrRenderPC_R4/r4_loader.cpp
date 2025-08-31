@@ -408,13 +408,13 @@ void CRender::LoadSectors(IReader* fs)
 
 		if (pReaderCache != nullptr)
 		{
-			rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pReaderCache, true);
+			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pReaderCache, true);
 		}
 		else
 		{
 			IWriter* pWriterCache = FS.w_open("$app_data_root$", LevelName);
 			pWriterCache->w_u32(crc);
-			rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, pWriterCache, false);
+			rmPortals->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS(), nullptr, nullptr, pWriterCache, false);
 		}
 	}
 	else

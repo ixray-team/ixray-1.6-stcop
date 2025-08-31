@@ -54,7 +54,7 @@ MODEL::~MODEL()
 	verts_count = 0;
 }
 
-void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
+void MODEL::build(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
 {
 	R_ASSERT(S_INIT == status);
 	R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
@@ -63,15 +63,15 @@ void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, vo
 	status = S_READY;
 }
 
-void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
+void MODEL::build_internal(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc, void* bcp, void* pRW, bool RWMode)
 {
 	// verts
-	verts_count = Vcnt;
+	verts_count = (u32)Vcnt;
 	verts = xr_alloc<Fvector>(verts_count);
 	CopyMemory(verts, V, verts_count * sizeof(Fvector));
 
 	// tris
-	tris_count = Tcnt;
+	tris_count = (u32)Tcnt;
 	tris = xr_alloc<TRI>(tris_count);
 	CopyMemory(tris, T, tris_count * sizeof(TRI));
 
@@ -113,7 +113,7 @@ void CDB::MODEL::CreateNewTree(IWriter* pCache)
 		return;
 	}
 	u32* temp_ptr = temp_tris;
-	for (int i = 0; i < tris_count; i++)
+	for (size_t i = 0; i < tris_count; i++)
 	{
 		*temp_ptr++ = tris[i].verts[0];
 		*temp_ptr++ = tris[i].verts[1];
