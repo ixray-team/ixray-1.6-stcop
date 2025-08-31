@@ -1333,23 +1333,33 @@ float SpawnManager_ParseHitPower(const shared_str& hit_str) {
 
 Section FilterSectionsWithSearch(const Section& sections, const char* searchBuffer)
 {
-	xr_string searchStr = searchBuffer ? searchBuffer : "";
-	std::ranges::transform(searchStr, searchStr.begin(), ::tolower);
-
-	if (searchStr.empty())
+	if (!searchBuffer || !*searchBuffer)
 		return sections;
 
+	xr_string searchStr = xr_strlwr_rus(Platform::UTF8_to_CP1251(searchBuffer));
+
 	Section filtered;
+	filtered.reserve(sections.size());
+
 	std::copy_if(sections.begin(), sections.end(),
 		std::back_inserter(filtered),
-		[&](const auto& pair)
+		[&](const xr_pair<xr_string_view, CInifile::Sect*>& pair)
 		{
 			if (!pair.second)
 				return false;
 
-			xr_string lowerName(pair.first.data());
-			std::ranges::transform(lowerName, lowerName.begin(), ::tolower);
-			return lowerName.find(searchStr) != std::string::npos;
+			const char* sectionKey = pair.first.data();
+
+			xr_string lowerSectionName = xr_strlwr_rus(sectionKey);
+
+			const char* rawName = pSettings->line_exist(sectionKey, "inv_name")
+				? pSettings->r_string(sectionKey, "inv_name")
+				: sectionKey;
+
+			xr_string lowerTranslated = xr_strlwr_rus(g_pStringTable->translate(rawName).c_str());
+
+			return lowerSectionName.find(searchStr) != xr_string::npos ||
+				lowerTranslated.find(searchStr) != xr_string::npos;
 		});
 
 	return filtered;
