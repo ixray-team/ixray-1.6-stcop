@@ -190,32 +190,32 @@ BOOL CLevel::Load_GameSpecific_After()
 
 struct translation_pair
 {
-	u32			m_id;
-	u16			m_index;
+	u32 m_id;
+	u16 m_index;
 
-	IC			translation_pair	(u32 id, u16 index)
+	IC translation_pair(u32 id, u16 index)
 	{
-		m_id	= id;
-		m_index	= index;
+		m_id = id;
+		m_index = index;
 	}
 
-	IC	bool	operator==	(const u16 &id) const
+	IC bool operator==(const u16& id) const
 	{
-		return	(m_id == id);
+		return (m_id == id);
 	}
 
-	IC	bool	operator<	(const translation_pair &pair) const
+	IC bool operator<(const translation_pair& pair) const
 	{
-		return	(m_id < pair.m_id);
+		return (m_id < pair.m_id);
 	}
 
-	IC	bool	operator<	(const u16 &id) const
+	IC bool operator<(const u16& id) const
 	{
-		return	(m_id < id);
+		return (m_id < id);
 	}
 };
 
-void CLevel::Load_GameSpecific_CFORM	( CDB::TRI* tris, u32 count )
+void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, size_t count)
 {
 	typedef xr_vector<translation_pair>	ID_INDEX_PAIRS;
 	ID_INDEX_PAIRS						translator;

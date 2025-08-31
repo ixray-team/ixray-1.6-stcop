@@ -32,7 +32,7 @@ static errno_t open_internal(LPCSTR fn, int& handle)
 			);
 }
 
-bool file_handle_internal(LPCSTR file_name, u32& size, int& file_handle)
+bool file_handle_internal(LPCSTR file_name, intptr_t& size, int& file_handle)
 {
 	if (open_internal(file_name, file_handle))
 	{
@@ -41,11 +41,15 @@ bool file_handle_internal(LPCSTR file_name, u32& size, int& file_handle)
 			return (false);
 	}
 
+#ifdef IXR_WINDOWS
+	size = _filelengthi64(file_handle);
+#else
 	size = _filelength(file_handle);
+#endif
 	return (true);
 }
 
-void *FileDownload(LPCSTR file_name, const int &file_handle, u32 &file_size)
+void *FileDownload(LPCSTR file_name, const int &file_handle, intptr_t&file_size)
 {
 	void *buffer = Memory.mem_alloc(file_size);
 
@@ -56,17 +60,17 @@ void *FileDownload(LPCSTR file_name, const int &file_handle, u32 &file_size)
 	return (buffer);
 }
 
-void* FileDownload(LPCSTR file_name, u32* buffer_size)
+void* FileDownload(LPCSTR file_name, intptr_t& buffer_size)
 {
 	int file_handle;
-	bool HandleComplete = file_handle_internal(file_name, *buffer_size, file_handle);
+	bool HandleComplete = file_handle_internal(file_name, buffer_size, file_handle);
 	R_ASSERT3(
 		HandleComplete,
 		"can't open file : ",
 		file_name
 	);
 
-	return (FileDownload(file_name, file_handle, *buffer_size));
+	return (FileDownload(file_name, file_handle, buffer_size));
 }
 
 typedef char MARK[9];
@@ -75,18 +79,18 @@ IC void mk_mark(MARK& M, const char* S)
 	strncpy_s(M,sizeof(M),S,8);
 }
 
-void  FileCompress	(const char *fn, const char* sign, void* data, u32 size)
+void  FileCompress	(const char *fn, const char* sign, void* data, intptr_t size)
 {
 	MARK M; mk_mark(M,sign);
 
 	int H	= _open(fn,O_BINARY|O_CREAT|O_WRONLY|O_TRUNC,S_IREAD|S_IWRITE);
 	R_ASSERT2(H>0,fn);
 	_write	(H,&M,8);
-	_writeLZ(H,data,size);
+	_writeLZ(H,data,(u32)size);
 	_close	(H);
 }
 
-void* FileDecompress(const char* fn, const char* sign, u32* size)
+void* FileDecompress(const char* fn, const char* sign, intptr_t& size)
 {
 	MARK M, F;
 	mk_mark(M, sign);
@@ -101,10 +105,11 @@ void* FileDecompress(const char* fn, const char* sign, u32* size)
 	}
 	R_ASSERT(strncmp(M, F, 8) == 0);
 
-	void* ptr = 0; u32 SZ;
+	void* ptr = 0;
+	intptr_t SZ;
 	SZ = _readLZ(H, ptr, _filelength(H) - 8);
 	_close(H);
-	if (size) *size = SZ;
+	if (size) size = SZ;
 	return ptr;
 }
 
@@ -244,7 +249,7 @@ IReader* IReader::open_chunk(u32 ID)
 {
 	BOOL bCompressed;
 
-	u32	dwSize = find_chunk(ID, &bCompressed);
+	size_t	dwSize = find_chunk(ID, &bCompressed);
 	if (dwSize != 0)
 	{
 		if (bCompressed)
@@ -271,7 +276,7 @@ void IReader::close()
 
 #include "FS_impl.h"
 
-u32 IReader::find_chunk(u32 ID, BOOL* bCompressed)
+intptr_t IReader::find_chunk(u32 ID, BOOL* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
 }
@@ -312,7 +317,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 	}
 }
 
-void IReader::r	(void *p,u32 cnt)
+void IReader::r	(void *p, intptr_t cnt)
 {
 	VERIFY			(Pos+cnt<=Size);
 	CopyMemory		(p,pointer(),cnt);
@@ -380,13 +385,13 @@ void IReader::r_stringZ(char* dest, u32 tgt_sz)
 void IReader::r_stringZ(shared_str& dest)
 {
 	dest = (char*)(data + Pos);
-	Pos += (dest.size() + 1);
+	Pos += dest.size() + 1;
 }
 
 void IReader::r_stringZ(xr_string& dest)
 {
 	dest = (char*)(data + Pos);
-	Pos += int(dest.size() + 1);
+	Pos += dest.size() + 1;
 }
 
 void IReader::skip_stringZ()
@@ -414,7 +419,7 @@ CPackReader::~CPackReader()
 // file stream
 CFileReader::CFileReader(const char *name)
 {
-    data	= (char *)FileDownload(name,(u32 *)&Size);
+    data	= (char *)FileDownload(name, Size);
     Pos		= 0;
 }
 
@@ -427,7 +432,7 @@ CFileReader::~CFileReader()
 // compressed stream
 CCompressedReader::CCompressedReader(const char *name, const char *sign)
 {
-    data	= (char *)FileDecompress(name,sign,(u32*)&Size);
+    data	= (char *)FileDecompress(name,sign, Size);
     Pos		= 0;
 }
 
@@ -440,7 +445,7 @@ CVirtualFileRW::CVirtualFileRW(const char* cFileName)
 {
 	// Open the file
 	hSrcFile = Platform::CreateFile(cFileName, true);
-	Size = (int)Platform::GetFileSize(hSrcFile);
+	Size = Platform::GetFileSize(hSrcFile);
 	hSrcMap = Platform::CreateMapData(hSrcFile, false);
 
 #ifdef IXR_WINDOWS

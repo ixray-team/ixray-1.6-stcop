@@ -84,7 +84,7 @@ namespace CDB
 	};
 
 	// Build callback
-	typedef void build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
+	using build_callback = void(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, void* params);
 
 	// Model definition
 	XRCORE_API IReader* GetModelCache(string_path Name, u32 crc);
@@ -106,9 +106,9 @@ namespace CDB
 
 		// tris
 		TRI*					tris;
-		int						tris_count;
+		u32						tris_count;
 		Fvector*				verts;
-		int						verts_count;
+		u32					verts_count;
 	public:
 		MODEL();
 		~MODEL();
@@ -131,8 +131,8 @@ namespace CDB
 		}
 
 		void					CreateNewTree	(IWriter* CacheWriter);
-		void					build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
-		void					build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
+		void					build_internal	(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
+		void					build			(Fvector* V, size_t Vcnt, TRI* T, size_t Tcnt, build_callback* bc=nullptr, void* bcp=nullptr, void* pRW = nullptr, bool RWMode = false);
 		u32						memory			();
 	};
 
