@@ -115,6 +115,26 @@ namespace std
 
 IC void	xr_strlwr(xr_string& src) { for (xr_string::iterator it = src.begin(); it != src.end(); it++) *it = xr_string::value_type(tolower(*it)); }
 
+// Функция для преобразования русских символов в нижний регистр
+IC xr_string xr_strlwr_rus(const xr_string& str)
+{
+	xr_string result = str;
+	for (char& c : result) {
+		// Русские заглавные буквы в UTF-8 (Windows-1251)
+		if (c >= -64 && c <= -33) { // А-Я
+			c += 32; // преобразуем в а-я
+		}
+		else if (c == -88) { // Ё
+			c = -72; // ё
+		}
+		// Английские буквы
+		else if (c >= 'A' && c <= 'Z') {
+			c += 32; // преобразуем в a-z
+		}
+	}
+	return result;
+}
+
 // xr_string: template magic
 template<size_t ArrayLenght>
 inline xr_string::xr_string(char* (&InArray)[ArrayLenght])
