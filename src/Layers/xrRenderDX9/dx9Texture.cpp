@@ -205,7 +205,7 @@ const char* D3DFormatToString(D3DFORMAT format) {
     return it != formatMap.end() ? it->second : "D3DFMT_UNKNOWN";
 }
 
-void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_t ddsSize, IDirect3DBaseTexture9* pTexture = nullptr)
+void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_t ddsSize, IDirect3DBaseTexture9* pTexture = nullptr, bool PrintMem = true)
 {
     // Получаем возможности устройства
     D3DCAPS9 caps;
@@ -223,7 +223,7 @@ void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_
     Msg(msg);
 
     // Анализируем DDS заголовок
-    if (ddsData && ddsSize >= sizeof(DWORD) + sizeof(DDS_HEADER))
+    if (PrintMem && ddsData && ddsSize >= sizeof(DWORD) + sizeof(DDS_HEADER))
     {
         const DWORD* magic = reinterpret_cast<const DWORD*>(ddsData);
         const DDS_HEADER* header = reinterpret_cast<const DDS_HEADER*>(magic + 1);
@@ -461,7 +461,7 @@ _DDS:
 
             if (FAILED(result) || T_sysmem == nullptr)
             {
-                PrintTextureError(result, fname, bitData, bitSize, pTexture2D);
+                PrintTextureError(result, fname, bitData, bitSize, pTexture2D, T_sysmem != nullptr);
 
                 string_path temp;
                 R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
