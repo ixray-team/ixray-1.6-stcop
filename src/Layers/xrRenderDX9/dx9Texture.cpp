@@ -452,11 +452,14 @@ _DDS:
 
             FS.r_close(S);
 
-            img_loaded_lod = get_texture_load_lod(fn);
-            pTexture2D = TW_LoadTextureFromTexture(T_sysmem, img_loaded_lod);
-            mip_cnt = pTexture2D->GetLevelCount();
+            if (T_sysmem != nullptr)
+            {
+                img_loaded_lod = get_texture_load_lod(fn);
+                pTexture2D = TW_LoadTextureFromTexture(T_sysmem, img_loaded_lod);
+                mip_cnt = pTexture2D->GetLevelCount();
+            }
 
-            if (FAILED(result))
+            if (FAILED(result) || T_sysmem == nullptr)
             {
                 PrintTextureError(result, fname, bitData, bitSize, pTexture2D);
 
