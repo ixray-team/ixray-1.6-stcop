@@ -186,15 +186,31 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     if (m_flags.test(eMultipleTasks))
         type = t->GetTaskType();
 	
-	SGameTaskObjective* o = &t->Objective(objective_id);
-	CMapLocation* ml = o->LinkedMapLocation();
-	if(((state==eTaskStateFail)||(state==eTaskStateCompleted)) && ml )
+	if (objective_id == ROOT_TASK_OBJECTIVE)
 	{
-		Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
-		o->m_map_location			= nullptr;
-		o->m_map_object_id			= u16(-1);
+		for (int i = 0; i < t->GetObjectivesCount(); ++i)
+		{
+			SGameTaskObjective* o = &t->Objective(i);
+			CMapLocation* ml = o->LinkedMapLocation();
+			if (((state == eTaskStateFail) || (state == eTaskStateCompleted)) && ml)
+			{
+				Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
+				o->m_map_location = nullptr;
+				o->m_map_object_id = u16(-1);
+			}
+		}
 	}
-
+	else
+	{
+		SGameTaskObjective* o = &t->Objective(objective_id);
+		CMapLocation* ml = o->LinkedMapLocation();
+		if (((state == eTaskStateFail) || (state == eTaskStateCompleted)) && ml)
+		{
+			Level().MapManager().RemoveMapLocation(o->m_map_location, o->m_map_object_id);
+			o->m_map_location = nullptr;
+			o->m_map_object_id = u16(-1);
+		}
+	}
     t->SetTaskState(state, objective_id);
 
     const bool isRoot      = objective_id == ROOT_TASK_OBJECTIVE;
@@ -424,8 +440,6 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, u16 objective_id)
         g_active_task_id[type] = task->m_ID;
         task->SetActiveObjective(objective_id);
 
-        m_flags.set(eChanged, TRUE);
-        task->m_read = true;
 
 		Level().MapManager().DisableAllPointers();
 		if (ActiveObjective())
@@ -434,6 +448,8 @@ void CGameTaskManager::SetActiveTask(CGameTask* task, u16 objective_id)
 			if (ml)
 				ml->EnablePointer();
 		}
+        m_flags.set(eChanged, TRUE);
+        task->m_read = true;
     }
 }
 
