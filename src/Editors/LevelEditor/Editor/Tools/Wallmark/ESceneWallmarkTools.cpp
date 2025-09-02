@@ -315,6 +315,8 @@ void ESceneWallmarkTool::SaveLTX(CInifile& ini, int id)
 
 bool ESceneWallmarkTool::LoadStream(IReader& F)
 {
+    IsLoaded = false;
+
 	inherited::LoadStream	(F);
 
 	u16 version = 0;
