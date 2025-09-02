@@ -48,7 +48,7 @@ public:
 	TUI_CustomControl* FindControl(int subtarget, int action);
 protected:
     // For loading event 
-    volatile bool IsLoaded = false;
+    volatile bool IsLoaded = true;
 
 protected:
     void            	AddControl				(TUI_CustomControl* c);
