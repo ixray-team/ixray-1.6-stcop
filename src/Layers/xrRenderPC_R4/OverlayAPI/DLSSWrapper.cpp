@@ -49,6 +49,7 @@ void DLSSWrapper::Create(const ContextParameters& Parameters)
 	if (!dlssAvailable)
 	{
 		NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
+		NgxParameters = nullptr;
 		return;
 	}
 
