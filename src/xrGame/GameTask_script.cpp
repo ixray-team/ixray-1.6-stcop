@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "GameTask.h"
+#include "level.h"
+#include "map_manager.h"
+#include "map_location.h"
 
 using namespace luabind;
 
@@ -8,6 +11,12 @@ void CGameTask::AddObjective_script(SGameTaskObjective* O)
 {
     O->CommitScriptHelperContents();
     m_Objectives.emplace_back(*O);
+
+    if (O->m_map_location.size() && O->m_map_object_id != u16(-1))
+    {
+        Level().MapManager().AddMapLocation(O->m_map_location, O->m_map_object_id);
+        O->LinkedMapLocation()->SetHint(O->m_map_hint);
+    }
 }
 
 SGameTaskObjective* CGameTask::GetObjective_script(u16 objective_id)
