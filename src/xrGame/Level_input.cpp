@@ -146,6 +146,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		else if (_curr == kSCREENSHOT)
 		{
+			m_screenshot_sound_event.play(nullptr, sm_2D);
 			Render->Screenshot();
 		}
 
@@ -155,6 +156,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	{
 		if (_curr == kSCREENSHOT)
 		{
+			m_screenshot_sound_event.play(nullptr, sm_2D);
 			Render->Screenshot();
 			return;
 		}
