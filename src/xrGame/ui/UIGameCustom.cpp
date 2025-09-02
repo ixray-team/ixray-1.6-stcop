@@ -99,10 +99,14 @@ void CUIGameCustom::OnFrame()
 void CUIGameCustom::Render()
 {
 	PROF_EVENT("CUIGameCustom::Render");
-	st_vec_it it = m_custom_statics.begin();
-	st_vec_it it_e = m_custom_statics.end();
-	for(;it!=it_e;++it)
-		(*it)->Draw();
+
+	for (auto& it : m_custom_statics)
+	{
+		if (it != nullptr)
+		{
+			it->Draw();
+		}
+	}
 
 	m_window->Draw();
 
@@ -464,7 +468,7 @@ void SDrawStaticStruct::SetText(LPCSTR text)
 
 void SDrawStaticStruct::Draw()
 {
-	if(m_static->IsShown())
+	if(m_static != nullptr && m_static->IsShown())
 		m_static->Draw();
 }
 
