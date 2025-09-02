@@ -191,49 +191,121 @@ u32	CSpaceRestrictionManager::accessible_nearest			(ALife::_OBJECT_ID id, const 
 	return						(client_restriction->accessible_nearest(position,result));
 }
 
-bool CSpaceRestrictionManager::restriction_presented	(shared_str restrictions, shared_str restriction) const
+bool CSpaceRestrictionManager::restriction_presented(shared_str restrictions, shared_str restriction) const
 {
-	string4096					m_temp;
-	for (u32 i=0, n=_GetItemCount(*restrictions); i<n; ++i)
-		if (!xr_strcmp(restriction,_GetItem(*restrictions,i,m_temp)))
-			return				(true);
-	return						(false);
+	if (restrictions.size() == 0)
+	{
+		return false;
+	}
+
+	xr_vector<xr_string> restriction_items = xr_string(restrictions.c_str()).Split(',');
+	for (const auto& item : restriction_items)
+	{
+		if (item == restriction.c_str())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
-IC	void CSpaceRestrictionManager::join_restrictions		(shared_str &restrictions, shared_str update)
+IC void CSpaceRestrictionManager::join_restrictions(shared_str& restrictions, shared_str update)
 {
-	string4096					m_temp1;
-	string4096					m_temp2;
-	xr_strcpy						(m_temp2,*restrictions);
-	for (u32 i=0, n=_GetItemCount(*update), count = xr_strlen(m_temp2); i<n; ++i)
-		if (!restriction_presented(m_temp2,_GetItem(*update,i,m_temp1))) {
-			if (count)
-				xr_strcat			(m_temp2,",");
-			xr_strcat				(m_temp2,m_temp1);
-			++count;
+	if (update.size() == 0)
+	{
+		return;
+	}
+
+	xr_string current_str(restrictions.c_str());
+	xr_string update_str(update.c_str());
+
+	xr_vector<xr_string> current_items = current_str.Split(',');
+	xr_vector<xr_string> update_items = update_str.Split(',');
+
+	xr_hash_set<xr_string> unique_set;
+	for (const auto& item : current_items)
+	{
+		if (!item.empty())
+		{
+			unique_set.insert(item);
 		}
-	restrictions				= shared_str(m_temp2);
+	}
+
+	for (const auto& item : update_items)
+	{
+		if (!item.empty() && unique_set.find(item) == unique_set.end())
+		{
+			current_items.push_back(item);
+			unique_set.insert(item);
+		}
+	}
+
+	if (current_items.empty())
+	{
+		restrictions = "";
+	}
+	else
+	{
+		xr_string result;
+		for (size_t i = 0; i < current_items.size(); ++i)
+		{
+			if (i > 0) result += ",";
+			result += current_items[i];
+		}
+		restrictions = result.c_str();
+	}
 }
 
-IC	void CSpaceRestrictionManager::difference_restrictions	(shared_str &restrictions, shared_str update)
+IC void CSpaceRestrictionManager::difference_restrictions(shared_str& restrictions, shared_str update)
 {
-	string4096					m_temp1;
-	string4096					m_temp2;
-	xr_strcpy						(m_temp2,"");
-	for (u32 i=0, n=_GetItemCount(*restrictions), count = 0; i<n; ++i)
-		if (!restriction_presented(update,_GetItem(*restrictions,i,m_temp1))) {
-			if (count)
-				xr_strcat			(m_temp2,",");
-			xr_strcat				(m_temp2,m_temp1);
-			++count;
+	if (restrictions.size() == 0)
+	{
+		return;
+	}
+
+	xr_vector<xr_string> original = xr_string(restrictions.c_str()).Split(',');
+	xr_vector<xr_string> to_remove = xr_string(update.c_str()).Split(',');
+
+	xr_hash_set<xr_string> remove_set;
+	for (const auto& item : to_remove)
+	{
+		if (!item.empty())
+		{
+			remove_set.emplace(item);
 		}
-	restrictions				= shared_str(m_temp2);
+	}
+
+	xr_vector<xr_string> result;
+	for (const auto& item : original)
+	{
+		if (!item.empty() && !remove_set.contains(item))
+		{
+			result.push_back(item);
+		}
+	}
+
+	if (result.empty())
+	{
+		restrictions = "";
+	}
+	else
+	{
+		xr_string result_str;
+		for (size_t i = 0; i < result.size(); ++i)
+		{
+			if (i > 0) result_str += ",";
+			result_str += result[i];
+		}
+		restrictions = result_str.c_str();
+	}
 }
 
 void CSpaceRestrictionManager::add_restrictions				(ALife::_OBJECT_ID id, shared_str add_out_restrictions, shared_str add_in_restrictions)
 {
 	CRestrictionPtr				_client_restriction = restriction(id);
-	if (!_client_restriction) {
+	if (!_client_restriction)
+	{
 		restrict				(id,add_out_restrictions,add_in_restrictions);
 		return;
 	}
@@ -273,7 +345,8 @@ void CSpaceRestrictionManager::remove_restrictions			(ALife::_OBJECT_ID id, shar
 void CSpaceRestrictionManager::change_restrictions			(ALife::_OBJECT_ID id, shared_str add_out_restrictions, shared_str add_in_restrictions, shared_str remove_out_restrictions, shared_str remove_in_restrictions)
 {
 	CRestrictionPtr				_client_restriction = restriction(id);
-	if (!_client_restriction) {
+	if (!_client_restriction)
+	{
 		restrict				(id,add_out_restrictions,add_in_restrictions);
 		return;
 	}
