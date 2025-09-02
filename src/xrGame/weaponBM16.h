@@ -23,7 +23,7 @@ protected:
 
 	virtual CWeaponBM16* cast_weapon_bm16() { return this; }
 
-	virtual int GetMagCapacity() override { int size = m_iAmmoCountToReload; m_iAmmoCountToReload = 2; return size; }
+	virtual int GetMagCapacity() override { int size = m_iAmmoCountToReload; m_iAmmoCountToReload = iMagazineSize; return size; }
 
 	bool m_bUseAltReloadSystem = false;
 	int m_iAmmoCountToReload = 2;

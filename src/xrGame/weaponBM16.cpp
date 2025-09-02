@@ -111,7 +111,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 	{
 		xr_sprintf(new_suffix, "_%d", iAmmoElapsed);
 
-		m_iAmmoCountToReload = 2;
+		m_iAmmoCountToReload = iMagazineSize;
 
 		if (m_bUseAltReloadSystem)
 		{
