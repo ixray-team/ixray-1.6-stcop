@@ -309,26 +309,39 @@ int ESceneCustomOTool::LockObjects(bool flag, bool bAllowSelectionFlag, bool bSe
 
 CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* pass)
 {
-	ObjectIt _I = m_Objects.begin();
-    ObjectIt _E = m_Objects.end();
-	for(;_I!=_E;_I++) 
-    {
-    	CCustomObject* CO = (*_I);
-    	LPCSTR _name = CO->GetName();
+    xr_atomic_bool bFound = false;
+    CCustomObject* Result = nullptr;
 
-        if (!_name || _name == "" || _name == " ")
+    xr_parallel_foreach
+    (
+        m_Objects.begin(), m_Objects.end(),
+        [&](CCustomObject* CO)
         {
-            Msg("!!! Error _name = %s, %s, %s", Scene->GetOTool(CO->FClassID)->ClassName(), CO->GetName(), CO->FName);
-            Msg("!!! Try FIX name");
-            CO->SetName(Scene->GetOTool(CO->FClassID)->ClassName());
-            _name = CO->GetName();
-        }
+            if (bFound)
+            {
+                return;
+            }
 
-        R_ASSERT3(_name, "Invalid object name, position:", (std::to_string(CO->GetPosition().x) + ", " + std::to_string(CO->GetPosition().y) + ", " + std::to_string(CO->GetPosition().z)).c_str());
-    	if((pass!=*_I) && (0==strcmp(_name,name)) ) 
-        	return (*_I);
-    }
-    return 0;
+            shared_str _name = CO->GetName();
+
+            if (!_name || _name == "" || _name == " ")
+            {
+                Msg("!!! Error _name = %s, %s, %s", Scene->GetOTool(CO->FClassID)->ClassName(), CO->GetName(), CO->FName);
+                Msg("!!! Try FIX name");
+                CO->SetName(Scene->GetOTool(CO->FClassID)->ClassName());
+                _name = CO->GetName();
+            }
+
+            R_ASSERT3(_name, "Invalid object name, position:", (std::to_string(CO->GetPosition().x) + ", " + std::to_string(CO->GetPosition().y) + ", " + std::to_string(CO->GetPosition().z)).c_str());
+            if ((pass != CO) && (0 == strcmp(*_name, name)))
+            {
+                Result = CO;
+                bFound = true;
+            }
+        }
+    );
+
+    return Result;
 }
 
 void setEditable(PropItemVec& items, u32 start_idx, bool bEditableTool, bool bObjectInGroup, bool bObjectInGroupUnique)

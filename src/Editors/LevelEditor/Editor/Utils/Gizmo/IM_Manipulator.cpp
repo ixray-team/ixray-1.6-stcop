@@ -33,7 +33,7 @@ void IM_Manipulator::Render(float canvasX, float canvasY, float canvasWidth, flo
 	{
 		for (SAINode* Node : ToolBase->Nodes())
 		{
-			if (Node->flags.test(SAINode::flSelected))
+			if (Node && Node->flags.test(SAINode::flSelected))
 			{
 				ObjectMatrix.c = Node->Pos;
 				NodeObject = Node;
