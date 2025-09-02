@@ -475,6 +475,10 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
         m_SmoothHeight = F.r_float();
     }
 
+    hash_FillFromNodes();
+
+    IsLoaded = true;
+
     // snap objects
     if (F.find_chunk(AIMAP_CHUNK_SNAP_OBJECTS)) 
     {
@@ -508,9 +512,6 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
         }
     }
 
-    hash_FillFromNodes();
-
-    IsLoaded = true;
     return true;
 }
 
