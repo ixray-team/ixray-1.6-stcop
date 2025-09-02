@@ -96,6 +96,12 @@ CLevel::CLevel():
 	game						= nullptr;
 	game_events					= new NET_Queue_Event();
 
+	if (pGameGlobals->section_exist("sound_events") && pGameGlobals->line_exist("sound_events","screenshot"))
+	{
+		const char* soundScreenshot = pGameGlobals->r_string("sound_events", "screenshot");
+		::Sound->create(m_screenshot_sound_event, soundScreenshot, st_Effect, sg_SourceType);
+	}
+
 	game_configured				= FALSE;
 	m_bGameConfigStarted		= FALSE;
 	m_connect_server_err		= xrServer::ErrNoError;
