@@ -42,6 +42,7 @@ void DLSSWrapper::Create(const ContextParameters& Parameters)
     result = NgxParameters->Get(NVSDK_NGX_Parameter_SuperSampling_Available, &dlssAvailable);
     if (!dlssAvailable) {
         NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
+        NgxParameters = nullptr;
         return;
     }
 
