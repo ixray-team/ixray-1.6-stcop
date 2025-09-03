@@ -618,21 +618,28 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 			C.SetItem		(itm,(x==0&&y==0));
 		}
 	}
-	itm->SetWndSize			( Fvector2().set( (m_cellSize.x*cs.x),		(m_cellSize.y*cs.y)		 )	);
-
-	// FX: (Отступ + размер) * позиция грида... Логично
-	Fvector2 ValidItemPos = { float((m_cellSpacing.x + m_cellSize.x) * cell_pos.x), float(((m_cellSpacing.y + m_cellSize.y) * cell_pos.y)) };
+	// without this will be double compression on wide screens
+	// solution works only for "quads" cells
+	if (m_pParentDragDropList->GetVerticalPlacement())
+	{
+		itm->SetWndSize            ( Fvector2().set( (m_cellSize.y*cs.x),        (m_cellSize.y*cs.y)         )    );
+	}
+	else
+	{
+		itm->SetWndSize            ( Fvector2().set( (m_cellSize.x*cs.x),        (m_cellSize.y*cs.y)         )    );    
+	}
 
 	if (!m_pParentDragDropList->GetVirtualCells()) {
+		// FX: (Отступ + размер) * позиция грида... Логично
+		Fvector2 ValidItemPos = { float((m_cellSpacing.x + m_cellSize.x) * cell_pos.x), float(((m_cellSpacing.y + m_cellSize.y) * cell_pos.y)) };
 		itm->SetWndPos(ValidItemPos);
 	}
 	else
 	{
-		Fvector2 WndSize = m_pParentDragDropList->GetWndSize();
-		Fvector2 AlignPos = WndSize;
+		Fvector2 AlignPos = m_pParentDragDropList->GetWndSize();;
 
 		// FX: We get the coordinates from the center of the window, taking into account the size of the item
-		AlignPos.sub(itm->GetWndSize());
+		AlignPos.sub(Fvector2().set(m_cellSize.x * cs.x,m_cellSize.y * cs.y));
 		AlignPos.div(2);
 
 		itm->SetWndPos(AlignPos);
