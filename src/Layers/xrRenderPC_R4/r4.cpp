@@ -199,6 +199,8 @@ void CRender::create()
 	o.distortion = o.distortion_enabled;
 	o.disasm = Core.ParamsData.test(ECoreParams::disasm);
 
+	clearAllShaderOptions();
+
 	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) {
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
@@ -606,21 +608,34 @@ void CRender::Statistics(CGameFont* _F) {
 #endif
 }
 
-xr_string CRender::getShaderParams() {
-	if(!m_ShaderOptions.empty()) {
-		xr_string params = "(";
+xr_string CRender::getShaderParams() 
+{
+	if(!m_ShaderOptions.empty()) 
+	{
+		u32 start_crc = 0xffffffff;
 
-		for(auto& [Name, Value] : m_ShaderOptions) {
-			params += Name + (Value[0] ? "_" + Value : "") + ",";
+		for(auto& [Name, Value] : m_ShaderOptions)
+		{
+			start_crc = crc32(Name.data(), Name.size(), start_crc);
+			start_crc = crc32(Value.data(), Value.size(), start_crc);
 		}
 
-		params[params.size() - 1] = ')';
+		xr_string params = "_";
+		params += xr_string::ToString(start_crc);
+
 		return params;
 	}
 	return "";
 }
 
-void CRender::addShaderOption(const char* name, const char* value) {
+void CRender::clearAllShaderOptions()
+{
+	//GPU_EVENT(__FUNCTION__)
+	m_ShaderOptions = EngineExternal().ShadersOptions;
+}
+
+void CRender::addShaderOption(const char* name, const char* value) 
+{
 	m_ShaderOptions[name] = value;
 }
 
@@ -826,13 +841,6 @@ HRESULT	CRender::shader_compile(
 	char c_sun_quality[32];
 
 	char sh_name[MAX_PATH] = "";
-
-	for(auto& [Name, Value] : EngineExternal().ShadersOptions) {
-		defines[def_it++] = {
-			Name.c_str(),
-			Value.c_str()
-		};
-	}
 
 	// options
 	u32 len = xr_strlen(sh_name);
