@@ -368,6 +368,18 @@ void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
 	}
 }
 
+void CCar::save(NET_Packet& output_packet)
+{
+	inherited::save(output_packet);
+	save_data(m_fuel, output_packet);
+}
+
+void CCar::load(IReader& input_packet)
+{
+	inherited::load(input_packet);
+	load_data(m_fuel, input_packet);
+}
+
 void CCar::shedule_Update(u32 dt)
 {
 	inherited::shedule_Update(dt);
