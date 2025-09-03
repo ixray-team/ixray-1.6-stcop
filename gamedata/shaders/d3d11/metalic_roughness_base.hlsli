@@ -183,7 +183,7 @@ void GbufferUnpack(in float2 TexCoord, in float2 HPos, inout IXrayGbuffer O)
     O.Roughness = NormalHemi.z;
 	
 	O.AO = PushGamma(Material.z);
-	O.F0 = 0.002f + 0.018f * Material.w;
+	O.F0 = 0.002f + 0.028f * Material.w;
 
 	O.SnowMask = NormalHemi.w;
 }
@@ -222,7 +222,7 @@ void GbufferUnpack(in float2 TexCoord, inout IXrayGbuffer O)
     O.Roughness = NormalHemi.z;
 	
 	O.AO = PushGamma(Material.z);
-	O.F0 = 0.002f + 0.018f * Material.w;
+	O.F0 = 0.002f + 0.028f * Material.w;
 
 	O.SnowMask = NormalHemi.w;
 }
