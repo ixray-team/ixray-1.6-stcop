@@ -103,11 +103,11 @@ float4 main(PSInput I) : SV_Target
 	SSLRBoxMinPos = min(SSLRBoxMin, SSLRBoxMinPos);
 	SSLRBoxMaxPos = max(SSLRBoxMax, SSLRBoxMaxPos);
 	
-	SSLRBoxMin = SSLRBoxMin * 0.5f + SSLRBoxMinPos * 0.5f;
-	SSLRBoxMax = SSLRBoxMax * 0.5f + SSLRBoxMaxPos * 0.5f;
+	SSLRBoxMin = SSLRBoxMinPos; //SSLRBoxMin * 0.5f + SSLRBoxMinPos * 0.5f;
+	SSLRBoxMax = SSLRBoxMaxPos; //SSLRBoxMax * 0.5f + SSLRBoxMaxPos * 0.5f;
 	
-	float4 SSLRMain = rcp(9) * (SSLR0 + SSLR1 + SSLR2 + SSLR3 + SSLR4 + SSLR5 + SSLR6 + SSLR7 + SSLR8);
-	
+	float4 SSLRMain = SSLR4; //rcp(9) * (SSLR0 + SSLR1 + SSLR2 + SSLR3 + SSLR4 + SSLR5 + SSLR6 + SSLR7 + SSLR8);
+	SSLRMain = median9(SSLR0, SSLR1, SSLR2, SSLR3, SSLR4, SSLR5, SSLR6, SSLR7, SSLR8);
 	
 	float3 Point = gbuf_unpack_position(I.texcoord.xy, O.PointReal.z);
 	float3 View = normalize(Point);
@@ -127,7 +127,7 @@ float4 main(PSInput I) : SV_Target
 	
 	float Fade = 1.0f; // - Fog * 0.1f;
 	
-	float DepthClamp = 1.0f - saturate(10.0f * abs(SSLR_OldDiffyse.w - O.Depth));
+	float DepthClamp = 1.0f - saturate(50.0f * abs(SSLR_OldDiffyse.w - O.Depth));
 	
 	if(O.Depth < 0.02f) {
 		Fade = 0.95f - Fog * 0.1f;
@@ -145,10 +145,10 @@ float4 main(PSInput I) : SV_Target
 	SSLR_OldSpecular = lerp(SSLR_Diffuse, SSLR_OldSpecular, GetBorderAtten(PrevSpecularUV));
 	
 	float SpecularFactor = 1.0f - HistoryClamp(SSLR_OldSpecular.xyz, SSLRMain.xyz, SSLRBoxMin.xyz, SSLRBoxMax.xyz);	
-	SSLR_OldSpecular = lerp(SSLRMain, SSLR_OldSpecular, 0.98 * SpecularFactor * Fade);
+	SSLR_OldSpecular = lerp(SSLRMain * 0.5f + SSLR_Diffuse * 0.5f, SSLR_OldSpecular, 0.98 * SpecularFactor * Fade);
 	
 	SpecularFactor = 1.0f - saturate(length(PrevDiffuseUV.xy - PrevSpecularUV.xy) * 300.0f);
-	float4 SSLR_Specular = lerp(SSLR_OldSpecular, SSLR_Diffuse, 0.9f * SpecularFactor);
+	float4 SSLR_Specular = lerp(SSLR_OldSpecular, SSLR_Diffuse, 0.95f * SpecularFactor);
 	
 	SSLR_Diffuse.xyz = lerp(SSLR_Specular.xyz, SSLR_Diffuse.xyz, O.Roughness);
 	SSLRMain.xyz = lerp(SSLRMain.xyz, SSLR_Diffuse.xyz, DepthClamp);

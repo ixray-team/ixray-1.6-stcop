@@ -94,7 +94,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		return float4(SamplePoint, 0.0f);
 	}
 	
-	Step *= sqrt((RadiusS - DistanceS) * rcp(DirectionS));
+	Step *= fog_params.z; //sqrt((RadiusS - DistanceS) * rcp(DirectionS));
 	
 	float Fade = 0;
 	float Delta = 0.0f;
