@@ -105,6 +105,7 @@ public:
 	Fvector2				CalcPosition					();
 	const Fvector2&			CalcDirection					();
 	IC const shared_str&	GetLevelName					()	{return m_cached.m_LevelName;}
+	IC LPCSTR				GetLPLevelName					()	{return m_cached.m_LevelName.c_str();}
 	const Fvector2&			GetPosition						()	{return m_cached.m_Position;}
 
 	u16						ObjectID						() {return m_objectID;}
