@@ -84,6 +84,7 @@ void UILogForm::Update()
 		ImGui::Spacing();
 		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
 		{
+			xrCriticalSectionGuard cs(LogGuard);
 			ImGuiListClipper clipper;
 			clipper.Begin(GetList()->size());
 

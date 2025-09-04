@@ -1,5 +1,6 @@
 #pragma once
-class UIMainMenuForm :public IEditorWnd
+class UIMainMenuForm :
+	public IEditorWnd
 {
 public:
 	UIMainMenuForm();

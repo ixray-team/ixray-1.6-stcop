@@ -29,4 +29,5 @@ private:
 	string_path m_Filter;
 	UIObjectListItem m_Root;
 	UIObjectListItem* m_LastSelected;
+	xrCriticalSection LoaderCS;
 };

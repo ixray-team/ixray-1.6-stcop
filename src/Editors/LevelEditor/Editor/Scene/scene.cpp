@@ -519,24 +519,20 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 		ELog.Msg(mtError,"*ERROR: Can't find any Spawn Object.");
 		bRes = false;
 	}
-/* St4lker0k765: what's the point of these checks?
-	if (ObjCount(OBJCLASS_LIGHT) == 0) {
+
+	if (ObjCount(OBJCLASS_LIGHT) == 0) 
+	{
 		ELog.Msg(mtError,"*ERROR: Can't find any Light Object.");
-		bRes = false;
-	}*/
+	}
+
 	if (ObjCount(OBJCLASS_SCENEOBJECT) == 0 && ObjCount(OBJCLASS_TERRAIN) == 0)
 	{
 		ELog.Msg(mtError,"*ERROR: Can't find any Scene Object or Terrain.");
 		bRes = false;
 	}
-/*	if (bTestGlow)
+
+	if (IsValidateDublicateNames && FindDuplicateName())
 	{
-		if (ObjCount(OBJCLASS_GLOW)==0){
-			ELog.Msg(mtError,"*ERROR: Can't find any Glow Object.");
-			bRes = false;
-		}
-	}*/
-	if (FindDuplicateName()){
 		ELog.Msg(mtError,"*ERROR: Found duplicate object name.");
 		bRes = false;
 	}

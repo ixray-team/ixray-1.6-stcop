@@ -27,52 +27,61 @@ void ESceneObjectTool::RemoveControls()
 
 bool ESceneObjectTool::Validate(bool full_test)
 {
-    bool bRes = inherited::Validate(full_test);
+    xr_atomic_bool bRes = inherited::Validate(full_test);
     // verify position & refs duplicate
-    CSceneObject *A, *B;
-    for (ObjectIt a_it=m_Objects.begin(); a_it!=m_Objects.end(); a_it++){
-        A = (CSceneObject*)(*a_it);
-	    for (ObjectIt b_it=m_Objects.begin(); b_it!=m_Objects.end(); b_it++){
-            B = (CSceneObject*)(*b_it);
-        	if (A==B) continue;
-            if (A->RefCompare(B->GetReference())){
-            	if (A->GetPosition().similar(B->GetPosition(),EPS_L)){
-                	bRes = false;
-                    ELog.Msg(mtError,"Duplicate object position '%s'-'%s' with reference '%s'.",A->GetName(),B->GetName(),A->RefName());
+    thread_local CSceneObject* B;
+
+    xr_parallel_foreach
+    (
+        m_Objects.begin(), m_Objects.end(),
+        [&](CCustomObject* ObjPtr)
+        {
+            CSceneObject* A = (CSceneObject*)ObjPtr;
+            for (ObjectIt b_it = m_Objects.begin(); b_it != m_Objects.end(); b_it++)
+            {
+                B = (CSceneObject*)(*b_it);
+                if (A == B)
+                    continue;
+
+                if (A->RefCompare(B->GetReference()))
+                {
+                    if (A->GetPosition().similar(B->GetPosition(), EPS_L))
+                    {
+                        bRes = false;
+                        ELog.Msg(mtError, "Duplicate object position '%s'-'%s' with reference '%s'.", A->GetName(), B->GetName(), A->RefName());
+                    }
                 }
             }
-        }
-	    // validate lods
-        if (full_test&&A->IsMUStatic()){
-			CEditableObject* E	= A->GetReference(); VERIFY(E);
-            xr_string lod_name 	= E->GetLODTextureName();
-            xr_string l_name	= lod_name.c_str();
-            string_path fn;
-            int age,age_nm;
-//.          FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
-            FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
-            age					= FS.get_file_age(fn);
-            if(age==-1)         Msg("!There is no texture '%s'", fn);
-            l_name 				+= "_nm";
-//.         FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
-            FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
-            age_nm				= FS.get_file_age(fn);
-            if(age_nm==-1)      Msg("!There is no texture '%s'", fn);
 
-            if(age_nm==-1 || age==-1)
-               bRes 			= false;
-/*
-            if ((age!=E->Version()) || (age_nm!=E->Version()) )
+            // validate lods
+            if (Scene->IsValidateLODs && full_test && A->IsMUStatic())
             {
-                Msg				("!Invalid LOD texture version: '%s'",E->GetName());
-                Msg             ("tex=%d obj=%d", age, E->Version());
-                Msg             ("tex=%d obj=%d", age_nm, E->Version());
-                bRes 			= false;
+                CEditableObject* E = A->GetReference(); VERIFY(E);
+                xr_string lod_name = E->GetLODTextureName();
+                xr_string l_name = lod_name.c_str();
+                string_path fn;
+                int age, age_nm;
+
+                FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
+                age = FS.get_file_age(fn);
+
+                if (age == -1)
+                    Msg("!There is no texture '%s'", fn);
+
+                l_name += "_nm";
+
+                FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
+                age_nm = FS.get_file_age(fn);
+
+                if (age_nm == -1)
+                    Msg("!There is no texture '%s'", fn);
+
+                if (age_nm == -1 || age == -1)
+                    bRes = false;
             }
-*/            
         }
-    }
-    
+    );
+
     return bRes;
 }
 
