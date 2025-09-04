@@ -355,7 +355,11 @@ private:
 public:
 	xr_string full_name;
 
+	bool IsValidateAtMake = true;
+	bool IsValidateDublicateNames = true;
+	bool IsValidateLODs = true;
 private:
+	bool IsAppliedPos = false;
 	bool IsPIERayPick = false;
 	CLevelGraphEditor m_level_graph;
 	CGameGraphEditor m_game_graph;
@@ -364,7 +368,6 @@ private:
 	CGameGraphBuilder m_graph_builder;
 	CFormBuilder m_cform_builder;
 
-	bool IsAppliedPos = false;
 	Fvector ActorNewPos = {};
 	Fvector ActorNewDir = {};
 	xrCriticalSection PickUpLock;

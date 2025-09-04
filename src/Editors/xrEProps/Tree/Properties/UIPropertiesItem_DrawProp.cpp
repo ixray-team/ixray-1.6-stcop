@@ -485,48 +485,56 @@ void UIPropertiesItem::DrawProp()
 	break;
 	case PROP_CLIST:
 	{
-		CListValue* V = dynamic_cast<CListValue*>(PItem->GetFrontValue()); R_ASSERT(V);
-		LPCSTR edit_value = V->value;
-		int index = 0;
-		int i = 0;
-		for (; i < V->item_count; i++)
+		CListValue* V = smart_cast<CListValue*>(PItem->GetFrontValue());
+		if (V)
 		{
-			if (V->items[i] == edit_value)
+			LPCSTR edit_value = V->value;
+			int index = 0;
+			int i = 0;
+			for (; i < V->item_count; i++)
 			{
-				index = i;
+				if (V->items[i] == edit_value)
+				{
+					index = i;
+				}
 			}
-		}
-		if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_string*>(data)[idx].c_str(); return true; }, reinterpret_cast<void*>(V->items), i))
-		{
-			if (PItem->AfterEdit<CListValue, xr_string>(V->items[index]))
-				if (PItem->ApplyValue<CListValue, LPCSTR>(V->items[index].c_str()))PropertiesFrom->Modified();
+			if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<xr_string*>(data)[idx].c_str(); return true; }, reinterpret_cast<void*>(V->items), i))
+			{
+				if (PItem->AfterEdit<CListValue, xr_string>(V->items[index]))
+					if (PItem->ApplyValue<CListValue, LPCSTR>(V->items[index].c_str()))PropertiesFrom->Modified();
+			}
 		}
 	}
 	break;
 	case PROP_RLIST:
 	{
-		RListValue* V = dynamic_cast<RListValue*>(PItem->GetFrontValue()); R_ASSERT(V);
-		LPCSTR edit_value = V->value? V->value->c_str():0;
-		int index = 0;
-		int i = 0;
-		for (; i < V->item_count; i++)
+		RListValue* V = smart_cast<RListValue*>(PItem->GetFrontValue());
+
+		if (V)
 		{
-			if (V->items[i] == edit_value)
+			LPCSTR edit_value = V->value ? V->value->c_str() : 0;
+			int index = 0;
+			int i = 0;
+			for (; i < V->item_count; i++)
 			{
-				index = i;
+				if (V->items[i] == edit_value)
+				{
+					index = i;
+				}
 			}
-		}
-		if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<shared_str*>(data)[idx].c_str(); return true; }, reinterpret_cast<void*>(V->items), i))
-		{
-			if (PItem->AfterEdit<RListValue, shared_str>(V->items[index]))
-				if (PItem->ApplyValue<RListValue, shared_str>(V->items[index]))PropertiesFrom->Modified();
+			if (ImGui::Combo("##value", &index, [](void* data, int idx, const char** out_text)->bool {*out_text = reinterpret_cast<shared_str*>(data)[idx].c_str(); return true; }, reinterpret_cast<void*>(V->items), i))
+			{
+				if (PItem->AfterEdit<RListValue, shared_str>(V->items[index]))
+					if (PItem->ApplyValue<RListValue, shared_str>(V->items[index]))PropertiesFrom->Modified();
+			}
 		}
 	}
 	break;
 	
 		case PROP_CTEXT:
 		{
-			CTextValue* V = dynamic_cast<CTextValue*>(PItem->GetFrontValue()); R_ASSERT(V);
+			CTextValue* V = smart_cast<CTextValue*>(PItem->GetFrontValue());
+			if (V)
 			{
 				string128 Str;
 				xr_string Source = PItem->GetDrawText();
@@ -555,7 +563,8 @@ void UIPropertiesItem::DrawProp()
 			break;
 		case PROP_RTEXT:
 		{
-			RTextValue* V = dynamic_cast<RTextValue*>(PItem->GetFrontValue()); R_ASSERT(V);
+			RTextValue* V = smart_cast<RTextValue*>(PItem->GetFrontValue());
+			if (V)
 			{
 				string256 Str;
 				xr_string Source = PItem->GetDrawText();
@@ -569,45 +578,48 @@ void UIPropertiesItem::DrawProp()
 				{
 				}
 
-				xr_string KeyValue = PItem->Key();
-				if (KeyValue.ends_with("Custom data"))
+				if (PItem->Key() != nullptr)
 				{
-					const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-
-					if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Logic)
+					xr_string KeyValue = PItem->Key();
+					if (KeyValue.ends_with("Custom data"))
 					{
-						ImDrawList* draw_list = ImGui::GetWindowDrawList();
-						ImVec2 p_min = ImGui::GetItemRectMin();
-						ImVec2 p_max = ImGui::GetItemRectMax();
-						draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
-						draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
-					}
+						const ImGuiPayload* payload = ImGui::GetDragDropPayload();
 
-					if (ImGui::BeginDragDropTarget())
-					{
-						if (auto ImData = ImGui::AcceptDragDropPayload("TEST#cd"))
+						if (payload && ImGui::IsMouseDragging(ImGuiMouseButton_Left) && GUIManager->DnDType == EDragDropType::Logic)
 						{
-							struct DragDropData
+							ImDrawList* draw_list = ImGui::GetWindowDrawList();
+							ImVec2 p_min = ImGui::GetItemRectMin();
+							ImVec2 p_max = ImGui::GetItemRectMax();
+							draw_list->AddRectFilled(p_min, p_max, IM_COL32(50, 50, 70, 100));
+							draw_list->AddRect(p_min, p_max, IM_COL32(100, 180, 255, 255));
+						}
+
+						if (ImGui::BeginDragDropTarget())
+						{
+							if (auto ImData = ImGui::AcceptDragDropPayload("TEST#cd"))
 							{
-								xr_string FileName;
-							}
-							Data = *(DragDropData*)ImData->Data;
-
-							xr_string NewLogicString = "[logic]\r\ncfg = ";
-
-							size_t Index = Data.FileName.find("scripts\\");
-							NewLogicString += Data.FileName.substr(Index);
-
-							shared_str out = NewLogicString.c_str();
-							if (PItem->AfterEdit<RTextValue, shared_str>(out))
-							{
-								if (PItem->ApplyValue<RTextValue, shared_str>(out))
+								struct DragDropData
 								{
-									PropertiesFrom->Modified();
+									xr_string FileName;
+								}
+								Data = *(DragDropData*)ImData->Data;
+
+								xr_string NewLogicString = "[logic]\r\ncfg = ";
+
+								size_t Index = Data.FileName.find("scripts\\");
+								NewLogicString += Data.FileName.substr(Index);
+
+								shared_str out = NewLogicString.c_str();
+								if (PItem->AfterEdit<RTextValue, shared_str>(out))
+								{
+									if (PItem->ApplyValue<RTextValue, shared_str>(out))
+									{
+										PropertiesFrom->Modified();
+									}
 								}
 							}
+							ImGui::EndDragDropTarget();
 						}
-						ImGui::EndDragDropTarget();
 					}
 				}
 			}
