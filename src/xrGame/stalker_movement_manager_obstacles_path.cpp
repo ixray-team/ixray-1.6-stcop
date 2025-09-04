@@ -159,7 +159,22 @@ void stalker_movement_manager_obstacles::build_level_path					()
 			
 			if (!pure_search_result) {
 #ifndef MASTER_GOLD
-				Msg					("! level_path().failed() during navigation");
+				if (object().cast_inventory_owner() != nullptr)
+				{
+					Msg("! level_path().failed() during navigation: unit %s [%s], profile [%s] ID [%d]",
+						object().Name(),
+						object().cNameSect().c_str(),
+						object().cast_inventory_owner()->CharacterInfo().GetSpecificCharacterId().c_str(),
+						object().ID());
+				}
+				else
+				{
+					Msg("! level_path().failed() during navigation: unit %s [%s] ID [%d]",
+						object().Name(),
+						object().cNameSect().c_str(),
+						object().ID());
+				}
+
 #endif // #ifndef MASTER_GOLD
 				break;
 			}
