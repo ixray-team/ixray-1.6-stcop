@@ -24,15 +24,20 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 	return object;
 }
 
-CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
+CCustomObject* EScene::FindObjectByName(LPCSTR name, CCustomObject* pass_object)
 {
 	CCustomObject* object = 0;
 	SceneToolsMapPairIt _I = m_SceneTools.begin();
 	SceneToolsMapPairIt _E = m_SceneTools.end();
-	for (; _I!=_E; _I++){
+	for (; _I != _E; _I++)
+	{
 		ESceneCustomOTool* mt = smart_cast<ESceneCustomOTool*>(_I->second);
-		if (mt&&(0!=(object=mt->FindObjectByName(name,pass_object)))) return object;
+		if (mt && (0 != (object = mt->FindObjectByName(name, pass_object))))
+		{
+			return object;
+		}
 	}
+
 	return 0;
 }
 

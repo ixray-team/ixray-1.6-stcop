@@ -139,6 +139,8 @@ void UIObjectList::Refresh()
 	if (Form == nullptr)
 		return;
 
+	xrCriticalSectionGuard guard(Form->LoaderCS);
+
 	Form->m_Root = UIObjectListItem("");
 
 	Form->m_cur_cls = LTools->CurrentClassID();
@@ -200,8 +202,10 @@ void UIObjectList::Refresh()
 
 void UIObjectList::DrawObjects()
 {
-	if (LTools->CurrentClassID() != m_cur_cls)Refresh();
+	if (LTools->CurrentClassID() != m_cur_cls)
+		Refresh();
 
+	xrCriticalSectionGuard guard(Form->LoaderCS);
 	static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody| ImGuiTableFlags_ScrollY;
 
 	if (ImGui::BeginTable("objects", 1, flags, ImVec2(0, -ImGui::GetFrameHeight() - 4)))

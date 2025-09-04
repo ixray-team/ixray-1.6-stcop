@@ -130,7 +130,15 @@ void UIMainMenuForm::Draw()
 			}
 			ImGui::Separator();
 
-			DrawMenuItem("Validate", COMMAND_VALIDATE_SCENE);
+			if (ImGui::BeginMenu("Validate##list"))
+			{
+				DrawMenuItem("Validate", COMMAND_VALIDATE_SCENE);
+				ImGui::Separator();
+				ImGui::Checkbox("Validate at make", &Scene->IsValidateAtMake);
+				ImGui::Checkbox("Validate LODs", &Scene->IsValidateLODs);
+				ImGui::Checkbox("Validate Dublicate Names", &Scene->IsValidateDublicateNames);
+				ImGui::EndMenu();
+			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Summary Info", "")) 
 			{
