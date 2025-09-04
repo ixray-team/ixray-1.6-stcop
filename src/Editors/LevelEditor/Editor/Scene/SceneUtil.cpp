@@ -43,22 +43,30 @@ CCustomObject* EScene::FindObjectByName(LPCSTR name, CCustomObject* pass_object)
 
 bool EScene::FindDuplicateName()
 {
-// find duplicate name
-	SceneToolsMapPairIt _I = m_SceneTools.begin();
-	SceneToolsMapPairIt _E = m_SceneTools.end();
-	for (; _I!=_E; _I++){
-		ESceneCustomOTool* mt = smart_cast<ESceneCustomOTool*>(_I->second);
-		if (mt){
-			ObjectList& lst = mt->GetObjects(); 
-			for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
-				if (FindObjectByName((*_F)->GetName(), *_F)){
-					ELog.DlgMsg(mtError,"Duplicate object name already exists: '%s'",(*_F)->GetName());
-					return true;
-				}
+	xr_hash_set<shared_str> nameSet;
+
+	for (const auto& [key, tool] : m_SceneTools)
+	{
+		auto* customTool = smart_cast<ESceneCustomOTool*>(tool);
+		if (!customTool)
+			continue;
+
+		for (CCustomObject* object : customTool->GetObjects())
+		{
+			const shared_str& name = object->GetName();
+			auto [iterator, inserted] = nameSet.insert(name);
+
+			if (!inserted)
+			{
+				ELog.DlgMsg(mtError, "Duplicate object name already exists: '%s'", *name);
+				return true;
+			}
 		}
 	}
+
 	return false;
 }
+
 
 void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
 {
