@@ -92,18 +92,23 @@ bool SceneBuilder::BuildSOMModel()
 		if (E->m_objectFlags.is(CEditableObject::eoSoundOccluder)){ 
 			Fvector 		v;
 			const Fmatrix&	parent = S->_Transform();
-			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); m_it++){
-				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); sf_it++){
+			for (EditMeshIt m_it=E->FirstMesh(); m_it!=E->LastMesh(); m_it++)
+			{
+				for (SurfFacesPairIt sf_it=(*m_it)->m_SurfFaces.begin(); sf_it!=(*m_it)->m_SurfFaces.end(); sf_it++)
+				{
 					CSurface* surf 		= sf_it->first;
 					int gm_id			= surf->_GameMtl(); 
-					if (gm_id==GAMEMTL_NONE_ID){ 
-						ELog.DlgMsg		(mtError,"Object '%s', surface '%s' contain invalid game material.",(*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
+					if (gm_id==GAMEMTL_NONE_ID)
+					{ 
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain invalid game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
 						bResult 		= FALSE; 
 						break; 
 					}
 					SGameMtl* mtl 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
-					if (0==mtl){
-						ELog.DlgMsg		(mtError,"Object '%s', surface '%s' contain undefined game material.",(*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
+
+					if (0==mtl)
+					{
+						ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", *(*m_it)->Name(), (*m_it)->Parent()->m_LibName.c_str(),surf->_Name());
 						bResult 		= FALSE; 
 						break; 
 					}

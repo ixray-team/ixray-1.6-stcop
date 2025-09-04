@@ -75,7 +75,6 @@ void CLevelPreferences::Load()
 		}
 	}
 	
-
 	if (JSONData.contains("gizmo") && JSONData["gizmo"].contains("matrixmode"))
 	{
 		imManipulator.MatrixMode = JSONData["gizmo"]["matrixmode"];
@@ -84,6 +83,22 @@ void CLevelPreferences::Load()
 	if (JSONData["ContentBrowser"].contains("IsSpawnElement"))
 	{
 		GContentView->IsSpawnElement = JSONData["ContentBrowser"]["IsSpawnElement"];
+	}
+
+	if (JSONData.contains("Scene"))
+	{
+		if (JSONData["Scene"].contains("ValidNames"))
+		{
+			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidNames"];
+		}
+		if (JSONData["Scene"].contains("ValidLod"))
+		{
+			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidLod"];
+		}
+		if (JSONData["Scene"].contains("ValidMake"))
+		{
+			Scene->IsValidateDublicateNames = JSONData["Scene"]["ValidMake"];
+		}
 	}
 
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
@@ -120,6 +135,9 @@ void CLevelPreferences::Save()
 	JSONData["ContentBrowser"]["ISEPath"] = GContentView->VirtualPath;
 	JSONData["ContentBrowser"]["IsSpawnElement"] = GContentView->IsSpawnElement;
 	JSONData["ContentBrowser"]["ViewMode"] = GContentView->ViewMode;
+	JSONData["Scene"]["ValidMake"] = Scene->IsValidateAtMake;
+	JSONData["Scene"]["ValidLod"] = Scene->IsValidateLODs;
+	JSONData["Scene"]["ValidNames"] = Scene->IsValidateDublicateNames;
 
 	SceneToolsMapPairIt _I 	= Scene->FirstTool();
 	SceneToolsMapPairIt _E 	= Scene->LastTool();
