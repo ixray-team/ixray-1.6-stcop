@@ -11,7 +11,6 @@ set release=%~1
 mkdir build\x64\Server-Windows\temp-developer
 copy fsgame.ltx build\x64\Server-Windows\temp-developer
 copy .xrignore build\x64\Server-Windows\temp-developer
-xcopy patches\xpatch_03.db build\x64\Server-Windows\temp-developer\patches\ /e
 xcopy patch build\x64\Server-Windows\temp-developer\gamedata /e /i
 xcopy build\x64\Server-Windows\bin\RelWithDebInfo build\x64\Server-Windows\temp-developer\bin /e /i
 pushd build\x64\Server-Windows\temp-developer
@@ -20,7 +19,6 @@ pushd build\x64\Server-Windows\temp-developer
     -ir!"gamedata" ^
     -ir!"fsgame.ltx" ^
     -ir!".xrignore" ^
-    -ir!"patches\xpatch_03.db" ^
     -xr!"*.pdb"
 popd
 move build\x64\Server-Windows\temp-developer\ixray-1.6-r%release%-engine-x64-develop.zip ^
@@ -30,7 +28,6 @@ move build\x64\Server-Windows\temp-developer\ixray-1.6-r%release%-engine-x64-dev
 mkdir build\x64\Server-Windows\temp-game
 copy fsgame.ltx build\x64\Server-Windows\temp-game
 copy .xrignore build\x64\Server-Windows\temp-game
-xcopy patches\xpatch_03.db build\x64\Server-Windows\temp-game\patches\ /e
 xcopy patch build\x64\Server-Windows\temp-game\gamedata /e /i
 xcopy build\x64\Server-Windows\bin\Release build\x64\Server-Windows\temp-game\bin /e /i
 pushd build\x64\Server-Windows\temp-game
@@ -39,7 +36,6 @@ pushd build\x64\Server-Windows\temp-game
     -ir!"gamedata" ^
     -ir!"fsgame.ltx" ^
     -ir!".xrignore" ^
-    -ir!"patches\xpatch_03.db" ^
     -xr!"*.pdb"
 popd
 move build\x64\Server-Windows\temp-game\ixray-1.6-r%release%-engine-x64-game.zip ^

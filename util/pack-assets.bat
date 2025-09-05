@@ -14,7 +14,6 @@ move patch gamedata
     "gamedata" ^
     -ir!"fsgame.ltx" ^
     -ir!".xrignore" ^
-    -ir!"patches\xpatch_03.db" ^
     -xr!"temp\fsgame.ltx"
 move gamedata patch
 move gamedata_main gamedata

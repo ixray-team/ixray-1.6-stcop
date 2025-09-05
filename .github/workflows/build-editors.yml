@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2025
+          - windows-latest
         preset:
           - Editors
         platform:
@@ -114,7 +114,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2025
+          - windows-latest
 
     runs-on: ${{ matrix.system }}
 
@@ -163,7 +163,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - windows-2025
+          - windows-latest
         platform:
           - x64
         preset:
