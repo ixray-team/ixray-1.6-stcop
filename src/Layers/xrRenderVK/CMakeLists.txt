@@ -6,6 +6,10 @@ file(GLOB_RECURSE XRVK_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.h"
 )
+
+# Exclude test files from main build
+list(FILTER XRVK_SOURCE_ALL_FILES EXCLUDE REGEX "test_.*")
+
 file(GLOB_RECURSE XRVK_SOURCE_COMP_FILES CONFIGURE_DEPENDS
     "../xrRender/*.cpp"
     "../xrRender/*.h"
