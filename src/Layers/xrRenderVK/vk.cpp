@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "vk.h"
+#include "vk_rendertarget.h"
+#include <set>
 
 CRender RImplementation;
 
 CRender::CRender()
 {
-    marker = RDEVICE_MARKER;
+    Target = nullptr;
     
     // Initialize Vulkan validation layers in debug builds
 #ifdef DEBUG
@@ -19,6 +21,9 @@ CRender::CRender()
 
 CRender::~CRender()
 {
+    if (Target) {
+        xr_delete(Target);
+    }
     DestroyVulkan();
 }
 
@@ -35,6 +40,13 @@ void CRender::create()
     // Create resource manager
     Resources = new CResourceManager();
     
+    // Create traditional render target with static passes
+    Target = new VKRenderTarget();
+    if (!Target->Create(Device.dwWidth, Device.dwHeight)) {
+        FATAL("Failed to create Vulkan render targets");
+        return;
+    }
+    
     // Initialize stats
     ZeroMemory(&stat, sizeof(stat));
     
@@ -49,6 +61,11 @@ void CRender::destroy()
     // Remove from render sequence
     Device.seqRender.Remove(this);
     
+    // Cleanup render target first
+    if (Target) {
+        xr_delete(Target);
+    }
+    
     // Cleanup resources
     if (Resources) {
         xr_delete(Resources);
@@ -62,12 +79,21 @@ void CRender::reset_begin()
 {
     // Clean up swapchain-dependent resources
     CleanupSwapchain();
+    
+    if (Target) {
+        Target->Destroy();
+    }
 }
 
 void CRender::reset_end()
 {
     // Recreate swapchain
     CreateSwapchain();
+    
+    // Recreate render target with new dimensions
+    if (Target) {
+        Target->Create(Device.dwWidth, Device.dwHeight);
+    }
 }
 
 void CRender::level_Load(IReader*)
@@ -108,12 +134,24 @@ void CRender::Calculate()
 
 void CRender::Render()
 {
-    // Basic Vulkan render loop
-    // This is a minimal implementation - just clear the screen
+    // Traditional phase-based rendering approach (no dynamic rendering)
+    // This follows the established pattern from R2 renderer
     
-    // Begin frame
-    // Wait for fence, acquire next image, record command buffer, submit, present
-    // For now, just update stats
+    if (!Target) return;
+    
+    // Phase 1: Shadow map rendering
+    phase_smap();
+    
+    // Phase 2: Scene geometry (G-buffer)
+    phase_scene();
+    
+    // Phase 3: Lighting accumulation
+    phase_lighting();
+    
+    // Phase 4: Final combine and present
+    phase_combine();
+    
+    // Update stats
     stat.ic_total = 0;
     stat.ic_culled = 0;
     stat.ic_visible = 0;
@@ -576,4 +614,63 @@ void CRender::CleanupSwapchain()
         vkDestroySwapchainKHR(vkDevice.device, vkDevice.swapchain, nullptr);
         vkDevice.swapchain = VK_NULL_HANDLE;
     }
+}
+
+// Traditional phase-based rendering implementation
+void CRender::phase_scene()
+{
+    // Geometry pass - render to G-buffer using traditional render passes
+    if (!Target) return;
+    
+    Target->phase_scene_prepare();
+    Target->phase_scene_begin();
+    
+    // TODO: Render geometry to G-buffer
+    // This would iterate through visible objects and render them
+    // using the geometry render pass
+    
+    Target->phase_scene_end();
+}
+
+void CRender::phase_lighting()
+{
+    // Lighting accumulation pass using traditional render passes
+    if (!Target) return;
+    
+    Target->phase_lighting_prepare();
+    Target->phase_lighting_begin();
+    
+    // TODO: Accumulate lighting using deferred shading
+    // This would read from G-buffer and accumulate lighting contributions
+    // using the lighting render pass
+    
+    Target->phase_lighting_end();
+}
+
+void CRender::phase_combine()
+{
+    // Final combine pass to swapchain using traditional render passes
+    if (!Target) return;
+    
+    Target->phase_combine_prepare();
+    Target->phase_combine_begin();
+    
+    // TODO: Combine lighting buffer with other effects and output to swapchain
+    // This would use the combine render pass
+    
+    Target->phase_combine_end();
+}
+
+void CRender::phase_smap()
+{
+    // Shadow map rendering using traditional render passes
+    if (!Target) return;
+    
+    Target->phase_smap_prepare();
+    Target->phase_smap_begin();
+    
+    // TODO: Render shadow casters to shadow map
+    // This would use the shadow map render pass
+    
+    Target->phase_smap_end();
 }
