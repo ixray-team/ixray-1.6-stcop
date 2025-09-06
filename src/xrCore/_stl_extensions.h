@@ -108,6 +108,14 @@ using xr_multimap = std::multimap<K, V, P, allocator>;
 template <typename K, class V, class _Traits = std::equal_to<K>, typename allocator = xalloc<std::pair<const K,V> > >	
 using xr_hash_map = std::unordered_map<K, V, std::hash<K>, _Traits, allocator>;
 
+template <typename K, class _Traits = std::equal_to<K>, typename allocator = xalloc<K> >
+using xr_hash_set = std::unordered_set<K, std::hash<K>, _Traits, allocator>;
+
+using xr_string_view = std::string_view;
+
+template<typename Type, size_t Size>
+using xr_array = std::array<Type, Size>;
+
 struct pred_str {
 	IC bool operator()(const char* x, const char* y) const				{	return xr_strcmp(x,y)<0;	}
 };
