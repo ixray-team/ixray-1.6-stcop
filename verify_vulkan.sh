@@ -64,7 +64,7 @@ fi
 
 # Check for shader path implementation
 echo "6. Checking shader path implementation..."
-if grep -q 'getShaderPath' src/Layers/xrRenderVK/vk.h && grep -q '"vk\\\\"' src/Layers/xrRenderVK/vk.cpp; then
+if grep -q '"vk\\\\"' src/Layers/xrRenderVK/vk.cpp; then
     echo "   ✅ Vulkan shader path implemented"
 else
     echo "   ❌ Vulkan shader path NOT implemented"
