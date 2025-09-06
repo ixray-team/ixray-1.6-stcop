@@ -36,11 +36,62 @@ target_precompile_headers(xrRender_VK PRIVATE "stdafx.h")
 target_include_directories(xrRender_VK PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_VK PUBLIC "${IXRAY_SDK_INC}")
 
-# Find Vulkan
-find_package(Vulkan REQUIRED)
-if (NOT Vulkan_FOUND)
-    message(FATAL_ERROR "Vulkan SDK not found. Please install Vulkan SDK from https://vulkan.lunarg.com/sdk/home")
+# Find Vulkan (robust)
+# Try environment variable first
+if(DEFINED ENV{VULKAN_SDK})
+    set(_VULKAN_SDK $ENV{VULKAN_SDK})
+    if (EXISTS "${_VULKAN_SDK}/Include/vulkan/vulkan.h")
+        list(APPEND CMAKE_PREFIX_PATH "${_VULKAN_SDK}")
+        message(STATUS "Vulkan SDK detected via VULKAN_SDK=${_VULKAN_SDK}")
+    endif()
 endif()
+
+# Common Windows fallback paths (GitHub Actions + default install)
+if (WIN32 AND NOT DEFINED _VULKAN_SDK)
+    file(GLOB _vk_candidates "C:/VulkanSDK/*")
+    list(SORT _vk_candidates DESCENDING)
+    list(GET _vk_candidates 0 _vk_latest_dir)
+    if(_vk_latest_dir AND EXISTS "${_vk_latest_dir}/Include/vulkan/vulkan.h")
+        set(_VULKAN_SDK ${_vk_latest_dir})
+        list(APPEND CMAKE_PREFIX_PATH "${_VULKAN_SDK}")
+        message(STATUS "Vulkan SDK detected at ${_VULKAN_SDK}")
+    endif()
+endif()
+
+find_package(Vulkan QUIET)
+
+if (NOT Vulkan_FOUND AND _VULKAN_SDK)
+    # Manual include/lib setup if module failed but headers exist
+    set(Vulkan_INCLUDE_DIR "${_VULKAN_SDK}/Include")
+    if (WIN32)
+        # Prefer static libs (lib) or import libs
+        if (EXISTS "${_VULKAN_SDK}/Lib/vulkan-1.lib")
+            set(Vulkan_LIBRARY "${_VULKAN_SDK}/Lib/vulkan-1.lib")
+        elseif(EXISTS "${_VULKAN_SDK}/Lib/vulkan-1.dll")
+            set(Vulkan_LIBRARY "${_VULKAN_SDK}/Lib/vulkan-1.dll")
+        endif()
+    else()
+        if (EXISTS "${_VULKAN_SDK}/lib/libvulkan.so")
+            set(Vulkan_LIBRARY "${_VULKAN_SDK}/lib/libvulkan.so")
+        elseif (EXISTS "${_VULKAN_SDK}/lib64/libvulkan.so")
+            set(Vulkan_LIBRARY "${_VULKAN_SDK}/lib64/libvulkan.so")
+        endif()
+    endif()
+    if (Vulkan_INCLUDE_DIR AND Vulkan_LIBRARY)
+        set(Vulkan_FOUND TRUE)
+        set(Vulkan_INCLUDE_DIRS ${Vulkan_INCLUDE_DIR})
+        set(Vulkan_LIBRARIES ${Vulkan_LIBRARY})
+        message(WARNING "Vulkan module not found, using manual paths: include=${Vulkan_INCLUDE_DIR} lib=${Vulkan_LIBRARY}")
+    endif()
+endif()
+
+if (NOT Vulkan_FOUND)
+    message(FATAL_ERROR "Vulkan SDK not found. Set VULKAN_SDK env var or install from https://vulkan.lunarg.com/sdk/home")
+endif()
+
+message(STATUS "Vulkan include dirs: ${Vulkan_INCLUDE_DIRS}")
+message(STATUS "Vulkan libraries: ${Vulkan_LIBRARIES}")
+
 target_include_directories(xrRender_VK PUBLIC ${Vulkan_INCLUDE_DIRS})
 
 # Project defines
