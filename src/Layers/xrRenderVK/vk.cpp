@@ -314,6 +314,11 @@ u32 CRender::memory_usage()
     return usage;
 }
 
+LPCSTR CRender::getShaderPath()
+{
+    return "vk\\";
+}
+
 // Vulkan-specific implementation methods
 bool CRender::InitializeVulkan()
 {

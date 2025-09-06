@@ -63,6 +63,18 @@ jobs:
           path: |
             ~/.nuget/packages
 
+      - name: Install Vulkan SDK
+        run: |
+          # Download and install Vulkan SDK
+          $vulkanUrl = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe"
+          $installerPath = "$env:TEMP\vulkan-sdk.exe"
+          Invoke-WebRequest -Uri $vulkanUrl -OutFile $installerPath
+          Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
+          # Add Vulkan SDK to PATH
+          $vulkanPath = "C:\VulkanSDK\*\Bin"
+          $env:Path += ";$vulkanPath"
+          echo "VULKAN_SDK=C:\VulkanSDK\*" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Configure engine
         run: |
           cmake `

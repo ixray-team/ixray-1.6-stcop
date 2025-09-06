@@ -20,7 +20,8 @@
                 "IXRAY_ASAN": "OFF",
                 "IXRAY_USE_R1": "ON",
                 "IXRAY_USE_R2": "ON",
-                "IXRAY_UNITYBUILD": "ON"
+                "IXRAY_UNITYBUILD": "ON",
+                "IXR_TEST_CI": "ON"
             }
         },
         {
@@ -66,7 +67,8 @@
                 "IXRAY_ASAN": "OFF",
                 "IXRAY_USE_R1": "ON",
                 "IXRAY_USE_R2": "ON",
-                "IXRAY_UNITYBUILD": "OFF"
+                "IXRAY_UNITYBUILD": "OFF",
+                "IXR_TEST_CI": "ON"
             }
         },
         {
