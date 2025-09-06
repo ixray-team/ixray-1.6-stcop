@@ -70,10 +70,29 @@ jobs:
           $installerPath = "$env:TEMP\vulkan-sdk.exe"
           Invoke-WebRequest -Uri $vulkanUrl -OutFile $installerPath
           Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
-          # Add Vulkan SDK to PATH
-          $vulkanPath = "C:\VulkanSDK\*\Bin"
-          $env:Path += ";$vulkanPath"
-          echo "VULKAN_SDK=C:\VulkanSDK\*" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          # Find the installed Vulkan SDK version
+          $vulkanBasePath = "C:\VulkanSDK"
+          $latestVersion = Get-ChildItem -Path $vulkanBasePath -Directory | Sort-Object Name -Descending | Select-Object -First 1
+          if ($latestVersion) {
+            $vulkanSdkPath = Join-Path $vulkanBasePath $latestVersion.Name
+            $vulkanBinPath = Join-Path $vulkanSdkPath "Bin"
+            $vulkanLibPath = Join-Path $vulkanSdkPath "Lib"
+            $vulkanIncludePath = Join-Path $vulkanSdkPath "Include"
+
+            # Set environment variables
+            echo "VULKAN_SDK=$vulkanSdkPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+            echo "VK_SDK_PATH=$vulkanSdkPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+            # Add to PATH
+            echo "$vulkanBinPath" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+            Write-Host "Vulkan SDK installed at: $vulkanSdkPath"
+            Write-Host "VULKAN_SDK: $env:VULKAN_SDK"
+          } else {
+            Write-Error "Vulkan SDK installation failed - directory not found"
+            exit 1
+          }
 
       - name: Configure engine
         run: |

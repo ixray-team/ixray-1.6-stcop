@@ -38,6 +38,9 @@ target_include_directories(xrRender_VK PUBLIC "${IXRAY_SDK_INC}")
 
 # Find Vulkan
 find_package(Vulkan REQUIRED)
+if (NOT Vulkan_FOUND)
+    message(FATAL_ERROR "Vulkan SDK not found. Please install Vulkan SDK from https://vulkan.lunarg.com/sdk/home")
+endif()
 target_include_directories(xrRender_VK PUBLIC ${Vulkan_INCLUDE_DIRS})
 
 # Project defines
