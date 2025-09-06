@@ -193,6 +193,8 @@ public:
 
     virtual u32 memory_usage() override;
 
+    virtual LPCSTR getShaderPath() override;
+
     // Vulkan specific methods
     bool InitializeVulkan();
     void DestroyVulkan();

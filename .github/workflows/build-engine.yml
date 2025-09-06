@@ -190,45 +190,20 @@ jobs:
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
-            build/x64/Engine-Linux/packages
 
-      - name: Prepare Vulkan SDK directory
-        if: runner.os == 'Windows'
+      - name: Install Vulkan SDK
         run: |
-          New-Item -ItemType Directory -Path C:/VulkanSDK -ErrorAction SilentlyContinue | Out-Null
-          Write-Host "Vulkan target version: $env:VULKAN_SDK_VERSION"
+          # Download and install Vulkan SDK
+          $vulkanUrl = "https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe"
+          $installerPath = "$env:TEMP\vulkan-sdk.exe"
+          Invoke-WebRequest -Uri $vulkanUrl -OutFile $installerPath
+          Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
+          # Add Vulkan SDK to PATH
+          $vulkanPath = "C:\VulkanSDK\*\Bin"
+          $env:Path += ";$vulkanPath"
+          echo "VULKAN_SDK=C:\VulkanSDK\*" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Cache Vulkan SDK
-        if: runner.os == 'Windows'
-        id: cache-vulkan-sdk
-        uses: actions/cache@v4
-        with:
-          path: C:/VulkanSDK/1.3.290.0
-          key: vulkan-sdk-${{ runner.os }}-1.3.290.0
-
-      - name: Install Vulkan SDK (if cache miss)
-        if: runner.os == 'Windows' && steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
-        run: |
-          $version = '1.3.290.0'
-          $installer = "VulkanSDK-$version-Installer.exe"
-          $url = "https://sdk.lunarg.com/sdk/download/$version/windows/$installer"
-          Write-Host "Downloading $url"
-          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
-          Start-Process -FilePath $installer -Wait -ArgumentList @('--accept-licenses','--default-answer','--confirm-command','install')
-          Remove-Item $installer
-          if (-not (Test-Path "C:/VulkanSDK/$version/Include/vulkan/vulkan.h")) { throw "Vulkan headers not found after install" }
-
-      - name: Export Vulkan env (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          $version = '1.3.290.0'
-          echo "VULKAN_SDK=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "VK_SDK_PATH=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "C:/VulkanSDK/$version/Bin" | Out-File -FilePath $env:GITHUB_PATH -Append
-          Write-Host "Using Vulkan SDK at C:/VulkanSDK/$version"
-
-      - name: Configure engine (Windows)
-        if: runner.os == 'Windows'
+      - name: Configure engine
         run: |
           cmake `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
