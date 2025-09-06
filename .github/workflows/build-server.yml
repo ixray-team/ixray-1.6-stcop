@@ -64,16 +64,37 @@ jobs:
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
-      - name: Setup Vulkan SDK (cached)
-        uses: humbletim/setup-vulkan-sdk@v1.2.0
+      - name: Prepare Vulkan SDK directory
+        run: |
+          New-Item -ItemType Directory -Path C:/VulkanSDK -ErrorAction SilentlyContinue | Out-Null
+          Write-Host "Vulkan target version: $env:VULKAN_SDK_VERSION"
+
+      - name: Cache Vulkan SDK
+        id: cache-vulkan-sdk
+        uses: actions/cache@v4
         with:
-          version: ${{ env.VULKAN_SDK_VERSION }}
-          cache: true
-          quiet: true
-          install-runtime: false
-          optional-components: com.lunarg.vkconfig
-          download-only: false
-          vulkan-query-version: false
+          path: C:/VulkanSDK/${{ env.VULKAN_SDK_VERSION }}
+          key: vulkan-sdk-${{ runner.os }}-${{ env.VULKAN_SDK_VERSION }}
+
+      - name: Install Vulkan SDK (if cache miss)
+        if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
+        run: |
+          $version = $env:VULKAN_SDK_VERSION
+          $installer = "VulkanSDK-$version-Installer.exe"
+          $url = "https://sdk.lunarg.com/sdk/download/$version/windows/$installer"
+          Write-Host "Downloading $url"
+          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
+          Start-Process -FilePath $installer -Wait -ArgumentList @('--accept-licenses','--default-answer','--confirm-command','install')
+          Remove-Item $installer
+          if (-not (Test-Path "C:/VulkanSDK/$version/Include/vulkan/vulkan.h")) { throw "Vulkan headers not found after install" }
+
+      - name: Export Vulkan env
+        run: |
+          $version = $env:VULKAN_SDK_VERSION
+          echo "VULKAN_SDK=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "VK_SDK_PATH=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "C:/VulkanSDK/$version/Bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+          Write-Host "Using Vulkan SDK at C:/VulkanSDK/$version"
 
       - name: Configure server
         run: |
