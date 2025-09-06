@@ -19,7 +19,6 @@
 
 // Forward declarations
 class vkRender_Visual;
-class VKRenderTarget;
 
 // Vulkan-specific structures
 struct VKDevice {
@@ -103,7 +102,6 @@ public:
 
 public:
     VKDevice vkDevice;
-    VKRenderTarget* Target;  // Traditional render target with static passes
     
     float m_fov = 90.f;
     float m_aspect = 1.f;
@@ -193,8 +191,6 @@ public:
 
     virtual u32 memory_usage() override;
 
-    virtual LPCSTR getShaderPath() override;
-
     // Vulkan specific methods
     bool InitializeVulkan();
     void DestroyVulkan();
@@ -204,12 +200,6 @@ public:
     bool CreateSurface();
     bool CreateSwapchain();
     void CleanupSwapchain();
-
-    // Traditional phase-based rendering (no dynamic rendering)
-    void phase_scene();         // Geometry pass
-    void phase_lighting();      // Lighting accumulation pass  
-    void phase_combine();       // Final combine pass
-    void phase_smap();          // Shadow map pass
 
     // Implementation details
     void apply_object(IRenderable* O);
