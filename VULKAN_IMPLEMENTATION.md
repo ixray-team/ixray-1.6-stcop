@@ -1,7 +1,7 @@
 # Vulkan Renderer Implementation Summary
 
 ## Overview
-This implementation adds native Vulkan support to the OpenXRay engine, providing a modern graphics API option alongside the existing DirectX 9 and DirectX 11 renderers.
+This implementation adds native Vulkan support to the IX-Ray engine, providing a modern graphics API option alongside the existing DirectX 9 and DirectX 11 renderers.
 
 ## What Was Implemented
 
