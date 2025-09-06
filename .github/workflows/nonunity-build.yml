@@ -65,46 +65,16 @@ jobs:
           path: |
             ~/.nuget/packages
 
-      - name: Install Vulkan SDK
-        run: |
-          function Install-VulkanSdk {
-            param([string]$VersionTag = 'latest')
-            $base = 'https://sdk.lunarg.com/sdk/download'
-            $url = "$base/$VersionTag/windows/vulkan-sdk.exe"
-            $inst = "$env:TEMP\vulkan-sdk.exe"
-            Write-Host "Downloading Vulkan SDK from $url"
-            Invoke-WebRequest -Uri $url -OutFile $inst -UseBasicParsing
-            Start-Process -FilePath $inst -ArgumentList '/S' -Wait -NoNewWindow
-            $root = 'C:\VulkanSDK'
-            if (-not (Test-Path $root)) { throw "VulkanSDK root not found after install" }
-            $versions = Get-ChildItem $root -Directory | Sort-Object Name -Descending
-            if (-not $versions) { throw "No Vulkan SDK versions detected under $root" }
-            $chosen = $versions[0].FullName
-            if (-not (Test-Path (Join-Path $chosen 'Include/vulkan/vulkan.h'))) { throw "vulkan.h missing in $chosen" }
-            echo "VULKAN_SDK=$chosen" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo "VK_SDK_PATH=$chosen" | Out-File -FilePath $env:GITHUB_ENV -Append
-            echo (Join-Path $chosen 'Bin') | Out-File -FilePath $env:GITHUB_PATH -Append
-            Write-Host "Installed Vulkan SDK at $chosen"
-          }
-          try {
-            Install-VulkanSdk -VersionTag 'latest'
-          } catch {
-            Write-Warning "Primary install failed: $_. Trying Chocolatey fallback..."
-            Set-ExecutionPolicy Bypass -Scope Process -Force
-            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-            choco install vulkan-sdk -y --no-progress || choco upgrade vulkan-sdk -y --no-progress
-            $root = 'C:\VulkanSDK'
-            $versions = Get-ChildItem $root -Directory | Sort-Object Name -Descending
-            if ($versions) {
-              $chosen = $versions[0].FullName
-              if (Test-Path (Join-Path $chosen 'Include/vulkan/vulkan.h')) {
-                echo "VULKAN_SDK=$chosen" | Out-File -FilePath $env:GITHUB_ENV -Append
-                echo "VK_SDK_PATH=$chosen" | Out-File -FilePath $env:GITHUB_ENV -Append
-                echo (Join-Path $chosen 'Bin') | Out-File -FilePath $env:GITHUB_PATH -Append
-                Write-Host "Chocolatey Vulkan SDK at $chosen"
-              } else { throw "Fallback Vulkan install missing headers" }
-            } else { throw "No Vulkan SDK versions after fallback" }
-          }
+      - name: Setup Vulkan SDK (cached)
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          version: 1.3.290.0
+          cache: true
+          quiet: true
+          install-runtime: false
+          optional-components: com.lunarg.vkconfig
+          download-only: false
+          vulkan-query-version: false
 
       - name: Configure engine
         run: |
