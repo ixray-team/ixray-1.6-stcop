@@ -67,7 +67,7 @@ jobs:
       - name: Setup Vulkan SDK (cached)
         uses: humbletim/setup-vulkan-sdk@v1.2.0
         with:
-          version: 1.3.290.0
+          version: ${{ env.VULKAN_SDK_VERSION }}
           cache: true
           quiet: true
           install-runtime: false
@@ -152,28 +152,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libvulkan1 \
-            libvulkan-dev \
             vulkan-tools \
-            vulkan-validationlayers \
-            vulkan-utility-libraries-dev \
+            vulkan-validationlayers-dev \
             spirv-tools \
             spirv-headers \
             mesa-vulkan-drivers \
             libx11-dev libxcb1-dev libxrandr-dev libxinerama-dev libxcursor-dev
-
-      - name: Export VULKAN_SDK (Linux)
-        run: |
-          echo "VULKAN_SDK=/usr" >> $GITHUB_ENV
-          echo "Set VULKAN_SDK to /usr (system Vulkan headers/libs)"
-
-      - name: Verify Vulkan setup (Linux)
-        run: |
-          echo 'Checking Vulkan headers...'
-          ls -1 /usr/include/vulkan 2>/dev/null | head -n5 || echo 'No /usr/include/vulkan directory'
-          echo 'ldconfig lookup:'
-          /sbin/ldconfig -p | grep -E 'libvulkan.so' || true
-          echo 'vulkaninfo (short) :' || true
-          (vulkaninfo --summary || vulkaninfo 2>/dev/null | head -n20) || echo 'vulkaninfo not available'
 
       - name: Install LLVM/Clang 18 and libc++
         run: |
