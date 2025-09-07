@@ -355,35 +355,6 @@
             "displayName": "Engine-x64-Linux",
             "inherits": "Engine-Base-Linux",
             "binaryDir": "build/x64/Engine-Linux"
-        },
-
-        {
-            "name": "Engine-Base-Linux",
-            "displayName": "Engine-Base-Linux",
-            "hidden": true,
-            "generator": "Ninja Multi-Config",
-            "cacheVariables": {
-                "IXRAY_UTILS": "OFF",
-                "IXRAY_EDITORS": "OFF",
-                "IXRAY_MP": "OFF",
-                "IXRAY_COMPRESSOR_ONLY": "OFF",
-                "IXRAY_PLUGINS": "OFF",
-                "IXRAY_ASAN": "OFF",
-                "IXRAY_USE_R1": "OFF",
-                "IXRAY_USE_R2": "OFF",
-                "IXRAY_USE_VK": "ON",
-                "IXRAY_UNITYBUILD": "ON",
-                "IXR_TEST_CI": "ON",
-                "CMAKE_C_COMPILER": "$env{IXRAY_C_COMPILER}",
-                "CMAKE_CXX_COMPILER": "$env{IXRAY_CXX_COMPILER}",
-                "CMAKE_POLICY_VERSION_MINIMUM": "3.5"
-            }
-        },
-        {
-            "name": "Engine-x64-Linux",
-            "displayName": "Engine-x64-Linux",
-            "inherits": "Engine-Base-Linux",
-            "binaryDir": "build/x64/Engine-Linux"
         }
     ],
     "buildPresets": [
