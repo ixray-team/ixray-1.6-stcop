@@ -7,6 +7,10 @@
 #pragma once
 
 #if defined(XR_FORCE_NO_D3D)
+#include "d3d_fallback.h"
+#endif
+
+#if defined(XR_FORCE_NO_D3D)
 	#undef XR_HAVE_D3D
 	#define XR_HAVE_D3D 0
 #elif (defined(_WIN32) || defined(USE_DX11))

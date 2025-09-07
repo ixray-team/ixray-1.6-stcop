@@ -4,6 +4,10 @@
 
 #define	CAP_VERSION(a,b)	(u32(a)*10 + u32(b))
 
+#if defined(XR_FORCE_NO_D3D)
+#include "d3d_fallback.h"
+#endif
+
 class  CHWCaps
 {
 public:
@@ -43,9 +47,11 @@ public:
 
 	u32				iGPUNum;
 
-	// device format
+	// device format (suppressed in non-D3D builds)
+#if !defined(XR_FORCE_NO_D3D)
 	D3DFORMAT		fTarget;
 	D3DFORMAT		fDepth;
+#endif
 	u32				dwRefreshRate;
 
 	// caps itself
@@ -63,7 +69,9 @@ public:
 	BOOL			bTableFog;			//
 
 	// some precalculated values
+#if !defined(XR_FORCE_NO_D3D)
 	D3DSTENCILOP	soDec, soInc;		// best stencil OPs for shadows
+#endif
 	u32				dwMaxStencilValue;  // maximum value the stencil buffer can hold
 
 	void			Update(void);
