@@ -87,8 +87,24 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libvulkan-dev vulkan-utils nuget
+          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libvulkan-dev vulkan-utils
           pkg-config --version
+
+      - name: Install Mono + NuGet (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y mono-complete
+          wget -q https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -O nuget.exe
+          sudo mv nuget.exe /usr/local/bin/nuget.exe
+          sudo chmod +x /usr/local/bin/nuget.exe
+          # Wrapper script to call via 'nuget'
+          echo '#!/usr/bin/env bash' | sudo tee /usr/local/bin/nuget >/dev/null
+          echo 'mono /usr/local/bin/nuget.exe "$@"' | sudo tee -a /usr/local/bin/nuget >/dev/null
+          sudo chmod +x /usr/local/bin/nuget
+          nuget help | head -n1
 
       - name: Install build-essential (Linux)
         if: runner.os == 'Linux'
@@ -122,12 +138,9 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          if ! command -v nuget >/dev/null 2>&1; then
-            echo "Installing nuget (dotnet tool fallback)";
-            sudo apt-get update && sudo apt-get install -y nuget || true
-          fi
           echo "NuGet version:"; nuget help | head -n1 || true
-          nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux || nuget restore cmake/linux/Packages.config -SolutionDirectory build || exit 1
+          nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux || \
+            nuget restore cmake/linux/Packages.config -SolutionDirectory build || exit 1
           echo "Listing restored LuaJIT path:"; ls -1 build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/ 2>/dev/null || true
       - name: Verify LuaJIT (Linux)
         if: runner.os == 'Linux'
