@@ -75,6 +75,43 @@ jobs:
           sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
           pkg-config --version
 
+      - name: Cache Vulkan SDK (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/cache@v4
+        id: cache-vulkan-sdk-linux
+        with:
+          path: ${{ runner.temp }}/VulkanSDK/${{ env.VULKAN_SDK_VERSION }}
+          key: vulkan-sdk-${{ runner.os }}-${{ env.VULKAN_SDK_VERSION }}
+
+      - name: Install Vulkan SDK (Linux if cache miss)
+        if: runner.os == 'Linux' && steps.cache-vulkan-sdk-linux.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/VulkanSDK"
+          cd "${RUNNER_TEMP}/VulkanSDK"
+          echo "Downloading Vulkan SDK ${VULKAN_SDK_VERSION} (Linux x86_64)" 
+          curl -L -o VulkanSDK.tar.gz "https://sdk.lunarg.com/sdk/download/${VULKAN_SDK_VERSION}/linux/x86_64?Human=true"
+          tar -xzf VulkanSDK.tar.gz
+          rm VulkanSDK.tar.gz
+          ls -1
+          # Expected extracted directory: ${VULKAN_SDK_VERSION}/x86_64
+          if [ ! -f "${VULKAN_SDK_VERSION}/x86_64/include/vulkan/vulkan.h" ]; then
+            echo "Vulkan header not found after extraction" >&2
+            exit 1
+          fi
+
+      - name: Export Vulkan env (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          export VULKAN_SDK="${RUNNER_TEMP}/VulkanSDK/${VULKAN_SDK_VERSION}/x86_64"
+          echo "VULKAN_SDK=${VULKAN_SDK}" >> $GITHUB_ENV
+          echo "VK_SDK_PATH=${VULKAN_SDK}" >> $GITHUB_ENV
+          echo "${VULKAN_SDK}/bin" >> $GITHUB_PATH
+          echo "Using Vulkan SDK at ${VULKAN_SDK}"
+
       - name: Cache packages
         uses: actions/cache@v4
         with:
