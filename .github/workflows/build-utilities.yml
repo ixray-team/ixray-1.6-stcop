@@ -174,7 +174,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libvulkan1 \
             vulkan-tools \
-            vulkan-validationlayers-dev \
+            vulkan-validationlayers \
+            vulkan-utility-libraries-dev \
             spirv-tools \
             spirv-headers \
             mesa-vulkan-drivers \
