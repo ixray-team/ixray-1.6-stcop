@@ -825,8 +825,7 @@ void CAI_Stalker::destroy_anim_mov_ctrl	()
 
 void CAI_Stalker::UpdateCL()
 {
-	START_PROFILE("stalker")
-	START_PROFILE("client_update")
+	PROF_EVENT("stalker/client_update")
 	VERIFY2(PPhysicsShell() || getEnabled(), *cName());
 
 
@@ -855,9 +854,8 @@ void CAI_Stalker::UpdateCL()
 			}
 			else
 			{
-				START_PROFILE("object_handler")
+				PROF_EVENT("object_handler");
 				update_object_handler();
-				STOP_PROFILE
 			}
 		}
 
@@ -879,22 +877,17 @@ void CAI_Stalker::UpdateCL()
 	}
 
 
-	START_PROFILE("inherited")
 	inherited::UpdateCL();
-	STOP_PROFILE
 
-	START_PROFILE("physics")
 	m_pPhysics_support->in_UpdateCL();
-	STOP_PROFILE
-
 
 	if (g_Alive())
 	{
-		START_PROFILE("sight_manager")
 		VERIFY(!m_pPhysicsShell);
 
 		if (OnServer())
 		{
+			PROF_EVENT("sight_manager")
 			try
 			{
 				sight().update();
@@ -911,23 +904,19 @@ void CAI_Stalker::UpdateCL()
 		{
 			Exec_Look(client_update_fdelta());
 		}
-		STOP_PROFILE
 
-		START_PROFILE("step_manager")
 		CStepManager::update(false);
-		STOP_PROFILE
 
-		START_PROFILE("weapon_shot_effector")
 		if (weapon_shot_effector().IsActive())
+		{
+			PROF_EVENT("weapon_shot_effector")
 			weapon_shot_effector().Update();
-		STOP_PROFILE
+		}
 	}
 
-	STOP_PROFILE
 #ifdef DEBUG
 	debug_text();
 #endif
-	STOP_PROFILE
 }
 
 void CAI_Stalker ::PHHit				(SHit &H )
@@ -942,131 +931,107 @@ CPHDestroyable*		CAI_Stalker::		ph_destroyable	()
 
 #include "../../enemy_manager.h"
 
-void CAI_Stalker::shedule_Update		( u32 DT )
+void CAI_Stalker::shedule_Update(u32 DT)
 {
 	PROF_EVENT("CAI_Stalker::shedule_Update")
-	VERIFY2(getEnabled()||PPhysicsShell(), *cName());
+		VERIFY2(getEnabled() || PPhysicsShell(), *cName());
 
 #if USE_OLD_OBJECT_PLANNER
-	if (!CObjectHandler::planner().initialized()) 
+	if (!CObjectHandler::planner().initialized())
 #else
 	if (!m_planner->GoapPlanner.GetCurrentAction() && OnServer())
 #endif
 	{
-		START_PROFILE("stalker/client_update/object_handler")
-		update_object_handler			();
-		STOP_PROFILE
+		update_object_handler();
 	}
-//	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
-//		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
-	// Queue shrink
-	VERIFY				(_valid(Position()));
-	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
+	//	if (Position().distance_to(Level().CurrentEntity()->Position()) <= 50.f)
+	//		Msg				("[%6d][SH][%s]",Device.dwTimeGlobal,*cName());
+		// Queue shrink
+	VERIFY(_valid(Position()));
+	u32	dwTimeCL = Level().timeServer() - NET_Latency;
 	if (NET.empty())
 	{
 		return;
 	}
 
-	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();
+	while ((NET.size() > 2) && (NET[1].dwTimeStamp < dwTimeCL)) NET.pop_front();
 
 	Fvector				vNewPosition = Position();
-	VERIFY				(_valid(Position()));
+	VERIFY(_valid(Position()));
 	// *** general stuff
-	float dt			= float(DT)/1000.f;
+	float dt = float(DT) / 1000.f;
 	CScriptEntity::process_sound_callbacks();
-	if (g_Alive()) {
-		animation().play_delayed_callbacks	();
+	if (g_Alive())
+	{
+		animation().play_delayed_callbacks();
 
 #ifndef USE_SCHEDULER_IN_AGENT_MANAGER
-		agent_manager().update			();
+		agent_manager().update();
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
 		Exec_Visibility();
 
-		START_PROFILE("memory")
+		process_enemies();
 
-		START_PROFILE("process")
-		process_enemies					();
-		STOP_PROFILE
-		
-		START_PROFILE("update")
-		memory().update					(dt);
-		STOP_PROFILE
-
-		STOP_PROFILE
+		PROF_EVENT("update memory");
+		memory().update(dt);
 	}
 
-	START_PROFILE("inherited")
 	inherited::inherited::shedule_Update(DT);
-	STOP_PROFILE
-	
-	if (Remote())		{
-	} else {
+
+	if (!Remote())
+	{
 		// here is monster AI call
-		VERIFY							(_valid(Position()));
-		m_fTimeUpdateDelta				= dt;
-		Device.Statistic->AI_Think.Begin	();
+		VERIFY(_valid(Position()));
+		m_fTimeUpdateDelta = dt;
+		Device.Statistic->AI_Think.Begin();
 		if (GetScriptControl())
-			ProcessScripts				();
+			ProcessScripts();
 		else
 #ifdef DEBUG
 			if (Device.dwFrame > (spawn_time() + g_AI_inactive_time))
 #endif
-				Think					();
-		m_dwLastUpdateTime				= Device.dwTimeGlobal;
-		Device.Statistic->AI_Think.End	();
-		VERIFY							(_valid(Position()));
+				Think();
+		m_dwLastUpdateTime = Device.dwTimeGlobal;
+		Device.Statistic->AI_Think.End();
+		VERIFY(_valid(Position()));
 
 		// Look and action streams
-		float							temp = conditions().health();
-		if (temp > 0) {
-			START_PROFILE("feel_touch")
+		float temp = conditions().health();
+		net_update uNext;
+
+		if (temp > 0)
+		{
 			Fvector C; float R;
 			Center(C);
 			R = Radius();
-			feel_touch_update		(C,R);
-			STOP_PROFILE
+			feel_touch_update(C, R);
 
-			START_PROFILE("net_update")
-			net_update				uNext;
-			uNext.dwTimeStamp		= Level().timeServer();
-			uNext.o_model			= movement().m_body.current.yaw;
-			uNext.o_torso			= movement().m_head.current;
-			uNext.p_pos				= vNewPosition;
-			uNext.fHealth			= GetfHealth();
-			NET.push_back			(uNext);
-			STOP_PROFILE
+			uNext.dwTimeStamp = Level().timeServer();
+			uNext.o_model = movement().m_body.current.yaw;
+			uNext.o_torso = movement().m_head.current;
+			uNext.p_pos = vNewPosition;
+			uNext.fHealth = GetfHealth();
+			NET.push_back(uNext);
 		}
-		else 
+		else
 		{
-			START_PROFILE("net_update")
-			net_update			uNext;
-			uNext.dwTimeStamp	= Level().timeServer();
-			uNext.o_model		= movement().m_body.current.yaw;
-			uNext.o_torso		= movement().m_head.current;
-			uNext.p_pos			= vNewPosition;
-			uNext.fHealth		= GetfHealth();
-			NET.push_back		(uNext);
-			STOP_PROFILE
+			uNext.dwTimeStamp = Level().timeServer();
+			uNext.o_model = movement().m_body.current.yaw;
+			uNext.o_torso = movement().m_head.current;
+			uNext.p_pos = vNewPosition;
+			uNext.fHealth = GetfHealth();
+			NET.push_back(uNext);
 		}
 	}
-	VERIFY				(_valid(Position()));
+	VERIFY(_valid(Position()));
 
-	START_PROFILE("inventory_owner")
 	UpdateInventoryOwner(DT);
-	STOP_PROFILE
 
-//#ifdef DEBUG
-//	if (psAI_Flags.test(aiALife)) {
-//		smart_cast<CSE_ALifeHumanStalker*>(ai().alife().objects().object(ID()))->check_inventory_consistency();
-//	}
-//#endif
-	
-	START_PROFILE("physics")
-	VERIFY				(_valid(Position()));
+	PROF_EVENT("physics");
+	VERIFY(_valid(Position()));
 	m_pPhysics_support->in_shedule_Update(DT);
-	VERIFY				(_valid(Position()));
-	STOP_PROFILE
+	VERIFY(_valid(Position()));
 }
 
 float CAI_Stalker::Radius() const
@@ -1083,70 +1048,22 @@ void CAI_Stalker::spawn_supplies	()
 	CObjectHandler::spawn_supplies	();
 }
 
-void CAI_Stalker::Think			()
+void CAI_Stalker::Think()
 {
-	START_PROFILE("stalker/schedule_update/think")
-	u32							update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
-	
-	START_PROFILE("stalker/schedule_update/think/brain")
-//	try {
-//		try {
-			try{brain().update(update_delta);}catch(...){}
-//		}
-#ifdef DEBUG
-//		catch (luabind::cast_failed &message) {
-//			Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-			//throw;
-//		}
-#endif
-//		catch (std::exception &message) {
-//			Msg						("! Expression \"%s\"",message.what());
-//			throw;
-//		}
-//		catch (...) {
-//			Msg						("! unknown exception occured");
-//			throw;
-//		}
-//	}
-//	catch(...) {
-#ifdef DEBUG
-//		Msg						("! Last action being executed : %s",brain().current_action().m_action_name);
-#endif
-//		brain().setup			(this);
-//		brain().update			(update_delta);
-//	}
-	STOP_PROFILE
+	u32 update_delta = Device.dwTimeGlobal - m_dwLastUpdateTime;
 
-	START_PROFILE("stalker/schedule_update/think/movement")
+	try
+	{
+		PROF_EVENT("think/brain");
+		brain().update(update_delta);
+	}
+	catch (...) {}
+
 	if (!g_Alive())
 		return;
 
-//	try {
-		movement().update		(update_delta);
-//	}
-#if 0//def DEBUG
-	catch (luabind::cast_failed &message) {
-		Msg						("! Expression \"%s\" from luabind::object to %s",message.what(),message.info()->name());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (std::exception &message) {
-		Msg						("! Expression \"%s\"",message.what());
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-	catch (...) {
-		Msg						("! unknown exception occured");
-		movement().initialize	();
-		movement().update		(update_delta);
-		throw;
-	}
-#endif // DEBUG
-
-	STOP_PROFILE
-	STOP_PROFILE
+	PROF_EVENT("think/movement");
+	movement().update(update_delta);
 }
 
 void CAI_Stalker::SelectAnimation(const Fvector &view, const Fvector &move, float speed)

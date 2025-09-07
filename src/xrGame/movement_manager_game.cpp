@@ -54,7 +54,7 @@ void CMovementManager::show_game_path_info	()
 
 void CMovementManager::process_game_path()
 {
-	START_PROFILE			("Build Path/Process Game Path");
+	PROF_EVENT("Build Path/Process Game Path");
 
 	if (m_path_state != ePathStateTeleport) {
 
@@ -205,6 +205,4 @@ void CMovementManager::process_game_path()
 		}
 		default : NODEFAULT;
 	}
-	
-	STOP_PROFILE
 }

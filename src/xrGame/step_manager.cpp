@@ -212,7 +212,7 @@ void CStepManager::on_animation_start(MotionID motion_id, CBlend *blend)
 
 void CStepManager::update(bool b_hud_view)
 {
-	START_PROFILE("Step Manager")
+	PROF_EVENT("Step Manager")
 
 	if (m_step_info.disable)	return;
 	if (!m_blend)				return;
@@ -314,7 +314,6 @@ void CStepManager::update(bool b_hud_view)
 			m_step_info.activity[i].cycle	= m_step_info.cur_cycle;
 		}
 	}
-	STOP_PROFILE
 }
 
 //////////////////////////////////////////////////////////////////////////

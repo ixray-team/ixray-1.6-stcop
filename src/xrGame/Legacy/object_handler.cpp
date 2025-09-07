@@ -134,9 +134,8 @@ CInventoryItem *CObjectHandler::best_weapon() const
 
 void CObjectHandler::update		()
 {
-	START_PROFILE("Object Handler")
+	PROF_EVENT("Object Handler")
 	planner().update		();
-	STOP_PROFILE
 }
 
 void CObjectHandler::set_goal	(MonsterSpace::EObjectAction object_action, CGameObject *game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval, u32 max_queue_interval)

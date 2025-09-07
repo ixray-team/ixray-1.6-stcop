@@ -32,28 +32,20 @@ void CControlAnimation::reset_data()
 	m_data.set_speed	(-1.f);
 }
 
-void CControlAnimation::update_frame() 
+void CControlAnimation::update_frame()
 {
 	if (m_freeze) return;
-	
-	// move to schedule update
-	START_PROFILE("BaseMonster/Animation/Update Tracks");
-	m_skeleton_animated->UpdateTracks	();	
-	STOP_PROFILE;
-	
-	START_PROFILE("BaseMonster/Animation/Check callbacks");
-	check_callbacks						();
-	STOP_PROFILE;
-	
-	START_PROFILE("BaseMonster/Animation/Play");
-	play								();	
-	STOP_PROFILE;
 
-	START_PROFILE("BaseMonster/Animation/Check Events");
-	check_events						(m_data.global);
-	check_events						(m_data.torso);
-	check_events						(m_data.legs);
-	STOP_PROFILE;
+	// move to schedule update
+	m_skeleton_animated->UpdateTracks();
+
+	check_callbacks();
+
+	play();
+
+	check_events(m_data.global);
+	check_events(m_data.torso);
+	check_events(m_data.legs);
 }
 
 static void  global_animation_end_callback(CBlend* B)
@@ -76,6 +68,8 @@ void CControlAnimation::play()
 {
 	if (OnClient())
 		return;
+
+	PROF_EVENT("Play");
 
 	if (!m_data.global.actual) {
 		play_part					(m_data.global,	global_animation_end_callback);
@@ -169,10 +163,13 @@ void CControlAnimation::add_anim_event(MotionID motion, float time_perc, u32 id)
 
 void CControlAnimation::check_events(SAnimationPart &part)
 {
-	if (part.get_motion().valid() && part.actual && part.blend) {
-		ANIMATION_EVENT_MAP_IT it = m_anim_events.find(part.get_motion());
-		if (it != m_anim_events.end()) {
+	PROF_EVENT("Check events");
 
+	if (part.get_motion().valid() && part.actual && part.blend)
+	{
+		ANIMATION_EVENT_MAP_IT it = m_anim_events.find(part.get_motion());
+		if (it != m_anim_events.end())
+		{
 			float cur_perc = float(Device.dwTimeGlobal - part.time_started) / ((part.blend->timeTotal / part.blend->speed) * 1000);
 
 			for (ANIMATION_EVENT_VEC_IT event_it = it->second.begin(); event_it != it->second.end(); ++event_it) {
@@ -191,6 +188,8 @@ void CControlAnimation::check_events(SAnimationPart &part)
 
 void CControlAnimation::check_callbacks()
 {
+	PROF_EVENT("Check callbacks");
+
 	if (m_global_animation_end) {
 		m_man->notify			(ControlCom::eventAnimationEnd, 0);
 		m_global_animation_end	= false;

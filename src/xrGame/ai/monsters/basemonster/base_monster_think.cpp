@@ -11,34 +11,28 @@
 
 void CBaseMonster::Think()
 {
-	START_PROFILE("Base Monster/Think");
+	if (!g_Alive() || getDestroy())
+		return;
 
-	if (!g_Alive() || getDestroy())			return;
+	PROF_EVENT("Base Monster/Think");
 
 	// Инициализировать
-	InitThink								();
-	anim().ScheduledInit					();
+	InitThink();
+	anim().ScheduledInit();
 
 	// Обновить память
-	START_PROFILE("Base Monster/Think/Update Memory");
-	UpdateMemory							();
-	STOP_PROFILE;
+	UpdateMemory();
 
 	// Обновить сквад
-	START_PROFILE("Base Monster/Think/Update Squad");
-	monster_squad().update					(this);
-	STOP_PROFILE;
+	monster_squad().update(this);
 
 	// Запустить FSM
-	START_PROFILE("Base Monster/Think/FSM");
-	update_fsm								();
-	STOP_PROFILE;	
-	
-	STOP_PROFILE;
+	update_fsm();
 }
 
 void CBaseMonster::update_fsm()
 {
+	PROF_EVENT("FSM");
 	StateMan->update				();
 	
 	// завершить обработку установленных в FSM параметров

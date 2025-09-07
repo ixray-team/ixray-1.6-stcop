@@ -15,6 +15,7 @@
 // Зрение, слух, вероятность победы, выгодность противника
 void CBaseMonster::UpdateMemory()
 {
+	PROF_EVENT("Update Memory");
 	// Обновить память
 	if (OnServer())
 	{

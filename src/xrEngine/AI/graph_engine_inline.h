@@ -40,28 +40,27 @@ template <
 	typename _Graph,
 	typename _Parameters
 >
-IC	bool CGraphEngine::search		(
-		const _Graph			&graph, 
-		const _index_type		&start_node, 
-		const _index_type		&dest_node, 
-		xr_vector<_index_type>	*node_path,
-		const _Parameters		&parameters
-	)
+IC	bool CGraphEngine::search(
+	const _Graph& graph,
+	const _index_type& start_node,
+	const _index_type& dest_node,
+	xr_vector<_index_type>* node_path,
+	const _Parameters& parameters
+)
 {
 #ifndef AI_COMPILER
-    if (start_node == _index_type(-1) || dest_node == _index_type(-1)) {
-        return false;
+	if (start_node == _index_type(-1) || dest_node == _index_type(-1)) {
+		return false;
 	}
 
 	Device.Statistic->AI_Path.Begin();
-	START_PROFILE("graph_engine")
-	START_PROFILE("graph_engine/search")
+	PROF_EVENT("graph_engine/search")
 #endif
-	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type,_index_type,_iteration_type>	CPathManagerGeneric;
+	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>	CPathManagerGeneric;
 
 	CPathManagerGeneric			path_manager;
 
-	path_manager.setup			(
+	path_manager.setup(
 		&graph,
 		&m_algorithm->data_storage(),
 		node_path,
@@ -69,45 +68,40 @@ IC	bool CGraphEngine::search		(
 		dest_node,
 		parameters
 	);
-	
+
 	bool						successfull = m_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
 	Device.Statistic->AI_Path.End();
 #endif
 	return						(successfull);
-#ifndef AI_COMPILER
-	STOP_PROFILE
-	STOP_PROFILE
-#endif
 }
 
 template <
 	typename _Graph,
 	typename _Parameters
 >
-IC	bool CGraphEngine::search			(
-		const _Graph			&graph, 
-		const _index_type		&start_node, 
-		const _index_type		&dest_node, 
-		xr_vector<_index_type>	*node_path,
-		_Parameters				&parameters
-	)
+IC	bool CGraphEngine::search(
+	const _Graph& graph,
+	const _index_type& start_node,
+	const _index_type& dest_node,
+	xr_vector<_index_type>* node_path,
+	_Parameters& parameters
+)
 {
 #ifndef AI_COMPILER
-    if (start_node == _index_type(-1) || dest_node == _index_type(-1)) {
-        return false;
+	if (start_node == _index_type(-1) || dest_node == _index_type(-1)) {
+		return false;
 	}
 
 	Device.Statistic->AI_Path.Begin();
-	START_PROFILE("graph_engine")
-	START_PROFILE("graph_engine/search")
+	PROF_EVENT("graph_engine/search")
 #endif
-	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type,_index_type,_iteration_type>	CPathManagerGeneric;
+	typedef CPathManager<_Graph, CAlgorithm::CDataStorage, _Parameters, _dist_type, _index_type, _iteration_type>	CPathManagerGeneric;
 
 	CPathManagerGeneric			path_manager;
 
-	path_manager.setup			(
+	path_manager.setup(
 		&graph,
 		&m_algorithm->data_storage(),
 		node_path,
@@ -115,17 +109,13 @@ IC	bool CGraphEngine::search			(
 		dest_node,
 		parameters
 	);
-	
-	bool						successfull = m_algorithm->find(path_manager);
+
+	bool successfull = m_algorithm->find(path_manager);
 
 #ifndef AI_COMPILER
 	Device.Statistic->AI_Path.End();
 #endif
-	return						(successfull);
-#ifndef AI_COMPILER
-	STOP_PROFILE
-	STOP_PROFILE
-#endif
+	return (successfull);
 }
 
 template <
@@ -148,8 +138,7 @@ IC	bool CGraphEngine::search			(
 	}
 
 	Device.Statistic->AI_Path.Begin();
-	START_PROFILE("graph_engine")
-	START_PROFILE("graph_engine/search")
+	PROF_EVENT("graph_engine/search");
 #endif
 	path_manager.setup			(
 		&graph,
@@ -165,11 +154,7 @@ IC	bool CGraphEngine::search			(
 #ifndef AI_COMPILER
 	Device.Statistic->AI_Path.End();
 #endif
-	return						(successfull);
-#ifndef AI_COMPILER
-	STOP_PROFILE
-	STOP_PROFILE
-#endif
+	return (successfull);
 }
 
 #ifndef AI_COMPILER
@@ -203,8 +188,7 @@ IC	bool CGraphEngine::search(
 {
 #ifndef AI_COMPILER
 	Device.Statistic->AI_Path.Begin();
-	START_PROFILE("graph_engine")
-	START_PROFILE("graph_engine/proble_solver")
+	PROF_EVENT("graph_engine/proble_solver");
 #endif
 	typedef CProblemSolver<T1,T2,T3,T4,T5,T6,T7,T8>	CSProblemSolver;
 	typedef CPathManager<CSProblemSolver,CSolverAlgorithm::CDataStorage,_Parameters,_solver_dist_type,_solver_index_type,GraphEngineSpace::_iteration_type>	CSolverPathManager;
@@ -226,10 +210,6 @@ IC	bool CGraphEngine::search(
 	Device.Statistic->AI_Path.End();
 #endif
 	return						(successfull);
-#ifndef AI_COMPILER
-	STOP_PROFILE
-	STOP_PROFILE
-#endif
 }
 
 template <
@@ -246,8 +226,7 @@ IC	bool CGraphEngine::search	(
 {
 #ifndef AI_COMPILER
 	Device.Statistic->AI_Path.Begin();
-	START_PROFILE("graph_engine")
-	START_PROFILE("graph_engine/search")
+	PROF_EVENT("graph_engine/search");
 #endif
 
 	typedef CPathManager<_Graph, CStringAlgorithm::CDataStorage, _Parameters, float, shared_str,u32>	CPathManagerGeneric;
@@ -269,10 +248,6 @@ IC	bool CGraphEngine::search	(
 	Device.Statistic->AI_Path.End();
 #endif
 	return						(successfull);
-#ifndef AI_COMPILER
-	STOP_PROFILE
-	STOP_PROFILE
-#endif
 }
 
 #endif // AI_COMPILER

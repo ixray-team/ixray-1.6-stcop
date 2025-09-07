@@ -48,7 +48,7 @@ CALifeSwitchManager::~CALifeSwitchManager	()
 
 void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update_registries)
 {
-	START_PROFILE("ALife/switch/add_online")
+	PROF_EVENT("ALife/add_online")
 	VERIFY							((ai().game_graph().vertex(object->m_tGraphID)->level_id() == graph().level().level_id()));
 
 	object->m_bOnline				= true;
@@ -69,12 +69,11 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject *object, bool update
 #endif
 
 	object->add_online				(update_registries);
-	STOP_PROFILE
 }
 
 void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool update_registries)
 {
-	START_PROFILE("ALife/switch/remove_online")
+	PROF_EVENT("ALife/remove_online");
 	object->m_bOnline			= false;
 	
 	m_saved_chidren				= object->children;
@@ -102,34 +101,29 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 #endif
 
 	object->add_offline			(m_saved_chidren,update_registries);
-	STOP_PROFILE
 }
 
 void CALifeSwitchManager::switch_online(CSE_ALifeDynamicObject *object)
 {
-	START_PROFILE("ALife/switch/switch_online")
+	PROF_EVENT("ALife/switch_online");
 #ifdef DEBUG
-//	if (psAI_Flags.test(aiALife))
-		Msg						("[LSS][%d] Going online [%d][%s][%d] ([%f][%f][%f] : [%f][%f][%f]), on '%s'",Device.dwFrame,Device.dwTimeGlobal,object->name_replace(), object->ID,VPUSH(graph().actor()->o_Position),VPUSH(object->o_Position), "*SERVER*");
+	Msg("[LSS][%d] Going online [%d][%s][%d] ([%f][%f][%f] : [%f][%f][%f]), on '%s'",Device.dwFrame,Device.dwTimeGlobal,object->name_replace(), object->ID,VPUSH(graph().actor()->o_Position),VPUSH(object->o_Position), "*SERVER*");
 #endif
 	object->switch_online		();
-	STOP_PROFILE
 }
 
 void CALifeSwitchManager::switch_offline(CSE_ALifeDynamicObject *object)
 {
-	START_PROFILE("ALife/switch/switch_offline")
+	PROF_EVENT("ALife/switch_offline");
 #ifdef DEBUG
-//	if (psAI_Flags.test(aiALife))
-		Msg							("[LSS][%d] Going offline [%d][%s][%d] ([%f][%f][%f] : [%f][%f][%f]), on '%s'",Device.dwFrame,Device.dwTimeGlobal,object->name_replace(), object->ID,VPUSH(graph().actor()->o_Position),VPUSH(object->o_Position), "*SERVER*");
+		Msg("[LSS][%d] Going offline [%d][%s][%d] ([%f][%f][%f] : [%f][%f][%f]), on '%s'",Device.dwFrame,Device.dwTimeGlobal,object->name_replace(), object->ID,VPUSH(graph().actor()->o_Position),VPUSH(object->o_Position), "*SERVER*");
 #endif
 	object->switch_offline			();
-	STOP_PROFILE
 }
 
 bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 {
-	START_PROFILE("ALife/switch/synchronize_location")
+	PROF_EVENT("ALife/synchronize_location");
 #ifdef DEBUG
 	VERIFY3					(ai().level_graph().level_id() == ai().game_graph().vertex(I->m_tGraphID)->level_id(),*I->s_name,I->name_replace());
 	if (!I->children.empty()) {
@@ -156,12 +150,10 @@ bool CALifeSwitchManager::synchronize_location(CSE_ALifeDynamicObject *I)
 		return				(true);
 
 	return					((*I).synchronize_location());
-	STOP_PROFILE
 }
 
 void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 {
-	START_PROFILE("ALife/switch/try_switch_online")
 	// so, the object is offline
 	// checking if the object is not attached
 	if (0xffff != I->ID_Parent) {
@@ -169,6 +161,7 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 		// checking if parent is offline too
 		return;
 	}
+	PROF_EVENT("ALife/try_switch_online");
 
 	VERIFY2						(
 		(
@@ -185,25 +178,24 @@ void CALifeSwitchManager::try_switch_online	(CSE_ALifeDynamicObject	*I)
 
 	if (!I->m_bOnline && !I->keep_saved_data_anyway())
 		I->clear_client_data();
-
-	STOP_PROFILE
 }
 
-void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject	*I)
+void CALifeSwitchManager::try_switch_offline(CSE_ALifeDynamicObject* I)
 {
-	START_PROFILE("ALife/switch/try_switch_offline")
+	PROF_EVENT("ALife/try_switch_offline");
 	// checking if the object is not attached
-	if (0xffff != I->ID_Parent) {
+	if (0xffff != I->ID_Parent)
+	{
 		return;
 	}
 
-	I->try_switch_offline	();
-	STOP_PROFILE
+	I->try_switch_offline();
 }
 
 void CALifeSwitchManager::switch_object	(CSE_ALifeDynamicObject	*I)
 {
-	if (I->redundant()) {
+	if (I->redundant())
+	{
 		release				(I);
 		return;
 	}

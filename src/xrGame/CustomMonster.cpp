@@ -410,7 +410,7 @@ void CCustomMonster::update_sound_player()
 
 void CCustomMonster::UpdateCL	()
 { 
-	START_PROFILE("CustomMonster/client_update")
+	PROF_EVENT("CustomMonster/client_update");
 	m_client_update_delta		= (u32)std::min(Device.dwTimeGlobal - m_last_client_update_time, u32(100) );
 	m_last_client_update_time	= Device.dwTimeGlobal;
 
@@ -419,35 +419,23 @@ void CCustomMonster::UpdateCL	()
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
 
-	START_PROFILE("CustomMonster/client_update/inherited")
 	inherited::UpdateCL			();
-	STOP_PROFILE
 
 #ifdef DEBUG
 	if( animation_movement() )
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
 
-	/*	//. hack just to skip 'CalculateBones'
-	if (sound().need_bone_data()) {
-		// we do this because we know here would be virtual function call
-		IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
-		VERIFY						(kinematics);
-		kinematics->CalculateBones	();
-	}
-	*/
-
 	if (g_mt_config.test(mtSoundPlayer))
 		Device.seqParallel.push_back	(xr_make_delegate(this,&CCustomMonster::update_sound_player));
 	else {
-		START_PROFILE("CustomMonster/client_update/sound_player")
+		PROF_EVENT("sound_player");
 		update_sound_player	();
-		STOP_PROFILE
 	}
 
-	START_PROFILE("CustomMonster/client_update/network extrapolation")
-	if (NET.empty()) {
-		update_animation_movement_controller	();
+	if (NET.empty())
+	{
+		update_animation_movement_controller();
 		return;
 	}
 
@@ -456,11 +444,14 @@ void CCustomMonster::UpdateCL	()
 	// distinguish interpolation/extrapolation
 	u32	dwTime			= Level().timeServer()-NET_Latency;
 	net_update&	N		= NET.back();
-	if ((dwTime > N.dwTimeStamp) || (NET.size() < 2)) {
+	if ((dwTime > N.dwTimeStamp) || (NET.size() < 2))
+	{
 		// BAD.	extrapolation
 		NET_Last		= N;
 	}
-	else {
+	else
+	{
+		PROF_EVENT("network extrapolation");
 		// OK.	interpolation
 		NET_WasExtrapolating		= FALSE;
 		// Search 2 keyframes for interpolation
@@ -493,7 +484,6 @@ void CCustomMonster::UpdateCL	()
 			NET_Time				= dwTime;
 		}
 	}
-	STOP_PROFILE
 
 #ifdef DEBUG
 	if( animation_movement() )
@@ -536,20 +526,16 @@ void CCustomMonster::UpdateCL	()
 	if( animation_movement() )
 				animation_movement()->DBG_verify_position_not_chaged();
 #endif
-
-	STOP_PROFILE
 }
 
 void CCustomMonster::UpdatePositionAnimation()
 {
-	START_PROFILE("CustomMonster/client_update/movement")
+	PROF_EVENT("CustomMonster/movement");
 	movement().on_frame			(character_physics_support()->movement(),NET_Last.p_pos);
-	STOP_PROFILE
 	
-	START_PROFILE("CustomMonster/client_update/animation")
+	PROF_EVENT("animation");
 	if (!bfScriptAnimation())
 		SelectAnimation			(XFORM().k,movement().detail().direction(),movement().speed());
-	STOP_PROFILE
 }
 
 BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)

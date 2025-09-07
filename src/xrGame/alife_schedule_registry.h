@@ -41,11 +41,10 @@ private:
 			return						(true);
 		}
 
-		IC	void	operator()			(_iterator &i, u64 cycle_count) const
+		IC void operator()(_iterator& i, u64 cycle_count) const
 		{
-			START_PROFILE("ALife/scheduled/update")
-			(*i).second->update			();
-			STOP_PROFILE
+			PROF_EVENT("ALife/scheduled/update");
+			(*i).second->update();
 		}
 	};
 
