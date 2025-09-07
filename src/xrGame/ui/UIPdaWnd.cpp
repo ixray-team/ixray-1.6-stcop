@@ -397,16 +397,14 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 	{
 		if (IsGameTypeSingle()) 
 		{
-			if (pUIRankingWnd)
-				m_pActiveDialog = pUIRankingWnd;
-			else
-				m_pActiveDialog = pUIStalkersRankingWnd;
+			m_pActiveDialog = pUIRankingWnd;
 		}
 		g_pda_info_state &= ~pda_section::ranking;
 	}
 	else if (section == "eptRankingGlobal")
 	{
 		m_pActiveDialog = pUIStalkersRankingWnd;
+		g_pda_info_state &= ~pda_section::ranking;
 	}
 	else if ( section == "eptLogs" )
 	{
@@ -553,7 +551,6 @@ void CUIPdaWnd::DrawHint()
 	}
 	else if (m_sActiveSection == "eptRanking")
 	{
-		if (pUIRankingWnd)
 			pUIRankingWnd->DrawHint();
 	}
 	else if (m_sActiveSection == "eptLogs")
