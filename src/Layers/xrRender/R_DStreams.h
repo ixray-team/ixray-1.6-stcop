@@ -6,11 +6,14 @@
 #define r_DStreamsH
 #pragma once
 
-#if (defined(_WIN32) || defined(USE_DX11))
-   // Real Direct3D path (DX9/DX11). We rely on platform stdafx including d3d headers.
-   #define XR_HAVE_D3D 1
+#if defined(XR_FORCE_NO_D3D)
+	#undef XR_HAVE_D3D
+	#define XR_HAVE_D3D 0
+#elif (defined(_WIN32) || defined(USE_DX11))
+	// Real Direct3D path (DX9/DX11). We rely on platform stdafx including d3d headers.
+	#define XR_HAVE_D3D 1
 #else
-   #define XR_HAVE_D3D 0
+	#define XR_HAVE_D3D 0
 #endif
 
 #if XR_HAVE_D3D
