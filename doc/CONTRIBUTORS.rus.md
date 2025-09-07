@@ -79,6 +79,8 @@
 - Sin!
 - pavelspitsin
 - Baryshev194
+- SkyLoader
+- wasertech
 
 ## Бывшие участники
 

@@ -4,6 +4,72 @@ English | [Русский](../doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.2.3 (September 2025)
+
+### Common
+
+- Fixed build with updated Visual Studio compiler (@ForserX)
+- Fixed startup on Linux (@wasertech)
+- Updated compiler standard to latest (@ForserX)
+- Updated NVIDIA DLSS to 310.4 version (@ForserX)
+- Updated pipelines (@Drombeys, @dependabot[bot])
+- Updated root documents (@Drombeys)
+
+### Engine
+
+- Added new standard container aliases (@Drombeys)
+- Added support intro locations from SoC/CS (@Drombeys)
+- Disabled redundant verifies for restrictors (@Drombeys)
+- Expand error logging in Lua (@Drombeys)
+- Extend logging in `build_level_path` method (@Drombeys)
+- Extend stacktrace support for luabind (@ForserX)
+- Fixed crash for units in invalid positions outside AI-Map (@ForserX)
+- Implemented exception-free fast_dynamic_cast for release builds (@v2v3v4)
+- Implemented non-fatal XML initialization (@St4lker0k765)
+- Implemented Wine and Proton detection (@ForserX)
+- Improved font missing error reporting (@St4lker0k765)
+- Optimized `ILevelGraph` search algorithm (@ForserX)
+- Optimized restriction parsing implementation (@Drombeys)
+- Removed dead code (@ForserX)
+- Removed unnecessary console messages and refactor code (@v2v3v4)
+
+### Gameplay
+
+- Added fuel saving and loading (@ForserX)
+- Added security check for `CUIGameCustom::Render()` method (@Drombeys)
+- Applied `use_condition` for knife and binoculars (@Drombeys)
+- Fixed `osoznanie mode` implementation (@St4lker0k765)
+- Fixed A-Life stability issues (@St4lker0k765)
+- Fixed broken music loop in main menu (@St4lker0k765)
+- Fixed double compression bug for item icons in vertical slots (@SergeiTeplov)
+- Fixed item stacking implementation (@Shtrecker)
+- Fixed nullptr crash in ALife object and inventory drop operations (@hkuprin)
+- Fixed PDA statistics color values (@St4lker0k765)
+- Fixed sound volume propagation from source to player (@Peter, @v2v3v4)
+- Fixed UI locking mechanism (@FFx0001)
+- Implemented inventory and PDA status saving (@St4lker0k765)
+- Implemented spot/mark creation without description (@Graff46)
+- Removed weapon packet system (@Shtrecker)
+
+### Graphics (renders, shaders)
+
+- Fixed DXVK compatibility with D3D11 (@ForserX)
+- Fixed fast shadow geometry loading (@SkyLoaderr)
+- Fixed particle rendering on R4 (@Hozar2002)
+- Implemented map HUD distortion effect (@Drombeys)
+- Implemented THM validation (@ForserX, @Drombeys)
+- Implemented thread-safe bone calculation (@v2v3v4)
+- Optimized particle loading with memory reservation (@v2v3v4)
+
+### Toolchain (in-game tools, editors)
+
+- Fixed `add_mp_stuff` method implementation (@Drombeys)
+- Fixed BC7 texture skipping in Editors (@ForserX)
+- Fixed loading details in Editors (@ForserX)
+- Fixed missing THM name output in spawn compilation (@mnelenpridumivat)
+- Fixed remove actions in `Particle Editor` (@ForserX)
+- Implemented icon existence check in Spawn Manager (@Drombeys)
+
 ## Release 1.2.2 (August 2025)
 
 ### Common
@@ -540,7 +606,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed bug with light culling (@v2v3v4)
 - Fixed incorrect details array size on D3D9 (@Hozar2002)
 - Fixed occlusion activation (@ForserX)
-- Fixed volumetric smoke rendering (@Hozar2002, @ForserX)
+- Fixed volumetric smoke rendering (@Hozar2002, @ForserX, @SkyLoaderr)
 - Implemented `r__detail_radius` console command (@Drombeys)
 - Improved fog for forward geometry (@Hozar2002, @Drombeys)
 - Improved grass rendering on D3D9 (@Hozar2002, @Drombeys)

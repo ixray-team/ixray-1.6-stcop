@@ -79,6 +79,8 @@ Detail list of all contributors to IX-Ray project
 - Sin!
 - pavelspitsin
 - Baryshev194
+- SkyLoader
+- wasertech
 
 ## Former Contributors
 
