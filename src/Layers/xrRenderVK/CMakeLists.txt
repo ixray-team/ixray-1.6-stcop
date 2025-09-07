@@ -110,7 +110,7 @@ if (NOT Vulkan_FOUND)
 endif()
 
 if (NOT Vulkan_FOUND)
-    message(FATAL_ERROR "Vulkan SDK not found. Set VULKAN_SDK env var or install from https://vulkan.lunarg.com/sdk/home")
+    message(FATAL_ERROR "Vulkan SDK not found. Provide VULKAN_SDK env path (e.g. /path/to/VulkanSDK/<ver>/x86_64) or install system packages (e.g. 'sudo apt-get install -y libvulkan-dev') or download from https://vulkan.lunarg.com/sdk/home")
 endif()
 
 message(STATUS "Vulkan include dirs: ${Vulkan_INCLUDE_DIRS}")
