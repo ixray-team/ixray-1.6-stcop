@@ -123,11 +123,13 @@ jobs:
             ~/.nuget/packages
 
       - name: Prepare Vulkan SDK directory
+        if: runner.os == 'Windows'
         run: |
           New-Item -ItemType Directory -Path C:/VulkanSDK -ErrorAction SilentlyContinue | Out-Null
           Write-Host "Vulkan target version: $env:VULKAN_SDK_VERSION"
 
       - name: Cache Vulkan SDK
+        if: runner.os == 'Windows'
         id: cache-vulkan-sdk
         uses: actions/cache@v4
         with:
@@ -135,7 +137,7 @@ jobs:
           key: vulkan-sdk-${{ runner.os }}-${{ env.VULKAN_SDK_VERSION }}
 
       - name: Install Vulkan SDK (if cache miss)
-        if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
+        if: runner.os == 'Windows' && steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
         run: |
           $version = $env:VULKAN_SDK_VERSION
           $installer = "VulkanSDK-$version-Installer.exe"
@@ -146,7 +148,8 @@ jobs:
           Remove-Item $installer
           if (-not (Test-Path "C:/VulkanSDK/$version/Include/vulkan/vulkan.h")) { throw "Vulkan headers not found after install" }
 
-      - name: Export Vulkan env
+      - name: Export Vulkan env (Windows)
+        if: runner.os == 'Windows'
         run: |
           $version = $env:VULKAN_SDK_VERSION
           echo "VULKAN_SDK=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
