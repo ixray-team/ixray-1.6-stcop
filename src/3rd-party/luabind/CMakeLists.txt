@@ -33,7 +33,10 @@ target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO
 target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
 
 ## LuaJIT
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${LUAJIT_NAME}
-)
+# copies only LuaJIT lib if it comes from the NuGet package (not system)
+if(NOT LUAJIT_SYSTEM)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${LUAJIT_NAME}
+    )
+endif()
 target_link_libraries(luabind PUBLIC ${LUAJIT_LIB})

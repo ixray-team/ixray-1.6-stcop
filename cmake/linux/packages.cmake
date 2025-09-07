@@ -10,7 +10,24 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(yaml-cpp)
 
 # TBB
-find_package(TBB REQUIRED)
+find_package(TBB QUIET)
+if(NOT TBB_FOUND)
+  message(STATUS "TBB non trouvé via find_package, utilisation de FetchContent (oneTBB) ...")
+  FetchContent_Declare(
+    tbb
+    GIT_REPOSITORY https://github.com/oneapi-src/oneTBB.git
+    GIT_TAG v2021.5.0
+  )
+  # to limit build: disable tests/examples if known variables
+  set(TBB_TEST OFF CACHE BOOL "Disable TBB tests" FORCE)
+  set(TBB_STRICT OFF CACHE BOOL "Disable TBB strict warnings" FORCE)
+  FetchContent_MakeAvailable(tbb)
+  if(TARGET TBB::tbb)
+    message(STATUS "TBB récupéré via FetchContent")
+  else()
+    message(FATAL_ERROR "Echec FetchContent TBB")
+  endif()
+endif()
 
 # LZO
 find_path(LZO_INCLUDE_DIR
