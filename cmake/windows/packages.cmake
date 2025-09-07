@@ -57,6 +57,26 @@ FetchContent_MakeAvailable(VulkanValidationLayers)
 
 message(STATUS "[packages] VulkanValidationLayers - downloaded!")
 
+if(TARGET VVL)
+    # Get layer binary path
+    get_target_property(LAYER_BINARY VVL LOCATION)
+    get_filename_component(LAYER_DIR ${LAYER_BINARY} DIRECTORY)
+
+    # Copy layer files to your binary directory
+    add_custom_command(TARGET xrRender_VK POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LAYER_BINARY}"
+            "$<TARGET_FILE_DIR:xrRender_VK>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LAYER_DIR}/VkLayer_khronos_validation.json"
+            "$<TARGET_FILE_DIR:xrRender_VK>"
+        COMMENT "Copying validation layers to output directory"
+    )
+
+    message(STATUS "added copying validation for Vulkan backend")
+endif()
+
+
 FetchContent_Declare(
     SPIRV-Headers
     GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Headers.git
