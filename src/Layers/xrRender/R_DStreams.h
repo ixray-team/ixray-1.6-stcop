@@ -6,7 +6,7 @@
 #define r_DStreamsH
 #pragma once
 
-#if defined(_WIN32) || defined(USE_DX11)
+#if (defined(_WIN32) || defined(USE_DX11))
    // Real Direct3D path (DX9/DX11). We rely on platform stdafx including d3d headers.
    #define XR_HAVE_D3D 1
 #else
@@ -123,7 +123,12 @@ public:
 		if(bytes_need>mSize){ data.resize(bytes_need); mSize = bytes_need; }
 		if(mPosition+bytes_need>mSize){ mPosition = 0; mDiscardID++; }
 		vOffset = mPosition/Stride; void* ptr = data.data()+mPosition; return ptr; }
-	void Unlock(u32 Count, u32 Stride){ mPosition += Count*Stride; #ifdef DEBUG dbg_lock--; #endif }
+	void Unlock(u32 Count, u32 Stride){
+		mPosition += Count*Stride;
+#ifdef DEBUG
+		dbg_lock--;
+#endif
+	}
 	u32 GetSize(){ return mSize; }
 	_VertexStream(){ Create(); }
 	~_VertexStream(){ Destroy(); }
