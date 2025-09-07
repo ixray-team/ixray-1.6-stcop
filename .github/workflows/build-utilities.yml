@@ -173,6 +173,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libvulkan1 \
+            libvulkan-dev \
             vulkan-tools \
             vulkan-validationlayers \
             vulkan-utility-libraries-dev \
@@ -185,6 +186,15 @@ jobs:
         run: |
           echo "VULKAN_SDK=/usr" >> $GITHUB_ENV
           echo "Set VULKAN_SDK to /usr (system Vulkan headers/libs)"
+
+      - name: Verify Vulkan setup (Linux)
+        run: |
+          echo 'Checking Vulkan headers...'
+          ls -1 /usr/include/vulkan 2>/dev/null | head -n5 || echo 'No /usr/include/vulkan directory'
+          echo 'ldconfig lookup:'
+          /sbin/ldconfig -p | grep -E 'libvulkan.so' || true
+          echo 'vulkaninfo (short) :' || true
+          (vulkaninfo --summary || vulkaninfo 2>/dev/null | head -n20) || echo 'vulkaninfo not available'
 
       - name: Install LLVM/Clang 18 and libc++
         run: |

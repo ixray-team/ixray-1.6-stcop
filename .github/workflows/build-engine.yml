@@ -228,7 +228,22 @@ jobs:
         run: |
           cmake \
             --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}" \
-            -DIXRAY_USE_VK=${IXRAY_USE_VK}
+            -DIXRAY_USE_VK=${IXRAY_USE_VK} \
+            -DIXRAY_USE_R1=OFF \
+            -DIXRAY_USE_R2=OFF \
+            -DIXRAY_FORCE_NO_D3D=ON
+
+      - name: Verify Vulkan setup (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          echo '==== Vulkan headers presence ===='
+          ls -1 /usr/include/vulkan 2>/dev/null | head -n10 || echo 'Missing /usr/include/vulkan'
+          echo '==== ldconfig vulkan libs ===='
+          /sbin/ldconfig -p | grep -E 'libvulkan.so' || true
+          echo '==== Feature flags (grep) ===='
+          grep -E 'IXRAY_USE_R1|IXRAY_USE_R2|IXRAY_USE_VK|IXRAY_FORCE_NO_D3D' build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/CMakeCache.txt || true
+          echo '================================'
 
       - name: Build engine (Windows)
         if: runner.os == 'Windows'
