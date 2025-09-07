@@ -94,13 +94,13 @@ void CDangerManager::reinit			()
 	m_selected				= 0;
 }
 
-void CDangerManager::reload			(LPCSTR section)
+void CDangerManager::reload(LPCSTR section)
 {
 }
 
-void CDangerManager::update			()
+void CDangerManager::update()
 {
-	START_PROFILE("Memory Manager/dangers::update")
+	PROF_EVENT("Memory Manager/dangers::update");
 	m_objects.erase			(
 		std::remove_if(
 			m_objects.begin(),
@@ -113,20 +113,18 @@ void CDangerManager::update			()
 		m_objects.end()
 	);
 
-	float					result = flt_max;
-	m_selected				= 0;
+	float result = flt_max;
+	m_selected = 0;
 	OBJECTS::const_iterator	I = m_objects.begin();
 	OBJECTS::const_iterator	E = m_objects.end();
-	for ( ; I != E; ++I) {
-//		Msg					("%6d : Danger : [%d][%d]",(*I).time(),(*I).type(),(*I).perceive_type());
+	for ( ; I != E; ++I) 
+	{
 		float				value = do_evaluate(*I);
 		if (result > value) {
 			result			= value;
 			m_selected		= &*I;
 		}
 	}
-
-	STOP_PROFILE
 }
 
 void CDangerManager::remove(const CDangerObject& object)

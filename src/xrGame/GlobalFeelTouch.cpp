@@ -29,6 +29,7 @@ struct objects_ptrs_equal {
 
 void GlobalFeelTouch::feel_touch_update(Fvector& P, float R)
 {
+	PROF_EVENT("FeelTouch");
 	//we ignore P and R arguments, we need just delete evaled denied objects...
 	auto new_end = std::remove_if(feel_touch_disable.begin(),
 		feel_touch_disable.end(),

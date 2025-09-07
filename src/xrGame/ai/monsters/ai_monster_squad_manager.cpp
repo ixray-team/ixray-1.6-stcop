@@ -92,6 +92,8 @@ CMonsterSquad *CMonsterSquadManager::get_squad(const CEntity *entity)
 
 void CMonsterSquadManager::update(CEntity *entity)
 {
+	PROF_EVENT("Update Squad");
+
 	CMonsterSquad	*squad = monster_squad().get_squad(entity);
 	if (squad && squad->SquadActive() && (squad->GetLeader() == entity)) {
 		squad->UpdateSquadCommands();

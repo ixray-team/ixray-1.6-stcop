@@ -94,15 +94,13 @@ void CZombie::reload(LPCSTR section)
 }
 
 
-void CZombie::BoneCallback(CBoneInstance *B)
+void CZombie::BoneCallback(CBoneInstance* B)
 {
-	CZombie*	this_class = static_cast<CZombie*>(B->callback_param());
+	CZombie* this_class = static_cast<CZombie*>(B->callback_param());
 
-	START_PROFILE("Zombie/Bones Update");
+	PROF_EVENT("Zombie/Bones Update");
 	this_class->Bones.Update(B, Device.dwTimeGlobal);
-	STOP_PROFILE("AI/Zombie/Bones Update");
 }
-
 
 void CZombie::vfAssignBones()
 {

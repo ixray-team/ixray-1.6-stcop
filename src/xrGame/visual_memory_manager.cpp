@@ -357,7 +357,7 @@ float CVisualMemoryManager::get_visible_value(const CGameObject *game_object, fl
 
 CNotYetVisibleObject *CVisualMemoryManager::not_yet_visible_object(const CGameObject *game_object)
 {
-	START_PROFILE("Memory Manager/visuals/not_yet_visible_object")
+	PROF_EVENT("Memory Manager/visuals/not_yet_visible_object")
 	xr_vector<CNotYetVisibleObject>::iterator	I = std::find_if(
 		m_not_yet_visible_objects.begin(),
 		m_not_yet_visible_objects.end(),
@@ -366,7 +366,6 @@ CNotYetVisibleObject *CVisualMemoryManager::not_yet_visible_object(const CGameOb
 	if (I == m_not_yet_visible_objects.end())
 		return							(0);
 	return								(&*I);
-	STOP_PROFILE
 }
 
 void CVisualMemoryManager::add_not_yet_visible_object	(const CNotYetVisibleObject &not_yet_visible_object)
@@ -649,7 +648,7 @@ u64 CVisualMemoryManager::mask			() const
 
 void CVisualMemoryManager::update				(float time_delta)
 {
-	START_PROFILE("Memory Manager/visuals/update")
+	PROF_EVENT("Memory Manager/visuals/update")
 
 	clear_delayed_objects				();
 
@@ -662,47 +661,42 @@ void CVisualMemoryManager::update				(float time_delta)
 	VERIFY								(m_objects);
 	m_visible_objects.clear				();
 
-	START_PROFILE("Memory Manager/visuals/update/feel_vision_get")
 	if (m_object)
 		m_object->feel_vision_get		(m_visible_objects);
 	else {
 		VERIFY							(m_client);
 		m_client->feel_vision_get		(m_visible_objects);
 	}
-	STOP_PROFILE
 
-	START_PROFILE("Memory Manager/visuals/update/make_invisible")
 	{
+		PROF_EVENT("make_invisible");
 		xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
 		xr_vector<CVisibleObject>::iterator	E = m_objects->end();
-		for ( ; I != E; ++I)
+		for (; I != E; ++I)
 			if ((*I).m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
-				(*I).visible			(mask,false);
+				(*I).visible(mask, false);
 	}
-	STOP_PROFILE
 
-	START_PROFILE("Memory Manager/visuals/update/add_visibles")
 	{
+		PROF_EVENT("add_visibles");
 		xr_vector<CObject*>::const_iterator	I = m_visible_objects.begin();
 		xr_vector<CObject*>::const_iterator	E = m_visible_objects.end();
 		for ( ; I != E; ++I)
 			add_visible_object			(*I,time_delta);
 	}
-	STOP_PROFILE
 
-	START_PROFILE("Memory Manager/visuals/update/make_not_yet_visible")
 	{
+		PROF_EVENT("make_not_yet_visible");
 		xr_vector<CNotYetVisibleObject>::iterator	I = m_not_yet_visible_objects.begin();
 		xr_vector<CNotYetVisibleObject>::iterator	E = m_not_yet_visible_objects.end();
 		for ( ; I != E; ++I)
 			if ((*I).m_update_time < Device.dwTimeGlobal)
 				(*I).m_value			= 0.f;
 	}
-	STOP_PROFILE
 
-	START_PROFILE("Memory Manager/visuals/update/removing_offline")
 	// verifying if object is online
 	{
+		PROF_EVENT("removing_offline");
 		m_objects->erase				(
 			std::remove_if(
 				m_objects->begin(),
@@ -715,6 +709,7 @@ void CVisualMemoryManager::update				(float time_delta)
 
 	// verifying if object is online
 	{
+		PROF_EVENT("removing_offline: not vis");
 		m_not_yet_visible_objects.erase	(
 			std::remove_if(
 				m_not_yet_visible_objects.begin(),
@@ -724,7 +719,6 @@ void CVisualMemoryManager::update				(float time_delta)
 			m_not_yet_visible_objects.end()
 		);
 	}
-	STOP_PROFILE
 
 	if (m_object && g_actor && m_object->is_relation_enemy(Actor())) {
 		xr_vector<CNotYetVisibleObject>::iterator	I = std::find_if(
@@ -745,8 +739,6 @@ void CVisualMemoryManager::update				(float time_delta)
 		else
 			SetActorVisibility				(m_object->ID(),0.f);
 	}
-
-	STOP_PROFILE
 }
 
 static inline bool is_object_valuable_to_save ( CCustomMonster const* const self, MemorySpace::CVisibleObject const& object )

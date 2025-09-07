@@ -837,8 +837,7 @@ void CDetailPathManager::build_smooth_path		(
 	u32						intermediate_index
 )
 {
-//	Msg									("[%6d][%s] started to build detail path",Device.dwFrame,*m_restricted_object->object().cName());
-	START_PROFILE("Build Path/Detail Path");
+	PROF_EVENT("Build Path/Detail Path");
 	
 	m_failed							= true;
 	m_distance_to_target_actual			= false;
@@ -885,7 +884,4 @@ void CDetailPathManager::build_smooth_path		(
 
 	if (m_restricted_object)
 		m_restricted_object->remove_border();
-
-	STOP_PROFILE;
-//	Msg									("[%6d][%s] build_detail_path [%d][%d][%d]",Device.dwFrame,*m_restricted_object->object().cName(),path().size(),curr_travel_point_index(),last_patrol_point());
 }

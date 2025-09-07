@@ -38,12 +38,11 @@ CSQuadTree::~CQuadTree			()
 TEMPLATE_SPECIALIZATION
 IC	void CSQuadTree::clear	()
 {
-	START_PROFILE("Covers/clear")
+	PROF_EVENT("Covers/clear")
 	m_nodes->clear		();
 	m_list_items->clear	();
 	m_root				= 0;
 	m_leaf_count		= 0;
-	STOP_PROFILE
 }
 
 TEMPLATE_SPECIALIZATION
@@ -88,7 +87,7 @@ IC	u32	CSQuadTree::neighbour_index	(const Fvector &position, Fvector &center, fl
 TEMPLATE_SPECIALIZATION
 IC	void CSQuadTree::insert		(_object_type *object)
 {
-	START_PROFILE("Covers/insert")
+	PROF_EVENT("Covers/insert")
 	Fvector				center = m_center;
 	float				distance = m_radius;
 	CQuadNode			**node = &m_root;
@@ -111,7 +110,6 @@ IC	void CSQuadTree::insert		(_object_type *object)
 		
 		node			= (*node)->m_neighbours + index;
 	}
-	STOP_PROFILE
 }
 
 TEMPLATE_SPECIALIZATION
@@ -143,11 +141,10 @@ IC	_object_type *CSQuadTree::find	(const Fvector &position) const
 TEMPLATE_SPECIALIZATION
 IC	void CSQuadTree::nearest	(const Fvector &position, float radius, xr_vector<_object_type*> &objects, bool clear) const
 {
-	START_PROFILE("Covers/nearest")
+	PROF_EVENT("Covers/nearest");
 	if (clear)
 		objects.clear	();
 	nearest				(position,radius,objects,m_root,m_center,m_radius,0);
-	STOP_PROFILE
 }
 
 TEMPLATE_SPECIALIZATION
@@ -230,10 +227,9 @@ IC	void CSQuadTree::nearest	(const Fvector &position, float radius, xr_vector<_o
 TEMPLATE_SPECIALIZATION
 IC	_object_type *CSQuadTree::remove		(const _object_type *object)
 {
-	START_PROFILE("Covers/remove")
+	PROF_EVENT("Covers/remove");
 	_object_type	*_object = remove(object,m_root,m_center,m_radius,0);
 	return			(_object);
-	STOP_PROFILE
 }
 
 TEMPLATE_SPECIALIZATION

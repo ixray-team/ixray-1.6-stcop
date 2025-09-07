@@ -411,15 +411,13 @@ void CExplosive::Explode()
 	}
 
 	GetExplosionBox(m_vExplodeSize);
-START_PROFILE("explosive/activate explosion box")
 	ActivateExplosionBox(m_vExplodeSize,m_vExplodePos);
-STOP_PROFILE
+
 	//---------------------------------------------------------------------
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgDrawExplosions))
 	{
 		DBG_ClosedCashedDraw(100000);
-		
 	}
 #endif
 	//////////////////////////////////////////////////////////////////////////
@@ -751,6 +749,8 @@ void CExplosive::SetExplosionSize(const Fvector	&new_size)
 
 void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 {
+	PROF_EVENT("CExplosive ActivateExplosionBox");
+
 	CPhysicsShellHolder *self_obj= cast_game_object() ? cast_game_object()->cast_physics_shell_holder() : NULL;
 	if (!self_obj) return;
 	CPhysicsShell* self_shell=self_obj->PPhysicsShell();
@@ -759,8 +759,10 @@ void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 	ActivateShapeExplosive( self_obj, size, m_vExplodeSize, in_out_pos );
 	if(self_shell&&self_shell->isActive())self_shell->EnableCollision();
 }
+
 void CExplosive::net_Relcase(CObject* O)
 {
+	PROF_EVENT("CExplosive net_Relcase");
 	if (IsGameTypeSingle())
 	{
 		if(O->ID()==m_iCurrentParentID)

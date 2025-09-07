@@ -135,7 +135,7 @@ IC	bool CSpaceRestriction::intersects			(SpaceRestrictionHolder::CBaseRestrictio
 
 void CSpaceRestriction::merge_in_out_restrictions	()
 {
-	START_PROFILE("Restricted Object/Merge In-Out");
+	PROF_EVENT("Restricted Object/Merge In-Out");
 	m_border						= m_out_space_restriction->border();
 	m_border.erase					(
 		std::remove_if(
@@ -178,7 +178,6 @@ void CSpaceRestriction::merge_in_out_restrictions	()
 		),
 		m_border.end()
 	);
-	STOP_PROFILE;
 }
 
 CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestrictionPtr bridge, const RESTRICTIONS& temp_restrictions) const
@@ -198,7 +197,7 @@ CSpaceRestriction::CBaseRestrictionPtr CSpaceRestriction::merge(CBaseRestriction
 #ifdef USE_FREE_IN_RESTRICTIONS
 void CSpaceRestriction::merge_free_in_retrictions	()
 {
-	START_PROFILE("Restricted Object/Merge Free In");
+	PROF_EVENT("Restricted Object/Merge Free In");
 	string256								temp;
 	for (u32 i=0, n=_GetItemCount(*m_in_restrictions); i<n ;++i) {
 		SpaceRestrictionHolder::CBaseRestrictionPtr bridge = m_space_restriction_manager->restriction(shared_str(_GetItem(*m_in_restrictions,i,temp)));
@@ -226,7 +225,6 @@ void CSpaceRestriction::merge_free_in_retrictions	()
 			}
 		}
 	}
-	STOP_PROFILE;
 }
 #endif
 

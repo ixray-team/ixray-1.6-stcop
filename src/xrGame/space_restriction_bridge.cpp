@@ -63,25 +63,22 @@ Fsphere CSpaceRestrictionBridge::sphere					() const
 	return				(object().sphere());
 }
 
-bool CSpaceRestrictionBridge::inside					(u32 level_vertex_id, bool partially_inside)
+bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside)
 {
-	START_PROFILE("Restricted Object/Bridge/Inside Vertex");
-	return		(object().inside(level_vertex_id,partially_inside));
-	STOP_PROFILE;
+	PROF_EVENT("Restricted Object/Bridge/Inside Vertex");
+	return (object().inside(level_vertex_id, partially_inside));
 }
 
-bool CSpaceRestrictionBridge::inside					(u32 level_vertex_id, bool partially_inside, float radius)
+bool CSpaceRestrictionBridge::inside(u32 level_vertex_id, bool partially_inside, float radius)
 {
-	START_PROFILE("Restricted Object/Bridge/Inside Vertex");
-	return		(object().inside(level_vertex_id,partially_inside,radius));
-	STOP_PROFILE;
+	PROF_EVENT("Restricted Object/Bridge/Inside Vertex");
+	return (object().inside(level_vertex_id, partially_inside, radius));
 }
 
 bool CSpaceRestrictionBridge::inside					(const Fsphere &sphere)
 {
-	START_PROFILE("Restricted Object/Bridge/Inside Position");
+	PROF_EVENT("Restricted Object/Bridge/Inside Position");
 	return		(object().inside(sphere));
-	STOP_PROFILE;
 }
 
 struct CFindByXZ_predicate {
@@ -93,7 +90,7 @@ struct CFindByXZ_predicate {
 
 bool CSpaceRestrictionBridge::on_border					(const Fvector &position) const
 {
-	START_PROFILE("Restricted Object/Bridge/On Border");
+	PROF_EVENT("Restricted Object/Bridge/On Border");
 	
 	VERIFY					(ai().level_graph().valid_vertex_position(position));
 
@@ -122,26 +119,22 @@ bool CSpaceRestrictionBridge::on_border					(const Fvector &position) const
 			return		(true);
 	}	
 
-	return				(false);
-
-	STOP_PROFILE;
+	return (false);
 }
 
-bool CSpaceRestrictionBridge::out_of_border				(const Fvector &position)
+bool CSpaceRestrictionBridge::out_of_border(const Fvector& position)
 {
-	START_PROFILE("Restricted Object/Bridge/Out Of Border");
+	PROF_EVENT("Restricted Object/Bridge/Out Of Border");
 
-	VERIFY					(ai().level_graph().valid_vertex_position(position));
+	VERIFY(ai().level_graph().valid_vertex_position(position));
 
-	u32						level_vertex_id = ai().level_graph().vertex_id(position);
+	u32 level_vertex_id = ai().level_graph().vertex_id(position);
 	if (!ai().level_graph().valid_vertex_id(level_vertex_id))
-		return				(true);
+		return (true);
 
 	Fsphere					temp;
-	temp.R					= EPS_L;
-	temp.P					= position;
-	temp.P.y				= ai().level_graph().vertex_plane_y(level_vertex_id,position.x,position.z);
-	return					(!inside(temp));
-
-	STOP_PROFILE;
+	temp.R = EPS_L;
+	temp.P = position;
+	temp.P.y = ai().level_graph().vertex_plane_y(level_vertex_id, position.x, position.z);
+	return (!inside(temp));
 }

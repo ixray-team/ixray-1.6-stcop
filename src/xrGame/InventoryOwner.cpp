@@ -211,6 +211,7 @@ void	CInventoryOwner::load	(IReader &input_packet)
 
 void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
 {
+	PROF_EVENT("UpdateInvOwner");
 	inventory().Update();
 
 	if ( m_pTrade )

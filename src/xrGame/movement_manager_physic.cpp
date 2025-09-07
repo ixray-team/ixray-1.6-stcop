@@ -201,7 +201,7 @@ Fvector CMovementManager::path_position	(const float &time_to_check)
 
 void CMovementManager::move_along_path		(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta)
 {
-	START_PROFILE		("Build Path/Move Along Path")
+	PROF_EVENT("Build Path/Move Along Path")
 
 	VERIFY				(movement_control);
 
@@ -348,6 +348,4 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 	}
 	
 	Device.Statistic->Physics.End	();
-
-	STOP_PROFILE
 }
