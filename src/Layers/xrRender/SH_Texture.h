@@ -4,6 +4,10 @@
 
 #include "../../xrCore/xr_resource.h"
 
+#if defined(XR_FORCE_NO_D3D)
+#include "d3d_fallback.h"
+#endif
+
 class  ENGINE_API CAviPlayerCustom;
 class  CTheoraSurface;
 
@@ -95,7 +99,7 @@ public:	//	Public class members (must be encapsulated furthur)
 		u32								seqMSPF;			// Sequence data milliseconds per frame
 	};
 
-	ID3DBaseTexture* pSurface;
+	ID3DBaseTexture* pSurface; // still declared (opaque) for interface uniformity
 private:
 	// Sequence data
 	xr_vector<ID3DBaseTexture*>			seqDATA;

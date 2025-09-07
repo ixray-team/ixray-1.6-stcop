@@ -7,6 +7,10 @@
 #ifndef STATS_MANAGER_H_INCLUDED
 #define STATS_MANAGER_H_INCLUDED
 
+#if defined(XR_FORCE_NO_D3D)
+#include "d3d_fallback.h"
+#endif
+
 enum enum_stats_buffer_type	{ enum_stats_buffer_type_vertex, enum_stats_buffer_type_index, enum_stats_buffer_type_rtarget, enum_stats_buffer_type_COUNT };
 
 class stats_manager 
@@ -17,13 +21,15 @@ public:
  	void increment_stats		( u32 size, enum_stats_buffer_type type, _D3DPOOL location );
 	void decrement_stats		( u32 size, enum_stats_buffer_type type, _D3DPOOL location );
 
+#if !defined(XR_FORCE_NO_D3D)
 	void increment_stats_rtarget( ID3DTexture2D*	buff );
-	void increment_stats_vb		( ID3DVertexBuffer*		buff );
-	void increment_stats_ib		( ID3DIndexBuffer*		buff );
+	void increment_stats_vb		( ID3DVertexBuffer*	buff );
+	void increment_stats_ib		( ID3DIndexBuffer*	buff );
 
 	void decrement_stats_rtarget( ID3DTexture2D*	buff );
-	void decrement_stats_vb		( ID3DVertexBuffer*		buff );
-	void decrement_stats_ib		( ID3DIndexBuffer*		buff );
+	void decrement_stats_vb		( ID3DVertexBuffer*	buff );
+	void decrement_stats_ib		( ID3DIndexBuffer*	buff );
+#endif
 
 	u32 memory_usage_summary[enum_stats_buffer_type_COUNT][4];
 
@@ -32,7 +38,7 @@ private:
 	void increment_stats( u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr );
 	void decrement_stats( u32 size, enum_stats_buffer_type type, _D3DPOOL location, void* buff_ptr );
 
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(XR_FORCE_NO_D3D)
 	struct stats_item
 	{
 		void*					buff_ptr;

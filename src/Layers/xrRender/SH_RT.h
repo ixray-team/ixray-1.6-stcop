@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(XR_FORCE_NO_D3D)
+#include "d3d_fallback.h"
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 class		CRT		:	public xr_resource_named	{
 public:
@@ -24,8 +28,8 @@ public:
 	}
 
 public:
-	ID3DTexture2D*			pSurface;
-	ID3DRenderTargetView*	pRT;
+	ID3DTexture2D*			pSurface; // opaque in non-D3D
+	ID3DRenderTargetView*	pRT;     // opaque in non-D3D
 
 	xr_vector<ID3DRenderTargetView*> pMippedRT;
 #ifdef USE_DX11
