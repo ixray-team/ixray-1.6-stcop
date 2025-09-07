@@ -146,7 +146,7 @@ jobs:
     strategy:
       matrix:
         system:
-          - ubuntu-24.04
+          - ubuntu-latest
         preset:
           - Targets
         platform:
@@ -239,7 +239,18 @@ jobs:
             -DCMAKE_C_COMPILER=clang-18 \
             -DCMAKE_CXX_COMPILER=clang++-18 \
             -DIXRAY_UTILS=ON \
-            -DIXRAY_CI=ON
+            -DIXRAY_CI=ON \
+            -DIXRAY_USE_R1=OFF \
+            -DIXRAY_USE_R2=OFF \
+            -DIXRAY_USE_VK=ON \
+            -DIXRAY_FORCE_NO_D3D=ON
+
+      - name: Dump feature flags (Linux targets)
+        if: runner.os == 'Linux'
+        run: |
+          echo '==== CMake Feature Flags Snapshot ===='
+          grep -E 'IXRAY_USE_R1|IXRAY_USE_R2|IXRAY_USE_VK|IXRAY_FORCE_NO_D3D' build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/CMakeCache.txt || true
+          echo '======================================='
 
       - name: Build targets
         run: |
