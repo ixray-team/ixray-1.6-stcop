@@ -77,9 +77,6 @@ void UIDOShuffle::Draw()
 				IM_TEXTURE_RELEASE(m_RealTexture);
 
 			m_RealTexture = m_Texture;
-
-			if(m_RealTexture) 
-				IM_TEXTURE_RELEASE(m_RealTexture);
 		}
 		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface, ImVec2(256, 256));
 
