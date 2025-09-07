@@ -446,25 +446,10 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
 
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	switch (CurrentAPILevel) {
-
-	case APILevel::DX9:
-		ResizeBuffersD3D9(Width, Height);
-		break;
-
-	case APILevel::DX11:
-		ResizeBuffersD3D11(Width, Height);
-		break;
-	case APILevel::Vulkan:
-		ResizeBuffersVulkan(Width, Height);
-		break;
-
-	default:
-		break;
 	switch (CurrentAPILevel)
 	{
-	case APILevel::DX9:  ResizeBuffersD3D9(Width, Height); break;
-	case APILevel::DX11: ResizeBuffersD3D11(Width, Height); break;
+	case APILevel::DX9:    ResizeBuffersD3D9(Width, Height); break;
+	case APILevel::DX11:   ResizeBuffersD3D11(Width, Height); break;
 	case APILevel::Vulkan: ResizeBuffersVulkan(Width, Height); break;
 	default: break;
 	}
