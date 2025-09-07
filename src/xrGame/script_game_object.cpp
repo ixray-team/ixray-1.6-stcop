@@ -346,6 +346,13 @@ Fvector	CScriptGameObject::bone_position(LPCSTR bone_name) const
 	else
 	{
 		bone_id = kin->LL_GetBoneRoot();
+		Msg("! CScriptGameObject::bone_position(...): bone_name is empty, object %s:", object().cNameSect().c_str());
+	}
+
+	if (bone_id == BI_NONE)
+	{
+		Msg("! CScriptGameObject::bone_position(...): bone_name [%s] not found in object [%s]", bone_name, object().cNameSect().c_str());
+		return {};
 	}
 
 	Fmatrix matrix;
