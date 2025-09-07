@@ -90,7 +90,7 @@ endif()
 
 if(CUDAToolkit_FOUND)
 	message(STATUS "CUDA found: ${CUDAToolkit_VERSION}")
-	find_package(OptiX REQUIRED)
+	find_package(OptiX)
 	if(OptiX_FOUND)
 		message(STATUS "OptiX found: ${OptiX_VERSION}")
 		enable_language(CUDA)

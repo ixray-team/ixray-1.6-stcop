@@ -96,6 +96,30 @@ jobs:
           echo "C:/VulkanSDK/$version/Bin" | Out-File -FilePath $env:GITHUB_PATH -Append
           Write-Host "Using Vulkan SDK at C:/VulkanSDK/$version"
 
+      - name: Install CUDA toolkit (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Write-Host "Installing CUDA Toolkit (using choco if available)";
+          $cudaPackage = 'cuda'
+          choco install -y $cudaPackage --no-progress || Write-Host "Chocolatey CUDA install failed or already present.";
+          if (Test-Path 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA') {
+            $versions = Get-ChildItem 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA' -Directory | Select-Object -ExpandProperty Name | Sort-Object -Descending
+            if ($versions.Length -gt 0) {
+              $ver = $versions[0]
+              $root = "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/$ver"
+              Write-Host "CUDA detected at $root"
+              if (Test-Path "$root/bin/nvcc.exe") {
+                echo "CUDAToolkit_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+                echo "$root/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+                & "$root/bin/nvcc.exe" --version | Select-String "Cuda compilation" | ForEach-Object { Write-Host $_ }
+              } else {
+                Write-Host "nvcc.exe not found under $root/bin"
+              }
+            }
+          } else {
+            Write-Host "CUDA toolkit directory not found; continuing without CUDA.";
+          }
+
       - name: Configure utilities
         run: |
           cmake `
@@ -239,6 +263,20 @@ jobs:
           liblzo2-2 \
           liblzo2-dev \
           libyaml-cpp-dev
+
+      - name: Install CUDA toolkit (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          set -e
+          echo "Installing CUDA toolkit (Ubuntu repo version)";
+          sudo apt-get update
+          sudo apt-get install -y nvidia-cuda-toolkit
+          if command -v nvcc >/dev/null 2>&1; then
+            echo "CUDAToolkit_ROOT=/usr" >> $GITHUB_ENV
+            echo "CUDA installed: $(nvcc --version | head -n1)"
+          else
+            echo "nvcc not found after install (build continues without CUDA)";
+          fi
 
       - name: Install Mono + NuGet (Linux targets)
         if: runner.os == 'Linux'
