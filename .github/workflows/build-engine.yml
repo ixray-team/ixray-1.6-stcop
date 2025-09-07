@@ -67,119 +67,13 @@ jobs:
             if (Test-Path $fallback) { echo "$fallback" | Out-File -FilePath $env:GITHUB_PATH -Append }
           }
           pkg-config --version
-      - name: Set Vulkan SDK version (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "VULKAN_SDK_VERSION=1.3.290.0" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: CMake cache (build dir)
-        uses: actions/cache@v4
-        with:
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/
-          key: cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-${{ matrix.config }}-${{ hashFiles('**/CMakeLists.txt') }}
-          restore-keys: |
-            cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-${{ matrix.config }}-
-            cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-
-            cmake-${{ runner.os }}-${{ matrix.platform }}-
 
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxext-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libvulkan-dev vulkan-utils libtbb-dev liblzo2-dev libluajit-5.1-dev
+          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
           pkg-config --version
-
-      - name: Install Mono + NuGet (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y mono-complete
-          NUGET_VERSION=5.11.0
-          wget -q "https://dist.nuget.org/win-x86-commandline/v${NUGET_VERSION}/nuget.exe" -O nuget.exe
-          sudo mv nuget.exe /usr/local/bin/nuget.exe
-          sudo chmod +x /usr/local/bin/nuget.exe
-          # Wrapper script (no heredoc to keep YAML parser happy)
-          printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'mono /usr/local/bin/nuget.exe "$@"' > /tmp/nuget-wrapper
-          sudo mv /tmp/nuget-wrapper /usr/local/bin/nuget
-          sudo chmod +x /usr/local/bin/nuget
-          mkdir -p "$GITHUB_WORKSPACE/.nuget/packages" build/x64/Engine-Linux/packages
-          echo "NUGET_PACKAGES=$GITHUB_WORKSPACE/.nuget/packages" >> $GITHUB_ENV
-          echo "NuGet pinned version:"; nuget help | head -n1 || true
-
-      - name: Install build-essential (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
-          gcc --version || true
-          g++ --version || true
-
-      - name: Set VULKAN_SDK (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          echo "VULKAN_SDK=/usr" >> $GITHUB_ENV
-          echo ""; echo "VULKAN_SDK set to /usr"; echo "";
-
-      - name: Select compiler (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          if command -v clang >/dev/null 2>&1; then
-            echo "IXRAY_C_COMPILER=clang" >> $GITHUB_ENV
-            echo "IXRAY_CXX_COMPILER=clang++" >> $GITHUB_ENV
-            echo "Compiler: $(clang --version | head -n1)"
-          else
-            echo "IXRAY_C_COMPILER=gcc" >> $GITHUB_ENV
-            echo "IXRAY_CXX_COMPILER=g++" >> $GITHUB_ENV
-            echo "Compiler: $(gcc --version | head -n1)"
-          fi
-
-      - name: Restore NuGet packages (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -e
-          echo "NuGet version:"; nuget help | head -n1 || true
-          echo "NUGET_PACKAGES=$NUGET_PACKAGES"
-          ls -ld "$NUGET_PACKAGES" || true
-          # Restore principal (Packages.config). On force un dossier solution existant.
-          mkdir -p build/x64/Engine-Linux || true
-          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux -Verbosity minimal; then
-            echo "Primary restore failed, trying fallback to root build directory";
-            nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed || {
-              echo "Restore failed after fallback"; exit 1;
-            }
-          fi
-          echo "Listing restored LuaJIT path:"; ls -1 build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/ 2>/dev/null || true
-      - name: Verify LuaJIT (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          LPATH="build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/libluajit.so"
-          if [ ! -f "$LPATH" ]; then
-            echo "LuaJIT library missing at $LPATH";
-            echo "Attempting direct nuget install fallback...";
-            nuget install IXRay.Packages.LuaJIT.Runtimes.linux-x64 -Version 2023.8.23.1-open -OutputDirectory build/x64/Engine-Linux/packages || exit 1
-            # Search for a versioned library and create canonical symlink if needed
-            if [ ! -f "$LPATH" ]; then
-              dir="$(dirname "$LPATH")"
-              cand=$(ls "$dir"/libluajit*.so 2>/dev/null | grep -v 'libluajit.so$' | head -n1 || true)
-              if [ -n "$cand" ]; then
-                echo "Found candidate library: $cand"
-                (cd "$dir" && ln -s "$(basename "$cand")" libluajit.so || true)
-              fi
-            fi
-            if [ ! -f "$LPATH" ]; then
-              echo "Still missing after install + symlink attempt.";
-              ls -l "$(dirname "$LPATH")" || true
-              exit 1;
-            fi
-          fi
-          echo "LuaJIT OK: $LPATH"
-          ls -l "$(dirname "$LPATH")"
 
       - name: Cache packages
         uses: actions/cache@v4
@@ -223,34 +117,18 @@ jobs:
           echo "C:/VulkanSDK/$version/Bin" | Out-File -FilePath $env:GITHUB_PATH -Append
           Write-Host "Using Vulkan SDK at C:/VulkanSDK/$version"
 
-      - name: Configure engine
+      - name: Configure engine (Windows)
+        if: runner.os == 'Windows'
         run: |
           cmake `
-            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
-            -DIXRAY_USE_VK=${{ env.IXRAY_USE_VK }}
+            --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}
 
       - name: Configure engine (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
           cmake \
-            --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}" \
-            -DIXRAY_USE_VK=${IXRAY_USE_VK} \
-            -DIXRAY_USE_R1=OFF \
-            -DIXRAY_USE_R2=OFF \
-            -DIXRAY_FORCE_NO_D3D=ON
-
-      - name: Verify Vulkan setup (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          echo '==== Vulkan headers presence ===='
-          ls -1 /usr/include/vulkan 2>/dev/null | head -n10 || echo 'Missing /usr/include/vulkan'
-          echo '==== ldconfig vulkan libs ===='
-          /sbin/ldconfig -p | grep -E 'libvulkan.so' || true
-          echo '==== Feature flags (grep) ===='
-          grep -E 'IXRAY_USE_R1|IXRAY_USE_R2|IXRAY_USE_VK|IXRAY_FORCE_NO_D3D' build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/CMakeCache.txt || true
-          echo '================================'
+            --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}"
 
       - name: Build engine (Windows)
         if: runner.os == 'Windows'
@@ -267,6 +145,14 @@ jobs:
 
       - name: Upload binaries (Windows)
         if: runner.os == 'Windows'
+      - name: Build engine (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          cmake --build --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}"
+
+      - name: Upload binaries (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
@@ -274,6 +160,16 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
 
+      - name: Upload binaries (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*
+
+      - name: Upload symbols (Windows)
+        if: runner.os == 'Windows' && matrix.config != 'Release'
       - name: Upload binaries (Linux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
@@ -300,12 +196,24 @@ jobs:
 
       - name: Upload libraries (Linux)
         if: runner.os == 'Linux'
+      - name: Upload libraries (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: engine-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
 
+      - name: Upload libraries (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
+
+      - name: Upload packages (Windows Debug x64 only)
+        if: runner.os == 'Windows' && matrix.config == 'Debug' && matrix.platform == 'x64'
       - name: Upload packages (Windows Debug x64 only)
         if: runner.os == 'Windows' && matrix.config == 'Debug' && matrix.platform == 'x64'
         uses: actions/upload-artifact@v4
