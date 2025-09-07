@@ -17,6 +17,16 @@
 #endif
 
 #if XR_HAVE_D3D
+#if !defined(__has_include)
+#  define __has_include(x) 0
+#endif
+#if !__has_include(<d3d9.h>) && !__has_include(<d3d11.h>)
+#  undef XR_HAVE_D3D
+#  define XR_HAVE_D3D 0
+#endif
+#endif
+
+#if XR_HAVE_D3D
 
 enum
 {
