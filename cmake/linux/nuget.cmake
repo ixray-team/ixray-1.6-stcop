@@ -51,6 +51,29 @@ set(LUAJIT_NAME libluajit.so)
 set(LUAJIT_LIB ${LUAJIT}runtimes/linux-x64/native/${LUAJIT_NAME})
 set(LUAJIT_BIN ${LUAJIT}runtimes/linux-x64/native/${LUAJIT_NAME})
 
+# Validation / fallback : si le fichier standard libluajit.so n'existe pas mais qu'une variante versionnée est présente
+if(NOT EXISTS "${LUAJIT_LIB}")
+    file(GLOB _LJ_CAND "${LUAJIT}runtimes/linux-x64/native/libluajit*.so")
+    list(FILTER _LJ_CAND EXCLUDE REGEX ".*/libluajit.so$")
+    list(LENGTH _LJ_CAND _LJ_COUNT)
+    if(_LJ_COUNT GREATER 0)
+        list(GET _LJ_CAND 0 _LJ_VERSIONED)
+        message(STATUS "LuaJIT: libluajit.so absent, utilisation candidate: ${_LJ_VERSIONED}")
+        # Créer un lien symbolique pour normaliser le nom attendu par le reste du build
+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${_LJ_VERSIONED} ${LUAJIT_LIB} RESULT_VARIABLE _LJ_SYM_RES OUTPUT_QUIET ERROR_QUIET)
+        if(_LJ_SYM_RES EQUAL 0)
+            message(STATUS "LuaJIT: lien symbolique créé -> ${LUAJIT_LIB}")
+        else()
+            message(WARNING "LuaJIT: impossible de créer le lien symbolique vers ${_LJ_VERSIONED}; le link peut échouer si aucune règle ne copie la lib.")
+            # Fallback: pointer directement sur la versionnée pour la phase link
+            set(LUAJIT_LIB ${_LJ_VERSIONED})
+            set(LUAJIT_BIN ${_LJ_VERSIONED})
+        endif()
+    else()
+        message(WARNING "LuaJIT: aucun binaire trouvé dans ${LUAJIT}runtimes/linux-x64/native/ (attendu: libluajit.so). Assurez-vous que le restore NuGet s'est bien déroulé.")
+    endif()
+endif()
+
 # FreeImage
 set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.2023.8.19-open)
 

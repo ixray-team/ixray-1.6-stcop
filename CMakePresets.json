@@ -345,8 +345,9 @@
                 "IXRAY_USE_VK": "ON",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXR_TEST_CI": "ON",
-                "CMAKE_C_COMPILER": "clang-14",
-                "CMAKE_CXX_COMPILER": "clang++-14"
+                "CMAKE_C_COMPILER": "$env{IXRAY_C_COMPILER}",
+                "CMAKE_CXX_COMPILER": "$env{IXRAY_CXX_COMPILER}",
+                "CMAKE_POLICY_VERSION_MINIMUM": "3.5"
             }
         },
         {
