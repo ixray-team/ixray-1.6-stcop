@@ -14,6 +14,16 @@
 	#define XR_HAVE_D3D_FVF 0
 #endif
 
+#if XR_HAVE_D3D_FVF
+#if !defined(__has_include)
+#  define __has_include(x) 0
+#endif
+#if !__has_include(<d3d9.h>) && !__has_include(<d3d11.h>)
+#  undef XR_HAVE_D3D_FVF
+#  define XR_HAVE_D3D_FVF 0
+#endif
+#endif
+
 #if !XR_HAVE_D3D_FVF
 // Fallback path needs core engine basic types (u32, Fvector, etc.) when not already included.
 #ifndef _types_included
