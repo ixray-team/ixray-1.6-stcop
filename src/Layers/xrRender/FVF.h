@@ -1,6 +1,28 @@
+// Vertex Flexible Format helpers.
+// On non-Windows (Linux Vulkan/OpenGL only) Direct3D FVF constants are not present;
+// we provide harmless fallback values so shared code can compile.
 #ifndef _FVF_H_
 #define _FVF_H_
 #pragma once
+
+#if defined(_WIN32) || defined(USE_DX11)
+	#define XR_HAVE_D3D_FVF 1
+#else
+	#define XR_HAVE_D3D_FVF 0
+#endif
+
+#if !XR_HAVE_D3D_FVF
+// Assign unique dummy bit patterns (matching approximate layout but not used at runtime in Vulkan path).
+// These values should not collide with real runtime logic outside D3D-specific code paths.
+static const u32 D3DFVF_XYZ      = 0x002; // arbitrary distinct bits
+static const u32 D3DFVF_NORMAL   = 0x010;
+static const u32 D3DFVF_TEX1     = 0x100;
+static const u32 D3DFVF_TEX2     = 0x200;
+static const u32 D3DFVF_TEX4     = 0x800;
+static const u32 D3DFVF_DIFFUSE  = 0x040;
+static const u32 D3DFVF_XYZRHW   = 0x004;
+#endif
+
 //-----------------------------------------------------------------------------
 #pragma pack(push,4)
 namespace FVF {
