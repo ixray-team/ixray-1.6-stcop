@@ -1,15 +1,40 @@
 cmake_minimum_required(VERSION 3.20)
-project(IXRay)
 
-# Optional: allow environment override from GitHub Actions (avoid hardcoding clang-14)
-if(DEFINED ENV{IXRAY_C_COMPILER} AND NOT CMAKE_C_COMPILER)
-    message(STATUS "Using env IXRAY_C_COMPILER=$ENV{IXRAY_C_COMPILER}")
-    set(CMAKE_C_COMPILER $ENV{IXRAY_C_COMPILER})
+# ---------------------------------------------------------------------------
+# Compiler selection (must happen BEFORE project())
+# ---------------------------------------------------------------------------
+if(NOT CMAKE_C_COMPILER AND DEFINED ENV{IXRAY_C_COMPILER})
+    set(CMAKE_C_COMPILER "$ENV{IXRAY_C_COMPILER}" CACHE STRING "C compiler from env" FORCE)
+    message(STATUS "(compiler) Using env IXRAY_C_COMPILER=$ENV{IXRAY_C_COMPILER}")
 endif()
-if(DEFINED ENV{IXRAY_CXX_COMPILER} AND NOT CMAKE_CXX_COMPILER)
-    message(STATUS "Using env IXRAY_CXX_COMPILER=$ENV{IXRAY_CXX_COMPILER}")
-    set(CMAKE_CXX_COMPILER $ENV{IXRAY_CXX_COMPILER})
+if(NOT CMAKE_CXX_COMPILER AND DEFINED ENV{IXRAY_CXX_COMPILER})
+    set(CMAKE_CXX_COMPILER "$ENV{IXRAY_CXX_COMPILER}" CACHE STRING "C++ compiler from env" FORCE)
+    message(STATUS "(compiler) Using env IXRAY_CXX_COMPILER=$ENV{IXRAY_CXX_COMPILER}")
 endif()
+
+# Auto-fallback: try clang then gcc if still unset (Linux / non-Windows)
+if(NOT WIN32)
+    if(NOT CMAKE_C_COMPILER)
+        foreach(cand clang clang-18 clang-17 clang-16 clang-15 clang-14 gcc)
+            if(NOT CMAKE_C_COMPILER AND EXISTS "/usr/bin/${cand}")
+                set(CMAKE_C_COMPILER "/usr/bin/${cand}" CACHE STRING "Auto-detected C compiler" FORCE)
+            endif()
+        endforeach()
+    endif()
+    if(NOT CMAKE_CXX_COMPILER)
+        foreach(cand clang++ clang++-18 clang++-17 clang++-16 clang++-15 clang++-14 g++)
+            if(NOT CMAKE_CXX_COMPILER AND EXISTS "/usr/bin/${cand}")
+                set(CMAKE_CXX_COMPILER "/usr/bin/${cand}" CACHE STRING "Auto-detected C++ compiler" FORCE)
+            endif()
+        endforeach()
+    endif()
+endif()
+
+if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
+    message(WARNING "(compiler) Still missing compiler after auto-detect; CMAKE_C_COMPILER='${CMAKE_C_COMPILER}' CMAKE_CXX_COMPILER='${CMAKE_CXX_COMPILER}'")
+endif()
+
+project(IXRay)
 
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
