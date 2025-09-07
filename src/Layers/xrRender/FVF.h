@@ -5,10 +5,13 @@
 #define _FVF_H_
 #pragma once
 
-#if (defined(_WIN32) || defined(USE_DX11))
-#define XR_HAVE_D3D_FVF 1
+#if defined(XR_FORCE_NO_D3D)
+	#undef XR_HAVE_D3D_FVF
+	#define XR_HAVE_D3D_FVF 0
+#elif (defined(_WIN32) || defined(USE_DX11))
+	#define XR_HAVE_D3D_FVF 1
 #else
-#define XR_HAVE_D3D_FVF 0
+	#define XR_HAVE_D3D_FVF 0
 #endif
 
 #if !XR_HAVE_D3D_FVF

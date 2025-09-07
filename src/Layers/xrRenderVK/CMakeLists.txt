@@ -121,6 +121,10 @@ target_include_directories(xrRender_VK PUBLIC ${Vulkan_INCLUDE_DIRS})
 # Project defines
 target_compile_definitions(xrRender_VK PRIVATE XRRENDER_VK_EXPORTS)
 target_compile_definitions(xrRender_VK PRIVATE USE_VULKAN)
+# Force fallback (no D3D) only on non-Windows platforms; keep D3D available on Windows to avoid disabling DX for users.
+if(NOT WIN32 OR IXRAY_VK_STRICT_NO_D3D)
+    target_compile_definitions(xrRender_VK PRIVATE XR_FORCE_NO_D3D)
+endif()
 target_compile_definitions(xrRender_VK PRIVATE _USRDLL)
 target_compile_definitions(xrRender_VK PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
