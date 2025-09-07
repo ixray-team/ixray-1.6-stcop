@@ -5,13 +5,33 @@
 #define _FVF_H_
 #pragma once
 
-#if defined(_WIN32) || defined(USE_DX11)
-	#define XR_HAVE_D3D_FVF 1
+#if (defined(_WIN32) || defined(USE_DX11))
+#define XR_HAVE_D3D_FVF 1
 #else
-	#define XR_HAVE_D3D_FVF 0
+#define XR_HAVE_D3D_FVF 0
 #endif
 
 #if !XR_HAVE_D3D_FVF
+// Fallback path needs core engine basic types (u32, Fvector, etc.) when not already included.
+#ifndef _types_included
+#include "../../xrCore/_types.h"
+#endif
+#ifndef _vector_included
+#include "../../xrCore/vector.h" // brings Fvector/Fvector2/Fvector4 definitions
+#endif
+// Minimal safety net if above includes weren't processed yet in some translation unit ordering.
+#ifndef u32
+using u32 = unsigned int; // fallback (should be overridden by _types.h)
+#endif
+#ifndef _fvector_fallback_declared
+#ifndef _vector_included
+struct Fvector { float x,y,z; void set(float _x,float _y,float _z){x=_x;y=_y;z=_z;} void set(const Fvector& o){x=o.x;y=o.y;z=o.z;} }; 
+struct Fvector2 { float x,y; void set(float _x,float _y){x=_x;y=_y;} }; 
+struct Fvector4 { float x,y,z,w; void set(float _x,float _y,float _z,float _w){x=_x;y=_y;z=_z;w=_w;} }; 
+struct Fmatrix { float _11,_12,_13,_14,_21,_22,_23,_24,_31,_32,_33,_34,_41,_42,_43,_44; }; 
+#endif
+#define _fvector_fallback_declared 1
+#endif
 // Assign unique dummy bit patterns (matching approximate layout but not used at runtime in Vulkan path).
 // These values should not collide with real runtime logic outside D3D-specific code paths.
 static const u32 D3DFVF_XYZ      = 0x002; // arbitrary distinct bits
