@@ -120,11 +120,10 @@ CInventoryItem *CObjectHandler::best_weapon() const
 	return										(m_planner->GetOwner()->m_best_item_to_kill);
 }
 
-void CObjectHandler::update		()
+void CObjectHandler::update()
 {
-	START_PROFILE("Object Handler")
-	m_planner->GoapPlanner.Update		();
-	STOP_PROFILE
+	PROF_EVENT("Object Handler");
+	m_planner->GoapPlanner.Update();
 }
 
 void CObjectHandler::set_goal	(MonsterSpace::EObjectAction object_action, CGameObject *game_object, u32 min_queue_size, u32 max_queue_size, u32 min_queue_interval, u32 max_queue_interval)

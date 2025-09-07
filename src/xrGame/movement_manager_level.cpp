@@ -19,7 +19,7 @@
 
 void CMovementManager::process_level_path()
 {
-	START_PROFILE("Build Path/Process Level Path");
+	PROF_EVENT("Build Path/Process Level Path");
 
 	if (!level_path().actual() && (m_path_state > ePathStateBuildLevelPath))
 		m_path_state		= ePathStateBuildLevelPath;
@@ -92,5 +92,4 @@ void CMovementManager::process_level_path()
 		}
 		default : NODEFAULT;
 	}
-	STOP_PROFILE;
 }

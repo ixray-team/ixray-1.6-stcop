@@ -637,6 +637,8 @@ void CKinematicsAnimated::UpdateTracks	()
 	if (Update_LastTime==RDEVICE.dwTimeGlobal)
 		return;
 
+	PROF_EVENT("Update Tracks");
+
 	u32 DT	= RDEVICE.dwTimeGlobal-Update_LastTime;
 	if (DT>66) DT=66;
 	float dt = float(DT)/1000.f;

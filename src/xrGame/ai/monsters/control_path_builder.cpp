@@ -53,64 +53,71 @@ void CControlPathBuilder::reinit()
 	m_data.game_graph_target_vertex	= u32(-1);
 }
 
-void CControlPathBuilder::update_schedule() 
+void CControlPathBuilder::update_schedule()
 {
-	START_PROFILE("Base Monster/Path Builder/Schedule Update");
-	
+	PROF_EVENT("Path Builder/Schedule Update");
+
 	// the one and only reason is because of the restriction-change, so wait until
 	// position and node will be in valid state
-	if (m_data.path_type != MovementManager::ePathTypePatrolPath) {
-		if (!accessible(m_data.target_position) || 
-			( (m_data.target_node != u32(-1)) && (!accessible(m_data.target_node)) )) {
-				return;
-			}
-	}
-	
-	if (m_data.reset_actuality)				make_inactual();
-
-	// set enabled
-	enable_movement							(m_data.enable);
-
-	// set params only if enable params
-	if (m_data.enable) {
-		detail().set_path_type				(eDetailPathTypeSmooth);
-
-		// установить direction
-		detail().set_use_dest_orientation	(m_data.use_dest_orientation);
-		if (m_data.use_dest_orientation)	detail().set_dest_direction	(m_data.dest_orientation);
-
-		detail().set_try_min_time			(m_data.try_min_time);
-
-		extrapolate_path					(m_data.extrapolate);
-
-		detail().set_velocity_mask			(m_data.velocity_mask);
-		detail().set_desirable_mask			(m_data.desirable_mask);
-
-		set_path_type						(m_data.path_type);
-		if (m_data.path_type == MovementManager::ePathTypeGamePath) {
-			// check if we have alife task
-			if (m_data.game_graph_target_vertex != u32(-1)) {
-				set_game_dest_vertex					(GameGraph::_GRAPH_ID(m_data.game_graph_target_vertex));
-				game_selector().set_selection_type		(eSelectionTypeMask);
-			} else 
-				// else just wandering through the game graph
-				game_selector().set_selection_type	(eSelectionTypeRandomBranching);
-		} else if (m_data.path_type != MovementManager::ePathTypePatrolPath) {
-			// set target
-			// TODO: make it VERIFY
-//			VERIFY3(m_data.target_node != u32(-1), "Error: Object set wrong path params! Object name:",*inherited_com::m_object->cName());
-			if (m_data.target_node == u32(-1)) return;
-
-			detail().set_dest_position		(m_data.target_position);
-			set_level_dest_vertex			(m_data.target_node);
+	if (m_data.path_type != MovementManager::ePathTypePatrolPath)
+	{
+		if (!accessible(m_data.target_position) || ((m_data.target_node != u32(-1)) && (!accessible(m_data.target_node))))
+		{
+			return;
 		}
 	}
 
-	update_path								();
-	
-	m_man->notify							(ControlCom::eventPathUpdated, 0);
-	
-	STOP_PROFILE;
+	if (m_data.reset_actuality)
+		make_inactual();
+
+	// set enabled
+	enable_movement(m_data.enable);
+
+	// set params only if enable params
+	if (m_data.enable)
+	{
+		detail().set_path_type(eDetailPathTypeSmooth);
+
+		// установить direction
+		detail().set_use_dest_orientation(m_data.use_dest_orientation);
+		if (m_data.use_dest_orientation)	detail().set_dest_direction(m_data.dest_orientation);
+
+		detail().set_try_min_time(m_data.try_min_time);
+
+		extrapolate_path(m_data.extrapolate);
+
+		detail().set_velocity_mask(m_data.velocity_mask);
+		detail().set_desirable_mask(m_data.desirable_mask);
+
+		set_path_type(m_data.path_type);
+		if (m_data.path_type == MovementManager::ePathTypeGamePath)
+		{
+			// check if we have alife task
+			if (m_data.game_graph_target_vertex != u32(-1))
+			{
+				set_game_dest_vertex(GameGraph::_GRAPH_ID(m_data.game_graph_target_vertex));
+				game_selector().set_selection_type(eSelectionTypeMask);
+			}
+			else
+			{
+				// else just wandering through the game graph
+				game_selector().set_selection_type(eSelectionTypeRandomBranching);
+			}
+		}
+		else if (m_data.path_type != MovementManager::ePathTypePatrolPath)
+		{
+			// set target
+			// TODO: make it VERIFY
+			if (m_data.target_node == u32(-1)) return;
+
+			detail().set_dest_position(m_data.target_position);
+			set_level_dest_vertex(m_data.target_node);
+		}
+	}
+
+	update_path();
+
+	m_man->notify(ControlCom::eventPathUpdated, 0);
 }
 
 void CControlPathBuilder::on_travel_point_change(const u32 &previous_travel_point_index)

@@ -86,26 +86,24 @@ CALifeUpdateManager::~CALifeUpdateManager	()
 
 float CALifeUpdateManager::shedule_Scale	()
 {
-	return					(.5f); // (schedule_min + schedule_max)*0.5f
+	return (.5f); // (schedule_min + schedule_max)*0.5f
 }
 
-void CALifeUpdateManager::update_switch	()
+void CALifeUpdateManager::update_switch()
 {
-	init_ef_storage						();
+	init_ef_storage();
 
-	START_PROFILE("ALife/switch");
-	graph().level().update				( CSwitchPredicate(this), Device.dwPrecacheFrame > 0 );
-	STOP_PROFILE
+	PROF_EVENT("ALife/switch");
+	graph().level().update(CSwitchPredicate(this), Device.dwPrecacheFrame > 0);
 }
 
-void CALifeUpdateManager::update_scheduled	(bool init_ef)
+void CALifeUpdateManager::update_scheduled(bool init_ef)
 {
 	if (init_ef)
-		init_ef_storage					();
+		init_ef_storage();
 
-	START_PROFILE("ALife/scheduled");
-	scheduled().update					();
-	STOP_PROFILE
+	PROF_EVENT("ALife/scheduled");
+	scheduled().update();
 }
 
 void CALifeUpdateManager::update()
@@ -138,28 +136,23 @@ void CALifeUpdateManager::new_game_for_editor()
 	Msg("* New game is successfully created!");
 }
 
-void CALifeUpdateManager::shedule_Update	(u32 dt)
+void CALifeUpdateManager::shedule_Update(u32 dt)
 {
-	ISheduled::shedule_Update		(dt);
+	ISheduled::shedule_Update(dt);
 
 	if (!initialized())
 		return;
 
-	if (!m_first_time && g_mt_config.test(mtALife)) {
-		Device.seqParallel.push_back(
-			xr_delegate<void()>(
-				this,
-				&CALifeUpdateManager::update
-			)
-		);
+	if (!m_first_time && g_mt_config.test(mtALife))
+	{
+		Device.seqParallel.push_back(xr_delegate<void()>(this, &CALifeUpdateManager::update));
 		return;
 	}
 
-	m_first_time					= false;
+	m_first_time = false;
 
-	START_PROFILE("ALife/update")
-	update							();
-	STOP_PROFILE
+	PROF_EVENT("ALife/update");
+	update();
 }
 
 void CALifeUpdateManager::set_process_time	(int microseconds)

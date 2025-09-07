@@ -611,11 +611,12 @@ void dbg_draw_geoms(xr_vector<CODEGeom*>& m_weapon_geoms)
 
 void CCharacterPhysicsSupport::in_UpdateCL()
 {
-	
 	if( m_eState==esRemoved )
 	{
 		return;
 	}
+
+	PROF_EVENT("CPH UpdateCL");
 #ifdef DEBUG
 	if( dbg_draw_character_bones )
 				dbg_draw_geoms( m_weapon_geoms );

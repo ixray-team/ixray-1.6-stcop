@@ -268,7 +268,7 @@ void CStalkerAnimationManager::update_impl					()
 
 void CStalkerAnimationManager::update						()
 {
-	START_PROFILE("stalker/client_update/animations")
+	PROF_EVENT("stalker/client_update/animations")
 	try {
 		update_impl			();
 	}
@@ -291,5 +291,4 @@ void CStalkerAnimationManager::update						()
 		legs().reset();
 		return;
 	}
-	STOP_PROFILE
 }
