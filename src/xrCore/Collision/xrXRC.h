@@ -1,11 +1,7 @@
 // xrXRC.h: interface for the xrXRC class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
-#define AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_
-//#pragma once
-
+#pragma once
 #include "xrCDB.h"
 
 #ifdef	DEBUG
@@ -92,6 +88,5 @@ public:
 	xrXRC();
 	~xrXRC();
 };
-XRCORE_API extern xrXRC XRC;
 
-#endif // !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
+XRCORE_API extern xrXRC XRC;

@@ -113,7 +113,7 @@ void		CDetailManager::cache_Decompress(Slot* S)
 	D.vis.box.get_CD	(bC,bD);
 
 #ifdef _EDITOR
-	ETOOLS::box_options	(CDB::OPT_FULL_TEST);
+	XRC.box_options(CDB::OPT_FULL_TEST);
 	// Select polygons
 	SBoxPickInfoVec		pinf;
     Scene->BoxPickObjects(D.vis.box,pinf,GetSnapList());

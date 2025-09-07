@@ -280,3 +280,8 @@ IC		TRI&				getT(u32 index)		{ return faces[index];		}
 };
 
 #pragma pack(pop)
+
+namespace XRay::Collision
+{
+	XRCORE_API bool TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull);
+}

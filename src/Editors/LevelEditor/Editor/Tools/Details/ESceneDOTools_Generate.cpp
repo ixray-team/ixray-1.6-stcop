@@ -157,7 +157,7 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
     bbox.max.set		(rect.x2, m_BBox.max.y, rect.y2);
 
     SBoxPickInfoVec pinf;
-    ETOOLS::box_options(0);
+    XRC.box_options(0);
     if (Scene->BoxPickObjects(bbox,pinf,&m_SnapObjects)){
 		bbox.grow		(EPS_L_VAR);
     	Fplane			frustum_planes[4];

@@ -3,6 +3,7 @@
 #include "../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "../xrServerEntities/xrServer_Objects.h"
+#include "../../../../xrECore/Editor/Intersect.h"
 
 #define SPAWNPOINT_CHUNK_VERSION		0xE411
 #define SPAWNPOINT_CHUNK_POSITION		0xE412
@@ -1054,46 +1055,51 @@ bool CSpawnPoint::RayPick(float& distance, const Fvector& start, const Fvector& 
 	if (!IsLoaded)
 		return false;
 
-	bool bPick 	= false;
-	if (m_AttachedObject){
-		bPick 	= m_AttachedObject->RayPick(distance, start, direction, pinf);
-		return 	bPick;
+	bool bPick = false;
+	if (m_AttachedObject)
+	{
+		bPick = m_AttachedObject->RayPick(distance, start, direction, pinf);
+		return bPick;
 	}
 
-	Fbox 		bb;
-	Fvector 	pos;
-	float 		radius;
-	GetBox		(bb);
-	bb.getsphere(pos,radius);
+	Fbox bb;
+	Fvector pos;
+	float radius;
+	GetBox(bb);
+	bb.getsphere(pos, radius);
 
 	Fvector ray2;
-	ray2.sub	(pos, start);
+	ray2.sub(pos, start);
 
 	float d = ray2.dotproduct(direction);
-	if( d > 0  ){
+	if (d > 0)
+	{
 		float d2 = ray2.magnitude();
-		if( ((d2*d2-d*d) < (radius*radius)) && (d>radius) ){
+		if (((d2 * d2 - d * d) < (radius * radius)) && (d > radius))
+		{
 			Fvector pt;
-			if (Fbox::rpOriginOutside==bb.Pick2(start,direction,pt)){
-				d	= start.distance_to(pt);
-				if (d<distance){
-					distance	= d;
-					bPick 		= true;
-					if( pinf && m_SpawnData.m_Visual && m_SpawnData.m_Visual->visual )
+			if (Fbox::rpOriginOutside == bb.Pick2(start, direction, pt))
+			{
+				d = start.distance_to(pt);
+				if (d < distance)
+				{
+					distance = d;
+					bPick = true;
+					if (pinf && m_SpawnData.m_Visual && m_SpawnData.m_Visual->visual)
 					{
 
-						IKinematics*  K = m_SpawnData.m_Visual->visual->dcast_PKinematics();
+						IKinematics* K = m_SpawnData.m_Visual->visual->dcast_PKinematics();
 						u16 b_id = u16(-1);
 						Fvector norm;
-						if( K )
+						if (K)
 						{
-						   bPick =	ETOOLS::intersect( FTransformRP, *K, start,  direction, b_id, distance,  norm );
-						   if( bPick )
-						   {
-							   pinf->visual_inf.K = K;
-							   pinf->visual_inf.normal = norm;
-							   pt.mad( start, direction, distance ); 
-						   }
+							bPick = XRay::Collision::intersect(FTransformRP, *K, start, direction, b_id, distance, norm);
+							if (bPick)
+							{
+								pinf->visual_inf.K = K;
+								pinf->visual_inf.normal = norm;
+								pt.mad(start, direction, distance);
+							}
 
 						}
 
