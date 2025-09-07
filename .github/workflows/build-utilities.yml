@@ -33,6 +33,10 @@ jobs:
     name: 'Build utilities'
     env:
       VULKAN_SDK_VERSION: 1.3.290.0
+      IXRAY_USE_VK: "ON"
+      IXRAY_VULKAN_TAG_VERSION: "vulkan-sdk-1.4.309.0"
+      IXRAY_ENABLE_TBB_FETCH: "ON"
+      IXRAY_FORCE_FETCH_NVTT: "ON"
 
     strategy:
       matrix:
@@ -64,6 +68,16 @@ jobs:
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
+      - name: CMake cache (build dir)
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/
+          key: cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-${{ matrix.config }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-${{ matrix.config }}-
+            cmake-${{ runner.os }}-${{ matrix.platform }}-${{ matrix.preset }}-
+            cmake-${{ runner.os }}-${{ matrix.platform }}-
       - name: Prepare Vulkan SDK directory
         run: |
           New-Item -ItemType Directory -Path C:/VulkanSDK -ErrorAction SilentlyContinue | Out-Null
@@ -124,7 +138,15 @@ jobs:
         run: |
           cmake `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
-            -DIXRAY_CI=ON
+            -DIXRAY_CI=ON `
+            -DIXRAY_USE_VK=${{ env.IXRAY_USE_VK }} `
+            -DIXRAY_VULKAN_TAG_VERSION=${{ env.IXRAY_VULKAN_TAG_VERSION }} `
+            -DIXRAY_ENABLE_TBB_FETCH=${{ env.IXRAY_ENABLE_TBB_FETCH }} `
+            -DIXRAY_FORCE_FETCH_NVTT=${{ env.IXRAY_FORCE_FETCH_NVTT }}
+            -DIXRAY_USE_VK=${{ env.IXRAY_USE_VK }} `
+            -DIXRAY_VULKAN_TAG_VERSION=${{ env.IXRAY_VULKAN_TAG_VERSION }} `
+            -DIXRAY_ENABLE_TBB_FETCH=${{ env.IXRAY_ENABLE_TBB_FETCH }} `
+            -DIXRAY_FORCE_FETCH_NVTT=${{ env.IXRAY_FORCE_FETCH_NVTT }}
 
       - name: Build utilities
         run: |
@@ -166,6 +188,11 @@ jobs:
 
   build-targets:
     name: 'Build targets'
+    env:
+      IXRAY_USE_VK: "ON"
+      IXRAY_VULKAN_TAG_VERSION: "vulkan-sdk-1.4.309.0"
+      IXRAY_ENABLE_TBB_FETCH: "ON"
+      IXRAY_FORCE_FETCH_NVTT: "ON"
 
     strategy:
       matrix:
@@ -325,15 +352,11 @@ jobs:
             -DIXRAY_CI=ON \
             -DIXRAY_USE_R1=OFF \
             -DIXRAY_USE_R2=OFF \
-            -DIXRAY_USE_VK=ON \
-            -DIXRAY_FORCE_NO_D3D=ON
-
-      - name: Dump feature flags (Linux targets)
-        if: runner.os == 'Linux'
-        run: |
-          echo '==== CMake Feature Flags Snapshot ===='
-          grep -E 'IXRAY_USE_R1|IXRAY_USE_R2|IXRAY_USE_VK|IXRAY_FORCE_NO_D3D' build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/CMakeCache.txt || true
-          echo '======================================='
+            -DIXRAY_USE_VK=${IXRAY_USE_VK} \
+            -DIXRAY_FORCE_NO_D3D=ON \
+            -DIXRAY_VULKAN_TAG_VERSION=${IXRAY_VULKAN_TAG_VERSION} \
+            -DIXRAY_ENABLE_TBB_FETCH=${IXRAY_ENABLE_TBB_FETCH} \
+            -DIXRAY_FORCE_FETCH_NVTT=${IXRAY_FORCE_FETCH_NVTT}
 
       - name: Build targets
         run: |
