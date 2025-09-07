@@ -181,6 +181,11 @@ jobs:
             mesa-vulkan-drivers \
             libx11-dev libxcb1-dev libxrandr-dev libxinerama-dev libxcursor-dev
 
+      - name: Export VULKAN_SDK (Linux)
+        run: |
+          echo "VULKAN_SDK=/usr" >> $GITHUB_ENV
+          echo "Set VULKAN_SDK to /usr (system Vulkan headers/libs)"
+
       - name: Install LLVM/Clang 18 and libc++
         run: |
           wget https://apt.llvm.org/llvm.sh
