@@ -240,6 +240,41 @@ jobs:
           liblzo2-dev \
           libyaml-cpp-dev
 
+      - name: Install Mono + NuGet (Linux targets)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y mono-complete
+          NUGET_VERSION=5.11.0
+          wget -q "https://dist.nuget.org/win-x86-commandline/v${NUGET_VERSION}/nuget.exe" -O nuget.exe
+          sudo mv nuget.exe /usr/local/bin/nuget.exe
+          sudo chmod +x /usr/local/bin/nuget.exe
+          printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' 'mono /usr/local/bin/nuget.exe "$@"' > /tmp/nuget-wrapper
+          sudo mv /tmp/nuget-wrapper /usr/local/bin/nuget
+          sudo chmod +x /usr/local/bin/nuget
+          mkdir -p "$GITHUB_WORKSPACE/.nuget/packages" build/x64/Targets-Linux/packages || true
+          echo "NUGET_PACKAGES=$GITHUB_WORKSPACE/.nuget/packages" >> $GITHUB_ENV
+          echo "NuGet pinned version:"; nuget help | head -n1 || true
+
+      - name: Restore NuGet packages (Linux targets)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          echo "NuGet version:"; nuget help | head -n1 || true
+          echo "NUGET_PACKAGES=$NUGET_PACKAGES"
+          ls -ld "$NUGET_PACKAGES" || true
+          mkdir -p build/x64/Targets-Linux || true
+          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Targets-Linux -Verbosity minimal; then
+            echo "Primary restore failed, trying fallback to build root";
+            nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed || {
+              echo "Restore failed after fallback"; exit 1;
+            }
+          fi
+          echo "Listing restored LuaJIT path:"; ls -1 build/x64/Targets-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/ 2>/dev/null || true
+
       - name: Configure targets
         run: |
           cmake \
