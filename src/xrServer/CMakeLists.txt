@@ -25,6 +25,7 @@ target_precompile_headers(xrServer PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrServer PRIVATE XRSERVER_EXPORT)
+target_compile_definitions(xrServer PRIVATE XR_FORCE_NO_D3D)
 
 # Linker list
 target_link_libraries(xrServer PUBLIC xrAbstractions)
