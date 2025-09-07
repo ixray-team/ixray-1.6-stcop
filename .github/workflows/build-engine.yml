@@ -32,12 +32,12 @@ jobs:
   build-engine:
     name: 'Build engine'
     env:
-      IXRAY_USE_VK: ON
+      IXRAY_USE_VK: "ON"
       # Central Vulkan tag (overrideable at workflow dispatch or future matrix)
-      IXRAY_VULKAN_TAG_VERSION: vulkan-sdk-1.4.309.0
+      IXRAY_VULKAN_TAG_VERSION: "vulkan-sdk-1.4.309.0"
       # Control fallback fetch behaviors
-      IXRAY_ENABLE_TBB_FETCH: ON
-      IXRAY_FORCE_FETCH_NVTT: OFF
+      IXRAY_ENABLE_TBB_FETCH: "ON"
+      IXRAY_FORCE_FETCH_NVTT: "ON"
 
     strategy:
       matrix:
