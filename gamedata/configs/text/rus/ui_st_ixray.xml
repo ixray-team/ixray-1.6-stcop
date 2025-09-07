@@ -9,7 +9,10 @@
     <string id="st_ixray_title_soc">
         <text>S.T.A.L.K.E.R.: Тень Чернобыля</text>
     </string>
-   <string id="st_discord_menu">
+    <string id="st_ixray_title_coc">
+        <text>S.T.A.L.K.E.R.: Зов Чернобыля</text>
+    </string>
+    <string id="st_discord_menu">
         <text>Главное меню</text>
     </string>
     <string id="st_discord_level">
