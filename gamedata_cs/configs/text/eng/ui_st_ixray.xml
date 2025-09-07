@@ -9,6 +9,9 @@
     <string id="st_ixray_title_soc">
         <text>S.T.A.L.K.E.R.: Shadow of Chernobyl</text>
     </string>
+    <string id="st_ixray_title_coc">
+        <text>S.T.A.L.K.E.R.: Call of Chernobyl</text>
+    </string>
     <string id="st_discord_menu">
         <text>Main menu</text>
     </string>
