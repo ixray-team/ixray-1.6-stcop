@@ -7,6 +7,26 @@ set(IXRAY_FOLDER_GAME FOLDER "Engine/Game")
 # Engine libraries
 add_subdirectory("xrCore")
 
+# Option globale pour forcer la désactivation des chemins D3D (utilise les stubs dans R_DStreams/FVF)
+option(IXRAY_FORCE_NO_D3D "Force disable Direct3D code paths and use fallback stream/FVF implementations" OFF)
+
+# Heuristique auto : si Vulkan est activé mais ni R1 ni R2 ne le sont, on peut forcer no D3D sauf sur Windows client.
+if(IXRAY_USE_VK AND NOT IXRAY_USE_R1 AND NOT IXRAY_USE_R2)
+    if (WIN32)
+        # Ne pas activer automatiquement sur Windows pour laisser le rendu D3D disponible sauf demande explicite.
+    else()
+        if(NOT IXRAY_FORCE_NO_D3D)
+            set(IXRAY_FORCE_NO_D3D ON)
+            message(STATUS "[IXRAY] Auto-enabled IXRAY_FORCE_NO_D3D (Vulkan-only configuration detected).")
+        endif()
+    endif()
+endif()
+
+if(IXRAY_FORCE_NO_D3D)
+    add_compile_definitions(XR_FORCE_NO_D3D)
+    message(STATUS "[IXRAY] XR_FORCE_NO_D3D is active (Direct3D paths disabled).")
+endif()
+
 if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("xrSound")
     add_subdirectory("xrNetServer")
