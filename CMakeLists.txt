@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
 project(IXRay)
 
+# Optional: allow environment override from GitHub Actions (avoid hardcoding clang-14)
+if(DEFINED ENV{IXRAY_C_COMPILER} AND NOT CMAKE_C_COMPILER)
+    message(STATUS "Using env IXRAY_C_COMPILER=$ENV{IXRAY_C_COMPILER}")
+    set(CMAKE_C_COMPILER $ENV{IXRAY_C_COMPILER})
+endif()
+if(DEFINED ENV{IXRAY_CXX_COMPILER} AND NOT CMAKE_CXX_COMPILER)
+    message(STATUS "Using env IXRAY_CXX_COMPILER=$ENV{IXRAY_CXX_COMPILER}")
+    set(CMAKE_CXX_COMPILER $ENV{IXRAY_CXX_COMPILER})
+endif()
+
 # CMake options
 option(IXRAY_UTILS "Apply utils to solution" OFF)
 option(IXRAY_EDITORS "Apply editors to solution" OFF)

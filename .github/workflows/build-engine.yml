@@ -87,8 +87,74 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libvulkan-dev vulkan-utils
+          sudo apt-get install -y pkg-config ninja-build mesa-common-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libvulkan-dev vulkan-utils nuget
           pkg-config --version
+
+      - name: Install build-essential (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+          gcc --version || true
+          g++ --version || true
+
+      - name: Set VULKAN_SDK (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          echo "VULKAN_SDK=/usr" >> $GITHUB_ENV
+          echo ""; echo "VULKAN_SDK set to /usr"; echo "";
+
+      - name: Select compiler (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          if command -v clang >/dev/null 2>&1; then
+            echo "IXRAY_C_COMPILER=clang" >> $GITHUB_ENV
+            echo "IXRAY_CXX_COMPILER=clang++" >> $GITHUB_ENV
+            echo "Compiler: $(clang --version | head -n1)"
+          else
+            echo "IXRAY_C_COMPILER=gcc" >> $GITHUB_ENV
+            echo "IXRAY_CXX_COMPILER=g++" >> $GITHUB_ENV
+            echo "Compiler: $(gcc --version | head -n1)"
+          fi
+
+      - name: Restore NuGet packages (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          if ! command -v nuget >/dev/null 2>&1; then
+            echo "Installing nuget (dotnet tool fallback)";
+            sudo apt-get update && sudo apt-get install -y nuget || true
+          fi
+          echo "NuGet version:"; nuget help | head -n1 || true
+          nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux || nuget restore cmake/linux/Packages.config -SolutionDirectory build || exit 1
+          echo "Listing restored LuaJIT path:"; ls -1 build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/ 2>/dev/null || true
+      - name: Verify LuaJIT (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          LPATH="build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native/libluajit.so"
+          if [ ! -f "$LPATH" ]; then
+            echo "LuaJIT library missing at $LPATH";
+            echo "Attempting direct nuget install fallback...";
+            nuget install IXRay.Packages.LuaJIT.Runtimes.linux-x64 -Version 2023.8.23.1-open -OutputDirectory build/x64/Engine-Linux/packages || exit 1
+            # Chercher une lib versionnée et créer un lien symbolique standard si nécessaire
+            if [ ! -f "$LPATH" ]; then
+              dir="$(dirname "$LPATH")"
+              cand=$(ls "$dir"/libluajit*.so 2>/dev/null | grep -v 'libluajit.so$' | head -n1 || true)
+              if [ -n "$cand" ]; then
+                echo "Trouvé bibliothèque candidate: $cand"
+                (cd "$dir" && ln -s "$(basename "$cand")" libluajit.so || true)
+              fi
+            fi
+            if [ ! -f "$LPATH" ]; then
+              echo "Toujours manquante après install + symlink.";
+              ls -l "$(dirname "$LPATH")" || true
+              exit 1;
+            fi
+          fi
+          echo "LuaJIT OK: $LPATH"
+          ls -l "$(dirname "$LPATH")"
 
       - name: Cache packages
         uses: actions/cache@v4
@@ -99,6 +165,7 @@ jobs:
             ${{ matrix.preset }}-NuGet-
           path: |
             ~/.nuget/packages
+            build/x64/Engine-Linux/packages
 
       - name: Prepare Vulkan SDK directory
         if: runner.os == 'Windows'
@@ -134,7 +201,6 @@ jobs:
           echo "VK_SDK_PATH=C:/VulkanSDK/$version" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "C:/VulkanSDK/$version/Bin" | Out-File -FilePath $env:GITHUB_PATH -Append
           Write-Host "Using Vulkan SDK at C:/VulkanSDK/$version"
-
 
       - name: Configure engine (Windows)
         if: runner.os == 'Windows'
