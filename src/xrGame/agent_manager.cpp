@@ -97,20 +97,17 @@ void CAgentManager::update_impl			()
 }
 
 #ifdef USE_SCHEDULER_IN_AGENT_MANAGER
-void CAgentManager::shedule_Update		(u32 time_delta)
+void CAgentManager::shedule_Update(u32 time_delta)
 {
-	START_PROFILE("Agent_Manager")
+	PROF_EVENT("Agent_Manager")
 
-	ISheduled::shedule_Update	(time_delta);
-
-	update_impl					();
-
-	STOP_PROFILE
+	ISheduled::shedule_Update(time_delta);
+	update_impl();
 }
 
-float CAgentManager::shedule_Scale		()
+float CAgentManager::shedule_Scale()
 {
-	return						(.5f);
+	return (.5f);
 }
 
 #else // USE_SCHEDULER_IN_AGENT_MANAGER

@@ -177,6 +177,8 @@ void CAI_Stalker::process_enemies		()
 	if (memory().enemy().selected())
 		return;
 
+	PROF_EVENT("process enumies");
+
 	typedef CVisualMemoryManager::VISIBLES	VISIBLES;
 
 	u64				mask = memory().visual().mask();

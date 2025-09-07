@@ -4,19 +4,17 @@
 #include "../../detail_path_manager.h"
 
 void CControlPathBuilderBase::update_frame()
-{	
-	START_PROFILE("Base Monster/Path Builder Base/Frame Update");
+{
+	PROF_EVENT("Path Builder Base/Frame Update");
 
 	// обновить состояние билдера
-	update_path_builder_state						();
-	
+	update_path_builder_state();
+
 	// обновить / установить целевую позицию
-	update_target_point								();
+	update_target_point();
 
 	// set params
-	set_path_builder_params							();	
-
-	STOP_PROFILE;
+	set_path_builder_params();
 }
 
 void CControlPathBuilderBase::update_target_point() 

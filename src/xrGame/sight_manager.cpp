@@ -104,7 +104,7 @@ static inline float	select_speed(float const distance, float const speed, float 
 
 void CSightManager::Exec_Look(float time_delta)
 {
-	START_PROFILE("Sight Manager")
+	PROF_EVENT("Sight Manager")
 
 	SBoneRotation& body = object().movement().m_body;
 	SBoneRotation& head = object().movement().m_head;
@@ -163,8 +163,6 @@ void CSightManager::Exec_Look(float time_delta)
 	m.i.set(_ch, 0.f, _sh); m._14_ = 0.f;
 	m.j.set(0.f, 1.f, 0.f); m._24_ = 0.f;
 	m.k.set(-_sh, 0.f, _ch); m._34_ = 0.f;
-
-	STOP_PROFILE
 }
 
 void CSightManager::setup			(const CSightAction &sight_action)
@@ -181,7 +179,7 @@ void CSightManager::setup			(const CSightAction &sight_action)
 
 void CSightManager::update			()
 {
-	START_PROFILE("Sight Manager")
+	PROF_EVENT("Sight Manager")
 
 	if (!enabled())
 		return;
@@ -216,8 +214,6 @@ void CSightManager::update			()
 	}
 
 	inherited::update		();
-
-	STOP_PROFILE
 }
 
 void CSightManager::remove_links					(CObject *object)

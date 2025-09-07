@@ -413,33 +413,27 @@ void CEnemyManager::try_change_enemy		()
 	}
 }
 
-void CEnemyManager::update					()
+void CEnemyManager::update()
 {
-	START_PROFILE("Memory Manager/enemies::update")
+	PROF_EVENT("Memory Manager/enemies::update");
 
-	if (!m_ready_to_save) {
-//		Msg						("%6d %s DEcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()-1);
+	if (!m_ready_to_save)
+	{
 		Level().autosave_manager().dec_not_ready();
 	}
 
-	m_ready_to_save				= true;
+	m_ready_to_save = true;
 
-	try_change_enemy			();
+	try_change_enemy();
 
-	if (selected()) {
-		m_last_enemy_time		= Device.dwTimeGlobal;
-		m_last_enemy			= selected();
+	if (selected())
+	{
+		m_last_enemy_time = Device.dwTimeGlobal;
+		m_last_enemy = selected();
 	}
 
-	if (!m_ready_to_save) {
-//		Msg						("%6d %s INcreased enemy counter for player (%d -> %d)",Device.dwTimeGlobal,*m_object->cName(),Level().autosave_manager().not_ready_count(),Level().autosave_manager().not_ready_count()+1);
+	if (!m_ready_to_save)
+	{
 		Level().autosave_manager().inc_not_ready();
 	}
-
-#if 0//def _DEBUG
-	if (g_enemy_manager_second_update && selected() && smart_cast<const CAI_Stalker*>(selected()) && smart_cast<const CAI_Stalker*>(selected())->wounded())
-		Msg						("%6d WOUNDED CHOOSED %s",Device.dwTimeGlobal,*m_object->cName());
-#endif // _DEBUG
-
-	STOP_PROFILE
 }

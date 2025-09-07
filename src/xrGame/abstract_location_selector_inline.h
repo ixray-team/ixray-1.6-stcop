@@ -101,26 +101,8 @@ IC	void CSelectorTemplate::select_location	(const _vertex_id_type start_vertex_i
 TEMPLATE_SPECIALIZATION
 IC	void CSelectorTemplate::perform_search		(const _vertex_id_type vertex_id)
 {
-	START_PROFILE("Build Path/Selector Path");
-	R_ASSERT(!"Not Used");
-	/*VERIFY						(m_evaluator && m_graph);
-
-	_vertex_id_type				start_vertex_id = vertex_id;
-	before_search				(start_vertex_id);
-
-	m_last_query_time			= Device.dwTimeGlobal;
-	
-	ai().graph_engine().search	(*m_graph,start_vertex_id,start_vertex_id,0,*m_evaluator);
-	m_failed	= 
-		!m_graph->valid_vertex_id(m_evaluator->selected_vertex_id()) || 
-		(m_evaluator->selected_vertex_id() == m_selected_vertex_id);
-	
-	if (!failed())
-		m_selected_vertex_id	= m_evaluator->selected_vertex_id();
-
-	after_search				();*/
-
-	STOP_PROFILE;
+	PROF_EVENT("Build Path/Selector Path");
+	VERIFY(!"Not Used");
 }
 
 TEMPLATE_SPECIALIZATION

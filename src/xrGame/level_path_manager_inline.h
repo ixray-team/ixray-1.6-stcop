@@ -37,7 +37,7 @@ IC	bool CLevelManagerTemplate::actual() const
 TEMPLATE_SPECIALIZATION
 IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id, const _vertex_id_type dest_vertex_id)
 {
-	START_PROFILE("Build Path/Level Path");
+	PROF_EVENT("Build Path/Level Path");
 	
 	THROW						(ai().level_graph().valid_vertex_id(start_vertex_id) && ai().level_graph().valid_vertex_id(dest_vertex_id));
 	
@@ -48,8 +48,6 @@ IC	void CLevelManagerTemplate::build_path	(const _vertex_id_type start_vertex_id
 		Msg						("! NPC %s couldn't build path from \n~ [%d][%f][%f][%f]\n~ to\n~ [%d][%f][%f][%f]",*this->m_object->object().cName(),start_vertex_id,VPUSH(ai().level_graph().vertex_position(start_vertex_id)),dest_vertex_id,VPUSH(ai().level_graph().vertex_position(dest_vertex_id)));
 	}
 #endif
-
-	STOP_PROFILE;
 }
 
 TEMPLATE_SPECIALIZATION

@@ -49,11 +49,13 @@ namespace Feel
 		void						feel_vision_clear		();
 		void						feel_vision_query		(Fmatrix& mFull,	Fvector& P);
 		void						feel_vision_update		(CObject* parent,	Fvector& P, float dt, float vis_threshold);
-		void				feel_vision_relcase		(CObject* object);
-		void						feel_vision_get			(xr_vector<CObject*>& R)		{
-			R.clear					();
-			xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();
-			for (; I!=E; I++)	if (positive(I->fuzzy)) R.push_back(I->O);
+		void						feel_vision_relcase		(CObject* object);
+		void						feel_vision_get(xr_vector<CObject*>& R)
+		{
+			PROF_EVENT("feel_vision_get");
+			R.clear();
+			xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
+			for (; I != E; I++)	if (positive(I->fuzzy)) R.push_back(I->O);
 		}
 		Fvector						feel_vision_get_vispoint(CObject* _O)					{
 			xr_vector<feel_visible_Item>::iterator I=feel_visible.begin(),E=feel_visible.end();

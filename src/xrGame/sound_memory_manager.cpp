@@ -315,7 +315,7 @@ struct CRemoveOfflinePredicate {
 
 void CSoundMemoryManager::update()
 {
-	START_PROFILE("Memory Manager/sounds::update")
+	PROF_EVENT("Memory Manager/sounds::update")
 
 	clear_delayed_objects		();
 
@@ -342,8 +342,6 @@ void CSoundMemoryManager::update()
 		}
 	}
 #endif
-
-	STOP_PROFILE
 }
 
 struct CSoundObjectPredicate {

@@ -103,9 +103,9 @@ float CItemManager::evaluate		(const CGameObject *object) const
 	return					(1000000.f - (float)inventory_item->Cost());
 }
 
-void CItemManager::update			()
+void CItemManager::update()
 {
-	START_PROFILE("Memory Manager/items::update")
+	PROF_EVENT("Memory Manager/items::update")
 
 #ifdef DEBUG
 	OBJECTS::const_iterator	I = m_objects.begin();
@@ -128,8 +128,6 @@ void CItemManager::update			()
 		*m_object->cName(),
 		selected() ? *selected()->cName() : "<no selected item>"
 	);
-
-	STOP_PROFILE
 }
 
 void CItemManager::remove_links		(CObject *object)

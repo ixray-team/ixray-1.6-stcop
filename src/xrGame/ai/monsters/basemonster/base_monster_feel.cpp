@@ -108,7 +108,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		
 		if (IsGameTypeSingle() && pEntityNC == Actor() && draw_hit_marks)
 		{
-			START_PROFILE("BaseMonster/Animation/HitEntity");
+			PROF_EVENT("BaseMonster/Animation/HitEntity");
 
 			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false, 3.0f);
 			
@@ -122,10 +122,6 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 			wnd_pos.y	+= 400.0f*_cos(d);
 			wnd_pos.x	+= 500.0f*_sin(d);
 			s->wnd()->SetWndPos(wnd_pos);
-
-			STOP_PROFILE;
-
-			//SetAttackEffector			();
 			
 			float time_to_lock		= fDamage * MAX_LOCK_TIME;
 			clamp					(time_to_lock, 0.f, MAX_LOCK_TIME);
