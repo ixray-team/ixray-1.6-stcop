@@ -266,7 +266,11 @@ void CUISequenceSimpleItem::Start()
 		}
 		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	
+			if (CurrentGameUI()->PdaMenu().pUIRankingWnd)
+				CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	
+			else
+				CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRankingGlobal");
+
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) 
