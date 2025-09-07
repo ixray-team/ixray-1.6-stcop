@@ -23,14 +23,6 @@ else()
     endif(LLD_PROGRAM)
 endif()
 
-# Setup packages patches
-if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
-    include("cmake/freebsd/packages.cmake")
-    add_compile_options(-mwaitpkg)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include("cmake/linux/packages.cmake")
-endif()
-
 # Setup build patches
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/$<CONFIG>)

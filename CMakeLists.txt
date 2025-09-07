@@ -1,39 +1,4 @@
 cmake_minimum_required(VERSION 3.20)
-
-# ---------------------------------------------------------------------------
-# Compiler selection (must happen BEFORE project())
-# ---------------------------------------------------------------------------
-if(NOT CMAKE_C_COMPILER AND DEFINED ENV{IXRAY_C_COMPILER})
-    set(CMAKE_C_COMPILER "$ENV{IXRAY_C_COMPILER}" CACHE STRING "C compiler from env" FORCE)
-    message(STATUS "(compiler) Using env IXRAY_C_COMPILER=$ENV{IXRAY_C_COMPILER}")
-endif()
-if(NOT CMAKE_CXX_COMPILER AND DEFINED ENV{IXRAY_CXX_COMPILER})
-    set(CMAKE_CXX_COMPILER "$ENV{IXRAY_CXX_COMPILER}" CACHE STRING "C++ compiler from env" FORCE)
-    message(STATUS "(compiler) Using env IXRAY_CXX_COMPILER=$ENV{IXRAY_CXX_COMPILER}")
-endif()
-
-# Auto-fallback: try clang then gcc if still unset (Linux / non-Windows)
-if(NOT WIN32)
-    if(NOT CMAKE_C_COMPILER)
-        foreach(cand clang clang-18 clang-17 clang-16 clang-15 clang-14 gcc)
-            if(NOT CMAKE_C_COMPILER AND EXISTS "/usr/bin/${cand}")
-                set(CMAKE_C_COMPILER "/usr/bin/${cand}" CACHE STRING "Auto-detected C compiler" FORCE)
-            endif()
-        endforeach()
-    endif()
-    if(NOT CMAKE_CXX_COMPILER)
-        foreach(cand clang++ clang++-18 clang++-17 clang++-16 clang++-15 clang++-14 g++)
-            if(NOT CMAKE_CXX_COMPILER AND EXISTS "/usr/bin/${cand}")
-                set(CMAKE_CXX_COMPILER "/usr/bin/${cand}" CACHE STRING "Auto-detected C++ compiler" FORCE)
-            endif()
-        endforeach()
-    endif()
-endif()
-
-if(NOT CMAKE_C_COMPILER OR NOT CMAKE_CXX_COMPILER)
-    message(WARNING "(compiler) Still missing compiler after auto-detect; CMAKE_C_COMPILER='${CMAKE_C_COMPILER}' CMAKE_CXX_COMPILER='${CMAKE_CXX_COMPILER}'")
-endif()
-
 project(IXRay)
 
 # CMake options
@@ -46,8 +11,6 @@ option(IXRAY_ASAN "Enable Address Sanitizer" OFF)
 option(IXRAY_LDEBUG "Enable LUA_DEBUG mode" OFF)
 option(IXRAY_USE_R1 "Enable DirectX 9 static render" ON)
 option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
-option(IXRAY_USE_VK "Enable Vulkan render" ON)
-option(IXRAY_VK_STRICT_NO_D3D "Force Vulkan renderer to compile with no Direct3D dependencies even on Windows" OFF)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" OFF)
@@ -115,6 +78,10 @@ if (WIN32)
 else()
     include("cmake/linux/nuget.cmake")
 endif()
+
+set(IXRAY_PACKAGES_CMAKE_NAME "packages.cmake")
+# Setup packages patches
+include("cmake/${CMAKE_SYSTEM_NAME}/${IXRAY_PACKAGES_CMAKE_NAME}")
 
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
