@@ -17,6 +17,8 @@ if ("${IXRAY_VULKAN_TAG_VERSION}" STREQUAL "")
     set(IXRAY_VULKAN_TAG_VERSION "vulkan-sdk-1.4.309.0")
 endif()
 
+message(STATUS "[packages] using Vulkan = ${IXRAY_VULKAN_TAG_VERSION}")
+
 FetchContent_Declare(
     VulkanHeaders
     GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers.git
@@ -36,7 +38,16 @@ FetchContent_MakeAvailable(VulkanLoader)
 
 message(STATUS "[packages] VulkanLoader - downloaded!")
 
- 
+FetchContent_Declare(
+    VulkanUtilityLibraries
+    GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
+    GIT_TAG "${IXRAY_VULKAN_TAG_VERSION}"
+)
+
+FetchContent_MakeAvailable(VulkanUtilityLibraries)
+
+message(STATUS "[packages] VulkanUtilityLibraries - downloaded!")
+
 FetchContent_Declare(
     VulkanValidationLayers
     GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-ValidationLayers.git
