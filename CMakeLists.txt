@@ -52,6 +52,9 @@ option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" OFF)
 option(IXRAY_OLD_AI_FORMAT "Enable old ai-map format" OFF)
+option(IXRAY_ENABLE_TBB_FETCH "Allow FetchContent fallback for oneTBB when system/NuGet TBB absent" ON)
+option(IXRAY_FORCE_FETCH_NVTT "Force FetchContent of nvtt even if NuGet/runtime variant present" OFF)
+set(IXRAY_DEFAULT_VULKAN_TAG_VERSION "vulkan-sdk-1.4.309.0" CACHE STRING "Default Vulkan SDK tag used when IXRAY_VULKAN_TAG_VERSION empty")
 
 # CI trash
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)

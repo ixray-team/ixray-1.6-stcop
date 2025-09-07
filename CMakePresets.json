@@ -21,6 +21,7 @@
                 "IXRAY_USE_R1": "ON",
                 "IXRAY_USE_R2": "ON",
                 "IXRAY_UNITYBUILD": "ON",
+                "IXRAY_VULKAN_TAG_VERSION": "$env{IXRAY_VULKAN_TAG_VERSION}",
                 "IXR_TEST_CI": "ON"
             }
         },
@@ -345,6 +346,7 @@
                 "IXRAY_USE_VK": "ON",
                 "IXRAY_UNITYBUILD": "ON",
                 "IXR_TEST_CI": "ON",
+                "IXRAY_VULKAN_TAG_VERSION": "$env{IXRAY_VULKAN_TAG_VERSION}",
                 "CMAKE_C_COMPILER": "$env{IXRAY_C_COMPILER}",
                 "CMAKE_CXX_COMPILER": "$env{IXRAY_CXX_COMPILER}",
                 "CMAKE_POLICY_VERSION_MINIMUM": "3.5"

@@ -33,6 +33,11 @@ jobs:
     name: 'Build engine'
     env:
       IXRAY_USE_VK: ON
+      # Central Vulkan tag (overrideable at workflow dispatch or future matrix)
+      IXRAY_VULKAN_TAG_VERSION: vulkan-sdk-1.4.309.0
+      # Control fallback fetch behaviors
+      IXRAY_ENABLE_TBB_FETCH: ON
+      IXRAY_FORCE_FETCH_NVTT: OFF
 
     strategy:
       matrix:
@@ -67,6 +72,29 @@ jobs:
             if (Test-Path $fallback) { echo "$fallback" | Out-File -FilePath $env:GITHUB_PATH -Append }
           }
           pkg-config --version
+      - name: Install CUDA toolkit (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Write-Host "Installing CUDA Toolkit (using choco if available)";
+          $cudaPackage = 'cuda'
+          choco install -y $cudaPackage --no-progress || Write-Host "Chocolatey CUDA install failed or already present.";
+          if (Test-Path 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA') {
+            $versions = Get-ChildItem 'C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA' -Directory | Select-Object -ExpandProperty Name | Sort-Object -Descending
+            if ($versions.Length -gt 0) {
+              $ver = $versions[0]
+              $root = "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/$ver"
+              Write-Host "CUDA detected at $root"
+              if (Test-Path "$root/bin/nvcc.exe") {
+                echo "CUDAToolkit_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append
+                echo "$root/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+                & "$root/bin/nvcc.exe" --version | Select-String "Cuda compilation" | ForEach-Object { Write-Host $_ }
+              } else {
+                Write-Host "nvcc.exe not found under $root/bin"
+              }
+            }
+          } else {
+            Write-Host "CUDA toolkit directory not found; continuing without CUDA.";
+          }
       - name: Set Vulkan SDK version (Windows)
         if: runner.os == 'Windows'
         run: |
@@ -116,6 +144,21 @@ jobs:
           sudo apt-get install -y build-essential
           gcc --version || true
           g++ --version || true
+
+      - name: Install CUDA toolkit (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -e
+          echo "Installing CUDA toolkit (Ubuntu repo version)";
+          sudo apt-get update
+          sudo apt-get install -y nvidia-cuda-toolkit
+          if command -v nvcc >/dev/null 2>&1; then
+            echo "CUDAToolkit_ROOT=/usr" >> $GITHUB_ENV
+            echo "CUDA installed: $(nvcc --version | head -n1)"
+          else
+            echo "nvcc not found after install (will keep build non-CUDA)";
+          fi
 
       - name: Set VULKAN_SDK (Linux)
         if: runner.os == 'Linux'
@@ -232,7 +275,10 @@ jobs:
         run: |
           cmake `
             --preset ${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }} `
-            -DIXRAY_USE_VK=${{ env.IXRAY_USE_VK }}
+            -DIXRAY_USE_VK=${{ env.IXRAY_USE_VK }} `
+            -DIXRAY_VULKAN_TAG_VERSION=${{ env.IXRAY_VULKAN_TAG_VERSION }} `
+            -DIXRAY_ENABLE_TBB_FETCH=${{ env.IXRAY_ENABLE_TBB_FETCH }} `
+            -DIXRAY_FORCE_FETCH_NVTT=${{ env.IXRAY_FORCE_FETCH_NVTT }}
 
       - name: Configure engine (Linux)
         if: runner.os == 'Linux'
@@ -243,7 +289,10 @@ jobs:
             -DIXRAY_USE_VK=${IXRAY_USE_VK} \
             -DIXRAY_USE_R1=OFF \
             -DIXRAY_USE_R2=OFF \
-            -DIXRAY_FORCE_NO_D3D=ON
+            -DIXRAY_FORCE_NO_D3D=ON \
+            -DIXRAY_VULKAN_TAG_VERSION=${IXRAY_VULKAN_TAG_VERSION} \
+            -DIXRAY_ENABLE_TBB_FETCH=${IXRAY_ENABLE_TBB_FETCH} \
+            -DIXRAY_FORCE_FETCH_NVTT=${IXRAY_FORCE_FETCH_NVTT}
 
       - name: Verify Vulkan setup (Linux)
         if: runner.os == 'Linux'
@@ -269,15 +318,6 @@ jobs:
         shell: bash
         run: |
           cmake --build --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}"
-
-      - name: Upload binaries (Windows)
-        if: runner.os == 'Windows'
-      - name: Build engine (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          cmake --build --preset "${{ matrix.preset }}-${{ matrix.platform }}-${{ runner.os }}-${{ matrix.config }}"
-
       - name: Upload binaries (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
@@ -287,16 +327,6 @@ jobs:
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.exe
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*.dll
 
-      - name: Upload binaries (Linux)
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v4
-        with:
-          name: engine-binaries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/bin/${{ matrix.config }}/*
-
-      - name: Upload symbols (Windows)
-        if: runner.os == 'Windows' && matrix.config != 'Release'
       - name: Upload binaries (Linux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
@@ -323,24 +353,12 @@ jobs:
 
       - name: Upload libraries (Linux)
         if: runner.os == 'Linux'
-      - name: Upload libraries (Windows)
-        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: engine-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
           path: |
             build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
 
-      - name: Upload libraries (Linux)
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v4
-        with:
-          name: engine-libraries-${{ matrix.system }}-${{ matrix.platform }}-${{ matrix.config }}-${{ github.sha }}
-          path: |
-            build/${{ matrix.platform }}/${{ matrix.preset }}-${{ runner.os }}/lib/${{ matrix.config }}/
-
-      - name: Upload packages (Windows Debug x64 only)
-        if: runner.os == 'Windows' && matrix.config == 'Debug' && matrix.platform == 'x64'
       - name: Upload packages (Windows Debug x64 only)
         if: runner.os == 'Windows' && matrix.config == 'Debug' && matrix.platform == 'x64'
         uses: actions/upload-artifact@v4
