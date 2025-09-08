@@ -25,6 +25,7 @@
 #include <luabind/config.hpp>
 
 #include <typeinfo>
+#include <limits>
 
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/object.hpp>

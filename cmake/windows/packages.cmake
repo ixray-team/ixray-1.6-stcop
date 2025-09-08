@@ -61,6 +61,6 @@ FetchContent_MakeAvailable(lunasvg)
 message(STATUS "[packages] lunasvg - fetched")
 
 # Vulkan dependencies (common script)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../common/packages-vulkan.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../common/packages-vulkan.cmake)
 
 message(STATUS "[packages] All Windows packages resolved")

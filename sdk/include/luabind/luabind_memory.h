@@ -23,7 +23,7 @@
 namespace luabind 
 {
 	typedef void* memory_allocation_function_parameter;
-	typedef void* (__cdecl *memory_allocation_function_pointer) (memory_allocation_function_parameter parameter, void const *, size_t);
+	typedef void* (*memory_allocation_function_pointer) (memory_allocation_function_parameter parameter, void const *, size_t);
 
 	extern LUABIND_API	memory_allocation_function_pointer		allocator;
 	extern LUABIND_API	memory_allocation_function_parameter	allocator_parameter;
