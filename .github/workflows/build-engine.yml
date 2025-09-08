@@ -190,9 +190,9 @@ jobs:
           ls -ld "$NUGET_PACKAGES" || true
           # Restore principal (Packages.config). On force un dossier solution existant.
           mkdir -p build/x64/Engine-Linux || true
-          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux -Verbosity minimal; then
+          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux; then
             echo "Primary restore failed, trying fallback to root build directory";
-            nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed || {
+            nuget restore cmake/linux/Packages.config -SolutionDirectory build || {
               echo "Restore failed after fallback"; exit 1;
             }
           fi

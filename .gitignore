@@ -95,3 +95,6 @@ cmake-build*/
 *.build
 *.install
 ixray-1.6-stcop/
+src/ixray-1.6-stcop/
+NuGet.exe
+./nuget

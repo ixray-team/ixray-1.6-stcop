@@ -332,9 +332,9 @@ jobs:
           echo "NUGET_PACKAGES=$NUGET_PACKAGES"
           ls -ld "$NUGET_PACKAGES" || true
           mkdir -p build/x64/Targets-Linux || true
-          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Targets-Linux -Verbosity minimal; then
+          if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Targets-Linux; then
             echo "Primary restore failed, trying fallback to build root";
-            nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed || {
+            nuget restore cmake/linux/Packages.config -SolutionDirectory build || {
               echo "Restore failed after fallback"; exit 1;
             }
           fi

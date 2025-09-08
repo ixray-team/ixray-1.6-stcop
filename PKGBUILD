@@ -40,10 +40,22 @@ optdepends=(
     'nvidia-cuda-toolkit: for CUDA acceleration support'
     'vulkan-tools: for Vulkan utilities and debugging'
 )
-source=(
-    "ixray-1.6-stcop::git+https://github.com/wasertech/ixray-1.6-stcop.git#branch=dev/vk"
-)
-sha256sums=('SKIP')
+# Mode source local facultatif:
+#   USE_LOCAL_SOURCE=1 makepkg -s
+# Désactiver génération du script fallback:
+#   SKIP_FALLBACK=1 USE_LOCAL_SOURCE=1 makepkg -s
+if [[ -n "${USE_LOCAL_SOURCE:-}" ]]; then
+    _using_local_source=1
+    _local_root="${PWD}"
+    source=()          # Pas de sources externes
+    noextract=()
+    sha256sums=()      # Pas de sources => pas de hash
+else
+    source=(
+        "ixray-1.6-stcop::git+https://github.com/wasertech/ixray-1.6-stcop.git#branch=dev/vk"
+    )
+    sha256sums=('SKIP')
+fi
 
 # Build configuration
 _preset="Engine"
@@ -51,12 +63,19 @@ _platform="x64"
 _config="RelWithDebInfo"
 
 prepare() {
-    cd "$srcdir/$pkgname"
-    git submodule update --init --recursive || true
-        # Assure l'exécutabilité du script de build centralisé ou le crée si absent
+    if [[ -n "${_using_local_source:-}" ]]; then
+        echo "== Using local working tree in-place (USE_LOCAL_SOURCE=1) =="
+        cd "${_local_root}"
+    else
+        cd "$srcdir/$pkgname"
+        git submodule update --init --recursive || true
+    fi
         if [ -f util/arch/build.sh ]; then
-                chmod +x util/arch/build.sh || true
+            chmod +x util/arch/build.sh || true
         else
+            if [[ -n "${SKIP_FALLBACK:-}" ]]; then
+                echo "[prepare] util/arch/build.sh manquant et SKIP_FALLBACK=1 -> pas de génération" >&2
+            else
                 echo "[prepare] util/arch/build.sh absent -> création d'une version embarquée" >&2
                 install -d util/arch
                 cat > util/arch/build.sh <<'EOF'
@@ -67,6 +86,8 @@ PRESET="Engine"
 PLATFORM="x64"
 CONFIG="${1:-RelWithDebInfo}"
 VULKAN_SDK_VERSION="vulkan-sdk-1.4.309.0"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 echo "== IX-Ray minimal build.sh (fallback) =="
 
@@ -106,10 +127,19 @@ EOS
 fi
 
 echo "Restoring NuGet packages..."
-nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux -Verbosity minimal || \
- nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed || true
+PKGS_FILE="$ROOT_DIR/cmake/linux/Packages.config"
+if [ ! -f "$PKGS_FILE" ]; then
+    echo "[ERR] Packages.config introuvable: $PKGS_FILE" >&2
+    ls -la "$ROOT_DIR/cmake/linux" 2>/dev/null || true
+    exit 0
+fi
+(
+    cd "$ROOT_DIR"
+    nuget restore "$PKGS_FILE" -SolutionDirectory build/x64/Engine-Linux || \
+     nuget restore "$PKGS_FILE" -SolutionDirectory build || true
+)
 
-# LuaJIT vérification
+# LuaJIT verification
 LJ="build/x64/Engine-Linux/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/runtimes/linux-x64/native"
 if [ ! -f "$LJ/libluajit.so" ]; then
     nuget install IXRay.Packages.LuaJIT.Runtimes.linux-x64 -Version 2023.8.23.1-open -OutputDirectory build/x64/Engine-Linux/packages || true
@@ -129,24 +159,37 @@ cmake --preset "${PRESET}-${PLATFORM}-Linux" \
 echo "Building..."
 cmake --build --preset "${PRESET}-${PLATFORM}-Linux-${CONFIG}"
 
-echo "== Build fallback terminé =="
+echo "== Build fallback done =="
 EOF
-                chmod +x util/arch/build.sh || true
+            chmod +x util/arch/build.sh || true
         fi
+    fi
 }
 
 build() {
-    cd "$srcdir/$pkgname"
+    if [[ -n "${_using_local_source:-}" ]]; then
+        cd "${_local_root}"
+    else
+        cd "$srcdir/$pkgname"
+    fi
     if [ -x util/arch/build.sh ]; then
         util/arch/build.sh "$_config"
     else
-        echo "util/arch/build.sh manquant ou non exécutable" >&2
+        if [[ -n "${SKIP_FALLBACK:-}" ]]; then
+            echo "[build] util/arch/build.sh absent et SKIP_FALLBACK=1 -> arrêt" >&2
+        else
+            echo "util/arch/build.sh manquant ou non exécutable" >&2
+        fi
         return 1
     fi
 }
 
 check() {
-    cd "$srcdir/$pkgname"
+    if [[ -n "${_using_local_source:-}" ]]; then
+        cd "${_local_root}"
+    else
+        cd "$srcdir/$pkgname"
+    fi
     local build_dir="build/x64/Engine-Linux/bin/$_config"
     if [ ! -d "$build_dir" ]; then
         echo "Build directory not found: $build_dir" >&2
@@ -157,7 +200,11 @@ check() {
 }
 
 package() {
-    cd "$srcdir/$pkgname"
+    if [[ -n "${_using_local_source:-}" ]]; then
+        cd "${_local_root}"
+    else
+        cd "$srcdir/$pkgname"
+    fi
     local build_dir="build/x64/Engine-Linux"
 
     if [ -d "$build_dir/bin/$_config" ]; then

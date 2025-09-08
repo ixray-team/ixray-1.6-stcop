@@ -5,7 +5,13 @@ set -euo pipefail
 # This script follows the same steps as the CI for ubuntu-latest
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+# Déterminer racine dépôt: ce script est dans util/arch/ -> remonter deux niveaux si nécessaire
+if [ -d "$SCRIPT_DIR/../../cmake" ]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+else
+    ROOT_DIR="$SCRIPT_DIR" # fallback
+fi
+cd "$ROOT_DIR"
 
 # Configuration
 PRESET="Engine"
@@ -157,9 +163,15 @@ EOF
 restore_packages() {
     log_info "Restoring NuGet packages..."
     
-    if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build/x64/Engine-Linux -Verbosity minimal; then
+    local pkgs_file="cmake/linux/Packages.config"
+    if [ ! -f "$pkgs_file" ]; then
+        log_error "Missing $pkgs_file (cwd=$(pwd))"
+        ls -la cmake/linux 2>/dev/null || true
+        exit 1
+    fi
+    if ! nuget restore "$pkgs_file" -SolutionDirectory build/x64/Engine-Linux; then
         log_warning "Primary restore failed, trying fallback..."
-        if ! nuget restore cmake/linux/Packages.config -SolutionDirectory build -Verbosity detailed; then
+        if ! nuget restore "$pkgs_file" -SolutionDirectory build; then
             log_error "Package restore failed"
             exit 1
         fi
