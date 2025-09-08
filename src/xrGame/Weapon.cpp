@@ -1192,12 +1192,19 @@ void CWeapon::OnHiddenItem ()
 	bWorking = false;
 }
 
-bool CWeapon::SendDeactivateItem()
+bool CWeapon::SendDeactivateItem(bool Force)
 {
 	if (GetState() == eFire)
-		return false;
+	{
+		if (!Force)
+		{
+			return false;
+		}
 
-	return inherited::SendDeactivateItem();
+		FireEnd();
+	}
+
+	return inherited::SendDeactivateItem(Force);
 }
 
 void CWeapon::SendHiddenItem()

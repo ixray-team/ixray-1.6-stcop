@@ -207,13 +207,13 @@ void CGrenade::DiscardState()
 		OnStateSwitch(eIdle);
 }
 
-bool CGrenade::SendDeactivateItem()
+bool CGrenade::SendDeactivateItem(bool Force)
 {
 	CActor* pActor = m_pInventory->GetOwner() ? m_pInventory->GetOwner()->cast_actor() : nullptr;
 	if (pActor && (GetState() == eReady || GetState() == eThrow))
 		return false;
 
-	return inherited::SendDeactivateItem();
+	return inherited::SendDeactivateItem(Force);
 }
 
 void CGrenade::Throw() 

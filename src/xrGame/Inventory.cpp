@@ -535,7 +535,7 @@ void CInventory::Activate_deffered	(u32 slot, u32 _frame)
 }*/
 
 
-void CInventory::Activate(u16 slot, bool bForce) 
+void CInventory::Activate(u16 slot, bool bForce, bool ForceHide)
 {	
 	if(!OnServer())
 	{
@@ -548,7 +548,7 @@ void CInventory::Activate(u16 slot, bool bForce)
 		{
 			if (CHudItem* hud_item = ActiveItem() ? ActiveItem()->cast_hud_item() : nullptr)
 			{
-				if (hud_item->SendDeactivateItem())
+				if (hud_item->SendDeactivateItem(false))
 				{
 					m_iNextActiveSlot = NO_ACTIVE_SLOT;
 				}
@@ -605,11 +605,14 @@ void CInventory::Activate(u16 slot, bool bForce)
 			CHudItem* tempItem = active_item->cast_hud_item();
 			R_ASSERT2(tempItem, active_item->object().cNameSect().c_str());
 			
-			if (tempItem == nullptr || !tempItem->SendDeactivateItem())
+			if (tempItem == nullptr || !tempItem->SendDeactivateItem(ForceHide))
+			{
 				return;
-
-		} else //in case where weapon is going to destroy
+			}
+		}
+		else
 		{
+			//in case where weapon is going to destroy
 			if (tmp_item)
 				tmp_item->ActivateItem();
 			
@@ -861,7 +864,7 @@ void CInventory::Update()
 				if(!hi->IsHidden())
 				{
 					if(hi->GetState()==CHUDState::eIdle && hi->GetNextState()==CHUDState::eIdle)
-						hi->SendDeactivateItem();
+						hi->SendDeactivateItem(false);
 
 					UpdateDropTasks	();
 					return;
@@ -1543,7 +1546,7 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
 	
 	if (bBlock)
 	{
-		TryDeactivateActiveSlot();	
+		TryDeactivateActiveSlot(true);	
 	} else
 	{
 		TryActivatePrevSlot();
@@ -1575,7 +1578,7 @@ void CInventory::TryActivatePrevSlot()
 	}
 }
 
-void CInventory::TryDeactivateActiveSlot	()
+void CInventory::TryDeactivateActiveSlot(bool Force)
 {
 	u16 ActiveSlot		= GetActiveSlot();
 	u16 NextActiveSlot	= GetNextActiveSlot();
@@ -1596,7 +1599,7 @@ void CInventory::TryDeactivateActiveSlot	()
 		Msg("Set slots blocked: activating slot [-1], Frame[%d]", Device.dwFrame);
 #endif // #ifndef MASTER_GOLD
 		ItemFromSlot(ActiveSlot)->DiscardState();
-		Activate			(NO_ACTIVE_SLOT);
+		Activate(NO_ACTIVE_SLOT, false, Force);
 		SetPrevActiveSlot	(ActiveSlot);
 	} else if (next_active_item &&
 		(IsSlotBlocked(next_active_item) || !m_slots[NextActiveSlot].CanBeActivated())
