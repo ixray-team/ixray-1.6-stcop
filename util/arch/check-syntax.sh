@@ -8,6 +8,20 @@ CLANG=${CLANG:-clang++}
 # assume script is in util/arch/, project root is three levels up
 PROJECT_ROOT="$(dirname "$(dirname "$(dirname "$0")")")"
 
+# Parse simple CLI flags
+KEEP_LOGS=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -k|--keep-logs)
+            KEEP_LOGS=1
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 function check_clang() {
     command -v "$1" >/dev/null 2>&1 || { echo >&2 "Error: $1 is not installed. Aborting."; exit 1; }
 }
@@ -22,7 +36,14 @@ function file_syntax_check() {
 
 function check_cpp_syntax() {
     local log_file=${1:-./check.cpp.err.log}
-    > "$log_file"  # Clear the log file
+
+    # If requested, do not reset logs and skip if the log already exists and is non-empty
+    if [ "$KEEP_LOGS" -eq 1 ] && [ -s "$log_file" ]; then
+        echo "Skipping C++ syntax check because '$log_file' exists and --keep-logs was specified."
+        return 0
+    fi
+
+    > "$log_file"  # Clear the log file (unless skipped above)
 
     # Number of threads to use (can be overridden with JOBS env)
     local jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 1)}
@@ -42,17 +63,17 @@ function check_cpp_syntax() {
     export CLANG PROJECT_ROOT TMPDIR="$tmpdir"
 
     # Run checks in parallel. Each failing check writes a small file into TMPDIR.
-    find "$PROJECT_ROOT" -name "*.cpp" -type f -print0 | \
+    find "$PROJECT_ROOT" -name "*.cpp" -type f -print0 2>/dev/null | \
       xargs -0 -P "$jobs" -I{} bash -c '
         file="$1"
         if ! "$CLANG" -ferror-limit=1 -std=c++23 -fsyntax-only -I "$PROJECT_ROOT/sdk/include" -I "$PROJECT_ROOT/sdk/include/luabind" -I "$PROJECT_ROOT/sdk/include/lua" "$file" >/dev/null 2>&1; then
-          tmpf=$(mktemp "$TMPDIR/file.XXXXXX") || tmpf="$TMPDIR/file.$$.$RANDOM"
+          tmpf=$(mktemp -p "$TMPDIR" file.XXXXXX 2>/dev/null) || tmpf="$TMPDIR/file.$$.$RANDOM"
           printf "%s\n" "$file" > "$tmpf"
         fi
       ' _ {}
 
     # Aggregate results if any
-    if comp=$(find "$tmpdir" -type f -name 'file.*' -print -quit); then
+    if comp=$(find "$tmpdir" -type f -name 'file.*' -print -quit 2>/dev/null); then
         cat "$tmpdir"/file.* > "$log_file"
     fi
 
@@ -61,7 +82,14 @@ function check_cpp_syntax() {
 
 function check_headers_syntax() {
     local log_file=${1:-./check.h.err.log}
-    > "$log_file"  # Clear the log file
+
+    # If requested, do not reset logs and skip if the log already exists and is non-empty
+    if [ "$KEEP_LOGS" -eq 1 ] && [ -s "$log_file" ]; then
+        echo "Skipping header syntax check because '$log_file' exists and --keep-logs was specified."
+        return 0
+    fi
+
+    > "$log_file"  # Clear the log file (unless skipped above)
 
     # Number of threads to use (can be overridden with JOBS env)
     local jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || echo 1)}
@@ -80,17 +108,17 @@ function check_headers_syntax() {
 
     export CLANG PROJECT_ROOT TMPDIR="$tmpdir"
 
-    find "$PROJECT_ROOT" -name "*.h" -type f -print0 | \
+    find "$PROJECT_ROOT" -name "*.h" -type f -print0 2>/dev/null | \
       xargs -0 -P "$jobs" -I{} bash -c '
         file="$1"
         if ! "$CLANG" -ferror-limit=1 -std=c++23 -fsyntax-only -I "$PROJECT_ROOT/sdk/include" -I "$PROJECT_ROOT/sdk/include/luabind" -I "$PROJECT_ROOT/sdk/include/lua" "$file" >/dev/null 2>&1; then
-          tmpf=$(mktemp "$TMPDIR/file.XXXXXX") || tmpf="$TMPDIR/file.$$.$RANDOM"
+          tmpf=$(mktemp -p "$TMPDIR" file.XXXXXX 2>/dev/null) || tmpf="$TMPDIR/file.$$.$RANDOM"
           printf "%s\n" "$file" > "$tmpf"
         fi
       ' _ {}
 
     # Aggregate results if any
-    if comp=$(find "$tmpdir" -type f -name 'file.*' -print -quit); then
+    if comp=$(find "$tmpdir" -type f -name 'file.*' -print -quit 2>/dev/null); then
         cat "$tmpdir"/file.* > "$log_file"
     fi
 
