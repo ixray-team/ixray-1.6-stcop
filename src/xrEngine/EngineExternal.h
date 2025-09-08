@@ -21,7 +21,7 @@ enum class EEngineExternalGame
 	EnableAutoreload,
 	EnableMonstersInventory,
 	EnableWeaponInertion,
-	EnableWeaponCollision
+	EnableWeaponCollision,
 };
 
 enum class EEngineExternalRender 
