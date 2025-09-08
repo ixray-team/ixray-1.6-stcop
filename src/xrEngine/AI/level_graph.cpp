@@ -15,14 +15,33 @@ ILevelGraph::~ILevelGraph()
 
 bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>& OutPath, float MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
 {
-	thread_local std::pmr::monotonic_buffer_resource pmr_resource{ 1024 * 1024 };
-	thread_local xr_vector<std::pair<float, u32>> TempPriorityNode;
+	// Используем более эффективные структуры данных
+	struct ComparePriority {
+		bool operator()(const std::pair<float, u32>& a, const std::pair<float, u32>& b) const {
+			return a.first > b.first; // min-heap
+		}
+	};
 
-	thread_local std::pmr::unordered_map<u32, u32> TempCameFrom{ &pmr_resource };
-	thread_local std::pmr::unordered_map<u32, float> TempCostSoFar{ &pmr_resource };
-	float m_distance_xz = header().cell_size();
+	thread_local std::priority_queue<std::pair<float, u32>,
+		xr_vector<std::pair<float, u32>>,
+		ComparePriority> TempPriorityNode;
 
-	TempPriorityNode.clear();
+	thread_local std::pmr::unordered_map<u32, u32> TempCameFrom;
+	thread_local std::pmr::unordered_map<u32, float> TempCostSoFar;
+
+	// Используем memory pool с очисткой между вызовами
+	thread_local std::pmr::unsynchronized_pool_resource pool_resource;
+	thread_local bool initialized = false;
+
+	if (!initialized) {
+		TempCameFrom = std::pmr::unordered_map<u32, u32>{ &pool_resource };
+		TempCostSoFar = std::pmr::unordered_map<u32, float>{ &pool_resource };
+		initialized = true;
+	}
+
+	const float m_distance_xz = header().cell_size();
+
+	TempPriorityNode = {};
 	TempCameFrom.clear();
 	TempCostSoFar.clear();
 	OutPath.clear();
@@ -30,45 +49,44 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 	u32 FromID = start_vertex_id;
 	u32 ToID = dest_vertex_id;
 
-	if (FromID == ToID)
-	{
+	if (FromID == ToID) {
 		OutPath.push_back(start_vertex_id);
 		return true;
 	}
 
-	if (!is_accessible(FromID) || !is_accessible(ToID))
-	{
+	if (!is_accessible(FromID) || !is_accessible(ToID)) {
 		return false;
 	}
 
-	TempPriorityNode.push_back({ 0.f, FromID });
-	TempCameFrom.insert({ FromID, FromID });
-	TempCostSoFar.insert({ FromID, 0.f });
+	// Предварительно вычисляем позицию целевого узла
+	CVertex* target_vertex = vertex(ToID);
+	float target_x, target_z;
+	unpack_xz(target_vertex, target_x, target_z);
 
-	auto CalcCost = [m_distance_xz](CVertex* Node1, CVertex* Node2)
-	{
+	TempPriorityNode.push({ 0.f, FromID });
+	TempCameFrom[FromID] = FromID;
+	TempCostSoFar[FromID] = 0.f;
+
+	auto CalcCost = [m_distance_xz](CVertex*, CVertex*) {
 		return m_distance_xz;
-	};
+		};
 
-	auto DistanceNode = [this, m_distance_xz](CVertex* Node1, CVertex* Node2)
-	{
-		float x1; float y1;
-		float x2; float y2;
-		unpack_xz(Node1, x1, y1);
-		unpack_xz(Node2, x2, y2);
-		return m_distance_xz * 2 * (fabs(x1 - x2) + fabs(y1 - y2));
-	};
+	auto DistanceNode = [this, m_distance_xz, target_x, target_z](CVertex* Node) {
+		float x1, y1;
+		unpack_xz(Node, x1, y1);
+		return m_distance_xz * 2 * (fabs(x1 - target_x) + fabs(y1 - target_z));
+		};
 
-	while (!TempPriorityNode.empty())
-	{
-		u32 CurrentNodeID = TempPriorityNode.back().second;
-		TempPriorityNode.pop_back();
+	u32 visited_count = 0;
 
-		if (CurrentNodeID == ToID)
-		{
+	while (!TempPriorityNode.empty() && MaxIterationCount > 0) {
+		u32 CurrentNodeID = TempPriorityNode.top().second;
+		TempPriorityNode.pop();
+
+		if (CurrentNodeID == ToID) {
+			// Восстанавливаем путь
 			u32 NextNode = ToID;
-			while (NextNode != FromID)
-			{
+			while (NextNode != FromID) {
 				OutPath.insert(OutPath.begin(), NextNode);
 				NextNode = TempCameFrom[NextNode];
 			}
@@ -77,57 +95,54 @@ bool ILevelGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>
 		}
 
 		CVertex* Node = vertex(CurrentNodeID);
-		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++)
-		{
-			if (MaxIterationCount == 0)
-				continue;
 
+		for (s32 NeighborIndex = 0; NeighborIndex < 4; NeighborIndex++) {
 			u32 NeighborID = Node->link(NeighborIndex);
-			if (!is_accessible(NeighborID))
+			if (!is_accessible(NeighborID)) {
 				continue;
-
-			MaxIterationCount--;
+			}
 
 			CVertex* Neighbor = vertex(NeighborID);
 			float NewCost = TempCostSoFar[CurrentNodeID] + CalcCost(Node, Neighbor);
-			auto TempCostSoFarIterator = TempCostSoFar.find(NeighborID);
-			const bool OutOfFar = TempCostSoFarIterator != TempCostSoFar.end();
 
-			if ((OutOfFar && TempCostSoFarIterator->second > NewCost) || (!OutOfFar && MaxVisitedNodeCount > TempCostSoFar.size()))
-			{
-				const float Distance = DistanceNode(vertex(ToID), Neighbor);
+			auto cost_it = TempCostSoFar.find(NeighborID);
+			if (cost_it != TempCostSoFar.end() && cost_it->second <= NewCost) {
+				continue; // Уже есть лучший путь
+			}
 
-				if (Distance > MaxRange)
-				{
-					continue;
-				}
+			// Проверяем лимит посещённых узлов
+			if (TempCostSoFar.size() >= MaxVisitedNodeCount) {
+				continue;
+			}
 
-				if (OutOfFar)
-				{
-					TempCostSoFarIterator->second = NewCost;
-				}
-				else
-				{
-					TempCostSoFar.insert({ NeighborID,NewCost });
-				}
+			// Проверяем диапазон
+			const float Distance = DistanceNode(Neighbor);
+			if (Distance > MaxRange) {
+				continue;
+			}
 
-				float priority = NewCost + Distance;
-				TempPriorityNode.insert
-				(
-					std::upper_bound
-					(
-						TempPriorityNode.begin(), TempPriorityNode.end(), std::make_pair(priority, NeighborID), 
-						[](const std::pair<float, u32>& Left, const std::pair<float, u32>& Right)
-						{
-							return Left.first > Right.first; 
-						}
-					),
-					{ priority, NeighborID }
-				);
+			// Обновляем или добавляем стоимость
+			if (cost_it != TempCostSoFar.end()) {
+				cost_it->second = NewCost;
+			}
+			else {
+				TempCostSoFar[NeighborID] = NewCost;
+			}
 
-				TempCameFrom[NeighborID] = CurrentNodeID;
+			// Добавляем в очередь с приоритетом
+			float priority = NewCost + Distance;
+			TempPriorityNode.push({ priority, NeighborID });
+
+			// Обновляем информацию о пути
+			TempCameFrom[NeighborID] = CurrentNodeID;
+
+			// Уменьшаем счётчик итераций
+			if (--MaxIterationCount == 0) {
+				break;
 			}
 		}
+
+		visited_count++;
 	}
 
 	return false;
