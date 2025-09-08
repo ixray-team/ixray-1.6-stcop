@@ -29,10 +29,12 @@ extern "C"
 #include <luabind/config.hpp>
 #include <functional>
 
+// Explicit instantiation outside of any namespace
+template class LUABIND_API std::function<int(lua_State*)>;
+
 namespace luabind::detail
 {
 	// this class represents a specific overload of a member-function.
-    template class LUABIND_API std::function<int(lua_State*)>;
 
 	struct LUABIND_API overload_rep_base
 	{
