@@ -118,7 +118,7 @@ public:
 
 	virtual bool				ActivateItem		();
 	virtual void				DeactivateItem		();
-	virtual bool				SendDeactivateItem	();
+	virtual bool				SendDeactivateItem	(bool Force);
 	virtual void				OnActiveItem		()				{};
 	virtual void				OnHiddenItem		()				{};
 	virtual void				SendHiddenItem		();			//same as OnHiddenItem but for client... (sends message to a server)...
