@@ -22,6 +22,55 @@ inline void itoa(float val, char* str, [[maybe_unused]]size_t size)
     strcpy(str, itoa(val));
 }
 
+inline char* itoa(int value, char* str, int radix)
+{
+    // Simple implementation for common radix values
+    if (radix == 10) {
+        sprintf(str, "%d", value);
+    } else if (radix == 16) {
+        sprintf(str, "%x", value);
+    } else if (radix == 8) {
+        sprintf(str, "%o", value);
+    } else {
+        // For other radix values, implement manually
+        char *p = str;
+        bool negative = false;
+        unsigned int uvalue;
+        
+        if (value < 0 && radix == 10) {
+            negative = true;
+            uvalue = -value;
+        } else {
+            uvalue = value;
+        }
+        
+        char temp[33];
+        char *tp = temp;
+        
+        if (uvalue == 0) {
+            *tp++ = '0';
+        } else {
+            while (uvalue) {
+                int digit = uvalue % radix;
+                if (digit < 10) {
+                    *tp++ = '0' + digit;
+                } else {
+                    *tp++ = 'a' + (digit - 10);
+                }
+                uvalue /= radix;
+            }
+        }
+        
+        if (negative) *p++ = '-';
+        
+        while (tp > temp) {
+            *p++ = *--tp;
+        }
+        *p = '\0';
+    }
+    return str;
+}
+
 inline void strupr(char* s)
 {
     while (*s)
@@ -170,6 +219,11 @@ IC bool IsCharAlphaNumeric(char ch)
  * @param readOnly
  * @return
  */
+IC char* _cdecl _ltoa(long value, char *str, int radix)
+{
+    return itoa((int)value, str, radix);
+}
+
 IC int _cdecl _i64toa_s(int64_t value, char *str, size_t size, int radix)
 {
     uint64_t val;
@@ -240,6 +294,17 @@ IC int _cdecl _i64toa_s(int64_t value, char *str, size_t size, int radix)
 
     memcpy(str, pos, len);
     return 0;
+}
+
+IC char* _cdecl _i64toa(int64_t value, char *str, int radix)
+{
+    // For values that fit in int, use itoa
+    if (value >= INT_MIN && value <= INT_MAX) {
+        return itoa((int)value, str, radix);
+    } else {
+        _i64toa_s(value, str, 65, radix);
+        return str;
+    }
 }
 
 IC int _cdecl _ui64toa_s(uint64_t value, char *str, size_t size, int radix)
@@ -385,6 +450,22 @@ IC uint64_t _strtoui64(const char *nptr, char **endptr, int base)
 {
     return _strtoui64_l(nptr, endptr, base, NULL);
 }
+
+inline char* strnstr(const char* haystack, const char* needle, size_t len)
+{
+    size_t needle_len = strlen(needle);
+    if (needle_len == 0) return (char*)haystack;
+    
+    for (size_t i = 0; i < len && haystack[i]; i++) {
+        if (i + needle_len > len) break;
+        if (strncmp(haystack + i, needle, needle_len) == 0) {
+            return (char*)(haystack + i);
+        }
+    }
+    return nullptr;
+}
+
+
 
 IC char* _strlwr_s(char* strDestination, size_t sizeInBytes)
 {
