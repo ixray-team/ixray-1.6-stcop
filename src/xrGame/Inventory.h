@@ -64,7 +64,7 @@ public:
 	bool					CanTakeItem			(CInventoryItem *inventory_item) const;
 
 
-	void					Activate			(u16 slot, /*EActivationReason reason=eGeneral, */bool bForce=false);
+	void					Activate			(u16 slot, bool bForce=false, bool ForceHide = false);
 	void					PutGrenade			(CGrenade* new_grenade);
 	
 	static u32 const		qs_priorities_count = 5;
@@ -196,7 +196,7 @@ private:
 
 	bool				IsSlotBlocked(u16 slot_id) const;
 	void				TryActivatePrevSlot		();
-	void				TryDeactivateActiveSlot	();
+	void				TryDeactivateActiveSlot	(bool Force = false);
 
 	const char* m_onItemAvailableToTrade = {};
 	bool m_isItemAvailableToTrade = false;

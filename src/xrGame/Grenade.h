@@ -52,7 +52,7 @@ public:
 	virtual void			DeactivateItem						();
 	virtual bool			GetBriefInfo						(II_BriefInfo& info);
 
-	virtual bool			SendDeactivateItem					();
+	virtual bool			SendDeactivateItem					(bool Force);
 protected:
 	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
 	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
