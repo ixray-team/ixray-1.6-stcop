@@ -81,3 +81,17 @@ cmake-build*/
 
 # Optick
 *.opt
+
+# Arch Packages Builds
+*.tar.zst
+*.tar.xz
+*.tar.gz
+*.pkg.tar.zst
+*.pkg.tar.xz
+*.pkg.tar.gz
+*.pkg.tar
+*.sig
+*.asc
+*.build
+*.install
+ixray-1.6-stcop/
