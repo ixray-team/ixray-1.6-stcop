@@ -13,7 +13,12 @@ else()
     )
     add_compile_options(-msse4.2) # crc32
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
+    # Use libc++ only if headers are present (some distros don't install libc++ by default).
+    if(EXISTS "/usr/include/c++/v1/new" OR EXISTS "/usr/include/c++/v1/iostream")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
+    else()
+        message(STATUS "libc++ headers not found in /usr/include/c++/v1; not adding -stdlib=libc++ flag")
+    endif()
     add_compile_definitions(_GNU_SOURCE) # mremap
     
     find_program(LLD_PROGRAM lld)

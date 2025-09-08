@@ -13,6 +13,15 @@ else
 fi
 cd "$ROOT_DIR"
 
+# Prepare build log in project root
+LOG_FILE="$ROOT_DIR/build.log"
+if [ -f "$LOG_FILE" ]; then
+    rm -f "$LOG_FILE"
+fi
+# Redirect all output to both stdout and the log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "=== Build log started: $(date) ==="
+
 # Configuration
 PRESET="Engine"
 PLATFORM="x64"

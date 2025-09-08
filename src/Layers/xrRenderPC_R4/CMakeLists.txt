@@ -96,8 +96,20 @@ endif()
 
 ## DirectX SDK
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+if(WIN32)
+    target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
+    target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+else()
+    # On non-Windows platforms DirectXTex is not applicable; rely on nvtt or system alternatives if needed
+    find_package(PkgConfig QUIET)
+    if(PkgConfig_FOUND)
+        pkg_check_modules(NVTT nvtt QUIET)
+        if(NVTT_FOUND)
+            target_include_directories(xrRender_R4 PUBLIC ${NVTT_INCLUDE_DIRS})
+            target_link_libraries(xrRender_R4 PUBLIC ${NVTT_LIBRARIES})
+        endif()
+    endif()
+endif()
 
 ## RenderDoc
 target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")

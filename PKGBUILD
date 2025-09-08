@@ -74,9 +74,9 @@ prepare() {
             chmod +x util/arch/build.sh || true
         else
             if [[ -n "${SKIP_FALLBACK:-}" ]]; then
-                echo "[prepare] util/arch/build.sh manquant et SKIP_FALLBACK=1 -> pas de génération" >&2
+                echo "[prepare] util/arch/build.sh manquant et SKIP_FALLBACK=1 -> no build" >&2
             else
-                echo "[prepare] util/arch/build.sh absent -> création d'une version embarquée" >&2
+                echo "[prepare] util/arch/build.sh absent -> creating embedded version" >&2
                 install -d util/arch
                 cat > util/arch/build.sh <<'EOF'
 #!/bin/bash
@@ -89,13 +89,21 @@ VULKAN_SDK_VERSION="vulkan-sdk-1.4.309.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
+# Prepare build log
+LOG_FILE="$ROOT_DIR/build.log"
+if [ -f "$LOG_FILE" ]; then
+    rm -f "$LOG_FILE"
+fi
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "=== Build log started: $(date) ==="
+
 echo "== IX-Ray minimal build.sh (fallback) =="
 
-# Environnement Vulkan
+# Vulkan environment
 export VULKAN_SDK=/usr
 export VK_SDK_PATH=/usr
 
-# Choix compilateur
+# Compiler selection
 if command -v clang >/dev/null 2>&1; then
     export IXRAY_C_COMPILER=clang
     export IXRAY_CXX_COMPILER=clang++

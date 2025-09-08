@@ -41,185 +41,42 @@ namespace luabind
                 using tuple_t = std::tuple<Ts...>;
 			public:
 
-				proxy_functor_caller(luabind::functor<Ret>* o, const tuple_t& args)
-					: m_func(o)
-					, m_args(args)
-					, m_called(false)
-				{
-				}
-
-                proxy_functor_caller(luabind::functor<Ret>* o, tuple_t&& args)
-                    : m_func(o)
-                    , m_args(std::move(args))
-                    , m_called(false)
-                {
-                }
-
-				proxy_functor_caller(const proxy_functor_caller& rhs)
-					: m_func(rhs.m_func)
-					, m_args(rhs.m_args)
-					, m_called(rhs.m_called)
-				{
-					rhs.m_called = true;
-				}
-
-                proxy_functor_caller(proxy_functor_caller&& rhs)
-                    : m_func(rhs.m_func)
-                    , m_args(std::move(rhs.m_args))
-                    , m_called(rhs.m_called)
-                {
-                    rhs.m_called = true;
-                }
-
-				~proxy_functor_caller() LUABIND_DTOR_NOEXCEPT
-				{
-					if (m_called) return;
-
-					m_called = true;
-					lua_State* L = m_func->lua_state();
-
-					// get the function
-					m_func->pushvalue();
-
-					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, sizeof...(Ts), 0))
-					{ 
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw luabind::error(L);
-#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "the lua function threw an error and exceptions are disabled."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
-					}
-				}
-
-				operator Ret()
-				{
-					typename default_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
-
-					m_called = true;
-					lua_State* L = m_func->lua_state();
-#ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == nullptr)
+					proxy_functor_caller(luabind::functor<Ret>* o, const tuple_t& args)
+						: m_func(o)
+						, m_args(args)
+						, m_called(false)
 					{
-	#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L); 
-	#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "tried to call uninitialized functor object."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-	#endif
-					}
-#endif
-
-					detail::stack_pop p(L, 1); // pop the return value
-
-					// get the function
-					m_func->pushvalue();
-
-					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, sizeof...(Ts), 1))
-					{ 
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw luabind::error(L);
-#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "the lua function threw an error and exceptions are disabled."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
 					}
 
-#ifndef LUABIND_NO_ERROR_CHECKING
-
-					if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+					proxy_functor_caller(luabind::functor<Ret>* o, tuple_t&& args)
+						: m_func(o)
+						, m_args(std::move(args))
+						, m_called(false)
 					{
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw cast_failed(L, LUABIND_TYPEID(Ret));
-#else
-						cast_failed_callback_fun e = get_cast_failed_callback();
-						if (e) e(L, LUABIND_TYPEID(Ret));
-
-						assert(0 && "the lua function's return value could not be converted."
-								"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
 					}
-#endif
-					return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
-				}
 
-				template<typename... Policies>
-				Ret operator[](const policy_cons<Policies...> p)
-				{
-					using converter_policy = typename detail::find_conversion_policy<0, Policies...>::type;
-					typename converter_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
-
-					m_called = true;
-					lua_State* L = m_func->lua_state();
-#ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == nullptr)
+					proxy_functor_caller(const proxy_functor_caller& rhs)
+						: m_func(rhs.m_func)
+						, m_args(rhs.m_args)
+						, m_called(rhs.m_called)
 					{
-	#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L); 
-	#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "tried to call uninitialized functor object."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-	#endif
-					}
-#endif
-
-					detail::stack_pop popper(L, 1); // pop the return value
-
-					// get the function
-					m_func->pushvalue();
-
-					detail::push_args_from_tuple<1>::apply(L, m_args, p);
-					if (pcall(L, sizeof...(Ts), 1))
-					{ 
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L);
-#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "the lua function threw an error and exceptions are disabled."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
+						rhs.m_called = true;
 					}
 
-#ifndef LUABIND_NO_ERROR_CHECKING
-
-					if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+					proxy_functor_caller(proxy_functor_caller&& rhs)
+						: m_func(rhs.m_func)
+						, m_args(std::move(rhs.m_args))
+						, m_called(rhs.m_called)
 					{
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw cast_failed(L, LUABIND_TYPEID(Ret));
-#else
-						cast_failed_callback_fun e = get_cast_failed_callback();
-						if (e) e(L, LUABIND_TYPEID(Ret));
-
-						assert(0 && "the lua function's return value could not be converted."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
+						rhs.m_called = true;
 					}
-#endif
-					return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
-				}
+
+					~proxy_functor_caller() LUABIND_DTOR_NOEXCEPT;
+
+					operator Ret();
+
+					template<typename... Policies>
+					Ret operator[](const policy_cons<Policies...> p);
 
 			private:
 
@@ -265,84 +122,11 @@ namespace luabind
                     rhs.m_called = true;
                 }
 
-				~proxy_functor_void_caller() LUABIND_DTOR_NOEXCEPT
-				{
-					if (m_called) return;
 
-					m_called = true;
-					lua_State* L = m_func->lua_state();
-#ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == nullptr)
-					{
-	#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L); 
-	#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "tried to call uninitialized functor object."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-	#endif
-					}
-#endif
-					// get the function
-					m_func->pushvalue();
-
-					push_args_from_tuple<1>::apply(L, m_args);
-					if (pcall(L, sizeof...(Ts), 0))
-					{ 
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw luabind::error(L);
-#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "the lua function threw an error and exceptions are disabled."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
-					}
-				}
+				~proxy_functor_void_caller() LUABIND_DTOR_NOEXCEPT;
 
 				template<typename... Policies>
-				void operator[](const policy_cons<Policies...> p)
-				{
-					m_called = true;
-					lua_State* L = m_func->lua_state();
-#ifndef LUABIND_NO_ERROR_CHECKING
-					if (L == nullptr)
-					{
-	#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L); 
-	#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "tried to call uninitialized functor object."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-	#endif
-					}
-#endif
-					// get the function
-					m_func->pushvalue();
-
-					detail::push_args_from_tuple<1>::apply(L, m_args, p);
-					if (pcall(L, sizeof...(Ts), 0))
-					{ 
-#ifndef LUABIND_NO_EXCEPTIONS
-						throw error(L); 
-#else
-						error_callback_fun e = get_error_callback();
-						if (e) e(L);
-	
-						assert(0 && "the lua function threw an error and exceptions are disabled."
-							"if you want to handle this error use luabind::set_error_callback()");
-						
-#endif
-					}
-				}
+				void operator[](const policy_cons<Policies...> p);
 
 			private:
 
@@ -449,3 +233,235 @@ namespace luabind
 		detail::lua_reference ref_;
 	};
 }
+
+// Out-of-class destructor definitions to avoid instantiating functor<void> inside templates
+namespace luabind { namespace detail {
+
+template<typename Ret, typename... Ts>
+proxy_functor_caller<Ret, Ts...>::~proxy_functor_caller() LUABIND_DTOR_NOEXCEPT
+{
+	if (m_called) return;
+
+	m_called = true;
+	lua_State* L = m_func->lua_state();
+
+	// get the function
+	m_func->pushvalue();
+
+	push_args_from_tuple<1>::apply(L, m_args);
+	if (pcall(L, sizeof...(Ts), 0))
+	{ 
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw luabind::error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "the lua function threw an error and exceptions are disabled."
+				"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+}
+
+template<typename... Ts>
+proxy_functor_void_caller<Ts...>::~proxy_functor_void_caller() LUABIND_DTOR_NOEXCEPT
+{
+	if (m_called) return;
+
+	m_called = true;
+	lua_State* L = m_func->lua_state();
+#ifndef LUABIND_NO_ERROR_CHECKING
+	if (L == nullptr)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L); 
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "tried to call uninitialized functor object."
+				"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+	// get the function
+	m_func->pushvalue();
+
+	push_args_from_tuple<1>::apply(L, m_args);
+	if (pcall(L, sizeof...(Ts), 0))
+	{ 
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw luabind::error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "the lua function threw an error and exceptions are disabled."
+				"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+}
+
+}} // namespace luabind::detail
+
+// Out-of-class definitions for proxy operators to avoid instantiating functor<T>
+namespace luabind { namespace detail {
+
+template<typename Ret, typename... Ts>
+proxy_functor_caller<Ret, Ts...>::operator Ret()
+{
+	typename default_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
+
+	m_called = true;
+	lua_State* L = m_func->lua_state();
+#ifndef LUABIND_NO_ERROR_CHECKING
+	if (L == nullptr)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "tried to call uninitialized functor object."
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+
+	detail::stack_pop p(L, 1); // pop the return value
+
+	// get the function
+	m_func->pushvalue();
+
+	push_args_from_tuple<1>::apply(L, m_args);
+	if (pcall(L, sizeof...(Ts), 1))
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw luabind::error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "the lua function threw an error and exceptions are disabled."
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+
+	if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw cast_failed(L, LUABIND_TYPEID(Ret));
+#else
+		cast_failed_callback_fun e = get_cast_failed_callback();
+		if (e) e(L, LUABIND_TYPEID(Ret));
+
+		assert(0 && "the lua function's return value could not be converted." 
+				"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+	return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
+}
+
+template<typename Ret, typename... Ts>
+template<typename... Policies>
+Ret proxy_functor_caller<Ret, Ts...>::operator[](const policy_cons<Policies...> p)
+{
+	using converter_policy = typename detail::find_conversion_policy<0, Policies...>::type;
+	typename converter_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
+
+	m_called = true;
+	lua_State* L = m_func->lua_state();
+#ifndef LUABIND_NO_ERROR_CHECKING
+	if (L == nullptr)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "tried to call uninitialized functor object."
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+
+	detail::stack_pop popper(L, 1); // pop the return value
+
+	// get the function
+	m_func->pushvalue();
+
+	detail::push_args_from_tuple<1>::apply(L, m_args, p);
+	if (pcall(L, sizeof...(Ts), 1))
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "the lua function threw an error and exceptions are disabled." 
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+	if (converter.match(L, LUABIND_DECORATE_TYPE(Ret), -1) < 0)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw cast_failed(L, LUABIND_TYPEID(Ret));
+#else
+		cast_failed_callback_fun e = get_cast_failed_callback();
+		if (e) e(L, LUABIND_TYPEID(Ret));
+
+		assert(0 && "the lua function's return value could not be converted." 
+				"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+	return converter.apply(L, LUABIND_DECORATE_TYPE(Ret), -1);
+}
+
+template<typename... Ts>
+template<typename... Policies>
+void proxy_functor_void_caller<Ts...>::operator[](const policy_cons<Policies...> p)
+{
+	m_called = true;
+	lua_State* L = m_func->lua_state();
+#ifndef LUABIND_NO_ERROR_CHECKING
+	if (L == nullptr)
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "tried to call uninitialized functor object."
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+#endif
+	// get the function
+	m_func->pushvalue();
+
+	detail::push_args_from_tuple<1>::apply(L, m_args, p);
+	if (pcall(L, sizeof...(Ts), 0))
+	{
+#ifndef LUABIND_NO_EXCEPTIONS
+		throw error(L);
+#else
+		error_callback_fun e = get_error_callback();
+		if (e) e(L);
+
+		assert(0 && "the lua function threw an error and exceptions are disabled." 
+			"if you want to handle this error use luabind::set_error_callback()");
+#endif
+	}
+}
+
+}} // namespace luabind::detail

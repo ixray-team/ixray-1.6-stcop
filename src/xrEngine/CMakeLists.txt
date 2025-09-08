@@ -119,21 +119,66 @@ target_link_libraries(xrAbstractions PRIVATE "d3d11.lib")
 target_link_libraries(xrAbstractions PRIVATE "dxgi.lib")
 
 # Copy binaries
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    )
 
-## FreeType
-target_link_libraries(xrAbstractions PRIVATE ${ENGINE_FREETYPE}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.lib)
-target_include_directories(xrAbstractions PRIVATE "${ENGINE_FREETYPE}native/include/")
+    ## FreeType (Windows)
+    target_link_libraries(xrAbstractions PRIVATE ${ENGINE_FREETYPE}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.lib)
+    target_include_directories(xrAbstractions PRIVATE "${ENGINE_FREETYPE}native/include/")
 
-## Theora
-target_link_libraries(xrAbstractions PUBLIC ${ENGINE_THRA}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
-target_include_directories(xrAbstractions PUBLIC "${ENGINE_THRA}/native/include/")
+    ## Theora (Windows)
+    target_link_libraries(xrAbstractions PUBLIC ${ENGINE_THRA}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
+    target_include_directories(xrAbstractions PUBLIC "${ENGINE_THRA}/native/include/")
 
-## OGG
-target_link_libraries(xrAbstractions PUBLIC ${SND_OGG}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrAbstractions PUBLIC "${SND_OGG}/native/include/")
+    ## OGG (Windows)
+    target_link_libraries(xrAbstractions PUBLIC ${SND_OGG}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
+    target_include_directories(xrAbstractions PUBLIC "${SND_OGG}/native/include/")
+else()
+    # Prefer system libraries on Unix
+    find_package(PkgConfig REQUIRED)
+
+    # FreeType
+    pkg_check_modules(FREETYPE freetype2 QUIET)
+    if(FREETYPE_FOUND)
+        target_include_directories(xrAbstractions PRIVATE ${FREETYPE_INCLUDE_DIRS})
+        target_link_libraries(xrAbstractions PRIVATE ${FREETYPE_LIBRARIES})
+    else()
+        find_library(FREETYPE_LIB freetype)
+        if(FREETYPE_LIB)
+            target_link_libraries(xrAbstractions PRIVATE ${FREETYPE_LIB})
+        else()
+            message(WARNING "freetype not found on system; some features may be disabled.")
+        endif()
+    endif()
+
+    # Theora
+    pkg_check_modules(THEORA theora QUIET)
+    if(THEORA_FOUND)
+        target_include_directories(xrAbstractions PUBLIC ${THEORA_INCLUDE_DIRS})
+        target_link_libraries(xrAbstractions PUBLIC ${THEORA_LIBRARIES})
+    else()
+        find_library(THEORA_LIB theora)
+        if(THEORA_LIB)
+            target_link_libraries(xrAbstractions PUBLIC ${THEORA_LIB})
+        endif()
+    endif()
+
+    # OGG
+    pkg_check_modules(OGG ogg QUIET)
+    if(OGG_FOUND)
+        target_include_directories(xrAbstractions PUBLIC ${OGG_INCLUDE_DIRS})
+        target_link_libraries(xrAbstractions PUBLIC ${OGG_LIBRARIES})
+    else()
+        find_library(OGG_LIB ogg)
+        if(OGG_LIB)
+            target_link_libraries(xrAbstractions PUBLIC ${OGG_LIB})
+        else()
+            message(WARNING "libogg not found on system; audio features might be broken.")
+        endif()
+    endif()
+endif()
 
 target_include_directories(xrAbstractions PUBLIC "${RENDERDOC_API}")
