@@ -368,7 +368,7 @@ void CMapManager::AllLocationsForEach(const luabind::functor<bool>& functor)
 
 	for (; it != it_e; ++it)
 	{
-		if (functor((*it).location) == true)
+		if (functor((*it).location, it->spot_type.c_str()) == true)
 			return;
 	}
 }
