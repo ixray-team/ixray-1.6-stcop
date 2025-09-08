@@ -15,6 +15,7 @@
 #include "character_info_defs.h"
 #include "game_graph_space.h"
 #include "game_location_selector.h"
+#include "Artefact.h"
 
 enum EPdaMsg;
 enum ESoundTypes;
