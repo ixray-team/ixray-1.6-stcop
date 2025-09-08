@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Script to check syntax of all .cpp, .h files in the project using clang++
 # Logs paths of files with errors to ./check.*.err.log
@@ -17,6 +18,17 @@ done
 
 function check_clang() {
     command -v "$1" >/dev/null 2>&1 || { echo >&2 "Error: $1 is not installed. Aborting."; exit 1; }
+}
+
+function count_lines() {
+    local file=$1
+    if [ ! -f "$file" ]; then
+        echo 0
+        return
+    fi
+    local count
+    count=$(grep -c . "$file" || echo 0)
+    echo "$count"
 }
 
 function check_cpp_syntax() {
@@ -95,14 +107,37 @@ function check_headers_syntax() {
     rm -rf "$tmpdir"
 }
 
-check_clang "$CLANG"
+function compute_stats() {
+    local cpp_log=${1:-./check.cpp.err.log}
+    local h_log=${2:-./check.h.err.log}
 
-echo "Starting syntax check for C++ files..."
-check_cpp_syntax "./check.cpp.err.log"
-echo "Syntax check complete for C++. Errors logged in ./check.cpp.err.log"
+    local cpp_errors h_errors
+    cpp_errors=$(count_lines "$cpp_log")
+    h_errors=$(count_lines "$h_log")
+    : "${cpp_errors:=0}"
+    : "${h_errors:=0}"
+    local total=$(( cpp_errors + h_errors ))
 
-echo "Starting syntax check for header files..."
-check_headers_syntax "./check.h.err.log"
-echo "Syntax check complete for headers. Errors logged in ./check.h.err.log"
+    echo "C++ files with syntax errors: $cpp_errors"
+    echo "Header files with syntax errors: $h_errors"
+    echo "Total files with syntax errors: $total"
+}
 
-echo "All done."
+function main() {
+    check_clang "$CLANG"
+
+    echo "Starting syntax check for C++ files..."
+    check_cpp_syntax "./check.cpp.err.log"
+    echo "Syntax check complete for C++. Errors logged in ./check.cpp.err.log"
+
+    echo "Starting syntax check for header files..."
+    check_headers_syntax "./check.h.err.log"
+    echo "Syntax check complete for headers. Errors logged in ./check.h.err.log"
+
+    echo "Computing statistics..."
+    compute_stats ./check.cpp.err.log ./check.h.err.log
+
+    echo "All done."
+}
+
+main
