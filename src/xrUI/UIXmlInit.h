@@ -35,6 +35,7 @@ class UIHintWindow;
 class CUILines;
 class CUITextWnd;
 class CUILoadingScreenProgress;
+class CUIStackPanel;
 
 class UI_API CUIXmlInit
 {
@@ -48,6 +49,7 @@ public:
 	static bool 	InitCustomEdit			(CUIXml& xml_doc, LPCSTR paht, int index, CUICustomEdit* pWnd);
 	static bool 	InitEditBox				(CUIXml& xml_doc, LPCSTR paht, int index, CUIEditBox* pWnd);
 	static bool 	InitStatic				(CUIXml& xml_doc, LPCSTR path, int index, CUIStatic* pWnd);
+	static bool 	InitStackPanel			(CUIXml& xml_doc, LPCSTR path, int index, CUIStackPanel* pWnd);
 	static bool 	InitTextWnd				(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd* pWnd);
 	static bool		InitCheck				(CUIXml& xml_doc, LPCSTR path, int index, CUICheckButton* pWnd);
 	static bool 	InitSpin				(CUIXml& xml_doc, LPCSTR path, int index, CUICustomSpin* pWnd);

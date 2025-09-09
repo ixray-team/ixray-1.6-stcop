@@ -31,6 +31,7 @@ class CUIScrollView;
 class CUIListBox;
 class CUIProgressBar;
 class CUIListWnd;
+class CUIStackPanel;
 
 class CScriptXmlInit 
 {
@@ -52,6 +53,7 @@ public:
 	CUIFrameLineWnd*	InitFrameLine(LPCSTR path, CUIWindow* parent);
 	CUIEditBox*			InitEditBox(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitStatic(LPCSTR path, CUIWindow* parent);
+	CUIStackPanel*		InitStackPanel(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitAnimStatic(LPCSTR path, CUIWindow* parent);
 	CUIStatic*			InitSleepStatic(LPCSTR path, CUIWindow* parent);
 	CUITextWnd*			InitTextWnd(LPCSTR path, CUIWindow* parent);

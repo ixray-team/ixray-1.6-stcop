@@ -11,6 +11,7 @@
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 #include "UIHint.h"
+#include "UIStackPanel.h"
 
 CFontManager& mngr()
 {
@@ -32,43 +33,6 @@ CGameFont* GetFontDI()
 	return mngr().pFontDI;
 }
 
-//шрифты для интерфейса
-CGameFont* ui_font_arial_14()
-{
-	static shared_str FontName = "ui_font_arial_14";
-	return UI().Font().GetFont(FontName);
-}
-
-CGameFont* ui_font_arial_21()
-{
-	static shared_str FontName = "ui_font_arial_21";
-	return UI().Font().GetFont(FontName);
-}
-
-CGameFont* ui_font_graffiti19_russian()
-{
-	static shared_str FontName = "ui_font_graffiti19_russian";
-	return UI().Font().GetFont(FontName);
-}
-
-CGameFont* ui_font_graffiti22_russian()
-{
-	static shared_str FontName = "ui_font_graffiti22_russian";
-	return UI().Font().GetFont(FontName);
-}
-
-CGameFont* ui_font_graffiti32_russian()
-{
-	static shared_str FontName = "ui_font_graffiti32_russian";
-	return UI().Font().GetFont(FontName);
-}
-
-CGameFont* ui_font_graffiti50_russian()
-{
-	static shared_str FontName = "ui_font_graffiti50_russian";
-	return UI().Font().GetFont(FontName);
-}
-
 CGameFont* ui_font_letterica16_russian()
 {
 	return UI().Font().pFontSystem16;
@@ -79,18 +43,34 @@ CGameFont* ui_font_letterica18_russian()
 	return UI().Font().pFontSystem;
 }
 
-CGameFont* ui_font_letter_25()
+//шрифты для интерфейса
+#define DECLARE_UI_FONT(func, str)                \
+    inline CGameFont* func()                      \
+    {                                             \
+        static shared_str FontName = str;         \
+        return UI().Font().GetFont(FontName);     \
+    }
+
+DECLARE_UI_FONT(ui_font_arial_14, "ui_font_arial_14")
+DECLARE_UI_FONT(ui_font_arial_21, "ui_font_arial_21")
+DECLARE_UI_FONT(ui_font_graffiti19_russian, "ui_font_graffiti19_russian")
+DECLARE_UI_FONT(ui_font_graffiti22_russian, "ui_font_graffiti22_russian")
+DECLARE_UI_FONT(ui_font_graffiti32_russian, "ui_font_graffiti32_russian")
+DECLARE_UI_FONT(ui_font_graffiti50_russian, "ui_font_graffiti50_russian")
+DECLARE_UI_FONT(ui_font_letter_25, "ui_font_letter_25")
+
+int SetARGB(u32 rgba, u32 a)
 {
-	static shared_str FontName = "ui_font_letter_25";
-	return UI().Font().GetFont(FontName);
+	return subst_alpha(rgba, a);
 }
 
-int SetARGB(u32 rgba, u32 a) { return subst_alpha(rgba, a); }
-
 int GetARGB(u16 a, u16 r, u16 g, u16 b)
-{return color_argb(a,r,g,b);}
+{
+	return color_argb(a,r,g,b);
+}
 
-const Fvector2 get_wnd_pos(CUIWindow* w) {
+const Fvector2 get_wnd_pos(CUIWindow* w)
+{
 	return w->GetWndPos();
 }
 
@@ -187,6 +167,11 @@ void CUIWindow::script_register(lua_State *L)
 		.def("SetWidth",				&CUIFrameLineWnd::SetWidth)
 		.def("SetHeight",				&CUIFrameLineWnd::SetHeight)
 		.def("SetColor",				&CUIFrameLineWnd::SetTextureColor),
+
+		class_<CUIStackPanel, CUIWindow>("CUIStackPanel")
+		.def(							constructor<>())
+		.def("SetRightAlign",			&CUIStackPanel::SetRightAlign)
+		.def("IsAlignRight",			&CUIStackPanel::IsAlignRight),
 
 		class_<UIHint, CUIWindow>("UIHint")
 		.def(							constructor<>())

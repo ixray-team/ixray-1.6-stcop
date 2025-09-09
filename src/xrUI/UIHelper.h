@@ -21,6 +21,8 @@ class CUIDragDropListEx;
 class CUIDragDropReferenceList;
 class CUIEditBox;
 
+#include "Widgets/UIStackPanel.h"
+
 class UI_API UIHelper
 {
 public:
@@ -28,6 +30,7 @@ public:
 	~UIHelper		() {};
 
 	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
+	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUITextWnd*			CreateTextWnd		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIProgressShape*	CreateProgressShape	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
