@@ -1,9 +1,24 @@
 #pragma once
-#include <mmreg.h>
+//#include <mmreg.h>
 
 #include "SoundRender_Cache.h"
 
 #include <vorbis\vorbisfile.h>
+
+#ifndef IXR_WINDOWS
+struct WAVEFORMATEX
+{
+    uint16_t wFormatTag;       // формат (например, 1 = PCM)
+    uint16_t nChannels;        // количество каналов
+    uint32_t nSamplesPerSec;   // частота дискретизации
+    uint32_t nAvgBytesPerSec;  // средняя скорость передачи данных
+    uint16_t nBlockAlign;      // размер блока данных
+    uint16_t wBitsPerSample;   // биты на сэмпл
+    uint16_t cbSize;           // доп. размер структуры, обычно 0
+};
+
+constexpr uint16_t WAVE_FORMAT_PCM = 1;
+#endif
 
 class CSoundRender_Source
 	: public CSound_source

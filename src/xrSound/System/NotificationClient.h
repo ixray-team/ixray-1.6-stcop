@@ -1,4 +1,5 @@
 #pragma once
+
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 
