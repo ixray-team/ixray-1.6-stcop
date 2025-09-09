@@ -1,4 +1,4 @@
 
 
 #define INITGUID 
-#include <dsound.h>
+//#include <dsound.h>

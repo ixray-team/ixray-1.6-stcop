@@ -36,3 +36,16 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(nvtt)
+
+
+# Sound 3rd
+function(setup_audio_libs target)
+    target_link_libraries(${target} PRIVATE
+        Ogg::ogg
+        Vorbis::vorbis
+        Vorbis::vorbisfile
+        OpenAL
+        Opus::opus
+        SpeexDSP::speexdsp
+    )
+endfunction()

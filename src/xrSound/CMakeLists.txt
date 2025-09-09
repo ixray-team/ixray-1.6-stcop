@@ -44,6 +44,10 @@ source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
+if(NOT WIN32)
+    list(FILTER SND_SRC_FILES EXCLUDE REGEX "System/NotificationClient.*")
+endif()
+
 # xrSound project
 add_library(xrSound SHARED ${SND_SRC_FILES})
 target_include_directories(xrSound PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -56,34 +60,4 @@ target_compile_definitions(xrSound PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
 
-# Copy binaries
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OGG}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_OAL}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SND_VOB}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPEEXDSP}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/speexdsp.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/speexdsp.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
-
-## LibOGG
-target_link_libraries(xrSound PRIVATE ${SND_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrSound PRIVATE "${SND_OGG}/native/include/")
-
-## Vorbis
-target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib)
-target_link_libraries(xrSound PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
-target_include_directories(xrSound PRIVATE "${SND_VOB}/native/include/")
-
-## OpenAL
-target_link_libraries(xrSound PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
-target_include_directories(xrSound PRIVATE "${SND_OAL}/native/include/")
-
-## SpeexDSP
-target_link_libraries(xrSound PRIVATE ${SPEEXDSP}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/speexdsp.lib)
-target_include_directories(xrSound PRIVATE "${SPEEXDSP}/build/native/include/")
-
-## OPUS
-target_link_libraries(xrSound PRIVATE ${OPUS}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/opus.lib)
-target_include_directories(xrSound PRIVATE "${OPUS}/build/native/include/")
+setup_audio_libs(xrSound)

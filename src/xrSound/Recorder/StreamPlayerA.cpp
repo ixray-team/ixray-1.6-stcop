@@ -5,7 +5,12 @@
 
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <opus/opus.h>
+
+#ifdef IXR_WINDOWS
+#	include <opus/opus.h>
+#else
+#	include <opus.h>
+#endif
 
 CStreamPlayerA::CStreamPlayerA(ALuint sampleRate, ALenum format, ALCcontext* context)
 	: m_sampleRate(sampleRate), m_format(format), m_pContext(context), m_source(0)
