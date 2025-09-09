@@ -9,7 +9,7 @@ else()
     add_compile_options(
         -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format -Wno-inconsistent-missing-override -Wno-undefined-inline
         -Wno-inline-new-delete -Wno-implicit-exception-spec-mismatch -Wno-unknown-warning-option -Wno-tautological-constant-out-of-range-compare
-        -Wno-macro-redefined -Wno-int-to-pointer-cast
+        -Wno-macro-redefined -Wno-int-to-pointer-cast -Wno-deprecated-declarations
     )
     add_compile_options(-msse4.2) # crc32
 

@@ -99,6 +99,8 @@ struct SNodeCover
 		case 3: return(cover3);
 		default: NODEFAULT;
 		}
+		
+		return 0;
 	}
 };
 
@@ -198,6 +200,8 @@ struct NodeCompressed
 		case 3:	return (((*(u32*)(data + 9)) >> 3) & LINK_MASK_0);
 		default: NODEFAULT;
 		}
+
+		return 0;
 	}
 };
 
@@ -257,6 +261,8 @@ struct NodeCompressed10
 		case 3: return (((*(u32*)(data + 8)) >> 5) & 0x007fffff);
 		default: NODEFAULT;
 		}
+
+		return 0;
 	}
 };
 

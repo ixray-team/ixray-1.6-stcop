@@ -140,7 +140,7 @@ namespace luabind
 			void assign(const T& val, const Policies& p)
 			{
 				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
-				detail::getref(L, m_key);
+				detail::getref(L, m_key.get_ref());
 				detail::convert_to_lua_p(L, val, p);
 				lua_settable(L, -3);
 				// pop table
@@ -240,7 +240,7 @@ namespace luabind
 			proxy_raw_object& operator=(const T& val)
 			{
 				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
-				detail::getref(L, m_key);
+				detail::getref(L, m_key.get_ref());
 				detail::convert_to_lua(L, val);
 				lua_rawset(L, -3);
 				// pop table
@@ -252,7 +252,7 @@ namespace luabind
 			void assign(const T& val, const policy_cons<Policies...> p)
 			{
 				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
-				detail::getref(L, m_key);
+				detail::getref(L, m_key.get_ref());
 				detail::convert_to_lua_p(L, val, p);
 				lua_settable(L, -3);
 				// pop table

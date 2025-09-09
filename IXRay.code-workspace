@@ -103,7 +103,21 @@
             "typeinfo": "cpp",
             "ranges": "cpp",
             "span": "cpp",
-            "locale": "cpp"
+            "locale": "cpp",
+            "condition_variable": "cpp",
+            "forward_list": "cpp",
+            "mutex": "cpp",
+            "semaphore": "cpp",
+            "shared_mutex": "cpp",
+            "stacktrace": "cpp",
+            "stop_token": "cpp",
+            "thread": "cpp",
+            "cfenv": "cpp",
+            "__threading_support": "cpp",
+            "__verbose_abort": "cpp",
+            "variant": "cpp",
+            "__bit_reference": "cpp",
+            "__node_handle": "cpp"
         },
 
         "dotnet.defaultSolution": "disable",
