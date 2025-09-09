@@ -49,7 +49,7 @@ namespace luabind { namespace detail
 
 		struct cmp
 		{
-			bool operator()(const type_info* a, const type_info* b) const
+			bool operator()(const std::type_info* a, const std::type_info* b) const
 			{
 				return a->before(*b) != 0;
 			}

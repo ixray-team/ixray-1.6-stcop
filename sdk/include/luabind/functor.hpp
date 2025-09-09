@@ -32,6 +32,93 @@
 
 namespace luabind
 {
+	template<typename Ret>
+	class functor
+	{
+	public:
+
+		functor(lua_State* L, const char* name)
+			: L_(L)
+		{
+			lua_pushstring(L, name);
+			lua_gettable(L, LUA_GLOBALSINDEX);
+			ref_.set(L_);
+		}
+
+		functor()
+			: L_(nullptr)
+		{
+		}
+
+		functor(const functor<Ret>& obj)
+			: L_(obj.L_)
+			, ref_(obj.ref_)
+		{
+		}
+
+		// this is a safe substitute for an implicit converter to bool
+		typedef void (functor::*member_ptr)() const;
+		operator member_ptr() const
+		{
+			if (is_valid()) return &functor::dummy;
+			return nullptr;
+		}
+
+		const functor<Ret>& operator=(const functor<Ret>& rhs)
+		{
+			L_ = rhs.L_;
+			ref_ = rhs.ref_;
+			return *this;
+		}
+
+		bool operator==(const functor<Ret>& rhs) const
+		{
+			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return false;
+			pushvalue();
+			rhs.pushvalue();
+			const bool result = lua_equal(L_, -1, -2) != 0;
+			lua_pop(L_, 2);
+			return result;
+		}
+
+		bool operator!=(const functor<Ret>& rhs) const
+		{
+			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return true;
+			pushvalue();
+			rhs.pushvalue();
+			const bool result = lua_equal(L_, -1, -2) == 0;
+			lua_pop(L_, 2);
+			return result;
+		}
+
+		bool is_valid() const { return ref_.is_valid(); }
+	
+		lua_State* lua_state() const { return L_; }
+		void pushvalue() const { ref_.get(L_); }
+
+		void reset()
+		{
+			L_ = nullptr;
+			ref_.reset();
+		}
+
+        template<typename... Args>
+        decltype(auto) operator()(const Args&... args) const;
+
+		functor(lua_State* L, detail::lua_reference const& ref)
+			: L_(L)
+			, ref_(ref)
+		{
+		}
+
+	private:
+
+		void dummy() const {}
+
+		lua_State* L_;
+		detail::lua_reference ref_;
+	};
+
 	namespace detail
 	{
 		// if the proxy_functor_caller returns non-void
@@ -351,101 +438,18 @@ namespace luabind
 				mutable bool m_called;
 			};
 
-	} // detail
+	}
 
 	template<typename Ret>
-	class functor
-	{
-	public:
+    template<typename... Args>
+    decltype(auto) functor<Ret>::operator()(const Args&... args) const
+    {
+        using proxy_type = std::conditional_t<
+            std::is_void_v<Ret>,
+            luabind::detail::proxy_functor_void_caller<const Args*...>,
+            luabind::detail::proxy_functor_caller<Ret, const Args*...>
+        >;
 
-		functor(lua_State* L, const char* name)
-			: L_(L)
-		{
-			lua_pushstring(L, name);
-			lua_gettable(L, LUA_GLOBALSINDEX);
-			ref_.set(L_);
-		}
-
-		functor()
-			: L_(nullptr)
-		{
-		}
-
-		functor(const functor<Ret>& obj)
-			: L_(obj.L_)
-			, ref_(obj.ref_)
-		{
-		}
-
-		// this is a safe substitute for an implicit converter to bool
-		typedef void (functor::*member_ptr)() const;
-		operator member_ptr() const
-		{
-			if (is_valid()) return &functor::dummy;
-			return nullptr;
-		}
-
-		const functor<Ret>& operator=(const functor<Ret>& rhs)
-		{
-			L_ = rhs.L_;
-			ref_ = rhs.ref_;
-			return *this;
-		}
-
-		bool operator==(const functor<Ret>& rhs) const
-		{
-			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return false;
-			pushvalue();
-			rhs.pushvalue();
-			const bool result = lua_equal(L_, -1, -2) != 0;
-			lua_pop(L_, 2);
-			return result;
-		}
-
-		bool operator!=(const functor<Ret>& rhs) const
-		{
-			if (!ref_.is_valid() || !rhs.ref_.is_valid()) return true;
-			pushvalue();
-			rhs.pushvalue();
-			const bool result = lua_equal(L_, -1, -2) == 0;
-			lua_pop(L_, 2);
-			return result;
-		}
-
-		bool is_valid() const { return ref_.is_valid(); }
-	
-		lua_State* lua_state() const { return L_; }
-		void pushvalue() const { ref_.get(L_); }
-
-		void reset()
-		{
-			L_ = nullptr;
-			ref_.reset();
-		}
-
-        template<typename... Args>
-        decltype(auto) operator()(const Args&... args) const
-        {
-            using proxy_type = std::conditional_t<
-                std::is_void_v<Ret>,
-                luabind::detail::proxy_functor_void_caller<const Args*...>,
-                luabind::detail::proxy_functor_caller<Ret, const Args*...>
-            >;
-
-            return proxy_type(const_cast<luabind::functor<Ret>*>(this), std::make_tuple(&args...));
-        }
-
-		functor(lua_State* L, detail::lua_reference const& ref)
-			: L_(L)
-			, ref_(ref)
-		{
-		}
-
-	private:
-
-		void dummy() const {}
-
-		lua_State* L_;
-		detail::lua_reference ref_;
-	};
+        return proxy_type(const_cast<luabind::functor<Ret>*>(this), std::make_tuple(&args...));
+    }
 }

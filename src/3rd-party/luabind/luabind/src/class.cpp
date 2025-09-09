@@ -380,7 +380,7 @@ namespace luabind { namespace detail {
 	template<class T>
 	void add_custom_name(T i, string_class& s) {}
 
-	void add_custom_name(type_info const* i, string_class& s)
+	void add_custom_name(std::type_info const* i, string_class& s)
 	{
 		s += " [";
 		s += i->name();

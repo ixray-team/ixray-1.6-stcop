@@ -17,7 +17,7 @@ struct calc_has_args
     template <typename... Policies>
     static constexpr int value() noexcept
     {
-		struct find_conversion_policy<Index + Offset, Policies... >::type FindConversionsPolicyHack;
+		typename find_conversion_policy<Index + Offset, Policies... >::type FindConversionsPolicyHack;
 		using converter_policy = decltype(FindConversionsPolicyHack);
         return calc_has_args<ResInit, Offset, Until, Index + 1, Result + toInt(converter_policy::has_arg)>::template value<Policies...>();
     }
