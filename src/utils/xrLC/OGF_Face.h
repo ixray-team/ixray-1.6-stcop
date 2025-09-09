@@ -1,8 +1,4 @@
 #pragma once
-
-//.#include "communicate.h"
-
-#include "progmesh.h"
 #include "xrSpherical.h"
 
 #include "vbm.h"
