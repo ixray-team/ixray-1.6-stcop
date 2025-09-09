@@ -30,6 +30,18 @@ CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* paren
 	return ui;
 }
 
+CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
+{
+	CUIStackPanel* ui = new CUIStackPanel;
+	if (parent)
+	{
+		parent->AttachChild(ui);
+		ui->SetAutoDelete(true);
+	}
+	CUIXmlInit::InitStackPanel(xml, ui_path, 0, ui);
+	return ui;
+}
+
 CUITextWnd* UIHelper::CreateTextWnd( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
 	CUITextWnd* ui			= new CUITextWnd();
