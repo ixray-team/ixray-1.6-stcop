@@ -81,6 +81,24 @@ inline int strcpy_s(char *dest, size_t num, const char *source)
     return ERANGE;
 }
 
+inline errno_t strncpy_s(char * dest, const char * src, size_t count)
+{
+    if (!dest || !src)
+        return EINVAL;
+
+    if (count == 0)
+        return ERANGE;
+
+    size_t len = std::strlen(src);
+    if (len >= count)
+        len = count - 1;
+
+    std::memcpy(dest, src, len);
+    dest[len] = '\0';
+
+    return 0;
+}
+
 inline int strncpy_s(char * dest, size_t dst_size, const char * source, size_t num)
 {
     if (!dest || (0 == dst_size))

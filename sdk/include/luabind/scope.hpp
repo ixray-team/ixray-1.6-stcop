@@ -32,23 +32,20 @@ namespace luabind {
 
 } // namespace luabind
 
-namespace luabind { namespace detail {
-
+namespace luabind::detail
+ {
     struct LUABIND_API registration
     {
         registration();
         registration(const registration&) = delete;
         virtual ~registration();
 
-    protected:
-        virtual void register_(lua_State*) const = 0;
-
-    private:
         friend struct scope;
         registration* m_next;
-    };
 
-}} // namespace luabind::detail
+        virtual void register_(lua_State*) const = 0;
+    };
+}
 
 namespace luabind {
 
@@ -118,6 +115,19 @@ namespace luabind {
     public:
         module_(lua_State* L_, char const* name);
         void operator[](scope&& s);
+
+        template<typename... Args>
+        void operator[](Args... args)
+        {
+            scope* scopes[] = { &args... };
+
+            for (size_t i = 0; i < sizeof...(Args); ++i)
+            {
+                operator[](std::move(*scopes[i]));
+            }
+        }
+
+
 
         module_(const module_&) = delete;
 
