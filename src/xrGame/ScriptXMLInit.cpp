@@ -22,6 +22,7 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UIStackPanel.h"
 
 using namespace luabind;
 
@@ -147,6 +148,14 @@ CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent)
 {
 	CUIStatic* pWnd = new CUIStatic();
 	CUIXmlInit::InitStatic(m_xml, path, 0, pWnd);
+	_attach_child(pWnd, parent);
+	return pWnd;
+}
+
+CUIStackPanel* CScriptXmlInit::InitStackPanel(LPCSTR path, CUIWindow* parent)
+{
+	CUIStackPanel* pWnd = new CUIStackPanel;
+	CUIXmlInit::InitStackPanel(m_xml, path, 0, pWnd);
 	_attach_child(pWnd, parent);
 	return pWnd;
 }
@@ -362,6 +371,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
+		.def("InitStackPanel",			&CScriptXmlInit::InitStackPanel)
 		.def("InitTextWnd",				&CScriptXmlInit::InitTextWnd)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
 		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)

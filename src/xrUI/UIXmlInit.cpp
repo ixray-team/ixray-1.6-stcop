@@ -19,6 +19,7 @@
 #include "Widgets/UIHint.h"
 #include "Widgets/UILoadingScreenProgress.h"
 #include "Widgets/UIListWnd.h"
+#include "Widgets/UIStackPanel.h"
 
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"
@@ -218,6 +219,15 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 	pWnd->m_stat_hint_text = xml_doc.ReadAttrib(path, index, "hint", "");
 	
 	return true;
+}
+
+bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStackPanel* pWnd)
+{
+	bool RetVal = InitWindow(xml_doc, path, index, pWnd);
+
+	pWnd->AlignLeft = !xml_doc.ReadAttribBool(path, index, "right", true);
+
+	return RetVal;
 }
 
 bool CUIXmlInit::InitTextWnd(CUIXml& xml_doc, LPCSTR path, int index, CUITextWnd* pWnd)
