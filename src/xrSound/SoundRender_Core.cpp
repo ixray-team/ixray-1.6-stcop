@@ -2,7 +2,10 @@
 
 
 #include "../xrEngine/xrLevel.h"
-#include "System/NotificationClient.h"
+
+#ifdef IXR_WINDOWS
+#	include "System/NotificationClient.h"
+#endif
 
 #include "SoundRender_Core.h"
 #include "SoundRender_Source.h"
@@ -59,8 +62,10 @@ CSoundRender_Core::~CSoundRender_Core()
 {
 	xr_delete					(geom_ENV);
 	xr_delete					(geom_SOM);
-
-	xr_delete					(pSysNotification);
+	
+#ifdef IXR_WINDOWS
+	xr_delete(pSysNotification);
+#endif
 }
 
 void CSoundRender_Core::_initialize(int stage)

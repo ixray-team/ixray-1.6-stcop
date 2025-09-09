@@ -1,5 +1,11 @@
 #include "stdafx.h"
-#include "opus/opus.h"
+
+#ifdef IXR_WINDOWS
+#	include <opus/opus.h>
+#else
+#	include <opus.h>
+#endif
+
 #include "VoicePacketsPacker.h"
 #include "SoundVoiceChat.h"
 #include "VoicePacket.h"
@@ -60,7 +66,7 @@ void CVoicePacketsPacker::AddPacket(const void* data, const int length)
 		VoicePacket::MAX_DATA_SIZE
 	);
 
-	packet->time = GetTickCount();
+	packet->time = SDL_GetTicks();
 	++m_packetsCount;
 }
 
@@ -69,7 +75,7 @@ void CVoicePacketsPacker::Update()
 	if (m_packetsCount > 0)
 	{
 		VoicePacket* lastPacket = m_voicePackets[m_packetsCount - 1];
-		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < GetTickCount())
+		if (m_packetsCount > MAX_VOICE_PACKETS - 1 || (lastPacket->time + 50) < SDL_GetTicks())
 		{
 			for (auto it = m_senders.begin(); it != m_senders.end(); ++it)
 			{
