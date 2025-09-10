@@ -39,6 +39,7 @@ public:
 			void	SetInvert				(bool v){m_b_invert=v;}
 			bool	GetInvert				() const	{return m_b_invert;};
 			void	SetStep					(float step);
+			void	SetMagnitude			(float magnitude);
 			bool	GetCheck				() const;
 			void	SetCheck				(bool b);
 			int		GetIValue				(){return m_i_val;}
@@ -61,7 +62,7 @@ ETrackBarMode		GetTrackBarMode			() const { return m_mode; }
 			void	SetCurrentID			(int val_id) { m_i_val = val_id + 1;}
 
 public:
-		IC	void	SetDrawingValue			(bool value) { m_bDrawValue = value; }
+		IC	void	SetDrawingValue			(bool value) { m_b_draw_value = value; }
 
 		virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -72,8 +73,9 @@ protected:
 	CUI3tButton*		m_pSlider;
 	bool				m_b_invert;
 	bool				m_b_mouse_capturer;
-	bool				m_bDrawValue;
+	bool				m_b_draw_value;
 	int					m_i_num_of_signs;
+	float				m_f_magnitude;
 	xr_token*			m_tokens;
 	ETrackBarMode		m_mode;
 
