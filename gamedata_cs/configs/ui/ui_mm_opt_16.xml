@@ -208,10 +208,6 @@
       <text font="letterica16" color="ui_6">not defined</text>
     </caption>
 
-    <track_con_sensitive x="162" y="0" width="217" height="21" step="0.01">
-      <options_item entry="con_sensitive" group="mm_opt_con_cmd"/>
-    </track_con_sensitive>
-
     <check_wpn_aim_toggle>
       <options_item entry="wpn_aim_toggle" group="mm_opt_con_cmd"/>
     </check_wpn_aim_toggle>
@@ -482,7 +478,7 @@
     <cap_vid_scale x="17" y="0" width="119" height="21" >
       <text font="letterica16" color="ui_6">ui_mm_vid_scale</text>
     </cap_vid_scale>
-    <track_vid_scale x="162" y="0" width="200" height="21" step="0.01" show_value="1">
+    <track_vid_scale x="162" y="0" width="200" height="21" step="0.01" show_value="1" magnitude="100">
       <options_item entry="vid_scale" group="mm_opt_video_adv" depend="vid"/>
     </track_vid_scale>
 
@@ -765,10 +761,10 @@
       <text font="letterica16" color="ui_6">ui_mm_dynamic_music</text>
     </check_dynamic_music>
 
-    <track_mastervolume x="162" y="20" width="217" height="21" step="0.01" show_value="1">
+    <track_mastervolume x="162" y="20" width="217" height="21" step="0.01" show_value="1" magnitude="100">
 			<options_item entry="snd_volume_eff" group="mm_opt_sound"/>
 		</track_mastervolume>
-		<track_musicvolume x="162" y="50" width="217" height="21" step="0.01" show_value="1">
+		<track_musicvolume x="162" y="50" width="217" height="21" step="0.01" show_value="1" magnitude="100">
 			<options_item entry="snd_volume_music" group="mm_opt_sound"/>
 		</track_musicvolume>
 
@@ -870,7 +866,7 @@
       </auto_static>
     </cap_keyboardsetup>
 	
-		<track_mousesens x="162" y="20" width="217" height="21" step="0.01">
+		<track_mousesens x="162" y="20" width="217" height="21" step="0.01" show_value="1" magnitude="10">
 			<options_item entry="mouse_sens" group="mm_opt_controls"/>
 		</track_mousesens>
 		<check_mouseinvert x="17" y="55" width="27" height="21" stretch="1">
