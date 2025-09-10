@@ -32,7 +32,8 @@ CUIArrowStepper::CUIArrowStepper()
 	m_b_invert(false),
 	m_mode(eStepperModeFloat),
 	m_tokens(nullptr),
-	m_i_num_of_signs(1)
+	m_i_num_of_signs(1),
+	m_f_magnitude(1.f)
 {	
 	m_TextVal						= nullptr;
 	m_FrameLine						= nullptr;
@@ -195,11 +196,11 @@ void CUIArrowStepper::UpdateText()
 	{
 		case eStepperModeInt:
 		{
-			out_str = std::to_string(m_i_val);
+			out_str = std::to_string(m_i_val * (int)m_f_magnitude);
 		}break;
 		case eStepperModeFloat:
 		{
-			out_str = FormatFloatWithStep(m_f_val, m_i_num_of_signs);
+			out_str = FormatFloatWithStep(m_f_val * m_f_magnitude, m_i_num_of_signs);
 		}break;
 		case eStepperModeToken:
 		{
@@ -323,6 +324,11 @@ void CUIArrowStepper::SetStep(float step)
 		m_f_step	= step;
 	else
 		m_i_step	= iFloor(step);
+}
+
+void CUIArrowStepper::SetMagnitude(float magnitude)
+{
+	m_f_magnitude = magnitude;
 }
 
 void CUIArrowStepper::Enable(bool status)

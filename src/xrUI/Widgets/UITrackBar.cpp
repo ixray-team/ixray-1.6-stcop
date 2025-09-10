@@ -21,7 +21,8 @@ CUITrackBar::CUITrackBar()
 	m_mode(eTrackBarModeFloat),
 	m_tokens(nullptr),
 	m_i_num_of_signs(1),
-	m_bDrawValue(false)
+	m_f_magnitude(1.f),
+	m_b_draw_value(false)
 {	
 	m_pSlider						= new CUI3tButton();
 	AttachChild						(m_pSlider);
@@ -133,7 +134,7 @@ void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 	m_pSlider->InitTexture	(nodevalue_button);
 	m_pSlider->m_background->SetStretchTexture(xml_doc.ReadInt("stretch", 0, TRUE));
 
-	if (m_bDrawValue)
+	if (m_b_draw_value)
 	{
 		m_pSlider->AddStatic();
 		m_pSlider->SetStaticColorChanging(true);
@@ -192,17 +193,17 @@ void CUITrackBar::UpdateText()
 {
 	CUIStatic* pUIStatic = m_pSlider->GetBtnStatic();
 	std::string out_str = "";
-	if (pUIStatic && m_bDrawValue)
+	if (pUIStatic && m_b_draw_value)
 	{
 		switch (m_mode)
 		{
 			case eTrackBarModeInt:
 			{
-				out_str = std::to_string(m_i_val);
+				out_str = std::to_string(m_i_val * (int)m_f_magnitude);
 			}break;
 			case eTrackBarModeFloat:
 			{
-				out_str = FormatFloatWithStep(m_f_val, m_i_num_of_signs);
+				out_str = FormatFloatWithStep(m_f_val * m_f_magnitude, m_i_num_of_signs);
 			}break;
 			case eTrackBarModeToken:
 			{
@@ -327,6 +328,11 @@ void CUITrackBar::SetStep(float step)
 		m_f_step	= step;
 	else
 		m_i_step	= iFloor(step);
+}
+
+void CUITrackBar::SetMagnitude(float magnitude)
+{
+	m_f_magnitude = magnitude;
 }
 
 void CUITrackBar::Enable(bool status)

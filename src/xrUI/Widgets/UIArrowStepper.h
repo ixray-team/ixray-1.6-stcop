@@ -50,6 +50,7 @@ public:
 			void	SetInvert				(bool v){m_b_invert=v;}
 			bool	GetInvert				() const	{return m_b_invert;};
 			void	SetStep					(float step);
+			void	SetMagnitude			(float magnitude);
 			bool	GetCheck				() const;
 			void	SetCheck				(bool b);
 			int		GetIValue				(){return m_i_val;}
@@ -79,6 +80,7 @@ protected:
 	bool				m_b_invert;
 	bool				m_b_mouse_capturer;
 	int					m_i_num_of_signs;
+	float				m_f_magnitude;
 	xr_token*			m_tokens;
 	EStepperMode		m_mode;
 	CUIStatic*			m_TextVal;

@@ -1376,6 +1376,7 @@ bool CUIXmlInit::InitTrackBar(CUIXml& xml_doc, LPCSTR path, int index, CUITrackB
 				pWnd->SetNumOfSigns(xml_doc.ReadAttribInt(path, index, "out_num_of_signs", 1));
 			}
 			pWnd->SetStep(xml_doc.ReadAttribFlt(path, index, "step", 0.1f)); // for bool and token it will be 1 always
+			pWnd->SetMagnitude(xml_doc.ReadAttribFlt(path, index, "magnitude", 1.f));
 		}break;
 		case eTrackBarModeToken:
 		{
@@ -1452,6 +1453,7 @@ bool CUIXmlInit::InitArrowStepper(CUIXml& xml_doc, LPCSTR path, int index, CUIAr
 			pWnd->SetNumOfSigns(xml_doc.ReadAttribInt(path, index, "out_num_of_signs", 1));
 		}
 		pWnd->SetStep(xml_doc.ReadAttribFlt(path, index, "step", 0.1f));
+		pWnd->SetMagnitude(xml_doc.ReadAttribFlt(path, index, "magnitude", 1.f));
 	}break;
 	case eStepperModeToken:
 	{
