@@ -81,7 +81,7 @@ void CWeaponBM16::PlayReloadSound()
 			}
 		}
 
-		if (IsMisfire())
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_jam) && IsMisfire())
 		{
 			sound = "sndReloadMis";
 		}
@@ -90,13 +90,20 @@ void CWeaponBM16::PlayReloadSound()
 	}
 	else
 	{
-		if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_jam && IsMisfire()))
 		{
-			PlaySound("sndReload1", get_LastFP());
+			PlaySound("sndReloadMis", get_LastFP());
 		}
 		else
 		{
-			PlaySound("sndReload", get_LastFP());
+			if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
+			{
+				PlaySound("sndReload1", get_LastFP());
+			}
+			else
+			{
+				PlaySound("sndReload", get_LastFP());
+			}
 		}
 	}
 }
