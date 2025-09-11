@@ -634,6 +634,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	if (!IsGrenadeMode())
 	{
 		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 	}
 }
 
@@ -733,6 +734,7 @@ void CWeaponMagazined::ReloadMagazine()
 	if (!IsGrenadeMode())
 	{
 		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());

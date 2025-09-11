@@ -770,6 +770,24 @@ void CWeapon::Load		(LPCSTR section)
 			m_ammo_bones_mag.push_back(bone_params);
 		}
 	}
+
+	if (pSettings->line_exist(section, "bullets_count"))
+	{
+		m_ammo_bones_lite.bullet_cnt = pSettings->r_u32(section, "bullets_count");
+	}
+
+	if (m_ammo_bones_lite.bullet_cnt > 0)
+	{
+		static shared_str read_bullet_bone_name = pSettings->r_string(section, "bullet_bone_name");
+		static shared_str bullet_bone_name = read_bullet_bone_name;
+
+		for (u32 i = 1; i < m_ammo_bones_lite.bullet_cnt; ++i)
+		{
+			bullet_bone_name.printf("%s%d", *read_bullet_bone_name, i);
+			auto& ConfigNode = m_ammo_bones_lite.bullet_bones[i];
+			ConfigNode = bullet_bone_name;
+		}
+	}
 }
 
 void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
@@ -903,6 +921,8 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	}
 
 	GiveAmmoFromMagToChamber();
+
+	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 
 	UpdateAltScope();
 	UpdateAddonsVisibility();
@@ -1375,6 +1395,7 @@ void CWeapon::ForceUpdateHUD()
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	UpdateShellBones(iAmmoElapsed, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
+	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 }
 
 void CWeapon::SwitchTorch(bool status, bool forced)
@@ -3794,6 +3815,7 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	if (!IsGrenadeMode() && m_bUseChamberInUpdateBones && m_bAmmoInChamber)
 	{
 		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 	}
 }
 
@@ -3885,6 +3907,7 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 		u32 current_configuration = FakeReload();
 		bool for_grenade = IsGrenadeMode();
 		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
+		UpdateLiteAmmoBones(current_configuration);
 	}
 
 	if (state == eKick && mark.name == "Left")
@@ -4005,6 +4028,54 @@ void CWeapon::UpdateShellBones(u32 idx, u8 type)
 				}
 			}
 		}
+	}
+
+	if (world_kin != nullptr)
+	{
+		world_kin->CalculateBones_Invalidate();
+		world_kin->CalculateBones(TRUE);
+	}
+
+	if (hud_kin != nullptr)
+	{
+		hud_kin->CalculateBones_Invalidate();
+		hud_kin->CalculateBones(TRUE);
+	}
+}
+
+void CWeapon::UpdateLiteAmmoBones(u32 idx)
+{
+	if (m_ammo_bones_lite.bullet_cnt == 0)
+	{
+		return;
+	}
+
+	if (IsGrenadeMode())
+	{
+		return;
+	}
+
+	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
+	{
+		if (kin != nullptr)
+		{
+			u16 bone_id = kin->LL_BoneID(bone_name);
+			if (bone_id != BI_NONE)
+			{
+				kin->LL_SetBoneVisible(bone_id, status, FALSE);
+			}
+		}
+	};
+
+	attachable_hud_item* HID = HudItemData();
+	IKinematics* hud_kin = HID != nullptr ? HID->m_model : nullptr;
+	IKinematics* world_kin = Visual() != nullptr ? PKinematics(Visual()) : nullptr;
+
+	for (u32 i = 1; i < m_ammo_bones_lite.bullet_bones.size(); i++)
+	{
+		const shared_str& node = m_ammo_bones_lite.bullet_bones[i];
+		SetVisible(world_kin, node, idx >= i);
+		SetVisible(hud_kin, node, idx >= i);
 	}
 
 	if (world_kin != nullptr)
