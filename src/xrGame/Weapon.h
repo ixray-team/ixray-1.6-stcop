@@ -196,12 +196,20 @@ public:
 		void Load(const shared_str& section, u32 size);
 	};
 
+	struct SAmmoBonesLite
+	{
+		xr_hash_map<u32, shared_str> bullet_bones{};
+		u32 bullet_cnt = 0;
+
+	} m_ammo_bones_lite;
+
 	//обновление видимости для косточек аддонов
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
 	void ProcessScope();
 	void UpdateScopePosition();
 	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
+	void UpdateLiteAmmoBones(u32 idx);
 	void UpdateShellBones(u32 idx, u8 type);
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();

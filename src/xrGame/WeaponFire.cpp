@@ -128,6 +128,8 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 		m_magazine.pop_back();
 		--iAmmoElapsed;
 
+		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
 			u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
@@ -209,6 +211,8 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 		m_LastShotAmmoType = m_chamber.back().m_LocalAmmoType;
 		DeleteAmmoInChamber();
 		GiveAmmoFromMagToChamber();
+
+		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
 		{
