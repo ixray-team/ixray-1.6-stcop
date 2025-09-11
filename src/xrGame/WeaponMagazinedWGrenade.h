@@ -41,8 +41,10 @@ public:
 	
 	virtual void	OnStateSwitch	(u32 S);
 	
-	virtual void	switch2_Reload	();
-	virtual void	switch2_SwitchMode();
+	virtual void	switch2_Hiding() override;
+	virtual void	switch2_Showing() override;
+	virtual void	switch2_Reload() override;
+			void	switch2_SwitchMode();
 	virtual void	state_Fire		(float dt);
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
 	virtual void	ReloadMagazine	();

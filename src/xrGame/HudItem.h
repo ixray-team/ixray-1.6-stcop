@@ -249,9 +249,30 @@ public:
 		sf_jam = (1 << 31),
 	};
 
+	enum ESoundsFlags2 : u64
+	{
+		sf_draw_g = (1 << 0),
+		sf_holster_g = (1 << 1),
+		sf_draw_w_gl = (1 << 2),
+		sf_holster_w_gl = (1 << 3),
+		sf_draw_empty = (1 << 4),
+		sf_holster_empty = (1 << 5),
+		sf_draw_jam = (1 << 6),
+		sf_holster_jam = (1 << 7),
+		sf_draw_empty_g = (1 << 8),
+		sf_holster_empty_g = (1 << 9),
+		sf_draw_empty_w_gl = (1 << 10),
+		sf_holster_empty_w_gl = (1 << 11),
+		sf_draw_jam_w_gl = (1 << 12),
+		sf_holster_jam_w_gl = (1 << 13),
+		sf_draw_jam_g = (1 << 14),
+		sf_holster_jam_g = (1 << 15),
+	};
+
 	Flags32 m_eDevicesFlags;
 	Flags32 m_eAnimationsFlags;
 	Flags64 m_eSoundsFlags;
+	Flags64 m_eSoundsFlags2;
 
 	bool bDisablePrepareAnimation = false;
 
