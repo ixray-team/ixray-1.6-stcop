@@ -85,6 +85,7 @@ void CHudItem::Load(LPCSTR section)
 void CHudItem::LoadSounds(LPCSTR section)
 {
 	m_eSoundsFlags.zero();
+	m_eSoundsFlags2.zero();
 
 	if (!m_bDisableBore && SoundExist(section, "snd_bore"))
 	{

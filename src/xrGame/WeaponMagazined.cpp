@@ -267,6 +267,132 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "snd_kick", "sndKick", true, m_eSoundEmptyClick);
 	}
+
+	if (SoundExist(section, "snd_draw_empty"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_empty, true);
+		m_sounds.LoadSound(section, "snd_draw_empty", "sndShowEmpty", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_empty"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_empty, true);
+		m_sounds.LoadSound(section, "snd_holster_empty", "sndHideEmpty", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_jammed"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam, true);
+		m_sounds.LoadSound(section, "snd_draw_jammed", "sndShowMis", false, m_eSoundShow);
+	}
+	else if (SoundExist(section, "snd_draw_misfire"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam, true);
+		m_sounds.LoadSound(section, "snd_draw_misfire", "sndShowMis", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_jammed"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam, true);
+		m_sounds.LoadSound(section, "snd_holster_jammed", "sndHideMis", false, m_eSoundHide);
+	}
+	else if (SoundExist(section, "snd_holster_misfire"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam, true);
+		m_sounds.LoadSound(section, "snd_holster_misfire", "sndHideMis", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_jammed_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam_w_gl, true);
+		m_sounds.LoadSound(section, "snd_draw_jammed_w_gl", "sndShowMisWGL", false, m_eSoundShow);
+	}
+	else if (SoundExist(section, "snd_draw_misfire_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam_w_gl, true);
+		m_sounds.LoadSound(section, "snd_draw_misfire_w_gl", "sndShowMisWGL", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_jammed_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam_w_gl, true);
+		m_sounds.LoadSound(section, "snd_holster_jammed_w_gl", "sndHideMisWGL", false, m_eSoundHide);
+	}
+	else if (SoundExist(section, "snd_holster_misfire_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam_w_gl, true);
+		m_sounds.LoadSound(section, "snd_holster_misfire_w_gl", "sndHideMisWGL", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_jammed_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam_g, true);
+		m_sounds.LoadSound(section, "snd_draw_jammed_g", "sndShowMisG", false, m_eSoundShow);
+	}
+	else if (SoundExist(section, "snd_draw_misfire_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_jam_g, true);
+		m_sounds.LoadSound(section, "snd_draw_misfire_g", "sndShowMisG", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_jammed_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam_g, true);
+		m_sounds.LoadSound(section, "snd_holster_jammed_g", "sndHideMisG", false, m_eSoundHide);
+	}
+	else if (SoundExist(section, "snd_holster_misfire_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_jam_g, true);
+		m_sounds.LoadSound(section, "snd_holster_misfire_g", "sndHideMisG", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_empty_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_empty_w_gl, true);
+		m_sounds.LoadSound(section, "snd_draw_empty_w_gl", "sndShowEmptyWGL", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_empty_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_empty_w_gl, true);
+		m_sounds.LoadSound(section, "snd_holster_empty_w_gl", "sndHideEmptyWGL", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_empty_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_empty_g, true);
+		m_sounds.LoadSound(section, "snd_draw_empty_g", "sndShowEmptyG", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_empty_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_empty_g, true);
+		m_sounds.LoadSound(section, "snd_holster_empty_g", "sndHideEmptyG", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_w_gl, true);
+		m_sounds.LoadSound(section, "snd_draw_w_gl", "sndShowWGL", false, m_eSoundShow);
+	}
+
+	if (SoundExist(section, "snd_holster_w_gl"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_w_gl, true);
+		m_sounds.LoadSound(section, "snd_holster_w_gl", "sndHideWGL", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_draw_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_draw_g, true);
+		m_sounds.LoadSound(section, "snd_draw_g", "sndShowG", false, m_eSoundShow);
+	}
+	
+	if (SoundExist(section, "snd_holster_g"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_g, true);
+		m_sounds.LoadSound(section, "snd_holster_g", "sndHideG", false, m_eSoundHide);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1506,12 +1632,25 @@ void CWeaponMagazined::switch2_Hiding()
 {
 	OnZoomOut();
 	CWeapon::FireEnd();
-	
-	if(m_sounds_enabled)
-		PlaySound			("sndHide",get_LastFP());
 
-	PlayAnimHide		();
-	SetPending			(TRUE);
+	if (m_sounds_enabled)
+	{
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_jam) && IsMisfire())
+		{
+			PlaySound("sndHideMis", get_LastFP());
+		}
+		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_holster_empty) && GetAmmoChamberElapsed() + GetAmmoElapsed() == 0)
+		{
+			PlaySound("sndHideEmpty", get_LastFP());
+		}
+		else
+		{
+			PlaySound("sndHide", get_LastFP());
+		}
+	}
+
+	PlayAnimHide();
+	SetPending(TRUE);
 }
 
 void CWeaponMagazined::switch2_Hidden()
@@ -1526,11 +1665,24 @@ void CWeaponMagazined::switch2_Hidden()
 
 void CWeaponMagazined::switch2_Showing()
 {
-	if(m_sounds_enabled)
-		PlaySound			("sndShow",get_LastFP());
+	if (m_sounds_enabled)
+	{
+		if (m_eSoundsFlags2.test(ESoundsFlags2::sf_draw_jam) && IsMisfire())
+		{
+			PlaySound("sndShowMis", get_LastFP());
+		}
+		else if (m_eSoundsFlags2.test(ESoundsFlags2::sf_draw_empty) && GetAmmoChamberElapsed() + GetAmmoElapsed() == 0)
+		{
+			PlaySound("sndShowEmpty", get_LastFP());
+		}
+		else
+		{
+			PlaySound("sndShow", get_LastFP());
+		}
+	}
 
-	SetPending			(TRUE);
-	PlayAnimShow		();
+	SetPending(TRUE);
+	PlayAnimShow();
 }
 
 void CWeaponMagazined::switch2_FireMode()
