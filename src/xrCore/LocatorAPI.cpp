@@ -1699,7 +1699,8 @@ void  CLocatorAPI::rescan_pathes()
 	for (PathPairIt p_it=pathes.begin(); p_it!=pathes.end(); p_it++)
 	{
 		FS_Path* P	= p_it->second;
-		if (P->m_Flags.is(FS_Path::flNeedRescan)){
+		if (P->m_Flags.is(FS_Path::flNeedRescan))
+		{
 			rescan_path(P->m_Path,P->m_Flags.is(FS_Path::flRecurse));
 			P->m_Flags.set(FS_Path::flNeedRescan,FALSE);
 		}
