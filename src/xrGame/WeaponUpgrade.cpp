@@ -37,6 +37,7 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_ammo_bones( section, test );
 	result |= install_upgrade_torch_laser( section, test );
 	result |= install_upgrade_scope_zoom( section, test );
+	result |= install_upgrade_fast_knife( section, test );
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
 	return result;
@@ -821,6 +822,124 @@ bool CWeapon::install_upgrade_scope_zoom(LPCSTR section, bool test)
 
 		SetNightBrightness(m_lens_night_brightness.cur_step, false);
 	}
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_fast_knife(LPCSTR section, bool test)
+{
+	bool result = false;
+	bool result2 = false;
+
+	u32 int_value = 0;
+	float float_value = 0.0f;
+	LPCSTR string_value = "";
+	BOOL bool_value = false;
+
+	result2 = process_if_exists_set(section, "kick_material", &CInifile::r_string, string_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.material = string_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_ap", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.ap = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_wallmark_size", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.wallmark_size = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_hit_count", &CInifile::r_u32, int_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.cnt = int_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_hit_power", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.hp = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_hit_impulse", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.imp = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_hit_type", &CInifile::r_u32, int_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.htype = (ALife::EHitType)int_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_distance", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.hdist = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_disp_hor", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.disp_hor = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "kick_disp_ver", &CInifile::r_float, float_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.disp_ver = float_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim", &CInifile::r_bool, bool_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.bBlockQK = bool_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_sil_attached", &CInifile::r_bool, bool_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.bBlockQKSil = bool_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_scope_attached", &CInifile::r_bool, bool_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.bBlockQKScp = bool_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_gl_attached", &CInifile::r_bool, bool_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.bBlockQKGL = bool_value;
+	}
+	result |= result2;
+
+	result2 = process_if_exists_set(section, "disable_kick_anim_when_gl_enabled", &CInifile::r_bool, bool_value, test);
+	if (result2 && !test)
+	{
+		m_fast_kick_params.bBlockQKGLM = bool_value;
+	}
+	result |= result2;
 
 	return result;
 }

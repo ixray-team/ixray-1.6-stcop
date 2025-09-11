@@ -135,6 +135,7 @@ public:
 		eEmptyClick,
 		eDevice,
 		eLightMis,
+		eKick,
 	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
@@ -291,6 +292,25 @@ public:
 		s32 lens_night_brightness_saved_step = -1;
 	} m_lens_night_brightness;
 
+	struct fast_kick_params
+	{
+		shared_str material = "objects\\knife";
+		int cnt = 1;
+		float hp = 0.0f;
+		float imp = 0.0f;
+		ALife::EHitType htype = ALife::EHitType::eHitTypeWound;
+		float hdist = 0.0f;
+		float disp_hor = 0.0f;
+		float disp_ver = 0.0f;
+		float ap = EPS_L;
+		float wallmark_size = 0.05f;
+		bool bBlockQK = false;
+		bool bBlockQKSil = false;
+		bool bBlockQKScp = false;
+		bool bBlockQKGL = false;
+		bool bBlockQKGLM = false;
+	} m_fast_kick_params;
+
 	bool IsLensedScopeInstalled() const { return m_lens_zoom_params.need_lens_frame; }
 	float GetLensFOV() const;
 	void LoadNightBrightnessParamsFromSection(shared_str sect);
@@ -299,6 +319,7 @@ public:
 	void UpdateZoomCrosshairUI();
 	void SetLensParams(lens_zoom_params& params);
 	void UpdateLensFactor(u32 timedelta);
+	void MakeWeaponKick(Fvector& pos, Fvector& dir);
 	float GetNightPPEFactor();
 
 	float m_fCollimatorLevelsProblem = 0.0f;
@@ -752,6 +773,8 @@ private:
 
 			bool			install_upgrade_torch_laser	( LPCSTR section, bool test );
 			bool			install_upgrade_scope_zoom( LPCSTR section, bool test );
+
+			bool			install_upgrade_fast_knife ( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 

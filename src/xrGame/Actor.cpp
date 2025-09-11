@@ -537,6 +537,15 @@ if(!g_dedicated_server)
 			m_sClearMaskAnimator = clearmask_animator;
 		}
 	}
+
+	if (pGameGlobals->line_exist("quick_kick", "quick_kick_animator"))
+	{
+		LPCSTR quick_kick_animator = pGameGlobals->r_string("quick_kick", "quick_kick_animator");
+		if (pSettings->section_exist(quick_kick_animator))
+		{
+			m_sQuickKickAnimator = quick_kick_animator;
+		}
+	}
 }
 
 void CActor::legs_shift_callback(CBoneInstance* B) {

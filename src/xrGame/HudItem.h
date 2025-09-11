@@ -210,6 +210,7 @@ public:
 		af_empty_click = (1 << 15),
 		af_aim_in_out = (1 << 16),
 		af_sprint_in_out = (1 << 17),
+		af_kick = (1 << 18),
 	};
 
 	enum ESoundsFlags : u64
