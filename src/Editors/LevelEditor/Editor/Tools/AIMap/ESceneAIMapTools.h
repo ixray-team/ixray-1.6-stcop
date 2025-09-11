@@ -213,4 +213,8 @@ public:
     void 				SmoothNodes				();
 	void 				ResetNodes				();
     void				SelectNodesByLink		(int link);
+
+    void RemoveNodeImmediate(SAINode* node);
+    bool IsNodeValidForCleanup(SAINode* node) const;
+    int CleanupInvalidNodes();
 };

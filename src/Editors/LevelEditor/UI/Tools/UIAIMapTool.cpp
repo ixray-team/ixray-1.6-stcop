@@ -36,6 +36,10 @@ void UIAIMapTool::Draw()
 					Scene->UndoSave();
 				}
 			}
+			if (ImGui::Button("Remove invalid nodes", ImVec2(-1, 0)))
+			{
+				tool->CleanupInvalidNodes();
+			}
 		}
 		ImGui::Separator();
 		{
