@@ -115,7 +115,23 @@ int ESceneAIMapTool::CleanupInvalidNodes()
 	xr_vector<SAINode*> ToDelete;
 	ToDelete.reserve(64);
 
-	const float DupEpsSqr = (0.001f * 0.001f);
+	const float DupEpsSqr = 0.001f;
+
+	auto IsNodeReferenced = [this](SAINode* Node)
+	{
+		for (SAINode* N : m_Nodes)
+		{
+			if (!N || N == Node)
+				continue;
+
+			for (int side = 0; side < 4; ++side)
+			{
+				if (N->n[side] == Node)
+					return true;
+			}
+		}
+		return false;
+	};
 
 	for (size_t I = 0; I < m_Nodes.size(); ++I)
 	{
@@ -126,13 +142,17 @@ int ESceneAIMapTool::CleanupInvalidNodes()
 			continue;
 		}
 
+		if (!IsNodeReferenced(N))
+		{
+			ToDelete.push_back(N);
+			continue;
+		}
+
 		for (size_t J = I + 1; J < m_Nodes.size(); ++J)
 		{
 			SAINode* M = m_Nodes[J];
 			if (!M)
-			{
 				continue;
-			}
 
 			Fvector Diff;
 			Diff.sub(N->Pos, M->Pos);
@@ -154,30 +174,21 @@ int ESceneAIMapTool::CleanupInvalidNodes()
 
 	xr_hash_set<SAINode*> DelSet;
 	DelSet.reserve(ToDelete.size() * 2);
+	DelSet.insert(ToDelete.begin(), ToDelete.end());
 
 	for (SAINode* N : ToDelete)
 	{
-		DelSet.insert(N);
-	}
-
-	for (SAINode* N : ToDelete)
-	{
-		if (!N)
-		{
-			continue;
-		}
-
 		for (int Side = 0; Side < 4; ++Side)
 		{
 			SAINode* Neighbor = N->n[Side];
-			if (Neighbor)
+			if (!Neighbor)
+				continue;
+
+			for (int S = 0; S < 4; ++S)
 			{
-				for (int S = 0; S < 4; ++S)
+				if (Neighbor->n[S] == N)
 				{
-					if (Neighbor->n[S] == N)
-					{
-						Neighbor->n[S] = nullptr;
-					}
+					Neighbor->n[S] = nullptr;
 				}
 			}
 		}
@@ -188,21 +199,20 @@ int ESceneAIMapTool::CleanupInvalidNodes()
 		if (DelSet.find(N) == DelSet.end())
 		{
 			NewNodes.push_back(N);
+			continue;
 		}
-		else
-		{
-			AINodeVec* Bucket = HashMap(N->Pos);
-			if (Bucket)
-			{
-				auto It = std::find(Bucket->begin(), Bucket->end(), N);
-				if (It != Bucket->end())
-				{
-					Bucket->erase(It);
-				}
-			}
 
-			xr_delete(N);
+		AINodeVec* Bucket = HashMap(N->Pos);
+		if (Bucket)
+		{
+			auto It = std::find(Bucket->begin(), Bucket->end(), N);
+			if (It != Bucket->end())
+			{
+				Bucket->erase(It);
+			}
 		}
+
+		xr_delete(N);
 	}
 
 	m_Nodes.swap(NewNodes);
