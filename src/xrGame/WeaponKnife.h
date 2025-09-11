@@ -70,6 +70,8 @@ public:
 	IC		float		GetHit2Dist						()	const	{ return m_Hit2Distance; }
 	bool				m_bShowKnifeStats;
 
+	void				FastKick();
+
 	virtual CWeaponKnife* cast_weapon_knife() { return this; }
 
 #ifdef DEBUG

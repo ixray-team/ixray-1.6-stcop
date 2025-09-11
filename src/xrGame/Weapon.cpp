@@ -25,6 +25,8 @@
 #include "CustomDetector.h"
 #include "script_game_object.h"
 #include <WeaponBinoculars.h>
+#include "Level_Bullet_Manager.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../xrScripts/script_callback_ex.h"
 
 #include <algorithm>
@@ -584,6 +586,23 @@ void CWeapon::Load		(LPCSTR section)
 	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
 	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
 	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
+
+	m_fast_kick_params.material = READ_IF_EXISTS(pSettings, r_string, section, "kick_material", "objects\\knife");
+	m_fast_kick_params.ap = READ_IF_EXISTS(pSettings, r_float, section, "kick_ap", EPS_L);
+	m_fast_kick_params.wallmark_size = READ_IF_EXISTS(pSettings, r_float, section, "kick_wallmark_size", 0.05f);
+	m_fast_kick_params.cnt = READ_IF_EXISTS(pSettings, r_u32, section, "kick_hit_count", 1);
+	m_fast_kick_params.hp = READ_IF_EXISTS(pSettings, r_float, section, "kick_hit_power", 0.0f);
+	m_fast_kick_params.imp = READ_IF_EXISTS(pSettings, r_float, section, "kick_hit_impulse", 0.0f);
+	m_fast_kick_params.htype = (ALife::EHitType)READ_IF_EXISTS(pSettings, r_u32, section, "kick_hit_type", ALife::EHitType::eHitTypeWound);
+	m_fast_kick_params.hdist = READ_IF_EXISTS(pSettings, r_float, section, "kick_distance", 0.0f);
+	m_fast_kick_params.disp_hor = READ_IF_EXISTS(pSettings, r_float, section, "kick_disp_hor", 0.0f);
+	m_fast_kick_params.disp_ver = READ_IF_EXISTS(pSettings, r_float, section, "kick_disp_ver", 0.0f);
+
+	m_fast_kick_params.bBlockQK = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim", true);
+	m_fast_kick_params.bBlockQKSil = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_sil_attached", true);
+	m_fast_kick_params.bBlockQKScp = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_scope_attached", true);
+	m_fast_kick_params.bBlockQKGL = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_attached", true);
+	m_fast_kick_params.bBlockQKGLM = READ_IF_EXISTS(pSettings, r_bool, section, "disable_kick_anim_when_gl_enabled", true);
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
@@ -1629,9 +1648,35 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				return true;
 			} 
 		case kWPN_NEXT: 
+		{
+			return SwitchAmmoType(flags);
+		}break;
+		case kQUICK_KICK:
+		{
+			if (!m_eAnimationsFlags.test(EAnimationsFlags::af_kick))
 			{
-				return SwitchAmmoType(flags);
-			} 
+				return false;
+			}
+
+			const bool test = m_fast_kick_params.bBlockQK || m_fast_kick_params.bBlockQKScp && IsScopeAttached() || m_fast_kick_params.bBlockQKSil && IsSilencerAttached() ||
+			m_fast_kick_params.bBlockQKGL && IsGrenadeLauncherAttached() || m_fast_kick_params.bBlockQKGLM && IsGrenadeMode();
+
+			if (test)
+			{
+				return false;
+			}
+
+			if (GetState() == eKick)
+			{
+				return true;
+			}
+
+			if (!IsPending() && GetState() == eIdle && !IsZoomed())
+			{
+				SwitchState(eKick);
+				return true;
+			}
+		}break;
 		case kWPN_ZOOM:
 		{
 			if (IsZoomEnabled())
@@ -3841,6 +3886,11 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 		bool for_grenade = IsGrenadeMode();
 		UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, current_configuration, GetTargetAmmoType(for_grenade));
 	}
+
+	if (state == eKick && mark.name == "Left")
+	{
+		MakeWeaponKick(Device.vCameraPosition, Device.vCameraDirection);
+	}
 }
 
 void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type)
@@ -4225,4 +4275,51 @@ float CWeapon::GetNightPPEFactor()
 	val = min_factor + (1.0f - min_factor) * brightness;
 
 	return val;
+}
+
+void CWeapon::MakeWeaponKick(Fvector& pos, Fvector& dir)
+{
+	CCartridge c;
+
+	c.param_s.buckShot = 1;
+	c.param_s.impair = 1.0f;
+	c.param_s.kDisp = 1.0f;
+	c.param_s.kHit = 1.0f;
+	c.param_s.kImpulse = 1.0f;
+	c.param_s.kAP = m_fast_kick_params.ap;
+	c.param_s.fWallmarkSize = m_fast_kick_params.wallmark_size;
+	c.bullet_material_idx = GMLib.GetMaterialIdx(*m_fast_kick_params.material);
+	c.param_s.u8ColorID = 0;
+	c.m_LocalAmmoType = 0;
+	c.param_s.kAirRes = 1.0f;
+	c.m_InvShortName = nullptr;
+
+	Level().BulletManager().AddBullet(pos, dir, 10000.0f, 0.0f, 0.0f, H_Parent()->ID(), ID(), m_fast_kick_params.htype, m_fast_kick_params.hdist, c, 1.0f, true, false);
+
+	c.bullet_material_idx = GMLib.GetMaterialIdx("objects\\clothes");
+	c.param_s.fWallmarkSize = EPS_L;
+
+	Fvector tmpdir = zero_vel, right = zero_vel, up = zero_vel;
+
+	u32 cnt = m_fast_kick_params.cnt;
+
+	for (int i = 0; i < cnt; ++i)
+	{
+		tmpdir = dir;
+		Fvector::generate_orthonormal_basis_normalized(tmpdir, up, right);
+
+		up.mul(m_fast_kick_params.disp_ver);
+		right.mul(m_fast_kick_params.disp_hor);
+
+		tmpdir.sub(up);
+		tmpdir.sub(right);
+
+		up.mul(2.0f * i / static_cast<float>(cnt));
+		right.mul(2.0f * i / static_cast<float>(cnt));
+
+		tmpdir.add(up);
+		tmpdir.add(right);
+
+		Level().BulletManager().AddBullet(pos, tmpdir, 10000.0f, m_fast_kick_params.hp, m_fast_kick_params.imp, H_Parent()->ID(), ID(), m_fast_kick_params.htype, m_fast_kick_params.hdist, c, 1.0f, true, false);
+	}
 }

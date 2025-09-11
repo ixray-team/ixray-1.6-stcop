@@ -292,6 +292,7 @@ public:
 	shared_str				m_sNVGAnimator;
 	shared_str				m_sHeadlampAnimator;
 	shared_str				m_sClearMaskAnimator;
+	shared_str				m_sQuickKickAnimator;
 
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }
@@ -760,6 +761,7 @@ public:
 			void				SwitchTorch						();
 			void				ClearMask						();
 			void				ClearMaskCB						();
+			void				MakeKick						();
 	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 
 	CCustomDetector*			GetDetector						(bool in_slot = false);

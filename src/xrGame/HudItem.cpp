@@ -500,6 +500,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_empty_click, HudAnimationExist("anm_empty_click"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_aim_in_out, (HudAnimationExist("anm_idle_aim_start") && HudAnimationExist("anm_idle_aim_end")));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_sprint_in_out, (HudAnimationExist("anm_idle_sprint_start") && HudAnimationExist("anm_idle_sprint_end")));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_kick, HudAnimationExist("anm_kick"));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)

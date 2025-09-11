@@ -1062,3 +1062,14 @@ void CWeaponKnife::best_victim_selector::operator()(
 		return;
 	}
 }
+
+void CWeaponKnife::FastKick()
+{
+	m_eHitType = m_eHitType_1;
+	fCurrentHit = fvHitPower_1[g_SingleGameDifficulty];
+	fHitImpulse_cur = fHitImpulse_1;
+
+	motion_marks mark;
+	mark.name = "Right";
+	OnMotionMark(eFire, mark);
+}

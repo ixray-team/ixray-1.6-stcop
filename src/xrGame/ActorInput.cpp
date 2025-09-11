@@ -35,6 +35,7 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ActorHelmet.h"
 #include "HudItem.h"
+#include "WeaponKnife.h"
 #include "../xrEngine/XR_IOConsole.h"
 
 extern u32 hud_adj_mode;
@@ -132,16 +133,36 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		break;
 	}
 	case kDETECTOR:
+	{
+		PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
+		if (det_active)
 		{
-			PIItem det_active = inventory().ItemFromSlot(DETECTOR_SLOT);
-			if (det_active)
+			if (CCustomDetector* det = det_active->cast_custom_detector())
 			{
-				if (CCustomDetector* det = det_active->cast_custom_detector())
+				det->switch_detector();
+			}
+		}
+	}break;
+	case kQUICK_KICK:
+	{
+		PIItem knife_item = inventory().ItemFromSlot(KNIFE_SLOT);
+		if (m_sQuickKickAnimator.size() > 0 && knife_item != nullptr)
+		{
+			if (!HudAnimator()->IsActive())
+			{
+				if (knife_item != inventory().ActiveItem())
 				{
-					det->switch_detector();
+					HudAnimator()->StartAnimator(m_sQuickKickAnimator);
+					HudAnimator()->SetLeftCallback({ this, &CActor::MakeKick });
+				}
+				else
+				{
+					knife_item->Action(kWPN_FIRE, CMD_START);
+					knife_item->Action(kWPN_FIRE, CMD_STOP);
 				}
 			}
-		}break;
+		}
+	}break;
 	case kUSE:
 		ActorUse();
 		break;
@@ -1239,6 +1260,15 @@ void CActor::ClearMask()
 void CActor::ClearMaskCB()
 {
 	//RAVLIK TO LVUTNER: KOGDA KAPLI NA EBAL'NIKE?
+}
+
+void CActor::MakeKick()
+{
+	PIItem knife_item = inventory().ItemFromSlot(KNIFE_SLOT);
+	if (CWeaponKnife* pWeaponKnife = knife_item != nullptr ? knife_item->cast_weapon_knife() : nullptr)
+	{
+		pWeaponKnife->FastKick();
+	}
 }
 
 #ifndef MASTER_GOLD

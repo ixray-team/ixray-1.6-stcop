@@ -262,6 +262,11 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "snd_light_misfire", "sndLightMisfire", true, m_eSoundEmptyClick);
 	}
+
+	if (SoundExist(section, "snd_kick"))
+	{
+		m_sounds.LoadSound(section, "snd_kick", "sndKick", true, m_eSoundEmptyClick);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -774,6 +779,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_LightMis();
 		break;
 	}
+	case eKick:
+	{
+		switch2_Kick();
+		break;
+	}
 	}
 }
 
@@ -798,6 +808,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eSwitchMode:
 		case eEmptyClick:
 		case eLightMis:
+		case eKick:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1298,6 +1309,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eDevice:
 		case eLightMis:
 		case eMisfire:
+		case eKick:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1564,6 +1576,13 @@ void CWeaponMagazined::switch2_LightMis()
 	SetPending(TRUE);
 	PlaySound("sndLightMisfire", get_LastFP());
 	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), TRUE, GetState());
+}
+
+void CWeaponMagazined::switch2_Kick()
+{
+	SetPending(TRUE);
+	PlaySound("sndKick", get_LastFP());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_kick"), TRUE, eKick);
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
