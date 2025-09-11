@@ -19,6 +19,11 @@ option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
 option(IXRAY_CI "GitHub Actions build" OFF)
 set(IXR_TEST_CI NOT IXRAY_UTILS OR NOT IXRAY_CI)
 
+# SDL stuff
+set(SDL_STATIC OFF)
+set(SDL_TEST_LIBRARY OFF)
+set(SDL_SHARED ON)
+
 # CMake Dev options
 option(DEVIXRAY_ENABLE_SHIPPING "Enable shipping build cfg" OFF)
 option(DEVIXRAY_ENABLE_OGL_RENDER "Enable OGL Render" OFF)
@@ -64,6 +69,8 @@ endif()
 # Download API from GitHub Releases
 include("cmake/github.cmake")
 
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+
 # Configure NuGet
 if (WIN32)
     include("cmake/windows/nuget.cmake")
@@ -75,12 +82,10 @@ endif()
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
+set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 
-if (WIN32)
-    set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
-else()
-    set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
-endif()
+include("${CMAKE_MODULE_PATH}/FindSDL3.cmake")
+
 # Configure dependencies
 set(RENDERDOC_API "${CMAKE_CURRENT_SOURCE_DIR}/src/3rd Party/renderdoc")
 

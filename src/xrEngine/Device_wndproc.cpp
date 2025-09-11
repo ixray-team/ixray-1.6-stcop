@@ -70,10 +70,10 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	case SDL_GAMEPAD_AXIS_LEFTY:
 		break;
 	case SDL_EVENT_KEY_DOWN:
-		pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, true);
+		pInput->KeyboardButtonUpdate(Event.key.scancode, true);
 		break;
 	case SDL_EVENT_KEY_UP:
-		pInput->KeyboardButtonUpdate(Event.key.keysym.scancode, false);
+		pInput->KeyboardButtonUpdate(Event.key.scancode, false);
 		break;
 	case SDL_EVENT_MOUSE_MOTION:
 		pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);

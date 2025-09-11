@@ -182,8 +182,8 @@ void CRenderDevice::on_idle		()
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
 	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !CImGuiManager::Instance().IsCapturingInputs();
 
-	SDL_SetWindowGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
-	SDL_SetRelativeMouseMode(!g_dedicated_server && Focus);
+	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
+	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 

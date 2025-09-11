@@ -59,12 +59,9 @@ void EnumerateDisplayModes()
 void MigrateToGameWindow()
 {
 	PROF_EVENT("MigrateToGameWindow");
+	SDL_ShowWindow(g_AppInfo.Window);
 	SDL_SetWindowTitle(g_AppInfo.Window, "IX-Ray Engine");
 		
-	SDL_SetWindowFocusable(g_AppInfo.Window, TRUE);
-	SDL_SetWindowShape(g_AppInfo.Window, FALSE);
-	SDL_SetWindowBordered(g_AppInfo.Window, true);
-	SDL_RaiseWindow(g_AppInfo.Window);
 	Console->Execute("vid_restart");
 	SDL_GetWindowSizeInPixels(g_AppInfo.Window, &Device.Width, &Device.Height);
 	SDL_GetWindowPosition(g_AppInfo.Window, &Device.PosX, &Device.PosY);
@@ -95,7 +92,7 @@ int APIENTRY WinMain
 	//PROF_START_CAPTURE();
 	{
 		PROF_EVENT("START_ENGINE");
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0) {
+		if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS)) {
 		return -1;
 	}
 
@@ -122,7 +119,11 @@ int APIENTRY WinMain
 #endif
 	EnumerateDisplayModes();
 
-	splash::show((void*&)g_AppInfo.Window);
+	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, 0);
+	SDL_HideWindow(g_AppInfo.Window);
+
+	SDL_Window* wnd1 = nullptr;
+	splash::show((void*&)wnd1);
 
 	EngineLoadStage1(lpCmdLine);
 
@@ -178,6 +179,8 @@ int APIENTRY WinMain
 
 	// Splash wnd => Game wnd
 	splash::hide();
+		SDL_DestroyWindow(wnd1);
+		
 	MigrateToGameWindow();
 	
 #ifdef DEBUG_DRAW

@@ -26,6 +26,12 @@ void EndRender()
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+    if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS))
+    {
+        Msg("! SDL_Init Error: %s", SDL_GetError());
+        return 0;
+    }
+
     splash::show(IDB_PE);
 
     splash::update(5, "Initializing Debugger");
@@ -101,12 +107,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
             case SDL_EVENT_KEY_DOWN:
                 if (UI)
                 {
-                    UI->KeyDown(Event.key.keysym.scancode, UI->GetShiftState());
-                    UI->ApplyShortCutInput(Event.key.keysym.scancode);
+                    UI->KeyDown(Event.key.scancode, UI->GetShiftState());
+                    UI->ApplyShortCutInput(Event.key.scancode);
                 }
                 break;
             case SDL_EVENT_KEY_UP:
-                if (UI)UI->KeyUp(Event.key.keysym.scancode, UI->GetShiftState());
+                if (UI)UI->KeyUp(Event.key.scancode, UI->GetShiftState());
                 break;
 
             case SDL_EVENT_MOUSE_MOTION:

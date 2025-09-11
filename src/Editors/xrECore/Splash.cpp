@@ -56,7 +56,10 @@ void Update(int progress = 0, const char*status = "")
 
 	SDL_RenderClear(splashRenderer);
 
-	SDL_QueryTexture(texture, nullptr, nullptr, &WinW, &WinH);
+	float sizeX, sizeY;
+	SDL_GetTextureSize(texture, &sizeX, &sizeY);
+	WinW = sizeX;
+	WinH = sizeY;
 
 	SDL_FRect dstRect = { 0, 0, WinW, WinH };
 	SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
@@ -102,14 +105,7 @@ SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName
 		return nullptr;
 	}
 	
-	SDL_Surface* surface = SDL_CreateSurfaceFrom(
-		imageData,            
-		width,                
-		height,               
-		width * 4,            
-		SDL_PIXELFORMAT_RGBA32
-	);
-
+	SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, imageData, width * 4);
 	if (!surface) {
 		stbi_image_free(imageData);
 		ErrorMsg("Failed to create pixel format (ID %d). %s", lpName, SDL_GetError());
@@ -174,8 +170,7 @@ namespace splash
 			return;
 		}
 
-		splashRenderer = SDL_CreateRenderer(splashWindow, NULL, NULL
-		/*"splashRenderer", SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC*/);
+		splashRenderer = SDL_CreateRenderer(splashWindow, NULL);
 		if (!splashRenderer) {
 			Destroy();
 			ErrorMsg("SDL_CreateRenderer Error: %s", SDL_GetError());
