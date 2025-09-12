@@ -21,7 +21,11 @@ if (NOT IXRAY_MP)
 elseif (NOT IXRAY_MP_SQL)
 	list(FILTER NETSERV_SRC_FILES EXCLUDE REGEX "SQLConnect.*")
 endif()
-
+if (WIN32)
+    list(FILTER NETSERV_SRC_FILES EXCLUDE REGEX "PosixSocksHelper.cpp")
+else()
+    list(FILTER NETSERV_SRC_FILES EXCLUDE REGEX "WinsocksHelper.cpp")
+endif()
 # xrNetServer project
 add_library(xrNetServer SHARED ${NETSERV_SRC_FILES})
 target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")

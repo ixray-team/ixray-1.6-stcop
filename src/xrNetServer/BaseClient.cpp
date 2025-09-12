@@ -181,7 +181,7 @@ void	BaseClient::Flush_Send_Buffer()
 #pragma region time correct
 void client_sync_thread(void* P)
 {
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+	Platform::SetCurrentThreadHighPriority();
 	BaseClient*	C = (BaseClient*)P;
 	C->Sync_Thread();
 }
@@ -219,10 +219,14 @@ bool BaseClient::Sync_Thread()
 		clPing.dwTime_ClientSend = TimerAsync(device_timer);
 
 		// Send it
-		__try {
-			if (!IsConnectionInit() || net_Disconnected)	break;
+#ifdef IXR_WINDOWS
+		__try
+		{
+			if (!IsConnectionInit() || net_Disconnected)
+				break;
 
-			if (!SendPingMessage(clPing)) {
+			if (!SendPingMessage(clPing))
+			{
 				Msg("* DirectPlayClient: SyncThread: EXIT. (failed to send - disconnected?)");
 				break;
 			}
@@ -232,7 +236,24 @@ bool BaseClient::Sync_Thread()
 			Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
 			break;
 		}
+#else
+	try
+	 {
+        if (!IsConnectionInit() || net_Disconnected)
+			break;
 
+        if (!SendPingMessage(clPing))
+		{
+            Msg("* DirectPlayClient: SyncThread: EXIT. (failed to send - disconnected?)");
+            break;
+        }
+    }
+    catch (...)
+	{
+        Msg("* CLIENT: SyncThread: EXIT. (failed to send - disconnected?)");
+        break;
+    }
+#endif
 		// Waiting for reply-packet to arrive
 		if (!net_Syncronised) {
 			u32	old_size = net_DeltaArray.size();

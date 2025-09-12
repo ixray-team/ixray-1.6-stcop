@@ -9,7 +9,7 @@
 #define _vsnprintf vsnprintf
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 #define strlwr _strlwr
-
+#define sscanf_s sscanf
 inline const char* itoa(float val)
 {
     static std::string temp;
