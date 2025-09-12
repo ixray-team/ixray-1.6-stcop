@@ -16,15 +16,15 @@ unsigned long WinsocksHelper::GetIpAddress(LPCSTR hostName)
     // Initialize Winsock
     WSADATA wsaData;
     int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) {
+    if (iResult != 0)
+    {
         Msg("[WinsocksHelper] WSAStartup failed: %d\n", iResult);
         WSACleanup();
         return 0;
     }
 
     hostent* remoteHost = gethostbyname(hostName);
-    if (remoteHost != nullptr &&
-        remoteHost->h_length > 0 &&
+    if (remoteHost != nullptr && remoteHost->h_length > 0 &&
         remoteHost->h_addrtype == AF_INET // Supports only IPv4 (AF_INET)
         )
     {

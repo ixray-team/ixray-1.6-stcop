@@ -36,8 +36,8 @@ void CObject::MakeMeCrow			()
 	if (
 			(u32)Platform::AtomicCompareExchange(
 				(long*)&dwFrame_AsCrow,
-				device_frame_id,
-				object_frame_id
+				object_frame_id,
+				device_frame_id
 			) == device_frame_id
 		)
 		return;
