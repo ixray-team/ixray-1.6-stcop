@@ -87,7 +87,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	Console->Execute("default_controls");
 
-	xr_strcpy(Console->ConfigFile, "user.ltx");
+	xr_strcpy(Console->ConfigFile, "user_editor.ltx");
 
 	if (strstr(Core.Params, "-ltx ")) {
 		string64 c_name;
