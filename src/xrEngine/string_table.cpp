@@ -112,6 +112,9 @@ void CStringTable::Init		()
 	//имя языка, если не задано (nullptr), то первый <text> в <string> в XML
 	pData->m_sLanguage = pSettings->r_string("string_table", "language");
 
+	// Get preferred fallback language from EngineExternal
+	pData->m_sFallbackLanguage = EngineExternal().GetPreferredFallbackLanguage();
+
 	auto it = std::find_if(languages_token.begin(), languages_token.end(), [](const xr_token& item) {
 		return item.name == pData->m_sLanguage;
 	});
@@ -142,6 +145,32 @@ void CStringTable::Init		()
 		xr_strcat(fn, ext);
 
 		Load(fn);
+	}
+
+	// Load fallback language files if fallback language is different from main language
+	if (pData->m_sFallbackLanguage.size() > 0 && 
+	    xr_strcmp(pData->m_sLanguage.c_str(), pData->m_sFallbackLanguage.c_str()) != 0)
+	{
+		FS_FileSet fallback_fset;
+		FS_FileSet fallback_efset;
+
+		xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sFallbackLanguage.c_str());
+		FS.file_list(fallback_fset, "$game_config$", FS_ListFiles, files_mask);
+
+		xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sFallbackLanguage.c_str());
+		FS.file_list(fallback_efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+
+		for (const FS_File& File : fallback_fset)
+		{
+			if (fallback_efset.contains(File))
+				continue;
+
+			string_path fn, ext;
+			_splitpath(File.name.c_str(), 0, 0, fn, ext);
+			xr_strcat(fn, ext);
+
+			LoadFallback(fn);
+		}
 	}
 
 	ReparseKeyBindings();
@@ -179,6 +208,42 @@ void CStringTable::Load	(LPCSTR xml_file_full)
 		STRING_VALUE str_val		= ParseLine(string_text, string_name, true);
 		
 		pData->m_StringTable[string_name] = str_val;
+	}
+}
+
+void CStringTable::LoadFallback	(LPCSTR xml_file_full)
+{
+	CXml						uiXml;
+	string_path					_s;
+	xr_strconcat(_s, "text\\", pData->m_sFallbackLanguage.c_str() );
+
+	uiXml.Load					(CONFIG_PATH, _s, xml_file_full);
+
+	//общий список всех записей таблицы в файле
+	int string_num = uiXml.GetNodesNum		(uiXml.GetRoot(), "string");
+
+	for(int i=0; i<string_num; ++i)
+	{
+		LPCSTR string_name = uiXml.ReadAttrib(uiXml.GetRoot(), "string", i, "id", nullptr);
+
+		bool isDublicate = pData->m_FallbackStringTable.find(string_name) != pData->m_FallbackStringTable.end();
+		if (isDublicate)
+		{
+			//VERIFY3(!isDublicate, "duplicate string table id", string_name);
+			Msg("! duplicate fallback string table id: %s", string_name);
+		}
+
+		LPCSTR string_text		= uiXml.Read(uiXml.GetRoot(), "string:text", i,  nullptr);
+
+		if(m_bWriteErrorsToLog && string_text)
+			Msg("[fallback string table] '%s' no translation in '%s'", string_name, pData->m_sFallbackLanguage.c_str() );
+		
+		if (string_text != nullptr)
+		{
+			STRING_VALUE str_val		= ParseLine(string_text, string_name, false);
+			
+			pData->m_FallbackStringTable[string_name] = str_val;
+		}
 	}
 }
 
@@ -284,8 +349,17 @@ STRING_VALUE CStringTable::ParseLine(LPCSTR str, LPCSTR skey, bool bFirst)
 
 STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 {
-	if(pData != nullptr && pData->m_StringTable.find(str_id)!=pData->m_StringTable.end())
-		return  pData->m_StringTable[str_id];
-	else
-		return str_id;
+	if(pData != nullptr)
+	{
+		// First try to find in main language
+		if(pData->m_StringTable.find(str_id)!=pData->m_StringTable.end())
+			return  pData->m_StringTable[str_id];
+			
+		// If not found and fallback table exists, try fallback language
+		if(pData->m_FallbackStringTable.find(str_id)!=pData->m_FallbackStringTable.end())
+			return  pData->m_FallbackStringTable[str_id];
+	}
+	
+	// If not found in either table, return the original string ID
+	return str_id;
 }
