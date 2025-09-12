@@ -661,6 +661,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseChamberInUpdateBones = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_chamber", false);
 
 	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
+	m_bBlockFiremodeinGLM = READ_IF_EXISTS(pSettings, r_bool, section, "block_firemode_glm", false);
 
 	m_fMisfireAfterProblemsLevel = READ_IF_EXISTS(pSettings, r_float, section, "misfire_after_problems_level", 10.0f);
 

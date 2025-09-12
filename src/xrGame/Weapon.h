@@ -359,6 +359,7 @@ public:
 	bool m_bNoJamFirstShot = false;
 	bool m_bActorCanShoot = true;
 	bool m_bIsAimAnimationPlaying = false;
+	bool m_bBlockFiremodeinGLM = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
