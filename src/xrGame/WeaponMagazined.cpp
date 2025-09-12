@@ -2529,6 +2529,11 @@ void CWeaponMagazined::ChangeFireMode(u16 cmd)
 		return;
 	}
 
+	if (m_bBlockFiremodeinGLM && IsGrenadeMode())
+	{
+		return;
+	}
+
 	if (IsZoomed() && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode) && m_bDisableFireModeAim)
 	{
 		return;
