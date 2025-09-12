@@ -3,8 +3,9 @@ using ThreadID = HANDLE;
 
 namespace Platform
 {
-	unsigned int GetCoresCount();
+	XRCORE_API unsigned int GetCoresCount();
 	XRCORE_API ThreadID GetCurrentThread();
-    size_t GetThreadId(ThreadID ID);
+    XRCORE_API size_t GetThreadId(ThreadID ID);
 	XRCORE_API void SetThreadName(const char* Name);
+    XRCORE_API long AtomicCompareExchange(long* ptr, long expected, long desired);
 }

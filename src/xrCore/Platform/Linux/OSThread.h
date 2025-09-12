@@ -16,4 +16,5 @@ namespace Platform
 	ThreadID GetCurrentThread();
     size_t GetThreadId(ThreadID ID);
     void SetThreadName(const char* name);
+    long AtomicCompareExchange(long* ptr, long expected, long desired);
 }

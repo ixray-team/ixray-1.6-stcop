@@ -468,11 +468,6 @@ float CGameFont::SizeOf_(const char* s)
 	return WidthOf(s);
 }
 
-float CGameFont::SizeOf_(const wide_char* wsStr)
-{
-	return 0;
-}
-
 float CGameFont::CurrentHeight_()
 {
 	return GetHeight();

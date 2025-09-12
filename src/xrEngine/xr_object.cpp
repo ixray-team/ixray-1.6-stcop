@@ -12,15 +12,7 @@
 #include "x_ray.h"
 #include "GameFont.h"
 
-#include "mp_logging.h"
 #include "xr_collide_form.h"
-
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <intrin.h>
-#pragma warning(pop)
-
-#pragma intrinsic(_InterlockedCompareExchange)
 
 inline void CObjectList::o_crow		(CObject*	O)
 {
@@ -42,7 +34,7 @@ void CObject::MakeMeCrow			()
 	u32 const device_frame_id		= Device.dwFrame;
 	u32 const object_frame_id		= dwFrame_AsCrow;
 	if (
-			(u32)_InterlockedCompareExchange(
+			(u32)Platform::AtomicCompareExchange(
 				(long*)&dwFrame_AsCrow,
 				device_frame_id,
 				object_frame_id

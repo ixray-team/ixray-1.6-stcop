@@ -1,5 +1,4 @@
 #pragma once
-#include "MbHelpers.h"
 #include "../Include/xrRender/FontRender.h"
 
 struct FT_FaceRec_;
@@ -101,8 +100,7 @@ public:
 	inline void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
 
 	float SizeOf_(const char* s);
-	float SizeOf_(const wide_char* wsStr);
-	float SizeOf_(int cChar);  // only ANSII
+	float SizeOf_(int cChar);
 
 	float CurrentHeight_();
 
