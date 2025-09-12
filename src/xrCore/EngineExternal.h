@@ -81,6 +81,7 @@ public:
 
 	xr_string GetTitle() const;
 	const char* GetPlayerHudOmfAdditional() const;
+	const char* GetPreferredFallbackLanguage() const;
 	const xr_vector<shared_str> StepWallmarksMaterials() const;
 	const xr_string WallmarkLeft() const;
 	const xr_string WallmarkRight() const;
