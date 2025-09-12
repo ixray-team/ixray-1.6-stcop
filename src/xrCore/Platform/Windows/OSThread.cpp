@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#pragma intrinsic(_InterlockedCompareExchange)
+
 u32 Platform::GetCoresCount()
 {
 	bool allocatedBuffer = false;
@@ -96,4 +98,9 @@ XRCORE_API void Platform::SetThreadName(const char* name)
         {
         }
     }
+}
+
+long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
+{
+	return _InterlockedCompareExchange(ptr, desired, expected);
 }

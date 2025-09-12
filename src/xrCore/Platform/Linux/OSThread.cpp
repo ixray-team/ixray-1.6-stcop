@@ -19,3 +19,19 @@ void Platform::SetThreadName(const char* name)
 {
     pthread_setname_np(pthread_self(), name);
 }
+
+long Platform::AtomicCompareExchange(long* ptr, long expected, long desired)
+{
+    long old = expected;
+    __atomic_compare_exchange_n
+    (
+        ptr,
+        &old,
+        desired,
+        false,
+        __ATOMIC_SEQ_CST,
+        __ATOMIC_SEQ_CST
+    );
+
+    return old;
+}

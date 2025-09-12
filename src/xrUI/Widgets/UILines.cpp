@@ -151,9 +151,9 @@ void CUILines::ParseText(bool force)
 			{
 				char* pszTemp = nullptr;
 				const u32 tcolor = line->m_subLines[i].m_color;
-				char szTempLine[MAX_MB_CHARS], * pszSearch = nullptr;
+				char szTempLine[4096], * pszSearch = nullptr;
 				size_t llen = xr_strlen(line->m_subLines[i].m_text.c_str());
-				VERIFY(llen < MAX_MB_CHARS);
+				VERIFY(llen < 4096);
 				xr_strcpy(szTempLine, line->m_subLines[i].m_text.c_str());
 				pszSearch = szTempLine;
 				while ((pszTemp = strstr(pszSearch, "\\n")) != nullptr)
@@ -178,7 +178,7 @@ void CUILines::ParseText(bool force)
 #define UBUFFER_SIZE 100
 		u16	aMarkers[UBUFFER_SIZE];
 		CUILine tmp_line;
-		char szTempLine[MAX_MB_CHARS];
+		char szTempLine[4096];
 		float fTargetWidth = 1.0f;
 		UI().ClientToScreenScaledWidth(fTargetWidth);
 		VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
@@ -204,7 +204,7 @@ void CUILines::ParseText(bool force)
 				u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
 				for (u16 j = 0; j < nMarkers; j++) {
 					uPartLen = aMarkers[j] - uFrom;
-					VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
+					VERIFY((uPartLen > 0) && (uPartLen < 4096));
 					strncpy_s(szTempLine, pszText + uFrom, uPartLen);
 					szTempLine[uPartLen] = '\0';
 					tmp_line.AddSubLine(szTempLine, tcolor);
@@ -215,7 +215,7 @@ void CUILines::ParseText(bool force)
 					uFrom += uPartLen;
 #pragma warning( default : 4244 )
 				}
-				strncpy_s(szTempLine, pszText + uFrom, MAX_MB_CHARS);
+				strncpy_s(szTempLine, pszText + uFrom, 4096);
 				tmp_line.AddSubLine(szTempLine, tcolor);
 				m_lines.push_back(tmp_line);
 				tmp_line.Clear();

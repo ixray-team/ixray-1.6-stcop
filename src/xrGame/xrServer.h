@@ -10,7 +10,6 @@
 #include "../xrNetServer/NET_Server.h"
 #include "game_sv_base.h"
 #include "id_generator.h"
-#include "../xrEngine/mp_logging.h"
 #include "secure_messaging.h"
 #include "xrServer_updates_compressor.h"
 #include "xrClientsPool.h"
