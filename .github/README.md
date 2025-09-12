@@ -176,12 +176,19 @@ To build from the console follow steps below
 
 - Select one of preset from the list and configure project:
 
-  - `Engine-x64`
-  - `Server-x64`
-  - `Utilities-x64`
-  - `Plugins-3ds-Max-x64`
-  - `Plugins-Lightwave-x64`
-  - `Compressor-x64`
+  - `Engine-x86-Windows`
+  - `Engine-x64-Windows`
+  - `Engine-x86-NonUnity`
+  - `Engine-x64-NonUnity`
+  - `Server-x86-Windows`
+  - `Server-x64-Windows`
+  - `Editors-x64-Windows`
+  - `Utilities-x86-Windows`
+  - `Utilities-x64-Windows`
+  - `Plugins-x64-Windows`
+  - `Compressor-x86-Windows`
+  - `Compressor-x64-Windows`
+  - `Compressor-x64-Linux`
 
   ```sh
   cmake --preset <preset-name>
@@ -228,3 +235,4 @@ Project is being developed with the support of these tools
 
   [__PVS-Studio__](https://pvs-studio.ru/ru/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code
 </div>
+
