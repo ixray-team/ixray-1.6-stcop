@@ -104,7 +104,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	::MainForm = MainForm;
 	UI->Push(MainForm, false);
 
-	pFPSCounter = new FPS::FPSCounter();
+	pFPSCounter = new XRay::Hardware::FPSCounter();
 
 	bool NeedExit = false;
 	splash::update(85, "Performing Final Checks");

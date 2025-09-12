@@ -1,6 +1,6 @@
 #pragma once
 
-namespace FPS
+namespace XRay::Hardware
 {
 	class ENGINE_API FPSCounter final
 	{
@@ -15,4 +15,4 @@ namespace FPS
 	};
 }
 
-extern ENGINE_API FPS::FPSCounter* pFPSCounter;
+extern ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter;
