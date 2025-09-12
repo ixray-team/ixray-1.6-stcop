@@ -145,6 +145,36 @@ UIInvUpgPropertiesWnd::UIInvUpgPropertiesWnd()
 	m_properties_ui.reserve( 15 );
 	m_temp_upgrade_vector.reserve( 1 );
 	m_Upgr_line = nullptr;
+	m_iNumUpgr = 0;
+	m_fnext_line_pos = 0.f;
+}
+
+void UIInvUpgPropertiesWnd::UpdateStatsPos(float& h, Fvector2& pos, UIProperty* pWnd, int& counter) const
+{
+
+	// Если элемент четный, размещаем его в правом столбце
+	if ((counter) % 2 == 0)
+	{
+		pos.x = 0.0f; // Левый столбец
+	}
+	else
+	{
+		pos.x = m_fsec_col_pos; // Правый столбец
+	}
+	// Увеличиваем счетчик
+	counter += 1;
+
+	// Устанавливаем вертикальное положение
+	pos.y = h;
+
+	// Если оба столбца заполнены (четное количество элементов), переходим на следующую строку
+	if (counter % 2 == 0)
+	{
+		h += m_fnext_line_pos;
+	}
+
+	// Устанавливаем позицию элемента
+	pWnd->SetWndPos(pos);
 }
 
 UIInvUpgPropertiesWnd::~UIInvUpgPropertiesWnd()
@@ -165,6 +195,8 @@ void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
 
 	if (ui_xml.NavigateToNode("properties:upgr_line"))
 		m_Upgr_line = UIHelper::CreateStatic(ui_xml, "properties:upgr_line", this);
+	m_fsec_col_pos = ui_xml.ReadAttribFlt("properties", 0, "sec_col_pos", UI().is_widescreen() ? 105.f : 130.f);
+	m_fnext_line_pos = ui_xml.ReadAttribFlt("properties", 0, "next_line_pos", 20.f);
 
 	LPCSTR properties_section = "upgrades_properties";
 
@@ -197,27 +229,45 @@ void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
 void UIInvUpgPropertiesWnd::set_info( ItemUpgrades_type const& item_upgrades )
 {
 	Fvector2 new_size;
+	new_size.set(GetWndPos());
+	float h = 0.f;
+	m_iNumUpgr = 0;
 	new_size.x = GetWndSize().x;
-	new_size.y = 0.0f;
 	if (m_Upgr_line)
-		new_size.y = m_Upgr_line->GetWndSize().y+3.0f;
+		h += m_Upgr_line->GetWndSize().y+3.0f;
 	
 	Properties_type::iterator ib = m_properties_ui.begin();
 	Properties_type::iterator ie = m_properties_ui.end();
-	for ( ; ib != ie ; ++ib )
+	for ( ; ib != ie ; ++ib)
 	{
 		UIProperty* ui_property = (*ib);
 		ui_property->Show( false );
 
 		if ( ui_property->compute_value( item_upgrades ) )
 		{
-			ui_property->SetWndPos( Fvector2().set( ui_property->GetWndPos().x, new_size.y ) );
-			new_size.y += ui_property->GetWndSize().y;
+			new_size.set(ui_property->GetWndPos());
+			new_size.x = 0.f;
+			UpdateStatsPos(h, new_size, ui_property, m_iNumUpgr);
 			ui_property->Show( true );
 		}
 	}
-	new_size.y += 10.0f;
-	SetWndSize( new_size );
+	if (GetParent())
+	{
+		if (m_iNumUpgr % 2 == 0)
+		{
+			h -= 5.f;
+		}
+		else
+		{
+			h += m_fnext_line_pos / 2.f;
+		}
+	}
+	else
+	{
+		if (m_iNumUpgr % 2 != 0)
+			h += m_fnext_line_pos;
+	}
+	SetHeight(h);
 }
 
 void UIInvUpgPropertiesWnd::set_upgrade_info( Upgrade_type& upgrade )
