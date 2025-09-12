@@ -200,7 +200,7 @@ void CUIItemInfo::InitItemInfo(Fvector2 pos, Fvector2 size, LPCSTR xml_name)
 {
 	inherited::SetWndPos	(pos);
 	inherited::SetWndSize	(size);
-    InitItemInfo			(xml_name);
+	InitItemInfo			(xml_name);
 }
 
 bool	IsGameTypeSingle();
