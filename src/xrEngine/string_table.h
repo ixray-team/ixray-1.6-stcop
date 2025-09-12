@@ -11,7 +11,9 @@ using STRING_TABLE_MAP_IT = STRING_TABLE_MAP::iterator;
 struct STRING_TABLE_DATA
 {
 	STRING_VALUE			m_sLanguage;
+	STRING_VALUE			m_sFallbackLanguage;
 	STRING_TABLE_MAP		m_StringTable;
+	STRING_TABLE_MAP		m_FallbackStringTable;
 	STRING_TABLE_MAP		m_string_key_binding;
 };
 
@@ -35,6 +37,7 @@ public:
 private:
 			void				Init					();
 			void				Load					(LPCSTR xml_file);
+			void				LoadFallback			(LPCSTR xml_file);
 	static STRING_VALUE			ParseLine				(LPCSTR str, LPCSTR key, bool bFirst);
 	static STRING_TABLE_DATA*	pData;
 };
