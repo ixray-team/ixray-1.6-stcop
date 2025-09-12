@@ -21,11 +21,11 @@ namespace inventory { namespace upgrade {
 class UIProperty : public CUIWindow
 {
 private:
-	typedef CUIWindow                            inherited;
-	typedef inventory::upgrade::Property         Property_type;
-	typedef inventory::upgrade::Upgrade          Upgrade_type;
-	typedef CInventoryItem::Upgrades_type        ItemUpgrades_type;
-	typedef Property_type::FunctorParams_type    PropertyFunctorParams_type;
+	typedef CUIWindow							inherited;
+	typedef inventory::upgrade::Property		Property_type;
+	typedef inventory::upgrade::Upgrade			Upgrade_type;
+	typedef CInventoryItem::Upgrades_type		ItemUpgrades_type;
+	typedef Property_type::FunctorParams_type	PropertyFunctorParams_type;
 
 protected:
 	shared_str		m_property_id;
@@ -35,17 +35,17 @@ protected:
 	string256		m_text;
 
 public:
-					UIProperty();
-	virtual			~UIProperty();
-		void		init_from_xml( CUIXml& ui_xml );
-		bool		init_property( shared_str const& property_id );
-	Property_type*	get_property();
+						UIProperty					();
+	virtual				~UIProperty					();
+		void			init_from_xml				(CUIXml& ui_xml);
+		bool			init_property				(shared_str const& property_id);
+	Property_type*		get_property				();
 
-		bool		read_value_from_section( LPCSTR section, LPCSTR param, float& result );
-		bool		compute_value( ItemUpgrades_type const& item_upgrades );
-		bool		show_result( LPCSTR values );
+		bool			read_value_from_section		(LPCSTR section, LPCSTR param, float& result);
+		bool			compute_value				(ItemUpgrades_type const& item_upgrades);
+		bool			show_result					(LPCSTR values);
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow*	ui_cast_window				() { return this; }
 
 }; // class UIProperty
 
@@ -54,25 +54,29 @@ public:
 class UIInvUpgPropertiesWnd : public CUIWindow
 {
 private:
-	typedef CUIWindow                    inherited;
-	typedef inventory::upgrade::Upgrade  Upgrade_type;
-	typedef xr_vector<UIProperty*>       Properties_type;
-	typedef CInventoryItem::Upgrades_type  ItemUpgrades_type;
+	typedef CUIWindow						inherited;
+	typedef inventory::upgrade::Upgrade		Upgrade_type;
+	typedef xr_vector<UIProperty*>			Properties_type;
+	typedef CInventoryItem::Upgrades_type	ItemUpgrades_type;
 
 protected:
 	Properties_type		m_properties_ui;
 	ItemUpgrades_type	m_temp_upgrade_vector;
 	CUIStatic*			m_Upgr_line;
+	int					m_iNumUpgr;
+	float				m_fsec_col_pos;
+	float				m_fnext_line_pos;
 
 public:
-					UIInvUpgPropertiesWnd();
-	virtual			~UIInvUpgPropertiesWnd();
-		void		init_from_xml( LPCSTR xml_name );
+						UIInvUpgPropertiesWnd	();
+	virtual				~UIInvUpgPropertiesWnd	();
+		void			init_from_xml			(LPCSTR xml_name);
 		
-		void		set_upgrade_info( Upgrade_type& upgrade );
-		void		set_item_info( CInventoryItem& item );
+		void			set_upgrade_info		(Upgrade_type& upgrade );
+		void			set_item_info			(CInventoryItem& item );
+		void			UpdateStatsPos			(float& h, Fvector2& pos, UIProperty* pWnd, int& counter) const;
 
-	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUIWindow*	ui_cast_window			() { return this; }
 
 protected:
 		void		set_info( ItemUpgrades_type const& item_upgrades );
