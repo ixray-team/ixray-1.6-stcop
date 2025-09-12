@@ -230,7 +230,7 @@ ENGINE_API void EngineLoadStage4()
 
 	Device.Create();
 	g_FontManager->InitializeFonts();
-	pFPSCounter = new FPS::FPSCounter();
+	pFPSCounter = new XRay::Hardware::FPSCounter();
 }
 
 ENGINE_API void EngineLoadStage5()

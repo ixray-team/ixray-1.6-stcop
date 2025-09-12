@@ -4,58 +4,61 @@
 #include "GameFont.h"
 #include "XR_IOConsole.h"
 #include "FPSCounter.h"
-#include "GameFont.h"
+#include "../xrCore/appinfo.h"
 
-ENGINE_API FPS::FPSCounter* pFPSCounter = nullptr;
+ENGINE_API XRay::Hardware::FPSCounter* pFPSCounter = nullptr;
 
 using xr_clock = std::chrono::high_resolution_clock;
 
 enum DebugTextColor : u64
 {
-    DTC_FPS_INFO = 0xFFFF8080,
+	DTC_FPS_INFO = 0xFFFF8080,
 };
 
-FPS::FPSCounter::FPSCounter()
+XRay::Hardware::FPSCounter::FPSCounter()
 {
-    pCGameFont = g_FontManager->CloneFont("ui_font_console");
+	pCGameFont = g_FontManager->CloneFont("ui_font_console");
 }
 
-void FPS::FPSCounter::OnRender() {
-    auto l_MonitorHZ = []() -> u32
-        {
-            u32 refreshRate = 0;
+void XRay::Hardware::FPSCounter::OnRender()
+{
+	auto GetMonitorHZLambda = []() -> u32
+	{
+		int DisplayID = SDL_GetDisplayForWindow(g_AppInfo.Window);
+		if (DisplayID < 0)
+		{
+			return 0u;
+		}
 
-            DEVMODE devMode = {};
-            devMode.dmSize = sizeof(devMode);
+		const SDL_DisplayMode* DisplayModePtr = SDL_GetDesktopDisplayMode(DisplayID);
+		if (DisplayModePtr == nullptr)
+		{
+			return 0u;
+		}
 
-            if (EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &devMode) != 0) {
-                return refreshRate = devMode.dmDisplayFrequency;
-            }
+		return static_cast<u32>(DisplayModePtr->refresh_rate);
+	};
 
-            return 0u;
-        };
+	pCGameFont->SetHeight(0.013f);
 
-    pCGameFont->SetHeight(0.013f);
+	static auto lastFrameTime = xr_clock::now();
+	auto currentTime = xr_clock::now();
+	currentTime = xr_clock::now();
+	std::chrono::duration<double> frameDuration = currentTime - lastFrameTime;
+	lastFrameTime = currentTime;
 
-    static auto lastFrameTime = xr_clock::now();
-    auto currentTime = xr_clock::now();
-    currentTime = xr_clock::now();
-    std::chrono::duration<double> frameDuration = currentTime - lastFrameTime;
-    lastFrameTime = currentTime;
+	float fps = 0.f;
+	static float prevFps = 0.f;
 
-    float fps = 0.f;
-    static float prevFps = 0.f;
+	if ((Device.dwFrame % GetMonitorHZLambda()) == 0)
+		fps = 1.f / (float)frameDuration.count();
 
-    if ((Device.dwFrame % l_MonitorHZ()) == 0)
-        fps = 1.f / (float)frameDuration.count();
+	fps = (fps == 0.0f) ? prevFps : fps;
 
-    fps = (fps == 0.0f) ? prevFps : fps;
+	pCGameFont->SetAligment(CGameFont::alLeft);
+	pCGameFont->SetColor(DebugTextColor::DTC_FPS_INFO);
+	pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight() * 4.5f, 35, "FPS: %i", static_cast<int>(fps));
+	pCGameFont->OnRender();
 
-    //clamp(fps, 0.f, static_cast<float>(l_MonitorHZ()));
-    pCGameFont->SetAligment(CGameFont::alLeft);
-    pCGameFont->SetColor(DebugTextColor::DTC_FPS_INFO);
-    pCGameFont->Out(psCurrentVidMode[0] - pCGameFont->GetHeight() * 4.5f, 35, "FPS: %i", static_cast<int>(fps));
-    pCGameFont->OnRender();
-
-    prevFps = fps;
+	prevFps = fps;
 }
