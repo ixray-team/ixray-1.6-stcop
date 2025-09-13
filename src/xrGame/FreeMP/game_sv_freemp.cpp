@@ -316,8 +316,6 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 {
-	game_sv_mp::OnDetach(eid_who, eid_what);
-
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
 		return;
@@ -327,18 +325,22 @@ void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 		return;
 
 	// drop players bag
-	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
+	if (!e_who->g_Alive())
 	{
-		OnDetachPlayersBag(e_who, e_entity);
+		if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
+		{
+			OnDetachPlayersBag(e_who, e_entity);
+		}
 	}
 }
 
 // player disconnect
 void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 {
-#ifdef IXR_MP_SQL
 	CActorMP* actor = smart_cast<CActorMP*>(Level().Objects.net_Find(GameID));
 	if (!actor) return;
+
+#ifdef IXR_MP_SQL
 
 	if (actor)
 	{
@@ -410,7 +412,12 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 	}
 #endif
 
-	inherited::OnPlayerDisconnect(id_who, Name, GameID);
+	if (actor->g_Alive())
+	{
+		CSE_Abstract* e_entity = server().game->get_entity_from_eid(actor->ID());
+		Level().Server->entity_Destroy(e_entity);
+		inherited::OnPlayerDisconnect(id_who, Name, GameID);
+	}
 }
 
 void game_sv_freemp::OnPlayerKillPlayer(game_PlayerState* ps_killer, game_PlayerState* ps_killed, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA)
