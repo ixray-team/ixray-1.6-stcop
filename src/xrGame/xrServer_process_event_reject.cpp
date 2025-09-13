@@ -61,7 +61,11 @@ bool xrServer::Process_event_reject	(NET_Packet& P, const ClientID sender, const
 
 	//R_ASSERT3(C.end()!=c,e_entity->name_replace(),e_parent->name_replace());
 	e_entity->ID_Parent		= 0xffff; 
-	C.erase					(c);
+
+	if (auto IdToErase = std::find(C.begin(), C.end(), id_entity); IdToErase != C.end())
+	{
+		C.erase(IdToErase);
+	}
 
 	// Signal to everyone (including sender)
 	if (send_message)
