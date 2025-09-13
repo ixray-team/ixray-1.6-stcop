@@ -273,7 +273,7 @@ bool CInventory::DropItem(CGameObject *pObj, bool just_before_destroy, bool dont
 		}break;
 	case eItemPlaceSlot:{
 			VERIFY			(InSlot(pIItem));
-			if(m_iActiveSlot == pIItem->CurrSlot())
+			if(m_iActiveSlot == pIItem->CurrSlot() && m_pOwner != nullptr)
 			{
 				CActor* pActor	= m_pOwner->cast_actor();
 				if (!pActor || pActor->g_Alive())
