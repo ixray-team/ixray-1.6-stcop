@@ -21,6 +21,11 @@
 
 CGroupHierarchyHolder::~CGroupHierarchyHolder			()
 {
+	if (OnClient())
+	{
+		return;
+	}
+
 	VERIFY						(m_members.empty());
 	VERIFY						(!m_visible_objects);
 	VERIFY						(!m_sound_objects);

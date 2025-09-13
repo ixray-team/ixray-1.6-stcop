@@ -222,9 +222,12 @@ void	CSheduler::Register		(ISheduled* A, BOOL RT				)
 	Registration.push_back	(R);
 }
 
-void	CSheduler::Unregister	(ISheduled* A						)
+void CSheduler::Unregister(ISheduled* A)
 {
-	VERIFY		(Registered(A));
+	if (!Registered(A))
+	{
+		return;
+	}
 
 	if (m_processing_now) {
 		if (internal_Unregister(A,A->shedule.b_RT,false))

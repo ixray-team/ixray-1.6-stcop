@@ -1929,10 +1929,9 @@ void game_sv_mp::DestroyGameItem(CSE_Abstract* entity)
 
 void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 {
-//	R_ASSERT2( entity, "entity not found for rejecting" );
-	VERIFY2  ( entity, "entity not found for rejecting" );
-	if ( !entity ) {
-		Msg ( "! ERROR: entity not found for rejecting" );
+	if (!entity)
+	{
+		Msg("! ERROR: entity not found for rejecting");
 		return;
 	}
 
@@ -1943,19 +1942,17 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 			return;
 	}
 
-	CSE_Abstract*	e_parent = get_entity_from_eid(entity->ID_Parent);
-	
-//	R_ASSERT2( e_parent, make_string<const char*>( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ).c_str() );
-	VERIFY2  ( e_parent, make_string<const char*>( "RejectGameItem: parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent ));
-	if ( !e_parent ) {
-		Msg( "! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent );
+	CSE_Abstract* e_parent = get_entity_from_eid(entity->ID_Parent);
+	if (!e_parent)
+	{
+		Msg("! ERROR (RejectGameItem): parent not found. entity_id = [%d], parent_id = [%d]", entity->ID, entity->ID_Parent);
 		return;
 	}
 
-	NET_Packet		P;
-	u_EventGen		(P,GE_OWNERSHIP_REJECT, e_parent->ID);
-	P.w_u16			(entity->ID);
-	Level().Send	(P,net_flags(TRUE,TRUE));
+	NET_Packet P;
+	u_EventGen(P, GE_OWNERSHIP_REJECT, e_parent->ID);
+	P.w_u16(entity->ID);
+	Level().Send(P, net_flags(TRUE, TRUE));
 }
 
 #include "../xrEngine/string_table.h"
