@@ -17,19 +17,23 @@
 #include "Level.h"
 #include "CarWeapon.h"
 
-void	CCar::OnMouseMove(int dx, int dy)
+void CCar::OnMouseMove(int dx, int dy)
 {
-	if (Remote())					return;
+	if (!IsMyCar())
+		return;
 
-	CCameraBase* C	= active_camera;
-	float scale		= (C->f_fov/g_fov)*psMouseSens * psMouseSensScale/50.f;
-	if (dx){
-		float d		= float(dx)*scale;
-		C->Move		((d<0)?kLEFT:kRIGHT, _abs(d));
+	CCameraBase* C = active_camera;
+	float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.f;
+	if (dx)
+	{
+		float d = float(dx) * scale;
+		C->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
 	}
-	if (dy){
-		float d		= ((psMouseInvert.test(1))?-1:1)*float(dy)*scale*3.f/4.f;
-		C->Move		((d>0)?kUP:kDOWN, _abs(d));
+
+	if (dy)
+	{
+		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.f / 4.f;
+		C->Move((d > 0) ? kUP : kDOWN, _abs(d));
 	}
 }
 
@@ -119,7 +123,8 @@ void CCar::vfProcessInputKey	(int iCommand, bool bPressed)
 
 void CCar::OnKeyboardPress(int cmd)
 {
-	if (Remote())								return;
+	if (!IsMyCar() && !g_dedicated_server)
+		return;
 
 	switch (cmd)	
 	{
@@ -138,16 +143,28 @@ void CCar::OnKeyboardPress(int cmd)
 	case kR_STRAFE:	PressRight();				if (OwnerActor()) OwnerActor()->steer_Vehicle(1);	break;
 	case kL_STRAFE:	PressLeft();				if (OwnerActor()) OwnerActor()->steer_Vehicle(-1);break;
 	case kJUMP:		PressBreaks();				break;
-	case kDETECTOR:	SwitchEngine();				break;
+	case kDETECTOR: SwitchEngine();				break;
 	case kTORCH:	m_lights.SwitchHeadLights();break;
 	case kUSE:									break;
 	};
 
+	if (OnClient())
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
+		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
+		P.w_u16(ID());
+		P.w_u8(cmd);
+		P.w_u8(true);
+		CGameObject::u_EventSend(P);
+	}
 }
 
-void	CCar::OnKeyboardRelease(int cmd)
+void CCar::OnKeyboardRelease(int cmd)
 {
-	if (Remote())								return;
+	if (!IsMyCar() && !g_dedicated_server)
+		return;
+
 	switch (cmd)	
 	{
 	case kACCEL:break;
@@ -157,11 +174,23 @@ void	CCar::OnKeyboardRelease(int cmd)
 	case kR_STRAFE:	ReleaseRight();				if (OwnerActor()) OwnerActor()->steer_Vehicle(0);	break;
 	case kJUMP:		ReleaseBreaks();			break;
 	};
+
+	if (OnClient())
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GE_GAME_EVENT, Owner()->ID());
+		P.w_u16(GAME_EVENT_MP_CAR_INPUT);
+		P.w_u16(ID());
+		P.w_u8(cmd);
+		P.w_u8(false);
+		CGameObject::u_EventSend(P);
+	}
 }
 
-void	CCar::OnKeyboardHold(int cmd)
+void CCar::OnKeyboardHold(int cmd)
 {
-	if (Remote())								return;
+	if (!IsMyCar())
+		return;
 
 	switch(cmd)
 	{
@@ -171,27 +200,7 @@ void	CCar::OnKeyboardHold(int cmd)
 	case kDOWN:
 	case kLEFT:
 	case kRIGHT:	active_camera->Move(cmd);	break;
-/*
-	case kFWD:		
-		if (ectFree==active_camera->tag)	active_camera->Move(kUP);
-		else								m_vCamDeltaHP.y += active_camera->rot_speed.y*Device.fTimeDelta;
-		break;
-	case kBACK:		
-		if (ectFree==active_camera->tag)	active_camera->Move(kDOWN);
-		else								m_vCamDeltaHP.y -= active_camera->rot_speed.y*Device.fTimeDelta;
-		break;
-	case kL_STRAFE: 
-		if (ectFree==active_camera->tag)	active_camera->Move(kLEFT);
-		else								m_vCamDeltaHP.x -= active_camera->rot_speed.x*Device.fTimeDelta;
-		break;
-	case kR_STRAFE: 
-		if (ectFree==active_camera->tag)	active_camera->Move(kRIGHT);
-		else								m_vCamDeltaHP.x += active_camera->rot_speed.x*Device.fTimeDelta;
-		break;
-*/
 	}
-//	clamp(m_vCamDeltaHP.x, -PI_DIV_2,	PI_DIV_2);
-//	clamp(m_vCamDeltaHP.y, active_camera->lim_pitch.x,	active_camera->lim_pitch.y);
 }
 void CCar::Action(u16 id, u32 flags)
 {

@@ -1838,6 +1838,67 @@ void CSE_ALifeCar::STATE_Write			(NET_Packet	&tNetPacket)
 	tNetPacket.w_float(health);
 }
 
+void CSE_ALifeCar::SyncRead(NET_Packet& P)
+{
+	u8 flags = P.r_u8();
+	std::bitset<8> BitsIn(flags);
+
+	Engine = BitsIn.test(0);
+	Light = BitsIn.test(1);
+
+	P >> Owner;
+	P >> Transmission;
+
+	StateVec.clear();
+
+	u16 cnt;
+	P >> cnt;
+
+	for (u16 i = 0; i < cnt; i++)
+	{
+		SPHNetState State;
+		P.r_vec3(State.position);
+
+		P.r_float_q8(State.quaternion.x, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.y, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.z, -1.0, 1.0);
+		P.r_float_q8(State.quaternion.w, -1.0, 1.0);
+
+		StateVec.push_back(State);
+	}
+}
+
+void CSE_ALifeCar::SyncWrite(NET_Packet& P)
+{
+	std::bitset<8> BitsOut;
+	BitsOut.set(0, Engine ? 1 : 0);
+	BitsOut.set(1, Light ? 1 : 0);
+
+	P.w_u8(static_cast<u8>(BitsOut.to_ulong()));
+	P << Owner;
+	P << Transmission;
+
+	u16 cnt = static_cast<u16>(StateVec.size());
+	P.w_u16(cnt);
+
+	for (u16 i = 0; i < cnt; i++)
+	{
+		const SPHNetState& State = StateVec[i];
+		P.w_vec3(State.position);
+
+		P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+		P.w_float_q8(State.quaternion.w, -1.0, 1.0);
+	}
+}
+
+
+BOOL CSE_ALifeCar::Net_Relevant()
+{
+	return !IsGameTypeSingle();
+}
+
 void CSE_ALifeCar::UPDATE_Read			(NET_Packet	&tNetPacket)
 {
 	inherited1::UPDATE_Read		(tNetPacket);

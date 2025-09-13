@@ -224,10 +224,12 @@ void	CSheduler::Register		(ISheduled* A, BOOL RT				)
 
 void CSheduler::Unregister(ISheduled* A)
 {
+#ifdef DEBUG
 	if (!Registered(A))
 	{
 		return;
 	}
+#endif
 
 	if (m_processing_now) {
 		if (internal_Unregister(A,A->shedule.b_RT,false))

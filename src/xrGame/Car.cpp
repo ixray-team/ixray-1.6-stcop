@@ -115,6 +115,14 @@ void CCar::reload(LPCSTR section)
 		m_memory->reload(section);
 }
 
+bool CCar::IsMyCar() const
+{
+	if (!Actor())
+		return false;
+
+	return Actor()->Holder() == this;
+}
+
 void CCar::cb_Steer(CBoneInstance* B)
 {
 	VERIFY2(fsimilar(DET(B->mTransform), 1.f, DET_CHECK_EPS), "Bones receive returns 0 matrix");
@@ -441,19 +449,26 @@ void CCar::VisualUpdate(float fov)
 	Fvector lin_vel = zero_vel;
 	if(m_pPhysicsShell)
 	{
-		m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		if (IsMyCar() || IsGameTypeSingle())
+		{
+			m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+		}
+		else
+		{
+			Interpolate();
+		}
 		m_pPhysicsShell->get_LinearVel(lin_vel);
 	}
 
 	m_car_sound->Update();
 	if (Owner())
 	{
-		if (m_pPhysicsShell->isEnabled())
+		if (m_pPhysicsShell->isEnabled() || OnClient())
 		{
 			Owner()->XFORM().mul_43(XFORM(), m_sits_transforms[0]);
 		}
 
-		if (CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr)
+		if (CurrentGameUI() != nullptr && CurrentGameUI()->UIMainIngameWnd != nullptr && IsMyCar())
 		{
 			CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
 			Panel.SetEngineLamp(b_engine_on);
@@ -471,19 +486,197 @@ void CCar::VisualUpdate(float fov)
 	m_lights.Update();
 }
 
-void	CCar::renderable_Render()
+void CCar::renderable_Render()
 {
 	inherited::renderable_Render();
 	if (m_car_weapon)
 		m_car_weapon->Render_internal();
 }
 
-void	CCar::net_Export(NET_Packet& P)
+float CCar::InterpolateStates(u32 element, SCarNetUpdate const& first, SCarNetUpdate const& last, SPHNetState& current)
+{
+	u32 CurTime = Device.dwTimeGlobal;
+
+	const u32 denom = last.TimeStamp - first.TimeStamp;
+	if (denom == 0)
+	{
+		const Fvector& pos2 = last.StateVec[element].position;
+		current.position = pos2;
+		current.quaternion = last.StateVec[element].quaternion;
+		return 1.f;
+	}
+
+	float factor = float(CurTime - first.TimeStamp) / float(denom);
+	float result = factor;
+	clamp(factor, 0.f, 1.f);
+
+	const Fvector& pos1 = first.StateVec[element].position;
+	const Fvector& pos2 = last.StateVec[element].position;
+
+	current.position.x = pos1.x + (factor * (pos2.x - pos1.x));
+	current.position.y = pos1.y + (factor * (pos2.y - pos1.y));
+	current.position.z = pos1.z + (factor * (pos2.z - pos1.z));
+
+	current.quaternion.slerp(first.StateVec[element].quaternion, last.StateVec[element].quaternion, factor);
+	return result;
+}
+
+
+void CCar::Interpolate()
+{
+	if (!getVisible() || !m_pPhysicsShell || m_CarNetUpdates.empty())
+		return;
+
+	// simple linear interpolation...
+	if (m_CarNetUpdates.size() >= 2)
+	{
+		auto& first = m_CarNetUpdates.front();
+		auto& last = m_CarNetUpdates.back();
+		u32 elementsCnt = first.StateVec.size();
+
+		for (u32 i = 0; i < elementsCnt; i++)
+		{
+			SPHNetState newState = m_CarNetUpdates.back().StateVec[i];
+			float f = InterpolateStates(i, first, last, newState);
+
+			if (f == 0)
+				return;
+
+			CPHSynchronize* pSyncObj = this->PHGetSyncItem(i);
+			SPHNetState oldState;
+			pSyncObj->get_State(oldState);
+
+			newState.previous_position = oldState.position;
+			newState.previous_quaternion = oldState.quaternion;
+			pSyncObj->set_State(newState);
+		}
+	}
+
+	m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
+}
+
+void CCar::SyncRead(NET_Packet& P)
+{
+	u8 flags = P.r_u8();
+	std::bitset<8> BitsIn(flags);
+
+	u8 engine = BitsIn.test(0);
+	u8 light = BitsIn.test(1);
+
+	u16 owner;
+	P.r_u16(owner);
+	m_current_transmission_num = P.r_u32();
+
+	if (owner != u16(-1))
+	{
+		if (!(IsMyCar()))
+		{
+			if (auto* act = smart_cast<CActor*>(Level().Objects.net_Find(owner)))
+				act->attach_Vehicle(this);
+		}
+	}
+	else
+	{
+		if (OwnerActor())
+			detach_Actor();
+	}
+
+	if (!IsMyCar())
+	{
+		bool e = !!engine;
+
+		if (e != b_engine_on)
+			SwitchEngine();
+
+		bool l = !!light;
+
+		if (l != m_lights.IsOn())
+			m_lights.SwitchHeadLights();
+	}
+
+	u16 cnt;
+	P.r_u16(cnt);
+
+	SCarNetUpdate update;
+	update.TimeStamp = Device.dwTimeGlobal;
+
+	for (int i = 0; i < cnt; i++)
+	{
+		SPHNetState state{ 0 };
+
+		P.r_vec3(state.position);
+		P.r_float_q8(state.quaternion.x, -1.0, 1.0);
+		P.r_float_q8(state.quaternion.y, -1.0, 1.0);
+		P.r_float_q8(state.quaternion.z, -1.0, 1.0);
+		P.r_float_q8(state.quaternion.w, -1.0, 1.0);
+
+		update.StateVec.push_back(state);
+	}
+
+	if (!IsMyCar())
+		m_CarNetUpdates.push_back(update);
+
+	while (m_CarNetUpdates.size() > 2)
+		m_CarNetUpdates.pop_front();
+}
+
+void CCar::SyncWrite(NET_Packet& P)
+{
+	std::bitset<8> BitsOut;
+	BitsOut.set(0, b_engine_on);
+	BitsOut.set(1, m_lights.IsOn());
+
+	P.w_u8(static_cast<u8>(BitsOut.to_ulong()));
+
+	if (OwnerActor())
+		P.w_u16(OwnerActor()->ID());
+	else
+		P.w_u16(u16(-1));
+
+	P.w_u32((u32)m_current_transmission_num);
+
+	if (OnClient() || m_CarNetUpdates.empty())
+	{
+		P.w_u16(PHGetSyncItemsNumber());
+
+		for (int i = 0; i < PHGetSyncItemsNumber(); i++)
+		{
+			auto item = PHGetSyncItem(i);
+
+			SPHNetState State;
+			item->get_State(State);
+
+			P.w_vec3(State.position);
+			P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
+		}
+	}
+	else
+	{
+		auto& vec = m_CarNetUpdates.back().StateVec;
+		P.w_u16(vec.size());
+
+		for (int i = 0; i < vec.size(); i++)
+		{
+			SPHNetState State = vec[i];
+
+			P.w_vec3(State.position);
+			P.w_float_q8(State.quaternion.x, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.y, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.z, -1.0, 1.0);
+			P.w_float_q8(State.quaternion.w, -1.0, 1.0);
+		}
+	}
+}
+
+void CCar::net_Export(NET_Packet& P)
 {
 	inherited::net_Export(P);
 }
 
-void	CCar::net_Import(NET_Packet& P)
+void CCar::net_Import(NET_Packet& P)
 {
 	inherited::net_Import(P);
 }
@@ -644,8 +837,12 @@ void CCar::detach_Actor()
 #ifdef DEBUG
 	DBgClearPlots();
 #endif
-	CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
-	Panel.Show(false);
+
+	if (!g_dedicated_server)
+	{
+		CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
+		Panel.Show(false);
+	}
 }
 
 bool CCar::attach_Actor(CGameObject* actor)
@@ -684,8 +881,11 @@ bool CCar::attach_Actor(CGameObject* actor)
 	processing_activate();
 	ReleaseHandBreak();
 
-	CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
-	Panel.Show(true);
+	if (!g_dedicated_server)
+	{
+		CUICarPanel& Panel = CurrentGameUI()->UIMainIngameWnd->CarPanel();
+		Panel.Show(true);
+	}
 	return true;
 }
 
@@ -1580,7 +1780,7 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
 		{
 			collide::rq_result* I = R.r_begin() + k;
 
-			if (IsGameTypeSingle() && m_bone_trunk == (u16)I->element)
+			if (IsGameTypeSingleCompatible() && m_bone_trunk == (u16)I->element)
 			{
 				bool IsDoorBone = is_Door((u16)I->element, i);
 				if (I->range < 1.f)

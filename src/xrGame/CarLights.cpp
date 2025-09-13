@@ -73,9 +73,16 @@ void SCarLight::ParseDefinitions(LPCSTR section)
 void SCarLight::Switch()
 {
 	VERIFY(!physics_world()->Processing());
-	if(isOn())TurnOff();
-	else	  TurnOn();
+	if (isOn())
+	{
+		TurnOff();
+	}
+	else
+	{
+		TurnOn();
+	}
 }
+
 void SCarLight::TurnOn()
 {
 	VERIFY(!physics_world()->Processing());
@@ -87,8 +94,8 @@ void SCarLight::TurnOn()
 	glow_render ->set_active(true);
 	light_render->set_active(true);
 	Update();
-
 }
+
 void SCarLight::TurnOff()
 {
 	VERIFY(!physics_world()->Processing());
@@ -117,18 +124,16 @@ void SCarLight::Update()
 	glow_render->set_direction(M.k);
 	glow_render->set_position	(M.c);
 	light_render->set_position	(M.c);
-
 }
-
 
 CCarLights::CCarLights()
 {
-	m_pcar=nullptr;
+	m_pcar = nullptr;
 }
 
 void CCarLights::Init(CCar* pcar)
 {
-	m_pcar=pcar;
+	m_pcar = pcar;
 	m_lights.clear();
 }
 

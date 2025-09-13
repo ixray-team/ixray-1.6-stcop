@@ -20,6 +20,8 @@
 #include "ui/UIGameTutorial.h"
 #include "ui/UIPdaWnd.h"
 #include "../xrNetServer/NET_AuthCheck.h"
+#include "Actor.h"
+#include "holder_custom.h"
 
 #include "../xrPhysics/PhysicsCommon.h"
 ENGINE_API bool g_dedicated_server;
@@ -189,11 +191,22 @@ void CLevel::ClientSend()
 		if (CurrentControlEntity()) 
 		{
 			CObject* pObj = CurrentControlEntity();
+
+			if (CActor* act = smart_cast<CActor*>(pObj))
+			{
+				if (act->Holder() != nullptr)
+				{
+					if (CObject* holder = act->Holder()->cast_game_object())
+					{
+						pObj = holder;
+					}
+				}
+			}
+
 			if (!pObj->getDestroy() && pObj->net_Relevant())
 			{				
 				P.w_begin		(M_CL_UPDATE);
 				
-
 				P.w_u16			(u16(pObj->ID()));
 				P.w_u32			(0);	//reserved place for client's ping
 

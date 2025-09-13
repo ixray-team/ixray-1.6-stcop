@@ -76,15 +76,9 @@ void CActorMP::fill_state	(actor_mp_state &state)
 
 BOOL CActorMP::net_Relevant	()
 {
-	if (OnClient())
+	if (Holder())
 	{
-		
-		/*
-		if (!g_Alive())
-			return						(false);
-
-		if (m_i_am_dead)
-			return						(false);*/
+		return false;
 	}
 
 	if (character_physics_support()->IsRemoved())

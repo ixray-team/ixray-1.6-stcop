@@ -382,7 +382,6 @@ private:
 	void				 Stall								()	;
 	void				 Clutch								()	;
 	void				 Unclutch							()	;
-	void				 SwitchEngine						()	;
 	void				 NeutralDrive						()	;
 	void				 UpdatePower						()	;
 	void				 ReleasePedals						()	;
@@ -405,17 +404,7 @@ IC	float	 			EngineRpmFromWheels					() const {return _abs(DriveWheelsMeanAngleR
 	void				TransmissionUp						();
 	void				TransmissionDown					();
 IC	size_t				CurrentTransmission					() const {return m_current_transmission_num;}
-	void				PressRight							();
-	void				PressLeft							();
-	void				PressForward						();
-	void				PressBack							();
-	void				PressBreaks							();
 
-	void				ReleaseRight						();
-	void				ReleaseLeft							();
-	void				ReleaseForward						();
-	void				ReleaseBack							();
-	void				ReleaseBreaks						();
 	float				EffectiveGravity					();
 	float				AntiGravityAccel					();
 	float				GravityFactorImpulse				();
@@ -455,7 +444,21 @@ IC	size_t				CurrentTransmission					() const {return m_current_transmission_num
 			bool WheelHit								(float P,s16 element,ALife::EHitType hit_type);
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:
-			void			DoExit						();
+	void DoExit();
+
+	void SwitchEngine();
+	void PressRight();
+	void PressLeft();
+	void PressForward();
+	void PressBack();
+	void PressBreaks();
+
+	void ReleaseRight();
+	void ReleaseLeft();
+	void ReleaseForward();
+	void ReleaseBack();
+	void ReleaseBreaks();
+
 	virtual bool			allowWeapon					() const		{return true;};
 	virtual bool			HUDView						() const;
 	virtual Fvector			ExitPosition				(){return m_exit_position;}
@@ -490,7 +493,7 @@ public:
 	// Network
 	virtual void			net_Export					(NET_Packet& P);				// export to server
 	virtual void			net_Import					(NET_Packet& P);				// import from server
-	virtual BOOL			net_Relevant				()	{ return getLocal(); };		// relevant for export to server
+	virtual BOOL			net_Relevant				()	{ return IsMyCar() || OnServer(); };		// relevant for export to server
 	virtual BOOL			UsedAI_Locations			();
 	virtual	void			net_Relcase					(CObject* O );
 	// Input
@@ -567,6 +570,15 @@ private:
 
 private:
 	car_memory	*m_memory;
+	struct SCarNetUpdate
+	{
+		u32	TimeStamp;
+		xr_vector<SPHNetState> StateVec;
+	};
+	xr_deque<SCarNetUpdate> m_CarNetUpdates;
+
+	void Interpolate();
+	float InterpolateStates(u32 element, SCarNetUpdate const& first, SCarNetUpdate const& last, SPHNetState& current);
 
 public:
 	virtual bool unlimited_ammo() { return false; };
@@ -574,6 +586,9 @@ public:
 	// Inventory for the car	
 	CInventory* GetInventory() { return &CInventoryOwner::inventory(); }
 
+	bool IsMyCar() const;
+	virtual void SyncRead(NET_Packet& Packet);
+	virtual void SyncWrite(NET_Packet& Packet);
 private:
 	xr_hash_map<u16, shared_str> UsableBones;
 	u16 UsableBonesActive = BI_NONE;
