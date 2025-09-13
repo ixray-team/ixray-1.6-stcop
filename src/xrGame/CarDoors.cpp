@@ -243,6 +243,11 @@ void CCarDoor::Update()
 	{
 		if (pos_open * closed_angle > pos_open * GetAngle()) ClosingToClosed();
 
+		if (OnClient())
+		{
+			IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+			pKinematics->CalculateBones();
+		}
 		break;
 	}
 	case opening:
@@ -252,6 +257,12 @@ void CCarDoor::Update()
 			NeutralTorque(torque);
 			open_time = Device.dwTimeGlobal;
 			state = opened;
+
+			if (OnClient())
+			{
+				IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+				pKinematics->CalculateBones();
+			}
 		}
 		break;
 
@@ -261,6 +272,12 @@ void CCarDoor::Update()
 		if (Device.dwTimeGlobal - open_time > 1000)
 		{
 			ApplyTorque(torque / 5.f, a_vel);
+
+			if (OnClient())
+			{
+				IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+				pKinematics->CalculateBones();
+			}
 			RemoveFromUpdate();
 		}
 	}

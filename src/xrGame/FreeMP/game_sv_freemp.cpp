@@ -16,6 +16,7 @@
 #include <Inventory.h>
 #include <Weapon.h>
 #include <WeaponMagazined.h>
+#include "../Car.h"
 
 game_sv_freemp::game_sv_freemp()
 	:pure_relcase(&game_sv_freemp::net_Relcase)
@@ -472,6 +473,26 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 	case GAME_EVENT_MP_TRADE:
 	{
 		OnPlayerTrade(P, sender);
+		break;
+	}
+	case GAME_EVENT_MP_CAR_INPUT:
+	{
+		u16 CarID = P.r_u16();
+		u8 KeyEvent = P.r_u8();
+		bool IsHold = !!P.r_u8();
+
+		if (CCar* CarPtr = smart_cast<CCar*>(Level().Objects.net_Find(CarID)))
+		{
+			if (IsHold)
+			{
+				CarPtr->OnKeyboardPress(KeyEvent);
+			}
+			else
+			{
+				CarPtr->OnKeyboardRelease(KeyEvent);
+			}
+		}
+
 		break;
 	}
 	case GAME_EVENT_MP_REPAIR:

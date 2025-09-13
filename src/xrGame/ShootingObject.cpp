@@ -336,7 +336,12 @@ void CShootingObject::StartFlameParticles	()
 	UpdateFlameParticles();
 	
 	
-	CSpectator* tmp_spectr = IsGameTypeSingle() ? nullptr : Level().CurrentControlEntity()->cast_spectator();
+	CSpectator* tmp_spectr = nullptr;
+	if (!IsGameTypeSingle() && Level().CurrentControlEntity() != nullptr)
+	{
+		tmp_spectr = Level().CurrentControlEntity()->cast_spectator();
+	}
+
 	bool in_hud_mode = IsHudModeNow();
 	if (in_hud_mode && tmp_spectr &&
 		(tmp_spectr->GetActiveCam() != CSpectator::eacFirstEye))

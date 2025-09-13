@@ -17,10 +17,9 @@ CPhysicsSkeletonObject::~CPhysicsSkeletonObject()
 
 }
 
-
 BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 {
-	CSE_Abstract			  *e	= (CSE_Abstract*)(DC);
+	CSE_Abstract *e	= (CSE_Abstract*)(DC);
 
 	inherited::net_Spawn	(DC);
 	xr_delete(collidable.model);
@@ -28,8 +27,10 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 	CPHSkeleton::Spawn(e);
 	setVisible(TRUE);
 	setEnabled(TRUE);
-	if(!PPhysicsShell()->isBreakable())
-		SheduleUnregister		();
+
+	if (PPhysicsShell() && !PPhysicsShell()->isBreakable())
+		SheduleUnregister();
+
 	return TRUE;
 }
 
