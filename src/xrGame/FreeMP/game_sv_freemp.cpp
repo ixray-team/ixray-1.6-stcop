@@ -316,6 +316,8 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 void game_sv_freemp::OnDetach(u16 eid_who, u16 eid_what)
 {
+	game_sv_mp::OnDetach(eid_who, eid_what);
+
 	CSE_ActorMP* e_who = smart_cast<CSE_ActorMP*>(m_server->ID_to_entity(eid_who));
 	if (!e_who)
 		return;
@@ -562,6 +564,12 @@ BOOL game_sv_freemp::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
 	CSE_Abstract* e_entity = m_server->ID_to_entity(eid_what);
 	if (!e_entity)
 		return FALSE;
+
+	// pick up players bag
+	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
+	{
+		return OnTouchPlayersBag(e_who, e_entity);
+	}
 
 	return TRUE;
 }
