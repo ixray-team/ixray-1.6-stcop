@@ -106,6 +106,7 @@ void  PS::CPEDef::OnDrawUI()
                             }
                         }
                         A->actionName = pref.c_str();
+                    	A->parent = this;
                         m_EActionList.push_back(A);
                         ExecCommand(COMMAND_UPDATE_PROPERTIES);
 
