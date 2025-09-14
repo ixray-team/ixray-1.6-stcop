@@ -60,8 +60,20 @@ public:
 	EEditMode			m_EditMode;
     UIPropertiesForm*       m_ObjectProps;
     UIPropertiesForm*		m_ItemProps;
-    UIItemListForm*			m_PList;
+	PEd::ListTypeBase	m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::All);
+	xr_map<PEd::ListTypeBase, UIItemListForm*> m_PList;
     UIItemListForm*         m_RList;
+
+	IC UIItemListForm* GetCurrentList()
+	{
+		auto It = m_PList.find(m_SelectedTypes);
+		if (It != m_PList.end())
+		{
+			return It->second;
+		}
+		return nullptr;
+	}
+	
 public:
 	// flags
     enum{
