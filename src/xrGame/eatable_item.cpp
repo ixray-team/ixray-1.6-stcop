@@ -177,7 +177,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 		{
 			if (actor && actor->HudAnimator())
 			{
-				actor->HudAnimator()->StartAnimator(m_iMaxUses > 1 && m_iRemainingUses == 1 && m_sLastUseAnimator.size() > 0 ? m_sLastUseAnimator : m_sUseAnimator);
+				actor->StartAnimator(m_iMaxUses > 1 && m_iRemainingUses == 1 && m_sLastUseAnimator.size() > 0 ? m_sLastUseAnimator : m_sUseAnimator);
 				actor->HudAnimator()->SetLeftCallback({this, &CEatableItem::EatableEffects});
 			}
 		}
