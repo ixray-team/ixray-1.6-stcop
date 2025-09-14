@@ -222,6 +222,12 @@ public:
 	BOOL		r_line			( LPCSTR S, int L,	LPCSTR* N, LPCSTR* V )const;
 	BOOL		r_line			( const shared_str& S, int L,	LPCSTR* N, LPCSTR* V )const;
 
+	template<XRay::Concepts::Enum EnumT>
+	EnumT r_enum(LPCSTR S, LPCSTR L) const
+	{
+		return EnumT(r_u64(S, L));
+	}
+
     void		w_string		( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment=0 );
 	void		w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment=0 );
 	void		w_u16			( LPCSTR S, LPCSTR L, u16				V, LPCSTR comment=0 );
@@ -241,6 +247,12 @@ public:
 	void		w_fvector3		( LPCSTR S, LPCSTR L, const Fvector3&	V, LPCSTR comment=0 );
 	void		w_fvector4		( LPCSTR S, LPCSTR L, const Fvector4&	V, LPCSTR comment=0 );
 	void		w_bool			( LPCSTR S, LPCSTR L, BOOL				V, LPCSTR comment=0 );
+
+	template<XRay::Concepts::Enum EnumT>
+	void w_enum(LPCSTR S, LPCSTR L, EnumT V, LPCSTR comment=0 )
+	{
+		w_u64(S, L, u64(V), comment);
+	}
 
     void		remove_line		( LPCSTR S, LPCSTR L );
 };
