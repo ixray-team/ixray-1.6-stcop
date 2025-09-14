@@ -5,7 +5,7 @@ UISpawnTool::UISpawnTool()
 	m_selPercent = 100;
 	m_Current = nullptr;
 	m_SpawnList = new UIItemListForm();
-	m_SpawnList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UISpawnTool::OnItemFocused));
+	m_SpawnList->SetOnItemFocusedEvent({this, &UISpawnTool::OnItemFocused});
 	RefreshList();
 	m_AttachObject = false;
 }
