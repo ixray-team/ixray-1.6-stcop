@@ -1,16 +1,41 @@
 #pragma once
+#include "FolderLib.h"
 
 class XREPROPS_API UIItemListForm : 
 	public IEditorWnd, 
-	private FolderHelper<ListItem, true>
+	protected FolderHelper<ListItem, true>
 {
+public:
+	using Node = FolderHelper<ListItem, true>::Node;
+	DECLARE_XR_DELEGATE(OnItemRename, void, Node&, LPCSTR, LPCSTR, EItemType);
+	DECLARE_XR_DELEGATE(OnItemRemove, void, Node& Node);
+	DECLARE_XR_DELEGATE(OnItemPreRemove, bool, Node& Node);
+	DECLARE_XR_DELEGATE(OnILItemsFocused, void, ListItemsVec&);
+	DECLARE_XR_DELEGATE(OnILItemFocused, void, ListItem*);
+	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
+	DECLARE_XR_DELEGATE(OnItemClone, void, LPCSTR, LPCSTR);
+	DECLARE_XR_DELEGATE(VerifyItem, bool, Node*);
+	DECLARE_XR_DELEGATE(GetItemMoveActionSlot, ENodeMoveActionSlot, Node*);
+	DECLARE_XR_DELEGATE(OnMoveItem, bool, Node*);
+
+private:
 	TOnILItemsFocused OnItemsFocusedEvent;
-	TOnILItemFocused  OnItemFocusedEvent;
-	TOnILItemFocused  OnItemUnfocusedEvent;
-	TOnItemRemove     OnItemRemoveEvent;
-	TOnItemRename     OnItemRenameEvent;
-	TOnItemCreate     OnItemCreateEvent;
-	TOnItemClone      OnItemCloneEvent;
+	TOnILItemFocused OnItemFocusedEvent;
+	TOnILItemFocused OnItemUnfocusedEvent;
+	TOnItemPreRemove OnItemPreRemoveEvent;
+	TOnItemRemove OnItemRemoveEvent;
+	TVerifyItem VerifyItemRename;
+	TVerifyItem VerifyItemMove;
+	TOnItemRename OnItemRenameEvent;
+	TVerifyItem VerifyItemCreate;
+	TVerifyItem VerifyFolderCreate;
+	TOnItemCreate OnItemCreateEvent;
+	TVerifyItem VerifyItemClone;
+	TOnItemClone OnItemCloneEvent;
+	TGetItemMoveActionSlot GetItemMoveActionSlot;
+	xr_map<ENodeMoveActionSlot, TOnMoveItem> ItemMoveActionSlots = {
+		{ENodeMoveActionSlot::Default, {this, &UIItemListForm::ItemMoveActionDefault}}
+	};
 
 public:
 	UIItemListForm();
@@ -39,10 +64,22 @@ public:
 	Flags32 m_Flags;
 
 private:
+
+	virtual bool IsNodeTrueFolder(Node& node) override
+	{
+		if (node.Object && node.Object->m_Object)
+		{
+			return false;
+		}
+		return node.IsFolder();
+	}
+	
 	void       DrawMenuEdit();
 	string4096 m_edit_name;
 	string4096 m_edit_path;
 	Node* m_edit_node;
+
+	bool ItemMoveActionDefault(Node* Node);
 
 public:
 	IC void SetOnItemsFocusedEvent(TOnILItemsFocused e)
@@ -57,6 +94,10 @@ public:
 	{
 		OnItemUnfocusedEvent = e;
 	}
+	IC void SetOnItemPreRemoveEvent(TOnItemPreRemove e)
+	{
+		OnItemPreRemoveEvent = e;
+	}
 	IC void SetOnItemRemoveEvent(TOnItemRemove e)
 	{
 		OnItemRemoveEvent = e;
@@ -65,13 +106,42 @@ public:
 	{
 		OnItemRenameEvent = e;
 	}
+	IC void SetVerifyItemCreate(TVerifyItem e)
+	{
+		VerifyItemCreate = e;
+	}
+	IC void SetVerifyFolderCreate(TVerifyItem e)
+	{
+		VerifyFolderCreate = e;
+	}
 	IC void SetOnItemCreaetEvent(TOnItemCreate e)
 	{
 		OnItemCreateEvent = e;
 	}
+	IC void SetVerifyItemRename(TVerifyItem e)
+	{
+		VerifyItemRename = e;
+	}
+	IC void SetVerifyItemMove(TVerifyItem e)
+	{
+		VerifyItemMove = e;
+	}
+	IC void SetVerifyItemClone(TVerifyItem e)
+	{
+		VerifyItemClone = e;
+	}
 	IC void SetOnItemCloneEvent(TOnItemClone e)
 	{
 		OnItemCloneEvent = e;
+	}
+	IC void SetGetItemMoveActionSlot(TGetItemMoveActionSlot e)
+	{
+		GetItemMoveActionSlot = e;
+	}
+	IC void SetOnMoveItemEvent(ENodeMoveActionSlot Slot, TOnMoveItem e)
+	{
+		R_ASSERT(ItemMoveActionSlots.find(Slot) == ItemMoveActionSlots.end());
+		ItemMoveActionSlots[Slot] = e;
 	}
 
 private:
@@ -82,9 +152,14 @@ private:
 	virtual bool IsFolderBullet(Node* Node);
 	virtual bool IsFolderSelected(Node* Node);
 
-private:
-	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path);
-	virtual void EventRemoveNode(Node* Node, const char* path);
+	bool VerifyItemCloneFunc(UIItemListForm::Node* Node);
+	bool VerifyItemCreateFunc(UIItemListForm::Node* Node);
+	bool VerifyFolderCreateFunc(UIItemListForm::Node* Node);
+	bool VerifyItemRenameFunc(UIItemListForm::Node* Node);
+	bool VerifyItemMoveFunc(UIItemListForm::Node* Node);
+	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) override;
+	virtual void EventRemoveNode(Node* Node, const char* path) override;
+	virtual bool EventPreRemoveNode(Node* Node) override;
 
 public:
 	Node         m_GeneralNode;

@@ -11,8 +11,8 @@ UIImageEditorForm::UIImageEditorForm()
 	m_ItemList = new UIItemListForm();
 	m_ItemList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 
-	m_ItemList->SetOnItemsFocusedEvent(TOnILItemsFocused(this,&UIImageEditorForm::OnItemsFocused));
-	m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
+	m_ItemList->SetOnItemsFocusedEvent({this,&UIImageEditorForm::OnItemsFocused});
+	m_ItemList->SetOnItemRemoveEvent({&ImageLib, &CImageManager::RemoveTexture});
 
 	m_bFilterImage = true;
 	m_bFilterCube = true;

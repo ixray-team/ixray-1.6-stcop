@@ -20,8 +20,8 @@ UIEditLibrary::UIEditLibrary()
 {
 	m_ObjectList = new UIItemListForm();
 	InitObjects();
-	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
-	m_ObjectList->SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
+	m_ObjectList->SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
+	m_ObjectList->SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});
 	m_ObjectList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 
 	InternalProps = new UIPropertiesForm();
@@ -34,8 +34,8 @@ UIEditLibrary::UIEditLibrary()
 
 	View.OnFocusCallback = ViewportFocusCallback;
 
-	SearchList.SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
-	SearchList.SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
+	SearchList.SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
+	SearchList.SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});
 }
 
 void UIEditLibrary::OnItemFocused(ListItem* item)

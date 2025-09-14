@@ -35,13 +35,21 @@ class CParticleTool:
     Fmatrix 			m_Transform;
     Fvector				m_Vel;
 
-    void 		OnItemModified		(void);
+	void 		OnItemModified		(void);
 
     void  		OnParticleItemFocused	(ListItem* items);
+	bool		VerifyParticleCloneItem(UIItemListForm::Node* Node);
     void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
+	bool		VerifyParticleCreateItem(UIItemListForm::Node* Node);
+	bool		VerifyParticleCreateFolder(UIItemListForm::Node* Node);
+	bool		VerifyParticleRenameItem(UIItemListForm::Node* Node);
+	bool		VerifyParticleMoveItem(UIItemListForm::Node* Node);
+	ENodeMoveActionSlot GetItemMoveActionSlot(UIItemListForm::Node* Node);
+	bool		ActionItemMoveAction(UIItemListForm::Node* Node);
     void        OnParticleCreateItem(LPCSTR path);
-	void  		OnParticleItemRename	(LPCSTR old_name, LPCSTR new_name, EItemType type);
-    void 	 	OnParticleItemRemove	(LPCSTR name, EItemType type);
+	void  		OnParticleItemRename	(UIItemListForm::Node& Node, LPCSTR old_name, LPCSTR new_name, EItemType type);
+	bool		OnParticlePreItemRemove(UIItemListForm::Node& Node);
+    void 	 	OnParticleItemRemove	(UIItemListForm::Node& Node);
 
     void				RealUpdateProperties();
 	void 				SelectListItem		(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand);
@@ -54,14 +62,30 @@ class CParticleTool:
     void				RealRemoveAction();
 
     void 		OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+
+	//LPCSTR InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str);
+	//EEditMode GetAffectedItemType(LPCSTR path);
+	
 public:
     virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,TRUE); if (bForced) RealRemoveAction();}
 public:
 	EEditMode			m_EditMode;
     UIPropertiesForm*       m_ObjectProps;
     UIPropertiesForm*		m_ItemProps;
-    UIItemListForm*			m_PList;
+	PEd::ListTypeBase	m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::All);
+	xr_map<PEd::ListTypeBase, UIItemListForm*> m_PList;
     UIItemListForm*         m_RList;
+
+	IC UIItemListForm* GetCurrentList()
+	{
+		auto It = m_PList.find(m_SelectedTypes);
+		if (It != m_PList.end())
+		{
+			return It->second;
+		}
+		return nullptr;
+	}
+	
 public:
 	// flags
     enum{
@@ -129,14 +153,14 @@ public:
     virtual void		StopCurrent			(bool bFinishPlaying) override;
     virtual void		SelectEffect		(LPCSTR name) override;
 
-    void				Rename				(LPCSTR src_name, LPCSTR part_name, int part_idx);
-    void				Rename				(LPCSTR src_name, LPCSTR dest_name);
+    //void				Rename				(LPCSTR src_name, LPCSTR part_name, int part_idx);
+    void				Rename				(UIItemListForm::Node& Node, LPCSTR src_name, LPCSTR dest_name);
 
     // PS routine
 	void 				CloneCurrent		();
     void				ResetCurrent		();
     void				RemoveCurrent		();
-	void 				Remove				(LPCSTR name);
+	void 				Remove				(UIItemListForm::Node& Node);
 
     // PG routine
     void                ImportPE            ();

@@ -14,7 +14,7 @@ UISoundEditorForm::UISoundEditorForm()
 {
     m_ItemProps = new UIPropertiesForm();
     m_ItemList = new UIItemListForm();
-    m_ItemList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UISoundEditorForm::OnItemsFocused));
+    m_ItemList->SetOnItemFocusedEvent({this, &UISoundEditorForm::OnItemsFocused});
     modif_map.clear();
     m_Flags.zero();
     InitItemList();

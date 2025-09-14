@@ -78,6 +78,7 @@ BOOL CPGDef::LoadOriginal(IReader& F)
 		m_Effects.resize(F.r_u32());
 		for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
 			*it				= new SEffect();
+			(*it)->parent = this;
 			F.r_stringZ		((*it)->m_EffectName);
 			F.r_stringZ		((*it)->m_OnPlayChildName);
 			F.r_stringZ		((*it)->m_OnBirthChildName);
@@ -97,16 +98,16 @@ BOOL CPGDef::Load2(CInifile& ini)
 {
 //.	u16 version						= ini.r_u16("_group", "version");
 	
-	auto ver = ini.r_enum<PS::PE::Version>("_group", "version");
+	auto ver = ini.r_enum<PS::PG::Version>("_group", "version");
 	switch (ver)
 	{
-	case PE::Version::Original:
+	case PG::Version::Original:
 		{
-			break;
+			return Load2Original(ini);
 		}
-	case PE::Version::Extended:
+	case PG::Version::Extended:
 		{
-			break;
+			return Load2Extended(ini);
 		}
 	default:
 		{
@@ -125,6 +126,7 @@ BOOL CPGDef::Load2Original(CInifile& ini)
 	for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); ++it,++counter)
 	{
 		*it							= new SEffect();
+		(*it)->parent = this;
 
 		xr_sprintf					(buff, sizeof(buff), "effect_%04d", counter);
 		

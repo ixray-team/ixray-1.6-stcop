@@ -14,7 +14,7 @@ UIObjectTool::UIObjectTool()
 	m_RealTexture = nullptr;
 	m_RemoveTexture = nullptr;
 	m_ObjectList = new UIItemListForm();
-	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIObjectTool::OnItemFocused));
+	m_ObjectList->SetOnItemFocusedEvent({this, &UIObjectTool::OnItemFocused});
 	m_TextureNull.create("ed\\ed_nodata");
 	m_TextureNull->Load();
 
