@@ -7,6 +7,7 @@
 
 #define CFS_CompressMark	(1ul << 31ul)
 #define CFS_HeaderChunkID	(666)
+#include "Concepts.h"
 
 XRCORE_API void VerifyPath	(LPCSTR path);
 
@@ -59,6 +60,9 @@ public:
 	IC void			w_ivector3(const Ivector3 &v)	{	w(&v,sizeof(Ivector3));	}
 	IC void			w_ivector2(const Ivector2 &v)	{	w(&v,sizeof(Ivector2));	}
 
+	template<typename EnumT>
+	IC void w_enum(EnumT v){ w(&v,sizeof(EnumT));	}
+
     // quant writing functions
 	IC void 		w_float_q16	(float a, float min, float max)
 	{
@@ -81,10 +85,24 @@ public:
 	// generalized chunking
 	u32				align		();
 	void			open_chunk	(u32 type);
+
+	template<XRay::Concepts::Enum EnumT>
+	void open_chunk(EnumT type)
+	{
+		open_chunk(u32(type));
+	}
+	
 	void			close_chunk	();
 	u32				chunk_size	();					// returns size of currently opened chunk, 0 otherwise
 	void			w_compressed(void* ptr, u32 count);
 	void			w_chunk		(u32 type, void* data, u32 size);
+
+	template<XRay::Concepts::Enum EnumT>
+	void w_chunk(EnumT type, void* data, u32 size)
+	{
+		w_chunk(u32(type), data, size);
+	}
+	
 	virtual bool	valid		()									{return true;}
 	virtual	void	flush		() = 0;
 };
@@ -166,6 +184,9 @@ public:
 	IC void			r_ivector4	(Ivector3 &v){	r(&v,sizeof(Ivector3));	}
 	IC void			r_ivector4	(Ivector2 &v){	r(&v,sizeof(Ivector2));	}
 	IC void			r_fcolor	(Fcolor &v)	{	r(&v,sizeof(Fcolor));	}
+
+	template<typename EnumT>
+	IC EnumT r_enum(){ EnumT tmp;	r(&tmp,sizeof(EnumT)); return tmp;	}
 	
 	IC float		r_float_q16	(float min, float max)
 	{
@@ -215,6 +236,18 @@ public:
 			r(dest,dwSize);
 			return TRUE;
 		} else return FALSE;
+	}
+
+	template<XRay::Concepts::Enum EnumT>
+	IC BOOL r_chunk(EnumT ID, void* dest)
+	{
+		return r_chunk(u32(ID),dest);
+	}
+
+	template<XRay::Concepts::Enum EnumT>
+	IC BOOL r_chunk_safe(EnumT ID, void* dest, u32 dest_size)
+	{
+		return r_chunk_safe(u32(ID),dest,dest_size);
 	}
 
 	u32 m_last_pos;
@@ -322,11 +355,33 @@ public:
 
 public:
 	// поиск XR Chunk'ов - возврат - размер или 0
-	IReader*		open_chunk	(u32 ID);
+	IReader* open_chunk(u32 ID);
+
+	template<XRay::Concepts::Enum EnumT>
+	IReader* open_chunk(EnumT ID)
+	{
+		return open_chunk(u32(ID));
+	}
 
 	// iterators
-	IReader*		open_chunk_iterator		(u32& ID, IReader* previous=NULL);	// NULL=first
-	intptr_t 		find_chunk	(u32 ID, BOOL* bCompressed = 0) override;
+	IReader* open_chunk_iterator(u32& ID, IReader* previous=NULL);	// NULL=first
+
+	template<XRay::Concepts::Enum EnumT>
+	IReader* open_chunk_iterator(EnumT& ID, IReader* previous=NULL)
+	{
+		u32 Iter = u32(ID);
+		IReader* Reader = open_chunk_iterator(Iter, previous);
+		ID = (EnumT)Iter;
+		return Reader;
+	}
+
+	intptr_t find_chunk(u32 ID, BOOL* bCompressed = 0) override;
+
+	template<XRay::Concepts::Enum EnumT>
+	intptr_t find_chunk(EnumT ID, BOOL* bCompressed = 0)
+	{
+		return find_chunk(u32(ID), bCompressed);
+	}
 
 private:
 	typedef IReaderBase inherited;

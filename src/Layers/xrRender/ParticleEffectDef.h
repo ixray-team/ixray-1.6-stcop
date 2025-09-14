@@ -107,10 +107,13 @@ namespace PS
         void				DestroyShader		();
 
 		void 				Save				(IWriter& F);
-		BOOL 				Load				(IReader& F);
+		BOOL 				LoadOriginal		(IReader& F);
+		BOOL 				LoadExtended		(IReader& F);
 
 		void 				Save2				(CInifile& ini);
 		BOOL 				Load2				(CInifile& ini);
+		BOOL				Load2Original		(CInifile& ini);
+		BOOL				Load2Entended		(CInifile& ini);
 
 #ifdef _EDITOR         
 // change Copy&Equal if variables changed
@@ -146,21 +149,35 @@ namespace PS
 		void				OnDrawUI			();
 #endif
 	};
+
+	namespace PE
+	{
+		enum class Version: u16
+		{
+			Original = 0x0001,
+			Extended,
+			MAX,
+			Latest = MAX - 1,
+		};
+
+		enum class Chunks: u32
+		{
+			VERSION = 0x0001,
+			NAME = 0x0002,
+			EFFECTDATA = 0x0003,
+			ACTIONLIST = 0x0004,
+			FLAGS = 0x0005,
+			FRAME = 0x0006,
+			SPRITE = 0x0007,
+			TIMELIMIT = 0x0008,
+			TIMELIMIT2 = 0x0009,
+			SOURCETEXT_ = 0x0020, // obsolete
+			COLLISION = 0x0021,
+			VEL_SCALE = 0x0022,
+			EDATA = 0x0024,
+			ALIGN_TO_PATH = 0x0025,
+		};
+	}
 };
-#define PED_VERSION				0x0001
-#define PED_CHUNK_VERSION		0x0001
-#define PED_CHUNK_NAME			0x0002
-#define PED_CHUNK_EFFECTDATA	0x0003
-#define PED_CHUNK_ACTIONLIST   	0x0004
-#define PED_CHUNK_FLAGS			0x0005
-#define PED_CHUNK_FRAME			0x0006
-#define PED_CHUNK_SPRITE	   	0x0007
-#define PED_CHUNK_TIMELIMIT		0x0008
-#define PED_CHUNK_TIMELIMIT2	0x0009
-#define PED_CHUNK_SOURCETEXT_  	0x0020 // obsolete
-#define PED_CHUNK_COLLISION	   	0x0021
-#define PED_CHUNK_VEL_SCALE		0x0022
-#define PED_CHUNK_EDATA			0x0024
-#define PED_CHUNK_ALIGN_TO_PATH	0x0025
 //---------------------------------------------------------------------------
 #endif
