@@ -1087,6 +1087,21 @@ void  CParticleTool::OnControlClick(ButtonValue* sender, bool& bDataModified, bo
     bDataModified = false;
 }
 
+LPCSTR CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str)
+{
+    xr_string builder;
+    auto ItemCount = _GetItemCount(path, '\\');
+    for (int i = 0; i < ItemCount-1; ++i)
+    {
+        builder.append(_GetItem(path, i, buffer, buf_size, '\\'));
+        builder.append("\\");
+    }
+    builder.append(insert_str);
+    builder.append(_GetItem(path, ItemCount-1, buffer, buf_size, '\\'));
+    xr_strcpy(buffer, buf_size, builder.c_str());
+    return buffer;
+}
+
 void CParticleTool::OnParticleItemFocused(ListItem* items)
 {
     PropItemVec props;
@@ -1132,6 +1147,8 @@ extern ECORE_API xr_string _item_to_select_after_edit;
 
 void CParticleTool::RealUpdateProperties()
 {
+    static string1024 buffer;
+    
     m_Flags.set(flRefreshProps, FALSE);
 
     // Add functions
@@ -1140,8 +1157,16 @@ void CParticleTool::RealUpdateProperties()
         PS::PEDIt Pe = RImplementation.PSLibrary.FirstPED();
         PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
         for (; Pe != Ee; Pe++) {
-            ListItem* I = LHelper().CreateItem(items, *(*Pe)->m_Name, emEffect, 0, *Pe);
+            ListItem* I = LHelper().CreateItem(items,
+                InsertBeforeLast(buffer, sizeof(buffer), *(*Pe)->m_Name, "[PE] "),
+                emEffect,
+                0,
+                *Pe);
             I->SetIcon(1);
+            //for (auto& Action : (*Pe)->m_EActionList)
+            //{
+                
+            //}
         }
         return items;
     };
@@ -1150,8 +1175,20 @@ void CParticleTool::RealUpdateProperties()
         PS::PGDIt Pg = RImplementation.PSLibrary.FirstPGD();
         PS::PGDIt Eg = RImplementation.PSLibrary.LastPGD();
         for (; Pg != Eg; Pg++) {
-            ListItem* I = LHelper().CreateItem(items, *(*Pg)->m_Name, emGroup, 0, *Pg);
+            ListItem* I = LHelper().CreateItem(
+                items,
+                InsertBeforeLast(buffer, sizeof(buffer), *(*Pg)->m_Name, "[PG] "),
+                emGroup,
+                0,
+                *Pg);
             I->SetIcon(2);
+            //for (auto& Effect : (*Pg)->m_Effects)
+            //{
+            //    xr_string EffectNameBuilder = *(*Pg)->m_Name;
+            //    EffectNameBuilder.append("\\");
+            //    EffectNameBuilder.append()
+            //    LHelper().CreateItem(items, Effect->m_EffectName.c_str(), )
+            //}
         }
         return items;
     };
