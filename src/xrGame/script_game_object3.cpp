@@ -1786,3 +1786,10 @@ const bool CScriptGameObject::getMechanic() const
 
 	return invOwn->SpecificCharacter().upgrade_mechanic();
 }
+
+
+void CScriptGameObject::SetHeadRotate(bool value)
+{
+	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+		pInventoryOwner->SetHeadRotate(value);
+}

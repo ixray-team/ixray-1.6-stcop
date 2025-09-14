@@ -143,6 +143,7 @@ protected:
 	bool				m_bAllowTalk;
 	bool				m_bAllowTrade;
 	bool				m_bAllowInvUpgrade;
+	bool m_bHeadRotate = true;
 
 	u16					m_tmp_active_slot_num;
 	
@@ -196,6 +197,7 @@ public:
 	virtual void			ChangeRank		(CHARACTER_RANK_VALUE);
 	virtual void			SetReputation	(CHARACTER_REPUTATION_VALUE);
 	virtual void			ChangeReputation(CHARACTER_REPUTATION_VALUE);
+			void			SetHeadRotate	(bool value) { m_bHeadRotate = value; }
 
 	virtual void			SetIcon(const shared_str& iconName, bool is_outfit_icon = false);
 

@@ -546,11 +546,9 @@ void CAI_Stalker::BoneCallback(CBoneInstance* B) {
 	R_ASSERT2(_valid(B->mTransform), "CAI_Stalker::BoneCallback");
 }
 
-void CAI_Stalker::LookAtActor(CBoneInstance* headBone) {
-	if (!g_Alive())
-		return;
-
-	if (!Actor())
+void CAI_Stalker::LookAtActor(CBoneInstance* headBone)
+{
+	if (!m_bHeadRotate || !g_Alive() || !Actor())
 		return;
 
 	if (wounded())
