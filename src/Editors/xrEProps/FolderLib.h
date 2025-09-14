@@ -1,4 +1,14 @@
 #pragma once
+
+enum class ENodeMoveActionSlot : u8
+{
+	Default = 0,
+	First,
+	Second,
+	Third,
+	MAX,
+};
+
 template<class C,bool FloderAsItem=false>
 class FolderHelper
 {
@@ -17,6 +27,7 @@ public:
 		EFloderNodeType Type;
 		shared_str Name;
 		shared_str Path;
+		shared_str Prefix = "";
 		xr_vector<Node> Nodes;
 		mutable C* Object;
 		IC bool IsObject() { return Type == FNT_Object; }
@@ -187,7 +198,10 @@ public:
 	}
 	inline Node* AppendObject(Node* N, const char* path)
 	{
-		if (N == nullptr)return nullptr;
+		if (N == nullptr)
+		{
+			return nullptr;
+		}
 		if (strchr(path, '\\'))
 		{
 			string_path name;
@@ -209,7 +223,7 @@ public:
 			{
 				if constexpr (FloderAsItem)
 				{
-					if (node.IsObject())
+					if (node.Object)
 						return &node;
 					return nullptr;
 				}
@@ -242,15 +256,18 @@ public:
 		N->Nodes.push_back(NewNode);
 		return &N->Nodes.back();
 	}
-	inline void Remove(Node* N, Node* Object, bool use_event = false)
+	inline void Remove(Node* N, Node* Object, bool use_event = false, bool use_child_event = true)
 	{
-
+		if (!EventPreRemoveNode(Object))
+		{
+			return;
+		}
 		Node* F = Object->Path.size() == 0 ? N : FindFolder(N, Object->Path.c_str());
 		R_ASSERT(F);
 		string_path path;
 		if (use_event)
 		{
-			RemoveNode(Object);
+			RemoveNode(Object, use_child_event);
 			GetFullPath(Object, path);
 			EventRemoveNode(Object, path);
 		}
@@ -312,7 +329,7 @@ public:
 		{
 			for (Node& node : N->Nodes)
 			{
-				if (node.IsFolder() && IsDrawFolder(&node))
+				if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
 				{
 					DrawNode(&node);
 					ImGui::Separator();
@@ -320,7 +337,7 @@ public:
 			}
 			for (Node& node : N->Nodes)
 			{
-				if (!node.IsFolder())
+				if (!IsNodeTrueFolder(node))
 				{
 					DrawNode(&node);
 					ImGui::Separator();
@@ -334,14 +351,16 @@ public:
 			ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
 			if (IsFolderBullet(N))FloderFlags |= ImGuiTreeNodeFlags_Bullet;
 			if (IsFolderSelected(N))FloderFlags |= ImGuiTreeNodeFlags_Selected;
-			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
+			xr_string builder = N->Prefix.c_str();
+			builder.append(N->Name.c_str());
+			if (ImGui::TreeNodeEx(builder.c_str(), FloderFlags))
 			{
 				DrawAfterFolderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)
 					IsItemClicked(N);
 				for (Node& node : N->Nodes)
 				{
-					if (node.IsFolder() && IsDrawFolder(&node))
+					if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
 					{
 						ImGui::Separator();
 						DrawNode(&node);
@@ -349,7 +368,7 @@ public:
 				}
 				for (Node& node : N->Nodes)
 				{
-					if (!node.IsFolder())
+					if (!IsNodeTrueFolder(node))
 					{
 						ImGui::Separator();
 						DrawNode(&node);
@@ -376,6 +395,7 @@ public:
 	virtual bool IsFolderSelected(Node* Node) { return false; }
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) {}
 	virtual void EventRemoveNode(Node* Node, const char* path) {}
+	virtual bool EventPreRemoveNode(Node* Node) { return true;}
 	inline void GetFullPath(Node* Object, string_path& full_path)
 	{
 		if (Object->Path.c_str() && Object->Path.c_str()[0])
@@ -390,11 +410,17 @@ public:
 	virtual void IsItemClicked(Node* Node) {}
 	virtual bool IsDrawFolder(Node* Node) = 0;
 	virtual void DrawItem(Node* Node) = 0;
+protected:
+	virtual bool IsNodeTrueFolder(Node& node)
+	{
+		return node.IsFolder();
+	}
 private:
 	inline void SwapData(Node* Dst, Node* Src)
 	{
 		std::swap(Dst->Type, Src->Type);
 		std::swap(Dst->Object, Src->Object);
+		std::swap(Dst->Prefix, Src->Prefix);
 		Dst->Nodes.swap(Src->Nodes);
 	}
 	inline void RebuildPath(Node* N)
@@ -429,14 +455,17 @@ private:
 		}
 	}
 
-	inline void RemoveNode(Node* Object)
+	inline void RemoveNode(Node* Object, bool use_child_event = true)
 	{
 		for (Node& n : Object->Nodes)
 		{
 			string_path path;
 			RemoveNode(&n);
-			GetFullPath(&n, path);
-			EventRemoveNode(&n, path);
+			if (use_child_event)
+			{
+				GetFullPath(&n, path);
+				EventRemoveNode(&n, path);
+			}
 		}
 		Object->Nodes.clear();
 	}

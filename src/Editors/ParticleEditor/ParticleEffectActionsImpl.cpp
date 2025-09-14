@@ -228,6 +228,24 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 	}
 }
 
+void EParticleAction::FillPropInit(PropItemVec& items, LPCSTR pref)
+{
+	u32 clr				= flags.is(EParticleAction::flEnabled)?0xFF000000:0xFFC0C0C0;
+	string128 buffer;
+	sprintf(buffer, "%s (%s)", *actionType, *actionName);
+	shared_str a_pref		= PrepareKey(pref,"Actions", buffer);
+
+	//ButtonValue* B			= PHelper().CreateButton(items,a_pref,"Up,Down,Remove",ButtonValue::flFirstOnly); B->tag = (s_it-m_EActionList.begin());
+	//B->Owner()->prop_color	= clr;
+	//B->OnBtnClickEvent.bind	(this,&PS::CPEDef::OnActionEditClick);
+
+	RTextValue* R;
+	R=PHelper().CreateRText	(items,PrepareKey(a_pref.c_str(),"Name"),&actionName);
+	R->OnAfterEditEvent.bind(parent,&PS::CPEDef::OnAfterActionNameEdit);
+	R->Owner()->prop_color	= clr;
+	FillProp	(items,a_pref.c_str(),clr);
+}
+
 void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
 {
 	PropValue* V=0;
@@ -1437,5 +1455,10 @@ EPABindVelocityValue::EPABindVelocityValue(): EParticleAction(PAPI::PABindVeloci
 void EPABindVelocityValue::Compile(IWriter& F)
 {
 	pBindVelocityValue(F, _vector("InitialValue").val);
+}
+
+PEd::ListTypeBase PEd::operator|(PEd::LisType lis, PEd::LisType rhs)
+{
+	return ListTypeBase(lis) | ListTypeBase(rhs);
 }
 

@@ -26,7 +26,7 @@ UIEditLightAnim::UIEditLightAnim()
 	R_CHK(REDevice->CreateTexture(32, 32, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_ItemTexture, 0));
 
 	m_Items->SetOnItemCreaetEvent(xr_make_delegate(this, &UIEditLightAnim::OnCreateItem));
-	m_Items->SetOnItemRemoveEvent(xr_make_delegate(this, &UIEditLightAnim::OnRemoveItem));
+	m_Items->SetOnItemRemoveEvent({this, &UIEditLightAnim::OnRemoveItem});
 	m_Items->SetOnItemCloneEvent(xr_make_delegate(this, &UIEditLightAnim::OnCloneItem));
 	m_Items->SetOnItemRenameEvent(xr_make_delegate(this, &UIEditLightAnim::OnRenameItem));
 	m_Items->SetOnItemFocusedEvent(xr_make_delegate(this, &UIEditLightAnim::OnItemFocused));
@@ -406,18 +406,23 @@ void UIEditLightAnim::OnCreateItem(LPCSTR path)
 	OnModified();
 }
 
-void UIEditLightAnim::OnRemoveItem(LPCSTR name, EItemType type)
+void UIEditLightAnim::OnRemoveItem(UIItemListForm::Node& node)
 {
+	EItemType type = TYPE_FOLDER;
+	if (node.IsObject())
+	{
+		type = TYPE_OBJECT;
+	}
 	bool res = false;
-	if (m_CurrentItem->cName == name) {
+	if (m_CurrentItem->cName == node.Name.c_str()) {
 		OnItemFocused(nullptr);
 	}
-	LALib.RemoveObject(name, type, res);
+	LALib.RemoveObject(node.Name.c_str(), type, res);
 
 	OnModified();
 }
 
-void UIEditLightAnim::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void UIEditLightAnim::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
 	bool res = false;
 	LALib.RenameObject(old_full_name, new_full_name,type);

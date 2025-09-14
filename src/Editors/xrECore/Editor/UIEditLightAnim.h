@@ -44,8 +44,8 @@ private:
 	bool OnFrameCountAfterEdit(PropValue* v, s32& val);
 	void OnCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
 	void OnCreateItem(LPCSTR path);
-	void OnRemoveItem(LPCSTR name, EItemType type);
-	void OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+	void OnRemoveItem(UIItemListForm::Node& node);
+	void OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
 
 	void RenderPointer();
 	void FillRectPointer(const ImVec4& rect, u32 color, bool plus_one = false);

@@ -32,7 +32,7 @@ public:
 				CImageManager		(){;}
 				~CImageManager		(){;}
 	// texture routines
-    void  	RemoveTexture	(LPCSTR fname, EItemType type);
+    void  	RemoveTexture	(UIItemListForm::Node& node);
     BOOL		CheckCompliance		(LPCSTR fname, int& compl_);
     void		CheckCompliance		(FS_FileSet& files, FS_FileSet& compl_);
     int			GetTextures			(FS_FileSet& files, BOOL bFolder=FALSE);

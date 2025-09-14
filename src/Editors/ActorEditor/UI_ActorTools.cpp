@@ -218,7 +218,7 @@ bool CActorTools::OnCreate()
 	m_ObjectItems = new UIItemListForm();
 	m_ObjectItems->m_Flags.set(UIItemListForm::fMultiSelect, true);
 	m_Props = new UIPropertiesForm();
-	m_ObjectItems->SetOnItemsFocusedEvent(TOnILItemsFocused(this, &CActorTools::OnObjectItemsFocused));
+	m_ObjectItems->SetOnItemsFocusedEvent({this, &CActorTools::OnObjectItemsFocused});
 	m_PreviewObject.OnCreate();
 
 	// key bar
