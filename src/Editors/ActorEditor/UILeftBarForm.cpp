@@ -26,7 +26,7 @@ UILeftBarForm::~UILeftBarForm()
 
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("LeftBar", 0))
+	if (ImGui::Begin("Left Bar", 0))
 	{
 		ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 		if (ImGui::TreeNode("Model"))
@@ -95,7 +95,7 @@ void UILeftBarForm::Draw()
 			}
 
 			static const char* PickModeList[] = { "None","Surface","Bone" };
-			ImGui::Combo("Pick mode", &m_PickMode, PickModeList, 3, -1);
+			ImGui::Combo("Pick Mode", &m_PickMode, PickModeList, 3, -1);
 			ImGui::TreePop();
 
 		}

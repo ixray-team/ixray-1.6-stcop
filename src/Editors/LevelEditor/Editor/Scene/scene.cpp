@@ -675,13 +675,13 @@ void EScene::FillProp(LPCSTR pref, PropItemVec& items, ObjClassID cls_id)
 {
 	PHelper().CreateCaption		(items,PrepareKey(pref,"Scene\\Name"),			LTools->m_LastFileName.c_str());
 
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Name prefix"),	&m_LevelOp.m_LevelPrefix);
+	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Name Prefix"),	&m_LevelOp.m_LevelPrefix);
 
 	PropValue* V;
-	auto NaneProp = PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Level path"),		&m_LevelOp.m_FNLevelPath);
+	auto NaneProp = PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Level Path"),		&m_LevelOp.m_FNLevelPath);
 	NaneProp->OnChangeEvent.bind(this, &EScene::OnNameChange);
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Custom data"),	&m_LevelOp.m_BOPText);
-	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Map version"),					&m_LevelOp.m_map_version);
+	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Build options\\Custom Data"),	&m_LevelOp.m_BOPText);
+	PHelper().CreateRText		(items,PrepareKey(pref,"Scene\\Map Version"),					&m_LevelOp.m_map_version);
 
 	m_LevelOp.m_mapUsage.FillProp("Scene", items);
 

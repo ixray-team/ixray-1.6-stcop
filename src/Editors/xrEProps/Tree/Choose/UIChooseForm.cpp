@@ -143,12 +143,12 @@ void UIChooseForm::Draw()
 				if (m_SelectedItem == nullptr)
 				{
 					ImGui::Text("Name:");
-					ImGui::Text("Hit:");
+					ImGui::Text("Hint:");
 				}
 				else
 				{
 					ImGui::Text("Name:%s", m_SelectedItem->Object->name.c_str());
-					ImGui::Text("Hit:%s", m_SelectedItem->Object->hint.c_str());
+					ImGui::Text("Hint:%s", m_SelectedItem->Object->hint.c_str());
 				}
 				ImGui::Separator();
 			}
@@ -167,7 +167,7 @@ void UIChooseForm::Draw()
 			{
 				if (ImGui::Button("Up")) { if (m_SelectedList > 0) { std::swap(m_SelectedItems[m_SelectedList - 1], m_SelectedItems[m_SelectedList]); m_SelectedList = -(m_SelectedList - 1) - 2; } } ImGui::SameLine();
 				if (ImGui::Button("Down")) { if (m_SelectedItems.size() > 1 && m_SelectedList < m_SelectedItems.size() - 1) { std::swap(m_SelectedItems[m_SelectedList], m_SelectedItems[m_SelectedList + 1]); m_SelectedList = -(m_SelectedList + 1) - 2; } }  ImGui::SameLine();
-				if (ImGui::Button("Del")) { if (m_SelectedItems.size() && m_SelectedList >= 0) { m_SelectedItems.erase(m_SelectedItems.begin() + m_SelectedList); m_SelectedList = -1; }m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); } ImGui::SameLine();
+				if (ImGui::Button("Delete")) { if (m_SelectedItems.size() && m_SelectedList >= 0) { m_SelectedItems.erase(m_SelectedItems.begin() + m_SelectedList); m_SelectedList = -1; }m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); } ImGui::SameLine();
 				if (ImGui::Button("Clear List")) { m_SelectedItems.clear(); m_RootItem.CheckFavorited(m_SelectedItems); CheckFavorite(); m_SelectedList = -1;/*  if (E.flags.test(SChooseEvents::flClearTexture) ){ if (m_Texture)m_Texture->Release(); m_Texture = 0; } */ImGui::SameLine(); }
 				if (ImGui::BeginChild("List", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar))
 				{
@@ -228,9 +228,9 @@ void UIChooseForm::Update()
 	// ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
 	if (Form && !Form->IsClosed())
 	{
-		ImGui::OpenPopup("Choose form");
+		ImGui::OpenPopup("Choose Form");
 		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Choose form", nullptr,0))
+		if (ImGui::BeginPopupModal("Choose Form", nullptr,0))
 		{
 			Form->Draw();
 			ImGui::EndPopup();

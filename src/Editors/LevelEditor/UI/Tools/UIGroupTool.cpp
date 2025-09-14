@@ -33,7 +33,7 @@ void UIGroupTool::Draw()
 				ParentTools->MakeThumbnail();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Save As ..."))
+			if (ImGui::MenuItem("Save As..."))
 			{
 				ParentTools->SaveSelectedObject();
 			}

@@ -134,7 +134,7 @@ void UIMainMenuForm::Draw()
 						MainForm->GetWorldPropertiesFrom()->Close();
 				}
 
-				if (ImGui::MenuItem("Export as archive"))
+				if (ImGui::MenuItem("Export as Archive"))
 				{
 					ExportLevelAsArchive();
 
@@ -146,9 +146,9 @@ void UIMainMenuForm::Draw()
 			{
 				DrawMenuItem("Validate", COMMAND_VALIDATE_SCENE);
 				ImGui::Separator();
-				ImGui::Checkbox("Validate at make", &Scene->IsValidateAtMake);
+				ImGui::Checkbox("Validate at Make", &Scene->IsValidateAtMake);
 				ImGui::Checkbox("Validate LODs", &Scene->IsValidateLODs);
-				ImGui::Checkbox("Validate Dublicate Names", &Scene->IsValidateDublicateNames);
+				ImGui::Checkbox("Validate Duplicate Names", &Scene->IsValidateDublicateNames);
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
@@ -163,11 +163,11 @@ void UIMainMenuForm::Draw()
 
 			DrawMenuItem("Clear Debug Draw", COMMAND_CLEAR_DEBUG_DRAW);
 			ImGui::Separator();
-			if (ImGui::MenuItem("Export entire Scene as Obj", ""))
+			if (ImGui::MenuItem("Export Entire Scene as Obj", ""))
 			{
 				Scene->ExportObj(false);
 			}
-			if (ImGui::MenuItem("Export selection as Obj", ""))
+			if (ImGui::MenuItem("Export Selection as Obj", ""))
 			{
 				Scene->ExportObj(true);
 			}
@@ -182,7 +182,7 @@ void UIMainMenuForm::Draw()
 				DrawMenuItem("Make Game", COMMAND_MAKE_GAME);
 				DrawMenuItem("Make Puddles", COMMAND_MAKE_PUDDLES);
 				DrawMenuItem("Make Details", COMMAND_MAKE_DETAILS);
-				DrawMenuItem("Make Hom", COMMAND_MAKE_HOM);
+				DrawMenuItem("Make HOM", COMMAND_MAKE_HOM);
 				DrawMenuItem("Make SOM", COMMAND_MAKE_SOM);
 				DrawMenuItem("Make AI-Map (25 bit)", COMMAND_MAKE_AIMAP);
 				DrawMenuItem("Make AI-Map (Legacy)", COMMAND_MAKE_AIMAP_LEGACY);
@@ -222,11 +222,11 @@ void UIMainMenuForm::Draw()
 				}
 				if (ImGui::BeginMenu("Spawn"))
 				{
-					if (ImGui::MenuItem("Only current level", ""))
+					if (ImGui::MenuItem("Only Current Level", ""))
 					{
 						LTools->RunXrAI_Spawn(true);
 					}
-					if (ImGui::MenuItem("All levels", ""))
+					if (ImGui::MenuItem("All Levels", ""))
 					{
 						LTools->RunXrAI_Spawn(false);
 					}
@@ -277,8 +277,8 @@ void UIMainMenuForm::Draw()
 			DrawMenuItem("Check New Textures", COMMAND_CHECK_TEXTURES);
 			ImGui::Separator();
 
-			DrawMenuItem("Edit minimap", COMMAND_MINIMAP_EDITOR);
-			if (ImGui::MenuItem("Sync THM", ""))
+			DrawMenuItem("Minimap Editor", COMMAND_MINIMAP_EDITOR);
+			if (ImGui::MenuItem("Synchronize THM", ""))
 			{
 				FS_FileSet      files;
 				FS.file_list(files, _textures_, FS_ListFiles, "*.thm");
@@ -389,7 +389,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				{
 					bool selected = !Caps.bForceGPU_SW;
-					if (ImGui::MenuItem("RenderHW", "", &selected))
+					if (ImGui::MenuItem("Render HW", "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
 						UI->Resize();
@@ -478,7 +478,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::BeginMenu("Environment"))
 				{
                     {
-                        if (ImGui::Button("Weather properties"))
+                        if (ImGui::Button("Weather Properties"))
                         {
                             ExecCommand(COMMAND_WEATHER_PROPERTIES);
                         }
@@ -536,7 +536,7 @@ void UIMainMenuForm::Draw()
 
 		if (ImGui::BeginMenu("Windows"))
 		{
-			DrawMenuItem("Light Anim Editor", COMMAND_LIGHTANIM_EDITOR);
+			DrawMenuItem("Light Animation Editor", COMMAND_LIGHTANIM_EDITOR);
 
 			if (ImGui::MenuItem("Macro Editor", ""))
 			{
@@ -577,7 +577,7 @@ void UIMainMenuForm::Draw()
 
 				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
 				bool selected2 = !ThemeInstance.IsClosed();
-				if (ImGui::MenuItem("Theme", "", &selected2))
+				if (ImGui::MenuItem("Theme Editor", "", &selected2))
 				{
 					if (selected2)
 					{

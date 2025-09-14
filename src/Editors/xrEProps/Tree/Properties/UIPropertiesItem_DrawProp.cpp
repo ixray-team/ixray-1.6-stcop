@@ -607,7 +607,7 @@ void UIPropertiesItem::DrawProp()
 				if (PItem->Key() != nullptr)
 				{
 					xr_string KeyValue = PItem->Key();
-					if (KeyValue.ends_with("Custom data"))
+					if (KeyValue.ends_with("Custom Data"))
 					{
 						const ImGuiPayload* payload = ImGui::GetDragDropPayload();
 

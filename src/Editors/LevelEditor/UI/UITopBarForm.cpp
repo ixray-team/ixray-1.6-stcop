@@ -153,15 +153,15 @@ void UITopBarForm::Draw()
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Play in Editor settings");
+					ImGui::SetTooltip("Play in Editor Settings");
 				}
 
 				ImGui::SameLine();
 				if (ImGui::BeginPopup("test"))
 				{
-					ImGui::Checkbox("Verify space restrictors", &m_VerifySpaceRestrictors);
-					ImGui::Checkbox("Apply camera pos to actor", &UseCameraPosForActor);
-					ImGui::Checkbox("Build artefact spawn positions", &((CLevelPreferences*)EPrefs)->PIEArtSpawnPos);
+					ImGui::Checkbox("Verify Space Restrictors", &m_VerifySpaceRestrictors);
+					ImGui::Checkbox("Apply Camera Position to Actor", &UseCameraPosForActor);
+					ImGui::Checkbox("Build Artefact Spawn Positions", &((CLevelPreferences*)EPrefs)->PIEArtSpawnPos);
 					ImGui::EndPopup();
 				}
 			}
@@ -170,7 +170,7 @@ void UITopBarForm::Draw()
 			{
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
 				IMGUI_HINT_BUTTON("ReloadCfg", m_tReloadConfigs, "Reload Configs", ClickReloadConfigs);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_EXPORT, "Build and Make", ClickBuildAndMake);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_EXPORT, "Make and Compile", ClickBuildAndMake);
 				ImGui::EndDisabled();
 			}
 
@@ -203,7 +203,7 @@ void UITopBarForm::Draw()
 			if (ImGui::TableNextColumn())
 			{
 				ImGui::SetCursorPosY(3);
-				if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
+				if (ImGui::Checkbox("Physics Simulation", &m_Simulate))
 				{
 					ExecCommand(COMMAND_SIMULATE, true);
 				}
@@ -218,7 +218,7 @@ void UITopBarForm::Draw()
 
 
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.15f));
-				if (ImGui::Button("Use Pos"))
+				if (ImGui::Button("Use Position"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}

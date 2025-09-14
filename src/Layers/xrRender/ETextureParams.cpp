@@ -287,7 +287,7 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 	P->OnChangeEvent.bind           (this,&STextureParams::OnTypeChange);
 	PHelper().CreateCaption			(items, "Source\\Width",			shared_str().printf("%d",width));
 	PHelper().CreateCaption			(items, "Source\\Height",			shared_str().printf("%d",height));
-	PHelper().CreateCaption			(items, "Source\\Alpha",			HasAlpha	()?"present":"absent"); 
+	PHelper().CreateCaption			(items, "Source\\Alpha",			HasAlpha	()?"Present":"Absent"); 
 	switch (type){
 	case ttImage:	
 	case ttCubeMap:	
@@ -305,8 +305,8 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 			PHelper().CreateChoose	(items, "Bump\\Texture",			&bump_name,			smTexture, path.c_str());
 		}
 		
-		PHelper().CreateFlag32		(items, "Details\\Use As Diffuse",	&flags,				flDiffuseDetail);
-		PHelper().CreateFlag32		(items, "Details\\Use As Bump (R2)",&flags,				flBumpDetail);
+		PHelper().CreateFlag32		(items, "Details\\Use as Diffuse",	&flags,				flDiffuseDetail);
+		PHelper().CreateFlag32		(items, "Details\\Use as Bump (R2)",&flags,				flBumpDetail);
 		PHelper().CreateChoose		(items, "Details\\Texture",			&detail_name,		smTexture);
 		PHelper().CreateFloat	   	(items, "Details\\Scale",			&detail_scale,		0.1f,10000.f,0.1f,2);
 
@@ -321,7 +321,7 @@ void STextureParams::FillProp(LPCSTR base_name, PropItemVec& items, PropValue::T
 		PHelper().CreateFlag32		(items, "Fade\\Enable Color",		&flags,				flFadeToColor);
 		PHelper().CreateFlag32		(items, "Fade\\Enabled Alpha",		&flags,				flFadeToAlpha);
 		PHelper().CreateU8			(items,	"Fade\\Delay 'n' MIP",		&fade_delay,		0,255);
-		PHelper().CreateU32			(items, "Fade\\% of color to fade in",&fade_amount,		0,100,0);
+		PHelper().CreateU32			(items, "Fade\\% of Color to Fade In",&fade_amount,		0,100,0);
 		PHelper().CreateColor	   	(items, "Fade\\Color",				&fade_color			);
 		PHelper().CreateU8			(items,	"Fade\\Alpha",				((u8*)&fade_color)+3,0,255);
 

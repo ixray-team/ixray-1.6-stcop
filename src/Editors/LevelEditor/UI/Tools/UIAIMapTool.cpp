@@ -31,16 +31,16 @@ void UIAIMapTool::Draw()
 			{
 				tool->GenerateMap(true);
 			}
-			if (ImGui::Button("Clear AI Map", ImVec2(size / 2, 0)))
+			if (ImGui::Button("Clear AI-Map", ImVec2(size / 2, 0)))
 			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes) 
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI-Map?") == mrYes) 
 				{
 					tool->Clear();
 					Scene->UndoSave();
 				}
 			}
 			ImGui::SameLine(0, 2);
-			if (ImGui::Button("Remove invalid nodes", ImVec2(size / 2, 0)))
+			if (ImGui::Button("Remove Invalid Nodes", ImVec2(size / 2, 0)))
 			{
 				tool->CleanupInvalidNodes();
 			}
@@ -56,7 +56,7 @@ void UIAIMapTool::Draw()
 		ImGui::TreePop();
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("AI Map Nodes"))
+	if (ImGui::TreeNode("AI-Map Nodes"))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
@@ -69,7 +69,7 @@ void UIAIMapTool::Draw()
 	}
 	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
 	ImGui::SetNextItemWidth(0);
-	if (ImGui::TreeNode("Ignore materials"))
+	if (ImGui::TreeNode("Ignore Materials"))
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
@@ -79,7 +79,7 @@ void UIAIMapTool::Draw()
 				m_ChooseIgnoreMaterials = true;
 			}
 				ImGui::SameLine(0, -1);
-			if (ImGui::Button("X"))
+			if (ImGui::Button("Clear"))
 			{
 				m_IgnoreMaterialsListSelected = 0;
 				m_IgnoreMaterialsList.clear();

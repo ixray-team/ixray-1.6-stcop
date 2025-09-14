@@ -41,7 +41,7 @@ void	CBlender_Particle::Save	( IWriter& fs	)
 	I.ID = 5; xr_strcpy(I.str,"ALPHA-ADD");	fs.w		(&I,sizeof(I));
 	
 	// Params
-	xrPWRITE_PROP		(fs,"Texture clamp",xrPID_BOOL,		oClamp);
+	xrPWRITE_PROP		(fs,"Texture Clamp",xrPID_BOOL,		oClamp);
 	xrPWRITE_PROP		(fs,"Alpha ref",	xrPID_INTEGER,	oAREF);
 }
 

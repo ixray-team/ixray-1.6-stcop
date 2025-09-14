@@ -41,7 +41,7 @@ void UIKeyForm::Draw()
 	bool Mark3 = bMarksPresent34 || ((CAEPreferences*)EPrefs)->bAlwaysShowKeyBar34;
 	bool Mark4 = bMarksPresent34 || ((CAEPreferences*)EPrefs)->bAlwaysShowKeyBar34;
 
-	ImGui::Begin("KeyForm");
+	ImGui::Begin("Key Form");
 	{
 		float a, b, c;
 		ATools->GetStatTime(a, b, c);
@@ -59,7 +59,7 @@ void UIKeyForm::Draw()
 			ImGui::EndChild();
 		}ImGui::SameLine();
 		ImVec2 size;
-		ImGui::BeginChild("Midle", ImVec2(-120, 100));
+		ImGui::BeginChild("Middle", ImVec2(-120, 100));
 		{
 			ImGui::SetNextItemWidth(-1);
 			if (AutoChange())m_Position = c ;
@@ -121,25 +121,25 @@ void UIKeyForm::Draw()
 
 			if (!Mark1) ImGui::BeginDisabled();
 			ImGui::PushID("left1");
-			if (ImGui::Button("Del") && Mark1) { SetMark(0, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark1) { SetMark(0, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark1) { SetMark(0, 1); }
+			if (ImGui::Button("Delete") && Mark1) { SetMark(0, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark1) { SetMark(0, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark1) { SetMark(0, 1); }
 			ImGui::PopID();
 			if (!Mark1) ImGui::EndDisabled();
 
 			if (!Mark2) ImGui::BeginDisabled();
 			ImGui::PushID("right1");
-			if (ImGui::Button("Del") && Mark2) { SetMark(1, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark2) { SetMark(1, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark2) { SetMark(1, 1); }
+			if (ImGui::Button("Delete") && Mark2) { SetMark(1, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark2) { SetMark(1, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark2) { SetMark(1, 1); }
 			ImGui::PopID();
 			if (!Mark2) ImGui::EndDisabled();
 
 			if (!Mark3) ImGui::BeginDisabled();
 			ImGui::PushID("left2");
-			if (ImGui::Button("Del") && Mark3) { SetMark(2, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark3) { SetMark(2, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark3) { SetMark(2, 1); }
+			if (ImGui::Button("Delete") && Mark3) { SetMark(2, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark3) { SetMark(2, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark3) { SetMark(2, 1); }
 			ImGui::PopID();
 			if (!Mark3) ImGui::EndDisabled();
 
 			if (!Mark4) ImGui::BeginDisabled();
 			ImGui::PushID("right2");
-			if (ImGui::Button("Del") && Mark4) { SetMark(3, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark4) { SetMark(3, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark4) { SetMark(3, 1); }
+			if (ImGui::Button("Delete") && Mark4) { SetMark(3, 3); } ImGui::SameLine(); 	if (ImGui::Button("Up") && Mark4) { SetMark(3, 2); } ImGui::SameLine(); 	if (ImGui::Button("Down", ImVec2(-1, 0)) && Mark4) { SetMark(3, 1); }
 			ImGui::PopID();
 			if (!Mark4) ImGui::EndDisabled();
 
@@ -207,7 +207,7 @@ void UIKeyForm::Draw()
 							ImGui::PushID(id++);
 							ImGui::Text(std::to_string(i).c_str());
 							ImGui::SameLine(116);
-							if (ImGui::Button("Del")) {
+							if (ImGui::Button("Delete")) {
 								ToRemove = Track.first;
 								ToRemove2 = i;
 								m_currentNotify = nullptr;

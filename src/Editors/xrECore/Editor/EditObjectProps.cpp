@@ -85,7 +85,7 @@ void CEditableObject::FillSummaryProps(LPCSTR pref, PropItemVec& items)
         PHelper().CreateCaption(items, PrepareKey(pref, xr_string(xr_string("Geometry\\Meshes\\") + MESH->Name().c_str()).c_str()), t1);
     }
 
-    PHelper().CreateSText(items,PrepareKey(pref, "Game options\\User Data"),&m_ClassScript);
+    PHelper().CreateSText(items,PrepareKey(pref, "Game Options\\User Data"),&m_ClassScript);
 }
 //---------------------------------------------------------------------------
 

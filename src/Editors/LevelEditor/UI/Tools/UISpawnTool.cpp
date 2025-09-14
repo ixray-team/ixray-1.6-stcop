@@ -63,7 +63,7 @@ void UISpawnTool::Draw()
 
 void UISpawnTool::DrawObjectsList()
 {
-	if (ImGui::Begin("Edit group items"))
+	if (ImGui::Begin("Edit Group Items"))
 	{
 		m_SpawnList->Draw();
 	}

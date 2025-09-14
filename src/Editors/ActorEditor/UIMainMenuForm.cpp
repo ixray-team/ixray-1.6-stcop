@@ -19,7 +19,7 @@ void UIMainMenuForm::Draw()
 			if (ImGui::MenuItem("Clear", "")) { ExecCommand(COMMAND_CLEAR); }
 			if (ImGui::MenuItem("Load", "")) { ExecCommand(COMMAND_LOAD); }
 			if (ImGui::MenuItem("Save", "")) { ExecCommand(COMMAND_SAVE, xr_string(ATools->m_LastFileName.c_str()), 0); }
-			if (ImGui::MenuItem("Save as ...", "")) { ExecCommand(COMMAND_SAVE,0, 1); }
+			if (ImGui::MenuItem("Save As...", "")) { ExecCommand(COMMAND_SAVE,0, 1); }
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Open Recent", "")) 
 			{
@@ -75,7 +75,7 @@ void UIMainMenuForm::Draw()
 				if (ImGui::MenuItem("Synchronize Sounds (Hard)", "")) { ExecCommand(COMMAND_SYNC_SOUNDS_HARD); }
 				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Light Anim Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
+			if (ImGui::MenuItem("Light Animation Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
 			if (ImGui::MenuItem("Minimap Editor", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
 			ImGui::EndMenu();
 		}
@@ -160,7 +160,7 @@ void UIMainMenuForm::Draw()
 				ImGui::Separator();
 				{
 					bool selected = !Caps.bForceGPU_SW;
-					if (ImGui::MenuItem("RenderHW", "", &selected))
+					if (ImGui::MenuItem("Render HW", "", &selected))
 					{
 						Caps.bForceGPU_SW = !selected;
 						UI->Resize();
@@ -273,14 +273,14 @@ void UIMainMenuForm::Draw()
 					ExecCommand(COMMAND_LOG_COMMANDS); 
 				}
 
-				if (ImGui::MenuItem("Post Process", nullptr)) 
+				if (ImGui::MenuItem("Post-process Editor", nullptr)) 
 				{
 					PPE.OpenState() = true;
 				}
 
 				CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
 				bool selected2 = !ThemeInstance.IsClosed();
-				if (ImGui::MenuItem("Theme", "", &selected2))
+				if (ImGui::MenuItem("Theme Editor", "", &selected2))
 				{
 					if (selected2)
 					{

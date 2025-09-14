@@ -308,7 +308,7 @@ void UIObjectTool::DrawObjectsList()
 	if (!bDrawList)
 		return;
 
-	if (ImGui::Begin("Edit group items", &bDrawList))
+	if (ImGui::Begin("Edit Group Items", &bDrawList))
 	{
 		if (!RefreshInProgress)
 		{

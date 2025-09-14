@@ -10,7 +10,7 @@ UIRightBarForm::~UIRightBarForm()
 
 void UIRightBarForm::Draw()
 {
-	ImGui::Begin("RightBar", 0);
+	ImGui::Begin("Right Bar", 0);
 
 	if (ImGui::TreeNode("Custom Object"))
 	{

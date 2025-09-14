@@ -157,7 +157,7 @@ public:
 
 	// definition
     IC LPCSTR			ClassName				(){return "ai_map";}
-    IC LPCSTR			ClassDesc				(){return "AI Map";}
+    IC LPCSTR			ClassDesc				(){return "AI-Map";}
     IC int				RenderPriority			(){return 10;}
 
     // validation

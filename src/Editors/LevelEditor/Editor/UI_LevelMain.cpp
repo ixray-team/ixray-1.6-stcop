@@ -1118,7 +1118,7 @@ void CLevelMain::RegisterCommands()
 		APPEND_SUB_CMD	("Object", 							OBJCLASS_SCENEOBJECT,	0);
 		APPEND_SUB_CMD	("Light", 							OBJCLASS_LIGHT, 		0);
 		APPEND_SUB_CMD	("Sound Source",					OBJCLASS_SOUND_SRC, 	0);
-		APPEND_SUB_CMD	("Sound Env", 		                OBJCLASS_SOUND_ENV, 	0);
+		APPEND_SUB_CMD	("Sound Environment", 		        OBJCLASS_SOUND_ENV, 	0);
 		APPEND_SUB_CMD	("Glow", 			                OBJCLASS_GLOW, 			0);
 		APPEND_SUB_CMD	("Shape", 			                OBJCLASS_SHAPE, 		0);
 		APPEND_SUB_CMD	("Spawn Point", 	                OBJCLASS_SPAWNPOINT, 	0);
@@ -1130,7 +1130,7 @@ void CLevelMain::RegisterCommands()
 		APPEND_SUB_CMD	("Group", 			                OBJCLASS_GROUP, 		0);
 		APPEND_SUB_CMD	("Particle System",                 OBJCLASS_PS, 			0);
 		APPEND_SUB_CMD	("Detail Objects", 	                OBJCLASS_DO, 			0);
-		APPEND_SUB_CMD	("AI Map", 			                OBJCLASS_AIMAP, 		0);
+		APPEND_SUB_CMD	("AI-Map", 			                OBJCLASS_AIMAP, 		0);
 		APPEND_SUB_CMD	("Static Wallmark",                 OBJCLASS_WM, 			0);
 	REGISTER_SUB_CMD_END;    
 	REGISTER_CMD_C	    (COMMAND_ENABLE_TARGET,           	LTools,CLevelTool::CommandEnableTarget);
@@ -1147,7 +1147,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_LOAD,              		"File\\Load Level", 			CommandLoad, 			true);
 	REGISTER_SUB_CMD_SE (COMMAND_SAVE, 						"File",							CommandSave,			true);
 		APPEND_SUB_CMD	("Save",							0,								0);
-		APPEND_SUB_CMD	("Save As",							0,								1);
+		APPEND_SUB_CMD	("Save As...",						0,								1);
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_S	    (COMMAND_SAVE_BACKUP,              	CommandSaveBackup);
 	REGISTER_CMD_SE	    (COMMAND_CLEAR,              		"File\\Clear Scene", 			CommandClear,			true);
@@ -1176,8 +1176,8 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_PUDDLES,             	"Compile\\Make Puddles",	    CommandMakePuddles,false);
-	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
-	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP_LEGACY,        	"Compile\\Make AI Map Legacy",  CommandMakeAIMapLegacy,false);
+	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI-Map",	        CommandMakeAIMap,false);
+	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP_LEGACY,        	"Compile\\Make AI-Map Legacy",  CommandMakeAIMapLegacy,false);
 	REGISTER_CMD_SE	    (COMMAND_MOVE_GIZMO,              	"Gizmo\\Set at camera",	        CommandMakeGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_UPDATE_GIZMO,             	"Gizmo\\Update at camera",	    CommandUpdateGizmo,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);

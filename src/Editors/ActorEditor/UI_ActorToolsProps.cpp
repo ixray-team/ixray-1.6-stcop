@@ -376,7 +376,7 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 		m_cnt = xr_string::ToString(m_pEditObject->SMotionCount());
 	}
 											
-	PHelper().CreateCaption			(items, PrepareKey(pref,"Global\\Motion count"),	m_cnt.c_str());
+	PHelper().CreateCaption			(items, PrepareKey(pref,"Global\\Motion Count"),	m_cnt.c_str());
 
 	xr_string 						tmp;
 	for(u32 i=0; i<m_pEditObject->m_SMotionRefs.size(); ++i)
@@ -386,7 +386,7 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 		tmp							+= m_pEditObject->m_SMotionRefs[i].c_str();
 	}
 	m_tmp_mot_refs					= tmp.c_str();
-	V=PHelper().CreateChoose		(items, PrepareKey(pref,"Global\\Motion reference"),&m_tmp_mot_refs, smGameSMotions,0,0,MAX_ANIM_SLOT);
+	V=PHelper().CreateChoose		(items, PrepareKey(pref,"Global\\Motion Reference"),&m_tmp_mot_refs, smGameSMotions,0,0,MAX_ANIM_SLOT);
 	// m_pEditObject->m_SMotionRefs
 	V->OnChangeEvent.bind			(this,&CActorTools::OnMotionRefsChange);
 	ButtonValue* B;             
@@ -396,7 +396,7 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 
 	if (m_pEditObject->m_SMotionRefs.size()==0) 
 	{            
-		B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),			"Add,Del,Save",ButtonValue::flFirstOnly);
+		B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),			"Add,Delete,Save",ButtonValue::flFirstOnly);
 		B->OnBtnClickEvent.bind		(this,&CActorTools::OnMotionEditClick); 
 	}
 	if (SM)
@@ -421,22 +421,22 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 		{
 			for (BoneIt it=m_pEditObject->FirstBone(); it!=m_pEditObject->LastBone(); it++)
 				m_BoneParts.push_back	(xr_rtoken((*it)->Name().c_str(),(*it)->SelfID));
-			PHelper().CreateRToken16 	(items,PrepareKey(pref,"Motion\\FX\\Start bone"),	(u16*)&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
+			PHelper().CreateRToken16 	(items,PrepareKey(pref,"Motion\\FX\\Start Bone"),	(u16*)&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
 
 			PHelper().CreateFloat		(items,PrepareKey(pref,"Motion\\FX\\Power"),	 	&SM->fPower,   	0.f,10.f,0.01f,2);
 		}else{
 			m_BoneParts.push_back(xr_rtoken("--all bones--",BI_NONE));
 			for (BPIt it=m_pEditObject->FirstBonePart(); it!=m_pEditObject->LastBonePart(); it++)
 				m_BoneParts.push_back	(xr_rtoken(it->alias.c_str(),it-m_pEditObject->FirstBonePart()));
-			PHelper().CreateRToken16  	(items,PrepareKey(pref,"Motion\\Cycle\\Bone part"),		&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Stop at end"),	&SM->m_Flags,		esmStopAtEnd);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\No mix"),	  	&SM->m_Flags,		esmNoMix);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Sync part"),		&SM->m_Flags,		esmSyncPart);
+			PHelper().CreateRToken16  	(items,PrepareKey(pref,"Motion\\Cycle\\Bone Part"),		&SM->m_BoneOrPart,	&*m_BoneParts.begin(), m_BoneParts.size());
+			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Stop at End"),	&SM->m_Flags,		esmStopAtEnd);
+			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\No Mix"),	  	&SM->m_Flags,		esmNoMix);
+			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Sync Part"),		&SM->m_Flags,		esmSyncPart);
 
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseFootSteps"),	&SM->m_Flags,		esmUseFootSteps);
+			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Use Foot Steps"),	&SM->m_Flags,	esmUseFootSteps);
 			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Move XForm"),	&SM->m_Flags,		esmRootMover);
 			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Idle"),			&SM->m_Flags,		esmIdle);
-			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\UseWeaponBone"),	&SM->m_Flags,	esmUseWeaponBone);
+			PHelper().CreateFlag8	  	(items,PrepareKey(pref,"Motion\\Cycle\\Use Weapon Bone"),	&SM->m_Flags,	esmUseWeaponBone);
 		}
 
 		B=PHelper().CreateButton	(items, PrepareKey(pref,"Marks\\Control-12"),	"Add,Remove",ButtonValue::flFirstOnly);
@@ -461,13 +461,13 @@ void CActorTools::FillMotionProperties(PropItemVec& items, LPCSTR pref, ListItem
 			StartMotionPoint.y		 = BM.envs[ctPositionY]->keys.size() ? BM.envs[ctPositionY]->keys.front()->value : -1;
 			StartMotionPoint.z		 = BM.envs[ctPositionZ]->keys.size() ? BM.envs[ctPositionZ]->keys.front()->value : -1;
 
-			PHelper().CreateVector(items,PrepareKey(pref,"Motion\\RootStartTransform"), &StartMotionPoint,-10000,10000,0.001,4);
+			PHelper().CreateVector(items,PrepareKey(pref,"Motion\\Root Start Transform"), &StartMotionPoint,-10000,10000,0.001,4);
 
 			EndMotionPoint.x		 = BM.envs[ctPositionX]->keys.size() ? BM.envs[ctPositionX]->keys.back()->value : -1;
 			EndMotionPoint.y		 = BM.envs[ctPositionY]->keys.size() ? BM.envs[ctPositionY]->keys.back()->value : -1;
 			EndMotionPoint.z		 = BM.envs[ctPositionZ]->keys.size() ? BM.envs[ctPositionZ]->keys.back()->value : -1;
 
-			PHelper().CreateVector(items,PrepareKey(pref,"Motion\\RootEndTransform"), &EndMotionPoint,-10000,10000,0.001,4);
+			PHelper().CreateVector(items,PrepareKey(pref,"Motion\\Root End Transform"), &EndMotionPoint,-10000,10000,0.001,4);
 		}
 
 		/*auto CurrentMotion = GetCurrentMotion();
@@ -738,7 +738,7 @@ void  CActorTools::OnBoneFileClick(ButtonValue* V, bool& bModif, bool& bSafe)
 			FS.TryLoad(fn);
 
 			IReader* R = FS.r_open(fn.c_str());
-			if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data succesfully loaded.");
+			if (m_pEditObject->LoadBoneData(*R))	ELog.DlgMsg(mtInformation,"Bone data successfully loaded.");
 			else                                    ELog.DlgMsg(mtError,"Failed to load bone data.");
 			FS.r_close(R);
 		}else{
@@ -773,11 +773,11 @@ void CActorTools::FillBoneProperties(PropItemVec& items, LPCSTR pref, ListItem* 
 	R_ASSERT(m_pEditObject);
 	CBone* BONE = (CBone*)sender->m_Object;
 
-	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone count"),	shared_str().printf("%d",m_pEditObject->BoneCount()));
+	PHelper().CreateCaption	(items, PrepareKey(pref,"Global\\Bone Count"),	shared_str().printf("%d",m_pEditObject->BoneCount()));
 	ButtonValue* B;
 	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\File"),"Load,Save",ButtonValue::flFirstOnly);
 	B->OnBtnClickEvent.bind		(this,&CActorTools::OnBoneFileClick);
-	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),"Bind pose,Reset IK,Clamp limits",ButtonValue::flFirstOnly);
+	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Edit"),"Bind Pose,Reset IK,Clamp Limits",ButtonValue::flFirstOnly);
 	B->OnBtnClickEvent.bind		(this,&CActorTools::OnBoneEditClick);
 	B=PHelper().CreateButton	(items, PrepareKey(pref,"Global\\Generate Shape"),"All, Selected",ButtonValue::flFirstOnly);
 	B->OnBtnClickEvent.bind		(this,&CActorTools::OnBoneShapeClick);
@@ -795,7 +795,7 @@ void CActorTools::FillBoneProperties(PropItemVec& items, LPCSTR pref, ListItem* 
 //.		PHelper().CreateCaption		(items, PrepareKey(pref,"Bone\\Influence"),					shared_str().sprintf("%d vertices",0));
 		PHelper().CreateChoose		(items,	PrepareKey(pref,"Bone\\Game Material"),				&BONE->game_mtl, smGameMaterial);
 		PHelper().CreateFloat	 	(items, PrepareKey(pref,"Bone\\Mass"),						&BONE->mass, 			0.f, 10000.f);
-		PHelper().CreateVector		(items, PrepareKey(pref,"Bone\\Center Of Mass"),			&BONE->center_of_mass, 	-10000.f, 10000.f);
+		PHelper().CreateVector		(items, PrepareKey(pref,"Bone\\Center of Mass"),			&BONE->center_of_mass, 	-10000.f, 10000.f);
 		V=PHelper().CreateVector 	(items, PrepareKey(pref,"Bone\\Bind Position"),				&BONE->_RestOffset(),	-10000.f, 10000.f);	V->OnChangeEvent.bind	(this,&CActorTools::OnBindTransformChange);
 		V=PHelper().CreateAngle3 	(items, PrepareKey(pref,"Bone\\Bind Rotation"),				&BONE->_RestRotate());						V->OnChangeEvent.bind	(this,&CActorTools::OnBindTransformChange);
 		PHelper().CreateFlag16		(items, PrepareKey(pref,"Bone\\Shape\\Flags\\No Pickable"),	&BONE->shape.flags, SBoneShape::sfNoPickable);

@@ -802,7 +802,7 @@ void ESceneWallmarkTool::FillPropObjects(LPCSTR pref, PropItemVec& items)
     PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Width"),			&m_MarkWidth, 	0.01f, 10.f);
     PHelper().CreateFloat	 	(items, PrepareKey(pref,"Common\\Height"),			&m_MarkHeight, 	0.01f, 10.f);
     PHelper().CreateAngle	 	(items, PrepareKey(pref,"Common\\Rotate"),			&m_MarkRotate);
-    PHelper().CreateChoose		(items, PrepareKey(pref,"Common\\Shader"),			&m_ShName, 		smEShader);
+    PHelper().CreateChoose		(items, PrepareKey(pref,"Common\\Engine Shader"),			&m_ShName, 		smEShader);
     PHelper().CreateChoose		(items, PrepareKey(pref,"Common\\Texture"),			&m_TxName, 		smTexture);
 }
 

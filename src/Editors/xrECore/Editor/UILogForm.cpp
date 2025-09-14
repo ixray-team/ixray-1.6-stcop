@@ -155,11 +155,11 @@ void UILogForm::Update()
 		ImGui::EndChild();
 
 		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
-		if (ImGui::InputTextWithHint("##Exec", "Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
+		if (ImGui::InputTextWithHint("##Execute", "Execute", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
 		{
 			if (m_Exec[0])
 			{
-				Msg("~ Exec %s", m_Exec);
+				Msg("~ Execute %s", m_Exec);
 				Console->Execute(m_Exec);
 			}
 		}

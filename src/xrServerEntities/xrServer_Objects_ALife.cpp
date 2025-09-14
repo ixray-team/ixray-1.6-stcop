@@ -528,10 +528,10 @@ void CSE_ALifeObject::FillProps				(LPCSTR pref, PropItemVec& items)
 {
 #	ifdef XRSE_FACTORY_EXPORTS
 	inherited::FillProps		(pref, 	items);
-	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"Custom data"),&m_ini_string);
+	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"Custom Data"),&m_ini_string);
 	if (m_flags.is(flUseSwitches)) {
-		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch online"),	&m_flags,			flSwitchOnline);
-		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch offline"),	&m_flags,			flSwitchOffline);
+		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can Switch Online"),	&m_flags,			flSwitchOnline);
+		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can Switch Offline"),	&m_flags,			flSwitchOffline);
 	}                            
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Interactive"),			&m_flags,			flInteractive);
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Used AI locations"),	&m_flags,			flUsedAI_Locations);
@@ -911,8 +911,8 @@ xr_token defaul_retrictor_types[]={
 void CSE_ALifeSpaceRestrictor::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited1::FillProps		(pref,items);
-	PHelper().CreateToken8		(items, PrepareKey(pref,*s_name,"restrictor type"),		&m_space_restrictor_type,	defaul_retrictor_types);
-	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"check for separator"),	&m_flags,					flCheckForSeparator);
+	PHelper().CreateToken8		(items, PrepareKey(pref,*s_name,"Restrictor Type"),		&m_space_restrictor_type,	defaul_retrictor_types);
+	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"Check for Separator"),	&m_flags,					flCheckForSeparator);
 }
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -1298,8 +1298,8 @@ void CSE_ALifeObjectPhysic::load(NET_Packet &tNetPacket)
 
 xr_token po_types[]={
 	{ "Box",			epotBox			},
-	{ "Fixed chain",	epotFixedChain	},
-	{ "Free chain",		epotFreeChain	},
+	{ "Fixed Chain",	epotFixedChain	},
+	{ "Free Chain",		epotFreeChain	},
 	{ "Skeleton",		epotSkeleton	},
 	{ 0,				0				}
 };
@@ -1315,7 +1315,7 @@ void CSE_ALifeObjectPhysic::FillProps		(LPCSTR pref, PropItemVec& values)
 	PHelper().CreateFlag8		(values, PrepareKey(pref,*s_name,"Active"), &_flags, flActive);
 
 	// motions & bones
-	PHelper().CreateChoose		(values, 	PrepareKey(pref,*s_name,"Model\\Fixed bones"),	&fixed_bones,		smSkeletonBones,0,(void*)visual()->get_visual(),8);
+	PHelper().CreateChoose		(values, 	PrepareKey(pref,*s_name,"Model\\Fixed Bones"),	&fixed_bones,		smSkeletonBones,0,(void*)visual()->get_visual(),8);
 }
 #endif // #ifndef XRGAME_EXPORTS
 

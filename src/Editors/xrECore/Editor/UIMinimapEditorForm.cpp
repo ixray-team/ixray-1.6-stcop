@@ -768,7 +768,7 @@ void UIMinimapEditorForm::ShowMenu()
 		}
 		ImGui::EndDisabled();
 
-		if (ImGui::MenuItem("Save As"))
+		if (ImGui::MenuItem("Save As..."))
 		{
 			SaveFile(false);
 		}
@@ -799,12 +799,12 @@ void UIMinimapEditorForm::ShowMenu()
 	}
 
 	ImGui::Separator();
-	if (ImGui::MenuItem("Reset pos"))
+	if (ImGui::MenuItem("Reset Position"))
 	{
 		(BoundRectMode ? m_BoundBackgroundPosition : m_BackgroundPosition) = ImVec2(0,0);
 	}
 
-	if (ImGui::MenuItem("Reset zoom")) 
+	if (ImGui::MenuItem("Reset Zoom")) 
 	{
 		(BoundRectMode ? m_BZoom : m_Zoom) = 1.f;
 	}
@@ -818,7 +818,7 @@ void UIMinimapEditorForm::ShowMenu()
 	ImGui::Text("Background Size:");
 	ImGui::DragFloat2("##bgs", (float*)&m_BackgroundRenderSize, 1.0f, 128, 1024*4);
 	ImGui::SameLine();
-	if (ImGui::Button("to file size"))
+	if (ImGui::Button("To File Size"))
 	{
 		m_BackgroundRenderSize = m_BackgroundSize;
 	}
@@ -924,7 +924,7 @@ void UIMinimapEditorForm::ShowMenu()
 			isEdited = true;
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Reset size"))
+		if (ImGui::Button("Reset Size"))
 		{
 			selectedElement->RenderSize = selectedElement->FileSize;
 			isEdited = true;

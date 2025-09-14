@@ -276,7 +276,7 @@ void CContentView::DrawHeader()
 		}
 		ImGui::Separator();
 
-		if (ImGui::BeginMenu("View mode"))
+		if (ImGui::BeginMenu("View Mode"))
 		{
 			if (ImGui::MenuItem("Tile"))
 			{

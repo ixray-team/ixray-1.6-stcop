@@ -32,7 +32,7 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
-                if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
+                if (ImGui::MenuItem("Check New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Sounds"))
@@ -43,7 +43,7 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Synchronize Sounds (Hard)", "")) { ExecCommand(COMMAND_SYNC_SOUNDS_HARD); }
                 ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Light Anim Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
+            if (ImGui::MenuItem("Light Animation Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
             if (ImGui::MenuItem("Minimap Editor", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
             ImGui::EndMenu();
         }
@@ -126,7 +126,7 @@ void UIMainMenuForm::Draw()
                 ImGui::Separator();
                 {
                     bool selected = !Caps.bForceGPU_SW;
-                    if (ImGui::MenuItem("RenderHW", "", &selected))
+                    if (ImGui::MenuItem("Render HW", "", &selected))
                     {
                         Caps.bForceGPU_SW = !selected;
                         UI->Resize();
@@ -209,7 +209,7 @@ void UIMainMenuForm::Draw()
 
                 CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
                 bool selected2 = !ThemeInstance.IsClosed();
-                if (ImGui::MenuItem("Theme", "", &selected2))
+                if (ImGui::MenuItem("Theme Editor", "", &selected2))
                 {
                     if (selected2)
                     {

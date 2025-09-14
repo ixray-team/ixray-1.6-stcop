@@ -452,7 +452,7 @@ void CMainPPE::DrawTool()
 				}
 
 				ImGui::SetCursorPos({ 35, 0 });
-				if (ImGui::Button("Del", { 33, 19 }))
+				if (ImGui::Button("Delete", { 33, 19 }))
 				{
 					size_t Iter = 0;
 					for (const PointItem& Item : ListData)
@@ -563,7 +563,7 @@ void CMainPPE::Draw()
 	if (!bOpen)
 		return;
 
-	if (ImGui::Begin("Post Process Editor", &bOpen))
+	if (ImGui::Begin("Post-process Editor", &bOpen))
 	{
 		ImVec2 BtnSize = { 40, 20 };
 

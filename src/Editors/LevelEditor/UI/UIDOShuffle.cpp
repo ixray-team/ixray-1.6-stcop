@@ -81,8 +81,8 @@ void UIDOShuffle::Draw()
 		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface->GetRawTexture(), ImVec2(256, 256));
 
 		{
-			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
-			if (ImGui::Button("-", ImVec2(0, ImGui::GetFrameHeight()))) 
+			if (ImGui::Button("Add", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
+			if (ImGui::Button("Delete", ImVec2(0, ImGui::GetFrameHeight()))) 
 			{
 				if (m_list_selected >= 0 && m_list.size() > m_list_selected)
 				{
@@ -94,7 +94,7 @@ void UIDOShuffle::Draw()
 				}
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("X", ImVec2(0, ImGui::GetFrameHeight())))
+			if (ImGui::Button("Clear", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				m_list.clear();
 				DM->InvalidateSlots();
@@ -105,7 +105,7 @@ void UIDOShuffle::Draw()
 				bModif = true;
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Load..", ImVec2(0, ImGui::GetFrameHeight())))
+			if (ImGui::Button("Load...", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
 				if (EFS.GetOpenName(_detail_objects_, fname)) {
@@ -113,7 +113,7 @@ void UIDOShuffle::Draw()
 				}
 			}
 			ImGui::SameLine();
-			if (ImGui::Button("Save..", ImVec2(0, ImGui::GetFrameHeight())))
+			if (ImGui::Button("Save...", ImVec2(0, ImGui::GetFrameHeight())))
 			{
 				xr_string fname;
 				if (EFS.GetSaveName(_detail_objects_, fname)) 
@@ -135,7 +135,7 @@ void UIDOShuffle::Draw()
 	ImGui::NextColumn();
 	ImGui::BeginChild("Right");
 	{
-		if (ImGui::Button("X")) { ClearIndexForms(); }
+		if (ImGui::Button("Clear")) { ClearIndexForms(); }
 		ImGui::SameLine();
 		if (ImGui::Button("Append Color Index", ImVec2(-1,0))) 
 		{

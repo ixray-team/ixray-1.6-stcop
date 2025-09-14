@@ -30,7 +30,7 @@ void	CBlender_Model_EbB::Save(	IWriter& fs )
 {
 	description.version	= 0x1;
 	IBlender::Save	(fs);
-	xrPWRITE_MARKER	(fs,"Environment map");
+	xrPWRITE_MARKER	(fs,"Environment Map");
 	xrPWRITE_PROP	(fs,"Name",				xrPID_TEXTURE,	oT2_Name);
 	xrPWRITE_PROP	(fs,"Transform",		xrPID_MATRIX,	oT2_xform);
 	xrPWRITE_PROP	(fs,"Alpha-Blend",		xrPID_BOOL,		oBlend);

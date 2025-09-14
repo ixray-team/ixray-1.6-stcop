@@ -10,7 +10,7 @@ UILeftBarForm::~UILeftBarForm()
 
 void UILeftBarForm::Draw()
 {
-	if (ImGui::Begin("LeftBar", 0))
+	if (ImGui::Begin("Left Bar", 0))
 	{
 		if (ImGui::Button("Add Group"))
 		{

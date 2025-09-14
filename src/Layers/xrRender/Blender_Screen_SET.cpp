@@ -51,7 +51,7 @@ void	CBlender_Screen_SET::Save	( IWriter& fs	)
 	I.ID = 9; xr_strcpy(I.str,"BLEND (4r)");	fs.w		(&I,sizeof(I));
 	
 	// Params
-	xrPWRITE_PROP		(fs,"Texture clamp",xrPID_BOOL,		oClamp);
+	xrPWRITE_PROP		(fs,"Texture Clamp",xrPID_BOOL,		oClamp);
 	xrPWRITE_PROP		(fs,"Alpha ref",	xrPID_INTEGER,	oAREF);
 	xrPWRITE_PROP		(fs,"Z-test",		xrPID_BOOL,		oZTest);
 	xrPWRITE_PROP		(fs,"Z-write",		xrPID_BOOL,		oZWrite);

@@ -443,7 +443,7 @@ void CActorMain::RegisterCommands()
 	REGISTER_CMD_C(COMMAND_SAVE_BACKUP, ATools, CActorTools::CommandSaveBackup);
 	REGISTER_SUB_CMD_CE(COMMAND_SAVE, "File", ATools, CActorTools::CommandSave, true);
 	APPEND_SUB_CMD("Save", 0, 0);
-	APPEND_SUB_CMD("Save As", 0, 1);
+	APPEND_SUB_CMD("Save As...", 0, 1);
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_CE(COMMAND_IMPORT, "File\\Import", ATools, CActorTools::CommandImport, true);
 	REGISTER_CMD_CE(COMMAND_EXPORT_DM, "File\\Export DM", ATools, CActorTools::CommandExportDM, true);

@@ -411,7 +411,7 @@ void CEditShape::SaveStream(IWriter& F)
 void CEditShape::FillProp(LPCSTR pref, PropItemVec& values)
 {
 	inherited::FillProp(pref,values);
-	PHelper().CreateCaption	(values, PrepareKey(pref,"Shape usage"),m_shape_type==eShapeCommon?"common":"level bound");
+	PHelper().CreateCaption	(values, PrepareKey(pref,"Shape Usage"),m_shape_type==eShapeCommon?"common":"level bound");
 }
 
 void CEditShape::Render(int priority, bool strictB2F)

@@ -27,7 +27,7 @@ CBlender_LaEmB::~CBlender_LaEmB	()
 void	CBlender_LaEmB::Save(	IWriter& fs )
 {
 	IBlender::Save	(fs);
-	xrPWRITE_MARKER	(fs,"Environment map");
+	xrPWRITE_MARKER	(fs,"Environment Map");
 	xrPWRITE_PROP	(fs,"Name",				xrPID_TEXTURE,	oT2_Name);
 	xrPWRITE_PROP	(fs,"Transform",		xrPID_MATRIX,	oT2_xform);
 	xrPWRITE_PROP	(fs,"Constant",			xrPID_CONSTANT,	oT2_const);

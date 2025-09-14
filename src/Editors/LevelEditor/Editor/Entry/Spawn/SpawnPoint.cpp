@@ -485,7 +485,7 @@ void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
    if(m_Visual)
    {
 	ButtonValue* BV = PHelper().CreateButton	    (	items, 
-									PrepareKey(pref,m_Data->name(),"Model\\AnimationControl"),
+									PrepareKey(pref,m_Data->name(),"Model\\Animation Control"),
 									"|<<,Play,Pause,Stop,>>|",
 									0);
    BV->OnBtnClickEvent.bind			(this,&CSpawnPoint::SSpawnData::OnAnimControlClick);

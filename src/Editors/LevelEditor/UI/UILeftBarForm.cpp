@@ -210,8 +210,8 @@ void UILeftBarForm::Draw()
 		}
 
 		ImGui::Separator();
-		ImGui::Checkbox("+/- Mode", &m_SnapListMode); ImGui::SameLine(0, 10);
-		if (ImGui::Button("X"))
+		ImGui::Checkbox("Add/Delete Mode", &m_SnapListMode); ImGui::SameLine(0, 10);
+		if (ImGui::Button("Clear"))
 		{
 			if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear snap objects?") == mrYes)
 				ExecCommand(COMMAND_CLEAR_SNAP_OBJECTS);
