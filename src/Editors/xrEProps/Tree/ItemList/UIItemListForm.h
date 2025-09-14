@@ -4,6 +4,16 @@ class XREPROPS_API UIItemListForm :
 	public IEditorWnd, 
 	protected FolderHelper<ListItem, true>
 {
+public:
+	using Node = FolderHelper<ListItem, true>::Node;
+	DECLARE_XR_DELEGATE(OnItemRename, void, LPCSTR, LPCSTR, EItemType);
+	DECLARE_XR_DELEGATE(OnItemRemove, void, Node& Node);
+	DECLARE_XR_DELEGATE(OnILItemsFocused, void, ListItemsVec&);
+	DECLARE_XR_DELEGATE(OnILItemFocused, void, ListItem*);
+	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
+	DECLARE_XR_DELEGATE(OnItemClone, void, LPCSTR, LPCSTR);
+
+private:
 	TOnILItemsFocused OnItemsFocusedEvent;
 	TOnILItemFocused  OnItemFocusedEvent;
 	TOnILItemFocused  OnItemUnfocusedEvent;

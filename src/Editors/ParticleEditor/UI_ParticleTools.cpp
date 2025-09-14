@@ -62,11 +62,11 @@ bool CParticleTool::OnCreate()
         R_ASSERT(!ListProp);
         ListProp = new UIItemListForm();
         ListProp->m_Flags.set(UIItemListForm::fMenuEdit, true);
-        ListProp->SetOnItemFocusedEvent	(TOnILItemFocused(this,&CParticleTool::OnParticleItemFocused));
-        ListProp->SetOnItemCloneEvent(TOnItemClone(this, &CParticleTool::OnParticleCloneItem));
-        ListProp->SetOnItemCreaetEvent(TOnItemCreate(this, &CParticleTool::OnParticleCreateItem));
-        ListProp->SetOnItemRenameEvent	(TOnItemRename(this,&CParticleTool::OnParticleItemRename));
-        ListProp->SetOnItemRemoveEvent	(TOnItemRemove(this,&CParticleTool::OnParticleItemRemove));
+        ListProp->SetOnItemFocusedEvent	({this,&CParticleTool::OnParticleItemFocused});
+        ListProp->SetOnItemCloneEvent({this, &CParticleTool::OnParticleCloneItem});
+        ListProp->SetOnItemCreaetEvent({this, &CParticleTool::OnParticleCreateItem});
+        ListProp->SetOnItemRenameEvent	({this,&CParticleTool::OnParticleItemRename});
+        ListProp->SetOnItemRemoveEvent	({this,&CParticleTool::OnParticleItemRemove});
     };
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Groups)]);
@@ -625,14 +625,27 @@ void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR new_full_name)
     }
 }
 
-void CParticleTool::Remove(LPCSTR name)
+void CParticleTool::Remove(UIItemListForm::Node& Node)
 {
-    switch (GetAffectedItemType(name))
+    switch (GetAffectedItemType(Node.Name.c_str()))
     {
     case emEffect:
+        {
+            auto RealObj = (PS::CPEDef*)(Node.Object->m_Object);
+            if (RImplementation.PSLibrary.FindPED(RealObj->Name()) == m_LibPED)
+            {
+                m_ItemProps->ClearProperties();
+            }
+            VERIFY(m_bReady);
+            SetCurrentPE(0);
+            SetCurrentPG(0);
+            RImplementation.PSLibrary.Remove(RealObj->Name());
+            break;
+        }
     case emGroup:
         {
-            if (RImplementation.PSLibrary.FindPED(name) == m_LibPED || RImplementation.PSLibrary.FindPGD(name) == m_LibPGD)
+            auto RealObj = (PS::CPGDef*)(Node.Object->m_Object);
+            if (RImplementation.PSLibrary.FindPGD(RealObj->m_Name.c_str()) == m_LibPGD)
             {
                 m_ItemProps->ClearProperties();
             }
@@ -640,11 +653,23 @@ void CParticleTool::Remove(LPCSTR name)
             VERIFY(m_bReady);
             SetCurrentPE(0);
             SetCurrentPG(0);
-            RImplementation.PSLibrary.Remove	(name);
+            RImplementation.PSLibrary.Remove(RealObj->m_Name.c_str());
             break;
         }
     case emAction:
         {
+            VERIFY(m_bReady);
+            auto RealObj = (EParticleAction*)(Node.Object->m_Object);
+            auto PE = RealObj->parent;
+            PE->RemoveAction(RealObj);
+            break;
+        }
+    case emEffectSlot:
+        {
+            VERIFY(m_bReady);
+            auto RealObj = (PS::CPGDef::SEffect*)(Node.Object->m_Object);
+            auto PG = RealObj->parent;
+            PG->RemoveEffect(RealObj);
             break;
         }
     }
@@ -1206,9 +1231,9 @@ void CParticleTool::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItem
     Modified();
 }
 
-void CParticleTool::OnParticleItemRemove(LPCSTR name, EItemType type)
+void CParticleTool::OnParticleItemRemove(UIItemListForm::Node& Node)
 {
-    Remove(name);
+    Remove(Node);
     Modified();
 }
 
@@ -1251,7 +1276,7 @@ EEditMode CParticleTool::GetAffectedItemType(LPCSTR path)
     }
     if (Item.StartWith("[EFFECT"))
     {
-        return emAction;
+        return emEffectSlot;
     }
     return emNone;
 }
@@ -1293,7 +1318,11 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
                 }
             case emEffectSlot:
                 {
-                    R_ASSERT(false);
+                    auto slot = (PS::CPGDef::SEffect*)item->m_Object;
+                    auto def = slot->parent;
+                    R_ASSERT(def);
+                    SetCurrentPG(def);
+                    slot->FillPropInit(props, "");
                     break;
                 }
             case emGroup:

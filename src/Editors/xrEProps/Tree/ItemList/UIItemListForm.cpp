@@ -586,7 +586,7 @@ void UIItemListForm::EventRemoveNode(Node* Node, const char* path)
 		type = TYPE_OBJECT;
 	}
 	if (!OnItemRemoveEvent.empty())
-		OnItemRemoveEvent(path, type);
+		OnItemRemoveEvent(*Node);
 }
 
 void UIItemListForm::ClearSelectedItems()
