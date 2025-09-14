@@ -41,7 +41,7 @@ class CParticleTool:
     void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
     void        OnParticleCreateItem(LPCSTR path);
 	void  		OnParticleItemRename	(LPCSTR old_name, LPCSTR new_name, EItemType type);
-    void 	 	OnParticleItemRemove	(LPCSTR name, EItemType type);
+    void 	 	OnParticleItemRemove	(UIItemListForm::Node& Node);
 
     void				RealUpdateProperties();
 	void 				SelectListItem		(LPCSTR pref, LPCSTR name, bool bVal, bool bLeaveSel, bool bExpand);
@@ -152,7 +152,7 @@ public:
 	void 				CloneCurrent		();
     void				ResetCurrent		();
     void				RemoveCurrent		();
-	void 				Remove				(LPCSTR name);
+	void 				Remove				(UIItemListForm::Node& Node);
 
     // PG routine
     void                ImportPE            ();
