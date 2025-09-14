@@ -48,32 +48,32 @@ void CPGDef::Clone	(CPGDef* source)
 //------------------------------------------------------------------------------
 // I/O part
 //------------------------------------------------------------------------------
-BOOL CPGDef::Load(IReader& F)
+BOOL CPGDef::LoadOriginal(IReader& F)
 {
-	bool FoundedChunk = !!F.find_chunk(PGD_CHUNK_VERSION);
+	bool FoundedChunk = !!F.find_chunk(PS::PG::Chunks::VERSION);
 	R_ASSERT2(FoundedChunk, "Not found chunk PGD_CHUNK_VERSION");
 
-	u16 version		= F.r_u16();
+	PS::PG::Version version	= F.r_enum<PS::PG::Version>();
 
-	if (version!=PGD_VERSION){
+	if (version!=PS::PG::Version::Original){
 		Log			("!Unsupported PG version. Load failed.");
 		return FALSE;
 	}
 
-	FoundedChunk = !!F.find_chunk(PGD_CHUNK_NAME);
+	FoundedChunk = !!F.find_chunk(PS::PG::Chunks::NAME);
 	R_ASSERT2(FoundedChunk, "Not found chunk PGD_CHUNK_NAME");
 
 	F.r_stringZ		(m_Name);
 
-	F.r_chunk		(PGD_CHUNK_FLAGS,&m_Flags);
+	F.r_chunk		(PS::PG::Chunks::FLAGS,&m_Flags);
 
-	if (F.find_chunk(PGD_CHUNK_TIME_LIMIT))
+	if (F.find_chunk(PS::PG::Chunks::TIME_LIMIT))
 		m_fTimeLimit= F.r_float();
 	else
 		m_fTimeLimit	= 0.0f;
 	
 	bool dont_calc_timelimit = m_fTimeLimit > 0.0f;
-	if (F.find_chunk(PGD_CHUNK_EFFECTS))
+	if (F.find_chunk(PS::PG::Chunks::EFFECTS))
 	{
 		m_Effects.resize(F.r_u32());
 		for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
@@ -96,9 +96,28 @@ BOOL CPGDef::Load(IReader& F)
 BOOL CPGDef::Load2(CInifile& ini)
 {
 //.	u16 version						= ini.r_u16("_group", "version");
+	
+	auto ver = ini.r_enum<PS::PE::Version>("_group", "version");
+	switch (ver)
+	{
+	case PE::Version::Original:
+		{
+			break;
+		}
+	case PE::Version::Extended:
+		{
+			break;
+		}
+	default:
+		{
+			return false;
+		}
+	}
+}
+
+BOOL CPGDef::Load2Original(CInifile& ini)
+{
 	m_Flags.assign					(ini.r_u32("_group", "flags"));
-
-
 	m_Effects.resize				(ini.r_u32("_group", "effects_count"));
 
 	u32 counter						= 0;
@@ -122,19 +141,24 @@ BOOL CPGDef::Load2(CInifile& ini)
 	return							TRUE;
 }
 
+BOOL CPGDef::Load2Extended(CInifile& ini)
+{
+	return true;
+}
+
 void CPGDef::Save(IWriter& F)
 {
-	F.open_chunk	(PGD_CHUNK_VERSION);
-	F.w_u16			(PGD_VERSION);
+	F.open_chunk	(PS::PG::Chunks::VERSION);
+	F.w_enum		(PS::PG::Version::Original);
 	F.close_chunk	();
 
-	F.open_chunk	(PGD_CHUNK_NAME);
+	F.open_chunk	(PS::PG::Chunks::NAME);
 	F.w_stringZ		(m_Name);
 	F.close_chunk	();
 
-	F.w_chunk		(PGD_CHUNK_FLAGS,&m_Flags,sizeof(m_Flags));
+	F.w_chunk		(PS::PG::Chunks::FLAGS,&m_Flags,sizeof(m_Flags));
 
-	F.open_chunk	(PGD_CHUNK_EFFECTS);
+	F.open_chunk	(PS::PG::Chunks::EFFECTS);
 	F.w_u32			((u32)m_Effects.size());
 	for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
 		F.w_stringZ	((*it)->m_EffectName);
@@ -147,14 +171,14 @@ void CPGDef::Save(IWriter& F)
 	}
 	F.close_chunk	();
 
-	F.open_chunk	(PGD_CHUNK_TIME_LIMIT);
+	F.open_chunk	(PS::PG::Chunks::TIME_LIMIT);
 	F.w_float		(m_fTimeLimit);
 	F.close_chunk	();
 }
 
 void CPGDef::Save2(CInifile& ini)
 {
-	ini.w_u16		("_group", "version", PGD_VERSION);
+	ini.w_enum		("_group", "version", PS::PG::Version::Original);
 
 	ini.w_u32		("_group", "flags", m_Flags.get());
 
