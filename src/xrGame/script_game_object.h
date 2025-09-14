@@ -975,6 +975,7 @@ public:
 			float       GetActorRunBackCoef() const;
 			void        SetActorRunBackCoef(float run_back_coef);
 			void		SetCharacterIcon(LPCSTR iconName);
+			void		SetActorDefaultVisual(LPCSTR visualName);
 			void SetCharacterMaxWeight(float value);
 	void StartActorAnimator(LPCSTR section);
 	void StopActorAnimator();
