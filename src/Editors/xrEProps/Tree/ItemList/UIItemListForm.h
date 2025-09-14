@@ -2,7 +2,7 @@
 
 class XREPROPS_API UIItemListForm : 
 	public IEditorWnd, 
-	private FolderHelper<ListItem, true>
+	protected FolderHelper<ListItem, true>
 {
 	TOnILItemsFocused OnItemsFocusedEvent;
 	TOnILItemFocused  OnItemFocusedEvent;
@@ -39,6 +39,16 @@ public:
 	Flags32 m_Flags;
 
 private:
+
+	virtual bool IsNodeTrueFolder(Node& node) override
+	{
+		if (node.Object && node.Object->m_Object)
+		{
+			return false;
+		}
+		return node.IsFolder();
+	}
+	
 	void       DrawMenuEdit();
 	string4096 m_edit_name;
 	string4096 m_edit_path;

@@ -56,6 +56,7 @@ class CParticleTool:
     void 		OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 
 	LPCSTR InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str);
+	EEditMode GetAffectedItemType(LPCSTR path);
 	
 public:
     virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,TRUE); if (bForced) RealRemoveAction();}
