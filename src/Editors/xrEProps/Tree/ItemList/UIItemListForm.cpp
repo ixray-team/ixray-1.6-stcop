@@ -162,6 +162,7 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 		if (N)
 		{
 			N->Object = item;
+			N->Prefix = item->Prefix();
 		}
 	}
 	if (name_selection)
@@ -199,7 +200,9 @@ void UIItemListForm::DrawMenuEdit()
 		ImGui::PopStyleVar(2);
 		m_UseMenuEdit = true;
 
-		if (!OnItemCreateEvent.empty())
+		Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
+		
+		if (VerifyItemCreateFunc(N))
 		{
 			if (ImGui::MenuItem("Create"))
 			{
@@ -211,7 +214,6 @@ void UIItemListForm::DrawMenuEdit()
 					else
 						xr_sprintf(name, "new_%d", i);
 
-					Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
 					string_path path;
 					path[0] = 0;
 					if (N->Path.c_str() && N->Path.c_str()[0])
@@ -239,7 +241,7 @@ void UIItemListForm::DrawMenuEdit()
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		}
-		if (!OnItemCloneEvent.empty() && m_edit_node && m_edit_node->IsObject())
+		if (VerifyItemCloneFunc(N))
 		{
 			if (ImGui::MenuItem("Clone"))
 			{
@@ -288,36 +290,38 @@ void UIItemListForm::DrawMenuEdit()
 			}
 		}
 
-		if (ImGui::MenuItem("Create Folder"))
+		if (VerifyFolderCreateFunc(N))
 		{
-			Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
-			for (int i = 0; i < 256; i++)
+			if (ImGui::MenuItem("Create Folder"))
 			{
-				string4096 full_path, name;
-				if (i == 0)
-					xr_strcpy(name, "new_Folder");
-				else
-					xr_sprintf(name, "new_Folder_%d", i);
-
-				if (N->Path.c_str() && N->Path.c_str()[0])
-					xr_strcpy(full_path, N->Path.c_str());
-				else
-					full_path[0] = 0;
-				if (N->IsFolder() && N->Name.c_str() && N->Name.c_str()[0])
+				for (int i = 0; i < 256; i++)
 				{
+					string4096 full_path, name;
+					if (i == 0)
+						xr_strcpy(name, "new_Folder");
+					else
+						xr_sprintf(name, "new_Folder_%d", i);
+
+					if (N->Path.c_str() && N->Path.c_str()[0])
+						xr_strcpy(full_path, N->Path.c_str());
+					else
+						full_path[0] = 0;
+					if (N->IsFolder() && N->Name.c_str() && N->Name.c_str()[0])
+					{
+						if (full_path[0])
+							xr_strcat(full_path, "\\");
+						xr_strcat(full_path, N->Name.c_str());
+					}
 					if (full_path[0])
 						xr_strcat(full_path, "\\");
-					xr_strcat(full_path, N->Name.c_str());
-				}
-				if (full_path[0])
-					xr_strcat(full_path, "\\");
-				xr_strcat(full_path, name);
+					xr_strcat(full_path, name);
 
-				if (!FindFolder(&m_GeneralNode, full_path) && AppendFolder(&m_GeneralNode, full_path))
-				{
-					ImGui::CloseCurrentPopup();
-					m_edit_node = nullptr;
-					break;
+					if (!FindFolder(&m_GeneralNode, full_path) && AppendFolder(&m_GeneralNode, full_path))
+					{
+						ImGui::CloseCurrentPopup();
+						m_edit_node = nullptr;
+						break;
+					}
 				}
 			}
 		}
@@ -326,71 +330,60 @@ void UIItemListForm::DrawMenuEdit()
 		if (m_edit_node && m_edit_node != &m_GeneralNode)
 		{
 			ImGui::Separator();
-			if (ImGui::BeginMenu("Rename"))
+			if (VerifyItemRenameFunc(N))
 			{
-				ImGui::InputText("New Name", m_edit_name, sizeof(m_edit_name));
-				if (ImGui::Button("Ok"))
+				if (ImGui::BeginMenu("Rename"))
 				{
-					string4096 full_path;
-					if (m_edit_node->Path.c_str() && m_edit_node->Path.c_str()[0])
-						xr_strcpy(full_path, m_edit_node->Path.c_str());
-					else
-						full_path[0] = 0;
+					ImGui::InputText("New Name", m_edit_name, sizeof(m_edit_name));
+					if (ImGui::Button("Ok"))
+					{
+						string4096 full_path;
+						if (m_edit_node->Path.c_str() && m_edit_node->Path.c_str()[0])
+							xr_strcpy(full_path, m_edit_node->Path.c_str());
+						else
+							full_path[0] = 0;
 
-					if (full_path[0])
-						xr_strcat(full_path, "\\");
-					xr_strcat(full_path, m_edit_name);
-					if (Move(&m_GeneralNode, m_edit_node, full_path))
+						if (full_path[0])
+							xr_strcat(full_path, "\\");
+						xr_strcat(full_path, m_edit_name);
+						if (Move(&m_GeneralNode, m_edit_node, full_path))
+						{
+							ImGui::CloseCurrentPopup();
+							m_edit_node = nullptr;
+						}
+					}
+					if (ImGui::IsItemHovered())
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					ImGui::SameLine();
+					if (ImGui::Button("Cancel"))
 					{
 						ImGui::CloseCurrentPopup();
-						m_edit_node = nullptr;
 					}
+					if (ImGui::IsItemHovered())
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+					ImGui::EndMenu();
 				}
-				if (ImGui::IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SameLine();
-				if (ImGui::Button("Cancel"))
-				{
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::EndMenu();
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			if (ImGui::BeginMenu("Move"))
+			if (VerifyItemMoveFunc(N))
 			{
-				ImGui::InputText("New Path", m_edit_path, sizeof(m_edit_path));
-				if (ImGui::Button("Ok"))
+				if (ImGui::BeginMenu("Move"))
 				{
-					string4096 full_path;
-					xr_strcpy(full_path, m_edit_path);
-					if (m_edit_path[0])
-						xr_strcat(full_path, "\\");
-					xr_strcat(full_path, m_edit_node->Name.c_str());
-					if (Move(&m_GeneralNode, m_edit_node, full_path))
+					auto Action = ItemMoveActionSlots.find(GetItemMoveActionSlot.empty() ? ENodeMoveActionSlot::Default : GetItemMoveActionSlot(N));
+					R_ASSERT(Action != ItemMoveActionSlots.end());
+					if (Action->second(N))
 					{
-						ImGui::CloseCurrentPopup();
 						m_edit_node = nullptr;
 					}
+					ImGui::EndMenu();
 				}
-				if (ImGui::IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::SameLine();
-				if (ImGui::Button("Cancel"))
-				{
-					ImGui::CloseCurrentPopup();
-				}
-				if (ImGui::IsItemHovered())
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				ImGui::EndMenu();
 			}
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			if (ImGui::MenuItem("Delete"))
 			{
-				Remove(&m_GeneralNode, m_edit_node, true);
+				Remove(&m_GeneralNode, m_edit_node, true, false);
 				ImGui::CloseCurrentPopup();
 				m_edit_node = nullptr;
 			}
@@ -402,6 +395,41 @@ void UIItemListForm::DrawMenuEdit()
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 3));
 	}
+}
+
+bool UIItemListForm::ItemMoveActionDefault(Node* Node)
+{
+	bool IsProcessed = false;
+	ImGui::InputText("New Path", m_edit_path, sizeof(m_edit_path));
+	if (ImGui::Button("Ok"))
+	{
+		string4096 full_path;
+		xr_strcpy(full_path, m_edit_path);
+		if (m_edit_path[0])
+		{
+			xr_strcat(full_path, "\\");
+		}
+		xr_strcat(full_path, m_edit_node->Name.c_str());
+		if (Move(&m_GeneralNode, m_edit_node, full_path))
+		{
+			ImGui::CloseCurrentPopup();
+			IsProcessed = true;
+		}
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+	}
+	if (ImGui::IsItemHovered())
+	{
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+	return IsProcessed;
 }
 
 void UIItemListForm::DrawAfterFolderNode(bool is_open, Node* Node)
@@ -441,7 +469,9 @@ void UIItemListForm::DrawItem(Node* Node)
 	}
 	if (m_edit_node == Node)
 		Flags |= ImGuiTreeNodeFlags_Selected;
-	ImGui::TreeNodeEx(Node->Name.c_str(), Flags);
+	xr_string builder = Node->Prefix.c_str();
+	builder.append(Node->Name.c_str());
+	ImGui::TreeNodeEx(builder.c_str(), Flags);
 
 	if (m_Flags.is(fMenuEdit))
 	{
@@ -566,6 +596,39 @@ bool UIItemListForm::IsFolderSelected(Node* Node)
 	return Node == m_edit_node;
 }
 
+bool UIItemListForm::VerifyItemCloneFunc(UIItemListForm::Node* Node)
+{
+	if (!VerifyItemClone.empty() && !VerifyItemClone(Node))
+	{
+		return false;
+	}
+	return !OnItemCloneEvent.empty() && m_edit_node && !IsNodeTrueFolder(*m_edit_node);
+}
+
+bool UIItemListForm::VerifyItemCreateFunc(UIItemListForm::Node* Node)
+{
+	if (!VerifyItemCreate.empty() && !VerifyItemCreate(Node))
+	{
+		return false;
+	}
+	return !OnItemCreateEvent.empty();
+}
+
+bool UIItemListForm::VerifyFolderCreateFunc(UIItemListForm::Node* Node)
+{
+	return VerifyFolderCreate.empty() || VerifyFolderCreate(Node);
+}
+
+bool UIItemListForm::VerifyItemRenameFunc(UIItemListForm::Node* Node)
+{
+	return VerifyItemRename.empty() || VerifyItemRename(Node);
+}
+
+bool UIItemListForm::VerifyItemMoveFunc(UIItemListForm::Node* Node)
+{
+	return VerifyItemMove.empty() || VerifyItemMove(Node);
+}
+
 void UIItemListForm::EventRenameNode(Node* Node, const char* old_path, const char* new_path)
 {
 	EItemType type = TYPE_FOLDER;
@@ -575,18 +638,24 @@ void UIItemListForm::EventRenameNode(Node* Node, const char* old_path, const cha
 		Node->Object->key = new_path;
 	}
 	if (!OnItemRenameEvent.empty())
-		OnItemRenameEvent(old_path, new_path, type);
+		OnItemRenameEvent(*Node, old_path, new_path, type);
 }
 
 void UIItemListForm::EventRemoveNode(Node* Node, const char* path)
 {
-	EItemType type = TYPE_FOLDER;
-	if (Node->IsObject())
-	{
-		type = TYPE_OBJECT;
-	}
 	if (!OnItemRemoveEvent.empty())
-		OnItemRemoveEvent(path, type);
+	{
+		OnItemRemoveEvent(*Node);
+	}
+}
+
+bool UIItemListForm::EventPreRemoveNode(Node* Node)
+{
+	if (!OnItemPreRemoveEvent.empty())
+	{
+		return OnItemPreRemoveEvent(*Node);
+	}
+	return true;
 }
 
 void UIItemListForm::ClearSelectedItems()
