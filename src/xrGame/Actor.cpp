@@ -1447,14 +1447,11 @@ void CActor::UpdateCL()
 
 	float current_fov = currentFOV();
 
-	if (m_holder)
-	{
-		m_holder->UpdateEx(current_fov);
-	}
-	else if (g_Alive())
+	if (g_Alive() && m_holder == nullptr)
 	{
 		UpdatePlayerView();
 	}
+
 	m_snd_noise -= 0.3f*Device.fTimeDelta;
 
 	inherited::UpdateCL();
