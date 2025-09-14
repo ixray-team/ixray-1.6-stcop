@@ -412,11 +412,13 @@ void CCar::UpdateEx(float fov)
 #endif
 
 	VisualUpdate(fov);
-	if (OwnerActor() && OwnerActor()->IsMyCamera())
+
+	CActor* OwnerLocal = OwnerActor();
+	if (OwnerLocal && OwnerLocal->IsMyCamera() && OwnerLocal->HasCameraEffector())
 	{
 		cam_Update(Device.fTimeDelta, fov);
-		OwnerActor()->Cameras().UpdateFromCamera(Camera());
-		OwnerActor()->Cameras().ApplyDevice(Device.fViewportNear);
+		OwnerLocal->Cameras().UpdateFromCamera(Camera());
+		OwnerLocal->Cameras().ApplyDevice(Device.fViewportNear);
 	}
 }
 
@@ -436,12 +438,16 @@ void CCar::UpdateCL()
 			m_memory->set_camera(m_car_weapon->ViewCameraPos(), m_car_weapon->ViewCameraDir(), m_car_weapon->ViewCameraNorm());
 	}
 	ASCUpdate();
-	if (Owner()) return;
-	//	UpdateEx			(g_fov);
+
+	if (Owner())
+	{
+		UpdateEx(Owner()->cast_actor()->currentFOV());
+		return;
+	}
+
 	VisualUpdate(90);
 	if (GetScriptControl())
 		ProcessScripts();
-
 }
 
 void CCar::VisualUpdate(float fov)
