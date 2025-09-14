@@ -651,11 +651,14 @@ bool CPSLibrary::Save(const char* nm)
 {
     CMemoryWriter F;
 
-    F.open_chunk(PS_CHUNK_VERSION);
-    F.w_u16(PS_VERSION);
+    F.open_chunk(PS::Chunks::VERSION);
+    F.w_enum(PS::Version::Original);
     F.close_chunk();
 
-    F.open_chunk(PS_CHUNK_SECONDGEN);
+	/*
+	 * TODO: Add saving to new format
+	 */
+    F.open_chunk(PS::Chunks::SECONDGEN);
     u32 chunk_id = 0;
     for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it, ++chunk_id)
     {
@@ -666,7 +669,7 @@ bool CPSLibrary::Save(const char* nm)
     F.close_chunk();
 
 
-    F.open_chunk(PS_CHUNK_THIRDGEN);
+    F.open_chunk(PS::Chunks::THIRDGEN);
     chunk_id = 0;
     for (PS::PGDIt g_it = m_PGDs.begin(); g_it != m_PGDs.end(); ++g_it, ++chunk_id)
     {

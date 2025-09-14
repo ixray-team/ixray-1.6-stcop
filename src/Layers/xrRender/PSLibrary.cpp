@@ -5,6 +5,9 @@
 
 
 #include "PSLibrary.h"
+
+#include <magic_enum/magic_enum.hpp>
+
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
 
@@ -199,48 +202,43 @@ bool CPSLibrary::Load(const char* nm)
 	IReader*	F			= FS.r_open(nm);
 	bool bRes 				= true;
 
-    bool FoundedChunk = !!F->find_chunk(PS_CHUNK_VERSION);
+    bool FoundedChunk = !!F->find_chunk(PS::Chunks::VERSION);
     R_ASSERT2(FoundedChunk, "Not found chunk PS_CHUNK_VERSION");
 
-    u16 ver					= F->r_u16();
-    if (ver!=PS_VERSION) return false;
-    // second generation
-    IReader* OBJ;
-    OBJ			 			= F->open_chunk(PS_CHUNK_SECONDGEN);
-    if (OBJ){
-        IReader* O   		= OBJ->open_chunk(0);
-        for (int count=1; O; count++) {
-            PS::CPEDef*	def	= new PS::CPEDef();
-            if (def->Load(*O))
-            {
-                m_all_ps.push_back(def->m_Name);
-                m_PEDs.push_back(def);
-            }
-            else{ bRes = false; xr_delete(def); }
-            O->close();
-            if (!bRes)	break;
-            O 			= OBJ->open_chunk(count);
-        }
-        OBJ->close();
-    }
-    // second generation
-    OBJ 					= F->open_chunk(PS_CHUNK_THIRDGEN);
-    if (OBJ){
-        IReader* O   		= OBJ->open_chunk(0);
-        for (int count=1; O; count++) {
-            PS::CPGDef*	def	= new PS::CPGDef();
-            if (def->Load(*O))
-            {
-                m_all_ps.push_back(def->m_Name);
-                m_PGDs.push_back(def);
-            }
-            else{ bRes = false; xr_delete(def); }
-            O->close();
-            if (!bRes) break;
-            O 			= OBJ->open_chunk(count);
-        }
-        OBJ->close();
-    }
+    //u16 ver					= F->r_u16();
+    //if (ver!=PS_VERSION) return false;
+
+	auto ver = F->r_enum<PS::Version>();
+	switch (ver)
+	{
+	case PS::Version::Original:
+		{
+			bRes = LoadOriginal(*F);
+			break;
+		}
+	case PS::Version::Extended:
+		{
+			bRes = LoadExtended(*F);
+			break;
+		}
+	default:
+		{
+			xr_string Message = "Unable to open [";
+			Message.append(nm);
+			Message.append("] as particle storage! (ver [");
+			auto VerStr = magic_enum::enum_name(ver);
+			if (VerStr.size())
+			{
+				Message.append(VerStr);
+			} else
+			{
+				Message.append(std::to_string(u16(ver)));
+			}
+			Message.append("]");
+			R_ASSERT(false, Message.c_str());
+			return false;
+		}
+	}
 
     // final
 	FS.r_close			(F);
@@ -253,6 +251,55 @@ bool CPSLibrary::Load(const char* nm)
 
     return			bRes;
 }
+
+bool CPSLibrary::LoadOriginal(IReader& F)
+{
+	bool bRes = true;
+	// second generation
+	IReader* OBJ;
+	OBJ			 			= F.open_chunk(PS::Chunks::SECONDGEN);
+	if (OBJ){
+		IReader* O   		= OBJ->open_chunk(0);
+		for (int count=1; O; count++) {
+			PS::CPEDef*	def	= new PS::CPEDef();
+			if (def->LoadOriginal(*O))
+			{
+				m_all_ps.push_back(def->m_Name);
+				m_PEDs.push_back(def);
+			}
+			else{ bRes = false; xr_delete(def); }
+			O->close();
+			if (!bRes)	break;
+			O 			= OBJ->open_chunk(count);
+		}
+		OBJ->close();
+	}
+	// second generation
+	OBJ 					= F.open_chunk(PS::Chunks::THIRDGEN);
+	if (OBJ){
+		IReader* O   		= OBJ->open_chunk(0);
+		for (int count=1; O; count++) {
+			PS::CPGDef*	def	= new PS::CPGDef();
+			if (def->LoadOriginal(*O))
+			{
+				m_all_ps.push_back(def->m_Name);
+				m_PGDs.push_back(def);
+			}
+			else{ bRes = false; xr_delete(def); }
+			O->close();
+			if (!bRes) break;
+			O 			= OBJ->open_chunk(count);
+		}
+		OBJ->close();
+	}
+	return bRes;
+}
+
+bool CPSLibrary::LoadExtended(IReader& F)
+{
+	return true;
+}
+
 //----------------------------------------------------
 void CPSLibrary::Reload()
 {

@@ -57,50 +57,6 @@ void CPEDef::SetName(LPCSTR name)
     m_Name				= name;
 }
 
-/*
-void CPEDef::pAlignToPath(float rot_x, float rot_y, float rot_z)
-{
-	m_Flags.set			(dfAlignToPath,TRUE);
-	m_APDefaultRotation.set(rot_x,rot_y,rot_z);
-}
-void CPEDef::pVelocityScale(float scale_x, float scale_y, float scale_z)
-{
-	m_Flags.set			(dfVelocityScale,TRUE);
-	m_VelocityScale.set	(scale_x, scale_y, scale_z);
-}
-void CPEDef::pCollision(float friction, float resilience, float cutoff, BOOL destroy_on_contact)
-{
-	m_fCollideOneMinusFriction 	= 1.f-friction;
-	m_fCollideResilience		= resilience;
-	m_fCollideSqrCutoff			= cutoff*cutoff;
-	m_Flags.set					(dfCollision,TRUE);
-	m_Flags.set					(dfCollisionDel,destroy_on_contact);
-}
-
-void CPEDef::pSprite(string128& sh_name, string128& tex_name)
-{
-	xr_free(m_ShaderName);	m_ShaderName	= xr_strdup(sh_name);
-	xr_free(m_TextureName);	m_TextureName	= xr_strdup(tex_name);
-	m_Flags.set	(dfSprite,TRUE);
-}
-void CPEDef::pFrame(BOOL random_frame, u32 frame_count, u32 tex_width, u32 tex_height, u32 frame_width, u32 frame_height)
-{
-	m_Flags.set			(dfFramed,TRUE);
-	m_Flags.set			(dfRandomFrame,random_frame);
-	m_Frame.Set			(frame_count, (float)tex_width, (float)tex_height, (float)frame_width, (float)frame_height);
-}
-void CPEDef::pAnimate(float speed, BOOL random_playback)
-{
-	m_Frame.m_fSpeed	= speed;
-	m_Flags.set			(dfAnimated,TRUE);
-	m_Flags.set			(dfRandomPlayback,random_playback);
-}
-void CPEDef::pTimeLimit(float time_limit)
-{
-	m_Flags.set			(dfTimeLimit,TRUE);
-	m_fTimeLimit		= time_limit;
-}
-*/
 void CPEDef::ExecuteAnimate(Particle *particles, u32 p_cnt, float dt)
 {
 	float speedFac = m_Frame.m_fSpeed * dt;
@@ -122,7 +78,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 
 		bool pick_needed;
 		int pick_cnt=0;
-		do{		
+		do{
 			pick_needed = false;
 			Fvector 	dir;
 			dir.sub		(m.pos,m.posB);
@@ -177,37 +133,38 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 //------------------------------------------------------------------------------
 // I/O part
 //------------------------------------------------------------------------------
-BOOL CPEDef::Load(IReader& F)
+BOOL CPEDef::LoadOriginal(IReader& F)
 {
-	bool FoundedChunk = !!F.find_chunk(PED_CHUNK_VERSION);
+	bool FoundedChunk = !!F.find_chunk(PS::PE::Chunks::VERSION);
 	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VERSION");
 
-	u16 version		= F.r_u16();
-
-	if (version!=PED_VERSION)
+	auto version = F.r_enum<PS::PE::Version>();
+	if (version!=PS::PE::Version::Original)
+	{
 		return FALSE;
+	}
 
-	FoundedChunk = !!F.find_chunk(PED_CHUNK_NAME);
+	FoundedChunk = !!F.find_chunk(PS::PE::Chunks::NAME);
 	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_NAME");
 
 	F.r_stringZ		(m_Name);
 
-	FoundedChunk = !!F.find_chunk(PED_CHUNK_EFFECTDATA);
+	FoundedChunk = !!F.find_chunk(PS::PE::Chunks::EFFECTDATA);
 	R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_EFFECTDATA");
 
 	m_MaxParticles	= F.r_u32();
 
 	{
-		u32 action_list	= F.find_chunk(PED_CHUNK_ACTIONLIST); 
+		u32 action_list	= F.find_chunk(PS::PE::Chunks::ACTIONLIST); 
 		R_ASSERT(action_list);
 		m_Actions.w		(F.pointer(),action_list);
 	}
 
-	F.r_chunk		(PED_CHUNK_FLAGS,&m_Flags);
+	F.r_chunk(PS::PE::Chunks::FLAGS,&m_Flags);
 
 	if (m_Flags.is(dfSprite))
 	{
-		FoundedChunk = !!F.find_chunk(PED_CHUNK_SPRITE);
+		FoundedChunk = !!F.find_chunk(PS::PE::Chunks::SPRITE);
 		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_SPRITE");
 
 		F.r_stringZ	(m_ShaderName);
@@ -216,7 +173,7 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfFramed))
 	{
-		FoundedChunk = !!F.find_chunk(PED_CHUNK_FRAME);
+		FoundedChunk = !!F.find_chunk(PS::PE::Chunks::FRAME);
 		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_FRAME");
 
 		F.r			(&m_Frame,sizeof(SFrame));
@@ -224,7 +181,7 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfTimeLimit))
 	{
-		FoundedChunk = !!F.find_chunk(PED_CHUNK_TIMELIMIT);
+		FoundedChunk = !!F.find_chunk(PS::PE::Chunks::TIMELIMIT);
 		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_TIMELIMIT");
 
 		m_fTimeLimit= F.r_float();
@@ -232,7 +189,7 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfCollision))
 	{
-		FoundedChunk = !!F.find_chunk(PED_CHUNK_COLLISION);
+		FoundedChunk = !!F.find_chunk(PS::PE::Chunks::COLLISION);
 		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_COLLISION");
 
 		m_fCollideOneMinusFriction 	= F.r_float();
@@ -242,7 +199,7 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfVelocityScale))
 	{
-		FoundedChunk = !!F.find_chunk(PED_CHUNK_VEL_SCALE);
+		FoundedChunk = !!F.find_chunk(PS::PE::Chunks::VEL_SCALE);
 		R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VEL_SCALE");
 
 		F.r_fvector3				(m_VelocityScale); 
@@ -250,14 +207,14 @@ BOOL CPEDef::Load(IReader& F)
 
 	if (m_Flags.is(dfAlignToPath))
 	{
-		if (F.find_chunk(PED_CHUNK_ALIGN_TO_PATH))
+		if (F.find_chunk(PS::PE::Chunks::ALIGN_TO_PATH))
 		{
 			F.r_fvector3			(m_APDefaultRotation);
 		}
 	}
 
 #ifdef _EDITOR
-    if (pCreateEAction &&F.find_chunk(PED_CHUNK_EDATA))
+    if (pCreateEAction &&F.find_chunk(PS::PE::Chunks::EDATA))
 	{
         m_EActionList.resize(F.r_u32());
         for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it)
@@ -277,9 +234,34 @@ BOOL CPEDef::Load(IReader& F)
 	return TRUE;
 }
 
+BOOL CPEDef::LoadExtended(IReader& F)
+{
+	return true;
+}
+
 BOOL CPEDef::Load2(CInifile& ini)
 {
-//.	u16 version		= ini.r_u16("_effect", "version");
+	auto ver = ini.r_enum<PS::PE::Version>("_effect", "version");
+
+	switch (ver)
+	{
+	case PE::Version::Original:
+		{
+			return Load2Original(ini);
+		}
+	case PE::Version::Extended:
+		{
+			return Load2Entended(ini);
+		}
+	default:
+		{
+			return false;
+		}
+	}
+}
+
+BOOL CPEDef::Load2Original(CInifile& ini)
+{
 	m_MaxParticles	= ini.r_u32("_effect", "max_particles");
 	m_Flags.assign	(ini.r_u32("_effect", "flags"));
 
@@ -323,26 +305,30 @@ BOOL CPEDef::Load2(CInifile& ini)
 	if(pCreateEAction)
 	{
 		u32 count		= ini.r_u32("_effect", "action_count");
-        m_EActionList.resize(count);
+		m_EActionList.resize(count);
 		u32 action_id	= 0;
-        for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
+		for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
 		{
 			string256					sect;
 			xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
-            PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
-            (*it)						= pCreateEAction(type);
-            (*it)->Load2				(ini, sect);
-        }
+			PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
+			(*it)						= pCreateEAction(type);
+			(*it)->Load2				(ini, sect);
+		}
 		Compile							(m_EActionList);
-    }
+	}
 #endif
-
 	return TRUE;
+}
+
+BOOL CPEDef::Load2Entended(CInifile& ini)
+{
+	return true;
 }
 
 void CPEDef::Save2(CInifile& ini)
 {
-	ini.w_u16		("_effect", "version",			PED_VERSION);
+	ini.w_enum		("_effect", "version",			PS::PE::Version::Original);
 //.	ini.w_string	("_effect", "name",				m_Name.c_str());
 	ini.w_u32		("_effect", "max_particles",	m_MaxParticles);
 //.!!	F.w				(m_Actions.pointer(),m_Actions.size());
@@ -399,27 +385,27 @@ void CPEDef::Save2(CInifile& ini)
 
 void CPEDef::Save(IWriter& F)
 {
-	F.open_chunk	(PED_CHUNK_VERSION);
-	F.w_u16			(PED_VERSION);
+	F.open_chunk	(PS::PE::Chunks::VERSION);
+	F.w_enum		(PS::PE::Version::Latest);
 	F.close_chunk	();
 
-	F.open_chunk	(PED_CHUNK_NAME);
+	F.open_chunk	(PS::PE::Chunks::NAME);
 	F.w_stringZ		(m_Name);
 	F.close_chunk	();
 
-	F.open_chunk	(PED_CHUNK_EFFECTDATA);
+	F.open_chunk	(PS::PE::Chunks::EFFECTDATA);
 	F.w_u32			(m_MaxParticles);
 	F.close_chunk	();
 
-	F.open_chunk	(PED_CHUNK_ACTIONLIST);
+	F.open_chunk	(PS::PE::Chunks::ACTIONLIST);
 	F.w				(m_Actions.pointer(),m_Actions.size());
 	F.close_chunk	();
 
-	F.w_chunk		(PED_CHUNK_FLAGS,&m_Flags,sizeof(m_Flags));
+	F.w_chunk		(PS::PE::Chunks::FLAGS,&m_Flags,sizeof(m_Flags));
 
 	if (m_Flags.is(dfSprite))
 	{
-		F.open_chunk	(PED_CHUNK_SPRITE);
+		F.open_chunk	(PS::PE::Chunks::SPRITE);
 		F.w_stringZ		(m_ShaderName);
 		F.w_stringZ		(m_TextureName);
 		F.close_chunk	();
@@ -427,21 +413,21 @@ void CPEDef::Save(IWriter& F)
 
 	if (m_Flags.is(dfFramed))
 	{
-		F.open_chunk	(PED_CHUNK_FRAME);
+		F.open_chunk	(PS::PE::Chunks::FRAME);
 		F.w				(&m_Frame,sizeof(SFrame));
 		F.close_chunk	();
 	}
 
 	if (m_Flags.is(dfTimeLimit))
 	{
-		F.open_chunk	(PED_CHUNK_TIMELIMIT);
+		F.open_chunk	(PS::PE::Chunks::TIMELIMIT);
 		F.w_float		(m_fTimeLimit);
 		F.close_chunk	();
 	}
 
 	if (m_Flags.is(dfCollision))
 	{
-		F.open_chunk	(PED_CHUNK_COLLISION);
+		F.open_chunk	(PS::PE::Chunks::COLLISION);
 		F.w_float		(m_fCollideOneMinusFriction);	
 		F.w_float		(m_fCollideResilience);
 		F.w_float		(m_fCollideSqrCutoff);
@@ -450,19 +436,19 @@ void CPEDef::Save(IWriter& F)
 
 	if (m_Flags.is(dfVelocityScale))
 	{
-		F.open_chunk	(PED_CHUNK_VEL_SCALE);
+		F.open_chunk	(PS::PE::Chunks::VEL_SCALE);
 		F.w_fvector3	(m_VelocityScale);
 		F.close_chunk	();
 	}
 
 	if (m_Flags.is(dfAlignToPath))
 	{
-		F.open_chunk	(PED_CHUNK_ALIGN_TO_PATH);
+		F.open_chunk	(PS::PE::Chunks::ALIGN_TO_PATH);
 		F.w_fvector3	(m_APDefaultRotation);
 		F.close_chunk	();
 	}
 #ifdef _EDITOR
-	F.open_chunk	(PED_CHUNK_EDATA);
+	F.open_chunk	(PS::PE::Chunks::EDATA);
     F.w_u32			(m_EActionList.size());
     for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++){
         F.w_u32		((*it)->type);
