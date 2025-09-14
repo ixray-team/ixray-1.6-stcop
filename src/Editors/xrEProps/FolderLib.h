@@ -312,7 +312,7 @@ public:
 		{
 			for (Node& node : N->Nodes)
 			{
-				if (node.IsFolder() && IsDrawFolder(&node))
+				if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
 				{
 					DrawNode(&node);
 					ImGui::Separator();
@@ -320,7 +320,7 @@ public:
 			}
 			for (Node& node : N->Nodes)
 			{
-				if (!node.IsFolder())
+				if (!IsNodeTrueFolder(node))
 				{
 					DrawNode(&node);
 					ImGui::Separator();
@@ -341,7 +341,7 @@ public:
 					IsItemClicked(N);
 				for (Node& node : N->Nodes)
 				{
-					if (node.IsFolder() && IsDrawFolder(&node))
+					if (IsNodeTrueFolder(node) && IsDrawFolder(&node))
 					{
 						ImGui::Separator();
 						DrawNode(&node);
@@ -349,7 +349,7 @@ public:
 				}
 				for (Node& node : N->Nodes)
 				{
-					if (!node.IsFolder())
+					if (!IsNodeTrueFolder(node))
 					{
 						ImGui::Separator();
 						DrawNode(&node);
@@ -390,6 +390,11 @@ public:
 	virtual void IsItemClicked(Node* Node) {}
 	virtual bool IsDrawFolder(Node* Node) = 0;
 	virtual void DrawItem(Node* Node) = 0;
+protected:
+	virtual bool IsNodeTrueFolder(Node& node)
+	{
+		return node.IsFolder();
+	}
 private:
 	inline void SwapData(Node* Dst, Node* Src)
 	{
