@@ -218,7 +218,7 @@ void CScriptEngine::init()
 	m_stack_level = lua_gettop(lua());
 
 #ifdef xrScripts_EXPORTS
-	if (IsLDBGAttached)
+	if (IsLDBGAttached || strstr(Core.Params, "-ldbg"))
 	{
 		DebbugerAttach();
 	}
