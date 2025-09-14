@@ -327,6 +327,29 @@ BOOL CPEDef::Load2Entended(CInifile& ini)
 	return true;
 }
 
+bool CPEDef::RemoveAction(EParticleAction* action)
+{
+	for (int i = 0; i < m_EActionList.size(); i++)
+	{
+		if (m_EActionList[i] == action)
+		{
+			return RemoveAction(i);
+		}
+	}
+	R_ASSERT(false);
+	return false;
+}
+
+bool CPEDef::RemoveAction(int idx)
+{
+	if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Remove action?") == mrYes) {
+		Tools->RemoveAction(idx);
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return true;
+	}
+	return false;
+}
+
 void CPEDef::Save2(CInifile& ini)
 {
 	ini.w_enum		("_effect", "version",			PS::PE::Version::Original);

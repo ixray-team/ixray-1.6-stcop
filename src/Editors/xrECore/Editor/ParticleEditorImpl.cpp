@@ -48,6 +48,7 @@ void PS::CPEDef::Copy(const CPEDef& src)
         PAPI::PActionEnum type 	= src.m_EActionList[k]->type;
         m_EActionList[k]		= pCreateEAction(type);
         *m_EActionList[k]		= *src.m_EActionList[k];
+    	m_EActionList[k]->parent = this;
     }
 	Compile				(m_EActionList);
 }
@@ -337,11 +338,7 @@ void  PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& b
 		bDataModified = true;
 		break;
 	case 2:
-		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Remove action?") == mrYes) {
-			Tools->RemoveAction(idx);
-			ExecCommand(COMMAND_UPDATE_PROPERTIES);
-			bDataModified = true;
-		}
+		bDataModified = RemoveAction(idx);
 		break;
 	}
 }
@@ -386,6 +383,70 @@ BOOL PS::CPGDef::SEffect::Equal(const SEffect& src)
 	return TRUE;
 }
 
+void PS::CPGDef::SEffect::FillProp(LPCSTR pref, PropItemVec& items, u32 clr)
+{
+	PropValue* V;
+    V=PHelper().CreateChoose(items,PrepareKey(pref,"Name"),&m_EffectName,smPE);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    V=PHelper().CreateFloat	(items,PrepareKey(pref,"Start Time (s)"),&m_Time0,		0.f,1000.f);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    V=PHelper().CreateFloat	(items,PrepareKey(pref,"End Time (s)"),	&m_Time1,		0.f,1000.f);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Deferred Stop"),&m_Flags,	SEffect::flDefferedStop);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Enabled"),									&m_Flags, 	SEffect::flEnabled);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Birth"),						&m_Flags,	SEffect::flOnBirthChild);
+    V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    if (m_Flags.is(SEffect::flOnBirthChild)){
+	    V=PHelper().CreateChoose(items,PrepareKey(pref,"Children\\On Birth\\Effect Name"),			&m_OnBirthChildName,smPE);
+        V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+	    V->Owner()->prop_color	= clr;
+    }
+    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Play"),						&m_Flags,	SEffect::flOnPlayChild);
+    V->OnChangeEvent.bind		(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color		= clr;
+    if (m_Flags.is(SEffect::flOnPlayChild)){
+	    V=PHelper().CreateChoose	(items,PrepareKey(pref,"Children\\On Play\\Effect Name"),			&m_OnPlayChildName,smPE);
+        V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+	    V->Owner()->prop_color	= clr;
+        V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Play\\Play After Stop"),		&m_Flags,	SEffect::flOnPlayChildRewind);
+        V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);
+        V->Owner()->prop_color	= clr;
+    }
+    V=PHelper().CreateFlag32(items,PrepareKey(pref,"Children\\On Dead"),						&m_Flags,	SEffect::flOnDeadChild);
+    V->OnChangeEvent.bind		(parent,&PS::CPGDef::OnParamsChange);
+    V->Owner()->prop_color	= clr;
+    if (m_Flags.is(SEffect::flOnDeadChild)){
+	    V=PHelper().CreateChoose	(items,PrepareKey(pref,"Children\\On Dead\\Effect Name"),			&m_OnDeadChildName,smPE);
+        V->OnChangeEvent.bind	(parent,&PS::CPGDef::OnParamsChange);    
+	    V->Owner()->prop_color	= clr;
+    }
+}
+
+void PS::CPGDef::SEffect::FillPropInit(PropItemVec& items, LPCSTR pref)
+{
+	u32 clr					= m_Flags.is(CPGDef::SEffect::flEnabled)? 0xFF000000 :0xFFC0C0C0;
+	xr_string nm;
+	nm.resize(64);
+	auto Index = parent->FindEffect(this);
+	sprintf(nm.data(), "Effect #%d", Index + 1);
+
+	auto FullPref = PrepareKey(pref,nm.c_str());
+	auto B=PHelper().CreateButton(items,FullPref,"Preview,Select,Remove",ButtonValue::flFirstOnly);
+	B->tag = Index;
+	B->OnBtnClickEvent.bind	(parent,&PS::CPGDef::OnEffectEditClick);
+	B->Owner()->prop_color	= clr;
+
+	FillProp(FullPref.c_str(), items, clr);
+}
+
 BOOL PS::CPGDef::Equal(const CPGDef* pg)
 {
 	if (!m_Flags.equal(pg->m_Flags))				return FALSE;
@@ -395,6 +456,18 @@ BOOL PS::CPGDef::Equal(const CPGDef* pg)
     for (EffectIt d_it=m_Effects.begin(); d_it!=m_Effects.end(); s_it++,d_it++)
     	if (!(*s_it)->Equal(**d_it)) return FALSE;
 	return TRUE;
+}
+int PS::CPGDef::FindEffect(SEffect* effect)
+{
+	for (int i = 0; i < m_Effects.size(); i++)
+	{
+		if (m_Effects[i] == effect)
+		{
+			return i;
+		}
+	}
+	R_ASSERT(false);
+	return -1;
 }
 
 bool PS::CPGDef::Validate(bool bMsg)
@@ -436,6 +509,7 @@ void  PS::CPGDef::OnEffectsEditClick(ButtonValue* B, bool& bDataModified, bool& 
     case 0:
         m_Effects.push_back(new SEffect());
         m_Effects.back()->m_Flags.set(CPGDef::SEffect::flEnabled,FALSE);
+    	m_Effects.back()->parent = this;
         ExecCommand		(COMMAND_UPDATE_PROPERTIES);
         OnParamsChange	(B);
         bDataModified	= true;
@@ -462,39 +536,68 @@ void  PS::CPGDef::OnControlClick(ButtonValue* B, bool& bDataModified, bool& bSaf
 void  PS::CPGDef::OnEffectEditClick(ButtonValue* B, bool& bDataModified, bool& bSafe)
 {
     switch (B->btn_num){
-    case 0:		    	
-    	Tools->PlayCurrent	(B->tag);    
-		bDataModified	= false;
+    case 0:
+	    {
+		    Tools->PlayCurrent	(B->tag);    
+    		bDataModified	= false;
+	    }
     break;
-    case 1:{
-    	CPGDef::SEffect* eff = *(m_Effects.begin()+B->tag); VERIFY(eff);
-		Tools->SelectEffect(*eff->m_EffectName);
-		bDataModified	= false;
-        bSafe			= true;
-    }break;
-    case 2:        
-        if (ELog.DlgMsg(mtConfirmation, mbYes| mbNo,"Remove effect?") == mrYes){
-        	SEffect* eff	= *(m_Effects.begin()+B->tag);
-        	xr_delete		(eff);
-            m_Effects.erase	(m_Effects.begin()+B->tag);
-            ExecCommand		(COMMAND_UPDATE_PROPERTIES);
-            OnParamsChange	(B);
-            bDataModified	= true;
-            bSafe			= true;
-        }else{
+    case 1:
+    	{
+    		CPGDef::SEffect* eff = *(m_Effects.begin()+B->tag); VERIFY(eff);
+			Tools->SelectEffect(*eff->m_EffectName);
 			bDataModified	= false;
-        }
-    break;
+			bSafe			= true;
+    		break;
+		}
+    case 2:
+	    {
+		    bDataModified = RemoveEffect(B->tag, bSafe);
+    		break;
+	    }
     }
+}
+
+bool PS::CPGDef::RemoveEffect(int idx, bool& safe)
+{
+	if (ELog.DlgMsg(mtConfirmation, mbYes| mbNo,"Remove effect?") == mrYes){
+		SEffect* eff	= *(m_Effects.begin()+idx);
+		xr_delete		(eff);
+		m_Effects.erase	(m_Effects.begin()+idx);
+		ExecCommand		(COMMAND_UPDATE_PROPERTIES);
+		OnParamsChangeInternal();
+		safe = true;
+		return true;
+	}
+	return false;
+}
+
+bool PS::CPGDef::RemoveEffect(SEffect* effect)
+{
+	bool dummy;
+	for (int i = 0; i < m_Effects.size(); i++)
+	{
+		if (m_Effects[i] == effect)
+		{
+			return RemoveEffect(i, dummy);
+		}
+	}
+	R_ASSERT(false);
+	return false;
 }
 
 void PS::CPGDef::OnParamsChange(PropValue* sender)
 {
-    Tools->SetCurrentPG(0);
-    Tools->SetCurrentPG(this);
+	OnParamsChangeInternal();
 }
 
-void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
+void PS::CPGDef::OnParamsChangeInternal()
+{
+	Tools->SetCurrentPG(0);
+	Tools->SetCurrentPG(this);
+}
+
+void PS::CPGDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
 {                                   
     ButtonValue* B;
 	B=PHelper().CreateButton	(items,PrepareKey(pref,"Control"),"Play,Stop,Stop...",ButtonValue::flFirstOnly);
@@ -513,52 +616,13 @@ void PS::CPGDef::FillProp(LPCSTR pref, ::PropItemVec& items, void* owner)
         xr_string nm;
         nm.resize(64);
         sprintf(nm.data(), "Effect #%d", i + 1);
-        
-        B=PHelper().CreateButton(items,PrepareKey(pref,nm.c_str()),"Preview,Select,Remove",ButtonValue::flFirstOnly); B->tag = it-m_Effects.begin();
+
+    	auto FullPref = PrepareKey(pref,nm.c_str());
+        B=PHelper().CreateButton(items,FullPref,"Preview,Select,Remove",ButtonValue::flFirstOnly); B->tag = it-m_Effects.begin();
         B->OnBtnClickEvent.bind	(this,&PS::CPGDef::OnEffectEditClick);
         B->Owner()->prop_color	= clr;
-        V=PHelper().CreateChoose(items,PrepareKey(pref,nm.c_str(),"Name"),&(*it)->m_EffectName,smPE);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFloat	(items,PrepareKey(pref,nm.c_str(),"Start Time (s)"),&(*it)->m_Time0,		0.f,1000.f);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFloat	(items,PrepareKey(pref,nm.c_str(),"End Time (s)"),	&(*it)->m_Time1,		0.f,1000.f);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Deferred Stop"),&(*it)->m_Flags,	SEffect::flDefferedStop);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Enabled"),									&(*it)->m_Flags, 	SEffect::flEnabled);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Birth"),						&(*it)->m_Flags,	SEffect::flOnBirthChild);
-        V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        if ((*it)->m_Flags.is(SEffect::flOnBirthChild)){
-	        V=PHelper().CreateChoose(items,PrepareKey(pref,nm.c_str(),"Children\\On Birth\\Effect Name"),			&(*it)->m_OnBirthChildName,smPE);
-    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-	        V->Owner()->prop_color	= clr;
-        }
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Play"),						&(*it)->m_Flags,	SEffect::flOnPlayChild);
-        V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color		= clr;
-        if ((*it)->m_Flags.is(SEffect::flOnPlayChild)){
-	        V=PHelper().CreateChoose	(items,PrepareKey(pref,nm.c_str(),"Children\\On Play\\Effect Name"),			&(*it)->m_OnPlayChildName,smPE);
-    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-	        V->Owner()->prop_color	= clr;
-            V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Play\\Play After Stop"),		&(*it)->m_Flags,	SEffect::flOnPlayChildRewind);
-            V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);
-            V->Owner()->prop_color	= clr;
-        }
-        V=PHelper().CreateFlag32(items,PrepareKey(pref,nm.c_str(),"Children\\On Dead"),						&(*it)->m_Flags,	SEffect::flOnDeadChild);
-        V->OnChangeEvent.bind		(this,&PS::CPGDef::OnParamsChange);
-        V->Owner()->prop_color	= clr;
-        if ((*it)->m_Flags.is(SEffect::flOnDeadChild)){
-	        V=PHelper().CreateChoose	(items,PrepareKey(pref,nm.c_str(),"Children\\On Dead\\Effect Name"),			&(*it)->m_OnDeadChildName,smPE);
-    	    V->OnChangeEvent.bind	(this,&PS::CPGDef::OnParamsChange);    
-	        V->Owner()->prop_color	= clr;
-        }
+
+    	(*it)->FillProp(FullPref.c_str(), items, clr);
     }
 }
 

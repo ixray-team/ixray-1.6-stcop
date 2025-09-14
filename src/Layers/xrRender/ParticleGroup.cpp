@@ -78,6 +78,7 @@ BOOL CPGDef::LoadOriginal(IReader& F)
 		m_Effects.resize(F.r_u32());
 		for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
 			*it				= new SEffect();
+			(*it)->parent = this;
 			F.r_stringZ		((*it)->m_EffectName);
 			F.r_stringZ		((*it)->m_OnPlayChildName);
 			F.r_stringZ		((*it)->m_OnBirthChildName);
@@ -125,6 +126,7 @@ BOOL CPGDef::Load2Original(CInifile& ini)
 	for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); ++it,++counter)
 	{
 		*it							= new SEffect();
+		(*it)->parent = this;
 
 		xr_sprintf					(buff, sizeof(buff), "effect_%04d", counter);
 		
