@@ -58,10 +58,12 @@ namespace PS
 		void				SetName		  	(LPCSTR name);
 
 		void 				Save		  	(IWriter& F);
-		BOOL 				Load		 	(IReader& F);
+		BOOL 				LoadOriginal	(IReader& F);
 
 		void 				Save2		  	(CInifile& ini);
 		BOOL 				Load2		 	(CInifile& ini);
+		BOOL				Load2Original	(CInifile& ini);
+		BOOL 				Load2Extended	(CInifile& ini);
 
 #ifdef _EDITOR
         void				Clone			(CPGDef* source);
@@ -163,15 +165,30 @@ namespace PS
 		PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) override;
 	};
 
+	namespace PG
+	{
+		enum class Version: u16
+		{
+			Original = 0x0003,
+			Extended,
+			MAX,
+			Latest = MAX - 1,
+		};
+
+		enum class Chunks: u32
+		{
+			VERSION = 0x0001,
+			NAME = 0x0002,
+			FLAGS = 0x0003,
+			EFFECTS = 0x0004, // obsolete
+			TIME_LIMIT = 0x0005,
+			EFFECTS2 = 0x0007,
+		};
+		
+	}
+
 }
 //----------------------------------------------------
-#define PGD_VERSION				0x0003
-#define PGD_CHUNK_VERSION		0x0001
-#define PGD_CHUNK_NAME			0x0002
-#define PGD_CHUNK_FLAGS			0x0003
-#define PGD_CHUNK_EFFECTS		0x0004 // obsolete
-#define PGD_CHUNK_TIME_LIMIT	0x0005
-#define PGD_CHUNK_EFFECTS2		0x0007
 
 //---------------------------------------------------------------------------
 #endif
