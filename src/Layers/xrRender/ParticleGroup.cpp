@@ -97,16 +97,16 @@ BOOL CPGDef::Load2(CInifile& ini)
 {
 //.	u16 version						= ini.r_u16("_group", "version");
 	
-	auto ver = ini.r_enum<PS::PE::Version>("_group", "version");
+	auto ver = ini.r_enum<PS::PG::Version>("_group", "version");
 	switch (ver)
 	{
-	case PE::Version::Original:
+	case PG::Version::Original:
 		{
-			break;
+			return Load2Original(ini);
 		}
-	case PE::Version::Extended:
+	case PG::Version::Extended:
 		{
-			break;
+			return Load2Extended(ini);
 		}
 	default:
 		{

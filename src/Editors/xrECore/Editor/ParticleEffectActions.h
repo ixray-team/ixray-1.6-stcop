@@ -393,3 +393,18 @@ enum EEditMode
     emEffect,
     emGroup
 };
+
+namespace PEd
+{
+	using ListTypeBase = u8;
+	enum class LisType: ListTypeBase
+	{
+		Groups = 1 << 0,
+		Effects = 1 << 1,
+		// add new here
+		All = Groups | Effects
+	};
+
+	ListTypeBase operator|(PEd::LisType lis, PEd::LisType rhs);
+	
+}
