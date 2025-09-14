@@ -4,7 +4,7 @@ UIParticlesTool::UIParticlesTool()
 {
     m_Current = nullptr;
     m_ParticlesList = new UIItemListForm();
-    m_ParticlesList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIParticlesTool::OnItemFocused));
+    m_ParticlesList->SetOnItemFocusedEvent({this, &UIParticlesTool::OnItemFocused});
     ListItemsVec items;
     for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++) {
         ListItem* I = LHelper().CreateItem(items, *(*E)->m_Name, 0, 0, *E);
