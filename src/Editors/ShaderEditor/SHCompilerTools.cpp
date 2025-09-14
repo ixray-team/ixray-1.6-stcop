@@ -189,15 +189,15 @@ void CSHCompilerTools::RealUpdateProperties()
     if (m_Shader)
     {
         Shader_xrLC& L = *m_Shader;
-        PHelper().CreateFloat(items, "Translucency", &L.vert_translucency);
-        PHelper().CreateFloat(items, "Ambient", &L.vert_ambient);
-        PHelper().CreateFloat(items, "LM density", &L.lm_density, 0.01f, 20.f);
+        PHelper().CreateFloat(items, "Vertex Translucency", &L.vert_translucency);
+        PHelper().CreateFloat(items, "Vertex Ambient", &L.vert_ambient);
+        PHelper().CreateFloat(items, "LightMap Density", &L.lm_density, 0.01f, 20.f);
 
         PHelper().CreateFlag32(items, "Flags\\Collision", &L.m_Flags, Shader_xrLC::flCollision);
         PHelper().CreateFlag32(items, "Flags\\Rendering", &L.m_Flags, Shader_xrLC::flRendering);
-        PHelper().CreateFlag32(items, "Flags\\OptimizeUV", &L.m_Flags, Shader_xrLC::flOptimizeUV);
-        PHelper().CreateFlag32(items, "Flags\\Vertex light", &L.m_Flags, Shader_xrLC::flLIGHT_Vertex);
-        PHelper().CreateFlag32(items, "Flags\\Cast shadow", &L.m_Flags, Shader_xrLC::flLIGHT_CastShadow);
+        PHelper().CreateFlag32(items, "Flags\\Optimize UV", &L.m_Flags, Shader_xrLC::flOptimizeUV);
+        PHelper().CreateFlag32(items, "Flags\\Vertex Light", &L.m_Flags, Shader_xrLC::flLIGHT_Vertex);
+        PHelper().CreateFlag32(items, "Flags\\Cast Shadow", &L.m_Flags, Shader_xrLC::flLIGHT_CastShadow);
     }
 
     Ext.m_ItemProps->ClearProperties();

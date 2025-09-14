@@ -758,7 +758,7 @@ void	EPABounce::Compile			(IWriter& F)
 
 EPACopyVertexB::EPACopyVertexB  	():EParticleAction(PAPI::PACopyVertexBID)
 {
-	actionType						= "CopyVertexB";
+	actionType						= "Copy Vertex B";
 	actionName						= actionType;
 	appendBool						("Copy Position", TRUE);
 }
@@ -787,14 +787,14 @@ EPAExplosion::EPAExplosion			():EParticleAction(PAPI::PAExplosionID)
 	appendVector					("Center",PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Velocity",		1.f, 	-P_MAXFLOAT, 	P_MAXFLOAT);
 	appendFloat						("Magnitude",		2.f, 	-P_MAXFLOAT, 	P_MAXFLOAT);
-	appendFloat						("Standart Dev",	3.f,  	EPS, 			P_MAXFLOAT);
+	appendFloat						("Standard Deviation",	3.f,  	EPS, 			P_MAXFLOAT);
 	appendFloat						("Epsilon",			EPS_L, 	EPS, 			P_MAXFLOAT);
 	appendFloat						("Age",				0.f, 	0.f, 			P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
 }
 void	EPAExplosion::Compile	  	(IWriter& F)
 {
-	pExplosion(F,_vector("Center").val, _float("Velocity").val, _float("Magnitude").val, _float("Standart Dev").val, _float("Epsilon").val, _float("Age").val, _bool("Allow Rotate").val);
+	pExplosion(F,_vector("Center").val, _float("Velocity").val, _float("Magnitude").val, _float("Standard Deviation").val, _float("Epsilon").val, _float("Age").val, _bool("Allow Rotate").val);
 }
 
 EPAFollow::EPAFollow				():EParticleAction(PAPI::PAFollowID)
@@ -860,7 +860,7 @@ void	EPAJet::Render				(const Fmatrix& parent)
 
 EPAKillOld::EPAKillOld				():EParticleAction(PAPI::PAKillOldID)
 {
-	actionType						= "KillOld";
+	actionType						= "Kill Old";
 	actionName						= actionType;
 	appendFloat						("Age Limit",		5.f, 0.0f, P_MAXFLOAT);
 	appendBool						("Kill Less Than",	FALSE);
@@ -872,7 +872,7 @@ void	EPAKillOld::Compile			(IWriter& F)
 
 EPAMatchVelocity::EPAMatchVelocity	():EParticleAction(PAPI::PAMatchVelocityID)
 {
-	actionType						= "MatchVelocity";
+	actionType						= "Match Velocity";
 	actionName						= actionType;
 	appendFloat						("Magnitude",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
@@ -895,7 +895,7 @@ void	EPAMove::Compile			(IWriter& F)
 
 EPAOrbitLine::EPAOrbitLine			():EParticleAction(PAPI::PAOrbitLineID)
 {
-	actionType						= "OrbitLine";
+	actionType						= "Orbit Line";
 	actionName						= actionType;
 	appendVector					("Position",		PVector::vNum, 0.f,0.f,0.f);
 	appendVector					("Axis",			PVector::vNum, 0.f,0.f,0.f);
@@ -923,7 +923,7 @@ void	EPAOrbitLine::Render		(const Fmatrix& parent)
 
 EPAOrbitPoint::EPAOrbitPoint		():EParticleAction(PAPI::PAOrbitPointID)
 {
-	actionType						= "OrbitPoint";
+	actionType						= "Orbit Point";
 	actionName						= actionType;
 	appendVector					("Center",			PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Magnitude",		400.f, -P_MAXFLOAT, P_MAXFLOAT);
@@ -945,7 +945,7 @@ void	EPAOrbitPoint::Render		(const Fmatrix& parent)
 
 EPARandomAccel::EPARandomAccel		():EParticleAction(PAPI::PARandomAccelID)
 {
-	actionType						= "RandomAccel";
+	actionType						= "Random Accelerate";
 	actionName						= actionType;
 	appendDomain					("Accelerate",PDomain(PDomain::vNum,FALSE));
 	appendBool						("Allow Rotate",	TRUE);
@@ -957,7 +957,7 @@ void	EPARandomAccel::Compile	   	(IWriter& F)
 
 EPARandomDisplace::EPARandomDisplace():EParticleAction(PAPI::PARandomDisplaceID)
 {
-	actionType						= "RandomDisplace";
+	actionType						= "Random Displace";
 	actionName						= actionType;
 	appendDomain					("Displace",PDomain(PDomain::vNum,FALSE));
 	appendBool						("Allow Rotate",	TRUE);
@@ -969,7 +969,7 @@ void	EPARandomDisplace::Compile 	(IWriter& F)
 
 EPARandomVelocity::EPARandomVelocity():EParticleAction(PAPI::PARandomVelocityID)
 {
-	actionType						= "RandomVelocity";
+	actionType						= "Random Velocity";
 	actionName						= actionType;
 	appendDomain					("Velocity",PDomain(PDomain::vNum,FALSE));
 	appendBool						("Allow Rotate",	TRUE);
@@ -1027,7 +1027,7 @@ void	EPASink::Compile			(IWriter& F)
 
 EPASinkVelocity::EPASinkVelocity	():EParticleAction(PAPI::PASinkVelocityID)
 {
-	actionType						= "SinkVelocity";
+	actionType						= "Sink Velocity";
 	actionName						= actionType;
 	appendBool						("Kill Inside",		TRUE);
 	appendDomain					("Domain",PDomain(PDomain::vNum,FALSE));
@@ -1068,7 +1068,7 @@ void	EPASource::Compile			(IWriter& F)
 
 EPASpeedLimit::EPASpeedLimit		():EParticleAction(PAPI::PASpeedLimitID)
 {
-	actionType						= "SpeedLimit";
+	actionType						= "Speed Limit";
 	actionName						= actionType;
 	appendFloat						("Min Speed",			-1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Speed",			15.0f, -P_MAXFLOAT, P_MAXFLOAT);
@@ -1080,7 +1080,7 @@ void	EPASpeedLimit::Compile	 	(IWriter& F)
 
 EPATargetColor::EPATargetColor		():EParticleAction(PAPI::PATargetColorID)
 {
-	actionType						= "TargetColor";
+	actionType						= "Target Color";
 	actionName						= actionType;
 	appendVector					("Color",			PVector::vColor, 1.f,1.f,1.f, 0.f,1.f);
 	appendFloat						("Alpha",			1.f, 0.0f,1.0f);
@@ -1130,7 +1130,7 @@ void EPATargetColor::Compile(IWriter& F)
 
 EPATargetSize::EPATargetSize		():EParticleAction(PAPI::PATargetSizeID)
 {
-	actionType						= "TargetSize";
+	actionType						= "Target Size";
 	actionName						= actionType;
 	appendVector					("Size",			PVector::vNum, 2.f,2.f,0.001f, EPS_L);
 	appendVector					("Scale",			PVector::vNum, 1.f,1.f,0.f);
@@ -1142,7 +1142,7 @@ void	EPATargetSize::Compile	  	(IWriter& F)
 
 EPATargetRotate::EPATargetRotate	():EParticleAction(PAPI::PATargetRotateID)
 {
-	actionType						= "TargetRotate";
+	actionType						= "Target Rotate";
 	actionName						= actionType;
 	appendVector					("Rotation",		PVector::vAngle, 0.f,0.f,0.f);
 	appendFloat						("Scale",			1.f, 0.0f, P_MAXFLOAT);
@@ -1154,7 +1154,7 @@ void	EPATargetRotate::Compile   	(IWriter& F)
 
 EPATargetVelocity::EPATargetVelocity():EParticleAction(PAPI::PATargetVelocityID)
 {
-	actionType						= "TargetVelocity";
+	actionType						= "Target Velocity";
 	actionName						= actionType;
 	appendVector					("Velocity",		PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Scale",			1.f, 0.0f, P_MAXFLOAT);
