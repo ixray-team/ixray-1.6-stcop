@@ -15,7 +15,7 @@ namespace PS
 		shared_str			m_Name;
 		Flags32				m_Flags;
 		float				m_fTimeLimit;
-		struct SEffect{
+		struct ECORE_API SEffect{
 			enum{
 				flDefferedStop		= (1<<0),
 				flOnPlayChild		= (1<<1),
@@ -33,7 +33,10 @@ namespace PS
 			float			m_Time1;
 							SEffect				(){m_Flags.zero();/*set(flEnabled)*/m_Time0=0;m_Time1=0;}
 #ifdef _EDITOR
+			CPGDef* parent = nullptr;
             BOOL			Equal				(const SEffect&);
+			void FillProp(LPCSTR pref, PropItemVec& items, u32 clr);
+			void FillPropInit(PropItemVec& items, LPCSTR pref);
 #endif
 		};
 
@@ -46,11 +49,15 @@ namespace PS
 		void   	OnEffectsEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnEffectTypeChange	(PropValue* sender);
 		void   	OnEffectEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+		bool RemoveEffect(int idx, bool& safe);
+		bool RemoveEffect(SEffect* effect);
 		void   	OnControlClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		void   	OnParamsChange	(PropValue* sender);
-		void				FillProp	   	(LPCSTR pref, ::PropItemVec& items, void* owner);
+		void	OnParamsChangeInternal();
+		void				FillProp	   	(LPCSTR pref, PropItemVec& items, void* owner);
 		BOOL				Equal			(const CPGDef* pe);
 		bool				Validate 			(bool bMsg);
+		int FindEffect(SEffect* effect);
 #endif
 	public:
 							CPGDef		  	();
