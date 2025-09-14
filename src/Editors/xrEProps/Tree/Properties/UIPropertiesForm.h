@@ -49,6 +49,7 @@ private:
 	PropItem* m_EditChooseValue;
 	PropItem* m_EditTextureValue;
 	PropItem* m_EditShortcutValue;
+	
 	TOnModifiedEvent OnModifiedEvent;
 	UIPropertiesItem m_Root;
 	UIPropertiesItem SearchRoot;

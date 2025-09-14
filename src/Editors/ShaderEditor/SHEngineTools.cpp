@@ -146,10 +146,10 @@ void CSHEngineTools::OnActivate()
 	// fill items*/
 	FillItemList						();
    /* Ext.m_Items->SetOnModifiedEvent		(TOnModifiedEvent(this,&CSHEngineTools::Modified));*/
-	Ext.m_Items->SetOnItemRenameEvent	(TOnItemRename(this,&CSHEngineTools::OnRenameItem));
-	Ext.m_Items->SetOnItemRemoveEvent	(TOnItemRemove(this,&CSHEngineTools::OnRemoveItem));
-	Ext.m_Items->SetOnItemCloneEvent    (TOnItemClone(this, &CSHEngineTools::OnCloneItem));
-	Ext.m_Items->SetOnItemCreaetEvent(TOnItemCreate(this, &CSHEngineTools::OnCreateItem));
+	Ext.m_Items->SetOnItemRenameEvent	({this,&CSHEngineTools::OnRenameItem});
+	Ext.m_Items->SetOnItemRemoveEvent	({this,&CSHEngineTools::OnRemoveItem});
+	Ext.m_Items->SetOnItemCloneEvent    ({this, &CSHEngineTools::OnCloneItem});
+	Ext.m_Items->SetOnItemCreaetEvent({this, &CSHEngineTools::OnCreateItem});
 
 	inherited::OnActivate				();
 }
@@ -609,7 +609,7 @@ LPCSTR CSHEngineTools::AppendMatrix(CMatrix* src, CMatrix** dest)
 	return I.first->first;
 }
 
-void CSHEngineTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHEngineTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
 	
 	if (type==TYPE_OBJECT)
@@ -619,9 +619,18 @@ void CSHEngineTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EI
 
 
 
-void CSHEngineTools::OnRemoveItem(LPCSTR name, EItemType type)
+void CSHEngineTools::OnRemoveItem(UIItemListForm::Node& node)
 {
-	if (type==TYPE_OBJECT){
+	string_path path;
+	if (node.Path.size())
+	{
+		xr_strconcat(path, node.Path.c_str(), "\\", node.Name.c_str());
+	} else
+	{
+		xr_strcpy(path, node.Name.c_str());
+	}
+	LPCSTR name = path;
+	if (node.IsObject()){
 		R_ASSERT(name && name[0]);
 		IBlender* B = FindItem(name);
 		R_ASSERT(B);

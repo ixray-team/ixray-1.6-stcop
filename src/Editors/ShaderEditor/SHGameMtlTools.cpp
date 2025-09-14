@@ -27,10 +27,10 @@ void CSHGameMtlTools::OnActivate()
     FillItemList		();
 
   /*  Ext.m_Items->SetOnModifiedEvent		(fastdelegate::bind<TOnModifiedEvent>(this,&CSHGameMtlTools::Modified));*/
-    Ext.m_Items->SetOnItemCloneEvent    (TOnItemClone(this,  &CSHGameMtlTools::OnCloneItem));
-    Ext.m_Items->SetOnItemCreaetEvent   (TOnItemCreate(this,&CSHGameMtlTools::OnCreateItem));
-    Ext.m_Items->SetOnItemRenameEvent	(TOnItemRename(this,&CSHGameMtlTools::OnRenameItem));
-    Ext.m_Items->SetOnItemRemoveEvent	(TOnItemRemove(this,&CSHGameMtlTools::OnRemoveItem));
+    Ext.m_Items->SetOnItemCloneEvent    ({this,  &CSHGameMtlTools::OnCloneItem});
+    Ext.m_Items->SetOnItemCreaetEvent   ({this,&CSHGameMtlTools::OnCreateItem});
+    Ext.m_Items->SetOnItemRenameEvent	({this,&CSHGameMtlTools::OnRenameItem});
+    Ext.m_Items->SetOnItemRemoveEvent	({this,&CSHGameMtlTools::OnRemoveItem});
     inherited::OnActivate		();
 }
 
@@ -167,7 +167,7 @@ void CSHGameMtlTools::AppendItem(LPCSTR path, bool dynamic, SGameMtl* parent )
     Modified();
 }
 
-void CSHGameMtlTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHGameMtlTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
 	if (type==TYPE_OBJECT){
         SGameMtl* S = FindItem(old_full_name); R_ASSERT(S);
@@ -184,9 +184,18 @@ void CSHGameMtlTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, E
     }
 }
 
-void CSHGameMtlTools::OnRemoveItem(LPCSTR name, EItemType type)
+void CSHGameMtlTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
 {
-	if (type==TYPE_OBJECT){
+    string_path path;
+    if (node.Path.size())
+    {
+        xr_strconcat(path, node.Path.c_str(), "\\", node.Name.c_str());
+    } else
+    {
+        xr_strcpy(path, node.Name.c_str());
+    }
+    LPCSTR name = path;
+	if (node.IsObject()){
         R_ASSERT(name && name[0]);
         if (m_Mtl&&m_Mtl->m_Name == name)
         {
