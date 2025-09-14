@@ -3,11 +3,11 @@ class CDS0_RenderLight :
 	public IRender_Light
 {
 	vis_data visimask;
-
+	bool LightActive = false;
 public:
 	virtual void set_type(LT type) override {};
-	virtual void set_active(bool) {};
-	virtual bool get_active() { return false; }
+	virtual void set_active(bool value) { LightActive = value; };
+	virtual bool get_active() { return LightActive; }
 	virtual void set_shadow(bool) {};
 	virtual void set_volumetric(bool) {};
 	virtual void set_volumetric_quality(float) {};
