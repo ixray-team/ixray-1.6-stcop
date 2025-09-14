@@ -29,11 +29,17 @@ public:
 #endif
 
 public:
-    bool 				Load			(LPCSTR nm);
-    bool				Save			(LPCSTR nm);
-    
-	bool				Load2			();
-	bool				Save2			();
+	// stream
+    bool Load(LPCSTR nm);
+	bool LoadOriginal(IReader& F);
+	bool LoadExtended(IReader& F);
+	
+    bool Save(LPCSTR nm);
+
+	// individuals INI
+	bool Load2();
+	bool Save2();
+	
 public:
 						CPSLibrary		(){;}
     		 			~CPSLibrary		(){;}
@@ -71,11 +77,27 @@ public:
 #define PS_LIB_SIGN 			"PS_LIB"
 
 #define PS_VERSION				0x0001
+
+namespace PS
+{
+	enum class Version: u16
+	{
+		Original = 0x0001,
+		Extended,
+		MAX,
+		Latest = MAX - 1,
+	};
+
+	enum class Chunks: u32
+	{
+		VERSION = 0x0001,
+		FIRSTGEN = 0x0002,
+		SECONDGEN = 0x0003,
+		THIRDGEN = 0x0004,
+	};
+}
+
 //----------------------------------------------------
-#define PS_CHUNK_VERSION		0x0001
-#define PS_CHUNK_FIRSTGEN		0x0002
-#define PS_CHUNK_SECONDGEN		0x0003
-#define PS_CHUNK_THIRDGEN		0x0004
 
 #endif /*_INCDEF_PSLibrary_H_*/
 
