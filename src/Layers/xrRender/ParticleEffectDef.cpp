@@ -221,7 +221,7 @@ BOOL CPEDef::LoadOriginal(IReader& F)
 		{
             PAPI::PActionEnum type		= (PAPI::PActionEnum)F.r_u32();
             (*it)						= pCreateEAction(type);
-
+        	(*it)->parent = this;
 			if ((*it) != nullptr)
 			{
 				(*it)->Load(F);
@@ -313,6 +313,7 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 			xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
 			PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
 			(*it)						= pCreateEAction(type);
+			(*it)->parent = this;
 			(*it)->Load2				(ini, sect);
 		}
 		Compile							(m_EActionList);

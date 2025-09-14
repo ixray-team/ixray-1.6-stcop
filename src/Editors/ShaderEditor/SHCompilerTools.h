@@ -17,8 +17,8 @@ class CSHCompilerTools: public ISHTools
     ListItem*				m_Selected;
 public:
     Shader_xrLC*			m_Shader;
-    virtual void            OnRemoveItem		(LPCSTR name, EItemType type); 
-	virtual void            OnRenameItem		(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+    virtual void            OnRemoveItem		(UIItemListForm::Node& node); 
+	virtual void            OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
     virtual void			AppendItem			(LPCSTR path, LPCSTR parent=0);
 	virtual void			FillItemList		();
 public:

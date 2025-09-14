@@ -167,11 +167,11 @@ void CSHSoundEnvTools::OnActivate()
 	// fill items
 	FillItemList		();
    // Ext.m_Items->SetOnModifiedEvent		(fastdelegate::bind<TOnModifiedEvent>(this,&CSHSoundEnvTools::Modified));
-	Ext.m_Items->SetOnItemCloneEvent    (TOnItemClone(this,  &CSHSoundEnvTools::OnCloneItem));
-	Ext.m_Items->SetOnItemCreaetEvent(TOnItemCreate(this, &CSHSoundEnvTools::OnCreateItem));
+	Ext.m_Items->SetOnItemCloneEvent    ({this,  &CSHSoundEnvTools::OnCloneItem});
+	Ext.m_Items->SetOnItemCreaetEvent({this, &CSHSoundEnvTools::OnCreateItem});
 
-	Ext.m_Items->SetOnItemRenameEvent	(TOnItemRename(this,&CSHSoundEnvTools::OnRenameItem));
-	Ext.m_Items->SetOnItemRemoveEvent	(TOnItemRemove(this,&CSHSoundEnvTools::OnRemoveItem));
+	Ext.m_Items->SetOnItemRenameEvent	({this,&CSHSoundEnvTools::OnRenameItem});
+	Ext.m_Items->SetOnItemRemoveEvent	({this,&CSHSoundEnvTools::OnRemoveItem});
 	inherited::OnActivate		();
 }
 //---------------------------------------------------------------------------
@@ -298,7 +298,7 @@ void CSHSoundEnvTools::AppendItem(LPCSTR folder_name, LPCSTR parent_name)
 	Modified			();
 }
 
-void CSHSoundEnvTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHSoundEnvTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
 	if (type==TYPE_OBJECT){
 		ApplyChanges	();
@@ -309,9 +309,18 @@ void CSHSoundEnvTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, 
 	}
 }
 
-void CSHSoundEnvTools::OnRemoveItem(LPCSTR name, EItemType type)
+void CSHSoundEnvTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
 {
-	if (type==TYPE_OBJECT){
+	string_path path;
+	if (node.Path.size())
+	{
+		xr_strconcat(path, node.Path.c_str(), "\\", node.Name.c_str());
+	} else
+	{
+		xr_strcpy(path, node.Name.c_str());
+	}
+	LPCSTR name = path;
+	if (node.IsObject()){
 		R_ASSERT		(name && name[0]);
 		if (m_Env && m_Env->name == name)
 		{

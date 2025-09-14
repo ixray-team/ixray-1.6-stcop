@@ -19,8 +19,8 @@ public:
     SGameMtl*				m_Mtl;
     virtual void			AppendItem			(LPCSTR path, LPCSTR parent_name=0);  
 	virtual void			AppendItem(LPCSTR path, bool dynamic=false, SGameMtl* parent=0);
-    virtual void   OnRemoveItem		(LPCSTR name, EItemType type); 
-	virtual void   OnRenameItem		(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+    virtual void   OnRemoveItem		(UIItemListForm::Node& node); 
+	virtual void   OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
 	void   		FillChooseMtlType	(ChooseItemVec& items, void* param);
 
     virtual void			FillItemList		();

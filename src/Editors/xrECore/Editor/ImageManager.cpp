@@ -640,13 +640,14 @@ BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, ti
 	return bResult;
 }
 
-void CImageManager::RemoveTexture(LPCSTR fname, EItemType type)
+void CImageManager::RemoveTexture(UIItemListForm::Node& node)
 {
-	if (TYPE_FOLDER==type){
+	auto fname = node.Name.c_str();
+	if (node.IsFolder()){
 		FS.dir_delete			(_textures_,fname,FALSE);
 		FS.dir_delete			(_game_textures_,fname,FALSE);
 		return;
-	}else if (TYPE_OBJECT==type)
+	}else if (node.IsObject())
 	{
 		xr_string src_name;
 		src_name				= EFS.ChangeFileExt(fname,".tga");

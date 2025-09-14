@@ -102,7 +102,8 @@ struct EParticleAction
 
     using PVectorMap = xr_map<AnsiString, PVector>;
     using PVectorMapIt = PVectorMap::iterator;
-
+	
+	PS::CPEDef*		parent = nullptr;
     shared_str 		actionName;
 	shared_str 		actionType;
     shared_str		hint;
@@ -156,7 +157,9 @@ public:
 	PDomain&		_domain		(LPCSTR name){PDomainMapIt 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
 	PBool&			_bool		(LPCSTR name){PBoolMapIt 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
 	PBool*			_bool_safe	(LPCSTR name){PBoolMapIt 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
-public:    
+public:
+	void FillPropInit(PropItemVec& items, LPCSTR pref);
+	
     virtual void	Compile		(IWriter& F)=0;
     virtual void 	FillProp	(PropItemVec& items, LPCSTR pref, u32 clr);
 
@@ -391,5 +394,22 @@ enum EEditMode
 {
     emNone,
     emEffect,
-    emGroup
+    emGroup,
+	emAction,
+	emEffectSlot,
 };
+
+namespace PEd
+{
+	using ListTypeBase = u8;
+	enum class LisType: ListTypeBase
+	{
+		Groups = 1 << 0,
+		Effects = 1 << 1,
+		// add new here
+		All = Groups | Effects
+	};
+
+	ListTypeBase operator|(PEd::LisType lis, PEd::LisType rhs);
+	
+}

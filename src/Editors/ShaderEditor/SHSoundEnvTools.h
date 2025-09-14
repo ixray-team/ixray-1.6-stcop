@@ -29,8 +29,8 @@ public:
     CSoundRender_Environment 	m_EnvSrc;
     CSoundRender_Environment* 	m_Env;
     virtual void				AppendItem			(LPCSTR folder_name, LPCSTR parent=0);            
-    virtual void   	OnRemoveItem		(LPCSTR name, EItemType type); 
-	virtual void   	OnRenameItem		(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
+    virtual void   	OnRemoveItem		(UIItemListForm::Node& node); 
+	virtual void   	OnRenameItem		(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type);
 	virtual void 				FillItemList		();
 
     void						UseEnvironment		(){Sound->set_user_env(m_Env);}
