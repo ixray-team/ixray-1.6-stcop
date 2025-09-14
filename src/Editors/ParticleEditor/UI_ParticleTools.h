@@ -54,6 +54,9 @@ class CParticleTool:
     void				RealRemoveAction();
 
     void 		OnControlClick		(ButtonValue* sender, bool& bDataModified, bool& bSafe);
+
+	LPCSTR InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str);
+	
 public:
     virtual void    	RemoveAction(u32 idx, bool bForced=false) {remove_action_num=idx;m_Flags.set(flRemoveAction,TRUE); if (bForced) RealRemoveAction();}
 public:
