@@ -158,7 +158,7 @@ void CHudAnimatorManager::PlayMotion()
 
 	if (m_sounds.FindSoundItem("sndSnd", false))
 	{
-		m_sounds.PlaySound("sndSnd", m_actor->Position(), m_actor, true, !!(ret == 0));
+		m_sounds.PlaySound("sndSnd", m_actor->Position(), m_actor, !!m_actor->HUDview(), !!(ret == 0));
 	}
 
 	if (ret > 0)

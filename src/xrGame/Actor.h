@@ -304,6 +304,7 @@ public:
 	s32						GetShotRndSeed			()	{ return m_ShotRndSeed;	};
 
 	CHudAnimatorManager*	HudAnimator()			{ return m_hud_animator; }
+	void					StartAnimator			(const shared_str& section);
 
 public:
 	void					detach_Vehicle			();

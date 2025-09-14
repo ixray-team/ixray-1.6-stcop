@@ -178,6 +178,21 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 				IR_OnKeyboardRelease(cmd);
 		}
 		break;
+	case GEG_PLAYER_START_HUD_ANIMATOR:
+	{
+		shared_str animator_section;
+		P.r_stringZ(animator_section);
+
+		if (!g_Alive())
+		{
+			break;
+		}
+
+		if (HudAnimator())
+		{
+			HudAnimator()->StartAnimator(animator_section);
+		}
+	}break;
 	case GEG_PLAYER_ITEM2SLOT:
 	case GEG_PLAYER_ITEM2BELT:
 	case GEG_PLAYER_ITEM2RUCK:

@@ -152,7 +152,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			{
 				if (knife_item != inventory().ActiveItem())
 				{
-					HudAnimator()->StartAnimator(m_sQuickKickAnimator);
+					StartAnimator(m_sQuickKickAnimator);
 					HudAnimator()->SetLeftCallback({ this, &CActor::MakeKick });
 				}
 				else
@@ -516,6 +516,21 @@ void CActor::IR_GamepadKeyPress(int id)
 	}
 	else if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_RIGHT_STICK)
 	{
+	}
+}
+
+void CActor::StartAnimator(const shared_str& section)
+{
+	if (IsGameTypeSingle())
+	{
+		HudAnimator()->StartAnimator(section);
+	}
+	else
+	{
+		NET_Packet P;
+		CGameObject::u_EventGen(P, GEG_PLAYER_START_HUD_ANIMATOR, ID());
+		P.w_stringZ(section);
+		CGameObject::u_EventSend(P);
 	}
 }
 
@@ -1057,7 +1072,7 @@ void CActor::SwitchNightVision()
 		{
 			if (HudAnimator() && !HudAnimator()->IsActive())
 			{
-				HudAnimator()->StartAnimator(m_sNVGAnimator);
+				StartAnimator(m_sNVGAnimator);
 				HudAnimator()->SetLeftCallback({ GetNightVisionEffector(), &CNightVisionEffector::SwitchNightVision });
 			}
 		}
@@ -1155,7 +1170,7 @@ void CActor::SwitchTorch()
 		{
 			if (HudAnimator() && !HudAnimator()->IsActive())
 			{
-				HudAnimator()->StartAnimator(m_sHeadlampAnimator);
+				StartAnimator(m_sHeadlampAnimator);
 				HudAnimator()->SetLeftCallback({ torch, &CTorch::Switch });
 			}
 		}
@@ -1251,7 +1266,7 @@ void CActor::ClearMask()
 	{
 		if (HudAnimator() && !HudAnimator()->IsActive())
 		{
-			HudAnimator()->StartAnimator(m_sClearMaskAnimator);
+			StartAnimator(m_sClearMaskAnimator);
 			HudAnimator()->SetLeftCallback({ this, &CActor::ClearMaskCB });
 		}
 	}
