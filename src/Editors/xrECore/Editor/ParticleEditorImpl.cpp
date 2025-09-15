@@ -318,29 +318,98 @@ void  PS::CPEDef::OnActionEditClick(ButtonValue* B, bool& bDataModified, bool& b
 	bDataModified = false;
 	int idx = B->tag;
 	switch (B->btn_num) {
-	case 0:		    // up
-		if (idx > 0) {
-			EParticleAction* E = m_EActionList[idx - 1];
-			m_EActionList[idx - 1] = m_EActionList[idx];
-			m_EActionList[idx] = E;
-			ExecCommand(COMMAND_UPDATE_PROPERTIES);
-			bDataModified = true;
+	case 0:
+		{
+			// up
+			bDataModified = MoveUpAction(idx);
+			break;
 		}
-		break;
-	case 1:		    // down
-		if (idx < (int(m_EActionList.size()) - 1)) {
-			EParticleAction* E = m_EActionList[idx + 1];
-			m_EActionList[idx + 1] = m_EActionList[idx];
-			m_EActionList[idx] = E;
-			ExecCommand(COMMAND_UPDATE_PROPERTIES);
-			bDataModified = true;
+	case 1:
+		{
+			// down
+			bDataModified = MoveDownAction(idx);
+			break;
 		}
-		bDataModified = true;
-		break;
 	case 2:
-		bDataModified = RemoveAction(idx);
-		break;
+		{
+			// remove
+			bDataModified = RemoveAction(idx);
+			break;
+		}
 	}
+}
+
+bool PS::CPEDef::RemoveAction(int idx)
+{
+	if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Remove action?") == mrYes) {
+		Tools->RemoveAction(idx);
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return true;
+	}
+	return false;
+}
+
+bool PS::CPEDef::RemoveAction(EParticleAction* action)
+{
+	for (int i = 0; i < m_EActionList.size(); i++)
+	{
+		if (m_EActionList[i] == action)
+		{
+			return RemoveAction(i);
+		}
+	}
+	R_ASSERT(false);
+	return false;
+}
+
+bool PS::CPEDef::MoveUpAction(int idx)
+{
+	if (idx > 0) {
+		EParticleAction* E = m_EActionList[idx - 1];
+		m_EActionList[idx - 1] = m_EActionList[idx];
+		m_EActionList[idx] = E;
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return true;
+	}
+	return false;
+}
+
+bool PS::CPEDef::MoveUpAction(EParticleAction* action)
+{
+	for (int i = 0; i < m_EActionList.size(); i++)
+	{
+		if (m_EActionList[i] == action)
+		{
+			return MoveUpAction(i);
+		}
+	}
+	R_ASSERT(false);
+	return false;
+}
+
+bool PS::CPEDef::MoveDownAction(int idx)
+{
+	if (idx < (int(m_EActionList.size()) - 1)) {
+		EParticleAction* E = m_EActionList[idx + 1];
+		m_EActionList[idx + 1] = m_EActionList[idx];
+		m_EActionList[idx] = E;
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return true;
+	}
+	return false;
+}
+
+bool PS::CPEDef::MoveDownAction(EParticleAction* action)
+{
+	for (int i = 0; i < m_EActionList.size(); i++)
+	{
+		if (m_EActionList[i] == action)
+		{
+			return MoveDownAction(i);
+		}
+	}
+	R_ASSERT(false);
+	return false;
 }
 
 ECORE_API xr_string _item_to_select_after_edit;

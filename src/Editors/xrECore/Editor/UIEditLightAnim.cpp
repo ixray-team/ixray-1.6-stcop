@@ -422,7 +422,7 @@ void UIEditLightAnim::OnRemoveItem(UIItemListForm::Node& node)
 	OnModified();
 }
 
-void UIEditLightAnim::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void UIEditLightAnim::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
 	bool res = false;
 	LALib.RenameObject(old_full_name, new_full_name,type);
