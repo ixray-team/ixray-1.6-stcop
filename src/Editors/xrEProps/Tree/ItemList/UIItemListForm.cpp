@@ -264,7 +264,7 @@ void UIItemListForm::DrawMenuEdit()
 					{
 						xr_strcpy(path, N->Path.c_str());
 					}
-					if (m_edit_node->IsFolder())
+					if (IsNodeTrueFolder(*m_edit_node))
 					{
 						if (path[0])
 							xr_strcat(path, "\\");

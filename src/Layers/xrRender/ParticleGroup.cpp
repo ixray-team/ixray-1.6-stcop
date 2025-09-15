@@ -78,7 +78,9 @@ BOOL CPGDef::LoadOriginal(IReader& F)
 		m_Effects.resize(F.r_u32());
 		for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
 			*it				= new SEffect();
+#ifdef _EDITOR
 			(*it)->parent = this;
+#endif
 			F.r_stringZ		((*it)->m_EffectName);
 			F.r_stringZ		((*it)->m_OnPlayChildName);
 			F.r_stringZ		((*it)->m_OnBirthChildName);
@@ -126,7 +128,9 @@ BOOL CPGDef::Load2Original(CInifile& ini)
 	for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); ++it,++counter)
 	{
 		*it							= new SEffect();
+#ifdef _EDITOR
 		(*it)->parent = this;
+#endif
 
 		xr_sprintf					(buff, sizeof(buff), "effect_%04d", counter);
 		
@@ -685,7 +689,7 @@ PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnu
 	{
 		return elem._effect->dcast_ParticleCustom()->Name() == PEName;
 	});
-	R_ASSERT(it != items.end(), "Unable to find PE in PG", PEName.c_str(), Name().c_str());
+	R_ASSERT4(it != items.end(), "Unable to find PE in PG", PEName.c_str(), Name().c_str());
 	return it != items.end() ? it->_effect->dcast_ParticleCustom()->FindPA(PEName, Action) : nullptr;
 }
 

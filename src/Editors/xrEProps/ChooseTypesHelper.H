@@ -23,6 +23,7 @@ enum EChooseMode
     smGameMaterial,
     smGameAnim,
     smGameSMotions,
+    smPAC,
 };
 
 enum EChooseFlags
