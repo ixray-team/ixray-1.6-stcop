@@ -93,7 +93,8 @@ void CScriptPropertiesListHelper::script_register(lua_State *L)
 				value("skeleton_bones",		int(smSkeletonBones)),
 				value("material",			int(smGameMaterial)),
 				value("game_animation",		int(smGameAnim)),
-				value("game_motion",		int(smGameSMotions))
+				value("game_motion",		int(smGameSMotions)),
+				value("particle_anim_curve", int(smPAC))
 			],
 
 		class_<CScriptPropertiesListHelper>("properties_list_helper")
