@@ -134,6 +134,10 @@ namespace PS
 		void   	OnActionEditClick	(ButtonValue* sender, bool& bDataModified, bool& bSafe);
 		bool	RemoveAction(EParticleAction* action);
 		bool	RemoveAction(int idx);
+		bool	MoveUpAction(EParticleAction* action);
+		bool	MoveDownAction(EParticleAction* action);
+		bool	MoveUpAction(int idx);
+		bool	MoveDownAction(int idx);
 	    void   	OnFrameResize		(PropValue* sender);
 	    void   	OnShaderChange		(PropValue* sender);
 	    void   	OnFlagChange		(PropValue* sender);
