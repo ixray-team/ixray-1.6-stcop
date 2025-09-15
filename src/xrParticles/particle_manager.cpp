@@ -302,11 +302,17 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     case PAVortexID:    		pa = new PAVortex();			break;
     case PATurbulenceID:		pa = new PATurbulence();		break;
     case PAScatterID:  			pa = new PAScatter();			break;
+    	// Binder
     case PABindVelocityValueID:	pa = new PABindVelocityValue();	break;
     case PABindRotationValueID:	pa = new PABindRotationValue();	break;
     case PABindSizeValueID:		pa = new PABindSizeValue();		break;
     case PABindColorValueID:	pa = new PABindColorValue();	break;
     case PABindColorAlphaID:	pa = new PABindColorAlpha();	break;
+    	// Animators
+    case PAColorAnimatorID:		pa = new PAColorAnimator();		break;
+    case PASizeAnimatorID:		pa = new PASizeAnimator();		break;
+    case PAVelocityAnimatorID:	pa = new PAVelocityAnimator();		break;
+    case PAVelocityRotationAnimatorID:	pa = new PAVelocityRotationAnimator();		break;
     default: NODEFAULT;
     }
     pa->type					= type;

@@ -476,6 +476,8 @@ void PATurbulence::Save		(IWriter& F)
 	F.w_float		(epsilon);
     F.w_fvector3	(offset);
 }
+
+// Binders
 void PABindVelocityValue::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_fvector3(BindValue);
@@ -517,6 +519,68 @@ void PABindColorAlpha::Load(IReader& F) {
 void PABindColorAlpha::Save(IWriter& F) {
 	ParticleAction::Save(F);
 	F.w_float(BindValue);
+}
+
+// Animators
+void PAColorAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
+}
+void PAColorAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
+}
+void PASizeAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
+}
+void PASizeAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
+}
+void PAVelocityAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
+}
+void PAVelocityAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
+}
+void PAVelocityRotationAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
+}
+void PAVelocityRotationAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
 }
 
 
