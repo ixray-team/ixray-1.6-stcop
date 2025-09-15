@@ -17,6 +17,7 @@ public:
 		EFloderNodeType Type;
 		shared_str Name;
 		shared_str Path;
+		shared_str Prefix = "";
 		xr_vector<Node> Nodes;
 		mutable C* Object;
 		IC bool IsObject() { return Type == FNT_Object; }
@@ -187,7 +188,10 @@ public:
 	}
 	inline Node* AppendObject(Node* N, const char* path)
 	{
-		if (N == nullptr)return nullptr;
+		if (N == nullptr)
+		{
+			return nullptr;
+		}
 		if (strchr(path, '\\'))
 		{
 			string_path name;
@@ -209,7 +213,7 @@ public:
 			{
 				if constexpr (FloderAsItem)
 				{
-					if (node.IsObject())
+					if (node.Object)
 						return &node;
 					return nullptr;
 				}
@@ -337,7 +341,9 @@ public:
 			ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
 			if (IsFolderBullet(N))FloderFlags |= ImGuiTreeNodeFlags_Bullet;
 			if (IsFolderSelected(N))FloderFlags |= ImGuiTreeNodeFlags_Selected;
-			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
+			xr_string builder = N->Prefix.c_str();
+			builder.append(N->Name.c_str());
+			if (ImGui::TreeNodeEx(builder.c_str(), FloderFlags))
 			{
 				DrawAfterFolderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)
@@ -404,6 +410,7 @@ private:
 	{
 		std::swap(Dst->Type, Src->Type);
 		std::swap(Dst->Object, Src->Object);
+		std::swap(Dst->Prefix, Src->Prefix);
 		Dst->Nodes.swap(Src->Nodes);
 	}
 	inline void RebuildPath(Node* N)

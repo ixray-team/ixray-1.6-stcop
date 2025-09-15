@@ -1279,7 +1279,7 @@ void  CParticleTool::OnControlClick(ButtonValue* sender, bool& bDataModified, bo
     bDataModified = false;
 }
 
-LPCSTR CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str)
+/*LPCSTR CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, LPCSTR insert_str)
 {
     xr_string builder;
     auto ItemCount = _GetItemCount(path, '\\');
@@ -1292,9 +1292,9 @@ LPCSTR CParticleTool::InsertBeforeLast(LPSTR buffer, u32 buf_size, LPCSTR path, 
     builder.append(_GetItem(path, ItemCount-1, buffer, buf_size, '\\'));
     xr_strcpy(buffer, buf_size, builder.c_str());
     return buffer;
-}
+}*/
 
-EEditMode CParticleTool::GetAffectedItemType(LPCSTR path)
+/*EEditMode CParticleTool::GetAffectedItemType(LPCSTR path)
 {
     string_path buffer;
     xr_string Item = _GetItem(path, _GetItemCount(path, '\\')-1, buffer, sizeof(buffer), '\\');
@@ -1315,7 +1315,7 @@ EEditMode CParticleTool::GetAffectedItemType(LPCSTR path)
         return emEffectSlot;
     }
     return emNone;
-}
+}*/
 
 void CParticleTool::OnParticleItemFocused(ListItem* items)
 {
@@ -1398,19 +1398,19 @@ extern ECORE_API xr_string _item_to_select_after_edit;
 void CParticleTool::RealUpdateProperties()
 {
     static string1024 buffer;
-    static string256 buffer2;
+    //static string256 buffer2;
     
     m_Flags.set(flRefreshProps, FALSE);
 
     // Make path functions
-    auto MakePGPathFunc = [&](LPCSTR OrigName)
-    {
-        return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PG] ");
-    };
-    auto MakePEPathFunc = [&](LPCSTR OrigName)
-    {
-        return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PE] ");
-    };
+    //auto MakePGPathFunc = [&](LPCSTR OrigName)
+    //{
+    //    return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PG] ");
+    //};
+    //auto MakePEPathFunc = [&](LPCSTR OrigName)
+    //{
+    //    return InsertBeforeLast(buffer, sizeof(buffer), OrigName, "[PE] ");
+    //};
     // Add functions
     auto AddAllPEFunc = [&](ListItemsVec& items) -> ListItemsVec&
     {
@@ -1418,28 +1418,26 @@ void CParticleTool::RealUpdateProperties()
         PS::PEDIt Ee = RImplementation.PSLibrary.LastPED();
         for (; Pe != Ee; Pe++) {
             ListItem* I = LHelper().CreateItem(items,
-                MakePEPathFunc(*(*Pe)->m_Name),
+                *(*Pe)->m_Name,
                 emEffect,
                 0,
                 *Pe);
             I->SetIcon(1);
-            xr_string ModifiedPath = buffer;
+            I->SetPrefix("[PE] ");
+            //xr_string ModifiedPath = buffer;
             for (auto Action : (*Pe)->m_EActionList)
             {
-                xr_string ActionNameBuilder = ModifiedPath;
+                xr_string ActionNameBuilder = *(*Pe)->m_Name;
                 ActionNameBuilder.append("\\");
                 ActionNameBuilder.append(
-                    InsertBeforeLast(
-                        buffer2,
-                        sizeof(buffer2),
                         _GetItem(
                             Action->actionName.c_str(),
                             _GetItemCount(Action->actionName.c_str(),'\\')-1,
                             buffer,
                             sizeof(buffer),
-                            '\\'),
-                        "[ACTION] "));
-                LHelper().CreateItem(items, ActionNameBuilder.c_str(), emAction, 0, Action );
+                            '\\'));
+                I = LHelper().CreateItem(items, ActionNameBuilder.c_str(), emAction, 0, Action );
+                I->SetPrefix("[ACTION] ");
             }
         }
         return items;
@@ -1451,28 +1449,25 @@ void CParticleTool::RealUpdateProperties()
         for (; Pg != Eg; Pg++) {
             ListItem* I = LHelper().CreateItem(
                 items,
-                MakePGPathFunc(*(*Pg)->m_Name),
+                *(*Pg)->m_Name,
                 emGroup,
                 0,
                 *Pg);
             I->SetIcon(2);
-            xr_string ModifiedPath = buffer;
+            I->SetPrefix("[PG] ");
             for (auto Effect : (*Pg)->m_Effects)
             {
-                xr_string EffectNameBuilder = ModifiedPath;
+                xr_string EffectNameBuilder = *(*Pg)->m_Name;
                 EffectNameBuilder.append("\\");
                 EffectNameBuilder.append(
-                    InsertBeforeLast(
-                        buffer2,
-                        sizeof(buffer2),
                         _GetItem(
                             Effect->m_EffectName.c_str(),
                             _GetItemCount(Effect->m_EffectName.c_str(),'\\')-1,
                             buffer,
                             sizeof(buffer),
-                            '\\'),
-                        "[EFFECT] "));
-                LHelper().CreateItem(items, EffectNameBuilder.c_str(), emEffectSlot, 0, Effect );
+                            '\\'));
+                I = LHelper().CreateItem(items, EffectNameBuilder.c_str(), emEffectSlot, 0, Effect );
+                I->SetPrefix("[EFFECT] ");
             }
         }
         return items;
@@ -1482,14 +1477,14 @@ void CParticleTool::RealUpdateProperties()
     {
         if (m_EditPE && m_EditPE->GetDefinition())
         {
-            List->SelectItem(MakePEPathFunc(m_EditPE->Name().c_str()));
+            List->SelectItem(m_EditPE->Name().c_str());
         }
     };
     auto SelectCurrentPGFunc = [&](UIItemListForm* List)
     {
         if (m_EditPG && m_EditPG->GetDefinition())
         {
-            List->SelectItem(MakePGPathFunc(m_EditPG->Name().c_str()));
+            List->SelectItem(m_EditPG->Name().c_str());
         }
     };
 
