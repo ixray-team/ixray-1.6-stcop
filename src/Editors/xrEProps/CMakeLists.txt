@@ -7,14 +7,22 @@ file(GLOB_RECURSE EPROPS_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 file(GLOB_RECURSE EPROPS_SOURCE_NODE_FILES CONFIGURE_DEPENDS
     "NodeBuilder/*.*"
 )
+file(GLOB_RECURSE EPROPS_SOURCE_PUBLIC_FILES CONFIGURE_DEPENDS
+    "../Public/PropertiesListTypes.h"
+    "../Public/PropertiesListHelper.h"
+    "../Public/xrEProps.h"
+    "../Public/ItemListTypes.h"
+)
 
 set(EPROPS_SRC_FILES)
 
 source_group("src" FILES ${EPROPS_SOURCE_ALL_FILES})
 source_group("nodes" FILES ${EPROPS_SOURCE_NODE_FILES})
+source_group("public" FILES ${EPROPS_SOURCE_PUBLIC_FILES})
 
 # Apply list
 list(APPEND EPROPS_SRC_FILES ${EPROPS_SOURCE_ALL_FILES})
+list(APPEND EPROPS_SRC_FILES ${EPROPS_SOURCE_PUBLIC_FILES})
 
 # Remove unused files
 #list(FILTER EPROPS_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")
