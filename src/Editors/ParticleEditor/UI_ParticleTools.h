@@ -42,8 +42,12 @@ class CParticleTool:
     void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
 	bool		VerifyParticleCreateItem(UIItemListForm::Node* Node);
 	bool		VerifyParticleCreateFolder(UIItemListForm::Node* Node);
+	bool		VerifyParticleRenameItem(UIItemListForm::Node* Node);
+	bool		VerifyParticleMoveItem(UIItemListForm::Node* Node);
+	ENodeMoveActionSlot GetItemMoveActionSlot(UIItemListForm::Node* Node);
+	bool		ActionItemMoveAction(UIItemListForm::Node* Node);
     void        OnParticleCreateItem(LPCSTR path);
-	void  		OnParticleItemRename	(LPCSTR old_name, LPCSTR new_name, EItemType type);
+	void  		OnParticleItemRename	(UIItemListForm::Node& Node, LPCSTR old_name, LPCSTR new_name, EItemType type);
 	bool		OnParticlePreItemRemove(UIItemListForm::Node& Node);
     void 	 	OnParticleItemRemove	(UIItemListForm::Node& Node);
 
@@ -149,8 +153,8 @@ public:
     virtual void		StopCurrent			(bool bFinishPlaying) override;
     virtual void		SelectEffect		(LPCSTR name) override;
 
-    void				Rename				(LPCSTR src_name, LPCSTR part_name, int part_idx);
-    void				Rename				(LPCSTR src_name, LPCSTR dest_name);
+    //void				Rename				(LPCSTR src_name, LPCSTR part_name, int part_idx);
+    void				Rename				(UIItemListForm::Node& Node, LPCSTR src_name, LPCSTR dest_name);
 
     // PS routine
 	void 				CloneCurrent		();
