@@ -1078,7 +1078,6 @@ void CParticleTool::RealApplyParent()
         }
     case emAnimCurve:
         {
-            R_ASSERT(false);
             break;
         }
     default:
