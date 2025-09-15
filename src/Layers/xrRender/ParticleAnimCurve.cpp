@@ -191,4 +191,18 @@ void PS::CPACDef::Clone(PS::CPACDef* source)
         *d_it = new st_PACKey(**s_it);
     }
 }
+
+void PS::CPACDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
+{
+    PHelper().CreateName(items,PrepareKey(pref,"Name"),&m_Name,(::ListItem*)owner);
+    // TODO: Add disabled
+    PHelper().CreateFloat(items, PrepareKey(pref,"Time Max"), &m_MaxTime, 0, 1000000);
+    auto B = PHelper().CreateButton(items, PrepareKey(pref, "Edit"), "Edit",ButtonValue::flFirstOnly);
+    B->OnBtnClickEvent.bind(this, &CPACDef::OnEditClicked);
+}
+
+void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
+{
+    // TODO: Add Curves Edit window
+}
 #endif
