@@ -4,6 +4,8 @@
 
 #include "particle_actions.h"
 #include "particle_core.h"
+#include "ParticleAnimCurveInterface.h"
+
 namespace PAPI{
 #define _METHODS	virtual void 	Load		(IReader& F);\
                     virtual void 	Save		(IWriter& F);\
@@ -349,7 +351,8 @@ namespace PAPI{
 			age,
 			age_sigma,
 			parent_vel,
-			parent_motion
+			parent_motion,
+			aligh_rot_vel_to_vel
 		};
 		enum{
 			flSingleSize		= (1ul<<29ul),// True to get positionB from position.
@@ -370,6 +373,7 @@ namespace PAPI{
 		float age_sigma;	// St. dev. of initial age of the particles
 		pVector parent_vel;	
 		float parent_motion;
+		bool AlighRotVelocityToVelocity; // TODO: Add setting to PE
 
         _METHODS;
 	};
@@ -529,6 +533,77 @@ namespace PAPI{
 			BindValue
 		};
 		float BindValue;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PAColorAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator,
+			Looped,
+			Reverse
+		};
+		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+
+		PS::IPAC* AnimPtr = nullptr;
+		//float CurrentTime = 0.0f;
+		//size_t CurrentIndex = 0;
+		//Fvector4 PrevValue;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PASizeAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator,
+			Looped,
+			Reverse
+		};
+		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+
+		PS::IPAC* AnimPtr = nullptr;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PAVelocityAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator,
+			Looped,
+			Reverse
+		};
+		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+
+		PS::IPAC* AnimPtr = nullptr;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PAVelocityRotationAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator,
+			Looped,
+			Reverse
+		};
+		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+
+		PS::IPAC* AnimPtr = nullptr;
 
 		_METHODS;
 	};
