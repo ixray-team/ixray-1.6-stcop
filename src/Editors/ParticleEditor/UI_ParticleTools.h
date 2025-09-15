@@ -35,12 +35,13 @@ class CParticleTool:
     Fmatrix 			m_Transform;
     Fvector				m_Vel;
 
-    void 		OnItemModified		(void);
+	void 		OnItemModified		(void);
 
     void  		OnParticleItemFocused	(ListItem* items);
     void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
     void        OnParticleCreateItem(LPCSTR path);
 	void  		OnParticleItemRename	(LPCSTR old_name, LPCSTR new_name, EItemType type);
+	bool		OnParticlePreItemRemove(UIItemListForm::Node& Node);
     void 	 	OnParticleItemRemove	(UIItemListForm::Node& Node);
 
     void				RealUpdateProperties();
