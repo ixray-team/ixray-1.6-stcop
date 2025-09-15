@@ -8,7 +8,7 @@
 #include "UITrackBar.h"
 #include "UIArrowStepper.h"
 
-#include <luabind.hpp>
+#include <luabind/luabind.hpp>
 
 using namespace luabind;
 

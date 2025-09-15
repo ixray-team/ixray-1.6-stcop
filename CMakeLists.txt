@@ -53,11 +53,6 @@ if (IXRAY_ASAN)
     add_compile_options(-fsanitize=address)
 endif()
 
-# LuaBind Debug
-if (IXRAY_LDEBUG)
-    add_compile_definitions(LUA_DEBUG)
-endif()
-
 ## Disable user-cheats for Release/Shipping build
 add_compile_definitions("$<$<CONFIG:Debug>:DEBUG>")
 add_compile_definitions("$<$<CONFIG:Debug>:DEBUG_DRAW>")
@@ -87,6 +82,7 @@ set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 
 include("${CMAKE_MODULE_PATH}/FindSDL3.cmake")
+include("${CMAKE_MODULE_PATH}/FindLuaBind.cmake")
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
