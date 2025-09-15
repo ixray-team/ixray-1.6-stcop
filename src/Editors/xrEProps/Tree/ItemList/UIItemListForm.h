@@ -13,6 +13,7 @@ public:
 	DECLARE_XR_DELEGATE(OnILItemFocused, void, ListItem*);
 	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
 	DECLARE_XR_DELEGATE(OnItemClone, void, LPCSTR, LPCSTR);
+	DECLARE_XR_DELEGATE(VerifyItem, bool, Node*);
 
 private:
 	TOnILItemsFocused OnItemsFocusedEvent;
@@ -21,7 +22,10 @@ private:
 	TOnItemPreRemove OnItemPreRemoveEvent;
 	TOnItemRemove OnItemRemoveEvent;
 	TOnItemRename OnItemRenameEvent;
+	TVerifyItem VerifyItemCreate;
+	TVerifyItem VerifyFolderCreate;
 	TOnItemCreate OnItemCreateEvent;
+	TVerifyItem VerifyItemClone;
 	TOnItemClone OnItemCloneEvent;
 
 public:
@@ -91,9 +95,21 @@ public:
 	{
 		OnItemRenameEvent = e;
 	}
+	IC void SetVerifyItemCreate(TVerifyItem e)
+	{
+		VerifyItemCreate = e;
+	}
+	IC void SetVerifyFolderCreate(TVerifyItem e)
+	{
+		VerifyFolderCreate = e;
+	}
 	IC void SetOnItemCreaetEvent(TOnItemCreate e)
 	{
 		OnItemCreateEvent = e;
+	}
+	IC void SetVerifyItemClone(TVerifyItem e)
+	{
+		VerifyItemClone = e;
 	}
 	IC void SetOnItemCloneEvent(TOnItemClone e)
 	{
@@ -108,7 +124,9 @@ private:
 	virtual bool IsFolderBullet(Node* Node);
 	virtual bool IsFolderSelected(Node* Node);
 
-private:
+	bool VerifyItemCloneFunc(UIItemListForm::Node* Node);
+	bool VerifyItemCreateFunc(UIItemListForm::Node* Node);
+	bool VerifyFolderCreateFunc(UIItemListForm::Node* Node);
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) override;
 	virtual void EventRemoveNode(Node* Node, const char* path) override;
 	virtual bool EventPreRemoveNode(Node* Node) override;
