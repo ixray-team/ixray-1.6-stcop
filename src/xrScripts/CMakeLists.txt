@@ -58,3 +58,8 @@ target_compile_definitions(xrScripts PRIVATE _USRDLL)
 target_link_libraries(xrScripts PUBLIC xrCore)
 target_link_libraries(xrScripts PUBLIC xrAbstractions)
 target_link_libraries(xrScripts PRIVATE "ws2_32.lib")
+
+## LuaJIT
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LUAJIT_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${LUAJIT_NAME}
+)
