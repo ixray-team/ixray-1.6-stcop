@@ -63,11 +63,14 @@ bool CParticleTool::OnCreate()
         ListProp = new UIItemListForm();
         ListProp->m_Flags.set(UIItemListForm::fMenuEdit, true);
         ListProp->SetOnItemFocusedEvent	({this,&CParticleTool::OnParticleItemFocused});
+        ListProp->SetVerifyItemClone({this, &CParticleTool::VerifyParticleCloneItem});
         ListProp->SetOnItemCloneEvent({this, &CParticleTool::OnParticleCloneItem});
+        ListProp->SetVerifyItemCreate({this, &CParticleTool::VerifyParticleCreateItem});
         ListProp->SetOnItemCreaetEvent({this, &CParticleTool::OnParticleCreateItem});
         ListProp->SetOnItemRenameEvent	({this,&CParticleTool::OnParticleItemRename});
         ListProp->SetOnItemPreRemoveEvent({this, &CParticleTool::OnParticlePreItemRemove});
         ListProp->SetOnItemRemoveEvent	({this,&CParticleTool::OnParticleItemRemove});
+        ListProp->SetVerifyFolderCreate({this, &CParticleTool::VerifyParticleCreateFolder});
     };
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Groups)]);
@@ -1220,6 +1223,24 @@ void CParticleTool::OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name
     }
 }
 
+bool CParticleTool::VerifyParticleCreateItem(UIItemListForm::Node* Node)
+{
+    if (!Node)
+    {
+        return false;
+    }
+    return !Node->Object || !Node->Object->m_Object;
+}
+
+bool CParticleTool::VerifyParticleCreateFolder(UIItemListForm::Node* Node)
+{
+    if (!Node)
+    {
+        return false;
+    }
+    return !Node->Object || !Node->Object->m_Object;
+}
+
 void CParticleTool::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItemType type)
 {
     Rename(old_name, new_name);
@@ -1369,6 +1390,16 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
     m_ItemProps->AssignItems(props);
 
     UI->RedrawScene();
+}
+
+bool CParticleTool::VerifyParticleCloneItem(UIItemListForm::Node* Node)
+{
+    if (!Node || !Node->Object)
+    {
+        return false;
+    }
+    auto type = Node->Object->Type();
+    return type == emEffect || type == emGroup;
 }
 
 extern ECORE_API xr_string _item_to_select_after_edit;
