@@ -27,6 +27,13 @@ void UILeftBarForm::Draw()
 			}
 			ImGui::SameLine();
 
+			if (ImGui::Button("Add PAC"))
+			{
+				PTools->AppendPAC(0, "pac");
+				PTools->Modified();
+			}
+			ImGui::SameLine();
+
 			if (ImGui::Button("Clone"))
 			{
 				PTools->CloneCurrent();
@@ -51,17 +58,22 @@ void UILeftBarForm::Draw()
 		{
 			if (ImGui::Button("All Particles"))
 			{
-				PTools->m_SelectedTypes = PEd::LisType::Groups | PEd::LisType::Effects;
+				PTools->m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::All);
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Groups"))
 			{
-				PTools->m_SelectedTypes = u8(PEd::LisType::Groups);
+				PTools->m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::Groups);
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Effects"))
 			{
-				PTools->m_SelectedTypes = u8(PEd::LisType::Effects);
+				PTools->m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::Effects);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Anim Curves"))
+			{
+				PTools->m_SelectedTypes = PEd::ListTypeBase(PEd::LisType::AnimCurve);
 			}
 		}
 		
