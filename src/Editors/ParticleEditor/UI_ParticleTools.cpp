@@ -71,6 +71,10 @@ bool CParticleTool::OnCreate()
         ListProp->SetOnItemPreRemoveEvent({this, &CParticleTool::OnParticlePreItemRemove});
         ListProp->SetOnItemRemoveEvent	({this,&CParticleTool::OnParticleItemRemove});
         ListProp->SetVerifyFolderCreate({this, &CParticleTool::VerifyParticleCreateFolder});
+        ListProp->SetVerifyItemRename({this, &CParticleTool::VerifyParticleRenameItem});
+        ListProp->SetVerifyItemMove({this, &CParticleTool::VerifyParticleMoveItem});
+        ListProp->SetGetItemMoveActionSlot({this, &CParticleTool::GetItemMoveActionSlot});
+        ListProp->SetOnMoveItemEvent(ENodeMoveActionSlot::First, {this, &CParticleTool::ActionItemMoveAction}); // Move action
     };
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Groups)]);
@@ -605,27 +609,46 @@ bool CParticleTool::Validate(bool bMsg)
     return error_cnt==0;
 }
 
-void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR ren_part, int level)
+/*void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR ren_part, int level)
 {
     VERIFY(level<_GetItemCount(old_full_name,'\\'));
     xr_string new_full_name;
     Rename(old_full_name, new_full_name.c_str());
-}
+}*/
 
-void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR new_full_name)
+void CParticleTool::Rename(UIItemListForm::Node& Node, LPCSTR old_full_name, LPCSTR new_full_name)
 {
 	VERIFY(m_bReady);
-    // is effect
-	PS::CPEDef* E = RImplementation.PSLibrary.FindPED(old_full_name);
-    if (E){
-        RImplementation.PSLibrary.RenamePED(E,new_full_name);
-    	return;
+    if (!Node.Object)
+    {
+        return;
     }
-    // is group
-	PS::CPGDef* G = RImplementation.PSLibrary.FindPGD(old_full_name);
-    if (G){
-        RImplementation.PSLibrary.RenamePGD(G,new_full_name);
-    	return;
+    switch (Node.Object->Type())
+    {
+    case emEffect:
+        {
+            // is effect
+            PS::CPEDef* E = RImplementation.PSLibrary.FindPED(old_full_name);
+            if (E){
+                RImplementation.PSLibrary.RenamePED(E,new_full_name);
+            }
+            break;
+        }
+    case emGroup:
+        {
+            // is group
+            PS::CPGDef* G = RImplementation.PSLibrary.FindPGD(old_full_name);
+            if (G){
+                RImplementation.PSLibrary.RenamePGD(G,new_full_name);
+            }
+            break;
+        }
+    case emAction:
+        {
+            auto PA = (EParticleAction*)(Node.Object->m_Object);
+            string_path buffer;
+            PA->actionName = _GetItem(new_full_name, _GetItemCount(new_full_name, '\\')-1, buffer, '\\');
+        }
     }
 }
 
@@ -1241,9 +1264,102 @@ bool CParticleTool::VerifyParticleCreateFolder(UIItemListForm::Node* Node)
     return !Node->Object || !Node->Object->m_Object;
 }
 
-void CParticleTool::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItemType type)
+bool CParticleTool::VerifyParticleRenameItem(UIItemListForm::Node* Node)
 {
-    Rename(old_name, new_name);
+    if (!Node || !Node->Object)
+    {
+        return false;
+    }
+    switch (Node->Object->Type())
+    {
+    case emEffectSlot:
+        {
+            return false;
+        }
+    default:
+        {
+            return true;
+        }
+    }
+}
+
+bool CParticleTool::VerifyParticleMoveItem(UIItemListForm::Node* Node)
+{
+    if (!Node || !Node->Object)
+    {
+        return false;
+    }
+    switch (Node->Object->Type())
+    {
+    case emEffectSlot:
+        {
+            return false;
+        }
+    default:
+        {
+            return true;
+        }
+    }
+}
+
+ENodeMoveActionSlot CParticleTool::GetItemMoveActionSlot(UIItemListForm::Node* Node)
+{
+    if (!Node || !Node->Object)
+    {
+        return ENodeMoveActionSlot::Default;
+    }
+    switch (Node->Object->Type())
+    {
+        case emAction:
+            {
+                return ENodeMoveActionSlot::First;
+            }
+        default:
+            {
+                return ENodeMoveActionSlot::Default;
+            }
+    }
+}
+
+bool CParticleTool::ActionItemMoveAction(UIItemListForm::Node* Node)
+{
+    bool IsProcessed = false;
+    EParticleAction* Action = (EParticleAction*)Node->Object->m_Object;
+    PS::CPEDef* Effect = Action->parent;
+    R_ASSERT(Effect);
+    if (ImGui::Button("Up"))
+    {
+        if (Effect->MoveUpAction(Action))
+        {
+            IsProcessed = true;
+        }
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Down"))
+    {
+        if (Effect->MoveDownAction(Action))
+        {
+            IsProcessed = true;
+        }
+    }
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
+    if (IsProcessed)
+    {
+        ImGui::CloseCurrentPopup();
+    }
+    return IsProcessed;
+}
+
+void CParticleTool::OnParticleItemRename(UIItemListForm::Node& Node, LPCSTR old_name, LPCSTR new_name, EItemType type)
+{
+    Rename(Node, old_name, new_name);
     Modified();
 }
 
