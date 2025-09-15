@@ -390,7 +390,7 @@ void UIItemListForm::DrawMenuEdit()
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			if (ImGui::MenuItem("Delete"))
 			{
-				Remove(&m_GeneralNode, m_edit_node, true);
+				Remove(&m_GeneralNode, m_edit_node, true, false);
 				ImGui::CloseCurrentPopup();
 				m_edit_node = nullptr;
 			}
@@ -580,13 +580,19 @@ void UIItemListForm::EventRenameNode(Node* Node, const char* old_path, const cha
 
 void UIItemListForm::EventRemoveNode(Node* Node, const char* path)
 {
-	EItemType type = TYPE_FOLDER;
-	if (Node->IsObject())
-	{
-		type = TYPE_OBJECT;
-	}
 	if (!OnItemRemoveEvent.empty())
+	{
 		OnItemRemoveEvent(*Node);
+	}
+}
+
+bool UIItemListForm::EventPreRemoveNode(Node* Node)
+{
+	if (!OnItemPreRemoveEvent.empty())
+	{
+		return OnItemPreRemoveEvent(*Node);
+	}
+	return true;
 }
 
 void UIItemListForm::ClearSelectedItems()
