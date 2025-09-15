@@ -5,6 +5,7 @@
 
 #include "UI_ParticleTools.h"
 
+#include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/ObjectAnimator.h"
 #include "../xrECore/Editor/ParticleEffectActions.h"
 //------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ bool CParticleTool::OnCreate()
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Groups)]);
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::Effects)]);
+    ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::AnimCurve)]);
     //
     m_ParentAnimator= new CObjectAnimator();
 
@@ -180,25 +182,30 @@ void CParticleTool::Render()
             R_ASSERT(false);
             break;
         }
-    case emGroup:{
-    	if (m_EditPG){
-         	int cnt 		= m_EditPG->items.size();
-            for (int k=0; k<cnt; k++){
-                PS::CParticleEffect* E		= (PS::CParticleEffect*)m_EditPG->items[k]._effect;
-
-                if (m_LibPGD == nullptr || m_LibPGD->m_Effects[k] == nullptr)
-                {
-                    continue;
+    case emGroup:
+        {
+        	if (m_EditPG){
+             	int cnt 		= m_EditPG->items.size();
+                for (int k=0; k<cnt; k++){
+                    PS::CParticleEffect* E		= (PS::CParticleEffect*)m_EditPG->items[k]._effect;
+    
+                    if (m_LibPGD == nullptr || m_LibPGD->m_Effects[k] == nullptr)
+                    {
+                        continue;
+                    }
+    
+	    			if (E&&E->GetDefinition()&&m_LibPGD->m_Effects[k]->m_Flags.is(PS::CPGDef::SEffect::flEnabled))
+	    			{
+	    			    E->GetDefinition()->Render(m_Transform);
+	    			}
                 }
-
-				if (E&&E->GetDefinition()&&m_LibPGD->m_Effects[k]->m_Flags.is(PS::CPGDef::SEffect::flEnabled))
-				{
-				    E->GetDefinition()->Render(m_Transform);
-				}
             }
+            break;
         }
-        break;
-    }
+    case emAnimCurve:
+        {
+            break;
+        }
     default:
         {
             THROW;
@@ -303,6 +310,10 @@ void CParticleTool::OnFrame()
             }
             break;
         }
+    case emAnimCurve:
+        {
+            break;
+        }
     default:
         {
             THROW;
@@ -349,6 +360,11 @@ void CParticleTool::ZoomObject(BOOL bSelOnly)
         case emGroup:
             {
                 box.set(m_EditPG->vis.box);
+                break;
+            }
+        case emAnimCurve:
+            {
+                R_ASSERT(false);
                 break;
             }
 	    default:
@@ -687,6 +703,13 @@ void CParticleTool::Remove(UIItemListForm::Node& Node)
             RImplementation.PSLibrary.Remove(RealObj->m_Name.c_str());
             break;
         }
+    case emAnimCurve:
+        {
+            auto RealObj = (PS::CPACDef*)(Node.Object->m_Object);
+            VERIFY(m_bReady);
+            RImplementation.PSLibrary.Remove(RealObj->getName());
+            break;
+        }
     case emAction:
     case emEffectSlot:
         {
@@ -837,6 +860,11 @@ void CParticleTool::DrawReferenceList()
                     }
                 }
             }
+            break;
+        }
+    case emAnimCurve:
+        {
+            R_ASSERT(false);
             break;
         }
     }
@@ -1046,6 +1074,11 @@ void CParticleTool::RealApplyParent()
     case emGroup:
         {
             m_EditPG->UpdateParent(m_Transform,m_Vel,m_Flags.is(flSetXFORM));
+            break;
+        }
+    case emAnimCurve:
+        {
+            R_ASSERT(false);
             break;
         }
     default:
@@ -1374,6 +1407,7 @@ bool CParticleTool::OnParticlePreItemRemove(UIItemListForm::Node& Node)
     {
     case emEffect:
     case emGroup:
+    case emAnimCurve:
         {
             return true;
         }
@@ -1493,6 +1527,12 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
                     def->FillProp(GROUP_PREFIX, props, item);
                     break;
                 }
+            case emAnimCurve:
+                {
+                    auto def = (PS::CPACDef*)item->m_Object;
+                    def->FillProp(ANIM_CURVE_PREFIX, props, item);
+                    break;
+                }
             default:
                 {
                     THROW;
@@ -1597,6 +1637,21 @@ void CParticleTool::RealUpdateProperties()
         }
         return items;
     };
+    auto AddAllPACFunc = [&](ListItemsVec& items) -> ListItemsVec&
+    {
+        for (auto elem : RImplementation.PSLibrary.VecPACDs())
+        {
+            ListItem* I = LHelper().CreateItem(
+                items,
+                elem->getName(),
+                emAnimCurve,
+                0,
+                elem);
+            I->SetIcon(3);
+            I->SetPrefix("[PAC] ");
+        }
+        return items;
+    };
     // Select selected functions
     auto SelectCurrentPEFunc = [&](UIItemListForm* List)
     {
@@ -1616,7 +1671,10 @@ void CParticleTool::RealUpdateProperties()
     {
         auto List = m_PList[PEd::ListTypeBase(PEd::LisType::All)];
         ListItemsVec items;
-        List->AssignItems(AddAllPGFunc(AddAllPEFunc(items)), nullptr, true);
+        List->AssignItems(
+            AddAllPACFunc(AddAllPGFunc(AddAllPEFunc(items))),
+            nullptr,
+            true);
         if (_item_to_select_after_edit.size())
         {
             List->SelectItem(_item_to_select_after_edit.c_str());
@@ -1630,7 +1688,10 @@ void CParticleTool::RealUpdateProperties()
     {
         auto List = m_PList[PEd::ListTypeBase(PEd::LisType::Groups)];
         ListItemsVec items;
-        List->AssignItems(AddAllPGFunc(items), nullptr, true);
+        List->AssignItems(
+            AddAllPGFunc(items),
+            nullptr,
+            true);
         if (_item_to_select_after_edit.size())
         {
             List->SelectItem(_item_to_select_after_edit.c_str());
@@ -1643,7 +1704,10 @@ void CParticleTool::RealUpdateProperties()
     {
         auto List = m_PList[PEd::ListTypeBase(PEd::LisType::Effects)];
         ListItemsVec items;
-        List->AssignItems(AddAllPEFunc(items), nullptr, true);
+        List->AssignItems(
+            AddAllPEFunc(items),
+            nullptr,
+            true);
         if (_item_to_select_after_edit.size())
         {
             List->SelectItem(_item_to_select_after_edit.c_str());
@@ -1651,6 +1715,20 @@ void CParticleTool::RealUpdateProperties()
         } else
         {
             SelectCurrentPEFunc(List);
+        }
+    }
+    {
+        auto List = m_PList[PEd::ListTypeBase(PEd::LisType::AnimCurve)];
+        ListItemsVec items;
+        List->AssignItems(
+            AddAllPACFunc(items),
+            nullptr,
+            true
+            );
+        if (_item_to_select_after_edit.size())
+        {
+            List->SelectItem(_item_to_select_after_edit.c_str());
+            _item_to_select_after_edit = "";
         }
     }
 }
