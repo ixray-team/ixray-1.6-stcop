@@ -8,6 +8,7 @@
 
 #include <magic_enum/magic_enum.hpp>
 
+#include "ParticleAnimCurve.h"
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
 
@@ -20,9 +21,11 @@
 
 bool ped_sort_pred	(const PS::CPEDef* a, 	const PS::CPEDef* b)	{	return xr_strcmp(a->Name(),b->Name())<0;}
 bool pgd_sort_pred	(const PS::CPGDef* a, 	const PS::CPGDef* b)	{	return xr_strcmp(a->m_Name,b->m_Name)<0;}
+bool pacd_sort_pred	(const PS::CPACDef* a, 	const PS::CPACDef* b)	{	return xr_strcmp(a->getName(),b->getName())<0;}
 
 bool ped_find_pred	(const PS::CPEDef* a, 	LPCSTR b)				{	return xr_strcmp(a->Name(),b)<0;}
 bool pgd_find_pred	(const PS::CPGDef* a, 	LPCSTR b)				{	return xr_strcmp(a->m_Name,b)<0;}
+bool pacd_find_pred	(const PS::CPACDef* a, 	LPCSTR b)				{	return xr_strcmp(a->getName(),b)<0;}
 //----------------------------------------------------
 void CPSLibrary::OnCreate()
 {
@@ -70,7 +73,7 @@ PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
 
 PS::CPEDef* CPSLibrary::FindPED(LPCSTR Name)
 {
-	PS::PEDIt it = FindPEDIt(Name);
+	auto it = FindPEDIt(Name);
     return (it==m_PEDs.end())?0:*it;
 }
 
@@ -90,7 +93,7 @@ PS::PGDIt CPSLibrary::FindPGDIt(LPCSTR Name)
 
 PS::CPGDef* CPSLibrary::FindPGD(LPCSTR Name)
 {
-	PS::PGDIt it = FindPGDIt(Name);
+	auto it = FindPGDIt(Name);
     return (it==m_PGDs.end())?0:*it;
 }
 
@@ -100,27 +103,66 @@ void CPSLibrary::RenamePED(PS::CPEDef* src, LPCSTR new_name)
 	src->SetName(new_name);
 }
 
+PS::CPACDef* CPSLibrary::FindPACD(LPCSTR Name)
+{
+	auto it = FindPACDIt(Name);
+	return (it==m_PACDs.end())?0:*it;
+}
+
+PS::PACDIt CPSLibrary::FindPACDIt(LPCSTR Name)
+{
+	if (!Name) return m_PACDs.end();
+#ifdef _EDITOR
+	for (auto it=m_PACDs.begin(); it!=m_PACDs.end(); it++)
+		if (0==xr_strcmp((*it)->getName(),Name)) return it;
+	return m_PACDs.end();
+#else
+	PS::PACDIt I = std::lower_bound(m_PACDs.begin(),m_PACDs.end(),Name,pacd_find_pred);
+	if (I==m_PACDs.end() || (0!=xr_strcmp((*I)->getName(),Name)))	return m_PACDs.end();
+	else														return I;
+#endif
+}
+
 void CPSLibrary::RenamePGD(PS::CPGDef* src, LPCSTR new_name)
 {
 	R_ASSERT(src&&new_name&&new_name[0]);
 	src->SetName(new_name);
 }
 
+void CPSLibrary::RenamePACD(PS::CPACDef* src, LPCSTR new_name)
+{
+	R_ASSERT(src&&new_name&&new_name[0]);
+	src->setName(new_name);
+}
+
 void CPSLibrary::Remove(const char* nm)
 {
-	PS::PEDIt it = FindPEDIt(nm);
-	if (it!=m_PEDs.end())
-    {
-		(*it)->DestroyShader();
-		xr_delete		(*it);
-		m_PEDs.erase	(it);
-	}else
-    {
-		PS::PGDIt it_ = FindPGDIt(nm);
-		if (it_!=m_PGDs.end())
-        {
-			xr_delete	(*it_);
-			m_PGDs.erase(it_);
+	{
+		auto it = FindPEDIt(nm);
+		if (it!=m_PEDs.end())
+		{
+			(*it)->DestroyShader();
+			xr_delete(*it);
+			m_PEDs.erase(it);
+			return;
+		}
+	}
+	{
+		auto it = FindPGDIt(nm);
+		if (it!=m_PGDs.end())
+		{
+			xr_delete(*it);
+			m_PGDs.erase(it);
+			return;
+		}
+	}
+	{
+		auto it = FindPACDIt(nm);
+		if (it!=m_PACDs.end())
+		{
+			xr_delete(*it);
+			m_PACDs.erase(it);
+			return;
 		}
 	}
 }
@@ -131,7 +173,7 @@ bool CPSLibrary::Load2()
 	string_path					_path;
     FS.update_path				(_path, "$game_particles$", "");
 
-	FS.file_list				(files, _path, FS_ListFiles, "*.pe,*.pg");
+	FS.file_list				(files, _path, FS_ListFiles, "*.pe,*.pg,*.pac");
 
 #ifdef _EDITOR
 	SPBItem* pb = nullptr;
@@ -158,20 +200,41 @@ bool CPSLibrary::Load2()
         {
             PS::CPEDef*	def		= new PS::CPEDef();
             def->m_Name			= _path;
-            if (def->Load2(ini)) 
-            	m_PEDs.push_back(def);
+            if (def->Load2(ini))
+            {
+	            m_PEDs.push_back(def);
+            }
             else
-            	xr_delete		(def);
-        }else
-        if(0==_stricmp(p_ext,".pg"))
+            {
+	            xr_delete		(def);
+            }
+        }
+		else if(0==_stricmp(p_ext,".pg"))
         {
             PS::CPGDef*	def		= new PS::CPGDef();
             def->m_Name			= _path;
-            if (def->Load2(ini)) 
-            	m_PGDs.push_back(def);
+            if (def->Load2(ini))
+            {
+	            m_PGDs.push_back(def);
+            }
             else
-            	xr_delete		(def);
-        }else
+            {
+	            xr_delete		(def);
+            }
+        }
+		else if(0==_stricmp(p_ext,".pac"))
+		{
+			auto def = new PS::CPACDef();
+			if (def->Load2(ini))
+			{
+				m_PACDs.push_back(def);
+			}
+			else
+			{
+				xr_delete(def);
+			}
+		}
+		else
         {
         	R_ASSERT(0);
         }
@@ -297,6 +360,7 @@ bool CPSLibrary::LoadOriginal(IReader& F)
 
 bool CPSLibrary::LoadExtended(IReader& F)
 {
+	R_ASSERT(false);
 	return true;
 }
 
