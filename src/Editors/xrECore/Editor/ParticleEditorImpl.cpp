@@ -5,6 +5,7 @@
 #include "../../Layers/xrRender/PSLibrary.h"
 #include "../../Layers/xrRender/ParticleEffect.h"
 #include "../../Layers/xrRender/ParticleGroup.h"
+#include "../../Layers/xrRender/ParticleAnimCurve.h"
 
 #include "ParticleEffectActions.h"
 #include "../xrEProps/FolderLib.h"
@@ -711,8 +712,10 @@ void PS::CPEDef::Render(const Fmatrix& parent)
 PS::CPEDef* CPSLibrary::AppendPED(PS::CPEDef* src)
 {
     m_PEDs.push_back(new PS::CPEDef());
-    if (src) 
-        m_PEDs.back()->Copy(*src);
+    if (src)
+    {
+	    m_PEDs.back()->Copy(*src);
+    }
 
     return m_PEDs.back();
 }
@@ -720,8 +723,21 @@ PS::CPEDef* CPSLibrary::AppendPED(PS::CPEDef* src)
 PS::CPGDef* CPSLibrary::AppendPGD(PS::CPGDef* src)
 {
     m_PGDs.push_back(new PS::CPGDef());
-    if (src) m_PGDs.back()->Clone(src);
+    if (src)
+    {
+	    m_PGDs.back()->Clone(src);
+    }
     return m_PGDs.back();
+}
+
+PS::CPACDef* CPSLibrary::AppendPACD(PS::CPACDef* src)
+{
+	m_PACDs.push_back(new PS::CPACDef());
+	if (src)
+	{
+		m_PACDs.back()->Clone(src);
+	}
+	return m_PACDs.back();
 }
 
 
@@ -740,7 +756,7 @@ bool CPSLibrary::Save()
 bool CPSLibrary::Save2()
 {
     string_path fn;
-    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size(), "Saving particles...");
+    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size() + m_PACDs.size(), "Saving particles...");
 
     for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it)
     {
@@ -777,6 +793,26 @@ bool CPSLibrary::Save2()
         pg->Save2(ini);
         ini.save_as(fn);
     }
+
+	for (auto elem : m_PACDs)
+	{
+		pb->Inc();
+
+		if (!elem->Validate(false))
+		{
+			continue;
+		}
+
+		FS.update_path(fn, "$game_particles$", elem->getName());
+		strcat(fn, ".pac");
+
+		FS.file_delete(fn);
+
+		CInifile ini(fn, FALSE, FALSE, FALSE);
+		elem->Save2(ini);
+		ini.save_as(fn);
+	}
+	
     UI->ProgressEnd(pb);
     return true;
 }
