@@ -162,6 +162,7 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 		if (N)
 		{
 			N->Object = item;
+			N->Prefix = item->Prefix();
 		}
 	}
 	if (name_selection)
@@ -444,7 +445,9 @@ void UIItemListForm::DrawItem(Node* Node)
 	}
 	if (m_edit_node == Node)
 		Flags |= ImGuiTreeNodeFlags_Selected;
-	ImGui::TreeNodeEx(Node->Name.c_str(), Flags);
+	xr_string builder = Node->Prefix.c_str();
+	builder.append(Node->Name.c_str());
+	ImGui::TreeNodeEx(builder.c_str(), Flags);
 
 	if (m_Flags.is(fMenuEdit))
 	{
