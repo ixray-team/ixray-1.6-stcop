@@ -65,7 +65,7 @@ void ParticleEffect::Remove(int i)
 }
 
 BOOL ParticleEffect::Add(const pVector& pos, const pVector& posB,
-	const pVector& size, const pVector& rot, const pVector& vel, u32 color,
+	const pVector& size, const pVector& rot, const pVector& vel, const pVector& rot_vel, u32 color,
 	const float age, u16 frame, u16 flags)
 {
 	if (p_count >= max_particles)
@@ -81,6 +81,8 @@ BOOL ParticleEffect::Add(const pVector& pos, const pVector& posB,
 	P.rotI.x 	= rot.x;
 	P.vel 		= vel;
 	P.velI 		= vel;
+	P.rot_vel 	= rot_vel;
+	P.rot_velS 	= rot_vel;
 	P.color 	= color;
 	P.age 		= age;
 	P.frame 	= frame;

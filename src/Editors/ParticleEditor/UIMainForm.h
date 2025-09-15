@@ -1,4 +1,10 @@
 #pragma once
+class UILeftBarForm;
+class UITopBarForm;
+class UIRenderForm;
+class UIMainMenuForm;
+class UIRightBarForm;
+
 class UIMainForm :public IEditorWnd
 {
 public:
