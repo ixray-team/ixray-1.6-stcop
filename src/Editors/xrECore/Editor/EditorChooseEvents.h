@@ -8,6 +8,7 @@
 #include "../../Layers/xrRender/ResourceManager.h"
 #include "../../Layers/xrRender/ParticleEffect.h"
 #include "../../Layers/xrRender/ParticleGroup.h"
+#include "../../Layers/xrRender/ParticleAnimCurve.h"
 #include "../../xrEngine/defines.h"
 #include "EditObject.h"
 ref_sound* choose_snd;
@@ -266,13 +267,30 @@ namespace ChoseEvents
     //---------------------------------------------------------------------------
     void   FillPE(ChooseItemVec& items, void* param)
     {
-        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
+        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
+        {
+            items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
+        }
+    }
+    //---------------------------------------------------------------------------
+    void   FillPAC(ChooseItemVec& items, void* param)
+    {
+        for (auto elem : RImplementation.PSLibrary.VecPACDs())
+        {
+            items.push_back(SChooseItem(elem->getName(), "ANIM_CURVE"));
+        }
     }
     //---------------------------------------------------------------------------
     void   FillParticles(ChooseItemVec& items, void* param)
     {
-        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
-        for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)items.push_back(SChooseItem(*(*G)->m_Name, "GROUP"));
+        for (PS::PEDIt E = ::RImplementation.PSLibrary.FirstPED(); E != ::RImplementation.PSLibrary.LastPED(); E++)
+        {
+            items.push_back(SChooseItem(*(*E)->m_Name, "EFFECT"));
+        }
+        for (PS::PGDIt G = ::RImplementation.PSLibrary.FirstPGD(); G != ::RImplementation.PSLibrary.LastPGD(); G++)
+        {
+            items.push_back(SChooseItem(*(*G)->m_Name, "GROUP"));
+        }
     }
 
     void   SelectPE(SChooseItem* item, PropItemVec& info_items)
@@ -454,6 +472,7 @@ void FillChooseEvents()
     UIChooseForm::AppendEvents(smGameMaterial, "Select Game Material", ChoseEvents::FillGameMaterial, 0, 0, 0, 0);
     UIChooseForm::AppendEvents(smGameAnim, "Select Animation", ChoseEvents::FillGameAnim, 0, 0, 0, 0);
     UIChooseForm::AppendEvents(smGameSMotions, "Select Game Object Motions", ChoseEvents::FillGameObjectMots, ChoseEvents::SelectGameObjectMots, 0, 0, 0);
+    UIChooseForm::AppendEvents(smPAC, "Select Animation Curve", ChoseEvents::FillPAC, 0,0, 0, 0);
     choose_snd = new ref_sound();
 }
 
