@@ -242,15 +242,18 @@ public:
 		N->Nodes.push_back(NewNode);
 		return &N->Nodes.back();
 	}
-	inline void Remove(Node* N, Node* Object, bool use_event = false)
+	inline void Remove(Node* N, Node* Object, bool use_event = false, bool use_child_event = true)
 	{
-
+		if (!EventPreRemoveNode(Object))
+		{
+			return;
+		}
 		Node* F = Object->Path.size() == 0 ? N : FindFolder(N, Object->Path.c_str());
 		R_ASSERT(F);
 		string_path path;
 		if (use_event)
 		{
-			RemoveNode(Object);
+			RemoveNode(Object, use_child_event);
 			GetFullPath(Object, path);
 			EventRemoveNode(Object, path);
 		}
@@ -376,6 +379,7 @@ public:
 	virtual bool IsFolderSelected(Node* Node) { return false; }
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) {}
 	virtual void EventRemoveNode(Node* Node, const char* path) {}
+	virtual bool EventPreRemoveNode(Node* Node) { return true;}
 	inline void GetFullPath(Node* Object, string_path& full_path)
 	{
 		if (Object->Path.c_str() && Object->Path.c_str()[0])
@@ -434,14 +438,17 @@ private:
 		}
 	}
 
-	inline void RemoveNode(Node* Object)
+	inline void RemoveNode(Node* Object, bool use_child_event = true)
 	{
 		for (Node& n : Object->Nodes)
 		{
 			string_path path;
 			RemoveNode(&n);
-			GetFullPath(&n, path);
-			EventRemoveNode(&n, path);
+			if (use_child_event)
+			{
+				GetFullPath(&n, path);
+				EventRemoveNode(&n, path);
+			}
 		}
 		Object->Nodes.clear();
 	}

@@ -8,6 +8,7 @@ public:
 	using Node = FolderHelper<ListItem, true>::Node;
 	DECLARE_XR_DELEGATE(OnItemRename, void, LPCSTR, LPCSTR, EItemType);
 	DECLARE_XR_DELEGATE(OnItemRemove, void, Node& Node);
+	DECLARE_XR_DELEGATE(OnItemPreRemove, bool, Node& Node);
 	DECLARE_XR_DELEGATE(OnILItemsFocused, void, ListItemsVec&);
 	DECLARE_XR_DELEGATE(OnILItemFocused, void, ListItem*);
 	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
@@ -15,12 +16,13 @@ public:
 
 private:
 	TOnILItemsFocused OnItemsFocusedEvent;
-	TOnILItemFocused  OnItemFocusedEvent;
-	TOnILItemFocused  OnItemUnfocusedEvent;
-	TOnItemRemove     OnItemRemoveEvent;
-	TOnItemRename     OnItemRenameEvent;
-	TOnItemCreate     OnItemCreateEvent;
-	TOnItemClone      OnItemCloneEvent;
+	TOnILItemFocused OnItemFocusedEvent;
+	TOnILItemFocused OnItemUnfocusedEvent;
+	TOnItemPreRemove OnItemPreRemoveEvent;
+	TOnItemRemove OnItemRemoveEvent;
+	TOnItemRename OnItemRenameEvent;
+	TOnItemCreate OnItemCreateEvent;
+	TOnItemClone OnItemCloneEvent;
 
 public:
 	UIItemListForm();
@@ -77,6 +79,10 @@ public:
 	{
 		OnItemUnfocusedEvent = e;
 	}
+	IC void SetOnItemPreRemoveEvent(TOnItemPreRemove e)
+	{
+		OnItemPreRemoveEvent = e;
+	}
 	IC void SetOnItemRemoveEvent(TOnItemRemove e)
 	{
 		OnItemRemoveEvent = e;
@@ -103,8 +109,9 @@ private:
 	virtual bool IsFolderSelected(Node* Node);
 
 private:
-	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path);
-	virtual void EventRemoveNode(Node* Node, const char* path);
+	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) override;
+	virtual void EventRemoveNode(Node* Node, const char* path) override;
+	virtual bool EventPreRemoveNode(Node* Node) override;
 
 public:
 	Node         m_GeneralNode;

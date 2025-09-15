@@ -66,6 +66,7 @@ bool CParticleTool::OnCreate()
         ListProp->SetOnItemCloneEvent({this, &CParticleTool::OnParticleCloneItem});
         ListProp->SetOnItemCreaetEvent({this, &CParticleTool::OnParticleCreateItem});
         ListProp->SetOnItemRenameEvent	({this,&CParticleTool::OnParticleItemRename});
+        ListProp->SetOnItemPreRemoveEvent({this, &CParticleTool::OnParticlePreItemRemove});
         ListProp->SetOnItemRemoveEvent	({this,&CParticleTool::OnParticleItemRemove});
     };
     ListInitFunc(m_PList[PEd::ListTypeBase(PEd::LisType::All)]);
@@ -627,7 +628,11 @@ void CParticleTool::Rename(LPCSTR old_full_name, LPCSTR new_full_name)
 
 void CParticleTool::Remove(UIItemListForm::Node& Node)
 {
-    switch (GetAffectedItemType(Node.Name.c_str()))
+    if (!Node.Object)
+    {
+        return;
+    }
+    switch (Node.Object->Type())
     {
     case emEffect:
         {
@@ -657,19 +662,9 @@ void CParticleTool::Remove(UIItemListForm::Node& Node)
             break;
         }
     case emAction:
-        {
-            VERIFY(m_bReady);
-            auto RealObj = (EParticleAction*)(Node.Object->m_Object);
-            auto PE = RealObj->parent;
-            PE->RemoveAction(RealObj);
-            break;
-        }
     case emEffectSlot:
         {
             VERIFY(m_bReady);
-            auto RealObj = (PS::CPGDef::SEffect*)(Node.Object->m_Object);
-            auto PG = RealObj->parent;
-            PG->RemoveEffect(RealObj);
             break;
         }
     }
@@ -1229,6 +1224,35 @@ void CParticleTool::OnParticleItemRename(LPCSTR old_name, LPCSTR new_name, EItem
 {
     Rename(old_name, new_name);
     Modified();
+}
+
+bool CParticleTool::OnParticlePreItemRemove(UIItemListForm::Node& Node)
+{
+    
+    if (!Node.Object)
+    {
+        return true;
+    }
+    switch (Node.Object->Type())
+    {
+    case emEffect:
+    case emGroup:
+        {
+            return true;
+        }
+    case emAction:
+        {
+            auto RealObj = (EParticleAction*)(Node.Object->m_Object);
+            auto PE = RealObj->parent;
+            return PE->RemoveAction(RealObj);
+        }
+    case emEffectSlot:
+        {
+            auto RealObj = (PS::CPGDef::SEffect*)(Node.Object->m_Object);
+            auto PG = RealObj->parent;
+            return PG->RemoveEffect(RealObj);
+        }
+    }
 }
 
 void CParticleTool::OnParticleItemRemove(UIItemListForm::Node& Node)
