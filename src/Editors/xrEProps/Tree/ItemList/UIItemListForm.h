@@ -1,4 +1,5 @@
 #pragma once
+#include "FolderLib.h"
 
 class XREPROPS_API UIItemListForm : 
 	public IEditorWnd, 
@@ -6,7 +7,7 @@ class XREPROPS_API UIItemListForm :
 {
 public:
 	using Node = FolderHelper<ListItem, true>::Node;
-	DECLARE_XR_DELEGATE(OnItemRename, void, LPCSTR, LPCSTR, EItemType);
+	DECLARE_XR_DELEGATE(OnItemRename, void, Node&, LPCSTR, LPCSTR, EItemType);
 	DECLARE_XR_DELEGATE(OnItemRemove, void, Node& Node);
 	DECLARE_XR_DELEGATE(OnItemPreRemove, bool, Node& Node);
 	DECLARE_XR_DELEGATE(OnILItemsFocused, void, ListItemsVec&);
@@ -14,6 +15,8 @@ public:
 	DECLARE_XR_DELEGATE(OnItemCreate, void, LPCSTR);
 	DECLARE_XR_DELEGATE(OnItemClone, void, LPCSTR, LPCSTR);
 	DECLARE_XR_DELEGATE(VerifyItem, bool, Node*);
+	DECLARE_XR_DELEGATE(GetItemMoveActionSlot, ENodeMoveActionSlot, Node*);
+	DECLARE_XR_DELEGATE(OnMoveItem, bool, Node*);
 
 private:
 	TOnILItemsFocused OnItemsFocusedEvent;
@@ -21,12 +24,18 @@ private:
 	TOnILItemFocused OnItemUnfocusedEvent;
 	TOnItemPreRemove OnItemPreRemoveEvent;
 	TOnItemRemove OnItemRemoveEvent;
+	TVerifyItem VerifyItemRename;
+	TVerifyItem VerifyItemMove;
 	TOnItemRename OnItemRenameEvent;
 	TVerifyItem VerifyItemCreate;
 	TVerifyItem VerifyFolderCreate;
 	TOnItemCreate OnItemCreateEvent;
 	TVerifyItem VerifyItemClone;
 	TOnItemClone OnItemCloneEvent;
+	TGetItemMoveActionSlot GetItemMoveActionSlot;
+	xr_map<ENodeMoveActionSlot, TOnMoveItem> ItemMoveActionSlots = {
+		{ENodeMoveActionSlot::Default, {this, &UIItemListForm::ItemMoveActionDefault}}
+	};
 
 public:
 	UIItemListForm();
@@ -70,6 +79,8 @@ private:
 	string4096 m_edit_path;
 	Node* m_edit_node;
 
+	bool ItemMoveActionDefault(Node* Node);
+
 public:
 	IC void SetOnItemsFocusedEvent(TOnILItemsFocused e)
 	{
@@ -107,6 +118,14 @@ public:
 	{
 		OnItemCreateEvent = e;
 	}
+	IC void SetVerifyItemRename(TVerifyItem e)
+	{
+		VerifyItemRename = e;
+	}
+	IC void SetVerifyItemMove(TVerifyItem e)
+	{
+		VerifyItemMove = e;
+	}
 	IC void SetVerifyItemClone(TVerifyItem e)
 	{
 		VerifyItemClone = e;
@@ -114,6 +133,15 @@ public:
 	IC void SetOnItemCloneEvent(TOnItemClone e)
 	{
 		OnItemCloneEvent = e;
+	}
+	IC void SetGetItemMoveActionSlot(TGetItemMoveActionSlot e)
+	{
+		GetItemMoveActionSlot = e;
+	}
+	IC void SetOnMoveItemEvent(ENodeMoveActionSlot Slot, TOnMoveItem e)
+	{
+		R_ASSERT(ItemMoveActionSlots.find(Slot) == ItemMoveActionSlots.end());
+		ItemMoveActionSlots[Slot] = e;
 	}
 
 private:
@@ -127,6 +155,8 @@ private:
 	bool VerifyItemCloneFunc(UIItemListForm::Node* Node);
 	bool VerifyItemCreateFunc(UIItemListForm::Node* Node);
 	bool VerifyFolderCreateFunc(UIItemListForm::Node* Node);
+	bool VerifyItemRenameFunc(UIItemListForm::Node* Node);
+	bool VerifyItemMoveFunc(UIItemListForm::Node* Node);
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) override;
 	virtual void EventRemoveNode(Node* Node, const char* path) override;
 	virtual bool EventPreRemoveNode(Node* Node) override;

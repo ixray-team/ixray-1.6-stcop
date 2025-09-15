@@ -1,4 +1,14 @@
 #pragma once
+
+enum class ENodeMoveActionSlot : u8
+{
+	Default = 0,
+	First,
+	Second,
+	Third,
+	MAX,
+};
+
 template<class C,bool FloderAsItem=false>
 class FolderHelper
 {
