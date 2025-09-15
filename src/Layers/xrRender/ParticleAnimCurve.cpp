@@ -1,0 +1,194 @@
+#include "stdafx.h"
+#include "ParticleAnimCurve.h"
+
+#include <json/json.hpp>
+
+PS::CPACDef::~CPACDef()
+{
+    for (auto elem : m_Keys)
+    {
+        xr_delete(elem);
+    }
+    m_Keys.clear();
+}
+
+void PS::CPACDef::Save(IWriter& F)
+{
+    F.open_chunk(PS::PAC::Chunks::VERSION);
+    F.w_enum(PS::PAC::Version::Latest);
+    F.close_chunk();
+
+    F.open_chunk(PS::PAC::Chunks::NAME);
+    F.w_stringZ(m_Name);
+    F.close_chunk();
+
+    F.open_chunk(PS::PAC::Chunks::TIME_MAX);
+    F.w_float(m_MaxTime);
+    F.close_chunk();
+
+    auto Size = m_Keys.size();
+    F.open_chunk(PS::PAC::Chunks::KEYS_NUM);
+    F.w_u32(Size);
+    F.close_chunk();
+
+    F.open_chunk(PS::PAC::Chunks::KEYS);
+    for (int i = 0; i < Size; i++)
+    {
+        auto Key = m_Keys[i];
+        F.open_chunk(i);
+        F.w_float(Key->time);
+        F.w_fvector4(Key->value);
+        F.close_chunk();
+    }
+    F.close_chunk();
+}
+
+bool PS::CPACDef::Load(IReader& F)
+{
+    R_ASSERT(m_Keys.empty());
+    
+    bool FoundedChunk = F.find_chunk(PS::PAC::Chunks::VERSION);
+    R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_VERSION");
+
+    auto version = F.r_enum<PS::PAC::Version>();
+    switch (version)
+    {
+    case PS::PAC::Version::Original:
+        {
+            FoundedChunk = F.find_chunk(PS::PAC::Chunks::NAME);
+            R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_NAME");
+            F.r_stringZ(m_Name);
+
+            FoundedChunk = F.find_chunk(PS::PAC::Chunks::TIME_MAX);
+            R_ASSERT(FoundedChunk, "Not found chunk PED_CHUNK_TIME_MAX");
+            m_MaxTime = F.r_float();
+
+            FoundedChunk = F.find_chunk(PS::PAC::Chunks::KEYS_NUM);
+            R_ASSERT(FoundedChunk, "Not found chunk PED_CHUNK_KEYS_NUM");
+            auto Size = F.r_u32();
+
+            auto KeysChunk = F.open_chunk(PS::PAC::Chunks::KEYS);
+            R_ASSERT(KeysChunk, "Not found chunk PED_CHUNK_KEYS");
+            for (int i = 0; i < Size; i++)
+            {
+                auto KeyChunk = KeysChunk->open_chunk(i);
+                R_ASSERT(KeyChunk, "Not found key chunk in chunk PED_CHUNK_KEYS", std::to_string(i).c_str());
+                m_Keys.push_back(new st_PACKey);
+                auto Key = m_Keys.back();
+                Key->time = KeyChunk->r_float();
+                KeyChunk->r_fvector4(Key->value);
+                KeyChunk->close();
+            }
+            KeysChunk->close();
+            
+            break;
+        }
+    default:
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void PS::CPACDef::Save2(CInifile& ini)
+{
+    ini.w_enum("_anim_curve", "version", PS::PAC::Version::Original);
+    ini.w_float("_anim_curve", "time_max", m_MaxTime);
+    ini.w_string("_anim_curve", "name", m_Name.c_str());
+    auto Size = m_Keys.size();
+    ini.w_u64("_anim_curve", "keys_num", Size);
+    for (int i = 0; i < Size; i++)
+    {
+        auto key = m_Keys[i];
+        string16		sect;
+        xr_sprintf		(sect, sizeof(sect), "key_%04d", i);
+        ini.w_float(sect, "time", key->time);
+        ini.w_fvector4(sect, "keys", key->value);
+    }
+}
+
+bool PS::CPACDef::Load2(CInifile& ini)
+{
+    auto version = ini.r_enum<PS::PAC::Version>("_anim_curve", "version");
+    switch (version)
+    {
+    case PAC::Version::Original:
+        {
+            m_MaxTime = ini.r_float("_anim_curve", "time_max");
+            m_Name = ini.r_string("_anim_curve", "name");
+            auto Size = ini.r_u64("_anim_curve", "keys_num");
+            R_ASSERT(m_Keys.empty());
+            for (int i = 0; i < Size; i++)
+            {
+                m_Keys.push_back(new st_PACKey);
+                auto key = m_Keys.back();
+                string16		sect;
+                xr_sprintf		(sect, sizeof(sect), "key_%04d", i);
+                key->time = ini.r_float(sect, "time");
+                key->value = ini.r_fvector4(sect, "keys");
+            }
+            break;
+        }
+    default:
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+Fvector4 PS::CPACDef::GetValueOnIndex(int index)
+{
+    R_ASSERT(index >= 0 && index < m_Keys.size());
+    return m_Keys[index]->value;
+}
+
+Fvector4 PS::CPACDef::GetValueOnTime(float time)
+{
+    R_ASSERT(time >= 0 && time <= m_MaxTime);
+    auto cmp = [&](float key_a, float key_b)
+    {
+        return key_a < key_b;
+    };
+    auto proj = [&](st_PACKey* key)
+    {
+        return key->time;
+    };
+    auto FoundIt = std::ranges::lower_bound(m_Keys, time, cmp, proj);
+    if (FoundIt == m_Keys.begin())
+    {
+        return (*FoundIt)->value;
+    }
+    auto PrevIt = std::prev(FoundIt);
+    auto Alpha = (time - (*PrevIt)->time)/((*FoundIt)->time - (*PrevIt)->time);
+    Fvector4 InterValue;
+    auto ProcessFunc = [&](int index)
+    {
+        return (*PrevIt)->value[index] + ((*FoundIt)->value[index] - (*PrevIt)->value[index])*Alpha;
+    };
+    for (int i = 0; i < 4; ++i)
+    {
+        InterValue[i] = ProcessFunc(i);
+    }
+    return InterValue;
+}
+
+void PS::CPACDef::setName(LPCSTR name)
+{
+    m_Name = name;
+}
+
+#ifdef _EDITOR
+void PS::CPACDef::Clone(PS::CPACDef* source)
+{
+    m_Name = "<invalid_name>";
+    m_MaxTime = source->m_MaxTime;
+
+    m_Keys.resize(source->m_Keys.size(), nullptr);
+    for (auto d_it=m_Keys.begin(),s_it=source->m_Keys.begin(); s_it!=source->m_Keys.end(); s_it++,d_it++)
+    {
+        *d_it = new st_PACKey(**s_it);
+    }
+}
+#endif
