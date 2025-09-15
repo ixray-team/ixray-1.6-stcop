@@ -38,7 +38,10 @@ class CParticleTool:
 	void 		OnItemModified		(void);
 
     void  		OnParticleItemFocused	(ListItem* items);
+	bool		VerifyParticleCloneItem(UIItemListForm::Node* Node);
     void        OnParticleCloneItem(LPCSTR parent_path, LPCSTR new_full_name);
+	bool		VerifyParticleCreateItem(UIItemListForm::Node* Node);
+	bool		VerifyParticleCreateFolder(UIItemListForm::Node* Node);
     void        OnParticleCreateItem(LPCSTR path);
 	void  		OnParticleItemRename	(LPCSTR old_name, LPCSTR new_name, EItemType type);
 	bool		OnParticlePreItemRemove(UIItemListForm::Node& Node);

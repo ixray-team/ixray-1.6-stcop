@@ -199,7 +199,9 @@ void UIItemListForm::DrawMenuEdit()
 		ImGui::PopStyleVar(2);
 		m_UseMenuEdit = true;
 
-		if (!OnItemCreateEvent.empty())
+		Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
+		
+		if (VerifyItemCreateFunc(N))
 		{
 			if (ImGui::MenuItem("Create"))
 			{
@@ -211,7 +213,6 @@ void UIItemListForm::DrawMenuEdit()
 					else
 						xr_sprintf(name, "new_%d", i);
 
-					Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
 					string_path path;
 					path[0] = 0;
 					if (N->Path.c_str() && N->Path.c_str()[0])
@@ -239,7 +240,7 @@ void UIItemListForm::DrawMenuEdit()
 			if (ImGui::IsItemHovered())
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		}
-		if (!OnItemCloneEvent.empty() && m_edit_node && m_edit_node->IsObject())
+		if (VerifyItemCloneFunc(N))
 		{
 			if (ImGui::MenuItem("Clone"))
 			{
@@ -288,36 +289,38 @@ void UIItemListForm::DrawMenuEdit()
 			}
 		}
 
-		if (ImGui::MenuItem("Create Folder"))
+		if (VerifyFolderCreateFunc(N))
 		{
-			Node* N = m_edit_node == 0 ? &m_GeneralNode : m_edit_node;
-			for (int i = 0; i < 256; i++)
+			if (ImGui::MenuItem("Create Folder"))
 			{
-				string4096 full_path, name;
-				if (i == 0)
-					xr_strcpy(name, "new_Folder");
-				else
-					xr_sprintf(name, "new_Folder_%d", i);
-
-				if (N->Path.c_str() && N->Path.c_str()[0])
-					xr_strcpy(full_path, N->Path.c_str());
-				else
-					full_path[0] = 0;
-				if (N->IsFolder() && N->Name.c_str() && N->Name.c_str()[0])
+				for (int i = 0; i < 256; i++)
 				{
+					string4096 full_path, name;
+					if (i == 0)
+						xr_strcpy(name, "new_Folder");
+					else
+						xr_sprintf(name, "new_Folder_%d", i);
+
+					if (N->Path.c_str() && N->Path.c_str()[0])
+						xr_strcpy(full_path, N->Path.c_str());
+					else
+						full_path[0] = 0;
+					if (N->IsFolder() && N->Name.c_str() && N->Name.c_str()[0])
+					{
+						if (full_path[0])
+							xr_strcat(full_path, "\\");
+						xr_strcat(full_path, N->Name.c_str());
+					}
 					if (full_path[0])
 						xr_strcat(full_path, "\\");
-					xr_strcat(full_path, N->Name.c_str());
-				}
-				if (full_path[0])
-					xr_strcat(full_path, "\\");
-				xr_strcat(full_path, name);
+					xr_strcat(full_path, name);
 
-				if (!FindFolder(&m_GeneralNode, full_path) && AppendFolder(&m_GeneralNode, full_path))
-				{
-					ImGui::CloseCurrentPopup();
-					m_edit_node = nullptr;
-					break;
+					if (!FindFolder(&m_GeneralNode, full_path) && AppendFolder(&m_GeneralNode, full_path))
+					{
+						ImGui::CloseCurrentPopup();
+						m_edit_node = nullptr;
+						break;
+					}
 				}
 			}
 		}
@@ -564,6 +567,29 @@ bool UIItemListForm::IsFolderSelected(Node* Node)
 		return true;
 	}
 	return Node == m_edit_node;
+}
+
+bool UIItemListForm::VerifyItemCloneFunc(UIItemListForm::Node* Node)
+{
+	if (!VerifyItemClone.empty() && !VerifyItemClone(Node))
+	{
+		return false;
+	}
+	return !OnItemCloneEvent.empty() && m_edit_node && !IsNodeTrueFolder(*m_edit_node);
+}
+
+bool UIItemListForm::VerifyItemCreateFunc(UIItemListForm::Node* Node)
+{
+	if (!VerifyItemCreate.empty() && !VerifyItemCreate(Node))
+	{
+		return false;
+	}
+	return !OnItemCreateEvent.empty();
+}
+
+bool UIItemListForm::VerifyFolderCreateFunc(UIItemListForm::Node* Node)
+{
+	return VerifyFolderCreate.empty() || VerifyFolderCreate(Node);
 }
 
 void UIItemListForm::EventRenameNode(Node* Node, const char* old_path, const char* new_path)
