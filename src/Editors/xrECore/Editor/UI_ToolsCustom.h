@@ -246,6 +246,7 @@ public:
     virtual void SelectEffect(LPCSTR name) {};
     virtual void RemoveAction(u32 idx, bool bForced = false) {};
     virtual void SetCurrentPG(PS::CPGDef* P) {};
+	virtual void EditPAC(PS::CPACDef* PAC){}
 
     ETAxis GetAxis() const
     {

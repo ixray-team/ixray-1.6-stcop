@@ -1694,7 +1694,7 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	if(effect->p_count + rate > effect->max_particles)
 		rate = effect->max_particles - effect->p_count;
 	
-	pVector pos, posB, vel, col, siz, rt;
+	pVector pos, posB, vel, rot_vel, col, siz, rt;
 	
 	if(m_Flags.is(u32(flVertexB_tracks))){
 		for(int i = 0; i < rate; i++){
@@ -1702,10 +1702,26 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
+			if (true/*AlighRotVelocityToVelocity*/)
+			{
+				rot_vel = vel;
+				if (fis_zero(rot_vel.magnitude()))
+				{
+					rot_vel.x = 1;
+					rot_vel.y = 0;
+					rot_vel.z = 0;
+				} else
+				{
+					rot_vel.normalize();
+				}
+			} else
+			{
+				// TODO: implement
+			}
 			color.Generate		(col);
 			float ag 			= age + NRand(age_sigma);
 
-			effect->Add			(pos, pos, siz, rt, vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
+			effect->Add			(pos, pos, siz, rt, vel, rot_vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
 		}
 	}else{
 		for(int i = 0; i < rate; i++){
@@ -1713,10 +1729,26 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
+			if (true/*AlighRotVelocityToVelocity*/)
+			{
+				rot_vel = vel;
+				if (fis_zero(rot_vel.magnitude()))
+				{
+					rot_vel.x = 1;
+					rot_vel.y = 0;
+					rot_vel.z = 0;
+				} else
+				{
+					rot_vel.normalize();
+				}
+			} else
+			{
+				// TODO: implement
+			}
 			color.Generate		(col);
 			float ag 			= age + NRand(age_sigma);
 
-			effect->Add			(pos, posB, siz, rt, vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
+			effect->Add			(pos, posB, siz, rt, vel, rot_vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
 		}
 	}
 }
@@ -2164,6 +2196,8 @@ void* PATurbulence::GetVariableImpl(u8 VarID)
 	R_ASSERT3(false, "Particle action Turbulence: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
+
+// Binders
 void PABindVelocityValue::Transform(const Fmatrix& m) {}
 void PABindVelocityValue::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
 	for (u32 i = 0; i < effect->p_count; i++)
@@ -2266,6 +2300,215 @@ void* PABindColorAlpha::GetVariableImpl(u8 VarID)
 		return &BindValue;
 	}
 	R_ASSERT3(false, "Particle action BindColorAlpha: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+
+// Animators
+void PAColorAnimator::Transform(const Fmatrix& m)
+{
+}
+void PAColorAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	//auto CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
+	Fcolor c_t;
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle &m = effect->particles[i];
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		c_t.set(
+			CurrentValue.x,
+			CurrentValue.y,
+			CurrentValue.z,
+			CurrentValue.w
+		);
+		m.color = c_t.get();
+	}
+}
+void* PAColorAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
+	}
+	R_ASSERT3(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PASizeAnimator::Transform(const Fmatrix& m)
+{
+}
+void PASizeAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	//Fvector4 CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle &m = effect->particles[i];
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		m.size.x = CurrentValue.x;
+		m.size.y = CurrentValue.y;
+		m.size.z = CurrentValue.z;
+	}
+}
+void* PASizeAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
+	}
+	R_ASSERT3(false, "Particle action SizeAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PAVelocityAnimator::Transform(const Fmatrix& m)
+{
+}
+void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		
+		Particle &m = effect->particles[i];
+		Fmatrix MDir;
+		{
+			Fvector Dir = m.rot_vel;
+			if(fis_zero(Dir.magnitude())) continue;
+			Dir.normalize_safe();
+			Fvector ChooseAxis = {0, 0, 1};
+			if (fsimilar(ChooseAxis.dotproduct(Dir), 1))
+			{
+				ChooseAxis = {1, 0, 0};
+			}
+			Fvector Cross;
+			Cross.crossproduct(Dir, ChooseAxis);
+			Cross.normalize();
+			MDir.rotation(Dir, Cross);
+		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
+		MDir.transform(m.vel, LocalVelocity);
+	}
+}
+void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
+	}
+	R_ASSERT3(false, "Particle action VelocityAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PAVelocityRotationAnimator::Transform(const Fmatrix& m)
+{
+}
+void PAVelocityRotationAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		
+		Particle &m = effect->particles[i];
+		Fmatrix MDir;
+		{
+			Fvector Dir = m.rot_velS;
+			if(fis_zero(Dir.magnitude())) continue;
+			Dir.normalize_safe();
+			Fvector ChooseAxis = {0, 0, 1};
+			if (fsimilar(ChooseAxis.dotproduct(Dir), 1))
+			{
+				ChooseAxis = {1, 0, 0};
+			}
+			Fvector Cross;
+			Cross.crossproduct(Dir, ChooseAxis);
+			Cross.normalize();
+			MDir.rotation(Dir, Cross);
+		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
+		MDir.transform(m.rot_vel, LocalVelocity);
+	}
+}
+void* PAVelocityRotationAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
+	}
+	R_ASSERT3(false, "Particle action VelocityRotationAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------

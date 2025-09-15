@@ -5,6 +5,7 @@
 #define PSLibraryH
 
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
+#include "../../xrParticles/ParticleAnimCurveInterface.h"
 
 namespace PS {
 	class CPEDef;
@@ -16,11 +17,17 @@ namespace PS {
 	
     using PGDVec = xr_vector<CPGDef*>;
     using PGDIt = PGDVec::iterator;
+
+	class CPACDef;
+
+	using PACDVec = xr_vector<CPACDef*>;
+	using PACDIt = PACDVec::iterator;
 } // namespace PS
 
-class ECORE_API CPSLibrary : public particles_systems::library_interface {
+class ECORE_API CPSLibrary : public particles_systems::library_interface, public PS::IPACLibrary {
 	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
+	PS::PACDVec			m_PACDs;
     xr_vector<shared_str> m_all_ps;
 #ifdef _EDITOR    
     xr_string			m_CurrentParticles;
@@ -50,19 +57,30 @@ public:
     PS::CPEDef*			FindPED			(LPCSTR name);
     PS::PEDIt			FindPEDIt		(LPCSTR name);
     PS::CPGDef*			FindPGD			(LPCSTR name);
-    PS::PGDIt			FindPGDIt		(LPCSTR name);
+	PS::PGDIt			FindPGDIt		(LPCSTR name);
+	PS::CPACDef*		FindPACD		(LPCSTR name);
+	PS::PACDIt			FindPACDIt		(LPCSTR name);
+
+	virtual PS::IPAC*	FindIPAC		(LPCSTR name) override;
 
     // get object properties methods
+	IC const PS::PEDVec& VecPEDs		()	{ return m_PEDs; }
     IC PS::PEDIt		FirstPED		()	{return m_PEDs.begin();}
     IC PS::PEDIt		LastPED			()	{return m_PEDs.end();}
+	IC const PS::PGDVec& VecPGDs		()	{ return m_PGDs; }
     IC PS::PGDIt		FirstPGD		()	{return m_PGDs.begin();}
     IC PS::PGDIt		LastPGD			()	{return m_PGDs.end();}
+	IC const PS::PACDVec& VecPACDs		()	{ return m_PACDs; }
+	IC PS::PACDIt		FirstPACD		()	{return m_PACDs.begin();}
+	IC PS::PACDIt		LastPACD			()	{return m_PACDs.end();}
 
-    PS::CPEDef*			AppendPED		(PS::CPEDef* src=0);
-    PS::CPGDef*			AppendPGD		(PS::CPGDef* src=0);
+    PS::CPEDef*			AppendPED		(PS::CPEDef* src=nullptr);
+    PS::CPGDef*			AppendPGD		(PS::CPGDef* src=nullptr);
+    PS::CPACDef*		AppendPACD		(PS::CPACDef* src=nullptr);
     void				Remove			(LPCSTR name);
     void				RenamePED		(PS::CPEDef* src, LPCSTR new_name);
     void				RenamePGD		(PS::CPGDef* src, LPCSTR new_name);
+    void				RenamePACD		(PS::CPACDef* src, LPCSTR new_name);
 
     void				Reload			();
     bool				Save			();
