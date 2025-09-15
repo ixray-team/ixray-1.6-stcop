@@ -33,6 +33,8 @@ namespace PS
         
 #ifdef _EDITOR
         void Clone(CPACDef* source);
+		void FillProp(LPCSTR pref, PropItemVec& items, void* owner);
+        void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
 #endif
     };
 

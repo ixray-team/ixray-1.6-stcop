@@ -67,6 +67,9 @@ public:
 	IC const PS::PGDVec& VecPGDs		()	{ return m_PGDs; }
     IC PS::PGDIt		FirstPGD		()	{return m_PGDs.begin();}
     IC PS::PGDIt		LastPGD			()	{return m_PGDs.end();}
+	IC const PS::PACDVec& VecPACDs		()	{ return m_PACDs; }
+	IC PS::PACDIt		FirstPACD		()	{return m_PACDs.begin();}
+	IC PS::PACDIt		LastPACD			()	{return m_PACDs.end();}
 
     PS::CPEDef*			AppendPED		(PS::CPEDef* src=nullptr);
     PS::CPGDef*			AppendPGD		(PS::CPGDef* src=nullptr);

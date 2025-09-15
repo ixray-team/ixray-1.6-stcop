@@ -397,6 +397,7 @@ enum EEditMode
     emGroup,
 	emAction,
 	emEffectSlot,
+	emAnimCurve,
 };
 
 namespace PEd
@@ -406,8 +407,9 @@ namespace PEd
 	{
 		Groups = 1 << 0,
 		Effects = 1 << 1,
+		AnimCurve = 1 << 2,
 		// add new here
-		All = Groups | Effects
+		All = Groups | Effects | AnimCurve
 	};
 
 	ListTypeBase operator|(PEd::LisType lis, PEd::LisType rhs);
