@@ -203,6 +203,7 @@ public:
 #define SYSTEM_PREFIX 	"Systems"
 #define EFFECT_PREFIX 	"Effects"
 #define GROUP_PREFIX 	"Groups"
+#define ANIM_CURVE_PREFIX 	"AnimationCurve"
 extern CParticleTool*	PTools;
 //---------------------------------------------------------------------------
 #endif
