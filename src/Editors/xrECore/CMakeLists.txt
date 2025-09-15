@@ -87,6 +87,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/ParticleEffect.*"
 	"../../Layers/xrRender/ParticleEffectDef.*"
 	"../../Layers/xrRender/ParticleGroup.*"
+	"../../Layers/xrRender/ParticleAnimCurve.*"
 	"../../Layers/xrRender/PSLibrary.*"
 	"../../Layers/xrRender/ResourceManager.*"
 	"../../Layers/xrRender/ResourceManager_Loader.*"
