@@ -476,6 +476,8 @@ void PATurbulence::Save		(IWriter& F)
 	F.w_float		(epsilon);
     F.w_fvector3	(offset);
 }
+
+// Binders
 void PABindVelocityValue::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_fvector3(BindValue);
@@ -517,6 +519,32 @@ void PABindColorAlpha::Load(IReader& F) {
 void PABindColorAlpha::Save(IWriter& F) {
 	ParticleAction::Save(F);
 	F.w_float(BindValue);
+}
+
+// Animators
+void PAColorAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+}
+void PAColorAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+}
+void PASizeAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+}
+void PASizeAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
+}
+void PAVelocityAnimator::Load(IReader& F) {
+	ParticleAction::Load(F);
+	F.r_stringZ(Animator);
+}
+void PAVelocityAnimator::Save(IWriter& F) {
+	ParticleAction::Save(F);
+	F.w_stringZ(Animator);
 }
 
 

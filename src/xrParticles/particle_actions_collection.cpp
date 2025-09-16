@@ -2164,6 +2164,8 @@ void* PATurbulence::GetVariableImpl(u8 VarID)
 	R_ASSERT(false, "Particle action Turbulence: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
+
+// Binders
 void PABindVelocityValue::Transform(const Fmatrix& m) {}
 void PABindVelocityValue::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
 	for (u32 i = 0; i < effect->p_count; i++)
@@ -2266,6 +2268,59 @@ void* PABindColorAlpha::GetVariableImpl(u8 VarID)
 		return &BindValue;
 	}
 	R_ASSERT(false, "Particle action BindColorAlpha: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+
+// Animators
+void PAColorAnimator::Transform(const Fmatrix& m)
+{
+	// TODO: Implement
+}
+void PAColorAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	// TODO: Implement
+}
+void* PAColorAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	}
+	R_ASSERT(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PASizeAnimator::Transform(const Fmatrix& m)
+{
+	// TODO: Implement
+}
+void PASizeAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	// TODO: Implement
+}
+void* PASizeAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	}
+	R_ASSERT(false, "Particle action SizeAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PAVelocityAnimator::Transform(const Fmatrix& m)
+{
+	// TODO: Implement
+}
+void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+	// TODO: Implement
+}
+void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	}
+	R_ASSERT(false, "Particle action VelocityAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
