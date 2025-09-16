@@ -3,6 +3,10 @@
 
 #include <json/json.hpp>
 
+#ifdef _EDITOR
+#include "Editor/UI_ToolsCustom.h"
+#endif
+
 PS::CPACDef::~CPACDef()
 {
     for (auto elem : m_Keys)
@@ -203,6 +207,6 @@ void PS::CPACDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
 
 void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
 {
-    // TODO: Add Curves Edit window
+    Tools->EditPAC(this);
 }
 #endif
