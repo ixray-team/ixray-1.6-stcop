@@ -45,29 +45,28 @@ endif()
 # Linker list
 target_link_libraries(xrNetServer PUBLIC xrCore)
 
-target_link_libraries(xrNetServer PRIVATE "Ws2_32.lib")
-target_link_libraries(xrNetServer PRIVATE "dxguid.lib")
+if (WIN32)
+    target_link_libraries(xrNetServer PRIVATE "Ws2_32.lib")
+    target_link_libraries(xrNetServer PRIVATE "dxguid.lib")
+endif()
 
 # Move precompiled header
 target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Steam Sockets
 if(IXRAY_MP)
-    target_link_libraries(xrNetServer PUBLIC "${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.lib")
+    target_link_libraries(xrNetServer PUBLIC "${STEAM_SOCKETS_LINK_LIBRARY}")
 
-    if("${NUGET_PACKAGE_PLATFORM}" MATCHES "(x64)")
-        set(LIBSSL_POSTFIX "-x64")
+    if (WIN32)
+        target_copy_dependency(xrNetServer ${STEAM_SOCKETS_LEGACY})
     endif()
 
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/legacy.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libcrypto-3${LIBSSL_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf-lite.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotoc.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libssl-3${LIBSSL_POSTFIX}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_LIBRARY})
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_CRYPTO})
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOBUF_LITE})
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOBUF})
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOC})
+    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_SSL})
 endif()
 
 # MySQL Connector
