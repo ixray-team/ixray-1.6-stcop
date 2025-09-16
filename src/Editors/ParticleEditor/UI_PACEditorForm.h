@@ -32,5 +32,7 @@ private:
     xr_vector<DoubleKey> dkeys_x;
     double LinkXMin = 0.0f, LinkXMax = 1.0f;
 
+    size_t SelectedKeyframeIndex = -1;
+
     void DrawCurves();
 };
