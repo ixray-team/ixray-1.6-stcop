@@ -34,7 +34,14 @@ void UIPACEditorForm::Open(PS::CPACDef* EditedPAC)
 	Form = new UIPACEditorForm();
 	Form->EditedPAC = EditedPAC;
 	Form->EditedPAC->SplitKeysForPlot(Form->R_keys_y, Form->G_keys_y, Form->B_keys_y, Form->A_keys_y, Form->keys_x);
-	Form->keys_y_dummy.resize(Form->keys_x.size(), 0.0f);
+	Form->dkeys_x.resize(Form->keys_x.size());
+	for (size_t i = 0; i < Form->keys_x.size(); i++)
+	{
+		Form->dkeys_x[i].Value = Form->keys_x[i];
+		Form->dkeys_x[i].Index = i;
+	}
+	//Form->keys_y_fdummy.resize(Form->keys_x.size(), 0.0f);
+	Form->keys_y_ddummy.resize(Form->keys_x.size(), 0.0);
 }
 
 void UIPACEditorForm::Update()
@@ -89,9 +96,94 @@ void UIPACEditorForm::DrawCurves()
 			ImPlot::SetupAxes("t (msec)", nullptr, 0,ImPlotAxisFlags_NoDecorations|ImPlotAxisFlags_Lock);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
 			ImPlot::SetupAxesLimits(-XSpace,EditedPAC->GetMaxTime()+XSpace,-0.01,0.01);
-			ImPlot::PlotScatter("Points", keys_x.data(), keys_y_dummy.data(), keys_x.size());
+			struct UpdatedData
+			{
+				size_t Index;
+				bool HasData = false;
+			} updated_data;
+			for (size_t i = 0; i < keys_x.size(); i++)
+			{
+				ImPlot::DragPoint(
+					i,
+					&(dkeys_x[i].Value),
+					&(keys_y_ddummy[i]),
+					ImColor(10,10,255),
+					4,
+					0,
+					&dkeys_x[i].clicked,
+					&dkeys_x[i].hovered,
+					&dkeys_x[i].hold);
+				keys_y_ddummy[i] = 0.0;
+				if (dkeys_x[i].hold)
+				{
+					dkeys_x[i].held = true;
+					keys_x[dkeys_x[i].Index] = dkeys_x[i].Value;
+				} else if (dkeys_x[i].held)
+				{
+					dkeys_x[i].held = false;
+					updated_data.HasData = true;
+					updated_data.Index = i;
+				}
+			}
+			if (updated_data.HasData)
+			{
+				updated_data.HasData = false;
+				auto cmp = [&](double key_a, double key_b)
+				{
+					return key_a < key_b;
+				};
+				auto proj = [&](const DoubleKey& key)
+				{
+					return key.Value;
+				};
+				auto i = updated_data.Index;
+				auto temp = dkeys_x[i];
+				dkeys_x.erase(dkeys_x.begin()+i);
+				auto FoundIt = std::ranges::upper_bound(dkeys_x, temp.Value, cmp, proj);
+				size_t NewIndex = FoundIt-dkeys_x.begin();
+				if (FoundIt == dkeys_x.end())
+				{
+					if (dsimilar((FoundIt-1)->Value, temp.Value))
+					{
+						temp.Value += 1;
+					}
+					dkeys_x.push_back(temp);
+				} else
+				{
+					if (FoundIt != dkeys_x.begin() && dsimilar((FoundIt-1)->Value, temp.Value))
+					{
+						temp.Value += 1;
+					}
+					dkeys_x.emplace(FoundIt, temp);
+				}
+				for (size_t i = 0; i < dkeys_x.size(); i++)
+				{
+					dkeys_x[i].Index = i;
+				}
+				auto Func = [&]<typename T>(xr_vector<T>& vec){
+					auto temp = vec[i];
+					vec.erase(vec.begin()+i);
+					vec.emplace(vec.begin()+NewIndex, temp);
+				};
+				Func(R_keys_y);
+				Func(G_keys_y);
+				Func(B_keys_y);
+				Func(A_keys_y);
+				Func(keys_x);
+			}
 			ImPlot::EndPlot();
 		}
         ImPlot::EndSubplots();
+	}
+
+	if (ImGui::Button("OK"))
+	{
+		
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+	{
+		ImGui::CloseCurrentPopup();
+		xr_delete(Form);
 	}
 }
