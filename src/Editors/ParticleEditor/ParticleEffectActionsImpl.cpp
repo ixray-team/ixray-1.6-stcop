@@ -41,12 +41,17 @@ xr_token2 actions_token_impl [] = {
 	{ "Target Rotate",		"Change rotate of all particles toward the specified rotation.", 			PATargetRotateID		},        
 	{ "Target Velocity",	"Change velocity of all particles toward the specified velocity.", 			PATargetVelocityID		},        
 	{ "Vortex",				"Swirl particles around a vortex.", 										PAVortexID				},        
-{ "Turbulence",			"A Turbulence.",															PATurbulenceID			},    
+{ "Turbulence",			"A Turbulence.",															PATurbulenceID			},
+	// Binders
 {"Bind Velocity",			"Bind particle Velocity variable for manual update from code.",			PABindVelocityValueID},
 {"Bind Rotation",			"Bind particle Rotation variable for manual update from code.",			PABindRotationValueID},
 {"Bind Size",				"Bind particle Size variable for manual update from code.",				PABindSizeValueID},
 {"Bind Color (RGB)",		"Bind particle Color (RGB channels) variable for manual update from code.",	PABindColorValueID},
-{"Bind Color (alpha)",		"Bind particle Color (alpha channel) variable for manual update from code.",	PABindColorAlphaID},    
+{"Bind Color (alpha)",		"Bind particle Color (alpha channel) variable for manual update from code.",	PABindColorAlphaID},
+	// Animators
+	{"Color Animator",		"Change color of all particles corresponding to specified animation curve.",	PAColorAnimatorID},
+	{"Size Animator",		"Change size of all particles corresponding to specified animation curve.",	PASizeAnimatorID},
+	{"Velocity Animator",	"Change velocity of all particles corresponding to specified animation curve.",PAVelocityAnimatorID},
 	{ 0,					0				  	 	}
 };
 
@@ -86,11 +91,16 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
 	case PAPI::PATargetVelocityDID: pa = new EPATargetVelocity	();	break;
 	case PAPI::PAVortexID:    		pa = new EPAVortex			();	break;
 	case PAPI::PATurbulenceID: 		pa = new EPATurbulence		();	break;
+		// Binders
 	case PAPI::PABindVelocityValueID:	pa = new EPABindVelocityValue();	break;
 	case PAPI::PABindRotationValueID:	pa = new EPABindRotateValue();	break;
 	case PAPI::PABindSizeValueID:	pa = new EPABindSizeValue();	break;
 	case PAPI::PABindColorValueID:	pa = new EPABindColorValue();	break;
 	case PAPI::PABindColorAlphaID:	pa = new EPABindColorAlpha();	break;
+		// Animators
+	case PAPI::PAColorAnimatorID: pa = new EPAColorAnimator(); break;
+	case PAPI::PASizeAnimatorID: pa = new EPASizeAnimator(); break;
+	case PAPI::PAVelocityAnimatorID: pa = new EPAVelocityAnimator(); break;
 	default: return nullptr;
 	}
 	pa->type						= type;
@@ -112,19 +122,34 @@ void EParticleAction::Load(IReader& F)
 	flags.assign(F.r_u32());
 
 	for (PFloatMapIt f_it = floats.begin(); f_it != floats.end(); f_it++)
+	{
 		f_it->second.val = F.r_float();
+	}
 
-	for (PVectorMapIt v_it = vectors.begin(); v_it != vectors.end(); v_it++)	
+	for (PVectorMapIt v_it = vectors.begin(); v_it != vectors.end(); v_it++)
+	{
 		F.r_fvector3(v_it->second.val);
+	}
 
-	for (PDomainMapIt d_it = domains.begin(); d_it != domains.end(); d_it++)	
+	for (PDomainMapIt d_it = domains.begin(); d_it != domains.end(); d_it++)
+	{
 		d_it->second.Load(F);
+	}
 
 	for (PBoolMapIt b_it = bools.begin(); b_it != bools.end(); b_it++)
+	{
 		b_it->second.val = F.r_u8();
+	}
 
 	for (PIntMapIt i_it = ints.begin(); i_it != ints.end(); i_it++)
+	{
 		i_it->second.val = F.r_s32();
+	}
+
+	for (PStringMapIt s_it = strings.begin(); s_it != strings.end(); s_it++)
+	{
+		F.r_stringZ(s_it->second.val);
+	}
 }
 
 void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
@@ -173,6 +198,13 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 		i_it->second.val		= ini.r_s32		(sect.c_str(), buff);
 	}
 
+	counter=0;
+	for (PStringMapIt s_it=strings.begin(); s_it!=strings.end(); ++s_it,++counter)
+	{
+		xr_sprintf				(buff, sizeof(buff),"string_%04d",counter);
+		s_it->second.val		= ini.r_string		(sect.c_str(), buff);
+	}
+
 }
 void 	EParticleAction::Save		(IWriter& F)
 {
@@ -184,6 +216,7 @@ void 	EParticleAction::Save		(IWriter& F)
 	for (PDomainMapIt 	d_it=domains.begin(); 	d_it!=domains.end(); 	d_it++)	d_it->second.Save	(F);
 	for (PBoolMapIt 	b_it=bools.begin(); 	b_it!=bools.end(); 		b_it++)	F.w_u8		((u8)b_it->second.val);
 	for (PIntMapIt 		i_it=ints.begin(); 		i_it!=ints.end(); 		i_it++)	F.w_s32		(i_it->second.val);
+	for (PStringMapIt 	s_it=strings.begin(); 	s_it!=strings.end(); 	s_it++)	F.w_stringZ	(s_it->second.val);
 }
 
 void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
@@ -226,6 +259,13 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 		xr_sprintf		(buff, sizeof(buff),"int_%04d",counter);
 		ini.w_s32		(sect.c_str(), buff, i_it->second.val);
 	}
+
+	counter=0;
+	for (PStringMapIt s_it=strings.begin(); s_it!=strings.end(); ++s_it,++counter)
+	{
+		xr_sprintf		(buff, sizeof(buff),"string_%04d",counter);
+		ini.w_string	(sect.c_str(), buff, s_it->second.val.c_str());
+	}
 }
 
 void EParticleAction::FillPropInit(PropItemVec& items, LPCSTR pref)
@@ -253,34 +293,61 @@ void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
 	{
 		LPCSTR name 				= o_it->name.c_str();
 		switch (o_it->type){           
-		case tpDomain:                                             
-			domains[o_it->name].FillProp(items, PrepareKey(pref,name).c_str(),clr);
-		break;
-		case tpVector:{ 
-			PVector& vect = vectors[o_it->name];
-			switch (vect.type){
-			case PVector::vNum: 	
-				V=PHelper().CreateVector	(items,	PrepareKey(pref,name).c_str(), &vect.val, vect.mn, vect.mx, 0.001f, 3);            
-			break;
-			case PVector::vAngle: 	
-				V=PHelper().CreateAngle3	(items,	PrepareKey(pref,name).c_str(), &vect.val, vect.mn, vect.mx, 0.001f, 3);            
-			break;
-			case PVector::vColor: 	
-				V=PHelper().CreateVColor	(items,	PrepareKey(pref,name).c_str(), &vect.val);
-			break;
+		case tpDomain:
+			{
+				domains[o_it->name].FillProp(items, PrepareKey(pref,name).c_str(),clr);
+				break;
 			}
-		}break;
-		case tpFloat:{
-			PFloat& flt	= floats[o_it->name];
-			V=PHelper().CreateFloat		(items,	PrepareKey(pref,name).c_str(), &flt.val, flt.mn, flt.mx, 0.001f, 3);
-		}break;
-		case tpInt:{
-			PInt& el	= ints[o_it->name];
-			V=PHelper().CreateS32			(items,	PrepareKey(pref,name).c_str(), &el.val, el.mn, el.mx);
-		}break;
-		case tpBool: 
-			V=PHelper().CreateBOOL		(items,	PrepareKey(pref,name).c_str(), &bools[o_it->name].val);
-		break;
+		case tpVector:
+			{ 
+				PVector& vect = vectors[o_it->name];
+				switch (vect.type){
+				case PVector::vNum:
+					{
+						V=PHelper().CreateVector	(items,	PrepareKey(pref,name).c_str(), &vect.val, vect.mn, vect.mx, 0.001f, 3);            
+						break;
+					}
+				case PVector::vAngle:
+					{
+						V=PHelper().CreateAngle3	(items,	PrepareKey(pref,name).c_str(), &vect.val, vect.mn, vect.mx, 0.001f, 3);            
+						break;
+					}
+				case PVector::vColor:
+					{
+						V=PHelper().CreateVColor	(items,	PrepareKey(pref,name).c_str(), &vect.val);
+						break;
+					}
+				}
+				break;
+			}
+		case tpFloat:
+			{
+				PFloat& flt	= floats[o_it->name];
+				V=PHelper().CreateFloat		(items,	PrepareKey(pref,name).c_str(), &flt.val, flt.mn, flt.mx, 0.001f, 3);
+				break;
+			}
+		case tpInt:
+			{
+				PInt& el	= ints[o_it->name];
+				V=PHelper().CreateS32			(items,	PrepareKey(pref,name).c_str(), &el.val, el.mn, el.mx);
+				break;
+			}
+		case tpBool:
+			{
+				V=PHelper().CreateBOOL		(items,	PrepareKey(pref,name).c_str(), &bools[o_it->name].val);
+				break;
+			}
+		case tpString:
+			{
+				if (o_it->string_type == smCustom)
+				{
+					V=PHelper().CreateRText(items, PrepareKey(pref,name).c_str(), &strings[o_it->name].val);
+				}
+				else
+				{
+					V=PHelper().CreateChoose(items, PrepareKey(pref,name).c_str(), &strings[o_it->name].val, o_it->string_type);
+				}
+			}
 		}
 		if (V) V->Owner()->prop_color	= clr;
 	}
@@ -314,6 +381,18 @@ void EParticleAction::appendBool	(LPCSTR name, BOOL v)
 {
 	orders.push_back				(SOrder(tpBool,name));
 	bools[name]						= PBool(v);
+}
+
+void EParticleAction::appendString(LPCSTR name, shared_str v, EChooseMode _string_type)
+{
+	orders.push_back				(SOrder(tpString,name, _string_type));
+	strings[name]						= PString(v);
+}
+
+void EParticleAction::appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type)
+{
+	orders.push_back				(SOrder(tpString,name, _string_type));
+	strings[name]						= PString(v);
 }
 
 //---------------------------------------------------------------------------
@@ -753,6 +832,36 @@ void pBindVelocityValue(IWriter& F, const Fvector& Value)
 	PABindVelocityValue S;
 	S.type      = PABindVelocityValueID;
 	S.BindValue.set(Value);
+
+	F.w_u32(S.type);
+	S.Save(F);
+}
+
+void pColorAnimator(IWriter& F, const shared_str& Animator)
+{
+	PAColorAnimator S;
+	S.type = PAColorAnimatorID;
+	S.Animator = Animator;
+
+	F.w_u32(S.type);
+	S.Save(F);
+}
+
+void pSizeAnimator(IWriter& F, const shared_str& Animator)
+{
+	PASizeAnimator S;
+	S.type = PASizeAnimatorID;
+	S.Animator = Animator;
+
+	F.w_u32(S.type);
+	S.Save(F);
+}
+
+void pVelocityAnimator(IWriter& F, const shared_str& Animator)
+{
+	PAVelocityAnimator S;
+	S.type = PAVelocityAnimatorID;
+	S.Animator = Animator;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1455,6 +1564,42 @@ EPABindVelocityValue::EPABindVelocityValue(): EParticleAction(PAPI::PABindVeloci
 void EPABindVelocityValue::Compile(IWriter& F)
 {
 	pBindVelocityValue(F, _vector("InitialValue").val);
+}
+
+EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAPI::PAColorAnimatorID)
+{
+	actionType = "ColorAnimator";
+	actionName = actionType;
+	appendString("Animator", "", smPAC);
+}
+
+void EPAColorAnimator::Compile(IWriter& F)
+{
+	pColorAnimator(F, _string("Animator").val);
+}
+
+EPASizeAnimator::EPASizeAnimator(): EParticleAction(PAPI::PASizeAnimatorID)
+{
+	actionType = "SizeAnimator";
+	actionName = actionType;
+	appendString("Animator", "", smPAC);
+}
+
+void EPASizeAnimator::Compile(IWriter& F)
+{
+	pSizeAnimator(F, _string("Animator").val);
+}
+
+EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAPI::PAVelocityAnimatorID)
+{
+	actionType = "VelocityAnimator";
+	actionName = actionType;
+	appendString("Animator", "", smPAC);
+}
+
+void EPAVelocityAnimator::Compile(IWriter& F)
+{
+	pVelocityAnimator(F, _string("Animator").val);
 }
 
 PEd::ListTypeBase PEd::operator|(PEd::LisType lis, PEd::LisType rhs)
