@@ -127,11 +127,16 @@ namespace PAPI{
 		PAVortexID,			// 
         PATurbulenceID,     //
         PAScatterID, 	    //
+		// Binders
 		PABindVelocityValueID,
 		PABindRotationValueID,
 		PABindSizeValueID,
 		PABindColorValueID,
 		PABindColorAlphaID,
+		// Animators
+		PAColorAnimatorID,
+		PASizeAnimatorID,
+		PAVelocityAnimatorID,
 		action_enum_force_dword = u32(-1)
 	};
     struct ParticleAction;
