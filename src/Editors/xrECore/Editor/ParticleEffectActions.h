@@ -16,6 +16,7 @@ struct PFloat{
     PFloat		(float _val, float _mn, float _mx):val(_val),mn(_mn),mx(_mx){}
     void 		set(float v){val=v;}
 };
+
 struct PInt{
     int			val;
     int			mn;
@@ -24,6 +25,7 @@ struct PInt{
     PInt		(int _val, int _mn, int _mx):val(_val),mn(_mn),mx(_mx){}
     void 		set(int v){val=v;}
 };
+
 struct PVector{
     Fvector		val;
     float		mn;
@@ -40,6 +42,17 @@ struct PVector{
     void 		set(const Fvector& v){val.set(v);}
     void 		set(float x, float y, float z){val.set(x,y,z);}
 };
+
+struct PString
+{
+	shared_str val;
+	PString():val(""){}
+	PString(shared_str _val):val(_val){}
+	PString(LPCSTR _val):val(_val){}
+	void set(shared_str v){val=v;}
+	void set(LPCSTR v){val=v;}
+};
+
 struct ECORE_API PDomain
 {
 public:
@@ -101,7 +114,10 @@ struct EParticleAction
     using PIntMapIt = PIntMap::iterator;
 
     using PVectorMap = xr_map<AnsiString, PVector>;
-    using PVectorMapIt = PVectorMap::iterator;
+	using PVectorMapIt = PVectorMap::iterator;
+
+	using PStringMap = xr_map<AnsiString, PString>;
+	using PStringMapIt = PStringMap::iterator;
 	
 	PS::CPEDef*		parent = nullptr;
     shared_str 		actionName;
@@ -119,6 +135,7 @@ struct EParticleAction
 	PFloatMap		floats;
     PIntMap			ints;
 	PVectorMap		vectors;
+	PStringMap		strings;
 
     enum EValType{
     	tpDomain,
@@ -126,11 +143,13 @@ struct EParticleAction
         tpFloat,
         tpBool,
         tpInt,
+    	tpString,
     };
     struct SOrder{
     	EValType	type;
+    	EChooseMode string_type = smCustom;
     	xr_string	name;
-        SOrder(EValType	_type, xr_string _name):type(_type),name(_name){}
+        SOrder(EValType	_type, xr_string _name, EChooseMode _string_type = smCustom):type(_type),name(_name),string_type(_string_type){}
     };
     using OrderVec = xr_vector<SOrder>;
     using OrderVecIt = OrderVec::iterator;
@@ -151,12 +170,15 @@ public:
 	void			appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
 	void			appendDomain(LPCSTR name, PDomain v);
 	void			appendBool	(LPCSTR name, BOOL b);
+	void			appendString(LPCSTR name, shared_str v, EChooseMode _string_type = smCustom);
+	void			appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type = smCustom);
 	PFloat&			_float		(LPCSTR name){PFloatMapIt 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
 	PInt&			_int		(LPCSTR name){PIntMapIt 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
 	PVector&		_vector		(LPCSTR name){PVectorMapIt 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
 	PDomain&		_domain		(LPCSTR name){PDomainMapIt 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
 	PBool&			_bool		(LPCSTR name){PBoolMapIt 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
 	PBool*			_bool_safe	(LPCSTR name){PBoolMapIt 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
+	PString&		_string		(LPCSTR name){PStringMapIt	it=strings.find(name);	R_ASSERT(it!=strings.end(),name);	return it->second;}
 public:
 	void FillPropInit(PropItemVec& items, LPCSTR pref);
 	
@@ -355,6 +377,8 @@ public:
     virtual void 	Render		(const Fmatrix& parent);
 };
 
+// Binders
+
 struct EPABindColorValue: public EParticleAction
 {
 	EPABindColorValue();
@@ -382,6 +406,26 @@ struct EPABindRotateValue: public EParticleAction
 struct EPABindVelocityValue: public EParticleAction
 {
 	EPABindVelocityValue();
+	virtual void Compile(IWriter& F);
+};
+
+// Animators
+
+struct EPAColorAnimator : public EParticleAction
+{
+	EPAColorAnimator();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPASizeAnimator : public EParticleAction
+{
+	EPASizeAnimator();
+	virtual void Compile(IWriter& F);
+};
+
+struct EPAVelocityAnimator : public EParticleAction
+{
+	EPAVelocityAnimator();
 	virtual void Compile(IWriter& F);
 };
 
