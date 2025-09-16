@@ -861,6 +861,35 @@ void CParticleTool::DrawReferenceList()
     }
 }
 
+PS::CPACDef* CParticleTool::FindPAC(LPCSTR name)
+{
+	return RImplementation.PSLibrary.FindPACD(name);
+}
+
+PS::CPACDef* CParticleTool::AppendPAC(PS::CPACDef* src, const char* path)
+{
+    VERIFY(m_bReady);
+    PS::CPACDef* S 		= RImplementation.PSLibrary.AppendPACD(src);
+    S->setName(path);
+
+    ExecCommand			(COMMAND_UPDATE_PROPERTIES,true);
+    SelectListItem(0, path,true,false,true);
+    return S;
+}
+
+void CParticleTool::SetCurrentPAC(PS::CPACDef* P)
+{
+    VERIFY(m_bReady);
+    m_EditPE->Compile(nullptr);
+    m_EditPG->Compile(nullptr);
+    m_EditMode = emAnimCurve;
+}
+
+void CParticleTool::EditPAC(PS::CPACDef* PAC)
+{
+    UIPACEditorForm::Open(PAC);
+}
+
 
 void CParticleTool::CommandJumpToItem()
 {
@@ -1226,21 +1255,30 @@ void CParticleTool::OnDrawUI()
                 {
                     AppendPE(0, m_CreatingParticlePath.c_str());
                 }
-                else
+                else if (result == "Group")
                 {
                     AppendPG(0, m_CreatingParticlePath.c_str());
+                }
+                else if (result == "AnimCurve")
+                {
+                    AppendPAC(0, m_CreatingParticlePath.c_str());
+                } else
+                {
+                    R_ASSERT(false, "Invalid choose result type!", result.c_str());
                 }
             }
             m_CreatingParticle = FALSE;
         }
         UIChooseForm::Update();
     }
+    UIPACEditorForm::Update();
 }
 
 void CParticleTool::FillChooseParticleType(ChooseItemVec& items, void* param)
 {
-    items.push_back(SChooseItem("Effect", "Effect Patricle"));
-    items.push_back(SChooseItem("Group", "Group Patricle"));
+    items.push_back(SChooseItem("Effect", "Effect Particle"));
+    items.push_back(SChooseItem("Group", "Group Particle"));
+    items.push_back(SChooseItem("AnimCurve", "Particle Animation Curve"));
 }
 
 void CParticleTool::OnParticleCreateItem(LPCSTR path)

@@ -21,3 +21,4 @@
 #include "UIRightBarForm.h"
 #include "UIMainMenuForm.h"
 #include "UIMainForm.h"
+#include "UI_PACEditorForm.h"

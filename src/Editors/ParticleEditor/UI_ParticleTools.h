@@ -175,6 +175,12 @@ public:
     void 				SetCurrentPG		(PS::CPGDef* P) override;
     void				DrawReferenceList	();
 
+	// PAC routine
+	PS::CPACDef*		FindPAC				(LPCSTR name);
+	PS::CPACDef*		AppendPAC			(PS::CPACDef* src,const char* path);
+	void 				SetCurrentPAC		(PS::CPACDef* P);
+	void				EditPAC				(PS::CPACDef* PAC) override;
+
     void				SelectPreviewObject	(int p);
     void				ResetPreviewObject	();
     void				FillObjectPrefs	();
