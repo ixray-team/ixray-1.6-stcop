@@ -14,6 +14,8 @@ namespace PS
         shared_str m_Name;
         xr_vector<st_PACKey*> m_Keys;
         float m_MaxTime = 0.0f;
+        float m_MinValue = 0.0f;
+        float m_MaxValue = 1.0f;
 
     public:
         ~CPACDef();
@@ -30,11 +32,21 @@ namespace PS
         Fvector4 GetValueOnIndex(int index);
         Fvector4 GetValueOnTime(float time);
         IC float GetMaxTime() const { return m_MaxTime; }
+        IC float GetMinValue() const { return m_MinValue; }
+        IC float GetMaxValue() const { return m_MaxValue; }
         
 #ifdef _EDITOR
         void Clone(CPACDef* source);
 		void FillProp(LPCSTR pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
+
+        void SplitKeysForPlot(
+            xr_vector<float>& R_keys_y,
+            xr_vector<float>& G_keys_y,
+            xr_vector<float>& B_keys_y,
+            xr_vector<float>& A_keys_y,
+            xr_vector<float>& keys_x
+        );
 #endif
     };
 
