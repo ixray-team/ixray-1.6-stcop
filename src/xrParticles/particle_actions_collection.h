@@ -532,6 +532,39 @@ namespace PAPI{
 
 		_METHODS;
 	};
+
+	struct PARTICLES_API PAColorAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator
+		};
+		shared_str Animator;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PASizeAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator
+		};
+		shared_str Animator;
+
+		_METHODS;
+	};
+
+	struct PARTICLES_API PAVelocityAnimator : public ParticleAction
+	{
+		enum class EVariable : u8
+		{
+			Animator
+		};
+		shared_str Animator;
+
+		_METHODS;
+	};
 };
 
 //---------------------------------------------------------------------------
