@@ -5,6 +5,7 @@
 #include <sched.h>
 
 using ThreadID = pthread_t;
+using ProcessID = pid_t;
 
 inline void Sleep(size_t Time)
 {
@@ -29,5 +30,22 @@ namespace Platform
         if (pthread_setschedparam(thread, SCHED_FIFO, &sch_params) != 0)
         {
         }
+    }
+    inline void SetCurrentThreadNormalPriority()
+    {
+        pthread_t this_thread = pthread_self();
+        sched_param params;
+        int policy;
+
+        if (pthread_getschedparam(this_thread, &policy, &params) == 0)
+        {
+            params.sched_priority = params.sched_priority - 1;
+            pthread_setschedparam(this_thread, policy, &params);
+        }
+    }
+    
+    inline ProcessID GetCurrentProcessId()
+    {
+        return getpid();
     }
 }

@@ -4,6 +4,15 @@
 struct FT_FaceRec_;
 using FT_Face = FT_FaceRec_*;
 
+#ifndef IXR_WINDOWS
+struct ABC
+{
+    int abcA;
+    u32 abcB;
+    int abcC;
+};
+#endif
+
 class ENGINE_API CGameFont
 {
 	friend class dxFontRender;

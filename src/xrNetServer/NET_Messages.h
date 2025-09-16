@@ -66,7 +66,7 @@ struct	MSYS_CLIENT_DATA
 
 	string64		name;
 	string64		pass;
-	u32					process_id;
+	ProcessID		process_id;
 };
 
 struct	MSYS_GAME_DESCRIPTION

@@ -5,13 +5,13 @@
 #include "WinsocksHelper.h"
 #include "GameNetworkingSockets/steam/isteamnetworkingutils.h"
 
-SteamNetClient* s_pCallbackInstance = nullptr;
+SteamNetClient* GClientCallback = nullptr;
 
 void ClSteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t *pInfo)
 {
-	if (s_pCallbackInstance)
+	if (GClientCallback)
 	{
-		s_pCallbackInstance->OnSteamNetConnectionStatusChanged(pInfo);
+		GClientCallback->OnSteamNetConnectionStatusChanged(pInfo);
 	}
 }
 
@@ -20,7 +20,7 @@ void ClSteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCa
 void steam_net_update_client(void* P)
 {
 	Msg("- [SteamNetClient] Thread for steam network client is started");
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+	Platform::SetCurrentThreadNormalPriority();
 	SteamNetClient*	C = (SteamNetClient*)P;
 	C->Update();
 }
@@ -229,7 +229,7 @@ void SteamNetClient::PollIncomingMessages()
 
 void SteamNetClient::PollConnectionStateChanges()
 {
-	s_pCallbackInstance = this;
+	GClientCallback = this;
 	m_pInterface->RunCallbacks();
 }
 
@@ -313,7 +313,7 @@ void SteamNetClient::SendClientData()
 	MSYS_CLIENT_DATA client_data;
 	client_data.sign1 = 0x02281488;
 	client_data.sign2 = 0x01488228;
-	client_data.process_id = GetCurrentProcessId();
+	client_data.process_id = Platform::GetCurrentProcessId();
 	xr_strcpy(client_data.name, m_user_name.c_str());
 	xr_strcpy(client_data.pass, m_user_pass.c_str());
 
@@ -341,7 +341,7 @@ bool SteamNetClient::SendPingMessage(MSYS_PING & clPing)
 
 	EResult result = m_pInterface->SendMessageToConnection(
 		m_hConnection,
-		LPBYTE(&clPing),
+		(void*)(&clPing),
 		sizeof(clPing),
 		k_nSteamNetworkingSend_UnreliableNoNagle,
 		nullptr

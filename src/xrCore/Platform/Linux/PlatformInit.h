@@ -83,6 +83,7 @@ using HFILE = int;
 
 #define xr_strerror(errno, buffer, bufferSize) strerror_r(errno, buffer, sizeof(buffer))
 #define xr_interface class
+#define RGB(r,g,b) ((uint32_t)(((uint8_t)(r)) | ((uint16_t)((uint8_t)(g))<<8) | ((uint32_t)((uint8_t)(b))<<16)))
 
 inline unsigned long GetLastError()
 {
