@@ -81,6 +81,24 @@ bool PS::CPACDef::Load(IReader& F)
                 auto Key = m_Keys.back();
                 Key->time = KeyChunk->r_float();
                 KeyChunk->r_fvector4(Key->value);
+                m_MinValue = std::min(
+                    m_MinValue,
+                    std::min(
+                        Key->value.x,
+                        std::min(
+                            Key->value.y,
+                            std::min(
+                                Key->value.z,
+                                Key->value.w))));
+                m_MaxValue = std::max(
+                    m_MaxValue,
+                    std::max(
+                        Key->value.x,
+                        std::max(
+                            Key->value.y,
+                            std::max(
+                                Key->value.z,
+                                Key->value.w))));
                 KeyChunk->close();
             }
             KeysChunk->close();
@@ -131,6 +149,24 @@ bool PS::CPACDef::Load2(CInifile& ini)
                 xr_sprintf		(sect, sizeof(sect), "key_%04d", i);
                 key->time = ini.r_float(sect, "time");
                 key->value = ini.r_fvector4(sect, "keys");
+                m_MinValue = std::min(
+                    m_MinValue,
+                    std::min(
+                        key->value.x,
+                        std::min(
+                            key->value.y,
+                            std::min(
+                                key->value.z,
+                                key->value.w))));
+                m_MaxValue = std::max(
+                    m_MaxValue,
+                    std::max(
+                        key->value.x,
+                        std::max(
+                            key->value.y,
+                            std::max(
+                                key->value.z,
+                                key->value.w))));
             }
             break;
         }
@@ -208,5 +244,29 @@ void PS::CPACDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
 void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
 {
     Tools->EditPAC(this);
+}
+
+void PS::CPACDef::SplitKeysForPlot(
+            xr_vector<float>& R_keys_y,
+            xr_vector<float>& G_keys_y,
+            xr_vector<float>& B_keys_y,
+            xr_vector<float>& A_keys_y,
+            xr_vector<float>& keys_x
+        )
+{
+    R_keys_y.resize(m_Keys.size(), 0);
+    G_keys_y.resize(m_Keys.size(), 0);
+    B_keys_y.resize(m_Keys.size(), 0);
+    A_keys_y.resize(m_Keys.size(), 0);
+    keys_x.resize(m_Keys.size(), 0);
+
+    for (size_t i = 0; i < m_Keys.size(); i++)
+    {
+        keys_x[i] = m_Keys[i]->time;
+        R_keys_y[i] = m_Keys[i]->value.x;
+        G_keys_y[i] = m_Keys[i]->value.y;
+        B_keys_y[i] = m_Keys[i]->value.z;
+        A_keys_y[i] = m_Keys[i]->value.w;
+    }
 }
 #endif
