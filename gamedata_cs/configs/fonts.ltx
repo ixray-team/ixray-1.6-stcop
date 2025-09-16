@@ -1,83 +1,107 @@
-[stat_font]
-shader 			= font
-texture			= ui\ui_font_hud_01
+;used
+[font_default]
+shader			= hud\font ;font
+size 			= 14
+name			= Arial ;Arial is default font by system
+
+[font_letterica]:font_default
+shader			= hud\font
+name			= Letterica
+
+[font_graffiti]:font_default
+shader			= hud\font
+name 			= Graffiti1CTT
+
+[font_condensed]:font_default
+shader			= hud\font
+name 			= RobotoCondensed
+opentype = true
+
+[font_condensed_18]:font_condensed
+size = 18
+letter_spacing = 0.3
+
+[font_condensed_20]:font_condensed
+size = 20
+letter_spacing = 0.3
+
+[font_statistic]:font_default
+size			= 13
 interval		= 0.75,1
 
-[hud_font_small]:stat_font
+[sdk_font_statistic]:font_default
+size = 10
 
-[hud_font_medium]
-shader 			= font
-texture		= ui\ui_font_hud_02
-	
-[hud_font_di]
-shader 			= font
-texture			= ui\ui_font_console_02
+[stat_font]:font_statistic ;TODO deprecated
 
-[hud_font_di2]
+[ui_font_console]:font_default
+name = consola
+opentype = true
+
+[hud_font_di]:ui_font_console ;TODO deprecated
+
+[ui_font_console_2]:ui_font_console
 shader 			= hud\font2
-texture			= ui\ui_font_console_02
+
+[hud_font_di2]:ui_font_console_2 ;TODO deprecated
+
+[ui_font_hud]:font_default
+size			= 16
+
+[hud_font_medium]:ui_font_hud ;TODO deprecated
+
+[ui_font_letterica16]:font_condensed
+size = 18
+letter_spacing = 0.3
+
+[ui_font_letterica16_russian]:ui_font_letterica16 ;TODO deprecated
+
+[letterica16]:ui_font_letterica16 ;TODO deprecated
+
+[ui_font_letterica18]:font_condensed
+size = 20
+letter_spacing = 0.3
+
+[ui_font_letterica18_russian]:ui_font_letterica18 ;TODO deprecated
+
+[ui_font_letterica25]:font_condensed
+size = 28
+letter_spacing = 0.5
 
 
-[ui_font_arial_14]
-shader			= font
-texture			= ui\ui_font_arial_14_1024
-texture800		= ui\ui_font_arial_14_800
-texture1600		= ui\ui_font_arial_14_1600
+[ui_font_letter_25]:ui_font_letterica25 ;TODO deprecated
 
-;not used
-[ui_font_arial_21]
-shader			= font
-texture			= ui\ui_font_arial_21_1024
-texture800		= ui\ui_font_arial_21_800
-texture1600		= ui\ui_font_arial_21_1600
+[ui_font_graffiti19]:font_graffiti
+size			= 19
 
-[ui_font_graffiti19_russian]
-shader			= font
-texture			= ui\ui_font_graff_19_1024
-texture800		= ui\ui_font_graff_19_800
-texture1600		= ui\ui_font_graff_19_1600
+[graffiti19]:ui_font_graffiti19 ;TODO deprecated
 
-[ui_font_graffiti22_russian]
-shader		= font
-texture			= ui\ui_font_graff_22_1024
-texture800		= ui\ui_font_graff_22_800
-texture1600		= ui\ui_font_graff_22_1600
+[ui_font_graffiti19_russian]:ui_font_graffiti19 ;TODO deprecated
 
-[ui_font_graff_32]
-shader			= font
-texture			= ui\ui_font_graff_32_1024
-texture800		= ui\ui_font_graff_32_800
-texture1600		= ui\ui_font_graff_32_1600
+[ui_font_graffiti22]:font_graffiti
+size			= 22
 
-;not used
-[ui_font_graff_40]
-shader			= font
-texture			= ui\ui_font_graff_40_1024
-texture800		= ui\ui_font_graff_40_800
-texture1600		= ui\ui_font_graff_40_1600
+[ui_font_graff_50]:font_graffiti
+size			= 50
 
-[ui_font_graff_50]
-shader			= font
-texture			= ui\ui_font_graff_50_1024
-texture800		= ui\ui_font_graff_50_800
-texture1600		= ui\ui_font_graff_50_1600
+[ui_font_graff_32]:font_graffiti
+size			= 32
 
+[ui_font_graff_40]:font_graffiti
+size			= 40
 
-[ui_font_letterica16_russian]
-shader			= font
-texture			= ui\ui_font_letter_16_1024
-texture800		= ui\ui_font_letter_16_800
-;texture800		= ui\ui_font_letter_18_800
-texture1600		= ui\ui_font_letter_16_1600
+[ui_font_graffiti22_russian]:ui_font_graffiti22 ;TODO deprecated
 
-[ui_font_letterica18_russian]
-shader			= font
-texture			= ui\ui_font_letter_18_1024
-texture800		= ui\ui_font_letter_18_800
-texture1600		= ui\ui_font_letter_18_1600
+[ui_font_graffiti32]:font_graffiti
+size			= 32
 
-[ui_font_letter_25]
-shader			= font
-texture			= ui\ui_font_letter_25_1024
-texture800		= ui\ui_font_letter_25_800
-texture1600		= ui\ui_font_letter_25_1600
+[graffiti22]:font_graffiti
+size = 22
+
+[graffiti50]:font_graffiti
+size = 50
+
+[ui_font_arial_14]:font_default ;TODO deprecated
+opentype = true
+
+[arial_14]:ui_font_arial_14 ;TODO deprecated
