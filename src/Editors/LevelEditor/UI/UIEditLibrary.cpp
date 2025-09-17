@@ -20,8 +20,8 @@ UIEditLibrary::UIEditLibrary()
 {
 	m_ObjectList = new UIItemListForm();
 	InitObjects();
-	m_ObjectList->SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
-	m_ObjectList->SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
+	m_ObjectList->SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
+	m_ObjectList->SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});
 	m_ObjectList->m_Flags.set(UIItemListForm::fMultiSelect, true);
 
 	InternalProps = new UIPropertiesForm();
