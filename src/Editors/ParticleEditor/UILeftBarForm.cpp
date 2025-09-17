@@ -27,6 +27,13 @@ void UILeftBarForm::Draw()
 			}
 			ImGui::SameLine();
 
+			if (ImGui::Button("Add PAC"))
+			{
+				PTools->AppendPAC(0, "pac");
+				PTools->Modified();
+			}
+			ImGui::SameLine();
+
 			if (ImGui::Button("Clone"))
 			{
 				PTools->CloneCurrent();
