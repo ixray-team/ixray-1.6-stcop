@@ -46,6 +46,13 @@ namespace PS
             xr_vector<float>& B_keys_y,
             xr_vector<float>& A_keys_y,
             xr_vector<float>& keys_x
+            );
+        void UpdateCurveFromKeys(
+            const xr_vector<float>& R_keys_y,
+            const xr_vector<float>& G_keys_y,
+            const xr_vector<float>& B_keys_y,
+            const xr_vector<float>& A_keys_y,
+            const xr_vector<float>& keys_x
         );
 #endif
     };

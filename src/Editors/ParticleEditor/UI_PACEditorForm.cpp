@@ -323,12 +323,18 @@ void UIPACEditorForm::DrawCurves()
 		}
 	}
 
+	bool NeedClose = false;
 	if (ImGui::Button("OK"))
 	{
-		
+		EditedPAC->UpdateCurveFromKeys(R_keys_y, G_keys_y, B_keys_y, A_keys_y, keys_x);
+		NeedClose = true;
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel"))
+	{
+		NeedClose = true;
+	}
+	if (NeedClose)
 	{
 		ImGui::CloseCurrentPopup();
 		xr_delete(Form);
