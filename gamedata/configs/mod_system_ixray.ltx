@@ -99,3 +99,210 @@ night_vision_disabled_maps						= ai_test,ai_test2, andy_test_
 ![monsters_common]
 corpse_remove_game_time_interval = 24 ; in hours
 stay_after_death_time_interval = 36 ; in hours
+
+;defines.ltx
+![hud_base] ; Gunslinger Style
+;наклоны оружия при ходьбе
+hud_move_speed_rot = 3			;скорость доворота до заданного угла			
+hud_move_speed_pos = 2		        ;скорость перемещения до заданной позиции
+hud_move_stabilize_factor = 3.5		;во сколько раз быстрее возвращаемся в нейтральное положение при идле
+hud_move_weaponhide_factor = 3.5	;во сколько раз быстрее возвращаемся в нейтральное положение при убирании оружия
+hud_move_unzoom_factor = 2.0
+hud_move_slow_factor = 0.5		;во сколько раз менять амплитуду при шаге
+hud_move_crouch_factor = 0.5		;во сколько раз менять амплитуду при присяде
+hud_move_slow_crouch_factor = 0.3	;во сколько раз менять амплитуду при полном присяде
+
+;задаются максимальные отклонения от центрального в разных режимах ходьбы
+;Аддитивно!
+
+;стрейф влево
+hud_move_left_offset_pos = -0.03,-0.018,0
+hud_move_left_offset_rot = 0,0,-3.5
+
+hud_move_left_offset_pos_16x9 = -0.03,-0.018,0
+hud_move_left_offset_rot_16x9 = 0,0,-3.5
+
+;стрейф вправо
+hud_move_right_offset_pos = 0.03,-0.005,0
+hud_move_right_offset_rot = 0,0,5
+
+hud_move_right_offset_pos_16x9 = 0.03,-0.005,0
+hud_move_right_offset_rot_16x9 = 0,0,5
+
+;движение вперед
+hud_move_forward_offset_pos = 0,-0.005,-0.035
+hud_move_forward_offset_rot = 0,0,0
+
+hud_move_forward_offset_pos_16x9 = 0,-0.005,-0.035
+hud_move_forward_offset_rot_16x9 = 0,0,0
+
+;движение назад
+hud_move_back_offset_pos = 0,-0.005,0.045
+hud_move_back_offset_rot = 0,0,0
+
+hud_move_back_offset_pos_16x9 = 0,-0.005,0.045
+hud_move_back_offset_rot_16x9 = 0,0,0
+
+;прыжок
+hud_move_jump_offset_pos = 0,0.05,0.03
+hud_move_jump_offset_rot = 0,-10,-10
+
+hud_move_jump_offset_pos_16x9 = 0,0.05,0.03
+hud_move_jump_offset_rot_16x9 = 0,-10,-10
+
+;падение
+hud_move_fall_offset_pos = 0,-0.05,0.06
+hud_move_fall_offset_rot = 0,5,0
+
+hud_move_fall_offset_pos_16x9 = 0,-0.05,0.06
+hud_move_fall_offset_rot_16x9 = 0,5,0
+
+;приземление - первая фаза
+hud_move_landing_offset_pos = 0,-0.2,0.03
+hud_move_landing_offset_rot = 0,-5,10
+
+hud_move_landing_offset_pos_16x9 = 0,-0.2,0.03
+hud_move_landing_offset_rot_16x9 = 0,-5,10
+
+;приземление - вторая фаза
+hud_move_landing2_offset_pos = 0,-0.3,0.03
+hud_move_landing2_offset_rot = 0,-13,20
+
+hud_move_landing2_offset_pos_16x9 = 0,-0.3,0.03
+hud_move_landing2_offset_rot_16x9 = 0,-13,20
+
+;переход из стойки в присяд
+to_crouch_time = 0.15
+hud_move_to_crouch_offset_pos = 0,-0.02, 0
+hud_move_to_crouch_offset_rot = 0,1.5,-4
+
+hud_move_to_crouch_offset_pos_16x9 = 0,-0.02, 0
+hud_move_to_crouch_offset_rot_16x9 = 0,1.5,-4
+
+;переход из присяда в стойку
+from_crouch_time = 0.15
+hud_move_from_crouch_offset_pos = 0,-0.008,0
+hud_move_from_crouch_offset_rot = 0,-0.8,3
+
+hud_move_from_crouch_offset_pos_16x9 = 0,-0.008,0
+hud_move_from_crouch_offset_rot_16x9 = 0,-0.8,3
+
+;переход из присяда в низкий присяд
+to_slow_crouch_time = 0.15
+hud_move_to_slow_crouch_offset_pos = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot = 0,1,-2
+
+hud_move_to_slow_crouch_offset_pos_16x9 = 0,-0.05, 0
+hud_move_to_slow_crouch_offset_rot_16x9 = 0,1,-2
+
+;переход из низкого присяда в присяд
+from_slow_crouch_time = 0.15
+hud_move_from_slow_crouch_offset_pos = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot = 0,-1,2
+
+hud_move_from_slow_crouch_offset_pos_16x9 = 0,0.02,0
+hud_move_from_slow_crouch_offset_rot_16x9 = 0,-1,2
+
+;переход из обычного в наклон влево
+to_llookout_time = 0.15
+hud_move_to_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot		= 0,0,0
+hud_move_to_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_to_llookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона влево в обычный
+from_llookout_time = 0.15
+hud_move_from_llookout_offset_pos 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot	= 0,0,0
+hud_move_from_llookout_offset_pos_16x9 	= -0.01, 0, 0
+hud_move_from_llookout_offset_rot_16x9	= 0,0,0
+
+
+;переход из обычного в наклон вправо
+to_rlookout_time = 0.15
+hud_move_to_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot		= 0,0,0
+hud_move_to_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_to_rlookout_offset_rot_16x9	= 0,0,0
+
+;переход из наклона вправо в обычный
+from_rlookout_time = 0.15
+hud_move_from_rlookout_offset_pos 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot	= 0,0,0
+hud_move_from_rlookout_offset_pos_16x9 	= 0.01, 0, 0
+hud_move_from_rlookout_offset_rot_16x9	= 0,0,0
+
+;наклон влево (постоянная компонента)
+hud_move_llookout_offset_speed_factor = 2.8
+hud_move_llookout_offset_pos 		= -0.045, -0.03, 0
+hud_move_llookout_offset_pos_16x9 	= -0.045, -0.03, 0
+hud_move_llookout_offset_rot 		= 0, 0, -9
+hud_move_llookout_offset_rot_16x9 	= 0, 0, -9
+
+;наклон вправо (постоянная компонента)
+hud_move_rlookout_offset_speed_factor = 2.8
+hud_move_rlookout_offset_pos 		= 0.04, -0.01, 0
+hud_move_rlookout_offset_pos_16x9 	= 0.04, -0.01, 0
+hud_move_rlookout_offset_rot 		= 0, 0, 10
+hud_move_rlookout_offset_rot_16x9 	= 0, 0, 10
+
+
+;аналогично для прицеливания
+;переход из стойки в присяд
+hud_aim_move_to_crouch_offset_pos = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_crouch_offset_pos_16x9 = 0,0.003, 0
+hud_aim_move_to_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из присяда в стойку
+hud_aim_move_from_crouch_offset_pos = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_crouch_offset_pos_16x9 = 0,-0.003,0
+hud_aim_move_from_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из присяда в низкий присяд
+hud_aim_move_to_slow_crouch_offset_pos = 0,0.001, 0
+hud_aim_move_to_slow_crouch_offset_rot = 0,0.3,-0.5
+
+hud_aim_move_to_slow_crouch_offset_pos_16x9 = 0,0.002, 0
+hud_aim_move_to_slow_crouch_offset_rot_16x9 = 0,0.3,-0.5
+
+;переход из низкого присяда в присяд
+hud_aim_move_from_slow_crouch_offset_pos = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot = 0,-0.3,0.5
+
+hud_aim_move_from_slow_crouch_offset_pos_16x9 = 0,-0.001,0
+hud_aim_move_from_slow_crouch_offset_rot_16x9 = 0,-0.3,0.5
+
+;переход из обычного в наклон влево
+hud_aim_move_to_llookout_offset_pos 	        = -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot		= 0,0,-0.6
+hud_aim_move_to_llookout_offset_pos_16x9 	= -0.003, 0, 0
+hud_aim_move_to_llookout_offset_rot_16x9	= 0,0,-0.6
+
+;переход из наклона влево в обычный
+hud_aim_move_from_llookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_llookout_offset_rot	        = 0,0,-1
+hud_aim_move_from_llookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_llookout_offset_rot_16x9	= 0,0,-1
+
+
+;переход из обычного в наклон вправо
+hud_aim_move_to_rlookout_offset_pos 	        = 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot		= 0,0,0.6
+hud_aim_move_to_rlookout_offset_pos_16x9 	= 0.003, 0, 0
+hud_aim_move_to_rlookout_offset_rot_16x9	= 0,0,0.6
+
+;переход из наклона вправо в обычный
+hud_aim_move_from_rlookout_offset_pos 	        = 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot	        = 0,0,1
+hud_aim_move_from_rlookout_offset_pos_16x9 	= 0, 0, 0
+hud_aim_move_from_rlookout_offset_rot_16x9	= 0,0,1
+
+hud_collision_enabled							= true
+hud_collision_offset_pos						= 0,-0.5,0
+hud_collision_offset_pos_16x9					= 0,-0.5,0
+hud_collision_offset_rot						= -0.8,0,0
+hud_collision_offset_rot_16x9					= -0.8,0,0
