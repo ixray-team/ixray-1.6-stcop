@@ -10,59 +10,93 @@ UIDOTool::~UIDOTool()
 
 void UIDOTool::Draw()
 {
-	ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
-	if (ImGui::TreeNode("Commands"))
+	if (ImGui::Button("First Initialize", ImVec2(-1, 0)))
 	{
-		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
+		if (DM->Initialize())
+			Scene->UndoSave();
+	}
+
+	if (ImGui::Button("Reinitialize All", ImVec2(-1, 0)))
+	{
+		if (DM->Reinitialize())
+			Scene->UndoSave();
+	}
+
+	if (ImGui::Button("Reinitialize Objects Only", ImVec2(-1, 0)))
+	{
+		if (DM->UpdateObjects(true, false))
+			Scene->UndoSave();
+	}
+
+	if (ImGui::Button("Reinitialize Selected Slot Objects", ImVec2(-1, 0)))
+	{
+		if (DM->UpdateObjects(false, true))
+			Scene->UndoSave();
+	}
+	ImGui::Separator();
+
+	if (ImGui::Button("Update Renderer", ImVec2(-1, 0)))
+	{
+		DM->InvalidateCache();
+		Scene->UndoSave();
+	}
+	ImGui::Separator();
+
+	if (ImGui::Button("Clear Slots", ImVec2(-1, 0)))
+	{
+		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to reset slots?") == mrYes) {
+			DM->ClearSlots();
+			Scene->UndoSave();
+		}
+	}
+
+	if (ImGui::Button("Clear Details", ImVec2(-1, 0)))
+	{
+		if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes) {
+			ExecCommand(COMMAND_UPDATE_PROPERTIES);
+			DM->Clear();
+			Scene->UndoSave();
+		}
+	}
+	ImGui::Separator();
+
+	if (ImGui::Button("Object List", ImVec2(-1, 0)))
+	{
+		m_DOShuffle = true;
+		UIDOShuffle::Show(DM);
+	}
+	ImGui::Separator();
+
+	ImGui::Text("Base Texture");
+
+	shared_str StrBaseTextureName = "<none>";
+	if (DM->m_Base.name.size() > 0)
+	{
+		StrBaseTextureName = DM->m_Base.name;
+	}
+
+	if (ImGui::Button(*StrBaseTextureName, ImVec2(-1, 0)))
+	{
+		UIChooseForm::SelectItem(smTexture, 1);
+		IsChooseDraw = true;
+	}
+
+	if (IsChooseDraw)
+	{
+		xr_string str;
+		bool ok;
+		if (UIChooseForm::GetResult(ok, str))
 		{
-			if (ImGui::Button("First Initialize", ImVec2(-1, 0)))
+			if (ok)
 			{
-				if (DM->Initialize())
-					Scene->UndoSave(); 
+				DM->m_Base.name = str.c_str();
+				DM->OnBaseTextureChange(nullptr);
 			}
-			if (ImGui::Button("Reinitialize All", ImVec2(-1, 0))) 
-			{
-				if (DM->Reinitialize())
-					Scene->UndoSave();
-			}
-			if (ImGui::Button("Reinitialize Objects Only", ImVec2(-1, 0)))
-			{
-				if (DM->UpdateObjects(true, false))
-					Scene->UndoSave();
-			}
-			if (ImGui::Button("Reinitialize Selected Slot Objects", ImVec2(-1, 0)))
-			{
-				if (DM->UpdateObjects(false, true))
-					Scene->UndoSave();
-			}
-			ImGui::Separator();
-			if (ImGui::Button("Update Renderer", ImVec2(-1, 0)))
-			{
-				DM->InvalidateCache();
-				Scene->UndoSave();
-			}
-			ImGui::Separator();
-			if (ImGui::Button("Clear Slots", ImVec2(-1, 0)))
-			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes| mbNo, "Are you sure to reset slots?") == mrYes) {
-					DM->ClearSlots();
-					Scene->UndoSave();
-				}
-			}
-			if (ImGui::Button("Clear Details", ImVec2(-1, 0)))
-			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear details?") == mrYes) {
-					ExecCommand(COMMAND_UPDATE_PROPERTIES);
-					DM->Clear();
-					Scene->UndoSave();
-				}
-			}
-			ImGui::Separator();
-			if (ImGui::Button("Object List", ImVec2(-1, 0))) { m_DOShuffle = true; UIDOShuffle::Show(DM); }
+
+			IsChooseDraw = false;
 		}
 
-		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::TreePop();
+		UIChooseForm::Update();
 	}
 
 	HandleDragDrop();
