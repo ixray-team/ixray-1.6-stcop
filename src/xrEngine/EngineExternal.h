@@ -93,6 +93,7 @@ public:
 	float GetTalkFovScale() const;
 	u32 GetFontAltasSize() const;
 	float GetSprintFovFactor() const;
+	const char* GetCurrentPlatformFullName();
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
