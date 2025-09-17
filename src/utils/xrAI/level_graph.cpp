@@ -22,25 +22,53 @@ CLevelGraph::CLevelGraph(LPCSTR filename)
 	R_ASSERT(header().version() > XRAI_MINIMAL_VERSION || header().version() < XRAI_CURRENT_VERSION);
 	m_reader->advance(sizeof(CHeader));
 
-	if (header().version() == XRAI_MINIMAL_VERSION)
+	switch (header().version())
 	{
-		NodeCompressed10* temp = (NodeCompressed10*)m_reader->pointer();
-		m_nodes = new CVertex[header().vertex_count()];
-
-		for (u32 i = 0; i < header().vertex_count(); ++i)
+		case XRAI_MINIMAL_VERSION: // ver 10 - CS/CoP format
 		{
-			std::memcpy(&m_nodes[i].high, &temp[i].high, sizeof(temp[i].high) + sizeof(temp[i].low) + sizeof(temp[i].plane) + sizeof(temp[i].p));
+			NodeCompressed10* Src = (NodeCompressed10*)m_reader->pointer();
+			m_nodes = new CVertex[header().vertex_count()];
 
-			for (u8 j = 0; j < 4; ++j)
+			for (u32 i = 0; i < header().vertex_count(); ++i)
 			{
-				m_nodes[i].link(j, temp[i].link(j));
+				for (u8 j = 0; j < 4; ++j)
+				{
+					u32 link_value = Src[i].link(j);
+					m_nodes[i].UncompressedNode.link(j, link_value);
+				}
+
+				// Остальные поля
+				m_nodes[i].UncompressedNode.high = Src[i].high;
+				m_nodes[i].UncompressedNode.low = Src[i].low;
+				m_nodes[i].UncompressedNode.plane = Src[i].plane;
+
+				m_nodes[i].UncompressedNode.p.xz(Src[i].p.xz());
+				m_nodes[i].UncompressedNode.p.y(Src[i].p.y());
 			}
-			m_nodes[i].light(temp[i].light());
+			break;
 		}
-	}
-	else
-	{
-		m_nodes = (CVertex*)m_reader->pointer();
+		case XRAI_CURRENT_VERSION: // ver 11 - 25-bit format
+		{
+			NodeCompressed* compressed_nodes = (NodeCompressed*)m_reader->pointer();
+			m_nodes = new CVertex[header().vertex_count()];
+
+			for (size_t i = 0; i < header().vertex_count(); ++i)
+			{
+				for (u8 link_idx = 0; link_idx < 4; ++link_idx)
+				{
+					u32 old_link = compressed_nodes[i].link(link_idx);
+					m_nodes[i].UncompressedNode.link(link_idx, old_link);
+				}
+
+				m_nodes[i].UncompressedNode.high = compressed_nodes[i].high;
+				m_nodes[i].UncompressedNode.low = compressed_nodes[i].low;
+				m_nodes[i].UncompressedNode.plane = compressed_nodes[i].plane;
+
+				m_nodes[i].UncompressedNode.p.xz(compressed_nodes[i].p.xz());
+				m_nodes[i].UncompressedNode.p.y(compressed_nodes[i].p.y());
+			}
+			break;
+		}
 	}
 
 	m_row_length = iFloor((header().box().max.z - header().box().min.z) / header().cell_size() + EPS_L + 1.5f);
@@ -49,7 +77,8 @@ CLevelGraph::CLevelGraph(LPCSTR filename)
 	unpack_xz(vertex_position(header().box().max), m_max_x, m_max_z);
 }
 
-CLevelGraph::~CLevelGraph		()
+CLevelGraph::~CLevelGraph()
 {
-	FS.r_close					(m_reader);
+	FS.r_close(m_reader);
+	xr_delete(m_nodes);
 }
