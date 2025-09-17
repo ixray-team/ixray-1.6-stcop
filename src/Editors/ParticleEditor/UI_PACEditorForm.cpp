@@ -52,7 +52,7 @@ void UIPACEditorForm::Update()
 			string256 buff;
 			xr_sprintf(buff, sizeof(buff), "%s (%s)", "PAC Editor", Form->EditedPAC->getName());
 			ImGui::OpenPopup(buff);
-			ImGui::SetNextWindowSize(ImVec2(1000, 0), ImGuiCond_::ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(1000, 0), ImGuiCond_::ImGuiCond_Always);
 			if (ImGui::BeginPopupModal(buff, &Form->bOpen,0))
 			{
 				Form->Draw();
@@ -259,7 +259,7 @@ void UIPACEditorForm::DrawCurves()
 		bool NeedDelete = ImGui::Button("Delete Key");
 		ImGui::Text("Time");
 		ImGui::SameLine();
-		NeedUpdate |= ImGui::InputDouble("Time Input", &dkeys_x[SelectedKeyframeIndex].Value, 1, 1, "%.0f");
+		NeedUpdate |= ImGui::InputDouble("Time Input", &dkeys_x[SelectedKeyframeIndex].Value, 0, 0, "%.0f");
 		static xr_vector<int> Buttons = {-100, -10, -1, 1, 10, 100};
 		for (auto elem : Buttons)
 		{
