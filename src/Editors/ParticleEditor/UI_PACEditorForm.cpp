@@ -40,20 +40,27 @@ void UIPACEditorForm::Open(PS::CPACDef* EditedPAC)
 		Form->dkeys_x[i].Value = Form->keys_x[i];
 		Form->dkeys_x[i].Index = i;
 	}
-	//Form->keys_y_fdummy.resize(Form->keys_x.size(), 0.0f);
 	Form->keys_y_ddummy.resize(Form->keys_x.size(), 0.0);
 }
 
 void UIPACEditorForm::Update()
 {
-	if (Form && !Form->IsClosed())
+	if (Form)
 	{
-		ImGui::OpenPopup("Particle Animation Curve Editor");
-		ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_::ImGuiCond_FirstUseEver);
-		if (ImGui::BeginPopupModal("Particle Animation Curve Editor", nullptr,0))
+		if(!Form->IsClosed())
 		{
-			Form->Draw();
-			ImGui::EndPopup();
+			string256 buff;
+			xr_sprintf(buff, sizeof(buff), "%s (%s)", "PAC Editor", Form->EditedPAC->getName());
+			ImGui::OpenPopup(buff);
+			ImGui::SetNextWindowSize(ImVec2(1000, 0), ImGuiCond_::ImGuiCond_FirstUseEver);
+			if (ImGui::BeginPopupModal(buff, &Form->bOpen,0))
+			{
+				Form->Draw();
+				ImGui::EndPopup();
+			}
+		} else
+		{
+			xr_delete(Form);
 		}
 	}
 }
@@ -61,29 +68,35 @@ void UIPACEditorForm::Update()
 void UIPACEditorForm::DrawCurves()
 {
 	static bool ShowTest = false;
-	if (ImGui::Button("demo_test"))
+	constexpr bool ShowDemo = false;
+	if constexpr (ShowDemo)
 	{
-		ShowTest = !ShowTest;
+		if (ImGui::Button("demo_test"))
+		{
+			ShowTest = !ShowTest;
+		}
+		if (ShowTest)
+		{
+			ImPlot::ShowDemoWindow();
+		}
+		ImGui::SameLine();
 	}
-	if (ShowTest)
-	{
-		ImPlot::ShowDemoWindow();
-	}
+	ImGui::Text("Ctrl + click on time bar to add key");
 	static ImPlotSubplotFlags flags = ImPlotSubplotFlags_ShareItems|ImPlotSubplotFlags_NoLegend;
 	static float rratios[] = {5,1};
 	static float cratios[] = {1};
 	float XSpace = EditedPAC->GetMaxTime()*0.05f;
 	float YSpace = std::fabs(EditedPAC->GetMinValue()*0.1f)+std::fabs(EditedPAC->GetMaxValue()*0.1f)/2;
+	auto cmp = [&](double key_a, double key_b)
+	{
+		return key_a < key_b;
+	};
+	auto proj = [&](const DoubleKey& key)
+	{
+		return key.Value;
+	};
 	auto AfterChangeTimeFunc = [&](size_t i)
 	{
-		auto cmp = [&](double key_a, double key_b)
-		{
-			return key_a < key_b;
-		};
-		auto proj = [&](const DoubleKey& key)
-		{
-			return key.Value;
-		};
 		auto temp = dkeys_x[i];
 		dkeys_x.erase(dkeys_x.begin()+i);
 		auto FoundIt = std::ranges::upper_bound(dkeys_x, temp.Value, cmp, proj);
@@ -122,7 +135,7 @@ void UIPACEditorForm::DrawCurves()
 	};
 	if (ImPlot::BeginSubplots("Animation Curves", 2, 1, ImVec2(-1,400), flags, rratios, cratios))
 	{
-		if (ImPlot::BeginPlot("Curves", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend))
+		if (ImPlot::BeginPlot("Curves", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend|ImPlotFlags_NoMenus))
 		{
 			ImPlot::SetupAxes(nullptr, "value", ImPlotAxisFlags_NoDecorations);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
@@ -137,11 +150,21 @@ void UIPACEditorForm::DrawCurves()
 			ImPlot::PlotLine("A", keys_x.data(), A_keys_y.data(), A_keys_y.size());
 			ImPlot::EndPlot();
 		}
-		if (ImPlot::BeginPlot("Times", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend))
+		if (ImPlot::BeginPlot("Times", ImVec2(-1,0), ImPlotFlags_NoTitle|ImPlotFlags_NoLegend|ImPlotFlags_NoMenus))
 		{
 			ImPlot::SetupAxes("t (msec)", nullptr, 0,ImPlotAxisFlags_NoDecorations|ImPlotAxisFlags_Lock);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
 			ImPlot::SetupAxesLimits(-XSpace,EditedPAC->GetMaxTime()+XSpace,-0.01,0.01);
+			struct
+			{
+				bool NeedInsert = false;
+				ImPlotPoint pt;
+			} InsertData;
+			if (ImPlot::IsPlotHovered() && ImGui::IsMouseClicked(0) && ImGui::GetIO().KeyCtrl) {
+				InsertData.pt = ImPlot::GetPlotMousePos();
+				InsertData.pt.y = 0.0;
+				InsertData.NeedInsert = true;
+			}
 			struct UpdatedData
 			{
 				size_t Index;
@@ -181,6 +204,50 @@ void UIPACEditorForm::DrawCurves()
 				auto i = updated_data.Index;
 				AfterChangeTimeFunc(i);
 			}
+			if (InsertData.NeedInsert)
+			{
+				InsertData.NeedInsert = false;
+				auto& pt = InsertData.pt;
+				auto FoundIt = std::ranges::upper_bound(dkeys_x, pt.x, cmp, proj);
+				size_t NewIndex = std::distance(dkeys_x.begin(), FoundIt);
+				DoubleKey NewKey;
+				NewKey.Value = pt.x;
+				NewKey.Index = NewIndex;
+				if (FoundIt == dkeys_x.end())
+				{
+					dkeys_x.push_back(NewKey);
+					keys_x.push_back(pt.x);
+					keys_y_ddummy.push_back(0);
+					R_keys_y.push_back(R_keys_y.back());
+					G_keys_y.push_back(G_keys_y.back());
+					B_keys_y.push_back(B_keys_y.back());
+					A_keys_y.push_back(A_keys_y.back());
+				} else if (FoundIt == dkeys_x.begin())
+				{
+					dkeys_x.insert(dkeys_x.begin(), NewKey);
+					keys_x.insert(keys_x.begin(), pt.x);
+					keys_y_ddummy.insert(keys_y_ddummy.begin(), 0);
+					R_keys_y.insert(R_keys_y.begin(), R_keys_y[0]);
+					G_keys_y.insert(G_keys_y.begin(), G_keys_y[0]);
+					B_keys_y.insert(B_keys_y.begin(), B_keys_y[0]);
+					A_keys_y.insert(A_keys_y.begin(), A_keys_y[0]);
+				} else
+				{
+					dkeys_x.insert(dkeys_x.begin()+NewIndex, NewKey);
+					auto InsertInterpolated = [&](xr_vector<float>& vec)
+					{
+						float Alpha = (keys_x[NewIndex] - pt.x)/(keys_x[NewIndex]-keys_x[NewIndex-1]);
+						vec.insert(vec.begin()+NewIndex, vec[NewIndex-1]+(vec[NewIndex]-vec[NewIndex-1])*Alpha);
+					};
+					InsertInterpolated(R_keys_y);
+					InsertInterpolated(G_keys_y);
+					InsertInterpolated(B_keys_y);
+					InsertInterpolated(A_keys_y);
+					keys_x.insert(keys_x.begin()+NewIndex, pt.x);
+					keys_y_ddummy.insert(keys_y_ddummy.begin()+NewIndex, 0);
+				}
+				SelectedKeyframeIndex = size_t(-1);
+			}
 			ImPlot::EndPlot();
 		}
         ImPlot::EndSubplots();
@@ -188,68 +255,72 @@ void UIPACEditorForm::DrawCurves()
 
 	if (SelectedKeyframeIndex < dkeys_x.size())
 	{
-		//if (ImGui::BeginChild("Time"))
-		//{
-			bool NeedUpdate = false;
-			ImGui::Text("Time");
+		bool NeedUpdate = false;
+		bool NeedDelete = ImGui::Button("Delete Key");
+		ImGui::Text("Time");
+		ImGui::SameLine();
+		NeedUpdate |= ImGui::InputDouble("Time Input", &dkeys_x[SelectedKeyframeIndex].Value, 1, 1, "%.0f");
+		static xr_vector<int> Buttons = {-100, -10, -1, 1, 10, 100};
+		for (auto elem : Buttons)
+		{
 			ImGui::SameLine();
-			NeedUpdate |= ImGui::InputDouble("Time Input", &dkeys_x[SelectedKeyframeIndex].Value);
-			static xr_vector<int> Buttons = {-100, -10, -1, 1, 10, 100};
-			for (auto elem : Buttons)
+			if (ImGui::Button(std::to_string(elem).c_str()))
 			{
-				ImGui::SameLine();
-				if (ImGui::Button(std::to_string(elem).c_str()))
-				{
-					dkeys_x[SelectedKeyframeIndex].Value += elem;
-					NeedUpdate |= true;
-				}
+				dkeys_x[SelectedKeyframeIndex].Value += elem;
+				NeedUpdate |= true;
 			}
-			if (NeedUpdate)
+		}
+		if (NeedUpdate)
+		{
+			if (dkeys_x[SelectedKeyframeIndex].Value <= 0)
 			{
-				if (dkeys_x[SelectedKeyframeIndex].Value <= 0)
+				auto ValidateFirstElems = [&](size_t index)
 				{
-					auto ValidateFirstElems = [&](size_t index)
+					do
 					{
-						do
-						{
-							dkeys_x[index++].Value++;
-						} while (index < dkeys_x.size()-1 && index < SelectedKeyframeIndex && dkeys_x[index-1].Value == dkeys_x[index].Value);
-					};
-					ValidateFirstElems(0);
-					dkeys_x[SelectedKeyframeIndex].Value = 0;
-				}
-				AfterChangeTimeFunc(SelectedKeyframeIndex);
+						dkeys_x[index++].Value++;
+					} while (index < dkeys_x.size()-1 && index < SelectedKeyframeIndex && dkeys_x[index-1].Value == dkeys_x[index].Value);
+				};
+				ValidateFirstElems(0);
+				dkeys_x[SelectedKeyframeIndex].Value = 0;
 			}
-		//}
-		//ImGui::EndChild();
+			AfterChangeTimeFunc(SelectedKeyframeIndex);
+		}
 		ImGui::Separator();
 		auto ChannelButtonsFunc = [&](LPCSTR Channel, xr_vector<float>& vec)
 		{
-			//if (ImGui::BeginChild(Channel))
-			//{
-				ImGui::Text(Channel);
+			ImGui::Text(Channel);
+			ImGui::SameLine();
+			string16 buf;
+			ImGui::InputFloat(xr_strconcat(buf, Channel, " Input"), &vec[SelectedKeyframeIndex], 0, 0, "%.2f");
+			static xr_vector<float> Buttons = {-1.0f, -0.1f, -0.01f, 0.01f, 0.1f, 1.0f};
+			ImGui::PushID(Channel);
+			for (auto elem : Buttons)
+			{
 				ImGui::SameLine();
-				string16 buf;
-				ImGui::InputFloat(xr_strconcat(buf, Channel, " Input"), &vec[SelectedKeyframeIndex], 0, 0, "%.2f");
-				static xr_vector<float> Buttons = {-1.0f, -0.1f, -0.01f, 0.01f, 0.1f, 1.0f};
-				ImGui::PushID(Channel);
-				for (auto elem : Buttons)
+				xr_sprintf(buf, sizeof(buf), "%.2f", elem);
+				if (ImGui::Button(buf))
 				{
-					ImGui::SameLine();
-					xr_sprintf(buf, sizeof(buf), "%.2f", elem);
-					if (ImGui::Button(buf))
-					{
-						vec[SelectedKeyframeIndex] += elem;
-					}
+					vec[SelectedKeyframeIndex] += elem;
 				}
-				ImGui::PopID();
-			//}
-			//ImGui::EndChild();
+			}
+			ImGui::PopID();
 		};
 		ChannelButtonsFunc("R", R_keys_y);
 		ChannelButtonsFunc("G", G_keys_y);
 		ChannelButtonsFunc("B", B_keys_y);
 		ChannelButtonsFunc("A", A_keys_y);
+
+		if (NeedDelete)
+		{
+			dkeys_x.erase(dkeys_x.begin()+SelectedKeyframeIndex);
+			keys_y_ddummy.erase(keys_y_ddummy.begin()+SelectedKeyframeIndex);
+			keys_x.erase(keys_x.begin()+SelectedKeyframeIndex);
+			R_keys_y.erase(R_keys_y.begin()+SelectedKeyframeIndex);
+			G_keys_y.erase(G_keys_y.begin()+SelectedKeyframeIndex);
+			B_keys_y.erase(B_keys_y.begin()+SelectedKeyframeIndex);
+			A_keys_y.erase(A_keys_y.begin()+SelectedKeyframeIndex);
+		}
 	}
 
 	if (ImGui::Button("OK"))
