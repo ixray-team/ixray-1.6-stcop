@@ -24,10 +24,10 @@ void CSHCompilerTools::OnActivate()
     FillItemList();
 
     //Ext.m_Items->SetOnModifiedEvent		(TOnModifiedEvent(this,&CSHCompilerTools::Modified));
-    Ext.m_Items->SetOnItemCreaetEvent(TOnItemCreate(this, &CSHCompilerTools::OnCreateItem));
-    Ext.m_Items->SetOnItemCloneEvent(TOnItemClone(this, &CSHCompilerTools::OnCloneItem));
-    Ext.m_Items->SetOnItemRenameEvent(TOnItemRename(this, &CSHCompilerTools::OnRenameItem));
-    Ext.m_Items->SetOnItemRemoveEvent(TOnItemRemove(this, &CSHCompilerTools::OnRemoveItem));
+    Ext.m_Items->SetOnItemCreaetEvent({this, &CSHCompilerTools::OnCreateItem});
+    Ext.m_Items->SetOnItemCloneEvent({this, &CSHCompilerTools::OnCloneItem});
+    Ext.m_Items->SetOnItemRenameEvent({this, &CSHCompilerTools::OnRenameItem});
+    Ext.m_Items->SetOnItemRemoveEvent({this, &CSHCompilerTools::OnRemoveItem});
 
     inherited::OnActivate();
 }
@@ -117,7 +117,7 @@ void CSHCompilerTools::AppendItem(LPCSTR path, LPCSTR parent_name)
 
 }
 
-void CSHCompilerTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
+void CSHCompilerTools::OnRenameItem(UIItemListForm::Node& node, LPCSTR old_full_name, LPCSTR new_full_name, EItemType type)
 {
     if (type == TYPE_OBJECT)
     {
@@ -136,9 +136,18 @@ void CSHCompilerTools::OnRenameItem(LPCSTR old_full_name, LPCSTR new_full_name, 
 }
 
 
-void CSHCompilerTools::OnRemoveItem(LPCSTR name, EItemType type)
+void CSHCompilerTools::OnRemoveItem(UIItemListForm::Node& node/*, LPCSTR name, EItemType type*/)
 {
-    if (type == TYPE_OBJECT) {
+    string_path path;
+    if (node.Path.size())
+    {
+        xr_strconcat(path, node.Path.c_str(), "\\", node.Name.c_str());
+    } else
+    {
+        xr_strcpy(path, node.Name.c_str());
+    }
+    LPCSTR name = path;
+    if (node.IsObject()) {
         R_ASSERT(name && name[0]);
         if (m_Shader && stricmp(m_Shader->Name, name) == 0)
         {
