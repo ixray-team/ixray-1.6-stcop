@@ -85,7 +85,12 @@ void UIPACEditorForm::DrawCurves()
 	static ImPlotSubplotFlags flags = ImPlotSubplotFlags_ShareItems|ImPlotSubplotFlags_NoLegend;
 	static float rratios[] = {5,1};
 	static float cratios[] = {1};
-	float XSpace = EditedPAC->GetMaxTime()*0.05f;
+	float MaxTime = EditedPAC->GetMaxTime();
+	if (fis_zero(MaxTime))
+	{
+		MaxTime = 100;
+	}
+	float XSpace = MaxTime*0.05f;
 	float YSpace = std::fabs(EditedPAC->GetMinValue()*0.1f)+std::fabs(EditedPAC->GetMaxValue()*0.1f)/2;
 	auto cmp = [&](double key_a, double key_b)
 	{
@@ -139,7 +144,7 @@ void UIPACEditorForm::DrawCurves()
 		{
 			ImPlot::SetupAxes(nullptr, "value", ImPlotAxisFlags_NoDecorations);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
-			ImPlot::SetupAxesLimits(-XSpace,EditedPAC->GetMaxTime()+XSpace,EditedPAC->GetMinValue()-YSpace,EditedPAC->GetMaxValue()+YSpace);
+			ImPlot::SetupAxesLimits(-XSpace,MaxTime+XSpace,EditedPAC->GetMinValue()-YSpace,EditedPAC->GetMaxValue()+YSpace);
 			ImPlot::SetNextLineStyle(ImColor(255,0,0));
 			ImPlot::PlotLine("R", keys_x.data(), R_keys_y.data(), R_keys_y.size());
 			ImPlot::SetNextLineStyle(ImColor(0,255,0));
@@ -154,7 +159,7 @@ void UIPACEditorForm::DrawCurves()
 		{
 			ImPlot::SetupAxes("t (msec)", nullptr, 0,ImPlotAxisFlags_NoDecorations|ImPlotAxisFlags_Lock);
 			ImPlot::SetupAxisLinks(ImAxis_X1, &LinkXMin, &LinkXMax);
-			ImPlot::SetupAxesLimits(-XSpace,EditedPAC->GetMaxTime()+XSpace,-0.01,0.01);
+			ImPlot::SetupAxesLimits(-XSpace,MaxTime+XSpace,-0.01,0.01);
 			struct
 			{
 				bool NeedInsert = false;
@@ -208,45 +213,60 @@ void UIPACEditorForm::DrawCurves()
 			{
 				InsertData.NeedInsert = false;
 				auto& pt = InsertData.pt;
-				auto FoundIt = std::ranges::upper_bound(dkeys_x, pt.x, cmp, proj);
-				size_t NewIndex = std::distance(dkeys_x.begin(), FoundIt);
-				DoubleKey NewKey;
-				NewKey.Value = pt.x;
-				NewKey.Index = NewIndex;
-				if (FoundIt == dkeys_x.end())
+				if (dkeys_x.empty())
 				{
+					DoubleKey NewKey;
+					NewKey.Index = 0;
+					NewKey.Value = pt.x;
 					dkeys_x.push_back(NewKey);
 					keys_x.push_back(pt.x);
 					keys_y_ddummy.push_back(0);
-					R_keys_y.push_back(R_keys_y.back());
-					G_keys_y.push_back(G_keys_y.back());
-					B_keys_y.push_back(B_keys_y.back());
-					A_keys_y.push_back(A_keys_y.back());
-				} else if (FoundIt == dkeys_x.begin())
-				{
-					dkeys_x.insert(dkeys_x.begin(), NewKey);
-					keys_x.insert(keys_x.begin(), pt.x);
-					keys_y_ddummy.insert(keys_y_ddummy.begin(), 0);
-					R_keys_y.insert(R_keys_y.begin(), R_keys_y[0]);
-					G_keys_y.insert(G_keys_y.begin(), G_keys_y[0]);
-					B_keys_y.insert(B_keys_y.begin(), B_keys_y[0]);
-					A_keys_y.insert(A_keys_y.begin(), A_keys_y[0]);
+					R_keys_y.push_back(1);
+					G_keys_y.push_back(1);
+					B_keys_y.push_back(1);
+					A_keys_y.push_back(1);
 				} else
 				{
-					dkeys_x.insert(dkeys_x.begin()+NewIndex, NewKey);
-					auto InsertInterpolated = [&](xr_vector<float>& vec)
+					auto FoundIt = std::ranges::upper_bound(dkeys_x, pt.x, cmp, proj);
+					size_t NewIndex = std::distance(dkeys_x.begin(), FoundIt);
+					DoubleKey NewKey;
+					NewKey.Value = pt.x;
+					NewKey.Index = NewIndex;
+					if (FoundIt == dkeys_x.end())
 					{
-						float Alpha = (keys_x[NewIndex] - pt.x)/(keys_x[NewIndex]-keys_x[NewIndex-1]);
-						vec.insert(vec.begin()+NewIndex, vec[NewIndex-1]+(vec[NewIndex]-vec[NewIndex-1])*Alpha);
-					};
-					InsertInterpolated(R_keys_y);
-					InsertInterpolated(G_keys_y);
-					InsertInterpolated(B_keys_y);
-					InsertInterpolated(A_keys_y);
-					keys_x.insert(keys_x.begin()+NewIndex, pt.x);
-					keys_y_ddummy.insert(keys_y_ddummy.begin()+NewIndex, 0);
+						dkeys_x.push_back(NewKey);
+						keys_x.push_back(pt.x);
+						keys_y_ddummy.push_back(0);
+						R_keys_y.push_back(R_keys_y.back());
+						G_keys_y.push_back(G_keys_y.back());
+						B_keys_y.push_back(B_keys_y.back());
+						A_keys_y.push_back(A_keys_y.back());
+					} else if (FoundIt == dkeys_x.begin())
+					{
+						dkeys_x.insert(dkeys_x.begin(), NewKey);
+						keys_x.insert(keys_x.begin(), pt.x);
+						keys_y_ddummy.insert(keys_y_ddummy.begin(), 0);
+						R_keys_y.insert(R_keys_y.begin(), R_keys_y[0]);
+						G_keys_y.insert(G_keys_y.begin(), G_keys_y[0]);
+						B_keys_y.insert(B_keys_y.begin(), B_keys_y[0]);
+						A_keys_y.insert(A_keys_y.begin(), A_keys_y[0]);
+					} else
+					{
+						dkeys_x.insert(dkeys_x.begin()+NewIndex, NewKey);
+						auto InsertInterpolated = [&](xr_vector<float>& vec)
+						{
+							float Alpha = (keys_x[NewIndex] - pt.x)/(keys_x[NewIndex]-keys_x[NewIndex-1]);
+							vec.insert(vec.begin()+NewIndex, vec[NewIndex-1]+(vec[NewIndex]-vec[NewIndex-1])*Alpha);
+						};
+						InsertInterpolated(R_keys_y);
+						InsertInterpolated(G_keys_y);
+						InsertInterpolated(B_keys_y);
+						InsertInterpolated(A_keys_y);
+						keys_x.insert(keys_x.begin()+NewIndex, pt.x);
+						keys_y_ddummy.insert(keys_y_ddummy.begin()+NewIndex, 0);
+					}
+					SelectedKeyframeIndex = NewIndex;
 				}
-				SelectedKeyframeIndex = size_t(-1);
 			}
 			ImPlot::EndPlot();
 		}
