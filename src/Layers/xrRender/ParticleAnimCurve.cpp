@@ -269,4 +269,31 @@ void PS::CPACDef::SplitKeysForPlot(
         A_keys_y[i] = m_Keys[i]->value.w;
     }
 }
+
+void PS::CPACDef::UpdateCurveFromKeys(const xr_vector<float>& R_keys_y, const xr_vector<float>& G_keys_y,
+    const xr_vector<float>& B_keys_y, const xr_vector<float>& A_keys_y, const xr_vector<float>& keys_x)
+{
+    R_ASSERT(
+        R_keys_y.size() == keys_x.size() &&
+        G_keys_y.size() == keys_x.size() &&
+        B_keys_y.size() == keys_x.size() &&
+        A_keys_y.size() == keys_x.size()
+        );
+    for (auto elem : m_Keys)
+    {
+        xr_delete(elem);
+    }
+    auto StartTime = keys_x[0];
+    m_Keys.resize(keys_x.size(), nullptr);
+    for (size_t i = 0; i < keys_x.size(); i++)
+    {
+        m_Keys[i] = new st_PACKey;
+        m_Keys[i]->time = keys_x[i]-StartTime;
+        m_Keys[i]->value.x = R_keys_y[i];
+        m_Keys[i]->value.y = G_keys_y[i];
+        m_Keys[i]->value.z = B_keys_y[i];
+        m_Keys[i]->value.w = A_keys_y[i];
+    }
+    m_MaxTime = m_Keys.back()->time;
+}
 #endif
