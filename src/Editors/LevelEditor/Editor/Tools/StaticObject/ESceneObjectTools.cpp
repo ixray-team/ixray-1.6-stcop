@@ -66,7 +66,7 @@ bool ESceneObjectTool::Validate(bool full_test)
                 age = FS.get_file_age(fn);
 
                 if (age == -1)
-                    Msg("!There is no texture '%s'", fn);
+                    Msg("! There is no texture '%s'", fn);
 
                 l_name += "_nm";
 
@@ -74,7 +74,7 @@ bool ESceneObjectTool::Validate(bool full_test)
                 age_nm = FS.get_file_age(fn);
 
                 if (age_nm == -1)
-                    Msg("!There is no texture '%s'", fn);
+                    Msg("! There is no texture '%s'", fn);
 
                 if (age_nm == -1 || age == -1)
                     bRes = false;
