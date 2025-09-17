@@ -12,4 +12,5 @@ public:
 private:
 	void HandleDragDrop();
 	bool m_DOShuffle;
+	bool IsChooseDraw = false;
 };

@@ -297,6 +297,11 @@ SChooseItem* UIChooseForm::GetSelectedItem()
 }
 bool UIChooseForm::GetResult(bool& change, xr_string& result)
 {
+	if (Form == nullptr)
+	{
+		return false;
+	}
+
 	if (!Form->bOpen)
 	{
 		if (Form->m_Result == R_Ok)

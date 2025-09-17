@@ -65,12 +65,12 @@ class EDetailManager:
     DetailSlot&			GetSlot			(u32 sx, u32 sz);
 
     void  		OnDensityChange		(PropValue* prop);
-    void  		OnBaseTextureChange	(PropValue* prop);
 protected:
     // controls
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
 public:
+    void  		        OnBaseTextureChange(PropValue* prop);
 // render part -----------------------------------------------------------------
     void 				InitRender				();
     void				RenderTexture			(float alpha);
