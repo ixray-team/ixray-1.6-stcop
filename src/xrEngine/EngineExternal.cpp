@@ -151,6 +151,11 @@ const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform platform)
 	}
 }
 
+const char* CEngineExternal::GetCurrentPlatformFullName()
+{
+	return Translate_EEngineExternalPlatform(m_platform_type);
+}
+
 ENGINE_API CEngineExternal& EngineExternal()
 {
 	if (g_pEngineExternal == nullptr) {
