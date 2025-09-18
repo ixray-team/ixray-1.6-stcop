@@ -2,7 +2,7 @@
 #include "UIPropertiesForm.h"
 
 UIPropertiesForm::UIPropertiesForm() :
-	m_Root("", this)
+	m_Root("", this), SearchRoot("", this)
 {
 	m_bModified = false;
 	m_EditChooseValue = nullptr;
@@ -14,7 +14,7 @@ UIPropertiesForm::UIPropertiesForm() :
 
 UIPropertiesForm::~UIPropertiesForm()
 {
-	if (m_EditTextValueData)xr_delete(m_EditTextValueData);
+	xr_delete(m_EditTextValueData);
 	ClearProperties();
 }
 
@@ -94,6 +94,28 @@ void UIPropertiesForm::Draw()
 		}
 	}
 
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 45);
+
+	string32 FindStr = {};
+	xr_strcpy(FindStr, m_SearchText.c_str());
+
+	if (ImGui::InputTextWithHint("##search", "Search...", FindStr, sizeof(FindStr)))
+	{
+		m_SearchText = FindStr;
+		SearchRoot.Items.clear();
+	}
+
+	IsSearchActive = !m_SearchText.empty();
+
+	ImGui::SameLine();
+	if (ImGui::Button("Clear"))
+	{
+		m_SearchText = "";
+		IsSearchActive = false;
+	}
+
+	ImGui::Separator();
+
 	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
 	ImGuiTableFlags Flags = DefFlags;
 	if (IsFitMode)
@@ -110,7 +132,16 @@ void UIPropertiesForm::Draw()
 		ImGui::TableSetupColumn("Name");
 		ImGui::TableSetupColumn("Prop");
 		ImGui::TableHeadersRow();
-		m_Root.DrawRoot();
+
+		if (IsSearchActive)
+		{
+			DrawFilteredProperties();
+		}
+		else
+		{
+			m_Root.DrawRoot();
+		}
+
 		ImGui::EndTable();
 	}
 }
@@ -131,7 +162,6 @@ void UIPropertiesForm::AssignItemsAsync(PropItemVec items)
 
 	bAsyncUpdated = true;
 }
-
 
 void UIPropertiesForm::AssignItems(PropItemVec& items)
 {
@@ -199,11 +229,8 @@ UIPropertiesItem* UIPropertiesForm::FindPropItem(const char* path)
 
 void UIPropertiesForm::DrawEditText()
 {
-
 	if (ImGui::BeginPopupContextItem("EditText", 0))
 	{
-		R_ASSERT(m_EditTextValueData);
-
 		ImGui::BeginGroup();
 		if (ImGui::Button("Ok"))
 		{
@@ -259,16 +286,20 @@ void UIPropertiesForm::DrawEditText()
 					}
 					else
 					{
-						R_ASSERT(false);
+						VERIFY(false);
 					}
 				}
 			}
-		}ImGui::SameLine(0);
+		}
+		ImGui::SameLine(0);
+
 		if (ImGui::Button("Cancel"))
 		{
 			xr_delete(m_EditTextValueData);
 			ImGui::CloseCurrentPopup();
-		} ImGui::SameLine(0);
+		}
+		ImGui::SameLine(0);
+
 		if (ImGui::Button("Apply"))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
@@ -313,7 +344,7 @@ void UIPropertiesForm::DrawEditText()
 					}
 					else
 					{
-						R_ASSERT(false);
+						VERIFY(false);
 					}
 				}
 			}
@@ -324,7 +355,7 @@ void UIPropertiesForm::DrawEditText()
 			xr_string fn;
 			if (EFS.GetOpenName("$import$", fn, false, NULL, 2)) 
 			{
-				xr_string		buf;
+				xr_string buf;
 				FS.TryLoad(fn);
 				IReader* F = FS.r_open(fn.c_str());
 
@@ -340,7 +371,8 @@ void UIPropertiesForm::DrawEditText()
 		if (ImGui::Button("Save"))
 		{
 			xr_string fn;
-			if (EFS.GetSaveName("$import$", fn, NULL, 2)) {
+			if (EFS.GetSaveName("$import$", fn, NULL, 2))
+			{
 				CMemoryWriter F;
 				F.w_stringZ(m_EditTextValueData);
 				if (!F.save_to(fn.c_str()))
@@ -388,7 +420,8 @@ int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
 		xr_free(m_EditTextValueData);
 		m_EditTextValueData = xr_strdup(Platform::UTF8_to_CP1251(CopyStr).c_str());
 	}
-	m_EditTextValueData =(char*) xr_realloc(m_EditTextValueData, data->BufSize);
+
+	m_EditTextValueData = (char*)xr_realloc(m_EditTextValueData, data->BufSize);
 	m_EditTextValueDataSize = data->BufSize;
 	data->Buf = m_EditTextValueData;
 	return 0;
@@ -401,71 +434,126 @@ void UIPropertiesForm::DrawEditGameType()
 		R_ASSERT(m_EditGameTypeValue);
 
 		bool test = false;
+		ImGui::BeginGroup();
 		{
-			ImGui::BeginGroup();
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
+			if (ImGui::Checkbox("Single", &cheked))
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
-				if (ImGui::Checkbox("Single", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
-				}
+				m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
 			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
-				if (ImGui::Checkbox("DM", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
-				if (ImGui::Checkbox("TDM", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
-				if (ImGui::Checkbox("ArtefactHunt", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
-				if (ImGui::Checkbox("CTA", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
-				if (ImGui::Checkbox("FMP", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
-				}
-			}
-			ImGui::EndGroup(); ImGui::SameLine();
 		}
 		{
-			ImGui::BeginGroup();
-			if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
+			if (ImGui::Checkbox("DM", &cheked))
 			{
-				if (m_EditGameTypeValue->AfterEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
-					if (m_EditGameTypeValue->ApplyValue<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
-					{
-						Modified();
-					}
-				ImGui::CloseCurrentPopup();
+				m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
 			}
-			if (ImGui::Button("Cancel", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
-			{
-				m_EditGameTypeValue = nullptr;
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndGroup();
 		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
+			if (ImGui::Checkbox("TDM", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
+			if (ImGui::Checkbox("ArtefactHunt", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
+			if (ImGui::Checkbox("CTA", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
+			}
+		}
+		{
+			bool cheked = m_EditGameTypeChooser.MatchType(eGameIDFreeMP);
+			if (ImGui::Checkbox("FMP", &cheked))
+			{
+				m_EditGameTypeChooser.m_GameType.set(eGameIDFreeMP, cheked);
+			}
+		}
+		ImGui::EndGroup(); ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+		{
+			if (m_EditGameTypeValue->AfterEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
+				if (m_EditGameTypeValue->ApplyValue<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser))
+				{
+					Modified();
+				}
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::Button("Cancel", ImVec2(ImGui::GetFrameHeight() * 6, 0)))
+		{
+			m_EditGameTypeValue = nullptr;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndGroup();
 		ImGui::EndPopup();
 	}
 }
 
+void UIPropertiesForm::DrawFilteredProperties()
+{
+	if (SearchRoot.Items.empty())
+	{
+		for (PropItem* PItem : m_Items)
+		{
+			if (DoesItemMatchSearch(PItem->Key()))
+			{
+				UIPropertiesItem* Item = static_cast<UIPropertiesItem*>(SearchRoot.AppendItem(PItem->Key()));
+				VERIFY(Item);
+				Item->PItem = PItem;
+				Item->IsTexture = PItem->IsTextureItem;
+			}
+		}
+	}
+
+	SearchRoot.DrawRoot();
+}
+
+bool UIPropertiesForm::DoesItemMatchSearch(shared_str ItemName)
+{
+	if (!ItemName || m_SearchText.empty())
+	{
+		return true;
+	}
+
+	const char* key = *ItemName;
+	if (strrchr(key, '\\'))
+	{
+		key = strrchr(key, '\\') + 1;
+	}
+
+	xr_string itemName = key;
+	xr_string searchLower = m_SearchText;
+
+	xr_strlwr(itemName);
+	xr_strlwr(searchLower);
+
+	return itemName.Contains(searchLower);
+}
+
+int UIPropertiesForm::GetVisibleItemsCount()
+{
+	if (!IsSearchActive)
+	{
+		return m_Items.size();
+	}
+
+	int Count = 0;
+	for (PropItem* item : m_Items)
+	{
+		if (DoesItemMatchSearch(item->key))
+		{
+			Count++;
+		}
+	}
+	return Count;
+}

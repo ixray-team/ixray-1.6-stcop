@@ -3,7 +3,6 @@ class XREPROPS_API UIPropertiesForm :
 	public IEditorWnd
 {
 	friend class UIPropertiesItem;
-	xr_atomic_bool bAsyncUpdated = true;
 
 public:
 	UIPropertiesForm();
@@ -26,7 +25,6 @@ public:
 	void SetModifiedEvent(TOnModifiedEvent modif = 0) { OnModifiedEvent = modif; }
 	void SetFitMode(bool Mode) { IsFitMode = Mode; }
 
-public:
 	void AssignItemsAsync(PropItemVec items);
 
 	enum
@@ -34,15 +32,20 @@ public:
 		plReadOnly = (1 << 0),
 	};
 	Flags32 m_Flags;
+
 	IC bool IsReadOnly()const { return m_Flags.is(plReadOnly); }
 
 private:
+	bool IsSearchActive = false;
+	xr_atomic_bool bAsyncUpdated = true;
+
 	PropItemVec m_Items;
 	PropItem* m_EditChooseValue;
 	PropItem* m_EditTextureValue;
 	PropItem* m_EditShortcutValue;
 	TOnModifiedEvent OnModifiedEvent;
 	UIPropertiesItem m_Root;
+	UIPropertiesItem SearchRoot;
 
 	PropItem* m_EditTextValue = nullptr;
 	PropItem* m_EditGameTypeValue;
@@ -51,10 +54,13 @@ private:
 	GameTypeChooser m_EditGameTypeChooser;
 	bool m_bModified;
 	bool IsFitMode = false;
+	xr_string m_SearchText;
 
-private:
 	void DrawEditText();
 	int  DrawEditText_Callback(ImGuiInputTextCallbackData* data);
 	void DrawEditGameType();
+	void DrawFilteredProperties();
+	bool DoesItemMatchSearch(shared_str ItemName);
+	int GetVisibleItemsCount();
 	void Modified() { m_bModified = true; if (!OnModifiedEvent.empty()) OnModifiedEvent(); /* m_bModified = false; */ }
 };
