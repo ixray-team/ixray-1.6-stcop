@@ -397,4 +397,10 @@
 	<string id="pda_btn_contacts_hint">
 		<text>Show stalker contact list</text>
 	</string>
+	<string id="st_undress_backpack">
+		<text>take off backpack</text>
+	</string>
+	<string id="st_dress_backpack">
+		<text>put on backpack</text>
+	</string>
 </string_table>
