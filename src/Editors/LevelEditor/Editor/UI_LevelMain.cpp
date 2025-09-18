@@ -1549,7 +1549,8 @@ void CLevelMain::LoadSettings(nlohmann::json& js)
 
 Ivector2 CLevelMain::GetRenderMousePosition() const
 {
-	return MainForm->GetRenderForm()->GetMousePos();
+	TUI::Viewport& Viewport = UI->CurrentView();
+	return Viewport.ViewportForm->GetMousePos();
 }
 
 void CLevelMain::OnDrawUI()

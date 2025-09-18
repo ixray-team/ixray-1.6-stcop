@@ -24,12 +24,19 @@ UIRenderForm::UIRenderForm()
 
 	if (ViewportID != 0)
 	{
-		UI->CreateViewport(ViewportID);
+		UI->CreateViewport(ViewportID, this);
+	}
+	else
+	{
+		TUI::Viewport& MainView = UI->CurrentView();
+		MainView.ViewGlobalIDX = ViewportID;
+		MainView.ViewportForm = this;
 	}
 }
 
 UIRenderForm::~UIRenderForm()
 {
+	UI->DestroyViewport(ViewportID);
 }
 
 void UIRenderForm::DrawStatistics()
