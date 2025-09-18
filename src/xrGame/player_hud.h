@@ -208,7 +208,7 @@ struct attachable_hud_item
 
 //props
 	u32								m_upd_firedeps_frame;
-	void		tune				(Ivector values);
+	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, BOOL bMixIn, float speed);
 	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd);
 
@@ -269,7 +269,7 @@ public:
 	void			detach_all_items	(){m_attached_items[0]=NULL; m_attached_items[1]=NULL;};
 
 	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
-	void			tune				(Ivector values);
+	void			tune				(Fvector values);
 	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;

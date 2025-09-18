@@ -27,7 +27,7 @@ bool is_attachable_item_tuning_mode()
 			pInput->iGetAsyncKeyState(SDL_SCANCODE_C);
 }
 
-void tune_remap(const Ivector& in_values, Ivector& out_values)
+void tune_remap(const Fvector& in_values, Fvector& out_values)
 {
 	if( pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT) )
 	{
@@ -106,7 +106,7 @@ void calc_cam_diff_rot(Fmatrix item_transform, Fvector diff, Fvector& res)
 	res.mul					(180.0f/PI);
 }
 
-void attachable_hud_item::tune(Ivector values)
+void attachable_hud_item::tune(Fvector values)
 {
 #ifndef MASTER_GOLD
 	if(!is_attachable_item_tuning_mode() )
@@ -211,10 +211,10 @@ void attachable_hud_item::debug_draw_firedeps()
 }
 
 
-void player_hud::tune(Ivector _values)
+void player_hud::tune(Fvector _values)
 {
 #ifndef MASTER_GOLD
-	Ivector				values;
+	Fvector				values;
 	tune_remap			(_values,values);
 
 	bool is_16x9		= UI().is_widescreen();
@@ -283,10 +283,10 @@ void player_hud::tune(Ivector _values)
 	if(hud_adj_mode==8 || hud_adj_mode==9)
 	{
 		if(hud_adj_mode==8 && (values.z) )
-			_delta_pos	+= (values.z>0)?0.001f:-0.001f;
+			_delta_pos	+= values.z;
 		
 		if(hud_adj_mode==9 && (values.z) )
-			 _delta_rot += (values.z>0)?0.1f:-0.1f;
+			 _delta_rot += values.z;
 	}else
 	{
 		attachable_hud_item* hi = m_attached_items[hud_adj_item_idx];
