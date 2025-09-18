@@ -106,27 +106,6 @@ CCommandVar CParticleTool::CommandStopCurrent(CCommandVar p1, CCommandVar p2)
     return TRUE;
 }
 
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
-{
-    /*fraTopBar->RefreshBar	();
-    fraLeftBar->RefreshBar	();
-    fraBottomBar->RefreshBar();*/
-    return TRUE;
-}
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
-{
-   /* fraTopBar->fsStorage->RestoreFormPlacement();
-    fraLeftBar->fsStorage->RestoreFormPlacement();
-    fraBottomBar->fsStorage->RestoreFormPlacement();*/
-    return TRUE;
-}
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
-{
-  /*  fraTopBar->fsStorage->SaveFormPlacement();
-    fraLeftBar->fsStorage->SaveFormPlacement();
-    fraBottomBar->fsStorage->SaveFormPlacement();*/
-    return TRUE;
-}
 CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     /*fraLeftBar->UpdateBar();*/
@@ -147,9 +126,7 @@ CCommandVar CommandJumpToItem(CCommandVar p1, CCommandVar p2)
 void CParticleMain::RegisterCommands()
 {
 	inherited::RegisterCommands();
-    // tools       
-	//REGISTER_CMD_CE	(COMMAND_SELECT_PREVIEW_OBJ,"Select Preview Object",PTools,CParticleTool::CommandSelectPreviewObj, true);
-	//REGISTER_CMD_CE	(COMMAND_EDIT_PREVIEW_PROPS,"Select Preview Props",	PTools,CParticleTool::CommandEditPreviewProps, true);
+    // tools
 	REGISTER_CMD_CE	(COMMAND_SAVE,            	"File\\Save",			PTools,CParticleTool::CommandSave, true);
 	REGISTER_CMD_C	(COMMAND_SAVE_BACKUP,       PTools,CParticleTool::CommandSaveBackup);
 	REGISTER_CMD_CE	(COMMAND_LOAD,            	"File\\Reload",			PTools,CParticleTool::CommandReload, true);
@@ -160,9 +137,6 @@ void CParticleMain::RegisterCommands()
     	APPEND_SUB_CMD	("Stop Immediate",		0,0);
     	APPEND_SUB_CMD	("Stop Deffered", 		1,0);
     REGISTER_SUB_CMD_END;
-	REGISTER_CMD_S	(COMMAND_REFRESH_UI_BAR,    CommandRefreshUIBar);
-	REGISTER_CMD_S	(COMMAND_RESTORE_UI_BAR,    CommandRestoreUIBar);
-	REGISTER_CMD_S	(COMMAND_SAVE_UI_BAR,     	CommandSaveUIBar);
 	REGISTER_CMD_S	(COMMAND_UPDATE_TOOLBAR,    CommandUpdateToolBar);
 	REGISTER_CMD_S	(COMMAND_UPDATE_CAPTION,    CommandUpdateCaption);
 	REGISTER_CMD_S	(COMMAND_JUMP_TO_ITEM,     CommandJumpToItem);

@@ -1,10 +1,7 @@
-//---------------------------------------------------------------------------
-#ifndef UI_ActorMainH
-#define UI_ActorMainH
-//---------------------------------------------------------------------------
+#pragma once
 
-
-enum {
+enum
+{
 	COMMAND_EXTFIRST_EXT = COMMAND_MAIN_LAST-1,
 
     COMMAND_MAKE_PREVIEW,
@@ -22,7 +19,6 @@ enum {
     COMMAND_MAKE_THUMBNAIL,
     COMMAND_CHANGE_TARGET,
 
-    COMMAND_FILE_MENU,
     COMMAND_LOAD_FIRSTRECENT,
 };
 //------------------------------------------------------------------------------
@@ -77,5 +73,3 @@ public:
     virtual void	FillProp        (PropItemVec& items);
 
 };
-//---------------------------------------------------------------------------
-#endif

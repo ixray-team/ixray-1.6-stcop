@@ -1,28 +1,7 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
-
-
 #include "UI_ActorMain.h"
 
-//---------------------------------------------------------------------------
 CActorMain*	AUI=(CActorMain*)UI;
-//---------------------------------------------------------------------------
-/*
-CActorMain::CActorMain()
-{
-	EPrefs			= new CAEPreferences();
-}
-//---------------------------------------------------------------------------
-
-CActorMain::~CActorMain()
-{
-	xr_delete		(EPrefs);
-}
-//---------------------------------------------------------------------------
-*/
-//---------------------------------------------------------------------------
-// actor commands
-//---------------------------------------------------------------------------
 
 CCommandVar CActorTools::CommandSaveBackup(CCommandVar p1, CCommandVar p2)
 {
@@ -363,31 +342,7 @@ CCommandVar CommandLoadFirstRecent(CCommandVar p1, CCommandVar p2)
 
 	return FALSE;
 }
-CCommandVar CommandFileMenu(CCommandVar p1, CCommandVar p2)
-{
-  //  FHelper.ShowPPMenu(fraLeftBar->pmSceneFile, 0);
-	return TRUE;
-}
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
-{
-	//not_implemented();
-  /*  fraTopBar->RefreshBar();
-	fraLeftBar->RefreshBar();
-	fraBottomBar->RefreshBar();*/
-	return TRUE;
-}
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
-{
-	//not_implemented();
-  /*  fraTopBar->fsStorage->RestoreFormPlacement();
-	fraLeftBar->fsStorage->RestoreFormPlacement();
-	fraBottomBar->fsStorage->RestoreFormPlacement();*/
-	return TRUE;
-}
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
-{
-	return TRUE;
-}
+
 CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
 	//not_implemented();
@@ -507,13 +462,9 @@ void CActorMain::RegisterCommands()
 	REGISTER_CMD_S(COMMAND_PREVIEW_OBJ_PREF, CommandPreviewObjPref);
 	REGISTER_CMD_S(COMMAND_SELECT_PREVIEW_OBJ, CommandSelectPreviewObj);
 	REGISTER_CMD_SE(COMMAND_LOAD_FIRSTRECENT, "File\\Load First Recent", CommandLoadFirstRecent, true);
-	REGISTER_CMD_SE(COMMAND_FILE_MENU, "File Menu", CommandFileMenu, true);
-	REGISTER_CMD_S(COMMAND_REFRESH_UI_BAR, CommandRefreshUIBar);
-	REGISTER_CMD_S(COMMAND_RESTORE_UI_BAR, CommandRestoreUIBar);
-	REGISTER_CMD_S(COMMAND_SAVE_UI_BAR, CommandSaveUIBar);
 	REGISTER_CMD_S(COMMAND_UPDATE_TOOLBAR, CommandUpdateToolBar);
 	REGISTER_CMD_S(COMMAND_UPDATE_CAPTION, CommandUpdateCaption);
-   REGISTER_SUB_CMD_SE(COMMAND_CHANGE_TARGET, "Change Target", CommandChangeTarget, true);
+	REGISTER_SUB_CMD_SE(COMMAND_CHANGE_TARGET, "Change Target", CommandChangeTarget, true);
 	APPEND_SUB_CMD(BONES_PREFIX, xr_string(BONES_PREFIX), 0);
 	APPEND_SUB_CMD(MOTIONS_PREFIX, xr_string(MOTIONS_PREFIX), 0);
 	APPEND_SUB_CMD(OBJECT_PREFIX, xr_string(OBJECT_PREFIX), 0);

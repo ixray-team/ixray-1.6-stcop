@@ -279,6 +279,10 @@ void CContentView::DrawHeader()
 		{
 			RescanDirectory();
 		}
+		if (ImGui::Checkbox("Show Temp Files", &IsTempMode) && !IsSpawnElement)
+		{
+			RescanDirectory();
+		}
 		ImGui::Separator();
 
 		if (ImGui::BeginMenu("View mode"))
@@ -1378,10 +1382,18 @@ bool CContentView::Contains(const ImVec2& ButtonSize)
 
 bool CContentView::CheckFile(const xr_path& File) const
 {
-	bool TestTHM = IsThmMode || (File.has_extension() && File.extension().string() != ".thm");
-	bool TestWinTrash = File.xfilename() != "desktop.ini";
+	if (File.has_extension())
+	{
+		xr_string Ext = File.extension().string().c_str();
 
-	return TestTHM && TestWinTrash;
+		bool TestTHM = IsThmMode   || Ext != ".thm";
+		bool TestTemp = IsTempMode || !Ext.StartWith(".~");
+		bool TestWinTrash = File.xfilename() != "desktop.ini";
+
+		return TestTemp && TestTHM && TestWinTrash;
+	}
+
+	return true;
 }
 
 bool CContentView::DrawFormContext()

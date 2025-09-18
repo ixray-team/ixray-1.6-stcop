@@ -138,6 +138,7 @@ private:
 	bool IsFindResult = false;
 
 	bool IsThmMode = false;
+	bool IsTempMode = false;
 
 	bool IsWndDestroyed = false;
 	xr_string VirtualPath;
