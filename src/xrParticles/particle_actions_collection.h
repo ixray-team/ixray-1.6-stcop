@@ -4,6 +4,8 @@
 
 #include "particle_actions.h"
 #include "particle_core.h"
+#include "../Layers/xrRender/ParticleAnimCurve.h"
+
 namespace PAPI{
 #define _METHODS	virtual void 	Load		(IReader& F);\
                     virtual void 	Save		(IWriter& F);\
@@ -540,6 +542,15 @@ namespace PAPI{
 			Animator
 		};
 		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+		float timeFrom;
+		float timeTo;
+
+		PS::CPACDef* AnimPtr = nullptr;
+		//float CurrentTime = 0.0f;
+		//size_t CurrentIndex = 0;
+		//Fvector4 PrevValue;
 
 		_METHODS;
 	};
@@ -551,6 +562,12 @@ namespace PAPI{
 			Animator
 		};
 		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+		float timeFrom;
+		float timeTo;
+
+		PS::CPACDef* AnimPtr = nullptr;
 
 		_METHODS;
 	};
@@ -562,6 +579,13 @@ namespace PAPI{
 			Animator
 		};
 		shared_str Animator;
+		bool Looped;
+		bool Reverse;
+		float timeFrom;
+		float timeTo;
+
+		PS::CPACDef* AnimPtr = nullptr;
+		Fmatrix ParticleTransform;
 
 		_METHODS;
 	};
