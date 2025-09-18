@@ -201,17 +201,86 @@ Fvector4 PS::CPACDef::GetValueOnTime(float time)
         return (*FoundIt)->value;
     }
     auto PrevIt = std::prev(FoundIt);
-    auto Alpha = (time - (*PrevIt)->time)/((*FoundIt)->time - (*PrevIt)->time);
+    return CalculateIntermedialeValue(*PrevIt, *FoundIt, time);
+}
+
+Fvector4 PS::CPACDef::CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time)
+{
+    R_ASSERT(A->time <= time && time <= B->time);
+    auto Alpha = (time - A->time)/(B->time - A->time);
     Fvector4 InterValue;
     auto ProcessFunc = [&](int index)
     {
-        return (*PrevIt)->value[index] + ((*FoundIt)->value[index] - (*PrevIt)->value[index])*Alpha;
+        return A->value[index] + (B->value[index] - A->value[index])*Alpha;
     };
     for (int i = 0; i < 4; ++i)
     {
         InterValue[i] = ProcessFunc(i);
     }
     return InterValue;
+}
+
+Fvector4 PS::CPACDef::FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse)
+{
+    R_ASSERT(m_Keys.size() > 1);
+    st_PACKey* LowerKey = nullptr;
+    st_PACKey* UpperKey = nullptr;
+    if (Reverse)
+    {
+        CurrentTime -= dt;
+        if (Loop)
+        {
+            while (CurrentTime < 0)
+            {
+                CurrentTime += m_MaxTime;
+                CurrentIndex = m_Keys.size() - 1;
+            }
+        } else
+        {
+            if (CurrentTime < 0)
+            {
+                CurrentTime = 0;
+                CurrentIndex = 0;
+                return m_Keys[0]->value;
+            }
+        }
+        auto NextIndex = CurrentIndex - 1;
+        while (m_Keys[NextIndex]->time > CurrentTime)
+        {
+            --CurrentIndex;
+            --NextIndex;
+        }
+        UpperKey = m_Keys[CurrentIndex];
+        LowerKey = m_Keys[NextIndex];
+    } else
+    {
+        CurrentTime += dt;
+        if (Loop)
+        {
+            while (CurrentTime > m_MaxTime)
+            {
+                CurrentTime -= m_MaxTime;
+                CurrentIndex = 0;
+            }
+        } else
+        {
+            if (CurrentTime > m_MaxTime)
+            {
+                CurrentTime = m_MaxTime;
+                CurrentIndex = m_Keys.size() - 1;
+                return m_Keys[CurrentIndex]->value;
+            }
+        }
+        auto NextIndex = CurrentIndex + 1;
+        while (m_Keys[NextIndex]->time < CurrentTime)
+        {
+            ++CurrentIndex;
+            ++NextIndex;
+        }
+        LowerKey = m_Keys[CurrentIndex];
+        UpperKey = m_Keys[NextIndex];
+    }
+    return CalculateIntermedialeValue(LowerKey, UpperKey, CurrentTime);
 }
 
 void PS::CPACDef::setName(LPCSTR name)

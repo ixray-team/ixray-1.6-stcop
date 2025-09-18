@@ -2274,10 +2274,43 @@ void* PABindColorAlpha::GetVariableImpl(u8 VarID)
 // Animators
 void PAColorAnimator::Transform(const Fmatrix& m)
 {
-	// TODO: Implement
 }
 void PAColorAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
-	// TODO: Implement
+	//auto CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
+	Fcolor c_t;
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle &m = effect->particles[i];
+		float LowerTime = timeFrom*tm_max;
+		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
+		float CurveTime = m.age - LowerTime;
+		if (Reverse)
+		{
+			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
+		}
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		c_t.set(
+			CurrentValue.x,
+			CurrentValue.y,
+			CurrentValue.z,
+			CurrentValue.w
+		);
+		m.color = c_t.get();
+	}
 }
 void* PAColorAnimator::GetVariableImpl(u8 VarID)
 {
@@ -2291,10 +2324,38 @@ void* PAColorAnimator::GetVariableImpl(u8 VarID)
 }
 void PASizeAnimator::Transform(const Fmatrix& m)
 {
-	// TODO: Implement
 }
 void PASizeAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
-	// TODO: Implement
+	//Fvector4 CurrentValue = AnimPtr->FastUpdateValue(CurrentIndex, CurrentTime, dt, Looped, Reverse);
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		Particle &m = effect->particles[i];
+		float LowerTime = timeFrom*tm_max;
+		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
+		float CurveTime = m.age - LowerTime;
+		if (Reverse)
+		{
+			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
+		}
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		m.size.x = CurrentValue.x;
+		m.size.y = CurrentValue.y;
+		m.size.z = CurrentValue.z;
+	}
 }
 void* PASizeAnimator::GetVariableImpl(u8 VarID)
 {
@@ -2308,10 +2369,41 @@ void* PASizeAnimator::GetVariableImpl(u8 VarID)
 }
 void PAVelocityAnimator::Transform(const Fmatrix& m)
 {
-	// TODO: Implement
+	ParticleTransform = m;
 }
 void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
-	// TODO: Implement
+
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		
+		Particle &m = effect->particles[i];
+		float LowerTime = timeFrom*tm_max;
+		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
+		float CurveTime = m.age - LowerTime;
+		if (Reverse)
+		{
+			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
+		}
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
+		pVector WorldVelocity;
+		ParticleTransform.transform_dir(WorldVelocity, LocalVelocity);
+		m.vel = WorldVelocity;
+	}
 }
 void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
 {
