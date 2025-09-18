@@ -142,11 +142,14 @@ void CContentView::DrawHeader()
 	{
 		auto Pathes = ViewDir.Split('\\');
 
+		u16 Iter = 0;
 		for (const xr_string& Path : Pathes)
 		{
 			ImGui::SameLine(0, 0);
 
-			if (ImGui::Button(Platform::ANSI_TO_UTF8(Path).data()))
+			xr_string ButtonPathName = Path + "##" + xr_string::ToString(Iter);
+
+			if (ImGui::Button(Platform::ANSI_TO_UTF8(ButtonPathName).c_str()))
 			{
 				xr_string NewPath;
 				for (const xr_string& LocPath : Pathes)
@@ -179,6 +182,8 @@ void CContentView::DrawHeader()
 				ImGui::SameLine(0, 0);
 				ImGui::TextUnformatted("/");
 			}
+
+			Iter++;
 		}
 	};
 

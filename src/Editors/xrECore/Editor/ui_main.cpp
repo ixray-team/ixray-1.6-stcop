@@ -808,7 +808,7 @@ TUI::Viewport& TUI::CurrentView()
 	return Views[ViewID];
 }
 
-void TUI::CreateViewport(int ID)
+void TUI::CreateViewport(int ID, UIRenderForm* Form)
 {
 	Viewport& MainView = Views.emplace_back();
 	MainView.m_Camera.SetViewport(EPrefs->view_np, EPrefs->view_fp, EPrefs->view_fov, true);
@@ -816,8 +816,23 @@ void TUI::CreateViewport(int ID)
 	MainView.m_Camera.SetFlyParams(EPrefs->cam_fly_speed, EPrefs->cam_fly_alt);
 	MainView.m_Camera.Reset();
 
+	MainView.ViewportForm = Form;
+	MainView.ViewGlobalIDX = ID;
+
 	MainView.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
 	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+}
+
+void TUI::DestroyViewport(int ID)
+{
+	auto Iter = std::find(Views.begin(), Views.end(), Viewport{ .ViewGlobalIDX = ID });
+	if (Iter != Views.end())
+	{
+		Views.erase(Iter);
+		return;
+	}
+
+	VERIFY(!"Viewport not found!");
 }
 
 void TUI::InitWindowIcons()

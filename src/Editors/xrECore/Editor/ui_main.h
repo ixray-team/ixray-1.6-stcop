@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef UI_MainH
-#define UI_MainH
+#pragma once
 #include <json/json.hpp>
 
 #include "UI_MainCommand.h"
@@ -11,7 +9,7 @@ class CCustomObject;
 class TUI_Tools;
 class TUI_Tools;
 class C3DCursor;
-//------------------------------------------------------------------------------
+class UIRenderForm;
 
 enum EEditorState
 {
@@ -258,13 +256,23 @@ public:
 
 	struct Viewport
 	{
+		UIRenderForm* ViewportForm = nullptr;
 		CUI_Camera m_Camera;
 		ref_rt RTFreez;
 		Ivector2 RTSize;
+
+		int ViewGlobalIDX = -1;
+
+		bool operator==(const Viewport& Right) const
+		{
+			return ViewGlobalIDX == Right.ViewGlobalIDX;
+		}
 	};
 
 	Viewport& CurrentView();
-	void CreateViewport(int ID);
+	void CreateViewport(int ID, UIRenderForm* Form);
+	void DestroyViewport(int ID);
+
 	size_t ViewID = -1;
 	xr_vector<Viewport> Views;
 
@@ -284,11 +292,9 @@ public:
    IC  void ResetUI(bool bForced=false)  { if (!bForced)m_Flags.set(flResetUI, TRUE); if (bForced) RealResetUI(); }
    virtual Ivector2 GetRenderMousePosition()const { return Ivector2().set(0, 0); }
 };
-//---------------------------------------------------------------------------
+
 extern ECORE_API TUI* UI;  
-//---------------------------------------------------------------------------
+
 void ECORE_API ResetActionToSelect();
 #define COMMAND0(cmd)		{ExecCommand(cmd);bExec=true;}
 #define COMMAND1(cmd,p0)	{ExecCommand(cmd,p0);bExec=true;}
-//---------------------------------------------------------------------------
-#endif
