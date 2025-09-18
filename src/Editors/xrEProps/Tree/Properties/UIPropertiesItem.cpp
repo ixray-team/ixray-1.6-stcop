@@ -61,9 +61,12 @@ void UIPropertiesItem::Draw()
 		if (IsTexture)
 		{
 			MultiChooseValue* Prop = (MultiChooseValue*)PItem->GetFrontValue();
-			ImTextureID Image = GUIManager->LoadTexture(Prop->Values[0]->GetValue().c_str());
-			ImGui::Image(Image, { 100, 100 });
-			//ImGui::TreeNodeEx((xr_string("##tree_") + *Name).c_str(), Flags);
+			shared_str TexName = Prop->Values[0]->GetValue();
+			if (TexName.size() > 0)
+			{
+				ImTextureID Image = GUIManager->LoadTexture(*TexName);
+				ImGui::Image(Image, { 100, 100 });
+			}
 		}
 		else
 		{
