@@ -1,43 +1,37 @@
 #include "stdafx.h"
 #include "Utils/Cursor3D.h"
-#include "..\xrengine\GameFont.h"
+#include "../xrengine\GameFont.h"
 #include "UI\UIEditLibrary.h"
 #include "Editor/Utils/ContentView.h"
-
-#ifdef _LEVEL_EDITOR
-//.    if (m_Cursor->GetVisible()) RedrawScene();
-#endif
+#include "../xrECore/Editor/UIEditLightAnim.h"
 
 ECORE_API extern bool bIsLevelEditor;
-CLevelMain*	LUI=(CLevelMain*)UI;
+CLevelMain* LUI = (CLevelMain*)UI;
 
 CLevelMain::CLevelMain()
 {
-	m_Cursor        = new C3DCursor();
-	EPrefs			= new CLevelPreferences();
+	m_Cursor = new C3DCursor();
+	EPrefs = new CLevelPreferences();
 }
 
 CLevelMain::~CLevelMain()
 {
-	xr_delete		(EPrefs);
-	xr_delete		(m_Cursor);
-   // TClipMaker::DestroyForm(g_clip_maker);
+	xr_delete(EPrefs);
+	xr_delete(m_Cursor);
 }
-
-
 
 // Tools commands
 CCommandVar CLevelTool::CommandChangeTarget(CCommandVar p1, CCommandVar p2)
 {
 	if (Scene->GetTool(p1)->IsEnabled())
 	{
-		SetTarget	(p1,p2);
-		ExecCommand	(COMMAND_UPDATE_PROPERTIES);
-		return 		TRUE;
-	}else{
-		return 		FALSE;
+		SetTarget(p1, p2);
+		ExecCommand(COMMAND_UPDATE_PROPERTIES);
+		return TRUE;
 	}
+	return FALSE;
 }
+
 CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 {
 	if (LUI->GetEState()==esEditScene) ShowObjectList();
@@ -47,64 +41,57 @@ CCommandVar CLevelTool::CommandShowObjectList(CCommandVar p1, CCommandVar p2)
 // Main commands
 CCommandVar CommandLibraryEditor(CCommandVar p1, CCommandVar p2)
 {
-	//if (Scene->ObjCount() || (LUI->GetEState() != esEditScene))
-	//{
-	//	if (LUI->GetEState() == esEditLibrary)
-	//		UIEditLibrary::Show();
-	//	else
-	//		ELog.DlgMsg(mtError, "! Scene must be empty before editing library!");
-	//}
-	//else
-		UIEditLibrary::Show();
+	UIEditLibrary::Show();
 
 	return TRUE;
 }
+
 CCommandVar CommandLAnimEditor(CCommandVar p1, CCommandVar p2)
 {
-	//TfrmEditLightAnim::ShowEditor();
+	UIEditLightAnim::Show();
 	return TRUE;
 }
-CCommandVar CommandFileMenu(CCommandVar p1, CCommandVar p2)
-{
-	//FHelper.ShowPPMenu(fraLeftBar->pmSceneFile,0);
-	return TRUE;
-}
+
 CCommandVar CommandLoadCustomIcons(CCommandVar p1, CCommandVar p2)
 {
 	GContentView->LoadCustomIcons();
 	return TRUE;
 }
+
 CCommandVar CommandRemoveCustomIcon(CCommandVar p1, CCommandVar p2)
 {
 	GContentView->RemoveCustomIcon(p1);
 	return TRUE;
 }
+
 CCommandVar CLevelTool::CommandEnableTarget(CCommandVar p1, CCommandVar p2)
 {
-	ESceneToolBase* M 	= Scene->GetTool(p1);
-	VERIFY					(M);
-	BOOL res				= FALSE;
+	ESceneToolBase* M = Scene->GetTool(p1);
+	VERIFY(M);
+	BOOL res = FALSE;
 	if (p2)
 	{
-		res 				= ExecCommand(COMMAND_LOAD_LEVEL_PART,M->FClassID,TRUE);
-		if(res)
-			M->m_EditFlags.set(ESceneToolBase::flEnable,TRUE);
-	}else
+		res = ExecCommand(COMMAND_LOAD_LEVEL_PART, M->FClassID, TRUE);
+		if (res)
+			M->m_EditFlags.set(ESceneToolBase::flEnable, TRUE);
+	}
+	else
 	{
 		if (!Scene->IfModified())
 		{
-			M->m_EditFlags.set(ESceneToolBase::flEnable,TRUE);
-			res				= FALSE;
-		}else
-		{
-			res				= ExecCommand(COMMAND_UNLOAD_LEVEL_PART,M->FClassID,TRUE);
-			if(res)
-				M->m_EditFlags.set(ESceneToolBase::flEnable,FALSE);
+			M->m_EditFlags.set(ESceneToolBase::flEnable, TRUE);
+			res = FALSE;
 		}
-		if (res)        	
-			ExecCommand(COMMAND_CHANGE_TARGET,OBJCLASS_SCENEOBJECT);
+		else
+		{
+			res = ExecCommand(COMMAND_UNLOAD_LEVEL_PART, M->FClassID, TRUE);
+			if (res)
+				M->m_EditFlags.set(ESceneToolBase::flEnable, FALSE);
+		}
+		if (res)
+			ExecCommand(COMMAND_CHANGE_TARGET, OBJCLASS_SCENEOBJECT);
 	}
-	ExecCommand				(COMMAND_REFRESH_UI_BAR);
+
 	return res;
 }
 
@@ -121,33 +108,21 @@ CCommandVar CLevelTool::CommandShowTarget(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CLevelTool::CommandReadonlyTarget(CCommandVar p1, CCommandVar p2)
 {
-	ESceneToolBase* M 		= Scene->GetTool(p1); VERIFY(M);
-	BOOL res				= TRUE;
-	if (p2){
+	ESceneToolBase* M = Scene->GetTool(p1); VERIFY(M);
+	BOOL res = TRUE;
+	if (p2)
+	{
 		if (!Scene->IfModified())
 		{
-			M->m_EditFlags.set(ESceneToolBase::flForceReadonly,FALSE);
-			res				= FALSE;
-		}else
-		{
-//.            xr_string pn	= Scene->LevelPartName(LTools->m_LastFileName.c_str(),M->ClassID);
+			M->m_EditFlags.set(ESceneToolBase::flForceReadonly, FALSE);
+			res = FALSE;
 		}
-	}else
-	{
-//.        xr_string pn		= Scene->LevelPartName(LTools->m_LastFileName.c_str(), M->ClassID);
 	}
 	if (res)
 	{
-		Reset				();
-		ExecCommand			(COMMAND_REFRESH_UI_BAR);
+		Reset();
 	}
 	return res;
-}
-
-CCommandVar CLevelTool::CommandMultiReplaceObjects(CCommandVar p1, CCommandVar p2)
-{
-
-	return false;
 }
 
 CCommandVar CLevelTool::CommandMultiRenameObjects(CCommandVar p1, CCommandVar p2)
@@ -1101,31 +1076,7 @@ CCommandVar CommandShowContextMenu(CCommandVar p1, CCommandVar p2)
 	LUI->ShowContextMenu		(p1);
 	return 						TRUE;
 }
-//------        
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
-{
-	/*if(MainForm)
-		if(MainForm->GetTopBarForm())
-			MainForm->GetTopBarForm()->RefreshBar();
-	fraTopBar->RefreshBar		();
-	fraLeftBar->RefreshBar		();
-	fraBottomBar->RefreshBar	();*/
-	return 						TRUE;
-}
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
-{
-	/*fraTopBar->fsStorage->RestoreFormPlacement();
-	fraLeftBar->fsStorage->RestoreFormPlacement();
-	fraBottomBar->fsStorage->RestoreFormPlacement();*/
-	return 						TRUE;
-}
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
-{
-   /* fraTopBar->fsStorage->SaveFormPlacement();
-	fraLeftBar->fsStorage->SaveFormPlacement();
-	fraBottomBar->fsStorage->SaveFormPlacement();*/
-	return 						TRUE;
-}
+
 CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
  /*   fraLeftBar->UpdateBar		();*/
@@ -1178,13 +1129,11 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_C	    (COMMAND_SHOW_TARGET,           	LTools,CLevelTool::CommandShowTarget);
 	REGISTER_CMD_C	    (COMMAND_READONLY_TARGET,          	LTools,CLevelTool::CommandReadonlyTarget);
 	REGISTER_CMD_C	    (COMMAND_MULTI_RENAME_OBJECTS,     	LTools,CLevelTool::CommandMultiRenameObjects);
-	REGISTER_CMD_C	    (COMMAND_MULTI_REPLACE_OBJECTS,     LTools,CLevelTool::CommandMultiReplaceObjects);
 
 	REGISTER_CMD_CE	    (COMMAND_SHOW_OBJECTLIST,           "Scene\\Show Object List",		LTools,CLevelTool::CommandShowObjectList, false);
 	// common
 	REGISTER_CMD_S	    (COMMAND_LIBRARY_EDITOR,           	CommandLibraryEditor);
 	REGISTER_CMD_S	    (COMMAND_LANIM_EDITOR,            	CommandLAnimEditor);
-	REGISTER_CMD_SE	    (COMMAND_FILE_MENU,              	"File\\Menu",					CommandFileMenu, 		true);
 	REGISTER_CMD_S		(COMMAND_LOAD_LEVEL_PART,			CommandLoadLevelPart);
 	REGISTER_CMD_S		(COMMAND_UNLOAD_LEVEL_PART,			CommandUnloadLevelPart);
 	REGISTER_CMD_SE	    (COMMAND_LOAD,              		"File\\Load Level", 			CommandLoad, 			true);
@@ -1249,9 +1198,6 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_ICON_REMOVE, CommandRemoveCustomIcon);
 	REGISTER_CMD_S	    (COMMAND_REFRESH_SOUND_ENV_GEOMETRY,CommandRefreshSoundEnvGeometry);
 	REGISTER_CMD_S	    (COMMAND_SHOWCONTEXTMENU,           CommandShowContextMenu);
-	REGISTER_CMD_S	    (COMMAND_REFRESH_UI_BAR,            CommandRefreshUIBar);
-	REGISTER_CMD_S	    (COMMAND_RESTORE_UI_BAR,            CommandRestoreUIBar);
-	REGISTER_CMD_S	    (COMMAND_SAVE_UI_BAR,              	CommandSaveUIBar);
 	REGISTER_CMD_S	    (COMMAND_UPDATE_TOOLBAR,            CommandUpdateToolBar);
 	REGISTER_CMD_S	    (COMMAND_UPDATE_CAPTION,            CommandUpdateCaption);
 	REGISTER_CMD_S	    (COMMAND_CREATE_SOUND_LIB,          CommandCreateSoundLib);

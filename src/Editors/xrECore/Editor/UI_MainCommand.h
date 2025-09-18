@@ -44,10 +44,6 @@ enum ECoreCommands
     COMMAND_ICON_LOAD,
     COMMAND_ICON_REMOVE,
 
-    COMMAND_REFRESH_UI_BAR,
-    COMMAND_RESTORE_UI_BAR,
-    COMMAND_SAVE_UI_BAR,
-
     COMMAND_MUTE_SOUND,
 
     // ����� ������ ����������

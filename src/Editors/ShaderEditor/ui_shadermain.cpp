@@ -48,27 +48,7 @@ CCommandVar CShaderTool::CommandUpdateList(CCommandVar p1, CCommandVar p2)
 	UpdateList		();
     return TRUE;
 }
-CCommandVar CommandRefreshUIBar(CCommandVar p1, CCommandVar p2)
-{
-   /* fraTopBar->RefreshBar	();
-    fraLeftBar->RefreshBar	();
-    fraBottomBar->RefreshBar();*/
-    return TRUE;
-}
-CCommandVar CommandRestoreUIBar(CCommandVar p1, CCommandVar p2)
-{
-    /*fraTopBar->fsStorage->RestoreFormPlacement();
-    fraLeftBar->fsStorage->RestoreFormPlacement();
-    fraBottomBar->fsStorage->RestoreFormPlacement();*/
-    return TRUE;
-}
-CCommandVar CommandSaveUIBar(CCommandVar p1, CCommandVar p2)
-{
-   /* fraTopBar->fsStorage->SaveFormPlacement();
-    fraLeftBar->fsStorage->SaveFormPlacement();
-    fraBottomBar->fsStorage->SaveFormPlacement();*/
-    return TRUE;
-}
+
 CCommandVar CommandUpdateToolBar(CCommandVar p1, CCommandVar p2)
 {
     //fraLeftBar->UpdateBar();
@@ -89,9 +69,6 @@ void CShaderMain::RegisterCommands()
 	REGISTER_CMD_CE	(COMMAND_LOAD,			 	"File\\Reload",	STools,CShaderTool::CommandReload,true);
 	REGISTER_CMD_CE	(COMMAND_CLEAR,			 	"File\\Clear", 	STools,CShaderTool::CommandClear,true);
     REGISTER_CMD_CE	(COMMAND_UPDATE_LIST,	 	"Update List",	STools,CShaderTool::CommandUpdateList,true);
-    REGISTER_CMD_S	(COMMAND_REFRESH_UI_BAR, 	CommandRefreshUIBar);
-    REGISTER_CMD_S	(COMMAND_RESTORE_UI_BAR,  	CommandRestoreUIBar);
-    REGISTER_CMD_S	(COMMAND_SAVE_UI_BAR,     	CommandSaveUIBar);
 	REGISTER_CMD_S	(COMMAND_UPDATE_TOOLBAR,  	CommandUpdateToolBar);
     REGISTER_CMD_S	(COMMAND_UPDATE_CAPTION,	CommandUpdateCaption);
 }

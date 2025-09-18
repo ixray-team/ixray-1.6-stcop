@@ -631,7 +631,6 @@ void CLevelTool::Simulate()
     else
         g_scene_physics.DestroyAll();
     UI->RedrawScene();
-    ExecCommand(COMMAND_REFRESH_UI_BAR);
 }
 
 void CLevelTool::UseSimulatePositions()

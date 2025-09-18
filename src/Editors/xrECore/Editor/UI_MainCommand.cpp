@@ -277,7 +277,7 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 	// make interface
 	//----------------
 	if(EPrefs)EPrefs->OnCreate		();
-	if (UI->OnCreate(/*(TD3DWindow*)(u32)p1,(TPanel*)(u32)p2)*/))
+	if (UI->OnCreate())
 	{
 		ExecCommand		(COMMAND_CREATE_SOUND_LIB);	R_ASSERT(SndLib);
 		SndLib->OnCreate();
@@ -304,8 +304,6 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
                     g_pGamePersistent->Environment().fTimeFactor = EPrefs->env_speed;
                 }
 				EDevice->seqAppStart.Process(rp_AppStart);
-				ExecCommand(COMMAND_RESTORE_UI_BAR);
-				ExecCommand(COMMAND_REFRESH_UI_BAR);
 				ExecCommand(COMMAND_CLEAR);
 				ExecCommand(COMMAND_RENDER_FOCUS);
 				ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
@@ -329,7 +327,6 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
     EPrefs->env_from_time = g_pGamePersistent->Environment().ed_from_time;
     EPrefs->env_to_time = g_pGamePersistent->Environment().ed_to_time;
     EPrefs->env_speed = g_pGamePersistent->Environment().fTimeFactor;
-	ExecCommand(COMMAND_SAVE_UI_BAR);
 	EPrefs->OnDestroy();
 	ExecCommand(COMMAND_CLEAR);
 	EDevice->seqAppEnd.Process(rp_AppEnd);
