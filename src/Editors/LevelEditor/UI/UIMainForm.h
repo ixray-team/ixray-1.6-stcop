@@ -10,7 +10,7 @@ public:
     IC UILeftBarForm* GetLeftBarForm() {return m_LeftBar;}
     IC UITopBarForm* GetTopBarForm() { return m_TopBar; }
     IC UIRenderForm* GetRenderForm() { return m_Render; }
-    IC UILPropertiesFrom* GetPropertiesFrom() { return m_Properties; }
+    IC UILPropertiesForm* GetPropertiesForm() { return m_Properties; }
     IC class UIWorldPropertiesFrom* GetWorldPropertiesFrom() { return m_WorldProperties; }
 
 private:
@@ -24,7 +24,7 @@ private:
     UIRenderForm* m_Render;
     UIMainMenuForm* m_MainMenu;
     UILeftBarForm* m_LeftBar;
-    UILPropertiesFrom* m_Properties;
+    UILPropertiesForm* m_Properties;
     class UIWorldPropertiesFrom* m_WorldProperties;
 
     ref_texture m_tMenu;

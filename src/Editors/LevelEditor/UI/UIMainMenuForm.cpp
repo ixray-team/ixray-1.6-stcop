@@ -554,8 +554,8 @@ void UIMainMenuForm::Draw()
 					MainForm->GetLeftBarForm()->ShowObjectsTool(selected);
 				}
 				{
-					bool selected = !MainForm->GetPropertiesFrom()->IsClosed();
-					if (ImGui::MenuItem("Properties", "", &selected)) { if (selected)MainForm->GetPropertiesFrom()->Open(); else MainForm->GetPropertiesFrom()->Close(); }
+					bool selected = !MainForm->GetPropertiesForm()->IsClosed();
+					if (ImGui::MenuItem("Properties", "", &selected)) { if (selected)MainForm->GetPropertiesForm()->Open(); else MainForm->GetPropertiesForm()->Close(); }
 				}
 			}
 			{

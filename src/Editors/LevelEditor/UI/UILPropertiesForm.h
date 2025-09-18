@@ -1,10 +1,10 @@
 #pragma once
-class UILPropertiesFrom :
+class UILPropertiesForm :
 	public IEditorWnd
 {
 public:
-	UILPropertiesFrom();
-	virtual ~UILPropertiesFrom();
+	UILPropertiesForm();
+	virtual ~UILPropertiesForm();
 	virtual void Draw();
 	IC void Open() { bOpen = true; }
 	IC void Close() { bOpen = false; }
