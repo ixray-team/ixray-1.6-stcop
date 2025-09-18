@@ -17,6 +17,8 @@ namespace PS
         float m_MinValue = 0.0f;
         float m_MaxValue = 1.0f;
 
+        Fvector4 CalculateIntermedialeValue(st_PACKey* A, st_PACKey* B, float time);
+
     public:
         ~CPACDef();
 
@@ -34,6 +36,12 @@ namespace PS
         IC float GetMaxTime() const { return m_MaxTime; }
         IC float GetMinValue() const { return m_MinValue; }
         IC float GetMaxValue() const { return m_MaxValue; }
+
+        /*
+         *  Based on current index, current time, delta time and reverse + loop flag update current index and time and return current RGBA value
+         *  Faster than externally calculate current time and search for value on time
+         */
+        Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false);
         
 #ifdef _EDITOR
         void Clone(CPACDef* source);
