@@ -27,7 +27,6 @@ private:
 
     void DrawRightBar();
     void RenderSaveButton();
-    void DrawObject(CCustomObject* obj, const char* name);
     void InitObjects();
     void OnPropertiesClick();
     void OnMakeThmClick();
@@ -41,15 +40,14 @@ private:
     void PickCallback();
     void ChangeReference(const RStringVec& items);
     bool SelectionToReference(ListItemsVec* props);
-    void ShowProperty();
     void ExportOneOBJ(CEditableObject* EO);
     void ExportObj();
+
+    UIPropertiesForm* GetPropertyWnd();
 
     static void OnModified();
 
     UIItemListForm* m_ObjectList;
-    UIPropertiesForm* m_Props;
-    UIPropertiesForm* m_PropsObjects;
     LPCSTR m_Current;
     bool m_Preview;
     bool m_Dropper;
@@ -63,6 +61,9 @@ private:
     bool bShowProps = false;
 
     bool IsModify = false;
+    bool UseWorldPropWnd = false;
 
     xr_vector<CSceneObject*> m_pEditObjects;
+    UIPropertiesForm* PreviewProps = nullptr;
+    UIPropertiesForm* InternalProps;
 };
