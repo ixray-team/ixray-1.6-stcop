@@ -244,7 +244,7 @@ void CActor::IR_OnMouseWheel(int direction)
 {
 	if(hud_adj_mode)
 	{
-		g_player_hud->tune	(Ivector().set(0,0,direction));
+		g_player_hud->tune({ 0.f,0.f,float(direction) });
 		return;
 	}
 
@@ -364,7 +364,13 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 
 	if (hud_adj_mode)
 	{
-		g_player_hud->tune(Ivector().set(dx, dy, 0));
+		float LookFactor = GetLookFactor();
+
+		CCameraBase* C = cameras[cam_active];
+		float scale = (C->f_fov / g_fov) * psMouseSens * psMouseSensScale / 50.0f / LookFactor;
+		float dx_ = float(dx) * scale;
+		float dy_ = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
+		g_player_hud->tune({ dx_, dy_, 0.f });
 		return;
 	}
 
