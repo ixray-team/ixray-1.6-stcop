@@ -49,7 +49,8 @@ IC	void CEnemyManager::set_enemy									(CEntityAlive const	*enemy)
 	m_smart_cover_enemy			= enemy;
 }
 
-IC	void CEnemyManager::invalidate_enemy							()
+IC	void CEnemyManager::invalidate_enemy()
 {
 	m_smart_cover_enemy			= 0;
+	m_object->callback(GameObject::eOnBestEnemySelected)(nullptr);
 }

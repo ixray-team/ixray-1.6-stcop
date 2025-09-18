@@ -677,7 +677,11 @@ bool CScriptGameObject::invulnerable() const
 
 void CScriptGameObject::invulnerable(bool invulnerable)
 {
-	if (CCustomMonster* monster = object().cast_custom_monster())
+	if (CActor* pActor = object().cast_actor())
+	{
+		psActorFlags.set(AF_GODMODE, invulnerable);
+	}
+	else if (CCustomMonster* monster = object().cast_custom_monster())
 	{
 		monster->invulnerable(invulnerable);
 	}

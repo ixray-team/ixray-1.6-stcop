@@ -2339,3 +2339,29 @@ float CScriptGameObject::GetActorPowerBoostTime()
 
 	return 0.0f;
 }
+
+LPCSTR CScriptGameObject::GetCutsceneVisual()
+{
+	if (CActor* pActor = smart_cast<CActor*>(&object()))
+	{
+		CCustomOutfit* pOutfit = pActor->GetOutfit();
+		return pOutfit ? pOutfit->m_ActorVisual.c_str() : pActor->m_DefaultVisualOutfit.c_str();
+	}
+	else
+	{
+		Msg("! GetCutsceneVisual(): method applicable only for actor!");
+	}
+	return nullptr;
+}
+
+void CScriptGameObject::SetInvulnerable(bool value)
+{
+	if (CActor* pActor = smart_cast<CActor*>(&object()))
+	{
+		psActorFlags.set(AF_GODMODE, value);
+	}
+	else
+	{
+		Msg("! SetInvulnerable(): method applicable only for actor!");
+	}
+}

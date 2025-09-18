@@ -118,6 +118,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("key_hold",					int(GameObject::eKeyHold)),
 				value("mouse_move",                 int(GameObject::eMouseMove)),
                 value("mouse_wheel",                int(GameObject::eMouseWheel)),
+                value("on_enemy_selected",          int(GameObject::eOnBestEnemySelected)),
 	
 
 				value("map_location_added",			int(GameObject::eMapLocationAdded))
