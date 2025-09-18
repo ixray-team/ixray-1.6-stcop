@@ -57,7 +57,6 @@
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-#include "Level.h"
 string_path		g_last_saved_game;
 
 #ifdef DEBUG
@@ -2597,6 +2596,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "g_autopickup", &psActorFlags, AF_AUTOPICKUP);
 	CMD3(CCC_Mask, "g_dynamic_music", &psActorFlags, AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask, "g_important_save", &psActorFlags, AF_IMPORTANT_SAVE);
+	CMD3(CCC_Mask, "g_hit_slowmo", &psActorFlags, AF_HIT_SLOWMO);
 
 #ifdef DEBUG
 	CMD1(CCC_LuaHelp, "lua_help");

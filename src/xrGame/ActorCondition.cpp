@@ -944,15 +944,15 @@ bool CActorCondition::PlayHitSound(SHit* pHDS)
 
 float CActorCondition::HitSlowmo(SHit* pHDS)
 {
-	float ret;
-	if(pHDS->hit_type==ALife::eHitTypeWound || pHDS->hit_type==ALife::eHitTypeStrike )
+	float ret = 0.0f;
+	if (!psActorFlags.test(AF_HIT_SLOWMO) || pHDS->hit_type != ALife::eHitTypeWound && pHDS->hit_type != ALife::eHitTypeStrike)
 	{
-		ret						= pHDS->damage();
-		clamp					(ret,0.0f,1.f);
-	}else
-		ret						= 0.0f;
+		return ret;
+	}
 
-	return ret;	
+	ret = pHDS->damage();
+	clamp(ret, 0.0f, 1.f);
+	return ret;
 }
 
 bool CActorCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect, bool use_sound)
