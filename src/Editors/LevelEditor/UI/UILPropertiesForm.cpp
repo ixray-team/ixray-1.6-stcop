@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-UILPropertiesFrom::UILPropertiesFrom()
+UILPropertiesForm::UILPropertiesForm()
 {
 }
 
-UILPropertiesFrom::~UILPropertiesFrom()
+UILPropertiesForm::~UILPropertiesForm()
 {
 }
 
-void UILPropertiesFrom::Draw()
+void UILPropertiesForm::Draw()
 {
 	if (bOpen)
 	{

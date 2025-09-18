@@ -33,7 +33,7 @@ UIMainForm::UIMainForm()
 	m_Render = new UIRenderForm();
 	m_MainMenu = new UIMainMenuForm();
 	m_LeftBar = new UILeftBarForm();
-	m_Properties = new UILPropertiesFrom();
+	m_Properties = new UILPropertiesForm();
 	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));

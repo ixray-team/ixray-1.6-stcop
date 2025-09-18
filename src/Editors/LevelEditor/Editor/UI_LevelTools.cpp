@@ -291,7 +291,7 @@ void CLevelTool::ShowProperties(LPCSTR focus_to_item)
 {
 	RealUpdateProperties	();
 	if(MainForm)
-		MainForm->GetPropertiesFrom()->Open();
+		MainForm->GetPropertiesForm()->Open();
    
 	/*
 	if(focus_to_item)
