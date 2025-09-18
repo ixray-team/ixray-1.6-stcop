@@ -25,6 +25,7 @@ void main(in HS_CONSTANT_DATA_OUTPUT input,
 
     output.tcdh = bp[0].tcdh * w + bp[1].tcdh * v + bp[2].tcdh * u;
     output.position = bp[0].position * w + bp[1].position * v + bp[2].position * u;
+    output.snow_mask = bp[0].snow_mask * w + bp[1].snow_mask * v + bp[2].snow_mask * u;
 
     float3 M1 = bp[0].M1 * w + bp[1].M1 * v + bp[2].M1 * u;
     output.M1 = M1;

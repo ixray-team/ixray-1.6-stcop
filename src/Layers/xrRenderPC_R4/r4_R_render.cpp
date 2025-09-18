@@ -671,6 +671,23 @@ void CRender::Render()
 		_RELEASE(res);
 	}
 
+	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
+	if(UseWinterPass)
+	{
+		GPU_EVENT(PhaseWinter);
+
+		RContext->CopyResource(Target->rt_NormalTemp->pSurface, Target->rt_Normal->pSurface);
+		RContext->CopyResource(Target->rt_SurfaceTemp->pSurface, Target->rt_Surface->pSurface);
+
+		Target->phase_scene_begin();
+		RCache.set_ZB(nullptr);
+
+		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
+		Target->PhaseWinter();
+
+		RCache.set_ColorWriteEnable();
+	}
+
 	// Wall marks
 	if(Wallmarks)	
 	{

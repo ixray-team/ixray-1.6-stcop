@@ -110,6 +110,12 @@ void main(p_bumped_new I, out OutStructure O)
     M.Roughness = 1.0f - M.Roughness * 0.9f;
 #endif
 
+#ifdef IGNORE_SNOW_MASK
+	M.SnowMask = 0.0f;
+#else
+    M.SnowMask = 1.0f;
+#endif
+
     O.Velocity = I.hpos_curr.xy / I.hpos_curr.w - I.hpos_old.xy / I.hpos_old.w;
 	
 #ifndef USE_LENGTH_BUFFER

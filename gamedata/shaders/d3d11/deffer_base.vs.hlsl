@@ -36,6 +36,8 @@ void main(in v_in I, out p_bumped_new O)
     O.M2 = N.yyy;
     O.M3 = N.zzz;
 #endif
+	
+    O.snow_mask = normalize(mul((float3x3)m_W, N)).y;
 
 #ifdef USE_LM_HEMI
     O.tcdh.zw = unpack_tc_lmap(I.lmh);

@@ -4,6 +4,7 @@
 
 static const float fParallaxStartFade = 8.0f;
 static const float fParallaxStopFade = 12.0f;
+Texture2D s_snow;
 
 #ifndef PARALLAX_HEIGHT
 	#ifdef USE_PBR
@@ -11,6 +12,10 @@ static const float fParallaxStopFade = 12.0f;
 	#else
 		#define PARALLAX_HEIGHT 0.01
 	#endif
+#endif
+
+#ifndef DYNAMIC_SNOW_COLOR
+#define DYNAMIC_SNOW_COLOR float3(0.75f, 0.75f, 0.75f)
 #endif
 
 void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, uint idx)
@@ -93,6 +98,7 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 #endif
 
     M.Color = s_base.Sample(smp_base, I.tcdh.xy);
+	M.SnowMask = smoothstep(0.7f, 0.8f, I.snow_mask);
 
 #ifdef USE_BUMP
     float4 Bump = s_bump.Sample(smp_base, I.tcdh.xy);
@@ -168,6 +174,15 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
     #endif
 #endif
 
+#ifdef USE_SNOW_TEXTURE
+	float4 Snow = s_snow.Sample(smp_base, I.tcdh.xy);
+    Snow.y *= smoothstep(0.2, 0.3, hemi_cube_pos_faces.y);
+
+	M.Color.xyz = lerp(M.Color.xyz, DYNAMIC_SNOW_COLOR, Snow.y);
+    M.Roughness = lerp(M.Roughness, Snow.x, Snow.y);
+    M.Metalness = lerp(M.Metalness, Snow.z, Snow.y);
+#endif
+
 #ifndef USE_PBR
 	#ifndef USE_TRUE_NORMAL_MAP
 		M.Normal.z *= 0.5f;
@@ -185,5 +200,5 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 #endif
 }
 
-#endif
 
+#endif
