@@ -222,7 +222,35 @@ void UIRenderForm::DrawVP()
 				ImVec2 pos{ canvas_pos.x + canvas_size.x - size.x, canvas_pos.y };
 
 				//Device.mView for only read
-				ImGuizmo::ViewManipulate((float*)&Device.mView, 10, pos, size, ImColor());
+				Fmatrix TempViewMatrix = Device.mView;
+				ImGuizmo::ViewManipulate((float*)&TempViewMatrix, 10, pos, size, ImColor());
+
+				if (ImGuizmo::IsUsingViewManipulate())
+				{
+					CUI_Camera& Camera = UI->CurrentView().m_Camera;
+
+					Fvector OldDir = Camera.GetDirection();
+					Fvector LookAt;
+					LookAt.mad(Camera.GetPosition(), OldDir, 1.0f);
+
+					Fmatrix InvView;
+					InvView.invert(TempViewMatrix);
+
+					Fvector Hpb;
+					InvView.getHPB(Hpb);
+
+					Fvector NewDir = InvView.k;
+					NewDir.normalize();
+
+					float Dist = LookAt.distance_to(Camera.GetPosition());
+
+					Fvector NewPos;
+					NewPos.mad(LookAt, NewDir, -Dist);
+
+					Camera.Set(Hpb, NewPos);
+
+					Device.mView.set(TempViewMatrix);
+				}
 			}
 		}
 
