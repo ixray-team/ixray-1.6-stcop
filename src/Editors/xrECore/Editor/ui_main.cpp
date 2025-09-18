@@ -85,7 +85,20 @@ TUI::~TUI()
 
 ImTextureID TUI::LoadTexture(const char* Texture) const
 {
-	return (void*)EDevice->Resources->_CreateTexture(Texture)->pSurface;
+	if (TextureStack.contains(Texture))
+	{
+		return TextureStack[Texture]->pSurface;
+	}
+
+	TextureStack[Texture] = EDevice->Resources->_CreateTexture(Texture);
+	ref_texture& Tex = TextureStack[Texture];
+
+	if (Tex->pSurface == nullptr)
+	{
+		Tex->Load();
+	}
+
+	return (void*)Tex->pSurface;
 }
 
 void TUI::OnDeviceCreate()
@@ -96,6 +109,7 @@ void TUI::OnDeviceCreate()
 void TUI::OnDeviceDestroy()
 {
 	DU_impl.OnDeviceDestroy();
+	TextureStack.clear();
 }
 
 bool TUI::IsModified()
@@ -745,6 +759,8 @@ void TUI::OnDestroy()
 	{
 		View.RTFreez.destroy();
 	}
+
+	TextureStack.clear();
 
 	RT.destroy();
 	RTCopy.destroy();
