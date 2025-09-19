@@ -555,6 +555,22 @@
             <options_item entry="r4_enable_tessellation" group="mm_opt_video_adv" depend="vid"/>
         </check_r4_tessellation>
 
+        <cap_r4_use_gasmask x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r4_use_gasmask</text>
+        </cap_r4_use_gasmask>
+        <check_r4_use_gasmask x="177" y="0.5" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r4_use_gasmask" group="mm_opt_video_adv" />
+        </check_r4_use_gasmask>
+
+        <cap_r2_use_rain_drops x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_r2_use_rain_drops</text>
+        </cap_r2_use_rain_drops>
+        <check_r2_use_rain_drops x="177" y="0.5" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="r2_use_rain_drops" group="mm_opt_video_adv" />
+        </check_r2_use_rain_drops>
+
         <btn_to_simply x="338" y="322" width="108" height="24">
             <text align="c" font="letterica16">ui_mm_simply</text>
             <texture>ui_inGame2_button</texture>
