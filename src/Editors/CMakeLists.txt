@@ -34,7 +34,6 @@ if (IXRAY_EDITORS)
 
     if (NOT IXRAY_UTILS)
         set_target_properties(xrSE_Factory PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
-        set_target_properties(ETools PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
         set_target_properties(xrDXT PROPERTIES ${IXRAY_FOLDER_EDITOR_EXCORE})
     endif()
 endif()
