@@ -14,7 +14,6 @@
 #include "UISoundEditorForm.h"
 #include "UIMinimapEditorForm.h"
 #include "UIWeatherPropForm.h"
-#include "../utils/ETools/ETools.h"
 #include "UILogForm.h"
 #include "../xrEngine/gamefont.h"
 #include "../XrEngine/XR_IOConsole.h"
@@ -680,7 +679,7 @@ bool TUI::OnCreate()
 
 	EDevice->Initialize();
 	// Creation
-	ETOOLS::ray_options	(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
+	XRC.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 
 	pInput			= new CInput(FALSE, all_device_key);
 

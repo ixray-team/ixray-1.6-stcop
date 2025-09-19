@@ -12,10 +12,10 @@
 #include "face_smoth_flags.h"
 #include "itterate_adjacents.h"
 #include "itterate_adjacents_dynamic.h"
-#	include "UI_ToolsCustom.h"
-#include "..\utils\ETools\ETools.h"
+#include "UI_ToolsCustom.h"
 
-CEditableMesh::~CEditableMesh(){
+CEditableMesh::~CEditableMesh()
+{
 	Clear();
     R_ASSERT2(0==m_RenderBuffers,"Render buffer still referenced.");
 }
@@ -74,7 +74,7 @@ void CEditableMesh::Clear()
 
 void CEditableMesh::UnloadCForm     ()
 {
-	ETOOLS::destroy_model			(m_CFModel);
+	xr_delete(m_CFModel);
 }
 
 void CEditableMesh::UnloadFNormals  (bool force)
