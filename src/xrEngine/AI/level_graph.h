@@ -55,10 +55,10 @@ protected:
 	u32						m_max_z;
 
 protected:
-			u32		vertex						(const Fvector &position) const;
 			u32		guess_vertex_id				(u32 const &current_vertex_id, Fvector const &position) const;
 
 public:
+			u32		vertex						(const Fvector &position) const;
 	typedef u32 const_iterator;
 	typedef u32 const_spawn_iterator;
 	typedef u32 const_death_iterator;
