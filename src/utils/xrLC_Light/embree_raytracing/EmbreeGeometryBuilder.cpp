@@ -16,6 +16,12 @@ void TriangleContainer::RemoveDublicates()
     // 1. Собираем все вершины
     //----------------------
     size_t totalVerts = raw_faces.size() * 3;
+
+    if (raw_faces.empty())
+    {
+        return;
+    }
+
     xr_vector<IndexedVertex> temp;
     temp.reserve(totalVerts);
 
@@ -143,6 +149,9 @@ void TriangleContainer::RemoveDublicatesFaces()
 
     clMsg("$ Triangles : Compacted From %u to %u", pFaces, faces_v.size());
     */
+
+    if (faces_v.empty())
+        return;
 
     CTimer t; 
     t.Start();
