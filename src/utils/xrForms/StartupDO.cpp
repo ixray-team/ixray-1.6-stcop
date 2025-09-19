@@ -10,7 +10,6 @@ static const char* h_str =
 "-? or -h	== this help\n"
 "-f<NAME>	== compile level in gamedata\\levels\\<NAME>\\\n"
 "-o			== modify build options\n"
-"-use_intel == включить Embree"
 "\n"
 "NOTE: The last key is required for any functionality\n";
 
@@ -43,8 +42,6 @@ void StartupDO()
 
 		Phase("Loading level...");
 		gl_data.xrLoad();
-
-		gl_data.use_intel = gCompilerMode.Embree;
 
 		Phase("Lighting nodes...");
 		xrLight_Details();

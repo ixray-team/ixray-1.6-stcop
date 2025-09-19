@@ -237,31 +237,41 @@ void CBuild::Run(LPCSTR P)
 	CorrectTJunctions();
 	mem_Compact();
 
+ 	// Tesselate + calculate
+	// Phase("Adaptive HT tessalate ...");
+	xrPhase_AdaptiveHT_tessalte();
+
+
+	Phase("Building RayTrace Model...");
+	Light_prepare();
+
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
-	{
-		GPUTaskinSystem.InitializeGPU();
-	}
+ 		GPUTaskinSystem.InitializeGPU();
 #endif
+	else if (gCompilerMode.Embree)
+		EmbreeMain.IntelEmbereLOAD();
+	else
+		BuildRapid(false);
 
-	// AdaptiveHT
-	BuildAdaptiveHT();
+	// Hemi MT - Calculate
+	Phase("Adaptive HT lighting ...");
+  	xrPhase_AdaptiveHT_calculate();
+  
+ 	// Building normals
+	Phase("Building normals...");
+ 	CalcNormals();
 
-
-	// Collision DB
 	//should be after normals, so that double-sided faces gets separated
 	BuildPortals(*fs);
 
+ 	Phase("Building CFORM ...");
+ 	BuildCForm();
 
-	// GLOBAL-ILLUMINATION
-	if (g_build_options.b_radiosity)
-	{
-		Phase("Radiosity-Solver...");
-		mem_Compact();
-		Light_prepare();
-		xrPhase_Radiosity();
-	}
-
+	// se7kills: теперь тут код эксплота build.cform
+	Phase("Building Rcast Model ...");
+	EmbreeMain.BuildRcast();
+ 
 	// All lighting + lmaps building and saving
 	Light();
 	RunAfterLight(fs);
