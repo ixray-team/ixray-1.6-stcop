@@ -25,11 +25,11 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOO
 {
 	// Allocate 512x512 texture if needed
 	if (lm.surface.empty())
-		lm.create(getLMSIZE(),getLMSIZE());
+		lm.create(getLMSIZE(), getLMSIZE());
 	
 	// Addressing
 	xr_vector<UVtri>	tris;
-	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER, getLMSIZE(), getLMSIZE(), bRotated);
+	D->RemapUV			(tris, b_u+BORDER, b_v+BORDER, s_u-2*BORDER, s_v-2*BORDER, getLMSIZE(), getLMSIZE(), bRotated);
 	
 	// Capture faces and setup their coords
 	for (UVIt T=tris.begin(); T!=tris.end(); T++)
@@ -42,13 +42,13 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOO
 	
 	// Perform BLIT
 	lm_layer&	L		=	D->layer;
-	u32 real_H = (L.height + 2 * BORDER);
-	u32 real_W = (L.width + 2 * BORDER);
+	u32 real_H			=   (L.height + 2 * BORDER);
+	u32 real_W			=   (L.width + 2 * BORDER);
 
 	if (!bRotated) 
-		blit	(lm,getLMSIZE(),getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
+		blit	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v, 254-BORDER);
 	else 
-		blit_r	(lm,getLMSIZE(),getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
+		blit_r	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v, 254-BORDER);
 }
 
 //////////////////////////////////////////////////////////////////////
