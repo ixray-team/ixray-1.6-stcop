@@ -112,12 +112,13 @@ void CBuild::xrPhase_AdaptiveHT	()
 	
 	
 	Light_prepare();
+	
+	
 	// Build model
-	BuildRapid(FALSE);
-	EmbreeMain.AttachGeometrys(false);
-
 	if (!gCompilerMode.CUDA)
 	{
+		BuildRapid(FALSE);
+ 
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
 		ThreadWorkID_Adaptive = 0;
@@ -143,6 +144,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 			auto& V = lc_global_data()->g_vertices()[VertexID];
 			V->normalFromAdj();
 			GPUTaskinSystem.LightPointPacked((u32)VertexID, 0, V->P, V->N, LP_dont_rgb + LP_dont_sun, 0);
+		
+			AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
 		}
 
 		GPUTaskinSystem.LightPointPackedRun();
