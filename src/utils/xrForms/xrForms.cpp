@@ -5,6 +5,7 @@
 
 #include <luabind/luabind.hpp>
 #include <imgui.h>
+#include <timeapi.h>
 
 #include "../../editors/xrEUI/imgui_impl_sdl3.h"
 #include "imgui_impl_sdlrenderer3.h"
@@ -35,10 +36,9 @@ void setup_luabind_allocator()
 	luabind::allocator_parameter = 0;
 }
 
-#pragma warning(disable:4995)
-#include <timeapi.h>
-#include <commctrl.h>
-#pragma warning(default:4995)
+extern int item_current_selected;
+extern int item_current_jitter;
+extern int item_current_jitter_mu;
 
 void StartupAI();
 void StartupLC();
@@ -53,10 +53,13 @@ void Help(const char* h_str)
 }
 
 CompilersMode gCompilerMode;
+CJsonSerializer* Serializer = nullptr;
 
 extern bool ShowMainUI;
 void Startup(LPSTR lpCmdLine) 
 {
+	SaveCompilerCfg();
+
 	GetIterationData().push_back({ "xrLC" });
 	GetIterationData().push_back({ "xrAI" });
 	GetIterationData().push_back({ "xrDO" });
@@ -243,9 +246,56 @@ void SDL_Application()
 void StartCompile()
 {
 	// Give a LOG-thread a chance to startup
-	InitCommonControls();
+	//InitCommonControls();
 	Sleep(150);
 	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
+}
+
+void SaveCompilerCfg()
+{
+	Serializer->Write("ai", gCompilerMode.AI);
+	Serializer->Write("lc", gCompilerMode.LC);
+	Serializer->Write("do", gCompilerMode.DO);
+	Serializer->Write("Silent", gCompilerMode.Silent);
+	Serializer->Write("Embree", gCompilerMode.Embree);
+	Serializer->Write("CUDA", gCompilerMode.CUDA);
+	Serializer->Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
+	Serializer->Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
+	Serializer->Write("ClearTemp", gCompilerMode.ClearTemp);
+	Serializer->Write("SkipTHM", gCompilerMode.SkipTHM);
+	Serializer->Write("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
+	Serializer->Write("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
+	Serializer->Write("LC_GI", gCompilerMode.LC_GI);
+	Serializer->Write("LC_NoSun", gCompilerMode.LC_NoSun);
+	Serializer->Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
+	Serializer->Write("LC_Noise", gCompilerMode.LC_Noise);
+	Serializer->Write("LC_Tess", gCompilerMode.LC_Tess);
+	Serializer->Write("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
+	Serializer->Write("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
+	Serializer->Write("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
+	Serializer->Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
+	Serializer->Write("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
+	Serializer->Write("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
+	Serializer->Write("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
+	Serializer->Write("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
+	Serializer->Write("LC_JSample", gCompilerMode.LC_JSample);
+	Serializer->Write("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
+	Serializer->Write("LC_Pixels", gCompilerMode.LC_Pixels);
+	Serializer->Write("WeldDistance", gCompilerMode.WeldDistance);
+	Serializer->Write("DO_NoSun", gCompilerMode.DO_NoSun);
+	Serializer->Write("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
+	Serializer->Write("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
+	Serializer->Write("AI_StartActor", gCompilerMode.AI_StartActor);
+	Serializer->Write("AI_spawn_name", gCompilerMode.AI_spawn_name);
+	Serializer->Write("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
+	Serializer->Write("AI_PureCovers", gCompilerMode.AI_PureCovers);
+	Serializer->Write("AI_Draft", gCompilerMode.AI_Draft);
+	Serializer->Write("AI_Verify", gCompilerMode.AI_Verify);
+	Serializer->Write("AI_Verbose", gCompilerMode.AI_Verbose);
+	Serializer->Write("item_current_selected", item_current_selected);
+	Serializer->Write("item_current_jitter", item_current_jitter);
+	Serializer->Write("item_current_jitter_mu", item_current_jitter_mu);
+	Serializer->Save();
 }
 
 int APIENTRY WinMain 
@@ -260,87 +310,56 @@ int APIENTRY WinMain
 	Debug._initialize(false);
 	Core._initialize("IX-Ray Compilers");
 
-	CJsonSerializer Serializer("xrlevelbuilder.json");
-	Serializer.Read("ai", gCompilerMode.AI);
-	Serializer.Read("lc", gCompilerMode.LC);
-	Serializer.Read("do", gCompilerMode.DO);
-	Serializer.Read("Silent", gCompilerMode.Silent);
-	Serializer.Read("Embree", gCompilerMode.Embree);
-	Serializer.Read("CUDA", gCompilerMode.CUDA);
-	Serializer.Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
-	Serializer.Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
-	Serializer.Read("ClearTemp", gCompilerMode.ClearTemp);
-	Serializer.Read("SkipTHM", gCompilerMode.SkipTHM);
-	Serializer.Read("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
-	Serializer.Read("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
-	Serializer.Read("LC_GI", gCompilerMode.LC_GI);
-	Serializer.Read("LC_NoSun", gCompilerMode.LC_NoSun);
-	Serializer.Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
-	Serializer.Read("LC_Noise", gCompilerMode.LC_Noise);
-	Serializer.Read("LC_Tess", gCompilerMode.LC_Tess);
-	Serializer.Read("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
-	Serializer.Read("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
-	Serializer.Read("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
-	Serializer.Read("LC_skipWeld", gCompilerMode.LC_skipWeld);
-	Serializer.Read("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
-	Serializer.Read("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
-	Serializer.Read("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
-	Serializer.Read("LC_JSample", gCompilerMode.LC_JSample);
-	Serializer.Read("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
-	Serializer.Read("LC_Pixels", gCompilerMode.LC_Pixels);
-	Serializer.Read("WeldDistance", gCompilerMode.WeldDistance);
-	Serializer.Read("DO_NoSun", gCompilerMode.DO_NoSun);
-	Serializer.Read("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
-	Serializer.Read("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
-	Serializer.Read("AI_StartActor", gCompilerMode.AI_StartActor);
-	Serializer.Read("AI_spawn_name", gCompilerMode.AI_spawn_name);
-	Serializer.Read("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
-	Serializer.Read("AI_PureCovers", gCompilerMode.AI_PureCovers);
-	Serializer.Read("AI_Draft", gCompilerMode.AI_Draft);
-	Serializer.Read("AI_Verify", gCompilerMode.AI_Verify);
-	Serializer.Read("AI_Verbose", gCompilerMode.AI_Verbose);
+	Serializer = new CJsonSerializer("xrlevelbuilder.json");
+	Serializer->Read("ai", gCompilerMode.AI);
+	Serializer->Read("lc", gCompilerMode.LC);
+	Serializer->Read("do", gCompilerMode.DO);
+	Serializer->Read("Silent", gCompilerMode.Silent);
+	Serializer->Read("Embree", gCompilerMode.Embree);
+	Serializer->Read("CUDA", gCompilerMode.CUDA);
+	Serializer->Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
+	Serializer->Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
+	Serializer->Read("ClearTemp", gCompilerMode.ClearTemp);
+	Serializer->Read("SkipTHM", gCompilerMode.SkipTHM);
+	Serializer->Read("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
+	Serializer->Read("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
+	Serializer->Read("LC_GI", gCompilerMode.LC_GI);
+	Serializer->Read("LC_NoSun", gCompilerMode.LC_NoSun);
+	Serializer->Read("LC_NoSMG", gCompilerMode.LC_NoSMG);
+	Serializer->Read("LC_Noise", gCompilerMode.LC_Noise);
+	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
+	Serializer->Read("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
+	Serializer->Read("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
+	Serializer->Read("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
+	Serializer->Read("LC_skipWeld", gCompilerMode.LC_skipWeld);
+	Serializer->Read("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
+	Serializer->Read("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
+	Serializer->Read("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
+	Serializer->Read("LC_JSample", gCompilerMode.LC_JSample);
+	Serializer->Read("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
+	Serializer->Read("LC_Pixels", gCompilerMode.LC_Pixels);
+	Serializer->Read("WeldDistance", gCompilerMode.WeldDistance);
+	Serializer->Read("DO_NoSun", gCompilerMode.DO_NoSun);
+	Serializer->Read("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
+	Serializer->Read("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
+	Serializer->Read("AI_StartActor", gCompilerMode.AI_StartActor);
+	Serializer->Read("AI_spawn_name", gCompilerMode.AI_spawn_name);
+	Serializer->Read("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
+	Serializer->Read("AI_PureCovers", gCompilerMode.AI_PureCovers);
+	Serializer->Read("AI_Draft", gCompilerMode.AI_Draft);
+	Serializer->Read("AI_Verify", gCompilerMode.AI_Verify);
+	Serializer->Read("AI_Verbose", gCompilerMode.AI_Verbose);
+	Serializer->Read("item_current_selected", item_current_selected);
+	Serializer->Read("item_current_jitter", item_current_jitter);
+	Serializer->Read("item_current_jitter_mu", item_current_jitter_mu);
+	Serializer->Read("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
 	
 	InitializeUIData();
 	SDL_Application();
 
-	Serializer.Write("ai", gCompilerMode.AI);
-	Serializer.Write("lc", gCompilerMode.LC);
-	Serializer.Write("do", gCompilerMode.DO);
-	Serializer.Write("Silent", gCompilerMode.Silent);
-	Serializer.Write("Embree", gCompilerMode.Embree);
-	Serializer.Write("CUDA", gCompilerMode.CUDA);
-	Serializer.Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
-	Serializer.Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
-	Serializer.Write("ClearTemp", gCompilerMode.ClearTemp);
-	Serializer.Write("SkipTHM", gCompilerMode.SkipTHM);
-	Serializer.Write("LC_BackingDisabled", gCompilerMode.LC_BackingDisabled);
-	Serializer.Write("LC_SaveOFG", gCompilerMode.LC_SaveOFG);
-	Serializer.Write("LC_GI", gCompilerMode.LC_GI);
-	Serializer.Write("LC_NoSun", gCompilerMode.LC_NoSun);
-	Serializer.Write("LC_NoSMG", gCompilerMode.LC_NoSMG);
-	Serializer.Write("LC_Noise", gCompilerMode.LC_Noise);
-	Serializer.Write("LC_Tess", gCompilerMode.LC_Tess);
-	Serializer.Write("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
-	Serializer.Write("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
-	Serializer.Write("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
-	Serializer.Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
-	Serializer.Write("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
-	Serializer.Write("LC_sizeLmaps", gCompilerMode.LC_sizeLmaps);
-	Serializer.Write("LC_JSampleMU", gCompilerMode.LC_JSampleMU);
-	Serializer.Write("LC_JSample", gCompilerMode.LC_JSample);
-	Serializer.Write("ThreadsPerWork", gCompilerMode.ThreadsPerWork);
-	Serializer.Write("LC_Pixels", gCompilerMode.LC_Pixels);
-	Serializer.Write("WeldDistance", gCompilerMode.WeldDistance);
-	Serializer.Write("DO_NoSun", gCompilerMode.DO_NoSun);
-	Serializer.Write("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
-	Serializer.Write("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
-	Serializer.Write("AI_StartActor", gCompilerMode.AI_StartActor);
-	Serializer.Write("AI_spawn_name", gCompilerMode.AI_spawn_name);
-	Serializer.Write("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
-	Serializer.Write("AI_PureCovers", gCompilerMode.AI_PureCovers);
-	Serializer.Write("AI_Draft", gCompilerMode.AI_Draft);
-	Serializer.Write("AI_Verify", gCompilerMode.AI_Verify);
-	Serializer.Write("AI_Verbose", gCompilerMode.AI_Verbose);
+	SaveCompilerCfg();
+
+	xr_delete(Serializer);
 
 	return 0;
 }

@@ -71,6 +71,6 @@ struct CompilersMode
 void RenderMainUI();
 void RenderCompilerUI(int X, int Y);
 void InitializeUIData();
-
+void SaveCompilerCfg();
 
 extern CompilersMode gCompilerMode;;
