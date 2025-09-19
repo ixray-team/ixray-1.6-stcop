@@ -10,7 +10,8 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
 
-    if (C.iElement == ScreenPostProcessType::Winter) {
+    if (C.iElement == ScreenPostProcessType::Winter)
+    {
         static auto texture_name = pSettings->section_exist("custom_textures")
             && pSettings->line_exist("custom_textures", "snow_texture")
             ? pSettings->r_string("custom_textures", "snow_texture") : "shaders\\snowmask\\snow";
@@ -46,6 +47,12 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
         case ScreenPostProcessType::Saturation:
             C.r_Pass("stub_screen_space", "saturation", FALSE, FALSE, FALSE);
             break;
+        case ScreenPostProcessType::Raindrops:
+        {
+            C.r_Pass("stub_screen_space", "raindrops", FALSE, FALSE, FALSE);
+            C.r_dx10Texture("s_droplets", "shaders\\fx_hud_droplets");
+            break;
+        }
     }
 
     C.r_dx10Texture("s_image", r2_RT_backbuffer_final);

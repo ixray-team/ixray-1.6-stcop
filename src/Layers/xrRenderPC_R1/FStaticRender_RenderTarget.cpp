@@ -8,6 +8,8 @@ static LPCSTR		RTTempName = "$user$rendertarget_temp";
 static LPCSTR		RTname_color_map= "$user$rendertarget_color_map";
 static LPCSTR		RTname_distort	= "$user$distort";
 
+bool UseGasmak = false;
+
 CRenderTarget::CRenderTarget()
 {
 	bAvailable			= FALSE;
