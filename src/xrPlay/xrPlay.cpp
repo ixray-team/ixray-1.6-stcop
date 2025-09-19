@@ -37,8 +37,8 @@ void EnumerateDisplayModes()
 	if (!pDisplayMode)
 	{
 		SDL_Log("Failed to get display mode, using defaults ...");
-		psCurrentVidMode[0] = 800;
-		psCurrentVidMode[1] = 600;
+		psCurrentVidMode[0] = 1024;
+		psCurrentVidMode[1] = 768;
 		return;
 	}
 

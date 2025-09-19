@@ -123,7 +123,7 @@ void fill_vid_mode_list()
 		DXGI_MODE_DESC& desc = modes[i];
 		string32 str;
 
-		if (desc.Width < 800)
+		if (desc.Width < 1024)
 			continue;
 
 		xr_sprintf(str, sizeof(str), "%dx%d", desc.Width, desc.Height);
