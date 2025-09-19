@@ -24,11 +24,8 @@ RTCDevice device	= 0;
 RTCScene IntelScene = 0;
  
 RTCGeometry IntelGeometryNormal = 0;
-RTCGeometry IntelGeometryMuModels = 0;
-
 RTCGeometry IntelGeometryTransp = 0;
-RTCGeometry IntelGeometryMuModelsTransp = 0;
-
+ 
 EmbreeData EmbreeMain;
  
 // Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
@@ -87,7 +84,7 @@ void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
 
-	Face* F = hit->geomID == 0 ? EmbreeMain.static_geom.dummy[hit->primID] : hit->geomID == 1 ? EmbreeMain.murefs_geom.dummy[hit->primID] : nullptr;
+	Face* F = EmbreeMain.static_geom.dummy[hit->primID];
 	if (F == ctxt->skip)
 	{
 		args->valid[0] = 0; return;
@@ -102,12 +99,7 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
-	Face* F = nullptr; 
-
-	if (hit->geomID == 2)
-		F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
-	else 
-		F = EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+	Face* F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
 	 
  	if (F != ctxt->skip && !CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
@@ -157,62 +149,37 @@ size_t GetMemory()
 #include <xrMU_Model.h>
 #include <xrMU_Model_Reference.h>
 
+// Loading Common 
 void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
- 	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(geom, quality);
 
 	if (FilterTransp)
 		rtcSetGeometryOccludedFilterFunction(geom, &FilterRaytraceTransparent);
-	else 
+	else
 		rtcSetGeometryOccludedFilterFunction(geom, &FilterRayTraceOpaque);
 
-	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(VertexEmbree), geom_buffer.vertex().size());
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
 	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(TriEmbree), geom_buffer.faces().size());
-	geom_buffer.hashTable.clear();
 
 	rtcCommitGeometry(geom);
-}
+};
 
-void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem)
+void EmbreeData::InitializeGeometry()
 {
  	// Конструктор модели
- 	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
-	CTimer t; t.Start();
+ 	EmbreeData::BuildRaytraceModel();
    	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
-	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
-  	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
-	LoadGeomBuffer(IntelGeometryMuModelsTransp, scene_quality, true, murefs_geom_transp);
-	Status("[Embree] Loading Buffers: [%u ms]", t.GetElapsed_ms());
-
-//	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
-//	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
-}
-
-size_t EmbreeData::AttachGeometrys(bool addMU)
-{
-	RemoveGeometry(false);
-	CTimer t;
-	t.Start();
-
+   	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
+ 
 	IntelScene = rtcNewScene(device);
 	rtcSetSceneFlags(IntelScene, scene_flags);
- 
- 	isAttached = true;
-  	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 2); 
-	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
 
-	size_t start = GetMemory();
+ 	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
+	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 1);
+
 	rtcCommitScene(IntelScene);
-	BVH_size = GetMemory() - start;
-	 
-	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", Static_size / 1024 / 1024, MU_size / 1024 / 1024, BVH_size / 1024 / 1024);
-
-	Status("[Embree] Attach Geoms : [%u ms]",t.GetElapsed_ms());
-
-	return (GetMemory() - start);
 }
 
 void EmbreeData::RemoveGeometry(bool isDealloc)
@@ -222,17 +189,10 @@ void EmbreeData::RemoveGeometry(bool isDealloc)
  		rtcReleaseScene(IntelScene);
   		static_geom.ClearAll();
 		static_geom_transp.ClearAll();
-		murefs_geom.ClearAll();
-		murefs_geom_transp.ClearAll();
-		 
-		BVH_size = 0;
-		Static_size = 0;
-		MU_size = 0;
 	}
 	else
 	{
 		rtcReleaseScene(IntelScene);
-		BVH_size = 0;
 	}
  	
 	IntelScene = 0;
@@ -295,12 +255,7 @@ void EmbreeData::IntelEmbereLOAD()
 	rtcSetSceneFlags(IntelScene, scene_flags);
 
 	// LOADING NORMAL GEOM
-	// size_t geom_memory, refs_memory;
- 	InitializeGeometry(Static_size, MU_size);
-	AttachGeometrys(true);
-
-	//size_t BVH = AttachGeometrys(true);
- 	//AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
+  	InitializeGeometry( );
 }
 
 void EmbreeData::IntelEmbereUNLOAD()
