@@ -31,6 +31,8 @@ public:
 	virtual void Execute();
 };
 
+
+
 void ImplicitThread::Execute()
 {
 	// Priority
@@ -60,7 +62,9 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	tmanager.wait();
 }
 
+
 xrCriticalSection csLockImplicit;
+
 
 void ImplicitExecute::Execute()
 {
@@ -157,8 +161,12 @@ void ImplicitExecute::Execute()
 	}
 }
  
+#include "CUDA/CUDARayCast.h"
+
 void RunTaskGPU()
 {
+	XRay::RayTrace::CUDA::InitializeRayTracing();
+
  	ImplicitDeflector& defl = cl_globs.DATA();
 	// Setup variables
 	Fvector2 dim, half;
@@ -172,48 +180,16 @@ void RunTaskGPU()
 	Fvector2* Jitter;
 	Jitter_Select(Jitter, Jcount);
 
-	PackedLighting			gpu_data;
 	xr_map<u32, u32>	    FCountMap;
 
-	auto GPU_RUN_TASKS = [&]()
-	{
- 		gpu_data.LightPointPackedRun();
-		gpu_data.LightPointPackedApply();
+	static PackedLighting			gpu_data;
 
-		xr_map<u32, base_color_c> Colors;
-		for (auto& INFO : gpu_data.task_pools)
-		{
-			Colors[INFO.INDEX_TASK].add(INFO.C);
-		}
+	
 
-		for (auto& T : Colors)
-		{
-			u32 index = T.first;
-			int V = index / defl.Width();
-			int U = index % defl.Width();
-
-			u32 Fcount = FCountMap[index];
-			if (Fcount)
-			{
-				auto& C = T.second;
-				// Calculate lighting amount
-				C.scale(Fcount);
-				C.mul(.5f);
-				defl.Lumel(U, V)._set(C);
-				defl.Marker(U, V) = 255;
-			}
-			else
-			{
-				defl.Marker(U, V) = 0;
-			}
-		}
-
-		Colors.clear();
- 	};
-
-	int RAYS_TASK = 16 * 1024; // 190 * 1024 * 1024; // * 200
 	extern u64 RayTracingTime;
-	RayTracingTime = 0;
+	extern u64 RayTracingCopy;
+	extern u64 RayTracingResults;
+ 	RayTracingTime = RayTracingCopy = RayTracingResults = 0;
 
 	for (u32 V = 0; V< defl.Height(); V++)
 	{
@@ -258,23 +234,55 @@ void RunTaskGPU()
 			{
 				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 			}
-
 			FCountMap[V * defl.Width() + U] = Fcount;
-
-			if (gpu_data.getAllocatedRays() > RAYS_TASK)
-			{
-				CTimer t;
-				t.Start();
-				GPU_RUN_TASKS();
-				gpu_data.ClearPool();
-				// clMsg("*** Ray Recvest processing: %u ms", t.GetElapsed_ms());
-			}
 		}
-		AditionalData("Current Height: %u | RayTraceGPU %llu ms", V, RayTracingTime / 1000);
 	}
 
-	GPU_RUN_TASKS();
+	// Остаток доработать 
+	gpu_data.ProcessReadyRays();
 
+
+	clMsg("*** Rays[%llu] | GPU:%llu |Rays:%llu|Copy:%llu|Col:%llu",
+		gpu_data.TotalRaysProcessed,
+		RayTracingTime / 1000,
+		gpu_data.StatsRaysAdd / 1000,
+		gpu_data.StatsCopyToVec / 1000,
+		gpu_data.StatsTotalGPUCopy / 1000
+	);
+
+	AditionalData("CUDA RayTrace( (GPU) code:%u, (CPU)copy:%u, (CPU)result:%u) | (CPU)Rays:%u| (CPU)Col: %u",
+		RayTracingTime / 1000,
+		RayTracingCopy / 1000,
+		RayTracingResults / 1000,
+		gpu_data.StatsRaysAdd / 1000,
+		// gpu_data.StatsCopyToVec / 1000, 
+		gpu_data.StatsTotalGPUCopy / 1000
+	);
+
+
+	// Apply Colors
+	for (auto& T : gpu_data.Colors)
+	{
+		u32 index = T.first;
+		int V = index / defl.Width();
+		int U = index % defl.Width();
+
+		u32 Fcount = FCountMap[index];
+		if (Fcount)
+		{
+			auto& C = T.second;
+			// Calculate lighting amount
+			C.scale(Fcount);
+			C.mul(.5f);
+			defl.Lumel(U, V)._set(C);
+			defl.Marker(U, V) = 255;
+		}
+		else
+		{
+			defl.Marker(U, V) = 0;
+		}
+	}
+	gpu_data.Colors.clear();
 }
 
 static xr_vector<u32> not_clear;

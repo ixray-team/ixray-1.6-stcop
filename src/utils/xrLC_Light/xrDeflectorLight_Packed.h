@@ -6,7 +6,7 @@
 #include "uv_tri.h"
 #include "R_light.h"
 
-enum LGroup
+enum LGroup : u8
 {
 	eSun = 1,
 	eHemi = 2,
@@ -14,66 +14,101 @@ enum LGroup
 };
 
 #pragma pack(push, 4)
-struct RayInfo
-{
-	// Stuff Parrams
-	LGroup   LGroup;
-	bool     isSunOrHemi;
-	u8		 LightType;
-
-	R_Light* L;
-	float    dotDirection;
-};
-
+// struct RayRequest
+// {
+// 	// Stuff Parrams
+// 	R_Light* L;
+// 	float    dotDirection;
+// 	// Ray Request
+// 	Fvector P;      // Начальная точка луча (аналог вашего `P`)
+// 	Fvector D;      // Направление луча (аналог `D`)
+// 	float R;        // Максимальная дистанция (аналог `R`)
+// 	float result;   // Результат трассировки (расстояние или -1)
+// 
+// 	LGroup   LightGroup;
+// 	bool	 isSunOrHemi;
+// 	u16		 LightType;
+// 	Face* skip;     // Полигон для игнорирования (аналог `skip`)
+// };
+// 
 struct RayRequest
-{
-	Fvector P;      // Начальная точка луча (аналог вашего `P`)
-	Fvector D;      // Направление луча (аналог `D`)
-	float R;        // Максимальная дистанция (аналог `R`)
-	float result;   // Результат трассировки (расстояние или -1)
-
-	Face* skip;     // Полигон для игнорирования (аналог `skip`)
+{	
+ 	// Ray Request
+	Fvector P;			// Начальная точка луча (аналог вашего `P`)
+	Fvector D;			// Направление луча (аналог `D`)
+	float R;			// Максимальная дистанция (аналог `R`)
+	float result;		// Результат трассировки (расстояние или -1)
+	Face*	 skip;      // Полигон для игнорирования (аналог `skip`)
 };
 #pragma pack(pop)
 
 
+// Initialize TASKS
+#define MAX_RAYS_PER_TASK   1024 * 1024 * 100 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
+// #define MAX_LIGTINGS 256
+
+// Recvest Class
 struct RayRecvestIndex
 {
 	base_color_c C;
 	u32 INDEX_TASK;
 	u32 SampleID;
 
-	u32 begin;
-	u32 end;
+	Fvector P;
+	Fvector N;
+	Face* skip;
+	u32 flags;
+	
 
-	xr_vector<RayInfo>			 reqInfo;
-	xr_vector<RayRequest>		 reqRays;
+//	u32 begin;
+//	u32 end;
+//	RayRequest		 reqRays[MAX_LIGTINGS];
+//	u32				 LightsUsed = 0;
 };
-typedef xr_vector<RayRecvestIndex> rays_tasked;
-
-
 
 class PackedLighting
 {
 public:
 	// Result Vector
-	xr_vector<RayRecvestIndex> task_pools;
- 	size_t AllocatedRays = 0;
- 	constexpr PackedLighting() = default;
+	size_t TotalRaysProcessed = 0;
+	xr_atomic_u32 IndexTask = 0;
+	RayRecvestIndex* task_pools;
+
+	PackedLighting()
+	{
+		task_pools = ( RayRecvestIndex * ) xr_malloc(MAX_RAYS_PER_TASK * sizeof(RayRecvestIndex) );
+		ClearPool();
+	};
+ 
 	~PackedLighting() 
 	{
 		ClearPool();
 	};
 
 public:
+	RayRecvestIndex& GetRays(int Index) { return task_pools[Index]; }
+	void ProcessReadyRays();
+
 	void LightPointPacked(u32 task_id, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 	void LightPointPackedRun();
-	void LightPointPackedApply();
-
+	// void LightPointPackedApply();
+  	
 	void ClearPool()
 	{ 
-		task_pools.clear();
-		AllocatedRays = 0; 
+		TotalRaysProcessed += AllocatedRays;
+ 		AllocatedRays = 0; 
+		IndexTask.store(0, std::memory_order_acquire);
 	}
-	size_t getAllocatedRays() { return AllocatedRays; }
+
+	xr_hash_map<u32, base_color_c> Colors;	// Task Index, Color.
+// 	xr_vector<RayRequest> rays_reqvested;
+
+	xr_atomic_u32 AllocatedRays = 0;
+	// size_t getAllocatedRays() { return AllocatedRays.load(std::memory_order_relaxed); }
+
+	// Stats 
+	CTimer tStats;
+	u64 StatsTotalGPUCopy = 0;
+	u64 StatsCopyToVec = 0;
+	u64 StatsRaysAdd = 0;
 };
