@@ -3,7 +3,7 @@
 #include "../../../xrCore/Collision/xrCDB.h"
 #include "xrFace.h"
  
-struct TriEmbree
+struct Triangle
 {
 	u32 point1, point2, point3;
  
@@ -29,7 +29,7 @@ struct IndexedTri
 	uint32_t i1, i2, i3;
 	uint32_t originalIndex;
 
-	IndexedTri(const TriEmbree& tri, uint32_t idx)		: originalIndex(idx)
+	IndexedTri(const Triangle& tri, uint32_t idx)		: originalIndex(idx)
 	{
 		// нормализуем пор€док вершин (сортировка трЄх чисел)
 		i1 = tri.point1;
@@ -57,11 +57,11 @@ struct IndexedTri
 struct TriangleContainer
 {
   	xr_vector<Fvector>		verts_v;
-	xr_vector<TriEmbree>	faces_v;
+	xr_vector<Triangle>		faces_v;
 	xr_vector<Face*>		dummy;
 
 	xr_vector<Fvector>& vertex() { return verts_v; }
-	xr_vector<TriEmbree>& faces() { return faces_v; }
+	xr_vector<Triangle>& faces() { return faces_v; }
 	u32 vertex_cnt() { return verts_v.size(); }
 	u32 faces_cnt() { return faces_v.size(); }
  	

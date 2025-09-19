@@ -38,7 +38,7 @@ public:
 	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
 
 	void					export_cform_rcast_new(xr_vector<FaceDataIntel>& faces);
-	
+	void					export_cform_game_new(xr_vector<FaceDataIntel>& faces);
 
 };
  
