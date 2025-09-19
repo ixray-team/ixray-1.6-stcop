@@ -392,6 +392,7 @@ void CRenderTarget::phase_combine()
 	{
 		PhaseGasmask();
 	}
+	PhaseRaindrops();
 
 	if (ps_r2_ls_flags_ext.test(R2FLAG_SPP_SATURATION)) {
 		GPU_EVENT(PhaseSaturation);

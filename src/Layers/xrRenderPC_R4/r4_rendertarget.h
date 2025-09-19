@@ -277,6 +277,7 @@ public:
 	void						PhaseAberration			();
 	void						PhaseVignette			();
 	void						PhaseSaturation			();
+	void						PhaseRaindrops();
 	void						PhaseGasmask			();
 	void						PhaseWinter				();
 
