@@ -1,12 +1,8 @@
-//---------------------------------------------------------------------------
+#pragma once
+#include "../../Public/VIMP_Processor.h"
 
-#ifndef ExportObjectOGFH
-#define ExportObjectOGFH
-
-#include "PropSlimTools.h"
-//---------------------------------------------------------------------------
 const int clpOGFMX = 48, clpOGFMY=16, clpOGFMZ=48;
-//---------------------------------------------------------------------------
+
 // refs
 class CEditableObject;
 class CEditableMesh;
@@ -181,5 +177,3 @@ public:
     bool    ExportAsSimple		(IWriter& F);
     bool	ExportAsWavefrontOBJ(IWriter& F, LPCSTR fn);
 };
-
-#endif
