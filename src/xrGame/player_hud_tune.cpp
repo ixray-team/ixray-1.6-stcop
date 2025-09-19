@@ -9,15 +9,14 @@
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/FDemoRecord.h"
 #include "../../xrUI/ui_base.h"
-#include "debug_renderer.h"
 
 u32 hud_adj_mode		= 0;
 u32 hud_adj_item_idx	= 0;
 bool hud_adj_crosshair  = false;
 // "press SHIFT+NUM 0-return 1-hud_pos 2-hud_rot 3-itm_pos 4-itm_rot 5-fire_point 6-fire_2_point 7-shell_point";
 
-float _delta_pos			= 0.0005f;
-float _delta_rot			= 0.05f;
+float _delta_pos = 0.0005f;
+float _delta_rot = 0.05f;
 
 bool is_attachable_item_tuning_mode()
 {
@@ -235,8 +234,8 @@ void player_hud::tune(Fvector _values)
 		if(idx)
 			_curr_dr	/= 20.0f;
 
-		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[0][idx];
-		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[1][idx];
+		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[0][idx];
+		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[1][idx];
 
 		if(hud_adj_mode==1)
 		{
@@ -244,6 +243,7 @@ void player_hud::tune(Fvector _values)
 			if(values.y)	diff.y = (values.y>0)?_delta_pos:-_delta_pos;
 			if(values.z)	diff.z = (values.z>0)?_delta_pos:-_delta_pos;
 
+			m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach_real[0].add(diff);
 			pos_.add		(diff);
 		}
 
@@ -253,6 +253,7 @@ void player_hud::tune(Fvector _values)
 			if(values.y)	diff.y = (values.y>0)?_curr_dr:-_curr_dr;
 			if(values.z)	diff.z = (values.z>0)?_curr_dr:-_curr_dr;
 
+			m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach_real[1].add(diff);
 			rot_.add		(diff);
 		}
 		if( (values.x)||(values.y)||(values.z) )

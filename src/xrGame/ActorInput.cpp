@@ -260,7 +260,10 @@ void CActor::IR_OnMouseWheel(int direction)
 
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
+	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		return;
+	}
 
 	if (Remote())
 		return;
@@ -295,7 +298,40 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
+	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_RIGHT))
+		{
+			g_player_hud->tune(Fvector().set(1, 0, 0));
+		}
+
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LEFT))
+		{
+			g_player_hud->tune(Fvector().set(-1, 0, 0));
+		}
+
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_UP))
+		{
+			g_player_hud->tune(Fvector().set(0, 1, 0));
+		}
+
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DOWN))
+		{
+			g_player_hud->tune(Fvector().set(0, -1, 0));
+		}
+
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_PAGEUP))
+		{
+			g_player_hud->tune(Fvector().set(0, 0, 1));
+		}
+
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_PAGEDOWN))
+		{
+			g_player_hud->tune(Fvector().set(0, 0, -1));
+		}
+
+		return;
+	}
 
 	if (Remote() || !g_Alive())					return;
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
