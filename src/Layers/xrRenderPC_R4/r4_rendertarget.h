@@ -40,6 +40,7 @@ public:
 
 	IBlender*					b_fxaa;
 	IBlender*					b_spp;
+	IBlender*					b_gasmask;
 	IBlender*					b_smaa;
 	IBlender*					b_scale;
 	IBlender*					b_cas;
@@ -116,6 +117,7 @@ public:
 	ref_texture					t_noise				[TEX_jitter_count];
 private:
 	ref_shader					s_spp;
+	ref_shader					s_gasmask;
 	ref_shader					s_fxaa;
 	ref_shader					s_smaa;
 	ref_shader					s_scale;
@@ -276,6 +278,7 @@ public:
 	void						PhaseAberration			();
 	void						PhaseVignette			();
 	void						PhaseSaturation			();
+	void						PhaseGasmask			();
 	void						PhaseWinter				();
 
 	void						phase_scene_forward		();
