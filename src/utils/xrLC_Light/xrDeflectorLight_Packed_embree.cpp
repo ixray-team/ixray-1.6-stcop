@@ -12,7 +12,9 @@ void copy_color(hardware_color& Chw, base_color_c& C)
 {
 	C.hemi = Chw.hemi;
 	C.sun = Chw.sun;
-	C.rgb = { Chw.rgb.x, Chw.rgb.y, Chw.rgb.z };
+
+	float3 temp_rgb = Chw.get_rgb_f32();
+	C.rgb.set(temp_rgb.x, temp_rgb.y, temp_rgb.z);
 };
 
 auto LightHW = [&](hardware_lighting& L)
@@ -146,9 +148,11 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 		C.hemi += att;
 		break;
 	case eRGB:
-		C.rgb.x += att * L.diffuse.x;
-		C.rgb.y += att * L.diffuse.y;
-		C.rgb.z += att * L.diffuse.z;
+		float3 rgb = C.get_rgb_f32();
+		rgb.x += att * L.diffuse.x;
+		rgb.y += att * L.diffuse.y;
+		rgb.z += att * L.diffuse.z;
+		C.set_rgb_f32(rgb.x, rgb.y, rgb.z);
 		break;
 	}
 };
