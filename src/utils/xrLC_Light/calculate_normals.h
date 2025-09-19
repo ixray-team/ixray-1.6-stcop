@@ -42,8 +42,7 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 		(*it)->flags.bSplitted	= true;
 		(*it)->CalcNormal		();
 	}
-
-
+	 
 	// remark:
 	//	we use Face's bSplitted value to indicate that face is processed
 	//  so bSplitted means bUsed
@@ -83,8 +82,6 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	}
 	Progress		( 1.f );
 
-	Status("vCountSize: %u", VCountAllocated);
-
 	// Destroy unused vertices
  	isolate_vertices<type_vertex>( FALSE, vertices);
 	  
@@ -92,7 +89,7 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )
 		(*it)->normalFromAdj	();
 
-	clMsg	("%d vertices was duplicated 'cause of SM groups",vertices.size()-Vcount);
+	// clMsg	("%d vertices was duplicated 'cause of SM groups",vertices.size()-Vcount);
 
 	// Clear temporary flag
 	for ( vecFaceIt it = faces.begin(); it!=faces.end(); it++ )
