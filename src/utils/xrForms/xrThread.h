@@ -33,6 +33,9 @@ class CThreadManager
 {
 	xr_vector<CThread*>	threads;
 public:
+
+	~CThreadManager();
+
 	void				start	(CThread*	T);
 	void				wait	(u32		sleep_time=1000);
 };
