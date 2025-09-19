@@ -40,8 +40,7 @@ typedef vec2Face::iterator			splitIt;
 typedef vecFace						vecAdj;
 typedef vecAdj::iterator			vecAdjIt;
 
-struct XRLC_LIGHT_API DataVertex :
-	public base_Vertex
+struct XRLC_LIGHT_API DataVertex :	public base_Vertex
 {
 public:
 	typedef DataFace DataFaceType;
@@ -52,8 +51,7 @@ public:
 	virtual ~DataVertex() {};
 };
 
-struct XRLC_LIGHT_API DataFace:
-	public base_Face
+struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
 

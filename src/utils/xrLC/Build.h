@@ -91,11 +91,17 @@ public:
 	void	BuildAdaptiveHT(); 
 	void	Light_prepare			();
 	void	Light					();
-	void	LMapsLocal				();
+ 
+
+	// Lmaps Processing 
+	void	ProcessLMAPS_CPU		();
+	void	LmapsStageGPU			(int Stage, bool isFirst, size_t Begin, size_t End);
 	void	LMaps					();
+
+
 	//void	Light_R2				();
 	void	LightVertex				();
-	void	xrPhase_MergeLM			();
+	void	xrPhase_MergeLM			(size_t start, size_t end);
 	void	xrPhase_SaveLmaps		();
 
 	void	xrPhase_MergeGeometry	();

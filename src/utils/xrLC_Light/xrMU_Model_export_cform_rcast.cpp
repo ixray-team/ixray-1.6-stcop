@@ -63,11 +63,9 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 	{
 		_face* F = (*it);
 		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
+		if (!SH.flags.bLIGHT_CastShadow) continue;
 
- 		F->flags.bProcessed = true;
-		Fvector					P[3];
+ 		Fvector					P[3];
 		xform.transform_tiny(P[0], F->v[0]->P);
 		xform.transform_tiny(P[1], F->v[1]->P);
 		xform.transform_tiny(P[2], F->v[2]->P);
