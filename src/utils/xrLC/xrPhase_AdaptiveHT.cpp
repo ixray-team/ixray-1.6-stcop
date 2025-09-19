@@ -97,7 +97,9 @@ void CBuild::xrPhase_AdaptiveHT	()
 	if (!lc_global_data()->GetSkipTesselate())
 	{
 		Status("Tesselating...");
-		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	{		// clear split flag from all faces + calculate normals
+		// clear split flag from all faces + calculate normals
+		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)
+		{
 			lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
 			lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
 			lc_global_data()->g_faces()[fit]->CalcNormal			();
@@ -127,29 +129,32 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Status("AdaptiveHT : Gathering lighting information...");
 		u_SmoothVertColors(5);
 
-
 		if (lc_global_data()->GetIsIntelUse())
+		{
 			EmbreeMain.IntelEmbereUNLOAD();
+		}
 	}
+#ifdef LCCUDA_BUILD
 	else
 	{
-		for (auto VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
+		for (size_t VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
 		{
 			// 1: VertexID, 2: SampleID
 			auto& V = lc_global_data()->g_vertices()[VertexID];
 			V->normalFromAdj();
-			GPUTaskinSystem.LightPointPacked(VertexID, 0, V->P, V->N, LP_dont_rgb + LP_dont_sun, 0);
+			GPUTaskinSystem.LightPointPacked((u32)VertexID, 0, V->P, V->N, LP_dont_rgb + LP_dont_sun, 0);
 		}
 
 		GPUTaskinSystem.LightPointPackedRun();
 
 		for (int Task = 0; Task < GPUTaskinSystem.IndexTask; Task++)
 		{
-			auto& TASK = GPUTaskinSystem.GetRays(Task);
+			RayRecvestIndex& TASK = GPUTaskinSystem.GetRays(Task);
 			TASK.C.mul(0.5f);
 			lc_global_data()->g_vertices()[TASK.INDEX_TASK.first]->C._set(TASK.C);
 		}
-	}  
+	}
+#endif
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
