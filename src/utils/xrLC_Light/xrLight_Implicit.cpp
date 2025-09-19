@@ -164,8 +164,6 @@ void ImplicitExecute::Execute()
 }
 
 #ifdef LCCUDA_BUILD
-#include "CUDA/CUDARayCast.h"
-
 extern u64 RayTracingTime;
 extern u64 RayTracingCopy;
 extern u64 RayTracingResults;
