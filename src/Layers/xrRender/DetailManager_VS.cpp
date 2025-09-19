@@ -72,7 +72,6 @@ void CDetailManager::hw_Load_Geom()
 	R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
 	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
 
-#endif	//	USE_DX11
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
 	// Fill VB
@@ -152,14 +151,17 @@ void CDetailManager::hw_Load_Geom()
 
 	// Declare geometry
 	hw_Geom.create		(dwDecl, hw_VB, hw_IB);
+#endif	//	USE_DX11
 }
 
 void CDetailManager::hw_Unload()
 {
 	// Destroy VS/VB/IB
+#ifndef USE_DX11	
 	hw_Geom.destroy				();
 	_RELEASE					(hw_IB);
 	_RELEASE					(hw_VB);
+#endif
 }
 
 #ifndef USE_DX11
