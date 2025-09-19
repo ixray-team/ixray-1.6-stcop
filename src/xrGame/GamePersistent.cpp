@@ -285,41 +285,46 @@ void CGamePersistent::WeathersUpdate()
 		VERIFY						(_env);
 
 		CEnvAmbient* env_amb		= _env->env_ambient;
-		if (env_amb) {
+		if (env_amb)
+		{
 			CEnvAmbient::SSndChannelVec& vec = env_amb->get_snd_channels();
 
 			auto I = vec.cbegin();
 			const auto E = vec.cend();
 			
-			for (size_t idx=0; I!=E; ++I,++idx) {
-				CEnvAmbient::SSndChannel& ch	= **I;
-				R_ASSERT						(idx<20);
-				if(ambient_sound_next_time[idx]==0)//first
+			for (size_t idx = 0; I != E; ++I, ++idx)
+			{
+				if (ambient_sound_next_time.empty())
+				{
+					break;
+				}
+
+				CEnvAmbient::SSndChannel& ch = **I;
+				if (ambient_sound_next_time[idx] == 0)
 				{
 					ambient_sound_next_time[idx] = Device.dwTimeGlobal + ch.get_rnd_sound_first_time();
-				}else
-				if(Device.dwTimeGlobal > ambient_sound_next_time[idx])
+				}
+				else if (Device.dwTimeGlobal > ambient_sound_next_time[idx])
 				{
 					ref_sound& snd = ch.get_rnd_sound();
 					if (!snd._p)
 						continue;
 
 					Fvector	pos;
-					float	angle		= ::Random.randF(PI_MUL_2);
-					pos.x				= _cos(angle);
-					pos.y				= 0;
-					pos.z				= _sin(angle);
-					pos.normalize		().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
-					pos.y				+= 10.f;
-					snd.play_at_pos		(0,pos);
+					float	angle = ::Random.randF(PI_MUL_2);
+					pos.x = _cos(angle);
+					pos.y = 0;
+					pos.z = _sin(angle);
+					pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
+					pos.y += 10.f;
+					snd.play_at_pos(0, pos);
 
 					if (!snd._handle() || Core.ParamsData.test(ECoreParams::nosound))
 						continue;
 
-					VERIFY							(snd._handle());
-					u32 _length_ms					= iFloor(snd.get_length_sec()*1000.0f);
-					ambient_sound_next_time[idx]	= Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
-//					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
+					VERIFY(snd._handle());
+					u32 _length_ms = iFloor(snd.get_length_sec() * 1000.0f);
+					ambient_sound_next_time[idx] = Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
 				}
 			}
 			// start effect
