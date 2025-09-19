@@ -412,8 +412,7 @@ float rayTraceOriginal(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& 
 }
 
 // Embree
-#include <../xrForms/CompilersUI.h>
-#include "../xrLC_Light/CUDA/CUDARayCast.h"
+
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 {
@@ -491,12 +490,8 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 				if (D <= 0)
 					return;
 
-				Fvector Psave = L.position;
-				L.position.mad(Fvector().random_dir(L.direction, PI_DIV_4), 0.05f);
 				float R = _sqrt(sqD);
 				float trace = rayTrace(DB, MDL, L, Pnew, Ldir, R, skip);
-				L.position = Psave;
-
 				att = powf(D, 0.125f) * L.energy * trace * (1 - R / L.range);
 				break;
 			}
