@@ -129,7 +129,7 @@ void	CBuild::LMaps					()
 
 		CTimer start_time; start_time.Start();
 
-		size_t SPLIT = 1024 * 1024;
+		size_t SPLIT = 1024 * 1024 * 2;
 		for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size();)
 		{
 			size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
@@ -155,26 +155,7 @@ void	CBuild::LMaps					()
 		clMsg("%f seconds", start_time.GetElapsed_sec());
 	}
 }
-  
-void CBuild::BuildAdaptiveHT()
-{
-	if (!gCompilerMode.LC_BackingDisabled)
-	{
-		//****************************************** HEMI-Tesselate
- 		Phase("Adaptive HT...");
-		xrPhase_AdaptiveHT();
-	}
-
-	// Building normals
-	Phase("Building normals...");
-	mem_Compact();
-	CalcNormals();
-
- 	// Phase("Building collision database (CFORM)...");
-	mem_Compact();
-	BuildCForm();
-}
-
+ 
 void CBuild::Light()
 {
  	//****************************************** Resolve materials
@@ -192,16 +173,6 @@ void CBuild::Light()
 	xrPhase_Subdivide();
 	lc_global_data()->vertices_isolate_and_pool_reload();
 	IsolateVertices(TRUE);
-
- 
-	// se7kills fixed All stage then Disable
-	if (!gCompilerMode.CUDA)
-	{
-		//****************************************** GLOBAL-RayCast model
-		Phase("Building rcast-CFORM model...");
-		Light_prepare();
-		BuildRapid(TRUE);
-	}
  
 	//****************************************** Implicit
 	Phase("LIGHT: Implicit...");
@@ -237,7 +208,7 @@ void CBuild::Light()
 	//****************************************** Destroy RCast-model
  	Phase("Destroying ray-trace model...");
  	lc_global_data()->destroy_rcmodel();
-	if (lc_global_data()->GetIsIntelUse())
+	if (gCompilerMode.Embree)
 		EmbreeMain.IntelEmbereUNLOAD();
 }
 
