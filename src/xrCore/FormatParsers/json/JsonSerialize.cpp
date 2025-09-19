@@ -16,6 +16,11 @@ CJsonSerializer::CJsonSerializer(shared_str FileName)
 
 CJsonSerializer::~CJsonSerializer()
 {
+	Save();
+}
+
+void CJsonSerializer::Save() const
+{
 	std::ofstream o(jfn);
 	o << JSONData;
 }
