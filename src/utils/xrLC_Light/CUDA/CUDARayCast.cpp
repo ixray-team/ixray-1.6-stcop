@@ -440,7 +440,7 @@ public:
 		// Синхронизируем только один раз
 		CUDA_CHECK(cudaStreamSynchronize(stream));
 
-		clMsg("*** GPU Stream Processing: %u ms | RaysTasks : %u ", t.GetElapsed_ms(), CurrentWritedRays);
+		// clMsg("*** GPU Stream Processing: %u ms | RaysTasks : %u ", t.GetElapsed_ms(), CurrentWritedRays);
 
 		// Копия цветов
 		auto copy_color = [&](hardware_color& Chw, base_color_c& C)
