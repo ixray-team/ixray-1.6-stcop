@@ -42,17 +42,12 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 		b_texture& T = globalData->textures()[M.surfidx];
  
 		bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
-		if (!isTransparent) {
-			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-		}
-		else
-		{
-			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-		}
-   	}
+		if (!isTransparent) 
+ 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+ 		else
+ 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+    }
 	
-	size_t Static = (GetHeapMemory() - Start);
-
 	// 2. Обрабатываем MU-референсы
 	for (auto ref : globalData->mu_refs())
 	{
@@ -67,21 +62,17 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
 			bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
 			if (!isTransparent) 
-			{
+  				geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+ 			else
  				geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
-			}
-			else
-			{
-				geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
-			}
-		}
+ 		}
 	}
 
-	clMsg("Processing Geometry: %u ms | Static: %u Memory: %u mb", t.GetElapsed_ms(), Static / 1024 / 1024, (GetHeapMemory() - Start) / 1024 / 1024);
+	clMsg("Processing Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
 
 	geometryBuilder.RemoveDublicates();
 
-	Phase("CUDA Building Accel BLAS");
+	Phase("CUDA Building RCastModel");
 
 	// 3. Строим BLAS
 	if (!geometryBuilder.BuildBLAS(context, outScene))
@@ -430,7 +421,7 @@ public:
 		{
 			base_color_c C;
 			copy_color(h_colors[it], C);
-			colors.push_back(C); 
+			colors.push_back(C);
 		}
 
 		// Чистим списки и результаты
@@ -447,9 +438,7 @@ void XRay::RayTrace::CUDA::RayTraceInitialize(base_lighting& L, u8 CurrentFlags)
 	if (!GPURayTracer.isInitialized)
  		GPURayTracer.Init(MAX_RAYS_PER_GPU);
  
-	GPURayTracer.current_flags = CurrentFlags;
-	// GPURayTracer.CurrentWritedRays = 0;
-	GPURayTracer.colors.clear();
+	GPURayTracer.current_flags = CurrentFlags; 
 }
 
 void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task, size_t index)
@@ -465,6 +454,8 @@ void XRay::RayTrace::CUDA::RayTraceRun(size_t max_rays)
 	if (!GPURayTracer.isInitialized)
  		GPURayTracer.Init(MAX_RAYS_PER_GPU);
  
+	// Чистим цвета 
+	GPURayTracer.colors.clear();
 	GPURayTracer.TraceRaysNew(max_rays);
 }
 
