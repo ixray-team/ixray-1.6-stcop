@@ -2,6 +2,7 @@
 #include "../../xrEngine/IGame_Persistent.h"
 
 bool UseGasmak = false;
+bool UseRainDrops = false;
 
 void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
 	u_setrt(rt_Generic_0, nullptr, nullptr, nullptr);
