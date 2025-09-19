@@ -242,7 +242,7 @@ void msimulator_CheckCollision(SCollisionData& cl)
 				// plane is embedded in ellipsoid / sphere
 				// find plane intersection point by shooting a ray from the 
 				// sphere intersection point along the planes normal.
-				bInsideTri = ETOOLS::TestRayTri2(sIPoint,T.N,T.p,distToPlaneIntersection);
+				bInsideTri = CDB::TestRayTri2(sIPoint,T.N,T.p,distToPlaneIntersection);
 				
 				// calculate plane intersection point
 				pIPoint.mad(sIPoint,T.N,distToPlaneIntersection);
@@ -250,7 +250,7 @@ void msimulator_CheckCollision(SCollisionData& cl)
 			else
 			{ 
 				// shoot ray along the velocity vector
-				bInsideTri = ETOOLS::TestRayTri2(sIPoint,normalizedVelocity,T.p,distToPlaneIntersection);
+				bInsideTri = CDB::TestRayTri2(sIPoint,normalizedVelocity,T.p,distToPlaneIntersection);
 				
 				// calculate plane intersection point
 				pIPoint.mad(sIPoint,normalizedVelocity,distToPlaneIntersection);
