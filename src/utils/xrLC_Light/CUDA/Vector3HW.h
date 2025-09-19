@@ -118,105 +118,120 @@ struct HardwareVector
 	}
 };
 
-
-class hardware_color
+struct hardware_color
 {
-public:
-	float3 rgb;   // - all static lighting
-	float hemi;   // - hemisphere
-	float sun;    // - sun
-	float _tmp_;  // ???
-
-	__device__
-		hardware_color()
+	union
 	{
-		rgb = make_float3(0.0f, 0.0f, 0.0f);
+		uint32_t rgba;
+		struct
+		{
+			uint8_t r, g, b, a;
+		};
+	};
+
+	float hemi;
+	float sun;
+	uint32_t _pad;
+
+	__device__ hardware_color()
+	{
+		rgba = 0;
 		hemi = 0.0f;
 		sun = 0.0f;
-		_tmp_ = 0.0f;
+		_pad = 0;
 	}
 
-	__device__
-	void mul(float s)
+	__device__ void set_rgb_f32(float x, float y, float z)
 	{
-		rgb.x *= s;
-		rgb.y *= s;
-		rgb.z *= s;
+		r = static_cast<uint8_t>(fminf(fmaxf(x * 255.0f, 0.0f), 255.0f));
+		g = static_cast<uint8_t>(fminf(fmaxf(y * 255.0f, 0.0f), 255.0f));
+		b = static_cast<uint8_t>(fminf(fmaxf(z * 255.0f, 0.0f), 255.0f));
+		a = 0;
+	}
+
+	__device__ float3 get_rgb_f32() const
+	{
+		return make_float3(r / 255.0f, g / 255.0f, b / 255.0f);
+	}
+
+	__device__ void mul(float s)
+	{
+		float3 rgb = get_rgb_f32();
+		set_rgb_f32(rgb.x * s, rgb.y * s, rgb.z * s);
+
 		hemi *= s;
 		sun *= s;
 	}
 
-	__device__
-		void add(float s)
+	__device__ void add(float s)
 	{
-		rgb.x += s;
-		rgb.y += s;
-		rgb.z += s;
+		float3 rgb = get_rgb_f32();
+		rgb = make_float3(rgb.x + s, rgb.y + s, rgb.z + s);
+		set_rgb_f32(rgb.x, rgb.y, rgb.z);
 
 		hemi += s;
 		sun += s;
 	}
 
-	__device__
-		void add(const hardware_color& s)
+	__device__ void add(const hardware_color& s)
 	{
-		rgb.x += s.rgb.x;
-		rgb.y += s.rgb.y;
-		rgb.z += s.rgb.z;
+		float3 rgb0 = get_rgb_f32();
+		float3 rgb1 = s.get_rgb_f32();
+		set_rgb_f32(rgb0.x + rgb1.x, rgb0.y + rgb1.y, rgb0.z + rgb1.z);
 
 		hemi += s.hemi;
 		sun += s.sun;
 	}
 
-	__device__
-		void scale(int samples)
+	__device__ void scale(int samples)
 	{
 		float inv = 1.0f / static_cast<float>(samples);
 		mul(inv);
 	}
 
-	__device__
-		void max(const hardware_color& s)
+	__device__ void max(const hardware_color& s)
 	{
-		rgb.x = fmaxf(rgb.x, s.rgb.x);
-		rgb.y = fmaxf(rgb.y, s.rgb.y);
-		rgb.z = fmaxf(rgb.z, s.rgb.z);
+		float3 rgb0 = get_rgb_f32();
+		float3 rgb1 = s.get_rgb_f32();
+		set_rgb_f32(fmaxf(rgb0.x, rgb1.x), fmaxf(rgb0.y, rgb1.y), fmaxf(rgb0.z, rgb1.z));
+
 		hemi = fmaxf(hemi, s.hemi);
 		sun = fmaxf(sun, s.sun);
 	}
 
-	__device__
-		void lerp(const hardware_color& A, const hardware_color& B, float s)
+	__device__ void lerp(const hardware_color& A, const hardware_color& B, float s)
 	{
 		float is = 1.0f - s;
-		rgb.x = A.rgb.x * is + B.rgb.x * s;
-		rgb.y = A.rgb.y * is + B.rgb.y * s;
- 		rgb.z = A.rgb.z * is + B.rgb.z * s;
+		float3 rgb;
+		rgb.x = A.r * is + B.r * s;
+		rgb.y = A.g * is + B.g * s;
+		rgb.z = A.b * is + B.b * s;
+		set_rgb_f32(rgb.x / 255.0f, rgb.y / 255.0f, rgb.z / 255.0f);
 
 		hemi = A.hemi * is + B.hemi * s;
 		sun = A.sun * is + B.sun * s;
 	}
 };
+
  
 struct hardware_lighting
 {
-	unsigned	short		type;				// Type of light source		
-	unsigned	short		light_type;			// RGB, SUN, HEMI
-	float3					diffuse;			// Diffuse color of light	
-	float3					position;			// Position in world space	
-	float3					direction;			// Direction in world space	
-	float					range;				// Cutoff range
-	float					range2;				// ^2
-	float					falloff;			// precalc to make light aqal to zero at light range
-	float					attenuation0;		// Constant attenuation		
-	float					attenuation1;		// Linear attenuation		
-	float					attenuation2;		// Quadratic attenuation	
-	float					energy;				// For radiosity ONLY
+	uint16_t type;				// Type of light source		
+	uint16_t light_type;		// RGB, SUN, HEMI
+	float3	 diffuse;			// Diffuse color of light	
+	float3	 position;			// Position in world space	
+	float3	 direction;			// Direction in world space	
+	float	 range;				// Cutoff range
+	float	 range2;			// ^2
+	float	 falloff;			// precalc to make light aqal to zero at light range
+	float	 attenuation0;		// Constant attenuation		
+	float	 attenuation1;		// Linear attenuation		
+	float	 attenuation2;		// Quadratic attenuation	
+	float	 energy;			// For radiosity ONLY
 };
 
 struct hardware_raytask 
 {
-	float3		   Position;
-	float3		   Direction;
- 
+	float3 Position;
+	float3 Direction;
 };
