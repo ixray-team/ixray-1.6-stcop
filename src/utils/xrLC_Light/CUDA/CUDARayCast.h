@@ -9,7 +9,8 @@
 #include <cuda_runtime.h>
 
 class PackedLighting;
- 
+  
+struct RayRecvestIndex;
 
 namespace XRay::RayTrace::CUDA
 {
@@ -47,15 +48,23 @@ namespace XRay::RayTrace::CUDA
         int surfidx; // Индекс текстуры
     };
      
+    // Builder Scene
 	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
-    void InitializeRayTracing();
-    float RayTraceWrapper
-    (
-        OptixTraversableHandle handle,
-        R_Light& L, Fvector& P, Fvector& D,
-        float R, Face* skip, const FaceData* d_faces, const MaterialData* d_materials, const TextureData* d_textures
-    );
+
+    // Textures (not used now)
     void InitializeTextures(xr_vector<TextureData>& gpuTextures, cudaTextureObject_t*& d_texObjects);
+
+    // RayTracing
+    void InitializeRayTracing();
  
-    void RayTracePackNew(PackedLighting& data_gpu, base_lighting& L);
+    // Ray Trace Call
+    // void RayTracePackNew(RayRecvestIndex* tasks, base_color_c* colors, u32 TaskPoolSize, u8 current_flags);
+
+    void RayTraceInitialize(base_lighting& L, u8 CurrentFlags);
+
+    void RayTraceAddRay(RayRecvestIndex& ray);
+    void RayTraceRun();
+
+    xr_vector<base_color_c>& RayTraceResult();
 }
+ 
