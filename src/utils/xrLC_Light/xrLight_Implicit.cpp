@@ -22,8 +22,7 @@ using Implicit_it = Implicit::iterator;
 #	include "CUDA/CUDARayCast.h"
 #endif
 
-class ImplicitThread :
-	public CThread
+class ImplicitThread : public CThread
 {
 public:
 
@@ -44,9 +43,11 @@ void ImplicitThread::Execute()
 }
 
 // 2 : Mainthread + UI thread
-ImplicitCalcGlobs cl_globs;
 int ThreadTaskID_Implication = 0;
 CTimer tImplicit;
+
+xrCriticalSection csLockImplicit;
+ImplicitCalcGlobs cl_globs;
 
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
@@ -63,10 +64,6 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 
 	tmanager.wait();
 }
-
-
-xrCriticalSection csLockImplicit;
-
 
 void ImplicitExecute::Execute()
 {
@@ -164,14 +161,8 @@ void ImplicitExecute::Execute()
 }
 
 #ifdef LCCUDA_BUILD
-extern u64 RayTracingTime;
-extern u64 RayTracingCopy;
-extern u64 RayTracingResults;
-
 void RunTaskGPU()
 {
-	RayTracingTime = RayTracingCopy = RayTracingResults = 0;
-
 	CTimer tStats;
 	tStats.Start();
 
@@ -190,10 +181,10 @@ void RunTaskGPU()
 	Fvector2* Jitter;
 	Jitter_Select(Jitter, Jcount);
 
-	xr_map<std::pair<u32, u32>, u32>	    FCountMap;
 
 	GPUTaskinSystem.RestartALL();
- 
+
+
 	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
 	GPUTaskinSystem.current_flags = flags;
 
@@ -239,7 +230,7 @@ void RunTaskGPU()
 			{
 				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 			}
-			FCountMap[{U, V}] = Fcount;
+			GPUTaskinSystem.FCountMap[{U, V}] = Fcount;
 		}
 	}
 
@@ -247,16 +238,13 @@ void RunTaskGPU()
 	GPUTaskinSystem.LightPointPackedRun();
 
 	CTimer tColors; tColors.Start();
-
- 	for (auto& T : GPUTaskinSystem.Colors)
+  	for (auto& T : GPUTaskinSystem.Colors)
 	{
 		auto UV = T.first;
 		int U = UV.first;
 		int V = UV.second;
 
-		// Msg("UV: %u, %u : ColorHemi: %f", U, V, T.second.hemi);
-
-		u32 Fcount = FCountMap[UV];
+		u32 Fcount = GPUTaskinSystem.FCountMap[UV];
 		if (Fcount)
 		{
 			auto& C = T.second;
@@ -271,30 +259,16 @@ void RunTaskGPU()
 			defl.Marker(U, V) = 0;
 		}
 	}
-	GPUTaskinSystem.Colors.clear();
-
-
-	clMsg("*** GPU: %llu | Rays:%llu| Copy:%llu| Col:%llu | LMAP: %u ms | total: %u ms",
-
-		// gpu_data.TotalRaysProcessed,
-		RayTracingTime / 1000,
-		GPUTaskinSystem.StatsRaysAdd / 1000,
-		GPUTaskinSystem.StatsCopyToVec / 1000,
-		GPUTaskinSystem.StatsTotalGPUCopy / 1000,
+ 
+	AditionalData("CPU Code: %u | GPU Code : (%u|RayTracing: %u) | Colors : %u | Total Code: %u",
+ 		GPUTaskinSystem.StatsRaysAdd / 1000,
+ 		GPUTaskinSystem.StatsTotalGPU / 1000,
+		GPUTaskinSystem.StatsTraverseGPU / 1000,
 		tColors.GetElapsed_ms(),
 		tStats.GetElapsed_ms()
 	);
-
-	AditionalData("CUDA( (GPU) code:%u, (CPU)copy:%u, (CPU)result:%u) | (CPU)Rays:%u| (CPU)Col: %u | Total : %u ms",
-		RayTracingTime / 1000,
-		RayTracingCopy / 1000,
-		RayTracingResults / 1000,
-		GPUTaskinSystem.StatsRaysAdd / 1000,
-		// GPUTaskinSystem.StatsCopyToVec / 1000, 
-		GPUTaskinSystem.StatsTotalGPUCopy / 1000,
-		tStats.GetElapsed_ms()
-	);
-
+	
+	GPUTaskinSystem.RestartALL();
 }
 #endif
 

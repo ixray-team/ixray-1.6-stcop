@@ -108,7 +108,7 @@ size_t GetHeapMemory()
 	static size_t last_update_memory = 0;
 	static CTimer tMemory;
 	// Не слишком часто обновляться
-	if (tMemory.GetElapsed_ms() < 2000)
+	if (tMemory.GetElapsed_ms() < 100)
 	{
 		return last_update_memory;
 	}
