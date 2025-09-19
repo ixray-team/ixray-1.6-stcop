@@ -51,6 +51,7 @@
 #include "player_hud.h"
 #include "CustomOutfit.h"
 #include "ActorBackpack.h"
+#include "Car.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -2452,4 +2453,14 @@ void CScriptGameObject::SetFire(bool value)
 	}
 
 	Msg("! SetFire(): pInventoryOwner is nullptr!");
+}
+
+
+bool CScriptGameObject::IsInCar()
+{
+	if (CActor* pActor = smart_cast<CActor*>(&object()))
+		return smart_cast<CCar*>(pActor->Holder());
+
+	Msg("! IsInCar(): method applicable only for actor!");
+	return false;
 }

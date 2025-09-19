@@ -988,7 +988,7 @@ public:
 	void SetFire(bool value);
 	bool GetAnimatorForceHideItems();
 	void SetAnimatorForceHideItems(bool status);
-
+	bool IsInCar();
 	void IterateFeelTouch(const luabind::functor<bool>& functor);
 			bool IsActorLadder() const;
 	doors::door*				m_door;
