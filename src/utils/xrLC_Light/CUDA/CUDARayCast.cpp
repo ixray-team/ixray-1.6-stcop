@@ -20,13 +20,19 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
 	OptixGeometryBuilder geometryBuilder;
  	// 1. Обрабатываем статическую геометрию
+
+	Phase("CUDA Get LC Faces");
+
 	Status("Build BLAS...");
 
 	CTimer t;
 	t.Start();
 
 	size_t Start = GetHeapMemory();
-  
+ 
+	clMsg("Processing Memory: %u mb", Start / 1024 / 1024);
+	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+
 	for (Face* F : globalData->g_faces())
 	{
  		const Shader_xrLC& SH = F->Shader();
@@ -34,7 +40,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
 		b_material& M = globalData->materials()[F->dwMaterial];
 		b_texture& T = globalData->textures()[M.surfidx];
-
+ 
 		bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
 		if (!isTransparent) {
 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
@@ -44,9 +50,8 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 		}
    	}
-
-	clMsg("Processing STATIC-Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
-
+	
+	size_t Static = (GetHeapMemory() - Start);
 
 	// 2. Обрабатываем MU-референсы
 	for (auto ref : globalData->mu_refs())
@@ -72,17 +77,29 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 		}
 	}
 
-	clMsg("Processing MU-Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
- 
+	clMsg("Processing Geometry: %u ms | Static: %u Memory: %u mb", t.GetElapsed_ms(), Static / 1024 / 1024, (GetHeapMemory() - Start) / 1024 / 1024);
+
+	geometryBuilder.RemoveDublicates();
+
+	Phase("CUDA Building Accel BLAS");
+
 	// 3. Строим BLAS
 	if (!geometryBuilder.BuildBLAS(context, outScene))
  		return false;
 
-	// 4. Строим TLAS
+
+ 	// // 4. Строим TLAS
 	if (!geometryBuilder.BuildTLAS(context, outScene, stream))
 		return false;
 
-	clMsg("[GPU] Stage acceleration data build : % u ms | Memory : % u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
+	geometryBuilder.Clear();
+	geometryBuilder.MemoryDealoc();
+
+	clMsg("Processing Faces: %u, Vertex: %u", geometryBuilder.triangles.size(), geometryBuilder.vertices.size());
+	
+	
+	clMsg("[GPU] Stage acceleration data build : % u ms | Memory in CPU (no cleared): % u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
+
 	return true;
 }
 
@@ -117,6 +134,8 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
+
+	clMsg("Processing Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 }
 
 // При завершении работы
@@ -284,9 +303,7 @@ public:
 		u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
  		
 		// Заполняем буфер Источников света
-		//h_lights = new hardware_lighting[numLights];
-
-		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(hardware_lighting)));
+ 		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(hardware_lighting)));
 
 		int INDEX_LIGHT = 0;
 		for (auto& RGB : Lights.rgb)

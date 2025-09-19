@@ -260,13 +260,13 @@ IC bool	sort_defl_complex(CDeflector* D1, CDeflector* D2)
 
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) return TRUE; }; if (D->bMerged) { D->bMerged = FALSE; return TRUE; } else return FALSE; }; };
  
-void CBuild::xrPhase_MergeLM()
+void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 {
 	vecDefl			Layer;
 
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
-	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
+	for (u32 it = begin; it < end; it++)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[it];
 		if (D->bMerged)		continue;
@@ -279,8 +279,7 @@ void CBuild::xrPhase_MergeLM()
 	u32 TotalMerged = 0;
   
 	Phase("Building lightmaps...");
-
-	setLMSIZE(gCompilerMode.LC_sizeLmaps);
+ 	setLMSIZE(gCompilerMode.LC_sizeLmaps);
 
 	while (Layer.size())
 	{
@@ -313,11 +312,12 @@ void CBuild::xrPhase_MergeLM()
 			placer_perpixel._InitSurface_tbb();
 			CLightmap* lmap = new CLightmap();
 			lc_global_data()->lightmaps().push_back(lmap);
-			TotalMerged += MergeLmap_Compact(Layer, lmap);
+			
+			// Collect All to map
+			TotalMerged		+= MergeLmap_Compact(Layer, lmap);
 		}
   
-
-		AditionalData("Merging:[%u/%u]", TotalMerged, StartSize);
+ 		AditionalData("Merging:[%u/%u]", TotalMerged, StartSize);
 		Progress(float(TotalMerged / float(StartSize)));
 
 		// Remove merged lightmaps
@@ -326,6 +326,21 @@ void CBuild::xrPhase_MergeLM()
 		Layer.erase(last, Layer.end());
 	}
 		 
+	u64 size_of_defl = 0;
+	for (auto i = begin; i < end; i++)
+	{
+		auto D = lc_global_data()->g_deflectors()[i];
+		size_of_defl += D->size_of_lm();
+	}
+	size_of_defl /= 1024 * 1024;
+	clMsg("%d deflectors lightmap: %u mb", size_of_defl);
+
+	for (auto i = begin; i < end; i++)
+	{
+		auto D = lc_global_data()->g_deflectors()[i];
+		D->layer.clear_memory();
+	}
+
  	clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
 }
  

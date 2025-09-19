@@ -41,7 +41,8 @@ void CBuild::xrPhase_Subdivide()
 			continue;
 		}
 		Progress			(float(X)/float(g_XSplit.size()));
-		
+		AditionalData("Splitting: %u | %u", X, g_XSplit.size());
+
 		// skip if subdivision is too small already
 		if (int(g_XSplit[X]->size())<(c_SS_LowVertLimit*2))	continue;
 		
