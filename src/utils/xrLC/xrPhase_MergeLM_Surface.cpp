@@ -1,7 +1,6 @@
 #include "stdafx.h" 
 #include "xrPhase_MergeLM_Surface.h"
-#include <immintrin.h>
-#include <intrin.h>
+#include "../xrForms/CompilersUI.h"
 
 extern float MAX_GRID_SPACE_WRITE  = 0.95f;	// 90% НАПОЛНЕНИЯ LMAP
 // Surfaces
@@ -28,7 +27,7 @@ void SurfacePlacePerpixel::RecalcY()
 void SurfacePlacePerpixel::_InitSurface_tbb()
 {
 	StartYPos   = 0;
-	SurfaceGrid = getLMSIZE();
+	SurfaceGrid = gCompilerMode.LC_sizeLmaps;
 	surface_tbb = xr_alloc<u8>(SurfaceGrid * SurfaceGrid);
 	FillMemory(surface_tbb, SurfaceGrid * SurfaceGrid, 0);
 

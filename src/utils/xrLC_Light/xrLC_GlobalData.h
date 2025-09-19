@@ -7,6 +7,7 @@
 #include "b_build_texture.h"
 #include "base_lighting.h"
 #include "../../Include/Editors/communicate.h"
+#include "../xrForms/CompilersUI.h"
 
 namespace CDB{
 class MODEL;
@@ -18,19 +19,17 @@ class xrMU_Reference;
 class base_Vertex;
 class base_Face;
 
-struct	compilers_global_data
+struct compilers_global_data
 {
-		xr_vector<b_BuildTexture>		_textures;
-		xr_vector<b_material>			_materials;
-		Shader_xrLC_LIB					_shaders;
-		b_params						_g_params;
-		base_lighting					_L_static;
-		CDB::MODEL*						_RCAST_Model;
+	xr_vector<b_BuildTexture>		_textures;
+	xr_vector<b_material>			_materials;
+	Shader_xrLC_LIB					_shaders;
+	b_params						_g_params;
+	base_lighting					_L_static;
+	CDB::MODEL* _RCAST_Model;
 };
 
-extern XRLC_LIGHT_API void		setLMSIZE(int size);
-
-class	XRLC_LIGHT_API xrLC_GlobalData
+class XRLC_LIGHT_API xrLC_GlobalData
 {
 
 	compilers_global_data			_cl_globs;
@@ -45,8 +44,6 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 	vecFace							_g_faces;
 	vecDefl							_g_deflectors;
 
-
-	bool							_b_nosun;
 	bool							_gl_linear;
  	bool							_b_skipWeld;
 	bool							_b_use_lmaps_build_alt;
@@ -60,12 +57,12 @@ private:
 	bool _OverrideSettings;
 
 private:
-	bool							b_vert_not_register;
-public:
+	bool b_vert_not_register;
 
 public:
-	xrLC_GlobalData();//:_RCAST_Model (0), _b_nosun(false),_gl_linear(false){}
+	xrLC_GlobalData();
 	~xrLC_GlobalData();
+
 	IC xr_vector<b_BuildTexture>& textures() { return _cl_globs._textures; }
 	IC xr_vector<CLightmap*>& lightmaps() { return _g_lightmaps; }
 	IC xr_vector<b_material>& materials() { return _cl_globs._materials; }
@@ -108,9 +105,7 @@ public:
 	bool GetSkipTHM() { return SkipThm; };
 	void SetSkipTHM(bool v) { SkipThm = v; };
 
-		bool						b_nosun			()		{	return _b_nosun; }
 		bool						gl_linear		()		{	return _gl_linear; }
-IC		void						b_nosun_set		(bool v){	_b_nosun = v; }
 		void						initialize		()		;
 		void						destroy_rcmodel	()		;
 
@@ -149,9 +144,6 @@ public:
 	bool GetSkipWeld() { return _b_skipWeld; }
 	void SetSkipWeld(bool value) { _b_skipWeld = value; }
 
-	
-	void SetLmapsSize(u32 size) { setLMSIZE(size); }
-
 	void SetJitterMU(u32 size) { JSampleMU = size; }
 	u32 GetJitterMU() { return JSampleMU; }
 
@@ -160,8 +152,6 @@ public:
 
 	bool GetOverrideSettings() 
 	{  return _OverrideSettings; }
-
-
 };
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();

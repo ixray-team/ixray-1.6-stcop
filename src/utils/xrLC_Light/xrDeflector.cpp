@@ -334,8 +334,8 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<= (getLMSIZE() - 2 * BORDER));
-		R_ASSERT		(lm.height	<= (getLMSIZE() - 2 * BORDER));
+		R_ASSERT		(lm.width	<= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
+		R_ASSERT		(lm.height	<= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
   		lm.create		(lm.width, lm.height);
 		L_Direct		(DB,LightsSelected,H);
 	} catch (...)
@@ -400,18 +400,4 @@ void DeflectorsStats ()
 	clMsg( "num deflectors: %d", size);
 	for( u32 i = 0; i <size ; i++ )
 			DumpDeflctor( i ); 
-}
- 
-
-extern XRLC_LIGHT_API int global_size_map = 1024;
-
-
-void setLMSIZE(int size)
-{
-	global_size_map = size;
-}
-
-u32 getLMSIZE()
-{
-	return global_size_map;
 }
