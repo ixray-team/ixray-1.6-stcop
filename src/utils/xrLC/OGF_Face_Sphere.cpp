@@ -67,53 +67,25 @@ void OGF_Base::CalcBounds(bool useProgressBar)
 	xr_vector<Fvector> V;
 	V.clear();
 	V.reserve(4096);
-  
-  	GetGeometry(V);
+   	GetGeometry(V);
  
 	//se7kills (Merging Problems Need fix this)	 
-	// 1: calc first variation
-	//Fsphere	S1;
-	//Fsphere_compute(S1,&*V.begin(),(u32)V.size());
-	// 2: calc ordinary algorithm (2nd)
  	Fsphere	S2 = CalculateSphere(V, bbox);
-	// 3: calc magic-fm
  	Fsphere S3 = CalculateMagic(V);
 
 	//BOOL B1 = SphereValid(V, S1);
 	BOOL B2 = SphereValid(V, S2);
 	BOOL B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
 
-	
-	//if (useProgressBar)
-	//	Msg("  S2: %f, S3: %f",  S2.R, S3.R);
-
-	// select best one
-	//if (B1 && (S1.R<S2.R))
-	//{
-	//	// miniball or FM
-	//	if (B3 && (S3.R<S1.R))
-	//	{
-	//		// FM wins
-	//		C.set	(S3.P);
-	//		R	=	S3.R;
-	//	} else {
-	//		// MiniBall wins
-	//		C.set	(S1.P);
-	//		R	=	S1.R;
-	//	}
-	//}
-	//else 
+	// base or FM
+	if (B3 && (S3.R<S2.R))
 	{
-		// base or FM
-		if (B3 && (S3.R<S2.R))
-		{
-			// FM wins
-			C.set	(S3.P);
-			R	=	S3.R;
-		} else {
-			// Base wins :)
-			C.set	(S2.P);
-			R	=	S2.R;
-		}
+		// FM wins
+		C.set	(S3.P);
+		R	=	S3.R;
+	} else {
+		// Base wins :)
+		C.set	(S2.P);
+		R	=	S2.R;
 	}
 }
