@@ -4,200 +4,179 @@
 #include "../xrLC_Light/xrFace.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 
-extern void		Detach		(vecFace* S);
+extern void Detach(vecFace* S);
 
-void	setup_bbs	(Fbox& b1, Fbox& b2, Fbox& bb,int edge)	{
-	Fvector	size;
-	b1.set	(bb);	b2.set(bb);
-	size.sub(bb.max,bb.min);
-	switch	(edge)	{
-		case 0:
-			b1.max.x -= size.x/2;
-			b2.min.x += size.x/2;
-			break;
-		case 1:
-			b1.max.y -= size.y/2;
-			b2.min.y += size.y/2;
-			break;
-		case 2:
-			b1.max.z -= size.z/2;
-			b2.min.z += size.z/2;
-			break;
-	}
-};
+namespace
+{
+    void setup_bbs(Fbox& b1, Fbox& b2, const Fbox& bb, int edge)
+    {
+        Fvector size;
+        size.sub(bb.max, bb.min);
+
+        b1 = bb;
+        b2 = bb;
+
+        switch (edge)
+        {
+        case 0: b1.max.x -= size.x / 2; b2.min.x += size.x / 2; break;
+        case 1: b1.max.y -= size.y / 2; b2.min.y += size.y / 2; break;
+        case 2: b1.max.z -= size.z / 2; b2.min.z += size.z / 2; break;
+        }
+    }
+
+    bool should_split(const vecFace& faces, const Fbox& bb)
+    {
+        if ((int)faces.size() < c_SS_LowVertLimit * 2)
+            return false;
+
+        Fvector size;
+        size.sub(bb.max, bb.min);
+
+        if (size.x > c_SS_maxsize || size.y > c_SS_maxsize || size.z > c_SS_maxsize)
+            return true;
+
+        if ((int)faces.size() > c_SS_HighVertLimit)
+            return true;
+
+        auto* defl = (CDeflector*)faces.front()->pDeflector;
+        if (defl)
+        {
+            if (defl->layer.width >= (getLMSIZE() - 2 * BORDER) ||
+                defl->layer.height >= (getLMSIZE() - 2 * BORDER))
+            {
+                clMsg("Split: Deflector size %u x %u exceeds limits",
+                    defl->layer.width, defl->layer.height);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int select_longest_axis(const Fvector& size)
+    {
+        if (size.x >= size.y && size.x >= size.z) return 0;
+        if (size.y >= size.x && size.y >= size.z) return 1;
+        return 2;
+    }
+
+    void split_faces(const vecFace& source, const Fbox& b1, vecFace& out1, vecFace& out2)
+    {
+        out1.clear();
+        out2.clear();
+        out1.reserve(source.size());
+        out2.reserve(source.size());
+
+        for (auto* face : source)
+        {
+            Fvector center;
+            face->CalcCenter(center);
+            (b1.contains(center) ? out1 : out2).push_back(face);
+        }
+    }
+
+    void create_deflectors(vecFace& s1, vecFace& s2)
+    {
+        auto& deflectors = lc_global_data()->g_deflectors();
+
+        auto make_deflector = [&](vecFace& faces)
+            {
+                CDeflector* D = new CDeflector();
+                D->OA_Place(faces);
+                D->OA_Export();
+                deflectors.push_back(D);
+            };
+
+        make_deflector(s1);
+        make_deflector(s2);
+    }
+
+    void remove_deflector(CDeflector* defl)
+    {
+        auto& deflectors = lc_global_data()->g_deflectors();
+        auto it = std::find(deflectors.begin(), deflectors.end(), defl);
+        if (it != deflectors.end())
+        {
+            xr_delete(*it);
+            deflectors.erase(it);
+        }
+    }
+}
 
 void CBuild::xrPhase_Subdivide()
 {
-	Status	("Subdividing in space...");
-	vecFace s1, s2;
-	Fbox	b1, b2;
-	for (int X=0; X<int(g_XSplit.size()); X++)
-	{
-		if (g_XSplit[X]->empty()) 
-		{
-			xr_delete		(g_XSplit[X]);
-			g_XSplit.erase	(g_XSplit.begin()+X);
-			X--;
-			continue;
-		}
-		Progress			(float(X)/float(g_XSplit.size()));
-		AditionalData("Splitting: %u | %u", X, g_XSplit.size());
+    Status("Subdividing in space...");
 
-		// skip if subdivision is too small already
-		if (int(g_XSplit[X]->size())<(c_SS_LowVertLimit*2))	continue;
-		
-		// calc bounding box
-		Fbox	bb;
-		Fvector size;
-		
-		bb.invalidate();
-		for (vecFaceIt F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
-		{
-			Face *XF = *F;
-			bb.modify(XF->v[0]->P);
-			bb.modify(XF->v[1]->P);
-			bb.modify(XF->v[2]->P);
-		}
-		
-		// analyze if we need to split
-		size.sub(bb.max,bb.min);
-		BOOL	bSplit	= FALSE;
-		if  	(size.x>c_SS_maxsize)					bSplit	= TRUE;
-		if		(size.y>c_SS_maxsize)					bSplit	= TRUE;
-		if		(size.z>c_SS_maxsize)					bSplit	= TRUE;
-		if		(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit	= TRUE;
-		CDeflector*	defl_base	= (CDeflector*)g_XSplit[X]->front()->pDeflector;
-		if		(!bSplit && defl_base)
-		{
-			if (defl_base->layer.width >= (getLMSIZE() - 2 * BORDER))
- 				bSplit = TRUE;
- 			if (defl_base->layer.height >=	(getLMSIZE() - 2 * BORDER))
-				bSplit	= TRUE;
+    for (size_t X = 0; X < g_XSplit.size();)
+    {
+        auto& faces = *g_XSplit[X];
 
-			if (bSplit)
-			{
-				clMsg("Split[%u] is Size(%u, %u) set to split", X, defl_base->layer.width, defl_base->layer.height);
-			}
-		}
+        if (faces.empty())
+        {
+            xr_delete(g_XSplit[X]);
+            g_XSplit.erase(g_XSplit.begin() + X);
+            continue;
+        }
 
-		// perform subdivide if needed
-		if (!bSplit)	continue;
-		
-		// select longest BBox edge
-		int		box_edge			= -1;	
-		if (size.x>=size.y && size.x>=size.z) {
-			box_edge	= 0;
-		} else {
-			if (size.y>=size.x && size.y>=size.z) {
-				box_edge	= 1;
-			} else {
-				box_edge	= 2;
-			}
-		}
-		setup_bbs	(b1,b2,bb,box_edge);
+        Progress(float(X) / g_XSplit.size());
+        AditionalData("Splitting: %u | %u", X, g_XSplit.size());
 
-		// align plane onto vertices
-		
-		// Process all faces and rearrange them
-		u32		iteration_on_edge	= 0	;	// up to 3
-		u32		iteration_per_edge	= 0	;	// up to 10
-resplit:
-		s2.clear	();
-		s1.clear	();
-		iteration_per_edge		++	;
-		for (vecFaceIt F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
-		{
-			Face *XF = *F;
-			Fvector C;
-			XF->CalcCenter(C);
-			if (b1.contains(C))	{ s1.push_back(XF); }
-			else				{ s2.push_back(XF); }
-		}
-		
-		if ((int(s1.size())<c_SS_LowVertLimit) || (int(s2.size())<c_SS_LowVertLimit))
-		{
-			// splitting failed
-			// clMsg	("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d",X,g_XSplit[X]->size(),s1.size(),s2.size());
-			if (iteration_per_edge<10)	{
-				if		(g_XSplit[X]->size() > c_SS_LowVertLimit*4)		
-				{
-					if (s2.size()>s1.size())	
-					{	//b2 -less, b1-grow
-						size.sub	(b2.max,b2.min);
-						b1.max[box_edge]	+= size[box_edge]/2;
-						b2.min[box_edge]	=  b1.max[box_edge];
-					} else {
-						//b2 -grow, b1-less
-						size.sub	(b1.max,b1.min);
-						b2.min[box_edge]	-= size[box_edge]/2;
-						b1.max[box_edge]	=  b2.min[box_edge];
-					}
-					goto		resplit;
-				}
-			} else {
-				// switch edge
-				iteration_per_edge	= 0	;
-				iteration_on_edge	++	;
-				if (iteration_on_edge<3)	{
-					box_edge		= (box_edge+1)%3;
-					setup_bbs		(b1,b2,bb,box_edge);
-					goto		resplit;
-				}
-			}
-		} 
-		else
-		{
-			// split deflector into TWO
-			if (defl_base)	
-			{
-				// _delete old deflector
-				for (u32 it=0; it<lc_global_data()->g_deflectors().size(); it++)
-				{
-					if (lc_global_data()->g_deflectors()[it]==defl_base)	
-					{
-						lc_global_data()->g_deflectors().erase	(lc_global_data()->g_deflectors().begin()+it);
-						xr_delete			(defl_base);
-						break;
-					}
-				}
-				
-				// Create _new deflectors
-				CDeflector*		D1	= new CDeflector(); 
-				//Deflector = D1;
-				D1->OA_Place(s1); 
-				D1->OA_Export();
-				lc_global_data()->g_deflectors().push_back(D1);
+        // Bounding box
+        Fbox bb;
+        bb.invalidate();
+        for (auto* f : faces)
+        {
+            bb.modify(f->v[0]->P);
+            bb.modify(f->v[1]->P);
+            bb.modify(f->v[2]->P);
+        }
 
-				
-				CDeflector*		D2	= new CDeflector(); 
-				//Deflector		= D2;
-				D2->OA_Place(s2); 
-				D2->OA_Export(); 
-				lc_global_data()->g_deflectors().push_back(D2);
-			}
-			
-			// Delete old SPLIT and push two new
-			xr_delete				(g_XSplit[X]);
-			g_XSplit.erase			(g_XSplit.begin()+X); X--;
-			g_XSplit.push_back		(new vecFace(s1));	Detach(&s1);
-			g_XSplit.push_back		(new vecFace(s2));	Detach(&s2);
-		}
-		s1.clear	();
-		s2.clear	();
-	}
-	clMsg("%d subdivisions.",g_XSplit.size());
-	validate_splits	();
+        if (!should_split(faces, bb))
+        {
+            ++X;
+            continue;
+        }
 
+        // Longest axis split
+        Fvector size;
+        size.sub(bb.max, bb.min);
+        int axis = select_longest_axis(size);
 
-	// Checking Deflectors Size
+        Fbox b1, b2;
+        setup_bbs(b1, b2, bb, axis);
 
-	size_t AllocatedDeflectors = 0;
+        vecFace s1, s2;
+        split_faces(faces, b1, s1, s2);
 
-	for (auto D : lc_global_data()->g_deflectors())
-	{
-		AllocatedDeflectors += D->size_deflector();
-	}
+        // If split failed, skip
+        if (s1.size() < c_SS_LowVertLimit || s2.size() < c_SS_LowVertLimit)
+        {
+            ++X;
+            continue;
+        }
 
-	AllocatedDeflectors /= (1024 * 1024); // MB
-	AditionalData("Splits: %u | DeflectorsAlloc: %u mb", g_XSplit.size(), AllocatedDeflectors);
+        // Split deflector
+        if (auto* defl_base = (CDeflector*)faces.front()->pDeflector)
+        {
+            remove_deflector(defl_base);
+            create_deflectors(s1, s2);
+        }
+
+        // Replace with two splits
+        xr_delete(g_XSplit[X]);
+        g_XSplit.erase(g_XSplit.begin() + X);
+        g_XSplit.push_back(new vecFace(std::move(s1)));
+        g_XSplit.push_back(new vecFace(std::move(s2)));
+        Detach(&s1);
+        Detach(&s2);
+    }
+
+    clMsg("%d subdivisions.", g_XSplit.size());
+    validate_splits();
+
+    size_t allocated = 0;
+    for (auto* D : lc_global_data()->g_deflectors())
+        allocated += D->size_deflector();
+
+    allocated /= (1024 * 1024);
+    AditionalData("Splits: %u | DeflectorsAlloc: %u mb", g_XSplit.size(), allocated);
 }
