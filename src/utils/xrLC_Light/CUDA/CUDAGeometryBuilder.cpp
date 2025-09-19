@@ -1,39 +1,15 @@
 #include "stdafx.h"
 #include "CUDAGeometryBuilder.h"
+#include "../../xrLC/Build.h"
 
-u32 OptixGeometryBuilder::AddVertex(const Fvector& v)
-{
-    u32 ix = iFloor(v.x);
-    u32 iy = iFloor(v.y);
-    u32 iz = iFloor(v.z);
-
-    // Generate hash key
-    size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
-    auto itHash = hash_vertices.find(hashKey);
-    if (itHash != hash_vertices.end())
-    {
-        Vertex* parsed = nullptr;
-        for (auto& vertex : itHash->second)
-        {
-            if (vertex.Vertex.similar(v, 0.001f))
-                return vertex.verID; // Нашли похожую вершину
-        }
-    }
- 
-    vertices.push_back(v);
-    u32 VertexID = vertices.size() - 1;
-
-    VertexData new_vertex;
-    new_vertex.Vertex = vertices.back();
-    new_vertex.verID = VertexID;
-    hash_vertices[hashKey].push_back(new_vertex);
-
-    return VertexID;
-}
 
 bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
+
+    CTimer tStats; tStats.Start();
+
+    clMsg("[GPU] Start build BLAS: Memory : % u mb", GetHeapMemory() / 1024 / 1024);
 
     // 1. Загружаем вершины на GPU
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.vertexBuffer),
@@ -55,10 +31,10 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
     OptixBuildInput buildInput = {};
     buildInput.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
 
-    buildInput.triangleArray.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
+    buildInput.triangleArray.vertexFormat        = OPTIX_VERTEX_FORMAT_FLOAT3;
     buildInput.triangleArray.vertexStrideInBytes = sizeof(Fvector);
-    buildInput.triangleArray.numVertices = static_cast<uint32_t>(vertices.size());
-    buildInput.triangleArray.vertexBuffers = &outBuffers.vertexBuffer;
+    buildInput.triangleArray.numVertices         = static_cast<uint32_t>(vertices.size());
+    buildInput.triangleArray.vertexBuffers       = &outBuffers.vertexBuffer;
 
     buildInput.triangleArray.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
     buildInput.triangleArray.indexStrideInBytes = sizeof(CDB::TRI);
@@ -93,6 +69,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
 
 
     // 7. Сборка BLAS
+
     OPTIX_CHECK(
     optixAccelBuild
     (
@@ -110,6 +87,9 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
         1
     )
     );
+
+    clMsg("[GPU] Optix Accel Builded: Memory : % u mb", GetHeapMemory() / 1024 / 1024);
+
 
     // 8. Узнаём размер скомпактированной структуры
     uint64_t compactedSize = 0;
@@ -153,6 +133,8 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
             bufferSizes.outputSizeInBytes / 1024 / 1024
          );
     }
+
+    clMsg("[GPU] Build BLAS ended: Memory : % u mb | time: %u ms", GetHeapMemory() / 1024 / 1024, tStats);
 
 
     // 11. Освобождаем временный буфер
