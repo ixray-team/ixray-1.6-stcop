@@ -143,15 +143,4 @@ void CBuild::PreOptimize()
 void CBuild::IsolateVertices	(BOOL bProgress)
 {
 	isolate_vertices<Vertex>( bProgress, lc_global_data()->g_vertices() );
- 
-    size_t RealSize  = 0;
-    size_t AllocSize = 0;
-
-    for (auto K : lc_global_data()->mu_refs())
-    {
-        RealSize += K->model->m_vertices.size();
-        AllocSize += K->model->m_vertices.capacity();
-    }
- 
-    Status("RealSize: %u/%u", RealSize, AllocSize);
 }
