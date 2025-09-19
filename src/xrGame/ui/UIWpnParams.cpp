@@ -253,6 +253,10 @@ bool CUIWpnParams::Check(CInventoryItem& wpn_section)
 	LPCSTR wpn_sect = wpn_section.object().cNameSect().c_str();
 	if (pSettings->line_exist(wpn_sect, "fire_dispersion_base"))
 	{
+		//Alundaio: Most likely a fake weapon or melee weapon
+		if (pSettings->line_exist(wpn_sect, "ammo_mag_size") && pSettings->r_u32(wpn_sect, "ammo_mag_size") == 0)
+			return false;
+
 		if (wpn_section.cast_addon_silencer())
 			return false;
 		if (wpn_section.cast_weapon_binoculars())
