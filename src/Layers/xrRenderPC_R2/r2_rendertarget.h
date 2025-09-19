@@ -213,6 +213,7 @@ public:
 	void PhaseAberration();
 	void PhaseVignette();
 	void PhaseSaturation();
+	void PhaseRaindrops();
 
 	void						phase_ssao				();
 	void phase_fxaa(u32 pass);
