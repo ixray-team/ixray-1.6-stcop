@@ -18,69 +18,79 @@ void	CBuild::xrPhase_ResolveMaterials()
 	CTimer t;
 	t.Start();
  	// Calculating materials
-	concurrency::concurrent_vector<_counter> counts_mt_safe;
-	{
-  		counts_mt_safe.reserve(256);
-		xr_parallel_foreach(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
-		{
-			BOOL	bCreate = TRUE;
- 			for (u32 I = 0; I < counts_mt_safe.size(); I++)
-			{
-				if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
-				{
-					counts_mt_safe[I].dwCount += 1;
-					bCreate = FALSE;
-					return;
-				}
-			}
+	// concurrency::concurrent_vector<_counter> counts_mt_safe;
+	auto& faces = lc_global_data()->g_faces();
 
-			if (bCreate)
-			{
-				_counter	C;
-				C.dwMaterial = F->dwMaterial;
-				C.dwCount = 1;
-				counts_mt_safe.push_back(C);
-			}
+	std::unordered_map<u16, size_t> matToIndex;
+ 
+	// Локальные хранилища для потоков -> потом сведём в общий map
+	concurrency::combinable<std::unordered_map<u16, u32>> localCounts;
+
+ 	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
+		{
+			localCounts.local()[F->dwMaterial] += 1;
 		});
+
+	// Слияние локальных карт в глобальную
+	std::unordered_map<u16, u32> globalCounts;
+	localCounts.combine_each([&](const std::unordered_map<u16, u32>& lm)
+		{
+			for (const auto& kv : lm)
+				globalCounts[kv.first] += kv.second;
+		});
+
+
+	// ======================================================
+	// 2) Вектор счётчиков + карта material -> index (SC)
+	// ======================================================
+	xr_vector<_counter> count;
+	count.reserve(globalCounts.size());
+	matToIndex.reserve(globalCounts.size());
+
+	size_t idx = 0;
+	for (const auto& kv : globalCounts)
+	{
+		const u16 mat = kv.first;
+		const u32 cnt = kv.second;
+		count.push_back(_counter{ mat, cnt });
+		matToIndex[mat] = idx++;
 	}
+ 
+ 	
 	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
-	
-	
+
 	// Performing Subdivs
 	t.Start();
-	u32 msCalc = 0;
-	{		
-		//x6 Быстрее на Ryzen 7 3700x чем SC
-		xr_vector<_counter> count(counts_mt_safe.begin(), counts_mt_safe.end());
 
-		concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> g_Xsplits_def;
-		g_Xsplits_def.reserve(64*1024);
-		g_Xsplits_def.resize(count.size());
+	concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> bins;
+	bins.reserve(count.size());
+	bins.resize(count.size());
 
- 		xr_parallel_foreach ( lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+ 	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
 		{
-			if (!F->Shader().flags.bRendering) return;					
-			
-			for (u32 I=0; I< count.size(); I++)
+			if (!F->Shader().flags.bRendering) return;
+
+			auto it = matToIndex.find(F->dwMaterial);
+			if (it != matToIndex.end())
 			{
-				if (F->dwMaterial == count[I].dwMaterial)
-				{
-					g_Xsplits_def[I].push_back(F);
-				}
+				bins[it->second].push_back(F);
 			}
-   		});
-		msCalc = t.GetElapsed_ms();
+		});
+ 
+	// Переносим в итоговый g_XSplit
+	g_XSplit.reserve(count.size());
+	g_XSplit.resize(count.size());
 
-		  
-		g_XSplit.reserve(64 * 1024);
-		g_XSplit.resize(counts_mt_safe.size());
-		for (auto i = 0; i < g_XSplit.size(); i++)
-		{
-  			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
- 		}
-	}	
-	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums] copy[%ums]", GetHeapMemory() / 1024 / 1024, msCalc,  t.GetElapsed_ms() - msCalc);
+	for (size_t i = 0; i < g_XSplit.size(); ++i)
+	{
+		// vecFace имеет конструктор от итераторов
+		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
+	}
+ 
+	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
 
+
+	// Старый код
 	t.Start();
 	{
 		for (int SP = 0; SP<int(g_XSplit.size()); SP++)
