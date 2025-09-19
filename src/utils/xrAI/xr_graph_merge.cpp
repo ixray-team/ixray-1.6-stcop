@@ -16,7 +16,7 @@
 #include "level_graph.h"
 #include "object_broker.h"
 #include "xr_graph_merge.h"
-#include "spawn_constructor_space.h"
+#include "level_spawn_constructor.h"
 #include "game_graph_builder.h"
 #include <direct.h>
 #include <random>
