@@ -83,7 +83,8 @@ static	CDeflector*		read_create					();
 	}
 
 	// se7kills Освещение на GPU
-	xr_hash_map<size_t, u32> FacesCount; 
+	xr_hash_map<size_t, base_color_c>		color_map;
+	xr_hash_map<size_t, u32>				FacesCount; 
 	bool ApplyResolution	 = false;
 	bool NeedGarbageRays	 = false;
 
