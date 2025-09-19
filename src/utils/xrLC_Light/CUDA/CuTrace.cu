@@ -15,8 +15,9 @@ struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
 
-	hardware_income* rays;
-	ColorsRessult* colors;
+	unsigned char	 flags;
+	hardware_raytask* rays;
+	hardware_color* colors;
 	hardware_lighting* lights;
 	int counts_lights;
 };
@@ -56,10 +57,10 @@ __device__ float RunOptickTask(HardwareVector& P, HardwareVector& N, float Range
 		hit
 	);
 
-	return (hit != 0) ? 1.0f : 0.0f;
+	return (hit == 0) ? 1.0f : 0.0f;
 }
 
-__device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C, int& RealProcessed, int Index)
+__device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C)
 {
 	HardwareVector Ldir;
 	HardwareVector Pnew = P;
@@ -133,8 +134,6 @@ __device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, Hardware
 	break;
 	}
 
-	RealProcessed++;
-
 	switch (L.light_type)
 	{
 	case eSun:
@@ -151,23 +150,39 @@ __device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, Hardware
 	}
 }
 
+enum Flags
+{
+	LP_Default   =  0,
+	LP_dont_rgb  = (1 << 1),
+	LP_dont_hemi = (1 << 2),
+	LP_dont_sun  = (1 << 3),
+};
+
 __device__ void run_tracing_new(int index)
 {
-	hardware_income& Rays = g_params.rays[index];
+	unsigned char flags = g_params.flags;
+
+	hardware_raytask& Rays = g_params.rays[index];
 	HardwareVector P(Rays.Position);
 	HardwareVector N(Rays.Direction);
 
-	ColorsRessult& Result = g_params.colors[index];
+	hardware_color& ColorUV = g_params.colors[index];
 
-	Result.RealProcessed = 0;
-	Result.ResultIndex = index;
-
+ 
 	for (int i = 0; i < g_params.counts_lights; i++)
 	{
 		hardware_lighting& L = g_params.lights[i];
-		CalculatePoint(L, P, N, Result.Color, Result.RealProcessed, index);
+
+		if (!(LP_dont_hemi & flags) && L.type == eHemi)
+ 			CalculatePoint(L, P, N, ColorUV);
+ 
+		if (!(LP_dont_rgb & flags) && L.type == eRGB)
+			CalculatePoint(L, P, N, ColorUV);
+
+		if (!(LP_dont_sun & flags) && L.type == eSun)
+			CalculatePoint(L, P, N, ColorUV);
 	}
-	Result.Configured = g_params.counts_lights;
+ 
 }
 
 // Entry points

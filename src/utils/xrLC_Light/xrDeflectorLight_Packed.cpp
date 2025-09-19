@@ -19,40 +19,39 @@ void copy_color(hardware_color& Chw, base_color_c& C)
 };
 
 auto LightHW = [&](hardware_lighting& L)
-	{
-		R_Light cuL;
-		cuL.type = L.type;
-		cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
-		cuL.position = { L.position.x, L.position.y, L.position.z };
-		cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
-		cuL.range = L.range;
-		cuL.range2 = L.range2;
-		cuL.falloff = L.falloff;
-		cuL.attenuation0 = L.attenuation0;
-		cuL.attenuation1 = L.attenuation1;
-		cuL.attenuation2 = L.attenuation2;
-		cuL.energy = L.energy;
-		return cuL;
-	};
-
+{
+	R_Light cuL;
+	cuL.type = L.type;
+	cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+	cuL.position = { L.position.x, L.position.y, L.position.z };
+	cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
+	cuL.range = L.range;
+	cuL.range2 = L.range2;
+	cuL.falloff = L.falloff;
+	cuL.attenuation0 = L.attenuation0;
+	cuL.attenuation1 = L.attenuation1;
+	cuL.attenuation2 = L.attenuation2;
+	cuL.energy = L.energy;
+	return cuL;
+};
 
 auto Light = [&](R_Light& L, int type)
-	{
-		hardware_lighting cuL;
-		cuL.type = L.type;
-		cuL.light_type = type;
-		cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
-		cuL.position = { L.position.x, L.position.y, L.position.z };
-		cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
-		cuL.range = L.range;
-		cuL.range2 = L.range2;
-		cuL.falloff = L.falloff;
-		cuL.attenuation0 = L.attenuation0;
-		cuL.attenuation1 = L.attenuation1;
-		cuL.attenuation2 = L.attenuation2;
-		cuL.energy = L.energy;
-		return cuL;
-	};
+{
+	hardware_lighting cuL;
+	cuL.type = L.type;
+	cuL.light_type = type;
+	cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+	cuL.position = { L.position.x, L.position.y, L.position.z };
+	cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
+	cuL.range = L.range;
+	cuL.range2 = L.range2;
+	cuL.falloff = L.falloff;
+	cuL.attenuation0 = L.attenuation0;
+	cuL.attenuation1 = L.attenuation1;
+	cuL.attenuation2 = L.attenuation2;
+	cuL.energy = L.energy;
+	return cuL;
+};
 
 
 
@@ -143,8 +142,6 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 		}break;
 	}
 
-	RealProcessed++;
-
 	switch (L.light_type)
 	{
 	case eSun:
@@ -189,48 +186,68 @@ void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, hardware_color& Cnew
 
 }
 
+// Cannot Now use in MT
+PackedLighting GPUTaskinSystem;
 
-// GPU
+void PackedLighting::InitializeGPU()
+{
+	XRay::RayTrace::CUDA::InitializeRayTracing();
+}
 
-void PackedLighting::LightPointPacked(u32 U, u32 V, u32 SampleID, Fvector& P, Fvector& N, base_lighting& LS, u32 flags, Face* skip)
+void PackedLighting::LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
 	tStats.Start();
-	int INDEX = IndexTask.load(std::memory_order_relaxed);
-	R_ASSERT(INDEX < MAX_RAYS_PER_TASK);
-	if (PrevCount < INDEX)
+ 	R_ASSERT(IndexTask < MAX_RAYS_PER_TASK);
+	if (PrevCount < IndexTask)
 	{
-		clMsg("*** Allocated Used : %u", INDEX);
-		PrevCount = INDEX + (1024 * 1024);
+		clMsg("*** Allocated Used : %u", IndexTask);
+		PrevCount = IndexTask + (1024 * 1024);
 	}
-	RayRecvestIndex& task_data = task_pools[INDEX];		// MT SAFE
-	IndexTask.fetch_add(1, std::memory_order_acquire); /// Загрузили сразу добовляем
+
+	RayRecvestIndex& task_data = task_pools[IndexTask];		// MT SAFE
+	IndexTask += 1; /// Загрузили сразу добовляем
 	task_data.INDEX_TASK = { U, V };
-	task_data.flags = flags;
-	task_data.P = P;
+ 	task_data.P = P;
 	task_data.N = N;
+	task_data.Owner = nullptr;
 	StatsRaysAdd += tStats.GetElapsed_mcs();
 }
+
+void PackedLighting::LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip)
+{
+	tStats.Start();
+ 	R_ASSERT(IndexTask < MAX_RAYS_PER_TASK);
+	if (PrevCount < IndexTask)
+	{
+		clMsg("*** Allocated Used : %u", IndexTask);
+		PrevCount = IndexTask + (1024 * 1024);
+	}
+	RayRecvestIndex& task_data = task_pools[IndexTask];		// MT SAFE
+	task_data.INDEX_TASK = { U, V };
+	task_data.P = P;
+	task_data.N = N;
+	task_data.Owner = D;
+	StatsRaysAdd += tStats.GetElapsed_mcs();
+
+	IndexTask++; /// Загрузили сразу добовляем
+}
+
 
 
 void PackedLighting::LightPointPackedRun()
 {
+	if (!isInitializedGPU)
+	{
+		InitializeGPU();
+		isInitializedGPU = true;
+	}
+
 	tStats.Start();
 	// GPU TASKING
 	XRay::RayTrace::CUDA::RayTracePackNew(*this, lc_global_data()->L_static());
 	StatsCopyToVec += tStats.GetElapsed_mcs();
 
-	// CPU TASKING
-	//for (auto i = 0; i < IndexTask; i++)
-	//{
-	//	auto Task = GetRays(i);
-	//	hardware_color color;
-	//	ProcessRays(Task.P, Task.N, lc_global_data()->L_static(), color);
-	//	copy_color(color, task_pools[i].C);
-	//
-	//	AditionalData("Processed : %u / %u", i, IndexTask.load());
-	//}
-
-	clMsg("*** Allocated Used : %u", IndexTask.load(std::memory_order_relaxed));
+	clMsg("*** Allocated Used : %u", IndexTask);
 
 	tStats.Start();
 
