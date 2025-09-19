@@ -101,6 +101,9 @@ extern	BOOL	g_fight_fast_respawn;
 
 extern ENGINE_API int m_look_cam_fp_zoom;
 
+int m_iQuickSave = 0;
+int m_iQuickSavesCount = 5;
+
 ENGINE_API extern float	g_console_sensitive;
 
 void register_mp_console_commands();
@@ -441,7 +444,7 @@ bool valid_saved_game_name(LPCSTR file_name)
 	LPCSTR		I = file_name;
 	LPCSTR		E = file_name + xr_strlen(file_name);
 	for (; I != E; ++I) {
-		if (!strchr("/\\:*?\"<>|^()[]%", *I))
+		if (!strchr("/\\:*?\"<>|^%", *I))
 			continue;
 
 		return	(false);
@@ -515,7 +518,14 @@ public:
 		timer.Start();
 #endif
 		if (!xr_strlen(S)) {
-			xr_strconcat(S, Core.UserName, " - ", g_pStringTable->translate("quicksave").c_str());
+
+			++m_iQuickSave;
+			xr_sprintf(S, "%s - %s [%i]", Core.UserName, g_pStringTable->translate("quicksave").c_str(), m_iQuickSave);
+			if (m_iQuickSave >= m_iQuickSavesCount)
+			{
+				m_iQuickSave = 0;
+			}
+
 			NET_Packet			net_packet;
 			net_packet.w_begin(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
