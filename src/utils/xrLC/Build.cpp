@@ -105,20 +105,10 @@ void CBuild::Light_prepare()
 size_t GetHeapMemory()
 {
 #ifdef IXR_WINDOWS
-	static size_t last_update_memory = 0;
-	static CTimer tMemory;
-	// Не слишком часто обновляться
-	if (tMemory.GetElapsed_ms() < 100)
-	{
-		return last_update_memory;
-	}
-
-	PROCESS_MEMORY_COUNTERS_EX pmc;
+ 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
 	{
-		tMemory.Start();
-		last_update_memory = pmc.PrivateUsage;
-		return pmc.PrivateUsage;
+ 		return pmc.PrivateUsage;
 	}
 #endif
 
@@ -247,21 +237,15 @@ void CBuild::Run(LPCSTR P)
 	CorrectTJunctions();
 	mem_Compact();
 
+	if (gCompilerMode.CUDA)
+		GPUTaskinSystem.InitializeGPU();
+
 	// AdaptiveHT
 	BuildAdaptiveHT();
 
-	// Building normals
-	Phase("Building normals...");
-	mem_Compact();
-	CalcNormals();
 
 	// Collision DB
 	//should be after normals, so that double-sided faces gets separated
-	Phase("Building collision database (CFORM)...");
-	mem_Compact();
-
-	if (!gCompilerMode.LC_BackingDisabled)
-		BuildCForm();
 	BuildPortals(*fs);
 
 
