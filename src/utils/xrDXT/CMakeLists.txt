@@ -26,9 +26,9 @@ list(FILTER DXT_SRC_FILES EXCLUDE REGEX "nvdxt.cpp$")
 
 # xrDXT project
 add_library(xrDXT SHARED ${DXT_SRC_FILES})
-target_include_directories(xrDXT PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(xrDXT PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_directories(xrDXT PUBLIC "${IXRAY_SDK_LIB}/")
-target_precompile_headers(xrDXT PUBLIC "StdAfx.h")
+target_precompile_headers(xrDXT PRIVATE "StdAfx.h")
 
 # Project defines
 target_compile_definitions(xrDXT PRIVATE DXT_EXPORTS)
@@ -49,8 +49,8 @@ if (WIN32)
     )
 
     # RedImage
-    target_link_libraries(xrDXT PUBLIC ${REDIMAGE_LIB})
-    target_include_directories(xrDXT PUBLIC "${REDIMAGE_INCL}")
+    target_link_libraries(xrDXT PRIVATE ${REDIMAGE_LIB})
+    target_include_directories(xrDXT PRIVATE "${REDIMAGE_INCL}")
 
     ## Copy binaries
     add_custom_command(TARGET ${PROJECT_NAME}

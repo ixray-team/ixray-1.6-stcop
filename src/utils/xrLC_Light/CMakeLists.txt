@@ -3,8 +3,6 @@ set(LCL_SRC_FILES)
 
 # Files import
 file(GLOB_RECURSE LCL_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-#    "${IXRAY_SDK_INC}/hxgrid/Interface/hxGridInterface.cpp"
-    
     "*.cpp"
     "*.h"
 )
@@ -24,8 +22,6 @@ file(GLOB_RECURSE LCL_SOURCE_IMAGE_FILES
     "tga.*"
     "../../xrEngine/xrLoadSurface.cpp"
 )
-
-
 
 file(GLOB_RECURSE LCL_SOURCE_LIGHT_FILES
     "xrLC_GlobalData.*"
@@ -64,11 +60,6 @@ file(GLOB_RECURSE LCL_SOURCE_DOLIGHT_FILES
     "compiler.*"
 )
 
-file(GLOB_RECURSE LCL_SOURCE_NETWORK_FILES
-     "lightstab_interface.*"
-     "light_execute.*"
-)
-
 file(GLOB_RECURSE LCL_SOURCE_MESHDATA_FILES
      "face_smoth_flags.*"
      "tcf.*"
@@ -99,10 +90,8 @@ source_group("light_files\\lightmap" FILES ${LCL_SOURCE_LIGHT_LIGHTMAP_FILES})
 
 source_group("base_files" FILES ${LCL_SOURCE_BASE_FILES})
 source_group("dolight_files" FILES ${LCL_SOURCE_DOLIGHT_FILES})
-source_group("network_files" FILES ${LCL_SOURCE_NETWORK_FILES})
 source_group("mesh_files" FILES ${LCL_SOURCE_MESHDATA_FILES})
 source_group("image_files" FILES ${LCL_SOURCE_IMAGE_FILES})
-
 
 # Apply list
 list(APPEND LCL_SRC_FILES ${LCL_SOURCE_ALL_FILES})
@@ -130,6 +119,7 @@ target_precompile_headers(xrLC_Light PRIVATE "stdafx.h")
 
 # Project defines
 target_compile_definitions(xrLC_Light PRIVATE _USRDLL)
+target_compile_definitions(xrLC_Light PRIVATE LCLIGHT_BUILD)
 
 # Linker list
 target_link_libraries(xrLC_Light PUBLIC xrCore)
@@ -157,3 +147,36 @@ target_link_libraries(xrLC_Light PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Pa
 # Intel Embree
 target_include_directories(xrLC_Light PUBLIC "${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/build/native/include/")
 target_link_libraries(xrLC_Light PUBLIC ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.Embree.Runtimes.win-x64.4.3.3/runtimes/win-x64/native/Release/embree4.lib)
+
+# Vulkan SDK
+#find_package(Vulkan REQUIRED)
+#target_link_libraries(xrLC_Light PRIVATE Vulkan::Vulkan)
+
+# CUDA
+enable_language(CUDA)
+find_package(OptiX REQUIRED)
+find_package(CUDAToolkit REQUIRED)
+
+target_include_directories(xrLC_Light PUBLIC ${OptiX_INCLUDE_DIRS})
+target_link_libraries(xrLC_Light PRIVATE ${OptiX_LIBRARIES})
+target_link_libraries(xrLC_Light PRIVATE CUDA::cudart)
+target_link_libraries(xrLC_Light PRIVATE CUDA::cuda_driver)
+
+set_target_properties(xrLC_Light PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+add_custom_command(TARGET ${PROJECT_NAME} 
+    COMMAND nvcc -ptx "${CMAKE_CURRENT_SOURCE_DIR}/CUDA/CuTrace.cu" -o "${IXRAY_OUTPUT}/CuTrace.ptx"
+        -Xcompiler "/MD"
+        -I"${OptiX_INCLUDE_DIRS}"
+        -I"${CUDA_TOOLKIT_ROOT_DIR}/include"
+        --gpu-architecture=compute_75
+        --gpu-code=sm_75
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/CUDA/CuTrace.cu"
+    COMMENT "Compiling CuTrace.cu to PTX"
+    VERBATIM
+)
+
+set(CUTRACE_OBJ ${CMAKE_SOURCE_DIR}/bin/CuTrace.obj)
+link_libraries(xrLC_Light PRIVATE ${CUTRACE_OBJ})
