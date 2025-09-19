@@ -54,6 +54,12 @@ void CRenderTarget::PhaseSaturation() {
 
 void CRenderTarget::PhaseRaindrops()
 {
+	const bool ItemCfgHudRainDropsAvialable = g_pGamePersistent->ShaderParams.ItemCfgHudRainDropsAvialable;
+	if (!ItemCfgHudRainDropsAvialable)
+	{
+		return;
+	}
+
 	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
 	if (condition < 0)
 	{
