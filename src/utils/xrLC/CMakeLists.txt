@@ -48,14 +48,19 @@ file(GLOB_RECURSE XLC_SOURCE_MUMODELS_FILES
     "xrMU_*"
 )
  
+file(GLOB_RECURSE XLC_SOURCE_EDITOR_PUBLIC_FILES CONFIGURE_DEPENDS
+	"../../Editors/Public/VIMP_Processor.*"
+	"../../Editors/Public/object_sliding.*"
+)
+
 # Source groups
 source_group("kernel" FILES ${XLC_SOURCE_ALL_FILES})
+source_group("editor" FILES ${XLC_SOURCE_EDITOR_PUBLIC_FILES})
 source_group("res" FILES ${XLC_SOURCE_RES_FILES})
 source_group("build" FILES ${XLC_SOURCE_BUILD_FILES})
 source_group("nvidia" FILES ${XLC_SOURCE_NVIDIA_FILES})
 source_group("ogf" FILES ${XLC_SOURCE_OGF_FILES})
 source_group("ogf/mumodels" FILES ${XLC_SOURCE_MUMODELS_FILES})
-
 
 # Apply list
 list(APPEND XLC_SRC_FILES ${XLC_SOURCE_ALL_FILES})
@@ -63,7 +68,7 @@ list(APPEND XLC_SRC_FILES ${XLC_SOURCE_RES_FILES})
 list(APPEND XLC_SRC_FILES ${XLC_SOURCE_BUILD_FILES})
 list(APPEND XLC_SRC_FILES ${XLC_SOURCE_NVIDIA_FILES})
 list(APPEND XLC_SRC_FILES ${XLC_SOURCE_OGF_FILES})
-
+list(APPEND XLC_SRC_FILES ${XLC_SOURCE_EDITOR_PUBLIC_FILES})
 
 # Remove unused files
 list(FILTER XLC_SRC_FILES EXCLUDE REGEX "xrGameMaterials.h")
@@ -80,7 +85,10 @@ target_precompile_headers(xrLC PRIVATE "stdafx.h")
 # Linker list
 target_link_libraries(xrLC PUBLIC xrCore)
 target_link_libraries(xrLC PUBLIC xrLC_Light)
-target_link_libraries(xrLC PUBLIC ETools)
 target_link_libraries(xrLC PUBLIC MagicFM)
 target_link_libraries(xrLC PUBLIC NvMender2003)
-target_link_libraries(xrLC PUBLIC "meshoptimizer.lib")
+#target_link_libraries(xrLC PUBLIC "meshoptimizer.lib")
+
+# DXMesh
+target_link_libraries(xrLC PUBLIC ${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib)
+target_include_directories(xrLC PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
