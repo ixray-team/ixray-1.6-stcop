@@ -67,7 +67,10 @@ public:
 	void	PreOptimize				();
 	void	CorrectTJunctions		();
 
-	void	xrPhase_AdaptiveHT		();
+	void	xrPhase_AdaptiveHT_tessalte		();
+	void	xrPhase_AdaptiveHT_calculate	();
+
+
 	void	u_Tesselate				(tesscb_estimator* E, tesscb_face* F, tesscb_vertex* V);
 	void	u_SmoothVertColors		(int count);
 
@@ -88,8 +91,7 @@ public:
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
 
-	void	BuildAdaptiveHT(); 
-	void	Light_prepare			();
+ 	void	Light_prepare			();
 	void	Light					();
  
 
