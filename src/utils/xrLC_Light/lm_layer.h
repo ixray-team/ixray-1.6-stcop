@@ -27,6 +27,17 @@ public:
 		surface.clear();
 		marker.clear();
 	}
+
+	void					clear_memory()
+	{
+		width = height = 0;
+		surface.clear();
+		marker.clear();
+
+		surface.shrink_to_fit();
+		marker.shrink_to_fit();
+	}
+
 	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
 	void					Pack			(xr_vector<u32>& dest)const;
