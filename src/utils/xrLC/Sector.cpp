@@ -290,7 +290,7 @@ void CSector::BuildHierrarhy()
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
 		// Собираем кандидатов только этого сектора
-		std::vector<int> candidates;
+		xr_vector<int> candidates;
 		for (int idx = 0; idx < g_tree.size(); ++idx) {
 			if (!g_tree[idx]->bConnected && g_tree[idx]->Sector == SelfID)
 				candidates.push_back(idx);
@@ -305,7 +305,7 @@ void CSector::BuildHierrarhy()
 			return C1.x < C2.x;
 		});
 
-		std::vector<OGF_Node*> new_nodes;
+		xr_vector<OGF_Node*> new_nodes;
 
 		AditionalData("Process : %.0f / %.0f | candidates: %u", SizeLimit, delimiter, candidates.size());
 

@@ -129,7 +129,7 @@ void ImplicitExecute::Execute()
 							wN.from_bary(V1->N, V2->N, V3->N, B);
 							wN.normalize();
 
-							u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+							u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
 							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
 							Fcount++;
 						}
@@ -185,7 +185,7 @@ void RunTaskGPU()
 	GPUTaskinSystem.RestartALL();
 
 
-	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
 	GPUTaskinSystem.current_flags = flags;
 
 	//
