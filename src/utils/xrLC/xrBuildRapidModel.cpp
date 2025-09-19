@@ -1,15 +1,11 @@
 #include "StdAfx.h"
-//#include "cl_collector.h"
 #include "Build.h"
+#include "../../xrCore/Collision/xrCDB.h"
+
 #include "../xrLC_Light/xrMU_Model.h"
 #include "../xrLC_Light/xrMU_Model_Reference.h"
-
 #include "../xrLC_Light/xrLC_GlobalData.h"
-#include "../../xrCore/Collision/xrCDB.h"
 #include "../xrLC_Light/xrFace.h"
-#include "../xrLC_Light/CUDA/CUDARayCast.h"
-
-//.#include "communicate.h"
 
 CDB::MODEL*	RCAST_Model	= 0;
 
