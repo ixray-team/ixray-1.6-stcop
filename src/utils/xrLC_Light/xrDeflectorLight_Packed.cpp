@@ -77,11 +77,8 @@ void PackedLighting::LightPointPackedRun()
 	int Splices = task_pools.size() / Splice;
 	int IndexSplit = 0;
 	for (size_t it = 0; it < task_pools.size(); it += Splice, IndexSplit++)
-	{
-		process(it, it + Splice, GPUms, CPUms); 
-		AditionalData("GPU Process %f", float(IndexSplit/Splices) * 100);
-	}
-
+ 		process(it, it + Splice, GPUms, CPUms); 
+ 
 	TaskT.Start();
 	for (size_t it = 0; it < task_pools.size(); it ++)
 	{
@@ -91,17 +88,15 @@ void PackedLighting::LightPointPackedRun()
 	size_t ApplyColorsMs = TaskT.GetElapsed_ms();
 	// Очистка
    	task_pools.clear();
-
-
+	 
 	clMsg("$ Elapsed GPU: %u ms | CPU Copy: %u ms | CPU Apply: %u ms", GPUms, CPUms, ApplyColorsMs);
 }
 
 // Deflectors
 
-void PackedLighting::LightPointPackedDeflector(CDeflector* D,  u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
+void PackedLighting::LightPointPackedDeflector(size_t IndexTask, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
-
-	RayRecvestIndex task_data;				// MT SAFE
+ 	RayRecvestIndex task_data;				// MT SAFE
 
 	if (task_pools.size() >= MAX_RAYS_PER_TASK - 1024)
 	{
@@ -112,7 +107,7 @@ void PackedLighting::LightPointPackedDeflector(CDeflector* D,  u32 U, u32 V, Fve
 		csEnter.Leave();
 	}
 
-	task_data.INDEX_TASK = MakeKey(U, V);   
+	task_data.INDEX_TASK = IndexTask;
 	task_data.P = P;
 	task_data.N = N;
 	task_data.Owner = D;
@@ -121,69 +116,52 @@ void PackedLighting::LightPointPackedDeflector(CDeflector* D,  u32 U, u32 V, Fve
 
 void PackedLighting::LightPointPackedDeflectorsRun()
 {	
+	CTimer tStats; tStats.Start();
 	// Initialize
 	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
  
-	static CTimer TaskT;
-	// Устанавливаем параметры 
- 	auto process = [](auto& recvests, auto& colors_result, size_t begin, size_t end, size_t& ElapsedGPU, size_t& ElapsedCPU)
+	// Tasks
+	auto& recvests = task_pools;
+ 	xr_vector<base_color_c> colors_result;
+	colors_result.reserve(recvests.size());
+
+ 	// Устанавливаем параметры 
+	auto process = [&](size_t begin, size_t end)
 	{
 		if (begin >= recvests.size())				return;
 		end = std::min(end, recvests.size());
 	
-		TaskT.Start();
 		size_t RayIndex = 0;
 		for (size_t it = begin; it < end; it++)
 		{
 			XRay::RayTrace::CUDA::RayTraceAddRay(recvests[it], RayIndex);
 			RayIndex += 1;
 		}
-		ElapsedCPU += TaskT.GetElapsed_ms(); TaskT.Start();
 	
 		// Запускаем трейсинг
  		XRay::RayTrace::CUDA::RayTraceRun(RayIndex);
-		ElapsedGPU += TaskT.GetElapsed_ms(); TaskT.Start();
 		// Получаем результаты
 		
 		auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
 		colors_result.insert(colors_result.end(), colors.begin(), colors.end());
-		colors.clear();
+ 	};
+	 
+	size_t Splice = MAX_RAYS_PER_GPU;
+ 	for (size_t it = 0; it < recvests.size(); it += Splice)
+		process(it, it + Splice);
+	
+ 	xr_parallel_for(size_t(0), recvests.size(), [&](size_t it)
+	{
+		auto& RAY_INFO = recvests[it];
+		auto D = (CDeflector*)RAY_INFO.Owner;
+ 		D->ApplyColor(RAY_INFO.INDEX_TASK, colors_result[it]);
+	});
 
-		ElapsedCPU += TaskT.GetElapsed_ms();
-	};
-
-	 auto& rays = task_pools;
- 
- 	 xr_vector<base_color_c> colors_result;
-	 colors_result.reserve(rays.size());
- 
-	 size_t Splice = MAX_RAYS_PER_GPU;
-	 size_t GPUElapsed = 0;
-	 size_t CPUElapsed = 0;
-
-	 int Splices = rays.size() / Splice;
-	 int IndexSplit = 0;
-	 for (size_t it = 0; it < rays.size(); it += Splice, IndexSplit++)
-	 {
-		 process(rays, colors_result, it, it + Splice, GPUElapsed, CPUElapsed);
-		 
-		 AditionalData("GPU Process %f", float(IndexSplit / Splices) * 100);
-	 }
- 
-	 TaskT.Start();
- 	 xr_parallel_for(size_t(0), rays.size(), [&](size_t it)
-	 {
-	 	auto& RAY_INFO = rays[it];
-	 	auto D = (CDeflector*)RAY_INFO.Owner;
-	 	if (D != nullptr)
-			D->ApplyColor(RAY_INFO.INDEX_TASK, colors_result[it]);
-	 });
-	 size_t ProcessApplyColors = TaskT.GetElapsed_ms();
-  
 	colors_result.clear();
-	rays.clear();
+	recvests.clear();
 
-	clMsg("$ Elapsed GPU: %u ms | CPU Copy: %u ms | CPU[MT] Apply: %u ms", GPUElapsed, CPUElapsed, ProcessApplyColors);
+
+	clMsg("$ GPU Code: %u ms", tStats.GetElapsed_ms() );
  }
 
 // MU-MODELS
