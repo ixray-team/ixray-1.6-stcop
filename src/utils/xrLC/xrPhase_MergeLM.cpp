@@ -29,7 +29,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 		// if (0 == (it % 1024))
 		// AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
 
-		if (_Y > getLMSIZE() - 32)
+		if (_Y > gCompilerMode.LC_sizeLmaps - 32)
 			break;
 
 		lm_layer& L = Layer[it]->layer;
@@ -40,7 +40,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 		if (_Max_y < HEIGHT)
 			_Max_y = HEIGHT;
 
-		if (_X + WIDTH > getLMSIZE() - 32)
+		if (_X + WIDTH > gCompilerMode.LC_sizeLmaps - 32)
 		{
 			_X = BorderUpdate;
 			_Y += _Max_y + BorderUpdate;
@@ -55,7 +55,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 
 		// Нужен только в оригенальной LMerge
 		BOOL		bRotated = false;
-		if (_Y < getLMSIZE() - HEIGHT)
+		if (_Y < gCompilerMode.LC_sizeLmaps - HEIGHT)
 		{
 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
 			Layer[it]->bMerged = TRUE;
@@ -76,25 +76,28 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 	// Sort layer by similarity (state changes) + calc material area
  	// Слишком много возьмет для помещения 
 	int selected_max = 1;
-	switch (getLMSIZE())
+	switch (gCompilerMode.LC_sizeLmaps)
 	{
 		case 1024:
 			selected_max = 8;
 			MAX_GRID_SPACE_WRITE = 0.95f;
+			break;
 		case 2048:
 			selected_max = 4;
 			MAX_GRID_SPACE_WRITE = 0.93f;
+			break;
 		case 4096:
 			selected_max = 4;
 			MAX_GRID_SPACE_WRITE = 0.92f;
+			break;
 		case 8192:
 			selected_max = 2.5;
 			MAX_GRID_SPACE_WRITE = 0.87f;
-		default:
 			break;
+		default: break;
 	}
 
-	u32 maxarea = getLMSIZE() * getLMSIZE() * selected_max;	// Max up to 8 lm selected
+	u32 maxarea = gCompilerMode.LC_sizeLmaps * gCompilerMode.LC_sizeLmaps * selected_max;	// Max up to 8 lm selected
 	u32 curarea = 0, merge_count = 0;
 
 	for (u32 it = 0; it < (int)Layer.size(); it++)
@@ -258,11 +261,26 @@ IC bool	sort_defl_complex(CDeflector* D1, CDeflector* D2)
 	}
 }
 
-class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) return TRUE; }; if (D->bMerged) { D->bMerged = FALSE; return TRUE; } else return FALSE; }; };
+struct pred_remove
+{
+	IC bool	operator() (CDeflector* D)
+	{
+		if (0 == D)
+			return TRUE;
+
+		if (D->bMerged)
+		{
+			D->bMerged = FALSE;
+			return TRUE;
+		}
+
+		return FALSE;
+	};
+};
  
 void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 {
-	vecDefl			Layer;
+	vecDefl Layer;
 
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
@@ -279,7 +297,6 @@ void CBuild::xrPhase_MergeLM(size_t begin, size_t end)
 	u32 TotalMerged = 0;
   
 	Phase("Building lightmaps...");
- 	setLMSIZE(gCompilerMode.LC_sizeLmaps);
 
 	while (Layer.size())
 	{
