@@ -29,6 +29,7 @@ public:
 	IC bool Empty() { return m_Items.size() == 0; }
 	void SetModifiedEvent(TOnModifiedEvent modif = 0) { OnModifiedEvent = modif; }
 	void SetFitMode(bool Mode) { IsFitMode = Mode; }
+	void DisableSearch(bool Mode) { IsSearchDisabled = Mode; }
 
 	void AssignItemsAsync(PropItemVec items);
 
@@ -59,6 +60,7 @@ private:
 	GameTypeChooser m_EditGameTypeChooser;
 	bool m_bModified;
 	bool IsFitMode = false;
+	bool IsSearchDisabled = false;
 	xr_string m_SearchText;
 
 	void DrawEditText();

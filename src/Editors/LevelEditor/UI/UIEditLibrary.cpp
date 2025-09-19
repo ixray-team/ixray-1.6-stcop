@@ -26,6 +26,7 @@ UIEditLibrary::UIEditLibrary()
 
 	InternalProps = new UIPropertiesForm();
 	PreviewProps = new UIPropertiesForm();
+	PreviewProps->DisableSearch(true);
 
 	m_Preview = ((CLevelPreferences*)(EPrefs))->PreviewRenderLibrary;
 	m_SelectLods = false;
