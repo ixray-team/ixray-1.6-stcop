@@ -83,18 +83,21 @@ static	CDeflector*		read_create					();
 	}
 
 	// se7kills Освещение на GPU
-	xr_hash_map<size_t, base_color_c>		color_map;
-	xr_hash_map<size_t, u32>				FacesCount; 
+	xr_concurrent_unordered_map<size_t, base_color_c>		color_map;
+	xr_concurrent_unordered_map<size_t, u32>				FacesCount;
+	
 	bool ApplyResolution	 = false;
 	bool NeedGarbageRays	 = false;
+	bool NeedApplyEdges		 = false;
 
 	// Stage 1
 	void LightGPU( HASH& H);
 	void L_DirectGPU( HASH& H);
 
 	// Stage 2
-	void ApplyGPU(HASH& H, bool isFirst);
- 	
+	void ApplyGPU(HASH& H);
+	void ApplyGPU_Edges(bool isFirst);
+
 	// Stage 3
 	void LowerResolutionGPU(HASH& H);
 	void ApplyExpadBordersGPU();
