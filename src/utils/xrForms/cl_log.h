@@ -43,6 +43,8 @@ struct IterationData
 
 static xrCriticalSection csLog;
 
+
+void DebugMsg(const char* format, ...);
 void clMsg(const char* format, ...);
 void Status(const char* format, ...);
 void StatusNoMsg(const char* format, ...);
