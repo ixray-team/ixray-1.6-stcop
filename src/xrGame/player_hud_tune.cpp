@@ -9,15 +9,14 @@
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/FDemoRecord.h"
 #include "../../xrUI/ui_base.h"
-#include "debug_renderer.h"
 
 u32 hud_adj_mode		= 0;
 u32 hud_adj_item_idx	= 0;
 bool hud_adj_crosshair  = false;
 // "press SHIFT+NUM 0-return 1-hud_pos 2-hud_rot 3-itm_pos 4-itm_rot 5-fire_point 6-fire_2_point 7-shell_point";
 
-float _delta_pos			= 0.0005f;
-float _delta_rot			= 0.05f;
+float _delta_pos = 0.0005f;
+float _delta_rot = 0.05f;
 
 bool is_attachable_item_tuning_mode()
 {
