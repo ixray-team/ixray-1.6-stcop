@@ -10,6 +10,48 @@ file(GLOB_RECURSE XGM_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 	"../xrServerEntities/*.*"
 	"../xrGameSpy/gamespy/md5c.c"
 )
+
+file(GLOB_RECURSE XGM_SOURCE_AI_PLANNERS
+	"*_planner_*.*"
+	"planner_*.*"
+	"*_planner.*"
+	"planner.*"
+
+	"action_*.*"
+	"*_action.*"
+	"*_action_*.*"
+	"action.*"
+
+	"squad_hierarchy_holder.*"
+)
+
+file(GLOB_RECURSE XGM_SOURCE_AI_SCRIPT
+	"*script*.*"
+)
+
+file(GLOB_RECURSE XGM_SOURCE_AI_STALKER_AI_Brains
+	"ai_*.*"
+	"aimers_*.*"
+	"agent_*.*"
+	"property*.*"
+	"stalker_*.*" 
+)
+
+file(GLOB_RECURSE XGM_SOURCE_AI_STALKER_AI_Pathes
+	"abstract_location_selector*.*"
+	"abstract_path_manager*.*"
+	"movement_manager*.*"
+	"moving*.*"
+	"patrol_*"
+	"path_manager_params.h"
+
+)
+
+file(GLOB_RECURSE XGM_SOURCE_AI_STALKER_AI_Controls
+	"control_*.*"
+	"monster_*.*"
+)
+ 
 file(GLOB_RECURSE XGM_SOURCE_AI_FILES
 	"ai/*.*"
 	"ai_*.*"
@@ -126,6 +168,18 @@ source_group("ai/legacy_planner" FILES ${XGM_SOURCE_LEGACY_FILES})
 source_group("AnimNotify" FILES ${XGM_SOURCE_ANIM_NOTIFY_FILES})
 
 source_group("imgui/utils" FILES ${XGM_SOURCE_IMGUI_INGAME_FILES})
+source_group("ai/scripting" FILES ${XGM_SOURCE_AI_SCRIPT})
+
+source_group("ai_brains/planners" FILES ${XGM_SOURCE_AI_PLANNERS} )
+source_group("ai_brains/stalker/brains" FILES ${XGM_SOURCE_AI_STALKER_AI_Brains} )
+source_group("ai_brains/stalker/pathes" FILES ${XGM_SOURCE_AI_STALKER_AI_Pathes})
+source_group("ai_brains/monsters" FILES ${XGM_SOURCE_AI_STALKER_AI_Controls} )
+ 
+
+
+
+
+
 
 # Apply list
 list(APPEND XGM_SRC_FILES ${XGM_SOURCE_ALL_FILES})
@@ -136,7 +190,6 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "WeaponMounted.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "LevelFogOfWar.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ai/monsters/rats/ai_rat_fsm.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/IUWpnParams.*")
-#list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFaction.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFraction.*")
 list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIStalkersRankingWnd.*")
 

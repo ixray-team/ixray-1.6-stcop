@@ -51,9 +51,7 @@ void TestEdge(Vertex* V1, Vertex* V2, Face* parent)
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
 void CBuild::BuildCForm	()
 {
-
-	/*
-		// Collecting data
+	// Collecting data
 	Status("CFORM: creating...");
 	vecFace* cfFaces = new vecFace();
 	vecVertex* cfVertices = new vecVertex();
@@ -121,12 +119,11 @@ void CBuild::BuildCForm	()
 		);
 		Progress(p_total += p_cost);		// progress
 	}
- 
+
 	if (bCriticalErrCnt) {
 		err_save();
 		clMsg("MultipleEdges: %d faces", bCriticalErrCnt);
 	}
-
 	xr_delete(cfFaces);
 	xr_delete(cfVertices);
 
@@ -151,6 +148,7 @@ void CBuild::BuildCForm	()
 	string_path		fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "level.cform"));
 	Status("Saving...");
+
 	// Header
 	hdrCFORM hdr;
 	hdr.version = CFORM_CURRENT_VERSION;
@@ -163,12 +161,19 @@ void CBuild::BuildCForm	()
 	// Data
 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
 	Msg("CFORM Saving Verts: %u", MFS->tell());
-	 
-	 
-	// Collecting data
-	Status		("CFORM: creating...");
-	*/
-  
+
+	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
+	Msg("CFORM Saving FACES: %u", MFS->tell());
+
+	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
+	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
+	{
+		Face* F = *I;
+		F->pDeflector = NULL;
+	}
+	FS.w_close(MFS);
+
+	/*
  	// Заполняем faces*
 	TriangleContainer container;
   	for (auto TRI : lc_global_data()->g_faces())
@@ -190,7 +195,7 @@ void CBuild::BuildCForm	()
 	}
 
 	container.RemoveDublicates();
-	// container.RemoveDublicatesFaces();
+	container.RemoveDublicatesFaces();
 
 	// Расщитуем BBox Уровня
 	Fbox BB;
@@ -219,15 +224,14 @@ void CBuild::BuildCForm	()
  		MFS->w(&T, sizeof(CDB::TRI));
 	}
 	FS.w_close(MFS);
-
-
-
+ 
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I=lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
 		Face* F			= *I;
 		F->pDeflector	= NULL;
 	}
+	*/
 }
 
 void CBuild::BuildPortals(IWriter& fs)
