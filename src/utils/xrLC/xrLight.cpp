@@ -114,6 +114,7 @@ void	CBuild::LMaps					()
 
 	// Stage 1
 	GPUTaskinSystem.RestartALL();
+
   	xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t INDEX)
 	{
 		CDeflector* D = lc_global_data()->g_deflectors()[INDEX];
@@ -136,16 +137,6 @@ void	CBuild::LMaps					()
 	});
 
 	clMsg("*** [3]CPU Apply Edges Time: %u ms", tStats.GetElapsed_ms()); 
-
-
-	clMsg("@ CPU Code: %llu | CPU CopyToGPU : %u | GPU(%u) | CPU copy result(%u) | Clear(%u)",
-		GPUTaskinSystem.StatsRaysAdd / 1000,
-		GPUTaskinSystem.StatsCopyRaysGPU / 1000,
-		GPUTaskinSystem.StatsTraverseGPU / 1000,
-		GPUTaskinSystem.StatsCopyResultGPU / 1000,
-		GPUTaskinSystem.StatsClearingListGPU / 1000
-	);
-
 	
 	
 	/*** PART 2 ***/
@@ -174,15 +165,6 @@ void	CBuild::LMaps					()
 		AditionalData("*** [LMAPS] FinalyResolution [%u / %u]", INDEX, lc_global_data()->g_deflectors().size());
 	});
 	clMsg("*** [3][Lower] CPU Apply Edges, ExpandBorders Time: %u ms", tStats.GetElapsed_ms());
-
-	clMsg("@ CPU Code: %llu | CPU CopyToGPU : %u | GPU(%u) | CPU copy result(%u) | Clear(%u)",
-		GPUTaskinSystem.StatsRaysAdd / 1000,
-		GPUTaskinSystem.StatsCopyRaysGPU / 1000,
-		GPUTaskinSystem.StatsTraverseGPU / 1000,
-		GPUTaskinSystem.StatsCopyResultGPU / 1000,
-		GPUTaskinSystem.StatsClearingListGPU / 1000
-	);
-
 
 	GPUTaskinSystem.RestartALL();
 }
