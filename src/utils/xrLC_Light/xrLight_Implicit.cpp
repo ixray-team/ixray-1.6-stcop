@@ -177,7 +177,7 @@ void RunTaskGPU()
 	CTimer tStats;
 	tStats.Start();
 
-	XRay::RayTrace::CUDA::InitializeRayTracing();
+	// XRay::RayTrace::CUDA::InitializeRayTracing();
 
  	ImplicitDeflector& defl = cl_globs.DATA();
 	// Setup variables
@@ -194,7 +194,10 @@ void RunTaskGPU()
 
 	xr_map<std::pair<u32, u32>, u32>	    FCountMap;
 
-	static PackedLighting			gpu_data;
+	GPUTaskinSystem.RestartALL();
+ 
+	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+	GPUTaskinSystem.current_flags = flags;
 
 	for (u32 V = 0; V < defl.Height(); V++)
 	{
@@ -204,12 +207,12 @@ void RunTaskGPU()
 			u32 Fcount = 0;
 			try
 			{
-				for (u32 J = 0; J < Jcount; J++)
+				for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
 				{
 					// LUMEL space
 					Fvector2				P;
-					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+					P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
 					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
 
 					// World space
@@ -228,10 +231,7 @@ void RunTaskGPU()
 							wN.from_bary(V1->N, V2->N, V3->N, B);
 							wN.normalize();
 
-							u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
-
-							int SampleID = J;
- 							gpu_data.LightPointPacked(U, V, SampleID, wP, wN, inlc_global_data()->L_static(), flags, F);
+							GPUTaskinSystem.LightPointPacked(U, V, wP, wN, flags, F);
 							Fcount++;
 						}
 					}
@@ -246,9 +246,11 @@ void RunTaskGPU()
 	}
 
 	// Остаток доработать 
-	gpu_data.LightPointPackedRun();
+	GPUTaskinSystem.LightPointPackedRun();
 
- 	for (auto& T : gpu_data.Colors)
+	CTimer tColors; tColors.Start();
+
+ 	for (auto& T : GPUTaskinSystem.Colors)
 	{
 		auto UV = T.first;
 		int U = UV.first;
@@ -271,16 +273,17 @@ void RunTaskGPU()
 			defl.Marker(U, V) = 0;
 		}
 	}
-	gpu_data.Colors.clear();
+	GPUTaskinSystem.Colors.clear();
 
 
-	clMsg("*** GPU: %llu | Rays:%llu| Copy:%llu| Col:%llu | total: %u ms",
+	clMsg("*** GPU: %llu | Rays:%llu| Copy:%llu| Col:%llu | LMAP: %u ms | total: %u ms",
 
 		// gpu_data.TotalRaysProcessed,
 		RayTracingTime / 1000,
-		gpu_data.StatsRaysAdd / 1000,
-		gpu_data.StatsCopyToVec / 1000,
-		gpu_data.StatsTotalGPUCopy / 1000,
+		GPUTaskinSystem.StatsRaysAdd / 1000,
+		GPUTaskinSystem.StatsCopyToVec / 1000,
+		GPUTaskinSystem.StatsTotalGPUCopy / 1000,
+		tColors.GetElapsed_ms(),
 		tStats.GetElapsed_ms()
 	);
 
@@ -288,9 +291,9 @@ void RunTaskGPU()
 		RayTracingTime / 1000,
 		RayTracingCopy / 1000,
 		RayTracingResults / 1000,
-		gpu_data.StatsRaysAdd / 1000,
-		// gpu_data.StatsCopyToVec / 1000, 
-		gpu_data.StatsTotalGPUCopy / 1000,
+		GPUTaskinSystem.StatsRaysAdd / 1000,
+		// GPUTaskinSystem.StatsCopyToVec / 1000, 
+		GPUTaskinSystem.StatsTotalGPUCopy / 1000,
 		tStats.GetElapsed_ms()
 	);
 
