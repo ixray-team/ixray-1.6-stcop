@@ -34,6 +34,18 @@ static u32					phase_total_time = 0;
 xr_vector<IterationData> iterationData;
 IterationData* ActiveIteration = nullptr;
 
+void DebugMsg(const char* format, ...)
+{
+	string256 msg;
+	va_list				mark;
+	va_start(mark, format);
+	vsprintf(msg, format, mark);
+
+	OutputDebugStringA(msg);
+	OutputDebugStringA("\n");
+}
+
+
 xr_string make_time(u32 sec)
 {
 	char buf[64];
@@ -165,8 +177,7 @@ void __cdecl clMsg(const char* format, ...) {
 	char buf[4 * 256];
 	va_start(mark, format);
 	vsprintf(buf, format, mark);
-
-
+ 
 	string1024		_out_;
 	xr_strconcat(_out_, "    |    | ", buf);
 	clLog(_out_);
