@@ -1,9 +1,7 @@
-#ifndef ExportSkeletonH
-#define ExportSkeletonH
-
-#include "PropSlimTools.h"
-//#include "../../../Layers/xrRender/SkeletonCustom.h"
+#pragma once
+#include "../../Public/VIMP_Processor.h"
 #include "EditMesh.h"
+
 //---------------------------------------------------------------------------
 const int clpSMX = 28, clpSMY=16, clpSMZ=28;
 //---------------------------------------------------------------------------
@@ -210,5 +208,3 @@ public:
 
 void ECORE_API 			ComputeOBB_RAPID	(Fobb &B, FvectorVec& V, u32 t_cnt);
 void ECORE_API 			ComputeOBB_WML		(Fobb &B, FvectorVec& V);
-
-#endif

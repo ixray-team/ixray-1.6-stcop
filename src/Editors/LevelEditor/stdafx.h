@@ -18,7 +18,6 @@
 #include "../xrECore/Editor/EditMesh.h"
 #include "../xrECore/Editor/D3DUtils.h"
 #include "../xrECore/Editor/PhysicsShellHolderEditorBase.h"
-#include "../../utils/ETools/ETools.h"
 #include "../xrECore/Editor/Library.h"
 #include "../xrECore/Editor/ImageManager.h"
 #include "../xrECore/Editor/pick_defs.h"
