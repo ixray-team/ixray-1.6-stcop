@@ -7,12 +7,17 @@ class XREPROPS_API UIPropertiesForm :
 public:
 	UIPropertiesForm();
 	virtual ~UIPropertiesForm();
-	virtual void Draw();
+
+	virtual void Draw() override;
+	virtual void ResetEnd() override;
+
 	void AssignItems(PropItemVec& items);
+	void ClearProperties();
+
 	PropItem* FindItem(const char* path);
 	UIPropertiesItem* FindPropItem(const char* path);
 	PropItem* FindItemOfName(shared_str name);
-	void ClearProperties();
+
 	IC void SetReadOnly(bool enable) { m_Flags.set(plReadOnly, enable); }
 	IC bool IsModified() { return m_bModified; }
 

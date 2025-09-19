@@ -89,6 +89,10 @@ UIMainForm::UIMainForm()
 	LoadWindowsStates();
 }
 
+void UIMainForm::ResetEnd()
+{
+}
+
 void UIMainForm::LoadWindowsStates()
 {
 	CLevelPreferences* LPrefs = static_cast<CLevelPreferences*>(EPrefs);

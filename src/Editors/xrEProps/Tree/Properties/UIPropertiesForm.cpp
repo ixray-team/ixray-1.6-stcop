@@ -105,6 +105,17 @@ void UIPropertiesForm::Draw()
 		SearchRoot.Items.clear();
 	}
 
+	if (GUIManager->SearchIcon)
+	{
+		ImVec2 IconSize = { 12,12 };
+
+		ImGui::SameLine();
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+
+		ImGui::Image(GUIManager->SearchIcon, IconSize);
+	}
+
 	IsSearchActive = !m_SearchText.empty();
 
 	ImGui::SameLine();
@@ -144,6 +155,10 @@ void UIPropertiesForm::Draw()
 
 		ImGui::EndTable();
 	}
+}
+
+void UIPropertiesForm::ResetEnd()
+{
 }
 
 void UIPropertiesForm::AssignItemsAsync(PropItemVec items)

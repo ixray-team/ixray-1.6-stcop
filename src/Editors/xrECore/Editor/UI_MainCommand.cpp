@@ -324,9 +324,9 @@ CCommandVar CommandInitialize(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 {
-    EPrefs->env_from_time = g_pGamePersistent->Environment().ed_from_time;
-    EPrefs->env_to_time = g_pGamePersistent->Environment().ed_to_time;
-    EPrefs->env_speed = g_pGamePersistent->Environment().fTimeFactor;
+	EPrefs->env_from_time = g_pGamePersistent->Environment().ed_from_time;
+	EPrefs->env_to_time = g_pGamePersistent->Environment().ed_to_time;
+	EPrefs->env_speed = g_pGamePersistent->Environment().fTimeFactor;
 	EPrefs->OnDestroy();
 	ExecCommand(COMMAND_CLEAR);
 	EDevice->seqAppEnd.Process(rp_AppEnd);
@@ -338,13 +338,12 @@ CCommandVar CommandDestroy(CCommandVar p1, CCommandVar p2)
 	DU_impl.DestroyObjects();
 	Lib.OnDestroy();
 	UI->OnDestroy();
-	{
-		xr_delete(pSettings);
-	}
-	{
-		xr_delete(pGameIni);
-	}
+
+	xr_delete(pSettings);
+	xr_delete(pGameIni);
+
 	ELog.Close();
+
 	for (auto& item : ECommands)
 	{
 		xr_delete(item);
