@@ -9,13 +9,22 @@ cbuffer DetailConstants
 
     float4 dir2D;
     float4 dir2D_old;
-
-    float2x4 array[61];
 };
+
+//LVutner: Has to match the CPU struct
+struct InstanceData
+{
+	float3 hpb;
+	float scale;
+	float3 pos;
+	float hemi;
+};
+
+//LVutner: Always bound to slot0 (see CPP code)
+StructuredBuffer<InstanceData> detail_buffer : register(t0);
 
 float3x3 setMatrix (float3 hpb)
 {
-        
     float _ch, _cp, _cb, _sh, _sp, _sb, _cc, _cs, _sc, _ss;
 
     sincos(hpb.x, _sh, _ch);
@@ -29,57 +38,52 @@ float3x3 setMatrix (float3 hpb)
 					_sp*_cs+_sc, _ss-_sp*_cc, _cp*_ch);
 };
 
-void main(in v_detail I, out p_bumped_new O)
+void main(in v_detail I, out p_bumped_new O, uint instance_id : SV_InstanceID)
 {
-    int i = I.misc.w;
-	float2x4 mm = array[i];
-	
-	float3x3 mmhpb = setMatrix(mm[0].xyz);
-	float3 posi = float3(mm[1].xyz);
-	
-	float scale = mm[0].w;
+	//LVutner: Read our structured buffer
+	InstanceData det = detail_buffer[instance_id];
 
-	float hemi = abs(mm[1].w);
-	float sun = sign(mm[1].w)*0.25f+0.25f;
+	float3x3 mmhpb = setMatrix(det.hpb);
 
-    float4 m0 = float4(mmhpb[0]*scale, posi.x);
-    float4 m1 = float4(mmhpb[1]*scale, posi.y);
-    float4 m2 = float4(mmhpb[2]*scale, posi.z);
+	float hemi = abs(det.hemi);
+	float sun = sign(det.hemi)*0.25f+0.25f;
+
+    float4 m0 = float4(mmhpb[0]*det.scale, det.pos.x);
+    float4 m1 = float4(mmhpb[1]*det.scale, det.pos.y);
+    float4 m2 = float4(mmhpb[2]*det.scale, det.pos.z);
 
     float4 pos, pos_old;
-    pos.x = dot(m0, I.pos);
-    pos.y = dot(m1, I.pos);
-    pos.z = dot(m2, I.pos);
+    pos.x = dot(m0, float4(I.pos.xyz, 1.0));
+    pos.y = dot(m1, float4(I.pos.xyz, 1.0));
+    pos.z = dot(m2, float4(I.pos.xyz, 1.0));
+
     pos.w = 1.0f;
     pos_old = pos;
 
 #ifdef USE_TREEWAVE
-    float base = m1.w;
     float H = I.pos.y * length(m1.xyz);
-    float fractional = I.misc.z * consts.x;
 
     float dp = calc_cyclic(dot(pos, wave));
     float inten = H * dp;
 
-    pos.xz += calc_xz_wave(dir2D.xz * inten, fractional);
+    pos.xz += calc_xz_wave(dir2D.xz * inten, I.pos.w);
 
     #ifndef DETAIL_SHADOW_PASS
 		float dp_old = calc_cyclic(dot(pos_old, wave_old));
 		float inten_old = H * dp_old;
 
-		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, fractional);
+		pos_old.xz += calc_xz_wave(dir2D_old.xz * inten_old, I.pos.w);
     #endif
 #endif
 
     float3 Pe = mul(m_WV, pos);
-    float2 tc = I.misc.xy * consts.xy;
 
     float3 N;
     N.x = pos.x - m0.w;
     N.y = pos.y - m1.w + 0.75f;
     N.z = pos.z - m2.w;
 
-    O.tcdh = float4(tc.xy, hemi, sun);
+    O.tcdh = float4(I.tc.xy, hemi, sun);
     O.position = float4(Pe, 1.0f);
 
     N.xyz = mul((float3x3)m_WV, N.xyz);
@@ -98,7 +102,5 @@ void main(in v_detail I, out p_bumped_new O)
 #else
     O.hpos_curr = O.hpos_old = O.hpos;
 #endif
-
-    O.snow_mask = 0.0f;
+	O.snow_mask = 0.0;
 }
-
