@@ -100,8 +100,7 @@ void ImplicitExecute::Execute()
 		{
 			base_color_c C;
 			u32 Fcount = 0;
-
-			try
+ 			try
 			{
 				for (u32 J = 0; J < Jcount; J++)
 				{
@@ -157,11 +156,130 @@ void ImplicitExecute::Execute()
 			AditionalData("CurrentV: %u | time: %.0f", V, tImplicit.GetElapsed_sec());
 	}
 }
+ 
+void RunTaskGPU()
+{
+ 	ImplicitDeflector& defl = cl_globs.DATA();
+	// Setup variables
+	Fvector2 dim, half;
+	dim.set(float(defl.Width()), float(defl.Height()));
+	half.set(.5f / dim.x, .5f / dim.y);
+
+	// Jitter data
+	Fvector2 JS;
+	JS.set(.499f / dim.x, .499f / dim.y);
+	u32 Jcount;
+	Fvector2* Jitter;
+	Jitter_Select(Jitter, Jcount);
+
+	PackedLighting			gpu_data;
+	xr_map<u32, u32>	    FCountMap;
+
+	auto GPU_RUN_TASKS = [&]()
+	{
+ 		gpu_data.LightPointPackedRun();
+		gpu_data.LightPointPackedApply();
+
+		xr_map<u32, base_color_c> Colors;
+		for (auto& INFO : gpu_data.task_pools)
+		{
+			Colors[INFO.INDEX_TASK].add(INFO.C);
+		}
+
+		for (auto& T : Colors)
+		{
+			u32 index = T.first;
+			int V = index / defl.Width();
+			int U = index % defl.Width();
+
+			u32 Fcount = FCountMap[index];
+			if (Fcount)
+			{
+				auto& C = T.second;
+				// Calculate lighting amount
+				C.scale(Fcount);
+				C.mul(.5f);
+				defl.Lumel(U, V)._set(C);
+				defl.Marker(U, V) = 255;
+			}
+			else
+			{
+				defl.Marker(U, V) = 0;
+			}
+		}
+
+		Colors.clear();
+ 	};
+
+	int RAYS_TASK = 16 * 1024; // 190 * 1024 * 1024; // * 200
+	extern u64 RayTracingTime;
+	RayTracingTime = 0;
+
+	for (u32 V = 0; V< defl.Height(); V++)
+	{
+ 		for (u32 U = 0; U < defl.Width(); U++)
+		{
+ 			base_color_c C;
+			u32 Fcount = 0;
+			try
+			{
+				for (u32 J = 0; J < Jcount; J++)
+				{
+					// LUMEL space
+					Fvector2				P;
+					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+					// World space
+					Fvector wP, wN, B;
+					for (vecFaceIt it = space.begin(); it != space.end(); it++)
+					{
+						Face* F = *it;
+						_TCF& tc = F->tc[0];
+						if (tc.isInside(P, B))
+						{
+							// We found triangle and have barycentric coords
+							Vertex* V1 = F->v[0];
+							Vertex* V2 = F->v[1];
+							Vertex* V3 = F->v[2];
+							wP.from_bary(V1->P, V2->P, V3->P, B);
+							wN.from_bary(V1->N, V2->N, V3->N, B);
+							wN.normalize();
+
+							u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+ 							gpu_data.LightPointPacked(V * defl.Width() + U, J, wP, wN, inlc_global_data()->L_static(), flags, F);
+							Fcount++;
+						}
+					}
+				}
+			}
+			catch (...)
+			{
+				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
+			}
+
+			FCountMap[V * defl.Width() + U] = Fcount;
+
+			if (gpu_data.getAllocatedRays() > RAYS_TASK)
+			{
+				CTimer t;
+				t.Start();
+				GPU_RUN_TASKS();
+				gpu_data.ClearPool();
+				// clMsg("*** Ray Recvest processing: %u ms", t.GetElapsed_ms());
+			}
+		}
+		AditionalData("Current Height: %u | RayTraceGPU %llu ms", V, RayTracingTime / 1000);
+	}
+
+	GPU_RUN_TASKS();
+
+}
 
 static xr_vector<u32> not_clear;
 void ImplicitLightingExec()
 {
-
 	Implicit		calculator;
 
 	cl_globs.Allocate();
@@ -206,7 +324,8 @@ void ImplicitLightingExec()
 		Progress(0);
 		cl_globs.Initialize(defl);
 
-		RunImplicitMultithread(defl);
+		// RunImplicitMultithread(defl);
+ 		RunTaskGPU();
 
 		defl.faces.clear();
 
