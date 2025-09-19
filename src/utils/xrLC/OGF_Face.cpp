@@ -1,11 +1,11 @@
 #include "StdAfx.h"
 #include "Build.h"
 #include "OGF_Face.h"
-//#include "std_classes.h"
-#include "../../xrCore/FS.h"
+
 #include "../../xrEngine/Fmesh.h"
 #include "xrOcclusion.h"
 
+#include "../../Editors/Public/VIMP_Processor.h"
 
 using namespace std;
 

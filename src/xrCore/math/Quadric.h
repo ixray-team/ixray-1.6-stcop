@@ -1,11 +1,14 @@
-#include <cassert>
-#include <cmath>
+#pragma once
 
-class MxVector
+class XRCORE_API MxVector
 {
 public:
-    union {
-        struct { float x, y, z, w, d; };
+    union
+    {
+        struct 
+        {
+            float x, y, z, w, d;
+        };
         float data[5];
     };
 
@@ -49,18 +52,18 @@ public:
 
     float& operator[](size_t index)
     {
-        assert(index < 5 && "Index out of bounds");
+        VERIFY(index < 5 && "Index out of bounds");
         return data[index];
     }
 
     const float& operator[](size_t index) const
     {
-        assert(index < 5 && "Index out of bounds");
+        VERIFY(index < 5 && "Index out of bounds");
         return data[index];
     }
 };
 
-class MxMatrix
+class XRCORE_API MxMatrix
 {
 public:
     MxVector i, j, k, l, m;
@@ -117,19 +120,10 @@ public:
         return result;
     }
 
-    static void SymmetricSubFrom(MxMatrix& A, const MxVector& a, const MxVector& b)
-    {
-        for (unsigned int i = 0; i < 5; i++)
-        {
-            for (unsigned int j = 0; j < 5; j++)
-            {
-                A(i, j) -= a[i] * b[j];
-            }
-        }
-    }
+    static void SymmetricSubFrom(MxMatrix& A, const MxVector& a, const MxVector& b);
 };
 
-class MxQuadric
+class XRCORE_API MxQuadric
 {
 public:
     MxMatrix matrix;
@@ -143,33 +137,7 @@ public:
         : matrix(mat), vector(vec), scalar(scl), area(0.0f) {
     }
 
-    MxQuadric(const MxVector& p1, const MxVector& p2, const MxVector& p3, float areaVal)
-        : matrix(), vector(), scalar(0.0f), area(areaVal)
-    {
-        MxVector e1 = p2 - p1;
-        float e1Norm = e1.norm();
-        if (e1Norm > 0) e1 = e1 * (1.0f / e1Norm);
-
-        MxVector e2 = p3 - p1;
-        float e2Proj = e1.dot(e2);
-        e2 = e2 - (e1 * e2Proj);
-        float e2Norm = e2.norm();
-        if (e2Norm > 0) e2 = e2 * (1.0f / e2Norm);
-
-        float p1e1 = p1.dot(e1);
-        float p1e2 = p1.dot(e2);
-
-        for (unsigned int i = 0; i < 5; i++)
-        {
-            matrix(i, i) = 1.0f;
-        }
-
-        MxMatrix::SymmetricSubFrom(matrix, e1, e1);
-        MxMatrix::SymmetricSubFrom(matrix, e2, e2);
-
-        vector = (e1 * p1e1) + (e2 * p1e2) - p1;
-        scalar = p1.dot(p1) - (p1e1 * p1e1) - (p1e2 * p1e2);
-    }
+    MxQuadric(const MxVector& p1, const MxVector& p2, const MxVector& p3, float areaVal);
 
     MxQuadric operator+(const MxQuadric& other) const
     {
