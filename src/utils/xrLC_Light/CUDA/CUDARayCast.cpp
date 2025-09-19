@@ -148,11 +148,12 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 			FATAL("[OptiX] Failed to initialize OptiX context");
 		}
 	}
-
+	
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
 }
+
 
 // При завершении работы
 void CleanupRayTracing()
@@ -213,186 +214,214 @@ void XRay::RayTrace::CUDA::InitializeTextures(xr_vector<TextureData>& gpuTexture
 }
 
 #include <xrDeflector.h>
+#include "Vector3HW.h"
 
-struct RayHitResult
+struct ColorsRessult
 {
-	float t;
-	int faceId;
+	hardware_color Color;
+	int		       Configured;
+	int			   RealProcessed;
 };
 
-struct Params
+struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
+
+ 	// 
+	ColorsRessult*		colors;
+ 	hardware_lighting*  lights;
+	int					counts_lights;
+
 	float3 rayOrigin;
 	float3 rayDir;
-	float rayMaxT;
-	RayHitResult* result;
 };
 
 u64 RayTracingTime = 0;  
+u64 RayTracingCopy = 0;
+u64 RayTracingResults = 0;
+
 class RayTracer
 {
-	RayHitResult* d_results;  // Буфер для результатов (N лучей)
-	CUdeviceptr d_params;
-	CUstream stream;        // Отдельный стрим
-	int max_rays;           // Макс. количество лучей в батче
+	// Colors (Result)
+	ColorsRessult*		  h_colors;		// CPU alloc
+	ColorsRessult*		  d_colors;		// GPU alloc
 
-	Params* h_params;
-	RayHitResult* h_results;
+	// Lighting 
+	int					  size_lights;
+	hardware_lighting*    h_lights;	// CPU alloc
+	hardware_lighting*	  d_lights;	// GPU alloc
+
+
+	// Parrrams (.cu export __constant__ Params g_params; )
+	OPTICK_Params*		  h_params;			// CPU alloc
+	OPTICK_Params*		  d_params;			// GPU alloc)
+	
+	
+	CUstream	  stream;			// Отдельный стрим
+	int			  max_rays;					// Макс. количество лучей в батче
+ 
 public:
 	bool isInitialized = false;
 
 	~RayTracer()
 	{
 		if (h_params) cudaFreeHost(h_params);
-		if (h_results) cudaFreeHost(h_results);
+	//	if (h_results) cudaFreeHost(h_results);
 	}
-
+	
 	void Init(int max_rays)
 	{
 		this->max_rays = max_rays;
-		CUDA_CHECK(cudaMalloc(&d_results, max_rays * sizeof(RayHitResult)));
-		//CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), sizeof(Params)));
-		CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), max_rays * sizeof(Params)));
+  		CUDA_CHECK(cudaStreamCreate(&stream));	
+		
+		// parrams
+		CUDA_CHECK(cudaMallocHost(&h_params, max_rays * sizeof(OPTICK_Params)));							// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_params, max_rays * sizeof(OPTICK_Params)));								// Device Alloc
 
-		CUDA_CHECK(cudaStreamCreate(&stream));
+		// colors
+		CUDA_CHECK(cudaMallocHost(&h_colors, max_rays * sizeof(ColorsRessult)));							// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_colors, max_rays * sizeof(ColorsRessult)));								// Device Alloc
+
 		isInitialized = true;
-
-		CUDA_CHECK(cudaMallocHost(&h_params, max_rays * sizeof(Params)));
-		CUDA_CHECK(cudaMallocHost(&h_results, max_rays * sizeof(RayHitResult)));
 	}
 
-	// 2. Пакетная трассировка лучей
-	void TraceRays(xr_vector<RayRequest>& rays)
+	void InitializeLights(base_lighting& Lights)
 	{
-		CTimer t;
-		t.Start();
-		if (rays.size() > max_rays)
+		enum eType : u16
 		{
-			Msg("*** > MaxRAYS:  Start Tracing Rays: %u size", rays.size());	return;
+			eSun, 
+			eHemi, 
+			eRGB
+		};
+ 
+ 		auto Light = [&](R_Light& L, eType type)
+		{
+			hardware_lighting cuL;
+ 			cuL.type			= L.type;
+ 			cuL.light_type		= type;
+			cuL.diffuse			= { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+			cuL.position		= { L.position.x, L.position.y, L.position.z };
+			cuL.direction		= { L.direction.x, L.direction.y, L.direction.z };
+			cuL.range			= L.range;
+			cuL.range2			= L.range2;
+			cuL.falloff			= L.falloff;
+			cuL.attenuation0	= L.attenuation0;
+			cuL.attenuation1	= L.attenuation1;
+			cuL.attenuation2	= L.attenuation2;
+			cuL.energy			= L.energy;
+			return cuL;
+ 		};
+ 		
+		u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
+ 		
+		// Заполняем буфер Источников света
+		h_lights = new hardware_lighting[numLights];
+		int INDEX_LIGHT = 0;
+		for (auto& RGB : Lights.rgb)
+		{
+			h_lights[INDEX_LIGHT] = Light(RGB, eRGB);
+			INDEX_LIGHT++;
 		}
-
-		// Подготавливаем данные на хосте
-		for (size_t i = 0; i < rays.size(); ++i)
+		for (auto& SUN : Lights.sun)
 		{
-			h_params[i] = {
+			h_lights[INDEX_LIGHT] = Light(SUN, eSun);
+			INDEX_LIGHT++;
+		}
+		for (auto& HEMI : Lights.hemi)
+		{
+			h_lights[INDEX_LIGHT] = Light(HEMI, eHemi);
+			INDEX_LIGHT++;
+		}
+ 		 
+		CUDA_CHECK( cudaMalloc((void**)&d_lights, sizeof(hardware_lighting) * numLights) );
+		CUDA_CHECK( cudaMemcpy((void*)d_lights, h_lights, sizeof(hardware_lighting) * numLights, cudaMemcpyHostToDevice) );
+		size_lights = numLights;
+	}
+	
+
+	void TraceRaysNew(PackedLighting& data_gpu)
+	{
+ 		// Подготавливаем данные на хосте
+		CTimer t; t.Start();
+
+
+ 		int IndexRay = 0;
+		
+		for (auto taskID = 0; taskID < data_gpu.IndexTask; taskID++)
+		{
+			auto& Task = data_gpu.GetRays(taskID);
+			h_params[IndexRay] =
+			{
 				.handle = CommitedScene.tlasHandle,
-				.rayOrigin = make_float3(rays[i].P.x, rays[i].P.y, rays[i].P.z),
-				.rayDir = make_float3(rays[i].D.x, rays[i].D.y, rays[i].D.z),
-				.rayMaxT = rays[i].R,
-				.result = d_results + i // * sizeof(RayHitResult)
-			};
-		}
-		// Msg("*** Processing HOST Parrams : %u ms", t.GetElapsed_ms()); t.Start();
+			
+				// Result Buffer
+				.colors = d_colors,
+				.lights = d_lights,
+				.counts_lights = size_lights,
 
+ 				.rayOrigin = make_float3(Task.P.x, Task.P.y, Task.P.z),
+				.rayDir = make_float3(Task.N.x, Task.N.y, Task.N.z),
+			};
+			IndexRay++;
+ 		};
+ 		
+		clMsg("Processing Size: %u | Lightings: %u", IndexRay, size_lights);
+
+
+		RayTracingCopy += t.GetElapsed_mcs(); t.Start();
 		// Копируем на устройство
 		CUDA_CHECK(cudaMemcpyAsync(
-			(void*)d_params,
+			d_params,
 			h_params,
-			rays.size() * sizeof(Params),
+			IndexRay * sizeof(OPTICK_Params),
 			cudaMemcpyHostToDevice,
 			stream
 		));
-
-		// Msg("*** Processing Copy to GPU: %u ms", t.GetElapsed_ms()); t.Start();
-
 
 		// Запускаем трассировку
 		OPTIX_CHECK(optixLaunch
 		(
 			optixContext.GetPipeline(),
 			stream,
-			d_params,
-			sizeof(Params),
+			reinterpret_cast<CUdeviceptr> ( d_params ),
+			sizeof(OPTICK_Params),
 			&optixContext.GetSBT(),
-			rays.size(), 1, 1  // Запускаем N лучей
+			IndexRay, 1, 1  // Запускаем N лучей
 		));
-		// Msg("*** Processing Run Tracing : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Копируем результаты асинхронно
-		CUDA_CHECK(cudaMemcpyAsync(
-			h_results,
-			(void*)d_results,
-			rays.size() * sizeof(RayHitResult),
+		CUDA_CHECK(
+		cudaMemcpyAsync(
+			h_colors,
+			d_colors,
+			IndexRay * sizeof(ColorsRessult),
 			cudaMemcpyDeviceToHost,
 			stream
-		));
-		// Msg("*** Processing Copy Results : %u ms", t.GetElapsed_ms()); t.Start();
-
+			)
+		);
+ 
 		// Синхронизируем только один раз
 		CUDA_CHECK(cudaStreamSynchronize(stream));
-
-		// Обновляем результаты
-		for (size_t i = 0; i < rays.size(); ++i)
- 			rays[i].result = h_results[i].t > 0 ? h_results[i].t : -1.0f;
- 
-		// Msg("*** Processing Update Results : %u ms", t.GetElapsed_ms());
-
 		RayTracingTime += t.GetElapsed_mcs();
+
+
+		for (auto i = 0; i < IndexRay; i++)
+		{
+			Msg("Index: %u | Processed: %u/%u | color: hemi: %f", i, h_colors[i].RealProcessed, h_colors[i].Configured, h_colors[i].Color.hemi);
+		}
+
 	}
 };
 
-
 thread_local RayTracer Tracer;
-void XRay::RayTrace::CUDA::RayTracePack(xr_vector<RayRequest> & data)
+void XRay::RayTrace::CUDA::RayTracePackNew(PackedLighting& data_gpu, base_lighting& L)
 {
-  	if (!Tracer.isInitialized)
- 		Tracer.Init(1024 * 32);
- 	Tracer.TraceRays(data);
-}
-
-float XRay::RayTrace::CUDA::RayTrace(Fvector& P, Fvector& D, float R, Face* skip)
-{
-#if 0
-	static RayTracer Tracer;
-	static bool Init = false;
-
-	if (!Init)
+	if (!Tracer.isInitialized)
 	{
-		Tracer.Init(1024);
-		Init = true;
+		Tracer.Init(MAX_RAYS_PER_TASK + 1024);
+		Tracer.InitializeLights(L);
 	}
-	Tracer.TraceRays(Data);
-#else
-	RayHitResult* d_result;
-	RayHitResult h_result = { -1.0f, -1 };
-
-	CUDA_CHECK(cudaMalloc(&d_result, sizeof(RayHitResult)));
-	CUDA_CHECK(cudaMemcpy(d_result, &h_result, sizeof(RayHitResult), cudaMemcpyHostToDevice));
-
-	Params h_params = {};
-	h_params.handle = CommitedScene.tlasHandle;
-	h_params.rayOrigin = make_float3(P.x, P.y, P.z);
-	h_params.rayDir = make_float3(D.x, D.y, D.z);
-	h_params.rayMaxT = R;
-	h_params.result = d_result;
-
-	CUdeviceptr d_params;
-	CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), sizeof(Params)));
-	CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_params), &h_params, sizeof(Params), cudaMemcpyHostToDevice));
-
-	OPTIX_CHECK(optixLaunch
-	(
-		optixContext.GetPipeline(),
-		cudaStream,
-		d_params,
-		sizeof(Params),
-		&optixContext.GetSBT(),
-		1, 1, 1
-	));
-
-	CUDA_CHECK(cudaStreamSynchronize(cudaStream));
-	CUDA_CHECK(cudaMemcpy(&h_result, d_result, sizeof(RayHitResult), cudaMemcpyDeviceToHost));
-
-	CUDA_CHECK(cudaFree(d_result));
-	CUDA_CHECK(cudaFree((void*)d_params));
-
-	if (h_result.t > 0)
-	{
-		// Можно вернуть расстояние или сам face, если нужен
-		return h_result.t;
-	}
-
-	return -1.0f;
-#endif
+	
+	Tracer.TraceRaysNew(data_gpu);
 }
+ 

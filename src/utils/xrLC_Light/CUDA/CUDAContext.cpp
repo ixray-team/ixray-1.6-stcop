@@ -94,6 +94,8 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 		&module
 	);
 
+	clMsg("*** PTX SIZE: %u", PtxData.size());
+
 	// Создание программных групп
 	OptixProgramGroup raygen_prog_group = nullptr;
 	OptixProgramGroupOptions programGroupOptions = {};
