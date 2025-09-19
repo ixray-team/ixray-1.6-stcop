@@ -234,8 +234,8 @@ void player_hud::tune(Fvector _values)
 		if(idx)
 			_curr_dr	/= 20.0f;
 
-		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[0][idx];
-		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets[1][idx];
+		Fvector& pos_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[0][idx];
+		Fvector& rot_ = m_attached_items[hud_adj_item_idx]->m_measures.m_hands_positions.hands_offsets_tune[1][idx];
 
 		if(hud_adj_mode==1)
 		{
@@ -243,6 +243,7 @@ void player_hud::tune(Fvector _values)
 			if(values.y)	diff.y = (values.y>0)?_delta_pos:-_delta_pos;
 			if(values.z)	diff.z = (values.z>0)?_delta_pos:-_delta_pos;
 
+			m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach_real[0].add(diff);
 			pos_.add		(diff);
 		}
 
@@ -252,6 +253,7 @@ void player_hud::tune(Fvector _values)
 			if(values.y)	diff.y = (values.y>0)?_curr_dr:-_curr_dr;
 			if(values.z)	diff.z = (values.z>0)?_curr_dr:-_curr_dr;
 
+			m_attached_items[hud_adj_item_idx]->m_measures.m_hands_attach_real[1].add(diff);
 			rot_.add		(diff);
 		}
 		if( (values.x)||(values.y)||(values.z) )
