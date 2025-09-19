@@ -173,7 +173,6 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     float dH = o_size.y / (LOD_IMAGE_SIZE / 2);
     float dR = bb.getradius();
     float d2R = dR * 2.f;
-    //ETOOLS::ray_options			(CDB::OPT_CULL);
 
     CreateLODSamples(bb, lod_pixels, LOD_IMAGE_SIZE, LOD_IMAGE_SIZE);
 

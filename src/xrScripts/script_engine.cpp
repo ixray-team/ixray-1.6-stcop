@@ -90,30 +90,14 @@ void lua_cast_failed(lua_State *L, LUABIND_TYPE_INFO info)
 	Debug.fatal(DEBUG_INFO,"LUA error: cannot cast lua value to %s",info->name());
 }
 
-void CScriptEngine::setup_callbacks		()
+void CScriptEngine::setup_callbacks()
 {
-	{
 #ifdef LUABIND_NO_EXCEPTIONS
-		luabind::set_error_callback		(CScriptEngine::lua_error);
+	luabind::set_error_callback(CScriptEngine::lua_error);
+	luabind::set_cast_failed_callback(lua_cast_failed);
 #endif
 
-#if 0
-		luabind::set_pcall_callback
-		(
-			[](lua_State* L) ->void
-			{  
-				lua_pushcfunction(L, CScriptEngine::lua_pcall_failed);
-			}
-		);
-#endif
-	}
-
-#ifdef LUABIND_NO_EXCEPTIONS
-	luabind::set_cast_failed_callback	(lua_cast_failed);
-#endif
-
-	lua_atpanic							(lua(),CScriptEngine::lua_panic);
-//	luabind::disable_super_deprecation();
+	lua_atpanic(lua(), CScriptEngine::lua_panic);
 }
 
 #ifdef DEBUG
@@ -130,9 +114,10 @@ int auto_load(lua_State* L)
 	int StackSize = lua_gettop(L);
 	bool IsTable = lua_istable(L, 1);
 
-	if ((StackSize < 2) || !IsTable || !lua_isstring(L, 2)) {
+	if ((StackSize < 2) || !IsTable || !lua_isstring(L, 2))
+	{
 		lua_pushnil(L);
-		return		(1);
+		return 1;
 	}
 
 	xr_string file_name_space = lua_tostring(L, 2);
@@ -147,9 +132,8 @@ int auto_load(lua_State* L)
 		lua_pushnil(L);
 	}
 
-	return (1);
+	return 1;
 }
-
 
 void CScriptEngine::setup_auto_load		()
 {
@@ -162,7 +146,6 @@ void CScriptEngine::setup_auto_load		()
 	luaL_getmetatable					(lua(),"XRAY_AutoLoadMetaTable");
 	lua_setmetatable					(lua(),-2);
 	//. ??????????
-	// lua_settop							(lua(),-0);
 
 	//Alun: Allow directory structuring for scripts
 	xray_scripts.clear();
@@ -250,35 +233,36 @@ void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)
 
 void CScriptEngine::load_common_scripts()
 {
-#ifdef DBG_DISABLE_SCRIPTS
-	return;
-#endif
-	string_path		S;
-	FS.update_path	(S,"$game_config$","script.ltx");
-	CInifile		*l_tpIniFile = new CInifile(S);
-	R_ASSERT		(l_tpIniFile);
-	if (!l_tpIniFile->section_exist("common")) {
-		xr_delete			(l_tpIniFile);
+	string_path S;
+	FS.update_path(S, "$game_config$", "script.ltx");
+	CInifile* l_tpIniFile = new CInifile(S);
+	R_ASSERT(l_tpIniFile);
+
+	if (!l_tpIniFile->section_exist("common"))
+	{
+		xr_delete(l_tpIniFile);
 		return;
 	}
 
-	if (l_tpIniFile->line_exist("common","script")) {
-		LPCSTR			caScriptString = l_tpIniFile->r_string("common","script");
-		u32				n = _GetItemCount(caScriptString);
-		string256		I;
-		for (u32 i=0; i<n; ++i) {
-			process_file(_GetItem(caScriptString,i,I));
-			xr_strcat	(I,"_initialize");
-			if (object("_G",I,LUA_TFUNCTION)) {
-//				lua_dostring			(lua(),xr_strcat(I,"()"));
+	if (l_tpIniFile->line_exist("common", "script"))
+	{
+		LPCSTR caScriptString = l_tpIniFile->r_string("common", "script");
+		u32 n = _GetItemCount(caScriptString);
+		string256 I;
+		for (u32 i = 0; i < n; ++i)
+		{
+			process_file(_GetItem(caScriptString, i, I));
+			xr_strcat(I, "_initialize");
+			if (object("_G", I, LUA_TFUNCTION))
+			{
 				luabind::functor<void>	f;
-				R_ASSERT				(functor(I,f));
-				f						();
+				R_ASSERT(functor(I, f));
+				f();
 			}
 		}
 	}
 
-	xr_delete			(l_tpIniFile);
+	xr_delete(l_tpIniFile);
 }
 
 shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
