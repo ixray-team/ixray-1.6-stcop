@@ -5,11 +5,13 @@
 #include "light_point.h"
 #include "xrFace.h"
 
-void CDeflector::LightGPU(base_lighting* LightsSelected, HASH& H)
+void CDeflector::LightGPU( HASH& H )
 {
 	// Geometrical bounds
-	Fbox bb;		bb.invalidate();
-	try {
+	Fbox bb;	
+	bb.invalidate();
+	try 
+	{
 		for (u32 fid = 0; fid < UVpolys.size(); fid++)
 		{
 			Face* F = UVpolys[fid].owner;
@@ -22,15 +24,19 @@ void CDeflector::LightGPU(base_lighting* LightsSelected, HASH& H)
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
 
+
+	// se7kills todo: Аналог на GPU
 	// Convert lights to local form
-	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
+	// LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
 	// Calculate and fill borders
-	try {
+	try
+	{
 		lm_layer& lm = layer;
 
 		// UV & HASH
 		RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+		
 		Fbox2			bounds;
 		Bounds_Summary(bounds);
 		H.initialize(bounds, (u32)UVpolys.size());
@@ -41,20 +47,13 @@ void CDeflector::LightGPU(base_lighting* LightsSelected, HASH& H)
 		}
 
 		// Calculate
-		R_ASSERT(lm.width <= (getLMSIZE() - 2 * BORDER));
-		R_ASSERT(lm.height <= (getLMSIZE() - 2 * BORDER));
 		lm.create(lm.width, lm.height);
-		L_DirectGPU(LightsSelected, H);
+		L_DirectGPU(H);
 	}
 	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::L_Calculate");
 	}
-
-
-	for (u32 ref = 254; ref > 0; ref--)
-		if (!ApplyBorders(layer, ref))
-			break;
 
 }
 
@@ -62,7 +61,7 @@ void CDeflector::LightGPU(base_lighting* LightsSelected, HASH& H)
 
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
  
-void CDeflector::L_DirectGPU(  base_lighting* LightsSelected, HASH& H)
+void CDeflector::L_DirectGPU(   HASH& H)
 {
 	auto FromBarry = [&](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 		{
@@ -75,47 +74,6 @@ void CDeflector::L_DirectGPU(  base_lighting* LightsSelected, HASH& H)
 			wN.add(F->N);
 			exact_normalize(wN);
 		};
-
-	auto EdgeProcessing = [&](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
-	{ 
-		Fvector		vdir;
-		vdir.sub(v2, v1);
-
-		lm_layer& lm = layer;
-
-		Fvector2		size;
-		size.x = p2.x - p1.x;
-		size.y = p2.y - p1.y;
-		int	du = iCeil(_abs(size.x) / texel_size);
-		int	dv = iCeil(_abs(size.y) / texel_size);
-		int steps = _max(du, dv);
-		if (steps <= 0)	return;
-
-		for (int I = 0; I <= steps; I++)
-		{
-			float	time = float(I) / float(steps);
-			Fvector2	uv;
-			uv.x = size.x * time + p1.x;
-			uv.y = size.y * time + p1.y;
-			int	_x = iFloor(uv.x * float(lm.width));
-			int _y = iFloor(uv.y * float(lm.height));
-
-			if ((_x < 0) || (_x >= (int)lm.width))	continue;
-			if ((_y < 0) || (_y >= (int)lm.height))	continue;
-
-			if (lm.marker[_y * lm.width + _x])		continue;
-
-			// ok - perform lighting
-			base_color_c	C;
-			Fvector			P;	P.mad(v1, vdir, time);
- 
-			// LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
- 
-			C.mul(.5f);
-			lm.surface[_y * lm.width + _x]._set(C);
-			lm.marker[_y * lm.width + _x] = 255;
-		}
-	};
 
 	lm_layer& lm = layer;
  	// Setup variables
@@ -151,37 +109,212 @@ void CDeflector::L_DirectGPU(  base_lighting* LightsSelected, HASH& H)
 						Face* F = (*it)->owner;
 						FromBarry(F, wP, wN, B);
  						GPUTaskinSystem.LightPointPackedDeflector(U, V, this, wP, wN, flags, F);
- 						// LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
- 						Fcount += 1;
+  						Fcount += 1;
  						break;
 					}
 				}
 			}
 
-			GPUTaskinSystem.FCountMap[{U, V}] = Fcount;
+			GPUTaskinSystem.DEF_FCountMap[this][{U, V}] = Fcount;
 		}
 	}
+}
 
+void CDeflector::ApplyGPU()
+{
+	lm_layer& lm = layer;
+	auto UVColors = GPUTaskinSystem.DEF_Colors[this];
+
+	for (auto& [key, C] : UVColors)
+	{
+		u32 U = key.first;
+		u32 V = key.second;
 	
-	// if (Fcount) {
-	// 	C.scale(Fcount);
-	// 	C.mul(.5f);
-	// 	lm.surface[V * lm.width + U]._set(C);
-	// 	lm.marker[V * lm.width + U] = 255;
-	// }
-	// else {
-	// 	lm.surface[V * lm.width + U]._set(C);	 
-	// 	lm.marker[V * lm.width + U] = 0;
-	// }
+		u32 Fcount = GPUTaskinSystem.DEF_FCountMap[this][key];
+		if (Fcount)
+		{
+			C.scale(Fcount);
+			C.mul(.5f);
+			lm.surface[V * lm.width + U]._set(C);
+			lm.marker[V * lm.width + U] = 255;
+		}
+		else {
+			lm.surface[V * lm.width + U]._set(C);
+			lm.marker[V * lm.width + U] = 0;
+		}
+	} 
+}
 
-	// *** Render Edges
-	// float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
-	// for (u32 t = 0; t < UVpolys.size(); t++)
-	// {
-	// 	UVtri& T = UVpolys[t];
-	// 	Face* F = T.owner;
- 	// 	EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
-	// 	EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
-	// 	EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
-	// }
+void CDeflector::ApplyEdges(bool isFirst)
+{
+	lm_layer& lm = layer;
+
+	auto EdgeProcessing = [&](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+		{
+			Fvector		vdir;
+			vdir.sub(v2, v1);
+
+			lm_layer& lm = layer;
+
+			Fvector2		size;
+			size.x = p2.x - p1.x;
+			size.y = p2.y - p1.y;
+			int	du = iCeil(_abs(size.x) / texel_size);
+			int	dv = iCeil(_abs(size.y) / texel_size);
+			int steps = _max(du, dv);
+			if (steps <= 0)	return;
+
+			for (int I = 0; I <= steps; I++)
+			{
+				float	time = float(I) / float(steps);
+				Fvector2	uv;
+				uv.x = size.x * time + p1.x;
+				uv.y = size.y * time + p1.y;
+				int	_x = iFloor(uv.x * float(lm.width));
+				int _y = iFloor(uv.y * float(lm.height));
+
+				if ((_x < 0) || (_x >= (int)lm.width))	continue;
+				if ((_y < 0) || (_y >= (int)lm.height))	continue;
+
+				if (lm.marker[_y * lm.width + _x])		continue;
+
+				// ok - perform lighting
+				base_color_c	C;
+				Fvector			P;	P.mad(v1, vdir, time);
+
+				LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
+
+				C.mul(.5f);
+				lm.surface[_y * lm.width + _x]._set(C);
+				lm.marker[_y * lm.width + _x] = 255;
+			}
+		};
+	 
+	// *** Render Edges (Embree Process)
+	float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
+	for (u32 t = 0; t < UVpolys.size(); t++)
+	{
+		UVtri& T = UVpolys[t];
+		Face* F = T.owner;
+		EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
+		EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
+		EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
+	}
+
+
+	if (isFirst)
+	{
+		for (u32 ref = 254; ref > 0; ref--)
+		if (!ApplyBorders(layer, ref))
+			break;
+	}
+
+}
+
+BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+BOOL	compress_Zero(lm_layer& lm, u32 rms);
+
+void CDeflector::LowerResolutionGPU(HASH& H)
+{
+	ApplyResolution = false;
+
+	try
+	{
+		u32	w, h;
+		if (compress_Zero(layer, rms_zero))
+		{
+			ApplyResolution = true;
+			return;		// already with borders
+		}
+		else if (compress_RMS(layer, rms_shrink, w, h))
+		{
+			// Reacalculate lightmap at lower resolution
+			layer.create(w, h);
+			L_DirectGPU(H);
+		}
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - Compression");
+	}
+}
+ 
+void CDeflector::ApplyExpadBordersGPU()
+{
+	if (ApplyResolution) return;
+
+	// Expand with borders
+	try
+	{
+		if (layer.width == 1)
+		{
+			// Horizontal ZERO - vertical line
+			lm_layer		T;
+			T.create(2 * BORDER, layer.height + 2 * BORDER);
+
+			// Transfer
+			for (u32 y = 0; y < T.height; y++)
+			{
+				int			py = int(y) - BORDER;
+				clamp(py, 0, int(layer.height - 1));
+				base_color	C = layer.surface[py];
+				T.surface[y * 2 + 0] = C;
+				T.marker[y * 2 + 0] = 255;
+				T.surface[y * 2 + 1] = C;
+				T.marker[y * 2 + 1] = 255;
+			}
+
+			// Exchange
+			T.width = 0;
+			T.height = layer.height;
+			layer = T;
+		}
+		else if (layer.height == 1)
+		{
+			// Vertical ZERO - horizontal line
+			lm_layer		T;
+			T.create(layer.width + 2 * BORDER, 2 * BORDER);
+
+			// Transfer
+			for (u32 x = 0; x < T.width; x++)
+			{
+				int			px = int(x) - BORDER;
+				clamp(px, 0, int(layer.width - 1));
+				base_color	C = layer.surface[px];
+				T.surface[0 * T.width + x] = C;
+				T.marker[0 * T.width + x] = 255;
+				T.surface[1 * T.width + x] = C;
+				T.marker[1 * T.width + x] = 255;
+			}
+
+			// Exchange
+			T.width = layer.width;
+			T.height = 0;
+			layer = T;
+		}
+		else
+		{
+			// Generic blit
+			lm_layer		lm_old = layer;
+			lm_layer		lm_new;
+			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
+			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
+			layer = lm_new;
+
+			ApplyBorders(layer, 254);
+			ApplyBorders(layer, 253);
+			ApplyBorders(layer, 252);
+			ApplyBorders(layer, 251);
+			for (u32 ref = 250; ref > 0; ref--)
+				if (!ApplyBorders(layer, ref))
+					break;
+
+			layer.width = lm_old.width;
+			layer.height = lm_old.height;
+		}
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
+	}
 }
