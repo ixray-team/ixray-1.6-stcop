@@ -5,7 +5,7 @@
 #include "light_point.h"
 #include "xrFace.h"
 
-void CDeflector::LightGPU( HASH& H )
+void CDeflector::LightGPU(HASH& H)
 {
 	// Geometrical bounds
 	Fbox bb;	
@@ -23,7 +23,6 @@ void CDeflector::LightGPU( HASH& H )
 	{
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
-
 
 	// se7kills todo: Аналог на GPU
 	// Convert lights to local form
@@ -58,8 +57,8 @@ void CDeflector::LightGPU( HASH& H )
 }
 
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
- 
-void CDeflector::L_DirectGPU(   HASH& H)
+
+void CDeflector::L_DirectGPU(HASH& H)
 {
 	auto FromBarry = [&](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 		{
@@ -80,7 +79,7 @@ void CDeflector::L_DirectGPU(   HASH& H)
 	half.set(.5f / dim.x, .5f / dim.y);
 
 	// Jitter data
-	u32		 Jcount; Fvector2 JS; Fvector2* Jitter;
+	u32 Jcount; Fvector2 JS; Fvector2* Jitter;
 	JS.set(.4999f / dim.x, .4999f / dim.y);
 	Jitter_Select(Jitter, Jcount);
 	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable;
@@ -89,7 +88,7 @@ void CDeflector::L_DirectGPU(   HASH& H)
 	{
  		for (u32 U = 0; U < lm.width; U++)
 		{
- 			u32				Fcount = 0;
+ 			u32 Fcount = 0;
  
 			for (u32 J = 0; J < Jcount; J++)
 			{
@@ -99,7 +98,7 @@ void CDeflector::L_DirectGPU(   HASH& H)
 
 				xr_vector<UVtri*>& space = H.query(P.x, P.y);
  				// World space
-				Fvector		wP, wN, B;
+				Fvector wP, wN, B;
 				for (UVtri** it = &*space.begin(); it != &*space.end(); it++)
 				{
 					if ((*it)->isInside(P, B))
@@ -125,50 +124,50 @@ void CDeflector::L_DirectGPU(   HASH& H)
 
 void CDeflector::ApplyGPU(HASH& H)
 {
-	auto EdgeProcessing = [&](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+	auto EdgeProcessing = [](Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, CDeflector* Deflector)
+	{
+		Fvector vdir;
+		vdir.sub(v2, v1);
+
+		lm_layer& lm = Deflector->layer;
+
+		Fvector2 size;
+		size.x = p2.x - p1.x;
+		size.y = p2.y - p1.y;
+		int	du = iCeil(_abs(size.x) / texel_size);
+		int	dv = iCeil(_abs(size.y) / texel_size);
+		int steps = _max(du, dv);
+		if (steps <= 0)	return;
+
+		for (int I = 0; I <= steps; I++)
 		{
-			Fvector		vdir;
-			vdir.sub(v2, v1);
+			float	time = float(I) / float(steps);
+			Fvector2	uv;
+			uv.x = size.x * time + p1.x;
+			uv.y = size.y * time + p1.y;
+			int	_x = iFloor(uv.x * float(lm.width));
+			int _y = iFloor(uv.y * float(lm.height));
 
-			lm_layer& lm = layer;
+			if ((_x < 0) || (_x >= (int)lm.width))	continue;
+			if ((_y < 0) || (_y >= (int)lm.height))	continue;
 
-			Fvector2		size;
-			size.x = p2.x - p1.x;
-			size.y = p2.y - p1.y;
-			int	du = iCeil(_abs(size.x) / texel_size);
-			int	dv = iCeil(_abs(size.y) / texel_size);
-			int steps = _max(du, dv);
-			if (steps <= 0)	return;
+			if (lm.marker[_y * lm.width + _x])		continue;
 
-			for (int I = 0; I <= steps; I++)
-			{
-				float	time = float(I) / float(steps);
-				Fvector2	uv;
-				uv.x = size.x * time + p1.x;
-				uv.y = size.y * time + p1.y;
-				int	_x = iFloor(uv.x * float(lm.width));
-				int _y = iFloor(uv.y * float(lm.height));
+			// ok - perform lighting
+			base_color_c	C;
+ 			
+			Fvector			P;	
+			P.mad(v1, vdir, time);
+			// LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
+			
+			u32 flags = 0;
+			GPUTaskinSystem.LightPointPackedDeflector(Deflector, _x, _y, P, N, flags, skip);
 
-				if ((_x < 0) || (_x >= (int)lm.width))	continue;
-				if ((_y < 0) || (_y >= (int)lm.height))	continue;
-
-				if (lm.marker[_y * lm.width + _x])		continue;
-
-				// ok - perform lighting
-				base_color_c	C;
- 				
-				Fvector			P;	
-				P.mad(v1, vdir, time);
-				// LightPoint(nullptr, nullptr, C, P, N, lc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
-				
-				u32 flags = 0;
-				GPUTaskinSystem.LightPointPackedDeflector(this, _x, _y, P, N, flags, skip);
-
-				// C.mul(.5f);
-				// lm.surface[_y * lm.width + _x]._set(C);
-				// lm.marker[_y * lm.width + _x] = 255;
-			}
-		};
+			// C.mul(.5f);
+			// lm.surface[_y * lm.width + _x]._set(C);
+			// lm.marker[_y * lm.width + _x] = 255;
+		}
+	};
  
 	if (NeedGarbageRays)
 	{
@@ -215,9 +214,9 @@ void CDeflector::ApplyGPU(HASH& H)
 		{
 			UVtri& T = UVpolys[t];
 			Face* F = T.owner;
-			EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F);
-			EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F);
-			EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
+			EdgeProcessing(T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size, F, this);
+			EdgeProcessing(T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size, F, this);
+			EdgeProcessing(T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F, this);
 		}
 	}	
 }
@@ -250,13 +249,9 @@ void CDeflector::ApplyGPU_Edges(bool isFirst)
 	}
 }
 
-
-
 // Перерасчет в более сжатый формат
-
-BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
-BOOL	compress_Zero(lm_layer& lm, u32 rms);
-
+BOOL compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+BOOL compress_Zero(lm_layer& lm, u32 rms);
 
 void CDeflector::LowerResolutionGPU(HASH& H)
 {
@@ -272,11 +267,11 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 		}
 		else if (compress_RMS(layer, rms_shrink, w, h))
 		{
-			
-			Fbox2			bounds;
+			Fbox2 bounds;
 			Bounds_Summary(bounds);
 			H.initialize(bounds, (u32)UVpolys.size());
-			for (u32 fid = 0; fid < UVpolys.size(); fid++) {
+			for (u32 fid = 0; fid < UVpolys.size(); fid++)
+			{
 				UVtri* T = &(UVpolys[fid]);
 				Bounds(fid, bounds);
 				H.add(bounds, T);
