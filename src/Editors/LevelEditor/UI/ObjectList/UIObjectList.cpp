@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
 UIObjectList* UIObjectList::Form = nullptr;
-UIObjectList::UIObjectList():m_Root("")
+
+UIObjectList::UIObjectList():
+	m_Root("")
 {
 	m_Mode = M_Visible;
 	m_Filter[0] = 0;
@@ -99,6 +101,18 @@ void UIObjectList::Draw()
 	{
 		m_Root.ClearSelcted();
 	}
+
+	if (GUIManager->SearchIcon)
+	{
+		ImVec2 IconSize = { 12,12 };
+
+		ImGui::SameLine();
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+
+		ImGui::Image(GUIManager->SearchIcon, IconSize);
+	}
+
 	ImGui::EndGroup();
 
 	ImGui::PopStyleVar(1);

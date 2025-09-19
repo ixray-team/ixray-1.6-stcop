@@ -67,8 +67,11 @@ void UIMainForm::Draw()
     m_TopBar->Draw();
     m_LeftBar->Draw();
     m_KeyForm->Draw();
-   // ImGui::ShowDemoWindow(&bOpen);
     m_Render->Draw();
+}
+
+void UIMainForm::ResetEnd()
+{
 }
 
 void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)

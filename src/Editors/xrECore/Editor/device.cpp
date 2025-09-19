@@ -286,20 +286,16 @@ void CEditorRenderDevice::Destroy()
 	if (!b_is_Ready) return;
 	ELog.Msg(mtInformation, "Destroying Direct3D...");
 
-	//HW.Validate			();
+	SearchIcon.destroy();
 	::Render->destroy();
-
 	// before destroy
 	_Destroy(FALSE);
 
 	xr_delete(Resources);
 
 	UI->Destroy();
-	// real destroy
-	//HW.DestroyDevice	();
 
 	ELog.Msg(mtInformation, "D3D: device cleared");
-	// xr_delete			(Statistic);
 }
 
 //---------------------------------------------------------------------------
@@ -386,6 +382,7 @@ void  CEditorRenderDevice::Resize(int w, int h, bool maximized)
 void CEditorRenderDevice::Reset(bool)
 {
 	u32 tm_start = TimerAsync();
+	SearchIcon.destroy();
 
 	Resources->reset_begin();
 	Resources->DeferredUnload();
@@ -403,6 +400,12 @@ void CEditorRenderDevice::Reset(bool)
 
 	UIChooseForm::SetNullTexture(texture_null->pSurface);
 
+	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser\\search");
+	if (SearchIcon)
+	{
+		SearchIcon->Load();
+		GUIManager->SearchIcon = SearchIcon->pSurface;
+	}
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);
 }
