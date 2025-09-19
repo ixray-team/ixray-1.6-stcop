@@ -406,4 +406,10 @@
 	<string id="st_dress_backpack">
 		<text>put on backpack</text>
 	</string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Glass mask effect</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text>Drops on Glass</text>
+	</string>
 </string_table>
