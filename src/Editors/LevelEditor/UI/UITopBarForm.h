@@ -14,9 +14,7 @@ private:
 	u32 m_timeRedo;
 
 	ref_texture m_tReloadConfigs;
-	ref_texture m_tCForm;
 	ref_texture m_tAIMap;
-	ref_texture m_tGGraph;
 	ref_texture m_tPlayInEditor;
 	ref_texture m_tTerminated;
 	ref_texture m_tPlayPC;

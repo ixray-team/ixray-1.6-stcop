@@ -6,9 +6,7 @@ UITopBarForm::UITopBarForm()
 {
     m_timeUndo               = 0;
     m_timeRedo               = 0;
-    m_tCForm                 = EDevice->Resources->_CreateTexture("ed\\bar\\CForm");
     m_tAIMap                 = EDevice->Resources->_CreateTexture("ed\\bar\\AIMap");
-    m_tGGraph                = EDevice->Resources->_CreateTexture("ed\\bar\\GGraph");
     m_tPlayInEditor          = EDevice->Resources->_CreateTexture("ed\\bar\\play_in_editor");
     m_tPlayPC                = EDevice->Resources->_CreateTexture("ed\\bar\\play_pc");
     m_tPlayCleanGame         = EDevice->Resources->_CreateTexture("ed\\bar\\play_clean_game");
@@ -129,9 +127,9 @@ void UITopBarForm::Draw()
 
 			if (ImGui::TableNextColumn())
 			{
-				IMGUI_HINT_BUTTON("BuildCForm", m_tCForm, "Build CFORM", ClickCForm);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_CUBE, "Build CFORM", ClickCForm);
 				IMGUI_HINT_BUTTON("BuildAIMap", m_tAIMap, "Build AI-Map", ClickAIMap);
-				IMGUI_HINT_BUTTON("BuildGameGraph", m_tGGraph, "Build Game Graph", ClickGGraph);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_DIAGRAM_PROJECT, "Build Game Graph", ClickGGraph);
 			}
 
 			if (ImGui::TableNextColumn())
@@ -210,20 +208,23 @@ void UITopBarForm::Draw()
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Activates the physics simulation of the selected object(s).");
+					ImGui::SetTooltip("Activates the physics simulation of the selected objects");
 				}
 				ImGui::SameLine(0, 10);
 
 				ImGui::SetCursorPosY(3);
+
+
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.15f));
 				if (ImGui::Button("Use Pos"))
 				{
 					ExecCommand(COMMAND_USE_SIMULATE_POSITIONS, true);
 				}
+
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-					ImGui::SetTooltip("Use the position of the selected object when physics simulation is active. The position of the object will be applied when simulating physics.");
+					ImGui::SetTooltip("Use the position of the selected object when physics simulation is active\r\nThe position of the object will be applied when simulating physics");
 				}
 				ImGui::PopStyleColor();
 			}
