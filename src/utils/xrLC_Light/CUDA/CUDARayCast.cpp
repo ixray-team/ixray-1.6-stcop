@@ -237,8 +237,16 @@ class RayTracer
 	CUstream stream;        // Отдельный стрим
 	int max_rays;           // Макс. количество лучей в батче
 
+	Params* h_params;
+	RayHitResult* h_results;
 public:
 	bool isInitialized = false;
+
+	~RayTracer()
+	{
+		if (h_params) cudaFreeHost(h_params);
+		if (h_results) cudaFreeHost(h_results);
+	}
 
 	void Init(int max_rays)
 	{
@@ -249,6 +257,9 @@ public:
 
 		CUDA_CHECK(cudaStreamCreate(&stream));
 		isInitialized = true;
+
+		CUDA_CHECK(cudaMallocHost(&h_params, max_rays * sizeof(Params)));
+		CUDA_CHECK(cudaMallocHost(&h_results, max_rays * sizeof(RayHitResult)));
 	}
 
 	// 2. Пакетная трассировка лучей
@@ -262,7 +273,6 @@ public:
 		}
 
 		// Подготавливаем данные на хосте
-		xr_vector<Params> h_params(rays.size());
 		for (size_t i = 0; i < rays.size(); ++i)
 		{
 			h_params[i] = {
@@ -276,10 +286,9 @@ public:
 		// Msg("*** Processing HOST Parrams : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Копируем на устройство
-		CUDA_CHECK(cudaMemcpyAsync
-		(
+		CUDA_CHECK(cudaMemcpyAsync(
 			(void*)d_params,
-			h_params.data(),
+			h_params,
 			rays.size() * sizeof(Params),
 			cudaMemcpyHostToDevice,
 			stream
@@ -301,10 +310,8 @@ public:
 		// Msg("*** Processing Run Tracing : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Копируем результаты асинхронно
-		std::vector<RayHitResult> h_results(rays.size());
-		CUDA_CHECK(cudaMemcpyAsync
-		(
-			h_results.data(),
+		CUDA_CHECK(cudaMemcpyAsync(
+			h_results,
 			(void*)d_results,
 			rays.size() * sizeof(RayHitResult),
 			cudaMemcpyDeviceToHost,
