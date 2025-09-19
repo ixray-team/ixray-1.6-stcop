@@ -71,8 +71,7 @@ virtual	void Execute()
 			csA.Leave();
 
 			base_color_c		vC;
-		 
-			vecVertex			&verts = lc_global_data()->g_vertices();
+ 			vecVertex			&verts = lc_global_data()->g_vertices();
  			Vertex*		V		= verts[ID];
 			
  			V->normalFromAdj	();
@@ -84,7 +83,10 @@ virtual	void Execute()
 };
 
 CThreadManager	precalc_base_hemi;
-#define MAX_THREADS CPU::ID.n_threads - 2
+
+#include "../xrForms/CompilersUI.h"
+#include "../xrLC_Light/CUDA/CUDARayCast.h"
+extern CompilersMode gCompilerMode;
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -111,16 +113,51 @@ void CBuild::xrPhase_AdaptiveHT	()
 		EmbreeMain.AttachGeometrys	(false);
  	}
 
+// #define USE_INTEL 
+	 
+#ifdef USE_INTEL
 	// Prepare
 	Status("AdaptiveHT : base hemisphere ...");
 	ThreadWorkID_Adaptive = 0;
-	for (u32 thID = 0; thID < MAX_THREADS; thID++)
+	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 		precalc_base_hemi.start(new CPrecalcBaseHemiThread(thID));
 	precalc_base_hemi.wait();
 
- 	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
 	Status("AdaptiveHT : Gathering lighting information...");
-	u_SmoothVertColors	(5);
+	u_SmoothVertColors(5);
+
+#else 
+ 	XRay::RayTrace::CUDA::InitializeRayTracing();
+	
+	CTimer t;
+	t.Start();
+	PackedLighting task_group;
+ 	for (auto VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
+	{		
+		// 1: VertexID, 2: SampleID
+		auto& V = lc_global_data()->g_vertices()[VertexID];
+		V->normalFromAdj();
+		task_group.LightPointPacked(VertexID, 1, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+
+		if (task_group.getAllocatedRays() > 2048)
+		{
+			task_group.LightPointPackedRun();
+			task_group.LightPointPackedApply();
+			for (auto& TASK : task_group.task_pools)
+			{
+				TASK.C.mul(0.5f);
+				lc_global_data()->g_vertices()[TASK.INDEX_TASK]->C._set(TASK.C);
+			}
+			task_group.ClearPool();
+		}
+	}
+	 
+
+#endif
+
+
 
 	if (lc_global_data()->GetIsIntelUse())
 		EmbreeMain.IntelEmbereUNLOAD();
