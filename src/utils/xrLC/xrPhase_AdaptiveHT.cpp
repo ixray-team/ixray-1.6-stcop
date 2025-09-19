@@ -89,36 +89,31 @@ virtual	void Execute()
 
 CThreadManager	precalc_base_hemi;
 
-void CBuild::xrPhase_AdaptiveHT	()
+void CBuild::xrPhase_AdaptiveHT_tessalte()
 {
 	CDB::COLLIDER	DB;
-	DB.ray_options	(0);
+	DB.ray_options(0);
 
 	if (!lc_global_data()->GetSkipTesselate())
 	{
 		Status("Tesselating...");
 		// clear split flag from all faces + calculate normals
-		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)
+		for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
 		{
-			lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
-			lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
-			lc_global_data()->g_faces()[fit]->CalcNormal			();
+			lc_global_data()->g_faces()[fit]->flags.bSplitted = false;
+			lc_global_data()->g_faces()[fit]->flags.bLocked = true;
+			lc_global_data()->g_faces()[fit]->CalcNormal();
 		}
-		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
+		u_Tesselate(callback_edge_longest, 0, 0);		// tesselate
 	}
 
-	// Tesselate + calculate
-	Status			("Building RayTrace Model...");
-	
-	
-	Light_prepare();
-	
-	
+}
+
+void CBuild::xrPhase_AdaptiveHT_calculate()
+{
 	// Build model
 	if (!gCompilerMode.CUDA)
 	{
-		BuildRapid(FALSE);
- 
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
 		ThreadWorkID_Adaptive = 0;
@@ -129,12 +124,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		//////////////////////////////////////////////////////////////////////////
 		Status("AdaptiveHT : Gathering lighting information...");
 		u_SmoothVertColors(5);
-
-		if (lc_global_data()->GetIsIntelUse())
-		{
-			EmbreeMain.IntelEmbereUNLOAD();
-		}
-	}
+ 	}
 #ifdef LCCUDA_BUILD
 	else
 	{
