@@ -10,15 +10,14 @@ struct GridKeyVertexies
 {
     int x, y, z;
 
-    bool operator==(const GridKeyVertexies& other) const noexcept {
+    bool operator==(const GridKeyVertexies& other) const noexcept
+    {
         return x == other.x && y == other.y && z == other.z;
     }
 };
 
-struct GridKeyHasher {
-    
- 
-
+struct GridKeyHasher
+{
     std::size_t operator()(const GridKeyVertexies& k) const noexcept 
     {
         // Сдвигаем в положительную область
@@ -119,12 +118,12 @@ public:
         Fvector v[3];
         Face* F;
     };
-    std::vector<FaceRaw> raw_faces;
+
+    xr_vector<FaceRaw> raw_faces;
     void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
     {
         raw_faces.push_back({ {v1, v2, v3}, F });
     };
-
 
     void AddFace(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
     {
@@ -145,8 +144,6 @@ public:
 
         AddFaceRaw(F, v1, v2, v3);
     }
-
-  
 
     struct IndexedVertex
     {

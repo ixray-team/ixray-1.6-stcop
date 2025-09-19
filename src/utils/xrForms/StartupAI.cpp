@@ -6,7 +6,6 @@
 #include "../xrAI/game_spawn_constructor.h"
 #include "../xrAI/xrCrossTable.h"
 #include "../xrAI/game_graph_builder.h"
-#include "../xrAI/spawn_patcher.h"
 
 #include "../xrAI/factory_api.h"
 #include "../../xrGame/quadtree.h"
@@ -40,8 +39,7 @@ void StartupAI()
 	// Load project
 	FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
 
-
-	for (auto& [Name, Selected] : gCompilerMode.Files)
+	for (const auto& [Name, Selected] : gCompilerMode.Files)
 	{
 		if (!Selected)
 			continue;
@@ -82,7 +80,7 @@ void StartupAI()
 	{
 		xr_string Levels;
 
-		for (auto& [Name, Selected] : gCompilerMode.Files)
+		for (const auto& [Name, Selected] : gCompilerMode.Files)
 		{
 			if (!Selected)
 				continue;
@@ -96,7 +94,9 @@ void StartupAI()
 		string512 name = {};
 		strcpy(name, Levels.data());
 		if (xr_strlen(name))
+		{
 			name[xr_strlen(name)] = 0;
+		}
 
 		xr_string output = gCompilerMode.AI_spawn_name;
 
@@ -112,9 +112,8 @@ void StartupAI()
 		}
 
 		clear_temp_folder();
-		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
+		xr_unique_ptr<CGameSpawnConstructor> BuilderSpawn = xr_make_unique<CGameSpawnConstructor>(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
-	
 }
 
 SEFactory_Create* create_entity = 0;
@@ -132,16 +131,11 @@ void InitialFactory() {
 
 	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
 
-#ifdef _M_X64
 	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
 	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
-#else
-	create_entity = (Factory_Create*)GetProcAddress(hFactory, "_create_entity@4");	R_ASSERT(create_entity);
-	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "_destroy_entity@4");	R_ASSERT(destroy_entity);
-#endif
 }
 
-void DestroyFactory() {
+void DestroyFactory()
+{
 	FreeLibrary(hFactory);
 }
- 

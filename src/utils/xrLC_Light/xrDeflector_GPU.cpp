@@ -82,7 +82,7 @@ void CDeflector::L_DirectGPU(   HASH& H)
 	u32 Jcount; Fvector2 JS; Fvector2* Jitter;
 	JS.set(.4999f / dim.x, .4999f / dim.y);
 	Jitter_Select(Jitter, Jcount);
-	u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable;
+	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
  
 	ApplyLmap = true;
 

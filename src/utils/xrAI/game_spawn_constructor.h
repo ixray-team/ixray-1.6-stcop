@@ -7,21 +7,21 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "alife_space.h"
 #include "xr_graph_merge.h"
 #include "../xrForms/xrThread.h"
 #include "graph_abstract.h"
 #include "xrServer_Object_Base.h"
-#include "spawn_constructor_space.h"
 #include "server_entity_wrapper.h"
+#include "level_spawn_constructor.h"
 
 class CSE_Abstract;
 class CLevelSpawnConstructor;
 class CSE_ALifeCreatureAbstract;
 class CPatrolPathStorage;
 
-class CGameSpawnConstructor {
+class CGameSpawnConstructor
+{
 	friend class CSpawnMerger;
 public:
 	typedef SpawnConstructorSpace::LEVEL_POINT_STORAGE								LEVEL_POINT_STORAGE;
@@ -31,7 +31,8 @@ public:
 	typedef xr_set<CLevelInfo>														LEVEL_INFO_STORAGE;
 
 public:
-	struct CSpawnHeader {
+	struct CSpawnHeader
+	{
 		u32							m_version;
 		xrGUID						m_guid;
 		xrGUID						m_graph_guid;

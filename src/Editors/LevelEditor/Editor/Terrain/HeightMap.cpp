@@ -109,7 +109,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 			bool isFlat = false, hasHoles = false;
 		};
 
-		std::vector<ChunkInfo> chunkInfos(chunkCountX * chunkCountZ);
+		xr_vector<ChunkInfo> chunkInfos(chunkCountX * chunkCountZ);
 		RenderData.Chunks.reserve(chunkCountX * chunkCountZ);
 
 		float globalMinH = FLT_MAX;
