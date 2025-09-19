@@ -25,8 +25,8 @@ extern void		Surface_Init	();
 // 
 
 // INTEL SELECTION
-extern  void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI);
-
+#include "embree_raytracing/EmbreeRayTrace.h"
+#include "../xrForms/CompilersUI.h"
 void global_claculation_data::xrLoad()
 {
 	string_path					N;
@@ -44,24 +44,45 @@ void global_claculation_data::xrLoad()
 		fs->r				(&H,sizeof(hdrCFORM));
 		R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 		
-		Fvector*	verts	= (Fvector*)fs->pointer();
+		Fvector*	verts	= (Fvector*) fs->pointer();
 		CDB::TRI*	tris	= (CDB::TRI*)(verts+H.vertcount);
 		
-		
-		InitEmbreeDetails(verts, tris, H.facecount);
+		// Embree Loader
+ 		EmbreeMain.build_data.build_fcnt	 = H.facecount;
+		EmbreeMain.build_data.build_vcnt	 = H.vertcount;
 
-		RCAST_Model.build	( verts, H.vertcount, tris, H.facecount );
-		Msg("* Level CFORM: %dK",RCAST_Model.memory()/1024);
+		// Vertex Loading
+		EmbreeMain.build_data.build_verts.clear();
+		EmbreeMain.build_data.build_verts.resize(H.vertcount);
 
+		for (u32 Vid = 0; Vid < H.vertcount; Vid++)
+			EmbreeMain.build_data.build_verts[Vid] = verts[Vid];
+
+		// Triangle Loading
+		EmbreeMain.build_data.build_faces.clear();
+		EmbreeMain.build_data.build_faces.resize(H.facecount);
+
+		for (u32 Tid = 0; Tid < H.facecount; Tid++)
+			EmbreeMain.build_data.build_faces[Tid] = tris[Tid];
+		Phase("Loading RCast CDB...");
+
+		RCAST_Model.build(verts, H.vertcount, tris, H.facecount);
+		clMsg("* Level CFORM: %dK", RCAST_Model.memory() / 1024);
+  
 		g_rc_faces.resize	(H.facecount);
 		R_ASSERT(fs->find_chunk(1));
 		fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));
 
 		LevelBB.set			(H.aabb);
-	}
-	
- 	slots_data.Load( );
 
+		FS.r_close(fs);
+	}
+
+	EmbreeMain.InitEmbreeDetails();
+
+	Phase("Loading build...");
+
+ 	slots_data.Load( );
 
  	// Lights
 	{
