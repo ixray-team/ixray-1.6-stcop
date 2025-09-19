@@ -261,6 +261,7 @@ int APIENTRY WinMain
 	Serializer.Read("do", gCompilerMode.DO);
 	Serializer.Read("Silent", gCompilerMode.Silent);
 	Serializer.Read("Embree", gCompilerMode.Embree);
+	Serializer.Read("Embree", gCompilerMode.CUDA);
 	Serializer.Read("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer.Read("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer.Read("ClearTemp", gCompilerMode.ClearTemp);
@@ -302,6 +303,7 @@ int APIENTRY WinMain
 	Serializer.Write("do", gCompilerMode.DO);
 	Serializer.Write("Silent", gCompilerMode.Silent);
 	Serializer.Write("Embree", gCompilerMode.Embree);
+	Serializer.Write("Embree", gCompilerMode.CUDA);
 	Serializer.Write("EmbreeBVHCompact", gCompilerMode.EmbreeBVHCompact);
 	Serializer.Write("EmbreeBVHRobust", gCompilerMode.EmbreeBVHRobust);
 	Serializer.Write("ClearTemp", gCompilerMode.ClearTemp);
