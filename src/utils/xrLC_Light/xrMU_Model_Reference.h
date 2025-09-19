@@ -21,7 +21,6 @@ public:
 	base_color_c			c_scale;
 	base_color_c			c_bias;
 public:
-	xr_vector<_vertex>								  SafeVertices;
  	xr_concurrent_unordered_map<size_t, base_color_c> colors_cuda;
 
 public:
