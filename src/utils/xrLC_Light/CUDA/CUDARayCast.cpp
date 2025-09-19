@@ -13,11 +13,12 @@ struct FaceDataIntel;
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
 {
 	xrLC_GlobalData* globalData = lc_global_data();
-	if (!globalData) return false;
+	if (!globalData)
+		return false;
 
 	OptixGeometryBuilder geometryBuilder;
  	// 1. Обрабатываем статическую геометрию
-
+	Status("Build BLAS...");
 	CTimer t; t.Start();
 	int INDEX = 0;
 	for (Face* F : globalData->g_faces())
