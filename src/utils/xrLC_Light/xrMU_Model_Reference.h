@@ -1,7 +1,8 @@
 #pragma once
 
 #include "base_color.h"
- 
+#include "mu_model_face.h"
+
 class xrMU_Model;
 struct FaceDataIntel;
 
@@ -20,11 +21,19 @@ public:
 	base_color_c			c_scale;
 	base_color_c			c_bias;
 public:
+	xr_vector<_vertex>								  SafeVertices;
+ 	xr_concurrent_unordered_map<size_t, base_color_c> colors_cuda;
+
+public:
 							xrMU_Reference		(): model(0), sector(u16(-1)), flags(Flags32().assign(0)), xform(Fidentity){}
 
 	void					Load				( IReader& fs, xr_vector<xrMU_Model*>& mu_models );
+	
 	void					calc_lighting		();
-
+	void					calc_lighting_cuda_1  ();
+	void					calc_lighting_cuda_2  ();
+	void					calc_lighting_cuda_3  ();
+ 
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
 

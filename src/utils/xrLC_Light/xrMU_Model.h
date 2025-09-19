@@ -67,15 +67,19 @@ public:
  
 	void					calc_materials		();
 	void					calc_faceopacity	();
-	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* M, base_lighting& lights, u32 flags, bool use_opcode);
-	void					calc_lighting		();
+	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* M, base_lighting& lights, u32 flags);
+	void					calc_lighting		(  );
+
  
+
 	void					export_cform_rcast	( CDB::CollectorPacked& CL, Fmatrix& xform );
 	void					export_cform_rcast_new (xr_vector<FaceDataIntel>& faces, Fmatrix& xform);
  
 	u32						find				( const _vertex *v )const;
 	u32						find				( const _face *v )const;
- 
+
+
+
 };
 
 void XRLC_LIGHT_API	calc_normals	( xrMU_Model &model );
