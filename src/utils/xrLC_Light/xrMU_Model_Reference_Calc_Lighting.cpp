@@ -2,10 +2,11 @@
 
 #include "xrMU_Model_Reference.h"
 #include "xrMU_Model.h"
-
 #include "light_point.h"
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
+
+#include "../xrForms/CompilersUI.h"
 
 template<typename T, typename T2>
 void vfComputeLinearRegression(xr_vector<T>& A, xr_vector<T>& B, T2& C, T2& D)
@@ -156,11 +157,8 @@ void xrMU_Reference::calc_lighting()
 }
 
 // **** CUDA CODE  **** // 
- 
- 
+#ifdef LCCUDA_BUILD
 #include "xrDeflectorLight_Packed.h"
-#include "../xrForms/CompilersUI.h"
-extern CompilersMode gCompilerMode;
 
 // Capture RAYS
 void xrMU_Reference::calc_lighting_cuda_1()
@@ -361,3 +359,4 @@ void xrMU_Reference::calc_lighting_cuda_3()
 			o_test(4, index, (u32)color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
 	}
 }
+#endif
