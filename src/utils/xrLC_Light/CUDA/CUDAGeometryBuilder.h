@@ -158,7 +158,8 @@ public:
     {
         size_t VertexStart = vertices.size();
 
-        CTimer t, tTask; t.Start();
+        CTimer tStats;
+        tStats.Start();
         //----------------------
         // 1. Собираем все вершины
         //----------------------
@@ -166,8 +167,6 @@ public:
         xr_vector<IndexedVertex> temp;
         temp.reserve(totalVerts);
 
-        tTask.Start();
-        // clMsg("$ CAPTURING VERTS");
         for (size_t i = 0; i < raw_faces.size(); ++i)
         {
             for (int j = 0; j < 3; ++j)
@@ -175,25 +174,18 @@ public:
                 temp.push_back({ raw_faces[i].v[j], static_cast<uint32_t>(i * 3 + j) });
             }
         }
-        clMsg("$ CAPTURING VERTS: %u ms | MEMORY: %u mb", tTask.GetElapsed_ms(), GetHeapMemory() / 1024 / 1024); tTask.Start();
-
         //----------------------
         // 2. Сортируем вершины
         //----------------------
-        // clMsg("$ SORTING VERTS"); 
         std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
             {
                 if (a.v.x != b.v.x) return a.v.x < b.v.x;
                 if (a.v.y != b.v.y) return a.v.y < b.v.y;
                 return a.v.z < b.v.z;
             });
-        clMsg("$ SORTING VERTS: %u ms | MEMORY: %u mb", tTask.GetElapsed_ms(), GetHeapMemory() / 1024 / 1024); tTask.Start();
-
         //----------------------
         // 3. Убираем дубликаты
         //----------------------
-        // clMsg("$ REMOVES DUBLICATE");
-
         xr_vector<uint32_t> remap(totalVerts);
         xr_vector<Fvector> unique_vertices;
         unique_vertices.reserve(totalVerts / 3);
@@ -215,24 +207,14 @@ public:
         // Сожмать до реального размера
         unique_vertices.shrink_to_fit();
 
-        clMsg("$ REMOVES DUBLICATE: %u ms | MEMORY: %u mb", tTask.GetElapsed_ms(), GetHeapMemory() / 1024 / 1024); tTask.Start();
-
-
         //----------------------
         // 4. Перестраиваем треугольники
         //----------------------
-        // clMsg("$ RESTORE TRI INDEX");
-
-        // Убрать размер до запаковки  !!!
         vertices.swap(unique_vertices);
 
-        triangles.clear();
-        facePointers.clear();
-
-        triangles.reserve(raw_faces.size());
-        facePointers.reserve(raw_faces.size());
-
-
+        triangles.clear();                       facePointers.clear();
+        triangles.reserve(raw_faces.size());     facePointers.reserve(raw_faces.size());
+ 
         for (size_t i = 0; i < raw_faces.size(); ++i)
         {
             CDB::TRI tri;
@@ -243,25 +225,15 @@ public:
             triangles.push_back(tri);
             facePointers.push_back(raw_faces[i].F);
         }
-        clMsg("$ RESTORE TRI INDEX: %u ms | MEMORY: %u mb", tTask.GetElapsed_ms(), GetHeapMemory() / 1024 / 1024); tTask.Start();
-
 
         //----------------------
         // 5. Чистим временные данные
         //----------------------
-
-        tTask.Start();
         raw_faces.clear();
         raw_faces.shrink_to_fit();
 
-        clMsg("$ Clearing Faces: %u ms | MEMORY: %u mb", tTask.GetElapsed_ms(), GetHeapMemory() / 1024 / 1024);  t.Start();
-
-        clMsg("$ Capacity Tris: %llu | Faces : %llu | Capacity Vertex: %llu", 
-            triangles.capacity(), facePointers.capacity(), vertices.capacity() );
-
-        clMsg("$ Total: %u ms | TRIS: %u | Vertex Now: %u | Vertex Pre : %u", 
-            t.GetElapsed_ms(), 
-            triangles.size(),
+        clMsg("$ Remove Dublicates: %u ms | Vertex Now: %u | Vertex Pre : %u", 
+            tStats.GetElapsed_ms(),
             vertices.size(), 
             VertexStart);
     };

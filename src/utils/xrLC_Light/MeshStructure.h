@@ -286,7 +286,7 @@ struct remove_pred
 template<typename typeVertex>
 IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 {
- 	Status		("Isolating vertices...");
+ 	// Status		("Isolating vertices...");
 
  	const u32 verts_old		= (u32)vertices.size();
 	u32 vRemoveReal = 0;
@@ -318,8 +318,8 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	u32 verts_new		= (u32)vertices.size();
 	u32	_count			= verts_old-verts_new;
 	
-	if	(_count)		
-		clMsg	("::compact:: %d verts removed",_count);
+	// if	(_count)		
+	// 	clMsg	("::compact:: %d verts removed",_count);
 
-	Status(":: compacting vertex: %u, capacity: %u", vertices.size(), vertices.capacity());
+	// Status(":: compacting vertex: %u, capacity: %u", vertices.size(), vertices.capacity());
 }
