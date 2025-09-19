@@ -11,16 +11,14 @@ struct _counter
 	u32	dwCount;
 };
 
-xrCriticalSection csResolveMat;
+
 void	CBuild::xrPhase_ResolveMaterials()
 {
-	// Count number of materials
-	CTimer t;
-	t.Start();
+	CTimer  tProcecss; tProcecss.Start();
+	
+ 	// Count number of materials
  	// Calculating materials
-	// concurrency::concurrent_vector<_counter> counts_mt_safe;
 	auto& faces = lc_global_data()->g_faces();
-
 	std::unordered_map<u16, size_t> matToIndex;
  
 	// Локальные хранилища для потоков -> потом сведём в общий map
@@ -55,17 +53,11 @@ void	CBuild::xrPhase_ResolveMaterials()
 		count.push_back(_counter{ mat, cnt });
 		matToIndex[mat] = idx++;
 	}
- 
- 	
-	clMsg("Calculating materials/subdivs (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
 
 	// Performing Subdivs
-	t.Start();
-
 	concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> bins;
 	bins.reserve(count.size());
 	bins.resize(count.size());
-
  	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
 		{
 			if (!F->Shader().flags.bRendering) return;
@@ -87,12 +79,8 @@ void	CBuild::xrPhase_ResolveMaterials()
 		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
 	}
  
-	clMsg("Perfroming subdivisions (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
-
-
 	// Старый код
-	t.Start();
-	{
+ 	{
 		for (int SP = 0; SP<int(g_XSplit.size()); SP++)
 		{
 			if (g_XSplit[SP]->empty())
@@ -100,12 +88,9 @@ void	CBuild::xrPhase_ResolveMaterials()
 		}
 		g_XSplit.erase(std::remove(g_XSplit.begin(),g_XSplit.end(),(vecFace*) NULL),g_XSplit.end());
 	}
-	clMsg("Removing empty subdivs (SC) ... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
-  
-	t.Start();
-	for (auto F : g_XSplit)
+   
+ 	for (auto F : g_XSplit)
  		Detach(F);
-   	clMsg("Detaching subdivs (MT)... Memory: [%umb] [%ums]", GetHeapMemory() / 1024 / 1024, t.GetElapsed_ms());
-
-	clMsg				("%d subdivisions.",g_XSplit.size());
+ 
+	clMsg				("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());
 }
