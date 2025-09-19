@@ -104,6 +104,9 @@ extern ENGINE_API int m_look_cam_fp_zoom;
 int m_iQuickSave = 0;
 int m_iQuickSavesCount = 5;
 
+extern float	_delta_pos;
+extern float	_delta_rot;
+
 ENGINE_API extern float	g_console_sensitive;
 
 void register_mp_console_commands();
@@ -2604,6 +2607,10 @@ void CCC_RegisterCommands()
 	CMD1(CCC_Script, "run_script");
 	CMD1(CCC_ScriptCommand, "run_string");
 	CMD1(CCC_TimeFactor, "time_factor");
+
+	CMD4(CCC_Float, "hud_adj_delta_pos", &_delta_pos, 0.0001f, 1.0f);
+	CMD4(CCC_Float, "hud_adj_delta_rot", &_delta_rot, 0.0001f, 1.0f);
+
 #endif // MASTER_GOLD
 
 	CMD1(CCC_ReloadSystemLtx, "reload_system_ltx");

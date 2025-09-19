@@ -359,6 +359,8 @@ void hud_item_measures::hud_hands_positions::Load(const shared_str& section, boo
 	hands_offsets[0][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[0][2] : zero_vel);
 	xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
 	hands_offsets[1][2] = READ_IF_EXISTS(pSettings, r_fvector3, sSection, val_name, default_is_self ? hands_offsets[1][2] : zero_vel);
+
+	memcpy(hands_offsets_tune, hands_offsets, sizeof(hands_offsets_tune));
 }
 
 bool  attachable_hud_item::need_renderable()
@@ -934,8 +936,8 @@ void attachable_hud_item::UpdateInertion(u32 delta, CActor* actor)
 		tollookout_time_remains = 0;
 	}
 
-	Fvector pos = m_measures.m_hands_positions.hands_offsets[0][0];
-	Fvector rot = m_measures.m_hands_positions.hands_offsets[1][0];
+	Fvector pos = m_measures.m_hands_positions.hands_offsets_tune[0][0];
+	Fvector rot = m_measures.m_hands_positions.hands_offsets_tune[1][0];
 
 	Fvector targetpos = zero_vel;
 	Fvector targetrot = zero_vel;
@@ -1511,11 +1513,13 @@ void player_hud::update_inertion(Fmatrix& trans)
 	}
 }
 
+extern u32 hud_adj_mode;
+
 void player_hud::UpdateWeaponOffset(u32 delta)
 {
 	static const bool isInertion = EngineExternal()[EEngineExternalGame::EnableWeaponInertion];
 
-	if (!isInertion)
+	if (!isInertion || hud_adj_mode)
 	{
 		return;
 	}
