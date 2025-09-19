@@ -1,9 +1,6 @@
 #include "stdafx.h"
 
-
-//#include "build.h"
 #include "xrMU_Model.h"
-//#include "xrLC_GlobalData.h"
 #include "light_point.h"
  
 #include "../../xrCore/Collision/xrCDB.h"
@@ -12,49 +9,22 @@
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
 
+
+#include "xrDeflectorLight_Packed.h"
+#include "../xrForms/CompilersUI.h"
+
+extern CompilersMode gCompilerMode;
+
 void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
   
-union var
-{
-	int		i;
-	float	f;
-	bool	b;
-
-	operator float()			{ return f; }
-	operator int()				{ return i; }
-	operator bool()				{ return b; }
-
-	var& operator = (float _f)	{ f=_f;	return *this; }
-	var& operator = (int _i)	{ i=_i;	return *this; }
-	var& operator = (bool _b)	{ b=_b;	return *this; }
-
-	var()  						{ }
-	var(float _f) : f(_f) 		{ }
-	var(int _i)	: i(_i)			{ }
-	var(bool _b) : b(_b)		{ }
-};
-
-/*
-var		test;
-
-test	= 0.f;
-int	k	= test;
-
-test	= true;
-float f = test;
-
-float x = 10.f;
-var _x	= var(x);
-*/
-
 //-----------------------------------------------------------------------
-void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
+void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags)
 {
 	// trans-map
 	typedef	xr_multimap<float,v_vertices>	mapVert;
 	typedef	mapVert::iterator				mapVertIt;
 	mapVert									g_trans;
-	u32										I;
+ 
 
 	// trans-epsilons
 	const float eps			= EPS_L;
@@ -73,62 +43,52 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 
 	// MT-Safe 
 	xr_vector<_vertex> SafeVertices(m_vertices.size());
-
-	for (size_t Iter = 0; Iter < m_vertices.size(); Iter++)
-	{
-		SafeVertices[Iter] = *m_vertices[Iter];
-	}
+ 	for (size_t Iter = 0; Iter < m_vertices.size(); Iter++)
+ 		SafeVertices[Iter] = *m_vertices[Iter];
+	
+	u32 SampleMAX = lc_global_data()->GetOverrideSettings() ? lc_global_data()->GetJitterMU() : 6;
+	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
 	// Perform lighting
-	for (I = 0; I< SafeVertices.size(); I++)
+	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
 		_vertex&	V			= SafeVertices[I];
-
-		// Get ambient factor
-		float		v_amb		= 0.f;
-		float		v_trans		= 0.f;
-		for (u32 f=0; f<V.m_adjacents.size(); f++)
-		{
-			_face*	F			=	V.m_adjacents[f];
-			v_amb				+=	F->Shader().vert_ambient;
-			v_trans				+=	F->Shader().vert_translucency;
-		}
-		v_amb					/=	float(V.m_adjacents.size());
-		v_trans					/=	float(V.m_adjacents.size());
-		float v_inv				=	1.f-v_amb;
-
 		base_color_c			vC;
-		Fvector					vP,vN;
-		xform.transform_tiny	(vP,V.P);
-		Rxform.transform_dir	(vN,V.N);
-		exact_normalize			(vN); 
+
+		Fvector					vP, vN;
+		xform.transform_tiny(vP, V.P);
+		Rxform.transform_dir(vN, V.N);
+		exact_normalize(vN);
 
 		// multi-sample
-		u32 SampleMAX = 6;
-		if (lc_global_data()->GetOverrideSettings())
-			SampleMAX = lc_global_data()->GetJitterMU();
-
-		const int n_samples		= (g_params().m_quality==ebqDraft) ? 1: SampleMAX;
-		for (u32 sample=0; sample<(u32)n_samples; sample++)
+		for (u32 sample = 0; sample < (u32)n_samples; sample++)
 		{
-			float				a	= 0.2f * float(sample) / float(n_samples);
-			Fvector				P,N;
-			N.random_dir		(vN,deg2rad(30.f));
-			P.mad				(vP,N,a);
- 			LightPoint			(&DB, MDL, vC, P, N, lights, flags, 0);
+			float				a = 0.2f * float(sample) / float(n_samples);
+			Fvector				P, N;
+			N.random_dir(vN, deg2rad(30.f));
+			P.mad(vP, N, a);
+			LightPoint(&DB, MDL, vC, P, N, lights, flags, 0);
 		}
- 
+    
+		// Get ambient factor
+		float		v_amb = 0.f;
+		float		v_trans = 0.f;
+		for (u32 f = 0; f < V.m_adjacents.size(); f++)
+		{
+			_face* F = V.m_adjacents[f];
+			v_amb += F->Shader().vert_ambient;
+			v_trans += F->Shader().vert_translucency;
+		}
+		v_amb /= float(V.m_adjacents.size());
+		v_trans /= float(V.m_adjacents.size());
+		float v_inv = 1.f - v_amb;
+
 		if (n_samples > 0)
 		{
 			vC.scale(n_samples);
 			vC._tmp_ = v_trans;
-
-			if (flags & LP_dont_hemi)
-			{
-
-			}
-			else
-				vC.hemi += v_amb;
+ 			if (! (flags & LP_dont_hemi) )
+ 				vC.hemi += v_amb;
 		}
 		else
 		{
@@ -169,17 +129,11 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		}
 	}
 
-	// Enable faces if needed
-	/*
-	if	(bDisableFaces)
-		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
-	*/
-
 	// Process all groups
-	for (mapVertIt it=g_trans.begin(); it!=g_trans.end(); it++)
+	for (auto& map : g_trans)
 	{
 		// Unique
-		v_vertices&	VL		= it->second;
+		v_vertices&	VL		= map.second;
 		std::sort			(VL.begin(),VL.end());
 		VL.erase			(std::unique(VL.begin(),VL.end()),VL.end());
 
@@ -212,7 +166,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 
 	// Transfer colors to destination
 	dest.resize(SafeVertices.size());
-	for (I = 0; I< SafeVertices.size(); I++)
+	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
 		Fvector		ptPos	= SafeVertices[I].P;
 		base_color	ptColor	= SafeVertices[I].C;
@@ -235,12 +189,11 @@ void xrMU_Model::calc_lighting	()
 	CDB::MODEL*				M	= new CDB::MODEL();
 	M->build				(CL.getV(),(u32)CL.getVS(),CL.getT(),(u32)CL.getTS());
 
-	calc_lighting			(color,Fidentity, M, inlc_global_data()->L_static(),LP_dont_rgb+LP_dont_sun, true);
+	calc_lighting			(color,Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb+LP_dont_sun);
 
 	xr_delete				(M);
 
 	clMsg					("model '%s' - REF_lighted.",*m_name);
 }
-
-
+ 
 
