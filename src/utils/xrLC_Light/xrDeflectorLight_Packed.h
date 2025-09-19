@@ -13,64 +13,39 @@ enum LGroup : u8
 	eRGB = 3
 };
 
-#pragma pack(push, 4)
-// struct RayRequest
-// {
-// 	// Stuff Parrams
-// 	R_Light* L;
-// 	float    dotDirection;
-// 	// Ray Request
-// 	Fvector P;      // Начальная точка луча (аналог вашего `P`)
-// 	Fvector D;      // Направление луча (аналог `D`)
-// 	float R;        // Максимальная дистанция (аналог `R`)
-// 	float result;   // Результат трассировки (расстояние или -1)
-// 
-// 	LGroup   LightGroup;
-// 	bool	 isSunOrHemi;
-// 	u16		 LightType;
-// 	Face* skip;     // Полигон для игнорирования (аналог `skip`)
-// };
-// 
-struct RayRequest
-{	
- 	// Ray Request
-	Fvector P;			// Начальная точка луча (аналог вашего `P`)
-	Fvector D;			// Направление луча (аналог `D`)
-	float R;			// Максимальная дистанция (аналог `R`)
-	float result;		// Результат трассировки (расстояние или -1)
-	Face*	 skip;      // Полигон для игнорирования (аналог `skip`)
-};
-#pragma pack(pop)
-
-
 // Initialize TASKS
 #define MAX_RAYS_PER_TASK   1024 * 1024 * 40 // Нужно еще учесть что там будут лампочек может быть по 256 за 1 таск
  
 // Recvest Class
 struct RayRecvestIndex
 {
+	CDeflector* Owner = nullptr;
 	base_color_c C;
 	std::pair<u32, u32> INDEX_TASK;
-	u32 SampleID;
-
+  	
+	// Task Pos, Dir, Skip
 	Fvector P;
 	Fvector N;
 	Face* skip;
-	u32 flags;
 };
 
 class PackedLighting
 {
 public:
 	// Result Vector
-	size_t TotalRaysProcessed = 0;
-	xr_atomic_u32 IndexTask = 0;
-	RayRecvestIndex* task_pools;
+	bool isInitializedGPU = false;
+	u8	    current_flags = 0;
+	size_t  TotalRaysProcessed = 0;
+	u32		IndexTask = 0;
+
+
+	xr_vector<RayRecvestIndex> task_pools;
 
 	PackedLighting()
-	{
-		task_pools = ( RayRecvestIndex * ) xr_malloc(MAX_RAYS_PER_TASK * sizeof(RayRecvestIndex) );
-		ClearPool();
+	{	
+		// InitializeGPU();
+		task_pools.resize(MAX_RAYS_PER_TASK);
+ 		ClearPool();
 	};
  
 	~PackedLighting() 
@@ -81,22 +56,40 @@ public:
 public:
 	RayRecvestIndex& GetRays(int Index) { return task_pools[Index]; }
  
-	void LightPointPacked(u32 U, u32 V, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
-	void LightPointPackedRun();
+	void InitializeGPU();
+	void LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
+	void LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip);
+ 	void LightPointPackedRun();
    	
 	void ClearPool()
 	{ 
-		TotalRaysProcessed += AllocatedRays;
- 		AllocatedRays = 0; 
-		IndexTask.store(0, std::memory_order_acquire);
+		TotalRaysProcessed += IndexTask;
+		IndexTask = 0;
 	}
 
-	xr_map<std::pair<u32, u32>, base_color_c> Colors;	// Task Index, Color.
- 	xr_atomic_u32 AllocatedRays = 0;
+	void RestartALL()
+	{
+		// start
+		current_flags = 0;
  
+		TotalRaysProcessed = 0;
+		IndexTask = 0;
+		Colors.clear();
+ 
+		// Stats
+		StatsTotalGPUCopy = 0;
+		StatsCopyToVec = 0;
+		StatsRaysAdd = 0;
+	}
+
+	xr_map<std::pair<u32, u32>, u32>		  FCountMap;
+	xr_map<std::pair<u32, u32>, base_color_c> Colors;	// Task Index, Color.
+  
 	// Stats 
 	CTimer tStats;
 	u64 StatsTotalGPUCopy = 0;
 	u64 StatsCopyToVec = 0;
 	u64 StatsRaysAdd = 0;
 };
+
+extern PackedLighting GPUTaskinSystem;

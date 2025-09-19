@@ -107,15 +107,14 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 	// Tesselate + calculate
 	Status			("Building RayTrace Model...");
-	{
- 		Light_prepare();
- 		// Build model
-  		BuildRapid					(FALSE);
-		EmbreeMain.AttachGeometrys	(false);
- 	}
-
+ 
 	if (!gCompilerMode.CUDA)
 	{
+ 		Light_prepare();
+		// Build model
+		BuildRapid(FALSE);
+		EmbreeMain.AttachGeometrys(false);
+ 
 		// Prepare
 		Status("AdaptiveHT : base hemisphere ...");
 		ThreadWorkID_Adaptive = 0;
@@ -127,41 +126,30 @@ void CBuild::xrPhase_AdaptiveHT	()
 		//////////////////////////////////////////////////////////////////////////
 		Status("AdaptiveHT : Gathering lighting information...");
 		u_SmoothVertColors(5);
+
+
+		if (lc_global_data()->GetIsIntelUse())
+			EmbreeMain.IntelEmbereUNLOAD();
 	}
-#if 0//def LCCUDA_BUILD
 	else
 	{
-		XRay::RayTrace::CUDA::InitializeRayTracing();
-
-		CTimer t;
-		t.Start();
-		PackedLighting task_group;
 		for (auto VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
 		{
 			// 1: VertexID, 2: SampleID
 			auto& V = lc_global_data()->g_vertices()[VertexID];
 			V->normalFromAdj();
-			task_group.LightPointPacked(VertexID, 1, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
-
-			if (task_group.getAllocatedRays() > 2048)
-			{
-				task_group.LightPointPackedRun();
-				task_group.LightPointPackedApply();
-				for (auto& TASK : task_group.task_pools)
-				{
-					TASK.C.mul(0.5f);
-					lc_global_data()->g_vertices()[TASK.INDEX_TASK]->C._set(TASK.C);
-				}
-				task_group.ClearPool();
-			}
+			GPUTaskinSystem.LightPointPacked(VertexID, 0, V->P, V->N, LP_dont_rgb + LP_dont_sun, 0);
 		}
-	}
-#endif
 
+		GPUTaskinSystem.LightPointPackedRun();
 
-
-	if (lc_global_data()->GetIsIntelUse())
-		EmbreeMain.IntelEmbereUNLOAD();
+		for (int Task = 0; Task < GPUTaskinSystem.IndexTask; Task++)
+		{
+			auto& TASK = GPUTaskinSystem.GetRays(Task);
+			TASK.C.mul(0.5f);
+			lc_global_data()->g_vertices()[TASK.INDEX_TASK.first]->C._set(TASK.C);
+		}
+	}  
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
