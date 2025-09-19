@@ -661,10 +661,13 @@ BOOL	compress_Zero		(lm_layer& lm, u32 rms)
 	base_color_c	_c;
 	u32				_count	= rms_average(lm,_c);
 
-	if (0==_count)	{
-		clMsg	("* ERROR: Lightmap not calculated (T:%d)");
+	if (0==_count)
+	{
+		clMsg	("* ERROR: Lightmap not calculated (W: %u | H: %u)", lm.width, lm.height);
 		return	FALSE;
-	} else		_c.scale(_count);
+	} 
+	else	
+		_c.scale(_count);
 
 	// Compress if needed
 	u8	_r	= u8_clr	(_c.rgb.x	); //.
