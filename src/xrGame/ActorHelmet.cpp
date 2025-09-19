@@ -54,6 +54,9 @@ void CHelmet::Load(LPCSTR section)
 	m_BonesProtectionSect			= READ_IF_EXISTS(pSettings, r_string, section, "bones_koeff_protection",  "" );
 	m_fShowNearestEnemiesDistance	= READ_IF_EXISTS(pSettings, r_float, section, "nearest_enemies_show_dist",  0.0f );
 
+	bIsHudGasMaskAvialable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_gas_mask_avaliable", true);		// FFx0001 ++
+	bIsHudRainDropsAvialable = !!READ_IF_EXISTS(pSettings, r_bool, section, "hud_rain_drops_avaliable", true);  // FFx0001 ++
+
 	if (pSettings->line_exist(section, "glass_present"))
 	{
 		GlassPresent = pSettings->r_bool(section, "glass_present");
