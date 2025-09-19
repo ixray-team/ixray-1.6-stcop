@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../R_Light.h"
+#include "../base_lighting.h"
 #include "../xrFace.h"
 
 #include <optix.h>
@@ -8,6 +9,8 @@
 #include <cuda_runtime.h>
 
 struct RayRequest;
+class PackedLighting;
+ 
 
 namespace XRay::RayTrace::CUDA
 {
@@ -55,7 +58,6 @@ namespace XRay::RayTrace::CUDA
         float R, Face* skip, const FaceData* d_faces, const MaterialData* d_materials, const TextureData* d_textures
     );
     void InitializeTextures(xr_vector<TextureData>& gpuTextures, cudaTextureObject_t*& d_texObjects);
-    float RayTrace(Fvector& P, Fvector& D, float R, Face* skip);
-
-    void RayTracePack(xr_vector<RayRequest>& data);
+ 
+    void RayTracePackNew(PackedLighting& data_gpu, base_lighting& L);
 }
