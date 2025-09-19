@@ -40,16 +40,35 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool pos
 	}
 }
 
-void CRenderTarget::PhaseAberration() {
+void CRenderTarget::PhaseAberration()
+{
 	RenderEffect(ScreenPostProcessType::Aberration);
 }
 
-void CRenderTarget::PhaseVignette() {
+void CRenderTarget::PhaseVignette()
+{
 	RenderEffect(ScreenPostProcessType::Vignette);
 }
 
-void CRenderTarget::PhaseSaturation() {
+void CRenderTarget::PhaseSaturation()
+{
 	RenderEffect(ScreenPostProcessType::Saturation);
+}
+
+void CRenderTarget::PhaseRaindrops()
+{
+	const float condition = g_pGamePersistent->ShaderParams.HelmetCondition;
+	if (condition < 0)
+	{
+		return;
+	}
+
+	if (g_pGamePersistent->Environment().wetness_factor < EPS_L)
+	{
+		return;
+	}
+
+	RenderEffect(ScreenPostProcessType::Raindrops);
 }
 
 void CRenderTarget::PhaseGasmask()
