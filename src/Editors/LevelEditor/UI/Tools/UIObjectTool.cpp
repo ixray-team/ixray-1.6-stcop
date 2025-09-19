@@ -20,6 +20,7 @@ UIObjectTool::UIObjectTool()
 
 	m_Props = new UIPropertiesForm();
 	m_Props->SetFitMode(true);
+	m_Props->DisableSearch(true);
 	RefreshList();
 }
 

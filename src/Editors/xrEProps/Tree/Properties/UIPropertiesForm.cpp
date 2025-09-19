@@ -94,39 +94,41 @@ void UIPropertiesForm::Draw()
 		}
 	}
 
-	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 45);
-
-	string32 FindStr = {};
-	xr_strcpy(FindStr, m_SearchText.c_str());
-
-	if (ImGui::InputTextWithHint("##search", "Search...", FindStr, sizeof(FindStr)))
+	if (!IsSearchDisabled)
 	{
-		m_SearchText = FindStr;
-		SearchRoot.Items.clear();
-	}
+		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 45);
 
-	if (GUIManager->SearchIcon)
-	{
-		ImVec2 IconSize = { 12,12 };
+		string32 FindStr = {};
+		xr_strcpy(FindStr, m_SearchText.c_str());
+
+		if (ImGui::InputTextWithHint("##search", "Search...", FindStr, sizeof(FindStr)))
+		{
+			m_SearchText = FindStr;
+			SearchRoot.Items.clear();
+		}
+
+		if (GUIManager->SearchIcon)
+		{
+			ImVec2 IconSize = { 12,12 };
+
+			ImGui::SameLine();
+			ImVec2 cursorPos = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+
+			ImGui::Image(GUIManager->SearchIcon, IconSize);
+		}
+
+		IsSearchActive = !m_SearchText.empty();
 
 		ImGui::SameLine();
-		ImVec2 cursorPos = ImGui::GetCursorPos();
-		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+		if (ImGui::Button("Clear"))
+		{
+			m_SearchText = "";
+			IsSearchActive = false;
+		}
 
-		ImGui::Image(GUIManager->SearchIcon, IconSize);
+		ImGui::Separator();
 	}
-
-	IsSearchActive = !m_SearchText.empty();
-
-	ImGui::SameLine();
-	if (ImGui::Button("Clear"))
-	{
-		m_SearchText = "";
-		IsSearchActive = false;
-	}
-
-	ImGui::Separator();
-
 	static constexpr ImGuiTableFlags DefFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBodyUntilResize;
 	ImGuiTableFlags Flags = DefFlags;
 	if (IsFitMode)
