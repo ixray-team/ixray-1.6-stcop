@@ -109,29 +109,33 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 			float	tri_min_range	= flt_max;
 			int		tri_selected	= -1;
 			float	range,u,v;
-			for (DWORD i=0; i<DWORD(tris.size()); i++){
-				if (ETOOLS::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
-					if (range<tri_min_range){
+			for (DWORD i=0; i<DWORD(tris.size()); i++)
+			{
+				if (XRay::Collision::TestRayTriA(P,D,tris[i].v,u,v,range,false))
+				{
+					if (range<tri_min_range)
+					{
 						tri_min_range	= range;
 						tri_selected	= i;
 					}
 				}
 			}
-			if (tri_selected>=0) {
+			if (tri_selected>=0)
+			{
 				P.y -= tri_min_range;
 				points.push_back(P);
 				normals.push_back(tris[tri_selected].N);
 			}
 		}
 	}
-	if (points.size()<3) {
-//		Msg		("Failed to create node at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+	if (points.size()<3)
+	{
 		return	FALSE;
 	}
 //.
 	float rc_lim = bIC?0.015f:0.7f;
-	if (float(points.size())/float(RCAST_Total) < rc_lim) {
-//		Msg		("Partial chasm at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+	if (float(points.size())/float(RCAST_Total) < rc_lim)
+	{
 		return	FALSE;
 	}
 
@@ -142,25 +146,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 		vNorm.add(normals[n]);
 	vNorm.div(float(normals.size()));
 	vNorm.normalize();
-	/*
-	{
-		// second algorithm (Magic)
-		Fvector N,O;
-		N.set(vNorm);
-		O.set(points[0]);
-		Mgc::OrthogonalPlaneFit(
-			points.size(),(Mgc::Vector3*)points.begin(),
-			*((Mgc::Vector3*)&O),
-			*((Mgc::Vector3*)&N)
-		);
-		if (N.y<0) N.invert();
-		N.normalize();
-		vNorm.lerp(vNorm,N,.3f);
-		vNorm.normalize();
-	}
-	*/
 
- 
 	// *** Align plane
 	Fvector vOffs;
 	vOffs.set(0,-1000,0);
@@ -210,7 +196,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 				int		tri_selected	= -1;
 				float	range,u,v;
 				for (size_t i=0; i<tris.size(); i++){
-					if (ETOOLS::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
+					if (XRay::Collision::TestRayTriA(P,D,tris[i].v,u,v,range,false)){
 						if (range<tri_min_range){
 							tri_min_range	= range;
 							tri_selected	= i;
@@ -627,7 +613,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 
 			SPBItem* pb = UI->ProgressStart(mesh_cnt, "Prepare collision model...");
 
-			CDB::Collector* CL = ETOOLS::create_collector();
+			CDB::Collector CL;
 			Fvector verts[3];
 			for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
 			{
@@ -672,9 +658,9 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 						{
 							E->GetFaceWorld((*o_it)->_Transform(), *m_it, *it, verts);
 
-							ETOOLS::collector_add_face_d(CL, verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
+							CL.add_face_D(verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
 							if (surf->m_Flags.is(CSurface::sf2Sided))
-								ETOOLS::collector_add_face_d(CL, verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+								CL.add_face_D(verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
 						}
 					}
 				}
@@ -683,9 +669,9 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 			UI->ProgressEnd(pb);
 
 			UI->SetStatus("Building collision model...");
-			// create CFModel
-			m_CFModel = ETOOLS::create_model_cl(CL);
-			ETOOLS::destroy_collector(CL);
+
+			m_CFModel = new CDB::MODEL();
+			m_CFModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
 		}
 
 		// building
@@ -700,7 +686,7 @@ bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 		Msg("-building time: %.3f", tm.GetElapsed_sec());
 
 		// unload CFModel
-		ETOOLS::destroy_model(m_CFModel);
+		xr_delete(m_CFModel);
 
 		Scene->UndoSave();
 		bRes = true;

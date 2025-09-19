@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #ifdef IXR_WINDOWS
 #include <process.h>
 #include <winver.h>
