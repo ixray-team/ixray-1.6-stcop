@@ -164,14 +164,26 @@ void CPHDestroyable::Destroy(u16 source_id/*=u16(-1)*/,LPCSTR section/*="ph_skel
 void CPHDestroyable::Load(CInifile* ini,LPCSTR section)
 {
 	m_flags.set(fl_destroyable,FALSE);
-	if(ini->line_exist(section,"destroyed_vis_name")){
+
+	if (ini->line_exist(section,"destroyed_vis_name")){
 		m_flags.set(fl_destroyable,TRUE);
 		m_destroyed_obj_visual_names.push_back(ini->r_string(section,"destroyed_vis_name"));
-	}else{
+	} else {
 		CInifile::Sect& data		= ini->r_section(section);
+
 		if(data.Data.size()>0) m_flags.set(fl_destroyable,TRUE);
-		for (CInifile::SectCIt I=data.Data.begin(); I!=data.Data.end(); I++)
-			if(I->first.size())		m_destroyed_obj_visual_names.push_back(I->first);
+
+		for (CInifile::SectCIt I = data.Data.begin(); I != data.Data.end(); I++)
+		{
+			if (I->first.size())
+				m_destroyed_obj_visual_names.push_back(I->first);
+
+			u8 cnt = *I->second ? u8(atoi(I->second.c_str())) : 1;
+
+			for (u8 i = 0; i < cnt; ++i)
+				m_destroyed_obj_visual_names.push_back(I->first);
+		}
+			
 	}
 }
 void CPHDestroyable::Load(LPCSTR section)
