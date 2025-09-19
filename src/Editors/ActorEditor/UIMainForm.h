@@ -1,12 +1,15 @@
 #pragma once
 #include "../xrECore/Editor/UIToolbar.h"
 
-class UIMainForm :public IEditorWnd
+class UIMainForm final :
+	public IEditorWnd
 {
 public:
 	UIMainForm();
 	virtual ~UIMainForm();
-	virtual void Draw();
+	virtual void Draw() override;
+	virtual void ResetEnd() override;
+
 	bool Frame();
 	IC UILeftBarForm* GetLeftBarForm() {return m_LeftBar;}
 	IC UITopBarForm* GetTopBarForm() { return m_TopBar; }

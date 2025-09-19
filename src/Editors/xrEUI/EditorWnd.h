@@ -10,7 +10,7 @@ public:
 	};
 	Flags32 Flags;
 	virtual ~IEditorWnd();
-	/*ÓÄÀËÈÒÜ ÅÑËÈ ÍÅ ÏÐÈÃÎÄÈÒÑß*/
+
 	virtual void ResetBegin();
 	virtual void ResetEnd();
 	bool IsClosed()const { return !bOpen; }

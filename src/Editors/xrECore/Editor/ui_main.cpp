@@ -84,6 +84,11 @@ TUI::~TUI()
 
 ImTextureID TUI::LoadTexture(const char* Texture) const
 {
+	if (EDevice == nullptr || EDevice->Resources == nullptr)
+	{
+		return nullptr;
+	}
+
 	if (TextureStack.contains(Texture))
 	{
 		return TextureStack[Texture]->pSurface;

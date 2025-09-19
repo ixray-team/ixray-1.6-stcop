@@ -43,8 +43,6 @@ void UILogForm::SetActive()
 {
 	if (!bAllowLogCommands)
 		bAllowLogCommands = true;
-
-	//ImGui::SetWindowFocus("Log");
 }
 
 void UILogForm::Hide()
@@ -80,6 +78,17 @@ void UILogForm::Update()
 		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-1);
 		ImGui::InputTextWithHint("##SearchFilter", "Search", m_Filter, sizeof(m_Filter));
+
+		if (GUIManager->SearchIcon)
+		{
+			ImVec2 IconSize = { 12,12 };
+
+			ImGui::SameLine();
+			ImVec2 cursorPos = ImGui::GetCursorPos();
+			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+
+			ImGui::Image(GUIManager->SearchIcon, IconSize);
+		}
 
 		ImGui::Spacing();
 		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))

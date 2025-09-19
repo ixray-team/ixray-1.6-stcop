@@ -12,22 +12,24 @@ public:
 	static void Close();
 	static IC bool IsOpen()  { return Form; }
 	static void Refresh();
-private:
-	static UIObjectList* Form;
+
 private:
 	void DrawObjects();
-	void DrawObject(CCustomObject* obj,const char*name);
+
 private:
-	ObjClassID m_cur_cls;
 	enum EMode
 	{
 		M_All,
 		M_Visible,
 		M_Inbvisible
 	};
+
+	ObjClassID m_cur_cls;
 	EMode m_Mode;
 	string_path m_Filter;
 	UIObjectListItem m_Root;
 	UIObjectListItem* m_LastSelected;
 	xrCriticalSection LoaderCS;
+
+	static UIObjectList* Form;
 };

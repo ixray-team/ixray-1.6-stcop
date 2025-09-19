@@ -241,16 +241,7 @@ void CContentView::DrawHeader()
 		w = FindStartPosX - 45;
 	}
 
-	IconData* IconPtr = &GetTexture("search");
 	ImVec2 IconSize{ 0,0 };
-
-	//Varian 1
-	/*if (IconPtr->Icon)
-	{
-		IconSize={ 16,16 };
-		ImGui::Image(IconPtr->Icon->pSurface, IconSize);
-		ImGui::SameLine();
-	}*/
 
 	ImGui::SetNextItemWidth(w - IconSize.x*1.5f);
 
@@ -260,7 +251,7 @@ void CContentView::DrawHeader()
 	}
 
 	//Varian 2
-	if (IconPtr->Icon)
+	if (GUIManager->SearchIcon)
 	{
 		IconSize = { 12,12 };
 
@@ -268,7 +259,7 @@ void CContentView::DrawHeader()
 		ImVec2 cursorPos = ImGui::GetCursorPos();
 		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x-10.f, cursorPos.y+(IconSize.y/4)));
 
-		ImGui::Image(IconPtr->Icon->pSurface, IconSize);
+		ImGui::Image(GUIManager->SearchIcon, IconSize);
 	}
 
 	ImGui::SameLine();
