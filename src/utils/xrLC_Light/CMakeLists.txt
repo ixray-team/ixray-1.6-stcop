@@ -95,12 +95,12 @@ if(CUDAToolkit_FOUND)
 			set_source_files_properties(${_cu_file} PROPERTIES HEADER_FILE_ONLY TRUE)
 		endforeach()
 	else()
-		message(FATAL_ERROR "OptiX not found, but CUDA is present!")
+		message(STATUS "OptiX not found, but CUDA is present!")
 		list(FILTER LCL_SRC_FILES EXCLUDE REGEX "xrDeflectorLight_Packed.*")
 		list(FILTER LCL_SRC_FILES EXCLUDE REGEX "CUDA/.*")
 	endif()
 else()
-	message(WARNING "CUDA toolkit not found, skipping CUDA/OptiX configuration.")
+	message(STATUS "CUDA toolkit not found, skipping CUDA/OptiX configuration.")
 	list(FILTER LCL_SRC_FILES EXCLUDE REGEX "xrDeflectorLight_Packed.*")
 	list(FILTER LCL_SRC_FILES EXCLUDE REGEX "CUDA/.*")
 endif()
@@ -122,7 +122,7 @@ endif()
 # Apply CUDA/OptiX
 if(OptiX_FOUND)
 	target_include_directories(xrLC_Light PUBLIC ${OptiX_INCLUDE_DIRS})
-	target_link_libraries(xrLC_Light PRIVATE ${OptiX_LIBRARIES} CUDA::cudart CUDA::cuda_driver)
+	target_link_libraries(xrLC_Light PRIVATE ${OptiX_LIBRARIES} CUDA::cudart_static CUDA::cuda_driver)
 	set_target_properties(xrLC_Light PROPERTIES
 		CUDA_SEPARABLE_COMPILATION ON
 		CUDA_RESOLVE_DEVICE_SYMBOLS ON
