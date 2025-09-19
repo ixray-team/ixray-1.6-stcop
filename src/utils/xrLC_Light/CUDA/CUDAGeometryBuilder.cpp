@@ -3,11 +3,11 @@
 
 u32 OptixGeometryBuilder::AddVertex(const Fvector& v)
 {
-    for (u32 i = 0; i < vertices.size(); ++i)
-    {
-        if (vertices[i].similar(v, 0.001f))
-            return i;
-    }
+//   for (u32 i = 0; i < vertices.size(); ++i)
+//   {
+//       if (vertices[i].similar(v, 0.001f))
+//           return i;
+//   }
 
     vertices.push_back(v);
     return vertices.size() - 1;

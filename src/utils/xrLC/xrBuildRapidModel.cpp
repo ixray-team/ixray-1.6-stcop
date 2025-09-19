@@ -7,6 +7,7 @@
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../xrLC_Light/xrFace.h"
+#include "../xrLC_Light/CUDA/CUDARayCast.h"
 
 //.#include "communicate.h"
 
