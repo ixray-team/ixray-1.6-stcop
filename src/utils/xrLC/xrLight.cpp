@@ -58,12 +58,12 @@ public:
 
 			ProgressData.fetch_add(1);
 
-			
-
 			// Perform operation
-			try {
-				D->Light	(&DB,&LightsSelected,H);
-			} catch (...)
+			try
+			{
+				D->Light	(&DB, &LightsSelected, H);
+			}
+			catch (...)
 			{
 				clMsg("* ERROR: CLMThread::Execute - light");
 			}
@@ -71,26 +71,27 @@ public:
 	}
 };
 
+
 void	CBuild::LMapsLocal				()
 {
-		mem_Compact		();
+	mem_Compact		();
 
-		// Randomize deflectors
-		std::shuffle(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), rng);
-
-		for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
-			task_pool.push_back(dit);
+	// Randomize deflectors
+	std::shuffle(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), rng);
 	
-
-		// Main process (4 threads)
-		Status			("Lighting...");
-		CThreadManager	threads;
- 		
-		CTimer	start_time;	
-		start_time.Start();				
-		for				(int L=0; L< gCompilerMode.ThreadsPerWork; L++)	threads.start(new CLMThread (L));
-		threads.wait	(500);
-		clMsg			("%f seconds",start_time.GetElapsed_sec());
+	for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
+		task_pool.push_back(dit);
+ 
+	// Main process (4 threads)
+	Status			("Lighting...");
+	CThreadManager	threads;
+ 	
+	CTimer	start_time;	
+	start_time.Start();				
+	for				(int L=0; L< gCompilerMode.ThreadsPerWork; L++)	threads.start(new CLMThread (L));
+	threads.wait	(500);
+	clMsg			("%f seconds",start_time.GetElapsed_sec());
+ 
 }
 
 void	CBuild::LMaps					()
@@ -128,11 +129,14 @@ void CBuild::Light()
 
 	if (!gCompilerMode.LC_BackingDisabled)
 	{
-		//****************************************** GLOBAL-RayCast model
-		Phase("Building rcast-CFORM model...");
-		Light_prepare();
-		BuildRapid(TRUE);
-
+		if (!gCompilerMode.CUDA)
+		{
+			//****************************************** GLOBAL-RayCast model
+			Phase("Building rcast-CFORM model...");
+			Light_prepare();
+			BuildRapid(TRUE);
+		}
+ 
 		//****************************************** Implicit
 		Phase("LIGHT: Implicit...");
 		if (gCompilerMode.Embree_SplitBVH)
