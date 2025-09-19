@@ -11,7 +11,8 @@ struct LevelFileData
 struct CompilersMode
 {
 	bool Silent = false;
-	bool Embree = true;
+	bool Embree = false;
+	bool CUDA = true;
 
 	bool Embree_SplitBVH = false;
 	bool EmbreeBVHCompact = false;
