@@ -5,7 +5,7 @@
 
 #include <execution>
 #include <array>
-
+ 
 void TriangleContainer::RemoveDublicates()
 {
     size_t VertexStart = verts_v.size();
@@ -19,6 +19,7 @@ void TriangleContainer::RemoveDublicates()
 
     if (raw_faces.empty())
     {
+        clMsg("$Raw Faces : %u size", raw_faces.size());
         return;
     }
 
@@ -72,7 +73,16 @@ void TriangleContainer::RemoveDublicates()
 
     faces_v.clear();                         dummy.clear();
     faces_v.reserve(raw_faces.size());       dummy.reserve(raw_faces.size());
-
+   
+    // Material Data
+    
+    bool cform_has = cform_data.size();
+    if (cform_has)
+    {
+        cform_data.clear();
+        cform_data.reserve(raw_faces.size());
+    }
+     
     for (size_t i = 0; i < raw_faces.size(); ++i)
     {
         Triangle tri;
@@ -80,7 +90,17 @@ void TriangleContainer::RemoveDublicates()
         tri.point2 = remap[i * 3 + 1];
         tri.point3 = remap[i * 3 + 2];
         faces_v.push_back(tri);
-        dummy.push_back(raw_faces[i].F);
+
+        auto Face = raw_faces[i].F;
+        dummy.push_back(Face);
+        
+        if (cform_has)
+        {
+            CFormTriangle data;
+            data.MaterialID = raw_faces[i].material;
+            data.Sector = raw_faces[i].Sector;;
+            cform_data.push_back(data);
+        }
     }
 
     //----------------------
@@ -98,60 +118,7 @@ void TriangleContainer::RemoveDublicates()
 
 void TriangleContainer::RemoveDublicatesFaces()
 {
-    /*
-    
-    // 6. Убираем дубликаты треугольников
-    struct TriKey
-    {
-        std::array<uint32_t, 3> idx;
-
-        TriKey(uint32_t a, uint32_t b, uint32_t c) {
-            idx = { a, b, c };
-            std::sort(idx.begin(), idx.end()); // нормализация порядка
-        }
-
-        bool operator==(const TriKey& other) const {
-            return idx == other.idx;
-        }
-    };
-
-    struct TriHash {
-        size_t operator()(const TriKey& t) const {
-            return std::hash<uint32_t>()(t.idx[0]) ^
-                (std::hash<uint32_t>()(t.idx[1]) << 1) ^
-                (std::hash<uint32_t>()(t.idx[2]) << 2);
-        }
-    };
-
-    std::unordered_map<TriKey, size_t, TriHash> seen;
-    xr_vector<TriEmbree> new_faces;
-    xr_vector<Face*> new_dummy;
-
-    new_faces.reserve(faces_v.size());
-    new_dummy.reserve(dummy.size());
-
-    for (size_t i = 0; i < faces_v.size(); ++i)
-    {
-        TriEmbree& tri = faces_v[i];
-        TriKey key(tri.point1, tri.point2, tri.point3);
-
-        if (seen.find(key) == seen.end()) {
-            seen[key] = i;
-            new_faces.push_back(tri);
-            new_dummy.push_back(dummy[i]);
-        }
-    }
-    
-    u32 pFaces = faces_v.size();
-
-    faces_v.swap(new_faces);
-    dummy.swap(new_dummy);
-
-    clMsg("$ Triangles : Compacted From %u to %u", pFaces, faces_v.size());
-    */
-
-    if (faces_v.empty())
-        return;
+    if (faces_v.empty())        return;
 
     CTimer t; 
     t.Start();
@@ -216,6 +183,22 @@ void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
     dummy.push_back((Face*)F);
 
     AddFaceRaw( (Face*) F, v1, v2, v3);
+}
+
+void TriangleContainer::AddFaceMaterial(void* F, Fvector& v1, Fvector& v2, Fvector& v3, u16 MaterialID, u16 SectorID)
+{
+    Triangle triangle;
+    triangle.point1 = AddVertex(v1);
+    triangle.point2 = AddVertex(v2);
+    triangle.point3 = AddVertex(v3);
+    faces().push_back(triangle);
+    
+    CFormTriangle data;
+    data.MaterialID = MaterialID;
+    data.Sector = SectorID;
+    cform_data.push_back(data);
+
+    AddFaceRawMaterial((Face*)F, v1, v2, v3, MaterialID, SectorID);
 }
    
 void TriangleContainer::ClearAll()
