@@ -261,16 +261,7 @@ void RunTaskGPU()
 			defl.Marker(U, V) = 0;
 		}
 	}
- 
-	clMsg("@ CPU Code: %llu | CPU CopyToGPU : %u | GPU(%u) | CPU copy result(%u) | Clear(%u)",
-		GPUTaskinSystem.StatsRaysAdd / 1000,
-		GPUTaskinSystem.StatsCopyRaysGPU / 1000,
-		GPUTaskinSystem.StatsTraverseGPU / 1000,
-		GPUTaskinSystem.StatsCopyResultGPU / 1000,
-		GPUTaskinSystem.StatsClearingListGPU / 1000
-	);
-
-	
+ 	
 	GPUTaskinSystem.RestartALL();
 }
 #endif
