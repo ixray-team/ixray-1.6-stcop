@@ -8,6 +8,8 @@
 
 #include <embree_raytracing/EmbreeRayTrace.h>
 
+extern size_t GetHeapMemory();
+
 struct FaceDataIntel;
  
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
@@ -19,8 +21,12 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 	OptixGeometryBuilder geometryBuilder;
  	// 1. Обрабатываем статическую геометрию
 	Status("Build BLAS...");
-	CTimer t; t.Start();
-	int INDEX = 0;
+
+	CTimer t;
+	t.Start();
+
+	size_t Start = GetHeapMemory();
+  
 	for (Face* F : globalData->g_faces())
 	{
  		const Shader_xrLC& SH = F->Shader();
@@ -37,11 +43,10 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 		{
 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 		}
+   	}
 
-		AditionalData("Processing GPU: %u/%u", INDEX, globalData->g_faces().size() );
-		INDEX++;
-	}
-	clMsg("Processing : %u ms", t.GetElapsed_ms());
+	clMsg("Processing STATIC-Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
+
 
 	// 2. Обрабатываем MU-референсы
 	for (auto ref : globalData->mu_refs())
@@ -67,65 +72,17 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 		}
 	}
 
+	clMsg("Processing MU-Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
+ 
 	// 3. Строим BLAS
 	if (!geometryBuilder.BuildBLAS(context, outScene))
-	{
+ 		return false;
+
+	// 4. Строим TLAS
+	if (!geometryBuilder.BuildTLAS(context, outScene, stream))
 		return false;
-	}
 
-	// 4. Строим TLAS (один экземпляр BLAS)
-	OptixInstance instance = {};
-	float transform[12] = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f
-	};
-
-	memcpy(instance.transform, transform, sizeof(transform));
-	instance.instanceId = 0;
-	instance.sbtOffset = 0;
-	instance.visibilityMask = 255;
-	instance.flags = OPTIX_INSTANCE_FLAG_NONE;
-	instance.traversableHandle = outScene.blasHandle;
-
-	CUdeviceptr d_instances;
-	CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_instances), sizeof(OptixInstance)));
-	CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_instances), &instance, sizeof(OptixInstance), cudaMemcpyHostToDevice));
-
-	OptixBuildInput buildInput = {};
-	buildInput.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
-	buildInput.instanceArray.instances = d_instances;
-	buildInput.instanceArray.numInstances = 1;
-
-	OptixAccelBuildOptions buildOptions = {};
-	buildOptions.buildFlags = OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
-	buildOptions.operation = OPTIX_BUILD_OPERATION_BUILD;
-
-	OptixAccelBufferSizes bufferSizes;
-	OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &buildOptions, &buildInput, 1, &bufferSizes));
-
-	CUdeviceptr d_tempBuffer;
-	CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
-	CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outScene.tlasBuffer), bufferSizes.outputSizeInBytes));
-
-	OPTIX_CHECK(optixAccelBuild(
-		context,
-		stream,
-		&buildOptions,
-		&buildInput,
-		1,
-		d_tempBuffer,
-		bufferSizes.tempSizeInBytes,
-		outScene.tlasBuffer,
-		bufferSizes.outputSizeInBytes,
-		&outScene.tlasHandle,
-		nullptr,
-		0
-	));
-
-	CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
-	CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
-
+	clMsg("[GPU] Stage acceleration data build : % u ms | Memory : % u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
 	return true;
 }
 
@@ -293,6 +250,8 @@ public:
 		CUDA_CHECK(cudaMalloc(&d_rays, max_rays * sizeof(hardware_raytask)));								// Device Alloc
 		
 		isInitialized = true;
+
+		InitializeLights(lc_global_data()->L_static());
 	}
 
 	void InitializeLights(base_lighting& Lights)
@@ -352,18 +311,17 @@ public:
 	}
 
 
-	u32 CurrentWritedRays = 0;
+//	u32 CurrentWritedRays = 0;
 	u8  current_flags = 0;
 
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
-	void WriteRayToBuffer(RayRecvestIndex& Task)
+	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
- 		h_rays[CurrentWritedRays] =
+ 		h_rays[INDEX] =
 		{
 			.Position = make_float3(Task.P.x, Task.P.y, Task.P.z),
 			.Direction = make_float3(Task.N.x, Task.N.y, Task.N.z)
 		};
-		CurrentWritedRays++;
   	}
 	
 	xr_vector<base_color_c> colors;
@@ -380,9 +338,10 @@ public:
 		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(hardware_color)));
 	}
 
-	void TraceRaysNew()
+	void TraceRaysNew(size_t INDEX)
 	{
-		CTimer t;t.Start();
+		size_t CurrentWritedRays = INDEX;
+
   		// Подготавливаем данные на хосте
  		h_params[0] =
 		{
@@ -469,24 +428,27 @@ static RayTracer GPURayTracer;
 void XRay::RayTrace::CUDA::RayTraceInitialize(base_lighting& L, u8 CurrentFlags)
 {
 	if (!GPURayTracer.isInitialized)
-	{
-		GPURayTracer.Init(MAX_RAYS_PER_TASK);
-		GPURayTracer.InitializeLights(L);
-	}
-
+ 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
+ 
 	GPURayTracer.current_flags = CurrentFlags;
-	GPURayTracer.CurrentWritedRays = 0;
+	// GPURayTracer.CurrentWritedRays = 0;
 	GPURayTracer.colors.clear();
 }
 
-void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task)
+void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task, size_t index)
 {
-	GPURayTracer.WriteRayToBuffer(task);
+	if (!GPURayTracer.isInitialized)
+ 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
+ 
+	GPURayTracer.WriteRayToBuffer(task, index);
 }
 
-void XRay::RayTrace::CUDA::RayTraceRun()
+void XRay::RayTrace::CUDA::RayTraceRun(size_t max_rays)
 {
-	GPURayTracer.TraceRaysNew();
+	if (!GPURayTracer.isInitialized)
+ 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
+ 
+	GPURayTracer.TraceRaysNew(max_rays);
 }
 
 xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
