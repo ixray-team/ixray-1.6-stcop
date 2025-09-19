@@ -466,7 +466,7 @@ public:
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_zoom_params.m_fZoomRotationFactor<1.f);}
 
-	u8 GetCurrentHudOffsetIdx() const;
+	virtual u8 GetCurrentHudOffsetIdx() const override;
 
 	virtual float				Weight			() const;		
 	virtual	u32					Cost			() const;
