@@ -135,6 +135,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 			EmbreeMain.IntelEmbereUNLOAD();
 		}
 	}
+#ifdef LCCUDA_BUILD
 	else
 	{
 		clMsg("Start Processing AdaptiveHT : MEMORY: %u mb", GetHeapMemory() / 1024 / 1024);
@@ -161,7 +162,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 		}
 
 		GPUTaskinSystem.RestartALL();
- 	}  
+ 	}
+#endif
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
