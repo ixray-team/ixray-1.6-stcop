@@ -41,8 +41,8 @@ namespace
         auto* defl = (CDeflector*)faces.front()->pDeflector;
         if (defl)
         {
-            if (defl->layer.width >= (getLMSIZE() - 2 * BORDER) ||
-                defl->layer.height >= (getLMSIZE() - 2 * BORDER))
+            if (defl->layer.width >= (gCompilerMode.LC_sizeLmaps - 2 * BORDER) ||
+                defl->layer.height >= (gCompilerMode.LC_sizeLmaps - 2 * BORDER))
             {
                 clMsg("Split: Deflector size %u x %u exceeds limits",
                     defl->layer.width, defl->layer.height);
