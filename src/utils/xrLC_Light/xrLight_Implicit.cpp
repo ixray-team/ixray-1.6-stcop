@@ -163,8 +163,17 @@ void ImplicitExecute::Execute()
  
 #include "CUDA/CUDARayCast.h"
 
+extern u64 RayTracingTime;
+extern u64 RayTracingCopy;
+extern u64 RayTracingResults;
+
 void RunTaskGPU()
 {
+	RayTracingTime = RayTracingCopy = RayTracingResults = 0;
+
+	CTimer tStats;
+	tStats.Start();
+
 	XRay::RayTrace::CUDA::InitializeRayTracing();
 
  	ImplicitDeflector& defl = cl_globs.DATA();
@@ -180,18 +189,11 @@ void RunTaskGPU()
 	Fvector2* Jitter;
 	Jitter_Select(Jitter, Jcount);
 
-	xr_map<u32, u32>	    FCountMap;
+	xr_map<std::pair<u32, u32>, u32>	    FCountMap;
 
 	static PackedLighting			gpu_data;
 
-	
-
-	extern u64 RayTracingTime;
-	extern u64 RayTracingCopy;
-	extern u64 RayTracingResults;
- 	RayTracingTime = RayTracingCopy = RayTracingResults = 0;
-
-	for (u32 V = 0; V< defl.Height(); V++)
+	for (u32 V = 0; V < defl.Height(); V++)
 	{
  		for (u32 U = 0; U < defl.Width(); U++)
 		{
@@ -224,7 +226,9 @@ void RunTaskGPU()
 							wN.normalize();
 
 							u32 flags = (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
- 							gpu_data.LightPointPacked(V * defl.Width() + U, J, wP, wN, inlc_global_data()->L_static(), flags, F);
+
+							int SampleID = J;
+ 							gpu_data.LightPointPacked(U, V, SampleID, wP, wN, inlc_global_data()->L_static(), flags, F);
 							Fcount++;
 						}
 					}
@@ -234,40 +238,22 @@ void RunTaskGPU()
 			{
 				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 			}
-			FCountMap[V * defl.Width() + U] = Fcount;
+			FCountMap[{U, V}] = Fcount;
 		}
 	}
 
 	// Остаток доработать 
-	gpu_data.ProcessReadyRays();
+	gpu_data.LightPointPackedRun();
 
-
-	clMsg("*** Rays[%llu] | GPU:%llu |Rays:%llu|Copy:%llu|Col:%llu",
-		gpu_data.TotalRaysProcessed,
-		RayTracingTime / 1000,
-		gpu_data.StatsRaysAdd / 1000,
-		gpu_data.StatsCopyToVec / 1000,
-		gpu_data.StatsTotalGPUCopy / 1000
-	);
-
-	AditionalData("CUDA RayTrace( (GPU) code:%u, (CPU)copy:%u, (CPU)result:%u) | (CPU)Rays:%u| (CPU)Col: %u",
-		RayTracingTime / 1000,
-		RayTracingCopy / 1000,
-		RayTracingResults / 1000,
-		gpu_data.StatsRaysAdd / 1000,
-		// gpu_data.StatsCopyToVec / 1000, 
-		gpu_data.StatsTotalGPUCopy / 1000
-	);
-
-
-	// Apply Colors
-	for (auto& T : gpu_data.Colors)
+ 	for (auto& T : gpu_data.Colors)
 	{
-		u32 index = T.first;
-		int V = index / defl.Width();
-		int U = index % defl.Width();
+		auto UV = T.first;
+		int U = UV.first;
+		int V = UV.second;
 
-		u32 Fcount = FCountMap[index];
+		// Msg("UV: %u, %u : ColorHemi: %f", U, V, T.second.hemi);
+
+		u32 Fcount = FCountMap[UV];
 		if (Fcount)
 		{
 			auto& C = T.second;
@@ -283,6 +269,28 @@ void RunTaskGPU()
 		}
 	}
 	gpu_data.Colors.clear();
+
+
+	clMsg("*** GPU: %llu | Rays:%llu| Copy:%llu| Col:%llu | total: %u ms",
+
+		// gpu_data.TotalRaysProcessed,
+		RayTracingTime / 1000,
+		gpu_data.StatsRaysAdd / 1000,
+		gpu_data.StatsCopyToVec / 1000,
+		gpu_data.StatsTotalGPUCopy / 1000,
+		tStats.GetElapsed_ms()
+	);
+
+	AditionalData("CUDA( (GPU) code:%u, (CPU)copy:%u, (CPU)result:%u) | (CPU)Rays:%u| (CPU)Col: %u | Total : %u ms",
+		RayTracingTime / 1000,
+		RayTracingCopy / 1000,
+		RayTracingResults / 1000,
+		gpu_data.StatsRaysAdd / 1000,
+		// gpu_data.StatsCopyToVec / 1000, 
+		gpu_data.StatsTotalGPUCopy / 1000,
+		tStats.GetElapsed_ms()
+	);
+
 }
 
 static xr_vector<u32> not_clear;

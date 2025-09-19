@@ -6,10 +6,10 @@
 #include "../xrLC_GlobalData.h"
 #include "../xrMU_Model_Reference.h"
 
-#include <optix_function_table_definition.h>
 #include <embree_raytracing/EmbreeRayTrace.h>
 
 struct FaceDataIntel;
+
 
 
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
@@ -216,35 +216,31 @@ void XRay::RayTrace::CUDA::InitializeTextures(xr_vector<TextureData>& gpuTexture
 #include <xrDeflector.h>
 #include "Vector3HW.h"
 
-struct ColorsRessult
-{
-	hardware_color Color;
-	int		       Configured;
-	int			   RealProcessed;
-};
-
-struct OPTICK_Params
-{
-	OptixTraversableHandle handle;
-
- 	// 
-	ColorsRessult*		colors;
- 	hardware_lighting*  lights;
-	int					counts_lights;
-
-	float3 rayOrigin;
-	float3 rayDir;
-};
-
 u64 RayTracingTime = 0;  
 u64 RayTracingCopy = 0;
 u64 RayTracingResults = 0;
+
+#include <optix_function_table_definition.h>
+struct OPTICK_Params
+{
+	OptixTraversableHandle handle;
+ 	// 
+	hardware_income*	rays;
+	ColorsRessult*		colors;  // Position, Direction, Color
+	hardware_lighting*	lights;	 // Lights
+	int					counts_lights;
+};
 
 class RayTracer
 {
 	// Colors (Result)
 	ColorsRessult*		  h_colors;		// CPU alloc
 	ColorsRessult*		  d_colors;		// GPU alloc
+
+	// Positions Rays (Incoming)
+	hardware_income*		h_rays;		// CPU alloc
+	hardware_income*		d_rays;		// GPU alloc
+
 
 	// Lighting 
 	int					  size_lights;
@@ -282,6 +278,10 @@ public:
 		CUDA_CHECK(cudaMallocHost(&h_colors, max_rays * sizeof(ColorsRessult)));							// Host Alloc
 		CUDA_CHECK(cudaMalloc(&d_colors, max_rays * sizeof(ColorsRessult)));								// Device Alloc
 
+		// positions
+		CUDA_CHECK(cudaMallocHost(&h_rays, max_rays * sizeof(hardware_income)));							// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_rays, max_rays * sizeof(hardware_income)));								// Device Alloc
+		
 		isInitialized = true;
 	}
 
@@ -315,7 +315,10 @@ public:
 		u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
  		
 		// Заполняем буфер Источников света
-		h_lights = new hardware_lighting[numLights];
+		//h_lights = new hardware_lighting[numLights];
+
+		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(hardware_lighting)));
+
 		int INDEX_LIGHT = 0;
 		for (auto& RGB : Lights.rgb)
 		{
@@ -332,9 +335,9 @@ public:
 			h_lights[INDEX_LIGHT] = Light(HEMI, eHemi);
 			INDEX_LIGHT++;
 		}
- 		 
-		CUDA_CHECK( cudaMalloc((void**)&d_lights, sizeof(hardware_lighting) * numLights) );
-		CUDA_CHECK( cudaMemcpy((void*)d_lights, h_lights, sizeof(hardware_lighting) * numLights, cudaMemcpyHostToDevice) );
+ 	
+		CUDA_CHECK( cudaMalloc(&d_lights, sizeof(hardware_lighting) * numLights) );
+		CUDA_CHECK( cudaMemcpy(d_lights, h_lights, sizeof(hardware_lighting) * numLights, cudaMemcpyHostToDevice) );
 		size_lights = numLights;
 	}
 	
@@ -342,30 +345,47 @@ public:
 	void TraceRaysNew(PackedLighting& data_gpu)
 	{
  		// Подготавливаем данные на хосте
-		CTimer t; t.Start();
-
+		CTimer t;
+		t.Start();
 
  		int IndexRay = 0;
 		
 		for (auto taskID = 0; taskID < data_gpu.IndexTask; taskID++)
 		{
 			auto& Task = data_gpu.GetRays(taskID);
+
+			h_rays[IndexRay] =
+			{
+				.Position = make_float3(Task.P.x, Task.P.y, Task.P.z),
+				.Direction = make_float3(Task.N.x, Task.N.y, Task.N.z)
+			};
+ 
 			h_params[IndexRay] =
 			{
 				.handle = CommitedScene.tlasHandle,
-			
-				// Result Buffer
+ 				// Result Buffer
+				.rays   = d_rays,
 				.colors = d_colors,
 				.lights = d_lights,
 				.counts_lights = size_lights,
-
- 				.rayOrigin = make_float3(Task.P.x, Task.P.y, Task.P.z),
-				.rayDir = make_float3(Task.N.x, Task.N.y, Task.N.z),
 			};
+
 			IndexRay++;
  		};
  		
 		clMsg("Processing Size: %u | Lightings: %u", IndexRay, size_lights);
+
+
+		// Копируем Стартовые параметры !!! асинхронно
+		CUDA_CHECK(
+			cudaMemcpyAsync(
+				d_rays,
+				h_rays,
+				IndexRay * sizeof(hardware_income),
+				cudaMemcpyHostToDevice,
+				stream
+			)
+		);
 
 
 		RayTracingCopy += t.GetElapsed_mcs(); t.Start();
@@ -403,11 +423,31 @@ public:
 		// Синхронизируем только один раз
 		CUDA_CHECK(cudaStreamSynchronize(stream));
 		RayTracingTime += t.GetElapsed_mcs();
+ 
+
+		auto copy_color = [&](hardware_color& Chw, base_color_c& C)
+		{
+			C.hemi = Chw.hemi;
+			C.sun  = Chw.sun;
+			C.rgb  = { Chw.rgb.x, Chw.rgb.y, Chw.rgb.z };
+ 		};
 
 
 		for (auto i = 0; i < IndexRay; i++)
 		{
-			Msg("Index: %u | Processed: %u/%u | color: hemi: %f", i, h_colors[i].RealProcessed, h_colors[i].Configured, h_colors[i].Color.hemi);
+			if (i % 1 == 0 && h_colors[i].RealProcessed < 100)
+			{
+				Msg("Light Map Hemi: %f, Init(%d, %d, %d), P(%f, %f, %f)",
+  					h_colors[i].Color.hemi,
+ 					h_colors[i].Configured,
+					h_colors[i].RealProcessed,
+					h_colors[i].ResultIndex,
+			
+					VPUSH( h_rays[i].Position )
+				);
+			}
+
+			copy_color (h_colors[i].Color, data_gpu.task_pools[i].C);
 		}
 
 	}

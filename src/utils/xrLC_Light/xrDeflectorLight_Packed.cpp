@@ -7,230 +7,240 @@
 #include "xrLC_GlobalData.h"
 #include "xrFace.h"
 
-void PackedLighting::ProcessReadyRays()
-{
-	// Fast Exit
-	//if (getAllocatedRays() >= MAX_RAYS_PER_TASK)
-	// if (IndexTask >= MAX_RAYS_PER_TASK)
-	{
-		clMsg("*** Allocated Used : %u", IndexTask.load(std::memory_order_relaxed));
-		LightPointPackedRun();
-		// LightPointPackedApply();
 
-		tStats.Start();
-		for (auto it = 0; it < IndexTask; it++) // Последний таск ID (Тоесть size)
-		{
-			auto& INFO = task_pools[it];
-			Colors[INFO.INDEX_TASK].add(INFO.C);
-		}
-		StatsTotalGPUCopy += tStats.GetElapsed_mcs();
-		ClearPool();
-	}
+#include "CUDA/Vector3HW.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
+
+void copy_color(hardware_color& Chw, base_color_c& C)
+{
+	C.hemi = Chw.hemi;
+	C.sun = Chw.sun;
+	C.rgb = { Chw.rgb.x, Chw.rgb.y, Chw.rgb.z };
+};
+
+auto LightHW = [&](hardware_lighting& L)
+	{
+		R_Light cuL;
+		cuL.type = L.type;
+		cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+		cuL.position = { L.position.x, L.position.y, L.position.z };
+		cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
+		cuL.range = L.range;
+		cuL.range2 = L.range2;
+		cuL.falloff = L.falloff;
+		cuL.attenuation0 = L.attenuation0;
+		cuL.attenuation1 = L.attenuation1;
+		cuL.attenuation2 = L.attenuation2;
+		cuL.energy = L.energy;
+		return cuL;
+	};
+
+
+auto Light = [&](R_Light& L, int type)
+	{
+		hardware_lighting cuL;
+		cuL.type = L.type;
+		cuL.light_type = type;
+		cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+		cuL.position = { L.position.x, L.position.y, L.position.z };
+		cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
+		cuL.range = L.range;
+		cuL.range2 = L.range2;
+		cuL.falloff = L.falloff;
+		cuL.attenuation0 = L.attenuation0;
+		cuL.attenuation1 = L.attenuation1;
+		cuL.attenuation2 = L.attenuation2;
+		cuL.energy = L.energy;
+		return cuL;
+	};
+
+
+
+int PrevCount = 0;
+
+// Embree
+
+float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareVector& Dnew, float R)
+{
+	auto V = LightHW(Lnew);
+	auto P = Fvector().set(Pnew.x, Pnew.y, Pnew.z);
+	auto D = Fvector().set(Dnew.x, Dnew.y, Dnew.z);
+ 	return EmbreeMain.RaytraceEmbreeProcess(V, P, D, R, 0);
+
 }
 
-/*
-void PackedLighting::LightPointPacked(u32 task_id, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
+void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C, int& RealProcessed)
 {
-	ProcessReadyRays();
+	HardwareVector Ldir;
+	HardwareVector Pnew = P;
+	Pnew.Mad_Self(N, 0.01f);
 
- 	R_ASSERT(IndexTask < MAX_TASK_POOL);
-   	RayRecvestIndex& task_data = task_pools[IndexTask.load(std::memory_order_relaxed)];		// MT SAFE
-	IndexTask.fetch_add(1, std::memory_order_acquire); /// Загрузили сразу добовляем
- 	task_data.INDEX_TASK = task_id;
- 	task_data.LightsUsed = 0;
+	HardwareVector LightPosition(L.position);
+	HardwareVector LightDirection(L.direction);
+	HardwareVector LightDiffuse(L.diffuse);
 
-	auto FillData = [&](LGroup& group, bool& isSunOrHemi, R_Light& L, float dot,
-						Fvector& Pnew, Fvector& Ldir, float Range)
+	bool isSunOrHemi = L.light_type != LGroup::eRGB;
+	float att = 0;
+	switch (L.type)
 	{
- 		task_data.reqRays[task_data.LightsUsed].LightGroup = group;
-		task_data.reqRays[task_data.LightsUsed].isSunOrHemi = isSunOrHemi;
-		task_data.reqRays[task_data.LightsUsed].LightType = L.type;
-		task_data.reqRays[task_data.LightsUsed].L = &L;
-		task_data.reqRays[task_data.LightsUsed].dotDirection = dot;
+		case LT_DIRECT:
+		{
+			Ldir.Inverted(LightDirection);
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)
+				return;
 
-		task_data.reqRays[task_data.LightsUsed].P = Pnew;
-		task_data.reqRays[task_data.LightsUsed].D = Ldir;
-		task_data.reqRays[task_data.LightsUsed].R = 1000.f;
-		task_data.reqRays[task_data.LightsUsed].result = 1;
-		task_data.reqRays[task_data.LightsUsed].skip = skip;
-		
-		task_data.LightsUsed++;
-		AllocatedRays.fetch_add(1, std::memory_order_acquire);
-	};
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, 1000.f);
+ 			att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
+		}
+		break;
+
+		case LT_POINT:
+		{
+			float sqD = P.DistanceSquared(LightPosition);
+			if (sqD > L.range2)
+				return;
+
+			Ldir.Subtract(LightPosition, P).Normalize_Safe();
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)
+				return;
+
+			float R = sqrt(sqD); // from api
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R);
+ 			float scale = D * L.energy * trace;
  
- 	auto CaptureVec = [&](R_Light& L, LGroup group, bool isSunOrHemi)
-	{
- 		R_ASSERT(task_data.LightsUsed < MAX_LIGTINGS);
-		Fvector Ldir;
-		Fvector Pnew = P;
-		Pnew.mad(N, 0.01f);
-
-		switch (L.type)
-		{
-			case LT_DIRECT:
+			if (isSunOrHemi)
 			{
-				Ldir.invert(L.direction);
-				float D = Ldir.dotproduct(N);
-				if (D <= 0)	return;
-
-				FillData(group, isSunOrHemi, L, D, Pnew, Ldir, 1000.0f);
-			}break;
-
-			case LT_POINT:
-			case LT_SECONDARY:
+				att = scale / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD);
+			}
+			else
 			{
-				float sqD = P.distance_to_sqr(L.position);
-				if (sqD > L.range2)			return;
+				att = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+			}
 
-				Ldir.sub(L.position, P).normalize_safe();
-				float D = Ldir.dotproduct(N);
-				if (D <= 0)					return;
+		}break;
 
-				if (L.type == LT_SECONDARY)
-				{
-					D *= -Ldir.dotproduct(L.direction);
-					if (D <= 0) return;
-				}
-
-  				FillData(group, isSunOrHemi, L, D, Pnew, Ldir, _sqrt(sqD));
-  			}
-		}
-	};
-
-	// RGB Lights
-
-	tStats.Start();
-	if (!(flags & LP_dont_rgb))
-	{
-		for (R_Light& L : lights.rgb)
+		case LT_SECONDARY:
 		{
-			CaptureVec(L, LGroup::eRGB, false);
-		}
+			float sqD = P.DistanceSquared(LightPosition);
+			if (sqD > L.range2)
+				return;
+
+			Ldir.Subtract(LightPosition, P).Normalize_Safe();
+			float D = Ldir.DotProduct(N);
+			if (D <= 0)
+				return;
+
+			D *= -Ldir.DotProduct(LightDirection);
+			if (D <= 0)
+				return;
+
+			float R = sqrt(sqD);
+			float trace = RaytraceEmbreeNew(L, Pnew, Ldir, R);
+ 			att = powf(D, 0.125f) * L.energy * trace * (1 - R / L.range);
+
+		}break;
 	}
 
-	// Sun Lights
-	if (!(flags & LP_dont_sun))
-	{
-		for (R_Light& L : lights.sun)
-		{
-			CaptureVec(L, LGroup::eSun, true);
-		}
-	}
+	RealProcessed++;
 
-	// Hemi Lights
-	if (!(flags & LP_dont_hemi))
+	switch (L.light_type)
 	{
-		for (R_Light& L : lights.hemi)
-		{
-			CaptureVec(L, LGroup::eHemi, true);
-		}
+	case eSun:
+		C.sun += att;
+		break;
+	case eHemi:
+		C.hemi += att;
+		break;
+	case eRGB:
+		C.rgb.x += att * L.diffuse.x;
+		C.rgb.y += att * L.diffuse.y;
+		C.rgb.z += att * L.diffuse.z;
+		break;
 	}
-
-	StatsRaysAdd += tStats.GetElapsed_mcs();
-	// Маркировка таска
 };
-*/
 
-void PackedLighting::LightPointPacked(u32 task_id, u32 SampleID, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip)
+void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, hardware_color& Cnew)
 {
-	// ProcessReadyRays();
+	int LightsProcessed = 0;
+	 
+	HardwareVector Pos(P.x, P.y, P.z);
+	HardwareVector Dir(D.x, D.y, D.z);
+	for (auto& L : LS.sun)
+	{
+		hardware_lighting Lnew = Light(L, LGroup::eSun);
+		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+	}
+
+	for (auto& L : LS.hemi)
+	{
+		hardware_lighting Lnew = Light(L, LGroup::eHemi);
+		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+	}
+
+	for (auto& L : LS.rgb)
+	{
+		hardware_lighting Lnew = Light(L, LGroup::eRGB);
+		CalculatePoint(Lnew, Pos, Dir, Cnew, LightsProcessed);
+	}
+
+//	Msg("Lights Processed: %u", LightsProcessed);
+
+}
+
+
+// GPU
+
+void PackedLighting::LightPointPacked(u32 U, u32 V, u32 SampleID, Fvector& P, Fvector& N, base_lighting& LS, u32 flags, Face* skip)
+{
 	tStats.Start();
-	RayRecvestIndex& task_data = task_pools[IndexTask.load(std::memory_order_relaxed)];		// MT SAFE
+	int INDEX = IndexTask.load(std::memory_order_relaxed);
+	R_ASSERT(INDEX < MAX_RAYS_PER_TASK);
+	if (PrevCount < INDEX)
+	{
+		clMsg("*** Allocated Used : %u", INDEX);
+		PrevCount = INDEX + (1024 * 1024);
+	}
+	RayRecvestIndex& task_data = task_pools[INDEX];		// MT SAFE
 	IndexTask.fetch_add(1, std::memory_order_acquire); /// Загрузили сразу добовляем
-	task_data.INDEX_TASK = task_id;
+	task_data.INDEX_TASK = { U, V };
 	task_data.flags = flags;
 	task_data.P = P;
-	task_data.N = N;	 
+	task_data.N = N;
 	StatsRaysAdd += tStats.GetElapsed_mcs();
 }
 
 
 void PackedLighting::LightPointPackedRun()
 {
- 	// if (AllocatedRays > 0)
+	tStats.Start();
+	// GPU TASKING
+	XRay::RayTrace::CUDA::RayTracePackNew(*this, lc_global_data()->L_static());
+	StatsCopyToVec += tStats.GetElapsed_mcs();
+
+	// CPU TASKING
+	//for (auto i = 0; i < IndexTask; i++)
+	//{
+	//	auto Task = GetRays(i);
+	//	hardware_color color;
+	//	ProcessRays(Task.P, Task.N, lc_global_data()->L_static(), color);
+	//	copy_color(color, task_pools[i].C);
+	//
+	//	AditionalData("Processed : %u / %u", i, IndexTask.load());
+	//}
+
+	clMsg("*** Allocated Used : %u", IndexTask.load(std::memory_order_relaxed));
+
+	tStats.Start();
+
+	Colors.clear();
+	for (auto it = 0; it < IndexTask; it++) // Последний таск ID (Тоесть size)
 	{
-		// Сшиваем 
-		tStats.Start();
- 		XRay::RayTrace::CUDA::RayTracePackNew(*this, lc_global_data()->L_static());
-		StatsCopyToVec += tStats.GetElapsed_mcs();
- 	}
+		auto& INFO = task_pools[it];
+		Colors[INFO.INDEX_TASK].add(INFO.C);
+	}
+
+	StatsTotalGPUCopy += tStats.GetElapsed_mcs();
+	ClearPool();
 }
-
-/*
-void PackedLighting::LightPointPackedApply()
-{
- 	auto processAccum = [&](  RayRequest & Reqvest, base_color_c& C)
-	{
-		float att = 0.0f;
-		auto& Info = Reqvest;
-		switch (Info.LightType)
-		{
-			case LT_DIRECT:
-			{
-				att = Info.isSunOrHemi ?
-					Info.L->energy * Reqvest.result :
-					Info.dotDirection * Info.L->energy * Reqvest.result;
-			} break;
-
-			case LT_POINT:
-			{
-				float scale = Info.dotDirection * Info.L->energy * Reqvest.result;
-				if (Info.isSunOrHemi)
-					att = scale / (Info.L->attenuation0 + Info.L->attenuation1 * Reqvest.R + Info.L->attenuation2 * Info.dotDirection);
-				else
-				{
-					att = (inlc_global_data()->gl_linear())
-						? scale * (1 - Reqvest.R / Info.L->range)
-						: scale * (1 / (Info.L->attenuation0 +
-							Info.L->attenuation1 * Reqvest.R + Info.L->attenuation2 * Info.dotDirection) - Reqvest.R * Info.L->falloff);
-				}
-			} break;
-
-			case LT_SECONDARY:
-			{
-				att = powf(Info.dotDirection, 0.125f) * Info.L->energy * Reqvest.result * (1 - Reqvest.R / Info.L->range);
-			}break;
-		}
-
-		switch (Info.LightGroup)
-		{
-		case eSun:
-			C.sun += att;
-			break;
-		case eHemi:
-			C.hemi += att;
-			break;
-		case eRGB:
-			C.rgb.x += att * Info.L->diffuse.x;
-			C.rgb.y += att * Info.L->diffuse.y;
-			C.rgb.z += att * Info.L->diffuse.z;
-			break;
-		}
-	};
- 
- 	for (auto it = 0; it < IndexTask; it++)
-	{
-		auto& RAY_TASK = task_pools[it];
-		for (auto INDEX = 0; INDEX < RAY_TASK.LightsUsed; INDEX++)
-		{
-			//auto& INFO = RAY_TASK.reqRays[INDEX];
-			auto& REQ  = RAY_TASK.reqRays[INDEX];
-
-			// if (INFO.LightGroup == eHemi)
-			// 	processAccum(INFO, REQ, RAY_TASK.C);
-			// if (INFO.LightGroup == eRGB)
-			// 	processAccum(INFO, REQ, RAY_TASK.C);
-			// if (INFO.LightGroup == eSun)
-			// 	processAccum(INFO, REQ, RAY_TASK.C);
-
-			if (REQ.LightGroup == eHemi)
-				processAccum(REQ, RAY_TASK.C);
-			if (REQ.LightGroup == eRGB)
-				processAccum(REQ, RAY_TASK.C);
-			if (REQ.LightGroup == eSun)
-				processAccum(REQ, RAY_TASK.C);
-		}
-  	}
-}
-
-*/

@@ -59,7 +59,7 @@ bool CalculateEnergy(Face* F, Fvector& B, float& energy, float u, float v)
 	B.set(1.0f - u - v, u, v);
 
 	//// calc UV
-	Fvector2* cuv = F->getTC0();
+	Fvector2*   cuv = F->getTC0();
 	Fvector2	uv;
 	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
 	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
