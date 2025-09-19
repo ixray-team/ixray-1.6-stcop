@@ -17,6 +17,14 @@ void CThread::startup(void* P)
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.", T->thID);
 }
 
+CThreadManager::~CThreadManager()
+{
+	for (CThread* Th : threads)
+	{
+		xr_delete(Th);
+	}
+}
+
 void CThreadManager::start(CThread* T)
 {
 	R_ASSERT(T);
