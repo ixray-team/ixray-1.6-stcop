@@ -5,6 +5,7 @@
 
 #include "math.h"
 #include "xrFace.h"
+ 
   
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
@@ -26,38 +27,50 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 	u32		ds_y	= dst.height;
 	u32		ss_x	= src.width;
 	u32		ss_y	= src.height;
-	// R_ASSERT(ds_x>=(ss_x+px));
-	// R_ASSERT(ds_y>=(ss_y+py));
+ 
 	for (u32 y=0; y<ss_y; y++)
-		for (u32 x=0; x<ss_x; x++)
-		{
-			u32 dx = px+x;
-			u32 dy = py+y;
-			base_color	sc = src.surface[y*ss_x+x];
-			u8			sm = src.marker [y*ss_x+x];
-			if (sm>=aREF) {
-				dst.surface	[dy*ds_x+dx] = sc;
-				dst.marker	[dy*ds_x+dx] = sm;
-			}
+	for (u32 x=0; x<ss_x; x++)
+	{
+		u32 dx = px+x;
+		u32 dy = py+y;
+		base_color	sc = src.surface[y*ss_x+x];
+		u8			sm = src.marker [y*ss_x+x];
+		if (sm>=aREF) {
+			dst.surface	[dy*ds_x+dx] = sc;
+			dst.marker	[dy*ds_x+dx] = sm;
 		}
+	}
 }
 
 void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	// R_ASSERT(ds_x>=(ss_x+px));
-	// R_ASSERT(ds_y>=(ss_y+py));
+ 	// DebugMsg("ds_x : %u || ss_x: %u", ds_x, ss_x);
+	// DebugMsg("ds_y : %u || ss_y: %u", ds_y, ss_y);
+	// 
+	// DebugMsg("Source Marker: %u, Surface: %u", src.marker.size(), src.surface.size());
+	// DebugMsg("Source W: %u, H: %u", src.width, src.height);
+
 	for (u32 y=0; y<ss_y; y++)
-		for (u32 x=0; x<ss_x; x++)
+	for (u32 x=0; x<ss_x; x++)
+	{
+		u32 dx = px+x;
+		u32 dy = py+y;
+
+		// if (y * ss_x + x > src.surface.capacity())
+		// 	DebugMsg("Source Map size: %u | but need : %u", src.surface.size(), y * ss_x + x);
+		// 
+		// if (y * ss_x + x > src.marker.capacity())
+		// 	DebugMsg("Source Map size: %u | but need : %u", src.marker.size(), y * ss_x + x);
+
+		base_color	sc = src.surface[y*ss_x+x];
+		u8			sm = src.marker [y*ss_x+x];
+		
+		if (sm>=aREF) 
 		{
-			u32 dx = px+x;
-			u32 dy = py+y;
-			base_color	sc = src.surface[y*ss_x+x];
-			u8			sm = src.marker [y*ss_x+x];
-			if (sm>=aREF) {
-				dst.surface	[dy*ds_x+dx] = sc;
-				dst.marker	[dy*ds_x+dx] = sm;
-			}
+			dst.surface	[dy*ds_x+dx] = sc;
+			dst.marker	[dy*ds_x+dx] = sm;
 		}
+	}
 }
 
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
@@ -300,7 +313,8 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 
 void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
-	try {
+	try
+	{
 		lm_layer&		lm	= layer;
 
 		// UV & HASH
@@ -315,9 +329,9 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<=(getLMSIZE() - 2 * BORDER));
-		R_ASSERT		(lm.height	<=(getLMSIZE() - 2 * BORDER));
-		lm.create		(lm.width,lm.height);
+		R_ASSERT		(lm.width	<= (getLMSIZE() - 2 * BORDER));
+		R_ASSERT		(lm.height	<= (getLMSIZE() - 2 * BORDER));
+  		lm.create		(lm.width, lm.height);
 		L_Direct		(DB,LightsSelected,H);
 	} catch (...)
 	{
@@ -329,15 +343,6 @@ u16	CDeflector:: GetBaseMaterial		()
 {
 	return UVpolys.front().owner->dwMaterial;	
 }
-
-/*
-xr_vector<UVtri>			UVpolys;
-Fvector						normal;
-lm_layer					layer;
-Fsphere						Sphere;
-	
-BOOL						bMerged;
-*/
 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 {

@@ -519,7 +519,8 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	// RGB Lights
 	if (!(flags & LP_dont_rgb))
 	{
-		DB->ray_options(0);
+		if (DB != nullptr)
+			 DB->ray_options(0);
 		for (R_Light& L : lights.rgb)
 		{
 			processLight(L, C.rgb, false);
@@ -529,7 +530,8 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	// Sun Lights
 	if (!(flags & LP_dont_sun))
 	{
-		DB->ray_options(0);
+		if (DB != nullptr)
+			DB->ray_options(0);
 		for (R_Light& L : lights.sun)
 		{
 			processLight(L, C.sun, true);
@@ -539,7 +541,8 @@ void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c& C, Fvector& P,
 	// Hemi Lights
 	if (!(flags & LP_dont_hemi))
 	{
-		DB->ray_options(0);
+		if (DB != nullptr)
+			DB->ray_options(0);
 		for (R_Light& L : lights.hemi)
 		{
 			processLight(L, C.hemi, true);

@@ -53,10 +53,6 @@ auto Light = [&](R_Light& L, int type)
 	return cuL;
 };
 
-
-
-int PrevCount = 0;
-
 // Embree
 
 float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareVector& Dnew, float R)
@@ -197,67 +193,126 @@ void PackedLighting::InitializeGPU()
 void PackedLighting::LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
 	tStats.Start();
- 	R_ASSERT(IndexTask < MAX_RAYS_PER_TASK);
-	if (PrevCount < IndexTask)
-	{
-		clMsg("*** Allocated Used : %u", IndexTask);
-		PrevCount = IndexTask + (1024 * 1024);
-	}
-
-	RayRecvestIndex& task_data = task_pools[IndexTask];		// MT SAFE
-	IndexTask += 1; /// Загрузили сразу добовляем
-	task_data.INDEX_TASK = { U, V };
+	if (task_pools.size() >= MAX_RAYS_PER_TASK - 1)
+ 		LightPointPackedRun();
+ 
+	RayRecvestIndex task_data;		// MT SAFE
+ 	task_data.INDEX_TASK = { U, V };
  	task_data.P = P;
 	task_data.N = N;
-	task_data.Owner = nullptr;
-	StatsRaysAdd += tStats.GetElapsed_mcs();
+
+	task_pools.push_back( std::move(task_data) );
+ 	StatsRaysAdd += tStats.GetElapsed_mcs();
 }
+
+void PackedLighting::LightPointPackedRun()
+{
+ 	// Инициализируем
+	if (!isInitializedGPU)
+	{
+		InitializeGPU();
+ 		isInitializedGPU = true;
+	}
+	
+	tStats.Start();
+
+	clMsg("*** Start Tracing Rays: %u", task_pools.size());
+	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
+
+ 	// Устанавливаем параметры 
+ 	for (auto& task : task_pools)
+ 		XRay::RayTrace::CUDA::RayTraceAddRay(task);
+	
+	// Запускаем трейсинг
+	CTimer t; t.Start();
+	XRay::RayTrace::CUDA::RayTraceRun();
+	StatsTraverseGPU += t.GetElapsed_mcs();
+	// Получаем результаты
+	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+	
+	// Копируем то что получили
+   	for (auto it = 0; it < task_pools.size(); it++) // Последний таск ID (Тоесть size)
+	{
+		auto& INFO = task_pools[it];
+		Colors[INFO.INDEX_TASK].add(colors[it]);
+	}
+ 
+	// Очистка
+   	task_pools.clear();
+	colors.clear();
+
+	StatsTotalGPU += tStats.GetElapsed_mcs();
+}
+
+// Deflectors
 
 void PackedLighting::LightPointPackedDeflector(u32 U, u32 V, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
+   	// if (task_pools.size() >= MAX_RAYS_PER_TASK - 1)
+	// 	LightPointPackedRun();
+
 	tStats.Start();
- 	R_ASSERT(IndexTask < MAX_RAYS_PER_TASK);
-	if (PrevCount < IndexTask)
-	{
-		clMsg("*** Allocated Used : %u", IndexTask);
-		PrevCount = IndexTask + (1024 * 1024);
-	}
-	RayRecvestIndex& task_data = task_pools[IndexTask];		// MT SAFE
+ 	 
+	RayRecvestIndex task_data;		// MT SAFE
 	task_data.INDEX_TASK = { U, V };
 	task_data.P = P;
 	task_data.N = N;
 	task_data.Owner = D;
-	StatsRaysAdd += tStats.GetElapsed_mcs();
+ 	task_pools.push_back( std::move(task_data) );
 
-	IndexTask++; /// Загрузили сразу добовляем
+	StatsRaysAdd += tStats.GetElapsed_mcs();
 }
 
+void PackedLighting::LightPointPackedDeflectorsRun()
+{	
+	csRayLaunched.Enter();
 
-
-void PackedLighting::LightPointPackedRun()
-{
+	tStats.Start();
+ 	// Initialize
 	if (!isInitializedGPU)
 	{
 		InitializeGPU();
 		isInitializedGPU = true;
 	}
 
-	tStats.Start();
-	// GPU TASKING
-	XRay::RayTrace::CUDA::RayTracePackNew(*this, lc_global_data()->L_static());
-	StatsCopyToVec += tStats.GetElapsed_mcs();
-
-	clMsg("*** Allocated Used : %u", IndexTask);
-
-	tStats.Start();
-
-	Colors.clear();
-	for (auto it = 0; it < IndexTask; it++) // Последний таск ID (Тоесть size)
+	clMsg("*** Start Tracing Rays: %u", task_pools.size());
+ 	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
+ 	 
+	// Устанавливаем параметры 
+	int CurrentRays = 0;
+	for (auto& task : task_pools)
 	{
-		auto& INFO = task_pools[it];
-		Colors[INFO.INDEX_TASK].add(INFO.C);
+		if (CurrentRays >= MAX_RAYS_PER_TASK - 1)
+		{
+			XRay::RayTrace::CUDA::RayTraceRun();
+			CurrentRays = 0;
+		}
+		XRay::RayTrace::CUDA::RayTraceAddRay(task);
+		CurrentRays++;
 	}
 
-	StatsTotalGPUCopy += tStats.GetElapsed_mcs();
-	ClearPool();
+	// Запускаем трейсинг
+	 
+	XRay::RayTrace::CUDA::RayTraceRun();
+	StatsTraverseGPU += tStats.GetElapsed_mcs();
+	 
+	// Получаем результаты
+	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+
+	// Заполняем в дефолекторы
+	int it = 0;
+	for (auto RAY_INFO : task_pools)
+	{
+		DEF_Colors[RAY_INFO.Owner][RAY_INFO.INDEX_TASK].add(colors[it]);
+		it++;
+	}
+ 
+	// Очистка
+	task_pools.clear();
+	colors.clear();
+
+	StatsTotalGPU += tStats.GetElapsed_mcs();
+
+	csRayLaunched.Leave();
 }
+
