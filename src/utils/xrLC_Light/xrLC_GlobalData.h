@@ -48,8 +48,7 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 
 	bool							_b_nosun;
 	bool							_gl_linear;
-	bool							_b_use_intel;
-	bool							_b_skipWeld;
+ 	bool							_b_skipWeld;
 	bool							_b_use_lmaps_build_alt;
 
 private:
@@ -146,9 +145,6 @@ public:
 
 	bool GetSkipSubdivide() { return _skipSubdivide; }
 	void SetSkipSubdivide(bool skipSubdivide) { _skipSubdivide = skipSubdivide; }
-
-	bool GetIsIntelUse() {return _b_use_intel;}
-	void SetIsIntelUse(bool use_intel) { _b_use_intel = use_intel; }
  
 	bool GetSkipWeld() { return _b_skipWeld; }
 	void SetSkipWeld(bool value) { _b_skipWeld = value; }
