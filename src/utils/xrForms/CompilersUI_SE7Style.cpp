@@ -269,7 +269,11 @@ int item_current_selected = 2;
 int item_current_jitter = 2;
 int item_current_jitter_mu = 6;
 
-const char* items[] = { "1024", "2048", "4096", "8192" };
+// Index Add (changed list)
+int			max_resolution = 5;
+const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384"};
+
+// Jitters
 const char* itemsJitter[] = { "1", "4", "9" };
 const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6"};
 
@@ -295,8 +299,8 @@ void DrawLCConfig()
 		ImGui::Separator();
 
 		ImGui::SetNextItemWidth(100);
-		if (ImGui::Combo("lmaps", &item_current_selected, items, 4))
- 			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
+		if (ImGui::Combo("lmaps", &item_current_selected, lightmap_resolution, max_resolution))
+ 			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
 		ImGui::Checkbox("LMAP places by se7kills", &gCompilerMode.LC_LmapsAlternative);
  
 		ImGui::Separator();
@@ -757,7 +761,7 @@ void RenderCompilerUI(int X, int Y)
 			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
 			{
 				auto& line = GetLogVector()[i];
-				ImGui::TextColored(getLogColor((char*)line.c_str()), "%s", line.c_str());
+				ImGui::TextColored(getLogColor((char*)line.c_str()), "%s", Platform::UTF8_to_CP1251(line.c_str()).c_str() );
 			}
 		}
 
