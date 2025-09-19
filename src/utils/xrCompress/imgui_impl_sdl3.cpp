@@ -322,6 +322,12 @@ ImGuiKey ImGui_ImplSDL3_KeyEventToImGuiKey(SDL_Keycode keycode, SDL_Scancode sca
         case SDLK_F24: return ImGuiKey_F24;
         case SDLK_AC_BACK: return ImGuiKey_AppBack;
         case SDLK_AC_FORWARD: return ImGuiKey_AppForward;
+
+        case 1084: return ImGuiKey_V;
+        case 1089: return ImGuiKey_C;
+        case 1092: return ImGuiKey_A;
+        case 1095: return ImGuiKey_X;
+
         default: break;
     }
 
