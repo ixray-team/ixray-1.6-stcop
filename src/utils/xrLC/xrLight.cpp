@@ -60,6 +60,7 @@ void CBuild::ProcessLMAPS_CPU()
 };
 
 
+#ifdef LCCUDA_BUILD
 #include "../xrLC_Light/xrDeflectorLight_Packed.h"
 
 void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
@@ -115,11 +116,13 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 
 	clMsg("$ [LMAPS] Ready [%u/%u] total [%u]", Begin, End, lc_global_data()->g_deflectors().size());
 }
+#endif
 
 void	CBuild::LMaps					()
 {
 	mem_Compact();
 
+#ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
 		Status("Lighting Precalculate for GPU...");
@@ -142,6 +145,7 @@ void	CBuild::LMaps					()
 		clMsg("%f seconds", start_time.GetElapsed_sec());
 	}
 	else
+#endif
 	{
 		// Main process (4 threads)
 		Status("Lighting...");

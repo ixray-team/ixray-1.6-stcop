@@ -49,8 +49,8 @@ if (WIN32)
     )
 
     # RedImage
-    target_link_libraries(xrDXT PRIVATE ${REDIMAGE_LIB})
-    target_include_directories(xrDXT PRIVATE "${REDIMAGE_INCL}")
+    target_link_libraries(xrDXT PUBLIC ${REDIMAGE_LIB})
+    target_include_directories(xrDXT PUBLIC "${REDIMAGE_INCL}")
 
     ## Copy binaries
     add_custom_command(TARGET ${PROJECT_NAME}

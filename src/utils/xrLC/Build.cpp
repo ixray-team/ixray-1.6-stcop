@@ -237,8 +237,12 @@ void CBuild::Run(LPCSTR P)
 	CorrectTJunctions();
 	mem_Compact();
 
+#ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
+	{
 		GPUTaskinSystem.InitializeGPU();
+	}
+#endif
 
 	// AdaptiveHT
 	BuildAdaptiveHT();

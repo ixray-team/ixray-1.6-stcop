@@ -157,6 +157,7 @@ void LightVertex()
 	// Start threads, wait, continue --- perform all the work
 	Status("Calculating...");
 
+#ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
 		int INDEX = 0;
@@ -200,6 +201,7 @@ void LightVertex()
 
 	}
 	else
+#endif
 	{
  		CThreadManager Threads;
 		VLT.init();
