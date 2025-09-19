@@ -60,7 +60,11 @@ void CTeleWhirlwind::draw_out_impact(Fvector& dir,float& val)
 	dir.set(m_saved_impacts[0].force);
 	val=dir.magnitude();
 	if(!fis_zero(val))dir.mul(1.f/val);
-	m_saved_impacts.erase(m_saved_impacts.begin());
+
+	if (m_saved_impacts.size())
+	{
+		m_saved_impacts.erase(m_saved_impacts.begin());
+	}
 }
 
 static bool RemovePred(CTelekineticObject *tele_object)
