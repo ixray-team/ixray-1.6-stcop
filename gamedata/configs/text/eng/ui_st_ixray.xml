@@ -417,6 +417,12 @@
 	</string>
 	<string id="kb_clear_gasmask">
 		<text>Wipe mask</text>
+    </string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Glass mask effect</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text>Drops on Glass</text>
 	</string>
 	<string id="ui_mm_mouse_sense_ui">
 		<text>Mouse sensitivity in UI</text>
