@@ -14,10 +14,10 @@ struct CompilersMode
 	bool Embree = true;
 	bool CUDA = true;
 
-	bool Embree_SplitBVH = false;
-	bool EmbreeBVHCompact = false;
+ 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
- 	bool ClearTemp = false;
+
+	bool ClearTemp = false;
 	bool SkipTHM = false;
 
 	bool AI = false;
