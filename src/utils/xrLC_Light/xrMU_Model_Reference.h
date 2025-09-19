@@ -30,10 +30,11 @@ public:
 	void					Load				( IReader& fs, xr_vector<xrMU_Model*>& mu_models );
 	
 	void					calc_lighting		();
+#ifdef LCCUDA_BUILD
 	void					calc_lighting_cuda_1  ();
 	void					calc_lighting_cuda_2  ();
 	void					calc_lighting_cuda_3  ();
- 
+#endif
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL); 
 
