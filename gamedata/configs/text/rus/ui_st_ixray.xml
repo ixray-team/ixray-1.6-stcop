@@ -424,4 +424,10 @@
 	<string id="ui_mm_mouse_sense_ui">
 		<text>„увствительность мыши в UI</text>
 	</string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Ёффект маски стекла</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text> апли на стекле</text>
+	</string>
 </string_table>
