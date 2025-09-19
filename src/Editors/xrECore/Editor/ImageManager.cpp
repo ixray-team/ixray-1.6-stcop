@@ -1,12 +1,10 @@
 #include "stdafx.h"
 
-
 #include "ImageManager.h"
+#include "CubeMapHelper.h"
 #include "ui_main.h"
 #include "EditObject.h"
 #include "../Layers/xrRender/ResourceManager.h"
-
-#include "../utils/ETools/ETools.h"
 
 CImageManager ImageLib;
 
@@ -731,7 +729,7 @@ BOOL CImageManager::CreateSmallerCubeMap(LPCSTR src_name, LPCSTR dst_name)
 		U32Vec sm_data	(sm_wf*sm_h,0);
 		SPBItem* PB		= UI->ProgressStart(1.f,"Cube Map: scale image...");
 		CTimer T; T.Start();
-		ETOOLS::SimplifyCubeMap	(data.data(),w,h,sm_data.data(),sm_w,sm_h,16.f,pb_callback,PB);
+		XRay::Editor::CubeMap::Simplify(data.data(),w,h,sm_data.data(),sm_w,sm_h,16.f,pb_callback,PB);
 		float tm_scm	= T.GetElapsed_sec();
 		UI->ProgressEnd	(PB);
 		// write texture
