@@ -519,20 +519,21 @@ void RenderCompilerUI(int X, int Y)
 
 	ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
 
-	// if (ResizeMaximal)
-	// {
-	// 	if (X != 1400 || Y != 925)
-	// 	{
-	// 		SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
-	// 	}
-	// }
-	// else
-	// {
-	// 	if (X != 1000 || Y != 560)
-	// 	{
-	// 		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
-	// 	}
-	// }
+	if (ResizeMaximal)
+	{
+		if (X != 1400 || Y != 640)
+		{
+			//SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
+			SDL_SetWindowSize(g_AppInfo.Window, 1400, 700);
+		}
+	}
+	else
+	{
+		if (X != 1000 || Y != 560)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+		}
+	}
 
 	int MAX_TRABS = 9;
 	if (ResizeMaximal)
