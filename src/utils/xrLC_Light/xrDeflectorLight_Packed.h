@@ -15,7 +15,7 @@ enum LGroup : u8
 };
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024					// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_TASK   1024 * 1024		* 200		// Общее кол-во Задач (на запуск GPU)
 #define MAX_RAYS_PER_GPU	128  * 1024					// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
 
 struct RayRecvestIndex
@@ -45,6 +45,8 @@ public:
  	};
 
 public:
+ 
+	// Unordered for maps
 	size_t MakeKey(u32 U, u32 V)
 	{
 		return (static_cast<u64>(U) << 32) | static_cast<u64>(V);
@@ -67,12 +69,8 @@ public:
 	void LightPointPackedRun();
 
 	xrCriticalSection csAdd;
-
-	// Deflectors Processing
-	xr_atomic_u32 DeflectorsReady = 0;
-	xr_atomic_u32 DeflectorsRecvested = 0;
-
-	void LightPointPackedDeflector(CDeflector* D, u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
+ 
+	void LightPointPackedDeflector(size_t IndexTask, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip);
  	void LightPointPackedDeflectorsRun();
  
 	// xrMuModels
@@ -82,9 +80,6 @@ public:
  	void RestartALL()
 	{
 		// start
-		DeflectorsReady = 0;
-		DeflectorsRecvested = 0;
-
 		current_flags = 0;
 
 		// Basic Tasks
@@ -93,6 +88,10 @@ public:
 		// task pool memory clear
 		task_pools.clear();
 		task_pools.shrink_to_fit();
+
+		ProcessingGPU = 0;
+		ProcessingCPU_copy = 0;
+		ProcessingCPU_result = 0;
 	}
  
 	// Task Index, Color. 
@@ -107,6 +106,12 @@ public:
 	xr_concurrent_vector<RayRecvestIndex>																task_pools;			// BASIC UV
 
 	xrCriticalSection csEnter;
+
+	// Stats
+	u32 ProcessingGPU = 0;
+	u32 ProcessingCPU_copy = 0;
+	u32 ProcessingCPU_result = 0;
+
 };
 
 extern PackedLighting GPUTaskinSystem;
