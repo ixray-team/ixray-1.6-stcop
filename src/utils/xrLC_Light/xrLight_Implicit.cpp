@@ -16,6 +16,7 @@ using Implicit_it = Implicit::iterator;
 
 #include "../xrForms/xrThread.h"
 #include "../xrForms/CompilersUI.h"
+#include "../xrDXT/xrDXT.h"
 
 class ImplicitThread :
 	public CThread
