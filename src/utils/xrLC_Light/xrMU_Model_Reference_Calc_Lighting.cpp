@@ -172,24 +172,18 @@ void xrMU_Reference::calc_lighting_cuda_1()
 	tmp.transpose(R);
 	Rxform.invert(tmp);
 
-	// MT-Safe 
-	SafeVertices.resize(model->m_vertices.size());
-	for (size_t Iter = 0; Iter < model->m_vertices.size(); Iter++)
-		SafeVertices[Iter] = *model->m_vertices[Iter];
-
-	u32 SampleMAX = lc_global_data()->GetOverrideSettings() ? lc_global_data()->GetJitterMU() : 6;
+ 	u32 SampleMAX = lc_global_data()->GetOverrideSettings() ? lc_global_data()->GetJitterMU() : 6;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
 	// Perform lighting
-	for (u32 I = 0; I < SafeVertices.size(); I++)
+	for (u32 I = 0; I < model->m_vertices.size(); I++)
 	{
-		_vertex& V = SafeVertices[I];
-		base_color_c			vC;
-
+		_vertex& V = *model->m_vertices[I];
+ 
 		Fvector					vP, vN;
-		xform.transform_tiny(vP, V.P);
-		Rxform.transform_dir(vN, V.N);
-		exact_normalize(vN);
+		xform.transform_tiny	(vP, V.P);
+		Rxform.transform_dir	(vN, V.N);
+		exact_normalize			(vN);
 
 		// multi-sample
 		for (u32 sample = 0; sample < (u32)n_samples; sample++)
@@ -226,6 +220,11 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	u32 SampleMAX = lc_global_data()->GetOverrideSettings() ? lc_global_data()->GetJitterMU() : 6;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
  
+	xr_vector<_vertex>								  SafeVertices;
+	SafeVertices.resize(model->m_vertices.size());
+	for (size_t Iter = 0; Iter < model->m_vertices.size(); Iter++)
+		SafeVertices[Iter] = *model->m_vertices[Iter];
+
 	// Perform lighting
 	for (u32 I = 0; I < SafeVertices.size(); I++)
 	{
@@ -330,6 +329,10 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	}
 
 	colors_cuda.clear();
+
+	// se7kills: ’от€бы пам€ть убрать из юза
+	SafeVertices.clear();
+	SafeVertices.shrink_to_fit();
 }
 
 // Ref Code
