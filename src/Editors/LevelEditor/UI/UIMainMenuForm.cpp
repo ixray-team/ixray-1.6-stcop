@@ -100,7 +100,19 @@ void UIMainMenuForm::Draw()
 			{
 				for (auto& str : EPrefs->scene_recent_list)
 				{
-					if (ImGui::MenuItem(str.c_str(), "")) { ExecCommand(COMMAND_LOAD, str); }
+					if (ImGui::MenuItem(str.c_str(), ""))
+					{
+						ExecCommand(COMMAND_LOAD, str);
+					}
+				}
+
+				if (!EPrefs->scene_recent_list.empty())
+				{
+					ImGui::Separator();
+					if (ImGui::MenuItem("Clear List", ""))
+					{
+						EPrefs->scene_recent_list.clear();
+					}
 				}
 				ImGui::EndMenu();
 			}
