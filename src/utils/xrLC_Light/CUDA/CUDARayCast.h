@@ -24,6 +24,7 @@ namespace XRay::RayTrace::CUDA
         OptixTraversableHandle tlasHandle = 0;
     };
 
+
     struct TextureData
     {
         u32 width;
