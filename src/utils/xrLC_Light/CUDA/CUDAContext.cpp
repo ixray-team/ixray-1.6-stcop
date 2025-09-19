@@ -22,9 +22,8 @@ bool OptixContext::Initialize()
 
 	OPTIX_CHECK(optixInit());
 	OPTIX_CHECK(optixDeviceContextCreate(cudaContext, &options, &optixContext));
-
-
-	CreatePipeline("X:\\GitHub\\ixray-1.6-stcop\\build\\bin\\Debug\\CuTrace.ptx");
+ 
+	CreatePipeline("CuTrace.ptx");
 	return true;
 }
 

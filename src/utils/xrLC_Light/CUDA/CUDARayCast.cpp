@@ -7,25 +7,24 @@
 #include "../xrMU_Model_Reference.h"
 
 #include <optix_function_table_definition.h>
+#include <embree_raytracing/EmbreeRayTrace.h>
 
-struct FaceDataIntel
-{
-	Fvector v1, v2, v3;
-	void* ptr;
-};
+struct FaceDataIntel;
+
 
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
 {
 	xrLC_GlobalData* globalData = lc_global_data();
-	if (!globalData)
-		return false;
+	if (!globalData) return false;
 
 	OptixGeometryBuilder geometryBuilder;
+ 	// 1. Обрабатываем статическую геометрию
 
-	// 1. Обрабатываем статическую геометрию
+	CTimer t; t.Start();
+	int INDEX = 0;
 	for (Face* F : globalData->g_faces())
 	{
-		const Shader_xrLC& SH = F->Shader();
+ 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow) continue;
 
 		b_material& M = globalData->materials()[F->dwMaterial];
@@ -35,7 +34,11 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 		if (!isTransparent) {
 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 		}
+
+		AditionalData("Processing GPU: %u/%u", INDEX, globalData->g_faces().size() );
+		INDEX++;
 	}
+	clMsg("Processing : %u ms", t.GetElapsed_ms());
 
 	// 2. Обрабатываем MU-референсы
 	for (auto ref : globalData->mu_refs())
@@ -209,11 +212,14 @@ void XRay::RayTrace::CUDA::InitializeTextures(xr_vector<TextureData>& gpuTexture
 	delete[] texObjects;
 }
 
+#include <xrDeflector.h>
+
 struct RayHitResult
 {
 	float t;
 	int faceId;
 };
+
 struct Params
 {
 	OptixTraversableHandle handle;
@@ -223,15 +229,7 @@ struct Params
 	RayHitResult* result;
 };
 
-struct RayRequest
-{
-	Fvector P;      // Начальная точка луча (аналог вашего `P`)
-	Fvector D;      // Направление луча (аналог `D`)
-	float R;        // Максимальная дистанция (аналог `R`)
-	Face* skip;     // Полигон для игнорирования (аналог `skip`)
-	float result;   // Результат трассировки (расстояние или -1)
-};
-
+u64 RayTracingTime = 0;  
 class RayTracer
 {
 	RayHitResult* d_results;  // Буфер для результатов (N лучей)
@@ -240,17 +238,29 @@ class RayTracer
 	int max_rays;           // Макс. количество лучей в батче
 
 public:
-	void Init(int max_rays = 1024)
+	bool isInitialized = false;
+
+	void Init(int max_rays)
 	{
 		this->max_rays = max_rays;
 		CUDA_CHECK(cudaMalloc(&d_results, max_rays * sizeof(RayHitResult)));
-		CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), sizeof(Params)));
+		//CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), sizeof(Params)));
+		CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_params), max_rays * sizeof(Params)));
+
 		CUDA_CHECK(cudaStreamCreate(&stream));
+		isInitialized = true;
 	}
 
 	// 2. Пакетная трассировка лучей
 	void TraceRays(xr_vector<RayRequest>& rays)
 	{
+		CTimer t;
+		t.Start();
+		if (rays.size() > max_rays)
+		{
+			Msg("*** > MaxRAYS:  Start Tracing Rays: %u size", rays.size());	return;
+		}
+
 		// Подготавливаем данные на хосте
 		xr_vector<Params> h_params(rays.size());
 		for (size_t i = 0; i < rays.size(); ++i)
@@ -260,9 +270,10 @@ public:
 				.rayOrigin = make_float3(rays[i].P.x, rays[i].P.y, rays[i].P.z),
 				.rayDir = make_float3(rays[i].D.x, rays[i].D.y, rays[i].D.z),
 				.rayMaxT = rays[i].R,
-				.result = d_results + i * sizeof(RayHitResult)
+				.result = d_results + i // * sizeof(RayHitResult)
 			};
 		}
+		// Msg("*** Processing HOST Parrams : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Копируем на устройство
 		CUDA_CHECK(cudaMemcpyAsync
@@ -274,6 +285,9 @@ public:
 			stream
 		));
 
+		// Msg("*** Processing Copy to GPU: %u ms", t.GetElapsed_ms()); t.Start();
+
+
 		// Запускаем трассировку
 		OPTIX_CHECK(optixLaunch
 		(
@@ -284,6 +298,7 @@ public:
 			&optixContext.GetSBT(),
 			rays.size(), 1, 1  // Запускаем N лучей
 		));
+		// Msg("*** Processing Run Tracing : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Копируем результаты асинхронно
 		std::vector<RayHitResult> h_results(rays.size());
@@ -295,16 +310,29 @@ public:
 			cudaMemcpyDeviceToHost,
 			stream
 		));
+		// Msg("*** Processing Copy Results : %u ms", t.GetElapsed_ms()); t.Start();
 
 		// Синхронизируем только один раз
 		CUDA_CHECK(cudaStreamSynchronize(stream));
 
 		// Обновляем результаты
-		for (size_t i = 0; i < rays.size(); ++i) {
-			rays[i].result = h_results[i].t > 0 ? h_results[i].t : -1.0f;
-		}
+		for (size_t i = 0; i < rays.size(); ++i)
+ 			rays[i].result = h_results[i].t > 0 ? h_results[i].t : -1.0f;
+ 
+		// Msg("*** Processing Update Results : %u ms", t.GetElapsed_ms());
+
+		RayTracingTime += t.GetElapsed_mcs();
 	}
 };
+
+
+thread_local RayTracer Tracer;
+void XRay::RayTrace::CUDA::RayTracePack(xr_vector<RayRequest> & data)
+{
+  	if (!Tracer.isInitialized)
+ 		Tracer.Init(1024 * 32);
+ 	Tracer.TraceRays(data);
+}
 
 float XRay::RayTrace::CUDA::RayTrace(Fvector& P, Fvector& D, float R, Face* skip)
 {
