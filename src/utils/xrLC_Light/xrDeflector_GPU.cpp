@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "xrDeflector.h"
 #include "xrLC_GlobalData.h"
-
 #include "light_point.h"
 #include "xrFace.h"
-
+ 
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 
 void CDeflector::LightGPU( HASH& H )
@@ -92,7 +91,8 @@ void CDeflector::L_DirectGPU(   HASH& H)
  		for (u32 U = 0; U < lm.width; U++)
 		{
  			u32 Fcount = 0;
- 
+			size_t TaskID = GPUTaskinSystem.MakeKey(U, V); 
+
 			for (u32 J = 0; J < Jcount; J++)
 			{
  				Fvector2 P;
@@ -109,20 +109,17 @@ void CDeflector::L_DirectGPU(   HASH& H)
 						Face* F = (*it)->owner;
 						FromBarry(F, wP, wN, B);
 						
- 						GPUTaskinSystem.LightPointPackedDeflector(this, U, V, wP, wN, flags, F);
-						ColorsRecvested++;
-
+  						GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
+ 
   						Fcount += 1;
  						break;
 					}
 				}
 			}
  			 
- 			def_FacesCount[GPUTaskinSystem.MakeKey(U, V)] = Fcount;
+ 			def_FacesCount[TaskID] = Fcount;
 		}
 	}
- 
-	GPUTaskinSystem.DeflectorsRecvested.fetch_add(1);
 }
 
 void CDeflector::EdgesLighting(HASH& H)
@@ -157,6 +154,7 @@ void CDeflector::EdgesLighting(HASH& H)
 			if ((_y < 0) || (_y >= (int)lm.height))	continue;
 
 			if (lm.marker[_y * lm.width + _x])		continue;
+ 
 
 			// ok - perform lighting
 			base_color_c	C;
@@ -165,7 +163,8 @@ void CDeflector::EdgesLighting(HASH& H)
 			P.mad(v1, vdir, time);
 			
 			u32 flags = 0;
-			GPUTaskinSystem.LightPointPackedDeflector(Deflector, _x, _y, P, N, flags, skip);
+			size_t TaskID = GPUTaskinSystem.MakeKey(_x, _y);
+			GPUTaskinSystem.LightPointPackedDeflector(TaskID, Deflector, P, N, flags, skip);
 		}
 	};
  
@@ -194,72 +193,58 @@ void CDeflector::EdgesLighting(HASH& H)
 }
 
 /// Залетают лучи после расчета в ГПУ
-
 void CDeflector::ApplyColors()
 {
- 	lm_layer& lm = layer;
+	lm_layer& lm = layer;
 
-	// Faces Только будет при простом проходе
-	GPUTaskinSystem.DeflectorsReady.fetch_add(1);
-
+ 	// Faces Только будет при простом проходе
 	if (def_FacesCount.size() && ApplyLmap)
 	{
 		ApplyLmap = false;
-
-  		lm_layer& lm = layer;
-		for (auto& [key, count] : def_FacesCount)
+  
+		for (auto& [key, C] : def_color_map)
 		{
 			u32 U = GPUTaskinSystem.GetU(key);
 			u32 V = GPUTaskinSystem.GetV(key);
-			if (count)
-			{
-				base_color_c& C = def_color_map[key];
-				C.scale(count);
-				C.mul(.5f);
-				lm.surface[V * lm.width + U]._set(C);
-				lm.marker[V * lm.width + U] = 255;
-			}
-			else
-			{
-				base_color_c C;
-				lm.surface[V * lm.width + U]._set(C);
-				lm.marker[V * lm.width + U] = 0;
-			}
-		}
+			u32 count = def_FacesCount[key] > 0 ? def_FacesCount[key] : 1;
 
- 		def_FacesCount.clear();
-		def_color_map.clear();
+ 			C.scale(count);
+			C.mul(.5f);
+			lm.surface[V * lm.width + U]._set(C);
+			lm.marker[V * lm.width + U] = 255;
+		}
   	}	
 
 	if (def_color_map.size() && ApplyEdge)
 	{
-		for (auto& F : def_color_map)
+		ApplyEdge = false;
+
+ 		for (auto& [key, C] : def_color_map)
 		{
-			u32 _x = GPUTaskinSystem.GetU(F.first);
-			u32 _y = GPUTaskinSystem.GetV(F.first);
-			auto& C = F.second;
+			u32 U = GPUTaskinSystem.GetU(key);
+			u32 V = GPUTaskinSystem.GetV(key);
 
-			C.mul(.5f);
-			lm.surface[_y * lm.width + _x]._set(C);
-			lm.marker[_y * lm.width + _x] = 255;
-		}
-	}
-
+ 			C.mul(.5f);
+			lm.surface[V * lm.width + U]._set(C);
+			lm.marker[V * lm.width + U] = 255;
+ 		}
+ 	}
 }
 
-void CDeflector::ApplyColor(size_t key, base_color_c& C)
+void CDeflector::ClearResults()
 {
- 	lm_layer& lm = layer;
- 	u32 U		 = GPUTaskinSystem.GetU(key);
-	u32 V		 = GPUTaskinSystem.GetV(key);
- 	
-	def_color_map[key].add(C); 	 
-	// if (ColorsRecvested != 0 && ColorsRecvested == ColorsApply)
-	// {
-	// 	csDefl.Enter();
-	// 	ApplyColors();
-	// 	csDefl.Leave();
-	// }
+	def_FacesCount.clear();
+	def_color_map.clear();
+}
+
+void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
+{
+	csApply.Enter();
+	if (def_color_map.end() != def_color_map.find(IKey))
+	 	def_color_map[IKey].add(C);
+	else
+		def_color_map[IKey] = C;
+	csApply.Leave();
 }
 
 // Перерасчет в более сжатый формат
@@ -312,8 +297,6 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 void CDeflector::ApplyExpadBordersGPU()
 {
 	if (ApplyResolution) return;
-	
- 	// clMsg("Deflector expand border [%u] ", Index.load());
 
 	// Expand with borders
 	try
