@@ -43,7 +43,7 @@ int EScene::RayQuery(SPickQuery& PQ, const Fvector& start, const Fvector& dir, f
 {
 	VERIFY			(snap_list);
 	PQ.prepare_rq	(start,dir,dist,flags);
-	ETOOLS::ray_options	(flags);
+	XRC.ray_options	(flags);
 	for(ObjectIt _F=snap_list->begin();_F!=snap_list->end();_F++)
 		((CSceneObject*)(*_F))->RayQuery(PQ);
 	return PQ.r_count();
@@ -53,7 +53,7 @@ int EScene::BoxQuery(SPickQuery& PQ, const Fbox& bb, u32 flags, ObjectList* snap
 {
 	VERIFY(snap_list);
 	PQ.prepare_bq(bb, flags);
-	ETOOLS::box_options(flags);
+	XRC.box_options(flags);
 	for (ObjectIt _F = snap_list->begin(); _F != snap_list->end(); _F++)
 	{
 		((*_F))->BoxQuery(PQ);
@@ -65,23 +65,23 @@ int EScene::BoxQuery(SPickQuery& PQ, const Fbox& bb, u32 flags, ObjectList* snap
 int EScene::RayQuery(SPickQuery& PQ, const Fvector& start, const Fvector& dir, float dist, u32 flags, CDB::MODEL* model)
 {
 	PQ.prepare_rq	(start,dir,dist,flags);
-	ETOOLS::ray_options	(flags);
-	ETOOLS::ray_query	(model,start,dir,dist);
-	for (int r=0; r<ETOOLS::r_count(); r++)
-		PQ.append	(ETOOLS::r_begin()+r,0,0);
+	XRC.ray_options	(flags);
+	XRC.ray_query	(model,start,dir,dist);
+	for (int r=0; r<XRC.r_count(); r++)
+		PQ.append	(XRC.r_begin()+r,0,0);
 	return PQ.r_count();
 }
 
 int EScene::BoxQuery(SPickQuery& PQ, const Fbox& bb, u32 flags, CDB::MODEL* model)
 {
 	PQ.prepare_bq	(bb,flags);
-	ETOOLS::box_options	(flags);
+	XRC.box_options	(flags);
 	Fvector c,d;
 	bb.getcenter	(c);
 	bb.getradius	(d);
-	ETOOLS::box_query	(model,c,d);
-	for (int r=0; r<ETOOLS::r_count(); r++)
-		PQ.append	(ETOOLS::r_begin()+r,0,0);
+	XRC.box_query	(model,c,d);
+	for (int r=0; r<XRC.r_count(); r++)
+		PQ.append	(XRC.r_begin()+r,0,0);
 	return PQ.r_count();
 }
 
