@@ -111,7 +111,7 @@ public:
 	virtual bool				Action				(u16 cmd, u32 flags)			{return false;}
 			void				OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	
-	virtual	u8					GetCurrentHudOffsetIdx ()							{return 0;}
+	virtual	u8					GetCurrentHudOffsetIdx () const {return 0;}
 
 	BOOL						GetHUDmode			();
 	IC BOOL						IsPending			()		const					{ return !!m_huditem_flags.test(fl_pending);}
