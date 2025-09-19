@@ -163,6 +163,8 @@ void ImplicitExecute::Execute()
 #ifdef LCCUDA_BUILD
 void RunTaskGPU()
 {
+	clMsg("$ Run Tasks GPU");
+
 	CTimer tStats;
 	tStats.Start();
   
@@ -299,6 +301,8 @@ void ImplicitLightingExec()
 			ImplicitDeflector& ImpD = it->second;
 			ImpD.faces.push_back(F);
 		}
+
+
 	}
 
 	// Lighing
@@ -320,7 +324,7 @@ void ImplicitLightingExec()
 		}
 		else
 #endif
-		RunImplicitMultithread(defl);
+			RunImplicitMultithread(defl);
 
 		defl.faces.clear();
 
