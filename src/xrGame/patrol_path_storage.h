@@ -16,7 +16,8 @@ class CGameGraph;
 #include "object_interfaces.h"
 #include "../xrCore/associative_vector.h"
 
-class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter> {
+class CPatrolPathStorage : public IPureSerializeObject<IReader,IWriter>
+{
 private:
 	typedef IPureSerializeObject<IReader,IWriter>		inherited;
 
@@ -41,6 +42,8 @@ public:
 
 	void add_path(shared_str, CPatrolPath*);
 	void remove_path(shared_str);
+
+	const CPatrolPath* safe_path(shared_str patrol_name, bool no_assert = false, bool on_level = false) const;
 };
 
 #include "patrol_path_storage_inline.h"
