@@ -113,7 +113,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		EmbreeMain.AttachGeometrys	(false);
  	}
 
-// #define USE_INTEL 
+#define USE_INTEL 
 	 
 #ifdef USE_INTEL
 	// Prepare
