@@ -407,4 +407,10 @@
 	<string id="st_dress_backpack">
 		<text>надеть рюкзак</text>
 	</string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Эффект маски стекла</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text>Капли на стекле</text>
+	</string>
 </string_table>
