@@ -43,6 +43,9 @@ public:
 
 	float m_fShowNearestEnemiesDistance;
 
+	bool bIsHudGasMaskAvialable;		// FFx0001 ++
+	bool bIsHudRainDropsAvialable;	// FFx0001 ++
+
 	void					ReloadBonesProtection	();
 	void					AddBonesProtection		(LPCSTR bones_section);
 
