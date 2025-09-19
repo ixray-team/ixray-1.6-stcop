@@ -172,22 +172,21 @@ __device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, Hardware
  
 __device__ void run_tracing_new(int index)
 {
-	//ColorsRessult& Result = g_params.colors[index];
 	HardwareVector P(g_params.rayOrigin);
 	HardwareVector N(g_params.rayDir);
 
-	ColorsRessult& Result = *g_params.colors;
-	// RGB Lights 
+	ColorsRessult& Result = g_params.colors[index];
 	Result.RealProcessed = 0;
 
-	for (auto i = 0; i < g_params.counts_lights; i++)
+	for (int i = 0; i < g_params.counts_lights; i++)
 	{
 		hardware_lighting& Light = g_params.lights[i];
 		CalculatePoint(Light, P, N, Result.Color, Result.RealProcessed);
 	}
 
-	Result.Configured = 123;
+	Result.Configured += 123;
 }
+
 
 // Callers
 extern "C" __global__ void __raygen__rg()
