@@ -62,6 +62,8 @@ public:
 	shared_str				m_NightVisionSect;
 
 	bool					bIsHelmetAvaliable;
+	bool					bIsHudGasMaskAvialable;		// FFx0001 ++
+	bool					bIsHudRainDropsAvialable;	// FFx0001 ++
 	bool					isDisableChangeSkin = true;
 
 	virtual u32				ef_equipment_type		() const;
