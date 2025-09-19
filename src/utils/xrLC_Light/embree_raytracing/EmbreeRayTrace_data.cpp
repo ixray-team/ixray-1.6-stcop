@@ -120,64 +120,18 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 
 	CTimer t; t.Start();
 
-	int ProgressID = 0;
 	for (auto F : lc_global_data()->g_faces())
 	{
-		Progress(float(ProgressID) / float(lc_global_data()->g_faces().size()));
-		ProgressID++;
-
 		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
-
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		// Collect
-		adjacent_vec.clear();
-		for (int vit = 0; vit < 3; ++vit)
-		{
-			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-		
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
-		
-		// Unique
-		BOOL			bAlready = FALSE;
-		 
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
-		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)
-				continue;
-			if (!Test->flags.bProcessed)
-				continue;
-			if (FaceEqual__(*F, *Test))
-			{
-				bAlready = TRUE;
-				break;
-			}
-		}
-	 
-		if (!bAlready)
- 		{
-			F->flags.bProcessed = true;
-			 
-			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-			b_texture& T = inlc_global_data()->textures()[M.surfidx];
- 			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
-			{
- 				static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-			}
-			else
-			{
-				static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-			}
-		}
-	}
+		if (!SH.flags.bLIGHT_CastShadow)	continue;
+ 					 
+		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+ 		if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
+  			static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+ 		else
+ 			static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+ 	}
 
 	Status("[RcastModel] Capturing Faces End [%u ms]", t.GetElapsed_ms());
 
@@ -188,25 +142,19 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 	Status("[RcastModel] Capturing MU-Ref Faces...");
 
 	t.Start();
-
-	ProgressID = 0;
 	for (auto ref : lc_global_data()->mu_refs())
 	{
-		Progress(float(ProgressID) / float(lc_global_data()->mu_refs().size()));
-		ProgressID++;
-
 		xr_vector<FaceDataIntel> temp_buffer;
   		ref->export_cform_rcast_new(temp_buffer);
-		for (auto pF : temp_buffer)
+		for (auto& FaceIntel : temp_buffer)
 		{
-			Face* F = (Face*) pF.ptr;
-
-			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+ 			Face* F = (Face*) FaceIntel.ptr;
+ 			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 			b_texture& T = inlc_global_data()->textures()[M.surfidx];
 			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
-				murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+				murefs_geom.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 			else
-				murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+				murefs_geom_transp.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 		}
 			
  	}

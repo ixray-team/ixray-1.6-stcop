@@ -134,7 +134,6 @@ void CBuild::xrPhase_AdaptiveHT	()
 			EmbreeMain.IntelEmbereUNLOAD();
 		}
 	}
-#ifdef LCCUDA_BUILD
 	else
 	{
 		for (size_t VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
@@ -147,14 +146,16 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 		GPUTaskinSystem.LightPointPackedRun();
 
-		for (int Task = 0; Task < GPUTaskinSystem.IndexTask; Task++)
+		for (auto& TASK : GPUTaskinSystem.Colors)
 		{
-			RayRecvestIndex& TASK = GPUTaskinSystem.GetRays(Task);
-			TASK.C.mul(0.5f);
-			lc_global_data()->g_vertices()[TASK.INDEX_TASK.first]->C._set(TASK.C);
+			auto& INDEX = TASK.first.first;
+			auto& C = TASK.second;
+			C.mul(0.5f);
+			lc_global_data()->g_vertices()[INDEX]->C._set(C);
 		}
-	}
-#endif
+
+		GPUTaskinSystem.RestartALL();
+	}  
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
