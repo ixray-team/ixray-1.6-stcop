@@ -50,18 +50,13 @@ void global_claculation_data::xrLoad()
 		// Embree Loader
  		EmbreeMain.build_data.build_fcnt	 = H.facecount;
 		EmbreeMain.build_data.build_vcnt	 = H.vertcount;
-
-		// Vertex Loading
-		EmbreeMain.build_data.build_verts.clear();
+  		EmbreeMain.build_data.build_verts.clear();
 		EmbreeMain.build_data.build_verts.resize(H.vertcount);
+  		EmbreeMain.build_data.build_faces.clear();
+		EmbreeMain.build_data.build_faces.resize(H.facecount);
 
 		for (u32 Vid = 0; Vid < H.vertcount; Vid++)
 			EmbreeMain.build_data.build_verts[Vid] = verts[Vid];
-
-		// Triangle Loading
-		EmbreeMain.build_data.build_faces.clear();
-		EmbreeMain.build_data.build_faces.resize(H.facecount);
-
 		for (u32 Tid = 0; Tid < H.facecount; Tid++)
 			EmbreeMain.build_data.build_faces[Tid] = tris[Tid];
 		Phase("Loading RCast CDB...");
