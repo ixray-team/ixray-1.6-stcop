@@ -108,11 +108,11 @@
     </menu_sound>
 	
 	<english_lang x="14" y="700" width="27" height="32" stretch="1">
-		<texture>ui_flag_usa</texture>
+		<texture>ui_flag_usa_cop</texture>
 	</english_lang>
 	
 	<russian_lang x="50" y="700" width="27" height="32" stretch="1">
-		<texture>ui_flag_russia</texture>
+		<texture>ui_flag_russia_cop</texture>
 	</russian_lang>
 	
 	<static_version x="14" y="740" width="80" height="30">
