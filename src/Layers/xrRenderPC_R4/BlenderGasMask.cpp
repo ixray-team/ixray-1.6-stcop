@@ -16,7 +16,7 @@ void CBlenderGasMask::Compile(CBlender_Compile& C)
 	}
 
 	C.r_Pass("stub_screen_space", "effector_gasmask", FALSE, FALSE, FALSE);
-	C.r_dx10Texture("s_image", r2_RT_generic);
+	C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
 
 	shared_str TexturePassName;
 	switch (C.iElement)
