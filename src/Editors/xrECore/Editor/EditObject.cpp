@@ -108,26 +108,29 @@ CEditableMesh* CEditableObject::FindMeshByName	(const char* name, CEditableMesh*
     return 0;
 }
 
-void CEditableObject::ClearGeometry ()
+void CEditableObject::ClearGeometry()
 {
-#if 1
     OnDeviceDestroy();
-#endif
-    if (!m_Meshes.empty())
-        for(EditMeshIt 	m=m_Meshes.begin(); m!=m_Meshes.end();m++)xr_delete(*m);
-    if (!m_Surfaces.empty())
-        for(SurfaceIt 	s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
-            xr_delete(*s_it);
+
+    for (EditMeshIt m = m_Meshes.begin(); m != m_Meshes.end(); m++)
+        xr_delete(*m);
+
+    for (SurfaceIt s_it = m_Surfaces.begin(); s_it != m_Surfaces.end(); s_it++)
+        xr_delete(*s_it);
+
     m_Meshes.clear();
     m_Surfaces.clear();
-#if 1
+
     // bones
-    for(BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end();b_it++)xr_delete(*b_it);
+    for (BoneIt b_it = m_Bones.begin(); b_it != m_Bones.end(); b_it++)
+        xr_delete(*b_it);
     m_Bones.clear();
+
     // skeletal motions
-    for(SMotionIt s_it=m_SMotions.begin(); s_it!=m_SMotions.end();s_it++) xr_delete(*s_it);
+    for (SMotionIt s_it = m_SMotions.begin(); s_it != m_SMotions.end(); s_it++)
+        xr_delete(*s_it);
     m_SMotions.clear();
-#endif
+
     m_ActiveSMotion = 0;
 }
 

@@ -39,6 +39,7 @@ protected:
     int				m_iBlinkTime;
     CSurface*		m_BlinkSurf;
 	void 			RenderBlink				();
+
 public:
     // constructor/destructor methods
 					CSceneObject			(LPVOID data, LPCSTR name);
@@ -46,6 +47,7 @@ public:
 	
 	virtual void 	Select					(BOOL flag);
 	void 			Construct				(LPVOID data);
+	void			ReloadReferences();
 
     // get object properties methods
 	IC bool 		RefCompare				(CEditableObject *to){return m_pReference?!!(m_pReference==to):false; }
