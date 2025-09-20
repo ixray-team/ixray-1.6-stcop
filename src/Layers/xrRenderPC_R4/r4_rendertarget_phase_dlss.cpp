@@ -40,7 +40,7 @@ bool CRenderTarget::phase_dlss()
 	dlssParams.cameraJitterX = ps_r_taa_jitter_full.x;
 	dlssParams.cameraJitterY = ps_r_taa_jitter_full.y;
 
-	dlssParams.sharpness = ps_r4_cas_sharpening;
+	dlssParams.sharpness = 0.0f;
 
 	dlssParams.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 
