@@ -37,6 +37,7 @@
 
 #define		r2_RT_sslr			"$user$sslr"
 #define		r2_RT_sslr_old		"$user$sslr_old"
+#define		r2_RT_sslr_data		"$user$sslr_data"
 #define		r2_RT_sslr_temp		"$user$sslr_temp"
 
 #define		r2_RT_ssao_temp		"$user$ssao_temp"		//temporary rt for ssao calculation
