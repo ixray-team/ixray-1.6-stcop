@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "WaveForm.h"
 
 UIPropertiesItem::UIPropertiesItem(shared_str Name, UIPropertiesForm* propertiesFrom):
 	UITreeItem(Name),
@@ -99,7 +100,35 @@ void UIPropertiesItem::DrawItem()
 	EPropType type = PItem->Type();
 	switch (type)
 	{
-		case PROP_WAVE:  break;
+		case PROP_WAVE:
+		{
+			WaveValue* V = dynamic_cast<WaveValue*>(PItem->GetFrontValue());
+			WaveForm edit_val = V->GetValue();
+			PItem->BeforeEdit<WaveValue, WaveForm>(edit_val);
+
+			if (CWaveForm::form == nullptr)
+			{
+				CWaveForm::form = new CWaveForm;
+				GUIManager->Push(CWaveForm::form, false);
+			}
+
+			if (ImGui::Button("[Wave]"))
+			{
+				CWaveForm::form->Run(&edit_val);
+			}
+
+			if (WaveForm* WaveInfo = CWaveForm::form->GetResult())
+			{
+				if (PItem->AfterEdit<WaveValue, WaveForm>(*WaveInfo))
+				{
+					if (PItem->ApplyValue<WaveValue, WaveForm>(*WaveInfo))
+					{
+						PropertiesFrom->Modified();
+					}
+				}
+			}
+			break;
+		}
 		case PROP_UNDEF: break;
 		
 		case PROP_CANVAS:
