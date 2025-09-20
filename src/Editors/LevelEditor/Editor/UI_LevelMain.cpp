@@ -434,6 +434,14 @@ CCommandVar CommandReloadObjects(CCommandVar p1, CCommandVar p2)
 		_S->ReloadObjectsReferences();
 	}
 
+	_F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
+	_E = Scene->LastObj(OBJCLASS_SCENEOBJECT);
+	for (; _F != _E; _F++)
+	{
+		CSceneObject* _S = (CSceneObject*)(*_F);
+		_S->ReloadReferences();
+	}
+
 	return 				TRUE;
 }
 
