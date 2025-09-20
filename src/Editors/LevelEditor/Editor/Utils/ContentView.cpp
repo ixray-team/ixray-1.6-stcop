@@ -1431,6 +1431,28 @@ bool CContentView::DrawContext(const xr_path& Path)
 				UI->Push(MeshView);
 			}
 		}
+		else if (Path.extension().string() == ".ltx" || Path.extension().string() == ".script")
+		{
+			if (ImGui::MenuItem("Open in VSCode"))
+			{
+#ifdef IXR_WINDOWS
+				ShellExecuteA(
+					nullptr,
+					"open",
+					"code",
+					("\"" + Path.xstring() + "\"").c_str(),
+					nullptr,
+					SW_HIDE
+				);
+#elif defined(IXR_MACOS)
+				xr_string cmd = "open -a \"Visual Studio Code\" \"" + Path.xstring() + "\"";
+				system(cmd.c_str());
+#else
+				xr_string cmd = "code \"" + Path.xstring() + "\"";
+				system(cmd.c_str());
+#endif
+			}
+		}
 		else if (Path.extension().string() == ".pg" || Path.extension().string() == ".pe")
 		{
 			if (ImGui::MenuItem("Open"))
@@ -1500,6 +1522,27 @@ bool CContentView::DrawContext(const xr_path& Path)
 		}
 		ImGui::Separator();
 	}
+
+	if (ImGui::MenuItem("Show in Explorer"))
+	{
+#ifdef IXR_WINDOWS
+		ShellExecuteA(
+			nullptr,
+			"open",
+			"explorer",
+			("/select,\"" + Path.xstring() + "\"").c_str(),
+			nullptr,
+			SW_SHOW
+		);
+#elif defined(IXR_MACOS)
+		xr_string cmd = "open -R \"" + Path.xstring() + "\"";
+		system(cmd.c_str());
+#else
+		xr_string cmd = "xdg-open \"" + Path.parent_path().xstring() + "\"";
+		system(cmd.c_str());
+#endif
+	}
+	ImGui::Separator();
 
 
 	if (ImGui::MenuItem("Cut"))
