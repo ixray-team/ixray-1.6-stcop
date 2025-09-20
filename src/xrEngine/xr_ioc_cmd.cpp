@@ -655,8 +655,12 @@ extern bool			dsEnableGamepad;
 extern int g_dwFPSlimit;
 extern bool IsFpsShow;
 
+extern bool use_smoothed_delta;
+
 void CCC_Register()
 {
+	CMD2(CCC_Boolean, "use_smoothed_delta", &use_smoothed_delta);
+
 	CMD2(CCC_Boolean, "ui_dbg_weather",		&Engine.External.EditorStates[(int)EditorUI::Weather]);
 	CMD2(CCC_Boolean, "ui_dbg_draw",		&Engine.External.EditorStates[(int)EditorUI::DebugDraw]);
 	CMD2(CCC_Boolean, "ui_dbg_cmd_vars",	&Engine.External.EditorStates[(int)EditorUI::CmdVars]);
