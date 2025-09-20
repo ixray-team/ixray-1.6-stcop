@@ -93,6 +93,7 @@ public:
 	// Engine flow-control
 	u32										dwFrame;
 
+	float									fTimeDeltaSmoothing;
 	float									fTimeDelta;
 	float									fTimeGlobal;
 	u32										dwTimeDelta;
