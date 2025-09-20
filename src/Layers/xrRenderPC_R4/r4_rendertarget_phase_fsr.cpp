@@ -54,7 +54,7 @@ bool CRenderTarget::phase_fsr()
 	fsr2Params.cameraJitterY = ps_r_taa_jitter_full.y;
 
 	fsr2Params.enableSharpening = false;
-	fsr2Params.sharpness = 0.f;
+	fsr2Params.sharpness = 0.0f;
 
 	fsr2Params.frameTimeDelta = std::max(1.0f + EPS_L, float(Device.dwTimeDelta));
 
