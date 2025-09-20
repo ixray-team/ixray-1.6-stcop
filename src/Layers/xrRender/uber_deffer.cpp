@@ -47,7 +47,14 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		}
 		else
 		{
-			Msg("! Texture [%s] has no detail bump", C.L_textures[0].c_str());
+			if (dt && dt[0])
+			{
+				Msg("! Texture [%s] has no detail bump [%s]", C.L_textures[0].c_str(), dt);
+			}
+			else
+			{
+				Msg("! Texture [%s] has no detail bump", C.L_textures[0].c_str());
+			}
 		}
 	}
 
