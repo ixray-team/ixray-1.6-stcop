@@ -364,6 +364,106 @@ void CRenderDevice::Run()
 u32 app_inactive_time		= 0;
 u32 app_inactive_time_start = 0;
 
+struct EfficientFilteredDelta
+{
+	static constexpr size_t BUFFER_SIZE = 8;
+
+	xr_array<float, BUFFER_SIZE> buffer;
+	size_t current_index = 0;
+	bool buffer_filled = false;
+
+	bool median_dirty = true;
+	float cached_median = 0.0f;
+
+	EfficientFilteredDelta() { buffer.fill(0.0f); }
+
+	void reset()
+	{
+		buffer.fill(0.0f);
+		current_index = 0;
+		buffer_filled = false;
+		median_dirty = true;
+		cached_median = 0.0f;
+	}
+
+	void CalculateSmoothedDelta(float& current_delta)
+	{
+		buffer[current_index] = current_delta;
+		current_index = (current_index + 1) % BUFFER_SIZE;
+
+		if (current_index == 0)
+			buffer_filled = true;
+
+		median_dirty = true;
+
+		current_delta = getFilteredAverage();
+	}
+
+	float getMedian()
+	{
+		if (!median_dirty) return cached_median;
+
+		size_t count = buffer_filled ? BUFFER_SIZE : current_index;
+		if (count == 0) return 0.0f;
+
+		if (!buffer_filled)
+			std::sort(buffer.begin(), buffer.begin() + count);
+		else
+			std::sort(buffer.begin(), buffer.end());
+
+		if (count % 2 == 0)
+			cached_median = (buffer[count / 2 - 1] + buffer[count / 2]) / 2.0f;
+		else
+			cached_median = buffer[count / 2];
+
+		median_dirty = false;
+		return cached_median;
+	}
+
+	float getFilteredAverage()
+	{
+		size_t count = buffer_filled ? BUFFER_SIZE : current_index;
+		if (count == 0) return 0.0f;
+
+		float median = getMedian();
+		float sum = 0.0f;
+		size_t valid_count = 0;
+
+		float threshold = calculateDynamicThreshold(median);
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			if (buffer[i] <= threshold)
+			{
+				sum += buffer[i];
+				valid_count++;
+			}
+		}
+
+		if (valid_count > 0)
+			return sum / valid_count;
+		else
+			return median;
+	}
+
+	float calculateDynamicThreshold(float median)
+	{
+		size_t count = buffer_filled ? BUFFER_SIZE : current_index;
+		if (count < 5) return median * 2.0f;
+
+		std::vector<float> deviations;
+		deviations.reserve(count);
+
+		for (size_t i = 0; i < count; ++i)
+			deviations.push_back(std::abs(buffer[i] - median));
+
+		std::sort(deviations.begin(), deviations.end());
+		float mad = deviations[count / 2];
+
+		return median + 3.0f * mad;
+	}
+} delta_filter;
+bool use_smoothed_delta = false;
 void ProcessLoading();
 void CRenderDevice::FrameMove()
 {
@@ -380,14 +480,21 @@ void CRenderDevice::FrameMove()
 		float fPreviousFrameTime = Timer.GetElapsed_sec(); Timer.Start();	// previous frame
 		fTimeDelta = 0.1f * fTimeDelta + 0.9f*fPreviousFrameTime;			// smooth random system activity - worst case ~7% error
 
-		if (fTimeDelta>.1f)    
-			fTimeDelta = .1f;							// limit to 15fps minimum
+		clamp(fTimeDelta, 0.0000002f, .1f);
 
-		if (fTimeDelta <= 0.f) 
-			fTimeDelta = EPS_S + EPS_S;					// limit to 15fps minimum
+		fTimeDeltaSmoothing = fTimeDelta;
+
+		if(use_smoothed_delta)
+		{
+			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+			clamp(fTimeDeltaSmoothing, 0.0000002f, .1f);
+		}
+
+		fTimeDelta = fTimeDeltaSmoothing;
 
 		if (Paused()) {
 			fTimeDelta = 0.0f;
+			fTimeDeltaSmoothing = 0.0f;
 		}
 
 		fTimeGlobal		= TimerGlobal.GetElapsed_sec();
