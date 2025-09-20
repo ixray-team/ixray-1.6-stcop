@@ -227,19 +227,9 @@ void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
 	float p,h;
 	des_dir.getHP(h,p);
 
-	if (isFocus)
-	{
-		cam->yaw = angle_inertion_var(cam->yaw, -h, 0.3f, 0.35f, PI_DIV_6, Device.fTimeDelta);
-		cam->pitch = angle_inertion_var(cam->pitch, -p, 0.3f, 0.35f, PI_DIV_6, Device.fTimeDelta);
-	}
-	else
-	{
-		if (angle_difference(cam->yaw, -h) > 0.2)
-			cam->yaw = angle_inertion_var(cam->yaw, -h, 0.15f, 0.2f, PI_DIV_6, Device.fTimeDelta);
-
-		if (angle_difference(cam->pitch, -p) > 0.2)
-			cam->pitch = angle_inertion_var(cam->pitch, -p, 0.15f, 0.2f, PI_DIV_6, Device.fTimeDelta);
-	}
+	Fvector targ_angles = EulerYawPitchRollInertion({ cam->pitch , cam->yaw, 0.f}, { -p, -h, 0.f}, 0.5f, Device.fTimeDelta);
+	cam->pitch = targ_angles.x;
+	cam->yaw = targ_angles.y;
 }
 
 void CUITalkWnd::Update()
