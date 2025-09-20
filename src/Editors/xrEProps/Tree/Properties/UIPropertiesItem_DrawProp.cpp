@@ -1,7 +1,5 @@
 #include "stdafx.h"
-//-----------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------
+#include "WaveForm.h"
 #define TSTRING_COUNT 10
 
 const LPCSTR TEXTUREString[TSTRING_COUNT] = { "Custom...","$null","$base0", "$base1" ,"$base2" ,"$base3" ,"$base4","$base5" ,"$base6" ,"$base7" };
@@ -201,6 +199,34 @@ void UIPropertiesItem::DrawProp()
 		}
 	}
 	break;
+	case PROP_WAVE:
+	{
+		WaveValue* V = dynamic_cast<WaveValue*>(PItem->GetFrontValue());
+		WaveForm edit_val = V->GetValue();
+		PItem->BeforeEdit<WaveValue, WaveForm>(edit_val);
+
+		if (CWaveForm::form == nullptr)
+		{
+			CWaveForm::form = new CWaveForm;
+		}
+
+		if (ImGui::Selectable("[Wave]"))
+		{
+			CWaveForm::form->Run(&edit_val);
+		}
+
+		if (WaveForm* WaveInfo = CWaveForm::form->GetResult())
+		{
+			if (PItem->AfterEdit<WaveValue, WaveForm>(*WaveInfo))
+			{
+				if (PItem->ApplyValue<WaveValue, WaveForm>(*WaveInfo))
+				{
+					PropertiesFrom->Modified();
+				}
+			}
+		}
+		break;
+	}
 	case PROP_BOOLEAN:
 	{
 		auto TryDrawBool = [&]<typename RangeCast, typename TypeID>()->bool
