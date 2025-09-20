@@ -315,6 +315,17 @@ void PS::CPACDef::OnEditClicked(ButtonValue* B, bool& bModif, bool& bSafe)
     Tools->EditPAC(this);
 }
 
+bool PS::CPACDef::Validate(bool bMsg)
+{
+    bool failed = false;
+    if (m_Keys.size() < 2 && bMsg)
+    {
+        Msg("Validation FAILED (invalid keys num) anim curve [%s]", m_Name.c_str());
+        failed = true;
+    }
+    return !failed;
+}
+
 void PS::CPACDef::SplitKeysForPlot(
             xr_vector<float>& R_keys_y,
             xr_vector<float>& G_keys_y,
