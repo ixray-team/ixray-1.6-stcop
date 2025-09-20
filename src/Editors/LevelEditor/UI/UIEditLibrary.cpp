@@ -154,9 +154,52 @@ void UIEditLibrary::Close()
 void UIEditLibrary::DrawObjects()
 {
 	ImGui::BeginChild("Object List");
+
+	// Поиск
+	string256 buf;
+	xr_strcpy(buf, SearchQuery.c_str());
+	ImGui::SetNextItemWidth(-1);
+	if (ImGui::InputTextWithHint("##value", "Search...", buf, sizeof(buf)))
+	{
+		SearchQuery = buf;
+
+		if (SearchQuery.empty())
+		{
+			SearchList.ClearList();
+		}
+		else
+		{
+			ListItemsVec Filtered;
+			for (ListItem* Item : m_ObjectList->GetItems())
+			{
+				if (strstr(Item->Key(), SearchQuery.c_str()))
+				{
+					ListItem* CopyItem = new ListItem(Item->Type());
+					*CopyItem = *Item;
+					Filtered.push_back(CopyItem);
+				}
+			}
+			SearchList.AssignItems(Filtered, nullptr, true, false);
+		}
+	}
+
+	if (GUIManager->SearchIcon)
+	{
+		ImVec2 IconSize = { 12,12 };
+
+		ImGui::SameLine();
+		ImVec2 cursorPos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
+
+		ImGui::Image(GUIManager->SearchIcon, IconSize);
+	}
 	ImGui::Separator();
 
-	m_ObjectList->Draw();
+	if (!SearchQuery.empty())
+		SearchList.Draw();
+	else
+		m_ObjectList->Draw();
+
 	ImGui::Separator();
 	ImGui::EndChild();
 
