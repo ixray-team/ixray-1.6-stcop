@@ -66,7 +66,7 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	Jitter.x = Jitter.x * 0.5f + 0.5f;
 	Jitter.y *= 0.7f;
 	
-//	O.Normal.xyz = normalize(cross(ddx(ReflectPoint), ddy(ReflectPoint)));
+	float3 BaseReflect = normalize(reflect(ViewVec, O.Normal.xyz));
 	
 	float4 H = ImportanceSampleGGX(mul(m_invV, O.Normal.xyz), Jitter, O.Roughness);
 	H.xyz = mul(m_V, H.xyz);
@@ -75,22 +75,29 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	
 	if (dot(Reflection, O.Normal) < 0.0f)
     {
-        Reflection = normalize(Reflection + O.Normal * 0.5f);
+        Reflection = normalize(Reflection + O.Normal);
     }
 	
 	float3 StartPoint = ReflectPoint * 0.996f;
 	Point.xyz = StartPoint + Reflection * fog_params.z;	
 	
-	if(O.Depth >= 0.02f) {
+	bool isNotHUD = O.Depth >= 0.02f;
+	
+	if(isNotHUD)
+	{
 		StartPoint += O.Normal * 0.15f;
 		
 #ifdef USE_OFFSCREEN_REFLECTIONS
 		float4 VSLR = FastViewReflections(StartPoint, Reflection);
 		Point.xyz = lerp(Point.xyz, VSLR.xyz, VSLR.w);
 #endif
+	} 
+	else
+	{
+		Point.xyz = Reflection.xyz * s_env.SampleLevel(smp_linear, Point.xyz, 0.0f).w;
 	}
 	
-	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, O.Depth < 0.02f);
+	float4 SSLR = FastViewReflectionsSSR(StartPoint, Reflection, !isNotHUD);
 	
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
@@ -100,21 +107,26 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
 	
+	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, saturate(O.Hemi * 3.0f), 0.0f).xyzz;
 	SSLR.w *= GetBorderAtten(PrevSpecularUV);
 	
+#ifdef USE_OFFSCREEN_REFLECTIONS
 	float3 Color = s_env.SampleLevel(smp_linear, Point.xyz, 0.0f);
 	Color.xyz *= rcp(1.00001f - Color.xyz);
+#else
+	float3 Color = Hemi.xyz;
+#endif
 	
 	Final.xyz = lerp(Color.xyz, Final.xyz, SSLR.w);
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
 	Final.xyz = PopGamma(Final.xyz);
 	
-	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, saturate(O.Hemi * 3.0f), 0.0f).xyzz;
 	Hemi.w = 1.0f - saturate(length(Point.xyz - StartPoint) * fog_params.w + fog_params.x);
-	
 	Final.xyz = lerp(Hemi.xyz, Final.xyz, Hemi.w);
 	
 	Point.w = rcp(max(0.000001f, H.w));
 	Final.xyz *= rcp(1.0f + Final.xyz);
+	
+	Final.w = isNotHUD;
 }
 
