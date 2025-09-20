@@ -48,6 +48,7 @@ private:
     static void OnModified();
 
     UIItemListForm* m_ObjectList;
+    UIItemListForm SearchList;
     LPCSTR m_Current;
     bool m_Preview;
     bool m_Dropper;
@@ -66,4 +67,5 @@ private:
     xr_vector<CSceneObject*> m_pEditObjects;
     UIPropertiesForm* PreviewProps = nullptr;
     UIPropertiesForm* InternalProps;
+    xr_string SearchQuery;
 };
