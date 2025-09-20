@@ -199,7 +199,8 @@ void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 
 	if (m_use_inertion)
 	{
-		vPosition.inertion(next_pos, 1.f - Device.fTimeDelta * 15.f);
+		static Fvector cam_spr_vel = zero_vel;
+		vPosition.spring_inertion(next_pos, cam_spr_vel, Device.fTimeDelta, 200.f, 20.f);
 	}
 	else
 	{
@@ -236,10 +237,8 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 		CWeapon* pWeap = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
 		if(pWeap && pWeap->render_item_ui_query())
 		{
-			if(!vPosition.similar(point))
-				vPosition.inertion(point, 1.f-Device.fTimeDelta*15.f);
-			else
-				vPosition.set(point);
+			static Fvector cam_spr_vel = zero_vel;
+			vPosition.spring_inertion(point, cam_spr_vel, Device.fTimeDelta, 200.f, 20.f);
 		}
 		else
 		{
@@ -250,13 +249,13 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 
 			if (psActorFlags.test(AF_RIGHT_SHOULDER))
 			{
-				if(!m_cam_offset_curr.similar(m_cam_offset_r))
-					m_cam_offset_curr.inertion(m_cam_offset_r, 1.f-Device.fTimeDelta*15.f);
+				static Fvector cam_spr_vel = zero_vel;
+				m_cam_offset_curr.spring_inertion(m_cam_offset_r, cam_spr_vel, Device.fTimeDelta, 200.f, 20.f);
 			}
 			else
 			{
-				if(!m_cam_offset_curr.similar(m_cam_offset_l))
-					m_cam_offset_curr.inertion(m_cam_offset_l, 1.f-Device.fTimeDelta*15.f);
+				static Fvector cam_spr_vel = zero_vel;
+				m_cam_offset_curr.spring_inertion(m_cam_offset_l, cam_spr_vel, Device.fTimeDelta, 200.f, 20.f);
 			}
 			Fvector P;
 			a_xform.transform_tiny			(P, m_cam_offset_curr);
