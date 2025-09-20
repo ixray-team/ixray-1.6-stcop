@@ -444,8 +444,6 @@ CRenderTarget::CRenderTarget()
 		DisplayRT(rt_sslr_data);
 		DisplayRT(rt_ssao_temp);
 		DisplayRT(rt_Velocity);
-		DisplayRT(rt_GammaLUT);
-
 #undef DisplayRT
 
 		static int stack_levels = 3;
@@ -611,8 +609,6 @@ CRenderTarget::CRenderTarget()
 	// Gamma
 	b_gamma = new CBlender_gamma();
 	s_gamma.create(b_gamma);
-
-	rt_GammaLUT.create(r2_RT_gamma_lut, 1024, 1, DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
 	// OCCLUSION
 	s_occq.create(b_occq, "r2\\occq");

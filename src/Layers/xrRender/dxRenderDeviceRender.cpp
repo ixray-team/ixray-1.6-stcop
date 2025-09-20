@@ -10,7 +10,6 @@
 #include "imgui.h"
 #endif
 
-bool bNeedUpdateGammaLUT = true;
 #ifdef USE_DX11
 #include "imgui_impl_dx11.h"
 #else
@@ -71,7 +70,6 @@ void dxRenderDeviceRender::updateGamma()
 #ifndef _EDITOR
 	m_Gamma.Update();
 #endif
-	bNeedUpdateGammaLUT = true;
 }
 
 void dxRenderDeviceRender::OnDeviceDestroy( BOOL bKeepTextures)
@@ -428,13 +426,6 @@ void dxRenderDeviceRender::End()
 	VERIFY	(RDevice);
 
 #ifdef USE_DX11
-	if (bNeedUpdateGammaLUT)
-	{
-		GPU_EVENT(GAMMA_GENERATE_LUT);
-		RImplementation.Target->PhaseGammaGenerateLUT();
-		bNeedUpdateGammaLUT = false;
-	}
-
 	{
 		GPU_EVENT(GAMMA_APPLY);
 		RImplementation.Target->PhaseGammaApply();

@@ -127,7 +127,6 @@ private:
 	ref_shader					s_taa;
 
 	// For gamma correction in windowed mode
-	ref_rt						rt_GammaLUT;		// 24bit, 256x1 (r,g,b)
 	ref_shader					s_gamma;
 
 	// OCCq
@@ -353,8 +352,7 @@ public:
 	void						increment_light_marker();
 
 	void						DoAsyncScreenshot		();
-	void PhaseGammaApply();
-	void PhaseGammaGenerateLUT();
+	void						PhaseGammaApply			();
 
 #ifdef DEBUG
 	IC void						dbg_addline				(Fvector& P0, Fvector& P1, u32 c)					{
