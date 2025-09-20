@@ -48,10 +48,16 @@ void CRenderTarget::phase_combine()
 	//*** exposure-pipeline
 	{
 		if (t_LUM_src != rt_LUM_pool[0]->pTexture)
+		{
 			t_LUM_src->surface_set(rt_LUM_pool[0]->pSurface);
+		}
+
 		if (t_LUM_dest != rt_LUM_pool[1]->pTexture)
+		{
 			t_LUM_dest->surface_set(rt_LUM_pool[1]->pSurface);
+		}
 	}
+
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 

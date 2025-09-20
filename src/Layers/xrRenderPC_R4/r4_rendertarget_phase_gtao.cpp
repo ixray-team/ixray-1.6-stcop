@@ -69,7 +69,7 @@ void CRenderTarget::phase_sslr() {
 	{
 		GPU_EVENT(sslr_render);
 		//Render the AO and view-z into new rendertarget
-		u_setrt(rt_sslr, nullptr, nullptr, nullptr);
+		u_setrt(rt_sslr, rt_sslr_data, nullptr, nullptr);
 		RCache.set_CullMode(CULL_NONE);
 
 		pv = (FVF::TL*)RCache.Vertex.Lock(3, g_combine->vb_stride, Offset);
