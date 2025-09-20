@@ -756,7 +756,7 @@ bool CPSLibrary::Save()
 bool CPSLibrary::Save2()
 {
     string_path fn;
-    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size(), "Saving particles...");
+    SPBItem* pb = UI->ProgressStart(m_PEDs.size() + m_PGDs.size() + m_PACDs.size(), "Saving particles...");
 
     for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); ++it)
     {
@@ -793,6 +793,26 @@ bool CPSLibrary::Save2()
         pg->Save2(ini);
         ini.save_as(fn);
     }
+
+	for (auto elem : m_PACDs)
+	{
+		pb->Inc();
+
+		if (!elem->Validate(false))
+		{
+			continue;
+		}
+
+		FS.update_path(fn, "$game_particles$", elem->getName());
+		strcat(fn, ".pac");
+
+		FS.file_delete(fn);
+
+		CInifile ini(fn, FALSE, FALSE, FALSE);
+		elem->Save2(ini);
+		ini.save_as(fn);
+	}
+	
     UI->ProgressEnd(pb);
     return true;
 }
