@@ -137,6 +137,7 @@ private:
 	ref_rt						rt_sslr;
 	ref_rt						rt_sslr_temp;
 	ref_rt						rt_sslr_old;
+	ref_rt						rt_sslr_data;
 
 	// SSAO
 	ref_rt						rt_ssao_temp;
