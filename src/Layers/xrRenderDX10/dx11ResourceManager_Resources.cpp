@@ -194,7 +194,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_vs);
 
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
 		return					_vs;
 	}
@@ -294,7 +294,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)data, size, c_entry, c_target, flags, (void*&)_ps);
 
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
 		return			_ps;
 	}
@@ -370,7 +370,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
 
 		HRESULT	const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, flags, (void*&)_gs);
 
-		R_ASSERT3(SUCCEEDED(_hr), "Can't compile shader", name);
+		R_ASSERT4(SUCCEEDED(_hr), "Can't compile shader", cname, RImplementation.getShaderParamsDebug().c_str());
 
 		FS.r_close				( file );
 
