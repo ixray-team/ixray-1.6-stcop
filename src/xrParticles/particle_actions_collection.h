@@ -4,7 +4,7 @@
 
 #include "particle_actions.h"
 #include "particle_core.h"
-#include "../Layers/xrRender/ParticleAnimCurve.h"
+#include "ParticleAnimCurveInterface.h"
 
 namespace PAPI{
 #define _METHODS	virtual void 	Load		(IReader& F);\
@@ -547,7 +547,7 @@ namespace PAPI{
 		float timeFrom;
 		float timeTo;
 
-		PS::CPACDef* AnimPtr = nullptr;
+		PS::IPAC* AnimPtr = nullptr;
 		//float CurrentTime = 0.0f;
 		//size_t CurrentIndex = 0;
 		//Fvector4 PrevValue;
@@ -567,7 +567,7 @@ namespace PAPI{
 		float timeFrom;
 		float timeTo;
 
-		PS::CPACDef* AnimPtr = nullptr;
+		PS::IPAC* AnimPtr = nullptr;
 
 		_METHODS;
 	};
@@ -584,7 +584,7 @@ namespace PAPI{
 		float timeFrom;
 		float timeTo;
 
-		PS::CPACDef* AnimPtr = nullptr;
+		PS::IPAC* AnimPtr = nullptr;
 		Fmatrix ParticleTransform;
 
 		_METHODS;

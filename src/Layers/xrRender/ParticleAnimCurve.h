@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrEngine/envelope.h"
+#include "../../xrParticles/ParticleAnimCurveInterface.h"
 
 namespace PS
 {
@@ -9,7 +9,7 @@ namespace PS
         float time;
     };
 
-    class ECORE_API CPACDef
+    class ECORE_API CPACDef : public IPAC
     {
         shared_str m_Name;
         xr_vector<st_PACKey*> m_Keys;
@@ -31,17 +31,17 @@ namespace PS
         void Save2(CInifile& ini);
         bool Load2(CInifile& ini);
 
-        Fvector4 GetValueOnIndex(int index);
-        Fvector4 GetValueOnTime(float time);
-        IC float GetMaxTime() const { return m_MaxTime; }
-        IC float GetMinValue() const { return m_MinValue; }
-        IC float GetMaxValue() const { return m_MaxValue; }
+        virtual Fvector4 GetValueOnIndex(int index) override ;
+        virtual Fvector4 GetValueOnTime(float time) override ;
+        virtual float GetMaxTime() const override { return m_MaxTime; }
+        virtual float GetMinValue() const override { return m_MinValue; }
+        virtual float GetMaxValue() const override { return m_MaxValue; }
 
         /*
          *  Based on current index, current time, delta time and reverse + loop flag update current index and time and return current RGBA value
          *  Faster than externally calculate current time and search for value on time
          */
-        Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false);
+        virtual Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false) override;
         
 #ifdef _EDITOR
         void Clone(CPACDef* source);
