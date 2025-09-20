@@ -608,6 +608,13 @@ bool CParticleTool::Validate(bool bMsg)
     	if (!pg->Validate(bMsg)) 
         	error_cnt++;
 	}
+    for (auto elem : RImplementation.PSLibrary.VecPACDs())
+    {
+        if (!elem->Validate(bMsg))
+        {
+            error_cnt++;
+        }
+    }
 
     if (bMsg){
         if (error_cnt>0)ELog.DlgMsg	(mtError,"Validation FAILED! Found %d error's.",error_cnt);
