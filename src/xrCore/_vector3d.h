@@ -117,6 +117,36 @@ public:
 		z = v*z + inv*p.z;
 		return *this;	
 	}
+
+	IC SelfRef spring_inertion(const Self& target, Self& velocity, T deltaTime, T stiffness, T damping)
+	{
+		Self acceleration;
+		acceleration.sub(target, *this);
+		acceleration.mul(stiffness);
+
+		Self dampForce;
+		dampForce.mul(velocity, damping);
+		acceleration.sub(dampForce);
+
+		velocity.x += acceleration.x * deltaTime;
+		velocity.y += acceleration.y * deltaTime;
+		velocity.z += acceleration.z * deltaTime;
+
+		x += velocity.x * deltaTime;
+		y += velocity.y * deltaTime;
+		z += velocity.z * deltaTime;
+
+		Self diff;
+		diff.sub(target, *this);
+		if (diff.magnitude() < EPS && velocity.magnitude() < EPS_L)
+		{
+			set(target);
+			velocity.set(0.f, 0.f, 0.f);
+		}
+
+		return *this;
+	}
+
 	IC	SelfRef	average(const Self &p) 
 	{
 		x = (x+p.x)*0.5f;
