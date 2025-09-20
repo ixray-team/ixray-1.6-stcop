@@ -138,7 +138,7 @@ int APIENTRY WinMain
 		g_pGPU->Initialize();
 	}
 		}
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	xrLogger::EnableFastDebugLog();
 #endif
 	EngineLoadStage2();
