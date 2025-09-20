@@ -61,7 +61,7 @@ float4 main(PSInput I) : SV_Target
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
 	float4 SSLR = s_refl.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
-	float3 Color = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f).xyz;
+	float4 BaseColor = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f);
 	
 	if(O.Depth >= 1.0f)
 	{		
@@ -73,7 +73,7 @@ float4 main(PSInput I) : SV_Target
 	
 	O.Normal.xyz = normalize(cross(ddx(ReflectPoint), ddy(ReflectPoint)));
 	
-	float4 FinalColor = Color.xyzz;
+	float4 FinalColor = BaseColor.xyzz;
  	FinalColor.w = length(O.Point - SSLR.xyz);
 	
 	float FinalWeight = 1;
@@ -85,9 +85,9 @@ float4 main(PSInput I) : SV_Target
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
 		offset = mirror(I.texcoord.xy + offset * 32.0f);
 		
-		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
+		SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
-		float3 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f).xyz;
+		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
 		float3 Light = O.Point - SSLR.xyz;
 		
 		float S = length(Light);
@@ -100,9 +100,12 @@ float4 main(PSInput I) : SV_Target
 		
 		float D = DistributionGGX(NdotH, O.Roughness);
 		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
-
+		
 		float SampleWeight = D * G * SSLR.w;
-		FinalColor += float4(Color, S) * SampleWeight;
+		SampleWeight *= 1.0f - abs(Color.w - BaseColor.w);
+
+		Color.w = S;
+		FinalColor += Color * SampleWeight;
 		
 		FinalWeight += SampleWeight;
 	}
