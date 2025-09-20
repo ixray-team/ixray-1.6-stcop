@@ -37,6 +37,7 @@ namespace PAPI{
 		IC pVector& operator*=	(const float a)					{	x *= a;	y *= a;	z *= a;	return *this;		}
 		IC pVector& operator/=	(const float a)					{	float b = 1.0f / a;	x *= b;	y *= b;	z *= b;	return *this;		}
 		IC pVector& operator=	(const pVector& a)				{	x = a.x;y = a.y;z = a.z;return *this;		}
+		IC pVector& operator=	(const Fvector& a)				{	x = a.x;y = a.y;z = a.z;return *this;		}
 		IC pVector 	operator^	(const pVector& b) const		{	return pVector(y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x);		}
 	};
 	// A single particle

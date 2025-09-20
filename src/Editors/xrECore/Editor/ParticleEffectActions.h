@@ -2,10 +2,11 @@
 
 struct PBool
 {
-	BOOL		val;
-    PBool		():val(FALSE){}
+	bool		val;
+    PBool		():val(false){}
     PBool		(BOOL _val):val(_val){}
-    void 		set(BOOL v){val=v;}
+    PBool		(bool _val):val(_val){}
+    void 		set(bool v){val=v;}
 };
 
 struct PFloat{
@@ -170,6 +171,7 @@ public:
 	void			appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
 	void			appendDomain(LPCSTR name, PDomain v);
 	void			appendBool	(LPCSTR name, BOOL b);
+	void			appendBool	(LPCSTR name, bool b);
 	void			appendString(LPCSTR name, shared_str v, EChooseMode _string_type = smCustom);
 	void			appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type = smCustom);
 	PFloat&			_float		(LPCSTR name){PFloatMapIt 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
