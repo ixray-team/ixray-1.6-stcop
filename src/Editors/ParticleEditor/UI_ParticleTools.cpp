@@ -444,8 +444,8 @@ bool CParticleTool::Save(bool bAsXR)
     {
         if (!bAsXR)
         {
-            int RetVal = ELog.DlgMsg(mtError, mbYes | mbNo, "Should I save only valid parts or cancel saving?");
-            if (RetVal == mrNo)
+            int RetVal = ELog.DlgMsg(mtError, mbOK | mbCancel, "Should I save only valid parts or cancel saving?");
+            if (RetVal == mrCancel)
             {
                 ELog.Msg(mtConfirmation, ">>> Cancel");
                 return false;
@@ -671,6 +671,15 @@ void CParticleTool::Rename(UIItemListForm::Node& Node, LPCSTR old_full_name, LPC
             auto PA = (EParticleAction*)(Node.Object->m_Object);
             string_path buffer;
             PA->actionName = _GetItem(new_full_name, _GetItemCount(new_full_name, '\\')-1, buffer, '\\');
+        }
+    case emAnimCurve:
+        {
+            PS::CPACDef* PAC = RImplementation.PSLibrary.FindPACD(old_full_name);
+            if (PAC)
+            {
+                RImplementation.PSLibrary.RenamePACD(PAC,new_full_name);
+            }
+            break;
         }
     }
 }
