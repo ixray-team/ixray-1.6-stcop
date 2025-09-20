@@ -628,6 +628,20 @@ xr_string CRender::getShaderParams()
 	return "";
 }
 
+xr_string CRender::getShaderParamsDebug() {
+	if (!m_ShaderOptions.empty()) {
+		xr_string params = "";
+
+		for (auto& [Name, Value] : m_ShaderOptions) {
+			params += Name + (Value[0] ? "_" + Value : "") + ",";
+		}
+
+		params[params.size() - 1] = ' ';
+		return params;
+	}
+	return "";
+}
+
 void CRender::clearAllShaderOptions()
 {
 	//GPU_EVENT(__FUNCTION__)
