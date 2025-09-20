@@ -47,6 +47,7 @@ namespace PS
         void Clone(CPACDef* source);
 		void FillProp(LPCSTR pref, PropItemVec& items, void* owner);
         void OnEditClicked(ButtonValue* B, bool& bModif, bool&);
+		bool Validate(bool bMsg);
 
         void SplitKeysForPlot(
             xr_vector<float>& R_keys_y,
