@@ -33,6 +33,9 @@ UIEditLibrary::UIEditLibrary()
 	m_RealTexture = nullptr;
 
 	View.OnFocusCallback = ViewportFocusCallback;
+
+	SearchList.SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
+	SearchList.SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
 }
 
 void UIEditLibrary::OnItemFocused(ListItem* item)
@@ -63,7 +66,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 
 		if (m_Preview)
 		{
-			FocusedItems = m_ObjectList->m_SelectedItems;
+			FocusedItems = ActualItemList().m_SelectedItems;
 			SelectionToReference(&FocusedItems);
 		}
 
@@ -195,10 +198,7 @@ void UIEditLibrary::DrawObjects()
 	}
 	ImGui::Separator();
 
-	if (!SearchQuery.empty())
-		SearchList.Draw();
-	else
-		m_ObjectList->Draw();
+	ActualItemList().Draw();
 
 	ImGui::Separator();
 	ImGui::EndChild();
@@ -266,7 +266,7 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 	if (res == mrNo)
 	{
 		RStringVec sel_items;
-		for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+		for (ListItem* ListItem : ActualItemList().m_SelectedItems)
 		{
 			sel_items.push_back(ListItem->Key());
 		}
@@ -282,7 +282,7 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 
 void UIEditLibrary::OnMakeThmClick()
 {
-	for (ListItem* item : m_ObjectList->m_SelectedItems)
+	for (ListItem* item : ActualItemList().m_SelectedItems)
 	{
 		CEditableObject* obj = Lib.CreateEditObject(item->Key());
 
@@ -310,7 +310,7 @@ void UIEditLibrary::OnPropertiesClick()
 	bShowProps = true;
 
 	const xr_string InitTex = "texture_";
-	for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+	for (ListItem* ListItem : ActualItemList().m_SelectedItems)
 	{
 		CSceneObject* SO = new CSceneObject(nullptr, nullptr);
 		SO->SetReference(ListItem->Key());
@@ -378,7 +378,7 @@ void UIEditLibrary::DrawRightBar()
 
 		// Make Thumbnail & Lod
 		{
-			bool enableMakeThumbnailAndLod = !m_ObjectList->m_SelectedItems.empty() && m_Preview;
+			bool enableMakeThumbnailAndLod = !ActualItemList().m_SelectedItems.empty() && m_Preview;
 
 			if (!enableMakeThumbnailAndLod)
 			{
@@ -400,7 +400,7 @@ void UIEditLibrary::DrawRightBar()
 				{
 					OnMakeThmClick();
 
-					for (auto Item : m_ObjectList->m_SelectedItems)
+					for (auto Item : ActualItemList().m_SelectedItems)
 					{
 						OnItemFocused(Item);
 					}
@@ -446,7 +446,7 @@ void UIEditLibrary::DrawRightBar()
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		if (ImGui::Button("Remove Object", ImVec2(-1, 0)))
 		{
-			m_ObjectList->RemoveSelectItem();
+			ActualItemList().RemoveSelectItem();
 		}
 		
 		if (ImGui::IsItemHovered())
@@ -534,10 +534,10 @@ void UIEditLibrary::RefreshSelected()
 
 	if (m_Preview)
 	{
-		if (!m_ObjectList->m_SelectedItems.empty())
+		if (!ActualItemList().m_SelectedItems.empty())
 		{
 			ListItemsVec vec;
-			for (ListItem* ListItem : m_ObjectList->m_SelectedItems)
+			for (ListItem* ListItem : ActualItemList().m_SelectedItems)
 			{
 				vec.push_back(ListItem);
 			}
@@ -639,7 +639,7 @@ void UIEditLibrary::ExportObj()
 		SPBItem* pb = UI->ProgressStart(m_pEditObjects.size(), "Expotring to OBJ");
 		CSceneObject* SO = new CSceneObject((LPVOID)0, (LPSTR)0);
 
-		for (ListItem* item : m_ObjectList->m_SelectedItems)
+		for (ListItem* item : ActualItemList().m_SelectedItems)
 		{
 			pb->Inc(item->Key());
 			SO->SetReference(item->Key());
@@ -693,7 +693,7 @@ void UIEditLibrary::OnModified()
 
 	Form->IsModify = true;
 
-	for (ListItem* Item : Form->m_ObjectList->m_SelectedItems)
+	for (ListItem* Item : Form->ActualItemList().m_SelectedItems)
 	{
 		CSceneObject* SO = new CSceneObject(nullptr, nullptr);
 		SO->SetReference(Item->Key());
@@ -818,7 +818,7 @@ void UIEditLibrary::Draw()
 
 		ImGui::EndChild();
 		ImGui::SetNextItemWidth(-200);
-		ImGui::Text(" Items count: %u", m_ObjectList->m_Items.size());
+		ImGui::Text(" Items count: %u", ActualItemList().m_Items.size());
 		ImGui::EndGroup();
 	}
 
