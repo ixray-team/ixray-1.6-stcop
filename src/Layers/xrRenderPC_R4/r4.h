@@ -323,6 +323,8 @@ public:
 	virtual ~CRender											();
 
 	xr_string						getShaderParams				();
+	xr_string						getShaderParamsDebug		();
+
 	void							addShaderOption				(const char* name, const char* value = "");
 	void							clearAllShaderOptions		();
 
