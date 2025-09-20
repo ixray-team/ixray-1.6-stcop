@@ -1,6 +1,5 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
-#include "metalic_roughness_ambient.hlsli"
 #include "metalic_roughness_light.hlsli"
 
 struct PSInput
@@ -9,194 +8,110 @@ struct PSInput
     float2 texcoord : TEXCOORD0;
 };
 
-float IntersectAABB(float3 Dir, float3 Org, float3 Box) {
-	float3 RcpDir = rcp(Dir);
-	
-	float3 TNeg = (Box - Org) * RcpDir;
-	float3 TPos = -RcpDir * (Box + Org);
-	
-	return max(min(TNeg.x, TPos.x), max(min(TNeg.y, TPos.y), min(TNeg.z, TPos.z)));
-}
+#define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
-float HistoryClamp(float3 History, float3 Filtered, float3 aabb_min, float3 aabb_max) {
-	float3 Min = min(Filtered, min(aabb_min, aabb_max));
-	float3 Max = max(Filtered, max(aabb_min, aabb_max));
-	
-	float3 Avg2 = Max + Min;
-	float3 Dir = Filtered - History;
-	
-	float3 Org = History - Avg2 * 0.5f;
-	float3 Scale = Max - Avg2 * 0.5f;
-	
-	return saturate(IntersectAABB(Dir, Org, Scale));
-}
+#define DISK32_RADIUS8 2.443279f
+#define DISK32_RADIUS16 1.48565f
+#define DISK32_RADIUS32 1.0f
 
-void sort(inout float4 a1, inout float4 a2) {
-	float4 t = min(a1, a2);
-	a2 = max(a1, a2);
-	a1 = t;
-}
+#define NUM_SAMPLES 32
+#define DISK32_RADIUS DISK32_RADIUS32
 
-float4 median3(float4 a1, float4 a2, float4 a3) {
-	sort(a2, a3);
-	sort(a1, a2);
-	
-	return min(a2, a3);
-}
+static const float2 Disk32_Normalized[32] = {
+	float2(-0.50000f, 0.100000f),
+	float2(0.408569f, 0.024217f),
+	float2(0.162925f, 0.230704f),
+	float2(-0.108248f, 0.367911f),
+	float2(-0.329684f, 0.150003f),
+	float2(-0.223398f, -0.167128f),
+	float2(-0.067794f, -0.356288f),
+	float2(0.136270f, -0.214864f),
 
-float4 median5(float4 a1, float4 a2, float4 a3, float4 a4, float4 a5) {
-	sort(a1, a2);
-	sort(a3, a4);
-	sort(a1, a3);
-	sort(a2, a4);
-	
-	return median3(a2, a3, a5);
-}
+	float2(0.597250f, 0.006447f),
+	float2(0.464972f, 0.455376f),
+	float2(0.054674f, 0.571788f),
+	float2(-0.423541f, 0.423589f),
+	float2(-0.657243f, -0.046063f),
+	float2(-0.484844f, -0.466902f),
+	float2(0.019780f, -0.556973f),
+	float2(0.512536f, -0.384894f),
 
-float4 median9(float4 a1, float4 a2, float4 a3, float4 a4, float4 a5, float4 a6, float4 a7, float4 a8, float4 a9) {
-	sort(a1, a2);
-	sort(a3, a4);
-	sort(a5, a6);
-	sort(a7, a8);
-	sort(a1, a3);
-	sort(a5, a7);
-	sort(a1, a5);
-	
-	sort(a3, a5);
-	sort(a3, a7);
-	sort(a2, a4);
-	sort(a6, a8);
-	sort(a4, a8);
-	sort(a4, a6);
-	sort(a2, a6);
-	
-	return median5(a2, a4, a5, a7, a9);
-}
+	float2(0.932249f, 0.011329f),
+	float2(0.857066f, 0.402364f),
+	float2(0.681793f, 0.580318f),
+	float2(0.323008f, 0.880092f),
+	float2(-0.016841f, 0.961073f),
+	float2(-0.422076f, 0.906560f),
+	float2(-0.676936f, 0.692191f),
+	float2(-0.925246f, 0.292709f),
+
+	float2(-0.893555f, -0.016208f),
+	float2(-0.790589f, -0.380594f),
+	float2(-0.677237f, -0.701563f),
+	float2(-0.295770f, -0.880309f),
+	float2(-0.002152f, -0.909661f),
+	float2(0.336380f, -0.833836f),
+	float2(0.637664f, -0.692579f),
+	float2(0.895505f, -0.323214f),
+};
 
 float4 main(PSInput I) : SV_Target
 {
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
-	
-	float4 SSLR4 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0);
 
-	if(O.Depth >= 1.0f) {
-		float4 Enviroment = CompureSpecularIrradance(O.View, 0.5f, 0.35f).xyzz;
-		Enviroment.w = 0.0f;
-		
-		return Enviroment;
+	float4 SSLR = s_refl.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
+	float3 Color = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f).xyz;
+	
+	if(O.Depth >= 1.0f)
+	{		
+		return 0.0f;
 	}
-	
-	float4 SSLR0 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(+1, +0));
-	float4 SSLR1 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-0, +1));
-	float4 SSLR2 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -0));
-	float4 SSLR3 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-0, -1));
-	
-	float4 SSLR5 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(+1, +1));
-	float4 SSLR6 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, +1));
-	float4 SSLR7 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -1));
-	float4 SSLR8 = s_refl.SampleLevel(smp_nofilter, I.texcoord, 0, int2(-1, -1));
-	
-	float4 SSLRMain = median9(SSLR0, SSLR1, SSLR2, SSLR3, SSLR4, SSLR5, SSLR6, SSLR7, SSLR8);
-	float Lod = 0.0f;
-	
-	float L = O.ViewDist + length(SSLRMain.xyz);
-	SSLRMain.xyz += O.PointReal.xyz;
-	
-	float4 EndProj;
-	
-	if(O.Depth < 0.02f) {
-		EndProj = mul(m_P_hud, float4(SSLRMain.xyz, 1.0f));
 		
-#ifdef USE_OFFSCREEN_REFLECTIONS
-		SSLRMain.xyz = reflect(O.View, O.Normal);
-		O.Hemi = lerp(0.5f, 1.0f, O.Hemi);
-		Lod = O.Roughness * 8.0f;
-#endif
-	} else {
-		EndProj = mul(m_P, float4(SSLRMain.xyz, 1.0f));
+	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
+	float3 View = normalize(ReflectPoint);
+	
+	O.Normal.xyz = normalize(cross(ddx(ReflectPoint), ddy(ReflectPoint)));
+	
+	float4 FinalColor = Color.xyzz;
+ 	FinalColor.w = length(O.Point - SSLR.xyz);
+	
+	float FinalWeight = 1;
+    float NdotV = max(0.0f, -dot(O.Normal, View));
+
+	[unroll(NUM_SAMPLES)]
+	for(uint i = 0; i < NUM_SAMPLES; ++i)
+	{
+		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
+		offset = mirror(I.texcoord.xy + offset * 32.0f);
+		
+		float4 SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
+		
+		float3 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f).xyz;
+		float3 Light = O.Point - SSLR.xyz;
+		
+		float S = length(Light);
+		Light *= rcp(max(0.000001f, S));
+		
+		float3 Half = normalize(Light + View);
+
+		float NdotL = max(0.0f, -dot(O.Normal, Light));
+		float NdotH = max(0.0f, -dot(O.Normal, Half));
+		
+		float D = DistributionGGX(NdotH, O.Roughness);
+		float G = NdotL * GeometrySmithD(NdotL, NdotV, O.Roughness);
+
+		float SampleWeight = D * G * SSLR.w;
+		FinalColor += float4(Color, S) * SampleWeight;
+		
+		FinalWeight += SampleWeight;
 	}
+
+	FinalColor *= rcp(FinalWeight);
+	FinalColor.xyz = saturate(FinalColor.xyz);
 	
-	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
+	FinalColor.w += O.ViewDist;
 	
-	float2 vel = s_velocity.Sample(smp_rtlinear, EndProj.xy).xy * float2(0.5f, -0.5f);
-	float2 PrevSpecularUV = saturate(EndProj.xy - vel);
-	
-	float4 Image = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
-	SSLRMain.w *= GetBorderAtten(PrevSpecularUV);
-	Image.xyz = PopGamma(Image.xyz);
-	Image.w = L;
-	
-	float4 Enviroment = CompureSpecularIrradance(SSLRMain.xyz, O.Hemi, O.Roughness).xyzz;
-	Enviroment.w = fog_params.z;
-	
-#ifdef USE_OFFSCREEN_REFLECTIONS
-	float4 Color = s_env.SampleLevel(smp_linear, SSLRMain.xyz, Lod);
-	Color.xyz *= rcp(1.00001f - Color.xyz);
-	Color.xyz = PopGamma(Color.xyz);
-	
-	Image = lerp(Color, Image, SSLRMain.w);
-	SSLRMain.w = 1.0f;
-#endif
-	
-	if(O.Depth < 0.02f) {
-		L = Image.w;
-	}
-	
-	float Fog = 1.0f - saturate(L * fog_params.w + fog_params.x);
-	Enviroment = lerp(Enviroment, Image, SSLRMain.w * Fog);
-	
-	Enviroment.xyz *= rcp(1.0f + Enviroment.xyz);
-	Enviroment.xyz = saturate(Enviroment.xyz);
-	
-	return Enviroment;
-	
-	// float4 FinalColor = 0.0f;
-	// float FinalWeight = 0.0f;
-	
-	// static const int2 offs[9] =
-	// {
-		// int2(0, 0),
-		// int2(0, 1),
-		// int2(1, -1),
-		// int2(-1, -1),
-		// int2(-1, 0),
-		// int2(0, -1),
-		// int2(1, 0),
-		// int2(-1, 1),
-		// int2(1, 1)
-	// };
-	
-	// // O.Roughness *= 0.1f;
-	
-	// float NdotV = saturate(dot(O.Normal, -O.View));
-	
-	// for(uint i = 0; i < 9; ++i) {
-		// float2 offset = offs[i] * scaled_screen_res.zw;
-		
-		// float4 SSLR = s_image.SampleLevel(smp_rtlinear, saturate(I.texcoord.xy + offset), 0);
-		// float3 Color = s_env.SampleLevel(smp_rtlinear, SSLR.xyz, 0.0f).xyz;
-		// float S = length(SSLR.xyz);
-		
-		// float Fog = PushGamma(saturate(S * fog_params.w + fog_params.x));
-		// Color = lerp(Color, fog_color, Fog); 
-		
-		// float3 L = normalize(SSLR.xyz - O.Point);
-		// float3 H = normalize(L + O.View);
-	
-		// float NdotL = saturate(dot(O.Normal, -L));
-		// float NdotH = saturate(dot(O.Normal, -H));
-		
-		// float D = DistributionGGX(NdotH, O.Roughness) + 0.0001f;
-		// float G = GeometrySmithD(NdotL, NdotV, O.Roughness) + 0.0001f;
-	
-		// float weight = D * G * rcp(SSLR.w + 0.0001f);
-		// FinalColor += float4(Color, S) * weight; FinalWeight += weight;
-	// }
-	
-	// FinalColor *= rcp(FinalWeight);
-	// return saturate(FinalColor);
-	
-	// return 0;
+	return FinalColor;
 }
 

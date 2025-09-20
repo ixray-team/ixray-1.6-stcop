@@ -32,6 +32,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         break;
     case 2:
         C.r_Pass("stub_fullscreen_triangle", "sslr_render", FALSE, FALSE, FALSE);
+
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
         C.r_dx10Texture("s_normal", r2_RT_N);
@@ -47,6 +48,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_dx10Texture("sky_s1", r2_T_sky1);
         C.r_dx10Texture("env_s0", r2_T_envs0);
         C.r_dx10Texture("env_s1", r2_T_envs1);
+
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
         C.r_dx10Sampler("smp_linear");
         C.r_dx10Sampler("smp_rtlinear");
@@ -57,6 +59,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         break;
     case 3:
         C.r_Pass("stub_fullscreen_triangle", "sslr_filter", FALSE, FALSE, FALSE);
+
         C.r_dx10Texture("s_position", r2_RT_P);
         C.r_dx10Texture("s_surface", r2_RT_S);
         C.r_dx10Texture("s_normal", r2_RT_N);
@@ -70,7 +73,7 @@ void CBlender_gtao::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_refl", r2_RT_sslr);
         C.r_dx10Texture("s_env", r2_RT_env);
 
-        C.r_dx10Texture("s_image", r2_RT_generic);
+        C.r_dx10Texture("s_image", r2_RT_sslr_data);
         C.r_dx10Texture("s_velocity", r2_RT_velocity);
 
         C.r_dx10Sampler("smp_linear");
