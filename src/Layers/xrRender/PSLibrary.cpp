@@ -40,6 +40,7 @@ void CPSLibrary::OnCreate()
         FS.update_path	(fn,_game_data_,"particles.xr");
         Load			(fn);
     }
+	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(this);
 }
  
 void CPSLibrary::OnDestroy()
@@ -55,6 +56,7 @@ void CPSLibrary::OnDestroy()
 		xr_delete	(*g_it);
 	m_PGDs.clear	();
     m_all_ps.clear();
+	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(nullptr);
 }
 //----------------------------------------------------
 PS::PEDIt CPSLibrary::FindPEDIt(LPCSTR Name)
@@ -107,6 +109,11 @@ PS::CPACDef* CPSLibrary::FindPACD(LPCSTR Name)
 {
 	auto it = FindPACDIt(Name);
 	return (it==m_PACDs.end())?0:*it;
+}
+
+PS::IPAC* CPSLibrary::FindIPAC(LPCSTR name)
+{
+	return FindPACD(name);
 }
 
 PS::PACDIt CPSLibrary::FindPACDIt(LPCSTR Name)

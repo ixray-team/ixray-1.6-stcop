@@ -5,6 +5,7 @@
 #define PSLibraryH
 
 #include "../../Include/xrRender/particles_systems_library_interface.hpp"
+#include "../../xrParticles/ParticleAnimCurveInterface.h"
 
 namespace PS {
 	class CPEDef;
@@ -23,7 +24,7 @@ namespace PS {
 	using PACDIt = PACDVec::iterator;
 } // namespace PS
 
-class ECORE_API CPSLibrary : public particles_systems::library_interface {
+class ECORE_API CPSLibrary : public particles_systems::library_interface, public PS::IPACLibrary {
 	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
 	PS::PACDVec			m_PACDs;
@@ -59,6 +60,8 @@ public:
 	PS::PGDIt			FindPGDIt		(LPCSTR name);
 	PS::CPACDef*		FindPACD		(LPCSTR name);
 	PS::PACDIt			FindPACDIt		(LPCSTR name);
+
+	virtual PS::IPAC*	FindIPAC		(LPCSTR name) override;
 
     // get object properties methods
 	IC const PS::PEDVec& VecPEDs		()	{ return m_PEDs; }
