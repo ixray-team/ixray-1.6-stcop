@@ -525,6 +525,9 @@ void PABindColorAlpha::Save(IWriter& F) {
 void PAColorAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
 }
 void PAColorAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
@@ -533,6 +536,9 @@ void PAColorAnimator::Save(IWriter& F) {
 void PASizeAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
 }
 void PASizeAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
@@ -541,6 +547,9 @@ void PASizeAnimator::Save(IWriter& F) {
 void PAVelocityAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
+	VERIFY(Library);
+	AnimPtr = Library->FindIPAC(Animator.c_str());
 }
 void PAVelocityAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
