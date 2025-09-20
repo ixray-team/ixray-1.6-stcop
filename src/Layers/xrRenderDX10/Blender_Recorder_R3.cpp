@@ -232,6 +232,9 @@ void CBlender_Compile::r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LP
 
 void CBlender_Compile::r_ComputePass(LPCSTR cs)
 {
+	//LVutner: This one is for gigachads.
+	ctable.clear();
+
 	dest.cs = DEV->_CreateCS(cs);
 
 	ctable.merge(&dest.cs->constants);
@@ -251,4 +254,5 @@ void	CBlender_Compile::r_End (bool clear)
 	if (clear) {
 		RImplementation.clearAllShaderOptions();
 	}
+
 }
