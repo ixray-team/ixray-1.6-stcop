@@ -21,13 +21,15 @@ namespace PAPI{
 			position,
 			look_ahead,
 			magnitude,
-			epsilon
+			epsilon,
+			align_rot_vel_to_vel
 		};
 		pDomain positionL;	// Avoid region (in local space)
 		pDomain position;	// Avoid region
 		float look_ahead;	// how many time units ahead to look
 		float magnitude;	// what percent of the way to go each time
 		float epsilon;		// add to r^2 for softening
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -39,13 +41,15 @@ namespace PAPI{
 			position,
 			oneMinusFriction,
 			resilience,
-			cutoffSqr
+			cutoffSqr,
+			align_rot_vel_to_vel
 		};
 		pDomain positionL;	// Bounce region (in local space)
 		pDomain position;	// Bounce region
 		float oneMinusFriction;	// Friction tangent to surface
 		float resilience;	// Resilence perpendicular to surface
 		float cutoffSqr;	// cutoff velocity; friction applies iff v > cutoff
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -67,11 +71,13 @@ namespace PAPI{
 		{
 			damping,
 			vlowSqr,
-			vhighSqr
+			vhighSqr,
+			align_rot_vel_to_vel
 		};
 		pVector damping;	// Damping constant applied to velocity
 		float vlowSqr;		// Low and high cutoff velocities
 		float vhighSqr;
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -85,7 +91,8 @@ namespace PAPI{
 			magnitude,
 			stdev,
 			age,
-			epsilon
+			epsilon,
+			align_rot_vel_to_vel
 		};
 		pVector centerL;	// The center of the explosion (in local space)
 		pVector center;		// The center of the explosion
@@ -94,6 +101,7 @@ namespace PAPI{
 		float stdev;		// Sharpness or width of shock wave
 		float age;			// How long it's been going on
 		float epsilon;		// Softening parameter
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -104,11 +112,13 @@ namespace PAPI{
 		{
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		float magnitude;	// The grav of each particle
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -119,11 +129,13 @@ namespace PAPI{
 		{
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		float magnitude;	// The grav of each particle
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -148,7 +160,8 @@ namespace PAPI{
 			acc,
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		pVector	centerL;	// Center of the fan (in local space)
 		pDomain accL;		// Acceleration vector domain  (in local space)
@@ -157,6 +170,7 @@ namespace PAPI{
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -180,11 +194,13 @@ namespace PAPI{
 		{
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		float magnitude;	// The grav of each particle
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -202,13 +218,15 @@ namespace PAPI{
 			axis,
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		pVector pL, axisL;	// Endpoints of line to which particles are attracted (in local space)
 		pVector p, axis;	// Endpoints of line to which particles are attracted
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -220,13 +238,15 @@ namespace PAPI{
 			center,
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		pVector centerL;	// Point to which particles are attracted (in local space)
 		pVector center;		// Point to which particles are attracted
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -235,10 +255,12 @@ namespace PAPI{
 	{
 		enum class EVariable : u8
 		{
-			gen_acc
+			gen_acc,
+			align_rot_vel_to_vel
 		};
 		pDomain gen_accL;	// The domain of random accelerations.(in local space)
 		pDomain gen_acc;	// The domain of random accelerations.
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -259,10 +281,12 @@ namespace PAPI{
 	{
 		enum class EVariable : u8
 		{
-			gen_vel
+			gen_vel,
+			align_rot_vel_to_vel
 		};
 		pDomain gen_velL;	// The domain of random velocities.(in local space)
 		pDomain gen_vel;	// The domain of random velocities.
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -271,9 +295,11 @@ namespace PAPI{
 	{
 		enum class EVariable : u8
 		{
-			time_left
+			time_left,
+			align_rot_vel_to_vel
 		};
 		float time_left;	// Time remaining until they should be in position.
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -285,13 +311,15 @@ namespace PAPI{
 			center,
 			magnitude,
 			epsilon,
-			max_radius
+			max_radius,
+			align_rot_vel_to_vel
 		};
 		pVector	centerL;	// Center of the fan (in local space)
 		pVector	center;		// Center of the fan
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -329,10 +357,12 @@ namespace PAPI{
 		enum class EVariable : u8
 		{
 			min_speed,
-			max_speed
+			max_speed,
+			align_rot_vel_to_vel
 		};
 		float min_speed;		// Clamp speed to this minimum.
 		float max_speed;		// Clamp speed to this maximum.
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -352,7 +382,8 @@ namespace PAPI{
 			age_sigma,
 			parent_vel,
 			parent_motion,
-			aligh_rot_vel_to_vel
+			aligh_rot_vel_to_vel,
+			rot_vel
 		};
 		enum{
 			flPrevValue = MAX-1, // flag of prev end
@@ -366,7 +397,7 @@ namespace PAPI{
 		pDomain position;	// Choose a position in this domain.
 		pDomain velocity;	// Choose a velocity in this domain.
 		pDomain rot;		// Choose a rotation in this domain.
-		bool AlighRotVelocityToVelocity;
+		bool AlighRotVelocityToVelocity = true;
 		pDomain rot_vel;
 		pDomain size;		// Choose a size in this domain.
 		pDomain color;		// Choose a color in this domain.
@@ -431,11 +462,13 @@ namespace PAPI{
 		enum class EVariable : u8
 		{
 			velocity,
-			scale
+			scale,
+			align_rot_vel_to_vel
 		};
 		pVector velocityL;	// Velocity to shift towards (in local space)
 		pVector velocity;	// Velocity to shift towards
 		float scale;		// Amount to shift by (1 == all the way)
+		bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
 	};
@@ -470,7 +503,8 @@ namespace PAPI{
     		magnitude,
     		epsilon,
     		offset,
-    		age
+    		age,
+    		align_rot_vel_to_vel
 		};
 		float frequency;	// Frequency
 		int	octaves;		// Octaves
@@ -478,6 +512,7 @@ namespace PAPI{
 		float epsilon;		// Softening parameter
         pVector offset;		// Offset
         float age;
+    	bool AlighRotVelocityToVelocity = true;
 
         _METHODS;
     };
@@ -486,9 +521,11 @@ namespace PAPI{
 	{
 		enum class EVariable : u8
 		{
-			BindValue
+			BindValue,
+			align_rot_vel_to_vel
 		};
 		pVector BindValue;
+		bool AlighRotVelocityToVelocity = true;
 
 		_METHODS;
 	};
