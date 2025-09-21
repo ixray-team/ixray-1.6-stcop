@@ -8,11 +8,17 @@ void ParticleAction::Load	(IReader& F)
 {
 	m_Flags.assign	(F.r_u32());
     type			= (PActionEnum)F.r_u32();
+	if (m_Flags.test(EXTENSIONS))
+	{
+		Version = F.r_enum<ParticleActionVersion>();
+	}
 }
 void ParticleAction::Save	(IWriter& F)
 {
+	m_Flags.set(EXTENSIONS, true);
 	F.w_u32			(m_Flags.get());
     F.w_u32			(type);
+	F.w_enum(ParticleActionVersion::Extended);
 }
 
 void PAAvoid::Load			(IReader& F)
@@ -350,6 +356,11 @@ void PASource::Load			(IReader& F)
     F.r				(&position,sizeof(pDomain));
     F.r				(&velocity,sizeof(pDomain));
     F.r				(&rot,sizeof(pDomain));
+	if (Version >= ParticleActionVersion::Extended)
+	{
+		AlighRotVelocityToVelocity = F.r_u8();
+		F.r(&rot_vel, sizeof(pDomain));
+	}
     F.r				(&size,sizeof(pDomain));
     F.r				(&color,sizeof(pDomain));
 	alpha			= F.r_float();
@@ -364,17 +375,19 @@ void PASource::Load			(IReader& F)
 void PASource::Save			(IWriter& F)
 {
 	ParticleAction::Save  	(F);
-    F.w				(&position,sizeof(pDomain));
-    F.w				(&velocity,sizeof(pDomain));
-    F.w				(&rot,sizeof(pDomain));
-    F.w				(&size,sizeof(pDomain));
-    F.w				(&color,sizeof(pDomain));
-	F.w_float		(alpha);
-	F.w_float		(particle_rate);
-	F.w_float		(age);
-	F.w_float		(age_sigma);
-    F.w_fvector3	(parent_vel);
-    F.w_float		(parent_motion);
+    F.w(&position,sizeof(pDomain));
+    F.w(&velocity,sizeof(pDomain));
+    F.w(&rot,sizeof(pDomain));
+	F.w_u8(AlighRotVelocityToVelocity);
+	F.w(&rot_vel,sizeof(pDomain));
+    F.w(&size,sizeof(pDomain));
+    F.w(&color,sizeof(pDomain));
+	F.w_float(alpha);
+	F.w_float(particle_rate);
+	F.w_float(age);
+	F.w_float(age_sigma);
+    F.w_fvector3(parent_vel);
+    F.w_float(parent_motion);
 }
 
 void PATargetColor::Load	(IReader& F)
