@@ -1410,8 +1410,6 @@ EPAColorAnimator::EPAColorAnimator(): EParticleAction(PAPI::PAColorAnimatorID)
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
 	appendBool("Reverse", false);     
-	appendFloat("TimeFrom", 0.0f, 0.0f, 1.0f);     
-	appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);     
 }
 
 void EPAColorAnimator::Compile(IWriter& F)
@@ -1421,8 +1419,6 @@ void EPAColorAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
-	S.timeFrom = _float("TimeFrom").val;
-	S.timeTo = _float("TimeTo").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1434,9 +1430,7 @@ EPASizeAnimator::EPASizeAnimator(): EParticleAction(PAPI::PASizeAnimatorID)
 	actionName = actionType;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
-	appendBool("Reverse", false);     
-	appendFloat("TimeFrom", 0.0f, 0.0f, 1.0f);     
-	appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);     
+	appendBool("Reverse", false);    
 }
 
 void EPASizeAnimator::Compile(IWriter& F)
@@ -1446,8 +1440,6 @@ void EPASizeAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
-	S.timeFrom = _float("TimeFrom").val;
-	S.timeTo = _float("TimeTo").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
@@ -1459,9 +1451,7 @@ EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAPI::PAVelocityAnim
 	actionName = actionType;
 	appendString("Animator", "", smPAC);
 	appendBool("Looped", false);
-	appendBool("Reverse", false);     
-	appendFloat("TimeFrom", 0.0f, 0.0f, 1.0f);     
-	appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);     
+	appendBool("Reverse", false);
 }
 
 void EPAVelocityAnimator::Compile(IWriter& F)
@@ -1471,8 +1461,6 @@ void EPAVelocityAnimator::Compile(IWriter& F)
 	S.Animator = _string("Animator").val;
 	S.Looped = _bool("Looped").val;
 	S.Reverse = _bool("Reverse").val;
-	S.timeFrom = _float("TimeFrom").val;
-	S.timeTo = _float("TimeTo").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
