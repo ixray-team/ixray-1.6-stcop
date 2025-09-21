@@ -43,19 +43,19 @@ static json jsonArray(
 
 namespace Platform
 {
-	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const wchar_t* C);
+    XRCORE_API xr_string TCHAR_TO_ANSI_U8(const wchar_t* C);
 }
 
 void EditorLuaCodespace()
 {
-	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaCodespace)])
-		return;
+    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::LuaCodespace)])
+        return;
 
-	if (!ImGui::Begin("Lua Coder", &Engine.External.EditorStates[static_cast<u8>(EditorUI::LuaCodespace)]))
-	{
-		ImGui::End();
-		return;
-	}
+    if (!ImGui::Begin("Lua Coder", &Engine.External.EditorStates[static_cast<u8>(EditorUI::LuaCodespace)]))
+    {
+        ImGui::End();
+        return;
+    }
 
     ImGui::AlignTextToFramePadding();
     ImGui::Text("Name snippet:");
@@ -83,7 +83,7 @@ void EditorLuaCodespace()
         jsonArray.push_back({
             { "name", name },
             { "code", CodeText.data() }
-        });
+            });
 
         name[0] = 0;
         //CodeText[0] = 0;
@@ -99,8 +99,8 @@ void EditorLuaCodespace()
 
     float rightPaneWidth = 250.0f;
 
-	float WndSizeX = ImGui::GetWindowSize().x;
-	float WndSizeY = ImGui::GetWindowSize().y;
+    float WndSizeX = ImGui::GetWindowSize().x;
+    float WndSizeY = ImGui::GetWindowSize().y;
 
     ImGui::BeginChild("LeftPane", ImVec2(WndSizeX - rightPaneWidth - ImGui::GetStyle().ItemSpacing.x, 0), true);
 
@@ -117,10 +117,14 @@ void EditorLuaCodespace()
     }
 
     if (ImGui::Button("Run", ImVec2(-1.0f, 50.0f)) && !isDisabledRun)
-	{
-		xr_string AnsiStr = Platform::UTF8_to_CP1251(CodeText.data());
-		g_pScriptEngine->script_process(ScriptEngine::eScriptProcessorHelper)->add_script(AnsiStr.data(), true, true);
-		g_pScriptEngine->script_process(ScriptEngine::eScriptProcessorHelper)->update();
+    {
+        xr_string AnsiStr = Platform::UTF8_to_CP1251(CodeText.data());
+        Device.callback(66, [=]()
+        {
+            g_pScriptEngine->script_process(ScriptEngine::eScriptProcessorHelper)->add_script(AnsiStr.data(), true, true);
+            g_pScriptEngine->script_process(ScriptEngine::eScriptProcessorHelper)->update();
+        });
+		
 	}
 
     if (isDisabledRun)
