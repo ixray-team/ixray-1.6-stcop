@@ -107,7 +107,7 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
  		auto task = [&](size_t ITask)
 		{
 			u32 Index = index_task.fetch_add(1, std::memory_order_relaxed);
-			// Áåð¸ì ïà÷êó çàäà÷
+			// Ð‘ÐµÑ€Ñ‘Ð¼ Ð¿Ð°Ñ‡ÐºÑƒ Ð·Ð°Ð´Ð°Ñ‡
  			AditionalData("*** [LMAPS] Apply Colors [%u] total [%u]", Index, lc_global_data()->g_deflectors().size());
 			CDeflector* D = lc_global_data()->g_deflectors()[ITask];
 			D->ApplyColors();

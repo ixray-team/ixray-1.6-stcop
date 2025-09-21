@@ -64,7 +64,7 @@ bool find_fmt_and_data_chunks(FILE* f, WAVFormat& fmt_out, uint32_t& data_offset
 		}
 		else
 		{
-			// Пропустить неизвестный чанк
+			// РџСЂРѕРїСѓСЃС‚РёС‚СЊ РЅРµРёР·РІРµСЃС‚РЅС‹Р№ С‡Р°РЅРє
 			fseek(f, chunk_size, SEEK_CUR);
 		}
 	}

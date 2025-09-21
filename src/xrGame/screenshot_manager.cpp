@@ -126,10 +126,10 @@ void screenshot_manager::make_jpeg_file()
 	RedImageTool::RedImage image;
 	image.Create(width, height, 1, 1, RedImageTool::RedTexturePixelFormat::R8G8B8);
 
-	// копируем RGB-данные
+	// РєРѕРїРёСЂСѓРµРј RGB-РґР°РЅРЅС‹Рµ
 	std::memcpy(image.operator*(), rgb24data, width * height * 3);
 
-	// Подготовка буфера для JPEG в памяти
+	// РџРѕРґРіРѕС‚РѕРІРєР° Р±СѓС„РµСЂР° РґР»СЏ JPEG РІ РїР°РјСЏС‚Рё
 	realloc_jpeg_buffer(m_jpeg_buffer_capacity);
 
 	size_t jpeg_size = 0;

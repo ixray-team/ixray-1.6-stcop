@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "ChZdbg.h"
 #include <memory>
