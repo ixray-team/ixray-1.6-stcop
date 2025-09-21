@@ -58,20 +58,21 @@ namespace PAPI{
 			ANIMATE_CCW	= (1<<0),
 		};
 
-		pVector		pos;	// 12
-		pVector		posB;   // 12
-		pVector		posI;   // 12
-		pVector		vel;    // 12  	
-		pVector		velI;   // 12  
-		pVector		size;   // 12
-		pVector		sizeI;  // 12
-		Rotation	rot;	// 4
-		Rotation	rotI;	// 4
-		u32			color;	// 4
-		float		age;	// 4       
-		u16			frame;	// 2
-		Flags16		flags;	// 2
-	};                  	// = 104
+		pVector		pos;	
+		pVector		posB;   
+		pVector		posI;   
+		pVector		vel;     	
+		pVector		velI;
+		pVector		rot_vel;
+		pVector		size;   
+		pVector		sizeI;  
+		Rotation	rot;	
+		Rotation	rotI;	
+		u32			color;	
+		float		age;	      
+		u16			frame;	
+		Flags16		flags;	
+	};                  	
 
 	typedef void (* OnBirthParticleCB)	(void* owner, u32 param, PAPI::Particle& P, u32 idx);
 	typedef void (* OnDeadParticleCB)	(void* owner, u32 param, PAPI::Particle& P, u32 idx);

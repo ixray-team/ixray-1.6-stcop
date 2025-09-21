@@ -1694,7 +1694,7 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 	if(effect->p_count + rate > effect->max_particles)
 		rate = effect->max_particles - effect->p_count;
 	
-	pVector pos, posB, vel, col, siz, rt;
+	pVector pos, posB, vel, rot_vel, col, siz, rt;
 	
 	if(m_Flags.is(u32(flVertexB_tracks))){
 		for(int i = 0; i < rate; i++){
@@ -1702,10 +1702,26 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
+			if (true/*AlighRotVelocityToVelocity*/)
+			{
+				rot_vel = vel;
+				if (fis_zero(rot_vel.magnitude()))
+				{
+					rot_vel.x = 1;
+					rot_vel.y = 0;
+					rot_vel.z = 0;
+				} else
+				{
+					rot_vel.normalize();
+				}
+			} else
+			{
+				// TODO: implement
+			}
 			color.Generate		(col);
 			float ag 			= age + NRand(age_sigma);
 
-			effect->Add			(pos, pos, siz, rt, vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
+			effect->Add			(pos, pos, siz, rt, vel, rot_vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
 		}
 	}else{
 		for(int i = 0; i < rate; i++){
@@ -1713,10 +1729,26 @@ void PASource::Execute(ParticleEffect *effect, const float dt, float& tm_max)
 			size.Generate		(siz); 	if (m_Flags.is(flSingleSize)) siz.set(siz.x,siz.x,siz.x);
 			rot.Generate		(rt);
 			velocity.Generate	(vel);	vel += parent_vel;
+			if (true/*AlighRotVelocityToVelocity*/)
+			{
+				rot_vel = vel;
+				if (fis_zero(rot_vel.magnitude()))
+				{
+					rot_vel.x = 1;
+					rot_vel.y = 0;
+					rot_vel.z = 0;
+				} else
+				{
+					rot_vel.normalize();
+				}
+			} else
+			{
+				// TODO: implement
+			}
 			color.Generate		(col);
 			float ag 			= age + NRand(age_sigma);
 
-			effect->Add			(pos, posB, siz, rt, vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
+			effect->Add			(pos, posB, siz, rt, vel, rot_vel, color_argb_f(alpha, col.x, col.y, col.z), ag);
 		}
 	}
 }
@@ -2281,13 +2313,7 @@ void PAColorAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
-		float LowerTime = timeFrom*tm_max;
-		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
-		float CurveTime = m.age - LowerTime;
-		if (Reverse)
-		{
-			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
-		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2330,13 +2356,7 @@ void PASizeAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_m
 	for(u32 i = 0; i < effect->p_count; i++)
 	{
 		Particle &m = effect->particles[i];
-		float LowerTime = timeFrom*tm_max;
-		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
-		float CurveTime = m.age - LowerTime;
-		if (Reverse)
-		{
-			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
-		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2369,7 +2389,6 @@ void* PASizeAnimator::GetVariableImpl(u8 VarID)
 }
 void PAVelocityAnimator::Transform(const Fmatrix& m)
 {
-	ParticleTransform = m;
 }
 void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
 
@@ -2377,13 +2396,22 @@ void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& 
 	{
 		
 		Particle &m = effect->particles[i];
-		float LowerTime = timeFrom*tm_max;
-		if(m.age<LowerTime || m.age>timeTo*tm_max ) continue;
-		float CurveTime = m.age - LowerTime;
-		if (Reverse)
+		Fmatrix MDir;
 		{
-			CurveTime = AnimPtr->GetMaxTime() -CurveTime;
+			Fvector Dir = m.rot_vel;
+			if(fis_zero(Dir.magnitude())) continue;
+			Dir.normalize_safe();
+			Fvector ChooseAxis = {0, 0, 1};
+			if (fsimilar(ChooseAxis.dotproduct(Dir), 1))
+			{
+				ChooseAxis = {1, 0, 0};
+			}
+			Fvector Cross;
+			Cross.crossproduct(Dir, ChooseAxis);
+			Cross.normalize();
+			MDir.rotation(Dir, Cross);
 		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
 		if (Looped)
 		{
 			while (CurveTime < 0)
@@ -2400,9 +2428,7 @@ void PAVelocityAnimator::Execute(ParticleEffect* effect, const float dt, float& 
 		}
 		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
 		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
-		pVector WorldVelocity;
-		ParticleTransform.transform_dir(WorldVelocity, LocalVelocity);
-		m.vel = WorldVelocity;
+		MDir.transform(m.vel, LocalVelocity);
 	}
 }
 void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
