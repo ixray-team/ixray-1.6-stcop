@@ -92,33 +92,34 @@ public:
 	Fvector&	GetCenter();
 	
     void 		Load		(IReader& F);
-    void 		Save		(IWriter& F);
+    void 		Save		(IWriter& F) const;
 
 	void 		Load2		(CInifile& ini, const shared_str& sect);
-    void 		Save2		(CInifile& ini, const shared_str& sect);
+    void 		Save2		(CInifile& ini, const shared_str& sect) const;
     
 	void 		Render		(u32 color, const Fmatrix& parent);
     void 		FillProp	(PropItemVec& items, LPCSTR pref, u32 clr);
 };
 struct EParticleAction
 {
-    using PDomainMap = xr_map<AnsiString, PDomain>;
-    using PDomainMapIt = PDomainMap::iterator;
+	using PDomainMapIt = xr_map<AnsiString, PDomain>::iterator;
 
-    using PBoolMap = xr_map<AnsiString, PBool>;
-    using PBoolMapIt = PBoolMap::iterator;
+	using PBoolMapIt = xr_map<AnsiString, PBool>::iterator;
 
-    using PFloatMap = xr_map<AnsiString, PFloat>;
-    using PFloatMapIt = PFloatMap::iterator;
+    using PFloatMapIt = xr_map<AnsiString, PFloat>::iterator;
 
-    using PIntMap = xr_map<AnsiString, PInt>;
-    using PIntMapIt = PIntMap::iterator;
+	using PIntMapIt = xr_map<AnsiString, PInt>::iterator;
 
-    using PVectorMap = xr_map<AnsiString, PVector>;
-	using PVectorMapIt = PVectorMap::iterator;
+    using PVectorMapIt = xr_map<AnsiString, PVector>::iterator;
 
-	using PStringMap = xr_map<AnsiString, PString>;
-	using PStringMapIt = PStringMap::iterator;
+	using PStringMapIt = xr_map<AnsiString, PString>::iterator;
+	
+	enum class EVersion : u32
+	{
+		Old,
+		Original,
+		Extended
+	};
 	
 	PS::CPEDef*		parent = nullptr;
     shared_str 		actionName;
@@ -130,13 +131,14 @@ struct EParticleAction
     };
 	Flags32				flags;
     PAPI::PActionEnum	type;
+	EVersion Version;
 
-	PDomainMap		domains;
-	PBoolMap		bools;
-	PFloatMap		floats;
-    PIntMap			ints;
-	PVectorMap		vectors;
-	PStringMap		strings;
+    xr_map<AnsiString, PDomain> domains;
+	xr_map<AnsiString, PBool> bools;
+    xr_map<AnsiString, PFloat> floats;
+	xr_map<AnsiString, PInt> ints;
+    xr_map<AnsiString, PVector> vectors;
+	xr_map<AnsiString, PString> strings;
 
     enum EValType{
     	tpDomain,
@@ -150,7 +152,9 @@ struct EParticleAction
     	EValType	type;
     	EChooseMode string_type = smCustom;
     	xr_string	name;
-        SOrder(EValType	_type, xr_string _name, EChooseMode _string_type = smCustom):type(_type),name(_name),string_type(_string_type){}
+    	EVersion min_version = EVersion::Original;
+    	SOrder(EValType _type, xr_string _name, EVersion _min_version = EVersion::Original);
+        SOrder(EValType	_type, xr_string _name, EChooseMode _string_type, EVersion _min_version = EVersion::Original);
     };
     using OrderVec = xr_vector<SOrder>;
     using OrderVecIt = OrderVec::iterator;
@@ -166,14 +170,14 @@ struct EParticleAction
     virtual ~EParticleAction() = default;
 
 public:
-	void			appendFloat	(LPCSTR name, float v, float mn, float mx);
-	void			appendInt	(LPCSTR name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);
-	void			appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
-	void			appendDomain(LPCSTR name, PDomain v);
-	void			appendBool	(LPCSTR name, BOOL b);
-	void			appendBool	(LPCSTR name, bool b);
-	void			appendString(LPCSTR name, shared_str v, EChooseMode _string_type = smCustom);
-	void			appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type = smCustom);
+	SOrder&	appendFloat	(LPCSTR name, float v, float mn, float mx);
+	SOrder&	appendInt	(LPCSTR name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);
+	SOrder&	appendVector(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn=-P_MAXFLOAT, float mx=P_MAXFLOAT);
+	SOrder&	appendDomain(LPCSTR name, PDomain v);
+	SOrder&	appendBool	(LPCSTR name, BOOL b);
+	SOrder&	appendBool	(LPCSTR name, bool b);
+	SOrder&	appendString(LPCSTR name, const shared_str& v, EChooseMode _string_type = smCustom);
+	SOrder&	appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type = smCustom);
 	PFloat&			_float		(LPCSTR name){PFloatMapIt 	it=floats.find(name); 	R_ASSERT2(it!=floats.end(),name);	return it->second;}
 	PInt&			_int		(LPCSTR name){PIntMapIt 	it=ints.find(name); 	R_ASSERT2(it!=ints.end(),name);		return it->second;}
 	PVector&		_vector		(LPCSTR name){PVectorMapIt 	it=vectors.find(name); 	R_ASSERT2(it!=vectors.end(),name);	return it->second;}
