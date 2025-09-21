@@ -14,7 +14,7 @@ UILeftBarForm::~UILeftBarForm()
 {
 }
 
-// Âñïîìîãàòåëüíàÿ ôóíêöèÿ äëÿ ðåíäåðèíãà êíîïêè èíñòðóìåíòà
+// Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð°Ñ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ñ Ð´Ð»Ñ Ñ€ÐµÐ½Ð´ÐµÑ€Ð¸Ð½Ð³Ð° ÐºÐ½Ð¾Ð¿ÐºÐ¸ Ð¸Ð½ÑÑ‚Ñ€ÑƒÐ¼ÐµÐ½Ñ‚Ð°
 void RenderToolButton(ESceneToolBase * tool, ObjClassID tool_id)
 {
 	if (!tool) return;
@@ -23,7 +23,7 @@ void RenderToolButton(ESceneToolBase * tool, ObjClassID tool_id)
 	ImGui::PushID(tool->ClassName());
 	ImGui::BeginDisabled(!tool->IsEnabled());
 
-	// Êíîïêà âèäèìîñòè
+	// ÐšÐ½Ð¾Ð¿ÐºÐ° Ð²Ð¸Ð´Ð¸Ð¼Ð¾ÑÑ‚Ð¸
 	xr_string icon = visible ? ICON_FA_EYE"##" : ICON_FA_EYE_SLASH"##";
 	icon += tool->ClassName();
 
@@ -41,7 +41,7 @@ void RenderToolButton(ESceneToolBase * tool, ObjClassID tool_id)
 
 	ImGui::SameLine();
 
-	// Êíîïêà âûáîðà èíñòðóìåíòà
+	// ÐšÐ½Ð¾Ð¿ÐºÐ° Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ð¸Ð½ÑÑ‚Ñ€ÑƒÐ¼ÐµÐ½Ñ‚Ð°
 	auto col_tool = ImGui::GetStyle().Colors[ImGuiCol_Button];
 	if (LTools->GetTarget() == tool_id)
 		col_tool = ImGui::GetStyle().Colors[ImGuiCol_ButtonActive];

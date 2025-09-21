@@ -151,7 +151,7 @@ void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 	if(fraglimit)
 		xr_sprintf(str,"%d", fraglimit);
 	else
-		xr_sprintf(str,"%s","∞");
+		xr_sprintf(str,"%s","âˆž");
 
 	m_pFragLimitIndicator->SetText(str);
 }

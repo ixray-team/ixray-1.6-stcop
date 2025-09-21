@@ -113,7 +113,7 @@ void CUIServerInfo::SetServerLogo(u8 const * data_ptr, u32 const data_size)
 		Msg("! ERROR: failed to create temporary dds file");
 		return;
 	}
-	tmp_writer->w((void*)data_ptr, data_size); // записываем исходный JPEG
+	tmp_writer->w((void*)data_ptr, data_size); // Р·Р°РїРёСЃС‹РІР°РµРј РёСЃС…РѕРґРЅС‹Р№ JPEG
 	FS.w_close(tmp_writer);
 
 	m_dds_file_created = true;

@@ -330,7 +330,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 
 	colors_cuda.clear();
 
-	// se7kills: Хотябы память убрать из юза
+	// se7kills: вЂ™РѕС‚в‚¬Р±С‹ РїР°Рјв‚¬С‚СЊ СѓР±СЂР°С‚СЊ РёР· СЋР·Р°
 	SafeVertices.clear();
 	SafeVertices.shrink_to_fit();
 }

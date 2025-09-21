@@ -174,7 +174,7 @@ void CBuild::BuildCForm	()
 	FS.w_close(MFS);
 
 	/*
- 	// Заполняем faces*
+ 	// Р—Р°РїРѕР»РЅСЏРµРј faces*
 	TriangleContainer container;
   	for (auto TRI : lc_global_data()->g_faces())
 	{
@@ -197,7 +197,7 @@ void CBuild::BuildCForm	()
 	container.RemoveDublicates();
 	container.RemoveDublicatesFaces();
 
-	// Расщитуем BBox Уровня
+	// Р Р°СЃС‰РёС‚СѓРµРј BBox РЈСЂРѕРІРЅСЏ
 	Fbox BB;
 	BB.invalidate	();
 	for (auto V : container.verts_v)

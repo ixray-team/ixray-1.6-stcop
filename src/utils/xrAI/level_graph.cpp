@@ -37,7 +37,7 @@ CLevelGraph::CLevelGraph(LPCSTR filename)
 					m_nodes[i].UncompressedNode.link(j, link_value);
 				}
 
-				// Остальные поля
+				// РћСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕР»СЏ
 				m_nodes[i].UncompressedNode.high = Src[i].high;
 				m_nodes[i].UncompressedNode.low = Src[i].low;
 				m_nodes[i].UncompressedNode.plane = Src[i].plane;
