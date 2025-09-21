@@ -312,6 +312,7 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     case PAColorAnimatorID:		pa = new PAColorAnimator();		break;
     case PASizeAnimatorID:		pa = new PASizeAnimator();		break;
     case PAVelocityAnimatorID:	pa = new PAVelocityAnimator();		break;
+    case PAVelocityRotationAnimatorID:	pa = new PAVelocityRotationAnimator();		break;
     default: NODEFAULT;
     }
     pa->type					= type;

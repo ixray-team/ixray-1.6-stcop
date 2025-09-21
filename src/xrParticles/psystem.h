@@ -64,6 +64,7 @@ namespace PAPI{
 		pVector		vel;     	
 		pVector		velI;
 		pVector		rot_vel;
+		pVector		rot_velS;
 		pVector		size;   
 		pVector		sizeI;  
 		Rotation	rot;	
@@ -139,6 +140,7 @@ namespace PAPI{
 		PAColorAnimatorID,
 		PASizeAnimatorID,
 		PAVelocityAnimatorID,
+		PAVelocityRotationAnimatorID,
 		action_enum_force_dword = u32(-1)
 	};
     struct ParticleAction;
