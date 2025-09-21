@@ -1,4 +1,4 @@
-#include "stdafx.h" 
+#include "StdAfx.h"
 #include "xrPhase_MergeLM_Surface.h"
 #include "../xrForms/CompilersUI.h"
 

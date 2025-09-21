@@ -7,7 +7,7 @@
 #include "../xrLC_Light/xrDeflector.h"
 #include "../xrLC_Light/xrLC_GlobalData.h"
 #include "../xrLC_Light/Lightmap.h"
-#include "../../utils/xrForms/CompilersUI.h"
+#include "../xrForms/CompilersUI.h"
 #include <ppl.h>
 
 extern CompilersMode gCompilerMode;
