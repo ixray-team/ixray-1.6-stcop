@@ -1,4 +1,5 @@
 #ifndef cgim_h_included
+#define cgim_h_included
 
 // creates more light by a vector from the sky 
 #define SMALLSKY_TOP_VECTOR_POWER 0.75f
