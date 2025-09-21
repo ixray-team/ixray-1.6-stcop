@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "UIPdaListItem.h"
-#include "../actor.h"
+#include "../Actor.h"
 #include "UIInventoryUtilities.h"
 #include "../../xrEngine/string_table.h"
 
@@ -11,7 +11,7 @@
 #include "character_info.h"
 
 #include "../../xrUI/Widgets/UIFrameWindow.h"
-#include "..\InventoryOwner.h"
+#include "../InventoryOwner.h"
 #include "UICharacterInfo.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 
