@@ -60,7 +60,7 @@ void RayTraceContactShadow(float2 TexCoord, float3 Point, float3 LightDir, inout
 	}
 	
 	ContactShadow *= GetBorderAtten(StartProj.xy, 0.0125f);
-	Light *= PushGamma(1.0f - saturate(ContactShadow));
+	Light *= 1.0f - saturate(ContactShadow);
 }
 #endif
 

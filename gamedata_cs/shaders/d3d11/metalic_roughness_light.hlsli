@@ -14,20 +14,11 @@ float DistributionGGX(float NdotH, float Roughness)
     return AlphaTwo * rcp(Divider * Divider);
 }
 
-#ifndef USE_LEGACY_LIGHT
-// Simple PBR - like attention
-float ComputeLightAttention(float3 PointToLight, float MinAttention)
-{
-    float Attention = saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
-    return Attention * Attention;
-}
-#else
 // Simple GSC - like attention
 float ComputeLightAttention(float3 PointToLight, float MinAttention)
 {
     return saturate(1.0f - dot(PointToLight, PointToLight) * MinAttention);
 }
-#endif
 
 float GeometrySmithD(float NdotL, float NdotV, float Roughness)
 {
