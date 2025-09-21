@@ -6,6 +6,7 @@
 #define USE_BASE_HUD_REFLECTIONS
 
 #define USE_VASYAN_CUTOFF
+
 // #define VSLR_SLOW_BREAK
 // #define SSLR_SLOW_BREAK
 

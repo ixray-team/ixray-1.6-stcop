@@ -71,8 +71,6 @@ float4 main(PSInput I) : SV_Target
 	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
 	float3 View = normalize(ReflectPoint);
 	
-	O.Normal.xyz = normalize(cross(ddx(ReflectPoint), ddy(ReflectPoint)));
-	
 	float4 FinalColor = BaseColor.xyzz;
  	FinalColor.w = length(O.Point - SSLR.xyz);
 	
