@@ -247,16 +247,17 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 		{
 			const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, phInfo.sIconName, "icons_texture", nullptr);
 			pBtnStatic->GetUIStaticItem().SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
-			float x = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons));
-			float y = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons));
-			float width = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_width") * INV_GRID_WIDTH(isHQIcons));
-			float height = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons));
+			float scaleIcon = READ_IF_EXISTS(pSettings, r_float, phInfo.sIconName, "inv_scale", 1.0f);
+			float x = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon));
+			float y = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon));
+			float width = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon));
+			float height = float(pSettings->r_u32(phInfo.sIconName, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon));
 			Frect tex_rect{ x, y, width, height };
 			tex_rect.rb.add(tex_rect.lt);
 
 			pBtnStatic->GetUIStaticItem().SetTextureRect(tex_rect);
 
-			icon_size.x *= width / INV_GRID_WIDTH(isHQIcons);
+			icon_size.x *= width / INV_GRID_WIDTH(scaleIcon);
 		}
 		pBtnStatic->SetWndPos(Fvector2().set(x_offset, 0.f));
 		x_offset += icon_size.x + itm->m_fOffsetAfterIcon;
