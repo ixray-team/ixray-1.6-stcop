@@ -110,24 +110,24 @@ CLevelGraph::CLevelGraph()
 
 			for (size_t i = 0; i < m_header->vertex_count(); i++)
 			{
-				// Конвертация линков через правильный метод
+				// РљРѕРЅРІРµСЂС‚Р°С†РёСЏ Р»РёРЅРєРѕРІ С‡РµСЂРµР· РїСЂР°РІРёР»СЊРЅС‹Р№ РјРµС‚РѕРґ
 				for (u8 j = 0; j < 4; ++j)
 				{
-					u32 link_value = Src[i].link(j); // 23-битный линк
-					m_nodes[i].UncompressedNode.link(j, link_value); // упаковываем в 26-битное поле
+					u32 link_value = Src[i].link(j); // 23-Р±РёС‚РЅС‹Р№ Р»РёРЅРє
+					m_nodes[i].UncompressedNode.link(j, link_value); // СѓРїР°РєРѕРІС‹РІР°РµРј РІ 26-Р±РёС‚РЅРѕРµ РїРѕР»Рµ
 				}
 
-				// Каверы: SOC хранит только "high", копируем в оба
+				// РљР°РІРµСЂС‹: SOC С…СЂР°РЅРёС‚ С‚РѕР»СЊРєРѕ "high", РєРѕРїРёСЂСѓРµРј РІ РѕР±Р°
 				m_nodes[i].UncompressedNode.high.cover0 = Src[i].cover0;
 				m_nodes[i].UncompressedNode.high.cover1 = Src[i].cover1;
 				m_nodes[i].UncompressedNode.high.cover2 = Src[i].cover2;
 				m_nodes[i].UncompressedNode.high.cover3 = Src[i].cover3;
 				m_nodes[i].UncompressedNode.low = m_nodes[i].UncompressedNode.high;
 
-				// Плоскость
+				// РџР»РѕСЃРєРѕСЃС‚СЊ
 				m_nodes[i].UncompressedNode.plane = Src[i].plane;
 
-				// Позиция
+				// РџРѕР·РёС†РёСЏ
 				m_nodes[i].UncompressedNode.p.xz(Src[i].p.xz());
 				m_nodes[i].UncompressedNode.p.y(Src[i].p.y());
 			}
@@ -146,7 +146,7 @@ CLevelGraph::CLevelGraph()
 					m_nodes[i].UncompressedNode.link(j, link_value);
 				}
 
-				// Остальные поля
+				// РћСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕР»СЏ
 				m_nodes[i].UncompressedNode.high = Src[i].high;
 				m_nodes[i].UncompressedNode.low = Src[i].low;
 				m_nodes[i].UncompressedNode.plane = Src[i].plane;
@@ -178,7 +178,7 @@ CLevelGraph::CLevelGraph()
 			}
 			break;
 		}
-		case XRAI_LARGE_VERSION: // ver 13 - 26 bit (слишком огромная, двиг не расчитан на такую геометрию)
+		case XRAI_LARGE_VERSION: // ver 13 - 26 bit (СЃР»РёС€РєРѕРј РѕРіСЂРѕРјРЅР°СЏ, РґРІРёРі РЅРµ СЂР°СЃС‡РёС‚Р°РЅ РЅР° С‚Р°РєСѓСЋ РіРµРѕРјРµС‚СЂРёСЋ)
 			m_nodes = (CVertex*)m_reader->pointer();
 	}
 

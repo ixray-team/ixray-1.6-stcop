@@ -13,7 +13,7 @@ void TriangleContainer::RemoveDublicates()
     CTimer tStats;
     tStats.Start();
     //----------------------
-    // 1. Собираем все вершины
+    // 1. РЎРѕР±РёСЂР°РµРј РІСЃРµ РІРµСЂС€РёРЅС‹
     //----------------------
     size_t totalVerts = raw_faces.size() * 3;
 
@@ -34,7 +34,7 @@ void TriangleContainer::RemoveDublicates()
         }
     }
     //----------------------
-    // 2. Сортируем вершины
+    // 2. РЎРѕСЂС‚РёСЂСѓРµРј РІРµСЂС€РёРЅС‹
     //----------------------
     std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
         {
@@ -43,7 +43,7 @@ void TriangleContainer::RemoveDublicates()
             return a.v.z < b.v.z;
         });
     //----------------------
-    // 3. Убираем дубликаты
+    // 3. РЈР±РёСЂР°РµРј РґСѓР±Р»РёРєР°С‚С‹
     //----------------------
     xr_vector<uint32_t> remap(totalVerts);
     xr_vector<Fvector> unique_vertices;
@@ -63,11 +63,11 @@ void TriangleContainer::RemoveDublicates()
         remap[temp[i].originalIndex] = newIndex;
     }
 
-    // Сожмать до реального размера
+    // РЎРѕР¶РјР°С‚СЊ РґРѕ СЂРµР°Р»СЊРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
     unique_vertices.shrink_to_fit();
 
     //----------------------
-    // 4. Перестраиваем треугольники
+    // 4. РџРµСЂРµСЃС‚СЂР°РёРІР°РµРј С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё
     //----------------------
     verts_v.swap(unique_vertices);
 
@@ -104,7 +104,7 @@ void TriangleContainer::RemoveDublicates()
     }
 
     //----------------------
-    // 5. Чистим временные данные
+    // 5. Р§РёСЃС‚РёРј РІСЂРµРјРµРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ
     //----------------------
     raw_faces.clear();
     raw_faces.shrink_to_fit();
@@ -123,7 +123,7 @@ void TriangleContainer::RemoveDublicatesFaces()
     CTimer t; 
     t.Start();
 
-    // 1. Убираем дубликаты треугольников через сортировку
+    // 1. РЈР±РёСЂР°РµРј РґСѓР±Р»РёРєР°С‚С‹ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ С‡РµСЂРµР· СЃРѕСЂС‚РёСЂРѕРІРєСѓ
     xr_vector<IndexedTri> temp;
     temp.reserve(faces_v.size());
 
@@ -134,13 +134,13 @@ void TriangleContainer::RemoveDublicatesFaces()
 
     std::sort(std::execution::par, temp.begin(), temp.end());
 
-    // создаём новые массивы
+    // СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Рµ РјР°СЃСЃРёРІС‹
     xr_vector<Triangle> new_faces;
     xr_vector<decltype(dummy)::value_type> new_dummy;
     new_faces.reserve(faces_v.size());
     new_dummy.reserve(dummy.size());
 
-    // первый всегда берём
+    // РїРµСЂРІС‹Р№ РІСЃРµРіРґР° Р±РµСЂС‘Рј
     new_faces.push_back(faces_v[temp[0].originalIndex]);
     new_dummy.push_back(dummy[temp[0].originalIndex]);
 
@@ -158,7 +158,7 @@ void TriangleContainer::RemoveDublicatesFaces()
     new_faces.shrink_to_fit();
     new_dummy.shrink_to_fit();
 
-    // меняем местами
+    // РјРµРЅСЏРµРј РјРµСЃС‚Р°РјРё
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
 

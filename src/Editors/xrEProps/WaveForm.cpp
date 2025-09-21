@@ -17,7 +17,7 @@ void CWaveForm::DrawGraph(ImVec2 Size)
 	ImDrawList* DrawList = ImGui::GetWindowDrawList();
 	ImVec2 P0 = ImGui::GetCursorScreenPos();
 
-	// Фон и рамка
+	// Р¤РѕРЅ Рё СЂР°РјРєР°
 	DrawList->AddRectFilled(P0, ImVec2(P0.x + Width + 4, P0.y + Height + 4), IM_COL32(0, 0, 0, 255));
 	DrawList->AddRect(P0, ImVec2(P0.x + Width + 4, P0.y + Height + 4), IM_COL32(0, 102, 0, 255));
 
@@ -32,7 +32,7 @@ void CWaveForm::DrawGraph(ImVec2 Size)
 		IM_COL32(0, 255, 0, 255)
 	);
 
-	// Точки графика
+	// РўРѕС‡РєРё РіСЂР°С„РёРєР°
 	float TCost = 1.f / Width;
 	xr_vector<ImVec2> Points;
 	Points.reserve(Width);

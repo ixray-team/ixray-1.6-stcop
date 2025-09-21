@@ -41,15 +41,15 @@ public:
 				u64 Condition : 8; // 0-100 
 				u64 AmmoCount : 8; // 0-100 
 				u64 AmmoType : 8; // 0-100 
-				u64 AddonScopeID : 8; // 255 доступных прицелов
-				u64 AddonSilenceID : 8; // 255 доступных глушителей
-				u64 AddonLauncherID : 8; // 255 доступных подстволок
+				u64 AddonScopeID : 8; // 255 РґРѕСЃС‚СѓРїРЅС‹С… РїСЂРёС†РµР»РѕРІ
+				u64 AddonSilenceID : 8; // 255 РґРѕСЃС‚СѓРїРЅС‹С… РіР»СѓС€РёС‚РµР»РµР№
+				u64 AddonLauncherID : 8; // 255 РґРѕСЃС‚СѓРїРЅС‹С… РїРѕРґСЃС‚РІРѕР»РѕРє
 				u64 reserved : 16;
 			};
 
 			u64 dummy;
 		};
-		u64 Updagrades; // 64 апгрейда
+		u64 Updagrades; // 64 Р°РїРіСЂРµР№РґР°
 	};
 
 	~DBService();
