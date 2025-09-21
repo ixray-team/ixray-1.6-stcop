@@ -188,6 +188,8 @@ void CInventoryItem::Load(LPCSTR section)
 	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
 	u32 inv_grid_width = pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
 	u32 inv_grid_height = pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+	ScaleIcon = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "inv_scale", 1.0f);
+	IconsTexture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 	

@@ -1179,13 +1179,16 @@ bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imnam
 	if (surfaceParams.Surface == nullptr || !isIcon)
 		return ImGui::Button(imname);
 
-	float x = pSettings->r_float(name, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
-	float y = pSettings->r_float(name, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
-	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
-	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, name, "inv_scale", 1.0f);
+	float x = pSettings->r_float(name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+	float y = pSettings->r_float(name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+	float w = pSettings->r_float(name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+	float h = pSettings->r_float(name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 
 	ImGui::SeparatorText(name);
-	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isHQIcons), h / (1 + isHQIcons)},
+	bool isScaleIcon = scaleIcon > 1.0f;
+
+	return ImGui::ImageButton(imname, surfaceParams.Surface, { w / (1 + isScaleIcon), h / (1 + isScaleIcon)},
 		{ x / surfaceParams.w, y / surfaceParams.h },
 		{ (x + w) / surfaceParams.w, (y + h) / surfaceParams.h });
 

@@ -29,8 +29,8 @@
 
 extern const LPCSTR g_inventory_upgrade_xml;
 
-#define INV_GRID_WIDTH2(HQ_ICONS) ((HQ_ICONS) ? (80.0f) : (40.0f))
-#define INV_GRID_HEIGHT2(HQ_ICONS) ((HQ_ICONS) ? (80.0f) : (40.0f))
+#define INV_GRID_WIDTH2(SCALE_ICON) (40.0f * SCALE_ICON)
+#define INV_GRID_HEIGHT2(SCALE_ICON) (40.0f * SCALE_ICON)
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -345,13 +345,13 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	if(UIItemImage)
 	{
 		// Загружаем картинку
-		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, m_pInvItem->m_section_id.c_str(), "icons_texture", nullptr);
-		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pInvItem->IconsTexture.c_str()));
 
-		Irect item_grid_rect				= pInvItem->GetInvGridRect();
+		Irect item_grid_rect = pInvItem->GetInvGridRect();
+		float scaleIcon = m_pInvItem->ScaleIcon;
 		Frect texture_rect = {};
-		texture_rect.lt.set(item_grid_rect.x1*INV_GRID_WIDTH(isHQIcons),	item_grid_rect.y1*INV_GRID_HEIGHT(isHQIcons));
-		texture_rect.rb.set(item_grid_rect.x2*INV_GRID_WIDTH(isHQIcons),	item_grid_rect.y2*INV_GRID_HEIGHT(isHQIcons));
+		texture_rect.lt.set(item_grid_rect.x1 * INV_GRID_WIDTH(scaleIcon), item_grid_rect.y1 * INV_GRID_HEIGHT(scaleIcon));
+		texture_rect.rb.set(item_grid_rect.x2 * INV_GRID_WIDTH(scaleIcon), item_grid_rect.y2 * INV_GRID_HEIGHT(scaleIcon));
 		texture_rect.rb.add(texture_rect.lt);
 		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
@@ -359,16 +359,8 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 
 		Fvector2 v_r = {};
 
-		if (isHQIcons)
-		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(isHQIcons) / 2,
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(isHQIcons) / 2 };
-		}
-		else
-		{
-			v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(isHQIcons),
-				item_grid_rect.y2 * INV_GRID_HEIGHT2(isHQIcons) };
-		}
+		v_r = { item_grid_rect.x2 * INV_GRID_WIDTH2(scaleIcon) / scaleIcon,
+			item_grid_rect.y2 * INV_GRID_HEIGHT2(scaleIcon) / scaleIcon };
 
 		v_r.x								*= UI().get_current_kx();
 

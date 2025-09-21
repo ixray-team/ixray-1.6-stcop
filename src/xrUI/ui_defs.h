@@ -9,8 +9,6 @@ typedef	FactoryPtr<IUIShader>	ui_shader;
 #define UI_BASE_WIDTH	1024.0f
 #define UI_BASE_HEIGHT	768.0f
 
-const static bool isHQIcons = EngineExternal()[EEngineExternalUI::HQIcons];
-
 enum EUIItemAlign
 {
 	alNone	= 0x0000,
