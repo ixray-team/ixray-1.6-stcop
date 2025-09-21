@@ -210,7 +210,7 @@ void CDeflector::OA_Export()
 
 	layer.width  = dwWidth;
 	layer.height = dwHeight;
-	// Не алоцируем
+	// РќРµ Р°Р»РѕС†РёСЂСѓРµРј
 }
 
 BOOL CDeflector::OA_Place	(Face *owner)

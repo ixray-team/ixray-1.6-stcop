@@ -2,7 +2,7 @@
 
 namespace 
 {
-	// Lookup table для software реализации
+	// Lookup table РґР»СЏ software СЂРµР°Р»РёР·Р°С†РёРё
 	static u32 crc32_table[256]; 
 
 	class Crc32Initializer final
@@ -16,7 +16,7 @@ namespace
 	private:
 		Crc32Initializer() noexcept
 		{
-			// Инициализация таблицы для software реализации
+			// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°Р±Р»РёС†С‹ РґР»СЏ software СЂРµР°Р»РёР·Р°С†РёРё
 			constexpr u32 POLYNOMIAL = 0xEDB88320;
 			for (u32 i = 0; i < 256; ++i) {
 				u32 crc = i;
@@ -28,13 +28,13 @@ namespace
 		}
 	};
 
-	// Аппаратная реализация с SSE4.2
+	// РђРїРїР°СЂР°С‚РЅР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ СЃ SSE4.2
 	u32 crc32_sse42(const void* P, size_t len, u32 starting_crc = ~0u) noexcept
 	{
 		const u8* buffer = static_cast<const u8*>(P);
 		u32 crc = starting_crc;
 
-		// Обрабатываем по 8 байт за раз
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РїРѕ 8 Р±Р°Р№С‚ Р·Р° СЂР°Р·
 		while (len >= 8)
 		{
 			crc = (u32)_mm_crc32_u64(crc, *reinterpret_cast<const u64*>(buffer));
@@ -42,7 +42,7 @@ namespace
 			len -= 8;
 		}
 
-		// Обрабатываем оставшиеся 4 байта
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ 4 Р±Р°Р№С‚Р°
 		if (len >= 4)
 		{
 			crc = _mm_crc32_u32(crc, *reinterpret_cast<const u32*>(buffer));
@@ -50,7 +50,7 @@ namespace
 			len -= 4;
 		}
 
-		// Обрабатываем оставшиеся 2 байта
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ 2 Р±Р°Р№С‚Р°
 		if (len >= 2)
 		{
 			crc = _mm_crc32_u16(crc, *reinterpret_cast<const u16*>(buffer));
@@ -58,7 +58,7 @@ namespace
 			len -= 2;
 		}
 
-		// Обрабатываем последний байт
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РїРѕСЃР»РµРґРЅРёР№ Р±Р°Р№С‚
 		if (len)
 		{
 			crc = _mm_crc32_u8(crc, *buffer);
@@ -116,8 +116,8 @@ u32 path_crc32(const char* path, size_t len)
 	u32 crc = ~0u;
 	const u8* buffer = reinterpret_cast<const u8*>(path);
 
-	// Для путей используем только software реализацию, 
-	// так как нужно пропускать символы '/' и '\'
+	// Р”Р»СЏ РїСѓС‚РµР№ РёСЃРїРѕР»СЊР·СѓРµРј С‚РѕР»СЊРєРѕ software СЂРµР°Р»РёР·Р°С†РёСЋ, 
+	// С‚Р°Рє РєР°Рє РЅСѓР¶РЅРѕ РїСЂРѕРїСѓСЃРєР°С‚СЊ СЃРёРјРІРѕР»С‹ '/' Рё '\'
 	while (len--) {
 		const u8 c = *buffer;
 		if (c != '/' && c != '\\') {

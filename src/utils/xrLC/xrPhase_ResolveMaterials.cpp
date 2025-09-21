@@ -21,7 +21,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 	auto& faces = lc_global_data()->g_faces();
 	std::unordered_map<u16, size_t> matToIndex;
  
-	// Локальные хранилища для потоков -> потом сведём в общий map
+	// Р›РѕРєР°Р»СЊРЅС‹Рµ С…СЂР°РЅРёР»РёС‰Р° РґР»СЏ РїРѕС‚РѕРєРѕРІ -> РїРѕС‚РѕРј СЃРІРµРґС‘Рј РІ РѕР±С‰РёР№ map
 	concurrency::combinable<std::unordered_map<u16, u32>> localCounts;
 
  	xr_parallel_foreach(faces.begin(), faces.end(), [&](Face* F)
@@ -29,7 +29,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 			localCounts.local()[F->dwMaterial] += 1;
 		});
 
-	// Слияние локальных карт в глобальную
+	// РЎР»РёСЏРЅРёРµ Р»РѕРєР°Р»СЊРЅС‹С… РєР°СЂС‚ РІ РіР»РѕР±Р°Р»СЊРЅСѓСЋ
 	std::unordered_map<u16, u32> globalCounts;
 	localCounts.combine_each([&](const std::unordered_map<u16, u32>& lm)
 		{
@@ -39,7 +39,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 
 
 	// ======================================================
-	// 2) Вектор счётчиков + карта material -> index (SC)
+	// 2) Р’РµРєС‚РѕСЂ СЃС‡С‘С‚С‡РёРєРѕРІ + РєР°СЂС‚Р° material -> index (SC)
 	// ======================================================
 	xr_vector<_counter> count;
 	count.reserve(globalCounts.size());
@@ -69,17 +69,17 @@ void	CBuild::xrPhase_ResolveMaterials()
 			}
 		});
  
-	// Переносим в итоговый g_XSplit
+	// РџРµСЂРµРЅРѕСЃРёРј РІ РёС‚РѕРіРѕРІС‹Р№ g_XSplit
 	g_XSplit.reserve(count.size());
 	g_XSplit.resize(count.size());
 
 	for (size_t i = 0; i < g_XSplit.size(); ++i)
 	{
-		// vecFace имеет конструктор от итераторов
+		// vecFace РёРјРµРµС‚ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РѕС‚ РёС‚РµСЂР°С‚РѕСЂРѕРІ
 		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
 	}
  
-	// Старый код
+	// РЎС‚Р°СЂС‹Р№ РєРѕРґ
  	{
 		for (int SP = 0; SP<int(g_XSplit.size()); SP++)
 		{
