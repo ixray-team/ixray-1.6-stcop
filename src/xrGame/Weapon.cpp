@@ -504,21 +504,21 @@ void CWeapon::Load		(LPCSTR section)
 
 	if (!bUseAltScope)
 		LoadOriginalScopesParams(section);
-    
+
 	if ( m_eSilencerStatus == ALife::eAddonAttachable )
 	{
 		m_sSilencerName = pSettings->r_string(section,"silencer_name");
 
-		m_iSilencerX = pSettings->r_s32(section, "silencer_x") * (1 + isHQIcons);
-		m_iSilencerY = pSettings->r_s32(section, "silencer_y") * (1 + isHQIcons);
+		m_iSilencerX = pSettings->r_s32(section, "silencer_x") * ScaleIcon;
+		m_iSilencerY = pSettings->r_s32(section, "silencer_y") * ScaleIcon;
 	}
     
 	if ( m_eGrenadeLauncherStatus == ALife::eAddonAttachable )
 	{
 		m_sGrenadeLauncherName = pSettings->r_string(section,"grenade_launcher_name");
 
-		m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * (1 + isHQIcons);
-		m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * (1 + isHQIcons);
+		m_iGrenadeLauncherX = pSettings->r_s32(section, "grenade_launcher_x") * ScaleIcon;
+		m_iGrenadeLauncherY = pSettings->r_s32(section, "grenade_launcher_y") * ScaleIcon;
 	}
 
 	UpdateAltScope();
@@ -3512,13 +3512,11 @@ bool CWeapon::IsUIForceUnhiding() const
 
 int CWeapon::GetScopeX()
 {
-	const static int useHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-
 	if (bUseAltScope)
 	{
 		if (m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
 		{
-			return pSettings->r_s32(GetNameWithAttachmentScope(), "scope_x") * (1 + useHQ);
+			return pSettings->r_s32(GetNameWithAttachmentScope(), "scope_x") * ScaleIcon;
 		}
 		else
 		{
@@ -3526,17 +3524,16 @@ int CWeapon::GetScopeX()
 		}
 	}
 
-	return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * (1 + useHQ);
+	return pSettings->r_s32(m_scopes[m_cur_scope], "scope_x") * ScaleIcon;
 }
 
 int CWeapon::GetScopeY()
 {
-	const static int useHQ = EngineExternal()[EEngineExternalUI::HQIcons];
 	if (bUseAltScope)
 	{
 		if (m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
 		{
-			return pSettings->r_s32(GetNameWithAttachmentScope(), "scope_y") * (1 + useHQ);
+			return pSettings->r_s32(GetNameWithAttachmentScope(), "scope_y") * ScaleIcon;
 		}
 		else
 		{
@@ -3544,7 +3541,7 @@ int CWeapon::GetScopeY()
 		}
 	}
 
-	return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * (1 + useHQ);
+	return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y") * ScaleIcon;
 }
 
 

@@ -37,6 +37,7 @@ struct
 	bool can_show_cam_step_angle_horz{};
 	bool can_show_hit_power{};
 	bool can_show_hit_power_critical{};
+	bool can_show_inv_scale{};
 	bool can_show_inv_grid_x{};
 	bool can_show_inv_grid_y{};
 	bool can_show_inv_grid_width{};
@@ -125,6 +126,9 @@ struct
 	float cam_step_angle_horz{};
 	float cfg_cam_step_angle_horz{};
 
+	float inv_scale {};
+	float cfg_inv_scale {};
+
 	int inv_grid_width{};
 	u32 cfg_inv_grid_width{};
 
@@ -155,6 +159,7 @@ struct
 
 	struct WeaponIcon
 	{
+		float inv_scale{};
 		u32 inv_grid_x{};
 		u32 inv_grid_y{};
 		u32 inv_grid_width{};
@@ -213,6 +218,7 @@ void RenderWeaponManagerWindow()
 				imgui_weapon_manager.inv_cost = pItem->Cost();
 				imgui_weapon_manager.inv_weight = pItem->Weight();
 				imgui_weapon_manager.control_inertion_factor = pItem->GetControlInertionFactor();
+				imgui_weapon_manager.inv_scale = READ_IF_EXISTS(pSettings, r_float, pItem->m_section_id, "inv_scale", 1.0f);;
 				imgui_weapon_manager.inv_grid_x = pItem->GetInvGridRect().x1;
 				imgui_weapon_manager.inv_grid_y = pItem->GetInvGridRect().y1;
 				imgui_weapon_manager.inv_grid_width = pItem->GetInvGridRect().x2;
@@ -263,6 +269,7 @@ void RenderWeaponManagerWindow()
 								if (pSection->line_exist("inv_grid_x") && pSection->line_exist("inv_grid_y") && pSection->line_exist("inv_grid_width") && pSection->line_exist("inv_grid_height"))
 								{
 									auto& icon = imgui_weapon_manager.icons[imgui_weapon_manager.icons_count];
+									icon.inv_scale = READ_IF_EXISTS(pSettings, r_float, pSection->Name, "inv_scale", 1.0f);
 									icon.inv_grid_x = pSettings->r_u32(pSection->Name, "inv_grid_x");
 									icon.inv_grid_y = pSettings->r_u32(pSection->Name, "inv_grid_y");
 									icon.inv_grid_width = pSettings->r_u32(pSection->Name, "inv_grid_width");
@@ -272,7 +279,6 @@ void RenderWeaponManagerWindow()
 								}
 							}
 						}
-
 					}
 				}
 
@@ -458,6 +464,16 @@ void RenderWeaponManagerWindow()
 							imgui_weapon_manager.cfg_fire_dispersion_condition_factor = pSettings->r_float(pSectionName, "fire_dispersion_condition_factor");
 						}
 
+						if (pSettings->line_exist(pSectionName, "inv_scale"))
+						{
+							imgui_weapon_manager.can_show_inv_scale = true;
+							imgui_weapon_manager.cfg_inv_scale = pSettings->r_u32(pSectionName, "inv_scale");
+						}
+						else
+						{
+							imgui_weapon_manager.cfg_inv_scale = 1.0f;
+						}
+
 						if (pSettings->line_exist(pSectionName, "inv_grid_x"))
 						{
 							imgui_weapon_manager.can_show_inv_grid_x = true;
@@ -527,10 +543,11 @@ void RenderWeaponManagerWindow()
 
 						if (imgui_weapon_manager.ui_icons.Surface != nullptr)
 						{
-							float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(isHQIcons);
-							float y = imgui_weapon_manager.inv_grid_y * INV_GRID_HEIGHT(isHQIcons);
-							float w = imgui_weapon_manager.inv_grid_width * INV_GRID_WIDTH(isHQIcons);
-							float h = imgui_weapon_manager.inv_grid_height * INV_GRID_HEIGHT(isHQIcons);
+							float scaleIcon = imgui_weapon_manager.inv_scale;
+							float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+							float y = imgui_weapon_manager.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+							float w = imgui_weapon_manager.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+							float h = imgui_weapon_manager.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 
 							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
 							ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.f, 0.f, 0.f, 0.f));
@@ -686,11 +703,11 @@ void RenderWeaponManagerWindow()
 								{
 									ImGui::TableSetColumnIndex(column);
 									const auto& icon = imgui_weapon_manager.icons[current_icon_index];
-
-									float x = icon.inv_grid_x * INV_GRID_WIDTH(isHQIcons);
-									float y = icon.inv_grid_y * INV_GRID_HEIGHT(isHQIcons);
-									float w = icon.inv_grid_width * INV_GRID_WIDTH(isHQIcons);
-									float h = icon.inv_grid_height * INV_GRID_HEIGHT(isHQIcons);
+									float scaleIcon = icon.inv_scale;
+									float x = icon.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+									float y = icon.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+									float w = icon.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+									float h = icon.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 
 									char button_name[64]{};
 									sprintf_s(button_name, sizeof(button_name), "%s%d", "WeaponIconButton_", current_icon_index);
@@ -759,6 +776,7 @@ void RenderWeaponManagerWindow()
 						imgui_weapon_manager.upgrade_disp_crouch_no_acc = imgui_weapon_manager.cfg_upgrade_disp_crouch_no_acc;
 						imgui_weapon_manager.upgrade_disp_vel_factor = imgui_weapon_manager.cfg_upgrade_disp_vel_factor;
 						imgui_weapon_manager.fire_dispersion_condition_factor = imgui_weapon_manager.cfg_fire_dispersion_condition_factor;
+						imgui_weapon_manager.inv_scale = imgui_weapon_manager.cfg_inv_scale;
 						imgui_weapon_manager.inv_grid_height = imgui_weapon_manager.cfg_inv_grid_height;
 						imgui_weapon_manager.inv_grid_width = imgui_weapon_manager.cfg_inv_grid_width;
 						imgui_weapon_manager.inv_grid_x = imgui_weapon_manager.cfg_inv_grid_x;
@@ -853,10 +871,11 @@ void RenderWeaponManagerWindow()
 
 								if (imgui_weapon_manager.ui_icons.Surface)
 								{
-									float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(isHQIcons);
-									float y = imgui_weapon_manager.inv_grid_y * INV_GRID_HEIGHT(isHQIcons);
-									float w = imgui_weapon_manager.inv_grid_width * INV_GRID_WIDTH(isHQIcons);
-									float h = imgui_weapon_manager.inv_grid_height * INV_GRID_HEIGHT(isHQIcons);
+									float scaleIcon = imgui_weapon_manager.inv_scale;
+									float x = imgui_weapon_manager.inv_grid_x * INV_GRID_WIDTH(scaleIcon);
+									float y = imgui_weapon_manager.inv_grid_y * INV_GRID_HEIGHT(scaleIcon);
+									float w = imgui_weapon_manager.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
+									float h = imgui_weapon_manager.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 
 									bool is_pressed = ImGui::ImageButton("WeaponIconInWeaponManager##Editing", imgui_weapon_manager.ui_icons.Surface, { w,h }, { x / imgui_weapon_manager.ui_icons.w, y / imgui_weapon_manager.ui_icons.h }, { (x + w) / imgui_weapon_manager.ui_icons.w, (y + h) / imgui_weapon_manager.ui_icons.h });
 

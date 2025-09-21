@@ -693,23 +693,23 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
 	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
-	UIPickUpItemIcon->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+	UIPickUpItemIcon->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pPickUpItem->IconsTexture.c_str()));
+	float scaleIcon = m_pPickUpItem->ScaleIcon;
 
 	float scale_x = m_iPickUpItemIconWidth /
-		float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
+		float(m_iGridWidth * INV_GRID_WIDTH(scaleIcon));
 	float scale_y = m_iPickUpItemIconHeight /
-		float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
+		float(m_iGridHeight * INV_GRID_HEIGHT(scaleIcon));
 
 	scale_x = (scale_x>1) ? 1.0f : scale_x;
 	scale_y = (scale_y>1) ? 1.0f : scale_y;
 
-	if (isHQIcons)
+	if (scaleIcon > 1.0f)
 	{
 		scale_x = m_iPickUpItemIconWidth /
-			(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
+			(m_iGridWidth * INV_GRID_WIDTH(scaleIcon) / 2);
 		scale_y = m_iPickUpItemIconHeight /
-			(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
+			(m_iGridHeight * INV_GRID_HEIGHT(scaleIcon) / 2);
 
 		scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
 		scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
@@ -718,15 +718,15 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
 	Frect texture_rect = {};
-	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(isHQIcons), m_iYPos*INV_GRID_HEIGHT(isHQIcons));
-	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(isHQIcons), m_iGridHeight*INV_GRID_HEIGHT(isHQIcons));
+	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(scaleIcon), m_iYPos*INV_GRID_HEIGHT(scaleIcon));
+	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(scaleIcon), m_iGridHeight*INV_GRID_HEIGHT(scaleIcon));
 	texture_rect.rb.add		(texture_rect.lt);
 	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
 	UIPickUpItemIcon->SetStretchTexture(true);
 
 
-	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(isHQIcons) * scale*UI().get_current_kx());
-	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(isHQIcons) * scale);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(scaleIcon) * scale*UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(scaleIcon) * scale);
 
 	UIPickUpItemIcon->SetWndPos(Fvector2().set(	m_iPickUpItemIconX+(m_iPickUpItemIconWidth-UIPickUpItemIcon->GetWidth())/2.0f,
 												m_iPickUpItemIconY+(m_iPickUpItemIconHeight-UIPickUpItemIcon->GetHeight())/2.0f) );
@@ -1054,12 +1054,13 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 
 				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, item_name.c_str(), "icons_texture", nullptr);
 				slot->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, item_name, "inv_scale", 1.0f);
 
 				Frect texture_rect;
-				texture_rect.x1 = pSettings->r_float(item_name, "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
-				texture_rect.y1 = pSettings->r_float(item_name, "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
-				texture_rect.x2 = pSettings->r_float(item_name, "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
-				texture_rect.y2 = pSettings->r_float(item_name, "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+				texture_rect.x1 = pSettings->r_float(item_name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+				texture_rect.y1 = pSettings->r_float(item_name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+				texture_rect.x2 = pSettings->r_float(item_name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+				texture_rect.y2 = pSettings->r_float(item_name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 				texture_rect.rb.add(texture_rect.lt);
 				slot->SetTextureRect(texture_rect);
 				slot->TextureOn();

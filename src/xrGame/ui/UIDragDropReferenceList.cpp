@@ -102,11 +102,12 @@ void CUIDragDropReferenceList::LoadItemTexture(LPCSTR section, Ivector2 cell_pos
 	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 	ref->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
+	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, section, "inv_scale", 1.0f);
 	Frect texture_rect;
-	texture_rect.x1	= pSettings->r_float(section, "inv_grid_x")		*INV_GRID_WIDTH(isHQIcons);
-	texture_rect.y1	= pSettings->r_float(section, "inv_grid_y")		*INV_GRID_HEIGHT(isHQIcons);
-	texture_rect.x2	= pSettings->r_float(section, "inv_grid_width")	*INV_GRID_WIDTH(isHQIcons);
-	texture_rect.y2	= pSettings->r_float(section, "inv_grid_height")*INV_GRID_HEIGHT(isHQIcons);
+	texture_rect.x1 = pSettings->r_float(section, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y1 = pSettings->r_float(section, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+	texture_rect.x2 = pSettings->r_float(section, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y2 = pSettings->r_float(section, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 	texture_rect.rb.add(texture_rect.lt);
 	ref->SetTextureRect(texture_rect);
 	ref->TextureOn();

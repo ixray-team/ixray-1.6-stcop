@@ -181,6 +181,8 @@ public:
 	Fvector2					m_custom_mark_size;
 	u32							m_custom_mark_clr;
 	LPCSTR						m_custom_mark_lanim;
+	float						ScaleIcon;
+	shared_str					IconsTexture;
 
 	SInvItemPlace				m_ItemCurrPlace;
 	RStringVec					m_HiglightRelatedItemSections; // FFx0001 ++
