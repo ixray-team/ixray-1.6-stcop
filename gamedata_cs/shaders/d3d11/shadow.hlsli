@@ -640,18 +640,21 @@ float shadow_rain(float4 tc, float2 tcJ) // jittered sampling
 }
 
 #ifdef USE_SUNMASK
-float3x4 m_sunmask;
 
+float3x4 m_sunmask;
 float sunmask(float4 P)
 {
     float2 tc = mul(m_sunmask, P).xy;
-    return PushGamma(lerp(0.25f, 1.0f, s_lmap.SampleLevel(smp_linear, tc, 0).w));
+    return 0.25f + 0.75f * s_lmap.SampleLevel(smp_linear, tc, 0).w;
 }
+
 #else
+	
 float sunmask(float4 P)
 {
     return 1.f;
 }
+
 #endif
 #endif
 

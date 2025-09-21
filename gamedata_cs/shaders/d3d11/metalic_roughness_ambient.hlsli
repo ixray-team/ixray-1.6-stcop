@@ -10,7 +10,7 @@ float2 EpicGamesEnvBRDFApprox(float NdotV, float Roughness)
 	return float2(-1.04, 1.04) * A004 + R.zw;
 }
 
-float3 CompureDiffuseIrradance(float3 N, float Hemi)
+float3 CompureDiffuseIrradance(float3 N, float3 Hemi)
 {
 	float3 LightDirection = mul((float3x3)m_invV, N).xyz;
 
@@ -19,19 +19,30 @@ float3 CompureDiffuseIrradance(float3 N, float Hemi)
 #endif
 
 #ifdef USE_NORMAL_HEMI_DISTRIBUTION
-	Hemi = min(Hemi, LightDirection.y * 0.375f + 0.375f);
+	Hemi = min(Hemi, LightDirection.yyy * 0.375f + 0.375f);
 #endif
 
 	float3 SampleLast = env_s0.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 	float3 SampleNext = env_s1.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 
+#ifdef USE_CGIM_SKY_TWEAK
+	float topToDownVec = saturate(LightDirection.y);
+	topToDownVec *= topToDownVec;
+	
+	float Factor = SMALLSKY_TOP_VECTOR_POWER;
+	Factor = saturate(Factor + (1.0 - Factor) * topToDownVec) + (1.0 - Factor) * 0.5f;
+	
+	Hemi *= Factor * Factor; float3 Irradance = 1.0f;
+	Hemi *= lerp(SampleLast, SampleNext, L_hemi_color.w);
+#else
 	float3 Irradance = lerp(SampleLast, SampleNext, L_hemi_color.w);
+#endif
 
 #ifdef USE_DIFFUSE_SKY_COLOR
 	#ifdef USE_BGRA_SKYCOLOR
-	   	Irradance *= L_sky_color.zyx;
+		Irradance *= L_sky_color.zyx;
 	#else
-	    Irradance *= L_sky_color.xyz;
+		Irradance *= L_sky_color.xyz;
 	#endif
 #else
 	Irradance *= L_hemi_color.xyz;
@@ -44,7 +55,7 @@ float3 CompureDiffuseIrradance(float3 N, float Hemi)
 	return Irradance * Hemi;
 }
 
-float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
+float3 CompureSpecularIrradance(float3 R, float3 Hemi, float Roughness)
 {
 	float3 LightDirection = mul((float3x3)m_invV, R);
 
