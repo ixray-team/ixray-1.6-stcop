@@ -165,7 +165,7 @@ void UIEditLibrary::DrawObjects()
 {
 	ImGui::BeginChild("Object List");
 
-	// Поиск
+	// РџРѕРёСЃРє
 	string256 buf;
 	xr_strcpy(buf, SearchQuery.c_str());
 	ImGui::SetNextItemWidth(-1);
