@@ -368,8 +368,8 @@ void CUIThemeManager::Save()
 	FastJSonWriteImColorAlt(log_color_warning);
 	FastJSonWriteImColorAlt(log_color_debug);
 
-	JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
-	JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
+	JSONData["Theme"]["ActiveAlpha"] = TransparentDefault;
+	JSONData["Theme"]["InactiveAlpha"] = TransparentUnfocused;
 	JSONData["Theme"]["Font"] = ImCurrentFont;
 	JSONData["Theme"]["CellPadding"] = { style.CellPadding.x, style.CellPadding.y };
 
@@ -461,8 +461,8 @@ void CUIThemeManager::SaveTo()
 		FastJSonWriteImColorAlt(log_color_warning);
 		FastJSonWriteImColorAlt(log_color_debug);
 
-		JSONData["Theme"]["InactiveAlpha"] = TransparentDefault;
-		JSONData["Theme"]["ActiveAlpha"] = TransparentUnfocused;
+		JSONData["Theme"]["ActiveAlpha"] = TransparentDefault;
+		JSONData["Theme"]["InactiveAlpha"] = TransparentUnfocused;
 		JSONData["Theme"]["Font"] = ImCurrentFont;
 		JSONData["Theme"]["CellPadding"] = { style.CellPadding.x, style.CellPadding.y };
 
@@ -559,14 +559,14 @@ void CUIThemeManager::LoadFrom()
 		FastJSonReadImColorAlt(log_color_debug);
 
 
-		if (JSONData["Theme"].contains("InactiveAlpha"))
-		{
-			TransparentDefault = JSONData["Theme"]["InactiveAlpha"];
-		}
-
 		if (JSONData["Theme"].contains("ActiveAlpha"))
 		{
-			TransparentUnfocused = JSONData["Theme"]["ActiveAlpha"];
+			TransparentDefault = JSONData["Theme"]["ActiveAlpha"];
+		}
+
+		if (JSONData["Theme"].contains("InactiveAlpha"))
+		{
+			TransparentUnfocused = JSONData["Theme"]["InactiveAlpha"];
 		}
 
 		if (JSONData["Theme"].contains("Font"))
@@ -672,14 +672,14 @@ void CUIThemeManager::Load()
 	FastJSonReadImColorAlt(log_color_warning);
 	FastJSonReadImColorAlt(log_color_debug);
 
-	if (JSONData["Theme"].contains("InactiveAlpha"))
-	{
-		TransparentDefault = JSONData["Theme"]["InactiveAlpha"];
-	}
-
 	if (JSONData["Theme"].contains("ActiveAlpha"))
 	{
-		TransparentUnfocused = JSONData["Theme"]["ActiveAlpha"];
+		TransparentDefault = JSONData["Theme"]["ActiveAlpha"];
+	}
+
+	if (JSONData["Theme"].contains("InactiveAlpha"))
+	{
+		TransparentUnfocused = JSONData["Theme"]["InactiveAlpha"];
 	}
 
 	if (JSONData["Theme"].contains("Font"))
