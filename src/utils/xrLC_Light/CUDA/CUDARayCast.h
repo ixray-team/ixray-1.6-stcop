@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../R_Light.h"
+#include "../R_light.h"
 #include "../base_lighting.h"
 #include "../xrFace.h"
 
