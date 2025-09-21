@@ -9,7 +9,7 @@
 
 #include "../xrRender/QueryHelper.h"
 
-#include "OverlayAPI\FSR2Wrapper.h"
+#include "OverlayAPI/FSR2Wrapper.h"
 
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
