@@ -36,12 +36,14 @@ void CUIStatsIcon::InitTexInfo(){
 	float fYPos			= pSettings->r_float(artefact_name, "inv_grid_y");
 
 	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, artefact_name, "icons_texture", nullptr);
+	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, artefact_name, "inv_scale", 1.0f);
+
 	m_tex_info[ARTEFACT][0].sh = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
 	m_tex_info[ARTEFACT][0].rect.set(
-		fXPos * INV_GRID_WIDTH(isHQIcons),
-		fYPos * INV_GRID_HEIGHT(isHQIcons),
-		fXPos * INV_GRID_WIDTH(isHQIcons) + fGridWidth * INV_GRID_WIDTH(isHQIcons),
-		fYPos * INV_GRID_HEIGHT(isHQIcons) + fGridHeight * INV_GRID_HEIGHT(isHQIcons));
+		fXPos * INV_GRID_WIDTH(scaleIcon),
+		fYPos * INV_GRID_HEIGHT(scaleIcon),
+		fXPos * INV_GRID_WIDTH(scaleIcon) + fGridWidth * INV_GRID_WIDTH(scaleIcon),
+		fYPos * INV_GRID_HEIGHT(scaleIcon) + fGridHeight * INV_GRID_HEIGHT(scaleIcon));
 	
 	m_tex_info[ARTEFACT][1] = m_tex_info[ARTEFACT][0];
 

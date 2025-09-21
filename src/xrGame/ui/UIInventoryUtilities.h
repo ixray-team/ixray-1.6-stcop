@@ -8,8 +8,8 @@
 class CUITextWnd;
 
 //размеры сетки в текстуре инвентаря
-#define INV_GRID_WIDTH(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
-#define INV_GRID_HEIGHT(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
+#define INV_GRID_WIDTH(SCALE_ICON) (50.0f * SCALE_ICON)
+#define INV_GRID_HEIGHT(SCALE_ICON) (50.0f * SCALE_ICON)
 
 //размеры сетки в текстуре иконок персонажей
 #define ICON_GRID_WIDTH			64.0f

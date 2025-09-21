@@ -5,9 +5,6 @@
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 
-#define INV_GRID_WIDTHF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
-#define INV_GRID_HEIGHTF(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
-
 namespace detail 
 {
 
@@ -25,21 +22,20 @@ struct is_helper_pred
 
 CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
-	m_pData											= (void*)itm;
+	m_pData = (void*)itm;
 
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id, "icons_texture", nullptr);
-	inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+	inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(itm->IconsTexture.c_str()));
 
-	m_grid_size.set									(itm->GetInvGridRect().rb);
-	Frect rect; 
-	rect.lt.set										(INV_GRID_WIDTHF(isHQIcons) * itm->GetInvGridRect().x1,
-														INV_GRID_HEIGHTF(isHQIcons) * itm->GetInvGridRect().y1 );
+	m_grid_size.set(itm->GetInvGridRect().rb);
+	Frect rect;
+	rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
+		INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
 
-	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x,
-														rect.lt.y+INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+	rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
+		rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
 
-	inherited::SetTextureRect						(rect);
-	inherited::SetStretchTexture					(true);
+	inherited::SetTextureRect(rect);
+	inherited::SetStretchTexture(true);
 }
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
@@ -228,9 +224,8 @@ void CUIWeaponCellItem::CreateIcon(eAddonType t)
 	if (t == eSilencer) sect = *object()->GetSilencerName();
 	else if (t == eScope) sect = *object()->GetScopeName();
 	else if (t == eLauncher) sect = *object()->GetGrenadeLauncherName();
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect, "icons_texture", nullptr);
 
-	m_addons[t]->SetShader		(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+	m_addons[t]->SetShader		(InventoryUtilities::GetEquipmentIconsShader(object()->IconsTexture.c_str()));
 
 	u32 color = GetTextureColor	();
 	m_addons[t]->SetTextureColor(color);
@@ -382,23 +377,24 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_o
 	Frect tex_rect;
 	Fvector2 base_scale;
 
+	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, section, "inv_scale", 1.0f);
 	if (Heading())
 	{
-		base_scale.x = GetHeight() / (INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x);
-		base_scale.y = GetWidth() / (INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+		base_scale.x = GetHeight() / (INV_GRID_WIDTH(scaleIcon) * m_grid_size.x);
+		base_scale.y = GetWidth() / (INV_GRID_HEIGHT(scaleIcon) * m_grid_size.y);
 	}
 	else
 	{
-		base_scale.x = GetWidth() / (INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x);
-		base_scale.y = GetHeight() / (INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+		base_scale.x = GetWidth() / (INV_GRID_WIDTH(scaleIcon) * m_grid_size.x);
+		base_scale.y = GetHeight() / (INV_GRID_HEIGHT(scaleIcon) * m_grid_size.y);
 	}
 
 	Fvector2 cell_size;
-	cell_size.x = pSettings->r_u32(section, "inv_grid_width") * INV_GRID_WIDTHF(isHQIcons);
-	cell_size.y = pSettings->r_u32(section, "inv_grid_height") * INV_GRID_HEIGHTF(isHQIcons);
+	cell_size.x = pSettings->r_u32(section, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+	cell_size.y = pSettings->r_u32(section, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 
-	tex_rect.x1 = pSettings->r_u32(section, "inv_grid_x") * INV_GRID_WIDTHF(isHQIcons);
-	tex_rect.y1 = pSettings->r_u32(section, "inv_grid_y") * INV_GRID_HEIGHTF(isHQIcons);
+	tex_rect.x1 = pSettings->r_u32(section, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+	tex_rect.y1 = pSettings->r_u32(section, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
 
 	tex_rect.rb.add(tex_rect.lt, cell_size);
 
@@ -449,8 +445,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		auto section = *object()->GetSilencerName();
-		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(*object()->IconsTexture));
 		InitAddon		(s, section, m_addon_offset[eSilencer], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
@@ -460,8 +455,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		auto section = *object()->GetScopeName();
-		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(*object()->IconsTexture));
 		InitAddon		(s,	*object()->GetScopeName(),		m_addon_offset[eScope], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
@@ -471,8 +465,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	{
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		auto section = *object()->GetGrenadeLauncherName();
-		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
-		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader(*object()->IconsTexture));
 		InitAddon		(s, *object()->GetGrenadeLauncherName(),m_addon_offset[eLauncher], false);
 		s->SetTextureColor(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
