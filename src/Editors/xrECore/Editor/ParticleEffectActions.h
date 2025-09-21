@@ -196,6 +196,24 @@ public:
     virtual void 	Load2		(CInifile& ini, const shared_str& sect);
     virtual void 	Save2		(CInifile& ini, const shared_str& sect);
     virtual void 	Render		(const Fmatrix& parent);
+private:
+	
+	template <int count>
+	LPCSTR GenerateKey_Extended(char (&buff)[count], LPCSTR type, LPCSTR sect_ref, LPCSTR id)
+	{
+		xr_string str_id = id;
+		xr_strlwr(str_id);
+		std::ranges::replace(str_id, ' ', '_');
+		std::ranges::replace(str_id, '\\', '_');
+		if (sect_ref)
+		{
+			xr_sprintf(buff, "%s_%s_%s", type, sect_ref, str_id.c_str());
+		} else
+		{
+			xr_sprintf(buff, "%s_%s", type, str_id.c_str());
+		}
+		return buff;
+	};
 };
 
 struct EPAAvoid : public EParticleAction
