@@ -693,32 +693,7 @@ function if_actor_has_jup_b1_art(first_speaker, second_speaker)
 end
 
 function jup_b1_actor_have_good_suit(first_speaker, second_speaker)
-	local actor_true = false
-	local suits_tbl = {
-						["scientific_outfit"] = true,
-						["military_outfit"] = true,
-						["dolg_heavy_outfit"] = true,
-						["exo_outfit"] = true,
-						["svoboda_light_outfit"] = true,
-						["svoboda_heavy_outfit"] = true,
-						["cs_heavy_outfit"] = true,
-						}
-
-	local helmets_tbl = {
-						["helm_battle"] = true,
-						["helm_tactic"] = true,
-						["helm_protective"] = true,
-						}
-
-	if db.actor:item_in_slot(7) ~= nil and suits_tbl[db.actor:item_in_slot(7):section()] then
-		actor_true = true
-	end
-
-	if db.actor:item_in_slot(12) ~= nil and helmets_tbl[db.actor:item_in_slot(12):section()] then
-		actor_true = true
-	end
-
-	return actor_true
+	return (db.actor:get_total_telepatic_protection() * 1000) >= 50.0
 end
 
 function jup_b1_actor_do_not_have_good_suit(first_speaker, second_speaker)
