@@ -30,6 +30,8 @@ namespace PAPI{
                                     float a0=0.0f, float a1=0.0f, float a2=0.0f,
                                     float a3=0.0f, float a4=0.0f, float a5=0.0f,
                                     float a6=0.0f, float a7=0.0f, float a8=0.0f);
+
+		pDomain& operator= (const pDomain& domain) = default;
 	};
 	#pragma pack (pop)
 	// misc    
