@@ -57,7 +57,7 @@ public:
     OptixPipeline GetPipeline() const { return m_pipeline; }
     OptixShaderBindingTable& GetSBT() { return m_sbt; }
 
-    // Создание CUDA stream
+    // РЎРѕР·РґР°РЅРёРµ CUDA stream
     static CUstream CreateCudaStream()
     {
         CUstream stream;
@@ -65,7 +65,7 @@ public:
         return stream;
     }
 
-    // Уничтожение CUDA stream
+    // РЈРЅРёС‡С‚РѕР¶РµРЅРёРµ CUDA stream
     static void DestroyCudaStream(CUstream stream)
     {
         if (stream) {
