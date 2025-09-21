@@ -121,8 +121,10 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	Point.xyz = lerp(Point.xyz, SSLR.xyz, SSLR.w);
 	Final.xyz = PopGamma(Final.xyz);
 	
-	Hemi.w = 1.0f - saturate(length(Point.xyz - StartPoint) * fog_params.w + fog_params.x);
-	Final.xyz = lerp(Hemi.xyz, Final.xyz, Hemi.w);
+	Hemi.w = max(length(Point.xyz), length(StartPoint.xyz) + length(Point.xyz - StartPoint.xyz));
+	Hemi.w = saturate(Hemi.w * fog_params.w + fog_params.x);
+	
+	Final.xyz = lerp(Final.xyz, Hemi.xyz, Hemi.w);
 	
 	Point.w = rcp(max(0.000001f, H.w));
 	Final.xyz *= rcp(1.0f + Final.xyz);
