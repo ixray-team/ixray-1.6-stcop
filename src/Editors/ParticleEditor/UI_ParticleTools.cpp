@@ -166,7 +166,6 @@ void CParticleTool::Render()
         }
     case emAction:
         {
-            R_ASSERT(false);
             break;
         }
     case emEffect:
@@ -179,7 +178,6 @@ void CParticleTool::Render()
         }
     case emEffectSlot:
         {
-            R_ASSERT(false);
             break;
         }
     case emGroup:
@@ -271,7 +269,6 @@ void CParticleTool::OnFrame()
         }
     case emAction:
         {
-            R_ASSERT(false);
             break;
         }
     case emEffect:
@@ -292,7 +289,6 @@ void CParticleTool::OnFrame()
         }
     case emEffectSlot:
         {
-            R_ASSERT(false);
             break;
         }
     case emGroup:
@@ -785,29 +781,46 @@ void CParticleTool::ResetCurrent()
     if (m_LibPGD) m_EditPG->Stop(FALSE);
     m_LibPED= 0;
     m_LibPGD= 0;
+    m_CurrentEf = nullptr;
+    m_CurrentPA = nullptr;
+    m_LibAC = nullptr;
 }
 
-void CParticleTool::SetCurrentPE(PS::CPEDef* P)
+void CParticleTool::SetCurrentPE(PS::CPEDef* P, EParticleAction* CurrentPA)
 {
 	VERIFY(m_bReady);
     m_EditPG->Compile		(0);
+    m_CurrentEf = nullptr;
+    m_LibAC = nullptr;
 	if (m_LibPED!=P){
 	    m_LibPED = P;
         m_EditPE->Compile	(m_LibPED);
 		if (m_LibPED)
 			m_EditMode		= emEffect;
     }
+    if (m_CurrentPA != CurrentPA)
+    {
+        m_CurrentPA = CurrentPA;
+        m_EditMode = emAction;
+    }
 }
 
-void CParticleTool::SetCurrentPG(PS::CPGDef* P)
+void CParticleTool::SetCurrentPG(PS::CPGDef* P, PS::CPGDef::SEffect* Ef)
 {
 	VERIFY(m_bReady);
 	m_EditPE->Compile		(0);
+    m_CurrentPA = nullptr;
+    m_LibAC = nullptr;
 	if (m_LibPGD!=P){
 	    m_LibPGD = P;
         m_EditPG->Compile	(m_LibPGD);
         if (m_LibPGD)
 			m_EditMode		= emGroup;
+	}
+    if (m_CurrentEf != Ef)
+    {
+        m_CurrentEf = Ef;
+        m_EditMode = emEffectSlot;
     }
 }
 
@@ -907,6 +920,9 @@ void CParticleTool::SetCurrentPAC(PS::CPACDef* P)
     VERIFY(m_bReady);
     m_EditPE->Compile(nullptr);
     m_EditPG->Compile(nullptr);
+    m_CurrentPA = nullptr;
+    m_CurrentEf = nullptr;
+    m_LibAC = P;
     m_EditMode = emAnimCurve;
 }
 
@@ -1551,7 +1567,7 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
                     auto PA = (EParticleAction*)item->m_Object;
                     PS::CPEDef* def = PA->parent;
                     R_ASSERT(def);
-                    SetCurrentPE(def);
+                    SetCurrentPE(def, PA);
                     PA->FillPropInit(props, "");
                     break;
                 }
@@ -1567,7 +1583,7 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
                     auto slot = (PS::CPGDef::SEffect*)item->m_Object;
                     auto def = slot->parent;
                     R_ASSERT(def);
-                    SetCurrentPG(def);
+                    SetCurrentPG(def, slot);
                     slot->FillPropInit(props, "");
                     break;
                 }
@@ -1582,6 +1598,7 @@ void CParticleTool::OnParticleItemFocused(ListItem* items)
                 {
                     auto def = (PS::CPACDef*)item->m_Object;
                     def->FillProp(ANIM_CURVE_PREFIX, props, item);
+                    SetCurrentPAC(def);
                     break;
                 }
             default:
@@ -1643,16 +1660,8 @@ void CParticleTool::RealUpdateProperties()
             //xr_string ModifiedPath = buffer;
             for (auto Action : (*Pe)->m_EActionList)
             {
-                xr_string ActionNameBuilder = *(*Pe)->m_Name;
-                ActionNameBuilder.append("\\");
-                ActionNameBuilder.append(
-                        _GetItem(
-                            Action->actionName.c_str(),
-                            _GetItemCount(Action->actionName.c_str(),'\\')-1,
-                            buffer,
-                            sizeof(buffer),
-                            '\\'));
-                I = LHelper().CreateItem(items, ActionNameBuilder.c_str(), emAction, 0, Action );
+                xr_sprintf(buffer, "%s\\%s", *(*Pe)->m_Name, Action->actionName.c_str());
+                I = LHelper().CreateItem(items, buffer, emAction, 0, Action );
                 I->SetPrefix("[ACTION] ");
             }
         }
@@ -1708,14 +1717,37 @@ void CParticleTool::RealUpdateProperties()
     {
         if (m_EditPE && m_EditPE->GetDefinition())
         {
-            List->SelectItem(m_EditPE->Name().c_str());
+            if (m_CurrentPA)
+            {
+                xr_sprintf(buffer, "%s\\%s", m_EditPE->Name().c_str(), m_CurrentPA->actionName.c_str());
+                List->SelectItem(buffer);
+            } else
+            {
+                List->SelectItem(m_EditPE->Name().c_str());
+            }
         }
     };
     auto SelectCurrentPGFunc = [&](UIItemListForm* List)
     {
         if (m_EditPG && m_EditPG->GetDefinition())
         {
-            List->SelectItem(m_EditPG->Name().c_str());
+            if (m_CurrentEf)
+            {
+                auto PGDef = m_EditPG->GetDefinition();
+                xr_string EffectNameBuilder = *PGDef->m_Name;
+                EffectNameBuilder.append("\\");
+                EffectNameBuilder.append(
+                        _GetItem(
+                            m_CurrentEf->m_EffectName.c_str(),
+                            _GetItemCount(m_CurrentEf->m_EffectName.c_str(),'\\')-1,
+                            buffer,
+                            sizeof(buffer),
+                            '\\'));
+                List->SelectItem(EffectNameBuilder.c_str());
+            } else
+            {
+                List->SelectItem(m_EditPG->Name().c_str());
+            }
         }
     };
 
