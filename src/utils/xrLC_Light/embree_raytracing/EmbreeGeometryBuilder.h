@@ -38,7 +38,7 @@ struct IndexedTri
 
 	IndexedTri(const Triangle& tri, uint32_t idx)		: originalIndex(idx)
 	{
-		// нормализуем порядок вершин (сортировка трёх чисел)
+		// РЅРѕСЂРјР°Р»РёР·СѓРµРј РїРѕСЂв‚¬РґРѕРє РІРµСЂС€РёРЅ (СЃРѕСЂС‚РёСЂРѕРІРєР° С‚СЂР„С… С‡РёСЃРµР»)
 		i1 = tri.point1;
 		i2 = tri.point2;
 		i3 = tri.point3;
