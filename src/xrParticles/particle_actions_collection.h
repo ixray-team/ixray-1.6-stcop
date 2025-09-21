@@ -355,6 +355,7 @@ namespace PAPI{
 			aligh_rot_vel_to_vel
 		};
 		enum{
+			flPrevValue = MAX-1, // flag of prev end
 			flSingleSize		= (1ul<<29ul),// True to get positionB from position.
 			flSilent			= (1ul<<30ul),
 			flVertexB_tracks	= (1ul<<31ul),// True to get positionB from position.
@@ -365,6 +366,8 @@ namespace PAPI{
 		pDomain position;	// Choose a position in this domain.
 		pDomain velocity;	// Choose a velocity in this domain.
 		pDomain rot;		// Choose a rotation in this domain.
+		bool AlighRotVelocityToVelocity;
+		pDomain rot_vel;
 		pDomain size;		// Choose a size in this domain.
 		pDomain color;		// Choose a color in this domain.
 		float alpha;		// Alpha of all generated particles
@@ -373,7 +376,6 @@ namespace PAPI{
 		float age_sigma;	// St. dev. of initial age of the particles
 		pVector parent_vel;	
 		float parent_motion;
-		bool AlighRotVelocityToVelocity; // TODO: Add setting to PE
 
         _METHODS;
 	};
