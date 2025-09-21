@@ -928,6 +928,7 @@ public:
 			u32 PlayHudMotion(LPCSTR M, bool bMixIn, u32 state);
 			void AmmoSetCount(u16 count);
 			u16 AmmoBoxSize();
+			float GetTotalTelepaticProtection();
 
 			//Weapon & Outfit
 			bool InstallUpgrade(LPCSTR upgrade);
