@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "script_engine.h"
+#include "lua_ext.h"
 
 using namespace luabind;
 
@@ -75,6 +76,10 @@ void trigger_vs_log(const char* pStringFromLua)
 	#endif
 }
 
+void LoadScriptToGlobal_script(LPCSTR script_name)
+{
+	LoadScriptToGlobal(g_pScriptEngine->lua(), script_name, false);
+}
 #endif
 
 LPCSTR user_name()
@@ -350,6 +355,7 @@ void CScriptEngine::script_register(lua_State *L)
 		def("try_load_file",					&TryLoadFile)
 #ifdef XRGAME_EXPORTS
 		,def("device",							&get_device),
+		def("load_script_to_global",			&LoadScriptToGlobal_script),
 		def("TinyLog",							&MyLog),
 		def("trigger_assert",					&trigger_assert),
 		def("trigger_vs_log",					&trigger_vs_log)
