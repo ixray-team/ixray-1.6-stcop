@@ -257,7 +257,7 @@ void UIObjectTool::DrawRandomAppend()
 		ImGui::SameLine();
 		ImGui::EndDisabled();
 
-		if (ImGui::Button("Custom.."))
+		if (ImGui::Button("Custom..."))
 		{
 			m_PropRandom = true;
 			ParentTools->FillAppendRandomPropertiesBegin();

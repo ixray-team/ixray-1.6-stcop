@@ -22,11 +22,11 @@ void CEditableObject::FillSurfaceProps(CSurface* SURF, LPCSTR pref, PropItemVec&
     V = MultiValue->CreateValue(PrepareKey(pref, "Texture"), &SURF->m_Texture, smTexture);
     V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 
-    V = MultiValue->CreateValue(PrepareKey(pref, "Shader"), &SURF->m_ShaderName, smEShader);
+    V = MultiValue->CreateValue(PrepareKey(pref, "Engine Shader"), &SURF->m_ShaderName, smEShader);
     V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
 
-    V = MultiValue->CreateValue(PrepareKey(pref, "Compile"), &SURF->m_ShaderXRLCName, smCShader);
-    V = MultiValue->CreateValue(PrepareKey(pref, "Game Mtl"), &SURF->m_GameMtlName, smGameMaterial);
+    V = MultiValue->CreateValue(PrepareKey(pref, "Compiler Shader"), &SURF->m_ShaderXRLCName, smCShader);
+    V = MultiValue->CreateValue(PrepareKey(pref, "Game Material"), &SURF->m_GameMtlName, smGameMaterial);
 
     V = PHelper().CreateFlag32(items, PrepareKey(pref, "2 Sided"), &SURF->m_Flags, CSurface::sf2Sided);
     V->OnChangeEvent.bind(this, &CEditableObject::OnChangeShader);
@@ -37,8 +37,8 @@ void CEditableObject::FillSurfaceProps(CSurface* SURF, LPCSTR pref, PropItemVec&
 xr_token ECORE_API eo_type_token[]={
 	{ "Static",					0},
 	{ "Dynamic",				CEditableObject::eoDynamic},
-	{ "Progressive Dynamic",	CEditableObject::eoDynamic|CEditableObject::eoProgressive},
-	{ "Disable Opt Dynamic",	CEditableObject::eoDynamic|CEditableObject::eoSkipOpt},
+	{ "Dynamic (Progressive)",	CEditableObject::eoDynamic|CEditableObject::eoProgressive},
+	{ "Dynamic (Disable Optimization)",	CEditableObject::eoDynamic|CEditableObject::eoSkipOpt},
 	{ "HOM",					CEditableObject::eoHOM},
 	{ "Multiple Usage",			CEditableObject::eoMultipleUsage|CEditableObject::eoUsingLOD},
 	{ "Sound Occluder",			CEditableObject::eoSoundOccluder},
@@ -55,7 +55,7 @@ void CEditableObject::FillBasicProps(LPCSTR pref, PropItemVec& items)
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Reference Name"),		m_LibName.c_str());
     PHelper().CreateToken32		(items, PrepareKey(pref,"Object Type"),   		&m_objectFlags.flags,		eo_type_token);
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Owner Name"),	m_CreateName.c_str());
-	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Modif Name"),	m_ModifName.c_str());
+	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Modifier Name"),	m_ModifName.c_str());
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Creation Time"), ct.c_str());
 	PHelper().CreateCaption		(items, PrepareKey(pref,"Version\\Modified Time"), mt.c_str());
     V=PHelper().CreateVector   	(items, PrepareKey(pref,"Transform\\Position"),	&t_vPosition,	-100000,	100000,0.01,2); 		V->OnChangeEvent.bind(this,&CEditableObject::OnChangeTransform);

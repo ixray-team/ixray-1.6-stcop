@@ -528,7 +528,7 @@ void UIMainMenuForm::Draw()
 			ImGui::Separator();
 			{
 				bool selected = psDeviceFlags.test(rsStatistic);
-				if (ImGui::MenuItem("Stats", "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
+				if (ImGui::MenuItem("Statistic", "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
 
 			}
 			ImGui::EndMenu();
@@ -616,7 +616,7 @@ void UIMainMenuForm::Draw()
 			CPluginsManagers& PlugMngr = CPluginsManagers::Instance();
 
 			bool NeedReinit = false;
-			if (ImGui::MenuItem("Reinit"))
+			if (ImGui::MenuItem("Reinitialize"))
 			{
 				PlugMngr.Reinit();
 			}

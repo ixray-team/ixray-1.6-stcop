@@ -320,7 +320,7 @@ void UIWeatherPropForm::Draw()
 		// Статистика
 		{
 			bool sStats = psDeviceFlags.test(rsStatistic);
-			if (ImGui::Checkbox("Stats", &sStats))
+			if (ImGui::Checkbox("Statistic", &sStats))
 			{
 				psDeviceFlags.set(rsStatistic, sStats);
 				UI->RedrawScene();
