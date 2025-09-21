@@ -2,7 +2,7 @@
 #include "xrDeflectorLight_Packed.h"
 
 #include <../xrForms/CompilersUI.h>
-#include "../xrLC_Light/CUDA/CUDARayCast.h"
+#include "CUDA/CUDARayCast.h"
 #include "light_point.h"
 #include "xrLC_GlobalData.h"
 #include "xrFace.h"
