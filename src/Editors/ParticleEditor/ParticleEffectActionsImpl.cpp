@@ -52,6 +52,7 @@ xr_token2 actions_token_impl [] = {
 	{"Color Animator",		"Change color of all particles corresponding to specified animation curve.",	PAColorAnimatorID},
 	{"Size Animator",		"Change size of all particles corresponding to specified animation curve.",	PASizeAnimatorID},
 	{"Velocity Animator",	"Change velocity of all particles corresponding to specified animation curve.",PAVelocityAnimatorID},
+	{"Velocity Rotation Animator", "Change direction of velocity of all particles corresponding to specified animation curve.", PAVelocityRotationAnimatorID},
 	{ 0,					0				  	 	}
 };
 
@@ -101,6 +102,7 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
 	case PAPI::PAColorAnimatorID: pa = new EPAColorAnimator(); break;
 	case PAPI::PASizeAnimatorID: pa = new EPASizeAnimator(); break;
 	case PAPI::PAVelocityAnimatorID: pa = new EPAVelocityAnimator(); break;
+	case PAPI::PAVelocityRotationAnimatorID: pa = new EPAVelocityRotationAnimator(); break;
 	default: return nullptr;
 	}
 	pa->type						= type;
@@ -1455,6 +1457,27 @@ EPAVelocityAnimator::EPAVelocityAnimator(): EParticleAction(PAPI::PAVelocityAnim
 }
 
 void EPAVelocityAnimator::Compile(IWriter& F)
+{
+	PAVelocityAnimator S;
+	S.type = PAVelocityAnimatorID;
+	S.Animator = _string("Animator").val;
+	S.Looped = _bool("Looped").val;
+	S.Reverse = _bool("Reverse").val;
+
+	F.w_u32(S.type);
+	S.Save(F);
+}
+
+EPAVelocityRotationAnimator::EPAVelocityRotationAnimator(): EParticleAction(PAPI::PAVelocityRotationAnimatorID)
+{
+	actionType = "VelocityRotationAnimator";
+	actionName = actionType;
+	appendString("Animator", "", smPAC);
+	appendBool("Looped", false);
+	appendBool("Reverse", false);
+}
+
+void EPAVelocityRotationAnimator::Compile(IWriter& F)
 {
 	PAVelocityAnimator S;
 	S.type = PAVelocityAnimatorID;

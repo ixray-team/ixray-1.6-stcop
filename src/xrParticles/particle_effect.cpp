@@ -82,6 +82,7 @@ BOOL ParticleEffect::Add(const pVector& pos, const pVector& posB,
 	P.vel 		= vel;
 	P.velI 		= vel;
 	P.rot_vel 	= rot_vel;
+	P.rot_velS 	= rot_vel;
 	P.color 	= color;
 	P.age 		= age;
 	P.frame 	= frame;
