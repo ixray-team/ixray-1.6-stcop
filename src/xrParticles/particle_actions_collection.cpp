@@ -2344,6 +2344,10 @@ void* PAColorAnimator::GetVariableImpl(u8 VarID)
 	{
 	case EVariable::Animator:
 		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
 	}
 	R_ASSERT(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
@@ -2383,6 +2387,10 @@ void* PASizeAnimator::GetVariableImpl(u8 VarID)
 	{
 	case EVariable::Animator:
 		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
 	}
 	R_ASSERT(false, "Particle action SizeAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
@@ -2437,8 +2445,70 @@ void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
 	{
 	case EVariable::Animator:
 		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
 	}
 	R_ASSERT(false, "Particle action VelocityAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	return nullptr;
+}
+void PAVelocityRotationAnimator::Transform(const Fmatrix& m)
+{
+}
+void PAVelocityRotationAnimator::Execute(ParticleEffect* effect, const float dt, float& tm_max) {
+
+	for(u32 i = 0; i < effect->p_count; i++)
+	{
+		
+		Particle &m = effect->particles[i];
+		Fmatrix MDir;
+		{
+			Fvector Dir = m.rot_velS;
+			if(fis_zero(Dir.magnitude())) continue;
+			Dir.normalize_safe();
+			Fvector ChooseAxis = {0, 0, 1};
+			if (fsimilar(ChooseAxis.dotproduct(Dir), 1))
+			{
+				ChooseAxis = {1, 0, 0};
+			}
+			Fvector Cross;
+			Cross.crossproduct(Dir, ChooseAxis);
+			Cross.normalize();
+			MDir.rotation(Dir, Cross);
+		}
+		float CurveTime = Reverse ? AnimPtr->GetMaxTime()- m.age*1000 : m.age*1000;
+		if (Looped)
+		{
+			while (CurveTime < 0)
+			{
+				CurveTime += AnimPtr->GetMaxTime();
+			}
+			while (CurveTime > AnimPtr->GetMaxTime())
+			{
+				CurveTime -= AnimPtr->GetMaxTime();
+			}
+		} else
+		{
+			clamp(CurveTime, 0.0f, AnimPtr->GetMaxTime());
+		}
+		Fvector4 CurrentValue = AnimPtr->GetValueOnTime(CurveTime);
+		Fvector LocalVelocity = {CurrentValue.x,CurrentValue.y,CurrentValue.z};
+		MDir.transform(m.rot_vel, LocalVelocity);
+	}
+}
+void* PAVelocityRotationAnimator::GetVariableImpl(u8 VarID)
+{
+	switch ((EVariable)VarID)
+	{
+	case EVariable::Animator:
+		return &Animator;
+	case EVariable::Looped:
+		return &Looped;
+	case EVariable::Reverse:
+		return &Reverse;
+	}
+	R_ASSERT(false, "Particle action VelocityRotationAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
