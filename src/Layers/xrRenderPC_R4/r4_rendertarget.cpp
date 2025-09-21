@@ -16,18 +16,18 @@
 #include "blender_cas.h"
 #include "blender_gtao.h"
 #include "blender_taa.h"
-#include "BlenderGasmask.h"
+#include "BlenderGasMask.h"
 
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
-#include "../xrRenderPC_R4/BlenderGamma.h"
+#include "BlenderGamma.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "magic_enum/magic_enum.hpp"
 
-#include "OverlayAPI\FSR2Wrapper.h"
-#include "OverlayAPI\DLSSWrapper.h"
-#include "OverlayAPI\XESSWrapper.h"
+#include "OverlayAPI/FSR2Wrapper.h"
+#include "OverlayAPI/DLSSWrapper.h"
+#include "OverlayAPI/XESSWrapper.h"
 
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
 {
