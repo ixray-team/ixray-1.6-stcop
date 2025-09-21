@@ -109,9 +109,14 @@ namespace PS
 	enum class Chunks: u32
 	{
 		VERSION = 0x0001,
-		FIRSTGEN = 0x0002,
-		SECONDGEN = 0x0003,
-		THIRDGEN = 0x0004,
+		// Original chunks
+		ORIGINAL_FIRSTGEN,
+		ORIGINAL_SECONDGEN,
+		ORIGINAL_THIRDGEN,
+		// Extended chunks
+		EXTENDED_PE = VERSION+1,
+		EXTENDED_PG,
+		EXTENDED_PAC,
 	};
 }
 
