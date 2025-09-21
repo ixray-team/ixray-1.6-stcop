@@ -431,6 +431,12 @@ struct EPAVelocityAnimator : public EParticleAction
 	virtual void Compile(IWriter& F);
 };
 
+struct EPAVelocityRotationAnimator : public EParticleAction
+{
+	EPAVelocityRotationAnimator();
+	virtual void Compile(IWriter& F);
+};
+
 extern ECORE_API xr_token2* actions_token;
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
