@@ -43,6 +43,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     Lightmap *= s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0.0f).xyz;
 #endif
 
+	Lightmap = PushGamma(Lightmap);
     return float4(Lightmap.xyz * Light.xyz, 0.0f);
 }
 
