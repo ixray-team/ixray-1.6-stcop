@@ -525,6 +525,8 @@ void PABindColorAlpha::Save(IWriter& F) {
 void PAColorAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
@@ -532,10 +534,14 @@ void PAColorAnimator::Load(IReader& F) {
 void PAColorAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
 	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
 }
 void PASizeAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
@@ -543,10 +549,14 @@ void PASizeAnimator::Load(IReader& F) {
 void PASizeAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
 	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
 }
 void PAVelocityAnimator::Load(IReader& F) {
 	ParticleAction::Load(F);
 	F.r_stringZ(Animator);
+	Looped = F.r_u8();
+	Reverse = F.r_u8();
 	auto Library = PS::CPACLibraryWrapper::GetInstance().GetPACLibrary();
 	VERIFY(Library);
 	AnimPtr = Library->FindIPAC(Animator.c_str());
@@ -554,6 +564,8 @@ void PAVelocityAnimator::Load(IReader& F) {
 void PAVelocityAnimator::Save(IWriter& F) {
 	ParticleAction::Save(F);
 	F.w_stringZ(Animator);
+	F.w_u8(Looped);
+	F.w_u8(Reverse);
 }
 
 

@@ -351,7 +351,8 @@ namespace PAPI{
 			age,
 			age_sigma,
 			parent_vel,
-			parent_motion
+			parent_motion,
+			aligh_rot_vel_to_vel
 		};
 		enum{
 			flSingleSize		= (1ul<<29ul),// True to get positionB from position.
@@ -372,6 +373,7 @@ namespace PAPI{
 		float age_sigma;	// St. dev. of initial age of the particles
 		pVector parent_vel;	
 		float parent_motion;
+		bool AlighRotVelocityToVelocity; // TODO: Add setting to PE
 
         _METHODS;
 	};
@@ -544,8 +546,6 @@ namespace PAPI{
 		shared_str Animator;
 		bool Looped;
 		bool Reverse;
-		float timeFrom;
-		float timeTo;
 
 		PS::IPAC* AnimPtr = nullptr;
 		//float CurrentTime = 0.0f;
@@ -564,8 +564,6 @@ namespace PAPI{
 		shared_str Animator;
 		bool Looped;
 		bool Reverse;
-		float timeFrom;
-		float timeTo;
 
 		PS::IPAC* AnimPtr = nullptr;
 
@@ -581,11 +579,8 @@ namespace PAPI{
 		shared_str Animator;
 		bool Looped;
 		bool Reverse;
-		float timeFrom;
-		float timeTo;
 
 		PS::IPAC* AnimPtr = nullptr;
-		Fmatrix ParticleTransform;
 
 		_METHODS;
 	};
