@@ -173,6 +173,12 @@ void EParticleAction::Load(IReader& F)
 			}
 		}
 
+		std::ranges::sort(TempFloatVec);
+		std::ranges::sort(TempVectorVec);
+		std::ranges::sort(TempDomainVec);
+		std::ranges::sort(TempBoolVec);
+		std::ranges::sort(TempIntVec);
+		std::ranges::sort(TempStringVec);
 
 		for (auto& elem : TempFloatVec)
 		{
@@ -258,78 +264,210 @@ void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 	actionName					= ini.r_string(sect.c_str(), "action_name");
 	flags.assign				(ini.r_u32(sect.c_str(), "flags"));
 
-	u32 DomainCounter = 0;
-	u32 BoolCounter = 0;
-	u32 FloatCounter = 0;
-	u32 IntCounter = 0;
-	u32 VectorCounter = 0;
-	u32 StringCounter = 0;
-	string256					buff;
-
-	for (auto& elem : orders)
+	if (Version <= EVersion::Original)
 	{
-		if (elem.min_version > Version)
+		u32 counter					= 0;
+		string256					buff;
+		for (auto& it : floats)
 		{
-			continue;
-		}
-		switch (elem.type)
-		{
-		case tpDomain:
+			bool Skip = false;
+			for (const auto& elem : orders)
 			{
-				auto d_it = domains.find(elem.name);
-				R_ASSERT(d_it != domains.end());
-				xr_sprintf				(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), DomainCounter++);
-				d_it->second.Load2		(ini, buff);
-				break;
-			}
-		case tpVector:
-			{
-				auto v_it = vectors.find(elem.name);
-				R_ASSERT(v_it != vectors.end());
-				xr_sprintf				(buff, sizeof(buff),"vec_%04d",VectorCounter++);
-				v_it->second.val		= ini.r_fvector3	(sect.c_str(), buff);
-				break;
-			}
-		case tpFloat:
-			{
-				auto f_it = floats.find(elem.name);
-				R_ASSERT(f_it != floats.end());
-				xr_sprintf(buff, sizeof(buff),"flt_%04d",FloatCounter++);
-				if(Version==EVersion::Old)
+				if (it.first == elem.name && elem.min_version > Version)
 				{
-					if(ini.line_exist(sect.c_str(), buff))
-					{
-						f_it->second.val = ini.r_float(sect.c_str(), buff);
-					}
-				}else
-				{
-					f_it->second.val = ini.r_float(sect.c_str(), buff);
+					Skip = true;
+					break;
 				}
-				break;
 			}
-		case tpBool:
+			if (Skip)
 			{
-				auto b_it = bools.find(elem.name);
-				R_ASSERT(b_it != bools.end());
-				xr_sprintf(buff, sizeof(buff),"bool_%04d",BoolCounter++);
-				b_it->second.val = ini.r_bool(sect.c_str(), buff);
-				break;
+				continue;
 			}
-		case tpInt:
+			xr_sprintf				(buff, sizeof(buff),"flt_%04d",counter++);
+			if(Version==EVersion::Old)
 			{
-				auto i_it = ints.find(elem.name);
-				R_ASSERT(i_it != ints.end());
-				xr_sprintf(buff, sizeof(buff),"int_%04d",IntCounter++);
-				i_it->second.val = ini.r_s32(sect.c_str(), buff);
-				break;
+				if(ini.line_exist(sect.c_str(), buff))
+				{
+					it.second.val		= ini.r_float(sect.c_str(), buff);
+				}
+			}else
+			{
+				it.second.val		= ini.r_float(sect.c_str(), buff);
 			}
-		case tpString:
+		}
+		counter=0;
+		for (auto& it : vectors)
+		{
+			bool Skip = false;
+			for (const auto& elem : orders)
 			{
-				auto s_it = strings.find(elem.name);
-				R_ASSERT(s_it != strings.end());
-				xr_sprintf				(buff, sizeof(buff),"string_%04d",StringCounter++);
-				s_it->second.val		= ini.r_string		(sect.c_str(), buff);
-				break;
+				if (it.first == elem.name && elem.min_version > Version)
+				{
+					Skip = true;
+					break;
+				}
+			}
+			if (Skip)
+			{
+				continue;
+			}
+			xr_sprintf				(buff, sizeof(buff),"vec_%04d",counter++);
+			it.second.val		= ini.r_fvector3	(sect.c_str(), buff);
+		}
+
+		counter=0;
+		for (auto& it : domains)
+		{
+			bool Skip = false;
+			for (const auto& elem : orders)
+			{
+				if (it.first == elem.name && elem.min_version > Version)
+				{
+					Skip = true;
+					break;
+				}
+			}
+			if (Skip)
+			{
+				continue;
+			}
+			xr_sprintf(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter++);
+			it.second.Load2(ini, buff);
+		}
+
+		counter=0;
+		for (auto& it : bools)
+		{
+			bool Skip = false;
+			for (const auto& elem : orders)
+			{
+				if (it.first == elem.name && elem.min_version > Version)
+				{
+					Skip = true;
+					break;
+				}
+			}
+			if (Skip)
+			{
+				continue;
+			}
+			xr_sprintf				(buff, sizeof(buff),"bool_%04d",counter++);
+			it.second.val		= ini.r_bool		(sect.c_str(), buff);
+		}
+
+		counter=0;
+		for (auto& it : ints)
+		{
+			bool Skip = false;
+			for (const auto& elem : orders)
+			{
+				if (it.first == elem.name && elem.min_version > Version)
+				{
+					Skip = true;
+					break;
+				}
+			}
+			if (Skip)
+			{
+				continue;
+			}
+			xr_sprintf				(buff, sizeof(buff),"int_%04d",counter++);
+			it.second.val		= ini.r_s32		(sect.c_str(), buff);
+		}
+
+		counter=0;
+		for (auto& it : strings)
+		{
+			bool Skip = false;
+			for (const auto& elem : orders)
+			{
+				if (it.first == elem.name && elem.min_version > Version)
+				{
+					Skip = true;
+					break;
+				}
+			}
+			if (Skip)
+			{
+				continue;
+			}
+			xr_sprintf				(buff, sizeof(buff),"string_%04d",counter++);
+			it.second.val		= ini.r_string		(sect.c_str(), buff);
+		}
+	} else
+	{
+		string256 buff;
+		for (auto& elem : orders)
+		{
+			if (elem.min_version > Version)
+			{
+				continue;
+			}
+			switch (elem.type)
+			{
+			case tpDomain:
+				{
+					auto d_it = domains.find(elem.name);
+					R_ASSERT(d_it != domains.end());
+					d_it->second.Load2(ini, GenerateKey_Extended(buff, "domain", sect.c_str(), elem.name.c_str()));
+					break;
+				}
+			case tpVector:
+				{
+					auto v_it = vectors.find(elem.name);
+					R_ASSERT(v_it != vectors.end());
+					v_it->second.val = ini.r_fvector3(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "vec", nullptr, elem.name.c_str()));
+					break;
+				}
+			case tpFloat:
+				{
+					auto f_it = floats.find(elem.name);
+					R_ASSERT(f_it != floats.end());
+					if(Version==EVersion::Old)
+					{
+						if(ini.line_exist(sect.c_str(), buff))
+						{
+							f_it->second.val = ini.r_float(
+								sect.c_str(),
+								GenerateKey_Extended(buff, "flt", nullptr, elem.name.c_str()));
+						}
+					}else
+					{
+						f_it->second.val = ini.r_float(
+							sect.c_str(),
+							GenerateKey_Extended(buff, "flt", nullptr, elem.name.c_str()));
+					}
+					break;
+				}
+			case tpBool:
+				{
+					auto b_it = bools.find(elem.name);
+					R_ASSERT(b_it != bools.end());
+					b_it->second.val = ini.r_bool(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "bool", nullptr, elem.name.c_str()));
+					break;
+				}
+			case tpInt:
+				{
+					auto i_it = ints.find(elem.name);
+					R_ASSERT(i_it != ints.end());
+					i_it->second.val = ini.r_s32(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "int", nullptr, elem.name.c_str()));
+					break;
+				}
+			case tpString:
+				{
+					auto s_it = strings.find(elem.name);
+					R_ASSERT(s_it != strings.end());
+					s_it->second.val = ini.r_string(
+						sect.c_str(),
+						GenerateKey_Extended(buff, "str", nullptr, elem.name.c_str()));
+					break;
+				}
 			}
 		}
 	}
@@ -340,54 +478,80 @@ void 	EParticleAction::Save		(IWriter& F)
 	F.w_enum(EVersion::Extended);
 	F.w_stringZ(actionName);
 	F.w_u32(flags.get());
+
+	CMemoryWriter BoolStream;
+	CMemoryWriter DomainStream;
+	CMemoryWriter VectorStream;
+	CMemoryWriter FloatStream;
+	CMemoryWriter IntStream;
+	CMemoryWriter StringStream;
+
+	for (auto& elem : orders)
+	{
+		switch (elem.type)
+		{
+		case tpDomain:
+			{
+				domains[elem.name].Save(DomainStream);
+				break;
+			}
+		case tpVector:
+			{
+				VectorStream.w_fvector3(vectors[elem.name].val);
+				break;
+			}
+		case tpFloat:
+			{
+				FloatStream.w_float(floats[elem.name].val);
+				break;
+			}
+		case tpBool:
+			{
+				BoolStream.w_u8(bools[elem.name].val);
+				break;
+			}
+		case tpInt:
+			{
+				IntStream.w_s32(ints[elem.name].val);
+				break;
+			}
+		case tpString:
+			{
+				StringStream.w_stringZ(strings[elem.name].val);
+				break;
+			}
+		}
+	}
 	
 	F.open_chunk(0);
 	{
 		F.open_chunk(tpFloat);
-		for (const auto& elem : floats)
-		{
-			F.w_float(elem.second.val);
-		}
+		F.w(FloatStream.pointer(), FloatStream.size());
 		F.close_chunk();
 	}
 	{
 		F.open_chunk(tpVector);
-		for (const auto& elem : vectors)
-		{
-			F.w_fvector3(elem.second.val);
-		}
+		F.w(VectorStream.pointer(), VectorStream.size());
 		F.close_chunk();
 	}
 	{
 		F.open_chunk(tpDomain);
-		for (const auto& elem : domains)
-		{
-			elem.second.Save(F);
-		}
+		F.w(DomainStream.pointer(), DomainStream.size());
 		F.close_chunk();
 	}
 	{
 		F.open_chunk(tpBool);
-		for (const auto& elem : bools)
-		{
-			F.w_u8(elem.second.val);
-		}
+		F.w(BoolStream.pointer(), BoolStream.size());
 		F.close_chunk();
 	}
 	{
 		F.open_chunk(tpInt);
-		for (const auto& elem : ints)
-		{
-			F.w_s32(elem.second.val);
-		}
+		F.w(IntStream.pointer(), IntStream.size());
 		F.close_chunk();
 	}
 	{
 		F.open_chunk(tpString);
-		for (const auto& elem : strings)
-		{
-			F.w_stringZ(elem.second.val);
-		}
+		F.w(StringStream.pointer(), StringStream.size());
 		F.close_chunk();
 	}
 	F.close_chunk();
@@ -399,46 +563,69 @@ void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 	ini.w_string		(sect.c_str(), "action_name",	actionName.c_str());
 	ini.w_u32			(sect.c_str(), "flags",			flags.get());
 	
-	u32 counter			= 0;
-	string256			buff;
-	for (PFloatMapIt f_it=floats.begin(); f_it!=floats.end(); ++f_it,++counter)
+	string256 buff;
+	for (auto& elem : orders)
 	{
-		xr_sprintf		(buff, sizeof(buff),"flt_%04d",counter);
-		ini.w_float		(sect.c_str(), buff, f_it->second.val);
-	}
-	counter=0;
-	for (PVectorMapIt v_it=vectors.begin(); v_it!=vectors.end(); ++v_it,++counter)
-	{
-		xr_sprintf		(buff, sizeof(buff),"vec_%04d",counter);
-		ini.w_fvector3	(sect.c_str(), buff, v_it->second.val);
-	}
-
-	counter=0;
-	for (PDomainMapIt d_it=domains.begin();	d_it!=domains.end(); ++d_it,++counter)
-	{
-		xr_sprintf		(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
-		d_it->second.Save2(ini, buff);
-	}
-
-	counter=0;
-	for (PBoolMapIt b_it=bools.begin(); b_it!=bools.end(); ++b_it,++counter)
-	{
-		xr_sprintf		(buff, sizeof(buff),"bool_%04d",counter);
-		ini.w_bool		(sect.c_str(), buff, b_it->second.val);
-	}
-
-	counter=0;
-	for (PIntMapIt i_it=ints.begin(); i_it!=ints.end(); ++i_it,++counter)
-	{
-		xr_sprintf		(buff, sizeof(buff),"int_%04d",counter);
-		ini.w_s32		(sect.c_str(), buff, i_it->second.val);
-	}
-
-	counter=0;
-	for (PStringMapIt s_it=strings.begin(); s_it!=strings.end(); ++s_it,++counter)
-	{
-		xr_sprintf		(buff, sizeof(buff),"string_%04d",counter);
-		ini.w_string	(sect.c_str(), buff, s_it->second.val.c_str());
+		switch (elem.type)
+		{
+		case tpDomain:
+			{
+				auto d_it = domains.find(elem.name);
+				R_ASSERT(d_it != domains.end());
+				d_it->second.Save2(ini, GenerateKey_Extended(buff, "domain", sect.c_str(), elem.name.c_str()));
+				break;
+			}
+		case tpVector:
+			{
+				auto v_it = vectors.find(elem.name);
+				R_ASSERT(v_it != vectors.end());
+				ini.w_fvector3(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "vec", nullptr, elem.name.c_str()),
+					v_it->second.val);
+				break;
+			}
+		case tpFloat:
+			{
+				auto f_it = floats.find(elem.name);
+				R_ASSERT(f_it != floats.end());
+				ini.w_float(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "flt", nullptr, elem.name.c_str()),
+					f_it->second.val);
+				break;
+			}
+		case tpBool:
+			{
+				auto b_it = bools.find(elem.name);
+				R_ASSERT(b_it != bools.end());
+				ini.w_bool(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "bool", nullptr, elem.name.c_str()),
+					b_it->second.val);
+				break;
+			}
+		case tpInt:
+			{
+				auto i_it = ints.find(elem.name);
+				R_ASSERT(i_it != ints.end());
+				ini.w_s32(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "int", nullptr, elem.name.c_str()),
+					i_it->second.val);
+				break;
+			}
+		case tpString:
+			{
+				auto s_it = strings.find(elem.name);
+				R_ASSERT(s_it != strings.end());
+				ini.w_string(
+					sect.c_str(),
+					GenerateKey_Extended(buff, "str", nullptr, elem.name.c_str()),
+					s_it->second.val.c_str());
+				break;
+			}
+		}
 	}
 }
 
@@ -594,7 +781,7 @@ EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, LPCSTR v, EC
 }
 
 //------------------------------------------------------------------------------
-pDomain&& ConvDomain(const PDomain& Source)
+pDomain ConvDomain(const PDomain& Source)
 {
 	return pDomain(Source.type, Source.f[0], Source.f[1], Source.f[2], Source.f[3], Source.f[4], Source.f[5], Source.f[6], Source.f[7], Source.f[8]);
 }
