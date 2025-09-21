@@ -608,6 +608,7 @@ EPAAvoid::EPAAvoid					():EParticleAction(PAPI::PAAvoidID)
 	appendFloat						("Epsilon",		0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Look Ahead",	0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAAvoid::Compile			(IWriter& F)
 {
@@ -623,6 +624,7 @@ void	EPAAvoid::Compile			(IWriter& F)
 	S.epsilon		= epsilon;
 	S.look_ahead	= look_ahead;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -636,6 +638,7 @@ EPABounce::EPABounce				():EParticleAction(PAPI::PABounceID)
 	appendFloat						("Resilience",0.1f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Cutoff",1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPABounce::Compile			(IWriter& F)
 {
@@ -651,6 +654,7 @@ void	EPABounce::Compile			(IWriter& F)
 	S.resilience	= resilience;
 	S.cutoffSqr		= _sqr(cutoff);
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -678,6 +682,7 @@ EPADamping::EPADamping				():EParticleAction(PAPI::PADampingID)
 	appendVector					("Damping", PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("V Low",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("V High",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPADamping::Compile			(IWriter& F)
 {
@@ -689,6 +694,7 @@ void	EPADamping::Compile			(IWriter& F)
 	S.damping		= pVector(damping.x, damping.y, damping.z);
 	S.vlowSqr		= _sqr(vlow);
 	S.vhighSqr		= _sqr(vhigh);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -704,6 +710,7 @@ EPAExplosion::EPAExplosion			():EParticleAction(PAPI::PAExplosionID)
 	appendFloat						("Epsilon",			EPS_L, 	EPS, 			P_MAXFLOAT);
 	appendFloat						("Age",				0.f, 	0.f, 			P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAExplosion::Compile	  	(IWriter& F)
 {
@@ -726,6 +733,7 @@ void	EPAExplosion::Compile	  	(IWriter& F)
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	if(S.epsilon < 0.0f)
 		S.epsilon 	= EPS_L;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -737,6 +745,7 @@ EPAFollow::EPAFollow				():EParticleAction(PAPI::PAFollowID)
 	appendFloat						("Magnitude",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAFollow::Compile			(IWriter& F)
 {
@@ -748,6 +757,7 @@ void	EPAFollow::Compile			(IWriter& F)
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -759,6 +769,7 @@ EPAGravitate::EPAGravitate			():EParticleAction(PAPI::PAGravitateID)
 	appendFloat						("Magnitude",1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",0.001f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",10.0f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAGravitate::Compile	   	(IWriter& F)
 {
@@ -770,6 +781,7 @@ void	EPAGravitate::Compile	   	(IWriter& F)
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -804,6 +816,7 @@ EPAJet::EPAJet						():EParticleAction(PAPI::PAJetID)
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAJet::Compile				(IWriter& F)
 {
@@ -822,6 +835,7 @@ void	EPAJet::Compile				(IWriter& F)
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -860,6 +874,7 @@ EPAMatchVelocity::EPAMatchVelocity	():EParticleAction(PAPI::PAMatchVelocityID)
 	appendFloat						("Magnitude",0.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAMatchVelocity::Compile 	(IWriter& F)
 {
@@ -871,6 +886,7 @@ void	EPAMatchVelocity::Compile 	(IWriter& F)
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -898,6 +914,7 @@ EPAOrbitLine::EPAOrbitLine			():EParticleAction(PAPI::PAOrbitLineID)
 	appendFloat						("Epsilon",			EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",		P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAOrbitLine::Compile	 	(IWriter& F)
 {
@@ -918,6 +935,7 @@ void	EPAOrbitLine::Compile	 	(IWriter& F)
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -944,6 +962,7 @@ EPAOrbitPoint::EPAOrbitPoint		():EParticleAction(PAPI::PAOrbitPointID)
 	appendFloat						("Epsilon",			0.1f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",		100.0f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAOrbitPoint::Compile	   	(IWriter& F)
 {
@@ -960,6 +979,7 @@ void	EPAOrbitPoint::Compile	   	(IWriter& F)
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -978,6 +998,7 @@ EPARandomAccel::EPARandomAccel		():EParticleAction(PAPI::PARandomAccelID)
 	actionName						= actionType;
 	appendDomain					("Accelerate",PDomain(PDomain::vNum,FALSE));
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPARandomAccel::Compile	   	(IWriter& F)
 {
@@ -987,6 +1008,7 @@ void	EPARandomAccel::Compile	   	(IWriter& F)
 	S.gen_accL		= ConvDomain(_domain("Accelerate"));
 	S.gen_acc		= S.gen_accL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1016,6 +1038,7 @@ EPARandomVelocity::EPARandomVelocity():EParticleAction(PAPI::PARandomVelocityID)
 	actionName						= actionType;
 	appendDomain					("Velocity",PDomain(PDomain::vNum,FALSE));
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPARandomVelocity::Compile 	(IWriter& F)
 {
@@ -1025,6 +1048,7 @@ void	EPARandomVelocity::Compile 	(IWriter& F)
 	S.gen_velL		= ConvDomain(_domain("Velocity"));
 	S.gen_vel		= S.gen_velL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1034,6 +1058,7 @@ EPARestore::EPARestore				():EParticleAction(PAPI::PARestoreID)
 	actionType						= "Restore";
 	actionName						= actionType;
 	appendFloat						("Time",			0.f, 0.0f, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPARestore::Compile			(IWriter& F)
 {
@@ -1041,6 +1066,7 @@ void	EPARestore::Compile			(IWriter& F)
 	PARestore 	S;
 	S.type			= PARestoreID;
 	S.time_left		= time_left;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1054,6 +1080,7 @@ EPAScatter::EPAScatter				():EParticleAction(PAPI::PAScatterID)
 	appendFloat						("Epsilon",EPS_L, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Radius",P_MAXFLOAT, -P_MAXFLOAT, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPAScatter::Compile	 		(IWriter& F)
 {
@@ -1070,6 +1097,7 @@ void	EPAScatter::Compile	 		(IWriter& F)
 	S.epsilon		= epsilon;
 	S.max_radius	= max_radius;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1176,6 +1204,7 @@ EPASpeedLimit::EPASpeedLimit		():EParticleAction(PAPI::PASpeedLimitID)
 	actionName						= actionType;
 	appendFloat						("Min Speed",			-1.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Max Speed",			15.0f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPASpeedLimit::Compile	 	(IWriter& F)
 {
@@ -1185,6 +1214,7 @@ void	EPASpeedLimit::Compile	 	(IWriter& F)
 	S.type			= PASpeedLimitID;
 	S.min_speed = min_speed;
 	S.max_speed = max_speed;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1297,6 +1327,7 @@ EPATargetVelocity::EPATargetVelocity():EParticleAction(PAPI::PATargetVelocityID)
 	appendVector					("Velocity",		PVector::vNum, 0.f,0.f,0.f);
 	appendFloat						("Scale",			1.f, 0.0f, P_MAXFLOAT);
 	appendBool						("Allow Rotate",	TRUE);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 void	EPATargetVelocity::Compile	(IWriter& F)
 {
@@ -1307,6 +1338,7 @@ void	EPATargetVelocity::Compile	(IWriter& F)
 	S.velocity		= S.velocityL;
 	S.scale			= _float("Scale").val;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,_bool("Allow Rotate").val);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	
 	F.w_u32			(S.type);
 	S.Save			(F);
@@ -1355,6 +1387,7 @@ EPATurbulence::EPATurbulence		():EParticleAction(PAPI::PATurbulenceID)
 	appendFloat						("Magnitude",		10.f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendFloat						("Delta",			0.01f, -P_MAXFLOAT, P_MAXFLOAT);
 	appendVector					("Movement",		PVector::vNum, 1,1,1);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 // -
 	nval=0; 
 	age								= 0.f;
@@ -1375,6 +1408,7 @@ void	EPATurbulence::Compile		(IWriter& F)
 	S.offset.set	(_vector("Movement").val);
 
 	S.age			= 0.f;
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 	
 	F.w_u32			(S.type);
 	S.Save			(F);
@@ -1567,6 +1601,7 @@ EPABindVelocityValue::EPABindVelocityValue(): EParticleAction(PAPI::PABindVeloci
 	actionType = "BindVelocity";
 	actionName = actionType;
 	appendVector("InitialValue", PVector::vNum, 1.0f, 1.0f, 1.0f, 0.0f, FLT_MAX);
+	appendBool("Align Rotation Velocity to Velocity", true).min_version = EVersion::Extended;
 }
 
 void EPABindVelocityValue::Compile(IWriter& F)
@@ -1574,6 +1609,7 @@ void EPABindVelocityValue::Compile(IWriter& F)
 	PABindVelocityValue S;
 	S.type      = PABindVelocityValueID;
 	S.BindValue.set(_vector("InitialValue").val);
+	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
 
 	F.w_u32(S.type);
 	S.Save(F);
