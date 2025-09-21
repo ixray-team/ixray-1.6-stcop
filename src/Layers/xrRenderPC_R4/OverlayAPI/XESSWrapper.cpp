@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "XeSSWrapper.h"
+#include "XESSWrapper.h"
 
 #if 0
 XeSSWrapper g_XESSWrapper;
