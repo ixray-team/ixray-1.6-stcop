@@ -663,8 +663,8 @@ void PS::CPGDef::OnParamsChange(PropValue* sender)
 
 void PS::CPGDef::OnParamsChangeInternal()
 {
-	Tools->SetCurrentPG(0);
-	Tools->SetCurrentPG(this);
+	//Tools->SetCurrentPG(0);
+	//Tools->SetCurrentPG(this);
 }
 
 void PS::CPGDef::FillProp(LPCSTR pref, PropItemVec& items, void* owner)
