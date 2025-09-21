@@ -482,6 +482,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_ammo",						&CScriptGameObject::IsAmmo)
 		// Actor
 		.def("set_character_icon", &CScriptGameObject::SetCharacterIcon)
+		.def("get_total_telepatic_protection", &CScriptGameObject::GetTotalTelepaticProtection)
 
 		//For Weapon & Outfit
 		.def("install_upgrade",				&CScriptGameObject::InstallUpgrade)
