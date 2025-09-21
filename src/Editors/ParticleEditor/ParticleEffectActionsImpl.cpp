@@ -117,113 +117,285 @@ void EParticleAction::Render(const Fmatrix& parent)
 
 void EParticleAction::Load(IReader& F)
 {
-	u32 vers = F.r_u32();
-	R_ASSERT(vers <= PARTICLE_ACTION_VERSION_MAX && vers >= PARTICLE_ACTION_VERSION_MIN);
-
+	Version						= F.r_enum<EVersion>();
 	F.r_stringZ(actionName);
 	flags.assign(F.r_u32());
 
-	for (PFloatMapIt f_it = floats.begin(); f_it != floats.end(); f_it++)
+	if (Version <= EVersion::Original)
 	{
-		f_it->second.val = F.r_float();
-	}
+		// read non-chunked action from original
 
-	for (PVectorMapIt v_it = vectors.begin(); v_it != vectors.end(); v_it++)
-	{
-		F.r_fvector3(v_it->second.val);
-	}
+		xr_vector<AnsiString> TempFloatVec;
+		xr_vector<AnsiString> TempVectorVec;
+		xr_vector<AnsiString> TempDomainVec;
+		xr_vector<AnsiString> TempBoolVec;
+		xr_vector<AnsiString> TempIntVec;
+		xr_vector<AnsiString> TempStringVec;
+		
+		for (auto& elem : orders)
+		{
+			if (elem.min_version > EVersion::Original)
+			{
+				continue;
+			}
+			switch (elem.type)
+			{
+			case tpDomain:
+				{
+					TempDomainVec.push_back(elem.name);
+					break;
+				}
+			case tpVector:
+				{
+					TempVectorVec.push_back(elem.name);
+					break;
+				}
+			case tpFloat:
+				{
+					TempFloatVec.push_back(elem.name);
+					break;
+				}
+			case tpBool:
+				{
+					TempBoolVec.push_back(elem.name);
+					break;
+				}
+			case tpInt:
+				{
+					TempIntVec.push_back(elem.name);
+					break;
+				}
+			case tpString:
+				{
+					TempStringVec.push_back(elem.name);
+					break;
+				}
+			}
+		}
 
-	for (PDomainMapIt d_it = domains.begin(); d_it != domains.end(); d_it++)
-	{
-		d_it->second.Load(F);
-	}
 
-	for (PBoolMapIt b_it = bools.begin(); b_it != bools.end(); b_it++)
+		for (auto& elem : TempFloatVec)
+		{
+			floats[elem].val = F.r_float();
+		}
+		for (auto& elem : TempVectorVec)
+		{
+			F.r_fvector3(vectors[elem].val);
+		}
+		for (auto& elem : TempDomainVec)
+		{
+			domains[elem].Load(F);
+		}
+		for (auto& elem : TempBoolVec)
+		{
+			bools[elem].val = F.r_u8();
+		}
+		for (auto& elem : TempIntVec)
+		{
+			ints[elem].val = F.r_s32();
+		}
+		for (auto& elem : TempStringVec)
+		{
+			F.r_stringZ(strings[elem].val);
+		}
+		
+	} else
 	{
-		b_it->second.val = F.r_u8();
-	}
+		constexpr u32 DataChunksID = 0;
+		R_ASSERT(F.r_u32() == DataChunksID);
+		auto ChunkSize = F.r_u32();
+		auto ActionsChunk = IReader(F.pointer(), ChunkSize);
+		auto BoolStream = ActionsChunk.open_chunk(tpBool);
+		auto DomainStream = ActionsChunk.open_chunk(tpDomain);
+		auto VectorStream = ActionsChunk.open_chunk(tpVector);
+		auto FloatStream = ActionsChunk.open_chunk(tpFloat);
+		auto IntStream = ActionsChunk.open_chunk(tpInt);
+		auto StringStream = ActionsChunk.open_chunk(tpString);
 
-	for (PIntMapIt i_it = ints.begin(); i_it != ints.end(); i_it++)
-	{
-		i_it->second.val = F.r_s32();
-	}
-
-	for (PStringMapIt s_it = strings.begin(); s_it != strings.end(); s_it++)
-	{
-		F.r_stringZ(s_it->second.val);
+		for (auto& elem : orders)
+		{
+			switch (elem.type)
+			{
+			case tpDomain:
+				{
+					domains[elem.name].Load(*DomainStream);
+					break;
+				}
+			case tpVector:
+				{
+					VectorStream->r_fvector3(vectors[elem.name].val);
+					break;
+				}
+			case tpFloat:
+				{
+					floats[elem.name].val = FloatStream->r_float();
+					break;
+				}
+			case tpBool:
+				{
+					bools[elem.name].val = BoolStream->r_u8();
+					break;
+				}
+			case tpInt:
+				{
+					ints[elem.name].val = IntStream->r_s32();
+					break;
+				}
+			case tpString:
+				{
+					StringStream->r_stringZ(strings[elem.name].val);
+					break;
+				}
+			}
+		}
 	}
 }
 
 void EParticleAction::Load2(CInifile& ini, const shared_str& sect)
 {
-	u32 ver 					= ini.r_u32(sect.c_str(), "version");
+	//u32 ver 					= ini.r_u32(sect.c_str(), "version");
+	Version						= ini.r_enum<EVersion>(sect.c_str(), "version");
 	actionName					= ini.r_string(sect.c_str(), "action_name");
 	flags.assign				(ini.r_u32(sect.c_str(), "flags"));
-	
-	u32 counter					= 0;
+
+	u32 DomainCounter = 0;
+	u32 BoolCounter = 0;
+	u32 FloatCounter = 0;
+	u32 IntCounter = 0;
+	u32 VectorCounter = 0;
+	u32 StringCounter = 0;
 	string256					buff;
-	for (PFloatMapIt f_it=floats.begin(); f_it!=floats.end(); ++f_it,++counter)
+
+	for (auto& elem : orders)
 	{
-		xr_sprintf				(buff, sizeof(buff),"flt_%04d",counter);
-		if(ver==0)
+		if (elem.min_version > Version)
 		{
-			if(ini.line_exist(sect.c_str(), buff))
-				f_it->second.val		= ini.r_float(sect.c_str(), buff);
-		}else
-		f_it->second.val		= ini.r_float(sect.c_str(), buff);
-	}
-	counter=0;
-	for (PVectorMapIt v_it=vectors.begin(); v_it!=vectors.end(); ++v_it,++counter)
-	{
-		xr_sprintf				(buff, sizeof(buff),"vec_%04d",counter);
-		v_it->second.val		= ini.r_fvector3	(sect.c_str(), buff);
-	}
-
-	counter=0;
-	for (PDomainMapIt d_it=domains.begin();	d_it!=domains.end(); ++d_it,++counter)
-	{
-		xr_sprintf				(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), counter);
-		d_it->second.Load2		(ini, buff);
-	}
-
-	counter=0;
-	for (PBoolMapIt b_it=bools.begin(); b_it!=bools.end(); ++b_it,++counter)
-	{
-		xr_sprintf				(buff, sizeof(buff),"bool_%04d",counter);
-		b_it->second.val		= ini.r_bool		(sect.c_str(), buff);
-	}
-
-	counter=0;
-	for (PIntMapIt i_it=ints.begin(); i_it!=ints.end(); ++i_it,++counter)
-	{
-		xr_sprintf				(buff, sizeof(buff),"int_%04d",counter);
-		i_it->second.val		= ini.r_s32		(sect.c_str(), buff);
-	}
-
-	counter=0;
-	for (PStringMapIt s_it=strings.begin(); s_it!=strings.end(); ++s_it,++counter)
-	{
-		xr_sprintf				(buff, sizeof(buff),"string_%04d",counter);
-		s_it->second.val		= ini.r_string		(sect.c_str(), buff);
+			continue;
+		}
+		switch (elem.type)
+		{
+		case tpDomain:
+			{
+				auto d_it = domains.find(elem.name);
+				R_ASSERT(d_it != domains.end());
+				xr_sprintf				(buff, sizeof(buff),"domain_%s_%04d", sect.c_str(), DomainCounter++);
+				d_it->second.Load2		(ini, buff);
+				break;
+			}
+		case tpVector:
+			{
+				auto v_it = vectors.find(elem.name);
+				R_ASSERT(v_it != vectors.end());
+				xr_sprintf				(buff, sizeof(buff),"vec_%04d",VectorCounter++);
+				v_it->second.val		= ini.r_fvector3	(sect.c_str(), buff);
+				break;
+			}
+		case tpFloat:
+			{
+				auto f_it = floats.find(elem.name);
+				R_ASSERT(f_it != floats.end());
+				xr_sprintf(buff, sizeof(buff),"flt_%04d",FloatCounter++);
+				if(Version==EVersion::Old)
+				{
+					if(ini.line_exist(sect.c_str(), buff))
+					{
+						f_it->second.val = ini.r_float(sect.c_str(), buff);
+					}
+				}else
+				{
+					f_it->second.val = ini.r_float(sect.c_str(), buff);
+				}
+				break;
+			}
+		case tpBool:
+			{
+				auto b_it = bools.find(elem.name);
+				R_ASSERT(b_it != bools.end());
+				xr_sprintf(buff, sizeof(buff),"bool_%04d",BoolCounter++);
+				b_it->second.val = ini.r_bool(sect.c_str(), buff);
+				break;
+			}
+		case tpInt:
+			{
+				auto i_it = ints.find(elem.name);
+				R_ASSERT(i_it != ints.end());
+				xr_sprintf(buff, sizeof(buff),"int_%04d",IntCounter++);
+				i_it->second.val = ini.r_s32(sect.c_str(), buff);
+				break;
+			}
+		case tpString:
+			{
+				auto s_it = strings.find(elem.name);
+				R_ASSERT(s_it != strings.end());
+				xr_sprintf				(buff, sizeof(buff),"string_%04d",StringCounter++);
+				s_it->second.val		= ini.r_string		(sect.c_str(), buff);
+				break;
+			}
+		}
 	}
 
 }
 void 	EParticleAction::Save		(IWriter& F)
 {
-	F.w_u32			(PARTICLE_ACTION_VERSION_MAX);
-	F.w_stringZ		(actionName);
-	F.w_u32			(flags.get());
-	for (PFloatMapIt 	f_it=floats.begin(); 	f_it!=floats.end(); 	f_it++)	F.w_float	(f_it->second.val);
-	for (PVectorMapIt 	v_it=vectors.begin(); 	v_it!=vectors.end(); 	v_it++)	F.w_fvector3(v_it->second.val);
-	for (PDomainMapIt 	d_it=domains.begin(); 	d_it!=domains.end(); 	d_it++)	d_it->second.Save	(F);
-	for (PBoolMapIt 	b_it=bools.begin(); 	b_it!=bools.end(); 		b_it++)	F.w_u8		((u8)b_it->second.val);
-	for (PIntMapIt 		i_it=ints.begin(); 		i_it!=ints.end(); 		i_it++)	F.w_s32		(i_it->second.val);
-	for (PStringMapIt 	s_it=strings.begin(); 	s_it!=strings.end(); 	s_it++)	F.w_stringZ	(s_it->second.val);
+	F.w_enum(EVersion::Extended);
+	F.w_stringZ(actionName);
+	F.w_u32(flags.get());
+	
+	F.open_chunk(0);
+	{
+		F.open_chunk(tpFloat);
+		for (const auto& elem : floats)
+		{
+			F.w_float(elem.second.val);
+		}
+		F.close_chunk();
+	}
+	{
+		F.open_chunk(tpVector);
+		for (const auto& elem : vectors)
+		{
+			F.w_fvector3(elem.second.val);
+		}
+		F.close_chunk();
+	}
+	{
+		F.open_chunk(tpDomain);
+		for (const auto& elem : domains)
+		{
+			elem.second.Save(F);
+		}
+		F.close_chunk();
+	}
+	{
+		F.open_chunk(tpBool);
+		for (const auto& elem : bools)
+		{
+			F.w_u8(elem.second.val);
+		}
+		F.close_chunk();
+	}
+	{
+		F.open_chunk(tpInt);
+		for (const auto& elem : ints)
+		{
+			F.w_s32(elem.second.val);
+		}
+		F.close_chunk();
+	}
+	{
+		F.open_chunk(tpString);
+		for (const auto& elem : strings)
+		{
+			F.w_stringZ(elem.second.val);
+		}
+		F.close_chunk();
+	}
+	F.close_chunk();
 }
 
 void EParticleAction::Save2(CInifile& ini, const shared_str& sect)
 {
-	ini.w_u32			(sect.c_str(), "version", PARTICLE_ACTION_VERSION_MAX);
+	ini.w_enum			(sect.c_str(), "version", EVersion::Extended);
 	ini.w_string		(sect.c_str(), "action_name",	actionName.c_str());
 	ini.w_u32			(sect.c_str(), "flags",			flags.get());
 	
@@ -358,56 +530,74 @@ void 	EParticleAction::FillProp	(PropItemVec& items, LPCSTR pref, u32 clr)
 	V=PHelper().CreateFlag32			(items,	PrepareKey(pref,"Enabled").c_str(), 		&flags, flEnabled);
 	V->Owner()->prop_color				= clr;
 }
-void EParticleAction::appendFloat	(LPCSTR name, float v, float mn, float mx)
+
+EParticleAction::SOrder::SOrder(EValType _type, xr_string _name, EVersion _min_version):type(_type),name(_name),min_version(_min_version)
+{
+	if (_type == tpString)
+	{
+		string_type=smCustom;
+	}
+}
+
+EParticleAction::SOrder::SOrder(EValType _type, xr_string _name, EChooseMode _string_type, EVersion _min_version):type(_type),name(_name),string_type(_string_type),min_version(_min_version)
+{
+	
+}
+
+EParticleAction::SOrder& EParticleAction::appendFloat	(LPCSTR name, float v, float mn, float mx)
 {
 	orders.push_back				(SOrder(tpFloat,name));
 	floats[name]					= PFloat(v,mn,mx);
+	return orders.back();
 }
-void EParticleAction::appendInt		(LPCSTR name, int v, int mn, int mx)
+EParticleAction::SOrder& EParticleAction::appendInt		(LPCSTR name, int v, int mn, int mx)
 {
 	orders.push_back				(SOrder(tpInt,name));
 	ints[name]						= PInt(v,mn,mx);
+	return orders.back();
 }
-void EParticleAction::appendVector	(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
+EParticleAction::SOrder& EParticleAction::appendVector	(LPCSTR name, PVector::EType type, float vx, float vy, float vz, float mn, float mx)
 {
 	orders.push_back				(SOrder(tpVector,name));
 	vectors[name]					= PVector(type,Fvector().set(vx,vy,vz),mn,mx);
+	return orders.back();
 }
-void EParticleAction::appendDomain	(LPCSTR name, PDomain v)
+EParticleAction::SOrder& EParticleAction::appendDomain	(LPCSTR name, PDomain v)
 {
 	orders.push_back				(SOrder(tpDomain,name));
 	domains[name]					= v;
+	return orders.back();
 }
-
-void EParticleAction::appendBool	(LPCSTR name, BOOL v)
+EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, BOOL v)
 {
 	orders.push_back				(SOrder(tpBool,name));
 	bools[name]						= PBool(v);
+	return orders.back();
 }
-
-void EParticleAction::appendBool	(LPCSTR name, bool v)
+EParticleAction::SOrder& EParticleAction::appendBool	(LPCSTR name, bool v)
 {
 	orders.push_back				(SOrder(tpBool,name));
 	bools[name]						= PBool(v);
+	return orders.back();
 }
-
-void EParticleAction::appendString(LPCSTR name, shared_str v, EChooseMode _string_type)
+EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, const shared_str& v, EChooseMode _string_type)
 {
 	orders.push_back				(SOrder(tpString,name, _string_type));
 	strings[name]						= PString(v);
+	return orders.back();
 }
-
-void EParticleAction::appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type)
+EParticleAction::SOrder& EParticleAction::appendString(LPCSTR name, LPCSTR v, EChooseMode _string_type)
 {
 	orders.push_back				(SOrder(tpString,name, _string_type));
 	strings[name]						= PString(v);
+	return orders.back();
 }
 
 //------------------------------------------------------------------------------
-#define EXPAND_DOMAIN(D)			D.type,\
-									D.f[0], D.f[1], D.f[2],\
-									D.f[3], D.f[4], D.f[5],\
-									D.f[6], D.f[7], D.f[8]
+pDomain&& ConvDomain(const PDomain& Source)
+{
+	return pDomain(Source.type, Source.f[0], Source.f[1], Source.f[2], Source.f[3], Source.f[4], Source.f[5], Source.f[6], Source.f[7], Source.f[8]);
+}
 									
 EPAAvoid::EPAAvoid					():EParticleAction(PAPI::PAAvoidID)
 {
@@ -424,11 +614,10 @@ void	EPAAvoid::Compile			(IWriter& F)
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
 	float look_ahead = _float("Look Ahead").val;
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Position")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAAvoid 		S;
 	S.type			= PAAvoidID;
-	S.positionL		= D;
+	S.positionL		= ConvDomain(_domain("Position"));
 	S.position		= S.positionL;
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
@@ -453,11 +642,10 @@ void	EPABounce::Compile			(IWriter& F)
 	float friction = _float("Friction").val;
 	float resilience = _float("Resilience").val;
 	float cutoff = _float("Cutoff").val;
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Position")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PABounce 		S;
 	S.type			= PABounceID;
-	S.positionL		= D;
+	S.positionL		= ConvDomain(_domain("Position"));
 	S.position		= S.positionL;
 	S.oneMinusFriction = 1.0f - friction;
 	S.resilience	= resilience;
@@ -619,7 +807,6 @@ EPAJet::EPAJet						():EParticleAction(PAPI::PAJetID)
 }
 void	EPAJet::Compile				(IWriter& F)
 {
-	pDomain acc = pDomain(EXPAND_DOMAIN(_domain("Accelerate")));
 	const Fvector& center = _vector("Center").val;
 	float magnitude = _float("Magnitude").val;
 	float epsilon = _float("Epsilon").val;
@@ -629,7 +816,7 @@ void	EPAJet::Compile				(IWriter& F)
 	S.type			= PAJetID;
 	S.centerL		= pVector(center.x, center.y, center.z);
 	S.center		= S.centerL;
-	S.accL			= acc;
+	S.accL			= ConvDomain(_domain("Accelerate"));
 	S.acc			= S.accL;
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
@@ -794,11 +981,10 @@ EPARandomAccel::EPARandomAccel		():EParticleAction(PAPI::PARandomAccelID)
 }
 void	EPARandomAccel::Compile	   	(IWriter& F)
 {
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Accelerate")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PARandomAccel 	S;
 	S.type			= PARandomAccelID;
-	S.gen_accL		= D;
+	S.gen_accL		= ConvDomain(_domain("Accelerate"));
 	S.gen_acc		= S.gen_accL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -814,11 +1000,10 @@ EPARandomDisplace::EPARandomDisplace():EParticleAction(PAPI::PARandomDisplaceID)
 }
 void	EPARandomDisplace::Compile 	(IWriter& F)
 {
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Displace")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PARandomDisplace 	S;
 	S.type			= PARandomDisplaceID;
-	S.gen_dispL		= D;
+	S.gen_dispL		= ConvDomain(_domain("Displace"));
 	S.gen_disp		= S.gen_dispL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -834,11 +1019,10 @@ EPARandomVelocity::EPARandomVelocity():EParticleAction(PAPI::PARandomVelocityID)
 }
 void	EPARandomVelocity::Compile 	(IWriter& F)
 {
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Velocity")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PARandomVelocity 	S;
 	S.type			= PARandomVelocityID;
-	S.gen_velL		= D;
+	S.gen_velL		= ConvDomain(_domain("Velocity"));
 	S.gen_vel		= S.gen_velL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -909,12 +1093,11 @@ EPASink::EPASink					():EParticleAction(PAPI::PASinkID)
 void	EPASink::Compile			(IWriter& F)
 {
 	BOOL kill_inside = _bool("Kill Inside").val;
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Domain")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PASink 	S;
 	S.type			= PASinkID;
 	S.kill_inside	= kill_inside;
-	S.positionL		= D;
+	S.positionL		= ConvDomain(_domain("Domain"));
 	S.position		= S.positionL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -932,12 +1115,11 @@ EPASinkVelocity::EPASinkVelocity	():EParticleAction(PAPI::PASinkVelocityID)
 void	EPASinkVelocity::Compile   	(IWriter& F)
 {
 	BOOL kill_inside = _bool("Kill Inside").val;
-	pDomain D = pDomain(EXPAND_DOMAIN(_domain("Domain")));
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PASinkVelocity 	S;
 	S.type			= PASinkVelocityID;
 	S.kill_inside	= kill_inside;
-	S.velocityL		= D;
+	S.velocityL		= ConvDomain(_domain("Domain"));
 	S.velocity		= S.velocityL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -946,52 +1128,44 @@ void	EPASinkVelocity::Compile   	(IWriter& F)
 
 EPASource::EPASource				():EParticleAction(PAPI::PASourceID)
 {
-	actionType						= "Source";
-	actionName						= actionType;
-	appendFloat						("Rate",			100.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendDomain					("Domain",			PDomain(PDomain::vNum,TRUE,0x60FFEBAA));
-	appendDomain					("Velocity",		PDomain(PDomain::vNum,FALSE));
-	appendDomain					("Rotation",		PDomain(PDomain::vAngle,FALSE));
-	appendDomain					("Size",			PDomain(PDomain::vNum,FALSE));
-	appendBool						("Single Size",		FALSE);
-	appendDomain					("Color",			PDomain(PDomain::vColor, FALSE, 0x00000000, PAPI::PDPoint,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f));
-	appendFloat						("Color\\Alpha",	0.f, 0.f, 1.f);
-	appendFloat						("Starting Age",	0.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendFloat						("Age Sigma",		0.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendFloat						("Parent Motion",	0.f, -P_MAXFLOAT, P_MAXFLOAT);
-	appendBool						("Allow Rotate",	FALSE);
+	actionType = "Source";
+	actionName = actionType;
+	appendFloat("Rate", 100.f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendDomain("Domain", PDomain(PDomain::vNum,TRUE,0x60FFEBAA));
+	appendDomain("Velocity", PDomain(PDomain::vNum,FALSE));
+	appendDomain("Rotation", PDomain(PDomain::vAngle,FALSE));
+	appendBool("Align Rotation Velocity to Rotation", true).min_version = EVersion::Extended;
+	appendDomain("Rotation Velocity", PDomain(PDomain::vNum, false)).min_version = EVersion::Extended;
+	appendDomain("Size", PDomain(PDomain::vNum,FALSE));
+	appendBool("Single Size", FALSE);
+	appendDomain("Color", PDomain(PDomain::vColor, FALSE, 0x00000000, PAPI::PDPoint,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f,1.f));
+	appendFloat("Color\\Alpha", 0.f, 0.f, 1.f);
+	appendFloat("Starting Age", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendFloat("Age Sigma", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendFloat("Parent Motion", 0.f, -P_MAXFLOAT, P_MAXFLOAT);
+	appendBool("Allow Rotate",	FALSE);
 }
 void	EPASource::Compile			(IWriter& F)
 {
-	float particle_rate = _float("Rate").val;
-	pDomain pos = pDomain(EXPAND_DOMAIN(_domain("Domain")));
-	pDomain vel = pDomain(EXPAND_DOMAIN(_domain("Velocity")));
-	pDomain rot = pDomain(EXPAND_DOMAIN(_domain("Rotation")));
-	pDomain size = pDomain(EXPAND_DOMAIN(_domain("Size")));
-	BOOL single_size = _bool("Single Size").val;
-	pDomain color = pDomain(EXPAND_DOMAIN(_domain("Color")));
-	float alpha = _float("Color\\Alpha").val;
-	float age = _float("Starting Age").val;
-	float age_sigma = _float("Age Sigma").val;
-	float parent_motion = _float("Parent Motion").val;
-	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PASource 	S;
 	S.type			= PASourceID;
-	S.particle_rate = particle_rate;
-	S.positionL		= pos;
+	S.particle_rate = _float("Rate").val;
+	S.positionL		= ConvDomain(_domain("Domain"));
 	S.position		= S.positionL;
-	S.velocityL		= vel;
+	S.velocityL		= ConvDomain(_domain("Velocity"));
 	S.velocity		= S.velocityL;
-	S.size			= size;
-	S.rot			= rot;
-	S.color			= color;
-	S.alpha			= alpha;
-	S.age			= age;
-	S.age_sigma		= age_sigma;
-	S.m_Flags.assign((single_size?PASource::flSingleSize:0)|PASource::flVertexB_tracks);
+	S.size			= ConvDomain(_domain("Size"));
+	S.rot			= ConvDomain(_domain("Rotation"));
+	S.color			= ConvDomain(_domain("Color"));
+	S.alpha			= _float("Color\\Alpha").val;
+	S.age			= _float("Starting Age").val;
+	S.age_sigma		= _float("Age Sigma").val;
+	S.m_Flags.assign(
+		(_bool("Single Size").val ? PASource::flSingleSize : 0)
+		| PASource::flVertexB_tracks);
 	S.parent_vel	= pVector(0,0,0);
-	S.parent_motion	= parent_motion;
-	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
+	S.parent_motion	= _float("Parent Motion").val;
+	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,_bool("Allow Rotate").val);
 	F.w_u32			(S.type);
 	S.Save			(F);
 }

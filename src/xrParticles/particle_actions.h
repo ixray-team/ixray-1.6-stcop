@@ -4,16 +4,25 @@
 
 namespace PAPI
 {
+	enum class ParticleActionVersion
+	{
+		Original,
+		Extended
+	};
+	
 	// refs
 	struct ParticleEffect;
 	struct PARTICLES_API ParticleAction
 	{
 		enum
 		{
-			ALLOW_ROTATE	= (1<<1)
+			ALLOW_ROTATE	= (1<<1),
+			EXTENSIONS		= (1<<2),
+			MAX
 		};
 		Flags32			m_Flags;
 		PActionEnum		type;	// Type field
+		ParticleActionVersion Version = ParticleActionVersion::Original;
 		ParticleAction	() : type(action_enum_force_dword) {m_Flags.zero();}
 
 		virtual ~ParticleAction() = default;
