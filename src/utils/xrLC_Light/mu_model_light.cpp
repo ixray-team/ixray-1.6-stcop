@@ -137,7 +137,7 @@ void run_mu_light()
 		}
 
 
-		GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 
+		GPUTaskinSystem.RestartALL(); // Р’С‹РіСЂСѓР¶Р°РµРј РІСЃРµ Р­С‚Рѕ РїРѕСЃР»РµРґРЅРµРµ РѕСЃРІРµС‰РµРЅРёРµ 
 	}
 	else
 #endif

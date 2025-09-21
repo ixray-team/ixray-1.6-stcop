@@ -25,7 +25,7 @@ void CDeflector::LightGPU( HASH& H )
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
 
-	// se7kills todo: Аналог на GPU
+	// se7kills todo: РђРЅР°Р»РѕРі РЅР° GPU
 	// Convert lights to local form
 	// LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
@@ -57,7 +57,7 @@ void CDeflector::LightGPU( HASH& H )
 
 }
 
-// Запрашивает лучи у ГПУ
+// Р—Р°РїСЂР°С€РёРІР°РµС‚ Р»СѓС‡Рё Сѓ Р“РџРЈ
 void CDeflector::L_DirectGPU(   HASH& H)
 {
 	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
@@ -192,12 +192,12 @@ void CDeflector::EdgesLighting(HASH& H)
 	}
 }
 
-/// Залетают лучи после расчета в ГПУ
+/// Р—Р°Р»РµС‚Р°СЋС‚ Р»СѓС‡Рё РїРѕСЃР»Рµ СЂР°СЃС‡РµС‚Р° РІ Р“РџРЈ
 void CDeflector::ApplyColors()
 {
 	lm_layer& lm = layer;
 
- 	// Faces Только будет при простом проходе
+ 	// Faces РўРѕР»СЊРєРѕ Р±СѓРґРµС‚ РїСЂРё РїСЂРѕСЃС‚РѕРј РїСЂРѕС…РѕРґРµ
 	if (def_FacesCount.size() && ApplyLmap)
 	{
 		ApplyLmap = false;
@@ -247,7 +247,7 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 	csApply.Leave();
 }
 
-// Перерасчет в более сжатый формат
+// РџРµСЂРµСЂР°СЃС‡РµС‚ РІ Р±РѕР»РµРµ СЃР¶Р°С‚С‹Р№ С„РѕСЂРјР°С‚
 
 BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
 BOOL	compress_Zero(lm_layer& lm, u32 rms);

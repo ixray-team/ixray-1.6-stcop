@@ -149,7 +149,7 @@ struct SplitInfo
 #include <tbb/combinable.h>
 #include <tbb/parallel_for.h>
 
-// ForserX Не трогай то что и так работает :)
+// ForserX РќРµ С‚СЂРѕРіР°Р№ С‚Рѕ С‡С‚Рѕ Рё С‚Р°Рє СЂР°Р±РѕС‚Р°РµС‚ :)
 void xrPhase_MergeGeometry_Tbb()
 {
 	xr_vector<SplitInfo> info(g_XSplit.size());
