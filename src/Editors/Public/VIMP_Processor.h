@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xrCore/mesh/object.h"
+#include "../../xrCore/Mesh/object.h"
 #include "../../xrCore/ArbitraryList.h"
 
 #pragma pack(push,1)
