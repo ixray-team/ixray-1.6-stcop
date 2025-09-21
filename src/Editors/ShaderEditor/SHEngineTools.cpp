@@ -870,8 +870,8 @@ void CSHEngineTools::OnShowHint(AStringVec& ss)
 			CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 			ss.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
 			ss.push_back(xr_string("Texture: ")+xr_string(surf->_Texture()));
-			ss.push_back(xr_string("Shader: ")+xr_string(surf->_ShaderName()));
-			ss.push_back(xr_string("LC Shader: ")+xr_string(surf->_ShaderXRLCName()));
+			ss.push_back(xr_string("Engine Shader: ")+xr_string(surf->_ShaderName()));
+			ss.push_back(xr_string("Compiler Shader: ")+xr_string(surf->_ShaderXRLCName()));
 			ss.push_back(xr_string("Game Material: ")+xr_string(surf->_GameMtlName()));
 			ss.push_back(xr_string("2 Sided: ")+xr_string(surf->m_Flags.is(CSurface::sf2Sided)?"on":"off"));
 		}
