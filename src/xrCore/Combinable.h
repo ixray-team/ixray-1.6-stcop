@@ -4,7 +4,7 @@ template <typename T>
 class Combinable
 {
 public:
-	// Локальное хранилище для каждого потока
+	// Р›РѕРєР°Р»СЊРЅРѕРµ С…СЂР°РЅРёР»РёС‰Рµ РґР»СЏ РєР°Р¶РґРѕРіРѕ РїРѕС‚РѕРєР°
 	T& Local()
 	{
 		thread_local T LocalValue = {};
@@ -20,7 +20,7 @@ public:
 		return LocalValue;
 	}
 
-	// Объединение всех локальных данных
+	// РћР±СЉРµРґРёРЅРµРЅРёРµ РІСЃРµС… Р»РѕРєР°Р»СЊРЅС‹С… РґР°РЅРЅС‹С…
 	template <typename CombineFunc>
 	void CombineEach(CombineFunc func) 
 	{
