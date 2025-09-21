@@ -214,6 +214,26 @@ u16 CScriptGameObject::AmmoBoxSize()
 	return 0;
 }
 
+
+float CScriptGameObject::GetTotalTelepaticProtection()
+{
+	if (CActor* pActor = object().cast_actor())
+	{
+		float result = 0.0f;
+
+		if (PIItem Outfit = pActor->inventory().ItemFromSlot(OUTFIT_SLOT))
+			result += (pSettings->r_float(Outfit->m_section_id, "telepatic_protection") * Outfit->GetCondition());
+
+		if (PIItem Helmet = pActor->inventory().ItemFromSlot(HELMET_SLOT))
+			result += (pSettings->r_float(Helmet->m_section_id, "telepatic_protection") * Helmet->GetCondition());
+
+		return result;
+	}
+
+
+	return 0.0f;
+}
+
 bool CScriptGameObject::InstallUpgrade(LPCSTR upgrade)
 {
 	if (CInventoryItem* item = object().cast_inventory_item())
