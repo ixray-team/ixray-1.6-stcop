@@ -238,7 +238,7 @@ void RunTaskGPU()
 		AditionalData("Current: %u", V);
 	};
 
-	// Остаток доработать 
+	// РћСЃС‚Р°С‚РѕРє РґРѕСЂР°Р±РѕС‚Р°С‚СЊ 
 	GPUTaskinSystem.LightPointPackedRun();
 
 	CTimer tColors; tColors.Start();

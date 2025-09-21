@@ -29,10 +29,10 @@ namespace XRay::RayTrace::CUDA
     {
         u32 width;
         u32 height;
-        u32* pSurface; // Указатель на GPU память
+        u32* pSurface; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° GPU РїР°РјСЏС‚СЊ
         bool hasAlpha;
 
-        // Для CUDA texture objects
+        // Р”Р»СЏ CUDA texture objects
         cudaTextureObject_t texObj;
     };
 
@@ -40,12 +40,12 @@ namespace XRay::RayTrace::CUDA
     {
         int dwMaterial;
         u32 flags;
-        Fvector2 tc0[3]; // UV координаты
+        Fvector2 tc0[3]; // UV РєРѕРѕСЂРґРёРЅР°С‚С‹
     };
 
     struct MaterialData
     {
-        int surfidx; // Индекс текстуры
+        int surfidx; // РРЅРґРµРєСЃ С‚РµРєСЃС‚СѓСЂС‹
     };
      
     // Builder Scene
