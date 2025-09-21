@@ -7,7 +7,7 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 #include "../../xrUI/UICursor.h"
-#include "uigamecustom.h"
+#include "UIGameCustom.h"
 
 CUISpawnWnd::CUISpawnWnd()
 	:  m_iCurTeam(0)
