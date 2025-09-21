@@ -6,6 +6,7 @@
 #define USE_BASE_HUD_REFLECTIONS
 
 #define USE_VASYAN_CUTOFF
+
 // #define VSLR_SLOW_BREAK
 // #define SSLR_SLOW_BREAK
 
@@ -46,14 +47,14 @@ float BinaryRefinement(inout float3 EndProj, float3 Reflect)
 	[unroll(MAX_FIND_STEP)]
 	for(int i = 0; i < MAX_FIND_STEP; ++i)
 	{
-		HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
+		HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
 		HitDepth *= HitDepth;
 		
 		Reflect *= 0.5f;
 		EndProj += dot(EndProj, EndProj) > HitDepth ? -Reflect : Reflect;
 	}
 	
-	HitDepth = s_env.SampleLevel(smp_rtlinear, EndProj.xyz, 0).w;
+	HitDepth = s_env.SampleLevel(smp_nofilter, EndProj.xyz, 0).w;
 	HitDepth *= HitDepth;
 	
 	return HitDepth;
@@ -94,7 +95,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		return float4(SamplePoint, 0.0f);
 	}
 	
-	Step *= fog_params.z; //sqrt((RadiusS - DistanceS) * rcp(DirectionS));
+	Step *= fog_params.z - length(Point); //sqrt((RadiusS - DistanceS) * rcp(DirectionS));
 	
 	float Fade = 0;
 	float Delta = 0.0f;
@@ -109,7 +110,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 		
 		SamplePoint.xyz = Point.xyz + Reflect * L;
 		
-		SampleHitPointLen = s_env.SampleLevel(smp_rtlinear, SamplePoint.xyz, 0).w;
+		SampleHitPointLen = s_env.SampleLevel(smp_nofilter, SamplePoint.xyz, 0).w;
 		SampleHitPointLen *= SampleHitPointLen;
 		
 		Delta = dot(SamplePoint, SamplePoint) - SampleHitPointLen;
@@ -121,7 +122,7 @@ float4 FastViewReflections(float3 Point, float3 Reflect)
 			
 			SampleHitPointLen = BinaryRefinement(SamplePoint.xyz, JReflect);
 			Delta = dot(SamplePoint.xyz, SamplePoint.xyz) - SampleHitPointLen;
-			Fade = abs(Delta * rcp(L * L + 1.0f)) < 0.15f;
+			Fade = abs(Delta) / max(dot(SamplePoint.xyz, SamplePoint.xyz), SampleHitPointLen) < 0.1f;
 
 #ifdef VSLR_SLOW_BREAK
 			if(Fade)
@@ -185,10 +186,13 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 			EndProj.xyz -= JReflect;
 			
 			HitDepth = BinaryRefinementHUD(EndProj.xyz, JReflect);
-			Delta = EndProj.z - HitDepth;
 			
-			Fade = is_hud || abs(Delta) * rcp(max(HitDepth, 0.001f)) < 0.007f;
+			float2 depthL = rcp(max(1.0f - HitDepth, 0.00001f));
+			float2 depthR = rcp(max(1.0f - EndProj.z, 0.00001f));
+			
 			EndProj.z = HitDepth;
+			
+		 	Fade = is_hud || abs(depthL - depthR) * rcp(max(depthL, depthR)) < 0.01f;
 			
 #ifdef SSLR_SLOW_BREAK
 			if(Fade)
