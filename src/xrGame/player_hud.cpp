@@ -1519,7 +1519,7 @@ void player_hud::UpdateWeaponOffset(u32 delta)
 {
 	static const bool isInertion = EngineExternal()[EEngineExternalGame::EnableWeaponInertion];
 
-	if (!isInertion || hud_adj_mode)
+	if (!isInertion || hud_adj_mode || Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_HudAdjustManager)])
 	{
 		return;
 	}
