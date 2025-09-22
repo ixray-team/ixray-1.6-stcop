@@ -39,7 +39,7 @@ private:
 	bool m_ChooseObject;
 
 private:
-	void FillData();
+	void FillData(bool ReloadTex);
 	void OnItemFocused(const char* name);
 	bool FindItem(const char* name);
 
