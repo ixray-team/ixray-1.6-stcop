@@ -35,6 +35,7 @@ void CCar::script_register(lua_State *L)
 		.def("SetExplodeTime",	&CCar::SetExplodeTime)
 		.def("ExplodeTime",		&CCar::ExplodeTime)
 		.def("CarExplode",		&CCar::CarExplode)
+		.def("actor_owner",		&CCar::OwnerActor)
 			
 		// FX: [AIW]
 		.def("add_fuel",			&CCar::AddFuel)

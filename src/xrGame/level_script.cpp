@@ -699,6 +699,11 @@ float add_cam_effector2(LPCSTR fn, int id, bool cyclic, LPCSTR cb_func, float ca
 	return						e->GetAnimatorLength();
 }
 
+float add_cam_effector2(LPCSTR fn, int id, bool cyclic, LPCSTR cb_func) 
+{
+	return add_cam_effector2(fn, id, cyclic, cb_func, g_fov);
+}
+
 void remove_cam_effector(int id)
 {
 	Actor()->Cameras().RemoveCamEffector((ECamEffectorType)id );
@@ -1572,8 +1577,8 @@ void CLevel::script_register(lua_State *L)
 		def("get_snd_volume",					&get_snd_volume),
 		def("set_snd_volume",					&set_snd_volume),
 		def("add_cam_effector",					&add_cam_effector),
-		def("add_cam_effector2",				&add_cam_effector2),
-		def("add_cam_effector2",				&add_cam_effector_without_fov),
+		def("add_cam_effector2",				(float (*) (LPCSTR fn, int id, bool cyclic, LPCSTR cb_func, float cam_fov)) &add_cam_effector2),
+		def("add_cam_effector2",				(float (*) (LPCSTR fn, int id, bool cyclic, LPCSTR cb_func)) &add_cam_effector2),
 		def("remove_cam_effector",				&remove_cam_effector),
 		def("add_pp_effector",					&add_pp_effector),
 		def("set_pp_effector_factor",			&set_pp_effector_factor),
