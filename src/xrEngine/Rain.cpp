@@ -233,13 +233,17 @@ void CEffect_Rain::OnFrame()
 		}
 
 		state = stWorking;
-		snd_Ambient.play(nullptr, sm_Looped);
-		if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
-			CurDropSnd.play(nullptr, sm_Looped);
-		else
-			CurDropSnd.stop();
-		snd_Ambient.set_position(Fvector().set(0, 0, 0));
-		snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
+		if (snd_Ambient._handle() != nullptr)
+		{
+			snd_Ambient.play(nullptr, sm_Looped);
+			if (!Device.IsEditorMode() || (Device.IsEditorMode() && bIsSndOnRoof))
+				CurDropSnd.play(nullptr, sm_Looped);
+			else
+				CurDropSnd.stop();
+			snd_Ambient.set_position(Fvector().set(0, 0, 0));
+			snd_Ambient.set_range(g_pGamePersistent->Environment().source_offset, g_pGamePersistent->Environment().source_offset * 2.f);
+		}
+
 		break;
 	}
 	case stWorking:
