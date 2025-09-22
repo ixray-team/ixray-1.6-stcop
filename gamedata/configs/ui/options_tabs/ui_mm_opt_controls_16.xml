@@ -41,11 +41,8 @@
                     <text r="170" g="170" b="170" font="arial_14" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_key</text>
                 </auto_static>
             </header_2>
-            <auto_frameline x="260" y="0" width="84" height="15">
-                <texture>ui_inGame2_servers_list_button</texture>
-            </auto_frameline>
-            <header_3 x="260" y="0" width="68" height="15">
-                <texture a="150">ui_inGame2_empty_frameline_15</texture>
+            <header_3 x="260" y="0" width="84" height="15">
+                <texture a="150">ui_inGame2_servers_list_button</texture>
                 <auto_static x="2" y="0" width="68" height="15">
                     <text r="170" g="170" b="170" font="arial_14" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_alternative</text>
                 </auto_static>
