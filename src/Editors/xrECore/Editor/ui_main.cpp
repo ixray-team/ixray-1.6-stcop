@@ -1,8 +1,4 @@
-//---------------------------------------------------------------------------
-
 #include "stdafx.h"
-
-
 #include "../xrEngine/xr_input.h"
 #include "UI_ToolsCustom.h"
 
@@ -406,191 +402,179 @@ void TUI::Redraw()
 {
 	PrepareRedraw();
 
-	{
-		Viewport& View = CurrentView();
+	Viewport& View = CurrentView();
 
-		if
+	if
 		(
-			u32(View.RTSize.x * EDevice->m_ScreenQuality) != EDevice->TargetWidth || 
+			u32(View.RTSize.x * EDevice->m_ScreenQuality) != EDevice->TargetWidth ||
 			u32(View.RTSize.y * EDevice->m_ScreenQuality) != EDevice->TargetHeight ||
 			!RT->pSurface
-		)
+			)
+
+		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
-			if(!ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
-			{
-				EDevice->TargetWidth = View.RTSize.x * EDevice->m_ScreenQuality;
-				EDevice->TargetHeight = View.RTSize.y * EDevice->m_ScreenQuality;
+			EDevice->TargetWidth = View.RTSize.x * EDevice->m_ScreenQuality;
+			EDevice->TargetHeight = View.RTSize.y * EDevice->m_ScreenQuality;
 
-				RT.destroy();
-				RTCopy.destroy();
-				ZB.destroy();
-				View.RTFreez.destroy();
+			RT.destroy();
+			RTCopy.destroy();
+			ZB.destroy();
+			View.RTFreez.destroy();
 
-				RTPostion.destroy();
-				RTNormal.destroy();
-				RTDiffuse.destroy();
+			RTPostion.destroy();
+			RTNormal.destroy();
+			RTDiffuse.destroy();
 
-				RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
-				RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
-				RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
+			RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+			RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
+			RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
 
-				RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
-				View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
 
-				ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
+			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
 
-				m_Flags.set(flRedraw, TRUE);
+			m_Flags.set(flRedraw, TRUE);
 
-				EDevice->m_fNearer = EDevice->mProject._43;
-				EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
-				EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
-				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
+			EDevice->m_fNearer = EDevice->mProject._43;
+			EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
+			EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
+			EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
 
-				EDevice->seqDeviceReset.Process(rp_DeviceReset);
-				EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
-				RCache.set_xform_project(EDevice->mProject);
-				RCache.set_xform_world(Fidentity);
-			}
-			else 
-			{
-				// Soft render update when resizing window
-				EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
-				EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
-				EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
-				m_Flags.set(flRedraw, TRUE); 
-			}
+			EDevice->seqDeviceReset.Process(rp_DeviceReset);
+			EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
+			RCache.set_xform_project(EDevice->mProject);
+			RCache.set_xform_world(Fidentity);
 		}
-		if (!UI->IsPlayInEditor())
+		else
 		{
-			EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
+			// Soft render update when resizing window
+			EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
+			EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
+			EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
+			m_Flags.set(flRedraw, TRUE);
 		}
 
-		if (EDevice->Begin())
+	if (!UI->IsPlayInEditor())
+	{
+		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
+	}
+
+	if (EDevice->Begin())
+	{
+		if (psDeviceFlags.is(rsRenderRealTime))
+			m_Flags.set(flRedraw, TRUE);
+		if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
 		{
-			if (psDeviceFlags.is(rsRenderRealTime))
-				m_Flags.set(flRedraw, TRUE);
-			if (m_Flags.is(flRedraw) || UI->IsPlayInEditor())
+			m_Flags.set(flRedraw, FALSE);
+
+			RCache.set_RT(RTNormal->pRT, 0);
+			RCache.set_RT(RTDiffuse->pRT, 1);
+			RCache.set_RT(RTPostion->pRT, 2);
+
+			RCache.set_ZB(0);
+
+			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
+
+			RCache.set_RT(RT->pRT);
+			RCache.set_ZB(ZB->pRT);
+
+			EDevice->Clear();
+
+			RCache.set_RT(RTDiffuse->pRT, 1);
+			RCache.set_RT(RTNormal->pRT, 2);
+			RCache.set_RT(RTPostion->pRT, 3);
+
+			RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
+			EDevice->UpdateView();
+			EDevice->ResetMaterial();
+
+			Tools->RenderEnvironment();
+
+			for (u32 k = 0; k < Caps.raster.dwStages; k++)
 			{
-				m_Flags.set(flRedraw, FALSE);
-
-				RCache.set_RT(RTNormal->pRT, 0);
-				RCache.set_RT(RTDiffuse->pRT, 1);
-				RCache.set_RT(RTPostion->pRT, 2);
-
-				RCache.set_ZB(0);
-
-				CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
-
-				RCache.set_RT(RT->pRT);
-				RCache.set_ZB(ZB->pRT);
-
-				EDevice->Clear();
-
-				RCache.set_RT(RTDiffuse->pRT, 1);
-				RCache.set_RT(RTNormal->pRT, 2);
-				RCache.set_RT(RTPostion->pRT, 3);
-
-				RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-				//EDevice->Statistic->RenderDUMP_RT.Begin();
-				EDevice->UpdateView();
-				EDevice->ResetMaterial();
-
-				Tools->RenderEnvironment();
-
-				//. temporary reset filter (      )
-				for (u32 k = 0; k < Caps.raster.dwStages; k++)
-				{
-					if (psDeviceFlags.is(rsFilterLinear)) {
-						EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-						EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-						EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-					}
-					else {
-						EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-						EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-						EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
-					}
+				if (psDeviceFlags.is(rsFilterLinear)) {
+					EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+					EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+					EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 				}
-
-				// draw grid
-				if (psDeviceFlags.is(rsDrawGrid)) {
-					DU_impl.DrawGrid();
-					DU_impl.DrawPivot(m_Pivot);
+				else {
+					EDevice->SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+					EDevice->SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+					EDevice->SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
 				}
+			}
 
-				{
-					Tools->Render();
-				}
-				// draw selection rect
-				if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
+			// draw grid
+			if (psDeviceFlags.is(rsDrawGrid))
+			{
+				DU_impl.DrawGrid();
+				DU_impl.DrawPivot(m_Pivot);
+			}
 
-				// draw axis
-				if (psDeviceFlags.test(rsDrawAxis) && !psDeviceFlags.test(rsDisableAxisCube))
+			Tools->Render();
+
+			// draw selection rect
+			if (m_SelectionRect)
+			{
+				DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
+			}
+
+			// draw axis
+			if (psDeviceFlags.test(rsDrawAxis) && !psDeviceFlags.test(rsDisableAxisCube))
 				DU_impl.DrawAxis(UI->CurrentView().m_Camera.GetTransform());
 
 
-				EDevice->Statistic->RenderDUMP_RT.End();
-				EDevice->Statistic->Show();
-				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+			EDevice->Statistic->RenderDUMP_RT.End();
+			EDevice->Statistic->Show();
+			EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 
-				g_FontManager->Render();
+			g_FontManager->Render();
 
-				EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
-				EDevice->seqRender.Process(rp_Render);
+			EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
+			EDevice->seqRender.Process(rp_Render);
 
-				if (g_pGamePersistent->OnRenderPPUI_query())
-				{
-					g_pGamePersistent->OnRenderPPUI_main();
-				}
-
-				RCache.set_RT(0, 1);
-				RCache.set_RT(0, 2);
-				RCache.set_RT(0, 3);
-
-				RCache.set_RT(RSwapchainTarget);
-				RCache.set_ZB(RDepth);
-
-				RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
-				RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-				RDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-				RDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-			}
-
-#ifndef DEBUG
-			try
-#endif
+			if (g_pGamePersistent->OnRenderPPUI_query())
 			{
-				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-				g_bRendering = FALSE;
-				// 
-				 //RCache.set_RT(RSwapchainTarget);
-				 //  Draw(); 
-				   // end draw
-				UI->BeginFrame();
-
-				Draw();
-
-				UI->EndFrame();
-				EDevice->End();
-				UI->MDIUpdate();
+				g_pGamePersistent->OnRenderPPUI_main();
 			}
-#ifndef DEBUG
-			catch (...)
-			{
-				ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
-			}
-#endif
+
+			RCache.set_RT(0, 1);
+			RCache.set_RT(0, 2);
+			RCache.set_RT(0, 3);
+
+			RCache.set_RT(RSwapchainTarget);
+			RCache.set_ZB(RDepth);
+
+			RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
+			RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+			RDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+			RDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		}
+
+		EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+		g_bRendering = FALSE;
+
+		// end draw
+		UI->BeginFrame();
+
+		Draw();
+
+		UI->EndFrame();
+		EDevice->End();
+		UI->MDIUpdate();
 	}
 
-	for (auto Callback : CommandList[TUI::ECommandListID::CurrentFrame])
+	for (auto& Callback : CommandList[TUI::ECommandListID::CurrentFrame])
+	{
 		Callback();
+	}
 
 	CommandList[TUI::ECommandListID::CurrentFrame].clear();
 	std::swap(CommandList[TUI::ECommandListID::CurrentFrame], CommandList[TUI::ECommandListID::NextFrame]);
 }
-//---------------------------------------------------------------------------
+
 void TUI::RealResize()
 {
 	m_Flags.set			(flResize,FALSE);
@@ -684,23 +668,16 @@ bool TUI::Idle()
 	return !m_AppClosed;
 }
 
-//---------------------------------------------------------------------------
 void ResetActionToSelect()
 {
 	ExecCommand(COMMAND_CHANGE_ACTION, etaSelect);
 }
-//---------------------------------------------------------------------------
-
-#define MIN_PANEL_HEIGHT 15
-
 
 bool TUI::OnCreate()
 {
 // create base class
 	EDevice->InitTimer();
 
-  //  m_D3DWindow 	= w;
-  //  m_D3DPanel		= p;
 	EDevice->Initialize();
 	// Creation
 	ETOOLS::ray_options	(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
@@ -872,7 +849,7 @@ void TUI::OnDrawUI()
 	UIImageEditorForm::Update();
 	UISoundEditorForm::Update();
 	UIMinimapEditorForm::Update();
-    UIWeatherPropForm::Update();
+	UIWeatherPropForm::Update();
 	UIIconPicker::Update();
 	UILogForm::Update();
 	EDevice->seqDrawUI.Process(rp_DrawUI);

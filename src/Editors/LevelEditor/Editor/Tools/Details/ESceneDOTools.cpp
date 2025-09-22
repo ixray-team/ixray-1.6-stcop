@@ -549,6 +549,7 @@ void EDetailManager::SaveLTX(CInifile& ini, int id)
 
 bool EDetailManager::LoadStream(IReader& F)
 {
+    IsLoaded = false;
 	inherited::LoadStream	(F);
 
     string256 buf;
