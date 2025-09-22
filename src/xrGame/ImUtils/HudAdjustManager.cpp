@@ -17,84 +17,6 @@ extern bool forceFPDraw;
 extern bool forceFP2Draw;
 extern bool forceSPDraw;
 
-void ImGui_Render2DWidget(float grid_step=24.0f)
-{
-	static ImVec2 circlePos(100.0f, 100.0f);
-	static float circleRadius = 20.0f;
-	const float squareSize = 200.0f;
-	const float minRadius = 5.0f;
-	const float maxRadius = 50.0f;
-	const auto color_hovered = IM_COL32(255, 255, 0, 200);
-	const auto color_nothovered = IM_COL32(255, 0, 0, 200);
-	const auto color_active = IM_COL32(50, 200, 50, 200);
-	ImGui::BeginChild("SquareArea", ImVec2(squareSize, squareSize), true,
-		ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove);
-	{
-		const ImVec2 squareMin = ImGui::GetWindowPos();
-		const ImVec2 squareMax(squareMin.x + squareSize, squareMin.y + squareSize);
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-		// Draw square border
-		drawList->AddRectFilled(squareMin, squareMax, IM_COL32(25,25,25,255));
-		const ImU32 gridColor = IM_COL32(100, 100, 100, 255); // Gray with 50% alpha
-		for (float x = 0; x <= squareSize; x += grid_step) {
-			ImVec2 start(squareMin.x + x, squareMin.y);
-			ImVec2 end(squareMin.x + x, squareMax.y);
-			drawList->AddLine(start, end, gridColor);
-		}
-		for (float y = 0; y <= squareSize; y += grid_step) {
-			ImVec2 start(squareMin.x, squareMin.y + y);
-			ImVec2 end(squareMax.x, squareMin.y + y);
-			drawList->AddLine(start, end, gridColor);
-		}
-
-		// Calculate circle position in screen space
-		const ImVec2 circleCenter(squareMin.x + circlePos.x, squareMin.y + circlePos.y);
-
-		// Create invisible button over the circle area
-		ImGui::SetCursorScreenPos(ImVec2(circleCenter.x - circleRadius, circleCenter.y - circleRadius));
-		ImGui::InvisibleButton("##CircleDrag", ImVec2(circleRadius * 2, circleRadius * 2));
-
-		// Handle dragging only when clicking inside the circle
-		if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-		{
-			ImVec2 mouseDelta = ImGui::GetIO().MouseDelta;
-			circlePos.x = std::clamp(circlePos.x + mouseDelta.x,
-				circleRadius, squareSize - circleRadius);
-			circlePos.y = std::clamp(circlePos.y + mouseDelta.y,
-				circleRadius, squareSize - circleRadius);
-		}
-
-		ImU32 cursor_color = color_nothovered;
-		if (ImGui::IsItemHovered() && !ImGui::IsItemActive())
-		{
-			cursor_color = color_hovered;
-		}
-
-		if (ImGui::IsItemActive())
-		{
-			cursor_color = color_active;
-		}
-
-		// Handle mouse wheel for radius adjustment
-		if (ImGui::IsWindowHovered())
-		{
-			const float wheel = ImGui::GetIO().MouseWheel;
-			if (wheel != 0.0f)
-			{
-				circleRadius = std::clamp(circleRadius + wheel * 2.0f, minRadius, maxRadius);
-				circlePos.x = std::clamp(circlePos.x, circleRadius, squareSize - circleRadius);
-				circlePos.y = std::clamp(circlePos.y, circleRadius, squareSize - circleRadius);
-			}
-		}
-
-		// Draw the circle
-		drawList->AddCircle(circleCenter, circleRadius, cursor_color);
-	}
-	ImGui::EndChild();
-}
-
-
 void RenderHUDAdjustManager()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_HudAdjustManager)])
@@ -161,7 +83,7 @@ void RenderHUDAdjustManager()
 							if (p_item)
 							{
 								string16 name = "";
-								sprintf_s(name, sizeof(name), "attached_item#%d", index);
+								xr_sprintf(name, sizeof(name), "attached_item#%d", index);
 								ImGui::SeparatorText(name);
 
 							//	ImGui::Text("Hands hud: %s", p_item->m_parent->section_name().c_str());
@@ -170,9 +92,9 @@ void RenderHUDAdjustManager()
 
 								string32 item_header_name = "";
 								string64 hud_header_name = "";
-								snprintf(hud_header_name, sizeof(hud_header_name), "Hud = %s##hh%d", p_item->m_parent->section_name().c_str(), index);
+								xr_sprintf(hud_header_name, sizeof(hud_header_name), "Hud = %s##hh%d", p_item->m_parent->section_name().c_str(), index);
 
-								std::sprintf(item_header_name, "Item = %s##hh%d", p_item->m_sect_name.c_str(), index);
+								xr_sprintf(item_header_name, "Item = %s##hh%d", p_item->m_sect_name.c_str(), index);
 
 								firedeps fd;
 								p_item->setup_firedeps(fd);
@@ -182,9 +104,10 @@ void RenderHUDAdjustManager()
 									{
 										ImGui::SeparatorText("Offset##FP");
 
+										Fvector& position = p_item->m_measures.m_fire_point_offset;
 										if (ImGui::Button("Reset##FPOffset"))
 										{
-											// todo: implement
+											position = pSettings->r_fvector3(p_item->m_sect_name, "fire_point");
 										}
 
 										if (ImGui::BeginTable("Data##FPP", 1))
@@ -194,7 +117,6 @@ void RenderHUDAdjustManager()
 											ImGui::TableNextColumn();
 
 
-											Fvector& position = p_item->m_measures.m_fire_point_offset;
 
 											ImGui::SliderFloat("X##FPP", &position.x, -1.0f, 1.0f);
 
@@ -213,9 +135,10 @@ void RenderHUDAdjustManager()
 									{
 										ImGui::SeparatorText("Offset##FP2");
 
+										Fvector& position = p_item->m_measures.m_fire_point2_offset;
 										if (ImGui::Button("Reset##FP2Offset"))
 										{
-											// todo: implement
+											position = pSettings->r_fvector3(p_item->m_sect_name, "fire_point2");
 										}
 
 										if (ImGui::BeginTable("Data##FP2P", 1))
@@ -225,7 +148,6 @@ void RenderHUDAdjustManager()
 											ImGui::TableNextColumn();
 
 
-											Fvector& position = p_item->m_measures.m_fire_point2_offset;
 
 											ImGui::SliderFloat("X##FP2P", &position.x, -1.0f, 1.0f);
 
@@ -244,9 +166,10 @@ void RenderHUDAdjustManager()
 									{
 										ImGui::SeparatorText("Offset##SP");
 
+										Fvector& position = p_item->m_measures.m_shell_point_offset;
 										if (ImGui::Button("Reset##SPOffset"))
 										{
-											// todo: implement
+											position = pSettings->r_fvector3(p_item->m_sect_name, "shell_point");
 										}
 
 										if (ImGui::BeginTable("Data##SPP", 1))
@@ -256,7 +179,6 @@ void RenderHUDAdjustManager()
 											ImGui::TableNextColumn();
 
 
-											Fvector& position = p_item->m_measures.m_shell_point_offset;
 
 											ImGui::SliderFloat("X##SPP", &position.x, -1.0f, 1.0f);
 
@@ -272,59 +194,114 @@ void RenderHUDAdjustManager()
 								{
 									if (ImGui::CollapsingHeader(hud_header_name))
 									{
-
-
-										ImGui::SeparatorText("Position##HUD");
-
-										if (ImGui::Button("Reset##HPosition"))
+										xr_string fmt;
+										u8 offsetIdx = p_item->m_parent_hud_item->GetCurrentHudOffsetIdx();
+										switch (offsetIdx)
 										{
-											// todo: implement
+										case 1:
+											fmt = "aim";
+											break;
+										case 2:
+											fmt = "aim gl";
+											break;
+										default:
+											fmt = "default";
+											break;
 										}
+										ImGui::Text("Hud offset index: %d (%s)", offsetIdx, fmt.c_str());
 
-										if (ImGui::BeginTable("Data##HUDP", 1))
+										auto drawHudParameters = [](attachable_hud_item* p_item, u8 attach_idx) -> void
+											{
+												ImGui::SeparatorText("Position##HUD");
+
+												Fvector& position = attach_idx ? p_item->m_measures.m_hands_positions.hands_offsets[0][attach_idx] : p_item->m_measures.m_hands_attach_real[0];
+												if (ImGui::Button("Reset##HPosition"))
+												{
+													switch (attach_idx)
+													{
+													case 1:
+														position = pSettings->r_fvector3(p_item->m_sect_name, "aim_hud_offset_pos");
+														break;
+													case 2:
+														position = pSettings->r_fvector3(p_item->m_sect_name, "gl_hud_offset_pos");
+														break;
+													default:
+														position = pSettings->r_fvector3(p_item->m_sect_name, "hands_position");
+														break;
+													}
+												}
+
+												if (ImGui::BeginTable("Data##HUDP", 1))
+												{
+													ImGui::TableNextRow();
+
+													ImGui::TableNextColumn();
+
+
+													ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
+
+													ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
+
+													ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
+
+													ImGui::EndTable();
+												}
+
+												ImGui::SeparatorText("Rotation##HUD");
+
+												Fvector& rotation = attach_idx ? p_item->m_measures.m_hands_positions.hands_offsets[1][attach_idx] : p_item->m_measures.m_hands_attach_real[1];
+												if (ImGui::Button("Reset##HRotation"))
+												{
+													switch (attach_idx)
+													{
+													case 1:
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, "aim_hud_offset_rot");
+														break;
+													case 2:
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, "gl_hud_offset_rot");
+														break;
+													default:
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, "hands_orientation");
+														break;
+													}
+												}
+
+												if (ImGui::BeginTable("Data##HUDR", 1))
+												{
+													ImGui::TableNextRow();
+
+													ImGui::TableNextColumn();
+
+
+													ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
+
+													ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
+
+													ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
+
+													ImGui::TableNextColumn();
+
+													ImGui::EndTable();
+												}
+											};
+
+										if (ImGui::CollapsingHeader("Offset 0 (default)"))
 										{
-											ImGui::TableNextRow();
-
-											ImGui::TableNextColumn();
-
-											Fvector& position = p_item->hands_offset_pos();
-
-											ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
-
-											ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
-
-											ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
-
-											ImGui::EndTable();
+											drawHudParameters(p_item, 0);
 										}
-
-
-
-
-										ImGui::SeparatorText("Rotation##HUD");
-
-										if (ImGui::Button("Reset##HRotation"))
+										if (p_item->m_measures.m_hands_positions.hands_offsets[0][1] != zero_vel)
 										{
-											// todo: implement
+											if (ImGui::CollapsingHeader("Offset 1 (aim)"))
+											{
+												drawHudParameters(p_item, 1);
+											}
 										}
-
-										if (ImGui::BeginTable("Data##HUDR", 1))
+										if (p_item->m_measures.m_hands_positions.hands_offsets[0][2] != zero_vel)
 										{
-											ImGui::TableNextRow();
-
-											ImGui::TableNextColumn();
-
-											Fvector& rotation = p_item->hands_offset_rot();
-
-											ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
-
-											ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
-
-											ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
-
-											ImGui::TableNextColumn();
-
-											ImGui::EndTable();
+											if (ImGui::CollapsingHeader("Offset 2 (aim gl)"))
+											{
+												drawHudParameters(p_item, 2);
+											}
 										}
 									}
 								}
@@ -332,6 +309,11 @@ void RenderHUDAdjustManager()
 								if (ImGui::CollapsingHeader(item_header_name))
 								{
 									ImGui::SeparatorText("Position##Item");
+									Fvector& position = p_item->m_measures.m_item_attach[0];
+									if (ImGui::Button("Reset##IPosition"))
+									{
+										position = pSettings->r_fvector3(p_item->m_sect_name, "item_position");
+									}
 
 									if (ImGui::BeginTable("Data##HUDPI", 1))
 									{
@@ -339,7 +321,6 @@ void RenderHUDAdjustManager()
 
 										ImGui::TableNextColumn();
 
-										Fvector& position = p_item->m_measures.m_item_attach[0];
 
 										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
 
@@ -351,6 +332,11 @@ void RenderHUDAdjustManager()
 									}
 
 									ImGui::SeparatorText("Rotation##Item");
+									Fvector& rotation = p_item->m_measures.m_item_attach[1];
+									if (ImGui::Button("Reset##IRotation"))
+									{
+										rotation = pSettings->r_fvector3(p_item->m_sect_name, "item_orientation");
+									}
 
 									if (ImGui::BeginTable("Data##HUDR", 1))
 									{
@@ -358,7 +344,6 @@ void RenderHUDAdjustManager()
 
 										ImGui::TableNextColumn();
 
-										Fvector& rotation = p_item->m_measures.m_item_attach[1];
 
 										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
 
