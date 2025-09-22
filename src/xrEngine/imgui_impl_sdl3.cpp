@@ -197,6 +197,17 @@ static void ImGui_ImplSDL3_PlatformSetImeData(ImGuiContext*, ImGuiViewport* view
 ImGuiKey ImGui_ImplSDL3_KeyEventToImGuiKey(SDL_Keycode keycode, SDL_Scancode scancode);
 ImGuiKey ImGui_ImplSDL3_KeyEventToImGuiKey(SDL_Keycode keycode, SDL_Scancode scancode)
 {
+    if (scancode >= SDL_SCANCODE_A && scancode <= SDL_SCANCODE_Z)
+    {
+        return (ImGuiKey)(ImGuiKey_A + (scancode - SDL_SCANCODE_A));
+    }
+
+    if (scancode >= SDL_SCANCODE_1 && scancode <= SDL_SCANCODE_0)
+    {
+        if (scancode == SDL_SCANCODE_0) return ImGuiKey_0;
+        return (ImGuiKey)(ImGuiKey_1 + (scancode - SDL_SCANCODE_1));
+    }
+
     // Keypad doesn't have individual key values in SDL3
     switch (scancode)
     {
