@@ -123,8 +123,6 @@ void UILeftBarForm::Draw()
 				{
 					CEditableMesh* pMesh = *mesh_it;
 					pMesh->AssignMesh("idle");
-					//pMesh->UnloadRenderBuffers();
-					//pMesh->GenerateRenderBuffers();
 				}
 
 				ATools->RealUpdateProperties();

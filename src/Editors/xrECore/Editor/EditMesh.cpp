@@ -382,13 +382,22 @@ void CEditableMesh::GenerateSVertices(u32 influence)
 void CEditableMesh::GenerateAdjacency()
 {
 	m_AdjsRefs++;
-    if (m_Adjs)		return;
-	m_Adjs			= new AdjVec();
-	VERIFY			(m_Faces);
-    m_Adjs->resize	(m_VertCount);
-//.	Log				(".. Update adjacency");
-	for (u32 f_id=0; f_id<m_FaceCount; f_id++)
-		for (int k=0; k<3; k++) (*m_Adjs)[m_Faces[f_id].pv[k].pindex].push_back(f_id);
+	if (m_Adjs)
+	{
+		return;
+	}
+
+	m_Adjs = new AdjVec();
+	VERIFY(m_Faces);
+	m_Adjs->resize(m_VertCount);
+
+	for (u32 f_id = 0; f_id < m_FaceCount; f_id++)
+	{
+		for (int k = 0; k < 3; k++)
+		{
+			(*m_Adjs)[m_Faces[f_id].pv[k].pindex].push_back(f_id);
+		}
+	}
 }
 
 CSurface*	CEditableMesh::GetSurfaceByFaceID(u32 fid)
