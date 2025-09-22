@@ -948,6 +948,12 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 				if (ImGui::Selectable("5", false))
 				{
+					Tools->m_MoveSnap = 5.f;
+				}
+				if (ImGui::IsItemHovered())
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				if (ImGui::Selectable("10", false))
+				{
 					Tools->m_MoveSnap = 10.f;
 				}
 				if (ImGui::IsItemHovered())
