@@ -24,17 +24,32 @@ float Contrast(float Input, float ContrastPower)
 	#define PopGamma(x) abs(x)
 #endif
 
+#ifndef USE_CGIM_WHITE_TWEAK
+	#define RCP_WHITE_SQR 0.34602f
+	#define INV_TONEMAP_COEF_ONE 0.61592f
+	#define INV_TONEMAP_COEF_TWO 1.44565f
+#else
+	#define RCP_WHITE_SQR 0.416233f
+	#define INV_TONEMAP_COEF_ONE 0.335068f
+	#define INV_TONEMAP_COEF_TWO 1.20125f
+#endif
+
 float3 tonemap(float3 rgb, float scale)
 {	
 	rgb = rgb * scale;
-	return PopGamma(rgb * (1.0f + rgb * 0.34602f) * rcp(rgb + 1.0f));
+	rgb = rgb * (1.0f + rgb * RCP_WHITE_SQR) * rcp(rgb + 1.0f);
+	
+	return PopGamma(rgb);
 }
 
 float3 detonemap(float3 rgb)
 {
 	rgb = PushGamma(rgb);
-	float3 r = rgb * rgb - 0.61592f * rgb + 1.0f;  
-	return (rgb + sqrt(r) - 1.0f) * 1.445f;  
+	
+	float3 scale = rgb * rgb - INV_TONEMAP_COEF_ONE * rgb + 1.0f;
+	rgb = rgb + sqrt(scale) - 1.0f;
+	
+	return rgb * INV_TONEMAP_COEF_TWO;  
 }
 
 void RemapVector(inout float3 View)
