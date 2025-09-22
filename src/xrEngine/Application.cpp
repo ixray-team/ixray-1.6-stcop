@@ -345,9 +345,12 @@ void CApplication::Level_Set(u32 L)
 			string_path temp2;
 			gen_logo_name(path, Levels[L].folder, count);
 
-			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) {
+			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) 
+			{
 				count++;
-			} else {
+			} 
+			else 
+			{
 				string_path temp3;
 				xr_strconcat(path, "intro\\intro_", Levels[L].folder);
 				path[xr_strlen(path) - 1] = 0;
@@ -355,9 +358,13 @@ void CApplication::Level_Set(u32 L)
 				string_path nm;
 				xr_strconcat(nm, path, ".dds");
 				FS.update_path(temp3, "$game_textures$", nm);
+				if (!FS.exist(temp3))
+				{
+					xr_strconcat(path, "intro\\intro_no_start_picture.dds");
+				}
 
 				break;
-		}
+			}
 		}
 
 		if (count)
