@@ -967,6 +967,7 @@ void CParticleTool::PlayCurrent(int idx)
     StopCurrent		(false);
     switch(m_EditMode){
     case emNone:
+    case emAnimCurve:
         {
             break;
         }
@@ -975,6 +976,7 @@ void CParticleTool::PlayCurrent(int idx)
             m_EditPE->Play();
             break;
         }
+    case emEffectSlot:
     case emGroup:
         {
             if (idx>-1){
@@ -1119,10 +1121,6 @@ void CParticleTool::RealApplyParent()
             break;
         }
     case emEffectSlot:
-        {
-            R_ASSERT(false);
-            break;
-        }
     case emGroup:
         {
             m_EditPG->UpdateParent(m_Transform,m_Vel,m_Flags.is(flSetXFORM));
