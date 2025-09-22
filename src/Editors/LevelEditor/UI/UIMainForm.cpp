@@ -334,12 +334,14 @@ void UIMainForm::DrawContextMenu()
 	if (ImGui::MenuItem("Make Heightmap"))
 	{
 		ESceneObjectTool* mt = (ESceneObjectTool*)Scene->GetTool(OBJCLASS_SCENEOBJECT);
-		CSceneObject* Obj = (CSceneObject*)mt->LastSelected();
-		auto MeshObjects = Obj->Meshes();
-
-		for (auto Mesh : *MeshObjects)
+		if (CSceneObject* Obj = (CSceneObject*)mt->LastSelected())
 		{
-			XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
+			auto MeshObjects = Obj->Meshes();
+
+			for (auto Mesh : *MeshObjects)
+			{
+				XRay::Editor::HeightmapUtils::GenerateHeightmapByMesh(Obj->GetReference(), *Mesh->Name());
+			}
 		}
 	}
 }
