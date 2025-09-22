@@ -1439,13 +1439,3 @@ void EPABindVelocityValue::Compile(IWriter& F)
 	pBindVelocityValue(F, _vector("InitialValue").val);
 }
 
-void PS::CPEDef::Render(const Fmatrix& parent)
-{
-	Fmatrix trans; trans.translate(parent.c);
-	for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); it++)
-		if ((*it)->flags.is(EParticleAction::flDraw|EParticleAction::flEnabled)){
-			PBool* ar = (*it)->_bool_safe("Allow Rotate");
-			(*it)->Render((ar&&ar->val)?parent:trans);
-		}
-}
-
