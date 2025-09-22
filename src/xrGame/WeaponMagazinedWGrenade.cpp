@@ -585,9 +585,30 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		d.normalize();
 		d.mul(CRocketLauncher::m_fLaunchSpeed);
 		VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
-		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
+		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel); 
 
 		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
+		if (!IsGameTypeSingle())
+		{
+			if (!pGrenade)
+			{
+				if (m_ammoTypes.size() > m_ammoType && pSettings->line_exist(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name"))
+				{
+					shared_str fake_grenade_name = pSettings->r_string(m_ammoTypes[m_ammoType].c_str(), "fake_grenade_name");
+					if (fake_grenade_name.size())
+					{
+						CRocketLauncher::SpawnRocket(*fake_grenade_name, this);
+						pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
+					}
+				}
+
+				if (!pGrenade)
+				{
+					return;
+				}
+			}
+		}
+
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 
