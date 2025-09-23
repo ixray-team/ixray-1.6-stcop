@@ -45,16 +45,25 @@ void CPSLibrary::OnCreate()
  
 void CPSLibrary::OnDestroy()
 {
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
-    	(*e_it)->DestroyShader();
-
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
-		xr_delete	(*e_it);
+	for (auto elem : m_PEDs)
+	{
+		elem->DestroyShader();
+		xr_delete(elem);
+	}
 	m_PEDs.clear	();
 
-	for (PS::PGDIt g_it = m_PGDs.begin(); g_it!=m_PGDs.end(); g_it++)
-		xr_delete	(*g_it);
+	for (auto elem : m_PGDs)
+	{
+		xr_delete(elem);
+	}
 	m_PGDs.clear	();
+
+	for (auto elem : m_PACDs)
+	{
+		xr_delete(elem);
+	}
+	m_PACDs.clear();
+	
     m_all_ps.clear();
 	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(nullptr);
 }
