@@ -455,7 +455,7 @@ void CCar::VisualUpdate(float fov)
 	Fvector lin_vel = zero_vel;
 	if(m_pPhysicsShell)
 	{
-		if (IsMyCar())
+		if (IsMyCar() || IsGameTypeSingle())
 		{
 			m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 		}
