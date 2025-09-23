@@ -272,13 +272,18 @@ void stalker_movement_manager_base::setup_movement_params	(stalker_movement_para
 				(movement_params.m_path_type != MovementManager::ePathTypeNoPath)
 			)
 		{
+			u32 vertex_id = level_path().dest_vertex_id();
+
 			if (!restrictions().accessible(level_path().dest_vertex_id())) {
-				Fvector							temp;
-				level_path().set_dest_vertex	(restrictions().accessible_nearest(ai().level_graph().vertex_position(level_path().dest_vertex_id()),temp));
-				detail().set_dest_position		(temp);
+				Fvector temp;
+				if (vertex_id != u32(-1))
+				{
+					level_path().set_dest_vertex(restrictions().accessible_nearest(ai().level_graph().vertex_position(level_path().dest_vertex_id()), temp));
+				} 
+
+				detail().set_dest_position(temp);
 			}
 			else {
-				u32								vertex_id = level_path().dest_vertex_id();
 				Fvector							vertex_position = ai().level_graph().vertex_position(level_path().dest_vertex_id());
 				VERIFY2							(
 					restrictions().accessible(vertex_position) || show_restrictions(&restrictions()),
