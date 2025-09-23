@@ -144,8 +144,8 @@ function delete_save_game(filename)
 	f:file_delete("$game_saves$",save_file)
 	    
     -- START IX-Ray
-	if (file_exist(filename..scop_marshal)) then
-		f:file_delete("$game_saves$",filename..scop_marshal)
+	if (file_exist(filename..saved_game_extension_ex)) then
+		f:file_delete("$game_saves$",filename..saved_game_extension_ex)
 	end
 	-- END IX-Ray
 	
@@ -328,13 +328,16 @@ end
 
 function load_dialog:OnButton_del_clicked()
 	if self.list_box:GetSize()==0 then return end
-	local index = self.list_box:GetSelectedItem()
-	
-	if index == -1 then return end
-	
+	local index = self.list_box:GetSelectedIndex()
+	local item = self.list_box:GetItemByIndex(index) -- Suhar_
+
+	if index == -1 or item==nil then -- Suhar_
+		return
+	end
+
 	self.msgbox_id = 1
-	
-	self.message_box:InitMessageBox("message_box_delete_file_name")		
+
+	self.message_box:InitMessageBox("message_box_delete_file_name")
 	self:GetHolder():start_stop_menu(self.message_box, true)
 end
 

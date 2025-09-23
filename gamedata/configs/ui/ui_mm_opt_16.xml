@@ -9,7 +9,7 @@
       <auto_static x="0" y="0" width="102" height="768" stretch="1">
 		    <texture>ui_inGame2_opt_left_widepanel</texture>
 	    </auto_static>
-	    <auto_static x="921" y="0" width="102" height="768" stretch="1">
+	    <auto_static x="921" y="0" width="104" height="768" stretch="1">
 		    <texture>ui_inGame2_opt_right_widepanel</texture>
 	    </auto_static>
 	</background>
