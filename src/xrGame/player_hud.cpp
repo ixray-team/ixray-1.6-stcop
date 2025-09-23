@@ -1685,66 +1685,82 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
-	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
-	if (pEntity)
+	CObject* cur_entity = Level().CurrentEntity();
+	if (CEntity* pEntity = cur_entity != nullptr ? cur_entity->cast_entity() : nullptr)
 	{
-		CActor* pActor = smart_cast<CActor*>(pEntity);
-		if(pActor)
+		if (CActor* pActor = pEntity->cast_actor())
 		{
-			if(pActor->HUDview())
+			if (pActor->HUDview())
 			{
-				if(cmd==0)
+				if (cmd == 0)
 				{
-					if(m_attached_items[0])
+					if (m_attached_items[0] != nullptr)
 					{
-						if(m_attached_items[0]->m_parent_hud_item->GetState()==CHUDState::eIdle)
+						if (m_attached_items[0]->m_parent_hud_item->GetState() == CHUDState::EHudStates::eIdle)
+						{
 							m_attached_items[0]->m_parent_hud_item->PlayAnimIdle();
+						}
 					}
-					if(m_attached_items[1])
-					{
-						if(m_attached_items[1]->m_parent_hud_item->GetState()==CHUDState::eIdle)
-							m_attached_items[1]->m_parent_hud_item->PlayAnimIdle();
-					}
-				}else
-				{
-					if(m_attached_items[0])
-						m_attached_items[0]->m_parent_hud_item->OnMovementChanged(cmd);
 
-					if(m_attached_items[1])
+					if (m_attached_items[1] != nullptr)
+					{
+						if (m_attached_items[1]->m_parent_hud_item->GetState() == CHUDState::EHudStates::eIdle)
+						{
+							m_attached_items[1]->m_parent_hud_item->PlayAnimIdle();
+						}
+					}
+				}
+				else
+				{
+					if (m_attached_items[0] != nullptr)
+					{
+						m_attached_items[0]->m_parent_hud_item->OnMovementChanged(cmd);
+					}
+
+					if (m_attached_items[1] != nullptr)
+					{
 						m_attached_items[1]->m_parent_hud_item->OnMovementChanged(cmd);
+					}
 				}
 			}
 			else
 			{
-				if(cmd==0)
+				PIItem active_item = pActor->inventory().ActiveItem();
+
+				if (cmd == 0)
 				{
-					if(pActor->inventory().ActiveItem())
+					if (CHudItem* pWeap = active_item != nullptr ? active_item->cast_hud_item() : nullptr)
 					{
-						CHudItem* pWeap = pActor->inventory().ActiveItem()->cast_hud_item();
-						if(pWeap && pWeap->GetState()==CHUDState::eIdle)
+						if (pWeap->GetState() == CHUDState::EHudStates::eIdle)
+						{
 							pWeap->PlayAnimIdle();
-					}
-					if(pActor->inventory().ItemFromSlot(DETECTOR_SLOT))
-					{
-						CHudItem* pDetector = smart_cast<CHudItem*>(pActor->inventory().ItemFromSlot(DETECTOR_SLOT));
-						if(pDetector && pDetector->GetState()==CHUDState::eIdle)
-							pDetector->PlayAnimIdle();
+						}
 					}
 
+					if (CCustomDetector* pDetector = pActor->GetDetector(true))
+					{
+						if (pDetector->GetState() == CHUDState::EHudStates::eIdle)
+						{
+							pDetector->PlayAnimIdle();
+						}
+					}
 				}
 				else
 				{
-					if(pActor->inventory().GetActiveSlot() != NO_ACTIVE_SLOT)
+					if (CHudItem* pWeap = active_item != nullptr ? active_item->cast_hud_item() : nullptr)
 					{
-						CHudItem* pWeap = pActor->inventory().ActiveItem()->cast_hud_item();
-						if(pWeap && pWeap->GetState()!=CHUDState::eHidden)
+						if (!pWeap->IsHidden())
+						{
 							pWeap->OnMovementChanged(cmd);
+						}
 					}
-					if(pActor->inventory().ItemFromSlot(DETECTOR_SLOT))
+
+					if (CCustomDetector* pDetector = pActor->GetDetector(true))
 					{
-						CHudItem* pDetector = smart_cast<CHudItem*>(pActor->inventory().ItemFromSlot(DETECTOR_SLOT));
-						if(pDetector && pDetector->GetState()!=CHUDState::eHidden)
+						if (!pDetector->IsHidden())
+						{
 							pDetector->OnMovementChanged(cmd);
+						}
 					}
 				}
 			}
