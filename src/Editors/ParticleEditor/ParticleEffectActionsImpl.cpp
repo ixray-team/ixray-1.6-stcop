@@ -878,7 +878,7 @@ void	EPADamping::Compile			(IWriter& F)
 	float vhigh = _float("V High").val;
 	PADamping 	S;
 	S.type			= PADampingID;
-	S.damping		= pVector(damping.x, damping.y, damping.z);
+	S.damping		= Fvector(damping.x, damping.y, damping.z);
 	S.vlowSqr		= _sqr(vlow);
 	S.vhighSqr		= _sqr(vhigh);
 	S.AlighRotVelocityToVelocity = _bool("Align Rotation Velocity to Velocity").val;
@@ -910,7 +910,7 @@ void	EPAExplosion::Compile	  	(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAExplosion 	S;
 	S.type			= PAExplosionID;
-	S.centerL		= pVector(center.x, center.y, center.z);
+	S.centerL		= Fvector(center.x, center.y, center.z);
 	S.center		= S.centerL;
 	S.velocity		= velocity;
 	S.magnitude		= magnitude;
@@ -986,7 +986,7 @@ void	EPAGravity::Compile			(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAGravity 	S;
 	S.type			= PAGravityID;
-	S.directionL	= pVector(dir.x, dir.y, dir.z);
+	S.directionL	= Fvector(dir.x, dir.y, dir.z);
 	S.direction		= S.directionL;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,allow_rotate);
 	F.w_u32			(S.type);
@@ -1014,7 +1014,7 @@ void	EPAJet::Compile				(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAJet 	S;
 	S.type			= PAJetID;
-	S.centerL		= pVector(center.x, center.y, center.z);
+	S.centerL		= Fvector(center.x, center.y, center.z);
 	S.center		= S.centerL;
 	S.accL			= ConvDomain(_domain("Accelerate"));
 	S.acc			= S.accL;
@@ -1113,9 +1113,9 @@ void	EPAOrbitLine::Compile	 	(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAOrbitLine 	S;
 	S.type			= PAOrbitLineID;
-	S.pL			= pVector(p.x, p.y, p.z);
+	S.pL			= Fvector(p.x, p.y, p.z);
 	S.p			= S.pL;
-	S.axisL		= pVector(axis.x, axis.y, axis.z);
+	S.axisL		= Fvector(axis.x, axis.y, axis.z);
 	S.axisL.normalize_safe();
 	S.axis			= S.axisL;
 	S.magnitude	= magnitude;
@@ -1160,7 +1160,7 @@ void	EPAOrbitPoint::Compile	   	(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAOrbitPoint 	S;
 	S.type			= PAOrbitPointID;
-	S.centerL		= pVector(center.x, center.y, center.z);
+	S.centerL		= Fvector(center.x, center.y, center.z);
 	S.center		= S.centerL;
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
@@ -1278,7 +1278,7 @@ void	EPAScatter::Compile	 		(IWriter& F)
 	BOOL allow_rotate = _bool("Allow Rotate").val;
 	PAScatter 		S;
 	S.type			= PAScatterID;
-	S.centerL		= pVector(center.x, center.y, center.z);
+	S.centerL		= Fvector(center.x, center.y, center.z);
 	S.center		= S.centerL;
 	S.magnitude		= magnitude;
 	S.epsilon		= epsilon;
@@ -1378,7 +1378,7 @@ void	EPASource::Compile			(IWriter& F)
 	S.m_Flags.assign(
 		(_bool("Single Size").val ? PASource::flSingleSize : 0)
 		| PASource::flVertexB_tracks);
-	S.parent_vel	= pVector(0,0,0);
+	S.parent_vel	= Fvector(0,0,0);
 	S.parent_motion	= _float("Parent Motion").val;
 	S.m_Flags.set	(ParticleAction::ALLOW_ROTATE,_bool("Allow Rotate").val);
 	F.w_u32			(S.type);
@@ -1460,7 +1460,7 @@ void EPATargetColor::Compile(IWriter& F)
 	float time_to = _float("TimeTo").val;
 	PATargetColor 	S;
 	S.type			= PATargetColorID;
-	S.color = pVector(color.x, color.y, color.z);
+	S.color = Fvector(color.x, color.y, color.z);
 	S.alpha = alpha;
 	S.scale = scale;
 	S.timeFrom = time_from;
@@ -1482,8 +1482,8 @@ void	EPATargetSize::Compile	  	(IWriter& F)
 	const Fvector& scale = _vector("Scale").val;
 	PATargetSize 	S;
 	S.type			= PATargetSizeID;
-	S.size = pVector(size.x, size.y, size.z);
-	S.scale = pVector(scale.x, scale.y, scale.z);
+	S.size = Fvector(size.x, size.y, size.z);
+	S.scale = Fvector(scale.x, scale.y, scale.z);
 	F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1501,7 +1501,7 @@ void	EPATargetRotate::Compile   	(IWriter& F)
 	float scale = _float("Scale").val;
 	PATargetRotate 	S;
 	S.type			= PATargetRotateID;
-	S.rot = pVector(rot.x, rot.y, rot.z);
+	S.rot = Fvector(rot.x, rot.y, rot.z);
 	S.scale = scale;
 	F.w_u32			(S.type);
 	S.Save			(F);

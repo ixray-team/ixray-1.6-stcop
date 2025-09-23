@@ -24,8 +24,8 @@ namespace PAPI
 
 		int Resize(u32 max_count);
 		void Remove(int i);
-		BOOL Add(const pVector& pos, const pVector& posB,
-			const pVector& size, const pVector& rot, const pVector& vel, const pVector& rot_vel, u32 color,
+		BOOL Add(const Fvector& pos, const Fvector& posB,
+			const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel, u32 color,
 			const float age = 0.0f, u16 frame = 0, u16 flags = 0);
 	};
 }
