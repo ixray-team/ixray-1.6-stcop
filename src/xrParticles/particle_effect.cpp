@@ -64,8 +64,8 @@ void ParticleEffect::Remove(int i)
 	m = particles[--p_count];
 }
 
-BOOL ParticleEffect::Add(const pVector& pos, const pVector& posB,
-	const pVector& size, const pVector& rot, const pVector& vel, const pVector& rot_vel, u32 color,
+BOOL ParticleEffect::Add(const Fvector& pos, const Fvector& posB,
+	const Fvector& size, const Fvector& rot, const Fvector& vel, const Fvector& rot_vel, u32 color,
 	const float age, u16 frame, u16 flags)
 {
 	if (p_count >= max_particles)

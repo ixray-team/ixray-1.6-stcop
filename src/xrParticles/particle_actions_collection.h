@@ -74,7 +74,7 @@ namespace PAPI{
 			vhighSqr,
 			align_rot_vel_to_vel
 		};
-		pVector damping;	// Damping constant applied to velocity
+		Fvector damping;	// Damping constant applied to velocity
 		float vlowSqr;		// Low and high cutoff velocities
 		float vhighSqr;
 		bool AlighRotVelocityToVelocity = true;
@@ -94,8 +94,8 @@ namespace PAPI{
 			epsilon,
 			align_rot_vel_to_vel
 		};
-		pVector centerL;	// The center of the explosion (in local space)
-		pVector center;		// The center of the explosion
+		Fvector centerL;	// The center of the explosion (in local space)
+		Fvector center;		// The center of the explosion
 		float velocity;		// Of shock wave
 		float magnitude;	// At unit radius
 		float stdev;		// Sharpness or width of shock wave
@@ -146,8 +146,8 @@ namespace PAPI{
 		{
 			direction
 		};
-		pVector directionL;	// Amount to increment velocity (in local space)
-		pVector direction;	// Amount to increment velocity
+		Fvector directionL;	// Amount to increment velocity (in local space)
+		Fvector direction;	// Amount to increment velocity
 
         _METHODS;
 	};
@@ -163,9 +163,9 @@ namespace PAPI{
 			max_radius,
 			align_rot_vel_to_vel
 		};
-		pVector	centerL;	// Center of the fan (in local space)
+		Fvector	centerL;	// Center of the fan (in local space)
 		pDomain accL;		// Acceleration vector domain  (in local space)
-		pVector	center;		// Center of the fan
+		Fvector	center;		// Center of the fan
 		pDomain acc;		// Acceleration vector domain
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
@@ -221,8 +221,8 @@ namespace PAPI{
 			max_radius,
 			align_rot_vel_to_vel
 		};
-		pVector pL, axisL;	// Endpoints of line to which particles are attracted (in local space)
-		pVector p, axis;	// Endpoints of line to which particles are attracted
+		Fvector pL, axisL;	// Endpoints of line to which particles are attracted (in local space)
+		Fvector p, axis;	// Endpoints of line to which particles are attracted
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
@@ -241,8 +241,8 @@ namespace PAPI{
 			max_radius,
 			align_rot_vel_to_vel
 		};
-		pVector centerL;	// Point to which particles are attracted (in local space)
-		pVector center;		// Point to which particles are attracted
+		Fvector centerL;	// Point to which particles are attracted (in local space)
+		Fvector center;		// Point to which particles are attracted
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
@@ -314,8 +314,8 @@ namespace PAPI{
 			max_radius,
 			align_rot_vel_to_vel
 		};
-		pVector	centerL;	// Center of the fan (in local space)
-		pVector	center;		// Center of the fan
+		Fvector	centerL;	// Center of the fan (in local space)
+		Fvector	center;		// Center of the fan
 		float magnitude;	// Scales acceleration
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
@@ -405,7 +405,7 @@ namespace PAPI{
 		float particle_rate;// Particles to generate per unit time
 		float age;			// Initial age of the particles
 		float age_sigma;	// St. dev. of initial age of the particles
-		pVector parent_vel;	
+		Fvector parent_vel;	
 		float parent_motion;
 
         _METHODS;
@@ -422,7 +422,7 @@ namespace PAPI{
 			timeTo
 		};
 		PATargetColor():timeFrom(0.0f),timeTo(1.0f){}
-		pVector color;		// Color to shift towards
+		Fvector color;		// Color to shift towards
 		float alpha;		// Alpha value to shift towards
 		float scale;		// Amount to shift by (1 == all the way)
 		float timeFrom;
@@ -438,8 +438,8 @@ namespace PAPI{
 			size,
 			scale
 		};
-		pVector size;		// Size to shift towards
-		pVector scale;		// Amount to shift by per frame (1 == all the way)
+		Fvector size;		// Size to shift towards
+		Fvector scale;		// Amount to shift by per frame (1 == all the way)
 
         _METHODS;
 	};
@@ -451,7 +451,7 @@ namespace PAPI{
 			rot,
 			scale
 		};
-		pVector rot;		// Rotation to shift towards
+		Fvector rot;		// Rotation to shift towards
 		float scale;		// Amount to shift by per frame (1 == all the way)
 
         _METHODS;
@@ -465,8 +465,8 @@ namespace PAPI{
 			scale,
 			align_rot_vel_to_vel
 		};
-		pVector velocityL;	// Velocity to shift towards (in local space)
-		pVector velocity;	// Velocity to shift towards
+		Fvector velocityL;	// Velocity to shift towards (in local space)
+		Fvector velocity;	// Velocity to shift towards
 		float scale;		// Amount to shift by (1 == all the way)
 		bool AlighRotVelocityToVelocity = true;
 
@@ -483,10 +483,10 @@ namespace PAPI{
 			epsilon,
 			max_radius
 		};
-		pVector centerL;	// Center of vortex (in local space)
-		pVector axisL;		// Axis around which vortex is applied (in local space)
-		pVector center;		// Center of vortex
-		pVector axis;		// Axis around which vortex is applied
+		Fvector centerL;	// Center of vortex (in local space)
+		Fvector axisL;		// Axis around which vortex is applied (in local space)
+		Fvector center;		// Center of vortex
+		Fvector axis;		// Axis around which vortex is applied
 		float magnitude;	// Scale for rotation around axis
 		float epsilon;		// Softening parameter
 		float max_radius;	// Only influence particles within max_radius
@@ -510,7 +510,7 @@ namespace PAPI{
 		int	octaves;		// Octaves
 		float magnitude;	// Scale for rotation around axis
 		float epsilon;		// Softening parameter
-        pVector offset;		// Offset
+        Fvector offset;		// Offset
         float age;
     	bool AlighRotVelocityToVelocity = true;
 
@@ -524,7 +524,7 @@ namespace PAPI{
 			BindValue,
 			align_rot_vel_to_vel
 		};
-		pVector BindValue;
+		Fvector BindValue;
 		bool AlighRotVelocityToVelocity = true;
 
 		_METHODS;
@@ -536,7 +536,7 @@ namespace PAPI{
 		{
 			BindValue
 		};
-		pVector BindValue;
+		Fvector BindValue;
 
 		_METHODS;
 	};
@@ -548,8 +548,8 @@ namespace PAPI{
 			BindValue,
 			Pivot
 		};
-		pVector BindValue;
-		pVector Pivot;
+		Fvector BindValue;
+		Fvector Pivot;
 
 		_METHODS;
 	};
@@ -560,7 +560,7 @@ namespace PAPI{
 		{
 			BindValue
 		};
-		pVector BindValue;
+		Fvector BindValue;
 
 		_METHODS;
 	};
