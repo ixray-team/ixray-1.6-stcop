@@ -403,7 +403,7 @@ void* PAAvoid::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Avoid: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Avoid: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 
@@ -800,7 +800,7 @@ void* PABounce::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Bounce: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Bounce: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -838,7 +838,7 @@ void* PACopyVertexB::GetVariableImpl(u8 VarID)
 	case EVariable::copy_pos:
 		return &copy_pos;
 	}
-	R_ASSERT(false, "Particle action CopyVertexB: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action CopyVertexB: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -891,7 +891,7 @@ void* PADamping::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Damping: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Damping: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -965,7 +965,7 @@ void* PAExplosion::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Explosion: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Explosion: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1041,7 +1041,7 @@ void* PAFollow::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Follow: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Follow: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1137,7 +1137,7 @@ void* PAGravitate::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Gravitate: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Gravitate: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1162,7 +1162,7 @@ void* PAGravity::GetVariableImpl(u8 VarID)
 	case EVariable::direction:
 		return &direction;
 	}
-	R_ASSERT(false, "Particle action Gravity: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Gravity: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1262,7 +1262,7 @@ void* PAJet::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Jet: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Jet: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1359,7 +1359,7 @@ void* PAScatter::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Scatter: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Scatter: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1388,7 +1388,7 @@ void* PAKillOld::GetVariableImpl(u8 VarID)
 	case EVariable::kill_less_than:
 		return &kill_less_than;
 	}
-	R_ASSERT(false, "Particle action KillOld: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action KillOld: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1484,7 +1484,7 @@ void* PAMatchVelocity::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action MatchVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action MatchVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1506,7 +1506,7 @@ void PAMove::Transform(const Fmatrix&){;}
 
 void* PAMove::GetVariableImpl(u8 VarID)
 {
-	R_ASSERT(false, "Particle action Move: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Move: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1611,7 +1611,7 @@ void* PAOrbitLine::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action OrbitLine: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action OrbitLine: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1701,7 +1701,7 @@ void* PAOrbitPoint::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action OrbitPoint: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action OrbitPoint: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1745,7 +1745,7 @@ void* PARandomAccel::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action RandomAccel: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action RandomAccel: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1778,7 +1778,7 @@ void* PARandomDisplace::GetVariableImpl(u8 VarID)
 	case EVariable::gen_disp:
 		return &gen_disp;
 	}
-	R_ASSERT(false, "Particle action RandomDisplace: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action RandomDisplace: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1821,7 +1821,7 @@ void* PARandomVelocity::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action RandomVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action RandomVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1941,7 +1941,7 @@ void* PARestore::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Restore: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Restore: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -1973,7 +1973,7 @@ void* PASink::GetVariableImpl(u8 VarID)
 	case EVariable::position:
 		return &position;
 	}
-	R_ASSERT(false, "Particle action Sink: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Sink: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2005,7 +2005,7 @@ void* PASinkVelocity::GetVariableImpl(u8 VarID)
 	case EVariable::velocity:
 		return &velocity;
 	}
-	R_ASSERT(false, "Particle action SinkVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action SinkVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2166,7 +2166,7 @@ void* PASource::GetVariableImpl(u8 VarID)
 			return &parent_motion;
 		}
 	}
-	R_ASSERT(false, "Particle action Source: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Source: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2221,7 +2221,7 @@ void* PASpeedLimit::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action SpeedLimit: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action SpeedLimit: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2259,7 +2259,7 @@ void* PATargetColor::GetVariableImpl(u8 VarID)
 	case EVariable::timeTo:
 		return &timeTo;
 	}
-	R_ASSERT(false, "Particle action TargetColor: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action TargetColor: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2292,7 +2292,7 @@ void* PATargetSize::GetVariableImpl(u8 VarID)
 	case EVariable::scale:
 		return &scale;
 	}
-	R_ASSERT(false, "Particle action TargetSize: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action TargetSize: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2323,7 +2323,7 @@ void* PATargetRotate::GetVariableImpl(u8 VarID)
 	case EVariable::scale:
 		return &scale;
 	}
-	R_ASSERT(false, "Particle action TargetRotate: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action TargetRotate: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2366,7 +2366,7 @@ void* PATargetVelocity::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action TargetVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action TargetVelocity: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2485,7 +2485,7 @@ void* PAVortex::GetVariableImpl(u8 VarID)
 	case EVariable::max_radius:
 		return &max_radius;
 	}
-	R_ASSERT(false, "Particle action Vortex: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Vortex: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
@@ -2626,7 +2626,7 @@ void* PATurbulence::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action Turbulence: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action Turbulence: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 
@@ -2657,7 +2657,7 @@ void* PABindVelocityValue::GetVariableImpl(u8 VarID)
 			return &AlighRotVelocityToVelocity;
 		}
 	}
-	R_ASSERT(false, "Particle action BindVelocityValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action BindVelocityValue: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PABindRotationValue::Transform(const Fmatrix& m) {}
@@ -2675,7 +2675,7 @@ void* PABindRotationValue::GetVariableImpl(u8 VarID)
 	case EVariable::BindValue:
 		return &BindValue;
 	}
-	R_ASSERT(false, "Particle action BindRotationValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action BindRotationValue: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PABindSizeValue::Transform(const Fmatrix& m) {}
@@ -2697,7 +2697,7 @@ void* PABindSizeValue::GetVariableImpl(u8 VarID)
 	case EVariable::Pivot:
 		return &Pivot;
 	}
-	R_ASSERT(false, "Particle action BindSizeValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action BindSizeValue: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PABindColorValue::Transform(const Fmatrix& m) {}
@@ -2720,7 +2720,7 @@ void* PABindColorValue::GetVariableImpl(u8 VarID)
 	case EVariable::BindValue:
 		return &BindValue;
 	}
-	R_ASSERT(false, "Particle action BindColorValue: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action BindColorValue: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PABindColorAlpha::Transform(const Fmatrix& m) {}
@@ -2743,7 +2743,7 @@ void* PABindColorAlpha::GetVariableImpl(u8 VarID)
 	case EVariable::BindValue:
 		return &BindValue;
 	}
-	R_ASSERT(false, "Particle action BindColorAlpha: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action BindColorAlpha: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 
@@ -2793,7 +2793,7 @@ void* PAColorAnimator::GetVariableImpl(u8 VarID)
 	case EVariable::Reverse:
 		return &Reverse;
 	}
-	R_ASSERT(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action ColorAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PASizeAnimator::Transform(const Fmatrix& m)
@@ -2836,7 +2836,7 @@ void* PASizeAnimator::GetVariableImpl(u8 VarID)
 	case EVariable::Reverse:
 		return &Reverse;
 	}
-	R_ASSERT(false, "Particle action SizeAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action SizeAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PAVelocityAnimator::Transform(const Fmatrix& m)
@@ -2894,7 +2894,7 @@ void* PAVelocityAnimator::GetVariableImpl(u8 VarID)
 	case EVariable::Reverse:
 		return &Reverse;
 	}
-	R_ASSERT(false, "Particle action VelocityAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action VelocityAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 void PAVelocityRotationAnimator::Transform(const Fmatrix& m)
@@ -2952,7 +2952,7 @@ void* PAVelocityRotationAnimator::GetVariableImpl(u8 VarID)
 	case EVariable::Reverse:
 		return &Reverse;
 	}
-	R_ASSERT(false, "Particle action VelocityRotationAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
+	R_ASSERT3(false, "Particle action VelocityRotationAnimator: Invalid Variable ID", std::to_string(VarID).c_str());
 	return nullptr;
 }
 //-------------------------------------------------------------------------------------------------
