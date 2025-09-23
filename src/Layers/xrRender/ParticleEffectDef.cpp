@@ -71,7 +71,7 @@ void CPEDef::ExecuteAnimate(Particle *particles, u32 p_cnt, float dt)
 
 void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CParticleEffect* owner, CollisionCallback cb)
 {
-	pVector pt,n;
+	Fvector pt,n;
 	// Must traverse list in reverse order so Remove will work
 	for(int i = p_cnt-1; i >= 0; i--){
 		Particle &m = particles[i];
@@ -109,8 +109,8 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					}else{
 						// Compute tangential and normal components of velocity
 						float nmag = m.vel * n;
-						pVector vn(n * nmag); 	// Normal Vn = (V.N)N
-						pVector vt(m.vel - vn);	// Tangent Vt = V - Vn
+						Fvector vn(n * nmag); 	// Normal Vn = (V.N)N
+						Fvector vt(m.vel - vn);	// Tangent Vt = V - Vn
 
 						// Compute _new velocity heading out:
 						// Don't apply friction if tangential velocity < cutoff
