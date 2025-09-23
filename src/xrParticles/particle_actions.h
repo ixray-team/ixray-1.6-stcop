@@ -65,7 +65,7 @@ namespace PAPI
 		IC ParticleAction* find (PActionEnum type)
 		{
 			auto it = std::find_if(actions.begin(), actions.end(), [&](ParticleAction* pa){return pa->type == type;});
-			R_ASSERT(it != actions.end(), "Failed to find action", magic_enum::enum_name<PActionEnum>(type).data());
+			R_ASSERT3(it != actions.end(), "Failed to find action", magic_enum::enum_name<PActionEnum>(type).data());
 			return it != actions.end() ? (*it) : nullptr;
 		}
 	};
