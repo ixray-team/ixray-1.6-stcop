@@ -3,7 +3,7 @@
 
 void PS::CPACLibraryWrapper::SetPACLibrary(IPACLibrary* NewPACLibrary)
 {
-    R_ASSERT2(!PACLibrary, "Attempt to init PACLibrary while other present!");
+    R_ASSERT2(!NewPACLibrary || !PACLibrary, "Attempt to init PACLibrary while other present!");
     PACLibrary = NewPACLibrary;
 }
 
