@@ -689,7 +689,7 @@ PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnu
 	{
 		return elem._effect->dcast_ParticleCustom()->Name() == PEName;
 	});
-	R_ASSERT(it != items.end(), "Unable to find PE in PG", PEName.c_str(), Name().c_str());
+	R_ASSERT4(it != items.end(), "Unable to find PE in PG", PEName.c_str(), Name().c_str());
 	return it != items.end() ? it->_effect->dcast_ParticleCustom()->FindPA(PEName, Action) : nullptr;
 }
 

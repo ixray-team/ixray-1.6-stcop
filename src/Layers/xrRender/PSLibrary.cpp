@@ -305,7 +305,7 @@ bool CPSLibrary::Load(const char* nm)
 				Message.append(std::to_string(u16(ver)));
 			}
 			Message.append("]");
-			R_ASSERT(false, Message.c_str());
+			R_ASSERT2(false, Message.c_str());
 			return false;
 		}
 	}
