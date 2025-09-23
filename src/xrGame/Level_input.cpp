@@ -241,13 +241,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		// FS.rescan_pathes();
 		FS.IsAddonPhase = false;
 #endif // DEBUG
-		string_path					saved_game,command;
-		xr_strconcat(saved_game, Core.UserName, " - ", g_pStringTable->translate("quicksave").c_str());
-		if (!CSavedGameWrapper::valid_saved_game(saved_game))
-			return;
-
-		xr_strconcat(command,"load ",saved_game);
-		Console->Execute			(command);
+		Console->Execute			("load_last_save");
 		return;
 	}
 
