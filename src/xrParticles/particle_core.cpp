@@ -7,11 +7,11 @@
 using namespace PAPI;
 
 // To offset [0 .. 1] vectors to [-.5 .. .5]
-static pVector vHalf(0.5, 0.5, 0.5);
+static Fvector vHalf(0.5, 0.5, 0.5);
 
-ICF pVector RandVec()
+ICF Fvector RandVec()
 {
-	return pVector(drand48(), drand48(), drand48());
+	return Fvector(drand48(), drand48(), drand48());
 }
 
 // Return a random number with a normal distribution.
@@ -43,12 +43,12 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 	switch(type)
 	{
 	case PDPoint:
-		p1 = pVector(a0, a1, a2);
+		p1 = Fvector(a0, a1, a2);
 		break;
 	case PDLine:
 		{
-			p1 = pVector(a0, a1, a2);
-			pVector tmp(a3, a4, a5);
+			p1 = Fvector(a0, a1, a2);
+			Fvector tmp(a3, a4, a5);
 			// p2 is vector3 from p1 to other endpoint.
 			p2 = tmp - p1;
 		}
@@ -82,18 +82,18 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		break;
 	case PDTriangle:
 		{
-			p1 = pVector(a0, a1, a2);
-			pVector tp2 = pVector(a3, a4, a5);
-			pVector tp3 = pVector(a6, a7, a8);
+			p1 = Fvector(a0, a1, a2);
+			Fvector tp2 = Fvector(a3, a4, a5);
+			Fvector tp3 = Fvector(a6, a7, a8);
 			
 			u = tp2 - p1;
 			v = tp3 - p1;
 			
 			// The rest of this is needed for bouncing.
 			radius1Sqr = u.length();
-			pVector tu = u / radius1Sqr;
+			Fvector tu = u / radius1Sqr;
 			radius2Sqr = v.length();
-			pVector tv = v / radius2Sqr;
+			Fvector tv = v / radius2Sqr;
 			
 			p2 = tu ^ tv; // This is the non-unit normal.
 			p2.normalize_safe(); // Must normalize it.
@@ -104,15 +104,15 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		break;
 	case PDRectangle:
 		{
-			p1 = pVector(a0, a1, a2);
-			u = pVector(a3, a4, a5);
-			v = pVector(a6, a7, a8);
+			p1 = Fvector(a0, a1, a2);
+			u = Fvector(a3, a4, a5);
+			v = Fvector(a6, a7, a8);
 			
 			// The rest of this is needed for bouncing.
 			radius1Sqr = u.length();
-			pVector tu = u / radius1Sqr;
+			Fvector tu = u / radius1Sqr;
 			radius2Sqr = v.length();
-			pVector tv = v / radius2Sqr;
+			Fvector tv = v / radius2Sqr;
 			
 			p2 = tu ^ tv; // This is the non-unit normal.
 			p2.normalize_safe(); // Must normalize it.
@@ -123,8 +123,8 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		break;
 	case PDPlane:
 		{
-			p1 = pVector(a0, a1, a2);
-			p2 = pVector(a3, a4, a5);
+			p1 = Fvector(a0, a1, a2);
+			p2 = Fvector(a3, a4, a5);
 			p2.normalize_safe(); // Must normalize it.
 			
 			// radius1 stores the d of the plane eqn.
@@ -132,7 +132,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		}
 		break;
 	case PDSphere:
-		p1 = pVector(a0, a1, a2);
+		p1 = Fvector(a0, a1, a2);
 		if(a3 > a4)
 		{
 			radius1 = a3; radius2 = a4;
@@ -150,8 +150,8 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			// p2 is a vector3 from p1 to the other end of cylinder.
 			// p1 is apex of cone.
 			
-			p1 = pVector(a0, a1, a2);
-			pVector tmp(a3, a4, a5);
+			p1 = Fvector(a0, a1, a2);
+			Fvector tmp(a3, a4, a5);
 			p2 = tmp - p1;
 			
 			if(a6 > a7)
@@ -166,7 +166,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			
 			// Given an arbitrary nonzero vector3 n, make two orthonormal
 			// vectors u and v forming a frame [u,v,n.normalize()].
-			pVector n = p2;
+			Fvector n = p2;
 			float p2l2 = n.length2(); // Optimize this.
 			n.normalize_safe();
 			
@@ -175,9 +175,9 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			radius2Sqr = p2l2 ? 1.0f / p2l2 : 0.0f;
 			
 			// Find a vector3 orthogonal to n.
-			pVector basis(1.0f, 0.0f, 0.0f);
+			Fvector basis(1.0f, 0.0f, 0.0f);
 			if(_abs(basis * n) > 0.999)
-				basis = pVector(0.0f, 1.0f, 0.0f);
+				basis = Fvector(0.0f, 1.0f, 0.0f);
 			
 			// Project away N component, normalize and cross to get
 			// second orthonormal vector3.
@@ -188,7 +188,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		break;
 	case PDBlob:
 		{
-			p1 = pVector(a0, a1, a2);
+			p1 = Fvector(a0, a1, a2);
 			radius1 = a3;
 			float tmp = 1.f/radius1;
 			radius2Sqr = -0.5f*_sqr(tmp);
@@ -197,8 +197,8 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 		break;
 	case PDDisc:
 		{
-			p1 = pVector(a0, a1, a2); // Center point
-			p2 = pVector(a3, a4, a5); // Normal (not used in Within and Generate)
+			p1 = Fvector(a0, a1, a2); // Center point
+			p2 = Fvector(a3, a4, a5); // Normal (not used in Within and Generate)
 			p2.normalize_safe();
 			
 			if(a6 > a7)
@@ -211,9 +211,9 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			}
 			
 			// Find a vector3 orthogonal to n.
-			pVector basis(1.0f, 0.0f, 0.0f);
+			Fvector basis(1.0f, 0.0f, 0.0f);
 			if(_abs(basis * p2) > 0.999)
-				basis = pVector(0.0f, 1.0f, 0.0f);
+				basis = Fvector(0.0f, 1.0f, 0.0f);
 			
 			// Project away N component, normalize and cross to get
 			// second orthonormal vector3.
@@ -227,7 +227,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 }
 
 // Determines if pos is inside the domain
-BOOL pDomain::Within(const pVector &pos) const
+BOOL pDomain::Within(const Fvector &pos) const
 {
 	switch (type)
 	{
@@ -241,7 +241,7 @@ BOOL pDomain::Within(const pVector &pos) const
 		return pos * p2 >= -radius1;
 	case PDSphere:
 		{
-			pVector rvec(pos - p1);
+			Fvector rvec(pos - p1);
 			float rSqr = rvec.length2();
 			return rSqr <= radius1Sqr && rSqr >= radius2Sqr;
 		}
@@ -259,7 +259,7 @@ BOOL pDomain::Within(const pVector &pos) const
 			// rad = x - dist * p2 = projected vector3 of x along the base
 			// p1 is the apex of the cone.
 			
-			pVector x(pos - p1);
+			Fvector x(pos - p1);
 			
 			// Check axial distance
 			// radius2Sqr stores 1 / (p2.p2)
@@ -268,7 +268,7 @@ BOOL pDomain::Within(const pVector &pos) const
 				return FALSE;
 			
 			// Check radial distance; scale radius along axis for cones
-			pVector xrad = x - p2 * dist; // Radial component of x
+			Fvector xrad = x - p2 * dist; // Radial component of x
 			float rSqr = xrad.length2();
 			
 			if(type == PDCone)
@@ -279,7 +279,7 @@ BOOL pDomain::Within(const pVector &pos) const
 		}
 	case PDBlob:
 		{
-			pVector x(pos - p1);
+			Fvector x(pos - p1);
 			// return exp(-0.5 * xSq * Sqr(oneOverSigma)) * ONEOVERSQRT2PI * oneOverSigma;
 			float Gx = expf(x.length2() * radius2Sqr) * radius2;
 			return (drand48() < Gx);
@@ -295,7 +295,7 @@ BOOL pDomain::Within(const pVector &pos) const
 }
 
 // Generate a random point uniformly distrbuted within the domain
-void pDomain::Generate(pVector &pos) const
+void pDomain::Generate(Fvector &pos) const
 {
 	switch (type)
 	{
@@ -380,7 +380,7 @@ void pDomain::Generate(pVector &pos) const
 		}
 		break;
 	default:
-		pos = pVector(0,0,0);
+		pos = Fvector(0,0,0);
 	}
 }
 
