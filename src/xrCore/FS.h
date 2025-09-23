@@ -367,9 +367,12 @@ public:
 	IReader* open_chunk_iterator(u32& ID, IReader* previous=NULL);	// NULL=first
 
 	template<XRay::Concepts::Enum EnumT>
-	IReader* open_chunk_iterator(EnumT ID, IReader* previous=NULL)
+	IReader* open_chunk_iterator(EnumT& ID, IReader* previous=NULL)
 	{
-		return open_chunk_iterator(u32(ID), previous);
+		u32 Iter = u32(ID);
+		IReader* Reader = open_chunk_iterator(Iter, previous);
+		ID = (EnumT)Iter;
+		return Reader;
 	}
 
 	intptr_t find_chunk(u32 ID, BOOL* bCompressed = 0) override;
