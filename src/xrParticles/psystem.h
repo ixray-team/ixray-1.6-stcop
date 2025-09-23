@@ -19,7 +19,7 @@
 //#define drand48() (((float) rand())/((float) RAND_MAX))
 
 namespace PAPI{
-	class PARTICLES_API pVector	: public Fvector
+	class pVector	: public Fvector
 	{
 	public:
 		IC 			pVector		(float ax, float ay, float az)	{ set(ax,ay,az);								}
