@@ -274,7 +274,7 @@ void CCustomPreferences::Load()
 		ShowAxisButtons = JSONData["editor_prefs"]["ShowAxisButtons"];
 
 	if (JSONData["editor_prefs"].contains("ShowOldCameraButtons"))
-		ShowAxisButtons = JSONData["editor_prefs"]["ShowOldCameraButtons"];
+		ShowOldCameraButtons = JSONData["editor_prefs"]["ShowOldCameraButtons"];
 
 	tools_sens_move = JSONData["editor_prefs"]["tools_sens_move"];
 	tools_sens_rot = JSONData["editor_prefs"]["tools_sens_rot"];
@@ -372,6 +372,9 @@ void CCustomPreferences::Save()
 	JSONData["editor_prefs"]["cam_fly_alt"]=cam_fly_alt;
 	JSONData["editor_prefs"]["cam_sens_rot"]=cam_sens_rot;
 	JSONData["editor_prefs"]["cam_sens_move"]=cam_sens_move;
+
+	JSONData["editor_prefs"]["ShowAxisButtons"] = ShowAxisButtons;
+	JSONData["editor_prefs"]["ShowOldCameraButtons"] = ShowOldCameraButtons;
 
 	JSONData["editor_prefs"]["tools_sens_rot"]=tools_sens_rot;
 	JSONData["editor_prefs"]["tools_sens_move"]=tools_sens_move;
