@@ -25,7 +25,7 @@ Fvector   cr_fvector3_hp (float h, float p)
 	return		res;
 }
 
-inline
+/*inline
 Fvector   operator + (const Fvector& v1, const Fvector& v2)
 {
 	return		cr_fvector3 (v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
@@ -35,7 +35,7 @@ inline
 Fvector   operator - (const Fvector& v1, const Fvector& v2)
 {
 	return		cr_fvector3 (v1.x-v2.x, v1.y-v2.y, v1.z-v2.z);
-}
+}*/
 
 inline
 Fvector   operator - (const Fvector& v)
@@ -43,11 +43,11 @@ Fvector   operator - (const Fvector& v)
 	return		cr_fvector3 (-v.x, -v.y, -v.z);
 }
 
-inline
+/*inline
 Fvector   operator * (const Fvector& v, float f)
 {
 	return		cr_fvector3 (v.x*f, v.y*f, v.z*f);
-}
+}*/
 
 inline
 Fvector   operator * (float f, const Fvector& v)
@@ -55,12 +55,12 @@ Fvector   operator * (float f, const Fvector& v)
 	return		cr_fvector3 (v.x*f, v.y*f, v.z*f);
 }
 
-inline
+/*inline
 Fvector   operator / (const Fvector& v, float f)
 {
 	const float	repr_f	=	1.f / f;
 	return		cr_fvector3 (v.x*repr_f, v.y*repr_f, v.z*repr_f);
-}
+}*/
 
 inline
 Fvector   _min (const Fvector& v1, const Fvector& v2)

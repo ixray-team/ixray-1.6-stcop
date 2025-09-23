@@ -469,6 +469,21 @@ public:
 			up.z		= -dir.y * right.x ;
 		}
 	}
+
+	IC float 	length		() const						{	return _sqrt(x*x+y*y+z*z);					}
+	IC float 	length2		() const						{	return (x*x+y*y+z*z);						}
+	
+	IC float 	operator*	(const _vector3 &a) const		{	return x*a.x + y*a.y + z*a.z;				}
+	IC _vector3 	operator*	(const float s) const			{	return _vector3(x*s, y*s, z*s);				}
+	IC _vector3 	operator/	(const float s) const			{	float invs = 1.0f / s;	return _vector3(x*invs, y*invs, z*invs);	}
+	IC _vector3 	operator+	(const _vector3& a) const		{	return _vector3(x+a.x, y+a.y, z+a.z);		}
+	IC _vector3 	operator-	(const _vector3& a) const		{	return _vector3(x-a.x, y-a.y, z-a.z);		}
+	IC _vector3 	operator-	()								{	x = -x;	y = -y;	z = -z;	return *this;		}
+	IC _vector3& operator+=	(const _vector3& a)				{	x += a.x;y += a.y;z += a.z;	return *this;	}
+	IC _vector3& operator-=	(const _vector3& a)		 		{	x -= a.x;y -= a.y;z -= a.z;	return *this;	}
+	IC _vector3& operator*=	(const float a)					{	x *= a;	y *= a;	z *= a;	return *this;		}
+	IC _vector3& operator/=	(const float a)					{	float b = 1.0f / a;	x *= b;	y *= b;	z *= b;	return *this;		}
+	IC _vector3 	operator^	(const _vector3& b) const		{	return _vector3(y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x);		}
 };
 typedef _vector3<float>		Fvector;
 typedef _vector3<float>		Fvector3;
