@@ -9,8 +9,9 @@
 #include "../xrEngine/string_table.h"
 #include "../player_hud.h"
 #include "ai_space.h"
-
+#include "../../xrUI/ui_base.h"
 #include "ImUtils.h"
+#include "../game_news.h"
 
 extern bool hud_adj_crosshair;
 extern bool forceFPDraw;
@@ -382,7 +383,75 @@ void RenderHUDAdjustManager()
 
 				if (ImGui::Button("Save"))
 				{
-					// todo: implement
+					string_path fn;
+					attachable_hud_item* p_hud_item_first = g_player_hud->attached_item(0);
+					attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
+
+					FS.update_path(fn, "$app_data_root$", "hud_adjust\\saved.ltx");
+					CInifile file(fn, FALSE, FALSE, TRUE);
+
+					auto writeParams = [](attachable_hud_item* p_item, CInifile& file) -> void
+						{
+							string64 sect = "";
+							xr_sprintf(sect, sizeof(sect), p_item->m_sect_name.c_str());
+							file.w_u8(sect, "attach_place_idx", p_item->m_attach_place_idx);
+
+							string64 _prefix = {};
+							xr_sprintf(_prefix, "%s", UI().is_widescreen() ? "_16x9" : "");
+							string128 val_name = {};
+
+							xr_strconcat(val_name, "hands_position", _prefix);
+							file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[0]);
+							xr_strconcat(val_name, "hands_orientation", _prefix);
+							file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_attach_real[1]);
+
+							file.w_fvector3(sect, "item_position", p_item->m_measures.m_item_attach[0]);
+							file.w_fvector3(sect, "item_orientation", p_item->m_measures.m_item_attach[1]);
+
+							if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_shell_point))
+							{
+								file.w_fvector3(sect, "shell_point", p_item->m_measures.m_shell_point_offset);
+							}
+							if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point))
+							{
+								file.w_fvector3(sect, "fire_point", p_item->m_measures.m_fire_point_offset);
+							}
+							if (p_item->m_measures.m_prop_flags.test(p_item->m_measures.e_fire_point2))
+							{
+								file.w_fvector3(sect, "fire_point2", p_item->m_measures.m_fire_point2_offset);
+							}
+
+							if (p_item->m_measures.m_hands_positions.hands_offsets[0][1] != zero_vel)
+							{
+								xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][1]);
+								xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][1]);
+							}
+							if (p_item->m_measures.m_hands_positions.hands_offsets[0][2] != zero_vel)
+							{
+								xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][1]);
+								xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][1]);
+							}
+						};
+
+					if (p_hud_item_first)
+					{
+						writeParams(p_hud_item_first, file);
+					}
+					if (p_hud_item_second)
+					{
+						writeParams(p_hud_item_second, file);
+					}
+					GAME_NEWS_DATA				news_data;
+					news_data.m_type = GAME_NEWS_DATA::eNewsType::eNews;
+					news_data.news_caption = "Saved result to:";
+					news_data.news_text = fn;
+					news_data.show_time = 5000;
+					news_data.texture_name = "ui_iconsTotal_bar_darklab_documents2";
+					Actor()->AddGameNews(news_data);
 				}
 
 				ImGui::SeparatorText("Params");
