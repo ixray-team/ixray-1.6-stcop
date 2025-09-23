@@ -206,7 +206,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
 		switch ((*it)->type)
 		{
 		case PASourceID:
-			static_cast<PASource*>(*it)->parent_vel = pVector(vel.x, vel.y, vel.z) * static_cast<PASource*>(*it)->parent_motion;
+			static_cast<PASource*>(*it)->parent_vel = Fvector(vel.x, vel.y, vel.z) * static_cast<PASource*>(*it)->parent_motion;
 			break;
 		}
 	}
