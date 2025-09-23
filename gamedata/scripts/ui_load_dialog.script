@@ -314,13 +314,17 @@ end
 function load_dialog:OnButton_del_clicked()
 	if self.list_box:GetSize()==0 then return end
 	local index = self.list_box:GetSelectedIndex()
+	local item = self.list_box:GetItemByIndex(index) -- Suhar_
 
-	if index == -1 then return end
+	if index == -1 or item==nil then -- Suhar_
+		return
+	end
 
 	self.msgbox_id = 1
 
 	self.message_box:InitMessageBox("message_box_delete_file_name")
 	self.message_box:ShowDialog(true)
+
 end
 
 function load_dialog:OnKeyboard(dik, keyboard_action)  --virtual function
