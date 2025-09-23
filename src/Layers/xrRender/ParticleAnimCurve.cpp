@@ -64,19 +64,19 @@ bool PS::CPACDef::Load(IReader& F)
             F.r_stringZ(m_Name);
 
             FoundedChunk = F.find_chunk(PS::PAC::Chunks::TIME_MAX);
-            R_ASSERT(FoundedChunk, "Not found chunk PED_CHUNK_TIME_MAX");
+            R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_TIME_MAX");
             m_MaxTime = F.r_float();
 
             FoundedChunk = F.find_chunk(PS::PAC::Chunks::KEYS_NUM);
-            R_ASSERT(FoundedChunk, "Not found chunk PED_CHUNK_KEYS_NUM");
+            R_ASSERT2(FoundedChunk, "Not found chunk PED_CHUNK_KEYS_NUM");
             auto Size = F.r_u32();
 
             auto KeysChunk = F.open_chunk(PS::PAC::Chunks::KEYS);
-            R_ASSERT(KeysChunk, "Not found chunk PED_CHUNK_KEYS");
+            R_ASSERT2(KeysChunk, "Not found chunk PED_CHUNK_KEYS");
             for (int i = 0; i < Size; i++)
             {
                 auto KeyChunk = KeysChunk->open_chunk(i);
-                R_ASSERT(KeyChunk, "Not found key chunk in chunk PED_CHUNK_KEYS", std::to_string(i).c_str());
+                R_ASSERT3(KeyChunk, "Not found key chunk in chunk PED_CHUNK_KEYS", std::to_string(i).c_str());
                 m_Keys.push_back(new st_PACKey);
                 auto Key = m_Keys.back();
                 Key->time = KeyChunk->r_float();
