@@ -95,16 +95,21 @@ void  CScriptGameObject::AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, 
 		templ_name);
 }
 
-//void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
-//{
-//	if (CUIGameCustom* current_ui = CurrentGameUI())
-//	{
-//		if (current_ui->TalkMenu->IsShown())
-//		{
-//			current_ui->TalkMenu->AddIconedMessage(caption, text, texture_name, templ_name ? templ_name : "iconed_answer_item");
-//		}
-//	}
-//}
+void _AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
+{
+	if (CUIGameCustom* current_ui = CurrentGameUI())
+	{
+		if (current_ui->TalkMenu->IsShown())
+		{
+			current_ui->TalkMenu->AddIconedMessage(caption, text, texture_name, templ_name ? templ_name : "iconed_answer_item");
+		}
+	}
+}
+
+void CScriptGameObject::AddIconedTalkMessage(LPCSTR caption, LPCSTR text, LPCSTR texture_name, LPCSTR templ_name)
+{
+	_AddIconedTalkMessage(caption, text, texture_name, templ_name);
+}
 
 xrTime CScriptGameObject::GetInfoTime(LPCSTR info_id)
 {
