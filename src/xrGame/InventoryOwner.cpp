@@ -275,8 +275,15 @@ bool CInventoryOwner::OfferTalk(CInventoryOwner* talk_partner)
 	CEntityAlive* pPartnerEntityAlive = talk_partner->cast_entity_alive();
 	R_ASSERT(pPartnerEntityAlive);
 	
-//	ALife::ERelationType relation = RELATION_REGISTRY().GetRelationType(this, talk_partner);
-//	if(relation == ALife::eRelationTypeEnemy) return false;
+	//	ALife::ERelationType relation = RELATION_REGISTRY().GetRelationType(this, talk_partner);
+    //	if(relation == ALife::eRelationTypeEnemy) return false;
+
+	if (!IsGameTypeSingle())
+	{
+		const auto relation = RELATION_REGISTRY().GetRelationType(this, talk_partner);
+		if (relation == ALife::eRelationTypeEnemy || relation == ALife::eRelationTypeWorstEnemy)
+			return false;
+	}
 
 	if(!is_alive() || !pPartnerEntityAlive->g_Alive()) return false;
 
