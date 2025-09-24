@@ -262,6 +262,24 @@ void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section) {
 	m_custom_mark_clr				= READ_IF_EXISTS(pSettings, r_color, section, "item_custom_mark_clr", 0);
 }
 
+void CInventoryItem::RefreshTranslations()
+{
+	// Re-translate the cached strings after language change
+	if (!m_section_id.size())
+		return;
+
+	LPCSTR section = m_section_id.c_str();
+	
+	if (pSettings->line_exist(section, "inv_name"))
+		m_name = g_pStringTable->translate(pSettings->r_string(section, "inv_name"));
+
+	if (pSettings->line_exist(section, "inv_name_short"))
+		m_nameShort = g_pStringTable->translate(pSettings->r_string(section, "inv_name_short"));
+
+	if (pSettings->line_exist(section, "description"))
+		m_Description = g_pStringTable->translate(pSettings->r_string(section, "description"));
+}
+
 void  CInventoryItem::ChangeCondition(float fDeltaCondition)
 {
 	m_fCondition += fDeltaCondition;
