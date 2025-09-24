@@ -223,39 +223,32 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
     }
 	else if (isRoot && !t->HasObjectiveInProgress())
 	{
-		if (EngineExternal().ShadowOfChernobylMode())
+		// we must be sure that we clear current task and our current task was completed fully
+		if (g_active_task_id[type] == t->m_ID)
 		{
-			// we must be sure that we clear current task and our current task was completed fully
-			if (g_active_task_id[type] == t->m_ID)
+			g_active_task_id[type] = "";
+
+			// sadly we can't obtain active task since we finished it off
+			if (!pActiveTask)
 			{
-				g_active_task_id[type] = "";
+				vGameTasks& tasks = GetGameTasks();
 
-				// sadly we can't obtain active task since we finished it off
-				if (!pActiveTask)
+				for (SGameTaskKey& task : tasks)
 				{
-					vGameTasks& tasks = GetGameTasks();
-
-					for (SGameTaskKey& task : tasks)
+					if (task.getGameTask())
 					{
-						if (task.getGameTask())
+						CGameTask* pTask = task.getGameTask();
+
+						bool isAvaiable = pTask->HasObjectiveInProgress();
+
+						if (isAvaiable)
 						{
-							CGameTask* pTask = task.getGameTask();
-
-							bool isAvaiable = pTask->HasObjectiveInProgress();
-
-							if (isAvaiable)
-							{
-								SetActiveTask(pTask);
-								break;
-							}
+							SetActiveTask(pTask);
+							break;
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-			R_ASSERT(false && "report to developers because it supposed that this code is unreachable for platforms >SOC");
 		}
 	}
     else if (!isRoot && isActiveObj && objective_id != t->GetObjectivesCount(true))
