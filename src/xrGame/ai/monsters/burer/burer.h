@@ -114,6 +114,7 @@ public:
 
 	TTime	m_shield_cooldown;
 	TTime	m_shield_time;
+	TTime	m_shield_expire_time;
 	bool	m_shield_active;
 	LPCSTR	m_shield_keep_particle;
 	TTime	m_shield_keep_particle_period;
