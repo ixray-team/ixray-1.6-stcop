@@ -249,6 +249,12 @@ void CInventoryOwner::RefreshNamesNPC()
 	m_game_name = TranslateName(m_game_name_str.c_str());
 }
 
+void CInventoryOwner::RefreshInventoryTranslations()
+{
+	if (m_inventory)
+		m_inventory->RefreshTranslations();
+}
+
 //достать PDA из специального слота инвентаря
 CPda* CInventoryOwner::GetPDA() const
 {

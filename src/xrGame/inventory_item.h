@@ -110,6 +110,7 @@ public:
 public:
 	virtual void				Load				(LPCSTR section);
 			void				ReadCustomTextAndMarks(LPCSTR section);
+			void				RefreshTranslations	();
 
 			// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
 			void				SetAdditionalDescription(LPCSTR additionalDescription);

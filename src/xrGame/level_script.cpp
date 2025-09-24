@@ -1099,10 +1099,24 @@ void ReloadLanguage(const char* lang)
 	g_pStringTable->ReloadLanguage(lang);
 }
 
-void RefreshNamesNPC()
+void RefreshNames()
 {
+	if (g_pGameLevel == nullptr)
+		return;
+
 	for (auto& [id, pointer] : ai().alife().objects().objects())
 	{
+		const auto obj = g_pGameLevel->Objects.net_Find(id);
+		if (obj != nullptr)
+		{
+			auto* owner = obj->cast_inventory_item();
+			if (owner)
+			{
+				owner->RefreshTranslations();
+				continue;
+			}
+		}
+
 		auto trader = pointer->cast_trader_abstract();
 		if (trader == nullptr)
 		{
@@ -1110,12 +1124,7 @@ void RefreshNamesNPC()
 		}
 
 		trader->m_character_name = TranslateName(trader->m_character_name_raw.c_str());
-		if (g_pGameLevel == nullptr)
-		{
-			continue;
-		}
 
-		const auto obj = g_pGameLevel->Objects.net_Find(id);
 		if (obj != nullptr)
 		{
 			CInventoryOwner* owner = obj->cast_inventory_owner();

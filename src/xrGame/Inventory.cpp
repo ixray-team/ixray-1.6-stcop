@@ -919,6 +919,16 @@ void CInventory::Update()
 	UpdateDropTasks	();
 }
 
+void CInventory::RefreshTranslations()
+{
+	// Refresh translations for all items in inventory after language change
+	for (PIItem item : m_all)
+	{
+		if (item)
+			item->RefreshTranslations();
+	}
+}
+
 void CInventory::UpdateDropTasks()
 {
 	//проверить слоты

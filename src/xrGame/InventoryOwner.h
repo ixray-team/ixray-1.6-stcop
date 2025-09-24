@@ -73,6 +73,7 @@ public:
 	virtual void	load						(IReader &input_packet);
 
 			void	RefreshNamesNPC();
+			void	RefreshInventoryTranslations();
 
 	//обновление
 	virtual void	UpdateInventoryOwner		(u32 deltaT);
