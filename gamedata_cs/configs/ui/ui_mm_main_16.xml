@@ -111,7 +111,6 @@
     <btn name="btn_ret"			caption="ui_mm_return_game" />
     <btn name="btn_options"		caption="ui_mm_options_n" />
     <btn name="btn_multiplayer"	caption="ui_mm_multiplayer_n" />
-    <btn name="btn_credits"		caption="ui_mm_credits" />
     <btn name="btn_quit_to_mm"	caption="ui_mm_disconnect" />
     <btn name="btn_quit"		caption="ui_mm_quit2windows" />
   </menu_main_mm>
