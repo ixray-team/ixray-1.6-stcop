@@ -18,9 +18,9 @@ float4 main(v2p I) : SV_Target
     float4 mix = I.color * (s0 + s1);
 	
 #ifdef USE_LEGACY_SKY_TONEMAP
-	return float4(detonemap(mix * 0.66f), 0.0f);
+	return float4(detonemap(mix.xyz * 0.66f), 0.0f);
 #else
-	return float4(PushGamma(mix), 0.0f);
+	return float4(PushGamma(mix.xyz), 0.0f);
 #endif
 }
 
