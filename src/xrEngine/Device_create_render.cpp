@@ -6,21 +6,7 @@
 
 #include <d3d11.h>
 
-
-static APILevel CurrentAPILevel = APILevel::DX11;
-
-D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0;
-void* HWSwapchain = nullptr;
-
-void* HWRenderDevice = nullptr;
-void* HWRenderContext = nullptr;
-
-void* RenderTexture = nullptr;
-void* RenderSRV = nullptr;
-void* RenderRTV = nullptr;
-
-void* RenderDSV = nullptr;
-void* SwapChainRTV = nullptr;
+static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
 extern ENGINE_API BOOL g_appLoaded;
 void DrawMainViewport()
@@ -43,7 +29,7 @@ void DrawMainViewport()
 		ImGui::SetCursorPos(ImVec2(0, 0));
 		ImGui::GetWindowDrawList()->AddRect(Viewport->Pos, ImVec2((float)Device.TargetWidth + Viewport->Pos.x, (float)Device.TargetHeight + Viewport->Pos.y), 0xFFFFFFFF);
 		ImGui::SetCursorPos(ImVec2(0, 0));
-		ImGui::Image(RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
+		ImGui::Image(GRHI->DevicePtr->RenderSRV, ImVec2((float)Device.TargetWidth, (float)Device.TargetHeight));
 	}
 	ImGui::End();
 
@@ -155,35 +141,28 @@ void fill_vid_mode_list()
 	}
 }
 
-bool CreateD3D9();
-bool UpdateBuffersD3D9();
-void ResizeBuffersD3D9(u16 Width, u16 Height);
-void DestroyD3D9();
-
-bool CreateD3D11();
-bool UpdateBuffersD3D11();
-void ResizeBuffersD3D11(u16 Width, u16 Height);
-void DestroyD3D11();
-
 bool CRenderDevice::InitRenderDeviceEditor()
 {
+	GRHI = new CRHI;
 	fill_vid_mode_list();
 
-	if (!CreateD3D9())
+	if (!GRHI->CreateDevice(ERHI_API_LAYER::D3D9))
 	{
 		return false;
 	}
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
-	CurrentAPILevel = APILevel::DX9;
+	CurrentAPILevel = ERHI_API_LAYER::D3D9;
 
 	return true;
 }
 
-bool CRenderDevice::InitRenderDevice(APILevel API)
+bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 {
 	PROF_EVENT("InitRenderDevice");
+	GRHI = new CRHI;
+
 	fill_vid_mode_list();
 
 	CImGuiManager& ImManager = CImGuiManager::Instance();
@@ -315,29 +294,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 		ImGui::PopStyleVar();
 	});
 
-	switch (API) {
-
-	case APILevel::DX9:
-		if (!CreateD3D9()) {
-			return false;
-		}
-		break;
-
-#ifndef _EDITOR
-	case APILevel::DX11:
-		if (!CreateD3D11()) {
-			return false;
-		}
-		break;
-
-#endif
-	default:
-		break;
-	}
-
-	if (HWRenderDevice == nullptr) {
-		return false;
-	}
+	GRHI->CreateDevice(API);
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
@@ -348,50 +305,49 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 void CRenderDevice::DestroyRenderDevice()
 {
 	CImGuiManager::Instance().Destroy();
-
-	switch (CurrentAPILevel) 
-	{
-	case APILevel::DX9:  DestroyD3D9(); break;
-	case APILevel::DX11: DestroyD3D11(); break;
-	default: break;
-	}
+	xr_delete(GRHI);
 
 	free_vid_mode_list();
 }
 
 void* CRenderDevice::GetRenderDevice()
 {
-	return HWRenderDevice;
+	if (GRHI == nullptr)
+	{
+		return nullptr;
+	}
+
+	return GRHI->DevicePtr->RawDevice;
 }
 
 void* CRenderDevice::GetRenderContext()
 {
-	return HWRenderContext;
+	return GRHI->GetContext();
 }
 
 void* CRenderDevice::GetRenderTexture()
 {
 	// FX: Use ImGui render for Debug Draw mode
 #ifdef DEBUG_DRAW
-	return RenderRTV;
+	return GRHI->DevicePtr->RenderRTV;
 #else
-	return SwapChainRTV;
+	return GRHI->DevicePtr->SwapChainRTV;
 #endif
 }
 
 void* CRenderDevice::GetDepthTexture()
 {
-	return RenderDSV;
+	return GRHI->DevicePtr->RenderDSV;
 }
 
 void* CRenderDevice::GetSwapchainTexture()
 {
-	return SwapChainRTV;
+	return GRHI->DevicePtr->SwapChainRTV;
 }
 
 void* CRenderDevice::GetSwapchain()
 {
-	return HWSwapchain;
+	return GRHI->GetSwapchain();
 }
 
 u32	CRenderDevice::GetSwapchainWidth()
@@ -427,12 +383,7 @@ u32 CRenderDevice::GetTimeDeltaSafe(u32 starttime, u32 endtime)
 
 void CRenderDevice::ResizeBuffers(u32 Width, u32 Height)
 {
-	switch (CurrentAPILevel)
-	{
-	case APILevel::DX9:  ResizeBuffersD3D9(Width, Height); break;
-	case APILevel::DX11: ResizeBuffersD3D11(Width, Height); break;
-	default: break;
-	}
+	GRHI->ResizeBuffers(Width, Height);
 
 	Device.TargetWidth = Width;
 	Device.TargetHeight = Height;
@@ -464,7 +415,7 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 
 D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
 {
-	return FeatureLevel;
+	return (D3D_FEATURE_LEVEL)(GRHI->DevicePtr->FeatureLevel);
 }
 
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
