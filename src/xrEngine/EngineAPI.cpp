@@ -256,14 +256,14 @@ void CEngineAPI::CreateRendererList()
 	}
 }
 
-APILevel CEngineAPI::GetAPI()
+ERHI_API_LAYER CEngineAPI::GetAPI()
 {
 	if (psDeviceFlags.test(rsR4))
 	{
-		return APILevel::DX11;
+		return ERHI_API_LAYER::D3D11;
 	}
 
-	return APILevel::DX9;
+	return ERHI_API_LAYER::D3D9;
 }
 
 thread_local int SkinningMode = -1;

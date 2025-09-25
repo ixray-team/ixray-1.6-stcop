@@ -76,21 +76,22 @@ void CRenderDevice::Create	()
 #endif
 
 	if (!m_pRender)
-		m_pRender			= RenderFactory->CreateRenderDeviceRender();
+		m_pRender = RenderFactory->CreateRenderDeviceRender();
+
 	SetupGPU(m_pRender);
 	Log					("Starting RENDER device...");
 
 	psCurrentVidMode[0]	= TargetWidth;
 	psCurrentVidMode[1] = TargetHeight;
 
-	fFOV				= 90.f;
-	fASPECT				= 1.f;
-	m_pRender->Create	(
+	fFOV = 90.f;
+	fASPECT = 1.f;
+
+	m_pRender->Create
+	(
 		g_AppInfo.Window,
 		TargetWidth,
 		TargetHeight,
-		HalfTargetWidth,
-		HalfTargetHeight,
 		true
 	);
 

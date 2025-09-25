@@ -795,12 +795,12 @@ IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData,
 
 IC float CBackend::get_width()
 {
-	return RDEVICE.HalfTargetWidth;
+	return HalfTarget.x;
 }
 
 IC float CBackend::get_height()
 {
-	return RDEVICE.HalfTargetHeight;
+	return HalfTarget.y;
 }
 
 IC float CBackend::get_target_width()

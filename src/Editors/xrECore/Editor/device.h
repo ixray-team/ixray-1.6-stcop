@@ -23,10 +23,8 @@ extern ECORE_API CEditorRenderDevice* EDevice;
 
 #define REContext ((IDirect3DDevice9*)EDevice->GetRenderContext())
 #define REDevice ((IDirect3DDevice9*)EDevice->GetRenderDevice())
-#define RESwapchainTarget ((IDirect3DSurface9*)EDevice->GetSwapchainTexture())
 #define RETarget ((IDirect3DSurface9*)EDevice->GetRenderTexture())
 #define REDepth ((IDirect3DSurface9*)EDevice->GetDepthTexture())
-#define RESwapchain ((IDirect3DDevice9*)EDevice->GetSwapchain())
 
 class ECORE_API CEditorRenderDevice :
 	public CRenderDevice
