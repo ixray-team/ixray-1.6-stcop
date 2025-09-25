@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 
 // Note:
 // ZNear - always 0.0f
@@ -11,6 +10,8 @@
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
+#include "../xrRHI/RHI.h"
+
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/RenderDeviceRender.h"
 
@@ -20,14 +21,8 @@ union SDL_Event;
 
 #pragma pack(push,4)
 
-enum class APILevel
-{
-	DX9,
-	DX11
-};
-
 #ifdef IXR_WINDOWS
-  enum D3D_FEATURE_LEVEL;
+enum D3D_FEATURE_LEVEL;
 #endif
 
 class IRenderDevice
@@ -37,7 +32,7 @@ public:
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
 
-	virtual				bool				InitRenderDevice(APILevel API) = 0;
+	virtual				bool				InitRenderDevice(ERHI_API_LAYER API) = 0;
 	virtual				void				DestroyRenderDevice() = 0;
 
 	virtual				void*               GetRenderDevice() = 0;
@@ -68,7 +63,6 @@ class ENGINE_API CRenderDeviceData
 public:
 	u32										TargetWidth;
 	u32										TargetHeight;
-	float									RenderScale = 1.0f;
 	
 	u32										dwPrecacheFrame;
 	BOOL									b_is_Ready;
@@ -175,7 +169,7 @@ public:
 	void									_SetupStates();
 
 	bool InitRenderDeviceEditor();
-	bool InitRenderDevice(APILevel API) override;
+	bool InitRenderDevice(ERHI_API_LAYER API) override;
 	void DestroyRenderDevice() override;
 
 	void* GetRenderDevice() override;
@@ -206,8 +200,6 @@ public:
 	LRESULT									MsgProc		(HWND,UINT,WPARAM,LPARAM);
 
 	u32										dwPrecacheTotal;
-
-	float									HalfTargetWidth, HalfTargetHeight;
 	void									OnWM_Activate(bool active, bool minimized);
 
 public:
@@ -314,7 +306,6 @@ virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
 extern ENGINE_API CRenderDevice* DevicePtr;
 extern ENGINE_API CTimer loading_save_timer;
 extern ENGINE_API bool loading_save_timer_started;
-extern ENGINE_API void* g_pAnnotation;
 
 
 #define Device (*DevicePtr)
