@@ -11,7 +11,8 @@
 
 class CResourceManager;
 
-class dxRenderDeviceRender : public IRenderDeviceRender
+class dxRenderDeviceRender :
+	public IRenderDeviceRender
 {
 public:
 	static dxRenderDeviceRender& Instance() {  return *((dxRenderDeviceRender*)(&*Device.m_pRender));}
@@ -26,10 +27,10 @@ public:
 	void OnDeviceDestroy( BOOL bKeepTextures) override;
 	void ValidateHW() override;
 	void DestroyHW() override;
-	void Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2) override;
+	void Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight) override;
 	void SetupStates() override;
 	void OnDeviceCreate(LPCSTR shName) override;
-	void Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool) override;
+	void Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool) override;
 	void SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) override;
 	void overdrawBegin() override;
 	void overdrawEnd() override;

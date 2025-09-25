@@ -447,7 +447,7 @@ static class cl_target_screen_res : public R_constant_setup {
 
 static class cl_screen_scale : public R_constant_setup {
 	virtual void setup(R_constant* C) {
-		RCache.set_c(C, RDEVICE.RenderScale, 0.0f, 0.0f, 0.0f);
+		RCache.set_c(C, GRHI->DevicePtr->RenderScale, 0.0f, 0.0f, 0.0f);
 	}
 } binder_screen_scale;
 
