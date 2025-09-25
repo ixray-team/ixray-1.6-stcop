@@ -111,6 +111,7 @@ target_link_libraries(xrAbstractions PUBLIC xrSound)
 target_link_libraries(xrAbstractions PUBLIC luabind)
 target_link_libraries(xrAbstractions PUBLIC xrNetServer)
 target_link_libraries(xrAbstractions PUBLIC imgui)
+target_link_libraries(xrAbstractions PUBLIC xrRHI)
 
 target_link_libraries(xrAbstractions PRIVATE "Winmm.lib")
 target_link_libraries(xrAbstractions PRIVATE "Vfw32.lib")
