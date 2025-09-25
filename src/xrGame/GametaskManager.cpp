@@ -341,32 +341,40 @@ void CGameTaskManager::UpdateActiveTask()
 	for (u32 tType = eTaskTypeStoryline; tType < eTaskTypeCount; ++tType)
 	{
 		CGameTask* activeTask = ActiveTask(static_cast<ETaskType>(tType));
-
-		if (!activeTask || activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
-			continue;
-
-		for (u32 i = 0; i < activeTask->GetObjectivesCount(); ++i)
+		if (!activeTask)
 		{
-			SGameTaskObjective& obj = activeTask->Objective(i);
-
-			if (i == 0)
+			CGameTask* frontTask = IterateGet(nullptr, eTaskStateInProgress, static_cast<ETaskType>(tType), true);
+			if (frontTask)
+				SetActiveTask(frontTask);
+		}
+		else
+		{
+			if (activeTask->Objective(0).GetTaskState() != eTaskStateInProgress)
 				continue;
 
-			//1-st enable hidden locations
-			if ((!obj.m_def_location_enabled) &&
-				(obj.GetTaskState() == eTaskStateInProgress) &&
-				(activeTask->Objective(i - 1).GetTaskState() == eTaskStateCompleted))
+			for (u32 i = 0; i < activeTask->GetObjectivesCount(); ++i)
 			{
-				if (obj.m_map_object_id != u16(-1) && *obj.m_map_location)
+				SGameTaskObjective& obj = activeTask->Objective(i);
+
+				if (i == 0)
+					continue;
+
+				//1-st enable hidden locations
+				if ((!obj.m_def_location_enabled) &&
+					(obj.GetTaskState() == eTaskStateInProgress) &&
+					(activeTask->Objective(i - 1).GetTaskState() == eTaskStateCompleted))
 				{
-					CMapLocation* ml = Level().MapManager().AddMapLocation(obj.m_map_location, obj.m_map_object_id);
-					if (obj.m_map_hint.size())
-						ml->SetHint(obj.m_map_hint);
-					ml->DisablePointer();
-					ml->SetSerializable(true);
+					if (obj.m_map_object_id != u16(-1) && *obj.m_map_location)
+					{
+						CMapLocation* ml = Level().MapManager().AddMapLocation(obj.m_map_location, obj.m_map_object_id);
+						if (obj.m_map_hint.size())
+							ml->SetHint(obj.m_map_hint);
+						ml->DisablePointer();
+						ml->SetSerializable(true);
+					}
 				}
+				bHasSpotPointer = bHasSpotPointer || (ActiveObjective() == &activeTask->Objective(i));
 			}
-			bHasSpotPointer = bHasSpotPointer || (ActiveObjective() == &activeTask->Objective(i));
 		}
 	}
 	// highlight new spot pointer
