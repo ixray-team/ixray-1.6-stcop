@@ -5,11 +5,11 @@
 //****************************************************************************
 #pragma once
 #include <array>
-
-enum class APILevel;
+#include "../xrRHI/APILevel.h"
 
 // Abstract 'Pure' class for DLL interface
-class ENGINE_API DLL_Pure {
+class ENGINE_API DLL_Pure
+{
 public:
 	CLASS_ID				CLS_ID;
 
@@ -73,7 +73,7 @@ public:
 	void				Destroy		();
 
 	void				CreateRendererList();
-	APILevel			GetAPI();
+	ERHI_API_LAYER		GetAPI();
 	int					GetSkinningMode() const;
 	void				SetSkinningMode(int Mode = -1);
 };

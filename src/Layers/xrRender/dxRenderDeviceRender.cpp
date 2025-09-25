@@ -101,7 +101,7 @@ void dxRenderDeviceRender::DestroyHW()
 #endif
 }
 
-void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2)
+void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeight)
 {
 #ifndef _EDITOR
 	Resources->reset_begin	();
@@ -115,9 +115,6 @@ void  dxRenderDeviceRender::Reset(SDL_Window* window, u32 &dwWidth, u32 &dwHeigh
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
-
-	fWidth_2 = Device.HalfTargetWidth;
-	fHeight_2 = Device.HalfTargetHeight;
 
 	Resources->reset_end();
 #endif
@@ -205,16 +202,13 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 #endif
 }
 
-void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, float &fWidth_2, float &fHeight_2, bool move_window)
+void dxRenderDeviceRender::Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool move_window)
 {
 #ifndef _EDITOR
 	CImGuiManager::Instance().InitHardware();
 
 	dwWidth = Device.GetSwapchainWidth();
 	dwHeight = Device.GetSwapchainHeight();
-
-	fWidth_2 = Device.HalfTargetWidth;
-	fHeight_2 = Device.HalfTargetHeight;
 
 	Resources = new CResourceManager();
 #endif

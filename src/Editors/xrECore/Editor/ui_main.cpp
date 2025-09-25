@@ -437,9 +437,9 @@ void TUI::Redraw()
 			m_Flags.set(flRedraw, TRUE);
 
 			EDevice->m_fNearer = EDevice->mProject._43;
-			EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
-			EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
-			EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
+			HalfTarget.x = float(View.RTSize.x) * 0.5f;
+			HalfTarget.y = float(View.RTSize.y) * 0.5f;
+			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
 
 			EDevice->seqDeviceReset.Process(rp_DeviceReset);
 			EDevice->seqResolutionChanged.Process(rp_ScreenResolutionChanged);
@@ -449,9 +449,9 @@ void TUI::Redraw()
 		else
 		{
 			// Soft render update when resizing window
-			EDevice->HalfTargetWidth = float(View.RTSize.x) * 0.5f;
-			EDevice->HalfTargetHeight = float(View.RTSize.y) * 0.5f;
-			EDevice->fASPECT = EDevice->HalfTargetHeight / EDevice->HalfTargetWidth;
+			HalfTarget.x = float(View.RTSize.x) * 0.5f;
+			HalfTarget.y = float(View.RTSize.y) * 0.5f;
+			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
 			m_Flags.set(flRedraw, TRUE);
 		}
 
