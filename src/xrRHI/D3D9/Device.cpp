@@ -168,6 +168,12 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 	UpdateBuffersD3D9();
 }
 
+void InternalDevice9::Present()
+{
+	DX9Device->EndScene();
+	DX9Device->Present(nullptr, nullptr, nullptr, nullptr);
+}
+
 void InternalDevice9::ClearTarget(void* Target, ERTColor InputColor)
 {
 	constexpr u32 ColorTransparent = color_xrgb(0, 0, 0);
