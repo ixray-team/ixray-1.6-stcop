@@ -25,8 +25,8 @@ void CRenderTarget::phase_taa()
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
 	
 	//Save previous frame
-	RContext->CopyResource(rt_Generic_0_prev->pSurface, rt_Generic_2->pSurface);
+	RContext->CopyResource((ID3D11Resource*)rt_Generic_0_prev->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Generic_2->pSurface->GetRawTexture());
 
 	//Copy to rt_Generic_0... waste more perf...
-	RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
+	RContext->CopyResource((ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Generic_2->pSurface->GetRawTexture());
 }
