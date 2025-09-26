@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-void set_viewport(ID3DDeviceContext* dev, float w, float h) {
+void set_viewport(ID3DDeviceContext* dev, float w, float h)
+{
 	D3D_VIEWPORT viewport[1] =
 	{
 		0, 0, w, h, 0.f, 1.f
@@ -8,11 +9,9 @@ void set_viewport(ID3DDeviceContext* dev, float w, float h) {
 	dev->RSSetViewports(1, viewport);
 }
 
-void CRenderTarget::phase_ssao() {
-	u32	Offset = 0;
-
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	RContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
+void CRenderTarget::phase_ssao()
+{
+	GRHI->ClearTarget(rt_ssao_temp->pRT);
 
 	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0/*RDepth*/);
@@ -27,6 +26,7 @@ void CRenderTarget::phase_ssao() {
 	float _h = RCache.get_height();
 
 	set_viewport(RContext, _w, _h);
+	u32	Offset = 0;
 
 	// Fill vertex buffer
 	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -47,39 +47,38 @@ void CRenderTarget::phase_ssao() {
 }
 
 
-void CRenderTarget::phase_downsamp() {
-	//Fvector2	p0,p1;
-	u32			Offset = 0;
-
+void CRenderTarget::phase_downsamp()
+{
 	u_setrt(rt_half_depth, 0, 0, 0);
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	RContext->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
+	GRHI->ClearTarget(rt_half_depth->pRT);
 
 	u32 w = (u32)RCache.get_width();
 	u32 h = (u32)RCache.get_height();
 
 	RImplementation.rmNormal();
 	RCache.set_Stencil(FALSE);
-	{
-		Fmatrix		m_v2w; m_v2w.invert(Device.mView);
 
-		// Fill VB
-		float	scale_X = float(w) / float(TEX_jitter);
-		float	scale_Y = float(h) / float(TEX_jitter);
+	Fmatrix m_v2w;
+	m_v2w.invert(Device.mView);
 
-		// Fill vertex buffer
-		FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-		pv->set(-1, 1, 0, 1, 0, 0, scale_Y);	pv++;
-		pv->set(-1, -1, 0, 0, 0, 0, 0);	pv++;
-		pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);	pv++;
-		pv->set(1, -1, 1, 0, 0, scale_X, 0);	pv++;
-		RCache.Vertex.Unlock(4, g_combine->vb_stride);
+	u32 Offset = 0;
 
-		// Draw
-		RCache.set_Element(s_ssao->E[1]);
-		RCache.set_Geometry(g_combine);
-		RCache.set_c("m_v2w", m_v2w);
+	// Fill VB
+	float	scale_X = float(w) / float(TEX_jitter);
+	float	scale_Y = float(h) / float(TEX_jitter);
 
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-	}
+	// Fill vertex buffer
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
+	pv->set(-1, 1, 0, 1, 0, 0, scale_Y);	pv++;
+	pv->set(-1, -1, 0, 0, 0, 0, 0);	pv++;
+	pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);	pv++;
+	pv->set(1, -1, 1, 0, 0, scale_X, 0);	pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
+
+	// Draw
+	RCache.set_Element(s_ssao->E[1]);
+	RCache.set_Geometry(g_combine);
+	RCache.set_c("m_v2w", m_v2w);
+
+	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 }

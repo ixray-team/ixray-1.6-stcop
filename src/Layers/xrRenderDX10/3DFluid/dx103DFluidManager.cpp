@@ -228,11 +228,9 @@ void dx103DFluidManager::DestroyRTTextureAndViews(int rtIndex)
 
 void dx103DFluidManager::Reset()
 {
-	float color[4] = {0, 0, 0, 0 };
-
-	for(int rtIndex=0; rtIndex<NUM_OWN_RENDER_TARGETS; rtIndex++)
+	for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
 	{
-		RContext->ClearRenderTargetView( pRenderTargetViews[rtIndex], color );
+		GRHI->ClearTarget(pRenderTargetViews[rtIndex]);
 	}
 }
 
@@ -356,10 +354,8 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 {
 	GPU_EVENT(AdvectColorBFECC);
 
-	float color[4] = {0, 0, 0, 0 };
-
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color );
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color );
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	if (bTeperature)
@@ -460,8 +456,7 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 	GPU_EVENT(ApplyVorticityConfinement);
 
 	// Compute vorticity
-	float color[4] = {0, 0, 0, 0 };
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color );
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Vorticity]);	
@@ -491,9 +486,7 @@ void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData &FluidData, f
 void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 {
 	GPU_EVENT(ComputeVelocityDivergence);
-
-	float color[4] = {0, 0, 0, 0 };
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color );
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
@@ -504,9 +497,7 @@ void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 void dx103DFluidManager::ComputePressure( float timestep )
 {
 	GPU_EVENT(ComputePressure);
-
-	float color[4] = {0, 0, 0, 0 };
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color );
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	// unbind this variable from the other technique that may have used it
 	RCache.set_RT(0);
@@ -568,9 +559,8 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 {
 	GPU_EVENT(Fluid_update_obstacles);
 	//	Reset data
-	float color[4] = {0, 0, 0, 0 };
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_OBSTACLES], color );
-	RContext->ClearRenderTargetView( pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], color );
+	GRHI->ClearTarget( pRenderTargetViews[RENDER_TARGET_OBSTACLES]);
+	GRHI->ClearTarget( pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);

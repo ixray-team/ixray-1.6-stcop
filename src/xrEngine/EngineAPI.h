@@ -5,7 +5,7 @@
 //****************************************************************************
 #pragma once
 #include <array>
-#include "../xrRHI/APILevel.h"
+#include "../xrRHI/RHIEnums.h"
 
 // Abstract 'Pure' class for DLL interface
 class ENGINE_API DLL_Pure

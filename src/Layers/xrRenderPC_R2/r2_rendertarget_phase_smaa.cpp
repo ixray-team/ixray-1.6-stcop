@@ -18,8 +18,7 @@ void CRenderTarget::phase_smaa() {
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     //RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_rgba(0, 0, 0, 0), 1, 0));
-    //RDevice->Clear(RCache.get_RT(), ColorRGBA);
+    GRHI->ClearTarget(RCache.get_RT());
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -42,8 +41,7 @@ void CRenderTarget::phase_smaa() {
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-
-    CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_rgba(0, 0, 0, 0), 1, 0));
+    GRHI->ClearTarget(RCache.get_RT());
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);

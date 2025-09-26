@@ -195,7 +195,6 @@ public:
 		u32								constants;		// Number of times the shader-consts changes
 #endif
 		u32								xforms;
-		u32								target_rt;
 		u32								target_zb;
 
 		R_statistics					r	;

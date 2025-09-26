@@ -9,12 +9,12 @@ public:
 	InternalDevice9();
 	~InternalDevice9();
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
-
-	void UpdateBuffersD3D9();
+	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
 
 private:
 	bool CreateD3D9();
 	void DestroyD3D9();
+	void UpdateBuffersD3D9();
 
 	D3DPRESENT_PARAMETERS GetPresentParameter(int Width, int Height);
 	u32 selectPresentInterval();
