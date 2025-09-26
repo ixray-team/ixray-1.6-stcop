@@ -419,8 +419,6 @@ void dxRenderDeviceRender::End()
 {
 #ifndef _EDITOR
 
-	VERIFY	(RDevice);
-
 #ifdef USE_DX11
 	{
 		GPU_EVENT(GAMMA_APPLY);
@@ -469,12 +467,7 @@ void dxRenderDeviceRender::End()
 #endif
 
 	PROF_EVENT("Present");
-#ifdef USE_DX11
-	RSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
-#else
-	CHK_DX				(RDevice->EndScene());
-	RDevice->Present( nullptr, nullptr, nullptr, nullptr );
-#endif
+	GRHI->Present();
 #endif
 }
 

@@ -11,6 +11,7 @@ public:
 
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
+	virtual void Present() override;
 
 public:
 	IDXGISwapChain* HWSwapchain = nullptr;
