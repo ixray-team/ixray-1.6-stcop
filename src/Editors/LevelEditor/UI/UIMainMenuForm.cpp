@@ -629,11 +629,11 @@ void UIMainMenuForm::Draw()
 			{
 				if (Plug->Type == EPluginType::Lua)
 				{
-					ImGui::Image(PlugLua->pSurface, { 15, 15 });
+					ImGui::Image(PlugLua->pSurface->GetRawTexture(), { 15, 15 });
 				}
 				else
 				{
-					ImGui::Image(PlugPy->pSurface, { 15, 15 });
+					ImGui::Image(PlugPy->pSurface->GetRawTexture(), { 15, 15 });
 				}
 				ImGui::SameLine();
 				if (ImGui::MenuItem(Plug->Name.c_str(), ""))

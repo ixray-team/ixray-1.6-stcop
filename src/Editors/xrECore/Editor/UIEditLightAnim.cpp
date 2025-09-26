@@ -250,7 +250,7 @@ void UIEditLightAnim::Draw()
 	   
 			RenderItem();
 		}
-		ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->pSurface, ImGui::CalcItemSize(ImVec2(-1,-1), 32, 32));
+		ImGui::Image(m_CurrentItem?m_ItemTexture:m_TextureNull->pSurface->GetRawTexture(), ImGui::CalcItemSize(ImVec2(-1, -1), 32, 32));
 		if (!IsDocked)
 			IsDocked = ImGui::IsWindowDocked();
 		if (!IsFocused)

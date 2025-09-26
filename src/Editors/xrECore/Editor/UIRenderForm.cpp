@@ -136,7 +136,7 @@ void UIRenderForm::DrawVP()
 
 	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
-		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
+		RDevice->StretchRect((ID3DDepthStencilView*)UI->RT->pRT->GetRawRTV(), 0, (ID3DDepthStencilView*)UI->Views[ViewportID].RTFreez->pRT->GetRawRTV(), 0, D3DTEXF_NONE);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
@@ -198,7 +198,7 @@ void UIRenderForm::DrawVP()
 		UI->Views[ViewportID].RTSize.set(canvas_size.x, canvas_size.y);
 
 		ImGui::SetCursorScreenPos(canvas_pos);
-		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface, canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
+		draw_list->AddImage(UI->Views[ViewportID].RTFreez->pSurface->GetRawTexture(), canvas_pos, ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y));
 
 		if (ViewportID != UI->ViewID && ImGui::IsWindowFocused())
 		{

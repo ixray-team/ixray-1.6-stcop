@@ -341,7 +341,7 @@ void CEditorRenderDevice::_Create(IReader* F)
 
 	texture_null.create("ed\\ed_nodata");
 	texture_null->Load();
-	UIChooseForm::SetNullTexture(texture_null->pSurface);
+	UIChooseForm::SetNullTexture(texture_null->pSurface->GetRawTexture());
 
 	// signal another objects
     UI->OnDeviceCreate			();       
@@ -399,13 +399,13 @@ void CEditorRenderDevice::Reset(bool)
 	UI->ResetEnd(RDevice);
 	_SetupStates();
 
-	UIChooseForm::SetNullTexture(texture_null->pSurface);
+	UIChooseForm::SetNullTexture(texture_null->pSurface->GetRawTexture());
 
 	SearchIcon = EDevice->Resources->_CreateTexture("ed\\content_browser\\search");
 	if (SearchIcon)
 	{
 		SearchIcon->Load();
-		GUIManager->SearchIcon = SearchIcon->pSurface;
+		GUIManager->SearchIcon = SearchIcon->pSurface->GetRawTexture();
 	}
 	u32 tm_end = TimerAsync();
 	Msg("*** RESET [%d ms]", tm_end - tm_start);

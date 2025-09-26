@@ -52,21 +52,39 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 	else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
 	else													usage = D3DUSAGE_RENDERTARGET;
 
-	// Try to create texture/surface
+	// Try to create texture/surface using GRHI
 	DEV->Evict				();
-	_hr = RDevice->CreateTexture		(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface,nullptr);
-
-	if (FAILED(_hr) || (0 == pSurface))
+	
+	// Create RHITextureDesc for the render target
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = w;
+	rhiDesc.Height = h;
+	rhiDesc.Depth = 1;
+	rhiDesc.MipLevels = 1;
+	rhiDesc.Format = f;
+	rhiDesc.Usage = usage;
+	rhiDesc.BindFlags = 0;
+	rhiDesc.CPUAccessFlags = 0;
+	rhiDesc.MiscFlags = 0;
+	
+	// Use GRHI to create the surface
+	IRHISurface* rhiSurface = GRHI->CreateRenderTarget(rhiDesc);
+	if (!rhiSurface)
 	{
 		Msg("Cannot create surface for %s", Name);
 		return;
 	}
+	
+	// Store the RHI surface
+	pSurface = rhiSurface;
 
 	// OK
 #ifdef DEBUG
 	Msg			("* created RT(%s), %dx%d",Name,w,h);
 #endif // DEBUG
-	R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
+	
+	// Create RHI render target view
+	pRT = GRHI->CreateRenderTargetView(rhiSurface);
 	pTexture	= DEV->_CreateTexture	(Name);
 	pTexture->surface_set	(pSurface);
 }
