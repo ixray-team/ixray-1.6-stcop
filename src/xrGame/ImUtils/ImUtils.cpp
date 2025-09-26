@@ -187,11 +187,11 @@ void CImGuiGameSearchManager::init()
 	{
 		char* pPtr = &category_names[i][0];
 		const char* pStr = convertTypeToString(i);
-		char result[32]{};
+		string32 result{};
 
 		if (pStr == nullptr && type_to_class.find(eSelectedType(i)) != type_to_class.end())
 		{
-			char name[16]{};
+			string16 name{};
 			CLASS_ID id = type_to_class.at(eSelectedType(i));
 			CLSID2TEXT(id, name);
 
@@ -278,7 +278,7 @@ const char* CImGuiGameSearchManager::getDefaultNameOfSelectedType(eSelectedType 
 }
 const char* CImGuiGameSearchManager::getTranslatedString(eSelectedType type)
 {
-	char name[16]{};
+	string16 name{};
 	CLASS_ID id = type_to_class.at(type);
 	CLSID2TEXT(id, name);
 
@@ -419,7 +419,7 @@ void clsid_manager::add_squad(CLASS_ID id) {
 }
 
 const char* clsid_manager::translateCLSID(CLASS_ID id) {
-	char name[16]{};
+	string16 name{};
 	CLSID2TEXT(id, name);
 
 	for (int i = 0; i < 16; ++i)

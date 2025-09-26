@@ -204,7 +204,7 @@ void OMFEditor_ReadString(xr_stack_string<Size>& str, std::ifstream& file)
 	uint32_t str_length = 0;
 	do
 	{
-		R_ASSERT(!(str_length > str.max_size()) && "report to developers you have too long serialized string");
+		R_ASSERT2(str_length < str.max_size(), "report to developers you have too long serialized string");
 
 		file.read(&symbol, 1);
 		str += symbol;
@@ -219,7 +219,7 @@ void OMFEditor_ReadStringMotionMark(xr_stack_string<Size>& str, std::ifstream& f
 	uint32_t str_length = 0;
 	do
 	{
-		R_ASSERT(!(str_length > str.max_size()) && "report to developers you have too long serialized string");
+		R_ASSERT2(str_length < str.max_size(), "report to developers you have too long serialized string");
 
 		file.read(&symbol, 1);
 		str += symbol;
@@ -263,7 +263,7 @@ bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 	file.read(reinterpret_cast<char*>(&data.ogf_version), sizeof(data.ogf_version));
 	file.read(reinterpret_cast<char*>(&data.count), sizeof(data.count));
 
-	R_ASSERT(data.count <= data.parts.max_size() && "report to developers!");
+	R_ASSERT2(data.count <= data.parts.max_size(), "report to developers!");
 
 	for (int16_t i = 0; i < data.count; ++i)
 	{
@@ -273,7 +273,7 @@ bool OMFEditor_LoadOMF_BoneData(OMFData::BoneData& data, std::ifstream& file)
 		OMFEditor_ReadString(bp.name, file);
 		file.read(reinterpret_cast<char*>(&bp.count), sizeof(bp.count));
 
-		R_ASSERT(bp.count <= bp.bones.max_size() && "report to developers!");
+		R_ASSERT2(bp.count <= bp.bones.max_size(), "report to developers!");
 
 		for (int j = 0; j < bp.count; ++j)
 		{
@@ -361,8 +361,8 @@ bool OMFEditor_LoadOMF_AnimParamsData(int16_t ogf_version, int32_t animation_cou
 
 void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 {
-	R_ASSERT(p_state->combo_animation_params_data.empty() && "did you clear data before init?");
-	R_ASSERT(p_state->combo_animation_params_name_hashes.empty() && "did you clear data before init?");
+	R_ASSERT2(p_state->combo_animation_params_data.empty(), "did you clear data before init?");
+	R_ASSERT2(p_state->combo_animation_params_name_hashes.empty(), "did you clear data before init?");
 
 	if (data.data_animparams.count > 0)
 	{
@@ -377,8 +377,8 @@ void OMFEditor_Init_ComboAnimationParams(OMFEditorState* p_state, OMFData& data)
 
 void OMFEditor_Init_ComboBones(OMFEditorState* p_state, OMFData& data)
 {
-	R_ASSERT(p_state->combo_bones_data.empty() && "did you clear data before init?");
-	R_ASSERT(p_state->combo_bones_name_hashes.empty() && "did you clear data before init?");
+	R_ASSERT2(p_state->combo_bones_data.empty(), "did you clear data before init?");
+	R_ASSERT2(p_state->combo_bones_name_hashes.empty(), "did you clear data before init?");
 
 	if (data.data_bone.count > 0)
 	{
@@ -439,7 +439,7 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 
 	if (data.data_bone.count > 0)
 	{
-		R_ASSERT(p_state->combo_bones_data.empty() == false && "can't be!");
+		R_ASSERT2(p_state->combo_bones_data.size(), "No bones detected");
 		p_state->rename_temp_bone = p_state->combo_bones_data[0];
 	}
 
@@ -451,8 +451,8 @@ void OMFEditor_Init(OMFEditorState* p_state, OMFData& data)
 
 bool OMFEditor_LoadOMF(OMFData& data, std::ifstream& file)
 {
-	R_ASSERT(file.good() && "lol, pass valid file here please");
-	R_ASSERT(file.is_open() && "obviously file must be opened before reading");
+	R_ASSERT2(file.good(), "Invalid file passed");
+	R_ASSERT2(file.is_open(), "Unable to open file!");
 
 	bool status = false;
 	if (file.is_open() && file.good())
@@ -668,7 +668,7 @@ void RenderToolsOMFEditorWindow()
 
 		if (g_omf_editor.is_file_loaded)
 		{
-			R_ASSERT(g_omf_editor.omf && "must be initialized");
+			R_ASSERT2(g_omf_editor.omf, "must be initialized");
 			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path);
 			ImGui::Separator();
 
@@ -772,7 +772,7 @@ void RenderToolsOMFEditorWindow()
 						ImGui::SameLine();
 						if (ImGui::Button("apply##ToolsInGameImGui_OMFEditor_RenameBone"))
 						{
-							size_t hash_temp = std::hash<std::string_view>()(std::string_view(g_omf_editor.rename_temp_bone.c_str()));
+							size_t hash_temp = std::hash<xr_string_view>()(xr_string_view(g_omf_editor.rename_temp_bone.c_str()));
 
 							if (g_omf_editor.combo_bones_name_hashes.find(hash_temp) != g_omf_editor.combo_bones_name_hashes.end() && g_omf_editor.combo_bones_data[g_omf_editor.current_selected_bone_rename] != g_omf_editor.rename_temp_bone)
 							{
@@ -931,7 +931,7 @@ void RenderToolsOMFEditorWindow()
 
 					if (g_omf_editor.has_motion_marks_selected && g_omf_editor.is_motion_time_format_radiobutton_changed)
 					{
-						R_ASSERT(!(g_omf_editor.is_motion_time_format_keys_selected && g_omf_editor.is_motion_time_format_seconds_selected) && "can't be both selected at same time!");
+						R_ASSERT2(!(g_omf_editor.is_motion_time_format_keys_selected && g_omf_editor.is_motion_time_format_seconds_selected), "You can't select both keys and seconds format at the same time!");
 
 						// todo: add implemenetation here
 

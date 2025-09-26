@@ -90,15 +90,15 @@ void CUIDosimeter::update()
 	}
 
 	string16 s;
-	sprintf_s(s, "%05.0lf", rad);
+	xr_sprintf(s, "%05.0lf", rad);
 	string16 tex;
-	sprintf_s(tex, "green_%c", s[1]);
+	xr_sprintf(tex, "green_%c", s[1]);
 	m_seg1->InitTextureEx(tex, "hud\\p3d");
-	sprintf_s(tex, "green_%c", s[2]);
+	xr_sprintf(tex, "green_%c", s[2]);
 	m_seg2->InitTextureEx(tex, "hud\\p3d");
-	sprintf_s(tex, "green_%c", s[3]);
+	xr_sprintf(tex, "green_%c", s[3]);
 	m_seg3->InitTextureEx(tex, "hud\\p3d");
-	sprintf_s(tex, "green_%c", s[4]);
+	xr_sprintf(tex, "green_%c", s[4]);
 	m_seg4->InitTextureEx(tex, "hud\\p3d");
 
 	if (Device.dwTimeGlobal > m_workTick + WORK_PERIOD)

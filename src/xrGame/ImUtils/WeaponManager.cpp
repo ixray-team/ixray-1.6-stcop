@@ -168,9 +168,9 @@ struct
 	};
 
 	// id for string table
-	char inv_name[128]{};
+	string128 inv_name{};
 	// id for string table
-	char inv_short_name[128]{};
+	string128 inv_short_name{};
 
 
 	WeaponIcon icons[1024]{};
@@ -210,7 +210,7 @@ void RenderWeaponManagerWindow()
 			if (!imgui_weapon_manager.init)
 			{
 				// clear bool flags that line_exist checking for correct init/uninit cycle
-				memset((&imgui_weapon_manager.init + sizeof(imgui_weapon_manager.init)), 0, 33);
+				ZeroMemory((&imgui_weapon_manager.init + sizeof(imgui_weapon_manager.init)), 33);
 
 				imgui_weapon_manager.current_slot = slot_type;
 				imgui_weapon_manager.weapon_id = pItem->object_id();
@@ -251,7 +251,7 @@ void RenderWeaponManagerWindow()
 
 				// icons
 				imgui_weapon_manager.icons_count = 0;
-				memset(imgui_weapon_manager.icons, 0, sizeof(imgui_weapon_manager.icons));
+				ZeroMemory(imgui_weapon_manager.icons, sizeof(imgui_weapon_manager.icons));
 
 				for (const auto& pSection : pSettings->sections())
 				{
@@ -259,12 +259,12 @@ void RenderWeaponManagerWindow()
 					{
 						// todo: temp because of korzyna need to replace to g_pClsidManager
 
-						std::string_view name = pSection->Name.c_str();
+						xr_string_view name = pSection->Name.c_str();
 
 						if (!name.empty())
 						{
 							size_t index = name.find("wpn_");
-							if (index != std::string_view::npos && index == 0)
+							if (index != xr_string_view::npos && index == 0)
 							{
 								if (pSection->line_exist("inv_grid_x") && pSection->line_exist("inv_grid_y") && pSection->line_exist("inv_grid_width") && pSection->line_exist("inv_grid_height"))
 								{
@@ -709,8 +709,8 @@ void RenderWeaponManagerWindow()
 									float w = icon.inv_grid_width * INV_GRID_WIDTH(scaleIcon);
 									float h = icon.inv_grid_height * INV_GRID_HEIGHT(scaleIcon);
 
-									char button_name[64]{};
-									sprintf_s(button_name, sizeof(button_name), "%s%d", "WeaponIconButton_", current_icon_index);
+									string64 button_name{};
+									xr_sprintf(button_name, sizeof(button_name), "%s%d", "WeaponIconButton_", current_icon_index);
 
 									bool is_pressed_icon = ImGui::ImageButton(button_name, imgui_weapon_manager.ui_icons.Surface, { w,h }, { x / imgui_weapon_manager.ui_icons.w, y / imgui_weapon_manager.ui_icons.h }, { (x + w) / imgui_weapon_manager.ui_icons.w, (y + h) / imgui_weapon_manager.ui_icons.h });
 
@@ -1087,8 +1087,8 @@ void RenderWeaponManagerWindow()
 		{
 			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
-			char slot2_tab_name[128]{ "Slot 2 (INV_SLOT_2) - " };
-			char slot3_tab_name[128]{ "Slot 3 (INV_SLOT_3) - " };
+			xr_string slot2_tab_name{ "Slot 2 (INV_SLOT_2) - " };
+			xr_string slot3_tab_name{ "Slot 3 (INV_SLOT_3) - " };
 
 			if (pActor)
 			{
@@ -1097,18 +1097,18 @@ void RenderWeaponManagerWindow()
 
 				if (pItemInSlot2)
 				{
-					memcpy_s(&slot2_tab_name[0] + strlen(slot2_tab_name), sizeof(slot2_tab_name), pItemInSlot2->m_section_id.c_str(), pItemInSlot2->m_section_id.size());
+					slot2_tab_name += pItemInSlot2->m_section_id.c_str();
 				}
-				memcpy_s(&slot2_tab_name[0] + strlen(slot2_tab_name), sizeof(slot2_tab_name), "##TB_InGameWeaponManager", sizeof("##TB_InGameWeaponManager"));
+				slot2_tab_name += "##TB_InGameWeaponManager";
 
 				if (pItemInSlot3)
 				{
-					memcpy_s(&slot3_tab_name[0] + strlen(slot3_tab_name), sizeof(slot3_tab_name), pItemInSlot3->m_section_id.c_str(), pItemInSlot3->m_section_id.size());
+					slot3_tab_name += pItemInSlot3->m_section_id.c_str();
 				}
-				memcpy_s(&slot3_tab_name[0] + strlen(slot3_tab_name), sizeof(slot3_tab_name), "##TB_InGameWeaponManager", sizeof("##TB_InGameWeaponManager"));
+				slot3_tab_name += "##TB_InGameWeaponManager";
 			}
 
-			if (ImGui::BeginTabItem(slot2_tab_name))
+			if (ImGui::BeginTabItem(slot2_tab_name.c_str()))
 			{
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_2);
 				draw_item(pItem, INV_SLOT_2);
@@ -1118,7 +1118,7 @@ void RenderWeaponManagerWindow()
 			}
 
 
-			if (ImGui::BeginTabItem(slot3_tab_name))
+			if (ImGui::BeginTabItem(slot3_tab_name.c_str()))
 			{
 
 				CInventoryItem* pItem = pActor->inventory().ItemFromSlot(INV_SLOT_3);
