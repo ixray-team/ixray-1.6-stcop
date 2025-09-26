@@ -17,9 +17,8 @@ void dxStatsRender::OutData1 (CGameFont &F)
 
 void dxStatsRender::OutData2 (CGameFont &F)
 {
-#ifdef DEBUG
+#ifdef _DEBUG
 	F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
-	F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
 	F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
 #endif
 }

@@ -353,23 +353,22 @@ CRenderTarget::CRenderTarget		()
 
 	// TONEMAP
 	{
-		rt_LUM_64.create			(r2_RT_luminance_t64,	64, 64,	D3DFMT_A16B16G16R16F	);
-		rt_LUM_8.create				(r2_RT_luminance_t8,	8,	8,	D3DFMT_A16B16G16R16F	);
-		s_luminance.create			(b_luminance,				"r2\\luminance");
-		f_luminance_adapt			= 0.5f;
+		rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, D3DFMT_A16B16G16R16F);
+		rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, D3DFMT_A16B16G16R16F);
+		s_luminance.create(b_luminance, "r2\\luminance");
+		f_luminance_adapt = 0.5f;
 
-		t_LUM_src.create			(r2_RT_luminance_src);
-		t_LUM_dest.create			(r2_RT_luminance_cur);
+		t_LUM_src.create(r2_RT_luminance_src);
+		t_LUM_dest.create(r2_RT_luminance_cur);
 
 		// create pool
 		for (u32 it = 0; it < 2; it++)
 		{
 			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
 			rt_LUM_pool[it].create(name.c_str(), 1, 1, D3DFMT_R32F);
-			u_setrt(rt_LUM_pool[it], 0, 0, 0);
-			CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET, 0x7f7f7f7f, 1.0f, 0L));
+			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
-		u_setrt						( RCache.get_width(),RCache.get_height(),RTarget,nullptr,nullptr,RDepth);
+		u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
 	}
 
 	// COMBINE
@@ -600,31 +599,12 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		pv->set						(float(_w+eps),	eps,			eps,	1.f, C, 0, 0);	pv++;
 		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
 		RCache.set_CullMode			(CULL_NONE	);
+
 		//	Clear everything except last bit
 		RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFE, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
-		//RCache.set_Stencil	(TRUE,D3DCMP_ALWAYS,dwLightMarkerID,0x00,0xFF, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO, D3DSTENCILOP_ZERO);
 		RCache.set_Element			(s_occq->E[1]	);
 		RCache.set_Geometry			(g_combine		);
 		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-
-/*
-		u32		Offset;
-		float	_w					= float(Device.TargetWidth);
-		float	_h					= float(Device.TargetHeight);
-		u32		C					= color_rgba	(255,255,255,255);
-		float	eps					= 0;
-		float	_dw					= 0.5f;
-		float	_dh					= 0.5f;
-		FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-		pv->set						(-_dw,		_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-		pv->set						(-_dw,		-_dh,		eps,	1.f, C, 0, 0);	pv++;
-		pv->set						(_w-_dw,	_h-_dh,		eps,	1.f, C, 0, 0);	pv++;
-		pv->set						(_w-_dw,	-_dh,		eps,	1.f, C, 0, 0);	pv++;
-		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-		RCache.set_Element			(s_occq->E[2]	);
-		RCache.set_Geometry			(g_combine		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-*/
 	}
 }
 
