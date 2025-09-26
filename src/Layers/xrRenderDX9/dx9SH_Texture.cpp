@@ -50,18 +50,17 @@ CTexture::~CTexture()
 	DEV->_DeleteTexture	(this);
 }
 
-void					CTexture::surface_set	(ID3DBaseTexture* surf )
+// RHI interface methods
+void CTexture::surface_set(IRHISurface* surf)
 {
-	if (surf)			surf->AddRef		();
-
-	_RELEASE								(pSurface);
-
-	pSurface			= surf;
+	if (surf) surf->AddRef();
+	_RELEASE(pSurface);
+	pSurface = surf;
 }
 
-ID3DBaseTexture*	CTexture::surface_get	()
+IRHISurface* CTexture::surface_get()
 {
-	if (pSurface)		pSurface->AddRef	();
+	if (pSurface) pSurface->AddRef();
 	return pSurface;
 }
 
@@ -83,8 +82,8 @@ void CTexture::apply_theora	(u32 dwStage)
 {
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:RDEVICE.dwTimeContinual))
     {
-		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
+		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
+		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
 		D3DLOCKED_RECT R{};
 		RECT rect;
 		rect.left			= 0;
@@ -101,13 +100,13 @@ void CTexture::apply_theora	(u32 dwStage)
 		VERIFY				(u32(_pos) == rect.bottom*_w);
 		R_CHK				(T2D->UnlockRect(0));
 	}
-	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage, (IDirect3DBaseTexture9*)pSurface->GetRawTexture()));
 };
 void CTexture::apply_avi	(u32 dwStage)	
 {
 	if (pAVI->NeedUpdate()){
-		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetType());
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
+		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
+		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
 
 		// AVI
 		D3DLOCKED_RECT R{};
@@ -120,7 +119,7 @@ void CTexture::apply_avi	(u32 dwStage)
 
 		R_CHK	(T2D->UnlockRect(0));
 	}
-	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+	CHK_DX(RDevice->SetTexture(dwStage, (IDirect3DBaseTexture9*)pSurface->GetRawTexture()));
 };
 void CTexture::apply_seq	(u32 dwStage)	{
 	// SEQ
@@ -129,15 +128,44 @@ void CTexture::apply_seq	(u32 dwStage)	{
 	if (flags.seqCycles)		{
 		u32	frame_id	= frame%(frame_data*2);
 		if (frame_id>=frame_data)	frame_id = (frame_data-1) - (frame_id%frame_data);
-		pSurface 			= seqDATA[frame_id];
+		// Create RHITextureDesc for the sequence texture
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = 1;  // Will be set properly by the texture
+		rhiDesc.Height = 1;
+		rhiDesc.Depth = 1;
+		rhiDesc.MipLevels = 1;
+		rhiDesc.Format = D3DFMT_A8R8G8B8;
+		rhiDesc.Usage = 0;
+		rhiDesc.BindFlags = 0;
+		rhiDesc.CPUAccessFlags = 0;
+		rhiDesc.MiscFlags = 0;
+		
+		// Use GRHI to create the surface from sequence data
+		pSurface = GRHI->CreateTextureFromMemory(seqDATA[frame_id]->GetRawTexture(), 0, rhiDesc);
 	} else {
 		u32	frame_id	= frame%frame_data;
-		pSurface 			= seqDATA[frame_id];
+		// Create RHITextureDesc for the sequence texture
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = 1;  // Will be set properly by the texture
+		rhiDesc.Height = 1;
+		rhiDesc.Depth = 1;
+		rhiDesc.MipLevels = 1;
+		rhiDesc.Format = D3DFMT_A8R8G8B8;
+		rhiDesc.Usage = 0;
+		rhiDesc.BindFlags = 0;
+		rhiDesc.CPUAccessFlags = 0;
+		rhiDesc.MiscFlags = 0;
+		
+		// Use GRHI to create the surface from sequence data
+		pSurface = GRHI->CreateTextureFromMemory(seqDATA[frame_id]->GetRawTexture(), 0, rhiDesc);
 	}
-	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+
+	CHK_DX(RDevice->SetTexture(dwStage, pSurface ? (IDirect3DBaseTexture9*)pSurface->GetRawTexture() : nullptr));
 };
-void CTexture::apply_normal	(u32 dwStage)	{
-	CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+
+void CTexture::apply_normal	(u32 dwStage)
+{
+	CHK_DX(RDevice->SetTexture(dwStage, pSurface ? (IDirect3DBaseTexture9*)pSurface->GetRawTexture() : nullptr));
 };
 
 void CTexture::Preload	()
@@ -195,7 +223,20 @@ void CTexture::Load		()
 				HRESULT hrr = RDevice->CreateTexture(
 					_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr );
 
-				pSurface = pTexture;
+				// Create RHITextureDesc for the texture
+				RHITextureDesc rhiDesc;
+				rhiDesc.Width = _w;
+				rhiDesc.Height = _h;
+				rhiDesc.Depth = 1;
+				rhiDesc.MipLevels = 1;
+				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Usage = 0;
+				rhiDesc.BindFlags = 0;
+				rhiDesc.CPUAccessFlags = 0;
+				rhiDesc.MiscFlags = 0;
+				
+				// Use GRHI to create the surface
+				pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
 				if (FAILED(hrr))
 				{
 					FATAL		("Invalid video stream");
@@ -226,7 +267,20 @@ void CTexture::Load		()
 					pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
 					&pTexture,nullptr
 					);
-				pSurface	= pTexture;
+				// Create RHITextureDesc for the texture
+				RHITextureDesc rhiDesc;
+				rhiDesc.Width = pAVI->m_dwWidth;
+				rhiDesc.Height = pAVI->m_dwHeight;
+				rhiDesc.Depth = 1;
+				rhiDesc.MipLevels = 1;
+				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Usage = 0;
+				rhiDesc.BindFlags = 0;
+				rhiDesc.CPUAccessFlags = 0;
+				rhiDesc.MiscFlags = 0;
+				
+				// Use GRHI to create the surface
+				pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
 				if (FAILED(hrr))
 				{
 					FATAL		("Invalid video stream");
@@ -261,7 +315,23 @@ void CTexture::Load		()
 				{
 					// Load another texture
 					u32	mem  = 0;
-					pSurface = ::RImplementation.texture_load	(buffer,mem);
+					IDirect3DBaseTexture9* baseTexture = ::RImplementation.texture_load(buffer,mem);
+					if (baseTexture) {
+						// Create RHITextureDesc for the loaded texture
+						RHITextureDesc rhiDesc;
+						rhiDesc.Width = 1;  // Will be set properly by the texture
+						rhiDesc.Height = 1;
+						rhiDesc.Depth = 1;
+						rhiDesc.MipLevels = 1;
+						rhiDesc.Format = D3DFMT_A8R8G8B8;
+						rhiDesc.Usage = 0;
+						rhiDesc.BindFlags = 0;
+						rhiDesc.CPUAccessFlags = 0;
+						rhiDesc.MiscFlags = 0;
+						
+						// Use GRHI to create the surface from loaded texture
+						pSurface = GRHI->CreateTextureFromMemory(baseTexture, 0, rhiDesc);
+					}
 					if (pSurface)	
 					{
 						// pSurface->SetPriority	(PRIORITY_LOW);
@@ -277,7 +347,23 @@ void CTexture::Load		()
 		{
 			// Normal texture
 			u32	mem  = 0;
-			pSurface = ::RImplementation.texture_load	(*cName,mem);
+			IDirect3DBaseTexture9* baseTexture = ::RImplementation.texture_load(*cName,mem);
+			if (baseTexture) {
+				// Create RHITextureDesc for the loaded texture
+				RHITextureDesc rhiDesc;
+				rhiDesc.Width = 1;  // Will be set properly by the texture
+				rhiDesc.Height = 1;
+				rhiDesc.Depth = 1;
+				rhiDesc.MipLevels = 1;
+				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Usage = 0;
+				rhiDesc.BindFlags = 0;
+				rhiDesc.CPUAccessFlags = 0;
+				rhiDesc.MiscFlags = 0;
+				
+				// Use GRHI to create the surface from loaded texture
+				pSurface = GRHI->CreateTextureFromMemory(baseTexture, 0, rhiDesc);
+			}
 
 			// Calc memory usage and preload into vid-mem
 			if (pSurface) {
@@ -325,9 +411,9 @@ void CTexture::Unload	()
 void CTexture::desc_update	()
 {
 	desc_cache	= pSurface;
-	if (pSurface && (D3DRTYPE_TEXTURE == pSurface->GetType()))
+	if (pSurface && (D3DRTYPE_TEXTURE == pSurface->GetTextureType()))
 	{
-		ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
+		ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
 		R_CHK					(T->GetLevelDesc(0,&desc));
 	}
 }

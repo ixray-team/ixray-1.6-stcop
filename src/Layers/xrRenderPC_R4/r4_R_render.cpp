@@ -322,7 +322,7 @@ void CRender::render_menu() {
 	}
 
 	// Actual Display
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), (ID3D11RenderTargetView*)RImplementation.Target->rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
 	rmNormal();
 
 	RCache.set_Shader(Target->s_menu);
@@ -374,7 +374,7 @@ void CRender::Render()
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
 	if (!(g_pGameLevel && g_hud) || bMenu) {
-		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), (ID3D11RenderTargetView*)RImplementation.Target->rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
 		return;
 	}
 
@@ -434,7 +434,7 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 		
 		Fvector PointPos = Device.vCameraPosition;
-		RContext->CopyResource(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
+		RContext->CopyResource((ID3D11Resource*)Target->rt_Reflection_temp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Reflection->pSurface->GetRawTexture());
 
 		for(auto i = 0; i < 6; ++i) {
 			GPU_EVENT(FORWARD_REFLECTION_SIDE);
@@ -447,11 +447,11 @@ void CRender::Render()
 			RCache.set_xform_view(cView);
 			mapWmark.clear();
 
-			RContext->ClearRenderTargetView(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
-			RContext->ClearDepthStencilView(Target->rt_Depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0);
+			RContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), (FLOAT*)&fog_color4);
+			RContext->ClearDepthStencilView((ID3D11DepthStencilView*)Target->rt_Depth->pZRT->GetRawDSV(), D3D_CLEAR_DEPTH, 1.0f, 0);
 
 			Target->u_setrt(RefSize, RefSize,
-				Target->rt_Reflection->pRT[i], NULL, NULL, Target->rt_Depth->pZRT);
+				(ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), NULL, NULL, (ID3D11DepthStencilView*)Target->rt_Depth->pZRT->GetRawDSV());
 			
 			RImplementation.rmNormal();
 
@@ -463,7 +463,7 @@ void CRender::Render()
 
 		{
 			GPU_EVENT(FORWARD_REFLECTION_MIPS_GEN);
-			RContext->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+			RContext->GenerateMips((ID3D11ShaderResourceView*)Target->rt_Reflection->pTexture->get_SRView()->GetRawSRV());
 		}
 
 		RCache.set_xform_project(Device.mProject);
@@ -668,17 +668,17 @@ void CRender::Render()
 		ID3D11Resource* res{};
 		RDepth->GetResource(&res);
 
-		RContext->CopyResource(Target->rt_Position->pSurface, res);
+		RContext->CopyResource((ID3D11Resource*)Target->rt_Position->pSurface->GetRawTexture(), res);
 		_RELEASE(res);
 	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
-	if(UseWinterPass && g_pGameLevel->UseSnowmask)
+	if(UseWinterPass)
 	{
 		GPU_EVENT(PhaseWinter);
 
-		RContext->CopyResource(Target->rt_NormalTemp->pSurface, Target->rt_Normal->pSurface);
-		RContext->CopyResource(Target->rt_SurfaceTemp->pSurface, Target->rt_Surface->pSurface);
+		RContext->CopyResource((ID3D11Resource*)Target->rt_NormalTemp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Normal->pSurface->GetRawTexture());
+		RContext->CopyResource((ID3D11Resource*)Target->rt_SurfaceTemp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Surface->pSurface->GetRawTexture());
 
 		Target->phase_scene_begin();
 		RCache.set_ZB(nullptr);
@@ -799,7 +799,7 @@ void CRender::render_forward				()
 		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 
-		RContext->CopyResource(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+		RContext->CopyResource((ID3D11Resource*)Target->rt_Accumulator->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Generic_0->pSurface->GetRawTexture());
 		r_dsgraph_render_sorted_hud();
 	}
 

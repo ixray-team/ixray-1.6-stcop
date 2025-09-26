@@ -22,9 +22,9 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	VERIFY									(_1);
 	dwWidth									= _1->dwWidth;
 	dwHeight								= _1->dwHeight;
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
-	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
+	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
+	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
+	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT((ID3DRenderTargetView*)nullptr,2);
 	RCache.set_ZB							(zb);
 //	RImplementation.rmNormal				();
 }
@@ -407,7 +407,22 @@ CRenderTarget::CRenderTarget		()
 			// Surface
 			R_CHK(RDevice->CreateVolumeTexture(TEX_material_LdotN, TEX_material_LdotH, 4, 1, 0, D3DFMT_A8L8, D3DPOOL_MANAGED, &t_material_surf, nullptr));
 			t_material = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
-			t_material->surface_set(t_material_surf);
+			
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = TEX_material_LdotN;
+			rhiDesc.Height = TEX_material_LdotH;
+			rhiDesc.Depth = 4;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = D3DFMT_A8L8;
+			rhiDesc.Usage = 0;
+			rhiDesc.BindFlags = 0;
+			rhiDesc.CPUAccessFlags = 0;
+			rhiDesc.MiscFlags = 0;
+			
+			// Use GRHI to create the surface
+			IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_material_surf, 0, rhiDesc);
+			t_material->surface_set(rhiSurface);
 
 			// Fill it (addr: x=dot(L,N),y=dot(L,H))
 			D3DLOCKED_BOX R{};
@@ -472,7 +487,22 @@ CRenderTarget::CRenderTarget		()
 			xr_sprintf(name, "%s%d", r2_jitter, it1);
 			R_CHK(RDevice->CreateTexture(TEX_jitter, TEX_jitter, 1, 0, D3DFMT_Q8W8V8U8, D3DPOOL_MANAGED, &t_noise_surf[it1], nullptr));
 			t_noise[it1] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
-			t_noise[it1]->surface_set(t_noise_surf[it1]);
+			
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = TEX_jitter;
+			rhiDesc.Height = TEX_jitter;
+			rhiDesc.Depth = 1;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = D3DFMT_Q8W8V8U8;
+			rhiDesc.Usage = 0;
+			rhiDesc.BindFlags = 0;
+			rhiDesc.CPUAccessFlags = 0;
+			rhiDesc.MiscFlags = 0;
+			
+			// Use GRHI to create the surface
+			IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_noise_surf[it1], 0, rhiDesc);
+			t_noise[it1]->surface_set(rhiSurface);
 			R_CHK(t_noise_surf[it1]->LockRect(0, &R[it1], 0, 0));
 		}
 
@@ -531,7 +561,7 @@ CRenderTarget::~CRenderTarget	()
 	t_LUM_dest->surface_set		(nullptr);
 
 #ifdef DEBUG
-	ID3DBaseTexture*	pSurf = 0;
+	IRHISurface*	pSurf = 0;
 
 	pSurf = t_envmap_0->surface_get();
 	if (pSurf) pSurf->Release();

@@ -3,7 +3,7 @@
 void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 {
 	// Targets
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pRT);
+	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pRT->GetRawRTV());
 	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
 
 	// Clear
@@ -41,5 +41,5 @@ void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
 {
 	VERIFY(RImplementation.o.Tshadows);
 	RCache.set_ColorWriteEnable();
-	GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
+	GRHI->ClearRawTarget(RCache.get_RT(), ERTColor::Black);
 }

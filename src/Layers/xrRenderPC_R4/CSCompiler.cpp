@@ -158,7 +158,7 @@ CSCompiler& CSCompiler::defTexture(LPCSTR ResourceName,	ref_texture texture)
 	if (stage >= m_Textures.size())
 		m_Textures.resize(stage+1);
 
-	m_Textures[stage] = texture->get_SRView(); //!!!dangerous view can be deleted
+	m_Textures[stage] = (ID3D11ShaderResourceView*)texture->get_SRView()->GetRawSRV(); //!!!dangerous view can be deleted
 
 	return *this;
 }

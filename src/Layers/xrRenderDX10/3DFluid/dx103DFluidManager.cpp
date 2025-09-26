@@ -213,8 +213,22 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
 	DescRT.Texture3D.WSize = TexDesc.Depth;
 
 	CHK_DX(RDevice->CreateRenderTargetView(pRT, &DescRT, &pRenderTargetViews[rtIndex]));
-
-	pRTTextures[rtIndex]->surface_set(pRT);
+	
+	// Create RHITextureDesc for the texture
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = TexDesc.Width;
+	rhiDesc.Height = TexDesc.Height;
+	rhiDesc.Depth = TexDesc.Depth;
+	rhiDesc.MipLevels = TexDesc.MipLevels;
+	rhiDesc.Format = TexDesc.Format;
+	rhiDesc.Usage = TexDesc.Usage;
+	rhiDesc.BindFlags = TexDesc.BindFlags;
+	rhiDesc.CPUAccessFlags = TexDesc.CPUAccessFlags;
+	rhiDesc.MiscFlags = TexDesc.MiscFlags;
+	
+	// Use GRHI to create the surface
+	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pRT, 0, rhiDesc);
+	pRTTextures[rtIndex]->surface_set(rhiSurface);
 
 	//	CTexture owns ID3DxxTexture3D interface
 	pRT->Release();
@@ -230,7 +244,7 @@ void dx103DFluidManager::Reset()
 {
 	for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
 	{
-		GRHI->ClearTarget(pRenderTargetViews[rtIndex]);
+		GRHI->ClearRawTarget(pRenderTargetViews[rtIndex]);
 	}
 }
 
@@ -311,7 +325,24 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 	for (int i=0; i<dx103DFluidData::VP_NUM_TARGETS; ++i)
 	{
 		ID3DTexture3D	*pT = FluidData.GetTexture((dx103DFluidData::eVolumePrivateRT)i);
-		pRTTextures[RENDER_TARGET_VELOCITY0+i]->surface_set(pT);
+		
+		// Create RHITextureDesc for the texture
+		D3D_TEXTURE3D_DESC desc;
+		pT->GetDesc(&desc);
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = desc.Width;
+		rhiDesc.Height = desc.Height;
+		rhiDesc.Depth = desc.Depth;
+		rhiDesc.MipLevels = desc.MipLevels;
+		rhiDesc.Format = desc.Format;
+		rhiDesc.Usage = desc.Usage;
+		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+		rhiDesc.MiscFlags = desc.MiscFlags;
+		
+		// Use GRHI to create the surface
+		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pT, 0, rhiDesc);
+		pRTTextures[RENDER_TARGET_VELOCITY0+i]->surface_set(rhiSurface);
 		_RELEASE(pT);
 
 		VERIFY(!pRenderTargetViews[RENDER_TARGET_VELOCITY0+i]);
@@ -327,14 +358,48 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 	{
 		ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
 		FluidData.SetTexture(dx103DFluidData::VP_COLOR, pTTarg);
-		pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
+		
+		// Create RHITextureDesc for the texture
+		D3D_TEXTURE3D_DESC desc;
+		pTSrc->GetDesc(&desc);
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = desc.Width;
+		rhiDesc.Height = desc.Height;
+		rhiDesc.Depth = desc.Depth;
+		rhiDesc.MipLevels = desc.MipLevels;
+		rhiDesc.Format = desc.Format;
+		rhiDesc.Usage = desc.Usage;
+		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+		rhiDesc.MiscFlags = desc.MiscFlags;
+		
+		// Use GRHI to create the surface
+		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pTSrc, 0, rhiDesc);
+		pRTTextures[RENDER_TARGET_COLOR]->surface_set(rhiSurface);
 		_RELEASE(pTTarg);
 		_RELEASE(pTSrc);
 	}
 	else
 	{
 		ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
-		pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
+		
+		// Create RHITextureDesc for the texture
+		D3D_TEXTURE3D_DESC desc;
+		pTSrc->GetDesc(&desc);
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = desc.Width;
+		rhiDesc.Height = desc.Height;
+		rhiDesc.Depth = desc.Depth;
+		rhiDesc.MipLevels = desc.MipLevels;
+		rhiDesc.Format = desc.Format;
+		rhiDesc.Usage = desc.Usage;
+		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+		rhiDesc.MiscFlags = desc.MiscFlags;
+		
+		// Use GRHI to create the surface
+		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pTSrc, 0, rhiDesc);
+		pRTTextures[RENDER_TARGET_COLOR]->surface_set(rhiSurface);
 		_RELEASE(pTSrc);
 	}
 
@@ -354,8 +419,8 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 {
 	GPU_EVENT(AdvectColorBFECC);
 
-	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
-	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	if (bTeperature)
@@ -434,7 +499,7 @@ void dx103DFluidManager::AdvectVelocity( float timestep, float fGravity )
 {
 	GPU_EVENT(AdvectVelocity);
 
-	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
+	RCache.set_RT((IRHIRenderTargetView*)pRenderTargetViews[RENDER_TARGET_VELOCITY1], 0);
 
 	if (_abs(fGravity)<0.000001)
 		RCache.set_Element(m_SimulationTechnique[SS_AdvectVel]);
@@ -456,7 +521,7 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 	GPU_EVENT(ApplyVorticityConfinement);
 
 	// Compute vorticity
-	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Vorticity]);	
@@ -486,7 +551,7 @@ void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData &FluidData, f
 void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 {
 	GPU_EVENT(ComputeVelocityDivergence);
-	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
@@ -497,10 +562,10 @@ void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 void dx103DFluidManager::ComputePressure( float timestep )
 {
 	GPU_EVENT(ComputePressure);
-	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	// unbind this variable from the other technique that may have used it
-	RCache.set_RT(0);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
 	ref_selement	CurrentTechnique = m_SimulationTechnique[SS_Jacobi];
 	RCache.set_Element(CurrentTechnique);
 
@@ -539,7 +604,24 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 
 	//	Bind input texture
 	ID3DTexture3D	*pT = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
-	pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(pT);
+	
+	// Create RHITextureDesc for the texture
+	D3D_TEXTURE3D_DESC desc;
+	pT->GetDesc(&desc);
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = desc.Width;
+	rhiDesc.Height = desc.Height;
+	rhiDesc.Depth = desc.Depth;
+	rhiDesc.MipLevels = desc.MipLevels;
+	rhiDesc.Format = desc.Format;
+	rhiDesc.Usage = desc.Usage;
+	rhiDesc.BindFlags = desc.BindFlags;
+	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+	rhiDesc.MiscFlags = desc.MiscFlags;
+	
+	// Use GRHI to create the surface
+	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pT, 0, rhiDesc);
+	pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(rhiSurface);
 	_RELEASE(pT);
 
 	//	Do rendering
@@ -559,8 +641,8 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 {
 	GPU_EVENT(Fluid_update_obstacles);
 	//	Reset data
-	GRHI->ClearTarget( pRenderTargetViews[RENDER_TARGET_OBSTACLES]);
-	GRHI->ClearTarget( pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY]);
+	GRHI->ClearRawTarget( pRenderTargetViews[RENDER_TARGET_OBSTACLES]);
+	GRHI->ClearRawTarget( pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);
@@ -571,10 +653,10 @@ void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, floa
 	//	later only rt 0 will be reassigned so rt1 
 	//	would be bound all the time
 	//	Reset to avoid confusion. 
-	RCache.set_RT(0, 0);
-	RCache.set_RT(0, 1);
-	RCache.set_RT(0, 2);
-	RCache.set_RT(0, 3);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 }
 
 //	Allow real-time config reload

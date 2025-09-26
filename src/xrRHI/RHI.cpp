@@ -62,12 +62,52 @@ void* CRHI::GetSwapchain()
 	return nullptr;
 }
 
-void CRHI::ClearTarget(void* Target, ERTColor Transparent)
+void CRHI::ClearRawTarget(void* Target, ERTColor Transparent)
 {
 	DevicePtr->ClearTarget(Target, Transparent);
+}
+
+void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
+{
+	DevicePtr->ClearTarget(Target->GetRawRTV(), Transparent);
 }
 
 void CRHI::Present()
 {
 	DevicePtr->Present();
+}
+
+IRHISurface* CRHI::CreateTextureFromFile(const char* filename, u32& memorySize)
+{
+	return DevicePtr->GetTextureFactory()->CreateTextureFromFile(filename, memorySize);
+}
+
+IRHISurface* CRHI::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateTextureFromMemory(data, size, desc);
+}
+
+IRHISurface* CRHI::CreateRenderTarget(const RHITextureDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateRenderTarget(desc);
+}
+
+IRHISurface* CRHI::CreateDepthStencil(const RHITextureDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateDepthStencil(desc);
+}
+
+IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateShaderResourceView(surface, desc);
+}
+
+IRHIRenderTargetView* CRHI::CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateRenderTargetView(surface, desc);
+}
+
+IRHIDepthStencilView* CRHI::CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateDepthStencilView(surface, desc);
 }

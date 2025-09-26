@@ -398,7 +398,7 @@ void dxRenderDeviceRender::Clear()
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
-		GRHI->ClearTarget(RCache.get_RT());
+		GRHI->ClearRawTarget(RCache.get_RT());
 	}
 #else //USE_DX11
 	CHK_DX(RDevice->Clear(0,0,
@@ -481,7 +481,7 @@ void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 void dxRenderDeviceRender::ClearTarget()
 {
 #ifndef _EDITOR
-	GRHI->ClearTarget(RCache.get_RT());
+	GRHI->ClearRawTarget(RCache.get_RT());
 #endif
 }
 

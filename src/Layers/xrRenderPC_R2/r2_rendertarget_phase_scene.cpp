@@ -15,7 +15,7 @@ void	CRenderTarget::phase_scene_prepare	()
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 	float fValue = E.m_fSunShaftsIntensity;
 
-	u_setrt(RCache.get_width(), RCache.get_height(), rt_Position->pRT, nullptr, nullptr, RDepth);
+	u_setrt(RCache.get_width(), RCache.get_height(), (IDirect3DSurface9*)rt_Position->pRT->GetRawRTV(), nullptr, nullptr, RDepth);
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
 
 	//	Igor: for volumetric lights

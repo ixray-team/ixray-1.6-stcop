@@ -80,7 +80,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
 	DescRT.Texture3D.WSize = TexDesc.Depth;
 
 	CHK_DX(RDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
-	GRHI->ClearTarget(m_pRenderTargetViews[rtIndex]);
+	GRHI->ClearRawTarget(m_pRenderTargetViews[rtIndex]);
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)

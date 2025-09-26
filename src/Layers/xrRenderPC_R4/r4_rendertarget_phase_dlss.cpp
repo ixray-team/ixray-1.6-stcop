@@ -22,15 +22,15 @@ bool CRenderTarget::phase_dlss()
 	DLSSWrapper::DrawParameters dlssParams = {};
 	dlssParams.deviceContext = RContext;
 
-	dlssParams.unresolvedColorResource = rt_Generic_0->pSurface;
-	dlssParams.motionvectorResource = rt_Velocity->pSurface;
-	dlssParams.depthbufferResource = rt_Position->pSurface;
+	dlssParams.unresolvedColorResource = (ID3D11Texture2D*)rt_Generic_0->pSurface->GetRawTexture();
+	dlssParams.motionvectorResource = (ID3D11Texture2D*)rt_Velocity->pSurface->GetRawTexture();
+	dlssParams.depthbufferResource = (ID3D11Texture2D*)rt_Position->pSurface->GetRawTexture();
 
 	dlssParams.exposureResource = nullptr;
 	dlssParams.reactiveMapResource = nullptr;
 	dlssParams.transparencyAndCompositionResource = nullptr;
 
-	dlssParams.resolvedColorResource = rt_Generic->pSurface;
+	dlssParams.resolvedColorResource = (ID3D11Texture2D*)rt_Generic->pSurface->GetRawTexture();
 
 	dlssParams.renderWidth = (int)RCache.get_width();
 	dlssParams.renderHeight = (int)RCache.get_height();

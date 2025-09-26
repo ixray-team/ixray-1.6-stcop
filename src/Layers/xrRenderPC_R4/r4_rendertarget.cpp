@@ -94,10 +94,10 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 		_RELEASE(pRes);
 	}
 
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
-	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
-	RCache.set_RT(nullptr, 3);
+	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
+	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
+	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT((ID3DRenderTargetView*)nullptr,2);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
 	RCache.set_ZB							(zb);
 }
@@ -131,10 +131,10 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthSten
 		_RELEASE( pRes );
 	}
 
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
-	RCache.set_RT(nullptr, 2);
-	RCache.set_RT(nullptr, 3);
+	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
+	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
 	RCache.set_ZB (zb);
 }
@@ -148,7 +148,7 @@ void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRende
 	RCache.set_RT							(_1,	0);
 	RCache.set_RT							(_2,	1);
 	RCache.set_RT							(_3,	2);
-	RCache.set_RT(nullptr, 3);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 	RCache.set_ZB							(zb);
 //	RImplementation.rmNormal				();
 }
@@ -366,8 +366,10 @@ CRenderTarget::CRenderTarget()
 		}
 
 		auto State = g_debug_blend_state;
-		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData) {
-			if (rt._get() == nullptr || rt->pTexture == nullptr || rt->pTexture->get_SRView() == nullptr) {
+		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData)
+		{
+			if (rt._get() == nullptr || rt->pTexture == nullptr || rt->pTexture->get_SRView() == nullptr)
+			{
 				return;
 			}
 
@@ -379,7 +381,8 @@ CRenderTarget::CRenderTarget()
 
 			const auto& Texture = *rt->pTexture;
 			
-			ImGui::Text(
+			ImGui::Text
+			(
 				"Target %s (fmt: %s, width: %i, height: %i)",
 				Texture.cName.c_str(), magic_enum::enum_name(rt->fmt).data(), rt->dwWidth, rt->dwHeight
 			);
@@ -391,33 +394,45 @@ CRenderTarget::CRenderTarget()
 			float scale = ImGui::GetContentRegionAvail().x / rt->dwWidth;
 			auto& DrawList = *ImGui::GetWindowDrawList();
 
-			if (!PowerMap.contains(Texture.cName.c_str())) {
+			if (!PowerMap.contains(Texture.cName.c_str()))
+			{
 				PowerMap[Texture.cName.c_str()] = 1;
 			}
 
 			float& ImagePower = PowerMap[Texture.cName.c_str()];
 			ImGui::SliderFloat(Texture.cName.c_str(), &ImagePower, 0.0f, 1.0f);
 
-			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-				const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-				RContext->OMSetBlendState((ID3D11BlendState*)cmd->UserCallbackData, blend_factor, 0xffffffff);
-				}, State);
-			ImGui::ImageWithBg(
-				rt->pTexture->get_SRView(),
+			DrawList.AddCallback
+			(
+				[](const ImDrawList* parent_list, const ImDrawCmd* cmd)
+				{
+					const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+					RContext->OMSetBlendState((ID3D11BlendState*)cmd->UserCallbackData, blend_factor, 0xffffffff);
+				},
+				State
+			);
+
+			ImGui::ImageWithBg
+			(
+				rt->pTexture->get_SRView()->GetRawSRV(),
 				ImVec2(ImGui::GetContentRegionAvail().x, rt->dwHeight * scale),
 				ImVec2(0, 0), ImVec2(1, 1), ImVec4(ImagePower, ImagePower, ImagePower, 1.0f)
 			);
 
-			DrawList.AddCallback([](const ImDrawList* parent_list, const ImDrawCmd* cmd) {
-				auto bd = ImGui_ImplDX11_GetBackendData();
-				if (bd != nullptr) {
-					const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-					RContext->OMSetBlendState((ID3D11BlendState*)bd->pBlendState, blend_factor, 0xffffffff);
-				}
-				}, State);
-			};
+			DrawList.AddCallback
+			(
+				[](const ImDrawList* parent_list, const ImDrawCmd* cmd)
+				{
+					auto bd = ImGui_ImplDX11_GetBackendData();
+					if (bd != nullptr) {
+						const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+						RContext->OMSetBlendState((ID3D11BlendState*)bd->pBlendState, blend_factor, 0xffffffff);
+					}
+				},
+				State
+			);
+		};
 
-		ID3D11BlendState* BlendState = nullptr;
 		if (!ImGui::Begin("GraphicDebug", &Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)], ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse)) {
 			ImGui::End();
 			return;
@@ -701,7 +716,7 @@ CRenderTarget::CRenderTarget()
 			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
 
-		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, (ID3D11RenderTargetView*)rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
 	}
 
 	// HBAO
@@ -833,7 +848,22 @@ CRenderTarget::CRenderTarget()
 
 			R_CHK(RDevice->CreateTexture3D(&desc, &subData, &t_material_surf));
 			t_material = dxRenderDeviceRender::Instance().Resources->_CreateTexture(r2_material);
-			t_material->surface_set(t_material_surf);
+			
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = desc.Width;
+			rhiDesc.Height = desc.Height;
+			rhiDesc.Depth = desc.Depth;
+			rhiDesc.MipLevels = desc.MipLevels;
+			rhiDesc.Format = desc.Format;
+			rhiDesc.Usage = desc.Usage;
+			rhiDesc.BindFlags = desc.BindFlags;
+			rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+			rhiDesc.MiscFlags = desc.MiscFlags;
+			
+			// Use GRHI to create the surface
+			IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_material_surf, 0, rhiDesc);
+			t_material->surface_set(rhiSurface);
 		}
 
 		// Build noise table
@@ -881,7 +911,22 @@ CRenderTarget::CRenderTarget()
 				xr_sprintf(name, "%s%d", r2_jitter, it);
 				R_CHK(RDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
 				t_noise[it] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
-				t_noise[it]->surface_set(t_noise_surf[it]);
+				
+				// Create RHITextureDesc for the texture
+				RHITextureDesc rhiDesc;
+				rhiDesc.Width = desc.Width;
+				rhiDesc.Height = desc.Height;
+				rhiDesc.Depth = 1;
+				rhiDesc.MipLevels = desc.MipLevels;
+				rhiDesc.Format = desc.Format;
+				rhiDesc.Usage = desc.Usage;
+				rhiDesc.BindFlags = desc.BindFlags;
+				rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+				rhiDesc.MiscFlags = desc.MiscFlags;
+				
+				// Use GRHI to create the surface
+				IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_noise_surf[it], 0, rhiDesc);
+				t_noise[it]->surface_set(rhiSurface);
 			}
 		}
 	}
@@ -915,15 +960,15 @@ CRenderTarget::~CRenderTarget	()
 	t_LUM_dest->surface_set		(nullptr);
 
 #ifdef DEBUG
-	ID3DBaseTexture*	pSurf = 0;
+	IRHISurface*	pSurf = 0;
 
 	pSurf = t_envmap_0->surface_get();
 	if (pSurf) pSurf->Release();
-	_SHOW_REF("t_envmap_0 - #small",pSurf);
+	_SHOW_REF("t_envmap_0 - #small", pSurf);
 
 	pSurf = t_envmap_1->surface_get();
 	if (pSurf) pSurf->Release();
-	_SHOW_REF("t_envmap_1 - #small",pSurf);
+	_SHOW_REF("t_envmap_1 - #small", pSurf);
 	//_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
 	//_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
 #endif // DEBUG
@@ -971,10 +1016,10 @@ CRenderTarget::~CRenderTarget	()
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
-
 #if 0
 	g_XESSWrapper.Destroy();
 #endif
+
 	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
 
 	if (g_debug_blend_state != nullptr) 
