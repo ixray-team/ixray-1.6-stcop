@@ -527,11 +527,7 @@ void CEditorRenderDevice::End()
 	g_bRendering = 	FALSE;
 	// end scene
 	RCache.OnFrameEnd();
-
-    (REDevice->EndScene());
-
-	CHK_DX(REDevice->Present( NULL, NULL, NULL, NULL ));
-
+	GRHI->Present();
 }
 
 void CEditorRenderDevice::UpdateView()
