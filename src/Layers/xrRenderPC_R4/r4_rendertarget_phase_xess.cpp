@@ -36,16 +36,16 @@ bool CRenderTarget::phase_xess()
     xessParams.deviceContext = RContext;
 
     // Устанавливаем входные ресурсы
-    xessParams.pColorTexture = rt_Generic_0->pSurface;
-    xessParams.pVelocityTexture = rt_Velocity->pSurface;
-    xessParams.pDepthTexture = rt_Position->pSurface;
+    xessParams.pColorTexture = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
+    xessParams.pVelocityTexture = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
+    xessParams.pDepthTexture = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
 
     // Опциональные ресурсы (можно оставить nullptr)
     xessParams.pExposureScaleTexture = nullptr;
     xessParams.pResponsivePixelMaskTexture = nullptr;
 
     // Выходной ресурс
-    xessParams.pOutputTexture = rt_Generic->pSurface;
+    xessParams.pOutputTexture = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
 
     // Разрешение исходного рендера
     xessParams.inputWidth = (u32)RCache.get_width();

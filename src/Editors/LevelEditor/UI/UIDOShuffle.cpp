@@ -35,7 +35,7 @@ void UIDOShuffle::Draw()
 	{
 		ImVec2 StartPos = ImGui::GetCursorPos();
 
-		ImGui::Image(m_MaskTexture._get() ? m_MaskTexture->pSurface : m_TextureNull->pSurface, ImVec2(256, 256));
+		ImGui::Image(m_MaskTexture._get() ? m_MaskTexture->pSurface->GetRawTexture() : m_TextureNull->pSurface->GetRawTexture(), ImVec2(256, 256));
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
 			ImVec2 ClickPos = ImGui::GetMousePos();
@@ -78,7 +78,7 @@ void UIDOShuffle::Draw()
 
 			m_RealTexture = m_Texture;
 		}
-		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface, ImVec2(256, 256));
+		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface->GetRawTexture(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
@@ -277,7 +277,7 @@ void UIDOShuffle::FillData(bool ReloadTex)
 					memcpy(rect.pBits, Pixels.data(), Pixels.size());
 					R_CHK(pTexture->UnlockRect(0));
 
-					m_MaskTexture->pSurface = pTexture;
+					m_MaskTexture->pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, {});
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 #pragma once
 #include "../RHI.h"
+#include "DX9TextureImplementations.h"
 #include <d3d9.h>
 
 class InternalDevice9 :
@@ -11,6 +12,9 @@ public:
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
 	virtual void Present() override;
+	
+	virtual IRHITextureFactory* GetTextureFactory() override;
+	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
 
 private:
 	bool CreateD3D9();
@@ -24,4 +28,6 @@ private:
 private:
 	IDirect3D9* D3D = nullptr;
 	IDirect3DStateBlock9* DebugSB = nullptr;
+	
+	DX9TextureFactory* m_pTextureFactory = nullptr;
 };
