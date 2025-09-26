@@ -10,11 +10,11 @@ void CRenderTarget::phase_scene_prepare()
 	GPU_EVENT(phase_scene_prepare);
 
 	//	TODO: DX10: Check if we need to set RT here.
-	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);
+	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), (ID3D11RenderTargetView*)rt_Normal->pRT->GetRawRTV(), NULL, NULL, RDepth);
 
 	FLOAT ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
 
-	RContext->ClearRenderTargetView(rt_Normal->pRT, ColorRGBA);
+	RContext->ClearRenderTargetView((ID3D11RenderTargetView*)rt_Normal->pRT->GetRawRTV(), ColorRGBA);
 	RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 
 	//	Igor: for volumetric lights
@@ -22,8 +22,8 @@ void CRenderTarget::phase_scene_prepare()
 	//	Clear later if try to draw volumetric
 }
 
-// begin
-void	CRenderTarget::phase_scene_begin() {
+void CRenderTarget::phase_scene_begin()
+{
 	// Enable ANISO
 	SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
 
@@ -36,14 +36,13 @@ void	CRenderTarget::phase_scene_begin() {
 	RCache.set_ColorWriteEnable();
 }
 
-void	CRenderTarget::disable_aniso		()
+void CRenderTarget::disable_aniso()
 {
 	// Disable ANISO
 	SSManager.SetMaxAnisotropy(1);
 }
 
-// end
-void	CRenderTarget::phase_scene_end		()
+void CRenderTarget::phase_scene_end()
 {
 	disable_aniso();
 }

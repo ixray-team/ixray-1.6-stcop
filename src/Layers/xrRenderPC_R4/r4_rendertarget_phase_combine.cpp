@@ -161,8 +161,8 @@ void CRenderTarget::phase_combine()
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
-		ID3DBaseTexture*	e0	= _menu_pp?0:envdescren.sky_r_textures_env[0].second->surface_get();
-		ID3DBaseTexture*	e1	= _menu_pp?0:envdescren.sky_r_textures_env[1].second->surface_get();
+		IRHISurface* e0 = _menu_pp ? 0 : envdescren.sky_r_textures_env[0].second->surface_get();
+		IRHISurface* e1 = _menu_pp ? 0 : envdescren.sky_r_textures_env[1].second->surface_get();
 		t_envmap_0->surface_set		(e0);	_RELEASE(e0);
 		t_envmap_1->surface_set		(e1);	_RELEASE(e1);
 	
@@ -260,7 +260,7 @@ void CRenderTarget::phase_combine()
 			RCache.set_Geometry(g_combine);
 
 			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-			RContext->CopyResource(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
+			RContext->CopyResource((ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Generic_2->pSurface->GetRawTexture());
 		}
 	}
 
