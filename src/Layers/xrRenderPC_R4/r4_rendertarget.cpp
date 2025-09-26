@@ -698,9 +698,7 @@ CRenderTarget::CRenderTarget()
 		{
 			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
 			rt_LUM_pool[it].create(name.c_str(), 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
-
-			FLOAT ColorRGBA[4] = { 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f, 127.0f / 255.0f };
-			RContext->ClearRenderTargetView(rt_LUM_pool[it]->pRT, ColorRGBA);
+			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
 
 		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
