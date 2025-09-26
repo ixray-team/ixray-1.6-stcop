@@ -356,39 +356,7 @@ private:
 
 struct CHudAdjustManager
 {
-	struct CommandState
-	{
-		u32 encoded_position=0;
-		u32 encoded_rotation=0;
-	};
-
-	struct History
-	{
-		u32 current_cursor;
-		xr_vector<CommandState> storage;
-	};
-
-	struct Settings
-	{
-		/// @brief \~english specifies amount of commands that will be store for undo/redo operations
-		u32 history_command_max_count;
-
-		FILE* p_file = nullptr;
-		Fvector3 hud_position;
-		Fvector3 hud_rotation;
-		Fvector3 item_position;
-		Fvector3 item_rotation;
-
-		Fvector3 hud_position_default;
-		Fvector3 hud_rotation_default;
-		Fvector3 item_position_default;
-		Fvector3 item_rotation_default;
-		char data_of_save[32];
-	};
-
 	bool is_initialized;
-	Settings settings;
-	History history;
 };
 
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
@@ -409,8 +377,6 @@ void DestroySpawnManagerWindow();
 
 void RegisterImGuiInGame();
 void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
-
-constexpr const char* kImGuiHudAdjustInGame_SettingsFileName = "iha.bin";
 
 extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
