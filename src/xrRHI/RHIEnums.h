@@ -7,3 +7,10 @@ enum ERHI_API_LAYER
 
 	NOT_CREATED = -1
 };
+
+enum class ERTColor
+{
+	Transparent,
+	Gray,
+	Black
+};
