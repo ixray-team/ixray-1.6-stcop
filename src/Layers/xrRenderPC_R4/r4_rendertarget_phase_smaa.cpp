@@ -6,8 +6,7 @@ void CRenderTarget::phase_smaa()
     Fvector2 p0, p1;
     float d_Z = EPS_S;
     float d_W = 1.0f;
-    u32 C = color_rgba(0, 0, 0, 255);
-    FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    constexpr u32 C = color_rgba(0, 0, 0, 255);
 
     float _w = RCache.get_width();
     float _h = RCache.get_height();
@@ -20,7 +19,7 @@ void CRenderTarget::phase_smaa()
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    GRHI->ClearTarget(RCache.get_RT());
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -44,8 +43,7 @@ void CRenderTarget::phase_smaa()
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-
-    RContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
+    GRHI->ClearTarget(RCache.get_RT());
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
