@@ -69,21 +69,18 @@ dx103DFluidData::~dx103DFluidData()
 void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
 	// Create the texture
-	CHK_DX( RDevice->CreateTexture3D(&TexDesc,nullptr,&m_pRTTextures[rtIndex]));
+	CHK_DX(RDevice->CreateTexture3D(&TexDesc, nullptr, &m_pRTTextures[rtIndex]));
 	// Create the render target view
-	
+
 	D3D_RENDER_TARGET_VIEW_DESC DescRT;
 	DescRT.Format = TexDesc.Format;
-	DescRT.ViewDimension =  D3D_RTV_DIMENSION_TEXTURE3D;
+	DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
 	DescRT.Texture3D.FirstWSlice = 0;
 	DescRT.Texture3D.MipSlice = 0;
 	DescRT.Texture3D.WSize = TexDesc.Depth;
 
-	CHK_DX( RDevice->CreateRenderTargetView( m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]) );
-
-	float color[4] = {0, 0, 0, 0 };
-
-	RContext->ClearRenderTargetView( m_pRenderTargetViews[rtIndex], color );
+	CHK_DX(RDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
+	GRHI->ClearTarget(m_pRenderTargetViews[rtIndex]);
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)
