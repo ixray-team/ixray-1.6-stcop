@@ -213,15 +213,16 @@ public:
 	virtual DWORD					get_dx_level			()	{ return 0x000A0001; }
 
 	// Loading / Unloading
-	virtual void					create						();
-	virtual void					destroy						();
-	virtual	void					reset_begin					();
-	virtual	void					reset_end					();
+	virtual void create();
+	virtual void destroy();
+	virtual	void reset_begin();
+	virtual	void reset_end();
 
-	virtual	void					level_Load					(IReader*);
-	virtual void					level_Unload				();
+	virtual	void level_Load(IReader*);
+	virtual void level_Unload();
 
-			ID3DBaseTexture*		texture_load				(LPCSTR	fname, u32& msize, bool bStaging = false);
+	IRHISurface* texture_load(LPCSTR	fname, u32& msize, bool bStaging = false);
+
 	virtual HRESULT					shader_compile			(
 		LPCSTR							name,
 		DWORD const*					pSrcData,
