@@ -377,3 +377,8 @@ void InternalDevice11::DestroyD3D11()
 		}
 	}
 }
+
+void InternalDevice11::Present()
+{
+	HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+}
