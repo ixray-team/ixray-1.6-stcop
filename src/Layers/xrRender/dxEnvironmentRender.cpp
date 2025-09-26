@@ -170,20 +170,20 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env) {
 	dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
 
 	//. Setup skybox textures, somewhat ugly
+
 	if (!mixRen.sky_r_textures.empty())
 	{
-		ID3DBaseTexture* E0 = mixRen.sky_r_textures[0].second->surface_get();
+		IRHISurface* E0 = mixRen.sky_r_textures[0].second->surface_get();
 		tsky0->surface_set(E0);
 		_RELEASE(E0);
 	}
 
 	if (mixRen.sky_r_textures.size() >= 2)
 	{
-		ID3DBaseTexture* E1 = mixRen.sky_r_textures[1].second->surface_get();
+		IRHISurface* E1 = mixRen.sky_r_textures[1].second->surface_get();
 		tsky1->surface_set(E1);
 		_RELEASE(E1);
 	}
-
 	// ******************** Environment params (setting)
 #ifdef USE_DX11
 	//	TODO: DX10: Implement environment parameters setting for DX10 (if necessary)

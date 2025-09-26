@@ -250,6 +250,7 @@ public:
 	IC	const Fmatrix&				get_xform_view_old	();
 	IC	const Fmatrix&				get_xform_project_old ();
 
+	IC	void						set_RT				(IRHIRenderTargetView* RT, u32 ID=0);
 	IC	void						set_RT				(ID3DRenderTargetView* RT, u32 ID=0);
 	IC	void						set_ZB				(ID3DDepthStencilView* ZB);
 	IC	ID3DRenderTargetView*		get_RT				(u32 ID=0);

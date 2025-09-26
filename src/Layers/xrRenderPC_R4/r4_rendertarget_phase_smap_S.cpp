@@ -2,13 +2,13 @@
 
 void CRenderTarget::phase_smap_spot_clear()
 {
-	RContext->ClearDepthStencilView( rt_smap_depth->pZRT, D3D_CLEAR_DEPTH, 1.0f, 0L);
+	RContext->ClearDepthStencilView((ID3DDepthStencilView*)rt_smap_depth->pZRT->GetRawDSV(), D3D_CLEAR_DEPTH, 1.0f, 0L);
 }
 
 void CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	u_setrt(nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
+	u_setrt(nullptr, nullptr, nullptr, (ID3DDepthStencilView*)rt_smap_depth->pZRT->GetRawDSV());
 
 	D3D_VIEWPORT VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
 	RContext->RSSetViewports(1, &VP);
@@ -32,7 +32,7 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 	if (IRender_Light::OMNIPART == L->flags.type)
 	{
 		// omni-part
-		GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
+		GRHI->ClearRawTarget(RCache.get_RT(), ERTColor::Black);
 	}
 	else
 	{

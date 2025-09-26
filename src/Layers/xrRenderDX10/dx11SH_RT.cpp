@@ -1,10 +1,8 @@
 #include "stdafx.h"
 
-
+#include "../../xrRHI/RHITextureInterfaces.h"
 #include "../xrRender/ResourceManager.h"
-
 #include "../xrRender/dxRenderDeviceRender.h"
-
 #include "dx10TextureUtils.h"
 
 CRT::CRT() {
@@ -27,7 +25,8 @@ CRT::~CRT() {
 	DEV->_DeleteRT(this);
 }
 
-void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags) {
+void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+{
 	if(pSurface) return;
 	PROF_EVENT("CRT::create");
 	R_ASSERT(RDevice && Name && Name[0] && w && h);
@@ -105,23 +104,39 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 		}
 	}
 
-	CHK_DX(RDevice->CreateTexture2D(&desc, nullptr, &pSurface));
+	// Create RHITextureDesc for the texture
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = desc.Width;
+	rhiDesc.Height = desc.Height;
+	rhiDesc.Depth = desc.SampleDesc.Count;
+	rhiDesc.MipLevels = desc.MipLevels;
+	rhiDesc.Format = desc.Format;
+	rhiDesc.Usage = desc.Usage;
+	rhiDesc.BindFlags = desc.BindFlags;
+	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+	rhiDesc.MiscFlags = desc.MiscFlags;
+	
+	// Use GRHI to create the surface
+	pSurface = GRHI->CreateRenderTarget(rhiDesc);
 
 #ifdef DEBUG
 	Msg("* created RT(%s), %dx%d, format = %d samples = %d", Name, w, h, dx10FMT, SampleCount);
 #endif
 
-	if(bUseAsDepth) {
+	if(bUseAsDepth)
+	{
 		D3D_DEPTH_STENCIL_VIEW_DESC	ViewDesc;
 		ZeroMemory(&ViewDesc, sizeof(ViewDesc));
 
 		ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 		ViewDesc.Texture2D.MipSlice = 0;
 
-		if(SampleCount <= 1) {
+		if(SampleCount <= 1)
+		{
 			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2D;
 		}
-		else {
+		else
+		{
 			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2DMS;
 			ViewDesc.Texture2DMS.UnusedField_NothingToDefine = 0;
 		}
@@ -135,20 +150,44 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 			break;
 		}
 
-		CHK_DX(RDevice->CreateDepthStencilView(pSurface, &ViewDesc, &pZRT));
+		RHIDepthStencilViewDesc dsvDesc;
+		dsvDesc.Format = ViewDesc.Format;
+		dsvDesc.ViewDimension = ViewDesc.ViewDimension;
+		dsvDesc.Flags = 0;
+		dsvDesc.MipSlice = 0;
+		dsvDesc.FirstArraySlice = 0;
+		dsvDesc.ArraySize = 1;
+		
+		pZRT = GRHI->CreateDepthStencilView(pSurface, dsvDesc);
 	}
-	else {
-		D3D_RENDER_TARGET_VIEW_DESC descRTV{};
-		ZeroMemory(&descRTV, sizeof(descRTV));
+	else
+	{
+		RHIRenderTargetViewDesc rtvDesc = {};
+		rtvDesc.Format = dx10FMT;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.MipSlice = 0;
+		rtvDesc.FirstArraySlice = 0;
+		rtvDesc.ArraySize = 1;
+		
+		// Convert TYPELESS formats for RTV
+		switch(rtvDesc.Format) {
+			case DXGI_FORMAT_R24G8_TYPELESS:
+				rtvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+				break;
+			case DXGI_FORMAT_R32_TYPELESS:
+				rtvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+				break;
+			case DXGI_FORMAT_R16_TYPELESS:
+				rtvDesc.Format = DXGI_FORMAT_R16_UNORM;
+				break;
+		}
+		
+		pRT = GRHI->CreateRenderTargetView(pSurface, rtvDesc);
 
-		descRTV.Format = desc.Format;
-		descRTV.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		descRTV.Texture2D.MipSlice = 0;
-
-		CHK_DX(RDevice->CreateRenderTargetView(pSurface, &descRTV, &pRT));
-
-		if(SampleCount == 1) {
-			if(CreationFlags & CRTCreationFlags::USE_UAV_FLAG) {
+		if(SampleCount == 1)
+		{
+			if(CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
+			{
 				D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
 				ZeroMemory(&UAVDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
 
@@ -157,16 +196,20 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 				UAVDesc.Buffer.FirstElement = 0;
 				UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
 
-				CHK_DX(RDevice->CreateUnorderedAccessView(pSurface, &UAVDesc, &pUAView));
+				// UAV creation - keep DirectX specific for now
+				CHK_DX(RDevice->CreateUnorderedAccessView((ID3D11Resource*)pSurface->GetRawTexture(), &UAVDesc, &pUAView));
 			}
 		}
 
 		pMippedRT.resize(desc.MipLevels);
 		pMippedRT[0] = pRT; pRT->AddRef();
 
-		for(UINT mip_level = 1; mip_level < desc.MipLevels; ++mip_level) {
-			descRTV.Texture2D.MipSlice = mip_level;
-			CHK_DX(RDevice->CreateRenderTargetView(pSurface, &descRTV, &pMippedRT[mip_level]));
+		for(UINT mip_level = 1; mip_level < desc.MipLevels; ++mip_level)
+		{
+			// Create a copy of rtvDesc for each mip level
+			RHIRenderTargetViewDesc mipRtvDesc = rtvDesc;
+			mipRtvDesc.MipSlice = mip_level;
+			pMippedRT[mip_level] = GRHI->CreateRenderTargetView(pSurface, mipRtvDesc);
 		}
 	}
 
@@ -243,7 +286,8 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 
 	desc.ArraySize = 6;
 
-	desc.Format = (DXGI_FORMAT)fmt;
+	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
+	desc.Format = dx10FMT;
 	desc.SampleDesc.Count = 1;
 
 	desc.Usage = D3D_USAGE_DEFAULT;
@@ -255,20 +299,48 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 		desc.MipLevels = log2(dwSize) + 1;
 	}
 
-	CHK_DX(RDevice->CreateTexture2D(&desc, nullptr, &pSurface));
+	// Create RHITextureDesc for the cube texture
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = desc.Width;
+	rhiDesc.Height = desc.Height;
+	rhiDesc.Depth = 1;
+	rhiDesc.MipLevels = desc.MipLevels;
+	rhiDesc.Format = desc.Format;
+	rhiDesc.Usage = desc.Usage;
+	rhiDesc.BindFlags = desc.BindFlags;
+	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
+	rhiDesc.MiscFlags = desc.MiscFlags;
+	rhiDesc.ArraySize = desc.ArraySize;
+	
+	// Use GRHI to create the surface
+	pSurface = GRHI->CreateRenderTarget(rhiDesc);
 
-	D3D_RENDER_TARGET_VIEW_DESC descRTV{};
-	ZeroMemory(&descRTV, sizeof(descRTV));
-
-	descRTV.Format = desc.Format;
+	RHIRenderTargetViewDesc descRTV = {};
+	descRTV.Format = dx10FMT; // Use the converted format
 	descRTV.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-	descRTV.Texture2D.MipSlice = 0;
-	descRTV.Texture2DArray.ArraySize = 1;
+	descRTV.MipSlice = 0;
+	descRTV.ArraySize = 1;
+	
+	// Convert TYPELESS formats for RTV
+	switch(descRTV.Format)
+	{
+		case DXGI_FORMAT_R24G8_TYPELESS:
+			descRTV.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+			break;
+		case DXGI_FORMAT_R32_TYPELESS:
+			descRTV.Format = DXGI_FORMAT_R32_FLOAT;
+			break;
+		case DXGI_FORMAT_R16_TYPELESS:
+			descRTV.Format = DXGI_FORMAT_R16_UNORM;
+			break;
+	}
 
 	for(UINT i = 0; i < 6; i++)
 	{
-		descRTV.Texture2DArray.FirstArraySlice = i;
-		CHK_DX(RDevice->CreateRenderTargetView(pSurface, &descRTV, &pRT[i]));
+		// Create a copy for each face to avoid modifying the original
+		RHIRenderTargetViewDesc faceRtvDesc = descRTV;
+		faceRtvDesc.FirstArraySlice = i;
+		pRT[i] = GRHI->CreateRenderTargetView(pSurface, faceRtvDesc);
 	}
 
 	pTexture = DEV->_CreateTexture(Name);

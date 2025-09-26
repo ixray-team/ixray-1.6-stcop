@@ -36,14 +36,14 @@ bool CRenderTarget::phase_fsr()
 	Fsr2Wrapper::DrawParameters fsr2Params = {};
 	fsr2Params.deviceContext = RContext;
 
-	fsr2Params.unresolvedColorResource = rt_Generic_0->pSurface;
-	fsr2Params.motionvectorResource = rt_Velocity->pSurface;
-	fsr2Params.depthbufferResource = rt_Position->pSurface;
+	fsr2Params.unresolvedColorResource = (ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture();
+	fsr2Params.motionvectorResource = (ID3D11Resource*)rt_Velocity->pSurface->GetRawTexture();
+	fsr2Params.depthbufferResource = (ID3D11Resource*)rt_Position->pSurface->GetRawTexture();
 
 	fsr2Params.reactiveMapResource = nullptr;
 	fsr2Params.transparencyAndCompositionResource = nullptr;
 
-	fsr2Params.resolvedColorResource = rt_Generic->pSurface;
+	fsr2Params.resolvedColorResource = (ID3D11Resource*)rt_Generic->pSurface->GetRawTexture();
 
 	fsr2Params.renderWidth = (u32)RCache.get_width();
 	fsr2Params.renderHeight = (u32)RCache.get_height();

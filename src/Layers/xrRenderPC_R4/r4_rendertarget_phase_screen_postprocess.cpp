@@ -36,8 +36,9 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool pos
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	// Copy resource
-	if (postProcessMode) {
-		RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+	if (postProcessMode)
+	{
+		RContext->CopyResource((ID3D11Resource*)rt_Back_Buffer->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Back_Buffer_AA->pSurface->GetRawTexture());
 	}
 }
 
@@ -123,7 +124,7 @@ void CRenderTarget::PhaseGasmask()
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
 	// Copy resource
-	RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
+	RContext->CopyResource((ID3D11Resource*)rt_Back_Buffer->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Back_Buffer_AA->pSurface->GetRawTexture());
 }
 
 void CRenderTarget::PhaseWinter()

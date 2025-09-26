@@ -37,7 +37,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
 
 	// Render
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-	RDevice->StretchRect(rt_Generic_0->pRT, 0, rt_Color->pRT, 0, D3DTEXF_NONE);
+	RDevice->StretchRect((IDirect3DSurface9*)rt_Generic_0->pRT->GetRawRTV(), 0,(IDirect3DSurface9*)rt_Color->pRT->GetRawRTV(), 0, D3DTEXF_NONE);
 }
 
 void CRenderTarget::PhaseAberration() {

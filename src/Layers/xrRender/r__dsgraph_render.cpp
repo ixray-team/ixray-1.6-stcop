@@ -221,8 +221,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 #if	RENDER==R_R2
 	// Targets, use accumulator for temporary storage
 	const ref_rt	rt_null;
-	RCache.set_RT(0,	1);
-	RCache.set_RT(0,	2);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr,	1);
+	RCache.set_RT((ID3DRenderTargetView*)nullptr,	2);
 	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RDepth);
 #endif
 
@@ -292,7 +292,7 @@ void	R_dsgraph_structure::r_dsgraph_render_scope	()
 		ID3D11Resource* res{};
 		RDepth->GetResource(&res);
 
-		RContext->CopyResource(RImplementation.Target->rt_Position->pSurface, res);
+		RContext->CopyResource((ID3D11Resource*)RImplementation.Target->rt_Position->pSurface->GetRawTexture(), res);
 		_RELEASE(res);
 	}
 
