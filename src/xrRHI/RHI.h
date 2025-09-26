@@ -8,6 +8,7 @@
 #endif
 
 #include "RHIEnums.h"
+#include "RHITextureInterfaces.h"
 #include "RHIDevice.h"
 
 enum
@@ -56,8 +57,19 @@ public:
 	void* GetContext();
 	void* GetSwapchain();
 
-	void ClearTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
+	void ClearRawTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
+	void ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent = ERTColor::Transparent);
+
 	void Present();
+	
+	IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize);
+	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
+	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
+	IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
+	IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc);
+	IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
+	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
+	
 public:
 	IRHIDevice* DevicePtr = nullptr;
 

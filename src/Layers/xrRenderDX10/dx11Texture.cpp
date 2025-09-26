@@ -116,7 +116,7 @@ IC void PrintLoadTextureError(HRESULT hr, TexMetadata& imageInfo, const char* fn
 	Msg("! TEXTURE CREATION ERROR: %s", errorDetails);
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
+IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 {
 	// Moved here just to avoid warning
 	TexMetadata imageInfo{};
@@ -281,7 +281,21 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 			FS.r_close(reader);
 			mip_cnt = static_cast<int>(imageInfo.mipLevels);
 			ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
-			return pTexture2D;
+			
+			// Create RHITextureDesc for the texture
+			RHITextureDesc desc;
+			desc.Width = imageInfo.width;
+			desc.Height = imageInfo.height;
+			desc.Depth = 1;
+			desc.MipLevels = imageInfo.mipLevels;
+			desc.Format = imageInfo.format;
+			desc.Usage = usage;
+			desc.BindFlags = bindFlags;
+			desc.CPUAccessFlags = cpuAccessFlags;
+			desc.MiscFlags = miscFlags;
+			
+			// Use GRHI to create the surface
+			return GRHI->CreateTextureFromMemory(pTexture2D, 0, desc);
 		}
 	_DDS_2D:
 		{
@@ -336,7 +350,21 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 
 			mip_cnt = static_cast<int>(imageInfo.mipLevels);
 			ret_msize = calc_texture_size(img_loaded_lod, mip_cnt, img_size);
-			return pTexture2D;
+			
+			// Create RHITextureDesc for the texture
+			RHITextureDesc desc;
+			desc.Width = imageInfo.width;
+			desc.Height = imageInfo.height;
+			desc.Depth = 1;
+			desc.MipLevels = imageInfo.mipLevels;
+			desc.Format = imageInfo.format;
+			desc.Usage = usage;
+			desc.BindFlags = bindFlags;
+			desc.CPUAccessFlags = cpuAccessFlags;
+			desc.MiscFlags = miscFlags;
+			
+			// Use GRHI to create the surface
+			return GRHI->CreateTextureFromMemory(pTexture2D, 0, desc);
 		}
 	_BUMP_from_base:
 		{
