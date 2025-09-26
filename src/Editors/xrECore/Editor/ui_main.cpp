@@ -87,7 +87,7 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 
 	if (TextureStack.contains(Texture))
 	{
-		return TextureStack[Texture]->pSurface;
+		return TextureStack[Texture]->pSurface->GetRawTexture();
 	}
 
 	TextureStack[Texture] = EDevice->Resources->_CreateTexture(Texture);
@@ -98,7 +98,7 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 		Tex->apply_load(0);
 	}
 
-	return (void*)Tex->pSurface;
+	return (void*)Tex->pSurface->GetRawTexture();
 }
 
 void TUI::OnDeviceCreate()
@@ -477,7 +477,7 @@ void TUI::Redraw()
 			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
 
 			RCache.set_RT(RT->pRT);
-			RCache.set_ZB(ZB->pRT);
+			RCache.set_ZB((ID3DDepthStencilView*)ZB->pRT->GetRawRTV());
 
 			EDevice->Clear();
 
@@ -539,9 +539,9 @@ void TUI::Redraw()
 				g_pGamePersistent->OnRenderPPUI_main();
 			}
 
-			RCache.set_RT(0, 1);
-			RCache.set_RT(0, 2);
-			RCache.set_RT(0, 3);
+			RCache.set_RT((ID3DRenderTargetView*)0, 1);
+			RCache.set_RT((ID3DRenderTargetView*)0, 2);
+			RCache.set_RT((ID3DRenderTargetView*)0, 3);
 
 			RCache.set_RT(RSwapchainTarget);
 			RCache.set_ZB(RDepth);

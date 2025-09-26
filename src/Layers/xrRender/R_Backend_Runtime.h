@@ -12,6 +12,7 @@
 #include "../xrRenderDX10/StateManager/dx10State.h"
 #else //USE_DX11
 #include "../xrRenderDX9/dx9R_Backend_Runtime.h"
+#include "R_Backend.h"
 #endif
 
 IC void		R_xforms::set_c_w			(R_constant* C)		{	c_w		= C;	RCache.set_c(C,m_w);	};
@@ -63,6 +64,17 @@ IC	const Fmatrix&	CBackend::get_xform_project	()	{ return xforms.get_P();	}
 IC	const Fmatrix&	CBackend::get_xform_world_old	()	{ return xforms.get_W_old();	}
 IC	const Fmatrix&	CBackend::get_xform_view_old	()	{ return xforms.get_V_old();	}
 IC	const Fmatrix&	CBackend::get_xform_project_old	()	{ return xforms.get_P_old();	}
+
+IC void CBackend::set_RT(IRHIRenderTargetView* RT, u32 ID)
+{
+	if (RT == nullptr)
+	{
+		set_RT((ID3DRenderTargetView*)nullptr, ID);
+		return;
+	}
+
+	set_RT((ID3DRenderTargetView*)RT->GetRawRTV(), ID);
+}
 
 IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
 {
