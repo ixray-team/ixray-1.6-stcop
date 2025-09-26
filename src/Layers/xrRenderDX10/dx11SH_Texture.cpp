@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-
+#include "../../xrRHI/RHITextureInterfaces.h"
 #include "../xrRender/ResourceManager.h"
 
 #ifndef _EDITOR
@@ -53,25 +53,24 @@ CTexture::~CTexture()
 	DEV->_DeleteTexture	(this);
 }
 
-void					CTexture::surface_set	(ID3DBaseTexture* surf )
+void CTexture::surface_set(IRHISurface* surf)
 {
-	if (surf)			surf->AddRef		();
-	_RELEASE			(pSurface);
-	_RELEASE			(m_pSRView);
+	if (surf)			surf->AddRef();
+	_RELEASE(pSurface);
+	_RELEASE(m_pSRView);
 
-	pSurface			= surf;
+	pSurface = surf;
 
 	if (pSurface)
 	{
 		desc_update();
 
-		D3D_RESOURCE_DIMENSION	type;
-		pSurface->GetType(&type);
-		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type )
+		u32 type = pSurface->GetTextureType();
+		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			D3D_SHADER_RESOURCE_VIEW_DESC ViewDesc { };
-			
-			if (desc.MiscFlags&D3D_RESOURCE_MISC_TEXTURECUBE)
+			D3D_SHADER_RESOURCE_VIEW_DESC ViewDesc{ };
+
+			if (desc.MiscFlags & D3D_RESOURCE_MISC_TEXTURECUBE)
 			{
 				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
 				ViewDesc.TextureCube.MostDetailedMip = 0;
@@ -79,7 +78,7 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 			}
 			else
 			{
-				if(desc.SampleDesc.Count <= 1)
+				if (desc.SampleDesc.Count <= 1)
 				{
 					ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
 					ViewDesc.Texture2D.MostDetailedMip = 0;
@@ -92,11 +91,11 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 					ViewDesc.Texture2D.MostDetailedMip = 0;
 					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
 				}
-			}			
+			}
 
 			ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 
-			switch(desc.Format)
+			switch (desc.Format)
 			{
 			case DXGI_FORMAT_R24G8_TYPELESS:
 				ViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
@@ -105,28 +104,48 @@ void					CTexture::surface_set	(ID3DBaseTexture* surf )
 				ViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 				break;
 			}
-			
-			if (desc.ArraySize > 1)
-                ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
 
-         // this would be supported by DX10.1 but is not needed for stalker
-        // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
-				if( (desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS) )         
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, &ViewDesc, &m_pSRView));
-        else
-           m_pSRView = 0;
+			if (desc.ArraySize > 1)
+				ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
+
+			// this would be supported by DX10.1 but is not needed for stalker
+		   // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
+			if ((desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS))
+			{
+				// Create shader resource view through GRHI with proper descriptor
+				RHIShaderResourceViewDesc srvDesc;
+				srvDesc.Format = ViewDesc.Format;
+				srvDesc.ViewDimension = ViewDesc.ViewDimension;
+				srvDesc.MostDetailedMip = ViewDesc.Texture2D.MostDetailedMip;
+				srvDesc.MipLevels = ViewDesc.Texture2D.MipLevels;
+				srvDesc.FirstArraySlice = 0;
+
+				if (desc.ArraySize > 1)
+				{
+					srvDesc.ArraySize = ViewDesc.Texture2DArray.ArraySize;
+				}
+				
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, &srvDesc);
+			}
+			else
+				m_pSRView = 0;
 		}
 		else
-			CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
-	}	
+		{
+			m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+		}
+	}
 }
 
-ID3DBaseTexture*	CTexture::surface_get	()
+IRHISurface* CTexture::surface_get()
 {
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
-	if (pSurface)		pSurface->AddRef	();
+	if (pSurface)
+	{
+		pSurface->AddRef();
+	}
 	return pSurface;
 }
 
@@ -149,16 +168,15 @@ void CTexture::ProcessStaging()
 	VERIFY(pSurface);
 	VERIFY(flags.bLoadedAsStaging);
 
-	ID3DBaseTexture* pTargetSurface = 0;
+	IRHISurface* pTargetSurface = 0;
 
-	D3D_RESOURCE_DIMENSION	type;
-	pSurface->GetType(&type);
+	u32 type = pSurface->GetTextureType();
 
 	switch (type)
 	{
-	case D3D_RESOURCE_DIMENSION_TEXTURE2D:
+		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
 		{
-			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
+			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
 			D3D_TEXTURE2D_DESC TexDesc;
 			T->GetDesc(&TexDesc);
 			TexDesc.Usage = D3D_USAGE_DEFAULT;
@@ -167,16 +185,25 @@ void CTexture::ProcessStaging()
 
 			T = 0;
 
-			CHK_DX(RDevice->CreateTexture2D( &TexDesc,       // Texture desc
-				nullptr,                  // Initial data
-				&T )); // [out] Texture
-
-			pTargetSurface = T;
+			// Create RHITextureDesc for the texture
+			RHITextureDesc desc;
+			desc.Width = TexDesc.Width;
+			desc.Height = TexDesc.Height;
+			desc.Depth = 1;
+			desc.MipLevels = TexDesc.MipLevels;
+			desc.Format = TexDesc.Format;
+			desc.Usage = TexDesc.Usage;
+			desc.BindFlags = TexDesc.BindFlags;
+			desc.CPUAccessFlags = TexDesc.CPUAccessFlags;
+			desc.MiscFlags = TexDesc.MiscFlags;
+			
+			// Use GRHI to create the surface
+			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
 		}
 		break;
-	case D3D_RESOURCE_DIMENSION_TEXTURE3D:
+		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
 		{
-			ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface;
+			ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface->GetRawTexture();
 			D3D_TEXTURE3D_DESC TexDesc;
 			T->GetDesc(&TexDesc);
 			TexDesc.Usage = D3D_USAGE_DEFAULT;
@@ -185,42 +212,33 @@ void CTexture::ProcessStaging()
 
 			T = 0;
 
-			CHK_DX(RDevice->CreateTexture3D( &TexDesc,       // Texture desc
-				nullptr,                  // Initial data
-				&T )); // [out] Texture
-
-			pTargetSurface = T;
+			// Create RHITextureDesc for the texture
+			RHITextureDesc desc;
+			desc.Width = TexDesc.Width;
+			desc.Height = TexDesc.Height;
+			desc.Depth = TexDesc.Depth;
+			desc.MipLevels = TexDesc.MipLevels;
+			desc.Format = TexDesc.Format;
+			desc.Usage = TexDesc.Usage;
+			desc.BindFlags = TexDesc.BindFlags;
+			desc.CPUAccessFlags = TexDesc.CPUAccessFlags;
+			desc.MiscFlags = TexDesc.MiscFlags;
+			
+			// Use GRHI to create the surface
+			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
 		}
 		break;
 	default:
 		VERIFY(!"CTexture::ProcessStaging unsupported dimensions.");
 	}
 
-	RContext->CopyResource(pTargetSurface, pSurface);
-	/*
-	for( int i=0; i<iNumSubresources; ++i)
-	{
-		RDevice->CopySubresourceRegion(
-			pTargetSurface,
-			i,
-			0,
-			0,
-			0,
-			pSurface,
-			i,
-			0
-			);
-	}
-	*/
-	
+	RContext->CopyResource((ID3D11Resource*)pTargetSurface->GetRawTexture(), (ID3D11Resource*)pSurface->GetRawTexture());
 
 	flags.bLoadedAsStaging = FALSE;
 
 	//	Check if texture was not copied _before_ it was converted.
-	ULONG RefCnt = pSurface->Release();
+	pSurface->Release();
 	pSurface = 0;
-
-	VERIFY(!RefCnt);
 
 	surface_set(pTargetSurface);
 
@@ -235,29 +253,29 @@ void CTexture::Apply(u32 dwStage)
 	if (dwStage<rstVertex)	//	Pixel shader stage resources
 	{
 		//RDevice->PSSetShaderResources(dwStage, 1, &m_pSRView);
-		SRVSManager.SetPSResource(dwStage, m_pSRView);
+		SRVSManager.SetPSResource(dwStage, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else if (dwStage<rstGeometry)	//	Vertex shader stage resources
 	{
 		//RDevice->VSSetShaderResources(dwStage-rstVertex, 1, &m_pSRView);
-		SRVSManager.SetVSResource(dwStage-rstVertex, m_pSRView);
+		SRVSManager.SetVSResource(dwStage-rstVertex,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else if (dwStage<rstHull)	//	Geometry shader stage resources
 	{
 		//RDevice->GSSetShaderResources(dwStage-rstGeometry, 1, &m_pSRView);
-		SRVSManager.SetGSResource(dwStage-rstGeometry, m_pSRView);
+		SRVSManager.SetGSResource(dwStage-rstGeometry,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else if (dwStage<rstDomain)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetHSResource(dwStage-rstHull, m_pSRView);
+		SRVSManager.SetHSResource(dwStage-rstHull,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else if (dwStage<rstCompute)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetDSResource(dwStage-rstDomain, m_pSRView);
+		SRVSManager.SetDSResource(dwStage-rstDomain,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else if (dwStage<rstInvalid)	//	Geometry shader stage resources
 	{
-		SRVSManager.SetCSResource(dwStage-rstCompute, m_pSRView);
+		SRVSManager.SetCSResource(dwStage-rstCompute,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else
 		VERIFY("Invalid stage");
@@ -267,10 +285,9 @@ void CTexture::apply_theora(u32 dwStage)
 {
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:Device.dwTimeContinual))
 	{
-		D3D_RESOURCE_DIMENSION	type;
-		pSurface->GetType(&type);
+		u32 type = pSurface->GetTextureType();
 		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
+		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
 		D3D_MAPPED_TEXTURE2D	mapData{};
 		RECT rect;
 		rect.left			= 0;
@@ -295,27 +312,25 @@ void CTexture::apply_theora(u32 dwStage)
 		RContext->Unmap(T2D, 0);
 	}
 	Apply(dwStage);
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
-};
-void CTexture::apply_avi	(u32 dwStage)	
+}
+
+void CTexture::apply_avi(u32 dwStage)
 {
-	if (pAVI->NeedUpdate()){
-		D3D_RESOURCE_DIMENSION	type;
-		pSurface->GetType(&type);
+	if (pAVI->NeedUpdate())
+	{
+		D3D_RESOURCE_DIMENSION type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
 		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface;
+		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
 		D3D_MAPPED_TEXTURE2D	mapData{};
 
 		// AVI
-		//R_CHK	(T2D->LockRect(0,&R,nullptr,0));
 		R_CHK(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
 		R_ASSERT(mapData.RowPitch == int(pAVI->m_dwWidth*4));
 		BYTE* ptr; pAVI->GetFrame(&ptr);
 		CopyMemory(mapData.pData,ptr,pAVI->m_dwWidth*pAVI->m_dwHeight*4);
-		//R_CHK	(T2D->UnlockRect(0));
 		RContext->Unmap(T2D, 0);
 	}
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+
 	Apply(dwStage);
 };
 void CTexture::apply_seq	(u32 dwStage)	{
@@ -346,47 +361,48 @@ void CTexture::Preload	()
 	m_material = DEV->m_textures_description.GetMaterial(cName);
 }
 
-void CTexture::Load		()
+void CTexture::Load()
 {
 	PROF_EVENT("CTexture::Load");
 
-	flags.bLoaded					= true;
-	desc_cache						= 0;
+	flags.bLoaded = true;
+	desc_cache = 0;
 	if (pSurface)					return;
 
-	flags.bUser						= false;
-	flags.MemoryUsage				= 0;
-	if (0==_stricmp(*cName,"$null"))	return;
-	if (0!=strstr(*cName,"$user$"))	{
-		flags.bUser	= true;
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+	if (0 == _stricmp(*cName, "$null"))	return;
+	if (0 != strstr(*cName, "$user$")) {
+		flags.bUser = true;
 		return;
 	}
 
-	Preload							();
+	Preload();
 
 	bool	bCreateView = true;
 
 	// Check for OGM
 	string_path			fn;
-	if (FS.exist(fn,"$game_textures$",*cName,".ogm")){
+	if (FS.exist(fn, "$game_textures$", *cName, ".ogm")) {
 		// AVI
-		pTheora		= new CTheoraSurface();
-		m_play_time	= 0xFFFFFFFF;
+		pTheora = new CTheoraSurface();
+		m_play_time = 0xFFFFFFFF;
 
 		if (!pTheora->Load(fn)) {
 			xr_delete(pTheora);
-			FATAL				("Can't open video stream");
-		} else {
-			flags.MemoryUsage	= pTheora->Width(true)*pTheora->Height(true)*4;
-			pTheora->Play		(TRUE,Device.dwTimeContinual);
+			FATAL("Can't open video stream");
+		}
+		else {
+			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
+			pTheora->Play(TRUE, Device.dwTimeContinual);
 
 			// Now create texture
-			ID3DTexture2D*	pTexture = 0;
+			ID3DTexture2D* pTexture = 0;
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
-//			HRESULT hrr = RDevice->CreateTexture(
-//				_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr );
+			//			HRESULT hrr = RDevice->CreateTexture(
+			//				_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr );
 			D3D_TEXTURE2D_DESC	desc_;
 			desc_.Width = _w;
 			desc_.Height = _h;
@@ -401,130 +417,156 @@ void CTexture::Load		()
 			desc_.MiscFlags = 0;
 			HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
 
-			pSurface = pTexture;
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = desc_.Width;
+			rhiDesc.Height = desc_.Height;
+			rhiDesc.Depth = 1;
+			rhiDesc.MipLevels = desc_.MipLevels;
+			rhiDesc.Format = desc_.Format;
+			rhiDesc.Usage = desc_.Usage;
+			rhiDesc.BindFlags = desc_.BindFlags;
+			rhiDesc.CPUAccessFlags = desc_.CPUAccessFlags;
+			rhiDesc.MiscFlags = desc_.MiscFlags;
+
+			// Use GRHI to create the surface
+			pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
 			if (FAILED(hrr))
 			{
-				FATAL		("Invalid video stream");
-				R_CHK		(hrr);
-				xr_delete	(pTheora);
-				pSurface	= 0;
-				m_pSRView	= 0;
+				FATAL("Invalid video stream");
+				R_CHK(hrr);
+				xr_delete(pTheora);
+				pSurface = 0;
+				m_pSRView = 0;
 			}
 			else
 			{
-				CHK_DX(RDevice->CreateShaderResourceView(pSurface, 0, &m_pSRView));
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
 			}
 
 		}
-	} else
-		if (FS.exist(fn,"$game_textures$",*cName,".avi")){
-			// AVI
-			pAVI = new CAviPlayerCustom();
+	}
+	else if (FS.exist(fn, "$game_textures$", *cName, ".avi"))
+	{
+		// AVI
+		pAVI = new CAviPlayerCustom();
 
-			if (!pAVI->Load(fn)) {
-				xr_delete(pAVI);
-				FATAL				("Can't open video stream");
-			} else {
-				flags.MemoryUsage	= pAVI->m_dwWidth*pAVI->m_dwHeight*4;
+		if (!pAVI->Load(fn)) {
+			xr_delete(pAVI);
+			FATAL("Can't open video stream");
+		}
+		else {
+			flags.MemoryUsage = pAVI->m_dwWidth * pAVI->m_dwHeight * 4;
 
-				// Now create texture
-				ID3DTexture2D*	pTexture = 0;
-				//HRESULT hrr = RDevice->CreateTexture(
-				//pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
-				//	&pTexture,nullptr
-				//	);
-				D3D_TEXTURE2D_DESC	desc_;
-				desc_.Width = pAVI->m_dwWidth;
-				desc_.Height = pAVI->m_dwHeight;
-				desc_.MipLevels = 1;
-				desc_.ArraySize = 1;
-				desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-				desc_.SampleDesc.Count = 1;
-				desc_.SampleDesc.Quality = 0;
-				desc_.Usage = D3D_USAGE_DYNAMIC;
-				desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
-				desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-				desc_.MiscFlags = 0;
-				HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
+			// Now create texture
+			ID3DTexture2D* pTexture = 0;
+			D3D_TEXTURE2D_DESC	desc_;
+			desc_.Width = pAVI->m_dwWidth;
+			desc_.Height = pAVI->m_dwHeight;
+			desc_.MipLevels = 1;
+			desc_.ArraySize = 1;
+			desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc_.SampleDesc.Count = 1;
+			desc_.SampleDesc.Quality = 0;
+			desc_.Usage = D3D_USAGE_DYNAMIC;
+			desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			desc_.MiscFlags = 0;
+			HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
 
-				pSurface	= pTexture;
-				if (FAILED(hrr))
-				{
-					FATAL		("Invalid video stream");
-					R_CHK		(hrr);
-					xr_delete	(pAVI);
-					pSurface = 0;
-					m_pSRView	= 0;
-				}
-				else
-				{
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, 0, &m_pSRView));
-				}
+			// Create RHITextureDesc for the texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = desc_.Width;
+			rhiDesc.Height = desc_.Height;
+			rhiDesc.Depth = 1;
+			rhiDesc.MipLevels = desc_.MipLevels;
+			rhiDesc.Format = desc_.Format;
+			rhiDesc.Usage = desc_.Usage;
+			rhiDesc.BindFlags = desc_.BindFlags;
+			rhiDesc.CPUAccessFlags = desc_.CPUAccessFlags;
+			rhiDesc.MiscFlags = desc_.MiscFlags;
 
-			}
-		} else
-			if (FS.exist(fn,"$game_textures$",*cName,".seq"))
+			// Use GRHI to create the surface
+			pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
+			if (FAILED(hrr))
 			{
-				// Sequence
-				string256 buffer;
-				IReader* _fs		= FS.r_open(fn);
-
-				flags.seqCycles	= FALSE;
-				_fs->r_string	(buffer,sizeof(buffer));
-				if (0==_stricmp	(buffer,"cycled"))
-				{
-					flags.seqCycles	= TRUE;
-					_fs->r_string	(buffer,sizeof(buffer));
-				}
-				u32 fps	= atoi(buffer);
-				seqMSPF		= 1000/fps;
-
-				while (!_fs->eof())
-				{
-					_fs->r_string(buffer,sizeof(buffer));
-					_Trim		(buffer);
-					if (buffer[0])	
-					{
-						// Load another texture
-						u32	mem  = 0;
-						pSurface = ::RImplementation.texture_load	(buffer,mem);
-						if (pSurface)	
-						{
-							// pSurface->SetPriority	(PRIORITY_LOW);
-							seqDATA.push_back(pSurface);
-							m_seqSRView.push_back(0);
-							RDevice->CreateShaderResourceView(seqDATA.back(), nullptr, & m_seqSRView.back());
-							flags.MemoryUsage		+= mem;
-						}
-					}
-				}
-				pSurface	= 0;
-				FS.r_close	(_fs);
-			} 
+				FATAL("Invalid video stream");
+				R_CHK(hrr);
+				xr_delete(pAVI);
+				pSurface = 0;
+				m_pSRView = 0;
+			}
 			else
 			{
-				// Normal texture
-				u32	mem  = 0;
-				//pSurface = ::RImplementation.texture_load	(*cName,mem);
-				pSurface = ::RImplementation.texture_load	(*cName,mem, true);
-
-				if (GetUsage() == D3D_USAGE_STAGING)
-				{
-					flags.bLoadedAsStaging = TRUE;
-					bCreateView = false;
-				}
-
-				// Calc memory usage and preload into vid-mem
-				if (pSurface) 
-				{
-					// pSurface->SetPriority	(PRIORITY_NORMAL);
-					flags.MemoryUsage		=	mem;
-				}
-				if (pSurface && bCreateView)
-					CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
 			}
 
-			PostLoad	()		;
+		}
+	}
+	else if (FS.exist(fn, "$game_textures$", *cName, ".seq"))
+	{
+		// Sequence
+		string256 buffer;
+		IReader* _fs = FS.r_open(fn);
+
+		flags.seqCycles = FALSE;
+		_fs->r_string(buffer, sizeof(buffer));
+		if (0 == _stricmp(buffer, "cycled"))
+		{
+			flags.seqCycles = TRUE;
+			_fs->r_string(buffer, sizeof(buffer));
+		}
+		u32 fps = atoi(buffer);
+		seqMSPF = 1000 / fps;
+
+		while (!_fs->eof())
+		{
+			_fs->r_string(buffer, sizeof(buffer));
+			_Trim(buffer);
+			if (buffer[0])
+			{
+				// Load another texture
+				u32	mem = 0;
+				pSurface = ::RImplementation.texture_load(buffer, mem);
+				if (pSurface)
+				{
+					// pSurface->SetPriority	(PRIORITY_LOW);
+					seqDATA.push_back(pSurface);
+					m_seqSRView.push_back(0);
+					m_seqSRView.back() = GRHI->CreateShaderResourceView(seqDATA.back(), nullptr);
+					flags.MemoryUsage += mem;
+				}
+			}
+		}
+		pSurface = 0;
+		FS.r_close(_fs);
+	}
+	else
+	{
+		// Normal texture
+		u32	mem = 0;
+		//pSurface = ::RImplementation.texture_load	(*cName,mem);
+		pSurface = ::RImplementation.texture_load(*cName, mem, true);
+
+		if (GetUsage() == D3D_USAGE_STAGING)
+		{
+			flags.bLoadedAsStaging = TRUE;
+			bCreateView = false;
+		}
+
+		// Calc memory usage and preload into vid-mem
+		if (pSurface)
+		{
+			flags.MemoryUsage = mem;
+
+			if (bCreateView)
+			{
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+			}
+		}
+	}
+
+	PostLoad();
 }
 
 void CTexture::Unload	()
@@ -550,9 +592,6 @@ void CTexture::Unload	()
 		m_pSRView	= 0;
 	}
 
-#ifdef DEBUG
-	_SHOW_REF		(msg_buff, pSurface);
-#endif // DEBUG
 	_RELEASE		(pSurface);
 	_RELEASE		(m_pSRView);
 
@@ -567,11 +606,10 @@ void CTexture::desc_update	()
 	desc_cache	= pSurface;
 	if (pSurface)
 	{
-		D3D_RESOURCE_DIMENSION	type;
-		pSurface->GetType(&type);
+		D3D_RESOURCE_DIMENSION	type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
 		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
+			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
 			T->GetDesc(&desc);
 		}
 	}
@@ -583,13 +621,12 @@ D3D_USAGE CTexture::GetUsage()
 
 	if (pSurface)
 	{
-		D3D_RESOURCE_DIMENSION	type;
-		pSurface->GetType(&type);
+		D3D_RESOURCE_DIMENSION	type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
 		switch(type)
 		{
 		case D3D_RESOURCE_DIMENSION_TEXTURE1D:
 			{
-				ID3DTexture1D*	T	= (ID3DTexture1D*)pSurface;
+				ID3DTexture1D*	T	= (ID3DTexture1D*)pSurface->GetRawTexture();
 				D3D_TEXTURE1D_DESC	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;
@@ -598,7 +635,7 @@ D3D_USAGE CTexture::GetUsage()
 
 		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
 			{
-				ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface;
+				ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
 				D3D_TEXTURE2D_DESC	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;
@@ -607,7 +644,7 @@ D3D_USAGE CTexture::GetUsage()
 
 		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
 			{
-				ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface;
+				ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface->GetRawTexture();
 				D3D_TEXTURE3D_DESC	descr;
 				T->GetDesc(&descr);
 				res = descr.Usage;

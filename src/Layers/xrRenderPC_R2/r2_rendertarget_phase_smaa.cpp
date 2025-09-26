@@ -18,7 +18,7 @@ void CRenderTarget::phase_smaa() {
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     //RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    GRHI->ClearTarget(RCache.get_RT());
+    GRHI->ClearRawTarget(RCache.get_RT());
 
     // Fill vertex buffer
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -41,7 +41,7 @@ void CRenderTarget::phase_smaa() {
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-    GRHI->ClearTarget(RCache.get_RT());
+    GRHI->ClearRawTarget(RCache.get_RT());
 
     // Fill vertex buffer
     pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -84,5 +84,5 @@ void CRenderTarget::phase_smaa() {
     RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
-    RDevice->StretchRect(rt_Color->pRT, 0, rt_Generic_0->pRT, 0, D3DTEXF_NONE);
+    RDevice->StretchRect((IDirect3DSurface9*)rt_Color->pRT->GetRawRTV(), 0, (IDirect3DSurface9*)rt_Generic_0->pRT->GetRawRTV(), 0, D3DTEXF_NONE);
 }
