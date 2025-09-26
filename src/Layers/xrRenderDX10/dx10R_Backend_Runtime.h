@@ -16,7 +16,6 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 	if (RT!=pRT[ID])
 	{
 		PGO(Msg("PGO:setRT"));
-		stat.target_rt	++;
 		pRT[ID]			= RT;
 
 		//	Mark RT array dirty
