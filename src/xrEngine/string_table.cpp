@@ -43,7 +43,7 @@ inline static shared_str FillLanguages()
 	FS_FileSet langSet = {};
 	string_path path = {};
 	FS.update_path(path, "$game_config$", "");
-	sprintf_s(path, "%s%s", path, "text\\");
+	xr_sprintf(path, "%s%s", path, "text\\");
 	FS.file_list(langSet, path, FS_ListFolders | FS_RootOnly);
 
 	std::ostringstream result_stream = {};
@@ -52,7 +52,7 @@ inline static shared_str FillLanguages()
 		xr_string folderName = it->name;
 
 		string_path current_path = {};
-		sprintf_s(current_path, "%s%s", path, it->name.c_str());
+		xr_sprintf(current_path, "%s%s", path, it->name.c_str());
 		if (CountFiles(current_path, "*.xml") <= 0)
 		{
 			continue;

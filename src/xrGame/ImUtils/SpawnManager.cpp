@@ -36,7 +36,7 @@ struct
 	bool weapon_sort_by_min_fire_distance{};
 	bool spawn_on_level{};
 	bool render_as_table{ true };
-	char spawn_count[4]{};
+	string16 spawn_count{};
 	// weapon tab
 
 	SectionData WeaponsSections = {};
@@ -72,8 +72,6 @@ static void SectionStatistics(const SectionData& sections) {
 	ImGui::Separator();
 }
 
-constexpr size_t kSpawnManagerMaxSectionName = 64;
-
 float SpawnManager_ParseHitPower(const shared_str& hit_str);
 void SpawnManager_RenderTooltip(CInifile::Sect* section);
 bool SpawnManager_RenderButtonOrImage(CInifile::Sect* section, const char* imname);
@@ -90,7 +88,7 @@ void InitSections()
 {
 	if (g_pClsidManager == nullptr)
 	{
-		R_ASSERT(!"! clsid manager uninitialized!");
+		R_ASSERT2(false, "! clsid manager uninitialized!");
 		return;
 	}
 
@@ -104,11 +102,11 @@ void InitSections()
 
 	if (ini.line_exist("pda_tips", "path") == 1)
 	{
-		memset(file_path, 0, sizeof(file_path));
+		ZeroMemory(file_path, sizeof(file_path));
 		const char* pSoundRelativeName = ini.r_string("pda_tips", "path");
 
-		char with_format_name[128]{};
-		sprintf_s(with_format_name, sizeof(with_format_name), "%s.ogg", pSoundRelativeName);
+		string128 with_format_name{};
+		xr_sprintf(with_format_name, sizeof(with_format_name), "%s.ogg", pSoundRelativeName);
 
 
 		if (FS.exist("$game_sounds$", with_format_name))
@@ -143,7 +141,7 @@ void InitSections()
 			xr_string_view visual = pSettings->r_string(name.data(), "visual");
 			shared_str full_path;
 
-			if (visual.find(".ogf") == xr_string::npos)
+			if (visual.find(".ogf") == xr_string_view::npos)
 			{
 				full_path.printf("%s%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data(), ".ogf");
 			}
@@ -441,7 +439,7 @@ void RenderSpawnManagerWindow() {
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.ItemsUsedSections);
 						
-						static char searchBuffer[128] = "";
+						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Used", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 						Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.ItemsUsedSections.Sorted, searchBuffer);
@@ -470,7 +468,7 @@ void RenderSpawnManagerWindow() {
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.DevicesSections);
 
-						static char searchBuffer[128] = "";
+						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Devices", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 						Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.DevicesSections.Sorted, searchBuffer);
@@ -499,7 +497,7 @@ void RenderSpawnManagerWindow() {
 						size_t number_imgui{};
 						SectionStatistics(imgui_spawn_manager.ItemsSections);
 
-						static char searchBuffer[128] = "";
+						static string128 searchBuffer = "";
 						ImGui::InputText("Search##Items", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 						Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.ItemsSections.Sorted, searchBuffer);
@@ -619,7 +617,7 @@ void RenderSpawnManagerWindow() {
 				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
 				SectionStatistics(imgui_spawn_manager.WeaponsSections);
 
-				static char weaponSearchBuffer[128] = "";
+				static string128 weaponSearchBuffer = "";
 				ImGui::InputText("Search##Weapons", weaponSearchBuffer, IM_ARRAYSIZE(weaponSearchBuffer));
 
 				Section filteredWeapons = FilterSectionsWithSearch(imgui_spawn_manager.WeaponsSections.Sorted, weaponSearchBuffer);
@@ -816,7 +814,7 @@ void RenderSpawnManagerWindow() {
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AmmoSections);
 
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Ammo", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.AmmoSections.Sorted, searchBuffer);
@@ -844,7 +842,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.AddonSections);
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Addons", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.AddonSections.Sorted, searchBuffer);
@@ -871,7 +869,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.ArtefactSections);
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Artefacts", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.ArtefactSections.Sorted, searchBuffer);
@@ -898,7 +896,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.OutfitSections);
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Outfits", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.OutfitSections.Sorted, searchBuffer);
@@ -925,7 +923,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.MpStuffSections);
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Multiplayer", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.MpStuffSections.Sorted, searchBuffer);
@@ -954,7 +952,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.NpcList.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##NpcList", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.NpcList, searchBuffer);
@@ -970,7 +968,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Monsters.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Monsters", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Monsters, searchBuffer);
@@ -984,7 +982,7 @@ void RenderSpawnManagerWindow() {
 			{
 				size_t number_imgui{};
 				SectionStatistics(imgui_spawn_manager.Squads);
-				static char searchBuffer[128] = "";
+				static string128 searchBuffer = "";
 				ImGui::InputText("Search##Squads", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 				Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Squads.Sorted, searchBuffer);
@@ -1005,7 +1003,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Anomalies.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Anomalies", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Anomalies, searchBuffer);
@@ -1021,7 +1019,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Vehicles.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Vehicles", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Vehicles, searchBuffer);
@@ -1037,7 +1035,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Explosives.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Explosives", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Explosives, searchBuffer);
@@ -1053,7 +1051,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.DynamicObjects.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##DynamicObjects", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.DynamicObjects, searchBuffer);
@@ -1069,7 +1067,7 @@ void RenderSpawnManagerWindow() {
 				{
 					size_t number_imgui{};
 					ImGui::Text("total sections count: %d", imgui_spawn_manager.Others.size());
-					static char searchBuffer[128] = "";
+					static string128 searchBuffer = "";
 					ImGui::InputText("Search##Others", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
 					Section filteredList = FilterSectionsWithSearch(imgui_spawn_manager.Others, searchBuffer);
@@ -1089,11 +1087,11 @@ void RenderSpawnManagerWindow() {
 void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 {
 	auto sm_process_button = [](bool is_table, const xr_string_view& section_name, CInifile::Sect* pSection, size_t& number_imgui) {
-		char imname[kSpawnManagerMaxSectionName]{};
+		string64 imname{};
 		memcpy_s(imname, sizeof(imname), section_name.data(), section_name.size());
 
-		char index[10]{};
-		sprintf_s(index, sizeof(index), "##%zu", number_imgui);
+		string16 index{};
+		xr_sprintf(index, sizeof(index), "##%zu", number_imgui);
 		memcpy_s(imname + section_name.size(), sizeof(imname), index, sizeof(index));
 
 		if (SpawnManager_RenderButtonOrImage(pSection, imname))
@@ -1219,11 +1217,11 @@ void SpawnManager_HandleButtonPress(CInifile::Sect* section)
 		if (section->line_exist("inv_name"))
 		{
 			const char* name = g_pStringTable->translate(pSettings->r_string(section->Name.c_str(), "inv_name")).c_str();
-			sprintf_s(text_news, sizeof(text_news), "[%s] x [%d] (%s)", section->Name.c_str(), count, name);
+			xr_sprintf(text_news, sizeof(text_news), "[%s] x [%d] (%s)", section->Name.c_str(), count, name);
 		}
 		else
 		{
-			sprintf_s(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
+			xr_sprintf(text_news, sizeof(text_news), "[%s] x [%d]", section->Name.c_str(), count);
 		}
 		text_news_final += text_news;
 
@@ -1355,9 +1353,7 @@ Section FilterSectionsWithSearch(const Section& sections, const char* searchBuff
 
 			xr_string lowerSectionName = xr_strlwr_rus(sectionKey);
 
-			const char* rawName = pSettings->line_exist(sectionKey, "inv_name")
-				? pSettings->r_string(sectionKey, "inv_name")
-				: sectionKey;
+			const char* rawName = READ_IF_EXISTS(pSettings, r_string, sectionKey, "inv_name", sectionKey);
 
 			xr_string lowerTranslated = xr_strlwr_rus(g_pStringTable->translate(rawName).c_str());
 

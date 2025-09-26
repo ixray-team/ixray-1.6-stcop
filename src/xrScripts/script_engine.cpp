@@ -294,7 +294,7 @@ shared_str ParseFolder(LPCSTR file_name, FS_FileSet& SET)
 		
 		// PATCH BASE
 		FS.update_path(path_to_file, "$game_scripts$", FOLDER.name.c_str());
-		sprintf_s(name_file, "%s.script", file_name);
+		xr_sprintf(name_file, "%s.script", file_name);
 		xr_strcat(path_to_file, name_file);
 		
 		// Check FOR FOLDERS

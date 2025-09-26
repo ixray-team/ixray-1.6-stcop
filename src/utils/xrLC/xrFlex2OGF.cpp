@@ -203,7 +203,7 @@ void CBuild::SaveOGF()
 			break;
 
 		string_path p_ref;
- 		sprintf_s(p_ref, "%s\\build.geom_%u", path, INDEX_FILE);
+ 		xr_sprintf(p_ref, "%s\\build.geom_%u", path, INDEX_FILE);
 
 
 		IWriter* write_ogf_ref = FS.w_open(p_ref);
