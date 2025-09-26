@@ -46,28 +46,28 @@ void RenderSearchManagerWindow()
 		ImGui::Text("%s: %d", imgui_search_manager.pTranslatedLabel_LevelChanger, imgui_search_manager.counts[(eSelectedType::kSelectedType_LevelChanger)]);
 		ImGui::Text("%s: %d", imgui_search_manager.pTranslatedLabel_Artefact, imgui_search_manager.counts[(eSelectedType::kSelectedType_Artefact)]);
 
-		char colh_monsters[24]{};
-		sprintf_s(colh_monsters, sizeof(colh_monsters), "Monsters: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Monster_All]);
+		string32 colh_monsters;
+		xr_sprintf(colh_monsters, sizeof(colh_monsters), "Monsters: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Monster_All]);
 
 		if (ImGui::CollapsingHeader(colh_monsters))
 		{
 			for (const auto& id : g_pClsidManager->get_monsters())
 			{
-				char monster_name[32]{};
-				sprintf_s(monster_name, sizeof(monster_name), "%s: %d", g_pClsidManager->translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
+				string32 monster_name;
+				xr_sprintf(monster_name, sizeof(monster_name), "%s: %d", g_pClsidManager->translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
 				ImGui::Text(monster_name);
 			}
 		}
 
-		char colh_weapons[24]{};
-		sprintf_s(colh_weapons, sizeof(colh_weapons), "Weapons: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Weapon_All]);
+		string32 colh_weapons;
+		xr_sprintf(colh_weapons, sizeof(colh_weapons), "Weapons: %d", imgui_search_manager.counts[eSelectedType::kSelectedType_Weapon_All]);
 
 		if (ImGui::CollapsingHeader(colh_weapons))
 		{
 			for (const auto& id : g_pClsidManager->get_weapons())
 			{
-				char weapon_name[32]{};
-				sprintf_s(weapon_name, sizeof(weapon_name), "%s: %d", g_pClsidManager->translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
+				string32 weapon_name;
+				xr_sprintf(weapon_name, sizeof(weapon_name), "%s: %d", g_pClsidManager->translateCLSID(id), imgui_search_manager.counts[imgui_search_manager.convertCLSIDToType(id)]);
 				ImGui::Text(weapon_name);
 			}
 		}
@@ -86,14 +86,13 @@ void RenderSearchManagerWindow()
 		{
 			if (ImGui::BeginTabItem("Online##TB_Online_InGameSearchManager"))
 			{
-				memset(imgui_search_manager.counts, 0, sizeof(imgui_search_manager.counts));
+				ZeroMemory(imgui_search_manager.counts, sizeof(imgui_search_manager.counts));
 
 				ImGui::InputText("##IT_InGameSeachManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				char category_name_separator[64]{};
-				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
-				size_t translate_str_len = strlen(pTranslatedCategoryName);
-				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				string64 category_name_separator;
+				xr_string pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				xr_strcpy(category_name_separator, pTranslatedCategoryName.c_str());
 				ImGui::SeparatorText(category_name_separator);
 
 				auto size = Level().Objects.o_count();
@@ -301,10 +300,9 @@ void RenderSearchManagerWindow()
 
 				ImGui::InputText("##IT_InGameSearchManager", imgui_search_manager.search_string, sizeof(imgui_search_manager.search_string));
 
-				char category_name_separator[64]{};
-				const char* pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
-				size_t translate_str_len = strlen(pTranslatedCategoryName);
-				memcpy_s(category_name_separator, sizeof(category_name_separator), pTranslatedCategoryName, translate_str_len);
+				string64 category_name_separator;
+				xr_string pTranslatedCategoryName = imgui_search_manager.convertTypeToString(imgui_search_manager.selected_type);
+				xr_strcpy(category_name_separator, pTranslatedCategoryName.c_str());
 				ImGui::SeparatorText(category_name_separator);
 
 				const auto& objects = ai().alife().objects().objects_vec();
@@ -368,8 +366,8 @@ void RenderSearchManagerWindow()
 										passed_filter = filter_by_cname || filter_by_s_name;
 									}
 
-									char button_name[128];
-									sprintf_s(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
+									string128 button_name;
+									xr_sprintf(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
 
 									if (passed_filter)
 									{
@@ -379,8 +377,7 @@ void RenderSearchManagerWindow()
 
 											if (pActor)
 											{
-												xr_string cmd;
-												cmd = "set_actor_position ";
+												xr_string cmd = "set_actor_position ";
 												cmd += cmd.ToString(pServerObject->Position().x);
 												cmd += ",";
 												cmd += cmd.ToString(pServerObject->Position().y);
@@ -422,13 +419,11 @@ void RenderSearchManagerWindow()
 
 									if (imgui_search_manager.valid(pServerObject->m_tClassID))
 									{
-										xr_string name;
-
-										name = pServerObject->name_replace() ? pServerObject->name_replace() : pServerObject->name();
+										xr_string name = pServerObject->name_replace() ? pServerObject->name_replace() : pServerObject->name();
 										CSE_Abstract* pAbstract = smart_cast<CSE_Abstract*>(pServerObject);
 
-										char button_name[128];
-										sprintf_s(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
+										string128 button_name;
+										xr_sprintf(button_name, "%s [%s]", pServerObject->name_replace() ? pServerObject->name_replace() : "", Platform::ANSI_TO_UTF8(g_pStringTable->translate(pAbstract->s_name).c_str()).c_str());
 
 										if (ImGui::Button(button_name))
 										{
@@ -436,8 +431,7 @@ void RenderSearchManagerWindow()
 
 											if (pActor)
 											{
-												xr_string cmd;
-												cmd = "set_actor_position ";
+												xr_string cmd = "set_actor_position ";
 												cmd += cmd.ToString(pServerObject->Position().x);
 												cmd += ",";
 												cmd += cmd.ToString(pServerObject->Position().y);
@@ -663,98 +657,7 @@ void InitImGuiSearchInGame()
 
 void InitImGuiHudAdjustInGame()
 {
-	string_path path_to_user_settings;
-	FS.update_path(path_to_user_settings, "$app_data_root$", kImGuiHudAdjustInGame_SettingsFileName);
-
-	xr_path path(path_to_user_settings);
-
-	if (path.is_absolute())
-	{
-		// do nothing
-	}
-	else
-	{
-		path = reinterpret_cast<const char*>(std::filesystem::current_path().u8string().c_str());
-		path /= path_to_user_settings;
-	}
-
-
-	bool need_to_init_defaults = false;
-	if (std::filesystem::exists(path))
-	{
-		// loading user settings
-		imgui_hud_adjust_manager.settings.p_file = fopen(path_to_user_settings, "rb+");
-
-		assert(imgui_hud_adjust_manager.settings.p_file && "failed to open file are you sure that system can read and write files on specified path?");
-
-		if (imgui_hud_adjust_manager.settings.p_file)
-		{
-			fread(&imgui_hud_adjust_manager.settings.history_command_max_count, sizeof(imgui_hud_adjust_manager.settings.history_command_max_count), 1, imgui_hud_adjust_manager.settings.p_file);
-
-			static_assert(sizeof(CHudAdjustManager::Settings::hud_position) == sizeof(float) * 3, "expected like this otherwise will fail to initialize data of last_position field");
-			static_assert(sizeof(CHudAdjustManager::Settings::hud_rotation) == sizeof(float) * 3, "expected like this otherwise will fail to initialize data of last_position field");
-			static_assert(sizeof(CHudAdjustManager::Settings::item_position) == sizeof(float) * 3, "expected like this otherwise will fail to initialize data of last_position field");
-			static_assert(sizeof(CHudAdjustManager::Settings::item_rotation) == sizeof(float) * 3, "expected like this otherwise will fail to initialize data of last_position field");
-
-
-
-			fread(&imgui_hud_adjust_manager.settings.hud_position.x, sizeof(float), 3, imgui_hud_adjust_manager.settings.p_file);
-
-			fread(&imgui_hud_adjust_manager.settings.hud_rotation.x, sizeof(float), 3, imgui_hud_adjust_manager.settings.p_file);
-
-			fread(&imgui_hud_adjust_manager.settings.item_position.x, sizeof(float), 3, imgui_hud_adjust_manager.settings.p_file);
-
-			fread(&imgui_hud_adjust_manager.settings.item_rotation.x, sizeof(float), 3, imgui_hud_adjust_manager.settings.p_file);
-
-			fread(&imgui_hud_adjust_manager.settings.data_of_save[0], sizeof(char), 32, imgui_hud_adjust_manager.settings.p_file);
-		}
-		else
-		{
-			need_to_init_defaults = true;
-		}
-	}
-	else
-	{
-		xr_string FilePath = Platform::UTF8_to_CP1251(path.xstring());
-		imgui_hud_adjust_manager.settings.p_file = fopen(FilePath.c_str(), "wb+");
-
-		assert(imgui_hud_adjust_manager.settings.p_file && "failed to open file are you sure that system can read and write files on specified path?");
-
-		need_to_init_defaults = true;
-	}
-
-	if (need_to_init_defaults)
-	{
-		// user defaults here...
-
-		imgui_hud_adjust_manager.settings.history_command_max_count = 100;
-
-		imgui_hud_adjust_manager.settings.hud_position.x = 0.0f;
-		imgui_hud_adjust_manager.settings.hud_position.y = 0.0f;
-		imgui_hud_adjust_manager.settings.hud_position.z = 0.0f;
-
-		imgui_hud_adjust_manager.settings.hud_rotation.x = 0.0f;
-		imgui_hud_adjust_manager.settings.hud_rotation.y = 0.0f;
-		imgui_hud_adjust_manager.settings.hud_rotation.z = 0.0f;
-
-		imgui_hud_adjust_manager.settings.item_position.x = 0.0f;
-		imgui_hud_adjust_manager.settings.item_position.y = 0.0f;
-		imgui_hud_adjust_manager.settings.item_position.z = 0.0f;
-
-		imgui_hud_adjust_manager.settings.item_rotation.x = 0.0f;
-		imgui_hud_adjust_manager.settings.item_rotation.y = 0.0f;
-		imgui_hud_adjust_manager.settings.item_rotation.z = 0.0f;
-
-
-		imgui_hud_adjust_manager.settings.hud_position_default = imgui_hud_adjust_manager.settings.hud_position;
-		imgui_hud_adjust_manager.settings.hud_rotation_default = imgui_hud_adjust_manager.settings.hud_rotation;
-
-		imgui_hud_adjust_manager.settings.item_position_default = imgui_hud_adjust_manager.settings.item_position;
-
-		imgui_hud_adjust_manager.settings.item_rotation_default = imgui_hud_adjust_manager.settings.item_rotation;
-	}
-
-	imgui_hud_adjust_manager.history.storage.reserve(imgui_hud_adjust_manager.settings.history_command_max_count);
+	// TODO: add message sound for saving
 
 	imgui_hud_adjust_manager.is_initialized = true;
 }
