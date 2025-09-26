@@ -61,3 +61,8 @@ void* CRHI::GetSwapchain()
 	VERIFY(!"Unsupported");
 	return nullptr;
 }
+
+void CRHI::ClearTarget(void* Target, ERTColor Transparent)
+{
+	DevicePtr->ClearTarget(Target, Transparent);
+}

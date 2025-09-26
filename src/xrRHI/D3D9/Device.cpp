@@ -168,6 +168,24 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 	UpdateBuffersD3D9();
 }
 
+void InternalDevice9::ClearTarget(void* Target, ERTColor InputColor)
+{
+	constexpr u32 ColorTransparent = color_xrgb(0, 0, 0);
+	constexpr u32 Color = color_xrgb(127, 127, 127);
+	constexpr u32 ColorBlack = color_xrgb(255, 255, 255);
+
+	u32 ColorPtr = 0;
+	switch (InputColor)
+	{
+		case ERTColor::Gray:		ColorPtr = Color; break;
+		case ERTColor::Black:		ColorPtr = ColorBlack; break;
+		case ERTColor::Transparent: ColorPtr = ColorTransparent; break;
+	}
+
+	DX9Device->SetRenderTarget(0, (IDirect3DSurface9*)Target);
+	DX9Device->Clear(0, nullptr, D3DCLEAR_TARGET, ColorPtr, 1, 0);
+}
+
 bool InternalDevice9::CreateD3D9()
 {
 	D3D = Direct3DCreate9(D3D_SDK_VERSION);

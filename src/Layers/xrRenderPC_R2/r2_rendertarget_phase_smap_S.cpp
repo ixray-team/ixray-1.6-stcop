@@ -28,12 +28,15 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 
 void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 {
-	VERIFY							(RImplementation.o.Tshadows);
-	RCache.set_ColorWriteEnable		();
-	if (IRender_Light::OMNIPART == L->flags.type)	{
+	VERIFY(RImplementation.o.Tshadows);
+	RCache.set_ColorWriteEnable();
+	if (IRender_Light::OMNIPART == L->flags.type)
+	{
 		// omni-part
-		CHK_DX							(RDevice->Clear( 0L, nullptr, D3DCLEAR_TARGET,	0xffffffff,	1.0f, 0L));
-	} else {
+		GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
+	}
+	else
+	{
 		// real-spot
 		// Select color-mask
 		ref_shader		shader			= L->s_spot;
