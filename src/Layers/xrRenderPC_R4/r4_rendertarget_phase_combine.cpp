@@ -61,31 +61,19 @@ void CRenderTarget::phase_combine()
 	{
 		PROF_EVENT("PHASE_AMBIENT_OCCLUSION");
 
-		switch(ps_r_ssao_mode) {
-			case 0:
-			{
-				FLOAT ColorRGBA[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-				RContext->ClearRenderTargetView(rt_ssao_temp->pRT, ColorRGBA);
-				break;
-			}
-			case 1:
-			{
-				phase_ssao();
-				break;
-			}
-			case 2:
-			{
-				phase_gtao();
-				break;
-			}
+		switch(ps_r_ssao_mode)
+		{
+			case 0: GRHI->ClearTarget(rt_ssao_temp->pRT, ERTColor::Black); break;
+			case 1: phase_ssao(); break;
+			case 2: phase_gtao(); break;
 		}
 	}
 
-	if(RImplementation.o.deffered_reflecitons) {
+	if(RImplementation.o.deffered_reflecitons)
+	{
 		phase_sslr();
 	}
 
-	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
 	RCache.set_CullMode(CULL_NONE);
@@ -234,12 +222,10 @@ void CRenderTarget::phase_combine()
 		}
 		if(bDistort) {
 			GPU_EVENT(render_distort_objects);
-			FLOAT ColorRGBA_[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 			u_setrt(rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
 
 			RImplementation.rmNormal();
-
-			RContext->ClearRenderTargetView(rt_Generic_1->pRT, ColorRGBA_);
+			GRHI->ClearTarget(rt_Generic_1->pRT, ERTColor::Gray);
 			RCache.set_CullMode(CULL_CCW);
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();

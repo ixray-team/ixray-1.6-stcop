@@ -7,8 +7,8 @@
 #	define RHI_API __declspec(dllimport)
 #endif
 
+#include "RHIEnums.h"
 #include "RHIDevice.h"
-#include "APILevel.h"
 
 enum
 {
@@ -55,6 +55,9 @@ public:
 
 	void* GetContext();
 	void* GetSwapchain();
+
+	void ClearTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
+
 public:
 	IRHIDevice* DevicePtr = nullptr;
 

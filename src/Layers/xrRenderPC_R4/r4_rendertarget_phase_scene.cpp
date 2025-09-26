@@ -5,7 +5,7 @@ void CRenderTarget::phase_scene_forward() {
 }
 
 // startup
-void	CRenderTarget::phase_scene_prepare	()
+void CRenderTarget::phase_scene_prepare()
 {
 	GPU_EVENT(phase_scene_prepare);
 
