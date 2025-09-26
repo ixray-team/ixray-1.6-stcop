@@ -216,7 +216,10 @@ void RenderHUDAdjustManager()
 												ImGui::SeparatorText("Position##HUD");
 
 												Fvector& position = attach_idx ? p_item->m_measures.m_hands_positions.hands_offsets[0][attach_idx] : p_item->m_measures.m_hands_attach_real[0];
-												if (ImGui::Button("Reset##HPosition"))
+												string32 btnName;
+												xr_sprintf(btnName, "Reset##HPosition_%d", attach_idx);
+
+												if (ImGui::Button(btnName)) 
 												{
 													switch (attach_idx)
 													{
@@ -251,7 +254,8 @@ void RenderHUDAdjustManager()
 												ImGui::SeparatorText("Rotation##HUD");
 
 												Fvector& rotation = attach_idx ? p_item->m_measures.m_hands_positions.hands_offsets[1][attach_idx] : p_item->m_measures.m_hands_attach_real[1];
-												if (ImGui::Button("Reset##HRotation"))
+												xr_sprintf(btnName, "Reset##HRotation_%d", attach_idx);
+												if (ImGui::Button(btnName))
 												{
 													switch (attach_idx)
 													{
