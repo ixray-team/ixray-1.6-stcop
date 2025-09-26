@@ -215,7 +215,30 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 #endif
 
 	pTexture.create(name);
-	pTexture->surface_set(pSurface);
+	
+	// Create RHITextureDesc for the texture
+	RHITextureDesc rhiDesc;
+	rhiDesc.Width = width;
+	rhiDesc.Height = height;
+	rhiDesc.Depth = 1;
+	rhiDesc.MipLevels = 1;
+#ifdef USE_DX11
+	rhiDesc.Format = descFontAtlas.Format;
+	rhiDesc.Usage = descFontAtlas.Usage;
+	rhiDesc.BindFlags = descFontAtlas.BindFlags;
+	rhiDesc.CPUAccessFlags = descFontAtlas.CPUAccessFlags;
+	rhiDesc.MiscFlags = descFontAtlas.MiscFlags;
+#else
+	rhiDesc.Format = D3DFMT_A8R8G8B8;
+	rhiDesc.Usage = 0;
+	rhiDesc.BindFlags = 0;
+	rhiDesc.CPUAccessFlags = 0;
+	rhiDesc.MiscFlags = 0;
+#endif
+	
+	// Use GRHI to create the surface
+	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pSurface, 0, rhiDesc);
+	pTexture->surface_set(rhiSurface);
 
 	_RELEASE(pSurface);
 }
