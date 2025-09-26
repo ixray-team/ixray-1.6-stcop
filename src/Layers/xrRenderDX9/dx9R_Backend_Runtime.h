@@ -1,5 +1,3 @@
-#ifndef	dx9R_Backend_Runtime_included
-#define	dx9R_Backend_Runtime_included
 #pragma once
 
 IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
@@ -10,12 +8,10 @@ IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
 
 IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 {
-	if (RT!=pRT[ID])
+	if (RT != pRT[ID])
 	{
-		PGO				(Msg("PGO:setRT"));
-		stat.target_rt	++;
-		pRT[ID]			= RT;
-		CHK_DX			(RDevice->SetRenderTarget(ID,RT));
+		pRT[ID] = RT;
+		CHK_DX(RDevice->SetRenderTarget(ID, RT));
 	}
 }
 
@@ -252,6 +248,3 @@ IC float CBackend::get_target_height()
 {
 	return RDEVICE.TargetHeight;
 }
-
-
-#endif	//	dx9R_Backend_Runtime_included

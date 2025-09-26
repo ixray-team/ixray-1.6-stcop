@@ -171,9 +171,6 @@ void CStats::Show()
 		F.OutNext	("mapped:      %d",			g_file_mapped_memory);
 		F.OutSkip	();
 		m_pRender->OutData2(F);
-		//F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
-		//F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
-		//F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
 #endif
 		m_pRender->OutData3(F);
 		//F.OutNext	("xforms:      %d",			RCache.stat.xforms);

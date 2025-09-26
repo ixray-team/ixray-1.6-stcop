@@ -295,6 +295,24 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 	UpdateBuffersD3D11();
 }
 
+void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
+{
+	constexpr float ColorTransparent[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	constexpr float ColorRGBA[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
+	constexpr float ColorBlack[4] = { 1.f, 1.f, 1.f, 1.f };
+
+	float* ColorPtr = nullptr;
+
+	switch (InputColor)
+	{
+		case ERTColor::Gray:		ColorPtr = (float*)ColorRGBA; break;
+		case ERTColor::Black:		ColorPtr = (float*)ColorBlack; break;
+		case ERTColor::Transparent: ColorPtr = (float*)ColorTransparent; break;
+	}
+
+	HWRenderContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target, ColorPtr);
+}
+
 void InternalDevice11::DestroyD3D11()
 {
 	if (RenderDSV != nullptr)

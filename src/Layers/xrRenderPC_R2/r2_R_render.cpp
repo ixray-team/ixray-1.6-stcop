@@ -308,9 +308,9 @@ void CRender::render_menu	()
 	}
 	// Distort
 	{
-		Target->u_setrt						(Target->rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
-		CHK_DX(RDevice->Clear			( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
-		g_pGamePersistent->OnRenderPPUI_PP	()	;	// PP-UI
+		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
+		GRHI->ClearTarget(RCache.get_RT(), ERTColor::Gray);
+		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 
 	// Actual Display

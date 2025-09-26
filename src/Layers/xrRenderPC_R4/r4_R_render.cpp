@@ -315,10 +315,9 @@ void CRender::render_menu() {
 
 	// Distort
 	{
-		FLOAT ColorRGBA[4] = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
 		Target->u_setrt(Target->rt_Generic_1, 0, 0, 0);		// Now RT is a distortion mask
 		rmNormal();
-		RContext->ClearRenderTargetView(Target->rt_Generic_1->pRT, ColorRGBA);
+		GRHI->ClearTarget(Target->rt_Generic_1->pRT, ERTColor::Gray);
 		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 
@@ -493,9 +492,8 @@ void CRender::Render()
 
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);
 
-	FLOAT ColorRGBA[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	RContext->ClearRenderTargetView(Target->rt_Generic_0->pRT, ColorRGBA);
-	RContext->ClearRenderTargetView(Target->rt_Velocity->pRT, ColorRGBA);
+	GRHI->ClearTarget(Target->rt_Generic_0->pRT);
+	GRHI->ClearTarget(Target->rt_Velocity->pRT);
 
 	RCache.set_CullMode(CULL_NONE);
 	RCache.set_Stencil(FALSE);
