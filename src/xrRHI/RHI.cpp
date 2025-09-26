@@ -66,3 +66,8 @@ void CRHI::ClearTarget(void* Target, ERTColor Transparent)
 {
 	DevicePtr->ClearTarget(Target, Transparent);
 }
+
+void CRHI::Present()
+{
+	DevicePtr->Present();
+}
