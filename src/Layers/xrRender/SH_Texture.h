@@ -36,8 +36,8 @@ public:
 	void								Unload			(void);
 //	void								Apply			(u32 dwStage);
 
-	void								surface_set		(ID3DBaseTexture* surf );
-	ID3DBaseTexture*					surface_get 	();
+	void								surface_set		(IRHISurface* surf );
+	IRHISurface*						surface_get 	();
 
 	IC BOOL								isUser			()		{ return flags.bUser;					}
 	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
@@ -56,9 +56,7 @@ public:
 	CTexture							();
 	virtual ~CTexture					();
 	
-#ifdef USE_DX11
-	ID3DShaderResourceView*				get_SRView() {return m_pSRView;}
-#endif //USE_DX11
+	IRHIShaderResourceView*				get_SRView() {return m_pSRView;}
 
 private:
 	IC BOOL								desc_valid		()		{ return pSurface==desc_cache; }
@@ -95,20 +93,18 @@ public:	//	Public class members (must be encapsulated furthur)
 		u32								seqMSPF;			// Sequence data milliseconds per frame
 	};
 
-	ID3DBaseTexture* pSurface;
+	IRHISurface* pSurface;
 private:
 	// Sequence data
-	xr_vector<ID3DBaseTexture*>			seqDATA;
+	xr_vector<IRHISurface*>				seqDATA;
 
 	// Description
-	ID3DBaseTexture*					desc_cache;
+	IRHISurface*						desc_cache;
 	D3D_TEXTURE2D_DESC					desc;
 
-#ifdef USE_DX11
-	ID3DShaderResourceView*			m_pSRView;
+	IRHIShaderResourceView*			m_pSRView;
 	// Sequence view data
-	xr_vector<ID3DShaderResourceView*>m_seqSRView;
-#endif //USE_DX11
+	xr_vector<IRHIShaderResourceView*>m_seqSRView;
 };
 struct 		resptrcode_texture	: public resptr_base<CTexture>
 {
