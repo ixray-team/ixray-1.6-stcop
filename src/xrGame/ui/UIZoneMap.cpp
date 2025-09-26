@@ -77,6 +77,7 @@ void CUIZoneMap::Init()
 		m_clipFrame.SetWndSize(temp);
 
 		temp = m_clipFrame.GetWndPos();
+		temp.x *= k;
 		m_clipFrame.SetWndPos(temp.mul(UI_BASE_HEIGHT));
 	}
 
