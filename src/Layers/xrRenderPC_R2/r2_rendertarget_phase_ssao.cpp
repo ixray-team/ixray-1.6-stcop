@@ -19,10 +19,8 @@ void CRenderTarget::phase_ssao	()
 	u32			Offset = 0;
 
 	// Targets
-	u_setrt									( rt_ssao_temp,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
-	u32		clr4clear					= color_rgba(0,0,0,0);	// 0x00
-	CHK_DX	(RDevice->Clear			( 0L, nullptr, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
-
+	u_setrt( rt_ssao_temp,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
+	GRHI->ClearTarget(RCache.get_RT());
 	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
 
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
@@ -81,18 +79,12 @@ void CRenderTarget::phase_ssao	()
 
 void CRenderTarget::phase_downsamp	()
 {
-	//IDirect3DSurface9 *source, *dest;
-	//rt_Position->pSurface->GetSurfaceLevel(0, &source);
-	//rt_half_depth->pSurface->GetSurfaceLevel(0, &dest);
-	//RDevice->StretchRect(source, nullptr, dest, nullptr, D3DTEXF_POINT);
-
 	Fvector2	p0,p1;
 	u32			Offset = 0;
 
 	// Targets
-	u_setrt								( rt_half_depth,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
-	u32		clr4clear					= color_rgba(0,0,0,0);	// 0x00
-	CHK_DX	(RDevice->Clear			( 0L, nullptr, D3DCLEAR_TARGET, clr4clear, 1.0f, 0L));
+	u_setrt( rt_half_depth,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
+	GRHI->ClearTarget(RCache.get_RT());
 
 	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
 
