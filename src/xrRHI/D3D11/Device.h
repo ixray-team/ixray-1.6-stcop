@@ -9,13 +9,15 @@ public:
 	InternalDevice11();
 	~InternalDevice11();
 
-	bool CreateD3D11();
-	void DestroyD3D11();
-
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
-	bool UpdateBuffersD3D11();
+	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
 
 public:
 	IDXGISwapChain* HWSwapchain = nullptr;
 	ID3D11DeviceContext* HWRenderContext = nullptr;
+
+private:
+	bool CreateD3D11();
+	void DestroyD3D11();
+	bool UpdateBuffersD3D11();
 };
