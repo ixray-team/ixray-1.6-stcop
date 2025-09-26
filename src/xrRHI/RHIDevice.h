@@ -16,4 +16,5 @@ public:
 public:
 	virtual void ResizeBuffers(u32 Width, u32 Height) = 0;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) = 0;
+	virtual void Present() = 0;
 };

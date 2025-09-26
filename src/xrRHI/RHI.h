@@ -57,7 +57,7 @@ public:
 	void* GetSwapchain();
 
 	void ClearTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
-
+	void Present();
 public:
 	IRHIDevice* DevicePtr = nullptr;
 
