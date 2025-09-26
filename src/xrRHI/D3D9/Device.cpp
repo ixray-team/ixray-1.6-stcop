@@ -12,6 +12,21 @@ InternalDevice9::~InternalDevice9()
 	DestroyD3D9();
 }
 
+IRHITextureFactory* InternalDevice9::GetTextureFactory()
+{
+	return m_pTextureFactory;
+}
+
+void InternalDevice9::SetTextureFactory(IRHITextureFactory* factory)
+{
+	if (m_pTextureFactory)
+	{
+		delete m_pTextureFactory;
+	}
+	m_pTextureFactory = static_cast<DX9TextureFactory*>(factory);
+	TextureFactory = m_pTextureFactory;
+}
+
 u32 InternalDevice9::selectPresentInterval()
 {
 	D3DCAPS9 caps;
@@ -210,11 +225,26 @@ bool InternalDevice9::CreateD3D9()
 	}
 
 	UpdateBuffersD3D9();
+	
+	// Initialize texture factory
+	if (!m_pTextureFactory)
+	{
+		m_pTextureFactory = new DX9TextureFactory(DX9Device);
+		TextureFactory = m_pTextureFactory;
+	}
+	
 	return true;
 }
 
 void InternalDevice9::DestroyD3D9()
 {
+	// Clean up texture factory
+	if (m_pTextureFactory)
+	{
+		xr_delete(m_pTextureFactory);
+		TextureFactory = nullptr;
+	}
+
 	if (RenderDSV != nullptr)
 	{
 		((IDirect3DSurface9*)RenderDSV)->Release();

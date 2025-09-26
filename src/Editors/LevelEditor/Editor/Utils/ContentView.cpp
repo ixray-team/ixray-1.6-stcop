@@ -297,7 +297,7 @@ void CContentView::DrawHeader()
 this->MenuIcon.p_ was nullptr.
 	*/
 
-	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface, { 15, 15 }))
+	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface->GetRawTexture(), { 15, 15 }))
 	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB" ))
 	{
 		ImGui::OpenPopup("MenuCBPpp");
@@ -1011,12 +1011,12 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 	if (SelectedObjects.size() == 1) 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface, BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface->GetRawTexture(), BtnSize);
 		ImGui::Text(LabelText.data());
 	}
 	else 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->pSurface, BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->pSurface->GetRawTexture(), BtnSize);
 		ImGui::Text("%d objects", SelectedObjects.size());
 	}
 	
@@ -1166,7 +1166,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->pSurface, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			ImGui::Image(IconPtr->Icon->pSurface->GetRawTexture(), ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
 
 			/*
 				Два варианта
@@ -1726,9 +1726,13 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETObject);
 				CTexture* TempTexture = new CTexture();
-				m_Thm->Update(TempTexture->pSurface);
 
-				if(TempTexture->pSurface != nullptr) {
+				ID3DBaseTexture* Texture = nullptr;
+				m_Thm->Update(Texture);
+				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
+				
+				if(TempTexture->pSurface != nullptr && TempTexture->pSurface->GetRawTexture() != nullptr)
+				{
 					Icons[IconPath] = {TempTexture, false};
 				}
 				else {
@@ -1746,11 +1750,14 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
 				EGroupThumbnail* m_Thm = new EGroupThumbnail(NewPath.data());
-				//EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETTexture);
 				CTexture* TempTexture = new CTexture();
-				m_Thm->Update(TempTexture->pSurface);
 
-				if (TempTexture->pSurface != nullptr) {
+				ID3DBaseTexture* Texture = nullptr;
+				m_Thm->Update(Texture);
+				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
+
+				if (TempTexture->pSurface != nullptr && TempTexture->pSurface->GetRawTexture() != nullptr)
+				{
 					Icons[IconPath] = { TempTexture, false };
 				}
 				else {
@@ -1773,7 +1780,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 					memcpy(rect.pBits, Pixels.data(), Pixels.size());
 					R_CHK(pTexture->UnlockRect(0));
 
-					TempTexture->pSurface = pTexture;
+					TempTexture->pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, {});
 				}
 			}
 			else if (IconPath.ends_with(".tga"))
@@ -1788,7 +1795,8 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 			Icons[IconPath] = {EDevice->Resources->_CreateTexture(NewPath.c_str()), false};
 			Icons[IconPath].Icon->Load();
 
-			if(!Icons[IconPath].Icon->pSurface) {
+			if(!Icons[IconPath].Icon->pSurface)
+			{
 				Icons[IconPath] = Icons["image"];
 			}
 		}

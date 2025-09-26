@@ -20,16 +20,16 @@ public:
 	void	reset_end();
 
 	IC BOOL	valid() {
-		return !!pTexture;
+		return !!pSurface;
 	}
 
 public:
-	ID3DTexture2D*			pSurface;
-	ID3DRenderTargetView*	pRT;
+	IRHISurface*			pSurface;
+	IRHIRenderTargetView*	pRT;
 
-	xr_vector<ID3DRenderTargetView*> pMippedRT;
+	xr_vector<IRHIRenderTargetView*> pMippedRT;
 #ifdef USE_DX11
-	ID3DDepthStencilView*	pZRT;
+	IRHIDepthStencilView*	pZRT;
 	ID3D11UnorderedAccessView*	pUAView;
 #endif //USE_DX11
 	ref_texture				pTexture;
@@ -62,8 +62,8 @@ typedef	resptr_core<CRT, resptrcode_crt> ref_rt;
 //////////////////////////////////////////////////////////////////////////
 class		CRTC	:	public xr_resource_named	{
 public:
-	ID3DTexture2D*			pSurface;
-	ID3DRenderTargetView*	pRT[6];
+	IRHISurface*			pSurface;
+	IRHIRenderTargetView*	pRT[6];
 	ref_texture				pTexture;
 
 	u32						dwSize;

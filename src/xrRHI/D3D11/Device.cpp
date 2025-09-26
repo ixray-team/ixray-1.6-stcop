@@ -13,6 +13,21 @@ InternalDevice11::~InternalDevice11()
 	DestroyD3D11();
 }
 
+IRHITextureFactory* InternalDevice11::GetTextureFactory()
+{
+	return m_pTextureFactory;
+}
+
+void InternalDevice11::SetTextureFactory(IRHITextureFactory* factory)
+{
+	if (m_pTextureFactory)
+	{
+		delete m_pTextureFactory;
+	}
+	m_pTextureFactory = static_cast<DX11TextureFactory*>(factory);
+	TextureFactory = m_pTextureFactory;
+}
+
 bool InternalDevice11::UpdateBuffersD3D11()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -244,6 +259,13 @@ bool InternalDevice11::CreateD3D11()
 		return false;
 	}
 
+	// Initialize texture factory
+	if (!m_pTextureFactory)
+	{
+		m_pTextureFactory = new DX11TextureFactory(DX11Device, HWRenderContext);
+		TextureFactory = m_pTextureFactory;
+	}
+
 	return true;
 }
 
@@ -315,6 +337,13 @@ void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 
 void InternalDevice11::DestroyD3D11()
 {
+	// Clean up texture factory
+	if (m_pTextureFactory)
+	{
+		xr_delete(m_pTextureFactory);
+		TextureFactory = nullptr;
+	}
+
 	if (RenderDSV != nullptr)
 	{
 		((ID3D11DepthStencilView*)RenderDSV)->Release();
