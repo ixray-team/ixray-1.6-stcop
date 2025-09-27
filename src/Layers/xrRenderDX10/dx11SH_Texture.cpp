@@ -4,7 +4,7 @@
 #include "../xrRender/ResourceManager.h"
 
 #ifndef _EDITOR
-#include "../../xrEngine/Render.h"
+#	include "../../xrEngine/Render.h"
 #endif
 
 #include "../../xrEngine/tntQAVI.h"
@@ -14,16 +14,15 @@
 
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
-#define		PRIORITY_HIGH	12
-#define		PRIORITY_NORMAL	8
-#define		PRIORITY_LOW	4
+#define PRIORITY_HIGH	12
+#define PRIORITY_NORMAL	8
+#define PRIORITY_LOW	4
 
-void resptrcode_texture::create(LPCSTR _name)
+void resptrcode_texture::create(const char* _name)
 {
 	PROF_EVENT("resptrcode_texture::create");
 	_set(DEV->_CreateTexture(_name));
 }
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -47,10 +46,8 @@ CTexture::CTexture		()
 
 CTexture::~CTexture()
 {
-	Unload				();
-
-	// release external reference
-	DEV->_DeleteTexture	(this);
+	Unload();
+	DEV->_DeleteTexture(this);
 }
 
 void CTexture::surface_set(IRHISurface* surf)
@@ -151,17 +148,19 @@ IRHISurface* CTexture::surface_get()
 
 void CTexture::PostLoad	()
 {
-	if (pTheora)				bind		= xr_make_delegate(this,&CTexture::apply_theora);
-	else if (pAVI)				bind		= xr_make_delegate(this,&CTexture::apply_avi);
-	else if (!seqDATA.empty())	bind		= xr_make_delegate(this,&CTexture::apply_seq);
-	else						bind		= xr_make_delegate(this,&CTexture::apply_normal);
+	if (pTheora)				bind = xr_make_delegate(this,&CTexture::apply_theora);
+	else if (pAVI)				bind = xr_make_delegate(this,&CTexture::apply_avi);
+	else if (!seqDATA.empty())	bind = xr_make_delegate(this,&CTexture::apply_seq);
+	else						bind = xr_make_delegate(this,&CTexture::apply_normal);
 }
 
-void CTexture::apply_load	(u32 dwStage)	{
-	if (!flags.bLoaded)		Load			()	;
-	else					PostLoad		()	;
-	bind					(dwStage)			;
-};
+void CTexture::apply_load(u32 dwStage)
+{
+	if (!flags.bLoaded)		Load();
+	else					PostLoad();
+
+	bind(dwStage);
+}
 
 void CTexture::ProcessStaging()
 {
@@ -176,7 +175,7 @@ void CTexture::ProcessStaging()
 	{
 		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
 		{
-			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
+			ID3DTexture2D* T = (ID3DTexture2D*)pSurface->GetRawTexture();
 			D3D_TEXTURE2D_DESC TexDesc;
 			T->GetDesc(&TexDesc);
 			TexDesc.Usage = D3D_USAGE_DEFAULT;
@@ -250,67 +249,67 @@ void CTexture::Apply(u32 dwStage)
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
-	if (dwStage<rstVertex)	//	Pixel shader stage resources
+	if (dwStage<rstVertex)
 	{
-		//RDevice->PSSetShaderResources(dwStage, 1, &m_pSRView);
+		//	Pixel shader stage resources
 		SRVSManager.SetPSResource(dwStage, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstGeometry)	//	Vertex shader stage resources
+	else if (dwStage<rstGeometry)
 	{
-		//RDevice->VSSetShaderResources(dwStage-rstVertex, 1, &m_pSRView);
+		//	Vertex shader stage resources
 		SRVSManager.SetVSResource(dwStage-rstVertex,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstHull)	//	Geometry shader stage resources
+	else if (dwStage<rstHull)
 	{
-		//RDevice->GSSetShaderResources(dwStage-rstGeometry, 1, &m_pSRView);
+		//	Geometry shader stage resources
 		SRVSManager.SetGSResource(dwStage-rstGeometry,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstDomain)	//	Geometry shader stage resources
+	else if (dwStage<rstDomain)
 	{
+		//	Geometry shader stage resources
 		SRVSManager.SetHSResource(dwStage-rstHull,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstCompute)	//	Geometry shader stage resources
+	else if (dwStage<rstCompute)
 	{
+		//	Geometry shader stage resources
 		SRVSManager.SetDSResource(dwStage-rstDomain,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstInvalid)	//	Geometry shader stage resources
+	else if (dwStage<rstInvalid)
 	{
+		//	Geometry shader stage resources
 		SRVSManager.SetCSResource(dwStage-rstCompute,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else
-		VERIFY("Invalid stage");
+	else VERIFY("Invalid stage");
 }
 
 void CTexture::apply_theora(u32 dwStage)
 {
-	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:Device.dwTimeContinual))
+	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Device.dwTimeContinual))
 	{
 		u32 type = pSurface->GetTextureType();
 		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
+		ID3DTexture2D* T2D = (ID3DTexture2D*)pSurface->GetRawTexture();
 		D3D_MAPPED_TEXTURE2D	mapData{};
 		RECT rect;
-		rect.left			= 0;
-		rect.top			= 0;
-		rect.right			= pTheora->Width(true);
-		rect.bottom			= pTheora->Height(true);
+		rect.left = 0;
+		rect.top = 0;
+		rect.right = pTheora->Width(true);
+		rect.bottom = pTheora->Height(true);
 
-		u32 _w				= pTheora->Width(false);
+		u32 _w = pTheora->Width(false);
 
-		//R_CHK				(T2D->LockRect(0,&R,&rect,0));
-		R_CHK				(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-		//R_ASSERT			(R.Pitch == int(pTheora->Width(false)*4));
-		//R_ASSERT			(mapData.RowPitch == int(pTheora->Width(false)*4));
+		R_CHK(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
 
 		int DeltaOffset = mapData.RowPitch / int(pTheora->Width(false) * 4);
 		_w *= DeltaOffset;
 
 		int _pos = 0;
 		pTheora->DecompressFrame((u32*)mapData.pData, _w - rect.right, _pos);
-		VERIFY(u32(_pos) == rect.bottom*_w);
+		VERIFY(u32(_pos) == rect.bottom * _w);
 
 		RContext->Unmap(T2D, 0);
 	}
+
 	Apply(dwStage);
 }
 
@@ -332,28 +331,35 @@ void CTexture::apply_avi(u32 dwStage)
 	}
 
 	Apply(dwStage);
-};
-void CTexture::apply_seq	(u32 dwStage)	{
+}
+
+void CTexture::apply_seq(u32 dwStage)
+{
 	// SEQ
-	u32	frame		= Device.dwTimeContinual/seqMSPF; //Device.dwTimeGlobal
-	u32	frame_data	= (u32)seqDATA.size();
-	if (flags.seqCycles)		{
-		u32	frame_id	= frame%(frame_data*2);
-		if (frame_id>=frame_data)	frame_id = (frame_data-1) - (frame_id%frame_data);
-		pSurface 			= seqDATA[frame_id];
-		m_pSRView			= m_seqSRView[frame_id];
-	} else {
-		u32	frame_id	= frame%frame_data;
-		pSurface 			= seqDATA[frame_id];
-		m_pSRView			= m_seqSRView[frame_id];
+	u32	frame = Device.dwTimeContinual / seqMSPF;
+	u32	frame_data = (u32)seqDATA.size();
+
+	if (flags.seqCycles)
+	{
+		u32	frame_id = frame % (frame_data * 2);
+		if (frame_id >= frame_data)	frame_id = (frame_data - 1) - (frame_id % frame_data);
+		pSurface = seqDATA[frame_id];
+		m_pSRView = m_seqSRView[frame_id];
 	}
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+	else
+	{
+		u32	frame_id = frame % frame_data;
+		pSurface = seqDATA[frame_id];
+		m_pSRView = m_seqSRView[frame_id];
+	}
+
 	Apply(dwStage);
-};
-void CTexture::apply_normal	(u32 dwStage)	{
-	//CHK_DX(RDevice->SetTexture(dwStage,pSurface));
+}
+
+void CTexture::apply_normal	(u32 dwStage)
+{
 	Apply(dwStage);
-};
+}
 
 void CTexture::Preload	()
 {
@@ -367,32 +373,40 @@ void CTexture::Load()
 
 	flags.bLoaded = true;
 	desc_cache = 0;
-	if (pSurface)					return;
+	if (pSurface)
+		return;
 
 	flags.bUser = false;
 	flags.MemoryUsage = 0;
-	if (0 == _stricmp(*cName, "$null"))	return;
-	if (0 != strstr(*cName, "$user$")) {
+
+	if (0 == _stricmp(*cName, "$null"))
+		return;
+
+	if (0 != strstr(*cName, "$user$"))
+	{
 		flags.bUser = true;
 		return;
 	}
 
 	Preload();
 
-	bool	bCreateView = true;
+	bool bCreateView = true;
 
 	// Check for OGM
 	string_path			fn;
-	if (FS.exist(fn, "$game_textures$", *cName, ".ogm")) {
+	if (FS.exist(fn, "$game_textures$", *cName, ".ogm"))
+	{
 		// AVI
 		pTheora = new CTheoraSurface();
 		m_play_time = 0xFFFFFFFF;
 
-		if (!pTheora->Load(fn)) {
+		if (!pTheora->Load(fn))
+		{
 			xr_delete(pTheora);
 			FATAL("Can't open video stream");
 		}
-		else {
+		else
+		{
 			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
 			pTheora->Play(TRUE, Device.dwTimeContinual);
 
@@ -401,8 +415,6 @@ void CTexture::Load()
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
-			//			HRESULT hrr = RDevice->CreateTexture(
-			//				_w, _h, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, nullptr );
 			D3D_TEXTURE2D_DESC	desc_;
 			desc_.Width = _w;
 			desc_.Height = _h;
@@ -451,11 +463,13 @@ void CTexture::Load()
 		// AVI
 		pAVI = new CAviPlayerCustom();
 
-		if (!pAVI->Load(fn)) {
+		if (!pAVI->Load(fn))
+		{
 			xr_delete(pAVI);
 			FATAL("Can't open video stream");
 		}
-		else {
+		else
+		{
 			flags.MemoryUsage = pAVI->m_dwWidth * pAVI->m_dwHeight * 4;
 
 			// Now create texture
@@ -569,47 +583,42 @@ void CTexture::Load()
 	PostLoad();
 }
 
-void CTexture::Unload	()
+void CTexture::Unload()
 {
-#ifdef DEBUG
-	string_path				msg_buff;
-	xr_sprintf				(msg_buff,sizeof(msg_buff),"* Unloading texture [%s] pSurface RefCount=",cName.c_str());
-#endif // DEBUG
+	flags.bLoaded = false;
+	flags.bLoadedAsStaging = false;
 
-	//.	if (flags.bLoaded)		Msg		("* Unloaded: %s",cName.c_str());
-
-	flags.bLoaded			= FALSE;
-	flags.bLoadedAsStaging	= FALSE;
-	if (!seqDATA.empty())	{
-		for (u32 I=0; I<seqDATA.size(); I++)
+	if (!seqDATA.empty())
+	{
+		for (u32 I = 0; I < seqDATA.size(); I++)
 		{
-			_RELEASE	(seqDATA[I]);
-			_RELEASE	(m_seqSRView[I]);
+			_RELEASE(seqDATA[I]);
+			_RELEASE(m_seqSRView[I]);
 		}
 		seqDATA.clear();
 		m_seqSRView.clear();
-		pSurface	= 0;
-		m_pSRView	= 0;
+		pSurface = 0;
+		m_pSRView = 0;
 	}
 
-	_RELEASE		(pSurface);
-	_RELEASE		(m_pSRView);
+	_RELEASE(pSurface);
+	_RELEASE(m_pSRView);
 
-	xr_delete		(pAVI);
-	xr_delete		(pTheora);
+	xr_delete(pAVI);
+	xr_delete(pTheora);
 
-	bind			= xr_make_delegate(this,&CTexture::apply_load);
+	bind = xr_make_delegate(this, &CTexture::apply_load);
 }
 
-void CTexture::desc_update	()
+void CTexture::desc_update()
 {
-	desc_cache	= pSurface;
+	desc_cache = pSurface;
 	if (pSurface)
 	{
 		D3D_RESOURCE_DIMENSION	type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
 		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
+			ID3DTexture2D* T = (ID3DTexture2D*)pSurface->GetRawTexture();
 			T->GetDesc(&desc);
 		}
 	}
@@ -617,7 +626,7 @@ void CTexture::desc_update	()
 
 D3D_USAGE CTexture::GetUsage()
 {
-	D3D_USAGE	res = D3D_USAGE_DEFAULT;
+	D3D_USAGE res = D3D_USAGE_DEFAULT;
 
 	if (pSurface)
 	{
@@ -659,22 +668,36 @@ D3D_USAGE CTexture::GetUsage()
 	return res;
 }
 
-void CTexture::video_Play		(BOOL looped, u32 _time)	
-{ 
-	if (pTheora) pTheora->Play	(looped,(_time!=0xFFFFFFFF)?(m_play_time=_time):Device.dwTimeContinual); 
-}
-
-void CTexture::video_Pause		(BOOL state)
+IRHIShaderResourceView* CTexture::GetView()
 {
-	if (pTheora) pTheora->Pause	(state); 
+	return m_pSRView;
 }
 
-void CTexture::video_Stop			()				
-{ 
-	if (pTheora) pTheora->Stop(); 
+void CTexture::video_Play(BOOL looped, u32 _time)
+{
+	if (pTheora)
+	{
+		pTheora->Play(looped, (_time != 0xFFFFFFFF) ? (m_play_time = _time) : Device.dwTimeContinual);
+	}
 }
 
-BOOL CTexture::video_IsPlaying	()				
-{ 
-	return (pTheora)?pTheora->IsPlaying():FALSE; 
+void CTexture::video_Pause(BOOL state)
+{
+	if (pTheora)
+	{
+		pTheora->Pause(state);
+	}
+}
+
+void CTexture::video_Stop()
+{
+	if (pTheora)
+	{
+		pTheora->Stop();
+	}
+}
+
+bool CTexture::video_IsPlaying()
+{
+	return (pTheora) ? pTheora->IsPlaying() : false;
 }
