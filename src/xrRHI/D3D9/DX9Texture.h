@@ -30,7 +30,10 @@ public:
     virtual u32 GetDepth() const override;
     virtual u32 GetMipLevels() const override;
     virtual u32 GetFormat() const override;
+    virtual u32 GetMiscFlags() const override;
     virtual u32 GetTextureType() const override;
+    virtual ERHI_USAGE GetUsage() const override;
+
     virtual void AddRef() override;
     virtual u32 Release() override;
     
