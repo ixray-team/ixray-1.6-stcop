@@ -43,7 +43,7 @@
 #include "bone.h"
 
 extern ENGINE_API CInifile *pGameIni;
-
+extern ENGINE_API bool g_dedicated_server;
 
 #if !defined(DEBUG) && !defined(LUA_DEBUG)
 #	define LUABIND_NO_ERROR_CHECKING

@@ -25,6 +25,7 @@
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= nullptr;
+ENGINE_API bool g_dedicated_server  = false;
 BOOL	g_bIntroFinished			= FALSE;
 extern	void	Intro				( void* fn );
 extern	void	Intro_DSHOW			( void* fn );
@@ -387,8 +388,6 @@ static void* __cdecl luabind_allocator(void* context, const void* pointer, size_
 	void* non_const_pointer = const_cast<LPVOID>(pointer);
 	return xr_realloc(non_const_pointer, size);
 }
-
-ENGINE_API	bool g_dedicated_server	= false;
 
 ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 {

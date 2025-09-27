@@ -13,10 +13,7 @@ using namespace DirectX;
 
 void CBackend::OnFrameEnd	()
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
 	if (!g_dedicated_server)
-#endif    
 	{
 #ifdef USE_DX11
 		Invalidate			();
@@ -36,12 +33,8 @@ void CBackend::OnFrameEnd	()
 
 void CBackend::OnFrameBegin	()
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
 	if (!g_dedicated_server)
-#endif    
 	{
-		PGO					(Msg("PGO:*****frame[%d]*****",RDEVICE.dwFrame));
 #ifdef USE_DX11
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
@@ -223,21 +216,17 @@ void CBackend::set_Textures			(STextureList* _T)
 			if ((int)load_id>_last_ps)		_last_ps	=	load_id;
 			if (textures_ps[load_id]!=load_surf)	
 			{
-				textures_ps[load_id]	= load_surf			;
-#ifdef DEBUG
-				stat.textures			++;
-#endif
+				textures_ps[load_id] = load_surf;
 				if (load_surf)			
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-//					load_surf->Apply	(load_id);
 				}
 			}
-		} else 
+		}
+		else 
 #ifdef USE_DX11
 		if (load_id < CTexture::rstGeometry)
-#endif	//	UDE_DX10
+#endif
 		{
 			//	Set up pixel shader resources
 			VERIFY(load_id < CTexture::rstVertex+mtMaxVertexShaderTextures);
@@ -248,14 +237,9 @@ void CBackend::set_Textures			(STextureList* _T)
 			if (textures_vs[load_id_remapped]!=load_surf)	
 			{
 				textures_vs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-//					load_surf->Apply	(load_id);
 				}
 			}
 		}
@@ -271,14 +255,9 @@ void CBackend::set_Textures			(STextureList* _T)
 			if (textures_gs[load_id_remapped]!=load_surf)	
 			{
 				textures_gs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
 				}
 			}
 		}
@@ -294,14 +273,10 @@ void CBackend::set_Textures			(STextureList* _T)
 			if (textures_hs[load_id_remapped]!=load_surf)	
 			{
 				textures_hs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
+
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
 				}
 			}
 		}
@@ -316,14 +291,9 @@ void CBackend::set_Textures			(STextureList* _T)
 			if (textures_ds[load_id_remapped]!=load_surf)	
 			{
 				textures_ds[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
 				}
 			}
 		}
@@ -338,23 +308,16 @@ void CBackend::set_Textures			(STextureList* _T)
 			if (textures_cs[load_id_remapped]!=load_surf)	
 			{
 				textures_cs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
 					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
 				}
 			}
 		}
 #endif
-		else
-			VERIFY("Invalid enum");
-#endif	//	UDE_DX10
+		else VERIFY("Invalid enum");
+#endif
 	}
-
 
 	// clear remaining stages (PS)
 	for (++_last_ps; _last_ps<mtMaxPixelShaderTextures; _last_ps++)
