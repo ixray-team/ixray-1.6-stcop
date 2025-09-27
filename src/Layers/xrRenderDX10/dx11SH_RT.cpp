@@ -5,7 +5,8 @@
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "dx10TextureUtils.h"
 
-CRT::CRT() {
+CRT::CRT()
+{
 	pSurface = nullptr;
 	pRT = nullptr;
 	pZRT = nullptr;
@@ -14,18 +15,19 @@ CRT::CRT() {
 	dwWidth = 0;
 	dwHeight = 0;
 
-	fmt = DxgiFormat::DXGI_FORMAT_UNKNOWN;
+	fmt = ERHI_FORMAT::UNKNOWN;
 	pMippedRT.clear();
 }
 
-CRT::~CRT() {
+CRT::~CRT()
+{
 	destroy();
 
 	// release external reference
 	DEV->_DeleteRT(this);
 }
 
-void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	if(pSurface) return;
 	PROF_EVENT("CRT::create");
@@ -43,93 +45,82 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 	// Select usage
 	u32 usage = D3DUSAGE_RENDERTARGET;
 
-	switch(fmt) {
-		case DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS:
-		case DxgiFormat::DXGI_FORMAT_D24_UNORM_S8_UINT:
-		case DxgiFormat::DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
+	switch(fmt)
+	{
+		case ERHI_FORMAT::R24G8_TYPELESS:
+		case ERHI_FORMAT::D24_UNORM_S8_UINT:
+		case ERHI_FORMAT::R24_UNORM_X8_TYPELESS:
 		{
 			usage = D3DUSAGE_DEPTHSTENCIL;
 			break;
 		}
-		case DxgiFormat::DXGI_FORMAT_D16_UNORM:
+		case ERHI_FORMAT::D16_UNORM:
 		{
-			fmt = DxgiFormat::DXGI_FORMAT_R16_TYPELESS;
+			fmt = ERHI_FORMAT::R16_TYPELESS;
 			usage = D3DUSAGE_DEPTHSTENCIL;
 			break;
 		}
-		case DxgiFormat::DXGI_FORMAT_D32_FLOAT:
+		case ERHI_FORMAT::D32_FLOAT:
 		{
-			fmt = DxgiFormat::DXGI_FORMAT_R32_TYPELESS;
+			fmt = ERHI_FORMAT::R32_TYPELESS;
 			usage = D3DUSAGE_DEPTHSTENCIL;
 			break;
 		}
 	}
 
-	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
 	bool bUseAsDepth = (usage != D3DUSAGE_RENDERTARGET);
 
 	// Try to create texture/surface
 	DEV->Evict();
 
 	// Create the render target texture
-	D3D_TEXTURE2D_DESC desc;
+	RHITextureDesc desc;
 	ZeroMemory(&desc, sizeof(desc));
 
 	desc.Width = dwWidth;
 	desc.Height = dwHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = dx10FMT;
-	desc.SampleDesc.Count = SampleCount;
-	desc.Usage = D3D_USAGE_DEFAULT;
+	desc.Format = fmt;
+	desc.SampleDescCount = SampleCount;
+	desc.Usage = (u32)ERHI_USAGE::USAGE_DEFAULT;
 
-	if(SampleCount <= 1) {
+	if(SampleCount <= 1)
+	{
 		desc.BindFlags = D3D_BIND_SHADER_RESOURCE | (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : D3D_BIND_RENDER_TARGET);
 	}
-	else {
+	else
+	{
 		desc.BindFlags = bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : (D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET);
 	}
 
-	if(!bUseAsDepth) {
-		if(CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG) {
+	if(!bUseAsDepth)
+	{
+		if(CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG)
+		{
 			auto dwSize = std::min(dwWidth, dwHeight);
 
-			while((dwSize /= 2) >= 4) {
+			while((dwSize /= 2) >= 4)
+			{
 				++desc.MipLevels;
 			}
 		}
 
-		if(SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG) {
+		if(SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
+		{
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 		}
 	}
 
-	// Create RHITextureDesc for the texture
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = desc.Width;
-	rhiDesc.Height = desc.Height;
-	rhiDesc.Depth = desc.SampleDesc.Count;
-	rhiDesc.MipLevels = desc.MipLevels;
-	rhiDesc.Format = desc.Format;
-	rhiDesc.Usage = desc.Usage;
-	rhiDesc.BindFlags = desc.BindFlags;
-	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-	rhiDesc.MiscFlags = desc.MiscFlags;
-	
 	// Use GRHI to create the surface
-	pSurface = GRHI->CreateRenderTarget(rhiDesc);
-
-#ifdef DEBUG
-	Msg("* created RT(%s), %dx%d, format = %d samples = %d", Name, w, h, dx10FMT, SampleCount);
-#endif
+	pSurface = GRHI->CreateRenderTarget(desc);
 
 	if(bUseAsDepth)
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	ViewDesc;
-		ZeroMemory(&ViewDesc, sizeof(ViewDesc));
+		RHIDepthStencilViewDesc	ViewDesc;
 
-		ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
-		ViewDesc.Texture2D.MipSlice = 0;
+		ViewDesc.Format = ERHI_FORMAT::UNKNOWN;
+		ViewDesc.MipSlice = 0;
 
 		if(SampleCount <= 1)
 		{
@@ -138,15 +129,15 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 		else
 		{
 			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2DMS;
-			ViewDesc.Texture2DMS.UnusedField_NothingToDefine = 0;
 		}
 
-		switch(desc.Format) {
-			case DXGI_FORMAT_R24G8_TYPELESS:
-			ViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		switch(desc.Format)
+		{
+		case ERHI_FORMAT::R24G8_TYPELESS:
+			ViewDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
 			break;
-			case DXGI_FORMAT_R32_TYPELESS:
-			ViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
+			case ERHI_FORMAT::R32_TYPELESS:
+			ViewDesc.Format = ERHI_FORMAT::D32_FLOAT;
 			break;
 		}
 
@@ -163,22 +154,23 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 	else
 	{
 		RHIRenderTargetViewDesc rtvDesc = {};
-		rtvDesc.Format = dx10FMT;
+		rtvDesc.Format = fmt;
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		rtvDesc.MipSlice = 0;
 		rtvDesc.FirstArraySlice = 0;
 		rtvDesc.ArraySize = 1;
 		
 		// Convert TYPELESS formats for RTV
-		switch(rtvDesc.Format) {
-			case DXGI_FORMAT_R24G8_TYPELESS:
-				rtvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		switch(rtvDesc.Format)
+		{
+			case ERHI_FORMAT::R24G8_TYPELESS:
+				rtvDesc.Format = ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
 				break;
-			case DXGI_FORMAT_R32_TYPELESS:
-				rtvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+			case ERHI_FORMAT::R32_TYPELESS:
+				rtvDesc.Format = ERHI_FORMAT::R32_FLOAT;
 				break;
-			case DXGI_FORMAT_R16_TYPELESS:
-				rtvDesc.Format = DXGI_FORMAT_R16_UNORM;
+			case ERHI_FORMAT::R16_TYPELESS:
+				rtvDesc.Format = ERHI_FORMAT::R16_UNORM;
 				break;
 		}
 		
@@ -191,7 +183,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::
 				D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
 				ZeroMemory(&UAVDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
 
-				UAVDesc.Format = dx10FMT;
+				UAVDesc.Format = (DXGI_FORMAT)fmt;
 				UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 				UAVDesc.Buffer.FirstElement = 0;
 				UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
@@ -245,7 +237,8 @@ void CRT::reset_end() {
 	create(*cName, dwWidth, dwHeight, fmt);
 }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags) {
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+{
 	_set(DEV->_CreateRT(Name, w, h, f, SampleCount, CreationFlags));
 }
 
@@ -253,7 +246,7 @@ CRTC::CRTC()
 {
 	if(pSurface) return;
 
-	fmt = DxgiFormat::DXGI_FORMAT_UNKNOWN;
+	fmt = ERHI_FORMAT::UNKNOWN;
 	dwSize = 0;
 
 	ZeroMemory(pRT, sizeof(pRT));
@@ -266,7 +259,7 @@ CRTC::~CRTC()
 	DEV->_DeleteRTC(this);
 }
 
-void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags)
+void CRTC::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(RDevice && Name && Name[0] && size && btwIsPow2(size));
 	_order = CPU::GetCLK();
@@ -278,7 +271,7 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 	if(size > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
 	// Create the render target texture
-	D3D_TEXTURE2D_DESC desc;
+	RHITextureDesc desc;
 	ZeroMemory(&desc, sizeof(desc));
 
 	desc.Width = dwSize;
@@ -286,37 +279,23 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 
 	desc.ArraySize = 6;
 
-	DXGI_FORMAT dx10FMT = (DXGI_FORMAT)fmt;
-	desc.Format = dx10FMT;
-	desc.SampleDesc.Count = 1;
+	desc.Format = fmt;
+	desc.SampleDescCount = 1;
 
 	desc.Usage = D3D_USAGE_DEFAULT;
 	desc.BindFlags = D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET;
 	desc.MiscFlags = D3D_RESOURCE_MISC_TEXTURECUBE;
 
-	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG) {
+	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG)
+	{
 		desc.MiscFlags |= D3D_RESOURCE_MISC_GENERATE_MIPS;
 		desc.MipLevels = log2(dwSize) + 1;
 	}
 
-	// Create RHITextureDesc for the cube texture
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = desc.Width;
-	rhiDesc.Height = desc.Height;
-	rhiDesc.Depth = 1;
-	rhiDesc.MipLevels = desc.MipLevels;
-	rhiDesc.Format = desc.Format;
-	rhiDesc.Usage = desc.Usage;
-	rhiDesc.BindFlags = desc.BindFlags;
-	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-	rhiDesc.MiscFlags = desc.MiscFlags;
-	rhiDesc.ArraySize = desc.ArraySize;
-	
-	// Use GRHI to create the surface
-	pSurface = GRHI->CreateRenderTarget(rhiDesc);
+	pSurface = GRHI->CreateRenderTarget(desc);
 
 	RHIRenderTargetViewDesc descRTV = {};
-	descRTV.Format = dx10FMT; // Use the converted format
+	descRTV.Format = fmt; // Use the converted format
 	descRTV.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 	descRTV.MipSlice = 0;
 	descRTV.ArraySize = 1;
@@ -324,14 +303,14 @@ void CRTC::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags Cre
 	// Convert TYPELESS formats for RTV
 	switch(descRTV.Format)
 	{
-		case DXGI_FORMAT_R24G8_TYPELESS:
-			descRTV.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		case ERHI_FORMAT::R24G8_TYPELESS:
+			descRTV.Format = ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
 			break;
-		case DXGI_FORMAT_R32_TYPELESS:
-			descRTV.Format = DXGI_FORMAT_R32_FLOAT;
+		case ERHI_FORMAT::R32_TYPELESS:
+			descRTV.Format = ERHI_FORMAT::R32_FLOAT;
 			break;
-		case DXGI_FORMAT_R16_TYPELESS:
-			descRTV.Format = DXGI_FORMAT_R16_UNORM;
+		case ERHI_FORMAT::R16_TYPELESS:
+			descRTV.Format = ERHI_FORMAT::R16_UNORM;
 			break;
 	}
 
@@ -352,21 +331,25 @@ void CRTC::destroy()
 	pTexture->surface_set(0);
 	pTexture = nullptr;
 
-	for(UINT i = 0; i < 6; ++i) {
+	for(UINT i = 0; i < 6; ++i)
+	{
 		_RELEASE(pRT[i]);
 	}
 
 	_RELEASE(pSurface);
 }
 
-void CRTC::reset_begin() {
+void CRTC::reset_begin()
+{
 	destroy();
 }
 
-void CRTC::reset_end() {
+void CRTC::reset_end()
+{
 	create(*cName, dwSize, fmt);
 }
 
-void resptrcode_crtc::create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags) {
+void resptrcode_crtc::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
+{
 	_set(DEV->_CreateRTC(Name, size, f, CreationFlags));
 }

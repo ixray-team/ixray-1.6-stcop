@@ -515,38 +515,38 @@ CRenderTarget::CRenderTarget()
 
 	// NORMAL
 	{
-		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
+		rt_Position.create(r2_RT_P, s_dwWidth, s_dwHeight, ERHI_FORMAT::R24G8_TYPELESS);
 
-		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM);
+		rt_Surface.create(r2_RT_S, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
+		rt_Normal.create(r2_RT_N, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_UNORM);
 
-		rt_SurfaceTemp.create(r2_RT_S"_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_NormalTemp.create(r2_RT_N"_temp", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_UNORM);
+		rt_SurfaceTemp.create(r2_RT_S"_temp", s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
+		rt_NormalTemp.create(r2_RT_N"_temp", s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_UNORM);
 
-		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_Color.create(r2_RT_albedo, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
+		rt_Accumulator.create(r2_RT_accum, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
 
-		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
-		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
-		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_Generic_0.create(r2_RT_generic0, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_Generic_1.create(r2_RT_generic1, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
+		rt_Generic_2.create(r2_RT_generic2, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
 
-		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
+		rt_BackbufferLUT.create(r2_RT_backbuffer_lut, get_target_width(), get_target_height(), ERHI_FORMAT::R10G10B10A2_UNORM);
 
-		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16_FLOAT);
+		rt_Velocity.create(r2_RT_velocity, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16_FLOAT);
 
-		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
-		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_Back_Buffer_AA.create(r2_RT_backbuffer_AA, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_Back_Buffer.create(r2_RT_backbuffer_final, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT);
 
-		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, 1, isUAV);
+		rt_Generic.create(r2_RT_generic, get_target_width(), get_target_height(), ERHI_FORMAT::R16G16B16A16_FLOAT, 1, isUAV);
 	}
 
 	if(RImplementation.o.deffered_reflecitons) 
 	{
-		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
-		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_sslr_old.create(r2_RT_sslr_old, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_sslr.create(r2_RT_sslr, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
 
-		rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
-		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_sslr_data.create(r2_RT_sslr_data, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_sslr_temp.create(r2_RT_sslr_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);
 	}
 
 	if(RImplementation.o.offscreen_reflecitons) {
@@ -554,10 +554,10 @@ CRenderTarget::CRenderTarget()
 		auto flags = CRT::CRTCreationFlags::MIPPED_RT_FLAG;
 
 		// TODO: Optimize memory using
-		rt_Reflection.create(r2_RT_env, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
-		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT, flags);
+		rt_Reflection.create(r2_RT_env, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
+		rt_Reflection_temp.create(r2_RT_env_temp, RefSize, ERHI_FORMAT::R16G16B16A16_FLOAT, flags);
 
-		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
+		rt_Depth.create(r2_RT_env_depth, RefSize, RefSize, ERHI_FORMAT::R24G8_TYPELESS);
 	}
 
 	init_fsr();
@@ -590,8 +590,8 @@ CRenderTarget::CRenderTarget()
 		b_smaa = new CBlender_SMAA();
 		s_smaa.create(b_smaa);
 
-		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8_UNORM);
-		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8_UNORM);
+		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8G8B8A8_UNORM);
 	}
 
 	//Contrast Adaptive Sharpening
@@ -605,7 +605,7 @@ CRenderTarget::CRenderTarget()
 		b_gtao = new CBlender_gtao();
 		s_gtao.create(b_gtao);
 
-		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R32_UINT); //AO.view-z
+		rt_gtao_0.create("$user$gtao_0", s_dwWidth, s_dwHeight, ERHI_FORMAT::R32_UINT); //AO.view-z
 	}
 
 	//Puddles
@@ -618,7 +618,7 @@ CRenderTarget::CRenderTarget()
 		b_taa = new CBlender_taa();
 		s_taa.create(b_taa);
 
-		rt_Generic_0_prev.create(r2_RT_generic0_prev, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);	
+		rt_Generic_0_prev.create(r2_RT_generic0_prev, s_dwWidth, s_dwHeight, ERHI_FORMAT::R16G16B16A16_FLOAT);	
 	}
 
 	// Gamma
@@ -629,7 +629,7 @@ CRenderTarget::CRenderTarget()
 	s_occq.create(b_occq, "r2\\occq");
 
 	// DIRECT (spot)
-	DxgiFormat depth_format = (DxgiFormat)RImplementation.o.HW_smap_FORMAT;
+	ERHI_FORMAT depth_format = (ERHI_FORMAT)RImplementation.o.HW_smap_FORMAT;
 
 	if (RImplementation.o.HW_smap)
 	{
@@ -684,7 +684,7 @@ CRenderTarget::CRenderTarget()
 
 	// BLOOM
 	{
-		DxgiFormat	fmt = DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM;			//;		// D3DFMT_X8R8G8B8
+		ERHI_FORMAT	fmt = ERHI_FORMAT::R8G8B8A8_UNORM;			//;		// D3DFMT_X8R8G8B8
 		u32	w = BLOOM_size_X, h = BLOOM_size_Y;
 		u32 fvf_build = D3DFVF_XYZRHW | D3DFVF_TEX4 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(1) | D3DFVF_TEXCOORDSIZE2(2) | D3DFVF_TEXCOORDSIZE2(3);
 		u32 fvf_filter = (u32)D3DFVF_XYZRHW | D3DFVF_TEX8 | D3DFVF_TEXCOORDSIZE4(0) | D3DFVF_TEXCOORDSIZE4(1) | D3DFVF_TEXCOORDSIZE4(2) | D3DFVF_TEXCOORDSIZE4(3) | D3DFVF_TEXCOORDSIZE4(4) | D3DFVF_TEXCOORDSIZE4(5) | D3DFVF_TEXCOORDSIZE4(6) | D3DFVF_TEXCOORDSIZE4(7);
@@ -700,8 +700,8 @@ CRenderTarget::CRenderTarget()
 
 	// TONEMAP
 	{
-		rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
-		rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
+		rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		s_luminance.create(b_luminance, "r2\\luminance");
 		f_luminance_adapt = 0.5f;
 
@@ -712,7 +712,7 @@ CRenderTarget::CRenderTarget()
 		for (u32 it = 0; it < 2; it++)
 		{
 			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
-			rt_LUM_pool[it].create(name.c_str(), 1, 1, DxgiFormat::DXGI_FORMAT_R32_FLOAT);
+			rt_LUM_pool[it].create(name.c_str(), 1, 1, ERHI_FORMAT::R32_FLOAT);
 			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
 
@@ -723,13 +723,11 @@ CRenderTarget::CRenderTarget()
 	{
 		u32 w = s_dwWidth / 2;
 		u32 h = s_dwHeight / 2;
-
-		DxgiFormat fmt = DxgiFormat::DXGI_FORMAT_R16_FLOAT;
-		rt_half_depth.create(r2_RT_half_depth, w, h, fmt);
+		rt_half_depth.create(r2_RT_half_depth, w, h, ERHI_FORMAT::R16_FLOAT);
 	}
 
 	s_ssao.create(b_ssao, "r2\\ssao");
-	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, DxgiFormat::DXGI_FORMAT_R8_UNORM, 1);
+	rt_ssao_temp.create(r2_RT_ssao_temp, s_dwWidth, s_dwHeight, ERHI_FORMAT::R8_UNORM, 1);
 
 	// COMBINE
 	{
@@ -855,7 +853,7 @@ CRenderTarget::CRenderTarget()
 			rhiDesc.Height = desc.Height;
 			rhiDesc.Depth = desc.Depth;
 			rhiDesc.MipLevels = desc.MipLevels;
-			rhiDesc.Format = desc.Format;
+			rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 			rhiDesc.Usage = desc.Usage;
 			rhiDesc.BindFlags = desc.BindFlags;
 			rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
@@ -918,7 +916,7 @@ CRenderTarget::CRenderTarget()
 				rhiDesc.Height = desc.Height;
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = desc.MipLevels;
-				rhiDesc.Format = desc.Format;
+				rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 				rhiDesc.Usage = desc.Usage;
 				rhiDesc.BindFlags = desc.BindFlags;
 				rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;

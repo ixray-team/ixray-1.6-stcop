@@ -167,12 +167,13 @@ void CRender::create()
 
 
 	// SMAP / DST
-	o.HW_smap_FETCH4	= FALSE;
-	o.HW_smap			= true;
-	o.HW_smap_PCF		= o.HW_smap		;
-	if (o.HW_smap)		{
-		o.HW_smap_FORMAT	= D3DFMT_D24X8;
-		Msg				("* HWDST/PCF supported and used");
+	o.HW_smap_FETCH4 = FALSE;
+	o.HW_smap = true;
+	o.HW_smap_PCF = o.HW_smap;
+	if (o.HW_smap)
+	{
+		o.HW_smap_FORMAT = (u32)ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
+		Msg("* HWDST/PCF supported and used");
 	}
 
 	o.fp16_filter		= true;

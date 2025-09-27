@@ -32,7 +32,6 @@ CTexture::CTexture		()
 	pSurface			= nullptr;
 	pAVI				= nullptr;
 	pTheora				= nullptr;
-	desc_cache			= 0;
 	seqMSPF				= 0;
 	flags.MemoryUsage	= 0;
 	flags.bLoaded		= false;
@@ -121,7 +120,8 @@ void CTexture::apply_avi	(u32 dwStage)
 	}
 	CHK_DX(RDevice->SetTexture(dwStage, (IDirect3DBaseTexture9*)pSurface->GetRawTexture()));
 };
-void CTexture::apply_seq	(u32 dwStage)	{
+void CTexture::apply_seq(u32 dwStage)
+{
 	// SEQ
 	u32	frame		=RDEVICE.dwTimeContinual/seqMSPF; //RDEVICE.dwTimeGlobal
 	u32	frame_data	= (u32)seqDATA.size();
@@ -134,7 +134,7 @@ void CTexture::apply_seq	(u32 dwStage)	{
 		rhiDesc.Height = 1;
 		rhiDesc.Depth = 1;
 		rhiDesc.MipLevels = 1;
-		rhiDesc.Format = D3DFMT_A8R8G8B8;
+		rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 		rhiDesc.Usage = 0;
 		rhiDesc.BindFlags = 0;
 		rhiDesc.CPUAccessFlags = 0;
@@ -150,7 +150,7 @@ void CTexture::apply_seq	(u32 dwStage)	{
 		rhiDesc.Height = 1;
 		rhiDesc.Depth = 1;
 		rhiDesc.MipLevels = 1;
-		rhiDesc.Format = D3DFMT_A8R8G8B8;
+		rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 		rhiDesc.Usage = 0;
 		rhiDesc.BindFlags = 0;
 		rhiDesc.CPUAccessFlags = 0;
@@ -178,7 +178,6 @@ void CTexture::Load		()
 {
 	PROF_EVENT("CTexture::Load");
 	flags.bLoaded					= true;
-	desc_cache						= 0;
 	if (pSurface)					return;
 
 	flags.bUser						= false;
@@ -191,10 +190,7 @@ void CTexture::Load		()
 	}
 
 	Preload							();
-//#ifndef		DEDICATED_SERVER
-#ifndef _EDITOR
 	if (!g_dedicated_server)
-#endif
 	{
 		// Check for OGM
 		string_path			fn;
@@ -229,7 +225,7 @@ void CTexture::Load		()
 				rhiDesc.Height = _h;
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = 1;
-				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 				rhiDesc.Usage = 0;
 				rhiDesc.BindFlags = 0;
 				rhiDesc.CPUAccessFlags = 0;
@@ -273,7 +269,7 @@ void CTexture::Load		()
 				rhiDesc.Height = pAVI->m_dwHeight;
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = 1;
-				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 				rhiDesc.Usage = 0;
 				rhiDesc.BindFlags = 0;
 				rhiDesc.CPUAccessFlags = 0;
@@ -323,7 +319,7 @@ void CTexture::Load		()
 						rhiDesc.Height = 1;
 						rhiDesc.Depth = 1;
 						rhiDesc.MipLevels = 1;
-						rhiDesc.Format = D3DFMT_A8R8G8B8;
+						rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 						rhiDesc.Usage = 0;
 						rhiDesc.BindFlags = 0;
 						rhiDesc.CPUAccessFlags = 0;
@@ -355,7 +351,7 @@ void CTexture::Load		()
 				rhiDesc.Height = 1;
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = 1;
-				rhiDesc.Format = D3DFMT_A8R8G8B8;
+				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 				rhiDesc.Usage = 0;
 				rhiDesc.BindFlags = 0;
 				rhiDesc.CPUAccessFlags = 0;
@@ -371,7 +367,6 @@ void CTexture::Load		()
 				flags.MemoryUsage		=	mem;
 			}
 		}
-//#endif
 	}
 	PostLoad	()		;
 }
@@ -406,16 +401,6 @@ void CTexture::Unload	()
 	xr_delete		(pTheora);
 
 	bind			= xr_make_delegate(this,&CTexture::apply_load);
-}
-
-void CTexture::desc_update	()
-{
-	desc_cache	= pSurface;
-	if (pSurface && (D3DRTYPE_TEXTURE == pSurface->GetTextureType()))
-	{
-		ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
-		R_CHK					(T->GetLevelDesc(0,&desc));
-	}
 }
 
 void CTexture::video_Play		(BOOL looped, u32 _time)	
