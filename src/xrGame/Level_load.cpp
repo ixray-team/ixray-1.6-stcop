@@ -15,8 +15,6 @@
 
 #include "inventory_upgrade_manager.h"
 
-ENGINE_API	bool g_dedicated_server;
-
 BOOL CLevel::Load_GameSpecific_Before()
 {
 	// AI space
