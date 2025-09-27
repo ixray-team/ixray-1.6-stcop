@@ -112,6 +112,11 @@ u32 DX11Surface::GetFormat() const
 	return m_desc.Format;
 }
 
+u32 DX11Surface::GetMiscFlags() const
+{
+	return m_desc.MiscFlags;
+}
+
 u32 DX11Surface::GetTextureType() const
 {
 	D3D11_RESOURCE_DIMENSION DescInfo;
@@ -120,6 +125,11 @@ u32 DX11Surface::GetTextureType() const
 	//if (Texture3D) return D3D11_RESOURCE_DIMENSION_TEXTURE3D;
 	//if (Texture1D) return D3D11_RESOURCE_DIMENSION_TEXTURE1D;
 	return DescInfo;
+}
+
+ERHI_USAGE DX11Surface::GetUsage() const
+{
+	return (ERHI_USAGE)m_desc.Usage;
 }
 
 IRHIShaderResourceView* DX11Surface::GetShaderResourceView()
