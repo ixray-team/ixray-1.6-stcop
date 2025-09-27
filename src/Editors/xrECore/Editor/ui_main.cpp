@@ -393,7 +393,7 @@ void TUI::PrepareRedraw()
 void TUI::Invalidate()
 {
 	UI->RT.destroy();
-	UI->RT.create("$user$rt_color", UI->GetRenderWidth(), UI->GetRenderHeight(), D3DFMT_X8R8G8B8);
+	UI->RT.create("$user$rt_color", UI->GetRenderWidth(), UI->GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 }
 
 extern ENGINE_API xr_atomic_bool g_bRendering;
@@ -419,15 +419,15 @@ void TUI::Redraw()
 			RTNormal.destroy();
 			RTDiffuse.destroy();
 
-			RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
-			RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), D3DFMT_A16B16G16R16F);
-			RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), D3DFMT_A8R8G8B8);
+			RTPostion.create("$user$position", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R16G16B16A16_FLOAT);
+			RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::R16G16B16A16_FLOAT);
+			RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8A8_UNORM);
 
-			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
-			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), D3DFMT_X8R8G8B8);
+			RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
+			View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+			RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::B8G8R8X8_UNORM);
 
-			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), D3DFMT_D24S8);
+			ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), ERHI_FORMAT::D24_UNORM_S8_UINT);
 
 			m_Flags.set(flRedraw, TRUE);
 
@@ -704,7 +704,7 @@ bool TUI::OnCreate()
 	for (auto& [ID, View] : Views)
 	{
 		View.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
-		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
 
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
@@ -715,14 +715,14 @@ bool TUI::OnCreate()
 	RCache.set_xform_project(EDevice->mProject);
 	RCache.set_xform_world(Fidentity);
 
-	RTPostion.create("$user$position", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-	RTNormal.create("$user$normal", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A16B16G16R16F);
-	RTDiffuse.create("$user$diffuse", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_A8R8G8B8);
+	RTPostion.create("$user$position", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R16G16B16A16_FLOAT);
+	RTNormal.create("$user$normal", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::R16G16B16A16_FLOAT);
+	RTDiffuse.create("$user$diffuse", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8A8_UNORM);
 
-	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
-	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
+	RTCopy.create("$user$rt_color_copy", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 
-	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_D24S8);
+	ZB.create("$user$rt_depth", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::D24_UNORM_S8_UINT);
 
 	return true;
 }
@@ -818,7 +818,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 	MainView.ViewGlobalIDX = ID;
 
 	MainView.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
-	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
+	MainView.RTFreez.create(("$user$rt_freez" + xr_string::ToString(ID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, ERHI_FORMAT::B8G8R8X8_UNORM);
 }
 
 void TUI::DestroyViewport(int ID)
