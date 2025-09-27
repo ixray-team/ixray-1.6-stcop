@@ -38,7 +38,7 @@ public:
     virtual IRHIShaderResourceView* GetShaderResourceView() override;
     virtual IRHIRenderTargetView* GetRenderTargetView() override;
     virtual IRHIDepthStencilView* GetDepthStencilView() override;
-    virtual bool UpdateData(const void* data, u32 size) override;
+    virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource) override;
     virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) override;
     virtual void Unlock() override;
     virtual void AddRef() override;
