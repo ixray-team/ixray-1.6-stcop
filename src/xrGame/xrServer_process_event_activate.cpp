@@ -2,8 +2,6 @@
 #include "xrServer.h"
 #include "xrserver_objects.h"
 
-ENGINE_API bool g_dedicated_server;
-
 void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
 {
 	// Parse message
