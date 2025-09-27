@@ -3,20 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "../../xrEngine/Fmesh.h"
 #include "FSkinned.h"
 #include "SkeletonX.h"
 
-#ifdef USE_DX11
-#include "../xrRenderDX10/dx10BufferUtils.h"
-#endif // USE_DX11
-
 #include "../../xrEngine/EnnumerateVertices.h"
-
-#include <vector>
-
 #include <FlexibleVertexFormat.h>
 using namespace FVF;
 
@@ -415,236 +406,103 @@ void CSkeletonX_ST::Load(const char* N, IReader *data, u32 dwFlags)
 	_Load_hw						(*this,_verts_);
 }
 
+template<typename VertSrc, typename VertHW, typename VerticesContainer, typename Setter>
+void _Load_hw_generic(Fvisual& V, void* _verts_, auto decl, VerticesContainer& container, Setter setter)
+{
+	// Back up vertex data
+	u32 size = V.vCount * sizeof(VertSrc);
+	u32 crc = crc32(_verts_, size);
+	container.create(crc, V.vCount, (VertSrc*)_verts_);
+
+	u32 vStride = (u32)ComputeVertexSize(decl, 0);
+	VERIFY(vStride == sizeof(VertHW));
+	VERIFY(nullptr == V.p_rm_Vertices);
+
+	VertHW* dstOriginal = xr_alloc<VertHW>(V.vCount);
+	VertHW* dst = dstOriginal;
+	VertSrc* src = (VertSrc*)_verts_;
+	for (u32 it = 0; it < V.vCount; it++, dst++, src++)
+	{
+		setter(dst, src);
+	}
+
+	VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+	xr_free(dstOriginal);
+
+	V.rm_geom.create(decl, V.p_rm_Vertices, V.p_rm_Indices);
+}
+
+void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
+{
 #ifdef USE_DX11
-void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
-{
-	// Create HW VB in case this is possible
-//	BOOL	bSoft				= Caps.geometry.bSoftware;
-//	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
-	switch	(RenderMode)
-	{
-	case RM_SKINNING_SOFT:
-		//Msg					("skinning: software");
-		V.rm_geom.create		(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
-		break;
-	case RM_SINGLE:
-	case RM_SKINNING_1B:
-		{
-			{	//	Back up vertex data since we can't read vertex buffer in DX10
-				u32 size				= V.vCount*sizeof(vertBoned1W);
-				u32 crc					= crc32( _verts_, size);
-				Vertices1W.create		( crc, V.vCount, (vertBoned1W*)_verts_);
-			}
-
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_01W, 0);
-
-			VERIFY(vStride == sizeof(vertHW_1W));
-			VERIFY(nullptr == V.p_rm_Vertices);
-
-			//	TODO: DX10: Check for memory fragmentation
-			vertHW_1W*		dstOriginal	= xr_alloc<vertHW_1W>(V.vCount);			
-			vertHW_1W*		dst	= dstOriginal;
-			vertBoned1W*	src = (vertBoned1W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)
-			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,src->matrix);
-				dst++; src++;
-			}
-
-			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
-		}  
-		break;
-	case RM_SKINNING_2B:
-		{
-			{	//	Back up vertex data since we can't read vertex buffer in DX10
-				u32 size				= V.vCount*sizeof(vertBoned2W);
-				u32 crc					= crc32( _verts_, size);
-				Vertices2W.create		( crc, V.vCount, (vertBoned2W*)_verts_);
-			}
-
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_2W, 0);
-			VERIFY				(vStride==sizeof(vertHW_2W));
-			VERIFY				(nullptr==V.p_rm_Vertices);
-
-
-			//	TODO: DX10: Check for memory fragmentation
-			vertHW_2W*		dstOriginal	= xr_alloc<vertHW_2W>(V.vCount);			
-			vertHW_2W*		dst	=dstOriginal;
-			vertBoned2W*	src = (vertBoned2W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)	{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->matrix0),int(src->matrix1),src->w);
-				dst++;		src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create		(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	case RM_SKINNING_3B:
-		{
-			{	//	Back up vertex data since we can't read vertex buffer in DX10
-				u32 size				= V.vCount*sizeof(vertBoned3W);
-				u32 crc					= crc32( _verts_, size);
-				Vertices3W.create		( crc, V.vCount, (vertBoned3W*)_verts_);
-			}
-
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_3W, 0);
-
-			VERIFY					(vStride==sizeof(vertHW_3W));
-//			BYTE*	bytes			= 0;
-			VERIFY					(nullptr==V.p_rm_Vertices);
-
-			//	TODO: DX10: Check for memory fragmentation
-			vertHW_3W*		dstOriginal	= xr_alloc<vertHW_3W>(V.vCount);
-			vertHW_3W*		dst	=dstOriginal;
-			vertBoned3W*	src = (vertBoned3W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)	
-			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0]),int(src->m[1]),int(src->m[2]),src->w[0],src->w[1]);
-				dst++;		
-				src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create		(dwDecl_3W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	case RM_SKINNING_4B:
-		{
-			{	//	Back up vertex data since we can't read vertex buffer in DX10
-				u32 size				= V.vCount*sizeof(vertBoned4W);
-				u32 crc					= crc32( _verts_, size);
-				Vertices4W.create		( crc, V.vCount, (vertBoned4W*)_verts_);
-			}
-
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_4W, 0);
-			VERIFY					(vStride==sizeof(vertHW_4W));
-			VERIFY					(nullptr==V.p_rm_Vertices);
-
-			//	TODO: DX10: Check for memory fragmentation
-			vertHW_4W*		dstOriginal	= xr_alloc<vertHW_4W>(V.vCount);
-			vertHW_4W*		dst	= dstOriginal;
-			vertBoned4W*	src = (vertBoned4W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)	
-			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0]),int(src->m[1]),int(src->m[2]),int(src->m[3]),src->w[0],src->w[1],src->w[2]);
-				dst++;		
-				src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create		(dwDecl_4W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	}
-}
-
-#else //USE_DX11
-
-void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
-{
-	// Create HW VB in case this is possible
-	BOOL	bSoft				= Caps.geometry.bSoftware;
-	u32		dwUsage				= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// VB may be read by wallmarks code
-	switch	(RenderMode)
-	{
-	case RM_SKINNING_SOFT:
-		//Msg					("skinning: software");
-		V.rm_geom.create		(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
-		break;
-	case RM_SINGLE:
-	case RM_SKINNING_1B:
-		{
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_01W, 0);
-			VERIFY(vStride==sizeof(vertHW_1W));
-			VERIFY(nullptr == V.p_rm_Vertices);
-
-			vertHW_1W* dstOriginal = xr_alloc<vertHW_1W>(V.vCount);
-			vertHW_1W* dst = dstOriginal;
-			vertBoned1W* src = (vertBoned1W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				Fvector2 uv; uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
-				dst++; src++;
-			}
-
-			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-			xr_free(dstOriginal);
-			V.rm_geom.create		(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
-		}  
-		break;
-	case RM_SKINNING_2B:
-		{
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_2W, 0);
-			VERIFY(vStride==sizeof(vertHW_2W));
-			VERIFY(nullptr==V.p_rm_Vertices);
-
-			vertHW_2W* dstOriginal = xr_alloc<vertHW_2W>(V.vCount);
-			vertHW_2W* dst = dstOriginal;
-			vertBoned2W* src = (vertBoned2W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				Fvector2	uv; uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
-				dst++;		src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-			xr_free(dstOriginal);
-			V.rm_geom.create		(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	case RM_SKINNING_3B:
-		{
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_3W, 0);
-			VERIFY					(vStride==sizeof(vertHW_3W));
-			BYTE*	bytes			= 0;
-			VERIFY					(nullptr==V.p_rm_Vertices);
-
-			vertHW_3W* dstOriginal = xr_alloc<vertHW_3W>(V.vCount);
-			vertHW_3W* dst = dstOriginal;
-			vertBoned3W* src = (vertBoned3W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				Fvector2	uv; uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, src->w[0], src->w[1]);
-				dst++;
-				src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create		(dwDecl_3W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	case RM_SKINNING_4B:
-		{
-			u32 vStride = (u32)ComputeVertexSize(dwDecl_4W, 0);
-			VERIFY(vStride==sizeof(vertHW_4W));
-			VERIFY(nullptr==V.p_rm_Vertices);
-			vertHW_4W* dstOriginal = xr_alloc<vertHW_4W>(V.vCount);
-			vertHW_4W* dst = dstOriginal;
-			vertBoned4W* src = (vertBoned4W*)_verts_;
-			for (u32 it = 0; it < V.vCount; it++)
-			{
-				Fvector2	uv; uv.set(src->u, src->v);
-				dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, int(src->m[3]) * 3, src->w[0], src->w[1], src->w[2]);
-				dst++;
-				src++;
-			}
-			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-			xr_free(dstOriginal);
-
-			V.rm_geom.create		(dwDecl_4W, V.p_rm_Vertices, V.p_rm_Indices);
-		}break;
-	}
-}
+	static int Multipler = 1;
+#else
+	static int Multipler = 3;
 #endif
+
+	switch (RenderMode)
+	{
+		case RM_SKINNING_SOFT:
+		{
+			V.rm_geom.create(vertRenderFVF, RCache.Vertex.Buffer(), V.p_rm_Indices);
+			break;
+		}
+		case RM_SINGLE:
+		case RM_SKINNING_1B:
+		{
+			_Load_hw_generic<vertBoned1W, vertHW_1W>
+			(
+				V, _verts_, dwDecl_01W, Vertices1W,
+				[](vertHW_1W* dst, vertBoned1W* src)
+				{
+					Fvector2 uv; uv.set(src->u, src->v);
+					dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * Multipler);
+				}
+			);
+			break;
+		}
+		case RM_SKINNING_2B:
+		{
+			_Load_hw_generic<vertBoned2W, vertHW_2W>
+			(
+				V, _verts_, dwDecl_2W, Vertices2W,
+				[](vertHW_2W* dst, vertBoned2W* src)
+				{
+					Fvector2 uv; uv.set(src->u, src->v);
+					dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * Multipler, int(src->matrix1) * Multipler, src->w);
+				}
+			);
+			break;
+		}
+		case RM_SKINNING_3B:
+		{
+			_Load_hw_generic<vertBoned3W, vertHW_3W>
+			(
+				V, _verts_, dwDecl_3W, Vertices3W,
+				[](vertHW_3W* dst, vertBoned3W* src)
+				{
+					Fvector2 uv; uv.set(src->u, src->v);
+					dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * Multipler, int(src->m[1]) * Multipler, int(src->m[2]) * Multipler, src->w[0], src->w[1]);
+				}
+			);
+			break;
+		}
+		case RM_SKINNING_4B:
+		{
+			_Load_hw_generic<vertBoned4W, vertHW_4W>
+			(
+				V, _verts_, dwDecl_4W, Vertices4W,
+				[](vertHW_4W* dst, vertBoned4W* src)
+				{
+					Fvector2 uv; uv.set(src->u, src->v);
+					dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * Multipler, int(src->m[1]) * Multipler, int(src->m[2]) * Multipler, int(src->m[3]) * Multipler, src->w[0], src->w[1], src->w[2]);
+				}
+			);
+			break;
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
