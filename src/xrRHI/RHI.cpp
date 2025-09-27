@@ -212,6 +212,11 @@ IRHIUnorderedAccessView* CRHI::CreateUAV(IRHISurface* Surface, const RHIUAVDesc&
 	return DevicePtr->GetTextureFactory()->CreateUAV(Surface, desc);
 }
 
+IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource)
+{
+	return DevicePtr->CreateBuffer(desc, pSubresource);
+}
+
 void CRHI::GPUStatsBegin() const
 {
 	if (!GPUStatsEnable)
