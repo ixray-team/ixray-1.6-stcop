@@ -7,20 +7,25 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 	R_ASSERT(m_pDev);
 
 	DWORD usage = 0;
-	D3DPOOL pool = D3DPOOL_DEFAULT;
+	D3DPOOL pool = D3DPOOL_MANAGED;
 
 	if (m_bufferDesc.Usage == ERHI_USAGE::USAGE_DYNAMIC)
 	{
-		usage |= D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY;
-		pool = D3DPOOL_DEFAULT;
+		// FX: Р•Р±Р°РЅС‹Р№ РєРѕСЃС‚С‹Р»СЊ
+		if (pInitData && pInitData->pSysMem)
+		{
+			usage |= D3DUSAGE_WRITEONLY;
+			pool = D3DPOOL_MANAGED;
+		}
+		else
+		{
+			usage |= D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY;
+			pool = D3DPOOL_DEFAULT;
+		}
 	}
 	else if (m_bufferDesc.Usage == ERHI_USAGE::USAGE_DEFAULT)
 	{
 		usage |= D3DUSAGE_WRITEONLY;
-		pool = D3DPOOL_DEFAULT;
-	}
-	else
-	{
 		pool = D3DPOOL_MANAGED;
 	}
 
@@ -40,20 +45,37 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 		hr = m_pDev->CreateIndexBuffer(
 			desc.Size,
 			usage,
-			D3DFMT_INDEX16, // по умолчанию, позже можно 32
+			D3DFMT_INDEX16,
 			pool,
 			&m_pIB,
 			nullptr);
 	}
 
+	R_CHK(hr);
+
 	if (pInitData && pInitData->pSysMem)
 	{
-		UpdateSubresource(const_cast<void*>(pInitData->pSysMem), m_bufferDesc.Size);
+		void* ptr = nullptr;
+		if (m_pVB)
+		{
+			m_pVB->Lock(0, desc.Size, &ptr, 0);
+			memcpy(ptr, pInitData->pSysMem, desc.Size);
+			m_pVB->Unlock();
+		}
+		else if (m_pIB)
+		{
+			m_pIB->Lock(0, desc.Size, &ptr, 0);
+			memcpy(ptr, pInitData->pSysMem, desc.Size);
+			m_pIB->Unlock();
+		}
 	}
 }
 
+
 CD3D9Buffer::~CD3D9Buffer()
 {
+	if (m_pVB) m_pVB->Release();
+	if (m_pIB) m_pIB->Release();
 }
 
 bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresource* pData)
@@ -61,6 +83,9 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 	DWORD lockFlags = 0;
 	switch (MapType)
 	{
+    case ERHI_BUFFER_MAP::READ:
+        lockFlags = D3DLOCK_READONLY;
+        break;
 	case ERHI_BUFFER_MAP::WRITE_DISCARD:
 		lockFlags = D3DLOCK_DISCARD;
 		break;
@@ -71,7 +96,7 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 		lockFlags = 0;
 		break;
 	default:
-		return false; // DX9 не поддерживает CPU read
+		return false; // DX9 limited mapping support
 	}
 
 	void* ptr = nullptr;
@@ -94,7 +119,7 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 	if (pData)
 	{
 		pData->pData = ptr;
-		pData->RowPitch = m_bufferDesc.Size;   // для простоты
+		pData->RowPitch = m_bufferDesc.Size;   // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		pData->DepthPitch = m_bufferDesc.Size;
 	}
 
@@ -150,9 +175,22 @@ void CD3D9Buffer::AddRef()
 
 u32 CD3D9Buffer::Release()
 {
-	if (m_pVB) return m_pVB->Release();
-	if (m_pIB) return m_pIB->Release();
+	u32 refCountVB = 0;
+	u32 refCountIB = 0;
 
-	R_ASSERT(0);
-	return 0;
+	if (m_pVB)
+	{
+		HRESULT hr = m_pVB->Unlock(); // Р±РµР·РѕРїР°СЃРЅРѕ, РµСЃР»Рё РЅРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ, РІРµСЂРЅС‘С‚ D3DERR_INVALIDCALL
+		refCountVB = m_pVB->Release();
+		m_pVB = nullptr;
+	}
+
+	if (m_pIB)
+	{
+		HRESULT hr = m_pIB->Unlock();
+		refCountIB = m_pIB->Release();
+		m_pIB = nullptr;
+	}
+
+	return std::max(refCountVB, refCountIB);
 }
