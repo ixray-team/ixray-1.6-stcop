@@ -3,9 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
 #include <d3dcompiler.h>
-
 #include "../xrRenderDX9/dx9ShaderUtils.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
@@ -22,9 +20,10 @@
 #include "../../xrCore/git_version.h"
 
 #include "../../xrParticles/ParticlesAsyncManager.h"
+#include "../xrRender/RenderInterfaceShared.h"
 using namespace R_dsgraph;
 
-CRender													RImplementation;
+CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
 ShaderElement*			CRender::rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq)
@@ -211,18 +210,10 @@ IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 		return			Models->CreatePG	(SG);
 	}
 }
-void					CRender::models_Prefetch		()					{ Models->Prefetch	();}
-void					CRender::models_Clear			(BOOL b_complete)	{ Models->ClearPool	(b_complete);}
 
-ref_shader				CRender::getShader				(int id)			{ VERIFY(id<int(Shaders.size()));	return Shaders[id];	}
-IRender_Portal*			CRender::getPortal				(int id)			{ VERIFY(id<int(Portals.size()));	return Portals[id];	}
-IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size()));	return Sectors[id];	}
-IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
-IRenderVisual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
 D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id)			{ VERIFY(id<int(DCL.size()));		return DCL[id].begin();	}
 IRHIBuffer*	CRender::getVB					(int id)			{ VERIFY(id<int(VB.size()));		return VB[id];		}
 IRHIBuffer*	CRender::getIB					(int id)			{ VERIFY(id<int(IB.size()));		return IB[id];		}
-IRender_Target*			CRender::getTarget				()					{ return Target;										}
 FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
 
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
@@ -237,67 +228,9 @@ CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 }
 
 IRender_Light*			CRender::light_create			()					{ return L_DB->Create();								}
-
 IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
 
-void					CRender::flush					()					{ r_dsgraph_render_graph	(0);						}
-
-BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
-BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
-BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
 ENGINE_API	extern xr_atomic_bool g_bRendering;
-void					CRender::add_Visual				(IRenderVisual* V)
-{
-	VERIFY				(g_bRendering);
-	add_leafs_Dynamic	((dxRender_Visual*)V);
-}
-void					CRender::add_Geometry			(IRenderVisual* V ){ add_Static((dxRender_Visual*)V,View->getMask());						}
-
-void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts, bool UseCameraDirection)
-{
-	if (T->suppress_wm)	return;
-	VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
-	Wallmarks->AddStaticWallmark(T, verts, P, &*S, s, UseCameraDirection);
-}
-
-void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection)
-{
-	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
-	ref_shader* pShader = pWMA->dxGenerateWallmark();
-	if (pShader) add_StaticWallmark(*pShader, P, s, T, V, UseCameraDirection);
-}
-
-void CRender::add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
-{
-	dxUIShader* pShader = (dxUIShader*)&*S;
-	add_StaticWallmark(pShader->hShader, P, s, T, V);
-}
-
-void					CRender::clear_static_wallmarks	()
-{
-	if (Wallmarks)
-		Wallmarks->clear				();
-}
-
-void					CRender::add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)
-{
-	Wallmarks->AddSkeletonWallmark				(wm);
-}
-void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
-{
-	Wallmarks->AddSkeletonWallmark				(xf, obj, sh, start, dir, size);
-}
-void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size)
-{
-	dxWallMarkArray *pWMA = (dxWallMarkArray *)pArray;
-	ref_shader *pShader = pWMA->dxGenerateWallmark();
-	if (pShader) add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
-}
-void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
-{
-	VERIFY					(_valid(bb_screenspace));
-	HOM.occlude				(bb_screenspace);
-}
 
 #include "../../xrEngine/PS_instance.h"
 void					CRender::set_Object				(IRenderable*		O )	
@@ -563,14 +496,6 @@ void CRender::Calculate				()
 	else
 	{
 		set_Object											(0);
-		/*
-		g_pGameLevel->pHUD->Render_First					();	
-		g_pGameLevel->pHUD->Render_Last						();	
-
-		// Calculate miscelaneous stuff
-		L_Shadows->calculate								();
-		L_Projector->calculate								();
-		*/
 	}
 
 	// End calc
