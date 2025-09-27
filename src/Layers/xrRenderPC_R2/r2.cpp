@@ -16,8 +16,9 @@
 #include "../xrRender/dxWallMarkArray.h"
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
+#include "../xrRender/RenderInterfaceShared.h"
 
-CRender										RImplementation;
+CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////
 class CGlow				: public IRender_Glow
@@ -375,14 +376,7 @@ IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 		return				Models->CreatePG	(SG);
 	}
 }
-void					CRender::models_Prefetch		()					{ Models->Prefetch	();}
-void					CRender::models_Clear			(BOOL b_complete)	{ Models->ClearPool	(b_complete);}
 
-ref_shader				CRender::getShader				(int id)			{ VERIFY(id<int(Shaders.size()));	return Shaders[id];	}
-IRender_Portal*			CRender::getPortal				(int id)			{ VERIFY(id<int(Portals.size()));	return Portals[id];	}
-IRender_Sector*			CRender::getSector				(int id)			{ VERIFY(id<int(Sectors.size()));	return Sectors[id];	}
-IRender_Sector*			CRender::getSectorActive		()					{ return pLastSector;									}
-IRenderVisual*			CRender::getVisual				(int id)			{ VERIFY(id<int(Visuals.size()));	return Visuals[id];	}
 D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{ 
 	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
 	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
@@ -396,63 +390,10 @@ IRHIBuffer*	CRender::getIB					(int id, BOOL	_alt)	{
 	else		{ VERIFY(id<int(nIB.size()));	return nIB[id];		}
 }
 FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}
-IRender_Target*			CRender::getTarget				()					{ return Target;										}
 
 IRender_Light*			CRender::light_create			()					{ return Lights.Create();								}
 IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
 
-void					CRender::flush					()					{ r_dsgraph_render_graph	(0);						}
-
-BOOL					CRender::occ_visible			(vis_data& P)		{ return HOM.visible(P);								}
-BOOL					CRender::occ_visible			(sPoly& P)			{ return HOM.visible(P);								}
-BOOL					CRender::occ_visible			(Fbox& P)			{ return HOM.visible(P);								}
-
-void					CRender::add_Visual				(IRenderVisual*		V)	{ add_leafs_Dynamic((dxRender_Visual*)V);								}
-void					CRender::add_Geometry			(IRenderVisual*		V )	{ add_Static((dxRender_Visual*)V,View->getMask());					}
-
-void CRender::add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* verts, bool UseCameraDirection)
-{
-	if (T->suppress_wm)	return;
-	VERIFY2(_valid(P) && _valid(s) && T && verts && (s > EPS_L), "Invalid static wallmark params");
-	Wallmarks->AddStaticWallmark(T, verts, P, &*S, s, UseCameraDirection);
-}
-
-void CRender::add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection)
-{
-	dxWallMarkArray* pWMA = (dxWallMarkArray*)pArray;
-	ref_shader* pShader = pWMA->dxGenerateWallmark();
-	if (pShader) add_StaticWallmark(*pShader, P, s, T, V, UseCameraDirection);
-}
-
-void CRender::add_StaticWallmark			(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)
-{
-	dxUIShader* pShader = (dxUIShader*)&*S;
-	add_StaticWallmark		(pShader->hShader, P, s, T, V);
-}
-
-void					CRender::clear_static_wallmarks	()
-{
-	Wallmarks->clear				();
-}
-
-void					CRender::add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)
-{
-	Wallmarks->AddSkeletonWallmark				(wm);
-}
-void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)
-{
-	Wallmarks->AddSkeletonWallmark				(xf, obj, sh, start, dir, size);
-}
-void					CRender::add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size)
-{
-	dxWallMarkArray *pWMA = (dxWallMarkArray *)pArray;
-	ref_shader *pShader = pWMA->dxGenerateWallmark();
-	if (pShader) add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
-}
-void					CRender::add_Occluder			(Fbox2&	bb_screenspace	)
-{
-	HOM.occlude			(bb_screenspace);
-}
 void					CRender::set_Object				(IRenderable*	O )	
 { 
 	val_pObject				= O;
