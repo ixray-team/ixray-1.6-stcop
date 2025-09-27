@@ -217,50 +217,56 @@ CRenderTarget::CRenderTarget		()
 	//	NORMAL
 	{
 		u32		w=RCache.get_width(), h=RCache.get_height();
-		rt_Position.create			(r2_RT_P,		w,h,D3DFMT_A16B16G16R16F);
-		rt_Normal.create			(r2_RT_N,		w,h,D3DFMT_A16B16G16R16F);
+		rt_Position.create			(r2_RT_P,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_Normal.create			(r2_RT_N,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 
 		// select albedo & accum
 		if (RImplementation.o.mrtmixdepth)	
 		{
 			// NV50
-			rt_Color.create			(r2_RT_albedo,	w,h,D3DFMT_A8R8G8B8		);
-			rt_Accumulator.create	(r2_RT_accum,	w,h,D3DFMT_A16B16G16R16F);
+			rt_Color.create			(r2_RT_albedo,	w,h, ERHI_FORMAT::B8G8R8A8_UNORM);
+			rt_Accumulator.create	(r2_RT_accum,	w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		}
 		else		
 		{
 			// can't - mix-depth
-			if (RImplementation.o.fp16_blend) {
+			if (RImplementation.o.fp16_blend)
+			{
 				// NV40
-				rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A16B16G16R16F);	// expand to full
-				rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F);
-			} else {
+				rt_Color.create				(r2_RT_albedo,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);	// expand to full
+				rt_Accumulator.create		(r2_RT_accum,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
+			}
+			else
+			{
 				// R4xx, no-fp-blend,-> albedo_wo
-				rt_Color.create				(r2_RT_albedo,		w,h,D3DFMT_A8R8G8B8		);	// normal
-				rt_Accumulator.create		(r2_RT_accum,		w,h,D3DFMT_A16B16G16R16F);
-				rt_Accumulator_temp.create	(r2_RT_accum_temp,	w,h,D3DFMT_A16B16G16R16F);
+				rt_Color.create				(r2_RT_albedo,		w,h, ERHI_FORMAT::B8G8R8A8_UNORM);	// normal
+				rt_Accumulator.create		(r2_RT_accum,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
+				rt_Accumulator_temp.create	(r2_RT_accum_temp,	w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 			}
 		}
 
 		// generic(LDR) RTs
-		rt_Generic_0.create(r2_RT_generic0, w, h, D3DFMT_A16B16G16R16F);
-		rt_Generic_1.create(r2_RT_generic1, w, h, D3DFMT_A8R8G8B8);
+		rt_Generic_0.create(r2_RT_generic0, w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_Generic_1.create(r2_RT_generic1, w, h, ERHI_FORMAT::B8G8R8A8_UNORM);
 
 		//	Igor: for volumetric lights
 		//	temp: for higher quality blends
-		rt_Generic_2.create(r2_RT_generic2, w, h, D3DFMT_A16B16G16R16F);
+		rt_Generic_2.create(r2_RT_generic2, w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 	}
 
 	// OCCLUSION
 	s_occq.create					(b_occq,		"r2\\occq");
 
 	// DIRECT (spot)
-	D3DFORMAT						depth_format	= (D3DFORMAT)RImplementation.o.HW_smap_FORMAT;
+	ERHI_FORMAT depth_format = (ERHI_FORMAT)RImplementation.o.HW_smap_FORMAT;
 
 	if (RImplementation.o.HW_smap)
 	{
-		D3DFORMAT	nullrt				= D3DFMT_R5G6B5;
-		if (RImplementation.o.nullrt)	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
+		ERHI_FORMAT	nullrt = ERHI_FORMAT::B5G6R5_UNORM;
+		if (RImplementation.o.nullrt)
+		{
+			nullrt = (ERHI_FORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
+		}
 
 		u32	size					=RImplementation.o.smapsize	;
 		rt_smap_depth.create		(r2_RT_smap_depth,			size,size,depth_format	);
@@ -273,7 +279,7 @@ CRenderTarget::CRenderTarget		()
 	else
 	{
 		u32	size					=RImplementation.o.smapsize	;
-		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,D3DFMT_R32F);
+		rt_smap_surf.create			(r2_RT_smap_surf,			size,size, ERHI_FORMAT::R32_FLOAT);
 		rt_smap_depth				= nullptr;
 		R_CHK						(RDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,nullptr));
 		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
@@ -311,7 +317,7 @@ CRenderTarget::CRenderTarget		()
 
 	// BLOOM
 	{
-		D3DFORMAT	fmt				= D3DFMT_A8R8G8B8;			//;		// D3DFMT_X8R8G8B8
+		ERHI_FORMAT fmt = ERHI_FORMAT::B8G8R8A8_UNORM;
 		u32	w=BLOOM_size_X, h=BLOOM_size_Y;
 		u32 fvf_build				= D3DFVF_XYZRHW|D3DFVF_TEX4|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3);
 		u32 fvf_filter				= (u32)D3DFVF_XYZRHW|D3DFVF_TEX8|D3DFVF_TEXCOORDSIZE4(0)|D3DFVF_TEXCOORDSIZE4(1)|D3DFVF_TEXCOORDSIZE4(2)|D3DFVF_TEXCOORDSIZE4(3)|D3DFVF_TEXCOORDSIZE4(4)|D3DFVF_TEXCOORDSIZE4(5)|D3DFVF_TEXCOORDSIZE4(6)|D3DFVF_TEXCOORDSIZE4(7);
@@ -326,7 +332,7 @@ CRenderTarget::CRenderTarget		()
 	}
 
 	u32 w = RCache.get_width(), h = RCache.get_height();
-	rt_ssao_temp.create(r2_RT_ssao_temp, w, h, D3DFMT_G16R16F);
+	rt_ssao_temp.create(r2_RT_ssao_temp, w, h, ERHI_FORMAT::R16G16_FLOAT);
 	s_ssao.create(b_ssao, "r2\\ssao");
 
 	// Screen Post Process
@@ -346,15 +352,15 @@ CRenderTarget::CRenderTarget		()
 		b_smaa = new CBlender_SMAA();
 		s_smaa.create(b_smaa);
 
-		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, w, h, D3DFMT_A8R8G8B8);
-		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, w, h, D3DFMT_A8R8G8B8);
+		rt_smaa_edgetex.create(r2_RT_smaa_edgetex, w, h, ERHI_FORMAT::B8G8R8A8_UNORM);
+		rt_smaa_blendtex.create(r2_RT_smaa_blendtex, w, h, ERHI_FORMAT::B8G8R8A8_UNORM);
 	}
 	
 
 	// TONEMAP
 	{
-		rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, D3DFMT_A16B16G16R16F);
-		rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, D3DFMT_A16B16G16R16F);
+		rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, ERHI_FORMAT::R16G16B16A16_FLOAT);
+		rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		s_luminance.create(b_luminance, "r2\\luminance");
 		f_luminance_adapt = 0.5f;
 
@@ -365,7 +371,7 @@ CRenderTarget::CRenderTarget		()
 		for (u32 it = 0; it < 2; it++)
 		{
 			shared_str name; name.printf("%s_%d", r2_RT_luminance_pool, it);
-			rt_LUM_pool[it].create(name.c_str(), 1, 1, D3DFMT_R32F);
+			rt_LUM_pool[it].create(name.c_str(), 1, 1, ERHI_FORMAT::R32_FLOAT);
 			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
 		u_setrt(RCache.get_width(), RCache.get_height(), RTarget, nullptr, nullptr, RDepth);
@@ -414,7 +420,7 @@ CRenderTarget::CRenderTarget		()
 			rhiDesc.Height = TEX_material_LdotH;
 			rhiDesc.Depth = 4;
 			rhiDesc.MipLevels = 1;
-			rhiDesc.Format = D3DFMT_A8L8;
+			rhiDesc.Format = ERHI_FORMAT::R8G8_UNORM;
 			rhiDesc.Usage = 0;
 			rhiDesc.BindFlags = 0;
 			rhiDesc.CPUAccessFlags = 0;
@@ -473,17 +479,16 @@ CRenderTarget::CRenderTarget		()
 					}
 				}
 			}
+
 			R_CHK(t_material_surf->UnlockBox(0));
-			// #ifdef DEBUG
-			// R_CHK	(D3DXSaveTextureToFile	("x:\\r2_material.dds",D3DXIFF_DDS,t_material_surf,0));
-			// #endif
 		}
 
 		// Build noise table
 		// Surfaces
 		D3DLOCKED_RECT R[TEX_jitter_count];
-		for(int it1 = 0; it1 < TEX_jitter_count; it1++) {
-			string_path					name;
+		for(int it1 = 0; it1 < TEX_jitter_count; it1++)
+		{
+			string_path name;
 			xr_sprintf(name, "%s%d", r2_jitter, it1);
 			R_CHK(RDevice->CreateTexture(TEX_jitter, TEX_jitter, 1, 0, D3DFMT_Q8W8V8U8, D3DPOOL_MANAGED, &t_noise_surf[it1], nullptr));
 			t_noise[it1] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
@@ -494,7 +499,7 @@ CRenderTarget::CRenderTarget		()
 			rhiDesc.Height = TEX_jitter;
 			rhiDesc.Depth = 1;
 			rhiDesc.MipLevels = 1;
-			rhiDesc.Format = D3DFMT_Q8W8V8U8;
+			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_SNORM;
 			rhiDesc.Usage = 0;
 			rhiDesc.BindFlags = 0;
 			rhiDesc.CPUAccessFlags = 0;

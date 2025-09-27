@@ -176,7 +176,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 	}
 }
 
-void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) {
+void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
+{
 	ID3DTexture2D* pSurface = nullptr;
 	PROF_EVENT("dxFontRender::CreateFontAtlas");
 #ifdef USE_DX11
@@ -223,13 +224,13 @@ void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = 1;
 #ifdef USE_DX11
-	rhiDesc.Format = descFontAtlas.Format;
+	rhiDesc.Format = (ERHI_FORMAT)descFontAtlas.Format;
 	rhiDesc.Usage = descFontAtlas.Usage;
 	rhiDesc.BindFlags = descFontAtlas.BindFlags;
 	rhiDesc.CPUAccessFlags = descFontAtlas.CPUAccessFlags;
 	rhiDesc.MiscFlags = descFontAtlas.MiscFlags;
 #else
-	rhiDesc.Format = D3DFMT_A8R8G8B8;
+	rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
 	rhiDesc.Usage = 0;
 	rhiDesc.BindFlags = 0;
 	rhiDesc.CPUAccessFlags = 0;

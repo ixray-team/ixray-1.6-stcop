@@ -51,10 +51,10 @@ LPCSTR dx103DFluidRenderer::m_pResourceRTNames[ RRT_NumRT ] =
 dx103DFluidRenderer::dx103DFluidRenderer():
 	m_bInited(false)
 {
-	RTFormats[RRT_RayDataTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_RayDataTexSmall] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_RayCastTex] = DxgiFormat::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	RTFormats[RRT_EdgeTex] = DxgiFormat::DXGI_FORMAT_R32_FLOAT;
+	RTFormats[RRT_RayDataTex] = ERHI_FORMAT::R32G32B32A32_FLOAT;
+	RTFormats[RRT_RayDataTexSmall] = ERHI_FORMAT::R32G32B32A32_FLOAT;
+	RTFormats[RRT_RayCastTex] = ERHI_FORMAT::R32G32B32A32_FLOAT;
+	RTFormats[RRT_EdgeTex] = ERHI_FORMAT::R32_FLOAT;
 }
 
 dx103DFluidRenderer::~dx103DFluidRenderer()
@@ -276,11 +276,9 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	desc.Height = 256;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	//desc.Format = DXGI_FORMAT_R8_TYPELESS;
 	desc.Format = DXGI_FORMAT_R8_UNORM;
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
-	//desc.Usage = D3D_USAGE_IMMUTABLE;
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
@@ -292,23 +290,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	dataDesc.SysMemPitch = 256;
 
 	ID3DTexture2D* NoiseTexture = nullptr;
-	//ID3DxxShaderResourceView* JitterTextureSRV = nullptr;
-
 	CHK_DX( RDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture));
-
-	//( m_pD3DDevice->CreateTexture2D(&desc, &dataDesc, &NoiseTexture) );
-
-	// Create the shader resource view for jittering
-	//D3Dxx_SHADER_RESOURCE_VIEW_DESC descSRV;
-
-	//ZeroMemory( &descSRV, sizeof(descSRV) );
-	//descSRV.Format = DXGI_FORMAT_R8_UNORM;
-	//descSRV.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-	//descSRV.Texture2D.MipLevels = 1;
-	//descSRV.Texture2D.MostDetailedMip = 0;
-
-	//V( m_pD3DDevice->CreateShaderResourceView( NoiseTexture, &descSRV, &JitterTextureSRV ) );
-	//pEffect->GetVariableByName("jitterTex")->AsShaderResource() -> SetResource (JitterTextureSRV);
 
 	m_JitterTexture = dxRenderDeviceRender::Instance().Resources->_CreateTexture("$user$NVjitterTex");
 	
@@ -320,7 +302,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	rhiDesc.Height = desc2D.Height;
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = desc2D.MipLevels;
-	rhiDesc.Format = desc2D.Format;
+	rhiDesc.Format = (ERHI_FORMAT)desc2D.Format;
 	rhiDesc.Usage = desc2D.Usage;
 	rhiDesc.BindFlags = desc2D.BindFlags;
 	rhiDesc.CPUAccessFlags = desc2D.CPUAccessFlags;
@@ -330,9 +312,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(NoiseTexture, 0, rhiDesc);
 	m_JitterTexture->surface_set(rhiSurface);
 
-
 	_RELEASE(NoiseTexture);
-	//SAFE_RELEASE(JitterTextureSRV);
 }
 
 namespace
@@ -429,7 +409,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 	rhiDesc.Height = 1;
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = desc1D.MipLevels;
-	rhiDesc.Format = desc1D.Format;
+	rhiDesc.Format = (ERHI_FORMAT)desc1D.Format;
 	rhiDesc.Usage = desc1D.Usage;
 	rhiDesc.BindFlags = desc1D.BindFlags;
 	rhiDesc.CPUAccessFlags = desc1D.CPUAccessFlags;
