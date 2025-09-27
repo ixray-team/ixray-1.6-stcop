@@ -13,7 +13,7 @@ DX9Surface::DX9Surface(IDirect3DTexture9* texture)
         m_desc.Height = desc.Height;
         m_desc.Depth = 1;
         m_desc.MipLevels = texture->GetLevelCount();
-        m_desc.Format = desc.Format;
+        m_desc.Format = ConvertDX9FormatToRHI(desc.Format);
         m_desc.Usage = desc.Usage;
         m_desc.BindFlags = 0; // DX9 doesn't have explicit bind flags
         m_desc.CPUAccessFlags = 0;
@@ -32,7 +32,7 @@ DX9Surface::DX9Surface(IDirect3DVolumeTexture9* texture)
         m_desc.Height = desc.Height;
         m_desc.Depth = desc.Depth;
         m_desc.MipLevels = texture->GetLevelCount();
-        m_desc.Format = desc.Format;
+        m_desc.Format = ConvertDX9FormatToRHI(desc.Format);
         m_desc.Usage = desc.Usage;
         m_desc.BindFlags = 0;
         m_desc.CPUAccessFlags = 0;
@@ -51,7 +51,7 @@ DX9Surface::DX9Surface(IDirect3DCubeTexture9* texture)
         m_desc.Height = desc.Height;
         m_desc.Depth = 6; // Cube has 6 faces
         m_desc.MipLevels = texture->GetLevelCount();
-        m_desc.Format = desc.Format;
+        m_desc.Format = ConvertDX9FormatToRHI(desc.Format);
         m_desc.Usage = desc.Usage;
         m_desc.BindFlags = 0;
         m_desc.CPUAccessFlags = 0;
@@ -107,7 +107,7 @@ u32 DX9Surface::GetMipLevels() const
     return m_desc.MipLevels;
 }
 
-u32 DX9Surface::GetFormat() const
+ERHI_FORMAT DX9Surface::GetFormat() const
 {
     return m_desc.Format;
 }
@@ -133,6 +133,16 @@ ERHI_USAGE DX9Surface::GetUsage() const
     }
 
     return ERHI_USAGE::USAGE_DEFAULT;
+}
+
+u32 DX9Surface::GetSampleDescCount() const
+{
+    return m_desc.SampleDescCount;
+}
+
+u32 DX9Surface::GetArraySize() const
+{
+    return m_desc.ArraySize;
 }
 
 IRHIShaderResourceView* DX9Surface::GetShaderResourceView()
@@ -200,12 +210,18 @@ void* DX9ShaderResourceView::GetRawSRV()
 
 void DX9ShaderResourceView::AddRef()
 {
-    if (Surface) Surface->AddRef();
+    if (Surface)
+    {
+        Surface->AddRef();
+    }
 }
 
 u32 DX9ShaderResourceView::Release()
 {
-    if (Surface) return Surface->Release();
+    if (Surface)
+    {
+        return Surface->Release();
+    }
     return 0;
 }
 
@@ -258,7 +274,10 @@ DX9RenderTargetView::DX9RenderTargetView(IDirect3DSurface9* surface, IRHISurface
 
 DX9RenderTargetView::~DX9RenderTargetView()
 {
-    if (Surface) Surface->Release();
+    if (Surface)
+    {
+        Surface->Release();
+    }
 }
 
 void* DX9RenderTargetView::GetRawRTV()
@@ -268,12 +287,18 @@ void* DX9RenderTargetView::GetRawRTV()
 
 void DX9RenderTargetView::AddRef()
 {
-    if (Surface) Surface->AddRef();
+    if (Surface)
+    {
+        Surface->AddRef();
+    }
 }
 
 u32 DX9RenderTargetView::Release()
 {
-    if (Surface) return Surface->Release();
+    if (Surface)
+    {
+        return Surface->Release();
+    }
     return 0;
 }
 
@@ -297,22 +322,6 @@ void DX9RenderTargetView::UnbindRenderTarget()
     // RDevice->SetRenderTarget(0, nullptr);
 }
 
-void DX9RenderTargetView::Clear(float r, float g, float b, float a)
-{
-    if (Surface)
-    {
-        D3DCOLOR color = D3DCOLOR_ARGB
-        (
-            static_cast<BYTE>(a * 255),
-            static_cast<BYTE>(r * 255),
-            static_cast<BYTE>(g * 255),
-            static_cast<BYTE>(b * 255)
-        );
-        // Would need device
-        // RDevice->ColorFill(Surface, nullptr, color);
-    }
-}
-
 // DX9 Depth Stencil View implementation
 DX9DepthStencilView::DX9DepthStencilView(IDirect3DSurface9* surface, IRHISurface* texture)
     : Surface(surface), Texture(texture)
@@ -321,7 +330,10 @@ DX9DepthStencilView::DX9DepthStencilView(IDirect3DSurface9* surface, IRHISurface
 
 DX9DepthStencilView::~DX9DepthStencilView()
 {
-    if (Surface) Surface->Release();
+    if (Surface)
+    {
+        Surface->Release();
+    }
 }
 
 void* DX9DepthStencilView::GetRawDSV()
@@ -331,12 +343,18 @@ void* DX9DepthStencilView::GetRawDSV()
 
 void DX9DepthStencilView::AddRef()
 {
-    if (Surface) Surface->AddRef();
+    if (Surface)
+    {
+        Surface->AddRef();
+    }
 }
 
 u32 DX9DepthStencilView::Release()
 {
-    if (Surface) return Surface->Release();
+    if (Surface)
+    {
+        return Surface->Release();
+    }
     return 0;
 }
 
@@ -408,7 +426,7 @@ IRHISurface* DX9TextureFactory::CreateTextureFromMemory(const void* data, u32 si
         desc.Height,
         desc.MipLevels,
         ConvertUsage(desc.Usage),
-        ConvertFormat(desc.Format),
+        ConvertRHIFormatToDX9(desc.Format),
         D3DPOOL_DEFAULT,
         &texture,
         nullptr
@@ -427,7 +445,7 @@ IRHISurface* DX9TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
         desc.Width, desc.Height,
         desc.MipLevels,
         ConvertUsage(desc.Usage),
-        ConvertFormat(desc.Format),
+        ConvertRHIFormatToDX9(desc.Format),
         ConvertPool(desc.Usage),
         &texture,
         nullptr
@@ -484,12 +502,6 @@ IRHIDepthStencilView* DX9TextureFactory::CreateDepthStencilView(IRHISurface* sur
         texture->GetSurfaceLevel(0, &dx9SurfacePtr);
     }
     return new DX9DepthStencilView(dx9SurfacePtr, surface);
-}
-
-// Helper methods
-D3DFORMAT DX9TextureFactory::ConvertFormat(u32 format)
-{
-    return static_cast<D3DFORMAT>(format);
 }
 
 D3DPOOL DX9TextureFactory::ConvertPool(u32 usage)
