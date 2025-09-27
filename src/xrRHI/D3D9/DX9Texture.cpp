@@ -1,9 +1,9 @@
-#include "DX9TextureImplementations.h"
+#include "DX9Texture.h"
 #include <d3d9.h>
 
 // DX9 Surface implementation
 DX9Surface::DX9Surface(IDirect3DTexture9* texture)
-    : m_pTexture2D(texture), m_pBaseTexture(texture)
+    : Texture2D(texture), BaseTexture(texture)
 {
     if (texture)
     {
@@ -22,7 +22,7 @@ DX9Surface::DX9Surface(IDirect3DTexture9* texture)
 }
 
 DX9Surface::DX9Surface(IDirect3DVolumeTexture9* texture)
-    : m_pTexture3D(texture), m_pBaseTexture(texture)
+    : Texture3D(texture), BaseTexture(texture)
 {
     if (texture)
     {
@@ -41,7 +41,7 @@ DX9Surface::DX9Surface(IDirect3DVolumeTexture9* texture)
 }
 
 DX9Surface::DX9Surface(IDirect3DCubeTexture9* texture)
-    : m_pTextureCube(texture), m_pBaseTexture(texture)
+    : TextureCube(texture), BaseTexture(texture)
 {
     if (texture)
     {
@@ -61,25 +61,29 @@ DX9Surface::DX9Surface(IDirect3DCubeTexture9* texture)
 
 DX9Surface::~DX9Surface()
 {
-    if (m_pSRV) delete m_pSRV;
-    if (m_pRTV) delete m_pRTV;
-    if (m_pDSV) delete m_pDSV;
-    if (m_pBaseTexture) m_pBaseTexture->Release();
+    xr_delete(SRV);
+    xr_delete(RTV);
+    xr_delete(DSV);
+
+    if (BaseTexture)
+    {
+        BaseTexture->Release();
+    }
 }
 
 void* DX9Surface::GetRawTexture()
 {
-    return m_pBaseTexture;
+    return BaseTexture;
 }
 
 void DX9Surface::AddRef()
 {
-    if (m_pBaseTexture) m_pBaseTexture->AddRef();
+    if (BaseTexture) BaseTexture->AddRef();
 }
 
 u32 DX9Surface::Release()
 {
-    if (m_pBaseTexture) return m_pBaseTexture->Release();
+    if (BaseTexture) return BaseTexture->Release();
     return 0;
 }
 
@@ -110,29 +114,29 @@ u32 DX9Surface::GetFormat() const
 
 u32 DX9Surface::GetTextureType() const
 {
-    if (m_pTexture2D) return D3DRTYPE_TEXTURE;
-    if (m_pTexture3D) return D3DRTYPE_VOLUMETEXTURE;
-    if (m_pTextureCube) return D3DRTYPE_CUBETEXTURE;
+    if (Texture2D) return D3DRTYPE_TEXTURE;
+    if (Texture3D) return D3DRTYPE_VOLUMETEXTURE;
+    if (TextureCube) return D3DRTYPE_CUBETEXTURE;
     return D3DRTYPE_SURFACE;
 }
 
 IRHIShaderResourceView* DX9Surface::GetShaderResourceView()
 {
-    if (!m_pSRV && m_pBaseTexture)
+    if (!SRV && BaseTexture)
     {
-        m_pSRV = new DX9ShaderResourceView(this);
+        SRV = new DX9ShaderResourceView(this);
     }
-    return m_pSRV;
+    return SRV;
 }
 
 IRHIRenderTargetView* DX9Surface::GetRenderTargetView()
 {
-    return m_pRTV;
+    return RTV;
 }
 
 IRHIDepthStencilView* DX9Surface::GetDepthStencilView()
 {
-    return m_pDSV;
+    return DSV;
 }
 
 bool DX9Surface::UpdateData(const void* data, u32 size)
@@ -143,10 +147,10 @@ bool DX9Surface::UpdateData(const void* data, u32 size)
 
 void* DX9Surface::Lock(u32 mipLevel, u32* pitch)
 {
-    if (m_pTexture2D)
+    if (Texture2D)
     {
         D3DLOCKED_RECT lockedRect;
-        HRESULT hr = m_pTexture2D->LockRect(mipLevel, &lockedRect, nullptr, 0);
+        HRESULT hr = Texture2D->LockRect(mipLevel, &lockedRect, nullptr, 0);
         if (SUCCEEDED(hr))
         {
             if (pitch) *pitch = lockedRect.Pitch;
@@ -158,15 +162,15 @@ void* DX9Surface::Lock(u32 mipLevel, u32* pitch)
 
 void DX9Surface::Unlock()
 {
-    if (m_pTexture2D)
+    if (Texture2D)
     {
-        m_pTexture2D->UnlockRect(0);
+        Texture2D->UnlockRect(0);
     }
 }
 
 // DX9 Shader Resource View implementation
 DX9ShaderResourceView::DX9ShaderResourceView(IRHISurface* surface)
-    : m_pSurface(surface)
+    : Surface(surface)
 {
 }
 
@@ -176,30 +180,30 @@ DX9ShaderResourceView::~DX9ShaderResourceView()
 
 void* DX9ShaderResourceView::GetRawSRV()
 {
-    return m_pSurface ? m_pSurface->GetRawTexture() : nullptr;
+    return Surface ? Surface->GetRawTexture() : nullptr;
 }
 
 void DX9ShaderResourceView::AddRef()
 {
-    if (m_pSurface) m_pSurface->AddRef();
+    if (Surface) Surface->AddRef();
 }
 
 u32 DX9ShaderResourceView::Release()
 {
-    if (m_pSurface) return m_pSurface->Release();
+    if (Surface) return Surface->Release();
     return 0;
 }
 
 IRHISurface* DX9ShaderResourceView::GetSurface()
 {
-    return m_pSurface;
+    return Surface;
 }
 
 void DX9ShaderResourceView::BindToPixelShader(u32 slot)
 {
-    if (m_pSurface)
+    if (Surface)
     {
-        DX9Surface* dx9Surface = static_cast<DX9Surface*>(m_pSurface);
+        DX9Surface* dx9Surface = static_cast<DX9Surface*>(Surface);
         if (dx9Surface->GetDX9BaseTexture())
         {
             // Would need device
@@ -210,9 +214,9 @@ void DX9ShaderResourceView::BindToPixelShader(u32 slot)
 
 void DX9ShaderResourceView::BindToVertexShader(u32 slot)
 {
-    if (m_pSurface)
+    if (Surface)
     {
-        DX9Surface* dx9Surface = static_cast<DX9Surface*>(m_pSurface);
+        DX9Surface* dx9Surface = static_cast<DX9Surface*>(Surface);
         if (dx9Surface->GetDX9BaseTexture())
         {
             // Would need device
@@ -233,42 +237,42 @@ void DX9ShaderResourceView::BindToComputeShader(u32 slot)
 
 // DX9 Render Target View implementation
 DX9RenderTargetView::DX9RenderTargetView(IDirect3DSurface9* surface, IRHISurface* texture)
-    : m_pSurface(surface), m_pTexture(texture)
+    : Surface(surface), Texture(texture)
 {
 }
 
 DX9RenderTargetView::~DX9RenderTargetView()
 {
-    if (m_pSurface) m_pSurface->Release();
+    if (Surface) Surface->Release();
 }
 
 void* DX9RenderTargetView::GetRawRTV()
 {
-    return m_pSurface;
+    return Surface;
 }
 
 void DX9RenderTargetView::AddRef()
 {
-    if (m_pSurface) m_pSurface->AddRef();
+    if (Surface) Surface->AddRef();
 }
 
 u32 DX9RenderTargetView::Release()
 {
-    if (m_pSurface) return m_pSurface->Release();
+    if (Surface) return Surface->Release();
     return 0;
 }
 
 IRHISurface* DX9RenderTargetView::GetSurface()
 {
-    return m_pTexture;
+    return Texture;
 }
 
 void DX9RenderTargetView::BindAsRenderTarget(u32 slot)
 {
-    if (m_pSurface)
+    if (Surface)
     {
         // Would need device
-        // RDevice->SetRenderTarget(slot, m_pSurface);
+        // RDevice->SetRenderTarget(slot, Surface);
     }
 }
 
@@ -280,57 +284,58 @@ void DX9RenderTargetView::UnbindRenderTarget()
 
 void DX9RenderTargetView::Clear(float r, float g, float b, float a)
 {
-    if (m_pSurface)
+    if (Surface)
     {
-        D3DCOLOR color = D3DCOLOR_ARGB(
+        D3DCOLOR color = D3DCOLOR_ARGB
+        (
             static_cast<BYTE>(a * 255),
             static_cast<BYTE>(r * 255),
             static_cast<BYTE>(g * 255),
             static_cast<BYTE>(b * 255)
         );
         // Would need device
-        // RDevice->ColorFill(m_pSurface, nullptr, color);
+        // RDevice->ColorFill(Surface, nullptr, color);
     }
 }
 
 // DX9 Depth Stencil View implementation
 DX9DepthStencilView::DX9DepthStencilView(IDirect3DSurface9* surface, IRHISurface* texture)
-    : m_pSurface(surface), m_pTexture(texture)
+    : Surface(surface), Texture(texture)
 {
 }
 
 DX9DepthStencilView::~DX9DepthStencilView()
 {
-    if (m_pSurface) m_pSurface->Release();
+    if (Surface) Surface->Release();
 }
 
 void* DX9DepthStencilView::GetRawDSV()
 {
-    return m_pSurface;
+    return Surface;
 }
 
 void DX9DepthStencilView::AddRef()
 {
-    if (m_pSurface) m_pSurface->AddRef();
+    if (Surface) Surface->AddRef();
 }
 
 u32 DX9DepthStencilView::Release()
 {
-    if (m_pSurface) return m_pSurface->Release();
+    if (Surface) return Surface->Release();
     return 0;
 }
 
 IRHISurface* DX9DepthStencilView::GetSurface()
 {
-    return m_pTexture;
+    return Texture;
 }
 
 void DX9DepthStencilView::BindAsDepthStencil()
 {
-    if (m_pSurface)
+    if (Surface)
     {
         // Would need device
-        // RDevice->SetDepthStencilSurface(m_pSurface);
+        // RDevice->SetDepthStencilSurface(Surface);
     }
 }
 
@@ -340,36 +345,9 @@ void DX9DepthStencilView::UnbindDepthStencil()
     // RDevice->SetDepthStencilSurface(nullptr);
 }
 
-void DX9DepthStencilView::ClearDepth(float depth)
-{
-    if (m_pSurface)
-    {
-        // Would need device
-        // RDevice->Clear(0, nullptr, D3DCLEAR_ZBUFFER, 0, depth, 0);
-    }
-}
-
-void DX9DepthStencilView::ClearStencil(u8 stencil)
-{
-    if (m_pSurface)
-    {
-        // Would need device
-        // RDevice->Clear(0, nullptr, D3DCLEAR_STENCIL, 0, 1.0f, stencil);
-    }
-}
-
-void DX9DepthStencilView::ClearDepthStencil(float depth, u8 stencil)
-{
-    if (m_pSurface)
-    {
-        // Would need device
-        // RDevice->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0, depth, stencil);
-    }
-}
-
 // DX9 Texture Factory implementation
 DX9TextureFactory::DX9TextureFactory(IDirect3DDevice9* device)
-    : m_pDevice(device)
+    : Device(device)
 {
 }
 
@@ -409,7 +387,7 @@ IRHISurface* DX9TextureFactory::CreateTextureFromMemory(const void* data, u32 si
 
     // Для DX9 создаем обычную 2D текстуру
     IDirect3DTexture9* texture = nullptr;
-    HRESULT hr = m_pDevice->CreateTexture
+    HRESULT hr = Device->CreateTexture
     (
         desc.Width,
         desc.Height,
@@ -430,7 +408,7 @@ IRHISurface* DX9TextureFactory::CreateTextureFromMemory(const void* data, u32 si
 IRHISurface* DX9TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 {
     IDirect3DTexture9* texture = nullptr;
-    HRESULT hr = m_pDevice->CreateTexture(
+    HRESULT hr = Device->CreateTexture(
         desc.Width, desc.Height,
         desc.MipLevels,
         ConvertUsage(desc.Usage),

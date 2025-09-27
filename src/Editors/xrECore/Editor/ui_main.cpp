@@ -58,7 +58,7 @@ TUI::TUI()
 	int DisplayX = GetSystemMetrics(SM_CXFULLSCREEN);
 	int DisplayY = GetSystemMetrics(SM_CYFULLSCREEN);
 
-	Viewport& MainView = Views.emplace_back();
+	Viewport& MainView = Views[0];
 	ViewID = 0;
 
 	m_Size.set(DisplayX, DisplayY);
@@ -403,13 +403,8 @@ void TUI::Redraw()
 
 	Viewport& View = CurrentView();
 
-	if
-		(
-			u32(View.RTSize.x * EDevice->m_ScreenQuality) != EDevice->TargetWidth ||
-			u32(View.RTSize.y * EDevice->m_ScreenQuality) != EDevice->TargetHeight ||
-			!RT->pSurface
-			)
-
+	if (u32(View.RTSize.x * EDevice->m_ScreenQuality) != EDevice->TargetWidth || u32(View.RTSize.y * EDevice->m_ScreenQuality) != EDevice->TargetHeight || !RT->pSurface)
+	{
 		if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
 			EDevice->TargetWidth = View.RTSize.x * EDevice->m_ScreenQuality;
@@ -454,10 +449,11 @@ void TUI::Redraw()
 			EDevice->fASPECT = float(HalfTarget.y) / float(HalfTarget.x);
 			m_Flags.set(flRedraw, TRUE);
 		}
+	}
 
 	if (!UI->IsPlayInEditor())
 	{
-		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
+		EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, View.m_Camera.m_Znear, View.m_Camera.m_Zfar);
 	}
 
 	if (EDevice->Begin())
@@ -705,12 +701,12 @@ bool TUI::OnCreate()
 	GetRenderWidth() = 128;
 	GetRenderHeight() = 128;
 
-	int Iter = 0;
-	for (Viewport& View : Views)
+	for (auto& [ID, View] : Views)
 	{
 		View.RTSize = { (int)GetRenderWidth(), (int)GetRenderHeight() };
 		View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, D3DFMT_X8R8G8B8);
 	}
+
 	EDevice->fASPECT = (float)GetRenderWidth() / (float)GetRenderHeight();
 
 	EDevice->mProject.build_projection(deg2rad(EDevice->fFOV), EDevice->fASPECT, UI->CurrentView().m_Camera.m_Znear, UI->CurrentView().m_Camera.m_Zfar);
@@ -736,7 +732,7 @@ void TUI::OnDestroy()
 	Console->Destroy();
 	xr_delete(Console);
 
-	for (Viewport& View : Views)
+	for (auto& [ID, View] : Views)
 	{
 		View.RTFreez.destroy();
 	}
@@ -802,12 +798,17 @@ void TUI::ProgressDraw()
 
 TUI::Viewport& TUI::CurrentView()
 {
+	if (!Views.contains(ViewID))
+	{
+		ViewID = 0;
+	}
+
 	return Views[ViewID];
 }
 
 void TUI::CreateViewport(int ID, UIRenderForm* Form)
 {
-	Viewport& MainView = Views.emplace_back();
+	Viewport& MainView = Views[ID];
 	MainView.m_Camera.SetViewport(EPrefs->view_np, EPrefs->view_fp, EPrefs->view_fov, true);
 	MainView.m_Camera.SetSensitivity(EPrefs->cam_sens_move, EPrefs->cam_sens_rot);
 	MainView.m_Camera.SetFlyParams(EPrefs->cam_fly_speed, EPrefs->cam_fly_alt);
@@ -822,7 +823,7 @@ void TUI::CreateViewport(int ID, UIRenderForm* Form)
 
 void TUI::DestroyViewport(int ID)
 {
-	auto Iter = std::find(Views.begin(), Views.end(), Viewport{ .ViewGlobalIDX = ID });
+	auto Iter = Views.find(ID);
 	if (Iter != Views.end())
 	{
 		Views.erase(Iter);
