@@ -232,7 +232,7 @@ void CTexture::ProcessStaging()
 		VERIFY(!"CTexture::ProcessStaging unsupported dimensions.");
 	}
 
-	RContext->CopyResource((ID3D11Resource*)pTargetSurface->GetRawTexture(), (ID3D11Resource*)pSurface->GetRawTexture());
+	GRHI->CopySurface(pTargetSurface, pSurface);
 
 	flags.bLoadedAsStaging = FALSE;
 
