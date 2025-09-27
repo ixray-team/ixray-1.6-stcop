@@ -192,19 +192,24 @@ IRHISurface* CRHI::CreateDepthStencil(const RHITextureDesc& desc)
 	return DevicePtr->GetTextureFactory()->CreateDepthStencil(desc);
 }
 
-IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc)
+IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHISurface* Surface, const RHIShaderResourceViewDesc* desc)
 {
-	return DevicePtr->GetTextureFactory()->CreateShaderResourceView(surface, desc);
+	return DevicePtr->GetTextureFactory()->CreateShaderResourceView(Surface, desc);
 }
 
-IRHIRenderTargetView* CRHI::CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc)
+IRHIRenderTargetView* CRHI::CreateRenderTargetView(IRHISurface* Surface, const RHIRenderTargetViewDesc& desc)
 {
-	return DevicePtr->GetTextureFactory()->CreateRenderTargetView(surface, desc);
+	return DevicePtr->GetTextureFactory()->CreateRenderTargetView(Surface, desc);
 }
 
-IRHIDepthStencilView* CRHI::CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc)
+IRHIDepthStencilView* CRHI::CreateDepthStencilView(IRHISurface* Surface, const RHIDepthStencilViewDesc& desc)
 {
-	return DevicePtr->GetTextureFactory()->CreateDepthStencilView(surface, desc);
+	return DevicePtr->GetTextureFactory()->CreateDepthStencilView(Surface, desc);
+}
+
+IRHIUnorderedAccessView* CRHI::CreateUAV(IRHISurface* Surface, const RHIUAVDesc& desc)
+{
+	return DevicePtr->GetTextureFactory()->CreateUAV(Surface, desc);
 }
 
 void CRHI::GPUStatsBegin() const

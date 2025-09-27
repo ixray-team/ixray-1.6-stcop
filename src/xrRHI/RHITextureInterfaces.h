@@ -34,11 +34,22 @@ struct RHIRenderTargetViewDesc
 struct RHIDepthStencilViewDesc
 {
 	ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
-	u32 ViewDimension = 0;    // D3D11_DSV_DIMENSION
+	ERHI_DSV_DIMENSION ViewDimension = ERHI_DSV_DIMENSION::UNKNOWN;
 	u32 Flags = 0;            // D3D11_DSV_FLAG
 	u32 MipSlice = 0;         // For texture arrays
 	u32 FirstArraySlice = 0;  // For texture arrays
 	u32 ArraySize = 1;        // For texture arrays
+};
+
+struct RHIUAVDesc
+{
+	ERHI_FORMAT Format;
+	ERHI_VIEW_DIMENSION ViewDimension;
+	u32 FirstElement;
+	u32 NumElements;
+	u32 MipSlice; // Для текстур
+	u32 FirstWSlice; // Для 3D текстур
+	u32 WSize; // Для 3D текстур
 };
 
 class IRHITexture
@@ -148,6 +159,15 @@ struct RHITextureDesc
 		: Width(width), Height(height), Format(format) {}
 };
 
+class IRHIUnorderedAccessView
+{
+public:
+	virtual ~IRHIUnorderedAccessView() = default;
+	virtual void* GetRaw() = 0;
+	virtual void AddRef() = 0;
+	virtual u32 Release() = 0;
+};
+
 class IRHITextureFactory
 {
 public:
@@ -160,4 +180,5 @@ public:
 	virtual IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) = 0;
 	virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) = 0;
 	virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) = 0;
+	virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) = 0;
 };
