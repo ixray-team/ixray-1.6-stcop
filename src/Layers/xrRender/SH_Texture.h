@@ -13,7 +13,7 @@ public:
 	enum ResourceShaderType	//	Don't change this since it's hardware-dependent
 	{
 		rstPixel = 0,	//	Default texture offset
-		rstVertex = D3DVERTEXTEXTURESAMPLER0,
+		rstVertex = RHI_VERTEX_TEXTURESAMPLER,
 		rstGeometry = rstVertex+256,
 		rstHull = rstGeometry+256,
 		rstDomain = rstHull+256,
@@ -32,18 +32,14 @@ public:
 	void								Load			();
 	void								PostLoad		();
 	void								Unload			(void);
-//	void								Apply			(u32 dwStage);
 
 	void								surface_set		(IRHISurface* surf );
 	IRHISurface*						surface_get 	();
 
 	IC BOOL								isUser			()		{ return flags.bUser;					}
-	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
-	IC u32								get_Height		()		{ desc_enshure(); return desc.Height;	}
-
-#ifdef USE_DX11
-	IC DXGI_FORMAT						get_Format		()		{ desc_enshure(); return desc.Format;	}
-#endif
+	IC u32								get_Width		()		{ return pSurface->GetWidth();	}
+	IC u32								get_Height		()		{ return pSurface->GetHeight();	}
+	IC ERHI_FORMAT						get_Format		()		{ return pSurface ? pSurface->GetFormat() : ERHI_FORMAT::UNKNOWN; }
 
 	void								video_Sync		(u32 _time){m_play_time=_time;}
 	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
@@ -57,9 +53,6 @@ public:
 	IRHIShaderResourceView*				get_SRView() {return m_pSRView;}
 
 private:
-	IC BOOL								desc_valid		()		{ return pSurface==desc_cache; }
-	IC void								desc_enshure	()		{ if (!desc_valid()) desc_update(); }
-	void								desc_update		();
 #ifdef USE_DX11
 	void								Apply			(u32 dwStage);
 	void								ProcessStaging();
@@ -69,18 +62,18 @@ private:
 public:
 	struct 
 	{
-		u32					bLoaded		: 1;
-		u32					bUser		: 1;
-		u32					seqCycles	: 1;
-		u32					MemoryUsage	: 28;
-		u32					bLoadedAsStaging: 1;
-	}									flags;
+		u32 bLoaded		: 1;
+		u32 bUser		: 1;
+		u32 seqCycles	: 1;
+		u32 MemoryUsage	: 28;
+		u32 bLoadedAsStaging: 1;
+	} flags;
 	xr_delegate<void(u32)> bind;
 
-	CAviPlayerCustom*					pAVI;
-	CTheoraSurface*						pTheora;
-	float								m_material;
-	shared_str							m_bumpmap;
+	CAviPlayerCustom*		pAVI;
+	CTheoraSurface*			pTheora;
+	float					m_material;
+	shared_str				m_bumpmap;
 
 	union
 	{
@@ -93,17 +86,13 @@ public:
 	IRHISurface* pSurface;
 
 private:
+	IRHIShaderResourceView* m_pSRView;
 
 	// Sequence data
-	xr_vector<IRHISurface*>				seqDATA;
+	xr_vector<IRHISurface*> seqDATA;
 
-	// Description
-	IRHISurface*						desc_cache;
-	D3D_TEXTURE2D_DESC					desc;
-
-	IRHIShaderResourceView*			m_pSRView;
 	// Sequence view data
-	xr_vector<IRHIShaderResourceView*>m_seqSRView;
+	xr_vector<IRHIShaderResourceView*> m_seqSRView;
 };
 
 struct resptrcode_texture :
