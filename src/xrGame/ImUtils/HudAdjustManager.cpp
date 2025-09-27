@@ -17,6 +17,7 @@ extern bool hud_adj_crosshair;
 extern bool forceFPDraw;
 extern bool forceFP2Draw;
 extern bool forceSPDraw;
+extern bool b_toggle_weapon_aim;
 
 void RenderHUDAdjustManager()
 {
@@ -146,7 +147,7 @@ void RenderHUDAdjustManager()
 						ImGui::Text("Mode: %s", p_hand);
 
 						ImGui::Checkbox("Show crosshair", &hud_adj_crosshair);
-
+						ImGui::Checkbox("Toggle weapon aim", &b_toggle_weapon_aim);
 						ImGui::Checkbox("Show fire point box", &forceFPDraw);
 						ImGui::Checkbox("Show fire point 2 box", &forceFP2Draw);
 						ImGui::Checkbox("Show shell point box", &forceSPDraw);
@@ -190,11 +191,11 @@ void RenderHUDAdjustManager()
 
 
 
-											ImGui::SliderFloat("X##FPP", &position.x, -1.0f, 1.0f);
+											ImGui::SliderFloat("X##FPP", &position.x, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Y##FPP", &position.y, -1.0f, 1.0f);
+											ImGui::SliderFloat("Y##FPP", &position.y, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Z##FPP", &position.z, -1.0f, 1.0f);
+											ImGui::SliderFloat("Z##FPP", &position.z, -1.0f, 1.0f, "%.6f");
 
 											ImGui::EndTable();
 										}
@@ -221,11 +222,11 @@ void RenderHUDAdjustManager()
 
 
 
-											ImGui::SliderFloat("X##FP2P", &position.x, -1.0f, 1.0f);
+											ImGui::SliderFloat("X##FP2P", &position.x, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Y##FP2P", &position.y, -1.0f, 1.0f);
+											ImGui::SliderFloat("Y##FP2P", &position.y, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Z##FP2P", &position.z, -1.0f, 1.0f);
+											ImGui::SliderFloat("Z##FP2P", &position.z, -1.0f, 1.0f, "%.6f");
 
 											ImGui::EndTable();
 										}
@@ -252,11 +253,11 @@ void RenderHUDAdjustManager()
 
 
 
-											ImGui::SliderFloat("X##SPP", &position.x, -1.0f, 1.0f);
+											ImGui::SliderFloat("X##SPP", &position.x, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Y##SPP", &position.y, -1.0f, 1.0f);
+											ImGui::SliderFloat("Y##SPP", &position.y, -1.0f, 1.0f, "%.6f");
 
-											ImGui::SliderFloat("Z##SPP", &position.z, -1.0f, 1.0f);
+											ImGui::SliderFloat("Z##SPP", &position.z, -1.0f, 1.0f, "%.6f");
 
 											ImGui::EndTable();
 										}
@@ -313,11 +314,11 @@ void RenderHUDAdjustManager()
 													ImGui::TableNextColumn();
 
 
-													ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
+													ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f, "%.6f");
 
-													ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
+													ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f, "%.6f");
 
-													ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
+													ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f, "%.6f");
 
 													ImGui::EndTable();
 												}
@@ -349,11 +350,11 @@ void RenderHUDAdjustManager()
 													ImGui::TableNextColumn();
 
 
-													ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
+													ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f, "%.6f");
 
-													ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
+													ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f, "%.6f");
 
-													ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
+													ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f, "%.6f");
 
 													ImGui::TableNextColumn();
 
@@ -398,11 +399,11 @@ void RenderHUDAdjustManager()
 										ImGui::TableNextColumn();
 
 
-										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f);
+										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f, "%.6f");
 
-										ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f);
+										ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f, "%.6f");
 
-										ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f);
+										ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f, "%.6f");
 
 										ImGui::EndTable();
 									}
@@ -421,11 +422,11 @@ void RenderHUDAdjustManager()
 										ImGui::TableNextColumn();
 
 
-										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f);
+										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f, "%.6f");
 
-										ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f);
+										ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f, "%.6f");
 
-										ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f);
+										ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f, "%.6f");
 
 										ImGui::TableNextColumn();
 
