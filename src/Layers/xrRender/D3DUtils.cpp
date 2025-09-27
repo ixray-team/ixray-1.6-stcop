@@ -95,37 +95,51 @@ u32 m_ColorSafeRect = 0xffB040B0;
 
 void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices, u32 _i_cnt)
 {
-#ifdef USE_DX11
-//	TODO: DX10: Implement SPrimitiveBuffer::CreateFromData for DX10
-//	VERIFY(!"SPrimitiveBuffer::CreateFromData not implemented for dx10");
-#else //USE_DX11
-	ID3DVertexBuffer*	pVB=0;
-	ID3DIndexBuffer*	pIB=0;
-	p_cnt				= _p_cnt;
-	p_type				= _pt;
-	v_cnt				= _v_cnt;
-	i_cnt				= _i_cnt;
-	u32 stride = (u32)FVF::ComputeVertexSize(FVF);
-	R_CHK(RDevice->CreateVertexBuffer(v_cnt*stride, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
-    u8* bytes{};
-	R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));
-	FLvertexVec	verts	(v_cnt);
-	for (u32 k=0; k<v_cnt; ++k)
-		verts[k].set	(((Fvector*)vertices)[k],0xFFFFFFFF);
-	Memory.mem_copy		(bytes,&*verts.begin(),v_cnt*stride);
-	R_CHK				(pVB->Unlock());
-	if (i_cnt){ 
-		R_CHK(RDevice->CreateIndexBuffer	(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,nullptr));
-		R_CHK			(pIB->Lock(0,0,(LPVOID*)&bytes,0));
-		Memory.mem_copy	(bytes,indices,i_cnt*sizeof(u16));
-		R_CHK			(pIB->Unlock());
-		OnRender.bind	(this,&SPrimitiveBuffer::RenderDIP);
-	}else{
-		OnRender.bind	(this,&SPrimitiveBuffer::RenderDP);
-	}
-	pGeom.create		(FVF,pVB,pIB);
-#endif
+    IRHIBuffer* pVB = nullptr;
+    IRHIBuffer* pIB = nullptr;
+
+    p_cnt = _p_cnt;
+    p_type = _pt;
+    v_cnt = _v_cnt;
+    i_cnt = _i_cnt;
+
+    u32 stride = FVF::ComputeVertexSize(FVF);
+
+    FLvertexVec verts(v_cnt);
+    for (u32 k = 0; k < v_cnt; ++k)
+        verts[k].set(((Fvector*)vertices)[k], 0xFFFFFFFF);
+
+    VERIFY(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride, false));
+
+    if (i_cnt)
+    {
+        VERIFY(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16), false));
+        OnRender.bind(this, &SPrimitiveBuffer::RenderDIP);
+    }
+    else
+    {
+        OnRender.bind(this, &SPrimitiveBuffer::RenderDP);
+    }
+
+    RHIMappedSubresource mapped = {};
+    if (pVB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
+    {
+        Memory.mem_copy(mapped.pData, verts.data(), v_cnt * stride);
+        pVB->Unmap();
+    }
+
+    if (pIB && i_cnt > 0)
+    {
+        if (pIB->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &mapped))
+        {
+            Memory.mem_copy(mapped.pData, indices, i_cnt * sizeof(u16));
+            pIB->Unmap();
+        }
+    }
+
+    pGeom.create(FVF, pVB, pIB);
 }
+
 void SPrimitiveBuffer::Destroy()
 {                       
 	if (pGeom){
