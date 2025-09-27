@@ -39,8 +39,8 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 	fmt = f;
 
 	// Check width-and-height of render target surface
-	if(w > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
-	if(h > D3D_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
+	if(w > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
+	if(h > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
 	// Select usage
 	u32 usage = D3DUSAGE_RENDERTARGET;
@@ -124,11 +124,11 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 
 		if(SampleCount <= 1)
 		{
-			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2D;
+			ViewDesc.ViewDimension = ERHI_DSV_DIMENSION::TEXTURE2D;
 		}
 		else
 		{
-			ViewDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2DMS;
+			ViewDesc.ViewDimension = ERHI_DSV_DIMENSION::TEXTURE2DMS;
 		}
 
 		switch(desc.Format)
@@ -180,16 +180,12 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 		{
 			if(CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 			{
-				D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
-				ZeroMemory(&UAVDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+				RHIUAVDesc uavDesc = {};
+				uavDesc.Format = fmt;
+				uavDesc.ViewDimension = ERHI_VIEW_DIMENSION::Texture2D;
+				uavDesc.NumElements = dwWidth * dwHeight;
 
-				UAVDesc.Format = (DXGI_FORMAT)fmt;
-				UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-				UAVDesc.Buffer.FirstElement = 0;
-				UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
-
-				// UAV creation - keep DirectX specific for now
-				CHK_DX(RDevice->CreateUnorderedAccessView((ID3D11Resource*)pSurface->GetRawTexture(), &UAVDesc, &pUAView));
+				pUAView = GRHI->CreateUAV(pSurface, uavDesc);
 			}
 		}
 
@@ -211,7 +207,8 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 
 void CRT::destroy()
 {
-	if(pTexture._get()) {
+	if (pTexture._get())
+	{
 		pTexture->surface_set(0);
 		pTexture = nullptr;
 	}
@@ -222,18 +219,21 @@ void CRT::destroy()
 	_RELEASE(pSurface);
 	_RELEASE(pUAView);
 
-	for(auto& MippedRT : pMippedRT) {
+	for (IRHIRenderTargetView* MippedRT : pMippedRT)
+	{
 		_RELEASE(MippedRT);
 	}
 
 	pMippedRT.clear();
 }
 
-void CRT::reset_begin() {
+void CRT::reset_begin()
+{
 	destroy();
 }
 
-void CRT::reset_end() {
+void CRT::reset_end()
+{
 	create(*cName, dwWidth, dwHeight, fmt);
 }
 

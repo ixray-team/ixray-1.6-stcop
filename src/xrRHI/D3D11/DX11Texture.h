@@ -117,6 +117,21 @@ public:
     ID3D11DepthStencilView* GetDX11DSV() const { return DSV; }
 };
 
+class DX11UnorderedAccessView :
+    public IRHIUnorderedAccessView
+{
+public:
+    DX11UnorderedAccessView(ID3D11UnorderedAccessView* pUAV) : UAV(pUAV) {}
+    ~DX11UnorderedAccessView() { if (UAV) UAV->Release(); }
+
+    void* GetRaw() override { return UAV; }
+    virtual void AddRef() override;
+    virtual u32 Release() override;
+
+private:
+    ID3D11UnorderedAccessView* UAV = nullptr;
+};
+
 class DX11TextureFactory :
     public IRHITextureFactory
 {
@@ -135,6 +150,7 @@ public:
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) override;
     virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
+    virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) override;
     
 private:
     D3D11_USAGE ConvertUsage(u32 usage);
@@ -142,9 +158,3 @@ private:
     u32 ConvertCPUAccessFlags(u32 cpuAccessFlags);
     u32 ConvertMiscFlags(u32 miscFlags);
 };
-
-
-
-
-
-
