@@ -164,10 +164,34 @@ IRHIDepthStencilView* DX9Surface::GetDepthStencilView()
     return DSV;
 }
 
-bool DX9Surface::UpdateData(const void* data, u32 size)
+bool DX9Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource)
 {
-    // Implementation would depend on usage flags
-    return false;
+    if (!Texture2D || !subResource || !subResource->Data || mipLevel > 0 || arrayLayer > 0)
+        return false; // DX9 не поддерживает мип-уровни и слои напрямую
+
+    u32 rowPitch = subResource->RowPitch;
+    if (rowPitch == 0)
+    {
+        rowPitch = subResource->Width * GetDX9FormatSize(ConvertRHIFormatToDX9(subResource->TextureFormat));
+    }
+
+    D3DLOCKED_RECT lockedRect;
+    HRESULT hr = Texture2D->LockRect(0, &lockedRect, nullptr, D3DLOCK_DISCARD);
+    if (FAILED(hr))
+        return false;
+
+    const u8* srcData = (const u8*)subResource->Data;
+    u8* dstData = (u8*)lockedRect.pBits;
+
+    for (u32 y = 0; y < subResource->Height; ++y)
+    {
+        memcpy(dstData, srcData, rowPitch);
+        srcData += rowPitch;
+        dstData += lockedRect.Pitch;
+    }
+
+    Texture2D->UnlockRect(0);
+    return true;
 }
 
 void* DX9Surface::Lock(u32 mipLevel, u32* pitch)
