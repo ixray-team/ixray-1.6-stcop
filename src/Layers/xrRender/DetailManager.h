@@ -129,8 +129,8 @@ public:
 	u32								hw_BatchSize;
 #ifndef USE_DX11	
 	ref_geom						hw_Geom;	
-	ID3DVertexBuffer*				hw_VB;
-	ID3DIndexBuffer*				hw_IB;
+	IRHIBuffer*				hw_VB;
+	IRHIBuffer*				hw_IB;
 #endif
 	ref_constant					hwc_consts;
 	ref_constant					hwc_wave;

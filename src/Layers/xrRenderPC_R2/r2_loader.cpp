@@ -196,80 +196,88 @@ void CRender::level_Unload()
 */
 }
 
-void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
+void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
-	R_ASSERT2					(base_fs,"Could not load geometry. File not found.");
-	dxRenderDeviceRender::Instance().Resources->Evict		();
-	u32	dwUsage					= D3DUSAGE_WRITEONLY;
+	R_ASSERT2(base_fs, "Could not load geometry. File not found.");
+	dxRenderDeviceRender::Instance().Resources->Evict();
+	u32	dwUsage = D3DUSAGE_WRITEONLY;
 
-	xr_vector<VertexDeclarator>				&_DC	= _alternative?xDC:nDC;
-	xr_vector<IDirect3DVertexBuffer9*>		&_VB	= _alternative?xVB:nVB;
-	xr_vector<IDirect3DIndexBuffer9*>		&_IB	= _alternative?xIB:nIB;
+	xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
+	xr_vector<IRHIBuffer*>& _VB = _alternative ? xVB : nVB;
+	xr_vector<IRHIBuffer*>& _IB = _alternative ? xIB : nIB;
 
 	// Vertex buffers
 	{
 		// Use DX9-style declarators
-		CStreamReader			*fs	= base_fs->open_chunk(fsL_VB);
-		R_ASSERT2				(fs,"Could not load geometry. File 'level.geom?' corrupted.");
-		u32 count				= fs->r_u32();
-		_DC.resize				(count);
-		_VB.resize				(count);
-		for (u32 i=0; i<count; i++)
+		CStreamReader* fs = base_fs->open_chunk(fsL_VB);
+		R_ASSERT2(fs, "Could not load geometry. File 'level.geom?' corrupted.");
+		u32 count = fs->r_u32();
+		_DC.resize(count);
+		_VB.resize(count);
+		for (u32 i = 0; i < count; i++)
 		{
 			// decl
 //			D3DVERTEXELEMENT9*	dcl		= (D3DVERTEXELEMENT9*) fs().pointer();
-			u32					buffer_size = (MAXD3DDECLLENGTH+1)*sizeof(D3DVERTEXELEMENT9);
-			D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
-			fs->r				(dcl,buffer_size);
-			fs->advance			(-(int)buffer_size);
+			u32					buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
+			D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
+			fs->r(dcl, buffer_size);
+			fs->advance(-(int)buffer_size);
 
 			u32 dcl_len = u32(GetDeclLength(dcl) + 1);
-			_DC[i].resize		(dcl_len);
-			fs->r				(_DC[i].begin(),dcl_len*sizeof(D3DVERTEXELEMENT9));
+			_DC[i].resize(dcl_len);
+			fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
 			// count, size
-			u32 vCount			= fs->r_u32	();
+			u32 vCount = fs->r_u32();
 			u32 vSize = (u32)ComputeVertexSize(dcl, 0);
 #ifdef DEBUG
 			Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
 #endif // DEBUG
 
 			// Create and fill
-			BYTE*	pData		= 0;
-			R_CHK				(RDevice->CreateVertexBuffer		( vCount*vSize, dwUsage, 0, D3DPOOL_MANAGED, &_VB[i], 0 ));
-			R_CHK				(_VB[i]->Lock(0,0,(void**)&pData,0));
-//			CopyMemory			(pData,fs().pointer(),vCount*vSize);
-			fs->r				(pData,vCount*vSize);
-			_VB[i]->Unlock		();
+			RHIBufferDesc vbDesc;
+			vbDesc.Size = vCount * vSize;
+			vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
+			vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			vbDesc.CPUAccessFlags = 0;
 
-//			fs->advance			(vCount*vSize);
+			xr_vector<u8> temp(vCount * vSize);
+			fs->r(temp.data(), vCount * vSize);
+
+			RHIBufferSubresource vbInit;
+			vbInit.pSysMem = temp.data();
+
+			_VB[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
+
 		}
-		fs->close				();
+		fs->close();
 	}
 
 	// Index buffers
 	{
-		CStreamReader			*fs	= base_fs->open_chunk(fsL_IB);
-		u32 count				= fs->r_u32();
-		_IB.resize				(count);
-		for (u32 i=0; i<count; i++)
+		CStreamReader* fs = base_fs->open_chunk(fsL_IB);
+		u32 count = fs->r_u32();
+		_IB.resize(count);
+		for (u32 i = 0; i < count; i++)
 		{
-			u32 iCount			= fs->r_u32	();
-#ifdef DEBUG
-			Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
-#endif // DEBUG
+			u32 iCount = fs->r_u32();
 
-			// Create and fill
-			BYTE*	pData		= 0;
-			R_CHK				(RDevice->CreateIndexBuffer	(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
-			R_CHK				(_IB[i]->Lock(0,0,(void**)&pData,0));
-//			CopyMemory			(pData,fs().pointer(),iCount*2);
-			fs->r				(pData,iCount*2);
-			_IB[i]->Unlock		();
+			xr_vector<u16> temp(iCount);
+			fs->r(temp.data(), iCount * sizeof(u16));
 
-//			fs().advance		(iCount*2);
+			RHIBufferDesc ibDesc;
+			ibDesc.Size = iCount * sizeof(u16);
+			ibDesc.Type = ERHI_BUFFER_TYPE::INDEX;
+			ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			ibDesc.CPUAccessFlags = 0;
+
+			RHIBufferSubresource ibInit;
+			ibInit.pSysMem = temp.data();
+
+			_IB[i] = GRHI->CreateBuffer(ibDesc, &ibInit);
+
 		}
-		fs->close				();
+		fs->close();
 	}
 }
 

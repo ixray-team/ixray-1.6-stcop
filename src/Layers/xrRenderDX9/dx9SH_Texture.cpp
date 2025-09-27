@@ -82,44 +82,41 @@ void CTexture::apply_theora	(u32 dwStage)
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:RDEVICE.dwTimeContinual))
     {
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
-		D3DLOCKED_RECT R{};
-		RECT rect;
-		rect.left			= 0;
-		rect.top			= 0;
-		rect.right			= pTheora->Width(true);
-		rect.bottom			= pTheora->Height(true);
 
-		u32 _w				= pTheora->Width(false);
+		u32 RowPitch = 0;
+		void* lockedPtr = pSurface->Lock(0, &RowPitch);
+		RECT rect{};
+		rect.left = 0;
+		rect.top = 0;
+		rect.right = pTheora->Width(true);
+		rect.bottom = pTheora->Height(true);
 
-		R_CHK				(T2D->LockRect(0,&R,&rect,0));
-		R_ASSERT			(R.Pitch == int(pTheora->Width(false)*4));
-		int _pos			= 0;
-		pTheora->DecompressFrame((u32*)R.pBits, _w - rect.right, _pos);
-		VERIFY				(u32(_pos) == rect.bottom*_w);
-		R_CHK				(T2D->UnlockRect(0));
+		u32 _w = pTheora->Width(false);
+
+		R_ASSERT(int(RowPitch) == int(pTheora->Width(false) * 4));
+		int _pos = 0;
+		pTheora->DecompressFrame((u32*)lockedPtr, _w - rect.right, _pos);
+		VERIFY(u32(_pos) == rect.bottom * _w);
+		pSurface->Unlock();
 	}
 	CHK_DX(RDevice->SetTexture(dwStage, (IDirect3DBaseTexture9*)pSurface->GetRawTexture()));
-};
-void CTexture::apply_avi	(u32 dwStage)	
+}
+
+void CTexture::apply_avi(u32 dwStage)	
 {
-	if (pAVI->NeedUpdate()){
+	if (pAVI->NeedUpdate())
+	{
 		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
-
-		// AVI
-		D3DLOCKED_RECT R{};
-		R_CHK	(T2D->LockRect(0,&R,nullptr,0));
-		R_ASSERT(R.Pitch == int(pAVI->m_dwWidth*4));
-		//		R_ASSERT(pAVI->DecompressFrame((u32*)(R.pBits)));
+		u32 RowPitch = 0;
+		void* lockedPtr = pSurface->Lock(0, &RowPitch);
+		R_ASSERT(int(RowPitch) == int(pAVI->m_dwWidth * 4));
 		BYTE* ptr; pAVI->GetFrame(&ptr);
-		CopyMemory(R.pBits,ptr,pAVI->m_dwWidth*pAVI->m_dwHeight*4);
-		//		R_ASSERT(pAVI->GetFrame((BYTE*)(&R.pBits)));
-
-		R_CHK	(T2D->UnlockRect(0));
+		CopyMemory(lockedPtr, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
+		pSurface->Unlock();
 	}
 	CHK_DX(RDevice->SetTexture(dwStage, (IDirect3DBaseTexture9*)pSurface->GetRawTexture()));
-};
+}
+
 void CTexture::apply_seq(u32 dwStage)
 {
 	// SEQ

@@ -27,6 +27,4 @@ public:
 private:
 	ID3D11Buffer* m_pBuffer;
 	RHIBufferDesc m_bufferDesc;
-
-
 };

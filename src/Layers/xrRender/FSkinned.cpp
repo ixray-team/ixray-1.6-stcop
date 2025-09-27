@@ -15,6 +15,8 @@
 
 #include "../../xrEngine/EnnumerateVertices.h"
 
+#include <vector>
+
 #include <FlexibleVertexFormat.h>
 using namespace FVF;
 
@@ -414,7 +416,6 @@ void CSkeletonX_ST::Load(const char* N, IReader *data, u32 dwFlags)
 }
 
 #ifdef USE_DX11
-
 void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 {
 	// Create HW VB in case this is possible
@@ -444,13 +445,14 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			vertHW_1W*		dstOriginal	= xr_alloc<vertHW_1W>(V.vCount);			
 			vertHW_1W*		dst	= dstOriginal;
 			vertBoned1W*	src = (vertBoned1W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)	{
+			for (u32 it=0; it<V.vCount; it++)
+			{
 				Fvector2	uv; uv.set(src->u,src->v);
 				dst->set	(src->P,src->N,src->T,src->B,uv,src->matrix);
 				dst++; src++;
 			}
 
-			R_CHK(dx10BufferUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -478,7 +480,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->matrix0),int(src->matrix1),src->w);
 				dst++;		src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -508,7 +510,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++;		
 				src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_3W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -536,7 +538,7 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 				dst++;		
 				src++;
 			}
-			R_CHK(dx10BufferUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
+			VERIFY(RHIUtils::CreateVertexBuffer	(&V.p_rm_Vertices, dstOriginal, V.vCount*vStride));
 			xr_free(dstOriginal);
 
 			V.rm_geom.create		(dwDecl_4W, V.p_rm_Vertices, V.p_rm_Indices);
@@ -561,40 +563,41 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 	case RM_SKINNING_1B:
 		{
 			u32 vStride = (u32)ComputeVertexSize(dwDecl_01W, 0);
-			VERIFY	(vStride==sizeof(vertHW_1W));
-			BYTE*	bytes		= 0;
-			VERIFY				(nullptr==V.p_rm_Vertices);
-			R_CHK				(RDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			vertHW_1W*		dst	= (vertHW_1W*)bytes;
-			vertBoned1W*	src = (vertBoned1W*)_verts_;
-			for (u32 it=0; it<V.vCount; it++)	{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,src->matrix*3);
+			VERIFY(vStride==sizeof(vertHW_1W));
+			VERIFY(nullptr == V.p_rm_Vertices);
+
+			vertHW_1W* dstOriginal = xr_alloc<vertHW_1W>(V.vCount);
+			vertHW_1W* dst = dstOriginal;
+			vertBoned1W* src = (vertBoned1W*)_verts_;
+			for (u32 it = 0; it < V.vCount; it++)
+			{
+				Fvector2 uv; uv.set(src->u, src->v);
+				dst->set(src->P, src->N, src->T, src->B, uv, src->matrix * 3);
 				dst++; src++;
 			}
-			V.p_rm_Vertices->Unlock	();
+
+			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+			xr_free(dstOriginal);
 			V.rm_geom.create		(dwDecl_01W, V.p_rm_Vertices, V.p_rm_Indices);
 		}  
 		break;
 	case RM_SKINNING_2B:
 		{
 			u32 vStride = (u32)ComputeVertexSize(dwDecl_2W, 0);
-			VERIFY				(vStride==sizeof(vertHW_2W));
-			BYTE* bytes			= 0;
-			VERIFY				(nullptr==V.p_rm_Vertices);
-			R_CHK				(RDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			R_CHK				(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			vertHW_2W* dst		= (vertHW_2W*)bytes;
-			vertBoned2W* src	= (vertBoned2W*)_verts_;
+			VERIFY(vStride==sizeof(vertHW_2W));
+			VERIFY(nullptr==V.p_rm_Vertices);
 
-			for (u32 it=0; it<V.vCount; ++it)	
+			vertHW_2W* dstOriginal = xr_alloc<vertHW_2W>(V.vCount);
+			vertHW_2W* dst = dstOriginal;
+			vertBoned2W* src = (vertBoned2W*)_verts_;
+			for (u32 it = 0; it < V.vCount; it++)
 			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->matrix0)*3,int(src->matrix1)*3,src->w);
+				Fvector2	uv; uv.set(src->u, src->v);
+				dst->set(src->P, src->N, src->T, src->B, uv, int(src->matrix0) * 3, int(src->matrix1) * 3, src->w);
 				dst++;		src++;
 			}
-			V.p_rm_Vertices->Unlock	();
+			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+			xr_free(dstOriginal);
 			V.rm_geom.create		(dwDecl_2W, V.p_rm_Vertices, V.p_rm_Indices);
 		}break;
 	case RM_SKINNING_3B:
@@ -603,40 +606,40 @@ void CSkeletonX_ext::_Load_hw	(Fvisual& V, void *	_verts_)
 			VERIFY					(vStride==sizeof(vertHW_3W));
 			BYTE*	bytes			= 0;
 			VERIFY					(nullptr==V.p_rm_Vertices);
-			R_CHK					(RDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			vertHW_3W* dst			= (vertHW_3W*)bytes;
-			vertBoned3W* src		= (vertBoned3W*)_verts_;
-			
-			for (u32 it=0; it<V.vCount; ++it)	
+
+			vertHW_3W* dstOriginal = xr_alloc<vertHW_3W>(V.vCount);
+			vertHW_3W* dst = dstOriginal;
+			vertBoned3W* src = (vertBoned3W*)_verts_;
+			for (u32 it = 0; it < V.vCount; it++)
 			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0])*3,int(src->m[1])*3,int(src->m[2])*3,src->w[0],src->w[1]);
-				dst++;		
+				Fvector2	uv; uv.set(src->u, src->v);
+				dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, src->w[0], src->w[1]);
+				dst++;
 				src++;
 			}
-			V.p_rm_Vertices->Unlock	();
+			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+			xr_free(dstOriginal);
+
 			V.rm_geom.create		(dwDecl_3W, V.p_rm_Vertices, V.p_rm_Indices);
 		}break;
 	case RM_SKINNING_4B:
 		{
 			u32 vStride = (u32)ComputeVertexSize(dwDecl_4W, 0);
-			VERIFY					(vStride==sizeof(vertHW_4W));
-			BYTE*	bytes			= 0;
-			VERIFY					(nullptr==V.p_rm_Vertices);
-			R_CHK					(RDevice->CreateVertexBuffer	(V.vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&V.p_rm_Vertices,0));
-			R_CHK					(V.p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			vertHW_4W* dst			= (vertHW_4W*)bytes;
-			vertBoned4W* src		= (vertBoned4W*)_verts_;
-			
-			for (u32 it=0; it<V.vCount; ++it)
+			VERIFY(vStride==sizeof(vertHW_4W));
+			VERIFY(nullptr==V.p_rm_Vertices);
+			vertHW_4W* dstOriginal = xr_alloc<vertHW_4W>(V.vCount);
+			vertHW_4W* dst = dstOriginal;
+			vertBoned4W* src = (vertBoned4W*)_verts_;
+			for (u32 it = 0; it < V.vCount; it++)
 			{
-				Fvector2	uv; uv.set(src->u,src->v);
-				dst->set	(src->P,src->N,src->T,src->B,uv,int(src->m[0])*3,int(src->m[1])*3,int(src->m[2])*3,int(src->m[3])*3,src->w[0],src->w[1],src->w[2]);
-				dst++;		
+				Fvector2	uv; uv.set(src->u, src->v);
+				dst->set(src->P, src->N, src->T, src->B, uv, int(src->m[0]) * 3, int(src->m[1]) * 3, int(src->m[2]) * 3, int(src->m[3]) * 3, src->w[0], src->w[1], src->w[2]);
+				dst++;
 				src++;
 			}
-			V.p_rm_Vertices->Unlock	();
+			VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+			xr_free(dstOriginal);
+
 			V.rm_geom.create		(dwDecl_4W, V.p_rm_Vertices, V.p_rm_Indices);
 		}break;
 	}
@@ -672,158 +675,146 @@ static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinema
 
 void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 {
-	u16* indices		= 0;
-
 #ifdef USE_DX11
-	indices = *m_Indices;
-#else //USE_DX11
-	R_CHK				(V->p_rm_Indices->Lock(0,V->dwPrimitives*3,(void**)&indices,D3DLOCK_READONLY));
+	u16* indices = *m_Indices;
+#else
+	RHIMappedSubresource mappedIdx = {};
+	if (!V->p_rm_Indices->Map(ERHI_BUFFER_MAP::READ, 0, &mappedIdx))
+		return;
+
+	u16* indices = reinterpret_cast<u16*>(mappedIdx.pData) + iBase;
 #endif
 
-	indices				+= iBase;
-
-#ifndef USE_DX11	//	Don't use hardware buffers in DX10 since we can't read them
-	switch	(RenderMode)
+#ifndef USE_DX11
+	if (RenderMode == RM_SKINNING_SOFT)
+#endif
 	{
-	case RM_SKINNING_SOFT:
-#endif //USE_DX11
+		if (*Vertices1W)
 		{
-			if(*Vertices1W)
+			vertBoned1W* vertices = *Vertices1W;
+			for (u32 idx = 0; idx < iCount; idx++)
 			{
-				vertBoned1W* vertices	= *Vertices1W;
-				for (u32 idx=0; idx<iCount; idx++){
-					vertBoned1W& v	= vertices[V->vBase+indices[idx]];
-#ifdef		DEBUG
-					verify_vertex( v,  V, Parent, iBase, iCount, indices, V->vBase+indices[idx], idx );
+				vertBoned1W& v = vertices[V->vBase + indices[idx]];
+#ifdef DEBUG
+				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
 #endif
-					CBoneData& BD	= Parent->LL_GetData((u16)v.matrix);
-					BD.AppendFace	(ChildIDX,(u16)(idx/3));
-				}
-			}else
-			if(*Vertices2W)
-			{
-				vertBoned2W* vertices	= *Vertices2W;
-				for (u32 idx=0; idx<iCount; ++idx)
-				{
-					vertBoned2W& v	= vertices[V->vBase+indices[idx]];
-#ifdef		DEBUG
-					verify_vertex( v,  V, Parent, iBase, iCount, indices, V->vBase+indices[idx], idx );
-#endif
-					CBoneData& BD0	= Parent->LL_GetData((u16)v.matrix0);
-					BD0.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD1	= Parent->LL_GetData((u16)v.matrix1);
-					BD1.AppendFace	(ChildIDX,(u16)(idx/3));
-				}
-			}else
-			if(*Vertices3W)
-			{
-				vertBoned3W* vertices	= *Vertices3W;
-				for (u32 idx=0; idx<iCount; ++idx)
-				{
-					vertBoned3W& v	= vertices[V->vBase+indices[idx]];
-#ifdef		DEBUG
-					verify_vertex( v,  V, Parent, iBase, iCount, indices, V->vBase+indices[idx], idx );
-#endif
-					CBoneData& BD0	= Parent->LL_GetData((u16)v.m[0]);
-					BD0.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD1	= Parent->LL_GetData((u16)v.m[1]);
-					BD1.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD2	= Parent->LL_GetData((u16)v.m[2]);
-					BD2.AppendFace	(ChildIDX,(u16)(idx/3));
-				}
-			}else
-			if(*Vertices4W)
-			{
-				vertBoned4W* vertices	= *Vertices4W;
-				for (u32 idx=0; idx<iCount; ++idx)
-				{
-					vertBoned4W& v	= vertices[V->vBase+indices[idx]];
-#ifdef		DEBUG
-					verify_vertex( v,  V, Parent, iBase, iCount, indices, V->vBase+indices[idx], idx );
-#endif
-					CBoneData& BD0	= Parent->LL_GetData((u16)v.m[0]);
-					BD0.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD1	= Parent->LL_GetData((u16)v.m[1]);
-					BD1.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD2	= Parent->LL_GetData((u16)v.m[2]);
-					BD2.AppendFace	(ChildIDX,(u16)(idx/3));
-					CBoneData& BD3	= Parent->LL_GetData((u16)v.m[3]);
-					BD3.AppendFace	(ChildIDX,(u16)(idx/3));
-				}
-			}else
-			R_ASSERT2(0,"not implemented yet");
+				CBoneData& BD = Parent->LL_GetData((u16)v.matrix);
+				BD.AppendFace(ChildIDX, (u16)(idx / 3));
+			}
 		}
-
-#ifndef USE_DX11	//	Don't use hardware buffers in DX10 since we can't read them
-		break;
-	case RM_SINGLE:
-	case RM_SKINNING_1B:	
+		else if (*Vertices2W)
 		{
-			vertHW_1W* vertices	= 0;
-			R_CHK				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-			for (u32 idx=0; idx<iCount; idx++){
-				vertHW_1W& v	= vertices[indices[idx]];
-				CBoneData& BD	= Parent->LL_GetData(v.get_bone());
-				BD.AppendFace	(ChildIDX,(u16)(idx/3));
+			vertBoned2W* vertices = *Vertices2W;
+			for (u32 idx = 0; idx < iCount; idx++)
+			{
+				vertBoned2W& v = vertices[V->vBase + indices[idx]];
+#ifdef DEBUG
+				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
+#endif
+				Parent->LL_GetData((u16)v.matrix0).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.matrix1).AppendFace(ChildIDX, (u16)(idx / 3));
 			}
-			V->p_rm_Vertices->Unlock();
 		}
-		break;
-	case RM_SKINNING_2B:
+		else if (*Vertices3W)
 		{
-			vertHW_2W* vertices		= 0;
-			R_CHK					(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-
-			for (u32 idx=0; idx<iCount; idx++)
+			vertBoned3W* vertices = *Vertices3W;
+			for (u32 idx = 0; idx < iCount; idx++)
 			{
-				vertHW_2W& v		= vertices[indices[idx]];
-				CBoneData& BD0		= Parent->LL_GetData(v.get_bone(0));
-				BD0.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD1		= Parent->LL_GetData(v.get_bone(1));
-				BD1.AppendFace		(ChildIDX,(u16)(idx/3));
+				vertBoned3W& v = vertices[V->vBase + indices[idx]];
+#ifdef DEBUG
+				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
+#endif
+				Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));
 			}
-			R_CHK					(V->p_rm_Vertices->Unlock());
-		}break;
-	case RM_SKINNING_3B:
+		}
+		else if (*Vertices4W)
 		{
-			vertHW_3W* vertices		= 0;
-			R_CHK					(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-
-			for (u32 idx=0; idx<iCount; idx++)
+			vertBoned4W* vertices = *Vertices4W;
+			for (u32 idx = 0; idx < iCount; idx++)
 			{
-				vertHW_3W& v		= vertices[indices[idx]];
-				CBoneData& BD0		= Parent->LL_GetData(v.get_bone(0));
-				BD0.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD1		= Parent->LL_GetData(v.get_bone(1));
-				BD1.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD2		= Parent->LL_GetData(v.get_bone(2));
-				BD2.AppendFace		(ChildIDX,(u16)(idx/3));
+				vertBoned4W& v = vertices[V->vBase + indices[idx]];
+#ifdef DEBUG
+				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
+#endif
+				Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData((u16)v.m[3]).AppendFace(ChildIDX, (u16)(idx / 3));
 			}
-			R_CHK					(V->p_rm_Vertices->Unlock());
-		}break;
-	case RM_SKINNING_4B:
-		{
-			vertHW_4W* vertices		= 0;
-			R_CHK					(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-
-			for (u32 idx=0; idx<iCount; idx++)
-			{
-				vertHW_4W& v		= vertices[indices[idx]];
-				CBoneData& BD0		= Parent->LL_GetData(v.get_bone(0));
-				BD0.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD1		= Parent->LL_GetData(v.get_bone(1));
-				BD1.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD2		= Parent->LL_GetData(v.get_bone(2));
-				BD2.AppendFace		(ChildIDX,(u16)(idx/3));
-				CBoneData& BD3		= Parent->LL_GetData(v.get_bone(3));
-				BD3.AppendFace		(ChildIDX,(u16)(idx/3));
-			}
-			R_CHK					(V->p_rm_Vertices->Unlock());
-		}break;
+		}
 	}
-	R_CHK					(V->p_rm_Indices->Unlock());
+#ifndef USE_DX11
+	else
+	{
+		RHIMappedSubresource mappedV = {};
+		if (!V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::READ, 0, &mappedV))
+		{
+			V->p_rm_Indices->Unmap();
+			return;
+		}
+
+		switch (RenderMode)
+		{
+		case RM_SINGLE:
+		case RM_SKINNING_1B:
+		{
+			vertHW_1W* vertices = reinterpret_cast<vertHW_1W*>(mappedV.pData);
+
+			for (u32 idx = 0; idx < iCount; idx++)
+			{
+				vertHW_1W& v = vertices[V->vBase + indices[idx]];
+				Parent->LL_GetData(v.get_bone()).AppendFace(ChildIDX, (u16)(idx / 3));
+			}
+		}
+		break;
+		case RM_SKINNING_2B:
+		{
+			vertHW_2W* vertices = reinterpret_cast<vertHW_2W*>(mappedV.pData);
+			for (u32 idx = 0; idx < iCount; idx++)
+			{
+				vertHW_2W& v = vertices[V->vBase + indices[idx]];
+				Parent->LL_GetData(v.get_bone(0)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(1)).AppendFace(ChildIDX, (u16)(idx / 3));
+			}
+		}
+		break;
+		case RM_SKINNING_3B:
+		{
+			vertHW_3W* vertices = reinterpret_cast<vertHW_3W*>(mappedV.pData);
+			for (u32 idx = 0; idx < iCount; idx++)
+			{
+				vertHW_3W& v = vertices[V->vBase + indices[idx]];
+				Parent->LL_GetData(v.get_bone(0)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(1)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(2)).AppendFace(ChildIDX, (u16)(idx / 3));
+			}
+		}
+		break;
+		case RM_SKINNING_4B:
+		{
+			vertHW_4W* vertices = reinterpret_cast<vertHW_4W*>(mappedV.pData);
+			for (u32 idx = 0; idx < iCount; idx++)
+			{
+				vertHW_4W& v = vertices[V->vBase + indices[idx]];
+				Parent->LL_GetData(v.get_bone(0)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(1)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(2)).AppendFace(ChildIDX, (u16)(idx / 3));
+				Parent->LL_GetData(v.get_bone(3)).AppendFace(ChildIDX, (u16)(idx / 3));
+			}
+		}
+		break;
+		default:
+			R_ASSERT2(0, "Unsupported RenderMode");
+		}
+
+		V->p_rm_Vertices->Unmap();
+	}
+	V->p_rm_Indices->Unmap();
 #endif
 }
+
 
 void CSkeletonX_ST::AfterLoad(CKinematics* parent, u16 child_idx)
 {
@@ -862,58 +853,79 @@ BOOL CSkeletonX_ext::_PickBoneHW4W(IKinematics::pick_result &r, float dist, cons
 	return pick_bone<vertHW_4W>(Parent,r, dist, S, D, V, indices, faces);
 }
 
-BOOL CSkeletonX_ext::_PickBone		(IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
+BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount)
 {
-	VERIFY							(Parent && (ChildIDX!=u16(-1)));
-	CBoneData& BD					= Parent->LL_GetData(bone_id);
-	CBoneData::FacesVec*	faces	= &BD.child_faces[ChildIDX];
-	BOOL result			= FALSE;
-	u16* indices		= 0;
-#ifdef USE_DX11
-	indices = *m_Indices;
-#else //USE_DX11
-	CHK_DX				(V->p_rm_Indices->Lock(0,V->dwPrimitives*3,(void**)&indices,D3DLOCK_READONLY));
-	// fill vertices
-	switch	(RenderMode)
+	VERIFY(Parent && (ChildIDX != u16(-1)));
+	CBoneData& BD = Parent->LL_GetData(bone_id);
+	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
+	BOOL result = FALSE;
+
+	RHIMappedSubresource mapped = {};
+	if (!V->p_rm_Indices->Map(ERHI_BUFFER_MAP::READ, 0, &mapped))
 	{
-case RM_SKINNING_SOFT:
-#endif
-
-	if		(*Vertices1W)		
-				result = _PickBoneSoft1W	(r,dist,start,dir,indices+iBase,*faces);
-	else if	(*Vertices2W)		
-				result = _PickBoneSoft2W	(r,dist,start,dir,indices+iBase,*faces);
-	else if	(*Vertices3W)		
-				result = _PickBoneSoft3W	(r,dist,start,dir,indices+iBase,*faces);
-	else {
-				VERIFY(!!(*Vertices4W));
-				result = _PickBoneSoft4W	(r,dist,start,dir,indices+iBase,*faces);
-		}
-
-#ifndef USE_DX11
-	break;
-case RM_SINGLE:
-case RM_SKINNING_1B:	result = _PickBoneHW1W	(r,dist,start,dir,V,indices+iBase,*faces); break;
-case RM_SKINNING_2B:	result = _PickBoneHW2W	(r,dist,start,dir,V,indices+iBase,*faces);	break;
-case RM_SKINNING_3B:	result = _PickBoneHW3W	(r,dist,start,dir,V,indices+iBase,*faces);	break;
-case RM_SKINNING_4B:	result = _PickBoneHW4W	(r,dist,start,dir,V,indices+iBase,*faces);	break;
-default: NODEFAULT;
+		Msg("! CSkeletonX_ext::_PickBone: failed to map index buffer");
+		return FALSE;
 	}
-	CHK_DX				(V->p_rm_Indices->Unlock());
-#endif //USE_DX11
+
+	u16* indices = reinterpret_cast<u16*>(mapped.pData) + iBase;
+
+	if (RenderMode == RM_SKINNING_SOFT)
+	{
+		if (*Vertices1W)
+		{
+			result = _PickBoneSoft1W(r, dist, start, dir, indices, *faces);
+		}
+		else if (*Vertices2W)
+		{
+			result = _PickBoneSoft2W(r, dist, start, dir, indices, *faces);
+		}
+		else if (*Vertices3W)
+		{
+			result = _PickBoneSoft3W(r, dist, start, dir, indices, *faces);
+		}
+		else
+		{
+			VERIFY(!!(*Vertices4W));
+			result = _PickBoneSoft4W(r, dist, start, dir, indices, *faces);
+		}
+	}
+	else
+	{
+		switch (RenderMode)
+		{
+		case RM_SINGLE:
+		case RM_SKINNING_1B:
+			result = _PickBoneHW1W(r, dist, start, dir, V, indices, *faces);
+			break;
+		case RM_SKINNING_2B:
+			result = _PickBoneHW2W(r, dist, start, dir, V, indices, *faces);
+			break;
+		case RM_SKINNING_3B:
+			result = _PickBoneHW3W(r, dist, start, dir, V, indices, *faces);
+			break;
+		case RM_SKINNING_4B:
+			result = _PickBoneHW4W(r, dist, start, dir, V, indices, *faces);
+			break;
+		default:
+			NODEFAULT;
+		}
+	}
+
+	V->p_rm_Indices->Unmap();
 
 	return result;
 }
-BOOL CSkeletonX_ST::PickBone		(IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+
+BOOL CSkeletonX_ST::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
 {
-	return inherited2::_PickBone	(r, dist,start,dir,this,bone_id,iBase,iCount);
-}
-BOOL CSkeletonX_PM::PickBone		(IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
-{
-	FSlideWindow& SW				= nSWI.sw[0];
-	return inherited2::_PickBone	(r,dist,start,dir,this,bone_id,iBase+SW.offset,SW.num_tris*3);
+	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase, iCount);
 }
 
+BOOL CSkeletonX_PM::PickBone(IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)
+{
+	FSlideWindow& SW = nSWI.sw[0];
+	return inherited2::_PickBone(r, dist, start, dir, this, bone_id, iBase + SW.offset, SW.num_tris * 3);
+}
 
 void	CSkeletonX_ST::		EnumBoneVertices( SEnumVerticesCallback &C, u16 bone_id )
 {
@@ -951,83 +963,111 @@ void CSkeletonX_ext::_FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& w
 
 void CSkeletonX_ext::_FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
-	vertHW_1W*			vertices;
-	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
-		u32 idx			= (*it)*3;
+	RHIMappedSubresource mapped = {};
+	if (!V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::READ, 0, &mapped))
+	{
+		Msg("! _FillVerticesHW1W: failed to map vertex buffer");
+		return;
+	}
+
+	vertHW_1W* vertices = reinterpret_cast<vertHW_1W*>(mapped.pData);
+
+	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
+	{
+		Fvector p[3];
+		u32 idx = (*it) * 3;
 		CSkeletonWallmark::WMFace F;
-		for (u32 k=0; k<3; k++){
-			vertHW_1W& vert			= vertices[indices[idx+k]];
-			F.bone_id[k][0]			= vert.get_bone();
-			F.bone_id[k][1]			= F.bone_id[k][0];
-			F.weight[k]				= 0.f;
-			const Fmatrix& xform	= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
-			vert.get_pos			(F.vert[k]);
-			xform.transform_tiny	(p[k],F.vert[k]);
-		}
-		Fvector test_normal;
-		test_normal.mknormal	(p[0],p[1],p[2]);
-		float cosa				= test_normal.dotproduct(normal);
-		if (cosa<EPS)			continue;
-		if (CDB::TestSphereTri(wm.ContactPoint(),size,p))
+
+		for (u32 k = 0; k < 3; ++k)
 		{
-			Fvector				UV;
-			for (u32 k=0; k<3; k++){
-				Fvector2& uv	= F.uv[k];
-				view.transform_tiny(UV,p[k]);
-				uv.x			= (1+UV.x)*.5f;
-				uv.y			= (1-UV.y)*.5f;
+			vertHW_1W& vert = vertices[V->vBase + indices[idx + k]];
+			F.bone_id[k][0] = vert.get_bone();
+			F.bone_id[k][1] = F.bone_id[k][0];
+			F.weight[k] = 0.f;
+
+			const Fmatrix& xform = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			vert.get_pos(F.vert[k]);
+			xform.transform_tiny(p[k], F.vert[k]);
+		}
+
+		Fvector test_normal;
+		test_normal.mknormal(p[0], p[1], p[2]);
+		float cosa = test_normal.dotproduct(normal);
+		if (cosa < EPS) continue;
+
+		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
+		{
+			Fvector UV;
+			for (u32 k = 0; k < 3; ++k)
+			{
+				Fvector2& uv = F.uv[k];
+				view.transform_tiny(UV, p[k]);
+				uv.x = (1 + UV.x) * 0.5f;
+				uv.y = (1 - UV.y) * 0.5f;
 			}
 			wm.m_Faces.push_back(F);
 		}
 	}
-	CHK_DX				(V->p_rm_Vertices->Unlock());
+
+	V->p_rm_Vertices->Unmap();
 }
+
 void CSkeletonX_ext::_FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
-	vertHW_2W*			vertices;
-	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); ++it)
+	RHIMappedSubresource mapped = {};
+	if (!V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::READ, 0, &mapped))
 	{
-		Fvector						p[3];
-		u32 idx						= (*it)*3;
-		CSkeletonWallmark::WMFace	F;
+		Msg("! _FillVerticesHW2W: failed to map vertex buffer");
+		return;
+	}
 
-		for (u32 k=0; k<3; k++)
+	vertHW_2W* vertices = reinterpret_cast<vertHW_2W*>(mapped.pData);
+
+	for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
+	{
+		Fvector p[3];
+		u32 idx = (*it) * 3;
+		CSkeletonWallmark::WMFace F;
+
+		for (u32 k = 0; k < 3; ++k)
 		{
-			Fvector P0,P1;
-			vertHW_2W& vert			= vertices[indices[idx+k]];
-			F.bone_id[k][0]			= vert.get_bone(0);
-			F.bone_id[k][1]			= vert.get_bone(1);
-			F.weight[k]				= vert.get_weight();
-			Fmatrix& xform0			= Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform; 
-			Fmatrix& xform1			= Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform; 
-			vert.get_pos			(F.vert[k]);		
-			xform0.transform_tiny	(P0,F.vert[k]);
-			xform1.transform_tiny	(P1,F.vert[k]);
-			p[k].lerp				(P0,P1,F.weight[k]);
+			Fvector P0, P1;
+			vertHW_2W& vert = vertices[V->vBase + indices[idx + k]];
+			F.bone_id[k][0] = vert.get_bone(0);
+			F.bone_id[k][1] = vert.get_bone(1);
+			F.weight[k] = vert.get_weight();
+
+			Fmatrix& xform0 = Parent->LL_GetBoneInstance(F.bone_id[k][0]).mRenderTransform;
+			Fmatrix& xform1 = Parent->LL_GetBoneInstance(F.bone_id[k][1]).mRenderTransform;
+
+			vert.get_pos(F.vert[k]);
+			xform0.transform_tiny(P0, F.vert[k]);
+			xform1.transform_tiny(P1, F.vert[k]);
+			p[k].lerp(P0, P1, F.weight[k]);
 		}
-		Fvector test_normal;
-		test_normal.mknormal	(p[0],p[1],p[2]);
-		float cosa				= test_normal.dotproduct(normal);
-		if (cosa<EPS)			continue;
 
-		if (CDB::TestSphereTri(wm.ContactPoint(),size,p))
+		Fvector test_normal;
+		test_normal.mknormal(p[0], p[1], p[2]);
+		float cosa = test_normal.dotproduct(normal);
+		if (cosa < EPS) continue;
+
+		if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
 		{
-			Fvector				UV;
-			for (u32 k=0; k<3; k++){
-				Fvector2& uv	= F.uv[k];
-				view.transform_tiny(UV,p[k]);
-				uv.x			= (1+UV.x)*.5f;
-				uv.y			= (1-UV.y)*.5f;
+			Fvector UV;
+			for (u32 k = 0; k < 3; ++k)
+			{
+				Fvector2& uv = F.uv[k];
+				view.transform_tiny(UV, p[k]);
+				uv.x = (1 + UV.x) * 0.5f;
+				uv.y = (1 - UV.y) * 0.5f;
 			}
 			wm.m_Faces.push_back(F);
 		}
 	}
-	CHK_DX				(V->p_rm_Vertices->Unlock());
+
+	V->p_rm_Vertices->Unmap();
 }
+
 
 void CSkeletonX_ext::_FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
@@ -1070,49 +1110,67 @@ IC void TEnumBoneVertices	(vertex_buffer_type vertices, u16* indices, CBoneData:
 		}
 }
 
-void	CSkeletonX_ext::_EnumBoneVertices	( SEnumVerticesCallback &C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount ) const
+void CSkeletonX_ext::_EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) const
 {
+	VERIFY(Parent && (ChildIDX != u16(-1)));
+	CBoneData& BD = Parent->LL_GetData(bone_id);
+	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
 
-	VERIFY							(Parent && (ChildIDX!=u16(-1)));
-	CBoneData& BD					= Parent->LL_GetData(bone_id);
-	CBoneData::FacesVec*	faces	= &BD.child_faces[ChildIDX];
-	u16* indices		= 0;
-	//.	R_CHK				(V->pIndices->Lock(iBase,iCount,		(void**)&indices,	D3DLOCK_READONLY));
-
+	// Map index buffer
 #ifdef USE_DX11
-	VERIFY(*m_Indices);
-	indices = *m_Indices;
-#else //USE_DX11
-	CHK_DX				(V->p_rm_Indices->Lock(0,V->dwPrimitives*3,(void**)&indices,D3DLOCK_READONLY));
-	// fill vertices
-	void				*vertices	=0;
-	if( RenderMode!= RM_SKINNING_SOFT)
-		CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-	switch	(RenderMode)
+	u16* indices = *m_Indices;
+#else
+	RHIMappedSubresource mappedIndices = {};
+	if (!V->p_rm_Indices->Map(ERHI_BUFFER_MAP::READ, 0, &mappedIndices))
 	{
-		case RM_SKINNING_SOFT:
-#endif
-			if	(*Vertices1W) 
-				TEnumBoneVertices( Vertices1W, indices+iBase, *faces, C );
-			else if(*Vertices2W)
-				TEnumBoneVertices( Vertices2W, indices+iBase, *faces, C  );	
-			else if(*Vertices3W)
-				TEnumBoneVertices( Vertices3W, indices+iBase, *faces, C  );
-			else {
-					VERIFY( !!(*Vertices4W) );
-					TEnumBoneVertices( Vertices4W, indices+iBase, *faces, C  );
-				 }
-#ifndef USE_DX11
-			break;
-		case RM_SINGLE:
-		case RM_SKINNING_1B: TEnumBoneVertices	( (vertHW_1W*)vertices, indices+iBase, *faces, C  );break;
-		case RM_SKINNING_2B: TEnumBoneVertices	( (vertHW_2W*)vertices, indices+iBase, *faces, C  );break;
-		case RM_SKINNING_3B: TEnumBoneVertices	( (vertHW_3W*)vertices, indices+iBase, *faces, C  );break;
-		case RM_SKINNING_4B: TEnumBoneVertices	( (vertHW_4W*)vertices, indices+iBase, *faces, C  );break;
-		default: NODEFAULT;
+		Msg("! _EnumBoneVertices: failed to map index buffer");
+		return;
 	}
-	if( RenderMode!= RM_SKINNING_SOFT)
-		CHK_DX				(V->p_rm_Vertices->Unlock());
-	CHK_DX				(V->p_rm_Indices->Unlock());
-#endif //USE_DX11
+
+	u16* indices = reinterpret_cast<u16*>(mappedIndices.pData) + iBase;
+
+	if (RenderMode == RM_SKINNING_SOFT)
+#endif
+	{
+		if (*Vertices1W)
+			TEnumBoneVertices(Vertices1W, indices, *faces, C);
+		else if (*Vertices2W)
+			TEnumBoneVertices(Vertices2W, indices, *faces, C);
+		else if (*Vertices3W)
+			TEnumBoneVertices(Vertices3W, indices, *faces, C);
+		else
+		{
+			VERIFY(*Vertices4W);
+			TEnumBoneVertices(Vertices4W, indices, *faces, C);
+		}
+	}
+#ifndef USE_DX11
+	else
+	{
+		// Map vertex buffer
+		RHIMappedSubresource mappedVertices = {};
+		if (!V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::READ, 0, &mappedVertices))
+		{
+			Msg("! _EnumBoneVertices: failed to map vertex buffer");
+			V->p_rm_Indices->Unmap();
+			return;
+		}
+
+		void* vertices = mappedVertices.pData;
+
+		switch (RenderMode)
+		{
+		case RM_SINGLE:
+		case RM_SKINNING_1B: TEnumBoneVertices((vertHW_1W*)vertices, indices, *faces, C); break;
+		case RM_SKINNING_2B: TEnumBoneVertices((vertHW_2W*)vertices, indices, *faces, C); break;
+		case RM_SKINNING_3B: TEnumBoneVertices((vertHW_3W*)vertices, indices, *faces, C); break;
+		case RM_SKINNING_4B: TEnumBoneVertices((vertHW_4W*)vertices, indices, *faces, C); break;
+		default: NODEFAULT;
+		}
+
+		V->p_rm_Vertices->Unmap();
+	}
+
+	V->p_rm_Indices->Unmap();
+#endif
 }

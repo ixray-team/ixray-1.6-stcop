@@ -153,8 +153,8 @@ void CDetail::Load		(IReader* S)
 			V.uv.y = vertices[v].v;
 			pV.push_back(V);
 		}
-		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
-		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
+		VERIFY(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
+		VERIFY(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
 		hw_Geom.create(dwDecl, hw_VB, hw_IB);
 	}
 #endif

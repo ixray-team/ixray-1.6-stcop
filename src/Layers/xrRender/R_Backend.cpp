@@ -18,48 +18,37 @@ void CBackend::RestoreQuadIBData()
 	;
 }
 
-void CBackend::CreateQuadIB		()
+void CBackend::CreateQuadIB()
 {
-	static const u32 dwTriCount	= 4*1024;
-	static const u32 dwIdxCount	= dwTriCount*2*3;
-	u16		IndexBuffer[dwIdxCount];
-	u16		*Indices		= IndexBuffer;
-	//u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	//if (Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
-	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
+	static const u32 dwTriCount = 4 * 1024;
+	static const u32 dwIdxCount = dwTriCount * 2 * 3;
+	u16	IndexBuffer[dwIdxCount];
+	u16* Indices = IndexBuffer;
 
-	D3D_BUFFER_DESC desc;
-	desc.ByteWidth = dwIdxCount*2;
-	//desc.Usage = D3D_USAGE_IMMUTABLE;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.BindFlags = D3D_BIND_INDEX_BUFFER;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
+	RHIBufferDesc desc;
+	desc.Size = dwIdxCount * 2;
+	desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	desc.Type = ERHI_BUFFER_TYPE::INDEX;
 
-	D3D_SUBRESOURCE_DATA subData;
+	RHIBufferSubresource subData;
 	subData.pSysMem = IndexBuffer;
 
-	//R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
+	int	Cnt = 0;
+	int	ICnt = 0;
+	for (int i = 0; i < dwTriCount; i++)
 	{
-		int		Cnt = 0;
-		int		ICnt= 0;
-		for (int i=0; i<dwTriCount; i++)
-		{
-			Indices[ICnt++]=u16(Cnt+0);
-			Indices[ICnt++]=u16(Cnt+1);
-			Indices[ICnt++]=u16(Cnt+2);
+		Indices[ICnt++] = u16(Cnt + 0);
+		Indices[ICnt++] = u16(Cnt + 1);
+		Indices[ICnt++] = u16(Cnt + 2);
 
-			Indices[ICnt++]=u16(Cnt+3);
-			Indices[ICnt++]=u16(Cnt+2);
-			Indices[ICnt++]=u16(Cnt+1);
+		Indices[ICnt++] = u16(Cnt + 3);
+		Indices[ICnt++] = u16(Cnt + 2);
+		Indices[ICnt++] = u16(Cnt + 1);
 
-			Cnt+=4;
-		}
+		Cnt += 4;
 	}
-	//R_CHK(QuadIB->Unlock());
 
-	//R_CHK(RDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,nullptr));
-	R_CHK(RDevice->CreateBuffer		( &desc, &subData, &QuadIB));
+	QuadIB = GRHI->CreateBuffer(desc, &subData);
 }
 
 #else //USE_DX11
@@ -68,25 +57,30 @@ void CBackend::CreateQuadIB		()
 void CBackend::RestoreQuadIBData()
 {
 	const u32 dwTriCount	= 4*1024;
-	u16		*Indices		= 0;
-	R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
+	u16		IndexBuffer[dwTriCount * 2 * 3];
+	u16* Indices = IndexBuffer;
+	int	Cnt = 0;
+	int	ICnt = 0;
+	for (int i = 0; i < dwTriCount; ++i)
 	{
-		int		Cnt = 0;
-		int		ICnt= 0;
-		for (int i=0; i<dwTriCount; i++)
-		{
-			Indices[ICnt++]=u16(Cnt+0);
-			Indices[ICnt++]=u16(Cnt+1);
-			Indices[ICnt++]=u16(Cnt+2);
+		Indices[ICnt++] = u16(Cnt + 0);
+		Indices[ICnt++] = u16(Cnt + 1);
+		Indices[ICnt++] = u16(Cnt + 2);
 
-			Indices[ICnt++]=u16(Cnt+3);
-			Indices[ICnt++]=u16(Cnt+2);
-			Indices[ICnt++]=u16(Cnt+1);
+		Indices[ICnt++] = u16(Cnt + 3);
+		Indices[ICnt++] = u16(Cnt + 2);
+		Indices[ICnt++] = u16(Cnt + 1);
 
-			Cnt+=4;
-		}
+		Cnt += 4;
 	}
-	R_CHK(QuadIB->Unlock());
+
+	// Update QuadIB via Map/Unmap
+	RHIMappedSubresource mapped = {};
+	if (QuadIB->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped))
+	{
+		memcpy(mapped.pData, IndexBuffer, dwTriCount * 2 * 3 * sizeof(u16));
+		QuadIB->Unmap();
+	}
 }
 
 
@@ -94,29 +88,26 @@ void CBackend::CreateQuadIB		()
 {
 	const u32 dwTriCount	= 4*1024;
 	const u32 dwIdxCount	= dwTriCount*2*3;
-	u16		*Indices		= 0;
-	u32		dwUsage			= D3DUSAGE_WRITEONLY;
-	if (Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
-	R_CHK(RDevice->CreateIndexBuffer	(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&QuadIB,nullptr));
-//	Msg("CBackend::CreateQuadIB(). Created buffer size = %d ", dwIdxCount*2 );
-	R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));
+	u16 IndexBufferStatic[dwIdxCount];
+	u16* Indices = IndexBufferStatic;
+
+	int Cnt = 0;
+	int ICnt = 0;
+	for (int i = 0; i < dwTriCount; ++i)
 	{
-		int		Cnt = 0;
-		int		ICnt= 0;
-		for (int i=0; i<dwTriCount; i++)
-		{
-			Indices[ICnt++]=u16(Cnt+0);
-			Indices[ICnt++]=u16(Cnt+1);
-			Indices[ICnt++]=u16(Cnt+2);
+		Indices[ICnt++] = u16(Cnt + 0);
+		Indices[ICnt++] = u16(Cnt + 1);
+		Indices[ICnt++] = u16(Cnt + 2);
 
-			Indices[ICnt++]=u16(Cnt+3);
-			Indices[ICnt++]=u16(Cnt+2);
-			Indices[ICnt++]=u16(Cnt+1);
+		Indices[ICnt++] = u16(Cnt + 3);
+		Indices[ICnt++] = u16(Cnt + 2);
+		Indices[ICnt++] = u16(Cnt + 1);
 
-			Cnt+=4;
-		}
+		Cnt += 4;
 	}
-	R_CHK(QuadIB->Unlock());
+
+	// Create immutable index buffer with initial data
+	VERIFY(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBufferStatic, dwIdxCount * 2));
 }
 
 #endif
@@ -124,10 +115,6 @@ void CBackend::CreateQuadIB		()
 // Device dependance
 void CBackend::OnDeviceCreate	()
 {
-#ifdef USE_DX11
-	//CreateConstantBuffers();
-#endif //USE_DX11
-
 	CreateQuadIB		();
 
 	// streams
@@ -146,26 +133,39 @@ void CBackend::OnDeviceDestroy()
 
 	// Quad
 	_RELEASE							(QuadIB);
-
-#ifdef USE_DX11
-	//DestroyConstantBuffers();
-#endif //USE_DX11
 }
 
-#ifdef USE_DX11
-/*
-void CBackend::CreateConstantBuffers()
+void CBackend::set_Vertices(IRHIBuffer* _vb, u32 _vb_stride)
 {
-	const int iVectorElements = 4;
-	const int iVectorNumber = 256;
-	dx10BufferUtils::CreateConstantBuffer(&m_pPixelConstants, iVectorNumber*iVectorElements*sizeof(float));
-	dx10BufferUtils::CreateConstantBuffer(&m_pVertexConstants, iVectorNumber*iVectorElements*sizeof(float));
+	if ((vb != _vb) || (vb_stride != _vb_stride))
+	{
+		vb = _vb;
+		vb_stride = _vb_stride;
+
+		if (vb)
+		{
+			vb->SetVertexBuffer(0, _vb_stride, 0);
+		}
+		else
+		{
+			GRHI->ClearVertexBuffer(_vb_stride);
+		}
+	}
 }
 
-void CBackend::DestroyConstantBuffers()
+void CBackend::set_Indices(IRHIBuffer* _ib)
 {
-	_RELEASE(m_pVertexConstants);
-	_RELEASE(m_pPixelConstants);
+	if (ib != _ib)
+	{
+		ib = _ib;
+
+		if (ib)
+		{
+			ib->SetIndexBuffer(false, 0);
+		}
+		else
+		{
+			GRHI->ClearIndexBuffer();
+		}
+	}
 }
-*/
-#endif
