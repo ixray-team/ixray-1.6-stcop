@@ -560,7 +560,7 @@ CRender::SurfaceParams CRender::getSurface(const char* nameTexture)
 {
 	auto texture = DEV->_CreateTexture(nameTexture);
 	SurfaceParams surface = {};
-	surface.Surface = texture->get_SRView();
+	surface.Surface = texture->GetView()->GetRawSRV();
 	surface.w = (float)texture->get_Width();
 	surface.h = (float)texture->get_Height();
 

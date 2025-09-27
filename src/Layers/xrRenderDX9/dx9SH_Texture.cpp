@@ -433,7 +433,12 @@ void CTexture::video_Stop			()
 	if (pTheora) pTheora->Stop(); 
 }
 
-BOOL CTexture::video_IsPlaying	()				
-{ 
-	return (pTheora)?pTheora->IsPlaying():FALSE; 
+bool CTexture::video_IsPlaying()
+{
+	return (pTheora) ? pTheora->IsPlaying() : false;
+}
+
+IRHIShaderResourceView* CTexture::GetView()
+{
+	return m_pSRView;
 }
