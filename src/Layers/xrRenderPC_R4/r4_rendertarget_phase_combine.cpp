@@ -260,7 +260,7 @@ void CRenderTarget::phase_combine()
 			RCache.set_Geometry(g_combine);
 
 			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
-			RContext->CopyResource((ID3D11Resource*)rt_Generic_0->pSurface->GetRawTexture(), (ID3D11Resource*)rt_Generic_2->pSurface->GetRawTexture());
+			GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
 

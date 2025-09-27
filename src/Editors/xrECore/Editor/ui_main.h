@@ -275,7 +275,7 @@ public:
 	void DestroyViewport(int ID);
 
 	size_t ViewID = -1;
-	xr_vector<Viewport> Views;
+	xr_map<int, Viewport> Views;
 
 	ref_texture	m_HeaderLogo = nullptr;
 	ref_texture	m_WinMin = nullptr;

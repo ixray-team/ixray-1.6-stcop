@@ -1,7 +1,6 @@
 #pragma once
 #include "../RHI.h"
-#include "DX9TextureImplementations.h"
-#include <d3d9.h>
+#include "DX9Texture.h"
 
 class InternalDevice9 :
 	public IRHIDevice
@@ -15,6 +14,8 @@ public:
 	
 	virtual IRHITextureFactory* GetTextureFactory() override;
 	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
+	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
+	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
 
 private:
 	bool CreateD3D9();
@@ -29,5 +30,5 @@ private:
 	IDirect3D9* D3D = nullptr;
 	IDirect3DStateBlock9* DebugSB = nullptr;
 	
-	DX9TextureFactory* m_pTextureFactory = nullptr;
+	DX9TextureFactory* TextureFactory = nullptr;
 };

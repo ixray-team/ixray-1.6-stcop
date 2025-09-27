@@ -59,6 +59,8 @@ public:
 
 	void ClearRawTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent = ERTColor::Transparent);
+	void CopySurface(IRHISurface* Dest, IRHISurface* Source);
+	void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source);
 
 	void Present();
 	
