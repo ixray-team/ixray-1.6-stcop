@@ -617,7 +617,7 @@ void CActor::SetActorKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags mask, bool state, 
 	}
 }
 
-extern BOOL b_toggle_weapon_aim;
+extern bool b_toggle_weapon_aim;
 
 void CActor::ProcessKeys(CHudItem* itm)
 {
