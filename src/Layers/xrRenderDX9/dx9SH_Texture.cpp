@@ -442,3 +442,15 @@ IRHIShaderResourceView* CTexture::GetView()
 {
 	return m_pSRView;
 }
+
+ERHI_USAGE CTexture::GetUsage()
+{
+	ERHI_USAGE res = ERHI_USAGE::USAGE_DEFAULT;
+
+	if (pSurface)
+	{
+		res = pSurface->GetUsage();
+	}
+
+	return res;
+}
