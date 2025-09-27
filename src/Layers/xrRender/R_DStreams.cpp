@@ -52,7 +52,6 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 #endif
 
 #ifdef DEBUG
-	PGO					(Msg("PGO:VB_LOCK:%d",vl_Count));
 	VERIFY				(0==dbg_lock);
 	dbg_lock			++;
 #endif
@@ -110,7 +109,6 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 void	_VertexStream::Unlock		( u32 Count, u32 Stride)
 {
 #ifdef DEBUG
-	PGO					(Msg("PGO:VB_UNLOCK:%d",Count));
 	VERIFY				(1==dbg_lock);
 	dbg_lock			--;
 #endif
@@ -191,7 +189,6 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 #ifdef USE_DX11
 	D3D11_MAPPED_SUBRESOURCE MappedSubRes;
 #endif
-	PGO						(Msg("PGO:IB_LOCK:%d",Count));
 	vOffset					= 0;
 	BYTE* pLockedData		= 0;
 
@@ -226,7 +223,6 @@ u16*	_IndexStream::Lock	( u32 Count, u32& vOffset )
 
 void	_IndexStream::Unlock(u32 RealCount)
 {
-	PGO						(Msg("PGO:IB_UNLOCK:%d",RealCount));
 	mPosition				+=	RealCount;
 	VERIFY					(pIB);
 #ifdef USE_DX11

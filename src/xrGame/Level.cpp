@@ -67,15 +67,11 @@
 
 #include "inventory_upgrade_manager.h"
 
-ENGINE_API bool g_dedicated_server;
-
-//extern BOOL	g_bDebugDumpPhysicsStep;
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
-
-float		g_cl_lvInterp		= 0.1f;
-u32			lvInterpSteps		= 0;
+float g_cl_lvInterp	= 0.1f;
+u32 lvInterpSteps	= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

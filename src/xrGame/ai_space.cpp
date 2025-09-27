@@ -23,8 +23,6 @@
 #include "AnimNotify/AnimNotifyGame.h"
 #include "../xrCore/AnimNotify/AnimNotifyRegistry.h"
 
-ENGINE_API	bool g_dedicated_server;
-
 CAI_Space *g_ai_space = 0;
 
 CAI_Space::CAI_Space				()
