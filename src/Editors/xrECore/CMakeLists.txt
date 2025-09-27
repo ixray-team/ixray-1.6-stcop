@@ -111,6 +111,8 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/SkeletonCustom.*"
 	"../../Layers/xrRender/SkeletonRigid.*"
 	"../../Layers/xrRender/SkeletonX.*"
+	"../../Layers/xrRender/RenderPhaseAccumPointGeom.*"
+	"../../Layers/xrRender/RenderPhaseAccumSpotGeom.*"
 	"../../Layers/xrRender/stats_manager.*"
 	"../../Layers/xrRenderDX9/dx9Texture.*"
 	"../../Layers/xrRender/TextureDescrManager.*"
