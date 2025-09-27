@@ -1,4 +1,5 @@
 #pragma once
+#include "RHIEnums.h"
 
 struct RHIBufferSubresource
 {

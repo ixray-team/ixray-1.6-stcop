@@ -117,6 +117,10 @@ bool CD3D11Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresour
 		return false;
 	}
 
+	pData->pData = mappedSubresource.pData;
+	pData->DepthPitch = mappedSubresource.DepthPitch;
+	pData->RowPitch = mappedSubresource.RowPitch;
+
 	return true;
 }
 

@@ -19,10 +19,7 @@ IRHITextureFactory* InternalDevice9::GetTextureFactory()
 
 void InternalDevice9::SetTextureFactory(IRHITextureFactory* factory)
 {
-	if (TextureFactory)
-	{
-		delete TextureFactory;
-	}
+	xr_delete(TextureFactory);
 	TextureFactory = static_cast<DX9TextureFactory*>(factory);
 	TextureFactory = TextureFactory;
 }
