@@ -210,12 +210,20 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 #endif // DEBUG
 
 			// Create and fill
-			BYTE*	pData		= 0;
-			R_CHK				(RDevice->CreateVertexBuffer(vCount*vSize,dwUsage,0,D3DPOOL_MANAGED,&VB[i],0));
-			R_CHK				(VB[i]->Lock(0,0,(void**)&pData,0));
-			fs->r				(pData,vCount*vSize);
-//			CopyMemory			(pData,fs->pointer(),vCount*vSize);	//.???? copy while skip T&B
-			VB[i]->Unlock		();
+			RHIBufferDesc vbDesc{};
+			vbDesc.Size = vCount * vSize;
+			vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
+			vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			vbDesc.CPUAccessFlags = 0;
+
+			// Временный буфер для инициализации
+			std::vector<BYTE> tmpData(vCount * vSize);
+			fs->r(tmpData.data(), tmpData.size());
+
+			RHIBufferSubresource vbInit{};
+			vbInit.pSysMem = tmpData.data();
+
+			VB[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
 
 //			fs->advance			(vCount*vSize);
 		}
@@ -227,28 +235,33 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 	// Index buffers
 	if (base_fs->find_chunk(fsL_IB))
 	{
-		CStreamReader			*fs	= base_fs->open_chunk(fsL_IB);
-		u32 count				= fs->r_u32();
-		IB.resize				(count);
-		for (u32 i=0; i<count; i++)
+		CStreamReader* fs = base_fs->open_chunk(fsL_IB);
+		u32 count = fs->r_u32();
+		IB.resize(count);
+
+		for (u32 i = 0; i < count; i++)
 		{
-			u32 iCount		= fs->r_u32	();
-#ifdef DEBUG
-			Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
-#endif // DEBUG
+			u32 iCount = fs->r_u32();
 
-			// Create and fill
-			BYTE*	pData		= 0;
-			R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&IB[i],0));
-			R_CHK				(IB[i]->Lock(0,0,(void**)&pData,0));
-//			CopyMemory			(pData,fs->pointer(),iCount*2);
-			fs->r				(pData,iCount*2);
-			IB[i]->Unlock		();
+			// Временный буфер для данных индексов
+			std::vector<u16> tmpData(iCount);
+			fs->r(tmpData.data(), iCount * sizeof(u16));
 
-//			fs->advance			(iCount*2);
+			RHIBufferDesc ibDesc{};
+			ibDesc.Size = iCount * sizeof(u16);
+			ibDesc.Type = ERHI_BUFFER_TYPE::INDEX;
+			ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			ibDesc.CPUAccessFlags = 0;
+
+			RHIBufferSubresource ibInit{};
+			ibInit.pSysMem = tmpData.data();
+
+			IB[i] = GRHI->CreateBuffer(ibDesc, &ibInit);
 		}
-		fs->close				();
+
+		fs->close();
 	}
+
 }
 
 void CRender::LoadVisuals(IReader *fs)

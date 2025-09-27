@@ -13,18 +13,18 @@ class					CKinematicsAnimated;
 class					CKinematics;
 class					IParticleCustom;
 
-struct					IRender_Mesh	
+struct IRender_Mesh	
 {
 	// format
 	ref_geom					rm_geom;
 
 	// verts
-	ID3DVertexBuffer*		p_rm_Vertices;
+	IRHIBuffer* p_rm_Vertices;
 	u32							vBase;
 	u32							vCount;
 
 	// indices
-	ID3DIndexBuffer*		p_rm_Indices;
+	IRHIBuffer* p_rm_Indices;
 	u32							iBase;
 	u32							iCount;
 	u32							dwPrimitives;
@@ -37,7 +37,8 @@ private:
 };
 
 // The class itself
-class		ECORE_API			dxRender_Visual : public IRenderVisual
+class ECORE_API dxRender_Visual :
+	public IRenderVisual
 {
 public:
 #ifdef _EDITOR
@@ -59,10 +60,6 @@ public:
 	virtual void				Copy						(dxRender_Visual* from);
 	virtual void				Spawn						()				{};
 	virtual void				Depart						()				{};
-
-//	virtual	CKinematics*		dcast_PKinematics			()				{ return 0;	}
-//	virtual	CKinematicsAnimated*dcast_PKinematicsAnimated	()				{ return 0;	}
-//	virtual IParticleCustom*	dcast_ParticleCustom		()				{ return 0;	}
 
 	virtual vis_data&	_BCL	getVisData() { return vis;}
 	virtual u32					getType()	 { return Type;}

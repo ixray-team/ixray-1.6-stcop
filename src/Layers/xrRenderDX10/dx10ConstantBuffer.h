@@ -1,18 +1,17 @@
-#ifndef	dx10ConstantBuffer_included
-#define	dx10ConstantBuffer_included
 #pragma once
 
 struct	R_constant;
 struct	R_constant_load;
 
-class dx10ConstantBuffer : public xr_resource_named
+class dx10ConstantBuffer :
+	public xr_resource_named
 {
 public:
 	dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
 	~dx10ConstantBuffer();
 
 	bool			Similar(dx10ConstantBuffer &_in);
-	ID3DBuffer*		GetBuffer() { return m_pBuffer; }
+	IRHIBuffer*		GetBuffer() { return m_pBuffer; }
 
 	void			Flush();
 
@@ -40,7 +39,7 @@ private:
 	xr_vector<D3D_SHADER_TYPE_DESC>	m_MembersList;
 	xr_vector<shared_str>				m_MembersNames;
 
-	ID3DBuffer*							m_pBuffer;
+	IRHIBuffer*							m_pBuffer;
 	u32									m_uiBufferSize;	//	Cache buffer size for debug validation
 	void*								m_pBufferData;
 	bool								m_bChanged;
@@ -53,5 +52,3 @@ private:
 };
 
 typedef	resptr_core<dx10ConstantBuffer,resptr_base<dx10ConstantBuffer> > ref_cbuffer;
-
-#endif	//	dx10ConstantBuffer_included
