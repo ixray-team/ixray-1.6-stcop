@@ -132,19 +132,8 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			vCount				= data->r_u32				();
 			u32 vStride = (u32)ComputeVertexSize(fvf);
 
-#ifdef USE_DX11
-			VERIFY				(nullptr==p_rm_Vertices);
-			R_CHK				(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount*vStride));
-#else //USE_DX11
-			BOOL	bSoft		= Caps.geometry.bSoftware;
-			u32		dwUsage		= D3DUSAGE_WRITEONLY | (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);
-			BYTE*	bytes		= 0;
-			VERIFY				(nullptr==p_rm_Vertices);
-			R_CHK				(RDevice->CreateVertexBuffer	(vCount*vStride,dwUsage,0,D3DPOOL_MANAGED,&p_rm_Vertices,0));
-			R_CHK				(p_rm_Vertices->Lock(0,0,(void**)&bytes,0));
-			CopyMemory			(bytes, data->pointer(), vCount*vStride);
-			p_rm_Vertices->Unlock	();
-#endif
+			VERIFY(nullptr == p_rm_Vertices);
+			VERIFY(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
 		}
 	}
 
@@ -174,20 +163,8 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			iCount				= data->r_u32();
 			dwPrimitives		= iCount/3;
 
-#ifdef USE_DX11
-			VERIFY				(nullptr==p_rm_Indices);
-			R_CHK				(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount*2));
-#else //USE_DX11
-			BOOL	bSoft		= Caps.geometry.bSoftware;
-			u32		dwUsage		= /*D3DUSAGE_WRITEONLY |*/ (bSoft?D3DUSAGE_SOFTWAREPROCESSING:0);	// indices are read in model-wallmarks code
-			BYTE*	bytes		= 0;
-
-			VERIFY				(nullptr==p_rm_Indices);
-			R_CHK				(RDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&p_rm_Indices,0));
-			R_CHK				(p_rm_Indices->Lock(0,0,(void**)&bytes,0));
-			CopyMemory		(bytes, data->pointer(), iCount*2);
-			p_rm_Indices->Unlock	();
-#endif
+			VERIFY(nullptr == p_rm_Indices);
+			VERIFY(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2, false, false));
 		}
 	}
 

@@ -265,7 +265,7 @@ void CSkeletonX::_Copy		(CSkeletonX *B)
 	RMS_boneid				= B->RMS_boneid;
 	RMS_bonecount			= B->RMS_bonecount;
 
-#ifdef USE_DX11
+#if 1
 	m_Indices				= B->m_Indices;
 #endif //USE_DX11
 }
@@ -818,7 +818,7 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 	}
 }
 
-#ifdef USE_DX11
+#if 1
 void CSkeletonX::_DuplicateIndices(const char* N, IReader *data)
 {
 	//	We will have trouble with container since don't know were to take readable indices

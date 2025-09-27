@@ -58,28 +58,29 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 {
 	u32 count = (u32)m_ctable->m_CBTable.size();
 
-	for (u32 i=0; i<count; ++i)
+	for (u32 i = 0; i < count; ++i)
 	{
 		m_ctable->m_CBTable[i].second->Flush();
 	}
 
-	ID3DBuffer*	tempBuffer[CBackend::MaxCBuffers];
+	xr_vector<IRHIBuffer*> tempBuffer;
+	tempBuffer.resize(CBackend::MaxCBuffers);
 
-	for (u32 i=0; i<count; ++i)
+	for (u32 i = 0; i < count; ++i)
 	{
 		tempBuffer[i] = m_ctable->m_CBTable[i].second->GetBuffer();
 	}
 
 	// process constant-loaders
-	R_constant_table::c_table::iterator	it	= m_ctable->table.begin();
-	R_constant_table::c_table::iterator	end	= m_ctable->table.end	();
-	for (; it!=end; it++)	
+	R_constant_table::c_table::iterator	it = m_ctable->table.begin();
+	R_constant_table::c_table::iterator	end = m_ctable->table.end();
+	for (; it != end; it++)
 	{
-		R_constant*		Cs	= &**it;
+		R_constant* Cs = &**it;
 		if (Cs->handler)	Cs->handler->setup(Cs);
 	}
 
-	RContext->CSSetConstantBuffers(0, count, tempBuffer);
+	GRHI->SetConstantBuffers(0, count, tempBuffer, ERHI_SHADER_TYPE::CS);
 
 	if (!m_Textures.empty())
 		RContext->CSSetShaderResources(0, (u32)m_Textures.size(), &m_Textures[0]);
@@ -95,4 +96,3 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 
 	RContext->Dispatch(dimx, dimy, dimz);
 }
-

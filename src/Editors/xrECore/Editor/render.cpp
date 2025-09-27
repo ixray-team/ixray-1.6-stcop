@@ -28,8 +28,10 @@ ECORE_API float	g_fSCREEN;
 
 CRender RImplementation;
 
-void CRenderTarget::draw_volume(light* L) {
-	switch(L->flags.type) {
+void CRenderTarget::draw_volume(light* L)
+{
+	switch(L->flags.type)
+	{
 		case IRender_Light::SPOT:
 		RCache.set_Geometry(g_accum_spot);
 		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_CONE_NUMVERTEX, 0, DU_CONE_NUMFACES);
@@ -41,7 +43,8 @@ void CRenderTarget::draw_volume(light* L) {
 	}
 }
 
-CRenderTarget::CRenderTarget() {
+CRenderTarget::CRenderTarget()
+{
 	t_envmap_0 = DEV->_CreateTexture("$user$env_s0");
 	t_envmap_1 = DEV->_CreateTexture("$user$env_s1");
 
