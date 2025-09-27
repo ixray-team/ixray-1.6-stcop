@@ -1,9 +1,9 @@
-#include "DX11TextureImplementations.h"
+#include "DX11Texture.h"
 #include <d3d11.h>
 
 // DX11 Surface implementation
 DX11Surface::DX11Surface(ID3D11Texture2D* texture)
-	: m_pTexture2D(texture), m_pResource(texture)
+	: Texture2D(texture), Resource(texture)
 {
 	if (texture)
 	{
@@ -22,7 +22,7 @@ DX11Surface::DX11Surface(ID3D11Texture2D* texture)
 }
 
 DX11Surface::DX11Surface(ID3D11Texture3D* texture)
-	: m_pTexture3D(texture), m_pResource(texture)
+	: Texture3D(texture), Resource(texture)
 {
 	if (texture)
 	{
@@ -41,7 +41,7 @@ DX11Surface::DX11Surface(ID3D11Texture3D* texture)
 }
 
 DX11Surface::DX11Surface(ID3D11Texture1D* texture)
-	: m_pTexture1D(texture), m_pResource(texture)
+	: Texture1D(texture), Resource(texture)
 {
 	if (texture)
 	{
@@ -61,25 +61,29 @@ DX11Surface::DX11Surface(ID3D11Texture1D* texture)
 
 DX11Surface::~DX11Surface()
 {
-	if (m_pSRV) delete m_pSRV;
-	if (m_pRTV) delete m_pRTV;
-	if (m_pDSV) delete m_pDSV;
-	if (m_pResource) m_pResource->Release();
+	xr_delete(SRV);
+	xr_delete(RTV);
+	xr_delete(DSV);
+
+	if (Resource)
+	{
+		Resource->Release();
+	}
 }
 
 void* DX11Surface::GetRawTexture()
 {
-	return m_pResource;
+	return Resource;
 }
 
 void DX11Surface::AddRef()
 {
-	if (m_pResource) m_pResource->AddRef();
+	if (Resource) Resource->AddRef();
 }
 
 u32 DX11Surface::Release()
 {
-	if (m_pResource) return m_pResource->Release();
+	if (Resource) return Resource->Release();
 	return 0;
 }
 
@@ -111,31 +115,31 @@ u32 DX11Surface::GetFormat() const
 u32 DX11Surface::GetTextureType() const
 {
 	D3D11_RESOURCE_DIMENSION DescInfo;
-	m_pResource->GetType(&DescInfo);
-	//if (m_pTexture2D) return D3D11_RESOURCE_DIMENSION_TEXTURE2D;
-	//if (m_pTexture3D) return D3D11_RESOURCE_DIMENSION_TEXTURE3D;
-	//if (m_pTexture1D) return D3D11_RESOURCE_DIMENSION_TEXTURE1D;
+	Resource->GetType(&DescInfo);
+	//if (Texture2D) return D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+	//if (Texture3D) return D3D11_RESOURCE_DIMENSION_TEXTURE3D;
+	//if (Texture1D) return D3D11_RESOURCE_DIMENSION_TEXTURE1D;
 	return DescInfo;
 }
 
 IRHIShaderResourceView* DX11Surface::GetShaderResourceView()
 {
-	if (!m_pSRV && m_pResource)
+	if (!SRV && Resource)
 	{
 		// Create SRV if needed
 		// This would need device context to create SRV
 	}
-	return m_pSRV;
+	return SRV;
 }
 
 IRHIRenderTargetView* DX11Surface::GetRenderTargetView()
 {
-	return m_pRTV;
+	return RTV;
 }
 
 IRHIDepthStencilView* DX11Surface::GetDepthStencilView()
 {
-	return m_pDSV;
+	return DSV;
 }
 
 bool DX11Surface::UpdateData(const void* data, u32 size)
@@ -157,110 +161,110 @@ void DX11Surface::Unlock()
 
 // DX11 Shader Resource View implementation
 DX11ShaderResourceView::DX11ShaderResourceView(ID3D11ShaderResourceView* srv, IRHISurface* surface)
-	: m_pSRV(srv), m_pSurface(surface)
+	: SRV(srv), Surface(surface)
 {
 }
 
 DX11ShaderResourceView::~DX11ShaderResourceView()
 {
-	if (m_pSRV) m_pSRV->Release();
+	if (SRV) SRV->Release();
 }
 
 void* DX11ShaderResourceView::GetRawSRV()
 {
-	return m_pSRV;
+	return SRV;
 }
 
 void DX11ShaderResourceView::AddRef()
 {
-	if (m_pSRV) m_pSRV->AddRef();
+	if (SRV) SRV->AddRef();
 }
 
 u32 DX11ShaderResourceView::Release()
 {
-	if (m_pSRV) return m_pSRV->Release();
+	if (SRV) return SRV->Release();
 	return 0;
 }
 
 IRHISurface* DX11ShaderResourceView::GetSurface()
 {
-	return m_pSurface;
+	return Surface;
 }
 
 void DX11ShaderResourceView::BindToPixelShader(u32 slot)
 {
-	if (m_pSRV)
+	if (SRV)
 	{
 		// Would need device context
-		// RContext->PSSetShaderResources(slot, 1, &m_pSRV);
+		// RContext->PSSetShaderResources(slot, 1, &SRV);
 	}
 }
 
 void DX11ShaderResourceView::BindToVertexShader(u32 slot)
 {
-	if (m_pSRV)
+	if (SRV)
 	{
 		// Would need device context
-		// RContext->VSSetShaderResources(slot, 1, &m_pSRV);
+		// RContext->VSSetShaderResources(slot, 1, &SRV);
 	}
 }
 
 void DX11ShaderResourceView::BindToGeometryShader(u32 slot)
 {
-	if (m_pSRV)
+	if (SRV)
 	{
 		// Would need device context
-		// RContext->GSSetShaderResources(slot, 1, &m_pSRV);
+		// RContext->GSSetShaderResources(slot, 1, &SRV);
 	}
 }
 
 void DX11ShaderResourceView::BindToComputeShader(u32 slot)
 {
-	if (m_pSRV)
+	if (SRV)
 	{
 		// Would need device context
-		// RContext->CSSetShaderResources(slot, 1, &m_pSRV);
+		// RContext->CSSetShaderResources(slot, 1, &SRV);
 	}
 }
 
 // DX11 Render Target View implementation
 DX11RenderTargetView::DX11RenderTargetView(ID3D11RenderTargetView* rtv, IRHISurface* surface)
-	: m_pRTV(rtv), m_pSurface(surface)
+	: RTV(rtv), Surface(surface)
 {
 }
 
 DX11RenderTargetView::~DX11RenderTargetView()
 {
-	if (m_pRTV) m_pRTV->Release();
+	if (RTV) RTV->Release();
 }
 
 void* DX11RenderTargetView::GetRawRTV()
 {
-	return m_pRTV;
+	return RTV;
 }
 
 void DX11RenderTargetView::AddRef()
 {
-	if (m_pRTV) m_pRTV->AddRef();
+	if (RTV) RTV->AddRef();
 }
 
 u32 DX11RenderTargetView::Release()
 {
-	if (m_pRTV) return m_pRTV->Release();
+	if (RTV) return RTV->Release();
 	return 0;
 }
 
 IRHISurface* DX11RenderTargetView::GetSurface()
 {
-	return m_pSurface;
+	return Surface;
 }
 
 void DX11RenderTargetView::BindAsRenderTarget(u32 slot)
 {
-	if (m_pRTV)
+	if (RTV)
 	{
 		// Would need device context
-		// RContext->OMSetRenderTargets(1, &m_pRTV, nullptr);
+		// RContext->OMSetRenderTargets(1, &RTV, nullptr);
 	}
 }
 
@@ -272,50 +276,59 @@ void DX11RenderTargetView::UnbindRenderTarget()
 
 void DX11RenderTargetView::Clear(float r, float g, float b, float a)
 {
-	if (m_pRTV)
+	if (RTV)
 	{
 		float color[4] = { r, g, b, a };
 		// Would need device context
-		// RContext->ClearRenderTargetView(m_pRTV, color);
+		// RContext->ClearRenderTargetView(RTV, color);
 	}
 }
 
 DX11DepthStencilView::DX11DepthStencilView(ID3D11DepthStencilView* dsv, IRHISurface* surface)
-	: m_pDSV(dsv), m_pSurface(surface)
+	: DSV(dsv), Surface(surface)
 {
 }
 
 DX11DepthStencilView::~DX11DepthStencilView()
 {
-	if (m_pDSV) m_pDSV->Release();
+	if (DSV)
+	{
+		DSV->Release();
+	}
 }
 
 void* DX11DepthStencilView::GetRawDSV()
 {
-	return m_pDSV;
+	return DSV;
 }
 
 void DX11DepthStencilView::AddRef()
 {
-	if (m_pDSV) m_pDSV->AddRef();
+	if (DSV)
+	{
+		DSV->AddRef();
+	}
 }
 
 u32 DX11DepthStencilView::Release()
 {
-	if (m_pDSV) return m_pDSV->Release();
+	if (DSV)
+	{
+		return DSV->Release();
+	}
 	return 0;
 }
 
 IRHISurface* DX11DepthStencilView::GetSurface()
 {
-	return m_pSurface;
+	return Surface;
 }
 
 void DX11DepthStencilView::BindAsDepthStencil()
 {
-	if (m_pDSV)
+	if (DSV)
 	{
-		// RContext->OMSetRenderTargets(0, nullptr, m_pDSV);
+		// RContext->OMSetRenderTargets(0, nullptr, DSV);
 	}
 }
 
@@ -324,32 +337,8 @@ void DX11DepthStencilView::UnbindDepthStencil()
 	// RContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void DX11DepthStencilView::ClearDepth(float depth)
-{
-	if (m_pDSV)
-	{
-		// RContext->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_DEPTH, depth, 0);
-	}
-}
-
-void DX11DepthStencilView::ClearStencil(u8 stencil)
-{
-	if (m_pDSV)
-	{
-		// RContext->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_STENCIL, 1.0f, stencil);
-	}
-}
-
-void DX11DepthStencilView::ClearDepthStencil(float depth, u8 stencil)
-{
-	if (m_pDSV)
-	{
-		// RContext->ClearDepthStencilView(m_pDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depth, stencil);
-	}
-}
-
 DX11TextureFactory::DX11TextureFactory(ID3D11Device* device, ID3D11DeviceContext* context)
-	: m_pDevice(device), m_pContext(context)
+	: Device(device), Context(context)
 {
 }
 
@@ -398,7 +387,7 @@ IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 s
 	d3dDesc.MiscFlags = ConvertMiscFlags(desc.MiscFlags);
 
 	ID3D11Texture2D* texture = nullptr;
-	HRESULT hr = m_pDevice->CreateTexture2D(&d3dDesc, nullptr, &texture);
+	HRESULT hr = Device->CreateTexture2D(&d3dDesc, nullptr, &texture);
 	if (FAILED(hr))
 		return nullptr;
 
@@ -421,7 +410,7 @@ IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 	d3dDesc.MiscFlags = ConvertMiscFlags(desc.MiscFlags);
 
 	ID3D11Texture2D* texture = nullptr;
-	HRESULT hr = m_pDevice->CreateTexture2D(&d3dDesc, nullptr, &texture);
+	HRESULT hr = Device->CreateTexture2D(&d3dDesc, nullptr, &texture);
 	if (FAILED(hr))
 		return nullptr;
 
@@ -470,7 +459,7 @@ IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface
 	}
 
 	ID3D11ShaderResourceView* srv = nullptr;
-	HRESULT hr = m_pDevice->CreateShaderResourceView(dx11Surface->GetDX11Resource(), desc != nullptr ? &srvDesc : nullptr , &srv);
+	HRESULT hr = Device->CreateShaderResourceView(dx11Surface->GetDX11Resource(), desc != nullptr ? &srvDesc : nullptr , &srv);
 	if (FAILED(hr))
 		return nullptr;
 
@@ -499,7 +488,7 @@ IRHIRenderTargetView* DX11TextureFactory::CreateRenderTargetView(IRHISurface* su
 	}
 
 	ID3D11RenderTargetView* rtv = nullptr;
-	HRESULT hr = m_pDevice->CreateRenderTargetView(dx11Surface->GetDX11Resource(), &rtvDesc, &rtv);
+	HRESULT hr = Device->CreateRenderTargetView(dx11Surface->GetDX11Resource(), &rtvDesc, &rtv);
 	if (FAILED(hr))
 		return nullptr;
 
@@ -517,16 +506,19 @@ IRHIDepthStencilView* DX11TextureFactory::CreateDepthStencilView(IRHISurface* su
 	dsvDesc.ViewDimension = (D3D11_DSV_DIMENSION)desc.ViewDimension;
 	dsvDesc.Flags = desc.Flags;
 	
-	if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2D) {
+	if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2D)
+	{
 		dsvDesc.Texture2D.MipSlice = desc.MipSlice;
-	} else if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2DARRAY) {
+	}
+	else if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2DARRAY)
+	{
 		dsvDesc.Texture2DArray.MipSlice = desc.MipSlice;
 		dsvDesc.Texture2DArray.FirstArraySlice = desc.FirstArraySlice;
 		dsvDesc.Texture2DArray.ArraySize = desc.ArraySize;
 	}
 
 	ID3D11DepthStencilView* dsv = nullptr;
-	HRESULT hr = m_pDevice->CreateDepthStencilView(dx11Surface->GetDX11Resource(), &dsvDesc, &dsv);
+	HRESULT hr = Device->CreateDepthStencilView(dx11Surface->GetDX11Resource(), &dsvDesc, &dsv);
 	if (FAILED(hr))
 		return nullptr;
 
