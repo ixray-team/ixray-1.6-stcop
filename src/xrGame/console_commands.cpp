@@ -2417,8 +2417,8 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "dbg_draw_lchangers", &dbg_net_Draw_Flags, dbg_draw_lchangers);
 
-	CMD3(CCC_Mask, "g_infinite_fire", &psActorFlags, AF_INFINITEFIRE);
-	CMD3(CCC_Mask, "g_infinite_durability", &psActorFlags, AF_INFINITEDURABILITY);
+	CMD3(CCC_Mask, "g_unlimited_fire", &psActorFlags, AF_INFINITEFIRE);
+	CMD3(CCC_Mask, "g_unlimited_durability", &psActorFlags, AF_INFINITEDURABILITY);
 
 	CMD1(CCC_ChZLoggerTest, "chZLoggerTest");
 	CMD1(CCC_ConsoleColors, "get_console_colors");
