@@ -360,10 +360,15 @@ CRenderTarget::CRenderTarget()
 		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
 	}
 
-	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]() {
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)]) {
+	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]()
+	{
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+		{
+			GRHI->GPUStatsEnable = false;
 			return;
 		}
+
+		GRHI->GPUStatsEnable = true;
 
 		auto State = g_debug_blend_state;
 		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData)
@@ -464,8 +469,9 @@ CRenderTarget::CRenderTarget()
 		static int stack_levels = 3;
 		ImGui::SliderInt("Stack Levels", &stack_levels, 0, 8);
 
-		auto& perf = GPUEvents_Statistics();
-		for (size_t i = 0; i < perf.count; i++) {
+		auto& perf = GRHI->GPUStats();
+		for (size_t i = 0; i < perf.count; i++)
+		{
 			auto& event = perf.events[i];
 			if (event.stack < stack_levels) {
 				u64 time_micros = (event.end - event.begin) / (event.freq / 1000000);
