@@ -182,3 +182,31 @@ ERHI_FORMAT ConvertDX9FormatToRHI(D3DFORMAT dx9Format)
 		return ERHI_FORMAT::UNKNOWN;
 	}
 }
+
+u32 GetDX9FormatSize(D3DFORMAT dx9Format)
+{
+	switch (dx9Format)
+	{
+	case D3DFMT_R32F:               return 4;
+	case D3DFMT_A32B32G32R32F:      return 16;
+	case D3DFMT_A16B16G16R16F:      return 8;
+	case D3DFMT_A16B16G16R16:       return 8;
+	case D3DFMT_G32R32F:            return 8;
+	case D3DFMT_G16R16F:            return 4;
+	case D3DFMT_G16R16:             return 4;
+	case D3DFMT_A8B8G8R8:           return 4;
+	case D3DFMT_R16F:               return 2;
+	case D3DFMT_L16:                return 2;
+	case D3DFMT_L8:                 return 1;
+	case D3DFMT_A8:                 return 1;
+	case D3DFMT_DXT1:               return 8;  // на блок 4x4
+	case D3DFMT_DXT3:               return 16; // на блок 4x4
+	case D3DFMT_DXT5:               return 16; // на блок 4x4
+	case D3DFMT_R5G6B5:             return 2;
+	case D3DFMT_A1R5G5B5:           return 2;
+	case D3DFMT_A8R8G8B8:           return 4;
+	case D3DFMT_X8R8G8B8:           return 4;
+	case D3DFMT_A4R4G4B4:           return 2;
+	default:                        return 0;
+	}
+}

@@ -52,6 +52,23 @@ struct RHIUAVDesc
 	u32 WSize; // Для 3D текстур
 };
 
+struct RHISubResource
+{
+	const void* Data;
+	u32 DataSize;
+	u32 Width;
+	u32 Height;
+	u32 Depth;
+	u32 RowPitch;
+	u32 DepthPitch;
+	ERHI_FORMAT TextureFormat;
+
+	RHISubResource() : Data(nullptr), DataSize(0), Width(0), Height(0),
+		Depth(1), RowPitch(0), DepthPitch(0),
+		TextureFormat(ERHI_FORMAT::UNKNOWN) {
+	}
+};
+
 class IRHITexture
 {
 public:
@@ -84,7 +101,7 @@ public:
 	virtual IRHIRenderTargetView* GetRenderTargetView() = 0;
 	virtual IRHIDepthStencilView* GetDepthStencilView() = 0;
 	
-	virtual bool UpdateData(const void* data, u32 size) = 0;
+	virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource) = 0;
 	
 	virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) = 0;
 	virtual void Unlock() = 0;
