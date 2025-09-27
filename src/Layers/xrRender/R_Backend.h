@@ -1,14 +1,4 @@
-#ifndef r_backendH
-#define r_backendH
 #pragma once
-
-//#define RBackend_PGO
-
-#ifdef	RBackend_PGO
-#define PGO(a)	a
-#else
-#define PGO(a)
-#endif
 
 #include "R_DStreams.h"
 #include "r_constants_cache.h"
@@ -185,15 +175,6 @@ public:
 		u32								calls;
 		u32								vs;
 		u32								ps;
-#ifdef	DEBUG
-		u32								decl;
-		u32								vb;
-		u32								ib;
-		u32								states;			// Number of times the shader-state changes
-		u32								textures;		// Number of times the shader-tex changes
-		u32								matrices;		// Number of times the shader-xform changes
-		u32								constants;		// Number of times the shader-consts changes
-#endif
 		u32								xforms;
 		u32								target_zb;
 
@@ -437,6 +418,4 @@ extern  ECORE_API CBackend			RCache;
 
 #ifndef _EDITOR
 #	include "D3DUtils.h"
-#endif
-
 #endif

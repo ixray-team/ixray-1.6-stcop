@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../xrServerEntities/gametype_chooser.h"
 #include "GameFont.h"
 #include "Environment.h"
@@ -8,8 +7,9 @@
 class IRenderVisual;
 class IMainMenu;
 class ENGINE_API CPS_Instance;
-//-----------------------------------------------------------------------------------------------------------
-class ENGINE_API IGame_Persistent	: 
+extern ENGINE_API bool g_dedicated_server;
+
+class ENGINE_API IGame_Persistent : 
 	public DLL_Pure,
 	public pureAppStart, 
 	public pureAppEnd,
@@ -113,7 +113,6 @@ public:
 	virtual bool					CanBePaused			()		{ return true;}
 };
 
-extern ENGINE_API	bool g_dedicated_server;
-extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
+extern ENGINE_API IGame_Persistent* g_pGamePersistent;
 
 #include "IGame_Menu.h"

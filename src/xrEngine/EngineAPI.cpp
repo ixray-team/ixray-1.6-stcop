@@ -86,8 +86,6 @@ void CEngineAPI::InitializeDedicated()
 	g_current_renderer	= 0;
 }
 
-extern ENGINE_API bool g_dedicated_server;
-
 void __cdecl Null_Factory_Destroy(DLL_Pure* O)
 {
 }

@@ -29,8 +29,6 @@
 #endif
 #include "../xrScripts/script_callback_ex.h"
 
-ENGINE_API bool	g_dedicated_server;
-
 CUIXml* pWpnScopeXml = nullptr;
 
 extern void createWpnScopeXML();
