@@ -127,5 +127,5 @@ void CRenderTarget::phase_sslr() {
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
 	}
 
-	RContext->CopyResource((ID3D11Resource*)rt_sslr_old->pSurface->GetRawTexture(), (ID3D11Resource*)rt_sslr->pSurface->GetRawTexture());
+	GRHI->CopySurface(rt_sslr_old->pSurface, rt_sslr->pSurface);
 }
