@@ -68,6 +68,11 @@ u32 InternalDevice9::selectRefresh(u32 dwWidth, u32 dwHeight, D3DFORMAT fmt)
 	}
 }
 
+IRHIBuffer* InternalDevice9::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource)
+{
+	return new CD3D9Buffer(static_cast<IDirect3DDevice9*>(RawDevice), desc, pSubresource);
+}
+
 void InternalDevice9::UpdateBuffersD3D9()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
