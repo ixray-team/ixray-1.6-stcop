@@ -220,7 +220,7 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
 	rhiDesc.Height = TexDesc.Height;
 	rhiDesc.Depth = TexDesc.Depth;
 	rhiDesc.MipLevels = TexDesc.MipLevels;
-	rhiDesc.Format = TexDesc.Format;
+	rhiDesc.Format = (ERHI_FORMAT)TexDesc.Format;
 	rhiDesc.Usage = TexDesc.Usage;
 	rhiDesc.BindFlags = TexDesc.BindFlags;
 	rhiDesc.CPUAccessFlags = TexDesc.CPUAccessFlags;
@@ -334,7 +334,7 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 		rhiDesc.Height = desc.Height;
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = desc.Format;
+		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 		rhiDesc.Usage = desc.Usage;
 		rhiDesc.BindFlags = desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
@@ -367,7 +367,7 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 		rhiDesc.Height = desc.Height;
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = desc.Format;
+		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 		rhiDesc.Usage = desc.Usage;
 		rhiDesc.BindFlags = desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
@@ -391,7 +391,7 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 		rhiDesc.Height = desc.Height;
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = desc.Format;
+		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 		rhiDesc.Usage = desc.Usage;
 		rhiDesc.BindFlags = desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
@@ -613,7 +613,7 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 	rhiDesc.Height = desc.Height;
 	rhiDesc.Depth = desc.Depth;
 	rhiDesc.MipLevels = desc.MipLevels;
-	rhiDesc.Format = desc.Format;
+	rhiDesc.Format = (ERHI_FORMAT)desc.Format;
 	rhiDesc.Usage = desc.Usage;
 	rhiDesc.BindFlags = desc.BindFlags;
 	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;

@@ -7,6 +7,7 @@
 #	define RHI_API __declspec(dllimport)
 #endif
 
+#include "RHIConstants.h"
 #include "RHIEnums.h"
 #include "RHITextureInterfaces.h"
 #include "RHIDevice.h"

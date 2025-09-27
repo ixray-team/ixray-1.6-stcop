@@ -456,7 +456,7 @@ void				CResourceManager::_DeleteConstantTable	(const R_constant_table* C)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-CRT*	CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
+CRT* CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	R_ASSERT(Name && Name[0] && w && h);
 
@@ -464,7 +464,10 @@ CRT*	CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 Sa
 	LPSTR N = LPSTR(Name);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RT::iterator I = m_rtargets.find	(N);
-	if (I!=m_rtargets.end())	return		I->second;
+	if (I != m_rtargets.end())
+	{
+		return I->second;
+	}
 	else
 	{
 		CRT *RT					=	new CRT();
@@ -476,18 +479,22 @@ CRT*	CResourceManager::_CreateRT(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 Sa
 }
 void	CResourceManager::_DeleteRT		(const CRT* RT)
 {
-	if (0==(RT->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	LPSTR N				= LPSTR		(*RT->cName);
+	if (0==(RT->dwFlags&xr_resource_flagged::RF_REGISTERED))
+		return;
+
+	LPSTR N = LPSTR(*RT->cName);
 	xrCriticalSectionGuard guard(creationGuard);
 	map_RT::iterator I	= m_rtargets.find	(N);
-	if (I!=m_rtargets.end())	{
+	if (I!=m_rtargets.end())
+	{
 		m_rtargets.erase(I);
 		return;
 	}
 	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 
-CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags) {
+CRTC* CResourceManager::_CreateRTC(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags)
+{
 	R_ASSERT(Name && Name[0] && size);
 
 	// ***** first pass - search already created RTC

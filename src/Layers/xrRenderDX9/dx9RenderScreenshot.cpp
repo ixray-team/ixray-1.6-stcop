@@ -206,7 +206,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter& memory_writer) {
 
     //	Kill alpha
 #if	RENDER != R_R1
-    if (Target->rt_Color->fmt == D3DFMT_A16B16G16R16F)
+    if (Target->rt_Color->fmt == ERHI_FORMAT::R16G16B16A16_FLOAT)
     {
         static const int iMaxPixelsInARow = 1024;
         auto pPixelElement16 = (float*)pPixel;
