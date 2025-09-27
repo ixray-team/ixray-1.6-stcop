@@ -48,6 +48,9 @@ list(APPEND XRR1_SRC_FILES ${XRR1_SOURCE_INCL_FILES})
 
 # Remove unused files
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/RenderPhaseAccumulator.cpp")
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/RenderPhaseAccumPointGeom.cpp")
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/RenderPhaseAccumOmnipartGeom.cpp")
+list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/RenderPhaseAccumSpotGeom.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/r__pixel_calculator.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/R_sun.cpp")
 list(FILTER XRR1_SRC_FILES EXCLUDE REGEX "../xrRender/Light_Render_Direct_ComputeXFS.cpp")
