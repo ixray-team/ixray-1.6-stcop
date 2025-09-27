@@ -1,13 +1,11 @@
-#ifndef SH_TEXTURE_H
-#define SH_TEXTURE_H
 #pragma once
 
 #include "../../xrCore/xr_resource.h"
 
-class  ENGINE_API CAviPlayerCustom;
-class  CTheoraSurface;
+class ENGINE_API CAviPlayerCustom;
+class CTheoraSurface;
 
-class  ECORE_API CTexture : public xr_resource_named
+class ECORE_API CTexture : public xr_resource_named
 {
 public:
 	//	Since DX10 allows up to 128 unique textures, 
@@ -51,7 +49,7 @@ public:
 	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
 	void								video_Pause		(BOOL state);
 	void								video_Stop		();
-	BOOL								video_IsPlaying	();
+	bool								video_IsPlaying	();
 
 	CTexture							();
 	virtual ~CTexture					();
@@ -68,33 +66,34 @@ private:
 	D3D_USAGE							GetUsage();
 #endif //USE_DX11
 
-	//	Class data
-public:	//	Public class members (must be encapsulated furthur)
+public:
 	struct 
 	{
 		u32					bLoaded		: 1;
 		u32					bUser		: 1;
 		u32					seqCycles	: 1;
 		u32					MemoryUsage	: 28;
-#ifdef USE_DX11
 		u32					bLoadedAsStaging: 1;
-#endif //USE_DX11
 	}									flags;
 	xr_delegate<void(u32)> bind;
-
 
 	CAviPlayerCustom*					pAVI;
 	CTheoraSurface*						pTheora;
 	float								m_material;
 	shared_str							m_bumpmap;
 
-	union{
-		u32								m_play_time;		// sync theora time
-		u32								seqMSPF;			// Sequence data milliseconds per frame
+	union
+	{
+		u32 m_play_time;		// sync theora time
+		u32 seqMSPF;			// Sequence data milliseconds per frame
 	};
 
+	IRHIShaderResourceView* GetView();
+
 	IRHISurface* pSurface;
+
 private:
+
 	// Sequence data
 	xr_vector<IRHISurface*>				seqDATA;
 
@@ -106,14 +105,15 @@ private:
 	// Sequence view data
 	xr_vector<IRHIShaderResourceView*>m_seqSRView;
 };
-struct 		resptrcode_texture	: public resptr_base<CTexture>
-{
-	ECORE_API void		create			(LPCSTR	_name);
-	void				destroy			()					{ _set(NULL);					}
-	shared_str			bump_get		()					{ return _get()->m_bumpmap;		}
-	bool				bump_exist		()					{ return 0!=bump_get().size();	}
-};
-typedef	resptr_core<CTexture,resptrcode_texture >	
-	ref_texture;
 
-#endif
+struct ECORE_API resptrcode_texture :
+	public resptr_base<CTexture>
+{
+	void create(const char* _name);
+	void destroy() { _set(nullptr); }
+	bool bump_exist() { return 0 != bump_get().size(); }
+
+	shared_str bump_get() { return _get()->m_bumpmap; }
+};
+
+using ref_texture = resptr_core<CTexture, resptrcode_texture>;
