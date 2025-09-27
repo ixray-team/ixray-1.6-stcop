@@ -1,27 +1,28 @@
 #pragma once
-#include "../RHI.h"
-#include <d3d11.h>
+#include <d3d9.h>
 
-class DX11Surface :
+#include "../RHI.h"
+
+class DX9Surface :
     public IRHISurface
 {
 private:
-    ID3D11Texture2D* m_pTexture2D = nullptr;
-    ID3D11Texture3D* m_pTexture3D = nullptr;
-    ID3D11Texture1D* m_pTexture1D = nullptr;
-    ID3D11Resource* m_pResource = nullptr;
+    IDirect3DTexture9* Texture2D = nullptr;
+    IDirect3DVolumeTexture9* Texture3D = nullptr;
+    IDirect3DCubeTexture9* TextureCube = nullptr;
+    IDirect3DBaseTexture9* BaseTexture = nullptr;
     
-    IRHIShaderResourceView* m_pSRV = nullptr;
-    IRHIRenderTargetView* m_pRTV = nullptr;
-    IRHIDepthStencilView* m_pDSV = nullptr;
+    IRHIShaderResourceView* SRV = nullptr;
+    IRHIRenderTargetView* RTV = nullptr;
+    IRHIDepthStencilView* DSV = nullptr;
     
     RHITextureDesc m_desc;
     
 public:
-    DX11Surface(ID3D11Texture2D* texture);
-    DX11Surface(ID3D11Texture3D* texture);
-    DX11Surface(ID3D11Texture1D* texture);
-    virtual ~DX11Surface();
+    DX9Surface(IDirect3DTexture9* texture);
+    DX9Surface(IDirect3DVolumeTexture9* texture);
+    DX9Surface(IDirect3DCubeTexture9* texture);
+    virtual ~DX9Surface();
     
     virtual void* GetRawTexture() override;
     virtual u32 GetWidth() const override;
@@ -30,6 +31,8 @@ public:
     virtual u32 GetMipLevels() const override;
     virtual u32 GetFormat() const override;
     virtual u32 GetTextureType() const override;
+    virtual void AddRef() override;
+    virtual u32 Release() override;
     
     virtual IRHIShaderResourceView* GetShaderResourceView() override;
     virtual IRHIRenderTargetView* GetRenderTargetView() override;
@@ -37,25 +40,22 @@ public:
     virtual bool UpdateData(const void* data, u32 size) override;
     virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) override;
     virtual void Unlock() override;
-    virtual void AddRef() override;
-    virtual u32 Release() override;
     
-    ID3D11Texture2D* GetDX11Texture2D() const { return m_pTexture2D; }
-    ID3D11Texture3D* GetDX11Texture3D() const { return m_pTexture3D; }
-    ID3D11Texture1D* GetDX11Texture1D() const { return m_pTexture1D; }
-    ID3D11Resource* GetDX11Resource() const { return m_pResource; }
+    IDirect3DTexture9* GetDX9Texture2D() const { return Texture2D; }
+    IDirect3DVolumeTexture9* GetDX9Texture3D() const { return Texture3D; }
+    IDirect3DCubeTexture9* GetDX9TextureCube() const { return TextureCube; }
+    IDirect3DBaseTexture9* GetDX9BaseTexture() const { return BaseTexture; }
 };
 
-class DX11ShaderResourceView :
+class DX9ShaderResourceView :
     public IRHIShaderResourceView
 {
 private:
-    ID3D11ShaderResourceView* m_pSRV = nullptr;
-    IRHISurface* m_pSurface = nullptr;
+    IRHISurface* Surface = nullptr;
     
 public:
-    DX11ShaderResourceView(ID3D11ShaderResourceView* srv, IRHISurface* surface);
-    virtual ~DX11ShaderResourceView();
+    DX9ShaderResourceView(IRHISurface* surface);
+    virtual ~DX9ShaderResourceView();
     
     virtual void* GetRawSRV() override;
     virtual IRHISurface* GetSurface() override;
@@ -63,23 +63,20 @@ public:
     virtual void BindToVertexShader(u32 slot) override;
     virtual void BindToGeometryShader(u32 slot) override;
     virtual void BindToComputeShader(u32 slot) override;
-
     virtual void AddRef() override;
     virtual u32 Release() override;
-
-    ID3D11ShaderResourceView* GetDX11SRV() const { return m_pSRV; }
 };
 
-class DX11RenderTargetView :
+class DX9RenderTargetView :
     public IRHIRenderTargetView
 {
 private:
-    ID3D11RenderTargetView* m_pRTV = nullptr;
-    IRHISurface* m_pSurface = nullptr;
+    IDirect3DSurface9* Surface = nullptr;
+    IRHISurface* Texture = nullptr;
     
 public:
-    DX11RenderTargetView(ID3D11RenderTargetView* rtv, IRHISurface* surface);
-    virtual ~DX11RenderTargetView();
+    DX9RenderTargetView(IDirect3DSurface9* surface, IRHISurface* texture);
+    virtual ~DX9RenderTargetView();
     
     virtual void* GetRawRTV() override;
     virtual IRHISurface* GetSurface() override;
@@ -88,45 +85,40 @@ public:
     virtual void Clear(float r, float g, float b, float a) override;
     virtual void AddRef() override;
     virtual u32 Release() override;
-
-    ID3D11RenderTargetView* GetDX11RTV() const { return m_pRTV; }
+    
+    IDirect3DSurface9* GetDX9Surface() const { return Surface; }
 };
 
-class DX11DepthStencilView :
+class DX9DepthStencilView :
     public IRHIDepthStencilView
 {
 private:
-    ID3D11DepthStencilView* m_pDSV = nullptr;
-    IRHISurface* m_pSurface = nullptr;
+    IDirect3DSurface9* Surface = nullptr;
+    IRHISurface* Texture = nullptr;
     
 public:
-    DX11DepthStencilView(ID3D11DepthStencilView* dsv, IRHISurface* surface);
-    virtual ~DX11DepthStencilView();
+    DX9DepthStencilView(IDirect3DSurface9* surface, IRHISurface* texture);
+    virtual ~DX9DepthStencilView();
     
     virtual void* GetRawDSV() override;
     virtual IRHISurface* GetSurface() override;
     virtual void BindAsDepthStencil() override;
     virtual void UnbindDepthStencil() override;
-    virtual void ClearDepth(float depth = 1.0f) override;
-    virtual void ClearStencil(u8 stencil = 0) override;
-    virtual void ClearDepthStencil(float depth = 1.0f, u8 stencil = 0) override;
-
     virtual void AddRef() override;
     virtual u32 Release() override;
-
-    ID3D11DepthStencilView* GetDX11DSV() const { return m_pDSV; }
+    
+    IDirect3DSurface9* GetDX9Surface() const { return Surface; }
 };
 
-class DX11TextureFactory :
+class DX9TextureFactory :
     public IRHITextureFactory
 {
 private:
-    ID3D11Device* m_pDevice = nullptr;
-    ID3D11DeviceContext* m_pContext = nullptr;
+    IDirect3DDevice9* Device = nullptr;
     
 public:
-    DX11TextureFactory(ID3D11Device* device, ID3D11DeviceContext* context);
-    virtual ~DX11TextureFactory();
+    DX9TextureFactory(IDirect3DDevice9* device);
+    virtual ~DX9TextureFactory();
     
     virtual IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize) override;
     virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
@@ -137,11 +129,9 @@ public:
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
     
 private:
-    DXGI_FORMAT ConvertFormat(u32 format);
-    D3D11_USAGE ConvertUsage(u32 usage);
-    u32 ConvertBindFlags(u32 bindFlags);
-    u32 ConvertCPUAccessFlags(u32 cpuAccessFlags);
-    u32 ConvertMiscFlags(u32 miscFlags);
+    D3DFORMAT ConvertFormat(u32 format);
+    D3DPOOL ConvertPool(u32 usage);
+    DWORD ConvertUsage(u32 usage);
 };
 
 

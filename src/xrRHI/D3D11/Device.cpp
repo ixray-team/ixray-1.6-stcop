@@ -1,5 +1,4 @@
 #include "Device.h"
-#include <d3d11_4.h>
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
@@ -15,17 +14,17 @@ InternalDevice11::~InternalDevice11()
 
 IRHITextureFactory* InternalDevice11::GetTextureFactory()
 {
-	return m_pTextureFactory;
+	return TextureFactory;
 }
 
 void InternalDevice11::SetTextureFactory(IRHITextureFactory* factory)
 {
-	if (m_pTextureFactory)
+	if (TextureFactory)
 	{
-		delete m_pTextureFactory;
+		delete TextureFactory;
 	}
-	m_pTextureFactory = static_cast<DX11TextureFactory*>(factory);
-	TextureFactory = m_pTextureFactory;
+	TextureFactory = static_cast<DX11TextureFactory*>(factory);
+	TextureFactory = TextureFactory;
 }
 
 bool InternalDevice11::UpdateBuffersD3D11()
@@ -260,10 +259,10 @@ bool InternalDevice11::CreateD3D11()
 	}
 
 	// Initialize texture factory
-	if (!m_pTextureFactory)
+	if (!TextureFactory)
 	{
-		m_pTextureFactory = new DX11TextureFactory(DX11Device, HWRenderContext);
-		TextureFactory = m_pTextureFactory;
+		TextureFactory = new DX11TextureFactory(DX11Device, HWRenderContext);
+		TextureFactory = TextureFactory;
 	}
 
 	return true;
@@ -338,9 +337,9 @@ void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 void InternalDevice11::DestroyD3D11()
 {
 	// Clean up texture factory
-	if (m_pTextureFactory)
+	if (TextureFactory)
 	{
-		xr_delete(m_pTextureFactory);
+		xr_delete(TextureFactory);
 		TextureFactory = nullptr;
 	}
 
@@ -410,4 +409,17 @@ void InternalDevice11::DestroyD3D11()
 void InternalDevice11::Present()
 {
 	HWSwapchain->Present(psDeviceFlags.test(rsVSync) ? 1 : 0, 0);
+}
+
+void InternalDevice11::CopySurface(IRHISurface* Dest, IRHISurface* Source)
+{
+	HWRenderContext->CopyResource(((DX11Surface*)Dest)->GetDX11Resource(), ((DX11Surface*)Source)->GetDX11Resource());
+}
+
+void InternalDevice11::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source)
+{
+	DX11Surface* DestSurf = static_cast<DX11Surface*>(((DX11RenderTargetView*)Dest)->GetSurface());
+	DX11Surface* SourceSurf = static_cast<DX11Surface*>(((DX11RenderTargetView*)Source)->GetSurface());
+
+	HWRenderContext->CopyResource(DestSurf->GetDX11Resource(), SourceSurf->GetDX11Resource());
 }

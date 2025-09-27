@@ -1,7 +1,9 @@
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////
-class		CRT		:	public xr_resource_named	{
+class ECORE_API CRT:
+	public xr_resource_named
+{
 public:
 	CRT();
 	~CRT();
@@ -46,7 +48,9 @@ public:
 	u64						_order;
 };
 
-struct resptrcode_crt : public resptr_base<CRT> {
+struct resptrcode_crt :
+	public resptr_base<CRT>
+{
 #ifdef USE_DX11
 	void				create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
 #else
