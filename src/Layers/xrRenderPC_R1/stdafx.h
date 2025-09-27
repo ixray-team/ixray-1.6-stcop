@@ -19,8 +19,6 @@
 #include "../xrRender/R_Backend.h"
 #include "../xrRender/R_Backend_Runtime.h"
 
-#include "../xrRender/Debug/dxGPUEventWrapper.h"
-
 #define		R_R1	1
 #define		R_R2	2
 #define		R_R4	4

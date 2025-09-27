@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
+#include <array>
 
 using std::swap;
 
-#ifdef	_M_AMD64
-#define M_DONTDEFERCLEAR_EXT
+#ifdef _M_AMD64
+#	define M_DONTDEFERCLEAR_EXT
 #endif
 
 template <class T>
