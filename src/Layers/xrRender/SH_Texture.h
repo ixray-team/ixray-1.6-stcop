@@ -63,9 +63,9 @@ private:
 #ifdef USE_DX11
 	void								Apply			(u32 dwStage);
 	void								ProcessStaging();
-	D3D_USAGE							GetUsage();
 #endif //USE_DX11
 
+	ERHI_USAGE							GetUsage();
 public:
 	struct 
 	{
@@ -106,14 +106,14 @@ private:
 	xr_vector<IRHIShaderResourceView*>m_seqSRView;
 };
 
-struct ECORE_API resptrcode_texture :
+struct resptrcode_texture :
 	public resptr_base<CTexture>
 {
-	void create(const char* _name);
-	void destroy() { _set(nullptr); }
-	bool bump_exist() { return 0 != bump_get().size(); }
+	ECORE_API void create(const char* _name);
+	IC void destroy() { _set(nullptr); }
+	IC bool bump_exist() { return 0 != bump_get().size(); }
 
-	shared_str bump_get() { return _get()->m_bumpmap; }
+	IC shared_str bump_get() { return _get()->m_bumpmap; }
 };
 
 using ref_texture = resptr_core<CTexture, resptrcode_texture>;

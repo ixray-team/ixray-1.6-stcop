@@ -57,36 +57,35 @@ void CTexture::surface_set(IRHISurface* surf)
 	_RELEASE(m_pSRView);
 
 	pSurface = surf;
+	m_pSRView = 0;
 
 	if (pSurface)
 	{
+		RHIShaderResourceViewDesc ViewDesc = {};
+		ViewDesc.MostDetailedMip = 0;
+
 		desc_update();
 
 		u32 type = pSurface->GetTextureType();
 		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			D3D_SHADER_RESOURCE_VIEW_DESC ViewDesc{ };
-
 			if (desc.MiscFlags & D3D_RESOURCE_MISC_TEXTURECUBE)
 			{
 				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
-				ViewDesc.TextureCube.MostDetailedMip = 0;
-				ViewDesc.TextureCube.MipLevels = desc.MipLevels;
+				ViewDesc.MipLevels = desc.MipLevels;
 			}
 			else
 			{
 				if (desc.SampleDesc.Count <= 1)
 				{
 					ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
-					ViewDesc.Texture2D.MostDetailedMip = 0;
-					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+					ViewDesc.MipLevels = desc.MipLevels;
 				}
 				else
 				{
 					VERIFY(desc.ArraySize == 1);
 					ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
-					ViewDesc.Texture2D.MostDetailedMip = 0;
-					ViewDesc.Texture2D.MipLevels = desc.MipLevels;
+					ViewDesc.MipLevels = desc.MipLevels;
 				}
 			}
 
@@ -103,29 +102,15 @@ void CTexture::surface_set(IRHISurface* surf)
 			}
 
 			if (desc.ArraySize > 1)
-				ViewDesc.Texture2DArray.ArraySize = desc.ArraySize;
+			{
+				ViewDesc.ArraySize = desc.ArraySize;
+			}
 
-			// this would be supported by DX10.1 but is not needed for stalker
-		   // if( ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS )
 			if ((desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS))
 			{
-				// Create shader resource view through GRHI with proper descriptor
-				RHIShaderResourceViewDesc srvDesc;
-				srvDesc.Format = ViewDesc.Format;
-				srvDesc.ViewDimension = ViewDesc.ViewDimension;
-				srvDesc.MostDetailedMip = ViewDesc.Texture2D.MostDetailedMip;
-				srvDesc.MipLevels = ViewDesc.Texture2D.MipLevels;
-				srvDesc.FirstArraySlice = 0;
-
-				if (desc.ArraySize > 1)
-				{
-					srvDesc.ArraySize = ViewDesc.Texture2DArray.ArraySize;
-				}
-				
-				m_pSRView = GRHI->CreateShaderResourceView(pSurface, &srvDesc);
+				ViewDesc.FirstArraySlice = 0;
+				m_pSRView = GRHI->CreateShaderResourceView(pSurface, &ViewDesc);
 			}
-			else
-				m_pSRView = 0;
 		}
 		else
 		{
@@ -175,55 +160,33 @@ void CTexture::ProcessStaging()
 	{
 		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
 		{
-			ID3DTexture2D* T = (ID3DTexture2D*)pSurface->GetRawTexture();
-			D3D_TEXTURE2D_DESC TexDesc;
-			T->GetDesc(&TexDesc);
-			TexDesc.Usage = D3D_USAGE_DEFAULT;
-			TexDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			TexDesc.CPUAccessFlags = 0;
-
-			T = 0;
-
-			// Create RHITextureDesc for the texture
 			RHITextureDesc desc;
-			desc.Width = TexDesc.Width;
-			desc.Height = TexDesc.Height;
+			desc.Width = pSurface->GetWidth();
+			desc.Height = pSurface->GetHeight();
 			desc.Depth = 1;
-			desc.MipLevels = TexDesc.MipLevels;
-			desc.Format = TexDesc.Format;
-			desc.Usage = TexDesc.Usage;
-			desc.BindFlags = TexDesc.BindFlags;
-			desc.CPUAccessFlags = TexDesc.CPUAccessFlags;
-			desc.MiscFlags = TexDesc.MiscFlags;
+			desc.MipLevels = pSurface->GetMipLevels();
+			desc.Format = pSurface->GetFormat();
+			desc.Usage = D3D_USAGE_DEFAULT;
+			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = pSurface->GetMiscFlags();
 			
-			// Use GRHI to create the surface
 			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
 		}
 		break;
 		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
 		{
-			ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface->GetRawTexture();
-			D3D_TEXTURE3D_DESC TexDesc;
-			T->GetDesc(&TexDesc);
-			TexDesc.Usage = D3D_USAGE_DEFAULT;
-			TexDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			TexDesc.CPUAccessFlags = 0;
-
-			T = 0;
-
-			// Create RHITextureDesc for the texture
 			RHITextureDesc desc;
-			desc.Width = TexDesc.Width;
-			desc.Height = TexDesc.Height;
-			desc.Depth = TexDesc.Depth;
-			desc.MipLevels = TexDesc.MipLevels;
-			desc.Format = TexDesc.Format;
-			desc.Usage = TexDesc.Usage;
-			desc.BindFlags = TexDesc.BindFlags;
-			desc.CPUAccessFlags = TexDesc.CPUAccessFlags;
-			desc.MiscFlags = TexDesc.MiscFlags;
+			desc.Width = pSurface->GetWidth();
+			desc.Height = pSurface->GetHeight();
+			desc.Depth = pSurface->GetDepth();
+			desc.MipLevels = pSurface->GetMipLevels();
+			desc.Format = pSurface->GetFormat();
+			desc.Usage = D3D_USAGE_DEFAULT;
+			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.CPUAccessFlags = 0;
+			desc.MiscFlags = pSurface->GetMiscFlags();
 			
-			// Use GRHI to create the surface
 			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
 		}
 		break;
@@ -249,35 +212,35 @@ void CTexture::Apply(u32 dwStage)
 	if (flags.bLoadedAsStaging)
 		ProcessStaging();
 
-	if (dwStage<rstVertex)
+	if (dwStage < rstVertex)
 	{
 		//	Pixel shader stage resources
 		SRVSManager.SetPSResource(dwStage, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstGeometry)
+	else if (dwStage < rstGeometry)
 	{
 		//	Vertex shader stage resources
-		SRVSManager.SetVSResource(dwStage-rstVertex,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstHull)
+	else if (dwStage < rstHull)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetGSResource(dwStage-rstGeometry,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstDomain)
+	else if (dwStage < rstDomain)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetHSResource(dwStage-rstHull,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstCompute)
+	else if (dwStage < rstCompute)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetDSResource(dwStage-rstDomain,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
-	else if (dwStage<rstInvalid)
+	else if (dwStage < rstInvalid)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetCSResource(dwStage-rstCompute,  m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
 	}
 	else VERIFY("Invalid stage");
 }
@@ -319,8 +282,8 @@ void CTexture::apply_avi(u32 dwStage)
 	{
 		D3D_RESOURCE_DIMENSION type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
 		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
-		ID3DTexture2D*	T2D		= (ID3DTexture2D*)pSurface->GetRawTexture();
-		D3D_MAPPED_TEXTURE2D	mapData{};
+		ID3DTexture2D* T2D = (ID3DTexture2D*)pSurface->GetRawTexture();
+		D3D_MAPPED_TEXTURE2D mapData{};
 
 		// AVI
 		R_CHK(RContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
@@ -410,43 +373,25 @@ void CTexture::Load()
 			flags.MemoryUsage = pTheora->Width(true) * pTheora->Height(true) * 4;
 			pTheora->Play(TRUE, Device.dwTimeContinual);
 
-			// Now create texture
 			ID3DTexture2D* pTexture = 0;
 			u32 _w = pTheora->Width(false);
 			u32 _h = pTheora->Height(false);
 
-			D3D_TEXTURE2D_DESC	desc_;
-			desc_.Width = _w;
-			desc_.Height = _h;
-			desc_.MipLevels = 1;
-			desc_.ArraySize = 1;
-			desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			desc_.SampleDesc.Count = 1;
-			desc_.SampleDesc.Quality = 0;
-			desc_.Usage = D3D_USAGE_DYNAMIC;
-			desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-			desc_.MiscFlags = 0;
-			HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
-
 			// Create RHITextureDesc for the texture
 			RHITextureDesc rhiDesc;
-			rhiDesc.Width = desc_.Width;
-			rhiDesc.Height = desc_.Height;
-			rhiDesc.Depth = 1;
-			rhiDesc.MipLevels = desc_.MipLevels;
-			rhiDesc.Format = desc_.Format;
-			rhiDesc.Usage = desc_.Usage;
-			rhiDesc.BindFlags = desc_.BindFlags;
-			rhiDesc.CPUAccessFlags = desc_.CPUAccessFlags;
-			rhiDesc.MiscFlags = desc_.MiscFlags;
+			rhiDesc.Width = _w;
+			rhiDesc.Height = _h;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
+			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			rhiDesc.MiscFlags = 0;
 
-			// Use GRHI to create the surface
-			pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
-			if (FAILED(hrr))
+			pSurface = GRHI->CreateTextureFromMemory(nullptr, 0, rhiDesc);
+			if (pSurface == nullptr)
 			{
 				FATAL("Invalid video stream");
-				R_CHK(hrr);
 				xr_delete(pTheora);
 				pSurface = 0;
 				m_pSRView = 0;
@@ -472,40 +417,21 @@ void CTexture::Load()
 		{
 			flags.MemoryUsage = pAVI->m_dwWidth * pAVI->m_dwHeight * 4;
 
-			// Now create texture
-			ID3DTexture2D* pTexture = 0;
-			D3D_TEXTURE2D_DESC	desc_;
-			desc_.Width = pAVI->m_dwWidth;
-			desc_.Height = pAVI->m_dwHeight;
-			desc_.MipLevels = 1;
-			desc_.ArraySize = 1;
-			desc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			desc_.SampleDesc.Count = 1;
-			desc_.SampleDesc.Quality = 0;
-			desc_.Usage = D3D_USAGE_DYNAMIC;
-			desc_.BindFlags = D3D_BIND_SHADER_RESOURCE;
-			desc_.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-			desc_.MiscFlags = 0;
-			HRESULT hrr = RDevice->CreateTexture2D(&desc_, 0, &pTexture);
-
-			// Create RHITextureDesc for the texture
 			RHITextureDesc rhiDesc;
-			rhiDesc.Width = desc_.Width;
-			rhiDesc.Height = desc_.Height;
-			rhiDesc.Depth = 1;
-			rhiDesc.MipLevels = desc_.MipLevels;
-			rhiDesc.Format = desc_.Format;
-			rhiDesc.Usage = desc_.Usage;
-			rhiDesc.BindFlags = desc_.BindFlags;
-			rhiDesc.CPUAccessFlags = desc_.CPUAccessFlags;
-			rhiDesc.MiscFlags = desc_.MiscFlags;
+			rhiDesc.Width = pAVI->m_dwWidth;
+			rhiDesc.Height = pAVI->m_dwHeight;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
+			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			rhiDesc.MiscFlags = 0;
 
 			// Use GRHI to create the surface
-			pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
-			if (FAILED(hrr))
+			pSurface = GRHI->CreateTextureFromMemory(nullptr, 0, rhiDesc);
+			if (pSurface == nullptr)
 			{
 				FATAL("Invalid video stream");
-				R_CHK(hrr);
 				xr_delete(pAVI);
 				pSurface = 0;
 				m_pSRView = 0;
@@ -544,7 +470,6 @@ void CTexture::Load()
 				pSurface = ::RImplementation.texture_load(buffer, mem);
 				if (pSurface)
 				{
-					// pSurface->SetPriority	(PRIORITY_LOW);
 					seqDATA.push_back(pSurface);
 					m_seqSRView.push_back(0);
 					m_seqSRView.back() = GRHI->CreateShaderResourceView(seqDATA.back(), nullptr);
@@ -562,7 +487,7 @@ void CTexture::Load()
 		//pSurface = ::RImplementation.texture_load	(*cName,mem);
 		pSurface = ::RImplementation.texture_load(*cName, mem, true);
 
-		if (GetUsage() == D3D_USAGE_STAGING)
+		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
 		{
 			flags.bLoadedAsStaging = TRUE;
 			bCreateView = false;
@@ -624,45 +549,13 @@ void CTexture::desc_update()
 	}
 }
 
-D3D_USAGE CTexture::GetUsage()
+ERHI_USAGE CTexture::GetUsage()
 {
-	D3D_USAGE res = D3D_USAGE_DEFAULT;
+	ERHI_USAGE res = ERHI_USAGE::USAGE_DEFAULT;
 
 	if (pSurface)
 	{
-		D3D_RESOURCE_DIMENSION	type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
-		switch(type)
-		{
-		case D3D_RESOURCE_DIMENSION_TEXTURE1D:
-			{
-				ID3DTexture1D*	T	= (ID3DTexture1D*)pSurface->GetRawTexture();
-				D3D_TEXTURE1D_DESC	descr;
-				T->GetDesc(&descr);
-				res = descr.Usage;
-			}
-			break;
-
-		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
-			{
-				ID3DTexture2D*	T	= (ID3DTexture2D*)pSurface->GetRawTexture();
-				D3D_TEXTURE2D_DESC	descr;
-				T->GetDesc(&descr);
-				res = descr.Usage;
-			}
-			break;
-
-		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
-			{
-				ID3DTexture3D*	T	= (ID3DTexture3D*)pSurface->GetRawTexture();
-				D3D_TEXTURE3D_DESC	descr;
-				T->GetDesc(&descr);
-				res = descr.Usage;
-			}
-			break;
-
-		default:
-			VERIFY(!"Unknown texture format???");
-		}
+		res = pSurface->GetUsage();
 	}
 
 	return res;
