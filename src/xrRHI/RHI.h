@@ -11,6 +11,7 @@
 #include "RHIEnums.h"
 #include "RHITextureInterfaces.h"
 #include "RHIDevice.h"
+#include "RHIGPUMark.h"
 
 enum
 {
@@ -46,7 +47,6 @@ enum
 extern RHI_API u32 psCurrentVidMode[2];
 extern RHI_API Flags32 psDeviceFlags;
 extern RHI_API Ivector2 HalfTarget;
-extern RHI_API void* g_pAnnotation;
 
 class RHI_API CRHI final
 {
@@ -64,7 +64,8 @@ public:
 	void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source);
 
 	void Present();
-	
+	xr_vector<shared_str> DisplaySizeArray();
+
 	IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize);
 	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
 	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
@@ -73,11 +74,14 @@ public:
 	IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
 	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	
+	void GPUStatsBegin() const;
+	const RHI_GPU_EVENT& GPUStats() const;
+	void GPUStatsEnd() const;
 public:
 	IRHIDevice* DevicePtr = nullptr;
-
-private:
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
+	
+	bool GPUStatsEnable = false;
 };
 
 extern RHI_API CRHI* GRHI;
