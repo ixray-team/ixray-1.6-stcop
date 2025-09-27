@@ -18,8 +18,6 @@
 
 #include "../xrRenderDX10/DXCommonTypes.h"
 
-#include "../xrRender/Debug/dxGPUEventWrapper.h"
-
 #define		R_R1	1
 #define		R_R2	2
 #define		R_R4	4
