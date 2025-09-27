@@ -121,6 +121,13 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	return true;
 }
 
+IRHIBuffer* InternalDevice11::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource)
+{
+	CD3D11Buffer* pBuffer = new CD3D11Buffer();
+	pBuffer->Create(desc, pSubresource);
+	return pBuffer;
+}
+
 #if 0
 void CreateRDoc()
 {
