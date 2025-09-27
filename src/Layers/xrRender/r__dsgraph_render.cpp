@@ -280,8 +280,9 @@ void	R_dsgraph_structure::r_dsgraph_render_emissive	()
 	rmNormal();
 #endif
 }
+
 // strict-sorted render
-void	R_dsgraph_structure::r_dsgraph_render_scope	()
+void R_dsgraph_structure::r_dsgraph_render_scope	()
 {
 #if	RENDER==R_R4
 	GPU_EVENT(SCOPE_BUFFER_RENDER);

@@ -14,17 +14,17 @@ InternalDevice9::~InternalDevice9()
 
 IRHITextureFactory* InternalDevice9::GetTextureFactory()
 {
-	return m_pTextureFactory;
+	return TextureFactory;
 }
 
 void InternalDevice9::SetTextureFactory(IRHITextureFactory* factory)
 {
-	if (m_pTextureFactory)
+	if (TextureFactory)
 	{
-		delete m_pTextureFactory;
+		delete TextureFactory;
 	}
-	m_pTextureFactory = static_cast<DX9TextureFactory*>(factory);
-	TextureFactory = m_pTextureFactory;
+	TextureFactory = static_cast<DX9TextureFactory*>(factory);
+	TextureFactory = TextureFactory;
 }
 
 u32 InternalDevice9::selectPresentInterval()
@@ -227,10 +227,10 @@ bool InternalDevice9::CreateD3D9()
 	UpdateBuffersD3D9();
 	
 	// Initialize texture factory
-	if (!m_pTextureFactory)
+	if (!TextureFactory)
 	{
-		m_pTextureFactory = new DX9TextureFactory(DX9Device);
-		TextureFactory = m_pTextureFactory;
+		TextureFactory = new DX9TextureFactory(DX9Device);
+		TextureFactory = TextureFactory;
 	}
 	
 	return true;
@@ -239,9 +239,9 @@ bool InternalDevice9::CreateD3D9()
 void InternalDevice9::DestroyD3D9()
 {
 	// Clean up texture factory
-	if (m_pTextureFactory)
+	if (TextureFactory)
 	{
-		xr_delete(m_pTextureFactory);
+		xr_delete(TextureFactory);
 		TextureFactory = nullptr;
 	}
 
@@ -291,4 +291,56 @@ void InternalDevice9::DestroyD3D9()
 		D3D->Release();
 		D3D = nullptr;
 	}
+}
+
+void InternalDevice9::CopySurface(IRHISurface* Dest, IRHISurface* Source)
+{
+	DX9Surface* pDestSurface = static_cast<DX9Surface*>(Dest);
+	DX9Surface* pSourceSurface = static_cast<DX9Surface*>(Source);
+
+	IDirect3DSurface9* pDestSurf = nullptr;
+	IDirect3DSurface9* pSourceSurf = nullptr;
+
+	if (pSourceSurface->GetDX9Texture2D())
+	{
+		pSourceSurface->GetDX9Texture2D()->GetSurfaceLevel(0, &pSourceSurf);
+	}
+
+	if (pDestSurface->GetDX9Texture2D())
+	{
+		pDestSurface->GetDX9Texture2D()->GetSurfaceLevel(0, &pDestSurf);
+	}
+
+	if (!pSourceSurf && pSourceSurface->GetDX9TextureCube())
+	{
+		pSourceSurface->GetDX9TextureCube()->GetCubeMapSurface(D3DCUBEMAP_FACE_POSITIVE_X, 0, &pSourceSurf);
+	}
+
+	if (!pDestSurf && pDestSurface->GetDX9TextureCube())
+	{
+		pDestSurface->GetDX9TextureCube()->GetCubeMapSurface(D3DCUBEMAP_FACE_POSITIVE_X, 0, &pDestSurf);
+	}
+
+	if (pSourceSurf && pDestSurf)
+	{
+		DX9Device->StretchRect(pSourceSurf, nullptr, pDestSurf, nullptr, D3DTEXF_NONE);
+	}
+
+	if (pSourceSurf)
+	{
+		pSourceSurf->Release();
+	}
+
+	if (pDestSurf)
+	{
+		pDestSurf->Release();
+	}
+}
+
+void InternalDevice9::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source)
+{
+	DX9RenderTargetView* pDestSurface = static_cast<DX9RenderTargetView*>(Dest);
+	DX9RenderTargetView* pSourceSurface = static_cast<DX9RenderTargetView*>(Source);
+
+	DX9Device->StretchRect(pSourceSurface->GetDX9Surface(), nullptr, pDestSurface->GetDX9Surface(), nullptr, D3DTEXF_NONE);
 }

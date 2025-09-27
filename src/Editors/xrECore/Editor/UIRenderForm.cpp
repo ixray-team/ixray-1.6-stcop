@@ -121,6 +121,11 @@ void UIRenderForm::Draw()
 
 void UIRenderForm::DrawVP()
 {
+	if (UI->Views[ViewportID].ViewGlobalIDX != ViewportID)
+	{
+		return;
+	}
+
 	if (ImGui::IsWindowFocused() || UI->ViewID == ViewportID)
 	{
 		if ((UI->IsPlayInEditor() && ViewportID == 0) || !UI->IsPlayInEditor())
@@ -136,7 +141,7 @@ void UIRenderForm::DrawVP()
 
 	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
-		RDevice->StretchRect((ID3DDepthStencilView*)UI->RT->pRT->GetRawRTV(), 0, (ID3DDepthStencilView*)UI->Views[ViewportID].RTFreez->pRT->GetRawRTV(), 0, D3DTEXF_NONE);
+		GRHI->CopySurface(UI->Views[ViewportID].RTFreez->pRT, UI->RT->pRT);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
