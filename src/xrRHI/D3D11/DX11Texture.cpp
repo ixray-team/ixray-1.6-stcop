@@ -86,7 +86,18 @@ void DX11Surface::AddRef()
 
 u32 DX11Surface::Release()
 {
-	if (Resource) return Resource->Release();
+	if (Resource)
+	{
+		u32 Counter = Resource->Release();
+		if (Counter == 0)
+		{
+			Resource = nullptr;
+			xr_delete(this);
+		}
+
+		return Counter;
+	}
+
 	return 0;
 }
 
@@ -205,7 +216,18 @@ void DX11ShaderResourceView::AddRef()
 
 u32 DX11ShaderResourceView::Release()
 {
-	if (SRV) return SRV->Release();
+	if (SRV)
+	{
+		u32 Counter = SRV->Release();
+		if (Counter == 0)
+		{
+			SRV = nullptr;
+			xr_delete(this);
+		}
+
+		return Counter;
+	}
+
 	return 0;
 }
 
@@ -281,7 +303,14 @@ u32 DX11RenderTargetView::Release()
 {
 	if (RTV)
 	{
-		return RTV->Release();
+		u32 Counter = RTV->Release();
+		if (Counter == 0)
+		{
+			RTV = nullptr;
+			xr_delete(this);
+		}
+
+		return Counter;
 	}
 	
 	return 0;
@@ -337,7 +366,14 @@ u32 DX11DepthStencilView::Release()
 {
 	if (DSV)
 	{
-		return DSV->Release();
+		u32 Counter = DSV->Release();
+		if (Counter == 0)
+		{
+			DSV = nullptr;
+			xr_delete(this);
+		}
+
+		return Counter;
 	}
 	return 0;
 }
@@ -529,11 +565,11 @@ IRHIDepthStencilView* DX11TextureFactory::CreateDepthStencilView(IRHISurface* su
 	dsvDesc.ViewDimension = (D3D11_DSV_DIMENSION)desc.ViewDimension;
 	dsvDesc.Flags = desc.Flags;
 	
-	if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2D)
+	if (desc.ViewDimension == ERHI_DSV_DIMENSION::TEXTURE2D)
 	{
 		dsvDesc.Texture2D.MipSlice = desc.MipSlice;
 	}
-	else if (desc.ViewDimension == D3D11_DSV_DIMENSION_TEXTURE2DARRAY)
+	else if (desc.ViewDimension == ERHI_DSV_DIMENSION::TEXTURE2DARRAY)
 	{
 		dsvDesc.Texture2DArray.MipSlice = desc.MipSlice;
 		dsvDesc.Texture2DArray.FirstArraySlice = desc.FirstArraySlice;
@@ -546,6 +582,43 @@ IRHIDepthStencilView* DX11TextureFactory::CreateDepthStencilView(IRHISurface* su
 		return nullptr;
 
 	return new DX11DepthStencilView(dsv, surface);
+}
+
+IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc)
+{
+	D3D11_UNORDERED_ACCESS_VIEW_DESC dxDesc;
+	ZeroMemory(&dxDesc, sizeof(dxDesc));
+
+	// Конвертация формата
+	dxDesc.Format = DXGI_FORMAT(desc.Format);
+
+	switch (desc.ViewDimension)
+	{
+	case ERHI_VIEW_DIMENSION::Texture2D:
+		dxDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		dxDesc.Texture2D.MipSlice = desc.MipSlice;
+		break;
+	case ERHI_VIEW_DIMENSION::Texture3D:
+		dxDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
+		dxDesc.Texture3D.MipSlice = desc.MipSlice;
+		dxDesc.Texture3D.FirstWSlice = desc.FirstWSlice;
+		dxDesc.Texture3D.WSize = desc.WSize;
+		break;
+	case ERHI_VIEW_DIMENSION::Buffer:
+		dxDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		dxDesc.Buffer.FirstElement = desc.FirstElement;
+		dxDesc.Buffer.NumElements = desc.NumElements;
+		break;
+	}
+
+	ID3D11UnorderedAccessView* pUAV = nullptr;
+	ID3D11Resource* pResource = static_cast<ID3D11Resource*>(pTexture->GetRawTexture());
+
+	HRESULT hr = Device->CreateUnorderedAccessView(pResource, &dxDesc, &pUAV);
+	if (SUCCEEDED(hr))
+		return new DX11UnorderedAccessView(pUAV);
+
+	return nullptr;
 }
 
 D3D11_USAGE DX11TextureFactory::ConvertUsage(u32 usage)
@@ -566,4 +639,26 @@ u32 DX11TextureFactory::ConvertCPUAccessFlags(u32 cpuAccessFlags)
 u32 DX11TextureFactory::ConvertMiscFlags(u32 miscFlags)
 {
 	return miscFlags;
+}
+
+void DX11UnorderedAccessView::AddRef()
+{
+	UAV->AddRef();
+}
+
+u32 DX11UnorderedAccessView::Release()
+{
+	if (UAV)
+	{
+		u32 Counter = UAV->Release();
+		if (Counter == 0)
+		{
+			UAV = nullptr;
+			xr_delete(this);
+		}
+
+		return Counter;
+	}
+
+	return 0;
 }

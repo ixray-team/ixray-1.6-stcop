@@ -504,6 +504,11 @@ IRHIDepthStencilView* DX9TextureFactory::CreateDepthStencilView(IRHISurface* sur
     return new DX9DepthStencilView(dx9SurfacePtr, surface);
 }
 
+IRHIUnorderedAccessView* DX9TextureFactory::CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc)
+{
+    return new DX9UnorderedAccessView();
+}
+
 D3DPOOL DX9TextureFactory::ConvertPool(u32 usage)
 {
     // Convert usage flags to D3DPOOL
