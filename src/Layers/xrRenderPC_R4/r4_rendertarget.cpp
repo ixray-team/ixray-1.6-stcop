@@ -464,8 +464,9 @@ CRenderTarget::CRenderTarget()
 		static int stack_levels = 3;
 		ImGui::SliderInt("Stack Levels", &stack_levels, 0, 8);
 
-		auto& perf = GPUEvents_Statistics();
-		for (size_t i = 0; i < perf.count; i++) {
+		auto& perf = GRHI->GPUStats();
+		for (size_t i = 0; i < perf.count; i++)
+		{
 			auto& event = perf.events[i];
 			if (event.stack < stack_levels) {
 				u64 time_micros = (event.end - event.begin) / (event.freq / 1000000);
