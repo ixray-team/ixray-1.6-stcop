@@ -1,10 +1,8 @@
-#include "stdafx.h"
+#include "Device.h"
+#include "DX11GPUEvents.h"
+#include "DX11GPUEventWrapper.h"
 
-#include "../xrRender/Debug/dxGPUEventWrapper.h"
-
-#ifdef DEBUG_DRAW
-
-GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
+InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const wchar_t* wname)
 {
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
@@ -13,12 +11,10 @@ GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
         pAnnotation->BeginEvent(wname);
     }
 
-#ifdef USE_DX11
     _index = GPUEvents_PushEvent(name);
-#endif
 }
 
-GPUEventWrapper::~GPUEventWrapper()
+InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
 {
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
@@ -27,9 +23,5 @@ GPUEventWrapper::~GPUEventWrapper()
         pAnnotation->EndEvent();
     }
 
-#ifdef USE_DX11
     GPUEvents_PopEvent(_index);
-#endif
 }
-
-#endif	//	DEBUG
