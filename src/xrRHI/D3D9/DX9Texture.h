@@ -29,9 +29,11 @@ public:
     virtual u32 GetHeight() const override;
     virtual u32 GetDepth() const override;
     virtual u32 GetMipLevels() const override;
-    virtual u32 GetFormat() const override;
     virtual u32 GetMiscFlags() const override;
     virtual u32 GetTextureType() const override;
+    virtual u32 GetSampleDescCount() const override;
+    virtual u32 GetArraySize() const override;
+    virtual ERHI_FORMAT GetFormat() const override;
     virtual ERHI_USAGE GetUsage() const override;
 
     virtual void AddRef() override;
@@ -85,7 +87,6 @@ public:
     virtual IRHISurface* GetSurface() override;
     virtual void BindAsRenderTarget(u32 slot = 0) override;
     virtual void UnbindRenderTarget() override;
-    virtual void Clear(float r, float g, float b, float a) override;
     virtual void AddRef() override;
     virtual u32 Release() override;
     
@@ -132,13 +133,9 @@ public:
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
     
 private:
-    D3DFORMAT ConvertFormat(u32 format);
     D3DPOOL ConvertPool(u32 usage);
     DWORD ConvertUsage(u32 usage);
 };
 
-
-
-
-
-
+D3DFORMAT ConvertRHIFormatToDX9(ERHI_FORMAT rhiFormat);
+ERHI_FORMAT ConvertDX9FormatToRHI(D3DFORMAT dx9Format);
