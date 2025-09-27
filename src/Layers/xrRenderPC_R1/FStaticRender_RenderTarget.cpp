@@ -61,16 +61,14 @@ BOOL CRenderTarget::Create()
 	Msg("* SSample: %dx%d", rtWidth, rtHeight);
 
 	// Bufferts
-	RT.create			(RTname,			rtWidth,rtHeight,D3DFMT_X8R8G8B8);
-	RTTemp.create(RTTempName, rtWidth, rtHeight, D3DFMT_X8R8G8B8);
+	RT.create			(RTname,			rtWidth,rtHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
+	RTTemp.create(RTTempName, rtWidth, rtHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
 
-	RT_distort.create	(RTname_distort,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
+	RT_distort.create	(RTname_distort,	rtWidth,rtHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
 	if (RImplementation.o.color_mapping)
 	{
-		//RT_color_map.create	(RTname_color_map,	rtWidth,rtHeight,D3DFMT_X8R8G8B8);
-		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, D3DFMT_X8R8G8B8);
+		RT_color_map.create	(RTname_color_map,	curWidth, curHeight, ERHI_FORMAT::B8G8R8X8_UNORM);
 	}
-	//RImplementation.o.color_mapping = RT_color_map->valid();
 
 	//FXAA
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
@@ -85,11 +83,6 @@ BOOL CRenderTarget::Create()
 
 	// Temp ZB, used by some of the shadowing code
 	R_CHK	(RDevice->CreateDepthStencilSurface	(512,512,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&pTempZB,nullptr));
-
-	//	Igor: TMP
-	//	Create an RT for online screenshot makining
-	//u32		w = Device.TargetWidth, h = Device.TargetHeight;
-	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 	RDevice->CreateOffscreenPlainSurface(rtWidth,rtHeight,D3DFMT_X8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 
 	// Shaders and stream
