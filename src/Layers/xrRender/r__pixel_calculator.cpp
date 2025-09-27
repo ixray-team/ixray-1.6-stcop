@@ -6,7 +6,7 @@
 #ifndef USE_DX11
 void	r_pixel_calculator::begin	()
 {
-	rt.create		("$user$test",		rt_dimensions,rt_dimensions, D3DFMT_X8R8G8B8);
+	rt.create		("$user$test",		rt_dimensions,rt_dimensions, ERHI_FORMAT::B8G8R8X8_UNORM);
 	R_CHK			(RDevice->CreateDepthStencilSurface	(rt_dimensions,rt_dimensions, D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&zb,nullptr));
 
 	RCache.set_RT	(rt->pRT);

@@ -20,9 +20,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 #ifndef _EDITOR
 	bool lmap = false;
-	if(C.L_textures.size() >= 3) {
+	if(C.L_textures.size() >= 3)
+	{
 		auto tex = C.L_textures[2].c_str();
-		if(tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p') {
+		if(tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p')
+		{
 			lmap = true;
 		}
 	}
@@ -37,7 +39,8 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	string256 texDetailBumpX = { '\0' };
 	bool bHasDetailBump = false;
 
-	if(C.bDetail_Bump) {
+	if(C.bDetail_Bump)
+	{
 		LPCSTR detail_bump_texture = DEV->m_textures_description.GetBumpName(dt).c_str();
 		if(detail_bump_texture != nullptr && detail_bump_texture[0] != '\0') {
 			bHasDetailBump = true;
@@ -62,37 +65,44 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		RImplementation.addShaderOption("USE_LM_HEMI", "1");
 	}
 
-	if(aref) {
+	if(aref)
+	{
 		RImplementation.addShaderOption("USE_AREF", "1");
 #ifdef USE_DX11
 		pTexture->Load();
-		auto Format = pTexture->get_Format();
 
-		if(Format >= DXGI_FORMAT_BC1_TYPELESS && Format < DXGI_FORMAT_BC2_TYPELESS) {
+		ERHI_FORMAT Format = pTexture->get_Format();
+		if(Format >= ERHI_FORMAT::BC1_TYPELESS && Format < ERHI_FORMAT::BC2_TYPELESS)
+		{
 			RImplementation.addShaderOption("USE_DXT1_HACK", "1");
 		}
 #endif
 	}
 
-	if(!!DEV->m_textures_description.UsePBRTexures(fname)) {
+	if(!!DEV->m_textures_description.UsePBRTexures(fname))
+	{
 		RImplementation.addShaderOption("USE_PBR", "1");
 	}
 
-	if(bump) {
+	if(bump)
+	{
 		RImplementation.addShaderOption("USE_BUMP", "1");
 
 		xr_strcpy(fnameA, pTexture.bump_get().c_str());
 		xr_strconcat(fnameB, fnameA, "#");
 	}
-	else {
+	else
+	{
 		fnameA[0] = fnameB[0] = 0;
 	}
 
-	if(C.bUseSteepParallax) {
+	if(C.bUseSteepParallax)
+	{
 		RImplementation.addShaderOption("USE_STEEPPARALLAX", "1");
 	}
 
-	if(dt && dt[0] && C.bDetail_Diffuse) {
+	if(dt && dt[0] && C.bDetail_Diffuse)
+	{
 		RImplementation.addShaderOption("USE_TDETAIL", "1");
 	}
 
@@ -104,16 +114,18 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 		}
 	}
 
-	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse) {
+	if(bHasDetailBump && dt && dt[0] && C.bDetail_Diffuse)
+	{
 		RImplementation.addShaderOption("USE_TDETAIL_BUMP", "1");
 	}
 
-	if(hq) {
+	if(hq)
+	{
 		RImplementation.addShaderOption("USE_HIGH_QUALITY", "1");
 	}
 
-	if(bump) {
-
+	if(bump)
+	{
 		string512 errorMsg;
 		xr_sprintf(errorMsg, "Missing bump texture: %s\n\t\t\tLoading texture: %s", dt, C.L_textures[0].c_str());
 

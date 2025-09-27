@@ -33,7 +33,6 @@ CTexture::CTexture		()
 	m_pSRView			= nullptr;
 	pAVI				= nullptr;
 	pTheora				= nullptr;
-	desc_cache			= 0;
 	seqMSPF				= 0;
 	flags.MemoryUsage	= 0;
 	flags.bLoaded		= false;
@@ -64,49 +63,44 @@ void CTexture::surface_set(IRHISurface* surf)
 		RHIShaderResourceViewDesc ViewDesc = {};
 		ViewDesc.MostDetailedMip = 0;
 
-		desc_update();
-
 		u32 type = pSurface->GetTextureType();
 		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
 		{
-			if (desc.MiscFlags & D3D_RESOURCE_MISC_TEXTURECUBE)
+			if (pSurface->GetMiscFlags() & D3D_RESOURCE_MISC_TEXTURECUBE)
 			{
 				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
-				ViewDesc.MipLevels = desc.MipLevels;
+				ViewDesc.MipLevels = pSurface->GetMipLevels();
 			}
 			else
 			{
-				if (desc.SampleDesc.Count <= 1)
+				if (pSurface->GetSampleDescCount() <= 1)
 				{
-					ViewDesc.ViewDimension = (desc.ArraySize > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
-					ViewDesc.MipLevels = desc.MipLevels;
+					ViewDesc.ViewDimension = (pSurface->GetArraySize() > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
+					ViewDesc.MipLevels = pSurface->GetMipLevels();
 				}
 				else
 				{
-					VERIFY(desc.ArraySize == 1);
+					VERIFY(pSurface->GetArraySize() == 1);
 					ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
-					ViewDesc.MipLevels = desc.MipLevels;
+					ViewDesc.MipLevels = pSurface->GetMipLevels();
 				}
 			}
 
-			ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
+			ViewDesc.Format = ERHI_FORMAT::UNKNOWN;
 
-			switch (desc.Format)
+			switch (pSurface->GetFormat())
 			{
-			case DXGI_FORMAT_R24G8_TYPELESS:
-				ViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+			case ERHI_FORMAT::R24G8_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
 				break;
-			case DXGI_FORMAT_R32_TYPELESS:
-				ViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+			case ERHI_FORMAT::R32_TYPELESS:
+				ViewDesc.Format = ERHI_FORMAT::R32_FLOAT;
 				break;
 			}
 
-			if (desc.ArraySize > 1)
-			{
-				ViewDesc.ArraySize = desc.ArraySize;
-			}
+			ViewDesc.ArraySize = pSurface->GetArraySize();
 
-			if ((desc.SampleDesc.Count <= 1) || (ViewDesc.Format != DXGI_FORMAT_R24_UNORM_X8_TYPELESS))
+			if ((pSurface->GetSampleDescCount() <= 1) || (ViewDesc.Format != ERHI_FORMAT::R24_UNORM_X8_TYPELESS))
 			{
 				ViewDesc.FirstArraySlice = 0;
 				m_pSRView = GRHI->CreateShaderResourceView(pSurface, &ViewDesc);
@@ -335,7 +329,6 @@ void CTexture::Load()
 	PROF_EVENT("CTexture::Load");
 
 	flags.bLoaded = true;
-	desc_cache = 0;
 	if (pSurface)
 		return;
 
@@ -382,7 +375,7 @@ void CTexture::Load()
 			rhiDesc.Width = _w;
 			rhiDesc.Height = _h;
 			rhiDesc.MipLevels = 1;
-			rhiDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
 			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
 			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
 			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
@@ -421,7 +414,7 @@ void CTexture::Load()
 			rhiDesc.Width = pAVI->m_dwWidth;
 			rhiDesc.Height = pAVI->m_dwHeight;
 			rhiDesc.MipLevels = 1;
-			rhiDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
 			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
 			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
 			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
@@ -533,20 +526,6 @@ void CTexture::Unload()
 	xr_delete(pTheora);
 
 	bind = xr_make_delegate(this, &CTexture::apply_load);
-}
-
-void CTexture::desc_update()
-{
-	desc_cache = pSurface;
-	if (pSurface)
-	{
-		D3D_RESOURCE_DIMENSION	type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
-		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
-		{
-			ID3DTexture2D* T = (ID3DTexture2D*)pSurface->GetRawTexture();
-			T->GetDesc(&desc);
-		}
-	}
 }
 
 ERHI_USAGE CTexture::GetUsage()

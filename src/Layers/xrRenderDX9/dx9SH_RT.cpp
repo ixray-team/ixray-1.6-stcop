@@ -11,7 +11,7 @@ CRT::CRT			()
 	pRT				= nullptr;
 	dwWidth			= 0;
 	dwHeight		= 0;
-	fmt				= D3DFMT_UNKNOWN;
+	fmt				= ERHI_FORMAT::UNKNOWN;
 }
 CRT::~CRT			()
 {
@@ -21,12 +21,12 @@ CRT::~CRT			()
 	DEV->_DeleteRT	(this);
 }
 
-void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
+void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
 	if (pSurface)	return;
 
 	R_ASSERT	(RDevice && Name && Name[0] && w && h);
-	_order		= CPU::GetCLK()	;	//RDEVICE.GetTimerGlobal()->GetElapsed_clk();
+	_order		= CPU::GetCLK()	;
 
 	HRESULT		_hr;
 
@@ -44,12 +44,12 @@ void CRT::create	(LPCSTR Name, u32 w, u32 h,	D3DFORMAT f, u32 SampleCount )
 
 	// Select usage
 	u32 usage	= 0;
-	if (D3DFMT_D24X8==fmt)									usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D24S8		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D15S1		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16			==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (D3DFMT_D16_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
+	if		(ERHI_FORMAT::R24_UNORM_X8_TYPELESS == fmt)		usage = D3DUSAGE_DEPTHSTENCIL;
+	else if (ERHI_FORMAT::D24_UNORM_S8_UINT == fmt)			usage = D3DUSAGE_DEPTHSTENCIL;
+	//else if (D3DFMT_D15S1		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
+	else if (ERHI_FORMAT::D16_UNORM ==fmt)					usage = D3DUSAGE_DEPTHSTENCIL;
+	//else if (D3DFMT_D16_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
+	//else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
 	else													usage = D3DUSAGE_RENDERTARGET;
 
 	// Try to create texture/surface using GRHI
@@ -106,12 +106,12 @@ void CRT::reset_begin	()
 	destroy		();
 }
 
-void CRT::reset_end		()
+void CRT::reset_end()
 {
-	create		(*cName,dwWidth,dwHeight,fmt);
+	create(*cName, dwWidth, dwHeight, fmt);
 }
 
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount )
+void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT::CRTCreationFlags CreationFlags)
 {
-	_set			(DEV->_CreateRT(Name,w,h,f));
+	_set(DEV->_CreateRT(Name, w, h, f));
 }
