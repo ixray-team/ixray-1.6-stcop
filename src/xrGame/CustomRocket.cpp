@@ -15,16 +15,12 @@
 #include "Level.h"
 #include "xrMessages.h"
 #include "../xrEngine/GameMtlLib.h"
-//#include "tri-colliderknoopc/dTriList.h"
 #include "../Include/xrRender/RenderVisual.h"
-//#include "CalculateTriangle.h"
 #include "Actor.h"
 #ifdef DEBUG
 #include "PHDebug.h"
 #include "game_base_space.h"
 #endif
-
-extern ENGINE_API	bool g_dedicated_server;
 
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
 	if(x>y)\
