@@ -434,9 +434,10 @@ void CRender::Render()
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
 		
 		Fvector PointPos = Device.vCameraPosition;
-		RContext->CopyResource((ID3D11Resource*)Target->rt_Reflection_temp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Reflection->pSurface->GetRawTexture());
+		GRHI->CopySurface(Target->rt_Reflection_temp->pSurface, Target->rt_Reflection->pSurface);
 
-		for(auto i = 0; i < 6; ++i) {
+		for(auto i = 0; i < 6; ++i)
+		{
 			GPU_EVENT(FORWARD_REFLECTION_SIDE);
 
 			cView.build_camera_dir(PointPos, cmDir[i], cmNorm[i]);
@@ -676,9 +677,8 @@ void CRender::Render()
 	if(UseWinterPass)
 	{
 		GPU_EVENT(PhaseWinter);
-
-		RContext->CopyResource((ID3D11Resource*)Target->rt_NormalTemp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Normal->pSurface->GetRawTexture());
-		RContext->CopyResource((ID3D11Resource*)Target->rt_SurfaceTemp->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Surface->pSurface->GetRawTexture());
+		GRHI->CopySurface(Target->rt_NormalTemp->pSurface, Target->rt_Normal->pSurface);
+		GRHI->CopySurface(Target->rt_SurfaceTemp->pSurface, Target->rt_Surface->pSurface);
 
 		Target->phase_scene_begin();
 		RCache.set_ZB(nullptr);
@@ -702,13 +702,18 @@ void CRender::Render()
 	{
 		GPU_EVENT(DEFER_FLUSH_OCCLUSION);
 		u32 it=0;
-		for (it=0; it<Lights_LastFrame.size(); it++)	{
-			if (0==Lights_LastFrame[it])	continue	;
-			try {
-				Lights_LastFrame[it]->svis.flushoccq()	;
-			} catch (...)
+		for (it=0; it<Lights_LastFrame.size(); it++)
+		{
+			if (0==Lights_LastFrame[it])
+				continue;
+
+			try
 			{
-				Msg	("! Failed to flush-OCCq on light [%d] %X",it,*(u32*)(&Lights_LastFrame[it]));
+				Lights_LastFrame[it]->svis.flushoccq();
+			}
+			catch (...)
+			{
+				Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
 			}
 		}
 		Lights_LastFrame.clear	();
@@ -799,7 +804,7 @@ void CRender::render_forward				()
 		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
 		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
 
-		RContext->CopyResource((ID3D11Resource*)Target->rt_Accumulator->pSurface->GetRawTexture(), (ID3D11Resource*)Target->rt_Generic_0->pSurface->GetRawTexture());
+		GRHI->CopySurface(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
 		r_dsgraph_render_sorted_hud();
 	}
 
