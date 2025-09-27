@@ -34,7 +34,7 @@
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
-BOOL	b_toggle_weapon_aim		= FALSE;
+bool	b_toggle_weapon_aim		= false;
 extern CUIXml*	pWpnScopeXml;
 
 ENGINE_API extern float psHUD_FOV_def;
