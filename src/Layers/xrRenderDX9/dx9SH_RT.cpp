@@ -34,25 +34,36 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 	dwHeight	= h;
 	fmt			= f;
 
-	// Get caps
-	D3DCAPS9	caps{};
-	R_CHK		(RDevice->GetDeviceCaps(&caps));
-
 	// Check width-and-height of render target surface
-	if (w>caps.MaxTextureWidth)			return;
-	if (h>caps.MaxTextureHeight)		return;
+	if (w > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
+	if (h > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
 	// Select usage
-	u32 usage	= 0;
-	if		(ERHI_FORMAT::R24_UNORM_X8_TYPELESS == fmt)		usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (ERHI_FORMAT::D24_UNORM_S8_UINT == fmt)			usage = D3DUSAGE_DEPTHSTENCIL;
-	//else if (D3DFMT_D15S1		==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	else if (ERHI_FORMAT::D16_UNORM ==fmt)					usage = D3DUSAGE_DEPTHSTENCIL;
-	//else if (D3DFMT_D16_LOCKABLE==fmt)						usage = D3DUSAGE_DEPTHSTENCIL;
-	//else if ((D3DFORMAT)MAKEFOURCC('D','F','2','4') == fmt)	usage = D3DUSAGE_DEPTHSTENCIL;
-	else													usage = D3DUSAGE_RENDERTARGET;
+	u32 usage = D3DUSAGE_RENDERTARGET;
 
-	// Try to create texture/surface using GRHI
+	switch (fmt)
+	{
+		case ERHI_FORMAT::R24G8_TYPELESS:
+		case ERHI_FORMAT::D24_UNORM_S8_UINT:
+		case ERHI_FORMAT::R24_UNORM_X8_TYPELESS:
+		{
+			usage = D3DUSAGE_DEPTHSTENCIL;
+			break;
+		}
+		case ERHI_FORMAT::D16_UNORM:
+		{
+			fmt = ERHI_FORMAT::R16_TYPELESS;
+			usage = D3DUSAGE_DEPTHSTENCIL;
+			break;
+		}
+		case ERHI_FORMAT::D32_FLOAT:
+		{
+			fmt = ERHI_FORMAT::R32_TYPELESS;
+			usage = D3DUSAGE_DEPTHSTENCIL;
+			break;
+		}
+	}
+
 	DEV->Evict				();
 	
 	// Create RHITextureDesc for the render target
@@ -77,11 +88,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 	
 	// Store the RHI surface
 	pSurface = rhiSurface;
-
-	// OK
-#ifdef DEBUG
-	Msg			("* created RT(%s), %dx%d",Name,w,h);
-#endif // DEBUG
 	
 	// Create RHI render target view
 	pRT = GRHI->CreateRenderTargetView(rhiSurface);
