@@ -78,7 +78,7 @@ public:
 	virtual BOOL			PickBone		(IKinematics::pick_result &r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id)=0;
 	virtual void			FillVertices	(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id)=0;
 
-#ifdef USE_DX11
+#if 1
 protected:
 	void			_DuplicateIndices(const char* N, IReader *data);
 
@@ -120,10 +120,31 @@ BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, con
 template<typename T>
 BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
 {
-	T* vertices;
-	CHK_DX				(V->p_rm_Vertices->Lock(V->vBase,V->vCount,(void**)&vertices,D3DLOCK_READONLY));
-	bool intersect		= !!pick_bone<T,T*>( vertices, Parent, r, dist, S, D, indices, faces);
-	CHK_DX				(V->p_rm_Vertices->Unlock());
-	return intersect;
+	// Use IRHIBuffer Map/Unmap instead of legacy Lock/Unlock
+	RHIMappedSubresource mapped = {};
+	bool mapped_ok = V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::READ, 0, &mapped);
+	T* vertices = nullptr;
+	bool intersect = false;
+	if (mapped_ok && mapped.pData)
+	{
+		// mapped.pData points to the start of the buffer; apply vBase offset
+		vertices = reinterpret_cast<T*>(mapped.pData) + V->vBase;
+		intersect = !!pick_bone<T,T*>(vertices, Parent, r, dist, S, D, indices, faces);
+		V->p_rm_Vertices->Unmap();
+		return intersect;
+	}
+
+	// Fallback: try mapping with WRITE flag (some backends only support write mappings)
+	if (V->p_rm_Vertices->Map(ERHI_BUFFER_MAP::WRITE, 0, &mapped) && mapped.pData)
+	{
+		vertices = reinterpret_cast<T*>(mapped.pData) + V->vBase;
+		intersect = !!pick_bone<T,T*>(vertices, Parent, r, dist, S, D, indices, faces);
+		V->p_rm_Vertices->Unmap();
+		return intersect;
+	}
+
+	// Last resort: cannot map the buffer for CPU read — log and return FALSE
+	Msg("! pick_bone: cannot map vertex buffer for read\n");
+	return FALSE;
 }
 #endif //USE_DX11

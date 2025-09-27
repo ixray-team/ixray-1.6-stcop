@@ -4,48 +4,6 @@
 namespace dx10BufferUtils
 {
 
-HRESULT	IC CreateBuffer( ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable, bool bIndexBuffer)
-{
-	D3D_BUFFER_DESC desc;
-	desc.ByteWidth = DataSize;
-	//desc.Usage = bImmutable ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DEFAULT;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.BindFlags = bIndexBuffer ? D3D_BIND_INDEX_BUFFER : D3D_BIND_VERTEX_BUFFER;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D_SUBRESOURCE_DATA subData;
-	subData.pSysMem = pData;
-
-	HRESULT res = RDevice->CreateBuffer( &desc, pData ? &subData : nullptr, ppBuffer);
-	//R_CHK(res);
-	return res;
-}
-
-HRESULT	CreateVertexBuffer( ID3DVertexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable)
-{
-	return CreateBuffer( ppBuffer, pData, DataSize, bImmutable, false);
-}
-
-HRESULT	CreateIndexBuffer( ID3DIndexBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable)
-{
-	return CreateBuffer( ppBuffer, pData, DataSize, bImmutable, true);
-}
-
-HRESULT	CreateConstantBuffer( ID3DBuffer** ppBuffer, UINT DataSize)
-{
-	D3D_BUFFER_DESC desc;
-	desc.ByteWidth = DataSize;
-	desc.Usage = D3D_USAGE_DYNAMIC;
-	desc.BindFlags = D3D_BIND_CONSTANT_BUFFER;
-	desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-
-	HRESULT res = RDevice->CreateBuffer( &desc, 0, ppBuffer);
-	//R_CHK(res);
-	return res;
-}
-
 struct VertexFormatPairs
 {
 	D3DDECLTYPE	m_dx9FMT;

@@ -20,7 +20,7 @@ dxDebugRender::dxDebugRender()
 void dxDebugRender::Init()
 {
 #ifdef USE_DX11
-	R_CHK(dx10BufferUtils::CreateVertexBuffer(
+	VERIFY(RHIUtils::CreateVertexBuffer(
 		&m_dbgVB,
 		nullptr,
 		line_vertex_limit,
@@ -53,13 +53,11 @@ void dxDebugRender::Render()
 	{
 		size_t drawCount = std::min((size_t)line_vertex_limit / sizeof(std::pair<FVF::L, FVF::L>), m_lines.size() - offset);
 
-		RContext->UpdateSubresource(
-			m_dbgVB,
-			0,
-			nullptr,
+		m_dbgVB->UpdateSubresource
+		(
 			m_lines.data() + offset,
-			drawCount * sizeof(std::pair<FVF::L, FVF::L>),
-			0);
+			drawCount * sizeof(std::pair<FVF::L, FVF::L>)
+		);
 
 		RCache.set_xform_world(Fidentity);
 		RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);

@@ -75,12 +75,16 @@ public:
 	IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
 	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
-	
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
+
+	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
 
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
 	void GPUStatsEnd() const;
+
+	void ClearVertexBuffer(u32 vb_stride);
+	void ClearIndexBuffer();
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
@@ -111,10 +115,10 @@ namespace RHIUtils
 		return true;
 	}
 
-	inline bool CreateIndexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	inline bool CreateIndexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true, bool Read = false)
 	{
 		RHIBufferDesc desc = {};
-		desc.Usage = bImmutable ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
+		desc.Usage = (bImmutable || Read) ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
 		desc.Size = DataSize;
 		desc.Type = ERHI_BUFFER_TYPE::INDEX;
 		desc.CPUAccessFlags = bImmutable ? 0 : ERHI_CPU_ACCESS_FLAG_WRITE;
@@ -137,6 +141,7 @@ namespace RHIUtils
 		desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 		desc.Size = DataSize;
 		desc.Type = ERHI_BUFFER_TYPE::CONSTANT;
+		desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG_WRITE;
 
 		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, nullptr);
 		if (!pBuffer)

@@ -44,7 +44,7 @@ public:
 private:
 	ref_shader		m_dbgShaders[dbgShaderCount];
 	ref_geom		m_dbgGeom;
-	ID3DVertexBuffer* m_dbgVB;
+	IRHIBuffer* m_dbgVB;
 };
 
 extern dxDebugRender DebugRenderImpl;

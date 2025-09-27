@@ -69,21 +69,33 @@ void CDetailManager::hw_Load_Geom()
 	u32 dwUsage		=	D3DUSAGE_WRITEONLY;
 
 	// Create VB/IB
-	R_CHK			(RDevice->CreateVertexBuffer	(dwVerts*vSize,dwUsage,0,D3DPOOL_MANAGED,&hw_VB,0));
-	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
+	RHIBufferDesc vbDesc = {};
+	vbDesc.Size = dwVerts * vSize;
+	vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
+	vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // или USAGE_DYNAMIC по необходимости
+	vbDesc.CPUAccessFlags = 0;
+
+	RHIBufferDesc ibDesc = {};
+	ibDesc.Size = dwIndices * 2;
+	ibDesc.Type = ERHI_BUFFER_TYPE::INDEX;
+	ibDesc.Usage = ERHI_USAGE::USAGE_DEFAULT; // или USAGE_DYNAMIC
+	ibDesc.CPUAccessFlags = 0;
+
+	// создаём буферы через RHI
+	IRHIBuffer* hw_VB = GRHI->CreateBuffer(vbDesc, nullptr);
+	IRHIBuffer* hw_IB = GRHI->CreateBuffer(ibDesc, nullptr);
+
 
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
 	// Fill VB
 	{
 		vertHW* pV{};
-#ifdef USE_DX11
+
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
-		pV = pVOriginal;		
-#else //USE_DX11
-		R_CHK			(hw_VB->Lock(0,0,(void**)&pV,0));
-#endif
+		pV = pVOriginal;
+
 		for (u32 o=0; o<objects.size(); o++)
 		{
 #ifndef _EDITOR 
@@ -108,24 +120,18 @@ void CDetailManager::hw_Load_Geom()
 				}
 			}
 		}
-#ifdef USE_DX11
-		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
+		R_CHK(RHIUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		xr_free(pVOriginal);
-#else //USE_DX11
-		R_CHK			(hw_VB->Unlock());
-#endif
 	}
 
 	// Fill IB
 	{
 		u16* pI{};
-#ifdef USE_DX11
-		u16*			pIOriginal;
+
+		u16* pIOriginal;
 		pIOriginal = xr_alloc<u16>(dwIndices);
 		pI	= pIOriginal;
-#else //USE_DX11
-		R_CHK			(hw_IB->Lock(0,0,(void**)(&pI),0));
-#endif
+
 		for (u32 o=0; o<objects.size(); o++)
 		{
 #ifndef _EDITOR 
@@ -141,12 +147,9 @@ void CDetailManager::hw_Load_Geom()
 				offset		=	u16(offset+u16(D.number_vertices));
 			}
 		}
-#ifdef USE_DX11
-		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
+
+		R_CHK(RHIUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		xr_free(pIOriginal);
-#else //USE_DX11
-		R_CHK			(hw_IB->Unlock());
-#endif
 	}
 
 	// Declare geometry

@@ -160,17 +160,7 @@ void dx103DFluidRenderer::CreateGridBox ()
 	};
 	m_iGridBoxVertNum = sizeof(vertices)/sizeof(vertices[0]);
 
-	//D3D_BUFFER_DESC bd;
-	//bd.Usage = D3D_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(vertices);
-	//bd.BindFlags = D3Dxx_BIND_VERTEX_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//bd.MiscFlags = 0;
-	//D3Dxx_SUBRESOURCE_DATA InitData;
-	//InitData.pSysMem = vertices;
-	//V_RETURN( m_pD3DDevice->CreateBuffer( &bd, &InitData, &pGridBoxVertexBuffer ) );
-
-	CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
+	VERIFY(RHIUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
 
 
 	// Create index buffer
@@ -187,22 +177,9 @@ void dx103DFluidRenderer::CreateGridBox ()
 	};
 	m_iGridBoxFaceNum = (sizeof(indices)/sizeof(indices[0]))/3;
 
-	//bd.Usage = D3D_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(indices);
-	//bd.BindFlags = D3Dxx_BIND_INDEX_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//bd.MiscFlags = 0;
-	//InitData.pSysMem = indices;
-	//V_RETURN( m_pD3DDevice->CreateBuffer( &bd, &InitData, &pGridBoxIndexBuffer ) );
-
-	CHK_DX(dx10BufferUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
+	VERIFY(RHIUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
 
 	// Define the input layout
-	//D3Dxx_INPUT_ELEMENT_DESC layout[] =
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3Dxx_INPUT_PER_VERTEX_DATA, 0 },  
-	//};
-	//UINT numElements = sizeof(layout)/sizeof(layout[0]);
 	static D3DVERTEXELEMENT9 layout[] = 
 	{
 		{ 0, 0,		D3DDECLTYPE_FLOAT3,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },
@@ -210,32 +187,17 @@ void dx103DFluidRenderer::CreateGridBox ()
 	};
 
 	// Create the input layout
-	//D3Dxx_PASS_DESC PassDesc;
-	//pTechnique->GetPassByName("CompRayData_Back")->GetDesc( &PassDesc );
-	//V_RETURN( m_pD3DDevice->CreateInputLayout( layout, numElements, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &pGridBoxLayout ) );
-
 	m_GeomGridBox.create(layout, m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
 }
 
 void dx103DFluidRenderer::CreateScreenQuad() 
 {
 	// Create our quad input layout
-	//const D3Dxx_INPUT_ELEMENT_DESC quadlayout[] =
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3Dxx_INPUT_PER_VERTEX_DATA, 0 },
-	//};
-	//UINT numElements = sizeof(quadlayout)/sizeof(quadlayout[0]);
-
 	static D3DVERTEXELEMENT9 quadlayout[] = 
 	{
 		{ 0, 0,		D3DDECLTYPE_FLOAT3,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },
 		D3DDECL_END()
 	};
-
-	// Create the input layout
-	//D3Dxx_PASS_DESC PassDesc;
-	//V_RETURN(pTechnique->GetPassByName("QuadRaycast")->GetDesc( &PassDesc ));
-	//V_RETURN( m_pD3DDevice->CreateInputLayout( quadlayout, numElements, PassDesc.pIAInputSignature, PassDesc.IAInputSignatureSize, &pQuadLayout ) );
 
 	// Create a screen quad for all render to texture operations
 	VsInput svQuad[4];
@@ -244,22 +206,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
 	svQuad[2].pos = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	svQuad[3].pos = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
-	//D3D_BUFFER_DESC vbdesc =
-	//{
-	//	4*sizeof(VsInput),
-	//	D3D_USAGE_DEFAULT,
-	//	D3Dxx_BIND_VERTEX_BUFFER,
-	//	0,
-	//	0
-	//};
-
-	//D3Dxx_SUBRESOURCE_DATA InitData;
-	//InitData.pSysMem = svQuad;
-	//InitData.SysMemPitch = 0;
-	//InitData.SysMemSlicePitch = 0;
-	//V_RETURN( m_pD3DDevice->CreateBuffer( &vbdesc, &InitData, &pQuadVertexBuffer ) );
-
-	CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+	VERIFY(RHIUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
 	m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
 }
 
