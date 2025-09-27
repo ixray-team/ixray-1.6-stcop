@@ -19,7 +19,6 @@ IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
 {
 	if (ZB!=pZB)
 	{
-		PGO				(Msg("PGO:setZB"));
 		stat.target_zb	++;
 		pZB				= ZB;
 		CHK_DX			(RDevice->SetDepthStencilSurface(ZB));
@@ -30,10 +29,6 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 {
 	if (decl!=_decl)
 	{
-		PGO				(Msg("PGO:v_format:%x",_decl));
-#ifdef DEBUG
-		stat.decl		++;
-#endif
 		decl			= _decl;
 		CHK_DX			(RDevice->SetVertexDeclaration(decl));
 	}
@@ -43,7 +38,6 @@ ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
 {
 	if (ps!=_ps)
 	{
-		PGO				(Msg("PGO:Pshader:%x",_ps));
 		stat.ps			++;
 		ps				= _ps;
 		CHK_DX			(RDevice->SetPixelShader(ps));
@@ -57,7 +51,6 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 {
 	if (vs!=_vs)
 	{
-		PGO				(Msg("PGO:Vshader:%x",_vs));
 		stat.vs			++;
 		vs				= _vs;
 		CHK_DX			(RDevice->SetVertexShader(vs));
@@ -71,10 +64,6 @@ ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
 {
 	if ((vb!=_vb) || (vb_stride!=_vb_stride))
 	{
-		PGO				(Msg("PGO:VB:%x,%d",_vb,_vb_stride));
-#ifdef DEBUG
-		stat.vb			++;
-#endif
 		vb				= _vb;
 		vb_stride		= _vb_stride;
 		CHK_DX			(RDevice->SetStreamSource(0,vb,0,vb_stride));
@@ -85,10 +74,6 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 {
 	if (ib!=_ib)
 	{
-		PGO				(Msg("PGO:IB:%x",_ib));
-#ifdef DEBUG
-		stat.ib			++;
-#endif
 		ib				= _ib;
 		CHK_DX			(RDevice->SetIndices(ib));
 	}
@@ -105,7 +90,6 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV
 	stat.polys			+= PC;
 	constants.flush		();
 	CHK_DX				(RDevice->DrawIndexedPrimitive(T_,baseV, startV, countV,startI,PC));
-	PGO					(Msg("PGO:DIP:%dv/%df",countV,PC));
 }
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
@@ -119,7 +103,6 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 	stat.polys			+= PC;
 	constants.flush		();
 	CHK_DX				(RDevice->DrawPrimitive(T_, startV, PC));
-	PGO					(Msg("PGO:DIP:%dv/%df",3*PC,PC));
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
@@ -208,14 +191,16 @@ ICF void CBackend::set_VS(ref_vs& _vs)
 IC void CBackend::set_Constants			(R_constant_table* C_)
 {
 	// caching
-	if (ctable==C_)	return;
+	if (ctable==C_)
+		return;
+
 	ctable			= C_;
 	xforms.unmap	();
 	hemi.unmap		();
 	tree.unmap		();
-	if (0==C_)		return;
 
-	PGO				(Msg("PGO:c-table"));
+	if (0==C_)
+		return;
 
 	// process constant-loaders
 	R_constant_table::c_table::iterator	it	= C_->table.begin();
