@@ -112,12 +112,27 @@ u32 DX9Surface::GetFormat() const
     return m_desc.Format;
 }
 
+u32 DX9Surface::GetMiscFlags() const
+{
+    return m_desc.MiscFlags;
+}
+
 u32 DX9Surface::GetTextureType() const
 {
     if (Texture2D) return D3DRTYPE_TEXTURE;
     if (Texture3D) return D3DRTYPE_VOLUMETEXTURE;
     if (TextureCube) return D3DRTYPE_CUBETEXTURE;
     return D3DRTYPE_SURFACE;
+}
+
+ERHI_USAGE DX9Surface::GetUsage() const
+{
+    if (m_desc.Usage == D3DUSAGE_DYNAMIC)
+    {
+        return ERHI_USAGE::USAGE_DYNAMIC;
+    }
+
+    return ERHI_USAGE::USAGE_DEFAULT;
 }
 
 IRHIShaderResourceView* DX9Surface::GetShaderResourceView()

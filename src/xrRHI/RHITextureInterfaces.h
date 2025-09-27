@@ -56,9 +56,12 @@ public:
 	virtual u32 GetMipLevels() const = 0;
 	virtual u32 GetFormat() const = 0;
 	virtual u32 GetTextureType() const = 0;
+	virtual u32 GetMiscFlags() const = 0;
+	virtual ERHI_USAGE GetUsage() const = 0;
 };
 
-class IRHISurface : public IRHITexture
+class IRHISurface :
+	public IRHITexture
 {
 public:
 	virtual ~IRHISurface() = default;
