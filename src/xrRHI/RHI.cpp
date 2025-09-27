@@ -217,6 +217,44 @@ IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubreso
 	return DevicePtr->CreateBuffer(desc, pSubresource);
 }
 
+void CRHI::SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*> Buffers, ERHI_SHADER_TYPE Type)
+{
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
+
+		xr_vector<ID3D11Buffer*> DXBuffer;
+		DXBuffer.resize(Buffers.size());
+
+		u32 Iter = 0;
+		for (IRHIBuffer* Buffer : Buffers)
+		{
+			if (Min > Iter)
+			{
+				continue;
+			}
+
+			if (Buffer == nullptr)
+			{
+				break;
+			}
+
+			DXBuffer[Iter] = (((CD3D11Buffer*)Buffer)->GetD3DObject());
+			Iter++;
+		}
+
+		switch (Type)
+		{
+			case ERHI_SHADER_TYPE::PS: Context->PSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+			case ERHI_SHADER_TYPE::VS: Context->VSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+			case ERHI_SHADER_TYPE::GS: Context->GSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+			case ERHI_SHADER_TYPE::HS: Context->HSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+			case ERHI_SHADER_TYPE::DS: Context->DSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+			case ERHI_SHADER_TYPE::CS: Context->CSSetConstantBuffers(Min, Max, DXBuffer.data()); break;
+		}
+	}
+}
+
 void CRHI::GPUStatsBegin() const
 {
 	if (!GPUStatsEnable)
@@ -268,5 +306,39 @@ void CRHI::GPUStatsEnd() const
 #ifdef DEBUG_DRAW
 		GPUEvents_EndRendering();
 #endif
+	}
+}
+
+void CRHI::ClearVertexBuffer(u32 vb_stride)
+{
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
+
+		u32	iOffset = 0;
+		Context->IASetVertexBuffers(0, 1, nullptr, &vb_stride, &iOffset);
+	}
+	else
+	{
+		InternalDevice9* Device = (InternalDevice9*)DevicePtr;
+		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
+
+		CHK_DX(DxDevice->SetStreamSource(0, nullptr, 0, vb_stride));
+	}
+}
+
+void CRHI::ClearIndexBuffer()
+{
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
+		Context->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
+	}
+	else
+	{
+		InternalDevice9* Device = (InternalDevice9*)DevicePtr;
+		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
+
+		CHK_DX(DxDevice->SetIndices(nullptr));
 	}
 }

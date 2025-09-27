@@ -99,11 +99,11 @@ public:
 	ref_geom g_accum_point;
 	ref_geom g_accum_spot;
 
-	IDirect3DVertexBuffer9* g_accum_point_vb;
-	IDirect3DIndexBuffer9* g_accum_point_ib;
+	IRHIBuffer* g_accum_point_vb;
+	IRHIBuffer* g_accum_point_ib;
 
-	IDirect3DVertexBuffer9* g_accum_spot_vb;
-	IDirect3DIndexBuffer9* g_accum_spot_ib;
+	IRHIBuffer* g_accum_spot_vb;
+	IRHIBuffer* g_accum_spot_ib;
 
 	virtual	void					set_blur(float	f) {}
 	virtual	void					set_gray(float	f) {}

@@ -26,12 +26,12 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 	//	Fill member list with variable descriptions
 	m_MembersList.resize(Desc.Variables);
 	m_MembersNames.resize(Desc.Variables);
-	for (u32 i=0; i<Desc.Variables; ++i)
+	for (u32 i = 0; i < Desc.Variables; ++i)
 	{
 		ID3DShaderReflectionVariable* pVar;
-		ID3DShaderReflectionType*		pType;
+		ID3DShaderReflectionType* pType;
 
-		D3D_SHADER_VARIABLE_DESC		var_desc;
+		D3D_SHADER_VARIABLE_DESC var_desc;
 
 		pVar = pTable->GetVariableByIndex(i);
 		VERIFY(pVar);
@@ -43,9 +43,9 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 		m_MembersNames[i] = var_desc.Name;
 	}
 
-	m_uiMembersCRC = crc32( &m_MembersList[0], Desc.Variables*sizeof(m_MembersList[0]));
+	m_uiMembersCRC = crc32(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
 
-	R_CHK(dx10BufferUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
+	R_CHK(RHIUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
 	VERIFY(m_pBuffer);
 	m_pBufferData = xr_malloc(Desc.Size);
 	VERIFY(m_pBufferData);
@@ -84,17 +84,14 @@ void dx10ConstantBuffer::Flush()
 {
 	if (m_bChanged)
 	{
-		void	*pData;
-
-		D3D11_MAPPED_SUBRESOURCE	pSubRes;
-		CHK_DX(RContext->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
-		pData = pSubRes.pData;
+		RHIMappedSubresource pSubRes;
+		R_ASSERT(m_pBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
+		void*  pData = pSubRes.pData;
 
 		VERIFY(pData);
 		VERIFY(m_pBufferData);
 		CopyMemory(pData, m_pBufferData, m_uiBufferSize);
-
-		RContext->Unmap(m_pBuffer, 0);
+		m_pBuffer->Unmap();
 
 		m_bChanged = false;
 	}

@@ -20,8 +20,8 @@ public:
 	
 #ifdef USE_DX11
 	ref_geom					hw_Geom;
-	ID3DVertexBuffer*			hw_VB;
-	ID3DIndexBuffer*			hw_IB;	
+	IRHIBuffer*			hw_VB;
+	IRHIBuffer*			hw_IB;
 #endif
 	
 	xr_vector<xr_shared_ptr<SlotItem>> m_items[3][2];

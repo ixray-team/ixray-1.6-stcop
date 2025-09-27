@@ -60,25 +60,6 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 	}
 }
 
-ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
-{
-	if ((vb!=_vb) || (vb_stride!=_vb_stride))
-	{
-		vb				= _vb;
-		vb_stride		= _vb_stride;
-		CHK_DX			(RDevice->SetStreamSource(0,vb,0,vb_stride));
-	}
-}
-
-ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
-{
-	if (ib!=_ib)
-	{
-		ib				= _ib;
-		CHK_DX			(RDevice->SetIndices(ib));
-	}
-}
-
 ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
 	//Fix D3D ERROR
