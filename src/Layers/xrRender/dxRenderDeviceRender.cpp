@@ -381,12 +381,7 @@ void dxRenderDeviceRender::Begin()
 	RCache.set_Z			(TRUE);
 #endif
 
-#if defined(USE_DX11) && defined(DEBUG_DRAW)
-	if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-	{
-		GPUEvents_BeginRendering();
-	}
-#endif
+	GRHI->GPUStatsBegin();
 }
 
 void dxRenderDeviceRender::Clear()
@@ -448,12 +443,7 @@ void dxRenderDeviceRender::End()
 		MyImGui.AfterRender();
 
 		DebugRenderImpl.m_lines.resize(0);
-#if defined(USE_DX11) && defined(DEBUG_DRAW)
-		if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-		{
-			GPUEvents_EndRendering();
-		}
-#endif
+		GRHI->GPUStatsEnd();
 	}
 #else
 

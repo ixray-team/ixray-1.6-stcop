@@ -114,9 +114,6 @@ target_link_libraries(xrAbstractions PUBLIC xrRHI)
 
 target_link_libraries(xrAbstractions PRIVATE "Winmm.lib")
 target_link_libraries(xrAbstractions PRIVATE "Vfw32.lib")
-target_link_libraries(xrAbstractions PRIVATE "d3d9.lib")
-target_link_libraries(xrAbstractions PRIVATE "d3d11.lib")
-target_link_libraries(xrAbstractions PRIVATE "dxgi.lib")
 
 # Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
