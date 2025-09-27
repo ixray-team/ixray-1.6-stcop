@@ -7,19 +7,17 @@ class ECORE_API CRT:
 public:
 	CRT();
 	~CRT();
-#ifdef USE_DX11
+
 	enum CRTCreationFlags
 	{
 		USE_UAV_FLAG = u32(1 << 0),
 		MIPPED_RT_FLAG = u32(1 << 1)
 	};
-	void	create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
-#else
-	void	create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
-#endif
-	void	destroy();
-	void	reset_begin();
-	void	reset_end();
+
+	void create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void destroy();
+	void reset_begin();
+	void reset_end();
 
 	IC BOOL	valid() {
 		return !!pSurface;
@@ -39,11 +37,7 @@ public:
 	u32						dwWidth;
 	u32						dwHeight;
 
-#ifdef USE_DX11
-	DxgiFormat				fmt;
-#else
-	D3DFORMAT				fmt;
-#endif
+	ERHI_FORMAT				fmt;
 
 	u64						_order;
 };
@@ -51,20 +45,19 @@ public:
 struct resptrcode_crt :
 	public resptr_base<CRT>
 {
-#ifdef USE_DX11
-	void				create(LPCSTR Name, u32 w, u32 h, DxgiFormat f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
-#else
-	void				create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
-#endif
-	void				destroy() {
-		_set(NULL);
+	void create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount = 1, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
+	void destroy()
+	{
+		_set(nullptr);
 	}
 };
 typedef	resptr_core<CRT, resptrcode_crt> ref_rt;
 
 #ifdef USE_DX11
 //////////////////////////////////////////////////////////////////////////
-class		CRTC	:	public xr_resource_named	{
+class CRTC:
+	public xr_resource_named
+{
 public:
 	IRHISurface*			pSurface;
 	IRHIRenderTargetView*	pRT[6];
@@ -72,23 +65,24 @@ public:
 
 	u32						dwSize;
 
-	DxgiFormat				fmt;
+	ERHI_FORMAT				fmt;
 
 	u64						_order;
 
 	CRTC					();
 	~CRTC					();
 
-	void				create(LPCSTR name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
+	void				create(LPCSTR name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void				destroy			();
 	void				reset_begin		();
 	void				reset_end		();
 	IC BOOL				valid			()	{ return !pTexture; }
 };
 
-struct 		resptrcode_crtc	: public resptr_base<CRTC>
+struct resptrcode_crtc:
+	public resptr_base<CRTC>
 {
-	void				create(LPCSTR Name, u32 size, DxgiFormat f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)NULL);
+	void				create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags CreationFlags = (CRT::CRTCreationFlags)0);
 	void				destroy			()	{ _set(NULL);		}
 };
 

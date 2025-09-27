@@ -13,11 +13,13 @@ DX11Surface::DX11Surface(ID3D11Texture2D* texture)
 		m_desc.Height = desc.Height;
 		m_desc.Depth = 1;
 		m_desc.MipLevels = desc.MipLevels;
-		m_desc.Format = desc.Format;
+		m_desc.Format = (ERHI_FORMAT)desc.Format;
 		m_desc.Usage = desc.Usage;
 		m_desc.BindFlags = desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
 		m_desc.MiscFlags = desc.MiscFlags;
+		m_desc.SampleDescCount = desc.SampleDesc.Count;
+		m_desc.ArraySize = desc.ArraySize;
 	}
 }
 
@@ -32,7 +34,7 @@ DX11Surface::DX11Surface(ID3D11Texture3D* texture)
 		m_desc.Height = desc.Height;
 		m_desc.Depth = desc.Depth;
 		m_desc.MipLevels = desc.MipLevels;
-		m_desc.Format = desc.Format;
+		m_desc.Format = (ERHI_FORMAT)desc.Format;
 		m_desc.Usage = desc.Usage;
 		m_desc.BindFlags = desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
@@ -51,11 +53,12 @@ DX11Surface::DX11Surface(ID3D11Texture1D* texture)
 		m_desc.Height = 1;
 		m_desc.Depth = 1;
 		m_desc.MipLevels = desc.MipLevels;
-		m_desc.Format = desc.Format;
+		m_desc.Format = (ERHI_FORMAT)desc.Format;
 		m_desc.Usage = desc.Usage;
 		m_desc.BindFlags = desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
 		m_desc.MiscFlags = desc.MiscFlags;
+		m_desc.ArraySize = desc.ArraySize;
 	}
 }
 
@@ -107,7 +110,7 @@ u32 DX11Surface::GetMipLevels() const
 	return m_desc.MipLevels;
 }
 
-u32 DX11Surface::GetFormat() const
+ERHI_FORMAT DX11Surface::GetFormat() const
 {
 	return m_desc.Format;
 }
@@ -125,6 +128,16 @@ u32 DX11Surface::GetTextureType() const
 	//if (Texture3D) return D3D11_RESOURCE_DIMENSION_TEXTURE3D;
 	//if (Texture1D) return D3D11_RESOURCE_DIMENSION_TEXTURE1D;
 	return DescInfo;
+}
+
+u32 DX11Surface::GetSampleDescCount() const
+{
+	return m_desc.SampleDescCount;
+}
+
+u32 DX11Surface::GetArraySize() const
+{
+	return m_desc.ArraySize;
 }
 
 ERHI_USAGE DX11Surface::GetUsage() const
@@ -245,7 +258,10 @@ DX11RenderTargetView::DX11RenderTargetView(ID3D11RenderTargetView* rtv, IRHISurf
 
 DX11RenderTargetView::~DX11RenderTargetView()
 {
-	if (RTV) RTV->Release();
+	if (RTV)
+	{
+		RTV->Release();
+	}
 }
 
 void* DX11RenderTargetView::GetRawRTV()
@@ -255,12 +271,19 @@ void* DX11RenderTargetView::GetRawRTV()
 
 void DX11RenderTargetView::AddRef()
 {
-	if (RTV) RTV->AddRef();
+	if (RTV)
+	{
+		RTV->AddRef();
+	}
 }
 
 u32 DX11RenderTargetView::Release()
 {
-	if (RTV) return RTV->Release();
+	if (RTV)
+	{
+		return RTV->Release();
+	}
+	
 	return 0;
 }
 
@@ -282,16 +305,6 @@ void DX11RenderTargetView::UnbindRenderTarget()
 {
 	// Would need device context
 	// RContext->OMSetRenderTargets(0, nullptr, nullptr);
-}
-
-void DX11RenderTargetView::Clear(float r, float g, float b, float a)
-{
-	if (RTV)
-	{
-		float color[4] = { r, g, b, a };
-		// Would need device context
-		// RContext->ClearRenderTargetView(RTV, color);
-	}
 }
 
 DX11DepthStencilView::DX11DepthStencilView(ID3D11DepthStencilView* dsv, IRHISurface* surface)
@@ -388,7 +401,7 @@ IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 s
 	d3dDesc.Height = desc.Height;
 	d3dDesc.MipLevels = desc.MipLevels;
 	d3dDesc.ArraySize = 1;
-	d3dDesc.Format = ConvertFormat(desc.Format);
+	d3dDesc.Format = DXGI_FORMAT(desc.Format);
 	d3dDesc.SampleDesc.Count = 1;
 	d3dDesc.SampleDesc.Quality = 0;
 	d3dDesc.Usage = ConvertUsage(desc.Usage);
@@ -411,8 +424,8 @@ IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 	d3dDesc.Height = desc.Height;
 	d3dDesc.MipLevels = desc.MipLevels;
 	d3dDesc.ArraySize = desc.ArraySize;
-	d3dDesc.Format = ConvertFormat(desc.Format);
-	d3dDesc.SampleDesc.Count = desc.Depth;
+	d3dDesc.Format = DXGI_FORMAT(desc.Format);
+	d3dDesc.SampleDesc.Count = desc.SampleDescCount;
 	d3dDesc.SampleDesc.Quality = 0;
 	d3dDesc.Usage = ConvertUsage(desc.Usage);
 	d3dDesc.BindFlags = ConvertBindFlags(desc.BindFlags);
@@ -533,12 +546,6 @@ IRHIDepthStencilView* DX11TextureFactory::CreateDepthStencilView(IRHISurface* su
 		return nullptr;
 
 	return new DX11DepthStencilView(dsv, surface);
-}
-
-// Helper methods
-DXGI_FORMAT DX11TextureFactory::ConvertFormat(u32 format)
-{
-	return static_cast<DXGI_FORMAT>(format);
 }
 
 D3D11_USAGE DX11TextureFactory::ConvertUsage(u32 usage)
