@@ -7,8 +7,6 @@
 #include "stdafx.h"
 #include "stats_manager.h"
 
-ENGINE_API bool g_dedicated_server;
-
 void stats_manager::increment_stats( u32 size, enum_stats_buffer_type type, _D3DPOOL location )
 {
 	if( g_dedicated_server )
