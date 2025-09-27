@@ -15,8 +15,6 @@
 #include "debug_renderer.h"
 #include "xrGameSpyServer.h"
 
-ENGINE_API	bool g_dedicated_server;
-
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
 string_path		MAPROT_LIST		= "";
 BOOL	net_sv_control_hit	= FALSE		;
