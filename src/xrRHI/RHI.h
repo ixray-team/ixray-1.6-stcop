@@ -10,6 +10,7 @@
 #include "RHIConstants.h"
 #include "RHIEnums.h"
 #include "RHITextureInterfaces.h"
+#include "RHIBuffer.h"
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
 
@@ -75,6 +76,8 @@ public:
 	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
 	
+	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
+
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
 	void GPUStatsEnd() const;
@@ -86,3 +89,60 @@ public:
 };
 
 extern RHI_API CRHI* GRHI;
+
+namespace RHIUtils
+{
+	inline bool CreateVertexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	{
+		RHIBufferDesc desc = {};
+		desc.Usage = bImmutable ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
+		desc.Size = DataSize;
+		desc.Type = ERHI_BUFFER_TYPE::VERTEX;
+		desc.CPUAccessFlags = bImmutable ? 0 : ERHI_CPU_ACCESS_FLAG_WRITE;
+
+		RHIBufferSubresource resource = {};
+		resource.pSysMem = pData;
+
+		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, pData ? &resource : nullptr);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	inline bool CreateIndexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
+	{
+		RHIBufferDesc desc = {};
+		desc.Usage = bImmutable ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
+		desc.Size = DataSize;
+		desc.Type = ERHI_BUFFER_TYPE::INDEX;
+		desc.CPUAccessFlags = bImmutable ? 0 : ERHI_CPU_ACCESS_FLAG_WRITE;
+
+		RHIBufferSubresource resource = {};
+		resource.pSysMem = pData;
+
+		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, pData ? &resource : nullptr);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+
+	// Will return nullptr on DX9
+	inline bool CreateConstantBuffer(IRHIBuffer** ppBuffer, u32 DataSize)
+	{
+		RHIBufferDesc desc = {};
+		desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+		desc.Size = DataSize;
+		desc.Type = ERHI_BUFFER_TYPE::CONSTANT;
+
+		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, nullptr);
+		if (!pBuffer)
+			return false;
+
+		*ppBuffer = pBuffer;
+		return true;
+	}
+}

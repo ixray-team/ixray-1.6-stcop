@@ -1,6 +1,7 @@
 #pragma once
 #include "../RHI.h"
 #include "DX9Texture.h"
+#include "DX9Buffer.h"
 
 class InternalDevice9 :
 	public IRHIDevice
@@ -16,6 +17,8 @@ public:
 	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
 	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
 	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
+
+	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
 private:
 	bool CreateD3D9();
