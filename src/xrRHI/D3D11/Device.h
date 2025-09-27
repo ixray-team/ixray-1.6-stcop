@@ -1,7 +1,8 @@
 #pragma once
+#include <d3d11_4.h>
+
 #include "../RHI.h"
-#include "DX11TextureImplementations.h"
-#include <d3d11.h>
+#include "DX11Texture.h"
 
 class InternalDevice11:
 	public IRHIDevice
@@ -13,9 +14,11 @@ public:
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
 	virtual void Present() override;
-	
+
 	virtual IRHITextureFactory* GetTextureFactory() override;
 	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
+	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
+	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
 
 public:
 	IDXGISwapChain* HWSwapchain = nullptr;
@@ -27,5 +30,5 @@ private:
 	void DestroyD3D11();
 	bool UpdateBuffersD3D11();
 	
-	DX11TextureFactory* m_pTextureFactory = nullptr;
+	DX11TextureFactory* TextureFactory = nullptr;
 };
