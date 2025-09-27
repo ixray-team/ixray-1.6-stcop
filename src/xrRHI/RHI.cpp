@@ -72,6 +72,16 @@ void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
 	DevicePtr->ClearTarget(Target->GetRawRTV(), Transparent);
 }
 
+void CRHI::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source)
+{
+	DevicePtr->CopySurface(Dest, Source);
+}
+
+void CRHI::CopySurface(IRHISurface* Dest, IRHISurface* Source)
+{
+	DevicePtr->CopySurface(Dest, Source);
+}
+
 void CRHI::Present()
 {
 	DevicePtr->Present();
