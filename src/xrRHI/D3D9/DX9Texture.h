@@ -114,6 +114,16 @@ public:
     IDirect3DSurface9* GetDX9Surface() const { return Surface; }
 };
 
+class DX9UnorderedAccessView :
+    public IRHIUnorderedAccessView
+{
+public:
+    DX9UnorderedAccessView() {}
+    void* GetRaw() override { return nullptr; }
+    virtual void AddRef() override {};
+    virtual u32 Release() override { return 0; };
+};
+
 class DX9TextureFactory :
     public IRHITextureFactory
 {
@@ -131,6 +141,7 @@ public:
     virtual IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc) override;
     virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
+    virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) override;
     
 private:
     D3DPOOL ConvertPool(u32 usage);
