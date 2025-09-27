@@ -67,37 +67,14 @@ bool det_render_debug = false;
 
 #include "../../xrEngine/GameMtlLib.h"
 
-static void correction_orientation(const Fvector &pos, const Fvector &dir, const Fvector &ground_normal, float& target_angle)
+static void ground_correction(Fmatrix& xform, const Fvector &ground_normal)
 {
-	Fplane Plane_;
-	Plane_.build(pos, ground_normal);
+	xform.j = ground_normal;
 
-	Fvector				position_on_plane;
-	Plane_.project		(position_on_plane, pos);
-
-	// находим проекцию точки, лежащей на векторе текущего направления
-	Fvector				dir_point, proj_point;
-	dir_point.mad		(position_on_plane, dir, 1.f);
-	Plane_.project		(proj_point,dir_point);
-
-	// получаем искомый вектор направления
-	Fvector				target_dir;
-	target_dir.sub		(proj_point,position_on_plane);
-
-	// изменяем текущий угол Эйлера
-	target_angle = target_dir.getP();
+	xform.i.crossproduct(xform.j, xform.k); xform.i.normalize();
+	xform.k.crossproduct(xform.i, xform.j); xform.k.normalize();
 }
 
-static void ground_correction(Fmatrix& xform_, const Fvector &ground_normal)
-{
-	Fvector saved_pos = xform_.c;
-	float h_, p_, b_;
-	xform_.getHPB(h_, p_, b_);
-	correction_orientation(xform_.c, xform_.k, ground_normal, p_);
-	correction_orientation(xform_.c, xform_.i, ground_normal, b_);
-	xform_.setHPB(h_, p_, -b_);
-	xform_.c = saved_pos;
-}
 //#define		DBG_SWITCHOFF_RANDOMIZE
 void		CDetailManager::cache_Decompress(Slot* S)
 {
