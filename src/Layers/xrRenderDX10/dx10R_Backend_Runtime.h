@@ -135,27 +135,6 @@ ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
 	}
 }
 
-ICF void CBackend::set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride)
-{
-	if ((vb!=_vb) || (vb_stride!=_vb_stride))
-	{
-		vb				= _vb;
-		vb_stride		= _vb_stride;
-
-		u32	iOffset = 0;
-		RContext->IASetVertexBuffers( 0, 1, &vb, &_vb_stride, &iOffset);
-	}
-}
-
-ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
-{
-	if (ib!=_ib)
-	{
-		ib				= _ib;
-		RContext->IASetIndexBuffer(ib, DXGI_FORMAT_R16_UINT, 0);
-	}
-}
-
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
 {
 	static	D3D_PRIMITIVE_TOPOLOGY translateTable[] =
@@ -519,7 +498,8 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				VERIFY("Invalid enumeration");
 		}
 
-		ID3DBuffer*	tempBuffer[MaxCBuffers];
+		xr_vector<IRHIBuffer*> tempBuffer;
+		tempBuffer.resize(MaxCBuffers);
 
 		u32 uiMin;
 		u32 uiMax;
@@ -536,7 +516,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 					tempBuffer[i] = 0;
 			}
 
-			RContext->PSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax - uiMin, tempBuffer, ERHI_SHADER_TYPE::PS);
 		}
 		
 
@@ -551,7 +531,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->VSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax - uiMin, tempBuffer, ERHI_SHADER_TYPE::VS);
 		}
 
 			
@@ -566,7 +546,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->GSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::CS);
 		}
 
 		if (CBuffersNeedUpdate(m_aHullConstants, aHullConstants, uiMin, uiMax))
@@ -580,7 +560,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->HSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::HS);
 		}
 
 		if (CBuffersNeedUpdate(m_aDomainConstants, aDomainConstants, uiMin, uiMax))
@@ -594,7 +574,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->DSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::DS);
 		}
 
 		if (CBuffersNeedUpdate(m_aComputeConstants, aComputeConstants, uiMin, uiMax))
@@ -608,7 +588,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 				else
 					tempBuffer[i] = 0;
 			}
-			RContext->CSSetConstantBuffers(uiMin, uiMax-uiMin, &tempBuffer[uiMin]);
+			GRHI->SetConstantBuffers(uiMin, uiMax-uiMin, tempBuffer, ERHI_SHADER_TYPE::CS);
 		}
 	}
 
