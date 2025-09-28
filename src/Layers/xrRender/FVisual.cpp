@@ -133,7 +133,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			u32 vStride = (u32)ComputeVertexSize(fvf);
 
 			VERIFY(nullptr == p_rm_Vertices);
-			VERIFY(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
+			R_ASSERT(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
 		}
 	}
 
@@ -164,7 +164,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			dwPrimitives		= iCount/3;
 
 			VERIFY(nullptr == p_rm_Indices);
-			VERIFY(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2, false, false));
+			R_ASSERT(RHIUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2, false, false));
 		}
 	}
 
