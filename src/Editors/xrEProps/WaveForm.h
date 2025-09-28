@@ -6,6 +6,7 @@ class XREPROPS_API CWaveForm:
 {
 public:
     static CWaveForm* form;
+    shared_str ItemKey = nullptr;
     WaveForm m_CurFunc;
     WaveForm m_SaveFunc;
     bool bLoadMode = false;

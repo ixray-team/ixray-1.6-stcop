@@ -111,19 +111,24 @@ void UIPropertiesItem::DrawItem()
 				CWaveForm::form = new CWaveForm;
 				GUIManager->Push(CWaveForm::form, false);
 			}
-
+			ImGui::PushID(V);
 			if (ImGui::Button("[Wave]"))
 			{
+				CWaveForm::form->ItemKey = PItem->Key();
 				CWaveForm::form->Run(&edit_val);
 			}
+			ImGui::PopID();
 
-			if (WaveForm* WaveInfo = CWaveForm::form->GetResult())
+			if (CWaveForm::form->ItemKey == PItem->Key())
 			{
-				if (PItem->AfterEdit<WaveValue, WaveForm>(*WaveInfo))
+				if (WaveForm* WaveInfo = CWaveForm::form->GetResult())
 				{
-					if (PItem->ApplyValue<WaveValue, WaveForm>(*WaveInfo))
+					if (PItem->AfterEdit<WaveValue, WaveForm>(*WaveInfo))
 					{
-						PropertiesFrom->Modified();
+						if (PItem->ApplyValue<WaveValue, WaveForm>(*WaveInfo))
+						{
+							PropertiesFrom->Modified();
+						}
 					}
 				}
 			}
