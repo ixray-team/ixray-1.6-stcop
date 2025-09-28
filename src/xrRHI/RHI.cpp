@@ -14,6 +14,7 @@ RHI_API CRHI* GRHI = nullptr;
 CRHI::~CRHI()
 {
 	xr_delete(DevicePtr);
+	std::memset(Shaders, 0, sizeof(void*) * RHI_SHADERS_TYPE_SIZE);
 }
 
 IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
@@ -341,4 +342,51 @@ void CRHI::ClearIndexBuffer()
 
 		CHK_DX(DxDevice->SetIndices(nullptr));
 	}
+}
+
+bool CRHI::IsTessPass() const
+{
+	if (APILevel == ERHI_API_LAYER::D3D9)
+	{
+		return false;
+	}
+
+	return Shaders[(size_t)ERHI_SHADER_TYPE::HS] || Shaders[(size_t)ERHI_SHADER_TYPE::DS];
+}
+
+void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
+{
+	if (Shaders[(size_t)Type] == NativeShader)
+	{
+		return;
+	}
+
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		ID3D11DeviceContext* Context = (ID3D11DeviceContext*)GetContext();
+
+		switch (Type)
+		{
+			case ERHI_SHADER_TYPE::PS: Context->PSSetShader((ID3D11PixelShader*)NativeShader, nullptr, 0); break;
+			case ERHI_SHADER_TYPE::VS: Context->VSSetShader((ID3D11VertexShader*)NativeShader, nullptr, 0); break;
+			case ERHI_SHADER_TYPE::GS: Context->GSSetShader((ID3D11GeometryShader*)NativeShader, nullptr, 0); break;
+			case ERHI_SHADER_TYPE::HS: Context->HSSetShader((ID3D11HullShader*)NativeShader, nullptr, 0); break;
+			case ERHI_SHADER_TYPE::DS: Context->DSSetShader((ID3D11DomainShader*)NativeShader, nullptr, 0); break;
+			case ERHI_SHADER_TYPE::CS: Context->CSSetShader((ID3D11ComputeShader*)NativeShader, nullptr, 0); break;
+			default: break;
+		}
+	}
+	else if (APILevel == ERHI_API_LAYER::D3D9)
+	{
+		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
+
+		switch (Type)
+		{
+			case ERHI_SHADER_TYPE::PS: CHK_DX(DxDevice->SetPixelShader((IDirect3DPixelShader9*)NativeShader)); break;
+			case ERHI_SHADER_TYPE::VS: CHK_DX(DxDevice->SetVertexShader((IDirect3DVertexShader9*)NativeShader)); break;
+			default: break; // DX9 supports only VS and PS in this context
+		}
+	}
+
+	Shaders[(size_t)Type] = NativeShader;
 }

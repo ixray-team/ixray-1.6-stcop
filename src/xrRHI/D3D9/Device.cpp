@@ -193,8 +193,8 @@ void InternalDevice9::Present()
 
 void InternalDevice9::ClearTarget(void* Target, ERTColor InputColor)
 {
-	constexpr u32 ColorTransparent = color_xrgb(0, 0, 0);
-	constexpr u32 Color = color_xrgb(127, 127, 127);
+	constexpr u32 ColorTransparent = color_rgba(0, 0, 0, 0);
+	constexpr u32 Color = color_rgba(127, 127, 127, 127);
 	constexpr u32 ColorBlack = color_xrgb(255, 255, 255);
 
 	u32 ColorPtr = 0;
