@@ -160,7 +160,7 @@ void dx103DFluidRenderer::CreateGridBox ()
 	};
 	m_iGridBoxVertNum = sizeof(vertices)/sizeof(vertices[0]);
 
-	VERIFY(RHIUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
 
 
 	// Create index buffer
@@ -177,7 +177,7 @@ void dx103DFluidRenderer::CreateGridBox ()
 	};
 	m_iGridBoxFaceNum = (sizeof(indices)/sizeof(indices[0]))/3;
 
-	VERIFY(RHIUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
+	R_ASSERT(RHIUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
 
 	// Define the input layout
 	static D3DVERTEXELEMENT9 layout[] = 
@@ -206,7 +206,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
 	svQuad[2].pos = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	svQuad[3].pos = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
-	VERIFY(RHIUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
 	m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
 }
 

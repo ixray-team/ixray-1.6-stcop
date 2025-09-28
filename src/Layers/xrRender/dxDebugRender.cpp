@@ -20,7 +20,7 @@ dxDebugRender::dxDebugRender()
 void dxDebugRender::Init()
 {
 #ifdef USE_DX11
-	VERIFY(RHIUtils::CreateVertexBuffer(
+	R_ASSERT(RHIUtils::CreateVertexBuffer(
 		&m_dbgVB,
 		nullptr,
 		line_vertex_limit,
