@@ -430,3 +430,8 @@ void InternalDevice11::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetV
 
 	HWRenderContext->CopyResource(DestSurf->GetDX11Resource(), SourceSurf->GetDX11Resource());
 }
+
+void InternalDevice11::SetViewport(RHIViewport& VP)
+{
+	HWRenderContext->RSSetViewports(1, (D3D11_VIEWPORT*)&VP);
+}

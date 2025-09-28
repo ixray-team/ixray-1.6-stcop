@@ -144,3 +144,24 @@ void CRender::add_Geometry(IRenderVisual* V)
 {
 	add_Static((dxRender_Visual*)V, View->getMask());
 }
+
+void CRender::rmNear()
+{
+	IRender_Target* T = getTarget();
+	RHIViewport VP = { 0, 0, (float)T->get_width(), (float)T->get_height(), 0, 0.02f };
+	GRHI->SetViewport(VP);
+}
+
+void CRender::rmFar()
+{
+	IRender_Target* T = getTarget();
+	RHIViewport VP = { 0, 0, (float)T->get_width(),(float)T->get_height(), 0.99999f, 1.f };
+	GRHI->SetViewport(VP);
+}
+
+void CRender::rmNormal()
+{
+	IRender_Target* T = getTarget();
+	RHIViewport VP = { 0, 0, (float)T->get_width(), (float)T->get_height(), 0, 1.f };
+	GRHI->SetViewport(VP);
+}

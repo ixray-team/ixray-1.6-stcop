@@ -13,6 +13,7 @@
 #include "RHIBuffer.h"
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
+#include "IRHITypes.h"
 
 enum
 {
@@ -78,8 +79,8 @@ public:
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
 
 	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
-	// Set shader by native shader pointer. For D3D11 pass ID3D11* shader pointers; for D3D9 pass IDirect3D* shader pointers.
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
+	void SetViewport(RHIViewport& VP);
 
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
