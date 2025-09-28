@@ -426,7 +426,7 @@ void _Load_hw_generic(Fvisual& V, void* _verts_, auto decl, VerticesContainer& c
 		setter(dst, src);
 	}
 
-	VERIFY(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
 	xr_free(dstOriginal);
 
 	V.rm_geom.create(decl, V.p_rm_Vertices, V.p_rm_Indices);

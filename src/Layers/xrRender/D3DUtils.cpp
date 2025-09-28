@@ -109,11 +109,11 @@ void SPrimitiveBuffer::CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF,
     for (u32 k = 0; k < v_cnt; ++k)
         verts[k].set(((Fvector*)vertices)[k], 0xFFFFFFFF);
 
-    VERIFY(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride, false));
+    R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, verts.data(), v_cnt * stride, false));
 
     if (i_cnt)
     {
-        VERIFY(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16), false));
+        R_ASSERT(RHIUtils::CreateIndexBuffer(&pIB, indices, i_cnt * sizeof(u16), false));
         OnRender.bind(this, &SPrimitiveBuffer::RenderDIP);
     }
     else
