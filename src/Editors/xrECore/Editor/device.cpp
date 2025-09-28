@@ -57,7 +57,7 @@ void setup_luabind_allocator()
 
 CEditorRenderDevice::CEditorRenderDevice()
 {
-	RadiusRender = 400;
+	RenderRadius = 400;
 	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
 // dynamic buffer size
 	rsDVB_Size		= 1024 * 16;

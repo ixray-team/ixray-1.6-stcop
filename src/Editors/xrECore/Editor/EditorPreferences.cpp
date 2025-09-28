@@ -182,7 +182,7 @@ void CCustomPreferences::FillProp(PropItemVec& props)
 	PHelper().CreateBOOL	(props,"Scene\\Common\\More Stats Info",		&bMoreStats);
 	PHelper().CreateFloat	(props,"Scene\\Grid\\Cell Size", 	           	&grid_cell_size,	0.1f,	10.f);
 	PHelper().CreateU32		(props,"Scene\\Grid\\Cell Count", 	           	&grid_cell_count,	10, 	1000);
-	PHelper().CreateFloat(props, "Scene\\RadiusRender", &EDevice->RadiusRender,10.f,100000.f);
+	PHelper().CreateFloat	(props,"Scene\\Viewport\\Render Radius",		&EDevice->RenderRadius, 10.f, 100000.f);
 
 	PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Limited Depth",		&bp_lim_depth);
 	PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Back Face Culling",	&bp_cull);
@@ -310,7 +310,7 @@ void CCustomPreferences::Load()
 	scene_recent_count = JSONData["editor_prefs"]["scene_recent_count"];
 	scene_clear_color = JSONData["editor_prefs"]["scene_clear_color"];
 	object_flags.flags = JSONData["editor_prefs"]["object_flags"];
-	EDevice->RadiusRender = JSONData["render"]["render_radius"];
+	EDevice->RenderRadius = JSONData["render"]["render_radius"];
 
 	start_w = JSONData["render"]["w"];
 	start_h = JSONData["render"]["h"];
@@ -437,7 +437,7 @@ void CCustomPreferences::Save()
 	JSONData["render"]["y"]=Y;
 
 	JSONData["windows"]["log"]=bAllowLogCommands;
-	JSONData["render"]["render_radius"]=EDevice->RadiusRender;
+	JSONData["render"]["render_radius"]=EDevice->RenderRadius;
 	
 	JSONData["ContentBrowser"]["file_custom_icon"] = custom_icons;
 	// load shortcuts
