@@ -346,3 +346,16 @@ void InternalDevice9::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetVi
 
 	DX9Device->StretchRect(pSourceSurface->GetDX9Surface(), nullptr, pDestSurface->GetDX9Surface(), nullptr, D3DTEXF_NONE);
 }
+
+void InternalDevice9::SetViewport(RHIViewport& VP)
+{
+	D3DVIEWPORT9 D9Viewport = {};
+	D9Viewport.X = static_cast<u32>(VP.TopLeftX);
+	D9Viewport.Y = static_cast<u32>(VP.TopLeftY);
+	D9Viewport.Width = static_cast<u32>(VP.Width);
+	D9Viewport.Height = static_cast<u32>(VP.Height);
+	D9Viewport.MinZ = VP.MinDepth;
+	D9Viewport.MaxZ = VP.MaxDepth;
+
+	DX9Device->SetViewport(&D9Viewport);
+}
