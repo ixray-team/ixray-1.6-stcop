@@ -107,7 +107,7 @@ void CBackend::CreateQuadIB		()
 	}
 
 	// Create immutable index buffer with initial data
-	VERIFY(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBufferStatic, dwIdxCount * 2));
+	R_ASSERT(RHIUtils::CreateIndexBuffer(&QuadIB, IndexBufferStatic, dwIdxCount * 2));
 }
 
 #endif
