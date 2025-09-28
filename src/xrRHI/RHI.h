@@ -78,6 +78,8 @@ public:
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
 
 	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
+	// Set shader by native shader pointer. For D3D11 pass ID3D11* shader pointers; for D3D9 pass IDirect3D* shader pointers.
+	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
@@ -85,69 +87,18 @@ public:
 
 	void ClearVertexBuffer(u32 vb_stride);
 	void ClearIndexBuffer();
+
+	bool IsTessPass() const;
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	
 	bool GPUStatsEnable = false;
+
+private:
+	void* Shaders[RHI_SHADERS_TYPE_SIZE];
 };
 
 extern RHI_API CRHI* GRHI;
 
-namespace RHIUtils
-{
-	inline bool CreateVertexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true)
-	{
-		RHIBufferDesc desc = {};
-		desc.Usage = bImmutable ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
-		desc.Size = DataSize;
-		desc.Type = ERHI_BUFFER_TYPE::VERTEX;
-		desc.CPUAccessFlags = bImmutable ? 0 : ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		RHIBufferSubresource resource = {};
-		resource.pSysMem = pData;
-
-		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, pData ? &resource : nullptr);
-		if (!pBuffer)
-			return false;
-
-		*ppBuffer = pBuffer;
-		return true;
-	}
-
-	inline bool CreateIndexBuffer(IRHIBuffer** ppBuffer, const void* pData, u32 DataSize, bool bImmutable = true, bool Read = false)
-	{
-		RHIBufferDesc desc = {};
-		desc.Usage = (bImmutable || Read) ? ERHI_USAGE::USAGE_DEFAULT : ERHI_USAGE::USAGE_DYNAMIC;
-		desc.Size = DataSize;
-		desc.Type = ERHI_BUFFER_TYPE::INDEX;
-		desc.CPUAccessFlags = bImmutable ? 0 : ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		RHIBufferSubresource resource = {};
-		resource.pSysMem = pData;
-
-		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, pData ? &resource : nullptr);
-		if (!pBuffer)
-			return false;
-
-		*ppBuffer = pBuffer;
-		return true;
-	}
-
-	// Will return nullptr on DX9
-	inline bool CreateConstantBuffer(IRHIBuffer** ppBuffer, u32 DataSize)
-	{
-		RHIBufferDesc desc = {};
-		desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
-		desc.Size = DataSize;
-		desc.Type = ERHI_BUFFER_TYPE::CONSTANT;
-		desc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG_WRITE;
-
-		IRHIBuffer* pBuffer = GRHI->CreateBuffer(desc, nullptr);
-		if (!pBuffer)
-			return false;
-
-		*ppBuffer = pBuffer;
-		return true;
-	}
-}
+#include "RHIUtils.h"

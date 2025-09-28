@@ -246,16 +246,6 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		SPass&						pass	= *sh->passes[iPass];
 		mapNormal_T&				map		= mapNormalPasses[sh->flags.iPriority/2][iPass];
 
-#ifdef USE_RESOURCE_DEBUGGER
-#ifdef USE_DX11
-		mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs);
-		mapNormalGS::TNode*			Ngs		= Nvs->val.insert	(pass.gs);
-		mapNormalPS::TNode*			Nps		= Ngs->val.insert	(pass.ps);
-#	else //USE_DX11
-		mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs);
-		mapNormalPS::TNode*			Nps		= Nvs->val.insert	(pass.ps);
-#	endif
-#else // USE_RESOURCE_DEBUGGER
 #ifdef USE_DX11
 		mapNormalVS::TNode*			Nvs		= map.insert		(&*pass.vs);
 		mapNormalGS::TNode*			Ngs		= Nvs->val.insert	(pass.gs->gs);
@@ -264,18 +254,11 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 		mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs->vs);
 		mapNormalPS::TNode*			Nps		= Nvs->val.insert	(pass.ps->ps);
 #	endif
-#endif // USE_RESOURCE_DEBUGGER
 
 #ifdef USE_DX11
-#	ifdef USE_RESOURCE_DEBUGGER
-		Nps->val.hs = pass.hs;
-		Nps->val.ds = pass.ds;
-		mapNormalCS::TNode*			Ncs		= Nps->val.mapCS.insert	(pass.constants._get());
-#	else
 		Nps->val.hs = pass.hs->sh;
 		Nps->val.ds = pass.ds->sh;
 		mapNormalCS::TNode*			Ncs		= Nps->val.mapCS.insert	(pass.constants._get());
-#	endif
 #else
 		mapNormalCS::TNode*			Ncs		= Nps->val.insert	(pass.constants._get());
 #endif

@@ -71,5 +71,5 @@ enum class ERHI_SHADER_TYPE
 	GS,
 	HS,
 	DS,
-	CS
+	CS,
 };

@@ -34,32 +34,6 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 	}
 }
 
-ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
-{
-	if (ps!=_ps)
-	{
-		stat.ps			++;
-		ps				= _ps;
-		CHK_DX			(RDevice->SetPixelShader(ps));
-#ifdef DEBUG
-		ps_name			= _n;
-#endif
-	}
-}
-
-ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
-{
-	if (vs!=_vs)
-	{
-		stat.vs			++;
-		vs				= _vs;
-		CHK_DX			(RDevice->SetVertexShader(vs));
-#ifdef DEBUG
-		vs_name			= _n;
-#endif
-	}
-}
-
 ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
 	//Fix D3D ERROR
@@ -166,7 +140,7 @@ ICF void	CBackend::set_CullMode		(u32 _mode)
 
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
-	set_VS(_vs->vs,_vs->cName.c_str());				
+	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
 }
 
 IC void CBackend::set_Constants			(R_constant_table* C_)
