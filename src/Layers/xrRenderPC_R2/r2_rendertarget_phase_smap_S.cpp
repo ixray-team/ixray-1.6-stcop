@@ -14,8 +14,8 @@ void	CRenderTarget::phase_smap_spot		(light* L)
 	// Targets + viewport
 	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pRT->GetRawRTV());
 	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
-	D3DVIEWPORT9 VP					=	{L->X.S.posX,L->X.S.posY,L->X.S.size,L->X.S.size,0,1 };
-	CHK_DX								(RDevice->SetViewport(&VP));
+	RHIViewport VP					=	{ (float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1 };
+	GRHI->SetViewport(VP);
 
 	// Misc		- draw only front-faces //back-faces
 	RCache.set_CullMode					( CULL_CCW	);
