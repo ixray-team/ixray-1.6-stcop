@@ -46,7 +46,7 @@ void CEditableMesh::GenerateRenderBuffers()
 		int buf_size = FVF::ComputeVertexSize(_S->_FVF()) * rb.dwNumVertex;
 		R_ASSERT2(buf_size, "Empty buffer size or bad FVF.");
 		IRHIBuffer* pVB = nullptr; // наш RHI буфер
-		VERIFY(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buf_size));
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&pVB, nullptr, buf_size));
 		rb.pGeom.create(_S->_FVF(), pVB, 0);
 
 		// Далее заполняем буфер
