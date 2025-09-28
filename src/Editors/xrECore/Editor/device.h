@@ -51,7 +51,7 @@ public:
 	ref_texture texture_null;
 	Fmaterial m_DefaultMat;
 
-	float RadiusRender;
+	float RenderRadius;
 	u32 dwRealWidth, dwRealHeight;
 	float m_RenderArea;
 	float m_ScreenQuality;

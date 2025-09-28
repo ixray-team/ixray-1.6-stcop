@@ -46,7 +46,7 @@ bool CCustomObject::IsRender()
         bb.getcenter(center);
         distance = center.distance_to(EDevice->vCameraPosition);
     }
-    if (distance > bb.getradius() + EDevice->RadiusRender)
+    if (distance > bb.getradius() + EDevice->RenderRadius)
         return false;
     return ::Render->occ_visible(bb)||( Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected|flMotion) );
 }
