@@ -56,26 +56,26 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 			mapNormalVS&	vs				= mapNormalPasses[_priority][iPass];
 			for (mapNormalVS::TNode& Nvs : vs)
 			{
+#ifdef USE_DX11
 				RCache.set_VS					(Nvs.key);
 
-#ifdef USE_DX11
 				//	GS setup
 				mapNormalGS&		gs			= Nvs.val;
 				for (mapNormalGS::TNode& Ngs : gs)
 				{
-					RCache.set_GS					(Ngs.key);	
-
+					GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 					mapNormalPS&		ps			= Ngs.val;
 #else //USE_DX11
+					GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
 					mapNormalPS&		ps			= Nvs.val;
 #endif
 					for (mapNormalPS::TNode& Nps : ps)
 					{
-						RCache.set_PS					(Nps.key);	
+						GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);	
 #ifdef USE_DX11
 						mapNormalCS&		cs			= Nps.val.mapCS;
-						RCache.set_HS(Nps.val.hs);
-						RCache.set_DS(Nps.val.ds);
+						GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+						GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
 #else //USE_DX11
 						mapNormalCS&		cs			= Nps.val;
 #endif
@@ -126,25 +126,25 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 		mapMatrixVS&	vs				= mapMatrixPasses[_priority][iPass];
 		for (mapMatrixVS::TNode& Nvs : vs)
 		{
-			RCache.set_VS					(Nvs.key);	
-
 #ifdef USE_DX11
+			RCache.set_VS					(Nvs.key);	
 			mapMatrixGS&		gs			= Nvs.val;
 			for (mapMatrixGS::TNode& Ngs : gs)
 			{
-				RCache.set_GS					(Ngs.key);	
+				GRHI->SetShader(Ngs.key, ERHI_SHADER_TYPE::GS);
 
 				mapMatrixPS&		ps			= Ngs.val;
 #else //USE_DX11
+				GRHI->SetShader(Nvs.key, ERHI_SHADER_TYPE::VS);
 				mapMatrixPS&		ps			= Nvs.val;
 #endif
 				for (mapMatrixPS::TNode& Nps : ps)
 				{
-					RCache.set_PS					(Nps.key);	
+					GRHI->SetShader(Nps.key, ERHI_SHADER_TYPE::PS);
 #ifdef USE_DX11
 					mapMatrixCS&		cs			= Nps.val.mapCS;
-					RCache.set_HS(Nps.val.hs);
-					RCache.set_DS(Nps.val.ds);
+					GRHI->SetShader(Nps.val.hs, ERHI_SHADER_TYPE::HS);
+					GRHI->SetShader(Nps.val.ds, ERHI_SHADER_TYPE::DS);
 #else
 					mapMatrixCS&		cs			= Nps.val;
 #endif

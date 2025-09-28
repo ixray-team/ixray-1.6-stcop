@@ -64,14 +64,6 @@ void CBackend::Invalidate	()
 	vb_stride					= 0;
 
 	state						= nullptr;
-	ps							= nullptr;
-	vs							= nullptr;
-DX10_ONLY(gs					= nullptr);
-#ifdef USE_DX11
-	hs = 0;
-	ds = 0;
-	cs = 0;
-#endif //USE_DX11
 	ctable						= nullptr;
 
 	T							= nullptr;
