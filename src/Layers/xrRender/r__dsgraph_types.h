@@ -62,8 +62,6 @@
 
 class dxRender_Visual;
 
-// #define	USE_RESOURCE_DEBUGGER
-
 namespace R_dsgraph
 {
 	// Elementary types
@@ -92,27 +90,15 @@ namespace R_dsgraph
 		dxRender_Visual* pVisual;
 	};
 
-#ifdef USE_RESOURCE_DEBUGGER
-		using vs_type = ref_vs;
-		using ps_type = ref_ps;
-#ifdef USE_DX11
-		using gs_type = ref_gs;
-		using hs_type = ref_hs;
-		using ds_type = ref_ds;
-#endif //USE_DX11
-#else
-	#ifdef USE_DX11	//	DX10 needs shader signature to propperly bind deometry to shader
-		using vs_type = SVS*;
-		using gs_type = ID3DGeometryShader*;
-		using hs_type = ID3D11HullShader*;
-		using ds_type = ID3D11DomainShader*;
-	#else //USE_DX11
-		using vs_type = ID3DVertexShader*;
-	#endif
-		using ps_type = ID3DPixelShader*;
+#ifdef USE_DX11	//	DX10 needs shader signature to propperly bind deometry to shader
+	using vs_type = SVS*;
+	using gs_type = ID3DGeometryShader*;
+	using hs_type = ID3D11HullShader*;
+	using ds_type = ID3D11DomainShader*;
+#else //USE_DX11
+	using vs_type = ID3DVertexShader*;
 #endif
-
-
+	using ps_type = ID3DPixelShader*;
 
 	// NORMAL
 	using mapNormalDirect = xr_vector<_NormalItem,render_allocator::helper<_NormalItem>::result>;
