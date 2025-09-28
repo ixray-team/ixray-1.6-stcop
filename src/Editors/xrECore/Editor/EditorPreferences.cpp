@@ -57,6 +57,8 @@ CCustomPreferences::CCustomPreferences()
     env_from_time       = 0.f;
     env_to_time         = 24.f * 60.f * 60.f;
     // sWeather         = "";
+	//sound
+	sound_volume		= 1.f;
 
 	//other
 	custom_icons.clear();
@@ -258,6 +260,9 @@ void CCustomPreferences::Load()
 	psDeviceFlags.flags = JSONData["editor_prefs"]["device_flags"];
 	psSoundFlags.flags = JSONData["editor_prefs"]["sound_flags"];
 
+	if (JSONData["editor_prefs"].contains("sound_volume"))
+		sound_volume = JSONData["editor_prefs"]["sound_volume"];
+
 	Tools->m_Settings.flags = JSONData["editor_prefs"]["tools_settings"], Tools->m_Settings.flags;
 
 	view_np = JSONData["editor_prefs"]["view_np"];
@@ -358,6 +363,7 @@ void CCustomPreferences::Save()
 {
 	JSONData["editor_prefs"]["device_flags"] = psDeviceFlags.flags;
 	JSONData["editor_prefs"]["sound_flags"] = psSoundFlags.flags;
+	JSONData["editor_prefs"]["sound_volume"] = sound_volume;
 
 	JSONData["editor_prefs"]["tools_settings"]=Tools->m_Settings.flags;
 

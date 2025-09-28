@@ -82,6 +82,8 @@ public:
     float           env_to_time;
     float           env_speed;
 	shared_str      sWeather;
+	// sound
+	float			sound_volume;
 
 	xr_string		Compiler_xrAI;
 	xr_string		Compiler_xrLC;
