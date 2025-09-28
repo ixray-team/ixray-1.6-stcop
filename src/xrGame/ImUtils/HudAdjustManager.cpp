@@ -130,10 +130,22 @@ void RenderHUDAdjustManager()
 					news_data.texture_name = "ui_iconsTotal_bar_darklab_documents2";
 					Actor()->AddGameNews(news_data);
 				}
+				xr_string itemSection = "Unknown";
 				if (p_item)
 				{
-					ImGui::Text("Item Section: %s", p_item->m_section_id.c_str());
-					
+					itemSection = p_item->m_section_id.c_str();
+				}
+
+				ImGui::Text("Item Section: %s", itemSection.c_str());
+				ImGui::SameLine(ImGui::CalcItemWidth() - ImGui::CalcTextSize("?").x);
+				ImGui::Button("?");
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::SetTooltip("* Shift + drag\nFor slower value change\n* Ctrl + click(or double click)\nInput text into slider\n* Alt + drag\nFor quick value change, opposite of Shift key");
+				}
+
+				if (p_item)
+				{					
 					if (g_player_hud)
 					{
 						const char* p_hand = "single hand";
@@ -159,8 +171,6 @@ void RenderHUDAdjustManager()
 								xr_sprintf(name, sizeof(name), "attached_item#%d", index);
 								ImGui::SeparatorText(name);
 
-							//	ImGui::Text("Hands hud: %s", p_item->m_parent->section_name().c_str());
-							//	ImGui::Text("Item hud: %s", p_item->m_sect_name.c_str());
 								R_ASSERT2(p_item->m_parent, "must be valid!");
 
 								string32 item_header_name = "";
@@ -439,12 +449,12 @@ void RenderHUDAdjustManager()
 
 						attachable_hud_item* p_hud_item_first = g_player_hud->attached_item(0);
 
-						p_draw_info_hud_item(p_hud_item_first,0);
+						p_draw_info_hud_item(p_hud_item_first, 0);
 
 						if (two_hands)
 						{
 							attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
-							p_draw_info_hud_item(p_hud_item_second,1);
+							p_draw_info_hud_item(p_hud_item_second, 1);
 						}
 					}
 				}
