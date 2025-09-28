@@ -258,7 +258,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 	AttachFluidData(FluidData);
 
 	// All drawing will take place to a viewport with the dimensions of a 3D texture slice
-	D3D_VIEWPORT rtViewport;
+	RHIViewport rtViewport;
 	rtViewport.TopLeftX = 0;
 	rtViewport.TopLeftY = 0;
 	rtViewport.MinDepth = 0.0f;
@@ -266,8 +266,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 
 	rtViewport.Width =  (float)m_iTextureWidth;
 	rtViewport.Height = (float)m_iTextureHeight;
-
-	RContext->RSSetViewports(1,&rtViewport);
+	GRHI->SetViewport(rtViewport);
 
 	RCache.set_ZB(0);
 
