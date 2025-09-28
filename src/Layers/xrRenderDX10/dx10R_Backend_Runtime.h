@@ -47,92 +47,9 @@ ICF void CBackend::set_Format(SDeclaration* _decl)
 	}
 }
 
-ICF void CBackend::set_PS(ID3DPixelShader* _ps, LPCSTR _n)
-{
-	if (ps != _ps)
-	{
-		stat.ps++;
-		ps = _ps;
-
-		RContext->PSSetShader(ps, 0, 0);
-
-#ifdef DEBUG
-		ps_name = _n;
-#endif
-	}
-}
-
-ICF void CBackend::set_GS(ID3DGeometryShader* _gs, LPCSTR _n)
-{
-	if (gs != _gs)
-	{
-		gs = _gs;
-
-		RContext->GSSetShader(gs, 0, 0);
-
-#ifdef DEBUG
-		gs_name = _n;
-#endif
-	}
-}
-
-ICF void CBackend::set_HS(ID3D11HullShader* _hs, LPCSTR _n)
-{
-	if (hs != _hs)
-	{
-		hs = _hs;
-		RContext->HSSetShader(hs, 0, 0);
-
-#ifdef DEBUG
-		hs_name = _n;
-#endif
-	}
-}
-
-ICF void CBackend::set_DS(ID3D11DomainShader* _ds, LPCSTR _n)
-{
-	if (ds != _ds)
-	{
-		ds = _ds;
-		RContext->DSSetShader(ds, 0, 0);
-
-#ifdef DEBUG
-		ds_name = _n;
-#endif
-	}
-}
-
-ICF void CBackend::set_CS(ID3D11ComputeShader* _cs, LPCSTR _n)
-{
-	if (cs != _cs)
-	{
-		cs = _cs;
-		RContext->CSSetShader(cs, 0, 0);
-
-#ifdef DEBUG
-		cs_name = _n;
-#endif
-	}
-}
-
 ICF	bool CBackend::is_TessEnabled()
 {
 	return true;
-}
-
-ICF void CBackend::set_VS(ID3DVertexShader* _vs, LPCSTR _n)
-{
-	if (vs != _vs)
-	{
-		stat.vs++;
-		vs = _vs;
-
-		RContext->VSSetShader(vs, 0, 0);
-
-#ifdef DEBUG
-		vs_name = _n;
-#endif
-	}
 }
 
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
@@ -203,7 +120,7 @@ IC void CBackend::RenderInstancedIndexed(D3DPRIMITIVETYPE T_, u32 baseV, u32 sta
 	u32	iIndexCount = GetIndexCount(T_, PC);
 
 	//!!! HACK !!!
-	if (hs != 0 || ds != 0)
+	if (GRHI->IsTessPass())
 	{
 		R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
@@ -232,7 +149,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV,
 	u32	iIndexCount = GetIndexCount(T_, PC);
 
 	//!!! HACK !!!
-	if (hs != 0 || ds != 0)
+	if (GRHI->IsTessPass())
 	{
 		R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
@@ -350,7 +267,6 @@ ICF void CBackend::set_CullMode(u32 _mode)
 
 IC void CBackend::ApplyVertexLayout()
 {
-	VERIFY(vs);
 	VERIFY(decl);
 	VERIFY(m_pInputSignature);
 
@@ -384,13 +300,13 @@ IC void CBackend::ApplyVertexLayout()
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
 	m_pInputSignature = _vs->signature->signature;
-	set_VS(_vs->vs,_vs->cName.c_str());
+	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
 }
 
 ICF void CBackend::set_VS(SVS* _vs)
 {
 	m_pInputSignature = _vs->signature->signature;
-	set_VS(_vs->vs,_vs->cName.c_str());
+	GRHI->SetShader(_vs->vs, ERHI_SHADER_TYPE::VS);
 }
 
 IC bool CBackend::CBuffersNeedUpdate( ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32 &uiMin, u32 &uiMax)
