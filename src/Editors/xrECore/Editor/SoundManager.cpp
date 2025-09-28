@@ -56,13 +56,13 @@ void CSoundManager::OnDestroy()
 
 void CSoundManager::OnFrame()
 {
-    ::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : psSoundVEffects;
+    ::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : EPrefs->sound_volume;
 }
 
 void CSoundManager::MuteSounds(BOOL bVal)
 {
 	if (bVal) 	::psSoundVEffects = 0.f;
-    else		::psSoundVEffects = psDeviceFlags.is(rsMuteSounds)?0.f: psSoundVEffects;
+    else		::psSoundVEffects = psDeviceFlags.is(rsMuteSounds) ? 0.f : EPrefs->sound_volume;
 }
 
 void CSoundManager::RenameSound(LPCSTR nm0, LPCSTR nm1, EItemType type)

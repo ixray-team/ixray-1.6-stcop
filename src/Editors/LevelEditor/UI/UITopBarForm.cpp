@@ -193,9 +193,12 @@ void UITopBarForm::Draw()
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::Checkbox("Hint ", &MainForm->GetRenderForm()->UseHint);
 				ImGui::SameLine();
+
+				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::SetNextItemWidth(150);
-				ImGui::SliderFloat("Volume", &psSoundVEffects, 0, 1, "%.2f");
+				ImGui::SliderFloat("Volume", &EPrefs->sound_volume, 0, 1, "%.2f");
+				ImGui::EndDisabled();
 			}
 
 			if (ImGui::TableNextColumn())
