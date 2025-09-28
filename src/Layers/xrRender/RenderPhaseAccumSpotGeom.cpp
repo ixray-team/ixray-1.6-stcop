@@ -6,11 +6,11 @@ void CRenderTarget::accum_spot_geom_create()
 	// vertices
 	u32 vCount = DU_CONE_NUMVERTEX;
 	u32 vSize = 3 * 4;
-	VERIFY(RHIUtils::CreateVertexBuffer(&g_accum_spot_vb, du_cone_vertices, vCount * vSize));
+	R_ASSERT(RHIUtils::CreateVertexBuffer(&g_accum_spot_vb, du_cone_vertices, vCount * vSize));
 
 	// Indices
 	u32 iCount = DU_CONE_NUMFACES * 3;
-	VERIFY(RHIUtils::CreateIndexBuffer(&g_accum_spot_ib, du_cone_faces, iCount * 2));
+	R_ASSERT(RHIUtils::CreateIndexBuffer(&g_accum_spot_ib, du_cone_faces, iCount * 2));
 }
 
 void CRenderTarget::accum_spot_geom_destroy()
@@ -46,7 +46,7 @@ void CRenderTarget::accum_volumetric_geom_create()
 			t += dt;
 		}
 
-		VERIFY(RHIUtils::CreateVertexBuffer(&g_accum_volumetric_vb, &pSlice, vCount * vSize));
+		R_ASSERT(RHIUtils::CreateVertexBuffer(&g_accum_volumetric_vb, &pSlice, vCount * vSize));
 	}
 
 	// Indices
@@ -66,7 +66,7 @@ void CRenderTarget::accum_volumetric_geom_create()
 			pInd[5] = basevert + 3;
 		}
 
-		VERIFY(RHIUtils::CreateIndexBuffer(&g_accum_volumetric_ib, &Datap, iCount * 2));
+		R_ASSERT(RHIUtils::CreateIndexBuffer(&g_accum_volumetric_ib, &Datap, iCount * 2));
 	}
 }
 
