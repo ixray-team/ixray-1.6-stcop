@@ -116,25 +116,7 @@ private:
 
 	// Shaders/State
 	ID3DState*						state;
-	ID3DPixelShader*				ps;
-	ID3DVertexShader*				vs;
-#ifdef USE_DX11
-	ID3DGeometryShader*				gs;
-	ID3D11HullShader*				hs;
-	ID3D11DomainShader*				ds;
-	ID3D11ComputeShader*			cs;
-#endif //USE_DX11
 
-#ifdef DEBUG
-	LPCSTR							ps_name;
-	LPCSTR							vs_name;
-#ifdef USE_DX11
-	LPCSTR							gs_name;
-	LPCSTR							hs_name;
-	LPCSTR							ds_name;
-	LPCSTR							cs_name;
-#endif //USE_DX11
-#endif
 	u32								stencil_enable;
 	u32								stencil_func;
 	u32								stencil_ref;
@@ -175,8 +157,6 @@ public:
 		u32								polys;
 		u32								verts;
 		u32								calls;
-		u32								vs;
-		u32								ps;
 		u32								xforms;
 		u32								target_zb;
 
@@ -265,23 +245,13 @@ public:
 	ICF  void						set_Format			(IDirect3DVertexDeclaration9* _decl);
 #endif
 
-	ICF void						set_PS				(ID3DPixelShader* _ps, LPCSTR _n=0);
-	ICF void						set_PS				(ref_ps& _ps)						{ set_PS(_ps->ps,_ps->cName.c_str());				}
-
+	ICF void						set_PS				(const ref_ps& _ps)					{ GRHI->SetShader(_ps->ps, ERHI_SHADER_TYPE::PS); }
 #ifdef USE_DX11
-	ICF void						set_GS				(ID3DGeometryShader* _gs, LPCSTR _n=0);
-	ICF void						set_GS				(ref_gs& _gs)						{ set_GS(_gs->gs,_gs->cName.c_str());				}
-
-	ICF void						set_HS				(ID3D11HullShader* _hs, LPCSTR _n=0);
-	ICF void						set_HS				(ref_hs& _hs)						{ set_HS(_hs->sh,_hs->cName.c_str());				}
-
-	ICF void						set_DS				(ID3D11DomainShader* _ds, LPCSTR _n=0);
-	ICF void						set_DS				(ref_ds& _ds)						{ set_DS(_ds->sh,_ds->cName.c_str());				}
-
-	ICF void						set_CS				(ID3D11ComputeShader* _cs, LPCSTR _n=0);
-	ICF void						set_CS				(ref_cs& _cs)						{ set_CS(_cs->sh,_cs->cName.c_str());				}
-
-#endif //USE_DX11
+	ICF void						set_GS				(const ref_gs& _gs)					{ GRHI->SetShader(_gs->gs, ERHI_SHADER_TYPE::GS); }
+	ICF void						set_HS				(const ref_hs& _hs)					{ GRHI->SetShader(_hs->sh, ERHI_SHADER_TYPE::HS); }
+	ICF void						set_DS				(const ref_ds& _ds)					{ GRHI->SetShader(_ds->sh, ERHI_SHADER_TYPE::DS); }
+	ICF void						set_CS				(const ref_cs& _cs)					{ GRHI->SetShader(_cs->sh, ERHI_SHADER_TYPE::CS); }
+#endif
 
 #ifdef USE_DX11
 	ICF	bool						is_TessEnabled		();
@@ -294,7 +264,7 @@ public:
 	ICF void						set_VS				(SVS* _vs);
 protected:	//	In DX10 we need input shader signature which is stored in ref_vs
 #endif //USE_DX11
-	ICF void						set_VS				(ID3DVertexShader* _vs, LPCSTR _n=0);
+
 #ifdef USE_DX11
 public:
 #endif //USE_DX11
