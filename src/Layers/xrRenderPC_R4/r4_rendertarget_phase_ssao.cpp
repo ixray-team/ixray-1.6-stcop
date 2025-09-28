@@ -2,11 +2,11 @@
 
 void set_viewport(ID3DDeviceContext* dev, float w, float h)
 {
-	D3D_VIEWPORT viewport[1] =
+	RHIViewport Viewport =
 	{
-		0, 0, w, h, 0.f, 1.f
+		0.f, 0.f, w, h, 0.f, 1.f
 	};
-	dev->RSSetViewports(1, viewport);
+	GRHI->SetViewport(Viewport);
 }
 
 void CRenderTarget::phase_ssao()
