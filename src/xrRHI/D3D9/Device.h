@@ -17,6 +17,7 @@ public:
 	virtual void SetTextureFactory(IRHITextureFactory* factory) override;
 	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) override;
 	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) override;
+	virtual void SetViewport(RHIViewport& VP) override;
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 

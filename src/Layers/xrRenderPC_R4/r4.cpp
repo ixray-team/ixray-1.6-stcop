@@ -414,43 +414,25 @@ IRHIBuffer* CRender::getIB(int id, BOOL	_alt) {
 	}
 }
 
-FSlideWindowItem* CRender::getSWI(int id) {
+FSlideWindowItem* CRender::getSWI(int id)
+{
 	VERIFY(id<int(SWIs.size()));
 	return &SWIs[id];
 }
 
-
-IRender_Light* CRender::light_create() {
+IRender_Light* CRender::light_create()
+{
 	return Lights.Create();
 }
 
-IRender_Glow* CRender::glow_create() {
+IRender_Glow* CRender::glow_create()
+{
 	return new CGlow();
 }
 
-void CRender::set_Object(IRenderable* O) {
+void CRender::set_Object(IRenderable* O)
+{
 	val_pObject = O;
-}
-
-void CRender::rmNear() {
-	IRender_Target* T = getTarget();
-	D3D_VIEWPORT VP = {0,0,(float)T->get_width(),(float)T->get_height(),0,0.02f};
-
-	RContext->RSSetViewports(1, &VP);
-}
-
-void CRender::rmFar() {
-	IRender_Target* T = getTarget();
-	D3D_VIEWPORT VP = {0,0,(float)T->get_width(),(float)T->get_height(),0.99999f,1.f};
-
-	RContext->RSSetViewports(1, &VP);
-}
-
-void CRender::rmNormal() {
-	IRender_Target* T = getTarget();
-	D3D_VIEWPORT VP = {0,0,(float)T->get_width(),(float)T->get_height(),0,1.f};
-
-	RContext->RSSetViewports(1, &VP);
 }
 
 CRender::SurfaceParams CRender::getSurface(const char* nameTexture)

@@ -1,4 +1,5 @@
 #pragma once
+#include "IRHITypes.h"
 
 class IRHIDevice
 {
@@ -26,6 +27,7 @@ public:
 	// Texture management
 	virtual IRHITextureFactory* GetTextureFactory() = 0;
 	virtual void SetTextureFactory(IRHITextureFactory* factory) = 0;
+	virtual void SetViewport(RHIViewport& VP) = 0;
 
 	// Buffer stuff
 	virtual IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr) = 0;

@@ -6,18 +6,21 @@ void CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 	RContext->ClearDepthStencilView((ID3DDepthStencilView*)rt_smap_depth->pZRT->GetRawDSV(), D3D_CLEAR_DEPTH, 1.0f, 0L);
 
 	//	Prepare viewport for shadow map rendering
-	if(sub_phase != SE_SUN_RAIN_SMAP) {
+	if(sub_phase != SE_SUN_RAIN_SMAP)
+	{
 		RImplementation.rmNormal();
 	}
-	else {
-		D3D_VIEWPORT VP = {
+	else
+	{
+		RHIViewport VP = 
+		{
 			(float)L->X.D.minX,(float)L->X.D.minY,
 			(float)(L->X.D.maxX - L->X.D.minX),
 			(float)(L->X.D.maxY - L->X.D.minY),
 			0.0f, 1.0f
 		};
 
-		RContext->RSSetViewports(1, &VP);
+		GRHI->SetViewport(VP);
 	}
 
 	// Stencil	- disable
