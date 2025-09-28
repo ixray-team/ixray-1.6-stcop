@@ -19,6 +19,11 @@ extern bool forceFP2Draw;
 extern bool forceSPDraw;
 extern bool b_toggle_weapon_aim;
 
+float snapDefault = 0.000001f;
+bool snapEnabled = false;
+
+#define CalculateSnap(for_snap) if (snapEnabled) for_snap = snapto(for_snap, snap);
+
 void RenderHUDAdjustManager()
 {
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_HudAdjustManager)])
@@ -130,10 +135,44 @@ void RenderHUDAdjustManager()
 					news_data.texture_name = "ui_iconsTotal_bar_darklab_documents2";
 					Actor()->AddGameNews(news_data);
 				}
+				xr_string itemSection = "Unknown";
 				if (p_item)
 				{
-					ImGui::Text("Item Section: %s", p_item->m_section_id.c_str());
-					
+					itemSection = p_item->m_section_id.c_str();
+				}
+
+				ImGui::Text("Item Section: %s", itemSection.c_str());
+
+				// TODO: add better method for scale calculation
+				ImGui::SameLine(ImGui::CalcItemWidth() - (ImGui::GetFontSize() * 6.43));
+				{
+					bool bPushColor = false;
+					if (snapEnabled)
+					{
+						bPushColor = true;
+						ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImGui::GetStyleColorVec4(ImGuiCol_CheckMark));
+					}
+					if (ImGui::ImageButton("##GlobalSnapEnable", ::Render->getSurface("ed\\bar\\grid").Surface, ImVec2(16, ImGui::GetFontSize()), ImVec2(0, 0), ImVec2(1.f, 1.f)))
+					{
+						snapEnabled = !snapEnabled;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+						ImGui::SetTooltip("Global snap applied to position & rotation of HUD elements");
+					}
+					if (bPushColor)
+					{
+						ImGui::PopStyleColor();
+						ImGui::PopStyleColor();
+					}
+				}
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(ImGui::GetFontSize() * 5);
+				ImGui::InputFloat("##GlobalSnap", &snapDefault, 0.0f, 0.0f, "%.6f");
+				if (p_item)
+				{					
 					if (g_player_hud)
 					{
 						const char* p_hand = "single hand";
@@ -152,15 +191,13 @@ void RenderHUDAdjustManager()
 						ImGui::Checkbox("Show fire point 2 box", &forceFP2Draw);
 						ImGui::Checkbox("Show shell point box", &forceSPDraw);
 
-						auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index) -> void {
+						auto p_draw_info_hud_item = [](attachable_hud_item* p_item, u8 index, float snap) -> void {
 							if (p_item)
 							{
 								string16 name = "";
 								xr_sprintf(name, sizeof(name), "attached_item#%d", index);
 								ImGui::SeparatorText(name);
 
-							//	ImGui::Text("Hands hud: %s", p_item->m_parent->section_name().c_str());
-							//	ImGui::Text("Item hud: %s", p_item->m_sect_name.c_str());
 								R_ASSERT2(p_item->m_parent, "must be valid!");
 
 								string32 item_header_name = "";
@@ -192,10 +229,13 @@ void RenderHUDAdjustManager()
 
 
 											ImGui::SliderFloat("X##FPP", &position.x, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.x);
 
 											ImGui::SliderFloat("Y##FPP", &position.y, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.y);
 
 											ImGui::SliderFloat("Z##FPP", &position.z, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.z);
 
 											ImGui::EndTable();
 										}
@@ -223,10 +263,13 @@ void RenderHUDAdjustManager()
 
 
 											ImGui::SliderFloat("X##FP2P", &position.x, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.x);
 
 											ImGui::SliderFloat("Y##FP2P", &position.y, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.y);
 
 											ImGui::SliderFloat("Z##FP2P", &position.z, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.z);
 
 											ImGui::EndTable();
 										}
@@ -254,10 +297,13 @@ void RenderHUDAdjustManager()
 
 
 											ImGui::SliderFloat("X##SPP", &position.x, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.x);
 
 											ImGui::SliderFloat("Y##SPP", &position.y, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.y);
 
 											ImGui::SliderFloat("Z##SPP", &position.z, -1.0f, 1.0f, "%.6f");
+											CalculateSnap(position.z);
 
 											ImGui::EndTable();
 										}
@@ -283,7 +329,7 @@ void RenderHUDAdjustManager()
 										}
 										ImGui::Text("Hud offset index: %d (%s)", offsetIdx, fmt.c_str());
 
-										auto drawHudParameters = [](attachable_hud_item* p_item, u8 attach_idx) -> void
+										auto drawHudParameters = [](attachable_hud_item* p_item, u8 attach_idx, float snap) -> void
 											{
 												ImGui::SeparatorText("Position##HUD");
 
@@ -315,10 +361,13 @@ void RenderHUDAdjustManager()
 
 
 													ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f, "%.6f");
+													CalculateSnap(position.x);
 
 													ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f, "%.6f");
+													CalculateSnap(position.y);
 
 													ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f, "%.6f");
+													CalculateSnap(position.z);
 
 													ImGui::EndTable();
 												}
@@ -351,10 +400,13 @@ void RenderHUDAdjustManager()
 
 
 													ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f, "%.6f");
+													CalculateSnap(rotation.x);
 
 													ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f, "%.6f");
+													CalculateSnap(rotation.y);
 
 													ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f, "%.6f");
+													CalculateSnap(rotation.z);
 
 													ImGui::TableNextColumn();
 
@@ -364,20 +416,20 @@ void RenderHUDAdjustManager()
 
 										if (ImGui::CollapsingHeader("Offset 0 (default)"))
 										{
-											drawHudParameters(p_item, 0);
+											drawHudParameters(p_item, 0, snap);
 										}
 										if (p_item->m_measures.m_hands_positions.hands_offsets[0][1] != zero_vel)
 										{
 											if (ImGui::CollapsingHeader("Offset 1 (aim)"))
 											{
-												drawHudParameters(p_item, 1);
+												drawHudParameters(p_item, 1, snap);
 											}
 										}
 										if (p_item->m_measures.m_hands_positions.hands_offsets[0][2] != zero_vel)
 										{
 											if (ImGui::CollapsingHeader("Offset 2 (aim gl)"))
 											{
-												drawHudParameters(p_item, 2);
+												drawHudParameters(p_item, 2, snap);
 											}
 										}
 									}
@@ -400,10 +452,13 @@ void RenderHUDAdjustManager()
 
 
 										ImGui::SliderFloat("X##HUDP", &position.x, -1.0f, 1.0f, "%.6f");
+										CalculateSnap(position.x);
 
 										ImGui::SliderFloat("Y##HUDP", &position.y, -1.0f, 1.0f, "%.6f");
+										CalculateSnap(position.y);
 
 										ImGui::SliderFloat("Z##HUDP", &position.z, -1.0f, 1.0f, "%.6f");
+										CalculateSnap(position.z);
 
 										ImGui::EndTable();
 									}
@@ -423,10 +478,13 @@ void RenderHUDAdjustManager()
 
 
 										ImGui::SliderFloat("X##HUDR", &rotation.x, -360.0f, 360.0f, "%.6f");
+										CalculateSnap(rotation.x);
 
 										ImGui::SliderFloat("Y##HUDR", &rotation.y, -360.0f, 360.0f, "%.6f");
+										CalculateSnap(rotation.y);
 
 										ImGui::SliderFloat("Z##HUDR", &rotation.z, -360.0f, 360.0f, "%.6f");
+										CalculateSnap(rotation.z);
 
 										ImGui::TableNextColumn();
 
@@ -439,12 +497,12 @@ void RenderHUDAdjustManager()
 
 						attachable_hud_item* p_hud_item_first = g_player_hud->attached_item(0);
 
-						p_draw_info_hud_item(p_hud_item_first,0);
+						p_draw_info_hud_item(p_hud_item_first, 0, snapDefault);
 
 						if (two_hands)
 						{
 							attachable_hud_item* p_hud_item_second = g_player_hud->attached_item(1);
-							p_draw_info_hud_item(p_hud_item_second,1);
+							p_draw_info_hud_item(p_hud_item_second, 1, snapDefault);
 						}
 					}
 				}
