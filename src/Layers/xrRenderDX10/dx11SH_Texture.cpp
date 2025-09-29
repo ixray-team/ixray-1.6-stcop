@@ -160,8 +160,8 @@ void CTexture::ProcessStaging()
 			desc.Depth = 1;
 			desc.MipLevels = pSurface->GetMipLevels();
 			desc.Format = pSurface->GetFormat();
-			desc.Usage = D3D_USAGE_DEFAULT;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MiscFlags = pSurface->GetMiscFlags();
 			
@@ -176,8 +176,8 @@ void CTexture::ProcessStaging()
 			desc.Depth = pSurface->GetDepth();
 			desc.MipLevels = pSurface->GetMipLevels();
 			desc.Format = pSurface->GetFormat();
-			desc.Usage = D3D_USAGE_DEFAULT;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MiscFlags = pSurface->GetMiscFlags();
 			
@@ -372,8 +372,8 @@ void CTexture::Load()
 			rhiDesc.Height = _h;
 			rhiDesc.MipLevels = 1;
 			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
-			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 			rhiDesc.MiscFlags = 0;
 
@@ -411,8 +411,8 @@ void CTexture::Load()
 			rhiDesc.Height = pAVI->m_dwHeight;
 			rhiDesc.MipLevels = 1;
 			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
-			rhiDesc.Usage = D3D_USAGE_DYNAMIC;
-			rhiDesc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 			rhiDesc.MiscFlags = 0;
 

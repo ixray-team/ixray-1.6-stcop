@@ -24,7 +24,7 @@ struct RHIShaderResourceViewDesc
 struct RHIRenderTargetViewDesc
 {
 	ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
-	u32 ViewDimension = 0;    // D3D11_RTV_DIMENSION
+	ERHI_RTV_DIMENSION ViewDimension = ERHI_RTV_DIMENSION::UNKNOWN;
 	u32 MipSlice = 0;         // For texture arrays
 	u32 FirstArraySlice = 0;  // For texture arrays
 	u32 ArraySize = 1;        // For texture arrays
@@ -164,8 +164,8 @@ struct RHITextureDesc
 	u32 Depth = 1;
 	u32 MipLevels = 1;
 	ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
-	u32 Usage = 0;
-	u32 BindFlags = 0;
+	ERHI_USAGE Usage = ERHI_USAGE::USAGE_DEFAULT;
+	ERHI_BIND_FLAG BindFlags = ERHI_BIND_FLAG::NOT_SET;
 	u32 CPUAccessFlags = 0;
 	u32 MiscFlags = 0;
 	u32 ArraySize = 1;
@@ -190,7 +190,7 @@ class IRHITextureFactory
 public:
 	virtual ~IRHITextureFactory() = default;
 
-	virtual IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize) = 0;
+	virtual IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource) = 0;
 	virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) = 0;
 	virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) = 0;
 	virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) = 0;

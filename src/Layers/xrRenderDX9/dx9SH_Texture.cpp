@@ -122,7 +122,8 @@ void CTexture::apply_seq(u32 dwStage)
 	// SEQ
 	u32	frame		=RDEVICE.dwTimeContinual/seqMSPF; //RDEVICE.dwTimeGlobal
 	u32	frame_data	= (u32)seqDATA.size();
-	if (flags.seqCycles)		{
+	if (flags.seqCycles)
+	{
 		u32	frame_id	= frame%(frame_data*2);
 		if (frame_id>=frame_data)	frame_id = (frame_data-1) - (frame_id%frame_data);
 		// Create RHITextureDesc for the sequence texture
@@ -132,14 +133,14 @@ void CTexture::apply_seq(u32 dwStage)
 		rhiDesc.Depth = 1;
 		rhiDesc.MipLevels = 1;
 		rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-		rhiDesc.Usage = 0;
-		rhiDesc.BindFlags = 0;
 		rhiDesc.CPUAccessFlags = 0;
 		rhiDesc.MiscFlags = 0;
 		
 		// Use GRHI to create the surface from sequence data
 		pSurface = GRHI->CreateTextureFromMemory(seqDATA[frame_id]->GetRawTexture(), 0, rhiDesc);
-	} else {
+	}
+	else
+	{
 		u32	frame_id	= frame%frame_data;
 		// Create RHITextureDesc for the sequence texture
 		RHITextureDesc rhiDesc;
@@ -148,8 +149,6 @@ void CTexture::apply_seq(u32 dwStage)
 		rhiDesc.Depth = 1;
 		rhiDesc.MipLevels = 1;
 		rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-		rhiDesc.Usage = 0;
-		rhiDesc.BindFlags = 0;
 		rhiDesc.CPUAccessFlags = 0;
 		rhiDesc.MiscFlags = 0;
 		
@@ -223,8 +222,6 @@ void CTexture::Load		()
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = 1;
 				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-				rhiDesc.Usage = 0;
-				rhiDesc.BindFlags = 0;
 				rhiDesc.CPUAccessFlags = 0;
 				rhiDesc.MiscFlags = 0;
 				
@@ -256,24 +253,14 @@ void CTexture::Load		()
 
 				// Now create texture
 				ID3DTexture2D*	pTexture = 0;
-				HRESULT hrr = RDevice->CreateTexture(
+				HRESULT hrr = RDevice->CreateTexture
+				(
 					pAVI->m_dwWidth,pAVI->m_dwHeight,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,
 					&pTexture,nullptr
-					);
-				// Create RHITextureDesc for the texture
-				RHITextureDesc rhiDesc;
-				rhiDesc.Width = pAVI->m_dwWidth;
-				rhiDesc.Height = pAVI->m_dwHeight;
-				rhiDesc.Depth = 1;
-				rhiDesc.MipLevels = 1;
-				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-				rhiDesc.Usage = 0;
-				rhiDesc.BindFlags = 0;
-				rhiDesc.CPUAccessFlags = 0;
-				rhiDesc.MiscFlags = 0;
-				
+				);
+
 				// Use GRHI to create the surface
-				pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
+				pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, {});
 				if (FAILED(hrr))
 				{
 					FATAL		("Invalid video stream");
@@ -317,8 +304,6 @@ void CTexture::Load		()
 						rhiDesc.Depth = 1;
 						rhiDesc.MipLevels = 1;
 						rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-						rhiDesc.Usage = 0;
-						rhiDesc.BindFlags = 0;
 						rhiDesc.CPUAccessFlags = 0;
 						rhiDesc.MiscFlags = 0;
 						
@@ -349,8 +334,6 @@ void CTexture::Load		()
 				rhiDesc.Depth = 1;
 				rhiDesc.MipLevels = 1;
 				rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-				rhiDesc.Usage = 0;
-				rhiDesc.BindFlags = 0;
 				rhiDesc.CPUAccessFlags = 0;
 				rhiDesc.MiscFlags = 0;
 				
