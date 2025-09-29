@@ -194,6 +194,10 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		{ 0, 0, "Cancel" },
 		{ 0, 1, "Try again" },
 		{ SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 2, "Continue" },
+#ifdef DEBUG
+			{0, 3, "Trigger breakpoint and try again"},
+			{0, 4, "Trigger breakpoint and continue"},
+#endif
 	};
 
 	auto utf8_message = Platform::ANSI_TO_UTF8(Platform::UTF8_to_CP1251(message.c_str()));
@@ -221,6 +225,26 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 		error_after_dialog = false;
 		ignore_always = true;
 	}
+#ifdef DEBUG
+	else if (buttonid == 3)
+	{
+		// Return to main menu
+		error_after_dialog = false;
+		if (IsDebuggerPresent())
+		{
+			DEBUG_INVOKE;
+		}
+	}
+	else if (buttonid == 4)
+	{
+		error_after_dialog = false;
+		ignore_always = true;
+		if (IsDebuggerPresent())
+		{
+			DEBUG_INVOKE;
+		}
+	}
+#endif
 	else
 	{
 		if (IsDebuggerPresent())
