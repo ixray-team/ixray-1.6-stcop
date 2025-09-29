@@ -173,9 +173,9 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
 	return std::move(_tmp);
 }
 
-IRHISurface* CRHI::CreateTextureFromFile(const char* filename, u32& memorySize)
+IRHISurface* CRHI::CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource)
 {
-	return DevicePtr->GetTextureFactory()->CreateTextureFromFile(filename, memorySize);
+	return DevicePtr->GetTextureFactory()->CreateTexture2D(Desc, &SubResource);
 }
 
 IRHISurface* CRHI::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc)
