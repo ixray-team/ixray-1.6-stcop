@@ -221,8 +221,8 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
 	rhiDesc.Depth = TexDesc.Depth;
 	rhiDesc.MipLevels = TexDesc.MipLevels;
 	rhiDesc.Format = (ERHI_FORMAT)TexDesc.Format;
-	rhiDesc.Usage = TexDesc.Usage;
-	rhiDesc.BindFlags = TexDesc.BindFlags;
+	rhiDesc.Usage = (ERHI_USAGE)TexDesc.Usage;
+	rhiDesc.BindFlags = (ERHI_BIND_FLAG)TexDesc.BindFlags;
 	rhiDesc.CPUAccessFlags = TexDesc.CPUAccessFlags;
 	rhiDesc.MiscFlags = TexDesc.MiscFlags;
 	
@@ -334,8 +334,8 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
 		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = desc.Usage;
-		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
 		rhiDesc.MiscFlags = desc.MiscFlags;
 		
@@ -367,8 +367,8 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
 		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = desc.Usage;
-		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
 		rhiDesc.MiscFlags = desc.MiscFlags;
 		
@@ -391,8 +391,8 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 		rhiDesc.Depth = desc.Depth;
 		rhiDesc.MipLevels = desc.MipLevels;
 		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = desc.Usage;
-		rhiDesc.BindFlags = desc.BindFlags;
+		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
 		rhiDesc.MiscFlags = desc.MiscFlags;
 		
@@ -613,8 +613,8 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 	rhiDesc.Depth = desc.Depth;
 	rhiDesc.MipLevels = desc.MipLevels;
 	rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-	rhiDesc.Usage = desc.Usage;
-	rhiDesc.BindFlags = desc.BindFlags;
+	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
 	rhiDesc.MiscFlags = desc.MiscFlags;
 	
