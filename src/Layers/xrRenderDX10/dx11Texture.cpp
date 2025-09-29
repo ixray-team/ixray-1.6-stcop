@@ -289,8 +289,8 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 			desc.Depth = 1;
 			desc.MipLevels = imageInfo.mipLevels;
 			desc.Format = (ERHI_FORMAT)imageInfo.format;
-			desc.Usage = usage;
-			desc.BindFlags = bindFlags;
+			desc.Usage = (ERHI_USAGE)usage;
+			desc.BindFlags = (ERHI_BIND_FLAG)bindFlags;
 			desc.CPUAccessFlags = cpuAccessFlags;
 			desc.MiscFlags = miscFlags;
 			
@@ -358,8 +358,8 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 			desc.Depth = 1;
 			desc.MipLevels = imageInfo.mipLevels;
 			desc.Format = (ERHI_FORMAT)imageInfo.format;
-			desc.Usage = usage;
-			desc.BindFlags = bindFlags;
+			desc.Usage = (ERHI_USAGE)usage;
+			desc.BindFlags = (ERHI_BIND_FLAG)bindFlags;
 			desc.CPUAccessFlags = cpuAccessFlags;
 			desc.MiscFlags = miscFlags;
 			

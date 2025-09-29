@@ -1,9 +1,7 @@
 #include "stdafx.h"
 
-#include "../../xrRHI/RHITextureInterfaces.h"
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/dxRenderDeviceRender.h"
-#include "dx10TextureUtils.h"
 
 CRT::CRT()
 {
@@ -43,7 +41,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 	if(h > RHI_REQ_TEXTURE2D_U_OR_V_DIMENSION) return;
 
 	// Select usage
-	u32 usage = D3DUSAGE_RENDERTARGET;
+	bool UsageDepth = false;
 
 	switch(fmt)
 	{
@@ -51,50 +49,45 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 		case ERHI_FORMAT::D24_UNORM_S8_UINT:
 		case ERHI_FORMAT::R24_UNORM_X8_TYPELESS:
 		{
-			usage = D3DUSAGE_DEPTHSTENCIL;
+			UsageDepth = true;
 			break;
 		}
 		case ERHI_FORMAT::D16_UNORM:
 		{
 			fmt = ERHI_FORMAT::R16_TYPELESS;
-			usage = D3DUSAGE_DEPTHSTENCIL;
+			UsageDepth = true;
 			break;
 		}
 		case ERHI_FORMAT::D32_FLOAT:
 		{
 			fmt = ERHI_FORMAT::R32_TYPELESS;
-			usage = D3DUSAGE_DEPTHSTENCIL;
+			UsageDepth = true;
 			break;
 		}
 	}
-
-	bool bUseAsDepth = (usage != D3DUSAGE_RENDERTARGET);
 
 	// Try to create texture/surface
 	DEV->Evict();
 
 	// Create the render target texture
 	RHITextureDesc desc;
-	ZeroMemory(&desc, sizeof(desc));
-
 	desc.Width = dwWidth;
 	desc.Height = dwHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = fmt;
 	desc.SampleDescCount = SampleCount;
-	desc.Usage = (u32)ERHI_USAGE::USAGE_DEFAULT;
 
 	if(SampleCount <= 1)
 	{
-		desc.BindFlags = D3D_BIND_SHADER_RESOURCE | (bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : D3D_BIND_RENDER_TARGET);
+		desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | (UsageDepth ? ERHI_BIND_FLAG::DEPTH_STENCIL : ERHI_BIND_FLAG::RENDER_TARGET);
 	}
 	else
 	{
-		desc.BindFlags = bUseAsDepth ? D3D_BIND_DEPTH_STENCIL : (D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET);
+		desc.BindFlags = UsageDepth ? ERHI_BIND_FLAG::DEPTH_STENCIL : (ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::RENDER_TARGET);
 	}
 
-	if(!bUseAsDepth)
+	if(!UsageDepth)
 	{
 		if(CreationFlags & CRTCreationFlags::MIPPED_RT_FLAG)
 		{
@@ -108,14 +101,14 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 
 		if(SampleCount == 1 && CreationFlags & CRTCreationFlags::USE_UAV_FLAG)
 		{
-			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+			desc.BindFlags |= ERHI_BIND_FLAG::UNORDERED_ACCESS;
 		}
 	}
 
 	// Use GRHI to create the surface
 	pSurface = GRHI->CreateRenderTarget(desc);
 
-	if(bUseAsDepth)
+	if(UsageDepth)
 	{
 		RHIDepthStencilViewDesc	ViewDesc;
 
@@ -155,7 +148,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 SampleCount, CRT:
 	{
 		RHIRenderTargetViewDesc rtvDesc = {};
 		rtvDesc.Format = fmt;
-		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.ViewDimension = ERHI_RTV_DIMENSION::TEXTURE2D;
 		rtvDesc.MipSlice = 0;
 		rtvDesc.FirstArraySlice = 0;
 		rtvDesc.ArraySize = 1;
@@ -242,6 +235,7 @@ void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, ERHI_FORMAT f, u32 Sample
 	_set(DEV->_CreateRT(Name, w, h, f, SampleCount, CreationFlags));
 }
 
+#ifdef USE_DX11
 CRTC::CRTC()
 {
 	if(pSurface) return;
@@ -272,8 +266,6 @@ void CRTC::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags Cr
 
 	// Create the render target texture
 	RHITextureDesc desc;
-	ZeroMemory(&desc, sizeof(desc));
-
 	desc.Width = dwSize;
 	desc.Height = dwSize;
 
@@ -282,8 +274,7 @@ void CRTC::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags Cr
 	desc.Format = fmt;
 	desc.SampleDescCount = 1;
 
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.BindFlags = D3D_BIND_SHADER_RESOURCE | D3D_BIND_RENDER_TARGET;
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::RENDER_TARGET;
 	desc.MiscFlags = D3D_RESOURCE_MISC_TEXTURECUBE;
 
 	if(CreationFlags & CRT::CRTCreationFlags::MIPPED_RT_FLAG)
@@ -296,7 +287,7 @@ void CRTC::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreationFlags Cr
 
 	RHIRenderTargetViewDesc descRTV = {};
 	descRTV.Format = fmt; // Use the converted format
-	descRTV.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+	descRTV.ViewDimension = ERHI_RTV_DIMENSION::TEXTURE2DARRAY;
 	descRTV.MipSlice = 0;
 	descRTV.ArraySize = 1;
 	
@@ -353,3 +344,4 @@ void resptrcode_crtc::create(LPCSTR Name, u32 size, ERHI_FORMAT f, CRT::CRTCreat
 {
 	_set(DEV->_CreateRTC(Name, size, f, CreationFlags));
 }
+#endif
