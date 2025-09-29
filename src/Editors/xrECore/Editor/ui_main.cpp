@@ -473,7 +473,7 @@ void TUI::Redraw()
 			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
 
 			RCache.set_RT(RT->pRT);
-			RCache.set_ZB((ID3DDepthStencilView*)ZB->pRT->GetRawRTV());
+			RCache.set_ZB(ZB->pZRT);
 
 			EDevice->Clear();
 

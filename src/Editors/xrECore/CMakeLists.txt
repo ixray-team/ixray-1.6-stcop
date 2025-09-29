@@ -104,7 +104,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/SH_Atomic.*"
 	"../../Layers/xrRender/SH_Constant.*"
 	"../../Layers/xrRender/SH_Matrix.*"
-	"../../Layers/xrRenderDX9/dx9SH_RT.*"
+	"../../Layers/xrRender/SH_RT.*"
 	"../../Layers/xrRenderDX9/dx9SH_Texture.*"
 	"../../Layers/xrRenderDX9/DDSTextureLoader9.*"
 	"../../Layers/xrRender/SkeletonAnimated.*"

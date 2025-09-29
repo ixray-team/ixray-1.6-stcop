@@ -1,32 +1,28 @@
 #include "stdafx.h"
 
-void	CRenderTarget::phase_smap_spot_clear()
+void CRenderTarget::phase_smap_spot_clear()
 {
-	/*
-	if (RImplementation.b_HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_depth->pRT);
-	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_d_ZB);
-	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
-	*/
 }
 
-void	CRenderTarget::phase_smap_spot		(light* L)
+void CRenderTarget::phase_smap_spot(light* L)
 {
 	// Targets + viewport
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pRT->GetRawRTV());
-	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
-	RHIViewport VP					=	{ (float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1 };
+	if (RImplementation.o.HW_smap)		u_setrt(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pZRT->GetRawDSV());
+	else								u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
+
+	RHIViewport VP = { (float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1 };
 	GRHI->SetViewport(VP);
 
 	// Misc		- draw only front-faces //back-faces
-	RCache.set_CullMode					( CULL_CCW	);
-	RCache.set_Stencil					( FALSE		);
+	RCache.set_CullMode(CULL_CCW);
+	RCache.set_Stencil(FALSE);
 	// no transparency
-	#pragma todo("can optimize for multi-lights covering more than say 50%...")
-	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable	(FALSE);
-	CHK_DX								(RDevice->Clear( 0L, nullptr, D3DCLEAR_ZBUFFER,	0xffffffff,	1.0f, 0L));
+#pragma todo("can optimize for multi-lights covering more than say 50%...")
+	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable(FALSE);
+	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0xffffffff, 1.0f, 0L));
 }
 
-void	CRenderTarget::phase_smap_spot_tsh	(light* L)
+void CRenderTarget::phase_smap_spot_tsh	(light* L)
 {
 	VERIFY(RImplementation.o.Tshadows);
 	RCache.set_ColorWriteEnable();

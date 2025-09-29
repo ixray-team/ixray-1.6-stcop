@@ -50,6 +50,10 @@ public:
     IDirect3DVolumeTexture9* GetDX9Texture3D() const { return Texture3D; }
     IDirect3DCubeTexture9* GetDX9TextureCube() const { return TextureCube; }
     IDirect3DBaseTexture9* GetDX9BaseTexture() const { return BaseTexture; }
+
+private:
+    template <typename T>
+    RHITextureDesc ConvertResource(const T& Desc);
 };
 
 class DX9ShaderResourceView :
@@ -133,8 +137,8 @@ private:
 public:
     DX9TextureFactory(IDirect3DDevice9* device);
     virtual ~DX9TextureFactory();
-    
-    virtual IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize) override;
+
+    virtual IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource) override;
     virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) override;
@@ -142,10 +146,9 @@ public:
     virtual IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {}) override;
     virtual IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {}) override;
     virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) override;
-    
+
 private:
-    D3DPOOL ConvertPool(u32 usage);
-    DWORD ConvertUsage(u32 usage);
+    u32 ConvertUsage(const RHITextureDesc& desc);
 };
 
 D3DFORMAT ConvertRHIFormatToDX9(ERHI_FORMAT rhiFormat);
