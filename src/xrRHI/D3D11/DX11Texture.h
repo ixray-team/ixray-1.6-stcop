@@ -132,7 +132,7 @@ private:
     ID3D11UnorderedAccessView* UAV = nullptr;
 };
 
-class DX11TextureFactory :
+class DX11TextureFactory final :
     public IRHITextureFactory
 {
 private:
@@ -142,8 +142,8 @@ private:
 public:
     DX11TextureFactory(ID3D11Device* device, ID3D11DeviceContext* context);
     virtual ~DX11TextureFactory();
-    
-    virtual IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize) override;
+
+    virtual IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource) override;
     virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) override;
@@ -153,7 +153,6 @@ public:
     virtual IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc) override;
     
 private:
-    D3D11_USAGE ConvertUsage(u32 usage);
     u32 ConvertBindFlags(u32 bindFlags);
     u32 ConvertCPUAccessFlags(u32 cpuAccessFlags);
     u32 ConvertMiscFlags(u32 miscFlags);
