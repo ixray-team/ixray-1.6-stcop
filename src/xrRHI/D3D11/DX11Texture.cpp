@@ -122,8 +122,8 @@ DX11Surface::DX11Surface(ID3D11Texture2D* texture)
 		m_desc.Depth = 1;
 		m_desc.MipLevels = desc.MipLevels;
 		m_desc.Format = (ERHI_FORMAT)desc.Format;
-		m_desc.Usage = desc.Usage;
-		m_desc.BindFlags = desc.BindFlags;
+		m_desc.Usage = (ERHI_USAGE)desc.Usage;
+		m_desc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
 		m_desc.MiscFlags = desc.MiscFlags;
 		m_desc.SampleDescCount = desc.SampleDesc.Count;
@@ -143,8 +143,8 @@ DX11Surface::DX11Surface(ID3D11Texture3D* texture)
 		m_desc.Depth = desc.Depth;
 		m_desc.MipLevels = desc.MipLevels;
 		m_desc.Format = (ERHI_FORMAT)desc.Format;
-		m_desc.Usage = desc.Usage;
-		m_desc.BindFlags = desc.BindFlags;
+		m_desc.Usage = (ERHI_USAGE)desc.Usage;
+		m_desc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
 		m_desc.MiscFlags = desc.MiscFlags;
 	}
@@ -162,8 +162,8 @@ DX11Surface::DX11Surface(ID3D11Texture1D* texture)
 		m_desc.Depth = 1;
 		m_desc.MipLevels = desc.MipLevels;
 		m_desc.Format = (ERHI_FORMAT)desc.Format;
-		m_desc.Usage = desc.Usage;
-		m_desc.BindFlags = desc.BindFlags;
+		m_desc.Usage = (ERHI_USAGE)desc.Usage;
+		m_desc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 		m_desc.CPUAccessFlags = desc.CPUAccessFlags;
 		m_desc.MiscFlags = desc.MiscFlags;
 		m_desc.ArraySize = desc.ArraySize;
@@ -527,9 +527,36 @@ DX11TextureFactory::~DX11TextureFactory()
 {
 }
 
-IRHISurface* DX11TextureFactory::CreateTextureFromFile(const char* filename, u32& memorySize)
+IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource)
 {
-	return nullptr;
+	D3D11_TEXTURE2D_DESC d3dDesc = {};
+	d3dDesc.Width = Desc.Width;
+	d3dDesc.Height = Desc.Height;
+	d3dDesc.MipLevels = Desc.MipLevels;
+	d3dDesc.ArraySize = 1;
+	d3dDesc.Format = DXGI_FORMAT(Desc.Format);
+	d3dDesc.SampleDesc.Count = 1;
+	d3dDesc.SampleDesc.Quality = 0;
+	d3dDesc.Usage = D3D11_USAGE(Desc.Usage);
+	d3dDesc.BindFlags = ConvertBindFlags(Desc.BindFlags);
+	d3dDesc.CPUAccessFlags = ConvertCPUAccessFlags(Desc.CPUAccessFlags);
+	d3dDesc.MiscFlags = ConvertMiscFlags(Desc.MiscFlags);
+
+	ID3D11Texture2D* texture = nullptr;
+	D3D11_SUBRESOURCE_DATA DxSubResource = {};
+	if (SubResource != nullptr)
+	{
+		DxSubResource.pSysMem = SubResource->Data;
+		DxSubResource.SysMemPitch = SubResource->DataSize;
+	}
+
+	HRESULT hr = Device->CreateTexture2D(&d3dDesc, SubResource ? &DxSubResource : nullptr, &texture);
+	if (FAILED(hr))
+	{
+		return nullptr;
+	}
+
+	return new DX11Surface(texture);
 }
 
 IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc)
@@ -554,25 +581,7 @@ IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 s
 		}
 	}
 	
-	D3D11_TEXTURE2D_DESC d3dDesc = {};
-	d3dDesc.Width = desc.Width;
-	d3dDesc.Height = desc.Height;
-	d3dDesc.MipLevels = desc.MipLevels;
-	d3dDesc.ArraySize = 1;
-	d3dDesc.Format = DXGI_FORMAT(desc.Format);
-	d3dDesc.SampleDesc.Count = 1;
-	d3dDesc.SampleDesc.Quality = 0;
-	d3dDesc.Usage = ConvertUsage(desc.Usage);
-	d3dDesc.BindFlags = ConvertBindFlags(desc.BindFlags);
-	d3dDesc.CPUAccessFlags = ConvertCPUAccessFlags(desc.CPUAccessFlags);
-	d3dDesc.MiscFlags = ConvertMiscFlags(desc.MiscFlags);
-
-	ID3D11Texture2D* texture = nullptr;
-	HRESULT hr = Device->CreateTexture2D(&d3dDesc, nullptr, &texture);
-	if (FAILED(hr))
-		return nullptr;
-
-	return new DX11Surface(texture);
+	return CreateTexture2D(desc, nullptr);
 }
 
 IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
@@ -585,7 +594,7 @@ IRHISurface* DX11TextureFactory::CreateRenderTarget(const RHITextureDesc& desc)
 	d3dDesc.Format = DXGI_FORMAT(desc.Format);
 	d3dDesc.SampleDesc.Count = desc.SampleDescCount;
 	d3dDesc.SampleDesc.Quality = 0;
-	d3dDesc.Usage = ConvertUsage(desc.Usage);
+	d3dDesc.Usage = D3D11_USAGE(desc.Usage);
 	d3dDesc.BindFlags = ConvertBindFlags(desc.BindFlags);
 	d3dDesc.CPUAccessFlags = ConvertCPUAccessFlags(desc.CPUAccessFlags);
 	d3dDesc.MiscFlags = ConvertMiscFlags(desc.MiscFlags);
@@ -657,11 +666,11 @@ IRHIRenderTargetView* DX11TextureFactory::CreateRenderTargetView(IRHISurface* su
 	rtvDesc.Format = (DXGI_FORMAT)desc.Format;
 	rtvDesc.ViewDimension = (D3D11_RTV_DIMENSION)desc.ViewDimension;
 	
-	if (desc.ViewDimension == D3D11_RTV_DIMENSION_TEXTURE2D)
+	if (desc.ViewDimension == ERHI_RTV_DIMENSION::TEXTURE2D)
 	{
 		rtvDesc.Texture2D.MipSlice = desc.MipSlice;
 	}
-	else if (desc.ViewDimension == D3D11_RTV_DIMENSION_TEXTURE2DARRAY)
+	else if (desc.ViewDimension == ERHI_RTV_DIMENSION::TEXTURE2DARRAY)
 	{
 		rtvDesc.Texture2DArray.MipSlice = desc.MipSlice;
 		rtvDesc.Texture2DArray.FirstArraySlice = desc.FirstArraySlice;
@@ -741,11 +750,6 @@ IRHIUnorderedAccessView* DX11TextureFactory::CreateUAV(IRHISurface* pTexture, co
 		return new DX11UnorderedAccessView(pUAV);
 
 	return nullptr;
-}
-
-D3D11_USAGE DX11TextureFactory::ConvertUsage(u32 usage)
-{
-	return static_cast<D3D11_USAGE>(usage);
 }
 
 u32 DX11TextureFactory::ConvertBindFlags(u32 bindFlags)

@@ -421,8 +421,6 @@ CRenderTarget::CRenderTarget		()
 			rhiDesc.Depth = 4;
 			rhiDesc.MipLevels = 1;
 			rhiDesc.Format = ERHI_FORMAT::R8G8_UNORM;
-			rhiDesc.Usage = 0;
-			rhiDesc.BindFlags = 0;
 			rhiDesc.CPUAccessFlags = 0;
 			rhiDesc.MiscFlags = 0;
 			
@@ -433,9 +431,12 @@ CRenderTarget::CRenderTarget		()
 			// Fill it (addr: x=dot(L,N),y=dot(L,H))
 			D3DLOCKED_BOX R{};
 			R_CHK(t_material_surf->LockBox(0, &R, 0, 0));
-			for(u32 slice = 0; slice < 4; slice++) {
-				for(u32 y = 0; y < TEX_material_LdotH; y++) {
-					for(u32 x = 0; x < TEX_material_LdotN; x++) {
+			for(u32 slice = 0; slice < 4; slice++)
+			{
+				for(u32 y = 0; y < TEX_material_LdotH; y++)
+				{
+					for(u32 x = 0; x < TEX_material_LdotN; x++)
+					{
 						u16* p = (u16*)(LPBYTE(R.pBits) + slice * R.SlicePitch + y * R.RowPitch + x * 2);
 						float	ld = float(x) / float(TEX_material_LdotN - 1);
 						float	ls = float(y) / float(TEX_material_LdotH - 1) + EPS_S;
@@ -500,8 +501,6 @@ CRenderTarget::CRenderTarget		()
 			rhiDesc.Depth = 1;
 			rhiDesc.MipLevels = 1;
 			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_SNORM;
-			rhiDesc.Usage = 0;
-			rhiDesc.BindFlags = 0;
 			rhiDesc.CPUAccessFlags = 0;
 			rhiDesc.MiscFlags = 0;
 			
