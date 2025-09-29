@@ -68,7 +68,7 @@ public:
 	void Present();
 	xr_vector<shared_str> DisplaySizeArray();
 
-	IRHISurface* CreateTextureFromFile(const char* filename, u32& memorySize);
+	IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource);
 	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
 	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
 	IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
