@@ -1,7 +1,7 @@
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////
-class ECORE_API CRT:
+class ECORE_API CRT :
 	public xr_resource_named
 {
 public:
@@ -19,27 +19,27 @@ public:
 	void reset_begin();
 	void reset_end();
 
-	IC BOOL	valid() {
+	IC BOOL	valid()
+	{
 		return !!pSurface;
 	}
 
 public:
-	IRHISurface*			pSurface;
-	IRHIRenderTargetView*	pRT;
+	IRHISurface* pSurface;
+	IRHIRenderTargetView* pRT;
 
 	xr_vector<IRHIRenderTargetView*> pMippedRT;
-#ifdef USE_DX11
-	IRHIDepthStencilView*	pZRT;
-	IRHIUnorderedAccessView*	pUAView;
-#endif //USE_DX11
-	ref_texture				pTexture;
+	IRHIDepthStencilView* pZRT;
+	IRHIUnorderedAccessView* pUAView;
 
-	u32						dwWidth;
-	u32						dwHeight;
+	ref_texture pTexture;
 
-	ERHI_FORMAT				fmt;
+	u32 dwWidth;
+	u32 dwHeight;
 
-	u64						_order;
+	ERHI_FORMAT fmt;
+
+	u64 _order;
 };
 
 struct resptrcode_crt :
