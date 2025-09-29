@@ -178,68 +178,31 @@ void dxFontRender::OnRender(CGameFont& owner)
 
 void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap)
 {
-	ID3DTexture2D* pSurface = nullptr;
 	PROF_EVENT("dxFontRender::CreateFontAtlas");
-#ifdef USE_DX11
-	D3D_TEXTURE2D_DESC descFontAtlas;
-	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));
-	descFontAtlas.Width = width;
-	descFontAtlas.Height = height;
-	descFontAtlas.MipLevels = 1;
-	descFontAtlas.ArraySize = 1;
-	descFontAtlas.SampleDesc.Count = 1;
-	descFontAtlas.SampleDesc.Quality = 0;
-	descFontAtlas.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	descFontAtlas.Usage = D3D_USAGE_DEFAULT;
-	descFontAtlas.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	descFontAtlas.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	descFontAtlas.MiscFlags = 0;
 
-	D3D_SUBRESOURCE_DATA FontData;
-	FontData.pSysMem = bitmap;
-	FontData.SysMemSlicePitch = 0;
-	FontData.SysMemPitch = width * 4;
-
-	if(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
-		Msg("! D3D_USAGE_DEFAULT may not be working");
-		_RELEASE(pSurface); descFontAtlas.Usage = D3D_USAGE_DYNAMIC;
-		R_CHK(RDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface));
-	}
-#else
-	D3DLOCKED_RECT LockedRect = {};
-	R_CHK(RDevice->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pSurface, nullptr));
-	R_CHK(pSurface->LockRect(0, &LockedRect, nullptr, 0));
-
-	memcpy(LockedRect.pBits, bitmap, width * height * 4);
-
-	R_CHK(pSurface->UnlockRect(0));
-#endif
-
-	pTexture.create(name);
-	
-	// Create RHITextureDesc for the texture
-	RHITextureDesc rhiDesc;
+	// Заполняем описание текстуры
+	RHITextureDesc rhiDesc = {};
 	rhiDesc.Width = width;
 	rhiDesc.Height = height;
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = 1;
-#ifdef USE_DX11
-	rhiDesc.Format = (ERHI_FORMAT)descFontAtlas.Format;
-	rhiDesc.Usage = descFontAtlas.Usage;
-	rhiDesc.BindFlags = descFontAtlas.BindFlags;
-	rhiDesc.CPUAccessFlags = descFontAtlas.CPUAccessFlags;
-	rhiDesc.MiscFlags = descFontAtlas.MiscFlags;
-#else
 	rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
-	rhiDesc.Usage = 0;
-	rhiDesc.BindFlags = 0;
+	rhiDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 	rhiDesc.CPUAccessFlags = 0;
 	rhiDesc.MiscFlags = 0;
-#endif
-	
-	// Use GRHI to create the surface
-	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pSurface, 0, rhiDesc);
-	pTexture->surface_set(rhiSurface);
 
-	_RELEASE(pSurface);
+	RHISubResource FontData;
+	FontData.Data = bitmap;
+	FontData.DataSize = width * 4;
+
+	IRHISurface* rhiSurface = GRHI->CreateTexture2D(rhiDesc, FontData);
+	if (!rhiSurface)
+	{
+		Msg("! Failed to create font atlas texture");
+		return;
+	}
+
+	pTexture.create(name);
+	pTexture->surface_set(rhiSurface);
 }
