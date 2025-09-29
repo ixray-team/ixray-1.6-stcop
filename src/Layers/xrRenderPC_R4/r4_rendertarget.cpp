@@ -860,8 +860,8 @@ CRenderTarget::CRenderTarget()
 			rhiDesc.Depth = desc.Depth;
 			rhiDesc.MipLevels = desc.MipLevels;
 			rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-			rhiDesc.Usage = desc.Usage;
-			rhiDesc.BindFlags = desc.BindFlags;
+			rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+			rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 			rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
 			rhiDesc.MiscFlags = desc.MiscFlags;
 			
@@ -875,62 +875,46 @@ CRenderTarget::CRenderTarget()
 			static const int sampleSize = 4;
 			u32	tempData[TEX_jitter_count][TEX_jitter * TEX_jitter];
 
-			D3D_TEXTURE2D_DESC	desc;
+			RHITextureDesc desc;
 			desc.Width = TEX_jitter;
 			desc.Height = TEX_jitter;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
-			desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+			desc.Format = ERHI_FORMAT::R8G8B8A8_SNORM;
 
-			desc.Usage = D3D_USAGE_DEFAULT;
-			desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+			desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+			desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 			desc.CPUAccessFlags = 0;
 			desc.MiscFlags = 0;
 
-			D3D_SUBRESOURCE_DATA	subData[TEX_jitter_count];
+			RHISubResource subData[TEX_jitter_count];
 
-			for(int it = 0; it < TEX_jitter_count; it++) {
-				subData[it].pSysMem = tempData[it];
-				subData[it].SysMemPitch = desc.Width * sampleSize;
+			for(int it = 0; it < TEX_jitter_count; it++)
+			{
+				subData[it].Data = tempData[it];
+				subData[it].DataSize = desc.Width * sampleSize;
 			}
 
-			for(u32 y = 0; y < TEX_jitter; y++) {
-				for(u32 x = 0; x < TEX_jitter; x++) {
-					DWORD	data[TEX_jitter_count];
+			for(u32 y = 0; y < TEX_jitter; y++)
+			{
+				for(u32 x = 0; x < TEX_jitter; x++)
+				{
+					DWORD data[TEX_jitter_count];
 					generate_jitter(data, TEX_jitter_count);
-					for(u32 it = 0; it < TEX_jitter_count; it++) {
-						u32* p = (u32*)
-							(LPBYTE(subData[it].pSysMem)
-							+ y * subData[it].SysMemPitch
-							+ x * 4);
-
+					for(u32 it = 0; it < TEX_jitter_count; it++)
+					{
+						u32* p = (u32*)(LPBYTE(subData[it].Data) + y * subData[it].DataSize + x * 4);
 						*p = data[it];
 					}
 				}
 			}
 
-			for(int it = 0; it < TEX_jitter_count; it++) {
+			for(int it = 0; it < TEX_jitter_count; it++)
+			{
 				xr_sprintf(name, "%s%d", r2_jitter, it);
-				R_CHK(RDevice->CreateTexture2D(&desc, &subData[it], &t_noise_surf[it]));
+				t_noise_surf[it] = GRHI->CreateTexture2D(desc, subData[it]);
 				t_noise[it] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(name);
-				
-				// Create RHITextureDesc for the texture
-				RHITextureDesc rhiDesc;
-				rhiDesc.Width = desc.Width;
-				rhiDesc.Height = desc.Height;
-				rhiDesc.Depth = 1;
-				rhiDesc.MipLevels = desc.MipLevels;
-				rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-				rhiDesc.Usage = desc.Usage;
-				rhiDesc.BindFlags = desc.BindFlags;
-				rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-				rhiDesc.MiscFlags = desc.MiscFlags;
-				
-				// Use GRHI to create the surface
-				IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(t_noise_surf[it], 0, rhiDesc);
-				t_noise[it]->surface_set(rhiSurface);
+				t_noise[it]->surface_set(t_noise_surf[it]);
 			}
 		}
 	}
@@ -985,12 +969,10 @@ CRenderTarget::~CRenderTarget	()
 //	_RELEASE					(rt_smap_ZB);
 
 	// Jitter
-	for (int it=0; it<TEX_jitter_count; it++)	{
-		t_noise	[it]->surface_set	(nullptr);
-#ifdef DEBUG
-		_SHOW_REF("t_noise_surf[it]",t_noise_surf[it]);
-#endif // DEBUG
-		_RELEASE					(t_noise_surf[it]);
+	for (int it = 0; it < TEX_jitter_count; it++)
+	{
+		t_noise[it]->surface_set(nullptr);
+		_RELEASE(t_noise_surf[it]);
 	}
 
 	accum_spot_geom_destroy();

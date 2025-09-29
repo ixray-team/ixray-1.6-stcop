@@ -113,7 +113,7 @@ public:
 	ID3DTexture3D*			t_material_surf;
 	ref_texture					t_material;
 
-	ID3DTexture2D*			t_noise_surf	[TEX_jitter_count];
+	IRHISurface*			t_noise_surf	[TEX_jitter_count];
 	ref_texture					t_noise				[TEX_jitter_count];
 private:
 	ref_shader					s_spp;
