@@ -3,7 +3,7 @@
 void	CRenderTarget::phase_smap_direct		(light* L, u32 sub_phase)
 {
 	// Targets
-	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pRT->GetRawRTV());
+	if (RImplementation.o.HW_smap)		u_setrt	(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pZRT->GetRawDSV());
 	else								u_setrt	(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
 
 	// Clear

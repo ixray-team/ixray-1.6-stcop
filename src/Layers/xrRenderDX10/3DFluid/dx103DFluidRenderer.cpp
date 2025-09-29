@@ -250,8 +250,8 @@ void dx103DFluidRenderer::CreateJitterTexture()
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = desc2D.MipLevels;
 	rhiDesc.Format = (ERHI_FORMAT)desc2D.Format;
-	rhiDesc.Usage = desc2D.Usage;
-	rhiDesc.BindFlags = desc2D.BindFlags;
+	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 	rhiDesc.CPUAccessFlags = desc2D.CPUAccessFlags;
 	rhiDesc.MiscFlags = desc2D.MiscFlags;
 	
@@ -357,8 +357,8 @@ void dx103DFluidRenderer::CreateHHGGTexture()
 	rhiDesc.Depth = 1;
 	rhiDesc.MipLevels = desc1D.MipLevels;
 	rhiDesc.Format = (ERHI_FORMAT)desc1D.Format;
-	rhiDesc.Usage = desc1D.Usage;
-	rhiDesc.BindFlags = desc1D.BindFlags;
+	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
+	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
 	rhiDesc.CPUAccessFlags = desc1D.CPUAccessFlags;
 	rhiDesc.MiscFlags = desc1D.MiscFlags;
 	
