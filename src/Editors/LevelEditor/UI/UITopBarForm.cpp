@@ -2,6 +2,7 @@
 #include "UITopBarForm.h"
 #include <shellapi.h>
 #include "IconsFontAwesome6.h"
+
 UITopBarForm::UITopBarForm()
 {
     m_timeUndo               = 0;
@@ -15,8 +16,6 @@ UITopBarForm::UITopBarForm()
     m_tReloadConfigs         = EDevice->Resources->_CreateTexture("ed\\bar\\reload_configs");
     m_VerifySpaceRestrictors = false;
     m_Simulate               = false;
-
-	m_PreferencesIcon = EDevice->Resources->_CreateTexture("ed\\bar\\win_preferences");
 }
 
 UITopBarForm::~UITopBarForm() {}
@@ -95,9 +94,10 @@ void UITopBarForm::Draw()
 
 	if (ImGui::Begin("TOOLBAR", NULL, window_flags))
 	{
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
 
-		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_BordersV | ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions");
 			ImGui::TableSetupColumn("File");
@@ -117,7 +117,6 @@ void UITopBarForm::Draw()
 				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
 				IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
 			}
-
 
 			if (ImGui::TableNextColumn())
 			{
@@ -240,11 +239,9 @@ void UITopBarForm::Draw()
         }
 		ImGui::EndTable();
 	}
-
 	ImGui::End();
 	ImGui::PopStyleColor();
 	ImGui::PopStyleVar(7);
-	
 }
 
 void UITopBarForm::ClickUndo()
