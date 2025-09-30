@@ -38,25 +38,16 @@ void CBlender_accum_point::Compile(CBlender_Compile& C) {
 	C.r_Sampler_rtf("s_normal", r2_RT_N);
 
 	C.r_Sampler_clw("s_material", r2_material);
+	C.r_Sampler("s_lmap", C.L_textures[0]);
 
-	if(C.iElement != SE_L_TRANSLUENT) {
-		C.r_Sampler_clf("s_lmap", r2_RT_smap_surf);
-	}
-	else {
-		C.r_Sampler("s_lmap", C.L_textures[0]);
-	}
-
-	if(C.iElement != SE_L_UNSHADOWED) {
-		if(RImplementation.o.HW_smap) {
-			if(RImplementation.o.HW_smap_PCF) {
-				C.r_Sampler_clf("s_smap", r2_RT_smap_depth);
-			}
-			else {
-				C.r_Sampler_rtf("s_smap", r2_RT_smap_depth);
-			}
+	if (C.iElement != SE_L_UNSHADOWED)
+	{
+		if (RImplementation.o.HW_smap_PCF)
+		{
+			C.r_Sampler_clf("s_smap", r2_RT_smap_depth);
 		}
 		else {
-			C.r_Sampler_rtf("s_smap", r2_RT_smap_surf);
+			C.r_Sampler_rtf("s_smap", r2_RT_smap_depth);
 		}
 	}
 

@@ -7,8 +7,7 @@ void CRenderTarget::phase_smap_spot_clear()
 void CRenderTarget::phase_smap_spot(light* L)
 {
 	// Targets + viewport
-	if (RImplementation.o.HW_smap)		u_setrt(rt_smap_surf, nullptr, nullptr, (IDirect3DSurface9*)rt_smap_depth->pZRT->GetRawDSV());
-	else								u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_ZB);
+	u_setrt(rt_smap_surf, nullptr, nullptr, rt_smap_depth->pZRT);
 
 	RHIViewport VP = { (float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1 };
 	GRHI->SetViewport(VP);
