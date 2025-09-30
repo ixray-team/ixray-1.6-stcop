@@ -24,7 +24,7 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 	}
 }
 
-IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
+IC void	CBackend::set_ZB(IRHIDepthStencilView* ZB)
 {
 	if (ZB != pZB)
 	{
@@ -525,7 +525,7 @@ ICF void CBackend::ApplyRTandZB()
 	if (m_bChangedRTorZB)
 	{
 		m_bChangedRTorZB = false;
-		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, pZB);
+		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, (ID3D11DepthStencilView*)pZB->GetRawDSV());
 	}
 }
 
