@@ -27,6 +27,12 @@ DX9Surface::DX9Surface(IDirect3DTexture9* texture)
 	}
 }
 
+DX9Surface::DX9Surface(const RHITextureDesc& texture)
+{
+	//FX: IT'S FAKE for DEPTH!!!
+	m_desc = texture;
+}
+
 DX9Surface::DX9Surface(IDirect3DVolumeTexture9* texture)
 	: Texture3D(texture), BaseTexture(texture)
 {
@@ -420,9 +426,20 @@ u32 DX9DepthStencilView::Release()
 {
 	if (Surface)
 	{
-		return Surface->Release();
+		u32 Counter = Surface->Release();
+		if (Counter == 0)
+		{
+			xr_delete(this);
+		}
+
+		return Counter;
 	}
 	return 0;
+}
+
+ERHI_DSV_DIMENSION DX9DepthStencilView::GetDimension() const
+{
+	return ERHI_DSV_DIMENSION::TEXTURE2D;
 }
 
 IRHISurface* DX9DepthStencilView::GetSurface()
@@ -457,14 +474,19 @@ DX9TextureFactory::~DX9TextureFactory()
 
 IRHISurface* DX9TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource)
 {
-	IDirect3DTexture9* texture = nullptr;
+	auto Usage = ConvertUsage(Desc);
+	if (Usage == D3DUSAGE_DEPTHSTENCIL)
+	{
+		return new DX9Surface(Desc);
+	}
 
+	IDirect3DTexture9* texture = nullptr;
 	HRESULT hr = Device->CreateTexture
 	(
 		Desc.Width,
 		Desc.Height,
 		Desc.MipLevels,
-		ConvertUsage(Desc),
+		Usage,
 		ConvertRHIFormatToDX9(Desc.Format),
 		D3DPOOL_MANAGED,
 		&texture,
@@ -577,22 +599,35 @@ IRHIRenderTargetView* DX9TextureFactory::CreateRenderTargetView(IRHISurface* sur
 
 IRHIDepthStencilView* DX9TextureFactory::CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc)
 {
-	// DX9 doesn't have separate depth stencil views like DX11
-	// In DX9, depth stencil is typically handled as part of the surface itself
-	// We can create a wrapper that provides the same interface
-	DX9Surface* dx9Surface = static_cast<DX9Surface*>(surface);
-	if (!dx9Surface)
+	DX9Surface* SurfacePtr = static_cast<DX9Surface*>(surface);
+	if (!SurfacePtr)
+	{
 		return nullptr;
+	}
 
-	// For DX9, we create a depth stencil view that wraps the surface
-	// The actual depth stencil functionality is handled by the surface
 	IDirect3DSurface9* dx9SurfacePtr = nullptr;
-	if (dx9Surface->GetRawTexture())
+	if (SurfacePtr->GetRawTexture())
 	{
 		// Get the surface from the texture
-		IDirect3DTexture9* texture = static_cast<IDirect3DTexture9*>(dx9Surface->GetRawTexture());
+		IDirect3DTexture9* texture = static_cast<IDirect3DTexture9*>(SurfacePtr->GetRawTexture());
 		texture->GetSurfaceLevel(0, &dx9SurfacePtr);
 	}
+
+	if (dx9SurfacePtr == nullptr)
+	{
+		HRESULT hr = Device->CreateDepthStencilSurface
+		(
+			SurfacePtr->GetWidth(),
+			SurfacePtr->GetHeight(),
+			ConvertRHIFormatToDX9(SurfacePtr->GetFormat()),
+			D3DMULTISAMPLE_NONE,
+			0,
+			TRUE,
+			&dx9SurfacePtr,
+			nullptr
+		);
+	}
+
 	return new DX9DepthStencilView(dx9SurfacePtr, surface);
 }
 

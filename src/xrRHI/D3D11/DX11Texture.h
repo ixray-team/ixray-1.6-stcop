@@ -115,6 +115,7 @@ public:
     virtual u32 Release() override;
 
     ID3D11DepthStencilView* GetDX11DSV() const { return DSV; }
+    virtual ERHI_DSV_DIMENSION GetDimension() const override;
 };
 
 class DX11UnorderedAccessView :
