@@ -7,7 +7,7 @@ public:
 	void* RawDevice = nullptr;
 	void* RenderRTV = nullptr;
 	void* RenderSRV = nullptr;
-	void* RenderDSV = nullptr;
+	IRHIDepthStencilView* RenderDSV = nullptr;
 	void* RenderTexture = nullptr;
 	void* SwapChainRTV = nullptr;
 
@@ -20,6 +20,7 @@ public:
 public:
 	virtual void ResizeBuffers(u32 Width, u32 Height) = 0;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) = 0;
+	virtual void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil) = 0;
 	virtual void Present() = 0;
 	virtual void CopySurface(IRHISurface* Dest, IRHISurface* Source) = 0;
 	virtual void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source) = 0;
