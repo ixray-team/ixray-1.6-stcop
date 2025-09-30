@@ -198,8 +198,6 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Stats", "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
 
             }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Preferences", "")) { ExecCommand(COMMAND_EDITOR_PREF); }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Windows"))
