@@ -263,11 +263,6 @@ void* CRenderDevice::GetRenderTexture()
 #endif
 }
 
-void* CRenderDevice::GetDepthTexture()
-{
-	return GRHI->DevicePtr->RenderDSV;
-}
-
 void* CRenderDevice::GetSwapchainTexture()
 {
 	return GRHI->DevicePtr->SwapChainRTV;

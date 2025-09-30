@@ -2,13 +2,13 @@
 
 void CRenderTarget::phase_smap_spot_clear()
 {
-	RContext->ClearDepthStencilView((ID3DDepthStencilView*)rt_smap_depth->pZRT->GetRawDSV(), D3D_CLEAR_DEPTH, 1.0f, 0L);
+	GRHI->ClearDepthStencil(rt_smap_depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 }
 
 void CRenderTarget::phase_smap_spot		(light* L)
 {
 	// Targets + viewport
-	u_setrt(nullptr, nullptr, nullptr, (ID3DDepthStencilView*)rt_smap_depth->pZRT->GetRawDSV());
+	u_setrt(nullptr, nullptr, nullptr, rt_smap_depth->pZRT);
 
 	RHIViewport VP = {(float)L->X.S.posX, (float)L->X.S.posY, (float)L->X.S.size, (float)L->X.S.size, 0, 1};
 	GRHI->SetViewport(VP);

@@ -75,6 +75,11 @@ void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
 	DevicePtr->ClearTarget(Target->GetRawRTV(), Transparent);
 }
 
+void CRHI::ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil)
+{
+	DevicePtr->ClearDepthStencil(View, TargetFlags, Depth, Stencil);
+}
+
 void CRHI::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source)
 {
 	DevicePtr->CopySurface(Dest, Source);

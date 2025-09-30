@@ -155,6 +155,7 @@ public:
 	
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
+	virtual ERHI_DSV_DIMENSION GetDimension() const = 0;
 };
 
 struct RHITextureDesc
