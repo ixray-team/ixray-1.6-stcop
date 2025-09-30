@@ -449,10 +449,9 @@ void CRender::Render()
 			mapWmark.clear();
 
 			RContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), (FLOAT*)&fog_color4);
-			RContext->ClearDepthStencilView((ID3D11DepthStencilView*)Target->rt_Depth->pZRT->GetRawDSV(), D3D_CLEAR_DEPTH, 1.0f, 0);
+			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 
-			Target->u_setrt(RefSize, RefSize,
-				(ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), NULL, NULL, (ID3D11DepthStencilView*)Target->rt_Depth->pZRT->GetRawDSV());
+			Target->u_setrt(RefSize, RefSize, (ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), NULL, NULL, Target->rt_Depth->pZRT);
 			
 			RImplementation.rmNormal();
 
@@ -665,12 +664,7 @@ void CRender::Render()
 	{
 		GPU_EVENT(ZBUFFER_COPY);
 		RCache.set_ZB(NULL);
-
-		ID3D11Resource* res{};
-		RDepth->GetResource(&res);
-
-		RContext->CopyResource((ID3D11Resource*)Target->rt_Position->pSurface->GetRawTexture(), res);
-		_RELEASE(res);
+		GRHI->CopySurface(Target->rt_Position->pSurface, RDepth->GetSurface());
 	}
 
 	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];

@@ -103,3 +103,10 @@ enum class ERHI_SHADER_TYPE
 	DS,
 	CS,
 };
+
+enum class ERHI_CLEAR_TARGET
+{
+	DEPTH = 1 << 0,
+	STENCIL = 1 << 1
+};
+ENUM_CLASS_FLAGS(ERHI_CLEAR_TARGET);
