@@ -38,7 +38,6 @@ public:
 	virtual				void*               GetRenderDevice() = 0;
 	virtual				void*               GetRenderContext() = 0;
 	virtual				void*               GetRenderTexture() = 0;
-	virtual				void*               GetDepthTexture() = 0;
 	virtual				void*               GetSwapchainTexture() = 0;
 
 	virtual				void*				GetSwapchain() = 0;
@@ -155,9 +154,9 @@ public:
 
 #pragma pack(pop)
 // refs
-class ENGINE_API CRenderDevice: public CRenderDeviceBase
+class ENGINE_API CRenderDevice:
+	public CRenderDeviceBase
 {
-	friend void CreateRDoc();
 	friend class CPHWorld;
 
 	RENDERDOC_API_1_6_0* pRDocAPI = nullptr;
@@ -178,7 +177,6 @@ public:
 	void* GetRenderDevice() override;
 	void* GetRenderContext() override;
 	void* GetRenderTexture() override;
-	void* GetDepthTexture() override;
 	void* GetSwapchainTexture() override;
 
 	u32 GetTimeDeltaSafe(u32 starttime);

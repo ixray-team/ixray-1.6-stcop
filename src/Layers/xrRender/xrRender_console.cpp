@@ -410,24 +410,6 @@ public		:
 
 };
 
-
-#if RENDER!=R_R1
-#include "r__pixel_calculator.h"
-class CCC_BuildSSA : public IConsole_Command
-{
-public:
-	CCC_BuildSSA(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) 
-	{
-#ifndef USE_DX11
-		//	TODO: DX10: Implement pixel calculator
-		r_pixel_calculator	c;
-		c.run				();
-#endif //USE_DX11
-	}
-};
-#endif
-
 class CCC_DofFar : public CCC_Float
 {
 public:
@@ -779,9 +761,6 @@ void		xrRender_initconsole	()
 	CMD2(CCC_Boolean, "r2_use_rain_drops", &UseRainDrops);
 
 #ifdef DEBUG_DRAW
-#if RENDER!=R_R1
-	CMD1(CCC_BuildSSA, "build_ssa");
-#endif
 	CMD4(CCC_Integer, "r__lsleep_frames", &ps_r__LightSleepFrames, 4, 30);
 	CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
 	CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);

@@ -15,11 +15,10 @@ void CRenderTarget::phase_scene_prepare()
 	FLOAT ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
 
 	RContext->ClearRenderTargetView((ID3D11RenderTargetView*)rt_Normal->pRT->GetRawRTV(), ColorRGBA);
-	RContext->ClearDepthStencilView(RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
+	GRHI->ClearDepthStencil(RDepth, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0L);
 
 	//	Igor: for volumetric lights
 	m_bHasActiveVolumetric = false;
-	//	Clear later if try to draw volumetric
 }
 
 void CRenderTarget::phase_scene_begin()
