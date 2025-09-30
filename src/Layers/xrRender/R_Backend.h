@@ -98,7 +98,7 @@ public:
 private:
 	// Render-targets
 	ID3DRenderTargetView*			pRT[4];
-	ID3DDepthStencilView*			pZB;
+	IRHIDepthStencilView*			pZB;
 
 	// Vertices/Indices/etc
 #ifdef USE_DX11
@@ -215,9 +215,9 @@ public:
 
 	IC	void						set_RT				(IRHIRenderTargetView* RT, u32 ID=0);
 	IC	void						set_RT				(ID3DRenderTargetView* RT, u32 ID=0);
-	IC	void						set_ZB				(ID3DDepthStencilView* ZB);
+	IC	void						set_ZB				(IRHIDepthStencilView* ZB);
 	IC	ID3DRenderTargetView*		get_RT				(u32 ID=0);
-	IC	ID3DDepthStencilView*		get_ZB				();
+	IC	IRHIDepthStencilView*		get_ZB				();
 
 	IC	void						set_Constants		(R_constant_table* C);
 	IC	void						set_Constants		(ref_ctable& C_)						{ set_Constants(&*C_);			}
