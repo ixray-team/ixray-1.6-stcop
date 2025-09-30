@@ -15,13 +15,13 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 	}
 }
 
-IC void	CBackend::set_ZB(ID3DDepthStencilView* ZB)
+IC void	CBackend::set_ZB(IRHIDepthStencilView* ZB)
 {
-	if (ZB!=pZB)
+	if (ZB != pZB)
 	{
-		stat.target_zb	++;
-		pZB				= ZB;
-		CHK_DX			(RDevice->SetDepthStencilSurface(ZB));
+		stat.target_zb++;
+		pZB = ZB;
+		CHK_DX(RDevice->SetDepthStencilSurface(ZB ? (IDirect3DSurface9*)ZB->GetRawDSV() : nullptr));
 	}
 }
 

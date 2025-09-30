@@ -16,6 +16,7 @@ public:
 
 	virtual void ResizeBuffers(u32 Width, u32 Height) override;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) override;
+	virtual void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil) override;
 	virtual void Present() override;
 
 	virtual IRHITextureFactory* GetTextureFactory() override;

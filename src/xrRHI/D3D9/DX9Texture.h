@@ -20,6 +20,7 @@ private:
     
 public:
     DX9Surface(IDirect3DTexture9* texture);
+    DX9Surface(const RHITextureDesc& texture);
     DX9Surface(IDirect3DVolumeTexture9* texture);
     DX9Surface(IDirect3DCubeTexture9* texture);
     virtual ~DX9Surface();
@@ -116,6 +117,7 @@ public:
     virtual u32 Release() override;
     
     IDirect3DSurface9* GetDX9Surface() const { return Surface; }
+    virtual ERHI_DSV_DIMENSION GetDimension() const override;
 };
 
 class DX9UnorderedAccessView :
