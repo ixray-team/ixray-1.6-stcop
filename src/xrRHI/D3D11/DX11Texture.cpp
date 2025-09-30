@@ -500,6 +500,14 @@ u32 DX11DepthStencilView::Release()
 	return 0;
 }
 
+ERHI_DSV_DIMENSION DX11DepthStencilView::GetDimension() const
+{
+	D3D11_DEPTH_STENCIL_VIEW_DESC Desc = {};
+	DSV->GetDesc(&Desc);
+
+	return ERHI_DSV_DIMENSION(Desc.ViewDimension);
+}
+
 IRHISurface* DX11DepthStencilView::GetSurface()
 {
 	return Surface;
@@ -544,7 +552,7 @@ IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, con
 
 	ID3D11Texture2D* texture = nullptr;
 	D3D11_SUBRESOURCE_DATA DxSubResource = {};
-	if (SubResource != nullptr)
+	if (SubResource != nullptr && SubResource->Data != nullptr)
 	{
 		DxSubResource.pSysMem = SubResource->Data;
 		DxSubResource.SysMemPitch = SubResource->DataSize;
