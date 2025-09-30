@@ -76,7 +76,6 @@ public:
 	// smap
 	ref_rt						rt_smap_surf;	// 32bit,		color
 	ref_rt						rt_smap_depth;	// 24(32) bit,	depth 
-	IDirect3DSurface9*			rt_smap_ZB;		//
 
 	// Textures
 	IDirect3DVolumeTexture9*	t_material_surf;
@@ -200,8 +199,8 @@ public:
 	void						u_compute_texgen_screen		(Fmatrix&	dest);
 	void						u_compute_texgen_screen_asd	(Fmatrix&	dest);
 	void						u_compute_texgen_jitter	(Fmatrix&	dest);
-	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb);
-	void						u_setrt					(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* zb);
+	void						u_setrt					(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb);
+	void						u_setrt					(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IRHIDepthStencilView* zb);
 	void						u_calc_tc_noise			(Fvector2& p0, Fvector2& p1);
 	void						u_calc_tc_duality_ss	(Fvector2& r0, Fvector2& r1, Fvector2& l0, Fvector2& l1);
 	BOOL						u_need_PP				();
