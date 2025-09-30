@@ -918,6 +918,8 @@ void CActor::FootStepCallback(float power, bool b_play, bool b_on_ground, bool b
 			}
 		}
 	}
+
+	CGameObject::FootStepCallback(power, b_play, b_on_ground, b_hud_view);
 }
 
 void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element)
