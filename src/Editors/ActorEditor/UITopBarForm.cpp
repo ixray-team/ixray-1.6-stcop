@@ -1,137 +1,138 @@
 #include "stdafx.h"
+#include "UITopBarForm.h"
+#include "IconsFontAwesome6.h"
 
 UITopBarForm::UITopBarForm()
 {
-    m_tUndo         = EDevice->Resources->_CreateTexture("ed\\bar\\Undo");
-    m_timeUndo      = 0;
-    m_tRedo         = EDevice->Resources->_CreateTexture("ed\\bar\\Redo");
-    m_timeRedo      = 0;
-    m_tNew          = EDevice->Resources->_CreateTexture("ed\\bar\\new");
-    m_tOpen         = EDevice->Resources->_CreateTexture("ed\\bar\\open");
-    m_tSave         = EDevice->Resources->_CreateTexture("ed\\bar\\save");
-    m_tOpenGameData = EDevice->Resources->_CreateTexture("ed\\bar\\open_gamedata");
+    m_timeUndo  = 0;
+    m_timeRedo  = 0;
+
+    m_Simulate  = false;
 }
 
 UITopBarForm::~UITopBarForm() {}
 
+#define IMGUI_HINT_BUTTON(Name, Ptr, Hint, Callback) \
+			Ptr->Load(); \
+			if (ImGui::ImageButton("##" Name, Ptr->pSurface->GetRawTexture(), ImVec2(20, 20))) \
+				Callback(); \
+			if (ImGui::IsItemHovered()) \
+			{ \
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
+				ImGui::SetTooltip(Hint); \
+			} \
+			ImGui::SameLine()
+
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#define IMGUI_HINT_AF_BUTTON_EX(Name, Timer, Hint, Callback) \
+			if (ImGui::Button(Name"##" STR(__LINE__) , ImVec2(yMaxSize, yMaxSize))) \
+			{ \
+				Callback(); \
+				Timer = EDevice->TimerAsync() + 130;\
+			} \
+			if (ImGui::IsItemHovered()) \
+			{ \
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
+				ImGui::SetTooltip(Hint); \
+			} \
+			ImGui::SameLine()
+#define IMGUI_HINT_AF_BUTTON(Name, Hint, Callback) \
+			if (ImGui::Button(Name"##" STR(__LINE__), ImVec2(yMaxSize, yMaxSize))) \
+				Callback(); \
+			if (ImGui::IsItemHovered()) \
+			{ \
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand); \
+				ImGui::SetTooltip(Hint); \
+			} \
+			ImGui::SameLine()
+
 void UITopBarForm::Draw()
 {
-    ImVec2 iconSize = { ImGui::GetWindowDpiScale() * 20, ImGui::GetWindowDpiScale() * 20 };
+	ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + UI->GetMenuBarHeight()));
+	ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, UIToolBarSize));
+	ImGui::SetNextWindowViewport(viewport->ID);
 
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + ImGui::GetWindowDpiScale() * UI->GetMenuBarHeight()));
-    ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, ImGui::GetWindowDpiScale() * UIToolBarSize));
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGuiWindowFlags window_flags = 0
-        | ImGuiWindowFlags_NoDocking
-        | ImGuiWindowFlags_NoTitleBar
-        | ImGuiWindowFlags_NoResize
-        | ImGuiWindowFlags_NoMove
-        | ImGuiWindowFlags_NoScrollbar
-        | ImGuiWindowFlags_NoSavedSettings
-        ;
+	ImGuiWindowFlags window_flags = 0
+		| ImGuiWindowFlags_NoDocking
+		| ImGuiWindowFlags_NoTitleBar
+		| ImGuiWindowFlags_NoResize
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoScrollbar
+		;
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2( 2,2));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(2, 2));
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(-2, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 6));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.f, 0.f, 0.f, 0.f));
+
     ImGui::Begin("TOOLBAR", NULL, window_flags);
     {
-        m_tUndo->Load();
-        if (ImGui::ImageButton("##ib001", m_tUndo->pSurface->GetRawTexture(), iconSize, ImVec2(m_timeUndo > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_timeUndo > EDevice->TimerAsync() ? 1 : 0.5, 1)/*, 0*/))
-        {
-            m_timeUndo = EDevice->TimerAsync() + 130;
-            ClickUndo();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Undo the last action.");
-        }
-        ImGui::SameLine();
-        m_tRedo->Load();
-        if (ImGui::ImageButton("##ib002",m_tRedo->pSurface->GetRawTexture(), iconSize, ImVec2(m_timeRedo > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(m_timeRedo > EDevice->TimerAsync() ? 1 : 0.5, 1)/*, 0*/))
-        {
-            m_timeRedo = EDevice->TimerAsync() + 130;
-            ClickRedo();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Repeat the last action.");
-        }
-        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
 
-        m_tNew->Load();
-        if (ImGui::ImageButton("##ib003",m_tNew->pSurface->GetRawTexture(), iconSize, ImVec2(0, 0), ImVec2(1, 1)))
+        if (ImGui::BeginTable("##ToolbarTable", 5, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
         {
-            ClickNew();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Clear/New Scene");
-        }
-        ImGui::SameLine();
-        m_tOpen->Load();
-        if (ImGui::ImageButton("##ib004", m_tOpen->pSurface->GetRawTexture(), iconSize, ImVec2(0, 0), ImVec2(1, 1)))
-        {
-            ClickOpen();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Open file");
-        }
-        ImGui::SameLine();
-        m_tSave->Load();
-        if (ImGui::ImageButton("##ib005", m_tSave->pSurface->GetRawTexture(), iconSize, ImVec2(0, 0), ImVec2(1, 1)))
-        {
-            ClickSave();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Save file");
-        }
-        ImGui::SameLine();
+            ImGui::TableSetupColumn("Actions");
+            ImGui::TableSetupColumn("File");
+            ImGui::TableSetupColumn("Directory Actions");
+            ImGui::TableSetupColumn("Physics");
+            ImGui::TableSetupColumn("Preferences");
 
-        m_tOpenGameData->Load();
-        if (ImGui::ImageButton("##ib006", m_tOpenGameData->pSurface->GetRawTexture(), iconSize, ImVec2(0, 0), ImVec2(1, 1)))
-        {
-            ClickOpenGameData();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Open 'gamedata' folder");
-        }
-        ImGui::SameLine();
+            auto yMaxSize = ImGui::GetContentRegionAvail().y;
 
-        bool Simulate = ATools->IsPhysics();
+            if (ImGui::TableNextColumn())
+            {
+                IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_LEFT, m_timeUndo, "Undo the last action", ClickUndo);
+                IMGUI_HINT_AF_BUTTON_EX(ICON_FA_ROTATE_RIGHT, m_timeRedo, "Repeat the last action", ClickRedo);
+            }
 
-        if (ImGui::Checkbox("Simulate", &Simulate))
-        {
-            if(Simulate)
-                ATools->PhysicsSimulate();
-            else
-                ATools->PhysicsStopSimulate();
-        }
-        if (ImGui::IsItemHovered())
-        {
-            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Activates physics simulation.");
-        }
-        ImGui::SameLine();
+            if (ImGui::TableNextColumn())
+            {
+                IMGUI_HINT_AF_BUTTON(ICON_FA_FILE, "Clear/New Scene", ClickNew);
+                IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_IMPORT, "Open file", ClickOpen);
+                IMGUI_HINT_AF_BUTTON(ICON_FA_FLOPPY_DISK, "Save file", ClickSave);
+            }
 
-        if (ATools->CurrentObject() && ImGui::Button("Make Thumbnail"))
-        {
-            ATools->MakeThumbnail();
+            if (ImGui::TableNextColumn())
+            {
+                IMGUI_HINT_AF_BUTTON(ICON_FA_FOLDER_OPEN, "Open 'gamedata' folder", ClickOpenGameData);
+            }
+
+            if (ImGui::TableNextColumn())
+            {
+                ImGui::SetCursorPosY(3);
+
+                if (ImGui::Checkbox("Phys Simulation", &m_Simulate))
+                {
+                    bool isPhysics = ATools->IsPhysics();
+
+                    if (isPhysics)
+                        ATools->PhysicsSimulate();
+                    else
+                        ATools->PhysicsStopSimulate();
+                }
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+                    ImGui::SetTooltip("Activates physics simulation");
+                }
+            }
+
+            if (ImGui::TableNextColumn())
+            {
+                IMGUI_HINT_AF_BUTTON(ICON_FA_SLIDERS, "Preferences", ClickPreferences);
+            }
         }
+        ImGui::EndTable();
     }
     ImGui::End();
-    ImGui::PopStyleVar(5);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(7);
 }
 
 void UITopBarForm::ClickUndo()
@@ -164,4 +165,9 @@ void UITopBarForm::ClickOpenGameData()
     string_path GameDataPath;
     FS.update_path(GameDataPath, "$game_data$", "");
     ShellExecuteA(NULL, "open", GameDataPath, NULL, NULL, SW_SHOWDEFAULT);
+}
+
+void UITopBarForm::ClickPreferences()
+{
+    ExecCommand(COMMAND_EDITOR_PREF);
 }
