@@ -725,7 +725,7 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S		(COMMAND_DESTROY,        		CommandDestroy);
 	REGISTER_CMD_SE		(COMMAND_EXIT,               	"Exit",					CommandExit,		true);
 	REGISTER_CMD_S		(COMMAND_QUIT,           		CommandQuit);
-	REGISTER_CMD_SE		(COMMAND_EDITOR_PREF,    		"Editor Preference",	CommandEditorPrefs, false);
+	REGISTER_CMD_SE		(COMMAND_EDITOR_PREF,    		"Editor Preferences",	CommandEditorPrefs, false);
 
     REGISTER_CMD_SE(COMMAND_WEATHER_PROPERTIES, "Weather Properties", CommandWeatherProperties, true);
 
