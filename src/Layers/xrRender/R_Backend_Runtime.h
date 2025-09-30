@@ -83,7 +83,7 @@ IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
 	return pRT[ID];
 }
 
-IC	ID3DDepthStencilView* CBackend::get_ZB				()
+IC	IRHIDepthStencilView* CBackend::get_ZB				()
 {
 	return pZB;
 }
