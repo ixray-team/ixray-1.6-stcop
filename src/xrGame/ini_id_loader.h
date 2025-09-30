@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "../xrScripts/script_engine.h"
+
 //T_ID, T_INDEX -	тип индекса и id
 
 //ITEM_DATA		-	структура с полями id и index типа T_ID и T_INDEX,
@@ -118,6 +120,7 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetById (const T_ID& str_id, bool no_
 
 	if(m_pItemDataVector->end() == it)
 	{
+		g_pScriptEngine->print_stack();
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;
 	}
@@ -132,6 +135,8 @@ const typename ITEM_DATA* CSINI_IdToIndex::GetByIndex(T_INDEX index, bool no_ass
 	{
 		if(!no_assert)
 			Debug.fatal(DEBUG_INFO,"item by index not found in section %s, line %s", section_name, line_name);
+
+		g_pScriptEngine->print_stack();
 		return NULL;
 	}
 	return &(m_pItemDataVector->at(index));

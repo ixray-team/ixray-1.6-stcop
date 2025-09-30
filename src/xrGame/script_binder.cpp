@@ -147,14 +147,17 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 
 void CScriptBinder::shedule_Update	(u32 time_delta)
 {
-	PROF_EVENT("CScriptBinder::shedule_Update")
-	if (m_object) {
-//		try {
-			m_object->shedule_Update	(time_delta);
-//		}
-//		catch(...) {
-//			clear			();
-//		}
+	PROF_EVENT("CScriptBinder::shedule_Update");
+	if (m_object)
+	{
+		try {
+			m_object->shedule_Update(time_delta);
+		}
+		catch (...) {
+			g_pScriptEngine->print_stack();
+			clear();
+		}
+		
 	}
 }
 

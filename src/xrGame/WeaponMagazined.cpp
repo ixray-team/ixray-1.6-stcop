@@ -810,7 +810,7 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 	{
 		if (!unlimited_ammo())
 		{
-			if (!m_pCurrentAmmo->Get(l_cartridge))
+			if (m_pCurrentAmmo != nullptr && !m_pCurrentAmmo->Get(l_cartridge))
 			{
 				break;
 			}
