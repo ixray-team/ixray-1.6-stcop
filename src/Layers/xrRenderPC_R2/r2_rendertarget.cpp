@@ -17,7 +17,7 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IDirect3DSurface9* zb)
+void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
 {
 	VERIFY									(_1);
 	dwWidth									= _1->dwWidth;
@@ -29,7 +29,7 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 //	RImplementation.rmNormal				();
 }
 
-void	CRenderTarget::u_setrt			(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IDirect3DSurface9* zb)
+void	CRenderTarget::u_setrt			(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IRHIDepthStencilView* zb)
 {
 	VERIFY									(_1);
 	dwWidth									= W;
@@ -271,17 +271,6 @@ CRenderTarget::CRenderTarget		()
 		u32	size					=RImplementation.o.smapsize	;
 		rt_smap_depth.create		(r2_RT_smap_depth,			size,size,depth_format	);
 		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
-		rt_smap_ZB					= nullptr;
-		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
-		s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
-	}
-	else
-	{
-		u32	size					=RImplementation.o.smapsize	;
-		rt_smap_surf.create			(r2_RT_smap_surf,			size,size, ERHI_FORMAT::R32_FLOAT);
-		rt_smap_depth				= nullptr;
-		R_CHK						(RDevice->CreateDepthStencilSurface	(size,size,D3DFMT_D24X8,D3DMULTISAMPLE_NONE,0,TRUE,&rt_smap_ZB,nullptr));
 		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
 		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
 		s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
@@ -574,23 +563,17 @@ CRenderTarget::~CRenderTarget	()
 	pSurf = t_envmap_1->surface_get();
 	if (pSurf) pSurf->Release();
 	_SHOW_REF("t_envmap_1 - #small",pSurf);
-	//_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
-	//_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
 #endif // DEBUG
 	t_envmap_0->surface_set		(nullptr);
 	t_envmap_1->surface_set		(nullptr);
 	t_envmap_0.destroy			();
 	t_envmap_1.destroy			();
 
-	_RELEASE					(rt_smap_ZB);
-
 	// Jitter
-	for (int it=0; it<TEX_jitter_count; it++)	{
-		t_noise	[it]->surface_set	(nullptr);
-#ifdef DEBUG
-		_SHOW_REF("t_noise_surf[it]",t_noise_surf[it]);
-#endif // DEBUG
-		_RELEASE					(t_noise_surf[it]);
+	for (int it = 0; it < TEX_jitter_count; it++)
+	{
+		t_noise[it]->surface_set(nullptr);
+		_RELEASE(t_noise_surf[it]);
 	}
 
 	// 

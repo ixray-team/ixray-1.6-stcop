@@ -288,13 +288,8 @@ void R_dsgraph_structure::r_dsgraph_render_scope	()
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
 	{
 		GPU_EVENT(ZBUFFER_COPY);
-		RCache.set_ZB(NULL);
-
-		ID3D11Resource* res{};
-		RDepth->GetResource(&res);
-
-		RContext->CopyResource((ID3D11Resource*)RImplementation.Target->rt_Position->pSurface->GetRawTexture(), res);
-		_RELEASE(res);
+		RCache.set_ZB(nullptr);
+		GRHI->CopySurface(RImplementation.Target->rt_Position->pSurface, RDepth->GetSurface());
 	}
 
 	RImplementation.Target->u_setrt(NULL, NULL, RDepth);

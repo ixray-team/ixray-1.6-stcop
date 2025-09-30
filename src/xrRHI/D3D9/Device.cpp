@@ -81,7 +81,12 @@ void InternalDevice9::UpdateBuffersD3D9()
 
 	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&RenderRTV));
 	R_CHK(DX9Device->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
-	R_CHK(DX9Device->GetDepthStencilSurface((IDirect3DSurface9**)&RenderDSV));
+
+	IDirect3DSurface9* DSV = nullptr;
+	R_CHK(DX9Device->GetDepthStencilSurface((IDirect3DSurface9**)&DSV));
+
+
+	RenderDSV = new DX9DepthStencilView(DSV, new DX9Surface(((IDirect3DTexture9*)RenderTexture)));
 
 	HalfTarget.x = psCurrentVidMode[0];
 	HalfTarget.y = psCurrentVidMode[1];
@@ -120,7 +125,7 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 {
 	if (RenderDSV != nullptr)
 	{
-		((IDirect3DSurface9*)RenderDSV)->Release();
+		R_ASSERT(!RenderDSV->Release());
 		RenderDSV = nullptr;
 	}
 
@@ -191,6 +196,24 @@ void InternalDevice9::Present()
 	DX9Device->Present(nullptr, nullptr, nullptr, nullptr);
 }
 
+void InternalDevice9::ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil)
+{
+	DWORD dx9Flags = 0;
+
+	if ((TargetFlags & ERHI_CLEAR_TARGET::DEPTH) != ERHI_CLEAR_TARGET(0))
+	{
+		dx9Flags |= D3DCLEAR_ZBUFFER;
+	}
+	
+	if ((TargetFlags & ERHI_CLEAR_TARGET::STENCIL) != ERHI_CLEAR_TARGET(0))
+	{
+		dx9Flags |= D3DCLEAR_STENCIL;
+	}
+
+	DX9Device->Clear(0, nullptr, dx9Flags, 0, Depth, Stencil);
+}
+
+
 void InternalDevice9::ClearTarget(void* Target, ERTColor InputColor)
 {
 	constexpr u32 ColorTransparent = color_rgba(0, 0, 0, 0);
@@ -249,7 +272,7 @@ void InternalDevice9::DestroyD3D9()
 
 	if (RenderDSV != nullptr)
 	{
-		((IDirect3DSurface9*)RenderDSV)->Release();
+		R_ASSERT(!RenderDSV->Release());
 		RenderDSV = nullptr;
 	}
 

@@ -387,25 +387,13 @@ void dxRenderDeviceRender::Begin()
 void dxRenderDeviceRender::Clear()
 {
 #ifndef _EDITOR
-#ifdef USE_DX11
-	RContext->ClearDepthStencilView(RCache.get_ZB(), 
-		D3D_CLEAR_DEPTH|D3D_CLEAR_STENCIL, 1.0f, 0);
+	GRHI->ClearDepthStencil(RCache.get_ZB(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
 		GRHI->ClearRawTarget(RCache.get_RT());
 	}
-#else //USE_DX11
-	CHK_DX(RDevice->Clear(0,0,
-		D3DCLEAR_ZBUFFER|
-		(psDeviceFlags.test(rsClearBB)?D3DCLEAR_TARGET:0)|
-		(Caps.bStencil?D3DCLEAR_STENCIL:0),
-		color_xrgb(0,0,0),1,0
-		));
 #endif
-#endif
-
-
 }
 
 void DoAsyncScreenshot();
