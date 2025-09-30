@@ -1,5 +1,6 @@
 #pragma once
-class UITopBarForm :public IEditorWnd
+class UITopBarForm :
+    public IEditorWnd
 {
 public:
     UITopBarForm();
@@ -7,26 +8,23 @@ public:
     virtual void Draw();
 
 private:
-    void        ClickUndo();
-    ref_texture m_tUndo;
-    u32         m_timeUndo;
-    void        ClickRedo();
-    ref_texture m_tRedo;
-    u32         m_timeRedo;
+    u32 m_timeUndo;
+    u32 m_timeRedo;
 
-    void        ClickSaveParticles();
-    ref_texture m_tSaveParticles;
-    void        ClickReloadParticles();
-    ref_texture m_tReloadParticles;
+    ref_texture m_tReload;
 
-    void        ClickOpen();
-    ref_texture m_tOpen;
-    void        ClickSaveXr();
-    ref_texture m_tSaveXr;
+    void ClickUndo();
+    void ClickRedo();
 
-    void        ClickOpenGameData();
-    ref_texture m_tOpenGameData;
+    void ClickSaveParticles();
+    void ClickReloadParticles();
 
-    void        ClickValidate();
-    ref_texture m_tValidate;
+    void ClickOpen();
+    void ClickSaveXr();
+
+    void ClickOpenGameData();
+
+    void ClickValidate();
+
+    void ClickPreferences();
 };

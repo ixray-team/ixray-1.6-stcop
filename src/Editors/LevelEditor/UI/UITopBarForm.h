@@ -19,7 +19,6 @@ private:
 	ref_texture m_tTerminated;
 	ref_texture m_tPlayPC;
 	ref_texture m_tPlayCleanGame;
-	ref_texture	m_PreferencesIcon;
 
 	bool m_VerifySpaceRestrictors;
 	bool m_Simulate;
