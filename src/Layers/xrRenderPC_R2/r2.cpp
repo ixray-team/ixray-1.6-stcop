@@ -171,27 +171,11 @@ void CRender::create()
 	o.HW_smap_FETCH4 = FALSE;
 	o.HW_smap = true;
 	o.HW_smap_PCF = o.HW_smap;
-	if (o.HW_smap)
-	{
-		o.HW_smap_FORMAT = (u32)ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
-		Msg("* HWDST/PCF supported and used");
-	}
+	o.HW_smap_FORMAT = (u32)ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
+	Msg("* HWDST/PCF supported and used");
 
 	o.fp16_filter		= true;
 	o.fp16_blend		= true;
-
-	// search for ATI formats
-	if (!o.HW_smap)		
-	{
-		o.HW_smap = true;
-		if (o.HW_smap)	
-		{
-			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
-			o.HW_smap_PCF	= FALSE			;
-			o.HW_smap_FETCH4= TRUE			;
-		}
-		Msg("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
-	}
 
 	VERIFY2				(o.mrt && (Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
 

@@ -74,15 +74,51 @@ BOOL CRenderTarget::Create()
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
 
-	if ((rtHeight!=RCache.get_height()) || (rtWidth!= RCache.get_width()))	{
-		R_CHK		(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,nullptr));
-	} else {
-		ZB			= RDepth;
+	if ((rtHeight!=RCache.get_height()) || (rtWidth!= RCache.get_width()))
+	{
+		RHITextureDesc descDS = {};
+		descDS.Width = rtWidth;
+		descDS.Height = rtHeight;
+		descDS.MipLevels = 1;
+		descDS.ArraySize = 1;
+		descDS.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
+		descDS.Usage = ERHI_USAGE::USAGE_DEFAULT;
+		descDS.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL;
+
+		RHISubResource Res = {};
+		IRHISurface* TempSurf = GRHI->CreateTexture2D(descDS, Res);
+
+		RHIDepthStencilViewDesc DepthDesc = {};
+		DepthDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
+
+		ZB = GRHI->CreateDepthStencilView(TempSurf, DepthDesc);
+
+		//R_CHK(RDevice->CreateDepthStencilSurface	(rtWidth,rtHeight,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&ZB,nullptr));
+	}
+	else
+	{
+		ZB = RDepth;
 		ZB->AddRef	();
 	}
 
+	RHITextureDesc descDS = {};
+	descDS.Width = 512;
+	descDS.Height = 512;
+	descDS.MipLevels = 1;
+	descDS.ArraySize = 1;
+	descDS.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
+	descDS.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	descDS.BindFlags = ERHI_BIND_FLAG::DEPTH_STENCIL;
+
+	RHISubResource Res = {};
+	IRHISurface* TempSurf = GRHI->CreateTexture2D(descDS, Res);
+
+	RHIDepthStencilViewDesc DepthDesc = {};
+	DepthDesc.Format = ERHI_FORMAT::D24_UNORM_S8_UINT;
+
 	// Temp ZB, used by some of the shadowing code
-	R_CHK	(RDevice->CreateDepthStencilSurface	(512,512,D3DFMT_D24S8,D3DMULTISAMPLE_NONE,0,TRUE,&pTempZB,nullptr));
+	pTempZB = GRHI->CreateDepthStencilView(TempSurf, DepthDesc);
+
 	RDevice->CreateOffscreenPlainSurface(rtWidth,rtHeight,D3DFMT_X8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 
 	// Shaders and stream

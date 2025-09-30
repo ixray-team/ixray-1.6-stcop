@@ -29,32 +29,20 @@
 #include "OverlayAPI/DLSSWrapper.h"
 #include "OverlayAPI/XESSWrapper.h"
 
-void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
-	if (_1)	{
+
+	if (_1)
+	{
 		dwWidth = _1->dwWidth;
 		dwHeight = _1->dwHeight;
 	}
-	else {
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
-		zb->GetDesc(&desc);
-
-		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
-
-		ID3DResource* pRes;
-
-		zb->GetResource(&pRes);
-
-		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
-
-		D3D_TEXTURE2D_DESC	TexDesc;
-
-		pTex->GetDesc(&TexDesc);
-
-		dwWidth = TexDesc.Width;
-		dwHeight = TexDesc.Height;
-		_RELEASE(pRes);
+	else
+	{
+		VERIFY(zb->GetDimension() == ERHI_DSV_DIMENSION::TEXTURE2D);
+		dwWidth = zb->GetSurface()->GetWidth();
+		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
 	RCache.set_RT(_1 ? _1->pRT : NULL, 0);
@@ -64,93 +52,62 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	RCache.set_ZB(zb);
 }
 
-void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
 {
-	VERIFY									(_1||zb);
+	VERIFY(_1 || zb);
 	if (_1)
 	{
-		dwWidth									= _1->dwWidth;
-		dwHeight								= _1->dwHeight;
+		dwWidth = _1->dwWidth;
+		dwHeight = _1->dwHeight;
 	}
 	else
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
-		zb->GetDesc(&desc);
-
-		VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
-
-		ID3DResource* pRes;
-
-		zb->GetResource(&pRes);
-
-		ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
-
-		D3D_TEXTURE2D_DESC	TexDesc;
-
-		pTex->GetDesc(&TexDesc);
-
-		dwWidth = TexDesc.Width;
-		dwHeight = TexDesc.Height;
-		_RELEASE(pRes);
+		VERIFY(zb->GetDimension() == ERHI_DSV_DIMENSION::TEXTURE2D);
+		dwWidth = zb->GetSurface()->GetWidth();
+		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
-	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT((ID3DRenderTargetView*)nullptr,2);
+	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
+	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
+	if (_3) RCache.set_RT(_3->pRT, 2); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
-	RCache.set_ZB							(zb);
+	RCache.set_ZB(zb);
 }
 
-void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb)
 {
-	VERIFY									(_1||zb);
+	VERIFY(_1 || zb);
 	if (_1)
 	{
-		dwWidth									= _1->dwWidth;
-		dwHeight								= _1->dwHeight;
+		dwWidth = _1->dwWidth;
+		dwHeight = _1->dwHeight;
 	}
 	else
 	{
-		D3D_DEPTH_STENCIL_VIEW_DESC	desc;
-		zb->GetDesc(&desc);
-		VERIFY(desc.ViewDimension==D3D_DSV_DIMENSION_TEXTURE2D);
-
-		ID3DResource *pRes;
-
-		zb->GetResource( &pRes);
-
-		ID3DTexture2D *pTex = (ID3DTexture2D *)pRes;
-
-		D3D_TEXTURE2D_DESC	TexDesc;
-
-		pTex->GetDesc(&TexDesc);
-
-		dwWidth = TexDesc.Width;
-		dwHeight = TexDesc.Height;
-		_RELEASE( pRes );
+		VERIFY(zb->GetDimension() == ERHI_DSV_DIMENSION::TEXTURE2D);
+		dwWidth = zb->GetSurface()->GetWidth();
+		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
+	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
+	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
-	RCache.set_ZB (zb);
+	RCache.set_ZB(zb);
 }
 
-void	CRenderTarget::u_setrt			(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb)
+void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, IRHIDepthStencilView* zb)
 {
-	//VERIFY									(_1);
-	dwWidth									= W;
-	dwHeight								= H;
-	//VERIFY									(_1);
-	RCache.set_RT							(_1,	0);
-	RCache.set_RT							(_2,	1);
-	RCache.set_RT							(_3,	2);
+	dwWidth = W;
+	dwHeight = H;
+
+	RCache.set_RT(_1, 0);
+	RCache.set_RT(_2, 1);
+	RCache.set_RT(_3, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
-	RCache.set_ZB							(zb);
-//	RImplementation.rmNormal				();
+	RCache.set_ZB(zb);
 }
 
 void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)

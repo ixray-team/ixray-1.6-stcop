@@ -110,12 +110,15 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	}
 
 	//	Create Depth/stencil view
+	ID3D11DepthStencilView* Dsv = nullptr;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = descDepth.Format;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
-	R = DX11Device->CreateDepthStencilView(pDepthStencil, &depthStencilViewDesc, (ID3D11DepthStencilView**)&RenderDSV);
+	R = DX11Device->CreateDepthStencilView(pDepthStencil, &depthStencilViewDesc, (ID3D11DepthStencilView**)&Dsv);
 	R_CHK(R);
+
+	RenderDSV = new DX11DepthStencilView(Dsv, new DX11Surface(pDepthStencil));
 
 	pDepthStencil->Release();
 	return true;
@@ -279,7 +282,7 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 {
 	if (RenderDSV != nullptr)
 	{
-		((ID3D11DepthStencilView*)RenderDSV)->Release();
+		RenderDSV->Release();
 		RenderDSV = nullptr;
 	}
 
@@ -341,6 +344,11 @@ void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 	HWRenderContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target, ColorPtr);
 }
 
+void InternalDevice11::ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil)
+{
+	HWRenderContext->ClearDepthStencilView((ID3D11DepthStencilView*)View->GetRawDSV(), (u32)TargetFlags, Depth, Stencil);
+}
+
 void InternalDevice11::DestroyD3D11()
 {
 	// Clean up texture factory
@@ -352,7 +360,7 @@ void InternalDevice11::DestroyD3D11()
 
 	if (RenderDSV != nullptr)
 	{
-		((ID3D11DepthStencilView*)RenderDSV)->Release();
+		R_ASSERT(!RenderDSV->Release());
 		RenderDSV = nullptr;
 	}
 
