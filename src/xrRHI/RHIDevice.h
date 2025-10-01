@@ -1,5 +1,5 @@
 #pragma once
-#include "IRHITypes.h"
+#include "RHITypes.h"
 
 class IRHIDevice
 {
