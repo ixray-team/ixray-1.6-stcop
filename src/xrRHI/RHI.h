@@ -13,7 +13,8 @@
 #include "RHIBuffer.h"
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
-#include "IRHITypes.h"
+#include "RHITypes.h"
+#include "RHIShaderDeclaration.h"
 
 enum
 {
@@ -79,6 +80,7 @@ public:
 	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
 	IRHIUnorderedAccessView* CreateUAV(IRHISurface* pTexture, const RHIUAVDesc& desc);
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr);
+	IRHIShaderDeclaration* CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize);
 
 	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
@@ -92,6 +94,9 @@ public:
 	void ClearIndexBuffer();
 
 	bool IsTessPass() const;
+
+	u32 GetInputElementDescStride(const RHIInputElementDesc& Desc, u32 DescSize);
+
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
