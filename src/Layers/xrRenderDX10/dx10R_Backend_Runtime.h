@@ -525,7 +525,7 @@ ICF void CBackend::ApplyRTandZB()
 	if (m_bChangedRTorZB)
 	{
 		m_bChangedRTorZB = false;
-		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, (ID3D11DepthStencilView*)pZB->GetRawDSV());
+		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, pZB ? (ID3D11DepthStencilView*)pZB->GetRawDSV() : nullptr);
 	}
 }
 
