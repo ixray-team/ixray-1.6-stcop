@@ -31,3 +31,7 @@ target_link_libraries(xrRHI PUBLIC xrCore)
 target_link_libraries(xrRHI PUBLIC "d3d11.lib")
 target_link_libraries(xrRHI PUBLIC "d3d9.lib")
 target_link_libraries(xrRHI PUBLIC "dxgi.lib")
+
+# Deps
+target_include_directories(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+target_link_libraries(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib")
