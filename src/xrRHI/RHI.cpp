@@ -1,9 +1,13 @@
 #include "RHI.h"
 
 #include "D3D9/Device.h"
+#include "D3D9/DX9ShaderDeclaration.h"
 
 #include "D3D11/Device.h"
 #include "D3D11/DX11GPUEvents.h"
+#include "D3D11/DX11ShaderDeclaration.h"
+
+#include <DirectXMesh.h>
 
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
@@ -223,6 +227,22 @@ IRHIBuffer* CRHI::CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubreso
 	return DevicePtr->CreateBuffer(desc, pSubresource);
 }
 
+IRHIShaderDeclaration* CRHI::CreateDecl(const RHIInputElementDesc* Desc, size_t DeclSize)
+{
+	IRHIShaderDeclaration* Decl = nullptr;
+
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		Decl = new DX11ShaderDeclaration(Desc, DeclSize);
+	}
+	else
+	{
+		Decl = new DX9ShaderDeclaration(Desc, DeclSize);
+	}
+
+	return Decl;
+}
+
 void CRHI::SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*> Buffers, ERHI_SHADER_TYPE Type)
 {
 	if (APILevel == ERHI_API_LAYER::D3D11)
@@ -357,6 +377,24 @@ bool CRHI::IsTessPass() const
 	}
 
 	return Shaders[(size_t)ERHI_SHADER_TYPE::HS] || Shaders[(size_t)ERHI_SHADER_TYPE::DS];
+}
+
+u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc& Desc, u32 DescSize)
+{
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
+		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
+
+		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)&Desc, DescSize, Offsets, Strides);
+		return Strides[0];
+	}
+	else
+	{
+		VERIFY(!"Implement me!");
+	}
+
+	return u32(-1);
 }
 
 void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
