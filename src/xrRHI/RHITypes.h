@@ -16,3 +16,14 @@ struct RHIViewport
 	{
 	}
 };
+
+struct RHIInputElementDesc
+{
+	const char* SemanticName;
+	u32 SemanticIndex;
+	ERHI_FORMAT Format;
+	u32 InputSlot;
+	u32 AlignedByteOffset;
+	ERHI_INPUT_CLASSIFICATION InputSlotClass;
+	u32 InstanceDataStepRate;
+};
