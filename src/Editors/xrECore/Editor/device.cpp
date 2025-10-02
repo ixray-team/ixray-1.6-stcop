@@ -228,6 +228,7 @@ bool CEditorRenderDevice::Create()
 {
 	if (b_is_Ready)	return false;
 
+	TimerGlobal.Start();
 	//Statistic = EStatistic;
 	ELog.Msg(mtInformation,"Starting RENDER device...");
 
