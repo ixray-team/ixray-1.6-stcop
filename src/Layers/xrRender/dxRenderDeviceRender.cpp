@@ -437,7 +437,7 @@ void dxRenderDeviceRender::End()
 
 #ifdef USE_DX11
 	ID3D11RenderTargetView* RTV = RTarget;
-	RContext->OMSetRenderTargets(1, &RTV, RDepth);
+	RContext->OMSetRenderTargets(1, &RTV, (ID3D11DepthStencilView*)RDepth->GetRawDSV());
 #else
 	RDevice->SetRenderTarget(0, RTarget);
 #endif
