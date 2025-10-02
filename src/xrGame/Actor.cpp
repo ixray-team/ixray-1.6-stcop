@@ -226,7 +226,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	const static float fovFactor = EngineExternal().GetSprintFovFactor();
 	m_SprintFovFactor = fovFactor;
 
-	_last_update_time = Device.dwTimeGlobal;
+	_last_update_time = 0;
 }
 
 
@@ -1348,8 +1348,15 @@ void CActor::UpdateCL()
 	CHudItem* item = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 
 	u32 ct = Device.dwTimeGlobal;
-	u32 dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
+	u32 dt = 0;
+	if (_last_update_time != 0)
+	{
+		dt = Device.GetTimeDeltaSafe(_last_update_time, ct);
+	}
+
 	_last_update_time = ct;
+	clamp(dt, 0u, 1000u);
+
 	UpdateElectronicsProblemsCnt(dt);
 	g_player_hud->UpdateWeaponOffset(dt);
 	ProcessKeys(item);
