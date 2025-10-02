@@ -79,76 +79,109 @@ public:
 };
 
 // Has time factor, thus slower
-class XRCORE_API CTimerFactored : public CTimer {
-private:
-	typedef CTimer inherited;
+class XRCORE_API CTimerFactored : 
+	public CTimer
+{
+	using inherited = CTimer;
 
 private:
-	float				m_time_factor;
-	u64					m_real_ticks;
-	u64					m_ticks;
-	bool				timerStarted_;
-
-private:
-	IC	u64 GetElapsed_mcs(const u64& current_ticks) const
-	{
-		u64				delta = current_ticks - m_real_ticks;
-		double			delta_d = (double)delta;
-		double			time_factor_d = time_factor();
-		double			time = delta_d * time_factor_d; // +.5;
-		u64				result = (u64)time;
-
-		return			(m_ticks + result);
-	}
+	float m_time_factor;
+	u64   m_accum_ticks;
+	u64   m_last_ticks; 
+	bool  m_started;    
 
 public:
-	IC CTimerFactored() : m_time_factor(1.f), m_real_ticks(0), m_ticks(0), timerStarted_(false) { }
+	IC CTimerFactored()
+		: m_time_factor(1.f), m_accum_ticks(0), m_last_ticks(0), m_started(false) {
+	}
 
-	ICF	void Start() override
+	ICF void Start() override
 	{
 		if (bPause)
 			return;
 
 		inherited::Start();
-
-		m_real_ticks	= 0;
-		m_ticks			= 0;
-		timerStarted_ = true;
+		m_last_ticks = inherited::GetElapsed_mcs();
+		m_accum_ticks = 0;
+		m_started = true;
 	}
 
-	IC	const bool IsStarted() const
+	IC bool IsStarted() const
 	{
-		return timerStarted_;
+		return m_started;
 	}
 
-	IC	const float& time_factor() const {
+	IC const float& time_factor() const
+	{
 		return m_time_factor;
 	}
 
-	IC	void time_factor(const float& time_factor) {
+	IC void time_factor(const float& new_factor)
+	{
+		if (!m_started)
+		{
+			m_time_factor = new_factor;
+			return;
+		}
+
 		u64 current = inherited::GetElapsed_mcs();
+		m_accum_ticks += u64((current - m_last_ticks) * double(m_time_factor));
+		m_last_ticks = current;
 
-		m_ticks = GetElapsed_mcs(current);
-		m_real_ticks = current;
-		m_time_factor = time_factor;
+		m_time_factor = new_factor;
 	}
 
-	IC	u64 GetElapsed_mcs() const override {
-		u64 result = GetElapsed_mcs(inherited::GetElapsed_mcs());
-		return result;
+	IC u64 GetElapsed_mcs() const override
+	{
+		if (!m_started)
+		{
+			return 0;
+		}
+
+		u64 current = inherited::GetElapsed_mcs();
+		u64 delta = current - m_last_ticks;
+
+		u64 elapsed = m_accum_ticks + u64(double(delta) * m_time_factor);
+
+		if (bPause)
+		{
+			return pausedTime_;
+		}
+
+		return elapsed;
 	}
 
-	IC CTimerFactored& operator=(const CTimerFactored& other_timer) {
-		inherited::operator=(other_timer);
+	IC u32 GetElapsed_ms() const override
+	{
+		return u32(GetElapsed_mcs() / 1000);
+	}
 
-		m_time_factor = other_timer.m_time_factor;
-		m_real_ticks = other_timer.m_real_ticks;
-		m_ticks = other_timer.m_ticks;
-		timerStarted_ = other_timer.timerStarted_;
+	IC float GetElapsed_ms_f() const override
+	{
+		return float(double(GetElapsed_mcs()) / 1000.0);
+	}
 
-		return (*this);
+	IC float GetElapsed_sec() const override
+	{
+		return float(double(GetElapsed_mcs()) / 1000000.0);
+	}
+
+	IC void Dump() const override
+	{
+		Msg("* Elapsed time (sec): %f", GetElapsed_sec());
+	}
+
+	IC CTimerFactored& operator=(const CTimerFactored& other)
+	{
+		inherited::operator=(other);
+		m_time_factor = other.m_time_factor;
+		m_accum_ticks = other.m_accum_ticks;
+		m_last_ticks = other.m_last_ticks;
+		m_started = other.m_started;
+		return *this;
 	}
 };
+
 
 class XRCORE_API CTimer_paused_ex : public CTimerFactored {
 	u64							save_clock;
