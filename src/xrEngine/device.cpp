@@ -184,15 +184,16 @@ void CRenderDevice::on_idle		()
 
 	g_bEnableStatGather = psDeviceFlags.test(rsStatistic);
 
-	if (g_loading_events.size())
+	if (!g_loading_events.empty())
 	{
 		{
 			PROF_EVENT("Loading...");
-		if (g_loading_events.front()())
-			g_loading_events.pop_front();
+			if (g_loading_events.front()())
+				g_loading_events.pop_front();
 		}
 		PROF_EVENT("LoadDraw");
 		pApp->LoadDraw();
+
 		return;
 	}
 	else 
