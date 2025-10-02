@@ -718,58 +718,46 @@ BOOL CSkeletonX_ext::_PickBone(IKinematics::pick_result& r, float dist, const Fv
 	CBoneData::FacesVec* faces = &BD.child_faces[ChildIDX];
 	BOOL result = FALSE;
 
-	RHIMappedSubresource mapped = {};
-	if (!V->p_rm_Indices->Map(ERHI_BUFFER_MAP::READ, 0, &mapped))
+#ifdef USE_DX11
+	u16* indices = *m_Indices;
+#else //USE_DX11
+
+	RHIMappedSubresource mappedIdx = {};
+	if (!V->p_rm_Indices->Map(ERHI_BUFFER_MAP::READ, 0, &mappedIdx))
 	{
-		Msg("! CSkeletonX_ext::_PickBone: failed to map index buffer");
-		return FALSE;
+		return false;
 	}
 
-	u16* indices = reinterpret_cast<u16*>(mapped.pData) + iBase;
+	u16* indices = reinterpret_cast<u16*>(mappedIdx.pData) + iBase;
 
-	if (RenderMode == RM_SKINNING_SOFT)
+	// fill vertices
+	switch (RenderMode)
 	{
+	case RM_SKINNING_SOFT:
+#endif
+
 		if (*Vertices1W)
-		{
 			result = _PickBoneSoft1W(r, dist, start, dir, indices, *faces);
-		}
 		else if (*Vertices2W)
-		{
 			result = _PickBoneSoft2W(r, dist, start, dir, indices, *faces);
-		}
 		else if (*Vertices3W)
-		{
 			result = _PickBoneSoft3W(r, dist, start, dir, indices, *faces);
-		}
-		else
-		{
+		else {
 			VERIFY(!!(*Vertices4W));
 			result = _PickBoneSoft4W(r, dist, start, dir, indices, *faces);
 		}
-	}
-	else
-	{
-		switch (RenderMode)
-		{
-		case RM_SINGLE:
-		case RM_SKINNING_1B:
-			result = _PickBoneHW1W(r, dist, start, dir, V, indices, *faces);
-			break;
-		case RM_SKINNING_2B:
-			result = _PickBoneHW2W(r, dist, start, dir, V, indices, *faces);
-			break;
-		case RM_SKINNING_3B:
-			result = _PickBoneHW3W(r, dist, start, dir, V, indices, *faces);
-			break;
-		case RM_SKINNING_4B:
-			result = _PickBoneHW4W(r, dist, start, dir, V, indices, *faces);
-			break;
-		default:
-			NODEFAULT;
-		}
-	}
 
+#ifndef USE_DX11
+		break;
+	case RM_SINGLE:
+	case RM_SKINNING_1B:	result = _PickBoneHW1W(r, dist, start, dir, V, indices, *faces); break;
+	case RM_SKINNING_2B:	result = _PickBoneHW2W(r, dist, start, dir, V, indices, *faces);	break;
+	case RM_SKINNING_3B:	result = _PickBoneHW3W(r, dist, start, dir, V, indices, *faces);	break;
+	case RM_SKINNING_4B:	result = _PickBoneHW4W(r, dist, start, dir, V, indices, *faces);	break;
+	default: NODEFAULT;
+	}
 	V->p_rm_Indices->Unmap();
+#endif //USE_DX11
 
 	return result;
 }
