@@ -30,7 +30,6 @@ public:
 public:
 	IDXGISwapChain* HWSwapchain = nullptr;
 	ID3D11DeviceContext* HWRenderContext = nullptr;
-	ID3D11Device* HWRenderDevice = nullptr;
 
 private:
 	bool CreateD3D11();
