@@ -1,5 +1,5 @@
-#include "../xrEngine/stdafx.h"
 #include "NvGPUTransferee.h"
+#include <d3d11.h>
 
 extern "C"
 {
@@ -74,8 +74,11 @@ void CNvReader::Initialize()
 		{ return; }
 		if (!TryToInitializeFunctionLambda((void**)&NvAPI_GPU_PhysicalFromLogical, 0x0AEA3FA32))
 		{ return; }
+		if (!TryToInitializeFunctionLambda((void**)&NvAPI_D3D11_SetDepthBoundsTest, 0x7AAF7A04, false))
+		{ return; }
 
 		bSupport = true;
+		GPUID = ERHI_GPU::NVIDIA;
 		InitDeviceInfo();
 	}
 	else
@@ -144,4 +147,15 @@ u32 CNvReader::GetPercentActive()
 u32 CNvReader::GetGPUCount()
 {
 	return u32(AdapterFinal ? AdapterFinal : 1);
+}
+
+bool CNvReader::SetDepthBounds(void* RContext, bool b, float zMin, float zMax)
+{
+	if (NvAPI_D3D11_SetDepthBoundsTest)
+	{
+		NvAPI_D3D11_SetDepthBoundsTest((ID3D11DeviceContext*)RContext, b, zMin, zMax);
+		return true;
+	}
+
+	return false;
 }
