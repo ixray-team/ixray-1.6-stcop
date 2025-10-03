@@ -54,10 +54,3 @@ endif()
 if(IXRAY_MP)
     add_dependencies(xrEngine xrGameSpy)
 endif()
-
-# AMD AGS SDK
-target_include_directories(xrEngine PUBLIC ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/inc/)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
