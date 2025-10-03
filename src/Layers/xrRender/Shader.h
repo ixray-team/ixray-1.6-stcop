@@ -91,6 +91,7 @@ struct ECORE_API SGeometry
 struct ECORE_API resptrcode_geom:
 	public resptr_base<SGeometry>
 {
+	void 				create			(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	void 				create			(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	void				create			(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	void				destroy			()			{ _set(NULL);		}

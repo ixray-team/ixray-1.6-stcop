@@ -164,12 +164,6 @@ void CRender::level_Unload		()
 	//*** Shaders
 	Shaders.clear();
 
-	//. dbg
-#ifdef DEBUG
-	// dxRenderDeviceRender::Instance().Resources->_DumpMemoryUsage	();
-	dxRenderDeviceRender::Instance().Resources->DBG_VerifyGeoms	();
-	dxRenderDeviceRender::Instance().Resources->DBG_VerifyTextures();
-#endif
 	b_loaded					= FALSE;
 }
 

@@ -325,24 +325,6 @@ void	CResourceManager::_DeleteRT		(const CRT* RT)
 	Msg	("! ERROR: Failed to find render-target '%s'",*RT->cName);
 }
 
-//--------------------------------------------------------------------------------------------------------------
-void	CResourceManager::DBG_VerifyGeoms	()
-{
-	/*
-	for (u32 it=0; it<v_geoms.size(); it++)
-	{
-	SGeometry* G					= v_geoms[it];
-
-	D3DVERTEXELEMENT9		test	[MAXD3DDECLLENGTH + 1];
-	u32						size	= 0;
-	G->dcl->GetDeclaration			(test,(unsigned int*)&size);
-	u32 vb_stride = ComputeVertexSize(test, 0);
-	u32 vb_stride_cached			= G->vb_stride;
-	R_ASSERT						(vb_stride == vb_stride_cached);
-	}
-	*/
-}
-
 SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib)
 {
 	xrCriticalSectionGuard guard(creationGuard);
@@ -367,6 +349,13 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb
 	v_geoms.push_back	(Geom);
 	return	Geom;
 }
+
+SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib)
+{
+	VERIFY(!"SOON!");
+	return nullptr;
+}
+
 SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IRHIBuffer* vb, IRHIBuffer* ib)
 {
 	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
@@ -430,21 +419,6 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 	}
 	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
 }
-
-#ifdef DEBUG
-void	CResourceManager::DBG_VerifyTextures	()
-{
-	map_Texture::iterator I		= m_textures.begin	();
-	map_Texture::iterator E		= m_textures.end	();
-	for (; I!=E; I++) 
-	{
-		R_ASSERT(I->first);
-		R_ASSERT(I->second);
-		R_ASSERT(I->second->cName);
-		R_ASSERT(0==xr_strcmp(I->first,*I->second->cName));
-	}
-}
-#endif
 
 //--------------------------------------------------------------------------------------------------------------
 CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)

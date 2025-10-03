@@ -278,13 +278,15 @@ IC void CBackend::ApplyVertexLayout()
 	{
 		ID3DInputLayout* pLayout;
 
-		CHK_DX(RDevice->CreateInputLayout(
-			&decl->dx10_dcl_code[0],
-			(u32)decl->dx10_dcl_code.size()-1,
+		CHK_DX(RDevice->CreateInputLayout
+		(
+			(D3D11_INPUT_ELEMENT_DESC*)decl->dx10_dcl_code.data(),
+			decl->dx10_dcl_code.size(),
 			m_pInputSignature->GetBufferPointer(),
 			m_pInputSignature->GetBufferSize(),
 			&pLayout
-			));
+			)
+		);
 
 		it = decl->vs_to_layout.insert(
 			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;

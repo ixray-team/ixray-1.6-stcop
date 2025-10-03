@@ -81,26 +81,25 @@ LPCSTR	ConvertSemantic(D3DDECLUSAGE Semantic)
 	return 0;
 }
 
-void ConvertVertexDeclaration( const xr_vector<D3DVERTEXELEMENT9> &declIn, xr_vector<D3D_INPUT_ELEMENT_DESC> &declOut)
+void ConvertVertexDeclaration(const xr_vector<D3DVERTEXELEMENT9>& declIn, xr_vector<RHIInputElementDesc>& declOut)
 {
-	int iDeclSize = (int)declIn.size()-1;
-	declOut.resize(iDeclSize+1);
+	// FX: Skip D3DDECL_END
+	size_t iDeclSize = declIn.size() - 1;
+	declOut.resize(iDeclSize);
 
-	for (int i=0; i<iDeclSize; ++i)
+	for (size_t i = 0; i < iDeclSize; ++i)
 	{
-		const D3DVERTEXELEMENT9		&descIn = declIn[i];
-		D3D_INPUT_ELEMENT_DESC		&descOut = declOut[i];
-		
+		const D3DVERTEXELEMENT9& descIn = declIn[i];
+		RHIInputElementDesc& descOut = declOut[i];
+
 		descOut.SemanticName = ConvertSemantic((D3DDECLUSAGE)descIn.Usage);
 		descOut.SemanticIndex = descIn.UsageIndex;
-		descOut.Format = ConvertVertexFormat((D3DDECLTYPE)descIn.Type);
+		descOut.Format = (ERHI_FORMAT)ConvertVertexFormat((D3DDECLTYPE)descIn.Type);
 		descOut.InputSlot = descIn.Stream;
 		descOut.AlignedByteOffset = descIn.Offset;
-		descOut.InputSlotClass = D3D_INPUT_PER_VERTEX_DATA;
+		descOut.InputSlotClass = ERHI_INPUT_CLASSIFICATION::VERTEX_DATA;
 		descOut.InstanceDataStepRate = 0;
 	}
-
-	ZeroMemory( &declOut[iDeclSize], sizeof(declOut[iDeclSize]) );
 }
 
 };
