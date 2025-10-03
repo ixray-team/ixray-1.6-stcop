@@ -1,4 +1,4 @@
-// SkeletonX.cpp: implementation of the CSkeletonX class.
+﻿// SkeletonX.cpp: implementation of the CSkeletonX class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -10,6 +10,7 @@
 #include "../../xrEngine/EnnumerateVertices.h"
 #include <FlexibleVertexFormat.h>
 using namespace FVF;
+using namespace std;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -35,6 +36,16 @@ float errN	(Fvector3 v, u8* qv)
 float errN	(Fvector3 v, u8* qv)	{ return 0; }
 #endif
 
+#ifdef USE_DX11
+static RHIInputElementDesc dwDecl_01W[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+#else
 static	D3DVERTEXELEMENT9 dwDecl_01W	[] =	// 24bytes
 {
 	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : P						: 2	: -12..+12
@@ -44,6 +55,8 @@ static	D3DVERTEXELEMENT9 dwDecl_01W	[] =	// 24bytes
 	{ 0, 28,	D3DDECLTYPE_FLOAT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : tc						: 1	: -16..+16
 	D3DDECL_END()
 };
+#endif
+
 struct	vertHW_1W
 {
 	float		_P		[4];
@@ -89,6 +102,16 @@ struct	vertHW_1W
 	}
 };
 
+#ifdef USE_DX11
+static RHIInputElementDesc dwDecl_2W[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+#else
 static	D3DVERTEXELEMENT9 dwDecl_2W	[] =	// 28bytes
 {
 	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
@@ -98,6 +121,8 @@ static	D3DVERTEXELEMENT9 dwDecl_2W	[] =	// 28bytes
 	{ 0, 28,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
 	D3DDECL_END()
 };
+#endif
+
 struct	vertHW_2W
 {
 	float		_P		[4];
@@ -151,6 +176,17 @@ struct	vertHW_2W
 			p.lerp			(P0,P1,get_weight());
 	}
 };
+
+#ifdef USE_DX11
+static RHIInputElementDesc dwDecl_3W[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+#else
 static	D3DVERTEXELEMENT9 dwDecl_3W	[] =	// 28bytes
 {
 	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
@@ -160,6 +196,8 @@ static	D3DVERTEXELEMENT9 dwDecl_3W	[] =	// 28bytes
 	{ 0, 28,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc), zw(indices): 2	: -16..+16, zw[0..32767]
 	D3DDECL_END()
 };
+#endif
+
 struct	vertHW_3W
 {
 	float		_P		[4];
@@ -236,6 +274,17 @@ struct	vertHW_3W
 	}
 };
 
+#ifdef USE_DX11
+static RHIInputElementDesc dwDecl_4W[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 20, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL", 0, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 24, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 28, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 1, ERHI_FORMAT::R8G8B8A8_UNORM, 0, 36, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+#else
 static	D3DVERTEXELEMENT9 dwDecl_4W	[] =	// 28bytes
 {
 	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
@@ -246,6 +295,8 @@ static	D3DVERTEXELEMENT9 dwDecl_4W	[] =	// 28bytes
 	{ 0, 36,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		1 },	// : indices			: 1	:  0..255
 	D3DDECL_END()
 };
+#endif
+
 struct	vertHW_4W
 {
 	float		_P		[4];
@@ -406,30 +457,62 @@ void CSkeletonX_ST::Load(const char* N, IReader *data, u32 dwFlags)
 	_Load_hw						(*this,_verts_);
 }
 
-template<typename VertSrc, typename VertHW, typename VerticesContainer, typename Setter>
-void _Load_hw_generic(Fvisual& V, void* _verts_, auto decl, VerticesContainer& container, Setter setter)
+//This is required rn
+template<typename DeclT, size_t Size>
+u32 ComputeStride(const DeclT(&decl)[Size])
 {
-	// Back up vertex data
-	u32 size = V.vCount * sizeof(VertSrc);
-	u32 crc = crc32(_verts_, size);
-	container.create(crc, V.vCount, (VertSrc*)_verts_);
+#ifdef USE_DX11
+    //DX11 - RHIInputElementDesc
+    u32 stride = 0;
+    for (size_t i = 0; i < Size; ++i)
+    {
+        switch (decl[i].Format)
+        {
+        case ERHI_FORMAT::R32G32B32A32_FLOAT: stride += 16; break;
+        case ERHI_FORMAT::R32G32B32_FLOAT:    stride += 12; break;
+        case ERHI_FORMAT::R32G32_FLOAT:       stride += 8;  break;
+        case ERHI_FORMAT::R32_FLOAT:          stride += 4;  break;
+        case ERHI_FORMAT::R8G8B8A8_UNORM:     stride += 4;  break;
+        case ERHI_FORMAT::R8G8B8A8_UINT:      stride += 4;  break;
+        default:
+            VERIFY2(false, "Unknown DX11 format!");
+        }
+    }
+    return stride;
+#else
+    //DX9 - D3DVERTEXELEMENT9
+    return ComputeVertexSize(decl, 0);
+#endif
+}
 
-	u32 vStride = (u32)ComputeVertexSize(decl, 0);
-	VERIFY(vStride == sizeof(VertHW));
-	VERIFY(nullptr == V.p_rm_Vertices);
+template<typename VertSrc, typename VertHW, typename DeclT, size_t Size, typename VerticesContainer, typename Setter>
+void _Load_hw_generic(Fvisual& V, void* _verts_, DeclT(&decl)[Size], VerticesContainer& container, Setter setter)
+{
+    // Back up vertex data
+    u32 size = V.vCount * sizeof(VertSrc);
+    u32 crc = crc32(_verts_, size);
+    container.create(crc, V.vCount, (VertSrc*)_verts_);
 
-	VertHW* dstOriginal = xr_alloc<VertHW>(V.vCount);
-	VertHW* dst = dstOriginal;
-	VertSrc* src = (VertSrc*)_verts_;
-	for (u32 it = 0; it < V.vCount; it++, dst++, src++)
-	{
-		setter(dst, src);
-	}
+    u32 vStride = (u32)ComputeStride(decl);
 
-	R_ASSERT(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
-	xr_free(dstOriginal);
+    VERIFY(vStride == sizeof(VertHW));
+    VERIFY(nullptr == V.p_rm_Vertices);
 
-	V.rm_geom.create(decl, V.p_rm_Vertices, V.p_rm_Indices);
+    VertHW* dstOriginal = xr_alloc<VertHW>(V.vCount);
+    VertHW* dst = dstOriginal;
+    VertSrc* src = (VertSrc*)_verts_;
+    for (u32 it = 0; it < V.vCount; it++, dst++, src++)
+    {
+        setter(dst, src);
+    }
+
+    R_ASSERT(RHIUtils::CreateVertexBuffer(&V.p_rm_Vertices, dstOriginal, V.vCount * vStride));
+    xr_free(dstOriginal);
+#ifdef USE_DX11    
+    V.rm_geom.create(decl, Size, V.p_rm_Vertices, V.p_rm_Indices);
+#else
+    V.rm_geom.create(decl, V.p_rm_Vertices, V.p_rm_Indices);
+#endif
 }
 
 void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
