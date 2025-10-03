@@ -274,10 +274,6 @@ void CEatableItem::EatableEffects()
 
 	if (Empty() && CanDelete())
 	{
-		if (CInventoryItem* item = cast_inventory_item())
-		{
-			item->SetDropManual(true);
-		}
 		object().DestroyObject();
 	}
 }

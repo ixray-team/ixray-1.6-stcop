@@ -55,6 +55,11 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 
 		Actor()->set_inventory_disabled(true);
 		Actor()->set_pda_disabled(true);
+
+		if (Actor()->HudAnimator()->IsActive())
+		{
+			Actor()->HudAnimator()->StopAnimator();
+		}
 	}
 	else
 	{
