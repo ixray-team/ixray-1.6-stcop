@@ -9,7 +9,6 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
-#include "../../xrEngine/ICore_GPU.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -183,13 +182,7 @@ void CRender::create()
 	// nvstencil should be enabled only for GF 6xxx and GF 7xxx
 	// if hardware support early stencil (>= GF 8xxx) stencil reset trick only
 	// slows down.
-	o.nvstencil			= FALSE;
-	if (!g_pGPU->IsAMD)	
-	{
-		//o.nvstencil = HW.support	((D3DFORMAT)MAKEFOURCC('R','A','W','Z'), D3DRTYPE_SURFACE, 0);
-		//o.nvstencil = TRUE;
-		o.nvstencil = false;
-	}
+	o.nvstencil = !!GRHI->DriverExt->GetNV();
 
 	if (Core.ParamsData.test(ECoreParams::nonvs))
 		o.nvstencil	= FALSE;
