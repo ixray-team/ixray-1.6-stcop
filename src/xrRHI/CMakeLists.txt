@@ -3,7 +3,7 @@ set(XRHI_SRC_FILES)
 
 # Files import
 file(GLOB_RECURSE XRHI_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-    "*.*"
+    "*.cpp" "*.h"
 )
 file(GLOB_RECURSE XRHI_SOURCE_D3D11_FILES "D3D11/*.*")
 file(GLOB_RECURSE XRHI_SOURCE_D3D9_FILES "D3D9/*.*")
@@ -35,3 +35,9 @@ target_link_libraries(xrRHI PUBLIC "dxgi.lib")
 # Deps
 target_include_directories(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 target_link_libraries(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib")
+
+# AMD AGS SDK
+target_include_directories(xrRHI PUBLIC ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/inc/)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)

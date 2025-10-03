@@ -9,6 +9,9 @@
 
 #include <DirectXMesh.h>
 
+#include "Drivers/AMDGPUTransferee.h"
+#include "Drivers/NvGPUTransferee.h"
+
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
 RHI_API Ivector2 HalfTarget = { 0, 0 };
@@ -18,11 +21,24 @@ RHI_API CRHI* GRHI = nullptr;
 CRHI::~CRHI()
 {
 	xr_delete(DevicePtr);
+	xr_delete(DriverExt);
 	std::memset(Shaders, 0, sizeof(void*) * RHI_SHADERS_TYPE_SIZE);
 }
 
 IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 {
+	{
+		PROF_EVENT("g_pGPU");
+		DriverExt = new CNvReader();
+		DriverExt->Initialize();
+		if (!((CNvReader*)(DriverExt))->bSupport)
+		{
+			xr_delete(DriverExt);
+			DriverExt = new CAMDReader;
+			DriverExt->Initialize();
+		}
+	}
+
 	switch (NewAPILevel)
 	{
 		case ERHI_API_LAYER::D3D9:  DevicePtr = new InternalDevice9;  break;

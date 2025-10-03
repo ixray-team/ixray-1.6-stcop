@@ -15,6 +15,7 @@
 #include "RHIGPUMark.h"
 #include "RHITypes.h"
 #include "RHIShaderDeclaration.h"
+#include "RHIDriversExt.h"
 
 enum
 {
@@ -102,6 +103,7 @@ public:
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	
 	bool GPUStatsEnable = false;
+	IRHIGPU* DriverExt = nullptr;
 
 private:
 	void* Shaders[RHI_SHADERS_TYPE_SIZE];
