@@ -2469,6 +2469,7 @@ void CCC_RegisterCommands()
 	psHUD_Flags.set(HUD_INFO, true);
 
 	CMD3(CCC_Mask, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
+	CMD3(CCC_Mask, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
 	CMD3(CCC_Mask, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
 
 	//#ifdef DEBUG
