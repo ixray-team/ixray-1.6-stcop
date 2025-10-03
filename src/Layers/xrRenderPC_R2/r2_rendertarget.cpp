@@ -13,7 +13,6 @@
 #include "blender_ssao.h"
 #include "../xrRender/blender_fxaa.h"
 #include "../xrRender/blender_smaa.h"
-#include "../../xrEngine/ICore_GPU.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
