@@ -1,4 +1,3 @@
-#include "../xrEngine/stdafx.h"
 #include "AMDGPUTransferee.h"
 
 extern "C"
@@ -111,7 +110,7 @@ void CAMDReader::Initialize()
 		InitDeviceInfo();
 
 		activity.iSize = sizeof(ADLPMActivity);
-		IsAMD = true;
+		GPUID = ERHI_GPU::AMD;
 	}
 
 #ifdef _M_X64
@@ -159,11 +158,13 @@ void CAMDReader::Initialize()
 			}
 		}
 
-		TryInitializeAMDAGSFunctionLambda((void**) & AGSDX12EXTProc, "agsDriverExtensionsDX12_CreateDevice");
-		TryInitializeAMDAGSFunctionLambda((void**) &AGSDX12EXTDestroyProc, "agsDriverExtensionsDX12_DestroyDevice");
+		//TryInitializeAMDAGSFunctionLambda((void**) &AGSDX12EXTProc, "agsDriverExtensionsDX12_CreateDevice");
+		//TryInitializeAMDAGSFunctionLambda((void**) &AGSDX12EXTDestroyProc, "agsDriverExtensionsDX12_DestroyDevice");
+		TryInitializeAMDAGSFunctionLambda((void**) &AGSDX11_SetDepthBounds, "agsDriverExtensionsDX11_SetDepthBounds");
 
 		MakeGPUCount();
 	}
+
 
 	bInitialized = true;
 }
@@ -306,7 +307,7 @@ AGSContext* CAMDReader::GetContext() const
 	return Context;
 }
 
-void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pImmediateContext, IDXGISwapChain** pSwapChain, D3D_FEATURE_LEVEL& FeatureLevel)
+u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain)
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -319,8 +320,8 @@ void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pIm
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), "SDL.window.win32.hwnd", nullptr);
 
 	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = Device.TargetHeight;
-	sd.BufferDesc.Height = Device.TargetHeight;
+	sd.BufferDesc.Width = psCurrentVidMode[0];
+	sd.BufferDesc.Height = psCurrentVidMode[1];
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	sd.BufferCount = 1;
 	sd.SampleDesc.Count = 1;
@@ -357,7 +358,19 @@ void CAMDReader::GetDX11Device(ID3D11Device** pDevice, ID3D11DeviceContext** pIm
 	*pDevice = ReturnedParams.pDevice;
 	*pImmediateContext = ReturnedParams.pImmediateContext;
 	*pSwapChain = ReturnedParams.pSwapChain;
-	FeatureLevel = ReturnedParams.FeatureLevel;
+
+	return ReturnedParams.FeatureLevel;
+}
+
+bool CAMDReader::SetDepthBounds(void* RContext, bool b, float zMin, float zMax)
+{
+	if (AGSDX11_SetDepthBounds)
+	{
+		AGSDX11_SetDepthBounds(Context, (ID3D11DeviceContext*)RContext, b, zMin, zMax);
+		return true;
+	}
+
+	return false;
 }
 
 const char* CAMDReader::AGSGetErrorString(AGSReturnCode code)
