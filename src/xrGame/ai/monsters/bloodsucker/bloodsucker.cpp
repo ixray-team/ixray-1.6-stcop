@@ -1042,6 +1042,11 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 			m_client_effector = false;
 			Actor()->set_inventory_disabled(true);
 			Actor()->set_pda_disabled(true);
+
+			if (Actor()->HudAnimator()->IsActive())
+			{
+				Actor()->HudAnimator()->StopAnimator();
+			}
 		}
 		break;
 	}

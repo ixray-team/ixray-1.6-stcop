@@ -1039,6 +1039,11 @@ void CActor::Die	(CObject* who)
 		m_DangerSnd.stop		();		
 	}
 
+	if (HudAnimator()->IsActive())
+	{
+		HudAnimator()->StopAnimator();
+	}
+
 	if	(IsGameTypeSingle())
 	{
 		cam_Set				(eacFreeLook);
