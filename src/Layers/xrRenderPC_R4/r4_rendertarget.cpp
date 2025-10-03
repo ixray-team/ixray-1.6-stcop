@@ -29,6 +29,11 @@
 #include "OverlayAPI/DLSSWrapper.h"
 #include "OverlayAPI/XESSWrapper.h"
 
+static RHIInputElementDesc ShaderDeclXYZ[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
 {
 	VERIFY(_1 || zb);
@@ -620,22 +625,22 @@ CRenderTarget::CRenderTarget()
 	{
 		s_accum_point.create(b_accum_point, "r2\\accum_point_s");
 		accum_point_geom_create();
-		g_accum_point.create(D3DFVF_XYZ, g_accum_point_vb, g_accum_point_ib);
+		g_accum_point.create(ShaderDeclXYZ, std::size(ShaderDeclXYZ), g_accum_point_vb, g_accum_point_ib);
 		accum_omnip_geom_create();
-		g_accum_omnipart.create(D3DFVF_XYZ, g_accum_omnip_vb, g_accum_omnip_ib);
+		g_accum_omnipart.create(ShaderDeclXYZ, std::size(ShaderDeclXYZ), g_accum_omnip_vb, g_accum_omnip_ib);
 	}
 
 	// SPOT
 	{
 		s_accum_spot.create(b_accum_spot, "r2\\accum_spot_s", "lights\\lights_spot01");
 		accum_spot_geom_create();
-		g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
+		g_accum_spot.create(ShaderDeclXYZ, std::size(ShaderDeclXYZ), g_accum_spot_vb, g_accum_spot_ib);
 	}
 
 	{
 		s_accum_volume.create("accum_volumetric", "lights\\lights_spot01");
 		accum_volumetric_geom_create();
-		g_accum_volumetric.create(D3DFVF_XYZ, g_accum_volumetric_vb, g_accum_volumetric_ib);
+		g_accum_volumetric.create(ShaderDeclXYZ, std::size(ShaderDeclXYZ), g_accum_volumetric_vb, g_accum_volumetric_ib);
 	}
 
 	string_path name{};
