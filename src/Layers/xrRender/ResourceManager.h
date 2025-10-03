@@ -130,10 +130,6 @@ public:
 
 	map_Blender&					_GetBlenders		()		{	return m_blenders;	}
 
-	// Debug
-	void							DBG_VerifyGeoms		();
-	void							DBG_VerifyTextures	();
-
 	// Editor cooperation
 	void							ED_UpdateBlender	(LPCSTR Name, IBlender*		data);
 #ifdef _EDITOR
@@ -198,6 +194,7 @@ public:
 	void							_DeleteState		(const SState* SB);
 
 	SDeclaration*					_CreateDecl			(D3DVERTEXELEMENT9* dcl);
+	SDeclaration*					_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize);
 	void							_DeleteDecl			(const SDeclaration* dcl);
 
 	STextureList*					_CreateTextureList	(STextureList& L);
@@ -233,6 +230,7 @@ public:
 	void			Delete					(const Shader*		S	);
 	void			RegisterConstantSetup	(LPCSTR name,		R_constant_setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
+	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(u32 FVF				, IRHIBuffer* vb, IRHIBuffer* ib);
 	void			DeleteGeom				(const SGeometry* VS		);
