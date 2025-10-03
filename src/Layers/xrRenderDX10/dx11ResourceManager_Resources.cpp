@@ -391,13 +391,39 @@ void	CResourceManager::_DeleteGS			(const SGS* gs)
 }
 
 //--------------------------------------------------------------------------------------------------------------
-static BOOL	dcl_equal			(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
+static bool	dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 {
 	// check sizes
 	size_t a_size = GetDeclLength(a);
 	size_t b_size = GetDeclLength(b);
-	if (a_size!=b_size)	return FALSE;
-	return 0==memcmp	(a,b,a_size*sizeof(D3DVERTEXELEMENT9));
+	if (a_size != b_size)	return FALSE;
+	return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
+}
+
+static bool dcl_equal(const RHIInputElementDesc* a, size_t aDeclSize, const RHIInputElementDesc* b, size_t bDeclSize)
+{
+	if (aDeclSize != bDeclSize)
+		return FALSE;
+	return 0 == memcmp(a, b, aDeclSize * sizeof(RHIInputElementDesc));
+}
+
+SDeclaration* CResourceManager::_CreateDecl(const RHIInputElementDesc* dcl, size_t declSize)
+{
+	xrCriticalSectionGuard guard(creationGuard);
+
+	// Search equal code
+	for (u32 it = 0; it < v_declarations.size(); it++)
+	{
+		SDeclaration* Declaration = v_declarations[it];
+		if (dcl_equal(dcl, declSize, Declaration->dx10_dcl_code.data(), Declaration->dx10_dcl_code.size()))
+			return Declaration;
+	}
+
+	SDeclaration* Declaration = new SDeclaration();
+	Declaration->dx10_dcl_code.assign(dcl, dcl + declSize);
+	Declaration->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	v_declarations.push_back(Declaration);
+	return Declaration;
 }
 
 SDeclaration*	CResourceManager::_CreateDecl	(D3DVERTEXELEMENT9* dcl)
@@ -521,22 +547,28 @@ void	CResourceManager::_DeleteRTC(const CRTC* RT) {
 	Msg("! ERROR: Failed to find render-target '%s'", *RT->cName);
 }
 
-//--------------------------------------------------------------------------------------------------------------
-void	CResourceManager::DBG_VerifyGeoms	()
+SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib)
 {
-	/*
-	for (u32 it=0; it<v_geoms.size(); it++)
-	{
-	SGeometry* G					= v_geoms[it];
+	xrCriticalSectionGuard guard(creationGuard);
 
-	D3DVERTEXELEMENT9		test	[MAXD3DDECLLENGTH + 1];
-	u32						size	= 0;
-	G->dcl->GetDeclaration			(test,(unsigned int*)&size);
-	u32 vb_stride = ComputeVertexSize(test,0);
-	u32 vb_stride_cached			= G->vb_stride;
-	R_ASSERT						(vb_stride == vb_stride_cached);
+	SDeclaration* dcl = _CreateDecl(DescList, DeclSize);
+	u32 vb_stride = (u32)GRHI->GetInputElementDescStride(*DescList, DeclSize);
+
+	// ***** first pass - search already loaded shader
+	for (u32 it = 0; it < v_geoms.size(); it++)
+	{
+		SGeometry& G = *(v_geoms[it]);
+		if ((G.dcl == dcl) && (G.vb == vb) && (G.ib == ib) && (G.vb_stride == vb_stride))	return v_geoms[it];
 	}
-	*/
+
+	SGeometry* Geom = new SGeometry();
+	Geom->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+	Geom->dcl = dcl;
+	Geom->vb = vb;
+	Geom->vb_stride = vb_stride;
+	Geom->ib = ib;
+	v_geoms.push_back(Geom);
+	return	Geom;
 }
 
 SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib)
@@ -616,8 +648,6 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 
 void	CResourceManager::_DeleteTexture		(const CTexture* T)
 {
-	// DBG_VerifyTextures	();
-
 	if (0==(T->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
 
 	xrCriticalSectionGuard guard(creationGuard);
@@ -631,21 +661,6 @@ void	CResourceManager::_DeleteTexture		(const CTexture* T)
 	}
 	Msg	("! ERROR: Failed to find texture surface '%s'",*T->cName);
 }
-
-#ifdef DEBUG
-void	CResourceManager::DBG_VerifyTextures	()
-{
-	map_Texture::iterator I		= m_textures.begin	();
-	map_Texture::iterator E		= m_textures.end	();
-	for (; I!=E; I++) 
-	{
-		R_ASSERT(I->first);
-		R_ASSERT(I->second);
-		R_ASSERT(I->second->cName);
-		R_ASSERT(0==xr_strcmp(I->first,*I->second->cName));
-	}
-}
-#endif
 
 //--------------------------------------------------------------------------------------------------------------
 CMatrix*	CResourceManager::_CreateMatrix	(LPCSTR Name)
