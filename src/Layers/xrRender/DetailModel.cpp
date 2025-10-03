@@ -13,12 +13,20 @@ struct	vertHW
 	Fvector2 uv;
 };
 
+#ifdef USE_DX11
+static RHIInputElementDesc dwDecl[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+#else
 static D3DVERTEXELEMENT9 dwDecl[] =
 {
 	{ 0, 0,  D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // pos.frac
 	{ 0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 }, // uv
 	D3DDECL_END()
 };
+#endif
 
 CDetail::~CDetail()
 {
@@ -155,7 +163,7 @@ void CDetail::Load		(IReader* S)
 		}
 		R_ASSERT(RHIUtils::CreateVertexBuffer(&hw_VB, pV.data(), number_vertices * sizeof(vertHW)));
 		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, indices, size_indices));
-		hw_Geom.create(dwDecl, hw_VB, hw_IB);
+		hw_Geom.create(dwDecl, std::size(dwDecl), hw_VB, hw_IB);
 	}
 #endif
 
