@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "../Drivers/AMDGPUTransferee.h"
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
@@ -180,12 +181,16 @@ bool InternalDevice11::CreateD3D11()
 	UINT createDeviceFlags = 0;
 	bool bHasDebugRender = Core.ParamsData.test(ECoreParams::dxdebug);
 
-	//if (g_pGPU != nullptr && g_pGPU->IsAMD)
-	//{
-	//	g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
-	//}
+	if (CAMDReader* AMDReader = GRHI->DriverExt->GetAMD(); AMDReader != nullptr && !bHasDebugRender)
+	{
+		u32 NewFeatureLevel = AMDReader->GetDX11Device((void**)&RawDevice, (void**)&HWRenderContext, (void**)&HWSwapchain);
+		if (RawDevice != nullptr)
+		{
+			FeatureLevel = NewFeatureLevel;
+		}
+	}
 
-	if (bHasDebugRender || DX11Device == nullptr)
+	if (RawDevice == nullptr)
 	{
 		if (bHasDebugRender)
 		{
@@ -258,10 +263,6 @@ bool InternalDevice11::CreateD3D11()
 			}
 		}
 	}
-	//else
-	//{
-	//	g_pGPU->GetDX11Device((ID3D11Device**)&HWRenderDevice, (ID3D11DeviceContext**)&HWRenderContext, (IDXGISwapChain**)&HWSwapchain, FeatureLevel);
-	//}
 
 	if (!UpdateBuffersD3D11())
 	{
