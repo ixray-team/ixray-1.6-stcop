@@ -180,23 +180,21 @@ void dx103DFluidRenderer::CreateGridBox ()
 	R_ASSERT(RHIUtils::CreateIndexBuffer	(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
 
 	// Define the input layout
-	static D3DVERTEXELEMENT9 layout[] = 
+	static RHIInputElementDesc layout[] =
 	{
-		{ 0, 0,		D3DDECLTYPE_FLOAT3,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },
-		D3DDECL_END()
+		{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 	};
 
 	// Create the input layout
-	m_GeomGridBox.create(layout, m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
+	m_GeomGridBox.create(layout, std::size(layout), m_pGridBoxVertexBuffer, m_pGridBoxIndexBuffer);
 }
 
 void dx103DFluidRenderer::CreateScreenQuad() 
 {
 	// Create our quad input layout
-	static D3DVERTEXELEMENT9 quadlayout[] = 
+	static RHIInputElementDesc quadlayout[] =
 	{
-		{ 0, 0,		D3DDECLTYPE_FLOAT3,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },
-		D3DDECL_END()
+		{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 	};
 
 	// Create a screen quad for all render to texture operations
@@ -207,7 +205,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
 	svQuad[3].pos = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
-	m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, 0);
+	m_GeomQuadVertex.create(quadlayout, std::size(quadlayout), m_pQuadVertexBuffer, 0);
 }
 
 void dx103DFluidRenderer::CreateJitterTexture()
