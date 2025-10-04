@@ -29,7 +29,7 @@ public:
     virtual u32 GetDepth() const override;
     virtual u32 GetMipLevels() const override;
     virtual u32 GetMiscFlags() const override;
-    virtual u32 GetTextureType() const override;
+    virtual ERHI_RESOURCE_DIMENSION GetTextureType() const override;
     virtual u32 GetSampleDescCount() const override;
     virtual u32 GetArraySize() const override;
     virtual ERHI_FORMAT GetFormat() const override;
