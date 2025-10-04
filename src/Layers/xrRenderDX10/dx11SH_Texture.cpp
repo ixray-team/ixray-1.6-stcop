@@ -63,8 +63,8 @@ void CTexture::surface_set(IRHISurface* surf)
 		RHIShaderResourceViewDesc ViewDesc = {};
 		ViewDesc.MostDetailedMip = 0;
 
-		u32 type = pSurface->GetTextureType();
-		if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		if (ERHI_RESOURCE_DIMENSION::TEXTURE2D == type)
 		{
 			if (pSurface->GetMiscFlags() & D3D_RESOURCE_MISC_TEXTURECUBE)
 			{
@@ -148,11 +148,11 @@ void CTexture::ProcessStaging()
 
 	IRHISurface* pTargetSurface = 0;
 
-	u32 type = pSurface->GetTextureType();
+	ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
 
 	switch (type)
 	{
-		case D3D_RESOURCE_DIMENSION_TEXTURE2D:
+		case ERHI_RESOURCE_DIMENSION::TEXTURE2D:
 		{
 			RHITextureDesc desc;
 			desc.Width = pSurface->GetWidth();
@@ -168,7 +168,7 @@ void CTexture::ProcessStaging()
 			pTargetSurface = GRHI->CreateTextureFromMemory(nullptr, 0, desc);
 		}
 		break;
-		case D3D_RESOURCE_DIMENSION_TEXTURE3D:
+		case ERHI_RESOURCE_DIMENSION::TEXTURE3D:
 		{
 			RHITextureDesc desc;
 			desc.Width = pSurface->GetWidth();
@@ -246,8 +246,8 @@ void CTexture::apply_theora(u32 dwStage)
 
 	if (pTheora->Update(m_play_time != 0xFFFFFFFF ? m_play_time : Device.dwTimeContinual))
 	{
-		u32 type = pSurface->GetTextureType();
-		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == type);
 
 		u32 RowPitch = 0;
 		void* InputBuffer = pSurface->Lock(0, &RowPitch);
