@@ -7,26 +7,17 @@
 	#include "../xrRenderDX10/dx10BufferUtils.h"
 #endif
 
-struct	vertHW
+struct vertHW
 {
 	Fvector4 pos_frac;
 	Fvector2 uv;
 };
 
-#ifdef USE_DX11
 static RHIInputElementDesc dwDecl[] =
 {
 	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, ERHI_FORMAT::R32G32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
-#else
-static D3DVERTEXELEMENT9 dwDecl[] =
-{
-	{ 0, 0,  D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 }, // pos.frac
-	{ 0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 }, // uv
-	D3DDECL_END()
-};
-#endif
 
 CDetail::~CDetail()
 {
