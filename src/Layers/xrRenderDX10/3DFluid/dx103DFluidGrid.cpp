@@ -57,20 +57,13 @@ void dx103DFluidGrid::Initialize( int gridWidth, int gridHeight, int gridDepth)
 
 void dx103DFluidGrid::CreateVertexBuffers()
 {
-	// Create layout
-	//D3Dxx_INPUT_ELEMENT_DESC layoutDesc[] = 
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,       0, 0, D3Dxx_INPUT_PER_VERTEX_DATA, 0 },
-	//	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT,       0,12, D3Dxx_INPUT_PER_VERTEX_DATA, 0 }, 
-	//};
-
 	static RHIInputElementDesc layoutDesc[] =
 	{
 		{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 12, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 	};
 
-	u32 vSize = (u32)std::size(layoutDesc);
+	u32 vSize = GRHI->GetInputElementDescStride(layoutDesc, std::size(layoutDesc));
 
 	//UINT numElements = sizeof(layoutDesc)/sizeof(layoutDesc[0]);
 	//CreateLayout( layoutDesc, numElements, technique, &layout);
@@ -104,7 +97,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
 	//CreateVertexBuffer(sizeof(VS_INPUT_FLUIDSIM_STRUCT)*numVerticesRenderQuad,
 	//	D3Dxx_BIND_VERTEX_BUFFER, &renderQuadBuffer, renderQuad, numVerticesRenderQuad));
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pRenderQuadBuffer, renderQuad, vSize*m_iNumVerticesRenderQuad));
-	m_GeomRenderQuad.create(layoutDesc, vSize, m_pRenderQuadBuffer, 0);
+	m_GeomRenderQuad.create(layoutDesc, std::size(layoutDesc), m_pRenderQuadBuffer, 0);
 
 	// Vertex buffer for "m_vDim[2]" quads to draw all the slices to a 3D texture
 	// (a Geometry Shader is used to send each quad to the appropriate slice)
@@ -115,7 +108,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
 	//V_RETURN(CreateVertexBuffer(sizeof(VS_INPUT_FLUIDSIM_STRUCT)*numVerticesSlices,
 	//	D3Dxx_BIND_VERTEX_BUFFER, &slicesBuffer, slices , numVerticesSlices));
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pSlicesBuffer, slices, vSize*m_iNumVerticesSlices));
-	m_GeomSlices.create(layoutDesc, vSize, m_pSlicesBuffer, 0);
+	m_GeomSlices.create(layoutDesc, std::size(layoutDesc), m_pSlicesBuffer, 0);
 
 	// Vertex buffers for boundary geometry
 	//   2 boundary slices
@@ -125,7 +118,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
 	//V_RETURN(CreateVertexBuffer(sizeof(VS_INPUT_FLUIDSIM_STRUCT)*numVerticesBoundarySlices,
 	//	D3Dxx_BIND_VERTEX_BUFFER, &boundarySlicesBuffer, boundarySlices, numVerticesBoundarySlices));
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pBoundarySlicesBuffer, boundarySlices, vSize*m_iNumVerticesBoundarySlices));
-	m_GeomBoundarySlices.create(layoutDesc, vSize, m_pBoundarySlicesBuffer, 0);
+	m_GeomBoundarySlices.create(layoutDesc, std::size(layoutDesc), m_pBoundarySlicesBuffer, 0);
 
 	//   ( 4 * "m_vDim[2]" ) boundary lines
 	index = 0;
@@ -134,7 +127,7 @@ void dx103DFluidGrid::CreateVertexBuffers()
 	//V_RETURN(CreateVertexBuffer(sizeof(VS_INPUT_FLUIDSIM_STRUCT)*numVerticesBoundaryLines,
 	//	D3Dxx_BIND_VERTEX_BUFFER, &boundaryLinesBuffer, boundaryLines, numVerticesBoundaryLines));
 	R_ASSERT(RHIUtils::CreateVertexBuffer(&m_pBoundaryLinesBuffer, boundaryLines, vSize*m_iNumVerticesBoundaryLines));
-	m_GeomBoundaryLines.create(layoutDesc, vSize, m_pBoundaryLinesBuffer, 0);
+	m_GeomBoundaryLines.create(layoutDesc, std::size(layoutDesc), m_pBoundaryLinesBuffer, 0);
 
 //cleanup:
 	xr_free(renderQuad);
@@ -149,7 +142,8 @@ void dx103DFluidGrid::CreateVertexBuffers()
 	boundaryLines = nullptr;
 }
 
-void dx103DFluidGrid::DestroyVertexBuffers() {
+void dx103DFluidGrid::DestroyVertexBuffers()
+{
 	_RELEASE(m_pRenderQuadBuffer);
 	_RELEASE(m_pSlicesBuffer);
 	_RELEASE(m_pBoundarySlicesBuffer);
