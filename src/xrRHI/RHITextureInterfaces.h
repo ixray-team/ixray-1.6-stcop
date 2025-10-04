@@ -83,7 +83,7 @@ public:
 	virtual u32 GetHeight() const = 0;
 	virtual u32 GetDepth() const = 0;
 	virtual u32 GetMipLevels() const = 0;
-	virtual u32 GetTextureType() const = 0;
+	virtual ERHI_RESOURCE_DIMENSION GetTextureType() const = 0;
 	virtual u32 GetMiscFlags() const = 0;
 	virtual u32 GetSampleDescCount() const = 0;
 	virtual u32 GetArraySize() const = 0;
