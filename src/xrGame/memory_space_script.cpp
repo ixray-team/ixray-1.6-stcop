@@ -39,7 +39,11 @@ int get_sound_type(const CSoundObject &sound_object)
 
 CScriptGameObject *get_memory_object(const MemorySpace::CMemoryObject &memory_object)
 {
-	return (memory_object.m_object->lua_game_object());
+	if (memory_object.m_object != nullptr)
+	{
+		return (memory_object.m_object->lua_game_object());
+	}
+	return nullptr;
 }
 
 CScriptGameObject *CDangerObject_object(const CDangerObject *self_)
