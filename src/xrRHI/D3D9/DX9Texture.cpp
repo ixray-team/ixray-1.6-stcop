@@ -119,12 +119,12 @@ u32 DX9Surface::GetMiscFlags() const
 	return m_desc.MiscFlags;
 }
 
-u32 DX9Surface::GetTextureType() const
+ERHI_RESOURCE_DIMENSION DX9Surface::GetTextureType() const
 {
-	if (Texture2D) return D3DRTYPE_TEXTURE;
-	if (Texture3D) return D3DRTYPE_VOLUMETEXTURE;
-	if (TextureCube) return D3DRTYPE_CUBETEXTURE;
-	return D3DRTYPE_SURFACE;
+	if (Texture2D) return ERHI_RESOURCE_DIMENSION::TEXTURE2D;
+	if (Texture3D) return ERHI_RESOURCE_DIMENSION::TEXTURE3D;
+	if (TextureCube) return ERHI_RESOURCE_DIMENSION::UNKNOWN;
+	return ERHI_RESOURCE_DIMENSION::UNKNOWN;
 }
 
 ERHI_USAGE DX9Surface::GetUsage() const
