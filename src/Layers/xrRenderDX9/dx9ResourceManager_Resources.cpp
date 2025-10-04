@@ -350,10 +350,63 @@ SGeometry*	CResourceManager::CreateGeom	(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb
 	return	Geom;
 }
 
+static D3DDECLTYPE ConvertFormat(ERHI_FORMAT fmt)
+{
+	switch (fmt)
+	{
+	case ERHI_FORMAT::R32G32B32A32_FLOAT: return D3DDECLTYPE_FLOAT4;
+	case ERHI_FORMAT::R32G32B32_FLOAT: return D3DDECLTYPE_FLOAT3;
+	case ERHI_FORMAT::R32G32_FLOAT:    return D3DDECLTYPE_FLOAT2;
+	case ERHI_FORMAT::R32_FLOAT:       return D3DDECLTYPE_FLOAT1;
+	case ERHI_FORMAT::R8G8B8A8_UNORM:  return D3DDECLTYPE_D3DCOLOR;
+
+	default: NODEFAULT;
+	}
+	return D3DDECLTYPE_UNUSED;
+}
+
+static BYTE ConvertInputSlotClass(ERHI_INPUT_CLASSIFICATION cls)
+{
+	return (cls == ERHI_INPUT_CLASSIFICATION::VERTEX_DATA)
+		? D3DDECLMETHOD_DEFAULT
+		: D3DDECLMETHOD_DEFAULT;
+}
+
+static BYTE ConvertSemantic(const char* name)
+{
+	if (stricmp(name, "POSITION") == 0) return D3DDECLUSAGE_POSITION;
+	if (stricmp(name, "NORMAL") == 0) return D3DDECLUSAGE_NORMAL;
+	if (stricmp(name, "TEXCOORD") == 0) return D3DDECLUSAGE_TEXCOORD;
+	if (stricmp(name, "COLOR") == 0) return D3DDECLUSAGE_COLOR;
+	if (stricmp(name, "TANGENT") == 0) return D3DDECLUSAGE_TANGENT;
+	if (stricmp(name, "BINORMAL") == 0) return D3DDECLUSAGE_BINORMAL;
+	return D3DDECLUSAGE_POSITION;
+}
+
+
 SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib)
 {
-	VERIFY(!"SOON!");
-	return nullptr;
+	xrCriticalSectionGuard guard(creationGuard);
+
+	xr_vector<D3DVERTEXELEMENT9> dcl;
+	dcl.resize(DeclSize + 1); // + END
+
+	for (size_t i = 0; i < DeclSize; ++i)
+	{
+		const RHIInputElementDesc& in = DescList[i];
+		D3DVERTEXELEMENT9& out = dcl[i];
+
+		out.Stream = (WORD)in.InputSlot;
+		out.Offset = (WORD)in.AlignedByteOffset;
+		out.Type = ConvertFormat(in.Format);
+		out.Method = ConvertInputSlotClass(in.InputSlotClass);
+		out.Usage = ConvertSemantic(in.SemanticName);
+		out.UsageIndex = (BYTE)in.SemanticIndex;
+	}
+
+	dcl[DeclSize] = D3DDECL_END();
+
+	return CreateGeom(dcl.data(), vb, ib);
 }
 
 SGeometry*	CResourceManager::CreateGeom		(u32 FVF, IRHIBuffer* vb, IRHIBuffer* ib)

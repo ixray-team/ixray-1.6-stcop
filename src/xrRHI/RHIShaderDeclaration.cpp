@@ -19,5 +19,5 @@ IRHIShaderDeclaration::IRHIShaderDeclaration(const RHIInputElementDesc* DescList
 	}
 
 	//memcpy(Descriptors.data(), DescList, DescCount * sizeof(RHIInputElementDesc));
-	VertexSize = GRHI->GetInputElementDescStride(*DescList, DescCount);
+	VertexSize = GRHI->GetInputElementDescStride(DescList, DescCount);
 }

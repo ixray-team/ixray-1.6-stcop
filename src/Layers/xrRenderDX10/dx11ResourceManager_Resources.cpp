@@ -552,7 +552,7 @@ SGeometry* CResourceManager::CreateGeom(RHIInputElementDesc* DescList, size_t De
 	xrCriticalSectionGuard guard(creationGuard);
 
 	SDeclaration* dcl = _CreateDecl(DescList, DeclSize);
-	u32 vb_stride = (u32)GRHI->GetInputElementDescStride(*DescList, DeclSize);
+	u32 vb_stride = (u32)GRHI->GetInputElementDescStride(DescList, DeclSize);
 
 	// ***** first pass - search already loaded shader
 	for (u32 it = 0; it < v_geoms.size(); it++)
