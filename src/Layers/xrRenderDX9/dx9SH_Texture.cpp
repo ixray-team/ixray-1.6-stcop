@@ -81,7 +81,7 @@ void CTexture::apply_theora	(u32 dwStage)
 {
 	if (pTheora->Update(m_play_time!=0xFFFFFFFF?m_play_time:RDEVICE.dwTimeContinual))
     {
-		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == pSurface->GetTextureType());
 
 		u32 RowPitch = 0;
 		void* lockedPtr = pSurface->Lock(0, &RowPitch);
@@ -106,7 +106,7 @@ void CTexture::apply_avi(u32 dwStage)
 {
 	if (pAVI->NeedUpdate())
 	{
-		R_ASSERT(D3DRTYPE_TEXTURE == pSurface->GetTextureType());
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == pSurface->GetTextureType());
 		u32 RowPitch = 0;
 		void* lockedPtr = pSurface->Lock(0, &RowPitch);
 		R_ASSERT(int(RowPitch) == int(pAVI->m_dwWidth * 4));
