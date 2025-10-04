@@ -395,14 +395,14 @@ bool CRHI::IsTessPass() const
 	return Shaders[(size_t)ERHI_SHADER_TYPE::HS] || Shaders[(size_t)ERHI_SHADER_TYPE::DS];
 }
 
-u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc& Desc, u32 DescSize)
+u32 CRHI::GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize)
 {
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 		u32 Offsets[D3D11_IA_VERTEX_INPUT_STRUCTURE_ELEMENT_COUNT] = {};
 		u32 Strides[D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT] = {};
 
-		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)&Desc, DescSize, Offsets, Strides);
+		DirectX::ComputeInputLayout((D3D11_INPUT_ELEMENT_DESC*)Desc, DescSize, Offsets, Strides);
 		return Strides[0];
 	}
 	else

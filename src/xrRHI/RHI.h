@@ -96,7 +96,7 @@ public:
 
 	bool IsTessPass() const;
 
-	u32 GetInputElementDescStride(const RHIInputElementDesc& Desc, u32 DescSize);
+	u32 GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize);
 
 public:
 	IRHIDevice* DevicePtr = nullptr;
