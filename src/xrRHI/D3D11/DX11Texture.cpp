@@ -239,14 +239,12 @@ u32 DX11Surface::GetMiscFlags() const
 	return m_desc.MiscFlags;
 }
 
-u32 DX11Surface::GetTextureType() const
+ERHI_RESOURCE_DIMENSION DX11Surface::GetTextureType() const
 {
 	D3D11_RESOURCE_DIMENSION DescInfo;
 	Resource->GetType(&DescInfo);
-	//if (Texture2D) return D3D11_RESOURCE_DIMENSION_TEXTURE2D;
-	//if (Texture3D) return D3D11_RESOURCE_DIMENSION_TEXTURE3D;
-	//if (Texture1D) return D3D11_RESOURCE_DIMENSION_TEXTURE1D;
-	return DescInfo;
+
+	return (ERHI_RESOURCE_DIMENSION)DescInfo;
 }
 
 u32 DX11Surface::GetSampleDescCount() const
