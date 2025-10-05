@@ -93,25 +93,22 @@ void	CRender::render_lights	(light_Package& LP)
 			Target->phase_smap_spot_clear();
 			xr_vector<light*>& source = LP.v_shadowed;
 			light* L = source.back();
-			u16			sid = L->vis.smap_ID;
+			u16 sid = L->vis.smap_ID;
+
 			while (!source.empty())
 			{
-				if (source.empty())		break;
 				L = source.back();
-				if (L->vis.smap_ID != sid)	break;
+				if (L->vis.smap_ID != sid)
+					break;
+
 				source.pop_back();
 				if (L->flags.bOccq && !L->flags.bHudMode)
 					Lights_LastFrame.push_back(L);
 
 				// render
 				phase = PHASE_SMAP;
-
-#if USE_DX11
 				r_pmask(true, !!RImplementation.o.Tshadows);
-#else
-				if (RImplementation.o.Tshadows)	r_pmask(true, true);
-				else							r_pmask(true, false);
-#endif
+
 				PROF_EVENT("SHADOWED_LIGHTS_RENDER_SUBSPACE");
 				bool decorative_light = false;
 				if (L->flags.bHudMode)
@@ -119,34 +116,37 @@ void	CRender::render_lights	(light_Package& LP)
 					L_spot_s.push_back(L);
 					decorative_light = true;
 				}
-				else
+				else if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) ||
+					     (L->decor_object[1] && !L->decor_object[1]->getDestroy()) ||
+						 (L->decor_object[2] && !L->decor_object[2]->getDestroy()) ||
+						 (L->decor_object[3] && !L->decor_object[3]->getDestroy()) ||
+						 (L->decor_object[4] && !L->decor_object[4]->getDestroy()) ||
+						 (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
 				{
-					if ((L->decor_object[0] && !L->decor_object[0]->getDestroy()) || (L->decor_object[1] && !L->decor_object[1]->getDestroy()) || (L->decor_object[2] && !L->decor_object[2]->getDestroy()) || (L->decor_object[3] && !L->decor_object[3]->getDestroy()) || (L->decor_object[4] && !L->decor_object[4]->getDestroy()) || (L->decor_object[5] && !L->decor_object[5]->getDestroy()))
+					RImplementation.marker++;			// !!! critical here
+					RImplementation.set_Object(0);
+					for (int f = 0; f < 6; f++)
 					{
-						RImplementation.marker++;			// !!! critical here
-						RImplementation.set_Object(0);
-						for (int f = 0; f < 6; f++)
+						if (L->decor_object[f] && !L->decor_object[f]->getDestroy())
 						{
-							if (L->decor_object[f] && !L->decor_object[f]->getDestroy())
-							{
-								L->decor_object[f]->renderable_Render();
-								decorative_light = true;
-							}
+							L->decor_object[f]->renderable_Render();
+							decorative_light = true;
 						}
 					}
-					else
-					{
-						PROF_EVENT("r_dsgraph_render_subspace")
-							r_dsgraph_render_subspace(L->SpatialComponent->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
-					}
+				}
+				else
+				{
+					PROF_EVENT("r_dsgraph_render_subspace");
+					r_dsgraph_render_subspace(L->SpatialComponent->spatial.sector, L->X.S.combine, L->position, TRUE, FALSE, L->ignore_object);
 				}
 
 				if (L->flags.bOccq && !L->flags.bHudMode)
 					L->svis.begin();
 
-				bool	bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-				bool	bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-				if (bNormal || bSpecial) {
+				bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
+				bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+				if (bNormal || bSpecial)
+				{
 					stats.s_merged++;
 					L_spot_s.push_back(L);
 					Target->phase_smap_spot(L);
@@ -164,7 +164,8 @@ void	CRender::render_lights	(light_Package& LP)
 					}
 
 					L->X.S.transluent = FALSE;
-					if (bSpecial) {
+					if (bSpecial)
+					{
 						L->X.S.transluent = TRUE;
 						Target->phase_smap_spot_tsh(L);
 
@@ -174,7 +175,8 @@ void	CRender::render_lights	(light_Package& LP)
 						r_dsgraph_render_sorted();			// strict-sorted geoms
 					}
 				}
-				else {
+				else
+				{
 					stats.s_finalclip++;
 				}
 
@@ -184,12 +186,14 @@ void	CRender::render_lights	(light_Package& LP)
 			}
 			{
 				PROF_EVENT("UNSHADOWED_LIGHTS");
-				//		switch-to-accumulator
 				Target->phase_accumulator();
 				PROF_EVENT("POINT_LIGHTS");
-				//		if (has_point_unshadowed)	-> 	accum point unshadowed
-				if (!LP.v_point.empty()) {
-					light* L_ = LP.v_point.back();		LP.v_point.pop_back();
+
+				if (!LP.v_point.empty())
+				{
+					light* L_ = LP.v_point.back();
+					LP.v_point.pop_back();
+
 					if (L_->flags.bOccq && !L_->flags.bHudMode)
 					{
 						L_->vis_update();
@@ -197,24 +201,32 @@ void	CRender::render_lights	(light_Package& LP)
 							Target->accum_point(L_);
 					}
 					else
+					{
 						Target->accum_point(L_);
+					}
 				}
+
 				PROF_EVENT("SPOT_LIGHTS");
-				//		if (has_spot_unshadowed)	-> 	accum spot unshadowed
-				if (!LP.v_spot.empty()) {
-					light* L_ = LP.v_spot.back();		LP.v_spot.pop_back();
+
+				if (!LP.v_spot.empty())
+				{
+					light* L_ = LP.v_spot.back();
+					LP.v_spot.pop_back();
 					if (L_->flags.bOccq && !L_->flags.bHudMode)
 					{
 						L_->vis_update();
 						if (L_->vis.visible)
+						{
 							Target->accum_spot(L_);
+						}
 					}
 					else
+					{
 						Target->accum_spot(L_);
+					}
 				}
 			}
 
-			//		if (was_spot_shadowed)		->	accum spot shadowed
 			if (!L_spot_s.empty())
 			{
 				PROF_EVENT("ACCUM_SPOT");
@@ -231,10 +243,11 @@ void	CRender::render_lights	(light_Package& LP)
 	}
 	{
 		PROF_EVENT("POINT_LIGHTS_ACCUM");
-		// Point lighting (unshadowed, if left)
-		if (!LP.v_point.empty()) {
+		if (!LP.v_point.empty())
+		{
 			xr_vector<light*>& Lvec = LP.v_point;
-			for (u32 pid = 0; pid < Lvec.size(); pid++) {
+			for (u32 pid = 0; pid < Lvec.size(); pid++)
+			{
 				if (Lvec[pid]->flags.bOccq && !Lvec[pid]->flags.bHudMode)
 				{
 					Lvec[pid]->vis_update();
@@ -242,17 +255,20 @@ void	CRender::render_lights	(light_Package& LP)
 						Target->accum_point(Lvec[pid]);
 				}
 				else
+				{
 					Target->accum_point(Lvec[pid]);
+				}
 			}
 			Lvec.clear();
 		}
 	}
 	{
 		PROF_EVENT("SPOT_LIGHTS_ACCUM");
-		// Spot lighting (unshadowed, if left)
-		if (!LP.v_spot.empty()) {
+		if (!LP.v_spot.empty())
+		{
 			xr_vector<light*>& Lvec = LP.v_spot;
-			for (u32 pid = 0; pid < Lvec.size(); pid++) {
+			for (u32 pid = 0; pid < Lvec.size(); pid++)
+			{
 				if (Lvec[pid]->flags.bOccq && !Lvec[pid]->flags.bHudMode)
 				{
 					Lvec[pid]->vis_update();
@@ -260,7 +276,9 @@ void	CRender::render_lights	(light_Package& LP)
 						Target->accum_spot(Lvec[pid]);
 				}
 				else
+				{
 					Target->accum_spot(Lvec[pid]);
+				}
 			}
 			Lvec.clear();
 		}
