@@ -8,7 +8,6 @@ using namespace DirectX;
 
 #ifdef USE_DX11
 #include "../xrRenderDX10/StateManager/dx10StateManager.h"
-#include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #endif //USE_DX11
 
 void CBackend::OnFrameEnd	()
@@ -107,7 +106,11 @@ void CBackend::Invalidate	()
 	//	if we create dedicated class.
 	StateManager.UnmapConstants();
 	SSManager.ResetDeviceState();
-	SRVSManager.ResetDeviceState();
+
+	if (GRHI && GRHI->ShaderResourceCache)
+	{
+		GRHI->ShaderResourceCache->ResetDeviceState();
+	}
 
 	for (u32 gs_it =0; gs_it < mtMaxGeometryShaderTextures;)	textures_gs	[gs_it++]	= 0;
 	for (u32 hs_it =0; hs_it < mtMaxHullShaderTextures;)	textures_hs	[hs_it++]	= 0;
@@ -122,282 +125,192 @@ void CBackend::Invalidate	()
 #endif
 }
 
-void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=nullptr */, u32 count/* =0*/)
-{
-#ifdef USE_DX11
-	//	TODO: DX10: Implement in the corresponding vertex shaders
-	//	Use this to set up location, were shader setup code will get data
-	//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
-	return;
-#else //USE_DX11
-	if (0==Caps.geometry.dwClipPlanes)	return;
-	if (!_enable)	{
-		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
-		return;
-	}
-
-	// Enable and setup planes
-	VERIFY	(_planes && count);
-	if		(count>Caps.geometry.dwClipPlanes)	count=Caps.geometry.dwClipPlanes;
-
-	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
-	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
-	XMFLOAT4 planeClip{};
-	XMVECTOR planeWorld{};
-
-	for (u32 it = 0; it < count; it++) {
-		Fplane& P = _planes[it];
-		planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
-		XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
-		CHK_DX(RDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
-	}
-
-	// Enable them
-	u32		e_mask	= (1<<count)-1;
-	CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,e_mask));
-#endif
-}
-
-#ifndef DEDICATED_SREVER
-void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 fmask/* =0xff */)
-{
-	if (!_enable)	{
-#ifdef USE_DX11
-		//	TODO: DX10: Implement in the corresponding vertex shaders
-		//	Use this to set up location, were shader setup code will get data
-		//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
-#else //USE_DX11
-		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
-#endif
-		return;
-	}
-	VERIFY		(_xform && fmask);
-	CFrustum	F;
-	F.CreateFromMatrix	(*_xform,fmask);
-	set_ClipPlanes		(_enable,F.planes,F.p_count);
-}
-
-void CBackend::set_Textures			(STextureList* _T)
+void CBackend::set_Textures(STextureList* _T)
 {
 	PROF_EVENT("set_Textures");
 	if (T == _T)	return;
-	T				= _T;
+	T = _T;
 	//	If resources weren't set at all we should clear from resource #0.
-	int _last_ps	= -1;
-	int _last_vs	= -1;
+	int _last_ps = -1;
+	int _last_vs = -1;
 #ifdef USE_DX11
-	int _last_gs	= -1;
-	int _last_hs	= -1;
-	int _last_ds	= -1;
-	int _last_cs	= -1;
+	int _last_gs = -1;
+	int _last_hs = -1;
+	int _last_ds = -1;
+	int _last_cs = -1;
 #endif //USE_DX11
-	STextureList::iterator	_it		= _T->begin	();
-	STextureList::iterator	_end	= _T->end	();
+	STextureList::iterator	_it = _T->begin();
+	STextureList::iterator	_end = _T->end();
 
-	for (; _it!=_end; _it++)
+	for (; _it != _end; _it++)
 	{
-		std::pair<u32,ref_texture>&		loader	=	*_it;
-		u32			load_id		= loader.first		;
-		CTexture*	load_surf	= &*loader.second	;
-//		if (load_id < 256)		{
+		std::pair<u32, ref_texture>& loader = *_it;
+		u32			load_id = loader.first;
+		CTexture* load_surf = &*loader.second;
+		//		if (load_id < 256)		{
 		if (load_id < CTexture::rstVertex)
 		{
 			//	Set up pixel shader resources
-			VERIFY(load_id<mtMaxPixelShaderTextures);
+			VERIFY(load_id < mtMaxPixelShaderTextures);
 			// ordinary pixel surface
-			if ((int)load_id>_last_ps)		_last_ps	=	load_id;
-			if (textures_ps[load_id]!=load_surf)	
+			if ((int)load_id > _last_ps)		_last_ps = load_id;
+			if (textures_ps[load_id] != load_surf)
 			{
 				textures_ps[load_id] = load_surf;
-				if (load_surf)			
+				if (load_surf)
 				{
-					load_surf->bind		(load_id);
+					load_surf->bind(load_id);
 				}
 			}
 		}
-		else 
+		else
 #ifdef USE_DX11
-		if (load_id < CTexture::rstGeometry)
+			if (load_id < CTexture::rstGeometry)
 #endif
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstVertex+mtMaxVertexShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstVertex;
-			if ((int)load_id_remapped>_last_vs)	_last_vs	=	load_id_remapped;
-			if (textures_vs[load_id_remapped]!=load_surf)	
 			{
-				textures_vs[load_id_remapped]	= load_surf;
-				if (load_surf)
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstVertex;
+				if ((int)load_id_remapped > _last_vs)	_last_vs = load_id_remapped;
+				if (textures_vs[load_id_remapped] != load_surf)
 				{
-					load_surf->bind		(load_id);
+					textures_vs[load_id_remapped] = load_surf;
+					if (load_surf)
+					{
+						load_surf->bind(load_id);
+					}
 				}
 			}
-		}
 #ifdef USE_DX11
-		else if (load_id < CTexture::rstHull)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstGeometry+mtMaxGeometryShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstGeometry;
-			if ((int)load_id_remapped>_last_gs)	_last_gs	=	load_id_remapped;
-			if (textures_gs[load_id_remapped]!=load_surf)	
+			else if (load_id < CTexture::rstHull)
 			{
-				textures_gs[load_id_remapped]	= load_surf;
-				if (load_surf)
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstGeometry + mtMaxGeometryShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstGeometry;
+				if ((int)load_id_remapped > _last_gs)	_last_gs = load_id_remapped;
+				if (textures_gs[load_id_remapped] != load_surf)
 				{
-					load_surf->bind		(load_id);
+					textures_gs[load_id_remapped] = load_surf;
+					if (load_surf)
+					{
+						load_surf->bind(load_id);
+					}
 				}
 			}
-		}
-#ifdef USE_DX11
-		else if (load_id < CTexture::rstDomain)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstHull+mtMaxHullShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstHull;
-			if ((int)load_id_remapped>_last_hs)	_last_hs	=	load_id_remapped;
-			if (textures_hs[load_id_remapped]!=load_surf)	
+			else if (load_id < CTexture::rstDomain)
 			{
-				textures_hs[load_id_remapped]	= load_surf;
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstHull + mtMaxHullShaderTextures);
 
-				if (load_surf)
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstHull;
+				if ((int)load_id_remapped > _last_hs)	_last_hs = load_id_remapped;
+				if (textures_hs[load_id_remapped] != load_surf)
 				{
-					load_surf->bind		(load_id);
+					textures_hs[load_id_remapped] = load_surf;
+
+					if (load_surf)
+					{
+						load_surf->bind(load_id);
+					}
 				}
 			}
-		}
-		else if (load_id < CTexture::rstCompute)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstDomain+mtMaxDomainShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstDomain;
-			if ((int)load_id_remapped>_last_ds)	_last_ds	=	load_id_remapped;
-			if (textures_ds[load_id_remapped]!=load_surf)	
+			else if (load_id < CTexture::rstCompute)
 			{
-				textures_ds[load_id_remapped]	= load_surf;
-				if (load_surf)
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstDomain + mtMaxDomainShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstDomain;
+				if ((int)load_id_remapped > _last_ds)	_last_ds = load_id_remapped;
+				if (textures_ds[load_id_remapped] != load_surf)
 				{
-					load_surf->bind		(load_id);
+					textures_ds[load_id_remapped] = load_surf;
+					if (load_surf)
+					{
+						load_surf->bind(load_id);
+					}
 				}
 			}
-		}
-		else if (load_id < CTexture::rstInvalid)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstCompute+mtMaxComputeShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstCompute;
-			if ((int)load_id_remapped>_last_cs)	_last_cs	=	load_id_remapped;
-			if (textures_cs[load_id_remapped]!=load_surf)	
+			else if (load_id < CTexture::rstInvalid)
 			{
-				textures_cs[load_id_remapped]	= load_surf;
-				if (load_surf)
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstCompute + mtMaxComputeShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstCompute;
+				if ((int)load_id_remapped > _last_cs)	_last_cs = load_id_remapped;
+				if (textures_cs[load_id_remapped] != load_surf)
 				{
-					load_surf->bind		(load_id);
+					textures_cs[load_id_remapped] = load_surf;
+					if (load_surf)
+					{
+						load_surf->bind(load_id);
+					}
 				}
 			}
-		}
-#endif
-		else VERIFY("Invalid enum");
+			else VERIFY("Invalid enum");
 #endif
 	}
 
 	// clear remaining stages (PS)
-	for (++_last_ps; _last_ps<mtMaxPixelShaderTextures; _last_ps++)
+	for (++_last_ps; _last_ps < mtMaxPixelShaderTextures; _last_ps++)
 	{
 		if (!textures_ps[_last_ps])
 			continue;
 
-		textures_ps[_last_ps]			= 0;
-#ifdef USE_DX11
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		//RDevice->PSSetShaderResources(_last_ps, 1, &pRes);
-		SRVSManager.SetPSResource(_last_ps, pRes);
-#else //USE_DX11
-		CHK_DX							(RDevice->SetTexture(_last_ps,nullptr));
-#endif
+		textures_ps[_last_ps] = 0;
+		GRHI->ShaderResourceCache->SetPSResource(_last_ps, nullptr);
 	}
 	// clear remaining stages (VS)
-	for (++_last_vs; _last_vs<mtMaxVertexShaderTextures; _last_vs++)		
+	for (++_last_vs; _last_vs < mtMaxVertexShaderTextures; _last_vs++)
 	{
 		if (!textures_vs[_last_vs])
 			continue;
 
-		textures_vs[_last_vs]			= 0;
-#ifdef USE_DX11
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		//RDevice->VSSetShaderResources(_last_vs, 1, &pRes);
-		SRVSManager.SetVSResource(_last_vs, pRes);
-#else //USE_DX11
-		CHK_DX							(RDevice->SetTexture(_last_vs+CTexture::rstVertex,nullptr));
-#endif
+		textures_vs[_last_vs] = 0;
+		GRHI->ShaderResourceCache->SetVSResource(_last_vs, nullptr);
 	}
 
 #ifdef USE_DX11
 	// clear remaining stages (VS)
-	for (++_last_gs; _last_gs<mtMaxGeometryShaderTextures; _last_gs++)
+	for (++_last_gs; _last_gs < mtMaxGeometryShaderTextures; _last_gs++)
 	{
 		if (!textures_gs[_last_gs])
 			continue;
 
-		textures_gs[_last_gs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		//RDevice->GSSetShaderResources(_last_gs, 1, &pRes);
-		SRVSManager.SetGSResource(_last_gs, pRes);
+		textures_gs[_last_gs] = 0;
+		GRHI->ShaderResourceCache->SetGSResource(_last_gs, nullptr);
 	}
 
-	for (++_last_hs; _last_hs<mtMaxHullShaderTextures; _last_hs++)
+	for (++_last_hs; _last_hs < mtMaxHullShaderTextures; _last_hs++)
 	{
 		if (!textures_hs[_last_hs])
 			continue;
 
-		textures_hs[_last_hs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetHSResource(_last_hs, pRes);
+		textures_hs[_last_hs] = 0;
+		GRHI->ShaderResourceCache->SetHSResource(_last_hs, nullptr);
 	}
-	for (++_last_ds; _last_ds<mtMaxDomainShaderTextures; _last_ds++)
+	for (++_last_ds; _last_ds < mtMaxDomainShaderTextures; _last_ds++)
 	{
 		if (!textures_ds[_last_ds])
 			continue;
 
-		textures_ds[_last_ds]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetDSResource(_last_ds, pRes);
+		textures_ds[_last_ds] = 0;
+		GRHI->ShaderResourceCache->SetDSResource(_last_ds, nullptr);
 	}
-	for (++_last_cs; _last_cs<mtMaxComputeShaderTextures; _last_cs++)
+	for (++_last_cs; _last_cs < mtMaxComputeShaderTextures; _last_cs++)
 	{
 		if (!textures_cs[_last_cs])
 			continue;
 
-		textures_cs[_last_cs]			= 0;
-
-		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
-		SRVSManager.SetCSResource(_last_cs, pRes);
+		textures_cs[_last_cs] = 0;
+		GRHI->ShaderResourceCache->SetCSResource(_last_cs, nullptr);
 	}
 
 #endif //USE_DX11
 }
-#else
-
-void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 fmask/* =0xff */) {}
-void CBackend::set_Textures			(STextureList* _T) {}
-
-#endif

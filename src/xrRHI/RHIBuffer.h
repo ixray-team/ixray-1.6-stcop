@@ -22,6 +22,7 @@ struct RHIBufferDesc
 	ERHI_USAGE Usage;
 	ERHI_BUFFER_TYPE Type;
 	/*ERHI_CPU_ACCESS_FLAG*/ int CPUAccessFlags;
+	u32 StructureByteStride = 0;
 };
 
 class IRHIBuffer
