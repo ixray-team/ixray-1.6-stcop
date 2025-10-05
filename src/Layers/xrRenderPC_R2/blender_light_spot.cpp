@@ -47,16 +47,8 @@ void CBlender_accum_spot::Compile(CBlender_Compile& C)
 
 	if (C.iElement != SE_L_UNSHADOWED)
 	{
-		if (RImplementation.o.HW_smap_PCF)
-		{
-			C.r_Sampler_clf("s_smap", r2_RT_smap_depth);
-		}
-		else
-		{
-			C.r_Sampler_rtf("s_smap", r2_RT_smap_depth);
-		}
+		C.r_Sampler_clf("s_smap", r2_RT_smap_depth);
 	}
-
 
 	jitter(C);
 	C.r_End();

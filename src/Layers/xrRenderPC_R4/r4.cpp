@@ -156,27 +156,7 @@ void CRender::create()
 	o.nullrt = false;
 
 	// SMAP / DST
-	o.HW_smap_FETCH4	= FALSE;
-	o.HW_smap			= true;
-	o.HW_smap_PCF		= o.HW_smap		;
-	if (o.HW_smap)		
-	{
-		//	For ATI it's much faster on DX10 to use D32F format
-			o.HW_smap_FORMAT	= DXGI_FORMAT_R24G8_TYPELESS;
-		Msg				("* HWDST/PCF supported and used");
-	}
-
-	// search for ATI formats
-	if (!o.HW_smap)	
-	{
-		o.HW_smap		= true;
-		if (o.HW_smap)	{
-			o.HW_smap_FORMAT= MAKEFOURCC	('D','F','2','4');
-			o.HW_smap_PCF	= FALSE			;
-			o.HW_smap_FETCH4= TRUE			;
-		}
-		Msg ("* DF24/F4 supported and used [%X]", o.HW_smap_FORMAT);
-	}
+	o.HW_smap_FORMAT = DXGI_FORMAT_R24G8_TYPELESS;
 
 	// nvstencil on NV40 and up
 	o.nvstencil = FALSE;
@@ -185,11 +165,6 @@ void CRender::create()
 
 	// nv-dbt
 	o.nvdbt = false;
-
-	o.no_ram_textures = ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
-	if(o.no_ram_textures) {
-		Msg("* Managed textures disabled");
-	}
 
 	// options
 	o.sunstatic = !ps_r2_ls_flags.test(R2FLAG_SUN) ? TRUE : FALSE;
@@ -202,11 +177,13 @@ void CRender::create()
 
 	clearAllShaderOptions();
 
-	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT"))) {
+	if(!EngineExternal().ShadersOptions.contains(xr_string("USE_LEGACY_LIGHT")))
+	{
 		o.deffered_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_SSLR_ON_WORLD);
 		o.offscreen_reflecitons = !!ps_r2_ls_flags_ext.test(R4FLAG_OFFSCREEN_REFLECTIONS);
 	}
-	else {
+	else
+	{
 		o.deffered_reflecitons = o.offscreen_reflecitons = false;
 	}
 
