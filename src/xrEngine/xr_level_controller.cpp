@@ -120,6 +120,7 @@ ENGINE_API _action  actions[]		= {
 	{ "quick_kick",			kQUICK_KICK				,_both },
 	{ "wpn_magcheck",		kMAG_CHECK				,_both },
 	{ "wpn_firecheck",		kFIREMODE_CHECK			,_both },
+	{ "show_quick_slots",   kSHOW_QUICK_SLOTS      , _both },
 																
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
