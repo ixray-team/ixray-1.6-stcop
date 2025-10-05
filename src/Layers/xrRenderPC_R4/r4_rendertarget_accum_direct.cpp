@@ -118,7 +118,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 			m_shadow.mul(xf_project, xf_invview);
 
 			// tsm-bias
-			if (SE_SUN_FAR == sub_phase && RImplementation.o.HW_smap)
+			if (SE_SUN_FAR == sub_phase)
 			{
 				Fvector bias;	bias.mul(L_dir, ps_r2_sun_bias);
 				Fmatrix bias_t;	bias_t.translate(bias);
@@ -238,13 +238,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		//			RDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 		//		}
 
-		// Fetch4 : enable
-		//		if (RImplementation.o.HW_smap_FETCH4)	{
-		//. we hacked the shader to force smap on S0
-		//#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-		//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
-		//		}
-
 		// Enable Z function only for near and middle cascades, the far one is restricted by only stencil.
 		if( (SE_SUN_NEAR==sub_phase || SE_SUN_MIDDLE==sub_phase) )
 			RCache.set_ZFunc(D3DCMP_GREATEREQUAL);
@@ -268,13 +261,6 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		//RCache.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		RCache.set_Stencil	(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,st_mask, D3DSTENCILOP_KEEP, st_pass, D3DSTENCILOP_KEEP);
 		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
-
-		// Fetch4 : disable
-		//		if (RImplementation.o.HW_smap_FETCH4)	{
-		//. we hacked the shader to force smap on S0
-		//#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-		//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
-		//		}
 
 		//	TODO: DX10: Check if DX10 has analog for NV DBT
 		// disable depth bounds
