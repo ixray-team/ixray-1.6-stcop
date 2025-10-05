@@ -37,6 +37,7 @@
 #include "HudItem.h"
 #include "WeaponKnife.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "UIMainIngameWnd.h"
 
 extern u32 hud_adj_mode;
 
@@ -199,45 +200,59 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kQUICK_USE_2:
 	case kQUICK_USE_3:
 	case kQUICK_USE_4:
+	{
+		// Show quick slots panel on item use
+		if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
 		{
-			if (HudAnimator() && HudAnimator()->IsActive())
+			CurrentGameUI()->UIMainIngameWnd->ShowQuickSlotsPanel();
+		}
+
+		if (HudAnimator() && HudAnimator()->IsActive())
+		{
+			return;
+		}
+
+		if (!CurrentGameUI()->ActorMenu().m_pQuickSlot)
+		{
+			break;
+		}
+
+		const shared_str& item_name = g_quick_use_slots[cmd - kQUICK_USE_1];
+		if (item_name.size())
+		{
+			PIItem best_itm = nullptr;
+
+			for (auto& it : inventory().m_ruck)
 			{
-				return;
+				if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
+				{
+					best_itm = it;
+				}
 			}
 
-			if (!CurrentGameUI()->ActorMenu().m_pQuickSlot)
+			if (best_itm != nullptr)
 			{
-				break;
-			}
-			
-			const shared_str& item_name		= g_quick_use_slots[cmd-kQUICK_USE_1];
-			if(item_name.size())
-			{
-				PIItem best_itm = nullptr;
+				IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
 
-				for (auto& it : inventory().m_ruck)
-				{
-					if (it->m_section_id == item_name && (best_itm == nullptr || it->GetCondition() < best_itm->GetCondition()))
-					{
-						best_itm = it;
-					}
-				}
+				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
+				string1024 str = {};
 
-				if (best_itm != nullptr)
-				{
-					IsGameTypeSingle() ? inventory().Eat(best_itm) : inventory().ClientEat(best_itm);
-					
-					SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true);
-					string1024 str = {};
+				xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
+				_s->wnd()->TextItemControl()->SetText(str);
 
-					xr_strconcat(str,*g_pStringTable->translate("st_item_used"),": ", best_itm->NameItem());
-					_s->wnd()->TextItemControl()->SetText(str);
-					
-					CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
-				}
+				CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
 			}
 		}
-		break;
+	}
+	break;
+	case kSHOW_QUICK_SLOTS:
+	{
+		if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
+		{
+			CurrentGameUI()->UIMainIngameWnd->SetQuickSlotsPanelVisible(true);
+		}
+	}
+	break;
 	}
 }
 
@@ -288,13 +303,21 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 
 
-		switch(cmd)
+		switch (cmd)
 		{
-		case kJUMP:		mstate_wishful &=~mcJump;		break;
+		case kJUMP:		mstate_wishful &= ~mcJump;		break;
 		case kDROP:		
 			if (GAME_PHASE_INPROGRESS == Game().Phase() && !CImGuiManager::Instance().IsCapturingInputs()) 
 				g_PerformDrop();				
 			break;
+		case kSHOW_QUICK_SLOTS:
+		{
+			if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
+			{
+				CurrentGameUI()->UIMainIngameWnd->SetQuickSlotsPanelVisible(false);
+			}
+		}
+		break;
 		}
 	}
 }

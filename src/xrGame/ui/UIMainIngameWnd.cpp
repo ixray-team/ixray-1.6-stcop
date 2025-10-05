@@ -69,6 +69,9 @@ const u32	g_clWhite					= 0xffffffff;
 
 #define		SHOW_INFO_SPEED				0.5f
 #define		HIDE_INFO_SPEED				10.f
+#define     QUICK_SLOTS_SHOW_SPEED       3.0f
+#define     QUICK_SLOTS_HIDE_DELAY       2.0f
+#define     QUICK_SLOTS_HIDE_SPEED       4.0f
 
 constexpr auto C_ON_ENEMY = color_xrgb(0xff, 0, 0);
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
@@ -79,6 +82,9 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 :/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
 {
 	UIZoneMap					= new CUIZoneMap();
+	UIWeaponJammedIcon			= nullptr;
+	UIInvincibleIcon			= nullptr;
+	UIArtefactIcon				= nullptr;
 	UIStackPanelBoosters		= nullptr;
 	UIStackPanelIndicators		= nullptr;
 }
@@ -100,55 +106,55 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 void CUIMainIngameWnd::Init()
 {
 	CUIXml						uiXml;
-	uiXml.Load					(CONFIG_PATH, UI_PATH, MAININGAME_XML);
-	
+	uiXml.Load(CONFIG_PATH, UI_PATH, MAININGAME_XML);
+
 	CUIXmlInit					xml_init;
-	xml_init.InitWindow			(uiXml,"main",0,this);
+	xml_init.InitWindow(uiXml, "main", 0, this);
 
 	Enable(false);
 
-//	AttachChild					(&UIStaticHealth);	xml_init.InitStatic			(uiXml, "static_health", 0, &UIStaticHealth);
-//	AttachChild					(&UIStaticArmor);	xml_init.InitStatic			(uiXml, "static_armor", 0, &UIStaticArmor);
-//	AttachChild					(&UIWeaponBack);
-//	xml_init.InitStatic			(uiXml, "static_weapon", 0, &UIWeaponBack);
+	//	AttachChild					(&UIStaticHealth);	xml_init.InitStatic			(uiXml, "static_health", 0, &UIStaticHealth);
+	//	AttachChild					(&UIStaticArmor);	xml_init.InitStatic			(uiXml, "static_armor", 0, &UIStaticArmor);
+	//	AttachChild					(&UIWeaponBack);
+	//	xml_init.InitStatic			(uiXml, "static_weapon", 0, &UIWeaponBack);
 
-/*	UIWeaponBack.AttachChild	(&UIWeaponSignAmmo);
-	xml_init.InitStatic			(uiXml, "static_ammo", 0, &UIWeaponSignAmmo);
-	UIWeaponSignAmmo.SetEllipsis	(CUIStatic::eepEnd, 2);
+	/*	UIWeaponBack.AttachChild	(&UIWeaponSignAmmo);
+		xml_init.InitStatic			(uiXml, "static_ammo", 0, &UIWeaponSignAmmo);
+		UIWeaponSignAmmo.SetEllipsis	(CUIStatic::eepEnd, 2);
 
-	UIWeaponBack.AttachChild	(&UIWeaponIcon);
-	xml_init.InitStatic			(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
-	UIWeaponIcon.SetShader		(GetEquipmentIconsShader());
-	UIWeaponIcon_rect			= UIWeaponIcon.GetWndRect();
-*/	//---------------------------------------------------------
-	UIPickUpItemIcon			= UIHelper::CreateStatic		(uiXml, "pick_up_item", this);
+		UIWeaponBack.AttachChild	(&UIWeaponIcon);
+		xml_init.InitStatic			(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
+		UIWeaponIcon.SetShader		(GetEquipmentIconsShader());
+		UIWeaponIcon_rect			= UIWeaponIcon.GetWndRect();
+	*/	//---------------------------------------------------------
+	UIPickUpItemIcon = UIHelper::CreateStatic(uiXml, "pick_up_item", this);
 	UIPickUpItemIcon->SetShader(GetEquipmentIconsShader());
 
-	m_iPickUpItemIconWidth		= UIPickUpItemIcon->GetWidth();
-	m_iPickUpItemIconHeight		= UIPickUpItemIcon->GetHeight();
-	m_iPickUpItemIconX			= UIPickUpItemIcon->GetWndRect().left;
-	m_iPickUpItemIconY			= UIPickUpItemIcon->GetWndRect().top;
+	m_iPickUpItemIconWidth = UIPickUpItemIcon->GetWidth();
+	m_iPickUpItemIconHeight = UIPickUpItemIcon->GetHeight();
+	m_iPickUpItemIconX = UIPickUpItemIcon->GetWndRect().left;
+	m_iPickUpItemIconY = UIPickUpItemIcon->GetWndRect().top;
 	//---------------------------------------------------------
 
 	//индикаторы 
-	UIZoneMap->Init				();
+	UIZoneMap->Init();
 
 	// Подсказки, которые возникают при наведении прицела на объект
-	UIStaticQuickHelp			= UIHelper::CreateTextWnd(uiXml, "quick_info", this);
+	UIStaticQuickHelp = UIHelper::CreateTextWnd(uiXml, "quick_info", this);
 
-	uiXml.SetLocalRoot			(uiXml.GetRoot());
+	uiXml.SetLocalRoot(uiXml.GetRoot());
 
-	m_UIIcons					= new CUIScrollView(); m_UIIcons->SetAutoDelete(true);
-	xml_init.InitScrollView		(uiXml, "icons_scroll_view", 0, m_UIIcons);
-	AttachChild					(m_UIIcons);
-	
+	m_UIIcons = new CUIScrollView(); m_UIIcons->SetAutoDelete(true);
+	xml_init.InitScrollView(uiXml, "icons_scroll_view", 0, m_UIIcons);
+	AttachChild(m_UIIcons);
+
 	if (uiXml.NavigateToNode("indicator_stack_panel", 0))
 		UIStackPanelIndicators = UIHelper::CreateStackPanel(uiXml, "indicator_stack_panel", this);
 
 	CUIWindow* indicatorParent = this;
 	if (UIStackPanelIndicators)
 		indicatorParent = UIStackPanelIndicators;
-
+	
 	if (uiXml.NavigateToNode("indicator_bleeding", 0))
 		m_ind_bleeding = UIHelper::CreateStatic(uiXml, "indicator_bleeding", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_radiation", 0))
@@ -158,7 +164,7 @@ void CUIMainIngameWnd::Init()
 	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
 	if (enableThirst)
 		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
-	
+
 	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
 	if (enableSleepiness)
 		m_ind_sleepiness = UIHelper::CreateStatic(uiXml, "indicator_sleepiness", indicatorParent);
@@ -245,27 +251,27 @@ void CUIMainIngameWnd::Init()
 //		UIPsyHealthIcon.Show	(false);
 	}
 */
-	UIWeaponJammedIcon			= UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
-	UIWeaponJammedIcon->Show	(false);
+	UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
+	UIWeaponJammedIcon->Show(false);
 
-//	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
-//	UIRadiaitionIcon.Show		(false);
+	//	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
+	//	UIRadiaitionIcon.Show		(false);
 
-//	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
-//	UIWoundIcon.Show			(false);
+	//	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
+	//	UIWoundIcon.Show			(false);
 
-	UIInvincibleIcon			= UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
-	UIInvincibleIcon->Show		(false);
+	UIInvincibleIcon = UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
+	UIInvincibleIcon->Show(false);
 
 
-	if ( (GameID() == eGameIDArtefactHunt) || (GameID() == eGameIDCaptureTheArtefact) )
+	if ((GameID() == eGameIDArtefactHunt) || (GameID() == eGameIDCaptureTheArtefact))
 	{
-		UIArtefactIcon			= UIHelper::CreateStatic(uiXml, "artefact_static", nullptr);
-		UIArtefactIcon->Show		(false);
+		UIArtefactIcon = UIHelper::CreateStatic(uiXml, "artefact_static", nullptr);
+		UIArtefactIcon->Show(false);
 	}
-	
-	shared_str warningStrings[7] = 
-	{	
+
+	shared_str warningStrings[7] =
+	{
 		"jammed",
 		"radiation",
 		"wounds",
@@ -298,34 +304,34 @@ void CUIMainIngameWnd::Init()
 
 
 	// Flashing icons initialize
-	uiXml.SetLocalRoot						(uiXml.NavigateToNode("flashing_icons"));
-	InitFlashingIcons						(&uiXml);
+	uiXml.SetLocalRoot(uiXml.NavigateToNode("flashing_icons"));
+	InitFlashingIcons(&uiXml);
 
-	uiXml.SetLocalRoot						(uiXml.GetRoot());
-	
+	uiXml.SetLocalRoot(uiXml.GetRoot());
+
 	// Car
 	UICarPanel.Init();
 	AttachChild(&UICarPanel);
 
 	// Icons
-	UIMotionIcon							= new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
-    const bool independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect());
-    if (!independent)
-        UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
-    else
-        AttachChild(UIMotionIcon);
+	UIMotionIcon = new CUIMotionIcon(); UIMotionIcon->SetAutoDelete(true);
+	const bool independent = UIMotionIcon->Init(UIZoneMap->MapFrame().GetWndRect());
+	if (!independent)
+		UIZoneMap->MapFrame().AttachChild(UIMotionIcon);
+	else
+		AttachChild(UIMotionIcon);
 
-	UIStaticDiskIO							= UIHelper::CreateStatic(uiXml, "disk_io", this);
+	UIStaticDiskIO = UIHelper::CreateStatic(uiXml, "disk_io", this);
 
-	m_ui_hud_states							= new CUIHudStatesWnd();
-	m_ui_hud_states->SetAutoDelete			(true);
-	AttachChild								(m_ui_hud_states);
-	m_ui_hud_states->InitFromXml			(uiXml, "hud_states");
+	m_ui_hud_states = new CUIHudStatesWnd();
+	m_ui_hud_states->SetAutoDelete(true);
+	AttachChild(m_ui_hud_states);
+	m_ui_hud_states->InitFromXml(uiXml, "hud_states");
 
-	for(int i=0; i<4; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		string32 path;
-		xr_sprintf				(path, "quick_slot%d", i);
+		xr_sprintf(path, "quick_slot%d", i);
 		if (uiXml.NavigateToNode(path))
 		{
 			m_quick_slots_icons.push_back(new CUIStatic());
@@ -337,15 +343,38 @@ void CUIMainIngameWnd::Init()
 		}
 	}
 	if (uiXml.NavigateToNode("quick_slot0_text", 0))
-		m_QuickSlotText1				= UIHelper::CreateTextWnd(uiXml, "quick_slot0_text", this);
+		m_QuickSlotText1 = UIHelper::CreateTextWnd(uiXml, "quick_slot0_text", this);
 	if (uiXml.NavigateToNode("quick_slot1_text", 0))
-		m_QuickSlotText2				= UIHelper::CreateTextWnd(uiXml, "quick_slot1_text", this);
+		m_QuickSlotText2 = UIHelper::CreateTextWnd(uiXml, "quick_slot1_text", this);
 	if (uiXml.NavigateToNode("quick_slot2_text", 0))
-		m_QuickSlotText3				= UIHelper::CreateTextWnd(uiXml, "quick_slot2_text", this);
+		m_QuickSlotText3 = UIHelper::CreateTextWnd(uiXml, "quick_slot2_text", this);
 	if (uiXml.NavigateToNode("quick_slot3_text", 0))
-		m_QuickSlotText4				= UIHelper::CreateTextWnd(uiXml, "quick_slot3_text", this);
+		m_QuickSlotText4 = UIHelper::CreateTextWnd(uiXml, "quick_slot3_text", this);
 
-	HUD_SOUND_ITEM::LoadSound				("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
+	HUD_SOUND_ITEM::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
+
+
+	// Quick slots panel hidden by default
+	m_quick_slots_visible = EngineExternal()[EEngineExternalUI::ShowQuickSlotByDefault];
+	m_quick_slots_force_visible = m_quick_slots_visible;
+	m_quick_slots_alpha = 0.0f;
+	m_quick_slots_last_interaction_time = -1000.0f;
+
+	// Скрываем все элементы панели по умолчанию
+	if (!m_quick_slots_visible)
+	{
+		for (const auto& slot : m_quick_slots_icons)
+		{
+			slot->Show(false);
+			CUIWindow* counter = slot->FindChild("counter");
+			if (counter)
+				counter->Show(false);
+		}
+		if (m_QuickSlotText1) m_QuickSlotText1->Show(false);
+		if (m_QuickSlotText2) m_QuickSlotText2->Show(false);
+		if (m_QuickSlotText3) m_QuickSlotText3->Show(false);
+		if (m_QuickSlotText4) m_QuickSlotText4->Show(false);
+	}
 }
 
 float UIStaticDiskIO_start_time = 0.0f;
@@ -460,6 +489,8 @@ void CUIMainIngameWnd::Update()
 	
 	UpdatePickUpItem			();
 
+	TickQuickSlotsPanelFade();
+	
 	if( Device.dwFrame % 10 )
 		return;
 
@@ -546,6 +577,61 @@ void CUIMainIngameWnd::RenderQuickInfos()
 		UIStaticQuickHelp->SetTextST(actor_action ? actor_action : " ");
 		UIStaticQuickHelp->ResetColorAnimation();
 		pObject	= pActor->ObjectWeLookingAt();
+	}
+}
+
+void CUIMainIngameWnd::ShowQuickSlotsPanel()
+{
+	m_quick_slots_visible = true;
+	m_quick_slots_last_interaction_time = Device.fTimeGlobal;
+}
+
+void CUIMainIngameWnd::HideQuickSlotsPanelImmediate()
+{
+	m_quick_slots_visible = false;
+	m_quick_slots_force_visible = false;
+	m_quick_slots_alpha = 0.0f;
+}
+
+void CUIMainIngameWnd::SetQuickSlotsPanelVisible(bool visible)
+{
+	m_quick_slots_force_visible = visible;
+	if (visible)
+	{
+		m_quick_slots_last_interaction_time = Device.fTimeGlobal;
+	}
+}
+
+void CUIMainIngameWnd::TickQuickSlotsPanelFade()
+{
+	const float dt = Device.fTimeDelta;
+
+	bool should_be_visible = m_quick_slots_force_visible || m_quick_slots_visible;
+
+	if (should_be_visible)
+	{
+
+		m_quick_slots_alpha += QUICK_SLOTS_SHOW_SPEED * dt;
+		if (m_quick_slots_alpha > 1.0f)
+			m_quick_slots_alpha = 1.0f;
+
+		if (!m_quick_slots_force_visible && m_quick_slots_visible)
+		{
+			if ((Device.fTimeGlobal - m_quick_slots_last_interaction_time) >= QUICK_SLOTS_HIDE_DELAY)
+			{
+				m_quick_slots_visible = false;
+			}
+		}
+	}
+	else
+	{
+
+		if (m_quick_slots_alpha > 0.0f)
+		{
+			m_quick_slots_alpha -= QUICK_SLOTS_HIDE_SPEED * dt;
+			if (m_quick_slots_alpha < 0.0f)
+				m_quick_slots_alpha = 0.0f;
+		}
 	}
 }
 
@@ -1028,38 +1114,39 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 	string32 tmp;
 	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText1)
 		m_QuickSlotText1->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_2").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText2)
 		m_QuickSlotText2->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_3").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText3)
 		m_QuickSlotText3->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_4").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText4)
 		m_QuickSlotText4->SetTextST(tmp);
-
 
 	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 	if (!pActor)
 	{
 		return;
 	}
+
+	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
 
 	int i = -1;
 	for (const auto& slot : m_quick_slots_icons)
@@ -1073,9 +1160,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			{
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;
-				xr_sprintf(str, "x%d", count);
+				xr_sprintf(str, "%d", count);
 				wnd->TextItemControl()->SetText(str);
-				wnd->Show(true);
+
+				wnd->Show(should_show_panel);
 
 				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, item_name.c_str(), "icons_texture", nullptr);
 				slot->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
@@ -1090,27 +1178,34 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				slot->SetTextureRect(texture_rect);
 				slot->TextureOn();
 				slot->SetStretchTexture(true);
-				if (!count)
+
+				slot->Show(should_show_panel);
+
+				if (should_show_panel)
 				{
-					wnd->SetTextureColor(color_rgba(255, 255, 255, 0));
-					wnd->TextItemControl()->SetTextColor(color_rgba(255, 255, 255, 0));
-					slot->SetTextureColor(color_rgba(255, 255, 255, 100));
-				}
-				else
-				{
-					wnd->SetTextureColor(color_rgba(255, 255, 255, 255));
-					wnd->TextItemControl()->SetTextColor(color_rgba(255, 255, 255, 255));
-					slot->SetTextureColor(color_rgba(255, 255, 255, 255));
+					const bool isEmpty = !count;
+					const float alphaScale = isEmpty ? 128.0f : 255.0f;
+					const u32 alpha = (u32)clampr(iFloor(m_quick_slots_alpha * alphaScale), 0, (int)alphaScale);
+
+					const u32 color = subst_alpha(color_rgba(255, 255, 255, 255), alpha);
+					wnd->SetTextureColor(color);
+					slot->SetTextureColor(color);
+					wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255));
 				}
 			}
 			else
 			{
 				wnd->Show(false);
+				slot->Show(false);
 				slot->SetTextureColor(color_rgba(255, 255, 255, 0));
-				//slot->Show(false);
 			}
 		}
 	}
+
+	if (m_QuickSlotText1) m_QuickSlotText1->Show(should_show_panel);
+	if (m_QuickSlotText2) m_QuickSlotText2->Show(should_show_panel);
+	if (m_QuickSlotText3) m_QuickSlotText3->Show(should_show_panel);
+	if (m_QuickSlotText4) m_QuickSlotText4->Show(should_show_panel);
 }
 
 void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
@@ -1124,67 +1219,73 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	UpdateQuickSlots();
 	UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
 
-	for (const auto& slot : m_quick_slots_icons)
-		slot->Draw();
+	// Проверяем, должна ли панель быть видимой
+	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
 
-	if (m_QuickSlotText1)
-		m_QuickSlotText1->Draw();
-	if (m_QuickSlotText2)
-		m_QuickSlotText2->Draw();
-	if (m_QuickSlotText3)
-		m_QuickSlotText3->Draw();
-	if (m_QuickSlotText4)
-		m_QuickSlotText4->Draw();
+	// Отрисовываем быстрые слоты только если панель должна быть видимой
+	if (should_show_panel)
+	{
+		for (const auto& slot : m_quick_slots_icons)
+			slot->Draw();
 
-	if(m_ind_boost_psy && m_ind_boost_psy->IsShown())
+		if (m_QuickSlotText1)
+			m_QuickSlotText1->Draw();
+		if (m_QuickSlotText2)
+			m_QuickSlotText2->Draw();
+		if (m_QuickSlotText3)
+			m_QuickSlotText3->Draw();
+		if (m_QuickSlotText4)
+			m_QuickSlotText4->Draw();
+	}
+
+	// Бустеры и другие индикаторы всегда отрисовываются (они не связаны с панелью быстрого доступа)
+	if (m_ind_boost_psy && m_ind_boost_psy->IsShown())
 	{
 		m_ind_boost_psy->Update();
 		m_ind_boost_psy->Draw();
 	}
 
-	if(m_ind_boost_radia && m_ind_boost_radia->IsShown())
+	if (m_ind_boost_radia && m_ind_boost_radia->IsShown())
 	{
 		m_ind_boost_radia->Update();
 		m_ind_boost_radia->Draw();
 	}
 
-	if(m_ind_boost_chem && m_ind_boost_chem->IsShown())
+	if (m_ind_boost_chem && m_ind_boost_chem->IsShown())
 	{
 		m_ind_boost_chem->Update();
 		m_ind_boost_chem->Draw();
 	}
 
-	if(m_ind_boost_wound && m_ind_boost_wound->IsShown())
+	if (m_ind_boost_wound && m_ind_boost_wound->IsShown())
 	{
 		m_ind_boost_wound->Update();
 		m_ind_boost_wound->Draw();
 	}
 
-	if(m_ind_boost_weight && m_ind_boost_weight->IsShown())
+	if (m_ind_boost_weight && m_ind_boost_weight->IsShown())
 	{
 		m_ind_boost_weight->Update();
 		m_ind_boost_weight->Draw();
 	}
 
-	if(m_ind_boost_health && m_ind_boost_health->IsShown())
+	if (m_ind_boost_health && m_ind_boost_health->IsShown())
 	{
 		m_ind_boost_health->Update();
 		m_ind_boost_health->Draw();
 	}
 
-	if(m_ind_boost_power && m_ind_boost_power->IsShown())
+	if (m_ind_boost_power && m_ind_boost_power->IsShown())
 	{
 		m_ind_boost_power->Update();
 		m_ind_boost_power->Draw();
 	}
 
-	if(m_ind_boost_rad && m_ind_boost_rad->IsShown())
+	if (m_ind_boost_rad && m_ind_boost_rad->IsShown())
 	{
 		m_ind_boost_rad->Update();
 		m_ind_boost_rad->Draw();
 	}
-
-	m_ui_hud_states->DrawZoneIndicators();
 }
 
 void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBooster> influences)
