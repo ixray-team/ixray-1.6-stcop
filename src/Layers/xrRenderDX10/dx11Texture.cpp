@@ -122,7 +122,7 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 	TexMetadata imageInfo{};
 
 	// Staging control
-	static bool bAllowStaging = !RImplementation.o.no_ram_textures;
+	static bool bAllowStaging = !ps_r__common_flags.test(RFLAG_NO_RAM_TEXTURES);
 	bStaging &= bAllowStaging;
 
 	DDS_FLAGS textureFlag = DDS_FLAGS::DDS_FLAGS_NONE;
