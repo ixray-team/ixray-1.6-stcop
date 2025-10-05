@@ -226,22 +226,10 @@ CRenderTarget::CRenderTarget		()
 			rt_Color.create			(r2_RT_albedo,	w,h, ERHI_FORMAT::B8G8R8A8_UNORM);
 			rt_Accumulator.create	(r2_RT_accum,	w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		}
-		else		
+		else
 		{
-			// can't - mix-depth
-			if (RImplementation.o.fp16_blend)
-			{
-				// NV40
-				rt_Color.create				(r2_RT_albedo,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);	// expand to full
-				rt_Accumulator.create		(r2_RT_accum,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
-			}
-			else
-			{
-				// R4xx, no-fp-blend,-> albedo_wo
-				rt_Color.create				(r2_RT_albedo,		w,h, ERHI_FORMAT::B8G8R8A8_UNORM);	// normal
-				rt_Accumulator.create		(r2_RT_accum,		w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
-				rt_Accumulator_temp.create	(r2_RT_accum_temp,	w,h, ERHI_FORMAT::R16G16B16A16_FLOAT);
-			}
+			rt_Color.create(r2_RT_albedo, w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);	// expand to full
+			rt_Accumulator.create(r2_RT_accum, w, h, ERHI_FORMAT::R16G16B16A16_FLOAT);
 		}
 
 		// generic(LDR) RTs
@@ -259,21 +247,18 @@ CRenderTarget::CRenderTarget		()
 	// DIRECT (spot)
 	ERHI_FORMAT depth_format = (ERHI_FORMAT)RImplementation.o.HW_smap_FORMAT;
 
-	if (RImplementation.o.HW_smap)
+	ERHI_FORMAT	nullrt = ERHI_FORMAT::B5G6R5_UNORM;
+	if (RImplementation.o.nullrt)
 	{
-		ERHI_FORMAT	nullrt = ERHI_FORMAT::B5G6R5_UNORM;
-		if (RImplementation.o.nullrt)
-		{
-			nullrt = (ERHI_FORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
-		}
-
-		u32	size					=RImplementation.o.smapsize	;
-		rt_smap_depth.create		(r2_RT_smap_depth,			size,size,depth_format	);
-		rt_smap_surf.create			(r2_RT_smap_surf,			size,size,nullrt		);
-		s_accum_mask.create				(b_accum_mask,				"r2\\accum_mask");
-		s_accum_direct_cascade.create	(b_accum_direct_cascade,	"r2\\accum_direct_cascade");
-		s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
+		nullrt = (ERHI_FORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
 	}
+
+	u32	size = RImplementation.o.smapsize;
+	rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
+	rt_smap_surf.create(r2_RT_smap_surf, size, size, nullrt);
+	s_accum_mask.create(b_accum_mask, "r2\\accum_mask");
+	s_accum_direct_cascade.create(b_accum_direct_cascade, "r2\\accum_direct_cascade");
+	s_accum_direct_volumetric_cascade.create("accum_volumetric_sun_cascade");
 
 	// POINT
 	{
