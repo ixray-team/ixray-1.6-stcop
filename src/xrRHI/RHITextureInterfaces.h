@@ -18,6 +18,7 @@ struct RHIShaderResourceViewDesc
 	u32 MipLevels = 0;        // Number of mip levels
 	u32 FirstArraySlice = 0;  // For texture arrays
 	u32 ArraySize = 1;        // For texture arrays
+	u32 ElementWidth = 0;
 };
 
 // Render Target View Descriptor

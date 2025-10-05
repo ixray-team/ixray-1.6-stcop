@@ -16,6 +16,7 @@
 #include "RHITypes.h"
 #include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
+#include "RHIShaderResourceCache.h"
 
 enum
 {
@@ -76,6 +77,7 @@ public:
 	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
 	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
 	IRHISurface* CreateDepthStencil(const RHITextureDesc& desc);
+	IRHIShaderResourceView* CreateShaderResourceView(IRHIBuffer* surface, const RHIShaderResourceViewDesc* desc);
 	IRHIShaderResourceView* CreateShaderResourceView(IRHISurface* surface, const RHIShaderResourceViewDesc* desc);
 	IRHIRenderTargetView* CreateRenderTargetView(IRHISurface* surface, const RHIRenderTargetViewDesc& desc = {});
 	IRHIDepthStencilView* CreateDepthStencilView(IRHISurface* surface, const RHIDepthStencilViewDesc& desc = {});
@@ -100,6 +102,8 @@ public:
 
 public:
 	IRHIDevice* DevicePtr = nullptr;
+	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
+
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	
 	bool GPUStatsEnable = false;
