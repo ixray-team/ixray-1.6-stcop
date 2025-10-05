@@ -9,6 +9,7 @@ enum class EEngineExternalUI
 	DisableMotionIcon,
 	PdaRearrangeTabButtons,
 	UseSavedGameStatic,
+	ShowQuickSlotByDefault,
 	None
 };
 
