@@ -314,7 +314,6 @@ void CRenderTarget::accum_volumetric(light* L) {
 		{
 			static shared_str	strFrustumClipPlane("FrustumClipPlane");
 			//	TODO: DX10: Check if it's equivalent to the previouse code.
-			//RCache.set_ClipPlanes (TRUE,ClipFrustum.planes,ClipFrustum.p_count);
 
 			//	Transform frustum to clip space
 			Fmatrix PlaneTransform;
@@ -335,10 +334,6 @@ void CRenderTarget::accum_volumetric(light* L) {
 		//	Igor: no need to do it per sub-sample. Plain AA will go just fine.
 		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, VOLUMETRIC_SLICES * 4, 0, VOLUMETRIC_SLICES * 2);
 		RCache.set_ColorWriteEnable();
-
-
-		//	Restore clip planes
-		RCache.set_ClipPlanes(FALSE, (Fmatrix*)0, 0);
 	}
 
 	RCache.set_Scissor(0);
