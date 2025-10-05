@@ -45,6 +45,7 @@
 		<command id="kb_quick_use_2"			exe="quick_use_2"/>
 		<command id="kb_quick_use_3"			exe="quick_use_3"/>
 		<command id="kb_quick_use_4"			exe="quick_use_4"/>
+        <command id="kb_show_quick_slots"     exe="show_quick_slots"/>
 		<command id="kb_drop"					exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">
