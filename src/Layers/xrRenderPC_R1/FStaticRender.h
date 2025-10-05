@@ -21,26 +21,31 @@
 class dxRender_Visual;
 
 // definition
-class CRender													:	public R_dsgraph_structure
+class CRender:
+	public R_dsgraph_structure
 {
 public:
-	enum	{
+	enum
+	{
 		PHASE_NORMAL,
 		PHASE_POINT,
 		PHASE_SPOT
 	};
-	struct		_options	{
-		u32		vis_intersect		: 1;	// config
-		u32		distortion			: 1;	// run-time modified
-		u32		color_mapping		: 1;	// true if SM 1.4 and higher
-		u32		disasm				: 1;	// config
-		u32		forceskinw			: 1;	// config
-		u32		no_detail_textures	: 1;	// config
-		u32		no_ram_textures		: 1;    // don't keep textures in RAM
-	}			o;
-	struct		_stats		{
+
+	struct _options
+	{
+		u32 vis_intersect		: 1;	// config
+		u32 distortion			: 1;	// run-time modified
+		u32 color_mapping		: 1;	// true if SM 1.4 and higher
+		u32 disasm				: 1;	// config
+		u32 forceskinw			: 1;	// config
+		u32 no_detail_textures	: 1;	// config
+	} o;
+
+	struct _stats
+	{
 		u32		o_queries,	o_culled;
-	}			stats;
+	} stats;
 public:
 	// Sector detection and visibility
 	CSector*													pLastSector;
@@ -52,7 +57,6 @@ public:
 	xrXRC														Sectors_xrc;
 	CDB::MODEL*													rmPortals;
 	CHOM														HOM;
-//.	R_occlusion													HWOCC;
 	
 	// Global containers
 	xr_vector<FSlideWindowItem>									SWIs;
