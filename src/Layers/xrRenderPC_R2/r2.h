@@ -38,22 +38,16 @@ public:
 public:
 	struct _options
 	{
+		u32		HW_smap_FORMAT		: 32;
 		u32		smapsize			: 16;
 		u32		mrt					: 1;
 		u32		mrtmixdepth			: 1;
-		u32		fp16_filter			: 1;
-		u32		fp16_blend			: 1;						// work-around albedo on less capable HW
-		u32		HW_smap				: 1;
-		u32		HW_smap_PCF			: 1;
-		u32		HW_smap_FETCH4		: 1;
 
-		u32		HW_smap_FORMAT		: 32;
 
 		u32		nvstencil			: 1;
 		u32		nvdbt				: 1;
 
 		u32		nullrt				: 1;
-		u32		no_ram_textures		: 1; // don't keep textures in RAM
 
 		u32		distortion			: 1;
 		u32		distortion_enabled	: 1;
