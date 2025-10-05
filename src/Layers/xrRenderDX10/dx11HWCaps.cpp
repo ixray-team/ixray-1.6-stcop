@@ -6,8 +6,6 @@
 
 ECORE_API CHWCaps Caps;
 
-extern u32 GetGpuNum();
-
 void CHWCaps::Update()
 {
 	// ***************** GEOMETRY
@@ -64,5 +62,5 @@ void CHWCaps::Update()
 
 	// DEV INFO
 
-	iGPUNum = GetGpuNum();
+	iGPUNum = GRHI->DriverExt->GetGPUCount();;
 }

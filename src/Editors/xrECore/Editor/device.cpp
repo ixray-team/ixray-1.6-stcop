@@ -643,8 +643,3 @@ void CEditorRenderDevice::DestryWindow()
 {
 	SDL_DestroyWindow(g_AppInfo.Window);
 }
-
-u32 GetGpuNum()
-{
-	return 2;
-}
