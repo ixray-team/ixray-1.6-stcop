@@ -107,13 +107,8 @@ void CRender::create()
 	o.mrtmixdepth		= (Caps.raster.b_MRT_mixdepth);
 
 	// Check for nullptr render target support
-	D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
 	o.nullrt			=false;
-	/*
-	if (o.nullrt)		{
-	Msg				("* NULLRT supported and used");
-	};
-	*/
+
 	if (o.nullrt)		{
 		Msg				("* NULLRT supported");
 
@@ -165,23 +160,9 @@ void CRender::create()
 		if (o.nullrt)	Msg				("* ...and used");
 	};
 
-
 	// SMAP / DST
-	o.HW_smap_FETCH4 = FALSE;
-	o.HW_smap = true;
-	o.HW_smap_PCF = o.HW_smap;
 	o.HW_smap_FORMAT = (u32)ERHI_FORMAT::R24_UNORM_X8_TYPELESS;
-	Msg("* HWDST/PCF supported and used");
-
-	o.fp16_filter		= true;
-	o.fp16_blend		= true;
-
-	VERIFY2				(o.mrt && (Caps.raster.dwInstructions>=256),"Hardware doesn't meet minimum feature-level");
-
-	// nvstencil on NV40 and up
-	// nvstencil should be enabled only for GF 6xxx and GF 7xxx
-	// if hardware support early stencil (>= GF 8xxx) stencil reset trick only
-	// slows down.
+	
 	o.nvstencil = !!GRHI->DriverExt->GetNV();
 
 	if (Core.ParamsData.test(ECoreParams::nonvs))
@@ -614,40 +595,25 @@ HRESULT	CRender::shader_compile			(
 		xr_strcat(sh_name, c_smapsize); len+=4;
 	}
 
-	if (o.fp16_filter)		{
-		defines[def_it].Name		=	"FP16_FILTER";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.fp16_filter); ++len;
+	defines[def_it].Name = "FP16_FILTER";
+	defines[def_it].Definition = "1";
+	def_it++;
+	sh_name[len]='0'+char(1); ++len;
 
-	if (o.fp16_blend)		{
-		defines[def_it].Name		=	"FP16_BLEND";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.fp16_blend); ++len;
+	defines[def_it].Name		=	"FP16_BLEND";
+	defines[def_it].Definition	=	"1";
+	def_it						++	;
+	sh_name[len]='0'+char(1); ++len;
 
-	if (o.HW_smap)			{
-		defines[def_it].Name		=	"USE_HWSMAP";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap); ++len;
+	defines[def_it].Name		=	"USE_HWSMAP";
+	defines[def_it].Definition	=	"1";
+	def_it						++	;
+	sh_name[len]='0'+char(1); ++len;
 
-	if (o.HW_smap_PCF)			{
-		defines[def_it].Name		=	"USE_HWSMAP_PCF";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap_PCF); ++len;
-
-	if (o.HW_smap_FETCH4)			{
-		defines[def_it].Name		=	"USE_FETCH4";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(o.HW_smap_FETCH4); ++len;
+	defines[def_it].Name		=	"USE_HWSMAP_PCF";
+	defines[def_it].Definition	=	"1";
+	def_it						++	;
+	sh_name[len]='0'+char(1); ++len;
 
 	if (Caps.raster_major >= 3)	{
 		defines[def_it].Name		=	"USE_BRANCHING";
