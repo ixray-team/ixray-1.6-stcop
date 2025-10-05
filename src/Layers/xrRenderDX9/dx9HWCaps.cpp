@@ -15,24 +15,19 @@ void CHWCaps::Update()
 	geometry_major				= u16 ( (u32(caps.VertexShaderVersion)&(0xf << 8ul))>>8 );
 	geometry_minor				= u16 ( (u32(caps.VertexShaderVersion)&0xf) );
 	geometry.bSoftware			= (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)==0;
-	geometry.bPointSprites		= FALSE;
 	geometry.bNPatches			= (caps.DevCaps & D3DDEVCAPS_NPATCHES)!=0;
 	DWORD cnt					= (caps.MaxVertexShaderConst);
 	clamp<DWORD>(cnt,0,256);
 	geometry.dwRegisters		= cnt;
-	geometry.dwInstructions		= 256;
-	geometry.dwClipPlanes		= _min(caps.MaxUserClipPlanes,15);
 	geometry.bVTF				= (geometry_major>=3);
 
 	// ***************** PIXEL processing
 	raster_major				= u16 ( u32(u32(caps.PixelShaderVersion)&u32(0xf << 8ul))>>8 );
 	raster_minor				= u16 ( u32(u32(caps.PixelShaderVersion)&u32(0xf)) );
 	raster.dwStages				= caps.MaxSimultaneousTextures;
-	raster.bNonPow2				= ((caps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL)!=0)  || ((caps.TextureCaps & D3DPTEXTURECAPS_POW2)==0);
 	raster.bCubemap				= (caps.TextureCaps & D3DPTEXTURECAPS_CUBEMAP)!=0;
 	raster.dwMRT_count			= (caps.NumSimultaneousRTs);
 	raster.b_MRT_mixdepth		= (caps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTINDEPENDENTBITDEPTHS)!=0;
-	raster.dwInstructions		= (caps.PS20Caps.NumInstructionSlots);
 
 	// ***************** Info
 	Msg							("* GPU shading: vs(%x/%d.%d/%d), ps(%x/%d.%d/%d)",

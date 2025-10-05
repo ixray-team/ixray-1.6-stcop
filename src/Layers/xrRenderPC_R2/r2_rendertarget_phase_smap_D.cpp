@@ -27,8 +27,7 @@ void	CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 
 	//	Cull always CCW. If you want to revert to previouse solution, please, revert bias setup/
 	RCache.set_CullMode(CULL_CCW);	// near
-	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable(FALSE);
-	else								RCache.set_ColorWriteEnable();
+	RCache.set_ColorWriteEnable(FALSE);
 }
 
 void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
