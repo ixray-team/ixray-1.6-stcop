@@ -37,34 +37,28 @@ public:
 	};
 
 public:
-	struct		_options	
+	struct _options	
 	{
-
-		u32		smapsize			: 16;
-		u32		HW_smap				: 1;
-		u32		HW_smap_PCF			: 1;
-		u32		HW_smap_FETCH4		: 1;
-
-		u32		HW_smap_FORMAT		: 32;
-
-		u32		nvstencil			: 1;
-		u32		nvdbt				: 1;
-
-		u32		nullrt				: 1;
-		u32		no_ram_textures		: 1; // don't keep textures in RAM
-
-		u32		distortion			: 1;
-		u32		distortion_enabled	: 1;
-
-		u32		sunstatic			: 1;
-		u32		noshadows			: 1;
-		u32		Tshadows			: 1;						// transluent shadows
-		u32		disasm				: 1;
-		u32		volumetricfog		: 1;
-		u32		offscreen_reflecitons	: 1;
-		u32		deffered_reflecitons	: 1;
-		
-	  u32		dx11_enable_tessellation : 1;
+		u32 HW_smap_FORMAT		: 32;
+		u32 smapsize			: 16;
+		    
+		u32 nvstencil			: 1;
+		u32 nvdbt				: 1;
+		    
+		u32 nullrt				: 1;
+		    
+		u32 distortion			: 1;
+		u32 distortion_enabled	: 1;
+		    
+		u32 sunstatic			: 1;
+		u32 noshadows			: 1;
+		u32 Tshadows			: 1;						// transluent shadows
+		u32 disasm				: 1;
+		u32 volumetricfog		: 1;
+		u32 offscreen_reflecitons	: 1;
+		u32 deffered_reflecitons	: 1;
+		    
+		u32 dx11_enable_tessellation : 1;
 	} o;
 
 	struct _stats
