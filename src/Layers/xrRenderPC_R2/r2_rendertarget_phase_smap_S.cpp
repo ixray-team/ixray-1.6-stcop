@@ -17,7 +17,7 @@ void CRenderTarget::phase_smap_spot(light* L)
 	RCache.set_Stencil(FALSE);
 	// no transparency
 #pragma todo("can optimize for multi-lights covering more than say 50%...")
-	if (RImplementation.o.HW_smap)		RCache.set_ColorWriteEnable(FALSE);
+	RCache.set_ColorWriteEnable(FALSE);
 	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_ZBUFFER, 0xffffffff, 1.0f, 0L));
 }
 

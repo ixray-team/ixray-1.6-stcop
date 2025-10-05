@@ -599,19 +599,13 @@ CRenderTarget::CRenderTarget()
 	// DIRECT (spot)
 	ERHI_FORMAT depth_format = (ERHI_FORMAT)RImplementation.o.HW_smap_FORMAT;
 
-	if (RImplementation.o.HW_smap)
-	{
-		D3DFORMAT	nullrt = D3DFMT_R5G6B5;
-		if (RImplementation.o.nullrt)	nullrt = (D3DFORMAT)MAKEFOURCC('N', 'U', 'L', 'L');
+	u32	size = RImplementation.o.smapsize;
+	rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
 
-		u32	size = RImplementation.o.smapsize;
-		rt_smap_depth.create(r2_RT_smap_depth, size, size, depth_format);
+	s_accum_mask.create(b_accum_mask, "r3\\accum_mask");
+	s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
 
-		s_accum_mask.create(b_accum_mask, "r3\\accum_mask");
-		s_accum_direct.create(b_accum_direct, "r3\\accum_direct");
-
-		s_accum_direct_volumetric.create("accum_volumetric_sun");
-	}
+	s_accum_direct_volumetric.create("accum_volumetric_sun");
 
 	//	RAIN
 	//	TODO: DX10: Create resources only when DX10 rain is enabled.

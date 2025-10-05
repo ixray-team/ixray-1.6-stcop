@@ -144,32 +144,10 @@ void CRenderTarget::accum_spot	(light* L)
 		RCache.set_ca				("m_lmap",		0,	m_Lmap._11, m_Lmap._21, m_Lmap._31, m_Lmap._41	);
 		RCache.set_ca				("m_lmap",		1,	m_Lmap._12, m_Lmap._22, m_Lmap._32, m_Lmap._42	);
 
-		// Fetch4 : enable
-		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
-		}
-
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 		draw_volume					(L);
-
-		// Fetch4 : disable
-		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
-		}
 	}
 
-	// blend-copy
-	if (!RImplementation.o.fp16_blend)	{
-		u_setrt						(rt_Accumulator,nullptr,nullptr,RDepth);
-		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
-		RCache.set_c				("m_texgen",		m_Texgen);
-		RCache.set_c				("m_texgen_J",		m_Texgen_J	);
-		draw_volume					(L);
-	}
 	CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();
@@ -270,57 +248,22 @@ void CRenderTarget::accum_volumetric(light* L)
 			(ClipFrustum.planes[4].d + ClipFrustum.planes[5].d)*(1-L->m_volumetric_distance);
 		
 	}
-
-	//	Calculate camera space AABB
-	// xform BB
-	/*
-	Fbox	BB;
-	Fvector	rr; rr.set(L->spatial.sphere.R,L->spatial.sphere.R,L->spatial.sphere.R);
-	BB.setb	(L->spatial.sphere.P, rr);
-
-	Fbox	bbp; bbp.invalidate();
-	for (u32 i=0; i<8; i++)		{
-		Fvector		pt;
-		BB.getpoint	(i,pt);
-		//Device.mFullTransform.transform	(pt);
-		Device.mFullTransform.transform	(mView);
-		bbp.modify	(pt);
-	}
-	*/
-
 	
 	//	Calculate camera space AABB
 	//	Adjust AABB according to the adjusted distance for the light volume
 	Fbox	aabb;
 	
-	//float	scaledRadius = L->spatial.sphere.R * (1+L->m_volumetric_distance)*0.5f;
 	float	scaledRadius = L->SpatialComponent->spatial.sphere.R * L->m_volumetric_distance;
 	Fvector	rr = Fvector().set(scaledRadius,scaledRadius,scaledRadius);
 	Fvector pt = L->SpatialComponent->spatial.sphere.P;
 	pt.sub(L->position);
 	pt.mul(L->m_volumetric_distance);
 	pt.add(L->position);
+
 	//	Don't adjust AABB
-	//float	scaledRadius = L->spatial.sphere.R;
-	//Fvector	rr = Fvector().set(scaledRadius,scaledRadius,scaledRadius);
-	//Fvector pt = L->spatial.sphere.P;
 	Device.mView.transform(pt);
 	aabb.setb( pt, rr);
-/*	
-	//	Calculate presise AABB assuming we are drawing for the spot light
-	{
-		aabb.invalidate();
-		Fmatrix	transform;
-		transform.mul( Device.mView, L->m_xform);		 
-		for (u32 i=0; i<DU_CONE_NUMVERTEX; ++i)
-		{
-			Fvector		pt = du_cone_vertices[i];
-			transform.transform(pt);
-			aabb.modify(pt);
-		}
-		
-	}
-*/
+
 	// Common constants
 	float		fQuality = L->m_volumetric_quality;
 	int			iNumSlises = (int)(VOLUMETRIC_SLICES*fQuality);
@@ -341,32 +284,9 @@ void CRenderTarget::accum_volumetric(light* L)
 
 	// Draw volume with projective texgen
 	{
-		/*
-		// Select shader
-		u32		_id					= 0;
-		if (L->flags.bShadow)		{
-			bool	bFullSize			= (L->X.S.size == RImplementation.o.smapsize);
-			if (L->X.S.transluent)	_id	= SE_L_TRANSLUENT;
-			else if		(bFullSize)	_id	= SE_L_FULLSIZE;
-			else					_id	= SE_L_NORMAL;
-		} else {
-			_id						= SE_L_UNSHADOWED;
-			m_Shadow				= m_Lmap;
-		}
-		RCache.set_Element			(shader->E[ _id ]	);
-		*/
-
 		//	Set correct depth surface
 		//	It's slow. Make this when shader is created
 		{
-			const char* pszSMapName;
-			BOOL		b_HW_smap	= RImplementation.o.HW_smap;
-			BOOL		b_HW_PCF	= RImplementation.o.HW_smap_PCF;
-			if (b_HW_smap) {
-				pszSMapName = r2_RT_smap_depth;
-			} else {
-				pszSMapName = r2_RT_smap_surf;
-			}
 			//s_smap
 			STextureList* _T = &*s_accum_volume->E[0]->passes[0]->T;
 
@@ -380,7 +300,7 @@ void CRenderTarget::accum_volumetric(light* L)
 				if (load_id==0)		
 				{
 					//	Assign correct texture
-					loader.second.create(pszSMapName);
+					loader.second.create(r2_RT_smap_depth);
 				}
 			}
 		}
@@ -419,51 +339,16 @@ void CRenderTarget::accum_volumetric(light* L)
 			}
 		}
 		
-
-		/*
-		float	clip[4];
-		clip[0] = 1;
-		clip[1] = 
-		clip[2] = 
-		clip[3] = 0;
-		RDevice->SetClipPlane( 0, clip);
-		*/
-
-
-		// Fetch4 : enable
-		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
-		}
-
 		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 
 		RCache.set_Geometry(g_accum_volumetric);
-		//RCache.Render(D3DPT_TRIANGLELIST,0,0,VOLUMETRIC_SLICES*4,0,VOLUMETRIC_SLICES*2);
 		RCache.Render(D3DPT_TRIANGLELIST,0,0,iNumSlises*4,0,iNumSlises*2);
 
 		RCache.set_ColorWriteEnable();
 
-		// Fetch4 : disable
-		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
-		}
-
 		//	Restore clip planes
 		RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
 	}
-/*
-	// blend-copy
-	if (!RImplementation.o.fp16_blend)	{
-		u_setrt						(rt_Accumulator,nullptr,nullptr,RDepth);
-		RCache.set_Element			(s_accum_mask->E[SE_MASK_ACCUM_VOL]	);
-		RCache.set_c				("m_texgen",		m_Texgen);
-		RCache.set_c				("m_texgen_J",		m_Texgen_J	);
-		draw_volume					(L);
-	}
-*/
+
 	CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 }

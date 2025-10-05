@@ -453,72 +453,7 @@ void CRenderTarget::phase_combine()
 	{
 		RCache.dbg_DrawLINE		(Fidentity,dbg_lines[it].P0,dbg_lines[it].P1,dbg_lines[it].color);
 	}
-#endif
 
-	// ********************* Debug
-	/*
-	if (0)		{
-		u32		C					= color_rgba	(255,255,255,255);
-		float	_w					= float(Device.TargetWidth)/3;
-		float	_h					= float(Device.TargetHeight)/3;
-
-		// draw light-spheres
-#ifdef DEBUG
-		if (0) for (u32 it=0; it<dbg_spheres.size(); it++)
-		{
-			Fsphere				S	= dbg_spheres[it].first;
-			Fmatrix				M;	
-			u32				ccc		= dbg_spheres[it].second.get();
-			M.scale					(S.R,S.R,S.R);
-			M.translate_over		(S.P);
-			RCache.dbg_DrawEllipse	(M,ccc);
-			RCache.dbg_DrawAABB		(S.P,.05f,.05f,.05f,ccc);
-		}
-#endif
-		// Draw quater-screen quad textured with our direct-shadow-map-image
-		if (1) 
-		{
-			u32							IX=0,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_0);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-
-		// Draw quater-screen quad textured with our accumulator
-		if (0)
-		{
-			u32							IX=1,IY=1;
-			p0.set						(.5f/_w, .5f/_h);
-			p1.set						((_w+.5f)/_w, (_h+.5f)/_h );
-
-			// Fill vertex buffer
-			FVF::TL* pv					= (FVF::TL*) RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-			pv->set						((IX+0)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p0.x, p1.y);	pv++;
-			pv->set						((IX+0)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p0.x, p0.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+1)*_h+EPS,	EPS,	1.f, C, p1.x, p1.y);	pv++;
-			pv->set						((IX+1)*_w+EPS,	(IY+0)*_h+EPS,	EPS,	1.f, C, p1.x, p0.y);	pv++;
-			RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
-			// Draw COLOR
-			RCache.set_Shader			(s_combine_dbg_1);
-			RCache.set_Geometry			(g_combine);
-			RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
-		}
-	}
-	*/
-#ifdef DEBUG
 	dbg_spheres.clear	();
 	dbg_lines.clear		();
 	dbg_planes.clear	();
