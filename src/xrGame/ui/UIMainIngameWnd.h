@@ -17,10 +17,11 @@ class	CUIHudStatesWnd;
 class	CUIMotionIcon;
 class	CUIStackPanel;
 
-class CUIMainIngameWnd final : public CUIWindow
+class CUIMainIngameWnd final :
+	public CUIWindow
 {
 public:
-			CUIMainIngameWnd();
+	CUIMainIngameWnd();
 	virtual ~CUIMainIngameWnd();
 
 	virtual void Init();
@@ -30,56 +31,69 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	
-	CUIStatic*			m_ind_sleepiness = nullptr;
-	CUIStatic*			m_ind_thirst = nullptr;
-	
-	CUIStatic*			m_icon_microphone = nullptr;
-	CUITextWnd*			m_voice_distance = nullptr;
+
+	CUIStatic* m_ind_sleepiness = nullptr;
+	CUIStatic* m_ind_thirst = nullptr;
+
+	CUIStatic* m_icon_microphone = nullptr;
+	CUITextWnd* m_voice_distance = nullptr;
 public:
-	CUIStatic*			m_ind_boost_psy;
-	CUIStatic*			m_ind_boost_radia;
-	CUIStatic*			m_ind_boost_chem;
-	CUIStatic*			m_ind_boost_wound;
-	CUIStatic*			m_ind_boost_weight;
-	CUIStatic*			m_ind_boost_health;
-	CUIStatic*			m_ind_boost_power;
-	CUIStatic*			m_ind_boost_rad;
+	CUIStatic* m_ind_boost_psy;
+	CUIStatic* m_ind_boost_radia;
+	CUIStatic* m_ind_boost_chem;
+	CUIStatic* m_ind_boost_wound;
+	CUIStatic* m_ind_boost_weight;
+	CUIStatic* m_ind_boost_health;
+	CUIStatic* m_ind_boost_power;
+	CUIStatic* m_ind_boost_rad;
 
-	CUIStatic*			m_ind_weapon_broken;
-	CUIStatic*			m_ind_helmet_broken;
-	CUIStatic*			m_ind_outfit_broken;
-	CUIStatic*			m_ind_overweight;
+	CUIStatic* m_ind_weapon_broken;
+	CUIStatic* m_ind_helmet_broken;
+	CUIStatic* m_ind_outfit_broken;
+	CUIStatic* m_ind_overweight;
 
-	CUIStatic*			m_ind_bleeding;
-	CUIStatic*			m_ind_radiation;
-	CUIStatic*			m_ind_starvation;
+	CUIStatic* m_ind_bleeding;
+	CUIStatic* m_ind_radiation;
+	CUIStatic* m_ind_starvation;
 
-	CUIStatic*			UIStaticDiskIO;
-	CUITextWnd*			UIStaticQuickHelp;
-	CUIMotionIcon*		UIMotionIcon;
-	CUIZoneMap*			UIZoneMap;
+	CUIStatic* UIStaticDiskIO;
+	CUITextWnd* UIStaticQuickHelp;
+	CUIMotionIcon* UIMotionIcon;
+	CUIZoneMap* UIZoneMap;
 
 	CUIStackPanel* UIStackPanelBoosters;
 	CUIStackPanel* UIStackPanelIndicators;
 
-	CUIHudStatesWnd*	m_ui_hud_states;
+	CUIHudStatesWnd* m_ui_hud_states;
 
 public:
-		void			ShowZoneMap(bool status);
-		void			DrawZoneMap();
-		void			UpdateZoneMap();
+	void			ShowZoneMap(bool status);
+	void			DrawZoneMap();
+	void			UpdateZoneMap();
 
-		void			DrawMainIndicatorsForInventory();
-	
-	CUIHudStatesWnd*	get_hud_states() { return m_ui_hud_states; } //temp
-	void				OnSectorChanged			(int sector);
+	void			DrawMainIndicatorsForInventory();
+
+	// Quick slots panel visibility / fade control
+	void			ShowQuickSlotsPanel();
+	void			HideQuickSlotsPanelImmediate();
+	void			TickQuickSlotsPanelFade();
+	void			SetQuickSlotsPanelVisible(bool visible);
+
+	CUIHudStatesWnd* get_hud_states() { return m_ui_hud_states; } //temp
+	void				OnSectorChanged(int sector);
 
 	xr_vector<CUIStatic* > m_quick_slots_icons;
-	CUITextWnd*			m_QuickSlotText1;
-	CUITextWnd*			m_QuickSlotText2;
-	CUITextWnd*			m_QuickSlotText3;
-	CUITextWnd*			m_QuickSlotText4;
+	CUITextWnd* m_QuickSlotText1;
+	CUITextWnd* m_QuickSlotText2;
+	CUITextWnd* m_QuickSlotText3;
+	CUITextWnd* m_QuickSlotText4;
+
+protected:
+	// Panel fade state
+	bool				m_quick_slots_visible = false;
+	bool				m_quick_slots_force_visible = false;
+	float				m_quick_slots_alpha = 0.0f; //
+	float				m_quick_slots_last_interaction_time = -1000.0f;
 
 protected:
 
@@ -89,42 +103,42 @@ protected:
 	// - ранения
 	// - голода
 	// - усталости
-	CUIStatic*			UIWeaponJammedIcon;
-//	CUIStatic			UIRadiaitionIcon;
-//	CUIStatic			UIWoundIcon;
-//	CUIStatic			UIStarvationIcon;
-//	CUIStatic			UIPsyHealthIcon;
-	CUIStatic*			UIInvincibleIcon;
-//	CUIStatic			UISleepIcon;
-	CUIStatic*			UIArtefactIcon;
+	CUIStatic* UIWeaponJammedIcon;
+	//	CUIStatic			UIRadiaitionIcon;
+	//	CUIStatic			UIWoundIcon;
+	//	CUIStatic			UIStarvationIcon;
+	//	CUIStatic			UIPsyHealthIcon;
+	CUIStatic* UIInvincibleIcon;
+	//	CUIStatic			UISleepIcon;
+	CUIStatic* UIArtefactIcon;
 
-	CUIScrollView*		m_UIIcons;
-	CUIWindow*			m_pMPChatWnd;
-	CUIWindow*			m_pMPLogWnd;
+	CUIScrollView* m_UIIcons;
+	CUIWindow* m_pMPChatWnd;
+	CUIWindow* m_pMPLogWnd;
 
 	// Car
 	CUICarPanel UICarPanel;
 public:
-	
+
 	// Енумы соответсвующие предупреждающим иконкам 
 	enum EWarningIcons
 	{
-		ewiAll				= 0,
+		ewiAll = 0,
 		ewiWeaponJammed,
-//		ewiRadiation,
-//		ewiWound,
-//		ewiStarvation,
-//		ewiPsyHealth,
-//		ewiSleep,
+		//		ewiRadiation,
+		//		ewiWound,
+		//		ewiStarvation,
+		//		ewiPsyHealth,
+		//		ewiSleep,
 		ewiInvincible,
 		ewiArtefact,
 	};
 
-	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
+	void				SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog);
 
 	// Задаем цвет соответствующей иконке
-	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);
-	void				TurnOffWarningIcon				(EWarningIcons icon);
+	void				SetWarningIconColor(EWarningIcons icon, const u32 cl);
+	void				TurnOffWarningIcon(EWarningIcons icon);
 
 	// Пороги изменения цвета индикаторов, загружаемые из system.ltx
 	typedef				xr_map<EWarningIcons, xr_vector<float> >	Thresholds;
@@ -134,53 +148,53 @@ public:
 	// Енум перечисления возможных мигающих иконок
 	enum EFlashingIcons
 	{
-		efiPdaTask	= 0,
+		efiPdaTask = 0,
 		efiMail
 	};
-	
-	void				SetFlashIconState_				(EFlashingIcons type, bool enable);
 
-	void				AnimateContacts					(bool b_snd);
+	void				SetFlashIconState_(EFlashingIcons type, bool enable);
+
+	void				AnimateContacts(bool b_snd);
 	HUD_SOUND_ITEM		m_contactSnd;
 
-	void				ReceiveNews						(GAME_NEWS_DATA* news);
-	void				UpdateMainIndicators			();
-	void				UpdateBoosterIndicators			(const xr_map<EBoostParams, SBooster> influences);
+	void				ReceiveNews(GAME_NEWS_DATA* news);
+	void				UpdateMainIndicators();
+	void				UpdateBoosterIndicators(const xr_map<EBoostParams, SBooster> influences);
 
-	void				SetActiveVoiceIcon				(bool active);
-	void				SetVoiceDistance				(u8 distance);
+	void				SetActiveVoiceIcon(bool active);
+	void				SetVoiceDistance(u8 distance);
 
 protected:
-	void				UpdateQuickSlots				();
-	void				SetWarningIconColorUI			(CUIStatic* s, const u32 cl);
-	void				InitFlashingIcons				(CUIXml* node);
-	void				DestroyFlashingIcons			();
-	void				UpdateFlashingIcons				();
-//	void				UpdateActiveItemInfo			();
+	void				UpdateQuickSlots();
+	void				SetWarningIconColorUI(CUIStatic* s, const u32 cl);
+	void				InitFlashingIcons(CUIXml* node);
+	void				DestroyFlashingIcons();
+	void				UpdateFlashingIcons();
+	//	void				UpdateActiveItemInfo			();
 
-//	void				SetAmmoIcon						(const shared_str& seсt_name);
+	//	void				SetAmmoIcon						(const shared_str& seсt_name);
 
-	// first - иконка, second - анимация
+		// first - иконка, second - анимация
 	using FlashingIcons = xr_map<EFlashingIcons, CUIStatic*>;
 	using FlashingIcons_it = FlashingIcons::iterator;
 
 	FlashingIcons		m_FlashingIcons;
 
-//	CMissile*			m_pGrenade;
-//	CInventoryItem*		m_pItem;
+	//	CMissile*			m_pGrenade;
+	//	CInventoryItem*		m_pItem;
 
-	// Отображение подсказок при наведении прицела на объект
+		// Отображение подсказок при наведении прицела на объект
 	void				RenderQuickInfos();
 
 public:
-	CUICarPanel&		CarPanel							() { return UICarPanel; };
-	CUIMotionIcon*		MotionIcon							() {return UIMotionIcon;}
-	void				OnConnected							();
-	void				reset_ui							();
+	CUICarPanel& CarPanel() { return UICarPanel; };
+	CUIMotionIcon* MotionIcon() { return UIMotionIcon; }
+	void				OnConnected();
+	void				reset_ui();
 
 protected:
-	CInventoryItem*		m_pPickUpItem;
-	CUIStatic*			UIPickUpItemIcon;
+	CInventoryItem* m_pPickUpItem;
+	CUIStatic* UIPickUpItemIcon;
 
 	float				m_iPickUpItemIconX;
 	float				m_iPickUpItemIconY;
@@ -189,8 +203,8 @@ protected:
 
 	void				UpdatePickUpItem();
 public:
-	void				SetPickUpItem	(CInventoryItem* PickUpItem);
+	void				SetPickUpItem(CInventoryItem* PickUpItem);
 #ifdef DEBUG
-	void				draw_adjust_mode					();
+	void				draw_adjust_mode();
 #endif
 };
