@@ -110,7 +110,7 @@ void CUIInventoryCellItem::UpdateItemText()
 
 	if ( count > 1 || helper_count )
 	{
-		xr_sprintf						( str, "x%d", count );
+		xr_sprintf						( str, "%d", count );
 		m_text->TextItemControl()->SetText	( str );
 		m_text->Show					( true );
 	}
