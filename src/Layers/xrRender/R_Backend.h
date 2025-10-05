@@ -280,8 +280,6 @@ public:
 	IC  void						set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
 	IC  void						set_CullMode		(u32 _mode);
 	IC  u32							get_CullMode		(){return cull_mode;}
-	void							set_ClipPlanes		(u32 _enable, Fplane*	_planes=NULL, u32 count=0);
-	void							set_ClipPlanes		(u32 _enable, Fmatrix*	_xform =NULL, u32 fmask=0xff);
 	IC	void						set_Scissor			(Irect*	rect=NULL);
 
 	// constants
