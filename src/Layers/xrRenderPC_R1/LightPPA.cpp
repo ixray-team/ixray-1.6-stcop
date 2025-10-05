@@ -230,79 +230,81 @@ void CLightR_Manager::render_spot	(u32 _priority)
 	Fvector		lc_COP		= Device.vCameraPosition	;
 	float		lc_limit	= ps_r1_dlights_clip		;
 
-	for (xr_vector<light*>::iterator it=selected_spot.begin(); it!=selected_spot.end(); it++)
+	for (xr_vector<light*>::iterator it = selected_spot.begin(); it != selected_spot.end(); it++)
 	{
-		light*	L					= *it;
+		light* L = *it;
 		if (L->SpatialComponent->spatial.sector == nullptr)
 		{
 			continue;
 		}
 		//		0. Dimm & Clip
-		float	lc_dist				= lc_COP.distance_to	(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
-		float	lc_scale			= 1 - lc_dist/lc_limit;
-		if		(lc_scale<EPS)		continue;
+		float	lc_dist = lc_COP.distance_to(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
+		float	lc_scale = 1 - lc_dist / lc_limit;
+		if (lc_scale < EPS)		continue;
 
 		//		1. Calculate light frustum
-		Fvector						L_dir,L_up,L_right,L_pos;
-		Fmatrix						L_view,L_project,L_combine;
-		L_dir.set					(L->direction);			L_dir.normalize		();
-		L_up.set					(0,1,0);				if (_abs(L_up.dotproduct(L_dir))>.99f)	L_up.set(0,0,1);
-		L_right.crossproduct		(L_up,L_dir);			L_right.normalize	();
-		L_up.crossproduct			(L_dir,L_right);		L_up.normalize		();
-		L_pos.set					(L->position);
-		L_view.build_camera_dir		(L_pos,L_dir,L_up);
-		L_project.build_projection	(L->cone,1.f,SSM_near_plane,L->range+EPS_S);
-		L_combine.mul				(L_project,L_view);
+		Fvector						L_dir, L_up, L_right, L_pos;
+		Fmatrix						L_view, L_project, L_combine;
+		L_dir.set(L->direction);			L_dir.normalize();
+		L_up.set(0, 1, 0);				if (_abs(L_up.dotproduct(L_dir)) > .99f)	L_up.set(0, 0, 1);
+		L_right.crossproduct(L_up, L_dir);			L_right.normalize();
+		L_up.crossproduct(L_dir, L_right);		L_up.normalize();
+		L_pos.set(L->position);
+		L_view.build_camera_dir(L_pos, L_dir, L_up);
+		L_project.build_projection(L->cone, 1.f, SSM_near_plane, L->range + EPS_S);
+		L_combine.mul(L_project, L_view);
 
 		//		2. Calculate matrix for TC-gen
-		float			fTexelOffs			= (.5f / SSM_tex_size);
-		float			fRange				= 1.f  / L->range;
-		float			fBias				= 0.f;
-		Fmatrix			m_TexelAdjust		= 
+		float			fTexelOffs = (.5f / SSM_tex_size);
+		float			fRange = 1.f / L->range;
+		float			fBias = 0.f;
+		Fmatrix			m_TexelAdjust =
 		{
 			0.5f,				0.0f,				0.0f,			0.0f,
 			0.0f,				-0.5f,				0.0f,			0.0f,
 			0.0f,				0.0f,				fRange,			0.0f,
 			0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
 		};
-		Fmatrix		L_texgen;		L_texgen.mul	(m_TexelAdjust,L_combine);
+		Fmatrix		L_texgen;		L_texgen.mul(m_TexelAdjust, L_combine);
 
 		//		2. Set global light-params to be used by shading
-		RImplementation.r1_dlight_light		= L;
-		RImplementation.r1_dlight_scale		= clampr(lc_scale,0.f,1.f);
-		RImplementation.r1_dlight_tcgen		= L_texgen;
+		RImplementation.r1_dlight_light = L;
+		RImplementation.r1_dlight_scale = clampr(lc_scale, 0.f, 1.f);
+		RImplementation.r1_dlight_tcgen = L_texgen;
 
 		//		3. Calculate visibility for light + build soring tree
-		VERIFY										(L->SpatialComponent->spatial.sector);
+		VERIFY(L->SpatialComponent->spatial.sector);
 		// RImplementation.marker					++;
-		if( _priority == 1)
-			RImplementation.r_pmask						(false,true);
+		if (_priority == 1)
+			RImplementation.r_pmask(false, true);
 
-		RImplementation.r_dsgraph_render_subspace	(
+		RImplementation.r_dsgraph_render_subspace(
 			L->SpatialComponent->spatial.sector,
 			L_combine,
 			L_pos,
 			TRUE,
 			TRUE			// precise portals
-			);
+		);
 
-		if( _priority == 1)
-			RImplementation.r_pmask						(true,true);
+		if (_priority == 1)
+			RImplementation.r_pmask(true, true);
 
 		//		4. Analyze if HUD intersects light volume
-		BOOL				bHUD	= FALSE;
+		BOOL				bHUD = FALSE;
 		CFrustum			F;
-		F.CreateFromMatrix	(L_combine,FRUSTUM_P_ALL);
-		bHUD				= F.testSphere_dirty	(Device.vCameraPosition,2.f);
+		F.CreateFromMatrix(L_combine, FRUSTUM_P_ALL);
+		bHUD = F.testSphere_dirty(Device.vCameraPosition, 2.f);
 		// if (bHUD)		Msg	("HUD");
 
 		//		4. Dump sorting tree
-		//	RCache.set_ClipPlanes					(true,	&L_combine);
-		RCache.set_Constants	((R_constant_table*)0);
-		if (bHUD&&_priority == 0)	g_hud->Render_Last		();	
-		RImplementation.r_dsgraph_render_graph			(_priority);
-		if (bHUD&&_priority == 0)	RImplementation.r_dsgraph_render_hud();	
-		//	RCache.set_ClipPlanes					(false,	&L_combine);
+		RCache.set_Constants((R_constant_table*)0);
+		if (bHUD && _priority == 0)
+			g_hud->Render_Last();
+
+		RImplementation.r_dsgraph_render_graph(_priority);
+
+		if (bHUD && _priority == 0)
+			RImplementation.r_dsgraph_render_hud();
 	}
 }
 

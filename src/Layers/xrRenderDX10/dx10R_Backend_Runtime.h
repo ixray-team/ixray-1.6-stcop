@@ -1,7 +1,5 @@
 #pragma once
-
 #include "StateManager/dx10StateManager.h"
-#include "StateManager/dx10ShaderResourceStateCache.h"
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -107,7 +105,7 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 {
 	stat.calls++;
 
-	SRVSManager.Apply();
+	GRHI->ShaderResourceCache->Apply();
 	StateManager.Apply();
 	//	State manager may alter constants
 	constants.flush();
@@ -132,7 +130,7 @@ IC void CBackend::RenderInstancedIndexed(D3DPRIMITIVETYPE T_, u32 baseV, u32 sta
 
 	ApplyPrimitieTopology(Topology);
 
-	SRVSManager.Apply();
+	GRHI->ShaderResourceCache->Apply();
 	ApplyRTandZB();
 	ApplyVertexLayout();
 	StateManager.Apply();
@@ -160,7 +158,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV,
 	stat.polys += PC;
 
 	ApplyPrimitieTopology(Topology);
-	SRVSManager.Apply();
+	GRHI->ShaderResourceCache->Apply();
 	ApplyRTandZB();
 	ApplyVertexLayout();
 	StateManager.Apply();
@@ -184,7 +182,7 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
 	stat.polys += PC;
 
 	ApplyPrimitieTopology(Topology);
-	SRVSManager.Apply();
+	GRHI->ShaderResourceCache->Apply();
 	ApplyRTandZB();
 	ApplyVertexLayout();
 	StateManager.Apply();
@@ -198,7 +196,7 @@ IC void CBackend::Render_noIA(u32 iVertexCount)
 	stat.calls++;
 	stat.verts += iVertexCount;
 
-	SRVSManager.Apply();
+	GRHI->ShaderResourceCache->Apply();
 	ApplyRTandZB();
 
 	//Unbind IA (VB, IB)

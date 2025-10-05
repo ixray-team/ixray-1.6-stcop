@@ -30,6 +30,8 @@ u32 GetD3D11BindFlags(ERHI_BUFFER_TYPE bufferType)
 		return D3D11_BIND_INDEX_BUFFER;
 	case ERHI_BUFFER_TYPE::CONSTANT:
 		return D3D11_BIND_CONSTANT_BUFFER;
+	case ERHI_BUFFER_TYPE::STRUCTURED:
+		return D3D11_BIND_SHADER_RESOURCE;
 	}
 
 	return 0;
@@ -96,6 +98,16 @@ void CD3D11Buffer::Create(const RHIBufferDesc& desc /*= {}*/, const RHIBufferSub
 	d3d11desc.BindFlags = GetD3D11BindFlags(m_bufferDesc.Type);
 	d3d11desc.CPUAccessFlags = GetD3D11CPUAccess(static_cast<ERHI_CPU_ACCESS_FLAG>(m_bufferDesc.CPUAccessFlags));
 	d3d11desc.MiscFlags = 0;
+
+	if (m_bufferDesc.Type == ERHI_BUFFER_TYPE::STRUCTURED)
+	{
+		d3d11desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+		d3d11desc.StructureByteStride = m_bufferDesc.StructureByteStride;
+	}
+	else
+	{
+		d3d11desc.MiscFlags = 0;
+	}
 
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = pSubresource ? pSubresource->pSysMem : nullptr;

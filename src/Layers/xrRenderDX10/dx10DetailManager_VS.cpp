@@ -33,37 +33,36 @@ void CDetailManager::hw_Load_Shaders()
 	hwc_s_array			= T1.get("array");
 
 	//Prepare descs
-	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	RHIBufferDesc bufferDesc = {};
+	bufferDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+	bufferDesc.Type = ERHI_BUFFER_TYPE::STRUCTURED;
+	bufferDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
 	bufferDesc.StructureByteStride = sizeof(InstanceData);
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	RHIShaderResourceViewDesc srvDesc = {};
+	srvDesc.Format = ERHI_FORMAT::UNKNOWN;
 
 	//Create the buffers & SRV
-    for (int i = 0; i < 8; ++i)
-    {
+	for (int i = 0; i < 8; ++i)
+	{
 		//Buffer
-		bufferDesc.ByteWidth = bufferSizes[i] * sizeof(InstanceData);
+		bufferDesc.Size = bufferSizes[i] * sizeof(InstanceData);
 
-		ID3D11Buffer* buffer = NULL;
-        R_CHK(RDevice->CreateBuffer(&bufferDesc, NULL, &buffer));
+		IRHIBuffer* buffer = GRHI->CreateBuffer(bufferDesc, nullptr);
 
-		if(buffer)
-			detailBuffer_map.insert({bufferSizes[i], buffer});
+		if (buffer)
+		{
+			detailBuffer_map.insert({ bufferSizes[i], buffer });
+		}
 
 		//SRV
-        srvDesc.Buffer.ElementWidth = bufferSizes[i];
+		srvDesc.ElementWidth = bufferSizes[i];
+		IRHIShaderResourceView* srv = GRHI->CreateShaderResourceView(buffer, &srvDesc);
 
-		ID3D11ShaderResourceView* srv = NULL;
-        R_CHK(RDevice->CreateShaderResourceView(buffer, &srvDesc, &srv));
-
-		if(srv)
-			detailSRV_map.insert({bufferSizes[i], srv});
+		if (srv)
+		{
+			detailSRV_map.insert({ bufferSizes[i], srv });
+		}
 	}
 }
 
@@ -137,11 +136,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 		//Current buffer size and resources
 		u32 currentSize = it->first;
-		ID3D11Buffer* currentBuffer = it->second;
-		ID3D11ShaderResourceView* currentSRV = detailSRV_map.find(currentSize)->second;
+		IRHIBuffer* currentBuffer = it->second;
+		IRHIShaderResourceView* currentSRV = detailSRV_map.find(currentSize)->second;
 
 		//Bind (current) buffer SRV
-		SRVSManager.SetVSResource(0, currentSRV);
+		GRHI->ShaderResourceCache->SetVSResource(0, currentSRV);
 
 		//Set IB, VB and decls
 		RCache.set_Geometry(Object.hw_Geom);
@@ -165,8 +164,8 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 			//LVutner: Update the instance buffer
 			if(instanceCount == 0)
 			{
-				D3D11_MAPPED_SUBRESOURCE pSubRes;
-				RContext->Map(currentBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes);
+				RHIMappedSubresource pSubRes;
+				R_ASSERT(currentBuffer->Map(ERHI_BUFFER_MAP::WRITE_DISCARD, 0, &pSubRes));
 				c_storage = reinterpret_cast<InstanceData*>(pSubRes.pData);
 			}
 			c_storage[instanceCount] = {Instance.hpb, Instance.scale_calculated, Instance.pos, Instance.c_hemi};
@@ -176,7 +175,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
 			if (instanceCount >= currentSize)
 			{ 
-				RContext->Unmap(currentBuffer, 0);
+				currentBuffer->Unmap();
 				RCache.RenderInstancedIndexed(D3DPT_TRIANGLELIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 				instanceCount = 0; //Reset
 			}
@@ -185,7 +184,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		//Render remaining instances
 		if (instanceCount > 0 && instanceCount < currentSize)
 		{
-			RContext->Unmap(currentBuffer, 0);
+			currentBuffer->Unmap();
 			RCache.RenderInstancedIndexed(D3DPT_TRIANGLELIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 		}
 	}
