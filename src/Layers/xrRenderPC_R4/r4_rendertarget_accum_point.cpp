@@ -95,30 +95,14 @@ void CRenderTarget::accum_point		(light* L)
 		RCache.set_c					("Ldynamic_hud",	(int)L->flags.bHudMode);
 		RCache.set_c					("m_texgen",		m_Texgen);
 
-		// Fetch4 : enable
-//		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-//#			define FOURCC_GET4  MAKEFOURCC('G','E','T','4') 
-//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET4 );
-//		}
-
 		RCache.set_CullMode				(CULL_CW);		// back
 		// Render if (light_id <= stencil && z-pass)
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
 		draw_volume(L);
-
-		// Fetch4 : disable
-//		if (RImplementation.o.HW_smap_FETCH4)	{
-			//. we hacked the shader to force smap on S0
-//#			define FOURCC_GET1  MAKEFOURCC('G','E','T','1') 
-//			RDevice->SetSamplerState	( 0, D3DSAMP_MIPMAPLODBIAS, FOURCC_GET1 );
-//		}
 	}
 
-	//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
 	RCache.set_Scissor(0);
 
-	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();
 
 	u_DBT_disable				();
