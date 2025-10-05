@@ -2,10 +2,12 @@
 
 #include "D3D9/Device.h"
 #include "D3D9/DX9ShaderDeclaration.h"
+#include "D3D9/DX9ShaderResourceStateCache.h"
 
 #include "D3D11/Device.h"
 #include "D3D11/DX11GPUEvents.h"
 #include "D3D11/DX11ShaderDeclaration.h"
+#include "D3D11/DX11ShaderResourceStateCache.h"
 
 #include <DirectXMesh.h>
 
@@ -21,8 +23,8 @@ RHI_API CRHI* GRHI = nullptr;
 CRHI::~CRHI()
 {
 	xr_delete(DevicePtr);
+	xr_delete(ShaderResourceCache);
 	xr_delete(DriverExt);
-	std::memset(Shaders, 0, sizeof(void*) * RHI_SHADERS_TYPE_SIZE);
 }
 
 IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
@@ -39,13 +41,13 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 		}
 	}
 
+	APILevel = NewAPILevel;
+
 	switch (NewAPILevel)
 	{
-		case ERHI_API_LAYER::D3D9:  DevicePtr = new InternalDevice9;  break;
-		case ERHI_API_LAYER::D3D11: DevicePtr = new InternalDevice11; break;
+		case ERHI_API_LAYER::D3D9:  DevicePtr = new InternalDevice9;  ShaderResourceCache = new DX9ShaderResourceStateCache; break;
+		case ERHI_API_LAYER::D3D11: DevicePtr = new InternalDevice11; ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext()); break;
 	}
-
-	APILevel = NewAPILevel;
 
 	return DevicePtr;
 }
@@ -216,6 +218,29 @@ IRHISurface* CRHI::CreateRenderTarget(const RHITextureDesc& desc)
 IRHISurface* CRHI::CreateDepthStencil(const RHITextureDesc& desc)
 {
 	return DevicePtr->GetTextureFactory()->CreateDepthStencil(desc);
+}
+
+IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHIBuffer* Buffer, const RHIShaderResourceViewDesc* desc)
+{
+	if (APILevel == ERHI_API_LAYER::D3D11)
+	{
+		ID3D11Device* DxDevice = (ID3D11Device*)((InternalDevice11*)DevicePtr)->RawDevice;
+		D3D11_SHADER_RESOURCE_VIEW_DESC Desc = {};
+
+		Desc.Format = (DXGI_FORMAT)desc->Format;
+		Desc.Buffer.ElementWidth = desc->ElementWidth;
+		Desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+
+		ID3D11ShaderResourceView* srv = nullptr;
+		R_CHK(DxDevice->CreateShaderResourceView(((CD3D11Buffer*)Buffer)->GetD3DObject(), &Desc, &srv));
+
+		return new DX11ShaderResourceView(srv, nullptr);
+	}
+	else
+	{
+		VERIFY(!"Unsupported");
+		return nullptr;
+	}
 }
 
 IRHIShaderResourceView* CRHI::CreateShaderResourceView(IRHISurface* Surface, const RHIShaderResourceViewDesc* desc)

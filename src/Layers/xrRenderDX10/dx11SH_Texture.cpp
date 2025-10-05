@@ -12,8 +12,6 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#include "StateManager/dx10ShaderResourceStateCache.h"
-
 #define PRIORITY_HIGH	12
 #define PRIORITY_NORMAL	8
 #define PRIORITY_LOW	4
@@ -209,32 +207,32 @@ void CTexture::Apply(u32 dwStage)
 	if (dwStage < rstVertex)
 	{
 		//	Pixel shader stage resources
-		SRVSManager.SetPSResource(dwStage, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetPSResource(dwStage, m_pSRView);
 	}
 	else if (dwStage < rstGeometry)
 	{
 		//	Vertex shader stage resources
-		SRVSManager.SetVSResource(dwStage - rstVertex, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetVSResource(dwStage - rstVertex, m_pSRView);
 	}
 	else if (dwStage < rstHull)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetGSResource(dwStage - rstGeometry, m_pSRView);
 	}
 	else if (dwStage < rstDomain)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetHSResource(dwStage - rstHull, m_pSRView);
 	}
 	else if (dwStage < rstCompute)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetDSResource(dwStage - rstDomain, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetDSResource(dwStage - rstDomain, m_pSRView);
 	}
 	else if (dwStage < rstInvalid)
 	{
 		//	Geometry shader stage resources
-		SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView ? (ID3D11ShaderResourceView*)m_pSRView->GetRawSRV() : nullptr);
+		GRHI->ShaderResourceCache->SetCSResource(dwStage - rstCompute, m_pSRView);
 	}
 	else VERIFY("Invalid stage");
 }
