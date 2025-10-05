@@ -118,6 +118,7 @@ ENGINE_API _action  actions[]		= {
 	{ "scope_brightness_minus",kBRIGHTNESS_MINUS	,_both },
 	{ "quick_grenade",		kQUICK_GRENADE			,_both },
 	{ "quick_kick",			kQUICK_KICK				,_both },
+	{ "show_quick_slots",   kSHOW_QUICK_SLOTS      , _both },
 																
 	{ nullptr, 				kLASTACTION				,_both}		
 };															

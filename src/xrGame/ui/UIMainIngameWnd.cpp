@@ -69,6 +69,9 @@ const u32	g_clWhite					= 0xffffffff;
 
 #define		SHOW_INFO_SPEED				0.5f
 #define		HIDE_INFO_SPEED				10.f
+#define     QUICK_SLOTS_SHOW_SPEED       3.0f
+#define     QUICK_SLOTS_HIDE_DELAY       2.0f
+#define     QUICK_SLOTS_HIDE_SPEED       4.0f
 
 constexpr auto C_ON_ENEMY = color_xrgb(0xff, 0, 0);
 constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
@@ -332,6 +335,25 @@ void CUIMainIngameWnd::Init()
 	HUD_SOUND_ITEM::LoadSound				("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 }
 
+// Quick slots panel hidden by default
+m_quick_slots_visible = false;
+m_quick_slots_force_visible = false;
+m_quick_slots_alpha = 0.0f;
+m_quick_slots_last_interaction_time = -1000.0f;
+
+// Скрываем все элементы панели по умолчанию
+for (const auto& slot : m_quick_slots_icons)
+{
+	slot->Show(false);
+	CUIWindow* counter = slot->FindChild("counter");
+	if (counter)
+		counter->Show(false);
+}
+if (m_QuickSlotText1) m_QuickSlotText1->Show(false);
+if (m_QuickSlotText2) m_QuickSlotText2->Show(false);
+if (m_QuickSlotText3) m_QuickSlotText3->Show(false);
+if (m_QuickSlotText4) m_QuickSlotText4->Show(false);
+
 float UIStaticDiskIO_start_time = 0.0f;
 void CUIMainIngameWnd::Draw()
 {
@@ -437,6 +459,8 @@ void CUIMainIngameWnd::Update()
 	
 	UpdatePickUpItem			();
 
+	TickQuickSlotsPanelFade();
+	
 	if( Device.dwFrame % 10 )
 		return;
 
@@ -523,6 +547,61 @@ void CUIMainIngameWnd::RenderQuickInfos()
 		UIStaticQuickHelp->SetTextST(actor_action ? actor_action : " ");
 		UIStaticQuickHelp->ResetColorAnimation();
 		pObject	= pActor->ObjectWeLookingAt();
+	}
+}
+
+void CUIMainIngameWnd::ShowQuickSlotsPanel()
+{
+	m_quick_slots_visible = true;
+	m_quick_slots_last_interaction_time = Device.fTimeGlobal;
+}
+
+void CUIMainIngameWnd::HideQuickSlotsPanelImmediate()
+{
+	m_quick_slots_visible = false;
+	m_quick_slots_force_visible = false;
+	m_quick_slots_alpha = 0.0f;
+}
+
+void CUIMainIngameWnd::SetQuickSlotsPanelVisible(bool visible)
+{
+	m_quick_slots_force_visible = visible;
+	if (visible)
+	{
+		m_quick_slots_last_interaction_time = Device.fTimeGlobal;
+	}
+}
+
+void CUIMainIngameWnd::TickQuickSlotsPanelFade()
+{
+	const float dt = Device.fTimeDelta;
+
+	bool should_be_visible = m_quick_slots_force_visible || m_quick_slots_visible;
+
+	if (should_be_visible)
+	{
+
+		m_quick_slots_alpha += QUICK_SLOTS_SHOW_SPEED * dt;
+		if (m_quick_slots_alpha > 1.0f)
+			m_quick_slots_alpha = 1.0f;
+
+		if (!m_quick_slots_force_visible && m_quick_slots_visible)
+		{
+			if ((Device.fTimeGlobal - m_quick_slots_last_interaction_time) >= QUICK_SLOTS_HIDE_DELAY)
+			{
+				m_quick_slots_visible = false;
+			}
+		}
+	}
+	else
+	{
+
+		if (m_quick_slots_alpha > 0.0f)
+		{
+			m_quick_slots_alpha -= QUICK_SLOTS_HIDE_SPEED * dt;
+			if (m_quick_slots_alpha < 0.0f)
+				m_quick_slots_alpha = 0.0f;
+		}
 	}
 }
 
@@ -1003,38 +1082,39 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 	string32 tmp;
 	LPCSTR str = g_pStringTable->translate("quick_use_str_1").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText1)
 		m_QuickSlotText1->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_2").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText2)
 		m_QuickSlotText2->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_3").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText3)
 		m_QuickSlotText3->SetTextST(tmp);
 
 	str = g_pStringTable->translate("quick_use_str_4").c_str();
 	strncpy_s(tmp, sizeof(tmp), str, 3);
-	if(tmp[2]==',')
+	if (tmp[2] == ',')
 		tmp[1] = '\0';
 	if (m_QuickSlotText4)
 		m_QuickSlotText4->SetTextST(tmp);
-
 
 	CActor* pActor = Level().CurrentViewEntity() ? Level().CurrentViewEntity()->cast_actor() : nullptr;
 	if (!pActor)
 	{
 		return;
 	}
+
+	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
 
 	int i = -1;
 	for (const auto& slot : m_quick_slots_icons)
@@ -1048,9 +1128,10 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			{
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;
-				xr_sprintf(str, "x%d", count);
+				xr_sprintf(str, "%d", count);
 				wnd->TextItemControl()->SetText(str);
-				wnd->Show(true);
+
+				wnd->Show(should_show_panel);
 
 				const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, item_name.c_str(), "icons_texture", nullptr);
 				slot->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
@@ -1065,27 +1146,40 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 				slot->SetTextureRect(texture_rect);
 				slot->TextureOn();
 				slot->SetStretchTexture(true);
-				if (!count)
+
+				slot->Show(should_show_panel);
+
+				if (should_show_panel)
 				{
-					wnd->SetTextureColor(color_rgba(255, 255, 255, 0));
-					wnd->TextItemControl()->SetTextColor(color_rgba(255, 255, 255, 0));
-					slot->SetTextureColor(color_rgba(255, 255, 255, 100));
-				}
-				else
-				{
-					wnd->SetTextureColor(color_rgba(255, 255, 255, 255));
-					wnd->TextItemControl()->SetTextColor(color_rgba(255, 255, 255, 255));
-					slot->SetTextureColor(color_rgba(255, 255, 255, 255));
+					if (!count)
+					{
+						const u32 empty_alpha = (u32)clampr(iFloor(m_quick_slots_alpha * 128.0f), 0, 128); 
+						wnd->SetTextureColor(subst_alpha(color_rgba(255, 255, 255, 255), empty_alpha));
+						wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255)); 
+						slot->SetTextureColor(subst_alpha(color_rgba(255, 255, 255, 255), empty_alpha));
+					}
+					else
+					{
+						const u32 a = (u32)clampr(iFloor(m_quick_slots_alpha * 255.0f), 0, 255);
+						wnd->SetTextureColor(subst_alpha(color_rgba(255, 255, 255, 255), a));
+						wnd->TextItemControl()->SetTextColor(subst_alpha(color_rgba(255, 255, 255, 255), 255)); 
+						slot->SetTextureColor(subst_alpha(color_rgba(255, 255, 255, 255), a));
+					}
 				}
 			}
 			else
 			{
 				wnd->Show(false);
+				slot->Show(false);
 				slot->SetTextureColor(color_rgba(255, 255, 255, 0));
-				//slot->Show(false);
 			}
 		}
 	}
+
+	if (m_QuickSlotText1) m_QuickSlotText1->Show(should_show_panel);
+	if (m_QuickSlotText2) m_QuickSlotText2->Show(should_show_panel);
+	if (m_QuickSlotText3) m_QuickSlotText3->Show(should_show_panel);
+	if (m_QuickSlotText4) m_QuickSlotText4->Show(should_show_panel);
 }
 
 void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
@@ -1099,67 +1193,73 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	UpdateQuickSlots();
 	UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
 
-	for (const auto& slot : m_quick_slots_icons)
-		slot->Draw();
+	// Проверяем, должна ли панель быть видимой
+	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
 
-	if (m_QuickSlotText1)
-		m_QuickSlotText1->Draw();
-	if (m_QuickSlotText2)
-		m_QuickSlotText2->Draw();
-	if (m_QuickSlotText3)
-		m_QuickSlotText3->Draw();
-	if (m_QuickSlotText4)
-		m_QuickSlotText4->Draw();
+	// Отрисовываем быстрые слоты только если панель должна быть видимой
+	if (should_show_panel)
+	{
+		for (const auto& slot : m_quick_slots_icons)
+			slot->Draw();
 
-	if(m_ind_boost_psy && m_ind_boost_psy->IsShown())
+		if (m_QuickSlotText1)
+			m_QuickSlotText1->Draw();
+		if (m_QuickSlotText2)
+			m_QuickSlotText2->Draw();
+		if (m_QuickSlotText3)
+			m_QuickSlotText3->Draw();
+		if (m_QuickSlotText4)
+			m_QuickSlotText4->Draw();
+	}
+
+	// Бустеры и другие индикаторы всегда отрисовываются (они не связаны с панелью быстрого доступа)
+	if (m_ind_boost_psy && m_ind_boost_psy->IsShown())
 	{
 		m_ind_boost_psy->Update();
 		m_ind_boost_psy->Draw();
 	}
 
-	if(m_ind_boost_radia && m_ind_boost_radia->IsShown())
+	if (m_ind_boost_radia && m_ind_boost_radia->IsShown())
 	{
 		m_ind_boost_radia->Update();
 		m_ind_boost_radia->Draw();
 	}
 
-	if(m_ind_boost_chem && m_ind_boost_chem->IsShown())
+	if (m_ind_boost_chem && m_ind_boost_chem->IsShown())
 	{
 		m_ind_boost_chem->Update();
 		m_ind_boost_chem->Draw();
 	}
 
-	if(m_ind_boost_wound && m_ind_boost_wound->IsShown())
+	if (m_ind_boost_wound && m_ind_boost_wound->IsShown())
 	{
 		m_ind_boost_wound->Update();
 		m_ind_boost_wound->Draw();
 	}
 
-	if(m_ind_boost_weight && m_ind_boost_weight->IsShown())
+	if (m_ind_boost_weight && m_ind_boost_weight->IsShown())
 	{
 		m_ind_boost_weight->Update();
 		m_ind_boost_weight->Draw();
 	}
 
-	if(m_ind_boost_health && m_ind_boost_health->IsShown())
+	if (m_ind_boost_health && m_ind_boost_health->IsShown())
 	{
 		m_ind_boost_health->Update();
 		m_ind_boost_health->Draw();
 	}
 
-	if(m_ind_boost_power && m_ind_boost_power->IsShown())
+	if (m_ind_boost_power && m_ind_boost_power->IsShown())
 	{
 		m_ind_boost_power->Update();
 		m_ind_boost_power->Draw();
 	}
 
-	if(m_ind_boost_rad && m_ind_boost_rad->IsShown())
+	if (m_ind_boost_rad && m_ind_boost_rad->IsShown())
 	{
 		m_ind_boost_rad->Update();
 		m_ind_boost_rad->Draw();
 	}
-
-	m_ui_hud_states->DrawZoneIndicators();
 }
 
 void CUIMainIngameWnd::UpdateBoosterIndicators(const xr_map<EBoostParams, SBooster> influences)
