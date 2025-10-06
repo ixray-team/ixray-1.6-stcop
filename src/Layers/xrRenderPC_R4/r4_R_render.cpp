@@ -448,7 +448,7 @@ void CRender::Render()
 			RCache.set_xform_view(cView);
 			mapWmark.clear();
 
-			RContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), (FLOAT*)&fog_color4);
+			GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
 			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 
 			Target->u_setrt(RefSize, RefSize, (ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), NULL, NULL, Target->rt_Depth->pZRT);
@@ -463,7 +463,7 @@ void CRender::Render()
 
 		{
 			GPU_EVENT(FORWARD_REFLECTION_MIPS_GEN);
-			RContext->GenerateMips((ID3D11ShaderResourceView*)Target->rt_Reflection->pTexture->get_SRView()->GetRawSRV());
+			GRHI->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
 		}
 
 		RCache.set_xform_project(Device.mProject);

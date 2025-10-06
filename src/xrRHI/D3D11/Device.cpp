@@ -345,9 +345,19 @@ void InternalDevice11::ClearTarget(void* Target, ERTColor InputColor)
 	HWRenderContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target, ColorPtr);
 }
 
+void InternalDevice11::ClearTarget(void* Target, const float* Color)
+{
+	HWRenderContext->ClearRenderTargetView((ID3D11RenderTargetView*)Target, Color);
+}
+
 void InternalDevice11::ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil)
 {
 	HWRenderContext->ClearDepthStencilView((ID3D11DepthStencilView*)View->GetRawDSV(), (u32)TargetFlags, Depth, Stencil);
+}
+
+void InternalDevice11::GenerateMips(IRHIShaderResourceView* SRV)
+{
+	HWRenderContext->GenerateMips((ID3D11ShaderResourceView*)SRV->GetRawSRV());
 }
 
 void InternalDevice11::DestroyD3D11()

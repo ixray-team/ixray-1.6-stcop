@@ -167,27 +167,32 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 
 		u32 stage = C.r_dx10Sampler("smp_bump_ds");
 		if (stage != u32(-1)) {
-			C.i_dx10Address(stage, D3DTADDRESS_WRAP);
-			C.i_dx10FilterAnizo(stage, TRUE);
+			C.i_Address(stage, D3DTADDRESS_WRAP);
+			C.i_FilterAnizo(stage, TRUE);
 		}
 
-		if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME)) {
+		if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
+		{
 			C.R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 		}
 
-		if(bump) {
+		if(bump)
+		{
 			C.r_dx10Texture("s_tbump", fnameA);
 			C.r_dx10Texture("s_tbumpX", fnameB);
 		}
 
-		if (bHasDetailBump) {
+		if (bHasDetailBump)
+		{
 			C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
 		}
 	}
-	else if (C.SH->flags.bLandscape) {
+	else if (C.SH->flags.bLandscape)
+	{
 		C.r_Pass(vs, ps, FALSE, TRUE, FALSE);
 	}
-	else {
+	else
+	{
 		C.r_Pass(vs, ps, FALSE);
 	}
 
