@@ -232,6 +232,32 @@ void InternalDevice9::ClearTarget(void* Target, ERTColor InputColor)
 	DX9Device->Clear(0, nullptr, D3DCLEAR_TARGET, ColorPtr, 1, 0);
 }
 
+void InternalDevice9::ClearTarget(void* Target, const float* Color)
+{
+	// Convert float[4] (RGBA) to D3D9 color format
+	u32 d3d9Color = color_rgba(
+		(u8)(Color[0] * 255.0f),  // R
+		(u8)(Color[1] * 255.0f),  // G
+		(u8)(Color[2] * 255.0f),  // B
+		(u8)(Color[3] * 255.0f)   // A
+	);
+	
+	DX9Device->SetRenderTarget(0, (IDirect3DSurface9*)Target);
+	DX9Device->Clear(0, nullptr, D3DCLEAR_TARGET, d3d9Color, 1, 0);
+}
+
+void InternalDevice9::GenerateMips(IRHIShaderResourceView* SRV)
+{
+	// D3D9 doesn't have built-in GenerateMips, so we'll use the texture's GenerateMipSubLevels
+	// This is a placeholder implementation - in practice, you might want to implement
+	// software mip generation or use a different approach
+	IDirect3DBaseTexture9* texture = (IDirect3DBaseTexture9*)SRV->GetSurface()->GetRawTexture();
+	if (texture)
+	{
+		texture->GenerateMipSubLevels();
+	}
+}
+
 bool InternalDevice9::CreateD3D9()
 {
 	D3D = Direct3DCreate9(D3D_SDK_VERSION);

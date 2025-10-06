@@ -65,7 +65,9 @@ public:
 
 	void ClearRawTarget(void* Target, ERTColor Transparent = ERTColor::Transparent);
 	void ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent = ERTColor::Transparent);
+	void ClearTarget(IRHIRenderTargetView* Target, const float* Color);
 	void ClearDepthStencil(IRHIDepthStencilView* View, ERHI_CLEAR_TARGET TargetFlags, float Depth, u8 Stencil);
+	void GenerateMips(IRHIShaderResourceView* SRV);
 
 	void CopySurface(IRHISurface* Dest, IRHISurface* Source);
 	void CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetView* Source);
