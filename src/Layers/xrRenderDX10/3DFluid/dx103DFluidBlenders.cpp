@@ -103,77 +103,43 @@ static cl_impulseSize		binder_impulseSize;
 void BindConstants(CBlender_Compile& C)
 {
 	//	Bind constants here
-
-	//	TextureWidthShaderVariable = pEffect->GetVariableByName( "textureWidth")->AsScalar();
 	C.r_Constant( "textureWidth",	&binder_textureWidth);
-	//	TextureHeightShaderVariable = pEffect->GetVariableByName( "textureHeight")->AsScalar();
 	C.r_Constant( "textureHeight",	&binder_textureHeight);
-	//	TextureDepthShaderVariable = pEffect->GetVariableByName( "textureDepth")->AsScalar();
 	C.r_Constant( "textureDepth",	&binder_textureDepth);
 
 	//	Renderer constants
-	//pEffect->GetVariableByName("gridDim")->AsVector()->SetFloatVector(gridDim);
 	C.r_Constant( "gridDim",	&binder_gridDim);
-	//pEffect->GetVariableByName("recGridDim")->AsVector()->SetFloatVector(recGridDim);
 	C.r_Constant( "recGridDim",	&binder_recGridDim);
-	//pEffect->GetVariableByName("maxGridDim")->AsScalar()->SetFloat(maxDim);
 	C.r_Constant( "maxGridDim",	&binder_maxDim);
-
-	//	Each technique should set up these variables itself
-	/*
-	// For project, advect
-	//ModulateShaderVariable = pEffect->GetVariableByName( "modulate")->AsScalar();
-	//C.r_Constant( "modulate",		&binder_decay);
-
-	// For gaussian
-	// Used to apply external impulse
-	//ImpulseSizeShaderVariable = pEffect->GetVariableByName( "size")->AsScalar();
-	//C.r_Constant( "size",		&binder_impulseSize);
-	//	Setup manually by technique
-	//ImpulseCenterShaderVariable = pEffect->GetVariableByName( "center")->AsVector();
-	//SplatColorShaderVariable = pEffect->GetVariableByName( "splatColor")->AsVector();	
-
-	// For confinement
-	EpsilonShaderVariable = pEffect->GetVariableByName( "epsilon")->AsScalar();
-	// For confinement, advect
-	TimeStepShaderVariable = pEffect->GetVariableByName( "timestep")->AsScalar();
-	// For advect BFECC
-	ForwardShaderVariable = pEffect->GetVariableByName( "forward")->AsScalar();
-	HalfVolumeDimShaderVariable = pEffect->GetVariableByName( "halfVolumeDim")->AsVector();
-
-
-	// For render call
-	//DrawTextureShaderVariable = pEffect->GetVariableByName( "textureNumber")->AsScalar();
-	*/
 }
 void SetupSamplers(CBlender_Compile& C)
 {
 	int smp = C.r_dx10Sampler("samPointClamp");
 	if ( smp != u32(-1) )
 	{
-		C.i_dx10Address( smp, D3DTADDRESS_CLAMP);
-		C.i_dx10Filter( smp, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
+		C.i_Address( smp, D3DTADDRESS_CLAMP);
+		C.i_Filter( smp, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
 	}
 
 	smp = C.r_dx10Sampler("samLinear");
 	if ( smp != u32(-1) )
 	{
-		C.i_dx10Address( smp, D3DTADDRESS_CLAMP);
-		C.i_dx10Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
+		C.i_Address( smp, D3DTADDRESS_CLAMP);
+		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
 	}
 
 	smp = C.r_dx10Sampler("samLinearClamp");
 	if ( smp != u32(-1) )
 	{
-		C.i_dx10Address( smp, D3DTADDRESS_CLAMP);
-		C.i_dx10Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
+		C.i_Address( smp, D3DTADDRESS_CLAMP);
+		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
 	}
 
 	smp = C.r_dx10Sampler("samRepeat");
 	if ( smp != u32(-1) )
 	{
-		C.i_dx10Address( smp, D3DTADDRESS_WRAP);
-		C.i_dx10Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
+		C.i_Address( smp, D3DTADDRESS_WRAP);
+		C.i_Filter( smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
 	}
 	
 }
@@ -188,7 +154,6 @@ void SetupTextures(CBlender_Compile& C)
 	
 	//	Renderer
 	C.r_dx10Texture("sceneDepthTex", r2_RT_P);
-	//C.r_dx10Texture("colorTex", "Texture_color");
 	C.r_dx10Texture("colorTex", TNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
 	C.r_dx10Texture("jitterTex", "$user$NVjitterTex");
 
@@ -202,7 +167,7 @@ void SetupTextures(CBlender_Compile& C)
 	for ( int i=0; i<dx103DFluidRenderer::RRT_NumRT; ++i)
 		C.r_dx10Texture(RNames[i], TNames[i]);
 }
-}	//	namespace
+}
 
 void CBlender_fluid_advect::Compile(CBlender_Compile& C)
 {
@@ -355,9 +320,6 @@ void CBlender_fluid_obstdraw::Compile(CBlender_Compile& C)
 	case 0:			// DrawTexture
 		C.r_Pass	("fluid_grid", "null", "fluid_draw_texture", false,FALSE,FALSE,FALSE);
 		break;
-//		TechniqueDrawWhiteTriangles = pEffect->GetTechniqueByName( "DrawWhiteTriangles" );
-//		TechniqueDrawWhiteLines = pEffect->GetTechniqueByName( "DrawWhiteLines" );
-//		TechniqueDrawBox = pEffect->GetTechniqueByName( "DrawBox" );
 	}
 
 	C.r_CullMode(D3DCULL_NONE);
