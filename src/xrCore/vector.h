@@ -101,7 +101,6 @@ template <class T> struct _quaternion;
 #include "_obb.h"
 #include "_sphere.h"
 #include "_cylinder.h"
-#include "_random.h"
 #include "_compressed_normal.h"
 #include "_plane.h"
 #include "_plane2.h"
@@ -111,6 +110,7 @@ template <class T> struct _quaternion;
 #endif
 #pragma pack(pop)
 
+constexpr Fvector zero_vel = { 0.0f, 0.0f, 0.0f };
 
 // normalize angle (0..2PI)
 ICF float		angle_normalize_always	(float a)

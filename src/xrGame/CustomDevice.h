@@ -1,0 +1,83 @@
+#pragma once
+#include "hud_item_object.h"
+#include "HudSound.h"
+#include "../xrSound/ai_sounds.h"
+#include <functional>
+
+typedef std::function<void()> detector_fn_t;
+
+class CCustomDevice : public CHudItemObject
+{
+	using inherited = CHudItemObject;
+public:
+	enum EDeviceStates
+	{
+		eHandHide = eLastBaseState + 1,
+		eHandDraw,
+		eHandThrowStart,
+		eHandThrowIdle,
+		eHandThrowEnd,
+		eHandKick1,
+		eHandKick2,
+		eHandLam,
+	};
+protected:
+	bool m_bFastAnimMode = false;
+	bool m_bNeedActivation = false;
+	bool m_bWorking = false;
+
+	detector_fn_t hide_callback = nullptr;
+public:
+	CCustomDevice() = default;
+	~CCustomDevice() override;
+
+	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	void LoadSounds(LPCSTR section) override;
+
+	virtual void OnH_B_Independent(bool just_before_destroy) override;
+
+	virtual void shedule_Update(u32 dt) override;
+	virtual void UpdateCL() override;
+
+	void switch_device();
+	bool IsWorking();
+	bool need_renderable() final override;
+	void OnMoveToRuck(const SInvItemPlace& prev) override;
+	void ShowingCallback(CBlend* B);
+	void OnStateSwitch(u32 S) override;
+	void OnAnimationEnd(u32 state) override;
+	void UpdateXForm() override;
+	void SwitchState(u32 S) final override;
+	void UpdateHudAdditonal(Fmatrix& trans) override;
+	void ToggleDetector(bool bFastMode, bool switching = false);
+	void HideDetector(bool bFastMode, bool force = false);
+	void ShowDetector(bool bFastMode);
+	bool CheckCompatibility(CHudItem* itm) override;
+
+	void ClearCallback() { hide_callback = nullptr; }
+	void HideAndSetCallback(const detector_fn_t fn);
+
+	virtual u32	ef_detector_type() const { return 1; }
+
+	bool NeedActivation() const { return m_bNeedActivation; }
+
+	void OnMotionMark(u32 state, const motion_marks&) override;
+
+	virtual bool can_be_attached() const;
+	void PlayWpnFinishDetector();
+	virtual void TurnDetectorInternal(bool b);
+
+	bool NeedBlockSprint() const;
+	bool CanDrawHand() const;
+	bool CanHideHand() const;
+	bool CanThrowHand() const;
+	bool CanKick() const;
+	bool CanLam() const;
+
+	virtual CCustomDevice* cast_custom_device() { return this; }
+
+protected:
+	bool CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate);
+	void UpdateVisibility();
+	virtual void UpdateWork() {}
+};

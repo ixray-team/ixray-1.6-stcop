@@ -11,7 +11,6 @@
 #include "../xrEngine/CameraBase.h"
 #include "player_hud.h"
 #include "../xrEngine/SkeletonMotions.h"
-#include "script_game_object.h"
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
 #include "../xrScripts/script_callback_ex.h"
@@ -207,10 +206,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		{
 			if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) != HudItemData())
 			{
-				CCustomDetector* det = smart_cast<CCustomDetector*>(g_player_hud->attached_item(1)->m_parent_hud_item);
-				if (det != nullptr && det->CanDrawHand() && old_state != CMissile::EMissileStates::eThrowEnd)
+				CCustomDevice* dev = smart_cast<CCustomDevice*>(g_player_hud->attached_item(1)->m_parent_hud_item);
+				if (dev != nullptr && dev->CanDrawHand() && old_state != CMissile::EMissileStates::eThrowEnd)
 				{
-					det->SwitchState(CCustomDetector::eHandDraw);
+					dev->SwitchState(CCustomDevice::EDeviceStates::eHandDraw);
 				}
 			}
 		}
@@ -222,10 +221,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		{
 			if (g_player_hud->attached_item(1) != nullptr && g_player_hud->attached_item(1) != HudItemData())
 			{
-				CCustomDetector* det = smart_cast<CCustomDetector*>(g_player_hud->attached_item(1)->m_parent_hud_item);
-				if (det != nullptr && det->CanHideHand())
+				CCustomDevice* dev = smart_cast<CCustomDevice*>(g_player_hud->attached_item(1)->m_parent_hud_item);
+				if (dev != nullptr && dev->CanHideHand())
 				{
-					det->SwitchState(CCustomDetector::eHandHide);
+					dev->SwitchState(CCustomDevice::EDeviceStates::eHandHide);
 				}
 			}
 		}
@@ -280,10 +279,10 @@ void CHudItem::OnStateSwitch(u32 S)
 		PlayHUDMotion(SetCurrentStateAnimation("anm_draw_detector"), true, ePrepareDetectorEnd);
 		if (CActor* pActor = m_object && m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 		{
-			if (CCustomDetector* det = pActor->GetDetector(true))
+			if (CCustomDevice* dev = pActor->GetDevice(true))
 			{
-				det->SwitchState(eShowing);
-				det->TurnDetectorInternal(true);
+				dev->SwitchState(eShowing);
+				dev->TurnDetectorInternal(true);
 			}
 		}
 		break;
@@ -924,10 +923,10 @@ void CHudItem::OnMotionMark(u32 state, const motion_marks& mark)
 	{
 		if (CActor* pActor = m_object && m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
 		{
-			if (CCustomDetector* det = pActor->GetDetector(true))
+			if (CCustomDevice* dev = pActor->GetDevice(true))
 			{
-				det->SwitchState(eShowing);
-				det->TurnDetectorInternal(true);
+				dev->SwitchState(eShowing);
+				dev->TurnDetectorInternal(true);
 			}
 		}
 	}
@@ -956,9 +955,9 @@ bool CHudItem::CanStartAction(CActor* pActor)
 		return true;
 	}
 
-	if (CCustomDetector* pDetector = pActor->GetDetector(true))
+	if (CCustomDevice* pDevice = pActor->GetDevice(true))
 	{
-		if (pDetector->GetState() != CCustomDetector::eIdle && !pDetector->IsHidden() || pDetector->NeedActivation())
+		if (pDevice->GetState() != CCustomDevice::eIdle && !pDevice->IsHidden() || pDevice->NeedActivation())
 		{
 			return false;
 		}
@@ -995,12 +994,12 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 	bool result = CanStartAction(pActor);
 	if (!result)
 	{
-		CCustomDetector* pDetector = pActor->GetDetector(true);
+		CCustomDevice* pDevice = pActor->GetDevice(true);
 
 		const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 		if (isDelayedWeaponActions && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
-		|| pDetector != nullptr && (pDetector->GetState() != CCustomDetector::eIdle && !pDetector->IsHidden() || pDetector->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
+		|| pDevice != nullptr && (pDevice->GetState() != CCustomDevice::eIdle && !pDevice->IsHidden() || pDevice->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
 		{
 			Actor()->SetActorKeyRepeatFlag((ACTOR_DEFS::EActorKeyflags)kfACTTYPE, true);
 		}

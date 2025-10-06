@@ -22,7 +22,7 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "Torch.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "script_game_object.h"
 #include <WeaponBinoculars.h>
 #include "Level_Bullet_Manager.h"
@@ -2089,7 +2089,7 @@ bool CWeapon::OnWeaponJam()
 	//	return false;
 	//}
 
-	if (m_bUseLightMis && !(pActor->GetDetector() != nullptr && m_bDisableLightMisDet))
+	if (m_bUseLightMis && !(pActor->GetDevice() != nullptr && m_bDisableLightMisDet))
 	{
 		float curcond = GetCondition();
 		float startcond = light_misfire.startcond;
@@ -2551,9 +2551,9 @@ bool CWeapon::CanAimNow()
 
 	bool result = true;
 
-	if (pActor && pActor->GetDetector() != nullptr)
+	if (pActor && pActor->GetDevice() != nullptr)
 	{
-		result = !!(pActor->GetDetector()->GetState() == CCustomDetector::eIdle);
+		result = !!(pActor->GetDevice()->GetState() == CCustomDevice::eIdle);
 	}
 
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() == eSprintStart || GetState() == eSprintEnd || m_bSwitchSprint))

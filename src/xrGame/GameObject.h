@@ -50,6 +50,7 @@ class CHudItem;
 class CCustomOutfit;
 class CHelmet;
 class CCustomDetector;
+class CCustomDevice;
 class CWeaponAmmo;
 class CWeaponBinoculars;
 class CWeaponKnife;
@@ -136,6 +137,7 @@ public:
 	virtual CCustomOutfit				*cast_outfit				()						{return nullptr;}
 	virtual CHelmet						*cast_helmet				()						{return nullptr;}
 	virtual CCustomDetector				*cast_custom_detector		()						{return nullptr;}
+	virtual CCustomDevice				*cast_custom_device			()						{return nullptr;}
 	virtual CWeaponAmmo					*cast_weapon_ammo			()						{return nullptr;}
 	virtual CWeaponBinoculars			*cast_weapon_binoculars		()						{return nullptr;}
 	virtual CWeaponKnife				*cast_weapon_knife			()						{return nullptr;}

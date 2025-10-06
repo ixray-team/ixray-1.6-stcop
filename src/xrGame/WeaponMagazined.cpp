@@ -22,7 +22,7 @@
 #include "script_game_object.h"
 #include "Actor_Flags.h"
 #include "player_hud.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "WeaponRPG7.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
@@ -1563,11 +1563,11 @@ void CWeaponMagazined::switch2_Device()
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
 	R_ASSERT(pActor);
 
-	if (CCustomDetector* det = pActor->GetDetector())
+	if (CCustomDevice* dev = pActor->GetDevice())
 	{
-		if (det->CanLam())
+		if (dev->CanLam())
 		{
-			det->SwitchState(CCustomDetector::EDetectorStates::eHandLam);
+			dev->SwitchState(CCustomDevice::EDeviceStates::eHandLam);
 		}
 	}
 }
@@ -1587,7 +1587,7 @@ void CWeaponMagazined::PlayReloadSound()
 
 	bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 : iAmmoElapsed == 0;
 	CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
-	bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+	bool detector = actor != nullptr && actor->GetDevice() != nullptr;
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_jam_last_det) && IsMisfire() && bMisfireReload && empty && detector)
 	{
@@ -2193,7 +2193,7 @@ shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 		}
 
 		CActor* actor = Level().CurrentControlEntity()->cast_actor();
-		bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+		bool detector = actor != nullptr && actor->GetDevice() != nullptr;
 
 		if (detector)
 		{
@@ -2268,7 +2268,7 @@ void CWeaponMagazined::PlayAnimReload()
 		}
 
 		CActor* actor = Level().CurrentControlEntity()->cast_actor();
-		bool detector = actor != nullptr && actor->GetDetector() != nullptr;
+		bool detector = actor != nullptr && actor->GetDevice() != nullptr;
 		if (detector && HudAnimationExist("anm_reload_detector"))
 		{
 			bDisablePrepareAnimation = true;

@@ -25,6 +25,9 @@
 #include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"
 #include "../../../../xrScripts/script_callback_ex.h"
+#include "../boar/boar.h"
+#include "../../../ActorCondition.h"
+#include "../../../Inventory.h"
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
@@ -105,7 +108,57 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.hit_type			= hit_type;															//		l_P.w_u16	( u16(ALife::eHitTypeWound) );
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
-		
+
+		if (pEntityNC == Actor() && !GodMode() && smart_cast<CAI_Boar*>(this) != nullptr)
+		{
+			const float stamina = Actor()->conditions().GetPower();
+
+			bool need_kick_animator = false;
+
+			if (stamina > HS.power)
+			{
+				Actor()->conditions().SetPower(stamina - HS.power);
+			}
+			else if (PIItem active_item = Actor()->inventory().ActiveItem())
+			{
+				u16 slot = active_item->BaseSlot();
+				if (!Actor()->inventory().SlotIsPersistent(slot) && ::Random.randF(0.0f, 1.0f) < HS.power - stamina)
+				{
+					if (!Actor()->inventory().Action(kDROP, CMD_STOP))
+					{
+						Actor()->g_PerformDrop();
+					}
+
+					need_kick_animator = true;
+				}
+			}
+			else
+			{
+				need_kick_animator = true;
+			}
+
+			if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+			{
+				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
+				{
+					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
+				};
+
+				bool is_actor_see_monster = GetAngleCos(HS.dir, Device.vCameraDirection) < 0.0f;
+
+				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+				if (is_actor_see_monster)
+				{
+					Actor()->HudAnimator()->StartAnimator("boar_front_kick_animator_hud");
+				}
+				else
+				{
+					Actor()->HudAnimator()->StartAnimator("boar_back_kick_animator_hud");
+				}
+			}
+		}
+
 		if (IsGameTypeSingle() && pEntityNC == Actor() && draw_hit_marks)
 		{
 			PROF_EVENT("BaseMonster/Animation/HitEntity");

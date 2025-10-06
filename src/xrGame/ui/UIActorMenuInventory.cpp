@@ -31,7 +31,7 @@
 #include "../../xrUI/UICursor.h"
 #include "../MPPlayersBag.h"
 #include "../player_hud.h"
-#include "../CustomDetector.h"
+#include "../CustomDevice.h"
 #include "../PDA.h"
 
 #include "../actor_defs.h"
@@ -576,7 +576,7 @@ bool CUIActorMenu::TryActiveSlot(CUICellItem* itm)
 		SendEvent_ActivateSlot( slot, m_pActorInvOwner->object_id() );
 		return true;
 	}
-	if ( slot == DETECTOR_SLOT )
+	if ( slot == DEVICE_SLOT )
 	{
 
 	}
@@ -668,7 +668,7 @@ bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		if ( !force_place || slot_id == NO_ACTIVE_SLOT ) 
 			return false;
 
-		if ( m_pActorInvOwner->inventory().SlotIsPersistent(slot_id) && slot_id != DETECTOR_SLOT  )
+		if ( m_pActorInvOwner->inventory().SlotIsPersistent(slot_id) && slot_id != DEVICE_SLOT  )
 			return false;
 
 		const static bool pistolsOnly = EngineExternal()[EEngineExternalGame::EnableInventoryPistolSlot];
@@ -689,10 +689,11 @@ bool CUIActorMenu::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 		VERIFY								(result);
 
 		result								= ToSlot(itm, false, slot_id);
-		if (b_own_item && result && slot_id == DETECTOR_SLOT)
+
+		if (b_own_item && result && slot_id == DEVICE_SLOT)
 		{
-			CCustomDetector* det = iitem->cast_custom_detector();
-			det->switch_detector();
+			CCustomDevice* dev = iitem->cast_custom_device();
+			dev->switch_device();
 		}
 
 		return result;

@@ -372,11 +372,11 @@ void CMissile::State(u32 state)
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
-				if (CCustomDetector* det = actor->GetDetector())
+				if (CCustomDevice* dev = actor->GetDevice())
 				{
-					if (det->CanThrowHand())
+					if (dev->CanThrowHand())
 					{
-						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowStart);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowStart);
 					}
 				}
 			}
@@ -386,11 +386,11 @@ void CMissile::State(u32 state)
 			PlayHUDMotion		("anm_throw_idle", TRUE, GetState());
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
-				if (CCustomDetector* det = actor->GetDetector())
+				if (CCustomDevice* dev = actor->GetDevice())
 				{
-					if (det->CanThrowHand())
+					if (dev->CanThrowHand())
 					{
-						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowIdle);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowIdle);
 					}
 				}
 			}
@@ -407,11 +407,11 @@ void CMissile::State(u32 state)
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
-				if (CCustomDetector* det = actor->GetDetector())
+				if (CCustomDevice* dev = actor->GetDevice())
 				{
-					if (det->CanThrowHand())
+					if (dev->CanThrowHand())
 					{
-						det->SwitchState(CCustomDetector::EDetectorStates::eHandThrowEnd);
+						dev->SwitchState(CCustomDevice::EDeviceStates::eHandThrowEnd);
 					}
 				}
 			}

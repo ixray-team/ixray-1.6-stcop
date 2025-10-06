@@ -35,6 +35,7 @@ class CArtefact;
 class CCustomOutfit;
 class CHelmet;
 class CCustomDetector;
+class CCustomDevice;
 class CWeaponMagazined;
 class CWeaponMagazinedWGrenade;
 class CWeaponBinoculars;
@@ -319,6 +320,7 @@ public:
 	virtual CCustomOutfit		*cast_outfit				()	{return nullptr;}
 	virtual CHelmet				*cast_helmet				()	{return nullptr;}
 	virtual CCustomDetector		*cast_custom_detector		()	{return nullptr;}
+	virtual CCustomDevice		*cast_custom_device			()	{return nullptr;}
 	virtual CWeaponBinoculars	*cast_weapon_binoculars		()  {return nullptr;}
 	virtual CWeaponKnife		*cast_weapon_knife			()  {return nullptr;}
 	virtual CWeaponMagazined	*cast_weapon_magazined		()  {return nullptr;}

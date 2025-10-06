@@ -41,7 +41,7 @@
 #include "ai/stalker/ai_stalker_impl.h"
 #include "smart_cover_object.h"
 #include "smart_cover.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "doors_manager.h"
 #include "doors_door.h"
 #include "Torch.h"
@@ -1358,12 +1358,12 @@ CScriptGameObject* CScriptGameObject::active_detector() const
 		return 0;
 	}
 
-	if (CInventoryItem* result = inventory_owner->inventory().ItemFromSlot(DETECTOR_SLOT))
+	if (CInventoryItem* result = inventory_owner->inventory().ItemFromSlot(DEVICE_SLOT))
 	{
-		CCustomDetector* detector = result->cast_custom_detector();
-		VERIFY(detector);
+		CCustomDevice* device = result->cast_custom_device();
+		VERIFY(device);
 
-		return detector->IsWorking() ? result->object().lua_game_object() : 0;
+		return device->IsWorking() ? result->object().lua_game_object() : 0;
 	}
 
 	return 0;

@@ -1375,30 +1375,36 @@ void CActor::UpdateCL()
 		_jitter_time_remains = 0;
 	}
 
-	CCustomDetector* det = GetDetector();
+	CCustomDevice* dev = GetDevice();
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
 
-		if (item != nullptr || det != nullptr)
+		if (item != nullptr || dev != nullptr)
 		{
-			if (det != nullptr)
+			if (dev != nullptr)
 			{
 				need_restore_detector = true;
-				if (det->GetState() == CHUDState::eIdle)
-					det->HideDetector(true, true);
+				if (dev->GetState() == CHUDState::eIdle)
+				{
+					dev->HideDetector(true, true);
+				}
 			}
 
 			if (item != nullptr)
 			{
 				if (old_slot == 0)
+				{
 					old_slot = inventory().GetActiveSlot();
+				}
 
 				if (item->GetState() == CHUDState::eIdle)
+				{
 					inventory().Activate(0);
+				}
 			}
 		}
-		else if (item == nullptr && det == nullptr)
+		else if (item == nullptr && dev == nullptr)
 		{
 			g_player_hud->m_need_reload = true;
 			if (g_player_hud->NextHUDSect.size() > 0)
@@ -1422,10 +1428,10 @@ void CActor::UpdateCL()
 
 			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
-			if (bres && need_restore_detector && GetDetector(true) != nullptr)
+			if (bres && need_restore_detector && GetDevice(true) != nullptr)
 			{
 				need_restore_detector = false;
-				GetDetector(true)->switch_detector();
+				GetDevice(true)->switch_device();
 			}
 
 		}
@@ -1528,7 +1534,7 @@ void CActor::UpdateCL()
 
 	const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
-	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || det != nullptr && det->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
+	bBlockSprint = isDelayedWeaponActions && m_iKeyFlags != 0 || pWeapon != nullptr && pWeapon->NeedBlockSprint() || dev != nullptr && dev->NeedBlockSprint() || pMissile != nullptr && pMissile->NeedBlockSprint();
 
 	if (pWeapon)
 	{
@@ -1762,16 +1768,16 @@ void CActor::UpdatePlayerView()
 				g_player_hud->detach_item_idx(0);
 			}
 
-			CCustomDetector* pDetector = GetDetector(true);
-			if (pDetector != nullptr)
+			CCustomDevice* pDevice = GetDevice(true);
+			if (pDevice != nullptr)
 			{
-				if (pDetector->IsHidden())
+				if (pDevice->IsHidden())
 				{
-					g_player_hud->detach_item(pDetector->cast_hud_item());
+					g_player_hud->detach_item(pDevice->cast_hud_item());
 				}
 				else if (!g_player_hud->attached_item(1))
 				{
-					g_player_hud->attach_item(pDetector->cast_hud_item());
+					g_player_hud->attach_item(pDevice->cast_hud_item());
 				}
 			}
 		}
@@ -2936,16 +2942,19 @@ bool CActor::unlimited_ammo()
 	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
 }
 
-CCustomDetector* CActor::GetDetector(bool in_slot)
+CCustomDevice* CActor::GetDevice(bool in_slot)
 {
 	if (in_slot)
-		return inventory().ItemFromSlot(DETECTOR_SLOT) ? inventory().ItemFromSlot(DETECTOR_SLOT)->cast_custom_detector() : nullptr;
+	{
+		PIItem device_item = inventory().ItemFromSlot(DEVICE_SLOT);
+		return device_item != nullptr ? device_item->cast_custom_device() : nullptr;
+	}
 	else
 	{
 		if (g_player_hud != nullptr && g_player_hud->attached_item(1) != nullptr)
 		{
 			attachable_hud_item* i1 = g_player_hud->attached_item(1);
-			return i1->m_parent_hud_item ? i1->m_parent_hud_item->cast_custom_detector() : nullptr;
+			return i1->m_parent_hud_item != nullptr ? i1->m_parent_hud_item->cast_custom_device() : nullptr;
 		}
 	}
 

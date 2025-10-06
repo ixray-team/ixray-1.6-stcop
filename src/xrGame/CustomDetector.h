@@ -1,111 +1,38 @@
 #pragma once
-#include "inventory_item_object.h"
-#include "HudSound.h"
+#include "CustomDevice.h"
 #include "CustomZone.h"
-#include "Artefact.h"
-#include "../xrSound/ai_sounds.h"
-#include <functional>
-
 #include "CustomDetectorZones.h"
+#include "ui/ArtefactDetectorUI.h"
 
 class CUIArtefactDetectorBase;
-typedef std::function<void()> detector_fn_t;
 
-class CCustomDetector :		public CHudItemObject
+class CCustomDetector : public CCustomDevice
 {
-	typedef	CHudItemObject	inherited;
+	using inherited = CCustomDevice;
+
+	float m_fAfVisRadius = 0.0f;
+	float m_fAfDetectRadius = 0.0f;
 protected:
-	CUIArtefactDetectorBase*			m_ui;
-	bool			m_bFastAnimMode;
-	bool			m_bNeedActivation;
-	bool			m_bDetectorActive;
-	bool			m_bHideAndRestore;
+	CUIArtefactDetectorBase* m_ui = nullptr;
+	CAfList	m_artefacts;
 
-	detector_fn_t hide_callback;
-
-	u32				m_old_state;
 public:
-					CCustomDetector		();
-	virtual			~CCustomDetector	();
+	CCustomDetector() = default;
+	~CCustomDetector() override;
 
-	virtual BOOL 	net_Spawn			(CSE_Abstract* DC);
-	virtual void 	Load				(LPCSTR section);
-	virtual void 	LoadSounds			(LPCSTR section);
+	void Load(LPCSTR section) override;
+	void OnH_B_Independent(bool just_before_destroy) override;
+	void shedule_Update(u32 dt) override;
+	void TurnDetectorInternal(bool b) final override;
 
-	virtual void 	OnH_A_Chield		();
-	virtual void 	OnH_B_Independent	(bool just_before_destroy);
-
-	virtual void 	shedule_Update		(u32 dt);
-	virtual void 	UpdateCL			();
-
-			void	switch_detector		();
-			bool 	IsWorking			();
-	inline	bool	IsActive			() const { return m_bDetectorActive; };
-	virtual bool	need_renderable		();
-	virtual void 	OnMoveToSlot		(const SInvItemPlace& prev);
-	virtual void 	OnMoveToRuck		(const SInvItemPlace& prev);
-			void	ShowingCallback		(CBlend*B);
-	virtual void	OnActiveItem		();
-	virtual void	OnHiddenItem		();
-	virtual void	OnStateSwitch		(u32 S);
-	virtual void	OnAnimationEnd		(u32 state);
-	virtual	void	UpdateXForm			();
-	virtual void	SwitchState			(u32 S);
-	virtual void	UpdateHudAdditonal	(Fmatrix& trans);
-	void			ToggleDetector		(bool bFastMode, bool switching = false);
-	void			HideDetector		(bool bFastMode, bool force = false);
-	void			ShowDetector		(bool bFastMode);
-	float			m_fAfDetectRadius;
-	virtual bool	CheckCompatibility	(CHudItem* itm);
-
-	void			ClearCallback() { hide_callback = nullptr; };
-	void			HideAndSetCallback(const detector_fn_t fn);
-
-	virtual u32		ef_detector_type	() const	{return 1;};
-
-	virtual bool	NeedActivation		() const	{return m_bNeedActivation;};
-	void			SetActive		(bool val){m_bDetectorActive = val;};
-	virtual bool	HasActive		() const	{return m_bDetectorActive;};
-
-	void			SetHideAndRestore(bool val){m_bHideAndRestore = val;};
-
-	virtual void	OnMotionMark(u32 state, const motion_marks&) override;
-
-	virtual bool	can_be_attached		() const;
-	void PlayWpnFinishDetector();
-	void 	TurnDetectorInternal(bool b);
-
-	bool NeedBlockSprint() const;
-	bool CanDrawHand() const;
-	bool CanHideHand() const;
-	bool CanThrowHand() const;
-	bool CanKick() const;
-	bool CanLam() const;
-
-	enum EDetectorStates
-	{
-		eHandHide = eLastBaseState + 1,
-		eHandDraw,
-		eHandThrowStart,
-		eHandThrowIdle,
-		eHandThrowEnd,
-		eHandKick1,
-		eHandKick2,
-		eHandLam,
-	};
+	float AfVisibleRadius() const { return m_fAfVisRadius; }
+	float AfDetectRadius() const { return m_fAfDetectRadius; }
 
 	virtual CCustomDetector* cast_custom_detector() { return this; }
+	virtual CCustomDevice* cast_custom_device() { return this; }
 
 protected:
-			bool	CheckCompatibilityInt		(CHudItem* itm, u16* slot_to_activate);
-	void 			UpdateNightVisionMode		(bool b_off);
-	void			UpdateVisibility			();
-	virtual void	UpfateWork					();
-	virtual void 	UpdateAf					()				{};
-	virtual void 	CreateUI					()				{};
-
-	bool			m_bWorking;
-	float			m_fAfVisRadius;
-
-	CAfList			m_artefacts;
+	void UpdateWork() override;
+	virtual void UpdateAf() {};
+	virtual void CreateUI() {};
 };

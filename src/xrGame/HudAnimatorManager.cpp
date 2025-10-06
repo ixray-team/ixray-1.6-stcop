@@ -70,19 +70,19 @@ void CHudAnimatorManager::Update()
 				}
 			}
 
-			if (CCustomDetector* det = m_actor->GetDetector())
+			if (CCustomDevice* dev = m_actor->GetDevice())
 			{
 				m_bRestoreDetector = true;
 
 				if (m_bForceHideItems)
 				{
-					det->SwitchState(CHUDState::EHudStates::eHidden);
-					det->SetState(CHUDState::EHudStates::eHidden);
+					dev->SwitchState(CHUDState::EHudStates::eHidden);
+					dev->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(1);
 				}
-				else if (det->GetState() != CHUDState::EHudStates::eHiding)
+				else if (dev->GetState() != CHUDState::EHudStates::eHiding)
 				{
-					det->HideDetector(true, true);
+					dev->HideDetector(true, true);
 				}
 			}
 		}
@@ -249,9 +249,9 @@ void CHudAnimatorManager::OnAnimationEnd()
 		m_iRestoreSlot = 0;
 	}
 
-	if (m_bRestoreDetector && m_actor->GetDetector(true))
+	if (m_bRestoreDetector && m_actor->GetDevice(true))
 	{
-		m_actor->GetDetector(true)->ToggleDetector(true);
+		m_actor->GetDevice(true)->ToggleDetector(true);
 		m_bRestoreDetector = false;
 	}
 }

@@ -22,7 +22,6 @@
 #include "../trade_parameters.h"
 #include "../ActorHelmet.h"
 #include "../CustomOutfit.h"
-#include "../CustomDetector.h"
 #include "../eatable_item.h"
 
 #include "../../xrUI/Widgets/UIProgressBar.h"
