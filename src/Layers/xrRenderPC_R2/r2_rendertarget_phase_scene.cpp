@@ -10,13 +10,14 @@ void	CRenderTarget::phase_scene_prepare	()
 
 	// we need to clean up G-buffer every frame to avoid some glithces
 	u_setrt(rt_Position, rt_Normal, rt_Color, 0);
-	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET, 0x0, 1.0f, 0L));
+	GRHI->ClearRawTarget(RCache.get_RT());
 
 	CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 	float fValue = E.m_fSunShaftsIntensity;
 
 	u_setrt(RCache.get_width(), RCache.get_height(), (IDirect3DSurface9*)rt_Position->pRT->GetRawRTV(), nullptr, nullptr, RDepth);
-	CHK_DX(RDevice->Clear(0L, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x0, 1.0f, 0L));
+	GRHI->ClearRawTarget(RCache.get_RT());
+	GRHI->ClearDepthStencil(RDepth, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0);
 
 	//	Igor: for volumetric lights
 	m_bHasActiveVolumetric				= false;
