@@ -1,13 +1,5 @@
-// Blender_Recorder.h: interface for the CBlender_Recorder class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_)
-#define AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_
 #pragma once
-
 #include "../tss.h"
-
 #pragma pack(push,4)
 
 class  CBlender_Compile  
@@ -99,33 +91,23 @@ public:
 	void				Stage_Constant		(LPCSTR name);
 	void				StageEnd			();
 
-	// R1/R2-compiler	[programmable]
-#ifdef USE_DX11
-	void				i_dx10Address		(u32 s, u32		address);
-	void				i_dx10Filter_Min	(u32 s, u32		f);
-	void				i_dx10Filter_Mip	(u32 s, u32		f);
-	void				i_dx10Filter_Mag	(u32 s, u32		f);
-	void				i_dx10FilterAnizo	(u32 s, BOOL	value);
-	void				i_dx10Filter		(u32 s, u32 _min, u32 _mip, u32 _mag);
-	void				i_dx10BorderColor	(u32 s, u32 color);
-#else	//	USE_DX11
+	void				i_Address		(u32 s, u32		address);
+	void				i_Filter_Min	(u32 s, u32		f);
+	void				i_Filter_Mip	(u32 s, u32		f);
+	void				i_Filter_Mag	(u32 s, u32		f);
+	void				i_FilterAnizo	(u32 s, BOOL	value);
+	void				i_Filter		(u32 s, u32 _min, u32 _mip, u32 _mag);
+	void				i_BorderColor	(u32 s, u32 color);
+
 	u32					i_Sampler			(LPCSTR name);
 	void				i_Texture			(u32 s, LPCSTR	name);
 	void				i_Projective		(u32 s, bool	b);
-	void				i_Address			(u32 s, u32		address);
-	void				i_Filter_Min		(u32 s, u32		f);
-	void				i_Filter_Mip		(u32 s, u32		f);
-	void				i_Filter_Mag		(u32 s, u32		f);
-	void				i_Filter			(u32 s, u32 _min, u32 _mip, u32 _mag);
-	void				i_BorderColor		(u32 s, u32	color);
-#endif
 
 	// R1/R2-compiler	[programmable]		- templates
 	void				r_Pass				(LPCSTR vs,		LPCSTR ps,		bool bFog,	BOOL	bZtest=TRUE,				BOOL	bZwrite=TRUE,			BOOL	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	BOOL aTest=FALSE,	u32 aRef=0);
+	void				r_Pass				(LPCSTR vs,		LPCSTR gs, LPCSTR ps,		bool bFog,	BOOL	bZtest=TRUE,				BOOL	bZwrite=TRUE,			BOOL	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	BOOL aTest=FALSE,	u32 aRef=0);
 	void				r_Constant			(LPCSTR name,	R_constant_setup* s);
 #ifdef USE_DX11
-	void				r_Pass				(LPCSTR vs,		LPCSTR gs, LPCSTR ps,		bool bFog,	BOOL	bZtest=TRUE,				BOOL	bZwrite=TRUE,			BOOL	bABlend=FALSE,			D3DBLEND	abSRC=D3DBLEND_ONE,		D3DBLEND abDST=D3DBLEND_ZERO,	BOOL aTest=FALSE,	u32 aRef=0);
-
 	void				r_TessPass			(LPCSTR vs,	LPCSTR hs, LPCSTR ds, LPCSTR gs, LPCSTR ps, bool bFog, BOOL bZtest=TRUE, BOOL bZwrite=TRUE, BOOL bABlend=FALSE,	D3DBLEND abSRC=D3DBLEND_ONE, D3DBLEND abDST=D3DBLEND_ZERO, BOOL aTest=FALSE, u32 aRef=0);
 	void				r_ComputePass		(LPCSTR cs );
 	void				r_Stencil(BOOL Enable, u32 Func=D3DCMP_ALWAYS, u32 Mask=0x00, u32 WriteMask=0x00, u32 Fail=D3DSTENCILOP_KEEP, u32 Pass=D3DSTENCILOP_KEEP, u32 ZFail=D3DSTENCILOP_KEEP);
@@ -157,5 +139,3 @@ public:
 	ShaderElement* 		_lua_Compile		(LPCSTR namesp, LPCSTR name);
 };
 #pragma pack(pop)
-
-#endif // !defined(AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_)
