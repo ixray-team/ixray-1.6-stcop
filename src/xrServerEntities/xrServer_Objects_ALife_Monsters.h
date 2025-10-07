@@ -113,7 +113,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeTrader,CSE_ALifeDynamicObjectVisual,CSE_AL
 	virtual	void					add_online				(const bool &update_registries);
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
 #endif
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	virtual bool					match_configuration		() const;
 #endif
 	virtual CSE_Abstract			*cast_abstract			() {return this;};
@@ -229,7 +229,7 @@ public:
 	virtual	void					on_death				(CSE_Abstract *killer);
 	virtual void					on_spawn				();
 #endif
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	virtual bool					match_configuration		() const;
 #endif
 SERVER_ENTITY_DECLARE_END
@@ -349,7 +349,7 @@ SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CS
 	virtual	void					add_online				(const bool &update_registries);
 	virtual	void					add_offline				(const xr_vector<ALife::_OBJECT_ID> &saved_children, const bool &update_registries);
 #endif
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	virtual bool					match_configuration		() const;
 #endif
 	virtual CSE_Abstract			*cast_abstract			() {return this;};

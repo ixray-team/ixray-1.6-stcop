@@ -575,7 +575,7 @@ CSE_ALifeTrader::~CSE_ALifeTrader			()
 {
 }
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 bool CSE_ALifeTrader::match_configuration	() const
 {
 	return						(!strstr(Core.Params,"-designer"));
@@ -994,7 +994,7 @@ CSE_ALifeCreatureAbstract::~CSE_ALifeCreatureAbstract()
 {
 }
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 bool CSE_ALifeCreatureAbstract::match_configuration	() const
 {
 	return						(!strstr(Core.Params,"-designer"));
@@ -1402,7 +1402,7 @@ CSE_ALifeCreatureActor::~CSE_ALifeCreatureActor()
 {
 }
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 bool CSE_ALifeCreatureActor::match_configuration	() const
 {
 	return						(true);
