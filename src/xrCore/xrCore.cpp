@@ -64,7 +64,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOO
 		// Mathematics & PSI detection
 		CPU::Detect			();
 		
-		Memory._initialize	(Core.ParamsData.test(ECoreParams::mem_debug));
+		Memory._initialize();
 
 		xrLogger::InitLog();
 		_initialize_cpu		();

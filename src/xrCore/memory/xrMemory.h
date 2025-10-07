@@ -13,7 +13,7 @@ class XRCORE_API xrMemory {
 	IMemoryAllocator* pAlloc = nullptr;
 public:
 	xrMemory			();
-	void				_initialize		(BOOL _debug_mode=FALSE);
+	void				_initialize		();
 	void				_destroy		();
 
 	u32					stat_calls = 0;

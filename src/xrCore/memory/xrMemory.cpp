@@ -44,7 +44,7 @@ xrMemory::xrMemory()
 #endif
 }
 
-void xrMemory::_initialize(BOOL bDebug)
+void xrMemory::_initialize()
 {
 	stat_calls = 0;
 	stat_counter = 0;
