@@ -29,7 +29,7 @@ int APIENTRY WinMain
 	if (!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_EVENTS)) {
 		return -1;
 	}
-	Debug._initialize(false);
+	Debug._initialize(true);
 
 	g_dedicated_server = true;
 	

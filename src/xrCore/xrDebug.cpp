@@ -120,7 +120,11 @@ void xrDebug::gather_info		(const char *expression, const char *description, con
 void xrDebug::do_exit	(const std::string &message)
 {
 	xrLogger::FlushLog			();
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
+	if (!SilentErrorMode)
+	{
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), nullptr);
+	}
+
 #ifdef IXR_WINDOWS
 	TerminateProcess	(GetCurrentProcess(),1);
 #else
@@ -170,6 +174,11 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 {
+	if (SilentErrorMode)
+	{
+		return;
+	}
+
 	if (handler)
 		handler();
 
@@ -634,11 +643,13 @@ void __cdecl debug_on_thread_spawn(void)
 #endif
 }
 
-void xrDebug::_initialize(const bool& dedicated)
+void xrDebug::_initialize(bool dedicated)
 {
 	PROF_EVENT("xrDebug::_initialize");
-	static bool is_dedicated = dedicated;
-
+	if (dedicated)
+	{
+		SilentErrorMode = true;
+	}
 	*g_bug_report_file = 0;
 #ifdef IXR_WINDOWS
 	previous_filter = ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions

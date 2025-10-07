@@ -213,8 +213,6 @@ void	__cdecl thread_entry	(void*	_params )	{
 
 ThreadID thread_spawn	(thread_t*	entry, const char*	name, unsigned	stack, void* arglist )
 {
-	Debug._initialize	(false);
-
 	THREAD_STARTUP*		startup	= new THREAD_STARTUP	();
 	startup->entry		= entry;
 	startup->name		= xr_strdup((char*)name);

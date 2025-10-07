@@ -8,9 +8,10 @@ class XRCORE_API	xrDebug
 private:
 	crashhandler*	handler	;
 	on_dialog*		m_on_dialog;
+	bool SilentErrorMode = false;
 
 public:
-	void			_initialize			(const bool &dedicated);
+	void			_initialize			(bool dedicated);
 	void			_destroy			();
 	
 public:
