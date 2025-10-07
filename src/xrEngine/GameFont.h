@@ -45,7 +45,7 @@ private:
 
 	struct String
 	{
-		string1024 string;
+		string2048 string;
 		xr_string  string_utf8;
 		float x, y;
 		float height;
