@@ -112,7 +112,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 {
 	shared_str anim = "anm_reload";
 
-	string16 new_suffix = {};
+	string64 new_suffix = {};
 
 	if (ParentIsActor())
 	{
@@ -198,7 +198,7 @@ void CWeaponBM16::PlayAnimReload()
 shared_str CWeaponBM16::SetCurrentShootAnimation()
 {
 	shared_str anim = (HudAnimationExist("anm_shot_2") || HudAnimationExist("anm_shot_1")) ? "anm_shot" : "anm_shoot";
-	string16 new_suffix = {};
+	string64 new_suffix = {};
 
 	if (ParentIsActor())
 	{
