@@ -26,6 +26,7 @@ class CExplosive :
 {
 private:
 	collide::rq_results			rq_storage;
+	bool m_bDisableEffector = false;
 
 public:
 								CExplosive(void);

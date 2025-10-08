@@ -90,6 +90,7 @@ void CExplosive::Load(LPCSTR section)
 
 void CExplosive::Load(CInifile const *ini,LPCSTR section)
 {
+	m_bDisableEffector = READ_IF_EXISTS(pSettings, r_bool, section, "disable_effector", false);
 	m_fBlastHit			= ini->r_float(section,"blast");
 	m_fBlastRadius		= ini->r_float(section,"blast_r");
 	m_fBlastHitImpulse	= ini->r_float(section,"blast_impulse");
@@ -423,7 +424,7 @@ void CExplosive::Explode()
 	//////////////////////////////////////////////////////////////////////////
 	// Explode Effector	//////////////
 	CActor* pActor = Level().CurrentEntity() ? Level().CurrentEntity()->cast_actor() : NULL;
-	if(pActor)
+	if (pActor && !m_bDisableEffector)
 	{
 		float dist_to_actor = pActor->Position().distance_to(pos);
 		float max_dist		= EFFECTOR_RADIUS;
