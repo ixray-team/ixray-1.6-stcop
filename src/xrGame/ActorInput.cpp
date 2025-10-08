@@ -102,6 +102,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}break;
 	case kSPRINT_TOGGLE:	
 		{
+			if (Holder() == nullptr)
 			mstate_wishful ^= mcSprint;
 		}break;
 	case kCROUCH:	

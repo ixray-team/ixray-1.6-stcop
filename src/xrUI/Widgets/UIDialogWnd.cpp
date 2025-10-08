@@ -37,7 +37,8 @@ bool CUIDialogWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 bool CUIDialogWnd::IR_process()
 {
-	if(!IsEnabled())					return false;
+	if (!IsEnabled() || GetHolder() == nullptr)
+		return false;
 
 	if(GetHolder() && GetHolder()->IgnorePause())		
 		return true;

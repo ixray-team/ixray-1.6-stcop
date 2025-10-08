@@ -1238,7 +1238,7 @@ void player_hud::render_hud()
 	if (m_animator_item && m_animator_item->IsPlaying)
 		m_animator_item->render();
 
-	if(m_show_legs && Actor() && m_legs_model)
+	if(m_show_legs && Actor() && m_legs_model && Actor()->Holder() == nullptr)
 	{
 		bool isClimb = Actor()->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & mcClimb;
 		if(!isClimb) {
