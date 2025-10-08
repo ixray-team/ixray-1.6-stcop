@@ -844,6 +844,8 @@ Fvector u32_3f(u32);
 
 void CSpawnPoint::OnFrame()
 {
+	xrCriticalSectionGuard guard(&OnFrameLock);
+
 	if (dwFrameUpdate == Device.dwFrame)
 		return;
 
@@ -923,6 +925,14 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 	if (!IsLoaded)
 		return;
 
+	if (m_CO_Flags.test(flObjectInGroup))
+	{
+		auto Tool = Scene->GetTool(OBJCLASS_GROUP);
+		if (!Tool->IsVisible())
+		{
+			return;
+		}
+	}
 	Fmatrix SaveTransform = FTransformRP;
 
 	if (m_physics_shell)

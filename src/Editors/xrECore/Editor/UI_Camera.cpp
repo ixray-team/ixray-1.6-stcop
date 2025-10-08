@@ -249,7 +249,7 @@ bool CUI_Camera::MoveEnd(TShiftState Shift)
     m_Shift = Shift;
     if ((!Shift & ssLeft) || (!Shift & ssShift))
     {
-        SDL_WarpMouseInWindow(g_AppInfo.Window, m_StartPos.x, m_StartPos.y);
+        SDL_WarpMouseInWindow(UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
         ShowCursor(true);
         m_bMoving = false;
         return true;
@@ -265,7 +265,7 @@ bool CUI_Camera::Process(TShiftState Shift, int dx, int dy)
 // camera move
         if( dx || dy )
         {
-            SDL_WarpMouseInWindow(g_AppInfo.Window, m_StartPos.x, m_StartPos.y);
+            SDL_WarpMouseInWindow(UI->CurrentView().WndHandle, m_StartPos.x, m_StartPos.y);
             switch (m_Style){
             case csPlaneMove:
                 if ((m_Shift & ssLeft) && (m_Shift & ssRight)) 

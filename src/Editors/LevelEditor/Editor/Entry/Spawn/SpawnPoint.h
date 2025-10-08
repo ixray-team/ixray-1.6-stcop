@@ -123,6 +123,8 @@ public:
         };
     };
 
+    xrCriticalSection OnFrameLock;
+
     shared_str		SectionToEditor			(shared_str);
     shared_str		EditorToSection			(shared_str);
 	void 	OnProfileChange			(PropValue* prop);

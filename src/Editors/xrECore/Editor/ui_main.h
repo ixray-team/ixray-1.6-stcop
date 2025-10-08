@@ -261,6 +261,7 @@ public:
 		ref_rt RTFreez;
 		Ivector2 RTSize;
 
+		SDL_Window* WndHandle = nullptr;
 		int ViewGlobalIDX = -1;
 
 		bool operator==(const Viewport& Right) const

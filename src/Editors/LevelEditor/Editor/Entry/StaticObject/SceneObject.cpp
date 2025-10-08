@@ -30,6 +30,7 @@ void CSceneObject::ReloadReferences()
 			return;
 
 		auto& OwnerSurfaces = m_pReference->Surfaces();
+		xr_vector<CSurface*> SurfacesToDelete;
 
 		m_Surfaces.erase
 		(
@@ -46,12 +47,24 @@ void CSceneObject::ReloadReferences()
 						[&](CSurface* OwnerSurf)
 						{
 							return xr_strcmp(Surf->_Name(), OwnerSurf->_Name()) == 0;
-						});
-					return it == OwnerSurfaces.end();
+						}
+					);
+
+					bool ShouldRemove = (it == OwnerSurfaces.end());
+					if (ShouldRemove)
+					{
+						SurfacesToDelete.push_back(Surf);
+					}
+					return ShouldRemove;
 				}
 			),
 			m_Surfaces.end()
 		);
+
+		for (CSurface* surf : SurfacesToDelete) 
+		{
+			xr_delete(surf);
+		}
 
 		for (CSurface* OwnerSurf : OwnerSurfaces)
 		{
@@ -67,7 +80,10 @@ void CSceneObject::ReloadReferences()
 
 			if (it == m_Surfaces.end())
 			{
-				m_Surfaces.push_back(OwnerSurf);
+				CSurface* NewSurf = new CSurface();
+				NewSurf->CopyFrom(OwnerSurf);
+
+				m_Surfaces.push_back(NewSurf);
 			}
 		}
 	}
@@ -156,11 +172,19 @@ void CSceneObject::Render(int priority, bool strictB2F)
 	if (!IsLoaded)
 		return;
 
+	if (m_CO_Flags.test(flObjectInGroup))
+	{
+		auto Tool = Scene->GetTool(OBJCLASS_GROUP);
+		if (!Tool->IsVisible())
+		{
+			return;
+		}
+	}
+
 	inherited::Render(priority,strictB2F);
 	if (!m_pReference) return;
-#ifdef _LEVEL_EDITOR    
+
 	Scene->SelectLightsForObject(this);
-#endif
 	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
 	if (Selected()){
 		if (1==priority){

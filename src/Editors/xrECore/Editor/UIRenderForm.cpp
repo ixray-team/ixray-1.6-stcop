@@ -152,6 +152,9 @@ void UIRenderForm::DrawVP()
 
 		if (ViewportID == UI->ViewID)
 		{
+			auto ViewHandle = ImGui::GetWindowViewport();
+			UI->Views[ViewportID].WndHandle = SDL_GetWindowFromID((SDL_WindowID)(size_t)ViewHandle->PlatformHandle);
+
 			if (ImGui::GetIO().KeyShift)ShiftState |= ssShift;
 			if (ImGui::GetIO().KeyCtrl)	ShiftState |= ssCtrl;
 			if (ImGui::GetIO().KeyAlt)	ShiftState |= ssAlt;
@@ -187,7 +190,7 @@ void UIRenderForm::DrawVP()
 			mouse_pos.y = canvas_pos.y + canvas_size.y;
 		}
 
-		bool curent_shiftstate_down = m_shiftstate_down;
+		bool curent_shiftstate_down = UI->CurrentView().m_Camera.IsMoving();
 
 
 		if (canvas_size.x < 32.0f) canvas_size.x = 32.0f;

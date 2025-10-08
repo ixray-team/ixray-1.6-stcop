@@ -15,4 +15,5 @@ private:
 
 	string256 InputFile = {};
 	string256 OutputFile = {};
+	bool Selected = false;
 };

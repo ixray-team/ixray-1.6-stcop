@@ -61,6 +61,7 @@ void UIReferenceReplacer::Draw()
 		if (ImGui::Button("Select"))
 		{
 			UIChooseForm::SelectItem(smObject, 1, InputFile, 0, 0, 0, 0, 0);
+			Selected = true;
 		}
 
 		ImGui::BeginDisabled(!HasItemInScene);
@@ -82,14 +83,17 @@ void UIReferenceReplacer::Draw()
 	}
 	ImGui::End();
 
-	UIChooseForm::Update();
-
-
-	bool change = true;
-	shared_str result;
-	if (UIChooseForm::GetResult(change, result) && change)
+	if (Selected)
 	{
-		xr_strcpy(OutputFile, *result);
+		bool change = false;
+		shared_str result;
+		if (UIChooseForm::GetResult(change, result) && change)
+		{
+			xr_strcpy(OutputFile, *result);
+			Selected = false;
+		}
+
+		UIChooseForm::Update();
 	}
 }
 
