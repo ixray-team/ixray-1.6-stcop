@@ -49,6 +49,9 @@
 #include "ActorHelmet.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
+#include "../xrServerEntities/restriction_space.h"
+#include "../xrEngine/GameMtlLib.h"
+#include "material_manager.h"
 
 using namespace luabind;
 
@@ -1388,6 +1391,67 @@ void jump_level(const Fvector& m_position, u32 m_level_vertex_id, GameGraph::_GR
 	Level().Send(p, net_flags(TRUE));
 }
 
+void CallGameOver()
+{
+	CurrentGameUI()->HideShownDialogs();
+	start_tutorial("game_over");
+}
+
+float get_fog_distance()
+{
+	auto CurrEnv = g_pGamePersistent->Environment().CurrentEnv;
+	if (CurrEnv != nullptr)
+	{
+		return CurrEnv->fog_distance;
+	}
+
+	return 400.0f;
+}
+
+void spawn_anomaly(LPCSTR str, int level_vertex_id, const Fvector& position, float rad)
+{
+	VERIFY(!physics_world()->Processing());
+	string128 tmp;
+	VERIFY3(3 == _GetItemCount(str), "Bad record format in artefact_spawn_zones", str);
+	float zone_radius = (float)atof(_GetItem(str, 1, tmp));
+	LPCSTR zone_sect = _GetItem(str, 0, tmp);
+
+	CSE_Abstract* object = Level().spawn_item(zone_sect,
+		position,
+		level_vertex_id,
+		0xffff,
+		true
+	);
+	CSE_ALifeAnomalousZone* AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);
+	VERIFY(AlifeZone);
+	CShapeData::shape_def		_shape;
+	_shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
+	_shape.data.sphere.R = rad;
+	_shape.type = CShapeData::cfSphere;
+	AlifeZone->assign_shapes(&_shape, 1);
+	AlifeZone->m_owner_id = 0;
+	AlifeZone->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+
+	NET_Packet					P;
+	object->Spawn_Write(P, TRUE);
+	Level().Send(P, net_flags(TRUE));
+	F_entity_Destroy(object);
+}
+
+LPCSTR GetActorMaterialPairName()
+{
+	u16 mtl_idx = Actor() ? Actor()->material().last_material_idx() : GAMEMTL_NONE_IDX;
+	if (mtl_idx != GAMEMTL_NONE_IDX)
+	{
+		SGameMtl* mtl = GMLib.GetMaterialByIdx(mtl_idx);
+		return (mtl) ? mtl->m_Name.c_str() : "";
+	}
+	else
+	{
+		return "";
+	}
+}
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -1418,6 +1482,11 @@ void CLevel::script_register(lua_State *L)
 		def("get_next_wdesc_execution_time", get_next_wdesc_execution_time),
 		def("get_past_weather", get_past_wdesc),
 		def("get_next_weather", get_next_wdesc),
+
+		def("get_fog_distance",					get_fog_distance),
+		def("GetActorMaterialPairName",			GetActorMaterialPairName),
+		def("CallGameOver",						CallGameOver),
+
 		def("start_weather_fx_from_time",		start_weather_fx_from_time),
 		def("is_wfx_playing",					is_wfx_playing),
 		def("get_wfx_time",						get_wfx_time),
@@ -1533,7 +1602,8 @@ void CLevel::script_register(lua_State *L)
 		def("spawn_item", &spawn_section),
 		def("get_active_cam", &get_active_cam),
 		def("set_active_cam", &set_active_cam),
-		def("get_start_time", &get_start_time),
+		def("get_start_time", &get_start_time), 
+		def("spawn_anomaly", &spawn_anomaly),
 		def("valid_vertex", &valid_vertex),
 		def("is_ui_shown", &IsUIShown),
 		def("is_actor_burned", &IsActorBurned),
