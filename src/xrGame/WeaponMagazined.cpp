@@ -2452,7 +2452,7 @@ void CWeaponMagazined::PlayAnimShoot()
 		UpdateShellBones(iAmmoElapsed, m_magazine.back().m_LocalAmmoType);
 	}
 
-	PlayHUDMotion(SetCurrentShootAnimation(), FALSE, GetState());
+	PlayHUDMotion(SetCurrentShootAnimation(), m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out), GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
