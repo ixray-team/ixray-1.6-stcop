@@ -157,13 +157,11 @@ void CD3D9Buffer::UpdateSubresource(void* pData, u32 Size)
 
 void CD3D9Buffer::SetVertexBuffer(u32 StartSlot, const u32 Stride, const u32 Offset)
 {
-	R_ASSERT(m_pVB);
 	m_pDev->SetStreamSource(StartSlot, m_pVB, Offset, Stride);
 }
 
 void CD3D9Buffer::SetIndexBuffer(bool Is32BitBuffer, u32 Offset)
 {
-	R_ASSERT(m_pIB);
 	m_pDev->SetIndices(m_pIB);
 }
 
@@ -191,6 +189,6 @@ u32 CD3D9Buffer::Release()
 		refCountIB = m_pIB->Release();
 		m_pIB = nullptr;
 	}
-
+	
 	return std::max(refCountVB, refCountIB);
 }
