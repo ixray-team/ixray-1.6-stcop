@@ -23,11 +23,8 @@ public:
 	u32 Release() override;
 
 private:
-	union
-	{
-		IDirect3DVertexBuffer9* m_pVB = nullptr;
-		IDirect3DIndexBuffer9* m_pIB;
-	};
+	IDirect3DVertexBuffer9* m_pVB = nullptr;
+	IDirect3DIndexBuffer9* m_pIB;
 
 	RHIBufferDesc m_bufferDesc;
 
