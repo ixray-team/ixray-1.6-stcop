@@ -2551,9 +2551,12 @@ bool CWeapon::CanAimNow()
 
 	bool result = true;
 
-	if (pActor && pActor->GetDevice() != nullptr)
+	CCustomDevice* pDevice = pActor->GetDevice();
+
+	if (pDevice != nullptr)
 	{
-		result = !!(pActor->GetDevice()->GetState() == CCustomDevice::eIdle);
+		u32 state = pDevice->GetState();
+		result = !!(state == CCustomDevice::eIdle || state == CCustomDevice::EDeviceStates::eHandAimStart || state == CCustomDevice::EDeviceStates::eHandAimEnd);
 	}
 
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() == eSprintStart || GetState() == eSprintEnd || m_bSwitchSprint))
@@ -2624,6 +2627,17 @@ void CWeapon::OnZoomIn()
 {
 	m_bSwitchSprint = false;
 	m_zoom_params.m_bIsZoomModeNow		= true;
+
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor != nullptr)
+	{
+		if (CCustomDevice* pDevice = pActor->GetDevice())
+		{
+			pDevice->SwitchZoom();
+		}
+	}
+
 	if (m_zoom_params.m_bUseDynamicZoom && IsScopeAttached())
 	{
 		if (LastZoomFactor)
@@ -2656,11 +2670,9 @@ void CWeapon::OnZoomIn()
 
 	if (m_zoom_params.m_sUseZoomPostprocess.size() && IsScopeAttached()) 
 	{
-		CActor* actor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
-
-		if (actor && !GetNightVision())
+		if (pActor != nullptr && !GetNightVision())
 		{
-			m_zoom_params.m_pNight_vision = new CWeaponNightVision(m_zoom_params.m_sUseZoomPostprocess, actor);
+			m_zoom_params.m_pNight_vision = new CWeaponNightVision(m_zoom_params.m_sUseZoomPostprocess, pActor);
 		}
 	}
 }
@@ -2670,6 +2682,16 @@ void CWeapon::OnZoomOut()
 	m_zoom_params.m_bIsZoomModeNow		= false;
 	m_fRTZoomFactor = GetZoomFactor();//store current
 	m_zoom_params.m_fCurrentZoomFactor = g_fov;
+
+	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+
+	if (pActor != nullptr)
+	{
+		if (CCustomDevice* pDevice = pActor->GetDevice())
+		{
+			pDevice->SwitchZoom();
+		}
+	}
 
 	GamePersistent().SetPickableEffectorDOF(false);
 
