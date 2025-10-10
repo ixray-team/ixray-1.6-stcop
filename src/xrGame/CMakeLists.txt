@@ -216,7 +216,7 @@ target_compile_definitions(xrGame PRIVATE dSINGLE)
 target_compile_definitions(xrGame PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrGame PUBLIC xrAbstractions)
+target_link_libraries(xrGame PUBLIC xrEngineCore)
 target_link_libraries(xrGame PUBLIC xrPhysics)
 target_link_libraries(xrGame PUBLIC xrScripts)
 target_link_libraries(xrGame PUBLIC xrUI)
