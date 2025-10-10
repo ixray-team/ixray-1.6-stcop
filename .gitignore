@@ -21,7 +21,11 @@ XRay.code-workspace
 obj/
 lib/
 bin/
-build*/
+build/
+build_win32/
+build_linux/
+build32/
+build_nounity/
 
 # Common logs
 *.log

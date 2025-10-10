@@ -27,7 +27,7 @@ target_precompile_headers(xrServer PRIVATE "stdafx.h")
 target_compile_definitions(xrServer PRIVATE XRSERVER_EXPORT)
 
 # Linker list
-target_link_libraries(xrServer PUBLIC xrAbstractions)
+target_link_libraries(xrServer PUBLIC xrEngineCore)
 add_dependencies(xrServer xrRender_DS0)
 add_dependencies(xrServer xrGame)
 add_dependencies(xrServer xrGameSpy)
