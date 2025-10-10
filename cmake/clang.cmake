@@ -5,7 +5,7 @@ if (WIN32)
     add_compile_options(--Wno-microsoft-template-shadow)
 else()
     add_compile_options(-fms-extensions)
-    add_compile_options(-fexperimental-library) # stacktrace
+    #add_compile_options(-fexperimental-library) # stacktrace
     add_compile_options(
         -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format -Wno-inconsistent-missing-override -Wno-undefined-inline
         -Wno-inline-new-delete -Wno-implicit-exception-spec-mismatch -Wno-unknown-warning-option -Wno-tautological-constant-out-of-range-compare
