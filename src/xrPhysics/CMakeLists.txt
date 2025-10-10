@@ -57,7 +57,7 @@ target_compile_definitions(xrPhysics PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrPhysics PUBLIC xrCore)
 target_link_libraries(xrPhysics PUBLIC ODE)
-target_link_libraries(xrPhysics PUBLIC xrAbstractions)
+target_link_libraries(xrPhysics PUBLIC xrEngineCore)
 
 # Move precompiled header
 target_validate_pch(xrPhysics ${CMAKE_CURRENT_SOURCE_DIR})
