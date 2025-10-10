@@ -52,7 +52,7 @@ target_compile_definitions(xrAI PRIVATE "$<$<CONFIG:Release>:LUABIND_NO_ERROR_CH
 # Linker list
 target_link_libraries(xrAI PUBLIC luabind)
 target_link_libraries(xrAI PUBLIC xrSE_Factory)
-target_link_libraries(xrAI PUBLIC xrAbstractions)
+target_link_libraries(xrAI PUBLIC xrEngineCore)
 target_link_libraries(xrAI PUBLIC imgui)
 
 target_link_libraries(xrAI PUBLIC "rpcrt4.lib")
