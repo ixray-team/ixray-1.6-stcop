@@ -53,7 +53,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(xrNetServer PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrPhysics PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrParticles PROPERTIES ${IXRAY_FOLDER_ENGINE})
-    set_target_properties(xrAbstractions PROPERTIES ${IXRAY_FOLDER_ENGINE})
+    set_target_properties(xrEngineCore PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrScripts PROPERTIES ${IXRAY_FOLDER_ENGINE})
     set_target_properties(xrUI PROPERTIES ${IXRAY_FOLDER_ENGINE})
 

@@ -97,7 +97,7 @@ target_include_directories(xrUI PUBLIC "${IXRAY_SDK_INC}")
 target_compile_definitions(xrUI PRIVATE XR_UI_EXPORTS)
 
 # Linker list
-target_link_libraries(xrUI PUBLIC xrAbstractions)
+target_link_libraries(xrUI PUBLIC xrEngineCore)
 target_link_libraries(xrUI PUBLIC xrScripts)
 
 # Move precompiled header
