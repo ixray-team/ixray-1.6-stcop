@@ -37,7 +37,7 @@ set_target_properties(xrEngine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 target_compile_definitions(xrEngine PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrEngine PUBLIC xrAbstractions)
+target_link_libraries(xrEngine PUBLIC xrEngineCore)
 target_link_libraries(xrEngine PUBLIC xrScripts)
 
 if (WIN32)

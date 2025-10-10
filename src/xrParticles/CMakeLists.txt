@@ -28,4 +28,4 @@ target_compile_definitions(xrParticles PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrParticles PUBLIC xrCore)
-target_link_libraries(xrParticles PUBLIC xrAbstractions)
+target_link_libraries(xrParticles PUBLIC xrEngineCore)
