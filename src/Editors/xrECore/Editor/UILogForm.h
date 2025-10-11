@@ -21,6 +21,6 @@ private:
 	static xr_vector<bool*> SelectedItems;
 	static bool bAutoScroll;
 	static bool bClearInPIE;
-	static string_path m_Filter;
-	static string_path m_Exec;
+	static string_path Filter;
+	static string_path Exec;
 };

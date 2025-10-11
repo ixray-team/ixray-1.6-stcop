@@ -12,8 +12,8 @@
 
 bool UILogForm::bAutoScroll = true;
 bool UILogForm::bClearInPIE = false;
-string_path UILogForm::m_Filter="";
-string_path UILogForm::m_Exec="";
+string_path UILogForm::Filter ="";
+string_path UILogForm::Exec="";
 xr_vector<xr_string>* UILogForm::List = nullptr;
 extern bool bAllowLogCommands;
 
@@ -53,128 +53,147 @@ void UILogForm::Hide()
 void UILogForm::Update()
 {
 	static bool FirstRun = false;
-	if (bAllowLogCommands)
-	{
-		bool NeedCopy = false;
-		if (!ImGui::Begin("Log", &bAllowLogCommands))
-		{
-			ImGui::End();
-			return;
-		}
 
-		if (ImGui::Button("Clear")) 
-		{
-			Clear();
-		}
-		ImGui::SameLine();
-
-		if (ImGui::Button("Copy"))
-		{
-			NeedCopy = true;
-		}
-		ImGui::SameLine();
-
-		ImGui::Checkbox("Auto Scroll", &bAutoScroll); 
-		ImGui::SameLine();
-		ImGui::SetNextItemWidth(-1);
-		ImGui::InputTextWithHint("##SearchFilter", "Search", m_Filter, sizeof(m_Filter));
-
-		if (GUIManager->SearchIcon)
-		{
-			ImVec2 IconSize = { 12,12 };
-
-			ImGui::SameLine();
-			ImVec2 cursorPos = ImGui::GetCursorPos();
-			ImGui::SetCursorPos(ImVec2(cursorPos.x - IconSize.x - 10.f, 1 + cursorPos.y + (IconSize.y / 4)));
-
-			ImGui::Image(GUIManager->SearchIcon, IconSize);
-		}
-
-		ImGui::Spacing();
-		if (ImGui::BeginChild("Log##child",ImVec2(0, -ImGui::GetFrameHeightWithSpacing()),true))
-		{
-			xrCriticalSectionGuard cs(LogGuard);
-			ImGuiListClipper clipper;
-			clipper.Begin(GetList()->size());
-
-			xr_string CopyLog;
-
-			while (clipper.Step())
-			{
-				for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
-				{
-					CUIThemeManager& theme_manager = CUIThemeManager::Get();
-					ImVec4 Color = theme_manager.log_color_default;
-					const char* Str = GetList()->at(i).c_str();
-
-					if (Str == nullptr || xr_strlen(Str) == 0)
-						continue;
-
-					if (m_Filter[0] && strstr(Str, m_Filter) == 0)
-					{
-						continue;
-					}
-					if (strncmp(Str, "! ", 2) == 0)
-					{
-						Color = theme_manager.log_color_error;
-					}
-					if (strncmp(Str, "~ ", 2) == 0)
-					{
-						Color = theme_manager.log_color_warning;
-					}
-					if (strncmp(Str, "* ", 2) == 0)
-					{
-						Color = theme_manager.log_color_debug;
-					}
-
-					ImGui::PushStyleColor(ImGuiCol_Text, Color);
-					string256 StrLog = {};
-					xr_sprintf(StrLog, "%s##%d", Str, i);
-
-					if (strlen(Str) > 0 && ImGui::Selectable(StrLog))
-					{
-						os_clipboard::copy_to_clipboard(Str);
-					}
-					else
-					{
-						if (NeedCopy)
-							CopyLog.append(Str).append("\r\n");
-					}
-					ImGui::PopStyleColor();
-				}
-			}
-
-			if (NeedCopy)
-			{
-				os_clipboard::copy_to_clipboard(CopyLog.c_str());
-			}
-			if (bAutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()|| FirstRun==false)
-				ImGui::SetScrollHereY();
-			FirstRun = true;
-		}
-		ImGui::EndChild();
-
-		ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
-		if (ImGui::InputTextWithHint("##Exec", "Exec", m_Exec, IM_ARRAYSIZE(m_Exec), input_text_flags))
-		{
-			if (m_Exec[0])
-			{
-				Msg("~ Exec %s", m_Exec);
-				Console->Execute(m_Exec);
-			}
-		}
-
-		float checkboxWidth = ImGui::CalcTextSize("Clear in PIE").x + ImGui::GetStyle().FramePadding.x * 2 + ImGui::GetStyle().ItemInnerSpacing.x * 2 + 10;
-		ImGui::SameLine(ImGui::GetContentRegionAvail().x - checkboxWidth + ImGui::GetCursorPosX());
-
-		ImGui::Checkbox("Clear in PIE", &bClearInPIE);
-
-		ImGui::End();
-	}
-	else
+	if (!bAllowLogCommands)
 	{
 		FirstRun = false;
+		return;
 	}
+
+	bool NeedCopy = false;
+	if (!ImGui::Begin("Log", &bAllowLogCommands))
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (ImGui::Button("Clear"))
+	{
+		Clear();
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Copy"))
+	{
+		NeedCopy = true;
+	}
+
+	ImGui::SameLine();
+	ImGui::Checkbox("Auto Scroll", &bAutoScroll);
+
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(-1);
+	ImGui::InputTextWithHint("##SearchFilter", "Search", Filter, sizeof(Filter));
+
+	if (GUIManager->SearchIcon)
+	{
+		static const ImVec2 IconSize = { 12, 12 };
+		ImGui::SameLine();
+		ImVec2 CursorPos = ImGui::GetCursorPos();
+		ImGui::SetCursorPos(ImVec2(CursorPos.x - IconSize.x - 10.f, 1 + CursorPos.y + (IconSize.y / 4)));
+		ImGui::Image(GUIManager->SearchIcon, IconSize);
+	}
+
+	ImGui::Spacing();
+
+	if (ImGui::BeginChild("Log##Child", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()), true))
+	{
+		xrCriticalSectionGuard Cs(LogGuard);
+
+		xr_vector<const char*> Visible;
+		Visible.reserve(GetList()->size());
+
+		for (const auto& S : *GetList())
+		{
+			const char* Str = S.c_str();
+			if (!Str || !*Str)
+			{
+				continue;
+			}
+
+			if (Filter[0] && strstr(Str, Filter) == nullptr)
+			{
+				continue;
+			}
+
+			Visible.push_back(Str);
+		}
+
+		ImGuiListClipper Clipper;
+		Clipper.Begin(static_cast<int>(Visible.size()));
+
+		xr_string CopyLog;
+
+		while (Clipper.Step())
+		{
+			for (int I = Clipper.DisplayStart; I < Clipper.DisplayEnd; ++I)
+			{
+				const char* Str = Visible[I];
+				CUIThemeManager& ThemeManager = CUIThemeManager::Get();
+				ImVec4 Color = ThemeManager.log_color_default;
+
+				if (strncmp(Str, "! ", 2) == 0)
+				{
+					Color = ThemeManager.log_color_error;
+				}
+				else if (strncmp(Str, "~ ", 2) == 0)
+				{
+					Color = ThemeManager.log_color_warning;
+				}
+				else if (strncmp(Str, "* ", 2) == 0)
+				{
+					Color = ThemeManager.log_color_debug;
+				}
+
+				ImGui::PushStyleColor(ImGuiCol_Text, Color);
+
+				string256 StrLog = {};
+				xr_sprintf(StrLog, "%s##%d", Str, I);
+
+				if (ImGui::Selectable(StrLog))
+				{
+					os_clipboard::copy_to_clipboard(Str);
+				}
+				else if (NeedCopy)
+				{
+					CopyLog.append(Str).append("\r\n");
+				}
+
+				ImGui::PopStyleColor();
+			}
+		}
+
+		if (NeedCopy)
+		{
+			os_clipboard::copy_to_clipboard(CopyLog.c_str());
+		}
+
+		if ((bAutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) || !FirstRun)
+		{
+			ImGui::SetScrollHereY();
+		}
+
+		FirstRun = true;
+	}
+	ImGui::EndChild();
+
+	ImGuiInputTextFlags InputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::InputTextWithHint("##Exec", "Exec", Exec, IM_ARRAYSIZE(Exec), InputTextFlags))
+	{
+		if (Exec[0])
+		{
+			Msg("~ Exec %s", Exec);
+			Console->Execute(Exec);
+		}
+	}
+
+	static const float CIPWidth = ImGui::CalcTextSize("Clear in PIE").x;
+	float CheckboxWidth = CIPWidth + ImGui::GetStyle().FramePadding.x * 2 + ImGui::GetStyle().ItemInnerSpacing.x * 2 + 10;
+
+	ImGui::SameLine(ImGui::GetContentRegionAvail().x - CheckboxWidth + ImGui::GetCursorPosX());
+	ImGui::Checkbox("Clear in PIE", &bClearInPIE);
+
+	ImGui::End();
 }
 
 void UILogForm::Clear()
