@@ -1173,6 +1173,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_strapped_mode				= false;
 	m_strapped_mode_rifle = false;
 	m_zoom_params.m_bIsZoomModeNow	= false;
+	bDisablePrepareAnimation = false;
 	UpdateXForm					();
 
 }
@@ -1208,6 +1209,7 @@ void CWeapon::OnActiveItem ()
 //-
 
 	bStopReloadSignal = false;
+	bDisablePrepareAnimation = false;
 
 	inherited::OnActiveItem		();
 	//если мы занружаемся и оружие было в руках
@@ -1230,6 +1232,7 @@ void CWeapon::OnHiddenItem ()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_bBlockEmptyClick = false;
 	bWorking = false;
+	bDisablePrepareAnimation = false;
 }
 
 bool CWeapon::SendDeactivateItem(bool Force)

@@ -195,7 +195,7 @@ void CCustomDevice::ToggleDetector(bool bFastMode, bool switching)
 			}
 		}
 	}
-	else if (GetState() != eHiding && GetState() != eShowing)
+	else if (GetState() != eHiding && GetState() != eShowing && !m_bIsZoomed)
 	{
 		SwitchState(eHiding);
 	}
@@ -440,6 +440,7 @@ void CCustomDevice::OnAnimationEnd(u32 state)
 		SwitchState(eHidden);
 		TurnDetectorInternal(false);
 		g_player_hud->detach_item(this);
+		m_bIsZoomed = false;
 	} break;
 	case eHandThrowStart:
 	case eHandThrowIdle:
@@ -546,7 +547,7 @@ void CCustomDevice::UpdateVisibility()
 		}
 	}
 
-	if (g_player_hud->attached_item(0) == nullptr && GetState() >= EDeviceStates::eHandThrowStart && GetState() <= EDeviceStates::eHandThrowEnd)
+	if ((g_player_hud->attached_item(0) == nullptr || g_player_hud->attached_item(0)->m_parent_hud_item->cast_missile() == nullptr) && GetState() >= EDeviceStates::eHandThrowStart && GetState() <= EDeviceStates::eHandThrowEnd)
 	{
 		SwitchState(eIdle);
 	}
@@ -641,6 +642,7 @@ void CCustomDevice::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
 	SwitchState(eHidden);
+	m_bIsZoomed = false;
 }
 
 void CCustomDevice::OnMoveToRuck(const SInvItemPlace& prev)
@@ -652,6 +654,7 @@ void CCustomDevice::OnMoveToRuck(const SInvItemPlace& prev)
 		SwitchState(eHidden);
 		g_player_hud->detach_item(this);
 		m_bNeedActivation = false;
+		m_bIsZoomed = false;
 	}
 
 	TurnDetectorInternal(false);
