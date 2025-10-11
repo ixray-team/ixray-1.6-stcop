@@ -44,6 +44,9 @@ source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
+if(NOT IXRAY_MP)
+    list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
+endif()
 if(NOT WIN32)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "System/NotificationClient.*")
 endif()
@@ -59,5 +62,13 @@ target_compile_definitions(xrSound PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
+target_link_libraries(xrSound PRIVATE Ogg::ogg)
+target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
+target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)
+target_link_libraries(xrSound PRIVATE OpenAL::OpenAL)
 
-setup_audio_libs(xrSound)
+if (IXRAY_MP)
+    target_link_libraries(xrSound PRIVATE SpeexDSP::SpeexDSP)
+    target_link_libraries(xrSound PRIVATE Opus::Opus)
+	target_compile_definitions(xrSound PUBLIC XR_MP_BUILD)
+endif()
