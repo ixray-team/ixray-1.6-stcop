@@ -16,8 +16,8 @@ void CFlashlight::Load(LPCSTR section)
 
 	m_HudLight.SetInstalled(true);
 
-	m_ElectronicProblems.probability = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problem_prob", 1.0f);
-	m_ElectronicProblems.problems_level = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_level", 0.0f);
+	m_fElectronicProblems.x = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_level", 0.0f);
+	m_fElectronicProblems.y = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_freq", 0.5f);
 
 	//TODO: Implement particles support
 }
@@ -44,9 +44,16 @@ void CFlashlight::UpdateCL()
 			level_electronic_problems = pActor->CurrentElectronicsProblemsCnt();
 		}
 
-		if (m_ElectronicProblems.problems_level > 0.0f && level_electronic_problems > 0.0f && level_electronic_problems >= m_ElectronicProblems.problems_level)
+		if (m_fElectronicProblems.x > 0.0f && level_electronic_problems > 0.0f)
 		{
-			status = m_ElectronicProblems.probability >= ::Random.randF(0.0f, 1.0f);
+			if (level_electronic_problems >= m_fElectronicProblems.x)
+			{
+				status = false;
+			}
+			else
+			{
+				status = !!(::Random.randF(0.0f, 1.0f) > m_fElectronicProblems.y);
+			}
 		}
 	}
 

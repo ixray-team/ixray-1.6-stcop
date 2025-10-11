@@ -6,12 +6,7 @@ class CFlashlight final : public CCustomDevice
 	using inherited = CCustomDevice;
 
 	bool m_bFlashlightStatus = false;
-
-	struct electronic_problems
-	{
-		float problems_level = 0.0f;
-		float probability = 1.0f;
-	} m_ElectronicProblems;
+	Fvector2 m_fElectronicProblems;
 
 public:
 	CFlashlight() = default;
