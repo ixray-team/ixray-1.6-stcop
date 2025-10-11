@@ -193,8 +193,12 @@ target_link_libraries(xrECore PUBLIC NvMender2003)
 target_link_libraries(xrECore PUBLIC "d3d9.lib")
 target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
-target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(xrECore PRIVATE Ogg::ogg)
+target_link_libraries(xrECore PRIVATE Vorbis::vorbis)
+#target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
+target_link_libraries(xrECore PRIVATE OpenAL::OpenAL)
 
+target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## DirectX SDK
 if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
@@ -209,21 +213,3 @@ target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxm
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib)
 target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
-
-# Nuget
-set(SNDE_OGG ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibOgg.1.3.5.4/)
-set(SNDE_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
-set(SNDE_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
-
-## LibOGG
-target_link_libraries(xrECore PRIVATE ${SNDE_OGG}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrECore PRIVATE "${SNDE_OGG}/native/include/")
-
-## Vorbis
-target_link_libraries(xrECore PRIVATE ${SNDE_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib)
-target_link_libraries(xrECore PRIVATE ${SNDE_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
-target_include_directories(xrECore PRIVATE "${SNDE_VOB}/native/include/")
-
-## OpenAL
-target_link_libraries(xrECore PRIVATE ${SNDE_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
-target_include_directories(xrECore PRIVATE "${SNDE_OAL}/native/include/")
