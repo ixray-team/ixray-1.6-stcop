@@ -305,7 +305,9 @@ void CSoundRender_CoreA::_initialize(int stage)
 			}
 		}
 
+#ifdef XR_MP_BUILD
         pSoundVoiceChat = new SoundVoiceChat(pContext);
+#endif
 	}
 }
 
@@ -322,16 +324,21 @@ void CSoundRender_CoreA::update(const Fvector& P, const Fvector& D, const Fvecto
 
     inherited::update(P, D, N);
 
+#ifdef XR_MP_BUILD
     if (pSoundVoiceChat)
+    {
         pSoundVoiceChat->Update(P, D, N);
+    }
+#endif
 }
 
 void CSoundRender_CoreA::_clear	()
 {
     inherited::_clear();
 
+#ifdef XR_MP_BUILD
     xr_delete(pSoundVoiceChat);
-
+#endif
     // remove targets
 	CSoundRender_Target* T = nullptr;
 	for (u32 tit=0; tit<s_targets.size(); tit++)
