@@ -51,6 +51,30 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 static HFILE gFileOut;
 static HFILE gFileIn;
 
+void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::array<xr_vector<u8>, 6>& faces)
+{
+	int S = W / 4;
+	auto copyFace = [&](int dstIndex, int srcX, int srcY)
+	{
+		faces[dstIndex].resize(S * S * 4);
+		for (int y = 0; y < S; y++)
+		{
+			const u8* srcLine = src + (srcY + y) * pitch + srcX * 4;
+			u8* dstLine = faces[dstIndex].data() + y * S * 4;
+			memcpy(dstLine, srcLine, S * 4);
+		}
+	};
+
+	// порядок: +X, -X, +Y, -Y, +Z, -Z
+	copyFace(0, 2 * S, S); // +X
+	copyFace(1, 0 * S, S); // -X
+	copyFace(2, 1 * S, 0); // +Y
+	copyFace(3, 1 * S, 2 * S); // -Y
+	copyFace(4, 1 * S, S); // +Z
+	copyFace(5, 3 * S, S); // -Z
+}
+
+
 int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
 	R_ASSERT(0 != w && 0 != h);
@@ -64,8 +88,8 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 	nvtt::InputOptions inOpt;
 	
 	
-	//auto layout = fmt->type == STextureParams::ttCubeMap ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
-	inOpt.setTextureLayout(nvtt::TextureType_2D, w, h);
+	nvtt::TextureType layout = fmt->type == STextureParams::ttCubeMap ? nvtt::TextureType_Cube : nvtt::TextureType_2D;
+	inOpt.setTextureLayout(layout, w, h);
 	inOpt.setMipmapGeneration(fmt->flags.is(STextureParams::flGenerateMipMaps));
 	inOpt.setWrapMode(nvtt::WrapMode_Clamp);
 	inOpt.setNormalMap(false);
@@ -114,7 +138,22 @@ int DXTCompressImageNVTT(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch,
 		for (u32 k = 0; k < w * h; k++, pixel += 4)
 			pixels[k].set(pixel[0], pixel[1], pixel[2], pixel[3]);
 
-		inOpt.setMipmapData(pixels, w, h);
+		if (fmt->type == STextureParams::ttCubeMap)
+		{
+			std::array<xr_vector<u8>, 6> faces;
+			ExtractCubeFacesFromCrossRGBA(raw_data, w, h, pitch, faces);
+
+			u32 side = w / 4;
+			inOpt.setTextureLayout(nvtt::TextureType_Cube, side, side);
+
+			for (int face = 0; face < 6; face++)
+				inOpt.setMipmapData(faces[face].data(), side, side, 1, face);
+		}
+		else
+		{
+			inOpt.setMipmapData(raw_data, w, h);
+		}
+
 		result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
 	}
 

@@ -356,7 +356,8 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 			if (!THM) THM = new ETextureThumbnail(it->name.c_str());
 			R_ASSERT(THM);
 			if (data.empty()){ bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);}
-			if (IsValidSize(w,h)){
+			if (true)
+			{
 				string_path 			game_name;
 				xr_strconcat(game_name, base_name.c_str(), ".dds");
 
