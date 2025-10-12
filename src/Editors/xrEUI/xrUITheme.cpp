@@ -3,6 +3,7 @@
 #include "imgui_user.h"
 
 #define _game_fonts_ "$game_fonts$"
+#define _themes_ "$themes$"
 
 #include <fstream>
 #include <json/json.hpp>
@@ -396,7 +397,7 @@ void CUIThemeManager::SaveTo()
 		return;
 
 	xr_string jfn;
-	if (EFS.GetSaveName("$themes$", jfn, 0, 6, "*.json"))
+	if (EFS.GetSaveName(_themes_, jfn, 0, 6, "*.json"))
 	{
 		json JSONData = {};
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -486,7 +487,7 @@ void CUIThemeManager::LoadFrom()
 {
 	json JSONData = {};
 	xr_string jfn;
-	if (EFS.GetOpenName("$themes$", jfn, false, NULL, 6, "*.json"))
+	if (EFS.GetOpenName(_themes_, jfn, false, NULL, 6, "*.json"))
 	{
 		std::ifstream f(jfn.c_str());
 		f >> JSONData;
