@@ -97,7 +97,7 @@ void UITopBarForm::Draw()
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 6);
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 6);
 
-		if (ImGui::BeginTable("##ToolbarTable", 10, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
+		if (ImGui::BeginTable("##ToolbarTable", 11, ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_Hideable))
 		{
 			ImGui::TableSetupColumn("Actions");
 			ImGui::TableSetupColumn("File");
@@ -106,6 +106,7 @@ void UITopBarForm::Draw()
 			ImGui::TableSetupColumn("Compile Actions");
 			ImGui::TableSetupColumn("Engine");
 			ImGui::TableSetupColumn("Directory Actions");
+			ImGui::TableSetupColumn("Hint");
 			ImGui::TableSetupColumn("Sound Preferences");
 			ImGui::TableSetupColumn("Physics");
 			ImGui::TableSetupColumn("Preferences");
@@ -192,12 +193,14 @@ void UITopBarForm::Draw()
 			{
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::Checkbox("Hint ", &MainForm->GetRenderForm()->UseHint);
-				ImGui::SameLine();
+			}
 
+			if (ImGui::TableNextColumn())
+			{
 				ImGui::BeginDisabled(psDeviceFlags.is(rsMuteSounds));
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
 				ImGui::SetNextItemWidth(150);
-				ImGui::SliderFloat("Volume", &EPrefs->sound_volume, 0, 1, "%.2f");
+				ImGui::SliderFloat(!psDeviceFlags.is(rsMuteSounds) ? ICON_FA_VOLUME_HIGH : ICON_FA_VOLUME_XMARK, &EPrefs->sound_volume, 0, 1, "%.2f");
 				ImGui::EndDisabled();
 			}
 
