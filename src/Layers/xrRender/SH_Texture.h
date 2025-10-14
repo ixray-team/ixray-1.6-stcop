@@ -53,10 +53,8 @@ public:
 	IRHIShaderResourceView*				get_SRView() {return m_pSRView;}
 
 private:
-#ifdef USE_DX11
-	void								Apply			(u32 dwStage);
+	void								Apply(u32 dwStage);
 	void								ProcessStaging();
-#endif //USE_DX11
 
 	ERHI_USAGE							GetUsage();
 public:
