@@ -450,7 +450,25 @@ void CTexture::Load()
 			{
 				// Load another texture
 				u32	mem = 0;
+#ifdef USE_DX11
 				pSurface = ::RImplementation.texture_load(buffer, mem);
+#else
+				IDirect3DBaseTexture9* baseTexture = ::RImplementation.texture_load(buffer, mem);
+				if (baseTexture) {
+					// Create RHITextureDesc for the loaded texture
+					RHITextureDesc rhiDesc;
+					rhiDesc.Width = 1;  // Will be set properly by the texture
+					rhiDesc.Height = 1;
+					rhiDesc.Depth = 1;
+					rhiDesc.MipLevels = 1;
+					rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+					rhiDesc.CPUAccessFlags = 0;
+					rhiDesc.MiscFlags = 0;
+
+					// Use GRHI to create the surface from loaded texture
+					pSurface = GRHI->CreateTextureFromMemory(baseTexture, 0, rhiDesc);
+				}
+#endif
 				if (pSurface)
 				{
 					seqDATA.push_back(pSurface);
@@ -467,7 +485,25 @@ void CTexture::Load()
 	{
 		// Normal texture
 		u32	mem = 0;
+#ifdef USE_DX11
 		pSurface = ::RImplementation.texture_load(*cName, mem, true);
+#else
+		IDirect3DBaseTexture9* baseTexture = ::RImplementation.texture_load(*cName, mem);
+		if (baseTexture) {
+			// Create RHITextureDesc for the loaded texture
+			RHITextureDesc rhiDesc;
+			rhiDesc.Width = 1;  // Will be set properly by the texture
+			rhiDesc.Height = 1;
+			rhiDesc.Depth = 1;
+			rhiDesc.MipLevels = 1;
+			rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+			rhiDesc.CPUAccessFlags = 0;
+			rhiDesc.MiscFlags = 0;
+
+			// Use GRHI to create the surface from loaded texture
+			pSurface = GRHI->CreateTextureFromMemory(baseTexture, 0, rhiDesc);
+		}
+#endif
 
 		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
 		{
