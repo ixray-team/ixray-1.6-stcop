@@ -631,23 +631,23 @@ IRHIShaderResourceView* DX11TextureFactory::CreateShaderResourceView(IRHISurface
 		srvDesc.Format = (DXGI_FORMAT)desc->Format;
 		srvDesc.ViewDimension = (D3D11_SRV_DIMENSION)desc->ViewDimension;
 
-		if (desc->ViewDimension == D3D11_SRV_DIMENSION_TEXTURE2D)
+		if (desc->ViewDimension == ERHI_SRV_DIMENSION::TEXTURE2D)
 		{
 			srvDesc.Texture2D.MostDetailedMip = desc->MostDetailedMip;
 			srvDesc.Texture2D.MipLevels = desc->MipLevels;
 		}
-		else if (desc->ViewDimension == D3D11_SRV_DIMENSION_TEXTURE2DARRAY)
+		else if (desc->ViewDimension == ERHI_SRV_DIMENSION::TEXTURE2DARRAY)
 		{
 			srvDesc.Texture2DArray.MostDetailedMip = desc->MostDetailedMip;
 			srvDesc.Texture2DArray.MipLevels = desc->MipLevels;
 			srvDesc.Texture2DArray.FirstArraySlice = desc->FirstArraySlice;
 			srvDesc.Texture2DArray.ArraySize = desc->ArraySize;
 		}
-		else if (desc->ViewDimension == D3D11_SRV_DIMENSION_TEXTURE2DMS)
+		else if (desc->ViewDimension == ERHI_SRV_DIMENSION::TEXTURE2DMS)
 		{
 			srvDesc.Texture2DMS.UnusedField_NothingToDefine = 0;
 		}
-		else if (desc->ViewDimension == D3D11_SRV_DIMENSION_TEXTURECUBE)
+		else if (desc->ViewDimension == ERHI_SRV_DIMENSION::TEXTURECUBE)
 		{
 			srvDesc.TextureCube.MostDetailedMip = desc->MostDetailedMip;
 			srvDesc.TextureCube.MipLevels = desc->MipLevels;
