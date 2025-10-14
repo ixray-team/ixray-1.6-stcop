@@ -13,7 +13,7 @@ class IRHIDepthStencilView;
 struct RHIShaderResourceViewDesc
 {
 	ERHI_FORMAT Format = ERHI_FORMAT::UNKNOWN;
-	u32 ViewDimension = 0;    // D3D11_SRV_DIMENSION
+	ERHI_SRV_DIMENSION ViewDimension = ERHI_SRV_DIMENSION::UNKNOWN;
 	u32 MostDetailedMip = 0;  // Most detailed mip level
 	u32 MipLevels = 0;        // Number of mip levels
 	u32 FirstArraySlice = 0;  // For texture arrays
