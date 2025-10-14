@@ -12,10 +12,6 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
-#define PRIORITY_HIGH	12
-#define PRIORITY_NORMAL	8
-#define PRIORITY_LOW	4
-
 void resptrcode_texture::create(const char* _name)
 {
 	PROF_EVENT("resptrcode_texture::create");
@@ -64,22 +60,22 @@ void CTexture::surface_set(IRHISurface* surf)
 		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
 		if (ERHI_RESOURCE_DIMENSION::TEXTURE2D == type)
 		{
-			if (pSurface->GetMiscFlags() & D3D_RESOURCE_MISC_TEXTURECUBE)
+			if (((ERHI_RESOURCE_MISC_FLAG)pSurface->GetMiscFlags() & ERHI_RESOURCE_MISC_FLAG::TEXTURECUBE) != ERHI_RESOURCE_MISC_FLAG(0))
 			{
-				ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURECUBE;
+				ViewDesc.ViewDimension = ERHI_SRV_DIMENSION::TEXTURECUBE;
 				ViewDesc.MipLevels = pSurface->GetMipLevels();
 			}
 			else
 			{
 				if (pSurface->GetSampleDescCount() <= 1)
 				{
-					ViewDesc.ViewDimension = (pSurface->GetArraySize() > 1) ? D3D_SRV_DIMENSION_TEXTURE2DARRAY : D3D_SRV_DIMENSION_TEXTURE2D;
+					ViewDesc.ViewDimension = (pSurface->GetArraySize() > 1) ? ERHI_SRV_DIMENSION::TEXTURE2DARRAY : ERHI_SRV_DIMENSION::TEXTURE2D;
 					ViewDesc.MipLevels = pSurface->GetMipLevels();
 				}
 				else
 				{
 					VERIFY(pSurface->GetArraySize() == 1);
-					ViewDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DMS;
+					ViewDesc.ViewDimension = ERHI_SRV_DIMENSION::TEXTURE2DMS;
 					ViewDesc.MipLevels = pSurface->GetMipLevels();
 				}
 			}
@@ -269,8 +265,8 @@ void CTexture::apply_avi(u32 dwStage)
 {
 	if (pAVI->NeedUpdate())
 	{
-		D3D_RESOURCE_DIMENSION type = (D3D_RESOURCE_DIMENSION)pSurface->GetTextureType();
-		R_ASSERT(D3D_RESOURCE_DIMENSION_TEXTURE2D == type);
+		ERHI_RESOURCE_DIMENSION type = pSurface->GetTextureType();
+		R_ASSERT(ERHI_RESOURCE_DIMENSION::TEXTURE2D == type);
 
 		u32 RowPitch = 0;
 		void* InputBuffer = pSurface->Lock(0, &RowPitch);
@@ -372,7 +368,7 @@ void CTexture::Load()
 			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
 			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			rhiDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
 			rhiDesc.MiscFlags = 0;
 
 			pSurface = GRHI->CreateTextureFromMemory(nullptr, 0, rhiDesc);
@@ -411,7 +407,7 @@ void CTexture::Load()
 			rhiDesc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
 			rhiDesc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
 			rhiDesc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
-			rhiDesc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
+			rhiDesc.CPUAccessFlags = ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE;
 			rhiDesc.MiscFlags = 0;
 
 			// Use GRHI to create the surface
@@ -471,7 +467,6 @@ void CTexture::Load()
 	{
 		// Normal texture
 		u32	mem = 0;
-		//pSurface = ::RImplementation.texture_load	(*cName,mem);
 		pSurface = ::RImplementation.texture_load(*cName, mem, true);
 
 		if (GetUsage() == ERHI_USAGE::USAGE_STAGING)
