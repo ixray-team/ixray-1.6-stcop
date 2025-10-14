@@ -290,41 +290,47 @@ _DDS:
 		const uint8_t* bitData = nullptr;
 		size_t bitSize = 0;
 
-#ifndef _EDITOR
 		const DDS_HEADER* header = nullptr;
 		HRESULT const result = LoadTextureDataFromMemory((uint8_t*)S->pointer(), S->length(), &header, &bitData, &bitSize);
+		bool UseRedImage = false;
 
-		D3DCAPS9 d3dCaps;
-		if (FAILED(RDevice->GetDeviceCaps(&d3dCaps)))
-		{
-			string512 errMsg;
-			xr_sprintf(errMsg, "Failed to get device capabilities for texture size check.");
-			R_ASSERT3(false, errMsg, fname);
-		}
-
-		const u32 maxTextureDimension = _max(d3dCaps.MaxTextureWidth, d3dCaps.MaxTextureHeight);
-
-		if (header && (header->width > maxTextureDimension || header->height > maxTextureDimension))
-		{
-			string512 errMsg;
-			xr_sprintf(errMsg, "Texture dimensions exceed hardware limits: %dx%d (Max: %d)",
-				header->width, header->height,
-				maxTextureDimension);
-			R_ASSERT3(false, errMsg, fname);
-		}
-#else
+#ifdef _EDITOR
 		RedImageTool::RedImage Image;
-		HRESULT result = S_OK;
-		if (!Image.LoadFromMemory(S->pointer(), S->length()))
+		if (result == 0x80070032)
 		{
-			result = S_FALSE;
-		}
-		
-		const size_t ImageBufferSize = Image.GetWidth() * 4 * Image.GetHeight();
-		bitData = (uint8_t*)*Image;
-#endif
+			UseRedImage = true;
+			if (!Image.LoadFromMemory(S->pointer(), S->length()))
+			{
+				UseRedImage = false;
+			}
 
-		if (FAILED(result))
+			const size_t ImageBufferSize = Image.GetWidth() * 4 * Image.GetHeight();
+			bitData = (uint8_t*)*Image;
+		}
+#endif
+		if (!UseRedImage)
+		{
+			D3DCAPS9 d3dCaps;
+			if (FAILED(RDevice->GetDeviceCaps(&d3dCaps)))
+			{
+				string512 errMsg;
+				xr_sprintf(errMsg, "Failed to get device capabilities for texture size check.");
+				R_ASSERT3(false, errMsg, fname);
+			}
+
+			const u32 maxTextureDimension = _max(d3dCaps.MaxTextureWidth, d3dCaps.MaxTextureHeight);
+
+			if (header && (header->width > maxTextureDimension || header->height > maxTextureDimension))
+			{
+				string512 errMsg;
+				xr_sprintf(errMsg, "Texture dimensions exceed hardware limits: %dx%d (Max: %d)",
+					header->width, header->height,
+					maxTextureDimension);
+				R_ASSERT3(false, errMsg, fname);
+			}
+		}
+
+		if (FAILED(result) && !UseRedImage)
 		{
 			Msg("! Unsupported texture [%s]", fn);
 			string1024 errorMsg;
@@ -353,13 +359,22 @@ _DDS:
 			goto _DDS;
 		}
 
-#ifndef _EDITOR
-		const bool is_cubemap = (header->caps2 & DDS_CUBEMAP) == DDS_CUBEMAP;
-		const bool is_volumap = (header->flags & DDS_HEADER_FLAGS_VOLUME) == DDS_HEADER_FLAGS_VOLUME;
-#else
-		const bool is_cubemap = Image.IsCubeMap();
-		const bool is_volumap = false;
+		bool is_cubemap = false;
+		bool is_volumap = false;
+
+#ifdef _EDITOR
+		if (UseRedImage)
+		{
+			is_cubemap = Image.IsCubeMap();
+			is_volumap = false;
+		}
+		else
 #endif
+		{
+			is_cubemap = (header->caps2 & DDS_CUBEMAP) == DDS_CUBEMAP;
+			is_volumap = (header->flags & DDS_HEADER_FLAGS_VOLUME) == DDS_HEADER_FLAGS_VOLUME;
+		}
+
 		if (is_cubemap || is_volumap) {
 			goto _DDS_CUBE;
 		} else {
@@ -393,63 +408,70 @@ _DDS:
 		{
 			strlwr(fn);
 			ID3DTexture2D* T_sysmem = nullptr;
+			HRESULT TextureApplyResult = S_OK;
 #ifdef _EDITOR
-			Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
-
-			HRESULT result = RDevice->CreateTexture
-			(
-				Image.GetWidth(), Image.GetHeight(),
-				Image.GetMips(), 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr
-			);
-
-			if (SUCCEEDED(result) && T_sysmem)
+			if (UseRedImage)
 			{
-				for (u32 level = 0; level < Image.GetMips(); ++level)
+				Image.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
+
+				TextureApplyResult = RDevice->CreateTexture
+				(
+					Image.GetWidth(), Image.GetHeight(),
+					Image.GetMips(), 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr
+				);
+
+				if (SUCCEEDED(result) && T_sysmem)
 				{
-					D3DLOCKED_RECT rect;
-					if (SUCCEEDED(T_sysmem->LockRect(level, &rect, nullptr, 0)))
+					for (u32 level = 0; level < Image.GetMips(); ++level)
 					{
-						const u32 w = std::max((size_t)1, Image.GetWidth() >> level);
-						const u32 h = std::max((size_t)1, Image.GetHeight() >> level);
-
-						const u8* src = (const u8*)*Image;
-
-						size_t mipOffset = 0;
-						for (u32 l = 0; l < level; ++l)
+						D3DLOCKED_RECT rect;
+						if (SUCCEEDED(T_sysmem->LockRect(level, &rect, nullptr, 0)))
 						{
-							mipOffset += (std::max((size_t)1, Image.GetWidth() >> l)) * (std::max((size_t)1, Image.GetHeight() >> l)) * 4;
-						}
+							const u32 w = std::max((size_t)1, Image.GetWidth() >> level);
+							const u32 h = std::max((size_t)1, Image.GetHeight() >> level);
 
-						src += mipOffset;
+							const u8* src = (const u8*)*Image;
 
-						for (u32 y = 0; y < h; ++y)
-						{
-							u8* rowDst = (u8*)rect.pBits + y * rect.Pitch;
-							const u8* rowSrc = src + y * w * 4;
-
-							for (u32 x = 0; x < w; ++x)
+							size_t mipOffset = 0;
+							for (u32 l = 0; l < level; ++l)
 							{
-								rowDst[x * 4 + 0] = rowSrc[x * 4 + 2]; // B
-								rowDst[x * 4 + 1] = rowSrc[x * 4 + 1]; // G
-								rowDst[x * 4 + 2] = rowSrc[x * 4 + 0]; // R
-								rowDst[x * 4 + 3] = rowSrc[x * 4 + 3]; // A
+								mipOffset += (std::max((size_t)1, Image.GetWidth() >> l)) * (std::max((size_t)1, Image.GetHeight() >> l)) * 4;
 							}
+
+							src += mipOffset;
+
+							for (u32 y = 0; y < h; ++y)
+							{
+								u8* rowDst = (u8*)rect.pBits + y * rect.Pitch;
+								const u8* rowSrc = src + y * w * 4;
+
+								for (u32 x = 0; x < w; ++x)
+								{
+									rowDst[x * 4 + 0] = rowSrc[x * 4 + 2]; // B
+									rowDst[x * 4 + 1] = rowSrc[x * 4 + 1]; // G
+									rowDst[x * 4 + 2] = rowSrc[x * 4 + 0]; // R
+									rowDst[x * 4 + 3] = rowSrc[x * 4 + 3]; // A
+								}
+							}
+							T_sysmem->UnlockRect(level);
 						}
-						T_sysmem->UnlockRect(level);
 					}
 				}
 			}
-#else
-			HRESULT const result = CreateDDSTextureFromMemoryEx(
-				RDevice,
-				(uint8_t*)S->pointer(),
-				S->length(),
-				0,
-				D3DPOOL_SYSTEMMEM,
-				false,
-				&T_sysmem
-			);
+			else
 #endif
+			{
+				TextureApplyResult = CreateDDSTextureFromMemoryEx
+				(
+					RDevice,
+					(u8*)S->pointer(),
+					S->length(),
+					0,
+					D3DPOOL_SYSTEMMEM,
+					false,
+					&T_sysmem
+				);
+			}
 
 			FS.r_close(S);
 
@@ -460,9 +482,9 @@ _DDS:
 				mip_cnt = pTexture2D->GetLevelCount();
 			}
 
-			if (FAILED(result) || T_sysmem == nullptr)
+			if (FAILED(TextureApplyResult) || T_sysmem == nullptr)
 			{
-				PrintTextureError(result, fname, bitData, bitSize, pTexture2D, T_sysmem != nullptr);
+				PrintTextureError(TextureApplyResult, fname, bitData, bitSize, pTexture2D, T_sysmem != nullptr);
 
 				string_path temp;
 				R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
