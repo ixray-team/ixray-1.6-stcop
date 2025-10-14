@@ -270,6 +270,7 @@ RHITextureDesc DX9Surface::ConvertResource(const T& Desc)
 DX9ShaderResourceView::DX9ShaderResourceView(IRHISurface* surface)
 	: Surface(surface)
 {
+	Surface->AddRef();
 }
 
 DX9ShaderResourceView::~DX9ShaderResourceView()
@@ -293,7 +294,14 @@ u32 DX9ShaderResourceView::Release()
 {
 	if (Surface)
 	{
-		return Surface->Release();
+		size_t RelCount = Surface->Release();
+		if (RelCount == 0)
+		{
+			Surface = nullptr;
+			xr_delete(this);
+		}
+
+		return RelCount;
 	}
 	return 0;
 }
@@ -486,7 +494,7 @@ IRHISurface* DX9TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, cons
 		Desc.Width,
 		Desc.Height,
 		Desc.MipLevels,
-		Usage,
+		0,
 		ConvertRHIFormatToDX9(Desc.Format),
 		D3DPOOL_MANAGED,
 		&texture,
