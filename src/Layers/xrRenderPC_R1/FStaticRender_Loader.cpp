@@ -10,7 +10,6 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#include <malloc.h>
 
 #include <FlexibleVertexFormat.h>
 using namespace FVF;
@@ -167,10 +166,9 @@ void CRender::level_Unload		()
 	b_loaded					= FALSE;
 }
 
-void CRender::LoadBuffers	(CStreamReader *base_fs)
+void CRender::LoadBuffers(CStreamReader* base_fs)
 {
-	dxRenderDeviceRender::Instance().Resources->Evict	();
-	u32	dwUsage				= D3DUSAGE_WRITEONLY | (Caps.geometry.bSoftware?D3DUSAGE_SOFTWAREPROCESSING:0);
+	dxRenderDeviceRender::Instance().Resources->Evict();
 
 	// Vertex buffers
 	if (base_fs->find_chunk(fsL_VB))
@@ -180,50 +178,13 @@ void CRender::LoadBuffers	(CStreamReader *base_fs)
 		u32 count				= fs->r_u32();
 		DCL.resize				(count);
 		VB.resize				(count);
-		for (u32 i=0; i<count; i++)
-		{
-			// decl
 
-//			D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*) fs->pointer();
-			u32					buffer_size = (MAXD3DDECLLENGTH+1)*sizeof(D3DVERTEXELEMENT9);
-			D3DVERTEXELEMENT9	*dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
-			fs->r				(dcl,buffer_size);
-			fs->advance			(-(int)buffer_size);
-
-			u32 dcl_len = u32(GetDeclLength(dcl) + 1);
-
-			DCL[i].resize		(dcl_len);
-			fs->r				(DCL[i].begin(),dcl_len*sizeof(D3DVERTEXELEMENT9));
-			//.????????? remove T&B from DCL[]
-
-			// count, size
-			u32 vCount			= fs->r_u32	();
-			u32 vSize = (u32)ComputeVertexSize(dcl, 0);
-#ifdef DEBUG
-			Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
-#endif // DEBUG
-
-			// Create and fill
-			RHIBufferDesc vbDesc{};
-			vbDesc.Size = vCount * vSize;
-			vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
-			vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-			vbDesc.CPUAccessFlags = 0;
-
-			// Временный буфер для инициализации
-			std::vector<BYTE> tmpData(vCount * vSize);
-			fs->r(tmpData.data(), tmpData.size());
-
-			RHIBufferSubresource vbInit{};
-			vbInit.pSysMem = tmpData.data();
-
-			VB[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
-
-//			fs->advance			(vCount*vSize);
-		}
-		fs->close				();
-	} else {
-		FATAL					("DX7-style FVFs unsupported");
+		ReadVBChunk(VB, DCL, count, fs);
+		fs->close();
+	}
+	else
+	{
+		FATAL("DX7-style FVFs unsupported");
 	}
 
 	// Index buffers
