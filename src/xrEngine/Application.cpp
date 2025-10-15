@@ -386,7 +386,7 @@ int CApplication::Level_ID(LPCSTR name, LPCSTR ver, bool bSet)
 
 	for (CLocatorAPI::archive& Arch : FS.m_archives)
 	{
-		if (Arch.hSrcFile == nullptr)
+		if (Arch.hSrcFile == 0)
 		{
 			LPCSTR ln = Arch.header->r_string("header", "level_name");
 			LPCSTR lv = Arch.header->r_string("header", "level_ver");
