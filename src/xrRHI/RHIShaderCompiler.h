@@ -1,6 +1,22 @@
 #pragma once
+
+class CRHIShaderCompilerShell
+{
+	ERHI_API_LAYER Layer;
+
+public:
+	CRHIShaderCompilerShell(ERHI_API_LAYER API);
+
+	HRESULT Build
+	(
+		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
+		const char* entryPoint, const char* target, u32 flags1, u32 flags2, void** code, void** errors
+	);
+};
+
 class IRHIShaderCompiler;
 
+#if 0
 struct RHIShaderPassDesc
 {
 	// Shader files
@@ -108,3 +124,4 @@ public:
 };
 
 RHI_API IRHIShaderCompiler* CreateShaderCompiler();
+#endif

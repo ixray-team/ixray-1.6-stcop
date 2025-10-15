@@ -77,7 +77,6 @@ target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrRender_R1 PRIVATE xrEngineCore)
 target_link_libraries(xrRender_R1 PRIVATE xrParticles)
-target_link_libraries(xrRender_R1 PRIVATE "d3dcompiler.lib")
 target_link_libraries(xrRender_R1 PRIVATE "d3d9.lib")
 
 ## DirectX SDK
