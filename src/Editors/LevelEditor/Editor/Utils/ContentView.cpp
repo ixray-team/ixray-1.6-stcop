@@ -297,7 +297,7 @@ void CContentView::DrawHeader()
 this->MenuIcon.p_ was nullptr.
 	*/
 
-	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->pSurface->GetRawTexture(), { 15, 15 }))
+	//if (MenuIcon && ImGui::ImageButton("##MenuCB", MenuIcon->get_SRView()->GetRawSRV(), { 15, 15 }))
 	if (MenuIcon && ImGui::Button(ICON_FA_BARS"##IMenuCB" ))
 	{
 		ImGui::OpenPopup("MenuCBPpp");
@@ -1011,12 +1011,12 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 	if (SelectedObjects.size() == 1) 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->pSurface->GetRawTexture(), BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->get_SRView()->GetRawSRV(), BtnSize);
 		ImGui::Text(LabelText.data());
 	}
 	else 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->pSurface->GetRawTexture(), BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), Icons["multi"].Icon->get_SRView()->GetRawSRV(), BtnSize);
 		ImGui::Text("%d objects", SelectedObjects.size());
 	}
 	
@@ -1166,7 +1166,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->pSurface->GetRawTexture(), ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			ImGui::Image(IconPtr->Icon->get_SRView()->GetRawSRV(), ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
 
 			/*
 				Два варианта
@@ -1731,7 +1731,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				m_Thm->Update(Texture);
 				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
 				
-				if(TempTexture->pSurface != nullptr && TempTexture->pSurface->GetRawTexture() != nullptr)
+				if(TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
 				{
 					Icons[IconPath] = {TempTexture, false};
 				}
@@ -1756,7 +1756,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				m_Thm->Update(Texture);
 				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
 
-				if (TempTexture->pSurface != nullptr && TempTexture->pSurface->GetRawTexture() != nullptr)
+				if (TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
 				{
 					Icons[IconPath] = { TempTexture, false };
 				}
