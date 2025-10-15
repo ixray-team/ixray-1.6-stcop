@@ -732,18 +732,7 @@ static HRESULT create_shader				(
 		}
 	}
 
-	if (disasm) {
-		ID3DBlob* disasm_ = 0;
-		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
-		string_path dname;
-		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs.hlsl" : ".ps.hlsl");
-		IWriter* W = FS.w_open("$logs$", dname);
-		W->w(disasm_->GetBufferPointer(), disasm_->GetBufferSize());
-		FS.w_close(W);
-		_RELEASE(disasm_);
-	}
-
-	return				_result;
+	return _result;
 }
 
 HRESULT	CRender::shader_compile			(
@@ -873,21 +862,16 @@ HRESULT	CRender::shader_compile			(
 
 	if (FAILED(_result))
 	{
-		includer					Includer;
-		LPD3DBLOB					pShaderBuf = nullptr;
-		LPD3DBLOB					pErrorBuf = nullptr;
+		includer Includer;
+		LPD3DBLOB pShaderBuf = nullptr;
+		LPD3DBLOB pErrorBuf = nullptr;
 
-		_result = D3DCompile(pSrcData, SrcDataLen,
-				"",//nullptr, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
-				defines, &Includer, pFunctionName,
-				pTarget,
-				Flags, 0,
-				&pShaderBuf,
-				&pErrorBuf
-			);
+		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, (void**)&pShaderBuf, (void**)&pErrorBuf);
 
-		if (SUCCEEDED(_result)) {
-			if (ps_r__common_flags.test(RFLAG_USE_CACHE)) {
+		if (SUCCEEDED(_result))
+		{
+			if (ps_r__common_flags.test(RFLAG_USE_CACHE))
+			{
 				IWriter* file = FS.w_open(file_name);
 				u32 const crc = crc32(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 				file->w_u32(crc);
@@ -895,9 +879,11 @@ HRESULT	CRender::shader_compile			(
 				file->w(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize());
 				FS.w_close				(file);
 			}
-			_result					= create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
+
+			_result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
 		}
-		else {
+		else
+		{
 			Msg("! %s", file_name);
 			if ( pErrorBuf )
 				Msg("! error: %s",(LPCSTR)pErrorBuf->GetBufferPointer());
