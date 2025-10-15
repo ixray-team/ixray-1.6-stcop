@@ -420,7 +420,7 @@ _DDS:
 					Image.GetMips(), 0, D3DFMT_A8R8G8B8, D3DPOOL_SYSTEMMEM, &T_sysmem, nullptr
 				);
 
-				if (SUCCEEDED(result) && T_sysmem)
+				if (SUCCEEDED(TextureApplyResult) && T_sysmem)
 				{
 					for (u32 level = 0; level < Image.GetMips(); ++level)
 					{

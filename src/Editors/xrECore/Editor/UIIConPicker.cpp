@@ -30,7 +30,7 @@ bool UIIconPicker::ShowIcons()
 		}
 		xr_string id = "##ibUIIconPicker";
 		id += it->name;
-		if (ImGui::ImageButton(id.c_str(),Icons[it->name]->pSurface->GetRawTexture(), ImVec2(button_size, button_size))) {
+		if (ImGui::ImageButton(id.c_str(),Icons[it->name]->get_SRView()->GetRawSRV(), ImVec2(button_size, button_size))) {
 			ImGui::Text("Button %d pressed", 0);
 			EPrefs->custom_icons[file_path.c_str()] = it->name;
 			return true;
