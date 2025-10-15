@@ -12,8 +12,6 @@
 #ifndef __ICETYPES_H__
 #define __ICETYPES_H__
 
-#include <cstdint>
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Things to help us compile on non-windows platforms
 
@@ -56,8 +54,8 @@
 	typedef unsigned short		uword;		//!< sizeof(uword)	must be 2
 	typedef signed int			sdword;		//!< sizeof(sdword)	must be 4
 	typedef unsigned int		udword;		//!< sizeof(udword)	must be 4
-	typedef int64_t		sqword;		//!< sizeof(sqword)	must be 8
-	typedef uint64_t	uqword;		//!< sizeof(uqword)	must be 8
+	typedef long long			sqword;		//!< sizeof(sqword)	must be 8
+	typedef unsigned long long uqword;		//!< sizeof(uqword)	must be 8
 	typedef float				float32;	//!< sizeof(float32)	must be 4
 	typedef double				float64;	//!< sizeof(float64)	must be 4
 

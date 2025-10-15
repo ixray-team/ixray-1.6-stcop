@@ -19,6 +19,9 @@ public:
 	T y = 0;
 	T z = 0;
 
+	constexpr _vector3(float _x = 0.f, float _y = 0.f, float _z = 0.f): x(_x), y(_y), z(_z) {}
+    constexpr ~_vector3() = default;
+
 	// access operators
 	ICF	T&			operator[] (int i)					{ return *((T*)this + i); }
 	ICF	T&			operator[] (int i)	const			{ return *((T*)this + i); }
@@ -474,16 +477,16 @@ public:
 	IC float 	length2		() const						{	return (x*x+y*y+z*z);						}
 	
 	IC float 	operator*	(const _vector3 &a) const		{	return x*a.x + y*a.y + z*a.z;				}
-	IC _vector3 	operator*	(const float s) const			{	return _vector3(x*s, y*s, z*s);				}
-	IC _vector3 	operator/	(const float s) const			{	float invs = 1.0f / s;	return _vector3(x*invs, y*invs, z*invs);	}
-	IC _vector3 	operator+	(const _vector3& a) const		{	return _vector3(x+a.x, y+a.y, z+a.z);		}
-	IC _vector3 	operator-	(const _vector3& a) const		{	return _vector3(x-a.x, y-a.y, z-a.z);		}
-	IC _vector3 	operator-	()								{	return _vector3(-x, -y, -z); }
+	IC _vector3 operator*	(const T s) const			{	return Self{x*s, y*s, z*s};				}
+	IC _vector3 operator/	(const T s) const			{	float invs = 1.0f / s;	return Self{x*invs, y*invs, z*invs};	}
+	IC _vector3 operator+	(const _vector3& a) const		{	return Self{x+a.x, y+a.y, z+a.z};		}
+	IC _vector3 operator-	(const _vector3& a) const		{	return Self{x-a.x, y-a.y, z-a.z};		}
+	IC _vector3 operator-	()								{	x = -x;	y = -y;	z = -z;	return *this;		}
 	IC _vector3& operator+=	(const _vector3& a)				{	x += a.x;y += a.y;z += a.z;	return *this;	}
 	IC _vector3& operator-=	(const _vector3& a)		 		{	x -= a.x;y -= a.y;z -= a.z;	return *this;	}
-	IC _vector3& operator*=	(const float a)					{	x *= a;	y *= a;	z *= a;	return *this;		}
-	IC _vector3& operator/=	(const float a)					{	float b = 1.0f / a;	x *= b;	y *= b;	z *= b;	return *this;		}
-	IC _vector3 	operator^	(const _vector3& b) const		{	return _vector3(y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x);		}
+	IC _vector3& operator*=	(const T a)						{	x *= a;	y *= a;	z *= a;	return *this;		}
+	IC _vector3& operator/=	(const T a)						{	float b = 1.0f / a;	x *= b;	y *= b;	z *= b;	return *this;		}
+	IC _vector3 	operator^	(const _vector3& b) const		{	return Self {y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x};		}
 };
 typedef _vector3<float>		Fvector;
 typedef _vector3<float>		Fvector3;
