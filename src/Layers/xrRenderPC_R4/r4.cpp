@@ -648,17 +648,6 @@ static HRESULT create_shader(
 		NODEFAULT;
 	}
 
-	if(disasm) {
-		ID3DBlob* disasm_ = 0;
-		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
-		string_path		dname;
-		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs.hlsl" : ('p' == pTarget[0]) ? ".ps.hlsl" : ".gs.hlsl");
-		IWriter* W = FS.w_open("$logs$", dname);
-		W->w(disasm_->GetBufferPointer(), (u32)disasm_->GetBufferSize());
-		FS.w_close(W);
-		_RELEASE(disasm_);
-	}
-
 	return _result;
 }
 
