@@ -765,6 +765,13 @@ u32 DX11TextureFactory::ConvertBindFlags(u32 bindFlags)
 
 u32 DX11TextureFactory::ConvertCPUAccessFlags(u32 cpuAccessFlags)
 {
+	switch (cpuAccessFlags)
+	{
+	case ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_WRITE:return D3D11_CPU_ACCESS_WRITE;
+	case ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_READ: return D3D11_CPU_ACCESS_READ;
+	case ERHI_CPU_ACCESS_FLAG::ERHI_CPU_ACCESS_FLAG_NONE: return 0;
+	}
+
 	return cpuAccessFlags;
 }
 
