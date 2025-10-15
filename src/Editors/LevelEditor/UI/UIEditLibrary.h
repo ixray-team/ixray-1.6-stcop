@@ -33,7 +33,7 @@ private:
 	void OnPreviewClick();
 
 	void MakeLOD(bool highQuality);
-	void GenerateLOD(RStringVec& props, bool bHighQuality);
+	void GenerateLOD(const RStringVec& props, bool bHighQuality);
 
 	void RefreshSelected();
 	void PickSurface();

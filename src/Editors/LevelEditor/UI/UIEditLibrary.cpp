@@ -207,7 +207,7 @@ void UIEditLibrary::DrawObjects()
 		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 }
 
-void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
+void UIEditLibrary::GenerateLOD(const RStringVec& props, bool bHighQuality)
 {
 	u32 lodsCnt = 0;
 	SPBItem* pb = UI->ProgressStart(props.size(), "Making LOD");
@@ -235,7 +235,7 @@ void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
 			_ChangeSymbol(tmp, '\\', '_');
 			tex_name = xr_string("lod_") + tmp;
 			tex_name = ImageLib.UpdateFileName(tex_name);
-			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, O->Version(), bHighQuality ? 4 /*7*/ : 1);
+			ImageLib.CreateLODTexture(O, tex_name.c_str(), LOD_IMAGE_SIZE, LOD_IMAGE_SIZE, LOD_SAMPLE_COUNT, (time_t)O->Version(), bHighQuality ? 4 /*7*/ : 1);
 			O->OnDeviceDestroy();
 			O->m_objectFlags.set(CEditableObject::eoUsingLOD, bLod);
 			ELog.Msg(mtInformation, "+ LOD for object '%s' successfully created.", O->GetName());
@@ -256,6 +256,7 @@ void UIEditLibrary::GenerateLOD(RStringVec& props, bool bHighQuality)
 		ELog.DlgMsg(mtInformation, "+ '%u' LOD's succesfully created.", lodsCnt);
 }
 
+static xr_task_group LODTask;
 void UIEditLibrary::MakeLOD(bool bHighQuality)
 {
 	int res = ELog.DlgMsg(mtConfirmation, TMsgDlgButtons() | mbYes | mbNo | mbCancel, "Do you want to select multiple objects?");
@@ -271,7 +272,14 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 			sel_items.push_back(ListItem->Key());
 		}
 
-		GenerateLOD(sel_items, bHighQuality);
+		LODTask.run
+		(
+			[this, sel_items, bHighQuality]()
+			{
+				GenerateLOD(sel_items, bHighQuality);
+			}
+		);
+
 		return;
 	}
 

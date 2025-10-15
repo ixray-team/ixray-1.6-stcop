@@ -29,7 +29,7 @@ void DXTUtils::Converter::MakeTGA(u32 w, u32 h, U32Vec& From, xr_path To)
 
 	for (u32 y = 0; y < h; y++)
 	{
-		for (u32 x = 0; x < w;x++)
+		for (u32 x = 0; x < w; x++)
 		{
 			Surface.SetPixel(From[y * w + x], x, y);
 		}
@@ -37,6 +37,15 @@ void DXTUtils::Converter::MakeTGA(u32 w, u32 h, U32Vec& From, xr_path To)
 
 	Surface.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
 	Surface.SwapRB();
+
+
+	std::filesystem::path dir = To.parent_path();
+
+	if (!dir.empty() && (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir)))
+	{
+		std::filesystem::create_directories(dir);
+	}
+
 	Surface.SaveToTga(To.xstring().data());
 }
 
