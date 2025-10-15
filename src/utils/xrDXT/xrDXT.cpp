@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "xrDXT.h"
+#include <magic_enum/magic_enum.hpp>
 
 #ifdef IXR_WINDOWS
 #include <RedImage/RedImage.hpp>
@@ -149,6 +150,8 @@ DXTUtils::ImageInfo DXT_API DXTUtils::GitPixels(const char* FileName)
 
 	RedImageTool::RedImage Img;
 	Img.LoadFromFile(FileName);
+	RedImageTool::RedTexturePixelFormat OldFormat = Img.GetFormat();
+	
 	Img.ClearMipLevels();
 	Img.Convert(RedImageTool::RedTexturePixelFormat::R8G8B8A8);
 	Img.SwapRB();
@@ -157,7 +160,9 @@ DXTUtils::ImageInfo DXT_API DXTUtils::GitPixels(const char* FileName)
 	Pixels.resize(PixelCount);
 	memcpy(Pixels.data(), *Img, PixelCount);
 
-	return { Img.GetWidth(), Img.GetHeight(), Pixels };
+
+	shared_str FormatText = magic_enum::enum_name(OldFormat).data();
+	return { (u32)Img.GetWidth(), (u32)Img.GetHeight(), Pixels, FormatText };
 }
 
 void DXTUtils::Filter::Resize(u32* dst, u32 dstW, u32 dstH, u32* out, u32 outW, u32 outH)

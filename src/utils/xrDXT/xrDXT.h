@@ -12,9 +12,10 @@ namespace DXTUtils
 {
 	struct ImageInfo
 	{
-		size_t W;
-		size_t H;
+		u32 W;
+		u32 H;
 		U8Vec P;
+		shared_str Format;
 	};
 
 	struct DXT_API Converter

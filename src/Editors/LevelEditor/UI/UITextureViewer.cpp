@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UITextureViewer.h"
+#include "../../xrEUI/IconsFontAwesome6.h"
 
 CUITextureViewer::CUITextureViewer()
 {
@@ -18,7 +19,7 @@ void CUITextureViewer::Draw()
 		return;
 	}
 
-	ImGui::SetNextWindowSizeConstraints(ImVec2(450, 450), ImVec2(FLT_MAX, FLT_MAX));
+	ImGui::SetNextWindowSizeConstraints(ImVec2(650, 512), ImVec2(FLT_MAX, FLT_MAX));
 	ImGui::Begin("Texture Viewer", &bOpen);
 
 	static const ImVec2 buttonSize(22, 22);
@@ -61,7 +62,11 @@ void CUITextureViewer::Draw()
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 1);
 
 	ImGui::SetNextItemWidth(100.0f);
-	ImGui::SliderFloat("Zoom", &Zoom, 0.1f, 5.0f, "%.1f");
+	ImGui::SliderFloat("##Zoom", &Zoom, 0.1f, 5.0f, "%.1f");
+	ImGui::SameLine();
+	ImGui::Text(ICON_FA_MAGNIFYING_GLASS);
+	ImGui::SameLine();
+	ImGui::Text(*SrcData.Format);
 
 	ImGui::SameLine();
 	ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 2);
