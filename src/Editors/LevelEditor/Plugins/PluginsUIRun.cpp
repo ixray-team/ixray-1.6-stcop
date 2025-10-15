@@ -41,7 +41,7 @@ void CPluginUIRun::Draw()
 			ImGui::InputText(("##" + Arg).c_str(), InputPlugin->InputArgsValues[Arg], 256);
 
 			ImGui::SameLine();
-			if (ImGui::ImageButton(("##Open" + Arg).c_str(), OpenImage->pSurface->GetRawTexture(), { 10, 14 }))
+			if (ImGui::ImageButton(("##Open" + Arg).c_str(), OpenImage->get_SRView()->GetRawSRV(), { 10, 14 }))
 			{
 				xr_string TempPath;
 				EFS.GetOpenName("$fs_root$", TempPath, false, nullptr, -1, "*.*");

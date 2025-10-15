@@ -314,7 +314,7 @@ void UIObjectTool::DrawObjectsList()
 		{
 			//if (ImGui::BeginChild("Props"))
 			{
-				ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface->GetRawTexture()), ImVec2(128, 128));
+				ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->get_SRView()->GetRawSRV()), ImVec2(128, 128));
 				ImGui::SameLine();
 				m_Props->Draw();
 				ImGui::Separator();
