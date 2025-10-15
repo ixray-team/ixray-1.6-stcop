@@ -17,9 +17,10 @@ inline const char* itoa(float val)
     return temp.c_str();
 }
 
-inline void itoa(float val, char* str, [[maybe_unused]]size_t size)
+inline const char* itoa(float val, char* str, [[maybe_unused]]size_t size)
 {
     strcpy(str, itoa(val));
+    return str;
 }
 
 inline void strupr(char* s)

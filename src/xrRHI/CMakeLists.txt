@@ -21,9 +21,9 @@ list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_ALL_FILES})
 if (WIN32)
     list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_D3D11_FILES})
     list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_D3D9_FILES})
+    list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_GPU_FILES})
 endif()
 
-list(APPEND XRHI_SRC_FILES ${XRHI_SOURCE_GPU_FILES})
 
 # xrRHI project
 add_library(xrRHI SHARED ${XRHI_SRC_FILES})
@@ -42,7 +42,6 @@ if (WIN32)
     target_link_libraries(xrRHI PUBLIC "d3d9.lib")
     target_link_libraries(xrRHI PUBLIC "dxgi.lib")
     target_link_libraries(xrRHI PRIVATE "d3dcompiler.lib")
-endif()
 
 # Deps
 target_include_directories(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
@@ -53,3 +52,4 @@ target_include_directories(xrRHI PUBLIC ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/inc/
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+endif()
