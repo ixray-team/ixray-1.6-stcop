@@ -1729,11 +1729,12 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 
 				ID3DBaseTexture* Texture = nullptr;
 				m_Thm->Update(Texture);
-				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
-				
-				if(TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
+				TempTexture->surface_set(GRHI->CreateTextureFromMemory(Texture, 0, {}));
+
+				if(TempTexture->pSurface != nullptr && TempTexture->get_SRView() != nullptr)
 				{
 					Icons[IconPath] = {TempTexture, false};
+					TempTexture->pSurface->Release();
 				}
 				else {
 					xr_delete(TempTexture);
