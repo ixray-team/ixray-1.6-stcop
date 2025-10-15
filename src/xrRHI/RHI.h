@@ -14,6 +14,7 @@
 #include "RHIDevice.h"
 #include "RHIGPUMark.h"
 #include "RHITypes.h"
+#include "RHIShaderCompiler.h"
 #include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
@@ -102,9 +103,15 @@ public:
 
 	u32 GetInputElementDescStride(const RHIInputElementDesc* Desc, u32 DescSize);
 
+	HRESULT BuildShader
+	(
+		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
+		const char* entryPoint, const char* target, u32 flags1, u32 flags2, void** code, void** errors
+	);
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
+	CRHIShaderCompilerShell* ShaderCompiler = nullptr;
 
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	

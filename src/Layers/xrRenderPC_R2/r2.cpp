@@ -509,17 +509,6 @@ static HRESULT create_shader				(
 		}
 	}
 
-	if (disasm) {
-		ID3DBlob* disasm_ = 0;
-		D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm_);
-		string_path		dname;
-		xr_strconcat(dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs.hlsl" : ".ps.hlsl");
-		IWriter* W = FS.w_open("$logs$", dname);
-		W->w(disasm_->GetBufferPointer(), (u32)disasm_->GetBufferSize());
-		FS.w_close(W);
-		_RELEASE(disasm_);
-	}
-
 	return				_result;
 }
 
@@ -847,17 +836,8 @@ HRESULT	CRender::shader_compile			(
 		includer					Includer;
 		LPD3DBLOB pShaderBuf = nullptr;
 		LPD3DBLOB pErrorBuf = nullptr;
-		_result =
-			D3DCompile(
-				pSrcData,
-				SrcDataLen,
-				"",//nullptr, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
-				defines, &Includer, pFunctionName,
-				pTarget,
-				Flags, 0,
-				&pShaderBuf,
-				&pErrorBuf
-			);
+
+		_result = GRHI->BuildShader(pSrcData, SrcDataLen, "", defines, &Includer, pFunctionName, pTarget, Flags, 0, (void**)&pShaderBuf, (void**)&pErrorBuf);
 
 		if (SUCCEEDED(_result)) {
 			if (ps_r__common_flags.test(RFLAG_USE_CACHE)) {
