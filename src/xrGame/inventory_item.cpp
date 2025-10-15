@@ -63,6 +63,9 @@ CInventoryItem::CInventoryItem()
 	m_ItemCurrPlace.slot_id			= NO_ACTIVE_SLOT;
 
 	m_Description					= "";
+	m_IsUsedAdditionalDescription	= false;
+	m_AdditionalDescription			= "";
+	m_ExtendedUnionDescription		= "";
 	m_section_id					= 0;
 	m_flags.set						(FIsHelperItem,FALSE);
 	m_flags.set						(FCanStack, TRUE);
@@ -194,6 +197,35 @@ void CInventoryItem::Load(LPCSTR section)
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 	
 	ReadCustomTextAndMarks		(section);
+}
+
+LPCSTR CInventoryItem::GetAdditionalDescription()
+{
+	return m_AdditionalDescription.c_str();
+}
+
+void CInventoryItem::SetAdditionalDescription(LPCSTR additionalDescription)
+{
+	m_AdditionalDescription = additionalDescription;
+	m_IsUsedAdditionalDescription = xr_strcmp(m_AdditionalDescription, "") != 0;
+
+	if (m_IsUsedAdditionalDescription)
+		m_ExtendedUnionDescription = make_string<const char*>("%s\\n\\n%s", m_Description.c_str(), m_AdditionalDescription.c_str());
+}
+
+void CInventoryItem::UnsetAdditionalDescription()
+{
+	SetAdditionalDescription("");
+}
+
+bool CInventoryItem::IsUsedAdditionalDescription()
+{
+	return m_IsUsedAdditionalDescription;
+}
+
+shared_str CInventoryItem::GetExtendedUnionDescription()
+{
+	return m_ExtendedUnionDescription;
 }
 
 void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section) {
