@@ -475,6 +475,11 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 			LPCSTR				GetPatrolPathName	();
+			LPCSTR				GetItemAdditionalDescription();
+			void				SetItemAdditionalDescription(LPCSTR additionalDescription);
+			void				UnsetItemAdditionalDescription();
+			bool				IsItemUsedAdditionalDescription();
+
 			u32					GetAmmoElapsed		();
 			u32					GetAmmoElapsedWithChamber(); // FFx0001 ++
 			bool				IsWeaponUseChamber(); // FFx0001 ++

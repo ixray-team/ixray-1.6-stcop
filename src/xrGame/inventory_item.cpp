@@ -63,6 +63,9 @@ CInventoryItem::CInventoryItem()
 	m_ItemCurrPlace.slot_id			= NO_ACTIVE_SLOT;
 
 	m_Description					= "";
+	m_IsUsedAdditionalDescription	= false;
+	m_AdditionalDescription			= "";
+	m_ExtendedUnionDescription		= "";
 	m_section_id					= 0;
 	m_flags.set						(FIsHelperItem,FALSE);
 	m_flags.set						(FCanStack, TRUE);
@@ -194,6 +197,35 @@ void CInventoryItem::Load(LPCSTR section)
 	m_inv_rect.set(inv_grid_x, inv_grid_y, inv_grid_width, inv_grid_height);
 	
 	ReadCustomTextAndMarks		(section);
+}
+
+LPCSTR CInventoryItem::GetAdditionalDescription()
+{
+	return m_AdditionalDescription.c_str();
+}
+
+void CInventoryItem::SetAdditionalDescription(LPCSTR additionalDescription)
+{
+	m_AdditionalDescription = additionalDescription;
+	m_IsUsedAdditionalDescription = xr_strcmp(m_AdditionalDescription, "") != 0;
+
+	if (m_IsUsedAdditionalDescription)
+		m_ExtendedUnionDescription = make_string<const char*>("%s\\n\\n%s", m_Description.c_str(), m_AdditionalDescription.c_str());
+}
+
+void CInventoryItem::UnsetAdditionalDescription()
+{
+	SetAdditionalDescription("");
+}
+
+bool CInventoryItem::IsUsedAdditionalDescription()
+{
+	return m_IsUsedAdditionalDescription;
+}
+
+shared_str CInventoryItem::GetExtendedUnionDescription()
+{
+	return m_ExtendedUnionDescription;
 }
 
 void CInventoryItem::ReadCustomTextAndMarks(LPCSTR section) {
@@ -470,6 +502,10 @@ void CInventoryItem::save(NET_Packet &packet)
 {
 	packet.w_u16			(m_ItemCurrPlace.value);
 	packet.w_float			(m_fCondition);
+
+	packet.w_stringZ(m_AdditionalDescription);
+	packet.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
+
 //--	save_data				(m_upgrades, packet);
 
 	if (object().H_Parent()) {
@@ -726,6 +762,8 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 			NET_Packet stpk;
 			obj->u_EventGen(stpk, GE_SYNC_ALIFEITEM, obj->ID());
 			stpk.w_float(m_fCondition);
+			stpk.w_stringZ(m_AdditionalDescription);
+			stpk.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
 			obj->u_EventSend(stpk, net_flags(FALSE));
 		}
 
@@ -775,6 +813,13 @@ void CInventoryItem::load(IReader &packet)
 {
 	m_ItemCurrPlace.value	= packet.r_u16();
 	m_fCondition			= packet.r_float();
+	packet.r_stringZ(m_AdditionalDescription);
+	m_IsUsedAdditionalDescription = packet.r_u8() == 1 ? true : false;
+
+	if (m_IsUsedAdditionalDescription) {
+		SetAdditionalDescription(m_AdditionalDescription.c_str());
+	}
+
 
 //--	load_data( m_upgrades, packet );
 //--	install_loaded_upgrades();
