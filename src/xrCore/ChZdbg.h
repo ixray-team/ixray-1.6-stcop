@@ -86,8 +86,9 @@
 			 xr_string s_level("  ");
 			 s_level[0] = level_sym(current_level);
 
+#if defined(_WIN32)
 			Log(std::format("{}{}", (s_level[0] == ' ' ? "" : s_level.c_str()), buffer.str()).c_str());
-
+#endif
 			buffer.str("");
 			buffer.clear();
 		}

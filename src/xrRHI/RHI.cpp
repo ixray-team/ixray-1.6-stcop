@@ -11,10 +11,9 @@
 #include "D3D11/DX11ShaderResourceStateCache.h"
 
 #include <DirectXMesh.h>
-#endif
-
 #include "Drivers/AMDGPUTransferee.h"
 #include "Drivers/NvGPUTransferee.h"
+#endif
 
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
@@ -32,6 +31,7 @@ CRHI::~CRHI()
 
 IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 {
+#ifdef IXR_WINDOWS
 	{
 		PROF_EVENT("g_pGPU");
 		DriverExt = new CNvReader();
@@ -43,6 +43,7 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			DriverExt->Initialize();
 		}
 	}
+#endif
 
 	APILevel = NewAPILevel;
 
@@ -70,10 +71,12 @@ void* CRHI::GetContext()
 	{
 		return nullptr;
 	}
+#ifdef IXR_WINDOWS
 	else if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 		return ((InternalDevice11*)DevicePtr)->HWRenderContext;
 	}
+#endif
 
 	VERIFY(!"Unsupported");
 	return nullptr;
@@ -85,10 +88,12 @@ void* CRHI::GetSwapchain()
 	{
 		return nullptr;
 	}
+#ifdef IXR_WINDOWS
 	else  if (APILevel == ERHI_API_LAYER::D3D11)
 	{
 		return ((InternalDevice11*)DevicePtr)->HWSwapchain;
 	}
+#endif
 
 	VERIFY(!"Unsupported");
 	return nullptr;
@@ -141,6 +146,7 @@ struct _uniq_mode
 	bool operator() (shared_str _other) { return _val == _other; }
 };
 
+#ifdef IXR_WINDOWS
 bool sort_vid_mode(const DXGI_MODE_DESC& left, const DXGI_MODE_DESC& right)
 {
 	auto leftString = xr_string::ToString(left.Width) + xr_string::ToString(left.Height);
@@ -162,6 +168,7 @@ bool sort_vid_mode(const DXGI_MODE_DESC& left, const DXGI_MODE_DESC& right)
 
 	return leftString.length() > rightString.length();
 }
+#endif
 
 xr_vector<shared_str> CRHI::DisplaySizeArray()
 {
