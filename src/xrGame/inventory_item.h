@@ -111,9 +111,17 @@ public:
 	virtual void				Load				(LPCSTR section);
 			void				ReadCustomTextAndMarks(LPCSTR section);
 
+			// Дополнение описания предмета для кастомизации через скрипты к основному описанию в UIItemInfo.cpp
+			void				SetAdditionalDescription(LPCSTR additionalDescription);
+			void				UnsetAdditionalDescription();
+			bool				IsUsedAdditionalDescription();
+			LPCSTR				GetAdditionalDescription();
+			shared_str			GetExtendedUnionDescription();
+
 			LPCSTR				NameItem			();// remove <virtual> by sea
 			LPCSTR				NameShort			();
 	shared_str					ItemDescription		() { return m_Description; }
+	shared_str					ItemDescriptionAdditional() { return m_AdditionalDescription; }
 	virtual bool				GetBriefInfo		(II_BriefInfo& info) { info.clear(); return false; }
 	
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
@@ -232,6 +240,9 @@ protected:
 	float						m_weight;
 	float						m_fCondition;
 	shared_str					m_Description;
+	shared_str					m_AdditionalDescription;
+	shared_str					m_ExtendedUnionDescription;
+	bool						m_IsUsedAdditionalDescription;
 protected:
 	ALife::_TIME_ID				m_dwItemIndependencyTime;
 
