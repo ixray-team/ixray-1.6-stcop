@@ -292,22 +292,34 @@ void CEditableObject::OnDeviceDestroy()
 	DefferedUnloadRP();
 }
 
+static RHIInputElementDesc dwDecl_4W[] =
+{
+	{ "POSITION",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 0,  ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "NORMAL",    0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 16, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TANGENT",   0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 32, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "BINORMAL",  0, ERHI_FORMAT::R32G32B32A32_FLOAT, 0, 48, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD",  0, ERHI_FORMAT::R32G32_FLOAT,       0, 64, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+	{ "TEXCOORD",  1, ERHI_FORMAT::B8G8R8A8_UNORM,     0, 72, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 },
+};
+
 void CEditableObject::DefferedLoadRP()
 {
 	if (m_LoadState.is(LS_RBUFFERS)) return;
 
 	// skeleton
 	if (IsSkeleton())
-		vs_SkeletonGeom.create((D3DVERTEXELEMENT9*)g_dwDeclSkinning4W,RCache.Vertex.Buffer(),RCache.Index.Buffer());
+	{
+		vs_SkeletonGeom.create(dwDecl_4W, std::size(dwDecl_4W), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	}
 
-//*/
 	// создать LOD shader
 	xr_string l_name = GetLODTextureName();
 	xr_string fname = xr_string(l_name)+xr_string(".dds");
 	m_LODShader.destroy();
-//    if (FS.exist(_game_textures_,fname.c_str()))
+
 	if (m_objectFlags.is(eoUsingLOD))
 		m_LODShader.create(GetLODShaderName(),l_name.c_str());
+
 	m_LoadState.set(LS_RBUFFERS,TRUE);
 }
 void CEditableObject::DefferedUnloadRP()
