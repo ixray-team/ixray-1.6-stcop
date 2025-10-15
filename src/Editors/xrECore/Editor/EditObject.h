@@ -155,18 +155,6 @@ struct ECORE_API SBonePart{
 using BPVec = xr_vector<SBonePart>;
 using BPIt = BPVec::iterator;
 
-const u32 FVF_SV	= D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_NORMAL;
-const D3DVERTEXELEMENT9 g_dwDeclSkinning4W[] =	// 28bytes
-{
-	{ 0, 0,		D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,		0 },	// : p					: 2	: -12..+12
-	{ 0, 16,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_NORMAL,		0 },	// : n.xyz, w = weight0	: 1	:  -1..+1, w=0..1
-	{ 0, 32,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TANGENT,		0 },	// : T.xyz, w = weight1	: 1	:  -1..+1, w=0..1
-	{ 0, 48,	D3DDECLTYPE_FLOAT4,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_BINORMAL,		0 },	// : B.xyz,	w = weight2	: 1	:  -1..+1, w=0..1
-	{ 0, 64,	D3DDECLTYPE_FLOAT2,		D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		0 },	// : xy(tc)				: 2	: -16..+16
-	{ 0, 72,	D3DDECLTYPE_D3DCOLOR,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_TEXCOORD,		1 },	// : indices			: 1	:  0..255
-	D3DDECL_END()
-};
-
 class ECORE_API CEditableObject:
 public IKinematics,
 public CPhysicsShellHolderEditorBase

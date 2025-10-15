@@ -22,7 +22,7 @@ namespace XRay::Legacy
 		size_t length = 0;
 		while (pDecl->Stream != 0xFF)
 		{
-			if (length >= MAXD3DDECLLENGTH)
+			if (length >= LEGACYMAXDECLLENGTH)
 				return 0;
 
 			++pDecl;
@@ -31,7 +31,7 @@ namespace XRay::Legacy
 		return length;
 	}
 
-	static const char* GetSemanticName(BYTE usage)
+	static const char* GetSemanticName(u8 usage)
 	{
 		switch (usage)
 		{
@@ -48,7 +48,7 @@ namespace XRay::Legacy
 		}
 	}
 
-	static ERHI_FORMAT ConvertDeclTypeToFormat(BYTE type)
+	static ERHI_FORMAT ConvertDeclTypeToFormat(u8 type)
 	{
 		switch (type)
 		{
@@ -71,7 +71,7 @@ namespace XRay::Legacy
 		}
 	}
 
-	constexpr uint8_t g_declTypeSizes[] =
+	constexpr u8 g_declTypeSizes[] =
 	{
 		4,  // D3DDECLTYPE_FLOAT1
 		8,  // D3DDECLTYPE_FLOAT2
@@ -92,7 +92,7 @@ namespace XRay::Legacy
 		8,  // D3DDECLTYPE_FLOAT16_4
 	};
 
-	inline size_t ComputeVertexSize(const LEGACYVERTEXELEMENT9* pDecl, uint32_t stream)
+	inline size_t ComputeVertexSize(const LEGACYVERTEXELEMENT9* pDecl, u32 stream)
 	{
 		if (!pDecl || stream >= 16u /*D3D10_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT*/)
 			return 0;
