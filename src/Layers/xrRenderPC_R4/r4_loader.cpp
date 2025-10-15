@@ -216,48 +216,24 @@ void CRender::level_Unload()
 	b_loaded					= FALSE;
 }
 
-void CRender::LoadBuffers		(CStreamReader *base_fs,	BOOL _alternative)
+void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
-	R_ASSERT2					(base_fs,"Could not load geometry. File not found.");
+	R_ASSERT2(base_fs, "Could not load geometry. File not found.");
 	dxRenderDeviceRender::Instance().Resources->Evict		();
-//	u32	dwUsage					= D3DUSAGE_WRITEONLY;
 
-	xr_vector<VertexDeclarator>				&_DC	= _alternative?xDC:nDC;
+	xr_vector<VertexDeclarator> &_DC	= _alternative?xDC:nDC;
 	xr_vector<IRHIBuffer*>		&_VB	= _alternative?xVB:nVB;
 	xr_vector<IRHIBuffer*>		&_IB	= _alternative?xIB:nIB;
 
 	// Vertex buffers
-	{
-		// Use DX9-style declarators
-		CStreamReader			*fs	= base_fs->open_chunk(fsL_VB);
-		R_ASSERT2				(fs,"Could not load geometry. File 'level.geom?' corrupted.");
-		u32 count				= fs->r_u32();
-		_DC.resize				(count);
-		_VB.resize				(count);
-		u32 bufferSize = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
-		D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_malloca(bufferSize);
-		for (u32 i=0; i<count; i++)
-		{
-			fs->r(dcl, bufferSize);
-			fs->advance(-(int)bufferSize);
+	CStreamReader* fs = base_fs->open_chunk(fsL_VB);
+	R_ASSERT2(fs, "Could not load geometry. File 'level.geom?' corrupted.");
+	u32 count = fs->r_u32();
+	_DC.resize(count);
+	_VB.resize(count);
 
-			u32 dcl_len = (u32)GetDeclLength(dcl) + 1;
-			_DC[i].resize		(dcl_len);
-			fs->r				(_DC[i].begin(),dcl_len*sizeof(D3DVERTEXELEMENT9));
-
-			// count, size
-			u32 vCount			= fs->r_u32	();
-			u32 vSize = (u32)ComputeVertexSize(dcl, 0);
-
-			//	TODO: DX10: Check fragmentation.
-			//	Check if buffer is less then 2048 kb
-			BYTE* pData = xr_alloc<BYTE>(vCount*vSize);
-			fs->r(pData,vCount*vSize);
-			RHIUtils::CreateVertexBuffer(&_VB[i], pData, vCount*vSize);
-			xr_free(pData);
-		}
-		fs->close				();
-	}
+	ReadVBChunk(_VB, _DC, count, fs);
+	fs->close();
 
 	// Index buffers
 	{
