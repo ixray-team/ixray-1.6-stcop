@@ -1,9 +1,4 @@
 #pragma once
-#include <dlfcn.h>
-
-#define _msize malloc_usable_size
-#define _expand(p, sz) sz <= _msize(p)
-#define _alloca alloca
 
 namespace Platform
 {
@@ -11,18 +6,18 @@ namespace Platform
     {
         char Path[256] = {};
         strcpy(Path, Name);
-        strcat(Path, ".so");
+        strcat(Path, ".dll");
 
-        return dlopen(Path, RTLD_NOW);
+        return LoadLibraryA(Path);
     }
 
     inline void* GetAddress(HMODULE Library, const char* Function)
     {
-        return dlsym(Library, Function);
+        return GetProcAddress(Library, Function);
     }
 
     inline void FreeLibrary(HMODULE Library)
     {
-        dlclose(Library);
+        ::FreeLibrary(Library);
     }
 }

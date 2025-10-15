@@ -506,6 +506,19 @@ float CGameFont::WidthOf(int ch)
 	return float(OurFont->glyph->metrics.width) / 64.f;
 }
 
+template <typename T>
+size_t DynamicFontLen(T String)
+{
+	if constexpr (std::is_same_v<T, const char*>)
+	{
+		return std::strlen(String);
+	}
+	else
+	{
+		return std::wcslen(String);
+	}
+}
+
 float CGameFont::WidthOf(const char* str)
 {
 	if (!str || !str[0]) return 0;
@@ -516,7 +529,7 @@ float CGameFont::WidthOf(const char* str)
 
 	if (IsUTF8(str)) {
 		auto wideStr = Platform::ANSI_TO_TCHAR(str);
-		length = std::wcslen(wideStr);
+		length = DynamicFontLen(wideStr);
 		for (int i = 0; i < length; i++)
 		{
 			size += WidthOf(wideStr[i]);
