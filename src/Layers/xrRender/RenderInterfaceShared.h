@@ -1,4 +1,5 @@
 #pragma once
+#include "LegacyVertexElement.h"
 
 IRenderVisual* CRender::getVisual(int id)
 {
@@ -164,4 +165,65 @@ void CRender::rmNormal()
 	IRender_Target* T = getTarget();
 	RHIViewport VP = { 0, 0, (float)T->get_width(), (float)T->get_height(), 0, 1.f };
 	GRHI->SetViewport(VP);
+}
+
+void CRender::ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs)
+{
+	xr_vector<svector<XRay::Legacy::LEGACYVERTEXELEMENT9, XRay::Legacy::LEGACYMAXDECLLENGTH + 1>> LegacyDeclBuffer;
+	LegacyDeclBuffer.resize(Count);
+
+	for (u32 i = 0; i < Count; i++)
+	{
+		// decl
+		u32 buffer_size = (XRay::Legacy::LEGACYMAXDECLLENGTH + 1) * sizeof(XRay::Legacy::LEGACYVERTEXELEMENT9);
+		XRay::Legacy::LEGACYVERTEXELEMENT9* dcl = (XRay::Legacy::LEGACYVERTEXELEMENT9*)_alloca(buffer_size);
+		fs->r(dcl, buffer_size);
+		fs->advance(-(int)buffer_size);
+
+		u32 dcl_len = u32(GetDeclLength(dcl) + 1);
+
+		LegacyDeclBuffer[i].resize(dcl_len);
+		fs->r(LegacyDeclBuffer[i].begin(), dcl_len * sizeof(XRay::Legacy::LEGACYVERTEXELEMENT9));
+
+		// count, size
+		u32 vCount = fs->r_u32();
+		u32 vSize = (u32)ComputeVertexSize(dcl, 0);
+
+		// Create and fill
+		RHIBufferDesc vbDesc{};
+		vbDesc.Size = vCount * vSize;
+		vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
+		vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+		vbDesc.CPUAccessFlags = 0;
+
+		xr_vector<u8> tmpData(vCount * vSize);
+		fs->r(tmpData.data(), tmpData.size());
+
+		RHIBufferSubresource vbInit{};
+		vbInit.pSysMem = tmpData.data();
+
+		OutBuffer[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
+	}
+
+	for (u32 i = 0; i < Count; i++)
+	{
+		for (const XRay::Legacy::LEGACYVERTEXELEMENT9& elem : LegacyDeclBuffer[i])
+		{
+			if (elem.Stream == 0xFF)
+			{
+				break;
+			}
+
+			RHIInputElementDesc rhiElem = {};
+			rhiElem.SemanticName = XRay::Legacy::GetSemanticName(elem.Usage);
+			rhiElem.SemanticIndex = elem.UsageIndex;
+			rhiElem.Format = XRay::Legacy::ConvertDeclTypeToFormat(elem.Type);
+			rhiElem.InputSlot = elem.Stream;
+			rhiElem.AlignedByteOffset = elem.Offset;
+			rhiElem.InputSlotClass = ERHI_INPUT_CLASSIFICATION::VERTEX_DATA;
+			rhiElem.InstanceDataStepRate = 0;
+
+			DeclBuffer[i].push_back(rhiElem);
+		}
+	}
 }
