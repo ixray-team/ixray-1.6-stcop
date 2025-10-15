@@ -38,12 +38,14 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 {
 	dxRender_Visual::Load		(N,data,dwFlags);
 
-	auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
-	D3DVERTEXELEMENT9*	vFormat	= 0;
+	xr_vector<RHIInputElementDesc> dcl;
+	RHIInputElementDesc*	vFormat	= 0;
+	size_t FormatSize = 0;
 	dwPrimitives				= 0;
 	BOOL				loaded_v=false;
 
-	if (data->find_chunk(OGF_GCONTAINER)) {
+	if (data->find_chunk(OGF_GCONTAINER))
+	{
 #ifndef _EDITOR
 		// verts
 		u32 ID				= data->r_u32					();
@@ -54,7 +56,8 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 		p_rm_Vertices		= RImplementation.getVB			(ID);
 		p_rm_Vertices->AddRef	();
-		vFormat				= RImplementation.getVB_Format	(ID);
+
+		vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
 		loaded_v			= true;
 
 		// indices
@@ -71,35 +74,36 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		// check for fast-vertices
 		if (data->find_chunk(OGF_FASTPATH))
 		{
-			destructor<IReader>	geomdef	(data->open_chunk		(OGF_FASTPATH));
-			destructor<IReader>	def		(geomdef().open_chunk	(OGF_GCONTAINER));
+			destructor<IReader>	geomdef(data->open_chunk(OGF_FASTPATH));
+			destructor<IReader>	def(geomdef().open_chunk(OGF_GCONTAINER));
 
 			// we have fast-mesh
-			m_fast						= new IRender_Mesh	();
+			m_fast = new IRender_Mesh();
 
 			// verts
-			D3DVERTEXELEMENT9*	fmt		= 0;
-			ID							= def().r_u32			();
-			m_fast->vBase				= def().r_u32			();
-			m_fast->vCount				= def().r_u32			();
+			RHIInputElementDesc* fmt = 0;
+			size_t fmtSize = 0;
+			ID = def().r_u32();
+			m_fast->vBase = def().r_u32();
+			m_fast->vCount = def().r_u32();
 
-			VERIFY						(nullptr==m_fast->p_rm_Vertices);
-			m_fast->p_rm_Vertices		= RImplementation.getVB	(ID,true);
+			VERIFY(nullptr == m_fast->p_rm_Vertices);
+			m_fast->p_rm_Vertices = RImplementation.getVB(ID, true);
 			m_fast->p_rm_Vertices->AddRef();
-			fmt							= RImplementation.getVB_Format(ID,true);
+			fmt = RImplementation.getVB_Format(ID, &fmtSize, true);
 
 			// indices
-			ID							= def().r_u32			();
-			m_fast->iBase				= def().r_u32			();
-			m_fast->iCount				= def().r_u32			();
-			m_fast->dwPrimitives		= m_fast->iCount/3;
-		
-			VERIFY						(nullptr==m_fast->p_rm_Indices);
-			m_fast->p_rm_Indices		= RImplementation.getIB	(ID,true);
+			ID = def().r_u32();
+			m_fast->iBase = def().r_u32();
+			m_fast->iCount = def().r_u32();
+			m_fast->dwPrimitives = m_fast->iCount / 3;
+
+			VERIFY(nullptr == m_fast->p_rm_Indices);
+			m_fast->p_rm_Indices = RImplementation.getIB(ID, true);
 			m_fast->p_rm_Indices->AddRef();
 
 			// geom
-			m_fast->rm_geom.create			(fmt,m_fast->p_rm_Vertices,m_fast->p_rm_Indices);
+			m_fast->rm_geom.create(fmt, fmtSize, m_fast->p_rm_Vertices, m_fast->p_rm_Indices);
 		}
 #endif // (RENDER==R_R2) || (RENDER==R_R4)
 	}
@@ -117,20 +121,22 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 			VERIFY				(nullptr==p_rm_Vertices);
 			p_rm_Vertices		= RImplementation.getVB			(ID);
 			p_rm_Vertices->AddRef();
-			vFormat				= RImplementation.getVB_Format	(ID);
+			vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
 #endif
 		} 
-		else 
+		else
 		{
 			bool FoundedChunk = data->find_chunk(OGF_VERTICES);
 			R_ASSERT2(FoundedChunk, "Not found chunk OGF_VERTICES");
 
-			vBase				= 0;
-			u32 fvf				= data->r_u32				();
-			CHK_DX(CreateDeclFromFVF(fvf, dcl));
+			vBase = 0;
+			u32 fvf = data->r_u32();
+			R_ASSERT(RHIUtils::Shader::CreateInputLayoutFromFVF(fvf, dcl));
 			vFormat = dcl.data();
-			vCount				= data->r_u32				();
-			u32 vStride = (u32)ComputeVertexSize(fvf);
+			FormatSize = dcl.size();
+
+			vCount = data->r_u32();
+			u32 vStride = (u32)RHIUtils::Shader::ComputeVertexStride(dcl);
 
 			VERIFY(nullptr == p_rm_Vertices);
 			R_ASSERT(RHIUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
@@ -171,7 +177,7 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	if (dwFlags&VLOAD_NOVERTICES)	
 		return;
 	else	
-		rm_geom.create		(vFormat,p_rm_Vertices,p_rm_Indices);
+		rm_geom.create		(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 }
 
 void Fvisual::Render		(float )
