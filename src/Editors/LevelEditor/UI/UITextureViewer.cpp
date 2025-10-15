@@ -81,7 +81,7 @@ void CUITextureViewer::Draw()
 	}
 	ImGui::Separator();
 
-	if (Texture && Texture->pSurface->GetRawTexture())
+	if (Texture && Texture->get_SRView()->GetRawSRV())
 	{
 		ImVec2 avail = ImGui::GetContentRegionAvail();
 		ImVec2 textureSize((float)SrcData.W, (float)SrcData.H);
@@ -104,7 +104,7 @@ void CUITextureViewer::Draw()
 		pos.y += (avail.y - textureSize.y) * 0.5f;
 		
 		ImGui::SetCursorScreenPos(pos);
-		ImGui::Image((void*)Texture->pSurface->GetRawTexture(), textureSize);
+		ImGui::Image((void*)Texture->get_SRView()->GetRawSRV(), textureSize);
 	}
 
 	ImGui::End();
@@ -145,7 +145,7 @@ void CUITextureViewer::UpdateTexture()
 		return;
 	}
 
-	IDirect3DTexture9* tex = (IDirect3DTexture9*)Texture->pSurface->GetRawTexture();
+	IDirect3DTexture9* tex = (IDirect3DTexture9*)Texture->get_SRView()->GetRawSRV();
 	if (!tex)
 	{
 		return;
