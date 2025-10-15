@@ -251,7 +251,7 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u3
 //------------------------------------------------------------------------------
 // загружает 32-bit данные
 //------------------------------------------------------------------------------
-bool CImageManager::LoadTextureData(LPCSTR src_name, U32Vec& data, u32& w, u32& h, int* age)
+bool CImageManager::LoadTextureData(LPCSTR src_name, U32Vec& data, u32& w, u32& h, time_t* age)
 {
 	string_path 			fn;
 //.	FS.update_path			(fn,_textures_,ChangeFileExt(src_name,".tga").c_str());
@@ -434,7 +434,7 @@ void CImageManager::WriteAssociation(CInifile* ltx_ini, LPCSTR base_name, const 
 	ltx_ini->w_u32				("types", base_name,fmt.type);
 }
 
-void CImageManager::SynchronizeTexture(LPCSTR tex_name, int age)
+void CImageManager::SynchronizeTexture(LPCSTR tex_name, time_t age)
 {
 	AStringVec modif;
 	FS_FileSet t_map;
@@ -610,7 +610,7 @@ void CImageManager::ApplyBorders(U32Vec& tgt_data, u32 w, u32 h)
 		tgt_data[t]=subst_alpha(tgt_data[t],color_get_A(border_pixels[t]));
 }
 
-BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, int age)
+BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, time_t age)
 {
 	BOOL bResult = TRUE;
 	// save render params

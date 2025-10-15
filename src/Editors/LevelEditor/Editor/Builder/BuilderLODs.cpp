@@ -78,7 +78,7 @@ int	SceneBuilder::BuildObjectLOD(const Fmatrix& parent, CEditableObject* E, int 
 
     xr_string l_name = lod_name.c_str();
     u32 w, h;
-    int age;
+    time_t age;
     if (!ImageLib.LoadTextureData(l_name.c_str(), b.data, w, h, &age))
     {
         Msg("!Can't find LOD texture: '%s'", l_name.c_str());

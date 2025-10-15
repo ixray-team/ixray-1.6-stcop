@@ -248,7 +248,7 @@ public:
 protected:
 	shared_str		AssignBoneName;
 
-	int				m_ObjectVersion;
+	time_t			m_ObjectVersion;
 
 	void 			ClearGeometry			();
 
@@ -285,7 +285,7 @@ public:
 	IC SurfaceIt	FirstSurface			()	{return m_Surfaces.begin();}
 	IC SurfaceIt	LastSurface				()	{return m_Surfaces.end();}
 	IC int			SurfaceCount			()	{return m_Surfaces.size();}
-	IC int 			Version 				() 	{return m_ObjectVersion;}
+	IC time_t		Version 				() 	{return m_ObjectVersion;}
 
 	// LOD
 	xr_string		GetLODTextureName		();
