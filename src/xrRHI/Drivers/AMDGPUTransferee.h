@@ -1,6 +1,7 @@
 #pragma once
 // AMD (AGS and ADL) detection system
 #include "../RHI.h"
+
 #include <amd_adl\adl_sdk.h>
 #include <amd_ags.h>
 
@@ -26,7 +27,7 @@ class CAMDReader :
 	using AGS_DEINIT = AGSReturnCode(*)(AGSContext*);
 	using AGS_INITIALIZE = AGSReturnCode(*)(AGSContext**, const AGSConfiguration*, AGSGPUInfo*);
 
-	// AGS DX11 Extensions (5.2–5.3)
+	// AGS DX11 Extensions (5.2ï¿½5.3)
 	using AGS_DX11EXT = AGSReturnCode(*)(AGSContext*, const AGSDX11DeviceCreationParams*, const AGSDX11ExtensionParams*, AGSDX11ReturnedParams*);
 	using AGS_DX11EXTDestroy = AGSReturnCode(*)(AGSContext*, ID3D11Device*, unsigned int*, ID3D11DeviceContext*, unsigned int*);
 
