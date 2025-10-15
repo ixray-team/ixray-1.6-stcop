@@ -211,7 +211,7 @@ IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 	}
 }
 
-D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id)			{ VERIFY(id<int(DCL.size()));		return DCL[id].begin();	}
+RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count) { *Count = DCL[id].size(); return DCL[id].begin(); }
 IRHIBuffer*	CRender::getVB					(int id)			{ VERIFY(id<int(VB.size()));		return VB[id];		}
 IRHIBuffer*	CRender::getIB					(int id)			{ VERIFY(id<int(IB.size()));		return IB[id];		}
 FSlideWindowItem*		CRender::getSWI					(int id)			{ VERIFY(id<int(SWIs.size()));		return &SWIs[id];	}

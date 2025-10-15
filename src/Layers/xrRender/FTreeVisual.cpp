@@ -30,11 +30,12 @@ void FTreeVisual::Release	()
 	dxRender_Visual::Release	();
 }
 
-void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
+void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
-	dxRender_Visual::Load		(N,data,dwFlags);
+	dxRender_Visual::Load(N, data, dwFlags);
 
-	D3DVERTEXELEMENT9*	vFormat	= nullptr;
+	RHIInputElementDesc* vFormat	= nullptr;
+	size_t FormatSize = 0;
 
 	// read vertices
 	bool FoundedChunk = !!data->find_chunk(OGF_GCONTAINER);
@@ -45,7 +46,7 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 		u32 ID				= data->r_u32				();
 		vBase				= data->r_u32				();
 		vCount				= data->r_u32				();
-		vFormat				= RImplementation.getVB_Format	(ID);
+		vFormat				= RImplementation.getVB_Format	(ID, &FormatSize);
 		
 		VERIFY				(nullptr==p_rm_Vertices);
 
@@ -76,7 +77,7 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	// Geom
-	rm_geom.create			(vFormat,p_rm_Vertices,p_rm_Indices);
+	rm_geom.create			(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 
 	// Get constants
 	m_xform				= "m_xform";
