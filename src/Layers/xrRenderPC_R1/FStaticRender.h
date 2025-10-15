@@ -61,7 +61,7 @@ public:
 	// Global containers
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										Shaders;
-	typedef svector<D3DVERTEXELEMENT9,MAXD3DDECLLENGTH+1>		VertexDeclarator;
+	using VertexDeclarator = svector<RHIInputElementDesc,65>;
 	xr_vector<VertexDeclarator>									DCL;
 	xr_vector<IRHIBuffer*>							VB;
 	xr_vector<IRHIBuffer*>							IB;
@@ -107,7 +107,7 @@ private:
 public:
 	ShaderElement*						rimp_select_sh_static	(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*						rimp_select_sh_dynamic	(dxRender_Visual	*pVisual, float cdist_sq);
-	D3DVERTEXELEMENT9*					getVB_Format			(int id);
+	RHIInputElementDesc*				getVB_Format(int id, size_t* Count);
 	IRHIBuffer*				getVB					(int id);
 	IRHIBuffer*				getIB					(int id);
 	FSlideWindowItem*					getSWI					(int id);
@@ -219,6 +219,8 @@ public:
 	virtual void					rmNear					();
 	virtual void					rmFar					();
 	virtual void					rmNormal				();
+
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs);
 
 	// Constructor/destructor/loader
 	CRender													();
