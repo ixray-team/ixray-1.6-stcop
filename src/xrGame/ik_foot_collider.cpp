@@ -23,7 +23,7 @@ ik_foot_collider::ik_foot_collider()
 {
 
 }
-static const Fplane		invalide_plane = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
+static const Fplane invalide_plane = { -FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 
 struct ik_pick_result
