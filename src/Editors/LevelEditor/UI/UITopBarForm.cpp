@@ -22,7 +22,7 @@ UITopBarForm::~UITopBarForm() {}
 
 #define IMGUI_HINT_BUTTON(Name, Ptr, Hint, Callback) \
 			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->pSurface->GetRawTexture(), ImVec2(20, 20))) \
+			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(20, 20))) \
 				Callback(); \
 			if (ImGui::IsItemHovered()) \
 			{ \
@@ -33,7 +33,7 @@ UITopBarForm::~UITopBarForm() {}
 
 #define IMGUI_HINT_BUTTON_EX(Name, Ptr, Timer, Hint, Callback) \
 			Ptr->Load(); \
-			if (ImGui::ImageButton("##" Name, Ptr->pSurface->GetRawTexture(), ImVec2(20, 20), ImVec2(Timer > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(Timer > EDevice->TimerAsync() ? 1 : 0.5, 1))) \
+			if (ImGui::ImageButton("##" Name, Ptr->get_SRView()->GetRawSRV(), ImVec2(20, 20), ImVec2(Timer > EDevice->TimerAsync() ? 0.5 : 0, 0), ImVec2(Timer > EDevice->TimerAsync() ? 1 : 0.5, 1))) \
 			{ \
 				Callback(); \
 				Timer = EDevice->TimerAsync() + 130;\
