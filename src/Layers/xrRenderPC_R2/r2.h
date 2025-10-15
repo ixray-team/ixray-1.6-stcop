@@ -88,7 +88,7 @@ public:
 	// Global vertex-buffer container
 	xr_vector<FSlideWindowItem>									SWIs;
 	xr_vector<ref_shader>										Shaders;
-	typedef svector<D3DVERTEXELEMENT9,MAXD3DDECLLENGTH+1>		VertexDeclarator;
+	using VertexDeclarator = svector<RHIInputElementDesc, 65>;
 	xr_vector<VertexDeclarator>									nDC,xDC;
 	xr_vector<IRHIBuffer*>							nVB,xVB;
 	xr_vector<IRHIBuffer*>							nIB,xIB;
@@ -135,10 +135,8 @@ private:
 	void							add_leafs_Static			(dxRender_Visual*pVisual);						// if detected node's full visibility
 
 public:
-	IRender_Sector*					rimp_detectSector			(Fvector& P, Fvector& D);
 	void							render_main					(bool deffered, bool zfill = false);
 	void							render_forward				();
-	void							render_smap_direct			(Fmatrix& mCombined);
 	void							render_lights				(light_Package& LP	);
 	void							render_menu					();
 	void							render_sun_cascade			(u32 cascade_ind);
@@ -148,7 +146,7 @@ public:
 public:
 	ShaderElement*					rimp_select_sh_static		(dxRender_Visual	*pVisual, float cdist_sq);
 	ShaderElement*					rimp_select_sh_dynamic		(dxRender_Visual	*pVisual, float cdist_sq);
-	D3DVERTEXELEMENT9*				getVB_Format				(int id, BOOL	_alt=FALSE);
+	RHIInputElementDesc*			getVB_Format(int id, size_t* Count, BOOL	_alt = false);
 	IRHIBuffer*			getVB						(int id, BOOL	_alt=FALSE);
 	IRHIBuffer*			getIB						(int id, BOOL	_alt=FALSE);
 	FSlideWindowItem*				getSWI						(int id);
@@ -315,6 +313,7 @@ protected:
 
 private:
 	FS_FileSet						m_file_set;
+	void ReadVBChunk(xr_vector<IRHIBuffer*>& OutBuffer, xr_vector<VertexDeclarator>& DeclBuffer, u32 Count, IReaderBase* fs);
 };
 
 extern CRender						RImplementation;
