@@ -214,42 +214,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 		u32 count = fs->r_u32();
 		_DC.resize(count);
 		_VB.resize(count);
-		for (u32 i = 0; i < count; i++)
-		{
-			// decl
-//			D3DVERTEXELEMENT9*	dcl		= (D3DVERTEXELEMENT9*) fs().pointer();
-			u32					buffer_size = (MAXD3DDECLLENGTH + 1) * sizeof(D3DVERTEXELEMENT9);
-			D3DVERTEXELEMENT9* dcl = (D3DVERTEXELEMENT9*)_alloca(buffer_size);
-			fs->r(dcl, buffer_size);
-			fs->advance(-(int)buffer_size);
-
-			u32 dcl_len = u32(GetDeclLength(dcl) + 1);
-			_DC[i].resize(dcl_len);
-			fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
-
-			// count, size
-			u32 vCount = fs->r_u32();
-			u32 vSize = (u32)ComputeVertexSize(dcl, 0);
-#ifdef DEBUG
-			Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
-#endif // DEBUG
-
-			// Create and fill
-			RHIBufferDesc vbDesc;
-			vbDesc.Size = vCount * vSize;
-			vbDesc.Type = ERHI_BUFFER_TYPE::VERTEX;
-			vbDesc.Usage = ERHI_USAGE::USAGE_DEFAULT;
-			vbDesc.CPUAccessFlags = 0;
-
-			xr_vector<u8> temp(vCount * vSize);
-			fs->r(temp.data(), vCount * vSize);
-
-			RHIBufferSubresource vbInit;
-			vbInit.pSysMem = temp.data();
-
-			_VB[i] = GRHI->CreateBuffer(vbDesc, &vbInit);
-
-		}
+		ReadVBChunk(_VB, _DC, count, fs);
 		fs->close();
 	}
 

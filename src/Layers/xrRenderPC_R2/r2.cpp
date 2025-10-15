@@ -335,10 +335,20 @@ IRenderVisual*			CRender::model_CreateParticles	(LPCSTR name)
 	}
 }
 
-D3DVERTEXELEMENT9*		CRender::getVB_Format			(int id, BOOL	_alt)	{ 
-	if (_alt)	{ VERIFY(id<int(xDC.size()));	return xDC[id].begin();	}
-	else		{ VERIFY(id<int(nDC.size()));	return nDC[id].begin(); }
+RHIInputElementDesc* CRender::getVB_Format(int id, size_t* Count, BOOL	_alt)
+{
+	if (_alt)
+	{
+		*Count = xDC[id].size();
+		return xDC[id].begin();
+	}
+	else
+	{
+		*Count = nDC[id].size();
+		return nDC[id].begin();
+	}
 }
+
 IRHIBuffer*	CRender::getVB					(int id, BOOL	_alt)	{
 	if (_alt)	{ VERIFY(id<int(xVB.size()));	return xVB[id];		}
 	else		{ VERIFY(id<int(nVB.size()));	return nVB[id];		}

@@ -14,3 +14,9 @@ public:
 	virtual void GenerateLayerDescriptors(void* Signature) = 0;
 	virtual void ApplyLayout() = 0;
 };
+
+namespace RHIUtils::Shader
+{
+	RHI_API bool CreateInputLayoutFromFVF(uint32_t fvfCode, xr_vector<RHIInputElementDesc>& il);
+	RHI_API size_t ComputeVertexStride(const xr_vector<RHIInputElementDesc>& il);
+}
