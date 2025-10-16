@@ -504,7 +504,6 @@ void CInventoryItem::save(NET_Packet &packet)
 	packet.w_float			(m_fCondition);
 
 	packet.w_stringZ(m_AdditionalDescription);
-	packet.w_stringZ(m_ExtendedUnionDescription);
 	packet.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
 
 //--	save_data				(m_upgrades, packet);
@@ -764,7 +763,6 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 			obj->u_EventGen(stpk, GE_SYNC_ALIFEITEM, obj->ID());
 			stpk.w_float(m_fCondition);
 			stpk.w_stringZ(m_AdditionalDescription);
-			stpk.w_stringZ(m_ExtendedUnionDescription);
 			stpk.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
 			obj->u_EventSend(stpk, net_flags(FALSE));
 		}
@@ -816,8 +814,11 @@ void CInventoryItem::load(IReader &packet)
 	m_ItemCurrPlace.value	= packet.r_u16();
 	m_fCondition			= packet.r_float();
 	packet.r_stringZ(m_AdditionalDescription);
-	packet.r_stringZ(m_ExtendedUnionDescription);
 	m_IsUsedAdditionalDescription = packet.r_u8() == 1 ? true : false;
+
+	if (m_IsUsedAdditionalDescription) {
+		SetAdditionalDescription(m_AdditionalDescription.c_str());
+	}
 
 
 //--	load_data( m_upgrades, packet );
