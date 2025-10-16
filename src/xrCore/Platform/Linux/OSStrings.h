@@ -90,11 +90,11 @@ inline errno_t strncpy_s(char * dest, const char * src, size_t count)
     if (count == 0)
         return ERANGE;
 
-    size_t len = std::strlen(src);
+    size_t len = strlen(src);
     if (len >= count)
         len = count - 1;
 
-    std::memcpy(dest, src, len);
+    memcpy(dest, src, len);
     dest[len] = '\0';
 
     return 0;

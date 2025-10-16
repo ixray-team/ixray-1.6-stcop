@@ -41,17 +41,6 @@ set(SND_VOB ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.LibVorbis.1.3.7.4/)
 # FreeType
 set(ENGINE_FREETYPE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeType.2.13.2/)
 
-# Steam Sockets
-set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.linux-x64.1.4.1)
-
-set(STEAM_SOCKETS_LINK_LIBRARY ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libGameNetworkingSockets.so)
-set(STEAM_SOCKETS_LIBRARY ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libGameNetworkingSockets.so)
-set(STEAM_SOCKETS_CRYPTO ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libcrypto.so.3)
-set(STEAM_SOCKETS_PROTOBUF_LITE ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libprotobuf-lite.so.3.21.8.0)
-set(STEAM_SOCKETS_PROTOBUF ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libprotobuf.so.3.21.8.0)
-set(STEAM_SOCKETS_PROTOC ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libprotoc.so.3.21.8.0)
-set(STEAM_SOCKETS_SSL ${STEAM_SOCKETS_PATH}/runtimes/linux-x64/native/Release/libssl.so.3)
-
 # LuaJIT 
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.Runtimes.linux-x64.2023.8.23.1-open/)
 

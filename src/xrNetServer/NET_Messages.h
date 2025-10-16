@@ -1,14 +1,17 @@
 #pragma once
 #include "NET_Common.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include "GameNetworkingSockets/steam/steamnetworkingtypes.h"
-#pragma warning(pop)
+#ifdef XR_MP_BUILD
+#	pragma warning(push)
+#	pragma warning(disable:4995)
+#	include <steam/steamnetworkingtypes.h>
+#	pragma warning(pop)
+#endif
+
 #include "NET_DeprecatedConstants.h"
 #pragma pack(push,1)
 
-#define	DPNSEND_IMMEDIATELLY				0x0100
+#define	DPNSEND_IMMEDIATELLY 0x0100
 
 IC u32	net_flags	(BOOL bReliable=FALSE, BOOL bSequental=TRUE, BOOL bHighPriority=FALSE, 
 					 BOOL bSendImmediatelly = FALSE)
@@ -23,7 +26,9 @@ IC u32	net_flags	(BOOL bReliable=FALSE, BOOL bSequental=TRUE, BOOL bHighPriority
 
 IC int convert_flags_for_steam(u32 flags)
 {
-	int steam_flags;
+	int steam_flags = 0;
+	
+#ifdef XR_MP_BUILD
 	bool bReliable = (flags & DPNSEND_GUARANTEED);
 	bool bHighPriority = (flags & DPNSEND_PRIORITY_HIGH);
 
@@ -35,12 +40,7 @@ IC int convert_flags_for_steam(u32 flags)
 	{
 		steam_flags = k_nSteamNetworkingSend_UnreliableNoDelay; // k_nSteamNetworkingSend_Unreliable|k_nSteamNetworkingSend_NoDelay|k_nSteamNetworkingSend_NoNagle;
 	}
-
-	// Ignore
-	//bool bSequental = !(flags & DPNSEND_NONSEQUENTIAL);
-	// Ignore because it is a custom realization
-	//bool bSendImmediatelly = (flags & DPNSEND_IMMEDIATELLY);
-
+#endif
 	return steam_flags;
 }
 

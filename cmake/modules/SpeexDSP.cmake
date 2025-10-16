@@ -14,16 +14,16 @@ if(WIN32)
 else()
     find_package(SpeexDSP QUIET)
 
-    if(NOT TARGET SpeexDSP::speexdsp)
+    if(NOT TARGET SpeexDSP::SpeexDSP)
         if(PkgConfig_FOUND)
-            pkg_check_modules(SPEEXDSP QUIET speexdsp)
+            pkg_check_modules(SPEEXDSP QUIET SpeexDSP)
         endif()
 
         if(SPEEXDSP_FOUND)
             message(STATUS "Using system speexdsp from pkg-config")
 
-            add_library(SpeexDSP::speexdsp INTERFACE IMPORTED)
-            set_target_properties(SpeexDSP::speexdsp PROPERTIES
+            add_library(SpeexDSP::SpeexDSP INTERFACE IMPORTED)
+            set_target_properties(SpeexDSP::SpeexDSP PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${SPEEXDSP_INCLUDE_DIRS}"
                 INTERFACE_LINK_LIBRARIES "${SPEEXDSP_LIBRARIES}"
             )
@@ -39,8 +39,8 @@ else()
             if(TARGET speexdsp)
                 target_include_directories(speexdsp PUBLIC ${speexdsp_SOURCE_DIR}/include ${speexdsp_SOURCE_DIR}/libspeexdsp)
 
-                if(NOT TARGET SpeexDSP::speexdsp)
-                    add_library(SpeexDSP::speexdsp ALIAS speexdsp)
+                if(NOT TARGET SpeexDSP::SpeexDSP)
+                    add_library(SpeexDSP::SpeexDSP ALIAS speexdsp)
                 endif()
             endif()
         endif()
