@@ -272,6 +272,7 @@ void UIEditLibrary::MakeLOD(bool bHighQuality)
 			sel_items.push_back(ListItem->Key());
 		}
 
+		LODTask.wait();
 		LODTask.run
 		(
 			[this, sel_items, bHighQuality]()

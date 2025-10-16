@@ -220,9 +220,11 @@ public:
 
 void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
-	PROF_EVENT("COLLIDER::ray_query")
-	if (!m_def)
+	PROF_EVENT("COLLIDER::ray_query");
+	if (!m_def || m_def->tree == nullptr)
+	{
 		return;
+	}
 
 	m_def->syncronize();
 
