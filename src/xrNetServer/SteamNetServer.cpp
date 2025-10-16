@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SteamNetServer.h"
-#include "GameNetworkingSockets/steam/isteamnetworkingutils.h"
+#include <steam/isteamnetworkingutils.h>
 
 // -----------------------------------------------------------------------------
 
