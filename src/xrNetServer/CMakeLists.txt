@@ -2,10 +2,7 @@ project(xrNetServer)
 set(NETSERV_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE NETSERV_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-	"*.cpp"
-	"*.h"
-)
+file(GLOB_RECURSE NETSERV_SOURCE_ALL_FILES CONFIGURE_DEPENDS "*.cpp" "*.h")
 
 # Source groups
 source_group("kernel" FILES ${NETSERV_SOURCE_ALL_FILES})
@@ -26,10 +23,10 @@ if (WIN32)
 else()
     list(FILTER NETSERV_SRC_FILES EXCLUDE REGEX "WinsocksHelper.cpp")
 endif()
+
 # xrNetServer project
 add_library(xrNetServer SHARED ${NETSERV_SRC_FILES})
 target_include_directories(xrNetServer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrNetServer PUBLIC "${STEAM_SOCKETS_PATH}/native/include/")
 
 # Project defines
 target_compile_definitions(xrNetServer PRIVATE XR_NETSERVER_EXPORTS)
@@ -55,18 +52,7 @@ target_validate_pch(xrNetServer ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Steam Sockets
 if(IXRAY_MP)
-    target_link_libraries(xrNetServer PUBLIC "${STEAM_SOCKETS_LINK_LIBRARY}")
-
-    if (WIN32)
-        target_copy_dependency(xrNetServer ${STEAM_SOCKETS_LEGACY})
-    endif()
-
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_LIBRARY})
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_CRYPTO})
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOBUF_LITE})
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOBUF})
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_PROTOC})
-    target_copy_dependency(${PROJECT_NAME} ${STEAM_SOCKETS_SSL})
+    target_link_libraries(xrNetServer PUBLIC Steam::Sockets)
 endif()
 
 # MySQL Connector

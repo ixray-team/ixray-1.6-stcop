@@ -43,18 +43,6 @@ set(SND_OAL ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.OpenALSoft.1.23.1.1/)
 # FreeType
 set(ENGINE_FREETYPE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeType.2.13.2/)
 
-# Steam Sockets
-set(STEAM_SOCKETS_PATH ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.GameNetworkingSockets.Vcpkg.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.1.4.1)
-
-set(STEAM_SOCKETS_LINK_LIBRARY ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.lib)
-set(STEAM_SOCKETS_LIBRARY ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/GameNetworkingSockets.dll)
-set(STEAM_SOCKETS_LEGACY ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/legacy.dll)
-set(STEAM_SOCKETS_CRYPTO ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libcrypto-3-x64.dll)
-set(STEAM_SOCKETS_PROTOBUF_LITE ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf-lite.dll)
-set(STEAM_SOCKETS_PROTOBUF ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotobuf.dll)
-set(STEAM_SOCKETS_PROTOC ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libprotoc.dll)
-set(STEAM_SOCKETS_SSL ${STEAM_SOCKETS_PATH}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/libssl-3-x64.dll)
-
 # LuaJIT 
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.LuaJIT.Binaries.win10.0.19041.0-${NUGET_PACKAGE_PLATFORM}.1626960173.0.0-open/)
 
