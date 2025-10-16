@@ -502,6 +502,11 @@ void CInventoryItem::save(NET_Packet &packet)
 {
 	packet.w_u16			(m_ItemCurrPlace.value);
 	packet.w_float			(m_fCondition);
+
+	packet.w_stringZ(m_AdditionalDescription);
+	packet.w_stringZ(m_ExtendedUnionDescription);
+	packet.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
+
 //--	save_data				(m_upgrades, packet);
 
 	if (object().H_Parent()) {
@@ -758,6 +763,9 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 			NET_Packet stpk;
 			obj->u_EventGen(stpk, GE_SYNC_ALIFEITEM, obj->ID());
 			stpk.w_float(m_fCondition);
+			stpk.w_stringZ(m_AdditionalDescription);
+			stpk.w_stringZ(m_ExtendedUnionDescription);
+			stpk.w_u8(m_IsUsedAdditionalDescription ? 1 : 0);
 			obj->u_EventSend(stpk, net_flags(FALSE));
 		}
 
@@ -807,6 +815,10 @@ void CInventoryItem::load(IReader &packet)
 {
 	m_ItemCurrPlace.value	= packet.r_u16();
 	m_fCondition			= packet.r_float();
+	packet.r_stringZ(m_AdditionalDescription);
+	packet.r_stringZ(m_ExtendedUnionDescription);
+	m_IsUsedAdditionalDescription = packet.r_u8() == 1 ? true : false;
+
 
 //--	load_data( m_upgrades, packet );
 //--	install_loaded_upgrades();
