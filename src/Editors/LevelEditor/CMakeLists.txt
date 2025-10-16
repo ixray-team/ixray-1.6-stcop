@@ -72,3 +72,6 @@ target_include_directories(LevelEditor PRIVATE "${SND_OGG}/native/include/")
 target_link_libraries(LevelEditor PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbisfile.lib)
 target_link_libraries(LevelEditor PRIVATE ${SND_VOB}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libvorbis.lib)
 target_include_directories(LevelEditor PRIVATE "${SND_VOB}/native/include/")
+## OpenAL
+target_link_libraries(LevelEditor PRIVATE ${SND_OAL}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/OpenAL32.lib)
+target_include_directories(LevelEditor PRIVATE "${SND_OAL}/native/include/")

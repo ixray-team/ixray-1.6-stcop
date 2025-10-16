@@ -47,6 +47,7 @@ enum ECoreCommands
     COMMAND_MUTE_SOUND,
 
     // ����� ������ ����������
+    COMMAND_IMPORT,
     COMMAND_CLEAR,
     COMMAND_LOAD,
     COMMAND_SAVE,

@@ -5,6 +5,7 @@ class ESoundEnvironment: public CEditShape
 	typedef CCustomObject inherited;
 
 	friend class		CLevelSoundManager;
+public:
 	// Env
     shared_str			m_EnvInner;
 	shared_str			m_EnvOuter;

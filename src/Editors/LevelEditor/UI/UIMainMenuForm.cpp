@@ -87,6 +87,7 @@ void UIMainMenuForm::Draw()
 		if (ImGui::BeginMenu("File"))
 		{
 			DrawMenuItem("Clear", COMMAND_CLEAR);
+			DrawMenuItem("Import", COMMAND_IMPORT);
 			DrawMenuItem("Open", COMMAND_LOAD);
 			DrawMenuItem("Save", COMMAND_SAVE, LTools->m_LastFileName);
 			DrawMenuItem("Save As ...", COMMAND_SAVE, 0, 1);

@@ -1110,6 +1110,8 @@ CCommandVar CommandToggleAiMapVisibility(CCommandVar p1, CCommandVar p2)
 	return 						TRUE;
 }
 
+CCommandVar CommandImport(CCommandVar p1, CCommandVar p2);
+
 void CLevelMain::RegisterCommands()
 {
 	inherited::RegisterCommands	();
@@ -1151,6 +1153,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_SUB_CMD_END;
 	REGISTER_CMD_S	    (COMMAND_SAVE_BACKUP,              	CommandSaveBackup);
 	REGISTER_CMD_SE	    (COMMAND_CLEAR,              		"File\\Clear Scene", 			CommandClear,			true);
+	REGISTER_CMD_SE	    (COMMAND_IMPORT,              		"File\\Import", 			CommandImport,			true);
 	REGISTER_CMD_SE	    (COMMAND_LOAD_FIRSTRECENT,          "File\\Load First Recent",		CommandLoadFirstRecent, true);
 	REGISTER_CMD_S	    (COMMAND_CLEAR_DEBUG_DRAW, 		    CommandClearDebugDraw);
 	REGISTER_CMD_S	    (COMMAND_IMPORT_COMPILER_ERROR,     CommandImportCompilerError);
@@ -1553,4 +1556,408 @@ void CLevelMain::OnStats(CGameFont* font)
 bool CLevelMain::IsPlayInEditor()
 {
 	return Scene->IsPlayInEditor();
+}
+// Полный ConvertLevelSndEnvToLtx с выбором перестановки ос и коррекцией знаков.
+// Требует доступных типов/функций X-Ray: Fvector, IReader, FS, Memory, xr_malloc/xr_free,
+// hdrCFORM, CDB::TRI, CInifile, shared_str, ELog/Msg и т.д.
+
+static void compute_covariance_and_mean(const xr_vector<Fvector>& pts, Fvector& mean, float cov[3][3]) {
+	mean.set(0, 0, 0);
+	size_t n = pts.size();
+	if (n == 0) {
+		for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) cov[i][j] = 0.f;
+		return;
+	}
+	for (size_t i = 0; i < n; ++i) mean.add(pts[i]);
+	mean.div(float(n));
+	for (int r = 0; r < 3; ++r) for (int c = 0; c < 3; ++c) cov[r][c] = 0.0f;
+	for (size_t i = 0; i < n; ++i) {
+		float x = pts[i].x - mean.x;
+		float y = pts[i].y - mean.y;
+		float z = pts[i].z - mean.z;
+		cov[0][0] += x * x; cov[0][1] += x * y; cov[0][2] += x * z;
+		cov[1][0] += y * x; cov[1][1] += y * y; cov[1][2] += y * z;
+		cov[2][0] += z * x; cov[2][1] += z * y; cov[2][2] += z * z;
+	}
+	float invn = 1.0f / float(n);
+	for (int r = 0; r < 3; ++r) for (int c = 0; c < 3; ++c) cov[r][c] *= invn;
+}
+
+static void jacobi_eigen_3x3(float A[3][3], float evals[3], Fvector vecs[3]) {
+	float V[3][3] = { {1,0,0},{0,1,0},{0,0,1} };
+	float D[3][3];
+	for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) D[i][j] = A[i][j];
+
+	const int MAX_ITERS = 60;
+	for (int iter = 0; iter < MAX_ITERS; ++iter) {
+		int p = 0, q = 1;
+		float maxv = fabsf(D[0][1]);
+		if (fabsf(D[0][2]) > maxv) { p = 0; q = 2; maxv = fabsf(D[0][2]); }
+		if (fabsf(D[1][2]) > maxv) { p = 1; q = 2; maxv = fabsf(D[1][2]); }
+		if (maxv < 1e-9f) break;
+		float apq = D[p][q];
+		float app = D[p][p];
+		float aqq = D[q][q];
+		float phi = 0.5f * atan2f(2.0f * apq, aqq - app);
+		float c = cosf(phi), s = sinf(phi);
+		for (int i = 0; i < 3; ++i) {
+			float dip = D[i][p], diq = D[i][q];
+			D[i][p] = c * dip - s * diq;
+			D[i][q] = s * dip + c * diq;
+		}
+		for (int i = 0; i < 3; ++i) {
+			float dpi = D[p][i], dqi = D[q][i];
+			D[p][i] = c * dpi - s * dqi;
+			D[q][i] = s * dpi + c * dqi;
+		}
+		D[p][q] = D[q][p] = 0.0f;
+		float new_app = c * c * app - 2.0f * s * c * apq + s * s * aqq;
+		float new_aqq = s * s * app + 2.0f * s * c * apq + c * c * aqq;
+		D[p][p] = new_app; D[q][q] = new_aqq;
+		for (int i = 0; i < 3; ++i) {
+			float vip = V[i][p], viq = V[i][q];
+			V[i][p] = c * vip - s * viq;
+			V[i][q] = s * vip + c * viq;
+		}
+	}
+	evals[0] = D[0][0]; evals[1] = D[1][1]; evals[2] = D[2][2];
+	for (int c = 0; c < 3; ++c) {
+		vecs[c].set(V[0][c], V[1][c], V[2][c]);
+		float len = vecs[c].magnitude();
+		if (len > 1e-9f) vecs[c].mul(1.0f / len);
+		else {
+			if (c == 0) vecs[c].set(1, 0, 0);
+			else if (c == 1) vecs[c].set(0, 1, 0);
+			else vecs[c].set(0, 0, 1);
+		}
+	}
+}
+
+static void axes_to_euler_xyz(const Fvector& ax, const Fvector& ay, const Fvector& az, Fvector& out_euler) {
+	float r00 = ax.x, r01 = ay.x, r02 = az.x;
+	float r10 = ax.y, r11 = ay.y, r12 = az.y;
+	float r20 = ax.z, r21 = ay.z, r22 = az.z;
+	float sy = -r20;
+	if (sy < -1.0f) sy = -1.0f;
+	if (sy > 1.0f) sy = 1.0f;
+	float y = asinf(sy);
+	float cx = cosf(y);
+	float x, z;
+	if (fabsf(cx) > 1e-5f) {
+		x = atan2f(r21, r22);
+		z = atan2f(r10, r00);
+	}
+	else {
+		x = 0.0f;
+		z = atan2f(-r01, r11);
+	}
+	out_euler.set(x, y, z);
+}
+
+#include "../../xrSound/stdafx.h"
+#include "../../xrSound/SoundRender_Source.h"
+#include "../../xrSound/SoundRender_Environment.h"
+
+bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
+{
+	if (!src_path || !dst_path) {
+		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: invalid paths");
+		return false;
+	}
+
+	IReader* F = FS.r_open(src_path);
+	if (!F) {
+		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: cannot open '%s'", src_path);
+		return false;
+	}
+
+	// Assosiate names
+	//xr_vector<u16> ids;
+	//SoundEnvironment_LIB* s_environment = new SoundEnvironment_LIB();
+//
+	//string_path					fn;
+	//if (FS.exist(fn, "$game_data$", SNDENV_FILENAME))
+	//{
+	//	s_environment = new SoundEnvironment_LIB();
+	//	s_environment->Load(fn);
+	//}
+//
+	//IReader* names = F->open_chunk(0);
+	//while (!names->eof())
+	//{
+	//	string256			n;
+	//	names->r_stringZ(n, sizeof(n));
+	//	int id = s_environment->GetID(n);
+	//	R_ASSERT(id >= 0);
+	//	ids.push_back(u16(id));
+	//}
+	//names->close();
+
+	// chunk 0 - names
+	xr_vector<shared_str> env_names;
+	if (IReader* names = F->open_chunk(0)) {
+		while (!names->eof()) {
+			string256 s; names->r_stringZ(s, sizeof(s));
+			env_names.emplace_back(s);
+		}
+		names->close();
+	}
+	else {
+		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: missing chunk 0 in '%s'", src_path);
+		FS.r_close(F);
+		return false;
+	}
+
+	// chunk 1 - geometry
+	IReader* geom_ch = F->open_chunk(1);
+	if (!geom_ch) {
+		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: missing chunk 1 in '%s'", src_path);
+		FS.r_close(F);
+		return false;
+	}
+
+	u32 geom_size = geom_ch->length();
+	u8* data = (u8*)xr_malloc(geom_size);
+	Memory.mem_copy(data, geom_ch->pointer(), geom_size);
+	IReader* geom = new IReader(data, geom_size, 0);
+
+	hdrCFORM H;
+	geom->r(&H, sizeof(hdrCFORM));
+	Fvector* verts = (Fvector*)geom->pointer();
+	CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+
+	// collect unique vertices per pair (inner,outer)
+	struct PairVerts {
+		shared_str inner, outer;
+		xr_vector<Fvector> verts;
+	};
+	xr_vector<PairVerts> pairs;
+
+	auto add_vertex_unique = [](xr_vector<Fvector>& list, const Fvector& v) {
+		const float EPS = 1e-5f;
+		for (auto& e : list) {
+			if (fabsf(e.x - v.x) < EPS && fabsf(e.y - v.y) < EPS && fabsf(e.z - v.z) < EPS) return;
+		}
+		list.push_back(v);
+		};
+
+	for (u32 i = 0; i < H.facecount; ++i) {
+		const CDB::TRI& T = tris[i];
+		u16 id_inner = (u16)((T.dummy & 0xffff0000) >> 16);
+		u16 id_outer = (u16)((T.dummy & 0x0000ffff) >> 0);
+		if (id_inner >= env_names.size() || id_outer >= env_names.size()) continue;
+
+		shared_str s_inner = env_names[id_inner];
+		shared_str s_outer = env_names[id_outer];
+
+		PairVerts* pfound = nullptr;
+		for (auto& p : pairs) {
+			if (p.inner == s_inner && p.outer == s_outer) {
+				pfound = &p;
+				break;
+			}
+		}
+		if (!pfound) {
+			pairs.push_back(PairVerts());
+			pairs.back().inner = s_inner;
+			pairs.back().outer = s_outer;
+			pfound = &pairs.back();
+		}
+
+		add_vertex_unique(pfound->verts, verts[T.verts[0]]);
+		add_vertex_unique(pfound->verts, verts[T.verts[1]]);
+		add_vertex_unique(pfound->verts, verts[T.verts[2]]);
+	}
+
+	// ini writer
+	CInifile ini(dst_path, FALSE, FALSE, FALSE);
+
+	auto normalize_angle = [](float a) -> float {
+		while (a > PI) a -= 2 * PI;
+		while (a <= -PI) a += 2 * PI;
+		return a;
+		};
+
+	for (u32 idx = 0; idx < pairs.size(); ++idx) {
+		PairVerts& P = pairs[idx];
+		if (P.verts.empty()) continue;
+
+		// Используем PCA для определения ориентации
+		Fvector mean; float cov[3][3];
+		compute_covariance_and_mean(P.verts, mean, cov);
+
+		float evals[3]; Fvector axes[3];
+		jacobi_eigen_3x3(cov, evals, axes);
+
+		// Сортируем оси по убыванию собственных значений
+		for (int i = 0; i < 3; ++i) {
+			for (int j = i + 1; j < 3; ++j) {
+				if (evals[j] > evals[i]) {
+					std::swap(evals[i], evals[j]);
+					std::swap(axes[i], axes[j]);
+				}
+			}
+		}
+
+		// Пробуем все перестановки осей и выбираем лучшую
+		Fvector best_ax, best_ay, best_az;
+		Fvector best_rotation;
+		Fvector best_scale;
+		Fvector best_world_center;
+		float best_rotation_score = FLT_MAX;
+
+		int permutations[6][3] = {
+			{0, 1, 2}, {0, 2, 1}, {1, 0, 2},
+			{1, 2, 0}, {2, 0, 1}, {2, 1, 0}
+		};
+
+		for (int perm = 0; perm < 6; ++perm) {
+			int i = permutations[perm][0];
+			int j = permutations[perm][1];
+			int k = permutations[perm][2];
+
+			Fvector test_ax = axes[i]; test_ax.normalize();
+			Fvector test_az = axes[j]; test_az.normalize();
+			Fvector test_ay = axes[k]; test_ay.normalize();
+
+			// Убедимся, что базис правый
+			Fvector cross; cross.crossproduct(test_ax, test_ay);
+			if (cross.dotproduct(test_az) < 0) {
+				test_ay.mul(-1.0f);
+			}
+
+			// Проецируем точки для определения размеров
+			float min_x = FLT_MAX, max_x = -FLT_MAX;
+			float min_y = FLT_MAX, max_y = -FLT_MAX;
+			float min_z = FLT_MAX, max_z = -FLT_MAX;
+
+			for (auto& v : P.verts) {
+				Fvector rel; rel.sub(v, mean);
+				float proj_x = rel.dotproduct(test_ax);
+				float proj_y = rel.dotproduct(test_ay);
+				float proj_z = rel.dotproduct(test_az);
+
+				min_x = std::min(min_x, proj_x); max_x = std::max(max_x, proj_x);
+				min_y = std::min(min_y, proj_y); max_y = std::max(max_y, proj_y);
+				min_z = std::min(min_z, proj_z); max_z = std::max(max_z, proj_z);
+			}
+
+			// Вычисляем scale и локальный центр
+			Fvector test_scale;
+			test_scale.x = (max_x - min_x);
+			test_scale.y = (max_y - min_y);
+			test_scale.z = (max_z - min_z);
+
+			Fvector test_local_center;
+			test_local_center.x = (min_x + max_x) * 0.5f;
+			test_local_center.y = (min_y + max_y) * 0.5f;
+			test_local_center.z = (min_z + max_z) * 0.5f;
+
+			// Корректируем направления осей
+			if (test_ax.dotproduct(Fvector().set(1, 0, 0)) < 0) {
+				test_ax.mul(-1.f);
+				test_local_center.x = -test_local_center.x;
+			}
+			if (test_ay.dotproduct(Fvector().set(0, 1, 0)) < 0) {
+				test_ay.mul(-1.f);
+				test_local_center.y = -test_local_center.y;
+			}
+			if (test_az.dotproduct(Fvector().set(0, 0, 1)) < 0) {
+				test_az.mul(-1.f);
+				test_local_center.z = -test_local_center.z;
+			}
+
+			// Вычисляем мировой центр
+			Fvector test_world_center;
+			test_world_center.set(mean);
+			test_world_center.mad(test_world_center, test_ax, test_local_center.x);
+			test_world_center.mad(test_world_center, test_ay, test_local_center.y);
+			test_world_center.mad(test_world_center, test_az, test_local_center.z);
+
+			// Создаем матрицу вращения
+			Fmatrix test_rot_matrix;
+			test_rot_matrix.identity();
+			test_rot_matrix.i.set(test_ax);
+			test_rot_matrix.j.set(test_ay);
+			test_rot_matrix.k.set(test_az);
+
+			// Получаем углы Эйлера
+			Fvector test_rotation;
+			test_rot_matrix.getXYZ(test_rotation);
+
+			// Нормализуем углы
+			test_rotation.x = normalize_angle(test_rotation.x);
+			test_rotation.y = normalize_angle(test_rotation.y);
+			test_rotation.z = normalize_angle(test_rotation.z);
+
+			// Оцениваем качество (предпочитаем минимальное вращение)
+			float rotation_score = fabsf(test_rotation.x) + fabsf(test_rotation.y) + fabsf(test_rotation.z);
+
+			if (rotation_score < best_rotation_score) {
+				best_rotation_score = rotation_score;
+				best_ax = test_ax;
+				best_ay = test_ay;
+				best_az = test_az;
+				best_rotation = test_rotation;
+				best_scale = test_scale;
+				best_world_center = test_world_center;
+			}
+		}
+
+		// Отладочный вывод
+		Msg("Object %d best rotation (radians): %.6f, %.6f, %.6f", idx, best_rotation.x, best_rotation.y, best_rotation.z);
+
+		// Write to INI
+		string64 sect; xr_sprintf(sect, "object_%u", idx);
+		ini.w_u32(sect, "clsid", 10);
+		ini.w_u32(sect, "co_flags", 0);
+		ini.w_string(sect, "env_inner", P.inner.c_str());
+		ini.w_string(sect, "env_outer", P.outer.c_str());
+
+		string64 nm; xr_sprintf(nm, "sound_env_%u", idx);
+		ini.w_string(sect, "name", nm);
+
+		ini.w_fvector3(sect, "position", best_world_center);
+		ini.w_fvector3(sect, "rotation", best_rotation);
+		ini.w_u32(sect, "rt_flags", 57);
+		ini.w_fvector3(sect, "scale", best_scale);
+		ini.w_u32(sect, "version", 18);
+	}
+
+	ini.save_as(dst_path);
+
+	xr_free(data);
+	geom_ch->close();
+	geom->close();
+	FS.r_close(F);
+
+	Msg("* ConvertLevelSndEnvToLtx finished: %s -> %s", src_path, dst_path);
+	return true;
+}
+CCommandVar CommandImport(CCommandVar p1, CCommandVar p2)
+{
+	LoaderEvent.wait();
+
+	if (!Scene->locked())
+	{
+		Scene->Stop();
+
+		if (!Scene->IfModified())
+			return TRUE;
+
+		string_path query{};
+		FS.update_path(query, "$import$", "level.snd_env");
+
+		string_path output{};
+		FS.update_path(output, "$import$", "export\\sound_env.part");
+
+		ConvertLevelSndEnvToLtx(query, output);
+
+		return TRUE;
+	}
+	else
+	{
+		ELog.DlgMsg(mtError, "Scene sharing violation");
+		return FALSE;
+	}
 }

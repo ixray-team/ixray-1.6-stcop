@@ -369,7 +369,11 @@ public:
 	}
 	IC	SelfRef	scale(const Tvector &v )			// setup scale matrix
 	{	return scale(v.x,v.y,v.z); }
-
+	IC	SelfRef	scale_over(const Tvector& v)			// modify scale
+	{
+		m[0][0] *= v.x; m[1][1] *= v.y; m[2][2] *= v.z;
+		return *this;
+	}
 	IC	SelfRef	rotateX		(T Angle )				// rotation about X axis
 	{
 		T cosa	= _cos(Angle);
