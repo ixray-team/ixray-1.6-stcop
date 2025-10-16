@@ -142,8 +142,8 @@ void UIPropertiesForm::Draw()
 
 	if (ImGui::BeginTable("props", 2, Flags))
 	{
-		ImGui::TableSetupColumn("Name");
-		ImGui::TableSetupColumn("Prop");
+		ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 0.0f);
+		ImGui::TableSetupColumn("Prop", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableHeadersRow();
 
 		if (IsSearchActive)
