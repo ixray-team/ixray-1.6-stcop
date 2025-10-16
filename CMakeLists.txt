@@ -36,8 +36,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (MSVC)
     include("cmake/msvc.cmake")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR NOT WIN32)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     include("cmake/clang.cmake")
+else()
+    include("cmake/gcc.cmake")
 endif()
 
 # Add new build types
@@ -68,8 +70,6 @@ include("cmake/github.cmake")
 # Help functions
 include("cmake/functions.cmake")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
-
 # Configure NuGet
 if (WIN32)
     include("cmake/windows/nuget.cmake")
@@ -83,13 +83,8 @@ set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_N
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 
-include("${CMAKE_MODULE_PATH}/SDL3.cmake")
-include("${CMAKE_MODULE_PATH}/LuaBind.cmake")
-include("${CMAKE_MODULE_PATH}/Ogg.cmake")
-include("${CMAKE_MODULE_PATH}/Vorbis.cmake")
-include("${CMAKE_MODULE_PATH}/Opus.cmake")
-include("${CMAKE_MODULE_PATH}/SpeexDSP.cmake")
-include("${CMAKE_MODULE_PATH}/OpenalSoft.cmake")
+# Modules (Nuget or Src)
+include("cmake/modules.cmake")
 
 # CMake targets
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
