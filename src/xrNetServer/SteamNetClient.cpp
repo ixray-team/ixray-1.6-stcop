@@ -3,7 +3,7 @@
 #include "SteamNetServer.h"
 #include "ip_address.h"
 #include "WinsocksHelper.h"
-#include "GameNetworkingSockets/steam/isteamnetworkingutils.h"
+#include <steam/isteamnetworkingutils.h>
 
 SteamNetClient* GClientCallback = nullptr;
 
