@@ -202,3 +202,5 @@ XRCORE_API	char*				timestamp				(string64& dest);
 extern XRCORE_API u32			crc32					(const void* P, size_t len);
 extern XRCORE_API u32			crc32					(const void* P, size_t len, u32 starting_crc);
 extern XRCORE_API u32			path_crc32				(const char* path, size_t len); // ignores '/' and '\'
+
+XRCORE_API bool NaturalCompare(const char* a, const char* b);

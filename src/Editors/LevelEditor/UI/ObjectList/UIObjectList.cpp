@@ -171,25 +171,13 @@ void UIObjectList::Refresh()
 
 			lst.sort([](CCustomObject* A, CCustomObject* B)
 				{
-					if (A->GetName() == nullptr)
+					if (A->GetName() == nullptr || A->GetName()[0] == 0)
 						return false;
-
-					if (B->GetName() == nullptr)
+					if (B->GetName() == nullptr || B->GetName()[0] == 0)
 						return true;
 
-					size_t BLen = strlen(B->GetName());
-					for (size_t Iter = 0; Iter < strlen(A->GetName()); Iter++)
-					{
-						if (Iter >= BLen)
-							return false;
-
-						if (A->GetName()[Iter] > B->GetName()[Iter])
-							return false;
-						else if(A->GetName()[Iter] < B->GetName()[Iter])
-							return true;
-					}
+					return NaturalCompare(A->GetName(), B->GetName());
 				}
-			
 			);
 
 			for (CCustomObject* Obj : lst)
@@ -204,11 +192,9 @@ void UIObjectList::Refresh()
 					VERIFY(Item);
 
 					Item->bIsSelected = Obj->Selected();
-					Item->Object = Obj; 
+					Item->Object = Obj;
 				}
-				
 			}
-			
 		}
 	}
 	Form->m_LastSelected = nullptr;
