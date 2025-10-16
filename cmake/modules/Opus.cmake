@@ -15,7 +15,7 @@ if(WIN32)
 else()
     find_package(Opus QUIET)
     
-    if(NOT TARGET Opus::opus)
+    if(NOT TARGET Opus::Opus)
         if(PkgConfig_FOUND)
             pkg_check_modules(OPUS QUIET opus)
         endif()
@@ -23,8 +23,8 @@ else()
         if(OPUS_FOUND)
             message(STATUS "Using system opus from pkg-config")
     
-            add_library(Opus::opus INTERFACE IMPORTED)
-            set_target_properties(Opus::opus PROPERTIES
+            add_library(Opus::Opus INTERFACE IMPORTED)
+            set_target_properties(Opus::Opus PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${OPUS_INCLUDE_DIRS}"
                 INTERFACE_LINK_LIBRARIES "${OPUS_LIBRARIES}"
             )
@@ -38,7 +38,7 @@ else()
             )
             FetchContent_MakeAvailable(opus)
     
-            #add_library(Opus::opus ALIAS opus)
+            add_library(Opus::Opus ALIAS opus)
             target_include_directories(opus INTERFACE $<BUILD_INTERFACE:${opus_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
         endif()
     endif()
