@@ -76,7 +76,7 @@ public:
 	void						iGetLastMouseDelta			( Ivector2& p );
 
 	CInput						( BOOL bExclusive = true, int deviceForInit = default_key);
-	~CInput						( );
+	virtual ~CInput				( );
 
 	virtual void	_BCL		OnFrame						(void);
 	virtual void				OnAppActivate				(void);

@@ -3,11 +3,9 @@
 #include "telekinetic_object.h"
 #include "../../../xrPhysics/PHUpdateObject.h"
 
-
-
-
-class CTelekinesis : public CPHUpdateObject {
-
+class CTelekinesis :
+	public CPHUpdateObject
+{
 protected:
 	using TELE_OBJECTS = xr_vector<CTelekineticObject*>;
 	using TELE_OBJECTS_IT = TELE_OBJECTS::iterator;
