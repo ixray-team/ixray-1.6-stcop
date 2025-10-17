@@ -16,6 +16,8 @@ DECLARE_MESSAGE(Stats);
 class ENGINE_API CStatsPhysics
 {
 public:
+	virtual ~CStatsPhysics() = default;
+
 	CStatTimer	ph_collision;		// collision
 	CStatTimer	ph_core;			// integrate
 	CStatTimer	Physics;			// movement+collision
@@ -111,8 +113,8 @@ public:
 	xr_vector		<shared_str>	errors;
 	CRegistrator	<pureStats>		seqStats;
 public:
-					CStats			();
-					~CStats			();
+			CStats();
+	virtual ~CStats();
 
 	IC CGameFont*	Font			(){return pFont;}
 
