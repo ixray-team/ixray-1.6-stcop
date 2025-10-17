@@ -110,7 +110,7 @@ struct CDestroyer {
 		IC	static void delete_data<true>(T &data)
 		{
 			if (data)
-				CDestroyer::delete_data	(*data);
+				::delete_data	(*data);
 			xr_delete					(data);
 		}
 	};
@@ -123,36 +123,21 @@ struct CDestroyer {
 			auto I = data.begin();
 			auto E = data.end();
 			for (; I != E; ++I)
-				CDestroyer::delete_data(*I);
+				::delete_data(*I);
 			data.clear();
 		}
 	};
-
-	template <typename T>
-	struct CHelper4 {
-		template <bool a>
-		IC	static void delete_data(T &data)
-		{
-			CHelper2<T>::delete_data<std::is_pointer<T>::value>	(data);
-		}
-
-		template <>
-		IC	static void delete_data<true>(T &data)
-		{
-			CHelper3::delete_data	(data);
-		}
-	};
-
-	template <typename T>
-	IC	static void delete_data(T &data)
-	{
-		CHelper4<T>::delete_data<object_type_traits::is_stl_container<T>::value>(data);
-	}
 };
 
 template <typename T>
-IC	void delete_data(const T &data)
+IC static void delete_data(T& data)
 {
-	T	*temp = const_cast<T*>(&data);
-	CDestroyer::delete_data(*temp);
+	if constexpr (object_type_traits::is_stl_container<T>::value)
+	{
+		CDestroyer::CHelper3::delete_data(data);
+	}
+	else
+	{
+		CDestroyer::CHelper2<T>::delete_data<std::is_pointer<T>::value>(data);
+	}
 }
