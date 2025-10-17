@@ -16,6 +16,7 @@ public:
 	ERHI_GPU GPUID = ERHI_GPU::INTELL;
 
 public:
+	virtual ~IRHIGPU() = default;
 	virtual void Initialize() = 0;
 	virtual void Destroy() {}
 
