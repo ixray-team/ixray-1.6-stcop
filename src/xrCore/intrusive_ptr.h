@@ -22,6 +22,8 @@ struct intrusive_base
 	{
 	}
 
+	virtual ~intrusive_base() = default;
+
 	template <typename T>
 	IC	void	_release		(T*object)
 	{

@@ -26,9 +26,12 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 
 template<class _Effector>
-class CPPEffectorCustomController {
+class CPPEffectorCustomController
+{
 public:
 					CPPEffectorCustomController	();
+			virtual ~CPPEffectorCustomController() = default;
+
 IC	virtual void	load						(LPCSTR section);
 IC	virtual bool	active						() {return (m_effector != 0);}
 

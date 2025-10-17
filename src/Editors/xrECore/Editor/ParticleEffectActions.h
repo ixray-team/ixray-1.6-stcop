@@ -141,6 +141,9 @@ struct EParticleAction
     	flags.assign(flEnabled);
         type		= _type;
     }
+
+    virtual ~EParticleAction() = default;
+
 public:
 	void			appendFloat	(LPCSTR name, float v, float mn, float mx);
 	void			appendInt	(LPCSTR name, int v, int mn=-P_MAXINT, int mx=P_MAXINT);

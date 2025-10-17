@@ -1,7 +1,8 @@
 #pragma once
 #include "../xrSound/Recorder/IVoicePacketSender.h"
 
-class CVoiceSender : IVoicePacketSender
+class CVoiceSender :
+	IVoicePacketSender
 {
 public:
 	u8 GetDistance() const { return m_distance; }
