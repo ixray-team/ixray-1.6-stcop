@@ -1,6 +1,3 @@
-#ifndef igame_level_h_defined
-#define igame_level_h_defined
-
 #pragma once
 
 #include "IInputReceiver.h"
@@ -115,7 +112,6 @@ public:
 	void                        SoundEvent_OnDestDestroy (Feel::Sound*);
 
 	// Loader interface
-	// ref_shader               LL_CreateShader(int S, int T, int M, int C);
 	void                        LL_CheckTextures();
     virtual float               GetEnvironmentGameDayTimeSec() const = 0;
     virtual void                SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
@@ -128,26 +124,4 @@ public:
 	virtual void				LoadEditor(shared_str LevelName) {};
 };
 
-//-----------------------------------------------------------------------------------------------------------
-extern ENGINE_API	IGame_Level*	g_pGameLevel;
-
-template <typename _class_type>
-	void relcase_register	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
-	{
-		g_pGameLevel->Objects.relcase_register	(
-			CObjectList::RELCASE_CALLBACK (
-				self,
-				function_to_bind)
-		);
-	}
-
-template <typename _class_type>
-	void relcase_unregister	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
-	{
-		g_pGameLevel->Objects.relcase_unregister	(
-			CObjectList::RELCASE_CALLBACK (
-				self,
-				function_to_bind)
-		);
-	}
-#endif    
+extern ENGINE_API IGame_Level* g_pGameLevel;

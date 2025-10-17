@@ -41,15 +41,13 @@ namespace object_type_traits
 	declare_has(size_type);
 
 	template <typename T>
-	struct is_stl_container 
+	struct is_stl_container
 	{
-		enum 
-		{ 
-			value = 
-				has_iterator<T>::value &&
-				has_const_iterator<T>::value &&
-				has_size_type<T>::value &&
-				has_value_type<T>::value
-		};
+	    static constexpr bool value = 	has_iterator<T>::value && has_const_iterator<T>::value && 
+										has_size_type<T>::value && has_value_type<T>::value;
 	};
+	
+	template <typename T>
+	inline constexpr bool is_stl_container_v = is_stl_container<T>::value;
+
 };

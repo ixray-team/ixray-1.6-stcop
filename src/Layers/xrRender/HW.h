@@ -29,5 +29,5 @@ struct SDL_Window;
 #define RSwapchain ((IDirect3DDevice9*)Device.GetSwapchain())
 #endif
 
-#define RFeatureLevel Device.GetFeatureLevel()
+#define RFeatureLevel (GRHI->DevicePtr->FeatureLevel)
 #define RDepth (GRHI->DevicePtr->RenderDSV)

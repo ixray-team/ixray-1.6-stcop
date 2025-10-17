@@ -12,7 +12,9 @@ struct xr_special_free
 
 		if constexpr (_is_pm)
 		{
-			void* _real_ptr = smart_cast<void*>(ptr);
+			// RTTI moments
+			// Don't toch this shit
+			void* _real_ptr = dynamic_cast<void*>(ptr);
 			ptr->~T();
 			Memory.mem_free(_real_ptr);
 		}
@@ -29,7 +31,7 @@ IC void xr_delete(T*& ptr)
 {
 	if (ptr)
 	{
-		xr_special_free<std::is_polymorphic<T>::value, T>()(ptr);
+		xr_special_free<std::is_polymorphic_v<T>, T>()(ptr);
 		ptr = nullptr;
 	}
 }
@@ -38,7 +40,7 @@ IC void xr_delete(T* const& ptr)
 {
 	if (ptr)
 	{
-		xr_special_free<std::is_polymorphic<T>::value, T>()(const_cast<T*&>(ptr));
+		xr_special_free<std::is_polymorphic_v<T>, T>()(const_cast<T*&>(ptr));
 		const_cast<T*&>(ptr) = nullptr;
 	}
 }
