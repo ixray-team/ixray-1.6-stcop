@@ -50,7 +50,8 @@ void CRenderDevice::Destroy()
 	m_time_callbacks.clear		();
 	RenderFactory->DestroyRenderDeviceRender(m_pRender);
 	m_pRender = 0;
-	xr_delete					(Statistic);
+
+	xr_delete(Statistic);
 
 	DestroyRenderDevice();
 }

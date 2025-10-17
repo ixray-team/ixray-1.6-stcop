@@ -18,6 +18,7 @@ public:
 	IRHITextureFactory* TextureFactory = nullptr;
 
 public:
+	virtual ~IRHIDevice() = default;
 	virtual void ResizeBuffers(u32 Width, u32 Height) = 0;
 	virtual void ClearTarget(void* Target, ERTColor Transparent) = 0;
 	virtual void ClearTarget(void* Target, const float* Color) = 0;

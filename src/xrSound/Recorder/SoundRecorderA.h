@@ -5,11 +5,12 @@ struct ALCdevice;
 class CSpeexPreprocess;
 class CVoicePacketsPacker;
 
-class CSoundRecorderA : public ISoundRecorder
+class CSoundRecorderA :
+	public ISoundRecorder
 {
 public:
 	CSoundRecorderA(u32 sampleRate, int format, u32 samplesPerBuffer);
-	~CSoundRecorderA();
+	virtual ~CSoundRecorderA();
 
 	bool Init(CVoicePacketsPacker* packetsPacker);
 	void Destroy();
