@@ -12,9 +12,18 @@ struct xr_special_free
 
 		if constexpr (_is_pm)
 		{
-			// RTTI moments
-			// Don't toch this shit
-			void* _real_ptr = dynamic_cast<void*>(ptr);
+			void* _real_ptr = nullptr;
+
+			if constexpr (std::is_polymorphic_v<T> && !std::is_final_v<T>)
+			{
+				// FX: ѕроблемы множественного наследовани€
+				_real_ptr = dynamic_cast<void*>(ptr);
+			}
+			else
+			{
+				_real_ptr = static_cast<void*>(ptr);
+			}
+
 			ptr->~T();
 			Memory.mem_free(_real_ptr);
 		}
@@ -26,9 +35,11 @@ struct xr_special_free
 	}
 };
 
+
 template <class T>
 IC void xr_delete(T*& ptr)
 {
+	static_assert(!std::is_polymorphic_v<T> || std::has_virtual_destructor_v<T>, "Polymorphic delete requires virtual destructor or RTTI!");
 	if (ptr)
 	{
 		xr_special_free<std::is_polymorphic_v<T>, T>()(ptr);
@@ -38,6 +49,7 @@ IC void xr_delete(T*& ptr)
 template <class T>
 IC void xr_delete(T* const& ptr)
 {
+	static_assert(!std::is_polymorphic_v<T> || std::has_virtual_destructor_v<T>, "Polymorphic delete requires virtual destructor or RTTI!");
 	if (ptr)
 	{
 		xr_special_free<std::is_polymorphic_v<T>, T>()(const_cast<T*&>(ptr));

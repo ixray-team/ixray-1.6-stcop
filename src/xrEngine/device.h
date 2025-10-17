@@ -28,6 +28,7 @@ union SDL_Event;
 class IRenderDevice
 {
 public:
+	virtual ~IRenderDevice() = default;
 	virtual		CStatsPhysics*	_BCL		StatPhysics		()							= 0;								
 	virtual				void	_BCL		AddSeqFrame		( pureFrame* f, bool mt )	= 0;
 	virtual				void	_BCL		RemoveSeqFrame	( pureFrame* f )			= 0;
@@ -142,17 +143,11 @@ public:
 	CRegistrator	<pureScreenResolutionChanged>	seqResolutionChanged;
 };
 
-class	ENGINE_API CRenderDeviceBase :
-	public IRenderDevice,
-	public CRenderDeviceData
-{
-public:
-};
-
 #pragma pack(pop)
 // refs
 class ENGINE_API CRenderDevice:
-	public CRenderDeviceBase
+	public IRenderDevice,
+	public CRenderDeviceData
 {
 	friend class CPHWorld;
 
@@ -235,6 +230,7 @@ public:
 	Fmatrix									mInvFullTransform;
 	
 	CRenderDevice();
+	virtual ~CRenderDevice() noexcept = default;
 
 	virtual void	Pause							(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
 	BOOL	Paused							();
