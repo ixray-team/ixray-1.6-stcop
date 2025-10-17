@@ -179,7 +179,7 @@ namespace ALife {
 		return(eHitTypeMax);
 	}
 
-	ENGINE_API xr_token hit_types_token[ ];
+	extern ENGINE_API xr_token hit_types_token[ ];
 
 	IC LPCSTR g_cafHitType2String(EHitType tHitType)
 	{

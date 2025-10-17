@@ -4,13 +4,6 @@ set(LUA_INCLUDE_DIR "${IXRAY_SDK_INC}/lua/" CACHE PATH "" FORCE)
 set(LUA_LIBRARIES "${LUAJIT_LIB}" CACHE FILEPATH "" FORCE)
 set(LUA_LIBRARY "${LUAJIT_LIB}" CACHE FILEPATH "" FORCE)
 
-
-add_library(Lua::Lua UNKNOWN IMPORTED)
-set_target_properties(Lua::Lua PROPERTIES
-    IMPORTED_LOCATION "${LUAJIT_LIB}"
-    INTERFACE_INCLUDE_DIRECTORIES "${IXRAY_SDK_INC}/lua/"
-)
-
 FetchContent_Declare(
     luabind
     GIT_REPOSITORY https://github.com/ForserX/luabind-latest.git
