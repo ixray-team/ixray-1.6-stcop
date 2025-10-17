@@ -20,7 +20,7 @@ private:
 	Objects						objects_active;
 	Objects						objects_sleeping;
 	Objects						m_crows[2];
-	u32							m_owner_thread_id;
+	std::thread::id				m_owner_thread_id;
 
 public:
 	typedef xr_delegate<void(CObject*)>	RELCASE_CALLBACK;
@@ -88,7 +88,7 @@ public:
 private:
 	IC		Objects&			get_crows			()
 	{
-		if (GetCurrentThreadId() == m_owner_thread_id)
+		if (std::this_thread::get_id() == m_owner_thread_id)
 			return				(m_crows[0]);
 
 		return					(m_crows[1]);

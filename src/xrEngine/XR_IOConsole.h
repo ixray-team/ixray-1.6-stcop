@@ -75,7 +75,6 @@ protected:
 
 	FactoryPtr<IUIShader>*		m_hShader_back;
 
-	POINT			m_mouse_pos;
 	bool			m_disable_tips;
 	
 	static constexpr int RING_BUFFER_SIZE = 262144;
