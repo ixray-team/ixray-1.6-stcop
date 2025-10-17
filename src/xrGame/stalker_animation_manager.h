@@ -21,7 +21,8 @@ class CMissile;
 class CPropertyStorage;
 class CStalkerAnimationData;
 
-class CStalkerAnimationManager {
+class CStalkerAnimationManager
+{
 public:
 	typedef xr_deque<CStalkerAnimationScript>					SCRIPT_ANIMATIONS;
 	typedef MonsterSpace::EMovementDirection					EMovementDirection;
@@ -190,6 +191,7 @@ private:
 
 public:
 									CStalkerAnimationManager(CAI_Stalker *object);
+	virtual							~CStalkerAnimationManager() = default;
 	virtual	void					reinit					();
 	virtual	void					reload					();
 	virtual void					update					();
