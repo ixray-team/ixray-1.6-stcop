@@ -9,18 +9,20 @@
 #pragma once
 
 template <
-	typename _key_type,
-	typename _data_type,
-	typename _compare_predicate_type
+	typename in_key_type,
+	typename in_data_type,
+	typename in_compare_predicate_type
 >
-class associative_vector_compare_predicate : public _compare_predicate_type {
+class associative_vector_compare_predicate :
+	public in_compare_predicate_type
+{
 private:
-	typedef _compare_predicate_type									inherited;
+	using inherited = in_compare_predicate_type;
 
 public:
-	typedef _key_type												_compare_predicate_type::_key_type;
-	typedef _data_type												_compare_predicate_type::_data_type;
-	typedef _compare_predicate_type									_compare_predicate_type::_compare_predicate_type;
+	using _key_type					= in_key_type;
+	using _data_type				= in_data_type;
+	using _compare_predicate_type	= in_compare_predicate_type;
 
 public:
     typedef std::pair<_key_type, _data_type>						value_type;

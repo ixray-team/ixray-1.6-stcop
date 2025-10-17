@@ -87,7 +87,7 @@ CEnvironment::CEnvironment	() :
     string_path filePath;
     const bool environmentFolderExist = FS.exist("$game_config$", "environment\\");
 
-    CInifile const* config = pSettings;
+    CInifile* config = pSettings;
     pcstr section = "thunderbolt_common";
 
     if (environmentFolderExist)
