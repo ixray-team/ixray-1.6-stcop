@@ -113,8 +113,6 @@ void CConsole::Initialize()
 	scroll_delta	= 0;
 	bVisible		= false;
 
-	m_mouse_pos.x	= 0;
-	m_mouse_pos.y	= 0;
 	m_last_cmd		= nullptr;
 	
 	m_cmd_history.reserve( m_cmd_history_max + 2 );
@@ -619,8 +617,6 @@ void CConsole::Show()
 		return;
 	}
 	bVisible = true;
-	
-	GetCursorPos( &m_mouse_pos );
 
 	ec().clear_states();
 	scroll_delta	= 0;
