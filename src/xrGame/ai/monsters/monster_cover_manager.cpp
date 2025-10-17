@@ -17,7 +17,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 // CControllerCoverEvaluator
-class CCoverEvaluator : public CCoverEvaluatorBase {
+class CCoverEvaluator :
+	public CCoverEvaluatorBase
+{
 	typedef CCoverEvaluatorBase inherited;
 
 	Fvector				m_dest_position;

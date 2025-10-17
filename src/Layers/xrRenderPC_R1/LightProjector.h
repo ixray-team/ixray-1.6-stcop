@@ -8,7 +8,7 @@
 
 #include "../xrRender/r__dsgraph_types.h"
 
-class CLightProjector		: public pureAppActivate
+class CLightProjector : public pureAppActivate
 {
 private:
 	static	const	int		P_rt_size		= 512;
@@ -52,7 +52,7 @@ public:
 #endif
 
 	CLightProjector			();
-	~CLightProjector		();
+	virtual ~CLightProjector();
 };
 
 #endif // !defined(AFX_LIGHTPRJ_H__CFA216D9_CACB_4515_9FBE_7C531649168F__INCLUDED_)

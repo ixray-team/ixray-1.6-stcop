@@ -31,7 +31,7 @@ struct Bonus_Money_Struct {
 	Bonus_Money_Struct() {Money = 0; Reason = 0; Kills=0;}
 };
 
-struct game_PlayerState 
+struct game_PlayerState final
 {
 	//string64	name;
 	u8			team;
@@ -88,7 +88,7 @@ struct game_PlayerState
 	explicit		game_PlayerState		(NET_Packet* account_info);
 					~game_PlayerState		();
 
-	virtual void	clear					();
+			void	clear					();
 			bool	testFlag				(u16 f) const;
 			void	setFlag					(u16 f);
 			void	resetFlag				(u16 f);
@@ -101,8 +101,8 @@ struct game_PlayerState
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
 
 #ifndef AI_COMPILER
-	virtual void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
-	virtual void	net_Import				(NET_Packet& P);
+			void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
+			void	net_Import				(NET_Packet& P);
 	static	void	skip_Import				(NET_Packet& P);
 #endif
 	//---------------------------------------
