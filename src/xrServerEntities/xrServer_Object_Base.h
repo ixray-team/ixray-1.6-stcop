@@ -38,7 +38,7 @@ class CSE_ALifeItemPDA;
 #pragma warning(disable:4005)
 
 SERVER_ENTITY_DECLARE_BEGIN(CPureServerObject,IPureServerObject)
-	virtual							~CPureServerObject(){}
+	virtual							~CPureServerObject() = default;
 	virtual void					load(IReader	&tFileStream);
 	virtual void					save(IWriter	&tMemoryStream);
 	virtual void					load(NET_Packet	&tNetPacket);
