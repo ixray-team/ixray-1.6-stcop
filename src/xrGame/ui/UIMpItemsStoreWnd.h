@@ -9,7 +9,8 @@ class CUICellItem;
 class CStoreHierarchy
 {
 public:
-	struct item :public IPureDestroyableObject
+	struct item :
+		public IPureDestroyableObject
 	{
 								item				():m_parent(NULL),m_button(NULL){}
 	virtual void				destroy				();

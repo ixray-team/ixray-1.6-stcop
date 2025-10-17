@@ -20,6 +20,8 @@ public:
 	xr_map<xr_string, string256> InputArgsValues;
 
 public:
+	virtual ~IPluginBase() = default;
+
 	virtual void Run() = 0;
 	virtual bool IsSimple() const { return InputArgsName.empty(); }
 

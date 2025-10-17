@@ -3,8 +3,8 @@ struct lua_State;
 
 class IGame_ObjectFactory
 {
-
 public:
+	virtual ~IGame_ObjectFactory() = default;
 	virtual	void register_script() const = 0;
 	virtual	void init() = 0;
 	virtual	void init_script(const char* str) = 0;

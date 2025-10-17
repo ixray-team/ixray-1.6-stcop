@@ -147,9 +147,9 @@ protected:
 		ArbitraryList<VIPM_SWR>	m_SWR;// The records of the collapses.
 	    u32				m_SkeletonLinkType;
     public:
-        SSplit			(CSurface* surf, const Fbox& bb, u16 part);
+        SSplit (CSurface* surf, const Fbox& bb, u16 part);
 
-        bool			valid()
+        bool valid()
         {
         	if (m_Verts.empty()) return false;
         	if (m_Faces.empty()) return false;
@@ -188,6 +188,8 @@ protected:
         }
     }
 public:
+    virtual ~CExportSkeletonCustom() = default;
+
     virtual bool    	Export				(IWriter& F, u8 infl)=0;
 };
 

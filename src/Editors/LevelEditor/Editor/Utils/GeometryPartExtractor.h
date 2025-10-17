@@ -62,7 +62,8 @@ using SBBoneVecIt = SBBoneVec::iterator;
 using SBAdjVec = xr_vector<SBFaceVec>;
 using SBAdjVecIt = SBAdjVec::iterator;
 
-struct SBPart: public CExportSkeletonCustom
+struct SBPart:
+    public CExportSkeletonCustom
 {
 	SBFaceVec		m_Faces;
     SBBoneVec		m_Bones;

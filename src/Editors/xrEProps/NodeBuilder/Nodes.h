@@ -64,6 +64,7 @@ public:
 public:
 	INodeUnknown() = delete;
 	INodeUnknown(const char* Name);
+	virtual ~INodeUnknown() = default;
 
 	virtual void Draw();
 	virtual void AddContactLink(const xr_string& Name, bool IsOut = false);

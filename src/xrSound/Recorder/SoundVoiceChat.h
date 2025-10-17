@@ -14,7 +14,7 @@ class SoundVoiceChat : ISoundVoiceChat
 {
 public:
 	SoundVoiceChat(ALCcontext* pContext);
-	~SoundVoiceChat();
+	virtual ~SoundVoiceChat();
 
 	ISoundRecorder* CreateRecorder(IVoicePacketSender* sender);
 

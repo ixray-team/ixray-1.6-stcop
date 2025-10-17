@@ -8,7 +8,7 @@ class CNotificationClient :
 {
 public:
     CNotificationClient();
-    ~CNotificationClient();
+    virtual ~CNotificationClient();
 
     // IUnknown methods
     STDMETHOD(QueryInterface)(REFIID riid, void** ppvObject) {
