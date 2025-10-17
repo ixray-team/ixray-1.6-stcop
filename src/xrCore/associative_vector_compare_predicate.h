@@ -18,9 +18,9 @@ private:
 	typedef _compare_predicate_type									inherited;
 
 public:
-	typedef _key_type												_key_type;
-	typedef _data_type												_data_type;
-	typedef _compare_predicate_type									_compare_predicate_type;
+	typedef _key_type												_compare_predicate_type::_key_type;
+	typedef _data_type												_compare_predicate_type::_data_type;
+	typedef _compare_predicate_type									_compare_predicate_type::_compare_predicate_type;
 
 public:
     typedef std::pair<_key_type, _data_type>						value_type;
