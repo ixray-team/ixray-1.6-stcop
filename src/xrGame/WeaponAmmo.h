@@ -24,7 +24,8 @@ struct SCartridgeParam
 	}
 };
 
-class CCartridge : public IAnticheatDumpable
+class CCartridge : 
+	public IAnticheatDumpable
 {
 public:
 	CCartridge();

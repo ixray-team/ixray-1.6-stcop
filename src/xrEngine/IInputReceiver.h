@@ -1,14 +1,10 @@
-// IInputReceiver.h: interface for the IInputReceiver class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#ifndef IINPUTRECEIVERH
-#define IINPUTRECEIVERH
 #pragma once
 
-class ENGINE_API	IInputReceiver
+class ENGINE_API IInputReceiver
 {
 public:
+	virtual ~IInputReceiver() = default;
+
 	void			IR_GetLastMouseDelta			(Ivector2& p);
 	void			IR_GetMousePosScreen			(Ivector2& p);
 	void			IR_GetMousePosReal				(Ivector2 &p);
@@ -40,5 +36,3 @@ public:
 ENGINE_API extern float			psMouseSens;
 ENGINE_API extern float			psMouseSensScale;
 ENGINE_API extern Flags32		psMouseInvert;
-
-#endif
