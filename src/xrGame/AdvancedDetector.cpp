@@ -70,6 +70,11 @@ void CAdvancedDetector::UpdateAf()
 	ITEM_TYPE* item_type = af_info.curr_ref;
 	CArtefact* pCurrentAf = it->first;
 
+	if (pCurrentAf->CurrPlace() != eItemPlace::eItemPlaceUndefined)
+	{
+		return;
+	}
+
 	float dist = min_dist;
 	float fRelPow = (dist / AfDetectRadius());
 	clamp(fRelPow, 0.f, 1.f);
@@ -96,7 +101,9 @@ void CAdvancedDetector::UpdateAf()
 		af_info.snd_time = 0;
 		HUD_SOUND_ITEM::PlaySound(item_type->detect_snds, Fvector().set(0, 0, 0), this, true, false);
 		if (item_type->detect_snds.m_activeSnd)
+		{
 			item_type->detect_snds.m_activeSnd->snd.set_frequency(snd_freq);
+		}
 	}
 	else
 	{
@@ -109,10 +116,6 @@ void CAdvancedDetector::UpdateAf()
 void CUIArtefactDetectorAdv::construct(CAdvancedDetector* p)
 {
 	m_parent = p;
-	m_target_dir.set(0, 0, 0);
-	m_curr_ang_speed = 0.0f;
-	m_cur_y_rot = 0.0f;
-	m_bid = u16(-1);
 }
 
 void CUIArtefactDetectorAdv::SetValue(const float val1, const Fvector& val2)
@@ -132,7 +135,7 @@ void CUIArtefactDetectorAdv::update()
 
 	IKinematics* kin = hid->m_model;
 
-	BOOL b_visible = !fis_zero(m_target_dir.magnitude());
+	BOOL b_visible = !fis_zero(m_target_dir.magnitude()) && m_parent != nullptr && m_parent->IsWorking();
 
 	if (b_visible != kin->LL_GetBoneVisible(m_bid))
 	{
@@ -152,6 +155,7 @@ void CUIArtefactDetectorAdv::update()
 	const float dest_y_rot = -dest.getH();
 	m_cur_y_rot = angle_inertion_var(m_cur_y_rot, dest_y_rot, PI_DIV_4, PI_MUL_4, PI_MUL_2, Device.fTimeDelta);
 }
+
 void CAdvancedDetector::on_a_hud_attach()
 {
 	inherited::on_a_hud_attach();
@@ -193,6 +197,9 @@ void CUIArtefactDetectorAdv::ResetBoneCallbacks()
 
 	CBoneInstance& bi = kin->LL_GetBoneInstance(bid);
 	bi.reset_callback();
+
+	kin->LL_SetBoneVisible(bid, FALSE, TRUE);
+	m_target_dir = zero_vel;
 }
 
 float CUIArtefactDetectorAdv::CurrentYRotation() const
