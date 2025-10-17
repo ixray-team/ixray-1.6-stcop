@@ -75,7 +75,6 @@ protected:
 
 	FactoryPtr<IUIShader>*		m_hShader_back;
 
-	POINT			m_mouse_pos;
 	bool			m_disable_tips;
 	
 	RingBuffer<shared_str, 512> m_log_history;

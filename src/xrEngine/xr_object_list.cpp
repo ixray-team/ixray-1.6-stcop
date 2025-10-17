@@ -21,8 +21,8 @@ public:
 	BOOL debug_destroy = TRUE;
 #endif
 
-CObjectList::CObjectList	( ) :
-	m_owner_thread_id		(GetCurrentThreadId())
+CObjectList::CObjectList() :
+	m_owner_thread_id(std::this_thread::get_id())
 {
 	ZeroMemory				(map_NETID, 0xffff*sizeof(CObject*));
 }
