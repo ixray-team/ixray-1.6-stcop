@@ -4,8 +4,6 @@
 #include "imgui_impl_sdl3.h"
 #include "IGame_Persistent.h"
 
-#include <d3d11.h>
-
 static ERHI_API_LAYER CurrentAPILevel = ERHI_API_LAYER::D3D11;
 
 extern ENGINE_API BOOL g_appLoaded;
@@ -334,11 +332,6 @@ void CRenderDevice::ResizeWindow(u32 width, u32 height)
 	}
 
 	ResizeBuffers(width, height);
-}
-
-D3D_FEATURE_LEVEL CRenderDevice::GetFeatureLevel()
-{
-	return (D3D_FEATURE_LEVEL)(GRHI->DevicePtr->FeatureLevel);
 }
 
 RENDERDOC_API_1_6_0* CRenderDevice::GetRenderDocAPI()
