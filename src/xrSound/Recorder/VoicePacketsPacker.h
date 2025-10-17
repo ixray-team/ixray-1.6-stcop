@@ -10,8 +10,8 @@ public:
 	CVoicePacketsPacker();
 	~CVoicePacketsPacker();
 
-	virtual void AddSender(IVoicePacketSender* ref);
-	virtual void RemoveSender(IVoicePacketSender* ref);
+	void AddSender(IVoicePacketSender* ref);
+	void RemoveSender(IVoicePacketSender* ref);
 
 	void AddPacket(const void* data, const int length);
 	void Update();

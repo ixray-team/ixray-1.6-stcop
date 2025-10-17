@@ -196,7 +196,8 @@ struct Bullet_Check_Array
 using BChA = xr_vector<Bullet_Check_Array>;
 using BChA_it = BChA::iterator;
 
-struct WeaponUsageStatistic {
+struct WeaponUsageStatistic final
+{
 
 	bool			m_bCollectStatistic;
 	bool			CollectData				() {return m_bCollectStatistic;};
@@ -228,7 +229,7 @@ struct WeaponUsageStatistic {
 	//-----------------------------------------------
 	void				OnWeaponBought			(game_PlayerState* ps, LPCSTR WeaponName);
 	void				OnBullet_Fire			(SBullet* pBullet, const CCartridge& cartridge);
-	virtual void		OnBullet_Hit			(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation);
+	 void		OnBullet_Hit			(SBullet* pBullet, u16 TargetID, s16 element, Fvector HitLocation);
 	void				OnBullet_Remove			(SBullet* pBullet);
 	//-----------------------------------------------
 	
@@ -246,11 +247,11 @@ struct WeaponUsageStatistic {
 	
 	void				SVUpdateAliveTimes			();
 
-	virtual void		OnPlayerSpawned				(game_PlayerState* ps);
+	 void		OnPlayerSpawned				(game_PlayerState* ps);
 	void				OnPlayerAddMoney			(game_PlayerState* ps, s32 MoneyAmount);
-	virtual void		OnPlayerBringArtefact		(game_PlayerState* ps);
+	 void		OnPlayerBringArtefact		(game_PlayerState* ps);
 			void		OnPlayerKillPlayer			(game_PlayerState* ps, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType);
-	virtual void		OnExplosionKill				(game_PlayerState* ps, const SHit& hit);
+	 void		OnExplosionKill				(game_PlayerState* ps, const SHit& hit);
 			void		OnBleedKill					(game_PlayerState* killer_ps, game_PlayerState* victim_ps, u16 weapon_id);
 	//-----------------------------------------------
 	void				Update						();

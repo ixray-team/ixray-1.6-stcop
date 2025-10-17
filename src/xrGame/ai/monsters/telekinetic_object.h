@@ -13,9 +13,11 @@ class CPhysicsShellHolder;
 class CTelekineticObject;
 class CPHUpdateObject;
 class CTelekinesis;
-class CTelekineticObject {
 
+class CTelekineticObject
+{
 	ETelekineticState	state;
+
 public:
 	CPhysicsShellHolder *object;
 	CTelekinesis		*telekinesis;
@@ -38,7 +40,7 @@ public:
 
 public:
 								CTelekineticObject		();
-								~CTelekineticObject		();
+			virtual				~CTelekineticObject		();
 	
 virtual		bool				init					(CTelekinesis* tele,CPhysicsShellHolder *obj, float s, float h, u32 ttk, bool rot = true); 
 			void				set_sound				(const ref_sound &snd_hold, const ref_sound &snd_throw);

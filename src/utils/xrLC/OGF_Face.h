@@ -95,6 +95,8 @@ struct OGF_Base
 
 	IC BOOL				IsNode()	{ return iLevel; }
 
+	virtual ~OGF_Base() = default;
+
 	virtual void		PreSave		(u32 tree_id)				{};
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &RES)	= 0;
@@ -143,7 +145,7 @@ struct OGF : public OGF_Base
 		dwRelevantUV		= 0;
 		dwRelevantUVMASK	= 0;
 	};
-	~OGF()
+	virtual ~OGF()
 	{
 		xr_free			(data.m_SWI.sw);
 	}
@@ -248,7 +250,8 @@ struct OGF_Reference : public OGF_Base
 	void LoadForCompile(IReader* R);
 };
 
-struct OGF_Node : public OGF_Base
+struct OGF_Node : 
+	public OGF_Base
 {
 	xr_vector<u32>		chields;
 

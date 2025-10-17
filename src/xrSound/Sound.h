@@ -144,6 +144,7 @@ public:
 class XRSOUND_API	CSound_source
 {
 public:
+	virtual ~CSound_source() = default;
 	virtual	float			length_sec				( ) const			= 0;
 	virtual u32				game_type				( ) const			= 0;
 	virtual LPCSTR			file_name				( ) const			= 0;
@@ -174,6 +175,8 @@ public:
 class XRSOUND_API			CSound_emitter
 {
 public:
+	virtual ~CSound_emitter() = default;
+
 	virtual BOOL					is_2D					()															= 0;
 	virtual void					switch_to_2D			()															= 0;
 	virtual void					switch_to_Intro			()															= 0;

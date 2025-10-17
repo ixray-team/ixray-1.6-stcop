@@ -6,18 +6,22 @@
 class XRCORE_API xr_resource	
 {
 public:
-	enum			{RF_REGISTERED=1<<0 };
+	enum {RF_REGISTERED=1<<0 };
 public:
 	xr_atomic_u32 dwReference = 0;
 	xr_resource() {};
+	virtual ~xr_resource() = default;
 };
 
-class	XRCORE_API	xr_resource_flagged	:	public xr_resource			{
+class XRCORE_API xr_resource_flagged	:
+	public xr_resource
+{
 public:
 	enum			{RF_REGISTERED=1<<0 };
 public:
 	u32				dwFlags;
 	xr_resource_flagged()	: dwFlags(0)					{ }
+	virtual ~xr_resource_flagged() = default;
 };
 
 class	XRCORE_API	xr_resource_named	:	public xr_resource_flagged	{
@@ -30,7 +34,7 @@ public:
 		return		*cName;
 	}
 	xr_resource_named()	: cName(0)		{ }
-	~xr_resource_named()				{ }
+	virtual ~xr_resource_named()		{ }
 };
 
 // resptr_BASE
