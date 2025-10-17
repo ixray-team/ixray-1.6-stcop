@@ -13,6 +13,7 @@ enum class ERHI_MAX_TEXTURE
 class IRHIShaderResourceStateCache
 {
 public:
+	virtual ~IRHIShaderResourceStateCache() = default;
 	virtual void ResetDeviceState() = 0;
 	virtual void Apply() = 0;
 
