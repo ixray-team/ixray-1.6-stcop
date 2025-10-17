@@ -31,8 +31,6 @@ CStatGraph::~CStatGraph()
 void CStatGraph::OnDeviceCreate()
 {
 	m_pRender->OnDeviceCreate();
-//	hGeomLine.create			(FVF::F_TL0uv,RCache.Vertex.Buffer(),RCache.Index.Buffer());
-//	hGeomTri.create				(FVF::F_TL0uv,RCache.Vertex.Buffer(),RCache.QuadIB);
 }
 
 void CStatGraph::OnDeviceDestroy()
