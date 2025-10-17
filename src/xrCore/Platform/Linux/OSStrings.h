@@ -1,11 +1,13 @@
 #pragma once
 #include <ctype.h>
 #include <cstdlib>
+#include <strings.h>
 
+#define _strcmpi strcasecmp
+#define stricmp strcasecmp
 #define _stricmp stricmp
 #define strcmpi stricmp
 #define lstrcpy strcpy
-#define stricmp strcasecmp
 #define _vsnprintf vsnprintf
 #define vsprintf_s(dest, size, format, args) vsprintf(dest, format, args)
 #define strlwr _strlwr

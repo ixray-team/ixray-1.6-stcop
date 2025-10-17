@@ -46,9 +46,6 @@ public:
 
 	virtual				void				ResizeWindow(u32 width, u32 height) = 0;
 
-#ifdef IXR_WINDOWS
-	virtual				D3D_FEATURE_LEVEL	GetFeatureLevel() = 0;
-#endif
 	virtual				RENDERDOC_API_1_6_0* GetRenderDocAPI() = 0;
 
 	virtual				void				BeginRender() = 0;
@@ -189,9 +186,6 @@ public:
 	void ResizeBuffers(u32 Width, u32 Height);
 	void ResizeWindow(u32 width, u32 height);
 
-#ifdef IXR_WINDOWS
-	D3D_FEATURE_LEVEL GetFeatureLevel() override;
-#endif
 	RENDERDOC_API_1_6_0* GetRenderDocAPI() override;
 
 	void BeginRender() override;
