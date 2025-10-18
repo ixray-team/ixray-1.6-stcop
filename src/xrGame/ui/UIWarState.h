@@ -13,7 +13,7 @@
 class CUIXml;
 class CUIStatic;
 
-class UIWarState : public UIHintWindow
+class UIWarState final : public UIHintWindow
 {
 private:
 	typedef UIHintWindow	inherited;

@@ -2,7 +2,7 @@
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
 
-class CUIMotionIcon : public CUIStatic
+class CUIMotionIcon final : public CUIStatic
 {
 	typedef CUIStatic inherited;
 public:

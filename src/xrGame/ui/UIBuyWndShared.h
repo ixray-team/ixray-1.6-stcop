@@ -22,7 +22,7 @@ struct string_lex_less
 		return (xr_strcmp(A,B) < 0);
 	}
 };
-class CItemMgr
+class CItemMgr final
 {
 	struct _i{
 		u8			slot_idx;

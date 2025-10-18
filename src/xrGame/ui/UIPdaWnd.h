@@ -22,7 +22,7 @@ class UIHint;
 class CMapSpot;
 class CUIPdaContactsWnd;
 
-class CUIPdaWnd: public CUIDialogWnd
+class CUIPdaWnd final : public CUIDialogWnd
 {
 	typedef CUIDialogWnd	inherited;
 protected:

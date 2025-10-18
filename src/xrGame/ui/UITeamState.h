@@ -16,7 +16,7 @@ class CUIXml;
 class UIPlayerItem;
 class UITeamHeader;
 
-class UITeamState : public CUIWindow
+class UITeamState final : public CUIWindow
 {
 private:
 	typedef CUIWindow inherited;

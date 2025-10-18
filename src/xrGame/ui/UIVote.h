@@ -10,7 +10,7 @@ class CUIFrameWindow;
 
 
 
-class CUIVote : public CUIDialogWnd 
+class CUIVote final : public CUIDialogWnd
 {
 public:
 

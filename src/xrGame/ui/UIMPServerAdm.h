@@ -11,7 +11,7 @@ class CUIEditBox;
 class CUISpinNum;
 class CUICheckButton;
 
-class CUIMpServerAdm :	public CUIWindow, public CUIWndCallback 
+class CUIMpServerAdm final :	public CUIWindow, public CUIWndCallback
 {
 		typedef CUIWindow	inherited;
 		CUI3tButton*		m_pBackBtn;

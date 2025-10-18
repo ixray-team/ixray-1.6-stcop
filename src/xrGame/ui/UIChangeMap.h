@@ -9,7 +9,7 @@ class CUIFrameWindow;
 class CUIListBox;
 class CUIXml;
 
-class CUIChangeMap : public CUIDialogWnd 
+class CUIChangeMap final : public CUIDialogWnd 
 {
 public:
 					CUIChangeMap			();

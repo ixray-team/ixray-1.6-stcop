@@ -6,7 +6,7 @@
 class CUIXml;
 class CUIFrameWindow;
 
-class CUIStats : 
+class CUIStats final :
 	public CUIScrollView
 {
 public:

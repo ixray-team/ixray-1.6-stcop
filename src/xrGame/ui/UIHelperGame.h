@@ -8,7 +8,7 @@
 #include "../xrUI/UIXmlInit.h"
 #include "../xrUI/UIHelper.h"
 
-class UIHelperGame: 
+class UIHelperGame final :
 	public UIHelper
 {
 public:
@@ -17,7 +17,7 @@ public:
 
 }; // class UIHelper
 
-class CUIXmlInitGame: 
+class CUIXmlInitGame final :
 	public CUIXmlInit
 {
 public:

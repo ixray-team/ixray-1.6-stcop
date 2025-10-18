@@ -10,7 +10,7 @@ class CUIStatic;
 class CUIDoubleProgressBar;
 class CUIXml;
 
-class CUIOutfitImmunity : public CUIWindow
+class CUIOutfitImmunity final : public CUIWindow
 {
 public:
 					CUIOutfitImmunity	();
@@ -32,7 +32,7 @@ protected:
 
 // -------------------------------------------------------------------------------------
 
-class CUIOutfitInfo : public CUIWindow
+class CUIOutfitInfo final : public CUIWindow
 {
 public:
 					CUIOutfitInfo		();

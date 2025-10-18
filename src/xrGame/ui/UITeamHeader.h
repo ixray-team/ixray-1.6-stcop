@@ -13,7 +13,7 @@ class CUIStatic;
 
 class UITeamState;
 
-class UITeamHeader : public CUIWindow
+class UITeamHeader final : public CUIWindow
 {
 private:
 	typedef	CUIWindow									inherited;

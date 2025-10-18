@@ -9,7 +9,7 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
 
-class FractionState
+class FractionState final
 {
 public:
 				FractionState		();
