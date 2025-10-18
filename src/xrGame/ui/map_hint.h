@@ -8,7 +8,7 @@ class CUIXml;
 class CGameTask;
 class CMapSpot;
 
-class CUIMapLocationHint :public CUIFrameWindow
+class CUIMapLocationHint final : public CUIFrameWindow
 {
 	typedef CUIFrameWindow inherited;
 

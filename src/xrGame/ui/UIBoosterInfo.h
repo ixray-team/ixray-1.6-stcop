@@ -7,7 +7,7 @@ class CUIStatic;
 class CUITextWnd;
 class UIBoosterInfoItem;
 
-class CUIBoosterInfo : public CUIWindow
+class CUIBoosterInfo final : public CUIWindow
 {
 public:
 					CUIBoosterInfo		();
@@ -31,7 +31,7 @@ protected:
 
 // -----------------------------------
 
-class UIBoosterInfoItem : public CUIWindow
+class UIBoosterInfoItem final : public CUIWindow
 {
 public:
 				UIBoosterInfoItem	();
