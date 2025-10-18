@@ -25,9 +25,10 @@ using smart_cover::detail::parse_table;
 using smart_cover::detail::parse_fvector;
 using smart_cover::detail::parse_int;
 
-namespace smart_cover {
-	static	LPCSTR				s_enter_loophole_id = "<__ENTER__>";
-	static	LPCSTR				s_exit_loophole_id  = "<__EXIT__>";
+namespace smart_cover
+{
+	static const char* s_enter_loophole_id = "<__ENTER__>";
+	static const char* s_exit_loophole_id  = "<__EXIT__>";
 
 	shared_str	transform_vertex(shared_str const &vertex_id, bool const &in)
 	{
@@ -233,39 +234,10 @@ void description::load_actions	(luabind::object const &table, description::Actio
 	}
 }
 
-template <typename _data_type,
-		  typename _edge_weight_type,
-		  typename _vertex_id_type,
-		  typename _edge_data_type>
-IC void delete_data (const CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type>& graph_)
-{
-	typedef CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type> Graph;
-
-	Graph& graph = const_cast<Graph&>(graph_);
-
-	typedef Graph::VERTICES Vertices;
-	typedef Graph::EDGES	Edges;
-
-	Vertices& verts = graph.vertices();
-
-	for ( auto vi=verts.begin(); vi!=verts.end(); ++vi )
-	{
-		auto vert = (*vi).second;
-		delete_data(vert->data());
-
-		Edges& edges = const_cast<Edges&>(vert->edges());
-		for ( auto ei=edges.begin(); ei!=edges.end(); ++ei )
-		{
-			auto& edge = (*ei);
-			delete_data(edge.data());
-		}
-	}
-}
-
 description::~description		()
 {
-	delete_data					(m_loopholes);
-	delete_data					(m_transitions);
+	delete_data(m_loopholes);
+	delete_abstract_data(m_transitions);
 }
 
 loophole const *description::loophole(shared_str const &loophole_id) const
