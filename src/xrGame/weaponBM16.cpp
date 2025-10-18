@@ -1,10 +1,6 @@
 #include "StdAfx.h"
 #include "weaponBM16.h"
 
-CWeaponBM16::~CWeaponBM16()
-{
-}
-
 void CWeaponBM16::Load(LPCSTR section)
 {
 	m_bUseAltReloadSystem = READ_IF_EXISTS(pSettings, r_bool, section, "use_alt_reload_system", false);
