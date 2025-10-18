@@ -1,14 +1,6 @@
 #include "StdAfx.h"
 #include "hud_item_object.h"
 
-CHudItemObject::CHudItemObject			()
-{
-}
-
-CHudItemObject::~CHudItemObject			()
-{
-}
-
 DLL_Pure *CHudItemObject::_construct	()
 {
 	CInventoryItemObject::_construct();

@@ -3,14 +3,13 @@
 #include "Explosive.h"
 #include "../xrEngine/Feel_Touch.h"
 
-class CGrenade :
-	public CMissile,
+class CGrenade : public CMissile,
 	public CExplosive
 {
-	typedef CMissile		inherited;
+	using inherited = CMissile;
 public:
-							CGrenade							();
-	virtual					~CGrenade							();
+	CGrenade();
+	virtual ~CGrenade() = default;
 
 
 	virtual void			Load								(LPCSTR section);

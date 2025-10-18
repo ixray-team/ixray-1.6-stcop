@@ -2,13 +2,13 @@
 
 #include "WeaponMagazined.h"
 
-class CWeaponCustomPistol: public CWeaponMagazined
+class CWeaponCustomPistol : public CWeaponMagazined
 {
-private:
-	typedef CWeaponMagazined inherited;
+	using inherited = CWeaponMagazined;
 public:
-					CWeaponCustomPistol	();
-	virtual			~CWeaponCustomPistol();
+	CWeaponCustomPistol() = default;
+	virtual ~CWeaponCustomPistol() = default;
+
 	virtual	int		GetCurrentFireMode	() { return 1; };
 protected:
 	virtual void	FireEnd				();

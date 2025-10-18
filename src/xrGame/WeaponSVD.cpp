@@ -2,12 +2,6 @@
 #include "pch_script.h"
 #include "WeaponSVD.h"
 
-CWeaponSVD::CWeaponSVD(void)
-{}
-
-CWeaponSVD::~CWeaponSVD(void)
-{}
-
 void CWeaponSVD::switch2_Fire	()
 {
 	m_bFireSingleShot			= true;

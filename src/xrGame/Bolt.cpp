@@ -3,15 +3,6 @@
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrEngine/xr_level_controller.h"
 
-CBolt::CBolt(void) 
-{
-	m_thrower_id = u16(-1);
-}
-
-CBolt::~CBolt(void) 
-{
-}
-
 void CBolt::OnH_A_Chield() 
 {
 	inherited::OnH_A_Chield();

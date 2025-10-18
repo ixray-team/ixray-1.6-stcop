@@ -3,13 +3,6 @@
 #include "Entity.h"
 #include "WeaponCustomPistol.h"
 
-CWeaponCustomPistol::CWeaponCustomPistol() : CWeaponMagazined(SOUND_TYPE_WEAPON_PISTOL)
-{
-}
-
-CWeaponCustomPistol::~CWeaponCustomPistol()
-{
-}
 void CWeaponCustomPistol::switch2_Fire	()
 {
 	m_bFireSingleShot			= true;

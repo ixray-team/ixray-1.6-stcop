@@ -71,12 +71,12 @@ public:
 	virtual void			OnStateSwitch		(u32 S)				= 0;
 };
 
-class CHudItem :public CHUDState
+class CHudItem : public CHUDState
 {
 public:
-							CHudItem			();
-	virtual					~CHudItem			();
-	virtual DLL_Pure*		_construct			();
+	CHudItem();
+	virtual	~CHudItem() = default;
+	virtual DLL_Pure* _construct();
 protected:
 	
 	Flags16					m_huditem_flags;

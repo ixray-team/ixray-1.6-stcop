@@ -180,12 +180,12 @@ void SBinocVisibleObj::Update()
 
 CBinocularsVision::CBinocularsVision(const shared_str& sect)
 {
-	Load							(sect);
+	Load(sect);
 }
 
 CBinocularsVision::~CBinocularsVision()
 {
-	delete_data			(m_active_objects);
+	delete_data(m_active_objects);
 }
 
 void CBinocularsVision::Update()

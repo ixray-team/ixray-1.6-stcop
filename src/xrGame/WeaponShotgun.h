@@ -3,12 +3,12 @@
 #include "WeaponCustomPistol.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponShotgun :	public CWeaponCustomPistol
+class CWeaponShotgun : public CWeaponCustomPistol
 {
-	typedef CWeaponCustomPistol inherited;
+	using inherited = CWeaponCustomPistol;
 public:
-					CWeaponShotgun		();
-	virtual			~CWeaponShotgun		();
+	CWeaponShotgun();
+	virtual	~CWeaponShotgun() = default;
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	LoadSounds			(LPCSTR section);

@@ -1,13 +1,12 @@
 #pragma once
 #include "WeaponCustomPistol.h"
 
-class CWeaponPistol :
-	public CWeaponCustomPistol
+class CWeaponPistol : public CWeaponCustomPistol
 {
-	typedef CWeaponCustomPistol inherited;
+	using inherited = CWeaponCustomPistol;
 public:
-					CWeaponPistol	();
-	virtual			~CWeaponPistol	();
+	CWeaponPistol() = default;
+	virtual	~CWeaponPistol() = default;
 
 	virtual void	Load			(LPCSTR section);
 	virtual void	PlayAnimHide	();
@@ -16,5 +15,5 @@ public:
 protected:	
 	virtual bool	AllowFireWhileWorking() {return true;}
 
-	ESoundTypes			m_eSoundClose;
+	ESoundTypes	m_eSoundClose = SOUND_TYPE_WEAPON_RECHARGING;
 };
