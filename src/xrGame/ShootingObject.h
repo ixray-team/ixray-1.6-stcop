@@ -21,8 +21,8 @@ class IRender_Sector;
 class CShootingObject : public IAnticheatDumpable
 {
 protected:
-			CShootingObject			();
-	virtual ~CShootingObject		();
+	CShootingObject();
+	virtual ~CShootingObject() = default;
 
 	void	reinit	();
 	void	reload	(LPCSTR section) {};

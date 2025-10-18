@@ -1,15 +1,15 @@
 #pragma once
 #include "Missile.h"
 #include "../xrPhysics/DamageSource.h"
-class CBolt :
-					public CMissile,
-					public IDamageSource
+
+class CBolt final : public CMissile,
+	public IDamageSource
 {
-	typedef CMissile inherited;
-	u16			m_thrower_id;
+	using inherited = CMissile;
+	u16	m_thrower_id = u16(-1);
 public:
-				CBolt				();
-	virtual		~CBolt				();
+	CBolt() = default;
+	virtual ~CBolt() = default;
 
 	virtual void OnH_A_Chield		();
 	
