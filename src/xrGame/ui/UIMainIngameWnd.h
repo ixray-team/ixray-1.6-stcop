@@ -16,7 +16,7 @@ class	CInventoryItem;
 class	CUIHudStatesWnd;
 class	CUIMotionIcon;
 
-class CUIMainIngameWnd: public CUIWindow  
+class CUIMainIngameWnd final : public CUIWindow
 {
 public:
 			CUIMainIngameWnd();

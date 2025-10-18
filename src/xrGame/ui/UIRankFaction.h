@@ -15,7 +15,7 @@ class CUITextWnd;
 class CUIProgressBar;
 class CActor;
 
-class CUIRankFaction : public CUIWindow
+class CUIRankFaction final : public CUIWindow
 {
 private:
 	FactionState	m_faction_state;
