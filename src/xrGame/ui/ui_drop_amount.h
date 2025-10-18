@@ -15,7 +15,7 @@ class CUIWindow;
 class CUITrackBar;
 class CUI3tButton;
 
-class CUIItemDropAmountWnd : 
+class CUIItemDropAmountWnd final : 
 	public CUIDialogWnd,
 	public CUIWndCallback
 {

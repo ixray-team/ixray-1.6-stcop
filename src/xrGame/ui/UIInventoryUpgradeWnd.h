@@ -28,7 +28,7 @@ class CUIFrameLineWnd;
 class CUI3tButton;
 class CUICellItem;
 
-class CUIInventoryUpgradeWnd : public CUIWindow
+class CUIInventoryUpgradeWnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow	inherited;

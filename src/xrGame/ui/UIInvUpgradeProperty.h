@@ -18,7 +18,7 @@ namespace inventory { namespace upgrade {
 	class Property;
 } } // namespace upgrade, inventory
 
-class UIProperty : public CUIWindow
+class UIProperty final : public CUIWindow
 {
 private:
 	typedef CUIWindow							inherited;
@@ -51,7 +51,7 @@ public:
 
 // =========================================================================================
 
-class UIInvUpgPropertiesWnd : public CUIWindow
+class UIInvUpgPropertiesWnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow						inherited;

@@ -11,7 +11,7 @@ typedef struct
 	int				n;
 } RESTR;
 
-class CRestrictions 
+class CRestrictions final
 {
 public:
 							CRestrictions			();

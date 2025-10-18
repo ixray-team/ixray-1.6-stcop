@@ -24,7 +24,7 @@ class CUIInventoryUpgradeWnd;
 class CInventoryItem;
 class CUIUpgradePoint;
 
-class UIUpgrade : public CUIWindow
+class UIUpgrade final : public CUIWindow
 {
 private:
 	typedef inventory::upgrade::Upgrade 	Upgrade_type;
@@ -133,7 +133,7 @@ public:
     CUIStatic*			m_ink;
 };
 
-class CUIUpgradePoint:public CUIStatic
+class CUIUpgradePoint final :public CUIStatic
 {
 private:
 	typedef CUIStatic	inherited;

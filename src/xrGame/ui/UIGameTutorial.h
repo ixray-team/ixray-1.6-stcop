@@ -7,7 +7,7 @@ class CUISequenceItem;
 class CUIXml;
 class IUISequenceVideoItem;
 
-class CUISequencer :
+class CUISequencer final :
 	public pureFrame,
 	public pureRender,
 	public IInputReceiver
@@ -113,7 +113,7 @@ public:
 	shared_str				m_onframe_lua_function;
 };
 
-class CUISequenceSimpleItem: public CUISequenceItem
+class CUISequenceSimpleItem final : public CUISequenceItem
 {
 	typedef CUISequenceItem	inherited;
 	struct SSubItem{
@@ -162,7 +162,7 @@ protected:
 	virtual float			current_factor		();
 };
 
-class CUISequenceVideoItem: public CUISequenceItem
+class CUISequenceVideoItem final : public CUISequenceItem
 {
 	typedef CUISequenceItem	inherited;
 	ref_sound				m_sound;
