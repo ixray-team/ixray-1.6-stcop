@@ -47,9 +47,6 @@ CShootingObject::CShootingObject(void)
 	reinit();
 
 }
-CShootingObject::~CShootingObject(void)
-{
-}
 
 void CShootingObject::reinit()
 {

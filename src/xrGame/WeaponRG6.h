@@ -4,14 +4,15 @@
 #include "WeaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponRG6 :  public CRocketLauncher,
-					public CWeaponShotgun
+class CWeaponRG6 final : public CRocketLauncher,
+	public CWeaponShotgun
 {
-	typedef CRocketLauncher		inheritedRL;
-	typedef CWeaponShotgun		inheritedSG;
+	using inheritedRL = CRocketLauncher;
+	using inheritedSG = CWeaponShotgun;
 	
 public:
-	virtual			~CWeaponRG6				();
+	CWeaponRG6() = default;
+	virtual ~CWeaponRG6() = default;
 	virtual BOOL	net_Spawn				(CSE_Abstract* DC) override;
 	virtual void	Load					(LPCSTR section) override;
 	virtual void	OnEvent					(NET_Packet& P, u16 type) override;

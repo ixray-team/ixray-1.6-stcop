@@ -13,11 +13,6 @@
 #	include "phdebug.h"
 #endif
 
-
-CWeaponRG6::~CWeaponRG6()
-{
-}
-
 BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
 {
 	BOOL l_res = inheritedSG::net_Spawn(DC);

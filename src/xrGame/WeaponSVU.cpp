@@ -2,12 +2,6 @@
 #include "pch_script.h"
 #include "WeaponSVU.h"
 
-CWeaponSVU::CWeaponSVU(void)
-{}
-
-CWeaponSVU::~CWeaponSVU(void)
-{}
-
 using namespace luabind;
 
 #pragma optimize("s",on)

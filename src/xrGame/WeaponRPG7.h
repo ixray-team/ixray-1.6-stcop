@@ -4,14 +4,13 @@
 #include "RocketLauncher.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponRPG7 :	public CWeaponCustomPistol,
-					public CRocketLauncher
+class CWeaponRPG7 final : public CWeaponCustomPistol,
+	public CRocketLauncher
 {
-private:
-	typedef CWeaponCustomPistol inherited;
+	using inherited = CWeaponCustomPistol;
 public:
-				CWeaponRPG7		();
-	virtual		~CWeaponRPG7	();
+	CWeaponRPG7();
+	virtual	~CWeaponRPG7() = default;
 
 	virtual BOOL net_Spawn		(CSE_Abstract* DC);
 	virtual void OnStateSwitch	(u32 S);
