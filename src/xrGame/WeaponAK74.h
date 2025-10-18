@@ -3,13 +3,12 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponAK74: public CWeaponMagazinedWGrenade
+class CWeaponAK74 final : public CWeaponMagazinedWGrenade
 {
-private:
-	typedef CWeaponMagazinedWGrenade inherited;
+	using inherited = CWeaponMagazinedWGrenade;
 public:
-					CWeaponAK74		(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
-	virtual			~CWeaponAK74	();
+	CWeaponAK74() = default;
+	virtual ~CWeaponAK74() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -9,14 +9,14 @@ class CCameraBase;
 
 #define DESIRED_DIR 1
 
-class CWeaponStatMgun:	public CPhysicsShellHolder, 
-						public CHolderCustom,
-						public CShootingObject
+class CWeaponStatMgun final : public CPhysicsShellHolder, 
+	public CHolderCustom,
+	public CShootingObject
 {
 private:
-	typedef CPhysicsShellHolder inheritedPH;
-	typedef CHolderCustom		inheritedHolder;
-	typedef CShootingObject		inheritedShooting;
+	using inheritedPH = CPhysicsShellHolder;
+	using inheritedHolder = CHolderCustom;
+	using inheritedShooting = CShootingObject;
 
 private:
 	CCameraBase*			camera;

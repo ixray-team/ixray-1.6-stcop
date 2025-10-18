@@ -15,10 +15,9 @@ class CWeaponBM16;
 class CWeaponRPG7;
 class CWeaponRG6;
 
-class CWeaponMagazined: public CWeapon
+class CWeaponMagazined : public CWeapon
 {
-private:
-	typedef CWeapon inherited;
+	using inherited = CWeapon;
 protected:
 	//звук текущего выстрела
 	xr_string		m_sSndShotCurrent;
@@ -78,8 +77,8 @@ protected:
 	virtual void	state_Fire		(float dt);
 	virtual void	state_FireChamber(float dt);
 public:
-					CWeaponMagazined	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
-	virtual			~CWeaponMagazined	();
+	CWeaponMagazined();
+	virtual ~CWeaponMagazined();
 
 	virtual void	Load(LPCSTR section);
 	virtual void	LoadSounds(LPCSTR section);

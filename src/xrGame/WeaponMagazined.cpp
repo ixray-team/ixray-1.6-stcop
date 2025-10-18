@@ -33,15 +33,15 @@ CUIXml* pWpnScopeXml = nullptr;
 
 extern void createWpnScopeXML();
 
-CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
+CWeaponMagazined::CWeaponMagazined()
 {
-	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
-	m_eSoundHide				= ESoundTypes(SOUND_TYPE_ITEM_HIDING | eSoundType);
-	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING | eSoundType);
-	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING | eSoundType);
-	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
-	m_eSoundAim 				= ESoundTypes(SOUND_TYPE_WEAPON | eSoundType);
-	m_eSoundAimOut 				= ESoundTypes(SOUND_TYPE_WEAPON | eSoundType);
+	m_eSoundShow				= ESoundTypes(SOUND_TYPE_ITEM_TAKING);
+	m_eSoundHide				= ESoundTypes(SOUND_TYPE_ITEM_HIDING);
+	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING);
+	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
+	m_eSoundAim 				= ESoundTypes(SOUND_TYPE_WEAPON);
+	m_eSoundAimOut 				= ESoundTypes(SOUND_TYPE_WEAPON);
 	
 	m_sounds_enabled			= true;
 	

@@ -9,13 +9,9 @@
 #include "Inventory.h"
 #include "InventoryOwner.h"
 
-CWeaponRPG7::CWeaponRPG7() : inherited()
+CWeaponRPG7::CWeaponRPG7()
 {
 	CWeapon::m_bIAmWeaponRPG7 = true;
-}
-
-CWeaponRPG7::~CWeaponRPG7() 
-{
 }
 
 void CWeaponRPG7::Load	(LPCSTR section)

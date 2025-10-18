@@ -55,12 +55,12 @@ public:
 	virtual shared_str const 	GetAnticheatSectionName	() const { return m_ammoSect; };
 };
 
-class CWeaponAmmo :	
-	public CInventoryItemObject {
-	typedef CInventoryItemObject		inherited;
+class CWeaponAmmo final : public CInventoryItemObject
+{
+	using inherited = CInventoryItemObject;
 public:
-									CWeaponAmmo			(void);
-	virtual							~CWeaponAmmo		(void);
+	CWeaponAmmo() = default;
+	virtual ~CWeaponAmmo() = default;
 
 	virtual CWeaponAmmo				*cast_weapon_ammo	()	{return this;}
 	virtual void					Load				(LPCSTR section);
