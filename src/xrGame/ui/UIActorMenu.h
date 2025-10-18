@@ -183,6 +183,8 @@ protected:
 private:
 	const char* m_onItemDropped = {};
 	bool m_isItemDropped = false;
+	PIItem m_lastFocusRecivedItem = nullptr;
+	u16 m_lastFocusLostItem_id = u16(0xffff);
 
 	const char* m_onCanMoveToPartner = {};
 	bool m_isCanMoveToPartner = false;
