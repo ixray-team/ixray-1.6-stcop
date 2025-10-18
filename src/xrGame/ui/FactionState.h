@@ -9,7 +9,7 @@
 
 #include "../../xrUI/Widgets/UIWindow.h"
 
-class FactionState
+class FactionState final
 {
 public:
 				FactionState		();

@@ -96,7 +96,7 @@ public:
 				bool		m_with_custom_mark;
 };
 
-class CUIDragItem: public CUIWindow, public pureRender, public pureFrame
+class CUIDragItem final: public CUIWindow, public pureRender, public pureFrame
 {
 	typedef		CUIWindow	inherited;
 	CUIStatic				m_static;

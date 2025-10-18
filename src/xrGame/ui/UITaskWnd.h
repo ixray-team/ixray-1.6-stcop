@@ -18,7 +18,7 @@ class UITaskListWnd;
 class UIMapLegend;
 class UIHint;
 
-class CUITaskWnd			:	public CUIWindow, 
+class CUITaskWnd final		:	public CUIWindow, 
 								public CUIWndCallback
 {
 private:
@@ -123,7 +123,7 @@ private:
 	void 				OnShowQuestNpcs			(CUIWindow*, void*);
 };
 
-class CUITaskItem : public CUIWindow
+class CUITaskItem final : public CUIWindow
 {
 private:
 	typedef CUIWindow			inherited;

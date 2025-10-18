@@ -31,7 +31,8 @@ enum enum_connect_error
 
 typedef mixed_delegate<void (enum_connect_error, char const *)> connect_error_cb;
 
-class SServerFilters{
+class SServerFilters final
+{
 public:
 	bool	empty;
 	bool	full;
@@ -41,7 +42,8 @@ public:
 	bool	listen_servers;
 };
 
-class CServerList : public CUIWindow{
+class CServerList final : public CUIWindow
+{
 public:
 					CServerList			();
 	virtual			~CServerList		();

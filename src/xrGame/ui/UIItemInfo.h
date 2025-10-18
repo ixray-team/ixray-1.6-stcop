@@ -19,7 +19,7 @@ class CUICellItem;
 
 extern const char * const 		fieldsCaptionColor;
 
-class CUIItemInfo: public CUIWindow
+class CUIItemInfo final : public CUIWindow
 {
 private:
 	typedef CUIWindow inherited;

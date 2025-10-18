@@ -21,7 +21,7 @@ class CUIFrameWindow;
 class UIInvUpgPropertiesWnd;
 class CInventoryItem;
 
-class UIInvUpgradeInfo: public CUIWindow
+class UIInvUpgradeInfo final : public CUIWindow
 {
 private:
 	using inherited = CUIWindow;

@@ -10,7 +10,7 @@ class CUI3tButton;
 class CUI3tButton;
 class CUITextWnd;
 
-class CUIServerInfo :
+class CUIServerInfo final :
 	public CUIDialogWnd,
 	public CUIWndCallback
 {

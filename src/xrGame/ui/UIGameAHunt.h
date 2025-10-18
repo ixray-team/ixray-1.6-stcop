@@ -14,7 +14,7 @@ class CUITextWnd;
 class CUIProgressShape;
 class CUIMessageBoxEx;
 
-class CUIGameAHunt: public CUIGameTDM
+class CUIGameAHunt final : public CUIGameTDM
 {
 private:
 	game_cl_ArtefactHunt * m_game;

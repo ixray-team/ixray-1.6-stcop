@@ -3,7 +3,7 @@
 #include "../../xrServerEntities/inventory_space.h"
 class CInventoryOwner;
 
-class CUIDragDropReferenceList : public CUIDragDropListEx
+class CUIDragDropReferenceList final : public CUIDragDropListEx
 {
 private:
 	typedef CUIDragDropListEx inherited;

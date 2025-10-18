@@ -4,7 +4,7 @@
 class CUIScrollView;
 
 
-class CUISpeechMenu : public CUIDialogWnd
+class CUISpeechMenu final : public CUIDialogWnd
 {
 public:
 					CUISpeechMenu	(LPCSTR section_name);

@@ -26,7 +26,7 @@ class CUIPropertiesBox;
 using GameMaps = xr_map<shared_str, CUICustomMap*>;
 using GameMapsPairIt = GameMaps::iterator;
 
-class CUIMapWnd: public CUIWindow, public CUIWndCallback
+class CUIMapWnd final : public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow inherited;
 private:
