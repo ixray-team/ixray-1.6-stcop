@@ -66,12 +66,14 @@ extern void destroy_lua_knife_params();
 
 void clean_game_globals()
 {
-	destroy_lua_wpn_params							();
+	destroy_lua_wpn_params();
 	destroy_lua_knife_params();
+
+	// destroy object factory
+	xr_delete(g_object_factory);
+
 	// destroy ai space
 	xr_delete										(g_ai_space);
-	// destroy object factory
-	xr_delete										(g_object_factory);
 	// destroy monster squad global var
 	xr_delete										(g_monster_squad);
 
