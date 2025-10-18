@@ -3,16 +3,15 @@
 #include "WeaponCustomPistol.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponSVD :
-	public CWeaponCustomPistol
+class CWeaponSVD final : public CWeaponCustomPistol
 {
-	typedef CWeaponCustomPistol inherited;
+	using inherited = CWeaponCustomPistol;
 protected:
-	virtual void switch2_Fire	();
-	virtual void OnAnimationEnd (u32 state);
+	virtual void switch2_Fire();
+	virtual void OnAnimationEnd(u32 state);
 public:
-	CWeaponSVD(void);
-	virtual ~CWeaponSVD(void);
+	CWeaponSVD() = default;
+	virtual ~CWeaponSVD() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

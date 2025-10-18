@@ -19,13 +19,12 @@ class CGrenade;
 class CPhysicItem;
 class CPhysicsShellHolder;
 
-class CHudItemObject : 
-		public CInventoryItemObject,
-		public CHudItem
+class CHudItemObject : public CInventoryItemObject,
+	public CHudItem
 {
 protected: //чтоб нельзя было вызвать на прямую
-						CHudItemObject		();
-	virtual				~CHudItemObject		();
+	CHudItemObject() = default;
+	virtual	~CHudItemObject() = default;
 
 public:
 	virtual	DLL_Pure	*_construct			();
