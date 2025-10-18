@@ -21,10 +21,6 @@ CGrenade::CGrenade(void)
 	m_eExplosionHitTypes.clear();
 }
 
-CGrenade::~CGrenade(void) 
-{
-}
-
 void CGrenade::Load(LPCSTR section) 
 {
 	inherited::Load(section);
