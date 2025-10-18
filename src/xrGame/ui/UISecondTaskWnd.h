@@ -23,7 +23,7 @@ class CUIFrameLineWnd;
 class CGameTask;
 class UIHint;
 
-class UITaskListWnd : public CUIWindow, public CUIWndCallback
+class UITaskListWnd final : public CUIWindow, public CUIWndCallback
 {
 private:
 	typedef CUIWindow	inherited;
@@ -71,7 +71,7 @@ private: // m_
 
 // -------------------------------------------------------------------------------------------------
 
-class UITaskListWndItem : public CUIWindow
+class UITaskListWndItem final : public CUIWindow
 {
 private:
 	typedef CUIWindow	inherited;

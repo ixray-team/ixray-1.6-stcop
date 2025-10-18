@@ -6,7 +6,7 @@
 class CUIXml;
 class CUIGameLog;
 
-class CUIMoneyIndicator: public CUIWindow 
+class CUIMoneyIndicator final : public CUIWindow
 {
 public:
 						CUIMoneyIndicator		();

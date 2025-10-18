@@ -18,7 +18,7 @@ namespace inventory::upgrade
 	class Property;
 }
 
-class UIProperty : public CUIWindow
+class UIProperty final : public CUIWindow
 {
 private:
 	using inherited = CUIWindow;
@@ -51,7 +51,7 @@ public:
 
 // =========================================================================================
 
-class UIInvUpgPropertiesWnd : public CUIWindow
+class UIInvUpgPropertiesWnd final : public CUIWindow
 {
 private:
 	using inherited = CUIWindow;

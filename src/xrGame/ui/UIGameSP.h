@@ -12,7 +12,7 @@ class CUIMessageBox;
 class CInventoryBox;
 class CInventoryOwner;
 
-class CUIGameSP : public CUIGameCustom
+class CUIGameSP final : public CUIGameCustom
 {
 private:
 	game_cl_Single*		m_game;

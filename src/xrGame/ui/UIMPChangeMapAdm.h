@@ -9,7 +9,7 @@ class CUITextWnd;
 class CUIListBox;
 class CUI3tButton;
 
-class CUIMpChangeMapAdm :	public CUIWindow, public CUIWndCallback 
+class CUIMpChangeMapAdm final :	public CUIWindow, public CUIWndCallback
 {
 		typedef CUIWindow	inherited;
 		CUIStatic*			map_pic;

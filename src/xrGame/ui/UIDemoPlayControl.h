@@ -11,7 +11,7 @@ class CUITextWnd;
 class CUIStatic;
 class demoplay_control;
 
-class CUIDemoPlayControl :
+class CUIDemoPlayControl final :
 	public CUIDialogWnd,
 	public CUIWndCallback
 {

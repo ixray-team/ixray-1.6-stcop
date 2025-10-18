@@ -8,7 +8,7 @@
 
 class UITeamState;
 
-class UITeamPanels : public CUIWindow
+class UITeamPanels final : public CUIWindow
 {
 private:
 	typedef CUIWindow inherited;

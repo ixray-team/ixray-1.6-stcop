@@ -56,7 +56,7 @@ enum EMenuMode{
 		mmDeadBodySearch,
 };
 
-class CUIActorMenu :	public CUIDialogWnd, 
+class CUIActorMenu final :	public CUIDialogWnd, 
 						public CUIWndCallback
 {
 	typedef CUIDialogWnd		inherited;

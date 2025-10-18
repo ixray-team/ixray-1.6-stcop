@@ -12,7 +12,7 @@ class CUIXml;
 class CUIScrollView;
 class CInventoryOwner;
 
-class CUICharacterInfo: public CUIWindow
+class CUICharacterInfo final: public CUIWindow
 {
 private:
 	typedef CUIWindow inherited;

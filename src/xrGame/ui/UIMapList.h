@@ -17,7 +17,7 @@ class CUIXml;
 
 #define	MAP_ROTATION_LIST	"maprot_list.ltx"
 
-class CUIMapList : public CUIWindow {
+class CUIMapList final : public CUIWindow {
 public:
 					CUIMapList();
 	virtual			~CUIMapList();

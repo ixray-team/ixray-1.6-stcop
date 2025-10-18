@@ -22,7 +22,7 @@ class CActor;
 
 class ui_actor_state_item;
 
-class ui_actor_state_wnd : public CUIWindow
+class ui_actor_state_wnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow		inherited;
@@ -68,7 +68,7 @@ private:
 
 };
 
-class ui_actor_state_item : public UIHintWindow
+class ui_actor_state_item final : public UIHintWindow
 {
 	typedef UIHintWindow	inherited;
 
