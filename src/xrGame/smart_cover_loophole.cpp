@@ -139,8 +139,8 @@ void loophole::add_action(LPCSTR type, luabind::object const &table)
 
 loophole::~loophole	()
 {
-	delete_data		(m_actions);
-	delete_data		(m_transitions);
+	delete_data(m_actions);
+	delete_abstract_data(m_transitions);
 }
 
 void loophole::fill_transitions(luabind::object const & transitions_table)

@@ -5,18 +5,19 @@
 //	Author		: Dmitriy Iassenev
 //	Description : rat state base class
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef RAT_STATE_BASE_H_INCLUDED
-#define RAT_STATE_BASE_H_INCLUDED
+#pragma once
 
 class CAI_Rat;
 
-class rat_state_base {
+class rat_state_base
+{
 private:
 	CAI_Rat	*m_object;
 
 public:
 	rat_state_base(const rat_state_base& other) = delete;
+	virtual ~rat_state_base() = default;
+
 	rat_state_base& operator=(const rat_state_base& other) = delete;
 
 	IC				rat_state_base	();
@@ -28,5 +29,3 @@ public:
 };
 
 #include "rat_state_base_inline.h"
-
-#endif // RAT_STATE_BASE_H_INCLUDED
