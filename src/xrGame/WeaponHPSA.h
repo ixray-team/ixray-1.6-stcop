@@ -2,15 +2,15 @@
 
 #include "WeaponPistol.h"
 #include "../xrScripts/script_export_space.h"
- 
-class CWeaponHPSA: public CWeaponPistol
+
+class CWeaponHPSA final : public CWeaponPistol
 {
 private:
-	typedef CWeaponPistol inherited;
+	using inherited = CWeaponPistol;
 protected:
 public:
-					CWeaponHPSA			();
-	virtual			~CWeaponHPSA		();
+	CWeaponHPSA() = default;
+	virtual ~CWeaponHPSA() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -9,13 +9,13 @@
 class SArtefactActivation;
 struct SArtefactDetectorsSupport;
 
-class CArtefact :	public CHudItemObject, 
-					public CPHUpdateObject 
+class CArtefact : public CHudItemObject, 
+	public CPHUpdateObject 
 {
-	typedef			CHudItemObject	inherited;
+	using inherited = CHudItemObject;
 public:
-									CArtefact						();
-	virtual							~CArtefact						();
+	CArtefact();
+	virtual ~CArtefact() = default;
 
 	virtual void					Load							(LPCSTR section);
 	virtual BOOL					net_Spawn						(CSE_Abstract* DC);

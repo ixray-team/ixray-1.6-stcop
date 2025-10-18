@@ -9,10 +9,10 @@ class CWeaponFakeGrenade;
 class CWeaponMagazinedWGrenade : public CWeaponMagazined,
 								 public CRocketLauncher
 {
-	typedef CWeaponMagazined inherited;
+	using inherited = CWeaponMagazined;
 public:
-					CWeaponMagazinedWGrenade	(ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
-	virtual			~CWeaponMagazinedWGrenade	();
+	CWeaponMagazinedWGrenade() = default;
+	virtual	~CWeaponMagazinedWGrenade() = default;
 
 	virtual void	Load				(LPCSTR section);
 	virtual void	LoadSounds			(LPCSTR section) override;
@@ -85,17 +85,16 @@ protected:
 public:
 	//дополнительные параметры патронов 
 	//для подствольника
-//-	CWeaponAmmo*			m_pAmmo2;
-	xr_vector<shared_str>	m_ammoTypes2;
-	u8						m_ammoType2;
+	xr_vector<shared_str>	m_ammoTypes2 = {};
+	u8						m_ammoType2 = 0;
 
-	int						iMagazineSize2;
-	xr_vector<CCartridge>	m_magazine2;
+	int						iMagazineSize2 = 0;
+	xr_vector<CCartridge>	m_magazine2 = {};
 
-	bool					m_bGrenadeMode;
+	bool					m_bGrenadeMode = false;
 
 	CCartridge				m_DefaultCartridge2;
-	u8						iAmmoElapsed2;
+	u8						iAmmoElapsed2 = 0;
 
 	virtual u8				GetTargetAmmoType(bool for_grenade_mode = false) const override;
 	virtual u8				GetAmmoType(bool for_grenade_mode = false) const override;

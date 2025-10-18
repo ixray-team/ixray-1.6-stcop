@@ -7,15 +7,15 @@ class CUIFrameWindow;
 class CUIStatic;
 class CBinocularsVision;
 
-class CWeaponBinoculars: public CWeaponCustomPistol
+class CWeaponBinoculars final : public CWeaponCustomPistol
 {
-private:
-	typedef CWeaponCustomPistol inherited;
-protected:
-	bool			m_bVision;
+	using inherited = CWeaponCustomPistol;
+
+	bool m_bVision = false;
+
 public:
-					CWeaponBinoculars	(); 
-	virtual			~CWeaponBinoculars	();
+	CWeaponBinoculars() = default;
+	virtual	~CWeaponBinoculars();
 
 	virtual void	Load				(LPCSTR section) override;
 	virtual void	LoadSounds			(LPCSTR section) override;
@@ -43,7 +43,7 @@ public:
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return this; }
 
 protected:
-	CBinocularsVision*					m_binoc_vision;
+	CBinocularsVision* m_binoc_vision = nullptr;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

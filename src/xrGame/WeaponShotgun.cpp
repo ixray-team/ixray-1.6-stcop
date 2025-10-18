@@ -5,17 +5,12 @@
 #include "Inventory.h"
 #include "Level.h"
 #include "Actor.h"
-#include "script_game_object.h"
 #include "../xrScripts/script_callback_ex.h"
 
 CWeaponShotgun::CWeaponShotgun()
 {
 	m_eSoundClose = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundAddCartridge = ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
-}
-
-CWeaponShotgun::~CWeaponShotgun()
-{
 }
 
 void CWeaponShotgun::net_Destroy()

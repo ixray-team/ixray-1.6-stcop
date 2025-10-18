@@ -38,15 +38,6 @@ void create_force_progress()
 	xml_init.InitProgressShape		(uiXml, "progress", 0, g_MissileForceShape);
 }
 
-CMissile::CMissile(void) 
-{
-	m_dwStateTime		= 0;
-}
-
-CMissile::~CMissile(void) 
-{
-}
-
 void CMissile::reinit		()
 {
 	inherited::reinit	();

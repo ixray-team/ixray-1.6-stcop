@@ -86,14 +86,6 @@ float CCartridge::Weight() const {
 	return res;
 }
 
-CWeaponAmmo::CWeaponAmmo(void) 
-{
-}
-
-CWeaponAmmo::~CWeaponAmmo(void)
-{
-}
-
 void CWeaponAmmo::Load(LPCSTR section) 
 {
 	inherited::Load			(section);
