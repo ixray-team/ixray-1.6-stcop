@@ -86,4 +86,31 @@ public:
 	virtual void						load			(IReader &stream);
 };
 
+
+template <typename _data_type, typename _edge_weight_type, typename _vertex_id_type, typename _edge_data_type>
+IC void delete_abstract_data(const CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type>& graph_)
+{
+	using Graph = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type, _edge_data_type>;
+
+	Graph& graph = const_cast<Graph&>(graph_);
+
+	using Vertices = typename Graph::VERTICES;
+	using Edges = typename Graph::EDGES;
+
+	Vertices& verts = graph.vertices();
+
+	for (auto vi = verts.begin(); vi != verts.end(); ++vi)
+	{
+		auto vert = (*vi).second;
+		delete_data(vert->data());
+
+		Edges& edges = const_cast<Edges&>(vert->edges());
+		for (auto ei = edges.begin(); ei != edges.end(); ++ei)
+		{
+			auto& edge = (*ei);
+			delete_data(edge.data());
+		}
+	}
+}
+
 #include "graph_abstract_inline.h"
