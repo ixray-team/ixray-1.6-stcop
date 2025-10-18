@@ -5,7 +5,7 @@ class CUIXml;
 class CUITextWnd;
 
 
-class UIVoteStatusWnd :public CUIFrameWindow
+class UIVoteStatusWnd final :public CUIFrameWindow
 {
 	CUITextWnd*						m_str_message;
 	CUITextWnd*						m_hint;

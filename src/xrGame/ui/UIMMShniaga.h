@@ -8,7 +8,7 @@ class CUIXml;
 class CUIScrollView;
 class CMMSound;
 
-class CUIMMShniaga :	public CUIWindow,
+class CUIMMShniaga final :	public CUIWindow,
 						public CDeviceResetNotifier
 {
 public:
