@@ -6,7 +6,7 @@ class CUIXml;
 class CUITabButtonMP;
 class CUICellItem;
 
-class CStoreHierarchy
+class CStoreHierarchy final
 {
 public:
 	struct item :

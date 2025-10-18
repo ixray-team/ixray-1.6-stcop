@@ -1,6 +1,7 @@
 #pragma once
 
-class CTeamInfo {
+class CTeamInfo final
+{
 public:
 	static u32			GetTeam1_color();
 	static u32			GetTeam2_color();
@@ -17,7 +18,8 @@ protected:
 	static shared_str	team1_color_tag;
 	static shared_str	team2_color_tag;
 
-	enum {
+	enum 
+	{
 		flTeam1_color = 1,
 		flTeam2_color = 1<<1,
 		flTeam1_name  = 1<<2,

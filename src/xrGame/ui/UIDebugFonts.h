@@ -11,7 +11,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
-class CUIDebugFonts : public CUIDialogWnd 
+class CUIDebugFonts final : public CUIDialogWnd 
 {
 public:
 				CUIDebugFonts		();

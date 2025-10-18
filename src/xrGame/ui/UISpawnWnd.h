@@ -16,7 +16,7 @@ typedef enum{
 	TEAM_MENU_AUTOSELECT
 } ETEAMMENU_BTN;
 
-class CUISpawnWnd: public CUIDialogWnd
+class CUISpawnWnd final : public CUIDialogWnd
 {
 private:
 	typedef CUIDialogWnd inherited;

@@ -24,7 +24,7 @@ class game_cl_CaptureTheArtefact;
 class CUITextWnd;
 
 /// This class used to control UI part of client for Capture the Artefact mp game mode.
-class CUIGameCTA : public UIGameMP
+class CUIGameCTA final : public UIGameMP
 {
 private:
 	CUISpawnWnd			*m_pUITeamSelectWnd;

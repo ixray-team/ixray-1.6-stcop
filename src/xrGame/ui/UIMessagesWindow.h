@@ -15,7 +15,7 @@ class CUIChatWnd;
 struct GAME_NEWS_DATA;
 struct KillMessageStruct;
 
-class CUIMessagesWindow : public CUIWindow 
+class CUIMessagesWindow final : public CUIWindow
 {
 public:
 						CUIMessagesWindow				();

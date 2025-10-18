@@ -7,7 +7,7 @@
 
 class CApplication;
 
-class UILoadingScreen : 
+class UILoadingScreen final :
     public ILoadingScreen, 
     public CUIWindow 
 {

@@ -12,7 +12,7 @@ class UITeamState;
 class UITeamPanels;	//for switching teams
 class CUIStatsIcon;
 
-class UIPlayerItem : 
+class UIPlayerItem final :
 	public CUIWindow
 {
 private:

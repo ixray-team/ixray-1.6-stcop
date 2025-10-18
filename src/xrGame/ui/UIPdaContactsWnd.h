@@ -11,7 +11,7 @@ class CUIAnimatedStatic;
 class CUIScrollView;
 class CInventoryOwner;
 
-class CUIPdaContactsWnd: public CUIWindow  
+class CUIPdaContactsWnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow inherited;
@@ -50,7 +50,7 @@ protected:
 };
 
 #include "UIPdaListItem.h"
-class CUIPdaContactItem :public CUIPdaListItem, public CUISelectable
+class CUIPdaContactItem final :public CUIPdaListItem, public CUISelectable
 {
 	CUIPdaContactsWnd*			m_cw;
 public:
