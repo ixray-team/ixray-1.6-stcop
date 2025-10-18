@@ -20,7 +20,7 @@ class CUIFrameWindow;
 class CUICharacterInfo;
 class CUIScrollView;
 
-class CUIRankingWnd : 
+class CUIRankingWnd final :
 	public CUIWindow,
 	public CUIWndCallback
 {

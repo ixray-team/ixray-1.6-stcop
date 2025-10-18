@@ -17,7 +17,7 @@ class	CUIHudStatesWnd;
 class	CUIMotionIcon;
 class	CUIStackPanel;
 
-class CUIMainIngameWnd: public CUIWindow  
+class CUIMainIngameWnd final : public CUIWindow
 {
 public:
 			CUIMainIngameWnd();

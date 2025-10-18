@@ -14,7 +14,7 @@ typedef enum{
 	SKIN_MENU_AUTOSELECT
 } ESKINMENU_BTN;
 
-class CUISkinSelectorWnd: public CUIDialogWnd
+class CUISkinSelectorWnd final : public CUIDialogWnd
 {
 	typedef CUIDialogWnd inherited;
 

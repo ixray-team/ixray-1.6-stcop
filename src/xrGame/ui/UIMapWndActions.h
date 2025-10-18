@@ -1,7 +1,7 @@
 #pragma once
 #include "UIMapWnd.h"
 
-class FRbmkMapActionPlanner
+class FRbmkMapActionPlanner final
 {
 
 public:

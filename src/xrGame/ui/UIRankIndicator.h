@@ -5,7 +5,7 @@ class CUIStatic;
 class CUIXml;
 class CUIStatic;
 
-class CUIRankIndicator :
+class CUIRankIndicator final :
 	public CUIWindow
 {
 	enum{max_rank=10,};

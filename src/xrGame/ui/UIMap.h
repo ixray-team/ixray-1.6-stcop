@@ -67,7 +67,7 @@ protected:
 };
 
 
-class CUIGlobalMap: public CUICustomMap
+class CUIGlobalMap final : public CUICustomMap
 {
 	typedef  CUICustomMap inherited;
 
@@ -101,7 +101,7 @@ protected:
 	virtual void	Init_internal			(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
 };
 
-class CUILevelMap: public CUICustomMap
+class CUILevelMap final : public CUICustomMap
 {
 	typedef  CUICustomMap inherited;
 
@@ -131,7 +131,7 @@ protected:
 	virtual void				Init_internal		(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
 };
 
-class CUIMiniMap: public CUICustomMap
+class CUIMiniMap final : public CUICustomMap
 {
 	typedef  CUICustomMap inherited;
 
