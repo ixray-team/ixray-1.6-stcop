@@ -6,7 +6,7 @@
 
 class UITeamPanels;
 
-class UIPanelsClassFactory
+class UIPanelsClassFactory final
 {
 private:
 public:

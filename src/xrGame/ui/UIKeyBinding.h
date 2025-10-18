@@ -8,7 +8,7 @@
 class CUIXml;
 class CUIScrollView;
 
-class CUIKeyBinding : public CUIWindow 
+class CUIKeyBinding final : public CUIWindow
 {
 public:
 					CUIKeyBinding			();

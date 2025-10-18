@@ -23,7 +23,7 @@ class CUIInventoryUpgradeWnd;
 class CInventoryItem;
 class CUIUpgradePoint;
 
-class UIUpgrade : public CUIWindow
+class UIUpgrade final : public CUIWindow
 {
 private:
 	using Upgrade_type = inventory::upgrade::Upgrade;

@@ -3,7 +3,7 @@
 #include "KillMessageStruct.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 
-class CUIPdaKillMessage : public CUIColorAnimConrollerContainer 
+class CUIPdaKillMessage final : public CUIColorAnimConrollerContainer
 {
 	typedef CUIColorAnimConrollerContainer inherited;
 public:

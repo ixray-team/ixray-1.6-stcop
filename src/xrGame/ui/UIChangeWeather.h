@@ -41,7 +41,7 @@ protected:
 	CUI3tButton*	btn_cancel;
 };
 
-class CUIChangeGameType :public CUIChangeWeather
+class CUIChangeGameType final :public CUIChangeWeather
 {
 public:
 	void			InitChangeGameType	(CUIXml& xml_doc);
