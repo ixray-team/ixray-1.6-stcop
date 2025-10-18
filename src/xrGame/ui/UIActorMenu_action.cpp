@@ -75,14 +75,19 @@ void CUIActorMenu::OnDragItemOnTrash(CUIDragItem* item, bool b_receive)
 bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 {
 	InfoCurItem( nullptr );
-	CUIDragDropListEx*	old_owner		= itm->OwnerList();
-	CUIDragDropListEx*	new_owner		= CUIDragDropListEx::m_drag_item->BackList();
+
+	bool is_on_item_dropped_callback_processed = false;
+
+	CUIDragDropListEx*	old_owner = itm->OwnerList();
+	CUIDragDropListEx*	new_owner = CUIDragDropListEx::m_drag_item->BackList();
+
 	if ( !old_owner || !new_owner )
 	{
 		return false;
 	}
-	EDDListType t_new		= GetListType(new_owner);
-	EDDListType t_old		= GetListType(old_owner);
+
+	EDDListType t_new = GetListType(new_owner);
+	EDDListType t_old = GetListType(old_owner);
 
 	if ( !AllowItemDrops(t_old, t_new) )
 	{
@@ -92,32 +97,25 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 	
 	if (old_owner == new_owner){
 		
-		if (m_isItemDropped)
+		if (m_isItemDropped && !is_on_item_dropped_callback_processed)
 		{
 			//Alundaio: Here we export the action of dragging one inventory item ontop of another!
 			luabind::functor<bool> funct1;
 			R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
 
-			//If list only has 1 item, get it, otherwise try to get item at current drag position
-			CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : 0;
-			if (!_citem)
-			{
-				CUICellContainer* c = old_owner->GetContainer();
-				Ivector2 c_pos = c->PickCell(UI().GetUICursor().GetCursorPosition());
-				if (c->ValidCell(c_pos))
-				{
-					CUICell& ui_cell = c->GetCellAt(c_pos);
-					if (!ui_cell.Empty())
-						_citem = ui_cell.m_item;
-				}
+			CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
+			CGameObject* GO2 = nullptr;
+
+			if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id) {
+				GO2 = m_lastFocusRecivedItem->cast_game_object();
 			}
 
-			PIItem _iitem = _citem ? (PIItem)_citem->m_pData : 0;
+			is_on_item_dropped_callback_processed = true;
 
-			CGameObject* GO1 = CurrentIItem()->cast_game_object();
-			CGameObject* GO2 = _iitem ? _iitem->cast_game_object() : 0;
 			if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+			{
 				return false;
+			}
 		}
 		else
 		{
@@ -137,8 +135,9 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 				old_owner->RemoveItem(itm, false);
 				return true;
 			}
-			SendEvent_Item_Drop		(CurrentIItem(), m_pActorInvOwner->object_id());
-			SetCurrentItem			(nullptr);
+
+			SendEvent_Item_Drop(CurrentIItem(), m_pActorInvOwner->object_id());
+			SetCurrentItem(nullptr);
 		}break;
 	case iActorSlot:
 		{
@@ -181,34 +180,27 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 		}break;
 	};
 
-	OnItemDropped				(CurrentIItem(), new_owner, old_owner);
+	OnItemDropped(CurrentIItem(), new_owner, old_owner);
 
-	if (m_isItemDropped)
+	if (m_isItemDropped && !is_on_item_dropped_callback_processed)
 	{
 		//Alundaio: Here we export the action of dragging one inventory item ontop of another! 
 		luabind::functor<bool> funct1;
 		R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
 
-		//If list only has 1 item, get it, otherwise try to get item at current drag position
-		CUICellItem* _citem = (new_owner->ItemsCount() == 1) ? new_owner->GetItemIdx(0) : nullptr;
-		if (!_citem)
-		{
-			CUICellContainer* c = old_owner->GetContainer();
-			Ivector2 c_pos = c->PickCell(old_owner->GetDragItemPosition());
-			if (c->ValidCell(c_pos))
-			{
-				CUICell& ui_cell = c->GetCellAt(c_pos);
-				if (!ui_cell.Empty())
-					_citem = ui_cell.m_item;
-			}
+		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
+		CGameObject* GO2 = nullptr;
+
+		if (m_lastFocusRecivedItem != nullptr && m_lastFocusLostItem_id != u16(0xffff) && m_lastFocusRecivedItem->object_id() != m_lastFocusLostItem_id) {
+			GO2 = m_lastFocusRecivedItem->cast_game_object();
 		}
 
-		PIItem _iitem = _citem ? (PIItem)_citem->m_pData : nullptr;
+		is_on_item_dropped_callback_processed = true;
 
-		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
-		CGameObject* GO2 = _iitem != nullptr ? _iitem->cast_game_object() : nullptr;
-		if (funct1(GO1 ? GO1->lua_game_object() : 0, GO2 ? GO2->lua_game_object() : 0, (int)t_old, (int)t_new) == false)
+		if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+		{
 			return false;
+		}
 
 		//-Alundaio
 	}
@@ -349,6 +341,8 @@ bool CUIActorMenu::OnItemFocusReceive(CUICellItem* itm)
 	itm->m_selected = true;
 	set_highlight_item( itm );
 
+	m_lastFocusRecivedItem = (PIItem)itm->m_pData;
+
 	if (m_isItemFocusReceive)
 	{
 		luabind::functor<bool> funct1;
@@ -368,8 +362,13 @@ bool CUIActorMenu::OnItemFocusLost(CUICellItem* itm)
 {
 	if ( itm )
 	{
+		m_lastFocusLostItem_id = ((PIItem)itm->m_pData)->object_id();
 		itm->m_selected = false;
 	}
+	else {
+		m_lastFocusLostItem_id = u16(0xffff);
+	}
+
 	InfoCurItem( nullptr );
 	clear_highlight_lists();
 
