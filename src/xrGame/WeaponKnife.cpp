@@ -39,10 +39,6 @@ CWeaponKnife::CWeaponKnife()
 	m_Hit2SpashDir.set	(0.f,0.f,1.f);
 }
 
-CWeaponKnife::~CWeaponKnife()
-{
-}
-
 void CWeaponKnife::Load(LPCSTR section)
 {
 	// verify class

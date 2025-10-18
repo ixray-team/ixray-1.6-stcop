@@ -3,13 +3,12 @@
 #include "WeaponPistol.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponWalther :
-	public CWeaponPistol
+class CWeaponWalther final : public CWeaponPistol
 {
-	typedef CWeaponPistol inherited;
+	using inherited = CWeaponPistol;
 public:
-	CWeaponWalther(void);
-	virtual ~CWeaponWalther(void);
+	CWeaponWalther() = default;
+	virtual ~CWeaponWalther() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

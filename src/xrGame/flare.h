@@ -5,11 +5,18 @@ class CParticlesObject;
 
 #include "hud_item_object.h"
 
-class CFlare :public CHudItemObject
+class CFlare final : public CHudItemObject
 {
-private:
-	typedef			CHudItemObject	inherited;
-	enum FlareStates{eFlareHidden,eFlareShowing,eFlareIdle,eFlareHiding,eFlareDropping};
+	using inherited = CHudItemObject;
+
+	enum FlareStates
+	{
+		eFlareHidden,
+		eFlareShowing,
+		eFlareIdle,
+		eFlareHiding,
+		eFlareDropping
+	};
 
 	CLAItem*					light_lanim;
 	ref_light					light_render;
@@ -20,6 +27,10 @@ private:
 	void						FirePoint						(Fvector&);
 	void						ParticlesMatrix					(Fmatrix&);
 public:
+
+	CFlare() = default;
+	virtual ~CFlare() = default;
+
 	virtual void				UpdateCL						();
 	virtual void				Load							(LPCSTR section);
 	virtual BOOL				net_Spawn						(CSE_Abstract* DC);

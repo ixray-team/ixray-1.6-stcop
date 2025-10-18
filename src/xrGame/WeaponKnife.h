@@ -4,9 +4,9 @@
 #include "../xrScripts/script_export_space.h"
 #include "../xrEngine/xr_collide_form.h"
 
-class CWeaponKnife: public CWeapon {
-private:
-	typedef CWeapon inherited;
+class CWeaponKnife final : public CWeapon
+{
+	using inherited = CWeapon;
 
 protected:
 
@@ -51,8 +51,8 @@ protected:
 protected:
 	virtual void		LoadFireParams					(LPCSTR section);
 public:
-						CWeaponKnife(); 
-	virtual				~CWeaponKnife(); 
+	CWeaponKnife(); 
+	virtual ~CWeaponKnife() = default; 
 
 	virtual void		Load							(LPCSTR section) override;
 	virtual void		LoadSounds						(LPCSTR section) override;

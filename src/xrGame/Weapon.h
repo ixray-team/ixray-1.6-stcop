@@ -36,8 +36,7 @@ class CWeaponNightVision;
 class CWeapon : public CHudItemObject,
 				public CShootingObject
 {
-private:
-	typedef CHudItemObject inherited;
+	using inherited = CHudItemObject;
 
 public:
 							CWeapon				();

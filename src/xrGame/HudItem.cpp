@@ -38,10 +38,6 @@ DLL_Pure *CHudItem::_construct()
 	return m_object;
 }
 
-CHudItem::~CHudItem()
-{
-}
-
 void CHudItem::Load(LPCSTR section)
 {
 	hud_sect				= pSettings->r_string		(section,"hud");
