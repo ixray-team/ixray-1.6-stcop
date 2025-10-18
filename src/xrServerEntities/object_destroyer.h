@@ -23,33 +23,24 @@ inline void delete_data(T& data)
 			data.destroy();
 		}
 	}
+	else if constexpr (std::is_same_v<T, const char*> || std::is_same_v<T, shared_str>)
+	{
+		// skip
+	}
+	else if constexpr (std::is_same_v<T, char*>)
+	{
+		xr_free(data);
+		data = nullptr;
+	}
 	else if constexpr (std::is_pointer_v<T>)
 	{
-		if constexpr (std::is_same_v<std::remove_pointer_t<T>, char>)
-		{
-			if (data != nullptr)
-			{
-				xr_free(data);
-				data = nullptr;
-			}
-		}
-		else
-		{
-			xr_delete(data);
-		}
+		xr_delete(data);
 	}
 	else if constexpr (HasContainerOps<T>)
 	{
 		for (auto& Item : data)
 		{
-			if constexpr (std::is_pointer_v<std::remove_reference_t<decltype(Item)>>)
-			{
-				xr_delete(Item);
-			}
-			else
-			{
-				delete_data(Item);
-			}
+			delete_data(Item);
 		}
 		data.clear();
 	}
@@ -74,10 +65,6 @@ inline void delete_data(T& data)
 		{
 			delete_data(Second);
 		}
-	}
-	else if constexpr (std::is_same_v<T, char*>)
-	{
-		xr_free(data);
 	}
 	else
 	{
