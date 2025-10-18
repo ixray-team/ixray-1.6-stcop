@@ -15,7 +15,7 @@ class CActor;
 
 int const it_max = ALife::infl_max_count - 1;
 
-class CUIHudStatesWnd : public CUIWindow
+class CUIHudStatesWnd final : public CUIWindow
 {
 private:
 	typedef CUIWindow						inherited;
