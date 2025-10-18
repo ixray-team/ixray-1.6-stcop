@@ -28,7 +28,7 @@ class CUICheckButton;
 struct GAME_NEWS_DATA;
 class CUINewsItemWnd;
 
-class CUILogsWnd : public CUIWindow, public CUIWndCallback
+class CUILogsWnd final : public CUIWindow, public CUIWndCallback
 {
 private:
 	typedef CUIWindow	inherited;

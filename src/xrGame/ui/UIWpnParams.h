@@ -10,7 +10,7 @@ class CInventoryItem;
 
 struct SLuaWpnParams;
 
-class CUIWpnParams : 
+class CUIWpnParams final : 
 	public CUIWindow 
 {
 public:

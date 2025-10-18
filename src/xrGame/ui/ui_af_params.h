@@ -9,7 +9,7 @@ class CUITextWnd;
 class UIArtefactParamItem;
 class CInventoryItem;
 
-class CUIArtefactParams : public CUIWindow
+class CUIArtefactParams final : public CUIWindow
 {
 public:
 	enum class CParamType
@@ -45,7 +45,7 @@ protected:
 
 // -----------------------------------
 
-class UIArtefactParamItem : public CUIWindow
+class UIArtefactParamItem final : public CUIWindow
 {
 public:
 				UIArtefactParamItem	();

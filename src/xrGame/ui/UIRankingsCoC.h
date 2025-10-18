@@ -7,7 +7,7 @@ class CUITextWnd;
 class UIHint;
 class CUIScrollView;
 
-class CUIRankingsCoC : public CUIWindow
+class CUIRankingsCoC final : public CUIWindow
 {
 	typedef CUIWindow inherited;
 private:

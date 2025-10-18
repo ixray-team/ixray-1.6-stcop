@@ -3,7 +3,7 @@
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 
-class CUICarPanel : public CUIWindow
+class CUICarPanel final : public CUIWindow
 {
 private:
     typedef CUIWindow inherited;

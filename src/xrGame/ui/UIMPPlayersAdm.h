@@ -10,7 +10,7 @@ class CUITrackBar;
 class CUITextWnd;
 class CUIComboBox;
 
-class CUIMpPlayersAdm :	
+class CUIMpPlayersAdm final :
 	public CUIWindow, 
 	public CUIWndCallback 
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-class CUIOptConCom {
+class CUIOptConCom final {
 public:
 	void Init();
 	CUIOptConCom();

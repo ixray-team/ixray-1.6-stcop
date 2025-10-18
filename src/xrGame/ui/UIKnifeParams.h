@@ -9,7 +9,7 @@ class CInventoryItem;
 
 struct SLuaKnifeParams;
 
-class CUIKnifeParams : public CUIWindow 
+class CUIKnifeParams final : public CUIWindow
 {
 public:
 							CUIKnifeParams		();

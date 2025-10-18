@@ -5,7 +5,7 @@ class CActor;
 class CUIMiniMap;
 
 
-class CUIZoneMap
+class CUIZoneMap final
 {
 public:
 	bool						visible;

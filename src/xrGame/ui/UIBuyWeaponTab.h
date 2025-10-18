@@ -5,7 +5,7 @@
 
 class CUIXml;
 
-class CUIBuyWeaponTab : public CUITabControl 
+class CUIBuyWeaponTab final : public CUITabControl 
 {
 typedef		 CUITabControl		inherited;
 

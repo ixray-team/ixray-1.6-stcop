@@ -19,7 +19,7 @@ class CUITalkDialogWnd;
 //
 ///////////////////////////////////////
 
-class CUITalkWnd: public CUIDialogWnd
+class CUITalkWnd final : public CUIDialogWnd
 {
 private:
 	typedef CUIDialogWnd inherited;

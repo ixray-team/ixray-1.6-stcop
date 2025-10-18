@@ -2,7 +2,7 @@
 
 class CUIXml;
 
-class CMMSound
+class CMMSound final
 {
 public:
 					CMMSound	();

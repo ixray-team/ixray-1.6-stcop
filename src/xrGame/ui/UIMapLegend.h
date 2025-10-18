@@ -16,7 +16,7 @@ class CUICheckButton;
 class CUIFrameLineWnd;
 class UIHint;
 
-class UIMapLegend : public CUIWindow
+class UIMapLegend final : public CUIWindow
 {
 private:
 	typedef CUIWindow	inherited;
@@ -43,7 +43,7 @@ private: // m_
 
 // -------------------------------------------------------------------------------------------------
 
-class UIMapLegendItem : public CUIWindow
+class UIMapLegendItem final : public CUIWindow
 {
 private:
 	typedef CUIWindow	inherited;

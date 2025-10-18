@@ -146,7 +146,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
-class CUICellContainer :public CUIWindow
+class CUICellContainer final :public CUIWindow
 {
 	friend class CUIDragDropListEx;
 	friend class CUIDragDropReferenceList;

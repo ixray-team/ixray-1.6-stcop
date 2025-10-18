@@ -42,7 +42,7 @@ struct LIST_SRV_ITEM {
 	LIST_SRV_INFO	info;
 };
 
-class CUIListItemServer : public CUIListBoxItem
+class CUIListItemServer final : public CUIListBoxItem
 {
 	typedef CUIListBoxItem	inherited;
 public:

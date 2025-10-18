@@ -22,7 +22,7 @@ public:
 	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
-class CUIAmmoCellItem :public CUIInventoryCellItem
+class CUIAmmoCellItem final :public CUIInventoryCellItem
 {
 	typedef  CUIInventoryCellItem	inherited;
 protected:
@@ -40,7 +40,7 @@ public:
 	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
-class CUIWeaponCellItem :public CUIInventoryCellItem
+class CUIWeaponCellItem final :public CUIInventoryCellItem
 {
 	typedef  CUIInventoryCellItem	inherited;
 public:
@@ -75,7 +75,7 @@ public:
 	virtual CUICellItem* ui_cast_cell_item() { return this; }
 };
 
-class CBuyItemCustomDrawCell :public ICustomDrawCellItem
+class CBuyItemCustomDrawCell final :public ICustomDrawCellItem
 {
 	CGameFont*			m_pFont;
 	string16			m_string;
