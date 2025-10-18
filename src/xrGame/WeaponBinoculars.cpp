@@ -9,15 +9,9 @@
 #include "object_broker.h"
 #include "Inventory.h"
 
-CWeaponBinoculars::CWeaponBinoculars()
-{
-	m_binoc_vision	= nullptr;
-	m_bVision		= false;
-}
-
 CWeaponBinoculars::~CWeaponBinoculars()
 {
-	xr_delete				(m_binoc_vision);
+	xr_delete(m_binoc_vision);
 }
 
 void CWeaponBinoculars::Load(LPCSTR section)

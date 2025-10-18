@@ -3,13 +3,12 @@
 #include "WeaponMagazined.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponVintorez :
-	public CWeaponMagazined
+class CWeaponVintorez final : public CWeaponMagazined
 {
-	typedef CWeaponMagazined inherited;
+	using inherited = CWeaponMagazined;
 public:
-	CWeaponVintorez(void);
-	virtual ~CWeaponVintorez(void);
+	CWeaponVintorez() = default;
+	virtual ~CWeaponVintorez() = default;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

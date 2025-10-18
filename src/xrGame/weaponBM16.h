@@ -3,12 +3,14 @@
 #include "WeaponShotgun.h"
 #include "../xrScripts/script_export_space.h"
 
-class CWeaponBM16 :public CWeaponShotgun
+class CWeaponBM16 final : public CWeaponShotgun
 {
-	typedef CWeaponShotgun inherited;
+	using inherited = CWeaponShotgun;
 
 public:
-	virtual			~CWeaponBM16					();
+	CWeaponBM16() = default;
+	virtual	~CWeaponBM16() = default;
+
 	virtual void	Load							(LPCSTR section);
 	virtual void	LoadSounds						(LPCSTR section);
 

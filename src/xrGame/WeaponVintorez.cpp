@@ -2,12 +2,6 @@
 #include "pch_script.h"
 #include "WeaponVintorez.h"
 
-CWeaponVintorez::CWeaponVintorez(void) : CWeaponMagazined(SOUND_TYPE_WEAPON_SNIPERRIFLE)
-{}
-
-CWeaponVintorez::~CWeaponVintorez(void)
-{}
-
 using namespace luabind;
 
 #pragma optimize("s",on)
