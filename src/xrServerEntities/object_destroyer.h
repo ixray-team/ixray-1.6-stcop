@@ -1,143 +1,106 @@
-////////////////////////////////////////////////////////////////////////////
-//	Module 		: object_destroyer.h
-//	Created 	: 21.01.2003
-//  Modified 	: 09.07.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Object destroyer
-////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "object_interfaces.h"
-#include <queue>
-#include "../xrCore/object_type_traits.h"
 
-struct CDestroyer {
-	IC	static void delete_data(LPCSTR data)
-	{
-	}
-
-	IC	static void delete_data(LPSTR data)
-	{
-		xr_free						(data);
-	}
-
-	template <typename T1, typename T2>
-	IC	static void delete_data(std::pair<T1,T2> &data)
-	{
-		delete_data					(data.first);
-		delete_data					(data.second);
-	}
-
-	template <typename T, int size>
-	IC	static void delete_data(svector<T,size> &data)
-	{
-		typename svector<T,size>::iterator	I = data.begin();
-		typename svector<T,size>::iterator	E = data.end();
-		for ( ; I != E; ++I)
-			delete_data				(*I);
-		data.clear					();
-	}
-
-	template <typename T, int n>
-	IC	static void delete_data(T (&array)[n])
-	{
-		T							*I = array;
-		T							*E = array + n;
-		for ( ; I != E; ++I)
-			delete_data				(*I);
-	}
-
-	template <typename T1, typename T2>
-	IC	static void delete_data(std::queue<T1,T2> &data)
-	{
-		std::queue<T1,T2>			temp = data;
-		for ( ; !temp.empty(); temp.pop())
-			delete_data				(temp.front());
-	}
-
-	template <template <typename _1, typename _2> class T1, typename T2, typename T3>
-	IC	static void delete_data(T1<T2,T3> &data, bool)
-	{
-		T1<T2,T3>					temp = data;
-		for ( ; !temp.empty(); temp.pop())
-			delete_data				(temp.top());
-	}
-
-	template <template <typename _1, typename _2, typename _3> class T1, typename T2, typename T3, typename T4>
-	IC	static void delete_data(T1<T2,T3,T4> &data, bool)
-	{
-		T1<T2,T3,T4>				temp = data;
-		for ( ; !temp.empty(); temp.pop())
-			delete_data				(temp.top());
-	}
-
-	template <typename T1, typename T2>
-	IC	static void delete_data(xr_stack<T1,T2> &data)
-	{
-		delete_data					(data,true);
-	}
-
-	template <typename T1, typename T2, typename T3>
-	IC	static void delete_data(std::priority_queue<T1,T2,T3> &data)
-	{
-		delete_data					(data,true);
-	}
-
-	template <typename T>
-	struct CHelper1 {
-		template <bool a>
-		IC	static void delete_data(T &)
-		{
-		}
-
-		template <>
-		IC	static void delete_data<true>(T &data)
-		{
-			data.destroy();
-		}
-	};
-
-	template <typename T>
-	struct CHelper2 {
-		template <bool a>
-		IC	static void delete_data(T &data)
-		{
-			CHelper1<T>::delete_data<std::is_base_of<IPureDestroyableObject,T>::value>(data);
-		}
-
-		template <>
-		IC	static void delete_data<true>(T &data)
-		{
-			if (data)
-				::delete_data	(*data);
-			xr_delete					(data);
-		}
-	};
-
-	struct CHelper3
-	{
-		template <typename T>
-		IC	static void delete_data(T& data)
-		{
-			auto I = data.begin();
-			auto E = data.end();
-			for (; I != E; ++I)
-				::delete_data(*I);
-			data.clear();
-		}
-	};
+template <typename T>
+concept HasContainerOps = requires(T a)
+{
+	a.begin();
+	a.end();
+	a.clear();
 };
 
 template <typename T>
-IC static void delete_data(T& data)
+inline void delete_data(T& data)
 {
-	if constexpr (object_type_traits::is_stl_container<T>::value)
+	if constexpr (std::is_base_of_v<IPureDestroyableObject, std::remove_pointer_t<T>>)
 	{
-		CDestroyer::CHelper3::delete_data(data);
+		if constexpr (std::is_pointer_v<T>)
+		{
+			data->destroy();
+		}
+		else
+		{
+			data.destroy();
+		}
+	}
+	else if constexpr (std::is_pointer_v<T>)
+	{
+		if constexpr (std::is_same_v<std::remove_pointer_t<T>, char>)
+		{
+			if (data != nullptr)
+			{
+				xr_free(data);
+				data = nullptr;
+			}
+		}
+		else
+		{
+			xr_delete(data);
+		}
+	}
+	else if constexpr (HasContainerOps<T>)
+	{
+		for (auto& Item : data)
+		{
+			if constexpr (std::is_pointer_v<std::remove_reference_t<decltype(Item)>>)
+			{
+				xr_delete(Item);
+			}
+			else
+			{
+				delete_data(Item);
+			}
+		}
+		data.clear();
+	}
+	else if constexpr (std::is_same_v<T, std::remove_cvref_t<T>> && requires { typename T::first_type; typename T::second_type; })
+	{
+		auto& [First, Second] = data;
+
+		if constexpr (std::is_pointer_v<std::remove_reference_t<decltype(First)>>)
+		{
+			xr_delete(First);
+		}
+		else
+		{
+			delete_data(First);
+		}
+
+		if constexpr (std::is_pointer_v<std::remove_reference_t<decltype(Second)>>)
+		{
+			xr_delete(Second);
+		}
+		else
+		{
+			delete_data(Second);
+		}
+	}
+	else if constexpr (std::is_same_v<T, char*>)
+	{
+		xr_free(data);
 	}
 	else
 	{
-		CDestroyer::CHelper2<T>::delete_data<std::is_pointer<T>::value>(data);
+	}
+}
+
+
+template <typename T, size_t N>
+inline void delete_data(T(&Array)[N])
+{
+	for (size_t i = 0; i < N; ++i)
+	{
+		if constexpr (std::is_pointer_v<T>)
+		{
+			if (Array[i] != nullptr)
+			{
+				delete_data(Array[i]);
+				Array[i] = nullptr;
+			}
+		}
+		else
+		{
+			delete_data(Array[i]);
+		}
 	}
 }
