@@ -10,7 +10,7 @@ class CGrenade;
 
 class CMissile : public CHudItemObject
 {
-	typedef CHudItemObject inherited;
+	using inherited = CHudItemObject;
 public:
 	enum EMissileStates{
 		eThrowStart = eLastBaseState+1,
@@ -18,8 +18,9 @@ public:
 		eThrow,
 		eThrowEnd,
 	};
-							CMissile					();
-	virtual					~CMissile					();
+
+	CMissile() = default;
+	virtual ~CMissile() = default;
 
 	virtual BOOL			AlwaysTheCrow				()				{ return TRUE; }
 	virtual void			render_item_ui					();
@@ -71,7 +72,7 @@ protected:
 protected:
 
 	//время нахождения в текущем состоянии
-	u32						m_dwStateTime;
+	u32						m_dwStateTime = 0;
 	bool					m_throw;
 	
 	//время уничтожения

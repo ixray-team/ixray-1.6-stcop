@@ -2,12 +2,6 @@
 #include "pch_script.h"
 #include "WeaponFORT.h"
 
-CWeaponFORT::CWeaponFORT()
-{}
-
-CWeaponFORT::~CWeaponFORT()
-{}
-
 using namespace luabind;
 
 #pragma optimize("s",on)

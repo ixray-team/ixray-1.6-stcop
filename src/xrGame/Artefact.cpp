@@ -44,10 +44,6 @@ CArtefact::CArtefact()
 	has_detector_visibling		= false;
 }
 
-
-CArtefact::~CArtefact() 
-{}
-
 void CArtefact::Load(LPCSTR section) 
 {
 	inherited::Load			(section);

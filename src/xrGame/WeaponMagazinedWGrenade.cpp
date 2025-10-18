@@ -19,16 +19,6 @@
 #	include "phdebug.h"
 #endif
 
-CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(ESoundTypes eSoundType) : CWeaponMagazined(eSoundType)
-{
-	m_ammoType2 = 0;
-	m_bGrenadeMode = false;
-}
-
-CWeaponMagazinedWGrenade::~CWeaponMagazinedWGrenade()
-{
-}
-
 void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 {
 	inherited::Load(section);
