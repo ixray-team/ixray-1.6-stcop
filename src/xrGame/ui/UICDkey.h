@@ -2,7 +2,7 @@
 #pragma once
 #include "../../xrUI/Widgets/UIEditBox.h"
 
-class CUICDkey : public CUIEditBox
+class CUICDkey final : public CUIEditBox
 {
 private:
 	typedef			CUIEditBox		inherited;
@@ -36,7 +36,7 @@ private:
 	bool			m_view_access;
 }; // class CUICDkey
 
-class CUIMPPlayerName : public CUIEditBox
+class CUIMPPlayerName final : public CUIEditBox
 {
 private:
 	typedef			CUIEditBox		inherited;

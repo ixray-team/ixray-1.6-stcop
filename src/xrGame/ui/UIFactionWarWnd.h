@@ -19,7 +19,7 @@ class CUIXml;
 class CUIProgressBar;
 class CUIFrameLineWnd;
 
-class CUIFactionWarWnd : public CUIWindow, public CUIWndCallback
+class CUIFactionWarWnd final : public CUIWindow, public CUIWndCallback
 {
 private:
 	typedef CUIWindow	inherited;

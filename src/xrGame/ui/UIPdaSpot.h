@@ -9,7 +9,7 @@ class CUIStatic;
 class CUIEditBox;
 class UIHint;
 
-class CUIPdaSpot : 
+class CUIPdaSpot final :
 	public CUIDialogWnd, 
 	public CUIWndCallback
 {

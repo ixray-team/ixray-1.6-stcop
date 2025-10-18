@@ -38,7 +38,7 @@ using ITEMS_vec = xr_vector<SBuyItemInfo*>;
 using ITEMS_vec_it = ITEMS_vec::iterator;
 using ITEMS_vec_cit = ITEMS_vec::const_iterator;
 
-class CUIMpTradeWnd :	public IBuyWnd, 
+class CUIMpTradeWnd final :	public IBuyWnd,
 						public CUIWndCallback
 {
 		typedef CUIDialogWnd	inherited;
@@ -279,7 +279,7 @@ u8		GetItemAddonsState_ext		(SBuyItemInfo* item);
 void	SetItemAddonsState_ext		(SBuyItemInfo* item, u8 addons);
 
 #include "UICellItem.h"
-class CUICellItemTradeMenuDraw :public ICustomDrawCellItem
+class CUICellItemTradeMenuDraw final :public ICustomDrawCellItem
 {
 	CUIMpTradeWnd*			m_trade_wnd;
 	SBuyItemInfo*			m_info_item;
