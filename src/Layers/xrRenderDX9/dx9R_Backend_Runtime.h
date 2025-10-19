@@ -188,3 +188,9 @@ IC float CBackend::get_target_height()
 {
 	return RDEVICE.TargetHeight;
 }
+
+IC void CBackend::DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+{
+	RCache.set_Geometry(geom);
+	RCache.Render(pt, vBase, pc);
+}
