@@ -167,6 +167,7 @@ COLLIDER::COLLIDER()
 	ray_mode		= 0;
 	box_mode		= 0;
 	frustum_mode	= 0;
+	obb_mode		= 0;
 }
 
 COLLIDER::~COLLIDER()

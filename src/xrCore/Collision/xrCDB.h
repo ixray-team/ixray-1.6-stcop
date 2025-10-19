@@ -169,7 +169,7 @@ namespace CDB
 		u32				ray_mode;
 		u32				box_mode;
 		u32				frustum_mode;
-
+		u32				obb_mode;
 		// Result management
 		xr_vector<RESULT>	rd;
 	public:
@@ -189,6 +189,9 @@ namespace CDB
 		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
 		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
 
+		ICF void		obb_options(u32 f) { obb_mode = f; }
+		void			obb_query(const MODEL* m_def, const Fobb& _obb);
+
 		ICF RESULT*		r_begin			()	{	return &*rd.begin();		};
 		ICF RESULT*		r_end			()	{	return &*rd.end();			};
 		RESULT&			r_add			()	;
@@ -196,6 +199,7 @@ namespace CDB
 		ICF int			r_count			()	{	return (u32)rd.size();			};
 		ICF void		r_clear			()	{	rd.resize(0);		};
 		ICF void		r_clear_compact	()	{	rd.clear();		};
+		IC xr_vector<RESULT>& r_vec		()	{	return rd;		};
 	};
 
 	//
