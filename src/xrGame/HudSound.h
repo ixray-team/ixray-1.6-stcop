@@ -54,7 +54,7 @@ struct HUD_SOUND_ITEM
 		float		delay;		//задержка перед проигрыванием
 		float		volume;		//громкость
 	};
-	shared_str		m_alias;
+	xr_string		m_alias;
 	SSnd*			m_activeSnd;
 	bool			m_b_exclusive;
 	xr_vector<SSnd> sounds;
@@ -67,7 +67,7 @@ class HUD_SOUND_COLLECTION
     // xr_vector<HUD_SOUND_ITEM>	m_sound_items;
     // HUD_SOUND_ITEM*				FindSoundItem	(	LPCSTR alias, bool b_assert);
 public:
-	shared_str m_alias; // Alundaio: For use when it's part of a layered Collection
+	xr_string m_alias; // Alundaio: For use when it's part of a layered Collection
 	~HUD_SOUND_COLLECTION();
 	
     HUD_SOUND_COLLECTION();

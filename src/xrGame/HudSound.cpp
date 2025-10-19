@@ -127,7 +127,7 @@ void HUD_SOUND_ITEM::StopSound(HUD_SOUND_ITEM& hud_snd)
 	hud_snd.m_activeSnd = nullptr;
 }
 
-HUD_SOUND_COLLECTION::HUD_SOUND_COLLECTION() : m_alias(nullptr)
+HUD_SOUND_COLLECTION::HUD_SOUND_COLLECTION() : m_alias("")
 {
 	m_sound_items.clear();
 
