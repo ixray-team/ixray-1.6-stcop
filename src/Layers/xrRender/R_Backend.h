@@ -363,6 +363,7 @@ public:
 	void dbg_DrawLINE				(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
 	void dbg_DrawEllipse			(Fmatrix& T, u32 C);
 #endif
+	void	DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
 
 	CBackend()						{	Invalidate(); };
 
