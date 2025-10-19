@@ -20,7 +20,9 @@ public:
     		Tvector j;
     		Tvector k;
         };
-		float m[3][3];					// Array
+        Tvector row[3];
+        float m[3][3];
+        float mm[9];
 	};
 
 	IC _matrix33()

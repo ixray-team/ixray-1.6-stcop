@@ -138,7 +138,7 @@ public:
 
 		Self diff;
 		diff.sub(target, *this);
-		if (diff.magnitude() < EPS && velocity.magnitude() < EPS_L)
+		if (diff.magnitude() < EPS_L && velocity.magnitude() < 0.01f)
 		{
 			set(target);
 			velocity.set(0.f, 0.f, 0.f);

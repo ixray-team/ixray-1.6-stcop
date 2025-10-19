@@ -244,3 +244,68 @@ void COLLIDER::box_query(const MODEL *m_def, const Fvector& b_center, const Fvec
 	BC._init(this, m_def->verts, m_def->tris, b_center, b_dim);
 	BC._stab(N);
 }
+
+struct obb_collider
+{
+	COLLIDER* dest;
+	TRI* tris;
+	Fvector* verts;
+	Fobb obb;
+
+	bool bClass3 = false;
+	bool bFirst = false;
+
+	Fvector mLeafVerts[3];
+
+	void _prim(DWORD prim)
+	{
+		TRI& T = tris[prim];
+		mLeafVerts[0] = verts[T.verts[0]];
+		mLeafVerts[1] = verts[T.verts[1]];
+		mLeafVerts[2] = verts[T.verts[2]];
+
+		if (!obb.intersectTri(mLeafVerts, bClass3))
+			return;
+
+		RESULT& R = dest->r_add();
+		R.id = prim;
+		R.verts[0] = mLeafVerts[0];
+		R.verts[1] = mLeafVerts[1];
+		R.verts[2] = mLeafVerts[2];
+		R.dummy = T.dummy;
+	}
+
+	void _stab(const AABBNoLeafNode* node)
+	{
+		// Actual OBB-AABB test
+		if (!obb.intersectAABB((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents)) return;
+
+		// 1st child
+		if (node->HasPosLeaf())	_prim(node->GetPosPrimitive());
+		else					_stab(node->GetPos());
+
+		// Early exit for "only first"
+		if (bFirst && dest->r_count()) return;
+
+		// 2nd child
+		if (node->HasNegLeaf())	_prim(node->GetNegPrimitive());
+		else					_stab(node->GetNeg());
+	}
+};
+
+void COLLIDER::obb_query(const MODEL* m_def, const Fobb& obb)
+{
+	PROF_EVENT("COLLIDER::obb_query");
+	if (!m_def)
+		return;
+
+	m_def->syncronize();
+
+	// Get nodes
+	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
+	const AABBNoLeafNode* N = T->GetNodes();
+	r_clear();
+
+	obb_collider OC{ this, m_def->tris, m_def->verts, obb, !!(box_mode & OPT_FULL_TEST), !!(box_mode & OPT_ONLYFIRST) };
+	OC._stab(N);
+}
