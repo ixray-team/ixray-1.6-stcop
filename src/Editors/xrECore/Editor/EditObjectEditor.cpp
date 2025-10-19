@@ -21,15 +21,21 @@ const float half_p_y= 0.5f*(1.f/tex_h);
 const float offs_x 	= 1.f/tex_w;
 const float offs_y 	= 1.f/tex_h;
 
-static Fvector LOD_pos[4]={
-	{-1.0f+offs_x, 1.0f-offs_y, 0.0f},
-	{ 1.0f-offs_x, 1.0f-offs_y, 0.0f},
-	{ 1.0f-offs_x,-1.0f+offs_y, 0.0f},
-	{-1.0f+offs_x,-1.0f+offs_y, 0.0f}
+static Fvector LOD_pos[4] =
+{
+	{-1.0f + offs_x, 1.0f - offs_y, 0.0f},
+	{ 1.0f - offs_x, 1.0f - offs_y, 0.0f},
+	{ 1.0f - offs_x,-1.0f + offs_y, 0.0f},
+	{-1.0f + offs_x,-1.0f + offs_y, 0.0f}
 };
-static FVF::LIT LOD[4]={
+
+static FVF::LIT LOD[6] =
+{
 	{{-1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 0
 	{{ 1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 1
+	{{ 1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 2
+
+	{{-1.0f, 1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 0
 	{{ 1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 2
 	{{-1.0f,-1.0f, 0.0f},  0xFFFFFFFF, {0.0f,0.0f}}, // F 3
 };
@@ -242,37 +248,50 @@ void CEditableObject::GetLODFrame(int frame, Fvector p[4], Fvector2 t[4], const 
 void CEditableObject::RenderLOD(const Fmatrix& parent)
 {
 	Fvector C;
-	C.sub			(parent.c,UI->CurrentView().m_Camera.GetPosition()); C.y = 0;
-	float m 		= C.magnitude();
-	if (m<EPS) return;
-	C.div			(m);
+	C.sub(parent.c, UI->CurrentView().m_Camera.GetPosition()); C.y = 0;
+	float m = C.magnitude();
+	if (m < EPS)
+	{
+		return;
+	}
+	
+	C.div(m);
 	int max_frame;
-	float max_dot	= 0;
+	float max_dot = 0;
 	Fvector HPB;
-	parent.getHPB	(HPB);
+	parent.getHPB(HPB);
 
-	for (int frame=0; frame<LOD_SAMPLE_COUNT; frame++){
-		float angle = angle_normalize(frame*(PI_MUL_2/float(LOD_SAMPLE_COUNT))+HPB.x);
+	for (int frame = 0; frame < LOD_SAMPLE_COUNT; frame++)
+	{
+		float angle = angle_normalize(frame * (PI_MUL_2 / float(LOD_SAMPLE_COUNT)) + HPB.x);
 
 		Fvector D;
-		D.setHP(angle,0);
+		D.setHP(angle, 0);
 		float dot = C.dotproduct(D);
-		if (dot<0.7072f) continue;
+		if (dot < 0.7072f) continue;
 
-		if (dot>max_dot){
+		if (dot > max_dot)
+		{
 			max_dot = dot;
 			max_frame = frame;
 		}
 	}
-	{
-		Fvector    	p[4];
-		Fvector2 	t[4];
-		GetLODFrame(max_frame,p,t);
-		for (int i=0; i<4; i++){ LOD[i].p.set(p[i]); LOD[i].t.set(t[i]); }
-		RCache.set_xform_world(parent);
-		EDevice->SetShader		(m_LODShader?m_LODShader:EDevice->m_WireShader);
-		DU_impl.DrawPrimitiveLIT	(D3DPT_TRIANGLEFAN, 2, LOD, 4, true, false);
-	}
+
+	Fvector p[4];
+	Fvector2 t[4];
+	GetLODFrame(max_frame, p, t);
+
+	LOD[0].p.set(p[0]); LOD[0].t.set(t[0]); LOD[0].color = 0xFFFFFFFF;
+	LOD[1].p.set(p[1]); LOD[1].t.set(t[1]); LOD[1].color = 0xFFFFFFFF;
+	LOD[2].p.set(p[2]); LOD[2].t.set(t[2]); LOD[2].color = 0xFFFFFFFF;
+
+	LOD[3].p.set(p[0]); LOD[3].t.set(t[0]); LOD[3].color = 0xFFFFFFFF;
+	LOD[4].p.set(p[2]); LOD[4].t.set(t[2]); LOD[4].color = 0xFFFFFFFF;
+	LOD[5].p.set(p[3]); LOD[5].t.set(t[3]); LOD[5].color = 0xFFFFFFFF;
+
+	RCache.set_xform_world(parent);
+	EDevice->SetShader(m_LODShader ? m_LODShader : EDevice->m_WireShader);
+	DU_impl.DrawPrimitiveLIT(D3DPT_TRIANGLELIST, 2, LOD, 6, true, false);
 }
 
 xr_string CEditableObject::GetLODTextureName()
