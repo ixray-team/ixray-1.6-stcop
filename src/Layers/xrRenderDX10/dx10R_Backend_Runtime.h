@@ -562,3 +562,25 @@ IC float CBackend::get_target_height()
 {
 	return float(RDEVICE.TargetHeight);
 }
+
+IC void CBackend::DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+{
+	const u32 cnt_v = pc + 2;
+	const u32 cnt_indices = pc * 3; // triangle
+	u32 of_indices = 0;
+	u16* ptr_indices = Index.Lock(cnt_indices, of_indices);
+
+	for (int i = 0; i < cnt_indices; i += 3)
+	{
+		ptr_indices[i * 3] = 0;
+		ptr_indices[i * 3 +1] = i+1;
+		ptr_indices[i * 3 +2] = i+2;
+	}
+
+	Index.Unlock(cnt_indices);
+
+	set_Geometry(geom);
+	set_Indices(Index.Buffer()); // overwrite geom IB with dyn IB
+	
+	Render(D3DPT_TRIANGLELIST, vBase, 0, cnt_indices, of_indices, pc);
+}
