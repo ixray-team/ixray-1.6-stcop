@@ -20,7 +20,7 @@ class CWeaponMagazined : public CWeapon
 	using inherited = CWeapon;
 protected:
 	//звук текущего выстрела
-	shared_str		m_sSndShotCurrent;
+	xr_string		m_sSndShotCurrent;
 
 	//дополнительная информация о глушителе
 	LPCSTR			m_sSilencerFlameParticles;
