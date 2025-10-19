@@ -1322,7 +1322,7 @@ void CWeaponMagazined::SelectShotSound()
 		}
 	}
 
-	m_layered_sounds.PlaySound(*m_sSndShotCurrent, get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
+	m_layered_sounds.PlaySound(m_sSndShotCurrent.c_str(), get_LastFP(), H_Parent(), !!GetHUDmode(), false, true);
 
 	float fAmmoElapsed = (float)get_elapsed;
 	float fmaxMagazineSize_ = iMagazineSize + iChamberSize;
