@@ -357,10 +357,14 @@ void DrawAIConfig()
 
 	ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
 
+	ImGui::Checkbox("FreeMP Build", &gCompilerMode.AI_FreeMPBuild);
+
+	ImGui::BeginDisabled(gCompilerMode.AI_FreeMPBuild);
 	ImGui::Text("Name all.spawn :");
 	ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
 	ImGui::Text("Name level start:");
 	ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+	ImGui::EndDisabled();
 
 	ImGui::EndDisabled();
 	ImGui::EndDisabled();
