@@ -61,7 +61,7 @@ class CActorInputHandler;
 
 class CActorMemory;
 class CActorStatisticMgr;
-
+class CEncyclopediaRegistryWrapper;
 class CLocationManager;
 class CPickUpManager;
 class CCustomDevice;
@@ -150,6 +150,8 @@ public:
 	void			 DumpTasks();
 #endif
 
+protected:
+	virtual void	AddEncyclopediaArticle(const CInfoPortion* info_portion) const;
 struct SDefNewsMsg{
 		GAME_NEWS_DATA*	news_data;
 		u32				time;
@@ -166,6 +168,7 @@ public:
 	virtual void StartTalk			(CInventoryOwner* talk_partner);
 			void RunTalkDialog		(CInventoryOwner* talk_partner, bool disable_break);
 	CActorStatisticMgr&				StatisticMgr()	{return *m_statistic_manager;}
+    CEncyclopediaRegistryWrapper*	encyclopedia_registry;
 	CGameNewsRegistryWrapper		*game_news_registry;
 	CCharacterPhysicsSupport		*m_pPhysics_support;
 
