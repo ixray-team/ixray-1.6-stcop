@@ -586,6 +586,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	m_current_head.invalidate	();
 	//-------------------------------------
 	//  ,  
+	encyclopedia_registry->registry().init(ID());
 	game_news_registry->registry().init(ID());
 
 

@@ -45,8 +45,8 @@ void init_game_globals()
 	InitHudSoundSettings							();
 	if(!g_dedicated_server)
 	{
-//		CInfoPortion::InitInternal					();
-//.		CEncyclopediaArticle::InitInternal			();
+		CInfoPortion::InitInternal					();
+		CEncyclopediaArticle::InitInternal			();
 		CPhraseDialog::InitInternal					();
 		InventoryUtilities::CreateShaders			();
 	};
@@ -82,11 +82,11 @@ void clean_game_globals()
 
 	if(!g_dedicated_server)
 	{
-//.		CInfoPortion::DeleteSharedData					();
-//.		CInfoPortion::DeleteIdToIndexData				();
+		CInfoPortion::DeleteSharedData					();
+		CInfoPortion::DeleteIdToIndexData				();
 
-//.		CEncyclopediaArticle::DeleteSharedData			();
-//.		CEncyclopediaArticle::DeleteIdToIndexData		();
+		CEncyclopediaArticle::DeleteSharedData			();
+		CEncyclopediaArticle::DeleteIdToIndexData		();
 
 		CPhraseDialog::DeleteSharedData					();
 		CPhraseDialog::DeleteIdToIndexData				();
