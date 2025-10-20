@@ -138,7 +138,6 @@ private:
 
 	// Lists-expanded
 	CTexture*						textures_ps	[mtMaxPixelShaderTextures];	// stages
-	//CTexture*						textures_vs	[5	];	// dmap + 4 vs
 	CTexture*						textures_vs	[mtMaxVertexShaderTextures];	// 4 vs
 #ifdef USE_DX11
 	CTexture*						textures_gs	[mtMaxGeometryShaderTextures];	// 4 vs
@@ -333,7 +332,6 @@ public:
 #endif //USE_DX11
 
 	// Device create / destroy / frame signaling
-	void							RestoreQuadIBData	();	// Igor: is used to test bug with rain, particles corruption
 	void							CreateQuadIB		();
 	void							OnFrameBegin		();
 	void							OnFrameEnd			();
@@ -370,8 +368,6 @@ public:
 #ifdef USE_DX11
 private:
 	//	DirectX 10 internal functionality
-	//void CreateConstantBuffers();
-	//void DestroyConstantBuffers();
 	void	ApplyVertexLayout();
 	void	ApplyRTandZB();
 	void	ApplyPrimitieTopology( D3D_PRIMITIVE_TOPOLOGY Topology );
@@ -385,7 +381,7 @@ private:
 };
 #pragma warning(pop)
 
-extern  ECORE_API CBackend			RCache;
+extern  ECORE_API CBackend RCache;
 
 #ifndef _EDITOR
 #	include "D3DUtils.h"
