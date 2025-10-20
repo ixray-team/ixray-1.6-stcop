@@ -38,6 +38,7 @@ endif()
 
 if(IXRAY_MP AND NOT IXRAY_COMPRESSOR_ONLY AND IXR_TEST_CI)
     add_subdirectory("xrServer")
+    add_subdirectory("xrServerCLI")
     add_subdirectory("xrGameSpy")
 endif()
 
