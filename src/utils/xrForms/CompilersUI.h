@@ -56,6 +56,7 @@ struct CompilersMode
 	char AI_spawn_name[256];
 	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;
+	bool AI_FreeMPBuild = false;
 
 
 	bool AI_BuildLevel = false;
