@@ -100,7 +100,11 @@ void StartupAI()
 
 		xr_string output = gCompilerMode.AI_spawn_name;
 
-		if (output.empty())
+		if (gCompilerMode.AI_FreeMPBuild)
+		{
+			output = "alife";
+		}
+		else if (output.empty())
 		{
 			output = "new";
 		}
