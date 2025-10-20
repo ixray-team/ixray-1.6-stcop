@@ -24,6 +24,8 @@ T& CALifeRegistryContainer::get()
         return m_game_tasks;
     else if constexpr (std::is_same_v<T, CActorStatisticRegistry>)
         return m_actor_statistics;
+    else if constexpr (std::is_same_v<T, CEncyclopediaRegistry>)
+        return m_encyclopedia_registry;
     else
     {
         VERIFY(!"no entry");
@@ -48,6 +50,8 @@ const T& CALifeRegistryContainer::get() const
         return m_game_tasks;
     else if constexpr (std::is_same_v<T, CActorStatisticRegistry>)
         return m_actor_statistics;
+    else if constexpr (std::is_same_v<T, CEncyclopediaRegistry>)
+        return m_encyclopedia_registry;
     else
     {
         VERIFY(!"no entry");

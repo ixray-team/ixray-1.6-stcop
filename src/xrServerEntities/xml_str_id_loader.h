@@ -107,9 +107,11 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bo
 
 	if(m_pItemDataVector->end() == it)
 	{
+#ifdef DEBUG
 		int i=0;
 		for(T_VECTOR::iterator it_ = m_pItemDataVector->begin();	m_pItemDataVector->end() != it_; it_++,i++)
 			Msg("[%d]=[%s]",i,*(*it_).id );
+#endif
 
 		R_ASSERT3(no_assert, "item not found, id", *str_id);
 		return NULL;
@@ -160,8 +162,11 @@ typename void	CSXML_IdToIndex::InitInternal ()
 		xr_string				xml_file_full;
 		xml_file_full			= xml_file;
 		xml_file_full			+= ".xml";
-		uiXml->Load				(CONFIG_PATH, "gameplay", xml_file_full.c_str());
 
+		if (!uiXml->Load(CONFIG_PATH, "gameplay", xml_file_full.c_str())) {
+			delete_data(uiXml);
+			continue;
+		}
 		//общий список
 		int items_num			= uiXml->GetNodesNum(uiXml->GetRoot(), tag_name);
 

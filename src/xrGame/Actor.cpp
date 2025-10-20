@@ -108,6 +108,7 @@ ENGINE_API extern bool g_3d_scopes;
 CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
 	LoadCallbackGlobals(m_isBeforeHitCallback, m_onBeforeHitCallback, "OnBeforeHit");
+	encyclopedia_registry	= new CEncyclopediaRegistryWrapper();
 	game_news_registry		= new CGameNewsRegistryWrapper();
 	// Cameras
 	cameras[eacFirstEye] = new CCameraFirstEye(this, CCameraBase::flKeepPitch);
@@ -230,6 +231,7 @@ CActor::~CActor()
 {
 	xr_delete				(m_location_manager);
 	xr_delete				(m_memory);
+    xr_delete				(encyclopedia_registry);
 	xr_delete				(game_news_registry);
 #ifdef DEBUG
 	Device.seqRender.Remove(this);
@@ -306,9 +308,9 @@ xr_vector<xr_string> CActor::GetKnowedPortions() const
 		return {};
 	}
 
-	for (const shared_str& Info : *KnownInfos)
+	for (auto& Info : *KnownInfos)
 	{
-		SafeVector.push_back(Info.c_str());
+		SafeVector.push_back(Info.info_id.c_str());
 	}
 
 	return SafeVector;
