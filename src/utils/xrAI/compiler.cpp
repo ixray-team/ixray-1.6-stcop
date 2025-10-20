@@ -70,11 +70,6 @@ void xrCompiler(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 
 	if (!draft_mode) 
 	{
-		Phase("Lighting nodes...");
-		xrLight();
-		//	xrDisplay	();
-		mem_Optimize();
-
 		Phase("Calculating coverage...");
 		xrCover(pure_covers);
 		mem_Optimize();

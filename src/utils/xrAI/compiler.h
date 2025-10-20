@@ -8,12 +8,8 @@
 #include "../../Layers/xrRender/ETextureParams.h"
 
 // base patch used all the time up to merging
-
-#ifdef IXRAY_AI_OLD_FORMAT
-constexpr u32 InvalidNode = 0x00ffffff;
-#else
 constexpr u32 InvalidNode = 0xffffffff;
-#endif
+constexpr u32 InvalidNode_v1 = 0x00ffffff;
 
 constexpr u32 UnkonnectedNode	= 0xfffffff0;
 constexpr WORD	InvalidSector	= 0xff;
@@ -59,17 +55,6 @@ struct vertex					// definition of "patch" or "node"
 using DWORDs = xr_vector<u32>;
 using DWORDs_it = DWORDs::iterator;
 
-//struct NodeMerged
-//{
-//	DWORDs		neighbours;	// list of neighbours
-//	DWORDs		contains;	// while merging - contains list of elementar nodes
-//	Fplane		plane;
-//	Fvector		P;			// min
-//	WORD		sector;
-//	BYTE		light;
-//	float		cover[4];
-//};
-
 #include "level_graph.h"
 
 void	Compress	(CLevelGraph::CVertex& Dest, vertex& Src);
@@ -99,9 +84,6 @@ struct SCover {
 
 using Nodes = xr_vector<vertex>;
 using Nodes_it = Nodes::iterator;
-
-//using Merged = xr_vector<NodeMerged>;
-//using Merged_it = Merged::iterator;
 
 using Vectors = xr_vector<Fvector>;
 using Vectors_it = Vectors::iterator;
@@ -155,7 +137,6 @@ extern xr_vector<b_rc_face>			g_rc_faces		;
 
 // phases
 void	xrLoad			(LPCSTR name, bool draft_mode);
-void	xrLight			();
 void	xrCover			(bool pure_covers);
 void	xrMerge			();
 void	xrConvertAndLink();
@@ -179,18 +160,21 @@ const float	sim_dist		= 0.15f;
 const int	sim_light		= 32;
 const float	sim_cover		= 48;
 
+extern size_t BuildAIMapVersion;
 struct CNodePositionCompressor {
 	IC				CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H);
 };
 
 IC CNodePositionCompressor::CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
 {
-	float sp = 1/g_params.fPatchSize;
-	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z)/H.size + EPS_L + 1.5f);
-	int pxz	= iFloor((Psrc.x - H.aabb.min.x)*sp + EPS_L + .5f)*row_length + iFloor((Psrc.z - H.aabb.min.z)*sp   + EPS_L + .5f);
-	int py	= iFloor(65535.f*(Psrc.y-H.aabb.min.y)/(H.size_y)+EPS_L);
+	float sp = 1 / g_params.fPatchSize;
+	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
+	int pxz = iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
+	int py = iFloor(65535.f * (Psrc.y - H.aabb.min.y) / (H.size_y) + EPS_L);
+
 	VERIFY(pxz < MAX_NODE_XZ);
 	Pdest.xz(pxz);
-	clamp	(py,0,     65535);	Pdest.y			(u16(py));
-}
 
+	clamp(py, 0, 65535);
+	Pdest.y(u16(py));
+}

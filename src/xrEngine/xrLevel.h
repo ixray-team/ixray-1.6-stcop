@@ -140,7 +140,6 @@ public:
 };
 
 struct NodeCompressed
-#ifndef IXRAY_AI_OLD_FORMAT
 {
 	u8 data[13];
 	static constexpr u32 NODE_BIT_COUNT = 25;
@@ -206,7 +205,6 @@ struct NodeCompressed
 };
 
 struct NodeCompressed10
-#endif
 {
 	u8 data[12]; // 0-10 - aimap; 11 - light (unused)
 
@@ -351,7 +349,6 @@ public:
 
 	friend class CLevelGraph;
 	friend struct CNodeCompressed;
-	friend class CNodeRenumberer;
 };									// 2+5+2+11 = 20b
 #endif
 
@@ -368,15 +365,9 @@ constexpr u32 XRCL_CURRENT_VERSION = 18; //17;	// input
 constexpr u32 XRCL_PRODUCTION_VERSION = 14; // output 
 constexpr u32 CFORM_CURRENT_VERSION = 4;
 
-#ifdef IXRAY_AI_OLD_FORMAT
-const u32 MAX_NODE_BIT_COUNT = 23;
-constexpr u32 MAX_AI_NODES = (1 << MAX_NODE_BIT_COUNT) - 1;
-constexpr u32 XRAI_CURRENT_VERSION = 10;
-#else
 constexpr u32 MAX_AI_NODES = NodeCompressed::LINK_MASK_0;
 constexpr u32 MAX_NODE_XZ = NodePosition::MAX_XZ;
 constexpr u32 XRAI_CURRENT_VERSION = 11;
-#endif
 
 constexpr u32 XRAI_SOC_VERSION = 8;
 constexpr u32 XRAI_MINIMAL_VERSION = 10;

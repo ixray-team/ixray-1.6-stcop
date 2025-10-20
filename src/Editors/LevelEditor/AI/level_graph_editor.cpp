@@ -169,7 +169,6 @@ void CLevelGraphEditor::clear()
 
 bool CLevelGraphEditor::save_temp()
 {
-
 	string_path FileName;
 	xr_strcpy(FileName, Scene->m_LevelOp.m_FNLevelPath.c_str());
 	xr_strcat(FileName, "\\level.ai.temp");

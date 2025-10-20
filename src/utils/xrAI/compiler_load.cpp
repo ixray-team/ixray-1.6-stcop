@@ -5,6 +5,8 @@
 #include "level_graph.h"
 #include "AIMapExport.h"
 
+size_t BuildAIMapVersion = 0;
+
 IC	const Fvector vertex_position(const NodePosition& Psrc, const Fbox& bb, const SAIParams& params)
 {
 	Fvector Pdest;
@@ -291,39 +293,29 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		R_ASSERT2(N_ < MAX_AI_NODES - 1, "Too many nodes!");
 		g_nodes.resize(N_);
 
+		BuildAIMapVersion = version;
+
 		hdrNODES H;
-		H.version = XRAI_CURRENT_VERSION;
+		H.version = XRAI_CURRENT_VERSION - (E_AIMAP_VERSION - version);
 		H.count = N_ + 1;
 		H.size = g_params.fPatchSize;
 		H.size_y = 1.f;
 		H.aabb = LevelBB;
 
 		typedef u32 NodeLink;
-#ifdef IXRAY_AI_OLD_FORMAT
+
 		for (u32 i = 0; i < N_; i++)
 		{
 			NodeLink id{};
-			for (int j = 0; j < 4; ++j)
-			{
-				F->r(&id, 3);
-				id = id & 0x00ffffff;
-				if (id == InvalidNode)
-					id = InvalidNode;
-				g_nodes[i].n[j] = id;
-			}
-#else
-		constexpr u32 InvalidNode_v1 = 0x00ffffff;
-		for (u32 i = 0; i < N_; i++)
-		{
-			NodeLink id{};
+
 			if (version == 1)
 			{
 				for (int j = 0; j < 4; ++j)
 				{
 					F->r(&id, 3);
-					id = id & InvalidNode_v1;
+					id = id & 0x00ffffff;
 					if (id == InvalidNode_v1)
-						id = InvalidNode;
+						id = InvalidNode_v1;
 					g_nodes[i].n[j] = id;
 				}
 			}
@@ -335,7 +327,6 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					g_nodes[i].n[j] = id;
 				}
 			}
-#endif
 
 			u16 pl = F->r_u16();
 			NodePosition np{};
