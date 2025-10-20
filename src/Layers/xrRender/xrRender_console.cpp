@@ -312,15 +312,6 @@ public:
 	}
 };
 
-class CCC_RestoreQuadIBData : public IConsole_Command
-{
-public:
-	CCC_RestoreQuadIBData(LPCSTR N) : IConsole_Command(N)  { };
-	virtual void Execute(LPCSTR args) {
-		RCache.RestoreQuadIBData();
-	}
-};
-
 //-----------------------------------------------------------------------
 class CCC_Preset :
 	public CCC_Token
@@ -779,8 +770,7 @@ void		xrRender_initconsole	()
 
 	CMD2(CCC_Boolean, "ui_dbg_graphic", &Engine.External.EditorStates[(int)EditorUI::Shaders]);
 	CMD1(CCC_DumpResources, "dump_resources");
-	//	Igor: just to test bug with rain/particles corruption
-	CMD1(CCC_RestoreQuadIBData, "r_restore_quad_ib_data");
+
 	CMD4(CCC_Integer, "r_particles_real_dt", &ps_r2_particle_dt, 0, 1);
 	tw_min.set(-10, -10, -EPS_S);	tw_max.set(10, 10, EPS_S);
 	CMD4(CCC_Vector3, "r_taa_jitter_scale", &ps_r_taa_jitter_scale, tw_min, tw_max);
