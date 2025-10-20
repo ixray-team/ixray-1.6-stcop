@@ -22,6 +22,7 @@ void CALifeRegistryContainer::load(IReader &file_stream)
 	m_map_locations.load(file_stream);
 	m_game_tasks.load(file_stream);
 	m_actor_statistics.load(file_stream);
+	m_encyclopedia_registry.load(file_stream);
 }
 
 void CALifeRegistryContainer::save(IWriter &memory_stream)
@@ -35,6 +36,7 @@ void CALifeRegistryContainer::save(IWriter &memory_stream)
 	m_map_locations.save(memory_stream);
 	m_game_tasks.save(memory_stream);
 	m_actor_statistics.save(memory_stream);
+	m_encyclopedia_registry.save(memory_stream);
 
 	memory_stream.close_chunk();
 }
