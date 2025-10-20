@@ -285,6 +285,7 @@ void SaveCompilerCfg()
 	Serializer->Write("DO_NoSun", gCompilerMode.DO_NoSun);
 	Serializer->Write("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
 	Serializer->Write("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
+	Serializer->Write("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Write("AI_StartActor", gCompilerMode.AI_StartActor);
 	Serializer->Write("AI_spawn_name", gCompilerMode.AI_spawn_name);
 	Serializer->Write("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
@@ -342,6 +343,7 @@ int APIENTRY WinMain
 	Serializer->Read("DO_NoSun", gCompilerMode.DO_NoSun);
 	Serializer->Read("AI_BuildSpawn", gCompilerMode.AI_BuildSpawn);
 	Serializer->Read("AI_NoSeparatorCheck", gCompilerMode.AI_NoSeparatorCheck);
+	Serializer->Read("AI_FreeMPBuild", gCompilerMode.AI_FreeMPBuild);
 	Serializer->Read("AI_StartActor", gCompilerMode.AI_StartActor);
 	Serializer->Read("AI_spawn_name", gCompilerMode.AI_spawn_name);
 	Serializer->Read("AI_BuildLevel", gCompilerMode.AI_BuildLevel);
