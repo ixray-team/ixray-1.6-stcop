@@ -558,17 +558,6 @@ void CCustomDevice::UpdateCL()
 
 	UpdateVisibility();
 
-	if (m_HudLight.GetTorchInstalled())
-	{
-		if (attachable_hud_item* item = HudItemData())
-		{
-			for (const shared_str& bone : m_HudLight.ConeBones)
-			{
-				item->set_bone_visible(bone, m_HudLight.GetTorchActive(), TRUE);
-			}
-		}
-	}
-
 	if (!IsWorking())
 	{
 		return;
@@ -590,10 +579,7 @@ bool CCustomDevice::can_be_attached() const
 void CCustomDevice::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
-
 	SwitchState(eHidden);
-	m_HudLight.SwitchTorchlight(false);
-	m_HudLight.UpdateTorchFromObject(this);
 	m_bIsZoomed = false;
 }
 
@@ -616,14 +602,4 @@ void CCustomDevice::OnMoveToRuck(const SInvItemPlace& prev)
 void CCustomDevice::TurnDetectorInternal(bool b)
 {
 	m_bWorking = b;
-}
-
-void CCustomDevice::OnMotionMark(u32 state, const motion_marks& mark)
-{
-	inherited::OnMotionMark(state, mark);
-
-	if ((state == eShowing || state == eHiding) && mark.name == "Left")
-	{
-		m_HudLight.SwitchTorchlight(!m_HudLight.GetTorchActive());
-	}
 }

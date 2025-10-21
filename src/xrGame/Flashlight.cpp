@@ -1,0 +1,88 @@
+#include "StdAfx.h"
+#include "Flashlight.h"
+#include "../xrEngine/SkeletonMotions.h"
+#include "player_hud.h"
+#include "Level.h"
+#include "Actor.h"
+
+CFlashlight::~CFlashlight()
+{
+	m_bFlashlightStatus = false;
+}
+
+void CFlashlight::Load(LPCSTR section)
+{
+	inherited::Load(section);
+
+	m_HudLight.SetInstalled(true);
+
+	m_fElectronicProblems.x = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_level", 0.0f);
+	m_fElectronicProblems.y = READ_IF_EXISTS(pSettings, r_float, section, "electronic_problems_freq", 0.5f);
+
+	//TODO: Implement particles support
+}
+
+void CFlashlight::UpdateCL()
+{
+	inherited::UpdateCL();
+
+	if (!m_HudLight.GetTorchInstalled())
+	{
+		return;
+	}
+
+	bool status = m_bFlashlightStatus;
+
+	if (GetState() != eHidden && status)
+	{
+		CObject* control_entity = Level().CurrentControlEntity();
+		CActor* pActor = control_entity != nullptr ? control_entity->cast_actor() : nullptr;
+
+		float level_electronic_problems = 0.0f;
+		if (pActor != nullptr)
+		{
+			level_electronic_problems = pActor->CurrentElectronicsProblemsCnt();
+		}
+
+		if (m_fElectronicProblems.x > 0.0f && level_electronic_problems > 0.0f)
+		{
+			if (level_electronic_problems >= m_fElectronicProblems.x)
+			{
+				status = false;
+			}
+			else
+			{
+				status = !!(::Random.randF(0.0f, 1.0f) > m_fElectronicProblems.y);
+			}
+		}
+	}
+
+	m_HudLight.SwitchTorchlight(status);
+
+	if (attachable_hud_item* item = HudItemData())
+	{
+		for (const shared_str& bone : m_HudLight.ConeBones)
+		{
+			item->set_bone_visible(bone, m_HudLight.GetTorchActive(), TRUE);
+		}
+	}
+}
+
+void CFlashlight::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	inherited::OnMotionMark(state, mark);
+
+	if ((state == eShowing || state == eHiding) && mark.name == "Left")
+	{
+		m_bFlashlightStatus = state == eShowing;
+	}
+}
+
+void CFlashlight::OnH_B_Independent(bool just_before_destroy)
+{
+	inherited::OnH_B_Independent(just_before_destroy);
+
+	m_bFlashlightStatus = false;
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
+}
