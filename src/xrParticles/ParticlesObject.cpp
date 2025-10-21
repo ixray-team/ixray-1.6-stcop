@@ -12,8 +12,6 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/Environment.h"
 
-PARTICLES_API const Fvector zero_vel = {0.f,0.f,0.f};
-
 CParticlesObject::CParticlesObject	(LPCSTR p_name, BOOL bAutoRemove, bool destroy_on_game_load) :
 	inherited				(destroy_on_game_load)
 {

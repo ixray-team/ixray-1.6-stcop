@@ -2,19 +2,21 @@
 #include "CustomDetector.h"
 class CUIArtefactDetectorAdv;
 
-class CAdvancedDetector :public CCustomDetector
+class CAdvancedDetector final : public CCustomDetector
 {
-	typedef CCustomDetector	inherited;
+	using inherited = CCustomDetector;
 public:
-					CAdvancedDetector			();
-	virtual			~CAdvancedDetector			();
-	virtual void	on_a_hud_attach				();
-	virtual void	on_b_hud_detach				();
+	CAdvancedDetector();
+	~CAdvancedDetector() override = default;
+	void on_a_hud_attach() override;
+	void on_b_hud_detach() override;
+
+	virtual CCustomDetector* cast_custom_detector() { return this; }
+	virtual CCustomDevice* cast_custom_device() { return this; }
+
 protected:
-	virtual void 	UpdateAf					();
-	virtual void 	CreateUI					();
-	CUIArtefactDetectorAdv& ui					();
+	void UpdateAf() override;
+	void CreateUI() override;
+	CUIArtefactDetectorAdv& ui();
 
 };
-
-//	static void _BCL		BoneCallback					(CBoneInstance *B);

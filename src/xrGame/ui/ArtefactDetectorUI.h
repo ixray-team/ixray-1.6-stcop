@@ -1,6 +1,5 @@
 #pragma once
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
-#include "../xrEngine/bone.h"
 
 class CUIStatic;
 class CUIFrameLineWnd;
@@ -14,95 +13,96 @@ class CLAItem;
 class CUIArtefactDetectorBase
 {
 public:
-	virtual			~CUIArtefactDetectorBase	()	{};
-	virtual void	update						()	{};
+	virtual ~CUIArtefactDetectorBase() = default;
+	virtual void update() {};
 };
 
-class CUIDetectorWave :public CUIFrameLineWnd
+class CUIDetectorWave : public CUIFrameLineWnd
 {
-	typedef CUIFrameLineWnd inherited;
+	using inherited = CUIFrameLineWnd;
 protected:
-	float			m_curr_v;
-	float			m_step;
+	float m_curr_v = 0.0f;
+	float m_step = 0.0f;
 public:
-					CUIDetectorWave		():m_curr_v(0.0f),m_step(0.0f){};
-			void	InitFromXML			(CUIXml& xml, LPCSTR path);
-			void	SetVelocity			(float v);
-	virtual void	Update				();
+	CUIDetectorWave() = default;
+	void InitFromXML(CUIXml& xml, LPCSTR path);
+	void SetVelocity(float v) { m_curr_v = v; }
+	void Update() override;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
-class CUIArtefactDetectorSimple :public CUIArtefactDetectorBase
+class CUIArtefactDetectorSimple final : public CUIArtefactDetectorBase
 {
-	typedef CUIArtefactDetectorBase	inherited;
+	using inherited = CUIArtefactDetectorBase;
 
-	CSimpleDetector*	m_parent;
-	u16					m_flash_bone;
-	u16					m_on_off_bone;
-	u32					m_turn_off_flash_time;
-	
-	ref_light			m_flash_light;
-	ref_light			m_on_off_light;
-	CLAItem*			m_pOnOfLAnim;
-	CLAItem*			m_pFlashLAnim;
-	void				setup_internals			();
+	CSimpleDetector* m_parent = nullptr;
+	u16	m_flash_bone = BI_NONE;
+	u16	m_on_off_bone = BI_NONE;
+	u32	m_turn_off_flash_time = BI_NONE;
+
+	float m_fFlash_light_range = 0.0f;
+	float m_fOnOff_light_range = 0.0f;
+
+	ref_light m_flash_light = nullptr;
+	ref_light m_on_off_light = nullptr;
+	CLAItem* m_pOnOfLAnim = nullptr;
+	CLAItem* m_pFlashLAnim = nullptr;
+	void setup_internals();
 public:
-	virtual				~CUIArtefactDetectorSimple	();
-	void				update						();
-	void				Flash						(bool bOn, float fRelPower);
+	~CUIArtefactDetectorSimple() override;
+	void update() override;
+	void Flash(bool bOn, float fRelPower);
 
-	void				construct					(CSimpleDetector* p);
+	void construct(CSimpleDetector* p);
 };
 
-class CUIArtefactDetectorElite :public CUIArtefactDetectorBase, public CUIWindow
+class CUIArtefactDetectorElite final : public CUIArtefactDetectorBase, public CUIWindow
 {
-	typedef CUIArtefactDetectorBase	inherited;
+	using inherited = CUIArtefactDetectorBase;
 
-	CUIWindow*			m_wrk_area;
-	
-	xr_map<shared_str,CUIStatic*>	m_palette;
+	CUIWindow* m_wrk_area = nullptr;
 
-	struct SDrawOneItem{
-		SDrawOneItem	(CUIStatic* s, const Fvector& p):pStatic(s),pos(p){}
-		CUIStatic*		pStatic;
-		Fvector			pos;
+	xr_map<shared_str, CUIStatic*> m_palette = {};
+
+	struct SDrawOneItem
+	{
+		SDrawOneItem(CUIStatic* s, const Fvector& p) : pStatic(s), pos(p) {}
+		CUIStatic* pStatic = nullptr;
+		Fvector	pos = zero_vel;
 	};
-	xr_vector<SDrawOneItem>	m_items_to_draw;
-	CEliteDetector*			m_parent;
-	Fmatrix					m_map_attach_offset;
+	xr_vector<SDrawOneItem>	m_items_to_draw = {};
+	CEliteDetector* m_parent = nullptr;
+	Fmatrix	m_map_attach_offset;
 
-	void				GetUILocatorMatrix			(Fmatrix& _m);
+	void GetUILocatorMatrix(Fmatrix& _m);
 public:
+	void update() override;
+	void Draw() override;
 
-	virtual void	update			();
-	virtual void	Draw			();
-
-	void		construct			(CEliteDetector* p);
-	void		Clear				();
-	void		RegisterItemToDraw	(const Fvector& p, const shared_str& palette_idx);
+	void construct(CEliteDetector* p);
+	void Clear();
+	void RegisterItemToDraw(const Fvector& p, const shared_str& palette_idx);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 };
 
-
-class CUIArtefactDetectorAdv :public CUIArtefactDetectorBase
+class CUIArtefactDetectorAdv final : public CUIArtefactDetectorBase
 {
-	typedef CUIArtefactDetectorBase	inherited;
+	using inherited = CUIArtefactDetectorBase;
 
-	CAdvancedDetector*		m_parent;
-	Fvector					m_target_dir;
-	float					m_cur_y_rot;
-	float					m_curr_ang_speed;
-	u16						m_bid;
+	CAdvancedDetector* m_parent = nullptr;
+	Fvector	m_target_dir = zero_vel;
+	float m_cur_y_rot = 0.0f;
+	float m_curr_ang_speed = 0.0f;
+	u16	m_bid = BI_NONE;
 
 public:
-	virtual					~CUIArtefactDetectorAdv			();
-	virtual void			update							();
-	void					construct						(CAdvancedDetector* p);
-	void					SetValue						(const float v1, const Fvector& v2);
-	float					CurrentYRotation				()	const;
-	static void 	_BCL	BoneCallback					(CBoneInstance *B);
-	void					ResetBoneCallbacks				();
-	void					SetBoneCallbacks				();
+	~CUIArtefactDetectorAdv() override = default;
+	void update() override;
+	void construct(CAdvancedDetector* p);
+	void SetValue(const float v1, const Fvector& v2);
+	float CurrentYRotation() const;
+	void ResetBoneCallbacks();
+	void SetBoneCallbacks();
 };

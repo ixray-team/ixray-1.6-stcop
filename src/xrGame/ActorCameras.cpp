@@ -292,7 +292,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		if (eacFirstEye == cam_active)
 		{
-			CCustomDetector* pDevice = GetDetector(true);
+			CCustomDevice* pDevice = GetDevice(true);
 
 			if (pItem && pItem->HudItemData() && pDevice && pDevice->HudItemData())
 				psHUD_FOV = fminf(pItem->GetHudFov(), pDevice->GetHudFov());

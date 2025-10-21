@@ -18,7 +18,7 @@
 
 #include "step_manager.h"
 #include "../xrScripts/script_export_space.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "EffectorNightVision.h"
 #include "HudAnimatorManager.h"
 
@@ -64,7 +64,7 @@ class CActorStatisticMgr;
 
 class CLocationManager;
 class CPickUpManager;
-class CCustomDetector;
+class CCustomDevice;
 
 class CNightVisionEffector;
 class CHudAnimatorManager;
@@ -766,7 +766,7 @@ public:
 			void				MakeKick						();
 	CNightVisionEffector*		GetNightVisionEffector			() { return m_night_vision;}
 
-	CCustomDetector*			GetDetector						(bool in_slot = false);
+	CCustomDevice*				GetDevice						(bool in_slot = false);
 
 #ifndef MASTER_GOLD
 			void				NoClipFly						(int cmd);

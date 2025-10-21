@@ -1,8 +1,6 @@
 #pragma once
 #include "../xrEngine/Feel_Touch.h"
 #include "HudSound.h"
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
 #include "../xrSound/ai_sounds.h"
 #include "Artefact.h"
 #include "CustomZone.h"
@@ -12,23 +10,18 @@ struct ITEM_TYPE
 	//min,max
 	Fvector2 freq;
 	HUD_SOUND_ITEM detect_snds;
-
-	shared_str zone_map_location;
-	shared_str nightvision_particle;
 };
 
 //описание зоны, обнаруженной детектором
 struct ITEM_INFO
 {
-	ITEM_TYPE* curr_ref;
-	float snd_time;
+	ITEM_TYPE* curr_ref = nullptr;
+	float snd_time = 0.0f;
 	//текущая частота работы датчика
-	float cur_period;
-	//particle for night-vision mode
-	CParticlesObject* pParticle;
+	float cur_period = 0.0f;
 
-	ITEM_INFO();
-	~ITEM_INFO();
+	ITEM_INFO() = default;
+	~ITEM_INFO() = default;
 };
 
 template <typename K>
@@ -45,7 +38,7 @@ public:
 	ItemsMap m_ItemInfos;
 
 protected:
-	virtual void feel_touch_new(CObject* O)
+	void feel_touch_new(CObject* O) override
 	{
 		K* pK = smart_cast<K*>(O);
 		R_ASSERT(pK);
@@ -54,28 +47,32 @@ protected:
 		m_ItemInfos[pK].snd_time = 0.0f;
 		m_ItemInfos[pK].curr_ref = &(it->second);
 	}
-	virtual void 	feel_touch_delete(CObject* O)
+
+	void feel_touch_delete(CObject* O) override
 	{
 		K* pK = smart_cast<K*>(O);
 		R_ASSERT(pK);
 		m_ItemInfos.erase(pK);
 	}
 public:
-	void			destroy()
+	void destroy()
 	{
-		TypesMapIt it = m_TypesMap.begin();
-		for (; it != m_TypesMap.end(); ++it)
-			HUD_SOUND_ITEM::DestroySound(it->second.detect_snds);
+		for (auto& it : m_TypesMap)
+		{
+			HUD_SOUND_ITEM::DestroySound(it.second.detect_snds);
+		}
 	}
-	void			clear()
+
+	void clear()
 	{
 		m_ItemInfos.clear();
 		Feel::Touch::feel_touch.clear();
 	}
-	virtual void	load(LPCSTR sect, LPCSTR prefix)
+
+	void load(LPCSTR sect, LPCSTR prefix)
 	{
 		u32 i = 1;
-		string256				temp;
+		string256 temp = {};
 		do {
 			xr_sprintf(temp, "%s_class_%d", prefix, i);
 			if (pSettings->line_exist(sect, temp))
@@ -102,20 +99,20 @@ public:
 
 class CCustomZone;
 
-class CAfList :public CDetectList<CArtefact>
+class CAfList final : public CDetectList<CArtefact>
 {
 protected:
-	virtual BOOL feel_touch_contact(CObject* O);
+	BOOL feel_touch_contact(CObject* O) override;
 public:
-	CAfList() :m_af_rank(0) {}
-	int m_af_rank;
+	CAfList() = default;
+	int m_af_rank = 0;
 };
 
-class CZoneList : public CDetectList<CCustomZone>
+class CZoneList final : public CDetectList<CCustomZone>
 {
 protected:
-	virtual BOOL feel_touch_contact(CObject* O);
+	BOOL feel_touch_contact(CObject* O) override;
 public:
 	CZoneList() = default;
-	virtual			~CZoneList();
-}; // class CZoneList
+	virtual	~CZoneList();
+};

@@ -5,7 +5,7 @@
 // refs
 class CBone;
 
-#define	BI_NONE				(u16(-1))
+constexpr u16 BI_NONE = u16(-1);
 
 #define OGF_IKDATA_VERSION	0x0001
 

@@ -22,7 +22,7 @@
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "Torch.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "script_game_object.h"
 #include <WeaponBinoculars.h>
 #include "Level_Bullet_Manager.h"
@@ -1173,6 +1173,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_strapped_mode				= false;
 	m_strapped_mode_rifle = false;
 	m_zoom_params.m_bIsZoomModeNow	= false;
+	bDisablePrepareAnimation = false;
 	UpdateXForm					();
 
 }
@@ -1208,6 +1209,7 @@ void CWeapon::OnActiveItem ()
 //-
 
 	bStopReloadSignal = false;
+	bDisablePrepareAnimation = false;
 
 	inherited::OnActiveItem		();
 	//если мы занружаемся и оружие было в руках
@@ -1230,6 +1232,7 @@ void CWeapon::OnHiddenItem ()
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_bBlockEmptyClick = false;
 	bWorking = false;
+	bDisablePrepareAnimation = false;
 }
 
 bool CWeapon::SendDeactivateItem(bool Force)
@@ -2089,7 +2092,7 @@ bool CWeapon::OnWeaponJam()
 	//	return false;
 	//}
 
-	if (m_bUseLightMis && !(pActor->GetDetector() != nullptr && m_bDisableLightMisDet))
+	if (m_bUseLightMis && !(pActor->GetDevice() != nullptr && m_bDisableLightMisDet))
 	{
 		float curcond = GetCondition();
 		float startcond = light_misfire.startcond;
@@ -2551,9 +2554,9 @@ bool CWeapon::CanAimNow()
 
 	bool result = true;
 
-	if (pActor && pActor->GetDetector() != nullptr)
+	if (pActor && pActor->GetDevice() != nullptr)
 	{
-		result = !!(pActor->GetDetector()->GetState() == CCustomDetector::eIdle);
+		result = !!(pActor->GetDevice()->GetState() == CCustomDevice::eIdle);
 	}
 
 	if (m_eAnimationsFlags.test(EAnimationsFlags::af_sprint_in_out) && (pActor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || GetState() == eSprintStart || GetState() == eSprintEnd || m_bSwitchSprint))

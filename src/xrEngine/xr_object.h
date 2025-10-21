@@ -35,6 +35,7 @@ class CHudItem;
 class CWeaponAmmo;
 class CTorch;
 class CCustomDetector;
+class CCustomDevice;
 class CArtefact;
 class CCustomOutfit;
 class CHelmet;
@@ -203,6 +204,7 @@ public:
 	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
 	virtual CTorch* cast_torch() { return nullptr; }
 	virtual CCustomDetector* cast_custom_detector() { return nullptr; }
+	virtual CCustomDevice* cast_custom_device() { return nullptr; }
 	virtual CWeaponBinoculars* cast_weapon_binoculars() { return nullptr; }
 	virtual CWeaponKnife* cast_weapon_knife() { return nullptr; }
 	virtual CWeaponMagazined* cast_weapon_magazined() { return nullptr; }

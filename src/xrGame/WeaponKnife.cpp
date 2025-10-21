@@ -305,11 +305,11 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 	{
 		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 		{
-			if (CCustomDetector* pDet = pActor->GetDetector())
+			if (CCustomDevice* pDev = pActor->GetDevice())
 			{
-				if (pDet->CanKick())
+				if (pDev->CanKick())
 				{
-					pDet->SwitchState(CCustomDetector::EDetectorStates::eHandKick1);
+					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick1);
 				}
 			}
 		}
@@ -325,11 +325,11 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 	{
 		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 		{
-			if (CCustomDetector* pDet = pActor->GetDetector())
+			if (CCustomDevice* pDev = pActor->GetDevice())
 			{
-				if (pDet->CanKick())
+				if (pDev->CanKick())
 				{
-					pDet->SwitchState(CCustomDetector::EDetectorStates::eHandKick2);
+					pDev->SwitchState(CCustomDevice::EDeviceStates::eHandKick2);
 				}
 			}
 		}
