@@ -31,13 +31,13 @@ public:
 	CCustomDevice() = default;
 	~CCustomDevice() override;
 
-	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	BOOL net_Spawn(CSE_Abstract* DC) override;
 	void LoadSounds(LPCSTR section) override;
 
-	virtual void OnH_B_Independent(bool just_before_destroy) override;
+	void OnH_B_Independent(bool just_before_destroy) override;
 
-	virtual void shedule_Update(u32 dt) override;
-	virtual void UpdateCL() override;
+	void shedule_Update(u32 dt) override;
+	void UpdateCL() override;
 
 	void switch_device();
 	bool IsWorking();
@@ -60,8 +60,6 @@ public:
 	virtual u32	ef_detector_type() const { return 1; }
 
 	bool NeedActivation() const { return m_bNeedActivation; }
-
-	void OnMotionMark(u32 state, const motion_marks&) override;
 
 	virtual bool can_be_attached() const;
 	void PlayWpnFinishDetector();
