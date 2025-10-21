@@ -64,6 +64,7 @@ struct SMedicineInfluenceValues{
 	float fPower;
 	float fSatiety;
 	float fThirst;
+	float fSleepiness;
 	float fRadiation;
 	float fWoundsHeal;
 	float fMaxPowerUp;

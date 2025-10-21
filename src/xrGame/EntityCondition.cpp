@@ -676,6 +676,7 @@ void SMedicineInfluenceValues::Load(const shared_str& sect)
 	fPower			= pSettings->r_float(sect.c_str(), "eat_power");
 	fSatiety		= pSettings->r_float(sect.c_str(), "eat_satiety");
 	fThirst			= READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_thirst", 0);
+	fSleepiness		= READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_sleepiness", 0);
 	fRadiation		= pSettings->r_float(sect.c_str(), "eat_radiation");
 	fWoundsHeal		= pSettings->r_float(sect.c_str(), "wounds_heal_perc");
 	clamp			(fWoundsHeal, 0.f, 1.f);
