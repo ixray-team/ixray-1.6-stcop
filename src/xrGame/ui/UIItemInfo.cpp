@@ -377,6 +377,10 @@ void CUIItemInfo::TryAddConditionInfo(CInventoryItem& pInvItem, CInventoryItem* 
 		UIConditionWnd->SetInfo(pCompareItem, pInvItem);
 		UIDesc->AddWindow(UIConditionWnd, false);
 	}
+	else
+	{
+		UIDesc->RemoveWindow(UIConditionWnd);
+	}
 }
 
 void CUIItemInfo::TryAddWpnInfo(CInventoryItem& pInvItem, CInventoryItem* pCompareItem)

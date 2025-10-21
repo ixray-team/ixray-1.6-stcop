@@ -159,15 +159,15 @@ void CUIWindow::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
 
-	for(CUIWindow* W : m_ChildWndList)
+	for (CUIWindow* W : m_ChildWndList)
 	{
 		if (!W)		continue;
-		if(!W->IsShown())		continue;
-		if(W->GetCustomDraw())	continue;
+		if (!W->IsShown())		continue;
+		if (W->GetCustomDraw())	continue;
 		W->Draw();
 	}
 #ifdef DEBUG
-	if(g_show_wnd_rect2){
+	if (g_show_wnd_rect2) {
 		Frect r;
 		GetAbsoluteRect(r);
 		add_rect_to_draw(r);
@@ -177,8 +177,8 @@ void CUIWindow::Draw()
 
 void CUIWindow::Draw(float x, float y)
 {
-	SetWndPos		(Fvector2().set(x,y));
-	Draw			();
+	SetWndPos(Fvector2().set(x, y));
+	Draw();
 }
 
 void CUIWindow::Update()
@@ -189,8 +189,8 @@ void CUIWindow::Update()
 
 		Fvector2			temp = GetUICursor().GetCursorPosition();
 		Frect				r;
-		GetAbsoluteRect		(r);
-		cursor_on_window	= !!r.in(temp);
+		GetAbsoluteRect(r);
+		cursor_on_window = !!r.in(temp);
 
 #ifdef DEBUG
 		if (cursor_on_window && g_show_wnd_rect2) {
@@ -208,27 +208,27 @@ void CUIWindow::Update()
 #endif
 
 		// RECEIVE and LOST focus
-		if(m_bCursorOverWindow != cursor_on_window)
+		if (m_bCursorOverWindow != cursor_on_window)
 		{
-			if(cursor_on_window)
-				OnFocusReceive();			
+			if (cursor_on_window)
+				OnFocusReceive();
 			else
-				OnFocusLost();			
+				OnFocusLost();
 		}
 	}
 	xrCriticalSectionGuard guard(csUi);
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end()!=it; ++it){
-		if(!(*it)->IsShown()) continue;
-			(*it)->Update();
+	for (WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it) {
+		if (!(*it)->IsShown()) continue;
+		(*it)->Update();
 	}
 }
 
 void CUIWindow::AttachChild(CUIWindow* pChild)
 {
 	R_ASSERT(pChild);
-	if(!pChild) return;
-	
-	R_ASSERT( !IsChild(pChild) );
+	if (!pChild) return;
+
+	R_ASSERT(!IsChild(pChild));
 	pChild->SetParent(this);
 
 	xrCriticalSectionGuard guard(csUi);
@@ -238,24 +238,25 @@ void CUIWindow::AttachChild(CUIWindow* pChild)
 void CUIWindow::DetachChild(CUIWindow* pChild)
 {
 	R_ASSERT(pChild);
-	if(nullptr==pChild)
+	if (nullptr == pChild)
 		return;
-	
-	if(m_pMouseCapturer == pChild)
+
+	if (m_pMouseCapturer == pChild)
 		SetCapture(pChild, false);
 
 	{
 		xrCriticalSectionGuard guard(csUi);
 
-		//.	SafeRemoveChild			(pChild);
 		WINDOW_LIST_it it = std::find(m_ChildWndList.begin(), m_ChildWndList.end(), pChild);
-		R_ASSERT(it != m_ChildWndList.end());
-		m_ChildWndList.erase(it);
+		if (it != m_ChildWndList.end())
+		{
+			m_ChildWndList.erase(it);
+		}
 	}
 
-	pChild->SetParent		(nullptr);
+	pChild->SetParent(nullptr);
 
-	if(pChild->IsAutoDelete())
+	if (pChild->IsAutoDelete())
 		xr_delete(pChild);
 }
 
