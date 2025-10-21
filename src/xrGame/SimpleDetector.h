@@ -3,17 +3,19 @@
 
 class CUIArtefactDetectorSimple;
 
-class CSimpleDetector :public CCustomDetector
+class CSimpleDetector final : public CCustomDetector
 {
-	typedef CCustomDetector	inherited;
+	using inherited = CCustomDetector;
 public:
-					CSimpleDetector				();
-	virtual			~CSimpleDetector			();
-	
+	CSimpleDetector();
+	~CSimpleDetector() override = default;
+
+	virtual CCustomDetector* cast_custom_detector() { return this; }
+	virtual CCustomDevice* cast_custom_device() { return this; }
+
 protected:
-//.	virtual void 	UpdateZones					();
-	virtual void 	UpdateAf					();
-	virtual void 	CreateUI					();
-	CUIArtefactDetectorSimple&	ui				();
+	void UpdateAf() override;
+	void CreateUI() override;
+	CUIArtefactDetectorSimple& ui();
 };
 

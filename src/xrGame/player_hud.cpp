@@ -1588,7 +1588,7 @@ bool player_hud::allow_activation(CHudItem* item)
 			CActor* pActor = smart_cast<CActor*>(pEntity);
 			if(pActor)
 			{
-				CHudItem* pDetector = pActor->inventory().ItemFromSlot(DETECTOR_SLOT) ? pActor->inventory().ItemFromSlot(DETECTOR_SLOT)->cast_hud_item() : nullptr;
+				CHudItem* pDetector = pActor->inventory().ItemFromSlot(DEVICE_SLOT) ? pActor->inventory().ItemFromSlot(DEVICE_SLOT)->cast_hud_item() : nullptr;
 				if(pDetector && pDetector->GetState()!=CHUDState::eHidden)
 					return pDetector->CheckCompatibility(item);
 			}
@@ -1737,11 +1737,11 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 						}
 					}
 
-					if (CCustomDetector* pDetector = pActor->GetDetector(true))
+					if (CCustomDevice* pDevice = pActor->GetDevice(true))
 					{
-						if (pDetector->GetState() == CHUDState::EHudStates::eIdle)
+						if (pDevice->GetState() == CHUDState::EHudStates::eIdle)
 						{
-							pDetector->PlayAnimIdle();
+							pDevice->PlayAnimIdle();
 						}
 					}
 				}
@@ -1755,11 +1755,11 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 						}
 					}
 
-					if (CCustomDetector* pDetector = pActor->GetDetector(true))
+					if (CCustomDevice* pDevice = pActor->GetDevice(true))
 					{
-						if (!pDetector->IsHidden())
+						if (!pDevice->IsHidden())
 						{
-							pDetector->OnMovementChanged(cmd);
+							pDevice->OnMovementChanged(cmd);
 						}
 					}
 				}

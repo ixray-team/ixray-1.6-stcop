@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HudTorchLight.h"
 #include "player_hud.h"
-#include "CustomDetector.h"
+#include "CustomDevice.h"
 #include "Weapon.h"
 #include "Actor.h"
 #include "Inventory.h"
@@ -172,7 +172,7 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 			Fvector3 curr_light_offset = LightOffset;
 			Fvector3 curr_omni_offset = OmniOffset;
 
-			if (smart_cast<CCustomDetector*>(item) != nullptr)
+			if (smart_cast<CCustomDevice*>(item) != nullptr)
 			{
 				CWeapon* wpn = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
 				if (wpn != nullptr && wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)

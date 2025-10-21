@@ -12,6 +12,7 @@
 #include "inventory_item.h"
 
 class CCustomDetector;
+class CCustomDevice;
 class CWeaponBinoculars;
 class CWeaponKnife;
 class CWeaponMagazined;
@@ -46,6 +47,7 @@ public:
 	virtual CGameObject		*cast_game_object				()  {return this;}
 	virtual CHudItem		*cast_hud_item					()	{return nullptr;}
 	virtual CCustomDetector	*cast_custom_detector			()	{return nullptr;}
+	virtual CCustomDevice	*cast_custom_device				()	{return nullptr;}
 	virtual CWeaponBinoculars*cast_weapon_binoculars		()  {return nullptr;}
 	virtual CWeaponKnife	*cast_weapon_knife				()  {return nullptr;}
 	virtual CWeaponMagazined*cast_weapon_magazined			()  {return nullptr;}

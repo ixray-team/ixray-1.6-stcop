@@ -1,39 +1,44 @@
 #pragma once
 #include "CustomDetector.h"
-#include "Level.h"
 
 class CUIArtefactDetectorElite;
 
-class CEliteDetector :public CCustomDetector
+class CEliteDetector : public CCustomDetector
 {
-	typedef CCustomDetector	inherited;
+	using inherited = CCustomDetector;
 public:
-					CEliteDetector				();
-	virtual			~CEliteDetector				();
-	virtual void 	Load						(LPCSTR section);
-	virtual void	render_item_3d_ui			();
-	virtual bool	render_item_3d_ui_query		();
-	virtual LPCSTR	ui_xml_tag					() const {return m_ui_xml_tag;}
+	CEliteDetector();
+	~CEliteDetector() override = default;
+	void Load(LPCSTR section) override;
+	void render_item_3d_ui() final override;
+	bool render_item_3d_ui_query() final override;
+	LPCSTR ui_xml_tag() const { return m_ui_xml_tag; }
+
+	virtual CCustomDetector* cast_custom_detector() { return this; }
+	virtual CCustomDevice* cast_custom_device() { return this; }
+
 protected:
-	virtual void 	UpdateAf					();
-	virtual void 	CreateUI					();
-	CUIArtefactDetectorElite& ui				();
-	LPCSTR			m_ui_xml_tag;
+	void UpdateAf() final override;
+	void CreateUI() final override;
+	CUIArtefactDetectorElite& ui();
+	LPCSTR m_ui_xml_tag;
 };
 
-
-
-class CScientificDetector :public CEliteDetector
+class CScientificDetector final : public CEliteDetector
 {
-	typedef CEliteDetector	inherited;
+	using inherited = CEliteDetector;
 public:
-					CScientificDetector			();
-	virtual			~CScientificDetector		();
-	virtual void 	Load						(LPCSTR section);
-	virtual void 	OnH_B_Independent			(bool just_before_destroy);
-	virtual void 	shedule_Update				(u32 dt);
+	CScientificDetector();
+	~CScientificDetector() override;
+	void Load(LPCSTR section) override;
+	void OnH_B_Independent(bool just_before_destroy) override;
+	void shedule_Update(u32 dt) override;
+
+	virtual CCustomDetector* cast_custom_detector() { return this; }
+	virtual CCustomDevice* cast_custom_device() { return this; }
+
 protected:
-	virtual void	UpfateWork					();
-	CZoneList		m_zones;
+	void UpdateWork() override;
+	CZoneList m_zones;
 };
 

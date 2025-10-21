@@ -14,7 +14,7 @@ enum
 	BOLT_SLOT,		//btn6 BOLT_SLOT
 	OUTFIT_SLOT,	// outfit
 	PDA_SLOT,		// pda
-	DETECTOR_SLOT,	// detector
+	DEVICE_SLOT,	// device (detector, dosimeter, compass & other)
 	TORCH_SLOT,		// torch
 	ARTEFACT_SLOT,	// artefact
 	HELMET_SLOT,

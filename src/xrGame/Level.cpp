@@ -50,7 +50,6 @@
 #include "Message_Filter.h"
 #include "DemoPlay_Control.h"
 #include "DemoInfo.h"
-#include "CustomDetector.h"
 
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/console_vars.h"

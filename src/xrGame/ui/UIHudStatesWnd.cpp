@@ -19,7 +19,7 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UIArrow.h"
 #include "UIInventoryUtilities.h"
-#include "CustomDetector.h"
+#include "../CustomDetectorZones.h"
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "../PDA.h"
 #include "WeaponMagazinedWGrenade.h"

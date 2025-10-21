@@ -35,7 +35,7 @@ void CInventoryOwner::script_register(lua_State *L)
 				luabind::value("BOLT_SLOT", BOLT_SLOT),
 				luabind::value("OUTFIT_SLOT", OUTFIT_SLOT),
 				luabind::value("PDA_SLOT", PDA_SLOT),
-				luabind::value("DETECTOR_SLOT", DETECTOR_SLOT),
+				luabind::value("DEVICE_SLOT", DEVICE_SLOT),
 				luabind::value("TORCH_SLOT", TORCH_SLOT),
 				luabind::value("ARTEFACT_SLOT", ARTEFACT_SLOT),
 				luabind::value("HELMET_SLOT", HELMET_SLOT),

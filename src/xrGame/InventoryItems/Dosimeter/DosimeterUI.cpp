@@ -5,11 +5,7 @@
 #include "../../../xrUI/UIXmlInit.h"
 #include "../../../xrUI/Widgets/UIStatic.h"
 
-#include "../../HUDManager.h"
-#include "../../Level.h"
 #include "../../player_hud.h"
-#include "../../ui/UIHudStatesWnd.h"
-#include "../../ui/UIMainIngameWnd.h"
 #include "../../Actor.h"
 #include "../../RadioactiveZone.h"
 
@@ -57,19 +53,16 @@ void CUIDosimeter::construct(CDosimeter* p)
 	_map_attach_r.mul(PI / 180.f);
 	m_map_attach_offset.setHPB(_map_attach_r.x, _map_attach_r.y, _map_attach_r.z);
 	m_map_attach_offset.translate_over(_map_attach_p);
-
-	m_workTick = 0;
-	m_noiseTick = 0;
-	m_noise = 0.0f;
 }
 
 void CUIDosimeter::update()
 {
 	CUIArtefactDetectorBase::update();
 
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	CObject* control_entity = Level().CurrentControlEntity();
+	CActor* pActor = control_entity != nullptr ? control_entity->cast_actor() : nullptr;
 
-	float rad = 0.f;
+	float rad = 0.0f;
 	if (pActor)
 	{
 		for (CObject* pFeelObject : pActor->q_nearest)
@@ -77,16 +70,18 @@ void CUIDosimeter::update()
 			CRadioactiveZone* pRadZone = smart_cast<CRadioactiveZone*>(pFeelObject);
 
 			if (pRadZone)
+			{
 				rad += pRadZone->fHitPower;
+			}
 		}
 	}
 
-	rad *= 1000;
+	rad *= 1000.0f;
 	rad += m_noise;
 
-	if (rad > 150)
+	if (rad > 150.0f)
 	{
-		rad = 150;
+		rad = 150.0f;
 	}
 
 	string16 s;
@@ -135,9 +130,11 @@ void CUIDosimeter::Draw()
 
 void CUIDosimeter::GetUILocatorMatrix(Fmatrix& _m)
 {
-	Fmatrix trans = m_parent->HudItemData()->m_item_transform;
-	u16 bid = m_parent->HudItemData()->m_model->LL_BoneID("cover");
-	Fmatrix cover_bone = m_parent->HudItemData()->m_model->LL_GetTransform(bid);
+	attachable_hud_item* hid = m_parent->HudItemData();
+	IKinematics* kin = hid->m_model;
+	Fmatrix trans = hid->m_item_transform;
+	u16 bid = kin->LL_BoneID("cover");
+	Fmatrix cover_bone = kin->LL_GetTransform(bid);
 	_m.mul(trans, cover_bone);
 	_m.mulB_43(m_map_attach_offset);
 }

@@ -25,7 +25,6 @@
 #include "Car.h"
 #include "Grenade.h"
 #include "../xrScripts/script_callback_ex.h"
-#include "CustomDetector.h"
 
 using namespace InventoryUtilities;
 
@@ -785,14 +784,14 @@ bool CInventory::Action(u16 cmd, u32 flags)
 					return false;
 				}
 
-				CCustomDetector* pDetector = pHudItem->cast_custom_detector();
-				if (pDetector)
+				CCustomDevice* pDevice = pHudItem->cast_custom_device();
+				if (pDevice)
 				{
 					PIItem pItem = ItemFromSlot(slot);
 					// Pavel: достаем пушку только после того, как убрали детектор
 					if (pItem && pItem->BaseSlot() != INV_SLOT_2)
 					{
-						pDetector->HideAndSetCallback([cmd, flags, this]() {
+						pDevice->HideAndSetCallback([cmd, flags, this]() {
 							this->SendActionEvent(cmd, flags);
 							});
 						return false;
