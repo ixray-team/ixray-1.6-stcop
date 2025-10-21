@@ -955,9 +955,10 @@ bool CHudItem::CanStartAction(CActor* pActor)
 		return true;
 	}
 
-	if (CCustomDevice* pDevice = pActor->GetDevice(true))
+	if (CCustomDevice* pDevice = pActor->GetDevice())
 	{
-		if (pDevice->GetState() != CCustomDevice::eIdle && !pDevice->IsHidden() || pDevice->NeedActivation())
+		u32 state = pDevice->GetState();
+		if (state != CCustomDevice::eIdle && state != CCustomDevice::EDeviceStates::eHandAimStart && state != CCustomDevice::EDeviceStates::eHandAimEnd && !pDevice->IsHidden() || pDevice->NeedActivation())
 		{
 			return false;
 		}
@@ -994,12 +995,13 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 	bool result = CanStartAction(pActor);
 	if (!result)
 	{
-		CCustomDevice* pDevice = pActor->GetDevice(true);
+		CCustomDevice* pDevice = pActor->GetDevice();
 
 		const static bool isDelayedWeaponActions = EngineExternal()[EEngineExternalGame::EnableDelayedWeaponActions];
 
 		if (isDelayedWeaponActions && (Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcSprint || m_bSwitchSprint)
-		|| pDevice != nullptr && (pDevice->GetState() != CCustomDevice::eIdle && !pDevice->IsHidden() || pDevice->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
+		|| pDevice != nullptr && (pDevice->GetState() != CCustomDevice::eIdle && pDevice->GetState() != CCustomDevice::EDeviceStates::eHandAimStart && pDevice->GetState() != CCustomDevice::EDeviceStates::eHandAimEnd
+		&& !pDevice->IsHidden() || pDevice->NeedActivation()) && ((kfACTTYPE & kfRELOAD) != 0 || (kfACTTYPE & kfNEXTAMMO) != 0))
 		{
 			Actor()->SetActorKeyRepeatFlag((ACTOR_DEFS::EActorKeyflags)kfACTTYPE, true);
 		}

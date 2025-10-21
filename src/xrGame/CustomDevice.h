@@ -20,11 +20,14 @@ public:
 		eHandKick1,
 		eHandKick2,
 		eHandLam,
+		eHandAimStart,
+		eHandAimEnd,
 	};
 protected:
 	bool m_bFastAnimMode = false;
 	bool m_bNeedActivation = false;
 	bool m_bWorking = false;
+	bool m_bIsZoomed = false;
 
 	detector_fn_t hide_callback = nullptr;
 public:
@@ -54,6 +57,9 @@ public:
 	void ShowDetector(bool bFastMode);
 	bool CheckCompatibility(CHudItem* itm) override;
 
+	void PlayAnimIdle() final override;
+	shared_str SetCurrentAimAnimation();
+
 	void ClearCallback() { hide_callback = nullptr; }
 	void HideAndSetCallback(const detector_fn_t fn);
 
@@ -64,6 +70,7 @@ public:
 	virtual bool can_be_attached() const;
 	void PlayWpnFinishDetector();
 	virtual void TurnDetectorInternal(bool b);
+	void SwitchZoom();
 
 	bool NeedBlockSprint() const;
 	bool CanDrawHand() const;

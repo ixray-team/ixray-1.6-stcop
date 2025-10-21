@@ -335,6 +335,16 @@ void CCustomDevice::OnStateSwitch(u32 S)
 		PlayHUDMotion("anm_lam", true, eHandLam);
 		break;
 	}
+	case eHandAimStart:
+	{
+		PlayHUDMotion("anm_idle_aim_start", true, eHandAimStart);
+		break;
+	}
+	case eHandAimEnd:
+	{
+		PlayHUDMotion("anm_idle_aim_end", true, eHandAimEnd);
+		break;
+	}
 	}
 }
 
@@ -358,6 +368,56 @@ void CCustomDevice::PlayWpnFinishDetector()
 	}
 }
 
+shared_str CCustomDevice::SetCurrentAimAnimation()
+{
+	shared_str anim = "anm_idle_aim";
+
+	if (CActor* actor = H_Parent()->cast_actor())
+	{
+		u32 state = actor->GetMovementState(ACTOR_DEFS::EMovementStates::eReal);
+		if (state & ACTOR_DEFS::EMoveCommand::mcAnyMove)
+		{
+			AddSuffixName(anim, "_moving");
+
+			if (state & ACTOR_DEFS::EMoveCommand::mcFwd)
+			{
+				AddSuffixName(anim, "_moving", "_forward");
+			}
+			else if (state & ACTOR_DEFS::EMoveCommand::mcBack)
+			{
+				AddSuffixName(anim, "_moving", "_back");
+			}
+			else if (state & ACTOR_DEFS::EMoveCommand::mcLStrafe)
+			{
+				AddSuffixName(anim, "_moving", "_left");
+			}
+			else if (state & ACTOR_DEFS::EMoveCommand::mcRStrafe)
+			{
+				AddSuffixName(anim, "_moving", "_right");
+			}
+		}
+	}
+
+	return anim;
+}
+
+void CCustomDevice::PlayAnimIdle()
+{
+	if (m_bIsZoomed)
+	{
+		PlayHUDMotion(SetCurrentAimAnimation(), true, eIdle);
+	}
+	else
+	{
+		if (TryPlayAnimIdle())
+		{
+			return;
+		}
+
+		PlayHUDMotion("anm_idle", true, eIdle);
+	}
+}
+
 void CCustomDevice::OnAnimationEnd(u32 state)
 {
 	inherited::OnAnimationEnd(state);
@@ -370,6 +430,8 @@ void CCustomDevice::OnAnimationEnd(u32 state)
 	case eHandKick1:
 	case eHandKick2:
 	case eHandLam:
+	case eHandAimStart:
+	case eHandAimEnd:
 	{
 		SwitchState(eIdle);
 	} break;
@@ -504,7 +566,7 @@ void CCustomDevice::UpdateVisibility()
 		else
 		{
 			CWeapon* wpn = parent_hud_item != nullptr ? parent_hud_item->cast_weapon() : nullptr;
-			if (wpn != nullptr && (wpn->IsZoomed() || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
+			if (wpn != nullptr && (wpn->IsZoomed() && !m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out) || wpn->GetState() == CWeapon::eReload || wpn->GetState() == CWeapon::eSwitch))
 			{
 				HideDetector(true);
 				m_bNeedActivation = true;
@@ -602,4 +664,23 @@ void CCustomDevice::OnMoveToRuck(const SInvItemPlace& prev)
 void CCustomDevice::TurnDetectorInternal(bool b)
 {
 	m_bWorking = b;
+}
+
+void CCustomDevice::SwitchZoom()
+{
+	if (!m_eAnimationsFlags.test(EAnimationsFlags::af_aim_in_out))
+	{
+		return;
+	}
+
+	if (m_bIsZoomed)
+	{
+		m_bIsZoomed = false;
+		SwitchState(eHandAimEnd);
+	}
+	else
+	{
+		m_bIsZoomed = true;
+		SwitchState(eHandAimStart);
+	}
 }
