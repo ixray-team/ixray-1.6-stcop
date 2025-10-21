@@ -26,6 +26,8 @@ float4 main( v2p I ) : SV_Target
 	t_base.b += noise;	
 	
 	t_base.xyz = detonemap(t_base.xyz);
-	return float4(t_base.xyz,t_base.w * I.c0.w);
+	
+	// #TODO: plohoi fix, no aref model sloman
+	return float4(t_base.xyz*4.0f,t_base.w * I.c0.w);
 }
 
