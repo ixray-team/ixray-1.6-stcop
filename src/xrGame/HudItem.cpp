@@ -273,20 +273,6 @@ void CHudItem::OnStateSwitch(u32 S)
 		}
 		break;
 	}
-	case ePrepareDetectorEnd:
-	{
-		SetPending(true);
-		PlayHUDMotion(SetCurrentStateAnimation("anm_draw_detector"), true, ePrepareDetectorEnd);
-		if (CActor* pActor = m_object && m_object->H_Parent() ? m_object->H_Parent()->cast_actor() : nullptr)
-		{
-			if (CCustomDevice* dev = pActor->GetDevice(true))
-			{
-				dev->SwitchState(eShowing);
-				dev->TurnDetectorInternal(true);
-			}
-		}
-		break;
-	}
 	case eFinishDetector:
 	{
 		SetPending(true);
@@ -319,7 +305,6 @@ void CHudItem::OnAnimationEnd(u32 state)
 	case eSprintEnd:
 	case eBore:
 	case eDeviceSwitch:
-	case ePrepareDetectorEnd:
 	case eFinishDetector:
 	{
 		SwitchState(eIdle);
@@ -327,14 +312,7 @@ void CHudItem::OnAnimationEnd(u32 state)
 	}
 	case ePrepareDetector:
 	{
-		if (m_eAnimationsFlags.test(af_prepare_detector_end))
-		{
-			SwitchState(ePrepareDetectorEnd);
-		}
-		else
-		{
-			SwitchState(eIdle);
-		}
+		SwitchState(eIdle);
 		break;
 	}
 	};
@@ -486,7 +464,6 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_nvg, m_eAnimationsFlags.test(EAnimationsFlags::af_torch));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_clear_mask, HudAnimationExist("anm_gasmask"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_prepare_detector, HudAnimationExist("anm_prepare_detector"));
-	m_eAnimationsFlags.set(EAnimationsFlags::af_prepare_detector_end, HudAnimationExist("anm_draw_detector"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_finish_detector, HudAnimationExist("anm_finish_detector"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_draw, HudAnimationExist("anm_hand_draw"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_det_hand_hide, HudAnimationExist("anm_hand_hide"));
