@@ -124,7 +124,7 @@ class ECORE_API CExportObjectOGF
         CObjectOGFCollectorPacked* m_CurrentPart;
         
 	    Fbox			m_Box;
-        CSurface*		m_Surf;
+        xr_shared_ptr<CSurface> m_Surf;
 
         // Progressive
 		void			AppendPart		(int apx_vertices, int apx_faces);
@@ -138,7 +138,7 @@ class ECORE_API CExportObjectOGF
         }
         
 		void 			MakeProgressive	();
-        				SSplit			(CSurface* surf, const Fbox& bb);
+        				SSplit			(xr_weak_ptr<CSurface> surf, const Fbox& bb);
         				~SSplit			();
 		void 			ComputeBounding	()
         {
@@ -158,8 +158,7 @@ class ECORE_API CExportObjectOGF
 	CEditableObject*	m_Source;
     Fbox 				m_Box;   	
 //----------------------------------------------------
-//	void 	ComputeOBB			(Fobb &B, FvectorVec& V);
-    SSplit*	FindSplit			(CSurface* surf);
+    SSplit*	FindSplit			(const xr_shared_ptr<CSurface>& surf);
     void 				ComputeBounding	()
     {
         m_Box.invalidate();

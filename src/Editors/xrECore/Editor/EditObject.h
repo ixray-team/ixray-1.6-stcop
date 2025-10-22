@@ -135,7 +135,7 @@ public:
 #endif
 };
 
-using SurfaceVec = xr_vector<CSurface*>;
+using SurfaceVec = xr_vector<xr_shared_ptr<CSurface>>;
 using SurfaceIt = SurfaceVec::iterator;
 
 using EditMeshVec = xr_vector<CEditableMesh*>;
@@ -342,8 +342,8 @@ public:
 
 	// render methods
 	void 			Render					(const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
-	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0x40E64646);
-	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0xFFC0C0C0);
+	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=0, xr_shared_ptr<CSurface> s=0, u32 c=0x40E64646);
+	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=0, xr_shared_ptr<CSurface> s=0, u32 c=0xFFC0C0C0);
 	void 			RenderBones				(const Fmatrix& parent);
 	void 			RenderAnimation			(const Fmatrix& parent);
 	void 			RenderSingle			(const Fmatrix& parent);
@@ -408,7 +408,7 @@ public:
 	CEditableMesh* 	FindMeshByName			(LPCSTR name, CEditableMesh* Ignore=0);
 	void			VerifyMeshNames			();
 	bool 			ContainsMesh			(const CEditableMesh* m);
-	CSurface*		FindSurfaceByName		(LPCSTR surf_name, int* s_id=0);
+	xr_shared_ptr<CSurface>	FindSurfaceByName(LPCSTR surf_name, int* s_id=0);
 	int				FindBoneByNameIdx		(LPCSTR name);
 	BoneIt			FindBoneByNameIt		(LPCSTR name);
 	CBone*			FindBoneByName			(LPCSTR name);
