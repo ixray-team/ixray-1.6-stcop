@@ -139,92 +139,109 @@ void CRHI::Present()
 	DevicePtr->Present();
 }
 
-struct _uniq_mode
-{
-	_uniq_mode(shared_str v) :_val(v) {}
-	shared_str _val;
-	bool operator() (shared_str _other) { return _val == _other; }
-};
-
-#ifdef IXR_WINDOWS
-bool sort_vid_mode(const DXGI_MODE_DESC& left, const DXGI_MODE_DESC& right)
-{
-	auto leftString = xr_string::ToString(left.Width) + xr_string::ToString(left.Height);
-	auto rightString = xr_string::ToString(right.Width) + xr_string::ToString(right.Height);
-
-	if (leftString.length() == rightString.length())
-	{
-		if (left.Width > right.Width)
-		{
-			return true;
-		}
-		else if (left.Width == right.Width)
-		{
-			return left.Height > right.Height;
-		}
-
-		return false;
-	}
-
-	return leftString.length() > rightString.length();
-}
-#endif
-
 xr_vector<shared_str> CRHI::DisplaySizeArray()
 {
-	xr_vector<shared_str> _tmp;
-
-#ifdef IXR_WINDOWS
-	xr_vector<DXGI_MODE_DESC> modes;
-
-	IDXGIOutput* pOutput = nullptr;
-	IDXGIAdapter* pAdapter = nullptr;
-	IDXGIFactory* pFactory = nullptr;
-	R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
-	pFactory->EnumAdapters(0, &pAdapter);
-	pAdapter->EnumOutputs(0, &pOutput);
-	pAdapter->Release();
-	pFactory->Release();
-	VERIFY(pOutput);
-
-	UINT num = 0;
-	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	UINT flags = 0;
-
-	// Get the number of display modes available
-	pOutput->GetDisplayModeList(format, flags, &num, 0);
-
-	// Get the list of display modes
-	modes.resize(num);
-	pOutput->GetDisplayModeList(format, flags, &num, &modes.front());
-
-	pOutput->Release();
-
-	std::sort(modes.begin(), modes.end(), sort_vid_mode);
-
-	for (u32 i = 0; i < num; ++i)
+	auto IsValidAspectLambda = [](int W, int H, bool Check21x9)
 	{
-		DXGI_MODE_DESC& desc = modes[i];
-		string32 str;
+		float Aspect = float(W) / float(H);
 
-		if (desc.Width < 1024)
-		{
-			continue;
-		}
+		// 16:9
+		if (fabs(Aspect - 16.0f / 9.0f) < 0.02f) return true;
 
-		xr_sprintf(str, sizeof(str), "%dx%d", desc.Width, desc.Height);
+		// 16:10
+		if (fabs(Aspect - 16.0f / 10.0f) < 0.02f) return true;
 
-		if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
-		{
-			continue;
-		}
+		if (Check21x9 && fabs(Aspect - 21.0f / 3.0f) < 0.02f) return true;
 
-		_tmp.push_back(nullptr);
-		_tmp.back() = str;
-	}
-#endif
-	return std::move(_tmp);
+		return false;
+	};
+
+    xr_vector<shared_str> Result = xr_vector<shared_str>();
+
+    int NumDisplays = 0;
+    SDL_DisplayID* Displays = SDL_GetDisplays(&NumDisplays);
+    if (!Displays || NumDisplays == 0)
+    {
+        return Result;
+    }
+
+    struct Mode
+    {
+        int W;
+        int H;
+    };
+    xr_vector<Mode> Modes = xr_vector<Mode>();
+
+    for (int D = 0; D < NumDisplays; ++D)
+    {
+        SDL_DisplayID DisplayID = Displays[D];
+		const SDL_DisplayMode* DesktopMode = SDL_GetDesktopDisplayMode(DisplayID);
+
+		const float Aspect = float(DesktopMode->w) / float(DesktopMode->h);
+		bool bSupports21by9 = fabs(Aspect - 21.0f / 9.0f) < 0.02f;
+
+        if (DesktopMode == nullptr)
+        {
+            continue;
+        }
+
+        if (DesktopMode->w < 1024)
+        {
+            continue;
+        }
+
+        int NumModes = 0;
+        SDL_DisplayMode** SdlModes = SDL_GetFullscreenDisplayModes(DisplayID, &NumModes);
+        if (SdlModes && NumModes > 0)
+        {
+            for (int I = 0; I < NumModes; ++I)
+            {
+                const SDL_DisplayMode* ModePtr = SdlModes[I];
+
+                if (ModePtr->w >= 1024 && ModePtr->w <= DesktopMode->w && ModePtr->h <= DesktopMode->h)
+                {
+					if (!IsValidAspectLambda(ModePtr->w, ModePtr->h, bSupports21by9))
+					{
+						continue;
+					}
+
+                    Modes.push_back({ ModePtr->w, ModePtr->h });
+                }
+            }
+            SDL_free(SdlModes);
+        }
+
+        Modes.push_back({ DesktopMode->w, DesktopMode->h });
+    }
+
+    SDL_free(Displays);
+
+    std::sort(Modes.begin(), Modes.end(), [](const Mode& A, const Mode& B)
+    {
+        if (A.W == B.W)
+        {
+            return A.H < B.H;
+        }
+        return A.W < B.W;
+    });
+
+    Modes.erase(std::unique(Modes.begin(), Modes.end(), [](const Mode& A, const Mode& B)
+    {
+        return A.W == B.W && A.H == B.H;
+    }), Modes.end());
+
+    for (const Mode& M : Modes)
+    {
+        string32 Str;
+        xr_sprintf(Str, sizeof(Str), "%dx%d", M.W, M.H);
+        Result.push_back(Str);
+    }
+
+	std::reverse(Result.begin(), Result.end());
+
+    return Result;
 }
+
 
 IRHISurface* CRHI::CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource)
 {
