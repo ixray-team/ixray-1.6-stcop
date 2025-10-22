@@ -65,14 +65,9 @@ CDemoRecord::CDemoRecord(const char *name,float life_time) : CEffectorCam(cefDem
 	stored_red_text = g_bDisableRedText;
 	g_bDisableRedText = TRUE;
 	m_iLMScreenshotFragment = -1;
-/*
-	stored_weapon = psHUD_Flags.test(HUD_WEAPON);
-	stored_cross = psHUD_Flags.test(HUD_CROSSHAIR);
-	psHUD_Flags.set(HUD_WEAPON, FALSE);
-	psHUD_Flags.set(HUD_CROSSHAIR, FALSE);
-*/
+	
 	m_b_redirect_input_to_level = false;
-	_unlink	(name);
+	Platform::Unlink(name);
 	file	= FS.w_open	(name);
 	if (file) 
 	{
@@ -150,7 +145,7 @@ void CDemoRecord::MakeScreenshotFace()
 }
 
 
-void GetLM_BBox(Fbox &bb, INT Step)
+void GetLM_BBox(Fbox &bb, int Step)
 {
 	float half_x = bb.min.x + (bb.max.x - bb.min.x)/2;
 	float half_z = bb.min.z + (bb.max.z - bb.min.z)/2;

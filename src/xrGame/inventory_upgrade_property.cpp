@@ -52,7 +52,7 @@ void Property::construct( shared_str const& property_id, Manager& manager_r )
 
 	LPCSTR funct_params_str = pSettings->r_string( id(), "params" );
 	u32 const buffer_size	= (xr_strlen(funct_params_str) + 1) * sizeof(char);
-	PSTR	temp = (PSTR)_alloca( buffer_size );
+	char*	temp = (char*)_alloca( buffer_size );
 	for ( int n = _GetItemCount( funct_params_str ), i = 0; i < n; ++i )
 	{
 		LPCSTR i_param = ( _GetItem( funct_params_str, i, temp, buffer_size ) );

@@ -355,7 +355,7 @@ void Manager::init_install( CInventoryItem& item )
 		if ( installed_upgrades_str )
 		{
 			u32 const buffer_size	= (xr_strlen(installed_upgrades_str) + 1) * sizeof(char);
-			PSTR	temp = (PSTR)_alloca( buffer_size );
+			char*	temp = (char*)_alloca( buffer_size );
 
 			for ( int n = _GetItemCount(installed_upgrades_str), i = 0; i < n; ++i )
 			{

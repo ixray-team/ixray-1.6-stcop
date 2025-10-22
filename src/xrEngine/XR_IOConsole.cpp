@@ -211,7 +211,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 		float f	= 0.0f;
 		int sz	= 0;
 		int ln	= 0;
-		PSTR one_line = (PSTR)_alloca( (CONSOLE_BUF_SIZE + 1) * sizeof(char) );
+		char* one_line = (char*)_alloca( (CONSOLE_BUF_SIZE + 1) * sizeof(char) );
 		
 		while( text[sz] && (ln + sz < CONSOLE_BUF_SIZE-5) )// перенос строк
 		{
@@ -692,11 +692,12 @@ IConsole_Command* CConsole::find_next_cmd( LPCSTR in_str, shared_str& out_str )
 	xr_strconcat( t2, in_str + offset, " " );
 
 	vecCMD_IT it = Commands.lower_bound( t2 );
-	if (it != Commands.end()) {
+	if (it != Commands.end())
+	{
 		IConsole_Command* cc = it->second;
 		LPCSTR name_cmd      = cc->Name();
 		u32    name_cmd_size = xr_strlen( name_cmd );
-		PSTR   new_str       = (PSTR)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
+		char*   new_str       = (char*)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
 
 		xr_strcpy( new_str, offset + name_cmd_size + 2, (b_ra)? radmin_cmd_name : "" );
 		xr_strcat( new_str, offset + name_cmd_size + 2, name_cmd );
@@ -826,8 +827,8 @@ void CConsole::update_tips() {
 	}
 	m_prev_length_str = cur_length;
 
-	PSTR first = (PSTR)_alloca( (cur_length + 1) * sizeof(char) );
-	PSTR last  = (PSTR)_alloca( (cur_length + 1) * sizeof(char) );
+	char* first = (char*)_alloca( (cur_length + 1) * sizeof(char) );
+	char* last  = (char*)_alloca( (cur_length + 1) * sizeof(char) );
 	text_editor::split_cmd( first, last, cur );
 	
 	u32 first_lenght = xr_strlen(first);

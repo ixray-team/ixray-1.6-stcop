@@ -486,7 +486,7 @@ void line_edit_control::add_inserted_text()
 		}
 	}
 
-	PSTR buf = (PSTR)_alloca( (m_buffer_size + 1) * sizeof(char) );
+	char* buf = (char*)_alloca( (m_buffer_size + 1) * sizeof(char) );
 
 	strncpy_s( buf,        m_buffer_size, m_edit_str,        m_p1        ); // part 1
 	strncpy_s( m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 );
@@ -523,7 +523,7 @@ void line_edit_control::copy_to_clipboard()
 		return;
 	}
 	u32 edit_len = xr_strlen( m_edit_str );
-	PSTR buf = (PSTR)_alloca( (edit_len + 1) * sizeof(char) );
+	char* buf = (char*)_alloca( (edit_len + 1) * sizeof(char) );
 	strncpy_s( buf, edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1 );
 	buf[edit_len] = 0;
 	os_clipboard::copy_to_clipboard( buf );
@@ -728,7 +728,7 @@ void remove_spaces(char* str) // in & out
     str[writeIndex] = 0;
 }
 
-void split_cmd( PSTR first, PSTR second, LPCSTR str )
+void split_cmd( char* first, char* second, LPCSTR str )
 {
 	first[0] = 0;
 	second[0] = 0;
