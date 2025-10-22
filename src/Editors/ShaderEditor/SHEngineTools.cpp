@@ -838,21 +838,10 @@ void CSHEngineTools::UpdateObjectShader()
 {
 	// apply this shader to non custom object
 	CEditableObject* E = m_PreviewObject;
-	if (E&&!m_bCustomEditObject){
-		CSurface* surf = *E->FirstSurface(); R_ASSERT(surf);
-/*
-		u32 cnt = _GetItemCount(surf->_Texture());
-		string512 	tex; 
-		string128 	elem;
-		if (0==cnt){
-			strcpy	(elem,"$shadertest");
-		}else{
-			_GetItem(surf->_Texture(),0,elem);
-		}
-		strcpy		(tex,surf->_Texture());
-		for (int i=cnt; i<8; i++){ strcat(tex,","); strcat(tex,elem);}
-		surf->SetTexture(tex);
-*/
+	if (E&&!m_bCustomEditObject)
+	{
+		const xr_shared_ptr<CSurface>& surf = *E->FirstSurface(); R_ASSERT(surf);
+
 		if (m_CurrentBlender)	surf->SetShader(m_CurrentBlender->getName());
 		else					surf->SetShader("editor\\wire");
 		UI->RedrawScene();
@@ -867,7 +856,7 @@ void CSHEngineTools::OnShowHint(AStringVec& ss)
 		SRayPickInfo pinf;
 		if (m_PreviewObject->RayPick(dist,UI->m_CurrentRStart,UI->m_CurrentRDir,Fidentity,&pinf)){
 			R_ASSERT(pinf.e_mesh);
-			CSurface* surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+			const xr_shared_ptr<CSurface>& surf=pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 			ss.push_back(xr_string("Surface: ")+xr_string(surf->_Name()));
 			ss.push_back(xr_string("Texture: ")+xr_string(surf->_Texture()));
 			ss.push_back(xr_string("Shader: ")+xr_string(surf->_ShaderName()));

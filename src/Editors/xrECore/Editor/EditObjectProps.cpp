@@ -112,7 +112,7 @@ void CEditableObject::FillSurfaceList(LPCSTR pref, ListItemsVec& items, int mode
     SurfaceVec& s_lst 	= Surfaces();
 	if (pref) LHelper().CreateItem(items, pref, modeID, ListItem::flSorted);
     for (SurfaceIt s_it=s_lst.begin(); s_it!=s_lst.end(); s_it++)
-        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->_Name()).c_str(), modeID, 0, *s_it);
+        LHelper().CreateItem(items, PrepareKey(pref, (*s_it)->_Name()).c_str(), modeID, 0, (*s_it).get());
 }
 //---------------------------------------------------------------------------
 
