@@ -102,10 +102,10 @@ void CObjectOGFCollectorPacked::ComputeBounding()
         m_Box.modify		(v_it->P);
 }
 
-CExportObjectOGF::SSplit::SSplit(CSurface* surf, const Fbox& bb)
+CExportObjectOGF::SSplit::SSplit(xr_weak_ptr<CSurface> surf, const Fbox& bb)
 {
     apx_box				= bb;
-	m_Surf 				= surf;
+	m_Surf 				= surf.lock();
     m_CurrentPart		= NULL;
 }
 
@@ -281,7 +281,7 @@ CExportObjectOGF::~CExportObjectOGF()
     	xr_delete(*it);
 }
 
-CExportObjectOGF::SSplit* CExportObjectOGF::FindSplit(CSurface* surf)
+CExportObjectOGF::SSplit* CExportObjectOGF::FindSplit(const xr_shared_ptr<CSurface>& surf)
 {
 	for (SplitIt it=m_Splits.begin(); it!=m_Splits.end(); ++it)
     	if ((*it)->m_Surf==surf) 
@@ -299,13 +299,12 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
     for (SurfFacesPairIt sp_it=MESH->m_SurfFaces.begin(); sp_it!=MESH->m_SurfFaces.end(); ++sp_it)
 	{
         IntVec& face_lst= sp_it->second;
-        CSurface* surf 	= sp_it->first;
+        xr_shared_ptr<CSurface> surf 	= sp_it->first;
         u32 dwTexCnt 	= ((surf->_FVF()&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);	
 		R_ASSERT		(dwTexCnt==1);
         SSplit* split	= FindSplit(surf);
         if (0==split)
 		{
-#if 1
             SGameMtl* M = PGMLib->GetMaterialByID(surf->_GameMtl());
             if (0==M)
 			{
@@ -313,7 +312,7 @@ bool CExportObjectOGF::PrepareMESH(CEditableMesh* MESH)
                 bResult 		= false; 
                 break; 
             }
-#endif
+
 			m_Splits.push_back	(new SSplit(surf,m_Source->GetBox()));
             split				= m_Splits.back();
         }

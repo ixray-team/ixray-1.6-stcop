@@ -456,7 +456,7 @@ bool  CActorTools::MouseStart(TShiftState Shift)
 				iTransform.invert(m_AVTransform);
 				if (m_pEditObject->RayPick(dis, UI->m_CurrentRStart, UI->m_CurrentRDir, iTransform, &pinf))
 				{
-					CSurface* surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
+					xr_shared_ptr<CSurface> surf = pinf.e_mesh->GetSurfaceByFaceID(pinf.inf.id);
 					xr_string s_name = xr_string("Surfaces\\") + xr_string(surf->_Name());
 					m_ObjectItems->SelectItem(s_name.c_str());
 				}

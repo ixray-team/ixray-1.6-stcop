@@ -9,7 +9,7 @@ using Fvector4It = Fvector4Vec::iterator;
 
 BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha)
 {
-    CSurface* surf = R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
+    xr_shared_ptr<CSurface> surf = R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
     Shader_xrLC* c_sh = EDevice->ShaderXRLC.Get(surf->_ShaderXRLCName());
     if (!c_sh->flags.bRendering) 
         return FALSE;
