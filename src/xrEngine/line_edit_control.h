@@ -12,8 +12,8 @@
 namespace text_editor
 {
 
-void remove_spaces( PSTR str ); // in & out
-void split_cmd( PSTR first, PSTR second, LPCSTR str );
+void remove_spaces( char* str ); // in & out
+void split_cmd( char* first, char* second, LPCSTR str );
 
 class base;
 

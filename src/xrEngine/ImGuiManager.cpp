@@ -34,6 +34,22 @@ void CImGuiManager::LoadImGuiFont(ImFont*& FontHandle, const char* Font, const f
 	}
 }
 
+float GetWindowScale(SDL_Window* window)
+{
+	int w_px, h_px;
+	SDL_GetWindowSizeInPixels(window, &w_px, &h_px);
+
+	int w_log, h_log;
+	SDL_GetWindowSize(window, &w_log, &h_log);
+
+	if (w_log == 0)
+	{
+		return 1.0f;
+	}
+
+	return (float)w_px / (float)w_log;
+}
+
 void CImGuiManager::InitPlatform()
 {
 	IMGUI_CHECKVERSION();
@@ -55,9 +71,8 @@ void CImGuiManager::InitPlatform()
 		Style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	const HDC screen = GetDC(nullptr);
-	const float scale = GetDeviceCaps(screen, LOGPIXELSX) / 96.f;
-	ReleaseDC(nullptr, screen);
+	float ddpi, hdpi, vdpi;
+	float scale = GetWindowScale(g_AppInfo.Window);
 
 	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf", scale);
 	LoadImGuiFont(ImGui::LightFont, "rus\\RobotoMono-Light.ttf", scale);

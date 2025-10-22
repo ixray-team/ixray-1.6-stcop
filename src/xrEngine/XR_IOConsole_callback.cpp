@@ -97,7 +97,7 @@ void CConsole::Find_cmd_back() // DIK_TAB+shift
 		IConsole_Command& cc = *(it->second);
 		LPCSTR name_cmd      = cc.Name();
 		u32    name_cmd_size = xr_strlen( name_cmd );
-		PSTR   new_str  = (PSTR)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
+		char*   new_str  = (char*)_alloca( (offset + name_cmd_size + 2) * sizeof(char) );
 
 		xr_strcpy( new_str, offset + name_cmd_size + 2, (b_ra)? radmin_cmd_name : "" );
 		xr_strcat( new_str, offset + name_cmd_size + 2, name_cmd );
