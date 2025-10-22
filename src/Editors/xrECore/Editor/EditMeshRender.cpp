@@ -27,9 +27,10 @@ void CEditableMesh::GenerateRenderBuffers()
 
 	VERIFY(m_VertexNormals || m_Normals);
 
-	for (SurfFacesPairIt sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); sp_it++) {
+	for (SurfFacesPairIt sp_it = m_SurfFaces.begin(); sp_it != m_SurfFaces.end(); sp_it++)
+	{
 		IntVec& face_lst = sp_it->second;
-		CSurface* _S = sp_it->first;
+		xr_shared_ptr<CSurface> _S = sp_it->first;
 		int num_verts = face_lst.size() * 3;
 		RBVector rb_vec;
 		int v_cnt = num_verts;
@@ -83,7 +84,7 @@ void CEditableMesh::UnloadRenderBuffers()
 	}
 }
 //----------------------------------------------------
-void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& src_data)
+void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const xr_shared_ptr<CSurface> surf, LPBYTE& src_data)
 {
 	LPBYTE data = src_data;
 	u32 dwFVF = surf->_FVF();
@@ -155,7 +156,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 }
 
 //----------------------------------------------------
-void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
+void CEditableMesh::Render(const Fmatrix& parent, xr_shared_ptr<CSurface> S)
 {
 	if (0==m_RenderBuffers) GenerateRenderBuffers();
 	// visibility test
@@ -214,7 +215,7 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 }
 //----------------------------------------------------
 
-void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 color)
+void CEditableMesh::RenderSelection(const Fmatrix& parent, xr_shared_ptr<CSurface> s, u32 color)
 {
 	if (0==m_RenderBuffers) GenerateRenderBuffers();
 //	if (!m_Visible) return;
@@ -246,7 +247,7 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 }
 //----------------------------------------------------
 
-void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
+void CEditableMesh::RenderEdge(const Fmatrix& parent, xr_shared_ptr<CSurface> s, u32 color)
 {
 	if (0==m_RenderBuffers) GenerateRenderBuffers();
 //	if (!m_Visible) return;
@@ -290,7 +291,7 @@ struct svertRender
 	uint32_t ind;
 };
 
-void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
+void CEditableMesh::RenderSkeleton(const Fmatrix&, xr_shared_ptr<CSurface> S)
 {
 	if (!IsGeneratedSVertices(RENDER_SKELETON_LINKS))
 		GenerateSVertices(RENDER_SKELETON_LINKS);

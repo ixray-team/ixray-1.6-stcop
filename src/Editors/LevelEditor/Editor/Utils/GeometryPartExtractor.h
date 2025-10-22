@@ -16,9 +16,9 @@ struct SBFace
 	Fvector			n[3];
     Fvector2		uv[3];
     int				bone_id;
-    CSurface*		surf;
+    xr_shared_ptr<CSurface> surf;
 public:		
-					SBFace	(CSurface* _surf, const Fvector2* _uv[3]):surf(_surf),marked(false),bone_id(-1)
+					SBFace	(xr_weak_ptr<CSurface> _surf, const Fvector2* _uv[3]):surf(_surf.lock()),marked(false),bone_id(-1)
 	{
     	vert_id[0]	= -1;
     	vert_id[1]	= -1;
@@ -109,7 +109,7 @@ public:
 	void			Initialize			(const Fbox& bb, float eps, u32 per_bone_face_count_min);
     void			Clear				();
 	// I/O routines
-	void			AppendFace			(CSurface* surf, const Fvector* v, const Fvector* n, const Fvector2* uvs[3]);
+	void			AppendFace			(xr_weak_ptr<CSurface> surf, const Fvector* v, const Fvector* n, const Fvector2* uvs[3]);
     SBPartVec&		GetParts			(){return m_Parts;}
     // utilities
     BOOL			Process				();

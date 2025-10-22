@@ -152,7 +152,7 @@ void XRay::Editor::HeightmapUtils::GenerateMeshByHeightmap(const SHeightMap& Hei
 		}
 	}
 
-	CSurface* Surface = Mesh->GetSurfaceByFaceID(0);
+	const xr_shared_ptr<CSurface>& Surface = Mesh->GetSurfaceByFaceID(0);
 	Surface->SetName("terrain");
 	Surface->SetShader("levels\\zaton_earth");
 	Surface->SetShaderXRLC("default");
