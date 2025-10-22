@@ -782,7 +782,7 @@ void UIMainMenuForm::ExportLevelAsArchive()
 		FS.file_copy(InFile.c_str(), OutFile.c_str());
 
 		// Parse textures
-		for (CSurface* Surface : Obj->m_Surfaces)
+		for (const xr_shared_ptr<CSurface>& Surface : Obj->m_Surfaces)
 		{
 			DirFilePath = TexturesObjectPath;
 			xr_string TextureName = Surface->m_Texture.c_str();
