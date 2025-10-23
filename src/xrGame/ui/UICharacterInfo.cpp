@@ -301,6 +301,12 @@ void CUICharacterInfo::UpdateRelation()
 		if(showRelation) {
 			CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_ownerID);
 			CSE_ALifeTraderAbstract* TA = ch_info_get_from_id(Actor()->ID());
+			if (!T || !TA)
+			{
+				m_icons[eRelationCaption]->Show(false);
+				m_icons[eRelation]->Show(false);
+				return;
+			}
 
 			SetRelation(RELATION_REGISTRY().GetRelationType(T, TA), RELATION_REGISTRY().GetAttitude(T, TA));
 		}
