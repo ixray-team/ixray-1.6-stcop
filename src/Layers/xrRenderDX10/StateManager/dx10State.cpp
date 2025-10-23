@@ -64,16 +64,6 @@ HRESULT dx10State::Apply()
 	SSManager.DSApplySamplers(m_DSSamplers);
 	SSManager.CSApplySamplers(m_CSSamplers);
 
-//	static const FLOAT BlendFactor[4] = {0.000f, 0.000f, 0.000f, 0.000f};
-//	static const UINT SampleMask = 0xffffffff;
-
-//	VERIFY(m_pRasterizerState);
-//	RDevice->RSSetState(m_pRasterizerState);
-//	VERIFY(m_pDepthStencilState);
-//	RDevice->OMSetDepthStencilState(m_pDepthStencilState, m_uiStencilRef);
-//	VERIFY(m_pBlendState);
-//	RDevice->OMSetBlendState(m_pBlendState, BlendFactor, SampleMask);
-
 	return S_OK;
 }
 
@@ -83,12 +73,12 @@ void dx10State::Release()
 	xr_delete<dx10State> (pState);
 }
 
-void dx10State::InitSamplers( tSamplerHArray& SamplerArray, SimulatorStates& state_code, int iBaseSamplerIndex)
+void dx10State::InitSamplers(tSamplerHArray& SamplerArray, SimulatorStates& state_code, int iBaseSamplerIndex)
 {
-	D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-	bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
+	bool SamplerUsed[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT];
 
-	for (int i=0; i<D3D_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
+	for (int i = 0; i < RHI_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
 	{
 		SamplerUsed[i] = false;
 		dx10StateUtils::ResetDescription(descArray[i]);
@@ -96,17 +86,17 @@ void dx10State::InitSamplers( tSamplerHArray& SamplerArray, SimulatorStates& sta
 
 	state_code.UpdateDesc(descArray, SamplerUsed, iBaseSamplerIndex);
 
-	int iMaxSampler = D3D_COMMONSHADER_SAMPLER_SLOT_COUNT - 1;
-	for ( ;iMaxSampler>-1; --iMaxSampler)
+	int iMaxSampler = RHI_COMMONSHADER_SAMPLER_SLOT_COUNT - 1;
+	for (; iMaxSampler > -1; --iMaxSampler)
 	{
 		if (SamplerUsed[iMaxSampler])
 			break;
 	}
 
-	if (iMaxSampler>-1)
+	if (iMaxSampler > -1)
 	{
-		SamplerArray.reserve(iMaxSampler+1);
-		for ( int i=0; i<=iMaxSampler; ++i )
+		SamplerArray.reserve(iMaxSampler + 1);
+		for (int i = 0; i <= iMaxSampler; ++i)
 		{
 			if (SamplerUsed[i])
 				SamplerArray.push_back(SSManager.GetState(descArray[i]));
