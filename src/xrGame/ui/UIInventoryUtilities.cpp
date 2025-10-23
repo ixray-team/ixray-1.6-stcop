@@ -578,7 +578,7 @@ u32 InventoryUtilities::GetGoodwillColor(CHARACTER_GOODWILL gw)
 u32 InventoryUtilities::GetReputationColor(CHARACTER_REPUTATION_VALUE rv)
 {
 	u32 res = 0xffc0c0c0;
-	if(rv==NEUTAL_REPUTATION){
+	if(rv==NEUTRAL_REPUTATION){
 		res = 0xffc0c0c0;
 	}else
 	if(rv>50){
