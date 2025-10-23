@@ -12,7 +12,6 @@
 #include "alife_simulator.h"
 #include "game_cl_base.h"
 #include "game_cl_single.h"
-#include "game_sv_single.h"
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Actor.h"
@@ -42,6 +41,7 @@
 #include "cameralook.h"
 #include "character_hit_animations_params.h"
 #include "inventory_upgrade_manager.h"
+#include "FreeMP/game_sv_freemp.h"
 
 #include "gamespy/GameSpy_Full.h"
 
@@ -317,15 +317,14 @@ class CCC_ALifeProcessTime : public IConsole_Command {
 public:
 	CCC_ALifeProcessTime(LPCSTR N) : IConsole_Command(N) { };
 	virtual void Execute(LPCSTR args) {
-		if ((IsGameTypeSingle()) && ai().get_alife()) {
-			game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-			VERIFY(tpGame);
+		if ((IsGameTypeSingle()) && ai().get_alife()) 
+		{
 			int id1 = 0;
 			sscanf(args, "%d", &id1);
 			if (id1 < 1)
 				Msg("Invalid process time! (%d)", id1);
 			else
-				tpGame->alife().set_process_time(id1);
+				Level().Server->game->alife().set_process_time(id1);
 		}
 		else
 			Log("!Not a single player game!");
@@ -339,11 +338,9 @@ public:
 	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N) { };
 	virtual void Execute(LPCSTR args) {
 		if ((IsGameTypeSingle()) && ai().get_alife()) {
-			game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-			VERIFY(tpGame);
 			int id1 = 0;
 			sscanf(args, "%d", &id1);
-			tpGame->alife().objects_per_update(id1);
+			Level().Server->game->alife().objects_per_update(id1);
 		}
 		else
 			Log("!Not a single player game!");
@@ -355,12 +352,10 @@ public:
 	CCC_ALifeSwitchFactor(LPCSTR N) : IConsole_Command(N) { };
 	virtual void Execute(LPCSTR args) {
 		if ((IsGameTypeSingle()) && ai().get_alife()) {
-			game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-			VERIFY(tpGame);
 			float id1 = 0;
 			sscanf(args, "%f", &id1);
 			clamp(id1, .1f, 1.f);
-			tpGame->alife().set_switch_factor(id1);
+			Level().Server->game->alife().set_switch_factor(id1);
 		}
 		else
 			Log("!Not a single player game!");
@@ -1862,13 +1857,9 @@ public:
 			}
 
 			Fvector3 point = point.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
-			auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-			if (tpGame == nullptr) {
-				return;
-			}
 
 			for (size_t i = 0; i < count; i++) {
-				auto item = tpGame->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
+				auto item = Level().Server->game->alife().spawn_item(nameSection, point, 0, actor->ai_location().game_vertex_id(), u16(-1));
 				item->cast_alife_object()->use_ai_locations(false);
 
 				auto anomaly = item->cast_anomalous_zone();
@@ -2141,13 +2132,8 @@ public:
 			}
 		}
 
-		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame == nullptr) {
-			return;
-		}
-
 		for (int i = 0; i < count; i++) {
-			CALifeSimulator__spawn_item2(&tpGame->alife(), nameSection, actor->Position(), actor->ai_location().level_vertex_id(),
+			CALifeSimulator__spawn_item2(&Level().Server->game->alife(), nameSection, actor->Position(), actor->ai_location().level_vertex_id(),
 				actor->ai_location().game_vertex_id(), actor->ID());
 		}
 	}

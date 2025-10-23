@@ -8,7 +8,6 @@
 
 class		CItemMgr;
 class		xrClientData; 
-class       CALifeSimulator;
 class		xrServer;
 
 #define		VOTE_LENGTH_TIME		1
@@ -71,7 +70,6 @@ protected:
 	u8			m_u8SpectatorModes		;
 
 	cdkey_ban_list	m_cdkey_ban_list;
-	CALifeSimulator* m_alife_simulator;
 
 protected:
 
@@ -223,12 +221,6 @@ public:
 	{
 		VERIFY(m_server);
 		return (*m_server);
-	}
-
-	IC CALifeSimulator& alife() const
-	{
-		VERIFY(m_alife_simulator);
-		return (*m_alife_simulator);
 	}
 };
 

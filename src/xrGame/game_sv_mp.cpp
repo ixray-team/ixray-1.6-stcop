@@ -60,7 +60,6 @@ extern xr_token	round_end_result_str[];
 
 game_sv_mp::game_sv_mp() :inherited()
 {
-	m_alife_simulator = nullptr;
 	m_strWeaponsData = new CItemMgr();
 	m_bVotingActive = false;	
 	//------------------------------------------------------
@@ -74,7 +73,6 @@ game_sv_mp::game_sv_mp() :inherited()
 
 game_sv_mp::~game_sv_mp()
 {
-	delete_data(m_alife_simulator);
 	xr_delete(m_strWeaponsData);
 }
 
