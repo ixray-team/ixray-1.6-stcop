@@ -24,6 +24,7 @@ enum ERoundEnd_Result
 
 class CSE_Abstract;
 class xrServer;
+class CALifeSimulator;
 // [OLES] Policy:
 // it_*		- means ordinal number of player
 // id_*		- means player-id
@@ -56,6 +57,8 @@ protected:
 	bool							m_bMapSwitched;
 	bool							m_bFastRestart;
 	xr_deque<SMapRot>				m_pMapRotation_List;
+
+	CALifeSimulator*				m_alife_simulator;
 
 public:
 #define		TEAM_COUNT 32
@@ -196,4 +199,10 @@ public:
 	virtual		void				DumpOnlineStatistic		(){};
 				
 				bool				CheckNewPlayer			(xrClientData* CL);
+				
+	IC			CALifeSimulator		&alife					() const
+	{
+		VERIFY						(m_alife_simulator);
+		return						(*m_alife_simulator);
+	}
 };
