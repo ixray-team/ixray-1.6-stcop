@@ -32,6 +32,7 @@ public:
 			void				ShowDropAmount						(u32 max, EDropMode mode);
 	virtual void				SendMessage							(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 	virtual bool				OnKeyboardAction					(int dik, EUIMessages keyboard_action);
+	virtual CUIWindow* ui_cast_window() { return this; }
 private:
 	CUIStatic*					m_UIBackground;
 	CUIStatic*					m_UIStaticPicture;
