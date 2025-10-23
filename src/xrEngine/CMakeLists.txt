@@ -111,6 +111,7 @@ target_link_libraries(xrEngineCore PUBLIC luabind)
 target_link_libraries(xrEngineCore PUBLIC xrNetServer)
 target_link_libraries(xrEngineCore PUBLIC imgui)
 target_link_libraries(xrEngineCore PUBLIC xrRHI)
+target_link_libraries(xrEngineCore PUBLIC FreeType::FreeType)
 
 target_link_libraries(xrEngineCore PRIVATE "Winmm.lib")
 target_link_libraries(xrEngineCore PRIVATE "Vfw32.lib")
@@ -118,12 +119,7 @@ target_link_libraries(xrEngineCore PRIVATE "Vfw32.lib")
 # Copy binaries
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_FREETYPE}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
-
-## FreeType
-target_link_libraries(xrEngineCore PRIVATE ${ENGINE_FREETYPE}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/freetype.lib)
-target_include_directories(xrEngineCore PRIVATE "${ENGINE_FREETYPE}native/include/")
 
 ## Theora
 target_link_libraries(xrEngineCore PUBLIC ${ENGINE_THRA}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
