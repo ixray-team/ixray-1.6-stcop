@@ -34,7 +34,6 @@ public:
 	virtual void			On_SetEntity		();
 	virtual void			On_LostEntity		();
 protected:
-	virtual	void			cam_Set					(EActorCameras style);
 			void			use_booster				(NET_Packet &packet);
 };
 
