@@ -20,7 +20,7 @@ public:
 
 	void	ClearStateArray();
 
-	SHandle	GetState( D3D_SAMPLER_DESC& desc );
+	SHandle	GetState(RHISampleDesc& desc );
 
 	void	VSApplySamplers(HArray &samplers);
 	void	PSApplySamplers(HArray &samplers);
@@ -37,7 +37,6 @@ public:
 	//	Private declarations
 private:
 	typedef	ID3DSamplerState	IDeviceState;
-	typedef	D3D_SAMPLER_DESC	StateDecs;
 
 	struct StateRecord 
 	{
@@ -46,8 +45,8 @@ private:
 	};
 
 private:
-	void	CreateState( StateDecs desc, IDeviceState** ppIState );
-	SHandle	FindState( const StateDecs& desc, u32 StateCRC );
+	void	CreateState(RHISampleDesc desc, IDeviceState** ppIState );
+	SHandle	FindState( const RHISampleDesc& desc, u32 StateCRC );
 
 	void	PrepareSamplerStates(
 		HArray &samplers, 
