@@ -47,7 +47,7 @@ public:
 	void	UpdateDesc( D3D_RASTERIZER_DESC &desc ) const;
 	void	UpdateDesc( D3D_DEPTH_STENCIL_DESC &desc ) const;
 	void	UpdateDesc( D3D_BLEND_DESC &desc ) const;
-	void	UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex ) const;
+	void	UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex ) const;
 #endif //USE_DX11
 };
 #endif
