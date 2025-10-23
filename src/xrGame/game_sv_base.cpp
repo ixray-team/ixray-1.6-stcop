@@ -11,6 +11,7 @@
 #include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
+#include "object_broker.h"
 
 #include "debug_renderer.h"
 #include "xrGameSpyServer.h"
@@ -650,6 +651,7 @@ game_sv_GameState::game_sv_GameState()
 	m_bMapNeedRotation = false;
 	m_bFastRestart = false;
 	m_pMapRotation_List.clear();
+	m_alife_simulator = nullptr;
 
 	for (int i=0; i<TEAM_COUNT; i++) rpoints_MinDist[i] = 1000.0f;	
 }
@@ -658,6 +660,7 @@ game_sv_GameState::~game_sv_GameState()
 {
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	xr_delete(m_event_queue);
+	delete_data(m_alife_simulator);
 
 	SaveMapList();
 

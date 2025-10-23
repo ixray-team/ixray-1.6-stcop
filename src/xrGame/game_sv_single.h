@@ -3,15 +3,11 @@
 #include "game_sv_base.h"
 
 class xrServer;
-class CALifeSimulator;
 
 class	game_sv_Single				: public game_sv_GameState
 {
 private:
 	typedef game_sv_GameState inherited;
-
-protected:
-	CALifeSimulator					*m_alife_simulator;
 
 public:
 									game_sv_Single			();
@@ -57,11 +53,5 @@ public:
 	{
 		VERIFY						(m_server);
 		return						(*m_server);
-	}
-
-	IC			CALifeSimulator		&alife					() const
-	{
-		VERIFY						(m_alife_simulator);
-		return						(*m_alife_simulator);
 	}
 };

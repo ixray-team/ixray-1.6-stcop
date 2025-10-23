@@ -13,13 +13,11 @@
 
 game_sv_Single::game_sv_Single			()
 {
-	m_alife_simulator			= nullptr;
 	m_type						= eGameIDSingle;
 };
 
 game_sv_Single::~game_sv_Single			()
 {
-	delete_data					(m_alife_simulator);
 }
 
 void	game_sv_Single::Create			(shared_str& options)
