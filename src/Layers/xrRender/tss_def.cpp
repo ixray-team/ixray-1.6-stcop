@@ -301,43 +301,41 @@ void SimulatorStates::UpdateDesc( D3D_BLEND_DESC &desc ) const
 	}
 }
 
-void SimulatorStates::UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex ) const
+void SimulatorStates::UpdateDesc(RHISampleDesc descArray[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[RHI_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex) const
 {
-	const int MipfilterLinear	= 0x01;
-	const int MagfilterLinear	= 0x04;
-	const int MinfilterLinear	= 0x10;
-	const int AllfilterLinear	= 0x15;
-	const int FilterAnisotropic	= 0x40;
-	const int FilterComparison	= 0x80;
+	const ERHI_FILTER MipfilterLinear = ERHI_FILTER::MIN_MAG_POINT_MIP_LINEAR;
+	const ERHI_FILTER MagfilterLinear = ERHI_FILTER::MIN_POINT_MAG_LINEAR_MIP_POINT;
+	const ERHI_FILTER MinfilterLinear = ERHI_FILTER::MIN_LINEAR_MAG_MIP_POINT;
+	const ERHI_FILTER AllfilterLinear = ERHI_FILTER::MIN_MAG_MIP_LINEAR;
+	const ERHI_FILTER FilterAnisotropic = ERHI_FILTER::ANISOTROPIC;
+	const ERHI_FILTER FilterComparison = ERHI_FILTER::COMPARISON_MIN_MAG_MIP_POINT;
 
-	for (u32 it=0; it<States.size(); it++)
+	for (u32 it = 0; it < States.size(); it++)
 	{
-		const State& S	= States[it];
-		if (S.type==2)
+		const State& S = States[it];
+		if (S.type == 2)
 		{
 			int iSamplerIndex = int(S.v1);
 			iSamplerIndex -= iBaseSamplerIndex;
 
-			if ( (iSamplerIndex>=D3D_COMMONSHADER_SAMPLER_SLOT_COUNT)
-				|| iSamplerIndex<0)
+			if ((iSamplerIndex >= RHI_COMMONSHADER_SAMPLER_SLOT_COUNT) || iSamplerIndex < 0)
 				continue;
 
 			SamplerUsed[iSamplerIndex] = true;
-			D3D_SAMPLER_DESC &desc = descArray[iSamplerIndex];
+			RHISampleDesc& desc = descArray[iSamplerIndex];
 
 			switch (S.v2)
 			{
-			//D3D_FILTER Filter;
+				//D3D_FILTER Filter;
 			case D3DSAMP_MAGFILTER:	/* D3DTEXTUREFILTER filter to use for magnification */
 				switch (S.v3)
 				{
 				case D3DTEXF_NONE:
 				case D3DTEXF_POINT:
-					desc.Filter = (D3D_FILTER)(desc.Filter & (~MagfilterLinear));
+					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MagfilterLinear));
 					break;
 				case D3DTEXF_LINEAR:
-					desc.Filter = (D3D_FILTER)(desc.Filter | MagfilterLinear);
-//					desc.Filter |= MagfilterLinear;
+					desc.Filter = (ERHI_FILTER)(desc.Filter | MagfilterLinear);
 					break;
 				default:
 					NODEFAULT;
@@ -349,12 +347,10 @@ void SimulatorStates::UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SA
 				{
 				case D3DTEXF_NONE:
 				case D3DTEXF_POINT:
-					//desc.Filter &= ~MinfilterLinear;
-					desc.Filter = (D3D_FILTER)(desc.Filter & (~MinfilterLinear));
+					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MinfilterLinear));
 					break;
 				case D3DTEXF_LINEAR:
-					desc.Filter = (D3D_FILTER)(desc.Filter | MinfilterLinear);
-					//desc.Filter |= MinfilterLinear;
+					desc.Filter = (ERHI_FILTER)(desc.Filter | MinfilterLinear);
 					break;
 				default:
 					NODEFAULT;
@@ -366,37 +362,35 @@ void SimulatorStates::UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SA
 				{
 				case D3DTEXF_NONE:
 				case D3DTEXF_POINT:
-					desc.Filter = (D3D_FILTER)(desc.Filter & (~MipfilterLinear));
+					desc.Filter = (ERHI_FILTER)(desc.Filter & (~MipfilterLinear));
 					//desc.Filter &= ~MipfilterLinear;
 					break;
 				case D3DTEXF_LINEAR:
-					desc.Filter = (D3D_FILTER)(desc.Filter | MipfilterLinear);
+					desc.Filter = (ERHI_FILTER)(desc.Filter | MipfilterLinear);
 					//desc.Filter |= MipfilterLinear;
 					break;
 				default:
 					NODEFAULT;
 				}
 				break;
-				
+
 			case XRDX10SAMP_ANISOTROPICFILTER:
 				if (S.v3)
-					desc.Filter = (D3D_FILTER)(desc.Filter | FilterAnisotropic);
-					//desc.Filter |= FilterAnisotropic;
+					desc.Filter = (ERHI_FILTER)(desc.Filter | FilterAnisotropic);
+				//desc.Filter |= FilterAnisotropic;
 				else
-					desc.Filter = (D3D_FILTER)(desc.Filter & (~FilterAnisotropic));
-					//desc.Filter &= ~FilterAnisotropic;
+					desc.Filter = (ERHI_FILTER)(desc.Filter & (~FilterAnisotropic));
+				//desc.Filter &= ~FilterAnisotropic;
 				break;
 
 			case XRDX10SAMP_COMPARISONFILTER:
 				if (S.v3)
-					desc.Filter = (D3D_FILTER)(desc.Filter | FilterComparison);
-					//desc.Filter |= FilterComparison;
+					desc.Filter = (ERHI_FILTER)(desc.Filter | FilterComparison);
 				else
-					desc.Filter = (D3D_FILTER)(desc.Filter & (~FilterComparison));
-					//desc.Filter &= ~FilterComparison;	
+					desc.Filter = (ERHI_FILTER)(desc.Filter & (~FilterComparison));
 				break;
 
-			//D3Dxx_TEXTURE_ADDRESS_MODE AddressU;
+				//D3Dxx_TEXTURE_ADDRESS_MODE AddressU;
 			case D3DSAMP_ADDRESSU:	/* D3DTEXTUREADDRESS for U coordinate */
 				desc.AddressU = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3));
 				break;
@@ -408,38 +402,38 @@ void SimulatorStates::UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SA
 			case D3DSAMP_ADDRESSW:	/* D3DTEXTUREADDRESS for W coordinate */
 				desc.AddressW = dx10StateUtils::ConvertTextureAddressMode(D3DTEXTUREADDRESS(S.v3));
 				break;
-				
-			//	FLOAT MipLODBias
+
+				//	FLOAT MipLODBias
 			case D3DSAMP_MIPMAPLODBIAS:
 				desc.MipLODBias = *((float*)(&(S.v3)));
 				break;
 
-			//	UINT MaxAnisotropy;
+				//	UINT MaxAnisotropy;
 			case D3DSAMP_MAXANISOTROPY:
 				desc.MaxAnisotropy = S.v3;
 				break;
 
-			//	D3Dxx_COMPARISON_FUNC ComparisonFunc;
+				//	D3Dxx_COMPARISON_FUNC ComparisonFunc;
 			case XRDX10SAMP_COMPARISONFUNC:
-				desc.ComparisonFunc = (D3D_COMPARISON_FUNC)S.v3;
+				desc.ComparisonFunc = (ERHI_COMPARISON_FUNC)S.v3;
 				break;
 
-			//	FLOAT BorderColor[4];
+				//	FLOAT BorderColor[4];
 			case D3DSAMP_BORDERCOLOR:
-				{
-					desc.BorderColor[0] = ((S.v3>>16)&0xff)/255.0f;
-					desc.BorderColor[1] = ((S.v3>>8)&0xff)/255.0f;
-					desc.BorderColor[2] = ((S.v3)&0xff)/255.0f;
-					desc.BorderColor[3] = ((S.v3>>24)&0xff)/255.0f;
-				}
-				break;
+			{
+				desc.BorderColor[0] = ((S.v3 >> 16) & 0xff) / 255.0f;
+				desc.BorderColor[1] = ((S.v3 >> 8) & 0xff) / 255.0f;
+				desc.BorderColor[2] = ((S.v3) & 0xff) / 255.0f;
+				desc.BorderColor[3] = ((S.v3 >> 24) & 0xff) / 255.0f;
+			}
+			break;
 
 			//	FLOAT MinLOD;
 			case XRDX10SAMP_MINLOD:
 				desc.MinLOD = (FLOAT)S.v3;
 				break;
 
-			//	FLOAT MaxLOD;
+				//	FLOAT MaxLOD;
 			case D3DSAMP_MAXMIPLEVEL:
 				desc.MaxLOD = (FLOAT)S.v3;
 				break;
@@ -448,17 +442,17 @@ void SimulatorStates::UpdateDesc( D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SA
 	}
 
 	//	Validate data
-	for ( int i=0; i<D3D_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
+	for (int i = 0; i < RHI_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
 	{
-		D3D_SAMPLER_DESC &desc = descArray[i];
-		if ( desc.Filter & FilterAnisotropic )
+		RHISampleDesc& desc = descArray[i];
+		if (!!(desc.Filter & FilterAnisotropic))
 		{
-			desc.Filter = (D3D_FILTER)(desc.Filter | AllfilterLinear);
+			desc.Filter = (ERHI_FILTER)(desc.Filter | AllfilterLinear);
 			//desc.Filter |= AllfilterLinear;
 		}
 
-		VERIFY(desc.MinLOD<=desc.MaxLOD);
-		if (desc.MinLOD>desc.MaxLOD)
+		VERIFY(desc.MinLOD <= desc.MaxLOD);
+		if (desc.MinLOD > desc.MaxLOD)
 			desc.MaxLOD = desc.MinLOD;
 	}
 }
