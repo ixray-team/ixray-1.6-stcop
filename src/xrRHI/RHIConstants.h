@@ -37,3 +37,5 @@ constexpr u32 RHI_FVF_TEX8             = 0x800;
 constexpr u32 RHI_FVF_LASTBETA_UBYTE4   = 0x1000;
 constexpr u32 RHI_FVF_LASTBETA_D3DCOLOR = 0x8000;
 constexpr u32 RHI_FVF_RESERVED2			= 0x6000;
+
+constexpr u32 RHI_COMMONSHADER_SAMPLER_SLOT_COUNT = 16;
