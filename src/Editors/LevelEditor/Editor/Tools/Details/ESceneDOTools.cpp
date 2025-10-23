@@ -265,6 +265,8 @@ bool EDetailManager::LoadColorIndices(IReader& F)
 
 bool EDetailManager::LoadLTX(CInifile& ini)
 {
+    IsLoaded = false;
+
     inherited::LoadLTX(ini);
 
     // version

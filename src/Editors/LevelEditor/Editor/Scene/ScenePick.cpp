@@ -99,6 +99,8 @@ CCustomObject *EScene::RayPickObject(float nearest_dist, const Fvector& start, c
 {
 	if(!valid()) return 0;
 
+	xrCriticalSectionGuard guard(PickUpLock);
+
 	CCustomObject *nearest_object = 0;
 	if (from_list){
 		for(ObjectIt _F=from_list->begin();_F!=from_list->end();_F++)
