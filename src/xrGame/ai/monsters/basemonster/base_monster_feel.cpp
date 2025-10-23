@@ -106,7 +106,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
 		
-		if (IsGameTypeSingle() && pEntityNC == Actor() && draw_hit_marks)
+		if ((OnClient() || IsGameTypeSingle()) && pEntityNC == Actor() && draw_hit_marks)
 		{
 			PROF_EVENT("BaseMonster/Animation/HitEntity");
 
