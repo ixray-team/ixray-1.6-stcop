@@ -1011,7 +1011,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	xr_string LabelText = FilePath.has_extension() ? FileName.substr(0, FileName.length() - FilePath.extension().string().length()).c_str() : FileName.c_str();
 	if (SelectedObjects.size() == 1) 
 	{
-		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->get_SRView()->GetRawSRV(), BtnSize);
+		ImGui::ImageButton(FilePath.xfilename().c_str(), IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV() : nullptr, BtnSize);
 		ImGui::Text(LabelText.data());
 	}
 	else 
@@ -1166,7 +1166,7 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				IconColor.w = 0.3;
 			}
 
-			ImGui::Image(IconPtr->Icon->get_SRView()->GetRawSRV(), ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
+			ImGui::Image(IconPtr->Icon->get_SRView() ? IconPtr->Icon->get_SRView()->GetRawSRV()  : nullptr, ImageSize, ImVec2(0, 0), ImVec2(1, 1), IconColor, ImVec4(0,0,0,0));
 
 			/*
 				Два варианта
