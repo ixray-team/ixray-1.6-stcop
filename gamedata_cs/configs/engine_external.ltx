@@ -4,13 +4,19 @@ title = st_ixray_title ; Mod name
 SaveImageSize = 128, 128
 
 [shaders_options]
-USE_LEGACY_LIGHT = 1
+USE_LEGACY_LIGHT = 1                   ; 1 - legacy pipeline, 0 - PBR pipeline
 
 ; Hozar: Use brga skycolor format
 ; USE_BGRA_SKYCOLOR = 1;
 
 ; Hozar: Use original GSC format for sky ToneMapping
 ; USE_LEGACY_SKY_TONEMAP = 1
+
+; CGIM2 compatibility
+; USE_CGIM_SKY_TWEAK = 1
+; USE_CGIM_WHITE_TWEAK = 1
+; USE_CGIM_COLOR_TWEAK = 1
+; USE_CGIM_BLOOM_TWEAK = 1
 
 ; Hozar: Use normal on Hemi calc
 ; USE_NORMAL_HEMI_DISTRIBUTION = 1
@@ -27,29 +33,29 @@ USE_LEGACY_LIGHT = 1
 ;; Engine features
 
 [ui]
-DisableCharacterInfo = false
+DisableCharacterInfo = false            ; Disable character information
 DisableInventoryGrid = false ; Uses ui\ui_grid_alt.dds instead of ui\ui_grid.dds
-WeaponIconScale = 0.65 ; Scale factor for static_wpn_icon in maingame.xml. For CoP it's 0.8, for CS - 0.65, for SoC - 0.9
-ShowLoadingStages = true ; Loading stages from CS/SoC
-DisableMotionIcon = true
-PdaRearrangeTabButtons = true ; for CS style buttons, where their size depends on text
-UseSavedGameStatic = true
+WeaponIconScale = 0.65                  ; Scale factor for static_wpn_icon in maingame.xml. For CoP it's 0.8, for CS - 0.65, for SoC - 0.9
+ShowLoadingStages = true                ; Loading stages from CS/SoC
+DisableMotionIcon = true                ; Disable motion icon
+PdaRearrangeTabButtons = true           ; for CS style buttons, where their size depends on text
+UseSavedGameStatic = true               ; Use custom static for save games
 
 [physics]
-DeadBodyRagdoll = false
+DeadBodyRagdoll = false                 ; Enable ragdoll body
 
 [gameplay]
-EnableThirst = false
-EnableSleepiness = false
-EnableAiDieInAnomaly = false
-EnableNPCLookAtActor = true
-EnableAutoreload = false
-EnableMonstersInventory = true
-EnableWeaponInertion = false            ; Gunslinger Mod Style
+EnableThirst = false                    ; Thirst
+EnableSleepiness = false                ; Sleepiness
+EnableAiDieInAnomaly = false            ; Ai Die In Anomaly
+EnableNPCLookAtActor = true             ; NPC Look at actor
+EnableAutoreload = false                ; Enable automatic weapon reloading
+EnableMonstersInventory = true          ; Enable monsters inventory
+EnableWeaponInertion = true             ; Gunslinger Mod Style
 EnableWeaponCollision = false           ; Shoker Mod Style
-EnableActorStepWallmarks = false        ; AIW Style
-EnableAlternateZoomFovCalc = false		; Don't turn it on unnecessarily! Breaks the original weapon system.
-EnableInventoryPistolSlot = true ; 2nd slot for pistols only (like in CS/SoC)
+EnableActorStepWallmarks = false        ; Actor step wallmarks AIW Style
+EnableAlternateZoomFovCalc = false      ; Don't turn it on unnecessarily! Breaks the original weapon system.
+EnableInventoryPistolSlot = true        ; 2nd slot for pistols only (like in CS/SoC)
 EnableImproveWeaponMisfire = false		; Gunslinger Mod Style
 EnableDelayedWeaponActions = false		; Gunslinger Mod Style
 
@@ -57,17 +63,17 @@ EnableDelayedWeaponActions = false		; Gunslinger Mod Style
 DialogFovScale = 0.75 ; Increasing fov during dialogue
 TalkDof = 0.0, 0.5, 5.0, 0.0 ; Degree of background blurring in dialogue
 ; Sprint
-EnableBlockSprintInReload = true
-DisableSprintWhileOverweight = false
-SprintFovFactor = 7.0
+EnableBlockSprintInReload = true        ; Enable block sprint in reload
+DisableSprintWhileOverweight = false    ; Disable Sprint while overweight
+SprintFovFactor = 3.0                   ; FOV magnification power while running
 
 [render]
-DisableLoadScreenTips = true
-UseDynamicSnowMask = false
-FontAtlasSize = 4096
+DisableLoadScreenTips = true            ; Disable load screen tips
+UseDynamicSnowMask = false              ; Use dynamic snow mask
+FontAtlasSize = 4096                    ; Texture atlas size value. Must be in the order of two
 
 [environment]
-ReadSunConfig = false
+ReadSunConfig = false                   ; Enable sun movement in configurations
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extended sections
