@@ -73,7 +73,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	LPCSTR ltx = pXML->Read(pNode, "ltx", 0, nullptr);
 
 
-	if(ltx)
+	if(ltx && pSettings->section_exist(ltx))
 	{
 		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, ltx, "icons_texture", nullptr);
 		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
@@ -89,6 +89,9 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 	}
 	else 
 	{
+		if (ltx)
+			Msg("! Trying to read data from section [%s] for article [%s], but it doesn't exist!", ltx, m_ArticleId.c_str());
+
 		if( pXML->NavigateToNode(pNode,"texture",0) )
 		{
 			pXML->SetLocalRoot(pNode);
