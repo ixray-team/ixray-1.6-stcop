@@ -12,7 +12,7 @@
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/string_table.h"
 #include "object_broker.h"
-
+#include "alife_simulator.h"
 #include "debug_renderer.h"
 #include "xrGameSpyServer.h"
 
