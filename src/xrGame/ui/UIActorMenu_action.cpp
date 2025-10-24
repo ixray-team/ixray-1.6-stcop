@@ -28,7 +28,8 @@
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
-
+#include "UITalkWnd.h"
+#include "UITalkDialogWnd.h"
 
 bool  CUIActorMenu::AllowItemDrops(EDDListType from, EDDListType to)
 {
@@ -448,6 +449,9 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 			g_btnHint->Discard();
 			HideDialog();
+
+			if (m_pActorInvOwner->IsTalking())
+				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 		}
 		return true;
 	}	
@@ -458,6 +462,9 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 			g_btnHint->Discard();
 			HideDialog();
+
+			if (m_pActorInvOwner->IsTalking())
+				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 		}
 		return true;
 	}
@@ -511,6 +518,9 @@ void CUIActorMenu::OnBtnExitClicked(CUIWindow* w, void* d)
 {
 	g_btnHint->Discard();
 	HideDialog();
+
+	if (m_pActorInvOwner->IsTalking())
+		CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 }
 
 void CUIActorMenu::OnMesBoxYes( CUIWindow*, void* )
