@@ -37,11 +37,11 @@
 
 #include "imgui.h"
 #ifndef IMGUI_DISABLE
+#include <d3d11.h>
 #include "imgui_impl_dx11.h"
 
 // DirectX
 #include <stdio.h>
-#include <d3d11.h>
 #include <d3dcompiler.h>
 #ifdef _MSC_VER
 #pragma comment(lib, "d3dcompiler") // Automatically link with d3dcompiler.lib as we are using D3DCompile() below.
@@ -549,7 +549,7 @@ bool    ImGui_ImplDX11_Init(ID3D11Device* device, ID3D11DeviceContext* device_co
 			if (pDXGIAdapter->GetParent(IID_PPV_ARGS(&pFactory)) == S_OK)
 			{
 				DXGI_ADAPTER_DESC Desc; pDXGIAdapter->GetDesc(&Desc);
-				Msg("* GPU %S: %d MB", Desc.Description, Desc.DedicatedVideoMemory/(1024*1024));
+				//Msg("* GPU %S: %d MB", Desc.Description, Desc.DedicatedVideoMemory/(1024*1024));
 				bd->pd3dDevice = device;
 				bd->pd3dDeviceContext = device_context;
 				bd->pFactory = pFactory;
