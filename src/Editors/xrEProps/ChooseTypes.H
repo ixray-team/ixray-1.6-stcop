@@ -12,6 +12,8 @@ struct SChooseItem
     SChooseItem	(LPCSTR nm, LPCSTR ht):name(nm),hint(ht){}
 };
 
+class IRHISurface;
+
 using ChooseItemVec = xr_vector<SChooseItem>;
 using ChooseItemVecIt = ChooseItemVec::iterator;
 
@@ -21,7 +23,7 @@ typedef xr_delegate<void(SChooseItem*, PropItemVec&)>	TOnChooseSelectItem;
 typedef xr_delegate<void(LPCSTR, HDC, const Irect&)> 	TOnDrawThumbnail;
 typedef xr_delegate<void()>						   	TOnChooseClose;
 
-using TGetTexture = xr_delegate<void(LPCSTR, ImTextureID&)>;
+using TGetTexture = xr_delegate<void(LPCSTR, IRHISurface*&)>;
 
 typedef void (*TOnChooseFillEvents)();
 
