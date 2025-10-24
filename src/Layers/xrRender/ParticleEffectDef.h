@@ -3,6 +3,12 @@
 #define ParticleEffectDefH
 
 #include "Shader.h"
+
+namespace EPALegacy
+{
+	struct EParticleAction;
+}
+
 class ButtonValue;
 
 namespace PAPI
@@ -115,7 +121,10 @@ namespace PS
 		BOOL				Load2Original		(CInifile& ini);
 		BOOL				Load2Entended		(CInifile& ini);
 
-#ifdef _EDITOR         
+#ifndef _EDITOR
+		using EPAVec = xr_vector<EPALegacy::EParticleAction*>;
+		using EPAVecIt = EPAVec::iterator;
+#else
 // change Copy&Equal if variables changed
 	public:
 		using EPAVec = xr_vector<EParticleAction*>;
@@ -151,9 +160,9 @@ namespace PS
 		static PFunction*	FindCommandPrototype(LPCSTR src, LPCSTR& dest);
 		void   	FillActionList		(ChooseItemVec& items, void* param);
         bool 				Validate 			(bool bMsg);
-		void 				Compile				(EPAVec& v);
 		void				OnDrawUI			();
 #endif
+		void Compile(EPAVec& v);
 	};
 
 	namespace PE
