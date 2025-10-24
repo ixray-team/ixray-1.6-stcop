@@ -19,13 +19,13 @@
 
 #define _game_data_			"$game_data$"
 
-bool ped_sort_pred	(const PS::CPEDef* a, 	const PS::CPEDef* b)	{	return xr_strcmp(a->Name(),b->Name())<0;}
-bool pgd_sort_pred	(const PS::CPGDef* a, 	const PS::CPGDef* b)	{	return xr_strcmp(a->m_Name,b->m_Name)<0;}
-bool pacd_sort_pred	(const PS::CPACDef* a, 	const PS::CPACDef* b)	{	return xr_strcmp(a->getName(),b->getName())<0;}
+bool ped_sort_pred(const PS::CPEDef* a, const PS::CPEDef* b){	return xr_strcmp(a->Name(),b->Name())<0;}
+bool pgd_sort_pred(const PS::CPGDef* a, const PS::CPGDef* b){	return xr_strcmp(a->m_Name,b->m_Name)<0;}
+bool pacd_sort_pred(const PS::CPACDef* a, const PS::CPACDef* b){	return xr_strcmp(a->getName(),b->getName())<0;}
 
-bool ped_find_pred	(const PS::CPEDef* a, 	LPCSTR b)				{	return xr_strcmp(a->Name(),b)<0;}
-bool pgd_find_pred	(const PS::CPGDef* a, 	LPCSTR b)				{	return xr_strcmp(a->m_Name,b)<0;}
-bool pacd_find_pred	(const PS::CPACDef* a, 	LPCSTR b)				{	return xr_strcmp(a->getName(),b)<0;}
+bool ped_find_pred(const PS::CPEDef* a, LPCSTR b){ return xr_strcmp(a->Name(),b)<0;}
+bool pgd_find_pred(const PS::CPGDef* a, LPCSTR b){ return xr_strcmp(a->m_Name,b)<0;}
+bool pacd_find_pred(const PS::CPACDef* a, LPCSTR b){ return xr_strcmp(a->getName(),b)<0;}
 //----------------------------------------------------
 void CPSLibrary::OnCreate()
 {
@@ -40,6 +40,9 @@ void CPSLibrary::OnCreate()
         FS.update_path	(fn,_game_data_,"particles.xr");
         Load			(fn);
     }
+#ifndef _EDITOR
+	Load2();
+#endif
 	PS::CPACLibraryWrapper::GetInstance().SetPACLibrary(this);
 }
  
@@ -218,7 +221,17 @@ bool CPSLibrary::Load2()
             def->m_Name			= _path;
             if (def->Load2(ini))
             {
-	            m_PEDs.push_back(def);
+            	auto found_elem = std::ranges::find_if(
+            		m_PEDs,
+            		[&def](const auto& elem){ return ped_find_pred(def,elem->Name());});
+            	if (found_elem!=m_PEDs.end())
+            	{
+            		xr_delete(*found_elem);
+            		*found_elem = def;
+            	} else
+            	{
+            		m_PEDs.push_back(def);
+            	}
             }
             else
             {
@@ -231,7 +244,17 @@ bool CPSLibrary::Load2()
             def->m_Name			= _path;
             if (def->Load2(ini))
             {
-	            m_PGDs.push_back(def);
+            	auto found_elem = std::ranges::find_if(
+					m_PGDs,
+					[&def](const auto& elem){ return pgd_find_pred(def,*elem->m_Name);});
+            	if (found_elem!=m_PGDs.end())
+            	{
+            		xr_delete(*found_elem);
+            		*found_elem = def;
+            	} else
+            	{
+            		m_PGDs.push_back(def);
+            	}
             }
             else
             {
@@ -243,7 +266,17 @@ bool CPSLibrary::Load2()
 			auto def = new PS::CPACDef();
 			if (def->Load2(ini))
 			{
-				m_PACDs.push_back(def);
+				auto found_elem = std::ranges::find_if(
+					m_PACDs,
+					[&def](const auto& elem){ return pacd_find_pred(def,elem->getName());});
+				if (found_elem!=m_PACDs.end())
+				{
+					xr_delete(*found_elem);
+					*found_elem = def;
+				} else
+				{
+					m_PACDs.push_back(def);
+				}
 			}
 			else
 			{
@@ -256,11 +289,14 @@ bool CPSLibrary::Load2()
         }
 	}
 
-	std::sort			(m_PEDs.begin(),m_PEDs.end(),ped_sort_pred);
-	std::sort			(m_PGDs.begin(),m_PGDs.end(),pgd_sort_pred);
+	std::ranges::sort(m_PEDs,ped_sort_pred);
+	std::ranges::sort(m_PGDs,pgd_sort_pred);
+	std::ranges::sort(m_PACDs,pacd_sort_pred);
 
-	for (PS::PEDIt e_it = m_PEDs.begin(); e_it!=m_PEDs.end(); e_it++)
-    	(*e_it)->CreateShader();
+	for (auto elem : m_PEDs)
+	{
+		elem->CreateShader();
+	}
 
 #ifdef _EDITOR
     if(pb) UI->ProgressEnd		(pb);
