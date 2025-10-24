@@ -177,7 +177,7 @@ void ETextureThumbnail::FillInfo(PropItemVec& items)
     PHelper().CreateCaption		(items, "Alpha",					_Alpha()?"on":"off");
 }
 
-void ETextureThumbnail::Update(ID3DBaseTexture*& Texture)
+void ETextureThumbnail::Update(IRHISurface*& Texture)
 {
     VERIFY(!Texture);
     if (0 == m_Pixels.size())
@@ -206,7 +206,13 @@ void ETextureThumbnail::Update(ID3DBaseTexture*& Texture)
 
             fn_img = EFS.ChangeFileExt(m_Name.c_str(), ".dds");
             u32	mem = 0;
-            Texture = ::RImplementation.texture_load(fn_img.c_str(), mem);
+
+            auto* baseTexture = ::RImplementation.texture_load(fn_img.c_str(), mem);
+            if (baseTexture)
+            {
+                Texture = GRHI->CreateTextureFromMemory(baseTexture, 0, {});
+            }
+
             if (!Texture)
                 ELog.Msg(mtError, "Can't make preview for texture '%s'.", m_Name.c_str());
 
