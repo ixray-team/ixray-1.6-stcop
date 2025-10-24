@@ -3,26 +3,26 @@ set(XRR4_SRC_FILES)
 
 # Files import
 file(GLOB_RECURSE XRR4_SOURCE_ALL_FILES CONFIGURE_DEPENDS
-    "*.cpp"
-    "*.h"
+	"*.cpp"
+	"*.h"
 )
 file(GLOB_RECURSE XRR4_SOURCE_COMP_FILES CONFIGURE_DEPENDS
-    "../xrRender/*.cpp"
-    "../xrRender/*.h"
+	"../xrRender/*.cpp"
+	"../xrRender/*.h"
 )
 file(GLOB XRR4_SOURCE_BLEND_FILES
-    "../xrRender/Blender_*.cpp"
-    "../xrRender/Blender_*.h"
-    "Blender_*.cpp"
-    "Blender_*.h"
+	"../xrRender/Blender_*.cpp"
+	"../xrRender/Blender_*.h"
+	"Blender_*.cpp"
+	"Blender_*.h"
 )
 file(GLOB_RECURSE XRR4_SOURCE_DX11_FILES CONFIGURE_DEPENDS
-    "../xrRenderDX10/*.cpp"
-    "../xrRenderDX10/*.h"
+	"../xrRenderDX10/*.cpp"
+	"../xrRenderDX10/*.h"
 )
 file(GLOB XRR4_SOURCE_LUA_FILES CONFIGURE_DEPENDS
-    "../../xrEngine/ai_script_lua*.cpp"
-    "../../xrEngine/ai_script_lua*.h"
+	"../../xrEngine/ai_script_lua*.cpp"
+	"../../xrEngine/ai_script_lua*.h"
 )
 file(GLOB XRR4_SOURCE_OVERLAY_FILES "OverlayAPI/*.*")
 file(GLOB_RECURSE XRR4_SOURCE_INCL_FILES CONFIGURE_DEPENDS "../../Include/*.h")
@@ -68,7 +68,7 @@ target_link_libraries(xrRender_R4 PUBLIC xrParticles)
 target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxguid.lib")
-target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
+target_link_libraries(xrRender_R4 PRIVATE "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
 target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
 
@@ -78,20 +78,20 @@ target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}
 target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
 
 add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-    target_link_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/lib/")
-    target_link_libraries(xrRender_R4 PUBLIC "nvsdk_ngx_d.lib")
+	target_link_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/lib/")
+	target_link_libraries(xrRender_R4 PUBLIC "nvsdk_ngx_d.lib")
 
-    # Copy binaries
-    add_custom_command(TARGET ${PROJECT_NAME}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
+	# Copy binaries
+	add_custom_command(TARGET ${PROJECT_NAME}
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	)
 endif()
 
 ## DirectX SDK
