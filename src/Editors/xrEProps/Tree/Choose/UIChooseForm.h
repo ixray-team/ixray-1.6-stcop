@@ -9,7 +9,7 @@ class XREPROPS_API UIChooseForm :  public IEditorWnd
     Node m_GeneralNode;*/
     void UpdateSelected(UIChooseFormItem*NewSelected);
     UIChooseFormItem m_RootItem;
-    ImTextureID m_Texture;
+    IRHISurface* m_Texture;
     ImGuiTextFilter m_Filter;
     UIPropertiesForm* m_Props;
     Flags32  m_Flags;

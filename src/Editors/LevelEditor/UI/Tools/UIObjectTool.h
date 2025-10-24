@@ -44,7 +44,6 @@ private:
 	xr_string RAIFile;
 
 	ref_texture m_TextureNull;
-
-	ImTextureID m_RealTexture;
-	ImTextureID m_RemoveTexture;
+	ref_texture m_RealTexture;
+	ref_texture m_RemoveTexture;
 };

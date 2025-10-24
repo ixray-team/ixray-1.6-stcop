@@ -1717,16 +1717,17 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				EObjectThumbnail* m_Thm = (EObjectThumbnail*)ImageLib.CreateThumbnail(NewPath.data(), EImageThumbnail::ETObject);
 				CTexture* TempTexture = new CTexture();
 
-				ID3DBaseTexture* Texture = nullptr;
+				IRHISurface* Texture = nullptr;
 				m_Thm->Update(Texture);
-				TempTexture->surface_set(GRHI->CreateTextureFromMemory(Texture, 0, {}));
+				TempTexture->surface_set(Texture);
 
 				if(TempTexture->pSurface != nullptr && TempTexture->get_SRView() != nullptr)
 				{
 					Icons[IconPath] = {TempTexture, false};
-					TempTexture->pSurface->Release();
+					Texture->Release();
 				}
-				else {
+				else 
+				{
 					xr_delete(TempTexture);
 				}
 			}
@@ -1737,21 +1738,24 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 			FS.update_path(fn, _groups_, "");
 			Icons[IconPath] = Icons["object"];
 
-			if (IconPath.find(fn) != xr_string::npos) {
+			if (IconPath.find(fn) != xr_string::npos)
+			{
 				xr_string NewPath = IconPath.substr(IconPath.find(fn) + xr_strlen(fn));
 
 				EGroupThumbnail* m_Thm = new EGroupThumbnail(NewPath.data());
 				CTexture* TempTexture = new CTexture();
 
-				ID3DBaseTexture* Texture = nullptr;
+				IRHISurface* Texture = nullptr;
 				m_Thm->Update(Texture);
-				TempTexture->pSurface = GRHI->CreateTextureFromMemory(Texture, 0, {});
+				TempTexture->surface_set(Texture);
 
 				if (TempTexture->pSurface != nullptr && TempTexture->get_SRView()->GetRawSRV() != nullptr)
 				{
 					Icons[IconPath] = { TempTexture, false };
+					Texture->Release();
 				}
-				else {
+				else
+				{
 					xr_delete(TempTexture);
 				}
 			}
@@ -1762,19 +1766,27 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 			if (!Pixels.empty())
 			{
 				CTexture* TempTexture = new CTexture();
-				ID3DTexture2D* pTexture = nullptr;
 				Icons[IconPath] = { TempTexture, false };
-				R_CHK(REDevice->CreateTexture(BtnSize.x, BtnSize.x, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
-				{
-					D3DLOCKED_RECT rect;
-					R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-					memcpy(rect.pBits, Pixels.data(), Pixels.size());
-					R_CHK(pTexture->UnlockRect(0));
 
-					IRHISurface* Surf = GRHI->CreateTextureFromMemory(pTexture, 0, {});
-					TempTexture->surface_set(Surf);
-					Surf->Release();
-				}
+				RHITextureDesc Desc;
+				Desc.Width = BtnSize.x;
+				Desc.Height = BtnSize.x;
+				Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+				Desc.MipLevels = 1;
+				Desc.ArraySize = 1;
+				Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+				Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+
+				RHISubResource SubResource{};
+				SubResource.Width = BtnSize.x;
+				SubResource.Height = BtnSize.x;
+				SubResource.TextureFormat = Desc.Format;
+				SubResource.RowPitch = BtnSize.x * 4;
+				SubResource.Data = Pixels.data();
+
+				IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
+				TempTexture->surface_set(Surf);
+				Surf->Release();
 			}
 			else if (IconPath.ends_with(".tga"))
 			{

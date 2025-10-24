@@ -28,8 +28,8 @@ private:
 	bool bImportMode;
 	bool bReadonlyMode;
 	static UIImageEditorForm* Form;
-	ImTextureID m_Texture;
-	ImTextureID m_TextureRemove;
+	ref_texture m_Texture;
+	ref_texture m_TextureRemove;
 private:
 	ETextureThumbnail* FindUsedTHM(const shared_str& name);
 	void RegisterModifiedTHM();
