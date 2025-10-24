@@ -21,6 +21,7 @@ class CUIAnimatedStatic;
 class UIHint;
 class CMapSpot;
 class CUIPdaContactsWnd;
+class CUIEncyclopediaWnd;
 
 class CUIPdaWnd final : public CUIDialogWnd
 {
@@ -53,6 +54,7 @@ public:
 	CUIRankingWnd*			pUIRankingWnd;
 	CUILogsWnd*				pUILogsWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
+	CUIEncyclopediaWnd*		pUIEncyclopediaWnd;
 
 	CMapSpot*				pSelectedMapSpot;
 
