@@ -3,7 +3,13 @@
     <string id="st_ixray_title">
         <text>S.T.A.L.K.E.R.: Зов Припяти</text>
     </string>
-    <string id="st_discord_menu">
+     <string id="st_ixray_title_cs">
+        <text>S.T.A.L.K.E.R.: Чистое Небо</text>
+    </string>
+    <string id="st_ixray_title_soc">
+        <text>S.T.A.L.K.E.R.: Тень Чернобыля</text>
+    </string>
+   <string id="st_discord_menu">
         <text>Главное меню</text>
     </string>
     <string id="st_discord_level">
@@ -364,18 +370,6 @@
     <string id="ss_png">
         <text>.png</text>
     </string>
-	<string id="st_client_connecting_to">
-		<text>Клиент: Соединение с</text>
-	</string>
-	<string id="st_client_spawning">
-		<text>Клиент: Создание</text>
-	</string>
-	<string id="st_client_synchronising">
-		<text>Клиент: Синхронизация</text>
-	</string>
-	<string id="st_creating_new_game">
-		<text>Создание новой игры</text>
-	</string>
 	<string id="ui_mm_lang">
 		<text>Язык</text>
 	</string>
