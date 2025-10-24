@@ -2,7 +2,9 @@
 #include "stdafx.h"
 #include "UIImageEditorForm.h"
 #include "EThumbnail.h"
+
 UIImageEditorForm* UIImageEditorForm::Form = nullptr;
+
 UIImageEditorForm::UIImageEditorForm()
 {
 	m_ItemProps = new UIPropertiesForm();
@@ -11,20 +13,18 @@ UIImageEditorForm::UIImageEditorForm()
 
 	m_ItemList->SetOnItemsFocusedEvent(TOnILItemsFocused(this,&UIImageEditorForm::OnItemsFocused));
 	m_ItemList->SetOnItemRemoveEvent(TOnItemRemove(&ImageLib, &CImageManager::RemoveTexture));
-	m_Texture = nullptr;
+
 	m_bFilterImage = true;
 	m_bFilterCube = true;
 	m_bFilterBump = true;
 	m_bFilterNormal = true;
 	m_bFilterTerrain = true;
 	m_bUpdateProperties = false;
-	m_TextureRemove = nullptr;
 }
 
 UIImageEditorForm::~UIImageEditorForm()
 {
-	if (m_Texture)
-		IM_TEXTURE_RELEASE(m_Texture);
+	m_Texture.destroy();;
 
 	xr_delete(m_ItemList);
 	xr_delete(m_ItemProps);
@@ -43,7 +43,7 @@ void UIImageEditorForm::Draw()
 
 	if (m_TextureRemove)
 	{
-		IM_TEXTURE_RELEASE(m_TextureRemove);
+		m_TextureRemove.destroy();
 		m_TextureRemove = nullptr;
 	}
 
@@ -110,9 +110,15 @@ void UIImageEditorForm::Draw()
 			if (m_Texture == nullptr)
 			{
 				u32 mem = 0;
-				m_Texture = RImplementation.texture_load("ed\\ed_nodata", mem);
+
+				auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
+				if (baseTexture)
+				{
+					m_Texture->surface_set(GRHI->CreateTextureFromMemory(baseTexture, 0, {}));
+					baseTexture->Release();
+				}
 			}
-			ImGui::Image(m_Texture, ImVec2(128, 128));
+			ImGui::Image(m_Texture->get_SRView()->GetRawSRV(), ImVec2(128, 128));
 			m_ItemProps->Draw();
 
 			if (!IsDocked)
@@ -413,7 +419,10 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 			B->OnBtnClickEvent.bind(this, &UIImageEditorForm::OnCubeMapBtnClick);
 		}
 
-		thm->Update((ID3DBaseTexture*&)m_Texture);
+		IRHISurface* Surf = nullptr;
+		thm->Update(Surf);
+		m_Texture->surface_set(Surf);
+		Surf->Release();
 	}
 
 	m_ItemProps->AssignItems(props);
