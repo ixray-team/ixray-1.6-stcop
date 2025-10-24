@@ -10,30 +10,10 @@
 #include "imgui.h"
 #endif
 
-#ifdef USE_DX11
-#include "imgui_impl_dx11.h"
-#else
-#include "../xrRenderDX9/imgui_impl_dx9.h"
-#endif
-
 dxRenderDeviceRender::dxRenderDeviceRender()
 #ifndef _EDITOR
 	:	Resources(0)
 {
-	CImGuiManager& ImUI = CImGuiManager::Instance();
-
-#ifdef USE_DX11
-	ImUI.HardwareInitCallback		= []() { ImGui_ImplDX11_Init(RDevice, RContext); };
-	ImUI.HardwareDrawDataCallback	= []() { ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); };
-	ImUI.HardwareDestroyCallback	= ImGui_ImplDX11_Shutdown;
-	ImUI.HardwareNewFrameCallback	= ImGui_ImplDX11_NewFrame;
-#else
-	ImUI.HardwareInitCallback		= []() { ImGui_ImplDX9_Init(RDevice); };
-	ImUI.HardwareDrawDataCallback	= []() { ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); };
-	ImUI.HardwareDestroyCallback	= ImGui_ImplDX9_Shutdown;
-	ImUI.HardwareNewFrameCallback	= ImGui_ImplDX9_NewFrame;
-	ImUI.HardwareResetCallback		= []() { ImGui_ImplDX9_InvalidateDeviceObjects(); /*ImGui_ImplDX9_CreateDeviceObjects(); */};
-#endif
 }
 #else
 {}
