@@ -1970,13 +1970,17 @@ public:
 		string1024 buff;
 		exclude_raid_from_args(arguments, buff, sizeof(buff));
 
-		if (sscanf_s(buff, "%s %f %f %f", &section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z) != 4)
+		u32 count;
+		if (sscanf_s(buff, "%s %f %f %f %d", &section, (u32)sizeof(section), &vec.x, &vec.y, &vec.z, &count) != 5)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Spawn object. Format: \"spawn_on_position <item section> <position>\"");
 			return;
 		}
-		srv->SpawnItemToPos(section, vec);
+		for (int i = 0; i < count; i++)
+		{
+			srv->SpawnItemToPos(section, vec);
+		}
 
 	}
 	virtual void		Save(IWriter* F) {};
