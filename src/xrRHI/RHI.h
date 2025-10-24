@@ -125,3 +125,4 @@ private:
 extern RHI_API CRHI* GRHI;
 
 #include "RHIUtils.h"
+#include "Layout/ImGui/RHIImGuiLayout.h"
