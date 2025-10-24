@@ -76,7 +76,7 @@ namespace PAPI{
 	};
 	//////////////////////////////////////////////////////////////////////
 	// Type codes for all actions
-	enum PActionEnum
+	enum PARTICLES_API PActionEnum
 	{
 		PAAvoidID,			// Avoid entering the domain of space.
 		PABounceID,			// Bounce particles off a domain of space.
