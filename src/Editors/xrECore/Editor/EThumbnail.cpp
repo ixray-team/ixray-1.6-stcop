@@ -47,38 +47,62 @@ void EImageThumbnail::CreatePixels(u32* p, u32 w, u32 h)
     DXTUtils::Filter::Process(m_Pixels.data(), THUMB_WIDTH, THUMB_HEIGHT, p, w, h, DXTUtils::Filter::imf_mitchell);
 }
 
-void EImageThumbnail::Update(ID3DBaseTexture*& Texture)
+void EImageThumbnail::Update(IRHISurface*& Texture)
 {
-    if (m_Pixels.size() == 0)
-    {
-        if (Texture)
-            IM_TEXTURE_RELEASE(Texture);
+	if (m_Pixels.empty())
+	{
+		if (Texture)
+		{
+			Texture->Release();
+			Texture = nullptr;
+		}
+		return;
+	}
 
-        Texture = nullptr;
+	RHITextureDesc Desc;
+	Desc.Width = THUMB_WIDTH;
+	Desc.Height = THUMB_HEIGHT;
+	Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	Desc.MipLevels = 1;
+	Desc.ArraySize = 1;
+	Desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 
-        return;
-    }
+	if (Texture)
+	{
+		if (Texture->GetWidth() != Desc.Width ||
+			Texture->GetHeight() != Desc.Height ||
+			Texture->GetFormat() != Desc.Format)
+		{
+			Texture->Release();
+			Texture = nullptr;
+		}
+	}
 
-    ID3DTexture2D* pTexture = nullptr;
-    if (Texture != nullptr)
-    {
-        R_CHK(((IDirect3DBaseTexture9*)(Texture))->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
-    }
-    else
-    {
-        R_CHK(REDevice->CreateTexture(THUMB_WIDTH, THUMB_HEIGHT, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
-        Texture = pTexture;
-    }
+	RHISubResource SubResource{};
+	SubResource.Width = THUMB_WIDTH;
+	SubResource.Height = THUMB_HEIGHT;
+	SubResource.TextureFormat = Desc.Format;
+	SubResource.RowPitch = THUMB_WIDTH * 4;
+	SubResource.DepthPitch = 0;
 
-    D3DLOCKED_RECT rect;
-    R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
-    for (int i = 0; i < THUMB_HEIGHT; i++)
-    {
+	xr_vector<u8> FlippedData(THUMB_WIDTH * THUMB_HEIGHT * 4);
+	for (int Y = 0; Y < THUMB_HEIGHT; ++Y)
+	{
+		const u8* Src = (u8*)Pixels() + (THUMB_WIDTH * (THUMB_HEIGHT - Y - 1)) * 4;
+		u8* Dst = FlippedData.data() + Y * THUMB_WIDTH * 4;
+		memcpy(Dst, Src, THUMB_WIDTH * 4);
+	}
+	SubResource.Data = FlippedData.data();
 
-        unsigned char* dest = static_cast<unsigned char*>(rect.pBits) + (rect.Pitch * i);
-        memcpy(dest, Pixels() + (THUMB_WIDTH * (THUMB_HEIGHT - i - 1)), sizeof(unsigned char) * THUMB_WIDTH * 4);
-    }
-    R_CHK(pTexture->UnlockRect(0));
+	if (!Texture)
+	{
+		Texture = GRHI->CreateTexture2D(Desc, SubResource);
+	}
+	else
+	{
+		Texture->UpdateData(0, 0, &SubResource);
+	}
 }
 
 ECORE_API EImageThumbnail* CreateThumbnail(LPCSTR src_name, ECustomThumbnail::THMType type, bool bLoad)
