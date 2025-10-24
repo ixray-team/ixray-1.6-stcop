@@ -3,12 +3,13 @@
 
 #include "ParticleEffectDef.h"
 #include "ParticleEffect.h"
+#include "../../xrServerEntities/object_destroyer.h"
 
 #ifdef _EDITOR
 	#include "../../Editors/xrECore/Editor/UI_ToolsCustom.h"
 	#include "../../Editors/xrECore/Editor/ParticleEffectActions.h"
 #else
-
+#include "../../xrParticles/EditorLegacy/ParticleEffectActions.h"
 #endif
 
 //---------------------------------------------------------------------------
@@ -45,7 +46,7 @@ CPEDef::~CPEDef()
 }
 void CPEDef::CreateShader()
 {
-    if (*m_ShaderName&&*m_TextureName)	
+    if (*m_ShaderName&&*m_TextureName && !m_CachedShader._get())	
         m_CachedShader.create(*m_ShaderName,*m_TextureName);
 }
 void CPEDef::DestroyShader()
@@ -318,6 +319,22 @@ BOOL CPEDef::Load2Original(CInifile& ini)
 		}
 		Compile							(m_EActionList);
 	}
+#else
+	u32 count		= ini.r_u32("_effect", "action_count");
+	EPAVec m_EActionList;
+	m_EActionList.resize(count);
+	u32 action_id	= 0;
+	for (auto it=m_EActionList.begin(); it!=m_EActionList.end(); ++it,++action_id)
+	{
+		string256					sect;
+		xr_sprintf					(sect, sizeof(sect), "action_%04d", action_id);
+		PAPI::PActionEnum type		= (PAPI::PActionEnum)(ini.r_u32(sect,"action_type"));
+		(*it)						= EPALegacy::EPACreator::pCreateEActionImpl(type);
+		(*it)->parent = this;
+		(*it)->Load2				(ini, sect);
+	}
+	Compile							(m_EActionList);
+	delete_data(m_EActionList);
 #endif
 	return TRUE;
 }
@@ -459,7 +476,6 @@ void CPEDef::Save(IWriter& F)
 #endif
 }
 
-#ifdef _EDITOR
 void PS::CPEDef::Compile(EPAVec& v)
 {
 	m_Actions.clear	();
@@ -470,7 +486,11 @@ void PS::CPEDef::Compile(EPAVec& v)
     
 	for(; it!=it_e; ++it)
 	{
+#ifdef _EDITOR
 		if ((*it) != nullptr && (*it)->flags.is(EParticleAction::flEnabled))
+#else
+		if ((*it) != nullptr && (*it)->flags.is(EPALegacy::EParticleAction::flEnabled))
+#endif
 		{
     	    (*it)->Compile(m_Actions);
             cnt++;
@@ -479,4 +499,3 @@ void PS::CPEDef::Compile(EPAVec& v)
     m_Actions.seek	(0);
     m_Actions.w_u32 (cnt);
 }
-#endif
