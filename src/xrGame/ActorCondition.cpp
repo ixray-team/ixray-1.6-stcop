@@ -242,7 +242,7 @@ void CActorCondition::UpdateCondition()
 			ConditionStand(cur_weight / base_weight);
 		}
 
-		if (IsGameTypeSingle())
+		if (IsGameTypeSingleCompatible())
 		{
 			float k_max_power = 1.0f + _min(cur_weight, base_weight) / base_weight
 				+ _max(0.0f, (cur_weight - base_weight) / 10.0f);
@@ -576,7 +576,7 @@ bool CActorCondition::IsCantWalk() const
 
 bool CActorCondition::IsCantWalkWeight()
 {
-	if(IsGameTypeSingle() && !GodMode())
+	if(IsGameTypeSingleCompatible() && !GodMode())
 	{
 		float max_w	= m_object->MaxWalkWeight();
 
