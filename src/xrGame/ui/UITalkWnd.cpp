@@ -391,10 +391,12 @@ void CUITalkWnd::SwitchToTrade()
 {
 	if ( m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() )
 	{
+		UITalkDialogWnd->Hide();
 		if (CurrentGameUI())
 		{
 			CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
 		}
+		StopSnd();
 	}
 }
 
