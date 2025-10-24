@@ -18,7 +18,7 @@ void UIChooseForm::UpdateSelected(UIChooseFormItem*NewSelected)
 		if (E.flags.test(SChooseEvents::flClearTexture))
 		{
 			if (m_Texture)
-				((IDirect3DBaseTexture9*)(m_Texture))->Release();
+				m_Texture->Release();
 			m_Texture = 0;
 		}
 		if (!E.on_get_texture.empty())
@@ -82,7 +82,8 @@ UIChooseForm::UIChooseForm():m_Texture(nullptr),m_SelectedItem(nullptr), m_RootI
 UIChooseForm::~UIChooseForm()
 {
 	if (m_Texture)
-		((IDirect3DBaseTexture9*)(m_Texture))->Release();
+		m_Texture->Release();
+
 	if (!E.on_close.empty())
 	{
 		E.on_close();
@@ -127,7 +128,8 @@ void UIChooseForm::Draw()
 				{
 					if (m_Texture)
 					{
-						ImGui::Image(m_Texture, ImVec2(192, 192));
+						IRHIShaderResourceView* SRV = GRHI->CreateShaderResourceView(m_Texture, nullptr);
+						ImGui::Image(SRV->GetRawSRV(), ImVec2(192, 192));
 					}
 					else
 					{

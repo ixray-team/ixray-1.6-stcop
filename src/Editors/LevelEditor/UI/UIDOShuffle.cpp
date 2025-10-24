@@ -19,13 +19,11 @@ UIDOShuffle::~UIDOShuffle()
 
 	ApplyChanges();
 	xr_delete(m_Props);
-	if (m_Texture)
-		IM_TEXTURE_RELEASE(m_Texture);
+
+	m_Texture.destroy();
+	m_RealTexture.destroy();
 
 	ClearIndexForms();
-
-	if (m_RealTexture)
-		IM_TEXTURE_RELEASE(m_RealTexture);
 }
 
 void UIDOShuffle::Draw()
@@ -73,12 +71,10 @@ void UIDOShuffle::Draw()
 	{
 		if (m_RealTexture != m_Texture)
 		{
-			if (m_RealTexture)
-				IM_TEXTURE_RELEASE(m_RealTexture);
-
+			m_RealTexture.destroy();
 			m_RealTexture = m_Texture;
 		}
-		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
+		ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView()->GetRawSRV() : m_TextureNull->get_SRView()->GetRawSRV(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
@@ -311,11 +307,7 @@ void UIDOShuffle::OnItemFocused(const char* name)
 {
 	if (!name)
 	{
-		if (m_Texture)
-		{
-			IM_TEXTURE_RELEASE(m_Texture);
-			m_Texture = nullptr;
-		}
+		m_Texture.destroy();
 
 		m_Props->ClearProperties();
 		m_list_selected = -1;
@@ -323,14 +315,15 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	}
 
 	m_Thm = ImageLib.CreateThumbnail(name, EImageThumbnail::ETObject);
-	if (m_Texture)
-	{
-		IM_TEXTURE_RELEASE(m_Texture);
-		m_Texture = nullptr;
-	}
+	m_Texture.destroy();
 	
 	if (m_Thm)
-		m_Thm->Update((ID3DBaseTexture*&)m_Texture);
+	{
+		IRHISurface* Surface = nullptr;
+		m_Thm->Update(Surface);
+		m_Texture->surface_set(Surface);
+		Surface->Release();
+	}
 
 	xr_delete(m_Thm);
 
