@@ -881,7 +881,7 @@ bool CContentView::DrawItem(const FileOptData& FilePath, size_t& HorBtnIter, con
 
 void CContentView::AcceptDragDropAction(const CContentView::FileOptData& InitFileName)
 {
-	if (/*!InitFileName.IsDir ||*/ (InitFileName.File == ".." && CurrentDir.find_last_of("/\\") == xr_string::npos) || IsSpawnElement || !ImGui::BeginDragDropTarget())
+	if ((InitFileName.File == ".." && CurrentDir.find_last_of("/\\") == xr_string::npos) || IsSpawnElement || !ImGui::BeginDragDropTarget())
 	{
 		return;
 	}
@@ -993,12 +993,7 @@ bool CContentView::BeginDragDropAction(xr_path& FilePath, xr_string& FileName, c
 	}
 	else
 	{
-		if (
-				FilePath == ".." || 
-				!InitFileName.IsDir ||
-				FilePath.xstring().find_last_of("/\\") == xr_string::npos ||
-				!ImGui::BeginDragDropSource()
-		   )
+		if (FilePath == ".." || !InitFileName.IsDir || FilePath.xstring().find_last_of("/\\") == xr_string::npos || !ImGui::BeginDragDropSource())
 		{
 			return false;
 		}
@@ -1037,7 +1032,9 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 	}
 
 	if (!isSelected)
+	{
 		AcceptDragDropAction(InitFileName);
+	}
 
 	return BeginDragDropAction(FilePath, FileName, InitFileName, IconPtr);
 }
@@ -1045,7 +1042,9 @@ bool CContentView::DrawItemHelper(xr_path& FilePath, xr_string& FileName, const 
 bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter, const size_t IterCount)
 {
 	if (InitFileName.File.empty())
+	{
 		return false;
+	}
 
 	const ImGuiStyle& style = ImGui::GetStyle();
 
@@ -1057,25 +1056,29 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 	bool isRenaming = RenameObject.Path == FilePath;
 
 	if (FileName.empty())
+	{
 		return false;
+	}
 
 	if (ViewMode == EViewMode::List)
+	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+	}
 
 	const ImVec2& CursorPos = ImGui::GetCursorPos();
 	auto InvalidateLambda = [&FileName, this, &CursorPos, &HorBtnIter, IterCount]()
+	{
+		if (HorBtnIter != IterCount)
 		{
-			if (HorBtnIter != IterCount)
-			{
-				ImGui::SetCursorPosY(CursorPos.y);
-				ImGui::SetCursorPosX(CursorPos.x + 15 + BtnSize.x);
-				HorBtnIter++;
-			}
-			else
-			{
-				HorBtnIter = 0;
-			}
-		};
+			ImGui::SetCursorPosY(CursorPos.y);
+			ImGui::SetCursorPosX(CursorPos.x + 15 + BtnSize.x);
+			HorBtnIter++;
+		}
+		else
+		{
+			HorBtnIter = 0;
+		}
+	};
 	int padding = 10;
 
 	ImVec2 ImageSize = BtnSize;
@@ -1098,7 +1101,9 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 		IconPtr = &GetTexture(HackName.c_str());
 	}
 	else
+	{
 		IconPtr = &GetTexture(FilePath);
+	}
 
 	if (!IconPtr->Icon)
 		return false;
@@ -1127,7 +1132,6 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 				ImGui::Dummy(ImVec2(0, padding / 2));
 			
 			if (ImGui::Button(ButtonId.c_str(), ImVec2(buttonSize.x, (isRenaming && ViewMode == EViewMode::Tile) ? buttonSize.y - 20: buttonSize.y)))
-			//if (ImGui::Button(ButtonId.c_str(), ImVec2(buttonSize.x, buttonSize.y-20)))
 			{
 				ImGuiIO& io = ImGui::GetIO();
 
@@ -1176,11 +1180,11 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 			xr_string LabelText = FilePath.has_extension()
 				? FileName.substr(0, FileName.length() - FilePath.extension().string().length())
 				: FileName;
+
 			if (!isRenaming)
 			{
 				if (ViewMode == EViewMode::Tile)
 				{
-#if 1
 					textSize = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data());
 					float textWidth = textSize.x;
 
@@ -1189,28 +1193,14 @@ bool CContentView::DrawItemN(const FileOptData& InitFileName, size_t& HorBtnIter
 						LabelText = LabelText.substr(0, LabelText.length() - 4) + "..";
 						textWidth = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data()).x;
 					}
-#else
-					float maxTextWidth = buttonSize.x - padding;
-					float textWidth = ImGui::CalcTextSize(LabelText.c_str()).x;
-
-					if (textWidth > maxTextWidth)
-					{
-						size_t trimSize = LabelText.length();
-						while (textWidth > maxTextWidth && trimSize > 2)
-						{
-							trimSize -= 2;
-							LabelText = LabelText.substr(0, trimSize) + "..";
-							textWidth = ImGui::CalcTextSize(LabelText.c_str()).x;
-						}
-					}
-
-#endif
 					textSize.x = textWidth;
 				}
 				else
+				{
 					textSize = ImGui::CalcTextSize(Platform::ANSI_TO_UTF8(LabelText).data());
+				}
 			}
-			
+
 			float TextPosY = ImageSize.y;
 
 			xr_string ExtDescription = "";
@@ -1781,7 +1771,9 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 					memcpy(rect.pBits, Pixels.data(), Pixels.size());
 					R_CHK(pTexture->UnlockRect(0));
 
-					TempTexture->pSurface = GRHI->CreateTextureFromMemory(pTexture, 0, {});
+					IRHISurface* Surf = GRHI->CreateTextureFromMemory(pTexture, 0, {});
+					TempTexture->surface_set(Surf);
+					Surf->Release();
 				}
 			}
 			else if (IconPath.ends_with(".tga"))
