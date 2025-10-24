@@ -1833,7 +1833,7 @@ public:
 			}
 
 			int count = 1;
-			char nameSection[128] = {};
+			string128 nameSection = {};
 			auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
 			if (sc > 2) {
 				Msg("! Failed to parse input");
@@ -1876,37 +1876,31 @@ public:
 			}
 		}
 
-		else {
+		else 
+		{
+			string128 nameSection = {};
+			int count = 1;
+			auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
+			if (sc > 2) {
+				Msg("! Failed to parse input");
+				return;
+			}
 
-			if (pSettings->section_exist(args))
+			if (pSettings->section_exist(nameSection))
 			{
-				Fvector3 pos, dir, madPos;
-				float range;
-				pos.set(Device.vCameraPosition);
-				dir.set(Device.vCameraDirection);
-				collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-
-				if (RQ.O)
-				{
-					Msg("! ERROR: Can spawn only on ground");
-					return;
-				}
-
-				range = RQ.range;
-				dir.normalize();
-				madPos.mad(pos, dir, range);
+				Fvector3 madPos = madPos.mad(Device.vCameraPosition, Device.vCameraDirection, HUD().GetCurrentRayQuery().range);
 
 				NET_Packet		P;
 				P.w_begin(M_REMOTE_CONTROL_CMD);
 				string128 str;
-				xr_sprintf(str, "spawn_on_position %s %f %f %f", args, madPos.x, madPos.y, madPos.z);
+				xr_sprintf(str, "spawn_on_position %s %f %f %f %d", nameSection, madPos.x, madPos.y, madPos.z, count);
 				P.w_stringZ(str);
 				Level().Send(P, net_flags(TRUE, TRUE));
 			}
 			else
 			{
 				Msg("! ERROR: bad command parameters.");
-				Msg("Spawn item. Format: \"g_spawn <item section>\"");
+				Msg("Spawn item. Format: \"g_spawn <item section> <count>\"");
 				return;
 			}
 		}
