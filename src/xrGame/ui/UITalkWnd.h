@@ -70,8 +70,8 @@ public:
 	void				AddQuestion				(const shared_str& text, const shared_str& id, int number, SPhraseInfo phInfo);
 	void				AddAnswer				(const shared_str& text, LPCSTR SpeakerName);
 	bool				b_disable_break;
-protected:
 	CUITalkDialogWnd*	UITalkDialogWnd;
+protected:
 
 	CActor*				m_pActor;
 	CInventoryOwner*	m_pOurInvOwner;
