@@ -91,29 +91,19 @@ void CImGuiManager::InitPlatform()
 
 void CImGuiManager::InitHardware()
 {
-	HardwareInitCallback();
+	RHIUtils::ImGui::Init();
 }
 
 void CImGuiManager::Reset()
 {
-	if (HardwareResetCallback)
-	{
-		HardwareResetCallback();
-	}
+	RHIUtils::ImGui::Reset();
 }
 
 void CImGuiManager::Destroy(bool HardwareOnly)
 {
 	if (HardwareOnly)
 	{
-		HardwareDestroyCallback();
-
-		HardwareInitCallback = nullptr;
-		HardwareResetCallback = nullptr;
-		HardwareDestroyCallback = nullptr;
-		HardwareNewFrameCallback = nullptr;
-		HardwareDrawDataCallback = nullptr;
-
+		RHIUtils::ImGui::Destroy();
 		return;
 	}
 
@@ -174,7 +164,7 @@ void CImGuiManager::Unsubscribe(shared_str Name)
 
 void CImGuiManager::BeginRender()
 {
-	HardwareNewFrameCallback();
+	RHIUtils::ImGui::NewFrame();
 }
 
 void CImGuiManager::AfterRender()
@@ -219,7 +209,7 @@ void CImGuiManager::Render()
 
 	ImGui::Render();
 
-	HardwareDrawDataCallback();
+	RHIUtils::ImGui::DrawData();
 }
 
 void CImGuiManager::UpdateCapture()
@@ -275,7 +265,7 @@ void CImGuiManager::NewPlatformFrame() const
 
 void CImGuiManager::NewHardwareFrame() const
 {
-	HardwareNewFrameCallback();
+	RHIUtils::ImGui::NewFrame();
 }
 
 CImGuiManager& CImGuiManager::Instance()
