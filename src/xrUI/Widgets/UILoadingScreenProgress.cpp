@@ -38,7 +38,7 @@ u32 calc_progress_color(u32 idx, u32 total, float stage, float max_stage, bool u
     if (useLegacyCount && idx > (total / 2))
         idx = total - idx;
 
-	float kk = ( stage/max_stage ) *  (float(total+1));
+    float kk = (stage / max_stage) * (float((total) / (1 + useLegacyCount)));
     float f = 1 / (exp((float(idx) - kk) * 0.9f) + 1.0f);
 
     return color_argb_f(f, 1.0f, 1.0f, 1.0f);
