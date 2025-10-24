@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="Contacts">
+		<text>Контакты</text>
+	</string>
+	<string id="pda_btn_contacts">
+		<text>Контакты</text>
+	</string>
+	<string id="pda_btn_contacts_hint">
+		<text>Показать список контактов сталкеров</text>
+	</string>
+	<string id="Encyclopedia">
+		<text>Справка</text>
+	</string>
+	<string id="pda_btn_encyclopedia">
+		<text>Справка</text>
+	</string>
+	<string id="pda_btn_encyclopedia_hint">
+		<text>Показать энциклопедию по Зоне</text>
+	</string>
+</string_table>
