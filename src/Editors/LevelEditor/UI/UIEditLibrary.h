@@ -12,7 +12,7 @@ public:
 	static void Close();
 	static void OnRender();
 
-	ImTextureID m_RealTexture;
+	ref_texture m_RealTexture;
 
 	void OnItemFocused(ListItem* item);
 	void OnItemUnfocused(ListItem* item);

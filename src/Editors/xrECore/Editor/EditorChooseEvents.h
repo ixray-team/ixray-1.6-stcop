@@ -77,12 +77,12 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateObjectTHM(LPCSTR name, ImTextureID&ID)
+    void   UpdateObjectTHM(LPCSTR name, IRHISurface*&ID)
     {
         EObjectThumbnail* thm = new EObjectThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update((ID3DBaseTexture*&)ID);
+            thm->Update(ID);
         }
         else if (ID)
         {
@@ -107,12 +107,12 @@ namespace ChoseEvents
         if (thm->Valid()) thm->FillInfo(info_items);
         xr_delete(thm);
     }
-    void   UpdateGroupTHM(LPCSTR name, ImTextureID& ID)
+    void   UpdateGroupTHM(LPCSTR name, IRHISurface*& ID)
     {
         EGroupThumbnail* thm = new EGroupThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update((ID3DBaseTexture*&)ID);
+            thm->Update(ID);
         }
         else if(ID)
         {
@@ -181,42 +181,64 @@ namespace ChoseEvents
         LAItemIt _E = lst.end();
         for (; it != _E; it++)			items.push_back(SChooseItem(*(*it)->cName, ""));
     }
-    void   UpdateLAnim(LPCSTR name, ImTextureID& Texture)
+
+    void UpdateLAnim(LPCSTR Name, IRHISurface*& Texture)
     {
-        int frame;
-        CLAItem* item = LALib.FindItem(name);
-        if (item)
+        CLAItem* Item = LALib.FindItem(Name);
+        if (!Item)
+            return;
+
+        RHITextureDesc Desc;
+        Desc.Width = THUMB_WIDTH;
+        Desc.Height = THUMB_HEIGHT;
+        Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+        Desc.MipLevels = 1;
+        Desc.ArraySize = 1;
+        Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+        Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+
+        if (Texture)
         {
+            if (Texture->GetWidth() != Desc.Width ||
+                Texture->GetHeight() != Desc.Height ||
+                Texture->GetFormat() != Desc.Format)
+            {
+                Texture->Release();
+                Texture = nullptr;
+            }
+        }
 
-            ID3DTexture2D* pTexture = nullptr;
-            if (Texture != nullptr)
-            {
-                R_CHK(((ID3DBaseTexture*)Texture)->QueryInterface(__uuidof(ID3DTexture2D), (void**)&pTexture));
-            }
-            else
-            {
-                R_CHK(REDevice->CreateTexture(THUMB_WIDTH, THUMB_HEIGHT, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &pTexture, 0));
-                Texture = pTexture;
-            }
-            {
-                D3DLOCKED_RECT rect;
-                R_CHK(pTexture->LockRect(0, &rect, 0, 0));
-                u32* dest = nullptr;
-                
-                for (u32 y = 0; y < THUMB_HEIGHT; y++)
-                {
-                    dest = reinterpret_cast<u32*>(reinterpret_cast<char*>(rect.pBits)+(rect.Pitch*y));
-                    for (u32 i = 0; i < THUMB_WIDTH; i++)
-                    {
-                        dest[i] = item->CalculateRGB(EDevice->fTimeGlobal, frame);
-                        dest[i] = subst_alpha(dest[i], 0xFF);
-                    }
-                }
-                R_CHK(pTexture->UnlockRect(0));
-            }
+        xr_vector<u32> Pixels(THUMB_WIDTH * THUMB_HEIGHT);
 
+        int Frame = 0;
+        for (u32 Y = 0; Y < THUMB_HEIGHT; ++Y)
+        {
+            for (u32 X = 0; X < THUMB_WIDTH; ++X)
+            {
+                u32 Color = Item->CalculateRGB(EDevice->fTimeGlobal, Frame);
+                Color = subst_alpha(Color, 0xFF); // фиксируем альфу
+                Pixels[Y * THUMB_WIDTH + X] = Color;
+            }
+        }
+
+        // Подготовка подресурса
+        RHISubResource SubResource{};
+        SubResource.Width = THUMB_WIDTH;
+        SubResource.Height = THUMB_HEIGHT;
+        SubResource.TextureFormat = Desc.Format;
+        SubResource.RowPitch = THUMB_WIDTH * 4;
+        SubResource.Data = Pixels.data();
+
+        if (!Texture)
+        {
+            Texture = GRHI->CreateTexture2D(Desc, SubResource);
+        }
+        else
+        {
+            Texture->UpdateData(0, 0, &SubResource);
         }
     }
+
     //---------------------------------------------------------------------------
     void   FillEShader(ChooseItemVec& items, void* param)
     {
@@ -299,11 +321,11 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHM(LPCSTR name, ImTextureID&Texture)
+    void   UpdateTextureTHM(LPCSTR name, IRHISurface*&Texture)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)Texture);
+            if (thm->Valid()) thm->Update(Texture);
             xr_delete(thm);
         }
     }
@@ -319,11 +341,11 @@ namespace ChoseEvents
         }
     }
 
-    void   UpdateTextureTHMRaw(LPCSTR name, ImTextureID& ID)
+    void   UpdateTextureTHMRaw(LPCSTR name, IRHISurface*& ID)
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)ID);
+            if (thm->Valid()) thm->Update(ID);
             xr_delete(thm);
         }
     }
