@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<window>
+
+ 	<main_wnd x="0" y="0" width="1024" height="768"/>
+ 
+	<background x="28" y="41" width="764" height="667">
+        <texture>ui_inGame2_pda_buttons_background</texture>
+	</background>
+	
+    <!-- INFO BACKGROUND -->
+    <left_frame_window x="302" y="50" width="455" height="600" a="80">
+		<texture>ui_inGame2_pda_ranking_icon_over</texture>        
+    </left_frame_window>
+
+    <!-- INFO BACKGROUND HEADER -->
+    <left_frame_line x="5" y="17" width="441" height="21">
+	    <title x="8" y="1" width="435" height="18">
+            <text font="letterica16" r="100" g="100" b="100" complex_mode="0"/>
+        </title>
+        <texture>ui_inGame2_pda_ranking_center_caption</texture>        
+    </left_frame_line>
+	
+    <!-- CURRENT ARTICLE HEADER -->
+	<article_header_static x="22" y="48" width="298" height="22">
+		<text font="letterica25" r="225" g="225" b="250" complex_mode="0"/>
+	</article_header_static>
+
+    <!-- LIST BACKGROUND -->
+	<right_frame_window x="6" y="50" width="283" height="600" a="80">
+		<texture>ui_inGame2_pda_ranking_icon_over</texture>        
+    </right_frame_window>
+
+    <!-- LIST HEADER -->
+    <right_frame_line x="5" y="17" width="274" height="21">
+        <title x="8" y="1" width="435" height="18">
+            <text font="letterica16" r="100" g="100" b="100">Encyclopedia</text>
+        </title>
+        <texture>ui_inGame2_pda_ranking_center_caption</texture>        
+    </right_frame_line>
+	
+	<tree_root_font font="letterica18" r="225" g="225" b="250">Encyclopedia</tree_root_font>
+	<tree_item_font font="letterica16" r="255" g="255" b="255">Encyclopedia</tree_item_font>
+
+
+    <!-- ENCYCLOPEDIA INDEX LIST -->
+    <idx_list x="23" y="55" width="258" height="538" item_height="20">
+        <font font="letterica16" r="255" g="255" b="255"/>
+    </idx_list>
+
+    <a_static x="2500" y="-3" width="24" height="32" frames="16" duration="1000" columns="8" frame_width="32" frame_height="32" cyclic="1" autoplay="1" stretch="1">
+        <texture>ui\ui_pda_anims_04</texture>
+    </a_static>
+
+    <info_list x="15" y="41" width="437" height="551" item_height="15" right_ident="5" top_indent="47">
+        <font font="letterica18" r="255" g="255" b="255"/>
+    </info_list>
+
+    <mask_frame_window x="0" y="0" width="500" height="500" a="70">
+		<texture>ui_pda_frame2</texture>		
+	</mask_frame_window>
+</window>
