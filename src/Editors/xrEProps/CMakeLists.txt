@@ -34,6 +34,7 @@ target_compile_definitions(xrEProps PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrEProps PUBLIC xrEUI)
+target_link_libraries(xrEProps PUBLIC xrRHI)
 
 # Move precompiled header
 set_target_properties(xrEProps PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
