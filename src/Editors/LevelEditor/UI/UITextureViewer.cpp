@@ -115,57 +115,67 @@ void CUITextureViewer::LoadFromFile(const xr_path& File)
 	CurrentFileName = File.xfilename();
 	SrcData = DXTUtils::GitPixels(File.xstring().c_str());
 
-	IDirect3DTexture9* pTex = nullptr;
-	HRESULT hr = RDevice->CreateTexture
-	(
-		(UINT)SrcData.W,
-		(UINT)SrcData.H,
-		1,
-		0,
-		D3DFMT_A8R8G8B8,
-		D3DPOOL_MANAGED,
-		&pTex,
-		nullptr
-	);
+	RHITextureDesc Desc;
+	Desc.Width = SrcData.W;
+	Desc.Height = SrcData.H;
+	Desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	Desc.MipLevels = 1;
+	Desc.ArraySize = 1;
+	Desc.Usage = ERHI_USAGE::USAGE_DYNAMIC;
+	Desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
 
-	if (FAILED(hr) || !pTex)
+	xr_vector<u8> Pixels(SrcData.W * SrcData.H * 4);
+	for (size_t y = 0; y < SrcData.H; ++y)
 	{
-		Msg("! Failed to create texture for viewer");
-		return;
+		for (size_t x = 0; x < SrcData.W; ++x)
+		{
+			size_t idx = (y * SrcData.W + x) * 4;
+			Pixels[idx + 0] = SrcData.P[idx + 2]; // B
+			Pixels[idx + 1] = SrcData.P[idx + 1]; // G
+			Pixels[idx + 2] = SrcData.P[idx + 0]; // R
+			Pixels[idx + 3] = SrcData.P[idx + 3]; // A
+		}
 	}
 
-	Texture->pSurface = GRHI->CreateTextureFromMemory(pTex, 0, {});
+	RHISubResource SubResource{};
+	SubResource.Width = SrcData.W;
+	SubResource.Height = SrcData.H;
+	SubResource.TextureFormat = Desc.Format;
+	SubResource.RowPitch = SrcData.W * 4;
+	SubResource.Data = Pixels.data();
+
+	IRHISurface* Surf = GRHI->CreateTexture2D(Desc, SubResource);
+	Texture->surface_set(Surf);
+	Surf->Release();
+
 	UpdateTexture();
 }
 
 void CUITextureViewer::UpdateTexture()
 {
-	if (!Texture)
+	if (!Texture || !Texture->pSurface)
 	{
 		return;
 	}
 
-	IDirect3DTexture9* tex = (IDirect3DTexture9*)Texture->get_SRView()->GetRawSRV();
-	if (!tex)
+	IRHISurface* Surf = Texture->pSurface;
+	u32 Width = Surf->GetWidth();
+	u32 Height = Surf->GetHeight();
+
+	u8* Data = static_cast<u8*>(Surf->Lock(0, nullptr));
+	if (!Data)
 	{
 		return;
 	}
 
-	D3DLOCKED_RECT rect;
-	if (FAILED(tex->LockRect(0, &rect, nullptr, 0)))
-	{
-		return;
-	}
+	bool FullMask = (ChannelMask == (Channel_R | Channel_G | Channel_B | Channel_A));
 
-	uint8_t* dst = (uint8_t*)rect.pBits;
-	bool fullMask = (ChannelMask == (Channel_R | Channel_G | Channel_B | Channel_A));
-
-	for (size_t y = 0; y < SrcData.H; y++)
+	for (size_t y = 0; y < Height; ++y)
 	{
-		uint8_t* row = dst + y * rect.Pitch;
-		for (size_t x = 0; x < SrcData.W; x++)
+		u8* Row = Data + y * Width * 4;
+		for (size_t x = 0; x < Width; ++x)
 		{
-			size_t idx = (y * SrcData.W + x) * 4;
+			size_t idx = (y * Width + x) * 4;
 			uint8_t r = SrcData.P[idx + 0];
 			uint8_t g = SrcData.P[idx + 1];
 			uint8_t b = SrcData.P[idx + 2];
@@ -173,14 +183,13 @@ void CUITextureViewer::UpdateTexture()
 
 			uint8_t R, G, B, A;
 
-			if (fullMask)
+			if (FullMask)
 			{
 				R = b;
 				G = g;
 				B = r;
 				A = a;
 			}
-
 			else if (GrayMode)
 			{
 				uint8_t v = 0;
@@ -200,12 +209,12 @@ void CUITextureViewer::UpdateTexture()
 				A = (ChannelMask & Channel_A) ? a : 255;
 			}
 
-			row[x * 4 + 0] = B;
-			row[x * 4 + 1] = G;
-			row[x * 4 + 2] = R;
-			row[x * 4 + 3] = A;
+			Row[x * 4 + 0] = B;
+			Row[x * 4 + 1] = G;
+			Row[x * 4 + 2] = R;
+			Row[x * 4 + 3] = A;
 		}
 	}
 
-	tex->UnlockRect(0);
+	Surf->Unlock();
 }
