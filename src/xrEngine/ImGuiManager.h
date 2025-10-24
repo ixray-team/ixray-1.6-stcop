@@ -23,12 +23,6 @@ public:
 	ImGuiCallback PlatformDestroyCallback = nullptr;
 	ImGuiCallback PlatformNewFrameCallback = nullptr;
 
-	ImGuiCallback HardwareInitCallback = nullptr;
-	ImGuiCallback HardwareResetCallback = nullptr;
-	ImGuiCallback HardwareDestroyCallback = nullptr;
-	ImGuiCallback HardwareNewFrameCallback = nullptr;
-	ImGuiCallback HardwareDrawDataCallback = nullptr;
-
 public:
 	CImGuiManager() = default;
 	~CImGuiManager() = default;
