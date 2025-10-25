@@ -137,6 +137,9 @@ extern ECORE_API int opt_dynamic;
 
 extern ECORE_API int r_debug_render_depth;
 
+extern ECORE_API u32 ps_r4_mblur_quality;
+extern ECORE_API float ps_r4_mblur_power;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),

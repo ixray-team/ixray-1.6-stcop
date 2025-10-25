@@ -281,6 +281,8 @@ void CRenderTarget::phase_combine()
 		}
 	}
 
+	phase_mblur();
+
 	u_setrt(get_width(), get_height(), 0, 0, 0, 0);
 	RImplementation.rmNormal();
 

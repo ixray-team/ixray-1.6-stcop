@@ -267,6 +267,7 @@ public:
 	void						phase_fxaa				();
 	void						phase_smaa				();
 	void						phase_taa				();
+	void						phase_mblur				();
 
 	void						phase_cas				();
 	void						phase_gtao				();
