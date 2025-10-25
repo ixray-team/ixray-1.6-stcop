@@ -268,7 +268,7 @@ void dx103DFluidManager::Update( dx103DFluidData &FluidData, float timestep )
 	rtViewport.Height = (float)m_iTextureHeight;
 	GRHI->SetViewport(rtViewport);
 
-	RCache.set_ZB(0);
+	GRHI->SetDepthStencilView(0);
 
 	UpdateObstacles( FluidData, timestep );
 
