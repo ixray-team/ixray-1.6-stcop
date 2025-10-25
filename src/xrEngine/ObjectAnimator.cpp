@@ -153,7 +153,7 @@ void CObjectAnimator::DrawPath()
         RCache.set_xform_world(Fidentity);
 
         if (!path_points.empty())
-            DU_impl.DrawPrimitiveL(D3DPT_LINESTRIP, path_points.size() - 1, path_points.data(), path_points.size(), clr, true, false);
+            DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, path_points.size() - 1, path_points.data(), path_points.size(), clr, true, false);
 
         CEnvelope* E = m_Current->Envelope();
 
