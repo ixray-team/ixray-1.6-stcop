@@ -306,7 +306,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 #endif
 
 			RCache.set_Geometry(hGeom);
-			RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, vCount, iOffset, pCount);
 			RCache.stat.r.s_dynamic_inst.add(vCount);
 		}
 		break;
@@ -346,7 +346,7 @@ void CSkeletonX::_Render	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 			}
 			// render
 			RCache.set_Geometry				(hGeom);
-			RCache.Render					(D3DPT_TRIANGLELIST,0,0,vCount,iOffset,pCount);
+			RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,vCount,iOffset,pCount);
 			if (RM_SKINNING_1B==RenderMode)	
 				RCache.stat.r.s_dynamic_1B.add	(vCount);
 			else
@@ -419,7 +419,7 @@ void CSkeletonX::_Render_soft	(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCo
 	}
 
 	RCache.set_Geometry		(hGeom);
-	RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,iOffset,pCount);
+	RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,vCount,iOffset,pCount);
 }
 
 void CSkeletonX::_Load	(const char* N, IReader *data, u32& dwVertCount) 

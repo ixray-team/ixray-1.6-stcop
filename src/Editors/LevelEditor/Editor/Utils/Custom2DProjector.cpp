@@ -56,13 +56,13 @@ void CCustom2DProjector::Render(bool blended)
 		FVF::V*	pv	 	= (FVF::V*)Stream->Lock(MAX_BUF_SIZE,geom->vb_stride,vBase);
 		CopyMemory		(pv,mesh.data()+k*MAX_BUF_SIZE,sizeof(FVF::V)*MAX_BUF_SIZE);
 		Stream->Unlock	(MAX_BUF_SIZE,geom->vb_stride);
-		EDevice->DP		(D3DPT_TRIANGLELIST,geom,vBase,MAX_BUF_SIZE/3);
+		EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,MAX_BUF_SIZE/3);
     }
     if (cnt.rem){
 		FVF::V*	pv	 	= (FVF::V*)Stream->Lock(cnt.rem,geom->vb_stride,vBase);
 		CopyMemory		(pv,mesh.data()+cnt.quot*MAX_BUF_SIZE,sizeof(FVF::V)*cnt.rem);
 		Stream->Unlock	(cnt.rem,geom->vb_stride);
-		EDevice->DP		(D3DPT_TRIANGLELIST,geom,vBase,cnt.rem/3);
+		EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,geom,vBase,cnt.rem/3);
     }
     EDevice->ResetNearer	();
 }
