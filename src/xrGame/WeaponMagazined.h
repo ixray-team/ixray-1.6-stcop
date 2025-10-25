@@ -51,6 +51,7 @@ protected:
 	virtual void	switch2_FireMode();
 	virtual void	switch2_LightMis();
 	virtual void	switch2_Kick	();
+	virtual void	switch2_MagCheck();
 	
 	virtual void	OnShot			();
 			void	OnShotJammed	();
