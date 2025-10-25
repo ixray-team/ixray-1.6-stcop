@@ -70,6 +70,17 @@ IRHIBuffer* InternalDevice9::CreateBuffer(const RHIBufferDesc& desc, const RHIBu
 	return new CD3D9Buffer(static_cast<IDirect3DDevice9*>(RawDevice), desc, pSubresource);
 }
 
+void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView)
+{
+	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : NULL);
+
+	// unrolled loop :p
+	DX9Device->SetRenderTarget(0, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()));
+	DX9Device->SetRenderTarget(1, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()));
+	DX9Device->SetRenderTarget(2, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()));
+	DX9Device->SetRenderTarget(3, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()));
+}
+
 void InternalDevice9::UpdateBuffersD3D9()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
