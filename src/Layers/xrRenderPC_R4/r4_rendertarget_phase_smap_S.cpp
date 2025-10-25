@@ -62,6 +62,6 @@ void	CRenderTarget::phase_smap_spot_tsh	(light* L)
 		RCache.set_Geometry				(g_combine);
 
 		// draw
-		RCache.Render					(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 }

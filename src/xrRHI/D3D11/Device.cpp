@@ -1,5 +1,6 @@
 #include "Device.h"
 #include "../Drivers/AMDGPUTransferee.h"
+#include "../RHITopologyUtils.h"
 
 #define DX11Device ((ID3D11Device*)RawDevice)
 
@@ -453,4 +454,61 @@ void InternalDevice11::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetV
 void InternalDevice11::SetViewport(RHIViewport& VP)
 {
 	HWRenderContext->RSSetViewports(1, (D3D11_VIEWPORT*)&VP);
+}
+
+void InternalDevice11::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
+{
+	static D3D_PRIMITIVE_TOPOLOGY d3dTopologies[] =
+	{
+		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,    // Undefined
+		D3D_PRIMITIVE_TOPOLOGY_POINTLIST,    // PointList
+		D3D_PRIMITIVE_TOPOLOGY_LINELIST,     // LineList
+		D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,    // LineStrip
+		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, // TriangleList
+		D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,// TriangleStrip
+		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED     // TriangleFan (not supported in DX11)
+	};
+	currentTopology = topology;
+	d3dTopology = d3dTopologies[static_cast<size_t>(topology)];
+	HWRenderContext->IASetPrimitiveTopology(d3dTopology);
+}
+
+void InternalDevice11::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+{
+	if (primitiveCount == 0)
+	{
+		return;
+	}
+
+	u32 indexCount = RHITopologyUtils::GetIndexCount(primitiveCount, currentTopology);
+	HWRenderContext->DrawIndexed(indexCount, startIndex, baseVertex);
+}
+
+void InternalDevice11::Draw(u32 startVertex, u32 primitiveCount)
+{
+	if (primitiveCount == 0)
+	{
+		return;
+	}
+
+	u32 vertexCount = RHITopologyUtils::GetVertexCount(primitiveCount, currentTopology);
+	HWRenderContext->Draw(vertexCount, startVertex);
+}
+
+void InternalDevice11::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+{
+	if (primitiveCount == 0)
+	{
+		return;
+	}
+
+	u32 indexCount = RHITopologyUtils::GetIndexCount(primitiveCount, currentTopology);
+	HWRenderContext->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstanceLocation);
+}
+
+void InternalDevice11::DrawNoInputAssembly(u32 vertexCount)
+{
+	HWRenderContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	HWRenderContext->IASetInputLayout(nullptr);
+	HWRenderContext->Draw(vertexCount, 0);
 }
