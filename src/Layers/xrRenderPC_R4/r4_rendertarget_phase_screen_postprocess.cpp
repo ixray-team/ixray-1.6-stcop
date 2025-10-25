@@ -33,7 +33,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool pos
 	RCache.set_Geometry(g_combine);
 
 	// Render
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 	// Copy resource
 	if (postProcessMode)
@@ -121,7 +121,7 @@ void CRenderTarget::PhaseGasmask()
 	RCache.set_Geometry(g_combine);
 
 	// Render
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 	// Copy resource
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);

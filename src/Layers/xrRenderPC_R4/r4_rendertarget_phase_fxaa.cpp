@@ -36,7 +36,7 @@ void CRenderTarget::phase_fxaa()
 
     // Set geometry
     RCache.set_Geometry(g_combine);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
     // Resolve RT
     GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);

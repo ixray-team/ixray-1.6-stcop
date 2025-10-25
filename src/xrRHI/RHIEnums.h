@@ -2,22 +2,35 @@
 
 enum ERHI_API_LAYER
 {
-	D3D11,
-	D3D9,
+    D3D11,
+    D3D9,
 
-	NOT_CREATED = -1
+    NOT_CREATED = -1
 };
 
 enum class ERTColor
 {
-	Transparent,
-	Gray,
-	Black
+    Transparent,
+    Gray,
+    Black
+};
+
+enum class ERHI_PRIMITIVE_TOPOLOGY
+{
+	UNDEFINED,
+	POINT_LIST,
+	LINE_LIST,
+	LINE_STRIP,
+	TRIANGLE_LIST,
+	TRIANGLE_STRIP,
+	TRIANGLE_FAN,
+	// DX10/11 specific
+	CONTROL_POINT_3_PATCH  // For tessellation
 };
 
 enum class ERHI_USAGE
 {
-	USAGE_DEFAULT = 0,
+    USAGE_DEFAULT = 0,
 	USAGE_IMMUTABLE = 1,
 	USAGE_DYNAMIC = 2,
 	USAGE_STAGING = 3

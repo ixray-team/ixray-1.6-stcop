@@ -40,7 +40,7 @@ void CRenderTarget::phase_ssao()
 	RCache.set_Element(s_ssao->E[0]);
 	RCache.set_Geometry(g_combine);
 
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	set_viewport(RContext, RCache.get_width(), RCache.get_height());
 
 	RCache.set_Stencil(FALSE);
@@ -80,5 +80,5 @@ void CRenderTarget::phase_downsamp()
 	RCache.set_Geometry(g_combine);
 	RCache.set_c("m_v2w", m_v2w);
 
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }

@@ -79,7 +79,7 @@ void CPortal::Render(int priority, bool strictB2F)
 			}
 
 			EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_CCW);
-			DU_impl.DrawPrimitiveL(D3DPT_TRIANGLELIST, V.size() / 3, V.data(), V.size(), Color.get(), true, false);
+			DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, V.size() / 3, V.data(), V.size(), Color.get(), true, false);
 			EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_CCW);
 		}
 
@@ -92,7 +92,7 @@ void CPortal::Render(int priority, bool strictB2F)
 			}
 
 			EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_CW);
-			DU_impl.DrawPrimitiveL(D3DPT_TRIANGLELIST, V.size() / 3, V.data(), V.size(), Color.get(), true, false);
+			DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, V.size() / 3, V.data(), V.size(), Color.get(), true, false);
 			EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_CCW);
 		}
 
@@ -106,7 +106,7 @@ void CPortal::Render(int priority, bool strictB2F)
 		EScenePortalTool* lt = static_cast<EScenePortalTool*>(FParentTools);
 		FvectorVec& src_ln = (lt->m_Flags.is(EScenePortalTool::flDrawSimpleModel)) ? m_SimplifyVertices : m_Vertices;
 
-		DU_impl.DrawPrimitiveL(D3DPT_LINESTRIP, src_ln.size(), src_ln.data(), src_ln.size(), Color.get(), true, true);
+		DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, src_ln.size(), src_ln.data(), src_ln.size(), Color.get(), true, true);
 
 		EDevice->ResetNearer();
 		DU_impl.DrawFaceNormal(m_Center, m_Normal, 1, 0xFFFFFFFF);

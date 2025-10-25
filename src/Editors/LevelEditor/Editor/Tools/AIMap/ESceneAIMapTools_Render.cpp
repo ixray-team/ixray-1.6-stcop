@@ -48,16 +48,23 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
     if (!IsLoaded)
         return;
 
-	if (m_Flags.is(flHideNodes) || !ai_map_shown) return;
-    if (1==priority){
-        if (false==strictB2F){
+	if (m_Flags.is(flHideNodes) || !ai_map_shown)
+        return;
+
+    if (1==priority)
+    {
+        if (!strictB2F)
+        {
             RCache.set_xform_world(Fidentity);
-			if (OBJCLASS_AIMAP==LTools->CurrentClassID()){
+			if (OBJCLASS_AIMAP==LTools->CurrentClassID())
+            {
 	            u32 clr = 0xffffc000;
 	            EDevice->SetShader	(EDevice->m_WireShader);
     	        DU_impl.DrawSelectionBoxB	(m_AIBBox,&clr);
             }
-            if (Valid()){
+
+            if (Valid())
+            {
                 // render nodes
                 EDevice->SetShader	(m_Shader);
                 EDevice->SetRS		(D3DRS_CULLMODE,		D3DCULL_NONE);
@@ -68,8 +75,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                 _VertexStream* Stream= &RCache.Vertex;
                 FVF::LIT* pv		= (FVF::LIT*)Stream->Lock(block_size,m_RGeom->vb_stride,vBase);
                 u32	cnt				= 0;
-//				EDevice->Statistic.TEST0.Begin();
-//				EDevice->Statistic.TEST2.Begin();
+
                 for (int x=rect.x1; x<=rect.x2; x++){
                     for (int z=rect.y1; z<=rect.y2; z++){
                         AINodeVec* nodes	= HashMap(x,z);
@@ -111,7 +117,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                                     
                                     if (cnt>=block_size-6){
                                         Stream->Unlock	(cnt,m_RGeom->vb_stride);
-                                        EDevice->DP		(D3DPT_TRIANGLELIST,m_RGeom,vBase,cnt/3);
+                                        EDevice->DP		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
                                         pv 				= (FVF::LIT*)Stream->Lock(block_size,m_RGeom->vb_stride,vBase);
                                         cnt				= 0;
                                     }	
@@ -120,18 +126,12 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
                         }
                     }
                 }
-//                EDevice->Statistic.TEST2.End();
-//                EDevice->Statistic.TEST0.End();
+
 				Stream->Unlock		(cnt,m_RGeom->vb_stride);
-                if (cnt) EDevice->DP	(D3DPT_TRIANGLELIST,m_RGeom,vBase,cnt/3);
+                if (cnt) EDevice->DP	(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_RGeom,vBase,cnt/3);
                 EDevice->SetRS		(D3DRS_CULLMODE,		D3DCULL_CCW);
             }
-        }else{
-/*            // render snap
-            if (m_Flags.is(flDrawSnapObjects))
-                for(ObjectIt _F=m_SnapObjects.begin();_F!=m_SnapObjects.end();_F++) 
-                    if((*_F)->Visible()) ((CSceneObject*)(*_F))->RenderSelection(0x4046B646);
-*/        }
+        }
     }
 }
 
