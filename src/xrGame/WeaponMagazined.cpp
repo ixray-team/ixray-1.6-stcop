@@ -393,6 +393,16 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_eSoundsFlags2.set(ESoundsFlags2::sf_holster_g, true);
 		m_sounds.LoadSound(section, "snd_holster_g", "sndHideG", false, m_eSoundHide);
 	}
+
+	if (SoundExist(section, "snd_mag_check"))
+	{
+		m_sounds.LoadSound(section, "snd_mag_check", "sndMagCheck", false, m_eSoundReload);
+	}
+
+	if (SoundExist(section, "snd_mag_check_g"))
+	{
+		m_sounds.LoadSound(section, "snd_mag_check_g", "sndMagCheckG", false, m_eSoundReload);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -912,6 +922,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Kick();
 		break;
 	}
+	case eMagCheck:
+	{
+		switch2_MagCheck();
+		break;
+	}
 	}
 }
 
@@ -937,6 +952,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eEmptyClick:
 		case eLightMis:
 		case eKick:
+		case eMagCheck:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1438,6 +1454,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eLightMis:
 		case eMisfire:
 		case eKick:
+		case eMagCheck:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1739,6 +1756,13 @@ void CWeaponMagazined::switch2_Kick()
 	PlayHUDMotion(SetCurrentStateAnimation("anm_kick"), TRUE, eKick);
 }
 
+void CWeaponMagazined::switch2_MagCheck()
+{
+	SetPending(TRUE);
+	PlaySound("sndMagCheck", get_LastFP());
+	const shared_str anim = IsGrenadeMode() ? (iAmmoElapsed == 0 ? "anm_grenade_empty_inspect" : "anm_grenade_inspect") : "anm_magazine_inspect";
+	PlayHUDMotion(SetCurrentStateAnimation(anim), TRUE, eMagCheck);
+}
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
 {
 	if (inherited::Action(cmd, flags))
@@ -1784,6 +1808,15 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		{
 			m_eDevicesFlags.set(EDevicesFlags::df_tacticaltorch, true);
 			SwitchState(eDevice);
+			return true;
+		}
+		break;
+	}
+	case kMAG_CHECK:
+	{
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_mag_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfMAGCHECK) && !IsZoomed() && GetState() == eIdle)
+		{
+			SwitchState(eMagCheck);
 			return true;
 		}
 		break;
