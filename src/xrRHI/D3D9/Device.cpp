@@ -75,10 +75,10 @@ void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const
 	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : NULL);
 
 	// unrolled loop :p
-	DX9Device->SetRenderTarget(0, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()));
-	DX9Device->SetRenderTarget(1, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()));
-	DX9Device->SetRenderTarget(2, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()));
-	DX9Device->SetRenderTarget(3, static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()));
+	DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : NULL);
+	DX9Device->SetRenderTarget(1, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()) : NULL);
+	DX9Device->SetRenderTarget(2, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()) : NULL);
+	DX9Device->SetRenderTarget(3, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()) : NULL);
 }
 
 void InternalDevice9::UpdateBuffersD3D9()
