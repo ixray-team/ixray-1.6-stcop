@@ -48,4 +48,7 @@ public:
 
 	// Buffer stuff
 	virtual IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr) = 0;
+
+    // Render Taget setup
+    virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView) = 0;
 };

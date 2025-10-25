@@ -57,6 +57,7 @@ extern RHI_API Ivector2 HalfTarget;
 class RHI_API CRHI final
 {
 public:
+	CRHI();
 	~CRHI();
 
 	// Drawing methods
@@ -99,6 +100,10 @@ public:
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 	void SetViewport(RHIViewport& VP);
 
+	void SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID);
+	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView);
+	void ApplyRenderTargetChange();
+
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
 	void GPUStatsEnd() const;
@@ -127,6 +132,10 @@ public:
 
 private:
 	void* Shaders[RHI_SHADERS_TYPE_SIZE];
+
+	IRHIRenderTargetView* m_pRenderTargetViews[RHI_MAX_RENDER_TARGETS];
+	IRHIDepthStencilView* m_pDepthStencilView;
+	bool m_bChangedRTorZB;
 };
 
 extern RHI_API CRHI* GRHI;
