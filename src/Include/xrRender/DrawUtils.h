@@ -1,6 +1,7 @@
 //----------------------------------------------------
 // file: DrawUtils.h
 //----------------------------------------------------
+#include "../../xrRHI/RHIEnums.h"
 
 #ifndef DrawUtilsH
 #define DrawUtilsH
