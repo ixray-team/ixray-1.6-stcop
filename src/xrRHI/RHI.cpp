@@ -579,22 +579,28 @@ void CRHI::SetViewport(RHIViewport& VP)
 	DevicePtr->SetViewport(VP);
 }
 
-void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID)
+void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce)
 {
 	if (m_pRenderTargetViews[ID] != pRenderTargetView)
 	{
 		m_pRenderTargetViews[ID] = pRenderTargetView;
 		m_bChangedRTorZB = true;
 	}
+
+	if (bForce)
+		ApplyRenderTargetChange();
 }
 
-void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView)
+void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce)
 {
 	if (m_pDepthStencilView != pDepthStencilView)
 	{
 		m_pDepthStencilView = pDepthStencilView;
 		m_bChangedRTorZB = true;
 	}
+
+	if (bForce)
+		ApplyRenderTargetChange();
 }
 
 void CRHI::ApplyRenderTargetChange()

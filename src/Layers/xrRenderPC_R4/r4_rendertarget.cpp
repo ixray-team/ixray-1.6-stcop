@@ -54,7 +54,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	RCache.set_RT(_2 ? _2->pRT : NULL, 1);
 	RCache.set_RT(_3 ? _3->pRT : NULL, 2);
 	RCache.set_RT(_4 ? _4->pRT : NULL, 3);
-	RCache.set_ZB(zb);
+	GRHI->SetDepthStencilView(zb);
 }
 
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, IRHIDepthStencilView* zb)
@@ -77,7 +77,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	if (_3) RCache.set_RT(_3->pRT, 2); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
-	RCache.set_ZB(zb);
+	GRHI->SetDepthStencilView(zb);
 }
 
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencilView* zb)
@@ -100,7 +100,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencil
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
 
-	RCache.set_ZB(zb);
+	GRHI->SetDepthStencilView(zb);
 }
 
 void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, IRHIDepthStencilView* zb)
@@ -112,7 +112,7 @@ void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTa
 	RCache.set_RT(_2, 1);
 	RCache.set_RT(_3, 2);
 	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
-	RCache.set_ZB(zb);
+	GRHI->SetDepthStencilView(zb);
 }
 
 void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
