@@ -25,5 +25,5 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 
     RCache.set_Element(s_fxaa->E[pass]);
     RCache.set_Geometry(g_fxaa);
-    RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }
