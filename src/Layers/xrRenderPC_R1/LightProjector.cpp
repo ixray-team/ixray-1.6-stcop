@@ -156,7 +156,7 @@ void CLightProjector::calculate	()
 	// Begin
 	Device.Statistic->RenderDUMP_Pcalc.Begin	();
 	RCache.set_RT				(RT->pRT);
-	RCache.set_ZB				(RImplementation.Target->pTempZB);
+	GRHI->SetDepthStencilView	(RImplementation.Target->pTempZB);
 	CHK_DX(RDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | (Caps.bStencil ? D3DCLEAR_STENCIL : 0), 0, 1, 0));
 	RCache.set_xform_world		(Fidentity);
 
