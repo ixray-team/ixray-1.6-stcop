@@ -303,7 +303,7 @@
 			<text align="c" vert_align="c" font="graffiti22" color="ui_4">99</text>
 		</icon>
 		<state_progress x="43" y="11" width="174" height="9" horz="1" min="0" max="1" pos="0"
-		expression="floor(fltPlayerPower * 55.0) / 55.0">
+		expression="fltPlayerPower">
 			<progress stretch="1">
 				<texture>ui_char_stamina</texture>
 			</progress>
@@ -316,7 +316,7 @@
 			<texture a="255">ui_char_bleeding</texture>
 		</icon>
 		<state_progress x="43" y="11" width="174" height="9" horz="1" min="0" max="1" pos="0"
-		expression="floor(fltPlayerHealth * 55.0) / 55.0">
+		expression="fltPlayerHealth">
 			<progress stretch="1">
 				<texture>ui_char_health</texture>
 			</progress>
@@ -329,7 +329,7 @@
 			<text align="c" vert_align="c" font="graffiti22" color="ui_4">99</text>
 		</icon>
 		<state_progress x="43" y="11" width="174" height="9" horz="1" min="0" max="1" pos="0"
-		 expression="floor(fltPlayerArmor * 55.0) / 55.0">
+		 expression="fltPlayerArmor">
 			<progress stretch="1">
 				<texture>ui_char_armor</texture>
 			</progress>
