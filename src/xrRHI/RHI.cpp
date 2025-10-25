@@ -21,6 +21,13 @@ RHI_API Ivector2 HalfTarget = { 0, 0 };
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
 
+CRHI::CRHI() :
+	m_pDepthStencilView(nullptr),
+	m_bChangedRTorZB(false)
+{
+	memset(m_pRenderTargetViews, 0, sizeof(m_pRenderTargetViews));
+}
+
 CRHI::~CRHI()
 {
 	xr_delete(DevicePtr);
@@ -564,4 +571,29 @@ void CRHI::SetShader(void* NativeShader, ERHI_SHADER_TYPE Type)
 void CRHI::SetViewport(RHIViewport& VP)
 {
 	DevicePtr->SetViewport(VP);
+}
+
+void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID)
+{
+	if (m_pRenderTargetViews[ID] != pRenderTargetView)
+	{
+		m_pRenderTargetViews[ID] = pRenderTargetView;
+		m_bChangedRTorZB = true;
+	}
+}
+
+void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView)
+{
+	if (m_pDepthStencilView != pDepthStencilView)
+	{
+		m_pDepthStencilView = pDepthStencilView;
+		m_bChangedRTorZB = true;
+	}
+}
+
+void CRHI::ApplyRenderTargetChange()
+{
+	DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, m_pRenderTargetViews, m_pDepthStencilView);
+	
+	m_bChangedRTorZB = false;
 }
