@@ -29,6 +29,8 @@ public:
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
+	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView) override;
+
     // Drawing methods
     virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
     virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) override;
