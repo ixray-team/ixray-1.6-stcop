@@ -39,7 +39,7 @@ void CBackend::OnFrameBegin	()
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
 		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
-		set_ZB				(nullptr);
+		GRHI->SetDepthStencilView(nullptr, true);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();
