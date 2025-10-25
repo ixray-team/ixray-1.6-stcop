@@ -415,7 +415,7 @@ void dx103DFluidRenderer::CreateRayDataResources( int width, int height )
 void dx103DFluidRenderer::Draw(const dx103DFluidData &FluidData)
 {
 	//	We don't need ZB anyway
-	RCache.set_ZB(0);
+	GRHI->SetDepthStencilView(0);
 
 	CRenderTarget* pTarget = RImplementation.Target;
 	const dx103DFluidData::Settings &VolumeSettings = FluidData.GetSettings();

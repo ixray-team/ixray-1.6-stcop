@@ -285,13 +285,13 @@ void CRenderTarget::Begin		()
 	{
 		// Base RT
 		RCache.set_RT			(RTarget);
-		RCache.set_ZB			(RDepth);
+		GRHI->SetDepthStencilView(RDepth);
 		curWidth				=  RCache.get_width();
 		curHeight				= RCache.get_height();
 	} else {
 		// Our 
 		RCache.set_RT			(RT->pRT);
-		RCache.set_ZB			(ZB);
+		GRHI->SetDepthStencilView(ZB);
 		curWidth				= rtWidth;
 		curHeight				= rtHeight;
 	}
@@ -360,7 +360,7 @@ void CRenderTarget::End		()
 
 	// combination/postprocess
 	RCache.set_RT		(RTarget);
-	RCache.set_ZB		(RDepth);
+	GRHI->SetDepthStencilView(RDepth);
 	curWidth			=  RCache.get_width();
 	curHeight			= RCache.get_height();
 	
@@ -425,7 +425,7 @@ void	CRenderTarget::phase_distortion	()
 {
 	frame_distort								= Device.dwFrame;
 	RCache.set_RT								(RT_distort->pRT);
-	RCache.set_ZB								(ZB);
+	GRHI->SetDepthStencilView					(ZB);
 	RCache.set_CullMode							(CULL_CCW);
 	RCache.set_ColorWriteEnable					( );
 	CHK_DX(RDevice->Clear					( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,127,127), 1.0f, 0L));
