@@ -663,7 +663,7 @@ void CRender::Render()
 
 	{
 		GPU_EVENT(ZBUFFER_COPY);
-		RCache.set_ZB(NULL);
+		GRHI->SetDepthStencilView(NULL, true);
 		GRHI->CopySurface(Target->rt_Position->pSurface, RDepth->GetSurface());
 	}
 
@@ -675,7 +675,7 @@ void CRender::Render()
 		GRHI->CopySurface(Target->rt_SurfaceTemp->pSurface, Target->rt_Surface->pSurface);
 
 		Target->phase_scene_begin();
-		RCache.set_ZB(nullptr);
+		GRHI->SetDepthStencilView(nullptr);
 
 		RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 		Target->PhaseWinter();

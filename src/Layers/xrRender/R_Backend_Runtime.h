@@ -83,11 +83,6 @@ IC	ID3DRenderTargetView* CBackend::get_RT(u32 ID)
 	return pRT[ID];
 }
 
-IC	IRHIDepthStencilView* CBackend::get_ZB				()
-{
-	return pZB;
-}
-
 ICF void	CBackend::set_States		(ID3DState* _state)
 {
 #ifndef USE_DX11

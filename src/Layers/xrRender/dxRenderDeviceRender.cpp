@@ -367,7 +367,7 @@ void dxRenderDeviceRender::Begin()
 void dxRenderDeviceRender::Clear()
 {
 #ifndef _EDITOR
-	GRHI->ClearDepthStencil(RCache.get_ZB(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
+	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.f, 0);
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
@@ -451,7 +451,7 @@ void dxRenderDeviceRender::SetupDefaultTarget()
 #else
 	RCache.set_RT(RTarget);
 #endif
-	RCache.set_ZB(nullptr);
+	GRHI->SetDepthStencilView(nullptr);
 #endif
 }
 
