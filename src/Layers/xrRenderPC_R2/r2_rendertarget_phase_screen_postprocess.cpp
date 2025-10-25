@@ -36,7 +36,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
 	RCache.set_Geometry(g_combine);
 
 	// Render
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	GRHI->CopySurface(rt_Color->pRT, rt_Generic_0->pRT);
 }
 

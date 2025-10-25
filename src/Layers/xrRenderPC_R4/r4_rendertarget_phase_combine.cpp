@@ -183,7 +183,7 @@ void CRenderTarget::phase_combine()
 		RCache.set_c				("ssao_noise_tile_factor",	fSSAONoise	);
 		RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	}
 
 	if(ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
@@ -259,7 +259,7 @@ void CRenderTarget::phase_combine()
 			RCache.set_Element(s_combine->E[1]);
 			RCache.set_Geometry(g_combine);
 
-			RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 			GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
@@ -366,7 +366,7 @@ void CRenderTarget::phase_combine()
 		RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 
 		RCache.set_Geometry(g_aa_AA);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	}
 
 	RCache.set_Stencil		(FALSE);
@@ -499,7 +499,7 @@ void CRenderTarget::phase_combine_volumetric()
 		RCache.set_Element			(s_combine_volumetric->E[0]	);
 		//RCache.set_Geometry			(g_combine_VP		);
 		RCache.set_Geometry			(g_combine		);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 	RCache.set_ColorWriteEnable();
 }

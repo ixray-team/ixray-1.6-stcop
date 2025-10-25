@@ -132,7 +132,7 @@ void CPortalTraverser::fade_render	()
 	RCache.set_Shader				(f_shader);
 	RCache.set_Geometry				(f_geom);
 	RCache.set_CullMode				(CULL_NONE);
-	RCache.Render					(D3DPT_TRIANGLELIST,_offset,_pcount);
+	RCache.Render					(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,_offset,_pcount);
 	RCache.set_CullMode				(CULL_CCW);
 
 	// cleanup

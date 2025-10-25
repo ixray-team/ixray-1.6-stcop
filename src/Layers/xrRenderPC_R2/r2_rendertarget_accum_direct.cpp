@@ -76,7 +76,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		// if (stencil>=1 && aref_pass)	stencil = light_id
 		RCache.set_ColorWriteEnable	(FALSE		);
 		RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 
 	// recalculate d_Z, to perform depth-clipping
@@ -250,7 +250,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 		else
 			RCache.set_Stencil			(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0xff,0x00);
 
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 8, i_offset, 16);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 8, i_offset, 16);
 
 		// disable depth bounds
 		u_DBT_disable	();
@@ -394,7 +394,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const Fma
 				RDevice->SetRenderState( D3DRS_ZFUNC, D3DCMP_ALWAYS);
 		}
 
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 		// disable depth bounds
 		u_DBT_disable	();

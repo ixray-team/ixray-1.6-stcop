@@ -34,11 +34,11 @@ void CRenderTarget::draw_volume(light* L)
 	{
 		case IRender_Light::SPOT:
 		RCache.set_Geometry(g_accum_spot);
-		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_CONE_NUMVERTEX, 0, DU_CONE_NUMFACES);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, DU_CONE_NUMVERTEX, 0, DU_CONE_NUMFACES);
 		break;
 		default:
 		RCache.set_Geometry(g_accum_point);
-		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, DU_SPHERE_NUMVERTEX, 0, DU_SPHERE_NUMFACES);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, DU_SPHERE_NUMVERTEX, 0, DU_SPHERE_NUMFACES);
 		break;
 	}
 }

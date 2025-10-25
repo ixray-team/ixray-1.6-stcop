@@ -347,7 +347,7 @@ void CRender::render_menu() {
 	pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);	pv++;
 
 	RCache.Vertex.Unlock(4, Target->g_menu->vb_stride);
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }
 
 Fvector3 ps_r_taa_jitter_full = {0,0,0};
