@@ -38,5 +38,5 @@ void CRenderTarget::PhaseGammaApply()
 	RCache.set_c("color_grading", color_grading.r, color_grading.g, color_grading.b, 0.0f);
 
 	RCache.set_Geometry(g_combine);
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 }

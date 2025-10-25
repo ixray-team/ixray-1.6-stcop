@@ -31,7 +31,7 @@ void CRenderTarget::phase_cas()
     RCache.set_Element(s_cas->E[0]);
 	RCache.set_c("sharpening_intensity", ps_r4_cas_sharpening);
 	RCache.set_Geometry(g_combine);
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 
 	//Resolve back to rt_Back_Buffer
 	GRHI->CopySurface(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);

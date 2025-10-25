@@ -4,6 +4,7 @@
 
 #ifndef D3DUtilsH
 #define D3DUtilsH
+
 #include "../../Include/xrRender/DrawUtils.h"
 //----------------------------------------------------
 
@@ -21,7 +22,7 @@ struct SPrimitiveBuffer{
     ref_geom				pGeom;
     u32						v_cnt;
     u32						i_cnt;
-    D3DPRIMITIVETYPE 		p_type;
+    ERHI_PRIMITIVE_TOPOLOGY 	p_type;
     u32						p_cnt;
 	typedef xr_delegate<void()> TOnRender;
     TOnRender				OnRender;
@@ -29,7 +30,7 @@ struct SPrimitiveBuffer{
     void 			RenderDP()	{DU_DRAW_DP	(p_type,pGeom,0,p_cnt);}
 public:
                             SPrimitiveBuffer():OnRender(0),pGeom(0){;}
-    void					CreateFromData(D3DPRIMITIVETYPE _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices=0, u32 _i_cnt=0);
+    void					CreateFromData(ERHI_PRIMITIVE_TOPOLOGY _pt, u32 _p_cnt, u32 FVF, LPVOID vertices, u32 _v_cnt, u16* indices=0, u32 _i_cnt=0);
     void					Destroy();
     void					Render(){OnRender();}
 };
@@ -142,14 +143,14 @@ public:
 	virtual void  DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel);
 	virtual void  DrawSelectionRect(const Ivector2& m_SelStart, const Ivector2& m_SelEnd);
 
-    virtual void  DrawIndexedPrimitive(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f)
+    virtual void  DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale = 1.0f)
 #ifndef _EDITOR
     {}
 #endif
     ;
-    virtual void  DrawPrimitiveL(D3DPRIMITIVETYPE pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
-    virtual void  DrawPrimitiveTL(D3DPRIMITIVETYPE pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
-    virtual void  DrawPrimitiveLIT(D3DPRIMITIVETYPE pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
+    virtual void  DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, Fvector* vertices, int vc, u32 color, BOOL bCull, BOOL bCycle);
+    virtual void  DrawPrimitiveTL(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::TL* vertices, int vc, BOOL bCull, BOOL bCycle);
+    virtual void  DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY pt, u32 pc, FVF::LIT* vertices, int vc, BOOL bCull, BOOL bCycle);
 
     virtual void  OutText	(const Fvector& pos, LPCSTR text, u32 color=0xFF000000, u32 shadow_color=0xFF909090);
 

@@ -5,6 +5,8 @@
 #include "R_Backend_xform.h"
 #include "R_Backend_hemi.h"
 #include "R_Backend_tree.h"
+#include "../../xrRHI/RHIEnums.h"
+#include "../../xrRHI/RHITopologyUtils.h"
 
 #ifdef USE_DX11
 #	include "..\xrRenderPC_R4\r_backend_lod.h"
@@ -322,13 +324,13 @@ public:
 	ICF	void						set_c				(shared_str& n, int A)												{ if(ctable)	set_c	(&*ctable->get(n),A);		}
 #endif //USE_DX11
 
-	ICF	void						Render				(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
-	ICF	void						Render				(D3DPRIMITIVETYPE T, u32 startV, u32 PC);
+	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	ICF	void						Render				(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC);
 
 #ifdef USE_DX11
 	ICF	void						Compute				(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ);
 	ICF void						Render_noIA			(u32 iVertexCount);
-	ICF	void						RenderInstancedIndexed(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation);	
+	ICF	void						RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation);
 #endif //USE_DX11
 
 	// Device create / destroy / frame signaling
@@ -339,8 +341,8 @@ public:
 	void							OnDeviceDestroy		();
 
 	// Debug render
-	void dbg_DP						(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
-	void dbg_DIP					(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	void dbg_DP						(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc);
+	void dbg_DIP					(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 #ifdef USE_DX11
 	//	TODO: DX10: Implement this.
 	IC void	dbg_SetRS				(D3DRENDERSTATETYPE p1, u32 p2)
@@ -361,7 +363,7 @@ public:
 	void dbg_DrawLINE				(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C);
 	void dbg_DrawEllipse			(Fmatrix& T, u32 C);
 #endif
-	void	DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc);
+	void	DrawTriangleFan(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 vBase, u32 pc);
 
 	CBackend()						{	Invalidate(); };
 
@@ -370,7 +372,6 @@ private:
 	//	DirectX 10 internal functionality
 	void	ApplyVertexLayout();
 	void	ApplyRTandZB();
-	void	ApplyPrimitieTopology( D3D_PRIMITIVE_TOPOLOGY Topology );
 	bool	CBuffersNeedUpdate(ref_cbuffer	buf1[MaxCBuffers], ref_cbuffer	buf2[MaxCBuffers], u32	&uiMin, u32	&uiMax);
 
 private:
