@@ -70,7 +70,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		dwCount 				= u32(pv_Tri-pv_Tri_start);
 		RCache.Vertex.Unlock	(dwCount,hGeomTri->vb_stride);
 		RCache.set_Geometry		(hGeomTri);
-		RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffsetTri,0, dwCount, 0, dwCount/2);
+		RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,dwOffsetTri,0, dwCount, 0, dwCount/2);
 	};
 
 	if (LineElem)
@@ -90,7 +90,7 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		dwCount 				= u32(pv_Line-pv_Line_start);
 		RCache.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
 		RCache.set_Geometry		(hGeomLine);
-		RCache.Render	   		(D3DPT_LINELIST,dwOffsetLine,dwCount/2);
+		RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,dwOffsetLine,dwCount/2);
 	};
 
 	if (!owner.m_Markers.empty())
@@ -106,87 +106,80 @@ void dxStatGraphRender::OnRender(CStatGraph &owner)
 		dwCount 				= u32(pv_Line-pv_Line_start);
 		RCache.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
 		RCache.set_Geometry		(hGeomLine);
-		RCache.Render	   		(D3DPT_LINELIST,dwOffsetLine,dwCount/2);
+		RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST,dwOffsetLine,dwCount/2);
 	}
 }
 
-void dxStatGraphRender::RenderBack(CStatGraph &owner)
+void dxStatGraphRender::RenderBack(CStatGraph& owner)
 {
 	// draw back
-	u32			dwOffset,dwCount;
-	FVF::TL0uv* pv_start				= (FVF::TL0uv*)RCache.Vertex.Lock(4,hGeomTri->vb_stride,dwOffset);
-	FVF::TL0uv* pv						= pv_start;
+	u32			dwOffset, dwCount;
+	FVF::TL0uv* pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(4, hGeomTri->vb_stride, dwOffset);
+	FVF::TL0uv* pv = pv_start;
 	// base rect
-	pv->set					(owner.lt.x,owner.rb.y,owner.back_color); pv++;	// 0
-	pv->set					(owner.lt.x,owner.lt.y,owner.back_color); pv++; 	// 1
-	pv->set					(owner.rb.x,owner.rb.y,owner.back_color); pv++;	// 2
-	pv->set					(owner.rb.x,owner.lt.y,owner.back_color); pv++;	// 3
+	pv->set(owner.lt.x, owner.rb.y, owner.back_color); pv++;	// 0
+	pv->set(owner.lt.x, owner.lt.y, owner.back_color); pv++; 	// 1
+	pv->set(owner.rb.x, owner.rb.y, owner.back_color); pv++;	// 2
+	pv->set(owner.rb.x, owner.lt.y, owner.back_color); pv++;	// 3
 	// render	
-	dwCount 				= u32(pv-pv_start);
-	RCache.Vertex.Unlock	(dwCount,hGeomTri->vb_stride);
-	RCache.set_Geometry		(hGeomTri);
-	RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0, dwCount, 0, dwCount/2);	
+	dwCount = u32(pv - pv_start);
+	RCache.Vertex.Unlock(dwCount, hGeomTri->vb_stride);
+	RCache.set_Geometry(hGeomTri);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, dwOffset, 0, dwCount, 0, dwCount / 2);
 
 	//draw rect
-	pv_start				= (FVF::TL0uv*)RCache.Vertex.Lock(5,hGeomLine->vb_stride,dwOffset);
-	pv						= pv_start;
+	pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(5, hGeomLine->vb_stride, dwOffset);
+	pv = pv_start;
 	// base rect
-	pv->set					(owner.lt.x,owner.lt.y,owner.rect_color); pv++;	// 0
-	pv->set					(owner.rb.x-1,owner.lt.y,owner.rect_color); pv++; 	// 1
-	pv->set					(owner.rb.x-1,owner.rb.y,owner.rect_color); pv++;	// 2
-	pv->set					(owner.lt.x,owner.rb.y,owner.rect_color); pv++;	// 3
-	pv->set					(owner.lt.x,owner.lt.y,owner.rect_color); pv++;	// 0
+	pv->set(owner.lt.x, owner.lt.y, owner.rect_color); pv++;	// 0
+	pv->set(owner.rb.x - 1, owner.lt.y, owner.rect_color); pv++; 	// 1
+	pv->set(owner.rb.x - 1, owner.rb.y, owner.rect_color); pv++;	// 2
+	pv->set(owner.lt.x, owner.rb.y, owner.rect_color); pv++;	// 3
+	pv->set(owner.lt.x, owner.lt.y, owner.rect_color); pv++;	// 0
 	// render	
-	dwCount 				= u32(pv-pv_start);
-	RCache.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
-	RCache.set_Geometry		(hGeomLine);
-	RCache.Render	   		(D3DPT_LINESTRIP,dwOffset,4);
+	dwCount = u32(pv - pv_start);
+	RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+	RCache.set_Geometry(hGeomLine);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP, dwOffset, 4);
 
 	// draw owner.grid
-	float elem_factor	= float(owner.rb.y-owner.lt.y)/float(owner.mx-owner.mn);
-	float base_y		= float(owner.rb.y)+(owner.mn*elem_factor);
+	float elem_factor = float(owner.rb.y - owner.lt.y) / float(owner.mx - owner.mn);
+	float base_y = float(owner.rb.y) + (owner.mn * elem_factor);
 
-	int PNum_H_LinesUp	= int((base_y - float(owner.lt.y)) / (owner.grid_step.y*elem_factor));
-	int PNum_H_LinesDwn = u32((float(owner.rb.y) - base_y) / (owner.grid_step.y*elem_factor));
+	int PNum_H_LinesUp = int((base_y - float(owner.lt.y)) / (owner.grid_step.y * elem_factor));
+	int PNum_H_LinesDwn = u32((float(owner.rb.y) - base_y) / (owner.grid_step.y * elem_factor));
 	int Num_H_LinesUp = (owner.grid.y < PNum_H_LinesUp) ? owner.grid.y : PNum_H_LinesUp;
 	int Num_H_LinesDwn = (owner.grid.y < PNum_H_LinesUp) ? owner.grid.y : PNum_H_LinesDwn;
 
-	pv_start	= (FVF::TL0uv*)RCache.Vertex.Lock(	2 + 2*owner.grid.x + Num_H_LinesUp*2 + Num_H_LinesDwn*2,
-		hGeomLine->vb_stride,dwOffset);
-	pv			= pv_start;
+	pv_start = (FVF::TL0uv*)RCache.Vertex.Lock(2 + 2 * owner.grid.x + Num_H_LinesUp * 2 + Num_H_LinesDwn * 2,
+		hGeomLine->vb_stride, dwOffset);
+	pv = pv_start;
+
 	// base Coordinate Line
-	pv->set					(owner.lt.x, int(base_y), owner.base_color); pv++; // 0
-	pv->set					(owner.rb.x, int(base_y), owner.base_color); pv++;	// 0    
-	// owner.grid
-	//    float grid_offs_x		= float(owner.rb.x-owner.lt.x)/float(owner.grid.x+1);
-	//    float grid_offs_y		= float(owner.rb.y-owner.lt.y)/float(owner.grid.y+1);
-	for (int g_x=1; g_x<=owner.grid.x; g_x++)
+	pv->set(owner.lt.x, int(base_y), owner.base_color); pv++;
+	pv->set(owner.rb.x, int(base_y), owner.base_color); pv++;
+
+	for (int g_x = 1; g_x <= owner.grid.x; g_x++)
 	{
-		pv->set				(int(owner.lt.x + g_x*owner.grid_step.x*elem_factor),owner.lt.y,owner.grid_color); pv++; 	
-		pv->set				(int(owner.lt.x + g_x*owner.grid_step.x*elem_factor),owner.rb.y,owner.grid_color); pv++; 	
+		pv->set(int(owner.lt.x + g_x * owner.grid_step.x * elem_factor), owner.lt.y, owner.grid_color); pv++;
+		pv->set(int(owner.lt.x + g_x * owner.grid_step.x * elem_factor), owner.rb.y, owner.grid_color); pv++;
 	}
-	for (int g_y=1; g_y<=Num_H_LinesDwn; g_y++)
+	for (int g_y = 1; g_y <= Num_H_LinesDwn; g_y++)
 	{
-		pv->set				(owner.lt.x,int(base_y+g_y*owner.grid_step.y*elem_factor),owner.grid_color); pv++;
-		pv->set				(owner.rb.x,int(base_y+g_y*owner.grid_step.y*elem_factor),owner.grid_color); pv++;
+		pv->set(owner.lt.x, int(base_y + g_y * owner.grid_step.y * elem_factor), owner.grid_color); pv++;
+		pv->set(owner.rb.x, int(base_y + g_y * owner.grid_step.y * elem_factor), owner.grid_color); pv++;
 	};
 
-	for (int g_y=1; g_y<=Num_H_LinesUp; g_y++)
-	{									
-		pv->set				(owner.lt.x,int(base_y-g_y*owner.grid_step.y*elem_factor),owner.grid_color); pv++; 	
-		pv->set				(owner.rb.x,int(base_y-g_y*owner.grid_step.y*elem_factor),owner.grid_color); pv++; 	
-	}    	
+	for (int g_y = 1; g_y <= Num_H_LinesUp; g_y++)
+	{
+		pv->set(owner.lt.x, int(base_y - g_y * owner.grid_step.y * elem_factor), owner.grid_color); pv++;
+		pv->set(owner.rb.x, int(base_y - g_y * owner.grid_step.y * elem_factor), owner.grid_color); pv++;
+	}
 
-
-	//    for (int g_y=1; g_y<=owner.grid.y; g_y++){
-	//	    pv->set				(owner.lt.x,iFloor(g_y*grid_offs_y+owner.lt.y),owner.grid_color); pv++; 	
-	//	    pv->set				(owner.rb.x,iFloor(g_y*grid_offs_y+owner.lt.y),owner.grid_color); pv++; 	
-	//	}
-
-	dwCount 				= u32(pv-pv_start);
-	RCache.Vertex.Unlock	(dwCount,hGeomLine->vb_stride);
-	RCache.set_Geometry		(hGeomLine);
-	RCache.Render	   		(D3DPT_LINELIST,dwOffset,dwCount/2);
+	dwCount = u32(pv - pv_start);
+	RCache.Vertex.Unlock(dwCount, hGeomLine->vb_stride);
+	RCache.set_Geometry(hGeomLine);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, dwOffset, dwCount / 2);
 }
 
 void dxStatGraphRender::RenderBars(CStatGraph &owner, FVF::TL0uv** ppv, CStatGraph::ElementsDeq* pelements)

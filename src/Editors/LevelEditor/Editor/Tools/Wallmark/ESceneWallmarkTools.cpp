@@ -202,7 +202,7 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
                                 RCache.Vertex.Unlock   	(w_count,hGeom->vb_stride);
                                 RCache.set_Shader		(slot->shader);
                                 RCache.set_Geometry		(hGeom);
-                                RCache.Render			(D3DPT_TRIANGLELIST,w_offset,w_count/3);
+                                RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,w_offset,w_count/3);
                                 // Restart (re-lock/re-calc)
                                 w_verts					= (FVF::LIT*)	RCache.Vertex.Lock	(MAX_R_VERTEX,hGeom->vb_stride,w_offset);
                                 w_start					= w_verts;
@@ -225,7 +225,7 @@ void ESceneWallmarkTool::OnRender(int priority, bool strictB2F)
             {
 				RCache.set_Shader	(slot->shader);
                 RCache.set_Geometry	(hGeom);
-                RCache.Render		(D3DPT_TRIANGLELIST,w_offset,w_count/3);
+                RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,w_offset,w_count/3);
             }
             // Projection
             EDevice->mProject._43		= _43;

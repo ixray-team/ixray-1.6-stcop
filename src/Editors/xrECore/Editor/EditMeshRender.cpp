@@ -169,7 +169,7 @@ void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 	if (rb_pair!=m_RenderBuffers->end()){
 		RBVector& rb_vec = rb_pair->second;
 		for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-			EDevice->DP(D3DPT_TRIANGLELIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
+			EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
 	}
 }
 //----------------------------------------------------
@@ -199,13 +199,13 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 
 		if (RB_cnt==MAX_VERT_COUNT)
 		{
-			DU_impl.DrawPrimitiveL(D3DPT_TRIANGLELIST,RB_cnt/3,RB,RB_cnt,color,true,false);
+			DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,RB_cnt/3,RB,RB_cnt,color,true,false);
 			RB_cnt = 0;
 		}
 	}
 
 	if (RB_cnt)
-		DU_impl.DrawPrimitiveL(D3DPT_TRIANGLELIST,RB_cnt/3,RB,RB_cnt,color,true,false);
+		DU_impl.DrawPrimitiveL(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,RB_cnt/3,RB,RB_cnt,color,true,false);
 
 	if (bEdge)
 		EDevice->SetRS(D3DRS_FILLMODE,EDevice->dwFillMode);
@@ -236,7 +236,7 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 		for (RBMapPairIt p_it=m_RenderBuffers->begin(); p_it!=m_RenderBuffers->end(); p_it++){
 			RBVector& rb_vec = p_it->second;
 			for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-				EDevice->DP(D3DPT_TRIANGLELIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
+				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
 		}
 		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
 	}
@@ -269,7 +269,7 @@ void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
 		for (RBMapPairIt p_it=m_RenderBuffers->begin(); p_it!=m_RenderBuffers->end(); p_it++){
 			RBVector& rb_vec = p_it->second;
 			for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-				EDevice->DP(D3DPT_TRIANGLELIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
+				EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
 		}
 		EDevice->SetRS(D3DRS_TEXTUREFACTOR,	0xffffffff);
 	}
@@ -403,7 +403,7 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 
 	if (FaceCount)
 	{
-		EDevice->DP(D3DPT_TRIANGLELIST, m_Parent->vs_SkeletonGeom, vBase, FaceCount);
+		EDevice->DP(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_Parent->vs_SkeletonGeom, vBase, FaceCount);
 	}
 
 	if (S->m_Flags.is(CSurface::sf2Sided))

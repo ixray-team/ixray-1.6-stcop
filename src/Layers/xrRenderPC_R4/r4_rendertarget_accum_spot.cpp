@@ -332,7 +332,7 @@ void CRenderTarget::accum_volumetric(light* L) {
 
 		RCache.set_Geometry(g_accum_volumetric);
 		//	Igor: no need to do it per sub-sample. Plain AA will go just fine.
-		RCache.Render(D3DPT_TRIANGLELIST, 0, 0, VOLUMETRIC_SLICES * 4, 0, VOLUMETRIC_SLICES * 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, VOLUMETRIC_SLICES * 4, 0, VOLUMETRIC_SLICES * 2);
 		RCache.set_ColorWriteEnable();
 	}
 
