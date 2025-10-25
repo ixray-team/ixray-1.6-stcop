@@ -741,6 +741,12 @@ void CActor::ProcessKeys(CHudItem* itm)
 		wpn->Action(kMAG_CHECK, CMD_START);
 		SetActorKeyRepeatFlag(kfMAGCHECK, false);
 	}
+
+	if ((m_iKeyFlags & kfFIREMODECHECK) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kFIREMODE_CHECK, CMD_START);
+		SetActorKeyRepeatFlag(kfFIREMODECHECK, false);
+	}
 }
 
 bool CActor::use_Holder(CHolderCustom* holder)

@@ -119,6 +119,7 @@ ENGINE_API _action  actions[]		= {
 	{ "quick_grenade",		kQUICK_GRENADE			,_both },
 	{ "quick_kick",			kQUICK_KICK				,_both },
 	{ "wpn_magcheck",		kMAG_CHECK				,_both },
+	{ "wpn_firecheck",		kFIREMODE_CHECK			,_both },
 																
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
