@@ -288,7 +288,7 @@ void R_dsgraph_structure::r_dsgraph_render_scope	()
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
 	{
 		GPU_EVENT(ZBUFFER_COPY);
-		RCache.set_ZB(nullptr);
+		GRHI->SetDepthStencilView(nullptr, true);
 		GRHI->CopySurface(RImplementation.Target->rt_Position->pSurface, RDepth->GetSurface());
 	}
 
