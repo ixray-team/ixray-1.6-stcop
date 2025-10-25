@@ -211,6 +211,7 @@ public:
 		af_sprint_in_out = (1 << 16),
 		af_kick = (1 << 17),
 		af_mag_check = (1 << 18),
+		af_firemode_check = (1 << 19),
 	};
 
 	enum ESoundsFlags : u64

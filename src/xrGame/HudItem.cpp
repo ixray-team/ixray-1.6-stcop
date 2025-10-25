@@ -479,6 +479,7 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_sprint_in_out, (HudAnimationExist("anm_idle_sprint_start") && HudAnimationExist("anm_idle_sprint_end")));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_kick, HudAnimationExist("anm_kick"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_mag_check, HudAnimationExist("anm_magazine_inspect"));
+	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode_check, HudAnimationExist("anm_firemode_inspect"));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)

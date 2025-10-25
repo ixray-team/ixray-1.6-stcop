@@ -403,6 +403,11 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	{
 		m_sounds.LoadSound(section, "snd_mag_check_g", "sndMagCheckG", false, m_eSoundReload);
 	}
+
+	if (SoundExist(section, "snd_firemode_check"))
+	{
+		m_sounds.LoadSound(section, "snd_firemode_check", "sndFiremodeCheck", false, m_eSoundReload);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -927,6 +932,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_MagCheck();
 		break;
 	}
+	case eFiremodeCheck:
+	{
+		switch2_FiremodeCheck();
+		break;
+	}
 	}
 }
 
@@ -953,6 +963,7 @@ void CWeaponMagazined::UpdateCL			()
 		case eLightMis:
 		case eKick:
 		case eMagCheck:
+		case eFiremodeCheck:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1455,6 +1466,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eMisfire:
 		case eKick:
 		case eMagCheck:
+		case eFiremodeCheck:
 			SwitchState(eIdle);
 		break;
 	}
@@ -1763,6 +1775,14 @@ void CWeaponMagazined::switch2_MagCheck()
 	const shared_str anim = IsGrenadeMode() ? (iAmmoElapsed == 0 ? "anm_grenade_empty_inspect" : "anm_grenade_inspect") : "anm_magazine_inspect";
 	PlayHUDMotion(SetCurrentStateAnimation(anim), TRUE, eMagCheck);
 }
+
+void CWeaponMagazined::switch2_FiremodeCheck()
+{
+	SetPending(TRUE);
+	PlaySound("sndFiremodeCheck", get_LastFP());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_firemode_inspect"), TRUE, eFiremodeCheck);
+}
+
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
 {
 	if (inherited::Action(cmd, flags))
@@ -1817,6 +1837,15 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_mag_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfMAGCHECK) && !IsZoomed() && GetState() == eIdle)
 		{
 			SwitchState(eMagCheck);
+			return true;
+		}
+		break;
+	}
+	case kFIREMODE_CHECK:
+	{
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIREMODECHECK) && !IsGrenadeMode() && !IsZoomed() && GetState() == eIdle)
+		{
+			SwitchState(eFiremodeCheck);
 			return true;
 		}
 		break;
