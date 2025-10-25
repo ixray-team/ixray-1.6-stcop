@@ -100,9 +100,11 @@ public:
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 	void SetViewport(RHIViewport& VP);
 
-	void SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID);
-	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView);
+	void SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce = false);
+	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce = false);
 	void ApplyRenderTargetChange();
+
+	inline IRHIDepthStencilView* GetDepthStencilView();
 
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
@@ -139,6 +141,11 @@ private:
 };
 
 extern RHI_API CRHI* GRHI;
+
+inline IRHIDepthStencilView* CRHI::GetDepthStencilView()
+{
+	return m_pDepthStencilView;
+}
 
 #include "RHIUtils.h"
 #include "Layout/ImGui/RHIImGuiLayout.h"
