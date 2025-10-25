@@ -66,6 +66,18 @@ xr_token							aa_type_token[] = {
 	{ 0,							0												}
 };
 
+u32 ps_r4_mblur_quality = 0;
+xr_token mblur_quality_token[] =
+{
+	{"st_opt_off", 0},
+	{"st_opt_low", 1},
+	{"st_opt_medium", 2},
+	{"st_opt_high", 3},
+	{"st_opt_ultra", 4},
+	{"st_opt_extreme", 5},
+	{0, 0}
+};
+
 u32			ps_screenshot_format = 2;			//	=	0;
 xr_token							screenshot_format_token[] = {
 	{ "ss_jpg",						0												},
@@ -180,6 +192,8 @@ float		ps_r2_dhemi_light_scale     = 0.2f	;
 float		ps_r2_dhemi_light_flow      = 0.1f	;
 int			ps_r2_dhemi_count			= 5;				// 5
 int			ps_r2_wait_sleep			= 0;
+
+float		ps_r4_mblur_power = 0.25f;
 
 float		ps_r2_lt_smooth				= 1.f;				// 1.f
 float		ps_r2_slight_fade			= 0.6f;				// 1.f
@@ -728,7 +742,10 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Integer, "r__optimize_dynamic_geom", &opt_dynamic, 0, 2);
 	CMD3(CCC_Mask, "r__optimize_shadow_geom", &ps_r__common_flags, RFLAG_OPT_SHAD_GEOM);
 	CMD3(CCC_Mask, "r__shader_cache", &ps_r__common_flags, RFLAG_USE_CACHE);
+	
 	CMD3(CCC_Token, "r__screenshot_format", &ps_screenshot_format, screenshot_format_token);
+	CMD3(CCC_Token, "r4_mblur_quality", &ps_r4_mblur_quality, mblur_quality_token);
+	CMD4(CCC_Float, "r4_mblur_power", &ps_r4_mblur_power, 0.0f, 1.0f);
 
 	CMD3(CCC_Mask, "r1_use_terrain_mask", &ps_r1_flags, R1FLAG_TERRAIN_MASK);
 
