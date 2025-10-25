@@ -29,5 +29,5 @@ void CRenderTarget::phase_scale() {
 	RCache.set_Element(s_scale->E[ps_r_scale_mode]);
 	RCache.set_Geometry(g_combine);
 
-	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 }

@@ -50,57 +50,6 @@ ICF	bool CBackend::is_TessEnabled()
 	return true;
 }
 
-IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
-{
-	static	D3D_PRIMITIVE_TOPOLOGY translateTable[] =
-	{
-		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,		//	None
-		D3D_PRIMITIVE_TOPOLOGY_POINTLIST,		//	D3DPT_POINTLIST = 1,
-		D3D_PRIMITIVE_TOPOLOGY_LINELIST,		//	D3DPT_LINELIST = 2,
-		D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,		//	D3DPT_LINESTRIP = 3,
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,	//	D3DPT_TRIANGLELIST = 4,
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	//	D3DPT_TRIANGLESTRIP = 5,
-		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,		//	D3DPT_TRIANGLEFAN = 6,
-	};
-
-	VERIFY(T<sizeof(translateTable)/sizeof(translateTable[0]));
-	VERIFY(T>=0);
-
-	D3D_PRIMITIVE_TOPOLOGY	result = translateTable[T];
-
-	VERIFY( result != D3D_PRIMITIVE_TOPOLOGY_UNDEFINED );
-
-	return result;
-}
-
-IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount)
-{
-	switch (T)
-	{
-	case D3DPT_POINTLIST:
-		return iPrimitiveCount;
-	case D3DPT_LINELIST:
-		return iPrimitiveCount*2;
-	case D3DPT_LINESTRIP:
-		return iPrimitiveCount+1;
-	case D3DPT_TRIANGLELIST:
-		return iPrimitiveCount*3;
-	case D3DPT_TRIANGLESTRIP:
-		return iPrimitiveCount+2;
-	default: NODEFAULT;
-	}
-	return 0;
-}
-
-IC void CBackend::ApplyPrimitieTopology( D3D_PRIMITIVE_TOPOLOGY Topology )
-{
-	if ( m_PrimitiveTopology != Topology )
-	{
-		m_PrimitiveTopology = Topology;
-		RContext->IASetPrimitiveTopology(m_PrimitiveTopology);
-	}
-}
-
 IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT ThreadGroupCountZ)
 {
 	stat.calls++;
@@ -112,23 +61,23 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 	RContext->Dispatch(ThreadGroupCountX,ThreadGroupCountY,ThreadGroupCountZ);
 }
 
-IC void CBackend::RenderInstancedIndexed(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation)
+IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC, u32 instanceCount, u32 startInstanceLocation)
 {
-	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T_);
-	u32	iIndexCount = GetIndexCount(T_, PC);
+	u32	iIndexCount = RHITopologyUtils::GetIndexCount(PC, topology);
 
 	//!!! HACK !!!
 	if (GRHI->IsTessPass())
 	{
-		R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
+		R_ASSERT(topology == ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
+		topology = ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH;
 	}
+
 
 	stat.calls++;
 	stat.verts += countV;
 	stat.polys += PC;
 
-	ApplyPrimitieTopology(Topology);
+	GRHI->SetPrimitiveTopology(topology);
 
 	GRHI->ShaderResourceCache->Apply();
 	ApplyRTandZB();
@@ -141,74 +90,82 @@ IC void CBackend::RenderInstancedIndexed(D3DPRIMITIVETYPE T_, u32 baseV, u32 sta
 	RContext->DrawIndexedInstanced(iIndexCount, instanceCount, startI, baseV, startInstanceLocation);
 }
 
-IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+
+
+IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T_);
-	u32	iIndexCount = GetIndexCount(T_, PC);
+    // Don't render if primitive count is 0
+    if (PC == 0)
+        return;
+    
+    // Don't render triangle fans in DX11
+    if (topology == ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN)
+        return;
+    
+    if (GRHI->IsTessPass())
+    {
+        R_ASSERT(topology == ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
+        topology = ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH;
+    }
 
-	//!!! HACK !!!
-	if (GRHI->IsTessPass())
-	{
-		R_ASSERT(Topology == D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Topology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
-	}
+    stat.calls++;
+    stat.verts += countV;
+    stat.polys += PC;
 
-	stat.calls++;
-	stat.verts += countV;
-	stat.polys += PC;
+    GRHI->SetPrimitiveTopology(topology);
+    GRHI->ShaderResourceCache->Apply();
+    ApplyRTandZB();
+    ApplyVertexLayout();
+    StateManager.Apply();
 
-	ApplyPrimitieTopology(Topology);
-	GRHI->ShaderResourceCache->Apply();
-	ApplyRTandZB();
-	ApplyVertexLayout();
-	StateManager.Apply();
-
-	//	State manager may alter constants
-	constants.flush();
-	RContext->DrawIndexed(iIndexCount, startI, baseV);
+    // State manager may alter constants
+    constants.flush();
+    GRHI->DrawIndexed(baseV, startV, countV, startI, PC);
 }
 
-IC void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
+IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC)
 {
-	//	TODO: DX10: Remove triangle fan usage from the engine
-	if (T_ == D3DPT_TRIANGLEFAN)
-		return;
+    // Don't render if primitive count is 0
+    if (PC == 0)
+        return;
+    
+    // Don't render triangle fans in DX11
+    if (topology == ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_FAN)
+        return;
 
-	D3D_PRIMITIVE_TOPOLOGY Topology = TranslateTopology(T_);
-	u32	iVertexCount = GetIndexCount(T_, PC);
+    stat.calls++;
+    stat.verts += 3*PC;
+    stat.polys += PC;
 
-	stat.calls++;
-	stat.verts += 3*PC;
-	stat.polys += PC;
-
-	ApplyPrimitieTopology(Topology);
-	GRHI->ShaderResourceCache->Apply();
-	ApplyRTandZB();
-	ApplyVertexLayout();
-	StateManager.Apply();
-	//	State manager may alter constants
-	constants.flush();
-	RContext->Draw(iVertexCount, startV);
+    GRHI->SetPrimitiveTopology(topology);
+    GRHI->ShaderResourceCache->Apply();
+    ApplyRTandZB();
+    ApplyVertexLayout();
+    StateManager.Apply();
+    
+    // State manager may alter constants
+    constants.flush();
+    GRHI->Draw(startV, PC);
 }
 
 IC void CBackend::Render_noIA(u32 iVertexCount)
 {
-	stat.calls++;
-	stat.verts += iVertexCount;
+    stat.calls++;
+    stat.verts += iVertexCount;
 
-	GRHI->ShaderResourceCache->Apply();
-	ApplyRTandZB();
+    GRHI->ShaderResourceCache->Apply();
+    ApplyRTandZB();
 
-	//Unbind IA (VB, IB)
-	RContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	RContext->IASetInputLayout(nullptr);
+    // Use RHI primitive topology
+    GRHI->SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
+    RContext->IASetInputLayout(nullptr);
 
-	StateManager.Apply();
+    StateManager.Apply();
 
-	//State manager may alter constants
-	constants.flush();
-
-	RContext->Draw(iVertexCount, 0);
+    // State manager may alter constants
+    constants.flush();
+    
+    GRHI->DrawNoInputAssembly(iVertexCount);
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
@@ -563,7 +520,7 @@ IC float CBackend::get_target_height()
 	return float(RDEVICE.TargetHeight);
 }
 
-IC void CBackend::DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+IC void CBackend::DrawTriangleFan(ERHI_PRIMITIVE_TOPOLOGY topology, ref_geom geom, u32 vBase, u32 pc)
 {
 	const u32 cnt_v = pc + 2;
 	const u32 cnt_indices = pc * 3; // triangle
@@ -582,5 +539,5 @@ IC void CBackend::DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase,
 	set_Geometry(geom);
 	set_Indices(Index.Buffer()); // overwrite geom IB with dyn IB
 	
-	Render(D3DPT_TRIANGLELIST, vBase, 0, cnt_indices, of_indices, pc);
+	Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vBase, 0, cnt_indices, of_indices, pc);
 }
