@@ -176,7 +176,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 			if (instanceCount >= currentSize)
 			{ 
 				currentBuffer->Unmap();
-				RCache.RenderInstancedIndexed(D3DPT_TRIANGLELIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
+				RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 				instanceCount = 0; //Reset
 			}
 		}
@@ -185,7 +185,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		if (instanceCount > 0 && instanceCount < currentSize)
 		{
 			currentBuffer->Unmap();
-			RCache.RenderInstancedIndexed(D3DPT_TRIANGLELIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
+			RCache.RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, Object.number_vertices, 0, Object.number_indices / 3, instanceCount, 0);
 		}
 	}
 }

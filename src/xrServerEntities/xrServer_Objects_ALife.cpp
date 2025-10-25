@@ -367,9 +367,9 @@ void CSE_ALifeGraphPoint::on_render(CDUInterface* du, ISE_AbstractLEOwner* owner
 	if (!bSelected)
 		RenderColorCurrent.a *= 0.6f;
 
-	du->DrawIndexedPrimitive(2/*D3DPT_LINELIST*/, 8, parent.c, PT, 5, IL, 16, RenderColorCurrent.get());
+	du->DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST/*D3DPT_LINELIST*/, 8, parent.c, PT, 5, IL, 16, RenderColorCurrent.get());
 	RenderColorCurrent.mul_rgba(0.75f);
-	du->DrawIndexedPrimitive(4/*D3DPT_TRIANGLELIST*/, 4, parent.c, PT, 5, IT, 12, RenderColorCurrent.get());
+	du->DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 4, parent.c, PT, 5, IT, 12, RenderColorCurrent.get());
 
 	if (bSelected)
 		du->DrawSelectionBox(parent.c, Fvector().set(0.5f, 1.0f, 0.5f), nullptr);

@@ -58,6 +58,13 @@ class RHI_API CRHI final
 {
 public:
 	~CRHI();
+
+	// Drawing methods
+	void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology);
+	void Draw(u32 startVertex, u32 primitiveCount);
+	void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount);
+	void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation);
+	void DrawNoInputAssembly(u32 vertexCount);
 	IRHIDevice* CreateDevice(ERHI_API_LAYER APILevel);
 	void ResizeBuffers(u32 Width, u32 Height);
 
