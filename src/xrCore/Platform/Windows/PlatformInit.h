@@ -63,8 +63,13 @@
 #include <cderr.h>
 #pragma warning(pop)
 
+// 1930 is Visual Studio 2022
+#if _MSC_VER >= 1930
 #include <stacktrace>
 #define USE_CXX_STACKTRACE 1
+#else
+#define USE_CXX_STACKTRACE 0
+#endif // _MSC_VER >= 1930
 
 #define ALIGN(a) __declspec(align(a))
 #define MODULE_NAME "xrCore.dll"
