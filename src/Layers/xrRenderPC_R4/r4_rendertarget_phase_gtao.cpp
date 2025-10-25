@@ -34,7 +34,7 @@ void CRenderTarget::phase_gtao()
 		RCache.set_Element(s_gtao->E[0]);
 		RCache.set_c("gtao_parameters", p_scale);
 		RCache.set_Geometry(g_combine);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
 	{
@@ -56,7 +56,7 @@ void CRenderTarget::phase_gtao()
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[1]);
 		RCache.set_Geometry(g_combine);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 }
 
@@ -84,7 +84,7 @@ void CRenderTarget::phase_sslr() {
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[2]);
 		RCache.set_Geometry(g_combine);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
 	{
@@ -104,7 +104,7 @@ void CRenderTarget::phase_sslr() {
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[3]);
 		RCache.set_Geometry(g_combine);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
 	{
@@ -124,7 +124,7 @@ void CRenderTarget::phase_sslr() {
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[4]);
 		RCache.set_Geometry(g_combine);
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
 	GRHI->CopySurface(rt_sslr_old->pSurface, rt_sslr->pSurface);

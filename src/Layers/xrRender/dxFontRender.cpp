@@ -168,9 +168,10 @@ void dxFontRender::OnRender(CGameFont& owner)
 			u32 vertexesCount = (u32)(vertexes - start);
 			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
 
-			if(vertexesCount > 0) {
+			if(vertexesCount > 0)
+			{
 				RCache.set_Geometry(pGeom);
-				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 			}
 		}
 	}

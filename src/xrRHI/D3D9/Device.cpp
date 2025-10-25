@@ -408,3 +408,49 @@ void InternalDevice9::SetViewport(RHIViewport& VP)
 
 	DX9Device->SetViewport(&D9Viewport);
 }
+
+void InternalDevice9::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
+{
+	static D3DPRIMITIVETYPE d3dTopologies[] =
+	{
+		D3DPT_FORCE_DWORD,    // Undefined
+		D3DPT_POINTLIST,      // PointList
+		D3DPT_LINELIST,       // LineList
+		D3DPT_LINESTRIP,      // LineStrip
+		D3DPT_TRIANGLELIST,   // TriangleList
+		D3DPT_TRIANGLESTRIP,  // TriangleStrip
+		D3DPT_TRIANGLEFAN     // TriangleFan
+	};
+	currentTopology = topology;
+	d3dTopology = d3dTopologies[static_cast<size_t>(topology)];
+}
+
+void InternalDevice9::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+{
+	if (primitiveCount == 0)
+	{
+		return;
+	}
+
+	CHK_DX(DX9Device->DrawIndexedPrimitive(d3dTopology, baseVertex, startVertex, vertexCount, startIndex, primitiveCount));
+}
+
+void InternalDevice9::Draw(u32 startVertex, u32 primitiveCount)
+{
+	if (primitiveCount == 0)
+	{
+		return;
+	}
+
+	CHK_DX(DX9Device->DrawPrimitive(d3dTopology, startVertex, primitiveCount));
+}
+
+void InternalDevice9::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+{
+	VERIFY(!"DrawIndexedInstanced not supported in DX9");
+}
+
+void InternalDevice9::DrawNoInputAssembly(u32 vertexCount)
+{
+	VERIFY(!"DrawNoInputAssembly not supported in DX9");
+}

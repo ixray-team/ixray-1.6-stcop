@@ -106,8 +106,8 @@ public:
 	// draw
 	void SetShader(ref_shader sh) { m_CurrentShader = sh; }
 	ref_shader GetShader() { return m_CurrentShader; }
-	void DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 startV, u32 pc);
-	void DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
+	void DP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 startV, u32 pc);
+	void DIP(ERHI_PRIMITIVE_TOPOLOGY pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC);
 
 	IC void SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 	{

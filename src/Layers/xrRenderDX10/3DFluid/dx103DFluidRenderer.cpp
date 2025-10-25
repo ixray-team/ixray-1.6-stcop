@@ -520,13 +520,13 @@ void dx103DFluidRenderer::ComputeEdgeTexture(const dx103DFluidData& FluidData)
 void dx103DFluidRenderer::DrawScreenQuad()
 {
 	RCache.set_Geometry(m_GeomQuadVertex);
-	RCache.Render( D3DPT_TRIANGLESTRIP, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP, 0, 2);
 }
 
 void dx103DFluidRenderer::DrawBox()
 {
 	RCache.set_Geometry(m_GeomGridBox);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, 0, m_iGridBoxVertNum ,0, m_iGridBoxFaceNum);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, m_iGridBoxVertNum ,0, m_iGridBoxFaceNum);
 }
 
 void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData &FluidData, FogLighting  &LightData)

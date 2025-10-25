@@ -1,6 +1,7 @@
 //----------------------------------------------------
 // file: DrawUtils.h
 //----------------------------------------------------
+#include "../../xrRHI/RHIEnums.h"
 
 #ifndef DrawUtilsH
 #define DrawUtilsH
@@ -61,7 +62,7 @@ public:
 	virtual void  DrawObjectAxis	   	(const Fmatrix& T, float sz, BOOL sel)=0;
 	virtual void  DrawSelectionRect   	(const Ivector2& m_SelStart, const Ivector2& m_SelEnd)=0;
 
-	virtual void  DrawIndexedPrimitive	(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale=1.0f)=0;
+	virtual void  DrawIndexedPrimitive	(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale=1.0f)=0;
 
     virtual void  OutText				(const Fvector& pos, LPCSTR text, u32 color=0xFF000000, u32 shadow_color=0xFF909090)=0;
 

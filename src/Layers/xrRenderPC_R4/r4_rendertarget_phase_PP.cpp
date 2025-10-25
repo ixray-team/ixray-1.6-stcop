@@ -112,8 +112,7 @@ void CRenderTarget::phase_pp		()
 	//	Element 0 for for normal post-process
 	//	Element 4 for color map post-process
 	bool	bCMap = u_need_CM();
-	//RCache.set_Element	(s_postprocess->E[bCMap ? 4 : 0]);
-		//		RCache.set_Shader	(s_postprocess	);
+
 	RCache.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
 
 	int		gblend		= clampr		(iFloor((1-param_gray)*255.f),0,255);
@@ -121,11 +120,7 @@ void CRenderTarget::phase_pp		()
 	u32					p_color			= subst_alpha		(param_color_base,nblend);
 	u32					p_gray			= subst_alpha		(param_color_gray,gblend);
 	Fvector				p_brightness	= param_color_add	;
-	// Msg				("param_gray:%f(%d),param_noise:%f(%d)",param_gray,gblend,param_noise,nblend);
-	// Msg				("base: %d,%d,%d",	color_get_R(p_color),		color_get_G(p_color),		color_get_B(p_color));
-	// Msg				("gray: %d,%d,%d",	color_get_R(p_gray),		color_get_G(p_gray),		color_get_B(p_gray));
-	// Msg				("add:  %d,%d,%d",	color_get_R(p_brightness),	color_get_G(p_brightness),	color_get_B(p_brightness));
-	
+
 	// Draw full-screen quad textured with our scene image
 	u32		Offset;
 	
@@ -148,5 +143,5 @@ void CRenderTarget::phase_pp		()
 	RCache.set_c		( s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0 );
 	RCache.set_c		(s_colormap, param_color_map_influence,param_color_map_interpolate,0,0);
 	RCache.set_Geometry	(g_postprocess);
-	RCache.Render		(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 }

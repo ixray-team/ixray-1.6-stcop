@@ -291,7 +291,7 @@ void CEditableObject::RenderLOD(const Fmatrix& parent)
 
 	RCache.set_xform_world(parent);
 	EDevice->SetShader(m_LODShader ? m_LODShader : EDevice->m_WireShader);
-	DU_impl.DrawPrimitiveLIT(D3DPT_TRIANGLELIST, 2, LOD, 6, true, false);
+	DU_impl.DrawPrimitiveLIT(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 2, LOD, 6, true, false);
 }
 
 xr_string CEditableObject::GetLODTextureName()
