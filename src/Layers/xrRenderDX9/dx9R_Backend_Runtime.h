@@ -15,16 +15,6 @@ IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
 	}
 }
 
-IC void	CBackend::set_ZB(IRHIDepthStencilView* ZB)
-{
-	if (ZB != pZB)
-	{
-		stat.target_zb++;
-		pZB = ZB;
-		CHK_DX(RDevice->SetDepthStencilSurface(ZB ? (IDirect3DSurface9*)ZB->GetRawDSV() : nullptr));
-	}
-}
-
 ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 {
 	if (decl!=_decl)
@@ -45,6 +35,7 @@ ICF void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 start
     stat.polys += PC;
     constants.flush();
 
+	GRHI->ApplyRenderTargetChange();
     GRHI->SetPrimitiveTopology(topology);
     GRHI->DrawIndexed(baseV, startV, countV, startI, PC);
 }
@@ -60,6 +51,7 @@ ICF void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC)
     stat.polys += PC;
     constants.flush();
     
+	GRHI->ApplyRenderTargetChange();
     GRHI->SetPrimitiveTopology(topology);
     GRHI->Draw(startV, PC);
 }

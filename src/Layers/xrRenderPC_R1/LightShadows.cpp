@@ -167,7 +167,7 @@ void CLightShadows::calculate	()
 			if (!bRTS)	{
 				bRTS						= TRUE;
 				RCache.set_RT				(RT_temp->pRT);
-				RCache.set_ZB				(RImplementation.Target->pTempZB);
+				GRHI->SetDepthStencilView	(RImplementation.Target->pTempZB);
 				RDevice->Clear(0, 0, D3DCLEAR_TARGET, color_xrgb(255, 255, 255), 1, 0);
 			}
 
@@ -294,7 +294,7 @@ void CLightShadows::calculate	()
 		
 		// Actual rendering (pass0, temp2real)
 		RCache.set_RT				(RT->pRT	);
-		RCache.set_ZB				(RImplementation.Target->pTempZB	);
+		GRHI->SetDepthStencilView	(RImplementation.Target->pTempZB	);
 		RCache.set_Shader			(sh_BlurTR	);
 		RCache.set_Geometry			(geom_Blur	);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
