@@ -148,7 +148,7 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	}	
 
 	RCache.set_Geometry			(g_combine		);
-	RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	
 }
 
@@ -995,7 +995,7 @@ void CRenderTarget::reset_light_marker( bool bResetStencil)
 		RCache.set_Element(s_occq->E[2]);
 		RCache.set_Geometry(g_combine);
 
-		RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
 	}
 }
 

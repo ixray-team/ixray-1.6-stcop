@@ -93,7 +93,7 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
 void dxUIRender::FlushPrimitive()
 {
 	u32 primCount					= 0;
-	_D3DPRIMITIVETYPE d3dPrimType	= D3DPT_FORCE_DWORD;
+	ERHI_PRIMITIVE_TOPOLOGY d3dPrimType	= ERHI_PRIMITIVE_TOPOLOGY::UNDEFINED;
 	std::ptrdiff_t p_cnt			= 0;
 
 	switch(m_PointType)
@@ -121,19 +121,19 @@ void dxUIRender::FlushPrimitive()
 	{
 	case ptTriStrip:
 		primCount = (u32)(p_cnt-2);
-		d3dPrimType = D3DPT_TRIANGLESTRIP;
+		d3dPrimType = ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_STRIP;
 		break;
 	case ptTriList:
 		primCount = (u32)(p_cnt/3);
-		d3dPrimType = D3DPT_TRIANGLELIST;
+		d3dPrimType = ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST;
 		break;
 	case ptLineStrip:
 		primCount = (u32)(p_cnt-1);
-		d3dPrimType = D3DPT_LINESTRIP;
+		d3dPrimType = ERHI_PRIMITIVE_TOPOLOGY::LINE_STRIP;
 		break;
 	case ptLineList:
 		primCount = (u32)(p_cnt/2);
-		d3dPrimType = D3DPT_LINELIST;
+		d3dPrimType = ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST;
 		break;
 	default:
 		NODEFAULT;

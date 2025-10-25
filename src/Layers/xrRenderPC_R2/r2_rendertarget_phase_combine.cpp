@@ -183,7 +183,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("env_color",		envclr	);
 		RCache.set_c				("fog_color",		fogclr	);
 		RCache.set_c				("ssao_params",		fSSAONoise, fSSAOKernelSize, 0.0f, 0.0f);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 
 	// Forward rendering
@@ -285,7 +285,7 @@ void	CRenderTarget::phase_combine	()
 		RCache.set_c				("dof_kernel",	vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 		
 		RCache.set_Geometry			(g_aa_AA);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 
 	RCache.set_Stencil (FALSE);
@@ -465,7 +465,7 @@ void CRenderTarget::phase_combine_volumetric()
 
 		RCache.set_c				("env_color",		envclr	);
 		RCache.set_c				("fog_color",		fogclr	);
-		RCache.Render				(D3DPT_TRIANGLELIST,Offset,0,4,0,2);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
 	}
 	RCache.set_ColorWriteEnable();
 }

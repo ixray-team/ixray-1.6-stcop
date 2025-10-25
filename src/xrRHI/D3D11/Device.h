@@ -29,6 +29,17 @@ public:
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
+    // Drawing methods
+    virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
+    virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) override;
+    virtual void Draw(u32 startVertex, u32 primitiveCount) override;
+    virtual void DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation) override;
+    virtual void DrawNoInputAssembly(u32 vertexCount) override;
+
+private:
+    D3D_PRIMITIVE_TOPOLOGY d3dTopology;
+    ERHI_PRIMITIVE_TOPOLOGY currentTopology;
+
 public:
 	IDXGISwapChain* HWSwapchain = nullptr;
 	ID3D11DeviceContext* HWRenderContext = nullptr;

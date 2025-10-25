@@ -444,6 +444,31 @@ void CRHI::ClearVertexBuffer(u32 vb_stride)
 #endif
 }
 
+void CRHI::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
+{
+	DevicePtr->SetPrimitiveTopology(topology);
+}
+
+void CRHI::Draw(u32 startVertex, u32 primitiveCount)
+{
+	DevicePtr->Draw(startVertex, primitiveCount);
+}
+
+void CRHI::DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount)
+{
+	DevicePtr->DrawIndexed(baseVertex, startVertex, vertexCount, startIndex, primitiveCount);
+}
+
+void CRHI::DrawIndexedInstanced(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount, u32 instanceCount, u32 startInstanceLocation)
+{
+	DevicePtr->DrawIndexedInstanced(baseVertex, startVertex, vertexCount, startIndex, primitiveCount, instanceCount, startInstanceLocation);
+}
+
+void CRHI::DrawNoInputAssembly(u32 vertexCount)
+{
+	DevicePtr->DrawNoInputAssembly(vertexCount);
+}
+
 void CRHI::ClearIndexBuffer()
 {
 #ifdef IXR_WINDOWS

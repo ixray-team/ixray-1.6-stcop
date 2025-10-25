@@ -1,7 +1,6 @@
 #include "stdafx.h"
-
-
 #include "StatGraph.h"
+#include "../xrRHI/RHIEnums.h"
 //---------------------------------------------
 
 CStatGraph::CStatGraph()
@@ -95,7 +94,7 @@ void CStatGraph::OnRender()
 		dwCount 				= u32(pv_Tri-pv_Tri_start);
 		RCache.Vertex.Unlock	(dwCount,hGeomTri->vb_stride);
 		RCache.set_Geometry		(hGeomTri);
-		RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffsetTri,0, dwCount, 0, dwCount/2);
+		RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::TriangleList,dwOffsetTri,0, dwCount, 0, dwCount/2);
 	};
 
 	if (LineElem)
@@ -152,7 +151,7 @@ void CStatGraph::RenderBack	()
 	dwCount 				= u32(pv-pv_start);
 	RCache.Vertex.Unlock	(dwCount,hGeomTri->vb_stride);
 	RCache.set_Geometry		(hGeomTri);
-	RCache.Render	   		(D3DPT_TRIANGLELIST,dwOffset,0, dwCount, 0, dwCount/2);	
+	RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::TriangleList,dwOffset,0, dwCount, 0, dwCount/2);
 
 	//draw rect
 	pv_start				= (FVF::TL0uv*)RCache.Vertex.Lock(5,hGeomLine->vb_stride,dwOffset);

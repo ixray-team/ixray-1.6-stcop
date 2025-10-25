@@ -176,7 +176,7 @@ void  CDS0_DUInterface::DrawSelectionRect(const Ivector2& m_SelStart, const Ivec
 {
 }
 
-void CDS0_DUInterface::DrawIndexedPrimitive(int prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale)
+void CDS0_DUInterface::DrawIndexedPrimitive(ERHI_PRIMITIVE_TOPOLOGY prim_type, u32 pc, const Fvector& pos, const Fvector* vb, const u32& vb_size, const u32* ib, const u32& ib_size, const u32& clr_argb, float scale)
 {
 }
 

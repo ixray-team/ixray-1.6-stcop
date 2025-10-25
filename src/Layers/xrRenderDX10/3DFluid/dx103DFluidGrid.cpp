@@ -263,44 +263,24 @@ void dx103DFluidGrid::InitBoundaryLines( VS_INPUT_FLUIDSIM_STRUCT** vertices, in
 
 void dx103DFluidGrid::DrawSlices( void )
 {
-	//UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-	//UINT offset[1] = { 0 };
-	//DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &slicesBuffer,
-	//	stride, offset, 0, numVerticesSlices );
-
 	RCache.set_Geometry(m_GeomSlices);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesSlices/3);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesSlices/3);
 }
 
 void dx103DFluidGrid::DrawSlicesToScreen( void )
 {
-	//UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-	//UINT offset[1] = { 0 };
-	//DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &renderQuadBuffer,
-	//	stride, offset, 0, numVerticesRenderQuad );
-
 	RCache.set_Geometry(m_GeomRenderQuad);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesRenderQuad/3);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesRenderQuad/3);
 }
 
 void dx103DFluidGrid::DrawBoundaryQuads( void )
 {
-	//UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-	//UINT offset[1] = { 0 };
-	//DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_TRIANGLELIST, layout, &boundarySlicesBuffer,
-	//	stride, offset, 0, numVerticesBoundarySlices );
-
 	RCache.set_Geometry(m_GeomBoundarySlices);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundarySlices/3);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesBoundarySlices/3);
 }
 
 void dx103DFluidGrid::DrawBoundaryLines( void )
 {
-//	UINT stride[1] = { sizeof(VS_INPUT_FLUIDSIM_STRUCT) };
-//	UINT offset[1] = { 0 };
-//	DrawPrimitive( D3Dxx_PRIMITIVE_TOPOLOGY_LINELIST, layout, &boundaryLinesBuffer, 
-//		stride, offset, 0, numVerticesBoundaryLines  );
-
 	RCache.set_Geometry(m_GeomBoundaryLines);
-	RCache.Render( D3DPT_TRIANGLELIST, 0, m_iNumVerticesBoundaryLines/3);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, m_iNumVerticesBoundaryLines/3);
 }

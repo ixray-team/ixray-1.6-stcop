@@ -34,30 +34,34 @@ ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
 	}
 }
 
-ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
+ICF void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	//Fix D3D ERROR
-	if (PC==0)
-		return;
+    //Fix D3D ERROR
+    if (PC==0)
+        return;
 
-	stat.calls			++;
-	stat.verts			+= countV;
-	stat.polys			+= PC;
-	constants.flush		();
-	CHK_DX				(RDevice->DrawIndexedPrimitive(T_,baseV, startV, countV,startI,PC));
+    stat.calls++;
+    stat.verts += countV;
+    stat.polys += PC;
+    constants.flush();
+
+    GRHI->SetPrimitiveTopology(topology);
+    GRHI->DrawIndexed(baseV, startV, countV, startI, PC);
 }
 
-ICF void CBackend::Render(D3DPRIMITIVETYPE T_, u32 startV, u32 PC)
+ICF void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC)
 {
-	//Fix D3D ERROR
-	if (PC==0)
-		return;
+    //Fix D3D ERROR
+    if (PC==0)
+        return;
 
-	stat.calls			++;
-	stat.verts			+= 3*PC;
-	stat.polys			+= PC;
-	constants.flush		();
-	CHK_DX				(RDevice->DrawPrimitive(T_, startV, PC));
+    stat.calls++;
+    stat.verts += 3*PC;
+    stat.polys += PC;
+    constants.flush();
+    
+    GRHI->SetPrimitiveTopology(topology);
+    GRHI->Draw(startV, PC);
 }
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
@@ -189,8 +193,8 @@ IC float CBackend::get_target_height()
 	return RDEVICE.TargetHeight;
 }
 
-IC void CBackend::DrawTriangleFan(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
+IC void CBackend::DrawTriangleFan(ERHI_PRIMITIVE_TOPOLOGY topology, ref_geom geom, u32 vBase, u32 pc)
 {
 	RCache.set_Geometry(geom);
-	RCache.Render(pt, vBase, pc);
+	RCache.Render(topology, vBase, pc);
 }

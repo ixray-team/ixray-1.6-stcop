@@ -1,21 +1,34 @@
 #pragma once
 #include "RHITypes.h"
+#include "RHIEnums.h"
 
 class IRHIDevice
 {
 public:
-	void* RawDevice = nullptr;
-	void* RenderRTV = nullptr;
-	void* RenderSRV = nullptr;
-	IRHIDepthStencilView* RenderDSV = nullptr;
-	void* RenderTexture = nullptr;
-	void* SwapChainRTV = nullptr;
+    void* RawDevice = nullptr;
+    void* RenderRTV = nullptr;
+    void* RenderSRV = nullptr;
+    IRHIDepthStencilView* RenderDSV = nullptr;
+    void* RenderTexture = nullptr;
+    void* SwapChainRTV = nullptr;
 
-	float RenderScale = 1.f;
-	u32 FeatureLevel;
-	
-	// Texture factory
-	IRHITextureFactory* TextureFactory = nullptr;
+    float RenderScale = 1.f;
+    u32 FeatureLevel;
+    
+    // Texture factory
+    IRHITextureFactory* TextureFactory = nullptr;
+
+    // Drawing methods
+    virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) = 0;
+    virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) = 0;
+    virtual void Draw(u32 startVertex, u32 primitiveCount) = 0;
+
+    virtual void DrawIndexedInstanced(
+        u32 baseVertex, u32 startVertex, u32 vertexCount,
+        u32 startIndex, u32 primitiveCount,
+        u32 instanceCount, u32 startInstanceLocation) = 0;
+    
+    virtual void DrawNoInputAssembly(u32 vertexCount) = 0;
 
 public:
 	virtual ~IRHIDevice() = default;
