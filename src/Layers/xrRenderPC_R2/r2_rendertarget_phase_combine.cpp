@@ -11,18 +11,8 @@ void CRenderTarget::DoAsyncScreenshot()
 	if (RImplementation.m_bMakeAsyncSS)
 	{
 		HRESULT hr;
-
-		IDirect3DSurface9*	pFBSrc = RTarget;
-
-		//	Don't addref, no need to release.
-	//	ID3DTexture2D *pTex = rt_Color->pSurface;
-
-	//	hr = pTex->GetSurfaceLevel(0, &pFBSrc);
-
 		//	SHould be async function
-		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
-
-	//	pFBSrc->Release();
+		hr = RDevice->GetRenderTargetData((IDirect3DSurface9*)RTarget->GetRawRTV(), pFB);
 
 		RImplementation.m_bMakeAsyncSS = false;
 	}
@@ -378,8 +368,8 @@ void	CRenderTarget::phase_combine	()
 void CRenderTarget::phase_wallmarks		()
 {
 	// Targets
-	RCache.set_RT((ID3DRenderTargetView*)nullptr,2);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
+	RCache.set_RT(nullptr,2);
+	RCache.set_RT(nullptr,1);
 	u_setrt								(rt_Color,nullptr,nullptr,RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
