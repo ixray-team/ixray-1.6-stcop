@@ -2130,7 +2130,15 @@ void CActor::shedule_Update	(u32 DT)
 						{
 							if (isMonstersInventory)
 							{
-								m_sDefaultObjAction = m_sDeadCharacterUseAction;
+								bool b_allow_drag = !!pSettings->line_exist("ph_capture_visuals", pEntityAlive->cNameVisual());
+								if (b_allow_drag)
+								{
+									m_sDefaultObjAction = m_sDeadCharacterUseOrDragAction;
+								}
+								else
+								{
+									m_sDefaultObjAction = m_sDeadCharacterUseAction;
+								}
 							}
 							else
 							{
