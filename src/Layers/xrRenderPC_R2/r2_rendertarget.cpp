@@ -21,14 +21,14 @@ void	CRenderTarget::u_setrt			(const ref_rt& _1, const ref_rt& _2, const ref_rt&
 	VERIFY									(_1);
 	dwWidth									= _1->dwWidth;
 	dwHeight								= _1->dwHeight;
-	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT((ID3DRenderTargetView*)nullptr,0);
-	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT((ID3DRenderTargetView*)nullptr,1);
-	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT((ID3DRenderTargetView*)nullptr,2);
+	if (_1) RCache.set_RT(_1->pRT,	0); else RCache.set_RT(nullptr,0);
+	if (_2) RCache.set_RT(_2->pRT,	1); else RCache.set_RT(nullptr,1);
+	if (_3) RCache.set_RT(_3->pRT,	2); else RCache.set_RT(nullptr,2);
 	GRHI->SetDepthStencilView				(zb);
 //	RImplementation.rmNormal				();
 }
 
-void	CRenderTarget::u_setrt			(u32 W, u32 H, IDirect3DSurface9* _1, IDirect3DSurface9* _2, IDirect3DSurface9* _3, IRHIDepthStencilView* zb)
+void	CRenderTarget::u_setrt			(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb)
 {
 	VERIFY									(_1);
 	dwWidth									= W;
@@ -514,7 +514,7 @@ CRenderTarget::CRenderTarget		()
 	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,D3DFMT_A8R8G8B8,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 	//RDevice->CreateOffscreenPlainSurface(Device.TargetWidth,Device.TargetHeight,rt_Color->fmt,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 	D3DSURFACE_DESC	desc;
-	RTarget->GetDesc(&desc);
+	((IDirect3DSurface9*)RTarget->GetRawRTV())->GetDesc(&desc);
 	RDevice->CreateOffscreenPlainSurface(RCache.get_width(),RCache.get_height(),desc.Format,D3DPOOL_SYSTEMMEM,&pFB,nullptr);
 
 	// 
