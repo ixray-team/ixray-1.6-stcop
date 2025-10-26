@@ -113,6 +113,10 @@ void CRHI::ClearRawTarget(void* Target, ERTColor Transparent)
 
 void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
 {
+	if (Target == nullptr)
+	{
+		return;
+	}
 	DevicePtr->ClearTarget(Target->GetRawRTV(), Transparent);
 }
 
@@ -253,6 +257,11 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
     return Result;
 }
 
+
+IRHISurface* CRHI::CreateTexture3D(const RHITextureDesc& Desc, RHISubResource* SubResource)
+{
+	return DevicePtr->GetTextureFactory()->CreateTexture3D(Desc, SubResource);
+}
 
 IRHISurface* CRHI::CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource)
 {
@@ -566,11 +575,18 @@ void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, 
 {
 	if (m_pRenderTargetViews[ID] != pRenderTargetView)
 	{
+		if (!m_bChangedRTorZB && APILevel == ERHI_API_LAYER::D3D11)
+		{
+			// Clear cache
+			IRHIRenderTargetView* nullSRV[RHI_MAX_RENDER_TARGETS] = { nullptr };
+			DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, nullSRV, nullptr);
+		}
+
 		m_pRenderTargetViews[ID] = pRenderTargetView;
 		m_bChangedRTorZB = true;
 	}
 
-	if (bForce)
+	if (bForce || APILevel == ERHI_API_LAYER::D3D9)
 		ApplyRenderTargetChange();
 }
 
@@ -578,17 +594,23 @@ void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bFo
 {
 	if (m_pDepthStencilView != pDepthStencilView)
 	{
+		if (!m_bChangedRTorZB && APILevel == ERHI_API_LAYER::D3D11)
+		{
+			// Clear cache
+			IRHIRenderTargetView* nullSRV[RHI_MAX_RENDER_TARGETS] = { nullptr };
+			DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, nullSRV, nullptr);
+		}
+
 		m_pDepthStencilView = pDepthStencilView;
 		m_bChangedRTorZB = true;
 	}
 
-	if (bForce)
+	if (bForce || APILevel == ERHI_API_LAYER::D3D9)
 		ApplyRenderTargetChange();
 }
 
 void CRHI::ApplyRenderTargetChange()
 {
 	DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, m_pRenderTargetViews, m_pDepthStencilView);
-	
 	m_bChangedRTorZB = false;
 }

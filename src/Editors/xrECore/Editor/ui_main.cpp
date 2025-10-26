@@ -535,9 +535,9 @@ void TUI::Redraw()
 				g_pGamePersistent->OnRenderPPUI_main();
 			}
 
-			RCache.set_RT((ID3DRenderTargetView*)0, 1);
-			RCache.set_RT((ID3DRenderTargetView*)0, 2);
-			RCache.set_RT((ID3DRenderTargetView*)0, 3);
+			RCache.set_RT(0, 1);
+			RCache.set_RT(0, 2);
+			RCache.set_RT(0, 3);
 
 			RCache.set_RT(RSwapchainTarget);
 			RCache.set_ZB(RDepth);
