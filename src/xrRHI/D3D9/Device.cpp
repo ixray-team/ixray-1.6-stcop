@@ -70,20 +70,24 @@ IRHIBuffer* InternalDevice9::CreateBuffer(const RHIBufferDesc& desc, const RHIBu
 	return new CD3D9Buffer(static_cast<IDirect3DDevice9*>(RawDevice), desc, pSubresource);
 }
 
-void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView)
+void InternalDevice9::SetDSV(IRHIDepthStencilView* pDepthStencilView)
 {
-	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : NULL);
+	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : nullptr);
+}
 
+void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews)
+{
 	// unrolled loop :p
-	//DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : NULL);
-	//DX9Device->SetRenderTarget(1, ppRenderTargetViews[1] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()) : NULL);
-	//DX9Device->SetRenderTarget(2, ppRenderTargetViews[2] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()) : NULL);
-	//DX9Device->SetRenderTarget(3, ppRenderTargetViews[3] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()) : NULL);
+	DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : nullptr);
+	DX9Device->SetRenderTarget(1, ppRenderTargetViews[1] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()) : nullptr);
+	DX9Device->SetRenderTarget(2, ppRenderTargetViews[2] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()) : nullptr);
+	DX9Device->SetRenderTarget(3, ppRenderTargetViews[3] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()) : nullptr);
 }
 
 void InternalDevice9::UpdateBuffersD3D9()
 {
 	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
+
 	R_CHK(DX9Device->CreateTexture(
 		psCurrentVidMode[0], psCurrentVidMode[1], 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8,
 		D3DPOOL_DEFAULT, (IDirect3DTexture9**)&RenderTexture, nullptr
@@ -150,13 +154,13 @@ void InternalDevice9::ResizeBuffers(u32 Width, u32 Height)
 
 	if (RenderRTV != nullptr)
 	{
-		((IDirect3DSurface9*)RenderRTV)->Release();
+		RenderRTV->Release();
 		RenderRTV = nullptr;
 	}
 
 	if (SwapChainRTV != nullptr)
 	{
-		((IDirect3DSurface9*)SwapChainRTV)->Release();
+		SwapChainRTV->Release();
 		SwapChainRTV = nullptr;
 	}
 
