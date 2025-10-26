@@ -565,6 +565,41 @@ IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, con
 	return new DX11Surface(texture);
 }
 
+IRHISurface* DX11TextureFactory::CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource)
+{
+	D3D11_TEXTURE3D_DESC d3dDesc = {};
+	d3dDesc.Width = Desc.Width;
+	d3dDesc.Height = Desc.Height;
+	d3dDesc.Depth = Desc.Depth;
+	d3dDesc.MipLevels = Desc.MipLevels;
+	d3dDesc.Format = static_cast<DXGI_FORMAT>(Desc.Format);
+	d3dDesc.Usage = static_cast<D3D11_USAGE>(Desc.Usage);
+	d3dDesc.BindFlags = ConvertBindFlags(Desc.BindFlags);
+	d3dDesc.CPUAccessFlags = ConvertCPUAccessFlags(Desc.CPUAccessFlags);
+	d3dDesc.MiscFlags = ConvertMiscFlags(Desc.MiscFlags);
+
+	ID3D11Texture3D* texture = nullptr;
+	const D3D11_SUBRESOURCE_DATA* initDataPtr = nullptr;
+	D3D11_SUBRESOURCE_DATA initData = {};
+
+	if (SubResource && SubResource->Data)
+	{
+		initData.pSysMem = SubResource->Data;
+		initData.SysMemPitch = SubResource->RowPitch;         // bytes per row
+		initData.SysMemSlicePitch = SubResource->DepthPitch;  // bytes per slice
+		initDataPtr = &initData;
+	}
+
+	HRESULT hr = Device->CreateTexture3D(&d3dDesc, initDataPtr, &texture);
+	if (FAILED(hr))
+	{
+		return nullptr;
+	}
+
+	return new DX11Surface(texture);
+}
+
+
 IRHISurface* DX11TextureFactory::CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc)
 {
 	if (data && size == 0)
@@ -681,6 +716,12 @@ IRHIRenderTargetView* DX11TextureFactory::CreateRenderTargetView(IRHISurface* su
 		rtvDesc.Texture2DArray.MipSlice = desc.MipSlice;
 		rtvDesc.Texture2DArray.FirstArraySlice = desc.FirstArraySlice;
 		rtvDesc.Texture2DArray.ArraySize = desc.ArraySize;
+	}
+	else if (desc.ViewDimension == ERHI_RTV_DIMENSION::TEXTURE3D)
+	{
+		rtvDesc.Texture3D.MipSlice = desc.MipSlice;
+		rtvDesc.Texture3D.FirstWSlice = desc.FirstArraySlice;
+		rtvDesc.Texture3D.WSize = desc.ArraySize;
 	}
 
 	ID3D11RenderTargetView* rtv = nullptr;

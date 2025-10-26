@@ -20,7 +20,7 @@ void CRenderTarget::phase_ssao	()
 
 	// Targets
 	u_setrt( rt_ssao_temp,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
-	GRHI->ClearRawTarget(RCache.get_RT());
+	GRHI->ClearTarget(RCache.get_RT());
 	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
 
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);	// stencil should be >= 1
@@ -84,7 +84,7 @@ void CRenderTarget::phase_downsamp	()
 
 	// Targets
 	u_setrt( rt_half_depth,nullptr,nullptr,nullptr );		// No need for ZBuffer at all
-	GRHI->ClearRawTarget(RCache.get_RT());
+	GRHI->ClearTarget(RCache.get_RT());
 
 	CHK_DX		(RDevice->SetRenderState	( D3DRS_ZENABLE,		FALSE				));
 

@@ -42,7 +42,8 @@ bool InternalDevice11::UpdateBuffersD3D11()
 		return false;
 	}
 
-	R = (DX11Device)->CreateRenderTargetView(pBuffer, nullptr, (ID3D11RenderTargetView**)&SwapChainRTV);
+	ID3D11RenderTargetView* SwapChainRaw = nullptr;
+	R = (DX11Device)->CreateRenderTargetView(pBuffer, nullptr, &SwapChainRaw);
 	pBuffer->Release();
 	R_CHK(R);
 
@@ -86,7 +87,8 @@ bool InternalDevice11::UpdateBuffersD3D11()
 		return false;
 	}
 
-	R = DX11Device->CreateRenderTargetView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11RenderTargetView**)&RenderRTV);
+	ID3D11RenderTargetView* RawSRV = nullptr;
+	R = DX11Device->CreateRenderTargetView((ID3D11Resource*)RenderTexture, nullptr, &RawSRV);
 	R_CHK(R);
 
 	R = DX11Device->CreateShaderResourceView((ID3D11Resource*)RenderTexture, nullptr, (ID3D11ShaderResourceView**)&RenderSRV);
@@ -121,6 +123,8 @@ bool InternalDevice11::UpdateBuffersD3D11()
 	R_CHK(R);
 
 	RenderDSV = new DX11DepthStencilView(Dsv, new DX11Surface(pDepthStencil));
+	SwapChainRTV = new DX11RenderTargetView(SwapChainRaw, new DX11Surface(((ID3D11Texture2D*)pBuffer)));
+	RenderRTV = new DX11RenderTargetView(RawSRV, new DX11Surface(((ID3D11Texture2D*)RenderTexture)));
 
 	pDepthStencil->Release();
 	return true;
@@ -140,7 +144,9 @@ void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* cons
 	R_ASSERT(NumViews >= RHI_MAX_RENDER_TARGETS);
 
 	for (int i = 0; i < NumViews; i++)
-		s_RenderTargetView11[i] = reinterpret_cast<ID3D11RenderTargetView*>(ppRenderTargetViews[i]->GetRawRTV());
+	{
+		s_RenderTargetView11[i] = reinterpret_cast<ID3D11RenderTargetView*>(ppRenderTargetViews[i] ? ppRenderTargetViews[i]->GetRawRTV() : nullptr);
+	}
 
 	HWRenderContext->OMSetRenderTargets(NumViews, s_RenderTargetView11, pDepthStencilView ? (ID3D11DepthStencilView*)pDepthStencilView->GetRawDSV() : nullptr);
 }
@@ -308,13 +314,13 @@ void InternalDevice11::ResizeBuffers(u32 Width, u32 Height)
 
 	if (RenderRTV != nullptr)
 	{
-		((ID3D11RenderTargetView*)RenderRTV)->Release();
+		RenderRTV->Release();
 		RenderRTV = nullptr;
 	}
 
 	if (SwapChainRTV != nullptr)
 	{
-		((ID3D11RenderTargetView*)SwapChainRTV)->Release();
+		SwapChainRTV->Release();
 		SwapChainRTV = nullptr;
 	}
 

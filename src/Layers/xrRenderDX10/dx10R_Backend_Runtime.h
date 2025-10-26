@@ -7,19 +7,9 @@ IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 	//	TODO: DX10: Implement CBackend::set_xform
 }
 
-IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
+IC void CBackend::set_RT(IRHIRenderTargetView* RT, u32 ID)
 {
-	if (RT!=pRT[ID])
-	{
-		pRT[ID]			= RT;
-
-		//	Mark RT array dirty
-		//	Reset all RT's here to allow RT to be bounded as input
-		if (!m_bChangedRTorZB)
-			RContext->OMSetRenderTargets(0, 0, 0);
-
-		m_bChangedRTorZB = true;
-	}
+	GRHI->SetRenderTargetView(RT, ID);
 }
 
 ICF void CBackend::set_Format(SDeclaration* _decl)
@@ -57,7 +47,6 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 		topology = ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH;
 	}
 
-
 	stat.calls++;
 	stat.verts += countV;
 	stat.polys += PC;
@@ -74,8 +63,6 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 
 	RContext->DrawIndexedInstanced(iIndexCount, instanceCount, startI, baseV, startInstanceLocation);
 }
-
-
 
 IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
@@ -99,7 +86,7 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV
 
     GRHI->SetPrimitiveTopology(topology);
     GRHI->ShaderResourceCache->Apply();
-    ApplyRTandZB();
+	ApplyRTandZB();
     ApplyVertexLayout();
     StateManager.Apply();
 
@@ -464,13 +451,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 
 ICF void CBackend::ApplyRTandZB()
 {
-	if (m_bChangedRTorZB)
-	{
-		m_bChangedRTorZB = false;
-
-		GRHI->ApplyRenderTargetChange();
-		RContext->OMSetRenderTargets(sizeof(pRT)/sizeof(pRT[0]), pRT, nullptr);
-	}
+	GRHI->ApplyRenderTargetChange();
 }
 
 IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)

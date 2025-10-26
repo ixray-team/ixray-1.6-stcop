@@ -309,7 +309,7 @@ void CRender::render_menu	()
 	// Distort
 	{
 		Target->u_setrt(Target->rt_Generic_1, 0, 0, RDepth);		// Now RT is a distortion mask
-		GRHI->ClearRawTarget(RCache.get_RT(), ERTColor::Gray);
+		GRHI->ClearTarget(RCache.get_RT(), ERTColor::Gray);
 		g_pGamePersistent->OnRenderPPUI_PP();	// PP-UI
 	}
 

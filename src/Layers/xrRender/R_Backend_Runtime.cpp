@@ -39,6 +39,12 @@ void CBackend::OnFrameBegin	()
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
 		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
+		GRHI->SetRenderTargetView(nullptr, 0);
+		GRHI->SetRenderTargetView(nullptr, 1);
+		GRHI->SetRenderTargetView(nullptr, 2);
+		GRHI->SetRenderTargetView(nullptr, 3);
+		GRHI->SetRenderTargetView(nullptr, 4);
+		GRHI->SetRenderTargetView(nullptr, 5);
 		GRHI->SetDepthStencilView(nullptr, true);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
@@ -51,12 +57,6 @@ void CBackend::OnFrameBegin	()
 
 void CBackend::Invalidate	()
 {
-	pRT[0]						= nullptr;
-	pRT[1]						= nullptr;
-	pRT[2]						= nullptr;
-	pRT[3]						= nullptr;
-	pZB							= nullptr;
-
 	decl						= nullptr;
 	vb							= nullptr;
 	ib							= nullptr;
