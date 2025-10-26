@@ -321,14 +321,10 @@ void CRenderTarget::DoAsyncScreenshot	()
 	{
 		HRESULT hr;
 
-		IDirect3DSurface9*	pFBSrc = RTarget;
-		//	Don't addref, no need to release.
-		//ID3DTexture2D *pTex = RT->pSurface;
-
-		//hr = pTex->GetSurfaceLevel(0, &pFBSrc);
+		IDirect3DSurface9* pFBSrc = (IDirect3DSurface9*)RTarget->GetRawRTV();
 
 		//	SHould be async function
-		hr = RDevice->GetRenderTargetData( pFBSrc, pFB );
+		hr = RDevice->GetRenderTargetData(pFBSrc, pFB);
 
 		//pFBSrc->Release();
 

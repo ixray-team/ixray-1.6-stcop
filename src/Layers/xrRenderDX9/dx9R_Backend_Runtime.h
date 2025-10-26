@@ -6,13 +6,9 @@ IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M_)
 	CHK_DX				(RDevice->SetTransform((D3DTRANSFORMSTATETYPE)ID,(D3DMATRIX*)&M_));
 }
 
-IC void CBackend::set_RT(ID3DRenderTargetView* RT, u32 ID)
+IC void CBackend::set_RT(IRHIRenderTargetView* RT, u32 ID)
 {
-	if (RT != pRT[ID])
-	{
-		pRT[ID] = RT;
-		CHK_DX(RDevice->SetRenderTarget(ID, RT));
-	}
+	GRHI->SetRenderTargetView(RT, ID);
 }
 
 ICF void CBackend::set_Format(IDirect3DVertexDeclaration9* _decl)
