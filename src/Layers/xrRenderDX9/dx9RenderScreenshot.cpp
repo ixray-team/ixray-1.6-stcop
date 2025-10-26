@@ -37,7 +37,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         return;
     }
 
-    hr = RDevice->GetRenderTargetData(RTarget, pFB);
+    hr = RDevice->GetRenderTargetData((IDirect3DSurface9*)RTarget->GetRawRTV(), pFB);
     if (hr != D3D_OK) {
         goto _end_;
     }
