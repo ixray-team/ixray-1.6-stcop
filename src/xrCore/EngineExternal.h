@@ -98,6 +98,7 @@ public:
 	u32 GetFontAltasSize() const;
 	float GetSprintFovFactor() const;
 	const char* GetCurrentPlatformFullName();
+	shared_str GetInventoryItemCountPrefix();
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;

@@ -122,7 +122,7 @@ void CUIInventoryCellItem::UpdateItemText()
 
 	if ( count > 1 || helper_count )
 	{
-		xr_sprintf						( str, "%d", count );
+		xr_sprintf						( str, "%s%d", EngineExternal().GetInventoryItemCountPrefix().c_str(), count );
 		m_text->TextItemControl()->SetText	( str );
 		m_text->Show					( true );
 	}

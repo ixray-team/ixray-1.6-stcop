@@ -215,3 +215,8 @@ float CEngineExternal::GetSprintFovFactor() const
 {
 	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "SprintFovFactor", 7.0f);
 }
+
+shared_str CEngineExternal::GetInventoryItemCountPrefix()
+{
+	return READ_IF_EXISTS(pOptions, r_string_wb, "ui", "InventoryItemCountPrefix", "x");
+}
