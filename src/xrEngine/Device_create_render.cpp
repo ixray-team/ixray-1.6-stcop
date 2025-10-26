@@ -246,26 +246,6 @@ void* CRenderDevice::GetRenderDevice()
 	return GRHI->DevicePtr->RawDevice;
 }
 
-void* CRenderDevice::GetRenderContext()
-{
-	return GRHI->GetContext();
-}
-
-void* CRenderDevice::GetRenderTexture()
-{
-	// FX: Use ImGui render for Debug Draw mode
-#ifdef DEBUG_DRAW
-	return GRHI->DevicePtr->RenderRTV;
-#else
-	return GRHI->DevicePtr->SwapChainRTV;
-#endif
-}
-
-void* CRenderDevice::GetSwapchainTexture()
-{
-	return GRHI->DevicePtr->SwapChainRTV;
-}
-
 void* CRenderDevice::GetSwapchain()
 {
 	return GRHI->GetSwapchain();
