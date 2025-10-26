@@ -25,7 +25,7 @@ enum class ERHI_PRIMITIVE_TOPOLOGY
 	TRIANGLE_STRIP,
 	TRIANGLE_FAN,
 	// DX10/11 specific
-	CONTROL_POINT_3_PATCH  // For tessellation
+	CONTROL_POINT_3_PATCH = 35  // For tessellation
 };
 
 enum class ERHI_USAGE
