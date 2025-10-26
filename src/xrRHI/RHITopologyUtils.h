@@ -6,7 +6,13 @@ struct RHITopologyUtils
 {
     static u32 GetIndexCount(u32 primitiveCount, ERHI_PRIMITIVE_TOPOLOGY topology)
     {
-        static u32 multipliers[] = {
+        if (topology == ERHI_PRIMITIVE_TOPOLOGY::CONTROL_POINT_3_PATCH)
+        {
+            topology = ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST;
+        }
+
+        static u32 multipliers[] =
+        {
             0,  // Undefined
             1,  // PointList
             2,  // LineList
@@ -16,7 +22,8 @@ struct RHITopologyUtils
             1   // TriangleFan (+2)
         };
 
-        static u32 additions[] = {
+        static u32 additions[] =
+        {
             0,  // Undefined
             0,  // PointList
             0,  // LineList
