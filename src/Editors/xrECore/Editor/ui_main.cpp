@@ -468,12 +468,12 @@ void TUI::Redraw()
 			RCache.set_RT(RTDiffuse->pRT, 1);
 			RCache.set_RT(RTPostion->pRT, 2);
 
-			RCache.set_ZB(0);
+			GRHI->SetDepthStencilView(0);
 
 			CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_TARGET, 0x0, 1, 0));
 
 			RCache.set_RT(RT->pRT);
-			RCache.set_ZB(ZB->pZRT);
+			GRHI->SetDepthStencilView(ZB->pZRT);
 
 			EDevice->Clear();
 
@@ -540,7 +540,7 @@ void TUI::Redraw()
 			RCache.set_RT(0, 3);
 
 			RCache.set_RT(RSwapchainTarget);
-			RCache.set_ZB(RDepth);
+			GRHI->SetDepthStencilView(RDepth);
 
 			RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
 			RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
