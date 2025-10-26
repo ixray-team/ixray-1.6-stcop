@@ -197,21 +197,18 @@ void CEditorRenderDevice::InitTimer()
 
 void CEditorRenderDevice::Clear()
 {
-	u32 ClearColor = 0x0;
+	float ClearColor[4] = {};
 
 	if (EPrefs)
 	{
-		float color[4] = 
-		{ 
-			color_get_R(EPrefs->scene_clear_color) / 255.f, 
-			color_get_G(EPrefs->scene_clear_color) / 255.f,
-			color_get_B(EPrefs->scene_clear_color) / 255.f, 
-			color_get_A(EPrefs->scene_clear_color) / 255.f
-		};
-		ClearColor = color_rgba_f(color[0], color[1], color[2], color[3]);
+		ClearColor[0] = color_get_R(EPrefs->scene_clear_color) / 255.f;
+		ClearColor[1] = color_get_G(EPrefs->scene_clear_color) / 255.f;
+		ClearColor[2] = color_get_B(EPrefs->scene_clear_color) / 255.f;
+		ClearColor[3] = color_get_A(EPrefs->scene_clear_color) / 255.f;
 	}
 
-	CHK_DX(REDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL | D3DCLEAR_TARGET, ClearColor, 1, 0));
+	GRHI->ClearDepthStencil(GRHI->GetDepthStencilView(), ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1, 0);
+	GRHI->ClearTarget(GRHI->GetRenderTargetView(0), ClearColor);
 }
 
 //---------------------------------------------------------------------------
