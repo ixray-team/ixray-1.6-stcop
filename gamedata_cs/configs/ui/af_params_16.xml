@@ -116,7 +116,7 @@
 			<texture>ui_am_prop_artefact</texture>
 			<text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
 		</caption>
-		<value x="188" y="0" width="33" height="20" magnitude="1">
+		<value x="238" y="0" width="33" height="20" magnitude="1">
 			<text font="letterica16" color="ui_6" align="r" vert_align="c"/>
 		</value>
 	</af_slots>
