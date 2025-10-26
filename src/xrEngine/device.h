@@ -37,9 +37,6 @@ public:
 	virtual				void				DestroyRenderDevice() = 0;
 
 	virtual				void*               GetRenderDevice() = 0;
-	virtual				void*               GetRenderContext() = 0;
-	virtual				void*               GetRenderTexture() = 0;
-	virtual				void*               GetSwapchainTexture() = 0;
 
 	virtual				void*				GetSwapchain() = 0;
 	virtual				u32					GetSwapchainWidth() = 0;
@@ -167,9 +164,6 @@ public:
 	void DestroyRenderDevice() override;
 
 	void* GetRenderDevice() override;
-	void* GetRenderContext() override;
-	void* GetRenderTexture() override;
-	void* GetSwapchainTexture() override;
 
 	u32 GetTimeDeltaSafe(u32 starttime);
 	u32 GetTimeDeltaSafe(u32 starttime, u32 endtime);

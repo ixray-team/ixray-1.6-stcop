@@ -480,6 +480,61 @@ DX9TextureFactory::~DX9TextureFactory()
 {
 }
 
+IRHISurface* DX9TextureFactory::CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource)
+{
+	IDirect3DVolumeTexture9* texture = nullptr;
+
+	HRESULT hr = Device->CreateVolumeTexture
+	(
+		Desc.Width,
+		Desc.Height,
+		Desc.Depth,
+		Desc.MipLevels,
+		0,
+		ConvertRHIFormatToDX9(Desc.Format),
+		D3DPOOL_MANAGED,
+		&texture,
+		nullptr
+	);
+
+	if (FAILED(hr))
+	{
+		return nullptr;
+	}
+
+	if (SubResource && SubResource->Data)
+	{
+		D3DLOCKED_BOX lockedBox;
+		hr = texture->LockBox(0, &lockedBox, nullptr, 0);
+		if (SUCCEEDED(hr))
+		{
+			const u8* src = reinterpret_cast<const u8*>(SubResource->Data);
+			u8* dst = reinterpret_cast<u8*>(lockedBox.pBits);
+
+			u32 rowPitchSrc = SubResource->RowPitch ? SubResource->RowPitch : Desc.Width * 4;
+			u32 rowPitchDst = lockedBox.RowPitch;
+			u32 slicePitchSrc = SubResource->DepthPitch ? SubResource->DepthPitch : rowPitchSrc * Desc.Height;
+			u32 slicePitchDst = lockedBox.SlicePitch;
+
+			for (u32 z = 0; z < Desc.Depth; ++z)
+			{
+				const u8* srcSlice = src + z * slicePitchSrc;
+				u8* dstSlice = dst + z * slicePitchDst;
+
+				for (u32 y = 0; y < Desc.Height; ++y)
+				{
+					memcpy(dstSlice + y * rowPitchDst, srcSlice + y * rowPitchSrc, rowPitchSrc);
+				}
+			}
+
+			texture->UnlockBox(0);
+		}
+	}
+
+	return new DX9Surface(texture);
+}
+
+
 IRHISurface* DX9TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource)
 {
 	auto Usage = ConvertUsage(Desc);

@@ -221,8 +221,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
 #if	RENDER==R_R2
 	// Targets, use accumulator for temporary storage
 	const ref_rt	rt_null;
-	RCache.set_RT((ID3DRenderTargetView*)nullptr,	1);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr,	2);
+	RCache.set_RT(nullptr,	1);
+	RCache.set_RT(nullptr,	2);
 	RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RDepth);
 #endif
 
@@ -288,7 +288,6 @@ void R_dsgraph_structure::r_dsgraph_render_scope	()
 	GPU_EVENT(SCOPE_BUFFER_RENDER);
 	{
 		GPU_EVENT(ZBUFFER_COPY);
-		GRHI->SetDepthStencilView(nullptr, true);
 		GRHI->CopySurface(RImplementation.Target->rt_Position->pSurface, RDepth->GetSurface());
 	}
 

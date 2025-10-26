@@ -371,7 +371,7 @@ void dxRenderDeviceRender::Clear()
 
 	if (psDeviceFlags.test(rsClearBB))
 	{
-		GRHI->ClearRawTarget(RCache.get_RT());
+		GRHI->ClearTarget(RCache.get_RT());
 	}
 #endif
 }
@@ -400,12 +400,7 @@ void dxRenderDeviceRender::End()
 		CImGuiManager& MyImGui = CImGuiManager::Instance();
 		MyImGui.BeginRender();
 
-#ifdef USE_DX11
-		ID3D11RenderTargetView* RTV = RSwapchainTarget;
-		RContext->OMSetRenderTargets(1, &RTV, nullptr);
-#else
-		RDevice->SetRenderTarget(0, RSwapchainTarget);
-#endif
+		GRHI->SetRenderTargetView(RSwapchainTarget, 0, true);
 
 		MyImGui.Render();
 		MyImGui.AfterRender();
@@ -419,7 +414,7 @@ void dxRenderDeviceRender::End()
 	ID3D11RenderTargetView* RTV = RTarget;
 	RContext->OMSetRenderTargets(1, &RTV, (ID3D11DepthStencilView*)RDepth->GetRawDSV());
 #else
-	RDevice->SetRenderTarget(0, RTarget);
+	GRHI->SetRenderTargetView(RTarget, 0);
 #endif
 
 #endif
@@ -439,7 +434,7 @@ void dxRenderDeviceRender::ResourcesDestroyNecessaryTextures()
 void dxRenderDeviceRender::ClearTarget()
 {
 #ifndef _EDITOR
-	GRHI->ClearRawTarget(RCache.get_RT());
+	GRHI->ClearTarget(RCache.get_RT());
 #endif
 }
 

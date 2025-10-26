@@ -503,9 +503,10 @@ void CRender::Calculate				()
 }
 
 extern u32 g_r;
-void	CRender::Render		()
+void CRender::Render()
 {
-	RDevice->SetRenderTarget(0, RTarget);
+	GRHI->SetRenderTargetView(RTarget, 0);
+
 	if( m_bFirstFrameAfterReset )
 	{
 		m_bFirstFrameAfterReset = false;

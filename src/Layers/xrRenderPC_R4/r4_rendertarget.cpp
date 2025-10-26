@@ -31,7 +31,11 @@
 
 static RHIInputElementDesc ShaderDeclXYZ[] =
 {
-	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT, 0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32_FLOAT,		0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
+};
+static RHIInputElementDesc InputDecl[] =
+{
+	{ "POSITION", 0, ERHI_FORMAT::R32G32B32A32_FLOAT,	0, 0, ERHI_INPUT_CLASSIFICATION::VERTEX_DATA, 0 }
 };
 
 void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, IRHIDepthStencilView* zb)
@@ -72,10 +76,10 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
-	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
-	if (_3) RCache.set_RT(_3->pRT, 2); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
+	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT(nullptr, 0);
+	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT(nullptr, 1);
+	if (_3) RCache.set_RT(_3->pRT, 2); else RCache.set_RT(nullptr, 2);
+	RCache.set_RT(nullptr, 3);
 
 	GRHI->SetDepthStencilView(zb);
 }
@@ -95,15 +99,15 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, IRHIDepthStencil
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
 
-	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
-	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
+	if (_1) RCache.set_RT(_1->pRT, 0); else RCache.set_RT(nullptr, 0);
+	if (_2) RCache.set_RT(_2->pRT, 1); else RCache.set_RT(nullptr, 1);
+	RCache.set_RT(nullptr, 2);
+	RCache.set_RT(nullptr, 3);
 
 	GRHI->SetDepthStencilView(zb);
 }
 
-void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, IRHIDepthStencilView* zb)
+void CRenderTarget::u_setrt(u32 W, u32 H, IRHIRenderTargetView* _1, IRHIRenderTargetView* _2, IRHIRenderTargetView* _3, IRHIDepthStencilView* zb)
 {
 	dwWidth = W;
 	dwHeight = H;
@@ -111,7 +115,7 @@ void CRenderTarget::u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTa
 	RCache.set_RT(_1, 0);
 	RCache.set_RT(_2, 1);
 	RCache.set_RT(_3, 2);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
+	RCache.set_RT(nullptr, 3);
 	GRHI->SetDepthStencilView(zb);
 }
 
@@ -676,7 +680,7 @@ CRenderTarget::CRenderTarget()
 			GRHI->ClearTarget(rt_LUM_pool[it]->pRT, ERTColor::Gray);
 		}
 
-		u_setrt(Device.TargetWidth, Device.TargetHeight, (ID3D11RenderTargetView*)rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
+		u_setrt(Device.TargetWidth, Device.TargetHeight, rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	}
 
 	// HBAO
@@ -691,20 +695,18 @@ CRenderTarget::CRenderTarget()
 
 	// COMBINE
 	{
-		static D3DVERTEXELEMENT9 dwDecl[] =
-		{
-			{ 0, 0,  D3DDECLTYPE_FLOAT4,	D3DDECLMETHOD_DEFAULT, 	D3DDECLUSAGE_POSITION,	0 },	// pos+uv
-			D3DDECL_END()
-		};
+
 		s_combine.create					(b_combine,					"r2\\combine");
 		s_combine_volumetric.create			("combine_volumetric");
 		s_combine_dbg_0.create				("effects\\screen_set",		r2_RT_smap_surf		);	
 		s_combine_dbg_1.create				("effects\\screen_set",		r2_RT_luminance_t8	);
 		s_combine_dbg_Accumulator.create	("effects\\screen_set",		r2_RT_accum			);
-		g_combine_VP.create					(dwDecl,		RCache.Vertex.Buffer(), RCache.QuadIB);
+
+		g_combine_VP.create(InputDecl, std::size(InputDecl), RCache.Vertex.Buffer(), RCache.QuadIB);
+		g_combine_cuboid.create(InputDecl, std::size(InputDecl), RCache.Vertex.Buffer(), RCache.Index.Buffer());
+
 		g_combine.create					(FVF::F_TL,		RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine_2UV.create				(FVF::F_TL2uv,	RCache.Vertex.Buffer(), RCache.QuadIB);
-		g_combine_cuboid.create				(dwDecl,	RCache.Vertex.Buffer(), RCache.Index.Buffer());
 
 		u32 fvf_aa_blur				= D3DFVF_XYZRHW|D3DFVF_TEX4|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3);
 		g_aa_blur.create			(fvf_aa_blur,	RCache.Vertex.Buffer(), RCache.QuadIB);
