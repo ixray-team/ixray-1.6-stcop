@@ -1,26 +1,26 @@
 <w>
-  <main_frame x="8" y="300" width="267" height="170" delay="810"/>
-  <background_frame x="0" y="0" width="267" height="170">
+  <main_frame x="8" y="300" width="317" height="170" delay="810"/>
+  <background_frame x="0" y="0" width="317" height="170">
     <texture>ui_temp_frame</texture>
   </background_frame>
   
-	<static_name x="18" y="18" width="233" height="20" stretch="1" complex_desc="1">
+	<static_name x="18" y="18" width="283" height="20" stretch="1" complex_desc="1">
 		<text font="letterica18" r="238" g="155" b="23" complex_mode="1" align="l" vert_align="c"/>		
 	</static_name>
 
-	<static_weight x="18" y="40" width="233" height="20">
+	<static_weight x="18" y="40" width="283" height="20">
 		<text align="l" font="letterica16" color="ui_gray"/>
 	</static_weight>
 
-	<static_cost x="192" y="40" width="58" height="16" stretch="1">
+	<static_cost x="242" y="40" width="58" height="16" stretch="1">
 		<text font="letterica18" color="ui_7" align="r"/>
 	</static_cost>
 
-	<static_no_trade x="16" y="60" width="224" height="20">
+	<static_no_trade x="16" y="60" width="274" height="20">
 		<text align="r" font="letterica16" r="196" g="18" b="18" complex_mode="1"/>
 	</static_no_trade>
 
-	<descr_list x="11" y="63" width="240" height="131" always_show_scroll="0" right_ident="10" left_ident="10" fit_to_height="1">
+	<descr_list x="11" y="63" width="300" height="131" always_show_scroll="0" right_ident="10" left_ident="10" fit_to_height="1">
 		<font font="letterica16" color="ui_6"/>
 	</descr_list>
 
@@ -41,7 +41,7 @@
 	    </progress_state>
 	</condition_params>
     
-    <wpn_params x="0" y="0" width="214" height="177">
+    <wpn_params x="0" y="0" width="264" height="177">
 		<cap_accuracy x="18" y="8" width="101" height="8">
 			<text font="letterica16" r="124" g="119" b="115">ui_inv_accuracy</text>
 		</cap_accuracy>		
@@ -71,7 +71,7 @@
 			<texture>ui_wp_propery_07</texture>
 		</static_ammo>
 		
-		<progress_accuracy x="108" y="8" width="101" height="8" horz="1">
+		<progress_accuracy x="158" y="8" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -81,7 +81,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
 		</progress_accuracy>
-		<progress_handling x="108" y="26" width="101" height="8" horz="1">
+		<progress_handling x="158" y="26" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -91,7 +91,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
 		</progress_handling>
-		<progress_damage x="108" y="44" width="101" height="8" horz="1">
+		<progress_damage x="158" y="44" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -101,7 +101,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
 		</progress_damage>
-		<progress_rpm x="108" y="62" width="101" height="8" horz="1">
+		<progress_rpm x="158" y="62" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -115,22 +115,22 @@
 		<cap_ammo_count x="18" y="80" width="80" height="8">
 			<text font="letterica16" r="124" g="119" b="115" align="l">ui_ammo_count</text>
 		</cap_ammo_count>
-		<cap_ammo_count2 x="108" y="80" width="80" height="8">
+		<cap_ammo_count2 x="158" y="80" width="80" height="8">
 			<text font="letterica16" align="l" r="124" g="119" b="115"/>
 		</cap_ammo_count2>
 
 		<cap_ammo_types x="18" y="96" width="120" height="8">
 			<text font="letterica16" align="l" r="124" g="119" b="115">ui_ammo_types</text>
 		</cap_ammo_types>
-		<cap_ammo_used_type x="108" y="96" width="40" height="8">
+		<cap_ammo_used_type x="158" y="96" width="40" height="8">
 			<text font="letterica16" align="l" r="124" g="119" b="115"/>
 		</cap_ammo_used_type>
 	    <static_ammo_type1 x="12" y="117" width="80" height="40" />
 	    <static_ammo_type2 x="84" y="117" width="80" height="40" />
 	</wpn_params>
 	
-	<knife_params x="0" y="0" width="212" height="70">
-		<prop_line x="0" y="0" width="212" height="9" stretch="1">
+	<knife_params x="0" y="0" width="262" height="70">
+		<prop_line x="0" y="0" width="262" height="9" stretch="1">
 		</prop_line>
 		<static_damage x="0" y="8" width="14" height="18" stretch="1">
 			<texture>ui_wp_prop_damage</texture>
@@ -151,7 +151,7 @@
 			<text font="letterica16" r="124" g="119" b="115" align="l">ui_inv_dist</text>
 		</cap_dist>
 		
-		<progress_damage x="108" y="8" width="101" height="8" horz="1">
+		<progress_damage x="158" y="8" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -161,7 +161,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
 		</progress_damage>
-		<progress_handling x="108" y="26" width="101" height="8" horz="1">
+		<progress_handling x="158" y="26" width="101" height="8" horz="1">
 			<progress>
 				<texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
 			</progress>
@@ -171,16 +171,16 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
 		</progress_handling>
-		<value_dist1 x="108" y="44" width="10" height="8">
+		<value_dist1 x="158" y="44" width="10" height="8">
 			<text font="letterica16" align="l"/>
 		</value_dist1>
-		<value_dist2 x="127" y="44" width="10" height="8">
+		<value_dist2 x="177" y="44" width="10" height="8">
 			<text font="letterica16" align="l"/>
 		</value_dist2>
-		<value_dist_delimiter x="123" y="44" width="1" height="8">
+		<value_dist_delimiter x="173" y="44" width="1" height="8">
 			<text font="letterica16" r="124" g="119" b="115" align="l"/>
 		</value_dist_delimiter>
-		<meters_name x="141" y="44" width="80" height="8">
+		<meters_name x="191" y="44" width="80" height="8">
 			<text font="letterica16" r="124" g="119" b="115" align="l"/>
 		</meters_name>
 	</knife_params>
@@ -189,26 +189,26 @@
 #include "ui\booster_params_16.xml"
 	
   <upgrade_info>
-    <main_frame x="0" y="0" width="267" height="200"/>
+    <main_frame x="0" y="0" width="300" height="200"/>
 
-    <background_frame x="0" y="0" width="250" height="200">
+    <background_frame x="0" y="0" width="300" height="200">
       <texture>ui_temp_frame</texture>
     </background_frame>
 
-    <info_name x="17" y="20" width="233" height="20">
+    <info_name x="17" y="20" width="263" height="20">
       <text font="letterica18" r="238" g="155" b="23" complex_mode="0" align="l" vert_align="t"/>
     </info_name>
 
-    <info_desc x="17" y="45" width="233" height="20" complex_mode="1">
+    <info_desc x="17" y="45" width="263" height="20" complex_mode="1">
       <text font="letterica18" r="238" g="155" b="122" align="l" vert_align="t"/>
     </info_desc>
 
-    <info_prerequisites x="17" y="65" width="233" height="20" complex_mode="1">
+    <info_prerequisites x="17" y="65" width="263" height="20" complex_mode="1">
       <text font="letterica18" color="ui_2" align="l" vert_align="t"/>
     </info_prerequisites>
 
-    <properties x="17" y="20" width="233" height="20">
-      <icon x="0"  y="0" width="16"  height="19" stretch="1" />
+    <properties x="17" y="20" width="263" height="20" sec_col_pos="155" next_line_pos="20">
+      <icon x="0"  y="0" width="15"  height="19" stretch="1" />
       <text x="20" y="3" width="255" height="19" />
     </properties>
   </upgrade_info>
@@ -248,15 +248,15 @@
 
   <!-- ============================ outfit_info ====================================   -->
   
-  <outfit_info x="4" y="5" width="233" height="180">
-    <caption x="0" y="0" width="233" height="20">
+  <outfit_info x="4" y="5" width="283" height="180">
+    <caption x="0" y="0" width="283" height="20">
 			<text font="letterica18" r="238" g="155" b="23" align="c" vert_align="c">ui_st_outfit_protect</text>
     </caption>
     
     <burn_immunity x="0" y="0" width="15" height="18" stretch="1">
       <texture>ui_inv_icon_burn_immunity</texture>
       <text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -266,7 +266,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </burn_immunity>
@@ -274,7 +274,7 @@
 		<strike_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_strike_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -284,7 +284,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </strike_immunity>
@@ -292,7 +292,7 @@
 		<shock_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_shock_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -302,7 +302,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </shock_immunity>
@@ -310,7 +310,7 @@
 		<wound_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_wound_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -320,7 +320,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </wound_immunity>
@@ -328,7 +328,7 @@
 		<radiation_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_radiation_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -338,7 +338,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </radiation_immunity>
@@ -346,7 +346,7 @@
 		<telepatic_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_telepatic_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -356,7 +356,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </telepatic_immunity>
@@ -364,7 +364,7 @@
 		<chemical_burn_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_chemical_burn_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -374,7 +374,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </chemical_burn_immunity>
@@ -382,7 +382,7 @@
 		<explosion_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_explosion_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -392,7 +392,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </explosion_immunity>
@@ -400,7 +400,7 @@
 		<fire_wound_immunity x="0" y="0" width="15" height="18" stretch="1">
 			<texture>ui_inv_icon_fire_wound_immunity</texture>
 			<text font="letterica16" x="18" y="0" color="ui_3" align="l" vert_align="c"/>
-      <progress_immunity x="108" y="4" width="83" height="8" horz="1">
+      <progress_immunity x="158" y="4" width="83" height="8" horz="1">
         <progress>
           <texture a="255" r="55" g="255" b="255">ui_buymenu_progBar</texture>
         </progress>
@@ -410,7 +410,7 @@
 			<color_less color="pda_red"  />
 			<color_more color="pda_green"/>
       </progress_immunity>
-      <static_value x="188" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
+      <static_value x="238" y="0" width="33" height="18" magnitude="100" unit_str="st_proc">
         <text font="letterica16" color="ui_6" align="r" vert_align="c"/>
       </static_value>
     </fire_wound_immunity>
