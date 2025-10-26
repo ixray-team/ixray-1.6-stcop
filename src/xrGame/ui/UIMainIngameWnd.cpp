@@ -1160,7 +1160,7 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 			{
 				const u32 count = pActor->inventory().dwfGetSameItemCount(item_name.c_str(), true);
 				string32 str;
-				xr_sprintf(str, "%d", count);
+				xr_sprintf(str, "%s%d", EngineExternal().GetInventoryItemCountPrefix().c_str(), count);
 				wnd->TextItemControl()->SetText(str);
 
 				wnd->Show(should_show_panel);
