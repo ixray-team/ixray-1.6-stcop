@@ -470,18 +470,8 @@ void InternalDevice11::SetViewport(RHIViewport& VP)
 
 void InternalDevice11::SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology)
 {
-	static D3D_PRIMITIVE_TOPOLOGY d3dTopologies[] =
-	{
-		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,    // Undefined
-		D3D_PRIMITIVE_TOPOLOGY_POINTLIST,    // PointList
-		D3D_PRIMITIVE_TOPOLOGY_LINELIST,     // LineList
-		D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,    // LineStrip
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST, // TriangleList
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,// TriangleStrip
-		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED     // TriangleFan (not supported in DX11)
-	};
 	currentTopology = topology;
-	d3dTopology = d3dTopologies[static_cast<size_t>(topology)];
+	d3dTopology = (D3D_PRIMITIVE_TOPOLOGY)(topology);
 	HWRenderContext->IASetPrimitiveTopology(d3dTopology);
 }
 
