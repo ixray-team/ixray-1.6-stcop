@@ -39,13 +39,6 @@ void CBackend::OnFrameBegin	()
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
 		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
-		GRHI->SetRenderTargetView(nullptr, 0);
-		GRHI->SetRenderTargetView(nullptr, 1);
-		GRHI->SetRenderTargetView(nullptr, 2);
-		GRHI->SetRenderTargetView(nullptr, 3);
-		GRHI->SetRenderTargetView(nullptr, 4);
-		GRHI->SetRenderTargetView(nullptr, 5);
-		GRHI->SetDepthStencilView(nullptr, true);
 #endif //USE_DX11
 		Memory.mem_fill		(&stat,0,sizeof(stat));
 		Vertex.Flush		();
@@ -57,6 +50,17 @@ void CBackend::OnFrameBegin	()
 
 void CBackend::Invalidate	()
 {
+	if (GRHI != nullptr)
+	{
+		GRHI->SetRenderTargetView(nullptr, 0);
+		GRHI->SetRenderTargetView(nullptr, 1);
+		GRHI->SetRenderTargetView(nullptr, 2);
+		GRHI->SetRenderTargetView(nullptr, 3);
+		GRHI->SetRenderTargetView(nullptr, 4);
+		GRHI->SetRenderTargetView(nullptr, 5);
+		GRHI->SetDepthStencilView(nullptr, true);
+	}
+
 	decl						= nullptr;
 	vb							= nullptr;
 	ib							= nullptr;
