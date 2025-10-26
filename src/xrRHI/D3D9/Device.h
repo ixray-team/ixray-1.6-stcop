@@ -24,7 +24,8 @@ public:
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
-	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView) override;
+	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
+	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
     // Drawing methods
     virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;

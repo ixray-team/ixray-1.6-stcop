@@ -5,30 +5,30 @@
 class IRHIDevice
 {
 public:
-    void* RawDevice = nullptr;
-    IRHIRenderTargetView* RenderRTV = nullptr;
-    void* RenderSRV = nullptr;
-    IRHIDepthStencilView* RenderDSV = nullptr;
-    IRHIRenderTargetView* RenderTexture = nullptr;
-    IRHIRenderTargetView* SwapChainRTV = nullptr;
+	void* RawDevice = nullptr;
+	IRHIRenderTargetView* RenderRTV = nullptr;
+	void* RenderSRV = nullptr;
+	IRHIDepthStencilView* RenderDSV = nullptr;
+	IRHIRenderTargetView* RenderTexture = nullptr;
+	IRHIRenderTargetView* SwapChainRTV = nullptr;
 
-    float RenderScale = 1.f;
-    u32 FeatureLevel;
-    
-    // Texture factory
-    IRHITextureFactory* TextureFactory = nullptr;
+	float RenderScale = 1.f;
+	u32 FeatureLevel;
+	
+	// Texture factory
+	IRHITextureFactory* TextureFactory = nullptr;
 
-    // Drawing methods
-    virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) = 0;
-    virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) = 0;
-    virtual void Draw(u32 startVertex, u32 primitiveCount) = 0;
+	// Drawing methods
+	virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) = 0;
+	virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) = 0;
+	virtual void Draw(u32 startVertex, u32 primitiveCount) = 0;
 
-    virtual void DrawIndexedInstanced(
-        u32 baseVertex, u32 startVertex, u32 vertexCount,
-        u32 startIndex, u32 primitiveCount,
-        u32 instanceCount, u32 startInstanceLocation) = 0;
-    
-    virtual void DrawNoInputAssembly(u32 vertexCount) = 0;
+	virtual void DrawIndexedInstanced(
+		u32 baseVertex, u32 startVertex, u32 vertexCount,
+		u32 startIndex, u32 primitiveCount,
+		u32 instanceCount, u32 startInstanceLocation) = 0;
+	
+	virtual void DrawNoInputAssembly(u32 vertexCount) = 0;
 
 public:
 	virtual ~IRHIDevice() = default;
@@ -49,6 +49,7 @@ public:
 	// Buffer stuff
 	virtual IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr) = 0;
 
-    // Render Taget setup
-    virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView) = 0;
+	// Render Taget setup
+	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) = 0;
+	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;
 };

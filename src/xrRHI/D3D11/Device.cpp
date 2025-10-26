@@ -137,7 +137,12 @@ IRHIBuffer* InternalDevice11::CreateBuffer(const RHIBufferDesc& desc, const RHIB
 	return pBuffer;
 }
 
-void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews, IRHIDepthStencilView* pDepthStencilView)
+void InternalDevice11::SetDSV(IRHIDepthStencilView* pDepthStencilView)
+{
+	DepthStencilView = pDepthStencilView;
+}
+
+void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews)
 {
 	static ID3D11RenderTargetView* s_RenderTargetView11[RHI_MAX_RENDER_TARGETS];
 
@@ -148,7 +153,7 @@ void InternalDevice11::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* cons
 		s_RenderTargetView11[i] = reinterpret_cast<ID3D11RenderTargetView*>(ppRenderTargetViews[i] ? ppRenderTargetViews[i]->GetRawRTV() : nullptr);
 	}
 
-	HWRenderContext->OMSetRenderTargets(NumViews, s_RenderTargetView11, pDepthStencilView ? (ID3D11DepthStencilView*)pDepthStencilView->GetRawDSV() : nullptr);
+	HWRenderContext->OMSetRenderTargets(NumViews, s_RenderTargetView11, DepthStencilView ? (ID3D11DepthStencilView*)DepthStencilView->GetRawDSV() : nullptr);
 }
 
 #if 0
