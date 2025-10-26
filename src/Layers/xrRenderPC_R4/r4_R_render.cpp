@@ -322,7 +322,7 @@ void CRender::render_menu() {
 	}
 
 	// Actual Display
-	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), (ID3D11RenderTargetView*)RImplementation.Target->rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
+	Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 	rmNormal();
 
 	RCache.set_Shader(Target->s_menu);
@@ -374,7 +374,7 @@ void CRender::Render()
 	bool	bMenu = pMainMenu?pMainMenu->CanSkipSceneRendering():false;
 
 	if (!(g_pGameLevel && g_hud) || bMenu) {
-		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), (ID3D11RenderTargetView*)RImplementation.Target->rt_BackbufferLUT->pRT->GetRawRTV(), nullptr, nullptr, nullptr);
+		Target->u_setrt((u32)RCache.get_target_width(), (u32)RCache.get_target_height(), RImplementation.Target->rt_BackbufferLUT->pRT, nullptr, nullptr, nullptr);
 		return;
 	}
 
@@ -451,7 +451,7 @@ void CRender::Render()
 			GRHI->ClearTarget(Target->rt_Reflection->pRT[i], (FLOAT*)&fog_color4);
 			GRHI->ClearDepthStencil(Target->rt_Depth->pZRT, ERHI_CLEAR_TARGET::DEPTH, 1.0f, 0L);
 
-			Target->u_setrt(RefSize, RefSize, (ID3D11RenderTargetView*)Target->rt_Reflection->pRT[i]->GetRawRTV(), NULL, NULL, Target->rt_Depth->pZRT);
+			Target->u_setrt(RefSize, RefSize, Target->rt_Reflection->pRT[i], NULL, NULL, Target->rt_Depth->pZRT);
 			
 			RImplementation.rmNormal();
 

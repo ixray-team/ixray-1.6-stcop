@@ -193,6 +193,7 @@ public:
 	virtual ~IRHITextureFactory() = default;
 
 	virtual IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource) = 0;
+	virtual IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource) = 0;
 	virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) = 0;
 	virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) = 0;
 	virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) = 0;

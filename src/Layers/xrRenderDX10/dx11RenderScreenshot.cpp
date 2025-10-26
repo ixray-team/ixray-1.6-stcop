@@ -9,9 +9,10 @@ using namespace DirectX;
 extern int SM_FOR_SEND_WIDTH;
 extern int SM_FOR_SEND_HEIGHT;
 
-void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) {
+void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer)
+{
     ID3DResource* pSrcTexture = nullptr;
-    RTarget->GetResource(&pSrcTexture);
+    ((ID3D11RenderTargetView*)RTarget->GetRawRTV())->GetResource(&pSrcTexture);
 
     VERIFY(pSrcTexture);
 

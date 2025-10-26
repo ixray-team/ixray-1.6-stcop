@@ -28,7 +28,7 @@ void CRenderTarget::phase_smap_spot_tsh	(light* L)
 	if (IRender_Light::OMNIPART == L->flags.type)
 	{
 		// omni-part
-		GRHI->ClearRawTarget(RCache.get_RT(), ERTColor::Black);
+		GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
 	}
 	else
 	{
