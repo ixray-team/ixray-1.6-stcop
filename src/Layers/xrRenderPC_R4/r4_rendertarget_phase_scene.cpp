@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_scene_forward() {
+void CRenderTarget::phase_scene_forward()
+{
 	u_setrt(rt_Generic_0, 0, 0, RDepth); // LDR RT
 }
 
@@ -10,11 +11,10 @@ void CRenderTarget::phase_scene_prepare()
 	GPU_EVENT(phase_scene_prepare);
 
 	//	TODO: DX10: Check if we need to set RT here.
-	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), (ID3D11RenderTargetView*)rt_Normal->pRT->GetRawRTV(), NULL, NULL, RDepth);
+	u_setrt((u32)RCache.get_width(), (u32)RCache.get_height(), rt_Normal->pRT, NULL, NULL, RDepth);
 
-	FLOAT ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
-
-	RContext->ClearRenderTargetView((ID3D11RenderTargetView*)rt_Normal->pRT->GetRawRTV(), ColorRGBA);
+	static float ColorRGBA[4] = { 0.5f, 0.5f, 1.0f, 1.0f };
+	GRHI->ClearTarget(rt_Normal->pRT, ColorRGBA);
 	GRHI->ClearDepthStencil(RDepth, ERHI_CLEAR_TARGET::DEPTH | ERHI_CLEAR_TARGET::STENCIL, 1.0f, 0L);
 
 	//	Igor: for volumetric lights

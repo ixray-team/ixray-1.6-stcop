@@ -84,6 +84,7 @@ public:
 	void Present();
 	xr_vector<shared_str> DisplaySizeArray();
 
+	IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, RHISubResource* SubResource);
 	IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, RHISubResource& SubResource);
 	IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc);
 	IRHISurface* CreateRenderTarget(const RHITextureDesc& desc);
@@ -105,6 +106,7 @@ public:
 	void ApplyRenderTargetChange();
 
 	inline IRHIDepthStencilView* GetDepthStencilView();
+	inline IRHIRenderTargetView* GetRenderTargetView(size_t ID);
 
 	void GPUStatsBegin() const;
 	const RHI_GPU_EVENT& GPUStats() const;
@@ -145,6 +147,11 @@ extern RHI_API CRHI* GRHI;
 inline IRHIDepthStencilView* CRHI::GetDepthStencilView()
 {
 	return m_pDepthStencilView;
+}
+
+inline IRHIRenderTargetView* CRHI::GetRenderTargetView(size_t ID)
+{
+	return m_pRenderTargetViews[ID];
 }
 
 #include "RHIUtils.h"
