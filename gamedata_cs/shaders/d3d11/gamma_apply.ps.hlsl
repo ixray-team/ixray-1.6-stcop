@@ -6,7 +6,7 @@ uniform float4 color_grading;
 struct PSInput
 {
     float4 hpos : SV_POSITION;
-    float4 texcoord : TEXCOORD0;
+    float2 texcoord : TEXCOORD0;
 };
 
 float4 main(in PSInput I) : SV_Target
