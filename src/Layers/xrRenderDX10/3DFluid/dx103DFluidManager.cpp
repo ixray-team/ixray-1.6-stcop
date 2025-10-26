@@ -65,12 +65,12 @@ dx103DFluidManager::dx103DFluidManager()
 {
 	ZeroMemory(pRenderTargetViews, sizeof(pRenderTargetViews));
 
-	RenderTargetFormats [RENDER_TARGET_VELOCITY1]	= DXGI_FORMAT_R16G16B16A16_FLOAT;
-	RenderTargetFormats [RENDER_TARGET_COLOR]		= DXGI_FORMAT_R16_FLOAT;
-	RenderTargetFormats [RENDER_TARGET_OBSTACLES]   = DXGI_FORMAT_R8_UNORM;
-	RenderTargetFormats [RENDER_TARGET_OBSTVELOCITY]= DXGI_FORMAT_R16G16B16A16_FLOAT;
-	RenderTargetFormats [RENDER_TARGET_TEMPSCALAR]	= DXGI_FORMAT_R16_FLOAT;
-	RenderTargetFormats [RENDER_TARGET_TEMPVECTOR]	= DXGI_FORMAT_R16G16B16A16_FLOAT;  
+	RenderTargetFormats [RENDER_TARGET_VELOCITY1]	= ERHI_FORMAT::R16G16B16A16_FLOAT;
+	RenderTargetFormats [RENDER_TARGET_COLOR]		= ERHI_FORMAT::R16_FLOAT;
+	RenderTargetFormats [RENDER_TARGET_OBSTACLES]   = ERHI_FORMAT::R8_UNORM;
+	RenderTargetFormats [RENDER_TARGET_OBSTVELOCITY]= ERHI_FORMAT::R16G16B16A16_FLOAT;
+	RenderTargetFormats [RENDER_TARGET_TEMPSCALAR]	= ERHI_FORMAT::R16_FLOAT;
+	RenderTargetFormats [RENDER_TARGET_TEMPVECTOR]	= ERHI_FORMAT::R16G16B16A16_FLOAT;  
 }
 
 dx103DFluidManager::~dx103DFluidManager()
@@ -78,7 +78,7 @@ dx103DFluidManager::~dx103DFluidManager()
 	Destroy();
 }
 
-void dx103DFluidManager::Initialize( int width, int height, int depth )
+void dx103DFluidManager::Initialize(int width, int height, int depth)
 {
 	if (!RImplementation.o.volumetricfog)
 		return;
@@ -91,50 +91,41 @@ void dx103DFluidManager::Initialize( int width, int height, int depth )
 
 	InitShaders();
 
-	D3D_TEXTURE3D_DESC desc;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-	desc.CPUAccessFlags = 0; 
+	RHITextureDesc desc;
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE | ERHI_BIND_FLAG::RENDER_TARGET;
+	desc.CPUAccessFlags = 0;
 	desc.MipLevels = 1;
 	desc.MiscFlags = 0;
-	desc.Usage = D3D_USAGE_DEFAULT;
-	desc.Width =  width;
+	desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	desc.Width = width;
 	desc.Height = height;
-	desc.Depth =  depth;
+	desc.Depth = depth;
 
-	D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	ZeroMemory( &SRVDesc, sizeof(SRVDesc) );
-	SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
-	SRVDesc.Texture3D.MipLevels = 1;
-	SRVDesc.Texture3D.MostDetailedMip = 0;
-
-	for(int rtIndex=0; rtIndex<NUM_RENDER_TARGETS; rtIndex++)
+	for (int rtIndex = 0; rtIndex < NUM_RENDER_TARGETS; rtIndex++)
 	{
 		PrepareTexture(rtIndex);
 		pRenderTargetViews[rtIndex] = 0;
 	}
 
-	for(int rtIndex=0; rtIndex<NUM_OWN_RENDER_TARGETS; rtIndex++)
+	for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
 	{
 		desc.Format = RenderTargetFormats[rtIndex];
-		SRVDesc.Format = RenderTargetFormats[rtIndex];
-		CreateRTTextureAndViews( rtIndex, desc );
+		CreateRTTextureAndViews(rtIndex, desc);
 	}
 
 	Reset();
 
-
 	m_pGrid = new dx103DFluidGrid();
 
-	m_pGrid->Initialize( m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);
+	m_pGrid->Initialize(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);
 
 	m_pRenderer = new dx103DFluidRenderer();
-	m_pRenderer->Initialize( m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);
+	m_pRenderer->Initialize(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth);
 
 	m_pObstaclesHandler = new dx103DFluidObstacles(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth, m_pGrid);
 	m_pEmittersHandler = new dx103DFluidEmitters(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth, m_pGrid);
 
 	m_bInited = true;
-
 }
 
 void dx103DFluidManager::Destroy()
@@ -196,43 +187,25 @@ void dx103DFluidManager::PrepareTexture(int rtIndex)
 	pRTTextures[rtIndex] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(m_pEngineTextureNames[rtIndex]);
 }
 
-void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
+void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, const RHITextureDesc& TexDesc)
 {
 	//	Resources must be already released by Destroy().
+	IRHISurface* pRT = GRHI->CreateTexture3D(TexDesc, nullptr);
 
-	ID3DTexture3D *pRT = nullptr;
-
-	// Create the texture
-	CHK_DX( RDevice->CreateTexture3D(&TexDesc,nullptr,&pRT));
 	// Create the render target view
-	D3D_RENDER_TARGET_VIEW_DESC DescRT;
+	RHIRenderTargetViewDesc DescRT;
 	DescRT.Format = TexDesc.Format;
-	DescRT.ViewDimension =  D3D_RTV_DIMENSION_TEXTURE3D;
-	DescRT.Texture3D.FirstWSlice = 0;
-	DescRT.Texture3D.MipSlice = 0;
-	DescRT.Texture3D.WSize = TexDesc.Depth;
+	DescRT.ViewDimension = ERHI_RTV_DIMENSION::TEXTURE3D;
+	DescRT.FirstArraySlice = 0;
+	DescRT.MipSlice = 0;
+	DescRT.ArraySize = TexDesc.Depth;
 
-	CHK_DX(RDevice->CreateRenderTargetView(pRT, &DescRT, &pRenderTargetViews[rtIndex]));
-	
-	// Create RHITextureDesc for the texture
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = TexDesc.Width;
-	rhiDesc.Height = TexDesc.Height;
-	rhiDesc.Depth = TexDesc.Depth;
-	rhiDesc.MipLevels = TexDesc.MipLevels;
-	rhiDesc.Format = (ERHI_FORMAT)TexDesc.Format;
-	rhiDesc.Usage = (ERHI_USAGE)TexDesc.Usage;
-	rhiDesc.BindFlags = (ERHI_BIND_FLAG)TexDesc.BindFlags;
-	rhiDesc.CPUAccessFlags = TexDesc.CPUAccessFlags;
-	rhiDesc.MiscFlags = TexDesc.MiscFlags;
-	
-	// Use GRHI to create the surface
-	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pRT, 0, rhiDesc);
-	pRTTextures[rtIndex]->surface_set(rhiSurface);
+	pRenderTargetViews[rtIndex] = GRHI->CreateRenderTargetView(pRT, DescRT);
+	pRTTextures[rtIndex]->surface_set(pRT);
 
-	//	CTexture owns ID3DxxTexture3D interface
 	pRT->Release();
 }
+
 void dx103DFluidManager::DestroyRTTextureAndViews(int rtIndex)
 {
 	//pRTTextures[rtIndex]->surface_set(0);
@@ -244,7 +217,7 @@ void dx103DFluidManager::Reset()
 {
 	for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
 	{
-		GRHI->ClearRawTarget(pRenderTargetViews[rtIndex]);
+		GRHI->ClearTarget(pRenderTargetViews[rtIndex]);
 	}
 }
 
@@ -323,25 +296,8 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData &FluidData)
 
 	for (int i=0; i<dx103DFluidData::VP_NUM_TARGETS; ++i)
 	{
-		ID3DTexture3D	*pT = FluidData.GetTexture((dx103DFluidData::eVolumePrivateRT)i);
-		
-		// Create RHITextureDesc for the texture
-		D3D_TEXTURE3D_DESC desc;
-		pT->GetDesc(&desc);
-		RHITextureDesc rhiDesc;
-		rhiDesc.Width = desc.Width;
-		rhiDesc.Height = desc.Height;
-		rhiDesc.Depth = desc.Depth;
-		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-		rhiDesc.MiscFlags = desc.MiscFlags;
-		
-		// Use GRHI to create the surface
-		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pT, 0, rhiDesc);
-		pRTTextures[RENDER_TARGET_VELOCITY0+i]->surface_set(rhiSurface);
+		IRHISurface*pT = FluidData.GetTexture((dx103DFluidData::eVolumePrivateRT)i);
+		pRTTextures[RENDER_TARGET_VELOCITY0+i]->surface_set(pT);
 		_RELEASE(pT);
 
 		VERIFY(!pRenderTargetViews[RENDER_TARGET_VELOCITY0+i]);
@@ -353,56 +309,22 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 {
 	GPU_EVENT(DetachAndSwapFluidData);
 
-	if (ID3DTexture3D* pTTarg = (ID3DTexture3D*)pRTTextures[RENDER_TARGET_COLOR]->surface_get())
+	if (IRHISurface* pTTarg = pRTTextures[RENDER_TARGET_COLOR]->surface_get())
 	{
-		ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
+		IRHISurface* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
 		FluidData.SetTexture(dx103DFluidData::VP_COLOR, pTTarg);
-		
-		// Create RHITextureDesc for the texture
-		D3D_TEXTURE3D_DESC desc;
-		pTSrc->GetDesc(&desc);
-		RHITextureDesc rhiDesc;
-		rhiDesc.Width = desc.Width;
-		rhiDesc.Height = desc.Height;
-		rhiDesc.Depth = desc.Depth;
-		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-		rhiDesc.MiscFlags = desc.MiscFlags;
-		
-		// Use GRHI to create the surface
-		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pTSrc, 0, rhiDesc);
-		pRTTextures[RENDER_TARGET_COLOR]->surface_set(rhiSurface);
+		pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
 		_RELEASE(pTTarg);
 		_RELEASE(pTSrc);
 	}
 	else
 	{
-		ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
-		
-		// Create RHITextureDesc for the texture
-		D3D_TEXTURE3D_DESC desc;
-		pTSrc->GetDesc(&desc);
-		RHITextureDesc rhiDesc;
-		rhiDesc.Width = desc.Width;
-		rhiDesc.Height = desc.Height;
-		rhiDesc.Depth = desc.Depth;
-		rhiDesc.MipLevels = desc.MipLevels;
-		rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-		rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-		rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-		rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-		rhiDesc.MiscFlags = desc.MiscFlags;
-		
-		// Use GRHI to create the surface
-		IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pTSrc, 0, rhiDesc);
-		pRTTextures[RENDER_TARGET_COLOR]->surface_set(rhiSurface);
+		IRHISurface* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
+		pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
 		_RELEASE(pTSrc);
 	}
 
-	ID3DRenderTargetView *pV = FluidData.GetView(dx103DFluidData::VP_COLOR);
+	IRHIRenderTargetView*pV = FluidData.GetView(dx103DFluidData::VP_COLOR);
 	FluidData.SetView(dx103DFluidData::VP_COLOR, pRenderTargetViews[RENDER_TARGET_COLOR]);
 	_RELEASE(pRenderTargetViews[RENDER_TARGET_COLOR]);
 	pRenderTargetViews[RENDER_TARGET_COLOR] = pV;
@@ -414,12 +336,12 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 	}
 }
 
-void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
+void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
 {
 	GPU_EVENT(AdvectColorBFECC);
 
-	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
-	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	if (bTeperature)
@@ -444,13 +366,13 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 		AdvectElement = m_SimulationTechnique[SS_Advect];
 
 	RCache.set_Element(AdvectElement);
-	//pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( nullptr );
-	//pShaderResourceVariables[RENDER_TARGET_COLOR0]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
+
 	//	Overwrite RENDER_TARGET_COLOR0 with RENDER_TARGET_TEMPVECTOR
 	//	Find texture index and patch texture manually using DirecX call!
-	static shared_str	strColorName(m_pEngineTextureNames[RENDER_TARGET_COLOR_IN]);
-	STextureList*		_T = &*(AdvectElement->passes[0]->T);
-	u32					dwTextureStage	= _T->find_texture_stage(strColorName);
+	static shared_str strColorName(m_pEngineTextureNames[RENDER_TARGET_COLOR_IN]);
+	STextureList* _T = &*(AdvectElement->passes[0]->T);
+	u32 dwTextureStage = _T->find_texture_stage(strColorName);
+
 	//	This will be overritten by the next technique.
 	//	Otherwise we had to reset current texture list manually.
 	pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(dwTextureStage);
@@ -469,7 +391,7 @@ void dx103DFluidManager::AdvectColorBFECC( float timestep, bool bTeperature )
 		RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECC]);
 
 	Fvector4 halfVol;
-	halfVol.set( (float)m_iTextureWidth/2.0f, (float)m_iTextureHeight/2.0f, (float)m_iTextureDepth/2.0f, 0.0f );
+	halfVol.set((float)m_iTextureWidth / 2.0f, (float)m_iTextureHeight / 2.0f, (float)m_iTextureDepth / 2.0f, 0.0f);
 	RCache.set_c(strHalfVolumeDim, halfVol);
 	RCache.set_c(strModulate, m_fDecay);
 	RCache.set_c(strForward, 1.0f);
@@ -520,7 +442,7 @@ void dx103DFluidManager::ApplyVorticityConfinement( float timestep )
 	GPU_EVENT(ApplyVorticityConfinement);
 
 	// Compute vorticity
-	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Vorticity]);	
@@ -550,7 +472,7 @@ void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData &FluidData, f
 void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 {
 	GPU_EVENT(ComputeVelocityDivergence);
-	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
 	RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
@@ -561,10 +483,10 @@ void dx103DFluidManager::ComputeVelocityDivergence( float timestep )
 void dx103DFluidManager::ComputePressure( float timestep )
 {
 	GPU_EVENT(ComputePressure);
-	GRHI->ClearRawTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
 
 	// unbind this variable from the other technique that may have used it
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
+	RCache.set_RT(nullptr, 0);
 	ref_selement	CurrentTechnique = m_SimulationTechnique[SS_Jacobi];
 	RCache.set_Element(CurrentTechnique);
 
@@ -596,31 +518,13 @@ void dx103DFluidManager::ProjectVelocity( float timestep )
 	m_pGrid->DrawSlices();
 }
 
-void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
+void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
 {
-//	return;
 	GPU_EVENT(render_fluid);
 
 	//	Bind input texture
-	ID3DTexture3D	*pT = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
-	
-	// Create RHITextureDesc for the texture
-	D3D_TEXTURE3D_DESC desc;
-	pT->GetDesc(&desc);
-	RHITextureDesc rhiDesc;
-	rhiDesc.Width = desc.Width;
-	rhiDesc.Height = desc.Height;
-	rhiDesc.Depth = desc.Depth;
-	rhiDesc.MipLevels = desc.MipLevels;
-	rhiDesc.Format = (ERHI_FORMAT)desc.Format;
-	rhiDesc.Usage = (ERHI_USAGE)desc.Usage;
-	rhiDesc.BindFlags = (ERHI_BIND_FLAG)desc.BindFlags;
-	rhiDesc.CPUAccessFlags = desc.CPUAccessFlags;
-	rhiDesc.MiscFlags = desc.MiscFlags;
-	
-	// Use GRHI to create the surface
-	IRHISurface* rhiSurface = GRHI->CreateTextureFromMemory(pT, 0, rhiDesc);
-	pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(rhiSurface);
+	IRHISurface* pT = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
+	pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(pT);
 	_RELEASE(pT);
 
 	//	Do rendering
@@ -636,26 +540,26 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData &FluidData)
 	RImplementation.rmNormal();
 }
 
-void dx103DFluidManager::UpdateObstacles( const dx103DFluidData &FluidData, float timestep )
+void dx103DFluidManager::UpdateObstacles(const dx103DFluidData& FluidData, float timestep)
 {
 	GPU_EVENT(Fluid_update_obstacles);
 	//	Reset data
-	GRHI->ClearRawTarget( pRenderTargetViews[RENDER_TARGET_OBSTACLES]);
-	GRHI->ClearRawTarget( pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_OBSTACLES]);
+	GRHI->ClearTarget(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY]);
 
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
 	RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);
 
-	m_pObstaclesHandler->ProcessObstacles( FluidData, timestep );
+	m_pObstaclesHandler->ProcessObstacles(FluidData, timestep);
 
 	//	Just reset render targets:
 	//	later only rt 0 will be reassigned so rt1 
 	//	would be bound all the time
 	//	Reset to avoid confusion. 
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 0);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 1);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 2);
-	RCache.set_RT((ID3DRenderTargetView*)nullptr, 3);
+	RCache.set_RT(nullptr, 0);
+	RCache.set_RT(nullptr, 1);
+	RCache.set_RT(nullptr, 2);
+	RCache.set_RT(nullptr, 3);
 }
 
 //	Allow real-time config reload
