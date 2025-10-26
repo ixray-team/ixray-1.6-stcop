@@ -152,6 +152,12 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
 	{
 		float Aspect = float(W) / float(H);
 
+		// 4:3
+		if (fabs(Aspect - 4.0f / 3.0f) < 0.02f) return true;
+
+		// 5:4
+		if (fabs(Aspect - 5.0f / 4.0f) < 0.02f) return true;
+
 		// 16:9
 		if (fabs(Aspect - 16.0f / 9.0f) < 0.02f) return true;
 
