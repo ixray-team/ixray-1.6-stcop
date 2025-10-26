@@ -6,11 +6,11 @@ class IRHIDevice
 {
 public:
     void* RawDevice = nullptr;
-    void* RenderRTV = nullptr;
+    IRHIRenderTargetView* RenderRTV = nullptr;
     void* RenderSRV = nullptr;
     IRHIDepthStencilView* RenderDSV = nullptr;
-    void* RenderTexture = nullptr;
-    void* SwapChainRTV = nullptr;
+    IRHIRenderTargetView* RenderTexture = nullptr;
+    IRHIRenderTargetView* SwapChainRTV = nullptr;
 
     float RenderScale = 1.f;
     u32 FeatureLevel;

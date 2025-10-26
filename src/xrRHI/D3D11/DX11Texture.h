@@ -145,6 +145,7 @@ public:
     virtual ~DX11TextureFactory();
 
     virtual IRHISurface* CreateTexture2D(const RHITextureDesc& Desc, const RHISubResource* SubResource) override;
+    virtual IRHISurface* CreateTexture3D(const RHITextureDesc& Desc, const RHISubResource* SubResource) override;
     virtual IRHISurface* CreateTextureFromMemory(const void* data, u32 size, const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateRenderTarget(const RHITextureDesc& desc) override;
     virtual IRHISurface* CreateDepthStencil(const RHITextureDesc& desc) override;
