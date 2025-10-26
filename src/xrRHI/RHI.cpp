@@ -15,21 +15,22 @@
 #include "Drivers/NvGPUTransferee.h"
 #endif
 
+#include "Private/RHIRenderViewManager.h"
+
 RHI_API u32 psCurrentVidMode[2] = { 1024,768 };
 RHI_API Flags32 psDeviceFlags = { rsDetails | mtPhysics | mtSound | mtNetwork | rsDrawStatic | rsDrawDynamic | rsDeviceActive | mtParticles };
 RHI_API Ivector2 HalfTarget = { 0, 0 };
 RHI_API void* g_pAnnotation = nullptr;
 RHI_API CRHI* GRHI = nullptr;
 
-CRHI::CRHI() :
-	m_pDepthStencilView(nullptr),
-	m_bChangedRTorZB(false)
+CRHI::CRHI()
 {
-	memset(m_pRenderTargetViews, 0, sizeof(m_pRenderTargetViews));
 }
 
 CRHI::~CRHI()
 {
+	GRHIRenderViewManager.Clear();
+
 	xr_delete(DevicePtr);
 	xr_delete(ShaderResourceCache);
 	xr_delete(DriverExt);
@@ -122,6 +123,11 @@ void CRHI::ClearTarget(IRHIRenderTargetView* Target, ERTColor Transparent)
 
 void CRHI::ClearTarget(IRHIRenderTargetView* Target, const float* Color)
 {
+	if (Target == nullptr)
+	{
+		return;
+	}
+
 	DevicePtr->ClearTarget(Target->GetRawRTV(), Color);
 }
 
@@ -590,44 +596,25 @@ void CRHI::SetViewport(RHIViewport& VP)
 
 void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce)
 {
-	if (m_pRenderTargetViews[ID] != pRenderTargetView)
-	{
-		if (!m_bChangedRTorZB && APILevel == ERHI_API_LAYER::D3D11)
-		{
-			// Clear cache
-			IRHIRenderTargetView* nullSRV[RHI_MAX_RENDER_TARGETS] = { nullptr };
-			DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, nullSRV, nullptr);
-		}
-
-		m_pRenderTargetViews[ID] = pRenderTargetView;
-		m_bChangedRTorZB = true;
-	}
-
-	if (bForce || APILevel == ERHI_API_LAYER::D3D9)
-		ApplyRenderTargetChange();
+	GRHIRenderViewManager.SetRenderTargetView(pRenderTargetView, ID, bForce);
 }
 
 void CRHI::SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce)
 {
-	if (m_pDepthStencilView != pDepthStencilView)
-	{
-		if (!m_bChangedRTorZB && APILevel == ERHI_API_LAYER::D3D11)
-		{
-			// Clear cache
-			IRHIRenderTargetView* nullSRV[RHI_MAX_RENDER_TARGETS] = { nullptr };
-			DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, nullSRV, nullptr);
-		}
-
-		m_pDepthStencilView = pDepthStencilView;
-		m_bChangedRTorZB = true;
-	}
-
-	if (bForce || APILevel == ERHI_API_LAYER::D3D9)
-		ApplyRenderTargetChange();
+	GRHIRenderViewManager.SetDepthStencilView(pDepthStencilView, bForce);
 }
 
 void CRHI::ApplyRenderTargetChange()
 {
-	DevicePtr->SetRenderTargets(RHI_MAX_RENDER_TARGETS, m_pRenderTargetViews, m_pDepthStencilView);
-	m_bChangedRTorZB = false;
+	GRHIRenderViewManager.ApplyRenderTargetChange();
+}
+
+IRHIDepthStencilView* CRHI::GetDepthStencilView() const
+{
+	return GRHIRenderViewManager.DepthStencilView;
+}
+
+IRHIRenderTargetView* CRHI::GetRenderTargetView(size_t ID) const
+{
+	return GRHIRenderViewManager.RenderTargetViews[ID];
 }
