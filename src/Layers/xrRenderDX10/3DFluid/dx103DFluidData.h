@@ -35,11 +35,11 @@ public:
 
 	void	Load(IReader *data);
 
-	void	SetTexture(eVolumePrivateRT id, ID3DTexture3D *pT) { pT->AddRef(); m_pRTTextures[id]->Release(); m_pRTTextures[id] = pT;}
-	void	SetView(eVolumePrivateRT id, ID3DRenderTargetView *pV) { pV->AddRef(); m_pRenderTargetViews[id]->Release(); m_pRenderTargetViews[id] = pV;}
+	void	SetTexture(eVolumePrivateRT id, IRHISurface*pT) { pT->AddRef(); m_pRTTextures[id]->Release(); m_pRTTextures[id] = pT;}
+	void	SetView(eVolumePrivateRT id, IRHIRenderTargetView* pV) { pV->AddRef(); m_pRenderTargetViews[id]->Release(); m_pRenderTargetViews[id] = pV;}
 
-	ID3DTexture3D*			GetTexture(eVolumePrivateRT id) const { m_pRTTextures[id]->AddRef(); return m_pRTTextures[id];}
-	ID3DRenderTargetView*		GetView(eVolumePrivateRT id) const { m_pRenderTargetViews[id]->AddRef(); return m_pRenderTargetViews[id];}
+	IRHISurface*			GetTexture(eVolumePrivateRT id) const { m_pRTTextures[id]->AddRef(); return m_pRTTextures[id];}
+	IRHIRenderTargetView*		GetView(eVolumePrivateRT id) const { m_pRenderTargetViews[id]->AddRef(); return m_pRenderTargetViews[id];}
 	const Fmatrix&				GetTransform() const { return m_Transform;}
 	const xr_vector<Fmatrix>&	GetObstaclesList() const { return m_Obstacles;}
 	const xr_vector<dx103DFluidEmitters::CEmitter>& GetEmittersList() const { return m_Emitters;}
@@ -55,7 +55,7 @@ private:
 
 private:
 
-	void	CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc);
+	void	CreateRTTextureAndViews(int rtIndex, const RHITextureDesc& TexDesc);
 	void	DestroyRTTextureAndViews(int rtIndex);
 
 	void	ParseProfile(const xr_string &Profile);
@@ -68,10 +68,10 @@ private:
 
 	Settings				m_Settings;
 
-	static	DXGI_FORMAT		m_VPRenderTargetFormats[ VP_NUM_TARGETS ];
+	static	ERHI_FORMAT		m_VPRenderTargetFormats[ VP_NUM_TARGETS ];
 
-	ID3DRenderTargetView	*m_pRenderTargetViews[ VP_NUM_TARGETS ];
-	ID3DTexture3D			*m_pRTTextures[ VP_NUM_TARGETS ];
+	IRHIRenderTargetView*	m_pRenderTargetViews[ VP_NUM_TARGETS ];
+	IRHISurface*			m_pRTTextures[ VP_NUM_TARGETS ];
 };
 
 #endif	//	dx103DFluidData_included

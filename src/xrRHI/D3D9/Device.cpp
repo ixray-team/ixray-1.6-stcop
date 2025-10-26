@@ -75,10 +75,10 @@ void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const
 	DX9Device->SetDepthStencilSurface(pDepthStencilView ? static_cast<IDirect3DSurface9*>(pDepthStencilView->GetRawDSV()) : NULL);
 
 	// unrolled loop :p
-	DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : NULL);
-	DX9Device->SetRenderTarget(1, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()) : NULL);
-	DX9Device->SetRenderTarget(2, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()) : NULL);
-	DX9Device->SetRenderTarget(3, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()) : NULL);
+	//DX9Device->SetRenderTarget(0, ppRenderTargetViews[0] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[0]->GetRawRTV()) : NULL);
+	//DX9Device->SetRenderTarget(1, ppRenderTargetViews[1] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[1]->GetRawRTV()) : NULL);
+	//DX9Device->SetRenderTarget(2, ppRenderTargetViews[2] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[2]->GetRawRTV()) : NULL);
+	//DX9Device->SetRenderTarget(3, ppRenderTargetViews[3] ? static_cast<IDirect3DSurface9*>(ppRenderTargetViews[3]->GetRawRTV()) : NULL);
 }
 
 void InternalDevice9::UpdateBuffersD3D9()
@@ -90,13 +90,16 @@ void InternalDevice9::UpdateBuffersD3D9()
 	));
 	RenderSRV = RenderTexture;
 
-	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, (IDirect3DSurface9**)&RenderRTV));
-	R_CHK(DX9Device->GetRenderTarget(0, (IDirect3DSurface9**)&SwapChainRTV));
+	IDirect3DSurface9* SwapchainRaw = nullptr;
+	IDirect3DSurface9* RTVRaw = nullptr;
+	R_CHK(((IDirect3DTexture9*)RenderTexture)->GetSurfaceLevel(0, &RTVRaw));
+	R_CHK(DX9Device->GetRenderTarget(0, &SwapchainRaw));
 
 	IDirect3DSurface9* DSV = nullptr;
 	R_CHK(DX9Device->GetDepthStencilSurface((IDirect3DSurface9**)&DSV));
 
-
+	RenderRTV = new DX9RenderTargetView(RTVRaw, new DX9Surface(((IDirect3DTexture9*)RenderTexture)));
+	SwapChainRTV = new DX9RenderTargetView(SwapchainRaw, new DX9Surface(((IDirect3DTexture9*)RenderTexture)));
 	RenderDSV = new DX9DepthStencilView(DSV, new DX9Surface(((IDirect3DTexture9*)RenderTexture)));
 
 	HalfTarget.x = psCurrentVidMode[0];
@@ -320,13 +323,13 @@ void InternalDevice9::DestroyD3D9()
 
 	if (RenderRTV != nullptr)
 	{
-		((IDirect3DSurface9*)RenderRTV)->Release();
+		RenderRTV->Release();
 		RenderRTV = nullptr;
 	}
 
 	if (SwapChainRTV != nullptr)
 	{
-		((IDirect3DSurface9*)SwapChainRTV)->Release();
+		SwapChainRTV->Release();
 		SwapChainRTV = nullptr;
 	}
 

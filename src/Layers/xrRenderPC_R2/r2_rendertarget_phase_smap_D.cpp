@@ -34,5 +34,5 @@ void CRenderTarget::phase_smap_direct_tsh(light* L, u32 sub_phase)
 {
 	VERIFY(RImplementation.o.Tshadows);
 	RCache.set_ColorWriteEnable();
-	GRHI->ClearRawTarget(RCache.get_RT(), ERTColor::Black);
+	GRHI->ClearTarget(RCache.get_RT(), ERTColor::Black);
 }
