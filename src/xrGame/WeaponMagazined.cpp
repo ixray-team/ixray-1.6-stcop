@@ -1465,8 +1465,22 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eKick:
 		case eMagCheck:
 		case eFiremodeCheck:
+		{
+			if (state == eSwitchMode)
+			{
+				shared_str anim_name = "anm_firemode_state_auto";
+				if (GetQueueSize() != -1)
+				{
+					anim_name = "anm_firemode_state_";
+					anim_name.printf("%s%d", *anim_name, GetQueueSize());
+				}
+
+				PlayBonePartAnim(anim_name, "firemode", true);
+			}
+
 			SwitchState(eIdle);
-		break;
+			break;
+		}
 	}
 	inherited::OnAnimationEnd(state);
 }
@@ -1741,6 +1755,8 @@ void CWeaponMagazined::switch2_FireMode()
 	{
 		anim_name.printf("%s%d", *anim_name, GetQueueSize());
 	}
+
+	EraseBonePartBlock("firemode");
 
 	if (HudAnimationExist(anim_name))
 	{

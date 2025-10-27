@@ -984,3 +984,23 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 
 	return result;
 }
+
+void CHudItem::PlayBonePartAnim(const shared_str& anim, const shared_str& bone_part, bool block_part)
+{
+	if (attachable_hud_item* hid = HudItemData())
+	{
+		hid->anim_play_bonepart(anim, bone_part, block_part);
+	}
+}
+
+void CHudItem::EraseBonePartBlock(const shared_str& bone_part)
+{
+	if (attachable_hud_item* hid = HudItemData())
+	{
+		RStringVecIt name = std::find(hid->m_blocked_parts.begin(), hid->m_blocked_parts.end(), bone_part);
+		if (name != hid->m_blocked_parts.end())
+		{
+			hid->m_blocked_parts.erase(name);
+		}
+	}
+}

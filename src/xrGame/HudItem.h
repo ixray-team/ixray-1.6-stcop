@@ -175,6 +175,9 @@ public:
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
 
+	void PlayBonePartAnim(const shared_str& anim, const shared_str& bone_part, bool block_part);
+	void EraseBonePartBlock(const shared_str& bone_part);
+
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
 
