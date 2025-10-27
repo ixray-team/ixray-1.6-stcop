@@ -252,30 +252,28 @@ void	CActor::HitSector(CObject* who, CObject* weapon)
 		Level().MapManager().AddMapLocation(ENEMY_HIT_SPOT, who->ID());
 }
 
-void CActor::on_weapon_shot_start		(CWeapon *weapon)
-{	
-	//CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (weapon);
-	CameraRecoil const& camera_recoil = ( IsZoomAimingMode() )? weapon->zoom_cam_recoil : weapon->cam_recoil;
-		
-	CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>( Cameras().GetCamEffector(eCEShot) );
-	if ( !effector )
+void CActor::on_weapon_shot_start(CWeapon* weapon)
+{
+	CCameraShotEffector* effector = smart_cast<CCameraShotEffector*>(Cameras().GetCamEffector(eCEShot));
+
+	if (!effector)
 	{
-		effector = (CCameraShotEffector*)Cameras().AddCamEffector( new CCameraShotEffector( camera_recoil ) );
+		effector = (CCameraShotEffector*)Cameras().AddCamEffector(new CCameraShotEffector());
 	}
 	else
 	{
-		if( effector->m_WeaponID != weapon->ID() )
+		if (effector->m_WeaponID != weapon->ID())
 		{
-			effector->Initialize( camera_recoil );
+			effector->Reset();
 		}
 	}
-	
+
 	effector->m_WeaponID = weapon->ID();
 	R_ASSERT(effector);
 
-	effector->SetRndSeed	(GetShotRndSeed());
-	effector->SetActor		(this);
-	effector->Shot			(weapon);
+	effector->SetRndSeed(GetShotRndSeed());
+	effector->SetActor(this);
+	effector->Shot(weapon); 
 }
 
 void CActor::on_weapon_shot_update		()

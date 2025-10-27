@@ -203,6 +203,39 @@ public:
 
 	} m_ammo_bones_lite;
 
+	public:
+		struct SRecoilPoint {
+			float x; 
+			float y; 
+		};
+
+		struct SRecoilPattern
+		{
+			shared_str name;
+			xr_vector<SRecoilPoint> bullet_patterns;
+			u32 current_bullet;
+
+			SRecoilPattern() : current_bullet(0) {}
+		};
+
+		// Данные паттернов
+		SRecoilPattern m_hipfire_pattern;
+		SRecoilPattern* m_current_pattern;
+
+		void LoadRecoilPatterns(LPCSTR section);
+		void ApplyPattern();
+		void StopPattern();
+		// для доступа к паттерну отдачи
+		bool GetCurrentRecoilPattern(float& out_x, float& out_y);
+
+protected:
+	// Вспомогательные методы
+	void LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern);
+	void StartRecoilPattern();
+	SRecoilPattern* GetPatternByName(const shared_str& name);
+
+	public:
+
 	//обновление видимости для косточек аддонов
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
