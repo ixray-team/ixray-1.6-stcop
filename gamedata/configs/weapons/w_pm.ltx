@@ -188,6 +188,36 @@ silencer_light_var_color	= 0.05
 silencer_light_var_range	= 0.5
 silencer_light_time 			= 0.2
 
+pattern_factor      = 0.045
+pattern_stiffness           = 500
+pattern_damping             = 20
+pattern_impulse             = 25
+pattern_loop                = 1
+pattern_return_speed        = 4.5
+pattern_return_enable       = 1
+
+zoom_pattern_factor      = 0.040
+zoom_pattern_stiffness           = 500
+zoom_pattern_damping             = 25
+zoom_pattern_impulse             = 25
+zoom_pattern_loop                = 1
+zoom_pattern_return_speed        = 4.5
+zoom_pattern_return_enable       = 1
+
+[wpn_pm_hipfire_pattern]
+bullet_1 = 0.15,0.2
+bullet_2 = 0.2,0.15
+bullet_3 = -0.2,0.1
+bullet_4 = 0.2,0.15
+bullet_5 = -0.1,0.15
+bullet_6 = 0.0,0.25
+bullet_7 = 0.1,0.2
+bullet_7 = 0.1,0.2
+bullet_8 = -0.15,0.15
+
+[wpn_pm_actor_hipfire_pattern]:wpn_pm_hipfire_pattern
+
+
 [wpn_pm_hud]:hud_base
 zoom_hide_crosshair			= true
 
