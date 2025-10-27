@@ -173,10 +173,13 @@ void	light::set_position		(const Fvector& P)
 	spatial_move();
 }
 
-void	light::set_range		(float R)			{
+void	light::set_range		(float R)			
+{
+	R *= CEngineExternal().LightKofRange();
+
 	float	eps					=	_max	(range*0.1f,EPS);
 	if (fsimilar(range,R,eps))	return	;
-	range						= R		;
+	range						= R;
 	spatial_move();
 };
 

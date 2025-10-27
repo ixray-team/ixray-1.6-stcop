@@ -215,3 +215,8 @@ float CEngineExternal::GetSprintFovFactor() const
 {
 	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "SprintFovFactor", 7.0f);
 }
+
+float CEngineExternal::LightKofRange() const
+{
+	return READ_IF_EXISTS(pOptions, r_float, "render", "LightKofRange", 2.0f);
+}

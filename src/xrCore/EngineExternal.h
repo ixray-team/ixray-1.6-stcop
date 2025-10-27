@@ -96,6 +96,7 @@ public:
 	float GetTalkFovScale() const;
 	u32 GetFontAltasSize() const;
 	float GetSprintFovFactor() const;
+	float LightKofRange() const;
 	const char* GetCurrentPlatformFullName();
 
 	bool operator[](const EEngineExternalUI& ID) const;
