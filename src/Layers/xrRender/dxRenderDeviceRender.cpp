@@ -400,7 +400,7 @@ void dxRenderDeviceRender::End()
 		CImGuiManager& MyImGui = CImGuiManager::Instance();
 		MyImGui.BeginRender();
 
-		GRHI->SetDepthStencilView(RDepth);
+		//GRHI->SetDepthStencilView(RDepth);
 		GRHI->SetRenderTargetView(RSwapchainTarget, 0, true);
 
 		MyImGui.Render();
@@ -412,8 +412,8 @@ void dxRenderDeviceRender::End()
 #else
 
 #ifdef USE_DX11
-	GRHI->SetDepthStencilView(RDepth);
-	GRHI->SetRenderTargetView(RTarget, 0);
+	//GRHI->SetDepthStencilView(RDepth);
+	GRHI->SetRenderTargetView(RTarget, 0, true);
 #endif
 
 #endif
