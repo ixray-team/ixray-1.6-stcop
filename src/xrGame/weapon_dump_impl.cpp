@@ -30,4 +30,27 @@ void CWeapon::DumpActiveParams(shared_str const & section_name, CInifile & dst_i
 	dst_ini.w_float	(section_name.c_str(), "cam_dispersion_inc",		cam_recoil.DispersionInc);
 	dst_ini.w_float	(section_name.c_str(), "zoom_cam_dispersion",		zoom_cam_recoil.Dispersion);
 	dst_ini.w_float	(section_name.c_str(), "zoom_cam_dispersion_inc",	zoom_cam_recoil.DispersionInc);
+
+
+	dst_ini.w_float(section_name.c_str(), "pattern_factor", cam_recoil.Pattern.Factor);
+	dst_ini.w_float(section_name.c_str(), "pattern_stiffness", cam_recoil.Pattern.Stiffness);
+	dst_ini.w_float(section_name.c_str(), "pattern_damping", cam_recoil.Pattern.Damping);
+	dst_ini.w_float(section_name.c_str(), "pattern_impulse", cam_recoil.Pattern.Impulse);
+	dst_ini.w_bool(section_name.c_str(), "pattern_loop", cam_recoil.Pattern.Loop);
+	dst_ini.w_float(section_name.c_str(), "pattern_return_speed", cam_recoil.Pattern.ReturnSpeed);
+	dst_ini.w_bool(section_name.c_str(), "pattern_return_enable", cam_recoil.Pattern.ReturnEnable);
+	dst_ini.w_fvector2(section_name.c_str(), "pattern_random_x", cam_recoil.Pattern.RandomOffsetX);
+	dst_ini.w_fvector2(section_name.c_str(), "pattern_random_y", cam_recoil.Pattern.RandomOffsetY);
+	dst_ini.w_bool(section_name.c_str(), "pattern_random_enable", cam_recoil.Pattern.RandomOffsetEnable);
+
+	dst_ini.w_float(section_name.c_str(), "zoom_pattern_factor", zoom_cam_recoil.Pattern.Factor);
+	dst_ini.w_float(section_name.c_str(), "zoom_pattern_stiffness", zoom_cam_recoil.Pattern.Stiffness);
+	dst_ini.w_float(section_name.c_str(), "zoom_pattern_damping", zoom_cam_recoil.Pattern.Damping);
+	dst_ini.w_float(section_name.c_str(), "zoom_pattern_impulse", zoom_cam_recoil.Pattern.Impulse);
+	dst_ini.w_bool(section_name.c_str(), "zoom_pattern_loop", zoom_cam_recoil.Pattern.Loop);
+	dst_ini.w_float(section_name.c_str(), "zoom_pattern_return_speed", zoom_cam_recoil.Pattern.ReturnSpeed);
+	dst_ini.w_bool(section_name.c_str(), "zoom_pattern_return_enable", zoom_cam_recoil.Pattern.ReturnEnable);
+	dst_ini.w_fvector2(section_name.c_str(), "zoom_pattern_random_x", zoom_cam_recoil.Pattern.RandomOffsetX);
+	dst_ini.w_fvector2(section_name.c_str(), "zoom_pattern_random_y", zoom_cam_recoil.Pattern.RandomOffsetY);
+	dst_ini.w_bool(section_name.c_str(), "zoom_pattern_random_enable", zoom_cam_recoil.Pattern.RandomOffsetEnable);
 }

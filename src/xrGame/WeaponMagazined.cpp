@@ -1109,6 +1109,13 @@ void CWeaponMagazined::state_Fire(float dt)
 		UpdateSounds			();
 	}
 
+	if (iAmmoElapsed == 0 ||
+		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
+		!IsWorking())
+	{
+		StopShotEffector(); 
+	}
+
 	if(fShotTimeCounter<0)
 	{
 		if(iAmmoElapsed == 0)
@@ -1227,6 +1234,13 @@ void CWeaponMagazined::state_FireChamber(float dt)
 		UpdateSounds();
 	}
 
+	if (iAmmoElapsed == 0 ||
+		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
+		!IsWorking())
+	{
+		StopShotEffector(); 
+	}
+
 	if (fShotTimeCounter < 0)
 	{
 		if (iAmmoChamberElapsed == 0)
@@ -1339,6 +1353,7 @@ void CWeaponMagazined::OnShot()
 {
 	SelectShotSound();
 
+	ApplyPattern();
 	// Camera	
 	AddShotEffector();
 

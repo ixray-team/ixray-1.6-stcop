@@ -142,8 +142,9 @@ void CWeaponStatMgun::AddShotEffector()
 	if (OwnerActor())
 	{
 		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
+
 		CameraRecoil camera_recoil;
-		//( camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f )
+		// Настройка параметров отдачи для стационарного пулемета
 		camera_recoil.MaxAngleVert = camMaxAngle;
 		camera_recoil.RelaxSpeed = camRelaxSpeed;
 		camera_recoil.MaxAngleHorz = 0.25f;
@@ -152,12 +153,13 @@ void CWeaponStatMgun::AddShotEffector()
 
 		if (S == nullptr)
 		{
-			S = (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector(camera_recoil));
+			S = (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector());
 		}
 
 		R_ASSERT(S);
-		S->Initialize(camera_recoil);
-		S->Shot2(0.01f);
+
+		S->SetCustomRecoil(camera_recoil);
+		S->Shot2Legacy(0.01f);
 	}
 }
 
