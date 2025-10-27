@@ -5,6 +5,7 @@
 DLSSWrapper g_DLSSWrapper;
 
 bool DLSSInited = false;
+extern ENGINE_API u32 ps_render_scale_preset;
 
 void DLSSWrapper::Create(const ContextParameters& Parameters)
 {
@@ -51,6 +52,31 @@ void DLSSWrapper::Create(const ContextParameters& Parameters)
 		NVSDK_NGX_D3D11_DestroyParameters(NgxParameters);
 		NgxParameters = nullptr;
 		return;
+	}
+	// Устанавливаем пресет для выбранного режима качества
+	const char* presetParameter = nullptr;
+	switch (ps_render_scale_preset) {
+	case 4:
+		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
+		break;
+	case 3:
+		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
+		break;
+	case 2:
+		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Balanced;
+		break;
+	case 1:
+		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Quality;
+		break;
+	case 0:
+		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
+		break;
+	}
+
+    Msg(presetParameter);
+	if (presetParameter)
+	{
+		NgxParameters->Set(NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA, static_cast<int>(NVSDK_NGX_DLSS_Hint_Render_Preset_F));
 	}
 
 	int32_t flags = 0;
@@ -138,7 +164,7 @@ bool DLSSWrapper::Draw(const DrawParameters& params)
 	dlssEvalParams.InMVScaleY = (float)params.renderHeight * 0.5f;
 
 	dlssEvalParams.pInTransparencyMask = params.transparencyAndCompositionResource;
-
+	
 	NVSDK_NGX_Result result = NGX_D3D11_EVALUATE_DLSS_EXT(RContext, Handle, NgxParameters, &dlssEvalParams);
 	if(result != NVSDK_NGX_Result_Success)
 	{
