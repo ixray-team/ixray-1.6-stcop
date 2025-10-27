@@ -9,7 +9,6 @@
 #include "Level.h"
 #include "Inventory.h"
 #include "../xrEngine/CameraBase.h"
-#include "player_hud.h"
 #include "../xrEngine/SkeletonMotions.h"
 #include "../../xrUI/ui_base.h"
 #include "HUDManager.h"
@@ -247,14 +246,14 @@ void CHudItem::OnStateSwitch(u32 S)
 	{
 		m_bSwitchSprint = true;
 		SetPending(true);
-		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), true, eSprintStart);
+		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_start"), EHudMixType::eMixAll, eSprintStart);
 		break;
 	}
 	case eSprintEnd:
 	{
 		m_bSwitchSprint = false;
 		SetPending(true);
-		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), true, eSprintEnd);
+		PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint_end"), EHudMixType::eMixAll, eSprintEnd);
 		break;
 	}
 	case eDeviceSwitch:
@@ -265,7 +264,7 @@ void CHudItem::OnStateSwitch(u32 S)
 	case ePrepareDetector:
 	{
 		SetPending(true);
-		PlayHUDMotion(SetCurrentStateAnimation("anm_prepare_detector"), true, ePrepareDetector);
+		PlayHUDMotion(SetCurrentStateAnimation("anm_prepare_detector"), EHudMixType::eMixAll, ePrepareDetector);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_prepare_detector))
 		{
@@ -276,7 +275,7 @@ void CHudItem::OnStateSwitch(u32 S)
 	case eFinishDetector:
 	{
 		SetPending(true);
-		PlayHUDMotion(SetCurrentStateAnimation("anm_finish_detector"), true, eFinishDetector);
+		PlayHUDMotion(SetCurrentStateAnimation("anm_finish_detector"), EHudMixType::eMixAll, eFinishDetector);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_finish_detector))
 		{
@@ -320,7 +319,7 @@ void CHudItem::OnAnimationEnd(u32 state)
 
 void CHudItem::PlayAnimBore()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_bore"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_bore"), EHudMixType::eMixAll, GetState());
 }
 
 bool CHudItem::ActivateItem() 
@@ -457,7 +456,7 @@ void CHudItem::on_a_hud_attach()
 {
 	if (m_current_motion_def)
 	{
-		PlayHUDMotion_noCB(m_current_motion, FALSE);
+		PlayHUDMotion_noCB(m_current_motion, EHudMixType::eNoMix);
 	}
 
 	m_eAnimationsFlags.set(EAnimationsFlags::af_torch, HudAnimationExist("anm_switch_device"));
@@ -480,6 +479,11 @@ void CHudItem::on_a_hud_attach()
 	m_eAnimationsFlags.set(EAnimationsFlags::af_kick, HudAnimationExist("anm_kick"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_mag_check, HudAnimationExist("anm_magazine_inspect"));
 	m_eAnimationsFlags.set(EAnimationsFlags::af_firemode_check, HudAnimationExist("anm_firemode_inspect"));
+
+	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_idle, HudAnimationExist("anm_bp_idle"));
+	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_idle_empty, HudAnimationExist("anm_bp_idle_empty"));
+	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_idle_jammed, HudAnimationExist("anm_bp_idle_jammed"));
+	m_eBonePartAnimationsFlags.set(EBPAnimsFlags::abpf_firemode, (HudAnimationExist("anm_bp_firemode_state_auto") || HudAnimationExist("anm_bp_firemode_state_1")));
 }
 
 bool CHudItem::HudAnimationExist(const shared_str& anim_name)
@@ -498,7 +502,7 @@ bool CHudItem::HudAnimationExist(const shared_str& anim_name)
 	}
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state)
+u32 CHudItem::PlayHUDMotion(const shared_str& M, EHudMixType bMixIn, u32 state)
 {
 	if (HudItemData() && !HudAnimationExist(M.c_str()))
 	{
@@ -542,7 +546,7 @@ bool CHudItem::AddSuffixName(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix
 	return false;
 }
 
-u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
+u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, EHudMixType bMixIn)
 {
 	m_current_motion					= motion_name;
 
@@ -592,7 +596,7 @@ void CHudItem::PlayAnimIdle()
 		return;
 	}
 
-	PlayHUDMotion(SetCurrentIdleAnimation(), TRUE, GetState());
+	PlayHUDMotion(SetCurrentIdleAnimation(), EHudMixType::eMixAll, GetState());
 }
 
 shared_str CHudItem::SetCurrentIdleAnimation()
@@ -683,27 +687,27 @@ bool CHudItem::TryPlayAnimIdle()
 
 void CHudItem::PlayAnimIdleMoving()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving"), EHudMixType::eMixAll, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_slow"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_slow"), EHudMixType::eMixAll, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch"), EHudMixType::eMixAll, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouchSlow()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch_slow"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving_crouch_slow"), EHudMixType::eMixAll, GetState());
 }
 
 void CHudItem::PlayAnimIdleSprint()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), EHudMixType::eMixAll, GetState());
 }
 
 void CHudItem::PlayAnimDeviceSwitch()
@@ -761,7 +765,7 @@ void CHudItem::PlayAnimDeviceSwitch()
 		PlaySound(*sound_name, m_object->Position());
 	}
 
-	PlayHUDMotion(anim_name, true, eDeviceSwitch);
+	PlayHUDMotion(anim_name, EHudMixType::eMixAll, eDeviceSwitch);
 }
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
@@ -987,4 +991,12 @@ bool CHudItem::SetKeyRepeatFlag(u32 kfACTTYPE)
 	}
 
 	return result;
+}
+
+void CHudItem::PlayBonePartAnim(const shared_str& anim, BOOL bMixIn)
+{
+	if (attachable_hud_item* hid = HudItemData())
+	{
+		hid->anim_play_bonepart(anim, bMixIn);
+	}
 }

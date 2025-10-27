@@ -1400,6 +1400,7 @@ void CWeapon::ForceUpdateHUD()
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	UpdateShellBones(iAmmoElapsed, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
 	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+	UpdateBonePartAnimations();
 }
 
 void CWeapon::SwitchTorch(bool status, bool forced)

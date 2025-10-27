@@ -255,7 +255,7 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 		{
 			PlaySound("sndReloadG", get_LastFP2());
 		}
-		PlayHUDMotion(SetCurrentReloadAnimation(), true, eReload);
+		PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, eReload);
 	}
 	else
 	{
@@ -895,7 +895,7 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor()
 //виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), TRUE, eSwitch);
+	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), EHudMixType::eMixAll, eSwitch);
 }
 
 shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& first_name)

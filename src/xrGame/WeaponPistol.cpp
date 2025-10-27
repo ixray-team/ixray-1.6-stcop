@@ -25,7 +25,7 @@ void CWeaponPistol::PlayAnimHide()
 	if (!iAmmoElapsed)
 	{
 		PlaySound			("sndClose", get_LastFP());
-		PlayHUDMotion		(SetCurrentStateAnimation("anm_hide"), TRUE, GetState());
+		PlayHUDMotion		(SetCurrentStateAnimation("anm_hide"), EHudMixType::eMixAll, GetState());
 	} 
 	else 
 		inherited::PlayAnimHide();

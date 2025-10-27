@@ -213,6 +213,7 @@ public:
 	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
 	void UpdateLiteAmmoBones(u32 idx);
 	void UpdateShellBones(u32 idx, u8 type);
+	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
 

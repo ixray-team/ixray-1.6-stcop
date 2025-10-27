@@ -25,6 +25,7 @@ class CPhysicsShellHolder;
 #include "HudSound.h"
 #include "InertionData.h"
 #include "../xrScripts/script_export_space.h"
+#include "player_hud.h"
 
 #include "HudTorchLight.h"
 
@@ -155,8 +156,8 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	u32							PlayHUDMotion		(const shared_str& M, BOOL bMixIn, u32 state);
-	u32							PlayHUDMotion_noCB	(const shared_str& M, BOOL bMixIn);
+	u32							PlayHUDMotion		(const shared_str& M, EHudMixType bMixIn, u32 state);
+	u32							PlayHUDMotion_noCB	(const shared_str& M, EHudMixType bMixIn);
 	void						StopCurrentAnimWithoutCallback();
 	bool						AddSuffixName		(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix = "");
 	shared_str					SetCurrentIdleAnimation();
@@ -174,6 +175,8 @@ public:
 	virtual bool				render_item_3d_ui_query	()					{return false;}
 
 	virtual bool				CheckCompatibility		(CHudItem*)			{return true;}
+
+	void PlayBonePartAnim(const shared_str& anim, BOOL bMixIn);
 
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
@@ -212,6 +215,14 @@ public:
 		af_kick = (1 << 17),
 		af_mag_check = (1 << 18),
 		af_firemode_check = (1 << 19),
+	};
+
+	enum EBPAnimsFlags : u64
+	{
+		abpf_idle = (1 << 0),
+		abpf_idle_empty = (1 << 1),
+		abpf_idle_jammed = (1 << 2),
+		abpf_firemode = (1 << 3),
 	};
 
 	enum ESoundsFlags : u64
@@ -272,6 +283,7 @@ public:
 
 	Flags32 m_eDevicesFlags;
 	Flags32 m_eAnimationsFlags;
+	Flags32 m_eBonePartAnimationsFlags;
 	Flags64 m_eSoundsFlags;
 	Flags64 m_eSoundsFlags2;
 
