@@ -185,6 +185,8 @@ struct attachable_hud_item
 	void AddOffsets(weapon_inertion::base_params& base, Fvector& pos, Fvector& rot, float koef = 1.0f);
 	void AddSuicideOffset(weapon_inertion& inertion_params, const shared_str& section, Fvector& pos, Fvector& rot);
 
+	RStringVec m_blocked_parts = {};
+
 			attachable_hud_item		(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
@@ -211,6 +213,7 @@ struct attachable_hud_item
 	u32								m_upd_firedeps_frame;
 	void		tune				(Fvector values);
 	void		anim_play			(const shared_str& item_anm_name, BOOL bMixIn, float speed);
+	void		anim_play_bonepart	(const shared_str& anim, const shared_str& bone_part, bool block_part);
 	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd);
 
 };

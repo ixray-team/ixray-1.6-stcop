@@ -541,33 +541,91 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 void attachable_hud_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)
 {
-	if(m_model->dcast_PKinematicsAnimated())
+	if (IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
-		IKinematicsAnimated* ka			= m_model->dcast_PKinematicsAnimated();
-
-		MotionID M2						= ka->ID_Cycle_Safe(item_anm_name);
-		if(!M2.valid())
-			M2							= ka->ID_Cycle_Safe("idle");
-		else
-			if(bDebug)
-				Msg						("playing item animation [%s]",item_anm_name.c_str());
-		
-		R_ASSERT3(M2.valid(),"model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
-
-		u16 root_id						= m_model->LL_GetBoneRoot();
-		CBoneInstance& root_binst		= m_model->LL_GetBoneInstance(root_id);
-		root_binst.set_callback_overwrite(TRUE);
-		root_binst.mTransform.identity	();
-
-		u16 pc							= ka->partitions().count();
-		for(u16 pid=0; pid<pc; ++pid)
+		MotionID M2 = ka->ID_Cycle_Safe(item_anm_name);
+		if (!M2.valid())
 		{
-			CBlend* B					= ka->PlayCycle(pid, M2, bMixIn);
-			R_ASSERT					(B);
-			B->speed					*= speed;
+			M2 = ka->ID_Cycle_Safe("idle");
+		}
+		else if (bDebug)
+		{
+			Msg("playing item animation [%s]", item_anm_name.c_str());
 		}
 
-		m_model->CalculateBones_Invalidate	();
+		R_ASSERT3(M2.valid(), "model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
+
+		u16 root_id = m_model->LL_GetBoneRoot();
+		CBoneInstance& root_binst = m_model->LL_GetBoneInstance(root_id);
+		root_binst.set_callback_overwrite(TRUE);
+		root_binst.mTransform.identity();
+
+		u16 pc = ka->partitions().count();
+		for (u16 pid = 0; pid < pc; ++pid)
+		{
+			RStringVecIt it_blocked_bp = std::find(m_blocked_parts.begin(), m_blocked_parts.end(), ka->partitions().part(pid).Name);
+			if (it_blocked_bp != m_blocked_parts.end())
+			{
+				continue;
+			}
+
+			CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
+			R_ASSERT(B);
+			B->speed *= speed;
+		}
+
+		m_model->CalculateBones_Invalidate();
+	}
+}
+
+void attachable_hud_item::anim_play_bonepart(const shared_str& anim, const shared_str& bone_part, bool block_part)
+{
+	if (IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
+	{
+		player_hud_motion* anm = m_hand_motions.find_motion(anim);
+
+		if (anm == nullptr)
+		{
+			Msg("Missing anim [%s]", *anim);
+			return;
+		}
+
+		MotionID M2 = ka->ID_Cycle_Safe(anm->m_base_name);
+		if (!M2.valid())
+		{
+			M2 = ka->ID_Cycle_Safe("idle");
+		}
+		else if (bDebug)
+		{
+			Msg("playing item animation [%s]", anm->m_base_name.c_str());
+		}
+
+		R_ASSERT3(M2.valid(), "model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
+
+		u16 root_id = m_model->LL_GetBoneRoot();
+		CBoneInstance& root_binst = m_model->LL_GetBoneInstance(root_id);
+		root_binst.set_callback_overwrite(TRUE);
+		root_binst.mTransform.identity();
+
+		u16 pc = ka->partitions().count();
+		for (u16 pid = 0; pid < pc; ++pid)
+		{
+			if (ka->partitions().part(pid).Name != bone_part)
+			{
+				continue;
+			}
+
+			if (block_part)
+			{
+				m_blocked_parts.push_back(bone_part);
+			}
+
+			CBlend* B = ka->PlayCycle(pid, M2, FALSE);
+			R_ASSERT(B);
+			B->speed *= anm->m_anim_speed;
+		}
+
+		m_model->CalculateBones_Invalidate();
 	}
 }
 
@@ -585,7 +643,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 	u32 ret					= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed);
 	
-	if(auto ka = m_model->dcast_PKinematicsAnimated())
+	if(IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
 		shared_str item_anm_name;
 		if(anm->m_base_name!=anm->m_additional_name)
