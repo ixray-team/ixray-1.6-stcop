@@ -328,10 +328,9 @@ end
 
 function load_dialog:OnButton_del_clicked()
 	if self.list_box:GetSize()==0 then return end
-	local index = self.list_box:GetSelectedIndex()
-	local item = self.list_box:GetItemByIndex(index) -- Suhar_
+	local index = self.list_box:GetSelectedItem()
 
-	if index == -1 or item==nil then -- Suhar_
+	if index == -1 then
 		return
 	end
 
