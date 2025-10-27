@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../xrRender/FBasicVisual.h"
@@ -461,7 +461,10 @@ void CRender::Render()
 			r_dsgraph_render_graph(0);
 		}
 
-		GRHI->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+		{
+			GPU_EVENT(FORWARD_REFLECTION_MIPS_GEN);
+			GRHI->GenerateMips(Target->rt_Reflection->pTexture->get_SRView());
+		}
 
 		RCache.set_xform_project(Device.mProject);
 		RCache.set_xform_view(Device.mView);
