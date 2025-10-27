@@ -48,7 +48,7 @@ function CMGShooting:update(name, sr_called)
 		    	cs_shooting_get_ready = get_hud():GetCustomStatic("shooting_get_ready")
 			end
             if(diff_time>750) then
-				cs_shooting_get_ready:wnd():SetTextST(game.translate_string("crowkiller_game_get_ready")..string.format("\\n0:0%d", math.floor((self.prev_time-time)/1000)))
+				cs_shooting_get_ready:wnd():SetTextST(game.translate_string("crowkiller_game_get_ready").."\\n0:" ..sr_timer.time2str(math.floor((self.prev_time-time)/1000)))
 			else
 				cs_shooting_get_ready:wnd():SetTextST(game.translate_string("shooting_fire"))
 			end
