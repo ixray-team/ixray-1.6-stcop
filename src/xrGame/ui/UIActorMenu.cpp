@@ -334,9 +334,8 @@ void CUIActorMenu::CheckDistance()
 			HideDialog();
 		}
 	}
-	else //pBoxGO
+	else if (pBoxGO)
 	{
-		VERIFY(pBoxGO);
 		if (pActorGO->Position().distance_to( pBoxGO->Position() ) > 3.0f)
 		{
 			g_btnHint->Discard();

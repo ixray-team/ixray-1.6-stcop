@@ -880,10 +880,10 @@ void CScriptGameObject::SwitchToUpgrade()
 
 	if (CUIGameCustom* current_ui = CurrentGameUI())
 	{
-		if (current_ui->TalkMenu->IsShown())
-		{
-			current_ui->TalkMenu->SwitchToUpgrade();
-		}
+		if (current_ui->TalkMenu && current_ui->TalkMenu->IsShown())
+			current_ui->TalkMenu->HideDialog();
+
+		current_ui->StartUpgrade(Actor(), nullptr);
 	}
 }
 
