@@ -34,8 +34,8 @@ UIEditLibrary::UIEditLibrary()
 
 	View.OnFocusCallback = ViewportFocusCallback;
 
-	SearchList.SetOnItemFocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemFocused));
-	SearchList.SetOnItemUnfocusedEvent(TOnILItemFocused(this, &UIEditLibrary::OnItemUnfocused));
+	SearchList.SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
+	SearchList.SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});
 }
 
 void UIEditLibrary::OnItemFocused(ListItem* item)
