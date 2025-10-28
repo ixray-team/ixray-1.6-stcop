@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////
 
 int rsDVB_Size = 4096;
-int		rsDIB_Size			= 512;
+int rsDIB_Size = 512;
 
 void _VertexStream::Create()
 {
