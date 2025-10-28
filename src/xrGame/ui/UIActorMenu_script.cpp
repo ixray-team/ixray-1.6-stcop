@@ -203,7 +203,7 @@ void CUIActorMenu::TryRepairItem(CUIWindow* w, void* d)
 		if (!allow_repair)
 			return;
 	}
-	LPCSTR partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
+	LPCSTR partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 
 	luabind::functor<bool> funct;
 	R_ASSERT2(
@@ -234,7 +234,7 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 	if (!item)
 		return;
 
-	const char* partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
+	const char* partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 
 	luabind::functor<bool> funct;
 
@@ -303,7 +303,7 @@ void CUIActorMenu::PerformDisassemble()
 	if (!item)
 		return;
 
-	const char* partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
+	const char* partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 	luabind::functor<void> funct;
 
 	R_ASSERT2(
@@ -319,10 +319,11 @@ void CUIActorMenu::PerformDisassemble()
 
 bool CUIActorMenu::CanUpgradeItem( PIItem item )
 {
-	VERIFY( item && m_pPartnerInvOwner );
+	VERIFY( item );
+
 	LPCSTR item_name = item->m_section_id.c_str();
-	LPCSTR partner = m_pPartnerInvOwner->CharacterInfo().Profile().c_str();
-	LPCSTR section = m_pPartnerInvOwner->cast_game_object()->cNameSect_str();
+	LPCSTR partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
+	LPCSTR section = m_pPartnerInvOwner ? m_pPartnerInvOwner->cast_game_object()->cNameSect_str() : Actor()->cast_game_object()->cNameSect_str();
 		
 	luabind::functor<bool> funct; 
 	R_ASSERT2(
