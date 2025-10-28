@@ -44,6 +44,7 @@ public:
 	// Update
 	void				Update			(float dt);
     void				DrawPath		();
+	bool				Exist			() { return (bool)m_Current; };
 };
 
 #endif //ObjectAnimatorH

@@ -22,8 +22,12 @@ BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
 	CSE_ALifeTorridZone	*zone	= smart_cast<CSE_ALifeTorridZone*>(abstract);
 	VERIFY				(zone);
 
-	m_animator->Load	(zone->get_motion());
-	m_animator->Play	(true);
+	LPCSTR motion = zone->get_motion();
+	if (motion && motion[0])
+	{
+		m_animator->Load(motion);
+		m_animator->Play(true);
+	}
 
 	shedule.t_min = shedule.t_max = 1;
 	Engine.Sheduler.Register(this, TRUE);
@@ -40,9 +44,12 @@ void CTorridZone::net_Destroy	()
 void CTorridZone::UpdateWorkload(u32 dt)
 {
 	inherited::UpdateWorkload	(dt);
-	m_animator->Update			(float(dt)/1000.f);
-	XFORM().set					(m_animator->XFORM());
-	OnMove						();
+	if (m_animator->Exist())
+	{
+		m_animator->Update(float(dt) / 1000.f);
+		XFORM().set(m_animator->XFORM());
+		OnMove();
+	}
 }
 
 void CTorridZone::shedule_Update(u32 dt)
@@ -58,7 +65,7 @@ void CTorridZone::shedule_Update(u32 dt)
 bool CTorridZone::Enable()
 {
 	bool res = inherited::Enable();
-	if(res)
+	if(res && m_animator->Exist())
 	{
 		m_animator->Stop	();
 		m_animator->Play	(true);
@@ -69,7 +76,7 @@ bool CTorridZone::Enable()
 bool CTorridZone::Disable()
 {
 	bool res = inherited::Disable();
-	if(res)
+	if(res && m_animator->Exist())
 		m_animator->Stop	();
 	
 	return res;
