@@ -6,9 +6,9 @@ CBackend RCache;
 // Create Quad-IB
 void CBackend::CreateQuadIB()
 {
-	const u32 dwTriCount = 4 * 1024;
+	const u32 dwTriCount = 4 * (4096 * 8);
 	const u32 dwIdxCount = dwTriCount * 2 * 3;
-	u16 IndexBufferStatic[dwIdxCount];
+	static u16 IndexBufferStatic[dwIdxCount];
 	u16* Indices = IndexBufferStatic;
 
 	int Cnt = 0;
