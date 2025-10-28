@@ -175,7 +175,7 @@ void	light::set_position		(const Fvector& P)
 
 void	light::set_range		(float R)			
 {
-	R *= CEngineExternal().LightKofRange();
+	R *= Device.getLightKofRange();
 
 	float	eps					=	_max	(range*0.1f,EPS);
 	if (fsimilar(range,R,eps))	return	;

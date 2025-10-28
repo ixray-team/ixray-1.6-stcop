@@ -344,6 +344,7 @@ void CRenderDevice::Run()
 	Log("Starting engine...");
 	thread_name("X-Ray Primary Thread");
 
+	lightKofRange = CEngineExternal().LightKofRange();
 	// Startup timers and calculate timer delta
 	dwTimeGlobal = 0;
 	Timer_MM_Delta = 0;

@@ -312,6 +312,10 @@ private:
 virtual		void			_BCL	AddSeqFrame			( pureFrame* f, bool mt );
 virtual		void			_BCL	RemoveSeqFrame		( pureFrame* f );
 virtual		CStatsPhysics*	_BCL	StatPhysics			()	{ return  Statistic ;}
+private:
+	float lightKofRange{ 1.f };
+public:
+	float getLightKofRange() { return lightKofRange; };
 };
 
 extern ENGINE_API CRenderDevice* DevicePtr;
