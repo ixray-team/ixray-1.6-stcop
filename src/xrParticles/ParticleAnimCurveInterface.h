@@ -5,6 +5,8 @@ namespace PS
     class PARTICLES_API IPAC
     {
     public:
+
+        virtual ~IPAC(){};
     
         virtual Fvector4 GetValueOnIndex(int index) = 0;
         virtual Fvector4 GetValueOnTime(float time) = 0;
