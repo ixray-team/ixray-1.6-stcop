@@ -115,20 +115,6 @@ private:
 	// Shaders/State
 	ID3DState*						state;
 
-	u32								stencil_enable;
-	u32								stencil_func;
-	u32								stencil_ref;
-	u32								stencil_mask;
-	u32								stencil_writemask;
-	u32								stencil_fail;
-	u32								stencil_pass;
-	u32								stencil_zfail;
-	u32								colorwrite_mask;
-	u32								cull_mode;
-	u32								z_enable;
-	u32								z_func;
-	u32								alpha_ref;
-
 	// Lists
 	STextureList*					T;
 	SMatrixList*					M;
@@ -273,7 +259,7 @@ public:
 	IC  void						set_AlphaRef		(u32 _value);
 	IC  void						set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
 	IC  void						set_CullMode		(u32 _mode);
-	IC  u32							get_CullMode		(){return cull_mode;}
+	IC  u32							get_CullMode		(){return GRHI->StateManager->GetCullMode();}
 	IC	void						set_Scissor			(Irect*	rect=NULL);
 
 	// constants
@@ -379,3 +365,38 @@ extern  ECORE_API CBackend RCache;
 #ifndef _EDITOR
 #	include "D3DUtils.h"
 #endif
+
+IC void	CBackend::set_Scissor(Irect* R)
+{
+	GRHI->SetScissorRect(R);
+}
+
+IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
+{
+	GRHI->StateManager->SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
+}
+
+IC void CBackend::set_Z(u32 _enable)
+{
+	GRHI->StateManager->SetDepthEnable(_enable);
+}
+
+IC void CBackend::set_ZFunc(u32 _func)
+{
+	GRHI->StateManager->SetDepthFunc(_func);
+}
+
+IC void CBackend::set_AlphaRef(u32 _value)
+{
+	GRHI->StateManager->SetAlphaRef(_value);
+}
+
+IC void	CBackend::set_ColorWriteEnable(u32 _mask)
+{
+	GRHI->StateManager->SetColorWriteEnable(_mask);
+}
+
+ICF void CBackend::set_CullMode(u32 _mode)
+{
+	GRHI->StateManager->SetCullMode(_mode);
+}
