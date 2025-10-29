@@ -49,6 +49,9 @@ public:
 	// Buffer stuff
 	virtual IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc = {}, const RHIBufferSubresource* pSubresource = nullptr) = 0;
 
+	// Scissor rect
+	virtual void SetScissorRect(Irect* R) = 0;
+
 	// Render Taget setup
 	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) = 0;
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;

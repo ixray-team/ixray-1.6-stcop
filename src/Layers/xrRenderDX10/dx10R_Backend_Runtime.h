@@ -146,50 +146,6 @@ IC void CBackend::set_Geometry(SGeometry* _geom)
 	set_Indices(_geom->ib);
 }
 
-IC void	CBackend::set_Scissor(Irect* R)
-{
-	if (R)
-	{
-		GRHI->StateManager->EnableScissoring();
-		RECT* clip = (RECT*)R;
-		RContext->RSSetScissorRects(1, clip);
-	}
-	else
-	{
-		GRHI->StateManager->EnableScissoring(FALSE);
-		RContext->RSSetScissorRects(0, 0);
-	}
-}
-
-IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
-{
-	GRHI->StateManager->SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
-}
-
-IC  void CBackend::set_Z(u32 _enable)
-{
-	GRHI->StateManager->SetDepthEnable(_enable);
-}
-
-IC  void CBackend::set_ZFunc(u32 _func)
-{
-	GRHI->StateManager->SetDepthFunc(_func);
-}
-
-IC  void CBackend::set_AlphaRef(u32 _value)
-{
-	VERIFY(!"Not implemented.");
-}
-
-IC void	CBackend::set_ColorWriteEnable(u32 _mask )
-{
-	GRHI->StateManager->SetColorWriteEnable(_mask);
-}
-ICF void CBackend::set_CullMode(u32 _mode)
-{
-	GRHI->StateManager->SetCullMode(_mode);
-}
-
 IC void CBackend::ApplyVertexLayout()
 {
 	VERIFY(decl);
