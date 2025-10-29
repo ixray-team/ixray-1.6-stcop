@@ -34,7 +34,7 @@ void dxUIRender::SetScissor(Irect* rect)
 {
 	RCache.set_Scissor(rect);
 #if RENDER == R_R4
-	StateManager.OverrideScissoring(rect ? true : false, TRUE);
+	GRHI->StateManager->OverrideScissoring(rect ? true : false, true);
 #endif
 }
 

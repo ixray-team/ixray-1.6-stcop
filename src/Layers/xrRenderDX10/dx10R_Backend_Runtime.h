@@ -1,5 +1,4 @@
 #pragma once
-#include "StateManager/dx10StateManager.h"
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -30,7 +29,7 @@ IC void CBackend::Compute(UINT ThreadGroupCountX, UINT ThreadGroupCountY, UINT T
 	stat.calls++;
 
 	GRHI->ShaderResourceCache->Apply();
-	StateManager.Apply();
+	GRHI->StateManager->Apply();
 	//	State manager may alter constants
 	constants.flush();
 	RContext->Dispatch(ThreadGroupCountX,ThreadGroupCountY,ThreadGroupCountZ);
@@ -54,9 +53,9 @@ IC void CBackend::RenderInstancedIndexed(ERHI_PRIMITIVE_TOPOLOGY topology, u32 b
 	GRHI->SetPrimitiveTopology(topology);
 
 	GRHI->ShaderResourceCache->Apply();
-	ApplyRTandZB();
+	GRHI->ApplyRenderTargetChange();
 	ApplyVertexLayout();
-	StateManager.Apply();
+	GRHI->StateManager->Apply();
 	
 	//	State manager may alter constants
 	constants.flush();
@@ -86,9 +85,9 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 baseV, u32 startV
 
     GRHI->SetPrimitiveTopology(topology);
     GRHI->ShaderResourceCache->Apply();
-	ApplyRTandZB();
+	GRHI->ApplyRenderTargetChange();
     ApplyVertexLayout();
-    StateManager.Apply();
+    GRHI->StateManager->Apply();
 
     // State manager may alter constants
     constants.flush();
@@ -111,9 +110,9 @@ IC void CBackend::Render(ERHI_PRIMITIVE_TOPOLOGY topology, u32 startV, u32 PC)
 
     GRHI->SetPrimitiveTopology(topology);
     GRHI->ShaderResourceCache->Apply();
-    ApplyRTandZB();
+	GRHI->ApplyRenderTargetChange();
     ApplyVertexLayout();
-    StateManager.Apply();
+    GRHI->StateManager->Apply();
     
     // State manager may alter constants
     constants.flush();
@@ -126,13 +125,12 @@ IC void CBackend::Render_noIA(u32 iVertexCount)
     stat.verts += iVertexCount;
 
     GRHI->ShaderResourceCache->Apply();
-    ApplyRTandZB();
+	GRHI->ApplyRenderTargetChange();
 
     // Use RHI primitive topology
     GRHI->SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST);
-    RContext->IASetInputLayout(nullptr);
 
-    StateManager.Apply();
+    GRHI->StateManager->Apply();
 
     // State manager may alter constants
     constants.flush();
@@ -152,30 +150,30 @@ IC void	CBackend::set_Scissor(Irect* R)
 {
 	if (R)
 	{
-		StateManager.EnableScissoring();
+		GRHI->StateManager->EnableScissoring();
 		RECT* clip = (RECT*)R;
 		RContext->RSSetScissorRects(1, clip);
 	}
 	else
 	{
-		StateManager.EnableScissoring(FALSE);
+		GRHI->StateManager->EnableScissoring(FALSE);
 		RContext->RSSetScissorRects(0, 0);
 	}
 }
 
 IC void CBackend::set_Stencil(u32 _enable, u32 _func, u32 _ref, u32 _mask, u32 _writemask, u32 _fail, u32 _pass, u32 _zfail)
 {
-	StateManager.SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
+	GRHI->StateManager->SetStencil(_enable, _func, _ref, _mask, _writemask, _fail, _pass, _zfail);
 }
 
 IC  void CBackend::set_Z(u32 _enable)
 {
-	StateManager.SetDepthEnable(_enable);
+	GRHI->StateManager->SetDepthEnable(_enable);
 }
 
 IC  void CBackend::set_ZFunc(u32 _func)
 {
-	StateManager.SetDepthFunc(_func);
+	GRHI->StateManager->SetDepthFunc(_func);
 }
 
 IC  void CBackend::set_AlphaRef(u32 _value)
@@ -185,11 +183,11 @@ IC  void CBackend::set_AlphaRef(u32 _value)
 
 IC void	CBackend::set_ColorWriteEnable(u32 _mask )
 {
-	StateManager.SetColorWriteEnable(_mask);
+	GRHI->StateManager->SetColorWriteEnable(_mask);
 }
 ICF void CBackend::set_CullMode(u32 _mode)
 {
-	StateManager.SetCullMode(_mode);
+	GRHI->StateManager->SetCullMode(_mode);
 }
 
 IC void CBackend::ApplyVertexLayout()
@@ -270,7 +268,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	hemi.unmap		();
 	tree.unmap		();
 	LOD.unmap		();
-	StateManager.UnmapConstants();
+	GRHI->StateManager->UnmapConstants();
 
 	if (0==C_)
 		return;
@@ -447,11 +445,6 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 		if (Cs && Cs->handler)
 			Cs->handler->setup(Cs);
 	}
-}
-
-ICF void CBackend::ApplyRTandZB()
-{
-	GRHI->ApplyRenderTargetChange();
 }
 
 IC	void CBackend::get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData)
