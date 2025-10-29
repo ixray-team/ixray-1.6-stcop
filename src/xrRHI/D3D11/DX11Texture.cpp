@@ -356,42 +356,6 @@ IRHISurface* DX11ShaderResourceView::GetSurface()
 	return Surface;
 }
 
-void DX11ShaderResourceView::BindToPixelShader(u32 slot)
-{
-	if (SRV)
-	{
-		// Would need device context
-		// RContext->PSSetShaderResources(slot, 1, &SRV);
-	}
-}
-
-void DX11ShaderResourceView::BindToVertexShader(u32 slot)
-{
-	if (SRV)
-	{
-		// Would need device context
-		// RContext->VSSetShaderResources(slot, 1, &SRV);
-	}
-}
-
-void DX11ShaderResourceView::BindToGeometryShader(u32 slot)
-{
-	if (SRV)
-	{
-		// Would need device context
-		// RContext->GSSetShaderResources(slot, 1, &SRV);
-	}
-}
-
-void DX11ShaderResourceView::BindToComputeShader(u32 slot)
-{
-	if (SRV)
-	{
-		// Would need device context
-		// RContext->CSSetShaderResources(slot, 1, &SRV);
-	}
-}
-
 // DX11 Render Target View implementation
 DX11RenderTargetView::DX11RenderTargetView(ID3D11RenderTargetView* rtv, IRHISurface* surface)
 	: RTV(rtv), Surface(surface)
@@ -439,21 +403,6 @@ u32 DX11RenderTargetView::Release()
 IRHISurface* DX11RenderTargetView::GetSurface()
 {
 	return Surface;
-}
-
-void DX11RenderTargetView::BindAsRenderTarget(u32 slot)
-{
-	if (RTV)
-	{
-		// Would need device context
-		// RContext->OMSetRenderTargets(1, &RTV, nullptr);
-	}
-}
-
-void DX11RenderTargetView::UnbindRenderTarget()
-{
-	// Would need device context
-	// RContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 DX11DepthStencilView::DX11DepthStencilView(ID3D11DepthStencilView* dsv, IRHISurface* surface)
@@ -509,19 +458,6 @@ ERHI_DSV_DIMENSION DX11DepthStencilView::GetDimension() const
 IRHISurface* DX11DepthStencilView::GetSurface()
 {
 	return Surface;
-}
-
-void DX11DepthStencilView::BindAsDepthStencil()
-{
-	if (DSV)
-	{
-		// RContext->OMSetRenderTargets(0, nullptr, DSV);
-	}
-}
-
-void DX11DepthStencilView::UnbindDepthStencil()
-{
-	// RContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
 DX11TextureFactory::DX11TextureFactory(ID3D11Device* device, ID3D11DeviceContext* context)
