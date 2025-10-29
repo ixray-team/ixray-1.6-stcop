@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "dx10State.h"
-
-//#include "dx10RSManager.h"
-#include "dx10StateCache.h"
+#include "../dx10StateUtils.h"
 
 dx10State::dx10State() : 
 	m_pRasterizerState(0),
@@ -22,13 +20,26 @@ dx10State::~dx10State()
 
 dx10State* dx10State::Create(SimulatorStates& state_code)
 {
-	dx10State	*pState = new dx10State();
-
+	dx10State *pState = new dx10State();
 	state_code.UpdateState(*pState);
 
-	pState->m_pRasterizerState = RSManager.GetState(state_code);
-	pState->m_pDepthStencilState = DSSManager.GetState(state_code);
-	pState->m_pBlendState = BSManager.GetState(state_code);
+	D3D_RASTERIZER_DESC DescRS = {};
+	D3D_DEPTH_STENCIL_DESC DescDS = {};
+	D3D_BLEND_DESC DescBS = {};
+
+	dx10StateUtils::ResetDescription(DescRS);
+	dx10StateUtils::ResetDescription(DescDS);
+	dx10StateUtils::ResetDescription(DescBS);
+
+	state_code.UpdateDesc(DescRS);
+	state_code.UpdateDesc(DescDS);
+	state_code.UpdateDesc(DescBS);
+	dx10StateUtils::ValidateState(DescDS);
+	dx10StateUtils::ValidateState(DescBS);
+
+	pState->m_pRasterizerState = (ID3DRasterizerState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::RS, &DescRS);
+	pState->m_pDepthStencilState = (ID3DDepthStencilState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::DS, &DescDS);
+	pState->m_pBlendState = (ID3DBlendState*)GRHI->StateManager->GetCache(ERHI_STATE_CACHE_TYPE::BS, &DescBS);;
 	//ID3DxxDevice::CreateSamplerState
 
 	//	Create samplers here
@@ -48,14 +59,14 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
 HRESULT dx10State::Apply()
 {
 	VERIFY(m_pRasterizerState);
-	StateManager.SetRasterizerState(m_pRasterizerState);
+	GRHI->StateManager->SetRasterizerState(m_pRasterizerState);
 	VERIFY(m_pDepthStencilState);
-	StateManager.SetDepthStencilState(m_pDepthStencilState);
+	GRHI->StateManager->SetDepthStencilState(m_pDepthStencilState);
 	if( m_uiStencilRef != -1 )
-		StateManager.SetStencilRef(m_uiStencilRef);
+		GRHI->StateManager->SetStencilRef(m_uiStencilRef);
 	VERIFY(m_pBlendState);
-	StateManager.SetBlendState(m_pBlendState);
-	StateManager.SetAlphaRef(m_uiAlphaRef);
+	GRHI->StateManager->SetBlendState(m_pBlendState);
+	GRHI->StateManager->SetAlphaRef(m_uiAlphaRef);
 
 	SSManager.GSApplySamplers(m_GSSamplers);
 	SSManager.VSApplySamplers(m_VSSamplers);
