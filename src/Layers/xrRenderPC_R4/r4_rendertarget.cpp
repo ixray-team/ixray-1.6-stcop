@@ -142,10 +142,10 @@ void	CRenderTarget::u_stencil_optimize	(eStencilOptimizeMode eSOM)
 	switch(eSOM)
 	{
 	case SO_Light:
-		StateManager.SetStencilRef(dwLightMarkerID);
+		GRHI->StateManager->SetStencilRef(dwLightMarkerID);
 		break;
 	case SO_Combine:
-		StateManager.SetStencilRef(0x01);
+		GRHI->StateManager->SetStencilRef(0x01);
 		break;
 	default:
 		VERIFY(!"CRenderTarget::u_stencil_optimize. switch no default!");

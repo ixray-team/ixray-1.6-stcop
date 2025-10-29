@@ -137,8 +137,12 @@ static class cl_sun_shafts_intensity : public R_constant_setup
 static class cl_alpha_ref	: public R_constant_setup 
 {	
 	virtual void setup (R_constant* C) 
-	{ 
-		StateManager.BindAlphaRef(C);
+	{
+		auto Callback = [C](u32 m_uiAlphaRef)
+		{
+			RCache.set_c(C, (float)m_uiAlphaRef / 255.0f);
+		};
+		GRHI->StateManager->BindAlphaRefCallback(Callback);
 	}
 } binder_alpha_ref;
 
