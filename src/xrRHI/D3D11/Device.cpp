@@ -525,3 +525,16 @@ void InternalDevice11::DrawNoInputAssembly(u32 vertexCount)
 	HWRenderContext->IASetInputLayout(nullptr);
 	HWRenderContext->Draw(vertexCount, 0);
 }
+
+void InternalDevice11::SetScissorRect(Irect* R)
+{
+	if (R)
+	{
+		D3D11_RECT* clip = (D3D11_RECT*)R;
+		HWRenderContext->RSSetScissorRects(1, clip);
+	}
+	else
+	{
+		HWRenderContext->RSSetScissorRects(0, nullptr);
+	}
+}
