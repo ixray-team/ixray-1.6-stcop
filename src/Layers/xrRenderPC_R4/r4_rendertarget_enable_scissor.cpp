@@ -2,14 +2,6 @@
 #include "../../xrCore/Collision/cl_intersect.h"
 #include "../xrRender/du_cone.h"
 
-//extern Fvector du_cone_vertices			[DU_CONE_NUMVERTEX];
-
-BOOL	tri_vs_sphere_intersect			(Fvector& SC, float R, Fvector& v0, Fvector& v1, Fvector& v2)
-{
-	Fvector	e0,e1;
-	return	CDB::TestSphereTri	(SC,R,v0,e0.sub(v1,v0),e1.sub(v2,v0));
-}
-
 void CRenderTarget::enable_dbt_bounds		(light* L)
 {
 	if (!RImplementation.o.nvdbt)					return;
@@ -58,109 +50,29 @@ void	CRenderTarget::u_DBT_disable	()
 	//	RDevice->SetRenderState(D3DRS_ADAPTIVETESS_X,0);
 }
 
-BOOL CRenderTarget::enable_scissor		(light* L)		// true if intersects near plane
+BOOL CRenderTarget::enable_scissor(light* L)		// true if intersects near plane
 {
-	// Msg	("%d: %x type(%d), pos(%f,%f,%f)",Device.dwFrame,u32(L),u32(L->flags.type),VPUSH(L->position));
-
 	// Near plane intersection
-	BOOL	near_intersect				= FALSE;
+	bool near_intersect = false;
 	{
-		Fmatrix& M						= Device.mFullTransform;
+		Fmatrix& M = Device.mFullTransform;
 		Fvector4 plane;
-		plane.x							= -(M._14 + M._13);
-		plane.y							= -(M._24 + M._23);
-		plane.z							= -(M._34 + M._33);
-		plane.w							= -(M._44 + M._43);
-		float denom						= -1.0f / _sqrt(_sqr(plane.x)+_sqr(plane.y)+_sqr(plane.z));
-		plane.mul						(denom);
-		Fplane	P;	P.n.set(plane.x,plane.y,plane.z); P.d = plane.w;
-		float	p_dist					= P.classify	(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
-		near_intersect					= (p_dist<=0);
+		plane.x = -(M._14 + M._13);
+		plane.y = -(M._24 + M._23);
+		plane.z = -(M._34 + M._33);
+		plane.w = -(M._44 + M._43);
+		float denom = -1.0f / _sqrt(_sqr(plane.x) + _sqr(plane.y) + _sqr(plane.z));
+		plane.mul(denom);
+		Fplane	P;	P.n.set(plane.x, plane.y, plane.z); P.d = plane.w;
+		float	p_dist = P.classify(L->SpatialComponent->spatial.sphere.P) - L->SpatialComponent->spatial.sphere.R;
+		near_intersect = (p_dist <= 0);
 	}
 #ifdef DEBUG
-	if (1)
-	{
-		Fsphere		S;	S.set	(L->SpatialComponent->spatial.sphere.P,L->SpatialComponent->spatial.sphere.R);
-		dbg_spheres.push_back	(std::make_pair(S,L->color));
-	}
+	Fsphere		S;	S.set(L->SpatialComponent->spatial.sphere.P, L->SpatialComponent->spatial.sphere.R);
+	dbg_spheres.push_back(std::make_pair(S, L->color));
 #endif
 
 	// Scissor
 	//. disable scissor because some bugs prevent it to work through multi-portals
-	//. if (!HW.Caps.bScissor)	return		near_intersect;
 	return		near_intersect;
-
-#if 0
-	CSector*	S	= (CSector*)L->spatial.sector;
-	_scissor	bb	= S->r_scissor_merged;
-	Irect		R;
-	R.x1		= clampr	(iFloor	(bb.min.x*Device.TargetWidth),	int(0),int(Device.TargetWidth));
-	R.x2		= clampr	(iCeil	(bb.max.x*Device.TargetWidth),	int(0),int(Device.TargetWidth));
-	R.y1		= clampr	(iFloor	(bb.min.y*Device.TargetHeight),	int(0),int(Device.TargetHeight));
-	R.y2		= clampr	(iCeil	(bb.max.y*Device.TargetHeight),	int(0),int(Device.TargetHeight));
-	if	( (Device.TargetWidth==u32(R.right - R.left)) && (Device.TargetHeight==u32(R.bottom-R.top)) )
-	{
-		// full-screen -> do nothing
-	} else {
-		// test if light-volume intersects scissor-rectangle
-		// if it does - do nothing, if doesn't - we look on light through portal
-
-		// 1. convert rect into -1..1 space
-		Fbox2		b_pp	= bb;
-		b_pp.min.x			= b_pp.min.x * 2 - 1;
-		b_pp.max.x			= b_pp.max.x * 2 - 1;
-		b_pp.min.y			= (1-b_pp.min.y) * 2 - 1;
-		b_pp.max.y			= (1-b_pp.max.y) * 2 - 1;
-
-		// 2. construct scissor rectangle in post-projection space
-		Fvector3	s_points_pp			[4];
-		s_points_pp[0].set	(bb.min.x,bb.min.y,bb.depth);	// LT
-		s_points_pp[1].set	(bb.max.x,bb.min.y,bb.depth);	// RT
-		s_points_pp[2].set	(bb.max.x,bb.max.y,bb.depth);	// RB
-		s_points_pp[3].set	(bb.min.x,bb.max.y,bb.depth);	// LB
-
-		// 3. convert it into world space
-		Fvector3	s_points			[4];
-		Fmatrix&	iVP					= Device.mInvFullTransform;
-		iVP.transform	(s_points[0],s_points_pp[0]);
-		iVP.transform	(s_points[1],s_points_pp[1]);
-		iVP.transform	(s_points[2],s_points_pp[2]);
-		iVP.transform	(s_points[3],s_points_pp[3]);
-
-		// 4. check intersection of two triangles with (spatial, enclosing) sphere
-		BOOL	bIntersect	= tri_vs_sphere_intersect	(
-			L->spatial.sphere.P,L->spatial.sphere.R,
-			s_points[0],s_points[1],s_points[2]
-			);
-		if (!bIntersect)	bIntersect	= tri_vs_sphere_intersect	(
-				L->spatial.sphere.P,L->spatial.sphere.R,
-				s_points[2],s_points[3],s_points[0]
-				);
-		if (!bIntersect)	{
-			// volume doesn't touch scissor - enable mask
-			RCache.set_Scissor(&R);
-			//CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,TRUE));
-			//CHK_DX		(RDevice->SetScissorRect(&R));
-		} else {
-			RCache.set_Scissor(nullptr);
-		}
-	}
-
-	return near_intersect;
-#endif
 }
-/*
-{
-	Fmatrix& M						= RCache.xforms.m_wvp;
-	BOOL	bIntersect				= FALSE;
-	for (u32 vit=0; vit<DU_CONE_NUMVERTEX; vit++)	{
-		Fvector&	v	= du_cone_vertices[vit];
-		float _z = v.x*M._13 + v.y*M._23 + v.z*M._33 + M._43;
-		float _w = v.x*M._14 + v.y*M._24 + v.z*M._34 + M._44;
-		if (_z<=0 || _w<=0)	{
-			bIntersect	= TRUE;
-			break;
-		}
-	}
-}
-*/

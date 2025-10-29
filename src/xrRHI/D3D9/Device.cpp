@@ -472,3 +472,12 @@ void InternalDevice9::DrawNoInputAssembly(u32 vertexCount)
 {
 	VERIFY(!"DrawNoInputAssembly not supported in DX9");
 }
+
+void InternalDevice9::SetScissorRect(Irect* R)
+{
+	if (R)
+	{
+		RECT* clip = (RECT*)R;
+		CHK_DX(DX9Device->SetScissorRect(clip));
+	}
+}
