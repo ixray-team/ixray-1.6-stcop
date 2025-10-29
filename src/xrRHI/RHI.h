@@ -1,3 +1,14 @@
+// SPDX-License-Identifier: LicenseRef-IXRAY-NonCommercial
+// IX-Ray Engine - Render Hardware Interface (RHI)
+// (c) 2019-2025 ForserX, ugo_zapad. All rights reserved.
+//
+// This file is part of the IX-Ray RHI subsystem.
+// Redistribution, modification, or commercial use of this code,
+// in whole or in part, is prohibited without explicit written
+// permission from the authors.
+//
+// Developed exclusively for the IX-Ray Engine project.
+
 #pragma once
 #include "../xrCore/xrCore.h"
 
