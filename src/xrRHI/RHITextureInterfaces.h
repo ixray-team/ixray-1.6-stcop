@@ -116,12 +116,7 @@ public:
 	virtual void* GetRawSRV() = 0;
 	
 	virtual IRHISurface* GetSurface() = 0;
-	
-	virtual void BindToPixelShader(u32 slot) = 0;
-	virtual void BindToVertexShader(u32 slot) = 0;
-	virtual void BindToGeometryShader(u32 slot) = 0;
-	virtual void BindToComputeShader(u32 slot) = 0;
-	
+
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
 };
@@ -135,9 +130,6 @@ public:
 	
 	virtual IRHISurface* GetSurface() = 0;
 	
-	virtual void BindAsRenderTarget(u32 slot = 0) = 0;
-	virtual void UnbindRenderTarget() = 0;
-	
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
 };
@@ -150,9 +142,6 @@ public:
 	virtual void* GetRawDSV() = 0;
 	
 	virtual IRHISurface* GetSurface() = 0;
-	
-	virtual void BindAsDepthStencil() = 0;
-	virtual void UnbindDepthStencil() = 0;
 	
 	virtual void AddRef() = 0;
 	virtual u32 Release() = 0;
