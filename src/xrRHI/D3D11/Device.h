@@ -29,6 +29,9 @@ public:
 
 	IRHIBuffer* CreateBuffer(const RHIBufferDesc& desc, const RHIBufferSubresource* pSubresource) override;
 
+	// Scissor rect
+	void SetScissorRect(Irect* R) override;
+
 	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
 	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
