@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.script": "lua",
         "*.ltx": "ini",
         "**/gamedata/configs/**/*.ltx": "ini",
         "**/gamedata/scripts/*.script": "lua",
@@ -93,7 +94,8 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "xiosbase": "cpp"
     },
 
     "dotnet.defaultSolution": "disable",
