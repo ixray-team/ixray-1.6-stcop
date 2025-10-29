@@ -67,20 +67,6 @@ void CBackend::Invalidate	()
 	M							= nullptr;
 	C							= nullptr;
 
-	stencil_enable=u32(-1);
-	stencil_func=u32(-1);
-	stencil_ref=u32(-1);
-	stencil_mask=u32(-1);
-	stencil_writemask=u32(-1);
-	stencil_fail=u32(-1);
-	stencil_pass=u32(-1);
-	stencil_zfail=u32(-1);
-	cull_mode=u32(-1);
-	z_enable=u32(-1);
-	z_func=u32(-1);
-	alpha_ref=u32(-1);
-	colorwrite_mask				= u32(-1);
-
 	//	Since constant buffers are unmapped (for DirecX 10)
 	//	transform setting handlers should be unmapped too.
 	xforms.unmap	();

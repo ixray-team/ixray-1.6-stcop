@@ -51,11 +51,20 @@ void RHIStateManagerDX9::SetDepthFunc(u32 Func)
 void RHIStateManagerDX9::SetColorWriteEnable(u32 Mask)
 {
     Device->SetRenderState(D3DRS_COLORWRITEENABLE, Mask);
+    Device->SetRenderState(D3DRS_COLORWRITEENABLE1, Mask);
+    Device->SetRenderState(D3DRS_COLORWRITEENABLE2, Mask);
+    Device->SetRenderState(D3DRS_COLORWRITEENABLE3, Mask);
 }
 
 void RHIStateManagerDX9::SetCullMode(u32 Mode)
 {
+    CacheCullMode = Mode;
     Device->SetRenderState(D3DRS_CULLMODE, Mode);
+}
+
+void RHIStateManagerDX9::SetAlphaRef(u32 mode)
+{
+    Device->SetRenderState(D3DRS_ALPHAREF, mode);
 }
 
 void RHIStateManagerDX9::UnmapConstants()
