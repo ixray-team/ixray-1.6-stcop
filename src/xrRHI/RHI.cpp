@@ -605,6 +605,12 @@ void CRHI::SetViewport(RHIViewport& VP)
 	DevicePtr->SetViewport(VP);
 }
 
+void CRHI::SetScissorRect(Irect* R)
+{
+	GRHI->StateManager->EnableScissoring(R != nullptr);
+	DevicePtr->SetScissorRect(R);
+}
+
 void CRHI::SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce)
 {
 	GRHIRenderViewManager.SetRenderTargetView(pRenderTargetView, ID, bForce);

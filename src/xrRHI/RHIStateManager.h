@@ -7,7 +7,7 @@ enum class ERHI_STATE_CACHE_TYPE
 	BS
 };
 
-class IRHIStateManager
+class RHI_API IRHIStateManager
 {
 public:
 	using BindAlphaCallbackDecl = std::function<void(u32)>;
@@ -30,10 +30,13 @@ public:
 	virtual void SetDepthStencilState(void* NewState) {};
 	virtual void SetBlendState(void* NewState) {};
 	virtual void SetStencilRef(u32 NewStencilRef) {};
-	virtual void SetAlphaRef(u32 NewAlphaRef) {};
+	virtual void SetAlphaRef(u32 NewAlphaRef) = 0;
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) { return nullptr; };
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) {};
 
+	u32 GetCullMode() const { return CacheCullMode; }
+
 protected:
 	BindAlphaCallbackDecl BindAlphaCallback;
+	u32 CacheCullMode = u32(-1);
 };

@@ -101,6 +101,7 @@ public:
 	void SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*>, ERHI_SHADER_TYPE Type);
 	void SetShader(void* pNativeShader, ERHI_SHADER_TYPE Type);
 	void SetViewport(RHIViewport& VP);
+	void SetScissorRect(Irect* R);
 
 	void SetRenderTargetView(IRHIRenderTargetView* pRenderTargetView, u32 ID, bool bForce = false);
 	void SetDepthStencilView(IRHIDepthStencilView* pDepthStencilView, bool bForce = false);
