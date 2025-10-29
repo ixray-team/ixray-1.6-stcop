@@ -63,10 +63,6 @@ public:
     
     virtual void* GetRawSRV() override;
     virtual IRHISurface* GetSurface() override;
-    virtual void BindToPixelShader(u32 slot) override;
-    virtual void BindToVertexShader(u32 slot) override;
-    virtual void BindToGeometryShader(u32 slot) override;
-    virtual void BindToComputeShader(u32 slot) override;
 
     virtual void AddRef() override;
     virtual u32 Release() override;
@@ -87,8 +83,6 @@ public:
     
     virtual void* GetRawRTV() override;
     virtual IRHISurface* GetSurface() override;
-    virtual void BindAsRenderTarget(u32 slot = 0) override;
-    virtual void UnbindRenderTarget() override;
     virtual void AddRef() override;
     virtual u32 Release() override;
 
@@ -108,8 +102,6 @@ public:
     
     virtual void* GetRawDSV() override;
     virtual IRHISurface* GetSurface() override;
-    virtual void BindAsDepthStencil() override;
-    virtual void UnbindDepthStencil() override;
 
     virtual void AddRef() override;
     virtual u32 Release() override;
