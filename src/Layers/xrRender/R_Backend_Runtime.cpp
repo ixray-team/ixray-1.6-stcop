@@ -1,14 +1,8 @@
 #include "stdafx.h"
-
-
 #include <DirectXMath.h>
 using namespace DirectX;
 
 #include "../../xrCore/Collision/Frustum.h"
-
-#ifdef USE_DX11
-#include "../xrRenderDX10/StateManager/dx10StateManager.h"
-#endif //USE_DX11
 
 void CBackend::OnFrameEnd	()
 {
@@ -105,10 +99,15 @@ void CBackend::Invalidate	()
 		m_aDomainConstants[i] = 0;
 		m_aComputeConstants[i] = 0;
 	}
-	StateManager.Reset();
-	//	Redundant call. Just no note that we need to unmap const
-	//	if we create dedicated class.
-	StateManager.UnmapConstants();
+
+	if (GRHI != nullptr)
+	{
+		GRHI->StateManager->Reset();
+		//	Redundant call. Just no note that we need to unmap const
+		//	if we create dedicated class.
+		GRHI->StateManager->UnmapConstants();
+	}
+
 	SSManager.ResetDeviceState();
 
 	if (GRHI && GRHI->ShaderResourceCache)

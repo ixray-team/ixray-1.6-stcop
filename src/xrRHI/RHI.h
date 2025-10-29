@@ -18,6 +18,7 @@
 #include "RHIShaderDeclaration.h"
 #include "RHIDriversExt.h"
 #include "RHIShaderResourceCache.h"
+#include "RHIStateManager.h"
 
 enum
 {
@@ -128,6 +129,7 @@ public:
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
 	CRHIShaderCompilerShell* ShaderCompiler = nullptr;
+	IRHIStateManager* StateManager = nullptr;
 
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	
