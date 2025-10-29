@@ -1,15 +1,13 @@
 #include "RHIStateManagerDX11.h"
 
-RHIStateManagerDX11::RHIStateManagerDX11()
+RHIStateManagerDX11::RHIStateManagerDX11() :
+	StateCache(static_cast<ID3D11Device*>(GRHI->DevicePtr->RawDevice))
 {
-	ID3D11Device* Device = static_cast<ID3D11Device*>(GRHI->DevicePtr->RawDevice);
-	StateCache = new RHIStateCache(Device);
 	Reset();
 }
 
 RHIStateManagerDX11::~RHIStateManagerDX11()
 {
-	xr_delete(StateCache);
 }
 
 void RHIStateManagerDX11::Reset()
@@ -111,7 +109,7 @@ void RHIStateManagerDX11::Apply()
 	{
 		if (bRSChanged)
 		{
-			RasterizerState = StateCache->GetRasterizerState(RDesc);
+			RasterizerState = StateCache.GetRasterizerState(RDesc);
 			// Get state from cache
 		}
 		Context->RSSetState(RasterizerState);
@@ -123,7 +121,7 @@ void RHIStateManagerDX11::Apply()
 	{
 		if (bDSSChanged)
 		{
-			DepthStencilState = StateCache->GetDepthStencilState(DSDesc);
+			DepthStencilState = StateCache.GetDepthStencilState(DSDesc);
 		}
 		Context->OMSetDepthStencilState(DepthStencilState, StencilRef);
 		bDSSNeedApply = false;
@@ -134,7 +132,7 @@ void RHIStateManagerDX11::Apply()
 	{
 		if (bBSChanged)
 		{
-			BlendState = StateCache->GetBlendState(BDesc);
+			BlendState = StateCache.GetBlendState(BDesc);
 		}
 		FLOAT BlendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 		Context->OMSetBlendState(BlendState, BlendFactor, SampleMask);
@@ -188,7 +186,7 @@ void RHIStateManagerDX11::EnableScissoring(bool Enable)
 {
 	ValidateRDesc();
 
-	if (RDesc.ScissorEnable != Enable)
+	if ((bool)RDesc.ScissorEnable != Enable)
 	{
 		bRSChanged = true;
 		RDesc.ScissorEnable = Enable;
@@ -300,6 +298,7 @@ void RHIStateManagerDX11::SetCullMode(u32 Mode)
 
 	bRSChanged = bRSChanged || RDesc.CullMode != (D3D11_CULL_MODE)Mode;
 	RDesc.CullMode = (D3D11_CULL_MODE)Mode;
+	CacheCullMode = Mode;
 }
 
 void RHIStateManagerDX11::BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback)
@@ -316,9 +315,9 @@ void* RHIStateManagerDX11::GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc)
 {
 	switch (Type)
 	{
-		case ERHI_STATE_CACHE_TYPE::RS: return StateCache->GetRasterizerState(*(D3D11_RASTERIZER_DESC*)Desc);
-		case ERHI_STATE_CACHE_TYPE::DS: return StateCache->GetDepthStencilState(*(D3D11_DEPTH_STENCIL_DESC*)Desc);
-		case ERHI_STATE_CACHE_TYPE::BS: return StateCache->GetBlendState(*(D3D11_BLEND_DESC*)Desc);
+		case ERHI_STATE_CACHE_TYPE::RS: return StateCache.GetRasterizerState(*(D3D11_RASTERIZER_DESC*)Desc);
+		case ERHI_STATE_CACHE_TYPE::DS: return StateCache.GetDepthStencilState(*(D3D11_DEPTH_STENCIL_DESC*)Desc);
+		case ERHI_STATE_CACHE_TYPE::BS: return StateCache.GetBlendState(*(D3D11_BLEND_DESC*)Desc);
 	}
 
 	return nullptr;

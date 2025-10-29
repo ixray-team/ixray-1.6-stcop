@@ -42,7 +42,7 @@ private:
 	void ValidateBDesc();
 
 private:
-	RHIStateCache* StateCache;
+	RHIStateCache StateCache;
 	ID3D11RasterizerState* RasterizerState;
 	ID3D11DepthStencilState* DepthStencilState;
 	ID3D11BlendState* BlendState;
