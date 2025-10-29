@@ -4,11 +4,13 @@
 #include "D3D9/Device.h"
 #include "D3D9/DX9ShaderDeclaration.h"
 #include "D3D9/DX9ShaderResourceStateCache.h"
+#include "D3D9/RHIStateManagerDX9.h"
 
 #include "D3D11/Device.h"
 #include "D3D11/DX11GPUEvents.h"
 #include "D3D11/DX11ShaderDeclaration.h"
 #include "D3D11/DX11ShaderResourceStateCache.h"
+#include "D3D11/RHIStateManagerDX11.h"
 
 #include <DirectXMesh.h>
 #include "Drivers/AMDGPUTransferee.h"
@@ -33,6 +35,7 @@ CRHI::~CRHI()
 
 	xr_delete(DevicePtr);
 	xr_delete(ShaderResourceCache);
+	xr_delete(StateManager);
 	xr_delete(DriverExt);
 	xr_delete(ShaderCompiler);
 }
@@ -58,8 +61,16 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 	switch (NewAPILevel)
 	{
 #ifdef IXR_WINDOWS
-		case ERHI_API_LAYER::D3D9:  DevicePtr = new InternalDevice9;  ShaderResourceCache = new DX9ShaderResourceStateCache; break;
-		case ERHI_API_LAYER::D3D11: DevicePtr = new InternalDevice11; ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext()); break;
+		case ERHI_API_LAYER::D3D9:  
+			DevicePtr = new InternalDevice9;  
+			ShaderResourceCache = new DX9ShaderResourceStateCache;
+			StateManager = new RHIStateManagerDX9();
+			break;
+		case ERHI_API_LAYER::D3D11: 
+			DevicePtr = new InternalDevice11; 
+			ShaderResourceCache = new DX11ShaderResourceStateCache((ID3D11DeviceContext*)GetContext());
+			StateManager = new RHIStateManagerDX11();
+			break;
 #endif
 	}
 
