@@ -15,8 +15,10 @@ public:
     void SetDepthFunc(u32 func) override;
     void SetColorWriteEnable(u32 mask) override;
     void SetCullMode(u32 mode) override;
+    void SetAlphaRef(u32 mode) override;
     void UnmapConstants() override;
     void Reset() override {};
+
 private:
     IDirect3DDevice9* Device;
 };

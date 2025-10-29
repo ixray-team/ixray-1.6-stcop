@@ -148,7 +148,7 @@ void CRenderTarget::accum_spot	(light* L)
 		draw_volume					(L);
 	}
 
-	CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+	GRHI->StateManager->EnableScissoring(false);
 	//dwLightMarkerID					+=	2;	// keep lowest bit always setted up
 	increment_light_marker();
 
@@ -350,5 +350,5 @@ void CRenderTarget::accum_volumetric(light* L)
 		RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, 0);
 	}
 
-	CHK_DX		(RDevice->SetRenderState(D3DRS_SCISSORTESTENABLE,FALSE));
+	GRHI->StateManager->EnableScissoring(false);
 }
