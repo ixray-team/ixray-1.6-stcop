@@ -311,42 +311,6 @@ IRHISurface* DX9ShaderResourceView::GetSurface()
 	return Surface;
 }
 
-void DX9ShaderResourceView::BindToPixelShader(u32 slot)
-{
-	if (Surface)
-	{
-		DX9Surface* dx9Surface = static_cast<DX9Surface*>(Surface);
-		if (dx9Surface->GetDX9BaseTexture())
-		{
-			// Would need device
-			// RDevice->SetTexture(slot, dx9Surface->GetDX9BaseTexture());
-		}
-	}
-}
-
-void DX9ShaderResourceView::BindToVertexShader(u32 slot)
-{
-	if (Surface)
-	{
-		DX9Surface* dx9Surface = static_cast<DX9Surface*>(Surface);
-		if (dx9Surface->GetDX9BaseTexture())
-		{
-			// Would need device
-			// RDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + slot, dx9Surface->GetDX9BaseTexture());
-		}
-	}
-}
-
-void DX9ShaderResourceView::BindToGeometryShader(u32 slot)
-{
-	// DX9 doesn't have geometry shaders
-}
-
-void DX9ShaderResourceView::BindToComputeShader(u32 slot)
-{
-	// DX9 doesn't have compute shaders
-}
-
 // DX9 Render Target View implementation
 DX9RenderTargetView::DX9RenderTargetView(IDirect3DSurface9* surface, IRHISurface* texture)
 	: Surface(surface), Texture(texture)
@@ -386,21 +350,6 @@ u32 DX9RenderTargetView::Release()
 IRHISurface* DX9RenderTargetView::GetSurface()
 {
 	return Texture;
-}
-
-void DX9RenderTargetView::BindAsRenderTarget(u32 slot)
-{
-	if (Surface)
-	{
-		// Would need device
-		// RDevice->SetRenderTarget(slot, Surface);
-	}
-}
-
-void DX9RenderTargetView::UnbindRenderTarget()
-{
-	// Would need device
-	// RDevice->SetRenderTarget(0, nullptr);
 }
 
 // DX9 Depth Stencil View implementation
@@ -453,21 +402,6 @@ ERHI_DSV_DIMENSION DX9DepthStencilView::GetDimension() const
 IRHISurface* DX9DepthStencilView::GetSurface()
 {
 	return Texture;
-}
-
-void DX9DepthStencilView::BindAsDepthStencil()
-{
-	if (Surface)
-	{
-		// Would need device
-		// RDevice->SetDepthStencilSurface(Surface);
-	}
-}
-
-void DX9DepthStencilView::UnbindDepthStencil()
-{
-	// Would need device
-	// RDevice->SetDepthStencilSurface(nullptr);
 }
 
 // DX9 Texture Factory implementation
