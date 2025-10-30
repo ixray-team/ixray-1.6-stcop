@@ -27,9 +27,6 @@
 namespace std { class exception; }
 namespace boost { void throw_exception( std::exception const& A ); }
 
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	(ltx->line_exist(section,name)) ? ltx->method(section,name) : default_value
-
 #if XRAY_EXCEPTIONS
 IC	xr_string string2xr_string(LPCSTR s) {return s ? s : "";}
 #	define	THROW(expr)				do {if (!(expr)) {string4096	assertion_info; ::Debug.gather_info(_TRE(#expr),   0,   0,0,DEBUG_INFO,assertion_info); throw assertion_info;}} while(0)

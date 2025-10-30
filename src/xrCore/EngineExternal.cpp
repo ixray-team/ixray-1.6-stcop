@@ -1,7 +1,9 @@
 #include "stdafx.h"
+
+#include "EngineExternal.h"
 #include <magic_enum/magic_enum.hpp>
 
-ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
+XRCORE_API CEngineExternal* g_pEngineExternal = nullptr;
 
 CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
 {
@@ -156,7 +158,7 @@ const char* CEngineExternal::GetCurrentPlatformFullName()
 	return Translate_EEngineExternalPlatform(m_platform_type);
 }
 
-ENGINE_API CEngineExternal& EngineExternal()
+XRCORE_API CEngineExternal& EngineExternal()
 {
 	if (g_pEngineExternal == nullptr) {
 		g_pEngineExternal = new CEngineExternal;

@@ -28,7 +28,7 @@
 #endif
 
 // Our headers
-#include "EngineExternal.h"
+#include "../xrCore/EngineExternal.h"
 #include "Engine.h"
 #include "defines.h"
 #ifndef NO_XRLOG
@@ -50,9 +50,6 @@ extern ENGINE_API bool g_dedicated_server;
 #endif
 
 #define LUABIND_DONT_COPY_STRINGS
-
-#define READ_IF_EXISTS(ltx,method,section,name,default_value)\
-	(((ltx)->line_exist(section, name)) ? ((ltx)->method(section, name)) : (default_value))
 
 #include "FontManager.h"
 
