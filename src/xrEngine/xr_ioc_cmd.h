@@ -426,6 +426,7 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{	
+		S[0] = 0;
 		bool bStatus = *value;
 
 		if (bStatus)
