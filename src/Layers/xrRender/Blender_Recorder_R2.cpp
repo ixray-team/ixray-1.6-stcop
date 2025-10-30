@@ -1,17 +1,13 @@
 // CBlender_Compile_combined.cpp
 #include "stdafx.h"
 
-#ifdef USE_DX11
-#include "../xrRender/ResourceManager.h"
-#include "../xrRender/blenders/Blender_Recorder.h"
-#include "../xrRender/blenders/Blender.h"
-#include "../xrRender/dxRenderDeviceRender.h"
-#include "../xrRender/tss.h"
-#else
 #include "ResourceManager.h"
 #include "blenders/Blender_Recorder.h"
 #include "blenders/Blender.h"
 #include "dxRenderDeviceRender.h"
+
+#ifdef USE_DX11
+#include "../xrRender/tss.h"
 #endif
 
 void fix_texture_name(LPSTR fn);
