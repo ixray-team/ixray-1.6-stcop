@@ -32,7 +32,6 @@ file(GLOB_RECURSE ENGINE_SOURCE_KERNEL_FILES
     "Engine.*"
     "EngineAPI.*"
     "EngineFactory.*"
-    "EngineExternal*.*"
     "Application*.*"
     "defines.*"
     "pure*.*"
