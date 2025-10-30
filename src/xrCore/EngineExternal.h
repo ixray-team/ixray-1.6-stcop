@@ -73,7 +73,7 @@ static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == static_cast<unsi
 static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == (sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])), "must be equal!");
 
 
-class ENGINE_API CEngineExternal final
+class XRCORE_API CEngineExternal final
 {
 public:
 	CEngineExternal();
@@ -116,4 +116,4 @@ private:
 
 const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform);
 
-ENGINE_API CEngineExternal& EngineExternal();
+XRCORE_API CEngineExternal& EngineExternal();
