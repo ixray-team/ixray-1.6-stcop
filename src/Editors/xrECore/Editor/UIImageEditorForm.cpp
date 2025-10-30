@@ -114,6 +114,7 @@ void UIImageEditorForm::Draw()
 				auto* baseTexture = ::RImplementation.texture_load("ed\\ed_nodata", mem);
 				if (baseTexture)
 				{
+					m_Texture = new CTexture;
 					m_Texture->surface_set(GRHI->CreateTextureFromMemory(baseTexture, 0, {}));
 					baseTexture->Release();
 				}
@@ -421,6 +422,8 @@ void UIImageEditorForm::OnItemsFocused(ListItemsVec& item)
 
 		IRHISurface* Surf = nullptr;
 		thm->Update(Surf);
+
+		m_Texture = new CTexture;
 		m_Texture->surface_set(Surf);
 		Surf->Release();
 	}
