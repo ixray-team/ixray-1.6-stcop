@@ -1,5 +1,9 @@
 #include "stdafx.h"
+
 #include "xrAddons.h"
+
+#include "EngineExternal.h"
+#include <FormatParsers/YAML/xr_yaml_reader.h>
 
 XRCORE_API CAddonManager* g_pAddonsManager = nullptr;
 
@@ -59,37 +63,50 @@ void CAddonManager::CanApply(xr_string& TempPath, CLocatorAPI::file& Desc)
 	}
 }
 
-#include <fstream>
-#include <sstream>
+static void removeAllSubstrings(xr_string& str, const xr_string& toRemove) {
+	size_t pos = 0;
+	while ((pos = str.find(toRemove, pos)) != xr_string::npos) {
+		str.erase(pos, toRemove.length());
+	}
+}
 
 void CAddonManager::ReadMetaInfo(const xr_string& InitFile)
 {
-	std::fstream FileStream(InitFile.c_str());
-	std::ostringstream filebuffer;
-	filebuffer << FileStream.rdbuf();
+	static xr_string addons_path = FS.get_path("$arch_dir_addons$")->m_Path;
+	static xr_string CurrentAddonName = "";
+	static bool IsProcessingAddon = false;
 
-	xr_string StringBuffer = filebuffer.str().data();
-	
-	if (StringBuffer.empty())
-		return;
-
-	AddonInfo& NewAddon = Addons.emplace_back();
-	NewAddon.EntryDir = InitFile.data();
-
-	size_t NameEntryIndex = StringBuffer.find("name:");
-	if (NameEntryIndex == xr_string::npos)
+	bool PathIsDir = std::filesystem::is_directory(InitFile.data());
+	if (InitFile.Contains(addons_path) && !PathIsDir && IsProcessingAddon)
 	{
-		size_t NameEndIndex = StringBuffer.find("\n", NameEntryIndex);
-
-		size_t Offet = NameEntryIndex + 6;
-		NewAddon.AddonName = StringBuffer.substr(Offet, NameEndIndex - Offet).c_str();
+		static xr_string data_path = FS.get_path("$game_data$")->m_Path;
+		CurrentAddonName = InitFile;
 	}
 
-	size_t ScriptEntryIndex = StringBuffer.find("script:");
-	if (ScriptEntryIndex == xr_string::npos)
-		return;
+	xr_string pathAddon = InitFile;
+	removeAllSubstrings(pathAddon, "addon.init");
+	CYaml yamlParser(pathAddon.c_str(), "addon.init");
+	auto& rootNode = yamlParser.GetRootNode();
 
-	size_t ScriptEndIndex = StringBuffer.find(".script", ScriptEntryIndex);
-	size_t Offet = ScriptEntryIndex;
-	NewAddon.ScriptInit = StringBuffer.substr(Offet + 8, ScriptEndIndex - Offet).c_str();
+	AddonInfo NewAddon;
+	NewAddon.EntryDir = InitFile.data();
+
+	const std::string name = yamlParser.GetStringRoot(rootNode, "name", "");
+
+	if (!name.empty())
+	{
+		NewAddon.AddonName = name.c_str();
+	}
+
+	const std::string script = yamlParser.GetStringRoot(rootNode, "script", "");
+	if (!script.empty())
+	{
+		xr_string scriptStr = script.c_str();
+		size_t dotPos = scriptStr.find(".script");
+		if (dotPos != xr_string::npos)
+		{
+			scriptStr = scriptStr.substr(0, dotPos);
+		}
+		NewAddon.ScriptInit = scriptStr.c_str();
+	}
 }

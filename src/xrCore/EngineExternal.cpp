@@ -29,7 +29,7 @@ CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Un
 
 	if (pOptions->section_exist("general"))
 	{
-		InitPlatform(READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop"));
+		InitPlatform(GetCurrentPlatformName());
 	}
 
 	if (!ClearSkyMode() && !CallOfPripyatMode() && !ShadowOfChernobylMode())
@@ -161,6 +161,16 @@ const char* Translate_EEngineExternalPlatform(EEngineExternalPlatform platform)
 const char* CEngineExternal::GetCurrentPlatformFullName()
 {
 	return Translate_EEngineExternalPlatform(m_platform_type);
+}
+
+const char* CEngineExternal::GetCurrentPlatformName()
+{
+	return READ_IF_EXISTS(pOptions, r_string, "general", "Platform", "cop");
+}
+
+EEngineExternalPlatform CEngineExternal::GetCurrentPlatform()
+{
+	return m_platform_type;
 }
 
 XRCORE_API CEngineExternal& EngineExternal()
