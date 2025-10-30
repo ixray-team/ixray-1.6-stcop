@@ -188,7 +188,7 @@ void CWeaponBM16::PlayAnimReload()
 
 	VERIFY(GetState() == eReload);
 	
-	PlayHUDMotion(SetCurrentReloadAnimation(), TRUE, GetState());
+	PlayHUDMotion(SetCurrentReloadAnimation(), EHudMixType::eMixAll, GetState());
 }
 
 shared_str CWeaponBM16::SetCurrentShootAnimation()

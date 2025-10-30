@@ -280,13 +280,13 @@ void CCustomDevice::OnStateSwitch(u32 S)
 	{
 		g_player_hud->attach_item(this);
 		m_sounds.PlaySound("sndShow", Fvector().set(0, 0, 0), this, true, false);
-		PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", FALSE, S);
+		PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", EHudMixType::eNoMix, S);
 		SetPending(TRUE);
 	}break;
 	case eHiding:
 	{
 		m_sounds.PlaySound("sndHide", Fvector().set(0, 0, 0), this, true, false);
-		PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", TRUE, S);
+		PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", EHudMixType::eMixAll, S);
 		SetPending(TRUE);
 		PlayWpnFinishDetector();
 	}break;
@@ -297,52 +297,52 @@ void CCustomDevice::OnStateSwitch(u32 S)
 	}break;
 	case eHandDraw:
 	{
-		PlayHUDMotion("anm_hand_draw", true, eHandDraw);
+		PlayHUDMotion("anm_hand_draw", EHudMixType::eMixAll, eHandDraw);
 		break;
 	}
 	case eHandHide:
 	{
-		PlayHUDMotion("anm_hand_hide", true, eHandHide);
+		PlayHUDMotion("anm_hand_hide", EHudMixType::eMixAll, eHandHide);
 		break;
 	}
 	case eHandThrowStart:
 	{
-		PlayHUDMotion("anm_hand_throw_start", true, eHandThrowStart);
+		PlayHUDMotion("anm_hand_throw_start", EHudMixType::eMixAll, eHandThrowStart);
 		break;
 	}
 	case eHandThrowIdle:
 	{
-		PlayHUDMotion("anm_hand_throw_idle", true, eHandThrowIdle);
+		PlayHUDMotion("anm_hand_throw_idle", EHudMixType::eMixAll, eHandThrowIdle);
 		break;
 	}
 	case eHandThrowEnd:
 	{
-		PlayHUDMotion("anm_hand_throw_end", true, eHandThrowEnd);
+		PlayHUDMotion("anm_hand_throw_end", EHudMixType::eMixAll, eHandThrowEnd);
 		break;
 	}
 	case eHandKick1:
 	{
-		PlayHUDMotion("anm_kick", true, eHandKick1);
+		PlayHUDMotion("anm_kick", EHudMixType::eMixAll, eHandKick1);
 		break;
 	}
 	case eHandKick2:
 	{
-		PlayHUDMotion("anm_kick2", true, eHandKick2);
+		PlayHUDMotion("anm_kick2", EHudMixType::eMixAll, eHandKick2);
 		break;
 	}
 	case eHandLam:
 	{
-		PlayHUDMotion("anm_lam", true, eHandLam);
+		PlayHUDMotion("anm_lam", EHudMixType::eMixAll, eHandLam);
 		break;
 	}
 	case eHandAimStart:
 	{
-		PlayHUDMotion("anm_idle_aim_start", true, eHandAimStart);
+		PlayHUDMotion("anm_idle_aim_start", EHudMixType::eMixAll, eHandAimStart);
 		break;
 	}
 	case eHandAimEnd:
 	{
-		PlayHUDMotion("anm_idle_aim_end", true, eHandAimEnd);
+		PlayHUDMotion("anm_idle_aim_end", EHudMixType::eMixAll, eHandAimEnd);
 		break;
 	}
 	}
@@ -405,7 +405,7 @@ void CCustomDevice::PlayAnimIdle()
 {
 	if (m_bIsZoomed)
 	{
-		PlayHUDMotion(SetCurrentAimAnimation(), true, eIdle);
+		PlayHUDMotion(SetCurrentAimAnimation(), EHudMixType::eMixAll, eIdle);
 	}
 	else
 	{
@@ -414,7 +414,7 @@ void CCustomDevice::PlayAnimIdle()
 			return;
 		}
 
-		PlayHUDMotion("anm_idle", true, eIdle);
+		PlayHUDMotion("anm_idle", EHudMixType::eMixAll, eIdle);
 	}
 }
 

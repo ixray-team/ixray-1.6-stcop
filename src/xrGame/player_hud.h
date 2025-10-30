@@ -9,6 +9,13 @@ class player_hud;
 class CHudItem;
 class CMotionDef;
 
+enum EHudMixType : u8
+{
+	eNoMix = 0,
+	eMixHands,
+	eMixAll
+};
+
 struct motion_descr
 {
 	MotionID		mid;
@@ -25,13 +32,26 @@ struct player_hud_motion
 	xr_vector<motion_descr>	m_animations;
 };
 
+struct attachable_hud_item_motion
+{
+	shared_str				m_alias_name;
+	shared_str				m_name;
+	xr_vector<shared_str>	m_bone_parts;
+	float					m_anim_speed;
+	xr_vector<motion_descr>	m_animations;
+};
+
 struct player_hud_motion_container
 {
-	xr_vector<player_hud_motion>	m_anims;
-	xr_hash_map<shared_str, bool>	m_names;
-	player_hud_motion*				find_motion(const shared_str& name);
-	bool		has_motion			(const shared_str& name);
-	void		load				(IKinematicsAnimated* model, const shared_str& sect);
+	xr_vector<player_hud_motion> m_anims;
+	xr_vector<attachable_hud_item_motion> m_item_anims;
+	xr_hash_map<shared_str, bool> m_names;
+	player_hud_motion* find_motion(const shared_str& name);
+	attachable_hud_item_motion* find_item_motion(const shared_str& name);
+	bool has_motion(const shared_str& name);
+	void load(IKinematicsAnimated* model, const shared_str& sect, IKinematicsAnimated* item_model = nullptr);
+	void load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data);
+	void load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data);
 };
 
 struct weapon_inertion
@@ -185,8 +205,6 @@ struct attachable_hud_item
 	void AddOffsets(weapon_inertion::base_params& base, Fvector& pos, Fvector& rot, float koef = 1.0f);
 	void AddSuicideOffset(weapon_inertion& inertion_params, const shared_str& section, Fvector& pos, Fvector& rot);
 
-	RStringVec m_blocked_parts = {};
-
 			attachable_hud_item		(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
 			~attachable_hud_item	();
 	void load						(const shared_str& sect_name);
@@ -212,9 +230,9 @@ struct attachable_hud_item
 //props
 	u32								m_upd_firedeps_frame;
 	void		tune				(Fvector values);
-	void		anim_play			(const shared_str& item_anm_name, BOOL bMixIn, float speed);
-	void		anim_play_bonepart	(const shared_str& anim, const shared_str& bone_part, bool block_part);
-	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd);
+	void		anim_play			(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm = nullptr);
+	void		anim_play_bonepart	(const shared_str& anim, BOOL bMixIn);
+	u32			anim_play			(const shared_str& anim_name, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd);
 
 };
 

@@ -44,8 +44,8 @@
 #include "WeaponMagazined.h"
 #include "inventory_upgrade_manager.h"
 #include "alife_simulator.h"
-#include "eatable_item.h"
 #include "CustomOutfit.h"
+#include "player_hud.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -182,7 +182,8 @@ u32 CScriptGameObject::PlayHudMotion(LPCSTR M, bool bMixIn, u32 state)
 {
 	if (CHudItem* itm = object().cast_hud_item())
 	{
-		return itm->PlayHUDMotion(M, bMixIn, state);
+		EHudMixType mix_type = bMixIn ? EHudMixType::eMixAll : EHudMixType::eNoMix;
+		return itm->PlayHUDMotion(M, mix_type, state);
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CGameObject : cannot be cast to CHudItem!");
