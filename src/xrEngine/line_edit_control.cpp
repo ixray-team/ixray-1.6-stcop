@@ -268,7 +268,7 @@ void line_edit_control::assign_char_pairs(init_mode mode) {
 	create_char_pair(SDL_SCANCODE_COMMA, ',', ',', true);
 	create_char_pair(SDL_SCANCODE_PERIOD, '.', '.', true);
 	create_char_pair(SDL_SCANCODE_SEMICOLON, ';', ';', true);
-	create_char_pair(SDL_SCANCODE_APOSTROPHE, '\'', '\'', true);
+	create_char_pair(SDL_SCANCODE_APOSTROPHE, '\'', '\"', true);
 	create_char_pair(SDL_SCANCODE_LEFTBRACKET, '[', '{', true);
 	create_char_pair(SDL_SCANCODE_RIGHTBRACKET, ']', '}', true);
 
