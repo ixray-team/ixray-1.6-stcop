@@ -672,6 +672,7 @@ protected:
 
 public:
 	IC int					GetAmmoElapsed		()	const		{ return iAmmoElapsed; }
+	virtual int				GetCurrentElapsed	(bool for_grenade_mode = false)	const { return iAmmoElapsed; }
 	int						GetAmmoChamberElapsed()	const		{ return iAmmoChamberElapsed; }
 	IC int					GetAmmoMagSize		()	const		{ return iMagazineSize; }
 	bool					IsChamber			()  const		{ return m_bAmmoInChamber; }
