@@ -209,7 +209,7 @@ public		:
 	virtual void	Info	(TInfo& I)
 	{	
 		I[0]=0;
-		xr_token *tok = tokens;
+		xr_token *tok = GetToken();
 		for (int Iter = 0;;Iter++) {
 			if (tok[Iter].name == nullptr) {
 				break;
