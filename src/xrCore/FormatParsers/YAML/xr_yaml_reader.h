@@ -23,9 +23,12 @@ public:
 
 	//чтение элементов
 	const char* GetString(const YAML::Node& BaseNode, const char* ChildNodeName, const char* DefaultStr);
+	std::string GetStringRoot(const YAML::Node& BaseNode, const char* Name, const char* DefaultStr);
 	int   				GetInt(const YAML::Node& BaseNode, const char* ChildNodeName, int iDefaultValue);
 	float   			GetFloat(const YAML::Node& BaseNode, const char* ChildNodeName, float fDefaultValue);
 	bool	   			GetBool(const YAML::Node& BaseNode, const char* ChildNodeName, bool bDefaultValue);
+	const YAML::Node& GetRootNode() const { return mRootNode; }
+	bool IsValid() const { return mRootNode && mRootNode.IsMap(); }
 
 	const YAML::Node& GetRoot() const { return mRootNode; }
 
