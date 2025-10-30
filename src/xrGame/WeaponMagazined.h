@@ -119,6 +119,10 @@ public:
 
 	virtual bool	GetBriefInfo	(II_BriefInfo& info);
 
+	virtual void	UpdateBonePartAnimations() override;
+	void UpdateFiremodeAnimations();
+	void UpdateIdleAnimations();
+
 	bool			bMisfireReload;
 
 public:

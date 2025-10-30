@@ -25,14 +25,33 @@ float CalcMotionSpeed(const shared_str& anim_name)
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {
-	xr_vector<player_hud_motion>::iterator it	= m_anims.begin();
+	xr_vector<player_hud_motion>::iterator it = m_anims.begin();
 	xr_vector<player_hud_motion>::iterator it_e = m_anims.end();
-	for(;it!=it_e;++it)
+	for (; it != it_e; ++it)
 	{
-		const shared_str& s = (true)?(*it).m_alias_name:(*it).m_base_name;
-		if( s == name)
+		const shared_str& s = (true) ? (*it).m_alias_name : (*it).m_base_name;
+		if (s == name)
+		{
 			return &(*it);
+		}
 	}
+
+	return nullptr;
+}
+
+attachable_hud_item_motion* player_hud_motion_container::find_item_motion(const shared_str& name)
+{
+	xr_vector<attachable_hud_item_motion>::iterator it = m_item_anims.begin();
+	xr_vector<attachable_hud_item_motion>::iterator it_e = m_item_anims.end();
+	for (; it != it_e; ++it)
+	{
+		const shared_str& s = (true) ? (*it).m_alias_name : (*it).m_name;
+		if (s == name)
+		{
+			return &(*it);
+		}
+	}
+
 	return nullptr;
 }
 
@@ -41,84 +60,19 @@ bool player_hud_motion_container::has_motion(const shared_str& name)
 	return m_names[name];
 }
 
-void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect)
+void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_str& sect, IKinematicsAnimated* item_model)
 {
-	CInifile::Sect& _sect		= pSettings->r_section(sect);
-	CInifile::SectCIt _b		= _sect.Data.begin();
-	CInifile::SectCIt _e		= _sect.Data.end();
-	player_hud_motion* pm		= nullptr;
-	
-	string512					buff;
-	MotionID					motion_ID;
+	CInifile::Sect& _sect = pSettings->r_section(sect);
 
-	for(;_b!=_e;++_b)
+	for (const auto& data : _sect.Data)
 	{
-		if(strstr(_b->first.c_str(), "anm_")==_b->first.c_str())
+		if (strstr(data.first.c_str(), "anm_bp_") == data.first.c_str())
 		{
-			m_names[_b->first] = true;
-			const shared_str& anm	= _b->second;
-			m_anims.resize			(m_anims.size()+1);
-			pm						= &m_anims.back();
-			//base and alias name
-			pm->m_alias_name		= _b->first;
-
-			auto items_count = _GetItemCount(anm.c_str());
-			if (items_count == 1)
-			{
-				pm->m_base_name			= anm;
-				pm->m_additional_name	= anm;
-				pm->m_anim_speed = 1.f;
-			}else
-			{
-				//R_ASSERT2(_GetItemCount(anm.c_str()) <= 3, anm.c_str());
-				string512				str_item;
-				_GetItem(anm.c_str(),0,str_item);
-				pm->m_base_name			= str_item;
-
-				_GetItem(anm.c_str(),1,str_item);
-				pm->m_additional_name = (strlen(str_item) > 0)
-					? pm->m_additional_name = str_item
-					: pm->m_base_name;
-
-				_GetItem(anm.c_str(), 2, str_item);
-				pm->m_anim_speed = strlen(str_item) > 0
-					? atof(str_item)
-					: 1.f;
-
-				if (items_count > 3) {
-					for (u32 j = 3; j < items_count; ++j) {
-						string512	str_item;
-						_GetItem(anm.c_str(), j, str_item);
-						pm->m_bone_parts.push_back(str_item);
-					}
-				}
-			}
-
-			//and load all motions for it
-
-			for(u32 i=0; i<=8; ++i)
-			{
-				if(i==0)
-					xr_strcpy				(buff,pm->m_base_name.c_str());		
-				else
-					xr_sprintf				(buff,"%s%d",pm->m_base_name.c_str(),i);		
-
-				motion_ID				= model->ID_Cycle_Safe(buff);
-				if (!motion_ID.valid() && i == 0)
-				{
-					motion_ID = model->ID_Cycle_Safe("hand_idle_doun");
-					Msg("! motion not found[% s]", pm->m_base_name.c_str());
-				}
-
-				if(motion_ID.valid())
-				{
-					pm->m_animations.resize			(pm->m_animations.size()+1);
-					pm->m_animations.back().mid		= motion_ID;
-					pm->m_animations.back().name	= buff;
-				}
-			}
-
-			R_ASSERT2(pm->m_animations.size(), make_string<const char*>("motion not found [%s]", pm->m_base_name.c_str()));
+			load_bonepart_motions(item_model, data);
+		}
+		else if (strstr(data.first.c_str(), "anm_") == data.first.c_str())
+		{
+			load_default_motions(model, data);
 		}
 	}
 
@@ -135,7 +89,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 		CImGuiManager::Instance().Subscribe
 		(
-			"HudAdjust", 
+			"HudAdjust",
 			CImGuiManager::ERenderPriority::eMedium, [this]
 			{
 				if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]) {
@@ -151,51 +105,51 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 
 				if (EnableAdjust)
 				{
-				    float padding = 10.0f; // Отступ между кнопками
-				    float buttonHeight = 35.0f;
+					float padding = 10.0f; // Отступ между кнопками
+					float buttonHeight = 35.0f;
 
-				    float widthHudPosition = ImGui::CalcTextSize("Hud Position").x + 20.0f;
-				    float widthHudRotation = ImGui::CalcTextSize("Hud Rotation").x + 20.0f;
-				    float widthItemPosition = ImGui::CalcTextSize("Item Position").x + 20.0f;
-				    float widthItemRotation = ImGui::CalcTextSize("Item Rotation").x + 20.0f;
-				    float widthFirePoint = ImGui::CalcTextSize("Fire Point").x + 20.0f;
-				    float widthFire2Point = ImGui::CalcTextSize("Fire 2 Point").x + 20.0f;
-				    float widthShellPoint = ImGui::CalcTextSize("Shell Point").x + 20.0f;
-				    float widthPosStep = ImGui::CalcTextSize("pos STEP").x + 20.0f;
-				    float widthRotStep = ImGui::CalcTextSize("rot STEP").x + 20.0f;
-				    float widthCrosshair = ImGui::CalcTextSize("Crosshair").x + 20.0f;
+					float widthHudPosition = ImGui::CalcTextSize("Hud Position").x + 20.0f;
+					float widthHudRotation = ImGui::CalcTextSize("Hud Rotation").x + 20.0f;
+					float widthItemPosition = ImGui::CalcTextSize("Item Position").x + 20.0f;
+					float widthItemRotation = ImGui::CalcTextSize("Item Rotation").x + 20.0f;
+					float widthFirePoint = ImGui::CalcTextSize("Fire Point").x + 20.0f;
+					float widthFire2Point = ImGui::CalcTextSize("Fire 2 Point").x + 20.0f;
+					float widthShellPoint = ImGui::CalcTextSize("Shell Point").x + 20.0f;
+					float widthPosStep = ImGui::CalcTextSize("pos STEP").x + 20.0f;
+					float widthRotStep = ImGui::CalcTextSize("rot STEP").x + 20.0f;
+					float widthCrosshair = ImGui::CalcTextSize("Crosshair").x + 20.0f;
 
-				    if (ImGui::Button("Hud Position", { widthHudPosition, buttonHeight }))
-				        hud_adj_mode = 1;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Hud Rotation", { widthHudRotation, buttonHeight }))
-				        hud_adj_mode = 2;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Item Position", { widthItemPosition, buttonHeight }))
-				        hud_adj_mode = 3;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Item Rotation", { widthItemRotation, buttonHeight }))
-				        hud_adj_mode = 4;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Fire Point", { widthFirePoint, buttonHeight }))
-				        hud_adj_mode = 5;
+					if (ImGui::Button("Hud Position", { widthHudPosition, buttonHeight }))
+						hud_adj_mode = 1;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Hud Rotation", { widthHudRotation, buttonHeight }))
+						hud_adj_mode = 2;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Item Position", { widthItemPosition, buttonHeight }))
+						hud_adj_mode = 3;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Item Rotation", { widthItemRotation, buttonHeight }))
+						hud_adj_mode = 4;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Fire Point", { widthFirePoint, buttonHeight }))
+						hud_adj_mode = 5;
 
-				    ImGui::NewLine();
+					ImGui::NewLine();
 
-				    if (ImGui::Button("Fire 2 Point", { widthFire2Point, buttonHeight }))
-				        hud_adj_mode = 6;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Shell Point", { widthShellPoint, buttonHeight }))
-				        hud_adj_mode = 7;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("pos STEP", { widthPosStep, buttonHeight }))
-				        hud_adj_mode = 8;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("rot STEP", { widthRotStep, buttonHeight }))
-				        hud_adj_mode = 9;
-				    ImGui::SameLine(0, padding);
-				    if (ImGui::Button("Crosshair", { widthCrosshair, buttonHeight }))
-				        hud_adj_crosshair = !hud_adj_crosshair;
+					if (ImGui::Button("Fire 2 Point", { widthFire2Point, buttonHeight }))
+						hud_adj_mode = 6;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Shell Point", { widthShellPoint, buttonHeight }))
+						hud_adj_mode = 7;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("pos STEP", { widthPosStep, buttonHeight }))
+						hud_adj_mode = 8;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("rot STEP", { widthRotStep, buttonHeight }))
+						hud_adj_mode = 9;
+					ImGui::SameLine(0, padding);
+					if (ImGui::Button("Crosshair", { widthCrosshair, buttonHeight }))
+						hud_adj_crosshair = !hud_adj_crosshair;
 				}
 				else
 				{
@@ -212,6 +166,151 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		);
 	}
 #endif
+}
+
+void player_hud_motion_container::load_default_motions(IKinematicsAnimated* model, const CInifile::Item& data)
+{
+	player_hud_motion* pm = nullptr;
+
+	string512 buff = {};
+	MotionID motion_ID;
+
+	m_names[data.first] = true;
+	const shared_str& anm = data.second;
+	m_anims.resize(m_anims.size() + 1);
+	pm = &m_anims.back();
+	//base and alias name
+	pm->m_alias_name = data.first;
+
+	int items_count = _GetItemCount(anm.c_str());
+	if (items_count == 1)
+	{
+		pm->m_base_name = anm;
+		pm->m_additional_name = anm;
+		pm->m_anim_speed = 1.0f;
+	}
+	else
+	{
+		string512 str_item = {};
+		_GetItem(anm.c_str(), 0, str_item);
+		pm->m_base_name = str_item;
+
+		_GetItem(anm.c_str(), 1, str_item);
+		pm->m_additional_name = (strlen(str_item) > 0) ? pm->m_additional_name = str_item : pm->m_base_name;
+
+		_GetItem(anm.c_str(), 2, str_item);
+		pm->m_anim_speed = strlen(str_item) > 0 ? atof(str_item) : 1.0f;
+
+		if (items_count > 3)
+		{
+			for (u32 j = 3; j < items_count; ++j)
+			{
+				string512 str_item = {};
+				_GetItem(anm.c_str(), j, str_item);
+				pm->m_bone_parts.push_back(str_item);
+			}
+		}
+	}
+
+	//and load all motions for it
+
+	for (u32 i = 0; i <= 8; ++i)
+	{
+		if (i == 0)
+		{
+			xr_strcpy(buff, pm->m_base_name.c_str());
+		}
+		else
+		{
+			xr_sprintf(buff, "%s%d", pm->m_base_name.c_str(), i);
+		}
+
+		motion_ID = model->ID_Cycle_Safe(buff);
+		if (!motion_ID.valid() && i == 0)
+		{
+			motion_ID = model->ID_Cycle_Safe("hand_idle_doun");
+			Msg("! motion not found[% s]", pm->m_base_name.c_str());
+		}
+
+		if (motion_ID.valid())
+		{
+			pm->m_animations.resize(pm->m_animations.size() + 1);
+			pm->m_animations.back().mid = motion_ID;
+			pm->m_animations.back().name = buff;
+		}
+	}
+
+	R_ASSERT2(pm->m_animations.size(), make_string<const char*>("motion not found [%s]", pm->m_base_name.c_str()));
+}
+
+void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* model, const CInifile::Item& data)
+{
+	if (model == nullptr)
+	{
+		return;
+	}
+
+	attachable_hud_item_motion* ahim = nullptr;
+
+	string512 buff = {};
+	MotionID motion_ID;
+
+	m_names[data.first] = true;
+	const shared_str& anm = data.second;
+	m_item_anims.resize(m_item_anims.size() + 1);
+	ahim = &m_item_anims.back();
+	//base and alias name
+	ahim->m_alias_name = data.first;
+
+	int items_count = _GetItemCount(anm.c_str());
+	if (items_count == 1)
+	{
+		ahim->m_name = anm;
+		ahim->m_anim_speed = 1.0f;
+	}
+	else
+	{
+		string512 str_item = {};
+		_GetItem(anm.c_str(), 0, str_item);
+		ahim->m_name = str_item;
+
+		for (u32 j = 1; j < items_count; ++j)
+		{
+			string512 str_item = {};
+			_GetItem(anm.c_str(), j, str_item);
+			ahim->m_bone_parts.push_back(str_item);
+		}
+
+		ahim->m_anim_speed = 1.0f;
+	}
+
+	for (u32 i = 0; i <= 8; ++i)
+	{
+		if (i == 0)
+		{
+			xr_strcpy(buff, ahim->m_name.c_str());
+		}
+		else
+		{
+			xr_sprintf(buff, "%s%d", ahim->m_name.c_str(), i);
+		}
+
+		motion_ID = model->ID_Cycle_Safe(buff);
+		if (!motion_ID.valid() && i == 0)
+		{
+			motion_ID = model->ID_Cycle_Safe("idle");
+			Msg("! motion not found[% s]", ahim->m_name.c_str());
+		}
+
+		if (motion_ID.valid())
+		{
+			ahim->m_animations.resize(ahim->m_animations.size() + 1);
+			ahim->m_animations.back().mid = motion_ID;
+			ahim->m_animations.back().name = buff;
+		}
+	}
+
+	R_ASSERT2(ahim->m_animations.size(), make_string<const char*>("motion not found [%s]", ahim->m_name.c_str()));
 }
 
 Fvector& attachable_hud_item::hands_attach_pos()
@@ -539,7 +638,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
 	m_measures.load				(sect_name, m_model);
 }
 
-void attachable_hud_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)
+void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType bMixIn, float speed, player_hud_motion* anm)
 {
 	if (IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
@@ -563,13 +662,26 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn
 		u16 pc = ka->partitions().count();
 		for (u16 pid = 0; pid < pc; ++pid)
 		{
-			RStringVecIt it_blocked_bp = std::find(m_blocked_parts.begin(), m_blocked_parts.end(), ka->partitions().part(pid).Name);
-			if (it_blocked_bp != m_blocked_parts.end())
+			bool is_default = ka->partitions().part(pid).Name == "default";
+			bool skip = pc > 1 && anm != nullptr && !is_default;
+			if (skip && !anm->m_bone_parts.empty())
+			{
+				for (const shared_str& bone_part : anm->m_bone_parts)
+				{
+					if (ka->partitions().part(pid).Name == bone_part)
+					{
+						skip = false;
+						break;
+					}
+				}
+			}
+
+			if (skip)
 			{
 				continue;
 			}
 
-			CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
+			CBlend* B = ka->PlayCycle(pid, M2, bMixIn > EHudMixType::eMixHands);
 			R_ASSERT(B);
 			B->speed *= speed;
 		}
@@ -578,11 +690,11 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn
 	}
 }
 
-void attachable_hud_item::anim_play_bonepart(const shared_str& anim, const shared_str& bone_part, bool block_part)
+void attachable_hud_item::anim_play_bonepart(const shared_str& anim, BOOL bMixIn)
 {
 	if (IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
-		player_hud_motion* anm = m_hand_motions.find_motion(anim);
+		attachable_hud_item_motion* anm = m_hand_motions.find_item_motion(anim);
 
 		if (anm == nullptr)
 		{
@@ -590,14 +702,14 @@ void attachable_hud_item::anim_play_bonepart(const shared_str& anim, const share
 			return;
 		}
 
-		MotionID M2 = ka->ID_Cycle_Safe(anm->m_base_name);
+		MotionID M2 = ka->ID_Cycle_Safe(anm->m_name);
 		if (!M2.valid())
 		{
 			M2 = ka->ID_Cycle_Safe("idle");
 		}
 		else if (bDebug)
 		{
-			Msg("playing item animation [%s]", anm->m_base_name.c_str());
+			Msg("playing item animation [%s]", anm->m_name.c_str());
 		}
 
 		R_ASSERT3(M2.valid(), "model has no motion [idle] ", pSettings->r_string(m_sect_name, "item_visual"));
@@ -610,17 +722,22 @@ void attachable_hud_item::anim_play_bonepart(const shared_str& anim, const share
 		u16 pc = ka->partitions().count();
 		for (u16 pid = 0; pid < pc; ++pid)
 		{
-			if (ka->partitions().part(pid).Name != bone_part)
+			bool skip = true;
+			for (const shared_str& bone_part : anm->m_bone_parts)
+			{
+				if (ka->partitions().part(pid).Name == bone_part)
+				{
+					skip = false;
+					break;
+				}
+			}
+
+			if (skip)
 			{
 				continue;
 			}
 
-			if (block_part)
-			{
-				m_blocked_parts.push_back(bone_part);
-			}
-
-			CBlend* B = ka->PlayCycle(pid, M2, FALSE);
+			CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
 			R_ASSERT(B);
 			B->speed *= anm->m_anim_speed;
 		}
@@ -629,7 +746,7 @@ void attachable_hud_item::anim_play_bonepart(const shared_str& anim, const share
 	}
 }
 
-u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx)
+u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMixIn, const CMotionDef*& md, u8& rnd_idx)
 {
 	R_ASSERT				(strstr(anm_name_b.c_str(),"anm_")==anm_name_b.c_str());
 
@@ -641,7 +758,9 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	const motion_descr& M	= anm->m_animations[ rnd_idx ];
 	float speed = anm->m_anim_speed;
 
-	u32 ret					= g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed);
+	bool need_mix_hands = bMixIn >= EHudMixType::eMixHands;
+
+	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed);
 	
 	if(IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
 	{
@@ -651,19 +770,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		else
 			item_anm_name = M.name;
 
-		anim_play(item_anm_name, bMixIn, speed);
-
-		for (auto& bpart_anim : anm->m_bone_parts) {
-			MotionID M3 = ka->ID_Cycle_Safe(bpart_anim);
-
-			if (M3.valid()) {
-				CBlend* B = ka->PlayCycle(M3, bMixIn);
-				if (B) 
-				{
-					B->speed *= speed;
-				}
-			}
-		}
+		anim_play(item_anm_name, bMixIn, speed, anm);
 	}
 
 	R_ASSERT2		(m_parent_hud_item, "parent hud item is nullptr");
@@ -1612,7 +1719,7 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 	}
 	attachable_hud_item* res	= new attachable_hud_item(this);
 	res->load					(sect);
-	res->m_hand_motions.load	(m_model, sect);
+	res->m_hand_motions.load	(m_model, sect, res->m_model->dcast_PKinematicsAnimated());
 	m_pool.push_back			(res);
 
 	return	res;
@@ -1896,7 +2003,7 @@ bool player_hud::animator_play(const shared_str& anim_name, u16 place_idx, u16 p
 				else
 					item_anm_name = M.name;
 
-				m_attached_items[place_idx]->anim_play(item_anm_name, bMixIn, speed);
+				m_attached_items[place_idx]->anim_play(item_anm_name, bMixIn ? EHudMixType::eMixAll : EHudMixType::eNoMix, speed);
 			}
 		}
 		else

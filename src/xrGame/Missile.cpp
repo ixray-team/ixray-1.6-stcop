@@ -312,7 +312,7 @@ void CMissile::State(u32 state)
 	case eShowing:
         {
 			SetPending			(TRUE);
-			PlayHUDMotion("anm_show", FALSE, GetState());
+			PlayHUDMotion("anm_show", EHudMixType::eNoMix, GetState());
 
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 			{
@@ -329,7 +329,7 @@ void CMissile::State(u32 state)
 			if(H_Parent())
 			{
 				SetPending			(TRUE);
-				PlayHUDMotion		("anm_hide", TRUE, GetState());
+				PlayHUDMotion		("anm_hide", EHudMixType::eMixAll, GetState());
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
 					PlaySound("SndHide", Position());
@@ -359,7 +359,7 @@ void CMissile::State(u32 state)
 			{
 				PlaySound("sndThrowBegin", Position());
 			}
-			PlayHUDMotion		("anm_throw_begin", TRUE, GetState());
+			PlayHUDMotion		("anm_throw_begin", EHudMixType::eMixAll, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
@@ -374,7 +374,7 @@ void CMissile::State(u32 state)
 		} break;
 	case eReady:
 		{
-			PlayHUDMotion		("anm_throw_idle", TRUE, GetState());
+			PlayHUDMotion		("anm_throw_idle", EHudMixType::eMixAll, GetState());
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{
 				if (CCustomDevice* dev = actor->GetDevice())
@@ -394,7 +394,7 @@ void CMissile::State(u32 state)
 			{
 				PlaySound("sndThrow", Position());
 			}
-			PlayHUDMotion		("anm_throw", TRUE, GetState());
+			PlayHUDMotion		("anm_throw", EHudMixType::eMixAll, GetState());
 
 			if (CActor* actor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 			{

@@ -50,12 +50,12 @@ void CFlare::OnStateSwitch(u32 S)
 	case eFlareShowing:
 		{
 			g_player_hud->attach_item	(this);
-			PlayHUDMotion				("anm_show", TRUE, GetState());
+			PlayHUDMotion				("anm_show", EHudMixType::eMixAll, GetState());
 			SetPending					(TRUE);
 		}break;
 	case eFlareHiding:
 		{
-			PlayHUDMotion				("anm_hide", TRUE, GetState());
+			PlayHUDMotion				("anm_hide", EHudMixType::eMixAll, GetState());
 			SetPending					(TRUE);
 		}break;
 	case eFlareIdle:
@@ -69,7 +69,7 @@ void CFlare::OnStateSwitch(u32 S)
 		}break;
 	case eFlareDropping:
 		{
-			PlayHUDMotion				("anm_drop", TRUE, GetState());
+			PlayHUDMotion				("anm_drop", EHudMixType::eMixAll, GetState());
 			SetPending					(TRUE);
 		}break;
 	};
