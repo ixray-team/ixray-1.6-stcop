@@ -1610,27 +1610,33 @@ static void jacobi_eigen_3x3(float A[3][3], float evals[3], Fvector vecs[3]) {
 
 bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
 {
-	if (!src_path || !dst_path) {
+	if (!src_path || !dst_path)
+	{
 		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: invalid paths");
 		return false;
 	}
 
 	IReader* F = FS.r_open(src_path);
-	if (!F) {
+	if (!F)
+	{
 		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: cannot open '%s'", src_path);
 		return false;
 	}
 
 	// chunk 0 - names (unique names list)
 	xr_vector<shared_str> env_names;
-	if (IReader* names = F->open_chunk(0)) {
-		while (!names->eof()) {
-			string256 s; names->r_stringZ(s, sizeof(s));
+	if (IReader* names = F->open_chunk(0))
+	{
+		while (!names->eof())
+		{
+			string256 s;
+			names->r_stringZ(s, sizeof(s));
 			env_names.emplace_back(s);
 		}
 		names->close();
 	}
-	else {
+	else
+	{
 		ELog.DlgMsg(mtError, "ConvertLevelSndEnvToLtx: missing chunk 0 in '%s'", src_path);
 		FS.r_close(F);
 		return false;
@@ -1669,7 +1675,7 @@ bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
 	const int TRIS_PER_BOX = 12;
 
 	struct SoundZone {
-		u32 material;           // raw material (inner<<16)|outer
+		u32 material{};           // raw material (inner<<16)|outer
 		shared_str inner;       // name
 		shared_str outer;       // name
 		xr_vector<Fvector> verts; // все вершины этого бокса
@@ -1742,7 +1748,8 @@ bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
 		for (int i = 0; i < 3; ++i) for (int j = 0; j < 3; ++j) cov[i][j] *= invn;
 		};
 
-	for (u32 idx = 0; idx < zones.size(); idx++)
+	u32 object_count = (u32)zones.size();
+	for (u32 idx = 0; idx < object_count; idx++)
 	{
 		SoundZone& Z = zones[idx];
 		if (Z.verts.empty()) continue;
@@ -1861,7 +1868,7 @@ bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
 		ini.w_fvector3(sect, "scale", best_scale);
 		ini.w_u32(sect, "version", 18);
 	}
-
+	ini.w_u32("main", "objects_count", object_count);
 	ini.save_as(dst_path);
 
 	// cleanup
@@ -1870,7 +1877,183 @@ bool ConvertLevelSndEnvToLtx(const char* src_path, const char* dst_path)
 	geom->close();
 	FS.r_close(F);
 
-	Msg("* ConvertLevelSndEnvToLtx finished: %s -> %s (objects: %u)", src_path, dst_path, (u32)zones.size());
+	Msg("* ConvertLevelSndEnvToLtx finished: %s -> %s (objects: %u)", src_path, dst_path, (u32)object_count);
+	return true;
+}
+
+#include "../../utils/xrLC_Light/R_light.h"
+
+bool ConvertAllLightsToLtx(const char* src_path, const char* dst_path)
+{
+	if (!src_path || !dst_path) {
+		ELog.DlgMsg(mtError, "ConvertAllLightsToLtx: invalid paths");
+		return false;
+	}
+
+	IReader* F = FS.r_open(src_path);
+	if (!F) {
+		ELog.DlgMsg(mtError, "ConvertAllLightsToLtx: cannot open '%s'", src_path);
+		return false;
+	}
+
+	// Создаем выходной INI
+	CInifile ini(dst_path, FALSE, FALSE, FALSE);
+
+	// Создаем секцию [guid]
+	ini.w_u64("guid", "guid_g0", 6148914691236517205ULL);
+	ini.w_u64("guid", "guid_g1", 6148914691236517205ULL);
+
+	// Создаем секцию [lcontrols]
+	ini.w_string("lcontrols", "$hemi", "1");
+	ini.w_string("lcontrols", "$static", "0");
+	ini.w_string("lcontrols", "$sun", "2");
+
+	// Создаем секцию [main] с временными значениями
+	ini.w_u32("main", "objects_count", 0);
+	ini.w_u32("main", "version", 0);
+	ini.w_u32("main", "flags", 0);
+	ini.w_u32("main", "lcontrol_last_idx", 3);
+	ini.w_fvector2("main", "sun_shadow_dir", Fvector2().set(-0.436332f, 5.096362f));
+
+	// Создаем секцию [modif]
+	ini.w_string("modif", "name", "");
+	ini.w_u32("modif", "time", 0);
+
+	// Читаем chunk 1 - Все статические света
+	IReader* lights_chunk = F->open_chunk(1);
+	if (!lights_chunk) {
+		ELog.DlgMsg(mtError, "ConvertAllLightsToLtx: missing lights chunk in '%s'", src_path);
+		FS.r_close(F);
+		return false;
+	}
+
+	u32 size = lights_chunk->length();
+	u32 element_size = sizeof(R_Light);
+	u32 count = size / element_size;
+
+	if (count * element_size != size) {
+		ELog.DlgMsg(mtError, "ConvertAllLightsToLtx: invalid data size in '%s'", src_path);
+		lights_chunk->close();
+		FS.r_close(F);
+		return false;
+	}
+
+	Msg("* Lights: found %d lights in chunk", count);
+
+	u32 object_count = 0;
+
+	for (u32 i = 0; i < count; i++) {
+		R_Light Ldata;
+		lights_chunk->r(&Ldata, sizeof(R_Light));
+
+		// Импортируем ВСЕ света независимо от типа
+		string64 sect_name;
+		xr_sprintf(sect_name, "object_%u", object_count);
+
+		// Записываем параметры света в формате CLight
+		ini.w_u32(sect_name, "clsid", 3); // CLSID_LIGHT
+		ini.w_u32(sect_name, "co_flags", 2);
+
+		// Позиция
+		ini.w_fvector3(sect_name, "position", Ldata.position);
+
+		// Вращение - для направленных источников используем direction
+		Fvector rotation;
+		if (Ldata.type == LT_DIRECT) {
+			// Для направленного света используем реальное направление
+			rotation.setHP(Ldata.direction.y, Ldata.direction.x);
+		}
+		else {
+			// Для точечных - направление вниз
+			rotation.set(0.0f, 0.0f, 1.0f);
+		}
+		ini.w_fvector3(sect_name, "rotation", rotation);
+
+		// Цвет - конвертируем из Fvector в Fcolor
+		Fcolor color;
+		color.set(Ldata.diffuse.x, Ldata.diffuse.y, Ldata.diffuse.z, 1.0f);
+		ini.w_fcolor(sect_name, "color", color);
+
+		// Яркость - вычисляем из интенсивности
+		float brightness = (Ldata.diffuse.x + Ldata.diffuse.y + Ldata.diffuse.z) / 3.0f;
+		ini.w_float(sect_name, "brightness", brightness);
+
+		// Диапазон
+		ini.w_float(sect_name, "range", Ldata.range);
+
+		// Затухание
+		ini.w_float(sect_name, "attenuation0", Ldata.attenuation0);
+		ini.w_float(sect_name, "attenuation1", Ldata.attenuation1);
+		ini.w_float(sect_name, "attenuation2", Ldata.attenuation2);
+
+		// Falloff
+		float falloff = Ldata.falloff > 0 ? Ldata.falloff : 1.0f;
+		ini.w_float(sect_name, "falloff", falloff);
+
+		// Угол конуса - для точечных источников всегда 0, для направленных тоже 0
+		// (в R_Light нет поля phi/cone, это параметр для spot lights которого нет в статических)
+		ini.w_float(sect_name, "cone", 0.0f);
+
+		// Виртуальный размер
+		ini.w_float(sect_name, "virtual_size", 0.0f);
+
+		// Тип света
+		ini.w_u32(sect_name, "type", Ldata.type);
+
+		// Флаги - статический свет
+		ini.w_u32(sect_name, "light_flags", 1);
+
+		// Контроллер света - определяем по типу
+		u32 lcontrol = 0; // по умолчанию static
+		if (Ldata.type == LT_DIRECT) {
+			lcontrol = 2; // sun
+		}
+		else if (Ldata.level > 0) {
+			lcontrol = 1; // hemi
+		}
+		ini.w_u32(sect_name, "light_control", lcontrol);
+
+		// Имя - с указанием типа
+		string64 light_name;
+		const char* type_name = "unknown";
+		switch (Ldata.type) {
+		case LT_POINT: type_name = "point"; break;
+		case LT_DIRECT: type_name = "direct"; break;
+		case LT_SECONDARY: type_name = "secondary"; break;
+		}
+		xr_sprintf(light_name, "light_%s_%04u", type_name, object_count);
+		ini.w_string(sect_name, "name", light_name);
+
+		// Другие параметры
+		ini.w_u32(sect_name, "rt_flags", 17);
+		ini.w_fvector3(sect_name, "scale", Fvector().set(1.0f, 1.0f, 1.0f));
+		ini.w_string(sect_name, "use_in_d3d", "off");
+		ini.w_u32(sect_name, "version", 17);
+		ini.w_string(sect_name, "anim_ref_name", "");
+		ini.w_string(sect_name, "fallof_texture", "");
+
+		object_count++;
+
+		Msg("* Light %d: type=%d(%s), level=%d, pos=[%.3f,%.3f,%.3f], range=%.3f, energy=%.3f",
+			i, Ldata.type, type_name, Ldata.level,
+			Ldata.position.x, Ldata.position.y, Ldata.position.z,
+			Ldata.range, Ldata.energy);
+	}
+
+	// Обновляем количество объектов в секции [main]
+	//ini.w_u32("main", "objects_count", object_count);
+
+	lights_chunk->close();
+	FS.r_close(F);
+
+	ini.save_as(dst_path);
+	Msg("* ConvertAllLightsToLtx: converted %d lights to '%s'", object_count, dst_path);
+
+	if (object_count == 0) {
+		ELog.DlgMsg(mtError, "No lights found in the file!");
+		return false;
+	}
+
 	return true;
 }
 
@@ -1880,8 +2063,6 @@ CCommandVar CommandImport(CCommandVar p1, CCommandVar p2)
 
 	if (!Scene->locked())
 	{
-		Scene->Stop();
-
 		if (!Scene->IfModified())
 			return TRUE;
 
@@ -1892,6 +2073,16 @@ CCommandVar CommandImport(CCommandVar p1, CCommandVar p2)
 		FS.update_path(output, "$import$", "export\\sound_env.part");
 
 		ConvertLevelSndEnvToLtx(query, output);
+
+
+		string_path query1{};
+		FS.update_path(query1, "$import$", "build.lights"); // бинарный файл с хеми-лайтами
+
+		string_path output1{};
+		FS.update_path(output1, "$import$", "export\\hemi_lights.ltx");
+
+		ConvertAllLightsToLtx(query1, output1);
+
 
 		return TRUE;
 	}
