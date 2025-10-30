@@ -1337,3 +1337,15 @@ const xr_vector<shared_str>& CWeaponMagazinedWGrenade::getAmmoTypes(bool for_gre
 		return m_bGrenadeMode ? m_ammoTypes2 : m_ammoTypes;
 	}
 }
+
+int CWeaponMagazinedWGrenade::GetCurrentElapsed(bool for_grenade_mode) const
+{
+	if (for_grenade_mode)
+	{
+		return m_bGrenadeMode ? iAmmoElapsed : iAmmoElapsed2;
+	}
+	else
+	{
+		return m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
+	}
+}
