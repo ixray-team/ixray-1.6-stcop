@@ -65,7 +65,7 @@ public:
 	void				Init_StrInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
 	void				Init_IconInfoItem		(CUIXml& xml_doc, LPCSTR item_str, UIItemType type);
 
-	//void				InitCharacter			(u16 id);
+	void				InitCharacter			(u16 id);
 	void				ClearInfo				();
 
 	void				InitCharacter			(CInventoryOwner* invOwner);
