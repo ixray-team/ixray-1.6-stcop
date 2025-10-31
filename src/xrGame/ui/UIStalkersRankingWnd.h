@@ -1,5 +1,5 @@
 #pragma once
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 class CUIFrameWindow;
 class CUIFrameLineWnd;
@@ -9,6 +9,7 @@ class CUICharacterInfo;
 class CUIScrollView;
 class CUIXml;
 class CSE_ALifeTraderAbstract;
+class UIHint;
 
 class CUIStalkersRankingWnd: public CUIWindow
 {
@@ -17,8 +18,10 @@ public:
 			void			Init				();
 	virtual void			Show				(bool status);
 			void			ShowHumanDetails	();
-protected:
+	virtual void			DrawHint			();
 	CUIFrameWindow*			UIInfoFrame;
+protected:
+	CUIFrameWindow*			m_background = nullptr;
 	CUIFrameWindow*			UICharIconFrame;
 	CUIFrameLineWnd*		UIInfoHeader;
 	CUIFrameLineWnd*		UICharIconHeader;
@@ -30,11 +33,14 @@ protected:
 	CUIScrollView*			UIList;
 	void					AddStalkerItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	void					AddActorItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
+	s32						m_items_count;
 
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}
 	void					ShowHumanInfo		(u16 id);
 	virtual void			Reset				();
+	virtual CUIWindow* ui_cast_window() { return this; }
+	UIHint*						m_hint_wnd = nullptr;
 };
 
 class CUIStalkerRankingInfoItem :public CUIWindow, public CUISelectable
@@ -52,6 +58,11 @@ public:
 	void					Init			(CUIXml* xml, LPCSTR path, int idx);
 	virtual void			SetSelected		(bool b);
 	virtual bool			OnMouseDown		(int mouse_btn);
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUISelectable* ui_cast_selectable() { return this; }
+	virtual void				OnFocusReceive			();
+	virtual void				OnFocusLost				();
+			void				SetHintText				();
 };
 
 class CUIStalkerRankingElipsisItem :public CUIStalkerRankingInfoItem
@@ -61,4 +72,6 @@ public:
 					CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd*);
 	virtual void			SetSelected		(bool b);
 	virtual bool			OnMouseDown		(int mouse_btn);
+	virtual CUIWindow* ui_cast_window() { return this; }
+	virtual CUISelectable* ui_cast_selectable() { return this; }
 };
