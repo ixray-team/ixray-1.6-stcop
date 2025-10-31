@@ -33,7 +33,12 @@
 #include "SoundDSP.h"
 #include "../Sound.h"
 #include "pffft.h"
-#include <SteamAudio/phonon.h>
+
+#define DISABLE_STEAM_AUDIO
+
+#ifndef DISABLE_STEAM_AUDIO
+#   include <SteamAudio/phonon.h>
+#endif
 
 #include "ogg_utils.h"
 
@@ -47,9 +52,6 @@
 #define CACHE_LINE_ENTRY_COUNT (32)
 
 using namespace XRay::Sound;
-
-//#define DISABLE_STEAM_AUDIO
-
 enum class sound_cmd_id : u16
 {
     invalid,
@@ -136,9 +138,9 @@ struct sound_mixer_state
 
     sound_bus_state buses[SND_BUS_COUNT];
 
+    bool editor_zone = false;
 #ifndef DISABLE_STEAM_AUDIO
     bool ipl_hrtf_enabled;
-    bool editor_zone = false;
     xr_vector<u32> free_hrtf_slots;
     xr_vector<sound_hrtf_slot_state> hrtf_slots;
     IPLContext ipl_context;
@@ -1753,7 +1755,9 @@ Mixer::ResetZones()
     for (auto& zone : mixer.zones) {
         for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
             if (zone.effect[ch] != nullptr) {
+#ifndef DISABLE_STEAM_AUDIO
                 iplReflectionEffectRelease(&zone.effect[ch]);
+#endif
             }
         }
 
