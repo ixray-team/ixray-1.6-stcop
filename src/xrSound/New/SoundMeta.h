@@ -49,6 +49,14 @@ typedef void(*audio_precache_callback)();
 typedef struct _IPLReflectionEffect_t {} *IPLReflectionEffect;
 #endif
 
+#ifndef DISABLE_RESONANCE_AUDIO
+namespace vraudio
+{
+    struct ResonanceAudioApi;
+}
+#endif
+
+
 class ref_sound;
 class CObject;
 
@@ -143,8 +151,13 @@ struct sound_reverb_line_state
 
 struct sound_reberb_state
 {
-    sound_reverb_line_state early_reflections_line;
-    sound_reverb_line_state lines[SND_REBERB_LINE_COUNT];
+#ifndef DISABLE_STEAM_AUDIO
+    IPLReflectionEffect effect[SND_CHANNEL_COUNT] = { 0 };
+#endif
+#ifndef DISABLE_RESONANCE_AUDIO
+    vraudio::ResonanceAudioApi* ra_context;
+    int buffer;
+#endif
 };
 
 struct sound_zone_params
@@ -162,7 +175,4 @@ struct sound_zone_params
     shared_str name;
     sound_reverb_settings settings;
     sound_reberb_state state;
-#ifndef DISABLE_STEAM_AUDIO
-    IPLReflectionEffect effect[SND_CHANNEL_COUNT] = { 0 };
-#endif
 };
