@@ -63,6 +63,7 @@ target_compile_definitions(xrSound PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrSound PUBLIC xrCore)
+target_link_libraries(xrSound PUBLIC pffft)
 target_link_libraries(xrSound PRIVATE Ogg::ogg)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)
