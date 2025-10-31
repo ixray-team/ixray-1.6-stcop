@@ -29,11 +29,8 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
         {
             R_ASSERT3(false, "There is no 'story_id' field in [story_object] section :object", se_obj->name());
         }
-        if (!value)
-        {
-            R_ASSERT3(false, "Field 'story_id' in [story_object] section got no value :object", se_obj->name());
-        }
-        self.Register(se_obj->ID, value);
+        if (value)
+            self.Register(se_obj->ID, value);
         return;
     }
     auto story_id = READ_IF_EXISTS(pSettings, r_string, se_obj->name(), "story_id", nullptr);
