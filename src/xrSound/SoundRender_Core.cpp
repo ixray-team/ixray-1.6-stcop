@@ -51,7 +51,9 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 	// Events
 	listenerPos = P;
 	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundCompression, m_V, P, D, N);
+#ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
+#endif
 }
 
 static u32 g_saved_event_count = 0;
@@ -196,8 +198,9 @@ void CSoundRender_Core::_initialize(int stage)
 	bPresent = TRUE;
 	bReady = TRUE;
 
-
+#ifdef XR_MP_BUILD
 	pSoundVoiceChat = new SoundVoiceChat();
+#endif
 }
 
 void CSoundRender_Core::_clear()
