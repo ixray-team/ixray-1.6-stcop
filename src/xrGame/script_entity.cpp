@@ -213,7 +213,7 @@ void CScriptEntity::vfUpdateParticles()
 void CScriptEntity::vfUpdateSounds()
 {
 	CScriptSoundAction	&l_tSoundAction = GetCurrentAction()->m_tSoundAction;
-	if (l_tSoundAction.m_caBoneName.size() && m_current_sound && m_current_sound->_feedback())
+	if (l_tSoundAction.m_caBoneName.size() && m_current_sound && m_current_sound->is_playing())
 		m_current_sound->set_position(GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,Fvector().set(0,0,0)).c);
 }
 
