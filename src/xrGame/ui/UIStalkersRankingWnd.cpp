@@ -1,18 +1,22 @@
 #include "StdAfx.h"
 #include "UIStalkersRankingWnd.h"
 
-#include "UIXmlInit.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UIPdaListItem.h"
-#include "UIAnimatedStatic.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "UICharacterInfo.h"
 #include "../InventoryOwner.h"
 #include "../Level.h"
 #include "../PDA.h"
 #include "../Actor.h"
-#include "../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/Widgets/UIHint.h"
+#include "../../xrUI/UICursor.h"
+#include "../../xrEngine/string_table.h"
 
 #define		STALKERS_RANKING_XML			"stalkers_ranking.xml"
 #define		STALKERS_RANKING_CHARACTER_XML	"stalkers_ranking_character.xml"
@@ -35,43 +39,61 @@ void CUIStalkersRankingWnd::Init()
 
 	xml_init.InitWindow					(uiXml, "main_wnd", 0, this);
 
-	UICharIconFrame						= xr_new<CUIFrameWindow>(); UICharIconFrame->SetAutoDelete(true);
-	AttachChild							(UICharIconFrame);
+	CUIWindow* frameParent = this;
+	if (uiXml.NavigateToNode("background"))
+	{
+		m_background = UIHelper::CreateFrameWindow(uiXml, "background", this);
+		frameParent = m_background;
+	}
+
+	UICharIconFrame						= new CUIFrameWindow(); UICharIconFrame->SetAutoDelete(true);
+	frameParent->AttachChild			(UICharIconFrame);
 	xml_init.InitFrameWindow			(uiXml, "chicon_frame_window", 0, UICharIconFrame);
 
-	UICharIconHeader					= xr_new<CUIFrameLineWnd>(); UICharIconHeader->SetAutoDelete(true);
+	UICharIconHeader					= new CUIFrameLineWnd(); UICharIconHeader->SetAutoDelete(true);
 	UICharIconFrame->AttachChild		(UICharIconHeader);
 	xml_init.InitFrameLine				(uiXml, "chicon_frame_line", 0, UICharIconHeader);
 
 
-	UIInfoFrame							= xr_new<CUIFrameWindow>(); UIInfoFrame->SetAutoDelete(true);
-	AttachChild							(UIInfoFrame);
+	UIInfoFrame							= new CUIFrameWindow(); UIInfoFrame->SetAutoDelete(true);
+	frameParent->AttachChild			(UIInfoFrame);
 	xml_init.InitFrameWindow			(uiXml, "info_frame_window", 0, UIInfoFrame);
 	
-	UIInfoHeader						= xr_new<CUIFrameLineWnd>(); UIInfoHeader->SetAutoDelete(true);
+	UIInfoHeader						= new CUIFrameLineWnd(); UIInfoHeader->SetAutoDelete(true);
 	UIInfoFrame->AttachChild			(UIInfoHeader);
 	xml_init.InitFrameLine				(uiXml, "info_frame_line", 0, UIInfoHeader);
 
-	UIAnimatedIcon						= xr_new<CUIAnimatedStatic>(); UIAnimatedIcon->SetAutoDelete(true);
+	UIAnimatedIcon						= new CUIAnimatedStatic(); UIAnimatedIcon->SetAutoDelete(true);
 	UIInfoHeader->AttachChild			(UIAnimatedIcon);
 	xml_init.InitAnimatedStatic			(uiXml, "a_static", 0, UIAnimatedIcon);
 
-	UIList								= xr_new<CUIScrollView>(); UIList->SetAutoDelete(true);
+	UIList								= new CUIScrollView(); UIList->SetAutoDelete(true);
 	UIInfoFrame->AttachChild			(UIList);
 	xml_init.InitScrollView				(uiXml, "list", 0, UIList);
+	m_items_count						= uiXml.ReadAttribInt("list", 0, "item_count", 20);
 
-	UICharacterWindow					= xr_new<CUIWindow>(); UICharacterWindow->SetAutoDelete(true);
+	UICharacterWindow					= new CUIWindow(); UICharacterWindow->SetAutoDelete(true);
 	UICharIconFrame->AttachChild		(UICharacterWindow);
 	xml_init.InitWindow					(uiXml, "character_info", 0, UICharacterWindow);
 
-	UICharacterInfo						= xr_new<CUICharacterInfo>(); UICharacterInfo->SetAutoDelete(true);
+	UICharacterInfo						= new CUICharacterInfo(); UICharacterInfo->SetAutoDelete(true);
 	UICharacterWindow->AttachChild		(UICharacterInfo);
 	UICharacterInfo->InitCharacterInfo	(Fvector2().set(0,0),UICharacterWindow->GetWndSize(), STALKERS_RANKING_CHARACTER_XML);
 
 	xml_init.InitAutoStaticGroup		(uiXml, "left_auto",	0,			UIInfoFrame);
 	xml_init.InitAutoStaticGroup		(uiXml, "right_auto",	0,			UICharIconFrame);
+
+	if (uiXml.NavigateToNode("hint_wnd"))
+	{
+		m_hint_wnd = UIHelper::CreateHint(uiXml, "hint_wnd");
+	}
 }
 
+void CUIStalkersRankingWnd::DrawHint()
+{
+	if (m_hint_wnd)
+		m_hint_wnd->Draw();
+}
 
 void CUIStalkersRankingWnd::Show(bool status)
 {
@@ -117,10 +139,10 @@ void CUIStalkersRankingWnd::FillList()
 		CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
 		int actor_place							= get_actor_ranking();
 
-		int sz = _min(g_all_statistic_humans.size(),20);
+		int sz = _min(g_all_statistic_humans.size(),m_items_count);
 		for(int i=0; i<sz; ++i){
 			CSE_ALifeTraderAbstract* pT			= (g_all_statistic_humans[i]).trader;
-			if(pT==pActorAbstract || (i==19&&actor_place>19)  ){
+			if(pT==pActorAbstract || (i== m_items_count-1&&actor_place>m_items_count-1)  ){
 				AddActorItem					(&uiXml, actor_place+1, pActorAbstract);
 			}else{
 				AddStalkerItem					(&uiXml, i+1, pT);
@@ -129,7 +151,7 @@ void CUIStalkersRankingWnd::FillList()
 
 		UIList->SetSelected						(UIList->GetItem(0) );
 	}else{
-		CUIStalkerRankingInfoItem* itm		= xr_new<CUIStalkerRankingInfoItem>(this);
+		CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
 		itm->Init							(&uiXml, "no_items", 0);
 		UIList->AddWindow					(itm, true);
 	}
@@ -143,7 +165,7 @@ void CUIStalkersRankingWnd::ShowHumanInfo(u16 id)
 void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t)
 {
 	string64								buff;
-	CUIStalkerRankingInfoItem* itm		= xr_new<CUIStalkerRankingInfoItem>(this);
+	CUIStalkerRankingInfoItem* itm		= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_human", 0);
 
 	sprintf_s								(buff,"%d.",num);
@@ -163,13 +185,14 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
 {
 	string64							buff;
 	CUIStalkerRankingInfoItem*			itm;
-	if(num>19){
-		itm								= xr_new<CUIStalkerRankingElipsisItem>(this);
+	if(num > m_items_count-1)
+	{
+		itm								= new CUIStalkerRankingElipsisItem(this);
 		itm->Init						(xml, "item_ellipsis", 0);
 		UIList->AddWindow				(itm, true);
 	}
 
-	itm									= xr_new<CUIStalkerRankingInfoItem>(this);
+	itm									= new CUIStalkerRankingInfoItem(this);
 	itm->Init							(xml, "item_actor", 0);
 
 	sprintf_s								(buff,"%d.",num);
@@ -235,30 +258,30 @@ void CUIStalkerRankingInfoItem::Init	(CUIXml* xml, LPCSTR path, int idx)
 
 	xml->SetLocalRoot						(xml->NavigateToNode(path,idx));
 
-	m_text1									= xr_new<CUIStatic>(); m_text1->SetAutoDelete(true);
+	m_text1									= new CUIStatic(); m_text1->SetAutoDelete(true);
 	AttachChild								(m_text1);
 	xml_init.InitStatic						(*xml, "text_1", 0, m_text1);
 
-	m_text2									= xr_new<CUIStatic>(); m_text2->SetAutoDelete(true);
+	m_text2									= new CUIStatic(); m_text2->SetAutoDelete(true);
 	AttachChild								(m_text2);
 	xml_init.InitStatic						(*xml, "text_2", 0, m_text2);
 
-	m_text3									= xr_new<CUIStatic>(); m_text3->SetAutoDelete(true);
+	m_text3									= new CUIStatic(); m_text3->SetAutoDelete(true);
 	AttachChild								(m_text3);
 	xml_init.InitStatic						(*xml, "text_3", 0, m_text3);
 
 	xml_init.InitAutoStaticGroup			(*xml, "auto", 0, this);
 
-	m_stored_alpha							= color_get_A(m_text2->GetTextColor());
+	m_stored_alpha							= color_get_A(m_text2->TextItemControl()->GetTextColor());
 	xml->SetLocalRoot						(_stored_root);
 }
 
 void CUIStalkerRankingInfoItem::SetSelected	(bool b)
 {
 	CUISelectable::SetSelected				(b);
-	m_text1->SetTextColor( subst_alpha(m_text1->GetTextColor(), b?255:m_stored_alpha ));
-	m_text2->SetTextColor( subst_alpha(m_text2->GetTextColor(), b?255:m_stored_alpha ));
-	m_text3->SetTextColor( subst_alpha(m_text3->GetTextColor(), b?255:m_stored_alpha ));
+	m_text1->SetTextColor( subst_alpha(m_text1->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
+	m_text2->SetTextColor( subst_alpha(m_text2->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
+	m_text3->SetTextColor( subst_alpha(m_text3->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
 	if(b){ 
 		m_StalkersRankingWnd->ShowHumanInfo			(m_humanID);
 	}
@@ -273,6 +296,41 @@ bool CUIStalkerRankingInfoItem::OnMouseDown		(int mouse_btn)
 		return true;
 	}else
 		return false;
+}
+
+void CUIStalkerRankingInfoItem::OnFocusReceive()
+{
+	CUIWindow::OnFocusReceive();
+
+	if (!m_StalkersRankingWnd->m_hint_wnd)
+		return;
+
+	if (!m_bCursorOverWindow)
+	{
+		m_StalkersRankingWnd->m_hint_wnd->set_text("");
+		return;
+	}
+	SetHintText();
+}
+
+void CUIStalkerRankingInfoItem::SetHintText()
+{
+	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_humanID);
+
+	const char* hint = "";
+
+	luabind::functor<const char*> functorSetHint;
+	if (ai().script_engine().functor("pda.coc_rankings_set_hint", functorSetHint))
+		hint = functorSetHint(m_humanID);
+
+	m_StalkersRankingWnd->m_hint_wnd->set_text(hint);
+}
+
+void CUIStalkerRankingInfoItem::OnFocusLost()
+{
+	CUIWindow::OnFocusLost();
+	if (m_StalkersRankingWnd->m_hint_wnd)
+		m_StalkersRankingWnd->m_hint_wnd->set_text("");
 }
 
 CUIStalkerRankingElipsisItem::CUIStalkerRankingElipsisItem(CUIStalkersRankingWnd* w)
