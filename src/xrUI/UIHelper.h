@@ -21,6 +21,7 @@ class CUIDragDropListEx;
 class CUIDragDropReferenceList;
 class CUIEditBox;
 class CUITrackBar;
+class CUIScrollView;
 
 #include "Widgets/UIStackPanel.h"
 
@@ -30,7 +31,7 @@ public:
 	UIHelper		() {};
 	~UIHelper		() {};
 
-	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
+	static	CUIStatic*			CreateStatic		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 	static	CUIStackPanel*		CreateStackPanel	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUITextWnd*			CreateTextWnd		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIProgressBar*		CreateProgressBar	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
@@ -41,6 +42,7 @@ public:
 	static	CUICheckButton*		CreateCheck			( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUIEditBox*			CreateEditBox		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
 	static	CUITrackBar*		CreateTrackBar		( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent );
+	static	CUIScrollView*		CreateScrollView	( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical = true );
 
 	static	UIHint*				CreateHint			( CUIXml& xml, LPCSTR ui_path /*, CUIWindow* parent*/ );
 
