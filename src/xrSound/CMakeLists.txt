@@ -56,7 +56,7 @@ target_link_libraries(xrSound PUBLIC xrCore)
 target_link_libraries(xrSound PRIVATE Ogg::ogg)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbis)
 target_link_libraries(xrSound PRIVATE Vorbis::vorbisfile)
-target_link_libraries(xrSound PRIVATE OpenAL::OpenAL)
+target_link_libraries(xrSound PRIVATE ResonanceAudioStatic)
 
 if (IXRAY_MP)
     target_link_libraries(xrSound PRIVATE SpeexDSP::SpeexDSP)

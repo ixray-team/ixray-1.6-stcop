@@ -1,6 +1,8 @@
 # Solution folders
 set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
 
+add_subdirectory("resonance-audio")
+
 # 3rd libraries
 if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("ode")
