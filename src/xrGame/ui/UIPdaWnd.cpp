@@ -30,6 +30,7 @@
 #include "UIScriptWnd.h"
 #include "UIPdaContactsWnd.h"
 #include "UIEncyclopediaWnd.h"
+#include "UIStalkersRankingWnd.h"
 
 #define PDA_XML		"pda.xml"
 
@@ -48,6 +49,7 @@ CUIPdaWnd::CUIPdaWnd()
 	UIPdaContactsWnd = nullptr;
 	m_hint_wnd       = nullptr;
 	pUIEncyclopediaWnd = nullptr;
+	pUIStalkersRankingWnd = nullptr;
 
 	LoadCallbackGlobals(m_isSetActiveSubdialog, m_onSetActiveSubdialog, "OnSetActiveSubdialog");
 	Init();
@@ -63,6 +65,7 @@ CUIPdaWnd::~CUIPdaWnd()
 	delete_data( m_hint_wnd );
 	delete_data( UINoice );
 	delete_data( pUIEncyclopediaWnd );
+	delete_data( pUIStalkersRankingWnd );
 }
 
 void CUIPdaWnd::Init()
@@ -115,6 +118,12 @@ void CUIPdaWnd::Init()
 	}
 	pUIRankingWnd					= new CUIRankingWnd();
 	pUIRankingWnd->Init				();
+
+	if (UITabControl->GetButtonById("eptRankingGlobal"))
+	{
+		pUIStalkersRankingWnd = new CUIStalkersRankingWnd();
+		pUIStalkersRankingWnd->Init();
+	}
 
 	pUILogsWnd						= new CUILogsWnd();
 	pUILogsWnd->Init				();
@@ -229,6 +238,10 @@ void CUIPdaWnd::SetActiveSubdialog(const shared_str& section)
 			m_pActiveDialog = pUIRankingWnd;
 		}
 	}
+	else if (section == "eptRankingGlobal")
+	{
+		m_pActiveDialog = pUIStalkersRankingWnd;
+	}
 	else if ( section == "eptLogs" )
 	{
 		m_pActiveDialog = pUILogsWnd;
@@ -340,6 +353,10 @@ void CUIPdaWnd::DrawHint()
 	{
 		UIPdaContactsWnd->DrawHint();
 	}
+	else if (m_sActiveSection == "eptRankingGlobal")
+	{
+		pUIStalkersRankingWnd->DrawHint();
+	}
 	m_hint_wnd->Draw();
 }
 
@@ -368,6 +385,7 @@ void CUIPdaWnd::Reset()
 	if ( pUIRankingWnd )	pUIRankingWnd->ResetAll();
 	if ( pUILogsWnd )		pUILogsWnd->ResetAll();
 	if ( pUIEncyclopediaWnd )	pUIEncyclopediaWnd->ResetAll();
+	if ( pUIStalkersRankingWnd )	pUIStalkersRankingWnd->ResetAll();
 }
 
 void CUIPdaWnd::SetCaption( LPCSTR text )
