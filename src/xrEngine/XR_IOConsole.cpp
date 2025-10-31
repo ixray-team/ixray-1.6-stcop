@@ -339,7 +339,7 @@ void CConsole::OnRender()
 	
 	// ---------------------
 	m_log_history_guard.Enter();
-	u32 log_line = m_log_history.GetSize();
+	u32 log_line = m_log_history.GetTail();
 	outY -= m_line_height;
 	for (u32 i = scroll_delta; i < log_line; ++i)
 	{
