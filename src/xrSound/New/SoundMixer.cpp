@@ -35,9 +35,15 @@
 #include "pffft.h"
 
 #define DISABLE_STEAM_AUDIO
+//#define DISABLE_RESONANCE_AUDIO
 
 #ifndef DISABLE_STEAM_AUDIO
 #   include <SteamAudio/phonon.h>
+#endif
+
+#ifndef DISABLE_RESONANCE_AUDIO
+#include "../../3rd-party/resonance-audio/resonance_audio/api/binaural_surround_renderer.h"
+#include "../../3rd-party/resonance-audio/resonance_audio/api/resonance_audio_api.h"
 #endif
 
 #include "ogg_utils.h"
@@ -1005,8 +1011,13 @@ Snd_MixerRenderCallback(float* buffer)
 #if 0
             DSP_AlgorithmicReverb(zone.state, zone.settings, reverb_buffer, process_buffer, SND_BLOCKSIZE);
             DSP_MixBuffer(bus_buffer, process_buffer, zone.settings.reverb * 0.5, zone.settings.reverb * 0.5, SND_BLOCKSIZE);
-            DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, bus_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope);
 #else
+
+#ifndef DISABLE_RESONANCE_AUDIO
+            zone.state.ra_context->SetPlanarBuffer(zone.state.buffer, reverb_buffer, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
+            zone.state.ra_context->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, process_buffer);
+            DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, bus_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope);
+#endif
 
 #ifndef DISABLE_STEAM_AUDIO
             for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
@@ -1017,8 +1028,8 @@ Snd_MixerRenderCallback(float* buffer)
                 iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
             }
 #endif
-
-            DSP_MixBuffer(bus_buffer, process_buffer, zone.settings.reflections, zone.settings.reflections, SND_BLOCKSIZE);
+            float reverb_gain = std::clamp(zone.settings.reverb, 0.0f, 1.0f) * 0.010f;
+            DSP_MixBuffer(bus_buffer, process_buffer, reverb_gain, reverb_gain, SND_BLOCKSIZE);
 #endif
         }
     }
@@ -1144,7 +1155,6 @@ Mixer::Initialize()
         mixer.hrtf_slots[i].buf_desc = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = mixer.hrtf_slots[i].process_buffer };
     }
 #endif
-
 #ifdef DEBUG_DRAW
 #pragma todo(replace with aligned allocators)
     // Blackman-Harris window
@@ -1717,12 +1727,69 @@ Mixer::GetParameters(u32 slot)
     return mixer.slots[slot - 1].parameters;
 }
 
-void XRay::Sound::Mixer::AddEditorZone(sound_zone_params& params)
+void 
+Mixer::AddEditorZone(sound_zone_params& params)
 {
     mixer.editor_zone = true;
     ResetZones();
     AddZone(params);
 }
+
+#ifndef DISABLE_RESONANCE_AUDIO
+static void
+Snd_EngineToResonanceParams(const sound_reverb_settings& s,
+    vraudio::ReflectionProperties& out_ref,
+    vraudio::ReverbProperties& out_rev)
+{
+    // zero-init
+    out_ref = vraudio::ReflectionProperties();
+    out_rev = vraudio::ReverbProperties();
+
+    // Room geometry: use environment_size (fallback to 10m)
+    float room_size = std::max(s.environment_size, 10.0f);
+    out_ref.room_dimensions[0] = room_size;
+    out_ref.room_dimensions[1] = room_size;
+    out_ref.room_dimensions[2] = room_size;
+
+    // Default room position/rotation (origin, identity)
+    out_ref.room_position[0] = out_ref.room_position[1] = out_ref.room_position[2] = 0.0f;
+    out_ref.room_rotation[0] = out_ref.room_rotation[1] = out_ref.room_rotation[2] = 0.0f;
+    out_ref.room_rotation[3] = 1.0f;
+
+    // Cutoff frequency derived from room_hf (interpreted as dB HF attenuation).
+    // Map 0 dB -> ~20kHz, negative values reduce cutoff.
+    float hf_db = s.room_hf;
+    float cutoff = 20000.0f * powf(10.0f, hf_db / 20.0f);
+    out_ref.cutoff_frequency = std::clamp(cutoff, 200.0f, 20000.0f);
+
+    // Reflection coefficients: use environment_diffusion (0..1) as uniform coefficient
+    float diffusion = std::clamp(s.environment_diffusion, 0.0f, 1.0f);
+    for (int i = 0; i < 6; ++i) out_ref.coefficients[i] = diffusion;
+    // Reflection gain from reflections parameter (kept in reasonable range)
+    out_ref.gain = std::clamp(s.reflections, 0.0f, 3.16f);
+
+    // Reverb (late) RT60 mapping:
+    // - base RT60 from decay_time
+    // - apply decay_hf_ratio on high-frequency bands
+    // - reduce HF RT60 by air_absorption_hf
+    float base_rt60 = std::clamp(s.decay_time, 0.05f, 60.0f);
+    float hf_ratio = std::clamp(s.decay_hf_ratio, 0.1f, 4.0f);
+    // Normalize air absorption to [0..1] (engine units unknown — clamp defensively)
+    float air_abs = std::clamp(s.air_absorption_hf, 0.0f, 100.0f) / 100.0f;
+
+    for (int i = 0; i < 9; ++i) {
+        // bands 0..5 -> low/mid, 6..8 -> high
+        if (i >= 6)
+            out_rev.rt60_values[i] = base_rt60 * hf_ratio * (1.0f - 0.5f * air_abs);
+        else
+            out_rev.rt60_values[i] = base_rt60 * (1.0f - 0.25f * air_abs);
+
+        out_rev.rt60_values[i] = std::clamp(out_rev.rt60_values[i], 0.01f, 120.0f);
+    }
+
+    out_rev.gain = 1.0f;
+}
+#endif
 
 void
 Mixer::AddZone(sound_zone_params& params)
@@ -1735,16 +1802,21 @@ Mixer::AddZone(sound_zone_params& params)
     };
 
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-        R_ASSERT(iplReflectionEffectCreate(mixer.ipl_context, &settings, &reflect_settings, &params.effect[ch]) == IPL_STATUS_SUCCESS);
+        R_ASSERT(iplReflectionEffectCreate(mixer.ipl_context, &settings, &reflect_settings, &params.state.effect[ch]) == IPL_STATUS_SUCCESS);
     }
 #endif
 
-    params.state.early_reflections_line.buffer = xr_alloc<float>(SND_REBERB_BUFFER_SIZE);
-    params.state.early_reflections_line.frames = SND_REBERB_BUFFER_SIZE;
-    for (size_t line = 0; line < SND_REBERB_LINE_COUNT; line++) {
-        params.state.lines[line].frames = SND_REBERB_BUFFER_SIZE;
-        params.state.lines[line].buffer = xr_alloc<float>(SND_REBERB_BUFFER_SIZE);
-    }
+#ifndef DISABLE_RESONANCE_AUDIO
+    vraudio::ReflectionProperties reflection_properties = { };
+    vraudio::ReverbProperties reverb_properties = {};
+
+    Snd_EngineToResonanceParams(params.settings, reflection_properties, reverb_properties);
+    params.state.ra_context = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
+    params.state.ra_context->EnableRoomEffects(true);
+    params.state.ra_context->SetReverbProperties(reverb_properties);
+    params.state.ra_context->SetReflectionProperties(reflection_properties);
+    params.state.buffer = params.state.ra_context->CreateSoundObjectSource(vraudio::RenderingMode::kStereoPanning);
+#endif
 
     mixer.zones.emplace_back(std::move(params));
 }
@@ -1753,18 +1825,17 @@ void
 Mixer::ResetZones()
 {
     for (auto& zone : mixer.zones) {
-        for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-            if (zone.effect[ch] != nullptr) {
 #ifndef DISABLE_STEAM_AUDIO
+        for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+            if (zone.state.effect[ch] != nullptr) {
                 iplReflectionEffectRelease(&zone.effect[ch]);
-#endif
             }
         }
+#endif
 
-        xr_free(zone.state.early_reflections_line.buffer);
-        for (size_t line = 0; line < SND_REBERB_LINE_COUNT+4; line++) {
-            xr_free(zone.state.lines[line].buffer);
-        }
+#ifndef DISABLE_RESONANCE_AUDIO
+        delete zone.state.ra_context;
+#endif
     }
 
     mixer.zones.clear();
