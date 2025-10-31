@@ -23,6 +23,10 @@ if (IXRAY_PROFILER_TRACY)
     include("${CMAKE_MODULE_PATHEX}/Tracy.cmake")
 endif()
 
+# Resonance Audio 3rd
+include("${CMAKE_MODULE_PATH}/eigen.cmake")
+include("${CMAKE_MODULE_PATH}/pffft.cmake")
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATHEX}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATHEX}/Opus.cmake")
