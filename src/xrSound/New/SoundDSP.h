@@ -43,7 +43,7 @@ inline double dB2lin(double dB)
 {
 	return exp(dB * 0.11512925464970228420089957273422);		// ln( 10 ) / 20
 }
-void DSP_AlgorithmicReverb(sound_reberb_state& state, sound_reverb_settings& settings, float** input, float** output, u32 frames);
+
 void DSP_CalculateRelativePosition(const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos, Fvector& out_pos, float& out_distance);
 void DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos);
 void DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames); // requires +1 sample of tail
