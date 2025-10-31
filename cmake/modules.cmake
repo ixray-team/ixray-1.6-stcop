@@ -7,6 +7,10 @@ include("${CMAKE_MODULE_PATH}/Ogg.cmake")
 include("${CMAKE_MODULE_PATH}/Vorbis.cmake")
 include("${CMAKE_MODULE_PATH}/FreeImage.cmake")
 
+# Resonance Audio 3rd
+include("${CMAKE_MODULE_PATH}/eigen.cmake")
+include("${CMAKE_MODULE_PATH}/pffft.cmake")
+
 if (IXRAY_MP)
     include("${CMAKE_MODULE_PATH}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATH}/Opus.cmake")

@@ -8,9 +8,6 @@ echo === Cloning Resonance Audio core dependencies ===
 
 call :GitCloneIfNotExist eigen https://gitlab.com/libeigen/eigen.git master
 call :GitCloneIfNotExist pffft https://bitbucket.org/jpommier/pffft.git master
-call :GitCloneIfNotExist googletest https://github.com/google/googletest.git main
-call :GitCloneIfNotExist android-cmake https://github.com/taka-no-me/android-cmake.git master
-call :GitCloneIfNotExist ios-cmake https://github.com/leetal/ios-cmake master
 
 echo === Done cloning dependencies ===
 exit /b 0
