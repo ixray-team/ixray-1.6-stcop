@@ -216,9 +216,9 @@ target_include_directories(ResonanceAudioObj PRIVATE ${EIGEN3_INCLUDE_DIR}/)
 target_include_directories(ResonanceAudioObj PRIVATE ${PFFFT_INCLUDE_DIR}/)
 
 # Build shared library
-add_library(ResonanceAudioShared SHARED $<TARGET_OBJECTS:ResonanceAudioObj>
-        $<TARGET_OBJECTS:SadieHrtfsObj>
-        $<TARGET_OBJECTS:PffftObj>)
+#add_library(ResonanceAudioShared SHARED $<TARGET_OBJECTS:ResonanceAudioObj>
+#        $<TARGET_OBJECTS:SadieHrtfsObj>
+#        $<TARGET_OBJECTS:PffftObj>)
 
 # Build static library
 add_library(ResonanceAudioStatic STATIC $<TARGET_OBJECTS:ResonanceAudioObj>
@@ -226,7 +226,7 @@ add_library(ResonanceAudioStatic STATIC $<TARGET_OBJECTS:ResonanceAudioObj>
         $<TARGET_OBJECTS:PffftObj>)
 
 set(RA_INSTALL_DIR "${INSTALL_DIR}/resonance_audio/")
-install(TARGETS ResonanceAudioStatic ResonanceAudioShared
+install(TARGETS ResonanceAudioStatic #ResonanceAudioShared
         LIBRARY DESTINATION ${RA_INSTALL_DIR}/lib
         ARCHIVE DESTINATION ${RA_INSTALL_DIR}/lib
         RUNTIME DESTINATION ${RA_INSTALL_DIR}/lib
