@@ -18,17 +18,26 @@
 #include "Widgets/UIHint.h"
 #include "Widgets/UIEditBox.h"
 #include "Widgets/UITrackBar.h"
+#include "Widgets/UIScrollView.h"
 
-CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
+CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
 {
-	CUIStatic* ui			= new CUIStatic();
-	if(parent)
-	{
-		parent->AttachChild	( ui );
-		ui->SetAutoDelete	( true );
-	}
-	CUIXmlInit::InitStatic	( xml, ui_path, 0, ui );
-	return ui;
+    // If it's not critical element, then don't crash if it doesn't exist
+    if (!critical && !xml.NavigateToNode(ui_path, 0))
+        return nullptr;
+
+    auto ui = new CUIStatic();
+    if (!CUIXmlInit::InitStatic(xml, ui_path, 0, ui, critical))
+    {
+        R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
+        xr_delete(ui);
+    }
+    else if (parent)
+    {
+        parent->AttachChild(ui);
+        ui->SetAutoDelete(true);
+    }
+    return ui;
 }
 
 CUIStackPanel* UIHelper::CreateStackPanel(CUIXml& xml, LPCSTR ui_path, CUIWindow* parent)
@@ -94,7 +103,7 @@ CUIFrameLineWnd* UIHelper::CreateFrameLine(CUIXml& xml, LPCSTR ui_path, CUIWindo
     auto ui = new CUIFrameLineWnd();
     if (!CUIXmlInit::InitFrameLine(xml, ui_path, 0, ui, critical))
     {
-        R_ASSERT2(!critical, "Failed to create frame line");
+        R_ASSERT4(!critical, "Failed to create frame line", ui_path, xml.m_xml_file_name);
         xr_delete(ui);
     }
     else if (parent)
@@ -114,7 +123,7 @@ CUIFrameWindow* UIHelper::CreateFrameWindow(CUIXml& xml, LPCSTR ui_path, CUIWind
 	auto ui = new CUIFrameWindow();
 	if (!CUIXmlInit::InitFrameWindow(xml, ui_path, 0, ui, critical))
 	{
-		R_ASSERT2(!critical, "Failed to create frame window");
+		R_ASSERT4(!critical, "Failed to create frame window", ui_path, xml.m_xml_file_name);
 		xr_delete(ui);
 	}
 	else if (parent)
@@ -161,4 +170,24 @@ CUITrackBar* UIHelper::CreateTrackBar( CUIXml& xml, LPCSTR ui_path, CUIWindow* p
 	}
 	CUIXmlInit::InitTrackBar( xml, ui_path, 0, ui );
 	return ui;
+}
+
+CUIScrollView* UIHelper::CreateScrollView( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent, bool critical )
+{
+    // If it's not critical element, then don't crash if it doesn't exist
+    if (!critical && !xml.NavigateToNode(ui_path, 0))
+        return nullptr;
+
+    auto ui = new CUIScrollView();
+    if (!CUIXmlInit::InitScrollView(xml, ui_path, 0, ui, critical))
+    {
+        R_ASSERT4(!critical, "Failed to create static", ui_path, xml.m_xml_file_name);
+        xr_delete(ui);
+    }
+    else if (parent)
+    {
+        parent->AttachChild(ui);
+        ui->SetAutoDelete(true);
+    }
+    return ui;
 }

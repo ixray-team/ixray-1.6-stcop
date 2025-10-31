@@ -338,7 +338,7 @@ void CUIPdaWnd::DrawHint()
 	}
 	else if (m_sActiveSection == "eptContacts")
 	{
-
+		UIPdaContactsWnd->DrawHint();
 	}
 	m_hint_wnd->Draw();
 }
