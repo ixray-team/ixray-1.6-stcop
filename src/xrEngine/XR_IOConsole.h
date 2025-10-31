@@ -77,7 +77,8 @@ protected:
 
 	bool			m_disable_tips;
 	
-	RingBuffer<shared_str, 512> m_log_history;
+	static constexpr int RING_BUFFER_SIZE = 262144;
+	RingBuffer<shared_str, RING_BUFFER_SIZE> m_log_history;
 	xrCriticalSection m_log_history_guard;
 
 private:
