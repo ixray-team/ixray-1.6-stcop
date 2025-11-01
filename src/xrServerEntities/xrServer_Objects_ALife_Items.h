@@ -61,7 +61,9 @@ public:
 
 			bool					has_upgrade				(const shared_str& upgrade_id);
 			void					add_upgrade				(const shared_str& upgrade_id);
-
+			void					SetCondition(float cond) {
+				m_fCondition = cond;
+			}
 private:
 	bool							prev_freezed;
 	bool							freezed;

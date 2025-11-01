@@ -1289,6 +1289,14 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 	// Same for eat, use, move
 	bool bClearCurrentItem = true;
 
+	if (IAntigas* oAntigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
+	{
+		if (oAntigas->OnProcessPropertiesBoxClicked(m_UIPropertiesBox))
+		{
+			return;
+		}
+	}
+
 	switch ( m_UIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
 	case INVENTORY_TO_SLOT_ACTION:	ToSlot( cell_item, true, item->BaseSlot() );		break;

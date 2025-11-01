@@ -34,6 +34,7 @@
 #include "Artefact.h"
 #include "sight_manager_space.h"
 #include "../xrScripts/exports/script_ini_file.h"
+#include "ActorHelmet.h"
 
 using namespace luabind;
 
@@ -453,6 +454,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("cast_BottleItem", &CScriptGameObject::cast_BottleItem)
 		.def("cast_Torch", &CScriptGameObject::cast_Torch)
 		.def("cast_InventoryBox", &CScriptGameObject::cast_InventoryBox)
+
+		.def("cast_CHelmet", &CScriptGameObject::cast_CHelmet)
+		.def("cast_AntigasFilter", &CScriptGameObject::cast_AntigasFilter)
+
 		.def("bones_protection_sect", &CScriptGameObject::bones_protection_sect)															  
 		.def("is_on_belt",					&CScriptGameObject::IsOnBelt)
 		.def("item_on_belt",				&CScriptGameObject::ItemOnBelt) 
@@ -493,6 +498,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_actor_radiation", &CScriptGameObject::SetActorRadiation)
 		.def("set_actor_psy_health", &CScriptGameObject::SetActorPsyHealth)
 		.def("set_actor_morale", &CScriptGameObject::SetActorMorale)
+
+		//For Antigas
+		.def("install_antigas_filter", &CScriptGameObject::InstallAntigasFilter)
+		.def("uninstall_antigas_filter", &CScriptGameObject::UnInstallAntigasFilter)
 
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)
