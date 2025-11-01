@@ -117,10 +117,20 @@ void CArmorBase::Load(LPCSTR section)
 
 	// Added by Axel, to enable optional condition use on any item
 	m_flags.set(FUsingCondition, READ_IF_EXISTS(pSettings, r_bool, section, "use_condition", true));
+	IAntigas::SetOwner(this, m_HitTypeProtection);	// FFx0001 ++
+	IAntigas::Load(section);						// FFx0001 ++
+}
+
+void CArmorBase::UpdateCL()
+{
+	inherited::UpdateCL();
+	IAntigas::UpdateCL();
 }
 
 void CArmorBase::Hit(float hit_power, ALife::EHitType hit_type)
 {
+	IAntigas::Hit(hit_power, hit_type, GetHitImmunity(hit_type));
+
 	float hit_power_not_k = hit_power;
 	hit_power *= GetHitImmunity(hit_type);
 	if (!psActorFlags.test(AF_INFINITE_DURABILITY))
@@ -155,6 +165,11 @@ void CArmorBase::ReloadBonesProtection()
 
 bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
 {
+	if (!test)
+	{
+		IAntigas::RestoreDefaultValues();
+	}
+
 	bool result = inherited::install_upgrade_impl(section, test);
 	bool result2 = false;
 	LPCSTR str = {};
@@ -195,7 +210,27 @@ bool CArmorBase::install_upgrade_impl(LPCSTR section, bool test)
 		AddBonesProtection(str);
 	}
 
+	if (!test)
+	{
+		IAntigas::CloneInitialProtectionParams(m_HitTypeProtection);
+		IAntigas::UpdateState();
+	}
+
 	return result;
+}
+
+void CArmorBase::save(NET_Packet& packet)
+{
+	inherited::save(packet);
+	IAntigas::OnNetSave(packet);
+}
+
+void CArmorBase::load(IReader& packet)
+{
+	inherited::load(packet);
+	IAntigas::OnNetLoad(packet);
+	IAntigas::CloneInitialProtectionParams(m_HitTypeProtection);
+	IAntigas::UpdateState();
 }
 
 float CArmorBase::HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
@@ -354,4 +389,20 @@ float CArmorBase::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 float CArmorBase::GetBoneArmor(s16 element)
 {
 	return m_boneProtection->getBoneArmor(element);
+}
+
+void CArmorBase::OverrideHitTypeProtection(ALife::EHitType hit_type, float value)
+{
+	m_HitTypeProtection[hit_type] = value;
+	clamp(m_HitTypeProtection[hit_type], 0.0f, 1.0f);
+}
+
+bool CArmorBase::InstallAntigasFilter(CInventoryItem* inventory_item)
+{
+	return IAntigas::InstallFilter(inventory_item);
+}
+
+bool CArmorBase::UnInstallAntigasFilter()
+{
+	return IAntigas::UninstallFilter();
 }

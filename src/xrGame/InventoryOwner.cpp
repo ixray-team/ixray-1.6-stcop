@@ -21,6 +21,8 @@
 #include "UIGameSP.h"
 #include "ui/UITalkWnd.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "ActorHelmet.h"
+#include "antigas_filter.h"
 
 CInventoryOwner::CInventoryOwner()
 {
@@ -42,6 +44,21 @@ CInventoryOwner::~CInventoryOwner()
 	xr_delete(m_known_info_registry);
 	xr_delete(m_trade_parameters);
 	xr_delete(m_purchase_list);
+}
+
+CHelmet* CScriptGameObject::cast_CHelmet()
+{
+	return object().cast_helmet();
+}
+
+AntigasFilter* CScriptGameObject::cast_AntigasFilter()
+{
+	if (AntigasFilter* oAntigasFilter = smart_cast<AntigasFilter*>(object().cast_inventory_item()))
+	{
+		return oAntigasFilter;
+	}
+
+	return nullptr;
 }
 
 void CInventoryOwner::Load(LPCSTR section)
