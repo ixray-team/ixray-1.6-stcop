@@ -185,6 +185,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		
 		.def("hide_weapon",					&CScriptGameObject::HideWeapon)
 		.def("hide_detector",				&CScriptGameObject::HideDetector)
+		.def("switch_detector",				&CScriptGameObject::SwitchDetector)
 		.def("restore_weapon",				&CScriptGameObject::RestoreWeapon)
 		
 		.def("weapon_is_grenadelauncher",	&CScriptGameObject::Weapon_IsGrenadeLauncherAttached)
