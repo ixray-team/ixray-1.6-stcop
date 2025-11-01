@@ -1,10 +1,11 @@
 #pragma once
 
 #include "inventory_item_object.h"
+#include "antigas.h"
 
 struct SBoneProtections;
 
-class CArmorBase : public CInventoryItemObject
+class CArmorBase : public CInventoryItemObject, public IAntigas
 {
 private:
 	typedef	CInventoryItemObject inherited;
@@ -15,13 +16,15 @@ public:
 
 	virtual CArmorBase* cast_armorbase() override final { return this; }
 
-	
-	//уменьшенная версия хита, для вызова, когда костюм надет на персонажа
+	virtual void UpdateCL() override;
+
 	virtual void			Hit						(float P, ALife::EHitType hit_type);
 	virtual void			Load					(LPCSTR section);
 
 	virtual void			ReloadBonesProtection	();
 	virtual bool			install_upgrade_impl	(LPCSTR section, bool test);
+	virtual void			save(NET_Packet& packet) override;
+	virtual void			load(IReader& packet) override;
 	virtual float			HitThroughArmor			(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type);
 	virtual float			GetDefHitTypeProtection	(ALife::EHitType hit_type);
 	virtual float			GetHitTypeProtection	(ALife::EHitType hit_type, s16 element);
@@ -34,6 +37,9 @@ public:
 	virtual shared_str		GetNV_Sect				() const { return m_NightVisionSect; }
 	virtual bool			IsHudGasMaskAvailable	() { return bIsHudGasMaskAvailable; }
 	virtual bool			IsHudRainDropsAvailable	() { return bIsHudRainDropsAvailable; }
+	void OverrideHitTypeProtection(ALife::EHitType hit_type, float value);
+	bool InstallAntigasFilter(CInventoryItem* inventory_item);
+	bool UnInstallAntigasFilter();
 
 	bool IsTorchAvailable() const { return m_bTorchAvailable; }
 
