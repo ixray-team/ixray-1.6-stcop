@@ -73,6 +73,14 @@ void CUIOwnerPropertiesBox::PropertiesBoxForUsing(PIItem item, bool& b_show)
 		}
 	}
 
+	if (IAntigas* pAntigas = smart_cast<IAntigas*>(item))
+	{
+		if (pAntigas->OnPropertiesBoxForUsing(m_UIPropertiesBox))
+		{
+			b_show = true;
+		}
+	}
+
 	//1st Custom Use action
 	act_str = READ_IF_EXISTS(pSettings, r_string, section_name, "use1_text", 0);
 	if (act_str)

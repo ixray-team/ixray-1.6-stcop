@@ -32,6 +32,7 @@ protected:
 
 	CUIDragDropListEx*		m_pParentList;
 	CUIProgressBar*			m_pConditionState;
+	CUIProgressBar*			m_pConditionState_filter;
 	Ivector2				m_grid_size;
 	ICustomDrawCellItem*	m_custom_draw;
 	int						m_accelerator;
@@ -41,6 +42,7 @@ protected:
 	CUIStatic*				m_custom_text;
 	Fvector2				m_custom_text_pos;
 	CUIStatic*				m_custom_mark;
+	CUIStatic*				m_filter_icon;
 	Fvector2				m_custom_mark_pos;
 
 	virtual void			UpdateItemText			();

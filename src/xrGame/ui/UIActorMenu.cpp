@@ -823,6 +823,36 @@ void CUIActorMenu::highlight_armament( PIItem item, CUIDragDropListEx* ddlist )
 	highlight_weapons_for_ammo( item, ddlist );
 	highlight_weapons_for_addon( item, ddlist );
 	highlight_related_config_sections(item, ddlist); // FFx001 ++
+	highlight_antigas_for_filter(item, ddlist); // FFx001 ++
+}
+
+// FFx0001 ++
+void CUIActorMenu::highlight_antigas_for_filter(PIItem item, CUIDragDropListEx* ddlist)
+{
+	VERIFY(item);
+	VERIFY(ddlist);
+
+	if (AntigasFilter* aFilter = smart_cast<AntigasFilter*>(item->cast_inventory_item()))
+	{
+		u32 const cnt = ddlist->ItemsCount();
+		for (u32 i = 0; i < cnt; ++i)
+		{
+			CUICellItem* ci = ddlist->GetItemIdx(i);
+			PIItem _item = (PIItem)ci->m_pData;
+			if (!_item)
+			{
+				continue;
+			}
+
+			if (IAntigas* oAntigas = smart_cast<IAntigas*>(_item->cast_inventory_item()))
+			{
+				if (oAntigas->IsFilterInWhiteList(item->m_section_id))
+				{
+					ci->m_select_armament = true;
+				}
+			}
+		}
+	}
 }
 
 // FFx0001 ++
