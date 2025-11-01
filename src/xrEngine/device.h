@@ -122,7 +122,7 @@ public:
 	float									fFOV;
 	float									fASPECT;
 	float									fViewportNear = 0.2f;
-	float									fHUDViewportNear = 0.01f;
+	float									fHUDViewportNear = 0.05f;
 protected:
 
 	u32										Timer_MM_Delta;
