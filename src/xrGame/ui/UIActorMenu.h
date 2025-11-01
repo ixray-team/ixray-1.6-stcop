@@ -216,6 +216,7 @@ private:
 	const char* m_onItemDropped = {};
 	bool m_isItemDropped = false;
 	PIItem m_lastFocusRecivedItem = nullptr;
+	CUICellItem* m_cell_lastFocusRecivedItem = nullptr;
 	u16 m_lastFocusLostItem_id = u16(0xffff);
 
 	const char* m_onCanMoveToPartner = {};
@@ -279,6 +280,7 @@ private:
 	bool						highlight_addons_for_weapon			(PIItem weapon_item, CUICellItem* ci);
 	void						highlight_weapons_for_addon			(PIItem addon_item, CUIDragDropListEx* ddlist);
 	void						highlight_related_config_sections	(PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
+	void						highlight_antigas_for_filter (PIItem item, CUIDragDropListEx* ddlist); // FFx001 ++
 
 protected:			
 	void						Construct							();

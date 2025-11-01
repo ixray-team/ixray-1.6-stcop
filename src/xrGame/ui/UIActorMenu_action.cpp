@@ -33,6 +33,8 @@
 #include "UITalkWnd.h"
 #include "UITalkDialogWnd.h"
 #include "UIInvUpgradeInfo.h"
+#include "antigas.h"
+#include "antigas_filter.h"
 
 bool  CUIActorMenu::AllowItemDrops(EDDListType from, EDDListType to)
 {
@@ -99,13 +101,8 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 	}
 	
 	if (old_owner == new_owner){
-		
-		if (m_isItemDropped && !is_on_item_dropped_callback_processed)
+		if (!is_on_item_dropped_callback_processed)
 		{
-			//Alundaio: Here we export the action of dragging one inventory item ontop of another!
-			luabind::functor<bool> funct1;
-			R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
-
 			CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 			CGameObject* GO2 = nullptr;
 
@@ -115,9 +112,28 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 			is_on_item_dropped_callback_processed = true;
 
-			if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+			if (GO1 != nullptr && GO2 != nullptr && GO1->H_Parent()->ID() == GO2->H_Parent()->ID())
 			{
-				return false;
+				AntigasFilter* filter = smart_cast<AntigasFilter*>(GO1);
+				IAntigas* antigas = smart_cast<IAntigas*>(GO2);
+				if (filter != nullptr && antigas != nullptr && antigas->IsFilterInWhiteList(GO1->cNameSect()))
+				{
+					if (antigas->InstallFilter(GO1->cast_inventory_item())) {
+						old_owner->RemoveItem(itm, false);
+						SetCurrentItem(nullptr);
+						return true;
+					}
+				}
+			}
+
+			if (m_isItemDropped) 
+			{
+				luabind::functor<bool> funct1;
+				R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
+				if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+				{
+					return false;
+				}
 			}
 		}
 		else
@@ -185,12 +201,8 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 	OnItemDropped(CurrentIItem(), new_owner, old_owner);
 
-	if (m_isItemDropped && !is_on_item_dropped_callback_processed)
+	if (!is_on_item_dropped_callback_processed)
 	{
-		//Alundaio: Here we export the action of dragging one inventory item ontop of another! 
-		luabind::functor<bool> funct1;
-		R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
-
 		CGameObject* GO1 = CurrentIItem() != nullptr ? CurrentIItem()->cast_game_object() : nullptr;
 		CGameObject* GO2 = nullptr;
 
@@ -200,12 +212,29 @@ bool CUIActorMenu::OnItemDrop(CUICellItem* itm)
 
 		is_on_item_dropped_callback_processed = true;
 
-		if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+		if (GO1 != nullptr && GO2 != nullptr && GO1->H_Parent()->ID() == GO2->H_Parent()->ID())
 		{
-			return false;
+			AntigasFilter* filter = smart_cast<AntigasFilter*>(GO1);
+			IAntigas* antigas = smart_cast<IAntigas*>(GO2);
+			if (filter != nullptr && antigas != nullptr && antigas->IsFilterInWhiteList(GO1->cNameSect()))
+			{
+				if (antigas->InstallFilter(GO1->cast_inventory_item())) {
+					old_owner->RemoveItem(itm, false);
+					SetCurrentItem(nullptr);
+					return true;
+				}
+			}
 		}
 
-		//-Alundaio
+		if (m_isItemDropped)
+		{
+			luabind::functor<bool> funct1;
+			R_ASSERT2(ai().script_engine().functor(m_onItemDropped, funct1), "failed to get OnItemDropped functor");
+			if (funct1(GO1 ? GO1->lua_game_object() : (0), GO2 ? GO2->lua_game_object() : (0), (int)t_old, (int)t_new) == false)
+			{
+				return false;
+			}
+		}
 	}
 
 	UpdateConditionProgressBars	();
@@ -400,7 +429,7 @@ bool CUIActorMenu::OnItemFocusReceive(CUICellItem* itm)
 	set_highlight_item( itm );
 
 	m_lastFocusRecivedItem = (PIItem)itm->m_pData;
-
+	m_cell_lastFocusRecivedItem = itm;
 	if (m_isItemFocusReceive)
 	{
 		luabind::functor<bool> funct1;
