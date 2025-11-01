@@ -32,6 +32,7 @@
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 #	include "EnhancementEditionLuaLayer.h"
 #	include "InteractiveObject.h"
+#	include "antigas_filter.h"
 #endif
 
 extern void CompatibilityBringeExport(lua_State*);
@@ -288,6 +289,8 @@ void export_classes	(lua_State *L)
 	game_sv_mp_script::script_register(L);
 	CScriptXRParser::script_register(L);
 	CInteractiveObject::script_register(L);
+
+	AntigasFilter::script_register(L);
 
 	// Ехидна Эдишен
 	ExportEELayer(L);

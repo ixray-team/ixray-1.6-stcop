@@ -58,6 +58,7 @@ public:
 	virtual CAI_Trader* cast_trader() { return nullptr; }
 	virtual CPhraseDialogManager* cast_phrase_dialog_manager() { return nullptr; }
 	virtual CAI_PhraseDialogManager* cast_ai_phrase_dialog_manager() { return nullptr; }
+
 public:
 
 	virtual DLL_Pure* _construct();

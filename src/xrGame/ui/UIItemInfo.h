@@ -78,6 +78,7 @@ public:
 	// legacy
 	CUIStatic*				UICondition;
 	CUIProgressBar*			UICondProgresBar;
+	CUIProgressBar*			UIFilterCondProgresBar;
 
 	Fvector2			UIItemImageSize; 
 	CUI3dStatic*		UIItemImage;
