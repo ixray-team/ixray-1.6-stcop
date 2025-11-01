@@ -1266,6 +1266,25 @@ void CScriptGameObject::HideDetector()
 	g_player_hud->detach_item(g_player_hud->attached_item(1)->m_parent_hud_item);
 }
 
+void CScriptGameObject::SwitchDetector()
+{
+	CActor* pActor = object().cast_actor();
+
+	if (pActor == nullptr)
+	{
+		return;
+	}
+
+	CCustomDevice* pDevice = pActor->GetDevice(true);
+
+	if (pDevice == nullptr)
+	{
+		return;
+	}
+
+	pDevice->switch_device();
+}
+
 int CScriptGameObject::Weapon_GrenadeLauncher_Status()
 {
 	if (CWeapon* weapon = object().cast_weapon())

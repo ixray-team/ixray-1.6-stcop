@@ -412,6 +412,7 @@ public:
 
 			void				HideWeapon			();
 			void				HideDetector		();
+			void				SwitchDetector		();
 			void				RestoreWeapon		();
 			void				AllowSprint			(bool b);
 
