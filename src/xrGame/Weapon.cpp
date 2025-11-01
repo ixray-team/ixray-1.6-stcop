@@ -1658,13 +1658,21 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 	{
 		case kWPN_FIRE:
 			{
+				if (m_pInventory != nullptr && m_pInventory->IsSlotBlocked(this))
+				{
+					return false;
+				}
+
 				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_bAddCartridgeInOpen && m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
 				{
 					bStopReloadSignal = true;
 					return true;
 				}
-				if(IsPending())		
+
+				if (IsPending())		
+				{
 					return false;
+				}
 
 				if (flags&CMD_START) 
 					FireStart();
