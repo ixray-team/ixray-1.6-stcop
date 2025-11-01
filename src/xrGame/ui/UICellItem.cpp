@@ -12,6 +12,7 @@
 #include "../../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Actor.h"
+#include "../xrGame/ui/UIInventoryUtilities.h"
 #include "CustomOutfit.h"
 
 CUICellItem* CUICellItem::m_mouse_selected_item = nullptr;
@@ -25,8 +26,10 @@ CUICellItem::CUICellItem()
 //-	m_mark				= nullptr;
 	m_custom_text		= nullptr;
 	m_custom_mark		= nullptr;
+	m_filter_icon		= nullptr;
 	m_upgrade			= nullptr;
 	m_pConditionState	= nullptr;
+	m_pConditionState_filter = nullptr;
 	m_drawn_frame		= 0;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
@@ -37,7 +40,7 @@ CUICellItem::CUICellItem()
 	m_has_upgrade		= false;
 	m_with_custom_text	= false;
 	m_with_custom_mark	= false;
-	
+
 	init();
 }
 
@@ -77,6 +80,22 @@ void CUICellItem::init()
 	m_upgrade_pos			= m_upgrade->GetWndPos();
 	m_upgrade->Show			( false );
 
+	m_pConditionState_filter = new CUIProgressBar();
+	m_pConditionState_filter->SetAutoDelete(true);
+	AttachChild(m_pConditionState_filter);
+	CUIXmlInit::InitProgressBar(uiXml, "condition_progess_bar", 0, m_pConditionState_filter);
+	m_pConditionState_filter->Show(false);
+
+	if (uiXml.NavigateToNode("cell_item_custom_mark", 0))
+	{
+		m_filter_icon = new CUIStatic();
+		m_filter_icon->SetAutoDelete(true);
+		AttachChild(m_filter_icon);
+		CUIXmlInit::InitStatic(uiXml, "cell_item_custom_mark", 0, m_filter_icon);
+		m_filter_icon->Show(false);
+	}
+
+
 	m_pConditionState = new CUIProgressBar();
 	m_pConditionState->SetAutoDelete(true);
 	AttachChild(m_pConditionState);
@@ -114,6 +133,41 @@ void CUICellItem::Draw()
 		m_custom_draw->OnDraw(this);
 };
 
+void AplyFilterIcon(const shared_str& sect_name, CUIStatic* _static, float width, float height)
+{
+	if (!sect_name.size())
+	{
+		return;
+	}
+
+	Frect texture_rect;
+	float scaleIcon = READ_IF_EXISTS(pSettings, r_float, sect_name, "inv_scale", 1.0f);
+
+	texture_rect.x1 = pSettings->r_float(sect_name, "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y1 = pSettings->r_float(sect_name, "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+	texture_rect.x2 = pSettings->r_float(sect_name, "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+	texture_rect.y2 = pSettings->r_float(sect_name, "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
+
+	texture_rect.rb.add(texture_rect.lt);
+
+	_static->GetUIStaticItem().SetTextureRect(texture_rect);
+	_static->SetStretchTexture(true);
+
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name, "icons_texture", nullptr);
+	_static->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
+
+	float h = height * EngineExternal().GetWeaponIconScaling();
+	float w = width * EngineExternal().GetWeaponIconScaling();
+
+	if (texture_rect.width() > 2.01f * INV_GRID_WIDTH(scaleIcon))
+	{
+		w = INV_GRID_WIDTH(scaleIcon) * 1.5f;
+	}
+
+	_static->SetWidth(w * UI().get_current_kx() / scaleIcon);
+	_static->SetHeight(h / scaleIcon);
+}
+
 void CUICellItem::Update()
 {
 	EnableHeading(m_pParentList->GetVerticalPlacement());
@@ -136,6 +190,77 @@ void CUICellItem::Update()
 	}
 	
 	PIItem item = (PIItem)m_pData;
+
+	Ivector2 itm_grid_size = GetGridSize();
+	if (m_pParentList->GetVerticalPlacement())
+	{
+		std::swap(itm_grid_size.x, itm_grid_size.y);
+	}
+
+	Ivector2 cell_size = m_pParentList->CellSize();
+	Ivector2 cell_space = m_pParentList->CellsSpacing();
+
+	if (item) {
+		if (IAntigas* antigas = smart_cast<IAntigas*>(item->cast_inventory_item()))
+		{
+			if (antigas->IsAllowed() && antigas->IsFilterInstalled()) {
+				float filter_condition = antigas->GetFilterCondition();
+
+				if (m_pConditionState_filter != nullptr) 
+				{
+					m_pConditionState_filter->SetWndPos(Fvector2().set(
+						1.f,
+						itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState_filter->GetHeight() - 10.f
+					));
+					m_pConditionState_filter->SetProgressPos(iCeil(filter_condition * 13.0f) / 13.0f);
+					m_pConditionState_filter->Show(true);
+				}
+
+				if (m_filter_icon != nullptr)
+				{
+					m_filter_icon->SetWndPos(Fvector2().set(
+						antigas->GetFilterIconOffsetX(),
+						antigas->GetFilterIconOffsetY()
+					));
+
+					AplyFilterIcon(
+						antigas->GetFilterSection(),
+						m_filter_icon,
+						antigas->GetFilterIconWidth(),
+						antigas->GetFilterIconHeight()
+					);
+
+					m_filter_icon->Show(true);
+				}
+			}
+			else
+			{
+				if (m_pConditionState_filter != nullptr) 
+				{
+					m_pConditionState_filter->SetProgressPos(0.f);
+					m_pConditionState_filter->Show(false);
+				}
+
+				if (m_filter_icon != nullptr)
+				{
+					m_filter_icon->Show(false);
+				}
+			}
+		}
+		else
+		{
+			if (m_pConditionState_filter != nullptr) 
+			{
+				m_pConditionState_filter->Show(false);
+			}
+
+			if (m_filter_icon != nullptr)
+			{
+				m_filter_icon->Show(false);
+			}
+		}
+	}
+
     m_has_upgrade = item ? item->has_any_upgrades() : false;
     if (m_upgrade)
     {
@@ -356,12 +481,30 @@ void CUICellItem::SetOwnerList(CUIDragDropListEx* p)
 
 void CUICellItem::UpdateConditionProgressBar()
 {
+	PIItem itm = (PIItem)m_pData;
+
+	if (itm == nullptr)
+	{
+		return;
+	}
+
+	Ivector2 itm_grid_size = GetGridSize();
+	if (m_pParentList->GetVerticalPlacement())
+	{
+		std::swap(itm_grid_size.x, itm_grid_size.y);
+	}
+
+	Ivector2 cell_size = m_pParentList->CellSize();
+	Ivector2 cell_space = m_pParentList->CellsSpacing();
+	float x = 1.f;
+	float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
+	bool is_need_skip = false;
+
 	if (!m_pConditionState)
 		return;
 
 	if(m_pParentList && m_pParentList->GetConditionProgBarVisibility())
 	{
-		PIItem itm = (PIItem)m_pData;
 		if (itm != nullptr && itm->IsUsingCondition())
 		{
 			float cond = itm->GetCondition();
@@ -394,14 +537,6 @@ void CUICellItem::UpdateConditionProgressBar()
 				}
 			}
 
-			Ivector2 itm_grid_size = GetGridSize();
-			if(m_pParentList->GetVerticalPlacement())
-				std::swap(itm_grid_size.x, itm_grid_size.y);
-
-			Ivector2 cell_size = m_pParentList->CellSize();
-			Ivector2 cell_space = m_pParentList->CellsSpacing();
-			float x = 1.f;
-			float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
 
 			m_pConditionState->SetWndPos(Fvector2().set(x,y));
 			m_pConditionState->SetProgressPos( iCeil( cond * 13.0f ) / 13.0f );
@@ -409,6 +544,7 @@ void CUICellItem::UpdateConditionProgressBar()
 			return;
 		}
 	}
+
 	m_pConditionState->Show(false);
 }
 

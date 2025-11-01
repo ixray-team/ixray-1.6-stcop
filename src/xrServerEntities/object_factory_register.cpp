@@ -192,6 +192,8 @@
 #	include "../xrGame/ActorBackpack.h"
 #	include "../xrGame/InventoryItems/Dosimeter/Dosimeter.h"
 #	include "InteractiveObject.h"
+
+#include "antigas_filter.h"
 #endif // NO_XR_GAME
 
 #ifndef NO_XR_GAME
@@ -357,6 +359,8 @@ void CObjectFactory::register_classes	()
 	ADD(CFoodItem				,CSE_ALifeItem					,CLSID_IITEM_FOOD				,"obj_food");
 	ADD(CBottleItem				,CSE_ALifeItem					,CLSID_IITEM_BOTTLE				,"obj_bottle");
 	ADD(CExplosiveItem			,CSE_ALifeItemExplosive			,CLSID_IITEM_EXPLOSIVE			,"obj_explosive");
+	
+	ADD(AntigasFilter			,CSE_ALifeItem					,CLSID_IITEM_ANTIGAS_FILTER		,"obj_antigas_filter");
 	
 	//Info Document
 	ADD(CInfoDocument			,CSE_ALifeItemDocument			,CLSID_IITEM_DOCUMENT			,"obj_document");
