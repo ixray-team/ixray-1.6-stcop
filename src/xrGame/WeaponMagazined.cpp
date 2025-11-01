@@ -2819,18 +2819,18 @@ bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
 	
 	LPCSTR str;
 	// fire_modes = 1, 2, -1
-	bool result2 = process_if_exists_set( section, "fire_modes", &CInifile::r_string, str, test );
-	if ( result2 && !test )
+	bool result2 = process_if_exists_set(section, "fire_modes", &CInifile::r_string, str, test);
+	if (result2 && !test)
 	{
-		int ModesCount = _GetItemCount( str );
+		int ModesCount = _GetItemCount(str);
 		m_aFireModes.clear();
-		for ( int i = 0; i < ModesCount; ++i )
+		for (int i = 0; i < ModesCount; ++i)
 		{
-			string16 sItem;
-			_GetItem( str, i, sItem );
-			m_aFireModes.push_back( (s8)atoi(sItem) );
+			string16 sItem = {};
+			_GetItem(str, i, sItem);
+			m_aFireModes.push_back((s8)atoi(sItem));
 		}
-		m_iCurFireMode = ModesCount - 1;
+		SetQueueSize(m_iCurFireMode = ModesCount - 1);
 	}
 	result |= result2;
 
