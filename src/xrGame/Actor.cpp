@@ -43,6 +43,7 @@
 #include "UIPdaWnd.h"
 #include "../xrUI/UICursor.h"
 #include "Wound.h"
+#include "inventory_space.h"
 
 u16 old_slot = 0;
 bool need_restore_detector = false;
@@ -1580,6 +1581,31 @@ void CActor::UpdateCL()
 	if (g_dedicated_server && g_Alive())
 	{
 		CheckFlyhack();
+	}
+
+	IAntigas* antigas = nullptr;
+	if (CInventoryItem* helmet = inventory().ItemFromSlot((u16)HELMET_SLOT))
+	{
+		if (IAntigas* _antigas = smart_cast<IAntigas*>(helmet))
+		{
+			antigas = _antigas;
+		}
+	}
+
+	if (antigas == nullptr) 
+	{
+		if (CInventoryItem* outfit = inventory().ItemFromSlot((u16)OUTFIT_SLOT))
+		{
+			if (IAntigas* _antigas = smart_cast<IAntigas*>(outfit))
+			{
+				antigas = _antigas;
+			}
+		}
+	}
+
+	if (antigas != nullptr) 
+	{
+		antigas->OnUpdate(this, Position());
 	}
 
 	PIItem active_item = inventory().ActiveItem();

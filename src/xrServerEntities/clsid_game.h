@@ -187,6 +187,8 @@
 #define CLSID_IITEM_ANTIRAD			MK_CLSID('I','I','_','A','N','T','I','R')
 #define CLSID_IITEM_EXPLOSIVE		MK_CLSID('I','I','_','E','X','P','L','O')
 
+#define CLSID_IITEM_ANTIGAS_FILTER	MK_CLSID('A','T','G','_','F','L','T','R')
+
 // Info Document
 #define CLSID_IITEM_DOCUMENT		MK_CLSID('I','I','_','D','O','C',' ',' ')
 
