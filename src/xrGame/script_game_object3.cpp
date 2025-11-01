@@ -48,6 +48,8 @@
 #include "player_hud.h"
 #include "../xrUI/ui_base.h"
 #include "../xrEngine/string_table.h"
+#include "ActorHelmet.h"
+#include "antigas.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -2031,4 +2033,26 @@ void CScriptGameObject::SetActorMorale(float value)
 	{
 		obj->SetActorMorale(value);
 	}
+}
+
+// FFx0001 ++
+bool CScriptGameObject::InstallAntigasFilter(CScriptGameObject* antigas_filter_lua_game_object)
+{
+	if (IAntigas* antigas = smart_cast<IAntigas*>(object().cast_inventory_item()))
+	{
+		return antigas->InstallFilter(antigas_filter_lua_game_object->cast_InventoryItem());
+	}
+
+	return false;
+}
+
+// FFx0001 ++
+bool CScriptGameObject::UnInstallAntigasFilter()
+{
+	if (IAntigas* antigas = smart_cast<IAntigas*>(object().cast_inventory_item()))
+	{
+		return antigas->UninstallFilter();
+	}
+
+	return false;
 }
