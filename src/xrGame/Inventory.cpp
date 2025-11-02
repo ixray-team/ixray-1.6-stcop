@@ -752,6 +752,20 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				}
 			}
 		}break;
+	case kWPN_7:
+		{
+		    b_send_event = true;
+			if(flags&CMD_START)
+			{
+                if(GetActiveSlot() == PISTOL_SLOT_NEW && ActiveItem())
+				{
+					Activate(NO_ACTIVE_SLOT);
+				}else 
+				{
+					Activate(PISTOL_SLOT_NEW);
+				}
+			}
+		}break;
 	}
 
 
@@ -789,7 +803,7 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				{
 					PIItem pItem = ItemFromSlot(slot);
 					// Pavel: достаем пушку только после того, как убрали детектор
-					if (pItem && pItem->BaseSlot() != INV_SLOT_2)
+					if (pItem && pItem->BaseSlot() != INV_SLOT_2 && pItem->BaseSlot() != PISTOL_SLOT_NEW)
 					{
 						pDevice->HideAndSetCallback([cmd, flags, this]() {
 							this->SendActionEvent(cmd, flags);

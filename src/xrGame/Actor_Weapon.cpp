@@ -145,6 +145,7 @@ void CActor::SetWeaponHideState (u16 State, bool bSet)
 static	u16 BestWeaponSlots [] = {
 	INV_SLOT_3		,		// 2
 	INV_SLOT_2		,		// 1
+	PISTOL_SLOT_NEW	,		// 1
 	GRENADE_SLOT	,		// 3
 	KNIFE_SLOT		,		// 0
 };
@@ -178,7 +179,7 @@ void CActor::SelectBestWeapon(CObject* O)
 		NeedToSelectBestWeapon = true;
 		if ((GameID() & eGameIDArtefactHunt) || (GameID() & eGameIDCaptureTheArtefact)) //only for test...
 		{
-			if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3)
+			if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == PISTOL_SLOT_NEW || pIItem->BaseSlot() == INV_SLOT_3)
 			{
 				CInventoryItem* pIItemInSlot = inventory().ItemFromSlot(pIItem->BaseSlot());
 				if (pIItemInSlot != nullptr && pIItemInSlot != pIItem)

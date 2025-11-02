@@ -34,6 +34,9 @@ enum EGameActions
 	kWPN_4,
 	kWPN_5,
 	kWPN_6,
+
+	kWPN_7, // abstract naming for 3rd weapon slot
+
 	kARTEFACT,
 	kWPN_NEXT,
 	kWPN_FIRE,
