@@ -760,8 +760,8 @@ end
 function game_disconnect(actor, npc)
 	local c = get_console()
 	c:execute("disconnect")
-	c:execute_deferred("main_menu off")
-	c:execute_deferred("hide")
+	c:execute("main_menu off")
+	c:execute("hide")
 end
 
 function game_credits(actor, npc)
