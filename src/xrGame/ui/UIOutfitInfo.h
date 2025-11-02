@@ -16,7 +16,7 @@ public:
 					CUIOutfitImmunity	();
 	virtual			~CUIOutfitImmunity	();
 
-			void	InitFromXml			( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type );
+			bool	InitFromXml			( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type );
 			void	SetProgressValue	( float cur, float comp );
 
 	virtual CUIWindow* ui_cast_window() { return this; }
@@ -45,7 +45,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	enum				{ max_count = ALife::eHitTypeMax-4 };
+	enum				{ max_count = ALife::eHitTypeMax-2 };
 	
 	CUIStatic*			m_caption;
 	CUIStatic*			m_Prop_line;
