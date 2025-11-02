@@ -206,7 +206,7 @@
 	<info_portion id="jup_b6_scientist_medic_soldier_outfit_done"></info_portion>
 	<info_portion id="jup_b6_scientist_nuclear_physicist_soldier_outfit_done"></info_portion>
 	<info_portion id="jup_b6_scientist_biochemist_soldier_outfit_done"></info_portion>
-	<info_portion id="jup_b6_scientist_biochemist_anomalous_grove_done""></info_portion>
+	<info_portion id="jup_b6_scientist_biochemist_anomalous_grove_done"></info_portion>
 	<info_portion id="jup_b206_anomalous_grove_has_plant_done"></info_portion>
 	<info_portion id="jup_b6_scientist_biochemist_anomalous_plant_done"></info_portion>
 	<info_portion id="jup_b206_nuclear_physicist_get_outfit_done"></info_portion>
@@ -225,7 +225,6 @@
 	<!--B220-->
 
 	<info_portion id="jup_b220_trapper_about_retire_told"></info_portion>
-	<info_portion id="jup_b208_burers_hunt_done"></info_portion>
 	<info_portion id="jup_b212_jupiter_chimera_hunt_told"></info_portion>
 	<info_portion id="jup_b212_jupiter_chimera_hunt_started"></info_portion>
 	<info_portion id="jup_b212_jupiter_chimera_dead"></info_portion>
