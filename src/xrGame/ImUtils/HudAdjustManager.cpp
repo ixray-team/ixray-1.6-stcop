@@ -302,18 +302,25 @@ void RenderHUDAdjustManager()
 												string32 btnName;
 												xr_sprintf(btnName, "Reset##HPosition_%d", attach_idx);
 
+												string64 _prefix = {};
+												xr_sprintf(_prefix, "%s", UI().is_widescreen() ? "_16x9" : "");
+												string128 val_name = {};
+
 												if (ImGui::Button(btnName)) 
 												{
 													switch (attach_idx)
 													{
 													case 1:
-														position = pSettings->r_fvector3(p_item->m_sect_name, "aim_hud_offset_pos");
+														xr_strconcat(val_name, "aim_hud_offset_pos", _prefix);
+														position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													case 2:
-														position = pSettings->r_fvector3(p_item->m_sect_name, "gl_hud_offset_pos");
+														xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
+														position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													default:
-														position = pSettings->r_fvector3(p_item->m_sect_name, "hands_position");
+														xr_strconcat(val_name, "hands_position", _prefix);
+														position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													}
 												}
@@ -343,13 +350,16 @@ void RenderHUDAdjustManager()
 													switch (attach_idx)
 													{
 													case 1:
-														rotation = pSettings->r_fvector3(p_item->m_sect_name, "aim_hud_offset_rot");
+														xr_strconcat(val_name, "aim_hud_offset_rot", _prefix);
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													case 2:
-														rotation = pSettings->r_fvector3(p_item->m_sect_name, "gl_hud_offset_rot");
+														xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													default:
-														rotation = pSettings->r_fvector3(p_item->m_sect_name, "hands_orientation");
+														xr_strconcat(val_name, "hands_orientation", _prefix);
+														rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 														break;
 													}
 												}
@@ -398,9 +408,15 @@ void RenderHUDAdjustManager()
 								{
 									ImGui::SeparatorText("Position##Item");
 									Fvector& position = p_item->m_measures.m_item_attach[0];
+
+									string64 _prefix = {};
+									xr_sprintf(_prefix, "%s", UI().is_widescreen() ? "_16x9" : "");
+									string128 val_name = {};
+
 									if (ImGui::Button("Reset##IPosition"))
 									{
-										position = pSettings->r_fvector3(p_item->m_sect_name, "item_position");
+										xr_strconcat(val_name, "item_position", _prefix);
+										position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 									}
 
 									if (ImGui::BeginTable("Data##HUDPI", 1))
@@ -423,7 +439,8 @@ void RenderHUDAdjustManager()
 									Fvector& rotation = p_item->m_measures.m_item_attach[1];
 									if (ImGui::Button("Reset##IRotation"))
 									{
-										rotation = pSettings->r_fvector3(p_item->m_sect_name, "item_orientation");
+										xr_strconcat(val_name, "item_orientation", _prefix);
+										rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
 									}
 
 									if (ImGui::BeginTable("Data##HUDR", 1))
