@@ -954,6 +954,7 @@ static	u16 SlotsToCheck [] = {
 		INV_SLOT_3		,		// 2
 		GRENADE_SLOT	,		// 3
 		ARTEFACT_SLOT	,		// 10
+		PISTOL_SLOT_NEW ,		// 13
 };
 
 void	CActor::OnNextWeaponSlot()
@@ -983,6 +984,10 @@ void	CActor::OnNextWeaponSlot()
 			if (SlotsToCheck[i] == ARTEFACT_SLOT) 
 			{
 				IR_OnKeyboardPress(kARTEFACT);
+			}
+			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
+			{
+				IR_OnKeyboardPress(kWPN_7);
 			}
 			else
 				IR_OnKeyboardPress(kWPN_1 + i);
