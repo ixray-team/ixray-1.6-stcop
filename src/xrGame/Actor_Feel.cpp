@@ -239,7 +239,7 @@ void	CActor::Check_for_AutoPickUp()
 		{
 			if (GameID() == eGameIDDeathmatch || GameID() == eGameIDTeamDeathmatch)
 			{
-				if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3 )
+				if (pIItem->BaseSlot() == INV_SLOT_2 || pIItem->BaseSlot() == INV_SLOT_3 || pIItem->BaseSlot() == PISTOL_SLOT_NEW)
 				{
 					if (inventory().ItemFromSlot(pIItem->BaseSlot()))
 						continue;

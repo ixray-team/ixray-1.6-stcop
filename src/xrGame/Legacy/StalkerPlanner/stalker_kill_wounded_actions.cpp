@@ -39,12 +39,21 @@ using namespace StalkerDecisionSpace;
 
 CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
 {
-	if (!object->inventory().ItemFromSlot(INV_SLOT_2))
+	if (!object->inventory().ItemFromSlot(INV_SLOT_2) && !object->inventory().ItemFromSlot(PISTOL_SLOT_NEW))
 		return			(object->best_weapon());
 
 	CWeaponMagazined	*temp = smart_cast<CWeaponMagazined*>(object->inventory().ItemFromSlot(INV_SLOT_2));
 	if (!temp)
-		return			(object->best_weapon());
+	{
+		temp = smart_cast<CWeaponMagazined*>(object->inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+		if (!temp)
+			return			(object->best_weapon());
+
+		if (!temp->can_kill())
+			return			(object->best_weapon());
+
+		return				(temp);
+	}
 
 	if (!temp->can_kill())
 		return			(object->best_weapon());
