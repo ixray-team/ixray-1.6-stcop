@@ -47,8 +47,8 @@ void CUIRankingsCoC::init_from_xml(CUIXml& xml, u8 index, bool bUnique)
 }
 void CUIRankingsCoC::Update()
 {
-	//if(ParentHasMe())
-	//	return;
+	if(ParentHasMe())
+		return;
 
 	luabind::functor<bool> functorCanShow;
 	if (ai().script_engine().functor("pda.coc_rankings_can_show", functorCanShow))
