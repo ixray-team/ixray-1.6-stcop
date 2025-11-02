@@ -1024,6 +1024,10 @@ void	CActor::OnPrevWeaponSlot()
 			{
 				IR_OnKeyboardPress(kARTEFACT);
 			}
+			else if (SlotsToCheck[i] == PISTOL_SLOT_NEW)
+			{
+				IR_OnKeyboardPress(kARTEFACT);
+			}
 			else
 				IR_OnKeyboardPress(kWPN_1 + i);
 			return;

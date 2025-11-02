@@ -752,6 +752,20 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				}
 			}
 		}break;
+	case kWPN_7:
+		{
+		    b_send_event = true;
+			if(flags&CMD_START)
+			{
+                if(GetActiveSlot() == PISTOL_SLOT_NEW && ActiveItem())
+				{
+					Activate(NO_ACTIVE_SLOT);
+				}else 
+				{
+					Activate(PISTOL_SLOT_NEW);
+				}
+			}
+		}break;
 	}
 
 
