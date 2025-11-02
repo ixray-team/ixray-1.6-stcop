@@ -42,7 +42,8 @@ ENGINE_API _action  actions[]		= {
 	{ "wpn_4",				kWPN_4					,_both},	
 	{ "wpn_5",				kWPN_5					,_both},	
 	{ "wpn_6",				kWPN_6					,_both},	
-	{ "artefact",			kARTEFACT				,_both/*_mp*/},		
+	{ "wpn_7",				kWPN_7					,_both},
+	{ "artefact",			kARTEFACT				,_both/*_mp*/},
 	{ "wpn_next",			kWPN_NEXT				,_both},	// means next ammo type
 	{ "wpn_fire",			kWPN_FIRE				,_both},	
 	{ "wpn_zoom",			kWPN_ZOOM				,_both},	

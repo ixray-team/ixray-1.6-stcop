@@ -393,7 +393,7 @@ void CAI_Stalker::HitSignal				(float amount, Fvector& vLocalDir, CObject* who, 
 
 bool CAI_Stalker::CanPutInSlot(PIItem item, u32 slot)
 {
-	if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
+	if (slot == INV_SLOT_2 || slot == INV_SLOT_3 || slot == PISTOL_SLOT_NEW)
 	{
 		return !!g_Alive();
 	}
