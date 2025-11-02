@@ -1469,7 +1469,7 @@ void CActor::UpdateCL()
 				old_slot = 0;
 			}
 
-			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
 			if (bres && need_restore_detector && GetDevice(true) != nullptr)
 			{
