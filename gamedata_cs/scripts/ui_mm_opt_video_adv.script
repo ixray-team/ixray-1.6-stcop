@@ -66,7 +66,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		end
 	end
 	
-    local addTrack = function (prec, text, command, step, invert, mode, show_value, depend, reg_name)
+    local addTrack = function (prec, text, command, step, invert, mode, show_value, depend, reg_name, magnitude)
         _st = xml:InitStatic("video_adv:templ_item", nil)
         local temp = xml:InitTrackBar("video_adv:track_template_" .. mode, _st)
         local tempText = xml:InitTextWnd("video_adv:cap_template", _st)
@@ -77,6 +77,9 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		temp:SetDrawingValue(show_value)
 		if reg_name then
 			handler:Register(temp, reg_name)
+		end
+		if magnitude then
+			temp:SetMagnitude(magnitude)
 		end
 		temp:SetStep(step)
         tempText:SetTextST(text)
@@ -146,7 +149,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
 	lineFrame(all_modes, "st_aa_options")
 
- 	addComboBox(mode_4, "ui_mm_r_scale_mode", "vid_scale_mode", 4, false, "sdVidRestart", "scaleMode")
+ 	addComboBox(mode_4, "ui_mm_r_scale_mode", "vid_scale_mode", 5, false, "sdVidRestart", "scaleMode")
     handler:AddCallback("scaleMode", ui_events.LIST_ITEM_SELECT, reloadControls, nil)
 	
 	local scalePresetPrec = function(id)
@@ -175,7 +178,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return false
 	end
 	
-	addTrack(vidScalePrec, "ui_mm_vid_scale", "vid_scale", 0.01, false, "float", true, "sdVidRestart")
+	addTrack(vidScalePrec, "ui_mm_vid_scale", "vid_scale", 0.01, false, "float", true, "sdVidRestart", "scaleTrack", 100)
 
 	local typeAAPrec = function(id)
 		if mode_4(id) then
@@ -190,7 +193,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		return true
 	end
 	
-	addTrack(mode_4, "ui_mm_cas_sharpening", "r4_cas_sharpening", 0.01, false, "float", true, "sdNothing")
+	addTrack(mode_4, "ui_mm_cas_sharpening", "r4_cas_sharpening", 0.01, false, "float", true, "sdNothing", "sharpeningTrack", 100)
 
 	addCheck(mode_4, "ui_mm_hashed_alpha_test", "r4_hashed_alpha_test", "sdSystemRestart", "hashedAlpha")
 	
