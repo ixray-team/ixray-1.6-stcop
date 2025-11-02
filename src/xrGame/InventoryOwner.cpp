@@ -349,6 +349,11 @@ void CInventoryOwner::renderable_Render		()
 		bool lValid = lWeapon ? lWeapon->BaseSlot() == INV_SLOT_3 : false;
 		if (lWeapon && lValid && lWeapon != inventory().ActiveItem())
 			lWeapon->renderable_Render();
+
+		auto lWeapon2 = inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+		bool lValid2 = lWeapon2 ? lWeapon2->BaseSlot() == INV_SLOT_3 : false;
+		if (lWeapon2 && lValid2 && lWeapon2 != inventory().ActiveItem())
+			lWeapon2->renderable_Render();
 	}
 
 	CAttachmentOwner::renderable_Render();
