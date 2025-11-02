@@ -183,7 +183,7 @@ function action_sound:on_enter( obj )
 					
 			end
 
-			local snd_name = self.st.sound_names[math.random(1, #self.st.sound_names]
+			local snd_name = self.st.sound_names[math.random(1, #self.st.sound_names)]
 			printf( "sr_sound: restrictor=%s pos_type=%d snd=%s", self.object:name(), self.st.pos_type, snd_name )
 
 			self.snd_obj	= xr_sound.get_safe_sound_object(snd_name)
