@@ -205,7 +205,7 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 		}
 	}
 
-	if(pSettings->line_exist(section.c_str(), "eat_sleepiness"))
+	if(pSettings->line_exist(section.c_str(), "eat_sleepiness") && m_booster_sleepiness)
 	{
 		val	= pSettings->r_float(section, "eat_sleepiness");
 		if(!fis_zero(val))
