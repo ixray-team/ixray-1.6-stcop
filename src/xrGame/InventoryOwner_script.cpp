@@ -40,8 +40,8 @@ void CInventoryOwner::script_register(lua_State *L)
 				luabind::value("ARTEFACT_SLOT", ARTEFACT_SLOT),
 				luabind::value("HELMET_SLOT", HELMET_SLOT),
 				luabind::value("BACKPACK_SLOT", BACKPACK_SLOT),
-				/*luabind::value("PATCH_SLOT", PATCH_SLOT),
-#ifdef MORE_INVENTORY_SLOTS
+				luabind::value("PISTOL_SLOT_NEW", PISTOL_SLOT_NEW),
+				luabind::value("BACKPACK_SLOT", BACKPACK_SLOT),
 				luabind::value("CUSTOM_SLOT_1", CUSTOM_SLOT_1),
 				luabind::value("CUSTOM_SLOT_2", CUSTOM_SLOT_2),
 				luabind::value("CUSTOM_SLOT_3", CUSTOM_SLOT_3),
@@ -52,7 +52,6 @@ void CInventoryOwner::script_register(lua_State *L)
 				luabind::value("CUSTOM_SLOT_8", CUSTOM_SLOT_8),
 				luabind::value("CUSTOM_SLOT_9", CUSTOM_SLOT_9),
 				luabind::value("CUSTOM_SLOT_10", CUSTOM_SLOT_10),
-#endif*/ // TODO: St4lker0k765: Port this?
 				luabind::value("LAST_SLOT", LAST_SLOT)
 			]
 			,
