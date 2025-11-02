@@ -178,7 +178,7 @@ bool CInventory::ActivateNextItemInActiveSlot()
 priority_group & CInventory::GetPriorityGroup	(u8 const priority_value, u16 slot)
 {
 	R_ASSERT(priority_value < qs_priorities_count);
-	if (slot == INV_SLOT_2)
+	if (slot == INV_SLOT_2 || slot == PISTOL_SLOT_NEW)
 	{
 		VERIFY(m_slot2_priorities[priority_value]);
 		return *m_slot2_priorities[priority_value];
