@@ -232,7 +232,7 @@ void CWeapon::UpdateXForm	()
 		mRes.mulA_43		(go->XFORM());
 	}
 
-	if (CurrSlot() == INV_SLOT_2)
+	if (CurrSlot() == INV_SLOT_2 || CurrSlot() == PISTOL_SLOT_NEW)
 		UpdatePosition_alt(mRes);
 	else
 		UpdatePosition(mRes);
