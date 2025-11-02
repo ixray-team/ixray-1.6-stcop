@@ -25,7 +25,15 @@ CUIComboBox::~CUIComboBox()
 
 void CUIComboBox::SetListLength(int length)
 {
+	int prev_height = m_iListHeight;
 	m_iListHeight = length;
+
+	if (m_bInited)
+	{
+		float item_height = m_list_box.GetHeight() / prev_height;
+		m_list_box.SetWndSize(Fvector2().set(m_list_box.GetWidth(), item_height * m_iListHeight));
+		m_list_frame.SetWndSize(Fvector2().set(m_list_frame.GetWidth(), m_list_box.GetItemHeight() * m_iListHeight));
+	}
 }
 
 void CUIComboBox::InitComboBox(Fvector2 pos, float width)
