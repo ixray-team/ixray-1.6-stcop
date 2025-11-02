@@ -287,7 +287,7 @@ void game_cl_Deathmatch::CheckItem			(PIItem pItem, PRESET_ITEMS* pPresetItems, 
 		if (PresetItemIt == pPresetItems->end()) return;
 	}
 
-	if (SlotID == INV_SLOT_2)
+	if (SlotID == INV_SLOT_2 || SlotID == PISTOL_SLOT_NEW)
 	{
 		PRESET_ITEMS_it DefPistolIt = std::find(PlayerDefItems.begin(), PlayerDefItems.end(), BigID);
 		if (DefPistolIt != PlayerDefItems.end() && PresetItemIt == pPresetItems->end()) return;
