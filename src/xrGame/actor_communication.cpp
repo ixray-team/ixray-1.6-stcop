@@ -29,6 +29,7 @@
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "game_cl_single.h"
 
 void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 {
@@ -147,7 +148,10 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 	if(!IsGameTypeSingle()) return;
 
 	bool b_alive = !!pInvOwner->cast_game_object()->cast_entity_alive()->g_Alive();
-	CurrentGameUI()->UIMainIngameWnd->AnimateContacts(b_alive);
+	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty == egdNovice : true;
+	if (renderHUD)
+		CurrentGameUI()->UIMainIngameWnd->AnimateContacts(b_alive);
 
 	Level().MapManager().AddRelationLocation		( pInvOwner );
 }
