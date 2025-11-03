@@ -1,16 +1,16 @@
 <w>
-	<background x="353" y="226" width="600" height="300">
+	<background x="387" y="299" width="600" height="300">
 		<auto_framewindow x="-5" y="0" width="240" height="85" stretch="1">
 			<texture>ui_stroketextbox</texture>
 		</auto_framewindow>
 	</background>
 
-	<spot_name_edit x="368" y="246" width="200" height="30">
-		<text x="5" font="letterica16" vert_align="c" align="l"/>
+	<spot_name_edit x="402" y="319" width="200" height="24">
+		<text x="5" font="letterica16" r="255" g="255" b="255" vert_align="c"></text>
 		<texture>ui_string_01</texture>
-	</spot_name_edit>
+	</spot_name_edit>	
 
-	<btn_apply x="395" y="279" width="70" height="28" check_mode="0" frame_mode="1">
+	<btn_apply x="429" y="352" width="70" height="28" check_mode="0" frame_mode="1">
 		<text font="letterica18">ui_inv_ok</text>
 		<texture_t>ui_nav_bt_t</texture_t>
 		<texture_e>ui_nav_bt_d</texture_e>
@@ -18,7 +18,7 @@
 		<texture_d>ui_nav_bt_d</texture_d>
 	</btn_apply>
 
-	<btn_cancel x="471" y="279" width="70" height="28" check_mode="0" frame_mode="1">
+	<btn_cancel x="506" y="352" width="70" height="28" check_mode="0" frame_mode="1">
 		<text font="letterica18">ui_inv_cancel</text>
 		<texture_t>ui_nav_bt_t</texture_t>
 		<texture_e>ui_nav_bt_d</texture_e>
