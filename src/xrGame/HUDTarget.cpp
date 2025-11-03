@@ -158,7 +158,7 @@ void CHUDTarget::Render()
 		return;
 	}
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
-	bool renderHUDTarget = noHUDonMaster ? g_SingleGameDifficulty != egdMaster : true;
+	bool renderHUDTarget = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
 	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
 	
 	if(!b_do_rendering)

@@ -3,6 +3,7 @@
 #include "UIMotionIcon.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
+#include "../game_cl_single.h"
 
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
 
@@ -216,7 +217,9 @@ void CUIMotionIcon::SetLuminosity(float newPos)
 void CUIMotionIcon::Draw()
 {
     const static bool disableMotionIcon = EngineExternal()[EEngineExternalUI::DisableMotionIcon];
-    if (!disableMotionIcon)
+    const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+    bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
+    if (!disableMotionIcon && renderHUD)
 	    inherited::Draw();
 }
 
