@@ -56,7 +56,8 @@ void CUIPdaSpot::Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd
 
 void CUIPdaSpot::InitControls()
 {
-	this->SetWndRect(Frect().set(0.0f, 0.0f, 1024.f, 768.f));
+	SetWndPos(Fvector2().set(0.0f, 0.0f));
+	SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, "pda_spot.xml");
