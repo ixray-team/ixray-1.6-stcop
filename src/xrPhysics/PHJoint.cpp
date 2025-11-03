@@ -13,7 +13,7 @@
 ///////////////////////////////////////////////////////////////////
 
 #include "ExtendedGeom.h"
-
+#include "../xrCore/EngineExternal.h"
 #include "PHElement.h"
 #include "PHJoint.h"
 #include "PHShell.h"
@@ -268,7 +268,11 @@ void CPHJoint::CreateSlider()
 	CalcAxis(0,axis,lo,hi,first_matrix,second_matrix,rotate);
 	//if(body1)axis.invert();//SwapLimits(lo,hi);!!!
 
- 	dJointSetSliderAxis(m_joint, -axis.x, -axis.y, -axis.z);
+	Fvector axis_temp = axis;
+	if (EngineExternal().ShadowOfChernobylMode())
+		axis_temp.invert();
+
+ 	dJointSetSliderAxis(m_joint, -axis_temp.x, -axis_temp.y, -axis_temp.z);
 	
 	dJointSetSliderParam( m_joint, dParamLoStop, axes[0].low );
 	dJointSetSliderParam( m_joint, dParamHiStop, axes[0].high );
