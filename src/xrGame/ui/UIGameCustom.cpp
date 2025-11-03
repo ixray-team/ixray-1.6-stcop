@@ -127,7 +127,10 @@ void CUIGameCustom::Render()
 			}
 		}
 
-		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) )
+		const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+		bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty != egdMaster : true;
+
+		if( GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT) && renderHUD )
 			UIMainIngameWnd->Draw();
 	}
 
