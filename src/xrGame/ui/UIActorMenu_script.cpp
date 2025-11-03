@@ -237,20 +237,35 @@ void CUIActorMenu::TryDisassembleItem(CUIWindow* w, void* d)
 	const char* partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 
 	luabind::functor<bool> funct;
-
-	R_ASSERT2(
-		ai().script_engine().functor(m_onCanDisassembleItem, funct),
-		make_string<const char*>("Failed to get functor onCanDisassembleItem, item = %s", item->m_section_id.c_str())
-	);
+	if (m_isCanDisassembleItem)
+	{
+		R_ASSERT2(
+			ai().script_engine().functor(m_onCanDisassembleItem, funct),
+			make_string<const char*>("Failed to get functor OnCanDisassembleItem, item = %s", item->m_section_id.c_str())
+		);
+	}
+	else
+	{
+		Msg("! Trying to disassemble item [%s], but functor OnCanDisassembleItem isn't set!", item->m_section_id.c_str());
+		return;
+	}
 
 	bool can_disassemble = funct(item->m_section_id.c_str(), item->GetCondition(), partner);
 
 	luabind::functor<const char*> funct2;
 
-	R_ASSERT2(
-		ai().script_engine().functor(m_onQuestionDisassembleItem, funct2),
-		make_string<const char*>("Failed to get functor onQuestionDisassembleItem, item = %s", item->m_section_id.c_str())
-	);
+	if (m_isQuestionDisassembleItem)
+	{
+		R_ASSERT2(
+			ai().script_engine().functor(m_onQuestionDisassembleItem, funct2),
+			make_string<const char*>("Failed to get functor OnQuestionDisassembleItem, item = %s", item->m_section_id.c_str())
+		);
+	}
+	else
+	{
+		Msg("! Trying to disassemble item [%s], but functor OnQuestionDisassembleItem isn't set!", item->m_section_id.c_str());
+		return;
+	}
 
 	const char* question = funct2(item->m_section_id.c_str(), item->GetCondition(), can_disassemble, partner);
 
@@ -306,11 +321,18 @@ void CUIActorMenu::PerformDisassemble()
 	const char* partner = m_pPartnerInvOwner ? m_pPartnerInvOwner->CharacterInfo().Profile().c_str() : Actor()->CharacterInfo().Profile().c_str();
 	luabind::functor<void> funct;
 
-	R_ASSERT2(
-		ai().script_engine().functor(m_onEffectDisassemble, funct),
-		make_string<const char*>("Failed to get functor <onEffectDisassemble>, item = %s", item->m_section_id.c_str())
-	);
-
+	if (m_isEffectDisassemble)
+	{
+		R_ASSERT2(
+			ai().script_engine().functor(m_onEffectDisassemble, funct),
+			make_string<const char*>("Failed to get functor <onEffectDisassemble>, item = %s", item->m_section_id.c_str())
+		);
+	}
+	else
+	{
+		Msg("! Trying to disassemble item [%s], but functor OnEffectDisassemble isn't set!", item->m_section_id.c_str());
+		return;
+	}
 	funct(item->m_section_id.c_str(), item->GetCondition(), partner);
 
 	SetCurrentItem(nullptr);
