@@ -220,7 +220,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	m_UserSpotWnd = new CUIPdaSpot();
 	m_UserSpotWnd->SetAutoDelete(true);
-	AttachChild(m_UserSpotWnd);
+	//AttachChild(m_UserSpotWnd);
 }
 
 void CUIMapWnd::Show(bool status)
