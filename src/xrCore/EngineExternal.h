@@ -10,6 +10,7 @@ enum class EEngineExternalUI
 	PdaRearrangeTabButtons,
 	UseSavedGameStatic,
 	ShowQuickSlotByDefault,
+	DisableHudRenderingOnMaster,
 	None
 };
 

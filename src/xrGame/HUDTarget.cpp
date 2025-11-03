@@ -23,6 +23,7 @@
 #include <ai/monsters/poltergeist/poltergeist.h>
 #include "../../xrUI/UIFontDefines.h"
 #include "Actor.h"
+#include "game_cl_single.h"
 
 u32 C_ON_ENEMY = color_rgba(0xff,0,0,0x80);
 u32 C_ON_NEUTRAL = color_rgba(0xff,0xff,0x80,0x80);
@@ -156,7 +157,9 @@ void CHUDTarget::Render()
 		Load();
 		return;
 	}
-	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) );
+	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+	bool renderHUDTarget = noHUDonMaster ? g_SingleGameDifficulty != egdMaster : true;
+	BOOL  b_do_rendering = ( psHUD_Flags.is(HUD_CROSSHAIR|HUD_CROSSHAIR_RT|HUD_CROSSHAIR_RT2) && renderHUDTarget );
 	
 	if(!b_do_rendering)
 		return;
