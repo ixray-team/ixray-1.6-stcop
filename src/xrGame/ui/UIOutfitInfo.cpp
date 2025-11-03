@@ -230,7 +230,7 @@ void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 
 	for ( u32 i = 0; i < max_count; ++i )
 	{
-		if ( i == ALife::eHitTypeFireWound )
+		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
 		{
 			continue;
 		}
