@@ -395,6 +395,13 @@ void CUIMainIngameWnd::Draw()
 	UIMotionIcon->Draw();
 
 
+	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
+	if (noHUDonMaster)
+	{
+		bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty < egdVeteran : true;
+		UIZoneMap->disabled = !renderHUD;
+	}
+
 	UIZoneMap->visible = true;
 	UIZoneMap->Render();
 
