@@ -35,55 +35,31 @@
 #include "../WeaponRPG7.h"
 #include "../CustomOutfit.h"
 #include "../ActorHelmet.h"
-#include "../ai_space.h"
 #include "../../xrScripts/script_engine.h"
 #include "script_game_object.h" 
 
 using namespace luabind;
-// -----
+using namespace inventory::upgrade;
 
 const LPCSTR g_inventory_upgrade_xml = "inventory_upgrade.xml";
 
-CUIInventoryUpgradeWnd::Scheme::Scheme()
-{
-}
-
 CUIInventoryUpgradeWnd::Scheme::~Scheme()
 {
-	delete_data( cells );
-}
-
-// =============================================================================================
-
-CUIInventoryUpgradeWnd::CUIInventoryUpgradeWnd()
-{
-	//m_WeaponIconsShader = new ui_shader();
-	//(*m_WeaponIconsShader)->create("hud\\default", "ui\\ui_actor_weapons");
-	//m_OutfitIconsShader = new ui_shader();
-	//(*m_OutfitIconsShader)->create("hud\\default", "ui\\ui_actor_armor");
-	m_inv_item       = nullptr;
-	m_cur_upgrade_id = nullptr;
-	m_current_scheme = nullptr;
-	m_btn_repair     = nullptr;
-	m_btn_disassemble = nullptr;
+	delete_data(cells);
 }
 
 CUIInventoryUpgradeWnd::~CUIInventoryUpgradeWnd()
 {
-	delete_data( m_schemes );
-	//xr_delete(m_WeaponIconsShader);
-	//xr_delete(m_OutfitIconsShader);
-	//m_WeaponIconsShader = 0;
-	//m_OutfitIconsShader = 0;
+	delete_data(m_schemes);
 }
 
 void CUIInventoryUpgradeWnd::Init()
 {
 	CUIXml uiXml;
-	uiXml.Load( CONFIG_PATH, UI_PATH, g_inventory_upgrade_xml );
-	
+	uiXml.Load(CONFIG_PATH, UI_PATH, g_inventory_upgrade_xml);
+
 	CUIXmlInit xml_init;
-	xml_init.InitWindow( uiXml, "main", 0, this );
+	xml_init.InitWindow(uiXml, "main", 0, this);
 	m_border_texture = uiXml.ReadAttrib("border", 0, "texture");
 	m_ink_texture = uiXml.ReadAttrib("inking", 0, "texture");
 
@@ -106,9 +82,9 @@ void CUIInventoryUpgradeWnd::Init()
 	}
 
 	m_scheme_wnd = new CUIWindow();
-	m_scheme_wnd->SetAutoDelete( true );
-	AttachChild( m_scheme_wnd );
-	xml_init.InitWindow( uiXml, "scheme", 0, m_scheme_wnd );
+	m_scheme_wnd->SetAutoDelete(true);
+	AttachChild(m_scheme_wnd);
+	xml_init.InitWindow(uiXml, "scheme", 0, m_scheme_wnd);
 
 	m_item_info = new CUIItemInfo();
 	if (m_item_info->InitItemInfo("inventory_upgrade_info.xml"))
@@ -121,7 +97,7 @@ void CUIInventoryUpgradeWnd::Init()
 		xr_delete(m_item_info);
 	}
 
-	m_btn_repair = UIHelper::Create3tButton( uiXml, "repair_button", this );
+	m_btn_repair = UIHelper::Create3tButton(uiXml, "repair_button", this);
 	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
 	if (parent_wnd)
 	{
@@ -134,17 +110,21 @@ void CUIInventoryUpgradeWnd::Init()
 		m_btn_disassemble = UIHelper::Create3tButton(uiXml, "disassemble_button", this);
 	}
 
-	LoadCellsBacks( uiXml );
-	LoadSchemes( uiXml );
+	LoadCellsBacks(uiXml);
+	LoadSchemes(uiXml);
 }
 
 void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgrade)
 {
-	if (m_item_info)
+	if (m_item_info != nullptr)
+	{
 		m_item_info->InitItem(cellItem);
+	}
 
-	if (!cellItem)
+	if (cellItem == nullptr)
+	{
 		return;
+	}
 
 	m_inv_item = static_cast<PIItem>(cellItem ? cellItem->m_pData : nullptr);
 
@@ -155,7 +135,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 	}
 
 	// Загружаем картинку
-	if (m_item && m_inv_item)
+	if (m_item != nullptr && m_inv_item != nullptr)
 	{
 		bool is_shader = false;
 		if (m_inv_item->cast_weapon())
@@ -173,7 +153,7 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 			m_item->SetShader(InventoryUtilities::GetOutfitUpgradeIconsShader(upgrIconsTexture));
 		}
 
-		if (m_item && is_shader)
+		if (is_shader)
 		{
 			Irect item_upgrade_grid_rect = m_inv_item->GetUpgrIconRect();
 			Frect texture_rect;
@@ -193,25 +173,29 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 			m_item->Show(true);
 		}
 		else
+		{
 			m_item->Show(false);
+		}
 	}
 
 	m_scheme_wnd->DetachAll();
-	m_scheme_wnd->Show( false );
-	if (m_back)
+	m_scheme_wnd->Show(false);
+
+	if (m_back != nullptr)
 	{
 		m_back->DetachAll();
 		m_back->Show(false);
 	}
-	m_btn_repair->Enable( false );
+
+	m_btn_repair->Enable(false);
 	if (m_btn_disassemble != nullptr)
 	{
 		m_btn_disassemble->Enable(false);
 	}
-	
-	if ( ai().get_alife() && m_inv_item )
+
+	if (ai().get_alife() && m_inv_item != nullptr)
 	{
-		if ( install_item( *m_inv_item, can_upgrade ) )
+		if (install_item(*m_inv_item, can_upgrade))
 		{
 			UpdateAllUpgrades();
 		}
@@ -220,9 +204,9 @@ void CUIInventoryUpgradeWnd::InitInventory(CUICellItem* cellItem, bool can_upgra
 
 // ------------------------------------------------------------------------------------------
 
-void CUIInventoryUpgradeWnd::Show( bool status )
-{ 
-	inherited::Show( status );
+void CUIInventoryUpgradeWnd::Show(bool status)
+{
+	inherited::Show(status);
 	UpdateAllUpgrades();
 }
 
@@ -233,17 +217,15 @@ void CUIInventoryUpgradeWnd::Update()
 
 void CUIInventoryUpgradeWnd::Reset()
 {
-	SCHEMES::iterator ibw = m_schemes.begin();
-	SCHEMES::iterator iew = m_schemes.end();
-	for ( ; ibw != iew; ++ibw )
+	for (const auto& scheme : m_schemes)
 	{
-		UI_Upgrades_type::iterator ib = (*ibw)->cells.begin();
-		UI_Upgrades_type::iterator ie = (*ibw)->cells.end();
-		for ( ; ib != ie; ++ib )
+		for (const auto& scheme_cell_item : scheme->cells)
 		{
-			(*ib)->Reset();
-			if ((*ib)->m_point)
-				(*ib)->m_point->Reset();
+			scheme_cell_item->Reset();
+			if (scheme_cell_item->m_point != nullptr)
+			{
+				scheme_cell_item->m_point->Reset();
+			}
 		}
 	}
 	inherited::Reset();
@@ -252,32 +234,29 @@ void CUIInventoryUpgradeWnd::Reset()
 
 void CUIInventoryUpgradeWnd::UpdateAllUpgrades()
 {
-	if ( !m_current_scheme || !m_inv_item )
+	if (m_current_scheme == nullptr || m_inv_item == nullptr)
 	{
 		return;
 	}
-	
-	UI_Upgrades_type::iterator ib = m_current_scheme->cells.begin();
-	UI_Upgrades_type::iterator ie = m_current_scheme->cells.end();
-	for ( ; ib != ie; ++ib )
+
+	for (const auto& ui_item : m_current_scheme->cells)
 	{
-		(*ib)->update_item( m_inv_item );
+		ui_item->update_item(m_inv_item);
 	}
 }
 
-void CUIInventoryUpgradeWnd::SetCurScheme( const shared_str& id )
+void CUIInventoryUpgradeWnd::SetCurScheme(const shared_str& id)
 {
-	SCHEMES::iterator ib = m_schemes.begin();
-	SCHEMES::iterator ie = m_schemes.end();
-	for ( ; ib != ie; ++ib )
+	for (const auto& scheme : m_schemes)
 	{
-		if ( (*ib)->name._get() == id._get() )
+		if (scheme->name._get() == id._get())
 		{
-			m_current_scheme = (*ib);
+			m_current_scheme = scheme;
 			return;
 		}
 	}
-	VERIFY2( 0, make_string<const char*>( "Scheme <%s> does not loaded !", id.c_str() ) );
+
+	VERIFY2(0, make_string<const char*>("Scheme <%s> does not loaded !", id.c_str()));
 }
 
 bool CUIInventoryUpgradeWnd::CheckEnableDisassembleButton(CInventoryItem& inv_item)
@@ -287,19 +266,18 @@ bool CUIInventoryUpgradeWnd::CheckEnableDisassembleButton(CInventoryItem& inv_it
 
 	luabind::functor<bool> funct;
 
-	R_ASSERT2(
-		ai().script_engine().functor("inventory_upgrades.gunsl_need_disassemble_button", funct),
-		make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_need_disassemble_button>, item = %s", item_name)
-	);
+	R_ASSERT2(ai().script_engine().functor("inventory_upgrades.gunsl_need_disassemble_button", funct), make_string<const char*>("Failed to get functor <inventory_upgrades.gunsl_need_disassemble_button>, item = %s", item_name));
 
 	return funct(item_name, condition);
 }
 
-bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_upgrade )
+bool CUIInventoryUpgradeWnd::install_item(CInventoryItem& inv_item, bool can_upgrade)
 {
 	m_scheme_wnd->DetachAll();
-	if (m_back)
+	if (m_back != nullptr)
+	{
 		m_back->DetachAll();
+	}
 
 	bool CanBeRepared = inv_item.cast_weapon() != nullptr || inv_item.cast_outfit() != nullptr || inv_item.cast_helmet() != nullptr;
 	m_btn_repair->Enable(CanBeRepared && inv_item.GetCondition() < 0.99f);
@@ -309,123 +287,130 @@ bool CUIInventoryUpgradeWnd::install_item( CInventoryItem& inv_item, bool can_up
 		m_btn_disassemble->Enable(CanBeRepared && CheckEnableDisassembleButton(inv_item));
 	}
 
-	if ( !can_upgrade )
+	if (!can_upgrade)
 	{
 #ifdef DEBUG
-		Msg( "Inventory item <%s> cannot upgrade - Mechanic say.", inv_item.m_section_id.c_str() );
+		Msg("Inventory item <%s> cannot upgrade - Mechanic say.", inv_item.m_section_id.c_str());
 #endif // DEBUG
 		m_current_scheme = nullptr;
 		return false;
 	}
 
-	LPCSTR scheme_name = Level().m_upgrade_manager->get_item_scheme( inv_item );
-	if ( !scheme_name )
+	LPCSTR scheme_name = Level().m_upgrade_manager->get_item_scheme(inv_item);
+	if (!scheme_name)
 	{
 #ifdef DEBUG
-		Msg( "Inventory item <%s> does not contain upgrade scheme.", inv_item.m_section_id.c_str() );
+		Msg("Inventory item <%s> does not contain upgrade scheme.", inv_item.m_section_id.c_str());
 #endif // DEBUG
 		m_current_scheme = nullptr;
 		return false;
 	}
 
-	SetCurScheme( scheme_name );
-	
-	UI_Upgrades_type::iterator ib = m_current_scheme->cells.begin();
-	UI_Upgrades_type::iterator ie = m_current_scheme->cells.end();
-	for ( ; ib != ie; ++ib )
+	SetCurScheme(scheme_name);
+
+	for (const auto& ui_item : m_current_scheme->cells)
 	{
-		UIUpgrade* ui_item = (*ib);
-		m_scheme_wnd->AttachChild( ui_item );
-		if (m_back && ui_item->m_point)
-			m_back->AttachChild( ui_item->m_point );
-		
-		LPCSTR upgrade_name = Level().m_upgrade_manager->get_upgrade_by_index( inv_item, ui_item->get_scheme_index() );
-		ui_item->init_upgrade( upgrade_name, inv_item );
-		
-		Upgrade_type* upgrade_p = Level().m_upgrade_manager->get_upgrade( upgrade_name );
-		VERIFY( upgrade_p );
-		for(u8 i = 0; i < inventory::upgrade::max_properties_count; i++)
+		m_scheme_wnd->AttachChild(ui_item);
+
+		if (m_back != nullptr && ui_item->m_point)
+		{
+			m_back->AttachChild(ui_item->m_point);
+		}
+
+		LPCSTR upgrade_name = Level().m_upgrade_manager->get_upgrade_by_index(inv_item, ui_item->get_scheme_index());
+		ui_item->init_upgrade(upgrade_name, inv_item);
+
+		Upgrade_type* upgrade_p = Level().m_upgrade_manager->get_upgrade(upgrade_name);
+		VERIFY(upgrade_p);
+		for (u8 i = 0; i < max_properties_count; i++)
 		{
 			shared_str prop_name = upgrade_p->get_property_name(i);
-			if(prop_name.size())
+			if (prop_name.size())
 			{
-				Property_type* prop_p = Level().m_upgrade_manager->get_property( prop_name );
-				VERIFY( prop_p );
+				Property_type* prop_p = Level().m_upgrade_manager->get_property(prop_name);
+				VERIFY(prop_p);
 			}
 		}
-		
-		ui_item->set_texture( UIUpgrade::LAYER_ITEM,   upgrade_p->icon_name() );
-		ui_item->set_texture( UIUpgrade::LAYER_POINT,  m_point_textures[UIUpgrade::STATE_ENABLED].c_str() ); //default
-		ui_item->set_texture( UIUpgrade::LAYER_COLOR,  m_cell_textures[UIUpgrade::STATE_ENABLED].c_str() ); //default
-        ui_item->set_texture( UIUpgrade::LAYER_BORDER, m_border_texture.c_str());
-        ui_item->set_texture( UIUpgrade::LAYER_INK,	   m_ink_texture.c_str());
+
+		ui_item->set_texture(UIUpgrade::LAYER_ITEM, upgrade_p->icon_name());
+		ui_item->set_texture(UIUpgrade::LAYER_POINT, m_point_textures[UIUpgrade::STATE_ENABLED].c_str()); //default
+		ui_item->set_texture(UIUpgrade::LAYER_COLOR, m_cell_textures[UIUpgrade::STATE_ENABLED].c_str()); //default
+		ui_item->set_texture(UIUpgrade::LAYER_BORDER, m_border_texture.c_str());
+		ui_item->set_texture(UIUpgrade::LAYER_INK, m_ink_texture.c_str());
 	}
-	
-	m_scheme_wnd->Show	( true );
-	if (m_item)
-		m_item->Show		( true );
-	if (m_back)
-		m_back->Show		( true );
+
+	m_scheme_wnd->Show(true);
+
+	if (m_item != nullptr)
+	{
+		m_item->Show(true);
+	}
+
+	if (m_back != nullptr)
+	{
+		m_back->Show(true);
+	}
 
 	UpdateAllUpgrades();
 	return true;
 }
 
-UIUpgrade* CUIInventoryUpgradeWnd::FindUIUpgrade( Upgrade_type const* upgr )
+UIUpgrade* CUIInventoryUpgradeWnd::FindUIUpgrade(Upgrade_type const* upgr)
 {
-	if ( !m_current_scheme )
+	if (m_current_scheme == nullptr)
 	{
 		return nullptr;
 	}
-	UI_Upgrades_type::iterator ib = m_current_scheme->cells.begin();
-	UI_Upgrades_type::iterator ie = m_current_scheme->cells.end();
-	for ( ; ib != ie; ++ib )
+
+	for (const auto& ui_item : m_current_scheme->cells)
 	{
-		Upgrade_type* i_upgr = (*ib)->get_upgrade();
-		if ( upgr == i_upgr )
+		Upgrade_type* i_upgr = ui_item->get_upgrade();
+		if (upgr == i_upgr)
 		{
-			return (*ib);
+			return ui_item;
 		}
 	}
+
 	return nullptr;
 }
 
-bool CUIInventoryUpgradeWnd::DBClickOnUIUpgrade( Upgrade_type const* upgr )
+bool CUIInventoryUpgradeWnd::DBClickOnUIUpgrade(Upgrade_type const* upgr)
 {
 	UpdateAllUpgrades();
-	UIUpgrade* uiupgr = FindUIUpgrade( upgr );
-	if ( uiupgr )
+	UIUpgrade* uiupgr = FindUIUpgrade(upgr);
+	if (uiupgr)
 	{
 		uiupgr->OnClick();
 		return true;
 	}
+
 	return false;
 }
 
-void CUIInventoryUpgradeWnd::AskUsing( LPCSTR text, LPCSTR upgrade_name )
+void CUIInventoryUpgradeWnd::AskUsing(LPCSTR text, LPCSTR upgrade_name)
 {
-	VERIFY( m_inv_item );
-	VERIFY( upgrade_name );
-	VERIFY( m_pParentWnd );
+	VERIFY(m_inv_item);
+	VERIFY(upgrade_name);
+	VERIFY(m_pParentWnd);
 
 	UpdateAllUpgrades();
 
 	m_cur_upgrade_id = upgrade_name;
-	
+
 	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
-	if ( parent_wnd )
+	if (parent_wnd)
 	{
-		parent_wnd->CallMessageBoxYesNo( text );
+		parent_wnd->CallMessageBoxYesNo(text);
 	}
 }
 
 void CUIInventoryUpgradeWnd::OnMesBoxYes()
 {
-	if (Level().m_upgrade_manager->upgrade_install( *m_inv_item, m_cur_upgrade_id, false ) )
+	if (Level().m_upgrade_manager->upgrade_install(*m_inv_item, m_cur_upgrade_id, false))
 	{
-		VERIFY( m_pParentWnd );
-		CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>( m_pParentWnd );
-		if ( parent_wnd )
+		VERIFY(m_pParentWnd);
+		CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
+		if (parent_wnd)
 		{
 			//Alundaio: tell script that item has been upgraded
 			luabind::functor<void>	funct;
@@ -443,22 +428,22 @@ void CUIInventoryUpgradeWnd::OnMesBoxYes()
 	UpdateAllUpgrades();
 }
 
-void CUIInventoryUpgradeWnd::HighlightHierarchy( shared_str const& upgrade_id )
+void CUIInventoryUpgradeWnd::HighlightHierarchy(shared_str const& upgrade_id)
 {
 	UpdateAllUpgrades();
-	Level().m_upgrade_manager->highlight_hierarchy( *m_inv_item, upgrade_id );
+	Level().m_upgrade_manager->highlight_hierarchy(*m_inv_item, upgrade_id);
 }
 
 void CUIInventoryUpgradeWnd::ResetHighlight()
 {
 	UpdateAllUpgrades();
-	Level().m_upgrade_manager->reset_highlight( *m_inv_item );
+	Level().m_upgrade_manager->reset_highlight(*m_inv_item);
 }
 
-void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
+void CUIInventoryUpgradeWnd::set_info_cur_upgrade(Upgrade_type* upgrade)
 {
-	UIUpgrade* uiu = FindUIUpgrade( upgrade );
-	if ( uiu )
+	UIUpgrade* uiu = FindUIUpgrade(upgrade);
+	if (uiu)
 	{
 		if (Device.dwTimeContinual < uiu->FocusReceiveTime() + (m_item_info ? m_item_info->delay : 0))
 		{
@@ -471,9 +456,9 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 	}
 
 	CUIActorMenu* parent_wnd = smart_cast<CUIActorMenu*>(m_pParentWnd);
-	if ( parent_wnd )
+	if (parent_wnd)
 	{
-		if ( parent_wnd->SetInfoCurUpgrade( upgrade, m_inv_item ) )
+		if (parent_wnd->SetInfoCurUpgrade(upgrade, m_inv_item))
 		{
 			UpdateAllUpgrades();
 		}
@@ -483,24 +468,22 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 void CUIInventoryUpgradeWnd::DeInitInventory()
 {
 	set_info_cur_upgrade(nullptr);
-	if (m_back)
+	if (m_back != nullptr)
 	{
 		m_back->DetachAll();
 		m_back->Show(false);
 	}
-	if (m_item)
+
+	if (m_item != nullptr)
 	{
 		m_item->DetachAll();
 		m_item->Show(false);
 	}
+
 	m_btn_repair->Enable(false);
 	m_scheme_wnd->DetachAll();
 	m_scheme_wnd->Show(false);
-/*	if (m_item_info)
-	{
-		m_item_info->DetachAll();
-		m_item_info->Show(false);
-	}*/
+
 	if (m_btn_disassemble != nullptr)
 	{
 		m_btn_disassemble->Enable(false);

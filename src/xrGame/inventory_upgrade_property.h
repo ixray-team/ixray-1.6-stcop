@@ -6,61 +6,44 @@
 //	Description : inventory upgrade property class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef INVENTORY_UPGRADE_PROPERTY_H_INCLUDED
-#define INVENTORY_UPGRADE_PROPERTY_H_INCLUDED
+#pragma once
 
 #include "inventory_upgrade.h"
 
-namespace inventory
-{
-namespace upgrade
-{
-
-
-class Property
+class inventory::upgrade::Property final
 {
 public:
-	typedef xr_vector<shared_str>		FunctorParams_type;
+	using FunctorParams_type = xr_vector<shared_str>;
 
 private:
-	typedef detail::functor2<LPCSTR>		StrFunctor;
+	using StrFunctor = functor2<LPCSTR>;
 
 public:
 	Property(const Property& other) = delete;
 	Property& operator=(const Property& other) = delete;
-					Property();
-	virtual			~Property();
+	Property() = default;
+	virtual	~Property() = default;
 
-			void	construct( const shared_str& property_id, Manager& manager_r );
-	IC shared_str const& id() const;
-	IC LPCSTR		id_str() const;
-	IC LPCSTR		icon_name() const;
-	IC LPCSTR		name() const;
-	IC u32			icon_color() const;
+	void construct(const shared_str& property_id, Manager& manager_r);
+	IC shared_str const& id() const { return m_id; }
+	IC LPCSTR id_str() const { return m_id.c_str(); }
+	IC LPCSTR icon_name() const { return m_icon.c_str(); }
+	IC LPCSTR name() const { return m_name.c_str(); }
+	IC u32 icon_color() const { return m_color; }
 
-	IC FunctorParams_type const&	functor_params() const;
+	IC FunctorParams_type const& functor_params() const { return m_functor_params; }
 
-		bool		run_functor( LPCSTR parameter, string256& result );
+	bool run_functor(LPCSTR parameter, string256& result);
 
-public:
-	
 protected:
-	shared_str		m_id;
+	shared_str m_id;
 
-	shared_str		m_name;
-	shared_str		m_icon;
-	u32				m_color;
+	shared_str m_name;
+	shared_str m_icon;
+	u32 m_color = 0xFFFFFFFF;
 
-	StrFunctor			m_desc;
-	FunctorParams_type	m_functor_params;
+	StrFunctor m_desc;
+	FunctorParams_type m_functor_params;
 
 }; // class Property
-
-
-} // namespace upgrade
-} // namespace inventory
-
-#include "inventory_upgrade_property_inline.h"
-
-#endif // INVENTORY_UPGRADE_PROPERTY_H_INCLUDED
 

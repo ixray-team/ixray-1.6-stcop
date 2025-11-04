@@ -6,17 +6,13 @@
 //	Description : inventory upgrade base class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef INVENTORY_UPGRADE_BASE_H_INCLUDED
-#define INVENTORY_UPGRADE_BASE_H_INCLUDED
+#pragma once
 
 #include "object_broker.h"
 
 class CInventoryItem;
 
-namespace inventory
-{
-namespace upgrade
-{
+namespace inventory::upgrade {
 
 class Manager;
 class Group;
@@ -44,47 +40,40 @@ class UpgradeBase
 public:
 	UpgradeBase(const UpgradeBase& other) = delete;
 	UpgradeBase& operator=(const UpgradeBase& other) = delete;
-							UpgradeBase();
-	virtual					~UpgradeBase();
-				void		construct( const shared_str& upgrade_id, Manager& manager_r );
+	UpgradeBase() = default;
+	virtual	~UpgradeBase() = default;
+	void construct(const shared_str& upgrade_id, Manager& manager_r);
 	
-	IC	 const	shared_str& id() const;
-	IC			LPCSTR		id_str() const;
-	IC			bool		is_known() const;
+	IC const shared_str& id() const { return m_id; }
+	IC LPCSTR id_str() const { return m_id.c_str(); }
+	IC bool is_known() const { return m_known; }
 
 #ifdef DEBUG
-	virtual		void		log_hierarchy( LPCSTR nest );
-//	virtual		void		test_all_upgrades( CInventoryItem& item );
+	virtual void log_hierarchy(LPCSTR nest);
 #endif // DEBUG
 
-	virtual		bool		is_root();
-				bool		make_known();
-	virtual		bool		contain_upgrade( const shared_str& upgrade_id );
-	virtual		void		fill_root_container( Root* root );
+	virtual bool is_root();
+	bool make_known();
+	virtual bool contain_upgrade(const shared_str& upgrade_id);
+	virtual void fill_root_container(Root* root);
 
-	virtual		UpgradeStateResult	can_install( CInventoryItem& item, bool loading );
+	virtual UpgradeStateResult can_install(CInventoryItem& item, bool loading);
 
-	virtual		void		highlight_up() {};
-	virtual		void		highlight_down() {};
+	virtual void highlight_up() {};
+	virtual void highlight_down() {};
 
 protected:
-	typedef xr_vector<Group*>	Groups_type;
+	using Groups_type = xr_vector<Group*>;
 
 private:
-	shared_str			m_id;
+	shared_str m_id;
 
 protected:
-	bool				m_known;
-	Groups_type			m_depended_groups;
+	bool m_known = false;
+	Groups_type m_depended_groups = {};
 
 protected:
-	void				add_dependent_groups( LPCSTR groups_str, Manager& manager_r );
+	void add_dependent_groups(LPCSTR groups_str, Manager& manager_r);
 
 }; // class UpgradeBase
-
-} // namespace upgrade
-} // namespace inventory
-
-#include "inventory_upgrade_base_inline.h"
-
-#endif // INVENTORY_UPGRADE_BASE_H_INCLUDED
+} // namespace inventory::upgrade

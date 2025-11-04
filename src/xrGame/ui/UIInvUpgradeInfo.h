@@ -6,16 +6,15 @@
 //	Description : inventory upgrade UI info window class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef UI_INVENTORY_UPGRADE_INFO_H_INCLUDED
-#define UI_INVENTORY_UPGRADE_INFO_H_INCLUDED
+#pragma once
 
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrUI/xrUIXmlParser.h"
 
-
-namespace inventory { namespace upgrade {
+namespace inventory::upgrade
+{
 	class Upgrade;
-} } // namespace upgrade, inventory
+}
 
 class CUITextWnd;
 class CUIFrameWindow;
@@ -25,34 +24,32 @@ class CInventoryItem;
 class UIInvUpgradeInfo final : public CUIWindow
 {
 private:
-	typedef CUIWindow                    inherited;
-	typedef inventory::upgrade::Upgrade  Upgrade_type;
+	using inherited = CUIWindow;
+	using Upgrade_type = inventory::upgrade::Upgrade;
 
 public:
-						UIInvUpgradeInfo();
-	virtual				~UIInvUpgradeInfo();
+	UIInvUpgradeInfo();
+	virtual ~UIInvUpgradeInfo() = default;
 
-			void		init_from_xml( LPCSTR xml_name );
-			bool		init_upgrade( Upgrade_type* upgr, CInventoryItem* inv_item );
-			bool		is_upgrade() { return (m_upgrade != NULL); }
-	IC Upgrade_type const*	get_upgrade() const { return m_upgrade; }
+	void init_from_xml(LPCSTR xml_name);
+	bool init_upgrade(Upgrade_type* upgr, CInventoryItem* inv_item);
+	bool is_upgrade() { return (m_upgrade != NULL); }
+	IC Upgrade_type const* get_upgrade() const { return m_upgrade; }
 
-	virtual void		Draw();
+	virtual void Draw();
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	Upgrade_type*		m_upgrade;
-	CUIFrameWindow*		m_background;
-	
-	UIInvUpgPropertiesWnd*	m_properties_wnd;
+	Upgrade_type* m_upgrade = nullptr;
+	CUIFrameWindow* m_background = nullptr;
 
-	CUITextWnd*			m_name;
-	CUITextWnd*			m_cost;
-	CUITextWnd*			m_desc;
-	CUITextWnd*			m_prereq;
-	bool				m_legacy_mode;
-	
+	UIInvUpgPropertiesWnd* m_properties_wnd = nullptr;
+
+	CUITextWnd* m_name = nullptr;
+	CUITextWnd* m_cost = nullptr;
+	CUITextWnd* m_desc = nullptr;
+	CUITextWnd* m_prereq = nullptr;
+	bool m_legacy_mode = false;
+
 }; // class UIInvUpgradeInfo
-
-#endif // UI_INVENTORY_UPGRADE_INFO_H_INCLUDED

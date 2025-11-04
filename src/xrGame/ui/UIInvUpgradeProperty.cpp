@@ -23,75 +23,63 @@
 #include "Level.h"
 #include "../../xrUI/UIHelper.h"
 
-
-UIProperty::UIProperty()
+void UIProperty::init_from_xml(CUIXml& ui_xml)
 {
-	m_text[0] = 0;
-	m_ui_icon = nullptr;
-	m_ui_text = nullptr;
-}
-
-UIProperty::~UIProperty()
-{
-}
-
-void UIProperty::init_from_xml( CUIXml& ui_xml )
-{
-	m_ui_icon = new CUIStatic();	 
+	m_ui_icon = new CUIStatic();
 	m_ui_text = new CUITextWnd();
-	AttachChild( m_ui_icon );
-	AttachChild( m_ui_text );
-	m_ui_icon->SetAutoDelete( true );
-	m_ui_text->SetAutoDelete( true );
+	AttachChild(m_ui_icon);
+	AttachChild(m_ui_text);
+	m_ui_icon->SetAutoDelete(true);
+	m_ui_text->SetAutoDelete(true);
 
-	CUIXmlInit::InitWindow( ui_xml, "properties", 0, this );
-	SetWndPos( Fvector2().set( 0, 0 ) );
-	CUIXmlInit::InitStatic( ui_xml, "properties:icon", 0, m_ui_icon );
-	CUIXmlInit::InitTextWnd( ui_xml, "properties:text", 0, m_ui_text );
+	CUIXmlInit::InitWindow(ui_xml, "properties", 0, this);
+	SetWndPos(Fvector2().set(0, 0));
+	CUIXmlInit::InitStatic(ui_xml, "properties:icon", 0, m_ui_icon);
+	CUIXmlInit::InitTextWnd(ui_xml, "properties:text", 0, m_ui_text);
 }
 
-bool UIProperty::init_property( shared_str const& property_id )
+bool UIProperty::init_property(shared_str const& property_id)
 {
 	m_property_id = property_id;
-	if ( !get_property() )
+	if (!get_property())
 	{
 		return false;
 	}
-	m_ui_icon->InitTexture( get_property()->icon_name() );
+	m_ui_icon->InitTexture(get_property()->icon_name());
 	m_ui_icon->SetTextureColor(get_property()->icon_color());
 	return true;
 }
 
 UIProperty::Property_type* UIProperty::get_property()
 {
-	if ( !ai().get_alife() )
+	if (!ai().get_alife())
 	{
 		return nullptr;
 	}
 	Property_type* proper = Level().m_upgrade_manager->get_property(m_property_id);
-	VERIFY( proper );
+	VERIFY(proper);
 	return proper;
 }
 
-bool UIProperty::read_value_from_section( LPCSTR section, LPCSTR param, float& result )
+bool UIProperty::read_value_from_section(LPCSTR section, LPCSTR param, float& result)
 {
 	result = 0.0f;
-	if ( !section || !pSettings->section_exist( section ) )
+	if (!section || !pSettings->section_exist(section))
 	{
 		return false;
 	}
 
-	if ( pSettings->line_exist( section, param ) && *pSettings->r_string( section, param ) )
+	if (pSettings->line_exist(section, param) && *pSettings->r_string(section, param))
 	{
-		result = pSettings->r_float( section, param );
+		result = pSettings->r_float(section, param);
 		return true;
 	}
 	return false;
 }
 
-bool UIProperty::compute_value( ItemUpgrades_type const& item_upgrades )
+bool UIProperty::compute_value(ItemUpgrades_type const& item_upgrades)
 {
-	if ( !get_property() )
+	if (!get_property())
 	{
 		return false;
 	}
@@ -100,38 +88,39 @@ bool UIProperty::compute_value( ItemUpgrades_type const& item_upgrades )
 	string2048 buf; buf[0] = 0;
 	ItemUpgrades_type::const_iterator ib_upg = item_upgrades.begin();
 	ItemUpgrades_type::const_iterator ie_upg = item_upgrades.end();
-	for ( ; ib_upg != ie_upg; ++ib_upg )
+	for (; ib_upg != ie_upg; ++ib_upg)
 	{
 		Upgrade_type* upgr = Level().m_upgrade_manager->get_upgrade(*ib_upg);
-		VERIFY( upgr );
-		for(u8 i = 0; i < inventory::upgrade::max_properties_count; i++)
+		VERIFY(upgr);
+		for (u8 i = 0; i < inventory::upgrade::max_properties_count; i++)
 		{
-			if ( upgr->get_property_name(i)._get() == m_property_id._get() )
+			if (upgr->get_property_name(i)._get() == m_property_id._get())
 			{
 				LPCSTR upgr_section = upgr->section();
-				if ( prop_count > 0 )
+				if (prop_count > 0)
 				{
-					xr_strcat( buf, sizeof(buf), ", " );
+					xr_strcat(buf, sizeof(buf), ", ");
 				}
-				xr_strcat( buf, sizeof(buf), upgr_section );
+				xr_strcat(buf, sizeof(buf), upgr_section);
 				++prop_count;
 			}
 		}
 	}
-	if ( prop_count > 0 )
+	if (prop_count > 0)
 	{
-		return show_result( buf );
+		return show_result(buf);
 	}
 	return false;
 }
 
-bool UIProperty::show_result( LPCSTR values )
+bool UIProperty::show_result(LPCSTR values)
 {
-	if ( get_property() && get_property()->run_functor( values, m_text ) )
+	if (get_property() && get_property()->run_functor(values, m_text))
 	{
-		m_ui_text->SetText( m_text );
+		m_ui_text->SetText(m_text);
 		return true;
-	}else
+	}
+	else
 	{
 		m_ui_text->SetText("");
 		return false;
@@ -142,17 +131,12 @@ bool UIProperty::show_result( LPCSTR values )
 
 UIInvUpgPropertiesWnd::UIInvUpgPropertiesWnd()
 {
-	m_properties_ui.reserve( 15 );
-	m_temp_upgrade_vector.reserve( 1 );
-	m_Upgr_line = nullptr;
-	m_iNumUpgr = 0;
-	m_fnext_line_pos = 0.0f;
-	m_fsec_col_pos = 0.0f;
+	m_properties_ui.reserve(15);
+	m_temp_upgrade_vector.reserve(1);
 }
 
 void UIInvUpgPropertiesWnd::UpdateStatsPos(float& h, Fvector2& pos, UIProperty* pWnd, int& counter) const
 {
-
 	// Если элемент четный, размещаем его в правом столбце
 	if ((counter) % 2 == 0)
 	{
@@ -180,51 +164,54 @@ void UIInvUpgPropertiesWnd::UpdateStatsPos(float& h, Fvector2& pos, UIProperty* 
 
 UIInvUpgPropertiesWnd::~UIInvUpgPropertiesWnd()
 {
-	delete_data( m_properties_ui );
+	delete_data(m_properties_ui);
 }
 
-void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
+void UIInvUpgPropertiesWnd::init_from_xml(LPCSTR xml_name)
 {
 	CUIXml ui_xml;
-	ui_xml.Load( CONFIG_PATH, UI_PATH, xml_name );
-	
-	XML_NODE* stored_root = ui_xml.GetLocalRoot();
-	XML_NODE* node = ui_xml.NavigateToNode( "upgrade_info", 0 );
-	ui_xml.SetLocalRoot( node );
+	ui_xml.Load(CONFIG_PATH, UI_PATH, xml_name);
 
-	CUIXmlInit::InitWindow( ui_xml, "properties", 0, this );
+	XML_NODE* stored_root = ui_xml.GetLocalRoot();
+	XML_NODE* node = ui_xml.NavigateToNode("upgrade_info", 0);
+	ui_xml.SetLocalRoot(node);
+
+	CUIXmlInit::InitWindow(ui_xml, "properties", 0, this);
 
 	if (ui_xml.NavigateToNode("properties:upgr_line"))
+	{
 		m_Upgr_line = UIHelper::CreateStatic(ui_xml, "properties:upgr_line", this);
+	}
+
 	m_fsec_col_pos = ui_xml.ReadAttribFlt("properties", 0, "sec_col_pos", UI().is_widescreen() ? 105.f : 130.f);
 	m_fnext_line_pos = ui_xml.ReadAttribFlt("properties", 0, "next_line_pos", 20.f);
 
 	LPCSTR properties_section = "upgrades_properties";
 
-	VERIFY2( pSettings->section_exist( properties_section ), make_string<const char*>( "Section [%s] does not exist !", properties_section ) );
-	VERIFY2( pSettings->line_count( properties_section ), make_string<const char*>( "Section [%s] is empty !",       properties_section ) );
+	VERIFY2(pSettings->section_exist(properties_section), make_string<const char*>("Section [%s] does not exist !", properties_section));
+	VERIFY2(pSettings->line_count(properties_section), make_string<const char*>("Section [%s] is empty !", properties_section));
 	shared_str property_id;
 
-	CInifile::Sect&		inv_section = pSettings->r_section( properties_section );
-	CInifile::SectIt_	ib = inv_section.Data.begin();
-	CInifile::SectIt_	ie = inv_section.Data.end();
-	for ( ; ib != ie ; ++ib )
+	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
+
+	for (const auto& section_data : inv_section.Data)
 	{
 		UIProperty* ui_property = new UIProperty(); // load one time !!
-		ui_property->init_from_xml( ui_xml );
+		ui_property->init_from_xml(ui_xml);
 
-		property_id._set( (*ib).first );
-		if ( !ui_property->init_property( property_id ) )
+		property_id._set(section_data.first);
+		if (!ui_property->init_property(property_id))
 		{
-			Msg( "! Invalid property <%s> in inventory upgrade manager!", property_id.c_str() );
+			Msg("! Invalid property <%s> in inventory upgrade manager!", property_id.c_str());
 			xr_delete(ui_property);
 			continue;
 		}
 
-		m_properties_ui.push_back( ui_property );
-		AttachChild( ui_property );
+		m_properties_ui.push_back(ui_property);
+		AttachChild(ui_property);
 	} // for ib
-	ui_xml.SetLocalRoot( stored_root );
+
+	ui_xml.SetLocalRoot(stored_root);
 }
 
 void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
@@ -235,8 +222,11 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 	float visiblePropertiesHeight = 0.0f;
 	m_iNumUpgr = 0;
 	new_size.x = GetWndSize().x;
+
 	if (m_Upgr_line)
+	{
 		height += m_Upgr_line->GetWndSize().y + 3.0f;
+	}
 
 	for (auto& ui_property : m_properties_ui)
 	{
@@ -275,24 +265,25 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 			visiblePropertiesHeight = 0.0f;
 		}
 	}
+
 	height += visiblePropertiesHeight;
 	SetHeight(height);
 }
 
-void UIInvUpgPropertiesWnd::set_upgrade_info( Upgrade_type& upgrade )
+void UIInvUpgPropertiesWnd::set_upgrade_info(Upgrade_type& upgrade)
 {
-	if ( !upgrade.is_known() )
+	if (!upgrade.is_known())
 	{
-		SetWndSize( Fvector2().set( 0, 0 ) );
+		SetWndSize(Fvector2().set(0, 0));
 		return;
 	}
 
 	m_temp_upgrade_vector.resize(0);
-	m_temp_upgrade_vector.push_back( upgrade.id() );
-	set_info( m_temp_upgrade_vector );
+	m_temp_upgrade_vector.push_back(upgrade.id());
+	set_info(m_temp_upgrade_vector);
 }
 
-void UIInvUpgPropertiesWnd::set_item_info( CInventoryItem& item )
+void UIInvUpgPropertiesWnd::set_item_info(CInventoryItem& item)
 {
-	set_info( item.upgardes() );
+	set_info(item.upgardes());
 }

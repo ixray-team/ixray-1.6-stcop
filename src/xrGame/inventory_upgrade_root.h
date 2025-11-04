@@ -6,52 +6,43 @@
 //	Description : inventory upgrade root class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef INVENTORY_UPGRADE_ROOT_H_INCLUDED
-#define INVENTORY_UPGRADE_ROOT_H_INCLUDED
+#pragma once
 
 #include "inventory_upgrade_manager.h"
 
-namespace inventory
+namespace inventory::upgrade
 {
-namespace upgrade
-{
-	
-class Root : public UpgradeBase
+
+class Root final : public UpgradeBase
 {
 private:
-	typedef		UpgradeBase				inherited;
-	typedef		xr_vector<Upgrade*>		Upgrades_vec;
+	using inherited = UpgradeBase;
+	using Upgrades_vec = xr_vector<Upgrade*>;
 
 public:
-							Root();
-	virtual					~Root();
-				void		construct( const shared_str& root_id, Manager& manager_r );
-	IC			LPCSTR		scheme() const;
+	Root() = default;
+	virtual ~Root() = default;
+	void construct(const shared_str& root_id, Manager& manager_r);
+	IC LPCSTR scheme() const { return m_upgrade_scheme.c_str(); }
 
-				void		add_upgrade( Upgrade* upgr );
-	virtual		bool		is_root();
+	void add_upgrade(Upgrade* upgr);
+	virtual	bool is_root() override { return true; }
 
 #ifdef DEBUG
-	virtual		void		log_hierarchy( LPCSTR nest );
-				void		test_all_upgrades( CInventoryItem& item );
+	virtual void log_hierarchy(LPCSTR nest) override;
+	void test_all_upgrades(CInventoryItem& item);
 #endif // DEBUG
 
-	virtual		bool		contain_upgrade( const shared_str& upgrade_id );
-				bool		verify_scheme_index( const Ivector2& scheme_index );
-				Upgrade*	get_upgrade_by_index( Ivector2 const& index );
+	virtual bool contain_upgrade(const shared_str& upgrade_id);
+	bool verify_scheme_index(const Ivector2& scheme_index);
+	Upgrade* get_upgrade_by_index(Ivector2 const& index);
 
-				void		highlight_hierarchy( shared_str const& upgrade_id );
-				void		reset_highlight();
+	void highlight_hierarchy(shared_str const& upgrade_id);
+	void reset_highlight();
 
 protected:
-	shared_str				m_upgrade_scheme;
-	Upgrades_vec			m_contained_upgrades;
+	shared_str m_upgrade_scheme;
+	Upgrades_vec m_contained_upgrades = {};
 
 }; // class Root
-
-} // namespace upgrade
-} // namespace inventory
-
-#include "inventory_upgrade_root_inline.h"
-
-#endif // INVENTORY_UPGRADE_ROOT_H_INCLUDED
+} // namespace inventory::upgrade
