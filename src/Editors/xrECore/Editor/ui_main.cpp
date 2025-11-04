@@ -95,7 +95,7 @@ ImTextureID TUI::LoadTexture(const char* Texture) const
 
 	if (Tex->pSurface == nullptr)
 	{
-		Tex->Load();
+		Tex->apply_load(0);
 	}
 
 	return (void*)Tex->get_SRView()->GetRawSRV();
