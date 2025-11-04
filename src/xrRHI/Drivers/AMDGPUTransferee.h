@@ -107,7 +107,7 @@ public:
 
 	u32 GetDX11Device(void** pDevice, void** pImmediateContext, void** pSwapChain);
 	virtual CAMDReader* GetAMD() override { return this; }
-	virtual bool SetDepthBounds(void* RContext, bool, float zMin, float zMax) override;
+	virtual bool SetDepthBounds(bool, float zMin, float zMax) override;
 
 public:
 	static bool bAMDSupportADL;

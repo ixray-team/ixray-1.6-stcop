@@ -25,5 +25,5 @@ public:
 
 	virtual CNvReader* GetNV()   { return nullptr; }
 	virtual CAMDReader* GetAMD() { return nullptr; }
-	virtual bool SetDepthBounds(void* RContext, bool, float zMin, float zMax) = 0;
+	virtual bool SetDepthBounds(bool, float zMin, float zMax) = 0;
 };
