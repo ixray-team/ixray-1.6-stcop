@@ -36,7 +36,8 @@ struct CompilersMode
 	bool LC_tex_rgba = false;
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
- 
+	bool LC_legacyLM = false;
+
 	int LC_sizeLmaps = 1024 * 4;
 
 	bool IsOverloadedSettings = false;
