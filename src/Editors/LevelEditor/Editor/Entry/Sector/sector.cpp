@@ -564,7 +564,7 @@ bool CSector::LoadStream(IReader& F)
 
 	char buf[1024];
 	R_ASSERT(F.r_chunk(SECTOR_CHUNK_VERSION,&version));
-	if( version!=SECTOR_VERSION ){
+	if( version!=0x0011 ){
 		ELog.Msg( mtError, "CSector: Unsupported version.");
 		return false;
 	}
