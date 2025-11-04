@@ -293,7 +293,8 @@ void DrawLCConfig()
 		if (ImGui::Combo("lmaps", &item_current_selected, lightmap_resolution, max_resolution))
  			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
 		ImGui::Checkbox("LMAP places by se7kills", &gCompilerMode.LC_LmapsAlternative);
- 
+		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
+
 		ImGui::Separator();
 		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
 
