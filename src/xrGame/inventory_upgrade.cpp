@@ -132,7 +132,8 @@ UpgradeStateResult Upgrade::can_install(CInventoryItem& item, bool loading)
 		}break;
 		case result_script_e_cant_do:
 		{
-			if (EngineExternal().ClearSkyMode())
+			const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+			if (isLegacyUpgrade)
 			{
 				if (res != result_ok)
 				{
