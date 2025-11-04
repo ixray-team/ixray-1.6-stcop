@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "lm_layer.h"
+#include "../xrForms/CompilersUI.h"
 
 void lm_layer::Pack		(xr_vector<u32>& dest)const	
 {
@@ -28,8 +29,10 @@ void lm_layer::Pack_hemi	(xr_vector<u32>& dest)const	//.
 		base_color_c	C;	I->_get(C);
 		u8	_d	= u8_clr	(C.sun);
 		u8	_h	= u8_clr	(C.hemi);
-		//*W++	= color_rgba(_h,_h,_h,_d);
-		*W++	= color_rgba(_d,_d,_d,_h);
+		if (gCompilerMode.LC_legacyLM)
+			*W++	= color_rgba(_h,_h,_h,_d);
+		else
+			*W++	= color_rgba(_d,_d,_d,_h);
 	}
 }
 void lm_layer::Pixel	(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h)
