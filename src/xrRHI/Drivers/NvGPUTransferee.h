@@ -48,7 +48,7 @@ public:
 	virtual u32		GetGPUCount();
 
 	virtual CNvReader* GetNV() override { return this; }
-	virtual bool SetDepthBounds(void* RContext, bool, float zMin, float zMax) override;
+	virtual bool SetDepthBounds(bool, float zMin, float zMax) override;
 
 public:
 	static bool bSupport;

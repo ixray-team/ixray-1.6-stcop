@@ -362,11 +362,16 @@ u32 CAMDReader::GetDX11Device(void** pDevice, void** pImmediateContext, void** p
 	return ReturnedParams.FeatureLevel;
 }
 
-bool CAMDReader::SetDepthBounds(void* RContext, bool b, float zMin, float zMax)
+bool CAMDReader::SetDepthBounds(bool b, float zMin, float zMax)
 {
+	if (GRHI->APILevel == ERHI_API_LAYER::D3D9)
+	{
+		return false;
+	}
+
 	if (AGSDX11_SetDepthBounds)
 	{
-		AGSDX11_SetDepthBounds(Context, (ID3D11DeviceContext*)RContext, b, zMin, zMax);
+		AGSDX11_SetDepthBounds(Context, (ID3D11DeviceContext*)GRHI->GetContext(), b, zMin, zMax);
 		return true;
 	}
 
