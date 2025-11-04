@@ -40,7 +40,7 @@ UIEditLibrary::UIEditLibrary()
 
 void UIEditLibrary::OnItemFocused(ListItem* item)
 {
-	m_RealTexture = nullptr;
+	m_RealTexture.destroy();
 	PreviewProps->ClearProperties();
 	m_Current = nullptr;
 
@@ -55,6 +55,7 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 		{
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
+			m_RealTexture = new CTexture;
 			m_RealTexture->surface_set(Surface);
 			Surface->Release();
 
