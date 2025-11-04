@@ -49,8 +49,8 @@ public:
 
 	CTexture							();
 	virtual ~CTexture					();
-	
-	IRHIShaderResourceView*				get_SRView() {return m_pSRView;}
+
+	IRHIShaderResourceView* get_SRView() { return m_pSRView; }
 
 private:
 	void								Apply(u32 dwStage);
