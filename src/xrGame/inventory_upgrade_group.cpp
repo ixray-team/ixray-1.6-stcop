@@ -76,8 +76,9 @@ UpgradeStateResult Group::can_install(CInventoryItem& item, UpgradeBase& test_up
 			continue;
 		}
 
-        bool cant_install = false; // XXX Clear Sky upgrades: find a dynamic, universal solution
-        if (EngineExternal().ClearSkyMode())
+        bool cant_install = false;
+		const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+		if (isLegacyUpgrade)
 		{
 			cant_install = !item.has_upgrade(upgrade_base->id());
 		}

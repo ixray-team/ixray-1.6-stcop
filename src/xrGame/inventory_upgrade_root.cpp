@@ -133,7 +133,8 @@ void Root::highlight_hierarchy(shared_str const& upgrade_id)
 	{
 		if (contained_upgrade->id()._get() == upgrade_id._get())
 		{
-			if (EngineExternal().ClearSkyMode()) // XXX Clear Sky upgrades: find a dynamic, universal solution
+			const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+			if (isLegacyUpgrade)
 			{
 				contained_upgrade->highlight_up();
 			}
