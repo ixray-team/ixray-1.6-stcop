@@ -6,18 +6,17 @@
 //	Description : inventory upgrade UI class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef UI_INVENTORY_UPGRADE_H_INCLUDED
-#define UI_INVENTORY_UPGRADE_H_INCLUDED
+#pragma once
 
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/UIXmlInit.h"
 
-
-namespace inventory { namespace upgrade {
+namespace inventory::upgrade
+{
 	class Upgrade;
 	class Property;
-} } // namespace upgrade, inventory
+}
 
 class CUIStatic;
 class CUIInventoryUpgradeWnd;
@@ -27,9 +26,9 @@ class CUIUpgradePoint;
 class UIUpgrade : public CUIWindow
 {
 private:
-	typedef inventory::upgrade::Upgrade 	Upgrade_type;
-	typedef inventory::upgrade::Property 	Property_type;
-	typedef	CUIWindow						inherited;
+	using Upgrade_type = inventory::upgrade::Upgrade;
+	using Property_type = inventory::upgrade::Property;
+	using inherited = CUIWindow;
 
 public:
 	enum ButtonState
@@ -69,86 +68,85 @@ public:
 	};
 
 public:
-	Fvector2		offset;
+	Fvector2 offset;
 
 private:
-	CUIInventoryUpgradeWnd*	m_parent_wnd;
+	CUIInventoryUpgradeWnd*	m_parent_wnd = nullptr;
 
-	CUIStatic*		m_item;
-	CUIStatic*		m_color;
-	shared_str		m_upgrade_id;
+	CUIStatic* m_item = nullptr;
+	CUIStatic* m_color = nullptr;
+	shared_str m_upgrade_id = nullptr;
 
 protected:
-	Ivector2		m_scheme_index;
+	Ivector2 m_scheme_index;
 
-	ButtonState		m_button_state;
+	ButtonState m_button_state;
 
-	ViewState		m_state;
-	ViewState		m_prev_state;
+	ViewState m_state;
+	ViewState m_prev_state;
 
-	bool			m_state_lock;
+	bool m_state_lock = false;
 
 public:
-						UIUpgrade( CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder );
-	virtual				~UIUpgrade();
+	UIUpgrade(CUIInventoryUpgradeWnd* parent_wnd, bool cellBorder);
+	virtual ~UIUpgrade();
 
-			void		init_upgrade( LPCSTR upgrade_id, CInventoryItem& item );
+	void init_upgrade(LPCSTR upgrade_id, CInventoryItem& item);
 
-			void		load_from_xml( CUIXml& ui_xml, int i_column, int i_cell, Frect const* t_cell_border, Frect const& t_cell_item );
-			void		set_texture( Layer layer, LPCSTR texture );
+	void load_from_xml(CUIXml& ui_xml, int i_column, int i_cell, Frect const* t_cell_border, Frect const& t_cell_item);
+	void set_texture(Layer layer, LPCSTR texture);
 			
-	virtual	void		Draw();
-	virtual	void		Update();
-	virtual	void		Reset();
+	virtual	void Draw() override;
+	virtual	void Update() override;
+	virtual	void Reset() override;
 
-			void		update_upgrade_state();
-			bool		OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state);
-			void		update_mask();
-			void		update_item( CInventoryItem* inv_item );
+	void update_upgrade_state();
+	bool OverrideFreeButtonState(const UIUpgrade::Upgrade_type* my_upgrade, const UIUpgrade::Upgrade_type* active_upgrade, ViewState& new_state);
+	void update_mask();
+	void update_item(CInventoryItem* inv_item);
+				 
+	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
+	virtual void OnFocusReceive() override;
+	virtual void OnFocusLost() override;
+	void OnClick();
+	virtual bool OnDbClick() override;
+	void OnRClick();
+				 
+	void on_over_window();
+				 
+	void highlight_relation(bool enable);
 
-	virtual bool		OnMouseAction( float x, float y, EUIMessages mouse_action );
-	virtual void		OnFocusReceive();
-	virtual void		OnFocusLost();
-	virtual void		OnClick();
-	virtual bool 		OnDbClick();
-			void		OnRClick();
+	IC ButtonState get_button_state() const { return m_button_state; }
+	void set_button_state(ButtonState state) { m_button_state = state; }
+	IC Ivector2 const& get_scheme_index() const { return m_scheme_index; }
 
-			void		on_over_window();
-			
-			void		highlight_relation( bool enable );
-
-	IC ButtonState		get_button_state() const { return m_button_state; }
-			void		set_button_state(ButtonState state) { m_button_state = state; }
-	IC Ivector2 const&	get_scheme_index() const  { return m_scheme_index; }
-
-	Upgrade_type*		get_upgrade();
-CUIInventoryUpgradeWnd* get_upgrade_window() {return m_parent_wnd;}
-			void		attach_point(CUIUpgradePoint* point);
+	Upgrade_type* get_upgrade();
+	CUIInventoryUpgradeWnd* get_upgrade_window() { return m_parent_wnd; }
+	void attach_point(CUIUpgradePoint* point);
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 public:			
-	CUIUpgradePoint*	m_point;
-    CUIStatic*			m_border;
-    CUIStatic*			m_ink;
+	CUIUpgradePoint* m_point = nullptr;
+    CUIStatic* m_border = nullptr;
+    CUIStatic* m_ink = nullptr;
 };
 
-class CUIUpgradePoint:public CUIStatic
+class CUIUpgradePoint final : public CUIStatic
 {
 private:
-	typedef CUIStatic	inherited;
-	UIUpgrade*			m_parent_upgrade;
+	typedef CUIStatic inherited;
+	UIUpgrade* m_parent_upgrade = nullptr;
 
 public:
-						CUIUpgradePoint(UIUpgrade* upgr);
-	virtual				~CUIUpgradePoint();
-			void		load_from_xml(CUIXml& ui_xml, int i_cell);
-	virtual bool		OnMouseAction( float x, float y, EUIMessages mouse_action );
-	virtual void		OnFocusReceive();
-	virtual void		OnFocusLost();
+	CUIUpgradePoint(UIUpgrade* upgr);
+	virtual	~CUIUpgradePoint() = default;
+
+	void load_from_xml(CUIXml& ui_xml, int i_cell);
+	virtual bool OnMouseAction(float x, float y, EUIMessages mouse_action) override;
+	virtual void OnFocusReceive() override;
+	virtual void OnFocusLost() override;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUIStatic* ui_cast_static() { return this; }
 };
-
-#endif // UI_INVENTORY_UPGRADE_H_INCLUDED

@@ -15,23 +15,13 @@
 #include "inventory_upgrade_group.h"
 #include "inventory_upgrade_property.h"
 
-
 extern int g_upgrades_log = 0;
 
-namespace inventory
-{
-namespace upgrade
-{
-
-//using inventory::upgrade::Manager;
-//using inventory::upgrade::UpgradeBase;
-//using inventory::upgrade::Upgrade;
-//using inventory::upgrade::Root;
-//using inventory::upgrade::Group;
+using namespace inventory::upgrade;
 
 Manager::Manager()
 {
-	load_all_properties(); //first 
+	load_all_properties();
 	load_all_inventory();
 }
 
@@ -41,103 +31,110 @@ Manager::~Manager()
 	delete_data(m_groups);
 	delete_data(m_upgrades);
 	delete_data(m_properties);
-	m_roots.clear(); // !!!!!!!!!!!!
+	m_roots.clear();
 	m_groups.clear();
 	m_upgrades.clear();
 	m_properties.clear();
 }
 
-Root* Manager::get_root( shared_str const& root_id )
+Root* Manager::get_root(shared_str const& root_id)
 {
-	Roots_type::const_iterator i = m_roots.find( root_id );
-	if ( i != m_roots.end() )
+	Roots_type::const_iterator i = m_roots.find(root_id);
+	if (i != m_roots.end())
 	{
-		return ( (*i).second );
+		return ((*i).second);
 	}
-	return ( nullptr );
+
+	return (nullptr);
 }
 
-Upgrade* Manager::get_upgrade( shared_str const& upgrade_id )
+Upgrade* Manager::get_upgrade(shared_str const& upgrade_id)
 {
-	Upgrades_type::const_iterator i = m_upgrades.find( upgrade_id );
-	if ( i != m_upgrades.end() )
+	Upgrades_type::const_iterator i = m_upgrades.find(upgrade_id);
+	if (i != m_upgrades.end())
 	{
-		return ( (*i).second );
+		return ((*i).second);
 	}
-	return ( nullptr );
+
+	return (nullptr);
 }
 
-Group* Manager::get_group( shared_str const& group_id )
+Group* Manager::get_group(shared_str const& group_id)
 {
-	Groups_type::const_iterator i = m_groups.find( group_id );
-	if ( i != m_groups.end() )
+	Groups_type::const_iterator i = m_groups.find(group_id);
+	if (i != m_groups.end())
 	{
-		return ( (*i).second );
+		return ((*i).second);
 	}
-	return ( nullptr );
+
+	return (nullptr);
 }
 
-Property* Manager::get_property( shared_str const& property_id )
+Property* Manager::get_property(shared_str const& property_id)
 {
-	Properties_type::const_iterator i = m_properties.find( property_id );
-	if ( i != m_properties.end() )
+	Properties_type::const_iterator i = m_properties.find(property_id);
+	if (i != m_properties.end())
 	{
-		return ( (*i).second );
+		return ((*i).second);
 	}
-	return ( nullptr );
+
+	return (nullptr);
 }
 
 // -----------------------------------------------------------------------
 
-Root* Manager::add_root( shared_str const& root_id )
+Root* Manager::add_root(shared_str const& root_id)
 {
-	if ( get_root( root_id ) )
+	if (get_root(root_id))
 	{
-		VERIFY2( 0, make_string<const char*>( "Try add the existent upgrade_root for inventory item <%s>!", root_id.c_str() ) );
+		VERIFY2(0, make_string<const char*>("Try add the existent upgrade_root for inventory item <%s>!", root_id.c_str()));
 	}
-	Root* 	new_root = new Root();
-	m_roots.insert( std::make_pair( root_id, new_root ) );
-	new_root->construct( root_id, *this );
-	return ( new_root );
+
+	Root* new_root = new Root();
+	m_roots.insert(std::make_pair(root_id, new_root));
+	new_root->construct(root_id, *this);
+	return (new_root);
 }
 
-Upgrade* Manager::add_upgrade( shared_str const& upgrade_id, Group& parent_group )
+Upgrade* Manager::add_upgrade(shared_str const& upgrade_id, Group& parent_group)
 {
-	if ( get_upgrade( upgrade_id ) )
+	if (get_upgrade(upgrade_id))
 	{
-		VERIFY2( 0, make_string<const char*>( "Try add the existent upgrade (%s), in group <%s>. Such upgrade is in group <%s> already!",
-			upgrade_id.c_str(), parent_group.id_str(), get_upgrade( upgrade_id )->parent_group_id().c_str() ) );
+		VERIFY2(0, make_string<const char*>("Try add the existent upgrade (%s), in group <%s>. Such upgrade is in group <%s> already!", upgrade_id.c_str(), parent_group.id_str(), get_upgrade(upgrade_id)->parent_group_id().c_str()));
 	}
+
 	Upgrade* new_upgrade = new Upgrade();
-	m_upgrades.insert( std::make_pair( upgrade_id, new_upgrade ) );
-	new_upgrade->construct( upgrade_id, parent_group, *this );
-	return ( new_upgrade );
+	m_upgrades.insert(std::make_pair(upgrade_id, new_upgrade));
+	new_upgrade->construct(upgrade_id, parent_group, *this);
+	return (new_upgrade);
 }
 
-Group* Manager::add_group( shared_str const& group_id, UpgradeBase& parent_upgrade )
+Group* Manager::add_group(shared_str const& group_id, UpgradeBase& parent_upgrade)
 {
-	Group* new_group = get_group( group_id );
-	if ( !new_group )
+	Group* new_group = get_group(group_id);
+	if (!new_group)
 	{
 		new_group = new Group();
-		m_groups.insert( std::make_pair( group_id, new_group ) );
-		new_group->construct( group_id, parent_upgrade, *this );
-		return ( new_group );
+		m_groups.insert(std::make_pair(group_id, new_group));
+		new_group->construct(group_id, parent_upgrade, *this);
+		return (new_group);
 	}
-	new_group->add_parent_upgrade( parent_upgrade );
-	return ( new_group );
+
+	new_group->add_parent_upgrade(parent_upgrade);
+	return (new_group);
 }
 
-Property* Manager::add_property( shared_str const& property_id )
+Property* Manager::add_property(shared_str const& property_id)
 {
-	if ( get_property( property_id ) )
+	if (get_property(property_id))
 	{
-		VERIFY2( 0, make_string<const char*>( "Try add the existent upgrade property <%s>!", property_id.c_str() ) );
+		VERIFY2(0, make_string<const char*>("Try add the existent upgrade property <%s>!", property_id.c_str()));
 	}
+
 	Property* new_property = new Property();
-	m_properties.insert( std::make_pair( property_id, new_property ) );
-	new_property->construct( property_id, *this );
-	return ( new_property );
+	m_properties.insert(std::make_pair(property_id, new_property));
+	new_property->construct(property_id, *this);
+	return (new_property);
 }
 
 // -------------------------------------------------------------------------------------------
@@ -146,10 +143,14 @@ void Manager::load_all_inventory()
 	for (const auto& section : pSettings->sections())
 	{
 		if (!pSettings->line_exist(section->Name, "upgrades") || !pSettings->r_string(section->Name, "upgrades"))
+		{
 			continue;
+		}
 
 		if (!pSettings->line_exist(section->Name, "upgrade_scheme") || !pSettings->r_string(section->Name, "upgrade_scheme"))
+		{
 			continue;
+		}
 
 		add_root(section->Name);
 	}
@@ -162,18 +163,17 @@ void Manager::load_all_properties()
 	VERIFY2(pSettings->section_exist(properties_section), make_string<const char*>("Section [%s] does not exist !", properties_section));
 	VERIFY2(pSettings->line_count(properties_section), make_string<const char*>("Section [%s] is empty !", properties_section));
 
-	CInifile::Sect&		inv_section = pSettings->r_section( properties_section );
-	CInifile::SectIt_	ib = inv_section.Data.begin();
-	CInifile::SectIt_	ie = inv_section.Data.end();
-	for ( ; ib != ie ; ++ib )
+	CInifile::Sect& inv_section = pSettings->r_section(properties_section);
+
+	for (const auto& section_data : inv_section.Data)
 	{
-		shared_str property_id( (*ib).first );
-		add_property( property_id );
+		shared_str property_id(section_data.first);
+		add_property(property_id);
 	}
 
-	if ( g_upgrades_log == 1 )
+	if (g_upgrades_log == 1)
 	{
-		Msg( "# Upgrades properties of inventory itmes loaded." );
+		Msg("# Upgrades properties of inventory itmes loaded.");
 	}
 }
 
@@ -184,269 +184,255 @@ void Manager::load_all_properties()
 void Manager::log_hierarchy()
 {
 	{ // roots
-		Msg( "# inventory upgrades roots: [%d] ", m_roots.size() );
-		Roots_type::iterator ib = m_roots.begin();
-		Roots_type::iterator ie = m_roots.end();
-		for ( ; ib != ie ; ++ib )
+		Msg("# inventory upgrades roots: [%d] ", m_roots.size());
+		for (const auto& root : m_roots)
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			Msg("   %s", root.first.c_str());
 		}
 	}
 
 	{ // groups
-		Msg( "# inventory upgrades groups: [%d] ", m_groups.size() );
-		Groups_type::iterator ib = m_groups.begin();
-		Groups_type::iterator ie = m_groups.end();
-		for ( ; ib != ie ; ++ib )
+		Msg("# inventory upgrades groups: [%d] ", m_groups.size());
+		for (const auto& group : m_groups)
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			Msg("   %s", group.first.c_str());
 		}
 	}
 
 	{ // upgrades
-		Msg( "# inventory upgrades: [%d] ", m_upgrades.size() );
-		Upgrades_type::iterator ib = m_upgrades.begin();
-		Upgrades_type::iterator ie = m_upgrades.end();
-		for ( ; ib != ie ; ++ib )
+		Msg("# inventory upgrades: [%d] ", m_upgrades.size());
+		for (const auto& upgrade : m_upgrades)
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			Msg("   %s", upgrade.first.c_str());
 		}
 	}
 
 	{ // properties
-		Msg( "# inventory upgrade properties: [%d] ", m_properties.size() );
-		Properties_type::iterator ib = m_properties.begin();
-		Properties_type::iterator ie = m_properties.end();
-		for ( ; ib != ie ; ++ib )
+		Msg("# inventory upgrade properties: [%d] ", m_properties.size());
+		for (const auto& property : m_properties)
 		{
-			Msg( "   %s", (*ib).first.c_str() );
+			Msg("   %s", property.first.c_str());
 		}
 	}
 
-	Msg( "- ----- ----- ----- inventory upgrades hierarchy: begin ----- ----- -----" );
-	
-	Roots_type::iterator ib = m_roots.begin();
-	Roots_type::iterator ie = m_roots.end();
-	for ( ; ib != ie ; ++ib )
+	Msg("- ----- ----- ----- inventory upgrades hierarchy: begin ----- ----- -----");
+
+	for (const auto& root : m_roots)
 	{
-		((*ib).second)->log_hierarchy( "" );
+		root.second->log_hierarchy("");
 	}
-	
-	Msg( "- ----- ----- ----- inventory upgrades hierarchy: end   ----- ----- -----" );
+
+	Msg("- ----- ----- ----- inventory upgrades hierarchy: end   ----- ----- -----");
 }
 
-void Manager::test_all_upgrades( CInventoryItem& item )
+void Manager::test_all_upgrades(CInventoryItem& item)
 {
-	Root* root_p = get_root( item.m_section_id );
-	VERIFY2( root_p, make_string<const char*>( "Upgrades for item <%s> (id = %d) does not exist!", item.m_section_id.c_str(), item.object_id() ) );
-	root_p->test_all_upgrades( item );
+	Root* root_p = get_root(item.m_section_id);
+	VERIFY2(root_p, make_string<const char*>("Upgrades for item <%s> (id = %d) does not exist!", item.m_section_id.c_str(), item.object_id()));
+	root_p->test_all_upgrades(item);
 
-	if ( g_upgrades_log == 1 )
+	if (g_upgrades_log == 1)
 	{
-		Msg( "- Checking all upgrades of item <%s> (id = %d) is successful.", root_p->id_str(), item.object_id() );
+		Msg("- Checking all upgrades of item <%s> (id = %d) is successful.", root_p->id_str(), item.object_id());
 	}
 }
 
 #endif // DEBUG
 
-Upgrade* Manager::upgrade_verify( shared_str const& item_section, shared_str const& upgrade_id )
+Upgrade* Manager::upgrade_verify(shared_str const& item_section, shared_str const& upgrade_id)
 {
-	Root* root_p = get_root( item_section );
-	VERIFY2( root_p,
-		make_string<const char*>( "Upgrades of item <%s> don`t exist!", item_section.c_str() ) );
+	Root* root_p = get_root(item_section);
+	VERIFY2(root_p, make_string<const char*>("Upgrades of item <%s> don`t exist!", item_section.c_str()));
 
-	Upgrade* upgrade_p = get_upgrade( upgrade_id );
-	VERIFY2( upgrade_p,
-		make_string<const char*>( "Upgrade <%s> in item <%s> does not exist!", upgrade_id.c_str(), item_section.c_str() ) );
+	Upgrade* upgrade_p = get_upgrade(upgrade_id);
+	VERIFY2(upgrade_p, make_string<const char*>("Upgrade <%s> in item <%s> does not exist!", upgrade_id.c_str(), item_section.c_str()));
 
-	VERIFY2( root_p->contain_upgrade( upgrade_id ),
-		make_string<const char*>( "Inventory item <%s> not contain upgrade <%s> !", item_section.c_str(), upgrade_id.c_str() ) );
+	VERIFY2(root_p->contain_upgrade(upgrade_id), make_string<const char*>("Inventory item <%s> not contain upgrade <%s> !", item_section.c_str(), upgrade_id.c_str()));
 
-	return ( upgrade_p );
+	return (upgrade_p);
 }
 
-bool Manager::make_known_upgrade( CInventoryItem& item, shared_str const& upgrade_id )
+bool Manager::make_known_upgrade(CInventoryItem& item, shared_str const& upgrade_id)
 {
-	return ( upgrade_verify( item.m_section_id, upgrade_id )->make_known() );
+	return (upgrade_verify(item.m_section_id, upgrade_id)->make_known());
 }
 
-bool Manager::make_known_upgrade( const shared_str& upgrade_id )
+bool Manager::make_known_upgrade(const shared_str& upgrade_id)
 {
-	Upgrade* upgrade_p = get_upgrade( upgrade_id );
-	VERIFY2( upgrade_p, make_string<const char*>( "Upgrade <%s> does not exist!", upgrade_id.c_str() ) );
-	return ( upgrade_p->make_known() );
+	Upgrade* upgrade_p = get_upgrade(upgrade_id);
+	VERIFY2(upgrade_p, make_string<const char*>("Upgrade <%s> does not exist!", upgrade_id.c_str()));
+
+	return (upgrade_p->make_known());
 }
 
-bool Manager::is_known_upgrade( CInventoryItem& item, shared_str const& upgrade_id )
+bool Manager::is_known_upgrade(CInventoryItem& item, shared_str const& upgrade_id)
 {
-	return ( upgrade_verify( item.m_section_id, upgrade_id )->is_known() );
+	return (upgrade_verify(item.m_section_id, upgrade_id)->is_known());
 }
 
-bool Manager::is_known_upgrade( shared_str const& upgrade_id )
+bool Manager::is_known_upgrade(shared_str const& upgrade_id)
 {
-	Upgrade* upgrade_p = get_upgrade( upgrade_id );
-	VERIFY2( upgrade_p, make_string<const char*>( "Upgrade <%s> does not exist!", upgrade_id.c_str() ) );
-	return ( upgrade_p->is_known() );
+	Upgrade* upgrade_p = get_upgrade(upgrade_id);
+	VERIFY2(upgrade_p, make_string<const char*>("Upgrade <%s> does not exist!", upgrade_id.c_str()));
+
+	return (upgrade_p->is_known());
 }
 
-/*
-bool Manager::is_disabled_upgrade( CInventoryItem& item, shared_str const& upgrade_id )
+bool Manager::upgrade_install(CInventoryItem& item, shared_str const& upgrade_id, bool loading)
 {
-	Upgrade* upgrade_p = upgrade_verify( item.m_section_id, upgrade_id );
-	return upgrade_p->can_install( item );
-}
-*/
-
-bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_id, bool loading )
-{
-	Upgrade* upgrade = upgrade_verify( item.m_section_id, upgrade_id );
+	Upgrade* upgrade = upgrade_verify(item.m_section_id, upgrade_id);
 	if (upgrade == nullptr)
 	{
 		return false;
 	}
-	UpgradeStateResult res = upgrade->can_install( item, loading );
-	
-	if ( res == result_ok )
+
+	UpgradeStateResult res = upgrade->can_install(item, loading);
+
+	if (res == result_ok)
 	{
-		if ( !loading )
+		if (!loading)
 		{
 			item.pre_install_upgrade();
 		}
 
-		if ( item.install_upgrade( upgrade->section() ) )
+		if (item.install_upgrade(upgrade->section()))
 		{
-			upgrade->run_effects( loading );
-			item.add_upgrade( upgrade_id, loading );
+			upgrade->run_effects(loading);
+			item.add_upgrade(upgrade_id, loading);
 
-			if ( g_upgrades_log == 1 )
+			if (g_upgrades_log == 1)
 			{
-				Msg( "# Upgrade <%s> of inventory item [%s] (id = %d) is installed.",
-					upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id() );
+				Msg("# Upgrade <%s> of inventory item [%s] (id = %d) is installed.", upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id());
 			}
 			return true;
 		}
 		else
 		{
-			FATAL( make_string<const char*>( "! Upgrade <%s> of item [%s] (id = %d) is EMPTY or FAILED !",
-				upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id() ));
+			FATAL(make_string<const char*>("! Upgrade <%s> of item [%s] (id = %d) is EMPTY or FAILED !", upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id()));
 		}
 	}
 
-	if ( g_upgrades_log == 1 )
+	if (g_upgrades_log == 1)
 	{
-		Msg( "- Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed. Error = %d",
-			upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id(), res );
+		Msg("- Upgrade <%s> of inventory item [%s] (id = %d) can`t be installed. Error = %d", upgrade_id.c_str(), item.m_section_id.c_str(), item.object_id(), res);
 	}
 	return false;
 }
 
-void Manager::init_install( CInventoryItem& item )
+void Manager::init_install(CInventoryItem& item)
 {
-	if ( !get_root( item.m_section_id ) ) return;
-	
+	if (!get_root(item.m_section_id))
+	{
+		return;
+	}
+
 #ifdef DEBUG
-	test_all_upgrades( item );
+	test_all_upgrades(item);
 #endif // DEBUG
-	
-	if ( pSettings->line_exist( item.m_section_id, "installed_upgrades" ) )
+
+	if (pSettings->line_exist(item.m_section_id, "installed_upgrades"))
 	{
 		// installed_upgrades by default
-		LPCSTR	installed_upgrades_str = pSettings->r_string( item.m_section_id, "installed_upgrades" );
-		if ( installed_upgrades_str )
+		LPCSTR installed_upgrades_str = pSettings->r_string(item.m_section_id, "installed_upgrades");
+		if (installed_upgrades_str)
 		{
-			u32 const buffer_size	= (xr_strlen(installed_upgrades_str) + 1) * sizeof(char);
-			char*	temp = (char*)_alloca( buffer_size );
+			string512 temp = {};
 
-			for ( int n = _GetItemCount(installed_upgrades_str), i = 0; i < n; ++i )
+			int n = _GetItemCount(installed_upgrades_str);
+			for (int i = 0; i < n; ++i)
 			{
-				upgrade_install( item, _GetItem( installed_upgrades_str, i, temp, buffer_size ), true );
+				_GetItem(installed_upgrades_str, i, temp, sizeof(temp));
+				upgrade_install(item, temp, true);
 			}
 		}
-	}//if exist
+	}
 }
 
-LPCSTR Manager::get_item_scheme( CInventoryItem& item )
+LPCSTR Manager::get_item_scheme(CInventoryItem& item)
 {
-	Root* root_p = get_root( item.m_section_id );
-	if ( !root_p ) return nullptr;
+	Root* root_p = get_root(item.m_section_id);
+	if (!root_p)
+	{
+		return nullptr;
+	}
+
 	return root_p->scheme();
 }
 
-LPCSTR Manager::get_upgrade_by_index( CInventoryItem& item, Ivector2 const& index )
+LPCSTR Manager::get_upgrade_by_index(CInventoryItem& item, Ivector2 const& index)
 {
 	Upgrade* upgrade = nullptr;
-	
-	Root* root_p = get_root( item.m_section_id );
-	if ( root_p )
+
+	Root* root_p = get_root(item.m_section_id);
+	if (root_p)
 	{
-		upgrade = root_p->get_upgrade_by_index( index );
-		if ( upgrade )
+		upgrade = root_p->get_upgrade_by_index(index);
+		if (upgrade)
 		{
 			return upgrade->id_str();
 		}
 	}
 
-	VERIFY2( upgrade, make_string<const char*>( "! Upgrade with index <%d,%d> in inventory item [%s] does not exist!",
-		index.x, index.y, item.m_section_id.c_str() ) );
+	VERIFY2(upgrade, make_string<const char*>("! Upgrade with index <%d,%d> in inventory item [%s] does not exist!", index.x, index.y, item.m_section_id.c_str()));
 	return nullptr;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-bool Manager::compute_range( LPCSTR parameter, float& low, float& high )
+bool Manager::compute_range(LPCSTR parameter, float& low, float& high)
 {
-	low		= flt_max;
-	high	= flt_min;
+	low = flt_max;
+	high = flt_min;
 
-	Roots_type::iterator ib = m_roots.begin();
-	Roots_type::iterator ie = m_roots.end();
-	for ( ; ib != ie ; ++ib )
+	for (const auto& root : m_roots)
 	{
-		compute_range_section( ((*ib).second)->id_str(), parameter, low, high );
+		compute_range_section(root.second->id_str(), parameter, low, high);
 	}
 
-	Upgrades_type::iterator uib = m_upgrades.begin();
-	Upgrades_type::iterator uie = m_upgrades.end();
-	for ( ; uib != uie ; ++uib )
+	for (const auto& upgrade : m_upgrades)
 	{
-		compute_range_section( ((*uib).second)->section(), parameter, low, high );
+		compute_range_section(upgrade.second->section(), parameter, low, high);
 	}
-	
-	return ( low != flt_max ) && ( high != flt_min );
+
+	return (low != flt_max) && (high != flt_min);
 }
 
-void Manager::compute_range_section( LPCSTR section, LPCSTR parameter, float& low, float& high )
+void Manager::compute_range_section(LPCSTR section, LPCSTR parameter, float& low, float& high)
 {
-	if ( !pSettings->line_exist( section, parameter ) || !*pSettings->r_string( section, parameter ) )
+	if (!pSettings->line_exist(section, parameter) || !*pSettings->r_string(section, parameter))
 	{
 		return;
 	}
-		
-	float cur = pSettings->r_float( section, parameter );
-	if ( cur < low )	{ low = cur; }
-	if ( cur > high )	{ high = cur; }
+
+	float cur = pSettings->r_float(section, parameter);
+	if (cur < low)
+	{
+		low = cur;
+	}
+
+	if (cur > high)
+	{
+		high = cur;
+	}
 }
 
 // -----------------------------------------------------------------------------
 
-void Manager::highlight_hierarchy( CInventoryItem& item, shared_str const& upgrade_id )
+void Manager::highlight_hierarchy(CInventoryItem& item, shared_str const& upgrade_id)
 {
-	Root* root_p = get_root( item.m_section_id );
-	if ( root_p )
+	Root* root_p = get_root(item.m_section_id);
+	if (root_p)
 	{
-		root_p->highlight_hierarchy( upgrade_id );
+		root_p->highlight_hierarchy(upgrade_id);
 	}
 }
 
-void Manager::reset_highlight( CInventoryItem& item )
+void Manager::reset_highlight(CInventoryItem& item)
 {
-	Root* root_p = get_root( item.m_section_id );
-	if ( root_p )
+	Root* root_p = get_root(item.m_section_id);
+	if (root_p)
 	{
 		root_p->reset_highlight();
 		return;
 	}
 }
-
-} // namespace upgrade
-} // namespace inventory

@@ -6,54 +6,44 @@
 //	Description : inventory upgrade group class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef INVENTORY_UPGRADE_GROUP_H_INCLUDED
-#define INVENTORY_UPGRADE_GROUP_H_INCLUDED
+#pragma once
 
 #include "inventory_upgrade_manager.h"
 
-namespace inventory
-{
-namespace upgrade
-{
+namespace inventory::upgrade {
 
-class Group
+class Group final
 {
 public:
 	Group(const Group& other) = delete;
 	Group& operator=(const Group& other) = delete;
-							Group();
-	virtual					~Group();
-				void		construct( const shared_str& group_id, UpgradeBase& parent_upgrade, Manager& manager_r );
-				void		add_parent_upgrade( UpgradeBase& parent_upgrade );
+	Group() = default;
+	virtual ~Group() = default;
+	void construct(const shared_str& group_id, UpgradeBase& parent_upgrade, Manager& manager_r);
+	void add_parent_upgrade(UpgradeBase& parent_upgrade);
 
-	IC	 const	shared_str& id() const;
-	IC			LPCSTR		id_str() const;
+	IC const shared_str& id() const { return m_id; }
+	IC LPCSTR id_str() const { return m_id.c_str(); }
 
 #ifdef DEBUG
-				void		log_hierarchy( LPCSTR nesting );
+	void log_hierarchy(LPCSTR nesting);
 #endif // DEBUG
 
-				void		fill_root( Root* root );
+	void fill_root(Root* root);
 
-				UpgradeStateResult	can_install( CInventoryItem& item, UpgradeBase& test_upgrade, bool loading );
-				
-				void		highlight_up();
-				void		highlight_down();
+	UpgradeStateResult can_install(CInventoryItem& item, UpgradeBase& test_upgrade, bool loading);
 
-private:
-	typedef xr_vector<UpgradeBase*>		Upgrades_type;
+	void highlight_up();
+	void highlight_down();
 
 private:
-	shared_str				m_id;
+	using Upgrades_type = xr_vector<UpgradeBase*>;
 
-	Upgrades_type			m_parent_upgrades;
-	Upgrades_type			m_included_upgrades;
+private:
+	shared_str m_id;
+
+	Upgrades_type m_parent_upgrades = {};
+	Upgrades_type m_included_upgrades = {};
 
 }; // class group
-
-} // namespace upgrade
-} // namespace inventory
-
-#include "inventory_upgrade_group_inline.h"
-
-#endif // INVENTORY_UPGRADE_GROUP_H_INCLUDED
+}
