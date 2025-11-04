@@ -448,7 +448,7 @@ void CImageManager::SynchronizeTexture(LPCSTR tex_name, time_t age)
 //------------------------------------------------------------------------------
 int CImageManager::GetTextures(FS_FileSet& files, BOOL bFolders)
 {                	
-	return FS.file_list(files,_game_textures_,(bFolders?FS_ListFolders:0)|FS_ListFiles|FS_ClampExt,"*.dds"); 
+	return FS.file_list(files,_game_textures_,(bFolders?FS_ListFolders:0)|FS_ListFiles|FS_ClampExt,"*.dds, *.seq"); 
 }
 
 int CImageManager::GetTexturesRaw(FS_FileSet& files, BOOL bFolders)
