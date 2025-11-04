@@ -296,6 +296,7 @@ void SaveCompilerCfg()
 	Serializer->Write("item_current_selected", item_current_selected);
 	Serializer->Write("item_current_jitter", item_current_jitter);
 	Serializer->Write("item_current_jitter_mu", item_current_jitter_mu);
+	Serializer->Write("LC_legacyLM", gCompilerMode.LC_legacyLM);
 	Serializer->Save();
 }
 
@@ -355,7 +356,8 @@ int APIENTRY WinMain
 	Serializer->Read("item_current_jitter", item_current_jitter);
 	Serializer->Read("item_current_jitter_mu", item_current_jitter_mu);
 	Serializer->Read("LC_LmapsAlternative", gCompilerMode.LC_LmapsAlternative);
-	
+	Serializer->Read("LC_legacyLM", gCompilerMode.LC_legacyLM);
+
 	InitializeUIData();
 	SDL_Application();
 
