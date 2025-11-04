@@ -25,7 +25,8 @@
 
 UIInvUpgradeInfo::UIInvUpgradeInfo()
 {
-	m_legacy_mode = EngineExternal().ClearSkyMode();
+	const static bool isLegacyUpgrade = EngineExternal()[EEngineExternalGame::EnableLegacyUpgradeSystem];
+	m_legacy_mode = isLegacyUpgrade;
 }
 
 void UIInvUpgradeInfo::init_from_xml(LPCSTR xml_name)
