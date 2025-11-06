@@ -23,10 +23,13 @@ public:
 	u32 Release() override;
 
 private:
-	IDirect3DVertexBuffer9* m_pVB = nullptr;
-	IDirect3DIndexBuffer9* m_pIB;
+	IDirect3DVertexBuffer9* VertexBuffer = nullptr;
+	IDirect3DIndexBuffer9* IndexBuffer = nullptr;
 
 	RHIBufferDesc m_bufferDesc;
 
 	IDirect3DDevice9* m_pDev;
+
+	u32 refCountVB = 0;
+	u32 refCountIB = 0;
 };
