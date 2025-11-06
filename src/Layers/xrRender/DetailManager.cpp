@@ -3,11 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "DetailManager.h"
-#include "cl_intersect.h"
 
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "../../xrEngine/IGame_Persistent.h"
 #include "../../xrEngine/Environment.h"
 

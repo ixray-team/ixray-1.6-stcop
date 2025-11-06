@@ -684,69 +684,26 @@ void 	get_pos_bones(const vertBoned4W &vert, Fvector& p, CKinematics* Parent )
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
-BOOL	CSkeletonX::_PickBoneSoft1W	(IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
-		return pick_bone<vertBoned1W>( Vertices1W, Parent, r, dist, S, D, indices, faces);
+	return pick_bone<vertBoned1W>(Vertices1W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CSkeletonX::_PickBoneSoft2W	(IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX::_PickBoneSoft2W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
-		return pick_bone<vertBoned2W>( Vertices2W, Parent,r, dist, S, D, indices, faces);
+	return pick_bone<vertBoned2W>(Vertices2W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CSkeletonX::_PickBoneSoft3W	(IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX::_PickBoneSoft3W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
-		return pick_bone<vertBoned3W>( Vertices3W, Parent, r, dist, S, D, indices, faces);
+	return pick_bone<vertBoned3W>(Vertices3W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CSkeletonX::_PickBoneSoft4W	(IKinematics::pick_result &r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
-		return pick_bone<vertBoned4W>( Vertices4W, Parent, r, dist, S, D, indices, faces);
-}
-/*
-BOOL	CSkeletonX::_PickBoneSoft1W	(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
-{
-	VERIFY				(*Vertices1W);
-	bool intersect		= FALSE;
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
-		u32 idx			= (*it)*3;
-		for (u32 k=0; k<3; k++){
-			vertBoned1W& vert		= Vertices1W[indices[idx+k]];
-			get_pos_bones(vert, p[k], Parent);
-		}
-		float u,v,range	= flt_max;
-		if (CDB::TestRayTri(S,D,p,u,v,range,true)&&(range<dist)){
-			normal.mknormal(p[0],p[1],p[2]);
-			dist		= range;
-			intersect	= TRUE;
-		}
-	}
-	return intersect;
+	return pick_bone<vertBoned4W>(Vertices4W, Parent, r, dist, S, D, indices, faces);
 }
 
-BOOL CSkeletonX::_PickBoneSoft2W	(Fvector& normal, float& dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
-{
-	VERIFY				(*Vertices2W);
-	bool intersect		= FALSE;
-	for (CBoneData::FacesVecIt it=faces.begin(); it!=faces.end(); it++){
-		Fvector			p[3];
-		u32 idx			= (*it)*3;
-		for (u32 k=0; k<3; k++){
-			vertBoned2W& vert		= Vertices2W[indices[idx+k]];
-			get_pos_bones(vert, p[k], Parent);
-		}
-		float u,v,range	= flt_max;
-		if (CDB::TestRayTri(S,D,p,u,v,range,true)&&(range<dist)){
-			normal.mknormal(p[0],p[1],p[2]);
-			dist		= range;
-			intersect	= TRUE;
-		}
-	}
-	return intersect;
-}
-*/
 // Fill Vertices
 void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
@@ -818,7 +775,6 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 	}
 }
 
-#if 1
 void CSkeletonX::_DuplicateIndices(const char* N, IReader *data)
 {
 	//	We will have trouble with container since don't know were to take readable indices
@@ -834,4 +790,3 @@ void CSkeletonX::_DuplicateIndices(const char* N, IReader *data)
 	u32 crc					= crc32( data->pointer(), size);
 	m_Indices.create		( crc, iCount, (u16*)data->pointer());
 }
-#endif //USE_DX11
