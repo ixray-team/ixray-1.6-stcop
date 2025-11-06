@@ -1,8 +1,8 @@
 #include "stdafx.h"
-
-
 #include "DetailManager.h"
-#include "cl_intersect.h"
+
+#include "../../xrEngine/GameMtlLib.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 
 #ifdef _EDITOR
 #	include "../../Editors/LevelEditor/Editor/scene/scene.h"
@@ -38,35 +38,6 @@ IC bool		InterpolateAndDither(float* alpha255,	u32 x, u32 y, u32 sx, u32 sy, u32
 	return	c	> dither[col][row];
 }
 
-#ifndef _EDITOR
-#if 0 //def	DEBUG
-//#include "../../Include/xrRender/DebugRender.h"
-#include "dxDebugRender.h"
-static void draw_obb		( const Fmatrix &matrix, const u32 &color )
-{
-	Fvector							aabb[8];
-	matrix.transform_tiny			(aabb[0],Fvector().set( -1, -1, -1)); // 0
-	matrix.transform_tiny			(aabb[1],Fvector().set( -1, +1, -1)); // 1
-	matrix.transform_tiny			(aabb[2],Fvector().set( +1, +1, -1)); // 2
-	matrix.transform_tiny			(aabb[3],Fvector().set( +1, -1, -1)); // 3
-	matrix.transform_tiny			(aabb[4],Fvector().set( -1, -1, +1)); // 4
-	matrix.transform_tiny			(aabb[5],Fvector().set( -1, +1, +1)); // 5
-	matrix.transform_tiny			(aabb[6],Fvector().set( +1, +1, +1)); // 6
-	matrix.transform_tiny			(aabb[7],Fvector().set( +1, -1, +1)); // 7
-
-	u32								aabb_id[12*2] = {
-		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
-	};
-
-	::DRender->add_lines							(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color);
-}
-
-bool det_render_debug = false;
-#endif
-#endif
-
-#include "../../xrEngine/GameMtlLib.h"
-
 static void ground_correction(Fmatrix& xform, const Fvector &ground_normal)
 {
 	xform.j = ground_normal;
@@ -75,19 +46,19 @@ static void ground_correction(Fmatrix& xform, const Fvector &ground_normal)
 	xform.k.crossproduct(xform.i, xform.j); xform.k.normalize();
 }
 
-//#define		DBG_SWITCHOFF_RANDOMIZE
-void		CDetailManager::cache_Decompress(Slot* S)
+void CDetailManager::cache_Decompress(Slot* S)
 {
-	VERIFY				(S);
-	Slot&	D			= *S;
-	D.type				= stReady;
-	if (D.empty)		return;
+	VERIFY(S);
+	Slot& D = *S;
+	D.type = stReady;
+	if (D.empty)
+		return;
 
-	DetailSlot&	DS		= QueryDB(D.sx,D.sz);
+	DetailSlot& DS = QueryDB(D.sx, D.sz);
 
 	// Select polygons
-	Fvector		bC,bD;
-	D.vis.box.get_CD	(bC,bD);
+	Fvector bC,bD;
+	D.vis.box.get_CD(bC, bD);
 
 #ifdef _EDITOR
 	XRC.box_options(CDB::OPT_FULL_TEST);
@@ -96,7 +67,7 @@ void		CDetailManager::cache_Decompress(Slot* S)
     Scene->BoxPickObjects(D.vis.box,pinf,GetSnapList());
 	u32	triCount		= pinf.size();
 #else
-	xrc.box_options		(CDB::OPT_FULL_TEST); 
+	xrc.box_options(CDB::OPT_FULL_TEST);
 	xrc.box_query		(g_pGameLevel->ObjectSpace.GetStaticModel(),bC,bD);
 	u32	triCount		= xrc.r_count	();
 	CDB::TRI*	tris	= g_pGameLevel->ObjectSpace.GetStaticTris();
@@ -137,54 +108,35 @@ void		CDetailManager::cache_Decompress(Slot* S)
 		for (u32 x=0; x<=d_size; x++)
 		{
 			// shift
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			u32 shift_x =  r_jitter.randI(16);
 			u32 shift_z =  r_jitter.randI(16);
-#else
-			u32 shift_x =  8;
-			u32 shift_z =  8;
-#endif
+
 			// Iterpolate and dither palette
 			selected.clear();
 
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			if ((DS.id0!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[0],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(0);
 			if ((DS.id1!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[1],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(1);
 			if ((DS.id2!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[2],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(2);
 			if ((DS.id3!=DetailSlot::ID_Empty)&& InterpolateAndDither(alpha255[3],x,z,shift_x,shift_z,d_size,dither))	selected.push_back(3);
-#else
-			if ((DS.id0!=DetailSlot::ID_Empty))	selected.push_back(0);
-			if ((DS.id1!=DetailSlot::ID_Empty))	selected.push_back(1);
-			if ((DS.id2!=DetailSlot::ID_Empty))	selected.push_back(2);
-			if ((DS.id3!=DetailSlot::ID_Empty))	selected.push_back(3);
-#endif
 			
 			// Select
 			if (selected.empty())	continue;
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
-			u32 index;
-			if (selected.size()==1)	index = selected[0];
-			else					index = selected[r_selection.randI(selected.size())];
-#else
-			u32 index = selected[0];
-#endif
+
+			u32 index = (selected.size() == 1) ? selected[0] : selected[r_selection.randI(selected.size())];
 
 #ifndef _EDITOR 
 			const CDetail& Dobj	=	objects[DS.r_id(index)];
 #else
 			const CDetail& Dobj	=	*objects[DS.r_id(index)];
 #endif
+
 			CDetail::SlotItem	Item	= CDetail::SlotItem();
 			// Position (XZ)
 			float		rx = (float(x)/float(d_size))*dm_slot_size + D.vis.box.min.x;
 			float		rz = (float(z)/float(d_size))*dm_slot_size + D.vis.box.min.z;
 			Fvector		Item_P;
 
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
 			Item_P.set	(rx + r_jitter.randFs(jitter), D.vis.box.max.y, rz + r_jitter.randFs(jitter));
-#else
-			Item_P.set	(rx , D.vis.box.max.y, rz );
-#endif
 
 			// Position (Y)
 			float y		= D.vis.box.min.y-5;
@@ -197,7 +149,8 @@ void		CDetailManager::cache_Decompress(Slot* S)
 #ifdef _EDITOR
 				Fvector verts[3];
 				SBoxPickInfo& I=pinf[tid];
-				for (int k=0; k<(int)I.inf.size(); k++){
+				for (int k=0; k<(int)I.inf.size(); k++)
+				{
 					VERIFY(I.s_obj);
 RDEVICE.Statistic->TEST0.Begin	();
 					I.e_obj->GetFaceWorld(I.s_obj->_Transform(),I.e_mesh,I.inf[k].id,verts);
@@ -211,8 +164,8 @@ RDEVICE.Statistic->TEST0.End		();
 					}
 				}
 #else
-				CDB::TRI&	T		= tris[xrc.r_begin()[tid].id];
-				SGameMtl* mtl		= GMLib.GetMaterialByIdx(T.material);
+				CDB::TRI& T = tris[xrc.r_begin()[tid].id];
+				SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
 
 				if(mtl->Flags.test(SGameMtl::flPassable))	
 					continue;
@@ -241,53 +194,38 @@ RDEVICE.Statistic->TEST0.End		();
 #endif
 			}
 			if(no_push) continue;
-			if (y<D.vis.box.min.y)			continue;
+			if (y<D.vis.box.min.y)
+				continue;
+
 			Item_P.y	= y;
 
 			// Angles and scale
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
-			Item.scale	= r_scale.randF		(Dobj.m_fMinScale*0.5f,Dobj.m_fMaxScale*0.9f);
-#else
-			Item.scale	= (Dobj.m_fMinScale*0.5f+Dobj.m_fMaxScale*0.9f)/2;
-			//Item.scale	= 0.1f;
-#endif
-			// X-Form BBox
-			Fmatrix		mScale,mXform;
-			Fbox		ItemBB;
-			Fmatrix mRotY;
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
-			mRotY.rotateY				(r_yaw.randF	(0,PI_MUL_2));
-#else
-			mRotY.rotateY				(0);
-#endif
-			Item.pos = Item_P;
-			mRotY.translate_over		(Item_P);
-			mScale.scale					(Item.scale,Item.scale,Item.scale);
-			mXform.mul_43					(mRotY,mScale);
-			ItemBB.xform					(Dobj.bv_bb,mXform);
-			Bounds.merge					(ItemBB);
+			Item.scale = r_scale.randF(Dobj.m_fMinScale * 0.5f, Dobj.m_fMaxScale * 0.9f);
 
-#ifndef _EDITOR
-#if 0 //def	DEBUG
-			if(det_render_debug)
-				draw_obb(  mXform, color_rgba		(255,0,0,255) );//Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
-#endif
-#endif
+			// X-Form BBox
+			Fmatrix mRotY;
+
+			mRotY.rotateY(r_yaw.randF(0, PI_MUL_2));
+
+			Item.pos = Item_P;
+			mRotY.translate_over(Item_P);
+
+			Fmatrix mScale;
+			mScale.scale(Item.scale, Item.scale, Item.scale);
+
+			Fmatrix mXform;
+			mXform.mul_43(mRotY, mScale);
+
+			Fbox ItemBB;
+			ItemBB.xform(Dobj.bv_bb, mXform);
+			Bounds.merge(ItemBB);
 
 			Item.c_hemi = DS.r_qclr(DS.c_hemi, 15)+EPS;
 			Item.c_hemi = DS.r_qclr(DS.c_dir, 15)>0.07f ? Item.c_hemi : -Item.c_hemi;
 
 			// Vis-sorting
-#ifndef		DBG_SWITCHOFF_RANDOMIZE
+			Item.vis_ID = Dobj.m_Flags.is(DO_NO_WAVING) ? 0 : Random.randI(1, 3);
 
-			if (Dobj.m_Flags.is(DO_NO_WAVING))
-				Item.vis_ID = 0;
-			else
-				Item.vis_ID = Random.randI(1, 3);
-
-#else
-			Item.vis_ID = 0;
-#endif
 			//чтобы (только) листики травы ложились на поверхность террейна
 			//	if (Item.vis_ID == 0)
 
@@ -295,13 +233,12 @@ RDEVICE.Statistic->TEST0.End		();
 			// Save it
 
 			mRotY.getHPB(Item.hpb);
-
 			D.G[index].items.emplace_back(xr_make_shared<CDetail::SlotItem>(Item));
 		}
 	}
 
 	// Update bounds to more tight and real ones
-	D.vis.clear			();
-	D.vis.box.set		(Bounds);
-	D.vis.box.getsphere	(D.vis.sphere.P,D.vis.sphere.R);
+	D.vis.clear();
+	D.vis.box.set(Bounds);
+	D.vis.box.getsphere(D.vis.sphere.P, D.vis.sphere.R);
 }
