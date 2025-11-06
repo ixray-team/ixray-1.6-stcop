@@ -37,7 +37,7 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 			usage,
 			0,
 			pool,
-			&m_pVB,
+			&VertexBuffer,
 			nullptr);
 	}
 	else if (desc.Type == ERHI_BUFFER_TYPE::INDEX)
@@ -47,7 +47,7 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 			usage,
 			D3DFMT_INDEX16,
 			pool,
-			&m_pIB,
+			&IndexBuffer,
 			nullptr);
 	}
 
@@ -56,17 +56,17 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 	if (pInitData && pInitData->pSysMem)
 	{
 		void* ptr = nullptr;
-		if (m_pVB)
+		if (VertexBuffer)
 		{
-			m_pVB->Lock(0, desc.Size, &ptr, 0);
+			VertexBuffer->Lock(0, desc.Size, &ptr, 0);
 			memcpy(ptr, pInitData->pSysMem, desc.Size);
-			m_pVB->Unlock();
+			VertexBuffer->Unlock();
 		}
-		else if (m_pIB)
+		else if (IndexBuffer)
 		{
-			m_pIB->Lock(0, desc.Size, &ptr, 0);
+			IndexBuffer->Lock(0, desc.Size, &ptr, 0);
 			memcpy(ptr, pInitData->pSysMem, desc.Size);
-			m_pIB->Unlock();
+			IndexBuffer->Unlock();
 		}
 	}
 }
@@ -74,8 +74,8 @@ CD3D9Buffer::CD3D9Buffer(IDirect3DDevice9* pDevice, const RHIBufferDesc& desc, c
 
 CD3D9Buffer::~CD3D9Buffer()
 {
-	if (m_pVB) m_pVB->Release();
-	if (m_pIB) m_pIB->Release();
+	if (VertexBuffer) VertexBuffer->Release();
+	if (IndexBuffer) IndexBuffer->Release();
 }
 
 bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresource* pData)
@@ -83,9 +83,9 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 	DWORD lockFlags = 0;
 	switch (MapType)
 	{
-    case ERHI_BUFFER_MAP::READ:
-        lockFlags = D3DLOCK_READONLY;
-        break;
+	case ERHI_BUFFER_MAP::READ:
+		lockFlags = D3DLOCK_READONLY;
+		break;
 	case ERHI_BUFFER_MAP::WRITE_DISCARD:
 		lockFlags = D3DLOCK_DISCARD;
 		break;
@@ -101,16 +101,24 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 
 	void* ptr = nullptr;
 	HRESULT hr = E_FAIL;
-	if (m_pVB)
+
+	VERIFY(VertexBuffer || IndexBuffer);
+
+	if (VertexBuffer)
 	{
-		hr = m_pVB->Lock(0, m_bufferDesc.Size, &ptr, lockFlags);
+		hr = VertexBuffer->Lock(0, m_bufferDesc.Size, &ptr, lockFlags);
 	}
-	else if (m_pIB)
+	else if (IndexBuffer)
 	{
-		hr = m_pIB->Lock(0, m_bufferDesc.Size, &ptr, lockFlags);
+		hr = IndexBuffer->Lock(0, m_bufferDesc.Size, &ptr, lockFlags);
 	}
 
-	if (FAILED(hr))
+	if (IndexBuffer == nullptr && VertexBuffer == nullptr)
+	{
+		Msg("! CD3D9Buffer::Map: Buffer is empty!");
+		return false;
+	}
+	else if (FAILED(hr))
 	{
 		Msg("! CD3D9Buffer::Map: Failed to map buffer. DirectX Error: %s", Debug.error2string(hr));
 		return false;
@@ -128,8 +136,8 @@ bool CD3D9Buffer::Map(ERHI_BUFFER_MAP MapType, u32 MapFlags, RHIMappedSubresourc
 
 void CD3D9Buffer::Unmap()
 {
-	if (m_pVB) m_pVB->Unlock();
-	if (m_pIB) m_pIB->Unlock();
+	if (VertexBuffer) VertexBuffer->Unlock();
+	if (IndexBuffer) IndexBuffer->Unlock();
 }
 
 void CD3D9Buffer::UpdateSubresource(void* pData, u32 Size)
@@ -137,57 +145,71 @@ void CD3D9Buffer::UpdateSubresource(void* pData, u32 Size)
 	R_ASSERT(Size <= m_bufferDesc.Size);
 
 	void* ptr = nullptr;
-	if (m_pVB)
+	if (VertexBuffer)
 	{
-		if (SUCCEEDED(m_pVB->Lock(0, Size, &ptr, 0)))
+		if (SUCCEEDED(VertexBuffer->Lock(0, Size, &ptr, 0)))
 		{
 			memcpy(ptr, pData, Size);
-			m_pVB->Unlock();
+			VertexBuffer->Unlock();
 		}
 	}
-	else if (m_pIB)
+	else if (IndexBuffer)
 	{
-		if (SUCCEEDED(m_pIB->Lock(0, Size, &ptr, 0)))
+		if (SUCCEEDED(IndexBuffer->Lock(0, Size, &ptr, 0)))
 		{
 			memcpy(ptr, pData, Size);
-			m_pIB->Unlock();
+			IndexBuffer->Unlock();
 		}
 	}
 }
 
 void CD3D9Buffer::SetVertexBuffer(u32 StartSlot, const u32 Stride, const u32 Offset)
 {
-	m_pDev->SetStreamSource(StartSlot, m_pVB, Offset, Stride);
+	m_pDev->SetStreamSource(StartSlot, VertexBuffer, Offset, Stride);
 }
 
 void CD3D9Buffer::SetIndexBuffer(bool Is32BitBuffer, u32 Offset)
 {
-	m_pDev->SetIndices(m_pIB);
+	m_pDev->SetIndices(IndexBuffer);
 }
 
 void CD3D9Buffer::AddRef()
 {
-	if (m_pVB) m_pVB->AddRef();
-	if (m_pIB) m_pIB->AddRef();
+	if (VertexBuffer)
+	{
+		refCountVB = VertexBuffer->AddRef(); 
+		return;
+	}
+
+	if (IndexBuffer)
+	{
+		refCountIB = IndexBuffer->AddRef();
+		return;
+	}
 }
 
 u32 CD3D9Buffer::Release()
 {
-	u32 refCountVB = 0;
-	u32 refCountIB = 0;
-
-	if (m_pVB)
+	if (VertexBuffer)
 	{
-		HRESULT hr = m_pVB->Unlock(); // безопасно, если не заблокирован, вернёт D3DERR_INVALIDCALL
-		refCountVB = m_pVB->Release();
-		m_pVB = nullptr;
+		HRESULT hr = VertexBuffer->Unlock(); // безопасно, если не заблокирован, вернёт D3DERR_INVALIDCALL
+		refCountVB = VertexBuffer->Release();
+
+		if (refCountVB == 0)
+		{
+			VertexBuffer = nullptr;
+		}
 	}
 
-	if (m_pIB)
+	if (IndexBuffer)
 	{
-		HRESULT hr = m_pIB->Unlock();
-		refCountIB = m_pIB->Release();
-		m_pIB = nullptr;
+		HRESULT hr = IndexBuffer->Unlock();
+		refCountIB = IndexBuffer->Release();
+
+		if (refCountIB == 0)
+		{
+			IndexBuffer = nullptr;
+		}
 	}
 	
 	return std::max(refCountVB, refCountIB);
