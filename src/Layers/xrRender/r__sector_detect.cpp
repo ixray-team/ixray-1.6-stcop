@@ -1,14 +1,7 @@
 #include "stdafx.h"
-#include "FHierrarhyVisual.h"
-#if (RENDER==R_R4)
-#include "r4.h"
-#endif
-#if (RENDER==R_R2)
-#include "r2.h"
-#endif
-#if (RENDER==R_R1)
-#include "FStaticRender.h"
-#endif
+#include "FHierrarhyVisual.h" 
+
+thread_local xrXRC sectors_detect_xrc;
 
 int CRender::translateSector(IRender_Sector* pSector)
 {
@@ -43,7 +36,7 @@ IRender_Sector* CRender::detectSector(const Fvector& P)
 	}
 	return S;
 }
-thread_local xrXRC sectors_detect_xrc;
+
 IRender_Sector* CRender::detectLastSector(const Fvector& P)
 {
 	if(SectorsCount()==1)

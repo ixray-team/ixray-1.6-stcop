@@ -148,7 +148,7 @@ void CDetailManager::hw_Load_Geom()
 			}
 		}
 
-		R_CHK(RHIUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
+		R_ASSERT(RHIUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
 		xr_free(pIOriginal);
 	}
 
