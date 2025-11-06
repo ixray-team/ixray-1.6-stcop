@@ -1,23 +1,6 @@
-// FVisual.cpp: implementation of the FVisual class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-
-
 #include "../../xrEngine/Fmesh.h"
 #include "FVisual.h"
-
-#ifdef USE_DX11
-#include "../xrRenderDX10/dx10BufferUtils.h"
-#endif // USE_DX11
-
-#include <FlexibleVertexFormat.h>
-using namespace FVF;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 Fvisual::Fvisual()  : dxRender_Visual()
 {
