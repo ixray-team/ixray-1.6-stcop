@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "XRaySkeletonX.h"
-#include "../../xrCore/Collision/xrCDB.h"
 #include "XRayKinematics.h"
-#include "../xrRender/cl_intersect.h"
+#include "../../xrCore/Collision/xrCDB.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 
 #pragma pack(push,2)
 struct vertRender// T&B are not skinned, because in R2 skinning occurs always in hardware
