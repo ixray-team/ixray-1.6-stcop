@@ -138,10 +138,3 @@ void CPortalTraverser::fade_render	()
 	// cleanup
 	f_portals.clear					();
 }
-
-#ifdef DEBUG
-void CPortalTraverser::dbg_draw		()
-{
-
-}
-#endif
