@@ -384,8 +384,7 @@ void CResourceManager::DeferredUnload()
 		texture.second->Unload();
 }
 
-#ifdef _EDITOR
-void	CResourceManager::ED_UpdateTextures(AStringVec* names)
+void CResourceManager::ED_UpdateTextures(xr_vector<xr_string>* names)
 {
 	// 1. Unload
 	if (names){
@@ -402,7 +401,6 @@ void	CResourceManager::ED_UpdateTextures(AStringVec* names)
 	// 2. Load
 	// DeferredUpload	();
 }
-#endif
 
 Shader* CResourceManager::_CreateShader(Shader* InShader)
 {
