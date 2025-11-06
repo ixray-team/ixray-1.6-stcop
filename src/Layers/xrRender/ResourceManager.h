@@ -132,9 +132,7 @@ public:
 
 	// Editor cooperation
 	void							ED_UpdateBlender	(LPCSTR Name, IBlender*		data);
-#ifdef _EDITOR
 	void							ED_UpdateTextures	(xr_vector<xr_string>* names);
-#endif
 
 	// Low level resource creation
 	CTexture*						_CreateTexture		(LPCSTR Name);

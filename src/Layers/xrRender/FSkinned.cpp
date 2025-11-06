@@ -531,30 +531,6 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
-
-#ifdef	DEBUG
-
-template	< typename vertex_type >
-static void verify_vertex( const vertex_type& v, const Fvisual* V, const CKinematics *Parent, u32 iBase, u32 iCount, const u16 *indices, u32 vertex_idx, u32 idx )
-{
-	VERIFY(Parent);
-#ifndef _EDITOR
-	for( u8 i =0; i<vertex_type::bones_count; ++i )
-		if( v.get_bone_id(i) >= Parent->LL_BoneCount() )
-		{
-			Msg( "v.get_bone_id(i): %d, Parent->LL_BoneCount() %d ", v.get_bone_id(i), Parent->LL_BoneCount() );
-			Msg( "&v: %p, &V: %p, indices: %p", &v, V, indices );
-			Msg( " iBase: %d, iCount: %d, V->iBase %d, V->iCount %d, V->vBase: %d,  V->vCount  %d, vertex_idx: %d, idx: %d", iBase, iCount, V->iBase, V->iCount, V->vBase, V->vCount, vertex_idx, idx  );
-			Msg( " v.P: %s , v.N: %s, v.T: %s, v.B: %s", get_string( v.P ).c_str(),get_string(  v.N ).c_str(),get_string(  v.T ).c_str(),get_string(  v.B  ).c_str());
-			Msg( "Parent->dbg_name: %s ", Parent->dbg_name.c_str() );
-			xrLogger::FlushLog();
-			FATAL( "v.get_bone_id(i) >= Parent->LL_BoneCount()" );
-		}
-#endif        
-}
-#endif
-
 void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 {
 #ifdef USE_DX11
@@ -577,9 +553,6 @@ void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 			for (u32 idx = 0; idx < iCount; idx++)
 			{
 				vertBoned1W& v = vertices[V->vBase + indices[idx]];
-#ifdef DEBUG
-				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
-#endif
 				CBoneData& BD = Parent->LL_GetData((u16)v.matrix);
 				BD.AppendFace(ChildIDX, (u16)(idx / 3));
 			}
@@ -590,9 +563,6 @@ void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 			for (u32 idx = 0; idx < iCount; idx++)
 			{
 				vertBoned2W& v = vertices[V->vBase + indices[idx]];
-#ifdef DEBUG
-				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
-#endif
 				Parent->LL_GetData((u16)v.matrix0).AppendFace(ChildIDX, (u16)(idx / 3));
 				Parent->LL_GetData((u16)v.matrix1).AppendFace(ChildIDX, (u16)(idx / 3));
 			}
@@ -603,9 +573,6 @@ void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 			for (u32 idx = 0; idx < iCount; idx++)
 			{
 				vertBoned3W& v = vertices[V->vBase + indices[idx]];
-#ifdef DEBUG
-				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
-#endif
 				Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
 				Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
 				Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));
@@ -617,9 +584,6 @@ void CSkeletonX_ext::_CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount)
 			for (u32 idx = 0; idx < iCount; idx++)
 			{
 				vertBoned4W& v = vertices[V->vBase + indices[idx]];
-#ifdef DEBUG
-				verify_vertex(v, V, Parent, iBase, iCount, indices, V->vBase + indices[idx], idx);
-#endif
 				Parent->LL_GetData((u16)v.m[0]).AppendFace(ChildIDX, (u16)(idx / 3));
 				Parent->LL_GetData((u16)v.m[1]).AppendFace(ChildIDX, (u16)(idx / 3));
 				Parent->LL_GetData((u16)v.m[2]).AppendFace(ChildIDX, (u16)(idx / 3));
