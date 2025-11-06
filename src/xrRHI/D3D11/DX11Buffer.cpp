@@ -186,5 +186,13 @@ void CD3D11Buffer::AddRef()
 
 u32 CD3D11Buffer::Release()
 {
-	return static_cast<u32>(m_pBuffer->Release());
+	u32 RefCount = m_pBuffer->Release();
+
+	if (RefCount == 0)
+	{
+		m_pBuffer = nullptr;
+		xr_delete(this);
+	}
+
+	return RefCount;
 }
