@@ -1,21 +1,20 @@
 // Portal.h: interface for the CPortal class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(_PORTAL_H_)
-#define _PORTAL_H_
 #pragma once
 
-class	CPortal;
-class	CSector;
+class CPortal;
+class CSector;
 
-struct	_scissor					: public Fbox2
+struct _scissor :
+	public Fbox2
 {
 	float	depth;
 };
 
 // Connector
-class	CPortal						: public IRender_Portal
+class CPortal :
+	public IRender_Portal
 #ifdef DEBUG_DRAW
 	, public pureRender
 #endif
@@ -50,7 +49,8 @@ public:
 class dxRender_Visual;
 
 // Main 'Sector' class
-class	 CSector					: public IRender_Sector
+class CSector :
+	public IRender_Sector
 {
 protected:
 	dxRender_Visual*					m_root;			// whole geometry of that sector
@@ -98,11 +98,6 @@ public:
 	void							traverse			(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
 	void							fade_portal			(CPortal* _p, float ssa);
 	void							fade_render			();
-#ifdef DEBUG
-	void							dbg_draw		();
-#endif
 };
 
-extern	CPortalTraverser			PortalTraverser	;
-
-#endif // !defined(AFX_PORTAL_H__1FC2D371_4A19_49EA_BD1E_2D0F8DEBBF15__INCLUDED_)
+extern	CPortalTraverser PortalTraverser	;
