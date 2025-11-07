@@ -12,8 +12,8 @@
 #include "../xrEngine/SkeletonMotions.h"
 #include "../xrEngine/motion.h"
 
-#include "freemagic/MgcCont3DBox.h"         
-#include "freemagic/MgcCont3DMinBox.h"         
+#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DBox.h"
+#include "../../3rd-party/MagicSoftware/FreeMagic/Include/MgcCont3DMinBox.h"
 
 #include "ui_main.h"
 #include "UI_ToolsCustom.h"
