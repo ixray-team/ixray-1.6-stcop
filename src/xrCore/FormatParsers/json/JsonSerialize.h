@@ -1,5 +1,5 @@
 #pragma once
-#include <json/json.hpp>
+#include <nlohmann/json.hpp>
 #include "../../Concepts.h"
 
 #ifdef XRGAME_EXPORTS
