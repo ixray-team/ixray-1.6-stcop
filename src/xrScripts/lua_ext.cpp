@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include <random>
 #include "script_engine.h"
 
 #include "luapanda.h"
 
+#include <random>
+
 extern "C"
 {
-#include <lua/lua.h>
 #include "lfs.h"
 #include "luasocket/luasocket.h"
 
