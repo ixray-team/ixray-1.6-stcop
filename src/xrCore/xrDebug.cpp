@@ -378,105 +378,67 @@ typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hF
 // TODO: windows specific stuff, Linux would require debugging tools and APIs like `libunwind`, `libbfd`, and `gdb`...
 void save_mini_dump			(_EXCEPTION_POINTERS *pExceptionInfo)
 {
-	// firstly see if dbghelp.dll is around and has the function we need
-	// look next to the EXE first, as the one in System32 might be old 
-	// (e.g. Windows 2000)
-	HMODULE hDll	= nullptr;
-	string_path		szDbgHelpPath;
-
-	if (GetModuleFileNameA( nullptr, szDbgHelpPath, _MAX_PATH ))
-	{
-		char *pSlash = strchr( szDbgHelpPath, '\\' );
-		if (pSlash)
-		{
-			xr_strcpy	(pSlash+1, sizeof(szDbgHelpPath)-(pSlash - szDbgHelpPath), "DBGHELP.DLL" );
-			hDll = ::LoadLibraryA( szDbgHelpPath );
-		}
-	}
-
-	if (hDll==nullptr)
-	{
-		// load any version we can
-		hDll = ::LoadLibraryA( "DBGHELP.DLL" );
-	}
-
 	const char* szResult = nullptr;
+	string_path	szDumpPath;
+	string_path	szScratch;
+	string64	t_stemp;
 
-	if (hDll)
+	timestamp	(t_stemp);
+	xr_strcpy		( szDumpPath, Core.ApplicationName);
+	xr_strcat		( szDumpPath, "_"					);
+	xr_strcat		( szDumpPath, Core.UserName			);
+	xr_strcat		( szDumpPath, "_"					);
+	xr_strcat		( szDumpPath, t_stemp				);
+	xr_strcat		( szDumpPath, ".mdmp"				);
+
+	__try {
+		if (FS.path_exist("$logs$"))
+			FS.update_path	(szDumpPath,"$logs$",szDumpPath);
+	}
+	__except( EXCEPTION_EXECUTE_HANDLER ) {
+		string_path	temp;
+		xr_strcpy		(temp,szDumpPath);
+		xr_strcpy		(szDumpPath,"logs/");
+		xr_strcat		(szDumpPath,temp);
+	}
+
+	// create the file
+	HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
+	if (INVALID_HANDLE_VALUE==hFile)	
 	{
-		MINIDUMPWRITEDUMP pDump = (MINIDUMPWRITEDUMP)::GetProcAddress( hDll, "MiniDumpWriteDump" );
-		if (pDump)
+		// try to place into current directory
+		MoveMemory	(szDumpPath,szDumpPath+5,strlen(szDumpPath));
+		hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
+	}
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+			
+		ExInfo.ThreadId = ::GetCurrentThreadId();
+		ExInfo.ExceptionPointers = pExceptionInfo;
+		ExInfo.ClientPointers = false;
+
+		// write the dump
+		MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
+
+		BOOL bOK = MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
+		if (bOK)
 		{
-			string_path	szDumpPath;
-			string_path	szScratch;
-			string64	t_stemp;
-
-			timestamp	(t_stemp);
-			xr_strcpy		( szDumpPath, Core.ApplicationName);
-			xr_strcat		( szDumpPath, "_"					);
-			xr_strcat		( szDumpPath, Core.UserName			);
-			xr_strcat		( szDumpPath, "_"					);
-			xr_strcat		( szDumpPath, t_stemp				);
-			xr_strcat		( szDumpPath, ".mdmp"				);
-
-			__try {
-				if (FS.path_exist("$logs$"))
-					FS.update_path	(szDumpPath,"$logs$",szDumpPath);
-			}
-			__except( EXCEPTION_EXECUTE_HANDLER ) {
-				string_path	temp;
-				xr_strcpy		(temp,szDumpPath);
-				xr_strcpy		(szDumpPath,"logs/");
-				xr_strcat		(szDumpPath,temp);
-			}
-
-			// create the file
-			HANDLE hFile = ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
-			if (INVALID_HANDLE_VALUE==hFile)	
-			{
-				// try to place into current directory
-				MoveMemory	(szDumpPath,szDumpPath+5,strlen(szDumpPath));
-				hFile		= ::CreateFileA( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
-			}
-			if (hFile != INVALID_HANDLE_VALUE)
-			{
-				_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
-
-				ExInfo.ThreadId = ::GetCurrentThreadId();
-				ExInfo.ExceptionPointers = pExceptionInfo;
-				ExInfo.ClientPointers = false;
-
-				// write the dump
-				MINIDUMP_TYPE dump_flags = MINIDUMP_TYPE(MiniDumpNormal | MiniDumpFilterMemory | MiniDumpScanMemory | MiniDumpWithDataSegs | MiniDumpWithThreadInfo | MiniDumpWithFullMemoryInfo);
-
-				BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, dump_flags, &ExInfo, nullptr, nullptr );
-				if (bOK)
-				{
-					xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
-					szResult = szScratch;
-//					retval = EXCEPTION_EXECUTE_HANDLER;
-				}
-				else
-				{
-					xr_sprintf( szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
-					szResult = szScratch;
-				}
-				::CloseHandle(hFile);
-			}
-			else
-			{
-				xr_sprintf( szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
-				szResult = szScratch;
-			}
+			xr_sprintf( szScratch, "Saved dump file to '%s'", szDumpPath );
+			szResult = szScratch;
+//			retval = EXCEPTION_EXECUTE_HANDLER;
 		}
 		else
 		{
-			szResult = "DBGHELP.DLL too old";
+			xr_sprintf( szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError() );
+			szResult = szScratch;
 		}
+		::CloseHandle(hFile);
 	}
 	else
 	{
-		szResult = "DBGHELP.DLL not found";
+		xr_sprintf( szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError() );
+		szResult = szScratch;
 	}
 }
 #endif // USE_OWN_MINI_DUMP
