@@ -1,0 +1,12 @@
+download_single_header(
+    "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/display-library/refs/heads/master/include/adl_sdk.h"
+    "amd_adl/adl_sdk.h"
+)
+download_single_header(
+    "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/display-library/refs/heads/master/include/adl_structures.h"
+    "amd_adl/adl_structures.h"
+)
+download_single_header(
+    "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/display-library/refs/heads/master/include/adl_defines.h"
+    "amd_adl/adl_defines.h"
+)
