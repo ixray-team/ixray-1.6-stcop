@@ -84,6 +84,8 @@ set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 
 # Modules (Nuget or Src)
+set(EXTERNAL_INCLUDE_DIR ${CMAKE_BINARY_DIR}/_deps_header_only/)
+file(MAKE_DIRECTORY "${EXTERNAL_INCLUDE_DIR}")
 include("cmake/modules.cmake")
 
 # CMake targets
