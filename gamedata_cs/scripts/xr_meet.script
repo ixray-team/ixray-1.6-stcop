@@ -23,16 +23,21 @@ function evaluator_contact:evaluate()
 			return false
 		end
 
+		self.a.meet_manager:update()
+
 		if xr_wounded.is_wounded(self.object) then
 			return false
 		end
 
-		self.a.meet_manager:update()
+		if self.object:best_enemy() ~= nil then
+			return false
+		end
 
 		if self.mgr == nil then
 			self.mgr = self.object:motivation_action_manager()
 		end
 		if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
+			self.a.meet_manager.use = "false"
 			self.object:disable_talk()
 			return false
 		end
@@ -486,7 +491,7 @@ function init_meet(npc, ini, section, st, scheme)
 		def.sound_start		= "meet_general_start"
 		def.sound_start_wpn = "meet_weapon_start"
 		def.sound_stop		= "meet_general_stop"
-		def.use				= "true"
+		def.use				= "{=actor_enemy} false, true"
 		def.use_wpn			= "false"
 		def.precond			= "visibility"
 		def.abuse			= "true"
@@ -529,7 +534,7 @@ function init_meet(npc, ini, section, st, scheme)
 		def.sound_start		= "meet_general_start"
 		def.sound_start_wpn = "meet_weapon_start"
 		def.sound_stop		= "meet_general_stop"
-		def.use				= "true"
+		def.use				= "{=actor_enemy} false, true"
 		def.use_wpn			= "false"
 		def.precond			= "visibility"
 		def.abuse			= "true"
