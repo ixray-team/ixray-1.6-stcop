@@ -50,8 +50,8 @@ function load_job(smart)
             "sound_start           = meet_comander_start\n"..
             "sound_start_wpn       = meet_weapon_start\n"..
             "sound_stop            = meet_comander_stop\n"..
-            "use                   = true\n"..
-            "use_wpn               = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
+            "use_wpn               = {=actor_enemy} false, true\n"..
             "precond               = visibility\n"..
             "meet_only_at_path     = true\n"..
 
@@ -63,8 +63,8 @@ function load_job(smart)
             "sound_start           = meet_general_start\n"..
             "sound_start_wpn       = meet_weapon_start\n"..
             "sound_stop            = meet_general_stop\n"..
-            "use                   = true\n"..
-            "use_wpn               = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
+            "use_wpn               = {=actor_enemy} false, true\n"..
             "precond               = visibility\n"..
             "meet_only_at_path     = true\n"..
 
@@ -78,7 +78,7 @@ function load_job(smart)
             "sound_start           = meet_general_start\n"..
             "sound_start_wpn       = meet_weapon_start\n"..
             "sound_stop            = meet_general_stop\n"..
-            "use                   = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
             "use_wpn               = false\n"..
             "precond               = visibility\n"..
             "meet_only_at_path     = true\n"..
@@ -91,7 +91,7 @@ function load_job(smart)
             "sound_start           = \n"..
             "sound_start_wpn       = \n"..
             "sound_stop            = \n"..
-            "use                   = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
             "use_wpn               = false\n"..
             "precond               = visibility\n"..
 
@@ -103,7 +103,7 @@ function load_job(smart)
             "sound_start           = \n"..
             "sound_start_wpn       = \n"..
             "sound_stop            = \n"..
-            "use                   = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
             "use_wpn               = false\n"..
             "precond               = visibility\n"..
 
@@ -115,8 +115,8 @@ function load_job(smart)
             "sound_start           = meet_general_start\n"..
             "sound_start_wpn       = meet_weapon_start\n"..
             "sound_stop            = meet_general_stop\n"..
-            "use                   = true\n"..
-            "use_wpn               = true\n"..
+            "use                   = {=actor_enemy} false, true\n"..
+            "use_wpn               = {=actor_enemy} false, true\n"..
             "precond               = usability\n"..
 
             "[danger@ignore_day]\n"..
