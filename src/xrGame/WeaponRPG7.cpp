@@ -21,6 +21,9 @@ void CWeaponRPG7::Load	(LPCSTR section)
 
 	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
 
+	m_sGrenadeBoneName					= READ_IF_EXISTS(pSettings, r_string, section,"grenade_bone", "grenade");
+	m_sHudGrenadeBoneName				= READ_IF_EXISTS(pSettings, r_string, hud_sect,"grenade_bone", "grenade");
+
 	m_sRocketSection					= pSettings->r_string	(section,"rocket_class");
 
 	m_rocket_explode_params.start_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_condition", 0.0f);
@@ -109,12 +112,12 @@ void CWeaponRPG7::UpdateMissileVisibility()
 
 	if (GetHUDmode())
 	{
-		HudItemData()->set_bone_visible("grenade", vis_hud, TRUE);
+		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, TRUE);
 	}
 
 	IKinematics* pWeaponVisual = PKinematics(Visual());
 	VERIFY(pWeaponVisual);
-	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID("grenade"), vis_weap, TRUE);
+	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, TRUE);
 }
 
 BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC) 
