@@ -237,7 +237,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			return;
 		}
 
-		if (!CurrentGameUI()->ActorMenu().m_pQuickSlot)
+		if (!&CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu().m_pQuickSlot)
 		{
 			break;
 		}
