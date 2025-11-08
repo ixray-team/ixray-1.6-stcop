@@ -159,6 +159,7 @@ void CDetailManager::Load()
 #endif
 void CDetailManager::Unload		()
 {
+	Device.details_task.wait();
 	hw_Unload();
 
 	objects.clear();

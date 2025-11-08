@@ -452,12 +452,3 @@ ENGINE_API void EngineLoadStage3()
 		xr_strcpy(Console->ConfigFile, c_name);
 	}
 }
-
-int ENGINE_API WinMain_impl(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     char *    lpCmdLine,
-                     int       nCmdShow)
-{
-
-	return					(0);
-}
