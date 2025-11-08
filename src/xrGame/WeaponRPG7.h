@@ -34,6 +34,8 @@ public:
 	bool CheckRLMisfireRocket();
 
 protected:
+	shared_str	m_sGrenadeBoneName;
+	shared_str	m_sHudGrenadeBoneName;
 	virtual bool	AllowBore		();
 
 	struct
