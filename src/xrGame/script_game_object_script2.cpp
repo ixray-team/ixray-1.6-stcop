@@ -158,6 +158,11 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("is_weapon_use_chamber",			 &CScriptGameObject::IsWeaponUseChamber) //FFx0001++
 		.def("get_ammo_total",				&CScriptGameObject::GetSuitableAmmoTotal)
 		.def("set_ammo_elapsed",			&CScriptGameObject::SetAmmoElapsed)
+
+
+		.def("set_sub_inventory_icon_text", &CScriptGameObject::SetSubIconText)
+		.def("set_sub_inventory_icon",		&CScriptGameObject::SetSubIcon)
+
 		//Alundaio
 		.def("use",							&CScriptGameObject::Use)
 		.def("start_trade",					&CScriptGameObject::StartTrade)

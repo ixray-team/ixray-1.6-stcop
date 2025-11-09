@@ -46,6 +46,7 @@
 #include "alife_simulator.h"
 #include "CustomOutfit.h"
 #include "player_hud.h"
+#include "../xrUI/ui_base.h"
 
 namespace MemorySpace {
 	struct CVisibleObject;
@@ -1813,4 +1814,25 @@ void CScriptGameObject::SetHeadRotate(bool value)
 {
 	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
 		pInventoryOwner->SetHeadRotate(value);
+}
+
+void CScriptGameObject::SetSubIconText(LPCSTR m_custom_text, int m_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset)
+{
+	if (CInventoryItem* iitem = this->object().cast_inventory_item()) {
+		iitem->m_custom_text = m_custom_text;
+		iitem->m_custom_text_clr_inv = m_custom_text_clr_inv;
+		iitem->m_custom_text_font = UI().Font().GetFont(item_custom_text_font);
+		iitem->m_custom_text_offset = m_custom_text_offset;
+	}
+}
+
+void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr)
+{
+	if (CInventoryItem* iitem = this->object().cast_inventory_item()) {
+		iitem->m_custom_mark = m_custom_mark;
+		iitem->m_custom_mark_offset = m_custom_mark_offset;
+		iitem->m_custom_mark_size = m_custom_mark_size;
+		iitem->m_custom_mark_texture = m_custom_mark_texture;
+		iitem->m_custom_mark_clr = m_custom_mark_clr;
+	}
 }
