@@ -2,12 +2,6 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
 Texture3D s_blue_noise;
 
 // TODO: Это можно упростить потом
@@ -45,7 +39,7 @@ float4 ImportanceSampleGGX(float3 N, float2 Xi, float Roughness)
     return float4(H, pdf);
 }
 
-void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
+void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
 {
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
