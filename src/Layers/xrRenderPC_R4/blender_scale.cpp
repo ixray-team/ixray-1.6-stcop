@@ -14,7 +14,7 @@ void CBlender_scale::Compile(CBlender_Compile& C)
 
 	RImplementation.addShaderOption("FILTER_TYPE", C.iElement == 0 ? "smp_nofilter" : "smp_rtlinear");
 
-	C.r_Pass("stub_notransform_t", "copy_image", FALSE, FALSE, FALSE);
+	C.r_Pass("stub_fullscreen_triangle", "copy_image", FALSE, FALSE, FALSE);
 	C.r_dx10Texture("s_image", r2_RT_generic0);
 
 	C.r_dx10Sampler("smp_nofilter");
