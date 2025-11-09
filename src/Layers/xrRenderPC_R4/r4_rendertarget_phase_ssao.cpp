@@ -14,33 +14,20 @@ void CRenderTarget::phase_ssao()
 	GRHI->ClearTarget(rt_ssao_temp->pRT);
 
 	// low/hi RTs
-	u_setrt(rt_ssao_temp, 0, 0, 0/*RDepth*/);
+	u_setrt(rt_ssao_temp, 0, 0, 0);
 
 	RCache.set_Stencil(FALSE);
-
-	// Fill VB
-	float	scale_X = RCache.get_width() * 0.5f / float(TEX_jitter);
-	float	scale_Y = RCache.get_height() * 0.5f / float(TEX_jitter);
 
 	float _w = RCache.get_width();
 	float _h = RCache.get_height();
 
 	set_viewport(RContext, _w, _h);
-	u32	Offset = 0;
-
-	// Fill vertex buffer
-	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-	pv->set(-1, 1, 0, 1, 0, 0, scale_Y);	pv++;
-	pv->set(-1, -1, 0, 0, 0, 0, 0);	pv++;
-	pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);	pv++;
-	pv->set(1, -1, 1, 0, 0, scale_X, 0);	pv++;
-	RCache.Vertex.Unlock(4, g_combine->vb_stride);
 
 	// Draw
 	RCache.set_Element(s_ssao->E[0]);
-	RCache.set_Geometry(g_combine);
+	RCache.set_Geometry(FSTriangleGeom);
 
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	set_viewport(RContext, RCache.get_width(), RCache.get_height());
 
 	RCache.set_Stencil(FALSE);

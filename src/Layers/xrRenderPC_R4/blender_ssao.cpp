@@ -13,7 +13,7 @@ void	CBlender_SSAO::Compile			(CBlender_Compile& C)
 	switch (C.iElement)
 	{
 	case 0:		// calculate SSAO
-		C.r_Pass			("combine_1",		"ssao_calc",	FALSE,	FALSE,	FALSE);
+		C.r_Pass			("stub_fullscreen_triangle",		"ssao_calc",	FALSE,	FALSE,	FALSE);
 		C.r_Stencil			(TRUE, D3DCMP_LESSEQUAL, 0xFF);	// stencil should be >= 1
 		C.r_StencilRef		(0x01);
 		C.r_CullMode		(D3DCULL_NONE);
