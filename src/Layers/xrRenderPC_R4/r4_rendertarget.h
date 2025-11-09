@@ -189,12 +189,16 @@ private:
 	ref_shader			s_luminance;
 	float						f_luminance_adapt;
 
+	// FX: ScreenQuad
+	ref_geom QuadGeom;
+	IRHIBuffer* QuadVB = nullptr;
+	IRHIBuffer* QuadIB = nullptr;
+
 	// Combine
 	ref_geom					g_combine;
 	ref_geom					g_combine_VP;		// xy=p,zw=tc
 	ref_geom					g_combine_2UV;
 	ref_geom					g_combine_cuboid;
-	ref_geom					g_aa_blur;
 	ref_geom					g_aa_AA;
 	ref_shader				s_combine_dbg_0;
 	ref_shader				s_combine_dbg_1;
@@ -231,6 +235,7 @@ private:
 	bool						m_bHasActiveVolumetric;
 public:
 								CRenderTarget			();
+								void CreateQuad();
 								~CRenderTarget			();
 	void						accum_point_geom_create	();
 	void						accum_point_geom_destroy();
