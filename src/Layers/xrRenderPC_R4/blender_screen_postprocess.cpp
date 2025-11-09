@@ -19,7 +19,7 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
         C.L_textures.resize(std::max(C.L_textures.size(), (size_t)1));
         C.L_textures[0]._set(texture_name);
 
-        uber_deffer(C, true, "stub_screen_space", "snowing_main", FALSE, NULL, true);
+        uber_deffer(C, true, "stub_fullscreen_triangle", "snowing_main", FALSE, NULL, true);
 
         C.PassSET_ZB(FALSE, FALSE);
         C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
@@ -39,17 +39,17 @@ void CBlender_SPP::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
         case ScreenPostProcessType::Vignette:
-            C.r_Pass("stub_screen_space", "vignette", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "vignette", FALSE, FALSE, FALSE);
             break;
         case ScreenPostProcessType::Aberration:
-            C.r_Pass("stub_screen_space", "chromatic_aberration", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "chromatic_aberration", FALSE, FALSE, FALSE);
             break;
         case ScreenPostProcessType::Saturation:
-            C.r_Pass("stub_screen_space", "saturation", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "saturation", FALSE, FALSE, FALSE);
             break;
         case ScreenPostProcessType::Raindrops:
         {
-            C.r_Pass("stub_screen_space", "raindrops", FALSE, FALSE, FALSE);
+            C.r_Pass("stub_fullscreen_triangle", "raindrops", FALSE, FALSE, FALSE);
             C.r_dx10Texture("s_droplets", "shaders\\fx_hud_droplets");
             break;
         }

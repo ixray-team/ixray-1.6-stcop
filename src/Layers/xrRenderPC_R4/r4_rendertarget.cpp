@@ -883,25 +883,26 @@ CRenderTarget::CRenderTarget()
 	dwWidth = Device.TargetWidth;
 	dwHeight = Device.TargetHeight;
 
-	CreateQuad();
+	CreateFSTriangle();
 }
 
-void CRenderTarget::CreateQuad()
+//Creates fullscreen triangle
+void CRenderTarget::CreateFSTriangle()
 {
-	FVF::TL verts[4];
+	//LVutner: A couple ideas: nuke vertex color, nuke index buffer, nuke vertex buffer. Thank you.
+	FVF::TL verts[3];
 	constexpr u32 color = color_rgba(0, 0, 0, 255);
 
-	verts[0].set(0.f, (float)Device.TargetHeight, EPS_S, 1.f, color, 0.f, 1.f); // bottom-left
-	verts[1].set(0.f, 0.f, EPS_S, 1.f, color, 0.f, 0.f);                        // top-left
-	verts[2].set((float)Device.TargetWidth, (float)Device.TargetHeight, EPS_S, 1.f, color, 1.f, 1.f); // bottom-right
-	verts[3].set((float)Device.TargetWidth, 0.f, EPS_S, 1.f, color, 1.f, 0.f);  // top-right
+	verts[0].set(-1.0, 1.0, 1.0, 1.0, color, 0.0, 0.0);
+	verts[1].set(3.0, 1.0, 1.0, 1.0, color, 2.0, 0.0);
+	verts[2].set(-1.0, -3.0, 1.0, 1.0, color, 0.0, 2.0);
 
-	static constexpr u16 indices[6] = { 0, 1, 2, 2, 1, 3 };
+	static constexpr u16 indices[3] = { 0, 1, 2 };
 
-	RHIUtils::CreateVertexBuffer(&QuadVB, verts, sizeof(verts), true);
-	RHIUtils::CreateIndexBuffer(&QuadIB, indices, sizeof(indices), true);
+	RHIUtils::CreateVertexBuffer(&FSTriangleVB, verts, sizeof(verts), true);
+	RHIUtils::CreateIndexBuffer(&FSTriangleIB, indices, sizeof(indices), true);
 
-	QuadGeom.create(FVF::F_TL, QuadVB, QuadIB);
+	FSTriangleGeom.create(FVF::F_TL, FSTriangleVB, FSTriangleIB);
 }
 
 CRenderTarget::~CRenderTarget	()
@@ -986,8 +987,8 @@ CRenderTarget::~CRenderTarget	()
 		g_debug_blend_state = nullptr;
 	}
 
-	QuadVB->Release();
-	QuadIB->Release();
+	FSTriangleVB->Release();
+	FSTriangleIB->Release();
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)
