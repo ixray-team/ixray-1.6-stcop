@@ -708,9 +708,6 @@ CRenderTarget::CRenderTarget()
 		g_combine.create					(FVF::F_TL,		RCache.Vertex.Buffer(), RCache.QuadIB);
 		g_combine_2UV.create				(FVF::F_TL2uv,	RCache.Vertex.Buffer(), RCache.QuadIB);
 
-		u32 fvf_aa_blur				= D3DFVF_XYZRHW|D3DFVF_TEX4|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3);
-		g_aa_blur.create			(fvf_aa_blur,	RCache.Vertex.Buffer(), RCache.QuadIB);
-
 		u32 fvf_aa_AA				= D3DFVF_XYZRHW|D3DFVF_TEX7|D3DFVF_TEXCOORDSIZE2(0)|D3DFVF_TEXCOORDSIZE2(1)|D3DFVF_TEXCOORDSIZE2(2)|D3DFVF_TEXCOORDSIZE2(3)|D3DFVF_TEXCOORDSIZE2(4)|D3DFVF_TEXCOORDSIZE4(5)|D3DFVF_TEXCOORDSIZE4(6);
 		g_aa_AA.create				(fvf_aa_AA,		RCache.Vertex.Buffer(), RCache.QuadIB);
 
@@ -883,9 +880,28 @@ CRenderTarget::CRenderTarget()
 	s_menu.create("distort");
 	g_menu.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 
-
 	dwWidth = Device.TargetWidth;
 	dwHeight = Device.TargetHeight;
+
+	CreateQuad();
+}
+
+void CRenderTarget::CreateQuad()
+{
+	FVF::TL verts[4];
+	constexpr u32 color = color_rgba(0, 0, 0, 255);
+
+	verts[0].set(0.f, (float)Device.TargetHeight, EPS_S, 1.f, color, 0.f, 1.f); // bottom-left
+	verts[1].set(0.f, 0.f, EPS_S, 1.f, color, 0.f, 0.f);                        // top-left
+	verts[2].set((float)Device.TargetWidth, (float)Device.TargetHeight, EPS_S, 1.f, color, 1.f, 1.f); // bottom-right
+	verts[3].set((float)Device.TargetWidth, 0.f, EPS_S, 1.f, color, 1.f, 0.f);  // top-right
+
+	static constexpr u16 indices[6] = { 0, 1, 2, 2, 1, 3 };
+
+	RHIUtils::CreateVertexBuffer(&QuadVB, verts, sizeof(verts), true);
+	RHIUtils::CreateIndexBuffer(&QuadIB, indices, sizeof(indices), true);
+
+	QuadGeom.create(FVF::F_TL, QuadVB, QuadIB);
 }
 
 CRenderTarget::~CRenderTarget	()
@@ -969,6 +985,9 @@ CRenderTarget::~CRenderTarget	()
 		g_debug_blend_state->Release();
 		g_debug_blend_state = nullptr;
 	}
+
+	QuadVB->Release();
+	QuadIB->Release();
 }
 
 void CRenderTarget::reset_light_marker( bool bResetStencil)
