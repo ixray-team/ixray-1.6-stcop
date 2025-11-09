@@ -3,12 +3,6 @@
 #include "metalic_roughness_ambient.hlsli"
 #include "metalic_roughness_light.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
 float IntersectAABB(float3 Dir, float3 Org, float3 Box) {
 	float3 RcpDir = rcp(Dir);
 	
@@ -73,7 +67,7 @@ float4 median9(float4 a1, float4 a2, float4 a3, float4 a4, float4 a5, float4 a6,
 	return median5(a2, a4, a5, a7, a9);
 }
 
-float4 main(PSInput I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
