@@ -1,12 +1,18 @@
 #include "common.hlsli"
 #include "sload.hlsli"
 
-void main(p_shadow _I, out IXrayGbufferPack O)
+struct PSInput
+{
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
+};
+
+void main(PSInput _I, out IXrayGbufferPack O)
 {
     IXrayGbuffer G;
     p_bumped_new I;
 
-    GbufferUnpack(_I.tc0.xy, _I.hpos.xy, G);
+    GbufferUnpack(_I.texcoord.xy, _I.hpos.xy, G);
 	
 	clip(G.SnowMask - 0.00001f);
 	clip(0.9999f - G.Depth);

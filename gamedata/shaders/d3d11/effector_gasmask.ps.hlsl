@@ -40,12 +40,12 @@ float3 calc_visor_reflect(float3 color, float2 tc)
 	return (color + VIS_GLASS_INTENSITY * res) * rcp(1.0f + VIS_GLASS_INTENSITY);
 }
 
-float4 main(float2 tc0 : TEXCOORD0) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
-	float4 mask = s_gasmask.SampleLevel(smp_rtlinear, tc0, 0.0);
-	float4 breath = s_breath.SampleLevel(smp_rtlinear, tc0, 0.0);
+	float4 mask = s_gasmask.SampleLevel(smp_rtlinear, I.texcoord, 0.0);
+	float4 breath = s_breath.SampleLevel(smp_rtlinear, I.texcoord, 0.0);
 
-	float2 tc0_shift = tc0 + (mask.xy - 0.5) * 0.035; //LV: 0.035 looks better
+	float2 tc0_shift = I.texcoord + (mask.xy - 0.5) * 0.035; //LV: 0.035 looks better
 
 	float4 img = s_image.SampleLevel(smp_rtlinear, tc0_shift, 0.0);
 	img.xyz = calc_visor_reflect(img.xyz, tc0_shift);

@@ -146,18 +146,6 @@ void CRenderTarget::phase_combine()
 			sundir.set				(L_dir.x,L_dir.y,L_dir.z,0);
 		}
 
-		// Fill VB
-		float	scale_X				= RCache.get_width() / float(TEX_jitter);
-		float	scale_Y				= RCache.get_height() / float(TEX_jitter);
-
-		// Fill vertex buffer
-		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-		pv->set						(-1,	1,	0, 1, 0, 0,			scale_Y	);	pv++;
-		pv->set						(-1,	-1,	0, 0, 0, 0,			0		);	pv++;
-		pv->set						(1,		1,	1, 1, 0, scale_X,	scale_Y	);	pv++;
-		pv->set						(1,		-1,	1, 0, 0, scale_X,	0		);	pv++;
-		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
 		dxEnvDescriptorMixerRender &envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
 
 		// Setup textures
@@ -168,8 +156,7 @@ void CRenderTarget::phase_combine()
 	
 		// Draw
 		RCache.set_Element			(s_combine->E[0]	);
-		//RCache.set_Geometry			(g_combine_VP		);
-		RCache.set_Geometry			(g_combine		);
+		RCache.set_Geometry			(FSTriangleGeom);
 
 		RCache.set_c				("m_v2w",			m_v2w	);
 		RCache.set_c				("L_ambient",		ambclr	);
@@ -183,7 +170,7 @@ void CRenderTarget::phase_combine()
 		RCache.set_c				("ssao_noise_tile_factor",	fSSAONoise	);
 		RCache.set_c				("ssao_kernel_size",		fSSAOKernelSize	);
 
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 	}
 
 	if(ps_r2_ls_flags_ext.test(R4FLAG_PUDDLES))
@@ -237,29 +224,11 @@ void CRenderTarget::phase_combine()
 
 			u_setrt(rt_Generic_2, 0, 0, 0);
 
-			constexpr auto C = color_rgba(255, 255, 255, 255);
-			float _w = RCache.get_width();
-			float _h = RCache.get_height();
-			float d_Z = EPS_S;
-			float d_W = 1.f;
-
-			p0.set(.5f / _w, .5f / _h);
-			p1.set((_w + .5f) / _w, (_h + .5f) / _h);
-
-			FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
-
-			pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);	pv++;
-			pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);	pv++;
-			pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);	pv++;
-			pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);	pv++;
-
-			RCache.Vertex.Unlock(4, g_combine->vb_stride);
-
 			// Draw COLOR
 			RCache.set_Element(s_combine->E[1]);
-			RCache.set_Geometry(g_combine);
+			RCache.set_Geometry(FSTriangleGeom);
 
-			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+			RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 			GRHI->CopySurface(rt_Generic_0->pSurface, rt_Generic_2->pSurface);
 		}
 	}
@@ -338,22 +307,6 @@ void CRenderTarget::phase_combine()
 	{
 		GPU_EVENT(combine_2);
 
-		float _w = (float)get_width();
-		float _h = (float)get_height();
-
-		float ddw = 1.f / _w;
-		float ddh = 1.f / _h;
-		p0.set(.5f / _w, .5f / _h);
-		p1.set((_w + .5f) / _w, (_h + .5f) / _h);
-
-		// Fill vertex buffer
-		v_aa* pv = (v_aa*)RCache.Vertex.Lock(4, g_aa_AA->vb_stride, Offset);
-		pv->p.set(EPS, float(_h + EPS), EPS, 1.f); pv->uv0.set(p0.x, p1.y); pv->uv1.set(p0.x - ddw, p1.y - ddh); pv->uv2.set(p0.x + ddw, p1.y + ddh); pv->uv3.set(p0.x + ddw, p1.y - ddh); pv->uv4.set(p0.x - ddw, p1.y + ddh); pv->uv5.set(p0.x - ddw, p1.y, p1.y, p0.x + ddw); pv->uv6.set(p0.x, p1.y - ddh, p1.y + ddh, p0.x); pv++;
-		pv->p.set(EPS, EPS, EPS, 1.f); pv->uv0.set(p0.x, p0.y); pv->uv1.set(p0.x - ddw, p0.y - ddh); pv->uv2.set(p0.x + ddw, p0.y + ddh); pv->uv3.set(p0.x + ddw, p0.y - ddh); pv->uv4.set(p0.x - ddw, p0.y + ddh); pv->uv5.set(p0.x - ddw, p0.y, p0.y, p0.x + ddw); pv->uv6.set(p0.x, p0.y - ddh, p0.y + ddh, p0.x); pv++;
-		pv->p.set(float(_w + EPS), float(_h + EPS), EPS, 1.f); pv->uv0.set(p1.x, p1.y); pv->uv1.set(p1.x - ddw, p1.y - ddh); pv->uv2.set(p1.x + ddw, p1.y + ddh); pv->uv3.set(p1.x + ddw, p1.y - ddh); pv->uv4.set(p1.x - ddw, p1.y + ddh); pv->uv5.set(p1.x - ddw, p1.y, p1.y, p1.x + ddw); pv->uv6.set(p1.x, p1.y - ddh, p1.y + ddh, p1.x); pv++;
-		pv->p.set(float(_w + EPS), EPS, EPS, 1.f); pv->uv0.set(p1.x, p0.y); pv->uv1.set(p1.x - ddw, p0.y - ddh); pv->uv2.set(p1.x + ddw, p0.y + ddh); pv->uv3.set(p1.x + ddw, p0.y - ddh); pv->uv4.set(p1.x - ddw, p0.y + ddh); pv->uv5.set(p1.x - ddw, p0.y, p0.y, p1.x + ddw); pv->uv6.set(p1.x, p0.y - ddh, p0.y + ddh, p1.x); pv++;
-		RCache.Vertex.Unlock(4, g_aa_AA->vb_stride);
-
 		//	Set up variable
 		Fvector2 vDofKernel;
 		vDofKernel.set(0.5f / Device.TargetWidth, 0.5f / Device.TargetHeight);
@@ -367,8 +320,8 @@ void CRenderTarget::phase_combine()
 		RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);
 		RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 
-		RCache.set_Geometry(g_aa_AA);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 4, 0, 2);
+		RCache.set_Geometry(FSTriangleGeom);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
 	}
 
 	RCache.set_Stencil		(FALSE);
@@ -475,33 +428,15 @@ void CRenderTarget::phase_wallmarks		()
 void CRenderTarget::phase_combine_volumetric()
 {
 	GPU_EVENT(phase_combine_volumetric);
-	u32			Offset					= 0;
-	//Fvector2	p0,p1;
 
-	//	TODO: DX10: Remove half pixel offset here
-
-	//u_setrt(rt_Generic_0,0,0,RDepth );			// LDR RT
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 	//	Sets limits to both render targets
 	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 	{
-		// Fill VB
-		float	scale_X				= RCache.get_width() / float(TEX_jitter);
-		float	scale_Y				= RCache.get_height() / float(TEX_jitter);
-
-		// Fill vertex buffer
-		FVF::TL* pv					= (FVF::TL*)	RCache.Vertex.Lock	(4,g_combine->vb_stride,Offset);
-		pv->set						(-1,	1,	0, 1, 0, 0,			scale_Y	);	pv++;
-		pv->set						(-1,	-1,	0, 0, 0, 0,			0		);	pv++;
-		pv->set						(1,		1,	1, 1, 0, scale_X,	scale_Y	);	pv++;
-		pv->set						(1,		-1,	1, 0, 0, scale_X,	0		);	pv++;
-		RCache.Vertex.Unlock		(4,g_combine->vb_stride);
-
 		// Draw
 		RCache.set_Element			(s_combine_volumetric->E[0]	);
-		//RCache.set_Geometry			(g_combine_VP		);
-		RCache.set_Geometry			(g_combine		);
-		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,Offset,0,4,0,2);
+		RCache.set_Geometry			(FSTriangleGeom);
+		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,0,0,3,0,1);
 	}
 	RCache.set_ColorWriteEnable();
 }
