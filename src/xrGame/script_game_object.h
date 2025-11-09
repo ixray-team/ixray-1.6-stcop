@@ -833,6 +833,9 @@ public:
 			void SetHeadRotate(bool value);
 			void				setMechanic								(bool cond);
 
+			void				SetSubIconText(LPCSTR m_custom_text, int item_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset);
+			void				SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr);
+
 			_DECLARE_FUNCTION14(cast_GameObject, CScriptGameObject);
 			_DECLARE_FUNCTION14(cast_Car, CCar);
 			_DECLARE_FUNCTION14(cast_Heli, CHelicopter);
