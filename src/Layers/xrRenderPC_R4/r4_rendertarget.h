@@ -190,9 +190,9 @@ private:
 	float						f_luminance_adapt;
 
 	// FX: ScreenQuad
-	ref_geom QuadGeom;
-	IRHIBuffer* QuadVB = nullptr;
-	IRHIBuffer* QuadIB = nullptr;
+	ref_geom FSTriangleGeom;
+	IRHIBuffer* FSTriangleVB = nullptr;
+	IRHIBuffer* FSTriangleIB = nullptr;
 
 	// Combine
 	ref_geom					g_combine;
@@ -235,7 +235,7 @@ private:
 	bool						m_bHasActiveVolumetric;
 public:
 								CRenderTarget			();
-								void CreateQuad();
+								void CreateFSTriangle();
 								~CRenderTarget			();
 	void						accum_point_geom_create	();
 	void						accum_point_geom_destroy();
