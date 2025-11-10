@@ -525,7 +525,7 @@ void CInput::OnFrame()
 
 	dwCurTime = RDEVICE.TimerAsync_MMT();
 #if !defined(MASTER_GOLD)
-	if (!Device.IsEditorMode() && (KBState[SDL_SCANCODE_F11] || CImGuiManager::Instance().IsCapturingInputs()))
+	if (!Device.IsEditorMode() && CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
