@@ -27,6 +27,9 @@ public:
 	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
 	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
+	// Readback helper
+	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) override;
+
 	// Scissor rect
 	void SetScissorRect(Irect* R) override;
 
