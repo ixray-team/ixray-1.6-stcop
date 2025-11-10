@@ -451,7 +451,7 @@ void CInput::iCapture(IInputReceiver *p)
 {
 	VERIFY(p);
 
-	if (!Device.IsEditorMode() && (KBState[SDL_SCANCODE_F11] || CImGuiManager::Instance().IsCapturingInputs()))
+	if (!Device.IsEditorMode() && CImGuiManager::Instance().IsCapturingInputs())
 	{
 		NoInputUpdate();
 	} 
