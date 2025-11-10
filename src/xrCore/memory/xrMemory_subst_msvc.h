@@ -35,6 +35,17 @@ struct xr_special_free
 	}
 };
 
+template <bool _is_pm, typename T>
+struct xr_special_free<_is_pm, T[]>
+{
+	IC void operator()(T* ptr)
+	{
+		if (ptr == nullptr)
+			return;
+
+		Memory.mem_free(ptr);
+	}
+};
 
 template <class T>
 IC void xr_delete(T*& ptr)
@@ -66,14 +77,14 @@ template<typename T>
 using xr_shared_ptr = std::shared_ptr<T>;
 
 template<typename T>
-using xr_unique_ptr = std::unique_ptr<T, xr_special_free<false, T>>;
+using xr_unique_ptr = std::unique_ptr<T, xr_special_free<std::is_polymorphic_v<T>, T>>;
 
 template <class T, class... Args>
 xr_shared_ptr<T> xr_make_shared(Args&&... args)
 {
 	return xr_shared_ptr<T>(new T(std::forward<Args>(args)...), [](T* ptr)
 	       {
-	       		xr_special_free<false, T> deleter;
+	       		xr_special_free<std::is_polymorphic_v<T>, T> deleter;
 	       		deleter(ptr);
 	       });
 }
@@ -83,5 +94,5 @@ xr_unique_ptr<T> xr_make_unique(ARGS&&... args)
 {
 	void* TypeMem = Memory.mem_alloc(sizeof(T));
 	new (TypeMem)T(std::forward<ARGS>(args)...);
-	return xr_unique_ptr<T>(reinterpret_cast<T*>(TypeMem), xr_special_free<false, T>{});
+	return xr_unique_ptr<T>(reinterpret_cast<T*>(TypeMem), xr_special_free<std::is_polymorphic_v<T>, T>{});
 }
