@@ -534,9 +534,23 @@ bool InternalDevice9::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Ds
 		return false;
 	}
 
+	// Convert each pixel from X8R8G8B8 (src) to B8G8R8A8 (dst) and set A=0xFF
 	for (u32 Y = 0; Y < OutHeight; ++Y)
 	{
-		memcpy((u8*)Dst + (size_t)Y * OutRowPitch, (u8*)Locked.pBits + (size_t)Y * Locked.Pitch, OutRowPitch);
+		u8* SrcRow = (u8*)Locked.pBits + (size_t)Y * Locked.Pitch;
+		u8* DstRowPtr = (u8*)Dst + (size_t)Y * OutRowPitch;
+		for (u32 X = 0; X < OutWidth; ++X)
+		{
+			u32 SrcPixel = *((u32*)(SrcRow + X * 4));
+
+			u8 Blue = (u8)(SrcPixel & 0xFF);
+			u8 Green = (u8)((SrcPixel >> 8) & 0xFF);
+			u8 Red = (u8)((SrcPixel >> 16) & 0xFF);
+
+			// Destination: BGRA in memory -> DWORD layout 0xAARRGGBB
+			u32 DstPixel = (0xFFu << 24) | (u32(Red) << 16) | (u32(Green) << 8) | u32(Blue);
+			*((u32*)(DstRowPtr + X * 4)) = DstPixel;
+		}
 	}
 
 	SysSurf->UnlockRect();
