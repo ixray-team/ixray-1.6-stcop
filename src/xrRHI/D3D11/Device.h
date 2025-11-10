@@ -35,6 +35,9 @@ public:
 	void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) override;
 	void SetDSV(IRHIDepthStencilView* pDepthStencilView) override;
 
+	// Readback helper
+	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) override;
+
     // Drawing methods
     virtual void SetPrimitiveTopology(ERHI_PRIMITIVE_TOPOLOGY topology) override;
     virtual void DrawIndexed(u32 baseVertex, u32 startVertex, u32 vertexCount, u32 startIndex, u32 primitiveCount) override;
