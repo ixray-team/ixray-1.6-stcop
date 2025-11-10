@@ -52,6 +52,12 @@ public:
 	// Scissor rect
 	virtual void SetScissorRect(Irect* R) = 0;
 
+	// Read pixels from a render target into a contiguous buffer (RGBA8 or 32-bit per pixel layout)
+	// Dst: pointer to destination buffer; DstSize: size of the destination buffer in bytes
+	// OutWidth/OutHeight: returned width/height of the captured region
+	// OutRowPitch: number of bytes per row written into Dst (may be Width*4)
+	virtual bool ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch) = 0;
+
 	// Render Taget setup
 	virtual void SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const* ppRenderTargetViews) = 0;
 	virtual void SetDSV(IRHIDepthStencilView* pDepthStencilView) = 0;

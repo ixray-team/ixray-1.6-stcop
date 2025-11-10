@@ -474,6 +474,82 @@ void InternalDevice11::CopySurface(IRHIRenderTargetView* Dest, IRHIRenderTargetV
 	HWRenderContext->CopyResource(DestSurf->GetDX11Resource(), SourceSurf->GetDX11Resource());
 }
 
+bool InternalDevice11::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch)
+{
+	if (!Rtv || !Dst)
+	{
+		return false;
+	}
+
+	ID3D11Resource* Resource = nullptr;
+	ID3D11RenderTargetView* RTV11 = reinterpret_cast<ID3D11RenderTargetView*>(Rtv->GetRawRTV());
+	RTV11->GetResource(&Resource);
+	if (!Resource)
+	{
+		return false;
+	}
+
+	ID3D11Texture2D* SrcTex = nullptr;
+	HRESULT Hr = Resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&SrcTex);
+	Resource->Release();
+	if (FAILED(Hr) || !SrcTex)
+	{
+		return false;
+	}
+
+	D3D11_TEXTURE2D_DESC Desc = {};
+	SrcTex->GetDesc(&Desc);
+
+	D3D11_TEXTURE2D_DESC DescStaging = Desc;
+	DescStaging.Usage = D3D11_USAGE_STAGING;
+	DescStaging.BindFlags = 0;
+	DescStaging.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	DescStaging.MiscFlags = 0;
+	DescStaging.SampleDesc.Count = 1;
+
+	ID3D11Texture2D* Staging = nullptr;
+	Hr = DX11Device->CreateTexture2D(&DescStaging, nullptr, &Staging);
+	if (FAILED(Hr) || !Staging)
+	{
+		SrcTex->Release();
+		return false;
+	}
+
+	HWRenderContext->CopyResource(Staging, SrcTex);
+
+	D3D11_MAPPED_SUBRESOURCE Mapped = {};
+	Hr = HWRenderContext->Map(Staging, 0, D3D11_MAP_READ, 0, &Mapped);
+	if (FAILED(Hr))
+	{
+		Staging->Release();
+		SrcTex->Release();
+		return false;
+	}
+
+	OutWidth = Desc.Width;
+	OutHeight = Desc.Height;
+	OutRowPitch = Mapped.RowPitch;
+
+	unsigned long long Required = (unsigned long long)OutRowPitch * (unsigned long long)OutHeight;
+	if (Required > DstSize)
+	{
+		HWRenderContext->Unmap(Staging, 0);
+		Staging->Release();
+		SrcTex->Release();
+		return false;
+	}
+
+	for (u32 Y = 0; Y < OutHeight; ++Y)
+	{
+		memcpy((u8*)Dst + (size_t)Y * OutRowPitch, (u8*)Mapped.pData + (size_t)Y * Mapped.RowPitch, OutRowPitch);
+	}
+
+	HWRenderContext->Unmap(Staging, 0);
+	Staging->Release();
+	SrcTex->Release();
+	return true;
+}
+
 void InternalDevice11::SetViewport(RHIViewport& VP)
 {
 	HWRenderContext->RSSetViewports(1, (D3D11_VIEWPORT*)&VP);
