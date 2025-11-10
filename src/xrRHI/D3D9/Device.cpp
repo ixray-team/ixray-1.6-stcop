@@ -481,3 +481,65 @@ void InternalDevice9::SetScissorRect(Irect* R)
 		CHK_DX(DX9Device->SetScissorRect(clip));
 	}
 }
+
+bool InternalDevice9::ReadRenderTargetPixels(IRHIRenderTargetView* Rtv, void* Dst, u32 DstSize, u32& OutWidth, u32& OutHeight, u32& OutRowPitch)
+{
+	if (!Rtv || !Dst)
+	{
+		return false;
+	}
+
+	IDirect3DSurface9* SrcSurf = reinterpret_cast<IDirect3DSurface9*>(Rtv->GetRawRTV());
+	if (!SrcSurf)
+	{
+		return false;
+	}
+
+	D3DSURFACE_DESC Desc = {};
+	HRESULT Hr = SrcSurf->GetDesc(&Desc);
+	if (FAILED(Hr))
+	{
+		return false;
+	}
+
+	OutWidth = Desc.Width;
+	OutHeight = Desc.Height;
+	OutRowPitch = OutWidth * 4; // assume X8R8G8B8
+
+	unsigned long long Required = (unsigned long long)OutRowPitch * (unsigned long long)OutHeight;
+	if (Required > DstSize)
+	{
+		return false;
+	}
+
+	IDirect3DSurface9* SysSurf = nullptr;
+	Hr = DX9Device->CreateOffscreenPlainSurface(OutWidth, OutHeight, D3DFMT_X8R8G8B8, D3DPOOL_SYSTEMMEM, &SysSurf, nullptr);
+	if (FAILED(Hr) || !SysSurf)
+	{
+		return false;
+	}
+
+	Hr = DX9Device->GetRenderTargetData(SrcSurf, SysSurf);
+	if (FAILED(Hr))
+	{
+		SysSurf->Release();
+		return false;
+	}
+
+	D3DLOCKED_RECT Locked = {};
+	Hr = SysSurf->LockRect(&Locked, nullptr, D3DLOCK_NOSYSLOCK);
+	if (FAILED(Hr))
+	{
+		SysSurf->Release();
+		return false;
+	}
+
+	for (u32 Y = 0; Y < OutHeight; ++Y)
+	{
+		memcpy((u8*)Dst + (size_t)Y * OutRowPitch, (u8*)Locked.pBits + (size_t)Y * Locked.Pitch, OutRowPitch);
+	}
+
+	SysSurf->UnlockRect();
+	SysSurf->Release();
+	return true;
+}
