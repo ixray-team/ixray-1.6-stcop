@@ -2,14 +2,21 @@
 --' Функторы тайтла и описания квеста (должны возвращать строку)
 --'*************************************************************************************
 
-function condlist(id, field, p)
+function condlist(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	local cond_string = p
 
-	local parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
+	-- MTB-marek.siemieniuk Start: cached condlist
+	local parsed_condlist = cached_condlist[cond_string];
+	if parsed_condlist == nil then
+		parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
+		cached_condlist[cond_string] = parsed_condlist
+	end
+	-- MTB-marek.siemieniuk End
+	
 	return xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
 end
 
-function zat_b29_adv_title(id, field, p)
+function zat_b29_adv_title(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	local actor = get_story_object("actor")
 	for i = 16, 23 do
 		if (has_alife_info(dialogs_zaton.zat_b29_infop_bring_table[i]) and actor:object(dialogs_zaton.zat_b29_af_table[i])) then
@@ -24,7 +31,7 @@ function zat_b29_adv_title(id, field, p)
 	return title
 end
 
-function zat_b29_adv_descr(id, field, p)
+function zat_b29_adv_descr(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	local descr
 	local f_af = 0
 	local actor = get_story_object("actor")
@@ -69,7 +76,7 @@ function zat_b29_adv_descr(id, field, p)
 	return descr
 end
 
-function surge_task_title(id, field, p)
+function surge_task_title(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	if(surge_manager.actor_in_cover()) then
 		return "hide_from_surge_name_2"
 	else
@@ -77,17 +84,24 @@ function surge_task_title(id, field, p)
 	end
 end
 
-function surge_task_descr(id, field, p)
+function surge_task_descr(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	return surge_manager.get_task_descr()
 end
 --'*************************************************************************************
 --' Функторы цели квеста (должны возвращать id персонажа)
 --'*************************************************************************************
 
-function target_condlist(id, field, p)
+function target_condlist(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	local cond_string = p
 
-	local parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
+	-- MTB-marek.siemieniuk Start: cached condlist
+	local parsed_condlist = cached_condlist[cond_string];
+	if parsed_condlist == nil then
+		parsed_condlist = xr_logic.parse_condlist(nil, "task", "task_condlist", cond_string)
+		cached_condlist[cond_string] = parsed_condlist
+	end
+	-- MTB-marek.siemieniuk End
+	
 	local value = xr_logic.pick_section_from_condlist(get_story_object("actor"), nil, parsed_condlist)
 
 	if value == nil then
@@ -103,7 +117,7 @@ function target_condlist(id, field, p)
 	return target_obj_id
 end
 
-function zat_b29_adv_target(id, field, p)
+function zat_b29_adv_target(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	local target_obj_id = "zat_a2_stalker_barmen"
 	local af = nil
 	local actor = get_story_object("actor")
@@ -157,6 +171,6 @@ function zat_b29_adv_target(id, field, p)
 	return nil
 end
 
-function surge_task_target(id, field, p)
+function surge_task_target(id, field, p, cached_condlist) -- MTB-marek.siemieniuk: cached condlist
 	return surge_manager.get_task_target()
 end
