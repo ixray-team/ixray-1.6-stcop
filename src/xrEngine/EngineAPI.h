@@ -45,6 +45,7 @@ enum class EditorUI : u8
 	Game_SearchManager,
 	Game_HudAdjustManager,
 	Tools_OMFEditor,
+	Tools_InputManager,
 	Count
 };
 
