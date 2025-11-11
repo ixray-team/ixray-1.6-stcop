@@ -112,6 +112,10 @@ void CAMDReader::Initialize()
 		activity.iSize = sizeof(ADLPMActivity);
 		GPUID = ERHI_GPU::AMD;
 	}
+	else
+	{
+		return;
+	}
 
 #ifdef _M_X64
 	hAMDAGS = LoadLibraryA("amd_ags_x64.dll");
