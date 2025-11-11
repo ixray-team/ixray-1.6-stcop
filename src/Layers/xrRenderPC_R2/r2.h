@@ -40,7 +40,6 @@ public:
 	{
 		u32		HW_smap_FORMAT		: 32;
 		u32		smapsize			: 16;
-		u32		mrt					: 1;
 		u32		mrtmixdepth			: 1;
 
 
