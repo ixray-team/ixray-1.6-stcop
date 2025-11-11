@@ -546,6 +546,35 @@ IInputReceiver* CInput::CurrentIR()
 		return nullptr;
 }
 
+
+unsigned char CInput::GetConnectedInputDeviceCount(void) const noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return 0;
+}
+
+void CInput::GetConnectedInputDeviceCount(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept
+{
+	
+}
+
+unsigned char CInput::GetConnectedInputDeviceCount(eInputDeviceType type) const noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return 0;
+}
+
+bool CInput::GetVendorInfoAboutInputDevice(const CInputDevice* pDevice, CInputDeviceVendorInfo* pInfo) const noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return false;
+}
+
+bool CInput::GetVendorInfoAboutInputDevice(const CInputDevice& device, CInputDeviceVendorInfo* pInfo) const noexcept
+{
+	return GetVendorInfoAboutInputDevice(&device, pInfo);
+}
+
 void CInput::unacquire()
 {
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, false);
@@ -561,4 +590,22 @@ void CInput::acquire()
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
 	stop_vibration_time = RDEVICE.fTimeGlobal + time;
+}
+
+bool CInput::GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT*/) noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return false;
+}
+
+bool CInput::GetConnectedInputMouses(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_mouses /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT*/) noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return false;
+}
+
+bool CInput::GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_gamepads /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT*/) noexcept
+{
+	R_ASSERT2(false, "todo: implement");
+	return false;
 }
