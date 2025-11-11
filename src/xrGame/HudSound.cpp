@@ -37,7 +37,8 @@ void HUD_SOUND_ITEM::LoadSound(LPCSTR section, LPCSTR line, ref_sound& snd, int 
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);
-	R_ASSERT(count);
+	R_ASSERT2(count, make_string<const char*>(
+		"In section [%s], line [%s] does not contain sound", section, line));
 
 	_GetItem(str, 0, buf_str);
 	snd.create(buf_str, st_Effect, type);
@@ -310,7 +311,8 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(LPCSTR section, LPCSTR line, LPCSTR
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);
-	R_ASSERT(count);
+	R_ASSERT2(count, make_string<const char*>(
+		"In section [%s], line [%s] does not contain sound", section, line));
 
 	_GetItem(str, 0, buf_str);
 	
@@ -344,7 +346,8 @@ void HUD_SOUND_COLLECTION_LAYERED::LoadSound(CInifile const* ini, LPCSTR section
 	string256 buf_str;
 
 	int	count = _GetItemCount(str);
-	R_ASSERT(count);
+	R_ASSERT2(count, make_string<const char*>(
+		"In section [%s], line [%s] does not contain sound", section, line));
 
 	_GetItem(str, 0, buf_str);
 
