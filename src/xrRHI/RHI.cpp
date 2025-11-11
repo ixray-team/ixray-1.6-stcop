@@ -55,7 +55,7 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			DriverExt = new CAMDReader;
 			DriverExt->Initialize();
 
-			if (CAMDReader::bAMDSupportADL)
+			if (!CAMDReader::bAMDSupportADL)
 			{
 				xr_delete(DriverExt);
 				DriverExt = new CIntelReader;
