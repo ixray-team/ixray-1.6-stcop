@@ -7,6 +7,20 @@
 InternalDevice11::InternalDevice11()
 {
 	CreateD3D11();
+
+	if (GRHI->DriverExt->GetAMD())
+	{
+		CAMDReader* AMDDriver = (CAMDReader*)GRHI->DriverExt;
+		VertexCache = AMDDriver->bGPUCoreDetected ? 24 : 32;
+	}
+	else if (GRHI->DriverExt->GetNV())
+	{
+		VertexCache = 32; // Дискретка
+	}
+	else
+	{
+		VertexCache = 24; // Intel HD Graphics???
+	}
 }
 
 InternalDevice11::~InternalDevice11()
