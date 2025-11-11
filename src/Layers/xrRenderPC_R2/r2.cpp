@@ -103,8 +103,6 @@ void CRender::create()
 
 	// hardware
 	o.smapsize			= ps_r2_smapsize;
-	o.mrt				= (Caps.raster.dwMRT_count >= 3);
-	o.mrtmixdepth		= (Caps.raster.b_MRT_mixdepth);
 
 	// Check for nullptr render target support
 	o.nullrt			=false;
@@ -614,43 +612,32 @@ HRESULT	CRender::shader_compile			(
 	def_it						++	;
 	sh_name[len]='0'+char(1); ++len;
 
-	if (Caps.raster_major >= 3)	{
-		defines[def_it].Name		=	"USE_BRANCHING";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(Caps.raster_major >= 3); ++len;
-
-	if (ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)) {
+	if (ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS))
+	{
 		defines[def_it].Name = "USE_SUNMASK";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
 	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(RFLAG_CLOUD_SHADOWS)); ++len;
-	
 
-	if (Caps.geometry.bVTF)	{
-		defines[def_it].Name		=	"USE_VTF";
-		defines[def_it].Definition	=	"1";
-		def_it						++	;
-	}
-	sh_name[len]='0'+char(Caps.geometry.bVTF); ++len;
-
-	if (o.Tshadows)			{
+	if (o.Tshadows)
+	{
 		defines[def_it].Name		=	"USE_TSHADOWS";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
 	sh_name[len]='0'+char(o.Tshadows); ++len;
 
-	if (o.sunstatic)		{
+	if (o.sunstatic)
+	{
 		defines[def_it].Name		=	"USE_R2_STATIC_SUN";
 		defines[def_it].Definition	=	"1";
 		def_it						++	;
 	}
 	sh_name[len]='0'+char(o.sunstatic); ++len;
 
-	if (o.forcegloss)		{
+	if (o.forcegloss)
+	{
 		xr_sprintf						(c_gloss,"%f",o.forcegloss_v);
 		defines[def_it].Name		=	"FORCE_GLOSS";
 		defines[def_it].Definition	=	c_gloss;
@@ -658,7 +645,8 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.forcegloss); ++len;
 
-	if (o.forceskinw)		{
+	if (o.forceskinw)
+	{
 		defines[def_it].Name		=	"SKIN_COLOR";
 		defines[def_it].Definition	=	"1";
 		def_it						++;
