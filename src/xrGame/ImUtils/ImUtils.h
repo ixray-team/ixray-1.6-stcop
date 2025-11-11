@@ -372,6 +372,7 @@ void RenderWeaponManagerWindow();
 void RenderSearchManagerWindow();
 void RenderHUDAdjustManager();
 void RenderToolsOMFEditorWindow();
+void RenderToolsInputManagerWindow();
 
 void DestroySpawnManagerWindow();
 
