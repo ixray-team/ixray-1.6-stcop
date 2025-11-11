@@ -14,7 +14,8 @@ public:
 
 	float RenderScale = 1.f;
 	u32 FeatureLevel;
-	
+	u32 VertexCache;
+
 	// Texture factory
 	IRHITextureFactory* TextureFactory = nullptr;
 
