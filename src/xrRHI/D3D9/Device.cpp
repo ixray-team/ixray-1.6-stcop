@@ -5,6 +5,22 @@
 InternalDevice9::InternalDevice9()
 {
 	CreateD3D9();
+
+	VertexCache = 16;
+
+	IDirect3DQuery9* q_vc;
+	D3DDEVINFO_VCACHE vc;
+	HRESULT _hr = DX9Device->CreateQuery(D3DQUERYTYPE_VCACHE, &q_vc);
+	if (SUCCEEDED(_hr))
+	{
+		q_vc->Issue(D3DISSUE_END);
+		q_vc->GetData(&vc, sizeof(vc), D3DGETDATA_FLUSH);
+		q_vc->Release();
+		if (1 == vc.OptMethod)
+		{
+			VertexCache = vc.CacheSize;
+		}
+	}
 }
 
 InternalDevice9::~InternalDevice9()

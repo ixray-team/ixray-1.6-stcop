@@ -53,7 +53,7 @@ ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float
 }
 
 //////////////////////////////////////////////////////////////////////////
-void					CRender::create					()
+void CRender::create()
 {
 	L_DB				= 0;
 	L_Shadows			= 0;
@@ -66,17 +66,10 @@ void					CRender::create					()
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("L_dynamic_color",	&r1_dlight_binder_color);
 	dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("L_dynamic_xform",	&r1_dlight_binder_xform);
 
-
-	// distortion
-	u32 v_dev	= CAP_VERSION(Caps.raster_major, Caps.raster_minor);
-	u32 v_need	= CAP_VERSION(1,4);
-
-	o.distortion = v_dev >= v_need && !Core.ParamsData.test(ECoreParams::nodistort);
-	Msg("* distortion: %s, dev(%d),need(%d)", o.distortion ? "used" : "unavailable", v_dev, v_need);
+	o.distortion = true;
 
 	//	Color mapping
-	o.color_mapping = v_dev >= v_need && !Core.ParamsData.test(ECoreParams::nocolormap);
-	Msg("* color_mapping: %s, dev(%d),need(%d)", o.color_mapping ? "used" : "unavailable", v_dev, v_need);
+	o.color_mapping = true;
 
 	Engine.External.SetSkinningMode();
 
@@ -88,14 +81,10 @@ void					CRender::create					()
 
 	m_bMakeAsyncSS				= false;
 
-//---------
 	Target						= new CRenderTarget		();
-//---------
-	//
 	Models						= new CModelPool		();
 	L_Dynamic					= new CLightR_Manager	();
 	PSLibrary.OnCreate			();
-//.	HWOCC.occq_create			(occq_size);
 
 	xrRender_apply_tf			();
 	::PortalTraverser.initialize();
