@@ -181,6 +181,10 @@ public:
 	virtual float GetHudFov();
 	virtual bool AllowBore() { return !m_bDisableBore && m_eAnimationsFlags.test(EAnimationsFlags::af_bore); }
 
+	float getLookOutSpeedKoef() const { return m_fLookOutSpeedKoef; }
+	float getLookOutAmplK() const { return m_fLookOutAmplK; }
+	float getActorCamSpeedFactor() const { return m_fActorCamSpeedFactor; }
+
 	bool CanStartAction(CActor* pActor);
 	bool SetKeyRepeatFlag(u32 kfACTTYPE);
 
@@ -324,6 +328,9 @@ protected:
 	float						m_nearwall_speed_mod;
 	float						m_fHudFov;
 	float						m_fHudFovFactor;
+	float						m_fLookOutSpeedKoef = 1.0f;
+	float						m_fLookOutAmplK = 1.0f;
+	float						m_fActorCamSpeedFactor = 1.0f;
 
 	bool						m_bDisableBore;
 	bool						m_bSwitchSprint = false;

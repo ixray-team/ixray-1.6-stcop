@@ -108,6 +108,107 @@ float CActor::CameraHeight()
 	return						m_fCamHeightFactor*( R.y - cammera_into_collision_shift );
 }
 
+void CActor::CorrectActorCameraHeight(float& h)
+{
+	if (m_last_camera_height == 0.0f)
+	{
+		m_last_camera_height = h;
+		m_last_cam_update_time = Device.dwTimeGlobal;
+		return;
+	}
+
+	u32 dt = Device.GetTimeDeltaSafe(m_last_cam_update_time, Device.dwTimeGlobal);
+	m_last_cam_update_time = Device.dwTimeGlobal;
+
+	if (mstate_real & mcLanding2)
+	{
+		m_landing2_effect_time_remains = floor(m_fActorCameraLanding2Time * 1000.0f);
+		m_landing_effect_time_remains = 0;
+		m_landing_effect_finish_time_remains = 0;
+	}
+	else if (mstate_real & mcLanding)
+	{
+		m_landing2_effect_time_remains = 0;
+		m_landing_effect_time_remains = floor(m_fActorCameraLandingTime * 1000.0f);
+		m_landing_effect_finish_time_remains = 0;
+	}
+
+	float dh_pow = m_fActorCameraSpeedPow;
+	float speed = m_fDefaultActorCameraSpeed;
+
+	PIItem active_item = inventory().ActiveItem();
+	if (CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr)
+	{
+		speed *= itm->getActorCamSpeedFactor();
+	}
+
+	float max_offset = 0.0f;
+	if (m_landing_effect_time_remains > 0)
+	{
+		max_offset = m_fActorCameraLandingOffset;
+		speed *= m_fActorCameraLandingSpeedFactor;
+		dh_pow *= m_fActorCameraLandingSpeedPowFactor;
+	}
+	else if (m_landing2_effect_time_remains > 0)
+	{
+		max_offset = m_fActorCameraLanding2Offset;
+		speed *= m_fActorCameraLanding2SpeedFactor;
+		dh_pow *= m_fActorCameraLanding2SpeedPowFactor;
+	}
+	else if (m_landing_effect_finish_time_remains > 0)
+	{
+		speed *= m_fActorCameraFinishLandingSpeedFactor;
+		dh_pow *= m_fActorCameraFinishLandingSpeedPowFactor;
+		max_offset = 0.0f;
+	}
+
+	float target_h = h + max_offset;
+	float dh = target_h - m_last_camera_height;
+	float delta = abs(pow(abs(dh), dh_pow) * dt * speed / 1000.0f);
+
+	if (dh < 0.0f)
+	{
+		delta *= -1.0f;
+	}
+
+	if (abs(delta) > abs(dh))
+	{
+		delta = dh;
+		m_landing_effect_finish_time_remains = 0;
+	}
+
+	h = m_last_camera_height + delta;
+	m_last_camera_height = h;
+
+	if (m_landing_effect_time_remains > dt)
+	{
+		m_landing_effect_time_remains -= dt;
+	}
+	else if (m_landing_effect_time_remains > 0)
+	{
+		m_landing_effect_finish_time_remains = floor(m_fActorCameraFinishLandingTime * 1000.0f);
+		m_landing_effect_time_remains = 0;
+	}
+
+	if (m_landing_effect_finish_time_remains > dt)
+	{
+		m_landing_effect_finish_time_remains -= dt;
+	}
+	else
+	{
+		m_landing_effect_finish_time_remains = 0;
+	}
+
+	if (m_landing2_effect_time_remains > dt)
+	{
+		m_landing2_effect_time_remains -= dt;
+	}
+	else
+	{
+		m_landing2_effect_time_remains = 0;
+	}
+}
+
 IC float viewport_near(float& w, float& h)
 {
 	w = 2.f* Device.fViewportNear*tan(deg2rad(Device.fFOV)/2.f);
@@ -337,17 +438,26 @@ void CActor::cam_Update(float dt, float fFOV)
 	} else
 		current_ik_cam_shift = 0;
 
+	float camera_h = CameraHeight();
+
 	// Alex ADD: smooth crouch
-	float HeightInterpolationSpeed = 4.f;
+	static const float HeightInterpolationSpeed = 4.0f;
 
 	if (CurrentHeight < 0.0f)
+	{
 		CurrentHeight = CameraHeight();
+	}
 
 	if (CurrentHeight != CameraHeight())
-		CurrentHeight = (CurrentHeight * (1.0f - HeightInterpolationSpeed * dt)) +
-		(CameraHeight() * HeightInterpolationSpeed * dt);
+	{
+		CurrentHeight = (CurrentHeight * (1.0f - HeightInterpolationSpeed * dt)) + (CameraHeight() * HeightInterpolationSpeed * dt);
+	}
 
-	Fvector point = { 0, CurrentHeight + current_ik_cam_shift, 0 };
+	camera_h = CurrentHeight;
+
+	CorrectActorCameraHeight(camera_h);
+
+	Fvector point = { 0, camera_h + current_ik_cam_shift, 0 };
 	Fvector dangle		= {0,0,0};
 	Fmatrix				xform;
 	xform.setXYZ		(0,r_torso.yaw,0);

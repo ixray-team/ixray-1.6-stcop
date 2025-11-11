@@ -285,13 +285,38 @@ protected:
 private:
 	void					SwitchOutBorder(bool new_border_state);
 
-	CHudAnimatorManager*	m_hud_animator = nullptr;
+	void LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt);
+
+	CHudAnimatorManager* m_hud_animator = nullptr;
 	u32 _jitter_time_remains = 0;
+	u32 _last_update_time = 0;
+	float m_last_camera_height = 0.0f;
+	u32 m_last_cam_update_time = 0;
+	u32 m_landing_effect_time_remains = 0;
+	u32 m_landing2_effect_time_remains = 0;
+	u32 m_landing_effect_finish_time_remains = 0;
+
+	float m_fActorCameraLanding2Time = 0.0f;
+	float m_fActorCameraLandingTime = 0.0f;
+	float m_fActorCameraSpeedPow = 0.0f;
+	float m_fDefaultActorCameraSpeed = 0.0f;
+	float m_fActorCameraLandingOffset = 0.0f;
+	float m_fActorCameraLandingSpeedFactor = 0.0f;
+	float m_fActorCameraLandingSpeedPowFactor = 0.0f;
+	float m_fActorCameraLanding2Offset = 0.0f;
+	float m_fActorCameraLanding2SpeedFactor = 0.0f;
+	float m_fActorCameraLanding2SpeedPowFactor = 0.0f;
+	float m_fActorCameraFinishLandingSpeedFactor = 0.0f;
+	float m_fActorCameraFinishLandingSpeedPowFactor = 0.0f;
+	float m_fActorCameraFinishLandingTime = 0.0f;
+	float m_fLookOutSpeed = 0.0f;
+	float m_fLookOutAmplK = 0.0f;
+	float m_fLookOutSpeedAmplDXPow = 0.0f;
 
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
-	u32 _last_update_time;
+
 	shared_str				m_sNVGAnimator;
 	shared_str				m_sHeadlampAnimator;
 	shared_str				m_sClearMaskAnimator;
@@ -389,6 +414,7 @@ protected:
 	void					camUpdateLadder			(float dt);
 	void					cam_SetLadder			();
 	void					cam_UnsetLadder			();
+	void					CorrectActorCameraHeight(float& h);
 
 	// Cameras
 	CCameraBase*			cameras[eacMaxCam];
