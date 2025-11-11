@@ -99,6 +99,8 @@ int				g_keypress_on_start = 1;
 
 extern	BOOL	g_fight_fast_respawn;
 
+extern float g_bobbing_factor;
+
 extern ENGINE_API int m_look_cam_fp_zoom;
 
 int m_iQuickSave = 0;
@@ -2804,6 +2806,8 @@ void CCC_RegisterCommands()
 	CMD2(CCC_Boolean, "wpn_aim_toggle", &b_toggle_weapon_aim);
 
 	CMD4(CCC_Integer, "g_fight_fast_respawn", &g_fight_fast_respawn, 0, 1);
+
+	CMD4(CCC_Float, "g_bobbing_factor", &g_bobbing_factor, 0.3f, 1.0f);
 
 	//	CMD4(CCC_Integer,	"hud_old_style",			&g_old_style_ui_hud, 0, 1);
 

@@ -4,7 +4,6 @@
 
 #include "StdAfx.h"
 #include "Spectator.h"
-#include "EffectorFall.h"
 #include "cameralook.h"
 #include "spectator_camera_first_eye.h"
 #include "Actor.h"

@@ -15,7 +15,7 @@
 #include "object_broker.h"
 #include "player_hud.h"
 #include "GamePersistent.h"
-#include "EffectorFall.h"
+#include "EffectorDOF.h"
 #include "debug_renderer.h"
 #include "clsid_game.h"
 #include "WeaponBinocularsVision.h"

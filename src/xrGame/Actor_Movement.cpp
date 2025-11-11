@@ -152,7 +152,6 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 
 void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Jump, float dt)
 {
-	float					cam_eff_factor = 0.0f;
 	mstate_old				= mstate_real;
 	vControlAccel.set		(0,0,0);
 
@@ -299,57 +298,121 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 				}
 
 				vControlAccel.mul			(scale);
-				cam_eff_factor				= scale;
 			}//scale>EPS
 		}//(mstate_real&mcAnyMove)
 	}//peOnGround || peAtWall
 
-	if(IsGameTypeSingle() && cam_eff_factor>EPS)
+	if (IsGameTypeSingle())
 	{
-	LPCSTR state_anm				= nullptr;
+		ECamEffectorType anm_id = eCEActorMoving;
+		shared_str state_anm;
 
-	if(mstate_real&mcSprint && !(mstate_old&mcSprint) )
-		state_anm					= "sprint";
-	else
-	if(mstate_real&mcLStrafe && !(mstate_old&mcLStrafe) )
-		state_anm					= "strafe_left";
-	else
-	if(mstate_real&mcRStrafe && !(mstate_old&mcRStrafe) )
-		state_anm					= "strafe_right";
-	else
-	if(mstate_real&mcFwd && !(mstate_old&mcFwd) )
-		state_anm					= "move_fwd";
-	else
-	if(mstate_real&mcBack && !(mstate_old&mcBack) )
-		state_anm					= "move_back";
+		auto change_name = [&](const shared_str& naming, const ECamEffectorType& effector_type)
+		{
+			state_anm = naming;
 
-		if(state_anm)
-		{ //play moving cam effect
-			CActor*	control_entity		= static_cast<CActor*>(Level().CurrentControlEntity());
-			R_ASSERT2					(control_entity, "current control entity is nullptr");
-			CEffectorCam* ec			= control_entity->Cameras().GetCamEffector(eCEActorMoving);
-			if(nullptr==ec)
+			if (IsZoomAimingMode())
 			{
-				string_path			eff_name;
-				xr_sprintf			(eff_name, sizeof(eff_name), "%s.anm", state_anm);
-				string_path			ce_path;
-				string_path			anm_name;
+				string64 result = {};
+				strcpy(result, naming.c_str());
+				strcat(result, "_aim");
+				state_anm = result;
+			}
+
+			anm_id = effector_type;
+		};
+
+		if (mstate_real & mcSprint)
+		{
+			change_name("sprint", eCEActorMovingSprint);
+		}
+		else if (mstate_real & mcLStrafe && !(mstate_old & mcLStrafe))
+		{
+			change_name("strafe_left", eCEActorMovingLeft);
+		}
+		else if (mstate_real & mcRStrafe && !(mstate_old & mcRStrafe))
+		{
+			change_name("strafe_right", eCEActorMovingRight);
+		}
+		else if (mstate_real & mcFwd && !(mstate_old & mcFwd))
+		{
+			change_name("move_fwd", eCEActorMovingFwd);
+		}
+		else if (mstate_real & mcBack && !(mstate_old & mcBack))
+		{
+			change_name("move_back", eCEActorMovingBack);
+		}
+
+		if (mstate_real & mcLanding)
+		{
+			change_name("landing", eCEActorMovingLanding);
+		}
+		else if (mstate_real & mcLanding2)
+		{
+			change_name("landing2", eCEActorMovingLanding);
+		}
+		else if (mstate_real & mcJump && !(mstate_old & mcJump))
+		{
+			change_name("jump", eCEActorMovingJump);
+		}
+		else if (mstate_real & mcFall && !(mstate_old & mcFall))
+		{
+			change_name("fall", eCEActorMovingFall);
+		}
+
+		if (!(mstate_real & mcLLookout) && mstate_wishful & mcLLookout)
+		{
+			change_name("lookout_left_start", eCEActorLLookoutStart);
+		}
+		else if (!(mstate_real & mcRLookout) && mstate_wishful & mcRLookout)
+		{
+			change_name("lookout_right_start", eCEActorRLookoutStart);
+		}
+		else if (mstate_real & mcLLookout && !(mstate_wishful & mcLLookout))
+		{
+			change_name("lookout_left_end", eCEActorLLookoutEnd);
+		}
+		else if (mstate_real & mcRLookout && !(mstate_wishful & mcRLookout))
+		{
+			change_name("lookout_right_end", eCEActorRLookoutEnd);
+		}
+
+		if (mstate_real & mcCrouch && !(mstate_old & mcCrouch))
+		{
+			change_name("crouch_down", eCEActorMovingCrouchDown);
+		}
+		else if (mstate_real & mcCrouch && !(mstate_wishful & mcCrouch))
+		{
+			change_name("crouch_up", eCEActorMovingCrouchUp);
+		}
+
+		if (state_anm.size() > 0)
+		{ //play moving cam effect
+			CActor* control_entity = static_cast<CActor*>(Level().CurrentControlEntity());
+			R_ASSERT2(control_entity, "current control entity is nullptr");
+			CEffectorCam* ec = control_entity->Cameras().GetCamEffector(anm_id);
+			if (ec == nullptr)
+			{
+				string_path	eff_name = {};
+				xr_sprintf(eff_name, sizeof(eff_name), "%s.anm", state_anm.c_str());
+				string_path	ce_path = {};
+				string_path	anm_name = {};
 				xr_strconcat(anm_name, "camera_effects\\actor_move\\", eff_name);
-				if (FS.exist( ce_path, "$game_anims$", anm_name))
+				if (FS.exist(ce_path, "$game_anims$", anm_name))
 				{
-					CAnimatorCamLerpEffectorConst* e		= new CAnimatorCamLerpEffectorConst();
-					float max_scale				= 70.0f;
-					float factor				= cam_eff_factor/max_scale;
-					e->SetFactor				(factor);
-					e->SetType					(eCEActorMoving);
-					e->SetHudAffect				(false);
-					e->SetCyclic				(false);
-					e->Start					(anm_name);
+					CAnimatorCamLerpEffectorConst* e = new CAnimatorCamLerpEffectorConst();
+					float factor = 70.0f;
+					e->SetFactor(factor);
+					e->SetType(anm_id);
+					e->SetHudAffect(false);
+					e->SetCyclic(false);
+					e->Start(anm_name);
 					control_entity->Cameras().AddCamEffector(e);
 				}
 			}
 		}
 	}
+
 	//transform local dir to world dir
 	Fmatrix				mOrient;
 	mOrient.rotateY		(-r_model_yaw);
@@ -425,11 +488,48 @@ void CActor::g_Orientate	(u32 mstate_rl, float dt)
 		if( (mstate_rl&mcLLookout) && (mstate_rl&mcRLookout) )
 			tgt_roll	= 0.0f;
 	}
-	if (!fsimilar(tgt_roll,r_torso_tgt_roll,EPS)){
-		r_torso_tgt_roll = angle_inertion_var(r_torso_tgt_roll, tgt_roll, 0.f, CurrentHeight * PI_MUL_2, PI_DIV_2, dt);
-		r_torso_tgt_roll= angle_normalize_signed(r_torso_tgt_roll);
-	}
+
+	LookoutFunctionReplace(r_torso_tgt_roll, tgt_roll, dt);
+	r_torso_tgt_roll = angle_normalize_signed(r_torso_tgt_roll);
 }
+
+void CActor::LookoutFunctionReplace(float& cur_roll, float tgt_roll, float dt)
+{
+	float speed = m_fLookOutSpeed;
+	float ampl_k = m_fLookOutAmplK;
+
+	float koef = 0.0f;
+
+	PIItem active_item = inventory().ActiveItem();
+	if (CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr)
+	{
+		koef = itm->getLookOutSpeedKoef();
+		speed *= koef;
+	
+		koef = itm->getLookOutAmplK();
+		ampl_k *= koef;
+	}
+
+	tgt_roll *= ampl_k;
+
+	float dx_pow = m_fLookOutSpeedAmplDXPow;
+
+	float dx = tgt_roll - cur_roll;
+	float delta = abs(pow(abs(dx), dx_pow) * dt * speed);
+
+	if (dx < 0.0f)
+	{
+		delta *= -1.0f;
+	}
+
+	if (abs(delta) > abs(dx))
+	{
+		delta = dx;
+	}
+
+	cur_roll += delta;
+}
+
 bool CActor::g_LadderOrient()
 {
 	Fvector leader_norm;

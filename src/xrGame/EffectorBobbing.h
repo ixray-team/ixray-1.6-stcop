@@ -1,35 +1,46 @@
-#ifndef _EFFECTOR_BOBBING_H
-#define _EFFECTOR_BOBBING_H
 #pragma once
 
 #include "CameraEffector.h"
 #include "../xrEngine/CameraManager.h"
 
-class CEffectorBobbing : public CEffectorCam  
+class CEffectorBobbing final : public CEffectorCam
 {
-	float	fTime;
-	Fvector	vAngleAmplitude;
-	float	fYAmplitude;
-	float	fSpeed;
+	float fTime = 0.0f;
 
-	u32		dwMState;
-	float	fReminderFactor;
-	bool	is_limping;
-	bool	m_bZoomMode;
+	u32 dwMState = 0;
+	float fReminderFactor = 0.0f;
+	bool is_limping = false;
+	bool m_bZoomMode = false;
 
-	float	m_fAmplitudeRun;
-	float	m_fAmplitudeWalk;
-	float	m_fAmplitudeLimp;
+	float m_fAmplitudeDelta = 1.0f;
 
-	float	m_fSpeedRun;
-	float	m_fSpeedWalk;
-	float	m_fSpeedLimp;
+	float fOldPhase = 0.0f;
+	float fOldFreq = 0.0f;
+	float fOldAmp = 0.0f;
+
+	struct EffectorType
+	{
+		float Default = 0.0f;
+		float Zoom = 0.0f;
+	};
+
+	struct EffectorData
+	{
+		EffectorType Amplitude;
+		EffectorType Speed;
+	};
+
+	EffectorData Run;
+	EffectorData Walk;
+	EffectorData Limp;
+	EffectorData Crouch;
+	EffectorData SlowCrouch;
+	EffectorData Sprint;
 
 public:
-			CEffectorBobbing	();
-	virtual ~CEffectorBobbing	();
-	virtual BOOL	ProcessCam	(SCamEffectorInfo& info);
-	void	SetState			(u32 st, bool limping, bool ZoomMode);
+	CEffectorBobbing();
+	virtual ~CEffectorBobbing() = default;
+	void SelectBobbingParams(bool zoom_mode, bool is_limping, float& old_phase, float& old_freq, float& old_amp, u32 mstate, float time, float& amp, float& st);
+	virtual BOOL ProcessCam(SCamEffectorInfo& info) override;
+	void SetState(u32 st, bool limping, bool ZoomMode);
 };
-
-#endif //_EFFECTOR_BOBBING_H

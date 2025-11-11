@@ -13,7 +13,6 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "cameralook.h"
 #include "CameraFirstEye.h"
-#include "EffectorFall.h"
 #include "EffectorBobbing.h"
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
@@ -225,10 +224,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	const static float fovFactor = EngineExternal().GetSprintFovFactor();
 	m_SprintFovFactor = fovFactor;
-
-	_last_update_time = 0;
 }
-
 
 CActor::~CActor()
 {
@@ -510,6 +506,24 @@ if(!g_dedicated_server)
 	//---------------------------------------------------------------------
 	m_sHeadShotParticle	= READ_IF_EXISTS(pSettings,r_string,section,"HeadShotParticle",0);
 	m_fLegs_shift = READ_IF_EXISTS(pSettings, r_float, "actor_hud", "legs_shift_delta", -0.55f);
+
+	m_fActorCameraLanding2Time = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_time", 0.5f);
+	m_fActorCameraLandingTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_time", 0.5f);
+	m_fActorCameraSpeedPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_speed_pow", 1.0f);
+	m_fDefaultActorCameraSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "default_actor_camera_speed", 10.0f);
+	m_fActorCameraLandingOffset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_offset", 0.0f);
+	m_fActorCameraLandingSpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_factor", 1.0f);
+	m_fActorCameraLandingSpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing_speed_pow_factor", 1.0f);
+	m_fActorCameraLanding2Offset = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_offset", 0.0f);
+	m_fActorCameraLanding2SpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_factor", 1.0f);
+	m_fActorCameraLanding2SpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_landing2_speed_pow_factor", 1.0f);
+	m_fActorCameraFinishLandingSpeedFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_factor", 1.0f);
+	m_fActorCameraFinishLandingSpeedPowFactor = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_speed_pow_factor", 1.0f);
+	m_fActorCameraFinishLandingTime = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "actor_camera_finish_landing_time", 0.5f);
+
+	m_fLookOutSpeed = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_speed", 6.0f);
+	m_fLookOutAmplK = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_k", 1.0f);
+	m_fLookOutSpeedAmplDXPow = READ_IF_EXISTS(pSettings, r_float, "gunslinger_base", "lookout_ampl_dx_pow", 1.0f);
 
 	if (pGameGlobals->line_exist("night_vision", "night_vision_animator"))
 	{
@@ -1156,11 +1170,8 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 		character_physics_support()->movement()->bSleep				=false;
 	}
 
-	if (Local() && g_Alive()) 
+	if (Local() && g_Alive())
 	{
-		if(character_physics_support()->movement()->gcontact_Was)
-			Cameras().AddCamEffector		(new CEffectorFall (character_physics_support()->movement()->gcontact_Power));
-
 		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	
 		{
 			VERIFY( character_physics_support() );

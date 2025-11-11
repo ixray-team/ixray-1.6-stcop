@@ -19,7 +19,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
 
-#include "EffectorFall.h"
+#include "EffectorDOF.h"
 #include "ActorEffector.h"
 #include "GamePersistent.h"
 
