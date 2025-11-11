@@ -15,6 +15,65 @@ const int keyboard_device_key	= 2;
 const int all_device_key		= mouse_device_key | keyboard_device_key;
 const int default_key			= mouse_device_key | keyboard_device_key ;
 
+/// @brief \~english add your device type here if you want to support by your game...
+enum class eInputDeviceType : unsigned char
+{
+	kKeyboard,
+	kGamepad,
+	kMouse,
+	kTotalCount,
+	kUnknown = std::underlying_type_t<eInputDeviceType>(-1)
+};
+
+struct CInputDevice
+{
+	eInputDeviceType type;
+};
+
+struct CInputDeviceVendorInfo
+{
+	char name[32];
+	char version[16];
+	char description[128];
+};
+
+inline constexpr const char* translateInputDeviceTypeToString(eInputDeviceType type)
+{
+	switch (type)
+	{
+	case eInputDeviceType::kKeyboard:
+	{
+		return "keyboard";
+	}
+	case eInputDeviceType::kGamepad:
+	{
+		return "gamepad";
+	}
+	case eInputDeviceType::kMouse:
+	{
+		return "mouse";
+	}
+	case eInputDeviceType::kTotalCount:
+	{
+		return "total_count";
+	}
+	case eInputDeviceType::kUnknown:
+	{
+		return "unknown";
+	}
+	default:
+	{
+		return "UNDEFINED_INPUT_DEVICE_TYPE_ENUM";
+	}
+	}
+}
+
+#define DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT 1
+#define DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT 1
+#define DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT 1
+
+#define DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT (DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT + DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT + DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT)
+
 class ENGINE_API CInput
 	:
 	public pureFrame,
@@ -84,14 +143,31 @@ public:
 
 	IInputReceiver*				CurrentIR					();
 
-public:
+	/// @brief \~english returns total amount by supported devices types that defined in eInputDeviceType enum
+	/// @param  
+	/// @return 
+	unsigned char GetConnectedInputDeviceCount(void) const noexcept;
+
+	/// @brief \~english returns current amount of connected input device by type that defined in eInputDeviceType enum
+	/// @param type 
+	/// @return 
+	unsigned char GetConnectedInputDeviceCount(eInputDeviceType type) const noexcept;
+
+	void GetConnectedInputDeviceCount(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept;
+	bool GetVendorInfoAboutInputDevice(const CInputDevice* pDevice, CInputDeviceVendorInfo* pInfo) const noexcept;
+	bool GetVendorInfoAboutInputDevice(const CInputDevice& device, CInputDeviceVendorInfo* pInfo) const noexcept;
 	bool IsAcquire = false;
 
-	void						unacquire					();
-	void						acquire						();
-	bool						get_dik_name				(int dik, LPSTR dest, int dest_sz);
+	void						unacquire();
+	void						acquire();
+	bool						get_dik_name(int dik, LPSTR dest, int dest_sz);
 
-	void						feedback					(u16 s1, u16 s2, float time);
+	void						feedback(u16 s1, u16 s2, float time);
+
+private:
+	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;
+	bool GetConnectedInputMouses(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_mouses = DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT) noexcept;
+	bool GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_gamepads = DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT) noexcept;
 };
 
 extern ENGINE_API CInput *		pInput;
