@@ -15,7 +15,9 @@
 #include <DirectXMesh.h>
 #include "Drivers/AMDGPUTransferee.h"
 #include "Drivers/NvGPUTransferee.h"
+#include "Drivers/IntelGPUTransferee.h"
 #endif
+
 
 #include "Private/RHIRenderViewManager.h"
 
@@ -52,6 +54,12 @@ IRHIDevice* CRHI::CreateDevice(ERHI_API_LAYER NewAPILevel)
 			xr_delete(DriverExt);
 			DriverExt = new CAMDReader;
 			DriverExt->Initialize();
+
+			if (!CAMDReader::bAMDSupportADL)
+			{
+				xr_delete(DriverExt);
+				DriverExt = new CIntelReader;
+			}
 		}
 	}
 #endif
