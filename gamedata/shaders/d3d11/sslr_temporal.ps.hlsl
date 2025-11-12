@@ -109,7 +109,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	float Fog = saturate(SSLRMain.w * fog_params.w + fog_params.x);
 	float3 ReflectPoint = View.xyz * SSLRMain.w;
 	
-	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);
+	float2 PrevDiffuseUV = I.texcoord.xy + s_velocity.SampleLevel(smp_nofilter, I.texcoord.xy, 0).xy * float2(-0.5f, 0.5f);
 	float4 PrevSpecularUV = mul(m_VP_old, float4(mul(m_invV, float4(ReflectPoint, 1.0f)).xyz, 1.0f));
 	
 	PrevSpecularUV.xy = PrevSpecularUV.xy / PrevSpecularUV.w * float2(0.5f, -0.5f) + 0.5f;	
