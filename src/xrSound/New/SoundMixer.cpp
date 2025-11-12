@@ -976,8 +976,8 @@ Snd_MixerRenderCallback(float* buffer)
 				u32 begin_offset = slot.position - slot.stopping_position;
 				u32 write_count = is_music ? SND_BLOCKSIZE : (u32)((float)SND_BLOCKSIZE * mixer.time_factor);
 				u32 end_offset = std::min(begin_offset + write_count, source.pub.frames_total - 1);
-				float begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
-				float end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
+				begin_factor = 1.0f - ((float)begin_offset / (float)(stopping_total - 1));
+				end_factor = 1.0f - ((float)end_offset / (float)(stopping_total - 1));
 			}
 		}
 
@@ -1493,7 +1493,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 				if (mixer.slots[i].sound_name.size() && mixer.slots[i].state != State::Stopped) {
 					mixer.slots[i].prev_state = mixer.slots[i].state;
 					mixer.slots[i].state = State::Paused;
-					mixer.slots[i].fake_state = State::Stopped;
+					mixer.slots[i].fake_state = State::Paused;
 				}
 			}
 		} break;
@@ -1502,7 +1502,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 				if (mixer.slots[i].state == State::Paused) {
 					mixer.slots[i].state = mixer.slots[i].prev_state;
 					mixer.slots[i].prev_state = State::Paused;
-					mixer.slots[i].fake_state = State::Stopped;
+					mixer.slots[i].fake_state = State::Playing;
 				}
 			}
 		} break;
