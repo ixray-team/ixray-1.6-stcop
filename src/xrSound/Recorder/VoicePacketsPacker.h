@@ -8,7 +8,7 @@ class CVoicePacketsPacker
 {
 public:
 	CVoicePacketsPacker();
-	~CVoicePacketsPacker();
+	virtual ~CVoicePacketsPacker();
 
 	virtual void AddSender(IVoicePacketSender* ref);
 	virtual void RemoveSender(IVoicePacketSender* ref);
