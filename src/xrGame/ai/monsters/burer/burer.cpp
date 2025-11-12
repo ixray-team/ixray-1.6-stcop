@@ -227,39 +227,66 @@ void CBurer::CheckSpecParams(u32 spec_params)
 {
 }
 
-void  CBurer::StaminaHit ()
+void  CBurer::StaminaHit()
 {
-	if ( GodMode() )
+	if (GodMode())
 	{
 		return;
 	}
 
-	CWeapon* const active_weapon	=	smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
-	if ( !active_weapon )
+	CObject* current_entity = Level().CurrentControlEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
 	{
 		return;
 	}
 
-	float const weight				=	active_weapon->Weight();
-	float const stamina_hit			=	weight * m_weight_to_stamina_hit;
+	PIItem active_item = pActor->inventory().ActiveItem();
+	CWeapon* const active_weapon = active_item != nullptr ? active_item->cast_weapon() : nullptr;
 
-	bool const do_weapon_drop		=	Actor()->conditions().GetPower() < stamina_hit*m_weapon_drop_stamina_k;
-
-	Actor()->conditions().PowerHit		(stamina_hit, false);
-
-	if ( do_weapon_drop )
+	if (active_weapon == nullptr)
 	{
-		Fvector dir					=	Actor()->Direction();
-		if ( dir.y < 0.f )
-		{
-			dir.y					=	-dir.y;
-		}
-		active_weapon->SetActivationSpeedOverride ( normalize(dir) * m_weapon_drop_velocity );
+		return;
+	}
 
-		if ( !Actor()->inventory().Action((u16)kDROP, CMD_STOP) )
-		{
-			Actor()->g_PerformDrop		();
-		}
+	float const weight = active_weapon->Weight();
+	float const stamina_hit = weight * m_weight_to_stamina_hit;
+
+	bool const do_weapon_drop = pActor->conditions().GetPower() < stamina_hit * m_weapon_drop_stamina_k && !pActor->inventory().SlotIsPersistent(active_weapon->BaseSlot());
+
+	pActor->conditions().PowerHit(stamina_hit, false);
+
+	if (!do_weapon_drop)
+	{
+		return;
+	}
+
+	Fvector dir = pActor->Direction();
+	if (dir.y < 0.0f)
+	{
+		dir.y = -dir.y;
+	}
+	
+	active_weapon->SetActivationSpeedOverride(normalize(dir) * m_weapon_drop_velocity);
+	
+	if (!pActor->inventory().Action((u16)kDROP, CMD_STOP))
+	{
+		pActor->g_PerformDrop();
+	}
+	
+	if (CCustomDevice* pDevice = pActor->GetDevice())
+	{
+		pDevice->SetActivationSpeedOverride(normalize(dir) * m_weapon_drop_velocity);
+		pDevice->SetDropManual(TRUE);
+	}
+
+	const shared_str& kick_animator = pActor->m_sBurerKickAnimator;
+	
+	if (kick_animator.size() > 0)
+	{
+		pActor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+		pActor->HudAnimator()->StartAnimator(kick_animator);
 	}
 }
 

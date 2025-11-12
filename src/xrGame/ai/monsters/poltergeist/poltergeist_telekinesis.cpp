@@ -267,6 +267,10 @@ bool CPolterTele::tele_raise_objects()
 
 	return false;
 }
+
+#include "../../../ActorCondition.h"
+#include "../../../Inventory.h"
+
 struct SCollisionHitCallback:
 	public ICollisionHitCallback
 
@@ -286,6 +290,79 @@ struct SCollisionHitCallback:
 			hl = m_pmt_object_collision_damage;
 		VERIFY( m_object );
 		di->SetInitiated();
+
+		if (obj->ObjectID() == 0 && !GodMode())
+		{
+			const float stamina = Actor()->conditions().GetPower();
+
+			bool need_kick_animator = false;
+
+			PIItem active_item = Actor()->inventory().ActiveItem();
+			CCustomDevice* device = Actor()->GetDevice();
+
+			if (stamina > hl)
+			{
+				Actor()->conditions().SetPower(stamina - hl);
+			}
+			else if (active_item != nullptr || device != nullptr)
+			{
+				if (::Random.randF(0.0f, 1.0f) < hl - stamina)
+				{
+					if (active_item != nullptr)
+					{
+						u16 slot = active_item->BaseSlot();
+						if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+						{
+							Actor()->g_PerformDrop();
+							need_kick_animator = true;
+						}
+					}
+
+					if (device != nullptr)
+					{
+						device->SetDropManual(TRUE);
+						need_kick_animator = true;
+					}
+				}
+			}
+			else
+			{
+				need_kick_animator = true;
+			}
+
+			if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+			{
+				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
+				{
+					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
+				};
+
+				Fvector dir = zero_vel;
+				di->HitDir(dir);
+				bool is_actor_see_monster = GetAngleCos(dir, Device.vCameraDirection) < 0.0f;
+
+				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
+				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
+
+				if (is_actor_see_monster)
+				{
+					if (front_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->StartAnimator(front_kick_animator);
+					}
+				}
+				else
+				{
+					if (back_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->StartAnimator(back_kick_animator);
+					}
+				}
+			}
+		}
+
 		m_object->set_collision_hit_callback( 0 );//delete this!!
 	}
 };

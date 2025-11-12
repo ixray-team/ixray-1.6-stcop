@@ -593,6 +593,9 @@ private:
 	float 							m_feel_enemy_who_just_hit_max_distance;
 	float 							m_feel_enemy_max_distance;
 
+protected:
+	bool m_bCanDropActorWeapon = false;
+
 //-------------------------------------------------------------------
 // CBaseMonster's  Atack on Move Parameters
 //-------------------------------------------------------------------

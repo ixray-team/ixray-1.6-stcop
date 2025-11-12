@@ -22,9 +22,12 @@
 #include "ui/UIGameCustom.h"
 #include "../../../../xrUI/Widgets/UIStatic.h"
 #include "../../../ai_object_location.h"
-#include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"
 #include "../../../../xrScripts/script_callback_ex.h"
+#include "../../../ActorCondition.h"
+#include "../../../Inventory.h"
+#include "../snork/snork.h"
+#include "../pseudogigant/pseudo_gigant.h"
 
 void CBaseMonster::feel_sound_new(CObject* who, int eType, CSound_UserDataPtr user_data, const Fvector &Position, float power)
 {
@@ -91,7 +94,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 
 		CEntity		*pEntityNC	= const_cast<CEntity*>(pEntity);
 		VERIFY		(pEntityNC);
-		
+
 		NET_Packet	l_P;
 		SHit		HS;
 		HS.GenHeader(GE_HIT, pEntityNC->ID());													//		u_EventGen	(l_P,GE_HIT, pEntityNC->ID());
@@ -99,13 +102,83 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.weaponID			= (ID());															//		l_P.w_u16	(ID());
 		HS.dir				= (hit_dir);														//		l_P.w_dir	(hit_dir);
 		HS.power			= (fDamage);														//		l_P.w_float	(fDamage);
-		HS.boneID			= (smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());//		l_P.w_s16	(smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
+		HS.boneID			= (PKinematics(pEntityNC->Visual())->LL_GetBoneRoot());				//		l_P.w_s16	(smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
 		HS.p_in_bone_space	= (position_in_bone_space);											//		l_P.w_vec3	(position_in_bone_space);
 		HS.impulse			= (impulse);														//		l_P.w_float	(impulse);
 		HS.hit_type			= hit_type;															//		l_P.w_u16	( u16(ALife::eHitTypeWound) );
 		HS.Write_Packet(l_P);
 		u_EventSend	(l_P);
 		
+		if (pEntityNC == Actor() && !GodMode() && m_bCanDropActorWeapon && smart_cast<CSnork*>(this) == nullptr && smart_cast<CPseudoGigant*>(this) == nullptr)
+		{
+			const float stamina = Actor()->conditions().GetPower();
+
+			bool need_kick_animator = false;
+
+			PIItem active_item = Actor()->inventory().ActiveItem();
+			CCustomDevice* device = Actor()->GetDevice();
+
+			if (stamina > HS.power)
+			{
+				Actor()->conditions().SetPower(stamina - HS.power);
+			}
+			else if (active_item != nullptr || device != nullptr)
+			{
+				if (::Random.randF(0.0f, 1.0f) < HS.power - stamina)
+				{
+					if (active_item != nullptr)
+					{
+						u16 slot = active_item->BaseSlot();
+						if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+						{
+							Actor()->g_PerformDrop();
+							need_kick_animator = true;
+						}
+					}
+
+					if (device != nullptr)
+					{
+						device->SetDropManual(TRUE);
+						need_kick_animator = true;
+					}
+				}
+			}
+			else
+			{
+				need_kick_animator = true;
+			}
+
+			if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+			{
+				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
+				{
+					return v1.dotproduct(v2) / (v1.magnitude() * v2.magnitude());
+				};
+
+				bool is_actor_see_monster = GetAngleCos(HS.dir, Device.vCameraDirection) < 0.0f;
+
+				Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+
+				const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
+				const shared_str& back_kick_animator = Actor()->m_sBackKickAnimator;
+
+				if (is_actor_see_monster)
+				{
+					if (front_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->StartAnimator(front_kick_animator);
+					}
+				}
+				else
+				{
+					if (back_kick_animator.size() > 0)
+					{
+						Actor()->HudAnimator()->StartAnimator(back_kick_animator);
+					}
+				}
+			}
+		}
+
 		if ((OnClient() || IsGameTypeSingle()) && pEntityNC == Actor() && draw_hit_marks)
 		{
 			PROF_EVENT("BaseMonster/Animation/HitEntity");

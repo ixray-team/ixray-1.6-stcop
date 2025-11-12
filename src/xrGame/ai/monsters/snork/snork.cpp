@@ -252,11 +252,64 @@ void CSnork::CheckSpecParams(u32 spec_params)
 	}
 }
 
+#include "../../../Actor.h"
+#include "../../../ActorCondition.h"
+#include "../../../Inventory.h"
+
 void CSnork::HitEntityInJump(const CEntity *pEntity)
 {
-	
 	SAAParam &params	= anim().AA_GetParams("stand_attack_2_1");
 	HitEntity			(pEntity, params.hit_power, params.impulse, params.impulse_dir);
+
+	if (pEntity == Actor() && !GodMode() && m_bCanDropActorWeapon)
+	{
+		const float stamina = Actor()->conditions().GetPower();
+
+		bool need_kick_animator = false;
+
+		PIItem active_item = Actor()->inventory().ActiveItem();
+		CCustomDevice* device = Actor()->GetDevice();
+
+		if (stamina > params.hit_power)
+		{
+			Actor()->conditions().SetPower(stamina - params.hit_power);
+		}
+		else if (active_item != nullptr || device != nullptr)
+		{
+			if (::Random.randF(0.0f, 1.0f) < params.hit_power - stamina)
+			{
+				if (active_item != nullptr)
+				{
+					u16 slot = active_item->BaseSlot();
+					if (!Actor()->inventory().SlotIsPersistent(slot) && !Actor()->inventory().Action(kDROP, CMD_STOP))
+					{
+						Actor()->g_PerformDrop();
+						need_kick_animator = true;
+					}
+				}
+
+				if (device != nullptr)
+				{
+					device->SetDropManual(TRUE);
+					need_kick_animator = true;
+				}
+			}
+		}
+		else
+		{
+			need_kick_animator = true;
+		}
+
+		if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+		{
+			Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+			const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
+			if (front_kick_animator.size() > 0)
+			{
+				Actor()->HudAnimator()->StartAnimator(front_kick_animator);
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

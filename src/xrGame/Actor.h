@@ -293,6 +293,9 @@ public:
 	shared_str				m_sHeadlampAnimator;
 	shared_str				m_sClearMaskAnimator;
 	shared_str				m_sQuickKickAnimator;
+	shared_str				m_sBurerKickAnimator;
+	shared_str				m_sFrontKickAnimator;
+	shared_str				m_sBackKickAnimator;
 
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }

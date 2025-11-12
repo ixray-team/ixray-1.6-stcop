@@ -150,6 +150,8 @@ void CBaseMonster::Load(LPCSTR section)
 	}
 
 	m_force_anti_aim						=	false;
+
+	m_bCanDropActorWeapon = READ_IF_EXISTS(pSettings, r_bool, section, "can_drop_actor_weapon", false);
 }
 
 void CBaseMonster::PostLoad (LPCSTR section)

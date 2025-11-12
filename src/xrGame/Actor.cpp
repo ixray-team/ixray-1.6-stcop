@@ -546,6 +546,33 @@ if(!g_dedicated_server)
 			m_sQuickKickAnimator = quick_kick_animator;
 		}
 	}
+
+	if (pGameGlobals->line_exist("mutant_kicks", "burer_kick_animator"))
+	{
+		LPCSTR burer_kick_animator = pGameGlobals->r_string("mutant_kicks", "burer_kick_animator");
+		if (pSettings->section_exist(burer_kick_animator))
+		{
+			m_sBurerKickAnimator = burer_kick_animator;
+		}
+	}
+
+	if (pGameGlobals->line_exist("mutant_kicks", "front_kick_animator"))
+	{
+		LPCSTR front_kick_animator = pGameGlobals->r_string("mutant_kicks", "front_kick_animator");
+		if (pSettings->section_exist(front_kick_animator))
+		{
+			m_sFrontKickAnimator = front_kick_animator;
+		}
+	}
+
+	if (pGameGlobals->line_exist("mutant_kicks", "back_kick_animator"))
+	{
+		LPCSTR back_kick_animator = pGameGlobals->r_string("mutant_kicks", "back_kick_animator");
+		if (pSettings->section_exist(back_kick_animator))
+		{
+			m_sBackKickAnimator = back_kick_animator;
+		}
+	}
 }
 
 void CActor::legs_shift_callback(CBoneInstance* B) {
