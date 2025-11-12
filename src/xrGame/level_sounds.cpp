@@ -208,18 +208,14 @@ void CLevelSoundManager::Update()
 				
 				if( T.in(game_time) )
 					indices.push_back	(k);
-/*
-				if ((0==T.m_ActiveTime.x) && (0==T.m_ActiveTime.y)||
-					((int(game_time)>=T.m_ActiveTime.x)&&(int(game_time)<T.m_ActiveTime.y)))
-					indices.push_back	(k);
-*/
 			}
 			if (!indices.empty())
 			{
 				u32 idx			= Random.randI((u32) indices.size());
 				m_CurrentTrack	= indices[idx];
 				SMusicTrack& T	= m_MusicTracks[m_CurrentTrack];
-				T.Play			();
+				if (!T.IsPlaying())
+					T.Play();
 #ifdef DEBUG
 				Msg("- Play music track: %s", T.m_DbgName.c_str());
 #endif

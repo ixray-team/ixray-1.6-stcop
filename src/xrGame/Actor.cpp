@@ -1259,11 +1259,6 @@ void CActor::PlayRainOnHelmetSound()
 		return;
 	}
 
-	if (!m_rainOnHelmetSnd.slot())
-	{
-		return;
-	}
-
 	float distance = 5.f;
 	constexpr Fvector direction(0, 1, 0);
 	const Fvector position = Device.vCameraPosition;
