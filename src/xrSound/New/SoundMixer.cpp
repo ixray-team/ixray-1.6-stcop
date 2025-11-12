@@ -122,6 +122,7 @@ struct sound_bus_state
 
 struct sound_mixer_state
 {
+	xrSRWLock render_lock;
 	xrSRWLock update_lock;
 	xrSRWLock manage_lock;
 
@@ -902,6 +903,8 @@ Snd_MixerRenderCallback(float* buffer)
 {
 	PROF_EVENT("Sound: Render Stage");
 
+	xrSRWLockGuard guard(mixer.render_lock, true);
+
 	static u64 timestamp = Snd_GetTimestamp();
 	float dt = (float)((double)(Snd_GetTimestamp() - timestamp) / 1000000000.0);
 	timestamp = Snd_GetTimestamp();
@@ -1009,7 +1012,7 @@ Snd_MixerRenderCallback(float* buffer)
 			}
 
 			u32 slot_idx = slot.zone_idx;// ((slot.flags & (u32)Mixer::Flags::Spatial) ? slot.zone_idx : );
-			if (slot_idx) {
+			if (slot_idx && !mixer.zones.empty()) {
 				sound_zone_params& zone = mixer.zones.at(slot_idx - 1);
 				zone.use_count++;
 				zone.last_use_ms = Snd_Milliseconds();
@@ -1910,6 +1913,8 @@ Mixer::AddZone(sound_zone_params& params)
 void 
 Mixer::ResetZones()
 {
+	xrSRWLockGuard guard(mixer.render_lock);
+
 	for (auto& zone : mixer.zones) {
 #ifndef DISABLE_STEAM_AUDIO
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
