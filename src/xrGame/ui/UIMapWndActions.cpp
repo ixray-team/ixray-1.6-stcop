@@ -8,11 +8,13 @@ FRbmkMapActionPlanner::FRbmkMapActionPlanner(CUIMapWnd* InOwner): Owner(InOwner)
 {
 }
 
+constexpr float MapResizeSpeed = 350.f;
+constexpr float	MapZoomTime = 0.5f;
+constexpr float	MinMoveTime = 0.25f;
+
 void FRbmkMapActionPlanner::Update()
 {
-	constexpr float MapResizeSpeed		= 350.f;	
-	constexpr float	MapZoomTime			= 0.5f;		
-	constexpr float	MinMoveTime			= 0.25f;	
+
 			
 	auto Initialize = [this]()
 	{
