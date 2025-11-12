@@ -7,6 +7,72 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	PROF_EVENT("CRenderDevice::on_event");
 	ImGui_ImplSDL3_ProcessEvent(&Event);
 	
+	// this is needed because default event handler that goes after if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID) is not reachable
+	switch (Event.type)
+	{
+	case SDL_EVENT_GAMEPAD_REMOVED:
+	{
+//		SDL_CloseGamepad(pInput->pGamePad);
+	//	pInput->pGamePad = nullptr;
+		
+		if (pInput->receive_gamepad_addedorremoved)
+		{
+			pInput->receive_gamepad_addedorremoved(nullptr, false);
+		}
+
+		break;
+	}
+	case SDL_EVENT_GAMEPAD_ADDED:
+	{
+	//	if (SDL_IsGamepad(Event.jdevice.which))
+	//	{
+	//		pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
+		if (pInput->receive_gamepad_addedorremoved)
+		{
+			pInput->receive_gamepad_addedorremoved(reinterpret_cast<void*>(Event.jdevice.which), true);
+		}
+	//	}
+		break;
+	}
+
+	case SDL_EVENT_KEYBOARD_ADDED:
+	{
+		if (pInput->receive_keyboard_addedorremoved)
+		{
+			pInput->receive_keyboard_addedorremoved(reinterpret_cast<void*>(Event.kdevice.which), true);
+		}
+
+		break;
+	}
+	case SDL_EVENT_KEYBOARD_REMOVED:
+	{
+		if (pInput->receive_keyboard_addedorremoved)
+		{
+			pInput->receive_keyboard_addedorremoved(nullptr, false);
+		}
+
+		break;
+	}
+	case SDL_EVENT_MOUSE_ADDED:
+	{
+		if (pInput->receive_mouse_addedorremoved)
+		{
+			pInput->receive_mouse_addedorremoved(reinterpret_cast<void*>(Event.mdevice.which), true);
+		}
+
+		break;
+	}
+	case SDL_EVENT_MOUSE_REMOVED:
+	{
+		if (pInput->receive_mouse_addedorremoved)
+		{
+			pInput->receive_mouse_addedorremoved(nullptr, false);
+		}
+
+		break;
+	}
+	}
+
 	if (SDL_GetWindowID(g_AppInfo.Window) != Event.window.windowID)
 		return true;
 
@@ -31,11 +97,41 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 	case SDL_EVENT_GAMEPAD_REMOVED:
 		SDL_CloseGamepad(pInput->pGamePad);
 		pInput->pGamePad = nullptr;
+	//	--pInput->gamepad_added_event_received;
+
 		break;
 	case SDL_EVENT_GAMEPAD_ADDED:
 		if (SDL_IsGamepad(Event.jdevice.which))
+		{
 			pInput->pGamePad = SDL_OpenGamepad(Event.jdevice.which);
+	//		++pInput->gamepad_added_event_received;
+		}
 		break;
+
+	case SDL_EVENT_KEYBOARD_ADDED:
+	{
+	//	++pInput->keyboard_added_event_received;
+
+		break;
+	}
+	case SDL_EVENT_KEYBOARD_REMOVED:
+	{
+	//	--pInput->keyboard_added_event_received;
+
+		break;
+	}
+	case SDL_EVENT_MOUSE_ADDED:
+	{
+	//	++pInput->mouse_added_event_received;
+
+		break;
+	}
+	case SDL_EVENT_MOUSE_REMOVED:
+	{
+	//	--pInput->mouse_added_event_received;
+
+		break;
+	}
 	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		pInput->GamepadButtonUpdate(Event.gbutton.button, true);
 		break;
