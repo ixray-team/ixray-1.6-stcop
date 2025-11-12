@@ -11,8 +11,6 @@ void set_viewport(ID3DDeviceContext* dev, float w, float h)
 
 void CRenderTarget::phase_ssao()
 {
-	GRHI->ClearTarget(rt_ssao_temp->pRT);
-
 	// low/hi RTs
 	u_setrt(rt_ssao_temp, 0, 0, 0);
 
