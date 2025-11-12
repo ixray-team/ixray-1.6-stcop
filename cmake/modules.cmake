@@ -5,7 +5,6 @@ include("${CMAKE_MODULE_PATH}/LuaJIT.cmake")
 include("${CMAKE_MODULE_PATH}/LuaBind.cmake")
 include("${CMAKE_MODULE_PATH}/Ogg.cmake")
 include("${CMAKE_MODULE_PATH}/Vorbis.cmake")
-include("${CMAKE_MODULE_PATH}/OpenalSoft.cmake")
 include("${CMAKE_MODULE_PATH}/FreeImage.cmake")
 
 if (IXRAY_MP)
