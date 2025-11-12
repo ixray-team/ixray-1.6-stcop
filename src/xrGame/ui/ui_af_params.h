@@ -28,7 +28,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	UIArtefactParamItem*	m_immunity_item[ALife::infl_max_count];
+	UIArtefactParamItem*	m_immunity_item[ALife::eHitTypeWound_2];
 	UIArtefactParamItem*	m_restore_item[ALife::eRestoreTypeMax];
 	UIArtefactParamItem*	m_disp_condition;
 	UIArtefactParamItem*	m_additional_weight;
@@ -51,7 +51,7 @@ public:
 				UIArtefactParamItem	();
 	virtual		~UIArtefactParamItem();
 		
-		void	Init				( CUIXml& xml, LPCSTR section );
+		bool	Init				( CUIXml& xml, LPCSTR section );
 		void	SetCaption			( LPCSTR name );
 		void	SetValue			( float value );
 	

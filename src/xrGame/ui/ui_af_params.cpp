@@ -17,7 +17,7 @@ u32 const green_clr = color_argb(255,170,170,170);
 
 CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 {
-	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
+	for ( u32 i = 0; i < ALife::eHitTypeWound_2; ++i )
 	{
 		m_immunity_item[i] = nullptr;
 	}
@@ -121,16 +121,22 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 		m_disp_condition->SetCaption(name);
 		xml.SetLocalRoot(base_node);
 	}
-	for ( u32 i = 0; i < ALife::infl_max_count; ++i )
+	for ( u32 i = 0; i < ALife::eHitTypeWound_2; ++i )
 	{
 		m_immunity_item[i] = new UIArtefactParamItem();
-		m_immunity_item[i]->Init( xml, af_immunity_section_names[i] );
-		m_immunity_item[i]->SetAutoDelete(false);
+		if (m_immunity_item[i]->Init(xml, af_immunity_section_names[i]))
+		{
+			m_immunity_item[i]->SetAutoDelete(false);
 
-		name = g_pStringTable->translate(af_immunity_caption[i]).c_str();
-		m_immunity_item[i]->SetCaption( name );
+			name = g_pStringTable->translate(af_immunity_caption[i]).c_str();
+			m_immunity_item[i]->SetCaption(name);
 
-		xml.SetLocalRoot( base_node );
+			xml.SetLocalRoot(base_node);
+		}
+		else
+		{
+			xr_delete(m_immunity_item[i]);
+		}
 	}
 
 	for ( u32 i = 0; i < ALife::eRestoreTypeMax; ++i )
@@ -213,11 +219,11 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 	if (is_artefact())
 	{
-		for (u32 i = 0; i < ALife::infl_max_count; ++i)
+		for (u32 i = 0; i < ALife::eHitTypeWound_2; ++i)
 		{
 			shared_str const& sect = pSettings->r_string(af_section, "hit_absorbation_sect");
 			val = pSettings->r_float(sect, af_immunity_section_names[i]);
-			if (fis_zero(val))
+			if (fis_zero(val) || !m_immunity_item[i])
 			{
 				continue;
 			}
@@ -302,9 +308,11 @@ UIArtefactParamItem::~UIArtefactParamItem()
 {
 }
 
-void UIArtefactParamItem::Init( CUIXml& xml, LPCSTR section )
+bool UIArtefactParamItem::Init( CUIXml& xml, LPCSTR section )
 {
-	CUIXmlInit::InitWindow( xml, section, 0, this );
+	if (!CUIXmlInit::InitWindow(xml, section, 0, this, false))
+		return false;
+
 	xml.SetLocalRoot( xml.NavigateToNode( section ) );
 
 	m_caption   = UIHelper::CreateStatic( xml, "caption", this );
@@ -324,6 +332,7 @@ void UIArtefactParamItem::Init( CUIXml& xml, LPCSTR section )
 		m_texture_plus._set( texture_plus );
 		VERIFY( m_texture_plus.size() );
 	}
+	return true;
 }
 
 void UIArtefactParamItem::SetCaption( LPCSTR name )
