@@ -553,9 +553,21 @@ unsigned char CInput::GetConnectedInputDeviceCount(void) const noexcept
 	return 0;
 }
 
-void CInput::GetConnectedInputDeviceCount(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept
+void CInput::GetConnectedInputDevices(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept
 {
-	
+	GetConnectedInputKeyboards(devices);
+	GetConnectedInputGamepads(devices);
+	GetConnectedInputMouses(devices);
+}
+
+void CInput::GetInfoAboutConnectedInputDevices(const CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], CInputDeviceVendorInfo(&infos)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept
+{
+	for (unsigned char i = 0; i < DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT; ++i)
+	{
+		CInputDeviceVendorInfo& info = infos[i];
+
+		FillVendorInfo(devices[i],	info);
+	}
 }
 
 unsigned char CInput::GetConnectedInputDeviceCount(eInputDeviceType type) const noexcept
@@ -592,20 +604,142 @@ void  CInput::feedback(u16 s1, u16 s2, float time)
 	stop_vibration_time = RDEVICE.fTimeGlobal + time;
 }
 
+bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept
+{
+	switch (device.type)
+	{
+	case eInputDeviceType::keyboard:
+	{
+		if (device.p_handle)
+		{
+			const char* pName = SDL_GetKeyboardNameForID(reinterpret_cast<SDL_KeyboardID>(device.p_handle));
+
+			if (pName)
+			{
+				std::memcpy(info.name, pName, sizeof(info.name));
+				info.name[(sizeof(info.name)/sizeof(info.name[0])) - 1] = 0;
+			}
+		}
+
+		break;
+	}
+	case eInputDeviceType::gamepad:
+	{
+
+
+		break;
+	}
+	case eInputDeviceType::mouse:
+	{
+		if (device.p_handle)
+		{
+			const char* pName = SDL_GetMouseNameForID(reinterpret_cast<SDL_MouseID>(device.p_handle));
+
+			if (pName)
+			{
+				std::memcpy(info.name, pName, sizeof(info.name));
+				info.name[(sizeof(info.name) / sizeof(info.name[0])) - 1] = 0;
+			}
+		}
+
+		break;
+	}
+	default:
+	{
+		R_ASSERT(false && "unsupported device");
+		break;
+	}
+	}
+
+
+	return true;
+}
+
 bool CInput::GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT*/) noexcept
 {
-	R_ASSERT2(false, "todo: implement");
-	return false;
+	bool result = false;
+
+	int count = -1;
+	SDL_KeyboardID* pKeyboards = SDL_GetKeyboards(&count);
+
+	result = !!(pKeyboards);
+
+	if (!pKeyboards)
+		return result;
+
+	if (static_cast<unsigned char>(count) > max_keyboards)
+	{
+		count = max_keyboards;
+	}
+
+	unsigned char index = static_cast<unsigned char>(eInputDeviceType::keyboard);
+	for (unsigned char i = 0; i < count; ++i)
+	{
+		pool[index].p_handle = reinterpret_cast<void*>(pKeyboards[i]);
+		pool[index].type = eInputDeviceType::keyboard;
+
+		index += i;
+	}
+
+	return result;
 }
 
 bool CInput::GetConnectedInputMouses(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_mouses /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT*/) noexcept
 {
-	R_ASSERT2(false, "todo: implement");
-	return false;
+	bool result = false;
+
+	int count = -1;
+	SDL_MouseID* pMouses = SDL_GetMice(&count);
+
+	result = !!(pMouses);
+
+	if (!pMouses)
+		return result;
+
+	if (static_cast<unsigned char>(count) > max_mouses)
+	{
+		count = max_mouses;
+	}
+
+	unsigned char index = static_cast<unsigned char>(eInputDeviceType::mouse);
+	for (unsigned char i = 0; i < count; ++i)
+	{
+		pool[index].p_handle = reinterpret_cast<void*>(pMouses[i]);
+		pool[index].type = eInputDeviceType::mouse;
+
+		index += i;
+	}
+
+	return result;
 }
 
 bool CInput::GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_gamepads /*= DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT*/) noexcept
 {
-	R_ASSERT2(false, "todo: implement");
-	return false;
+	bool result = false;
+
+	int count = -1;
+	SDL_JoystickID* pGamepads = SDL_GetGamepads(&count);
+
+	result = !!(pGamepads);
+
+	bool check = SDL_HasGamepad();
+
+	if (!pGamepads)
+		return result;
+
+	if (static_cast<unsigned char>(count) > max_gamepads)
+	{
+		count = max_gamepads;
+	}
+
+	unsigned char index = static_cast<unsigned char>(eInputDeviceType::gamepad);
+	for (unsigned char i = 0; i < count; ++i)
+	{
+		pool[index].p_handle = reinterpret_cast<void*>(pGamepads[i]);
+		pool[index].type = eInputDeviceType::gamepad;
+
+		index += i;
+	}
+
+	return result;
 }
