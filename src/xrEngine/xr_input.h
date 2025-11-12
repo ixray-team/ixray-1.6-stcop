@@ -18,16 +18,17 @@ const int default_key			= mouse_device_key | keyboard_device_key ;
 /// @brief \~english add your device type here if you want to support by your game...
 enum class eInputDeviceType : unsigned char
 {
-	kKeyboard,
-	kGamepad,
-	kMouse,
-	kTotalCount,
+	keyboard,
+	gamepad,
+	mouse,
+	totalcount,
 	kUnknown = std::underlying_type_t<eInputDeviceType>(-1)
 };
 
 struct CInputDevice
 {
 	eInputDeviceType type;
+	void* p_handle;
 };
 
 struct CInputDeviceVendorInfo
@@ -36,37 +37,6 @@ struct CInputDeviceVendorInfo
 	char version[16];
 	char description[128];
 };
-
-inline constexpr const char* translateInputDeviceTypeToString(eInputDeviceType type)
-{
-	switch (type)
-	{
-	case eInputDeviceType::kKeyboard:
-	{
-		return "keyboard";
-	}
-	case eInputDeviceType::kGamepad:
-	{
-		return "gamepad";
-	}
-	case eInputDeviceType::kMouse:
-	{
-		return "mouse";
-	}
-	case eInputDeviceType::kTotalCount:
-	{
-		return "total_count";
-	}
-	case eInputDeviceType::kUnknown:
-	{
-		return "unknown";
-	}
-	default:
-	{
-		return "UNDEFINED_INPUT_DEVICE_TYPE_ENUM";
-	}
-	}
-}
 
 #define DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT 1
 #define DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT 1
@@ -89,6 +59,10 @@ public:
 	};
 
 	SDL_Gamepad* pGamePad = nullptr;
+
+	std::function<void(void*, bool)> receive_gamepad_addedorremoved;
+	std::function<void(void*, bool)> receive_keyboard_addedorremoved;
+	std::function<void(void*, bool)> receive_mouse_addedorremoved;
 
 private:
 	bool						mouseMoved = false;
@@ -153,7 +127,8 @@ public:
 	/// @return 
 	unsigned char GetConnectedInputDeviceCount(eInputDeviceType type) const noexcept;
 
-	void GetConnectedInputDeviceCount(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept;
+	void GetConnectedInputDevices(CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept;
+	void GetInfoAboutConnectedInputDevices(const CInputDevice(&devices)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], CInputDeviceVendorInfo(&infos)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT]) noexcept;
 	bool GetVendorInfoAboutInputDevice(const CInputDevice* pDevice, CInputDeviceVendorInfo* pInfo) const noexcept;
 	bool GetVendorInfoAboutInputDevice(const CInputDevice& device, CInputDeviceVendorInfo* pInfo) const noexcept;
 	bool IsAcquire = false;
@@ -165,6 +140,7 @@ public:
 	void						feedback(u16 s1, u16 s2, float time);
 
 private:
+	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
 	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;
 	bool GetConnectedInputMouses(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_mouses = DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT) noexcept;
 	bool GetConnectedInputGamepads(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_gamepads = DEF_XR_INPUT_MAX_INPUT_CONNECTED_GAMEPAD_COUNT) noexcept;
