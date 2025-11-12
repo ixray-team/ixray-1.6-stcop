@@ -336,6 +336,7 @@ void CHudItem::DeactivateItem()
 void CHudItem::OnMoveToRuck(const SInvItemPlace& prev)
 {
 	SwitchState(eHidden);
+	m_HudLight.UpdateTorchFromObject(this);
 }
 
 bool CHudItem::SendDeactivateItem(bool Force)
@@ -424,6 +425,7 @@ void CHudItem::OnH_B_Independent	(bool just_before_destroy)
 {
 	m_sounds.StopAllSounds	();
 	UpdateXForm				();
+	m_HudLight.UpdateTorchFromObject(this);
 	
 	// next code was commented 
 	/*

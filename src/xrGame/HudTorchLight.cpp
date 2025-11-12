@@ -143,13 +143,17 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		return;
 	}
 
-	if (item->GetState() == item->eHidden && item->object().H_Parent())
+	if (item->object().H_Parent())
 	{
-		RenderLight->set_active(false);
-		OmniLight->set_active(false);
+		if (item->GetState() == item->eHidden || item->cast_inventory_item()->CurrPlace() == eItemPlace::eItemPlaceRuck)
+		{
+			RenderLight->set_active(false);
+			OmniLight->set_active(false);
 
-		return;
+			return;
+		}
 	}
+
 
 	bool isHudMode = item->GetHUDmode();
 	if (IsRenderLight)

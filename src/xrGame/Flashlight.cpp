@@ -86,3 +86,21 @@ void CFlashlight::OnH_B_Independent(bool just_before_destroy)
 	m_HudLight.SwitchTorchlight(false);
 	m_HudLight.UpdateTorchFromObject(this);
 }
+
+void CFlashlight::OnHiddenItem()
+{
+	inherited::OnHiddenItem();
+
+	m_bFlashlightStatus = false;
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
+}
+
+void CFlashlight::OnMoveToRuck(const SInvItemPlace& prev)
+{
+	inherited::OnMoveToRuck(prev);
+
+	m_bFlashlightStatus = false;
+	m_HudLight.SwitchTorchlight(false);
+	m_HudLight.UpdateTorchFromObject(this);
+}
