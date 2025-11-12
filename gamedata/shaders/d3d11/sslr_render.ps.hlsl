@@ -96,7 +96,7 @@ void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final :
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
 	
-	float2 Velocity = s_velocity.Sample(smp_rtlinear, EndProj.xy).xy * float2(0.5f, -0.5f);
+	float2 Velocity = s_velocity.Sample(smp_nofilter, EndProj.xy).xy * float2(0.5f, -0.5f);
 	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
 	
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
