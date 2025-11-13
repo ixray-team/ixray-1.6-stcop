@@ -3,13 +3,7 @@
 uniform float4 color_params;
 uniform float4 color_grading;
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
-float4 main(in PSInput I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
 	float3 color = s_image.Sample(smp_nofilter, I.texcoord.xy).xyz;
 	
