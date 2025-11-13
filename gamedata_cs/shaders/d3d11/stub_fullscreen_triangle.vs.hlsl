@@ -1,18 +1,8 @@
-struct VSInput
-{
-    float2 texcoord : TEXCOORD0;
-    float4 hpos : POSITIONT;
-};
+#include "common_iostructs.hlsli"
 
-struct VSOutput
+VSOutputFullscreen main(VSInputFullscreen I)
 {
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
-VSOutput main(VSInput I)
-{
-    VSOutput O;
+    VSOutputFullscreen O;
 
     O.hpos = I.hpos;
     O.texcoord = I.texcoord;

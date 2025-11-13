@@ -511,4 +511,23 @@ struct v_detail
     float2 tc : TEXCOORD0; // texcoord
 };
 
+//	Fullscreen triangle
+struct PSInputFullscreen
+{
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
+};
+
+struct VSInputFullscreen
+{
+    float2 texcoord : TEXCOORD0;
+    float4 hpos : POSITIONT;
+};
+
+struct VSOutputFullscreen
+{
+    float4 hpos : SV_POSITION;
+    float2 texcoord : TEXCOORD0;
+};
+
 #endif //	common_iostructs_h_included
