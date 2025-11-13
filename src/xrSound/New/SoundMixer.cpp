@@ -439,6 +439,7 @@ Snd_LoadSource(sound_source& source, const char* name)
 	R_ASSERT(ovi->rate == SND_SAMPLERATE);
 	source.pub.channels_count = ovi->channels;
 	source.pub.frames_total = ov_pcm_total(&source.file, -1);
+	source.pub.volume = 1.f;
 
 	vorbis_comment* ovm = ov_comment(&source.file, -1);
 	if (ovm->comments) {
