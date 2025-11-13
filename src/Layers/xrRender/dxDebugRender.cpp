@@ -23,7 +23,7 @@ void dxDebugRender::Init()
 	R_ASSERT(RHIUtils::CreateVertexBuffer(
 		&m_dbgVB,
 		nullptr,
-		line_vertex_limit,
+		line_vertex_limit * 2,
 		false));
 
 	m_dbgGeom.create(FVF::F_L, m_dbgVB, nullptr);
@@ -47,6 +47,7 @@ void dxDebugRender::Render()
 	if (m_lines.empty())
 		return;
 
+	GPU_EVENT(DebugRender);
 #ifdef USE_DX11
 	size_t offset = 0;
 	while (offset < m_lines.size())
@@ -60,9 +61,12 @@ void dxDebugRender::Render()
 		);
 
 		RCache.set_xform_world(Fidentity);
+		RCache.set_xform_view(Device.mView);
+		RCache.set_xform_project(Device.mProject);
+		RCache.set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
 		RCache.set_Element(m_dbgShaders[dbgShaderWorld]->E[r_debug_render_depth * 4]);
 		RCache.set_Geometry(m_dbgGeom);
-		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, 0, drawCount / 2);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::LINE_LIST, 0, drawCount * 2);
 
 		offset += drawCount;
 	}

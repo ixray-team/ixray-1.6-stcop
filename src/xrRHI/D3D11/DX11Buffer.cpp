@@ -149,7 +149,13 @@ void CD3D11Buffer::UpdateSubresource(void* pData, u32 Size)
 	ID3D11DeviceContext* pImmediateContext = static_cast<ID3D11DeviceContext*>(GRHI->GetContext());
 	R_ASSERT(pImmediateContext);
 
-	pImmediateContext->UpdateSubresource(m_pBuffer, 0, NULL, pData, 0, 0);
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	HRESULT hr = pImmediateContext->Map(m_pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+	R_ASSERT(SUCCEEDED(hr));
+
+	memcpy(mapped.pData, pData, Size);
+
+	pImmediateContext->Unmap(m_pBuffer, 0);
 }
 
 ID3D11Buffer* CD3D11Buffer::GetD3DObject()
