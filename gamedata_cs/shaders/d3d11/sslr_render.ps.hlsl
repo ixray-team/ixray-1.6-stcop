@@ -2,12 +2,6 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_ambient.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
 Texture3D s_blue_noise;
 
 // TODO: Это можно упростить потом
@@ -45,7 +39,7 @@ float4 ImportanceSampleGGX(float3 N, float2 Xi, float Roughness)
     return float4(H, pdf);
 }
 
-void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
+void main(PSInputFullscreen I, out float4 Point : SV_Target0, out float4 Final : SV_Target1)
 {
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
@@ -102,7 +96,7 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	float4 EndProj = mul(O.Depth < 0.02f ? m_P_hud : m_P, float4(SSLR.xyz, 1.0f));
 	EndProj.xy = EndProj.xy * rcp(EndProj.w) * float2(0.5f, -0.5f) + 0.5f;
 	
-	float2 Velocity = s_velocity.Sample(smp_rtlinear, EndProj.xy).xy * float2(0.5f, -0.5f);
+	float2 Velocity = s_velocity.Sample(smp_nofilter, EndProj.xy).xy * float2(0.5f, -0.5f);
 	float2 PrevSpecularUV = saturate(EndProj.xy - Velocity.xy);
 	
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
