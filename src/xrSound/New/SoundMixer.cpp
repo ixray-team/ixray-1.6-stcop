@@ -53,8 +53,8 @@
 
 #define SND_HRTF_SLOT_COUNT (512)
 #define DEFAULT_SLOT_COUNT (4096)
-#define CACHE_LINES_COUNT (2048)
-#define CACHE_LINE_WIDTH (9)
+#define CACHE_LINES_COUNT (2048 * 4)
+#define CACHE_LINE_WIDTH (12)
 #define CACHE_LINE_ENTRY_COUNT (32)
 
 using namespace XRay::Sound;
@@ -1692,7 +1692,12 @@ Mixer::SetVolume(u32 slot, double volume)
 		return;
 	}
 
-	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
+	if (std::abs(volume) > 10)
+	{
+		volume = 1.0;
+	}
+
+	auto out_val = mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
 }
 
 xr_vector<sound_slot_state>&
