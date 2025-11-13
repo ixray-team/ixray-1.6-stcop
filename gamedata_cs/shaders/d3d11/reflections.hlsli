@@ -258,7 +258,7 @@ float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
     Fade *= step(-0.4f, DeltaL);
 
     float Attention = GetBorderAtten(ReflUV, 0.125f);
-    ReflUV -= s_velocity.SampleLevel(smp_rtlinear, ReflUV, 0).xy * float2(0.5f, -0.5f);
+    ReflUV -= s_velocity.SampleLevel(smp_nofilter, ReflUV, 0).xy * float2(0.5f, -0.5f);
     Fade *= min(Attention, GetBorderAtten(ReflUV, 0.125f));
 
 #ifdef SKYBLED_FADE

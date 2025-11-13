@@ -17,12 +17,6 @@
 
 #include "common.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float4 texcoord : TEXCOORD0;
-};
-
 Texture2D s_image_prev; //Previous rt_generic_0
 float4 scaled_screen_res; //Render resolution
 
@@ -113,7 +107,7 @@ void get_3x3_color(float2 texcoord, float2 gather_texcoord, inout float3 c_3x3[9
 }
 #endif
 
-float4 main(PSInput I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
 	//https://wojtsterna.blogspot.com/2018/02/directx-11-hlsl-gatherred.html
 	float2 gather_texcoord = I.texcoord.xy + scaled_screen_res.zw * 0.5;

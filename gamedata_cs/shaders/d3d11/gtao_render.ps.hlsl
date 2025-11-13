@@ -19,12 +19,6 @@
 
 #include "common.hlsli"
 
-struct PSInput
-{
-	float4 hpos : SV_POSITION;
-	float2 texcoord : TEXCOORD0;
-};
-
 float gtao_parameters; //Factor used to transform world space radius into screen space
 
 float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal, float2 texcoord, float2 jitter)
@@ -152,7 +146,7 @@ float example_how_to_not_implement_gtao(float3 view_position, float3 view_normal
 }
 
 Texture3D s_blue_noise;
-uint main(PSInput I) : SV_Target
+uint main(PSInputFullscreen I) : SV_Target
 {
 	//Sample depth buffer
 	float zbuffer = s_position.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f).x;
