@@ -2,12 +2,6 @@
 #include "reflections.hlsli"
 #include "metalic_roughness_light.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float2 texcoord : TEXCOORD0;
-};
-
 #define mirror(x) saturate(1.0 - abs(abs(x) - 1.0))
 
 #define DISK32_RADIUS8 2.443279f
@@ -55,7 +49,7 @@ static const float2 Disk32_Normalized[32] = {
 	float2(0.895505f, -0.323214f),
 };
 
-float4 main(PSInput I) : SV_Target
+float4 main(PSInputFullscreen I) : SV_Target
 {
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
