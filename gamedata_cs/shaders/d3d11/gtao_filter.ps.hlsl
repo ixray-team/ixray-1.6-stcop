@@ -15,15 +15,9 @@
 
 #include "common.hlsli"
 
-struct PSInput
-{
-    float4 hpos : SV_POSITION;
-    float4 texcoord : TEXCOORD0;
-};
-
 Texture2D<uint> t_gtao_packed;
 
-float main(PSInput I) : SV_Target
+float main(PSInputFullscreen I) : SV_Target
 {
     int kernel = 7;
     int half_kernel = kernel / 2;

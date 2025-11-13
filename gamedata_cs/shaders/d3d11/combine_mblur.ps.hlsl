@@ -13,30 +13,24 @@ inline void SampleImage(inout float4 Final, in float2 SampleUV, in float CenterD
 	Final.w += SampleWeight;
 }
 
-struct PSInput
-{
-    float4 HPos : SV_POSITION;
-    float4 Center : TEXCOORD0;
-};
-
-void main(in PSInput I : TEXCOORD0, out float4 Color : SV_Target)
+void main(in PSInputFullscreen I, out float4 Color : SV_Target)
 {	
 	float2 Vel = 0;
 	
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.Center.xy + float2(+0.5f, -0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.Center.xy + float2(+0.5f, +0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.Center.xy + float2(-0.5f, -0.5f) * mblur_params.zw, 0);
-	Vel += s_velocity.SampleLevel(smp_rtlinear, I.Center.xy + float2(-0.5f, +0.5f) * mblur_params.zw, 0);
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, -0.5f) * mblur_params.zw, 0);
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(+0.5f, +0.5f) * mblur_params.zw, 0);
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, -0.5f) * mblur_params.zw, 0);
+	Vel += s_velocity.SampleLevel(smp_rtlinear, I.texcoord.xy + float2(-0.5f, +0.5f) * mblur_params.zw, 0);
 	
 	// AVG velocty with "centered" inf
 	Vel *= 0.25f * float2(-0.5f, 0.5f);
 	
 	// Add some noise to get a "dirty" result
-	Vel *= Hash(I.Center.xy * m_taa_jitter.z * mblur_params.z) * 0.1f + 0.95f;
+	Vel *= Hash(I.texcoord.xy * m_taa_jitter.z * mblur_params.z) * 0.1f + 0.95f;
 	
-	float CenterDepth = s_position.SampleLevel(smp_rtlinear, I.Center.xy, 0).x;
+	float CenterDepth = s_position.SampleLevel(smp_rtlinear, I.texcoord.xy, 0).x;
 	
-	float4 Final = s_image.SampleLevel(smp_rtlinear, I.Center.xy, 0);
+	float4 Final = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
 	Final.w = 1.0f;
 	
 	float PixelSize = max(mblur_params.z, mblur_params.w);
@@ -52,8 +46,8 @@ void main(in PSInput I : TEXCOORD0, out float4 Color : SV_Target)
 		{
 			L += Step;
 			
-			SampleImage(Final, saturate(I.Center.xy + Vel * L), CenterDepth);
-		 	SampleImage(Final, saturate(I.Center.xy - Vel * L), CenterDepth);
+			SampleImage(Final, saturate(I.texcoord.xy + Vel * L), CenterDepth);
+		 	SampleImage(Final, saturate(I.texcoord.xy - Vel * L), CenterDepth);
 		}
 	}
 	
