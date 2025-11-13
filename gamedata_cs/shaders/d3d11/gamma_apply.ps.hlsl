@@ -1,21 +1,21 @@
 #include "common.hlsli"
 
-uniform texture2D s_gamma_lut;
+uniform float4 color_params;
+uniform float4 color_grading;
 
-float4 main(float2 tc0 : TEXCOORD0) : SV_Target
+struct PSInput
 {
-	float3 image  = s_image.Sample(smp_nofilter, tc0).xyz;
+    float4 hpos : SV_POSITION;
+    float2 texcoord : TEXCOORD0;
+};
 
-	// Compute the 1D LUT lookup scale/offset factor
-	const float lutSize = 1024.0f;
-	float scale = (lutSize - 1.0f) / lutSize;
-	float offset = 1.0f / (2.0f * lutSize);
+float4 main(in PSInput I) : SV_Target
+{
+	float3 color = s_image.Sample(smp_nofilter, I.texcoord.xy).xyz;
 	
-	// apply
-	float3 color = float3(s_gamma_lut.Sample(smp_rtlinear, scale * image.x + offset).x,
-						  s_gamma_lut.Sample(smp_rtlinear, scale * image.y + offset).y,
-						  s_gamma_lut.Sample(smp_rtlinear, scale * image.z + offset).z);
+	color = color_params.x * pow(color, color_params.y) + color_params.z;
+	color = saturate(color.xyz * color_grading.xyz);
 	
-    color = deband_color(color, tc0.xy);
+    color = deband_color(color, I.texcoord.xy);
 	return float4(color, 1.0f);
 }

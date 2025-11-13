@@ -1,13 +1,9 @@
 function normal(shader, t_base, t_second, t_detail)
-    shader:begin("deffer_base", "deffer_base")
+    shader:begin("dumb", "dumb")
         :fog(false)
-        :emissive(true)
+        :zb(false, false)
+        :blend(true, blend.zero, blend.one)
+        :aref(false, 0)
+        :sorting(2, false)
     shader:sampler("s_base"):texture(t_base)
-end
-
-function l_special(shader, t_base, t_second, t_detail)
-    shader:begin("deffer_base", "accum_emissivel")
-        :zb(true, false)
-        :fog(false)
-        :emissive(true)
 end

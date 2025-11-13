@@ -107,10 +107,12 @@ void main(p_bumped_new I, out OutStructure O)
 #ifdef USE_LEGACY_LIGHT
     M.Metalness = L_material.w;
 #else
-    M.Roughness = 1.0f - M.Roughness * 0.9f;
+	#ifndef USE_PBR
+		M.Roughness = 1.0f - M.Roughness * 0.9f;
+	#endif
 #endif
 
-#ifdef IGNORE_SNOW_MASK
+#ifdef IGNORE_SNOW_MASK_ON_TERRAIN
 	M.SnowMask = 0.0f;
 #else
     M.SnowMask = 1.0f;
