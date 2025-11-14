@@ -30,7 +30,7 @@
 #pragma once
 
 #define SND_CHANNEL_COUNT (2)
-#define SND_SAMPLERATE (44100)
+#define SND_SAMPLERATE 44100
 #define SND_BLOCKSIZE (1 << 10)
 #define SND_REBERB_BUFFER_SIZE (SND_SAMPLERATE*8)
 #define SND_REBERB_LINE_COUNT (8*2+2)
@@ -85,6 +85,7 @@ namespace XRay::Sound::Mixer
         DistanceRange,
         Pitch,
         Position,
+        Panning,
         Count
     };
 }

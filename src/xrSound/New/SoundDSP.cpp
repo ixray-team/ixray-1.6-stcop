@@ -123,6 +123,20 @@ DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_fa
 }
 
 void 
+DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames)
+{
+    float factors[SND_CHANNEL_COUNT] = { left, right };
+    for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
+        for (size_t k = 0; k < frames; k++) {
+            float factor = lerp(begin_factor, end_factor, (float)(k) / (float)(frames - 1)) * factors[ch];
+            float mix_sample = mix_buffer[ch][k];
+            float sample = data[ch][k];
+            mix_buffer[ch][k] += sample * factor;
+        }
+    }
+}
+
+void 
 DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT])
 {
     float lin_attack = attack_ms == 0.0f ? 0.0 : (f32)exp(-1.0 / ((float)SND_SAMPLERATE * attack_ms));
