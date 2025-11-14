@@ -36,6 +36,8 @@ float   psTimeFactor = 1.0f;
 CSoundRender_Core* SoundRender = nullptr;
 CSound_manager_interface* Sound = nullptr;
 
+thread_local CDB::COLLIDER geom_DB;
+
 void CSoundRender_Core::debug_draw()
 {
 
