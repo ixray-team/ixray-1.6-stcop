@@ -30,7 +30,6 @@ public:
 	xr_string_map<xr_string, u32>		SoundDevices;
 protected:
 	// Collider
-	CDB::COLLIDER						geom_DB;
 	CDB::MODEL*							geom_SOM;
 	CDB::MODEL*							geom_MODEL;
 	CDB::MODEL*							geom_ENV;
