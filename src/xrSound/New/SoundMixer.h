@@ -54,6 +54,7 @@ namespace XRay::Sound::Mixer
     XRSOUND_API void Stop(u32 slot, bool deferred);
     XRSOUND_API void UpdateParameter(u32 slot, ParameterId parameter, Fvector value);
     XRSOUND_API void SetVolume(u32 slot, double volume);
+    XRSOUND_API void SetPanning(u32 slot, double left, double right);
 
     XRSOUND_API bool SlotIsRelated(u32 slot);
     XRSOUND_API u32 GetGameType(u32 slot);
