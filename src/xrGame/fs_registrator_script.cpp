@@ -144,6 +144,9 @@ void FS_file_list_ex::Sort(u32 flags)
 FS_file_list_ex file_list_open_ex(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask)
 {return FS_file_list_ex(path,flags,mask);}
 
+FS_file_list_ex file_list_open_ex2(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask, bool, bool)
+{return FS_file_list_ex(path,flags,mask);}
+
 FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags)
 {	return FS_file_list(fs->file_list_open(initial,flags));}
 
@@ -252,7 +255,8 @@ void fs_registrator::script_register(lua_State *L)
 
 			.def("file_list_open",						&file_list_open_script)
 			.def("file_list_open",						&file_list_open_script_2)
-			.def("file_list_open_ex",					&file_list_open_ex),
+			.def("file_list_open_ex",					&file_list_open_ex)
+			.def("file_list_open_ex",					&file_list_open_ex2), // Ехидна эдишен
 
 		def("getFS",									getFS)
 	];
