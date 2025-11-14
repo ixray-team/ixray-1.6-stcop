@@ -995,6 +995,9 @@ Snd_MixerRenderCallback(float* buffer)
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
+		float left_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].x;
+		float right_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].y;
+
 		// Spatial processing
 		if (!(slot.flags & (u32)Mixer::Flags::Intro) && source.pub.channels_count == 1) {
 			PROF_EVENT("Slot Spatial");
@@ -1028,7 +1031,7 @@ Snd_MixerRenderCallback(float* buffer)
 				}
 
 				// TODO(vertver): better volume attenutation for reverb stuff
-				DSP_MixBuffer(reverb_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
+				DSP_MixBufferPanning(reverb_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
 			}
 		}
 
@@ -1040,7 +1043,7 @@ Snd_MixerRenderCallback(float* buffer)
 		}
 
 		// Bus mixing
-		DSP_MixBuffer(bus_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
+		DSP_MixBufferPanning(bus_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
 	}
 
 	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
