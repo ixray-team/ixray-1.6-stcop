@@ -54,7 +54,7 @@ bool r_line(CScriptIniFile *self_, LPCSTR S, int L,	luabind::internal_string &N,
 
 #pragma warning(push)
 #pragma warning(disable:4238)
-CScriptIniFile *create_ini_file	(LPCSTR ini_string)
+SCRIPTS_API CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 {
 	IReader temp(
 		(void*)ini_string,

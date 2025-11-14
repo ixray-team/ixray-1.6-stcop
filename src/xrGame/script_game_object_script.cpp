@@ -12,6 +12,7 @@
 #include "game_object_space.h"
 #include "sight_manager_space.h"
 #include "../xrScripts/exports/script_ini_file.h"
+#include "EnhancementEditionLuaLayer.h"
 
 using namespace luabind;
 
@@ -48,11 +49,11 @@ void CScriptGameObject::script_register(lua_State *L)
 			.def_readonly("m_vector",		&CSightParams::m_vector)
 			.def_readonly("m_sight_type",	&CSightParams::m_sight_type),
 		
-		script_register_game_object2(
+		script_register_game_object_ee(script_register_game_object2(
 			script_register_game_object1(
 				script_register_game_object_trader(std::move(instance))
 			)
-		),
+		)),
 
 		class_<enum_exporter<GameObject::ECallbackType> >("callback")
 			.enum_("callback_types")
