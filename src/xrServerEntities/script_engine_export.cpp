@@ -30,6 +30,7 @@
 #	include	"ActorCondition.h"
 #	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
+#	include "EnhancementEditionLuaLayer.h"
 #endif
 
 void export_classes	(lua_State *L)
@@ -271,6 +272,9 @@ void export_classes	(lua_State *L)
 	CWeaponAmmo::script_register(L);
 	CGameTaskManager::script_register(L);
 	CScriptXRParser::script_register(L);
+
+	// Ехидна Эдишен
+	ExportEELayer(L);
 	// CScriptStoryIDManager::script_register(L); -> Конфликт с оригинальные скриптами
 #endif
 }
