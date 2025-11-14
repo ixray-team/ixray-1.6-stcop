@@ -69,7 +69,8 @@ enum class sound_cmd_id : u16
 	pause_all,
 	resume_all,
 	update_parameter,
-	set_volume
+	set_volume,
+	set_panning
 };
 
 struct sound_command
@@ -436,10 +437,13 @@ Snd_LoadSource(sound_source& source, const char* name)
 
 	vorbis_info* ovi = ov_info(&source.file, -1);
 	R_ASSERT3(ovi, "Invalid source info:", source.pub.name.c_str());
-	R_ASSERT(ovi->rate == SND_SAMPLERATE);
+	R_ASSERT(ovi->rate == SND_SAMPLERATE, "Invalid sample rate. Please, convert to 44100 Hz using converters like FFmpeg or foobar2000", name);
 	source.pub.channels_count = ovi->channels;
 	source.pub.frames_total = ov_pcm_total(&source.file, -1);
 	source.pub.volume = 1.f;
+	source.pub.min_distance = 1.0f;
+	source.pub.max_distance = 300.0f;
+	source.pub.max_ai_distance = 300.0f;
 
 	vorbis_comment* ovm = ov_comment(&source.file, -1);
 	if (ovm->comments) {
@@ -991,6 +995,9 @@ Snd_MixerRenderCallback(float* buffer)
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
+		float left_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].x;
+		float right_panning = slot.parameters[(u32)Mixer::ParameterId::Panning].y;
+
 		// Spatial processing
 		if (!(slot.flags & (u32)Mixer::Flags::Intro) && source.pub.channels_count == 1) {
 			PROF_EVENT("Slot Spatial");
@@ -1024,7 +1031,7 @@ Snd_MixerRenderCallback(float* buffer)
 				}
 
 				// TODO(vertver): better volume attenutation for reverb stuff
-				DSP_MixBuffer(reverb_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
+				DSP_MixBufferPanning(reverb_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
 			}
 		}
 
@@ -1036,7 +1043,7 @@ Snd_MixerRenderCallback(float* buffer)
 		}
 
 		// Bus mixing
-		DSP_MixBuffer(bus_buffer, process_buffer, begin_factor, end_factor, SND_BLOCKSIZE);
+		DSP_MixBufferPanning(bus_buffer, process_buffer, begin_factor, end_factor, left_panning, right_panning, SND_BLOCKSIZE);
 	}
 
 	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
@@ -1435,6 +1442,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
 			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
 			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Pitch] = Fvector(1.0f, 1.0f, 1.0f);
+			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Panning] = Fvector(1.0f, 1.0f, 1.0f);
 			mixer.slots[cmd.slot - 1].position = 0;
 			mixer.slots[cmd.slot - 1].stopping_position = (u32)-1;
 			mixer.slots[cmd.slot - 1].sound_name = cmd.string_storage.c_str();
@@ -1523,6 +1531,10 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		} break;
 		case sound_cmd_id::set_volume: {
 			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::VolumePerChannel].y = *(double*)&cmd.param1;
+		} break;
+		case sound_cmd_id::set_panning: {
+			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].x = *(double*)&cmd.param1;
+			mixer.slots[cmd.slot - 1].parameters[(u32)ParameterId::Panning].y = *(double*)&cmd.param2;
 		} break;
 		}
 	}
@@ -1693,12 +1705,20 @@ Mixer::SetVolume(u32 slot, double volume)
 		return;
 	}
 
-	if (std::abs(volume) > 10)
-	{
-		volume = 1.0;
+	volume = std::clamp(volume, 0.0, 10.0);	
+	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
+}
+
+void
+Mixer::SetPanning(u32 slot, double left, double right)
+{
+	if (slot == 0) {
+		return;
 	}
 
-	auto out_val = mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
+	left = std::clamp(left, 0.0, 1.0);
+	right = std::clamp(right, 0.0, 1.0);
+	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_panning, .param1 = *(u64*)&left, .param2 = *(u64*)&right });
 }
 
 xr_vector<sound_slot_state>&
