@@ -7,12 +7,31 @@
 #include "Actor.h"
 #include "Inventory.h"
 #include "../xrEngine/xr_input.h"
+#include "../xrScripts/exports/script_ini_file.h"
+
+class CScriptIniFile;
+CScriptIniFile* CacheIni(const char* Name)
+{
+	SCRIPTS_API CScriptIniFile* create_ini_file(LPCSTR ini_string);
+	static xr_hash_map<xr_string, CScriptIniFile*> cached_ini_map;
+
+	auto Iter = cached_ini_map.find(Name);
+	if (Iter != std::end(cached_ini_map))
+	{
+		return Iter->second;
+	}
+
+	auto IniFile = cached_ini_map[Name];
+	IniFile = create_ini_file(Name);
+	return IniFile;
+}
 
 void ExportEELayer(lua_State* L)
 {
 	// Other trash module
 	luabind::module(L)
 	[
+		luabind::def("get_cached_ini",   CacheIni),
 		luabind::def("unlock_trophy",    +[]() {}),
 		luabind::def("get_platform_id",  +[]() { return 7; }),
 		luabind::def("detectKeyboard",   +[]() { return true; }),
