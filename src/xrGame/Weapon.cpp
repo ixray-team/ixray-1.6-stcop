@@ -64,6 +64,8 @@ CWeapon::CWeapon()
 	m_ammoType				= 0;
 	m_ChamberAmmoType		= 0;
 
+	m_current_pattern = nullptr;
+
 	eHandDependence			= hdNone;
 
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
@@ -302,6 +304,8 @@ void CWeapon::Load		(LPCSTR section)
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 
+
+
 	m_base_inertion = m_current_inertion;
 
 	m_zoom_inertion.PitchOffsetR = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_pitch_offset_r", 0.0f);
@@ -391,6 +395,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	zoom_cam_recoil.ReturnMode		= cam_recoil.ReturnMode;
 	zoom_cam_recoil.StopReturn		= cam_recoil.StopReturn;
+
+	zoom_cam_recoil.Pattern = cam_recoil.Pattern;
 
 	
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed" ) )
@@ -789,6 +795,9 @@ void CWeapon::Load		(LPCSTR section)
 			ConfigNode = bullet_bone_name;
 		}
 	}
+
+	// Загрузка паттернов отдачи
+	LoadRecoilPatterns(section);
 }
 
 void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
@@ -870,7 +879,106 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 	CShootingObject::LoadFireParams(section);
 };
 
+void CWeapon::LoadRecoilPatterns(LPCSTR section)
+{
+	LoadBulletPattern(section, "hipfire_pattern", m_hipfire_pattern);
+	m_hipfire_pattern.name = "hipfire";
 
+	cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor", 0.035f);
+	cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "pattern_stiffness", 800.0f);
+	cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "pattern_damping", 40.0f);
+	cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "pattern_impulse", 35.0f);
+	cam_recoil.Pattern.Loop = READ_IF_EXISTS(pSettings, r_bool, section, "pattern_loop", true);
+	cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "pattern_return_speed", 5.0f);
+	cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "pattern_return_enable", true);
+
+
+	cam_recoil.Pattern.RandomOffsetEnable =
+		READ_IF_EXISTS(pSettings, r_bool, section, "pattern_random_enable", false);
+
+	if (cam_recoil.Pattern.RandomOffsetEnable)
+	{
+		Fvector2 pattern_random_x =
+			READ_IF_EXISTS(pSettings, r_fvector2, section, "pattern_random_x", Fvector2().set(0, 0));
+		Fvector2 pattern_random_y =
+			READ_IF_EXISTS(pSettings, r_fvector2, section, "pattern_random_y", Fvector2().set(0, 0));
+
+
+		cam_recoil.Pattern.RandomOffsetX.x = pattern_random_x.x;
+		cam_recoil.Pattern.RandomOffsetX.y = pattern_random_x.y;
+
+		cam_recoil.Pattern.RandomOffsetY.x = pattern_random_y.x;
+		cam_recoil.Pattern.RandomOffsetY.y = pattern_random_y.y;
+	}
+
+
+	zoom_cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor", 0.015f);
+	zoom_cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_stiffness", 800.0f);
+	zoom_cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_damping", 40.0f);
+	zoom_cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_impulse", 35.0f);
+	zoom_cam_recoil.Pattern.Loop = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_loop", true);
+	zoom_cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_return_speed", 5.0f);
+	zoom_cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_return_enable", true);
+
+	zoom_cam_recoil.Pattern.RandomOffsetEnable =
+		READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_random_enable", false);
+
+	if (zoom_cam_recoil.Pattern.RandomOffsetEnable)
+	{
+		Fvector2 zoom_pattern_random_x =
+			READ_IF_EXISTS(pSettings, r_fvector2, section, "zoom_pattern_random_x", Fvector2().set(0, 0));
+		Fvector2 zoom_pattern_random_y =
+			READ_IF_EXISTS(pSettings, r_fvector2, section, "zoom_pattern_random_y", Fvector2().set(0, 0));
+
+
+		zoom_cam_recoil.Pattern.RandomOffsetX.x = zoom_pattern_random_x.x; 
+		zoom_cam_recoil.Pattern.RandomOffsetX.y = zoom_pattern_random_x.y; 
+
+		zoom_cam_recoil.Pattern.RandomOffsetY.x = zoom_pattern_random_y.x; 
+		zoom_cam_recoil.Pattern.RandomOffsetY.y = zoom_pattern_random_y.y; 
+	}
+
+//	Msg("[%s] Recoil patterns loaded: hipfire=%d (factor=%.2f), (factor=%.2f)",
+//		section,
+//		m_hipfire_pattern.bullet_patterns.size(), cam_recoil.Pattern.Factor, zoom_cam_recoil.Pattern.Factor);
+}
+
+void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR pattern_name, SRecoilPattern& pattern)
+{
+	pattern.bullet_patterns.clear();
+	pattern.current_bullet = 0;
+
+	string512 subsection_name;
+	xr_sprintf(subsection_name, "%s_%s", section, pattern_name);
+
+	if (!pSettings->section_exist(subsection_name)) {
+//		Msg("!! Recoil pattern subsection not found: %s", subsection_name);
+		return;
+	}
+
+	string64 LineName;
+
+	for (u32 i = 1; i < 255; i++)
+	{
+		xr_sprintf(LineName, "bullet_%d", i);
+
+		if (!pSettings->line_exist(subsection_name, LineName))
+			break;
+
+		Fvector2 _point= pSettings->r_fvector2(subsection_name, LineName);
+
+		SRecoilPoint point;
+		point.x = _point.x;
+		point.y = _point.y;
+
+		pattern.bullet_patterns.push_back(point);
+
+//		Msg("Recoil bullet %d: x=%.3f, y=%.3f", i, point.x, point.y);
+	}
+
+//	Msg("Loaded %d recoil bullets from subsection %s",
+//		pattern.bullet_patterns.size(), subsection_name);
+}
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
@@ -1780,7 +1888,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 							{
 								SwitchState(eIdle);
 							}
-
+							StopShooting();
 							OnZoomIn();
 						}
 					}
@@ -2630,6 +2738,128 @@ float CWeapon::CurrentZoomFactor()
 {
 	return IsScopeAttached() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
 };
+
+CWeapon::SRecoilPattern* CWeapon::GetPatternByName(const shared_str& name)
+{
+	if (name == "hipfire") return &m_hipfire_pattern;
+	return nullptr;
+}
+
+void CWeapon::StartRecoilPattern()
+{
+	if (!m_hipfire_pattern.bullet_patterns.empty()) {
+		m_current_pattern = &m_hipfire_pattern;
+	}
+	else {
+		m_current_pattern = nullptr;
+		return;
+	}
+
+	m_current_pattern->current_bullet = 0;
+}
+
+void CWeapon::StopPattern()
+{
+
+	if (m_current_pattern)
+	{
+		m_current_pattern->current_bullet = 0;
+		//Msg("Recoil pattern %s reset", m_current_pattern->name.c_str());
+	}
+}
+
+void CWeapon::ApplyPattern()
+{
+	if (!m_current_pattern) {
+		StartRecoilPattern();
+	}
+
+	if (!m_current_pattern)
+	{
+		return;
+	}
+
+	
+	if (m_current_pattern->current_bullet < m_current_pattern->bullet_patterns.size())
+	{
+		SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet];
+	//	Msg("Pattern bullet %d/%d: raw (x:%.3f, y:%.3f)",
+	//		m_current_pattern->current_bullet + 1,
+	//		m_current_pattern->bullet_patterns.size(),
+	//		point.x, point.y);
+	}
+
+	
+	m_current_pattern->current_bullet++;
+
+	if (m_current_pattern->current_bullet >= m_current_pattern->bullet_patterns.size())
+	{
+		bool should_loop = IsZoomed() ? zoom_cam_recoil.Pattern.Loop : cam_recoil.Pattern.Loop;
+
+		if (should_loop)
+		{
+			m_current_pattern->current_bullet = 0;
+	//		Msg("Recoil pattern %s looped (zoom=%d, loop_setting=%d)",
+	//			m_current_pattern->name.c_str(),
+	//			IsZoomed(),
+	//			should_loop);
+		}
+		else
+		{
+			m_current_pattern->current_bullet = m_current_pattern->bullet_patterns.size();
+	//		Msg("Recoil pattern %s finished (no loop)", m_current_pattern->name.c_str());
+		}
+	}
+}
+
+bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
+{
+	if (!m_current_pattern || m_current_pattern->bullet_patterns.empty())
+		return false;
+
+	u32 idx = 0;
+	if (m_current_pattern->current_bullet > 0)
+	{
+		idx = m_current_pattern->current_bullet - 1;
+	}
+	else
+	{
+		// Если current_bullet == 0, используем последний элемент (для цикличности)
+		idx = m_current_pattern->bullet_patterns.size() - 1;
+	}
+
+
+	if (idx >= m_current_pattern->bullet_patterns.size())
+	{
+		idx = m_current_pattern->bullet_patterns.size() - 1;
+	}
+
+	const SRecoilPoint& point = m_current_pattern->bullet_patterns[idx];
+
+	bool offset_enabled = IsZoomed() ? zoom_cam_recoil.Pattern.RandomOffsetEnable : cam_recoil.Pattern.RandomOffsetEnable;
+
+	if (offset_enabled)
+	{
+
+		float min_x = IsZoomed() ? zoom_cam_recoil.Pattern.RandomOffsetX.x : cam_recoil.Pattern.RandomOffsetX.x;
+		float max_x = IsZoomed() ? zoom_cam_recoil.Pattern.RandomOffsetX.y : cam_recoil.Pattern.RandomOffsetX.y;
+		float min_y = IsZoomed() ? zoom_cam_recoil.Pattern.RandomOffsetY.x : cam_recoil.Pattern.RandomOffsetY.x;
+		float max_y = IsZoomed() ? zoom_cam_recoil.Pattern.RandomOffsetY.y : cam_recoil.Pattern.RandomOffsetY.y;
+
+		out_x = point.x + Random.randF(min_x, max_x);
+		out_y = point.y + Random.randF(min_y, max_y);
+	}
+	else
+	{
+		out_x = point.x;
+		out_y = point.y;
+	}
+
+//	Msg("GetCurrentRecoilPattern: bullet %d/%d -> (x:%.3f, y:%.3f)",
+//		idx + 1, m_current_pattern->bullet_patterns.size(), out_x, out_y);
+
+	return true;
+}
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
 

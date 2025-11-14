@@ -127,6 +127,18 @@ bool CWeapon::install_upgrade_disp( LPCSTR section, bool test )
 	VERIFY( !fis_zero(zoom_cam_recoil.MaxAngleVert ) );
 	VERIFY( !fis_zero(zoom_cam_recoil.MaxAngleHorz ) );
 
+	result |= process_if_exists(section, "pattern_factor", &CInifile::r_float, cam_recoil.Pattern.Factor, test);
+	result |= process_if_exists(section, "pattern_stiffness", &CInifile::r_float, cam_recoil.Pattern.Stiffness, test);
+	result |= process_if_exists(section, "pattern_damping", &CInifile::r_float, cam_recoil.Pattern.Damping, test);
+	result |= process_if_exists(section, "pattern_impulse", &CInifile::r_float, cam_recoil.Pattern.Impulse, test);
+	result |= process_if_exists(section, "pattern_return_speed", &CInifile::r_float, cam_recoil.Pattern.ReturnSpeed, test);
+	result |= process_if_exists(section, "zoom_pattern_factor", &CInifile::r_float, zoom_cam_recoil.Pattern.Factor, test);
+	result |= process_if_exists(section, "zoom_pattern_stiffness", &CInifile::r_float, zoom_cam_recoil.Pattern.Stiffness, test);
+	result |= process_if_exists(section, "zoom_pattern_damping", &CInifile::r_float, zoom_cam_recoil.Pattern.Damping, test);
+	result |= process_if_exists(section, "zoom_pattern_impulse", &CInifile::r_float, zoom_cam_recoil.Pattern.Impulse, test);
+	result |= process_if_exists(section, "zoom_pattern_return_speed", &CInifile::r_float, zoom_cam_recoil.Pattern.ReturnSpeed, test);
+
+
 	result |= process_if_exists( section, "PDM_disp_base",          &CInifile::r_float, m_pdm.m_fPDM_disp_base,          test );
 	result |= process_if_exists( section, "PDM_disp_vel_factor",    &CInifile::r_float, m_pdm.m_fPDM_disp_vel_factor,    test );
 	result |= process_if_exists( section, "PDM_disp_accel_factor",  &CInifile::r_float, m_pdm.m_fPDM_disp_accel_factor,  test );
