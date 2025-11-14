@@ -49,3 +49,4 @@ void DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector&
 void DSP_ResampleBuffer(float** input, float** output, float history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY+1], u32 input_frames, u32 output_frames); // requires +1 sample of tail
 void DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float ratio, float** data, float drywet, u32 frames, float envelope[SND_CHANNEL_COUNT]);
 void DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_factor, u32 frames);
+void DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float end_factor, float left, float right, u32 frames);
