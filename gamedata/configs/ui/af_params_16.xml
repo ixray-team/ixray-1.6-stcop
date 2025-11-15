@@ -7,7 +7,7 @@
             <texture>ui_am_condition</texture>
             <text color="ui_3" font="letterica16" vert_align="c" x="18" y="0"/>
         </caption>
-        <value x="135" y="0" width="30" height="20" magnitude="100">
+        <value x="135" y="0" width="30" height="20" magnitude="100" unit_str="st_proc">
             <text font="letterica16" vert_align="c"/>
         </value>
     </condition>
