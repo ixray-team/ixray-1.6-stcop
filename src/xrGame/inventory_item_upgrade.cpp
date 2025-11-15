@@ -210,6 +210,10 @@ void CInventoryItem::pre_install_upgrade()
 		{
 			wm->UnloadMagazine();
 			wm->UnloadChamber();
+
+			wm->m_bHaveShell = false;
+			wm->m_bNeedPumpState = false;
+
 			if (CWeaponMagazinedWGrenade* wg = cast_weapon_magazined_w_grenade())
 			{
 				if (wg->IsGrenadeLauncherAttached())

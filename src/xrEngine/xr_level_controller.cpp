@@ -121,7 +121,10 @@ ENGINE_API _action  actions[]		= {
 	{ "quick_kick",			kQUICK_KICK				,_both },
 	{ "wpn_magcheck",		kMAG_CHECK				,_both },
 	{ "wpn_firecheck",		kFIREMODE_CHECK			,_both },
-	{ "show_quick_slots",   kSHOW_QUICK_SLOTS      , _both },
+	{ "show_quick_slots",   kSHOW_QUICK_SLOTS		,_both },
+	{ "wpn_chamber_load",   kWPN_CHAMBER_LOAD		,_both },
+	{ "wpn_chamber_unload", kWPN_CHAMBER_UNLOAD     ,_both },
+	{ "wpn_chamber_check",  kWPN_CHAMBER_CHECK      ,_both },
 																
 	{ nullptr, 				kLASTACTION				,_both}		
 };															
