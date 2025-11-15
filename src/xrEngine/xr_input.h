@@ -34,8 +34,10 @@ struct CInputDevice
 struct CInputDeviceVendorInfo
 {
 	char name[32];
-	char version[16];
-	char description[128];
+	// use this for interpret data that you accessed when you filled vendor info
+	unsigned char data[16];
+	unsigned char data2[32];
+	unsigned char data3[64];
 };
 
 #define DEF_XR_INPUT_MAX_INPUT_CONNECTED_MOUSE_COUNT 1
