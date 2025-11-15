@@ -127,8 +127,9 @@ public:
 	void					signal_HideComplete	();
 	virtual bool			Action(u16 cmd, u32 flags);
 
-	enum EWeaponStates {
-		eFire		= eLastBaseState+1,
+	enum EWeaponStates
+	{
+		eFire = eLastBaseState + 1,
 		eFire2,
 		eReload,
 		eMisfire,
@@ -140,12 +141,18 @@ public:
 		eKick,
 		eMagCheck,
 		eFiremodeCheck,
+		eLoadChamber,
+		eUnloadChamber,
+		eChamberCheck,
 	};
-	enum EWeaponSubStates{
-		eSubstateReloadBegin		=0,
+
+	enum EWeaponSubStates
+	{
+		eSubstateReloadBegin = 0,
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
 	};
+
 	enum { undefined_ammo_type = u8(-1) };
 
 	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}

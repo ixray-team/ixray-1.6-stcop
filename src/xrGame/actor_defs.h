@@ -41,6 +41,9 @@ enum EActorKeyflags
 	kfLASER = (1ul << 12ul),
 	kfMAGCHECK = (1ul << 13ul),
 	kfFIREMODECHECK = (1ul << 14ul),
+	kfCHAMBERLOAD = (1ul << 15ul),
+	kfCHAMBERUNLOAD = (1ul << 16ul),
+	kfCHAMBERCHECK = (1ul << 17ul),
 };
 
 enum EMovementStates
