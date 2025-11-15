@@ -22,6 +22,10 @@ public:
 		eHandLam,
 		eHandAimStart,
 		eHandAimEnd,
+		eHandShoot,
+		eHandDry,
+		eHandJammed,
+		eHandLightMisfire,
 	};
 protected:
 	bool m_bFastAnimMode = false;
@@ -78,6 +82,9 @@ public:
 	bool CanThrowHand() const;
 	bool CanKick() const;
 	bool CanLam() const;
+	bool CanShooting(bool dry = false) const;
+	bool CanJammed() const;
+	bool CanLightMisfire() const;
 
 	virtual CCustomDevice* cast_custom_device() { return this; }
 

@@ -345,6 +345,54 @@ void CCustomDevice::OnStateSwitch(u32 S)
 		PlayHUDMotion("anm_idle_aim_end", EHudMixType::eMixAll, eHandAimEnd);
 		break;
 	}
+	case eHandShoot:
+	{
+		if (m_bIsZoomed)
+		{
+			PlayHUDMotion("anm_hand_shoot_aim", EHudMixType::eMixAll, eHandShoot);
+		}
+		else
+		{
+			PlayHUDMotion("anm_hand_shoot", EHudMixType::eMixAll, eHandShoot);
+		}
+		break;
+	}
+	case eHandDry:
+	{
+		if (m_bIsZoomed)
+		{
+			PlayHUDMotion("anm_hand_dry_aim", EHudMixType::eMixAll, eHandDry);
+		}
+		else
+		{
+			PlayHUDMotion("anm_hand_dry", EHudMixType::eMixAll, eHandDry);
+		}
+		break;
+	}
+	case eHandJammed:
+	{
+		if (m_bIsZoomed)
+		{
+			PlayHUDMotion("anm_hand_jammed_aim", EHudMixType::eMixAll, eHandJammed);
+		}
+		else
+		{
+			PlayHUDMotion("anm_hand_jammed", EHudMixType::eMixAll, eHandJammed);
+		}
+		break;
+	}
+	case eHandLightMisfire:
+	{
+		if (m_bIsZoomed)
+		{
+			PlayHUDMotion("anm_hand_lightmisfire_aim", EHudMixType::eMixAll, eHandLightMisfire);
+		}
+		else
+		{
+			PlayHUDMotion("anm_hand_lightmisfire", EHudMixType::eMixAll, eHandLightMisfire);
+		}
+		break;
+	}
 	}
 }
 
@@ -432,6 +480,10 @@ void CCustomDevice::OnAnimationEnd(u32 state)
 	case eHandLam:
 	case eHandAimStart:
 	case eHandAimEnd:
+	case eHandDry:
+	case eHandShoot:
+	case eHandJammed:
+	case eHandLightMisfire:
 	{
 		SwitchState(eIdle);
 	} break;
@@ -482,6 +534,22 @@ bool CCustomDevice::CanLam() const
 {
 	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_lam) &&
 		(GetState() == eIdle || GetState() == eHandLam || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
+}
+
+bool CCustomDevice::CanShooting(bool dry) const
+{
+	return (dry && m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_dry) || m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_shoot)) && GetState() != eHidden && GetState() != eHiding
+			&& GetState() != eHandAimStart && GetState() != eHandAimEnd;
+}
+
+bool CCustomDevice::CanJammed() const
+{
+	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_jammed) && GetState() != eHidden && GetState() != eHiding && GetState() != eHandAimStart && GetState() != eHandAimEnd;
+}
+
+bool CCustomDevice::CanLightMisfire() const
+{
+	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_lightmis) && GetState() != eHidden && GetState() != eHiding && GetState() != eHandAimStart && GetState() != eHandAimEnd;
 }
 
 void CCustomDevice::shedule_Update(u32 dt)

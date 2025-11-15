@@ -1573,6 +1573,16 @@ void CWeaponMagazined::switch2_Empty()
 		SetPending(TRUE);
 		m_bBlockEmptyClick = true;
 		PlayHUDMotion(SetCurrentStateAnimation(motion_name), EHudMixType::eMixAll, eEmptyClick);
+		if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+		{
+			if (CCustomDevice* pDevice = pActor->GetDevice())
+			{
+				if (IsMisfire() && pDevice->CanJammed() || pDevice->CanShooting(true))
+				{
+					pDevice->SwitchState(IsMisfire() ? CCustomDevice::EDeviceStates::eHandJammed : CCustomDevice::EDeviceStates::eHandDry);
+				}
+			}
+		}
 		OnEmptyClick();
 	};
 
@@ -1790,6 +1800,17 @@ void CWeaponMagazined::switch2_LightMis()
 	SetPending(TRUE);
 	PlaySound("sndLightMisfire", get_LastFP());
 	PlayHUDMotion(SetCurrentStateAnimation("anm_shoot_lightmisfire"), EHudMixType::eMixAll, GetState());
+
+	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (CCustomDevice* pDevice = pActor->GetDevice())
+		{
+			if (pDevice->CanLightMisfire())
+			{
+				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandLightMisfire);
+			}
+		}
+	}
 }
 
 void CWeaponMagazined::switch2_Kick()
@@ -2546,6 +2567,17 @@ void CWeaponMagazined::PlayAnimShoot()
 	}
 
 	PlayHUDMotion(SetCurrentShootAnimation(), EHudMixType::eMixHands, GetState());
+
+	if (CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
+	{
+		if (CCustomDevice* pDevice = pActor->GetDevice())
+		{
+			if (pDevice->CanShooting())
+			{
+				pDevice->SwitchState(CCustomDevice::EDeviceStates::eHandShoot);
+			}
+		}
+	}
 }
 
 void CWeaponMagazined::OnZoomIn			()
