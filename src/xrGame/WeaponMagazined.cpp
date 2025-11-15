@@ -248,6 +248,34 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_breechblock", "sndPump", true, m_eSoundEmptyClick);
 	}
 
+
+	if (SoundExist(section, "snd_chamber_load"))
+	{
+		m_sounds.LoadSound(section, "snd_chamber_load", "sndChamberLoad", true, m_eSoundReload);
+	}
+
+	if (SoundExist(section, "snd_chamber_unload"))
+	{
+		m_sounds.LoadSound(section, "snd_chamber_unload", "sndChamberUnload", true, m_eSoundReload);
+	}
+
+	if (SoundExist(section, "snd_chamber_check"))
+	{
+		m_sounds.LoadSound(section, "snd_chamber_check", "sndChamberCheck", true, m_eSoundReload);
+	}
+
+	if (SoundExist(section, "snd_chamber_unload_empty"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_chamber_unload_empty, TRUE);
+		m_sounds.LoadSound(section, "snd_chamber_unload_empty", "sndChamberUnloadEmpty", true, m_eSoundReload);
+	}
+
+	if (SoundExist(section, "snd_chamber_check_empty"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_chamber_check_empty, TRUE);
+		m_sounds.LoadSound(section, "snd_chamber_check_empty", "sndChamberCheckEmpty", true, m_eSoundReload);
+	}
+
 	//Only for improve misfire external!
 	if (SoundExist(section, "snd_jam"))
 	{
@@ -935,6 +963,21 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_FiremodeCheck();
 		break;
 	}
+	case eLoadChamber:
+	{
+		switch2_ChamberLoad();
+		break;
+	}
+	case eUnloadChamber:
+	{
+		switch2_ChamberUnload();
+		break;
+	}
+	case eChamberCheck:
+	{
+		switch2_ChamberCheck();
+		break;
+	}
 	}
 
 	if (S == eIdle)
@@ -967,6 +1010,9 @@ void CWeaponMagazined::UpdateCL			()
 		case eKick:
 		case eMagCheck:
 		case eFiremodeCheck:
+		case eLoadChamber:
+		case eUnloadChamber:
+		case eChamberCheck:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
@@ -1477,6 +1523,20 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 			}
 			break;
 		}
+		case eLoadChamber:
+		{
+			GiveAmmoFromMagToChamber();
+			SwitchState(eIdle);
+			break;
+		}
+		case eUnloadChamber:
+		{
+			UnloadChamber();
+			GiveAmmoFromMagToChamber();
+			SwitchState(eIdle);
+			break;
+		}
+		case eChamberCheck:
 		case eShowing:
 		case eSwitchMode:
 		case eDevice:
@@ -1838,6 +1898,99 @@ void CWeaponMagazined::switch2_FiremodeCheck()
 	PlayHUDMotion(SetCurrentStateAnimation("anm_firemode_inspect"), EHudMixType::eMixAll, eFiremodeCheck);
 }
 
+void CWeaponMagazined::switch2_ChamberLoad()
+{
+	SetPending(TRUE);
+	PlaySound("sndChamberLoad", get_LastFP());
+
+	if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_load_w_gl"))
+	{
+		PlayHUDMotion("anm_chamber_load_w_gl", EHudMixType::eMixAll, eLoadChamber);
+	}
+	else
+	{
+		PlayHUDMotion("anm_chamber_load", EHudMixType::eMixAll, eLoadChamber);
+	}
+}
+
+void CWeaponMagazined::switch2_ChamberUnload()
+{
+	SetPending(TRUE);
+
+	bool is_empty = iAmmoElapsed + iAmmoChamberElapsed == 0;
+
+	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_chamber_unload_empty) && is_empty)
+	{
+		PlaySound("sndChamberUnloadEmpty", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndChamberUnload", get_LastFP());
+	}
+
+	if (is_empty && HudAnimationExist("anm_chamber_unload_empty"))
+	{
+		if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_unload_empty_w_gl"))
+		{
+			PlayHUDMotion("anm_chamber_unload_empty_w_gl", EHudMixType::eMixAll, eUnloadChamber);
+		}
+		else
+		{
+			PlayHUDMotion("anm_chamber_unload_empty", EHudMixType::eMixAll, eUnloadChamber);
+		}
+	}
+	else
+	{
+		if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_unload_w_gl"))
+		{
+			PlayHUDMotion("anm_chamber_unload_w_gl", EHudMixType::eMixAll, eUnloadChamber);
+		}
+		else
+		{
+			PlayHUDMotion("anm_chamber_unload", EHudMixType::eMixAll, eUnloadChamber);
+		}
+	}
+}
+
+void CWeaponMagazined::switch2_ChamberCheck()
+{
+	SetPending(TRUE);
+
+	bool is_empty = iAmmoElapsed + iAmmoChamberElapsed == 0;
+
+	if (m_eSoundsFlags2.test(ESoundsFlags2::sf_chamber_check_empty) && is_empty)
+	{
+		PlaySound("sndChamberCheckEmpty", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndChamberCheck", get_LastFP());
+	}
+
+	if (is_empty && HudAnimationExist("anm_chamber_check_empty"))
+	{
+		if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_check_empty_w_gl"))
+		{
+			PlayHUDMotion("anm_chamber_check_empty_w_gl", EHudMixType::eMixAll, eChamberCheck);
+		}
+		else
+		{
+			PlayHUDMotion("anm_chamber_check_empty", EHudMixType::eMixAll, eChamberCheck);
+		}
+	}
+	else
+	{
+		if (IsGrenadeLauncherAttached() && HudAnimationExist("anm_chamber_check_empty_w_gl"))
+		{
+			PlayHUDMotion("anm_chamber_check_w_gl", EHudMixType::eMixAll, eChamberCheck);
+		}
+		else
+		{
+			PlayHUDMotion("anm_chamber_check", EHudMixType::eMixAll, eChamberCheck);
+		}
+	}
+}
+
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 
 {
 	if (inherited::Action(cmd, flags))
@@ -1911,6 +2064,39 @@ bool CWeaponMagazined::Action(u16 cmd, u32 flags)
 		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_firemode_check) && SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfFIREMODECHECK) && !IsGrenadeMode() && !IsZoomed() && GetState() == eIdle)
 		{
 			SwitchState(eFiremodeCheck);
+			return true;
+		}
+		break;
+	}
+	case kWPN_CHAMBER_LOAD:
+	{
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_load) &&
+			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERLOAD) && !IsGrenadeMode() &&
+			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber && iAmmoChamberElapsed + iAmmoElapsed == 0 && !m_bNeedPumpState)
+		{
+			SwitchState(eLoadChamber);
+			return true;
+		}
+		break;
+	}
+	case kWPN_CHAMBER_UNLOAD:
+	{
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_unload) &&
+			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERUNLOAD) && !IsGrenadeMode() &&
+			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber && !m_bNeedPumpState)
+		{
+			SwitchState(eUnloadChamber);
+			return true;
+		}
+		break;
+	}
+	case kWPN_CHAMBER_CHECK:
+	{
+		if (flags & CMD_START && m_eAnimationsFlags.test(EAnimationsFlags::af_chamber_check) &&
+			SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfCHAMBERCHECK) && !IsGrenadeMode() &&
+			!IsZoomed() && GetState() == eIdle && !IsMisfire() && m_bAmmoInChamber)
+		{
+			SwitchState(eChamberCheck);
 			return true;
 		}
 		break;
