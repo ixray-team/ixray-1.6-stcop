@@ -248,6 +248,41 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_breechblock", "sndPump", true, m_eSoundEmptyClick);
 	}
 
+	if (SoundExist(section, "snd_breechblock_aim"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_aim", "sndPumpAim", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_breechblock_aim"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_aim", "sndPumpAim", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_breechblock_last"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_last, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_last", "sndPumpLast", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_breechblock_aim_last"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim_last, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_aim_last", "sndPumpAimLast", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_breechblock_empty"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_empty, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_empty", "sndPumpEmpty", true, m_eSoundEmptyClick);
+	}
+
+	if (SoundExist(section, "snd_breechblock_aim_empty"))
+	{
+		m_eSoundsFlags.set(ESoundsFlags2::sf_pump_aim_empty, TRUE);
+		m_sounds.LoadSound(section, "snd_breechblock_aim_empty", "sndPumpAimEmpty", true, m_eSoundEmptyClick);
+	}
 
 	if (SoundExist(section, "snd_chamber_load"))
 	{
@@ -450,7 +485,17 @@ void CWeaponMagazined::FireStart()
 
 	if (!IsMisfire())
 	{
-		if (iAmmoElapsed + iAmmoChamberElapsed > 0)
+		if (!IsActor)
+		{
+			m_bNeedPumpState = false;
+			m_bHaveShell = false;
+		}
+
+		if (m_bIsPumpEnabled && m_bNeedPumpState && CurrentState == eIdle)
+		{
+			SwitchState(ePump);
+		}
+		else if (iAmmoElapsed + iAmmoChamberElapsed > 0)
 		{
 			if (!IsWorking() || AllowFireWhileWorking())
 			{
@@ -823,7 +868,6 @@ bool CWeaponMagazined::HaveCartridgeInInventory(u8 cnt)
 	return ac >= cnt;
 }
 
-
 u8 CWeaponMagazined::AddCartridge(u8 cnt)
 {
 	if (IsMisfire())
@@ -871,13 +915,15 @@ u8 CWeaponMagazined::AddCartridge(u8 cnt)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//�������� ������� ��������, ���� ��� ������
-	if (m_pCurrentAmmo && !m_pCurrentAmmo->m_boxCurr && OnServer())
+	if (m_pCurrentAmmo != nullptr && !m_pCurrentAmmo->m_boxCurr && OnServer())
 	{
 		m_pCurrentAmmo->SetDropManual(TRUE);
 	}
 
+	if (!m_bIsPumpEnabled)
+	{
 	GiveAmmoFromMagToChamber();
+	}
 
 	return cnt;
 }
@@ -984,6 +1030,11 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_ChamberCheck();
 		break;
 	}
+	case ePump:
+	{
+		switch2_Pump();
+		break;
+	}
 	}
 
 	if (S == eIdle)
@@ -1019,16 +1070,26 @@ void CWeaponMagazined::UpdateCL			()
 		case eLoadChamber:
 		case eUnloadChamber:
 		case eChamberCheck:
+		case ePump:
 			{
 				fShotTimeCounter	-=	dt;
 				clamp				(fShotTimeCounter, 0.0f, flt_max);
 			}break;
 		case eFire:			
 			{
+				if (m_bIsPumpEnabled && m_bNeedPumpState && ParentIsActor())
+				{
+					break;
+				}
+
 				if (m_bAmmoInChamber && !IsGrenadeMode())
+				{
 					state_FireChamber(dt);
+				}
 				else
+				{
 					state_Fire		(dt);
+				}
 			}break;
 		case eHidden:		break;
 		}
@@ -1396,7 +1457,7 @@ void CWeaponMagazined::SelectShotSound()
 		}
 	}
 
-	if (m_eSoundsFlags.test(ESoundsFlags::sf_breechblock))
+	if (!m_bIsPumpEnabled && m_eSoundsFlags.test(ESoundsFlags::sf_breechblock))
 	{
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_jam) && IsMisfire())
 		{
@@ -1541,6 +1602,14 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eUnloadChamber:
 		{
 			UnloadChamber();
+			GiveAmmoFromMagToChamber();
+			SwitchState(eIdle);
+			break;
+		}
+		case ePump:
+		{
+			m_bNeedPumpState = false;
+			m_bHaveShell = false;
 			GiveAmmoFromMagToChamber();
 			SwitchState(eIdle);
 			break;
@@ -1998,6 +2067,68 @@ void CWeaponMagazined::switch2_ChamberCheck()
 			PlayHUDMotion("anm_chamber_check", EHudMixType::eMixAll, eChamberCheck);
 		}
 	}
+}
+
+shared_str CWeaponMagazined::SetCurrentPumpAnimation()
+{
+	shared_str anm = "anm_pump";
+
+	if (m_bHaveShell && iAmmoChamberElapsed + iAmmoElapsed == 0)
+	{
+		AddSuffixName(anm, "_last");
+	}
+	else if (!m_bHaveShell && iAmmoChamberElapsed == 0 && iAmmoElapsed != 0)
+	{
+		AddSuffixName(anm, "_empty");
+	}
+
+	if (IsZoomed())
+	{
+		AddSuffixName(anm, "_aim");
+	}
+
+	return anm;
+}
+
+void CWeaponMagazined::switch2_Pump()
+{
+	SetPending(TRUE);
+
+	bool is_shell = m_bHaveShell && iAmmoChamberElapsed + iAmmoElapsed == 0;
+	bool is_chamber_empty = !m_bHaveShell && iAmmoChamberElapsed == 0 && iAmmoElapsed != 0;
+
+	if (IsZoomed() && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_aim))
+	{
+		if (is_shell && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_aim_last))
+		{
+			PlaySound("sndPumpAimLast", get_LastFP());
+		}
+		else if (is_chamber_empty && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_aim_empty))
+		{
+			PlaySound("sndPumpAimEmpty", get_LastFP());
+		}
+		else
+		{
+			PlaySound("sndPumpAim", get_LastFP());
+		}
+	}
+	else
+	{
+		if (is_shell && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_last))
+		{
+			PlaySound("sndPumpLast", get_LastFP());
+		}
+		else if (is_chamber_empty && m_eSoundsFlags2.test(ESoundsFlags2::sf_pump_empty))
+		{
+			PlaySound("sndPumpEmpty", get_LastFP());
+		}
+		else
+		{
+			PlaySound("sndPump", get_LastFP());
+		}
+	}
+
+	PlayHUDMotion(SetCurrentPumpAnimation(), EHudMixType::eMixAll, ePump);
 }
 
 bool CWeaponMagazined::Action(u16 cmd, u32 flags) 

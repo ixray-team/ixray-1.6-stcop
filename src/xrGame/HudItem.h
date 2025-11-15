@@ -295,7 +295,7 @@ public:
 		sf_chamber_check_empty = (1 << 16),
 		sf_pump_aim = (1 << 17),
 		sf_pump_last = (1 << 18),
-		sf_pump_aim_last = (1 << 10),
+		sf_pump_aim_last = (1 << 19),
 		sf_pump_empty = (1 << 20),
 		sf_pump_aim_empty = (1 << 21),
 		sf_bore_empty = (1 << 22),

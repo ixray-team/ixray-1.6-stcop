@@ -109,6 +109,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 		}break;
 		case eSubstateReloadEnd:
 		{
+			m_bNeedPumpState = true;
 			bStopReloadSignal = false;
 			SwitchState(eIdle);
 		}break;
