@@ -127,8 +127,9 @@ public:
 	void					signal_HideComplete	();
 	virtual bool			Action(u16 cmd, u32 flags);
 
-	enum EWeaponStates {
-		eFire		= eLastBaseState+1,
+	enum EWeaponStates
+	{
+		eFire = eLastBaseState + 1,
 		eFire2,
 		eReload,
 		eMisfire,
@@ -140,12 +141,19 @@ public:
 		eKick,
 		eMagCheck,
 		eFiremodeCheck,
+		eLoadChamber,
+		eUnloadChamber,
+		eChamberCheck,
+		ePump,
 	};
-	enum EWeaponSubStates{
-		eSubstateReloadBegin		=0,
+
+	enum EWeaponSubStates
+	{
+		eSubstateReloadBegin = 0,
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
 	};
+
 	enum { undefined_ammo_type = u8(-1) };
 
 	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}
@@ -250,7 +258,7 @@ protected:
 	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
 	void UpdateMagAmmoBones(xr_hash_map<u8, RStringVec>& lVector, u8 type);
 	void UpdateLiteAmmoBones(u32 idx);
-	void UpdateShellBones(u32 idx, u8 type);
+	void UpdateShellBones(u8 type);
 	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
@@ -402,6 +410,11 @@ protected:
 	bool m_bActorCanShoot = true;
 	bool m_bIsAimAnimationPlaying = false;
 	bool m_bBlockFiremodeinGLM = false;
+	bool m_bNeedPumpReloadEnd = false;
+
+	bool m_bHaveShell = false;
+	bool m_bNeedPumpState = false;
+	bool m_bIsPumpEnabled = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
@@ -717,6 +730,7 @@ public:
 			float			GetFirstBulletDisp	()	const	{ return m_first_bullet_controller.get_fire_dispertion(); };
 
 	virtual void			UnloadChamber(bool spawn_ammo = true);
+	virtual void			LoadChamber();
 
 	virtual void OnChangeVisual() final override;
 
