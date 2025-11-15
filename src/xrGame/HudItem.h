@@ -221,7 +221,9 @@ public:
 		af_kick = (1 << 17),
 		af_mag_check = (1 << 18),
 		af_firemode_check = (1 << 19),
-
+		af_chamber_load = (1 << 20),
+		af_chamber_unload = (1 << 21),
+		af_chamber_check = (1 << 22),
 		af_det_hand_shoot = (1 << 23),
 		af_det_hand_dry = (1 << 24),
 		af_det_hand_jammed = (1 << 25),
@@ -290,6 +292,8 @@ public:
 		sf_holster_jam_w_gl = (1 << 13),
 		sf_draw_jam_g = (1 << 14),
 		sf_holster_jam_g = (1 << 15),
+		sf_chamber_unload_empty = (1 << 16),
+		sf_chamber_check_empty = (1 << 17),
 	};
 
 	Flags32 m_eDevicesFlags;
