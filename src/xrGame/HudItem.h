@@ -221,7 +221,9 @@ public:
 		af_kick = (1 << 17),
 		af_mag_check = (1 << 18),
 		af_firemode_check = (1 << 19),
-
+		af_chamber_load = (1 << 20),
+		af_chamber_unload = (1 << 21),
+		af_chamber_check = (1 << 22),
 		af_det_hand_shoot = (1 << 23),
 		af_det_hand_dry = (1 << 24),
 		af_det_hand_jammed = (1 << 25),
