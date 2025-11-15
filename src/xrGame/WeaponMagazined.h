@@ -53,6 +53,9 @@ protected:
 	virtual void	switch2_Kick	();
 	virtual void	switch2_MagCheck();
 	virtual void	switch2_FiremodeCheck();
+	virtual void	switch2_ChamberLoad();
+	virtual void	switch2_ChamberUnload();
+	virtual void	switch2_ChamberCheck();
 	
 	virtual void	OnShot			();
 			void	OnShotJammed	();
