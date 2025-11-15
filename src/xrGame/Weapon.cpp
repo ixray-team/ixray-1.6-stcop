@@ -684,6 +684,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
 	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
 
+	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
+
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
 
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isImproveMis);
@@ -1200,6 +1202,10 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_LastShotAmmoType,			output_packet);
 	save_data(m_lens_zoom_params.target_position,	output_packet);
 	save_data(m_lens_night_brightness.cur_step,		output_packet);
+
+	//Раскоментить, когда релизнимся
+	//save_data(m_bHaveShell, output_packet);
+	//save_data(m_bNeedPumpState, output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -1217,6 +1223,10 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_LastShotAmmoType,			input_packet);
 	load_data(m_lens_zoom_params.target_position,	input_packet);
 	load_data(m_lens_night_brightness.lens_night_brightness_saved_step,	input_packet);
+
+	//Раскоментить, когда релизнимся
+	//load_data(m_bHaveShell, input_packet);
+	//load_data(m_bNeedPumpState, input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 	{
