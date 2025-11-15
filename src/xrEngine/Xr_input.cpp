@@ -625,7 +625,42 @@ bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& 
 	}
 	case eInputDeviceType::gamepad:
 	{
+		SDL_Joystick* joystick = SDL_OpenJoystick(reinterpret_cast<SDL_JoystickID>(device.p_handle));
 
+		if (joystick) {
+			const char* name = SDL_GetJoystickName(joystick);
+			u16 vendor = SDL_GetJoystickVendor(joystick);
+			u16 product = SDL_GetJoystickProduct(joystick);
+			u16 version = SDL_GetJoystickFirmwareVersion(joystick);
+			const char* serial = SDL_GetJoystickSerial(joystick);
+
+			
+			if (name)
+			{
+				std::memcpy(info.name, name, sizeof(info.name));
+				info.name[(sizeof(info.name) / sizeof(info.name[0])) - 1] = 0;
+			}
+
+			if (serial)
+			{
+				std::memcpy(info.data2, serial, sizeof(info.data2));
+				info.name[(sizeof(info.data2) / sizeof(info.data2[0])) - 1] = 0;
+			}
+
+			u16* pWrite = (u16*)&info.data[0];
+
+			*pWrite = vendor;
+
+			pWrite = (u16*)&info.data[2];
+
+			*pWrite = product;
+
+			pWrite = (u16*)&info.data[4];
+
+			*pWrite = version;
+
+			SDL_CloseJoystick(joystick);
+		}
 
 		break;
 	}
