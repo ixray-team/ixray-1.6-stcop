@@ -770,6 +770,24 @@ void CActor::ProcessKeys(CHudItem* itm)
 		wpn->Action(kFIREMODE_CHECK, CMD_START);
 		SetActorKeyRepeatFlag(kfFIREMODECHECK, false);
 	}
+
+	if ((m_iKeyFlags & kfCHAMBERLOAD) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_LOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERLOAD, false);
+	}
+
+	if ((m_iKeyFlags & kfCHAMBERUNLOAD) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_UNLOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERUNLOAD, false);
+	}
+
+	if ((m_iKeyFlags & kfCHAMBERCHECK) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_CHECK, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERCHECK, false);
+	}
 }
 
 bool CActor::use_Holder(CHolderCustom* holder)
