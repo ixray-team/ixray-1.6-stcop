@@ -141,6 +141,7 @@ public:
 		eLoadChamber,
 		eUnloadChamber,
 		eChamberCheck,
+		ePump,
 	};
 
 	enum EWeaponSubStates
@@ -406,6 +407,10 @@ protected:
 	bool m_bActorCanShoot = true;
 	bool m_bIsAimAnimationPlaying = false;
 	bool m_bBlockFiremodeinGLM = false;
+
+	bool m_bHaveShell = false;
+	bool m_bNeedPumpState = false;
+	bool m_bIsPumpEnabled = false;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
