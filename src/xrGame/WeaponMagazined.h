@@ -53,6 +53,10 @@ protected:
 	virtual void	switch2_Kick	();
 	virtual void	switch2_MagCheck();
 	virtual void	switch2_FiremodeCheck();
+	virtual void	switch2_ChamberLoad();
+	virtual void	switch2_ChamberUnload();
+	virtual void	switch2_ChamberCheck();
+	virtual void	switch2_Pump();
 	
 	virtual void	OnShot			();
 			void	OnShotJammed	();
@@ -66,6 +70,7 @@ protected:
 	virtual void	UpdateSounds	();
 
 	bool			TryReload		();
+	bool			TryReloadChamber		();
 
 protected:
 	virtual void	ReloadMagazine();
@@ -195,6 +200,7 @@ protected:
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentAimAnimation();
+	shared_str SetCurrentPumpAnimation();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();

@@ -708,17 +708,11 @@ void CActor::ProcessKeys(CHudItem* itm)
 		}
 	}
 
-	/*if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (GetMovementState(eReal) & mcSprint) == 0 && (m_iKeyFlags & kfFIRE) != 0)
+	if ((m_iKeyFlags & kfFIRE) != 0 && itm->CanStartAction(this))
 	{
 		wpn->Action(kWPN_FIRE, CMD_START);
-
-		if (!IsActionKeyPressed(kWPN_FIRE))
-		{
-			wpn->Action(kWPN_FIRE, CMD_STOP);
-		}
-
 		SetActorKeyRepeatFlag(kfFIRE, false);
-	}*/
+	}
 
 	if ((m_iKeyFlags & kfGLAUNCHSWITCH) != 0 && itm->CanStartAction(this))
 	{
@@ -772,6 +766,24 @@ void CActor::ProcessKeys(CHudItem* itm)
 	{
 		wpn->Action(kFIREMODE_CHECK, CMD_START);
 		SetActorKeyRepeatFlag(kfFIREMODECHECK, false);
+	}
+
+	if ((m_iKeyFlags & kfCHAMBERLOAD) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_LOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERLOAD, false);
+	}
+
+	if ((m_iKeyFlags & kfCHAMBERUNLOAD) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_UNLOAD, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERUNLOAD, false);
+	}
+
+	if ((m_iKeyFlags & kfCHAMBERCHECK) != 0 && itm->CanStartAction(this))
+	{
+		wpn->Action(kWPN_CHAMBER_CHECK, CMD_START);
+		SetActorKeyRepeatFlag(kfCHAMBERCHECK, false);
 	}
 }
 

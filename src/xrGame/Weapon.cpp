@@ -684,6 +684,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_bUseLightMis = READ_IF_EXISTS(pSettings, r_bool, section, "use_light_misfire", false);
 	m_bDisableLightMisDet = READ_IF_EXISTS(pSettings, r_bool, HudSection(), "disable_light_misfires_with_detector", false);
 
+	m_bIsPumpEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "use_pump_system", false);
+	m_bNeedPumpReloadEnd = READ_IF_EXISTS(pSettings, r_bool, section, "need_pump_reload_end", false);
+
 	const static bool isImproveMis = EngineExternal()[EEngineExternalGame::EnableImproveWeaponMisfire];
 
 	m_bJamNotShot = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "no_jam_fire", !isImproveMis);
@@ -1245,6 +1248,10 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_LastShotAmmoType,			output_packet);
 	save_data(m_lens_zoom_params.target_position,	output_packet);
 	save_data(m_lens_night_brightness.cur_step,		output_packet);
+
+	//Раскоментить, когда релизнимся
+	//save_data(m_bHaveShell, output_packet);
+	//save_data(m_bNeedPumpState, output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -1262,6 +1269,10 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_LastShotAmmoType,			input_packet);
 	load_data(m_lens_zoom_params.target_position,	input_packet);
 	load_data(m_lens_night_brightness.lens_night_brightness_saved_step,	input_packet);
+
+	//Раскоментить, когда релизнимся
+	//load_data(m_bHaveShell, input_packet);
+	//load_data(m_bNeedPumpState, input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 	{
@@ -1553,7 +1564,7 @@ void CWeapon::ForceUpdateHUD()
 	ProcessScope();
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
-	UpdateShellBones(iAmmoElapsed, m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
+	UpdateShellBones(m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType());
 	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 	UpdateBonePartAnimations();
 }
@@ -3499,7 +3510,7 @@ extern bool hud_adj_crosshair;
 bool CWeapon::show_crosshair()
 {
 	const u8 NextState = GetNextState();
-	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
+	return hud_adj_crosshair || !m_bTacticalLaserStatus && (!IsPending() || NextState == eEmptyClick || NextState == eSprintStart || NextState == eSprintEnd || NextState == ePump) && NextState != eHidden && (!IsZoomed() || !ZoomHideCrosshair());
 }
 
 bool CWeapon::show_indicators()
@@ -4136,6 +4147,96 @@ void CWeapon::UnloadChamber(bool spawn_ammo)
 	}
 }
 
+void CWeapon::LoadChamber()
+{
+	m_BriefInfo_CalcFrame = 0;
+
+	if (!m_pInventory)
+	{
+		return;
+	}
+
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type)
+	{
+		m_ChamberAmmoType = m_set_next_ammoType_on_reload;
+		m_set_next_ammoType_on_reload = undefined_ammo_type;
+	}
+
+	if (!unlimited_ammo())
+	{
+		if (m_ammoTypes.size() <= m_ChamberAmmoType)
+		{
+			return;
+		}
+
+		LPCSTR tmp_sect_name = m_ammoTypes[m_ChamberAmmoType].c_str();
+
+		if (!tmp_sect_name)
+		{
+			return;
+		}
+
+		//попытаться найти в инвентаре патроны текущего типа
+		PIItem get_any = m_pInventory->GetAny(tmp_sect_name);
+		m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+
+		if (m_pCurrentAmmo == nullptr)
+		{
+			for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+			{
+				//проверить патроны всех подходящих типов
+				get_any = m_pInventory->GetAny(m_ammoTypes[i].c_str());
+				m_pCurrentAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
+				if (m_pCurrentAmmo != nullptr)
+				{
+					m_ChamberAmmoType = i;
+					break;
+				}
+			}
+		}
+	}
+
+	//нет патронов для перезарядки
+	if (m_pCurrentAmmo == nullptr && !unlimited_ammo())
+	{
+		return;
+	}
+
+	if (m_DefaultCartridgeInChamber.m_LocalAmmoType != m_ChamberAmmoType)
+	{
+		m_DefaultCartridgeInChamber.Load(m_ammoTypes[m_ChamberAmmoType].c_str(), m_ChamberAmmoType);
+	}
+
+	CCartridge l_cartridge = m_DefaultCartridgeInChamber;
+	while (iAmmoChamberElapsed < iChamberSize)
+	{
+		if (!unlimited_ammo())
+		{
+			if (!m_pCurrentAmmo->Get(l_cartridge))
+			{
+				break;
+			}
+		}
+
+		++iAmmoChamberElapsed;
+		l_cartridge.m_LocalAmmoType = m_ChamberAmmoType;
+		m_chamber.push_back(l_cartridge);
+	}
+
+	//выкинуть коробку патронов, если она пустая
+	if (m_pCurrentAmmo != nullptr && !m_pCurrentAmmo->m_boxCurr && OnServer())
+	{
+		m_pCurrentAmmo->SetDropManual(TRUE);
+	}
+
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ChamberAmmoType);
+	UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
+
+	m_pCurrentAmmo = nullptr;
+
+	VERIFY((u32)iAmmoChamberElapsed == m_chamber.size());
+}
+
 bool CWeapon::GetScopeBack()
 {
 	if (bUseAltScope && m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
@@ -4305,7 +4406,7 @@ void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8
 	}
 }
 
-void CWeapon::UpdateShellBones(u32 idx, u8 type)
+void CWeapon::UpdateShellBones(u8 type)
 {
 	auto SetVisible = [&](IKinematics* kin, const shared_str& bone_name, BOOL status)
 	{
@@ -4336,24 +4437,12 @@ void CWeapon::UpdateShellBones(u32 idx, u8 type)
 	{
 		if (bone_param->AmmoType == type || bone_param->AmmoType == undefined_ammo_type)
 		{
-			auto& Node = bone_param->ConfigurationMap[idx];
-			if (Node.second.empty())
-			{
 				for (const auto& bone_name : bone_param->AllBones)
 				{
 					SetVisible(hud_kin, bone_name, TRUE);
 					SetVisible(world_kin, bone_name, TRUE);
 				}
 			}
-			else
-			{
-				for (const auto& configuration_bone : Node.second)
-				{
-					SetVisible(hud_kin, configuration_bone, TRUE);
-					SetVisible(world_kin, configuration_bone, TRUE);
-				}
-			}
-		}
 	}
 
 	if (world_kin != nullptr)
