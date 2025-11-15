@@ -294,6 +294,11 @@ public:
 		sf_holster_jam_g = (1 << 15),
 		sf_chamber_unload_empty = (1 << 16),
 		sf_chamber_check_empty = (1 << 17),
+		sf_pump_aim = (1 << 18),
+		sf_pump_last = (1 << 19),
+		sf_pump_aim_last = (1 << 20),
+		sf_pump_empty = (1 << 21),
+		sf_pump_aim_empty = (1 << 22),
 	};
 
 	Flags32 m_eDevicesFlags;
