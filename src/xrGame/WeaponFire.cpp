@@ -128,6 +128,12 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 		m_magazine.pop_back();
 		--iAmmoElapsed;
 
+		if (m_bIsPumpEnabled)
+		{
+			m_bNeedPumpState = true;
+			m_bHaveShell = true;
+		}
+
 		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 
 		if (!m_bBlockUpdateAmmoBonesShooting)
@@ -210,7 +216,16 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 		m_bJustAfterReload = false;
 		m_LastShotAmmoType = m_chamber.back().m_LocalAmmoType;
 		DeleteAmmoInChamber();
-		GiveAmmoFromMagToChamber();
+
+		if (!m_bIsPumpEnabled)
+		{
+			GiveAmmoFromMagToChamber();
+		}
+		else
+		{
+			m_bNeedPumpState = true;
+			m_bHaveShell = true;
+		}
 
 		UpdateLiteAmmoBones(iAmmoElapsed + iAmmoChamberElapsed);
 
