@@ -49,6 +49,8 @@ void CWeaponRG6::Load(LPCSTR section)
 {
 	inheritedRL::Load(section);
 	inheritedSG::Load(section);
+
+	m_bAlternateReloadScheme = READ_IF_EXISTS(pSettings, r_bool, section, "alternate_reload_scheme", false);
 }
 
 void CWeaponRG6::FireTrace(const Fvector& P, const Fvector& D)
@@ -263,5 +265,26 @@ void CWeaponRG6::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16						(id);
 			inheritedRL::DetachRocket	(id, bLaunch);
 		} break;
+	}
+}
+
+static u32 iDoReloadElapsed = 0;
+void CWeaponRG6::PlayAnimOpenWeapon()
+{
+	iDoReloadElapsed = iAmmoElapsed;
+	inheritedSG::PlayAnimOpenWeapon();
+}
+
+void CWeaponRG6::PlayAnimAddOneCartridgeWeapon()
+{
+	if (m_bAlternateReloadScheme)
+	{
+		shared_str anm;
+		anm.printf("anm_add_cartridge_%d_%d", iDoReloadElapsed, iAmmoElapsed + 1);
+		PlayHUDMotion(anm, EHudMixType::eNoMix, GetState());
+	}
+	else
+	{
+		inheritedSG::PlayAnimAddOneCartridgeWeapon();
 	}
 }

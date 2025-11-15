@@ -10,12 +10,18 @@ class CWeaponRG6 :  public CRocketLauncher,
 	typedef CRocketLauncher		inheritedRL;
 	typedef CWeaponShotgun		inheritedSG;
 	
+	bool m_bAlternateReloadScheme = false;
+
 public:
 	virtual			~CWeaponRG6				();
 	virtual BOOL	net_Spawn				(CSE_Abstract* DC) override;
 	virtual void	Load					(LPCSTR section) override;
 	virtual void	OnEvent					(NET_Packet& P, u16 type) override;
 	virtual CWeaponRG6* cast_weapon_rg6() { return this; }
+
+	virtual void	PlayAnimOpenWeapon() override;
+	virtual void	PlayAnimAddOneCartridgeWeapon() override;
+
 protected:
 	virtual u8		AddCartridge			(u8 cnt) override;
 	virtual void	UnloadMagazine			(bool spawn_ammo = true) override;
