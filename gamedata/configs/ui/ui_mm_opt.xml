@@ -641,6 +641,14 @@
             <options_item entry="g_bobbing_factor" group="mm_opt_gameplay"/>
         </track_bobbing_factor>
 
+        <cap_hit_slowmo x="40" y="3" width="135" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_hit_slowmo</text>
+        </cap_hit_slowmo>
+        <check_hit_slowmo x="177" y="0.5" width="44" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="g_hit_slowmo" group="mm_opt_gameplay"/>
+        </check_hit_slowmo>
+
         <cap_check_crosshair x="40" y="3" width="135" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_show_crosshair</text>
         </cap_check_crosshair>

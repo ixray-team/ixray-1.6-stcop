@@ -412,4 +412,7 @@
 	<string id="ui_mm_bobbing_factor">
 		<text>Сила качания камеры</text>
 	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Замедление после урона</text>
+	</string>
 </string_table>

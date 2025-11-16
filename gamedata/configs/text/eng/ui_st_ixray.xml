@@ -409,4 +409,7 @@
 	<string id="ui_mm_bobbing_factor">
 		<text>Camera bobbing factor</text>
 	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Slowdown after damage</text>
+	</string>
 </string_table>
