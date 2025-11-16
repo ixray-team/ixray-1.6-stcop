@@ -50,7 +50,7 @@ float		g_sv_mp_fVoteTime				= VOTE_LENGTH_TIME;
 BOOL		g_sv_mp_save_proxy_screenshots	= FALSE;
 BOOL		g_sv_mp_save_proxy_configs		= FALSE;
 //-----------------------------------------------------------------
-u32			g_sv_adm_menu_ban_time			= 1;
+u32			g_sv_adm_menu_ban_time			= 600;
 int			g_sv_adm_menu_ping_limit		= 25;
 //-----------------------------------------------------------------
 
