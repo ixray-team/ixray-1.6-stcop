@@ -406,4 +406,7 @@
 	<string id="st_dress_backpack">
 		<text>put on backpack</text>
 	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Camera bobbing factor</text>
+	</string>
 </string_table>
