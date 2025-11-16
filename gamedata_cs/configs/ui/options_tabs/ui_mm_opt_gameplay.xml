@@ -30,6 +30,23 @@
 			<text font="letterica16" color="ui_6">ui_mm_tips</text>
 		</check_tips>
 
+        <cap_bobbing_factor x="20" y="3" width="143" height="21">
+            <text font="letterica16" color="ui_6">ui_mm_bobbing_factor</text>
+        </cap_bobbing_factor>
+        <track_bobbing_factor x="194" y="0" width="245" height="21" step="0.1" show_value="1" magnitude="10">
+            <options_item entry="g_bobbing_factor" group="mm_opt_gameplay"/>
+        </track_bobbing_factor>
+
+		<check_hit_slowmo x="20" y="0" width="30" height="21">
+			<options_item entry="g_hit_slowmo" group="mm_opt_gameplay"/>
+			<text font="letterica16" color="ui_6">ui_mm_hit_slowmo</text>
+		</check_hit_slowmo>
+
+		<check_wpn_aim_toggle x="20" y="0" width="30" height="21">
+			<options_item entry="wpn_aim_toggle" group="mm_opt_gameplay"/>
+			<text font="letterica16" color="ui_6">ui_mm_wpn_aim_toggle</text>
+		</check_wpn_aim_toggle>
+
 		<check_crosshair x="20" y="0" width="30" height="21">
 			<options_item entry="hud_crosshair" group="mm_opt_gameplay"/>
 			<text font="letterica16" color="ui_6">ui_mm_show_crosshair</text>
