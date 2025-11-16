@@ -68,6 +68,53 @@ bool ImGui::BeginPopupModal(const char* name, bool* p_open, ImGuiWindowFlags fla
     return  ImGui::BeginPopupModal(name, p_open, flags);
 }
 
+bool ImGui::BeginMenuI(const char* label, const char* icon, bool enabled)
+{
+    return BeginMenuEx(label, icon, enabled);
+}
+
+bool ImGui::MenuItemI(const char* label, const char* icon, const char* shortcut, bool selected, bool enabled)
+{
+    return MenuItemEx(label, icon, shortcut, selected, enabled);
+}
+
+bool ImGui::MenuItemI(const char* label, const char* icon, const char* shortcut, bool* p_selected, bool enabled)
+{
+    if (MenuItemEx(label, icon, shortcut, p_selected ? *p_selected : false, enabled))
+    {
+        if (p_selected)
+            *p_selected = !*p_selected;
+        return true;
+    }
+    return false;
+}
+
+void ImGui::RenderTextI(ImVec2 pos, const char* text, const float font_size, const char* text_end, bool hide_text_after_hash)
+{
+    ImGuiContext& g = *GImGui;
+    ImGuiWindow* window = g.CurrentWindow;
+
+    // Hide anything after a '##' string
+    const char* text_display_end;
+    if (hide_text_after_hash)
+    {
+        text_display_end = FindRenderedTextEnd(text, text_end);
+    }
+    else
+    {
+        if (!text_end)
+            text_end = text + ImStrlen(text); // FIXME-OPT
+        text_display_end = text_end;
+    }
+
+    if (text != text_display_end)
+    {
+        window->DrawList->AddText(g.Font, font_size, pos, GetColorU32(ImGuiCol_Text), text, text_display_end);
+        if (g.LogEnabled)
+            LogRenderedText(&pos, text, text_display_end);
+    }
+}
+
 IMGUI_API bool ImGui::ArrowButton(const char* str_id, ImGuiDir dir, ImVec2 size, ImGuiButtonFlags flags)
 {
     return ArrowButtonEx(str_id, dir, size, flags);
