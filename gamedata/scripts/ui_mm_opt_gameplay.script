@@ -41,6 +41,11 @@ function opt_gameplay:InitControls(x, y, xml, handler)
     addControl(_st)
 
     _st = xml:InitStatic("video_adv:templ_item", nil)
+    xml:InitStatic("tab_gameplay:cap_wpn_aim_toggle", _st)
+    xml:InitCheck("tab_gameplay:check_wpn_aim_toggle", _st)
+    addControl(_st)
+
+    _st = xml:InitStatic("video_adv:templ_item", nil)
     xml:InitStatic("tab_gameplay:cap_check_crosshair", _st)
     xml:InitCheck("tab_gameplay:check_crosshair", _st)
     addControl(_st)
