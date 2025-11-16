@@ -418,4 +418,7 @@
 	<string id="ui_mm_wpn_aim_toggle">
 		<text>Прицеливание по клику</text>
 	</string>
+	<string id="kb_clear_gasmask">
+		<text>Протирание маски</text>
+	</string>
 </string_table>
