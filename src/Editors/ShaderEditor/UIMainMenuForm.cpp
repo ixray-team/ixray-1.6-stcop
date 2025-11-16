@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "../xrEUI/xrUITheme.h"
 #include "../xrEUI/imgui_EditorEx.h"
+
+#include "IconsFontAwesome6.h"
+
 UIMainMenuForm::UIMainMenuForm()
 {
 }
@@ -9,42 +12,95 @@ UIMainMenuForm::~UIMainMenuForm()
 {
 }
 
+shared_str UIMainMenuForm::GetCommandShortcat(int CommandID) const
+{
+    ECommandVec& CommandVec = GetEditorCommands();
+
+    if (CommandVec[CommandID] == nullptr)
+        return {};
+
+    ESubCommandVec& SubCommandVec = CommandVec[CommandID]->sub_commands;
+
+    if (SubCommandVec.empty())
+        return {};
+
+    const xr_shortcut& Cat = SubCommandVec[0]->shortcut;
+
+    xr_string txt;
+    if (Cat.key == 0)
+    {
+        return {};
+    }
+
+    if (Cat.ext.test(xr_shortcut::flCtrl))
+    {
+        txt.append("Ctrl+");
+    }
+    if (Cat.ext.test(xr_shortcut::flShift))
+    {
+        txt.append("Shift+");
+    }
+    if (Cat.ext.test(xr_shortcut::flAlt))
+    {
+        txt.append("Alt+");
+    }
+
+    txt += SDL_GetScancodeName((SDL_Scancode)Cat.key);
+
+
+    return txt.c_str();
+}
+
+void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int command, const xr_string& param, int flag)
+{
+    if (ImGui::MenuItemI(label, icon, *GetCommandShortcat(command)))
+    {
+        ExecCommand(command, param, flag);
+    }
+}
+
+void UIMainMenuForm::DrawMenuItemI(const char* label, const char* icon, int command, int param, int flag)
+{
+    if (ImGui::MenuItemI(label, icon, *GetCommandShortcat(command)))
+    {
+        ExecCommand(command, param, flag);
+    }
+}
+
 void UIMainMenuForm::Draw()
 {
     if (IXBeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Save"))
-            {
-                ExecCommand(COMMAND_SAVE);
-            }
-            if (ImGui::MenuItem("Reload"))
-            {
-                ExecCommand(COMMAND_LOAD);
-            }
+            DrawMenuItemI("Save", ICON_FA_FLOPPY_DISK, COMMAND_SAVE);
+            DrawMenuItemI("Reload", ICON_FA_ARROWS_ROTATE, COMMAND_LOAD);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Editors"))
         {
-            if (ImGui::BeginMenu("Image"))
+            if (ImGui::BeginMenu("Images"))
             {
-                if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
+                DrawMenuItemI("Image Editor", ICON_FA_IMAGE, COMMAND_IMAGE_EDITOR);
                 ImGui::Separator();
-                if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
-                if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
+
+                DrawMenuItemI("Synchronize Textures", ICON_FA_REPEAT, COMMAND_REFRESH_TEXTURES);
+                DrawMenuItemI("Cheack New Textures", ICON_FA_CHECK, COMMAND_CHECK_TEXTURES);
+                ImGui::Separator();
+
+                DrawMenuItemI("Minimap Editor", ICON_FA_MAP, COMMAND_MINIMAP_EDITOR);
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Sounds"))
             {
-                if (ImGui::MenuItem("Sound Editor", "")) { ExecCommand(COMMAND_SOUND_EDITOR); }
+                DrawMenuItemI("Sound Editor", ICON_FA_MUSIC, COMMAND_SOUND_EDITOR);
                 ImGui::Separator();
-                if (ImGui::MenuItem("Synchronize Sounds (Soft)", "")) { ExecCommand(COMMAND_SYNC_SOUNDS); }
-                if (ImGui::MenuItem("Synchronize Sounds (Hard)", "")) { ExecCommand(COMMAND_SYNC_SOUNDS_HARD); }
+
+                DrawMenuItemI("Synchronize Sounds (Soft)", ICON_FA_REPEAT, COMMAND_SYNC_SOUNDS);
+                DrawMenuItemI("Synchronize Sounds (Hard)", ICON_FA_REPEAT, COMMAND_SYNC_SOUNDS_HARD);
                 ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Light Anim Editor", "")) { ExecCommand(COMMAND_LIGHTANIM_EDITOR); }
-            if (ImGui::MenuItem("Minimap Editor", "")) { ExecCommand(COMMAND_MINIMAP_EDITOR); }
+            DrawMenuItemI("Light Anim Editor", ICON_FA_LIGHTBULB, COMMAND_LIGHTANIM_EDITOR);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Options"))
@@ -162,7 +218,7 @@ void UIMainMenuForm::Draw()
             }
             {
                 bool selected = psDeviceFlags.test(rsDrawGrid);
-                if (ImGui::MenuItem("Draw Grid", "", &selected))
+                if (ImGui::MenuItemI("Draw Grid", ICON_FA_TABLE_CELLS, "", &selected))
                 {
                     psDeviceFlags.set(rsDrawGrid, selected);
                     UI->RedrawScene();
@@ -171,7 +227,7 @@ void UIMainMenuForm::Draw()
             ImGui::Separator();
             {
                 bool selected = psDeviceFlags.test(rsFog);
-                if (ImGui::MenuItem("Fog", "", &selected))
+                if (ImGui::MenuItemI("Fog", ICON_FA_CLOUD, "", &selected))
                 {
                     psDeviceFlags.set(rsFog, selected);
                     UI->RedrawScene();
@@ -180,14 +236,14 @@ void UIMainMenuForm::Draw()
             ImGui::Separator();
             {
                 bool selected = psDeviceFlags.test(rsMuteSounds);
-                if (ImGui::MenuItem("Mute Sounds", "", &selected))
+                if (ImGui::MenuItemI("Mute Sounds", ICON_FA_VOLUME_XMARK, "", &selected))
                 {
                     psDeviceFlags.set(rsMuteSounds, selected);
                 }
             }
             {
                 bool selected = psDeviceFlags.test(rsRenderRealTime);
-                if (ImGui::MenuItem("Real Time", "", &selected))
+                if (ImGui::MenuItemI("Real Time", ICON_FA_HOURGLASS_HALF, "", &selected))
                 {
                     psDeviceFlags.set(rsRenderRealTime, selected);
                 }
@@ -195,7 +251,11 @@ void UIMainMenuForm::Draw()
             ImGui::Separator();
             {
                 bool selected = psDeviceFlags.test(rsStatistic);
-                if (ImGui::MenuItem("Stats", "", &selected)) { psDeviceFlags.set(rsStatistic, selected);  UI->RedrawScene(); }
+                if (ImGui::MenuItem("Stats", "", &selected))
+                {
+                    psDeviceFlags.set(rsStatistic, selected);
+                    UI->RedrawScene();
+                }
 
             }
             ImGui::EndMenu();
@@ -205,11 +265,14 @@ void UIMainMenuForm::Draw()
             {
                 bool selected = AllowLogCommands();
 
-                if (ImGui::MenuItem("Log", "", &selected)) { ExecCommand(COMMAND_LOG_COMMANDS); }
+                if (ImGui::MenuItem("Log", "", &selected))
+                {
+                    ExecCommand(COMMAND_LOG_COMMANDS);
+                }
 
                 CUIThemeManager& ThemeInstance = CUIThemeManager::Get();
                 bool selected2 = !ThemeInstance.IsClosed();
-                if (ImGui::MenuItem("Theme", "", &selected2))
+                if (ImGui::MenuItemI("Theme", ICON_FA_PAINT_ROLLER, "", &selected2))
                 {
                     if (selected2)
                     {

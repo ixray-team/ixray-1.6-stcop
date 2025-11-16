@@ -3,7 +3,7 @@
 namespace ImGui
 {
     IMGUI_API float GetWindowBarHeight();
-    IMGUI_API ImVec2        CalcItemSize(ImVec2 size, float default_w, float default_h);
+    IMGUI_API ImVec2 CalcItemSize(ImVec2 size, float default_w, float default_h);
     IMGUI_API bool OpenPopupOnItemClick2(const char* str_id, ImGuiPopupFlags popup_flags);
 
     IMGUI_API bool InputFloat(const char* label, float* v, float step, float step_fast, int dec, ImGuiInputTextFlags flags = 0);
@@ -14,6 +14,11 @@ namespace ImGui
     IMGUI_API bool ArrowButton(const char* str_id, ImGuiDir dir, ImVec2 size, ImGuiButtonFlags flags);
     IMGUI_API void PushItemFlag(int option, bool enabled);
     IMGUI_API void PopItemFlag();
+
+    IMGUI_API bool BeginMenuI(const char* label, const char* icon, bool enabled = true);
+    IMGUI_API bool MenuItemI(const char* label, const char* icon, const char* shortcut = NULL, bool selected = false, bool enabled = true);
+    IMGUI_API bool MenuItemI(const char* label, const char* icon, const char* shortcut, bool* p_selected, bool enabled = true);
+    IMGUI_API void RenderTextI(ImVec2 pos, const char* text, const float font_size, const char* text_end = NULL, bool hide_text_after_hash = true);
 }
 
 namespace XRay::ImGui
