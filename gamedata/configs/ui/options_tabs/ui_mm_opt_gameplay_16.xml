@@ -25,6 +25,29 @@
 		    </text_color>
         </list_lang>
 
+        <cap_bobbing_factor x="26" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_bobbing_factor</text>
+        </cap_bobbing_factor>
+        <track_bobbing_factor x="154" y="0.5" width="188" height="16" step="0.1" show_value="1" magnitude="10">
+            <options_item entry="g_bobbing_factor" group="mm_opt_gameplay"/>
+        </track_bobbing_factor>
+
+        <cap_hit_slowmo x="26" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_hit_slowmo</text>
+        </cap_hit_slowmo>
+        <check_hit_slowmo x="143" y="0.5" width="35" stretch="1" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="g_hit_slowmo" group="mm_opt_gameplay"/>
+        </check_hit_slowmo>
+
+        <cap_wpn_aim_toggle x="26" y="3" width="108" height="24">
+            <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_wpn_aim_toggle</text>
+        </cap_wpn_aim_toggle>
+        <check_wpn_aim_toggle x="143" y="0.5" width="35" stretch="1" height="29">
+            <texture>ui_inGame2_checkbox</texture>
+            <options_item entry="wpn_aim_toggle" group="mm_opt_gameplay"/>
+        </check_wpn_aim_toggle>
+
         <cap_check_crosshair x="26" y="3" width="108" height="24">
             <text r="170" g="170" b="170" font="letterica16" align="r" vert_align="c">ui_mm_show_crosshair</text>
         </cap_check_crosshair>
