@@ -172,7 +172,7 @@ void UITopBarForm::Draw()
 			{
 				ImGui::BeginDisabled(LTools->IsCompilerRunning() || LTools->IsGameRunning());
 				IMGUI_HINT_BUTTON("ReloadCfg", m_tReloadConfigs, "Reload Configs", ClickReloadConfigs);
-				IMGUI_HINT_AF_BUTTON(ICON_FA_FILE_EXPORT, "Build and Make", ClickBuildAndMake);
+				IMGUI_HINT_AF_BUTTON(ICON_FA_TROWEL_BRICKS, "Build and Make", ClickBuildAndMake);
 				ImGui::EndDisabled();
 			}
 
