@@ -1,11 +1,12 @@
-// FX: Экспорты lua функций для поддежки EE
-// для работы требуется xr_sound и sound_theme переместить из оригинальной триологии в папку скриптов EE
+// FX: Р­РєСЃРїРѕСЂС‚С‹ lua С„СѓРЅРєС†РёР№ РґР»СЏ РїРѕРґРґРµР¶РєРё EE
+// РґР»СЏ СЂР°Р±РѕС‚С‹ С‚СЂРµР±СѓРµС‚СЃСЏ xr_sound Рё sound_theme РїРµСЂРµРјРµСЃС‚РёС‚СЊ РёР· РѕСЂРёРіРёРЅР°Р»СЊРЅРѕР№ С‚СЂРёРѕР»РѕРіРёРё РІ РїР°РїРєСѓ СЃРєСЂРёРїС‚РѕРІ EE
 
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "ai_space.h"
 #include "Actor.h"
 #include "Inventory.h"
+#include "script_game_object.h"
 #include "../xrEngine/xr_input.h"
 #include "../xrScripts/exports/script_ini_file.h"
 
@@ -37,13 +38,13 @@ void ExportEELayer(lua_State* L)
 		luabind::def("detectKeyboard",   +[]() { return true; }),
 		luabind::def("detectController", +[]() { return pInput->pGamePad != nullptr; }),
 
-		// консольная хуйня, скип
+		// РєРѕРЅСЃРѕР»СЊРЅР°СЏ С…СѓР№РЅСЏ, СЃРєРёРї
 		luabind::def("savedata_delete",  +[]() {}), 
 		luabind::def("set_current_user", +[]() {}),
 		luabind::def("is_full_savedata", +[]() { return false; })
 	];
 
-	// Enum для платформ
+	// Enum РґР»СЏ РїР»Р°С‚С„РѕСЂРј
 	luabind::module(L, "platform_ids")
 	[
 		luabind::def("zerofunc", +[](){})
@@ -92,8 +93,8 @@ void ExportEELayer(lua_State* L)
 		})
 	];
 
-	// FX: xr_sound_impl через костыль
-	const char* xr_sound_code = 
+	// FX: xr_sound_impl С‡РµСЂРµР· РєРѕСЃС‚С‹Р»СЊ
+	const char* xr_sound_code =
 	R"(
 		xr_sound_impl =
 		{
@@ -106,11 +107,11 @@ void ExportEELayer(lua_State* L)
 				end
 			end,
 			
-			xr_sound_impl.sound_exists = function(npc_id)
+			sound_exists = function(npc_id)
 				return xr_sound.sound_table[npc_id] ~= nil
 			end,
 			
-			xr_sound_impl.stop_sound = function(npc)
+			stop_sound = function(npc)
 				local npc_id = npc:id()
 				if xr_sound.sound_table[npc_id] then
 					xr_sound.sound_table[npc_id]:stop(npc_id)
