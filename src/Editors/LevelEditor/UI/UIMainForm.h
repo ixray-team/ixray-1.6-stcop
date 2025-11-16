@@ -23,6 +23,10 @@ private:
     void RenderOldCameraButtons();
     void RenderAxisButtons();
 
+    shared_str GetCommandShortcat(int CommandID) const;
+    void DrawMenuItem(const char* label, int command, int param = 0, int flag = 0);
+    void DrawMenuItemI(const char* label, const char* icon, int command, int param = 0, int flag = 0);
+
 private:
     UITopBarForm* m_TopBar;
     UIRenderForm* m_Render;
