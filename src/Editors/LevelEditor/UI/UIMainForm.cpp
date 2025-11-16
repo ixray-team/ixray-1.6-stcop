@@ -197,6 +197,61 @@ UIMainForm::~UIMainForm()
 	ExecCommand(COMMAND_DESTROY, (u32)0, (u32)0);
 }
 
+shared_str UIMainForm::GetCommandShortcat(int CommandID) const
+{
+	ECommandVec& CommandVec = GetEditorCommands();
+
+	if (CommandVec[CommandID] == nullptr)
+		return {};
+
+	ESubCommandVec& SubCommandVec = CommandVec[CommandID]->sub_commands;
+
+	if (SubCommandVec.empty())
+		return {};
+
+	const xr_shortcut& Cat = SubCommandVec[0]->shortcut;
+
+	xr_string txt;
+	if (Cat.key == 0)
+	{
+		return {};
+	}
+
+	if (Cat.ext.test(xr_shortcut::flCtrl))
+	{
+		txt.append("Ctrl+");
+	}
+	if (Cat.ext.test(xr_shortcut::flShift))
+	{
+		txt.append("Shift+");
+	}
+	if (Cat.ext.test(xr_shortcut::flAlt))
+	{
+		txt.append("Alt+");
+	}
+
+	txt += SDL_GetScancodeName((SDL_Scancode)Cat.key);
+
+
+	return txt.c_str();
+}
+
+void UIMainForm::DrawMenuItem(const char* label, int command, int param, int flag)
+{
+	if (ImGui::MenuItem(label, *GetCommandShortcat(command)))
+	{
+		ExecCommand(command, param, flag);
+	}
+}
+
+void UIMainForm::DrawMenuItemI(const char* label, const char* icon, int command, int param, int flag)
+{
+	if (ImGui::MenuItemI(label, icon, *GetCommandShortcat(command)))
+	{
+		ExecCommand(command, param, flag);
+	}
+}
+
 void UIMainForm::Draw()
 {
 	bOpen = true;
@@ -222,15 +277,8 @@ void UIMainForm::DrawContextMenu()
 	{
 		if (ImGui::BeginMenu("Shape"))
 		{
-			if (ImGui::MenuItem("Box"))
-			{
-				ExecCommand(COMMAND_CREATE_SHAPE_BOX);
-			}
-
-			if (ImGui::MenuItem("Sphere"))
-			{
-				ExecCommand(COMMAND_CREATE_SHAPE_SPHERE);
-			}
+			DrawMenuItem("Box", COMMAND_CREATE_SHAPE_BOX);
+			DrawMenuItem("Sphere", COMMAND_CREATE_SHAPE_SPHERE);
 
 			ImGui::EndMenu();
 		}
@@ -238,23 +286,13 @@ void UIMainForm::DrawContextMenu()
 	}
 	if (ImGui::BeginMenuI("Visiblity", ICON_FA_EYE))
 	{
-		if (ImGui::MenuItemI("Hide Selected", ICON_FA_EYE_SLASH))
-		{
-			ExecCommand(COMMAND_HIDE_SEL, FALSE);
-		}
-		if (ImGui::MenuItemI("Hide Unselected", ICON_FA_EYE_SLASH))
-		{
-			ExecCommand(COMMAND_HIDE_UNSEL);
-		}
-		if (ImGui::MenuItemI("Hide All", ICON_FA_EYE_SLASH))
-		{
-			ExecCommand(COMMAND_HIDE_ALL, FALSE);
-		}
+		DrawMenuItemI("Hide Selected", ICON_FA_EYE_SLASH, COMMAND_HIDE_SEL, FALSE);
+		DrawMenuItemI("Hide Unselected", ICON_FA_EYE_SLASH, COMMAND_HIDE_UNSEL);
+		DrawMenuItemI("Hide All", ICON_FA_EYE_SLASH, COMMAND_HIDE_ALL, FALSE);
 		ImGui::Separator();
-		if (ImGui::MenuItemI("Unhide All", ICON_FA_EYE))
-		{
-			ExecCommand(COMMAND_HIDE_ALL, TRUE);
-		}
+
+		DrawMenuItemI("Unhide All", ICON_FA_EYE, COMMAND_HIDE_ALL, TRUE);
+
 		ImGui::EndMenu();
 	}
 
@@ -266,70 +304,41 @@ void UIMainForm::DrawContextMenu()
 		bool CanUnlock = TestOut != ESceneToolBase::ETestResult::None;
 
 		ImGui::BeginDisabled(!CanLock);
-		if (ImGui::MenuItemI("Lock selection", ICON_FA_LOCK))
-		{
-			ExecCommand(COMMAND_LOCK_SEL, TRUE);
-		}
-		if (ImGui::MenuItemI("Lock unselected", ICON_FA_LOCK))
-		{
-			ExecCommand(COMMAND_LOCK_UNSEL, TRUE);
-		}
-		if (ImGui::MenuItemI("Lock all", ICON_FA_LOCK))
-		{
-			ExecCommand(COMMAND_LOCK_ALL, TRUE);
-		}
+		DrawMenuItemI("Lock selection", ICON_FA_LOCK, COMMAND_LOCK_SEL, TRUE);
+		DrawMenuItemI("Lock unselected", ICON_FA_LOCK, COMMAND_LOCK_UNSEL, TRUE);
+		DrawMenuItemI("Lock all", ICON_FA_LOCK, COMMAND_LOCK_ALL, TRUE);
 		ImGui::EndDisabled();
 
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!CanUnlock);
-		if (ImGui::MenuItemI("Unlock selection", ICON_FA_LOCK_OPEN))
-		{
-			ExecCommand(COMMAND_LOCK_SEL, FALSE);
-		}
-		if (ImGui::MenuItemI("Unlock unselected", ICON_FA_LOCK_OPEN))
-		{
-			ExecCommand(COMMAND_LOCK_UNSEL, FALSE);
-		}
-		if (ImGui::MenuItemI("Unlock all", ICON_FA_LOCK_OPEN))
-		{
-			ExecCommand(COMMAND_LOCK_ALL, FALSE);
-		}
+		DrawMenuItemI("Unlock selection", ICON_FA_LOCK_OPEN, COMMAND_LOCK_SEL, FALSE);
+		DrawMenuItemI("Unlock unselected", ICON_FA_LOCK_OPEN, COMMAND_LOCK_UNSEL, FALSE);
+		DrawMenuItemI("Unlock all", ICON_FA_LOCK_OPEN, COMMAND_LOCK_ALL, FALSE);
 		ImGui::EndDisabled();
+
 		ImGui::EndMenu();
 	}
 
 	if (ImGui::BeginMenuI("Edit", ICON_FA_PEN_TO_SQUARE))
 	{
-		if (ImGui::MenuItemI("Copy", ICON_FA_COPY))
-		{
-			ExecCommand(COMMAND_COPY);
-		}
-		if (ImGui::MenuItemI("Paste", ICON_FA_PASTE))
-		{
-			ExecCommand(COMMAND_PASTE);
-		}
-		if (ImGui::MenuItemI("Duplicate", ICON_FA_CLONE))
-		{
-			ExecCommand(COMMAND_DUPLICATE);
-		}
+		DrawMenuItemI("Copy", ICON_FA_COPY, COMMAND_COPY);
+		DrawMenuItemI("Paste", ICON_FA_PASTE, COMMAND_PASTE);
+		DrawMenuItemI("Duplicate", ICON_FA_CLONE, COMMAND_DUPLICATE);
+
 		ImGui::Separator();
-		if (ImGui::MenuItemI("Cut", ICON_FA_SCISSORS))
-		{
-			ExecCommand(COMMAND_CUT);
-		}
+
+		DrawMenuItemI("Cut", ICON_FA_SCISSORS, COMMAND_CUT);
+
 		ImGui::Separator();
-		if (ImGui::MenuItemI("Delete", ICON_FA_TRASH))
-		{
-			ExecCommand(COMMAND_DELETE_SELECTION);
-		}
+
+		DrawMenuItemI("Delete", ICON_FA_TRASH, COMMAND_DELETE_SELECTION);
+
 		ImGui::EndMenu();
 	}
 	ImGui::Separator();
-	if (ImGui::MenuItemI("Properties", ICON_FA_GEAR))
-	{
-		ExecCommand(COMMAND_SHOW_PROPERTIES);
-	}
+
+	DrawMenuItemI("Properties", ICON_FA_GEAR, COMMAND_SHOW_PROPERTIES);
 
 	if (ImGui::MenuItem("Make Heightmap"))
 	{
@@ -414,10 +423,8 @@ void UIMainForm::DrawRenderToolBar(ImVec2 Pos, ImVec2 Size)
 				{
 					if (ImGui::BeginMenuI("Environment", ICON_FA_CLOUD_SUN))
 					{
-						if (ImGui::MenuItem("Properties"))
-						{
-							ExecCommand(COMMAND_WEATHER_PROPERTIES);
-						}
+						DrawMenuItem("Properties", COMMAND_WEATHER_PROPERTIES);
+
 						if (ImGui::IsItemHovered())
 						{
 							ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
