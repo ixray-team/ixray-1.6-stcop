@@ -46,6 +46,7 @@ struct player_hud_motion_container
 	xr_vector<player_hud_motion> m_anims;
 	xr_vector<attachable_hud_item_motion> m_item_anims;
 	xr_hash_map<shared_str, bool> m_names;
+	xr_vector<shared_str> m_banned_bone_parts = {};
 	player_hud_motion* find_motion(const shared_str& name);
 	attachable_hud_item_motion* find_item_motion(const shared_str& name);
 	bool has_motion(const shared_str& name);
