@@ -230,3 +230,8 @@ shared_str CEngineExternal::GetInventoryItemCountPrefix()
 {
 	return READ_IF_EXISTS(pOptions, r_string_wb, "ui", "InventoryItemCountPrefix", "x");
 }
+
+CInifile* CEngineExternal::GetIniFile()
+{
+	return pOptions;
+}
