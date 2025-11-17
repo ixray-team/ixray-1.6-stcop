@@ -385,15 +385,6 @@
 	<string id="st_track_opt_on">
 		<text>on</text>
 	</string>
-	<string id="Contacts">
-		<text>Contacts</text>
-	</string>
-	<string id="pda_btn_contacts">
-		<text>Contacts</text>
-	</string>
-	<string id="pda_btn_contacts_hint">
-		<text>Show stalker contact list</text>
-	</string>
 	<string id="st_undress_backpack">
 		<text>take off backpack</text>
 	</string>
@@ -414,6 +405,12 @@
 	</string>
 	<string id="ui_mm_mouse_sense_ui">
 		<text>Mouse sensitivity in UI</text>
+	</string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Glass mask effect</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text>Drops on Glass</text>
 	</string>
 	<string id="st_drop_amount">
 		<text>drop amount</text>
