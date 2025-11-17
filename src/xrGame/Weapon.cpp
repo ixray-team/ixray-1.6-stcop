@@ -747,7 +747,7 @@ void CWeapon::Load		(LPCSTR section)
 	if (pSettings->line_exist(hud_sect, "shell_params_section"))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "shell_params_section"), iMagazineSize + 1);
+		bone_params->Load(pSettings->r_string(hud_sect, "shell_params_section"));
 		m_shell_bones.push_back(bone_params);
 	}
 	else for (int i = 0; i < m_ammoTypes.size(); i++)
@@ -757,7 +757,7 @@ void CWeapon::Load		(LPCSTR section)
 		if (pSettings->line_exist(hud_sect, *params_section))
 		{
 			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section));
 			m_shell_bones.push_back(bone_params);
 		}
 	}
@@ -765,7 +765,7 @@ void CWeapon::Load		(LPCSTR section)
 	if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
 	{
 		SAmmoBonesParams* bone_params = new SAmmoBonesParams(undefined_ammo_type);
-		bone_params->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize + 1);
+		bone_params->Load(pSettings->r_string(hud_sect, "ammo_params_section"));
 		m_ammo_bones_mag.push_back(bone_params);
 	}
 	else for (int i = 0; i < m_ammoTypes.size(); i++)
@@ -775,7 +775,7 @@ void CWeapon::Load		(LPCSTR section)
 		if (pSettings->line_exist(hud_sect, *params_section))
 		{
 			SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-			bone_params->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+			bone_params->Load(pSettings->r_string(hud_sect, *params_section));
 			m_ammo_bones_mag.push_back(bone_params);
 		}
 	}
@@ -802,7 +802,7 @@ void CWeapon::Load		(LPCSTR section)
 	LoadRecoilPatterns(section);
 }
 
-void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
+void CWeapon::SAmmoBonesParams::Load(const shared_str& section)
 {
 	if (!AllBones.empty())
 	{
@@ -838,24 +838,28 @@ void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
 
 	ConfigurationMap.clear();
 
-	for (u32 i = 0; i < size; ++i)
+	u32 k = 0;
+
+	configuration.printf("configuration_%d", k);
+
+	while (pSettings->line_exist(section, configuration))
 	{
-		auto& ConfigNode = ConfigurationMap[i];
-		configuration.printf("configuration_%d", i);
-		ConfigNode.first = configuration;
-		if (pSettings->line_exist(section, configuration))
+		auto& node = ConfigurationMap[k];
+
+		node.first = configuration;
+
+		LPCSTR S = pSettings->r_string(section, *configuration);
+		if (S && S[0])
 		{
-			LPCSTR S = pSettings->r_string(section, *configuration);
-			if (S && S[0])
+			string128 Item = {};
+			u32 count = _GetItemCount(S);
+			for (u32 it = 0; it < count; ++it)
 			{
-				string128 Item = {};
-				u32 count = _GetItemCount(S);
-				for (u32 it = 0; it < count; ++it)
-				{
-					ConfigNode.second.push_back(_GetItem(S, it, Item));
-				}
+				node.second.push_back(_GetItem(S, it, Item));
 			}
 		}
+
+		configuration.printf("configuration_%d", ++k);
 	}
 }
 
