@@ -1851,58 +1851,71 @@ Mixer::AddEditorZone(sound_zone_params& params)
 }
 
 #ifndef DISABLE_RESONANCE_AUDIO
+static inline float DbToLinear(float db)
+{
+	return powf(10.0f, db / 20.0f);
+}
+
 static void
-Snd_EngineToResonanceParams(const sound_reverb_settings& s,
+Snd_EngineToResonanceParams(const sound_zone_params& s,
 	vraudio::ReflectionProperties& out_ref,
 	vraudio::ReverbProperties& out_rev)
 {
-	// zero-init
 	out_ref = vraudio::ReflectionProperties();
 	out_rev = vraudio::ReverbProperties();
 
-	// Room geometry: use environment_size (fallback to 10m)
-	float room_size = std::max(s.environment_size, 10.0f);
-	out_ref.room_dimensions[0] = room_size;
-	out_ref.room_dimensions[1] = room_size;
-	out_ref.room_dimensions[2] = room_size;
+	constexpr float HF_REF = 5000.0f;
+	constexpr float LF_REF = 250.0f;
 
-	// Default room position/rotation (origin, identity)
-	out_ref.room_position[0] = out_ref.room_position[1] = out_ref.room_position[2] = 0.0f;
+	// Room dimensions
+	out_ref.room_dimensions[0] = s.size.x;
+	out_ref.room_dimensions[1] = s.size.y;
+	out_ref.room_dimensions[2] = s.size.z;
+
+	out_ref.room_position[0] = s.center.x;
+	out_ref.room_position[1] = s.center.y;
+	out_ref.room_position[2] = s.center.z;
+
 	out_ref.room_rotation[0] = out_ref.room_rotation[1] = out_ref.room_rotation[2] = 0.0f;
 	out_ref.room_rotation[3] = 1.0f;
 
-	// Cutoff frequency derived from room_hf (interpreted as dB HF attenuation).
-	// Map 0 dB -> ~20kHz, negative values reduce cutoff.
-	float hf_db = s.room_hf;
-	float cutoff = 20000.0f * powf(10.0f, hf_db / 20.0f);
+	// High-frequency cutoff from EAX RoomHF (dB)
+	// RoomHF = -10000..0 dB  (attenuation)
+	// cutoff = HF_REF * 10^(RoomHF/20)
+	float hf_db = std::clamp(s.settings.room_hf, -10000.0f, 0.0f);
+	float cutoff = HF_REF * DbToLinear(hf_db);
 	out_ref.cutoff_frequency = std::clamp(cutoff, 200.0f, 20000.0f);
 
-	// Reflection coefficients: use environment_diffusion (0..1) as uniform coefficient
-	float diffusion = std::clamp(s.environment_diffusion, 0.0f, 1.0f);
-	for (int i = 0; i < 6; ++i) out_ref.coefficients[i] = diffusion;
-	// Reflection gain from reflections parameter (kept in reasonable range)
-	out_ref.gain = std::clamp(s.reflections, 0.0f, 3.16f);
+	// Reflection coefficients = diffusion
+	float diffusion = std::clamp(s.settings.environment_diffusion, 0.0f, 1.0f);
+	for (int i = 0; i < 6; i++)
+		out_ref.coefficients[i] = diffusion;
 
-	// Reverb (late) RT60 mapping:
-	// - base RT60 from decay_time
-	// - apply decay_hf_ratio on high-frequency bands
-	// - reduce HF RT60 by air_absorption_hf
-	float base_rt60 = std::clamp(s.decay_time, 0.05f, 60.0f);
-	float hf_ratio = std::clamp(s.decay_hf_ratio, 0.1f, 4.0f);
-	// Normalize air absorption to [0..1] (engine units unknown — clamp defensively)
-	float air_abs = std::clamp(s.air_absorption_hf, 0.0f, 100.0f) / 100.0f;
+	// Early reflection gain (EAX Reflections)
+	//	EAX uses dB -> RA uses linear gain
+	out_ref.gain = DbToLinear(std::clamp(s.settings.reflections, -10000.0f, 0.0f));
 
-	for (int i = 0; i < 9; ++i) {
-		// bands 0..5 -> low/mid, 6..8 -> high
-		if (i >= 6)
-			out_rev.rt60_values[i] = base_rt60 * hf_ratio * (1.0f - 0.5f * air_abs);
-		else
-			out_rev.rt60_values[i] = base_rt60 * (1.0f - 0.25f * air_abs);
+	// Late reverb gain (EAX Reverb)
+	out_rev.gain = DbToLinear(std::clamp(s.settings.reverb, -10000.0f, 0.0f));
 
-		out_rev.rt60_values[i] = std::clamp(out_rev.rt60_values[i], 0.01f, 120.0f);
+	// RT60 mapping for 9 bands
+	const float base_rt60 = std::clamp(s.settings.decay_time, 0.1f, 20.0f);
+	const float hf_ratio = std::clamp(s.settings.decay_hf_ratio, 0.1f, 4.0f);
+
+	// Air absorption HF is in dB/metre for HF_REF
+	float air_hf = std::max(0.0f, s.settings.air_absorption_hf);
+	float hf_abs_scale = powf(10.0f, -(air_hf) / 20.0f);
+
+	for (int i = 0; i < 9; i++)
+	{
+		bool isHF = (i >= 6);
+
+		float rt = base_rt60;
+		if (isHF)
+			rt *= hf_ratio * hf_abs_scale;
+
+		out_rev.rt60_values[i] = std::clamp(rt, 0.05f, 120.0f);
 	}
-
-	out_rev.gain = 1.0f;
 }
 #endif
 
@@ -1925,7 +1938,7 @@ Mixer::AddZone(sound_zone_params& params)
 	vraudio::ReflectionProperties reflection_properties = { };
 	vraudio::ReverbProperties reverb_properties = {};
 
-	Snd_EngineToResonanceParams(params.settings, reflection_properties, reverb_properties);
+	Snd_EngineToResonanceParams(params, reflection_properties, reverb_properties);
 	params.state.ra_context = vraudio::CreateResonanceAudioApi(SND_CHANNEL_COUNT, SND_BLOCKSIZE, SND_SAMPLERATE);
 	params.state.ra_context->EnableRoomEffects(true);
 	params.state.ra_context->SetReverbProperties(reverb_properties);
