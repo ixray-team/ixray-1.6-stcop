@@ -30,9 +30,19 @@ public:
 
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return this; }
 
+	bool CheckRLMisfireRocket();
+
 protected:
 	virtual bool	AllowBore		();
 	virtual void	PlayAnimReload	();
+
+	struct
+	{
+		float start_tr = 0.0f;
+		float end_tr = 0.0f;
+		float start_prob = 0.0f;
+		float end_prob = 0.0f;
+	} m_rocket_explode_params;
 
 	shared_str	m_sRocketSection;
 
