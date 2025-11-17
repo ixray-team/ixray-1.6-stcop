@@ -81,7 +81,6 @@
 #include "ui\options_tabs\ui_mm_opt_video.xml"
 #include "ui\options_tabs\ui_mm_opt_video_adv.xml"
 #include "ui\options_tabs\ui_mm_opt_sound.xml"
-#include "ui\options_tabs\ui_mm_opt_gameplay.xml"
 #include "ui\options_tabs\ui_mm_opt_controls.xml"
 
     <download_static x="251" y="717" width="482" height="51" stretch="1">
