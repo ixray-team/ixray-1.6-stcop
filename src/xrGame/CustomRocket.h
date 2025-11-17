@@ -28,6 +28,7 @@ class CCustomRocket : public CPhysicItem,
 private:
 	typedef CPhysicItem inherited;
 	friend CRocketLauncher;
+	friend CWeaponRPG7;
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Generic
