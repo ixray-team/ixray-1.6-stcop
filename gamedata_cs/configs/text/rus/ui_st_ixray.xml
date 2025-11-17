@@ -433,4 +433,10 @@
 	<string id="ui_mm_wpn_aim_toggle">
 		<text>Прицеливание по клику</text>
 	</string>
+    <string id="st_gameplay_settings">
+        <text>Игровой процесс</text>
+    </string>
+    <string id="st_ui_settings">
+        <text>Интерфейс</text>
+    </string>
 </string_table>
