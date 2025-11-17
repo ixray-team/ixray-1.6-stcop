@@ -385,20 +385,26 @@
 	<string id="st_track_opt_on">
 		<text>on</text>
 	</string>
-	<string id="Contacts">
-		<text>Contacts</text>
-	</string>
-	<string id="pda_btn_contacts">
-		<text>Contacts</text>
-	</string>
-	<string id="pda_btn_contacts_hint">
-		<text>Show stalker contact list</text>
-	</string>
 	<string id="st_undress_backpack">
 		<text>take off backpack</text>
 	</string>
 	<string id="st_dress_backpack">
 		<text>put on backpack</text>
+	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Camera bobbing factor</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Slowdown after damage</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Toggle Aim</text>
+	</string>
+	<string id="ui_mm_r4_use_gasmask">
+		<text>Glass mask effect</text>
+	</string>
+	<string id="ui_mm_r2_use_rain_drops">
+		<text>Drops on Glass</text>
 	</string>
 	<string id="st_drop_amount">
 		<text>drop amount</text>

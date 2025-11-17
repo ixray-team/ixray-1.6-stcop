@@ -388,20 +388,20 @@
 	<string id="st_track_opt_on">
 		<text>вкл.</text>
 	</string>
-	<string id="Contacts">
-		<text>Контакты</text>
-	</string>
-	<string id="pda_btn_contacts">
-		<text>Контакты</text>
-	</string>
-	<string id="pda_btn_contacts_hint">
-		<text>Показать список контактов сталкеров</text>
-	</string>
 	<string id="st_undress_backpack">
 		<text>снять рюкзак</text>
 	</string>
 	<string id="st_dress_backpack">
 		<text>надеть рюкзак</text>
+	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Сила качания камеры</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Замедление после урона</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Прицеливание по клику</text>
 	</string>
 	<string id="ui_mm_r4_use_gasmask">
 		<text>Эффект маски стекла</text>
