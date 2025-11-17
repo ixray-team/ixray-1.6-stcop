@@ -430,4 +430,10 @@
 	<string id="ui_mm_wpn_aim_toggle">
 		<text>Toggle Aim</text>
 	</string>
+    <string id="st_gameplay_settings">
+        <text>Gameplay</text>
+    </string>
+    <string id="st_ui_settings">
+        <text>User interface</text>
+    </string>
 </string_table>
