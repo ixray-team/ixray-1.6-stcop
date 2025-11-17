@@ -430,4 +430,10 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Specify amount of items to take</text>
 	</string>
+	<string id="st_gameplay_settings">
+		<text>Gameplay</text>
+	</string>
+	<string id="st_ui_settings">
+		<text>User interface</text>
+	</string>
 </string_table>
