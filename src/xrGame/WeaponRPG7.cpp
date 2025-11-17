@@ -22,6 +22,11 @@ void CWeaponRPG7::Load	(LPCSTR section)
 	m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float	(section,"max_zoom_factor");
 
 	m_sRocketSection					= pSettings->r_string	(section,"rocket_class");
+
+	m_rocket_explode_params.start_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_condition", 0.0f);
+	m_rocket_explode_params.end_tr = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_condition", 0.0f);
+	m_rocket_explode_params.start_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_start_probability", 0.0f);
+	m_rocket_explode_params.end_prob = READ_IF_EXISTS(pSettings, r_float, section, "rocket_misfunc_end_probability", 0.0f);
 }
 
 bool CWeaponRPG7::AllowBore()
@@ -148,6 +153,57 @@ void CWeaponRPG7::SwitchState(u32 S)
 	inherited::SwitchState(S);
 }
 
+bool CWeaponRPG7::CheckRLMisfireRocket()
+{
+	if (!ParentIsActor() || getRocketCount() <= 0 || GetAmmoElapsed() <= 0)
+	{
+		return false;
+	}
+
+	shared_str sect = cNameSect();
+	
+	float start_tr = m_rocket_explode_params.start_tr;
+	float end_tr = m_rocket_explode_params.end_tr;
+	float start_prob = m_rocket_explode_params.start_prob;
+	float end_prob = m_rocket_explode_params.end_prob;
+	float cond = GetCondition();
+	
+	bool is_expl = false;
+	
+	if (cond > start_tr || start_tr == end_tr)
+	{
+		is_expl = false;
+	}
+	else if (cond < end_tr)
+	{
+		is_expl = ::Random.randF(0.0f, 1.0f) < end_prob;
+	}
+	else
+	{
+		is_expl = ::Random.randF(0.0f, 1.0f) < start_prob + (end_prob - start_prob) * (start_tr - cond) / (start_tr - end_tr);
+	}
+	
+	if (is_expl)
+	{
+		Fvector p = Position();
+		Fvector n = { 0.0f, 1.0f, 0.0f };
+		CCustomRocket* r = getCurrentRocket();
+		DetachRocket(r->ID(), true);
+		r->Contact(p, n);
+	
+		while (getRocketCount())
+		{
+			dropCurrentRocket();
+		}
+	
+		m_magazine.pop_back();
+		--iAmmoElapsed;
+		UpdateMissileVisibility();
+	}
+
+	return is_expl;
+}
+
 void CWeaponRPG7::FireStart()
 {
 	if (!iAmmoElapsed)
@@ -156,6 +212,11 @@ void CWeaponRPG7::FireStart()
 		{
 			ReloadMagazine();
 		}
+	}
+
+	if (CheckRLMisfireRocket())
+	{
+		return;
 	}
 
 	inherited::FireStart();
