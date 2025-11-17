@@ -87,7 +87,6 @@
 #include "ui\options_tabs\ui_mm_opt_video.xml"
 #include "ui\options_tabs\ui_mm_opt_video_adv.xml"
 #include "ui\options_tabs\ui_mm_opt_sound.xml"
-#include "ui\options_tabs\ui_mm_opt_gameplay.xml"
 #include "ui\options_tabs\ui_mm_opt_controls.xml"
 	
 	<frame x="0" y="0" width="470" height="330">
