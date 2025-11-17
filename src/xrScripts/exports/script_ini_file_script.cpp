@@ -17,6 +17,26 @@ CScriptIniFile *get_system_ini()
 	return	((CScriptIniFile*)pSettings);
 }
 
+CScriptIniFile* get_external_ini()
+{
+	return	((CScriptIniFile*)EngineExternal().GetIniFile());
+}
+
+bool is_cop()
+{
+	return EngineExternal().CallOfPripyatMode();
+}
+
+bool is_cs()
+{
+	return EngineExternal().ClearSkyMode();
+}
+
+bool is_soc()
+{
+	return EngineExternal().ShadowOfChernobylMode();
+}
+
 CScriptIniFile* reload_system_ini()
 {
 	pSettings->Destroy(const_cast<CInifile*>(pSettings));
@@ -143,7 +163,12 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
 			.def("r_line", &::r_line, out_value<4>() + out_value<5>()),
 
+		def("is_cop",				&is_cop),
+		def("is_cs",				&is_cs),
+		def("is_soc",				&is_soc),
+
 		def("system_ini",			&get_system_ini),
+		def("external_ini",			&get_external_ini),
 		def("reload_system_ini",	&reload_system_ini),
 		def("create_ini",			&create_ini),
 		def("read_ini",				&read_ini),
