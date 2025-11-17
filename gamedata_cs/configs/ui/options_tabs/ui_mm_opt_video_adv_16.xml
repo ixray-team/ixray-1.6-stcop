@@ -6,7 +6,7 @@
 		<templ_item width="375" height="25"/>
 
 		<cap_template x="17" y="0" width="119" height="21">
-			<text font="letterica16" color="ui_6"/>
+			<text font="letterica16" color="ui_6" vert_align="c"/>
 		</cap_template>
 		<track_template_float x="162" y="0" width="200" height="21" show_value="1">
 			<options_item entry="console_command_undefined_please_check_your_options_script" group="mm_opt_video_adv"/>
@@ -29,7 +29,7 @@
 		</list_template>
 	
         <cap_header_setup x="17" y="0" width="119" height="15">
-			<text font="letterica16" color="ui_6"/>
+			<text font="letterica16" color="ui_6" vert_align="c"/>
         </cap_header_setup>
         <header_setup x="0" y="7" width="370" height="17">
             <texture a="150">ui_table_button_e</texture>
