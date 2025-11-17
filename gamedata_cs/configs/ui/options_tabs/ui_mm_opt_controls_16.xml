@@ -1,11 +1,11 @@
 	<tab_controls>
 		<cap_mousesens x="17" y="20" width="125" height="21">
-			<text font="letterica16" color="ui_6">ui_mm_mouse_sense</text>
+			<text font="letterica16" color="ui_6" vert_align="c">ui_mm_mouse_sense</text>
 		</cap_mousesens>
 		<cap_keyboardsetup x="6" y="95" width="380" height="23">
 			<texture>ui_brokenline</texture>
       <auto_static x="8" y="0" width="372" height="23">
-        <text font="letterica16" color="ui_6">ui_mm_keyboard_setup</text>
+        <text font="letterica16" color="ui_6" vert_align="c">ui_mm_keyboard_setup</text>
       </auto_static>
     </cap_keyboardsetup>
 	
@@ -14,7 +14,7 @@
 		</track_mousesens>
 		<check_mouseinvert x="17" y="55" width="27" height="21" stretch="1">
 			<options_item entry="mouse_invert" group="mm_opt_controls"/>
-			<text font="letterica16" color="ui_6">ui_mm_invert_mouse</text>
+			<text font="letterica16" color="ui_6" vert_align="c">ui_mm_invert_mouse</text>
 		</check_mouseinvert>
 		<key_binding x="8" y="120" width="376" height="199">
 			<!-- headers -->
