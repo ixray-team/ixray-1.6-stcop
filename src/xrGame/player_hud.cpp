@@ -279,6 +279,11 @@ void player_hud_motion_container::load_bonepart_motions(IKinematicsAnimated* mod
 			string512 str_item = {};
 			_GetItem(anm.c_str(), j, str_item);
 			ahim->m_bone_parts.push_back(str_item);
+
+			if (std::find(m_banned_bone_parts.begin(), m_banned_bone_parts.end(), str_item) == m_banned_bone_parts.end())
+			{
+				m_banned_bone_parts.push_back(str_item);
+			}
 		}
 
 		ahim->m_anim_speed = 1.0f;
@@ -662,17 +667,19 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, EHudMixType
 		u16 pc = ka->partitions().count();
 		for (u16 pid = 0; pid < pc; ++pid)
 		{
-			bool is_default = ka->partitions().part(pid).Name == "default";
-			bool skip = pc > 1 && anm != nullptr && !is_default;
-			if (skip && !anm->m_bone_parts.empty())
+			const shared_str& part_name = ka->partitions().part(pid).Name;
+
+			bool skip = true;
+
+			if (anm != nullptr)
 			{
-				for (const shared_str& bone_part : anm->m_bone_parts)
+				if (std::find(anm->m_bone_parts.begin(), anm->m_bone_parts.end(), part_name) != anm->m_bone_parts.end())
 				{
-					if (ka->partitions().part(pid).Name == bone_part)
-					{
-						skip = false;
-						break;
-					}
+					skip = false;
+				}
+				else if (std::find(m_hand_motions.m_banned_bone_parts.begin(), m_hand_motions.m_banned_bone_parts.end(), part_name) == m_hand_motions.m_banned_bone_parts.end())
+				{
+					skip = false;
 				}
 			}
 
