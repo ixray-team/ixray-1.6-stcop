@@ -436,4 +436,10 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Укажите количество предметов для взятия</text>
 	</string>
+	<string id="st_gameplay_settings">
+		<text>Игровой процесс</text>
+	</string>
+	<string id="st_ui_settings">
+		<text>Интерфейс</text>
+	</string>
 </string_table>
