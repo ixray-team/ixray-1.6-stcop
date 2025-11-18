@@ -13,9 +13,13 @@
 inline CActor* GetActor()
 {
     if (IsGameTypeSingle())
+    {
         return Actor();
+    }
 
-    return smart_cast<CActor*>(Level().CurrentViewEntity());
+    CObject* current_entity = Level().CurrentViewEntity();
+
+    return current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 }
 
 #define DECLARE_OUTFIT_PROTECTION_DELEGATE(protectionType) \
@@ -43,11 +47,9 @@ DECLARE_OUTFIT_PROTECTION_DELEGATE(eHitTypeExplosion);
 #define DECLARE_HELMET_PROTECTION_DELEGATE(protectionType) \
 float GetHelmet##protectionType##Protection() \
 { \
-    PIItem itm = GetActor()->inventory().ItemFromSlot(HELMET_SLOT); \
-    CHelmet* helmet = smart_cast<CHelmet*>(itm); \
-    if (helmet != nullptr) \
+    if (CHelmet* ActorHelmet = GetActor()->GetHelmet()) \
     { \
-        return helmet->GetDefHitTypeProtection(ALife::protectionType); \
+        return ActorHelmet->GetDefHitTypeProtection(ALife::protectionType); \
     } \
     return 0.0f; \
 }

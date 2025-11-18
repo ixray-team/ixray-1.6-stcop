@@ -112,9 +112,9 @@ class CUIVote;
 class CUIMessageBoxEx;
 class CUIMpAdminMenu;
 
-class game_cl_mp :public game_cl_GameState
+class game_cl_mp : public game_cl_GameState
 {
-	typedef game_cl_GameState	inherited;
+	using inherited = game_cl_GameState;
 protected:
 
 	CL_TEAM_DATA_LIST				TeamList;
@@ -324,5 +324,8 @@ public:
 				static void	generate_file_name(string_path& file_name, LPCSTR file_suffix, SYSTEMTIME const& date_time);
 				static LPCSTR	make_file_name(LPCSTR session_id, string_path & dest);
 //-------------------------------------------------------------------------------------------------
+
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
+
 #include "game_cl_mp_messages_menu.h"
 };

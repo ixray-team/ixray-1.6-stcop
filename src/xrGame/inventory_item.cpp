@@ -423,8 +423,7 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 	{
 		CSE_Abstract*		D	= F_entity_Create(item_section_name);
 		R_ASSERT		   (D);
-		CSE_ALifeDynamicObject	*l_tpALifeDynamicObject = 
-								smart_cast<CSE_ALifeDynamicObject*>(D);
+		CSE_ALifeDynamicObject* l_tpALifeDynamicObject = D->cast_alife_dynamic_object();
 		R_ASSERT			(l_tpALifeDynamicObject);
 		
 		l_tpALifeDynamicObject->m_tNodeID = (g_dedicated_server)?u32(-1):object().ai_location().level_vertex_id();
@@ -470,15 +469,17 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 //	m_bInInterpolation				= false;
 //	m_bInterpolate					= false;
 
-	m_flags.set						(Fuseful_for_NPC, TRUE);
-	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeObject					*alife_object = smart_cast<CSE_ALifeObject*>(e);
-	if (alife_object)	{
+	m_flags.set(Fuseful_for_NPC, TRUE);
+	CSE_Abstract* e = (CSE_Abstract*)(DC);
+	CSE_ALifeObject* alife_object = e != nullptr ? e->cast_alife_object() : nullptr;
+	if (alife_object)
+	{
 		m_flags.set(Fuseful_for_NPC, alife_object->m_flags.test(CSE_ALifeObject::flUsefulForAI));
 	}
 
-	CSE_ALifeInventoryItem			*pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e);
-	if (!pSE_InventoryItem)			return TRUE;
+	CSE_ALifeInventoryItem* pSE_InventoryItem = e != nullptr ? e->cast_inventory_item() : nullptr;
+	if (!pSE_InventoryItem)
+		return TRUE;
 
 	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;

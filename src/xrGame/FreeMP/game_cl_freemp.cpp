@@ -93,12 +93,14 @@ void game_cl_freemp::shedule_Update(u32 dt)
 		m_pVoiceChat->Update();
 	}
 
-	for (auto cl : players)
+	for (const auto& cl : players)
 	{
 		game_PlayerState* ps = cl.second;
 		if (!ps || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 
-		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
+		CObject* finded_object = Level().Objects.net_Find(ps->GameID);
+
+		CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 		if (!pActor || !pActor->g_Alive()) continue;
 
 		pActor->SetName(ps->getName());
@@ -128,8 +130,9 @@ void game_cl_freemp::TranslateGameMessage(u32 msg, NET_Packet& P)
 		if (m_game_ui && m_game_ui->ActorMenu().IsShown() && m_game_ui->ActorMenu().GetMenuMode() == mmUpgrade)
 		{
 			u16 itemId = P.r_u16();
-			PIItem item = smart_cast<PIItem>(Level().Objects.net_Find(itemId));
-			if (item)
+			CObject* finded_item = Level().Objects.net_Find(itemId);
+
+			if (PIItem item = finded_item != nullptr ? finded_item->cast_inventory_item() : nullptr)
 			{
 				m_game_ui->ActorMenu().OnSuccessRepairMP(item);
 			}
@@ -173,8 +176,8 @@ bool game_cl_freemp::OnKeyboardPress(int key)
 		CObject* curr = Level().CurrentControlEntity();
 		if (!curr) return(false);
 
-		bool is_actor = !!smart_cast<CActor*>(curr);
-		bool is_spectator = !!smart_cast<CSpectator*>(curr);
+		bool is_actor = curr->cast_actor() != nullptr;
+		bool is_spectator = curr->cast_spectator() != nullptr;
 
 		game_PlayerState* ps = local_player;
 
@@ -185,7 +188,7 @@ bool game_cl_freemp::OnKeyboardPress(int key)
 
 		if (b_need_to_send_ready)
 		{
-			CGameObject* GO = smart_cast<CGameObject*>(curr);
+			CGameObject* GO = curr->cast_game_object();
 			NET_Packet			P;
 			GO->u_EventGen(P, GE_GAME_EVENT, GO->ID());
 			P.w_u16(GAME_EVENT_PLAYER_READY);

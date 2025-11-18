@@ -158,18 +158,7 @@ bool CWeaponAmmo::Useful() const
 	// Если IItem еще не полностью использованый, вернуть true
 	return !!m_boxCurr;
 }
-/*
-s32 CWeaponAmmo::Sort(PIItem pIItem) 
-{
-	// Если нужно разместить IItem после this - вернуть 1, если
-	// перед - -1. Если пофиг то 0.
-	CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(pIItem);
-	if(!l_pA) return 0;
-	if(xr_strcmp(cNameSect(), l_pA->cNameSect())) return 0;
-	if(m_boxCurr <= l_pA->m_boxCurr) return 1;
-	else return -1;
-}
-*/
+
 bool CWeaponAmmo::Get(CCartridge &cartridge) 
 {
 	if(!m_boxCurr) return false;
