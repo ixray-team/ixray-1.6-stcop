@@ -6,7 +6,7 @@ class CUIGameTDM;
 
 class game_cl_TeamDeathmatch :public game_cl_Deathmatch
 {
-typedef game_cl_Deathmatch inherited;
+	using inherited = game_cl_Deathmatch;
 	CUIGameTDM*							m_game_ui;
 protected:
 	bool								m_bFriendlyIndicators;
@@ -83,6 +83,10 @@ protected:
 
 	virtual		u8						GetTeamCount			() { return 2; };
 	virtual		void					OnConnected				();
+
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
+	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return this; }
+	virtual game_cl_TeamDeathmatch* cast_game_cl_teamdeathmatch() override { return this; }
 };
 
 IC bool	TDM_Compare_Players		(game_PlayerState* p1, game_PlayerState* p2)

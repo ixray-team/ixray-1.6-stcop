@@ -4,10 +4,10 @@
 
 class xrServer;
 
-class	game_sv_Single				: public game_sv_GameState
+class game_sv_Single final : public game_sv_GameState
 {
 private:
-	typedef game_sv_GameState inherited;
+	using inherited = game_sv_GameState;
 
 public:
 									game_sv_Single			();
@@ -54,4 +54,6 @@ public:
 		VERIFY						(m_server);
 		return						(*m_server);
 	}
+
+	virtual game_sv_Single* cast_game_sv_single() override { return this; }
 };

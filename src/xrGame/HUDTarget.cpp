@@ -169,7 +169,7 @@ void CHUDTarget::Render()
 
 	VERIFY				(g_bRendering);
 
-	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	CActor* Actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (!Actor)
 		return;
 
@@ -180,7 +180,7 @@ void CHUDTarget::Render()
 
 	CObject*	O		= Level().CurrentEntity();
 	if (0==O)			return;
-	CEntity*	E		= smart_cast<CEntity*>(O);
+	CEntity*	E		= O->cast_entity();
 	if (0==E)			return;
 
 	Fvector p1			= Device.vCameraPosition;
@@ -208,11 +208,11 @@ void CHUDTarget::Render()
 
 		if ((PP.RQ.O && PP.RQ.O->getVisible()) || is_poltergeist)
 		{
-			CEntityAlive* E_ = smart_cast<CEntityAlive*>(PP.RQ.O);
-			CEntityAlive* pCurEnt = smart_cast<CEntityAlive*>(Level().CurrentEntity());
-			PIItem l_pI = smart_cast<PIItem>(PP.RQ.O);
-			CActor* pActor = smart_cast<CActor*>	(PP.RQ.O);
-			CInventoryOwner* our_inv_owner = smart_cast<CInventoryOwner*>(pCurEnt);
+			CEntityAlive* E_ = PP.RQ.O->cast_entity_alive();
+			CEntityAlive* pCurEnt = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity_alive() : nullptr;
+			PIItem l_pI = PP.RQ.O->cast_inventory_item();
+			CActor* pActor = PP.RQ.O->cast_actor();
+			CInventoryOwner* our_inv_owner = pCurEnt != nullptr ? pCurEnt->cast_inventory_owner() : nullptr;
 
 			if (E_ && E_->g_Alive())
 			{
@@ -222,7 +222,7 @@ void CHUDTarget::Render()
 				}
 				else if (!pActor || (pActor && IsGameTypeSingleCompatible()))
 				{
-					CInventoryOwner* others_inv_owner = smart_cast<CInventoryOwner*>(E_);
+					CInventoryOwner* others_inv_owner = E_->cast_inventory_owner();
 
 					if (our_inv_owner && others_inv_owner)
 					{
