@@ -16,7 +16,7 @@
 CtaGameArtefact::CtaGameArtefact()
 {
 	// game object must present...
-	m_game				= smart_cast<game_cl_CaptureTheArtefact*>(&Game());
+	m_game				= Game().cast_game_cl_capturetheartefact();
 	m_artefact_rpoint	= nullptr;
 	m_my_team			= etSpectatorsTeam;
 }

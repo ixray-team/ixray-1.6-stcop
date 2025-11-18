@@ -3,16 +3,13 @@
 // ExoOutfit - защитный костюм с усилением
 ///////////////////////////////////////////////////////////////
 
-
 #pragma once
 
 #include "CustomOutfit.h"
 
-class CExoOutfit: public CCustomOutfit
+class CExoOutfit final : public CCustomOutfit
 {
-private:
-    typedef	CCustomOutfit inherited;
 public:
-	CExoOutfit(void);
-	virtual ~CExoOutfit(void);
+	CExoOutfit() = default;
+	virtual ~CExoOutfit() = default;
 };

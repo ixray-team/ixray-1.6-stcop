@@ -779,20 +779,23 @@ bool CAI_Stalker::undetected_anomaly	()
 	return					(inside_anomaly() || brain().CStalkerPlanner::m_storage.property(StalkerDecisionSpace::eWorldPropertyAnomaly));
 }
 
-bool CAI_Stalker::inside_anomaly		()
+bool CAI_Stalker::inside_anomaly()
 {
-	xr_vector<CObject*>::const_iterator	I = feel_touch.begin();
-	xr_vector<CObject*>::const_iterator	E = feel_touch.end();
-	for ( ; I != E; ++I) {
-		CCustomZone			*zone = (*I)&&(*I)->cast_game_object() ? (*I)->cast_game_object()->cast_custom_zone() : NULL;
-		if ( zone && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone) ) {
-			if (smart_cast<CRadioactiveZone*>(zone))
+	for (const auto& feel_object : feel_touch)
+	{
+		CCustomZone* zone = feel_object != nullptr && feel_object->cast_game_object() != nullptr ? feel_object->cast_game_object()->cast_custom_zone() : nullptr;
+		if (zone != nullptr && (zone->restrictor_type() != RestrictionSpace::eRestrictorTypeNone))
+		{
+			if (zone->cast_radioactive_zone())
+			{
 				continue;
+			}
 
-			return			(true);
+			return true;
 		}
 	}
-	return					(false);
+
+	return false;
 }
 
 bool CAI_Stalker::zoom_state			() const

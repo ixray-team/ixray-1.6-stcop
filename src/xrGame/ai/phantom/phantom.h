@@ -5,7 +5,7 @@
 
 class CParticlesObject;
 
-class CPhantom : public CEntity {
+class CPhantom final : public CEntity {
 	
 	typedef	CEntity inherited;
 private:

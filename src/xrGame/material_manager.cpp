@@ -60,8 +60,9 @@ void CMaterialManager::reinit		()
 	m_step_id				= 0;
 	m_run_mode				= false;
 
-	CEntityAlive			*entity_alive = smart_cast<CEntityAlive*>(m_object);
-	if (entity_alive) {
+	CEntityAlive* entity_alive = m_object != nullptr ? m_object->cast_entity_alive() : nullptr;
+	if (entity_alive)
+	{
 		//VERIFY( entity_alive->character_physics_support()->movement()->CharacterExist() );
 		entity_alive->character_physics_support()->movement()->SetPLastMaterialIDX	(&m_last_material_idx);
 

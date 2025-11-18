@@ -309,7 +309,7 @@ void game_cl_ArtefactHunt::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 	if(!pObject)
 		return;
 
-	CArtefact* pArtefact = smart_cast<CArtefact*>(pObject);
+	CArtefact* pArtefact = pObject->cast_artefact();
 	VERIFY(pArtefact);
 
 	CObject* pParent = pArtefact->H_Parent();
@@ -370,7 +370,7 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 
 			if (local_player && Level().CurrentControlEntity())
 			{
-				if (smart_cast<CActor*>(Level().CurrentControlEntity()))
+				if (Level().CurrentControlEntity()->cast_actor() != nullptr)
 				{
 					if(m_game_ui) m_game_ui->SetBuyMsgCaption("");
 					if (m_bBuyEnabled)
@@ -527,7 +527,7 @@ BOOL game_cl_ArtefactHunt::CanCallBuyMenu			()
 		return FALSE;
 	};*/
 
-	CActor* pCurActor = smart_cast<CActor*> (Level().CurrentEntity());
+	CActor* pCurActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (!pCurActor || !pCurActor->g_Alive()) return FALSE;
 
 	return TRUE;
@@ -632,25 +632,6 @@ void	game_cl_ArtefactHunt::UpdateMapLocations		()
 						Level().MapManager().RemoveMapLocationByObjectID(artefactID);
 					};
 
-					/*bool OutfitWorkDown = false;
-
-					CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(artefactBearerID));
-					if (pActor)
-					{
-						CCustomOutfit* pOutfit			= pActor->GetOutfit();
-						if (pOutfit && pOutfit->CLS_ID == CLSID_EQUIPMENT_SCIENTIFIC)
-						{
-							if (!pActor->AnyAction())
-							{
-								if (Level().MapManager().HasMapLocation(ARTEFACT_ENEMY, artefactID))
-								{
-									Level().MapManager().RemoveMapLocationByObjectID(artefactID);									
-								}
-								OutfitWorkDown = true;
-							}
-						}
-					}
-					if (!OutfitWorkDown && */
 					if (!Level().MapManager().HasMapLocation(ARTEFACT_ENEMY, artefactID))
 					{
 						(Level().MapManager().AddMapLocation(ARTEFACT_ENEMY, artefactID))->EnablePointer();
@@ -699,7 +680,7 @@ void game_cl_ArtefactHunt::OnSpawn(CObject* pObj)
 {
 	inherited::OnSpawn(pObj);
 	if (!pObj) return;
-	CArtefact* pArtefact = smart_cast<CArtefact*>(pObj);
+	CArtefact* pArtefact = pObj->cast_artefact();
 	if (pArtefact)
 	{
 		if (xr_strlen(m_Eff_Af_Spawn))
@@ -737,7 +718,7 @@ void	game_cl_ArtefactHunt::OnBuySpawnMenu_Ok		()
 {
 	CObject* curr = Level().CurrentEntity();
 	if (!curr) return;
-	CGameObject* GO = smart_cast<CGameObject*>(curr);
+	CGameObject* GO = curr->cast_game_object();
 	NET_Packet			P;
 	GO->u_EventGen		(P,GE_GAME_EVENT,GO->ID()	);
 	P.w_u16(GAME_EVENT_PLAYER_BUY_SPAWN);
@@ -747,7 +728,8 @@ void	game_cl_ArtefactHunt::OnBuySpawnMenu_Ok		()
 void	game_cl_ArtefactHunt::OnSellItemsFromRuck		()
 {
 	if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || !local_player->testFlag(GAME_PLAYER_FLAG_ONBASE)) return;
-	CActor* pCurActor = smart_cast<CActor*> (Level().Objects.net_Find	(local_player->GameID));
+	CObject* finded_object = Level().Objects.net_Find(local_player->GameID);
+	CActor* pCurActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	if (!pCurActor) return;
 	
 	TIItemContainer::const_iterator	IRuck = pCurActor->inventory().m_ruck.begin();

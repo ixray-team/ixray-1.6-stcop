@@ -84,7 +84,6 @@ IPHStaticGeomShell* P_BuildStaticGeomShell(IPhysicsShellHolder* obj,ObjectContac
 	CPHStaticGeomShell* pUnbrokenObject =P_BuildStaticGeomShell(obj,object_contact_callback,b);
 
 	
-	//IKinematics* K=smart_cast<IKinematics*>(V); VERIFY(K);
 	K->CalculateBones(TRUE);
 	for (u16 k=0; k<K->LL_BoneCount(); k++){
 		K->LL_GetBoneInstance(k).set_callback( bctPhysics,cb,K->LL_GetBoneInstance(k).callback_param(), TRUE);

@@ -42,10 +42,13 @@ CInventoryItem *weapon_to_kill(const CAI_Stalker *object)
 	if (!object->inventory().ItemFromSlot(INV_SLOT_2) && !object->inventory().ItemFromSlot(PISTOL_SLOT_NEW))
 		return			(object->best_weapon());
 
-	CWeaponMagazined	*temp = smart_cast<CWeaponMagazined*>(object->inventory().ItemFromSlot(INV_SLOT_2));
+	PIItem item_from_slot = object->inventory().ItemFromSlot(INV_SLOT_2);
+
+	CWeaponMagazined* temp = item_from_slot != nullptr ? item_from_slot->cast_weapon_magazined() : nullptr;
 	if (!temp)
 	{
-		temp = smart_cast<CWeaponMagazined*>(object->inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+		item_from_slot = object->inventory().ItemFromSlot(PISTOL_SLOT_NEW);
+		temp = item_from_slot != nullptr ? item_from_slot->cast_weapon_magazined() : nullptr;
 		if (!temp)
 			return			(object->best_weapon());
 
@@ -332,7 +335,7 @@ void CStalkerActionKillWounded::execute					()
 	HS.weaponID				= weapon_to_kill(&object())->object().ID();
 	HS.dir					= Fvector().set(0.f,0.f,1.f);
 	HS.power				= 1.f;
-	HS.boneID				= smart_cast<IKinematics*>((const_cast<CEntityAlive*>(enemy))->Visual())->LL_GetBoneRoot();
+	HS.boneID				= PKinematics((const_cast<CEntityAlive*>(enemy))->Visual())->LL_GetBoneRoot();
 	HS.p_in_bone_space		= Fvector().set(0.f,0.f,0.f);
 	HS.impulse				= 1.f;
 	HS.hit_type				= ALife::eHitTypeWound;

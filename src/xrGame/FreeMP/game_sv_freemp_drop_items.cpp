@@ -7,7 +7,8 @@
 void game_sv_freemp::FillDeathActorRejectItems(CSE_ActorMP* actor, xr_vector<CSE_Abstract*>& to_reject)
 {
 	R_ASSERT(actor);
-	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(actor->ID));
+	CObject* finded_object = Level().Objects.net_Find(actor->ID);
+	CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 
 	VERIFY2(pActor, make_string<const char*>("Actor not found. actor_id = [%d]", actor->ID));
 	if (!pActor) {

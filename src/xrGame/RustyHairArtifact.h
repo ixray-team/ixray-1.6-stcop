@@ -6,7 +6,7 @@
 #pragma once
 #include "Artefact.h"
 
-class CRustyHairArtefact : public CArtefact 
+class CRustyHairArtefact final : public CArtefact 
 {
 private:
 	typedef CArtefact inherited;

@@ -109,7 +109,7 @@ void CWeaponMagazinedWGrenade::net_Destroy()
 
 BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 {
-	CSE_ALifeItemWeapon* const weapon = smart_cast<CSE_ALifeItemWeapon*>(DC);
+	CSE_ALifeItemWeapon* const weapon = DC->cast_item_weapon();
 	R_ASSERT(weapon);
 	if (IsGameTypeSingle())
 	{
@@ -587,7 +587,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
 		CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
 
-		CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
+		CExplosiveRocket* pGrenade = getCurrentRocket()->cast_explosive_rocket();
 		VERIFY(pGrenade);
 		pGrenade->SetInitiator(H_Parent()->ID());
 

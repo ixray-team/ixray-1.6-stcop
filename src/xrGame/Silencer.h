@@ -6,7 +6,7 @@
 #pragma once
 #include "inventory_item_object.h"
 
-class CSilencer : public CInventoryItemObject {
+class CSilencer final : public CInventoryItemObject {
 private:
 	typedef CInventoryItemObject inherited;
 public:

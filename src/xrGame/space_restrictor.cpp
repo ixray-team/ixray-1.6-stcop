@@ -35,54 +35,64 @@ float CSpaceRestrictor::Radius		() const
 	return							(CFORM()->getRadius());
 }
 
-BOOL CSpaceRestrictor::net_Spawn	(CSE_Abstract* data)
+BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 {
-	actual							(false);
+	actual(false);
 
-	CSE_Abstract					*abstract = (CSE_Abstract*)data;
-	CSE_ALifeSpaceRestrictor		*se_shape = smart_cast<CSE_ALifeSpaceRestrictor*>(abstract);
-	R_ASSERT						(se_shape);
+	CSE_Abstract* abstract = (CSE_Abstract*)data;
+	CSE_ALifeSpaceRestrictor* se_shape = smart_cast<CSE_ALifeSpaceRestrictor*>(abstract);
+	R_ASSERT(se_shape);
 
-	m_space_restrictor_type			= se_shape->m_space_restrictor_type;
+	m_space_restrictor_type = se_shape->m_space_restrictor_type;
 
-	CCF_Shape						*shape = new CCF_Shape(this);
-	collidable.model				= shape;
+	CCF_Shape* shape = new CCF_Shape(this);
+	collidable.model = shape;
 
-	for (u32 i=0; i < se_shape->shapes.size(); ++i) {
-		CShapeData::shape_def		&S = se_shape->shapes[i];
-		switch (S.type) {
-			case 0 : {
-				shape->add_sphere	(S.data.sphere);
+	for (u32 i = 0; i < se_shape->shapes.size(); ++i)
+	{
+		CShapeData::shape_def& S = se_shape->shapes[i];
+		switch (S.type)
+		{
+			case 0:
+			{
+				shape->add_sphere(S.data.sphere);
 				break;
 			}
-			case 1 : {
-				shape->add_box		(S.data.box);
+			case 1:
+			{
+				shape->add_box(S.data.box);
 				break;
 			}
 		}
 	}
 
-	shape->ComputeBounds			();
+	shape->ComputeBounds();
 
-	BOOL							result = inherited::net_Spawn(data);
-	
+	BOOL result = inherited::net_Spawn(data);
+
 	if (!result)
-		return						(FALSE);
+	{
+		return FALSE;
+	}
 
 	CCustomZone* zone = cast_custom_zone();
 	const static bool isAiDieInAnomaly = EngineExternal()[EEngineExternalGame::EnableAiDieInAnomaly];
-	if (!isAiDieInAnomaly || !zone || smart_cast<CRadioactiveZone*>(zone))
+	if (!isAiDieInAnomaly || zone == nullptr || zone->cast_radioactive_zone() != nullptr)
+	{
 		SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
+	}
 
-	setEnabled						(FALSE);
-	setVisible						(FALSE);
+	setEnabled(FALSE);
+	setVisible(FALSE);
 
 	if (!ai().get_level_graph() || (RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type) == RestrictionSpace::eRestrictorTypeNone))
-		return						(TRUE);
+	{
+		return TRUE;
+	}
 
-	Level().space_restriction_manager().register_restrictor(this,RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
+	Level().space_restriction_manager().register_restrictor(this, RestrictionSpace::ERestrictorTypes(se_shape->m_space_restrictor_type));
 
-	return							(TRUE);
+	return TRUE;
 }
 
 void CSpaceRestrictor::net_Destroy	()

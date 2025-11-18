@@ -1,7 +1,7 @@
 #pragma once
 #include "CustomZone.h"
 
-class CNoGravityZone :
+class CNoGravityZone final :
 	public CCustomZone
 {
 typedef CCustomZone inherited;

@@ -36,7 +36,7 @@ struct						dSurfaceParameters;
 class CScriptEntityAction;
 class car_memory;
 
-class CCar : 
+class CCar final : 
 	public CEntity, 
 	public CScriptEntity,
 	public CPHUpdateObject,
