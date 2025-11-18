@@ -221,22 +221,6 @@ public:
 
 	CPickUpManager* GetPickupManager() { return pPickup; }
 
-	float previous_electronics_problems_counter = 0.0f;
-	float current_electronics_problems_counter = 0.0f;
-	float target_electronics_problems_counter = 0.0f;
-	bool last_problems_update_was_decrease = false;
-
-	void ResetElectronicsProblems();
-	void ResetElectronicsProblems_Full();
-	float PreviousElectronicsProblemsCnt() const;
-	bool ElectronicsProblemsImmediateApply();
-	bool ElectronicsProblemsInc();
-	float TargetElectronicsProblemsCnt() const;
-	float CurrentElectronicsProblemsCnt() const;
-	bool ElectronicsProblemsDec();
-	bool IsElectronicsProblemsDecreasing() const;
-	void UpdateElectronicsProblemsCnt(u32 dt);
-
 public:
 
 	//свойства артефактов
