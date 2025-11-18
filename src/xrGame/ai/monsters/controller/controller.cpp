@@ -273,7 +273,8 @@ void CController::load_friend_community_overrides(LPCSTR section)
 
 bool CController::is_community_friend_overrides(const CEntityAlive *entity_alive) const
 {
-	const CInventoryOwner	*IO = smart_cast<const CInventoryOwner*>(entity_alive);
+	CEntityAlive* cast_entity_alive = const_cast<CEntityAlive*>(entity_alive);
+	const CInventoryOwner* IO = cast_entity_alive != nullptr ? cast_entity_alive->cast_inventory_owner() : nullptr;
 	if (!IO) return false;
 	if (const_cast<CEntityAlive *>(entity_alive)->cast_base_monster()) return false;
 	
@@ -336,7 +337,7 @@ void CController::CheckSpecParams(u32 spec_params)
 void CController::InitThink()
 {
 	for	(u32 i=0; i<m_controlled_objects.size(); i++) {	
-		CBaseMonster *base = smart_cast<CBaseMonster*>(m_controlled_objects[i]);
+		CBaseMonster *base = m_controlled_objects[i] != nullptr ? m_controlled_objects[i]->cast_base_monster() : nullptr;
 		if (!base) continue;
 		if (base->EnemyMan.get_enemy()) 
 			EnemyMemory.add_enemy  (base->EnemyMan.get_enemy(), 
@@ -393,8 +394,10 @@ void CController::control_hit()
 {
 	Hit_Psy						(const_cast<CEntityAlive*>(EnemyMan.get_enemy()), 30.f);
 	
+	CEntityAlive* enemy = const_cast<CEntityAlive*>(EnemyMan.get_enemy());
+
 	// start postprocess
-	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
+	CActor *pA = enemy != nullptr ? enemy->cast_actor() : nullptr;
 	if (!pA) return;
 	
 	Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_control_effector.ce_time,m_control_effector.ce_amplitude,m_control_effector.ce_period_number,m_control_effector.ce_power));
@@ -777,7 +780,7 @@ void CController::OnEvent(NET_Packet& P, u16 type)
 				float const base_fov = g_fov;
 				float const dest_fov = g_fov - (g_fov - 10.f) * actor_psy_immunity;
 
-				IKinematicsAnimated* skel = smart_cast<IKinematicsAnimated*>(Visual());
+				IKinematicsAnimated* skel = Visual()->dcast_PKinematicsAnimated();
 
 				Actor()->Cameras().AddCamEffector(new CControllerPsyHitCamEffector(eCEControllerPsyHit, src_pos, target_pos,
 					control().animation().motion_time(skel->ID_Cycle_Safe("psy_attack_1"), Visual()),

@@ -776,7 +776,7 @@ void game_sv_TeamDeathmatch::OnObjectEnterTeamBase(u16 id, u16 zone_team)
 	CSE_ALifeCreatureActor* eActor	= smart_cast<CSE_ALifeCreatureActor*>(e_who);
 	if (eActor)
 	{
-		game_cl_mp*	tmp_cl_game = smart_cast<game_cl_mp*>(&Game());
+		game_cl_mp*	tmp_cl_game = Game().cast_game_cl_mp();
 		s16 mteam				= tmp_cl_game->ModifyTeam(s16(zone_team));
 		game_PlayerState* ps = eActor->owner->ps;
 		if (ps && (ps->team == mteam))
@@ -796,7 +796,7 @@ void game_sv_TeamDeathmatch::OnObjectLeaveTeamBase(u16 id, u16 zone_team)
 	CSE_ALifeCreatureActor* eActor	= smart_cast<CSE_ALifeCreatureActor*>(e_who);
 	if (eActor)
 	{
-		game_cl_mp*	tmp_cl_game = smart_cast<game_cl_mp*>(&Game());
+		game_cl_mp*	tmp_cl_game = Game().cast_game_cl_mp();
 		s16 mteam				= tmp_cl_game->ModifyTeam(s16(zone_team));
 		game_PlayerState* ps = eActor->owner->ps;
 		if (ps && (ps->team == mteam))

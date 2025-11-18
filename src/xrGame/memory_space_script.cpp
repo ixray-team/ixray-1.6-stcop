@@ -58,8 +58,10 @@ CScriptGameObject *CDangerObject_dependent_object(const CDangerObject *self_)
 	if (!self_->dependent_object())
 		return			(0);
 
-	const CGameObject	*game_object = smart_cast<const CGameObject*>(self_->dependent_object());
-	return				(game_object ? game_object->lua_game_object() : 0);
+	CObject* casted_object = const_cast<CObject*>(self_->dependent_object());
+
+	const CGameObject* game_object = casted_object != nullptr ? casted_object->cast_game_object() : nullptr;
+	return game_object != nullptr ? game_object->lua_game_object() : 0;
 }
 
 Fvector CDangerObject__position	(const CDangerObject *self_)

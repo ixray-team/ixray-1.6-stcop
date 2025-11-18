@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// RocketLauncher.cpp:	интерфейс дл€ семейства объектов 
-//						стрел€ющих гранатами и ракетами
+// RocketLauncher.cpp:	интерфейс для семейства объектов 
+//						стреляющих гранатами и ракетами
 //////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
@@ -11,76 +11,84 @@
 #include "ai_object_location.h"
 #include "../xrEngine/IGame_Persistent.h"
 
-CRocketLauncher::CRocketLauncher()
-{
-//	m_pRocket =  nullptr;
-}
-CRocketLauncher::~CRocketLauncher()
-{
-}
-void  CRocketLauncher::Load	(LPCSTR section)
+void CRocketLauncher::Load(LPCSTR section)
 {
 	m_fLaunchSpeed = pSettings->r_float(section, "launch_speed");
 }
 
 void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject* parent_rocket_launcher)
 {
-	if (OnClient())		return;
+	if (OnClient())
+	{
+		return;
+	}
 
-	CSE_Abstract*		D	= F_entity_Create(rocket_section.c_str());
-	R_ASSERT			(D);
-	CSE_Temporary		*l_tpTemporary = smart_cast<CSE_Temporary*>(D);
-	R_ASSERT			(l_tpTemporary);
-	l_tpTemporary->m_tNodeID= (g_dedicated_server)?u32(-1) : parent_rocket_launcher->ai_location().level_vertex_id();
-	D->s_name			= rocket_section;
-	D->set_name_replace	("");
-	
-//.	D->s_gameid			=	u8(GameID());
-	D->s_RP				=	0xff;
-	D->ID				=	0xffff;
-	D->ID_Parent		=	parent_rocket_launcher->ID();
-	D->ID_Phantom		=	0xffff;
-	D->s_flags.assign	(M_SPAWN_OBJECT_LOCAL);
-	D->RespawnTime		=	0;
-	
-	NET_Packet			P;
-	D->Spawn_Write		(P,TRUE);
-	Level().Send		(P,net_flags(TRUE));
-	F_entity_Destroy	(D);
+	CSE_Abstract* D = F_entity_Create(rocket_section.c_str());
+	R_ASSERT(D);
+	CSE_Temporary* l_tpTemporary = smart_cast<CSE_Temporary*>(D);
+	R_ASSERT(l_tpTemporary);
+	l_tpTemporary->m_tNodeID = (g_dedicated_server) ? u32(-1) : parent_rocket_launcher->ai_location().level_vertex_id();
+	D->s_name = rocket_section;
+	D->set_name_replace("");
+
+	D->s_RP = 0xff;
+	D->ID = 0xffff;
+	D->ID_Parent = parent_rocket_launcher->ID();
+	D->ID_Phantom = 0xffff;
+	D->s_flags.assign(M_SPAWN_OBJECT_LOCAL);
+	D->RespawnTime = 0;
+
+	NET_Packet P;
+	D->Spawn_Write(P, TRUE);
+	Level().Send(P, net_flags(TRUE));
+	F_entity_Destroy(D);
 }
 
 void CRocketLauncher::AttachRocket(u16 rocket_id, CGameObject* parent_rocket_launcher)
 {
-	CCustomRocket * pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
-	pRocket->m_pOwner = smart_cast<CGameObject*>(parent_rocket_launcher->H_Root());
+	CObject* finded_object = Level().Objects.net_Find(rocket_id);
+	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
+
+	if (pRocket == nullptr)
+	{
+		R_ASSERT(pRocket);
+		return;
+	}
+
+	pRocket->m_pOwner = parent_rocket_launcher->H_Root() != nullptr ? parent_rocket_launcher->H_Root()->cast_game_object() : nullptr;
 	VERIFY(pRocket->m_pOwner);
+
 	pRocket->H_SetParent(parent_rocket_launcher);
 	m_rockets.push_back(pRocket);
 }
 
 void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 {
-	CCustomRocket *pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
-	if (!pRocket && OnClient()) return;
+	CObject* finded_object = Level().Objects.net_Find(rocket_id);
+	CCustomRocket* pRocket = finded_object != nullptr ? finded_object->cast_custom_rocket() : nullptr;
+
+	if (pRocket == nullptr && OnClient())
+	{
+		return;
+	}
 
 	VERIFY(pRocket);
-	ROCKETIT It = std::find(m_rockets.begin(), m_rockets.end(),pRocket);
-	ROCKETIT It_l = std::find(m_launched_rockets.begin(), m_launched_rockets.end(),pRocket);
+	ROCKETIT It = std::find(m_rockets.begin(), m_rockets.end(), pRocket);
+	ROCKETIT It_l = std::find(m_launched_rockets.begin(), m_launched_rockets.end(), pRocket);
 
 	if (OnServer())
 	{
-		VERIFY( (It != m_rockets.end())||
-			(It_l != m_launched_rockets.end()) );
+		VERIFY((It != m_rockets.end()) || (It_l != m_launched_rockets.end()));
 	};
 
-	if( It != m_rockets.end() )
+	if (It != m_rockets.end())
 	{
-		(*It)->m_bLaunched	= bLaunch;
-		(*It)->H_SetParent	(nullptr);
-		m_rockets.erase		(It);
+		(*It)->m_bLaunched = bLaunch;
+		(*It)->H_SetParent(nullptr);
+		m_rockets.erase(It);
 	};
 
-	if( It_l != m_launched_rockets.end() )
+	if (It_l != m_launched_rockets.end())
 	{
 		(*It_l)->m_bLaunched = bLaunch;
 		(*It_l)->H_SetParent(nullptr);
@@ -90,7 +98,7 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 
 void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
 {
-	VERIFY2(_valid(xform),"CRocketLauncher::LaunchRocket. Invalid xform argument!");
+	VERIFY2(_valid(xform), "CRocketLauncher::LaunchRocket. Invalid xform argument!");
 	if (CCustomRocket* Rocket = getCurrentRocket())
 	{
 		Rocket->SetLaunchParams(xform, vel, angular_vel);
@@ -101,7 +109,9 @@ void CRocketLauncher::LaunchRocket(const Fmatrix& xform, const Fvector& vel, con
 CCustomRocket* CRocketLauncher::getCurrentRocket()
 {
 	if (!m_rockets.empty())
+	{
 		return m_rockets.back();
+	}
 
 	return nullptr;
 }

@@ -8,7 +8,7 @@
 #include "inventory_item_object.h"
 #include "../xrScripts/script_export_space.h"
 
-class CScope : 
+class CScope final : 
 	public CInventoryItemObject 
 {
 private:

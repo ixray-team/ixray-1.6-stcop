@@ -176,9 +176,10 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 			Fvector3 curr_light_offset = LightOffset;
 			Fvector3 curr_omni_offset = OmniOffset;
 
-			if (smart_cast<CCustomDevice*>(item) != nullptr)
+			if (item->cast_custom_device() != nullptr)
 			{
-				CWeapon* wpn = smart_cast<CWeapon*>(Actor()->inventory().ActiveItem());
+				PIItem active_item = Actor()->inventory().ActiveItem();
+				CWeapon* wpn = active_item != nullptr ? active_item->cast_weapon() : nullptr;
 				if (wpn != nullptr && wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
 				{
 					Fvector3 aim_offset = AimOffset;

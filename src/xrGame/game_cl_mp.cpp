@@ -767,7 +767,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			string1024	sWeapon = "", sSpecial = "";
 			if (pWeapon)
 			{
-				CInventoryItem* pIItem = smart_cast<CInventoryItem*>(pWeapon);
+				CInventoryItem* pIItem = pWeapon->cast_inventory_item();
 				if (pIItem)
 				{
 					KMS.m_initiator.m_shader = GetEquipmentIconsShader();
@@ -787,7 +787,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 					}
 				} else
 				{
-					CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pWeapon);
+					CCustomZone* pAnomaly = pWeapon->cast_custom_zone();
 					if (pAnomaly)
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
@@ -804,7 +804,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			{
 				if (!pKiller)
 				{
-					CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pOKiller);
+					CCustomZone* pAnomaly = pOKiller->cast_custom_zone();
 					if (pAnomaly)
 					{
 						KMS.m_initiator.m_shader = GetKillEventIconsShader();
@@ -830,8 +830,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				{
 					if (pOKiller && pOKiller==Level().CurrentViewEntity())
 					{
-						//if (pWeapon && pWeapon->CLS_ID == CLSID_OBJECT_W_KNIFE)
-						if ( smart_cast<CWeaponKnife*>( pWeapon ) )
+						if (pWeapon->cast_weapon_knife() != nullptr)
 						{
 							PlaySndMessage(ID_BUTCHER);
 						}
@@ -922,7 +921,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 
 			if (!pKiller)
 			{
-				CCustomZone* pAnomaly = smart_cast<CCustomZone*>(pOKiller);
+				CCustomZone* pAnomaly = pOKiller->cast_custom_zone();
 				if (pAnomaly)
 				{
 					KMS.m_ext_info.m_shader = GetKillEventIconsShader();
@@ -1082,7 +1081,6 @@ void	game_cl_mp::OnEventMoneyChanged			(NET_Packet& P)
 {
 	if (!local_player) return;
 	
-	//CUIGameDM* pUIDM = smart_cast<CUIGameDM*>(m_game_ui_custom);
 	VERIFY2(m_game_ui_custom, "game ui not initialized");
 	local_player->money_for_round = P.r_s32();
 	OnMoneyChanged();
@@ -1177,7 +1175,7 @@ void	game_cl_mp::OnSpectatorSelect		()
 {
 	CObject *l_pObj = Level().CurrentEntity();
 
-	CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
+	CGameObject *l_pPlayer = l_pObj != nullptr ? l_pObj->cast_game_object() : nullptr;
 	if(!l_pPlayer) return;
 
 	NET_Packet		P;
