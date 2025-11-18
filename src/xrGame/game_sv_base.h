@@ -31,9 +31,11 @@ class CALifeSimulator;
 // eid_*	- means entity-id
 class GameEventQueue;
 
-class	game_sv_GameState	: public game_GameState
+class game_sv_mp;
+
+class game_sv_GameState : public game_GameState
 {
-	typedef game_GameState inherited;
+	using inherited = game_GameState;
 protected:
 	xrServer*						m_server;
 	
@@ -205,4 +207,11 @@ public:
 		VERIFY						(m_alife_simulator);
 		return						(*m_alife_simulator);
 	}
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return nullptr; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return nullptr; }
+	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return nullptr; }
+	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() override { return nullptr; }
+	virtual game_sv_CaptureTheArtefact* cast_game_sv_capturetheartefact() override { return nullptr; }
+	virtual game_sv_Single* cast_game_sv_single() override { return nullptr; }
 };

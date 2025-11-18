@@ -60,7 +60,7 @@ bool CUISpeechMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
     if (dik < SDL_SCANCODE_1 || dik > SDL_SCANCODE_0)
 		return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 
-	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
+	game_cl_mp* game = Game().cast_game_cl_mp();
 
 	HideDialog();
 	game->OnMessageSelected(this, static_cast<u8>(dik - SDL_SCANCODE_1));

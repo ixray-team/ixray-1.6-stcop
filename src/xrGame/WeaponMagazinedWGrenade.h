@@ -70,6 +70,7 @@ public:
 	virtual shared_str SetCurrentShootAnimation();
 	
 	virtual CWeaponMagazinedWGrenade* cast_weapon_magazined_w_grenade() { return this; }
+	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	virtual bool	IsGrenadeMode() const { return m_bGrenadeMode; }
 private:

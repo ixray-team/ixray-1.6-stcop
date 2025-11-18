@@ -18,7 +18,9 @@ public:
 	virtual BOOL	net_Spawn				(CSE_Abstract* DC) override;
 	virtual void	Load					(LPCSTR section) override;
 	virtual void	OnEvent					(NET_Packet& P, u16 type) override;
+
 	virtual CWeaponRG6* cast_weapon_rg6() { return this; }
+	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	virtual void	PlayAnimOpenWeapon() override;
 	virtual void	PlayAnimAddOneCartridgeWeapon() override;

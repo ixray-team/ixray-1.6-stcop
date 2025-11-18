@@ -64,32 +64,31 @@ CActor *g_debug_actor = 0;
 
 void try_change_current_entity()
 {
-	CActor								*actor = smart_cast<CActor*>(Level().CurrentEntity());
+	CActor								*actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	VERIFY								(actor);
 	g_debug_actor						= actor;
 
 	CFrustum							frustum;
 	frustum.CreateFromMatrix			(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
-	typedef xr_vector<ISpatialShared>		OBJECTS;
-	OBJECTS								ISpatialResult;
+	using OBJECTS = xr_vector<ISpatialShared>;
+	OBJECTS								ISpatialResult = {};
 	g_SpatialSpace->q_frustum			(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 
 	float								maxlen = 1000.0f;
 	CCustomMonster*						nearest_agent = 0;
 
-	OBJECTS::const_iterator				I = ISpatialResult.begin();
-	OBJECTS::const_iterator				E = ISpatialResult.end();
-	for ( ; I != E; ++I) {
-		CCustomMonster					*current = smart_cast<CCustomMonster*>((*I)->dcast_CObject());
+	for (const auto& spatial_object : ISpatialResult)
+	{
+		CCustomMonster* current = spatial_object->dcast_CObject()->cast_custom_monster();
 		if (!current)					continue;
-		if (Level().CurrentEntity()==current) continue;
+		if (Level().CurrentEntity() == current) continue;
 
-		Fvector							A, B, tmp; 
-		current->Center					(A);
+		Fvector							A, B, tmp;
+		current->Center(A);
 
-		tmp.sub							(A, actor->cam_Active()->vPosition);
-		B.mad							(
+		tmp.sub(A, actor->cam_Active()->vPosition);
+		B.mad(
 			actor->cam_Active()->vPosition,
 			actor->cam_Active()->vDirection,
 			tmp.dotproduct(
@@ -99,7 +98,7 @@ void try_change_current_entity()
 		float len = B.distance_to_sqr(A);
 		if (len > 1) continue;
 
-		if (maxlen>len && !current->getDestroy())
+		if (maxlen > len && !current->getDestroy())
 		{
 			maxlen = len;
 			nearest_agent = current;
@@ -122,7 +121,7 @@ void try_change_current_entity()
 void restore_actor()
 {
 	VERIFY		(g_debug_actor);
-	VERIFY		(!smart_cast<CActor*>(Level().CurrentEntity()));
+	VERIFY		(Level().CurrentEntity() == nullptr || Level().CurrentEntity()->cast_actor() == nullptr);
 
 	Engine.Sheduler.Unregister	(Level().CurrentEntity());
 	Engine.Sheduler.Register	(Level().CurrentEntity());
@@ -134,7 +133,9 @@ void restore_actor()
 
 	g_debug_actor->inventory().Items_SetCurrentEntityHud(true);
 
-	CHudItem* pHudItem = smart_cast<CHudItem*>(g_debug_actor->inventory().ActiveItem());
+	PIItem active_item = g_debug_actor->inventory().ActiveItem();
+
+	CHudItem* pHudItem = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 	if (pHudItem) 
 	{
 		pHudItem->OnStateSwitch(pHudItem->GetState());
@@ -193,7 +194,7 @@ LPCSTR animation_name(CAI_Stalker *self, const MotionID &animation)
 	if (!animation)
 		return			("");
 #ifdef DEBUG
-	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(self->Visual());
+	IKinematicsAnimated	*skeleton_animated = self->Visual()->dcast_PKinematicsAnimated();
 	VERIFY				(skeleton_animated);
 	LPCSTR				name = skeleton_animated->LL_MotionDefName_dbg(animation).first;
 	return				(name);
@@ -256,7 +257,7 @@ void CAI_Stalker::debug_text			()
 	if (!psAI_Flags.test(aiStalker))
 		return;
 
-	CActor								*actor = smart_cast<CActor*>(Level().Objects.net_Find(0));
+	CActor* actor = Level().Objects.net_Find(0)->cast_actor();
 	if (!actor) {
 		if (!g_debug_actor)
 			return;
@@ -432,7 +433,10 @@ void CAI_Stalker::debug_text			()
 		if (memory().danger().selected()->dependent_object() && !!memory().danger().selected()->dependent_object()->cName()) {
 			DBG_OutText("%s%s%sdependent : %s",indent,indent,indent,*memory().danger().selected()->dependent_object()->cName());
 			if (g_Alive())
-				DBG_OutText("%s%s%svisible   : %s",indent,indent,indent,memory().visual().visible_now(smart_cast<const CGameObject*>(memory().danger().selected()->dependent_object())) ? "+" : "-");
+			{
+				CObject* dep_obj = const_cast<CObject*>(memory().danger().selected()->dependent_object());
+				DBG_OutText("%s%s%svisible   : %s", indent, indent, indent, memory().visual().visible_now(dep_obj->cast_game_object()) ? "+" : "-");
+			}
 		}
 	}
 
@@ -483,7 +487,7 @@ void CAI_Stalker::debug_text			()
 	DBG_OutText	("%s%sammo in box to spawn: %d",indent,indent,item_to_spawn().size() ? ammo_in_box_to_spawn() : 0);
 	
 #if USE_OLD_OBJECT_PLANNER
-	CWeaponMagazined					*weapon = smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
+	CWeaponMagazined					*weapon = inventory().ActiveItem() != nullptr ? inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
 	if (weapon) {
 		CObjectHandlerPlanner			&planner = CObjectHandler::planner();
 		DBG_OutText("%s%squeue size          : %d",indent,indent,weapon->GetQueueSize());
@@ -502,7 +506,7 @@ void CAI_Stalker::debug_text			()
 	if (inventory().ActiveItem()) {
 		DBG_OutText	("%s%sactive item",indent,indent);
 		DBG_OutText	("%s%s%sobject         : %s",indent,indent,indent,inventory().ActiveItem() ? *inventory().ActiveItem()->object().cName() : "");
-		CWeapon	*weapon_ = smart_cast<CWeapon*>(inventory().ActiveItem());
+		CWeapon	*weapon_ = inventory().ActiveItem() != nullptr ? inventory().ActiveItem()->cast_weapon() : nullptr;
 		if (weapon_) {
 			DBG_OutText("%s%s%sstrapped       : %s",indent,indent,indent,weapon_strapped(weapon_) ? "+" : "-");
 			DBG_OutText("%s%s%sunstrapped     : %s",indent,indent,indent,weapon_unstrapped(weapon_) ? "+" : "-");
@@ -953,7 +957,7 @@ void CAI_Stalker::dbg_draw_vision	()
 {
 	VERIFY						(!!psAI_Flags.is(aiVision));
 
-	if (!smart_cast<CGameObject*>(Level().CurrentEntity()))
+	if (Level().CurrentEntity() == nullptr || Level().CurrentEntity()->cast_game_object() == nullptr)
 		return;
 
 	Fvector						shift;
@@ -975,7 +979,7 @@ void CAI_Stalker::dbg_draw_vision	()
 	float						x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
 	float						y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
-	CNotYetVisibleObject		*object = memory().visual().not_yet_visible_object(smart_cast<CGameObject*>(Level().CurrentEntity()));
+	CNotYetVisibleObject		*object = memory().visual().not_yet_visible_object(Level().CurrentEntity()->cast_game_object());
 	string64					out_text;
 	xr_sprintf						(out_text,"%.2f",object ? object->m_value : 0.f);
 
@@ -1255,7 +1259,7 @@ static Fmatrix aim_on_actor		(
 
 static void fill_bones				(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, LPCSTR animation_id, bool const local)
 {
-	IKinematics*						kinematics = smart_cast<IKinematics*>(kinematics_animated);
+	IKinematics*						kinematics = kinematics_animated->dcast_PKinematics();
 	u16									bone_count = kinematics->LL_BoneCount();
 	MotionID							animation = kinematics_animated->LL_MotionID(animation_id);
 	VERIFY								(animation.valid());
@@ -1372,7 +1376,7 @@ static void draw_bones				(
 
 static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, IKinematicsAnimated* kinematics_animated, LPCSTR animation_id)
 {
-	IKinematics* kinematics				= smart_cast<IKinematics*>(kinematics_animated);
+	IKinematics* kinematics				= kinematics_animated->dcast_PKinematics();
 
 	u16									spine_bone_id = 
 		(u16)kinematics->LL_BoneID(
@@ -1407,7 +1411,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 
 #if 0
 	Fmatrix								player_head;
-	IKinematics* actor_kinematics		= smart_cast<IKinematics*>(Actor()->Visual());
+	IKinematics* actor_kinematics		= PKinematics(Actor()->Visual());
 	actor_kinematics->Bone_GetAnimPos	(player_head, actor_kinematics->LL_BoneID("bip01_head"), 1, false);
 	player_head.mulA_43					(Actor()->XFORM());
 	Fvector								target = player_head.c;
@@ -1437,7 +1441,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	Fmatrix							spine_bone;
 	spine_bone.mul_43				(transform, g_stalker_skeleton[spine_bone_id]);
 
-	CWeapon* weapon					= smart_cast<CWeapon*>(self.best_weapon());
+	CWeapon* weapon					= self.best_weapon() != nullptr ? self.best_weapon()->cast_weapon() : nullptr;
 	VERIFY							(weapon);
 	
 	Fvector							pos,ypr;
@@ -1587,7 +1591,7 @@ static void draw_animation_bones	(CAI_Stalker& self, Fmatrix const& transform, I
 	CDebugRenderer&					renderer = Level().debug_renderer();
 
 	if (self.inventory().ActiveItem()) {
-		CWeapon*					weapon_ = smart_cast<CWeapon*>(self.inventory().ActiveItem());
+		CWeapon*					weapon_ = self.inventory().ActiveItem()->cast_weapon();
 		if (weapon_) {
 			Fvector position		= weapon_->get_LastFP();
 			Fvector direction		= weapon_->get_LastFD();
@@ -1646,7 +1650,7 @@ Fvector	g_debug_position_3		= Fvector().set(0.f, 0.f, 0.f);
 void CAI_Stalker::OnRender				()
 {
 #if 0
-	IKinematicsAnimated*		kinematics = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated*		kinematics = Visual()->dcast_PKinematicsAnimated();
 	VERIFY						(kinematics);
 //	draw_animation_bones		(*this, XFORM(), kinematics, "loophole_2_no_look_idle_0");
 

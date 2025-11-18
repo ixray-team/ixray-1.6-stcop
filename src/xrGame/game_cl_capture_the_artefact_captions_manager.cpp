@@ -58,9 +58,9 @@ void CTAGameClCaptionsManager::ShowInProgressCaptions()
 	
 	if (ps->team == static_cast<u8>(etSpectatorsTeam))
 	{
-		VERIFY(smart_cast<CSpectator*>(control_entity));
+		VERIFY(control_entity->cast_spectator());
 		parent_game_ui->SetPressJumpMsgCaption("mp_press_jump2select_team");
-		CSpectator* pSpectator = smart_cast<CSpectator*>(control_entity);
+		CSpectator* pSpectator = control_entity->cast_spectator();
 		if (pSpectator)
 		{
 			string1024 SpectatorStr;
@@ -71,7 +71,7 @@ void CTAGameClCaptionsManager::ShowInProgressCaptions()
 	}
 	if (Level().IsDemoPlayStarted())
 	{
-		CSpectator* pSpectator = smart_cast<CSpectator*>(control_entity);
+		CSpectator* pSpectator = control_entity->cast_spectator();
 		if (pSpectator)
 		{
 			string1024 SpectatorStr;
@@ -87,7 +87,7 @@ void CTAGameClCaptionsManager::ShowInProgressCaptions()
 	}
 	if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 	{
-		if (smart_cast<CActor*>(Level().CurrentControlEntity()))
+		if (Level().CurrentControlEntity() != nullptr && Level().CurrentControlEntity()->cast_actor() != nullptr)
 		{
 			parent_game_ui->SetPressJumpMsgCaption("mp_press_fire2spectator");
 		} else

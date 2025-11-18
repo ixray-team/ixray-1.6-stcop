@@ -2,10 +2,10 @@
 
 #include "inventory_item_object.h"
 
-class CBackpack : public CInventoryItemObject
+class CBackpack final : public CInventoryItemObject
 {
 private:
-    typedef CInventoryItemObject inherited;
+    using inherited = CInventoryItemObject;
 
     //ref_sound m_dress_snd[2] = {};
 
@@ -18,7 +18,7 @@ public:
     virtual void OnMoveToSlot(const SInvItemPlace& prev) override;
     virtual void OnMoveToRuck(const SInvItemPlace& previous_place) override;
 
-    virtual CBackpack* cast_backpack() { return this; }
+    virtual CBackpack* cast_backpack() override { return this; }
 
     float m_additional_weight = 0.0f;
     float m_additional_weight2 = 0.0f;

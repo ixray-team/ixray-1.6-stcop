@@ -142,7 +142,7 @@ void CUIMpPlayersAdm::FillPlayersList(u32 const)
 
 void CUIMpPlayersAdm::RefreshPlayersList()
 {
-	game_cl_mp* tmp_game = smart_cast<game_cl_mp*>(&Game());
+	game_cl_mp* tmp_game = Game().cast_game_cl_mp();
 	if (!tmp_game)
 		return;
 

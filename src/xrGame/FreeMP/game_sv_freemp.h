@@ -3,7 +3,7 @@
 #include "game_sv_mp.h"
 #include "../../xrEngine/pure_relcase.h"
 
-class game_sv_freemp :
+class game_sv_freemp final :
 	public game_sv_mp, 
 	private pure_relcase
 {
@@ -47,6 +47,8 @@ public:
 	virtual		void				FillDeathActorRejectItems(CSE_ActorMP* actor, xr_vector<CSE_Abstract*>& to_reject);
 	BOOL			 	            OnTouchPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
 	void			             	OnDetachPlayersBag(CSE_ActorMP* actor, CSE_Abstract* item);
+
+	virtual game_sv_freemp* cast_game_sv_freemp() override { return this; }
 
 private:
 	xr_hash_map<u64, xr_vector<shared_str>> DoSpawnList;

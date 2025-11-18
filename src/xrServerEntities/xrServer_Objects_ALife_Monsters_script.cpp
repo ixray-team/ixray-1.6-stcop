@@ -51,7 +51,7 @@ void set_character_name_script(CSE_ALifeTraderAbstract* ta, LPCSTR str) {
 	if (g_pGameLevel)
 	{
 		CObject* obj = g_pGameLevel->Objects.net_Find(ta->object_id());
-		CInventoryOwner* owner = smart_cast<CInventoryOwner*>(obj);
+		CInventoryOwner* owner = obj != nullptr ? obj->cast_inventory_owner() : nullptr;
 		if (owner)
 			owner->ChangeName(str);
 	}

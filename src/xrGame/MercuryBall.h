@@ -7,7 +7,7 @@
 #pragma once
 #include "Artefact.h"
 
-class CMercuryBall : public CArtefact 
+class CMercuryBall final : public CArtefact 
 {
 private:
 	typedef CArtefact inherited;

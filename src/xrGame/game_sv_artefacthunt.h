@@ -2,10 +2,10 @@
 
 #include "game_sv_teamdeathmatch.h"
 
-class	game_sv_ArtefactHunt			: public game_sv_TeamDeathmatch
+class game_sv_ArtefactHunt final : public game_sv_TeamDeathmatch
 {
 private:
-	typedef game_sv_TeamDeathmatch inherited;
+	using inherited = game_sv_TeamDeathmatch;
 
 	enum	ARTEFACT_STATE
 	{
@@ -140,6 +140,12 @@ public:
 	virtual		void				OnRender				();
 #endif
 	//  [7/5/2005]
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
+	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return this; }
+	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() override { return this; }
+
 protected:
 	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
 };

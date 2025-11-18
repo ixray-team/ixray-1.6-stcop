@@ -40,28 +40,37 @@ void CAgentExplosiveManager::remove_links	(CObject *object)
 		m_explosives.erase			(J);
 }
 
-void CAgentExplosiveManager::register_explosive	(const CExplosive *explosive, const CGameObject *game_object)
+void CAgentExplosiveManager::register_explosive(const CExplosive* explosive, const CGameObject* game_object)
 {
 	{
-		xr_vector<CDangerExplosive>::iterator	I = std::find(m_explosives.begin(),m_explosives.end(),explosive);
+		xr_vector<CDangerExplosive>::iterator I = std::find(m_explosives.begin(), m_explosives.end(), explosive);
 		if (I != m_explosives.end())
+		{
 			return;
+		}
 	}
+
 	{
-		TO_BE_DESTROYED::iterator	I = std::find(m_explosives_to_remove.begin(),m_explosives_to_remove.end(),game_object->ID());
+		TO_BE_DESTROYED::iterator I = std::find(m_explosives_to_remove.begin(), m_explosives_to_remove.end(), game_object->ID());
 		if (I != m_explosives_to_remove.end())
+		{
 			return;
+		}
 	}
 
-	m_explosives_to_remove.push_back	(game_object->ID());
-	m_explosives.push_back				(CDangerExplosive(explosive,game_object,0,Device.dwTimeGlobal));
-	
-	u32									interval = AFTER_GRENADE_DESTROYED_INTERVAL;
-	const CMissile						*missile = smart_cast<const CMissile*>(explosive);
-	if (missile && (missile->destroy_time() > Device.dwTimeGlobal))
-		interval						= missile->destroy_time() - Device.dwTimeGlobal + AFTER_GRENADE_DESTROYED_INTERVAL;
+	m_explosives_to_remove.push_back(game_object->ID());
+	m_explosives.push_back(CDangerExplosive(explosive, game_object, 0, Device.dwTimeGlobal));
 
-	object().location().add				(new CDangerObjectLocation(game_object,Device.dwTimeGlobal,interval,GRENADE_RADIUS));
+	u32	interval = AFTER_GRENADE_DESTROYED_INTERVAL;
+	CExplosive* explo = const_cast<CExplosive*>(explosive);
+	const CMissile* missile = explo != nullptr ? explo->cast_missile() : nullptr;
+
+	if (missile && (missile->destroy_time() > Device.dwTimeGlobal))
+	{
+		interval = missile->destroy_time() - Device.dwTimeGlobal + AFTER_GRENADE_DESTROYED_INTERVAL;
+	}
+
+	object().location().add(new CDangerObjectLocation(game_object, Device.dwTimeGlobal, interval, GRENADE_RADIUS));
 }
 
 bool CAgentExplosiveManager::process_explosive			(CMemberOrder &member)

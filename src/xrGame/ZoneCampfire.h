@@ -1,7 +1,7 @@
 #pragma once
 #include "MosquitoBald.h"
 
-class CZoneCampfire :public CMosquitoBald
+class CZoneCampfire final :public CMosquitoBald
 {
 	typedef CMosquitoBald	inherited;
 protected:

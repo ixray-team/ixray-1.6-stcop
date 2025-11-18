@@ -128,7 +128,7 @@ public:
 	void	net_Destroy					();
 };
 
-class CHelicopter : 	public CEntity,
+class CHelicopter final : public CEntity,
 						public CShootingObject,
 						public CRocketLauncher,
 						public CPHSkeleton,
@@ -140,7 +140,7 @@ class CHelicopter : 	public CEntity,
 					#endif
 
 {
-	typedef CEntity inherited;
+	using inherited = CEntity;
 public:
 	enum EHeliState {
 		eAlive							= u32(0),
@@ -308,6 +308,7 @@ public:
 	virtual CExplosive* cast_explosive() { return this; }
 	virtual CHelicopter* cast_helicopter() { return this; }
 	virtual CPHSkeleton* PHSkeleton() { return this; }
+	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 public:
 	//for scripting

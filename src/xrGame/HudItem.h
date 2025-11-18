@@ -390,6 +390,7 @@ public:
 	virtual CInventoryItem* cast_inventory_item() { return nullptr; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return nullptr; }
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
 protected:
 	DECLARE_SCRIPT_REGISTER_FUNCTION

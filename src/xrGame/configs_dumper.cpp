@@ -87,7 +87,9 @@ static active_objects_t::size_type get_active_objects(active_objects_t & dest)
 		if (!tmp_inv_item)
 			continue;
 
-		CWeapon const * tmp_weapon			= smart_cast<CWeapon const*>(tmp_inv_item);
+		PIItem casted_inv_item = const_cast<PIItem>(tmp_inv_item);
+
+		CWeapon const * tmp_weapon = casted_inv_item->cast_weapon();
 		if (tmp_weapon)
 		{
 			dest.push_back(tmp_weapon);
@@ -156,7 +158,7 @@ void configs_dumper::sign_configs		()
 	string64	creation_date;
 	string64		tmp_player_name = {};
 	CInifile	tmp_ini				(nullptr, FALSE, FALSE, FALSE);
-	game_cl_mp*	tmp_cl_game			= smart_cast<game_cl_mp*>(&Game());
+	game_cl_mp*	tmp_cl_game			= Game().cast_game_cl_mp();
 	R_ASSERT						(tmp_cl_game);
 	xr_strconcat(tmp_player_name, "\"",
 		tmp_cl_game->local_player ? tmp_cl_game->local_player->getName() : "unknown_just_connected",

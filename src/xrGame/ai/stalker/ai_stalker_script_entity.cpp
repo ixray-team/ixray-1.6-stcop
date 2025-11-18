@@ -20,9 +20,9 @@
 #include "../../stalker_movement_manager_smart_cover.h"
 #include "../../ai_space.h"
 
-CWeapon	*CAI_Stalker::GetCurrentWeapon() const
+CWeapon* CAI_Stalker::GetCurrentWeapon() const
 {
-	return			(smart_cast<CWeapon*>(inventory().ActiveItem()));
+	return inventory().ActiveItem() != nullptr ? inventory().ActiveItem()->cast_weapon() : nullptr;
 }
 
 u32 CAI_Stalker::GetWeaponAmmo() const
@@ -92,7 +92,7 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction *tpEntityAction)
 			if (!xr_strlen(l_tWatchAction.m_bone_to_watch))
 				l_tWatchAction.m_tpObjectToWatch->Center(l_tWatchAction.m_tWatchVector);
 			else {
-				CBoneInstance	&l_tBoneInstance = smart_cast<IKinematics*>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_BoneID(l_tWatchAction.m_bone_to_watch));
+				CBoneInstance	&l_tBoneInstance = PKinematics(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_GetBoneInstance(PKinematics(l_tWatchAction.m_tpObjectToWatch->Visual())->LL_BoneID(l_tWatchAction.m_bone_to_watch));
 				Fmatrix			l_tMatrix;
 
 				l_tMatrix			= l_tBoneInstance.mTransform;
@@ -129,7 +129,7 @@ bool CAI_Stalker::bfAssignWatch(CScriptEntityAction *tpEntityAction)
 bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 {
 	CScriptObjectAction	&l_tObjectAction	= tpEntityAction->m_tObjectAction;
-	CInventoryItem	*l_tpInventoryItem	= smart_cast<CInventoryItem*>(l_tObjectAction.m_tpObject);
+	CInventoryItem	*l_tpInventoryItem	= l_tObjectAction.m_tpObject != nullptr ? l_tObjectAction.m_tpObject->cast_inventory_item() : nullptr;
 
 	if (!inherited::bfAssignObject(tpEntityAction) || !l_tObjectAction.m_tpObject || !l_tpInventoryItem) {
 		if (!inventory().ActiveItem()) {
@@ -145,8 +145,8 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 	if (!l_tpInventoryItem->object().H_Parent())
 		return			(true);
 
-	CWeapon				*l_tpWeapon				= smart_cast<CWeapon*>(inventory().ActiveItem());
-	CWeaponMagazined	*l_tpWeaponMagazined	= smart_cast<CWeaponMagazined*>(inventory().ActiveItem());
+	CWeapon				*l_tpWeapon				= inventory().ActiveItem() != nullptr ? inventory().ActiveItem()->cast_weapon() : nullptr;
+	CWeaponMagazined	*l_tpWeaponMagazined	= inventory().ActiveItem() != nullptr ? inventory().ActiveItem()->cast_weapon_magazined() : nullptr;
 
 	if (l_tpWeaponMagazined)
 		l_tpWeaponMagazined->SetQueueSize		(l_tObjectAction.m_dwQueueSize);
@@ -222,44 +222,36 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction *tpEntityAction)
 					l_tObjectAction.m_bCompleted = true;
 			}
 			else
-				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"cannot reload active item because it is not selected!");
-
-//			if (inventory().ActiveItem()) {
-//				inventory().Action(kWPN_FIRE,	CMD_STOP);
-//				if (CWeapon::eReload != l_tpWeapon->STATE)
-//					inventory().Action(kWPN_RELOAD,	CMD_START);
-//				else
-//					l_tObjectAction.m_bCompleted = true;
-//			}
-//			else
-//				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"cannot reload active item because it is not selected!");
+			{
+				ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "cannot reload active item because it is not selected!");
+			}
 			break;
 		}
-		case eObjectActionActivate : {
-			CTorch			*torch = smart_cast<CTorch*>(l_tObjectAction.m_tpObject);
-			if (torch) {
+		case eObjectActionActivate:
+		{
+			CTorch* torch = l_tObjectAction.m_tpObject != nullptr ? l_tObjectAction.m_tpObject->cast_torch() : nullptr;
+			if (torch)
+			{
 				torch->Switch(true);
 				break;
 			}
-			CObjectHandler::set_goal	(eObjectActionIdle,l_tpInventoryItem);
-//				inventory().Slot(l_tpInventoryItem);
-//				inventory().Activate(l_tpInventoryItem->GetSlot());
-//			if (inventory().ActiveItem() && (inventory().ActiveItem()->ID() == l_tpInventoryItem->ID()))
-//				if (l_tpWeapon && (CWeapon::eIdle == l_tpWeapon->STATE))
-//				l_tObjectAction.m_bCompleted = true;
-			return	((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
+
+			CObjectHandler::set_goal(eObjectActionIdle,l_tpInventoryItem);
+			return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
 
 			break;
 		}
-		case eObjectActionDeactivate : {
-			CTorch			*torch = smart_cast<CTorch*>(l_tObjectAction.m_tpObject);
-			if (torch) {
+		case eObjectActionDeactivate:
+		{
+			CTorch* torch = l_tObjectAction.m_tpObject != nullptr ? l_tObjectAction.m_tpObject->cast_torch() : nullptr;
+			if (torch)
+			{
 				torch->Switch(false);
 				break;
 			}
-//				inventory().Activate(u32(-1));
-			CObjectHandler::set_goal	(eObjectActionIdle);
-			return	((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
+
+			CObjectHandler::set_goal(eObjectActionIdle);
+			return ((l_tObjectAction.m_bCompleted = (CObjectHandler::goal_reached())) == false);
 			break;
 		}
 		case eObjectActionUse : {

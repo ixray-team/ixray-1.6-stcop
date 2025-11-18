@@ -175,7 +175,7 @@ void CUIGameCTA::UpdateTeamPanels()
 void CUIGameCTA::SetClGame(game_cl_GameState* g)
 {
 	inherited::SetClGame(g);
-	m_game = smart_cast<game_cl_CaptureTheArtefact*>(g);
+	m_game = g->cast_game_cl_capturetheartefact();
 	VERIFY(m_game);
 	
 	if (m_pMapDesc)
@@ -344,7 +344,8 @@ void CUIGameCTA::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
 {
 	game_PlayerState* ps = Game().local_player;
 	VERIFY2(ps, "local player not initialized");
-	CActor* actor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
+	CObject* finded_item = Level().Objects.net_Find(ps->GameID);
+	CActor* actor = finded_item != nullptr ? finded_item->cast_actor() : nullptr;
 	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
 		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
@@ -453,7 +454,7 @@ void TryToDefuseGrenadeLauncher(CWeaponMagazinedWGrenade const * weapon,
 	if (temp_iter == all_items.end())
 		return;
 
-	CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(*temp_iter);
+	CWeaponAmmo* temp_ammo = (*temp_iter)->cast_weapon_ammo();
 	R_ASSERT2(temp_ammo, "failed to create ammo after defusing weapon");
 	temp_ammo->m_boxCurr = temp_ammo->m_boxSize;
 }
@@ -466,7 +467,9 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 	if (!weapon)
 		return;
 
-	CWeaponMagazinedWGrenade const * tmp_gl_weapon = smart_cast<CWeaponMagazinedWGrenade const *>(weapon);
+	CWeapon* cast_weapon = const_cast<CWeapon*>(weapon);
+
+	CWeaponMagazinedWGrenade const * tmp_gl_weapon = cast_weapon->cast_weapon_magazined_w_grenade();
 	if (weapon->IsGrenadeLauncherAttached())
 		TryToDefuseGrenadeLauncher(tmp_gl_weapon, all_items, dest_ammo);
 
@@ -515,7 +518,7 @@ void TryToDefuseWeapon(CWeapon const * weapon,
 	if (temp_iter == all_items.end())
 		return;
 
-	CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(*temp_iter);
+	CWeaponAmmo* temp_ammo = (*temp_iter)->cast_weapon_ammo();
 	R_ASSERT2(temp_ammo, "failed to create ammo after defusing weapon");
 	temp_ammo->m_boxCurr = temp_ammo->m_boxSize;
 }

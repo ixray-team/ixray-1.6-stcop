@@ -325,18 +325,18 @@ void CBaseMonster::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16
 		lua_game_object(), 
 		amount,
 		vLocalDir,
-		smart_cast<const CGameObject*>(who)->lua_game_object(),
+		who->cast_game_object()->lua_game_object(),
 		element
 	);
 
 	// если нейтрал - добавить как врага
-	CEntityAlive	*obj = smart_cast<CEntityAlive*>(who);
+	CEntityAlive	*obj = who->cast_entity_alive();
 	if (obj && (tfGetRelationType(obj) == ALife::eRelationTypeNeutral)) EnemyMan.add_enemy(obj);
 }
 
 void CBaseMonster::SetAttackEffector() 
 {
-	CActor *pA = smart_cast<CActor *>(Level().CurrentEntity());
+	CActor *pA = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 	if (pA) {
 		Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(db().m_attack_effector.ce_time,db().m_attack_effector.ce_amplitude,db().m_attack_effector.ce_period_number,db().m_attack_effector.ce_power));
 		Actor()->Cameras().AddPPEffector(new CMonsterEffector(db().m_attack_effector.ppi, db().m_attack_effector.time, db().m_attack_effector.time_attack, db().m_attack_effector.time_release));
@@ -369,7 +369,7 @@ void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, f
 	HS.weaponID			= (ID());															//	P.w_u16		(ID());
 	HS.dir				= (dir);															//	P.w_dir		(dir);
 	HS.power			= (value);															//	P.w_float	(value);
-	HS.boneID			= (smart_cast<IKinematics*>(object->Visual())->LL_GetBoneRoot());	//	P.w_s16		(smart_cast<IKinematics*>(object->Visual())->LL_GetBoneRoot());
+	HS.boneID			= (PKinematics(object->Visual())->LL_GetBoneRoot());	//	P.w_s16		(smart_cast<IKinematics*>(object->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));										//	P.w_vec3	(Fvector().set(0.f,0.f,0.f));
 	HS.impulse			= (impulse);														//	P.w_float	(impulse);
 	HS.hit_type			= (ALife::eHitTypeWound);											//	P.w_u16		(u16(ALife::eHitTypeWound));

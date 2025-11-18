@@ -8,10 +8,10 @@
 
 
 
-class game_sv_CaptureTheArtefact : public game_sv_mp
+class game_sv_CaptureTheArtefact final : public game_sv_mp
 {
 private:
-	typedef game_sv_mp inherited;
+	using inherited = game_sv_mp;
 
 	struct MyTeam
 	{
@@ -43,7 +43,7 @@ private:
 		void DeactivateArtefact();
 		CSE_ActorMP * GetArtefactOwner() const;
 	};
-	typedef std::pair<ETeam, MyTeam> TeamPair;
+	using TeamPair = std::pair<ETeam, MyTeam>;
 	// For balancing team players count
 	struct MinPlayersFunctor {
 		bool operator()(const TeamPair & left, const TeamPair & right) const;
@@ -55,21 +55,21 @@ private:
 		bool operator()(const TeamPair & tr, u16 actorId) const;
 	};
 	
-	typedef xr_map<ETeam, MyTeam> TeamsMap;
+	using TeamsMap = xr_map<ETeam, MyTeam>;
 	TeamsMap teams;
 
 	//todo: transmit work with anomalies into other class...
 	//----------------------------------------------------
-	typedef std::pair<xr_string, u16>			TNameGameIDAnomalyPair;
-	typedef	xr_vector<TNameGameIDAnomalyPair>	TAnomaliesVector;
+	using TNameGameIDAnomalyPair = std::pair<xr_string, u16>;
+	using TAnomaliesVector = xr_vector<TNameGameIDAnomalyPair>;
 
-	typedef std::pair<TAnomaliesVector, u8>		TAnomalyStartedPair;
-	typedef xr_vector<TAnomalyStartedPair>		TAnomalySet;
+	using TAnomalyStartedPair = std::pair<TAnomaliesVector, u8>;
+	using TAnomalySet = xr_vector<TAnomalyStartedPair>;
 
-	typedef std::pair<u16, u8>					TGIDCPair; //GameIDCountPair
-	typedef xr_multimap<xr_string, TGIDCPair>	TMultiMap;
+	using TGIDCPair = std::pair<u16, u8>; //GameIDCountPair
+	using TMultiMap = xr_multimap<xr_string, TGIDCPair>;
 
-	typedef xr_map<ClientID, int>				TGameIDToBoughtFlag;		//this map shows what player already bought items when he was dead...
+	using TGameIDToBoughtFlag = xr_map<ClientID, int>;		//this map shows what player already bought items when he was dead...
 	
 
 	TAnomaliesVector				m_AnomaliesPermanent;
@@ -142,7 +142,7 @@ private:
 		buyMenuPlayerReadyToSpawn		= 2		// this value set in RespawnDeadPlayers
 	};
 
-	typedef associative_vector<xrClientData const *, buyMenuPlayerState> TBuyMenuPlayerStates;
+	using TBuyMenuPlayerStates = associative_vector<xrClientData const *, buyMenuPlayerState>;
 	TBuyMenuPlayerStates				m_buyMenuPlayerStates;
 	virtual void OnPlayerOpenBuyMenu(xrClientData const * pclient);				//this method invokes only if player dead
 	virtual void OnPlayerCloseBuyMenu(xrClientData const * pclient);			//if client state buyMenuPlayerReadyToSpawn respawn player
@@ -184,7 +184,7 @@ private:
 	bool teams_swaped;
 
 
-	typedef associative_vector<ClientID, u32> InvincibilityTimeouts;
+	using InvincibilityTimeouts = associative_vector<ClientID, u32>;
 	InvincibilityTimeouts m_invTimeouts;
 	void ResetTimeoutInvincibility(u32 currentTime);
 	bool ResetInvincibility(ClientID const clientId);
@@ -260,4 +260,7 @@ public:
 	virtual	bool Player_Check_Rank(game_PlayerState* ps);
 
 			void SwapTeams();
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
+	virtual game_sv_CaptureTheArtefact* cast_game_sv_capturetheartefact() override { return this; }
 };

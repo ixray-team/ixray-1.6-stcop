@@ -713,7 +713,8 @@ void CCustomDevice::UpdateCL()
 
 bool CCustomDevice::can_be_attached() const
 {
-	if (smart_cast<CActor*>(H_Parent()) && m_pInventory)
+	CObject* h_parent = const_cast<CObject*>(H_Parent());
+	if (h_parent != nullptr && h_parent->cast_actor() != nullptr && m_pInventory)
 	{
 		return m_pInventory->InSlot(this) && !IsHidden();
 	}

@@ -320,7 +320,11 @@ struct real_sender
 void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 {
 	CObject* pObject =  Level().Objects.net_Find(GameID);
-	if (!pObject || !smart_cast<CActor*>(pObject)) return;
+	if (pObject == nullptr)
+	{
+		return;
+	}
+
 	// Remove everything	
 	xrClientData* xrCData	=	m_server->ID_to_client(id_who);
 #ifdef DEBUG
@@ -343,7 +347,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 			xrCData->ps->m_bClearRun = false;
 	};
 	//-------------------------------------------------------
-	CActor* pActor = smart_cast <CActor*>(pObject);
+	CActor* pActor = pObject->cast_actor();
 	if (pActor)
 	{
 		if (!pActor->g_Alive())
@@ -711,12 +715,12 @@ void game_sv_mp::AllowDeadBodyRemove(ClientID id, u16 GameID)
 	CObject* pObject =  Level().Objects.net_Find(GameID);
 	
 
-	if (pObject && smart_cast<CActor*>(pObject))
+	if (pObject != nullptr)
 	{
-		CActor* pActor = smart_cast <CActor*>(pObject);
+		CActor* pActor = pObject->cast_actor();
 		if (pActor)
 		{
-			pActor->set_death_time		();
+			pActor->set_death_time();
 			pActor->m_bAllowDeathRemove = true;
 		};
 	};	
@@ -790,12 +794,17 @@ bool	game_sv_mp::GetPosAngleFromActor				(ClientID id, Fvector& Pos, Fvector &An
 	if (!xrCData || !xrCData->owner) return false;
 	
 	CObject* pObject =  Level().Objects.net_Find(xrCData->owner->ID);
-	///	R_ASSERT2	((pObject && smart_cast<CActor*>(pObject)),"Dead Player is not Actor");
 
-	if (!pObject || !smart_cast<CActor*>(pObject)) return false;
+	if (pObject == nullptr)
+	{
+		return false;
+	}
 
-	CActor* pActor = smart_cast <CActor*>(pObject);
-	if (!pActor) return false;
+	CActor* pActor = pObject->cast_actor();
+	if (!pActor)
+	{
+		return false;
+	}
 
 	Angle.set(-pActor->cam_Active()->pitch, -pActor->cam_Active()->yaw, -pActor->cam_Active()->roll);
 	Pos.set(pActor->cam_Active()->vPosition);
@@ -964,7 +973,7 @@ void	game_sv_mp::SpawnAmmoDifference(u16 actorId, ammo_diff_t const & ammo_diff)
 	
 	CSE_Abstract *ammo_entity = spawn_begin(ammo_diff.first.c_str());
 	ammo_entity->ID_Parent = actorId;
-	CSE_ALifeItemAmmo *temp_ammo = smart_cast<CSE_ALifeItemAmmo*>(ammo_entity);
+	CSE_ALifeItemAmmo* temp_ammo = ammo_entity->cast_item_ammo();
 	R_ASSERT2(temp_ammo, "ammo difference tries to spawn not an ammo");
 	temp_ammo->a_elapsed = ammo_diff.second;
 	spawn_end(ammo_entity,m_server->GetServerClient()->ID);
@@ -980,7 +989,7 @@ void	game_sv_mp::SpawnWeapon4Actor(u16 actorId,  LPCSTR N, u8 Addons, game_Playe
 	ammo_diff_t	ammo_diff;
 	E->s_flags.assign		(M_SPAWN_OBJECT_LOCAL);	// flags
 	/////////////////////////////////////////////////////////////////////////////////
-	CSE_ALifeItemWeapon		*pWeapon	=	smart_cast<CSE_ALifeItemWeapon*>(E);
+	CSE_ALifeItemWeapon* pWeapon = E->cast_item_weapon();
 	if (pWeapon)
 	{
 		pWeapon->m_addon_flags.assign(Addons);
@@ -1508,7 +1517,8 @@ void game_sv_mp::OnPlayerKilled(NET_Packet P)
 
 	if (!ps_killed)
 	{
-		CEntity *entity = smart_cast<CEntity*>(Level().Objects.net_Find(KilledID));
+		CObject* finded_object = Level().Objects.net_Find(KilledID);
+		CEntity *entity = finded_object != nullptr ? finded_object->cast_entity() : nullptr;
 
 #ifndef MASTER_GOLD
 		Msg("! ERROR:  killed entity is null ! (entitty [%d][%s]), killer id [%d][%s], Frame [%d]",
@@ -1883,7 +1893,8 @@ void game_sv_mp::RenewAllActorsHealth	()
 				return;
 			}
 			// this hack (client objects on server) must be deleted !!!
-			CActor *pActor = smart_cast<CActor*>(Level().Objects.net_Find(l_pC->ps->GameID));
+			CObject* finded_object = Level().Objects.net_Find(l_pC->ps->GameID);
+			CActor *pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 			if (!pActor)	//if player is spectator
 				return;
 
@@ -1935,7 +1946,8 @@ void game_sv_mp::RejectGameItem(CSE_Abstract* entity)
 
 	if (smart_cast<CSE_ALifeItemGrenade*>(entity))
 	{
-		CGrenade* grenade = smart_cast<CGrenade*>(Level().Objects.net_Find(entity->ID));
+		CObject* finded_object = Level().Objects.net_Find(entity->ID);
+		CGrenade* grenade = finded_object != nullptr ? finded_object->cast_grenade() : nullptr;
 		if (grenade && grenade->DropGrenade())
 			return;
 	}
@@ -2239,36 +2251,41 @@ void game_sv_mp::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
 	Msg("---Destroying player [%s] items before spawning new bought items.", ps->getName());
 #endif // #ifndef MASTER_GOLD
 	
-	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
-	if (!pActor)
+	CObject* finded_object = Level().Objects.net_Find(ps->GameID);
+
+	CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
+	if (pActor == nullptr)
 		return;
 	
-	TIItemContainer::const_iterator iie = pActor->inventory().m_all.end();
-	for (TIItemContainer::const_iterator ii = pActor->inventory().m_all.begin();
-		ii != iie; ++ii)
+	for (const PIItem& item : pActor->inventory().m_all)
 	{
-//		VERIFY(*ii);
-		R_ASSERT2(*ii, make_string<const char*>("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
+		R_ASSERT2(item, make_string<const char*>("PIItem in player`s inventory not found. Destroy all items of actor[%d]", ps->GameID));
 
-		u16 object_id = (*ii)->object().ID();
+		u16 object_id = item->object().ID();
 		CSE_Abstract* tempEntity = m_server->ID_to_entity(object_id);
 
-//		R_ASSERT2( tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID).c_str() );
-		VERIFY2  ( tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID) );
-		if (!tempEntity) {
-			Msg                 ( "! ERROR: entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID );
+		VERIFY2(tempEntity, make_string<const char*>("entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID));
+		if (tempEntity == nullptr)
+		{
+			Msg("! ERROR: entity not found [%d]. Destroy all items of actor[%d]", object_id, ps->GameID);
 			continue;
 		}
-		
-		if (smart_cast<CMPPlayersBag*>(*ii))
+
+		if (smart_cast<CMPPlayersBag*>(item))
+		{
 			continue;
-		
-		if (smart_cast<CWeaponKnife*>(*ii))
+		}
+
+		if (item->cast_weapon_knife() != nullptr)
+		{
 			continue;
-		
-		if (smart_cast<CArtefact*>(*ii))
+		}
+
+		if (item->cast_artefact() != nullptr)
+		{
 			continue;
-		
+		}
+
 		DestroyGameItem(tempEntity);
 	}
 }

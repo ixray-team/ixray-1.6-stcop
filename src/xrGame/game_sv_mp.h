@@ -30,9 +30,9 @@ struct Rank_Struct
 	};
 };
 
-class game_sv_mp :public game_sv_GameState
+class game_sv_mp : public game_sv_GameState
 {
-	typedef game_sv_GameState inherited;
+	using inherited = game_sv_GameState;
 
 protected:
 	//список трупов для удаления
@@ -222,5 +222,13 @@ public:
 		VERIFY(m_server);
 		return (*m_server);
 	}
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return nullptr; }
+	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return nullptr; }
+	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() override { return nullptr; }
+	virtual game_sv_CaptureTheArtefact* cast_game_sv_capturetheartefact() override { return nullptr; }
+	virtual game_sv_Single* cast_game_sv_single() override { return nullptr; }
+	virtual game_sv_freemp* cast_game_sv_freemp() override { return nullptr; }
 };
 

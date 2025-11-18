@@ -1044,7 +1044,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
 	BOOL bResult					= inherited::net_Spawn(DC);
 	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeItemWeapon			    *E	= smart_cast<CSE_ALifeItemWeapon*>(e);
+	CSE_ALifeItemWeapon* E = e->cast_item_weapon();
 
 	//iAmmoCurrent					= E->a_current;
 	iAmmoElapsed					= E->a_elapsed;

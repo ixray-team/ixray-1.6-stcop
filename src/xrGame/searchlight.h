@@ -4,7 +4,7 @@
 
 class CLAItem;
 
-class CProjector: public CScriptObject {
+class CProjector final : public CScriptObject {
 	typedef	CScriptObject		inherited;
 
 	friend void		BoneCallbackX(CBoneInstance *B);

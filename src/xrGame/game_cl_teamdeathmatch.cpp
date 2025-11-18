@@ -198,8 +198,7 @@ void game_cl_TeamDeathmatch::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
 		if(local_team == it->second->team){
 			u16 id = it->second->GameID;
 			CObject* pObject = Level().Objects.net_Find(id);
-			if (!pObject) continue;
-			if (!pObject || !smart_cast<CActor*>(pObject)) continue;
+			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
 
 			VERIFY(pObject);
 			D.pos = pObject->Position();
@@ -270,7 +269,7 @@ void game_cl_TeamDeathmatch::OnTeamSelect(int Team)
 	{
 		CObject *l_pObj = Level().CurrentEntity();
 
-		CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
+		CGameObject *l_pPlayer = l_pObj != nullptr ? l_pObj->cast_game_object() : nullptr;
 		if(!l_pPlayer) return;
 
 		NET_Packet		P;
@@ -429,7 +428,7 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 		{
 			if (local_player && !local_player->IsSkip())
 			{			
-				if (Level().CurrentEntity() && smart_cast<CSpectator*>(Level().CurrentEntity()))
+				if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_spectator() != nullptr)
 				{
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
@@ -522,8 +521,7 @@ void	game_cl_TeamDeathmatch::OnRender				()
 			u16 id = ps->GameID;
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 			CObject* pObject = Level().Objects.net_Find(id);
-			if (!pObject) continue;
-			if (!pObject || !smart_cast<CActor*>(pObject)) continue;
+			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
 			if (IsEnemy(ps)) continue;
 			
 			
@@ -535,7 +533,7 @@ void	game_cl_TeamDeathmatch::OnRender				()
 			if (/*m_bFriendlyNames &&*/ m_bShowPlayersNames)
 			{
 				VERIFY(pObject);
-				CActor* pActor = smart_cast<CActor*>(pObject);
+				CActor* pActor = pObject->cast_actor();
 				VERIFY(pActor); 
 				Fvector IPos = pTS->IndicatorPos;
 				IPos.y -= pTS->Indicator_r2;
@@ -544,7 +542,7 @@ void	game_cl_TeamDeathmatch::OnRender				()
 			if (m_bFriendlyIndicators)
 			{
 				VERIFY(pObject);
-				CActor* pActor = smart_cast<CActor*>(pObject);
+				CActor* pActor = pObject->cast_actor();
 				VERIFY(pActor);
 				Fvector IPos = pTS->IndicatorPos;
 				IPos.y += dup;
@@ -651,7 +649,7 @@ void game_cl_TeamDeathmatch::UpdateMapLocations		()
 			};
 			
 			CObject* pObject = Level().Objects.net_Find(id);
-			if (!pObject || !smart_cast<CActor*>(pObject)) continue;
+			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
 			if (IsEnemy(ps)) 
 			{
 				if (Level().MapManager().HasMapLocation(FRIEND_LOCATION, id))

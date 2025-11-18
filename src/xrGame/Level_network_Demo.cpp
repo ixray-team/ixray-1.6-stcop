@@ -152,7 +152,7 @@ void CLevel::SaveDemoHeader(shared_str const & server_options)
 
 void CLevel::SaveDemoInfo()
 {
-	game_cl_mp* tmp_game = smart_cast<game_cl_mp*>(&Game());
+	game_cl_mp* tmp_game = Game().cast_game_cl_mp();
 	if (!tmp_game)
 		return;
 	
@@ -237,8 +237,8 @@ void CLevel::SpawnDemoSpectator()
 {
 	R_ASSERT(Server && Server->game);
 	m_current_spectator = nullptr;
-	game_sv_mp*	tmp_sv_game		= smart_cast<game_sv_mp*>(Server->game);
-	game_cl_mp*	mp_cl_game		= smart_cast<game_cl_mp*>(Level().game);
+	game_sv_mp*	tmp_sv_game		= Game().cast_game_sv_mp();
+	game_cl_mp*	mp_cl_game		= Game().cast_game_cl_mp();
 
 	CSE_Spectator* specentity = smart_cast<CSE_Spectator*>(
 		tmp_sv_game->spawn_begin("spectator"));

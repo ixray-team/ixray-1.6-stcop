@@ -853,41 +853,54 @@ CStalkerActionPostCombatWait::CStalkerActionPostCombatWait	(CAI_Stalker *object,
 {
 }
 
-void CStalkerActionPostCombatWait::initialize		()
+void CStalkerActionPostCombatWait::initialize()
 {
-	inherited::initialize	();
-	
-	if (object().movement().current_params().cover())
-		return;
+	inherited::initialize();
 
-	object().movement().set_movement_type	(eMovementTypeRun);
-	
-	EObjectAction			action = eObjectActionAimReady1;
+	if (object().movement().current_params().cover())
+	{
+		return;
+	}
+
+	object().movement().set_movement_type(eMovementTypeRun);
+
+	EObjectAction action = eObjectActionAimReady1;
 	if (m_storage->property(eWorldPropertyKilledWounded))
-		action				= eObjectActionIdle;
+	{
+		action = eObjectActionIdle;
+	}
 
 	if (object().inventory().ActiveItem() && object().best_weapon() && (object().inventory().ActiveItem()->object().ID() == object().best_weapon()->object().ID()))
-		object().set_goal	(action,object().best_weapon());
-	else {
-		if (object().inventory().ItemFromSlot(INV_SLOT_2)) 
+		object().set_goal(action, object().best_weapon());
+	else
+	{
+		if (PIItem item_from_slot_2 = object().inventory().ItemFromSlot(INV_SLOT_2))
 		{
-			CWeaponMagazined				*temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(INV_SLOT_2));
+			CWeaponMagazined* temp = item_from_slot_2->cast_weapon_magazined();
 			if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
-				object().set_goal			(action,object().inventory().ItemFromSlot(INV_SLOT_2));
+			{
+				object().set_goal(action, object().inventory().ItemFromSlot(INV_SLOT_2));
+			}
 		}
-		else if (object().inventory().ItemFromSlot(PISTOL_SLOT_NEW))
+		else if (PIItem item_from_slot_pistol = object().inventory().ItemFromSlot(PISTOL_SLOT_NEW))
 		{
-			CWeaponMagazined* temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+			CWeaponMagazined* temp = item_from_slot_pistol->cast_weapon_magazined();
 			if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
+			{
 				object().set_goal(action, object().inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+			}
 		}
 	}
 
 	if (m_storage->property(eWorldPropertyKilledWounded))
+	{
 		return;
+	}
 
 	if (object().memory().enemy().last_enemy() && object().memory().visual().visible_now(object().memory().enemy().last_enemy()))
-		object().sight().setup				(CSightAction(object().memory().enemy().last_enemy(),true,true));
+	{
+		object().sight().setup(CSightAction(object().memory().enemy().last_enemy(), true, true));
+	}
 }
 
 void CStalkerActionPostCombatWait::execute			()

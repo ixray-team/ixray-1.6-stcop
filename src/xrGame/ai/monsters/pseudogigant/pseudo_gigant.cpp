@@ -187,26 +187,26 @@ void CPseudoGigant::reinit()
 
 
 
-#define MAX_STEP_RADIUS 60.f
+#define MAX_STEP_RADIUS 60.0f
 
 void CPseudoGigant::event_on_step()
 {
-	//////////////////////////////////////////////////////////////////////////
-	// Earthquake Effector	//////////////
-	CActor* pActor =  smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor)
+	// Earthquake Effector
+	CObject* current_entity = Level().CurrentEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+
+	if (pActor == nullptr)
 	{
-		float dist_to_actor = pActor->Position().distance_to(Position());
-		float max_dist		= MAX_STEP_RADIUS;
-		if (dist_to_actor < max_dist) 
-			Actor()->Cameras().AddCamEffector(new CPseudogigantStepEffector(
-				step_effector.time, 
-				step_effector.amplitude, 
-				step_effector.period_number, 
-				(max_dist - dist_to_actor) / (1.2f * max_dist))
-			);
+		return;
 	}
-	//////////////////////////////////
+
+	float dist_to_actor = pActor->Position().distance_to(Position());
+	float max_dist = MAX_STEP_RADIUS;
+
+	if (dist_to_actor < max_dist) 
+	{
+		pActor->Cameras().AddCamEffector(new CPseudogigantStepEffector(step_effector.time, step_effector.amplitude, step_effector.period_number, (max_dist - dist_to_actor) / (1.2f * max_dist)));
+	}
 }
 
 bool CPseudoGigant::check_start_conditions(ControlCom::EControlType type)
@@ -398,7 +398,10 @@ void CPseudoGigant::on_threaten_execute()
 				xrClientData* CL = static_cast<xrClientData*>(client);
 				if (!CL->owner)
 					return;
-				CActor* pA = smart_cast<CActor*>(Level().Objects.net_Find(CL->owner->ID));
+
+				CObject* finded_object = Level().Objects.net_Find(CL->owner->ID);
+
+				CActor* pA = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 				if (!pA)
 					return;
 

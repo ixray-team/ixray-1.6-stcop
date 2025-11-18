@@ -22,7 +22,7 @@ void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair,const Fvector& pos)
 		if(vel.square_magnitude()>0.01f)
 		{
 			CLONE_MTL_SOUND(m_sound, mtl_pair, CollideSounds);
-			m_sound.play_at_pos(smart_cast<CPhysicsShellHolder*>(m_object),pos);
+			m_sound.play_at_pos(m_object, pos);
 		}
 	}
 }

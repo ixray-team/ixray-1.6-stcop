@@ -50,14 +50,14 @@ void game_sv_freemp::SpawnItemToActor(u16 actorId, LPCSTR name)
 	E->ID_Parent = actorId;
 	E->s_flags.assign(M_SPAWN_OBJECT_LOCAL);	// flags
 
-	CSE_ALifeItemWeapon* pWeapon = smart_cast<CSE_ALifeItemWeapon*>(E);
+	CSE_ALifeItemWeapon* pWeapon = E->cast_item_weapon();
 	if (pWeapon)
 	{
 		u16 ammo_magsize = pWeapon->get_ammo_magsize();
 		pWeapon->a_elapsed = ammo_magsize;
 	}
 
-	CSE_ALifeItemPDA* pPda = smart_cast<CSE_ALifeItemPDA*>(E);
+	CSE_ALifeItemPDA* pPda = E->cast_item_pda();
 	if (pPda)
 	{
 		pPda->m_original_owner = actorId;
@@ -367,7 +367,7 @@ void game_sv_freemp::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
 					if (item->cNameSect() == "wpn_binoc")
 						continue;
 
-					CWeaponMagazined* wpn = smart_cast<CWeaponMagazined*>(item);
+					CWeaponMagazined* wpn = item->cast_weapon_magazined();
 
 					if (wpn != nullptr && wpn->WpnCanShoot())
 					{
@@ -437,7 +437,8 @@ void game_sv_freemp::OnPlayerRepairItem(NET_Packet& P, ClientID const& clientID)
 	if (!ps) return;
 	u16 itemId = P.r_u16();
 	s32 cost = P.r_s32();
-	PIItem item = smart_cast<CInventoryItem*>(Level().Objects.net_Find(itemId));
+	CObject* finded_object = Level().Objects.net_Find(itemId);
+	PIItem item = finded_object != nullptr ? finded_object->cast_inventory_item() : nullptr;
 	if (!item) return;
 	if (ps->money_for_round < cost) return;
 	AddMoneyToPlayer(ps, -cost);
@@ -481,7 +482,9 @@ void game_sv_freemp::OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender)
 		u8 KeyEvent = P.r_u8();
 		bool IsHold = !!P.r_u8();
 
-		if (CCar* CarPtr = smart_cast<CCar*>(Level().Objects.net_Find(CarID)))
+		CObject* finded_object = Level().Objects.net_Find(CarID);
+
+		if (CCar* CarPtr = finded_object != nullptr ? finded_object->cast_car() : nullptr)
 		{
 			if (IsHold)
 			{
