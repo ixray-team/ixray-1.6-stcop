@@ -102,7 +102,7 @@ bool UIGameMP::ShowServerInfo()
 void UIGameMP::SetClGame(game_cl_GameState* g)
 {
 	inherited::SetClGame(g);
-	m_game = smart_cast<game_cl_mp*>(g);
+	m_game = g->cast_game_cl_mp();
 	VERIFY(m_game);
 
 	if (m_pServerInfo)

@@ -175,14 +175,6 @@ void game_cl_CaptureTheArtefact::shedule_Update(u32 dt)
 					UpdateWarmupTime(current_time);
 					UpdateTimeLimit(current_time);
 				}
-				/*if (Level().CurrentControlEntity()){
-						CGameObject* GO = smart_cast<CGameObject*>(Level().CurrentControlEntity());
-						Msg("---I'm ready (ID = %d) sending player ready packet !!!", GO->ID());
-						NET_Packet			P;
-						GO->u_EventGen		(P,GE_GAME_EVENT,GO->ID()	);
-						P.w_u16(GAME_EVENT_PLAYER_READY);
-						GO->u_EventSend			(P);
-				}*/
 			}break;
 		case GAME_PHASE_PENDING:
 			{
@@ -676,12 +668,9 @@ void game_cl_CaptureTheArtefact::OnGameMenuRespond_ChangeSkin(NET_Packet& P)
 
 void game_cl_CaptureTheArtefact::SpawnMe()
 {
-	CActor*			currActor	= smart_cast<CActor*>(Level().CurrentControlEntity());
+	CActor* currActor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 	if (!currActor)
 		return;
-
-	/*CGameObject*	go = smart_cast<CGameObject*>(curr);
-	VERIFY			(go);*/
 
 	NET_Packet		packet;
 	currActor->u_EventGen	(packet, GE_GAME_EVENT, currActor->ID());
@@ -804,26 +793,13 @@ void game_cl_CaptureTheArtefact::OnSpawn(CObject* pObj)
 	if (g_dedicated_server)
 		return;
 
-	CArtefact *pArtefact = smart_cast<CArtefact*>(pObj);
+	CArtefact *pArtefact = pObj != nullptr ? pObj->cast_artefact() : nullptr;
 	if (pArtefact)
 	{
 		Level().MapManager().AddMapLocation(ARTEFACT_NEUTRAL, pObj->ID())->EnablePointer();
-		/*if (OnServer()) // huck :( - server logic must be ONLY ON SERVER !!!
-		{
-			if (GetGreenArtefactID() == pArtefact->ID())
-			{
-				pArtefact->MoveTo(GetGreenArtefactRPoint());
-			} else if (GetBlueArtefactID() == pArtefact->ID())
-			{
-				pArtefact->MoveTo(GetBlueArtefactRPoint());
-			} else
-			{
-				VERIFY2(false, "unknown artefact in game");
-			}
-		}*/
 		return;
 	}
-	CActor *pActor = smart_cast<CActor*>(pObj);
+	CActor *pActor = pObj != nullptr ? pObj->cast_actor() : nullptr;
 	if (pActor && local_player)
 	{
 		game_PlayerState *ps = GetPlayerByGameID(pActor->ID());
@@ -844,7 +820,7 @@ void game_cl_CaptureTheArtefact::OnSpawn(CObject* pObj)
 			}
 		}
 	}
-	if (smart_cast<CWeapon*>(pObj))
+	if (pObj != nullptr && pObj->cast_weapon() != nullptr)
 	{
 		if (pObj->H_Parent())
 		{
@@ -864,7 +840,7 @@ void game_cl_CaptureTheArtefact::SetInvinciblePlayer(u16 const gameId, bool cons
 	if (!pObject)
 		return;
 
-	if (!smart_cast<CActor*>(pObject))
+	if (pObject->cast_actor() == nullptr)
 		return;
 
 	CActor* pActor		= static_cast<CActor*>		(pObject);
@@ -1087,7 +1063,7 @@ void game_cl_CaptureTheArtefact::OnBuySpawnMenu_Ok		()
 	if (!curr)
 		return;
 
-	CGameObject*	go = smart_cast<CGameObject*>(curr);
+	CGameObject*	go = curr->cast_game_object();
 	NET_Packet		packet;
 	go->u_EventGen	(packet, GE_GAME_EVENT, go->ID());
 	packet.w_u16	(GAME_EVENT_PLAYER_BUY_SPAWN);
@@ -1543,11 +1519,11 @@ void game_cl_CaptureTheArtefact::OnRender()
 			if (!pObject)
 				continue;
 
-			if (!pObject || !smart_cast<CActor*>(pObject))
+			if (!pObject || pObject->cast_actor() == nullptr)
 				continue;
 
 			VERIFY(pObject);
-			CActor* pActor = smart_cast<CActor*>(pObject);
+			CActor* pActor = pObject->cast_actor();
 			VERIFY(pActor); 
 			Fvector IPos = pTS->IndicatorPos;
 

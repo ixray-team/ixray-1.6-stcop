@@ -103,12 +103,12 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 		{
 			if (IsGameTypeSingle())
 			{
-				game_sv_Single* _gameS = smart_cast<game_sv_Single*>(game);
+				game_sv_Single* _gameS = game->cast_game_sv_single();
 				_gameS->alife().release(e_dest, false);
 			}
 			else
 			{
-				game_sv_freemp* _gameM = smart_cast<game_sv_freemp*>(game);
+				game_sv_freemp* _gameM = game->cast_game_sv_freemp();
 				_gameM->alife().release(e_dest, false);
 			}
 		}
