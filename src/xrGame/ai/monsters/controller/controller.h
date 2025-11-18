@@ -10,7 +10,7 @@ class SndShockEffector;
 class CControllerPsyHit;
 class CControllerAura;
 
-class CController : public CBaseMonster,
+class CController final : public CBaseMonster,
 					public CControlledActor 
 {
 	typedef		CBaseMonster	inherited;

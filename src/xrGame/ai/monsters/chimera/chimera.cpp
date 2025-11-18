@@ -54,7 +54,7 @@ void   CChimera::Load (LPCSTR section)
 
 	//@
 
-	IKinematicsAnimated*	KA			=	smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated*	KA			= Visual()->dcast_PKinematicsAnimated();
 	MotionID idle_motion_id1			=	KA->LL_MotionID("stand_idle_0");
 	MotionID idle_motion_id2			=	KA->LL_MotionID("stand_idle_1");
 

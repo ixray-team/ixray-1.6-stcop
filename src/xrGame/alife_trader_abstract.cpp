@@ -26,7 +26,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 	CSE_ALifeDynamicObject* dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(this);
 	VERIFY(dynamic_object);
 	CSE_Abstract* abstract = dynamic_object->alife().spawn_item(pGameGlobals->r_string("actor_item", "pda_item"), base()->o_Position, dynamic_object->m_tNodeID, dynamic_object->m_tGraphID, base()->ID);
-	CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
+	CSE_ALifeItemPDA* pda = abstract->cast_item_pda();
 	pda->m_original_owner = base()->ID;
 
 #ifdef XRGAME_EXPORTS

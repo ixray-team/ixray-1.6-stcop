@@ -159,7 +159,7 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 {
 	R_ASSERT(xrCL);
 	IClient* tmp_client = static_cast<IClient*>(xrCL);
-	game_sv_mp* server_game = smart_cast<game_sv_mp*>(game);
+	game_sv_mp* server_game = game->cast_game_sv_mp();
 	P->r_stringZ(xrCL->m_cdkey_digest);
 	shared_str	admin_name;
 	if (server_game->IsPlayerBanned(xrCL->m_cdkey_digest.c_str(), admin_name))

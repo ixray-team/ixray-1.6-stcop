@@ -7,7 +7,7 @@
 
 #include "../xrScripts/script_export_space.h"
 
-class CHairsZone : 
+class CHairsZone final : 
 	public CVisualZone 
 {
 typedef				CVisualZone		inherited;		

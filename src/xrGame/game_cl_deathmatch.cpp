@@ -198,7 +198,7 @@ void game_cl_Deathmatch::OnSkinMenu_Ok			()
 {
 	CObject *l_pObj = Level().CurrentEntity();
 
-	CGameObject *l_pPlayer = smart_cast<CGameObject*>(l_pObj);
+	CGameObject *l_pPlayer = l_pObj != nullptr ? l_pObj->cast_game_object() : nullptr;
 	if(!l_pPlayer) return;
 
 	NET_Packet		P;
@@ -235,7 +235,7 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 	if (!is_buy_menu_ready())
 		return FALSE;
 
-	if (Level().CurrentEntity() && !smart_cast<CSpectator*>(Level().CurrentEntity()))
+	if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_spectator() == nullptr)
 	{
 		return FALSE;
 	};
@@ -280,7 +280,7 @@ BOOL game_cl_Deathmatch::CanCallSkinMenu			()
 BOOL game_cl_Deathmatch::CanCallInventoryMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
-	if (Level().CurrentEntity() && !smart_cast<CActor*>(Level().CurrentEntity()))
+	if (Level().CurrentEntity() != nullptr && Level().CurrentEntity()->cast_actor() == nullptr)
 	{
 		return FALSE;
 	}
@@ -550,7 +550,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					m_game_ui->SetWarmUpCaption(tmpStr);
 				}
 
-				if (Level().CurrentEntity() && smart_cast<CSpectator*>(Level().CurrentEntity()))
+				if (Level().CurrentEntity() && Level().CurrentEntity()->cast_spectator() != nullptr)
 				{
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
@@ -568,13 +568,9 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					};
 				};
 
-				if (Level().CurrentControlEntity() && 
-					smart_cast<CSpectator*>(Level().CurrentControlEntity()) &&
-					(CurrentGameUI()->GameIndicatorsShown())
-					)
+				if (Level().CurrentControlEntity() && (CurrentGameUI()->GameIndicatorsShown()))
 				{
-					
-					CSpectator* pSpectator = smart_cast<CSpectator*>(Level().CurrentControlEntity());
+					CSpectator* pSpectator = Level().CurrentControlEntity()->cast_spectator();
 					if (pSpectator)
 					{
 						string1024 SpectatorStr = "";
@@ -709,8 +705,8 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 		CObject* curr = Level().CurrentControlEntity();
 		if (!curr) return(false);
 
-		bool is_actor = !!smart_cast<CActor*>(curr);
-		bool is_spectator = !!smart_cast<CSpectator*>(curr);
+		bool is_actor = curr->cast_actor() != nullptr;
+		bool is_spectator = curr->cast_spectator() != nullptr;
 
 		game_PlayerState* ps = local_player;
 
@@ -724,7 +720,7 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 		};
 		if (b_need_to_send_ready)
 		{
-			CGameObject* GO = smart_cast<CGameObject*>(curr);
+			CGameObject* GO = curr->cast_game_object();
 			NET_Packet			P;
 			GO->u_EventGen(P, GE_GAME_EVENT, GO->ID());
 			P.w_u16(GAME_EVENT_PLAYER_READY);
@@ -746,7 +742,7 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 
 	if (kINVENTORY == key )
 	{
-		if (Level().CurrentControlEntity() && smart_cast<CActor*>(Level().CurrentControlEntity()))
+		if (Level().CurrentControlEntity() != nullptr && Level().CurrentControlEntity()->cast_actor() != nullptr)
 		{
 			if (m_game_ui)
 			{
@@ -950,28 +946,7 @@ void game_cl_Deathmatch::OnVoteEnd				(NET_Packet& P)
 };
 
 void game_cl_Deathmatch::GetMapEntities(xr_vector<SZoneMapEntityData>& dst)
-{
-	/*
-	SZoneMapEntityData D;
-	u32 color_self_team		=		0xff00ff00;
-	D.color					=		color_self_team;
-
-	PLAYERS_MAP_IT it = players.begin();
-	for(;it!=players.end();++it)
-	{
-		game_PlayerState* ps = it->second;
-		u16 id = ps->GameID;
-		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
-		CObject* pObject = Level().Objects.net_Find(id);
-		if (!pObject) continue;
-		if (!pObject || !smart_cast<CActor*>(pObject)) continue;
-
-		VERIFY(pObject);
-		D.pos = pObject->Position();
-		dg_pStringTable->push_back(D);
-	}
-	*/
-}
+{}
 
 bool		game_cl_Deathmatch::IsEnemy					(game_PlayerState* ps)
 {
@@ -996,14 +971,13 @@ void		game_cl_Deathmatch::OnRender				()
 			if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 			if (!ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE)) continue;
 			CObject* pObject = Level().Objects.net_Find(id);
-			if (!pObject) continue;
-			if (!pObject || !smart_cast<CActor*>(pObject)) continue;
+			if (pObject == nullptr || pObject->cast_actor() == nullptr) continue;
 			if (ps == local_player) continue;
 			if (!IsEnemy(ps)) continue;
 			cl_TeamStruct *pTS = &TeamList[ModifyTeam(ps->team)]; 
 
 			VERIFY(pObject);
-			CActor* pActor = smart_cast<CActor*>(pObject);
+			CActor* pActor = pObject->cast_actor();
 			VERIFY(pActor);
 			pActor->RenderIndicator(pTS->IndicatorPos, pTS->Indicator_r1, pTS->Indicator_r2, pTS->InvincibleShader);
 		}
@@ -1041,13 +1015,13 @@ void game_cl_Deathmatch::OnSpawn(CObject* pObj)
 {
 	inherited::OnSpawn(pObj);
 	if (!pObj) return;
-	CActor* pActor = smart_cast<CActor*>(pObj);
+	CActor* pActor = pObj->cast_actor();
 	if (pActor)
 	{
 		if (xr_strlen(Actor_Spawn_Effect))
 			PlayParticleEffect(Actor_Spawn_Effect.c_str(), pObj->Position());
 	};
-	if (smart_cast<CWeapon*>(pObj))
+	if (pObj->cast_weapon() != nullptr)
 	{
 		if (pObj->H_Parent())
 		{
@@ -1224,9 +1198,7 @@ void game_cl_Deathmatch::OnPlayerFlagsChanged(game_PlayerState* ps)
 	CObject* pObject				= Level().Objects.net_Find(ps->GameID);
 	if (!pObject)					return;
 
-	if (!smart_cast<CActor*>(pObject)) return;
-
-	CActor* pActor					= smart_cast<CActor*>(pObject);
+	CActor* pActor					= pObject->cast_actor();
 	if (!pActor)					return;
 
 	pActor->conditions().SetCanBeHarmedState(!ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE));

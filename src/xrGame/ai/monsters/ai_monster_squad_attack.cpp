@@ -140,7 +140,8 @@ void CMonsterSquad::get_index_in_squad(ENTITY_VEC &members, const CEntity *m_ene
 		m_index++;
 		pEntity = members.back();
 		pEntity->cast_entity_alive()->m_squad_index = m_index;
-		smart_cast<CBaseMonster&>(*pEntity).SetEnemy(smart_cast<const CEntityAlive*>(m_enemy));
+		CEntity* enemy = const_cast<CEntity*>(m_enemy);
+		pEntity->cast_base_monster()->SetEnemy(enemy != nullptr ? enemy->cast_entity_alive() : nullptr);
 		members.pop_back();
 	}
 }

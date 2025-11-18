@@ -59,34 +59,41 @@ void CScriptZone::shedule_Update(u32 dt)
 	feel_touch_update			(P,s.R);
 }
 
-void CScriptZone::feel_touch_new	(CObject *tpObject)
+void CScriptZone::feel_touch_new(CObject* tpObject)
 {
-	CGameObject					*l_tpGameObject = smart_cast<CGameObject*>(tpObject);
-	if (!l_tpGameObject)
+	CGameObject* l_tpGameObject = tpObject != nullptr ? tpObject->cast_game_object() : nullptr;
+	if (l_tpGameObject == nullptr)
+	{
 		return;
-	
-	callback(GameObject::eZoneEnter)(lua_game_object(),l_tpGameObject->lua_game_object());
+	}
+
+	callback(GameObject::eZoneEnter)(lua_game_object(), l_tpGameObject->lua_game_object());
 }
 
-void CScriptZone::feel_touch_delete	(CObject *tpObject)
+void CScriptZone::feel_touch_delete(CObject* tpObject)
 {
-	CGameObject					*l_tpGameObject = smart_cast<CGameObject*>(tpObject);
-	
-	if (!l_tpGameObject || l_tpGameObject->getDestroy())
-		return;
+	CGameObject* l_tpGameObject = tpObject != nullptr ? tpObject->cast_game_object() : nullptr;
 
-	callback(GameObject::eZoneExit)(lua_game_object(),l_tpGameObject->lua_game_object());
+	if (l_tpGameObject == nullptr || l_tpGameObject->getDestroy())
+	{
+		return;
+	}
+
+	callback(GameObject::eZoneExit)(lua_game_object(), l_tpGameObject->lua_game_object());
 }
 
-void CScriptZone::net_Relcase			(CObject *O)
+void CScriptZone::net_Relcase(CObject* O)
 {
-	CGameObject					*l_tpGameObject = smart_cast<CGameObject*>(O);
-	if (!l_tpGameObject)
+	CGameObject* l_tpGameObject = O != nullptr ? O->cast_game_object() : nullptr;
+	if (l_tpGameObject == nullptr)
+	{
 		return;
+	}
 
-	xr_vector<CObject*>::iterator	I = std::find(feel_touch.begin(),feel_touch.end(),O);
-	if (I != feel_touch.end()) {
-		callback(GameObject::eZoneExit)(lua_game_object(),l_tpGameObject->lua_game_object());
+	xr_vector<CObject*>::iterator I = std::find(feel_touch.begin(), feel_touch.end(), O);
+	if (I != feel_touch.end())
+	{
+		callback(GameObject::eZoneExit)(lua_game_object(), l_tpGameObject->lua_game_object());
 	}
 }
 
