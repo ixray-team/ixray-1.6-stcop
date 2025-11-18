@@ -152,7 +152,9 @@ void CSightAction::execute_object				()
 {
 	Fvector					look_pos;
 
-	CActor* pActor = smart_cast<CActor*>(m_object_to_look);
+	CGameObject* cast_object_to_look = const_cast<CGameObject*>(m_object_to_look);
+
+	CActor* pActor = cast_object_to_look->cast_actor();
 	if(pActor)
 	{
 		if(pActor->HUDview())
@@ -179,7 +181,7 @@ void CSightAction::execute_object				()
 
 	Fvector					my_position = m_object->eye_matrix.c;
 
-	const CEntityAlive		*entity_alive = smart_cast<const CEntityAlive*>(m_object_to_look);
+	const CEntityAlive* entity_alive = cast_object_to_look->cast_entity_alive();
 	if (!entity_alive || entity_alive->g_Alive()) {
 		look_pos.x			= m_object_to_look->Position().x;
 		look_pos.z			= m_object_to_look->Position().z;

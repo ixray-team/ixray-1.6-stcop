@@ -826,16 +826,20 @@ bool CRelationMapLocation::Update()
 			bAlive = pCreature->g_Alive		();
 	}else
 	{
-		CInventoryOwner*			pEnt = nullptr;
-		CInventoryOwner*			pAct = nullptr;
+		CInventoryOwner* pEnt = nullptr;
+		CInventoryOwner* pAct = nullptr;
 
-		pEnt = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_objectID));
-		pAct = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_pInvOwnerActorID));
+		CObject* finded_object = Level().Objects.net_Find(m_objectID);
+		pEnt = finded_object != nullptr ? finded_object->cast_inventory_owner() : nullptr;
+
+		finded_object = Level().Objects.net_Find(m_pInvOwnerActorID);
+		pAct = finded_object != nullptr ? finded_object->cast_inventory_owner() : nullptr;
+
 		if(!pEnt || !pAct)	
 			return false;
 
 		m_last_relation =  RELATION_REGISTRY().GetRelationType(pEnt, pAct);
-		CEntityAlive* pEntAlive = smart_cast<CEntityAlive*>(pEnt);
+		CEntityAlive* pEntAlive = pEnt != nullptr ? pEnt->cast_entity_alive() : nullptr;
 		if(pEntAlive)
 			bAlive = !!pEntAlive->g_Alive		();
 	}
@@ -857,14 +861,17 @@ bool CRelationMapLocation::Update()
 		CObject* _object_ = Level().Objects.net_Find(m_objectID);
 		if(_object_)
 		{
-			CEntityAlive* ea = smart_cast<CEntityAlive*>(_object_);
+			CEntityAlive* ea = _object_->cast_entity_alive();
 			if(ea&&!ea->g_Alive()) 
 				vis_res =  true;	
 			else
 			{
-				const CGameObject* pObj = smart_cast<const CGameObject*>(_object_);
-				CActor* pAct = smart_cast<CActor*>(Level().Objects.net_Find(m_pInvOwnerActorID));
-				CHelmet* helm = smart_cast<CHelmet*>(pAct->inventory().ItemFromSlot(HELMET_SLOT));
+				const CGameObject* pObj = _object_->cast_game_object();
+				CObject* finded_object = Level().Objects.net_Find(m_pInvOwnerActorID);
+
+				CActor* pAct = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
+				CHelmet* helm = pAct->GetHelmet();
+
 				if(helm && helm->m_fShowNearestEnemiesDistance)
 				{
 					if(pAct->Position().distance_to(pObj->Position()) < helm->m_fShowNearestEnemiesDistance)
@@ -885,9 +892,11 @@ bool CRelationMapLocation::Update()
 		CObject* _object_ = Level().Objects.net_Find(m_objectID);
 		if(_object_)
 		{
-			const CGameObject* pObj = smart_cast<const CGameObject*>(_object_);
-			CActor* pAct = smart_cast<CActor*>(Level().Objects.net_Find(m_pInvOwnerActorID));
-			if(/*pAct->Position().distance_to_sqr(pObj->Position()) < 100.0F && */abs(pObj->Position().y-pAct->Position().y)<3.0f)
+			const CGameObject* pObj = _object_->cast_game_object();
+			CObject* finded_object = Level().Objects.net_Find(m_pInvOwnerActorID);
+			CActor* pAct = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
+
+			if(abs(pObj->Position().y-pAct->Position().y)<3.0f)
 				vis_res = true;
 			else
 				vis_res = false;

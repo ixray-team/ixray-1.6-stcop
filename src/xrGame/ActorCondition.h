@@ -9,7 +9,7 @@ class CScriptCallbackEx;
 class CActor;
 class CActorDeathEffector;
 
-class CActorCondition : 
+class CActorCondition final : 
 	public CEntityCondition
 {
 private:

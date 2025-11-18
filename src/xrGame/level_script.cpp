@@ -202,7 +202,8 @@ CScriptGameObject* get_object_by_name(LPCSTR caObjectName)
 
 CScriptGameObject *get_object_by_id(u16 id)
 {
-	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
+	CObject* finded_object = Level().Objects.net_Find(id);
+	CGameObject* pGameObject = finded_object != nullptr ? finded_object->cast_game_object() : nullptr;
 	if (!pGameObject)
 	{
 		//g_pScriptEngine->print_stack();
@@ -313,7 +314,8 @@ float get_global_time_factor() { return (Device.time_factor()); }
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
 	g_SingleGameDifficulty		= dif;
-	game_cl_Single* game		= smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
+	game_cl_Single* game		= Game().cast_game_cl_single();
+	VERIFY(game);
 	game->OnDifficultyChanged	();
 }
 ESingleGameDifficulty get_game_difficulty()
@@ -344,7 +346,7 @@ u32 get_time_minutes()
 
 void change_game_time(u32 days, u32 hours, u32 mins)
 {
-	game_sv_Single	*tpGame = smart_cast<game_sv_Single *>(Level().Server->game);
+	game_sv_Single* tpGame = Level().Server->game != nullptr ? Level().Server->game->cast_game_sv_single() : nullptr;
 	if(tpGame && ai().get_alife())
 	{
 		u32 value		= days*86400+hours*3600+mins*60;

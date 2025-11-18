@@ -1829,13 +1829,16 @@ const bool CScriptGameObject::getMechanic() const
 
 void CScriptGameObject::SetHeadRotate(bool value)
 {
-	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
+	{
 		pInventoryOwner->SetHeadRotate(value);
+	}
 }
 
 void CScriptGameObject::SetSubIconText(LPCSTR m_custom_text, int m_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset)
 {
-	if (CInventoryItem* iitem = this->object().cast_inventory_item()) {
+	if (CInventoryItem* iitem = this->object().cast_inventory_item())
+	{
 		iitem->m_custom_text = m_custom_text;
 		iitem->m_custom_text_clr_inv = m_custom_text_clr_inv;
 		iitem->m_custom_text_font = UI().Font().GetFont(item_custom_text_font);
@@ -1845,7 +1848,8 @@ void CScriptGameObject::SetSubIconText(LPCSTR m_custom_text, int m_custom_text_c
 
 void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr)
 {
-	if (CInventoryItem* iitem = this->object().cast_inventory_item()) {
+	if (CInventoryItem* iitem = this->object().cast_inventory_item())
+	{
 		iitem->m_custom_mark = m_custom_mark;
 		iitem->m_custom_mark_offset = m_custom_mark_offset;
 		iitem->m_custom_mark_size = m_custom_mark_size;
