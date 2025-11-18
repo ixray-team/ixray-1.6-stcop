@@ -1400,7 +1400,6 @@ void CActor::UpdateCL()
 	_last_update_time = ct;
 	clamp(dt, 0u, 1000u);
 
-	UpdateElectronicsProblemsCnt(dt);
 	g_player_hud->UpdateWeaponOffset(dt);
 	ProcessKeys(item);
 
@@ -1562,10 +1561,6 @@ void CActor::UpdateCL()
 	{
 		HudAnimator()->Update();
 	}
-
-	Device.hudViewportData.IsElectronicsProblemsDecreasing = IsElectronicsProblemsDecreasing();
-	Device.hudViewportData.CurrentElectronicsProblemsCnt = CurrentElectronicsProblemsCnt();
-	Device.hudViewportData.TargetElectronicsProblemsCnt = TargetElectronicsProblemsCnt();
 
 	Device.hudViewportData.ActorHealth = GetfHealth();
 	Device.hudViewportData.ActorOutfitCondition = GetOutfit() != nullptr ? GetOutfit()->GetCondition() : -1.0f;
@@ -3024,86 +3019,6 @@ CCustomDevice* CActor::GetDevice(bool in_slot)
 bool CActor::infinite_fire()
 {
 	return !!psActorFlags.test(AF_INFINITEFIRE);
-}
-
-
-void CActor::ResetElectronicsProblems()
-{
-	target_electronics_problems_counter = 0.0f;
-}
-
-void CActor::ResetElectronicsProblems_Full()
-{
-	ResetElectronicsProblems();
-	current_electronics_problems_counter = 0.0f;
-	previous_electronics_problems_counter = 0.0f;
-	last_problems_update_was_decrease = false;
-}
-
-float CActor::PreviousElectronicsProblemsCnt() const
-{
-	return previous_electronics_problems_counter;
-}
-
-bool CActor::ElectronicsProblemsImmediateApply()
-{
-	current_electronics_problems_counter = target_electronics_problems_counter;
-	return true;
-}
-
-bool CActor::ElectronicsProblemsInc()
-{
-	target_electronics_problems_counter += 1.0f;
-	return true;
-}
-
-float CActor::TargetElectronicsProblemsCnt() const
-{
-	return target_electronics_problems_counter;
-}
-
-float CActor::CurrentElectronicsProblemsCnt() const
-{
-	return current_electronics_problems_counter;
-}
-
-bool CActor::ElectronicsProblemsDec()
-{
-	if (target_electronics_problems_counter > 0.0f)
-	{
-		target_electronics_problems_counter -= 1.0f;
-		return true;
-	}
-	else
-		return false;
-}
-
-bool CActor::IsElectronicsProblemsDecreasing() const
-{
-	return last_problems_update_was_decrease;
-}
-
-void CActor::UpdateElectronicsProblemsCnt(u32 dt)
-{
-	float max_delta = static_cast<float>(dt) / 2000.0f;
-	float delta = target_electronics_problems_counter - current_electronics_problems_counter;
-
-	previous_electronics_problems_counter = current_electronics_problems_counter;
-
-	if (target_electronics_problems_counter == current_electronics_problems_counter)
-	{
-		return;
-	}
-
-	if (abs(delta) <= abs(max_delta))
-	{
-		current_electronics_problems_counter = target_electronics_problems_counter;
-	}
-	else
-	{
-		current_electronics_problems_counter += copysign(max_delta, delta);
-		last_problems_update_was_decrease = (delta < 0.0f);
-	}
 }
 
 float CActor::GetHandJitterScale(CHudItem* itm) const

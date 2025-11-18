@@ -53,6 +53,8 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "material_manager.h"
 
+#include "ElectronicsProblemsManager.h"
+
 using namespace luabind;
 
 void show_legs(bool val)
@@ -1197,9 +1199,9 @@ bool InventoryShown()
 
 bool ElectronicsBreak()
 {
-	if (CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr)
+	if (CElectronicsProblemsManager* electronics_manager = Level().GetElectronicsProblemsManager())
 	{
-		return actor->ElectronicsProblemsInc();
+		return electronics_manager->ElectronicsProblemsInc();
 	}
 
 	return false;
@@ -1222,9 +1224,9 @@ bool IsActorBurned()
 
 bool IsElectronicsRestore()
 {
-	if (CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr)
+	if (CElectronicsProblemsManager* electronics_manager = Level().GetElectronicsProblemsManager())
 	{
-		return actor->ElectronicsProblemsDec();
+		return electronics_manager->ElectronicsProblemsDec();
 	}
 
 	return false;
@@ -1232,9 +1234,9 @@ bool IsElectronicsRestore()
 
 bool ElectronicsReset()
 {
-	if (CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr)
+	if (CElectronicsProblemsManager* electronics_manager = Level().GetElectronicsProblemsManager())
 	{
-		actor->ResetElectronicsProblems();
+		electronics_manager->ResetElectronicsProblems();
 		return true;
 	}
 
@@ -1243,9 +1245,9 @@ bool ElectronicsReset()
 
 bool IsElectronicsApply()
 {
-	if (CActor* actor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr)
+	if (CElectronicsProblemsManager* electronics_manager = Level().GetElectronicsProblemsManager())
 	{
-		return actor->ElectronicsProblemsImmediateApply();
+		return electronics_manager->ElectronicsProblemsImmediateApply();
 	}
 
 	return false;
