@@ -47,6 +47,7 @@ enum class EditorUI : u8
 	Tools_OMFEditor,
 	Tools_InputManager,
 	Audio_General,
+	UI_General,
 	Count
 };
 
