@@ -46,6 +46,8 @@ class	message_filter;
 class	demoplay_control;
 class	demo_info;
 
+class CElectronicsProblemsManager;
+
 #ifdef DEBUG_DRAW
 	class	CDebugRenderer;
 #endif
@@ -88,6 +90,9 @@ private:
 
 	bool m_isKeyPress = false;
 	const char* m_onKeyPress = {};
+
+	CElectronicsProblemsManager* m_electronics_problems_manager = nullptr;
+
 protected:
 	typedef IGame_Level			inherited;
 	
@@ -156,6 +161,8 @@ public:
 	virtual void				OnInvalidPassword		();
 	virtual void				OnSessionFull			();
 	virtual void				OnConnectRejected		();
+
+	CElectronicsProblemsManager* GetElectronicsProblemsManager() { return m_electronics_problems_manager; }
 
 	NET_Packet* GetLastClientScriptEvent();
 	void PopLastClientScriptEvent();
