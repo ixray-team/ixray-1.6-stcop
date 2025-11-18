@@ -6,7 +6,7 @@
 #pragma once
 #include "Artefact.h"
 
-class CThornArtefact : public CArtefact 
+class CThornArtefact final : public CArtefact 
 {
 private:
 	typedef CArtefact inherited;

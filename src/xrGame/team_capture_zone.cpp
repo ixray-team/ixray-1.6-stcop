@@ -174,7 +174,7 @@ void CTeamCaptureZone::update_Capture(u8 team)
 
 void CTeamCaptureZone::feel_touch_new(CObject* tpObject)
 {
-	if (OnServer() && smart_cast<CActor*>(tpObject))
+	if (OnServer() && tpObject->cast_actor() != nullptr)
 	{
 		v_actor.push_back(tpObject);
 	};
@@ -182,9 +182,8 @@ void CTeamCaptureZone::feel_touch_new(CObject* tpObject)
 
 void CTeamCaptureZone::feel_touch_delete(CObject* tpObject)
 {
-	if (OnServer() && smart_cast<CActor*>(tpObject))
+	if (OnServer() && tpObject->cast_actor() != nullptr)
 	{
-		
 		if (!v_actor.empty())
 		{
 			size_t i = 0;
@@ -203,7 +202,7 @@ void CTeamCaptureZone::feel_touch_delete(CObject* tpObject)
 
 BOOL CTeamCaptureZone::feel_touch_contact(CObject* O)
 {
-	CActor* pActor = smart_cast<CActor*>(O);
+	CActor* pActor = O->cast_actor();
 	if (!pActor) return (FALSE);
 	return ((CCF_Shape*)CFORM())->Contact(O);
 }

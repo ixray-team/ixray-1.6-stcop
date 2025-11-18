@@ -46,12 +46,12 @@ public:
 
 public:
 	virtual CInventoryOwner*	cast_inventory_owner	()	{return this;}
-	virtual CAttachmentOwner*	cast_attachment_owner	()  {return this;}
+	virtual CAttachmentOwner*	cast_attachment_owner	() override {return this;}
 	virtual CActor*				cast_actor				()	{return nullptr;}
 	virtual CEntityAlive*		cast_entity_alive		()	{return nullptr;}
 	virtual CEntity*			cast_entity				()	{return nullptr;}
 	virtual CAI_Stalker*		cast_stalker			()	{return nullptr;}
-	virtual CGameObject*		cast_game_object		()	{return nullptr;}
+	virtual CGameObject*		cast_game_object		() override	{return nullptr;}
 	virtual CBaseMonster*		cast_base_monster		()	{return nullptr;}
 	virtual CCar*				cast_car				()	{return nullptr;}
 	virtual CAI_Trader*			cast_trader				()  {return nullptr;}

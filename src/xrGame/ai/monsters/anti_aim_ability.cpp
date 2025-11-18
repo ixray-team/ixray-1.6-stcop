@@ -269,12 +269,15 @@ bool   anti_aim_ability::check_update_condition () const
 	if ( !m_object->g_Alive() || !Actor() || !Actor()->g_Alive() )
 		return							false;
 	
-	const CActor* actor = smart_cast<const CActor*>(m_object->EnemyMan.get_enemy());
+	CEntityAlive* get_enemy = const_cast<CEntityAlive*>((m_object->EnemyMan.get_enemy()));
+	const CActor* actor = get_enemy != nullptr ? get_enemy->cast_actor() : nullptr;
 
 	if ( !actor )
 		return							false;
 
-	if ( !smart_cast<CWeapon*>(Actor()->inventory().ActiveItem()) )
+	PIItem active_item = Actor()->inventory().ActiveItem();
+
+	if (active_item != nullptr && active_item->cast_weapon() == nullptr)
 		return							false;
 
 	return								true;

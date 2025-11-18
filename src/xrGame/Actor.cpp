@@ -1707,7 +1707,7 @@ void CActor::CheckFlyhack()
 
 	if (ps && (Vel_.y >= 15 || Vel_xz_abs >= 50 || hovering_checker(this)))
 	{
-		game_sv_mp* sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp* sv_game = Level().Server->game != nullptr ? Level().Server->game->cast_game_sv_mp() : nullptr;
 
 		if (sv_game)
 		{
@@ -2813,7 +2813,8 @@ bool CActor::use_center_to_aim			() const
 
 bool CActor::can_attach(const CInventoryItem* inventory_item) const
 {
-	const CAttachableItem* item = smart_cast<const CAttachableItem*>(inventory_item);
+	PIItem inv_item = const_cast<PIItem>(inventory_item);
+	const CAttachableItem* item = inv_item != nullptr ? inv_item->cast_attachable_item() : nullptr;
 	if (!item || !item->can_be_attached())
 		return false;
 
@@ -3059,7 +3060,7 @@ CScriptGameObject* CActor::GetBestEnemy()
 
 void CScriptGameObject::SetCharacterMaxWeight(float value)
 {
-	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 		pInventoryOwner->inventory().SetMaxWeight(value);
 	else
 		Msg("! SetCharacterMaxWeight(...): pInventoryOwner is nullptr!");

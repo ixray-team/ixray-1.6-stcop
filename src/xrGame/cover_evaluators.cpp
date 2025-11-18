@@ -32,7 +32,7 @@ CCoverEvaluatorBase::CCoverEvaluatorBase					(CRestrictedObject *object)
 	m_selected				= 0;
 	m_previous_selected		= 0;
 	m_object				= object;
-	m_stalker				= smart_cast<CAI_Stalker*>( &object->object() );
+	m_stalker				= object->object().cast_stalker();
 	m_actuality				= true;
 	m_last_radius			= flt_max;
 	m_use_smart_covers_only	= false;
