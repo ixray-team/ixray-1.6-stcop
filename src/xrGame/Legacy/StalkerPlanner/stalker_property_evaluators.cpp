@@ -145,11 +145,13 @@ _value_type CStalkerPropertyEvaluatorEnemySeeMe::evaluate	()
 	if (!enemy)
 		return				(false);
 
-	const CCustomMonster	*enemy_monster = smart_cast<const CCustomMonster*>(enemy);
+	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
+
+	const CCustomMonster	*enemy_monster = cast_enemy != nullptr ? cast_enemy->cast_custom_monster() : nullptr;
 	if (enemy_monster)
 		return				(enemy_monster->memory().visual().visible_now(m_object));
 
-	const CActor			*actor = smart_cast<const CActor*>(enemy);
+	const CActor* actor = cast_enemy != nullptr ? cast_enemy->cast_actor () : nullptr;
 	if (actor)
 		return				(actor->memory().visual().visible_now(m_object));
 
@@ -250,8 +252,9 @@ _value_type CStalkerPropertyEvaluatorReadyToKill::evaluate	()
 	if (!m_object->best_weapon())
 		return (false);
 
-	CWeapon&		best_weapon = smart_cast<CWeapon&>(*m_object->best_weapon());
-	if (best_weapon.GetAmmoElapsed() <= (int)m_min_ammo_count) {
+	CWeapon& best_weapon = *m_object->best_weapon()->cast_weapon();
+	if (best_weapon.GetAmmoElapsed() <= (int)m_min_ammo_count)
+	{
 		if (best_weapon.GetAmmoMagSize() <= (int)m_min_ammo_count)
 			return	(best_weapon.GetState() != CWeapon::eReload);
 		else
@@ -349,7 +352,9 @@ _value_type CStalkerPropertyEvaluatorSmartTerrainTask::evaluate	()
 	if (!ai().get_alife())
 		return			(false);
 
-	CSE_ALifeHumanAbstract		*stalker = smart_cast<CSE_ALifeHumanAbstract*>(ai().alife().objects().object(m_object->ID(), true));
+	CSE_ALifeDynamicObject* object = ai().alife().objects().object(m_object->ID(), true);
+
+	CSE_ALifeHumanAbstract* stalker = object != nullptr ? object->cast_human_abstract() : nullptr;
 	if (!stalker)
 		return					(false);
 
@@ -420,7 +425,9 @@ _value_type CStalkerPropertyEvaluatorEnemyCriticallyWounded::evaluate	()
 	if (!enemy)
 		return					(false);
 
-	const CAI_Stalker			*enemy_stalker = smart_cast<const CAI_Stalker*>(enemy);
+	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
+
+	const CAI_Stalker* enemy_stalker = cast_enemy != nullptr ? cast_enemy->cast_stalker() : nullptr;
 	if (!enemy_stalker)
 		return					(false);
 

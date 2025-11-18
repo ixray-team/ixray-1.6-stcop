@@ -4,14 +4,14 @@
 
 bool CHolderCustom::attach_Actor(CGameObject* actor)
 {
-	m_owner						= actor;
-	m_ownerActor				= smart_cast<CActor*>(actor);
+	m_owner = actor;
+	m_ownerActor = actor->cast_actor();
 
 	return true;
 }
 
 void CHolderCustom::detach_Actor()
 {
-	m_owner						= nullptr;
-	m_ownerActor				= nullptr;
+	m_owner = nullptr;
+	m_ownerActor = nullptr;
 }

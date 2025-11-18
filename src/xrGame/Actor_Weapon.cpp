@@ -64,13 +64,14 @@ float CActor::GetWeaponAccuracy() const
 
 void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& fire_dir)
 {
-	CWeapon* pWeap = smart_cast<CWeapon*>(pHudItem);
+	CHudItem* casted_hud_item = const_cast<CHudItem*>(pHudItem);
+	CWeapon* pWeap = casted_hud_item != nullptr ? casted_hud_item->cast_weapon() : nullptr;
 	if (!IsGameTypeSingle() || HUDview() || (pWeap && pWeap->render_item_ui_query()))
 	{
 		fire_pos = Cameras().Position();
 		fire_dir = Cameras().Direction();
 
-		const CMissile* pMissile = smart_cast <const CMissile*> (pHudItem);
+		const CMissile* pMissile = casted_hud_item != nullptr ? casted_hud_item->cast_missile() : nullptr;
 		if (pMissile)
 		{
 			Fvector offset;
@@ -80,7 +81,7 @@ void CActor::g_fireParams(const CHudItem* pHudItem, Fvector& fire_pos, Fvector& 
 	}
 	else
 	{
-		const CMissile* pMissile = smart_cast <const CMissile*> (pHudItem);
+		const CMissile* pMissile = casted_hud_item != nullptr ? casted_hud_item->cast_missile() : nullptr;
 		if (pMissile)
 		{
 			fire_pos = pMissile->Position();
@@ -232,13 +233,13 @@ void	CActor::HitSector(CObject* who, CObject* weapon)
 
 	bool bShowHitSector = true;
 	
-	CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(who);
+	CEntityAlive* pEntityAlive = who != nullptr ? who->cast_entity_alive() : nullptr;
 
 	if (!pEntityAlive || this == who) bShowHitSector = false;
 
 	if (weapon)
 	{
-		CWeapon* pWeapon = smart_cast<CWeapon*> (weapon);
+		CWeapon* pWeapon = weapon->cast_weapon();
 		if (pWeapon)
 		{
 			if (pWeapon->IsSilencerAttached())
@@ -335,7 +336,7 @@ void	CActor::SpawnAmmoForWeapon	(CInventoryItem *pIItem)
 	if (OnClient()) return;
 	if (!pIItem) return;
 
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
+	CWeaponMagazined* pWM = pIItem->cast_weapon_magazined();
 	if (!pWM || !pWM->AutoSpawnAmmo()) return;
 
 	///	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( (pWM->m_ammoTypes[0].c_str()) ));
@@ -348,10 +349,11 @@ void	CActor::RemoveAmmoForWeapon	(CInventoryItem *pIItem)
 	if (OnClient()) return;
 	if (!pIItem) return;
 
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
+	CWeaponMagazined* pWM = pIItem->cast_weapon_magazined();
 	if (!pWM || !pWM->AutoSpawnAmmo()) return;
 
-	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny( pWM->m_ammoTypes[0].c_str() ));
+	PIItem get_any = inventory().GetAny(pWM->m_ammoTypes[0].c_str());
+	CWeaponAmmo* pAmmo = get_any != nullptr ? get_any->cast_weapon_ammo() : nullptr;
 	if (!pAmmo) return;
 	//--- мы нашли патроны к текущему оружию	
 	/*

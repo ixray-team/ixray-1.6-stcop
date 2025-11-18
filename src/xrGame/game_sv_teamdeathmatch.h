@@ -2,16 +2,13 @@
 
 #include "game_sv_deathmatch.h"
 
-class	game_sv_TeamDeathmatch			: public game_sv_Deathmatch
+class game_sv_TeamDeathmatch : public game_sv_Deathmatch
 {
 private:
-	typedef game_sv_Deathmatch inherited;
+	using inherited = game_sv_Deathmatch;
 	bool	teams_swaped;
 
 protected:
-	
-	
-
 
 	virtual		bool				checkForFragLimit		();
 	virtual		bool				HasChampion				();
@@ -82,6 +79,11 @@ public:
 				void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
 				void				OnObjectLeaveTeamBase	(u16 id, u16 zone_team);
 	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
+	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() override { return this; }
+
 protected:
 	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
 };

@@ -381,7 +381,8 @@ void	game_sv_ArtefactHunt::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 		game_PlayerState* PSE		= static_cast<xrClientData*>(
 			m_server->GetClientByID(EnemyIt[PointID]))->ps;
 		R_ASSERT2					(PSE, "Where is Enemy!!!");
-		CGameObject* pPlayer = smart_cast<CGameObject*>(Level().Objects.net_Find(PSE->GameID));
+		CObject* finded_object = Level().Objects.net_Find(PSE->GameID);
+		CGameObject* pPlayer = finded_object != nullptr ? finded_object->cast_game_object() : nullptr;
 		R_ASSERT2					(pPlayer, "Where is Enemy Object!!!");
 
 		NET_Packet		P;
@@ -552,7 +553,7 @@ BOOL	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, BOOL bForced)
 		};
 
 		// Actor touches something
-		CSE_ALifeItemWeapon*	W			=	smart_cast<CSE_ALifeItemWeapon*> (e_what);
+		CSE_ALifeItemWeapon* W = e_what->cast_item_weapon();
 		if (W) 
 		{
 			//---------------------------------------------------------------
@@ -730,7 +731,8 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 	P.w_u16				(ps->team);
 	u_EventSend(P);
 	//-----------------------------------------------
-	CActor* pActor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
+	CObject* finded_object = Level().Objects.net_Find(ps->GameID);
+	CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	if (pActor)
 	{
 		pActor->SetfHealth(pActor->GetMaxHealth());
@@ -1161,7 +1163,8 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 
 			if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())	return;
 			CSE_ALifeCreatureActor	*pA	=	smart_cast<CSE_ALifeCreatureActor*>(l_pC->owner);
-			CActor* pActor = smart_cast<CActor*> (Level().Objects.net_Find(ps->GameID));
+			CObject* finded_object = Level().Objects.net_Find(ps->GameID);
+			CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 			if (!pA || !pActor) return;
 
 			if (!ps->testFlag(GAME_PLAYER_FLAG_ONBASE)) 
@@ -1493,39 +1496,3 @@ void game_sv_ArtefactHunt::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoun
 
 	ini.w_u32		(sect,"artefacts_limit", Get_ArtefactsCount());
 }
-
-/*void game_sv_ArtefactHunt::DestroyAllPlayerItems(ClientID id_who)	//except rukzak
-{
-	xrClientData* xrCData = m_server->ID_to_client(id_who);
-	
-	VERIFY2(xrCData, 
-		make_string("client (ClientID = 0x%08x) not found", id_who.value()).c_str());
-	VERIFY(xrCData->ps);
-	game_PlayerState*	ps	=	xrCData->ps;
-#ifndef MASTER_GOLD
-	Msg("---Destroying player [%s] items before spawning new bought items.", ps->getName());
-#endif // #ifndef MASTER_GOLD
-	
-	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
-	if (!pActor)
-		return;
-	
-	TIItemContainer::const_iterator iie = pActor->inventory().m_all.end();
-	for (TIItemContainer::const_iterator ii = pActor->inventory().m_all.begin();
-		ii != iie; ++ii)
-	{
-		VERIFY(*ii);
-		u16 object_id = (*ii)->object().ID();
-		CSE_Abstract* tempEntity = m_server->ID_to_entity(object_id);
-		VERIFY(tempEntity);
-		
-		if (smart_cast<CMPPlayersBag*>(*ii))
-			continue;
-		
-		CArtefact*	temp_artefact = smart_cast<CArtefact*>(*ii);
-		if (temp_artefact)
-			continue;
-		
-		DestroyGameItem(tempEntity);
-	}
-}*/

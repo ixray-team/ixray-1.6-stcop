@@ -85,7 +85,7 @@ void CBaseMonster::SyncRead(NET_Packet& Packet)
 	SPHNetState	State = {};
 
 	MotionID motion;
-	IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated* ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
 	if (u_last_motion_idx != u_motion_idx || u_last_motion_slot != u_motion_slot)
 	{
 		u_last_motion_idx = u_motion_idx;
