@@ -75,6 +75,7 @@
 #endif
 
 #include "inventory_upgrade_manager.h"
+#include "ElectronicsProblemsManager.h"
 
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
@@ -314,6 +315,7 @@ CLevel::~CLevel()
 	delete_data(m_game_task_manager);
 
 	xr_delete(m_upgrade_manager);
+	xr_delete(m_electronics_problems_manager);
 //	xr_delete					(m_pFogOfWarMngr);
 	
 	// here we clean default trade params
@@ -749,6 +751,11 @@ void CLevel::OnFrame()
 
 		pStatGraphR->AppendItem(float(m_dwRPC) * fRPC_Mult, 0xffff0000, 1);
 		pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
+	}
+
+	if (m_electronics_problems_manager != nullptr)
+	{
+		m_electronics_problems_manager->UpdateCL();
 	}
 }
 
@@ -1266,6 +1273,7 @@ void CLevel::OnAlifeSimulatorLoaded()
 	{
 		// moved from alife simulator for supporting in MP
 		m_upgrade_manager = new inventory::upgrade::Manager();
+		m_electronics_problems_manager = new CElectronicsProblemsManager();
 	}
 }
 
