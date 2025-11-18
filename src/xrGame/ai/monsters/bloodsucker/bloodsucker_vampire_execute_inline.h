@@ -28,7 +28,8 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 		this->object->CControlledActor::install();
 	else
 	{
-		actor = const_cast<CActor*>(smart_cast<const CActor*>(this->object->EnemyMan.get_enemy()));
+		CEntityAlive* enemy = const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
+		actor = enemy != nullptr ? enemy->cast_actor() : nullptr;
 		if (actor)
 			this->object->CControlledActor::install(actor);
 		else
@@ -203,14 +204,16 @@ bool CStateBloodsuckerVampireExecuteAbstract::check_start_conditions()
 	if ( !this->object->WantVampire() ) 
 		return false;
 	
+	CEntityAlive* enemy_alive = const_cast<CEntityAlive*>(enemy);
+
 	// является ли враг актером
-	if ( !smart_cast<CActor const*>(enemy) )
+	if (enemy_alive->cast_actor() == nullptr)
 		return false;
 
 	if ( this->object->CControlledActor::is_controlling() )	
 		return false;
 
-	const CActor *actor = smart_cast<const CActor *>(enemy);
+	const CActor *actor = enemy_alive->cast_actor();
 	
 	VERIFY(actor);
 
@@ -270,7 +273,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::look_head()
 {
-	IKinematics *pK = smart_cast<IKinematics*>(this->object->Visual());
+	IKinematics *pK = PKinematics(this->object->Visual());
 	Fmatrix bone_transform;
 	bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));	
 

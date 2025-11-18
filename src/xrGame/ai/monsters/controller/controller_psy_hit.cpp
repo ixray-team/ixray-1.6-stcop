@@ -25,7 +25,7 @@ void CControllerPsyHit::reinit()
 {
 	inherited::reinit();
 
-	IKinematicsAnimated	*skel = smart_cast<IKinematicsAnimated *>(m_object->Visual());
+	IKinematicsAnimated	*skel = m_object->Visual()->dcast_PKinematicsAnimated();
 	m_stage[0] = skel->ID_Cycle_Safe("psy_attack_0"); VERIFY(m_stage[0]);
 	m_stage[1] = skel->ID_Cycle_Safe("psy_attack_1"); VERIFY(m_stage[1]);
 	m_stage[2] = skel->ID_Cycle_Safe("psy_attack_2"); VERIFY(m_stage[2]);
@@ -71,7 +71,8 @@ bool CControllerPsyHit::check_start_conditions()
 	}
 	else
 	{
-		CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(m_object->EnemyMan.get_enemy()));
+		CEntityAlive* cast_entity_alive = const_cast<CEntityAlive*>(m_object->EnemyMan.get_enemy());
+		CActor* pA = cast_entity_alive != nullptr ? cast_entity_alive->cast_actor() : nullptr;
 		if (pA) 
 		{
 			m_curent_actor_id = u16(-1);
@@ -102,7 +103,8 @@ void CControllerPsyHit::activate()
 	CActor* pActor = Actor();
 	if (!IsGameTypeSingle())
 	{
-		pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		pActor = object != nullptr ? object->cast_actor() : nullptr;
 		if (!pActor)
 		{
 			return;
@@ -161,7 +163,9 @@ void CControllerPsyHit::deactivate()
 		}
 		else
 		{
-			CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+
+			CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+			pActor = object != nullptr ? object->cast_actor() : nullptr;
 			if (pActor)
 			{
 				pActor->u_EventGen(P, GEG_PLAYER_WEAPON_HIDE_STATE, pActor->ID());
@@ -236,16 +240,6 @@ bool check_actor_visibility (const Fvector trace_from,
 
 extern CActor* g_actor;
 
-
-/*
-bool CControllerPsyHit::see_enemy ()
-{
-	CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
-	return	m_object->EnemyMan.see_enemy_now(pActor);
-}
-
-*/
-
 bool CControllerPsyHit::see_enemy(CActor* pA)
 {
 	return	m_object->EnemyMan.see_enemy_now(pA);
@@ -273,7 +267,8 @@ bool CControllerPsyHit::check_conditions_final() {
 	}
 	else
 	{
-		pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		pActor = object != nullptr ? object->cast_actor() : nullptr;
 
 		if (!pActor)
 			return false;
@@ -304,7 +299,8 @@ void CControllerPsyHit::death_glide_start()
 	
 	if (!IsGameTypeSingle())
 	{
-		pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		pActor = object != nullptr ? object->cast_actor() : nullptr;
 		if (!pActor)
 		{
 			return;
@@ -415,7 +411,8 @@ void CControllerPsyHit::death_glide_end()
 	else
 	{
 		CController* monster = smart_cast<CController*>(m_object);
-		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		pActor = object != nullptr ? object->cast_actor() : nullptr;
 		if (pActor)
 		{
 			m_object->Hit_Psy(pActor, monster->m_tube_damage);
@@ -460,7 +457,8 @@ void CControllerPsyHit::hit()
 {	
 	if (!IsGameTypeSingle())
 	{
-		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		CActor* pActor = object != nullptr ? object->cast_actor() : nullptr;
 		if (pActor)
 		{
 			NET_Packet	tmp_packet;
@@ -492,7 +490,8 @@ void CControllerPsyHit::stop ()
 	}
 	else
 	{
-		CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(m_curent_actor_id));
+		CObject* object = Level().Objects.net_Find(m_curent_actor_id);
+		pActor = object != nullptr ? object->cast_actor() : nullptr;
 		if (pActor)
 		{
 			NET_Packet	tmp_packet;

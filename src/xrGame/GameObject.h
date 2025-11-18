@@ -43,6 +43,8 @@ class CBlend;
 class ai_obstacle;
 class CMissile;
 class CExplosiveRocket;
+class CCustomRocket;
+class CRocketLauncher;
 class CGrenade;
 class CUsableScriptObject;
 class CBreakableObject;
@@ -79,6 +81,7 @@ class CBackpack;
 class CClimableObject;
 class CPhysicObject;
 class CTeamBaseZone;
+class CRadioactiveZone;
 
 class IKinematics;
 class CAI_Trader;
@@ -171,6 +174,9 @@ public:
 	virtual CClimableObject* cast_climable_object() { return nullptr; }
 	virtual CPhysicObject* cast_physics_object() { return nullptr; }
 	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
+	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
+	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
+	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
 
 public:
 	virtual BOOL						feel_touch_on_contact	(CObject *)					{return TRUE;}

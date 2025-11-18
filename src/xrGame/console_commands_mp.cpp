@@ -166,7 +166,7 @@ public:
 										return;
 		
 		CObject *l_pObj					= Level().CurrentControlEntity();
-		CActor *l_pPlayer				= smart_cast<CActor*>(l_pObj);
+		CActor *l_pPlayer				= l_pObj != nullptr ? l_pObj->cast_actor() : nullptr;
 		if(l_pPlayer) 
 		{
 			NET_Packet					P;
@@ -892,7 +892,7 @@ public:
 	virtual void	Execute		(LPCSTR args_) 
 	{
 		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
-		game_sv_mp*	tmp_sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp*	tmp_sv_game = Level().Server->game->cast_game_sv_mp();
 		if (!tmp_sv_game) return;
 
 		u32 len	= xr_strlen(args_);
@@ -957,7 +957,7 @@ public:
 	virtual void	Execute		(LPCSTR args_) 
 	{
 		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
-		game_sv_mp*	tmp_sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp*	tmp_sv_game = Level().Server->game->cast_game_sv_mp();
 		if (!tmp_sv_game) return;
 
 		u32 len	= xr_strlen(args_);
@@ -993,7 +993,7 @@ public:
 	virtual void	Execute		(LPCSTR args_) 
 	{
 		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
-		game_sv_mp*	tmp_sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp*	tmp_sv_game = Level().Server->game->cast_game_sv_mp();
 		if (!tmp_sv_game) return;
 		u32 len	= xr_strlen(args_);
 		if ((len == 0) || (len >= 64))		//one digit and raid:%u
@@ -1298,7 +1298,7 @@ public:
 	virtual void	Execute					(LPCSTR args) 
 	{
 		if (!g_pGameLevel || !Level().Server || !Level().Server->game) return;
-		game_sv_mp*	tmp_sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp*	tmp_sv_game = Level().Server->game->cast_game_sv_mp();
 		if (!tmp_sv_game) return;
 		string512 tmp_dest;
 		string512 filter_dest = "";
@@ -1519,7 +1519,7 @@ public:
 	{
 		if (!OnServer())		return;
 
-		game_sv_Deathmatch* gameDM = smart_cast<game_sv_Deathmatch *>(Level().Server->game);
+		game_sv_Deathmatch* gameDM = Level().Server->game->cast_game_sv_deathmatch();
 		if (!gameDM) return;
 
 		gameDM->StartAnomalies( atol(args) );
@@ -1701,7 +1701,7 @@ public:
 	virtual void	Execute				(LPCSTR args) {
 		if (!Level().Server)
 			return;
-		game_sv_mp* sv_game = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp* sv_game = Level().Server->game->cast_game_sv_mp();
 		if (!sv_game)
 		{
 			Msg("! Server multiplayer game instance not present");
@@ -1727,7 +1727,7 @@ public:
 		if (!OnServer())						return;
 		if (GameID() != eGameIDArtefactHunt)		return;
 
-		game_sv_ArtefactHunt* g = smart_cast<game_sv_ArtefactHunt*>(Level().Server->game);
+		game_sv_ArtefactHunt* g = Level().Server->game->cast_game_sv_artefacthunt();
 		g->MoveAllAlivePlayers();
 	}
 };
@@ -1755,7 +1755,7 @@ public:
 	{
 		if (!OnServer())	return;
 
-		game_sv_mp* pGameMP		= smart_cast<game_sv_Deathmatch *>(Level().Server->game);
+		game_sv_mp* pGameMP		= Level().Server->game->cast_game_sv_deathmatch();
 		if (!pGameMP)		return;
 
 		string512			Team = "";
@@ -1867,8 +1867,8 @@ public:
 		if (!OnServer()) return;
 		if(Level().Server && Level().Server->game) 
 		{
-			game_sv_TeamDeathmatch* tdmGame = smart_cast<game_sv_TeamDeathmatch*>(Level().Server->game);
-			game_sv_CaptureTheArtefact* ctaGame = smart_cast<game_sv_CaptureTheArtefact*>(Level().Server->game);
+			game_sv_TeamDeathmatch* tdmGame = Level().Server->game->cast_game_sv_teamdeathmatch();
+			game_sv_CaptureTheArtefact* ctaGame = Level().Server->game->cast_game_sv_capturetheartefact();
 			if (tdmGame)
 			{
 				BOOL old_team_swap = g_sv_tdm_bAutoTeamSwap;
@@ -1910,7 +1910,7 @@ public:
 		if (!OnServer())	return;
 		if(Level().Server && Level().Server->game) 
 		{
-			game_sv_mp* game = smart_cast<game_sv_mp*>(Level().Server->game);
+			game_sv_mp* game = Level().Server->game->cast_game_sv_mp();
 			if ( game )
 			{
 				string256 msg;
@@ -1961,7 +1961,7 @@ public:
 	{
 		if (!g_pGameLevel || !Level().Server) return;
 
-		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp* srv = Level().Server->game->cast_game_sv_mp();
 		if (!srv) return;
 
 		string256 section;
@@ -1996,7 +1996,7 @@ public:
 	{
 		if (!g_pGameLevel || !Level().Server) return;
 
-		game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+		game_sv_mp* srv = Level().Server->game->cast_game_sv_mp();
 		if (!srv) return;
 
 		string1024 buff;
@@ -2067,7 +2067,7 @@ public:
 		if (Game().local_player && Game().local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
 			return;
 
-		CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity());
+		CActor* pActor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 		if (!pActor || !pActor->is_alive())
 			return;
 

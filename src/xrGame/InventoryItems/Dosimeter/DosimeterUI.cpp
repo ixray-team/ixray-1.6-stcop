@@ -67,9 +67,7 @@ void CUIDosimeter::update()
 	{
 		for (CObject* pFeelObject : pActor->q_nearest)
 		{
-			CRadioactiveZone* pRadZone = smart_cast<CRadioactiveZone*>(pFeelObject);
-
-			if (pRadZone)
+			if (CRadioactiveZone* pRadZone = pFeelObject != nullptr ? pFeelObject->cast_radioactive_zone() : nullptr)
 			{
 				rad += pRadZone->fHitPower;
 			}

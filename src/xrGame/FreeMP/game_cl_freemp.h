@@ -4,10 +4,10 @@
 
 class CUIGameFMP;
 
-class game_cl_freemp :public game_cl_mp
+class game_cl_freemp final : public game_cl_mp
 {
 private:
-	typedef game_cl_mp inherited;
+	using inherited = game_cl_mp;
 	CUIGameFMP* m_game_ui;
 	CVoiceChat* m_pVoiceChat = nullptr;
 
@@ -33,6 +33,9 @@ public:
 	virtual LPCSTR GetGameScore(string32& score_dest);
 	virtual void OnRender() override;
 	virtual void OnVoiceMessage(NET_Packet* P) override;
+
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
+	virtual game_cl_freemp* cast_game_cl_freemp() override { return this; }
 };
 
 bool IsGameTypeSingleCompatible();
