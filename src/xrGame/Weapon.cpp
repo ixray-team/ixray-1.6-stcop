@@ -28,6 +28,7 @@
 #include "Level_Bullet_Manager.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "ElectronicsProblemsManager.h"
 
 #include <algorithm>
 
@@ -2317,7 +2318,7 @@ bool CWeapon::CheckForMisfire_validate_NoMisfire()
 	{
 		float problems_lvl = m_fMisfireAfterProblemsLevel;
 
-		if (problems_lvl > 0.0f && pActor->CurrentElectronicsProblemsCnt() >= problems_lvl)
+		if (problems_lvl > 0.0f && Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt() >= problems_lvl)
 		{
 			return OnWeaponJam();
 		}
@@ -4259,7 +4260,7 @@ void CWeapon::UpdateCollimatorSight()
 		return;
 
 	conditional_breaking_params bp = CollimatorBreakingParams;
-	float current_problems_cnt = Actor()->CurrentElectronicsProblemsCnt();
+	float current_problems_cnt = Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt();
 
 	if (/*GetAimFactor() > 0.0f && (IsLastZoomAlter() || GetAlterZoomDirectSwitchMixupFactor() > EPS) && m_bHideColimSightInAlter) || */ GetCondition() < bp.end_condition)
 	{

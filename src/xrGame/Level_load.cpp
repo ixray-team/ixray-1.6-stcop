@@ -14,6 +14,7 @@
 #include "../xrEngine/Rain.h"
 
 #include "inventory_upgrade_manager.h"
+#include "ElectronicsProblemsManager.h"
 
 BOOL CLevel::Load_GameSpecific_Before()
 {
@@ -57,6 +58,9 @@ BOOL CLevel::Load_GameSpecific_Before()
 	{
 		R_ASSERT(m_upgrade_manager == nullptr);
 		m_upgrade_manager = new inventory::upgrade::Manager();
+
+		R_ASSERT(m_electronics_problems_manager == nullptr);
+		m_electronics_problems_manager = new CElectronicsProblemsManager();
 	}
 
 	return (TRUE);
