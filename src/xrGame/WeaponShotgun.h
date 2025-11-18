@@ -34,6 +34,8 @@ public:
 
 	virtual void	OnMotionMark(u32 state, const motion_marks&);
 
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return this; }
+
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
 	void			TriStateReload		();

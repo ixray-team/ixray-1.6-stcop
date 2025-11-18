@@ -55,9 +55,6 @@ CPhysicsShell*	 P_build_Shell			( IPhysicsShellHolder* obj, bool not_active_stat
 {
 	VERIFY( obj );
 	phys_shell_verify_object_model( *obj );
-	//IRenderVisual*	V = obj->ObjectVisual();
-	//IKinematics* pKinematics=smart_cast<IKinematics*>(V);
-	//IKinematics* pKinematics	=  V->dcast_PKinematics			();
 	IKinematics* pKinematics	= obj->ObjectKinematics();
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
@@ -96,8 +93,7 @@ void	fix_bones( LPCSTR	fixed_bones, CPhysicsShell* shell )
 }
 CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state,BONE_P_MAP* p_bone_map, LPCSTR	fixed_bones )
 {
-	CPhysicsShell* pPhysicsShell = 0;
-	//IKinematics* pKinematics=smart_cast<IKinematics*>(obj->ObjectVisual());
+	CPhysicsShell* pPhysicsShell = nullptr;
 	IKinematics* pKinematics=obj->ObjectKinematics();
 	if(fixed_bones)
 	{
@@ -138,7 +134,6 @@ CPhysicsShell*	P_build_Shell( IPhysicsShellHolder* obj, bool not_active_state, L
 {
 	U16Vec f_bones;
 	if(fixed_bones){
-		//IKinematics* K		= smart_cast<IKinematics*>(obj->ObjectVisual());
 		IKinematics* K		=obj->ObjectKinematics();
 		VERIFY( K );
 		int count =			_GetItemCount(fixed_bones);

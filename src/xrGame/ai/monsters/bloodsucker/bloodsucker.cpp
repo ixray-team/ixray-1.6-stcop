@@ -329,8 +329,8 @@ void CAI_Bloodsucker::vfAssignBones()
 {
 	// Установка callback на кости
 
-	bone_spine =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine"));
-	bone_head =		&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
+	bone_spine =	&PKinematics(Visual())->LL_GetBoneInstance(PKinematics(Visual())->LL_BoneID("bip01_spine"));
+	bone_head =		&PKinematics(Visual())->LL_GetBoneInstance(PKinematics(Visual())->LL_BoneID("bip01_head"));
 	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
 	{
 		bone_spine->set_callback(bctCustom,BoneCallback,this);
@@ -648,7 +648,7 @@ void CAI_Bloodsucker::shedule_Update(u32 dt)
 		return;
 
 	if (!CControlledActor::is_turning() && !m_client_effector) {
-		IKinematics* pK = smart_cast<IKinematics*>(Visual());
+		IKinematics* pK = PKinematics(Visual());
 		Fmatrix bone_transform;
 		bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
 
@@ -758,7 +758,7 @@ void CAI_Bloodsucker::start_drag()
 {
 	if(m_animated){
 		com_man().script_capture(ControlCom::eControlAnimation);
-		smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle("boloto_attack_link_bone",TRUE,animation_end_jump,this);
+		Visual()->dcast_PKinematicsAnimated()->PlayCycle("boloto_attack_link_bone", TRUE, animation_end_jump, this);
 		m_animated = false;
 	}
 }
@@ -800,7 +800,7 @@ void CAI_Bloodsucker::predator_start()
 
 			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
 			MotionID motion;
-			IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+			IKinematicsAnimated* ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
 			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
 			{
 				u_last_motion_idx = mid.idx;
@@ -867,7 +867,7 @@ void CAI_Bloodsucker::predator_stop()
 
 			// 			ApplyAnimation(mid.idx, mid.slot, u_last_motion_no_loop); <---------- OMP
 			MotionID motion;
-			IKinematicsAnimated* ik_anim_obj = smart_cast<IKinematicsAnimated*>(Visual());
+			IKinematicsAnimated* ik_anim_obj = Visual()->dcast_PKinematicsAnimated();
 			if (u_last_motion_idx != mid.idx || u_last_motion_slot != mid.slot)
 			{
 				u_last_motion_idx = mid.idx;
@@ -1022,7 +1022,7 @@ void CAI_Bloodsucker::OnEvent(NET_Packet& P, u16 type)
 		if (Actor())
 		{
 			CControlledActor::install(Actor());
-			IKinematics* pK = smart_cast<IKinematics*>(Visual());
+			IKinematics* pK = PKinematics(Visual());
 			Fmatrix bone_transform;
 			bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));
 

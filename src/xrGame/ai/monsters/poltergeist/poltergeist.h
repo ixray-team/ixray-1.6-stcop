@@ -13,7 +13,7 @@ class CPolterTele;
 //////////////////////////////////////////////////////////////////////////
 
 
-class CPoltergeist :	public CBaseMonster ,
+class CPoltergeist final :	public CBaseMonster ,
 						public CTelekinesis,
 						public CEnergyHolder {
 	
@@ -191,7 +191,7 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // Flame
 //////////////////////////////////////////////////////////////////////////
-class CPolterFlame : public CPolterSpecialAbility {
+class CPolterFlame final : public CPolterSpecialAbility {
 
 	typedef CPolterSpecialAbility inherited;
 
@@ -279,7 +279,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 // TELE
 //////////////////////////////////////////////////////////////////////////
-class CPolterTele : public CPolterSpecialAbility {
+class CPolterTele final : public CPolterSpecialAbility {
 	typedef CPolterSpecialAbility inherited;
 
 	xr_vector<CObject*>	m_nearest;

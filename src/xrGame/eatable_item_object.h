@@ -11,68 +11,68 @@
 #include "physic_item.h"
 #include "eatable_item.h"
 
-class CEatableItemObject : 
-			public CEatableItem, 
-			public CPhysicItem
+class CEatableItemObject :
+	public CEatableItem,
+	public CPhysicItem
 {
 public:
-							CEatableItemObject	();
-	virtual					~CEatableItemObject	();
-	virtual DLL_Pure		*_construct			();
+	CEatableItemObject() = default;
+	virtual	~CEatableItemObject() = default;
+	virtual DLL_Pure* _construct() override;
 
 public:
-	virtual CPhysicsShellHolder	*cast_physics_shell_holder	()	{return this;}
-	virtual CInventoryItem		*cast_inventory_item		()	{return this;}
-	virtual CAttachableItem		*cast_attachable_item		()	{return this;}
-	virtual CFoodItem			*cast_food_item				()	{return nullptr;}
-	virtual CGameObject			*cast_game_object			()  {return this;}
-	virtual CEatableItem		*cast_eatable_item			()  {return this;}
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
+	virtual CInventoryItem* cast_inventory_item() { return this; }
+	virtual CAttachableItem* cast_attachable_item() { return this; }
+	virtual CFoodItem* cast_food_item() { return nullptr; }
+	virtual CGameObject* cast_game_object() { return this; }
+	virtual CEatableItem* cast_eatable_item() { return this; }
 
 public:
-	virtual void	Load					(LPCSTR section);
-	virtual	void	Hit						(SHit* pHDS);
+	virtual void Load(LPCSTR section) override;
+	virtual	void Hit(SHit* pHDS) override;
 
-	virtual void	OnH_B_Independent		(bool just_before_destroy);
-	virtual void	OnH_A_Independent		();
-	virtual void	OnH_B_Chield			();
-	virtual void	OnH_A_Chield			();
-	virtual void	UpdateCL				();
-	virtual void	OnEvent					(NET_Packet& P, u16 type);
-	virtual BOOL	net_Spawn				(CSE_Abstract* DC);
-	virtual void	net_Destroy				();
-	virtual void	net_Import				(NET_Packet& P);					// import from server
-	virtual void	net_Export				(NET_Packet& P);					// export to server
-	virtual void	save					(NET_Packet &output_packet);
-	virtual void	load					(IReader &input_packet);
-	virtual BOOL	net_SaveRelevant		()								{return TRUE;}
-	virtual void	renderable_Render		();
-	virtual void	reload					(LPCSTR section);
-	virtual void	reinit					();
-	virtual void	activate_physic_shell	();
-	virtual void	on_activate_physic_shell();
+	virtual void OnH_B_Independent(bool just_before_destroy) override;
+	virtual void OnH_A_Independent() override;
+	virtual void OnH_B_Chield() override;
+	virtual void OnH_A_Chield() override;
+	virtual void UpdateCL() override;
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
+	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void net_Import(NET_Packet& P) override;					// import from server
+	virtual void net_Export(NET_Packet& P) override;					// export to server
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
+	virtual BOOL net_SaveRelevant() override { return TRUE; }
+	virtual void renderable_Render() override;
+	virtual void reload(LPCSTR section) override;
+	virtual void reinit() override;
+	virtual void activate_physic_shell() override;
+	virtual void on_activate_physic_shell() override;
 public:
 	////////// network //////////////////////////////////////////////////
-	virtual void	make_Interpolation		();
-	virtual void	PH_B_CrPr				(); // actions & operations before physic correction-prediction steps
-	virtual void	PH_I_CrPr				(); // actions & operations after correction before prediction steps
+	virtual void make_Interpolation() override;
+	virtual void PH_B_CrPr() override; // actions & operations before physic correction-prediction steps
+	virtual void PH_I_CrPr() override; // actions & operations after correction before prediction steps
 #ifdef DEBUG
-	virtual void	PH_Ch_CrPr				(); // 
+	virtual void PH_Ch_CrPr();
 #endif
-	virtual void	PH_A_CrPr				(); // actions & operations after phisic correction-prediction steps
-	virtual bool	NeedToDestroyObject		() const;
+	virtual void PH_A_CrPr() override; // actions & operations after phisic correction-prediction steps
+	virtual bool NeedToDestroyObject() const override;
 
 protected:
 #ifdef DEBUG_DRAW
-	virtual void	OnRender				();
+	virtual void OnRender() override;
 #endif
 
 public:
-	virtual bool	Useful					() const;
+	virtual bool Useful() const override;
 
 public:
-	virtual u32		ef_weapon_type			() const;
+	virtual u32	ef_weapon_type() const override;
 protected:
-	virtual bool	use_parent_ai_locations	() const
+	virtual bool use_parent_ai_locations() const override
 	{
 		return CAttachableItem::use_parent_ai_locations();
 	}

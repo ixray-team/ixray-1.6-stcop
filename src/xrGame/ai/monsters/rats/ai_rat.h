@@ -24,7 +24,7 @@ class rat_state_manager;
 namespace steering_behaviour {
 	class manager;
 } // namespace steering_behaviour
-class CAI_Rat : public CCustomMonster, public CEatableItem
+class CAI_Rat final : public CCustomMonster, public CEatableItem
 {
 private:
 	typedef	CCustomMonster	inherited;

@@ -67,6 +67,12 @@ class CBackpack;
 class CClimableObject;
 class CPhysicObject;
 class CTeamBaseZone;
+class CExplosiveRocket;
+class CCustomRocket;
+class CRocketLauncher;
+class CRadioactiveZone;
+class CExplosive;
+class CWeaponShotgun;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS		(30.f)
@@ -242,6 +248,12 @@ public:
 	virtual CClimableObject* cast_climable_object() { return nullptr; }
 	virtual CPhysicObject* cast_physics_object() { return nullptr; }
 	virtual CTeamBaseZone* cast_team_base_zone() { return nullptr; }
+	virtual CCustomRocket* cast_custom_rocket() { return nullptr; }
+	virtual CExplosiveRocket* cast_explosive_rocket() { return nullptr; }
+	virtual CRocketLauncher* cast_rocket_launcher() { return nullptr; }
+	virtual CRadioactiveZone* cast_radioactive_zone() { return nullptr; }
+	virtual CExplosive* cast_explosive() { return nullptr; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
 
 	virtual void						OnChangeVisual		()					{ }
 	virtual		IPhysicsShell			*physics_shell		()					{ return  0; }

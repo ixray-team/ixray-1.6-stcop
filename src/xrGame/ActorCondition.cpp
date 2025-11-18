@@ -368,7 +368,8 @@ void CActorCondition::AffectDamage_InjuriousMaterialAndMonstersInfluence()
 
 		for (const CObject* Object : m_object->feel_touch)
 		{
-			const CBaseMonster* monster = smart_cast<CBaseMonster*>(Object);
+			CObject* cast_object = const_cast<CObject*>(Object);
+			const CBaseMonster* monster = cast_object != nullptr ? cast_object->cast_base_monster() : nullptr;
 			if (!monster || !monster->g_Alive()) continue;
 
 			psy_influence += monster->get_psy_influence();
@@ -460,12 +461,12 @@ void CActorCondition::UpdateRadiation()
 		m_fRadiationZonePower = 0;
 		for (CObject* pFeelObject : m_object->q_nearest)
 		{
-			if (!pFeelObject || pFeelObject->getDestroy()) 
-				continue;									// Don't touch candidates for destroy
+			if (pFeelObject == nullptr || pFeelObject->getDestroy()) 
+			{
+				continue;
+			}
 
-			CRadioactiveZone* pRadZone = smart_cast<CRadioactiveZone*>(pFeelObject);
-
-			if (pRadZone)
+			if (CRadioactiveZone* pRadZone = pFeelObject->cast_radioactive_zone())
 			{
 				m_fRadiationZonePower = std::max(m_fRadiationZonePower, pRadZone->fHitPower * 10);
 			}

@@ -65,6 +65,7 @@ public:
 	virtual CGameObject			*cast_game_object()=0;
 	virtual CExplosive*			cast_explosive(){return this;}
 	virtual IDamageSource*		cast_IDamageSource()	{return this;}
+	virtual CMissile*			cast_missile() { return nullptr; }
 	virtual void				GetRayExplosionSourcePos(Fvector &pos);
 	virtual	void				GetExplosionBox			(Fvector &size);
 	virtual void				ActivateExplosionBox	(const Fvector &size,Fvector &in_out_pos);

@@ -7,11 +7,3 @@
 
 #include "StdAfx.h"
 #include "ExoOutfit.h"
-
-CExoOutfit::CExoOutfit()
-{
-}
-
-CExoOutfit::~CExoOutfit() 
-{
-}

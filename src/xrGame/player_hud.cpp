@@ -1780,10 +1780,10 @@ bool player_hud::allow_activation(CHudItem* item)
 		return m_attached_items[1]->m_parent_hud_item->CheckCompatibility(item);
 	else
 	{
-		CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
+		CEntity* pEntity = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_entity() : nullptr;
 		if (pEntity)
 		{
-			CActor* pActor = smart_cast<CActor*>(pEntity);
+			CActor* pActor = pEntity->cast_actor();
 			if(pActor)
 			{
 				CHudItem* pDetector = pActor->inventory().ItemFromSlot(DEVICE_SLOT) ? pActor->inventory().ItemFromSlot(DEVICE_SLOT)->cast_hud_item() : nullptr;

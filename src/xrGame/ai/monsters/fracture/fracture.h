@@ -4,7 +4,7 @@
 
 class CStateManagerFracture;
 
-class CFracture : public CBaseMonster {
+class CFracture final : public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 	
 public:

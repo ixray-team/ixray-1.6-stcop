@@ -13,20 +13,16 @@ struct dContact;
 struct SGameMtl;
 struct SRoketContact
 {
-	bool contact;
-	Fvector pos;
-	Fvector up;
-	SRoketContact()
-	{
-		contact = false;
-	}
+	bool contact = false;
+	Fvector pos = zero_vel;
+	Fvector up = zero_vel;
 };
 
 class CCustomRocket : public CPhysicItem,
-					  public CPHUpdateObject
+	public CPHUpdateObject
 {
 private:
-	typedef CPhysicItem inherited;
+	using inherited = CPhysicItem;
 	friend CRocketLauncher;
 	friend CWeaponRPG7;
 public:
@@ -34,67 +30,74 @@ public:
 	//	Generic
 	//////////////////////////////////////////////////////////////////////////
 
-	CCustomRocket(void);
-	virtual ~CCustomRocket(void);
+	CCustomRocket();
+	virtual ~CCustomRocket();
 
-	virtual void Load(LPCSTR section);
-	virtual BOOL net_Spawn(CSE_Abstract* DC);
-	virtual void net_Destroy();
-	virtual BOOL						AlwaysTheCrow				()				{ return TRUE; }
+	virtual void Load(LPCSTR section) override;
+	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual BOOL AlwaysTheCrow() override { return TRUE; }
 
-	virtual void reinit		();
-	virtual void reload		(LPCSTR section);
+	virtual void reinit() override;
+	virtual void reload(LPCSTR section) override;
 
-	virtual void OnH_A_Independent	();
-	virtual void OnH_B_Independent	(bool just_before_destroy);
-	virtual void OnH_B_Chield		();
-	virtual void OnH_A_Chield		();
-	virtual void UpdateCL();
+	virtual void OnH_A_Independent() override;
+	virtual void OnH_B_Independent(bool just_before_destroy) override;
+	virtual void OnH_B_Chield() override;
+	virtual void OnH_A_Chield() override;
+	virtual void UpdateCL() override;
 
-	virtual BOOL UsedAI_Locations	()			{return	(FALSE);}
-	virtual bool Useful				() const	{return (m_eState == eInactive);	}
+	virtual BOOL UsedAI_Locations() override { return FALSE; }
+	virtual bool Useful() const { return (m_eState == eInactive); }
 
-	virtual void renderable_Render() {inherited::renderable_Render();}
+	virtual void renderable_Render() override { inherited::renderable_Render(); }
 
 	//создание физической оболочки
-	virtual void			activate_physic_shell	();
-	virtual void			create_physic_shell		();
+	virtual void activate_physic_shell() override;
+	virtual void create_physic_shell() override;
 
-	virtual void			PhDataUpdate			(float step);
-	virtual void			PhTune					(float step);
+	virtual void PhDataUpdate(float step) override;
+	virtual void PhTune(float step) override;
+
+	virtual CExplosiveRocket* cast_explosive_rocket() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CPhysicItem* cast_physics_item() override { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CCustomRocket* cast_custom_rocket() override { return this; }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Rocket Properties
 	//////////////////////////////////////////////////////////////////////////
 public:
 #ifdef DEBUG
-	CGameObject*			owner					(){return m_pOwner;}
+	CGameObject* owner() { return m_pOwner; }
 #endif
-	virtual	void			StartEngine				();
-	virtual	void			StopEngine				();
-	virtual	void			UpdateEngine			();
-	virtual	void			UpdateEnginePh			();
+	virtual	void StartEngine();
+	virtual	void StopEngine();
+	virtual	void UpdateEngine();
+	virtual	void UpdateEnginePh();
 
-	virtual	void			StartFlying				();
-	virtual	void			StopFlying				();
+	virtual	void StartFlying();
+	virtual	void StopFlying();
 
-	virtual	void			SetLaunchParams			(const Fmatrix& xform, 
-													 const Fvector& vel,
-													 const Fvector& angular_vel);
+	virtual	void SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
 
-	virtual void			OnEvent					(NET_Packet& P, u16 type);
-	bool					m_bLaunched;
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
+	bool m_bLaunched = false;
+
+	virtual void Contact(const Fvector& pos, const Fvector& normal);
+
 protected:
 	//указатель на владельца RocketLauncher - который стреляет ракету
-	CGameObject*			m_pOwner;
+	CGameObject* m_pOwner = nullptr;
 
-	SRoketContact			m_contact;
+	SRoketContact m_contact = {};
 	//параметры которые задаются RocketLauncher-ом перед пуском
-	Fmatrix					m_LaunchXForm;
-	Fvector					m_vLaunchVelocity;
-	Fvector					m_vLaunchAngularVelocity;
+	Fmatrix m_LaunchXForm;
+	Fvector m_vLaunchVelocity = zero_vel;
+	Fvector m_vLaunchAngularVelocity = zero_vel;
 
-	enum ERocketState{
+	enum ERocketState {
 		eInactive,		//ракета неактивна и находиться в инвентаре
 		eEngine,		//включен двигатель
 		eFlying,		//просто летим
@@ -102,70 +105,67 @@ protected:
 	};
 
 	//текущее состояние ракеты
-	ERocketState m_eState;
+	ERocketState m_eState = eInactive;
 
 	//двигатель присутствует
-	bool		m_bEnginePresent;
+	bool m_bEnginePresent = false;
 	//время работы двигателя с момента старта
-	int			m_dwEngineWorkTime;
+	int	m_dwEngineWorkTime = 0;
 	//сила работы двигателя (размер импульса в секунду)
-	float		m_fEngineImpulse;
-	float		m_fEngineImpulseUp;
+	float m_fEngineImpulse = 0.0f;
+	float m_fEngineImpulseUp = 0.0f;
 	//текущее время работы двигателя
-	int			m_dwEngineTime;
+	int m_dwEngineTime = 0;
 
 	//обработка столкновения
-	virtual void			Contact(const Fvector &pos, const Fvector &normal);
-			void			PlayContact();
-	static	void			ObjectContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
-
+	void PlayContact();
+	static void	ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
 	//////////////////////////////////////////////////////////////////////////
 protected:
 	//флаг, что подсветка может быть включена
-	bool			m_bLightsEnabled;
+	bool m_bLightsEnabled = false;
 	//флаг, что подсветка будет остановлена
 	//вместе с двигателем
-	bool			m_bStopLightsWithEngine;
+	bool m_bStopLightsWithEngine = true;
 	//подсветка во время полета и работы двигателя
-	ref_light		m_pTrailLight;
-	Fcolor			m_TrailLightColor;
-	float			m_fTrailLightRange;
-	ref_sound		m_flyingSound;
+	ref_light m_pTrailLight = nullptr;
+	Fcolor m_TrailLightColor;
+	float m_fTrailLightRange = 0.0f;
+	ref_sound m_flyingSound = {};
 
 protected:
-	virtual void	StartLights();
-	virtual void	StopLights();
-	virtual void	UpdateLights();
-    
-	
+	virtual void StartLights();
+	virtual void StopLights();
+	virtual void UpdateLights();
+
 	//////////////////////////////////////////////////////////////////////////
 	//	Particles
 	//////////////////////////////////////////////////////////////////////////
-protected:	
+protected:
 	//имя партиклов двигателя
-	shared_str			m_sEngineParticles;
-	xr_shared_ptr<CParticlesObject>	m_pEngineParticles;
+	shared_str m_sEngineParticles;
+	xr_shared_ptr<CParticlesObject>	m_pEngineParticles = nullptr;
 	//имя партиклов полета
-	shared_str			m_sFlyParticles;
-	xr_shared_ptr<CParticlesObject>	m_pFlyParticles;
+	shared_str m_sFlyParticles;
+	xr_shared_ptr<CParticlesObject>	m_pFlyParticles = nullptr;
 
-	Fvector				m_vPrevVel;
-	float				m_time_to_explode;
+	Fvector	m_vPrevVel = zero_vel;
+	float m_time_to_explode = 0.0f;
 #ifdef	DEBUG
-	float				gbg_rocket_speed1;
-	float				gbg_rocket_speed2;
+	float gbg_rocket_speed1 = 0.0f;
+	float gbg_rocket_speed2 = 0.0f;
 #endif
 protected:
-	virtual void		StartEngineParticles();
-	virtual void		StopEngineParticles();
-	virtual void		StartFlyParticles();
-	virtual void		StopFlyParticles();
+	virtual void StartEngineParticles();
+	virtual void StopEngineParticles();
+	virtual void StartFlyParticles();
+	virtual void StopFlyParticles();
 
-	virtual void		UpdateParticles();
+	virtual void UpdateParticles();
 #ifdef DEBUG
-	virtual void		deactivate_physics_shell ();
+	virtual void deactivate_physics_shell();
 #endif
 };

@@ -282,7 +282,7 @@ s32 UITeamState::GetSummaryFrags() const
 		game_PlayerState*	ps = i->second;
 		if (!ps)
 			continue;
-		game_cl_mp* tempGame = smart_cast<game_cl_mp*>(&Game());
+		game_cl_mp* tempGame = Game().cast_game_cl_mp();
 		R_ASSERT(tempGame);
 		if (static_cast<ETeam>(tempGame->ModifyTeam(ps->team)) == myTeam)
 			sum = sum + ps->m_iRivalKills;

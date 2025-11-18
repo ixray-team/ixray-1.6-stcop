@@ -1085,7 +1085,7 @@ void RenderWeaponManagerWindow()
 	{
 		if (ImGui::BeginTabBar("##TB_InGameWeaponManager"))
 		{
-			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+			CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
 			xr_string slot2_tab_name{ "Slot 2 (INV_SLOT_2) - " };
 			xr_string slot3_tab_name{ "Slot 3 (INV_SLOT_3) - " };

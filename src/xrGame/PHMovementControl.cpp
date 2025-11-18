@@ -219,7 +219,7 @@ bool CPHMovementControl::MakeJumpPath(xr_vector<DetailPathManager::STravelPathPo
 	if ( !m_character->JumpState() )
 		return					false;
 
-	CBaseMonster * monster	=	smart_cast<CBaseMonster *>(pObject);
+	CBaseMonster* monster = pObject != nullptr ? pObject->cast_base_monster() : nullptr;
 	if ( !monster )
 		return					false;
 

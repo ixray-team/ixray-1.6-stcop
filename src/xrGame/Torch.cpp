@@ -1,61 +1,48 @@
 #include "StdAfx.h"
 #include "Torch.h"
-#include "Entity.h"
 #include "Actor.h"
 #include "../xrEngine/LightAnimLibrary.h"
-#include "../xrPhysics/PhysicsShell.h"
-#include "xrServer_Objects_ALife_Items.h"
-#include "../xrSound/ai_sounds.h"
-
-#include "Level.h"
-#include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/CameraBase.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "Inventory.h"
-#include "game_base_space.h"
 
-static const float		TORCH_INERTION_CLAMP		= PI_DIV_6;
-static const float		TORCH_INERTION_SPEED_MAX	= 7.5f;
-static const float		TORCH_INERTION_SPEED_MIN	= 0.5f;
-static		 Fvector	TORCH_OFFSET				= {-0.2f,+0.1f,-0.3f};
-static const Fvector	OMNI_OFFSET					= {-0.2f,+0.1f,-0.1f};
-static const float		OPTIMIZATION_DISTANCE		= 100.f;
+static constexpr float TORCH_INERTION_SPEED_MAX = 7.5f;
+static constexpr float TORCH_INERTION_SPEED_MIN = 0.5f;
+static Fvector TORCH_OFFSET = { -0.2f,+0.1f,-0.3f };
+static constexpr Fvector OMNI_OFFSET = { -0.2f,+0.1f,-0.1f };
+static constexpr float OPTIMIZATION_DISTANCE = 100.0f;
 
-static bool stalker_use_dynamic_lights	= false;
+static bool stalker_use_dynamic_lights = false;
 
 ENGINE_API int g_current_renderer;
 
-CTorch::CTorch(void) 
+CTorch::CTorch()
 {
-	light_render				= ::Render->light_create();
-	light_render->set_type		(IRender_Light::SPOT);
-	light_render->set_shadow	(true);
-	light_omni					= ::Render->light_create();
-	light_omni->set_type		(IRender_Light::POINT);
-	light_omni->set_shadow		(!!psDeviceFlags.test(rsR4));
+	light_render = ::Render->light_create();
+	light_render->set_type(IRender_Light::SPOT);
+	light_render->set_shadow(true);
+	light_omni = ::Render->light_create();
+	light_omni->set_type(IRender_Light::POINT);
+	light_omni->set_shadow(!!psDeviceFlags.test(rsR4));
 
-	m_switched_on				= false;
-	glow_render					= ::Render->glow_create();
-	lanim						= 0;
-	fBrightness					= 1.f;
+	glow_render = ::Render->glow_create();
 
-	m_prev_hp.set				(0,0);
-	m_delta_h					= 0;
+	m_prev_hp.set(0.0f, 0.0f);
 
 	// Disabling shift by x and z axes for 1st render, 
 	// because we don't have dynamic lighting in it. 
-	if( g_current_renderer == 1 )
+	if (g_current_renderer == 1)
 	{
-		TORCH_OFFSET.x = 0;
-		TORCH_OFFSET.z = 0;
+		TORCH_OFFSET.x = 0.0f;
+		TORCH_OFFSET.z = 0.0f;
 	}
 }
 
-CTorch::~CTorch() 
+CTorch::~CTorch()
 {
-	light_render.destroy	();
-	light_omni.destroy		();
-	glow_render.destroy		();
+	light_render.destroy();
+	light_omni.destroy();
+	glow_render.destroy();
 }
 
 void CTorch::OnMoveToSlot(const SInvItemPlace& prev)
@@ -77,7 +64,7 @@ void CTorch::OnMoveToRuck(const SInvItemPlace& prev)
 
 inline bool CTorch::can_use_dynamic_lights()
 {
-	if (!H_Parent())
+	if (H_Parent() == nullptr)
 	{
 		return true;
 	}
@@ -91,15 +78,16 @@ inline bool CTorch::can_use_dynamic_lights()
 	return owner->can_use_dynamic_lights();
 }
 
-void CTorch::Load(LPCSTR section) 
+void CTorch::Load(LPCSTR section)
 {
-	inherited::Load			(section);
-	light_trace_bone		= pSettings->r_string(section,"light_trace_bone");
+	inherited::Load(section);
+	light_trace_bone = pSettings->r_string(section, "light_trace_bone");
 
 	if (pSettings->line_exist(section, "sound_activate"))
 	{
 		m_sounds.LoadSound(section, "sound_activate", "soundActivate", false, SOUND_TYPE_ITEM_USING);
 	}
+
 	if (pSettings->line_exist(section, "sound_deactivate"))
 	{
 		m_sounds.LoadSound(section, "sound_deactivate", "soundDeactivate", false, SOUND_TYPE_ITEM_USING);
@@ -108,75 +96,82 @@ void CTorch::Load(LPCSTR section)
 
 void CTorch::Switch()
 {
-	if (OnClient())			return;
-	bool bActive			= !m_switched_on;
-	Switch					(bActive);
-	CActor* pA = H_Parent()->cast_actor();
+	if (OnClient())
+	{
+		return;
+	}
 
-	if (pA != nullptr)
+	bool bActive = !m_switched_on;
+	Switch(bActive);
+
+	if (CActor* pA = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr)
 	{
 		if (!m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundActivate", false))
-				m_sounds.PlaySound("soundActivate", pA->Position(), nullptr, !!pA->HUDview());
+			{
+				m_sounds.PlaySound("soundActivate", pA->Position(), pA, !!pA->HUDview());
+			}
 		}
 		else if (m_switched_on)
 		{
 			if (m_sounds.FindSoundItem("soundDeactivate", false))
-				m_sounds.PlaySound("soundDeactivate", pA->Position(), nullptr, !!pA->HUDview());
+			{
+				m_sounds.PlaySound("soundDeactivate", pA->Position(), pA, !!pA->HUDview());
+			}
 		}
 	}
 }
 
 void CTorch::Switch(bool light_on)
 {
-	m_switched_on			= light_on;
+	m_switched_on = light_on;
 
 	if (can_use_dynamic_lights())
 	{
 		light_render->set_active(light_on);
-		
-		// CActor *pA = smart_cast<CActor *>(H_Parent());
-		//if(!pA)
-			light_omni->set_decor_object(H_Parent());
-			light_omni->set_active(light_on);
+		light_omni->set_decor_object(H_Parent());
+		light_omni->set_active(light_on);
 	}
-	glow_render->set_active					(light_on);
 
-	if (*light_trace_bone) 
+	glow_render->set_active(light_on);
+
+	if (*light_trace_bone)
 	{
-		IKinematics* pVisual				= PKinematics(Visual());
+		IKinematics* pVisual = PKinematics(Visual());
 		VERIFY(pVisual);
-		u16 bi								= pVisual->LL_BoneID(light_trace_bone);
+		u16 bi = pVisual->LL_BoneID(light_trace_bone);
 
-		pVisual->LL_SetBoneVisible			(bi,	light_on,	TRUE);
-		pVisual->CalculateBones				(TRUE);
+		pVisual->LL_SetBoneVisible(bi, light_on, TRUE);
+		pVisual->CalculateBones(TRUE);
 	}
 }
-bool CTorch::torch_active					() const
+bool CTorch::torch_active() const
 {
 	return (m_switched_on);
 }
 
-BOOL CTorch::net_Spawn(CSE_Abstract* DC) 
+BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 {
-	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeItemTorch		*torch	= smart_cast<CSE_ALifeItemTorch*>(e);
-	R_ASSERT				(torch);
-	cNameVisual_set			(torch->get_visual());
+	CSE_Abstract* e = (CSE_Abstract*)(DC);
+	CSE_ALifeItemTorch* torch = smart_cast<CSE_ALifeItemTorch*>(e);
+	R_ASSERT(torch);
+	cNameVisual_set(torch->get_visual());
 
-	R_ASSERT				(!CFORM());
-	R_ASSERT				(PKinematics(Visual()));
-	collidable.model		= new CCF_Skeleton	(this);
+	R_ASSERT(!CFORM());
+	R_ASSERT(PKinematics(Visual()));
+	collidable.model = new CCF_Skeleton(this);
 
 	if (!inherited::net_Spawn(DC))
-		return				(FALSE);
-	
-	bool b_r2				= !!psDeviceFlags.test(rsR2);
-	b_r2					|= !!psDeviceFlags.test(rsR4);
+	{
+		return FALSE;
+	}
 
-	IKinematics* K			= PKinematics(Visual());
-	CInifile* pUserData		= K->LL_UserData(); 
+	bool b_r2 = !!psDeviceFlags.test(rsR2);
+	b_r2 |= !!psDeviceFlags.test(rsR4);
+
+	IKinematics* K = PKinematics(Visual());
+	CInifile* pUserData = K->LL_UserData();
 
 	if (pUserData != nullptr)
 	{
@@ -209,45 +204,48 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 		m_delta_h = PI_DIV_2 - atan((range * 0.5f) / _abs(TORCH_OFFSET.x));
 	}
 
-	return					(TRUE);
+	return TRUE;
 }
 
-void CTorch::net_Destroy() 
+void CTorch::net_Destroy()
 {
 	Switch(false);
-
-	inherited::net_Destroy	();
+	inherited::net_Destroy();
 }
 
-void CTorch::OnH_A_Chield() 
+void CTorch::OnH_A_Chield()
 {
-	inherited::OnH_A_Chield			();
-	m_focus.set						(Position());
+	inherited::OnH_A_Chield();
+	m_focus.set(Position());
 }
 
-void CTorch::OnH_B_Independent(bool just_before_destroy) 
+void CTorch::OnH_B_Independent(bool just_before_destroy)
 {
 	inherited::OnH_B_Independent(just_before_destroy);
-
-	Switch						(false);
-
+	Switch(false);
 	m_sounds.StopAllSounds();
 }
 
-void CTorch::UpdateCL() 
+void CTorch::UpdateCL()
 {
 	PROF_EVENT("CTorch::UpdateCL")
-	inherited::UpdateCL			();
-	
-	if (!m_switched_on)			return;
+	inherited::UpdateCL();
 
-	CBoneInstance			&BI = PKinematics(Visual())->LL_GetBoneInstance(guid_bone);
-	Fmatrix					M;
-
-	if (H_Parent()) 
+	if (!m_switched_on)
 	{
-		CActor*			actor = smart_cast<CActor*>(H_Parent());
-		if (actor)		PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		return;
+	}
+
+	CBoneInstance& BI = PKinematics(Visual())->LL_GetBoneInstance(guid_bone);
+	Fmatrix M;
+
+	if (H_Parent())
+	{
+		CActor* actor = H_Parent()->cast_actor();
+		if (actor)
+		{
+			PKinematics(H_Parent()->Visual())->CalculateBones_Invalidate();
+		}
 
 		if ((H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE) || GameID() != eGameIDSingle))
 		{
@@ -255,24 +253,24 @@ void CTorch::UpdateCL()
 			PKinematics(H_Parent()->Visual())->CalculateBones
 			(
 				!!Render->ViewBase.testSphere_dirty(H_Parent()->SpatialComponent->spatial.sphere.P,
-				H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
+					H_Parent()->SpatialComponent->spatial.sphere.R + SpatialComponent->spatial.sphere.R + light_render->get_homdata().sphere.R)
 			);
 
 			M.mul_43(XFORM(), BI.mTransform);
 		}
-		else 
+		else
 		{
 			// approximately the same
-			M		= H_Parent()->XFORM		();
-			H_Parent()->Center				(M.c);
-			M.c.y	+= H_Parent()->Radius	()*2.f/3.f;
+			M = H_Parent()->XFORM();
+			H_Parent()->Center(M.c);
+			M.c.y += H_Parent()->Radius() * 2.0f / 3.0f;
 		}
 
-		if (actor)
+		if (actor != nullptr)
 		{
-			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
-			if(actor->active_cam()==eacFirstEye)
+			m_prev_hp.x = angle_inertion_var(m_prev_hp.x, -actor->cam_Active()->yaw, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			m_prev_hp.y = angle_inertion_var(m_prev_hp.y, -actor->cam_Active()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, PI_DIV_6, Device.fTimeDelta);
+			if (actor->active_cam() == eacFirstEye)
 			{
 				light_render->set_ignore_object(H_Parent());
 				light_omni->set_ignore_object(H_Parent());
@@ -285,10 +283,9 @@ void CTorch::UpdateCL()
 				light_omni->set_decor_object(H_Parent());
 			}
 
-			Fvector			dir, right, up;
+			Fvector	dir = zero_vel, right = zero_vel, up = zero_vel;
 			dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
 			Fvector::generate_orthonormal_basis_normalized(dir, up, right);
-
 
 			Fvector offset = M.c;
 			offset.mad(M.i, TORCH_OFFSET.x);
@@ -296,14 +293,11 @@ void CTorch::UpdateCL()
 			offset.mad(M.k, TORCH_OFFSET.z);
 			light_render->set_position(offset);
 
-			if (true /*false*/)
-			{
-				offset = M.c;
-				offset.mad(M.i, OMNI_OFFSET.x);
-				offset.mad(M.j, OMNI_OFFSET.y);
-				offset.mad(M.k, OMNI_OFFSET.z);
-				light_omni->set_position(offset);
-			}
+			offset = M.c;
+			offset.mad(M.i, OMNI_OFFSET.x);
+			offset.mad(M.j, OMNI_OFFSET.y);
+			offset.mad(M.k, OMNI_OFFSET.z);
+			light_omni->set_position(offset);
 
 			glow_render->set_position(M.c);
 
@@ -326,58 +320,64 @@ void CTorch::UpdateCL()
 			glow_render->set_direction(dir);
 
 		}
-		else 
+		else
 		{
-			if (can_use_dynamic_lights()) 
+			if (can_use_dynamic_lights())
 			{
-				light_render->set_position	(M.c);
-				light_render->set_rotation	(M.k,M.i);
+				light_render->set_position(M.c);
+				light_render->set_rotation(M.k, M.i);
 
-				Fvector offset				= M.c; 
-				offset.mad					(M.i,OMNI_OFFSET.x);
-				offset.mad					(M.j,OMNI_OFFSET.y);
-				offset.mad					(M.k,OMNI_OFFSET.z);
-				light_omni->set_position	(M.c);
-				light_omni->set_rotation	(M.k,M.i);
-			}//if (can_use_dynamic_lights()) 
+				Fvector offset = M.c;
+				offset.mad(M.i, OMNI_OFFSET.x);
+				offset.mad(M.j, OMNI_OFFSET.y);
+				offset.mad(M.k, OMNI_OFFSET.z);
+				light_omni->set_position(M.c);
+				light_omni->set_rotation(M.k, M.i);
+			}
 
-			glow_render->set_position	(M.c);
-			glow_render->set_direction	(M.k);
+			glow_render->set_position(M.c);
+			glow_render->set_direction(M.k);
 		}
-	}//if(HParent())
-	else 
+	}
+	else
 	{
-		if (getVisible() && m_pPhysicsShell) 
+		if (getVisible() && m_pPhysicsShell)
 		{
-			M.mul						(XFORM(),BI.mTransform);
+			M.mul(XFORM(), BI.mTransform);
 
-			m_switched_on			= false;
+			m_switched_on = false;
 			light_render->set_active(false);
 			light_omni->set_active(false);
-			glow_render->set_active	(false);
-		}//if (getVisible() && m_pPhysicsShell)  
+			glow_render->set_active(false);
+		}  
 	}
 
-	if (!m_switched_on)					return;
+	if (!m_switched_on)
+	{
+		return;
+	}
 
 	// calc color animator
-	if (!lanim)							return;
+	if (lanim == nullptr)
+	{
+		return;
+	}
 
-	int						frame;
+	int frame = 0;
 	// возвращает в формате BGR
-	u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); 
+	u32 clr = lanim->CalculateBGR(Device.fTimeGlobal, frame);
 
-	Fcolor					fclr;
-	fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
-	fclr.mul_rgb			(fBrightness/255.f);
+	Fcolor fclr;
+	fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.0f);
+	fclr.mul_rgb(fBrightness / 255.0f);
 	if (can_use_dynamic_lights())
 	{
-		light_render->set_color	(fclr);
-		light_omni->set_color	(fclr);
+		light_render->set_color(fclr);
+		light_omni->set_color(fclr);
 	}
-	glow_render->set_color		(fclr);
-}
 
+	glow_render->set_color(fclr);
+}
 
 void CTorch::create_physic_shell()
 {
@@ -415,24 +415,25 @@ void CTorch::net_Export(NET_Packet& P)
 void CTorch::net_Import(NET_Packet& P)
 {
 	inherited::net_Import(P);
-	
+
 	BYTE F = P.r_u8();
 	bool new_m_switched_on = !!(F & eTorchActive);
 
 	if (new_m_switched_on != m_switched_on)
+	{
 		Switch(new_m_switched_on);
+	}
 }
-bool  CTorch::can_be_attached		() const
+
+bool CTorch::can_be_attached() const
 {
-	const CActor *pA = smart_cast<const CActor *>(H_Parent());
-	if (pA)
+	CObject* h_parent = const_cast<CObject*>(H_Parent());
+	if (const CActor* pA = h_parent != nullptr ? h_parent->cast_actor() : nullptr)
 	{
 		return pA->inventory().InSlot(this);
 	}
-	else
-	{
-		return true;
-	}
+
+	return true;
 }
 
 void CTorch::afterDetach()
@@ -449,9 +450,11 @@ void CTorch::renderable_Render()
 	}
 	else
 	{
-		CActor* pActor = H_Parent() ? H_Parent()->cast_actor() : nullptr;
-		if (m_switched_on && pActor)
+		CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
+		if (m_switched_on && pActor != nullptr)
+		{
 			inherited::renderable_Render();
+		}
 	}
 }
 
@@ -460,6 +463,8 @@ void CTorch::enable(bool value)
 	inherited::enable(value);
 
 	if (!enabled() && m_switched_on)
+	{
 		Switch(false);
+	}
 
 }

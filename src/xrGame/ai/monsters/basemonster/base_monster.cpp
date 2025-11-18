@@ -523,7 +523,9 @@ bool CBaseMonster::useful(const CItemManager *manager, const CGameObject *object
 		return false;
 	}
 
-	const CEntityAlive *pCorpse = smart_cast<const CEntityAlive *>(object); 
+	CGameObject* obj = const_cast<CGameObject*>(object);
+
+	const CEntityAlive *pCorpse = obj != nullptr ? obj->cast_entity_alive() : nullptr;
 	if ( !pCorpse ) 
 	{
 		return false;
@@ -754,7 +756,8 @@ u32 CBaseMonster::get_attack_rebuild_time()
 
 void CBaseMonster::on_kill_enemy(const CEntity *obj)
 {
-	const CEntityAlive *entity	= smart_cast<const CEntityAlive *>(obj);
+	CEntity* ent = const_cast<CEntity*>(obj);
+	const CEntityAlive* entity = ent != nullptr ? ent->cast_entity_alive() : nullptr;
 	
 	// добавить в список трупов	
 	CorpseMemory.add_corpse		(entity);
@@ -936,8 +939,8 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 			CObject		*O	= Level().Objects.net_Find	(id);
 			VERIFY		(O);
 
-			CGameObject			*GO = smart_cast<CGameObject*>(O);
-			CInventoryItem		*pIItem = smart_cast<CInventoryItem*>(GO);
+			CGameObject			*GO = O->cast_game_object();
+			CInventoryItem		*pIItem = GO->cast_inventory_item();
 			VERIFY				(inventory().CanTakeItem(pIItem));
 			pIItem->m_ItemCurrPlace.type = eItemPlaceRuck;
 
@@ -956,7 +959,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 			bool dont_create_shell			= (type==GE_TRADE_SELL) || just_before_destroy;
 
 			O->SetTmpPreDestroy				(just_before_destroy);
-			if (inventory().DropItem(smart_cast<CGameObject*>(O), just_before_destroy, dont_create_shell) && !O->getDestroy())
+			if (inventory().DropItem(O->cast_game_object(), just_before_destroy, dont_create_shell) && !O->getDestroy())
 			{
 				//O->H_SetParent	(0,just_before_destroy); //moved to DropItem
 				feel_touch_deny	(O,2000);
@@ -969,7 +972,7 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		CObject* O	= Level().Objects.net_Find	(id);
 
 		if (O)  {
-			CEntity *pEntity = smart_cast<CEntity*>(O);
+			CEntity *pEntity = O->cast_entity();
 			if (pEntity) on_kill_enemy(pEntity);
 		}
 			
@@ -1077,7 +1080,7 @@ void CBaseMonster::update_eyes_visibility ()
 		return;
 	}
 
-	IKinematics* const skeleton	=	smart_cast<IKinematics*>(Visual());
+	IKinematics* const skeleton	=	PKinematics(Visual());
 	if ( !skeleton )
 	{
 		return;

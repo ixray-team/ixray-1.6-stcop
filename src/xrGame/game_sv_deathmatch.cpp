@@ -429,7 +429,7 @@ void	game_sv_Deathmatch::Update()
 
 			if (m_bSpectatorMode)
 			{
-				if (!m_pSM_CurViewEntity || !smart_cast<CActor*>(m_pSM_CurViewEntity) || m_dwSM_LastSwitchTime<Level().timeServer())
+				if (m_pSM_CurViewEntity == nullptr || m_pSM_CurViewEntity->cast_actor() == nullptr || m_dwSM_LastSwitchTime<Level().timeServer())
 					SM_SwitchOnNextActivePlayer();
 				CUIGameDM* GameDM = nullptr;
 				if (CurrentGameUI())
@@ -438,7 +438,7 @@ void	game_sv_Deathmatch::Update()
 				if(GameDM)
 				{
 					CObject* pObject				= Level().CurrentViewEntity();
-					if (pObject && smart_cast<CActor*>(pObject))
+					if (pObject != nullptr && pObject->cast_actor() != nullptr)
 					{
 						string1024					Text;
 						xr_sprintf						(Text, "Following %s", pObject->cName().c_str());
@@ -588,7 +588,7 @@ void	game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 			::Random.randI((int)tmp_functor.PPlayersCount) ];
 		VERIFY(C->ps);
 		pNewObject					=  Level().Objects.net_Find(C->ps->GameID);
-		CActor* pActor				= smart_cast<CActor*>(pNewObject);
+		CActor* pActor				= pNewObject != nullptr ? pNewObject->cast_actor() : nullptr;
 
 		if (!pActor || !pActor->g_Alive() || !pActor->inventory().ActiveItem()) return;
 	};
@@ -610,13 +610,13 @@ void	game_sv_Deathmatch::SM_SwitchOnPlayer(CObject* pNewObject)
 
 	if (pNewObject != m_pSM_CurViewEntity)
 	{
-		CActor* pActor					= smart_cast<CActor*>(m_pSM_CurViewEntity);
+		CActor* pActor					= m_pSM_CurViewEntity->cast_actor();
 		
 		if (pActor)
 			pActor->inventory().Items_SetCurrentEntityHud(false);
 	}
 
-	CActor* pActor = smart_cast<CActor*> (pNewObject);
+	CActor* pActor = pNewObject->cast_actor();
 	if (pActor)
 	{
 		pActor->inventory().Items_SetCurrentEntityHud(true);
@@ -869,13 +869,13 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 		if ((ItemID & 0x00ff) != u16(m_strWeaponsData->GetItemIdx(pItem->object().cNameSect()))) continue;
 
 		found = true;
-		CWeaponAmmo* pAmmo = 	smart_cast<CWeaponAmmo*>(pItem);
+		CWeaponAmmo* pAmmo = pItem->cast_weapon_ammo();
 		if (pAmmo)
 		{
 			if (pAmmo->m_boxCurr != pAmmo->m_boxSize) break;
 		};
 		//----- Check for Addon Changes ---------------------
-		CWeapon		*pWeapon	=	smart_cast<CWeapon*>(pItem);
+		CWeapon		*pWeapon	= pItem->cast_weapon();
 		if (pWeapon)
 		{
 			u8 OldAddons  = pWeapon->GetAddonsState();
@@ -890,7 +890,8 @@ void game_sv_Deathmatch::CheckItem(game_PlayerState* ps, PIItem pItem, xr_vector
 			}
 			if (OldAddons != NewAddons)
 			{
-				CSE_ALifeItemWeapon* pSWeapon = smart_cast<CSE_ALifeItemWeapon*>(get_entity_from_eid(pWeapon->ID()));
+				CSE_Abstract* finded_entity = get_entity_from_eid(pWeapon->ID());
+				CSE_ALifeItemWeapon* pSWeapon = finded_entity != nullptr ? finded_entity->cast_item_weapon() : nullptr;
 				if (pSWeapon)
 				{
 					pSWeapon->m_addon_flags.zero();
@@ -952,83 +953,6 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 		SpawnWeaponsForActor(e_Actor, ps);
 	}
 	SetCanOpenBuyMenu(id_who);
-
-	/*game_PlayerState*	ps		= get_id	(id_who);
-	if (!ps || ps->IsSkip())		return;	
-	
-	P.r_s32(ps->LastBuyAcount);	
-	if (ps->LastBuyAcount != 0) ps->m_bClearRun = false;
-
-	xr_vector<s16>		ItemsDesired;
-
-	u8 NumItems;
-	P.r_u8(NumItems);
-	for (u8 i=0; i<NumItems; i++)
-	{
-		s16	ItemID;
-		P.r_s16(ItemID);
-//		Msg("------------- Player wants %d", ItemID);
-		ItemsDesired.push_back(ItemID);
-	};
-
-	CSE_ALifeCreatureActor*		e_Actor	= smart_cast<CSE_ALifeCreatureActor*>(get_entity_from_eid	(ps->GameID));
-	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find	(ps->GameID));
-	if (pActor)
-	{
-		PIItem pItem = nullptr;
-		xr_vector<u16>				ItemsToDelete;
-
-		bool ExactMatch	= true;
-		//проверяем пояс
-		TIItemContainer::const_iterator	IBelt = pActor->inventory().m_belt.begin();
-		TIItemContainer::const_iterator	EBelt = pActor->inventory().m_belt.end();
-
-		for ( ; IBelt != EBelt; ++IBelt) 
-		{
-			pItem = (*IBelt);
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
-		};
-
-		//проверяем ruck
-		TIItemContainer::const_iterator	IRuck = pActor->inventory().m_ruck.begin();
-		TIItemContainer::const_iterator	ERuck = pActor->inventory().m_ruck.end();
-
-		for ( ; IRuck != ERuck; ++IRuck) 
-		{
-			pItem = (*IRuck);			
-			if (!pItem) continue;
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
-		};
-
-		//проверяем слоты
-		TISlotArr::const_iterator	ISlot = pActor->inventory().m_slots.begin();
-		TISlotArr::const_iterator	ESlot = pActor->inventory().m_slots.end();
-
-		for ( ; ISlot != ESlot; ++ISlot) 
-		{
-			pItem = (*ISlot).m_pIItem;
-			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
-		};
-		
-		xr_vector<u16>::iterator	IDI = ItemsToDelete.begin();
-		xr_vector<u16>::iterator	EDI = ItemsToDelete.end();
-		for ( ; IDI != EDI; ++IDI) 
-		{
-			NET_Packet			P;
-			u_EventGen			(P,GE_DESTROY,*IDI);
-			Level().Send(P,net_flags(TRUE,TRUE));
-		};
-	};
-
-	ps->pItemList.clear();
-	for (u32 it = 0; it<ItemsDesired.size(); it++)
-	{
-		ps->pItemList.push_back(ItemsDesired[it]);
-	};
-
-	if (!pActor) return;
-
- 	SpawnWeaponsForActor(e_Actor, ps);*/
 };
 
 void	game_sv_Deathmatch::SpawnWeaponsForActor(CSE_Abstract* pE, game_PlayerState*	ps)
@@ -1319,7 +1243,7 @@ void	game_sv_Deathmatch::RemoveItemFromActor	(CSE_Abstract* pItem)
 {
 	if (!pItem) return;
 	//-------------------------------------------------------------
-	CSE_ALifeItemWeapon* pWeapon = smart_cast<CSE_ALifeItemWeapon*> (pItem);
+	CSE_ALifeItemWeapon* pWeapon = pItem->cast_item_weapon();
 	if (pWeapon)
 	{
 	};
@@ -1572,7 +1496,7 @@ BOOL	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, BOOL bForced)
 	if (A)
 	{
 		// Actor touches something
-		CSE_ALifeItemWeapon*	W			=	smart_cast<CSE_ALifeItemWeapon*> (e_what);
+		CSE_ALifeItemWeapon* W = e_what->cast_item_weapon();
 		if (W) 
 		{
 			// Weapon
@@ -1582,7 +1506,7 @@ BOOL	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, BOOL bForced)
 			{
 				CSE_Abstract*		Et	= m_server->ID_to_entity				(C[it]);
 				if (0==Et)				continue;
-				CSE_ALifeItemWeapon*		T	= smart_cast<CSE_ALifeItemWeapon*>	(Et);
+				CSE_ALifeItemWeapon* T = Et->cast_item_weapon();
 				if (0==T)				continue;
 				if (slot == T->get_slot())	
 				{
@@ -1608,7 +1532,7 @@ BOOL	game_sv_Deathmatch::OnTouch			(u16 eid_who, u16 eid_what, BOOL bForced)
 			return TRUE;
 		}
 		
-		CSE_ALifeItemAmmo* pIAmmo			=	smart_cast<CSE_ALifeItemAmmo*> (e_what);
+		CSE_ALifeItemAmmo* pIAmmo = e_what->cast_item_ammo();
 		if (pIAmmo)
 		{
 			//Ammo
@@ -1966,29 +1890,6 @@ BOOL game_sv_Deathmatch::Is_Anomaly_InLists(CSE_Abstract* E)
 {
 	if (!E) return FALSE;
 	return TRUE;
-	/*CSE_ALifeCustomZone* pCustomZone	=	smart_cast<CSE_ALifeCustomZone*> (E);
-	if (pCustomZone)
-	{
-		if (pCustomZone->m_owner_id != 0xffffffff) return TRUE;
-	}
-	
-	ANOMALIES_it It = std::find(m_AnomaliesPermanent.begin(), m_AnomaliesPermanent.end(),E->name_replace());
-	if (It != m_AnomaliesPermanent.end())
-	{
-		return TRUE;
-	};
-
-	for (u32 j=0; j<m_AnomalySetsList.size(); j++)
-	{
-		ANOMALIES* Anomalies = &(m_AnomalySetsList[j]);
-		ANOMALIES_it It = std::find(Anomalies->begin(), Anomalies->end(),E->name_replace());
-		if (It != Anomalies->end())
-		{
-			return TRUE;
-		};
-	};
-
-	return FALSE;*/
 }
 
 BOOL game_sv_Deathmatch::OnPreCreate(CSE_Abstract* E)
@@ -2237,8 +2138,10 @@ void game_sv_Deathmatch::WriteGameState(CInifile& ini, LPCSTR sect, bool bRoundR
 
 void game_sv_Deathmatch::FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject)
 {
-	R_ASSERT	(actor);
-	CActor*		pActor = smart_cast<CActor*>(Level().Objects.net_Find(actor->ID));
+	R_ASSERT(actor);
+
+	CObject* finded_object = Level().Objects.net_Find(actor->ID);
+	CActor*	pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	
 //	R_ASSERT2( pActor, make_string("Actor not found. actor_id = [%d]", actor->ID).c_str() );
 	VERIFY2  ( pActor, make_string<const char*>("Actor not found. actor_id = [%d]", actor->ID));

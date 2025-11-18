@@ -51,8 +51,10 @@ void CPsyDogAura::reinit()
 	m_time_actor_saw_phantom	= 0;
 	m_time_phantom_saw_actor	= 0;
 
-	m_actor						= smart_cast<CActor *>(Level().CurrentEntity());
-	VERIFY						(m_actor);
+	CObject* current_entity = Level().CurrentEntity();
+
+	m_actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+	VERIFY(m_actor);
 }
 
 void CPsyDogAura::update_schedule()

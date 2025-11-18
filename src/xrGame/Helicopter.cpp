@@ -147,15 +147,15 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 
 	CPHSkeleton::Spawn((CSE_Abstract*)(DC));
 	for(u32 i=0; i<4; ++i)
-		CRocketLauncher::SpawnRocket(*m_sRocketSection, smart_cast<CGameObject*>(this));
+		CRocketLauncher::SpawnRocket(*m_sRocketSection, cast_game_object());
 
 	// assigning m_animator here
 	CSE_Abstract		*abstract	=(CSE_Abstract*)(DC);
 	CSE_ALifeHelicopter	*heli		= smart_cast<CSE_ALifeHelicopter*>(abstract);
 	VERIFY				(heli);
 
-	R_ASSERT						(Visual()&&smart_cast<IKinematics*>(Visual()));
-	IKinematics* K					= smart_cast<IKinematics*>(Visual());
+	R_ASSERT						(Visual()&&PKinematics(Visual()));
+	IKinematics* K					= PKinematics(Visual());
 	CInifile* pUserData				= K->LL_UserData();
 
 	m_rotate_x_bone			= K->LL_BoneID	(pUserData->r_string("helicopter_definition","wpn_rotate_x_bone"));
@@ -185,9 +185,9 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 		}
 	}
 	
-	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= PKinematics(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
 	biX.set_callback		(bctCustom,BoneMGunCallbackX,this);
-	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= PKinematics(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
 	biY.set_callback		(bctCustom,BoneMGunCallbackY,this);
 	CBoneData& bdX			= K->LL_GetData(m_rotate_x_bone); VERIFY(bdX.IK_data.type==jtJoint);
 	m_lim_x_rot.set			(bdX.IK_data.limits[0].limit.x,bdX.IK_data.limits[0].limit.y);
@@ -203,7 +203,7 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	m_bind_x.set			(matrices[m_rotate_x_bone].c);
 	m_bind_y.set			(matrices[m_rotate_y_bone].c);
 	
-	IKinematicsAnimated	*A	= smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated	*A	= Visual()->dcast_PKinematicsAnimated();
 	if (A) {
 		A->PlayCycle		(*heli->startup_animation);
 		K->CalculateBones	(TRUE);
@@ -377,7 +377,7 @@ void CHelicopter::UpdateCL()
 
 		PPhysicsShell()->InterpolateGlobalTransform(&XFORM());
 
-		IKinematics* K		= smart_cast<IKinematics*>(Visual());
+		IKinematics* K		= PKinematics(Visual());
 		K->CalculateBones	();
 		//smoke
 		UpdateHeliParticles();
@@ -422,7 +422,7 @@ void CHelicopter::UpdateCL()
 	UpdateWeapons();
 	UpdateHeliParticles();
 
-	IKinematics* K		= smart_cast<IKinematics*>(Visual());
+	IKinematics* K		= PKinematics(Visual());
 	K->CalculateBones	();
 }
 

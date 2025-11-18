@@ -10,6 +10,9 @@ class	CUIGameCustom;
 class	CUI;
 class	CUIDialogWnd;
 
+class game_cl_freemp;
+class game_cl_CaptureTheArtefact;
+
 struct SZoneMapEntityData{
 	Fvector	pos;
 	u32		color;
@@ -18,9 +21,9 @@ struct SZoneMapEntityData{
 
 struct WeaponUsageStatistic;
 
-class	game_cl_GameState	: public game_GameState, public ISheduled
+class game_cl_GameState	: public game_GameState, public ISheduled
 {
-	typedef game_GameState	inherited;
+	using inherited = game_GameState;
 	shared_str							m_game_type_name;
 protected:
 	CUIGameCustom*						m_game_ui_custom;
@@ -120,4 +123,12 @@ public:
 	virtual		bool				IsPlayerInTeam			(game_PlayerState* ps, ETeam team) {return ps->team == team;};
 	virtual		void				OnConnected				();
 	virtual		void				OnScreenResolutionChanged() {};
+
+	virtual game_cl_Single* cast_game_cl_single() override { return nullptr; }
+	virtual game_cl_mp* cast_game_cl_mp() override { return nullptr; }
+	virtual game_cl_freemp* cast_game_cl_freemp() override { return nullptr; }
+	virtual game_cl_CaptureTheArtefact* cast_game_cl_capturetheartefact() override { return nullptr; }
+	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return nullptr; }
+	virtual game_cl_ArtefactHunt* cast_game_cl_artefacthunt() override { return nullptr; }
+	virtual game_cl_TeamDeathmatch* cast_game_cl_teamdeathmatch() override { return nullptr; }
 };

@@ -179,15 +179,18 @@ LPCSTR CPhraseDialog::GetPhraseText	(const shared_str& phrase_id, bool current_s
 	//CPhrase*	ph = phrase_vertex->data();
 	CPhrase*	ph = GetPhrase(phrase_id);
 
-	CGameObject*	pSpeakerGO1 = (current_speaking)?smart_cast<CGameObject*>(FirstSpeaker()):nullptr;
-	CGameObject*	pSpeakerGO2 = (current_speaking)?smart_cast<CGameObject*>(SecondSpeaker()):nullptr;
-	CGameObject*	pSpeakerGO  = nullptr;
+	CGameObject* pSpeakerGO1 = (current_speaking) ? smart_cast<CGameObject*>(FirstSpeaker()) : nullptr;
+	CGameObject* pSpeakerGO2 = (current_speaking) ? smart_cast<CGameObject*>(SecondSpeaker()) : nullptr;
+	CGameObject* pSpeakerGO = nullptr;
 	
-	if( smart_cast<CActor*>(pSpeakerGO1) )
+	if(pSpeakerGO1 != nullptr && pSpeakerGO1->cast_actor() != nullptr)
 	{
 		pSpeakerGO = pSpeakerGO2;
-	}else
+	}
+	else
+	{
 		pSpeakerGO = pSpeakerGO1;
+	}
 
 	if(ph->m_script_text_id.length() > 0 )
 	{

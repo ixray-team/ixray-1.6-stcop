@@ -98,7 +98,7 @@ void CMonsterSquad::InformSquadAboutEnemy(CEntityAlive const * const enemy)
 								it	!=	m_goals.end();
 							  ++it )
 	{
-		CBaseMonster* monster	=	smart_cast<CBaseMonster*>(it->first);
+		CBaseMonster* monster	= it->first != nullptr ? it->first->cast_base_monster() : nullptr;
 
 		if ( monster )
 		{

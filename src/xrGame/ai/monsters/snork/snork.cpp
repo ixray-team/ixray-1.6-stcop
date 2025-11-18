@@ -349,8 +349,12 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
 #ifdef _DEBUG
 void CSnork::debug_on_key(int key)
 {
-	CActor *actor = smart_cast<CActor *>(Level().CurrentEntity());
-	if (!actor) return;
+	CObject* current_entity = Level().CurrentEntity();
+	CActor* actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+	if (actor == nullptr)
+	{
+		return;
+	}
 
 	switch (key){
 	case SDL_SCANCODE_1:

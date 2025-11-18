@@ -75,17 +75,23 @@ struct CEnemyFiller {
 	}
 };
 
-struct remove_wounded_predicate {
-	IC	bool	operator()						(const CMemberEnemy &enemy) const
+struct remove_wounded_predicate
+{
+	IC bool operator() (const CMemberEnemy& enemy) const
 	{
-		const CAI_Stalker			*stalker = smart_cast<const CAI_Stalker*>(enemy.m_object);
+		CEntityAlive* entity_alive = const_cast<CEntityAlive*>(enemy.m_object);
+		const CAI_Stalker* stalker = entity_alive != nullptr ? entity_alive->cast_stalker() : nullptr;
 		if (!stalker)
-			return					(false);
+		{
+			return false;
+		}
 
 		if (!stalker->wounded())
-			return					(false);
+		{
+			return false;
+		}
 
-		return						(true);
+		return true;
 	}
 };
 

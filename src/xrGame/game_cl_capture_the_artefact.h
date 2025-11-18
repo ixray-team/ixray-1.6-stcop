@@ -4,10 +4,10 @@
 #include "UIGameCTA.h"
 #include "game_cl_capture_the_artefact_captions_manager.h"
 /// This class describes the client part of "Capture The Artefact" game mode.
-class game_cl_CaptureTheArtefact	: public game_cl_mp
+class game_cl_CaptureTheArtefact final : public game_cl_mp
 {
 private:
-	typedef game_cl_mp inherited;
+	using inherited = game_cl_mp;
 	
 	CUIGameCTA * m_game_ui;
 
@@ -167,4 +167,7 @@ public:
 	virtual	void	OnConnected				();
 	s32				GetGreenTeamScore		() const { return greenTeamScore; };
 	s32				GetBlueTeamScore		() const { return blueTeamScore; };
+
+	virtual game_cl_CaptureTheArtefact* cast_game_cl_capturetheartefact() override { return this; }
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
 };

@@ -2,7 +2,7 @@
 #include "../basemonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CChimera : public CBaseMonster 
+class CChimera final : public CBaseMonster 
 {
 public:
 							CChimera					();
