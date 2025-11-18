@@ -29,7 +29,7 @@ void CPickUpManager::RenderInfo()
 
 void CPickUpManager::PickupInfoDraw(CObject* object)
 {
-	CInventoryItem* item = smart_cast<CInventoryItem*>(object);
+	CInventoryItem* item = object != nullptr ? object->cast_inventory_item() : nullptr;
 	if (!item)
 		return;
 
@@ -111,15 +111,38 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 
 			for (collide::rq_result result : RQR.r_results())
 			{
-				CGameObject* GO = smart_cast<CGameObject*>(result.O);
-				if(!GO) continue;
-				if(GO == Owner->cast_game_object()) continue;
-				if(GO->cast_inventory_item()) continue;
-				CEntity* entity = smart_cast<CEntity*>(GO);
-				if(entity && !entity->g_Alive()) continue;
+				CGameObject* GO = result.O != nullptr ? result.O->cast_game_object() : nullptr;
+				if (GO == nullptr)
+				{
+					continue;
+				}
+
+				if (GO == Owner->cast_game_object())
+				{
+					continue;
+				}
+
+				if (GO->cast_inventory_item())
+				{
+					continue;
+				}
+
+				CEntity* entity = GO->cast_entity();
+				if (entity != nullptr && !entity->g_Alive())
+				{
+					continue;
+				}
+
 				CDestroyablePhysicsObject* dstobj = smart_cast<CDestroyablePhysicsObject*>(GO);
-				if(dstobj && dstobj->HasChildPart()) continue;
-				if(GO->spawn_ini() && GO->spawn_ini()->section_exist("story_object")) continue;
+				if (dstobj != nullptr && dstobj->HasChildPart())
+				{
+					continue;
+				}
+
+				if (GO->spawn_ini() && GO->spawn_ini()->section_exist("story_object"))
+				{
+					continue;
+				}
 
 				return false;
 			}

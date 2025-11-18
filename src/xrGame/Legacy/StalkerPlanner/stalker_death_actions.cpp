@@ -37,7 +37,9 @@ bool CStalkerActionDead::fire			() const
 	if (object().inventory().TotalWeight() <= 0)
 		return							(false);
 	
-	CWeapon								*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
+	PIItem active_item = object().inventory().ActiveItem();
+
+	CWeapon								*weapon = active_item != nullptr ? active_item->cast_weapon() : nullptr;
 	if (!weapon)
 		return							(false);
 
@@ -71,8 +73,9 @@ void CStalkerActionDead::initialize		()
 	u16 active_slot						= object().inventory().GetActiveSlot();
 	if (active_slot == INV_SLOT_3) {
 		CInventoryItem*					item = object().inventory().ItemFromSlot(active_slot);
-		if (item) {
-			CWeaponMagazined*			weapon = smart_cast<CWeaponMagazined*>(item);
+		if (item)
+		{
+			CWeaponMagazined*			weapon = item->cast_weapon_magazined();
 			VERIFY						(weapon);
 			weapon->SetQueueSize		(weapon->GetAmmoElapsed() + weapon->GetAmmoChamberElapsed());
 		}

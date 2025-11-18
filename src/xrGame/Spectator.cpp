@@ -205,7 +205,7 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 		}break;
 	case kWPN_ZOOM:
 		{
-			game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
+			game_cl_mp* pMPGame = Game().cast_game_cl_mp();
 			if (!pMPGame) break;
 			game_PlayerState* PS = Game().local_player;
 			if (!Level().IsDemoPlay() && (!PS || PS->GameID != ID())) break;
@@ -269,7 +269,7 @@ void CSpectator::IR_OnKeyboardHold(int cmd)
 	if (g_pGamePersistent->GameType() & eGameIDFreeMP)
 		return;
 
-	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
+	game_cl_mp* pMPGame = Game().cast_game_cl_mp();
 	game_PlayerState* PS = Game().local_player;
 
 	if ((cam_active==eacFreeFly)||(cam_active==eacFreeLook)){
@@ -334,12 +334,12 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 	CActor*		pOldActor = nullptr;
 	if (pCurViewEntity)
 	{
-		pOldActor = smart_cast<CActor*>(pCurViewEntity);
+		pOldActor = pCurViewEntity->cast_actor();
 		if (pOldActor)
 		{
 			pOldActor->inventory().Items_SetCurrentEntityHud(false);
 		};
-		if (smart_cast<CSpectator*>(pCurViewEntity))
+		if (pCurViewEntity->cast_spectator() != nullptr)
 		{
 			Engine.Sheduler.Unregister	(pCurViewEntity);
 			Engine.Sheduler.Register	(pCurViewEntity, TRUE);
@@ -352,7 +352,7 @@ void CSpectator::FirstEye_ToPlayer(CObject* pObject)
 		Engine.Sheduler.Unregister	(pObject);
 		Engine.Sheduler.Register	(pObject, TRUE);
 
-		CActor* pActor = smart_cast<CActor*> (pObject);
+		CActor* pActor = pObject->cast_actor();
 		if (pActor)
 		{
 			pActor->inventory().Items_SetCurrentEntityHud(true);
@@ -486,7 +486,7 @@ BOOL			CSpectator::net_Spawn				( CSE_Abstract*	DC )
 	CSE_Abstract			*E	= (CSE_Abstract*)(DC);
 	if (!E) return FALSE;
 
-	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
+	game_cl_mp* pMPGame = Game().cast_game_cl_mp();
 	float tmp_roll = 0.f;
 	if (!pMPGame || pMPGame->Is_Spectator_Camera_Allowed(eacFreeFly))
 	{
@@ -532,7 +532,7 @@ bool			CSpectator::SelectNextPlayerToLook	(bool const search_next)
 	if (!PS) return false;
 	m_pActorToLookAt = nullptr;
 
-	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
+	game_cl_mp* pMPGame = Game().cast_game_cl_mp();
 
 	game_cl_GameState::PLAYERS_MAP_IT it = Game().players.begin(),
 		ite = Game().players.end();

@@ -131,7 +131,7 @@ const char* CUIStatsPlayerInfo::GetInfoByID(const char* id)
 			xr_strcpy(ans,"death");
 		else if (GameID() == eGameIDArtefactHunt)
 		{
-			game_cl_ArtefactHunt* pGameAHunt = smart_cast<game_cl_ArtefactHunt*>(&(Game()));
+			game_cl_ArtefactHunt* pGameAHunt = Game().cast_game_cl_artefacthunt();
 			R_ASSERT(pGameAHunt);
 			if (m_pPlayerInfo->GameID == pGameAHunt->artefactBearerID)
 				xr_strcpy(ans,"artefact");

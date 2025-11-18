@@ -111,7 +111,7 @@ void CTeamBaseZone::shedule_Update(u32 dt)
 
 void CTeamBaseZone::feel_touch_new	(CObject *tpObject)
 {
-	if(OnServer() && smart_cast<CActor*>(tpObject))
+	if(OnServer() && tpObject->cast_actor() != nullptr)
 	{
 		NET_Packet			P_;
 
@@ -125,7 +125,7 @@ void CTeamBaseZone::feel_touch_new	(CObject *tpObject)
 
 void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 {
-	if(OnServer() && smart_cast<CActor*>(tpObject))
+	if(OnServer() && tpObject->cast_actor() != nullptr)
 	{
 		NET_Packet			P_;
 		u_EventGen			(P_,GE_GAME_EVENT,ID()	);
@@ -138,7 +138,7 @@ void CTeamBaseZone::feel_touch_delete	(CObject *tpObject)
 
 BOOL CTeamBaseZone::feel_touch_contact	(CObject* O)
 {
-	CActor*	pActor = smart_cast<CActor*>(O);
+	CActor*	pActor = O->cast_actor();
 	if (!pActor) return (FALSE);
 	return ((CCF_Shape*)CFORM())->Contact(O);
 }

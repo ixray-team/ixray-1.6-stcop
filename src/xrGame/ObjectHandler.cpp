@@ -91,24 +91,26 @@ void CObjectHandler::OnItemTake		(CInventoryItem *inventory_item)
 	}
 }
 
-void CObjectHandler::OnItemDrop		(CInventoryItem *inventory_item, bool just_before_destroy)
+void CObjectHandler::OnItemDrop(CInventoryItem* inventory_item, bool just_before_destroy)
 {
-	inherited::OnItemDrop	(inventory_item, just_before_destroy);
+	inherited::OnItemDrop(inventory_item, just_before_destroy);
 
-	m_inventory_actual		= false;
-	
-	if (m_infinite_ammo && m_planner->GetOwner()->g_Alive() && !inventory_item->useful_for_NPC()) {
-		CWeaponAmmo				*weapon_ammo = smart_cast<CWeaponAmmo*>(inventory_item);
-		if (weapon_ammo) {
-			Level().spawn_item		(*weapon_ammo->cNameSect(),m_planner->GetOwner()->Position(),m_planner->GetOwner()->ai_location().level_vertex_id(),m_planner->GetOwner()->ID());
-			m_item_to_spawn			= weapon_ammo->cNameSect();
-			m_ammo_in_box_to_spawn	= weapon_ammo->m_boxSize;
+	m_inventory_actual = false;
+
+	if (m_infinite_ammo && m_planner->GetOwner()->g_Alive() && !inventory_item->useful_for_NPC())
+	{
+		CWeaponAmmo* weapon_ammo = inventory_item->cast_weapon_ammo();
+		if (weapon_ammo)
+		{
+			Level().spawn_item(*weapon_ammo->cNameSect(), m_planner->GetOwner()->Position(), m_planner->GetOwner()->ai_location().level_vertex_id(), m_planner->GetOwner()->ID());
+			m_item_to_spawn = weapon_ammo->cNameSect();
+			m_ammo_in_box_to_spawn = weapon_ammo->m_boxSize;
 		}
 	}
 
-	m_planner->RemoveObject		(inventory_item->cast_game_object());
+	m_planner->RemoveObject(inventory_item->cast_game_object());
 
-	switch_torch				(inventory_item,false);
+	switch_torch(inventory_item, false);
 }
 
 CInventoryItem *CObjectHandler::best_weapon() const
@@ -271,11 +273,13 @@ bool CObjectHandler::weapon_unstrapped	(CWeapon *weapon) const
 	return						(!weapon->strapped_mode());
 }
 
-IC	void CObjectHandler::switch_torch	(CInventoryItem *inventory_item, bool value)
+IC	void CObjectHandler::switch_torch(CInventoryItem* inventory_item, bool value)
 {
-	CTorch						*torch = smart_cast<CTorch*>(inventory_item);
-	if (torch && attached(torch) && m_planner->GetOwner()->g_Alive())
-		torch->Switch			(value);
+	CTorch* torch = inventory_item->cast_torch();
+	if (torch != nullptr && attached(torch) && m_planner->GetOwner()->g_Alive())
+	{
+		torch->Switch(value);
+	}
 }
 
 void CObjectHandler::attach				(CInventoryItem *inventory_item)

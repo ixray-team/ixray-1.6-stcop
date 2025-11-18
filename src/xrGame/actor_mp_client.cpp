@@ -51,7 +51,7 @@ void CActorMP::use_booster(NET_Packet &packet)
 		return;
 	}
 
-	CEatableItem* tmp_eatable = smart_cast<CEatableItem*>(tmp_booster);
+	CEatableItem* tmp_eatable = tmp_booster->cast_eatable_item();
 	VERIFY2(tmp_eatable, "using not eatable object");
 	if (!tmp_eatable)
 	{
