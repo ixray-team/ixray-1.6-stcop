@@ -205,27 +205,29 @@ void	CPhysicObject::SpawnInitPhysics	(CSE_Abstract* D)
 
 
 
-void CPhysicObject::RunStartupAnim(CSE_Abstract *D)
+void CPhysicObject::RunStartupAnim(CSE_Abstract* D)
 {
-	if(Visual()&&smart_cast<IKinematics*>(Visual()))
+	if (Visual() && PKinematics(Visual()))
 	{
-		//		CSE_PHSkeleton	*po	= smart_cast<CSE_PHSkeleton*>(D);
-		IKinematicsAnimated*	PKinematicsAnimated=nullptr;
-		R_ASSERT			(Visual()&&smart_cast<IKinematics*>(Visual()));
-		PKinematicsAnimated	=smart_cast<IKinematicsAnimated*>(Visual());
-		if(PKinematicsAnimated)
+		IKinematicsAnimated* PKinematicsAnimated = nullptr;
+		R_ASSERT(Visual() && PKinematics(Visual()));
+		PKinematicsAnimated = Visual()->dcast_PKinematicsAnimated();
+
+		if (PKinematicsAnimated)
 		{
-			CSE_Visual					*visual = smart_cast<CSE_Visual*>(D);
-			R_ASSERT					(visual);
-			R_ASSERT2					(*visual->startup_animation,"no startup animation");
-	
-			VERIFY2( (!!PKinematicsAnimated->LL_MotionID( visual->startup_animation.c_str() ) .valid() ) , (make_string<const char*>(" animation %s not faund ",visual->startup_animation.c_str() ) + dbg_object_base_dump_string( this )).c_str() );
-			m_anim_blend				= m_anim_script_callback.play_cycle( PKinematicsAnimated, visual->startup_animation );
+			CSE_Visual* visual = smart_cast<CSE_Visual*>(D);
+			R_ASSERT(visual);
+			R_ASSERT2(*visual->startup_animation, "no startup animation");
+
+			VERIFY2((!!PKinematicsAnimated->LL_MotionID(visual->startup_animation.c_str()).valid()), (make_string<const char*>(" animation %s not faund ", visual->startup_animation.c_str()) + dbg_object_base_dump_string(this)).c_str());
+			m_anim_blend = m_anim_script_callback.play_cycle(PKinematicsAnimated, visual->startup_animation);
 		}
-		smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
-		smart_cast<IKinematics*>(Visual())->CalculateBones	(TRUE);
+
+		PKinematics(Visual())->CalculateBones_Invalidate();
+		PKinematics(Visual())->CalculateBones(TRUE);
 	}
 }
+
 IC	bool check_blend(CBlend * b, LPCSTR name, LPCSTR sect, LPCSTR visual)
 {
 #ifdef	DEBUG
@@ -278,7 +280,7 @@ void	CPhysicObject::		anim_time_set					( float time )
 		return;
 	}
 	m_anim_blend->timeCurrent = time;
-	IKinematics *K = smart_cast<IKinematics*>(Visual());
+	IKinematics *K = PKinematics(Visual());
 	VERIFY( K );
 	K->CalculateBones_Invalidate();
 	K->CalculateBones(TRUE);
@@ -316,7 +318,7 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 	LPCSTR	fixed_bones=*po->fixed_bones;
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive),fixed_bones);
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,fixed_bones[0]!='\0');
-	ApplySpawnIniToPhysicShell(smart_cast<IKinematics*>(Visual())->LL_UserData(),m_pPhysicsShell,fixed_bones[0]!='\0');
+	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,fixed_bones[0]!='\0');
 }
 
 void CPhysicObject::Load(LPCSTR section)
@@ -404,7 +406,7 @@ void CPhysicObject::PHObjectPositionUpdate	()
 
 void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 {
-	IKinematics* K		= smart_cast<IKinematics*>(Visual());
+	IKinematics* K		= PKinematics(Visual());
 
 	CPhysicsElement* E	= P_create_Element();
 	CBoneInstance& B	= K->LL_GetBoneInstance(u16(id));
@@ -444,7 +446,7 @@ void CPhysicObject::AddElement(CPhysicsElement* root_e, int id)
 void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po) {
 
 	if(m_pPhysicsShell) return;
-	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
+	IKinematics* pKinematics= PKinematics(Visual());
 	switch(m_type) {
 		case epotBox : {
 			m_pPhysicsShell=P_build_SimpleShell(this,m_mass,!po->_flags.test(CSE_ALifeObjectPhysic::flActive));

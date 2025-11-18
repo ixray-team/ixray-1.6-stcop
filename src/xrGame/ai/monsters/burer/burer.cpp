@@ -332,8 +332,10 @@ void CBurer::UpdateGraviObject()
 	float trace_dist = float(m_gravi.step);
 
 	collide::rq_result	l_rq;
-	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr)) {
-		const CObject *enemy = smart_cast<const CObject *>(m_gravi_object.enemy);
+	if (Level().ObjectSpace.RayPick(new_pos, dir, trace_dist, collide::rqtBoth, l_rq, nullptr))
+	{
+		CEntityAlive* casted_enemy = const_cast<CEntityAlive*>(m_gravi_object.enemy);
+		const CObject *enemy = casted_enemy->dcast_CObject();
 		if ((l_rq.O == enemy) && (l_rq.range < trace_dist)) {
 			
 			// check for visibility
@@ -385,8 +387,9 @@ void CBurer::UpdateGraviObject()
 	Level().ObjectSpace.GetNearest	(m_nearest,m_gravi_object.cur_pos, m_gravi.radius, nullptr); 
 	//xr_vector<CObject*> &m_nearest = Level().ObjectSpace.q_nearest;
 
-	for (u32 i=0;i<m_nearest.size();i++) {
-		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
+	for (u32 i=0;i<m_nearest.size();i++)
+	{
+		CPhysicsShellHolder  *obj = m_nearest[i]->cast_physics_shell_holder();
 		if (!obj || !obj->m_pPhysicsShell) continue;
 		
 		Fvector dir_;
@@ -486,19 +489,21 @@ void CBurer::UpdateCL()
 	//	control().activate(ControlCom::eComCustom1);
 }
 
-void CBurer::StartGraviPrepare() 
+void CBurer::StartGraviPrepare()
 {
-	const CEntityAlive *enemy = EnemyMan.get_enemy();
-	if (!enemy) return;
-	
-	CActor *pA									=	const_cast<CActor *>(smart_cast<const CActor*>(enemy));
-	if (!pA) return;
+	const CEntityAlive* enemy = EnemyMan.get_enemy();
+	if (!enemy)
+		return;
+
+	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
+
+	CActor* pA = cast_enemy->cast_actor();
+	if (!pA)
+		return;
 
 	if (IsGameTypeSingle())
 	{
-		pA->CParticlesPlayer::StartParticles			(particle_gravi_prepare,
-			Fvector().set(0.0f, 0.1f, 0.0f),
-			pA->ID());
+		pA->CParticlesPlayer::StartParticles(particle_gravi_prepare, Fvector().set(0.0f, 0.1f, 0.0f), pA->ID());
 	}
 	else
 	{
@@ -509,21 +514,27 @@ void CBurer::StartGraviPrepare()
 		Level().Server->SendBroadcast(BroadcastCID, tmp_packet, net_flags(TRUE, TRUE));
 	}
 }
-void CBurer::StopGraviPrepare() 
+
+void CBurer::StopGraviPrepare()
 {
 	if (IsGameTypeSingle())
 	{
-		CActor *pA = Actor();
-		if ( !pA ) return;
-		pA->CParticlesPlayer::StopParticles				(particle_gravi_prepare, BI_NONE, true);
+		CActor* pA = Actor();
+		if (!pA)
+			return;
+		pA->CParticlesPlayer::StopParticles(particle_gravi_prepare, BI_NONE, true);
 	}
 	else
 	{
 		const CEntityAlive* enemy = m_gravi_object.enemy;
-		if (!enemy) return;
+		if (!enemy)
+			return;
 
-		CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(enemy));
-		if (!pA) return;
+		CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
+
+		CActor* pA = cast_enemy->cast_actor();
+		if (!pA)
+			return;
 
 		NET_Packet	tmp_packet;
 		CGameObject::u_EventGen(tmp_packet, GE_BURER_GRAVI_PARTICLES, ID());
@@ -535,7 +546,7 @@ void CBurer::StopGraviPrepare()
 
 void CBurer::StartTeleObjectParticle(CGameObject *pO) 
 {
-	CParticlesPlayer* PP						=	smart_cast<CParticlesPlayer*>(pO);
+	CParticlesPlayer* PP = pO != nullptr ? pO->cast_particles_player() : nullptr;
 	if(!PP) return;
 	PP->StartParticles								(particle_tele_object,
 													 Fvector().set(0.0f, 0.1f, 0.0f),
@@ -544,7 +555,7 @@ void CBurer::StartTeleObjectParticle(CGameObject *pO)
 
 void CBurer::StopTeleObjectParticle(CGameObject *pO) 
 {
-	CParticlesPlayer* PP						=	smart_cast<CParticlesPlayer*>(pO);
+	CParticlesPlayer* PP = pO != nullptr ? pO->cast_particles_player() : nullptr;
 	if(!PP) return;
 	PP->StopParticles								(particle_tele_object, BI_NONE, true);
 }
@@ -621,7 +632,7 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 		if (!obj)
 			break;
 
-		CActor* pA = const_cast<CActor*>(smart_cast<const CActor*>(obj));
+		CActor* pA = obj->cast_actor();
 		if (!pA)
 			break;
 
@@ -650,7 +661,7 @@ void CBurer::OnEvent(NET_Packet& P, u16 type)
 		if (!obj)
 			break;
 
-		CEntityAlive* entity = smart_cast<CEntityAlive*>(obj);
+		CEntityAlive* entity = obj->cast_entity_alive();
 		if (!entity)
 			break;
 
@@ -757,8 +768,11 @@ bool actor_is_reloading_weapon() {
 		return false;
 	}
 
-	CWeapon* const active_weapon = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
-	if(active_weapon && active_weapon->GetState() == CWeapon::eReload) {
+	PIItem active_item = pActor->inventory().ActiveItem();
+
+	CWeapon* const active_weapon = active_item != nullptr ? active_item->cast_weapon() : nullptr;
+	if (active_weapon && active_weapon->GetState() == CWeapon::eReload)
+	{
 		return true;
 	}
 

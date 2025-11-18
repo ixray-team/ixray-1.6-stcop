@@ -149,7 +149,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 	R_ASSERT(m_pInventory == IO->m_inventory);
 	R_ASSERT(object().H_Parent()->ID() == entity_alive->ID());
 
-	CActor* actor = smart_cast<CActor*>(IO);
+	CActor* actor = IO->cast_actor();
 
 	bool use_animator = m_sUseAnimator.size() > 0;
 

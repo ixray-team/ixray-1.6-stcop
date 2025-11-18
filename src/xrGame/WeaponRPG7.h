@@ -29,6 +29,7 @@ public:
 	virtual void net_Import			( NET_Packet& P);				// import from server
 
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return this; }
+	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 	bool CheckRLMisfireRocket();
 
