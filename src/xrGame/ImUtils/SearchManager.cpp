@@ -111,7 +111,7 @@ void RenderSearchManagerWindow()
 
 							if (imgui_search_manager.valid(pObject->CLS_ID))
 							{
-								CGameObject* pCasted = smart_cast<CGameObject*>(pObject);
+								CGameObject* pCasted = pObject->cast_game_object();
 								bool passed_filter{ true };
 								if (filter_string_size)
 								{
@@ -131,7 +131,7 @@ void RenderSearchManagerWindow()
 								{
 									if (imgui_search_manager.show_alive_creatures)
 									{
-										CEntity* pEntity = smart_cast<CEntity*>(pCasted);
+										CEntity* pEntity = pCasted->cast_entity();
 
 										if (pEntity)
 										{
@@ -163,7 +163,7 @@ void RenderSearchManagerWindow()
 
 									if (ImGui::Button(name.c_str()))
 									{
-										CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+										CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
 										if (pActor)
 										{
@@ -208,7 +208,7 @@ void RenderSearchManagerWindow()
 							if (real_count >= supposed_to_be_displayed)
 								break;
 
-							auto* pObject = Level().Objects.o_get_by_iterator(i);
+							CObject* pObject = Level().Objects.o_get_by_iterator(i);
 
 							if (pObject && pObject->H_Parent() == nullptr)
 							{
@@ -217,14 +217,14 @@ void RenderSearchManagerWindow()
 
 								if (imgui_search_manager.valid(pObject->CLS_ID))
 								{
-									CGameObject* pCasted = smart_cast<CGameObject*>(pObject);
+									CGameObject* pCasted = pObject->cast_game_object();
 									bool passed_filter = true;
 
 									if (pCasted)
 									{
 										if (imgui_search_manager.show_alive_creatures)
 										{
-											CEntity* pEntity = smart_cast<CEntity*>(pCasted);
+											CEntity* pEntity = pCasted->cast_entity();
 
 											if (pEntity)
 											{
@@ -257,7 +257,7 @@ void RenderSearchManagerWindow()
 
 										if (ImGui::Button(name.c_str()))
 										{
-											CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
 											if (pActor)
 											{
@@ -373,7 +373,7 @@ void RenderSearchManagerWindow()
 									{
 										if (ImGui::Button(button_name))
 										{
-											CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
 											if (pActor)
 											{
@@ -427,7 +427,7 @@ void RenderSearchManagerWindow()
 
 										if (ImGui::Button(button_name))
 										{
-											CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+											CActor* pActor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 
 											if (pActor)
 											{

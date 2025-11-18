@@ -3,13 +3,13 @@
 
 class CUIGameAHunt;
 
-class game_cl_ArtefactHunt :public game_cl_TeamDeathmatch
+class game_cl_ArtefactHunt final : public game_cl_TeamDeathmatch
 {
 	friend class CUIMessagesWindow;
 	CUIGameAHunt*						m_game_ui;	
 	shared_str							m_Eff_Af_Spawn;
 	shared_str							m_Eff_Af_Disappear;
-	typedef game_cl_TeamDeathmatch inherited;
+	using inherited = game_cl_TeamDeathmatch;
 
 protected:
 	virtual const shared_str			GetBaseCostSect			() {return "artefacthunt_base_cost";}
@@ -55,4 +55,8 @@ public :
 	virtual			void				OnDestroy				(CObject* pObj);	
 	virtual			void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
 	virtual		void					OnConnected				();
+
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
+	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return this; }
+	virtual game_cl_ArtefactHunt* cast_game_cl_artefacthunt() override { return this; }
 };

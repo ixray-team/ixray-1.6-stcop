@@ -68,6 +68,7 @@ public:
 	virtual CCustomZone* cast_custom_zone() {return this;}
 	virtual CSpaceRestrictor* cast_restrictor() {return this;}
 	virtual CGameObject* cast_game_object() { return this; }
+	virtual CRadioactiveZone* cast_radioactive_zone() override { return nullptr; }
 
 	//различные состояния в которых может находиться зона
 	typedef enum {
