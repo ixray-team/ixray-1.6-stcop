@@ -159,6 +159,13 @@ void CUIWindow::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
 
+#ifdef DEBUG_DRAW
+	if (IsShown())
+	{
+		UI().LastFrameWidgets.emplace(this);
+	}
+#endif
+
 	for (CUIWindow* W : m_ChildWndList)
 	{
 		if (!W)		continue;
@@ -166,8 +173,10 @@ void CUIWindow::Draw()
 		if (W->GetCustomDraw())	continue;
 		W->Draw();
 	}
+
 #ifdef DEBUG
-	if (g_show_wnd_rect2) {
+	if (g_show_wnd_rect2)
+	{
 		Frect r;
 		GetAbsoluteRect(r);
 		add_rect_to_draw(r);
