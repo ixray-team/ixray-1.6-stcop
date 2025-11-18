@@ -59,7 +59,7 @@ void CInfoDocument::OnH_A_Chield()
 	
 	//передать информацию содержащуюся в документе
 	//объекту, который поднял документ
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
+	CInventoryOwner* pInvOwner = H_Parent() != nullptr ? H_Parent()->cast_inventory_owner() : nullptr;
 	if(!pInvOwner) return;
 	
 	//создать и отправить пакет о получении новой информации

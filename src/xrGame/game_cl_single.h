@@ -2,9 +2,9 @@
 #include "game_cl_base.h"
 #include "../xrScripts/script_export_space.h"
 
-class game_cl_Single :public game_cl_GameState
+class game_cl_Single final : public game_cl_GameState
 {
-	typedef game_cl_GameState	inherited;
+	using inherited = game_cl_GameState;
 public :
 										game_cl_Single			();
 	virtual		CUIGameCustom*			createGameUI			();
@@ -19,6 +19,8 @@ public :
 	virtual		ALife::_TIME_ID		GetEnvironmentGameTime		();
 	virtual		float				GetEnvironmentGameTimeFactor();
 	virtual		void				SetEnvironmentGameTimeFactor(const float fTimeFactor);
+
+	virtual game_cl_Single* cast_game_cl_single() override { return this; }
 
 	void		OnDifficultyChanged		();
 };

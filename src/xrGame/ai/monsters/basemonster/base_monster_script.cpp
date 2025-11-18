@@ -119,7 +119,7 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 	if (l_tMovementAction.m_bCompleted)	return(false);
 
 	// check if alive
-	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(this);
+	CEntityAlive *entity_alive = cast_entity_alive();
 	if (entity_alive && !entity_alive->g_Alive()) {
 		l_tMovementAction.m_bCompleted = true;
 		return				(false);
@@ -157,7 +157,7 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 	switch (l_tMovementAction.m_tGoalType) {
 		
 		case CScriptMovementAction::eGoalTypeObject : {
-			CGameObject		*l_tpGameObject = smart_cast<CGameObject*>(l_tMovementAction.m_tpObjectToGo);
+			CGameObject		*l_tpGameObject = l_tMovementAction.m_tpObjectToGo != nullptr ? l_tMovementAction.m_tpObjectToGo->cast_game_object() : nullptr;
 		
 			if ( AssignGamePathIfNeeded(Fvector().set(0.f, 0.f, 0.f), l_tpGameObject->ai_location().level_vertex_id()) )
 				break;
@@ -188,17 +188,15 @@ bool CBaseMonster::bfAssignMovement (CScriptEntityAction *tpEntityAction)
 
 		case CScriptMovementAction::eGoalTypeFollowLeader:
 		{
-			CSE_ALifeMonsterAbstract* const i_am 
-						=	smart_cast<CSE_ALifeMonsterAbstract*>( ai().alife().objects().object(ID()) );
-			VERIFY								(i_am);
-			CSE_ALifeOnlineOfflineGroup& group	
-											=	ai().alife().groups().object(i_am->m_group_id);
+			CSE_ALifeDynamicObject* alife_object = ai().alife().objects().object(ID());
+			CSE_ALifeMonsterAbstract* const i_am = alife_object != nullptr ? alife_object->cast_monster_abstract() : nullptr;
+			VERIFY(i_am);
+			CSE_ALifeOnlineOfflineGroup& group = ai().alife().groups().object(i_am->m_group_id);
 
-			ALife::_OBJECT_ID leader_id		=	group.commander_id();
-			bool const should_follow_leader	=	leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
-			CCustomMonster* const leader	=	should_follow_leader ? 
-												smart_cast<CCustomMonster*>( Level().Objects.net_Find(leader_id) ) : 
-												nullptr;
+			ALife::_OBJECT_ID leader_id = group.commander_id();
+			bool const should_follow_leader = leader_id != (ALife::_OBJECT_ID)(-1) && leader_id != ID();
+			CObject* finded_item = Level().Objects.net_Find(leader_id);
+			CCustomMonster* const leader = should_follow_leader ? finded_item != nullptr ? finded_item->cast_custom_monster() : nullptr : nullptr;
 
 			if ( !should_follow_leader || !leader || (leader && !leader->GetScriptControl()) )
 			{
@@ -376,7 +374,7 @@ bool CBaseMonster::bfAssignMonsterAction(CScriptEntityAction *tpEntityAction)
 	CScriptMonsterAction	&l_tAction = tpEntityAction->m_tMonsterAction;	
 	if (l_tAction.completed()) return false;
 
-	CEntityAlive *pE = smart_cast<CEntityAlive *>(l_tAction.m_tObject);
+	CEntityAlive *pE = l_tAction.m_tObject != nullptr ? l_tAction.m_tObject->cast_entity_alive() : nullptr;
 
 	switch(l_tAction.m_tAction) {
 		case eGA_Rest:		
@@ -489,10 +487,13 @@ CEntity *CBaseMonster::GetCurrentEnemy()
 
 CEntity *CBaseMonster::GetCurrentCorpse()
 {
-	CEntity *corpse = 0;
+	CEntity* corpse = nullptr;
 
 	if (CorpseMan.get_corpse()) 
-		corpse = const_cast<CEntity *>(smart_cast<const CEntity*>(CorpseMan.get_corpse()));
+	{
+		CEntityAlive* alive = const_cast<CEntityAlive*>(CorpseMan.get_corpse());
+		corpse = alive->cast_entity();
+	}
 
 	if (!corpse || corpse->getDestroy() || corpse->g_Alive()) corpse = 0;
 

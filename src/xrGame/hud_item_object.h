@@ -47,6 +47,7 @@ public:
 	virtual CBolt* cast_bolt() { return nullptr; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 	virtual CPhysicItem* cast_physics_item() { return this; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
 
 public:
 	virtual void		Load				(LPCSTR section);

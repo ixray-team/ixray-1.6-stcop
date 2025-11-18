@@ -23,7 +23,8 @@ protected:
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentReloadAnimation();
 
-	virtual CWeaponBM16* cast_weapon_bm16() { return this; }
+	virtual CWeaponBM16* cast_weapon_bm16() override { return this; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return this; }
 
 	virtual int GetMagCapacity() override { int size = m_iAmmoCountToReload; m_iAmmoCountToReload = iMagazineSize; return size; }
 

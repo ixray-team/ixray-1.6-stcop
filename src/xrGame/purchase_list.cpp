@@ -15,38 +15,36 @@
 
 static float min_deficit_factor = .3f;
 
-void CPurchaseList::process	(CInifile &ini_file, LPCSTR section, CInventoryOwner &owner)
+void CPurchaseList::process(CInifile& ini_file, LPCSTR section, CInventoryOwner& owner)
 {
 	owner.sell_useless_items();
 
-	m_deficits.clear		();
+	m_deficits.clear();
 
-	const CGameObject		&game_object = smart_cast<const CGameObject &>(owner);
-	CInifile::Sect			&S = ini_file.r_section(section);
-	CInifile::SectCIt		I = S.Data.begin();
-	CInifile::SectCIt		E = S.Data.end();
-	for ( ; I != E; ++I) {
-		if (!(*I).second.size())
+	const CGameObject& game_object = *owner.cast_game_object();
+
+	CInifile::Sect& S = ini_file.r_section(section);
+
+	for (const auto& sect : S.Data)
+	{
+		if (!sect.second.size())
 		{
-			Msg				("! PurchaseList : cannot handle lines in section without values! Section [%s], file [%s]", (*I).first.c_str(), ini_file.fname());
+			Msg("! PurchaseList : cannot handle lines in section without values! Section [%s], file [%s]", sect.first.c_str(), ini_file.fname());
 			continue;
 		}
-		if (!pSettings->section_exist((*I).first))
+
+		if (!pSettings->section_exist(sect.first))
 		{
-			Msg				("! Section [%s] doesn't exist! File [%s]", (*I).first.c_str(), ini_file.fname());
+			Msg("! Section [%s] doesn't exist! File [%s]", sect.first.c_str(), ini_file.fname());
 			continue;
 		}
-		string256			temp0, temp1;
 
-		LPCSTR count = _GetItem(*(*I).second, 0, temp0);
-		LPCSTR prob = _GetItemCount(*(*I).second) >= 2 ? _GetItem(*(*I).second, 1, temp1) : "1.0f";
+		string256 temp0 = {}, temp1 = {};
 
-		process				(
-			game_object,
-			(*I).first,
-			atoi(count),
-			(float)atof(prob)
-		);
+		LPCSTR count = _GetItem(*sect.second, 0, temp0);
+		LPCSTR prob = _GetItemCount(*sect.second) >= 2 ? _GetItem(*sect.second, 1, temp1) : "1.0f";
+
+		process(game_object, sect.first, atoi(count), (float)atof(prob));
 	}
 }
 

@@ -452,15 +452,17 @@ void loophole_fire::on_animation_end	()
 	m_firing					= !m_firing;
 }
 
-void loophole_fire::on_mark				()
+void loophole_fire::on_mark()
 {
-	CWeapon *best_weapon		= smart_cast<CWeapon *>(object().best_weapon());
-	if (!best_weapon)
+	CWeapon* best_weapon = object().best_weapon() != nullptr ? object().best_weapon()->cast_weapon() : nullptr;
+	if (best_weapon == nullptr)
+	{
 		return;
+	}
 
-	u32 const magazine_size		= best_weapon->GetAmmoMagSize();
-//	Msg							( "started firing: %d", magazine_size );
-	object().set_goal			(eObjectActionFireNoReload,object().best_weapon(), magazine_size, magazine_size);
+	u32 const magazine_size = best_weapon->GetAmmoMagSize();
+
+	object().set_goal(eObjectActionFireNoReload, object().best_weapon(), magazine_size, magazine_size);
 }
 
 void loophole_fire::on_no_mark			()

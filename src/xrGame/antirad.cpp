@@ -4,14 +4,17 @@
 ///////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "pch_script.h"
 #include "antirad.h"
-#include "../xrPhysics/PhysicsShell.h"
 
-CAntirad::CAntirad(void) 
-{
-}
+using namespace luabind;
 
-CAntirad::~CAntirad(void) 
+#pragma optimize("s",on)
+void CAntirad::script_register(lua_State* L)
 {
+	module(L)
+		[
+			class_<CAntirad, CGameObject>("CAntirad")
+				.def(constructor<>())
+		];
 }

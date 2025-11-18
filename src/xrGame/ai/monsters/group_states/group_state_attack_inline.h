@@ -110,7 +110,7 @@ void CStateGroupAttackAbstract::execute()
 	bool	can_attack_on_move	=	this->object->can_attack_on_move();
 	CEntityAlive* enemy	= const_cast<CEntityAlive*>(this->object->EnemyMan.get_enemy());
 
-	bool const enemy_is_actor	=	!!smart_cast<CActor*>(enemy);
+	bool const enemy_is_actor = enemy != nullptr && enemy->cast_actor() != nullptr;
 
 	const Fvector3 enemy_pos = enemy->Position();
 

@@ -2,7 +2,7 @@
 
 #include "script_object.h"
 
-class CFryupZone : public CScriptObject 
+class CFryupZone final : public CScriptObject 
 {
 	typedef	CScriptObject	inherited;
 

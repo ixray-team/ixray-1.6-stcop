@@ -62,13 +62,13 @@ ICF static BOOL GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 
 	if (result.O)
 	{
-		if (CCustomRocket* pRocket = smart_cast<CCustomRocket*>(result.O))
+		if (CCustomRocket* pRocket = result.O != nullptr ? result.O->cast_custom_rocket() : nullptr)
 		{
 			if (!pRocket->Useful())
 				return TRUE;
 		}
 
-		if (CMissile* pMissile = smart_cast<CMissile*>(result.O))
+		if (CMissile* pMissile = result.O != nullptr ? result.O->cast_missile() : nullptr)
 		{
 			if (!pMissile->Useful())
 				return TRUE;
@@ -231,11 +231,12 @@ void CCameraLook2::Update(Fvector& point, Fvector& noise_dangle)
 	vDirection.set					(mR.k);
 	vNormal.set						(mR.j);
 
-	CActor* pActor = smart_cast<CActor*>(parent);
-	if (pActor)
+	if (CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr)
 	{
-		CWeapon* pWeap = smart_cast<CWeapon*>(pActor->inventory().ActiveItem());
-		if(pWeap && pWeap->render_item_ui_query())
+		PIItem active_item = pActor->inventory().ActiveItem();
+		CWeapon* pWeap = active_item != nullptr ? active_item->cast_weapon() : nullptr;
+
+		if(pWeap != nullptr && pWeap->render_item_ui_query())
 		{
 			static Fvector cam_spr_vel = zero_vel;
 			vPosition.spring_inertion(point, cam_spr_vel, Device.fTimeDelta, 200.f, 20.f);

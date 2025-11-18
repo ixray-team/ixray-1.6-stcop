@@ -70,7 +70,7 @@ protected:
 	shared_str		m_sTeleParticlesSmall;
 };
 
-class CGraviZone	: public CBaseGraviZone
+class CGraviZone final : public CBaseGraviZone
 {
 	typedef		CBaseGraviZone				inherited;
 	CTelekinesis m_telekinesis;

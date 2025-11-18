@@ -54,7 +54,7 @@ void CUIGameFMP::Init(int stage)
 void CUIGameFMP::SetClGame(game_cl_GameState* g)
 {
 	inherited::SetClGame(g);
-	m_game = smart_cast<game_cl_freemp*>(g);
+	m_game = g->cast_game_cl_freemp();
 	R_ASSERT(m_game);
 }
 
@@ -63,13 +63,15 @@ bool CUIGameFMP::IR_UIOnKeyboardPress(int dik)
 	if (inherited::IR_UIOnKeyboardPress(dik)) return true;
 	if (Device.Paused()) return false;
 
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if (!pInvOwner)			return false;
 
-	CEntityAlive* EA = smart_cast<CEntityAlive*>(Level().CurrentEntity());
+	CEntityAlive* EA = current_entity != nullptr ? current_entity->cast_entity_alive() : nullptr;
 	if (!EA || !EA->g_Alive())	return false;
 
-	CActor* pActor = smart_cast<CActor*>(pInvOwner);
+	CActor* pActor = pInvOwner != nullptr ? pInvOwner->cast_actor() : nullptr;
 	if (!pActor)
 		return false;
 

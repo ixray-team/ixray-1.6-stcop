@@ -82,9 +82,9 @@ void type_motion_diagnostic( LPCSTR message, type_motion::edirection dr, const C
 	if(! death_anim_debug )
 		return;
 	
-	IKinematicsAnimated *KA = smart_cast<IKinematicsAnimated*>( ea.Visual() );
+	IKinematicsAnimated *KA = ea.Visual()->dcast_PKinematicsAnimated();
 	VERIFY( KA );
-	IKinematics *K  = smart_cast<IKinematics*>( ea.Visual() );
+	IKinematics *K  = PKinematics( ea.Visual() );
 	LPCSTR bone_name = "not_definite";
 	if( H.bone() != BI_NONE )
 	{
@@ -165,28 +165,38 @@ class	type_motion1: public type_motion
 };
 
 //3.	Шотган 
-class	type_motion2: public type_motion
+class	type_motion2 : public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const	
+	bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const
 	{
 		m = MotionID();
-		if( H.initiator() !=  Level().CurrentControlEntity())
-		return false;
-		
-		CObject* O = Level().Objects.net_Find( H.weaponID );
-		if(!O)
+		if (H.initiator() != Level().CurrentControlEntity())
+		{
 			return false;
-		//static_cast<CGameObject*>(O)->cast_weapon()
-		CWeaponShotgun* s = smart_cast< CWeaponShotgun* >( static_cast<CGameObject*>(O) );
-		if(!s)
+		}
+
+		CObject* O = Level().Objects.net_Find(H.weaponID);
+		if (O == nullptr)
+		{
 			return false;
-		Fvector p;
-		const	float max_distance = 20.f;
-		if(Fvector().sub(H.initiator()->Position(),global_hit_position( p, ea, H )).magnitude() > max_distance)
+		}
+
+		CWeaponShotgun* s = O->cast_weapon_shotgun();
+		if (s == nullptr)
+		{
 			return false;
-		edirection dr = dir( ea, H, angle );
-		m = motion( dr );
-		type_motion_diagnostic( " type_motion2: 3.	Шотган ", dr, ea, H, m );
+		}
+
+		Fvector p = zero_vel;
+		const float max_distance = 20.f;
+		if (Fvector().sub(H.initiator()->Position(), global_hit_position(p, ea, H)).magnitude() > max_distance)
+		{
+			return false;
+		}
+
+		edirection dr = dir(ea, H, angle);
+		m = motion(dr);
+		type_motion_diagnostic(" type_motion2: 3.	Шотган ", dr, ea, H, m);
 		return true;
 	}
 };
@@ -213,21 +223,30 @@ class	type_motion3: public type_motion
 	}
 };
 
-bool is_snipper( u16 weaponID )
+bool is_snipper(u16 weaponID)
 {
-	CObject* O = Level().Objects.net_Find( weaponID );
-	if(!O)
+	CObject* O = Level().Objects.net_Find(weaponID);
+	if (O == nullptr)
+	{
 		return false;
-	CWeaponMagazined* WM = smart_cast<CWeaponMagazined*>( O );
-	if(!WM )
+	}
+
+	CWeaponMagazined* WM = O->cast_weapon_magazined();
+	if (WM == nullptr)
+	{
 		return false;
-	if( !WM->IsZoomed() )
+	}
+
+	if (!WM->IsZoomed())
+	{
 		return false;
-	//if( !WM->SingleShotMode() )
-		//return false;
-	if( !WM->IsScopeAttached() )
+	}
+
+	if (!WM->IsScopeAttached())
+	{
 		return false;
-	
+	}
+
 	return true;
 }
 
@@ -279,35 +298,35 @@ class	type_motion5: public type_motion
 	}
 };
 
-//7.	Гранта 
-class	type_motion6: public type_motion
+//7. Граната
+class	type_motion6 : public type_motion
 {
-	bool predicate( CEntityAlive& ea, const SHit& H, MotionID &m, float &angle ) const	
+	bool predicate(CEntityAlive& ea, const SHit& H, MotionID& m, float& angle) const
 	{
-		
-		if( H.initiator() !=  Level().CurrentControlEntity())
+
+		if (H.initiator() != Level().CurrentControlEntity())
 			return false;
 
-		if(H.type() == ALife::eHitTypeExplosion)
+		if (H.type() == ALife::eHitTypeExplosion)
 		{
-			edirection dr = dir( ea, H, angle );
-			m = motion( dr );
-			type_motion_diagnostic( "type_motion6: 7. Гранта", dr, ea, H, m );
+			edirection dr = dir(ea, H, angle);
+			m = motion(dr);
+			type_motion_diagnostic("type_motion6: 7. Гранта", dr, ea, H, m);
 			return true;
 		}
 
-		CObject* O = Level().Objects.net_Find( H.weaponID );
-		if(!O)
+		CObject* O = Level().Objects.net_Find(H.weaponID);
+		if (!O)
 		{
 			m = MotionID();
 			return false;
 		}
 
-		if( smart_cast<CExplosive*>( O ) != 0 )
-		{	
-			edirection dr = dir( ea, H, angle );
-			m = motion(  dr );
-			type_motion_diagnostic( "type_motion6: 7. Гранта - осколок", dr, ea, H, m );
+		if (O->cast_explosive() != nullptr)
+		{
+			edirection dr = dir(ea, H, angle);
+			m = motion(dr);
+			type_motion_diagnostic("type_motion6: 7. Гранта - осколок", dr, ea, H, m);
 			return true;
 		}
 

@@ -2,10 +2,10 @@
 #include "CustomZone.h"
 #include "../xrScripts/script_export_space.h"
 
-class CRadioactiveZone : public CCustomZone
+class CRadioactiveZone final : public CCustomZone
 {
 private:
-	typedef	CCustomZone	inherited;
+	using inherited = CCustomZone;
 public:
 	CRadioactiveZone(void);
 	virtual ~CRadioactiveZone(void);
@@ -16,6 +16,8 @@ public:
 	virtual	void UpdateWorkload			(u32	dt	);				// related to fast-mode optimizations
 	virtual	BOOL feel_touch_contact		(CObject* O	);
 			float nearest_shape_radius	(SZoneObjectInfo* O);
+
+	virtual CRadioactiveZone* cast_radioactive_zone() override { return this; }
 
 			float fHitPower = 0;
 protected:
