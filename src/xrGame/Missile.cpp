@@ -191,7 +191,7 @@ void CMissile::spawn_fake_missile()
 			true
 		);
 
-		CSE_ALifeObject				*alife_object = smart_cast<CSE_ALifeObject*>(object);
+		CSE_ALifeObject* alife_object = object->cast_alife_object();
 		VERIFY						(alife_object);
 		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,FALSE);
 
@@ -725,7 +725,7 @@ void CMissile::activate_physic_shell()
 		if(m_pPhysicsShell&&m_pPhysicsShell->isActive()&&!IsGameTypeSingle())
 		{
 				m_pPhysicsShell->add_ObjectContactCallback		(ExitContactCallback);
-				m_pPhysicsShell->set_CallbackData	(smart_cast<CPhysicsShellHolder*>(H_Root()));
+				m_pPhysicsShell->set_CallbackData	(H_Root() != nullptr ? H_Root()->cast_physics_shell_holder() : nullptr);
 		}
 		return;
 	}
@@ -784,12 +784,14 @@ void CMissile::activate_physic_shell()
 	}
 	kinematics->CalculateBones			(TRUE);
 }
-void	CMissile::net_Relcase(CObject* O)
+void CMissile::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
-	if(PPhysicsShell()&&PPhysicsShell()->isActive())
+
+	if (PPhysicsShell() != nullptr && PPhysicsShell()->isActive())
 	{
-		if(O==smart_cast<CObject*>((CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData()))
+		CPhysicsShellHolder* callback_data = (CPhysicsShellHolder*)PPhysicsShell()->get_CallbackData();
+		if (callback_data != nullptr && O == callback_data->dcast_CObject())
 		{
 			PPhysicsShell()->remove_ObjectContactCallback(ExitContactCallback);
 			PPhysicsShell()->set_CallbackData(nullptr);
@@ -797,6 +799,7 @@ void	CMissile::net_Relcase(CObject* O)
 	}
 
 }
+
 void CMissile::create_physic_shell	()
 {
 	//create_box2sphere_physic_shell();
@@ -911,7 +914,7 @@ void CMissile::ExitContactCallback_Patch(dGeomID dxGeom)
 		float min_speed = contact_params.MinExplosionSpeed;
 		if (min_speed > 0.0f)
 		{
-			CPhysicsShellHolder* cpsh = smart_cast<CPhysicsShellHolder*>(grenade);
+			CPhysicsShellHolder* cpsh = grenade->cast_physics_shell_holder();
 			if (cpsh)
 			{
 				Fvector linear_vel = zero_vel;

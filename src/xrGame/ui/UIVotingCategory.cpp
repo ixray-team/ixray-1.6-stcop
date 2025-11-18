@@ -107,8 +107,6 @@ bool CUIVotingCategory::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 void CUIVotingCategory::OnBtn(int i)
 {
-//	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
-
 	//check buttons state, based on voting mask
 	u16 flag = 1<<(u16(i+1) & 0xff);
 	if (Game().IsVotingEnabled(flag))

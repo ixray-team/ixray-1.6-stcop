@@ -75,29 +75,31 @@ void CRadioactiveZone::Affect(SZoneObjectInfo* O)
 	}//while
 }
 
-void CRadioactiveZone::feel_touch_new					(CObject* O	)
+void CRadioactiveZone::feel_touch_new(CObject* O)
 {
 	inherited::feel_touch_new(O);
 	if (!IsGameTypeSingle())
 	{
-		if (smart_cast<CActor*>(O))
+		if (O->cast_actor() != nullptr)
 		{
-			CreateHit(O->ID(),ID(),Fvector().set(0, 0, 0),0.0f,BI_NONE,Fvector().set(0, 0, 0),0.0f,m_eHitTypeBlowout);// ALife::eHitTypeRadiation
+			CreateHit(O->ID(), ID(), zero_vel, 0.0f, BI_NONE, zero_vel, 0.0f, m_eHitTypeBlowout);
 		}
 	};
 };
 
-#include "Actor.h"
 BOOL CRadioactiveZone::feel_touch_contact(CObject* O)
 {
+	if (CActor* A = O != nullptr ? O->cast_actor() : nullptr)
+	{
+		if (!((CCF_Shape*)CFORM())->Contact(O))
+		{
+			return FALSE;
+		}
 
-	CActor* A = smart_cast<CActor*>(O);
-	if ( A )
-	{ 
-		if (!((CCF_Shape*)CFORM())->Contact(O))		return	FALSE;
-		return										A->feel_touch_on_contact(this);
-	}else
-		return										FALSE;
+		return A->feel_touch_on_contact(this);
+	}
+
+	return FALSE;
 }
 
 void CRadioactiveZone::UpdateWorkload					(u32	dt)

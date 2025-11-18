@@ -141,7 +141,22 @@ enum ETeam
 
 #pragma pack(pop)
 
-class	game_GameState : public DLL_Pure
+class game_cl_Single;
+class game_sv_Deathmatch;
+class game_sv_TeamDeathmatch;
+class game_sv_ArtefactHunt;
+class game_cl_mp;
+class game_cl_Deathmatch;
+class game_sv_CaptureTheArtefact;
+class game_cl_ArtefactHunt;
+class game_cl_TeamDeathmatch;
+class game_sv_mp;
+class game_cl_freemp;
+class game_cl_CaptureTheArtefact;
+class game_sv_Single;
+class game_sv_freemp;
+
+class game_GameState : public DLL_Pure
 {
 protected:
 	EGameIDs						m_type;
@@ -167,6 +182,22 @@ public:
 //for scripting enhancement
 	static		CLASS_ID			getCLASS_ID				(LPCSTR game_type_name, bool bServer);
 	virtual		game_PlayerState*	createPlayerState		(NET_Packet* account_info)		{return new game_PlayerState(account_info); };
+
+	virtual game_cl_Single* cast_game_cl_single() { return nullptr; }
+	virtual game_cl_mp* cast_game_cl_mp() { return nullptr; }
+	virtual game_cl_freemp* cast_game_cl_freemp() { return nullptr; }
+	virtual game_cl_CaptureTheArtefact* cast_game_cl_capturetheartefact() { return nullptr; }
+	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() { return nullptr; }
+	virtual game_cl_ArtefactHunt* cast_game_cl_artefacthunt() { return nullptr; }
+	virtual game_cl_TeamDeathmatch* cast_game_cl_teamdeathmatch() { return nullptr; }
+
+	virtual game_sv_mp* cast_game_sv_mp() { return nullptr; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() { return nullptr; }
+	virtual game_sv_TeamDeathmatch* cast_game_sv_teamdeathmatch() { return nullptr; }
+	virtual game_sv_ArtefactHunt* cast_game_sv_artefacthunt() { return nullptr; }
+	virtual game_sv_CaptureTheArtefact* cast_game_sv_capturetheartefact() { return nullptr; }
+	virtual game_sv_Single* cast_game_sv_single() { return nullptr; }
+	virtual game_sv_freemp* cast_game_sv_freemp() { return nullptr; }
 
 //moved from game_sv_base (time routines)
 private:

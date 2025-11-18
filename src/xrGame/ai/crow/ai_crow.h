@@ -13,7 +13,7 @@ class CMotionDef;
 class CBlend;
 class IKinematicsAnimated;
 
-class CAI_Crow : public CEntity
+class CAI_Crow final : public CEntity
 {
 	typedef	CEntity inherited;
 	enum ECrowStates 	{

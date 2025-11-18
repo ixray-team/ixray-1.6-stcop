@@ -59,7 +59,7 @@ BOOL CMincer::net_Spawn(CSE_Abstract* DC)
 	Center(C);
 	C.y+=m_fTeleHeight;
 	m_telekinetics.SetCenter(C);
-	m_telekinetics.SetOwnerObject(smart_cast<CGameObject*>(this));
+	m_telekinetics.SetOwnerObject(cast_game_object());
 	return result;
 }
 void CMincer::net_Destroy()
@@ -77,10 +77,11 @@ void CMincer::feel_touch_new				(CObject* O)
 		Telekinesis().activate(GO, m_fThrowInImpulse, m_fTeleHeight, 100000);
 	}
 }
-BOOL	CMincer::feel_touch_contact				(CObject* O)
+BOOL CMincer::feel_touch_contact(CObject* O)
 {
-	return inherited::feel_touch_contact(O)&&smart_cast<CPhysicsShellHolder *>(O);
+	return inherited::feel_touch_contact(O) && O->cast_physics_shell_holder() != nullptr;
 }
+
 void CMincer:: AffectThrow	(SZoneObjectInfo* O, CPhysicsShellHolder* GO,const Fvector& throw_in_dir,float dist)
 {
 	inherited::AffectThrow(O,GO,throw_in_dir,dist);
@@ -127,7 +128,7 @@ void CMincer::NotificateDestroy			(CPHDestroyableNotificate *dn)
 	//CObject* obj=Level().Objects.net_Find(id);
 	CPhysicsShellHolder* obj=dn->PPhysicsShellHolder();
 	m_telekinetics.draw_out_impact(dir,impulse);
-	CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(obj);
+	CParticlesPlayer* PP = obj != nullptr ? obj->cast_particles_player() : nullptr;
 	if(PP && *m_torn_particles)
 	{
 		PP->StartParticles(m_torn_particles,Fvector().set(0,1,0),ID());
@@ -145,7 +146,7 @@ void CMincer::AffectPullAlife(CEntityAlive* EA,const Fvector& throw_in_dir,float
 	float power = Power(dist, Radius());
 	//Fvector dir;
 	//dir.random_dir(throw_in_dir,2.f*M_PI);
-	if(!smart_cast<CActor*>(EA))
+	if (EA != nullptr && EA->cast_actor() == nullptr)
 	{
 		Fvector pos_in_bone_space;
 		pos_in_bone_space.set(0,0,0);
@@ -155,7 +156,7 @@ void CMincer::AffectPullAlife(CEntityAlive* EA,const Fvector& throw_in_dir,float
 
 }
 
-float CMincer::BlowoutRadiusPercent	(CPhysicsShellHolder* GO)
+float CMincer::BlowoutRadiusPercent(CPhysicsShellHolder* GO)
 {
-	return	(!smart_cast<CActor*>(GO)? m_fBlowoutRadiusPercent:m_fActorBlowoutRadiusPercent);
+	return GO != nullptr && GO->cast_actor() == nullptr ? m_fBlowoutRadiusPercent : m_fActorBlowoutRadiusPercent;
 }

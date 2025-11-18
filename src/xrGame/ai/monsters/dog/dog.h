@@ -4,7 +4,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CAI_Dog : public CBaseMonster, 
+class CAI_Dog final : public CBaseMonster, 
 				public CControlledEntity<CAI_Dog> {
 	
 	typedef		CBaseMonster				inherited;

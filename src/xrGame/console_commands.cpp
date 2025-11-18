@@ -211,7 +211,8 @@ public:
 			};
 			//#endif
 
-			game_cl_Single* game = smart_cast<game_cl_Single*>(Level().game); VERIFY(game);
+			game_cl_Single* game = Level().game->cast_game_cl_single();
+			VERIFY(game);
 			game->OnDifficultyChanged();
 		}
 	}
@@ -631,22 +632,6 @@ public:
 			return;
 		}
 
-		/*     moved to level_network_messages.cpp
-				CSavedGameWrapper			wrapper(args);
-				if (wrapper.level_id() == ai().level_graph().level_id()) {
-					if (Device.Paused())
-						Device.Pause		(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
-
-					Level().remove_objects	();
-
-					game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-					R_ASSERT				(game);
-					game->restart_simulator	(saved_game);
-
-					return;
-				}
-		*/
-
 		if (MainMenu()->IsActive())
 			MainMenu()->Activate(false);
 
@@ -859,8 +844,9 @@ public:
 class CCC_DumpInfos : public IConsole_Command {
 public:
 	CCC_DumpInfos(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(LPCSTR args) {
-		CActor* A = smart_cast<CActor*>(Level().CurrentEntity());
+	virtual void	Execute(LPCSTR args)
+	{
+		CActor* A = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (A)
 			A->DumpInfo();
 	}
@@ -872,8 +858,9 @@ public:
 class CCC_DumpTasks : public IConsole_Command {
 public:
 	CCC_DumpTasks(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void	Execute(LPCSTR args) {
-		CActor* A = smart_cast<CActor*>(Level().CurrentEntity());
+	virtual void	Execute(LPCSTR args)
+	{
+		CActor* A = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (A)
 			A->DumpTasks();
 	}
@@ -974,7 +961,7 @@ public:
 		_GetItem(args, 1, param2, ' ');
 
 		CObject* obj = Level().Objects.FindObjectByName(param1);
-		CBaseMonster* monster = smart_cast<CBaseMonster*>(obj);
+		CBaseMonster* monster = obj != nullptr ? obj->cast_base_monster() : nullptr;
 		if (!monster)	return;
 
 		u32				value2;
@@ -1109,26 +1096,6 @@ struct CCC_LuaHelp : public IConsole_Command {
 		print_help(ai().script_engine().lua());
 	}
 };
-
-/*
-struct CCC_NoClip : public CCC_Mask
-{
-public:
-	CCC_NoClip(LPCSTR N, Flags32* V, u32 M):CCC_Mask(N,V,M){};
-	virtual	void Execute(LPCSTR args)
-	{
-		CCC_Mask::Execute(args);
-		if (EQ(args,"on") || EQ(args,"1"))
-		{
-			if(g_pGameLevel && Level().CurrentViewEntity())
-			{
-				CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
-				actor->character_physics_support()->SetRemoved();
-			}
-		}
-	};
-};
-*/
 #endif
 
 //#ifndef MASTER_GOLD
@@ -1492,7 +1459,7 @@ public:
 		}
 
 		IRenderVisual* visual = Render->model_Create(arguments);
-		IKinematics* kinematics = smart_cast<IKinematics*>(visual);
+		IKinematics* kinematics = PKinematics(visual);
 		if (!kinematics) {
 			Render->model_Delete(visual);
 			Msg("! Invalid visual type \"%s\" (not a IKinematics)", arguments);
@@ -1601,7 +1568,7 @@ public:
 		CObject* obj = Level().CurrentViewEntity();	VERIFY(obj);
 		shared_str ssss = args;
 
-		CAttachmentOwner* owner = smart_cast<CAttachmentOwner*>(obj);
+		CAttachmentOwner* owner = obj->cast_attachment_owner();
 		CAttachableItem* itm = owner->attachedItem(ssss);
 		if (itm)
 		{
@@ -1609,10 +1576,12 @@ public:
 		}
 		else
 		{
-			CInventoryOwner* iowner = smart_cast<CInventoryOwner*>(obj);
+			CInventoryOwner* iowner = obj->cast_inventory_owner();
 			PIItem active_item = iowner->m_inventory->ActiveItem();
 			if (active_item && active_item->object().cNameSect() == ssss)
+			{
 				CAttachableItem::m_dbgItem = active_item->cast_attachable_item();
+			}
 		}
 
 		if (CAttachableItem::m_dbgItem)
@@ -1776,8 +1745,8 @@ public:
 			return;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor != nullptr) {
+		if (CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr)
+		{
 			actor->OnReceiveInfo(info_id);
 		}
 	}
@@ -1793,8 +1762,8 @@ public:
 			return;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor != nullptr) {
+		if (CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr)
+		{
 			actor->OnDisableInfo(info_id);
 		}
 	}
@@ -1810,8 +1779,8 @@ public:
 			return;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor != nullptr) {
+		if (CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr)
+		{
 			actor->set_money(actor->get_money() + atoi(money), true);
 		}
 	}
@@ -1844,9 +1813,11 @@ public:
 
 	virtual void Execute(LPCSTR args) override {
 
-		if (IsGameTypeSingle()) {
-			auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-			if (actor == nullptr) {
+		if (IsGameTypeSingle())
+		{
+			CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
+			if (actor == nullptr)
+			{
 				return;
 			}
 
@@ -2030,7 +2001,7 @@ public:
 		{
 			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
 			{
-				if (CInventoryOwner* pIO = smart_cast<CInventoryOwner*>(smart_cast<CGameObject*>(HUD().GetCurrentRayQuery().O)))
+				if (CInventoryOwner* pIO = HUD().GetCurrentRayQuery().O != nullptr ? HUD().GetCurrentRayQuery().O->cast_inventory_owner() : nullptr)
 				{
 					CHARACTER_COMMUNITY	community_human;
 					for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
@@ -2046,7 +2017,7 @@ public:
 		}
 		else
 		{
-			if (CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity()))
+			if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
 			{
 				CHARACTER_COMMUNITY	community_human;
 				for (CHARACTER_COMMUNITY_INDEX i = 0; i < community_human.GetMaxIndex() + 1; ++i)
@@ -2085,21 +2056,27 @@ public:
 		{
 			if (HUD().GetCurrentRayQuery().element >= 0 && HUD().GetCurrentRayQuery().O)
 			{
-				if (CEntityAlive* pEA = smart_cast<CEntityAlive*>(smart_cast<CGameObject*>(HUD().GetCurrentRayQuery().O)))
+				if (CEntityAlive* pEA = HUD().GetCurrentRayQuery().O != nullptr ? HUD().GetCurrentRayQuery().O->cast_entity_alive() : nullptr)
+				{
 					pEA->monster_community->set(string);
+				}
 			}
 		}
 		else
 		{
-			if (CActor* pActor = smart_cast<CActor*>(Level().CurrentControlEntity()))
+			if (CActor* pActor = Level().CurrentControlEntity()->cast_actor())
+			{
 				pActor->monster_community->set(string);
+			}
 		}
 	}
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
 		MONSTER_COMMUNITY	community_monster;
 		for (MONSTER_COMMUNITY_INDEX i = 0; i < community_monster.GetMaxIndex() + 1; ++i)
+		{
 			tips.push_back(community_monster.GetByIndex(i)->id.c_str());
+		}
 	}
 };
 
@@ -2116,7 +2093,7 @@ public:
 			return;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
+		CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
 		if (actor == nullptr) {
 			return;
 		}

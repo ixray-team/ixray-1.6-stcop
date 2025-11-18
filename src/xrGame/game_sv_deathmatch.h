@@ -8,9 +8,9 @@
 
 class IClient;
 
-class	game_sv_Deathmatch			: public game_sv_mp,private pure_relcase
+class game_sv_Deathmatch : public game_sv_mp, private pure_relcase
 {
-	typedef game_sv_mp inherited;
+	using inherited = game_sv_mp;
 protected:
 	struct		RPointData
 	{
@@ -212,6 +212,10 @@ public:
 
 	// adtitional methods for predicates
 	void					RespawnPlayerAsSpectator(IClient* client);
+
+	virtual game_sv_mp* cast_game_sv_mp() override { return this; }
+	virtual game_sv_Deathmatch* cast_game_sv_deathmatch() override { return this; }
+
 protected:
 	virtual		void				WriteGameState			(CInifile& ini, LPCSTR sect, bool bRoundResult);
 	shared_str m_not_free_ammo_str;

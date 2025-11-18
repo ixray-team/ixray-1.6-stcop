@@ -67,6 +67,7 @@ public:
 	virtual CScope* cast_addon_scope() {return nullptr;}
 	virtual CGrenadeLauncher* cast_addon_grenade_launcher() {return nullptr;}
 	virtual CPhysicItem* cast_physics_item() { return this; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
 
 public:
 	virtual void	Load					(LPCSTR section);

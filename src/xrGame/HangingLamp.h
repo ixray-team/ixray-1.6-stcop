@@ -15,9 +15,9 @@ class CLAItem;
 class CPhysicsElement;
 class CSE_ALifeObjectHangingLamp;
 class CPHElement;
-class CHangingLamp: 
-public CPhysicsShellHolder,
-public CPHSkeleton
+class CHangingLamp final : 
+	public CPhysicsShellHolder,
+	public CPHSkeleton
 {//need m_pPhysicShell
 	typedef	CPhysicsShellHolder		inherited;
 private:

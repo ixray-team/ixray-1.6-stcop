@@ -443,7 +443,6 @@ void	CPHShell:: update_root_transforms			()
 }
 
 void  CPHShell:: BonesCallback				( CBoneInstance* B ){
-	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
 
 	CPHElement*	E	= cast_PHElement( B->callback_param() );
 	//if( E == &root_element() )
@@ -456,7 +455,6 @@ void  CPHShell:: BonesCallback				( CBoneInstance* B ){
 
 
 void  CPHShell::StataticRootBonesCallBack			(CBoneInstance* B){
-	///CPHElement*	E			= smart_cast<CPHElement*>	(static_cast<CPhysicsBase*>(B->Callback_Param));
 
 	CPHElement*	E			= cast_PHElement(B->callback_param());
 	E->StataticRootBonesCallBack(B);

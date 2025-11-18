@@ -95,7 +95,7 @@ void CUIMapDesc::Init(){
 void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
 	if (BUTTON_CLICKED == msg)
 	{
-		game_cl_mp * dm = smart_cast<game_cl_mp *>(&(Game()));
+		game_cl_mp * dm = Game().cast_game_cl_mp();
 		HideDialog							();
 		if (pWnd == m_pBtnSpectator)
 			dm->OnSpectatorSelect();
@@ -111,7 +111,7 @@ bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 		if (dik == SDL_SCANCODE_TAB)
 		{
 			ShowChildren(true);
-			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
+			game_cl_mp* game = Game().cast_game_cl_mp();
 			game->OnKeyboardRelease(kSCORES);
 			GetUICursor().Show();
 		}
@@ -122,13 +122,13 @@ bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 	if (dik == SDL_SCANCODE_TAB)
 	{
         ShowChildren(false);
-		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
+		game_cl_mp* game = Game().cast_game_cl_mp();
 		game->OnKeyboardPress(kSCORES);
 		UI().GetUICursor().Hide();
 		return false;
 	}
 
-	game_cl_mp * dm = smart_cast<game_cl_mp *>(&(Game()));
+	game_cl_mp * dm = Game().cast_game_cl_mp();
 
 	switch (dik){
 		case SDL_SCANCODE_ESCAPE:
