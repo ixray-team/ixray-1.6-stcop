@@ -34,16 +34,11 @@
 #include "../Sound.h"
 #include "pffft.h"
 
-#define DISABLE_STEAM_AUDIO
-//#define DISABLE_RESONANCE_AUDIO
-
 #ifndef DISABLE_STEAM_AUDIO
 #   include <SteamAudio/phonon.h>
-#endif
-
-#ifndef DISABLE_RESONANCE_AUDIO
-#include "../../3rd-party/resonance-audio/resonance_audio/api/binaural_surround_renderer.h"
-#include "../../3rd-party/resonance-audio/resonance_audio/api/resonance_audio_api.h"
+#elif !defined(DISABLE_RESONANCE_AUDIO)
+#	include "../../3rd-party/resonance-audio/resonance_audio/api/binaural_surround_renderer.h"
+#	include "../../3rd-party/resonance-audio/resonance_audio/api/resonance_audio_api.h"
 #endif
 
 #include "ogg_utils.h"
@@ -106,9 +101,10 @@ struct sound_cache_line
 struct sound_hrtf_slot_state
 {
 	// Common process buffers for any HRTF backend
+#ifndef DISABLE_STEAM_AUDIO
 	float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
 	float* process_buffer[SND_CHANNEL_COUNT];
-#ifndef DISABLE_STEAM_AUDIO
+
 	IPLAudioBuffer buf_desc;
 	IPLBinauralEffect effect;
 #elif !defined(DISABLE_RESONANCE_AUDIO)
@@ -254,13 +250,6 @@ Snd_AcquireHRTFSlot(u32 slot_idx)
 #ifndef DISABLE_STEAM_AUDIO
 	if (mixer.ipl_hrtf != nullptr) {
 		iplBinauralEffectReset(mixer.hrtf_slots[slot.hrtf_slot - 1].effect);
-	}
-#endif
-
-#ifndef DISABLE_RESONANCE_AUDIO
-	// For Resonance we don't need to reset the effect; ensure source exists
-	if (mixer.ra_api != nullptr) {
-		// no-op here; SetPlanarBuffer will overwrite previous frame data
 	}
 #endif
 }
@@ -530,11 +519,13 @@ Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 	u32 offset = 0;
 	do {
 		int status = ov_read_float(&source.file, &pcm, last_frames, &section);
-		if (status == 0) {
+		if (status == 0)
+		{
 			break;
-		} else if (status < 0) {
-			R_ASSERT2(false, "Decoding error");
-		} else {
+		}
+		else 
+		{
+			R_ASSERT2(status >= 0, "Decoding error");
 			last_frames -= status;
 		}
 
@@ -769,7 +760,7 @@ Snd_ProcessSlot(u32 slot_idx, float** data)
 
 	u32 output_frames = SND_BLOCKSIZE;
 	float scaled_frames = (float)output_frames * pitch * mixer.time_factor;
-	u32 input_frames = std::min((u32)scaled_frames, (u32)SND_BLOCKSIZE);//ceilf(scaled_frames - 1e-6f);
+	u32 input_frames = std::min((u32)scaled_frames, (u32)SND_BLOCKSIZE);
 
 	bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 
@@ -840,54 +831,41 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 		return;
 	}
 
-#ifndef DISABLE_STEAM_AUDIO
 	auto& hrtf_slot = mixer.hrtf_slots[slot.hrtf_slot - 1];
+
+#ifndef DISABLE_STEAM_AUDIO
 	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 		memcpy(hrtf_slot.process_buffer[ch], data[ch], SND_BLOCKSIZE * sizeof(float));
 	}
+#endif
 
 	Fvector relative_pos;
 	float distance;
 	DSP_CalculateRelativePosition(mixer.P, mixer.D, mixer.N, pos, relative_pos, distance);
 	distance = std::max(distance, 0.1f);
+
+#ifndef DISABLE_STEAM_AUDIO
 	relative_pos.normalize();
 
 	// HRTF
-	IPLBinauralEffectParams binaural_params = { 
+	IPLBinauralEffectParams binaural_params =
+	{ 
 		.direction = {relative_pos.x, relative_pos.y, relative_pos.z}, 
 		.spatialBlend = 1.0f, .hrtf = mixer.ipl_hrtf
 	};
+
 	IPLAudioBuffer out_buf = { .numChannels = SND_CHANNEL_COUNT, .numSamples = SND_BLOCKSIZE, .data = data };
 	R_ASSERT(iplBinauralEffectApply(hrtf_slot.effect, &binaural_params, &hrtf_slot.buf_desc, &out_buf) == IPL_STATUS_SUCCESS);
-
-	// Attenuation
-	distance = std::clamp(distance, distances.x, distances.y);
-	float att = distances.x / (psSoundRolloff * distance);
-	att *= att;
-	att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / ((distances.y - distances.x)), 0.0f, 1.0f);
-	att = std::clamp(att, 0.f, 1.f);
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-			data[ch][i] *= att;
-		}
-	}
 #elif !defined(DISABLE_RESONANCE_AUDIO)
-	auto& hrtf_slot = mixer.hrtf_slots[slot.hrtf_slot - 1];
-	for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-		memcpy(hrtf_slot.process_buffer[ch], data[ch], SND_BLOCKSIZE * sizeof(float));
-	}
-
-	Fvector relative_pos;
-	float distance;
-	DSP_CalculateRelativePosition(mixer.P, mixer.D, mixer.N, pos, relative_pos, distance);
-	distance = std::max(distance, 0.1f);
 
 	mixer.ra_api->SetHeadPosition(mixer.P.x, mixer.P.y, mixer.P.z);
-	if (mixer.ra_api != nullptr) {
+	if (mixer.ra_api != nullptr)
+	{
 		mixer.ra_api->SetSourcePosition(hrtf_slot.source_id, pos.x, pos.y, pos.z);
 		mixer.ra_api->SetPlanarBuffer(hrtf_slot.source_id, (const float* const*)data, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
 		mixer.ra_api->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, data);
 	}
+#endif
 
 	// Attenuation
 	distance = std::clamp(distance, distances.x, distances.y);
@@ -900,7 +878,6 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 			data[ch][i] *= att;
 		}
 	}
-#endif
 }
 
 static void
@@ -939,7 +916,7 @@ Snd_MixerRenderCallback(float* buffer)
 			continue;
 		}
 
-		if (!mixer.sources.contains(mixer.slots[i].sound_name.c_str())) {
+		if (!mixer.sources.contains(mixer.slots[i].sound_name)) {
 			MixerNewState(i + 1, Mixer::State::Stopped);
 			continue;
 		}
@@ -1019,7 +996,7 @@ Snd_MixerRenderCallback(float* buffer)
 				slot.zone_idx = 1;
 			}
 
-			u32 slot_idx = slot.zone_idx;// ((slot.flags & (u32)Mixer::Flags::Spatial) ? slot.zone_idx : );
+			u32 slot_idx = slot.zone_idx;
 			if (slot_idx && !mixer.zones.empty()) {
 				sound_zone_params& zone = mixer.zones.at(slot_idx - 1);
 				zone.use_count++;
@@ -1051,12 +1028,12 @@ Snd_MixerRenderCallback(float* buffer)
 	}
 
 	// Reverb mixing
-	if (psSoundFlags.is(ss_EFX)) {
-		for (auto& zone : mixer.zones) {
-			if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds()) {
-				for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-					//zone.position[ch] = 0;
-				}
+	if (psSoundFlags.is(ss_EFX))
+	{
+		for (auto& zone : mixer.zones)
+		{
+			if (zone.use_count == 0 && (zone.last_use_ms + 3000) < Snd_Milliseconds())
+			{
 				continue;
 			}
 
@@ -1068,11 +1045,6 @@ Snd_MixerRenderCallback(float* buffer)
 				reverb_buffer[ch] = zone.data[ch];
 				bus_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
 			}
-
-#if 0
-			DSP_AlgorithmicReverb(zone.state, zone.settings, reverb_buffer, process_buffer, SND_BLOCKSIZE);
-			DSP_MixBuffer(bus_buffer, process_buffer, zone.settings.reverb * 0.5, zone.settings.reverb * 0.5, SND_BLOCKSIZE);
-#else
 
 #ifndef DISABLE_RESONANCE_AUDIO
 			zone.state.ra_context->SetPlanarBuffer(zone.state.buffer, reverb_buffer, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
@@ -1091,22 +1063,17 @@ Snd_MixerRenderCallback(float* buffer)
 #endif
 			float reverb_gain = std::clamp(zone.settings.reverb, 0.0f, 1.0f) * 0.010f;
 			DSP_MixBuffer(bus_buffer, process_buffer, reverb_gain, reverb_gain, SND_BLOCKSIZE);
-#endif
 		}
 	}
 
 	{
 		PROF_EVENT("Sound Mixing");
 		float* master_buffer[SND_CHANNEL_COUNT] = {};
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-#if 0
-			master_buffer[ch] = mixer.buses[SND_BUS_REVERB].data[ch];
-#else
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		{
 			master_buffer[ch] = mixer.buses[SND_BUS_MASTER].data[ch];
-#endif
 		}
 
-#if 1
 		// Master mixing
 		for (size_t i = 0; i < SND_BUS_COUNT; i++) {
 			float* bus_buffer[SND_CHANNEL_COUNT] = {};
@@ -1116,7 +1083,6 @@ Snd_MixerRenderCallback(float* buffer)
 
 			DSP_MixBuffer(master_buffer, bus_buffer, 1.0f, 1.0f, SND_BLOCKSIZE);
 		}
-#endif
 
 		DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, master_buffer, mixer.compression, SND_BLOCKSIZE, mixer.compressor_envelope);
 
@@ -1228,10 +1194,8 @@ Mixer::Initialize()
 	}
 
 	mixer.hrtf_slots.resize(SND_HRTF_SLOT_COUNT);
-	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++) {
-		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
-			mixer.hrtf_slots[i].process_buffer[ch] = mixer.hrtf_slots[i]._process_buffer[ch];
-		}
+	for (size_t i = 0; i < SND_HRTF_SLOT_COUNT; i++)
+	{
 		// Create a Resonance sound object source for this slot
 		mixer.hrtf_slots[i].source_id = mixer.ra_api->CreateSoundObjectSource(vraudio::RenderingMode::kBinauralHighQuality);
 	}
@@ -1273,8 +1237,6 @@ Mixer::Shutdown()
 
 	if (mixer.ipl_hrtf) iplHRTFRelease(&mixer.ipl_hrtf);
 	if (mixer.ipl_context) iplContextRelease(&mixer.ipl_context);
-	mixer.hrtf_slots.clear();
-	mixer.free_hrtf_slots.clear();
 #endif
 
 #ifndef DISABLE_RESONANCE_AUDIO
@@ -1288,9 +1250,10 @@ Mixer::Shutdown()
 		delete mixer.ra_api;
 		mixer.ra_api = nullptr;
 	}
+#endif
+
 	mixer.hrtf_slots.clear();
 	mixer.free_hrtf_slots.clear();
-#endif
 
 	mixer.slots.clear();
 	mixer.free_slots.clear();
@@ -1416,12 +1379,8 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 	for (const auto& cmd : mixer.cmd) {
 		switch (cmd.id) {
 		case sound_cmd_id::play: {
-#if 1
 			bool sound_exists = (cmd.param1 && mixer.sounds.contains((ref_sound*)cmd.param1));
 			ref_sound* sound = sound_exists ? (ref_sound*)cmd.param1 : nullptr;
-#else
-			ref_sound* sound = (ref_sound*)cmd.param1;
-#endif
 			u16 flags = cmd.param0;
 			double delay = *(double*)&cmd.param2;
 			CObject* obj = (CObject*)cmd.param3;
@@ -1610,7 +1569,6 @@ Mixer::Destroy(u32 slot)
 	}
 
 	mixer.slots[slot - 1].fake_state = State::Stopped;
-	//mixer.slots[slot - 1].sound = nullptr;
 	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::destroy });
 	mixer.stats.possible_free_count++;
 }
@@ -1965,6 +1923,7 @@ Mixer::ResetZones()
 
 #ifndef DISABLE_RESONANCE_AUDIO
 		delete zone.state.ra_context;
+		zone.state.ra_context = nullptr;
 #endif
 	}
 
