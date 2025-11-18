@@ -1669,7 +1669,7 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 		}
 	case INVENTORY_PARSE_ITEM:
 	{
-		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+		game_sv_Single* tpGame = Level().Server->game != nullptr ? Level().Server->game->cast_game_sv_single() : nullptr;
 		if (tpGame == nullptr) {
 			break;
 		}

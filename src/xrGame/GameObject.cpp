@@ -282,7 +282,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 #endif
 	VERIFY							(_valid(renderable.xform));
 	VERIFY							(!fis_zero(DET(renderable.xform)));
-	CSE_ALifeObject					*O = smart_cast<CSE_ALifeObject*>(E);
+	CSE_ALifeObject* O = E->cast_alife_object();
 	if (O && xr_strlen(O->m_ini_string)) {
 #pragma warning(push)
 #pragma warning(disable:4238)
@@ -346,7 +346,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	// if we have a parent
 	if ( ai().get_level_graph() ) {
 		if ( E->ID_Parent == 0xffff ) {
-			CSE_ALifeObject* l_tpALifeObject	= smart_cast<CSE_ALifeObject*>(E);
+			CSE_ALifeObject* l_tpALifeObject	= E->cast_alife_object();
 			if (l_tpALifeObject && ai().level_graph().valid_vertex_id(l_tpALifeObject->m_tNodeID))
 				ai_location().level_vertex		(l_tpALifeObject->m_tNodeID);
 			else {
@@ -363,7 +363,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 				Fvector vertex_pos = ai().level_graph().vertex_position(ai_location().level_vertex_id());
 				Msg("! [%s]: %s has invalid Position[%f,%f,%f] level_vertex_id[%u][%f,%f,%f]", __FUNCTION__, cName().c_str(), Position().x, Position().y, Position().z, ai_location().level_vertex_id(), vertex_pos.x, vertex_pos.y, vertex_pos.z);
 				Position().set(vertex_pos);
-				CSE_ALifeObject* const se_obj = smart_cast<CSE_ALifeObject*>(E);
+				CSE_ALifeObject* const se_obj = E->cast_alife_object();
 				if (se_obj != nullptr)
 					se_obj->o_Position.set(Position());
 			}
@@ -382,7 +382,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 				Position().y					= EPS_L + ai().level_graph().vertex_plane_y(*ai_location().level_vertex(),Position().x,Position().z);
 		}
 		else {
-			CSE_ALifeObject* const alife_object	= smart_cast<CSE_ALifeObject*>(E);
+			CSE_ALifeObject* const alife_object	= E->cast_alife_object();
 			if ( alife_object && ai().level_graph().valid_vertex_id(alife_object->m_tNodeID) ) {
 				ai_location().level_vertex		(alife_object->m_tNodeID);
 				ai_location().game_vertex		(alife_object->m_tGraphID);
@@ -524,12 +524,13 @@ void CGameObject::spawn_supplies()
 			if (::Random.randF(1.f) < p){
 				CSE_Abstract* A=Level().spawn_item	(N,Position(),ai_location().level_vertex_id(),ID(),true);
 
-				CSE_ALifeInventoryItem*	pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(A);
+				CSE_ALifeInventoryItem* pSE_InventoryItem = A->cast_inventory_item();
 				if(pSE_InventoryItem)
 						pSE_InventoryItem->m_fCondition = f_cond;
 
-				CSE_ALifeItemWeapon* W =  smart_cast<CSE_ALifeItemWeapon*>(A);
-				if (W) {
+				CSE_ALifeItemWeapon* W = A->cast_item_weapon();
+				if (W)
+				{
 					if (W->m_scope_status			== ALife::eAddonAttachable)
 						W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
 					if (W->m_silencer_status		== ALife::eAddonAttachable)
@@ -720,7 +721,7 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 
 	setup_parent_ai_locations	(false);
 
-	CGameObject					*parent = smart_cast<CGameObject*>(H_Parent());
+	CGameObject* parent = H_Parent() != nullptr ? H_Parent()->cast_game_object() : nullptr;
 	VERIFY						(parent);
 	if (ai().get_level_graph() && ai().level_graph().valid_vertex_id(parent->ai_location().level_vertex_id()))
 		validate_ai_locations	(false);
@@ -738,7 +739,7 @@ BOOL CGameObject::TestServerFlag(u32 Flag) const
 
 void CGameObject::add_visual_callback		(visual_callback *callback)
 {
-	VERIFY						(smart_cast<IKinematics*>(Visual()));
+	VERIFY						(PKinematics(Visual()));
 	CALLBACK_VECTOR_IT			I = std::find(visual_callbacks().begin(),visual_callbacks().end(),callback);
 	VERIFY						(I == visual_callbacks().end());
 
@@ -760,9 +761,9 @@ void CGameObject::SetKinematicsCallback		(bool set)
 {
 	if(!Visual())	return;
 	if (set)
-		smart_cast<IKinematics*>(Visual())->Callback(VisualCallback,this);
+		PKinematics(Visual())->Callback(VisualCallback,this);
 	else
-		smart_cast<IKinematics*>(Visual())->Callback(0,0);
+		PKinematics(Visual())->Callback(0,0);
 };
 
 void VisualCallback	(IKinematics *tpKinematics)
@@ -949,7 +950,7 @@ float CGameObject::shedule_Scale_Base()
 		if (Device.dwTimeGlobal > u_optimize_time) 
 		{
 			u_optimize_time = Device.dwTimeGlobal + Random.randI(5000, 10000);
-			auto game = &Game(); // smart_cast<game_cl_mp*>(&Game());
+			auto game = &Game();
 			if (game)
 			{
 				float min_distance = 40100;
@@ -1062,7 +1063,7 @@ void CGameObject::on_matrix_change	(const Fmatrix &previous)
 void render_box						(IRenderVisual *visual, const Fmatrix &xform, const Fvector &additional, bool draw_child_boxes, const u32 &color)
 {
 	CDebugRenderer			&renderer = Level().debug_renderer();
-	IKinematics				*kinematics = smart_cast<IKinematics*>(visual);
+	IKinematics				*kinematics = PKinematics(visual);
 	VERIFY					(kinematics);
 	u16						bone_count = kinematics->LL_BoneCount();
 	VERIFY					(bone_count);

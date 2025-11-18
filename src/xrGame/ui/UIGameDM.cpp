@@ -53,7 +53,7 @@ CUIGameDM::CUIGameDM()
 void CUIGameDM::SetClGame (game_cl_GameState* g)
 {
 	inherited::SetClGame(g);
-	m_game = smart_cast<game_cl_Deathmatch*>(g);
+	m_game = g->cast_game_cl_deathmatch();
 	R_ASSERT(m_game);
 	
 	if (m_pMapDesc && m_pMapDesc->IsShown())

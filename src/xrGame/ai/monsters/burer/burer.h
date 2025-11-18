@@ -8,7 +8,7 @@
 class CCharacterPhysicsSupport;
 class CBurerFastGravi;
 
-class CBurer :	public CBaseMonster,
+class CBurer final :	public CBaseMonster,
 				public CTelekinesis 
 {
 

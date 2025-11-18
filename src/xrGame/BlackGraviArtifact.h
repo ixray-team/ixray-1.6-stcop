@@ -12,7 +12,7 @@
 using GAME_OBJECT_LIST = xr_vector<CPhysicsShellHolder*>;
 using GAME_OBJECT_LIST_it = GAME_OBJECT_LIST::iterator;
 
-class CBlackGraviArtefact: public CGraviArtefact,
+class CBlackGraviArtefact final : public CGraviArtefact,
 						   public Feel::Touch
 {
 private:

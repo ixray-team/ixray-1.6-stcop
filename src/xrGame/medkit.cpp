@@ -4,14 +4,17 @@
 ///////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
-
+#include "pch_script.h"
 #include "medkit.h"
-#include "../xrPhysics/PhysicsShell.h"
 
-CMedkit::CMedkit() 
-{
-}
+using namespace luabind;
 
-CMedkit::~CMedkit() 
+#pragma optimize("s",on)
+void CMedkit::script_register(lua_State* L)
 {
+	module(L)
+		[
+			class_<CMedkit, CGameObject>("CMedkit")
+				.def(constructor<>())
+		];
 }

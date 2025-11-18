@@ -95,8 +95,9 @@ public:
 	virtual CScriptEntity*				cast_script_entity			()	{return this;}
 	virtual CBaseMonster*				cast_base_monster			()	{return this;}
 
-	virtual CInventoryOwner				*cast_inventory_owner		() {return this;}
-	virtual CGameObject*				cast_game_object			() {return this;}
+	virtual CInventoryOwner				*cast_inventory_owner		() override {return this;}
+	virtual CGameObject*				cast_game_object			() override {return this;}
+	virtual CAttachmentOwner*			cast_attachment_owner	() override {return this;}
 
 public:
 	

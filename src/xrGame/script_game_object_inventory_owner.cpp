@@ -2434,7 +2434,7 @@ float CScriptGameObject::GetActorPowerBoostTime()
 
 LPCSTR CScriptGameObject::GetCutsceneVisual()
 {
-	if (CActor* pActor = smart_cast<CActor*>(&object()))
+	if (CActor* pActor = object().cast_actor())
 	{
 		CCustomOutfit* pOutfit = pActor->GetOutfit();
 		return pOutfit ? pOutfit->m_ActorVisual.c_str() : pActor->m_DefaultVisualOutfit.c_str();
@@ -2448,7 +2448,7 @@ LPCSTR CScriptGameObject::GetCutsceneVisual()
 
 void CScriptGameObject::SetInvulnerable(bool value)
 {
-	if (CActor* pActor = smart_cast<CActor*>(&object()))
+	if (CActor* pActor = object().cast_actor())
 	{
 		psActorFlags.set(AF_GODMODE, value);
 	}
@@ -2460,7 +2460,7 @@ void CScriptGameObject::SetInvulnerable(bool value)
 
 void CScriptGameObject::SetFire(bool value)
 {
-	if (CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object()))
+	if (CInventoryOwner* pInventoryOwner = object().cast_inventory_owner())
 	{
 		pInventoryOwner->inventory().Action((u16)kWPN_FIRE, value ? CMD_START : CMD_STOP);
 		return;
@@ -2472,8 +2472,10 @@ void CScriptGameObject::SetFire(bool value)
 
 bool CScriptGameObject::IsInCar()
 {
-	if (CActor* pActor = smart_cast<CActor*>(&object()))
+	if (CActor* pActor = object().cast_actor())
+	{
 		return smart_cast<CCar*>(pActor->Holder());
+	}
 
 	Msg("! IsInCar(): method applicable only for actor!");
 	return false;

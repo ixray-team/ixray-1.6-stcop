@@ -40,7 +40,7 @@ CAgentMemberManager::~CAgentMemberManager		()
 
 void CAgentMemberManager::add					(CEntity *member)
 {
-	CAI_Stalker					*stalker = smart_cast<CAI_Stalker*>(member);
+	CAI_Stalker					*stalker = member != nullptr ? member->cast_stalker() : nullptr;
 	if (!stalker || !stalker->g_Alive())
 		return;
 
@@ -97,7 +97,7 @@ void CAgentMemberManager::remove_links			(CObject *object)
 			{
 				if(CMissile* missile = explosiveGO->cast_missile())
 				{
-					CGrenade* grenade = smart_cast<CGrenade*>(missile);
+					CGrenade* grenade = missile->cast_grenade();
 					if (grenade && grenade->CurrentParentID() == object->ID())
 						(*I)->grenade_reaction().clear();
 				}

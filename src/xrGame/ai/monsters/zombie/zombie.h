@@ -7,7 +7,7 @@
 
 #define FAKE_DEATH_TYPES_COUNT	4
 
-class CZombie :	public CBaseMonster,
+class CZombie final :	public CBaseMonster,
 				public CControlledEntity<CZombie> {
 	
 	typedef		CBaseMonster				inherited;

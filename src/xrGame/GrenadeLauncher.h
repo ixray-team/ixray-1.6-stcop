@@ -6,7 +6,7 @@
 #pragma once
 #include "inventory_item_object.h"
 
-class CGrenadeLauncher : public CInventoryItemObject {
+class CGrenadeLauncher final : public CInventoryItemObject {
 private:
 	typedef CInventoryItemObject inherited;
 public:

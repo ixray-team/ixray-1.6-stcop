@@ -14,7 +14,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "PHDestroyable.h"
 
-class CMincer :	
+class CMincer final :	
 	public CBaseGraviZone,
 	public CPHDestroyableNotificator
 {

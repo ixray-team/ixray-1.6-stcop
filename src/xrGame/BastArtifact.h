@@ -15,7 +15,7 @@ struct	dContact;
 using ALIVE_LIST = xr_vector<CEntityAlive*>;
 using ALIVE_LIST_it = ALIVE_LIST::iterator;
 
-class CBastArtefact : public CArtefact,
+class CBastArtefact final : public CArtefact,
 					  public Feel::Touch
 {
 private:

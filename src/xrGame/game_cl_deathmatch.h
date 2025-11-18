@@ -13,9 +13,9 @@ class CUIInventoryWnd;
 class CUIMapDesc;
 class CWeaponMagazinedWGrenade;
 
-class game_cl_Deathmatch :public game_cl_mp
+class game_cl_Deathmatch : public game_cl_mp
 {
-typedef game_cl_mp inherited;
+	using inherited = game_cl_mp;
 	CUIGameDM*						m_game_ui;
 	shared_str						Actor_Spawn_Effect;
 public :
@@ -162,6 +162,10 @@ public:
 	virtual		bool				LocalPlayerCanBuyItem	(shared_str const & name_sect);
 	virtual		LPCSTR				GetGameScore			(string32&	score_dest);
 	virtual		void				OnConnected				();
+
+	virtual game_cl_mp* cast_game_cl_mp() override { return this; }
+	virtual game_cl_Deathmatch* cast_game_cl_deathmatch() override { return this; }
+
 private:
 	//next methods for alife players in buy menu (artefacthunt)
 	typedef buffer_vector<shared_str> aditional_ammo_t;

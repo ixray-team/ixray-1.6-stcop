@@ -58,6 +58,7 @@ public:
 	virtual CWeaponBM16* cast_weapon_bm16() { return nullptr; }
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
 	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
+	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
 
 
 	//serialization

@@ -422,7 +422,7 @@ void CInventoryOwner::spawn_supplies()
 	if (!ai().get_alife() && IsGameTypeSingle())
 	{
 		CSE_Abstract* abstract = Level().spawn_item(pGameGlobals->r_string("actor_item", "pda_item"), game_object->Position(), game_object->ai_location().level_vertex_id(), game_object->ID(), true);
-		CSE_ALifeItemPDA* pda = smart_cast<CSE_ALifeItemPDA*>(abstract);
+		CSE_ALifeItemPDA* pda = abstract->cast_item_pda();
 		R_ASSERT(pda);
 		pda->m_original_owner = (u16)game_object->ID();
 

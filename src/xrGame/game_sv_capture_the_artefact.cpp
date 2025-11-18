@@ -179,14 +179,14 @@ void game_sv_CaptureTheArtefact::Update()
 
 void game_sv_CaptureTheArtefact::SM_CheckViewSwitching()
 {
-	if (!m_pSM_CurViewEntity || !smart_cast<CActor*>(m_pSM_CurViewEntity) || m_dwSM_LastSwitchTime<Level().timeServer())
+	if (m_pSM_CurViewEntity == nullptr || m_pSM_CurViewEntity->cast_actor() == nullptr || m_dwSM_LastSwitchTime<Level().timeServer())
 		SM_SwitchOnNextActivePlayer();
 	
 	CUIGameCTA* gameCTA = smart_cast<CUIGameCTA*>(CurrentGameUI());
 	if (gameCTA)
 	{
-		CObject* pObject				= Level().CurrentViewEntity();
-		if (pObject && smart_cast<CActor*>(pObject))
+		CObject* pObject = Level().CurrentViewEntity();
+		if (pObject != nullptr && pObject->cast_actor() != nullptr)
 		{
 			string1024						Text;
 			xr_sprintf						(Text, "Following %s", pObject->cName().c_str());
@@ -205,13 +205,13 @@ void game_sv_CaptureTheArtefact::SM_SwitchOnPlayer(CObject* pNewObject)
 
 	if (pNewObject != m_pSM_CurViewEntity)
 	{
-		CActor* pActor					= smart_cast<CActor*>(m_pSM_CurViewEntity);
-		
+		CActor* pActor = m_pSM_CurViewEntity->cast_actor();
+
 		if (pActor)
 			pActor->inventory().Items_SetCurrentEntityHud(false);
 	}
 
-	CActor* pActor = smart_cast<CActor*> (pNewObject);
+	CActor* pActor = pNewObject->cast_actor();
 	if (pActor)
 	{
 		pActor->inventory().Items_SetCurrentEntityHud(true);
@@ -259,7 +259,7 @@ void game_sv_CaptureTheArtefact::SM_SwitchOnNextActivePlayer()
 				::Random.randI((int)tmp_functor.PPlayersCount) ];
 
 		pNewObject					=  Level().Objects.net_Find(C->ps->GameID);
-		CActor* pActor				= smart_cast<CActor*>(pNewObject);
+		CActor* pActor				= pNewObject != nullptr ? pNewObject->cast_actor() : nullptr;
 
 		if (!pActor || !pActor->g_Alive() || !pActor->inventory().ActiveItem()) return;
 	};
@@ -807,8 +807,7 @@ void game_sv_CaptureTheArtefact::OnRoundEnd()
 			game_PlayerState* ps	= l_pC->ps;
 			if (!ps)				return;
 			if (ps->IsSkip())		return;
-			if (l_pC->owner &&
-				smart_cast<CActor*>(Level().Objects.net_Find(l_pC->owner->ID)))
+			if (l_pC->owner && Level().Objects.net_Find(l_pC->owner->ID) != nullptr && Level().Objects.net_Find(l_pC->owner->ID)->cast_actor() != nullptr)
 			{
 				m_server->Perform_destroy(l_pC->owner, net_flags(TRUE, TRUE));
 			}
@@ -1859,7 +1858,8 @@ void game_sv_CaptureTheArtefact::FillDeathActorRejectItems(CSE_ActorMP *actor, x
 {
 	R_ASSERT	(actor);
 	
-	CActor*		pActor = smart_cast<CActor*>(Level().Objects.net_Find(actor->ID));
+	CObject* finded_object = Level().Objects.net_Find(actor->ID);
+	CActor* pActor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
 	R_ASSERT	(pActor);
 
 	u16			active_slot = pActor->inventory().GetActiveSlot();
@@ -1979,7 +1979,8 @@ void game_sv_CaptureTheArtefact::MoveArtefactToPoint(CSE_ALifeItemArtefact *arte
 	VERIFY(artefact->cast_inventory_item());
 	artefact->cast_inventory_item()->State.position.set(toPoint.P);		//settings position to server object
 
-	CArtefact * OArtefact = smart_cast<CArtefact*>(Level().Objects.net_Find(artefact->ID));
+	CObject* finded_object = Level().Objects.net_Find(artefact->ID);
+	CArtefact * OArtefact = finded_object != nullptr ? finded_object->cast_artefact() : nullptr;
 
 	R_ASSERT2( OArtefact, make_string<const char*>("artefact not found. artefact_id = [%d]. CTA:MoveArtefactToPoint()", artefact->ID));
 

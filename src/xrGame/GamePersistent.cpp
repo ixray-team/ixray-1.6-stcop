@@ -122,7 +122,7 @@ void CGamePersistent::RegisterModel(IRenderVisual* V)
 	case MT_SKELETON_RIGID:{
 		u16 def_idx		= GMLib.GetMaterialIdx("default_object");
 		R_ASSERT2		(GMLib.GetMaterialByIdx(def_idx)->Flags.is(SGameMtl::flDynamic),"'default_object' - must be dynamic");
-		IKinematics* K	= smart_cast<IKinematics*>(V); VERIFY(K);
+		IKinematics* K	= PKinematics(V); VERIFY(K);
 		int cnt = K->LL_BoneCount();
 		for (u16 k=0; k<cnt; k++){
 			CBoneData& bd	= K->LL_GetData(k); 
@@ -275,7 +275,8 @@ void CGamePersistent::WeathersUpdate()
 
 		if(bIndoor==FALSE)
 		{
-			CActor* actor				= smart_cast<CActor*>(Level().CurrentViewEntity());
+			CObject* current_view_entity = Level().CurrentViewEntity();
+			CActor* actor				= current_view_entity != nullptr ? current_view_entity->cast_actor() : nullptr;
 			if (actor) bIndoor			= actor->renderable_ROS()->get_luminocity_hemi()<0.05f;
 		}
 
@@ -573,7 +574,8 @@ if (!g_pGameLevel)
 	{
 		if (Level().IsDemoPlay())
 		{
-			CSpectator* tmp_spectr = smart_cast<CSpectator*>(Level().CurrentControlEntity());
+			CObject* current_view_entity = Level().CurrentViewEntity();
+			CSpectator* tmp_spectr = current_view_entity != nullptr ? current_view_entity->cast_spectator() : nullptr;
 			if (tmp_spectr)
 			{
 				tmp_spectr->UpdateCL();	//updating spectator in pause (pause ability of demo play)
@@ -581,8 +583,10 @@ if (!g_pGameLevel)
 		}
 #ifndef MASTER_GOLD
 		if (Level().CurrentViewEntity() && IsGameTypeSingle()) {
-			if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID())) {
-				CCustomMonster	*custom_monster = smart_cast<CCustomMonster*>(Level().CurrentViewEntity());
+			if (!g_actor || (g_actor->ID() != Level().CurrentViewEntity()->ID()))
+			{
+				CObject* current_view_entity = Level().CurrentViewEntity();
+				CCustomMonster	*custom_monster = current_view_entity != nullptr ? current_view_entity->cast_custom_monster() : nullptr;
 				if (custom_monster) // can be spectator in multiplayer
 					custom_monster->UpdateCamera();
 			}
@@ -720,7 +724,7 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		LPSTR saved_name = (LPSTR)(P1);
 
 		Level().remove_objects();
-		game_sv_Single* game = smart_cast<game_sv_Single*>(Level().Server->game);
+		game_sv_Single* game = Level().Server->game != nullptr ? Level().Server->game->cast_game_sv_single() : nullptr;
 		R_ASSERT(game);
 		game->restart_simulator(saved_name);
 		xr_free(saved_name);

@@ -216,7 +216,7 @@ void CLevel::ClientSend()
 		{
 			CObject* pObj = CurrentControlEntity();
 
-			if (CActor* act = smart_cast<CActor*>(pObj))
+			if (CActor* act = pObj != nullptr ? pObj->cast_actor() : nullptr)
 			{
 				if (act->Holder() != nullptr)
 				{
