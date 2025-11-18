@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "ui_base.h"
-#include "../xrEngine/IGame_Persistent.h"
 #include "UICursor.h"
 #include "Widgets/UIWindow.h"
+
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/XR_IOConsole.h"
 
 UI_API ui_core* m_pUI_core = nullptr;
 
@@ -275,6 +277,12 @@ void ui_core::RenderUIDebugger()
 	if (ImGui::Button("Rebuild Tree"))
 	{
 		BuildTree();
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reload UI"))
+	{
+		Console->Execute("ui_reload");
 	}
 
 	ImGui::Separator();
