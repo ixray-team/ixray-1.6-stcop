@@ -1,6 +1,7 @@
 #pragma once
 
 class CUICursor;
+class CUIWindow;
 class CUIGameCustom;
 
 #include "ui_defs.h"
@@ -32,7 +33,11 @@ class UI_API ui_core:
 
 public:
 	xr_stack<Frect> m_Scissors;
-	
+
+#ifdef DEBUG_DRAW
+	xr_hash_set<CUIWindow*> LastFrameWidgets;
+	void RenderUIDebugger();
+#endif
 					ui_core							();
 					~ui_core						();
 	CFontManager&	Font							()								{return *g_FontManager;}
