@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "ui_base.h"
-#include "../xrEngine/IGame_Persistent.h"
 #include "UICursor.h"
+#include "Widgets/UIWindow.h"
+
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/XR_IOConsole.h"
 
 UI_API ui_core* m_pUI_core = nullptr;
 
@@ -204,6 +207,141 @@ void ui_core::PopScissor()
 	}
 }
 
+#ifdef DEBUG_DRAW
+void ui_core::RenderUIDebugger()
+{
+	static CUIWindow* Selected = nullptr;
+	static xr_vector<CUIWindow*> Roots;
+
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::UI_General)])
+	{
+		LastFrameWidgets.clear();
+		return;
+	}
+
+	auto BuildTree = [&]()
+	{
+		Roots.clear();
+		Roots.reserve(LastFrameWidgets.size());
+
+		for (CUIWindow* Window : LastFrameWidgets)
+		{
+			CUIWindow* Parent = Window->GetParent();
+
+			if (Parent == nullptr || LastFrameWidgets.count(Parent) == 0)
+			{
+				Roots.push_back(Window);
+			}
+		}
+	};
+
+	std::function<void(CUIWindow*)> DrawNode = [&](CUIWindow* Window)
+	{
+		if (!LastFrameWidgets.contains(Window))
+		{
+			return;
+		}
+
+		ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		if (Window == Selected)
+		{
+			Flags |= ImGuiTreeNodeFlags_Selected;
+		}
+
+		bool IsOpen = ImGui::TreeNodeEx(Window, Flags, "%s (%p)", Window->WindowNodeName().c_str(), Window);
+
+		if (ImGui::IsItemClicked())
+		{
+			Selected = Window;
+		}
+
+		if (IsOpen)
+		{
+			for (CUIWindow* Child : Window->GetChildWndList())
+			{
+				DrawNode(Child);
+			}
+
+			ImGui::TreePop();
+		}
+	};
+
+	if (!ImGui::Begin("UI Debugger", &Engine.External.EditorStates[static_cast<u8>(EditorUI::UI_General)]))
+	{
+		LastFrameWidgets.clear();
+		ImGui::End();
+		return;
+	}
+
+	if (ImGui::Button("Rebuild Tree"))
+	{
+		BuildTree();
+	}
+	ImGui::SameLine();
+
+	if (ImGui::Button("Reload UI"))
+	{
+		Console->Execute("ui_reload");
+	}
+
+	ImGui::Separator();
+
+	for (CUIWindow* Root : Roots)
+	{
+		DrawNode(Root);
+	}
+
+	ImGui::Separator();
+
+	if (Selected != nullptr && LastFrameWidgets.contains(Selected))
+	{
+		ImGui::Text("Selected: %s", Selected->WindowName().c_str());
+
+		Fvector2 Position = Selected->GetWndPos();
+		Fvector2 Size = Selected->GetWndSize();
+
+		if (ImGui::DragFloat2("Position", reinterpret_cast<float*>(&Position), 1.0f))
+		{
+			Selected->SetWndPos(Position);
+		}
+
+		if (ImGui::DragFloat2("Size", reinterpret_cast<float*>(&Size), 1.0f))
+		{
+			Selected->SetWndSize(Size);
+		}
+	}
+	else
+	{
+		ImGui::Text("No UI window selected.");
+	}
+
+	ImGui::End();
+
+	if (Selected != nullptr && LastFrameWidgets.contains(Selected))
+	{
+		Fvector2 AbsPos;
+		Selected->GetAbsolutePos(AbsPos);
+
+		Fvector2 Size = Selected->GetWndSize();
+
+		AbsPos.x /= get_current_kx();
+		Size.x /= get_current_kx();
+
+		ImDrawList* Draw = ImGui::GetForegroundDrawList();
+
+		Draw->AddRect
+		(
+			ImVec2(AbsPos.x, AbsPos.y),
+			ImVec2(AbsPos.x + Size.x, AbsPos.y + Size.y),
+			IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f
+		);
+	}
+
+	LastFrameWidgets.clear();
+}
+#endif
+
 ui_core::ui_core()
 {
 	if(!g_dedicated_server)
@@ -219,6 +357,10 @@ ui_core::ui_core()
 
 	m_current_scale				= &m_scale_;
 	m_currentPointType			= IUIRender::pttTL;
+
+#ifdef DEBUG_DRAW
+	CImGuiManager::Instance().Subscribe("UIDEBUG", CImGuiManager::ERenderPriority::eMedium, xr_make_delegate(this, &ui_core::RenderUIDebugger));
+#endif
 }
 
 ui_core::~ui_core()
