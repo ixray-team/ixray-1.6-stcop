@@ -148,6 +148,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 			if (ImGui::BeginMenu("Debug"))
 			{
 				ImGui::MenuItem("Audio Debug", nullptr, &States[static_cast<u8>(EditorUI::Audio_General)]);
+				ImGui::MenuItem("UI Debug", nullptr, &States[static_cast<u8>(EditorUI::UI_General)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 			#if defined(IXRAY_PROFILER)
