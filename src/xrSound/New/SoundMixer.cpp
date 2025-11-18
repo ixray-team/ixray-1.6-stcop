@@ -1097,38 +1097,46 @@ Snd_MixerRenderCallback(float* buffer)
 	}
 
 #ifdef DEBUG_DRAW
-
-	/*
-	for (size_t i = 0; i < SND_BLOCKSIZE; i++) {
-		float sample = ((buffer[i * SND_CHANNEL_COUNT + 0] + buffer[i * SND_CHANNEL_COUNT + 1]) * 0.5f);
+	for (size_t i = 0; i < SND_BLOCKSIZE; i++)
+	{
+		float sample = 0.0f;
+		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++)
+		{
+			sample += buffer[i * SND_CHANNEL_COUNT + ch];
+		}
+		
+		sample /= float(SND_CHANNEL_COUNT);
 		mixer.aligned_input_fft[i] = mixer.fft_window[i] * sample;
 	}
 
-	pffft_transform_ordered(mixer.fft_setup, mixer.aligned_input_fft, mixer.aligned_output_fft, NULL, PFFFT_FORWARD);
-	float* fft_out_real = &mixer.aligned_output_fft[0];
-	float* fft_out_imag = &mixer.aligned_output_fft[SND_BLOCKSIZE];
+	pffft_transform_ordered(mixer.fft_setup, mixer.aligned_input_fft, mixer.aligned_output_fft, nullptr, PFFFT_FORWARD);
+	mixer.stats.spectral_data[0] = lin2dB(fabs(mixer.aligned_output_fft[0]) / float(SND_BLOCKSIZE));
 
-	for (size_t i = 0; i < SND_BLOCKSIZE*2; i++) {
-		float sample = sqrtf(powf(fft_out_real[i], 2) + powf(fft_out_imag[i], 2));
-		//float sample = sqrtf(powf(fft_out_real[i], 2) + powf(fft_out_imag[i], 2));
-		//mixer.stats.spectral_data[i] = sample;// lin2dB(sample / f32(SND_BLOCKSIZE));
-		//float sample = (atan2f(fft_out_imag[i], fft_out_real[i]) + M_PI) / M_PI * 2;// () / M_PI * 2;// sqrtf(powf(, 2) + powf(, 2));
-		mixer.stats.spectral_data[i/2] = lin2dB(sample / f32(SND_BLOCKSIZE));
+	for (size_t k = 1; k < SND_BLOCKSIZE / 2; k++)
+	{
+		float re = mixer.aligned_output_fft[k];
+		float im = mixer.aligned_output_fft[SND_BLOCKSIZE + k - 1];
+		float mag = sqrtf(re * re + im * im) / float(SND_BLOCKSIZE);
+		mixer.stats.spectral_data[k] = lin2dB(mag);
 	}
 
-	float volumes[SND_CHANNEL_COUNT] = { 0 };
-	for (size_t j = 0; j < SND_BLOCKSIZE; j++) {
-		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	mixer.stats.spectral_data[SND_BLOCKSIZE / 2] = lin2dB(fabs(mixer.aligned_output_fft[SND_BLOCKSIZE / 2]) / float(SND_BLOCKSIZE));
+
+	float volumes[SND_CHANNEL_COUNT] = {};
+	for (size_t j = 0; j < SND_BLOCKSIZE; j++)
+	{
+		for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+		{
 			volumes[i] = (volumes[i] + fabs(buffer[j * SND_CHANNEL_COUNT + i])) * 0.5f;
 		}
 	}
 
-	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
+	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+	{
 		volumes[i] = lin2dB(volumes[i]);
 	}
 
 	memcpy(mixer.stats.channel_volumes, volumes, sizeof(volumes));
-	*/
 #endif
 
 	mixer.stats.render_time_micros = (Snd_GetTimestamp() - timestamp) / 1000;
@@ -1697,10 +1705,9 @@ Mixer::GetManageMutex()
 	return mixer.manage_lock;
 }
 
-sound_stats
-Mixer::GetStats()
+sound_stats* Mixer::GetStats()
 {
-	return mixer.stats;
+	return &mixer.stats;
 }
 
 float 
@@ -1930,8 +1937,7 @@ Mixer::ResetZones()
 	mixer.zones.clear();
 }
 
-const xr_vector<sound_zone_params>& 
-Mixer::GetZones()
+const xr_vector<sound_zone_params>& Mixer::GetZones()
 {
 	return mixer.zones;
 }

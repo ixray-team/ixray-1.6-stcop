@@ -206,29 +206,34 @@ void RenderUI()
 			return;
 		}
 
-		if (ImGui::BeginTabBar("TabBarAudio")) {
+		if (ImGui::BeginTabBar("TabBarAudio"))
+		{
 			xrSRWLockGuard g1(XRay::Sound::Mixer::GetUpdateMutex());
 			auto stats = XRay::Sound::Mixer::GetStats();
-			u64 free_time_micros = (stats.frame_time_micros - stats.precache_time_micros - stats.render_time_micros);
+			u64 free_time_micros = (stats->frame_time_micros - stats->precache_time_micros - stats->render_time_micros);
 
-			if (ImGui::BeginTabItem("Overall")) {
+			if (ImGui::BeginTabItem("Overall")) 
+			{
 				auto& slots = XRay::Sound::Mixer::GetSlots();
 
 				u32 free_slots = 0;
 				u32 playing_slots = 0;
 				u32 stopped_slots = 0;
 				u32 paused_slots = 0;
-				for (size_t i = 0; i < slots.size(); i++) {
+				for (size_t i = 0; i < slots.size(); i++)
+				{
 					const auto& slot = slots[i];
-					if (slot.sound_name.size() == 0) {
+					if (slot.sound_name.size() == 0)
+					{
 						free_slots++;
 						continue;
 					}
 
-					switch (slot.state) {
-					case XRay::Sound::Mixer::State::Stopped: stopped_slots++; break;
-					case XRay::Sound::Mixer::State::Playing: playing_slots++; break;
-					case XRay::Sound::Mixer::State::Paused: paused_slots++; break;
+					switch (slot.state)
+					{
+						case XRay::Sound::Mixer::State::Stopped: stopped_slots++; break;
+						case XRay::Sound::Mixer::State::Playing: playing_slots++; break;
+						case XRay::Sound::Mixer::State::Paused: paused_slots++; break;
 					}
 				}
 
@@ -236,9 +241,9 @@ void RenderUI()
 				static float max_volume = 0.0f;
 
 #ifdef DEBUG_DRAW
-				/*
-				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
-					ImGui::Text("Volume %i: %.2fdB", i, stats.channel_volumes[i]);
+				for (size_t i = 0; i < SND_CHANNEL_COUNT; i++)
+				{
+					ImGui::Text("Volume %i: %.2fdB", i, stats->channel_volumes[i]);
 				}
 
 				ImGui::SliderFloat("Min Volume", &min_volume, -180.0f, -18.0f, "%.2fdB");
@@ -247,31 +252,32 @@ void RenderUI()
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, 0xBCBF8A6E);
 				ImGui::PushStyleColor(ImGuiCol_PlotHistogram, 0xFF0F0F0F);
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-				ImGui::PlotHistogram("Spectral", stats.spectral_data, SND_BLOCKSIZE / 2, 0, nullptr, min_volume, max_volume, ImVec2(0, 300));
+
+				float AvailWidth = ImGui::GetContentRegionAvail().x;
+				ImGui::PlotHistogram("##Spectral", stats->spectral_data, SND_BLOCKSIZE / 2, 0, nullptr, min_volume, max_volume, ImVec2(AvailWidth, 300));
 				ImGui::PopStyleColor(2);
 				ImGui::PopStyleVar();
 				ImGui::SameLine();
 
 				ImGui::Separator();
-				*/
 #endif
 
 				ImGui::Text("Slots: %d", slots.size() - free_slots);
 				ImGui::Text("    free:          %d", free_slots);
-				ImGui::Text("    possibly free: %d", stats.possible_free_count);
+				ImGui::Text("    possibly free: %d", stats->possible_free_count);
 				ImGui::Text("    playing:       %d", playing_slots);
 				ImGui::Text("    stopped:       %d", stopped_slots);
 				ImGui::Text("    paused:        %d", paused_slots);
-				ImGui::Text("Cache: miss %.1f%%", ((float)stats.cache_miss_count / (((float)stats.cache_hit_count) + EPS)) * 100.0f);
-				ImGui::Text("    hits:   %d", stats.cache_hit_count);
-				ImGui::Text("    misses: %d", stats.cache_miss_count);
-				ImGui::Text("    free:   %d", stats.cache_lines_free);
-				ImGui::Text("    total:  %d", stats.cache_lines_total);
-				ImGui::Text("Timers: free %.1f%%", ((float)free_time_micros / (float)stats.frame_time_micros) * 100.0f);
-				ImGui::Text("    update:   %.2fms", (float)stats.update_time_micros / 1000.0f);
-				ImGui::Text("    frame:    %.2fms", (float)stats.frame_time_micros / 1000.0f);
-				ImGui::Text("    precache: %.2fms", (float)stats.precache_time_micros / 1000.0f);
-				ImGui::Text("    render:   %.2fms", (float)stats.render_time_micros / 1000.0f);
+				ImGui::Text("Cache: miss %.1f%%", ((float)stats->cache_miss_count / (((float)stats->cache_hit_count) + EPS)) * 100.0f);
+				ImGui::Text("    hits:   %d", stats->cache_hit_count);
+				ImGui::Text("    misses: %d", stats->cache_miss_count);
+				ImGui::Text("    free:   %d", stats->cache_lines_free);
+				ImGui::Text("    total:  %d", stats->cache_lines_total);
+				ImGui::Text("Timers: free %.1f%%", ((float)free_time_micros / (float)stats->frame_time_micros) * 100.0f);
+				ImGui::Text("    update:   %.2fms", (float)stats->update_time_micros / 1000.0f);
+				ImGui::Text("    frame:    %.2fms", (float)stats->frame_time_micros / 1000.0f);
+				ImGui::Text("    precache: %.2fms", (float)stats->precache_time_micros / 1000.0f);
+				ImGui::Text("    render:   %.2fms", (float)stats->render_time_micros / 1000.0f);
 				static u32 filter = 0;
 				if (ImGui::BeginListBox("Filter", { 0, 5 * 22 })) {
 					if (ImGui::Selectable("None", filter == 0)) {
@@ -343,9 +349,12 @@ void RenderUI()
 				ImGui::EndTabItem();
 			}
 
-			if (ImGui::BeginTabItem("Zones")) {
-				auto zones = XRay::Sound::Mixer::GetZones();
-				for (auto& zone : zones) {
+			if (ImGui::BeginTabItem("Zones"))
+			{
+				const auto& zones = XRay::Sound::Mixer::GetZones();
+				size_t Iter = 0;
+				for (auto& zone : zones)
+				{
 					ImGui::Text("Zone \"%s\"", zone.name.c_str());
 					ImGui::Text("    pos:  (%.2f, %.2f, %.2f)",  zone.center.x, zone.center.y, zone.center.z);
 					ImGui::Text("    size: (%.2f, %.2f, %.2f)", zone.size.x, zone.size.y, zone.size.z);
@@ -358,6 +367,8 @@ void RenderUI()
 					ImGui::Text("        reflect delay: %.2fs", zone.settings.reflections_delay);
 					ImGui::Text("        room:          %.2fs", zone.settings.room);
 					ImGui::Separator();
+
+					Iter++;
 				}
 				ImGui::EndTabItem();
 			}
