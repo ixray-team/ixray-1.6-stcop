@@ -109,9 +109,9 @@ void RenderHUDAdjustManager()
 							if (p_item->m_measures.m_hands_positions.hands_offsets[0][2] != zero_vel)
 							{
 								xr_strconcat(val_name, "gl_hud_offset_pos", _prefix);
-								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][1]);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[0][2]);
 								xr_strconcat(val_name, "gl_hud_offset_rot", _prefix);
-								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][1]);
+								file.w_fvector3(sect, val_name, p_item->m_measures.m_hands_positions.hands_offsets[1][2]);
 							}
 						};
 
