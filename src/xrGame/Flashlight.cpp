@@ -4,6 +4,7 @@
 #include "player_hud.h"
 #include "Level.h"
 #include "Actor.h"
+#include "ElectronicsProblemsManager.h"
 
 CFlashlight::~CFlashlight()
 {
@@ -41,7 +42,7 @@ void CFlashlight::UpdateCL()
 		float level_electronic_problems = 0.0f;
 		if (pActor != nullptr)
 		{
-			level_electronic_problems = pActor->CurrentElectronicsProblemsCnt();
+			level_electronic_problems = Level().GetElectronicsProblemsManager()->CurrentElectronicsProblemsCnt();
 		}
 
 		if (m_fElectronicProblems.x > 0.0f && level_electronic_problems > 0.0f)
