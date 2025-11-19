@@ -566,6 +566,7 @@ Snd_SlotOcclusion(u32 slot_idx, float dt, float* occ_volume)
 
 		if (occ_volume != nullptr) {
 			float occ = Sound->get_occlusion_to(mixer.P, pos);
+			clamp(occ, 0.f, 1.f);
 			*occ_volume = occ;
 		}
 	}
@@ -955,6 +956,13 @@ Snd_MixerRenderCallback(float* buffer)
 		// Deferred stopping
 		bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
 		
+		// Update fade volume for non-intro sounds
+		if (!is_music) {
+			float fade_scale = (slot.stopping_position != (u32)-1) ? -1.0f : 1.0f;
+			slot.fade_volume += dt * 10.0f * fade_scale;
+			clamp(slot.fade_volume, 0.0f, 1.0f);
+		}
+		
 		if (slot.stopping_position != (u32)-1) {
 			u32 stopping_total = source.pub.frames_total - slot.stopping_position;
 			if (stopping_total != 0) {
@@ -968,7 +976,7 @@ Snd_MixerRenderCallback(float* buffer)
 
 		// Apply final volumes
 		float slot_volume = volumes.x * volumes.y * volumes.z;
-		float volume_final = occ_volume * slot_volume * (is_music ? mixer.music_volume : mixer.effect_volume);
+		float volume_final = occ_volume * slot_volume * (is_music ? mixer.music_volume : mixer.effect_volume) * slot.fade_volume;
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
