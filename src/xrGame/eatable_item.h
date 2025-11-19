@@ -5,19 +5,20 @@
 class CPhysicItem;
 class CEntityAlive;
 
-class CEatableItem : public CInventoryItem {
+class CEatableItem : public CInventoryItem
+{
 private:
-	typedef CInventoryItem	inherited;
+	using inherited = CInventoryItem;
 
 protected:
-	CPhysicItem* m_physic_item;
+	CPhysicItem* m_physic_item = nullptr;
 
-	u8 m_iMaxUses;
-	u8 m_iRemainingUses;
-	BOOL m_bRemoveAfterUse;
-	BOOL m_bConsumeChargeOnUse;
-	float m_fWeightFull;
-	float m_fWeightEmpty;
+	u8 m_iMaxUses = 1;
+	u8 m_iRemainingUses = 1;
+	BOOL m_bRemoveAfterUse = TRUE;
+	BOOL m_bConsumeChargeOnUse = FALSE;
+	float m_fWeightFull = 0.0f;
+	float m_fWeightEmpty = 0.0f;
 	shared_str m_sUseAnimator;
 	shared_str m_sLastUseAnimator;
 
@@ -25,27 +26,27 @@ public:
 	shared_str UseText;
 
 public:
-	CEatableItem();
-	virtual ~CEatableItem();
-	virtual	DLL_Pure* _construct();
+	CEatableItem() = default;
+	virtual ~CEatableItem() = default;
+	virtual	DLL_Pure* _construct() override;
 
-	virtual CEatableItem* cast_eatable_item() { return this; }
-	virtual CInventoryItem* cast_inventory_item() { return this; }
+	virtual CEatableItem* cast_eatable_item() override { return this; }
+	virtual CInventoryItem* cast_inventory_item() override { return this; }
 
-	virtual void			Load(LPCSTR section);
-	virtual void			load(IReader& packet);
-	virtual void			save(NET_Packet& packet);
-	virtual bool			Useful() const;
+	virtual void Load(LPCSTR section) override;
+	virtual void load(IReader& packet) override;
+	virtual void save(NET_Packet& packet) override;
+	virtual bool Useful() const override;
 
-	virtual BOOL			net_Spawn(CSE_Abstract* DC);
+	virtual BOOL net_Spawn(CSE_Abstract* DC) override;
 
-	virtual void			OnH_B_Independent(bool just_before_destroy);
-	virtual void			OnH_A_Independent();
-	virtual	bool			UseBy(CEntityAlive* npc);
-	virtual float			Weight() const;
-	
-	virtual	void			Hit(SHit* pHDS);
-	virtual void			EatableEffects();
+	virtual void OnH_B_Independent(bool just_before_destroy) override;
+	virtual void OnH_A_Independent() override;
+	virtual	bool UseBy(CEntityAlive* npc);
+	virtual float Weight() const override;
+
+	virtual	void Hit(SHit* pHDS) override;
+	void EatableEffects();
 
 	bool Empty() const { return m_iRemainingUses == 0; };
 	IC bool CanDelete() const { return m_bRemoveAfterUse == 1; };
