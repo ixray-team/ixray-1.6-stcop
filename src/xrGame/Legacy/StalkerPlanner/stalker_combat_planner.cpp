@@ -104,11 +104,6 @@ void CStalkerCombatPlanner::update				()
 
 	object().react_on_grenades		();
 	object().react_on_member_death	();
-
-//	const CEntityAlive				*enemy = object().memory().enemy().selected();
-//	VERIFY							(enemy);
-//	const CAI_Stalker				*stalker = smart_cast<const CAI_Stalker*>(enemy);
-//	m_last_wounded					= stalker && stalker->wounded();
 }
 
 void CStalkerCombatPlanner::initialize			()
@@ -170,32 +165,38 @@ void CStalkerCombatPlanner::initialize			()
 	object().agent_manager().member().register_in_combat	(m_object);
 }
 
-void CStalkerCombatPlanner::finalize			()
+void CStalkerCombatPlanner::finalize()
 {
-	inherited::finalize		();
+	inherited::finalize();
 
 	if (!object().g_Alive())
+	{
 		return;
-
-	object().memory().danger().time_line					(Device.dwTimeGlobal + 3000);
-	if (object().agent_manager().member().registered_in_combat(m_object))
-		object().agent_manager().member().unregister_in_combat	(m_object);
-
-	object().m_clutched_hammer_enabled						= false;
-
-//	object().sound().remove_active_sounds					(eStalkerSoundMaskNoDanger);
-
-	if (object().inventory().ItemFromSlot(INV_SLOT_2)) 
-	{
-		CWeaponMagazined				*temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(INV_SLOT_2));
-		if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
-			object().set_goal			(eObjectActionIdle,object().inventory().ItemFromSlot(INV_SLOT_2));
 	}
-	else if (object().inventory().ItemFromSlot(PISTOL_SLOT_NEW))
+
+	object().memory().danger().time_line(Device.dwTimeGlobal + 3000);
+	if (object().agent_manager().member().registered_in_combat(m_object))
 	{
-		CWeaponMagazined* temp = smart_cast<CWeaponMagazined*>(object().inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+		object().agent_manager().member().unregister_in_combat(m_object);
+	}
+
+	object().m_clutched_hammer_enabled = false;
+
+	if (PIItem item_from_slot_2 = object().inventory().ItemFromSlot(INV_SLOT_2))
+	{
+		CWeaponMagazined* temp = item_from_slot_2->cast_weapon_magazined();
 		if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
+		{
+			object().set_goal(eObjectActionIdle, object().inventory().ItemFromSlot(INV_SLOT_2));
+		}
+	}
+	else if (PIItem item_from_slot_pistol = object().inventory().ItemFromSlot(PISTOL_SLOT_NEW))
+	{
+		CWeaponMagazined* temp = item_from_slot_pistol->cast_weapon_magazined();
+		if (object().inventory().ActiveItem() && temp && (object().inventory().ActiveItem()->object().ID() == temp->ID()))
+		{
 			object().set_goal(eObjectActionIdle, object().inventory().ItemFromSlot(PISTOL_SLOT_NEW));
+		}
 	}
 }
 

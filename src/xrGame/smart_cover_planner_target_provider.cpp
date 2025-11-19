@@ -85,25 +85,33 @@ void target_fire::initialize		()
 	inherited::initialize				();
 }
 
-void target_fire::execute			()
+void target_fire::execute()
 {
-	inherited::execute					();
+	inherited::execute();
 
-	if ( !m_inertia_time )
+	if (!m_inertia_time)
+	{
 		return;
+	}
 
-	if ( !completed() )
+	if (!completed())
+	{
 		return;
+	}
 
-	if ( this->m_object->m_object->ready_to_kill() ) {
-		CWeapon			*weapon = smart_cast<CWeapon*>(this->m_object->m_object->m_best_item_to_kill);
-		if ( weapon ) {
-			if ( weapon->GetAmmoElapsed() <= weapon->GetAmmoMagSize()/6 )
+	if (this->m_object->m_object->ready_to_kill())
+	{
+		PIItem item_to_kill = this->m_object->m_object->m_best_item_to_kill;
+		if (CWeapon* weapon = item_to_kill != nullptr ? item_to_kill->cast_weapon() : nullptr)
+		{
+			if (weapon->GetAmmoElapsed() <= weapon->GetAmmoMagSize() / 6)
+			{
 				return;
+			}
 		}
 	}
 
-	m_storage->set_property				(StalkerDecisionSpace::eWorldPropertyLoopholeTooMuchTimeFiring, true);
+	m_storage->set_property(StalkerDecisionSpace::eWorldPropertyLoopholeTooMuchTimeFiring, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////
