@@ -501,23 +501,22 @@ void				game_cl_Deathmatch::OnMoneyChanged				()
 	}
 }
 
-void game_cl_Deathmatch::TryToDefuseAllWeapons	(aditional_ammo_t & dest_ammo)
+void game_cl_Deathmatch::TryToDefuseAllWeapons(aditional_ammo_t& dest_ammo)
 {
 	game_PlayerState* ps = Game().local_player;
 	VERIFY2(ps, "local player not initialized");
 	CObject* finded_object = Level().Objects.net_Find(ps->GameID);
 	CActor* actor = finded_object != nullptr ? finded_object->cast_actor() : nullptr;
-	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD),
-		make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
+	R_ASSERT2(actor || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD), make_string<const char*>("bad actor: not found in game (GameID = %d)", ps->GameID));
 
-	TIItemContainer const & all_items = actor->inventory().m_all;  
+	TIItemContainer const& all_items = actor->inventory().m_all;
 
-	for (TIItemContainer::const_iterator i = all_items.begin(),
-		ie = all_items.end(); i != ie; ++i)
+	for (const PIItem& item : all_items)
 	{
-		CWeapon* tmp_weapon = smart_cast<CWeapon*>(*i);
-		if (tmp_weapon)
+		if (CWeapon* tmp_weapon = item->cast_weapon())
+		{
 			TryToDefuseWeapon(tmp_weapon, all_items, dest_ammo);
+		}
 	}
 }
 
@@ -534,7 +533,7 @@ struct AmmoSearcherPredicate
 
 	bool operator()(PIItem const & item)
 	{
-		CWeaponAmmo* temp_ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* temp_ammo = item != nullptr ? item->cast_weapon_ammo() : nullptr;
 		if (!temp_ammo)
 			return false;
 		

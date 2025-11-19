@@ -3,35 +3,26 @@
 // BottleItem - бутылка с напитком, которую можно разбить
 ///////////////////////////////////////////////////////////////
 
-
 #pragma once
 
 #include "FoodItem.h"
 #include "../xrScripts/script_export_space.h"
 
-
-class CBottleItem: public CFoodItem
+class CBottleItem final : public CFoodItem
 {
-private:
-    typedef	CFoodItem inherited;
+	using inherited = CFoodItem;
 public:
-				CBottleItem			();
-	virtual		~CBottleItem		();
+	CBottleItem() = default;
+	virtual	~CBottleItem();
 
+	virtual void Load(LPCSTR section) override;
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
+	virtual	void Hit(SHit* pHDS) override;
+	void BreakToPieces();
 
-	virtual void Load				(LPCSTR section);
-	
-
-	void	OnEvent					(NET_Packet& P, u16 type);
-
-
-	virtual	void	Hit				(SHit* pHDS);
-	
-
-			void					BreakToPieces		();
 protected:
 	//партиклы разбивания бутылки
 	shared_str m_sBreakParticles;
-	ref_sound sndBreaking;
+	ref_sound sndBreaking = {};
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

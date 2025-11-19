@@ -2560,19 +2560,6 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ShowAnimationStats, "ai_show_animation_stats");
 #endif // DEBUG
 
-	extern Fvector obb_c, obb_s;
-	CMD4(CCC_Vector3, "obb_c", &obb_c, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
-	CMD4(CCC_Vector3, "obb_s", &obb_s, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
-
-	extern Fvector col_pos, col_rot;
-	CMD4(CCC_Vector3, "col_pos", &col_pos, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
-	CMD4(CCC_Vector3, "col_rot", &col_rot, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
-
-	extern float col_rot_speed, col_pos_speed;
-
-	CMD4(CCC_Float, "col_pos_speed", &col_pos_speed, -1000.0f, 1000.0f);
-	CMD4(CCC_Float, "col_rot_speed", &col_rot_speed, -1000.0f, 1000.0f);
-
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask, "ai_ignore_actor", &psAI_Flags, aiIgnoreActor);
 	CMD1(CCC_TuneAttachableItem, "dbg_adjust_attachable_item");
