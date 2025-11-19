@@ -3,7 +3,7 @@
 #include "../controlled_entity.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CTushkano :	public CBaseMonster,
+class CTushkano final :	public CBaseMonster,
 					public CControlledEntity<CTushkano> {
 
 

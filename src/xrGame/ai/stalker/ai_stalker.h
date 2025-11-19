@@ -103,7 +103,7 @@ struct SBoneProtections;
 class CDangerLocation;
 class CRestrictedObject;
 
-class CAI_Stalker : 
+class CAI_Stalker final : 
 	public CCustomMonster, 
 	public CObjectHandler,
 	public CAI_PhraseDialogManager,

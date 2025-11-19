@@ -2,7 +2,7 @@
 #include "../basemonster/base_monster.h"
 #include "../../../../xrScripts/script_export_space.h"
 
-class CSnork :	public CBaseMonster {
+class CSnork final :	public CBaseMonster {
 	typedef		CBaseMonster		inherited;
 
 	SVelocityParam	m_fsVelocityJumpPrepare;

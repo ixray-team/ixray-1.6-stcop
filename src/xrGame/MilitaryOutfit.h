@@ -3,16 +3,13 @@
 // MilitaryOutfit - защитный костюм военного
 ///////////////////////////////////////////////////////////////
 
-
 #pragma once
 
 #include "CustomOutfit.h"
 
-class CMilitaryOutfit: public CCustomOutfit
+class CMilitaryOutfit final : public CCustomOutfit
 {
-private:
-    typedef	CCustomOutfit inherited;
 public:
-	CMilitaryOutfit(void);
-	virtual ~CMilitaryOutfit(void);
+	CMilitaryOutfit() = default;
+	virtual ~CMilitaryOutfit() = default;
 };

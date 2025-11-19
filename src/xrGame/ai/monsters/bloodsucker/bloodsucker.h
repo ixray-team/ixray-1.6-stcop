@@ -9,7 +9,7 @@
 #include "bloodsucker_alien.h"
 
 
-class CAI_Bloodsucker : public CBaseMonster, 
+class CAI_Bloodsucker final : public CBaseMonster, 
 						public CControlledActor {
 
 	typedef		CBaseMonster	inherited;
