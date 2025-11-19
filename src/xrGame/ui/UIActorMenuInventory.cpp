@@ -1111,14 +1111,14 @@ void CUIActorMenu::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, 
 	}
 	if (pWeapon->cast_weapon_magazined() != nullptr && IsGameTypeSingleCompatible())
 	{
-		bool b = (pWeapon->GetAmmoElapsed() || pWeapon->IsChamber() && pWeapon->GetAmmoChamberElapsed());
+		bool b = pWeapon->GetState() != CWeapon::EWeaponStates::eReload && (pWeapon->GetAmmoElapsed() || pWeapon->IsChamber() && pWeapon->GetAmmoChamberElapsed() && !pWeapon->IsGrenadeMode());
 		if (!b)
 		{
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
 				CWeapon* pChildWpn = (CWeapon*)cell_item->Child(i)->m_pData;
 				CWeaponMagazined* weap_mag = pChildWpn ? pChildWpn->cast_weapon_magazined() : nullptr;
-				if (weap_mag != nullptr && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed()))
+				if (weap_mag != nullptr && weap_mag->GetState() != CWeapon::EWeaponStates::eReload && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed() && !weap_mag->IsGrenadeMode()))
 				{
 					b = true;
 					break; // for
@@ -1556,7 +1556,10 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			}
 
 			UnloadWeapon(weap_mag);
-			weap_mag->UnloadChamber();
+			if (!weap_mag->IsGrenadeMode())
+			{
+				weap_mag->UnloadChamber();
+			}
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
 				CUICellItem* child_itm = cell_item->Child(i);
@@ -1565,7 +1568,10 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 				if (child_weap_mag != nullptr)
 				{
 					UnloadWeapon(child_weap_mag);
-					child_weap_mag->UnloadChamber();
+					if (!child_weap_mag->IsGrenadeMode())
+					{
+						child_weap_mag->UnloadChamber();
+					}
 				}
 			}
 			break;
