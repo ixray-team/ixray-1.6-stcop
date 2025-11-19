@@ -185,30 +185,32 @@ CStalkerActionSmartTerrain::CStalkerActionSmartTerrain	(CAI_Stalker *object, LPC
 	set_inertia_time		(30000);
 }
 
-void CStalkerActionSmartTerrain::initialize				()
+void CStalkerActionSmartTerrain::initialize()
 {
-	inherited::initialize							();
-//	object().movement().set_desired_position		(0);
-	object().movement().set_desired_direction		(0);
-	object().movement().game_selector().set_selection_type		(eSelectionTypeMask);
-	object().movement().set_detail_path_type		(DetailPathManager::eDetailPathTypeSmooth);
-	object().movement().set_body_state				(eBodyStateStand);
-	object().movement().set_movement_type			(eMovementTypeWalk);
-	object().movement().set_mental_state			(eMentalStateFree);
-	object().sight().setup							(CSightAction(SightManager::eSightTypePathDirection));
+	inherited::initialize();
+	object().movement().set_desired_direction(0);
+	object().movement().game_selector().set_selection_type(eSelectionTypeMask);
+	object().movement().set_detail_path_type(DetailPathManager::eDetailPathTypeSmooth);
+	object().movement().set_body_state(eBodyStateStand);
+	object().movement().set_movement_type(eMovementTypeWalk);
+	object().movement().set_mental_state(eMentalStateFree);
+	object().sight().setup(CSightAction(SightManager::eSightTypePathDirection));
 
-	if (!object().best_weapon()) {
-		object().CObjectHandler::set_goal		(eObjectActionIdle);
+	if (!object().best_weapon())
+	{
+		object().CObjectHandler::set_goal(eObjectActionIdle);
 		return;
 	}
 
-	object().CObjectHandler::set_goal			(eObjectActionIdle);
+	object().CObjectHandler::set_goal(eObjectActionIdle);
 
-	CWeapon										*best_weapon = smart_cast<CWeapon*>(object().best_weapon());
+	CWeapon* best_weapon = object().best_weapon()->cast_weapon();
 	if (object().CObjectHandler::weapon_strapped(best_weapon))
+	{
 		return;
+	}
 
-	object().CObjectHandler::set_goal			(eObjectActionIdle,object().best_weapon());
+	object().CObjectHandler::set_goal(eObjectActionIdle, object().best_weapon());
 }
 
 void CStalkerActionSmartTerrain::finalize				()

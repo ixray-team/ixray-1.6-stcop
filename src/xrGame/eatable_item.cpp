@@ -20,26 +20,10 @@
 #include "Actor.h"
 #include "ActorCondition.h"
 
-CEatableItem::CEatableItem()
+DLL_Pure* CEatableItem::_construct()
 {
-	m_physic_item = nullptr;
-	m_fWeightFull = 0;
-	m_fWeightEmpty = 0;
-
-	m_iMaxUses = 1;
-	m_iRemainingUses = 1;
-	m_bRemoveAfterUse = true;
-	m_bConsumeChargeOnUse = true;
-}
-
-CEatableItem::~CEatableItem()
-{
-}
-
-DLL_Pure *CEatableItem::_construct	()
-{
-	m_physic_item	= smart_cast<CPhysicItem*>(this);
-	return			(inherited::_construct());
+	m_physic_item = smart_cast<CPhysicItem*>(this);
+	return inherited::_construct();
 }
 
 void CEatableItem::Load(LPCSTR section)
@@ -71,7 +55,7 @@ void CEatableItem::Load(LPCSTR section)
 
 	UseText = READ_IF_EXISTS(pSettings, r_string, section, "use_text", "st_use");
 
-	m_bRemoveAfterUse = READ_IF_EXISTS( pSettings, r_bool, section, "remove_after_use", TRUE );
+	m_bRemoveAfterUse = READ_IF_EXISTS(pSettings, r_bool, section, "remove_after_use", TRUE);
 	m_bConsumeChargeOnUse = READ_IF_EXISTS(pSettings, r_bool, section, "consume_charge_on_use", TRUE);
 	m_fWeightFull = m_weight;
 	m_fWeightEmpty = READ_IF_EXISTS(pSettings, r_float, section, "empty_weight", 0.0f);
@@ -79,9 +63,13 @@ void CEatableItem::Load(LPCSTR section)
 	if (IsUsingCondition())
 	{
 		if (m_iMaxUses > 0)
+		{
 			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+		}
 		else
-			SetCondition(0);
+		{
+			SetCondition(0.0f);
+		}
 	}
 }
 
@@ -99,14 +87,21 @@ void CEatableItem::save(NET_Packet& packet)
 
 BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
-	if (!inherited::net_Spawn(DC)) return FALSE;
+	if (!inherited::net_Spawn(DC))
+	{
+		return FALSE;
+	}
 
 	if (IsUsingCondition())
 	{
 		if (m_iMaxUses > 0)
+		{
 			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+		}
 		else
-			SetCondition(0);
+		{
+			SetCondition(0.0f);
+		}
 	}
 
 	return TRUE;
@@ -114,37 +109,50 @@ BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
 
 bool CEatableItem::Useful() const
 {
-	if(!inherited::Useful()) return false;
+	if (!inherited::Useful())
+	{
+		return false;
+	}
 
 	//проверить не все ли еще съедено
-	if (m_iRemainingUses == 0 && CanDelete()) return false;
+	if (m_iRemainingUses == 0 && CanDelete())
+	{
+		return false;
+	}
 
 	return true;
 }
 
-void CEatableItem::OnH_A_Independent() 
+void CEatableItem::OnH_A_Independent()
 {
 	inherited::OnH_A_Independent();
-	if(!Useful()) {
-		if (object().Local() && OnServer())	object().DestroyObject	();
-	}	
+	if (!Useful())
+	{
+		if (object().Local() && OnServer())
+		{
+			object().DestroyObject();
+		}
+	}
 }
 
 void CEatableItem::OnH_B_Independent(bool just_before_destroy)
 {
-	if(!Useful()) 
+	if (!Useful())
 	{
 		object().setVisible(FALSE);
 		object().setEnabled(FALSE);
-		if (m_physic_item)
-			m_physic_item->m_ready_to_destroy	= true;
+		if (m_physic_item != nullptr)
+		{
+			m_physic_item->m_ready_to_destroy = true;
+		}
 	}
+
 	inherited::OnH_B_Independent(just_before_destroy);
 }
 
 bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 {
-	CInventoryOwner* IO = smart_cast<CInventoryOwner*>(entity_alive);
+	CInventoryOwner* IO = entity_alive != nullptr ? entity_alive->cast_inventory_owner() : nullptr;
 	R_ASSERT(IO);
 	R_ASSERT(m_pInventory == IO->m_inventory);
 	R_ASSERT(object().H_Parent()->ID() == entity_alive->ID());
@@ -178,7 +186,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 			if (actor && actor->HudAnimator())
 			{
 				actor->StartAnimator(m_iMaxUses > 1 && m_iRemainingUses == 1 && m_sLastUseAnimator.size() > 0 ? m_sLastUseAnimator : m_sUseAnimator);
-				actor->HudAnimator()->SetLeftCallback({this, &CEatableItem::EatableEffects});
+				actor->HudAnimator()->SetLeftCallback({ this, &CEatableItem::EatableEffects });
 			}
 		}
 	}
@@ -209,9 +217,13 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 		if (IsUsingCondition())
 		{
 			if (m_iMaxUses > 0)
+			{
 				SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+			}
 			else
-				SetCondition(0);
+			{
+				SetCondition(0.0f);
+			}
 		}
 
 		if (CurrentGameUI())
@@ -227,7 +239,7 @@ void CEatableItem::EatableEffects()
 {
 	CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 
-	if (!actor)
+	if (actor == nullptr)
 	{
 		return;
 	}
@@ -262,9 +274,13 @@ void CEatableItem::EatableEffects()
 	if (IsUsingCondition())
 	{
 		if (m_iMaxUses > 0)
+		{
 			SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+		}
 		else
-			SetCondition(0);
+		{
+			SetCondition(0.0f);
+		}
 	}
 
 	if (CurrentGameUI())
@@ -285,7 +301,7 @@ float CEatableItem::Weight() const
 	if (IsUsingCondition())
 	{
 		float net_weight = m_fWeightFull - m_fWeightEmpty;
-		float use_weight = m_iMaxUses > 0 ? (net_weight / m_iMaxUses) : 0.f;
+		float use_weight = m_iMaxUses > 0 ? (net_weight / m_iMaxUses) : 0.0f;
 
 		res = m_fWeightEmpty + (m_iRemainingUses * use_weight);
 	}
@@ -301,22 +317,22 @@ void CEatableItem::Hit(SHit* pHDS)
 using namespace luabind;
 
 #pragma optimize("s",on)
-void CEatableItem::script_register(lua_State *L)
+void CEatableItem::script_register(lua_State* L)
 {
 	module(L)
 		[
 			class_<CEatableItem>("CEatableItem")
-			.def("Empty", &CEatableItem::Empty)
-			.def("CanDelete", &CEatableItem::CanDelete)
-			.def("GetMaxUses", &CEatableItem::GetMaxUses)
-			.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
-			.def("SetRemainingUses", &CEatableItem::SetRemainingUses)
+				.def("Empty", &CEatableItem::Empty)
+				.def("CanDelete", &CEatableItem::CanDelete)
+				.def("GetMaxUses", &CEatableItem::GetMaxUses)
+				.def("GetRemainingUses", &CEatableItem::GetRemainingUses)
+				.def("SetRemainingUses", &CEatableItem::SetRemainingUses)
 
-			.def_readwrite("m_bRemoveAfterUse", &CEatableItem::m_bRemoveAfterUse)
-			.def_readwrite("m_fWeightFull", &CEatableItem::m_fWeightFull)
-			.def_readwrite("m_fWeightEmpty", &CEatableItem::m_fWeightEmpty)
+				.def_readwrite("m_bRemoveAfterUse", &CEatableItem::m_bRemoveAfterUse)
+				.def_readwrite("m_fWeightFull", &CEatableItem::m_fWeightFull)
+				.def_readwrite("m_fWeightEmpty", &CEatableItem::m_fWeightEmpty)
 
-			.def("Weight", &CEatableItem::Weight)
-			.def("Cost", &CEatableItem::Cost)
+				.def("Weight", &CEatableItem::Weight)
+				.def("Cost", &CEatableItem::Cost)
 		];
 }

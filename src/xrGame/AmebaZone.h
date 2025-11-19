@@ -5,7 +5,7 @@
 #include "ZoneVisual.h"
 #include "../../../xrphysics/PHUpdateObject.h"
 
-class CAmebaZone :
+class CAmebaZone final :
 	public CVisualZone,
 	public CPHUpdateObject
 {
