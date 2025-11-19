@@ -2,10 +2,10 @@
 #include "ActorBackpack.h"
 #include "Actor.h"
 #include "Inventory.h"
-#include "../../xrSound/ai_sounds.h"
+//#include "../../xrSound/ai_sounds.h"
 
-static LPCSTR backpack_on = "interface\\inv_backpack_on";
-static LPCSTR backpack_off = "interface\\inv_backpack_off";
+static constexpr LPCSTR backpack_on = "interface\\inv_backpack_on";
+static constexpr LPCSTR backpack_off = "interface\\inv_backpack_off";
 
 CBackpack::CBackpack()
 {
