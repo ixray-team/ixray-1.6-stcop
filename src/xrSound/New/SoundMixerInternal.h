@@ -46,6 +46,7 @@ struct sound_slot_state
     //ref_sound * sound;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
+    f32 fade_volume = 1.0f;
 };
 
 namespace XRay::Sound::Mixer
