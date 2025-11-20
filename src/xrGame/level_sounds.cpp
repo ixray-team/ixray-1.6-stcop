@@ -1,8 +1,7 @@
 #include "StdAfx.h"
-
-
 #include "Level.h"
 #include "level_sounds.h"
+#include "../xrSound/ai_sounds.h"
 
 //-----------------------------------------------------------------------------
 // static level sounds
@@ -12,7 +11,7 @@ void SStaticSound::Load(IReader& F)
 	R_ASSERT				(F.find_chunk(0));
 	xr_string				wav_name;
 	F.r_stringZ				(wav_name);
-	m_Source.create			(wav_name.c_str(),st_Effect,sg_SourceType);
+	m_Source.create			(wav_name.c_str(),st_Effect, ESoundTypes::SOUND_TYPE_WORLD_AMBIENT);
 	F.r_fvector3			(m_Position);
 	m_Volume				= F.r_float();
 	m_Freq					= F.r_float();
