@@ -18,7 +18,7 @@ protected:
 	xr_vector<CAttachableItem*>		m_attached_objects;
 
 public:
-	virtual CGameObject*		cast_game_object		() = 0;
+	virtual CGameObject* cast_game_object() { return nullptr; }
 	virtual CAttachmentOwner*	cast_attachment_owner	() {return this;}
 public:
 	IC						CAttachmentOwner	();
