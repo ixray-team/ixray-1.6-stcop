@@ -32,6 +32,7 @@
 #include "SoundBackend.h"
 #include "SoundDSP.h"
 #include "../Sound.h"
+#include "../ai_sounds.h"
 #include "pffft.h"
 
 #ifndef DISABLE_STEAM_AUDIO
@@ -955,12 +956,20 @@ Snd_MixerRenderCallback(float* buffer)
 
 		// Deferred stopping
 		bool is_music = (slot.flags & (u16)Mixer::Flags::Intro);
-		
-		// Update fade volume for non-intro sounds
-		if (!is_music) {
-			float fade_scale = (slot.stopping_position != (u32)-1) ? -1.0f : 1.0f;
-			slot.fade_volume += dt * 10.0f * fade_scale;
-			clamp(slot.fade_volume, 0.0f, 1.0f);
+
+		if (slot.flags & (u16)Mixer::Flags::NoOCC)
+		{
+			occ_volume = 1.f;
+		}
+
+		// Update fade volume for non-intro sounds (fade in on startup)
+		//if (!is_music) {
+		//	slot.fade_volume += dt * 10.0f;
+		//	clamp(slot.fade_volume, 0.0f, 1.0f);
+		//}
+		//else
+		{
+			slot.fade_volume = 1.f;
 		}
 		
 		if (slot.stopping_position != (u32)-1) {
@@ -976,7 +985,7 @@ Snd_MixerRenderCallback(float* buffer)
 
 		// Apply final volumes
 		float slot_volume = volumes.x * volumes.y * volumes.z;
-		float volume_final = occ_volume * slot_volume * (is_music ? mixer.music_volume : mixer.effect_volume) * slot.fade_volume;
+		float volume_final = occ_volume * slot_volume * ((slot.flags & (u16)Mixer::Flags::Music) ? mixer.music_volume : mixer.effect_volume) * slot.fade_volume;
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
@@ -1299,6 +1308,7 @@ DestroyInternal(int slot)
 	mixer.slots[slot - 1].state = Mixer::State::Stopped;
 	mixer.slots[slot - 1].prev_state = Mixer::State::Stopped;
 	mixer.slots[slot - 1].fake_state = Mixer::State::Stopped;
+	mixer.slots[slot - 1].fade_volume = 1.0f;
 	mixer.free_slots.push_back(slot);
 }
 
@@ -1422,6 +1432,8 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			mixer.slots[cmd.slot - 1].stopping_position = (u32)-1;
 			mixer.slots[cmd.slot - 1].sound_name = cmd.string_storage.c_str();
 			mixer.slots[cmd.slot - 1].flags = flags;
+			mixer.slots[cmd.slot - 1].fade_volume = 0.0f;
+			
 			
 			if (handler != nullptr) {
 				float clip = source.pub.max_ai_distance * source.pub.volume;
