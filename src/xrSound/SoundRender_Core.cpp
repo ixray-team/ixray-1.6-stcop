@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "../xrEngine/xrLevel.h"
 #include "cl_intersect.h"
 #include "SoundRender_Core.h"
@@ -9,6 +8,7 @@
 #include "New/SoundMixerInternal.h"
 #include "../xrEngine/IRenderable.h"
 #include "Recorder/SoundVoiceChat.h"
+#include "ai_sounds.h"
 
 using namespace XRay::Sound;
 
@@ -473,26 +473,51 @@ void CSoundRender_Core::clone(ref_sound& S, const ref_sound& from, esound_type s
 	S._p->s_type = sound_type;
 }
 
+u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
+{
+	u32 MixedFlags = 0;
+
+	if (flags & sm_Looped)
+	{
+		MixedFlags |= (u32)Mixer::Flags::Looped;
+	}
+
+	if (flags & sm_NoFeedback)
+	{
+		MixedFlags |= (u32)Mixer::Flags::NoFeedback;
+	}
+
+	if ((flags & sm_Intro))
+	{
+		if (S._sound_type() == st_Music)
+		{
+			MixedFlags |= (u32)Mixer::Flags::Music;
+		}
+
+		MixedFlags |= (u32)Mixer::Flags::Intro;
+	}
+	else if ((flags & sm_2D) == 0)
+	{
+		MixedFlags |= (u32)Mixer::Flags::Spatial;
+	}
+
+	if (S._g_type() == ESoundTypes::SOUND_TYPE_WORLD_AMBIENT)
+	{
+		MixedFlags |= (u32)Mixer::Flags::NoOCC;
+	}
+
+	return MixedFlags;
+}
+
 void CSoundRender_Core::play(ref_sound& S, CObject* O, u32 flags, float delay)
 {
 	if (!bPresent || !S.handle()) return;
 	S._p->g_object = O;
 
-	u32 mixer_flags = 0;
-	if (flags & sm_Looped) {
-		mixer_flags |= (u32)Mixer::Flags::Looped;
-	} if (flags & sm_NoFeedback) {
-		mixer_flags |= (u32)Mixer::Flags::NoFeedback;
-	}
+	u32 mixer_flags = GetMixedFlags(flags, S);
 
-	if ((flags & sm_Intro)) {
-		mixer_flags |= (u32)Mixer::Flags::Intro;
-	}
-	else if ((flags & sm_2D) == 0) {
-		mixer_flags |= (u32)Mixer::Flags::Spatial;
-	}
-
-	if (!S.slot()) {
+	if (!S.slot())
+	{
 		S._p->slot = Mixer::Create();
 	}
 
@@ -511,20 +536,7 @@ void CSoundRender_Core::play_no_feedback(ref_sound& S, CObject* O, u32 flags, fl
 		range_ptr = &range_vec;
 	}
 
-	u32 mixer_flags = (u32)Mixer::Flags::NoFeedback;
-	if (flags & sm_Looped) {
-		mixer_flags |= (u32)Mixer::Flags::Looped;
-	} if (flags & sm_NoFeedback) {
-		mixer_flags |= (u32)Mixer::Flags::NoFeedback;
-	}
-
-	if ((flags & sm_Intro)) {
-		mixer_flags |= (u32)Mixer::Flags::Intro;
-	}
-	else if ((flags & sm_2D) == 0) {
-		mixer_flags |= (u32)Mixer::Flags::Spatial;
-	}
-
+	u32 mixer_flags = (u32)Mixer::Flags::NoFeedback | GetMixedFlags(flags, S);
 	Mixer::PlayNoFeedback(mixer_flags, &S, O, delay, freq, vol, range_ptr, pos);
 }
 
@@ -539,19 +551,7 @@ void CSoundRender_Core::play_at_pos(ref_sound& S, CObject* O, const Fvector& pos
 		S._p->slot = Mixer::Create();
 	}
 
-	u32 mixer_flags = (u32)Mixer::Flags::NoPosUpdate;
-	if (flags & sm_Looped) {
-		mixer_flags |= (u32)Mixer::Flags::Looped;
-	} if (flags & sm_NoFeedback) {
-		mixer_flags |= (u32)Mixer::Flags::NoFeedback;
-	}
-
-	if ((flags & sm_Intro)) {
-		mixer_flags |= (u32)Mixer::Flags::Intro;
-	} else if ((flags & sm_2D) == 0) {
-		mixer_flags |= (u32)Mixer::Flags::Spatial;
-	}
-
+	u32 mixer_flags = (u32)Mixer::Flags::NoPosUpdate | GetMixedFlags(flags, S);
 	Mixer::Play(S.slot(), mixer_flags, &S, delay);
 	S._p->fTimeTotal = Mixer::GetDuration(S.slot());
 	S._p->g_type = (S._p->g_type == sg_SourceType) ? S._p->g_type : XRay::Sound::Mixer::GetGameType(S.slot());
