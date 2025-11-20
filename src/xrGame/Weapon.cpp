@@ -328,7 +328,14 @@ void CWeapon::Load		(LPCSTR section)
 		for (int it=0; it<count; ++it)	
 		{
 			_GetItem				(S,it,_ammoItem);
-			m_ammoTypes.push_back	(_ammoItem);
+			if (pSettings->section_exist(_ammoItem))
+			{
+				m_ammoTypes.push_back(_ammoItem);
+			}
+			else
+			{
+				Msg("! Ammo section [%s] in weapon section [%s] doesn't exist!", _ammoItem, cNameSect().c_str());
+			}
 		}
 	}
 
