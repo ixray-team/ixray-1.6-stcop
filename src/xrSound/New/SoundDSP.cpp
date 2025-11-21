@@ -50,7 +50,7 @@ DSP_CalculateRelativePosition(const Fvector& P, const Fvector& D, const Fvector&
 }
 
 void 
-DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos)
+DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, const Fvector& D, const Fvector& N, const Fvector& obj_pos, bool disable_attenuation)
 {   
     // LH coordinates
     Fvector pos;
@@ -65,10 +65,14 @@ DSP_SpatialProcess(float** buffer, const Fvector& distances, const Fvector& P, c
 
     // Attenuation
     distance = std::clamp(distance, distances.x, distances.y);
-    float att = distances.x / (psSoundRolloff * distance);
-    att = powf(att, 1.3f);
-    att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / (distances.y-distances.x), 0.0f, 1.0f);
-    att = std::clamp(att, 0.f, 1.f);
+    float att = 1.0f;
+
+    if (!disable_attenuation) {
+        att = distances.x / (psSoundRolloff * distance);
+        att = powf(att, 1.3f);
+        att *= 1.0f - std::clamp(std::max(distance - distances.x, 0.0f) / (distances.y - distances.x), 0.0f, 1.0f);
+        att = std::clamp(att, 0.f, 1.f);
+    }
 
     // Panning
     float lc = att * ((speaker_l.dotproduct(pos) + 1.0f) * 0.5f);
