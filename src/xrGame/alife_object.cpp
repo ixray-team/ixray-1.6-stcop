@@ -16,6 +16,168 @@ void CSE_ALifeObject::spawn_supplies()
     spawn_supplies(*m_ini_string);
 }
 
+
+float CSE_ALifeObject::parseFloatParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, float defaultValue)
+{
+    float value = defaultValue;
+
+    if (spawnArgs == nullptr || !xr_strlen(spawnArgs) || !xr_strlen(parameterName)) {
+        return value;
+    }
+
+    if (nullptr != strstr(spawnArgs, parameterName)) {
+        value = (float)atof(strstr(spawnArgs, parameterName) + xr_strlen(parameterName));
+    }
+
+    return value;
+}
+
+int CSE_ALifeObject::parseIntParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, int defaultValue)
+{
+    int value = defaultValue;
+
+    if (spawnArgs == nullptr || !xr_strlen(spawnArgs) || !xr_strlen(parameterName)) {
+        return value;
+    }
+
+    if (nullptr != strstr(spawnArgs, parameterName)) {
+        value = (int)atoi(strstr(spawnArgs, parameterName) + xr_strlen(parameterName));
+    }
+
+    return value;
+}
+
+bool CSE_ALifeObject::parseBoolParameterValue(LPCSTR spawnArgs, LPCSTR parameterName)
+{
+    if (spawnArgs == nullptr || !xr_strlen(spawnArgs) || !xr_strlen(parameterName)) {
+        return false;
+    }
+
+    return (nullptr != strstr(spawnArgs, parameterName));
+}
+
+u32 CSE_ALifeObject::getCountValueToSpawn(LPCSTR spawnArgs)
+{
+    int spawn_count = 1;
+
+    if (spawnArgs == nullptr || !xr_strlen(spawnArgs)) {
+        return spawn_count;
+    }
+
+    if (spawnArgs && xr_strlen(spawnArgs))
+    {
+        if (_GetItemCount(spawnArgs) > 0) {
+            string64 tmp;
+            spawn_count = atoi(_GetItem(spawnArgs, 0, tmp));
+            if (!spawn_count)
+            {
+                spawn_count = 1;
+            }
+        }
+    }
+
+    return spawn_count;
+}
+
+CSE_Abstract* CSE_ALifeObject::setAddonFlagsIsWeapon(CSE_Abstract* E, LPCSTR spawnArgs)
+{
+    if (E == nullptr) {
+        return E;
+    }
+
+    CSE_ALifeItemWeapon* ALIWeapon = smart_cast<CSE_ALifeItemWeapon*>(E);
+
+    if (ALIWeapon == nullptr)
+    {
+        return E;
+    }
+
+    bool bScope = parseBoolParameterValue(spawnArgs, "scope");
+    int scope_index = parseIntParameterValue(spawnArgs, "scope=", 0);
+    float fScopeProb = parseFloatParameterValue(spawnArgs, "scope_prob=", 0.0f);
+    if ( bScope && (fScopeProb > 0.0f) && (fScopeProb < 1.0f) && (randF(1.f) >= fScopeProb) ) {
+        bScope = false;
+    }
+
+    bool bSilencer = parseBoolParameterValue(spawnArgs, "silencer");
+    float fSilencerProb = parseFloatParameterValue(spawnArgs, "silencer_prob=", 0.0f);
+    if (bSilencer && (fSilencerProb > 0.0f) && (fSilencerProb < 1.0f) && (randF(1.f) >= fSilencerProb)) {
+        bSilencer = false;
+    }
+
+    bool bLauncher = parseBoolParameterValue(spawnArgs, "launcher");
+    float fLauncherProb = parseFloatParameterValue(spawnArgs, "launcher_prob=", 0.0f);
+    if (bLauncher && (fLauncherProb > 0.0f) && (fLauncherProb < 1.0f) && (randF(1.f) >= fLauncherProb)) {
+        bLauncher = false;
+    }
+
+    if (ALIWeapon->m_scope_status == ALife::eAddonAttachable)
+    {
+        ALIWeapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
+        ALIWeapon->cur_scope = scope_index;
+    }
+
+    if (ALIWeapon->m_silencer_status == ALife::eAddonAttachable)
+    {
+        ALIWeapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, bSilencer);
+    }
+
+    if (ALIWeapon->m_grenade_launcher_status == ALife::eAddonAttachable)
+    {
+        ALIWeapon->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, bLauncher);
+    }
+
+    return E;
+}
+
+void CSE_ALifeObject::spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn)
+{
+    if (wpnSection == nullptr || !xr_strlen(wpnSection)) {
+        return;
+    }
+
+    if (CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(E))
+    {
+        if (pSettings->line_exist(wpnSection, "ammo_class"))
+        {
+            LPCSTR ammoSec = "";
+            LPCSTR ammo_class = pSettings->r_string(wpnSection, "ammo_class");
+
+            for (int i = 0, n = _GetItemCount(ammo_class); i < n; ++i)
+            {
+                string128 tmp;
+                ammoSec = _GetItem(ammo_class, i, tmp);
+
+                if (i == i_ammo_type) 
+                {
+                    break;
+                }
+            }
+
+            if (xr_strlen(ammoSec) && pSettings->section_exist(ammoSec))
+            {
+                for (u32 i = 1; i <= countAmmoBoxesToSpawn; ++i)
+                {
+                    alife().spawn_item(ammoSec, o_Position, m_tNodeID, m_tGraphID, ID);
+                }
+            }
+        }
+    }
+}
+
+void CSE_ALifeObject::setItemCondition(CSE_Abstract* E, float condition)
+{
+    if (E == nullptr)
+    {
+        return;
+    }
+
+    if (CSE_ALifeInventoryItem* IItem = smart_cast<CSE_ALifeInventoryItem*>(E)) {
+        IItem->m_fCondition = condition;
+    }
+}
+
+
 void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 {
     if (!ini_string)
@@ -36,207 +198,166 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 	);
 #pragma warning(pop)
 
-    // This will spawn a single random section listed in [spawn_loadout]
-    // No need to spawn ammo, this will automatically spawn 1 box for weapon and if ammo_type is specficied it will spawn that type
-    // count is used only for ammo boxes (ie wpn_pm = 3) will spawn 3 boxes, not 3 wpn_pm
-    // Usage: to create random weapon loadouts
+    const static bool isEnableLoadoutsForSpawnSupplies = EngineExternal()[EEngineExternalGame::EnableLoadoutsForSpawnSupplies];
+    const static bool isEnableCocStyleForLoadoutsSpawnSupplies = EngineExternal()[EEngineExternalGame::EnableCocStyleForLoadoutsSpawnSupplies];
 
-    u8 iItr = 1;
-    LPCSTR loadout_section = "spawn_loadout";
-
-    while (ini.section_exist(loadout_section))
-    {
-        LPCSTR itmSection, V;
-        xr_vector<u32> OnlyOne;
-        OnlyOne.clear();
-        LPCSTR lname = *ai().game_graph().header().level(ai().game_graph().vertex(m_tGraphID)->level_id()).name();
-
-        for (u32 k = 0; ini.r_line(loadout_section, k, &itmSection, &V); k++)
+    if (isEnableLoadoutsForSpawnSupplies) {
+        if (isEnableCocStyleForLoadoutsSpawnSupplies) 
         {
-            // If level=<lname> then only spawn items if object on that level
-            if (strstr(V, "level=") != nullptr)
-            {
-                if (strstr(V, lname) != nullptr)
-                    OnlyOne.push_back(k);
-            }
-            else
-            {
-                OnlyOne.push_back(k);
-            }
+            processingSpawnOnceRandomItemInRandomLoadout(ini);
         }
-
-        if (!OnlyOne.empty())
+        else 
         {
-            s32 sel = ::Random.randI(0, OnlyOne.size());
-
-            if (ini.r_line(loadout_section, OnlyOne.at(sel), &itmSection, &V))
-            {
-                VERIFY(xr_strlen(itmSection));
-
-                if (pSettings->section_exist(itmSection))
-                {
-                    u32 spawn_count = 1;
-                    float f_cond = 1.0f;
-                    bool bScope = false;
-                    bool bSilencer = false;
-                    bool bLauncher = false;
-                    int i_ammo_type = 0, n = 0;
-
-                    if (V && xr_strlen(V))
-                    {
-                        n = _GetItemCount(V);
-
-                        if (n > 0)
-                        {
-                            string64 tmp;
-                            spawn_count = atoi(_GetItem(V, 0, tmp)); //count
-                        }
-
-                        if (!spawn_count)
-                            spawn_count = 1;
-
-                        if (nullptr != strstr(V, "cond="))
-                            f_cond = (float)atof(strstr(V, "cond=") + 5);
-
-                        bScope = (nullptr != strstr(V, "scope"));
-                        bSilencer = (nullptr != strstr(V, "silencer"));
-                        bLauncher = (nullptr != strstr(V, "launcher"));
-
-                        if (nullptr != strstr(V, "ammo_type="))
-                            i_ammo_type = atoi(strstr(V, "ammo_type=") + 10);
-                    }
-
-                    CSE_Abstract* E = alife().spawn_item(itmSection, o_Position, m_tNodeID, m_tGraphID, ID);
-                    CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(E);
-
-                    if (W)
-                    {
-                        if (W->m_scope_status == ALife::eAddonAttachable)
-                        {
-                            W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
-                        }
-
-                        if (W->m_silencer_status == ALife::eAddonAttachable)
-                        {
-                            W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, bSilencer);
-                        }
-
-                        if (W->m_grenade_launcher_status == ALife::eAddonAttachable)
-                        {
-                            W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, bLauncher);
-                        }
-
-                        //spawn count box(es) of the correct ammo for weapon
-                        if (pSettings->line_exist(itmSection, "ammo_class"))
-                        {
-                            LPCSTR ammoSec = "";
-                            LPCSTR ammo_class = pSettings->r_string(itmSection, "ammo_class");
-
-                            for (int i = 0, n = _GetItemCount(ammo_class); i < n; ++i)
-                            {
-                                string128 tmp;
-                                ammoSec = _GetItem(ammo_class, i, tmp);
-                                if (i == i_ammo_type)
-                                    break;
-                            }
-
-                            if (xr_strlen(ammoSec) && pSettings->section_exist(ammoSec))
-                            {
-                                for (u32 i = 1; i <= spawn_count; ++i)
-                                    alife().spawn_item(ammoSec, o_Position, m_tNodeID, m_tGraphID, ID);
-                            }
-                        }
-                    }
-
-                    CSE_ALifeInventoryItem* IItem = smart_cast<CSE_ALifeInventoryItem*>(E);
-
-                    if (IItem)
-                        IItem->m_fCondition = f_cond;
-                }
-            }
+            processingSpawnOnceFullRandomLoadout(ini);
         }
-
-        iItr++;
-        string32 buf;
-        loadout_section = xr_strconcat(buf, buf, "spawn_loadout", std::to_string(iItr).c_str());
     }
+
+    processingVanillaSpawn(ini);
+}
+
+xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
+{
+    xr_vector <CInifile::Sect*> m_loadouts;
+    LPCSTR loadoutSpawnSectionName = "";
+    auto sections = ini.sections();
+    m_loadouts.clear();
+
+    for (size_t i = 0; i < sections.size(); i++) {
+        CInifile::Sect* sect = sections[i];
+        if (!sect) {
+            continue;
+        }
+
+        loadoutSpawnSectionName = sect->Name.c_str();
+        if (nullptr != strstr(loadoutSpawnSectionName, "spawn_loadout")) {
+            m_loadouts.push_back(&ini.r_section(loadoutSpawnSectionName));
+        }
+    }
+
+    return m_loadouts;
+}
+
+// Спавнит один полный лодаут среди случайных в рамках инклуда в профиле нпц в разделе supplies
+void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile& ini)
+{
+    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    LPCSTR itemSection = "";
+    LPCSTR spawnArgs = "";
+    bool isSpawned = false;
+
+    if (m_loadouts.empty()) {
+        return;
+    }
+
+    CInifile::Sect* randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
+
+    for (size_t i = 0; i < randomLoadout->Data.size(); i++) {
+        itemSection = randomLoadout->Data[i].first.c_str();
+        spawnArgs = randomLoadout->Data[i].second.c_str();
+
+        if (!pSettings->section_exist(itemSection))
+        {
+            Msg("! ERROR missing loadout spawn section:[%s] for npc:[%s]", itemSection, name());
+            continue;
+        }
+
+        float spawnItemChance = parseFloatParameterValue(spawnArgs, "prob=", 1.0f);
+        if (spawnItemChance > 0.0f && spawnItemChance < 1.0f) {
+            if (randF(1.f) >= spawnItemChance)
+            {
+                continue;
+            }
+        }
+
+        CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
+            alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
+            spawnArgs
+        );
+
+        spawnAmmoForWeapon(
+            itemSection,
+            CSEItem,
+            parseIntParameterValue(spawnArgs, "ammo_type=", 0),
+            getCountValueToSpawn(spawnArgs)
+        );
+
+        setItemCondition(
+            CSEItem,
+            parseFloatParameterValue(spawnArgs, "cond=", 1.0f)
+        );
+    }
+}
+
+// Спавнит один случайный предмет среди случайно выбранного лодаута в рамках инклуда в профиле нпц в разделе supplies
+void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini)
+{
+    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    if (m_loadouts.empty()) {
+        return;
+    }
+
+    CInifile::Sect* randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
+    size_t randomLoadoutItemIndex = ::Random.randI(0, randomLoadout->Data.size());
+    LPCSTR itemSection = randomLoadout->Data[randomLoadoutItemIndex].first.c_str();
+    LPCSTR spawnArgs = randomLoadout->Data[randomLoadoutItemIndex].second.c_str();
+
+    if (!pSettings->section_exist(itemSection))
+    {
+        Msg("! ERROR missing loadout spawn section:[%s] for npc:[%s]", itemSection, name());
+        return;
+    }
+
+    CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
+        alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
+        spawnArgs
+    );
+
+    spawnAmmoForWeapon(
+        itemSection,
+        CSEItem,
+        parseIntParameterValue(spawnArgs, "ammo_type=", 0),
+        getCountValueToSpawn(spawnArgs)
+    );
+
+    setItemCondition(
+        CSEItem,
+        parseFloatParameterValue(spawnArgs, "cond=", 1.0f)
+    );
+}
+
+// Ванильный спавн
+void CSE_ALifeObject::processingVanillaSpawn(CInifile& ini)
+{
+    LPCSTR itemSection = "";
+    LPCSTR spawnArgs = "";
 
     if (ini.section_exist("spawn"))
     {
-        pcstr N, V;
-        float p;
-        for (u32 k = 0, j; ini.r_line("spawn", k, &N, &V); k++)
-        {
-            VERIFY(xr_strlen(N));
+        CInifile::Sect spawnChunk = ini.r_section("spawn");
 
-            if (pSettings->section_exist(N)) //Verify item section exists!
+        for (size_t i = 0; i < spawnChunk.Data.size(); i++) {
+            itemSection = spawnChunk.Data[i].first.c_str();
+            spawnArgs = spawnChunk.Data[i].second.c_str();
+
+            if (!pSettings->section_exist(itemSection))
             {
-                float f_cond = 1.0f;
-                bool bScope = false;
-                bool bSilencer = false;
-                bool bLauncher = false;
-                int cur_scope = 0;
+                Msg("! ERROR missing spawn section:[%s] for npc:[%s]", itemSection, name());
+                continue;
+            }
 
-                j = 1;
-                p = 1.f;
+            if (pSettings->section_exist(itemSection))
+            {
+                float f_cond = parseFloatParameterValue(spawnArgs, "cond=", 1.0f);
+                int countToSpawn = getCountValueToSpawn(spawnArgs);
+                float spawnChance = parseFloatParameterValue(spawnArgs, "prob=", 1.0f);
 
-                if (V && xr_strlen(V))
+                for (u32 i = 0; i < countToSpawn; ++i)
                 {
-                    string64 buf;
-                    j = atoi(_GetItem(V, 0, buf));
-                    if (!j)
-                        j = 1;
-
-                    bScope = nullptr != strstr(V, "scope");
-                    bSilencer = nullptr != strstr(V, "silencer");
-                    bLauncher = nullptr != strstr(V, "launcher");
-
-                    // probability
-                    if (nullptr != strstr(V, "prob="))
-                        p = static_cast<float>(atof(strstr(V, "prob=") + 5));
-
-                    if (fis_zero(p))
-                        p = 1.0f;
-
-                    if (nullptr != strstr(V, "cond="))
-                        f_cond = static_cast<float>(atof(strstr(V, "cond=") + 5));
-
-                    if (nullptr != strstr(V, "scope="))
-                        cur_scope = atoi(strstr(V, "scope=") + 6);
-                }
-
-                for (u32 i = 0; i < j; ++i)
-                {
-                    if (randF(1.f) < p)
+                    if (randF(1.f) < spawnChance)
                     {
-                        CSE_Abstract* E = alife().spawn_item(N, o_Position, m_tNodeID, m_tGraphID, ID);
-
-                        //РїРѕРґСќРѕРµРґРёРЅРёС‚СЊ Р°РґРґРѕРЅС‹ Рє РѕСЂСѓР¶РёСЋ, РµСќР»Рё РІРєР»СЋС‡РµРЅС‹ СќРѕРѕС‚РІРµС‚СќС‚РІСѓСЋС‰РёРµ С„Р»Р°Р¶РєРё
-                        CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(E);
-
-                        if (W)
-                        {
-                            if (W->m_scope_status == ALife::eAddonAttachable)
-                            {
-                                W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonScope, bScope);
-                                W->cur_scope = cur_scope;
-                            }
-
-                            if (W->m_silencer_status == ALife::eAddonAttachable)
-                            {
-                                W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonSilencer, bSilencer);
-                            }
-
-                            if (W->m_grenade_launcher_status == ALife::eAddonAttachable)
-                            {
-                                W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, bLauncher);
-                            }
-                        }
-
-                        CSE_ALifeInventoryItem* IItem = smart_cast<CSE_ALifeInventoryItem*>(E);
-
-                        if (IItem)
-                            IItem->m_fCondition = f_cond;
+                        CSE_Abstract* CSEItem = alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID);
+                        setAddonFlagsIsWeapon(CSEItem, spawnArgs);
+                        setItemCondition(CSEItem, f_cond);
                     }
                 }
             }
@@ -246,5 +367,5 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 
 bool CSE_ALifeObject::keep_saved_data_anyway() const
 {
-    return			(false);
+    return (false);
 }
