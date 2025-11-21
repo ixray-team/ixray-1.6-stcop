@@ -87,3 +87,6 @@ target_include_directories(xrRender_R1 PUBLIC "${CMAKE_BINARY_DIR}/packages/dire
 
 ## RenderDoc
 target_include_directories(xrRender_R1 PUBLIC "${RENDERDOC_API}")
+
+## lunaSVG
+target_link_libraries(xrRender_R1 PUBLIC lunasvg)

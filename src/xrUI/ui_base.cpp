@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "ui_base.h"
+#include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/Render.h"
 #include "UICursor.h"
 #include "Widgets/UIWindow.h"
 
@@ -478,4 +480,31 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 #endif // #ifdef DEBUG
 	}
 	return str;
+}
+
+const ui_shader& ui_core::GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	R_ASSERT(DevicePtr && "Render must be initialized otherwise early calling!");
+	R_ASSERT(DevicePtr->m_pRender && "Resource manager");
+
+	if (DevicePtr == nullptr || DevicePtr->m_pRender == nullptr)
+		return m_empty_default;
+
+	return DevicePtr->m_pRender->GetSVGShader(subpath, requested_width, requested_height);
+}
+
+const ui_shader& ui_core::GetVectorShader(const char* pSubpath, float requested_width, float requested_height)
+{
+	R_ASSERT(pSubpath && "invalid string (nullptr)");
+
+	return GetVectorShader(std::string_view(pSubpath), requested_width, requested_height);
+}
+
+Frect ui_core::GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	if (DevicePtr == nullptr || DevicePtr->m_pRender == nullptr)
+		return Frect();
+
+
+	return DevicePtr->m_pRender->GetSVGUV(subpath, requested_width, requested_height);
 }
