@@ -2,6 +2,8 @@
 #define	UIShader_included
 #pragma once
 
+constexpr const char _kDefaultSVGShader[] = "IXRAY_DEFAULT_SVG_SHADER";
+
 class IUIShader
 {
 public:

@@ -27,7 +27,7 @@ public:
 #endif
 
 			void	CreateShader			(LPCSTR tex, LPCSTR sh = "hud\\default");
-			void	SetShader				(const ui_shader& sh)								{hShader = sh;};
+			void	SetShader(const ui_shader& sh);
 	void			Init					(LPCSTR tex, LPCSTR sh, float left, float top);
 	void			Render					();
 	void			Render					(float angle);

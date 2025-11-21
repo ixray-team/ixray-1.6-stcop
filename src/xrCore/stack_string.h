@@ -11,6 +11,8 @@
 #include <string.h>
 #include <iterator>
 #include <cassert>
+#include <functional>
+#include <string_view>
 
 #ifdef UNICODE
 #ifdef IXR_WINDOWS
@@ -134,11 +136,13 @@ public:
 			return found ? found - this->m_buffer : number_type(-1);
 		}
 
+#ifdef IXR_WINDOWS
 		if constexpr (std::is_same_v<char_t, wchar_t>)
 		{
 			const wchar_t* found = std::wcsstr(this->m_buffer + pos, p_str);
 			return found ? found - this->m_buffer : number_type(-1);
 		}
+#endif
 
 		return number_type(-1);
 	}
@@ -156,10 +160,12 @@ public:
 			return (number_type)strlen(m_buffer);
 		}
 
+#ifdef IXR_WINDOWS
 		if constexpr (std::is_same<wchar_t, char_t>::value)
 		{
 			return wcslen(m_buffer);
 		}
+#endif
 	}
 
 	inline number_type length(void) const { return this->size(); }
@@ -189,10 +195,12 @@ public:
 				std::strncat(this->m_buffer, p_str, available_length);
 			}
 
+#ifdef IXR_WINDOWS
 			if constexpr (std::is_same_v<char_t, wchar_t>)
 			{
 				std::wcsncat(this->m_buffer, p_str, available_length);
 			}
+#endif
 		}
 
 		return *this;
@@ -295,6 +303,32 @@ public:
 		return *this;
 	}
 
+	inline stack_string<char_t, _kStringLength>& operator=(const std::string_view& view)
+	{
+		if (view.empty() == false)
+		{
+			if constexpr (std::is_same_v<char_t, char>)
+			{
+				number_type arg_len = std::clamp(number_type(view.size()), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, view.data(), arg_len);
+				this->m_buffer[arg_len] = L'\0';
+			}
+
+#ifdef IXR_WINDOWS
+			if constexpr (std::is_same_v<char_t, wchar_t>)
+			{
+				std::wstring_view wview(view.begin(), view.size());
+
+				number_type arg_len = std::clamp(number_type(wview.size()), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, wview.data(), arg_len * sizeof(wchar_t));
+				this->m_buffer[arg_len] = L'\0';
+			}
+#endif
+		}
+
+		return *this;
+	}
+
 	inline stack_string<char_t, _kStringLength>& operator=(const char_t* p_str)
 	{
 		if (p_str)
@@ -306,12 +340,14 @@ public:
 				this->m_buffer[arg_len] = '\0';
 			}
 
+#ifdef IXR_WINDOWS
 			if constexpr (std::is_same_v<char_t, wchar_t>)
 			{
 				number_type arg_len = std::clamp(number_type(wcslen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, p_str, arg_len * sizeof(wchar_t));
-				this->m_buffer[arg_len] = '\0';
+				this->m_buffer[arg_len] = L'\0';
 			}
+#endif
 		}
 
 		return *this;
@@ -343,11 +379,12 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const stack_str
 		return !strcmp(left.c_str(), right.c_str());
 	}
 
+#ifdef IXR_WINDOWS
 	if constexpr (std::is_same_v<char_t, wchar_t>)
 	{
 		return !wcscmp(left.c_str(), right.c_str());
 	}
-
+#endif
 	assert(false && "unsupported char type, report to developers");
 	return false;
 }
@@ -362,11 +399,36 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const char_t* r
 		return std::strncmp(left.c_str(), right, _kSize) == 0;
 	}
 
+#ifdef IXR_WINDOWS
 	if constexpr (std::is_same_v<char_t, wchar_t>)
 	{
 		return std::wcsncmp(left.c_str(), right, _kSize) == 0;
 	}
+#endif
 }
+
+namespace std {
+	template <std::size_t N>
+	struct hash< stack_string<char, N> >
+	{
+		std::size_t operator()(stack_string<char, N> const& s) const noexcept {
+			std::string_view sv{ s.c_str() };
+			return std::hash<std::string_view>{}(sv);
+		}
+	};
+
+#ifdef IXR_WINDOWS
+	template <std::size_t N>
+	struct hash< stack_string<wchar_t, N> >
+	{
+		std::size_t operator()(stack_string<wchar_t, N> const& s) const noexcept {
+			std::wstring_view wsv{ s.c_str() };
+			return std::hash<std::wstring_view>{}(wsv);
+		}
+	};
+#endif
+} // namespace std
+
 
 static_assert(sizeof(stack_string<char, 1>) == sizeof(char[1]), "you can't add any additional field to this class! pure buffer on stack... (there's no point in reducing counting operations and caching like size of buffer and etc)");
 

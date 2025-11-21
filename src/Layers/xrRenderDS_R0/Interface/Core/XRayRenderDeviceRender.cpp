@@ -163,3 +163,28 @@ void CDS0_RenderDeviceRender::SetupDefaultTarget()
 void CDS0_RenderDeviceRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject)
 {
 }
+
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height)
+{
+	return m_empty_default;
+}
+
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height)
+{
+	return m_empty_default;
+}
+
+const FactoryPtr<IUIShader>& CDS0_RenderDeviceRender::GetSVGDefaultShader()
+{
+	return m_empty_default;
+}
+
+Frect CDS0_RenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	return Frect();
+}
+
+void CDS0_RenderDeviceRender::PostCreate()
+{
+
+}

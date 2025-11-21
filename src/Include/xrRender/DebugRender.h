@@ -1,9 +1,7 @@
 #pragma once
-
-#ifdef DEBUG_DRAW
-
 #include "DebugShader.h"
 
+#ifdef DEBUG_DRAW
 class IDebugRender
 {
 public:

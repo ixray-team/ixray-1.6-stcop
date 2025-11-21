@@ -185,6 +185,18 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				{
 					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
 					ImGui::MenuItem("Input##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
+					
+					if (ImGui::BeginMenu("Render##ToolsInGameImGui"))
+					{
+						if (ImGui::BeginMenu("Debug##RenderToolsInGameImGui"))
+						{
+							ImGui::MenuItem("SVGStorageViewer##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
+							ImGui::EndMenu();
+						}
+
+						ImGui::EndMenu();
+					}
+
 					ImGui::EndMenu();
 				}
 
