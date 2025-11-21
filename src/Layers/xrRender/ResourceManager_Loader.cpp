@@ -1,13 +1,19 @@
 #include "stdafx.h"
-
+#include "SVGStorage.h"
 
 #include "ResourceManager.h"
 #include "blenders/Blender.h"
 
-
-void	CResourceManager::OnDeviceDestroy(BOOL )
+void CResourceManager::OnDeviceDestroy(BOOL )
 {
 	if (RDEVICE.b_is_Ready)				return;
+
+	if (m_pStorageSVG)
+	{
+		m_pStorageSVG->uninit();
+		xr_delete(m_pStorageSVG);
+	}
+
 	m_textures_description.UnLoad		();
 
 	// Matrices

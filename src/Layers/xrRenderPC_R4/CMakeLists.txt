@@ -112,3 +112,6 @@ add_custom_command(TARGET ${PROJECT_NAME}
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_DX11_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
+
+## lunaSVG
+target_link_libraries(xrRender_R4 PUBLIC lunasvg)

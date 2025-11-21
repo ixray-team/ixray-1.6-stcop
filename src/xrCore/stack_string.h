@@ -11,6 +11,8 @@
 #include <string.h>
 #include <iterator>
 #include <cassert>
+#include <functional>
+#include <string_view>
 
 #ifdef UNICODE
 #ifdef IXR_WINDOWS
@@ -295,6 +297,30 @@ public:
 		return *this;
 	}
 
+	inline stack_string<char_t, _kStringLength>& operator=(const std::string_view& view)
+	{
+		if (view.empty() == false)
+		{
+			if constexpr (std::is_same_v<char_t, char>)
+			{
+				number_type arg_len = std::clamp(number_type(view.size()), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, view.data(), arg_len);
+				this->m_buffer[arg_len] = L'\0';
+			}
+
+			if constexpr (std::is_same_v<char_t, wchar_t>)
+			{
+				std::wstring_view wview(view.begin(), view.end());
+
+				number_type arg_len = std::clamp(number_type(wview.size()), min(number_type(1), _kStringLength), _kStringLength);
+				std::memcpy(this->m_buffer, wview.data(), arg_len * sizeof(wchar_t));
+				this->m_buffer[arg_len] = L'\0';
+			}
+		}
+
+		return *this;
+	}
+
 	inline stack_string<char_t, _kStringLength>& operator=(const char_t* p_str)
 	{
 		if (p_str)
@@ -310,7 +336,7 @@ public:
 			{
 				number_type arg_len = std::clamp(number_type(wcslen(p_str)), min(number_type(1), _kStringLength), _kStringLength);
 				std::memcpy(this->m_buffer, p_str, arg_len * sizeof(wchar_t));
-				this->m_buffer[arg_len] = '\0';
+				this->m_buffer[arg_len] = L'\0';
 			}
 		}
 
@@ -367,6 +393,27 @@ inline bool operator==(const stack_string<char_t, _kSize>& left, const char_t* r
 		return std::wcsncmp(left.c_str(), right, _kSize) == 0;
 	}
 }
+
+namespace std {
+	template <std::size_t N>
+	struct hash< stack_string<char, N> >
+	{
+		std::size_t operator()(stack_string<char, N> const& s) const noexcept {
+			std::string_view sv{ s.c_str() };
+			return std::hash<std::string_view>{}(sv);
+		}
+	};
+
+	template <std::size_t N>
+	struct hash< stack_string<wchar_t, N> >
+	{
+		std::size_t operator()(stack_string<wchar_t, N> const& s) const noexcept {
+			std::wstring_view wsv{ s.c_str() };
+			return std::hash<std::wstring_view>{}(wsv);
+		}
+	};
+} // namespace std
+
 
 static_assert(sizeof(stack_string<char, 1>) == sizeof(char[1]), "you can't add any additional field to this class! pure buffer on stack... (there's no point in reducing counting operations and caching like size of buffer and etc)");
 
