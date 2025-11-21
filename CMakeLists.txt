@@ -79,6 +79,10 @@ else()
     include("cmake/linux/nuget.cmake")
 endif()
 
+set(IXRAY_PACKAGES_CMAKE_NAME "packages.cmake")
+# Setup packages patches
+include("cmake/${CMAKE_SYSTEM_NAME}/${IXRAY_PACKAGES_CMAKE_NAME}")
+
 # SDK folders
 set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
