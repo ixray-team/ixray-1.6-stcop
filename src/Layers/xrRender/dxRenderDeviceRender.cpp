@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
+#include "SVGStorage.h"
 
-#ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
-#endif
 
 #include "ResourceManager.h"
 #ifndef _EDITOR
@@ -474,4 +473,70 @@ void  dxRenderDeviceRender::OnAssetsChanged()
 	Resources->m_textures_description.UnLoad();
 	Resources->m_textures_description.Load();
 #endif
+}
+
+void dxRenderDeviceRender::PostCreate()
+{
+	R_ASSERT2(Resources, "must be valid or early calling");
+
+	if (Resources)
+	{
+		Resources->Initialize_SVGStorage();
+	}
+}
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height)
+{
+	if (Resources)
+	{
+		R_ASSERT(subpath.empty() == false && "must be not empty path");
+
+		CSVGStorage* pStorage = Resources->GetSVGStorage();
+
+		R_ASSERT(pStorage && "must be valid!");
+
+		if (pStorage)
+		{
+			return pStorage->get_shader(subpath, width, height);
+		}
+	}
+
+	return m_empty_default_shader;
+}
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height)
+{
+	R_ASSERT(pSubpath && "invalid string (nullptr)");
+	R_ASSERT(pSubpath[0] != '\0' && "empty string");
+
+	return GetSVGShader(std::string_view(pSubpath), width, height);
+}
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
+{
+	if (Resources)
+	{
+
+	}
+
+	return m_empty_default_shader;
+}
+
+Frect dxRenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	if (Resources)
+	{
+		R_ASSERT(subpath.empty() == false && "must be not empty path");
+
+		CSVGStorage* pStorage = Resources->GetSVGStorage();
+
+		R_ASSERT(pStorage && "must be valid!");
+
+		if (pStorage)
+		{
+			return pStorage->get_uv(subpath, requested_width, requested_height);
+		}
+	}
+
+	return Frect();
 }

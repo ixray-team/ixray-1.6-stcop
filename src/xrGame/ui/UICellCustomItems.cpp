@@ -24,18 +24,86 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 {
 	m_pData = (void*)itm;
 
-	inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(itm->IconsTexture.c_str()));
+	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id, "icons_texture", nullptr);
+
+	bool isRaster = EngineExternal().isRenderingUIRaster();
+
+	if (!isRaster)
+	{
+		if (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas()==false)
+		{
+			isRaster = !(pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon));
+		}
+	}
 
 	m_grid_size.set(itm->GetInvGridRect().rb);
-	Frect rect;
-	rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
-		INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
+	if (isRaster)
+	{
+		inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
-	rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
-		rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
+		Frect rect;
+		rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
+
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
 
 	inherited::SetTextureRect(rect);
 	inherited::SetStretchTexture(true);
+}
+	else
+	{
+		Frect rect;
+		rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
+
+		// todo: it is estimated but not real (true) values that render expects and when it applies to polygon so think about how to extract real values... (but probably in most cases should be fine and wouldn't be noticable, but if noticable so I refer to this todo so you need to use accurate and exact values for requested width and height)
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
+		float fRequestedWidth = rect.width();
+		float fRequestedHeight = rect.height();
+
+		Fvector2 vScaled;
+		UI().ClientToScreenScaled(vScaled, fRequestedWidth, fRequestedHeight);
+
+		vScaled.x = fRequestedWidth;
+		vScaled.y = fRequestedHeight;
+
+		if (pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon))
+		{
+			xr_string_view icon_subpath = pSettings->r_string(itm->m_section_id, kUIConfigField_InventoryVectorIcon);
+
+			if (icon_subpath.empty() == false)
+			{
+				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, vScaled.x, vScaled.y);
+				rect = UI().GetVectorUV(icon_subpath, vScaled.x, vScaled.y);
+
+				inherited::SetShader(svg_shader);
+				inherited::SetTextureRect(rect);
+				inherited::SetStretchTexture(true);
+			}
+			else
+			{
+				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
+
+				rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
+				inherited::SetShader(default_shader);
+				inherited::SetTextureRect(rect);
+				inherited::SetStretchTexture(true);
+			}
+		}
+		else
+		{
+			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
+
+			rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
+			inherited::SetShader(default_shader);
+			inherited::SetTextureRect(rect);
+			inherited::SetStretchTexture(true);
+		}
+	}
+
+
 }
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)

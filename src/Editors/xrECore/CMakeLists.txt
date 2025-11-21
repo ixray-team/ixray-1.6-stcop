@@ -73,6 +73,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRender/dxUIRender.*"
 	"../../Layers/xrRender/dxUISequenceVideoItem.*"
 	"../../Layers/xrRender/dxUIShader.*"
+	"../../Layers/xrRender/TextureAtlas.*"
 	"../../Layers/xrRender/dxWallMarkArray.*"
 	"../../Layers/xrRender/ETextureParams.*"
 	"../../Layers/xrRender/FBasicVisual.*"
@@ -128,6 +129,7 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
 	"../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
 	"../../Layers/xrRenderPC_R1/Blender_Vertex.*"
+	"../../Layers/xrRender/smol-atlas.*"
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
@@ -213,3 +215,6 @@ target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxm
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
 target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib)
 target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+
+## lunaSVG
+target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

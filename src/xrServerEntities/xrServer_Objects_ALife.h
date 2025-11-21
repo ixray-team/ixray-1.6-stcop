@@ -155,7 +155,8 @@ public:
 	virtual u32						ef_weapon_type		() const;
 	virtual u32						ef_detector_type	() const;
 
-	private:
+#ifdef XRGAME_EXPORTS
+private:
 	virtual u32						getCountValueToSpawn(LPCSTR spawnArgs);
 	virtual float					parseFloatParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, float defaultValue = 0.0f);
 	virtual int						parseIntParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, int defaultValue = 0);
@@ -167,8 +168,9 @@ public:
 	virtual void					processingSpawnOnceFullRandomLoadout(CInifile& ini);
 	virtual void					processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini);
 	virtual void					processingVanillaSpawn(CInifile& ini);
+#endif
 
-	public:
+public:
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies		(LPCSTR);
 	virtual void					spawn_supplies		();

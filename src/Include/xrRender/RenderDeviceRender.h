@@ -34,6 +34,7 @@ public:
 	virtual void	OnDeviceCreate(LPCSTR shName) = 0;
 	virtual void	Create(SDL_Window* window, u32 &dwWidth, u32 &dwHeight, bool ) = 0;
 	virtual void	SetupGPU( BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF) = 0;
+	virtual void	PostCreate() = 0;
 	//	Overdraw
 	virtual void	overdrawBegin() = 0;
 	virtual void	overdrawEnd() = 0;
@@ -62,6 +63,11 @@ public:
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGDefaultShader() = 0;
+
+	virtual Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height) = 0;
 };
 
 #endif	//	RenderDeviceRender_included

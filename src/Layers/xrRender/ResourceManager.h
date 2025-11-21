@@ -13,6 +13,7 @@
 struct		lua_State;
 
 class dx10ConstantBuffer;
+class CSVGStorage;
 
 // defs
 class ECORE_API CResourceManager
@@ -240,7 +241,21 @@ public:
 	void			DestroyNecessaryTextures();
 	void			Dump					(bool bBrief);
 
+	/// @brief creates a valid CTexture with allocated by GPU ID3DTexture and ID3DShaderResourceView, initial usage of this method is for creating atlas textures and where user needs own 'freedom' for working on resource, but at the same time maintain GSC's renderer usage of blenders and passes creation on high level (frontend, see CTextureAtlas class)
+	/// @param pName a name this field must be valid e.g. a not empty string and not null pointer
+	/// @param w width in pixels (like 1920)
+	/// @param h height in pixels (like 1080)
+	/// @return allocated CTexture instance
+	CTexture* _CreateEmptyTexture(LPCSTR pName, u32 w, u32 h);
+	
+	CSVGStorage* GetSVGStorage() const;
+
+	// for dx9 call only after vid_restart because device will contain allocated texture that weren't deleted and thus we couldn't make a succesful DxDevice->Reset
+	void Initialize_SVGStorage();
+
 private:
+	CSVGStorage* m_pStorageSVG;
+	
 #ifdef USE_DX11
 	map_DS	m_ds;
 	map_HS	m_hs;

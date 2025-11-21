@@ -212,6 +212,11 @@ void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
 }
 
 
+void CUIStaticItem::SetShader(const ui_shader& sh)
+{
+	hShader = sh;
+}
+
 void CUIStaticItem::Init(LPCSTR tex, LPCSTR sh, float left, float top)
 {
 	uFlags.set		(flValidSize, FALSE);

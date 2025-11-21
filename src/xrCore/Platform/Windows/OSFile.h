@@ -13,6 +13,8 @@ class FS_Path;
 
 namespace Platform
 {
+    constexpr const char* kPreferredSeparator = "\\";
+
     IC const char* ValidPath(const char* In)
     {
         return In;

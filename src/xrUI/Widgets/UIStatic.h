@@ -35,6 +35,7 @@ private:
 	typedef CUIWindow inherited;
 	lanim_cont_xf			m_lanim_xform;
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
+	bool m_bHasSvgAttribute;
 public:
 
 							CUIStatic				();
@@ -43,14 +44,16 @@ public:
 	virtual void			Draw					();
 	virtual void			Update					();
 	virtual void			OnFocusLost				();
-
+	bool InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name) override;
 	virtual pcstr GetText() { return TextItemControl()->GetText(); }
 	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	virtual	void		SetFont					(CGameFont* F)				{CUIWindow::SetFont(F); TextItemControl()->SetFont(F);}
 	virtual	CGameFont*	GetFont					()							{return TextItemControl()->GetFont();}
-
+	void InitSVG(CUIXml& xml_doc, LPCSTR path, int index) override;
+	bool isSVGPresented(void) const override;
+	LPCSTR getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index = 0) override;
 	void SetTextColor_script(int a, int r, int g, int b)
 	{
 		TextItemControl()->SetTextColor(color_argb(a, r, g, b));

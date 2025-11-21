@@ -310,6 +310,8 @@ public:
 	virtual void					rmNormal				()											{};
 	virtual u32						memory_usage			()											{ return 0;};
 
+	virtual void renderImGuiDebugWindow_SVGStorage() {}
+		
 	// Constructor/destructor
 	virtual ~IRender_interface() = default;
 protected:

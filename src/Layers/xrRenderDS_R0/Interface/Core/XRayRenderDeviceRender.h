@@ -55,6 +55,12 @@ public:
 	void SetupDefaultTarget() override;
 	void SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject) override;
 
-private:
+	const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height) override;
+	const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height) override;
+	const FactoryPtr<IUIShader>& GetSVGDefaultShader() override;
 
+	Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height) override;
+	void	PostCreate() override;
+private:
+	FactoryPtr<IUIShader> m_empty_default;
 };
