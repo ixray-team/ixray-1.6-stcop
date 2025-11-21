@@ -169,6 +169,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 	Frect _stored_rect = m_UIStaticItem.GetTextureRect();
 
+	// todo: think about it and implement for svg support
 	xr_strconcat(buf, path, ":texture_above");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
@@ -187,6 +188,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		m_icon_above				= m_UIStaticItem.GetShader		();
 	}
 
+	// todo: think about it and implement for svg support
 	xr_strconcat(buf, path, ":texture_below");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
@@ -204,25 +206,36 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 		m_icon_below				= m_UIStaticItem.GetShader		();
 	}
-	xr_strconcat(buf, path, ":texture");
-	n = xml->NavigateToNode(buf,0);
-	if(n){
-		LPCSTR texture  = xml->Read(buf, 0, nullptr);
-		CUITextureMaster::InitTexture	(texture, &m_UIStaticItem);
-		if(strchr(texture,'\\'))
-		{
-			float x					= xml->ReadAttribFlt(buf, 0, "x", base_rect.x1);
-			float y					= xml->ReadAttribFlt(buf, 0, "y", base_rect.y1);
-			float width				= xml->ReadAttribFlt(buf, 0, "width", base_rect.width());
-			float height			= xml->ReadAttribFlt(buf, 0, "height", base_rect.height());
-			m_tex_rect_normal.set	(x,y,x+width,y+height);
-		}else
-			m_tex_rect_normal		= m_UIStaticItem.GetTextureRect();
 
-		m_icon_normal				= m_UIStaticItem.GetShader		();
+	bool isRaster = EngineExternal().isRenderingUIRaster();
+
+	if (isRaster)
+	{
+		xr_strconcat(buf, path, ":texture");
+		n = xml->NavigateToNode(buf, 0);
+		if (n) {
+			LPCSTR texture = xml->Read(buf, 0, nullptr);
+			CUITextureMaster::InitTexture(texture, &m_UIStaticItem);
+			if (strchr(texture, '\\'))
+			{
+				float x = xml->ReadAttribFlt(buf, 0, "x", base_rect.x1);
+				float y = xml->ReadAttribFlt(buf, 0, "y", base_rect.y1);
+				float width = xml->ReadAttribFlt(buf, 0, "width", base_rect.width());
+				float height = xml->ReadAttribFlt(buf, 0, "height", base_rect.height());
+				m_tex_rect_normal.set(x, y, x + width, y + height);
+			}
+			else
+				m_tex_rect_normal = m_UIStaticItem.GetTextureRect();
+
+			m_icon_normal = m_UIStaticItem.GetShader();
+		}
+
+		m_UIStaticItem.SetTextureRect(_stored_rect);
 	}
-
-	m_UIStaticItem.SetTextureRect	(_stored_rect);
+	else
+	{
+		// be careful because it is already initialized in inherited::Load(xml,path); call
+	}
 }
 
 void CMiniMapSpot::Draw()

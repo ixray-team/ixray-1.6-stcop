@@ -646,6 +646,45 @@ CTexture* CResourceManager::_CreateTexture	(LPCSTR _Name)
 	}
 }
 
+CTexture* CResourceManager::_CreateEmptyTexture(LPCSTR _Name, u32 w, u32 h)
+{
+	// DBG_VerifyTextures	();
+
+	R_ASSERT(_Name && _Name[0]);
+	R_ASSERT(w > 0 && "must be valid width!");
+	R_ASSERT(h > 0 && &"must be valid height!");
+
+	if (0 == xr_strcmp(_Name, "null") || w == 0 || h == 0)	
+		return nullptr;
+
+	string_path		Name;
+	xr_strcpy(Name, _Name); //. andy if (strext(Name)) *strext(Name)=0;
+
+	xrCriticalSectionGuard guard(creationGuard);
+
+	fix_texture_name(Name);
+
+	for (u32 i = 0; i < strlen(Name); ++i)
+		Name[i] = std::tolower(Name[i]);
+
+	// ***** first pass - search already loaded texture
+	LPSTR N = LPSTR(Name);
+	map_TextureIt I = m_textures.find(N);
+	if (I != m_textures.end())	return	I->second;
+	else
+	{
+		CTexture* T = new CTexture();
+		T->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+		m_textures.insert(std::make_pair(T->set_name(Name), T));
+		T->Preload();
+		
+		if (Device.b_is_Ready) 
+			T->CreateEmpty(w,h);
+
+		return		T;
+	}
+}
+
 void	CResourceManager::_DeleteTexture		(const CTexture* T)
 {
 	if (0==(T->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
