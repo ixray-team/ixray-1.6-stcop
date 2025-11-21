@@ -373,7 +373,7 @@ void RenderSearchManagerWindow();
 void RenderHUDAdjustManager();
 void RenderToolsOMFEditorWindow();
 void RenderToolsInputManagerWindow();
-
+void RenderToolsRenderDebugSVGStorageViewerWindow();
 void DestroySpawnManagerWindow();
 
 void RegisterImGuiInGame();

@@ -161,30 +161,42 @@ IRHIDepthStencilView* DX9Surface::GetDepthStencilView()
 	return DSV;
 }
 
-bool DX9Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource)
+bool DX9Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box)
 {
-	if (!Texture2D || !subResource || !subResource->Data || mipLevel > 0 || arrayLayer > 0)
-		return false; // DX9 не поддерживает мип-уровни и слои напрямую
-
-	u32 rowPitch = subResource->RowPitch;
-	if (rowPitch == 0)
+	if (!Texture2D || !subResource || !subResource->Data)
 	{
-		rowPitch = subResource->Width * GetDX9FormatSize(ConvertRHIFormatToDX9(subResource->TextureFormat));
+		return false;
+	}
+
+	if (mipLevel > 0 || arrayLayer > 0)
+	{
+		return false;
 	}
 
 	D3DLOCKED_RECT lockedRect;
 	HRESULT hr = Texture2D->LockRect(0, &lockedRect, nullptr, D3DLOCK_DISCARD);
 	if (FAILED(hr))
+	{
 		return false;
+	}
 
-	const u8* srcData = (const u8*)subResource->Data;
-	u8* dstData = (u8*)lockedRect.pBits;
+	const u8* src = reinterpret_cast<const u8*>(subResource->Data);
+
+	u8* dstBase = reinterpret_cast<u8*>(lockedRect.pBits)
+		+ Box.top * lockedRect.Pitch
+		+ Box.left * GetDX9FormatSize(ConvertRHIFormatToDX9(subResource->TextureFormat));
+
+	u32 rowBytes = subResource->RowPitch;
+	if (rowBytes == 0)
+	{
+		rowBytes = subResource->Width * GetDX9FormatSize(ConvertRHIFormatToDX9(subResource->TextureFormat));
+	}
 
 	for (u32 y = 0; y < subResource->Height; ++y)
 	{
-		memcpy(dstData, srcData, rowPitch);
-		srcData += rowPitch;
-		dstData += lockedRect.Pitch;
+		memcpy(dstBase, src, rowBytes);
+		src += rowBytes;
+		dstBase += lockedRect.Pitch;
 	}
 
 	Texture2D->UnlockRect(0);

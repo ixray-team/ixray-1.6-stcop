@@ -133,3 +133,8 @@ void CResourceManager::Dump(bool bBrief)
 	Msg		("* RM_Dump: v_elements: %d",		v_elements.size());
 	Msg		("* RM_Dump: v_shaders : %d",		v_shaders.size());
 }
+
+CSVGStorage* CResourceManager::GetSVGStorage() const
+{
+	return m_pStorageSVG;
+}

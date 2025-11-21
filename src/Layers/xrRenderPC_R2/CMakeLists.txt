@@ -73,3 +73,6 @@ target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex
 
 ## RenderDoc
 target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")
+
+## lunaSVG
+target_link_libraries(xrRender_R2 PUBLIC lunasvg)

@@ -1,10 +1,8 @@
 // TextureManager.cpp: implementation of the CResourceManager class.
 //
 //////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-
-
+#include "SVGStorage.h"
 #include "ResourceManager.h"
 #include "tss.h"
 #include "blenders/Blender.h"
@@ -472,4 +470,14 @@ void	CResourceManager::Evict()
 #ifndef USE_DX11
 	CHK_DX	(RDevice->EvictManagedResources());
 #endif //USE_DX11
+}
+
+void CResourceManager::Initialize_SVGStorage()
+{
+	// we don't use storage svg if rendering ui is raster because there's no need in such creation
+	if (!m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
+	{
+		m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
+		m_pStorageSVG->init();
+	}
 }
