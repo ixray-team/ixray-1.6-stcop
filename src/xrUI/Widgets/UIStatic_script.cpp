@@ -45,7 +45,7 @@ void CUIStatic::script_register(lua_State *L)
 
         .def("SetTextColor",		&CUIStatic::SetTextColor_script)
 
-        .def("InitTexture",			&CUIStatic::InitTexture)
+        .def("InitTexture",			(bool (CUIStatic::*)(LPCSTR, bool)) &CUIStatic::InitTexture)
         .def("InitTexture",			+[](CUIStatic* self, pcstr texture) { self->InitTexture(texture); })
         .def("InitTextureEx",		&CUIStatic::InitTextureEx)
         .def("InitTextureEx",		+[](CUIStatic* self, pcstr texture, pcstr shader) { self->InitTextureEx(texture, shader); })
