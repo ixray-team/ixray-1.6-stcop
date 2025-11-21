@@ -125,6 +125,8 @@ using FileHandle = int;
 class FS_Path;
 namespace Platform
 {
+    constexpr const char* kPreferredSeparator = "/";
+
     IC const char* ValidPath(const char* In)
     {
         static std::string NewPath;

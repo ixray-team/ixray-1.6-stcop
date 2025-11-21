@@ -30,7 +30,7 @@ class UI_API ui_core:
 	Fvector2		m_pp_scale_;
 	Fvector2		m_scale_;
 	Fvector2*		m_current_scale;
-
+	ui_shader m_empty_default;
 public:
 	xr_stack<Frect> m_Scissors;
 
@@ -65,6 +65,11 @@ public:
 	static	bool	is_ultrawide					();
 	static	float	get_current_kx					();
 	shared_str		get_xml_name					(LPCSTR fn);
+
+	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height);
+	const ui_shader& GetVectorShader(const char* pSubpath, float requested_width, float requested_height);
+
+	Frect GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height);
 	
 	IUIRender::ePointType		m_currentPointType;
 };
