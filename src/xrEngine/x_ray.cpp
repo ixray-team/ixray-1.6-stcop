@@ -243,6 +243,11 @@ ENGINE_API void EngineLoadStage5()
 	g_SpatialSpace = new ISpatial_DB();
 	g_SpatialSpacePhysic = new ISpatial_DB();
 
+	if (Device.m_pRender)
+	{
+		Device.m_pRender->PostCreate();
+	}
+
 	// Main cycle
 	//Memory.mem_usage();
 	Device.Run					( );

@@ -39,6 +39,7 @@ public:
 	static void FreeCachedShaders		();
 
 	static bool		InitTexture			(const shared_str& texture_name, CUIStaticItem* tc, const shared_str& shader_name ="hud\\default", bool warn_about_missing_tex = true);
+	static bool InitTexture(const shared_str& svg_texture_name, CUIStaticItem* tc, float fWidgetWidth, float fWidgetHeight);
 	static bool		InitTexture			(const shared_str& texture_name, const shared_str& shader_name, ui_shader& out_shader, Frect& out_rect, bool warn_about_missing_tex = true);
 	static float	GetTextureHeight	(const shared_str&  texture_name);
 	static float	GetTextureWidth		(const shared_str&  texture_name);
