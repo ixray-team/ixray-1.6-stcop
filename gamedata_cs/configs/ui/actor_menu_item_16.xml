@@ -1,6 +1,6 @@
 <w>
-  <main_frame x="8" y="300" width="317" height="170" delay="810"/>
-  <background_frame x="0" y="0" width="317" height="170">
+  <main_frame x="8" y="300" width="367" height="170" delay="810"/>
+  <background_frame x="0" y="0" width="367" height="170">
     <texture>ui_temp_frame</texture>
   </background_frame>
   
@@ -20,7 +20,7 @@
 		<text align="l" font="letterica16" r="196" g="18" b="18" complex_mode="1"/>
 	</static_no_trade>
 
-	<descr_list x="11" y="63" width="300" height="131" always_show_scroll="0" right_ident="10" left_ident="10" fit_to_height="1">
+	<descr_list x="11" y="63" width="350" height="131" always_show_scroll="0" right_ident="10" left_ident="10" fit_to_height="1">
 		<font font="letterica16" color="ui_6"/>
 	</descr_list>
 
@@ -241,27 +241,27 @@
 #include "ui\booster_params_16.xml"
 	
   <upgrade_info>
-    <main_frame x="0" y="0" width="300" height="200"/>
+    <main_frame x="0" y="0" width="350" height="200"/>
 
-    <background_frame x="0" y="0" width="300" height="200">
+    <background_frame x="0" y="0" width="350" height="200">
       <texture>ui_temp_frame</texture>
     </background_frame>
 
-    <info_name x="17" y="20" width="333" height="20">
+    <info_name x="17" y="20" width="343" height="20">
       <text font="letterica18" r="238" g="155" b="23" complex_mode="0" align="l" vert_align="t"/>
     </info_name>
 
-    <info_desc x="17" y="45" width="333" height="20" complex_mode="1">
+    <info_desc x="17" y="45" width="343" height="20" complex_mode="1">
       <text font="letterica18" r="238" g="155" b="122" align="l" vert_align="t"/>
     </info_desc>
 
-    <info_prerequisites x="17" y="65" width="333" height="20" complex_mode="1">
+    <info_prerequisites x="17" y="65" width="343" height="20" complex_mode="1">
       <text font="letterica18" color="ui_2" align="l" vert_align="t"/>
     </info_prerequisites>
 
-    <properties x="17" y="20" width="333" height="20" sec_col_pos="155" next_line_pos="20">
+    <properties x="17" y="20" width="343" height="20" sec_col_pos="170" next_line_pos="20">
       <icon x="0"  y="0" width="15"  height="19" stretch="1" />
-      <text x="20" y="3" width="255" height="19" />
+      <text x="20" y="3" width="305" height="19" />
     </properties>
   </upgrade_info>
   
