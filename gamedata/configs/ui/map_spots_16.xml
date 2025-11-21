@@ -170,9 +170,11 @@
         </treasure>
         <treasure_spot width="20" height="20" alignment="c" stretch="1"><!-- scale="1" scale_min="1.1" scale_max="3.1" light_anim="map_spot_secrets" la_cyclic="0" la_texture="1" la_text="0" la_alpha="1"-->
                 <texture>ui_inGame2_PDA_icon_secret</texture>
+                <svg>ui_map_legend_icon_secret.svg</svg>
         </treasure_spot>
         <treasure_spot_mini width="17" height="17" alignment="c" stretch="1">
                 <texture>ui_inGame2_PDA_icon_secret</texture>
+                <svg color="green">ui_map_legend_icon_secret.svg</svg>
         </treasure_spot_mini>
 
 

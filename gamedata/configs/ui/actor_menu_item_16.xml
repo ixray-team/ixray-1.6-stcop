@@ -43,6 +43,7 @@
 		</static_handling>
 		<static_damage x="0" y="46" width="14" height="18" stretch="1">
 			<texture>ui_wp_prop_damage</texture>
+            <svg color="clr_wpn_param">ui_inv_wpn_property_damage.svg</svg>
 		</static_damage>
 		<static_rpm x="0" y="64" width="14" height="18" stretch="1">
 			<texture>ui_wp_prop_skorostrelnost</texture>

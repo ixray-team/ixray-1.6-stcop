@@ -39,6 +39,8 @@
   <color name="pda_red"     r="238" g="28"  b="36"/>
   <color name="pda_blue"    r="11"  g="178" b="248"/>
   <color name="edit"        r="207" g="155" b="80"/>
+
+  <color name="clr_wpn_param" r="41" g="247" b="231"/>
    
   <!-- Use "%cDEFAULT" color when need to switch to default color of UI element -->
 </colors>

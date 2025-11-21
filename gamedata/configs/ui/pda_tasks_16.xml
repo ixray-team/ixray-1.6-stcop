@@ -244,6 +244,7 @@
 			<item x="0" y="0" width="220" height="26">
 				<image x="8" y="0" width="15" height="19" stretch="1">
 					<texture>ui_inGame2_PDA_icon_secret</texture>
+					<svg>ui_map_legend_icon_secret.svg</svg>
 				</image>
 				<text_static x="32" y="2" width="184" height="16" complex_mode="1">
 					<text align="l" font="letterica16" r="170" g="170" b="170">st_ui_pda_legend_secrets</text>

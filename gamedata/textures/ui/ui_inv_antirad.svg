@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 512 512" xml:space="preserve">
+<rect x="239.918" y="6.874" style="fill:#BDCCD4;" width="32.072" height="88.192"/>
+<polyline style="fill:#29ABE2;" points="296.044,95.07 296.044,367.676 255.955,415.783 215.866,367.676 215.866,95.07 "/>
+<polygon style="fill:#0071BC;" points="255.955,415.783 215.866,367.676 215.866,95.07 255.955,95.07 "/>
+<polygon style="fill:#C1272D;" points="296.044,367.676 255.955,415.783 215.866,367.676 215.866,223.354 296.044,223.354 "/>
+<polyline style="fill:#740C10;" points="255.955,415.783 215.866,367.676 215.866,223.354 255.955,223.354 "/>
+<g>
+	<rect x="231.395" y="119.362" style="fill:#FFFFFF;" width="48.164" height="15.706"/>
+	<rect x="249.194" y="143.444" style="fill:#FFFFFF;" width="14.658" height="15.706"/>
+	<rect x="231.395" y="167.526" style="fill:#FFFFFF;" width="48.164" height="15.706"/>
+	<rect x="249.194" y="191.607" style="fill:#FFFFFF;" width="14.658" height="15.706"/>
+	<rect x="231.395" y="214.642" style="fill:#FFFFFF;" width="48.164" height="15.706"/>
+	<rect x="249.194" y="239.771" style="fill:#FFFFFF;" width="14.658" height="15.706"/>
+	<rect x="231.395" y="262.806" style="fill:#FFFFFF;" width="48.164" height="15.706"/>
+	<rect x="249.194" y="287.935" style="fill:#FFFFFF;" width="14.658" height="15.706"/>
+	<rect x="231.395" y="312.016" style="fill:#FFFFFF;" width="48.164" height="15.706"/>
+	<rect x="249.194" y="335.051" style="fill:#FFFFFF;" width="14.658" height="15.706"/>
+</g>
+<path d="M320.393,87.951H191.607v15.706h16.406v266.862l40.134,48.16v21.076h15.706v-21.184l40.044-48.053V103.656h16.496V87.951z
+	 M288.191,364.832l-32.236,38.684l-32.236-38.684V103.656h64.472V364.832z"/>
+<polygon points="233.489,78.528 249.194,78.528 249.194,15.706 263.853,15.706 263.853,78.528 279.558,78.528 279.558,15.706 
+	310.969,15.706 310.969,0 199.984,0 199.984,15.706 233.489,15.706 "/>
+<rect x="248.147" y="447.084" style="fill:#29ABE2;" width="15.706" height="64.916"/>
+</svg>
