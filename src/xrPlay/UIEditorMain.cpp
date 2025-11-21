@@ -324,10 +324,10 @@ void RenderUI()
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, color_shift, color_shift, 1.0f));
 
 					if (slot.flags & (u32)XRay::Sound::Mixer::Flags::Spatial) {
-						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: (%.1f%% %.1f%%, %.1f%%), (%.3f,%.3f,%.3f), %s", 
-							i + 1, name, playtime, duration, volumes.x * 100.0f, volumes.y * 100.0f, volumes.z * 100.0f, pos.x, pos.y, pos.z, state_name);
+						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: (%.1f%% %.1f%%, %.1f%%), (%.3f,%.3f,%.3f), %s, %d flags", 
+							i + 1, name, playtime, duration, volumes.x * 100.0f, volumes.y * 100.0f, volumes.z * 100.0f, pos.x, pos.y, pos.z, state_name, slot.flags);
 					} else {
-						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: %.1f%%, 2D, %s", i + 1, name, playtime, duration, volumes.x * 100.0f, state_name);
+						ImGui::Text("[%3i:%s:%.3fs/%.3fs]: %.1f%%, 2D, %s, %d flags", i + 1, name, playtime, duration, volumes.x * 100.0f, state_name, slot.flags);
 					}
 
 					ImGui::PopStyleColor(1);

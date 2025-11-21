@@ -829,7 +829,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
 
 	if (slot.hrtf_slot == 0) {
-		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
+		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 		return;
 	}
 
@@ -995,6 +995,7 @@ Snd_MixerRenderCallback(float* buffer)
 		// Spatial processing
 		if (!(slot.flags & (u32)Mixer::Flags::Intro) && source.pub.channels_count == 1) {
 			PROF_EVENT("Slot Spatial");
+
 			if (slot.flags & (u32)Mixer::Flags::Spatial) {
 #if !defined(DISABLE_STEAM_AUDIO) || 0//!defined(DISABLE_RESONANCE_AUDIO)
 				if (psSoundFlags.is(ss_HRTF) && mixer.hrtf_enabled)
@@ -1004,7 +1005,7 @@ Snd_MixerRenderCallback(float* buffer)
 				else
 #endif
 				{
-					DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos);
+					DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 				}
 			}
 
@@ -1367,36 +1368,39 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		auto& slot = mixer.slots[i];
 		if (slot.flags & (u16)Flags::NoFeedback && slot.state == State::Stopped) {
 			Destroy(i + 1);
-		} else if (((slot.flags & (u16)Flags::Intro) == 0) && slot.state == State::Playing) {
-			Fvector pos = (slot.flags & (u16)Flags::Spatial) ? slot.parameters[(u32)Mixer::ParameterId::Position] : mixer.P ;
-			float dist = mixer.P.distance_to(pos);
-			if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y) {
-				float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
-				float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
-				volume_lerp(old_occ, out_occ, 1.0f, dt);
+		} else {
+			bool occ_enable = ((slot.flags & ((u16)Flags::Intro | (u16)Flags::NoOCC)) == 0) && slot.state == State::Playing;
+			if (occ_enable) {
+				Fvector pos = (slot.flags & (u16)Flags::Spatial) ? slot.parameters[(u32)Mixer::ParameterId::Position] : mixer.P;
+				float dist = mixer.P.distance_to(pos);
+				if (dist <= slot.parameters[(u32)Mixer::ParameterId::DistanceRange].y) {
+					float out_occ = ::Sound->get_occlusion(pos, 0.2f, &mixer.occ);
+					float& old_occ = slot.parameters[(u32)Mixer::ParameterId::VolumePerChannel].z;
+					volume_lerp(old_occ, out_occ, 1.0f, dt);
 
-				CDB::MODEL* env_model = ::Sound->get_geometry_env();
-				CDB::COLLIDER* collider = ::Sound->get_geometry_db();
-				if (env_model != nullptr) {
-					Fvector	dir = { 0,-1,0 };
-					collider->ray_options(CDB::OPT_ONLYNEAREST);
-					collider->ray_query(env_model, pos, dir, 1000.f);
-					if (collider->r_count()) {
-						CDB::RESULT* r = collider->r_begin();
-						CDB::TRI* T = env_model->get_tris() + r->id;
-						Fvector* V = env_model->get_verts();
+					CDB::MODEL* env_model = ::Sound->get_geometry_env();
+					CDB::COLLIDER* collider = ::Sound->get_geometry_db();
+					if (env_model != nullptr) {
+						Fvector	dir = { 0,-1,0 };
+						collider->ray_options(CDB::OPT_ONLYNEAREST);
+						collider->ray_query(env_model, pos, dir, 1000.f);
+						if (collider->r_count()) {
+							CDB::RESULT* r = collider->r_begin();
+							CDB::TRI* T = env_model->get_tris() + r->id;
+							Fvector* V = env_model->get_verts();
 
-						Fvector tri_norm;
-						tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+							Fvector tri_norm;
+							tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
 
-						float dot = dir.dotproduct(tri_norm);
-						R_ASSERT(T->dummy < mixer.zones.size());
-						slot.zone_idx = T->dummy + 1;
+							float dot = dir.dotproduct(tri_norm);
+							R_ASSERT(T->dummy < mixer.zones.size());
+							slot.zone_idx = T->dummy + 1;
+						} else {
+							slot.zone_idx = 0;
+						}
 					} else {
 						slot.zone_idx = 0;
 					}
-				} else {
-					slot.zone_idx = 0;
 				}
 			}
 		}
