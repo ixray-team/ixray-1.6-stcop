@@ -664,6 +664,11 @@ int	CScriptGameObject::GetAttitude(CScriptGameObject* pToWho)
 {
 	CInventoryOwner* pInventoryOwner = object().cast_inventory_owner();
 	VERIFY(pInventoryOwner);
+	if (pInventoryOwner->Community() == NO_COMMUNITY_INDEX)
+	{
+		g_pScriptEngine->print_stack();
+		R_ASSERT2(false, "Unable to get attitude from owner with invalid community index");
+	}
 
 	CInventoryOwner* pOthersInventoryOwner = pToWho->object().cast_inventory_owner();
 	VERIFY(pOthersInventoryOwner);
