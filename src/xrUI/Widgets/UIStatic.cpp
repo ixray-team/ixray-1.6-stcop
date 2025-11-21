@@ -37,6 +37,7 @@ m_pTextControl(nullptr)
 	m_TextureOffset.set		(0.0f,0.0f);
 	m_lanim_xform.set_defaults	();
 	m_bEnableTextHighlighting = false;
+	m_bHasSvgAttribute = false;
 }
 
 CUIStatic::~CUIStatic()
@@ -60,6 +61,52 @@ void CUIStatic::SetXformLightAnim(LPCSTR lanim, bool bCyclic)
 bool CUIStatic::InitTexture(pcstr texture, bool fatal)
 {
     return InitTextureEx(texture, "hud\\default", fatal);
+}
+
+bool CUIStatic::InitTexture(LPCSTR raster_texture_name, LPCSTR svg_texture_name)
+{
+	bool result = CUITextureMaster::InitTexture(svg_texture_name, &m_UIStaticItem, GetWidth(), GetHeight());
+
+	Fvector2 p = GetWndPos();
+	m_UIStaticItem.SetPos(p.x, p.y);
+
+	return result;
+}
+
+void CUIStatic::InitSVG(CUIXml& xml_doc, LPCSTR path, int index)
+{
+	bool isRaster = EngineExternal().isRenderingUIRaster();
+
+	if (!isRaster)
+	{
+		LPCSTR svg = xml_doc.ReadAttrib(path, index, "svg");
+		m_bHasSvgAttribute = strlen(svg)>0;
+
+		// todo: probably provide nested nodes? but might there's better to refactor and make one place where we init svg data from xmls
+	}
+}
+
+bool CUIStatic::isSVGPresented(void) const
+{
+	return m_bHasSvgAttribute;
+}
+
+LPCSTR CUIStatic::getSVGFilename(CUIXml& xml_doc, LPCSTR path, int index)
+{
+	R_ASSERT(m_bHasSvgAttribute && "must be initialized!");
+
+	if (m_bHasSvgAttribute)
+	{
+		bool validNode = xml_doc.NavigateToNode(path, index);
+
+		R_ASSERT2(validNode, "not presented");
+
+		LPCSTR result = xml_doc.ReadAttrib(path, index, "svg");
+
+		return result;
+	}
+
+	return inherited::getSVGFilename(xml_doc, path);
 }
 
 void CUIStatic::CreateShader(const char* tex, const char* sh)

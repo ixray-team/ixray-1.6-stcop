@@ -56,13 +56,20 @@ enum class EEngineExternalEnvironment
 	None
 };
 
-enum class EEngineExternalPlatform : unsigned char
+enum class EEngineExternalPlatform : u8
 {
 	ShadowOfChernobyl,
 	ClearSky,
 	CallOfPripyat,
 	EnumSize,
-	Unknown = static_cast<unsigned char>(-1)
+	Unknown = static_cast<u8>(-1)
+};
+
+enum class EEngineExternalUIRenderingType : u8
+{
+	Raster,
+	Vector,
+	Unknown = static_cast<u8>(-1)
 };
 
 constexpr const char* kPlatformNameCOP = "cop";
@@ -72,9 +79,10 @@ constexpr const char* kPlatformNameSOC = "soc";
 constexpr const char* g_PlatformNames[] = {kPlatformNameSOC, kPlatformNameCS, kPlatformNameCOP};
 constexpr EEngineExternalPlatform g_Platforms[] = {EEngineExternalPlatform::ShadowOfChernobyl, EEngineExternalPlatform::ClearSky, EEngineExternalPlatform::CallOfPripyat};
 
+constexpr const char* kUIConfigField_InventoryVectorIcon = "inv_vector_icon";
 
-static_assert((sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])) == static_cast<unsigned char>(EEngineExternalPlatform::EnumSize), "you must register names that will be equal to EEngineExternalPlatform, you forgot to add a new platform to g_PlatformNames");
-static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == static_cast<unsigned char>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");
+static_assert((sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "you must register names that will be equal to EEngineExternalPlatform, you forgot to add a new platform to g_PlatformNames");
+static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == static_cast<u8>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");
 static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == (sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])), "must be equal!");
 
 
@@ -103,6 +111,8 @@ public:
 	const char* GetCurrentPlatformName();
 	EEngineExternalPlatform GetCurrentPlatform();
 	shared_str GetInventoryItemCountPrefix();
+	bool isRenderingUIRaster() const;
+	bool isRenderingUIErrorFallbackToDefaultAtlas() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
@@ -119,6 +129,8 @@ private:
 	void InitPlatform(const char* pPlatformName);
 
 private:
+	bool m_is_rendering_ui_vector_when_error_use_default_atlas;
+	EEngineExternalUIRenderingType m_preferredUIRendering;
 	EEngineExternalPlatform m_platform_type;
 	CInifile* pOptions;
 };

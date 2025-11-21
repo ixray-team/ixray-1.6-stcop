@@ -32,6 +32,7 @@ public:
 	void								Load			();
 	void								PostLoad		();
 	void								Unload			(void);
+	void								CreateEmpty(u32 w, u32 h);
 
 	void								surface_set		(IRHISurface* surf );
 	IRHISurface*						surface_get 	();
@@ -82,6 +83,7 @@ public:
 	IRHIShaderResourceView* GetView();
 
 	IRHISurface* pSurface;
+	bool can_unload;
 
 private:
 	IRHIShaderResourceView* m_pSRView;
@@ -104,3 +106,4 @@ struct resptrcode_texture :
 };
 
 using ref_texture = resptr_core<CTexture, resptrcode_texture>;
+#include "TextureAtlas.h"
