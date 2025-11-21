@@ -154,6 +154,21 @@ public:
 	virtual u32						ef_main_weapon_type	() const;
 	virtual u32						ef_weapon_type		() const;
 	virtual u32						ef_detector_type	() const;
+
+	private:
+	virtual u32						getCountValueToSpawn(LPCSTR spawnArgs);
+	virtual float					parseFloatParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, float defaultValue = 0.0f);
+	virtual int						parseIntParameterValue(LPCSTR spawnArgs, LPCSTR parameterName, int defaultValue = 0);
+	virtual bool					parseBoolParameterValue(LPCSTR spawnArgs, LPCSTR parameterName);
+	virtual CSE_Abstract*			setAddonFlagsIsWeapon(CSE_Abstract* E, LPCSTR spawnArgs);
+	virtual void					spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn);
+	virtual void					setItemCondition(CSE_Abstract* E, float condition);
+	virtual xr_vector <CInifile::Sect*> parseLoadouts(CInifile& ini);
+	virtual void					processingSpawnOnceFullRandomLoadout(CInifile& ini);
+	virtual void					processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini);
+	virtual void					processingVanillaSpawn(CInifile& ini);
+
+	public:
 #ifdef XRGAME_EXPORTS
 	virtual void					spawn_supplies		(LPCSTR);
 	virtual void					spawn_supplies		();
