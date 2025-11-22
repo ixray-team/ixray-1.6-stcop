@@ -66,7 +66,7 @@ public:
 	~CSVGStorage();
 
 	/// @brief call it only after RenderFactory was initialized and can allocate instances based on FactoryPtr
-	void init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context);
+	void init();
 	void uninit();
 
 	// returns preallocated size that was specified initially (but it doesn't show current size)
@@ -122,8 +122,6 @@ private:
 	u32 m_atlas_index_generator;
 	FactoryPtr<IUIShader>* m_p_default_shader;
 	FactoryPtr<IUIShader> m_empty_default_shader;
-	ID3DDevice* m_p_device;
-	ID3DDeviceContext* m_p_device_context;
 	CTextureAtlas m_default_atlas;
 	unsigned char m_static_storage[calculate_reserve_count(sizeof(CTextureAtlas), static_cast<size_t>(_kRenderBackend_SVGStorageSizeInitial))];
 	std::pmr::monotonic_buffer_resource m_ss_wrapper;

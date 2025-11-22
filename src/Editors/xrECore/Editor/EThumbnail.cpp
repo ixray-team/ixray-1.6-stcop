@@ -101,7 +101,15 @@ void EImageThumbnail::Update(IRHISurface*& Texture)
 	}
 	else
 	{
-		Texture->UpdateData(0, 0, &SubResource);
+		RHIBox box;
+		box.left = 0;
+		box.top = 0;
+		box.front = 0;
+		box.right = THUMB_WIDTH;
+		box.bottom = THUMB_HEIGHT;
+		box.back = 1;
+
+		Texture->UpdateData(0, 0, &SubResource, box);
 	}
 }
 
