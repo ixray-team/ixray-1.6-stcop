@@ -873,8 +873,11 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		}
 	}
 
+	int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
+	int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
 	int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
 	int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
+
 	float scaleIcon = m_pPickUpItem->ScaleIcon;
 
 	UIPickUpItemIcon->SetShader(InventoryUtilities::GetEquipmentIconsShader(m_pPickUpItem->IconsTexture.c_str()));
@@ -908,14 +911,14 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		const ui_shader& ui_shader = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
 		UIPickUpItemIcon->SetShader(ui_shader);
 
-		texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH(itm->ScaleIcon), m_iYPos * INV_GRID_HEIGHT(itm->ScaleIcon));
-		texture_rect.rb.set(m_iGridWidth * INV_GRID_WIDTH(itm->ScaleIcon), m_iGridHeight * INV_GRID_HEIGHT(itm->ScaleIcon));
+		texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH(scaleIcon), m_iYPos * INV_GRID_HEIGHT(scaleIcon));
+		texture_rect.rb.set(m_iGridWidth * INV_GRID_WIDTH(scaleIcon), m_iGridHeight * INV_GRID_HEIGHT(scaleIcon));
 		texture_rect.rb.add(texture_rect.lt);
 	}
 	else
 	{
-		float fRequestedWidth = m_iGridWidth * INV_GRID_WIDTH(itm->ScaleIcon) * scale * UI().get_current_kx();
-		float fRequestedHeight = m_iGridHeight * INV_GRID_HEIGHT(itm->ScaleIcon) * scale;
+		float fRequestedWidth = m_iGridWidth * INV_GRID_WIDTH(scaleIcon) * scale * UI().get_current_kx();
+		float fRequestedHeight = m_iGridHeight * INV_GRID_HEIGHT(scaleIcon) * scale;
 
 		Fvector2 vRealWH;
 		UI().ClientToScreenScaled(vRealWH, fRequestedWidth, fRequestedHeight);
@@ -949,8 +952,8 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	}
 
 	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
-	UIPickUpItemIcon->SetWidth(m_iGridWidth * INV_GRID_WIDTH(itm->ScaleIcon) * scale * UI().get_current_kx());
-	UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(itm->ScaleIcon) * scale);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth * INV_GRID_WIDTH(scaleIcon) * scale * UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(scaleIcon) * scale);
 	UIPickUpItemIcon->SetWndPos(Fvector2().set(m_iPickUpItemIconX + (m_iPickUpItemIconWidth - UIPickUpItemIcon->GetWidth()) / 2.0f,
 		m_iPickUpItemIconY + (m_iPickUpItemIconHeight - UIPickUpItemIcon->GetHeight()) / 2.0f));
 	UIPickUpItemIcon->SetTextureColor(color_rgba(255, 255, 255, 192));
