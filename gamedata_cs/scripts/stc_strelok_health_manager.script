@@ -123,16 +123,12 @@ end
 function load(packet)
 	set_save_marker(packet, "load", false, "strelok_health")
 	local r_strelok_hp = nil
-	local r_strelok_last_hit_time = nil
 	r_strelok_hp 				= packet:r_stringZ()
-	r_strelok_last_hit_time 	= packet:r_stringZ()
 	if r_strelok_hp == "nil" then
 		strelok_hp = nil
 	else
 		strelok_hp = tonumber(r_strelok_hp)
 	end
-
-	strelok_last_hit_time = nil
 
 	set_save_marker(packet, "load", true, "strelok_health")		
 end
