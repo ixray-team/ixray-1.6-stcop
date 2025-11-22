@@ -84,7 +84,6 @@ public:
 
 	IRHISurface* pSurface;
 	bool can_unload;
-	void setDebugName(const char* pName);
 
 private:
 	IRHIShaderResourceView* m_pSRView;

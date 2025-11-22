@@ -430,6 +430,7 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 {
 	if (m_RealTexture)m_RemoveTexture = m_RealTexture;
 	m_RealTexture = nullptr;
+
 	m_Props->ClearProperties();
 	m_Current = nullptr;
 	if (item)
@@ -441,6 +442,7 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 			IRHISurface* Surface = nullptr;
 			m_Thm->Update(Surface);
 
+			m_RealTexture = new CTexture;
 			m_RealTexture->surface_set(Surface);
 			Surface->Release();
 
