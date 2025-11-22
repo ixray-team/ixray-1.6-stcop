@@ -10,6 +10,8 @@
 #include "FBasicVisual.h"
 #include "CHudInitializer.h"
 #include "SkeletonCustom.h"
+#include "SVGStorage.h"
+
 using namespace		R_dsgraph;
 
 extern float		r_ssaDISCARD;

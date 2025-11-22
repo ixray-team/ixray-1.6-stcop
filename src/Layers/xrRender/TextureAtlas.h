@@ -62,15 +62,15 @@ public:
 
 	CTextureAtlas& operator=(CTextureAtlas&& other) noexcept;
 
-	void init(ID3DDevice* p_device, int width, int height, const char* pName);
+	void init(int width, int height, const char* pName);
 	void uninit();
 
-	bool addRegion(element_lookupid_type& lookup_element_id, ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch = 0);
+	bool addRegion(element_lookupid_type& lookup_element_id, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch = 0);
 
 	// if was successful immediately call addData after that method
 	bool tryAddRegion(element_lookupid_type& lookup_element_id, const xr_string_view& icon_subpath_name, u32 w, u32 h);
 
-	bool addData(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch);
+	bool addData(u32 w, u32 h, const void* pData, u32 pitch);
 
 	void getRegion(const xr_string_view& icon_subpath_name, u32& w, u32& h);
 
@@ -99,12 +99,7 @@ public:
 
 private:
 	element_lookupid_type findNearestSpatialIndex(float w, float h) const;
-
-	// for older GAPI < DX11
-	void addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
-
-	// for newer GAPI >= DX11
-	bool addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
+	void addRegion(u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
 private:
 #ifdef DEBUG
 	bool init_was_called;
