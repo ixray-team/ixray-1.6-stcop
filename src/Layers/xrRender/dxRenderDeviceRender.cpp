@@ -2,9 +2,7 @@
 #include "dxRenderDeviceRender.h"
 #include "SVGStorage.h"
 
-#ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
-#endif
 
 #include "ResourceManager.h"
 #ifndef _EDITOR
