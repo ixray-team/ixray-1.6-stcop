@@ -54,7 +54,7 @@ void DLSSWrapper::Create(const ContextParameters& Parameters)
 		return;
 	}
 	// Устанавливаем пресет для выбранного режима качества
-	const char* presetParameter = nullptr;
+	const char* presetParameter = "";
 	switch (ps_render_scale_preset) {
 	case 4:
 		presetParameter = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
