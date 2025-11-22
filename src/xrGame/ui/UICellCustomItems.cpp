@@ -42,11 +42,11 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 		inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
 		Frect rect;
-		rect.lt.set(INV_GRID_WIDTHF(itm->ScaleIcon) * itm->GetInvGridRect().x1,
-			INV_GRID_HEIGHTF(itm->ScaleIcon) * itm->GetInvGridRect().y1);
+		rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
 
-		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(itm->ScaleIcon) * m_grid_size.x,
-			rect.lt.y + INV_GRID_HEIGHTF(itm->ScaleIcon) * m_grid_size.y);
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
 
 		inherited::SetTextureRect(rect);
 		inherited::SetStretchTexture(true);
@@ -54,12 +54,12 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	else
 	{
 		Frect rect;
-		rect.lt.set(INV_GRID_WIDTHF(itm->ScaleIcon) * itm->GetInvGridRect().x1,
-			INV_GRID_HEIGHTF(itm->ScaleIcon) * itm->GetInvGridRect().y1);
+		rect.lt.set(INV_GRID_WIDTH(itm->ScaleIcon) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHT(itm->ScaleIcon) * itm->GetInvGridRect().y1);
 
 		// todo: it is estimated but not real (true) values that render expects and when it applies to polygon so think about how to extract real values... (but probably in most cases should be fine and wouldn't be noticable, but if noticable so I refer to this todo so you need to use accurate and exact values for requested width and height)
-		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(itm->ScaleIcon) * m_grid_size.x,
-			rect.lt.y + INV_GRID_HEIGHTF(itm->ScaleIcon) * m_grid_size.y);
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTH(itm->ScaleIcon) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHT(itm->ScaleIcon) * m_grid_size.y);
 		float fRequestedWidth = rect.width();
 		float fRequestedHeight = rect.height();
 
