@@ -21,6 +21,7 @@ include("${CMAKE_MODULE_PATH}/nlohmann_json.cmake")
 include("${CMAKE_MODULE_PATH}/amd_adl.cmake")
 include("${CMAKE_MODULE_PATH}/nvapi.cmake")
 include("${CMAKE_MODULE_PATH}/stb.cmake")
+include("${CMAKE_MODULE_PATH}/lunasvg.cmake")
 
 include("${CMAKE_MODULE_PATH}/SteamAudio.cmake")
 

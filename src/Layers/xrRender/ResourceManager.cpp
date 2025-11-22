@@ -478,6 +478,6 @@ void CResourceManager::Initialize_SVGStorage()
 	if (!m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
 	{
 		m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
-		m_pStorageSVG->init(RDevice, RContext);
+		m_pStorageSVG->init();
 	}
 }
