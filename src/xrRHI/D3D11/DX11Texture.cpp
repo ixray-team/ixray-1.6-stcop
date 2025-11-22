@@ -282,20 +282,36 @@ IRHIDepthStencilView* DX11Surface::GetDepthStencilView()
 	return DSV;
 }
 
-bool DX11Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource)
+bool DX11Surface::UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box)
 {
 	if (!Resource || !subResource || !subResource->Data)
 		return false;
 
 	ID3D11DeviceContext* context = (ID3D11DeviceContext*)GRHI->GetContext();
 
-	D3D11_MAPPED_SUBRESOURCE mappedData;
-	HRESULT hr = context->Map(Texture2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
-	memcpy(mappedData.pData, subResource->Data, mappedData.DepthPitch);
+	D3D11_BOX destBox;
+	destBox.left = Box.left;
+	destBox.top = Box.top;
+	destBox.front = Box.front;
+	destBox.right = Box.right;
+	destBox.bottom = Box.bottom;
+	destBox.back = Box.back;
 
-	context->Unmap(Resource, 0);
+	UINT dstSubresource = 0;
+
+	context->UpdateSubresource
+	(
+		Resource,
+		dstSubresource,
+		&destBox,
+		subResource->Data,
+		subResource->RowPitch,
+		subResource->DepthPitch
+	);
+
 	return true;
 }
+
 
 void* DX11Surface::Lock(u32 mipLevel, u32* pitch)
 {
@@ -485,14 +501,17 @@ IRHISurface* DX11TextureFactory::CreateTexture2D(const RHITextureDesc& Desc, con
 	d3dDesc.MiscFlags = ConvertMiscFlags(Desc.MiscFlags);
 
 	ID3D11Texture2D* texture = nullptr;
+
+	bool UseSubres = false;
 	D3D11_SUBRESOURCE_DATA DxSubResource = {};
 	if (SubResource != nullptr && SubResource->Data != nullptr)
 	{
 		DxSubResource.pSysMem = SubResource->Data;
 		DxSubResource.SysMemPitch = SubResource->DataSize;
+		UseSubres = true;
 	}
 
-	HRESULT hr = Device->CreateTexture2D(&d3dDesc, SubResource ? &DxSubResource : nullptr, &texture);
+	HRESULT hr = Device->CreateTexture2D(&d3dDesc, UseSubres ? &DxSubResource : nullptr, &texture);
 	if (FAILED(hr))
 	{
 		return nullptr;

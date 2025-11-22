@@ -34,6 +34,7 @@ CTexture::CTexture		()
 	flags.seqCycles		= FALSE;
 	flags.bLoadedAsStaging = FALSE;
 	m_material			= 1.0f;
+	can_unload = true;
 	bind				= xr_make_delegate(this,&CTexture::apply_load);
 }
 
@@ -528,6 +529,7 @@ void CTexture::Load()
 
 void CTexture::Unload()
 {
+	if (!can_unload) return;
 	flags.bLoaded = false;
 	flags.bLoadedAsStaging = false;
 
@@ -597,4 +599,45 @@ void CTexture::video_Stop()
 bool CTexture::video_IsPlaying()
 {
 	return (pTheora) ? pTheora->IsPlaying() : false;
+}
+
+void CTexture::CreateEmpty(u32 w, u32 h)
+{
+	R_ASSERT(RDevice && "must be valid");
+
+	flags.bLoaded = true;
+	if (pSurface)
+		return;
+
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+	if (0 == _stricmp(*cName, "$null"))	return;
+	if (0 != strstr(*cName, "$user$")) {
+		flags.bUser = true;
+		return;
+	}
+
+	Preload();
+
+	RHITextureDesc desc = {};
+	desc.Width = w;
+	desc.Height = h;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = ERHI_FORMAT::R8G8B8A8_UNORM;
+	desc.Usage = ERHI_USAGE::USAGE_DEFAULT;
+	desc.BindFlags = ERHI_BIND_FLAG::SHADER_RESOURCE;
+
+	RHISubResource Subres = {};
+	pSurface = GRHI->CreateTexture2D(desc, Subres);
+
+	if (pSurface)
+	{
+		flags.MemoryUsage = w * h * 4;
+		m_pSRView = GRHI->CreateShaderResourceView(pSurface, nullptr);
+	}
+
+	PostLoad();
+
+	can_unload = false;
 }
