@@ -829,7 +829,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
 
 	if (slot.hrtf_slot == 0) {
-		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, slot.flags & (u32)Mixer::Flags::NoOCC);
+		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 		return;
 	}
 
@@ -1005,7 +1005,7 @@ Snd_MixerRenderCallback(float* buffer)
 				else
 #endif
 				{
-					DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, slot.flags& (u32)Mixer::Flags::NoOCC);
+					DSP_SpatialProcess(process_buffer, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
 				}
 			}
 
