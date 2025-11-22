@@ -215,9 +215,9 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
     processingVanillaSpawn(ini);
 }
 
-xr_vector <CInifile::Sect> CSE_ALifeObject::parseLoadouts(CInifile ini)
+xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
 {
-    xr_vector <CInifile::Sect> m_loadouts;
+    xr_vector <CInifile::Sect*> m_loadouts;
     LPCSTR loadoutSpawnSectionName = "";
     auto sections = ini.sections();
     m_loadouts.clear();
@@ -230,7 +230,7 @@ xr_vector <CInifile::Sect> CSE_ALifeObject::parseLoadouts(CInifile ini)
 
         loadoutSpawnSectionName = sect->Name.c_str();
         if (nullptr != strstr(loadoutSpawnSectionName, "spawn_loadout")) {
-            m_loadouts.push_back(ini.r_section(loadoutSpawnSectionName));
+            m_loadouts.push_back(&ini.r_section(loadoutSpawnSectionName));
         }
     }
 
@@ -238,9 +238,9 @@ xr_vector <CInifile::Sect> CSE_ALifeObject::parseLoadouts(CInifile ini)
 }
 
 // Спавнит один полный лодаут среди случайных в рамках инклуда в профиле нпц в разделе supplies
-void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile ini)
+void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile& ini)
 {
-    xr_vector <CInifile::Sect> m_loadouts = parseLoadouts(ini);
+    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
     LPCSTR itemSection = "";
     LPCSTR spawnArgs = "";
     bool isSpawned = false;
@@ -249,11 +249,11 @@ void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile ini)
         return;
     }
 
-    CInifile::Sect randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
+    CInifile::Sect* randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
 
-    for (size_t i = 0; i < randomLoadout.Data.size(); i++) {
-        itemSection = randomLoadout.Data[i].first.c_str();
-        spawnArgs = randomLoadout.Data[i].second.c_str();
+    for (size_t i = 0; i < randomLoadout->Data.size(); i++) {
+        itemSection = randomLoadout->Data[i].first.c_str();
+        spawnArgs = randomLoadout->Data[i].second.c_str();
 
         if (!pSettings->section_exist(itemSection))
         {
@@ -289,17 +289,17 @@ void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile ini)
 }
 
 // Спавнит один случайный предмет среди случайно выбранного лодаута в рамках инклуда в профиле нпц в разделе supplies
-void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile ini)
+void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini)
 {
-    xr_vector <CInifile::Sect> m_loadouts = parseLoadouts(ini);
+    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
     if (m_loadouts.empty()) {
         return;
     }
 
-    CInifile::Sect randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
-    size_t randomLoadoutItemIndex = ::Random.randI(0, randomLoadout.Data.size());
-    LPCSTR itemSection = randomLoadout.Data[randomLoadoutItemIndex].first.c_str();
-    LPCSTR spawnArgs = randomLoadout.Data[randomLoadoutItemIndex].second.c_str();
+    CInifile::Sect* randomLoadout = m_loadouts[::Random.randI(0, m_loadouts.size())];
+    size_t randomLoadoutItemIndex = ::Random.randI(0, randomLoadout->Data.size());
+    LPCSTR itemSection = randomLoadout->Data[randomLoadoutItemIndex].first.c_str();
+    LPCSTR spawnArgs = randomLoadout->Data[randomLoadoutItemIndex].second.c_str();
 
     if (!pSettings->section_exist(itemSection))
     {
@@ -326,7 +326,7 @@ void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile ini)
 }
 
 // Ванильный спавн
-void CSE_ALifeObject::processingVanillaSpawn(CInifile ini)
+void CSE_ALifeObject::processingVanillaSpawn(CInifile& ini)
 {
     LPCSTR itemSection = "";
     LPCSTR spawnArgs = "";
