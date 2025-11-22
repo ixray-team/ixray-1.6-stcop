@@ -70,6 +70,16 @@ struct RHISubResource
 	}
 };
 
+struct RHIBox
+{
+	u32 left;
+	u32 top;
+	u32 front;
+	u32 right;
+	u32 bottom;
+	u32 back;
+};
+
 class IRHITexture
 {
 public:
@@ -102,7 +112,7 @@ public:
 	virtual IRHIRenderTargetView* GetRenderTargetView() = 0;
 	virtual IRHIDepthStencilView* GetDepthStencilView() = 0;
 	
-	virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource) = 0;
+	virtual bool UpdateData(u32 mipLevel, u32 arrayLayer, const RHISubResource* subResource, const RHIBox& Box) = 0;
 	
 	virtual void* Lock(u32 mipLevel = 0, u32* pitch = nullptr) = 0;
 	virtual void Unlock() = 0;
