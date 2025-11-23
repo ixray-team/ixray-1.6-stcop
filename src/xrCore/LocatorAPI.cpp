@@ -343,7 +343,7 @@ void CLocatorAPI::archive::close()
 	hSrcFile = 0;
 }
 
-void CLocatorAPI::ProcessArchive(LPCSTR _path)
+void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 {
 	// find existing archive
 	shared_str path = Platform::ANSI_TO_UTF8(_path).c_str();
@@ -370,7 +370,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path)
 	}
 	
 	if(bProcessArchiveLoading || Core.ParamsData.test(ECoreParams::auto_load_arch))
-		LoadArchive				(A);
+		LoadArchive				(A, base_path);
 	else
 		A.close					();
 }
@@ -1802,4 +1802,26 @@ BOOL CLocatorAPI::can_modify_file(LPCSTR path, LPCSTR name)
 	string_path			temp;       
 	update_path			(temp,path,name);
 	return can_modify_file(temp);
+}
+
+void CLocatorAPI::ProcessExternalArch()
+{
+	FS_FileSet		fset;
+	file_list		(fset, "$mod_dir$", FS_ListFiles, "*.xdb*");
+
+	FS_FileSetIt	it		= fset.begin();
+	FS_FileSetIt	it_e	= fset.end();
+
+	string_path		full_mod_name, _path;
+	for( ;it!=it_e; ++it)
+	{
+		Msg					("--found external arch %s",(*it).name.c_str());
+		update_path			(full_mod_name,"$mod_dir$",(*it).name.c_str());
+
+		FS_Path* pFSRoot		= FS.get_path("$fs_root$");
+		
+		xr_strconcat		(_path, pFSRoot->m_Path, "gamedata");
+
+		ProcessArchive		(full_mod_name, _path);
+	}
 }
