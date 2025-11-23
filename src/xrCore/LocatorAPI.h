@@ -78,7 +78,7 @@ private:
 	bool IsArchivePhase = false;
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, time_t modif);
-	void						ProcessArchive	(LPCSTR path);
+	void						ProcessArchive	(LPCSTR path, LPCSTR base_path = nullptr);
 	void						ProcessOne		(LPCSTR path, system_file* F);
 	bool						Recurse			(LPCSTR path);	
 
@@ -126,7 +126,7 @@ private:
 	
 	template <typename T>
 	IC		T					*r_open_impl		(LPCSTR path, LPCSTR _fname);
-
+			void				ProcessExternalArch	();
 private:
 			void				setup_fs_path		(LPCSTR fs_name, string_path &fs_path);
 			void				setup_fs_path		(LPCSTR fs_name);
