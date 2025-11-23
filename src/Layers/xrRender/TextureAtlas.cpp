@@ -945,8 +945,6 @@ void CSVGStorage::init_default_atlas()
 
 	IReader* pReader = FS.r_open(fn);
 
-	R_ASSERT(pReader && "there's no default SVG texture file it must be presented on disk or archive!");
-
 	if (pReader)
 	{
 		init_atlas(384, 384, _kSVGStorage_DefaultAtlasName, m_default_atlas);
