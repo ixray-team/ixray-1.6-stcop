@@ -210,7 +210,11 @@ void CUIMainIngameWnd::Init()
 
 	bool isRaster = EngineExternal().isRenderingUIRaster();
 
-	auto pInitSVGForCUIStatic = [](CUIStatic* pElement, CUIXml& uiXml, bool& svg_init) -> void {
+	auto pInitSVGForCUIStatic = [](CUIStatic* pElement, CUIXml& uiXml, bool& svg_init) -> void
+		{
+			if (!pElement)
+				return;
+
 		if (
 			pElement->isSVGPresented() && EngineExternal().isRenderingUIRaster()==false)
 		{
