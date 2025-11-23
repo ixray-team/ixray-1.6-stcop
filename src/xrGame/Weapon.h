@@ -390,6 +390,7 @@ protected:
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil = false;
 	bool m_bTacticalTorchStatus = false;
+	bool m_bTacticalLaserStatus = false;
 	bool m_bJustAfterReload = false;
 	bool m_bIsPreloaded = false;
 	bool m_bAddCartridgeInOpen = false;
