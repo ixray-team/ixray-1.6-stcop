@@ -104,7 +104,7 @@ public:
 	filetransfer_node	(buffer_vector<mutable_buffer_t>* vector_of_buffers, u32 const chunk_size, sending_state_callback_t const & callback, u32 user_param = 0);
 	filetransfer_node	(CMemoryWriter* src_writer, u32 const max_size, u32 const chunk_size, sending_state_callback_t const & callback, u32 user_param = 0);
 	
-	filetransfer_node& operator=(filetransfer_node const & copy) {NODEFAULT;};
+	filetransfer_node& operator=(filetransfer_node const & copy) = delete;
 	~filetransfer_node	();
 
 	void calculate_chunk_size	(u32 peak_throughput, u32 current_throughput);

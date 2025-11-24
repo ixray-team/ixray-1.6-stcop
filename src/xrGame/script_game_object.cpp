@@ -746,7 +746,7 @@ bool CScriptGameObject::invulnerable() const
 
 void CScriptGameObject::invulnerable(bool invulnerable)
 {
-	if (CActor* pActor = object().cast_actor())
+	if (object().cast_actor() != nullptr)
 	{
 		psActorFlags.set(AF_GODMODE, invulnerable);
 	}

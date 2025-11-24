@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Rat"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
@@ -486,7 +486,7 @@ void CAI_Rat::UpdateCL			()
 
 		if (squad && 
 			((squad->GetLeader() != this && !squad->GetLeader()->g_Alive()) ||
-			squad->get_index(this) == u32(-1))
+			squad->get_index(this) == u8(-1))
 			) squad->SetLeader(this);
 
 		if (squad &&
