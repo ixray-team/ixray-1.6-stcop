@@ -284,14 +284,12 @@ shared_str door::get_initiators_ids	( ) const
 	LPSTR const result			= (LPSTR)_alloca(buffer_size);
 	*result						= 0;
 	LPSTR j						= result;
-	u32 left_size				= buffer_size;
 	for ( i = m_initiators.begin(); i != e; ++i ) {
 		u32 const length		= xr_strlen((*i)->get_name());
 		Memory.mem_copy			( j, (*i)->get_name(), length );
 		j						+= length;
 		*j++					= ',';
 		*j++					= ' ';
-		left_size				= buffer_size - (j - result);
 	}
 
 	if ( buffer_size > 1 )

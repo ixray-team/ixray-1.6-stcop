@@ -10,7 +10,7 @@ endif()
 add_subdirectory("imgui")
 add_subdirectory("opcode")
 
-if(WIN32)
+if(WIN32 AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_subdirectory("dxerr")
 endif()
 
@@ -39,6 +39,6 @@ endif()
 set_target_properties(imgui PROPERTIES ${IXRAY_FOLDER_3RD})
 set_target_properties(opcode-prosectors PROPERTIES ${IXRAY_FOLDER_3RD})
 
-if(WIN32)
+if(WIN32 AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set_target_properties(dxerr PROPERTIES ${IXRAY_FOLDER_3RD})
 endif()

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIActorMenu.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/xrUIXmlParser.h"

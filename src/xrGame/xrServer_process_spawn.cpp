@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "xrServer.h"
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 
 #ifdef DEBUG
-#	include "xrserver_objects_alife_items.h"
+#	include "xrServer_Objects_ALife_Items.h"
 #endif
 
 CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, BOOL bSpawnWithClientsMainEntityAsParent, CSE_Abstract* tpExistedEntity)

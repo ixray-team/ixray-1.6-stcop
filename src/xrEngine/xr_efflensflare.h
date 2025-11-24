@@ -6,7 +6,7 @@
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/LensFlareRender.h"
 
-class ENGINE_API CInifile;
+class XRCORE_API CInifile;
 class ENGINE_API CEnvironment;
 
 class ENGINE_API CLensFlareDescriptor

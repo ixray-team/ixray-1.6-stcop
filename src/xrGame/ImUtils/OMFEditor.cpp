@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../Level.h"
 #include "../Actor.h"
 #include "../alife_simulator.h"
@@ -197,8 +197,8 @@ struct OMFEditorState
 
 OMFEditorState* pEditor = &g_omf_editor;
 
-template<std::size_t Size>
-void OMFEditor_ReadString(xr_stack_string<Size>& str, std::ifstream& file)
+template<typename T>
+void OMFEditor_ReadString(T& str, std::ifstream& file)
 {
 	char symbol = -1;
 	uint32_t str_length = 0;
@@ -212,8 +212,8 @@ void OMFEditor_ReadString(xr_stack_string<Size>& str, std::ifstream& file)
 	} while (symbol != '\0');
 }
 
-template<std::size_t Size>
-void OMFEditor_ReadStringMotionMark(xr_stack_string<Size>& str, std::ifstream& file)
+template<typename T>
+void OMFEditor_ReadStringMotionMark(T& str, std::ifstream& file)
 {
 	char symbol = -1;
 	uint32_t str_length = 0;
@@ -669,7 +669,7 @@ void RenderToolsOMFEditorWindow()
 		if (g_omf_editor.is_file_loaded)
 		{
 			R_ASSERT2(g_omf_editor.omf, "must be initialized");
-			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path);
+			ImGui::TextWrapped("Loaded file: [%s]", g_omf_editor.path.c_str());
 			ImGui::Separator();
 
 			if (ImGui::BeginTable("##ToolsInGameImGui_OMFEditor_Data_Header", 2))

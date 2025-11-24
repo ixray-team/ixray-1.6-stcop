@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pseudo_gigant.h"
 #include "pseudogigant_state_manager.h" 
 

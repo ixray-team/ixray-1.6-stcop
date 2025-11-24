@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "xrServer.h"
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 
 void xrServer::Process_event_activate	(NET_Packet& P, const ClientID sender, const u32 time, const u16 id_parent, const u16 id_entity, bool send_message)
 {

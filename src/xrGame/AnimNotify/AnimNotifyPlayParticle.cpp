@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "AnimNotifyPlayParticle.h"
 
 #include "../Include/xrRender/Kinematics.h"

@@ -6,7 +6,7 @@
 //	Description : ALife monster brain class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "alife_monster_brain.h"
 #include "object_broker.h"
 #include "xrServer_Objects_ALife_Monsters.h"
@@ -25,7 +25,7 @@
 #	include "alife_time_manager.h"
 #	include "../xrEngine/date_time.h"
 #	ifdef DEBUG
-#		include "level.h"
+#		include "Level.h"
 #		include "map_location.h"
 #		include "map_manager.h"
 #	endif

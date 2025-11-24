@@ -419,7 +419,7 @@ void CStepManager::material_sound::play_next(SGameMtlPair* mtl_pair, CEntityAliv
 																	&vol );
 }
 
-inline void CStepManager::PlayRainStep(const bool bHudView)
+void CStepManager::PlayRainStep(const bool bHudView)
 {
 	if (m_rain_steps.empty())
 	{
@@ -441,7 +441,7 @@ inline void CStepManager::PlayRainStep(const bool bHudView)
 	m_rain_steps[Random.randI(count)].play_no_feedback(m_object, bHudView ? sm_2D : 0, 0, &pos, &rainVolume);
 }
 
-inline void CStepManager::PlayExoStep(const bool bHudView)
+void CStepManager::PlayExoStep(const bool bHudView)
 {
 	if (!is_exo || m_exo_steps.empty())
 	{

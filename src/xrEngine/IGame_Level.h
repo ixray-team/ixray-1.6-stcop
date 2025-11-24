@@ -9,7 +9,7 @@
 class ENGINE_API CCameraManager;
 class ENGINE_API CCursor;
 class ENGINE_API CCustomHUD;
-class ENGINE_API ISpatial;
+class XRCORE_API ISpatial;
 namespace Feel { class ENGINE_API Sound; }
 
 class ENGINE_API CServerInfo

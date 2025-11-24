@@ -1,4 +1,3 @@
-#pragma once
 #include "DX9ShaderDeclaration.h"
 #include <d3d9.h>
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "base_monster.h"
 
 #include "../../../ai_object_location.h"
@@ -455,10 +455,8 @@ void CBaseMonster::PH_A_CrPr() {
 	CalculateInterpolationParams();
 }
 
-void CBaseMonster::CalculateInterpolationParams() {
-	CPHSynchronize* pSyncObj = NULL;
-	pSyncObj = PHGetSyncItem(0);
-
+void CBaseMonster::CalculateInterpolationParams() 
+{
 	monster_interpolation::InterpData* pIStart = &IStart;
 	monster_interpolation::InterpData* pIEnd = &IEnd;
 
@@ -579,7 +577,8 @@ void CBaseMonster::make_Interpolation() {
 			pSyncObj->set_State(PredictedState);
 			VERIFY2(_valid(renderable.xform), *cName());
 		}
-		else {
+		else
+		{
 			float factor = 0.0f;
 
 			if(m_dwIEndTime != m_dwIStartTime)
@@ -591,13 +590,6 @@ void CBaseMonster::make_Interpolation() {
 			NewPos.lerp(IStart.Pos, IEnd.Pos, factor);
 
 			VERIFY2(_valid(renderable.xform), *cName());
-
-			//movement().m_body.current.pitch = angle_lerp(IStart.o_torso.pitch, IEnd.o_torso.pitch, factor);
-			//movement().m_body.current.roll = angle_lerp(IStart.o_torso.roll, IEnd.o_torso.roll, factor);
-			//movement().m_body.current.yaw = angle_lerp(IStart.o_torso.yaw, IEnd.o_torso.yaw, factor);
-
-			float& yaw = movement().m_body.current.yaw;
-			float& pitch = movement().m_body.current.pitch;
 
 			float f_yaw = angle_lerp(IStart.o_torso.yaw, IEnd.o_torso.yaw, factor);
 			float f_pitch = angle_lerp(IStart.o_torso.pitch, IEnd.o_torso.pitch, factor);

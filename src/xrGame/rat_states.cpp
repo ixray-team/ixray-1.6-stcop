@@ -188,7 +188,7 @@ void rat_state_attack_melee::execute	()
 
 	if (squad && 
 		((squad->GetLeader() != object().cast_entity() && !squad->GetLeader()->g_Alive()) ||
-		squad->get_index(object().cast_entity()) == u32(-1))
+		squad->get_index(object().cast_entity()) == u8(-1))
 		) squad->SetLeader(object().cast_entity());
 
 	if (squad &&

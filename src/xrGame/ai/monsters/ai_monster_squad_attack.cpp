@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ai_monster_squad.h"
 #include "../../Entity.h"
 #include "../../entity_alive.h"
@@ -270,7 +270,7 @@ Fvector   CMonsterSquad::calc_monster_target_dir (CBaseMonster* monster, const C
 	VERIFY(squad_size);
 
 	u8 squad_index = get_index(monster);
-	if ( squad_index == -1 )
+	if ( squad_index == u8(-1))
 	{
 		squad_index = 0;
 	}

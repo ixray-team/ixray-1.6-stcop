@@ -657,17 +657,16 @@ void WeaponUsageStatistic::Send_Check_Respond()
 	if (!OnServer()) return;
 	NET_Packet P;
 	string1024 STrue, SFalse;
-	for (u32 i=0; i<m_Requests.size(); i++)
+
+	for (u32 i = 0; i < m_Requests.size(); i++)
 	{
 		Bullet_Check_Array& BChA_Request = m_Requests[i];
 		if (BChA_Request.Requests.empty()) continue;
-		Bullet_Check_Respond_True* pSTrue = (Bullet_Check_Respond_True*) STrue;
-		u32* pSFalse = (u32*) SFalse;
-		//-----------------------------------------------------
-		u32 NumFalse = 0;
-		u32 NumTrue = 0;
-		u32 j=0;
-		while (j<BChA_Request.Requests.size())
+		Bullet_Check_Respond_True* pSTrue = (Bullet_Check_Respond_True*)STrue;
+		u32* pSFalse = (u32*)SFalse;
+		u32 j = 0;
+
+		while (j < BChA_Request.Requests.size())
 		{
 			Bullet_Check_Request& curBChR = BChA_Request.Requests[j];
 			if (!curBChR.Processed)
@@ -677,38 +676,32 @@ void WeaponUsageStatistic::Send_Check_Respond()
 			}
 			else
 			{
-				if (curBChR.Result) 
+				if (curBChR.Result)
 				{
 					pSTrue->BulletID = curBChR.BulletID;
 					pSTrue->BoneID = curBChR.BoneID;
-					pSTrue++;				
-//					HitChecksRespondedTrue++;
-					NumTrue++;
+					pSTrue++;
 				}
-				else 
+				else
 				{
 					*(pSFalse++) = curBChR.BulletID;
-//					HitChecksRespondedFalse++;
-					NumFalse++;
 				};
-//				HitChecksResponded++;
-				//-----------------------------------------------------
-				*(BChA_Request.Requests.begin()+j) = BChA_Request.Requests.back();
+				*(BChA_Request.Requests.begin() + j) = BChA_Request.Requests.back();
 				BChA_Request.Requests.pop_back();
 			}
 		}
 		//-----------------------------------------------------
-		P.w_begin(M_BULLET_CHECK_RESPOND);		
-//		Msg("%d-%d || %d-%d", NumFalse, BChA_Request.NumFalse, NumTrue, BChA_Request.NumTrue);
+		P.w_begin(M_BULLET_CHECK_RESPOND);
+
 		P.w_u8(BChA_Request.NumFalse);		BChA_Request.NumFalse = 0;
 		P.w_u8(BChA_Request.NumTrue);		BChA_Request.NumTrue = 0;
 
-		if ((char*)pSFalse != (char*)SFalse) P.w(SFalse, u32((char*)pSFalse-(char*)SFalse));
-		if ((char*)pSTrue != (char*)STrue) P.w(STrue, u32((char*)pSTrue-(char*)STrue));
+		if ((char*)pSFalse != (char*)SFalse) P.w(SFalse, u32((char*)pSFalse - (char*)SFalse));
+		if ((char*)pSTrue != (char*)STrue) P.w(STrue, u32((char*)pSTrue - (char*)STrue));
 		//-----------------------------------------------------
 		ClientID ClID; ClID.set(BChA_Request.SenderID);
-		if(Level().Server) Level().Server->SendTo(ClID, P);
-	};
+		if (Level().Server) Level().Server->SendTo(ClID, P);
+	}
 }
 
 void WeaponUsageStatistic::On_Check_Respond(NET_Packet* P)

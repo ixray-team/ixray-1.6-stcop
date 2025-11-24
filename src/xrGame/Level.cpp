@@ -66,8 +66,8 @@
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
 #	include "debug_renderer.h"
-#	include "physicobject.h"
-#	include "phdebug.h"
+#	include "PhysicObject.h"
+#	include "PHDebug.h"
 
 // Lain:added
 #	include "debug_text_tree.h"

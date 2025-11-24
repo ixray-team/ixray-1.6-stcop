@@ -316,7 +316,7 @@ void dTimerEnd()
 //****************************************************************************
 // print report
 
-static void fprintDoubleWithPrefix (FILE *f, double a, const char *fmt)
+[[maybe_unused]] static void fprintDoubleWithPrefix (FILE *f, double a, const char *fmt)
 {
   if (a >= 0.999999) {
     fprintf (f,fmt,a);

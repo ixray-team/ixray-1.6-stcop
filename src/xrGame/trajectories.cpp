@@ -192,12 +192,10 @@ bool trajectory_intersects_geometry	(float							trajectory_time,
 									 CObject * const 				self_object,
 									 CObject * const 				ignored_object,
 									 collide::rq_results &			temp_rq_results,
-									 xr_vector<trajectory_pick> * const	out_trajectory_picks,
-									 xr_vector<Fvector>	* const		out_collide_tris,
+									 [[maybe_unused]] xr_vector<trajectory_pick>* const out_trajectory_picks,
+									 [[maybe_unused]] xr_vector<Fvector>* const out_collide_tris,
 									 Fvector const &				box_size)
 {
-	out_trajectory_picks; out_collide_tris;
-
 #ifdef DEBUG
 	if ( out_trajectory_picks )
 		out_trajectory_picks->resize	(0);

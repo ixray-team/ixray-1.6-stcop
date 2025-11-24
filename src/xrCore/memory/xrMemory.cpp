@@ -8,9 +8,6 @@
 
 #include "xrsharedmem.h"
 
-// HACK: ForserX: Хак для установки уровня инициализации переменной в глобальном пространстве
-#pragma section(".Hook",read)
-
 BOOL mem_initialized	= FALSE;
 bool shared_str_initialized	= false;
 
@@ -49,7 +46,7 @@ void xrMemory::_initialize()
 	stat_calls = 0;
 	stat_counter = 0;
 
-	if (CPU::ID.hasFeature(CPUFeature::MMXExt))
+	if (CPU::ID().hasFeature(CPUFeature::MMXExt))
 	{
 		mem_copy = xrMemCopy_MMX;
 		mem_fill = xrMemFill_x86;
@@ -122,8 +119,4 @@ XRCORE_API		BOOL			is_stack_ptr		( void* _ptr)
 	return		(difference < (512*1024));
 }
 
-#ifdef IXR_WINDOWS
-#pragma init_seg(lib)
-__declspec(allocate(".Hook"))
-#endif
 xrMemory Memory;

@@ -135,7 +135,9 @@ enum ETeam
 {
 	etGreenTeam			=	0x00,
 	etBlueTeam			=	0X01,
-	etSpectatorsTeam	=	0x02
+	etSpectatorsTeam	=	0x02,
+
+	endOffset = etSpectatorsTeam
 };
 //--------------
 

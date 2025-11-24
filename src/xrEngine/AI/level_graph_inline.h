@@ -308,17 +308,17 @@ ICF const ILevelGraph::CPosition &ILevelGraph::CVertex::position() const
 	return (UncompressedNode.p);
 }
 
-ICF bool ILevelGraph::CVertex::operator<	(const ILevelGraph::CVertex &vertex) const
+ICF bool ILevelGraph::CVertex::operator<(const CVertex& vertex) const
 {
 	return				(position().xz() < vertex.position().xz());
 }
 
-ICF bool ILevelGraph::CVertex::operator>	(const ILevelGraph::CVertex &vertex) const
+ICF bool ILevelGraph::CVertex::operator>(const CVertex& vertex) const
 {
 	return				(position().xz() > vertex.position().xz());
 }
 
-ICF bool ILevelGraph::CVertex::operator==	(const ILevelGraph::CVertex &vertex) const
+ICF bool ILevelGraph::CVertex::operator==(const CVertex& vertex) const
 {
 	return				(position().xz() == vertex.position().xz());
 }
@@ -511,14 +511,18 @@ IC	bool	ILevelGraph::create_straight_path	(u32 start_vertex_id, const Fvector2 &
 				path_node.set_vertex_id(next_vertex_id);
 				tpaOutputPoints.push_back(path_node);
 
-				if (dest_xz == v->position().xz()/**box.contains(dest)/**/) {
+				if (dest_xz == v->position().xz())
+				{
 					tIntersectPoint = v3d(dest);
 					if (bAssignY)
+					{
 						tIntersectPoint.y = vertex_plane_y(vertex(cur_vertex_id),tIntersectPoint.x,tIntersectPoint.z);
+					}
+
 					path_node.set_position(tIntersectPoint);
 					path_node.set_vertex_id(next_vertex_id);
 					tpaOutputPoints.push_back(path_node);
-					return		(true);
+					return true;
 				}
 				found			= true;
 				prev_vertex_id	= cur_vertex_id;

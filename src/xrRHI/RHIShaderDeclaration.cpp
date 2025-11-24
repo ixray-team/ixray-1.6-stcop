@@ -66,15 +66,6 @@ RHI_API bool RHIUtils::Shader::CreateInputLayoutFromFVF(uint32_t fvfCode, xr_vec
 		ERHI_FORMAT::R32_FLOAT
 	};
 
-	static constexpr u32 s_formatSize[] =
-	{
-		4, 8, 12, 16, // FLOAT1..FLOAT4
-		4, 4, 4, 8,   // D3DCOLOR..SHORT4
-		4, 4, 8, 4,   // UBYTE4N..USHORT2N
-		8, 4, 4, 4,   // USHORT4N..FLOAT16_2
-		8             // FLOAT16_4
-	};
-
 	il.clear();
 
 	if ((fvfCode & ((RHI_FVF_RESERVED0 | RHI_FVF_RESERVED2) & ~RHI_FVF_POSITION_MASK)) != 0)

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "controller_psy_aura.h"
 #include "controller.h"
 #include "../../../Actor.h"

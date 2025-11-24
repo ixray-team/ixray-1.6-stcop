@@ -1,4 +1,3 @@
-#pragma once
 #include "DX11ShaderDeclaration.h"
 
 inline UINT DX11GetFormatSize(DXGI_FORMAT fmt)

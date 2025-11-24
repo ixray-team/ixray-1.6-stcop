@@ -149,20 +149,6 @@ void CUIButton::DrawHighlightedText() {
 
 void CUIButton::DrawText()
 {
-	float right_offset;
-	float down_offset;
-
-	if(GetButtonState() == BUTTON_UP || GetButtonState() == BUTTON_NORMAL)
-	{
-		right_offset	= 0;
-		down_offset		= 0;
-	}
-	else
-	{
-		right_offset	= PUSH_OFFSET_RIGHT;
-		down_offset		= PUSH_OFFSET_DOWN;
-	}
-
 	CUIStatic::DrawText();
 	if(g_btnHint->Owner()==this)
 		g_btnHint->Draw_();

@@ -360,10 +360,7 @@ IC		void	new_val						(float new_val)
 			val=inertion*val+(1-inertion)*new_val;
 		}
 private:
-		SInertVal& operator = (SInertVal& v)
-		{
-			R_ASSERT(false);
-		}
+		SInertVal& operator = (SInertVal& v) = delete;
 };
 
 IC float DET(const Fmatrix &a){

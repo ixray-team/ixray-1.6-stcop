@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITalkDialogWnd.h"
 
 #include "../../xrUI/xrUIXmlParser.h"
@@ -233,7 +233,7 @@ void CUITalkDialogWnd::AddQuestion(LPCSTR str, LPCSTR value, int number, SPhrase
 		itm->m_text->SetAccelerator		(kQUIT, 2);
 		itm->m_text->SetAccelerator		(kUSE, 3);
 	}
-	if (&phInfo.sIconName && phInfo.sIconName.size() > 1)
+	if (phInfo.sIconName.size() > 1)
 	{
 		Fvector2 icon_size = itm->m_icon_size;
 		itm->m_text->AddStatic();

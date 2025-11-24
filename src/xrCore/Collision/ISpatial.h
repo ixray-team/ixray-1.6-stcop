@@ -123,7 +123,7 @@ private:
 
 public:
 	Fvector OwnerSectorPoint();
-	void OwnerReset(ISpatialOwner* ptr) { RawOwner = ptr; };
+	void OwnerReset(ISpatialOwner* ptr);
 
 	ICF void spatial_updatesector()	
 	{

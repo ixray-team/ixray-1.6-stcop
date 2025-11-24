@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "psy_dog.h"
 #include "../../../level_graph.h"
 #include "../../../ai_space.h"

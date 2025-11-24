@@ -264,7 +264,7 @@ void CLevelChanger::OnRender() {
 		return;
 
 	DRender->OnFrameEnd();
-	Fvector l_half = l_half.set(0.5f, 0.5f, 0.5f);
+	Fvector l_half = { 0.5f, 0.5f, 0.5f };
 	Fmatrix l_ball = {}, l_box = {};
 	auto& l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 

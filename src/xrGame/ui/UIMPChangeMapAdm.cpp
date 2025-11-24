@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIMPChangeMapAdm.h"
 #include "UIGameCustom.h"
 #include "Level.h"
