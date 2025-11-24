@@ -6,7 +6,7 @@
 //	Description : Server monsters for ALife simulator, script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "xrServer_script_macroses.h"
@@ -69,15 +69,15 @@ void CSE_ALifeTraderAbstract::script_register(lua_State *L)
 			("cse_alife_trader_abstract")
 //			.def(		constructor<LPCSTR>())
 #ifdef XRGAME_EXPORTS
-			.def("community",		&CommunityName)
+			.def("community",		&CSE_ALifeTraderAbstract::CommunityName)
 			.def("profile_name",	&profile_name_script)
 			.def("set_profile_name", &profile_name_set_script)
 			.def("character_name", &character_name_script)
 			.def("set_character_name", &set_character_name_script)
 			.def("character_name_str", &character_name_str_script)
-			.def("rank",			&Rank)
-			.def("set_rank",		&SetRank)
-			.def("reputation",		&Reputation)
+			.def("rank",			&CSE_ALifeTraderAbstract::Rank)
+			.def("set_rank",		&CSE_ALifeTraderAbstract::SetRank)
+			.def("reputation",		&CSE_ALifeTraderAbstract::Reputation)
 			.def("character_icon", &icon_name_script)
 #endif // XRGAME_EXPORTS
 	];

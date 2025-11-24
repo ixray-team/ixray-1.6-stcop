@@ -7,7 +7,7 @@
 // Copyright 2005 GSC Game World
 
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UILine.h"
 #include "uilinestd.h"
 #include "ui_base.h"

@@ -14,14 +14,14 @@
 // version that accepts a server instance when it is called it binds client and
 // server version of  your function myfunction = main word without postfix
 #define IXRAY_LUA_TO_CPP_REGISTER_FUNCTION_TO_SCRIPT(myfunction)          \
-	this->registerClientFunction(#myfunction,                             \
-		CAnyCallable<                                                     \
-			std::function<decltype(##myfunction##_client)>::result_type>( \
-			##myfunction##_client));                                      \
-	this->registerServerFunction(#myfunction,                             \
-		CAnyCallable<                                                     \
-			std::function<decltype(##myfunction##_server)>::result_type>( \
-			##myfunction##_server));
+    this->registerClientFunction(#myfunction,                             \
+        CAnyCallable<                                                     \
+            std::function<decltype(myfunction##_client)>::result_type>(   \
+            myfunction##_client));                                        \
+    this->registerServerFunction(#myfunction,                             \
+        CAnyCallable<                                                     \
+            std::function<decltype(myfunction##_server)>::result_type>(   \
+            myfunction##_server));
 
 // declares two hash maps for two version of function client and server;
 // also implements all methods for accessing these fields:
@@ -74,31 +74,32 @@ private:                                                                       \
 	}                                                                          \
                                                                                \
 public:                                                                        \
-	const CAnyCallable<return_type_of_function>&                               \
+	template<typename T = return_type_of_function>                             \
+	CAnyCallable<T> GetFunctionByType()                                        \
+	{                                                                          \
+		if constexpr (std::is_void_v<T>)                                       \
+		{ return CAnyCallable<T>([]() {}); }                                   \
+		else return CAnyCallable<T>(                                           \
+			[]()->T                                                            \
+		{ return T{}; });                                                      \
+	}                                                                          \
+	CAnyCallable<return_type_of_function>                                      \
 	getRegisteredClientFunctionByName(const xr_string& function_name)          \
 	{                                                                          \
 		if (m_mClientStorageOf##return_type_of_function.find(function_name) != \
 			m_mClientStorageOf##return_type_of_function.end())                 \
 			return m_mClientStorageOf##return_type_of_function.at(             \
 				function_name);                                                \
-		return CAnyCallable<return_type_of_function>(                          \
-			[]() -> return_type_of_function                                    \
-			{ if constexpr (!std::is_void_v<return_type_of_function>)		   \
-				return return_type_of_function{};							   \
-			  else return;});									               \
+			return GetFunctionByType<return_type_of_function>();               \
 	}                                                                          \
-	const CAnyCallable<return_type_of_function>&                               \
+	CAnyCallable<return_type_of_function>                                      \
 	getRegisteredServerFunctionByName(const xr_string& function_name)          \
 	{                                                                          \
 		if (m_mServerStorageOf##return_type_of_function.find(function_name) != \
 			m_mServerStorageOf##return_type_of_function.end())                 \
 			return m_mServerStorageOf##return_type_of_function.at(             \
 				function_name);                                                \
-		return CAnyCallable<return_type_of_function>(                          \
-			[]() -> return_type_of_function                                    \
-			{ if constexpr (!std::is_void_v<return_type_of_function>)		   \
-				return return_type_of_function{};							   \
-			  else return;});									               \
+			return GetFunctionByType<return_type_of_function>();               \
 	}                                                                          \
 	bool hasRegisteredClientFunction(const xr_string& function_name)           \
 	{                                                                          \
@@ -190,11 +191,12 @@ struct CAnyCallable
 		m_pFunction{ inst.m_pFunction }
 	{
 	}
-
-	template <typename F>
+	template <typename F,
+		typename = std::enable_if_t<!std::is_same_v<std::decay_t<F>, CAnyCallable>>>
 	CAnyCallable(F&& func) : m_pFunction{ reinterpret_cast<void*>(+func) }
 	{
 	}
+
 
 	CAnyCallable& operator=(const CAnyCallable<ReturnType>& other)
 	{

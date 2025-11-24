@@ -483,7 +483,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions()
 	CTimer Timer;
 	Timer.Start();
 	Msg("Generate artefact spawn positions ...");
-	size_t CountThread = std::min((size_t)CPU::ID.n_threads, m_spawns.size());
+	size_t CountThread = std::min((size_t)CPU::ID().n_threads, m_spawns.size());
 	m_generate_artefact_spawn_positions_worker_counter = m_spawns.size();
 	xr_vector<HANDLE> Threads;
 	Msg("* create workers %d", CountThread);

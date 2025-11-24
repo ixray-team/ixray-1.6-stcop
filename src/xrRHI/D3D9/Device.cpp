@@ -37,7 +37,6 @@ void InternalDevice9::SetTextureFactory(IRHITextureFactory* factory)
 {
 	xr_delete(TextureFactory);
 	TextureFactory = static_cast<DX9TextureFactory*>(factory);
-	TextureFactory = TextureFactory;
 }
 
 u32 InternalDevice9::selectPresentInterval()
@@ -102,8 +101,6 @@ void InternalDevice9::SetRenderTargets(u32 NumViews, IRHIRenderTargetView* const
 
 void InternalDevice9::UpdateBuffersD3D9()
 {
-	HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-
 	R_CHK(DX9Device->CreateTexture(
 		psCurrentVidMode[0], psCurrentVidMode[1], 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8,
 		D3DPOOL_DEFAULT, (IDirect3DTexture9**)&RenderTexture, nullptr
@@ -315,7 +312,6 @@ bool InternalDevice9::CreateD3D9()
 	if (!TextureFactory)
 	{
 		TextureFactory = new DX9TextureFactory(DX9Device);
-		TextureFactory = TextureFactory;
 	}
 	
 	return true;

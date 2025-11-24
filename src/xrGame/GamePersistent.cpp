@@ -424,7 +424,7 @@ void CGamePersistent::start_logo_intro()
 {
 	if (!g_keypress_on_start)
 	{
-		m_intro_event = 0;
+		m_intro_event.clear();
 		Console->Show();
 		Console->Execute("main_menu on");
 		return;

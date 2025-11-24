@@ -138,7 +138,7 @@ struct CCloner
 		}
 
 		template <typename T1, typename T2>
-		IC	static void add(T1 &data, typename T2 &value)
+		IC	static void add(T1 &data, T2 &value)
 		{
 			data.insert			(value);
 		}
@@ -162,7 +162,7 @@ struct CCloner
 		template <bool a>
 		IC	static void clone(const T &_1, T &_2)
 		{
-			CHelper<T>::clone<std::is_pointer<T>::value>(_1,_2);
+			CHelper<T>::template clone<std::is_pointer<T>::value>(_1,_2);
 		}
 
 		template <>
@@ -175,13 +175,13 @@ struct CCloner
 	template <typename T>
 	IC	static void clone(const T &_1, T &_2)
 	{
-		CHelper4<T>::clone<object_type_traits::is_stl_container<T>::value>(_1,_2);
+		CHelper4<T>::template clone<object_type_traits::is_stl_container<T>::value>(_1,_2);
 	}
 };
 
 IC	void clone(LPCSTR p0, LPSTR &p1)
 {
-	p1				= xr_strdup(p0);
+	p1 = xr_strdup(p0);
 }
 
 template <typename T>

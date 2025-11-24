@@ -155,7 +155,6 @@ void check_object(CScriptGameObject* object)
 		Msg("check_object %s", object->Name());
 	}
 	catch (...) {
-		object = object;
 	}
 }
 
@@ -235,23 +234,17 @@ float get_next_wdesc_execution_time()
 
 float get_weather_game_time()
 {
-	return			(&g_pGamePersistent->Environment() ? g_pGamePersistent->Environment().GetGameTime() : -1.f);
+	return (g_pGamePersistent->Environment().GetGameTime());
 }
 
 void set_past_wdesc(LPCSTR WeatherSection)
 {
-	if (&g_pGamePersistent->Environment())
-	{
-		g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[0]);
-	}
+	g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[0]);
 }
 
 void set_next_wdesc(LPCSTR WeatherSection)
 {
-	if (&g_pGamePersistent->Environment())
-	{
-		g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[1]);
-	}
+	g_pGamePersistent->Environment().SetEnvDesc(WeatherSection, g_pGamePersistent->Environment().Current[1]);
 }
 
 LPCSTR get_weather	()
@@ -1063,7 +1056,7 @@ CScriptGameObject* get_view_entity_script()
 
 void set_view_entity_script(CScriptGameObject* go)
 {
-	if (CObject* o = &go->object() != nullptr ? go->object().dcast_CObject() : nullptr)
+	if (CObject* o = go->object().dcast_CObject())
 	{
 		Level().SetViewEntity(o);
 	}

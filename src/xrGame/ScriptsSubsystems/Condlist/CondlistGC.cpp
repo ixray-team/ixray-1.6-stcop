@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "CondlistGC.h"
 #include "script_game_object.h"
 

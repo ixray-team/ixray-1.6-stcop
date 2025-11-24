@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "xrServer.h"
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 
 #include "../../../xrScripts/script_engine.h"
 

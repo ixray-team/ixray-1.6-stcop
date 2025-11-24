@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameSpy_GP.h"
 #include "../MainMenu.h"		//in case of fatal error, deleting profile class instance
 

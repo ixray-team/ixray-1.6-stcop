@@ -454,21 +454,24 @@ void CUIScrollBar::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 void CUIScrollBar::TryScrollInc(bool by_scrollbox)
 {
-	if(ScrollInc(by_scrollbox))
-		if(m_bIsHorizontal)
+	if (ScrollInc(by_scrollbox))
+	{
+		if (m_bIsHorizontal)
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 		else
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
+	}
 }
 
 void CUIScrollBar::TryScrollDec(bool by_scrollbox)
 {
-	if(ScrollDec(by_scrollbox))
-		if(m_bIsHorizontal)
+	if (ScrollDec(by_scrollbox))
+	{
+		if (m_bIsHorizontal)
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_HSCROLL);
 		else
 			GetMessageTarget()->SendMessage(this, SCROLLBAR_VSCROLL);
-
+	}
 }
 
 

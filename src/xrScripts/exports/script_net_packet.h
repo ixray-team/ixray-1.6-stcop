@@ -11,4 +11,4 @@
 #include "../xrScripts/script_export_space.h"
 class NET_Packet;
 
-typedef class_exporter_lib<NET_Packet> SCRIPTS_API CScriptNetPacket;
+typedef class_exporter_lib<NET_Packet> CScriptNetPacket;

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Entity.h"
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 #include "Level.h"
 #include "xrMessages.h"
 #include "game_cl_base.h"

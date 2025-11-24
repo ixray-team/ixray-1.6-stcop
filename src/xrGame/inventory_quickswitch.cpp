@@ -76,7 +76,7 @@ public:
 		}
 	};
 private:
-	next_weapon_searcher & operator = (next_weapon_searcher const & copy) {}
+	next_weapon_searcher& operator = (next_weapon_searcher const& copy) = delete;
 	priority_group &	m_prior_group;
 	exception_items_t &	m_except_set;
 	PIItem &			m_best_fit;

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "CharacterPhysicsSupport.h"
 #include "ai_monster_effector.h"
 #include "Actor.h"
 
@@ -64,7 +64,7 @@ TEMPLATE_SPECIALIZATION
 void CScanningAbilityAbstract::schedule_update()
 {
 	// check if we end scanning
-	if (m_this_scan && !sound_scan._feedback()) {
+	if (m_this_scan && !sound_scan.is_playing()) {
 		object->can_scan = true;
 		m_this_scan		 = false;
 	}
@@ -95,7 +95,7 @@ void CScanningAbilityAbstract::schedule_update()
 				scan_value		+= vel;
 			}
 			
-			if (sound_scan._feedback()) sound_scan.set_position(scan_obj->Position());
+			if (sound_scan.is_playing()) sound_scan.set_position(scan_obj->Position());
 			else {
 				if (object->can_scan) {
 					// играть звук

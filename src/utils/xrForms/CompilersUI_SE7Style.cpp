@@ -396,7 +396,7 @@ void DrawCompilerConfig()
 
 	if (ImGui::InputInt("##Threads Max", &gCompilerMode.ThreadsPerWork))
 	{
-		gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID.n_threads);
+		gCompilerMode.ThreadsPerWork = std::min((u32)gCompilerMode.ThreadsPerWork, CPU::ID().n_threads);
 	}
 }
 

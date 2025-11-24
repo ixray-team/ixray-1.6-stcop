@@ -8,11 +8,10 @@
 #include "../xrCore/Collision/ISpatial.h"
 #include "ILoadingScreen.h"
 
-//---------------------------------------------------------------------
-// 2446363
-// umbt@ukr.net
-//////////////////////////////////////////////////////////////////////////
-struct _SoundProcessor : public pureFrame
+ENGINE_API BOOL g_appLoaded = FALSE;
+
+struct _SoundProcessor :
+	public pureFrame
 {
 	virtual void  OnFrame()
 	{
@@ -173,7 +172,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 }
 
 static	CTimer	phase_timer;
-extern	ENGINE_API BOOL			g_appLoaded = FALSE;
 
 void CApplication::LoadBegin()
 {

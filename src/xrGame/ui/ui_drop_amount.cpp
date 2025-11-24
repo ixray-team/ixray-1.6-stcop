@@ -4,16 +4,16 @@
 //	Author		: St4lker0k765
 //	Description : Implementation for custom amount of items for drop
 ////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "ui_drop_amount.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/UIXmlInit.h"
-#include "../../xrUI/uihelper.h"
+#include "../../xrUI/UIHelper.h"
 #include "../../xrUI/Widgets/UITrackBar.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-#include "uigamecustom.h"
-#include "uiactormenu.h"
+#include "UIGameCustom.h"
+#include "UIActorMenu.h"
 
 CUIItemDropAmountWnd::CUIItemDropAmountWnd()
 {

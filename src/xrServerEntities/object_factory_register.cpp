@@ -6,7 +6,7 @@
 //	Description : Object factory
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 
 
@@ -20,11 +20,11 @@
 // client entities includes
 #ifndef NO_XR_GAME
 #	include "../xrEngine/std_classes.h"
-#	include "level.h"
-#	include "gamepersistent.h"
-#	include "hudmanager.h"
-#	include "actor.h"
-#	include "spectator.h"
+#	include "Level.h"
+#	include "GamePersistent.h"
+#	include "HUDManager.h"
+#	include "Actor.h"
+#	include "Spectator.h"
 
 #	include "ai/monsters/flesh/flesh.h"
 #	include "ai/monsters/chimera/chimera.h"
@@ -34,8 +34,8 @@
 #	include "ai/monsters/boar/boar.h"
 #	include "ai/monsters/pseudodog/pseudodog.h"
 #	include "ai/monsters/pseudodog/psy_dog.h"
-#	include "ai/monsters/Burer/burer.h"
-#	include "ai/monsters/PseudoGigant/pseudo_gigant.h"
+#	include "ai/monsters/burer/burer.h"
+#	include "ai/monsters/pseudogigant/pseudo_gigant.h"
 #	include "ai/monsters/controller/controller.h"
 #	include "ai/monsters/poltergeist/poltergeist.h"
 #	include "ai/monsters/zombie/zombie.h"

@@ -515,7 +515,7 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("clone_weapon", &try_to_clone_object)
 			.def("register", &reprocess_spawn)
 			.def("set_objects_per_update", &set_objects_per_update)
-			.def("set_process_time", &set_process_time)
+			.def("set_process_time", &CALifeSimulator::set_process_time)
 			.def("get_children", &get_children, return_stl_iterator)
 
 		,def("alife",						&alife)

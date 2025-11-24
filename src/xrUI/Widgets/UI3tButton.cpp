@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UI3tButton.h"
 #include "UIXmlInit.h"
 #include "UIHint.h"

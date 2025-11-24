@@ -315,8 +315,6 @@ void CUIStalkerRankingInfoItem::OnFocusReceive()
 
 void CUIStalkerRankingInfoItem::SetHintText()
 {
-	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(m_humanID);
-
 	const char* hint = "";
 
 	luabind::functor<const char*> functorSetHint;

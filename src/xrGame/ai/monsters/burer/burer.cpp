@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "burer.h"
 #include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../CharacterPhysicsSupport.h"

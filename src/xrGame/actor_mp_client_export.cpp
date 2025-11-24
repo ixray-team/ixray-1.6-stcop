@@ -39,7 +39,7 @@
 
 void CActorMP::fill_state	(actor_mp_state &state)
 {
-	if (CPHSynchronize* PhSync = PHGetSyncItem(0))
+	if (PHGetSyncItem(0) != nullptr)
 	{
 		SPHNetState State;
 

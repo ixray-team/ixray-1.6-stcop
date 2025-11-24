@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include "alife_registry_container.h"
 
 IC	bool								CALifeSimulatorBase::initialized			() const
 {

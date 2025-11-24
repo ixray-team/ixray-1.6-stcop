@@ -63,7 +63,7 @@
 #endif // _MSC_VER > 1000
 
 #include <cstring> // to allow <,> comparisons
-
+#include <type_traits>
 ////////////////////////////////////////////////////////////////////////////////
 //                      Configuration options
 //
@@ -931,6 +931,10 @@ public:
     : BaseType(function_to_bind)  { }
   void operator = (const BaseType &x)  {
         *static_cast<BaseType*>(this) = x; }
+  void operator=(std::nullptr_t)
+  {
+      this->clear();
+  }
 };
 
 #endif //FASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX

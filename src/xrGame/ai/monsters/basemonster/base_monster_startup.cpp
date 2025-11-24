@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "base_monster.h"
 #include "../../../ai_space.h"
 #include "../../../Hit.h"

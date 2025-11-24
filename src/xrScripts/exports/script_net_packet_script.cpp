@@ -64,6 +64,7 @@ u16	SCRIPTS_API script_server_object_version()
 }
 
 #pragma optimize("s",on)
+template<>
 void CScriptNetPacket::script_register(lua_State *L)
 {
 	module(L)

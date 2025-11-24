@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "AnimNotifyGame.h"
 #include "pch_script.h"
 #include "alife_object_registry.h"

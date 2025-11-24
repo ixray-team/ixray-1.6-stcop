@@ -7,6 +7,10 @@
 #include "../Include/xrRender/RenderFactory.h"
 #include "../Include/xrRender/FontRender.h"
 #include <freetype/freetype.h>
+#include <freetype/ftfntfmt.h>
+
+extern u32 TextureDimension;
+extern xr_vector<u32> FontBitmap;
 
 FT_Library FreetypeLib = nullptr;
 
@@ -98,12 +102,8 @@ xr_vector<xr_string> split(const xr_string& s, char delim)
 	{
 		elems.push_back(item);
 	}
-	return std::move(elems);
+	return elems;
 }
-#include <freetype/ftfntfmt.h>
-
-extern u32 TextureDimension;
-extern xr_vector<u32> FontBitmap;
 
 void CGameFont::Initialize2(const char* name, const char* shader, const char* style, u32 size)
 {
@@ -205,7 +205,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	float FontSizeInPixels = (float)(OurFont->size->metrics.ascender - OurFont->size->metrics.descender) / 64.0f;
 
-	auto CopyGlyphImageToAtlas = [this, &TargetX, &TargetX2, &TargetY, &TargetY2, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
+	auto CopyGlyphImageToAtlas = [&TargetX, &TargetX2, &TargetY, &TargetY2, FontSizeInPixels](FT_Bitmap& GlyphBitmap)
 		{
 			TargetX2 = TargetX + GlyphBitmap.width;
 			if (TargetX2 >= TextureDimension)

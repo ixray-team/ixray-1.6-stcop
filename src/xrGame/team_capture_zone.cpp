@@ -1,7 +1,7 @@
 
 #include "StdAfx.h"
 #include "team_capture_zone.h"
-#include "xrserver_objects_alife_monsters.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "Hit.h"
 #include "Actor.h"
 #include "Level.h"
@@ -126,7 +126,7 @@ void CTeamCaptureZone::capture_Update(u32 dt) {
 	for (CObject* actor : v_actor)
 	{
 		game_PlayerState* ps = Game().GetPlayerByGameID(actor->ID());
-		if (m_CapturedTeam == -1)
+		if (m_CapturedTeam == u8(-1))
 		{
 			m_CapturedTeam = ps->team;
 		}
@@ -136,7 +136,7 @@ void CTeamCaptureZone::capture_Update(u32 dt) {
 		}
 	}
 
-	if (m_Conflict || m_CapturedTeam == -1 || m_CapturedTeam == m_Team)
+	if (m_Conflict || m_CapturedTeam == u8(-1) || m_CapturedTeam == m_Team)
 	{
 		return;
 	}

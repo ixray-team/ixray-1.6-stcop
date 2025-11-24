@@ -15,10 +15,11 @@ template <
 	typename _object_type,
 	typename _action_id_type
 >
-class CSetupManager {
-private:
-	typedef std::pair<_action_id_type,_action_type*>	setup_pair;
-	typedef xr_vector<setup_pair>						setup_actions;
+class CSetupManager
+{
+public:
+	using setup_pair = std::pair<_action_id_type,_action_type*>;
+	using setup_actions = xr_vector<setup_pair>;
 
 private:
 	struct setup_pred {

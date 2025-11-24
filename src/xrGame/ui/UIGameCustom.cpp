@@ -496,7 +496,7 @@ void SDrawStaticStruct::Update()
 }
 
 CMapListHelper	gMapListHelper;
-xr_token		game_types[];
+extern xr_token game_types[];
 
 void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, LPCSTR map_ver)
 {
