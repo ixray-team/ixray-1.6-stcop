@@ -237,6 +237,16 @@ void ui_core::RenderUIDebugger()
 		}
 	};
 
+	auto GetWndName = [](CUIWindow* WndPtr)->shared_str
+	{
+		if (WndPtr->WindowName().size() > 0)
+		{
+			return WndPtr->WindowName();
+		}
+
+		return WndPtr->WindowNodeName();
+	};
+
 	std::function<void(CUIWindow*)> DrawNode = [&](CUIWindow* Window)
 	{
 		if (!LastFrameWidgets.contains(Window))
@@ -251,7 +261,7 @@ void ui_core::RenderUIDebugger()
 			Flags |= ImGuiTreeNodeFlags_Selected;
 		}
 
-		bool IsOpen = ImGui::TreeNodeEx(Window, Flags, "%s (%p)", Window->WindowNodeName().c_str(), Window);
+		bool IsOpen = ImGui::TreeNodeEx(Window, Flags, "%s (%p)", GetWndName(Window).c_str(), Window);
 
 		if (ImGui::IsItemClicked())
 		{
@@ -298,7 +308,7 @@ void ui_core::RenderUIDebugger()
 
 	if (Selected != nullptr && LastFrameWidgets.contains(Selected))
 	{
-		ImGui::Text("Selected: %s", Selected->WindowName().c_str());
+		ImGui::Text("Selected: %s", GetWndName(Selected).c_str());
 
 		Fvector2 Position = Selected->GetWndPos();
 		Fvector2 Size = Selected->GetWndSize();
