@@ -74,14 +74,14 @@ bool IGameGraph::Search(u32 start_vertex_id, u32 dest_vertex_id, xr_vector<u32>&
 		return Edge->distance();
 	};
 
-	auto DistanceNode = [this](const CVertex* Node1,const CVertex* Node2)
+	auto DistanceNode = [](const CVertex* Node1, const CVertex* Node2)
 	{
 		return Node1->game_point().distance_to(Node2->game_point());
 	};
 
-	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;
-	thread_local	xr_map<u32, u32>					TempCameFrom;
-	thread_local	xr_map<u32, float>					TempCostSoFar;
+	thread_local xr_vector<std::pair<float, u32>>	TempPriorityNode;
+	thread_local xr_map<u32, u32>					TempCameFrom;
+	thread_local xr_map<u32, float>					TempCostSoFar;
 
 	TempPriorityNode.clear();
 	TempCameFrom.clear();
@@ -185,11 +185,6 @@ bool IGameGraph::SearchNearestVertex(u32 start_vertex_id, u8 LevelID, u32& Resul
 	auto CalcCost = [](const CVertex* Node1,const CVertex* Node2, const CEdge* Edge)
 	{
 		return Edge->distance();
-	};
-
-	auto DistanceNode = [this](const CVertex* Node1,const CVertex* Node2)
-	{
-		return Node1->game_point().distance_to(Node2->game_point());
 	};
 
 	thread_local	xr_vector<std::pair<float, u32>>	TempPriorityNode;

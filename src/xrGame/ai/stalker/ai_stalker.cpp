@@ -6,7 +6,7 @@
 //	Description : AI Behaviour for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "../ai_monsters_misc.h"
@@ -67,7 +67,7 @@
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
 #	include "../../alife_object_registry.h"
-#	include "../../level.h"
+#	include "../../Level.h"
 #	include "../../map_location.h"
 #	include "../../map_manager.h"
 #endif // DEBUG
@@ -650,7 +650,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		ai().get_game_graph() && 
 		ai().get_level_graph() && 
 		ai().get_cross_table() && 
-		(ai().level_graph().level_id() != u32(-1)),
+		(ai().level_graph().level_id() != u8(-1)),
 		"There is no AI-Map, level graph, cross table, or graph is not compiled into the game graph!"
 	);
 

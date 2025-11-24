@@ -94,9 +94,6 @@ void CConsole::DrawUIConsoleVars()
 
 void CConsole::DrawUIConsole()
 {
-	constexpr u32 MaxHintCommands = 5;
-	char InputBuf[256] = {};
-
 	ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
 	if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::CmdConsole)]) {
 		return;

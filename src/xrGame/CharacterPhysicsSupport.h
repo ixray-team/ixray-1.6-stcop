@@ -161,7 +161,7 @@ public:
 		bool							has_shell_collision_place		( const CPhysicsShellHolder* obj ) const;
 		virtual void					on_child_shell_activate			( CPhysicsShellHolder* obj );
 /////////////////////////////////////////////////////////////////
-		CCharacterPhysicsSupport& operator = ( CCharacterPhysicsSupport& /**asup/**/ ){ R_ASSERT2( false, "Can not assign it" ); }
+		CCharacterPhysicsSupport& operator= (CCharacterPhysicsSupport& /**asup/**/) = delete;
 										CCharacterPhysicsSupport		( EType atype, CEntityAlive* aentity )																				;
 virtual									~CCharacterPhysicsSupport		( )																													;
 private:

@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "../../xrUI/Widgets/uidialogwnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "../../xrUI/Widgets/UIWndCallback.h"
 
 class CUITextWnd;

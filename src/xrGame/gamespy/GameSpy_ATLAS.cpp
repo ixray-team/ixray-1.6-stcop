@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "GameSpy_ATLAS.h"
 
 CGameSpy_ATLAS::CGameSpy_ATLAS	()

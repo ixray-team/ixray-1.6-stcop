@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "bloodsucker.h"
 #include "bloodsucker_state_manager.h"
 #include "../../../Actor.h"

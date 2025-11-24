@@ -178,7 +178,7 @@ xr_string xr_string::ToString(int Value)
 	string64 buf = { 0 };
 	itoa(Value, &buf[0], 10);
 
-	return std::move(xr_string(buf));
+	return xr_string(buf);
 }
 
 xr_string xr_string::ToString(unsigned int Value)
@@ -186,7 +186,7 @@ xr_string xr_string::ToString(unsigned int Value)
 	string64 buf = { 0 };
 	sprintf(buf, "%u", Value);
 
-	return std::move(xr_string(buf));
+	return xr_string(buf);
 }
 
 xr_string xr_string::ToString(float Value) 

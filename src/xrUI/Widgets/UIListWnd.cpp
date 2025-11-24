@@ -1,14 +1,6 @@
 #include "stdafx.h"
 #include "UIListWnd.h"
-//.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
-
-//#define ACTIVE_BACKGROUND			"ui\\ui_pop_up_active_back"
-//#define ACTIVE_BACKGROUND_WIDTH	16
-//#define ACTIVE_BACKGROUND_HEIGHT	16
-
-// разделитель для интерактивных строк в листе
-static const char cSeparatorChar = '%';
 
 CUIListWnd::CUIListWnd()
 {

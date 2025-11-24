@@ -5,7 +5,7 @@
 //	Description : UI actor state window class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIActorStateInfo.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIProgressShape.h"
