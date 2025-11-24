@@ -10,7 +10,7 @@
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "UIInventoryUtilities.h"
 #include "game_cl_base.h"
-
+#include "UITalkDialogWnd.h"
 #include "../Weapon.h"
 #include "../WeaponKnife.h"
 #include "../WeaponBinoculars.h"
@@ -23,7 +23,7 @@
 #include "../ActorHelmet.h"
 #include "../CustomOutfit.h"
 #include "../eatable_item.h"
-
+#include "UITalkWnd.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/UICursor.h"
 #include "UICellItem.h"
@@ -332,6 +332,9 @@ void CUIActorMenu::CheckDistance()
 		{
 			g_btnHint->Discard();
 			HideDialog();
+
+			if (m_pActorInvOwner->IsTalking())
+				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 		}
 	}
 	else if (pBoxGO)
@@ -340,6 +343,9 @@ void CUIActorMenu::CheckDistance()
 		{
 			g_btnHint->Discard();
 			HideDialog();
+
+			if (m_pActorInvOwner->IsTalking())
+				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
 		}
 	}
 }
