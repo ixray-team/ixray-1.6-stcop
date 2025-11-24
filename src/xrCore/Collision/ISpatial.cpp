@@ -156,6 +156,11 @@ Fvector ISpatial::SectorPoint()
 	return spatial.sphere.P;
 }
 
+void ISpatial::OwnerReset(ISpatialOwner* ptr)
+{
+	RawOwner = ptr;
+}
+
 Fvector ISpatial::OwnerSectorPoint()
 {
 	return RawOwner ? RawOwner->spatial_sector_point() : spatial.sphere.P;

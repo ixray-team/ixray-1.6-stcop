@@ -157,7 +157,6 @@ public:
     {
         int i;
         float tresh,theta,tau,t,sm,s,h,g,c;
-        int nrot;
         Tvector b;
         Tvector z;
         _matrix33 v;
@@ -168,8 +167,6 @@ public:
         b.set(a.m[0][0], a.m[1][1], a.m[2][2]);
         d.set(a.m[0][0], a.m[1][1], a.m[2][2]);
         z.set(0,0,0);
-
-        nrot = 0;
 
         for(i=0; i<50; i++){
             sm=0.0f; sm+=_abs(a.m[0][1]); sm+=_abs(a.m[0][2]); sm+=_abs(a.m[1][2]);
@@ -191,7 +188,6 @@ public:
                     z.x -= h; z.y += h; d.x -= h; d.y += h;
                     a.m[0][1]=0.0f;
                     ROT(a,0,2,1,2); ROT(v,0,0,0,1); ROT(v,1,0,1,1); ROT(v,2,0,2,1);
-                    nrot++;
                 }
             }
             {
@@ -210,7 +206,6 @@ public:
                     z.x -= h; z.z += h; d.x -= h; d.z += h;
                     a.m[0][2]=0.0f;
                     ROT(a,0,1,1,2); ROT(v,0,0,0,2); ROT(v,1,0,1,2); ROT(v,2,0,2,2);
-                    nrot++;
                 }
             }
             {
@@ -229,7 +224,6 @@ public:
                     z.y -= h; z.z += h; d.y -= h; d.z += h;
                     a.m[1][2]=0.0f;
                     ROT(a,0,1,0,2); ROT(v,0,1,0,2); ROT(v,1,1,1,2); ROT(v,2,1,2,2);
-                    nrot++;
                 }
             }
             b.add(z);

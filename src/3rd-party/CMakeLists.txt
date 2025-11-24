@@ -56,7 +56,7 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     endif()
 endif()
 
-if(WIN32)
+if(WIN32 AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_subdirectory("dxerr")
 endif()
 
@@ -91,6 +91,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     endif()
 endif()
 
-if(WIN32)
+if(WIN32 AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set_target_properties(dxerr PROPERTIES ${IXRAY_FOLDER_3RD})
 endif()

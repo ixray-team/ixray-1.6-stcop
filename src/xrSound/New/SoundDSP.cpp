@@ -119,7 +119,6 @@ DSP_MixBuffer(float** mix_buffer, float** data, float begin_factor, float end_fa
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
         for (size_t k = 0; k < frames; k++) {
             float factor = lerp(begin_factor, end_factor, (float)(k) / (float)(frames - 1));
-            float mix_sample = mix_buffer[ch][k];
             float sample = data[ch][k];
             mix_buffer[ch][k] += sample * factor;
         }
@@ -133,7 +132,6 @@ DSP_MixBufferPanning(float** mix_buffer, float** data, float begin_factor, float
     for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
         for (size_t k = 0; k < frames; k++) {
             float factor = lerp(begin_factor, end_factor, (float)(k) / (float)(frames - 1)) * factors[ch];
-            float mix_sample = mix_buffer[ch][k];
             float sample = data[ch][k];
             mix_buffer[ch][k] += sample * factor;
         }
