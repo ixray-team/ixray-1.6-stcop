@@ -156,10 +156,13 @@ public:
     ICF float				Power				(){return Dequantize(power);}
     bool					StopAtEnd			();
 };
-struct accel_str_pred {
+
+struct accel_str_pred
+{
 	IC bool operator()(const shared_str& x, const shared_str& y) const	{	return xr_strcmp(x,y)<0;	}
 };
-typedef xr_map<shared_str,u16,accel_str_pred> 	accel_map;
+
+using accel_map = xr_map<shared_str, u16, accel_str_pred>;
 
 using MotionDefVec = xr_vector<CMotionDef>; 
 using MotionDefVecIt = MotionDefVec::iterator;
@@ -182,25 +185,31 @@ struct anim_notify_prefetched
 using NotifyVec = xr_vector<xr_hash_map<u16, anim_notify_prefetched>>;
 
 // partition
-class 	ENGINE_API	CPartDef
+class ENGINE_API CPartDef final
 {
 public:
-	shared_str			Name;
-	xr_vector<u32>		bones;
-	CPartDef()			: Name(0) {};
+	shared_str Name;
+	U32Vec bones = {};
 
-	u32					mem_usage			(){ return sizeof(*this)+(u32)bones.size()*sizeof(u32)+sizeof(Name);}
+	CPartDef() = default;
+	~CPartDef() = default;
+
+	u32	mem_usage() { return sizeof(*this) + (u32)bones.size() * sizeof(u32) + sizeof(Name); }
 };
-class 	ENGINE_API	CPartition
+
+class ENGINE_API CPartition final
 {
-	CPartDef			P[MAX_PARTS];
+	CPartDef P[MAX_PARTS];
 public:
-	IC CPartDef&		operator[] 			(u16 id)						{ return P[id]; }
-	IC const CPartDef&	part				(u16 id)				const	{ return P[id]; }
-	u16					part_id				(const shared_str& name) const	;
-	u32					mem_usage			()		{ return P[0].mem_usage()*MAX_PARTS;}
-	void				load				(IKinematics* V, LPCSTR model_name);
-    u8					count				() const {u8 ret=0;for(u8 i=0;i<MAX_PARTS;++i) if(P[i].Name.size())ret++; return ret;};
+	IC CPartDef& operator[] (u16 id) { return P[id]; }
+	IC const CPartDef& part(u16 id)	const { return P[id]; }
+	u16	part_id(const shared_str& name) const;
+	u32	mem_usage() { return P[0].mem_usage() * MAX_PARTS; }
+	void load(IKinematics* V, LPCSTR model_name);
+	u8 count() const { u8 ret = 0; for (u8 i = 0; i < MAX_PARTS; ++i) if (P[i].Name.size())ret++; return ret; };
+
+	CPartition() = default;
+	~CPartition() = default;
 };
 
 // shared motions

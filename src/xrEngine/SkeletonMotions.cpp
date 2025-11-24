@@ -23,40 +23,48 @@ u16 CPartition::part_id(const shared_str& name) const
 
 void CPartition::load(IKinematics* V, LPCSTR model_name)
 {
-	string_path fn, fn_full;
+	string_path fn = {}, fn_full = {};
 	xr_strcpy(fn, sizeof(fn), model_name);
 	if (strext(fn))
+	{
 		*strext(fn) = 0;
+	}
+
 	xr_strcat(fn, sizeof(fn), ".ltx");
 
 	FS.update_path(fn_full, "$game_meshes$", fn);
 
 	CInifile ini(fn_full, TRUE, TRUE, FALSE);
 
-	if (ini.sections().size() == 0) return;
-	shared_str part_name = "partition_name";
+	if (ini.sections().empty())
+	{
+		return;
+	}
+
+	static const shared_str part_name = "partition_name";
 	for (u32 i = 0; i < MAX_PARTS; ++i)
 	{
-		string64 buff;
+		string64 buff = {};
 		xr_sprintf(buff, sizeof(buff), "part_%d", i);
 
-		CInifile::Sect S = ini.r_section(buff);
-		CInifile::SectCIt it = S.Data.begin();
-		CInifile::SectCIt it_e = S.Data.end();
-		if (S.Data.size())
+		P[i].bones.resize(0);
+
+		if (!ini.section_exist(buff))
 		{
-			P[i].bones.resize(0);
+			continue;
 		}
-		for (; it != it_e; ++it)
+
+		CInifile::Sect S = ini.r_section(buff);
+
+		for (const auto& line : S.Data)
 		{
-			const CInifile::Item& I = *it;
-			if (I.first == part_name)
+			if (line.first == part_name)
 			{
-				P[i].Name = I.second;
+				P[i].Name = line.second;
 			}
 			else
 			{
-				u32 bid = V->LL_BoneID(I.first.c_str());
+				u32 bid = V->LL_BoneID(line.first.c_str());
 				P[i].bones.push_back(bid);
 			}
 		}
