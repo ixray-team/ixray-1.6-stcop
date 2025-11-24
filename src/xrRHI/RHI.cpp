@@ -468,9 +468,7 @@ void CRHI::ClearVertexBuffer(u32 vb_stride)
 	}
 	else
 	{
-		InternalDevice9* Device = (InternalDevice9*)DevicePtr;
 		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
-
 		CHK_DX(DxDevice->SetStreamSource(0, nullptr, 0, vb_stride));
 	}
 #endif

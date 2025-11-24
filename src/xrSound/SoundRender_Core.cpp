@@ -369,7 +369,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
 	Mixer::ResetZones();
 
 	for (u32 idx_offset = 0; idx_offset < H.facecount; idx_offset += 12) {
-		sound_zone_params params = { 0 };
+		sound_zone_params params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
 
@@ -658,7 +658,7 @@ void CSoundRender_Core::set_user_env(CSound_environment* E)
 	if (E)
 	{
 		s_user_environment = *((CSoundRender_Environment*)E);
-		sound_zone_params params = { 0 };
+		sound_zone_params params = {};
 		params.min = Fvector(1000000, 1000000, 1000000);
 		params.max = Fvector(-1000000, -1000000, -1000000);
 

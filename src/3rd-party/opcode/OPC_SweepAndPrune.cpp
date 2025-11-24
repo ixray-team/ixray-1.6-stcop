@@ -494,7 +494,7 @@ bool SweepAndPrune::CheckListsIntegrity()
 		SAP_EndPoint* Current = mList[Axis];
 		while(Current->Previous)	Current = Current->Previous;
 
-		udword Nb = 0;
+		[[maybe_unused]]udword Nb = 0;
 
 		SAP_EndPoint* Previous = null;
 		while(Current)

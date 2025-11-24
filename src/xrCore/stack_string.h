@@ -303,7 +303,8 @@ public:
 		return *this;
 	}
 
-	inline stack_string<char_t, _kStringLength>& operator=(const std::string_view& view)
+	template <class ViewTemplate>
+	inline stack_string<char_t, _kStringLength>& operator=(const ViewTemplate& view)
 	{
 		if (view.empty() == false)
 		{
