@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIDragDropListEx.h"
 #include "../../xrUI/Widgets/UIScrollBar.h"
 #include "object_broker.h"

@@ -5,7 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object handler
 ////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "pch_script.h"
 #include "object_handler.h"

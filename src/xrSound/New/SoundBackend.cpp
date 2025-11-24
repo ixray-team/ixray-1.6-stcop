@@ -88,7 +88,7 @@ Snd_ThreadProc(void* data)
     Snd_Initialize();
     while (backend.is_running) {
         PROF_EVENT("Sound: WASAPI update");
-        u32 required_frames = 0, submit_frames = 0;
+        u32 required_frames = 0;
         u8* buffer = (u8*)backend.output_buffer;
 
         backend.precache_callback();

@@ -5,7 +5,7 @@
 
 #pragma warning(push)
 #pragma warning(disable:4995)
-#if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
+#if defined(_MSC_VER) && !defined(IXR_ARM64) && !defined(__clang__)
 #	include <direct.h>
 #	include <dxerr.h>
 #endif
@@ -271,7 +271,7 @@ LPCSTR xrDebug::dxerror2string(long code)
 {
 	static string512 Err = {};
 	memset(Err, 0, sizeof(Err));
-#if defined(IXR_WINDOWS) && !defined(IXR_ARM64)
+#if defined(_MSC_VER) && !defined(IXR_ARM64) && !defined(__clang__)
 	DXGetErrorDescriptionA(code, Err, sizeof(Err));
 #elif defined(IXR_WINDOWS)
 	return error2string(code);

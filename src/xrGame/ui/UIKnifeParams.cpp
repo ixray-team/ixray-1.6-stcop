@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIKnifeParams.h"
 #include "../../xrUI/UIXmlInit.h"

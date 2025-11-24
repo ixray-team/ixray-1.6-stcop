@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "control_manager.h"
 #include "control_combase.h"
 #include "basemonster/base_monster.h"
@@ -430,6 +430,5 @@ void CControl_Manager::check_active_com(CControl_Com *com, bool b_add)
 
 void CControl_Manager::add_debug_info(debug::text_tree& root_s)
 {
-	u32 index = 0;
 }
 #endif //DEBUG
