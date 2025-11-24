@@ -6,7 +6,7 @@
 //	Description : Stalker script functions
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_space.h"

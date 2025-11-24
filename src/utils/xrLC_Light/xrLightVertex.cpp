@@ -207,7 +207,7 @@ void LightVertex()
 		VLT.init();
 		CTimer start_time;
 		start_time.Start();
-		const u32 NUM_THREADS = CPU::ID.n_threads - 2;
+		const u32 NUM_THREADS = CPU::ID().n_threads - 2;
 		for (u32 thID = 0; thID < NUM_THREADS; thID++)
 		{
 			Threads.start(new CVertexLightThread(thID));

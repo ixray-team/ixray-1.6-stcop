@@ -31,7 +31,7 @@ using namespace luabind;
 //-Alundaio
 
 #ifdef DEBUG
-#	include "ai/monsters/BaseMonster/base_monster.h"
+#	include "ai/monsters/basemonster/base_monster.h"
 
 // Lain: add
 #   include "level_debug.h"

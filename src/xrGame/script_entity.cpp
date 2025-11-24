@@ -367,19 +367,21 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 	if (l_tSoundAction.m_bCompleted)
 		return		(false);
 	
-	if (m_current_sound) {
+	if (m_current_sound)
+	{
 		if (!m_current_sound->is_playing())
-			if (!l_tSoundAction.m_bStartedToPlay) {
-#ifdef _DEBUG
-//				Msg									("%6d Starting sound %s",Device.dwTimeGlobal,*l_tSoundAction.m_caSoundToPlay);
-#endif
-				const Fmatrix	&l_tMatrix = GetUpdatedMatrix(l_tSoundAction.m_caBoneName,l_tSoundAction.m_tSoundPosition,l_tSoundAction.m_tSoundAngles);
-				m_current_sound->play_at_pos(m_object,l_tMatrix.c,l_tSoundAction.m_bLooped ? sm_Looped : 0);
+		{
+			if (!l_tSoundAction.m_bStartedToPlay)
+			{
+				const Fmatrix& l_tMatrix = GetUpdatedMatrix(l_tSoundAction.m_caBoneName, l_tSoundAction.m_tSoundPosition, l_tSoundAction.m_tSoundAngles);
+				m_current_sound->play_at_pos(m_object, l_tMatrix.c, l_tSoundAction.m_bLooped ? sm_Looped : 0);
 				l_tSoundAction.m_bStartedToPlay = true;
 			}
-			else {
-				l_tSoundAction.m_bCompleted		= true;
+			else
+			{
+				l_tSoundAction.m_bCompleted = true;
 			}
+		}
 	}
 	else {
 		if (xr_strlen(l_tSoundAction.m_caSoundToPlay)) {
@@ -392,28 +394,33 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 	return		(!l_tSoundAction.m_bCompleted);
 }
 
-bool CScriptEntity::bfAssignParticles(CScriptEntityAction *tpEntityAction)
+bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
 {
-	CScriptParticleAction	&l_tParticleAction = tpEntityAction->m_tParticleAction;
+	CScriptParticleAction& l_tParticleAction = tpEntityAction->m_tParticleAction;
 	if (l_tParticleAction.m_bCompleted)
-		return		(false);
-	if (l_tParticleAction.m_tpParticleSystem) {
-		if (true/** !l_tParticleAction.m_tpParticleSystem/**/)
-			if (!l_tParticleAction.m_bStartedToPlay) {
-				const Fmatrix	&l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName,l_tParticleAction.m_tParticlePosition,l_tParticleAction.m_tParticleAngles);
-				Fvector zero_vel_={0.f,0.f,0.f};
-				l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix,zero_vel_);
-				l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
-				l_tParticleAction.m_bStartedToPlay = true;
-			}
-			else {
-				l_tParticleAction.m_bCompleted = true;
-			}
+		return (false);
+
+	if (l_tParticleAction.m_tpParticleSystem)
+	{
+		if (!l_tParticleAction.m_bStartedToPlay)
+		{
+			const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
+			Fvector zero_vel_ = { 0.f,0.f,0.f };
+			l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, zero_vel_);
+			l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
+			l_tParticleAction.m_bStartedToPlay = true;
+		}
+		else
+		{
+			l_tParticleAction.m_bCompleted = true;
+		}
 	}
 	else
+	{
 		l_tParticleAction.m_bCompleted = true;
+	}
 
-	return			(!l_tParticleAction.m_bCompleted);
+	return (!l_tParticleAction.m_bCompleted);
 }
 
 bool CScriptEntity::bfAssignObject(CScriptEntityAction *tpEntityAction)

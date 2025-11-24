@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "xrServer.h"
 #include "xrMessages.h"
-#include "xrserver_objects.h"
-#include "xrServer_Objects_Alife_Monsters.h"
+#include "xrServer_Objects.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 #include "Level.h"
 
 
@@ -219,8 +219,8 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 {
 	u16 Type;
 	P.r_begin( Type );
-	u64 _our		=	FS.auth_get();
-	u64 _him		=	P.r_u64();
+	[[maybe_unused]] u64 _our = FS.auth_get();
+	[[maybe_unused]] u64 _him = P.r_u64();
 
 #ifdef USE_DEBUG_AUTH
 	Msg("_our = %d", _our);

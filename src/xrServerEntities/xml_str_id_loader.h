@@ -59,7 +59,7 @@ public:
 		const ITEM_DATA* item = GetById(str_id, no_assert);
 		return item?item->index:default_index;
 	}
-	static const shared_str		IndexToId	(int index, shared_str default_id = NULL, bool no_assert = false)
+	static const shared_str		IndexToId	(int index, shared_str default_id = nullptr, bool no_assert = false)
 	{
 		const ITEM_DATA* item = GetByIndex(index, no_assert);
 		return item?item->id:default_id;
@@ -73,12 +73,12 @@ public:
 
 
 TEMPLATE_SPECIALIZATION
-typename T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = NULL;
+T_VECTOR* CSXML_IdToIndex::m_pItemDataVector = nullptr;
 
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::file_str = NULL;
+LPCSTR CSXML_IdToIndex::file_str = nullptr;
 TEMPLATE_SPECIALIZATION
-LPCSTR CSXML_IdToIndex::tag_name = NULL;
+LPCSTR CSXML_IdToIndex::tag_name = nullptr;
 
 
 TEMPLATE_SPECIALIZATION
@@ -94,7 +94,7 @@ CSXML_IdToIndex::~CXML_IdToIndex()
 
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bool no_assert)
+const ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bool no_assert)
 {
 	T_INIT::InitXmlIdToIndex();
 	T_VECTOR::iterator it = m_pItemDataVector->begin();
@@ -121,7 +121,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById (const shared_str& str_id, bo
 }
 
 TEMPLATE_SPECIALIZATION
-const typename ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
+const ITEM_DATA* CSXML_IdToIndex::GetByIndex(int index, bool no_assert)
 {
 	if((size_t)index>=m_pItemDataVector->size())
 	{
@@ -141,7 +141,7 @@ void CSXML_IdToIndex::DeleteIdToIndexData	()
 }
 
 TEMPLATE_SPECIALIZATION
-typename void	CSXML_IdToIndex::InitInternal ()
+void CSXML_IdToIndex::InitInternal ()
 {
 	VERIFY(!m_pItemDataVector);
 	T_INIT::InitXmlIdToIndex();
@@ -205,4 +205,3 @@ typename void	CSXML_IdToIndex::InitInternal ()
 }
 
 #undef TEMPLATE_SPECIALIZATION
-

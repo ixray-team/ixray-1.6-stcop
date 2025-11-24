@@ -29,10 +29,8 @@ IC bool PhOutOfBoundaries(const Fvector& v)
 }
 
 //fly distance to lose control
-const float LOSE_CONTROL_DISTANCE=0.5f;
-
-const float CLAMB_DISTANCE=0.5f;
-const float CLIMB_GETUP_HEIGHT=0.3f;
+const float LOSE_CONTROL_DISTANCE = 0.5f;
+const float CLAMB_DISTANCE = 0.5f;
 
 float IC sgn(float v)
 {
@@ -58,23 +56,22 @@ bool test_sides(const Fvector& center, const Fvector& side_dir, const Fvector& f
 	float abs_sd0 = sg_sd0 * sd0;
 	float abs_sd1 = sg_sd1 * sd1;
 
-	float sd, abs_sd, sg_sd;
+	float abs_sd, sg_sd;
 	u32 v;
 	if (sg_sd0 == sg_sd1)
 	{
-		sd = -sd0 - sd1;
 		abs_sd = abs_sd0 + abs_sd1;
 		sg_sd = -sg_sd0;
 		v = tri.T->verts[2];
 	}
 	else if (abs_sd0 > abs_sd1)
 	{
-		sd = sd0; abs_sd = abs_sd0; sg_sd = sg_sd0;
+		abs_sd = abs_sd0; sg_sd = sg_sd0;
 		v = tri.T->verts[0];
 	}
 	else
 	{
-		sd = sd1; abs_sd = abs_sd1; sg_sd = sg_sd1;
+		abs_sd = abs_sd1; sg_sd = sg_sd1;
 		v = tri.T->verts[1];
 	}
 
@@ -757,7 +754,6 @@ void CPHSimpleCharacter::PhTune(dReal step)
 
 const float CHWON_ACCLEL_SHIFT=0.4f;
 const float CHWON_AABB_FACTOR =1.f;
-const float CHWON_ANG_COS	  =M_SQRT1_2;
 const float CHWON_CALL_UP_SHIFT=0.05f;
 const float CHWON_CALL_FB_HIGHT=1.5f;
 const float CHWON_AABB_FB_FACTOR =1.f;
@@ -1391,7 +1387,6 @@ void CPHSimpleCharacter::InitContact(dContact* c, bool& do_collide, u16 material
 	u16 contact_material = bo1 ? material_idx_2 : material_idx_1;
 	SGameMtl* tri_material = GMLibrary().GetMaterialByIdx(contact_material);
 
-	bool bClimable = !!tri_material->Flags.test(SGameMtl::flClimable);
 	if (is_control && m_elevator_state.ClimbingState())
 	{
 		c->surface.mu = 0.f;

@@ -5,19 +5,16 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Base action inline function
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "Level.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _object_type>
 #define CBaseAction				CActionBase<_object_type>
 
 TEMPLATE_SPECIALIZATION
-IC	CBaseAction::CActionBase		(const xr_vector<COperatorCondition> &conditions, const xr_vector<COperatorCondition> &effects, _object_type *object, LPCSTR action_name) :
-	inherited			(conditions,effects)
+IC CBaseAction::CActionBase(const xr_vector<COperatorCondition> &conditions, const xr_vector<COperatorCondition> &effects, _object_type *object, LPCSTR action_name)
 {
-	init				(object,action_name);
+	init(object,action_name);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -42,8 +39,6 @@ void CBaseAction::init			(_object_type *object, LPCSTR action_name)
 	m_use_log			= false;
 	m_action_name		= action_name;
 	m_switched			= false;
-//	if (xr_strlen(m_action_name))
-//		debug_log		(eActionStateConstructed);
 #endif
 }
 

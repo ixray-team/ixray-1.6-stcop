@@ -25,8 +25,6 @@ CUISpeechMenu::CUISpeechMenu(LPCSTR section_name)
 
 CUISpeechMenu::~CUISpeechMenu()
 {
-	int x=0;
-	x=x;
 }
 
 void CUISpeechMenu::InitList(LPCSTR section_name)

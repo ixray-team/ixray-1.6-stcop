@@ -96,7 +96,7 @@ const xr_vector<shared_str> CEngineExternal::StepWallmarksMaterials() const
 		Iter++;
 	}
 
-	return std::move(TempVector);
+	return TempVector;
 }
 
 const xr_string CEngineExternal::WallmarkLeft() const
