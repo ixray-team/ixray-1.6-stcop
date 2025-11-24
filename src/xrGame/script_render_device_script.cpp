@@ -12,12 +12,12 @@
 
 using namespace luabind;
 
-bool is_device_paused(CRenderDevice* d)
+bool is_device_paused(CRenderDeviceData* d)
 {
 	return !!Device.Paused();
 }
 
-void set_device_paused(CRenderDevice* d, bool b)
+void set_device_paused(CRenderDeviceData* d, bool b)
 {
 	Device.Pause(b, TRUE, FALSE,"set_device_paused_script");
 }
@@ -28,36 +28,40 @@ bool is_app_ready()
 	return !!g_appLoaded;
 }
 
-u32 time_global(const CRenderDevice *self_)
+u32 time_global(const CRenderDeviceData *self_)
 {
 	THROW		(self_);
 	return		(self_->dwTimeGlobal);
 }
 
 #pragma optimize("s",on)
+template<>
 void CScriptRenderDevice::script_register(lua_State *L)
 {
 	module(L)
 	[
-		class_<CRenderDevice>("render_device")
-			.def_readonly("width",					&CRenderDevice::TargetWidth)
-			.def_readonly("height",					&CRenderDevice::TargetHeight)
-			.def_readonly("time_delta",				&CRenderDevice::dwTimeDelta)
-			.def_readonly("f_time_delta",			&CRenderDevice::fTimeDelta)
-			.def_readonly("cam_pos",				&CRenderDevice::vCameraPosition)
-			.def_readonly("cam_dir",				&CRenderDevice::vCameraDirection)
-			.def_readonly("cam_top",				&CRenderDevice::vCameraTop)
-			.def_readonly("cam_right",				&CRenderDevice::vCameraRight)
+		class_<CRenderDeviceData>("render_device")
+			.def_readonly("width",					&CRenderDeviceData::TargetWidth)
+			.def_readonly("height",					&CRenderDeviceData::TargetHeight)
+			.def_readonly("time_delta",				&CRenderDeviceData::dwTimeDelta)
+			.def_readonly("f_time_delta",			&CRenderDeviceData::fTimeDelta)
+			.def_readonly("cam_pos",				&CRenderDeviceData::vCameraPosition)
+			.def_readonly("cam_dir",				&CRenderDeviceData::vCameraDirection)
+			.def_readonly("cam_top",				&CRenderDeviceData::vCameraTop)
+			.def_readonly("cam_right",				&CRenderDeviceData::vCameraRight)
 //			.def_readonly("view",					&CRenderDevice::mView)
 //			.def_readonly("projection",				&CRenderDevice::mProject)
 //			.def_readonly("full_transform",			&CRenderDevice::mFullTransform)
-			.def_readonly("fov",					&CRenderDevice::fFOV)
-			.def_readonly("aspect_ratio",			&CRenderDevice::fASPECT)
+			.def_readonly("fov",					&CRenderDeviceData::fFOV)
+			.def_readonly("aspect_ratio",			&CRenderDeviceData::fASPECT)
 			.def("time_global",						&time_global)
-			.def_readonly("precache_frame",			&CRenderDevice::dwPrecacheFrame)
-			.def_readonly("frame",					&CRenderDevice::dwFrame)
-			.def("is_paused",						&is_device_paused)
-			.def("pause",							&set_device_paused),
-			def("app_ready",						&is_app_ready)
+			.def_readonly("precache_frame",			&CRenderDeviceData::dwPrecacheFrame)
+			.def_readonly("frame",					&CRenderDeviceData::dwFrame),
+
+		def("app_ready",						&is_app_ready),
+
+		class_<CRenderDevice, CRenderDeviceData>("engine_device")
+			.def("is_paused", &is_device_paused)
+			.def("pause", &set_device_paused)
 	];
 }

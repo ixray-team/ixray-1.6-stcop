@@ -57,7 +57,7 @@ namespace vraudio
 #endif
 
 
-class ref_sound;
+struct ref_sound;
 class CObject;
 
 namespace XRay::Sound::Mixer

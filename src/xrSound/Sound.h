@@ -112,7 +112,7 @@ public:
 	{
 		Fvector* params = XRay::Sound::Mixer::GetParameters(slot);
 		if (params) {
-			CSound_params out_params = { 0 };
+			CSound_params out_params = {};
 			out_params.position = params[(u32)XRay::Sound::Mixer::ParameterId::Position];
 			out_params.base_volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
 			out_params.volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].y;
@@ -123,7 +123,7 @@ public:
 			return out_params;
 		}
 
-		return { 0 };
+		return {};
 	}
 
 	IC bool is_2d() { return ((XRay::Sound::Mixer::GetFlags(slot) & (u32)XRay::Sound::Mixer::Flags::Spatial) == 0); }
@@ -353,7 +353,7 @@ IC CSound_params ref_sound::get_params()
 {
 	Fvector* params = XRay::Sound::Mixer::GetParameters(slot());
 	if (slot()) {
-		CSound_params out_params = { 0 };
+		CSound_params out_params = {};
 		out_params.position = params[(u32)XRay::Sound::Mixer::ParameterId::Position];
 		out_params.volume = params[(u32)XRay::Sound::Mixer::ParameterId::VolumePerChannel].x;
 		out_params.freq = params[(u32)XRay::Sound::Mixer::ParameterId::Pitch].x;

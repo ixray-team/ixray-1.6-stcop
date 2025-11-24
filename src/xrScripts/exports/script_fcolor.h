@@ -9,4 +9,4 @@
 #pragma once
 #include "../xrScripts/script_export_space.h"
 
-typedef class_exporter_lib<Fcolor> SCRIPTS_API CScriptFcolor;
+typedef class_exporter_lib<Fcolor> CScriptFcolor;
