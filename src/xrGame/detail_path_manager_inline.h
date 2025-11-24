@@ -144,23 +144,31 @@ IC	void CDetailPathManager::assign_angle(
 ) const
 {
 	if (positive)
+	{
 		if (dest_yaw >= start_yaw)
-			angle		= dest_yaw - start_yaw;
+			angle = dest_yaw - start_yaw;
 		else
-			angle		= PI_MUL_2 - start_yaw + dest_yaw;
+			angle = PI_MUL_2 - start_yaw + dest_yaw;
+	}
 	else
+	{
 		if (dest_yaw <= start_yaw)
-			angle		= dest_yaw - start_yaw;
+			angle = dest_yaw - start_yaw;
 		else
-			angle		= dest_yaw - start_yaw - PI_MUL_2;
-
+			angle = dest_yaw - start_yaw - PI_MUL_2;
+	}
 	if (!start && ((direction_type == eDirectionTypePP) || (direction_type == eDirectionTypeNN)))
+	{
 		if (angle <= 0.f)
+		{
 			angle = angle + PI_MUL_2;
+		}
 		else
+		{
 			angle = angle - PI_MUL_2;
-
-	VERIFY				(_valid(angle));
+		}
+	}
+	VERIFY(_valid(angle));
 }
 
 IC	bool CDetailPathManager::compute_circles(

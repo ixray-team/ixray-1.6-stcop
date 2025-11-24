@@ -32,7 +32,7 @@
 
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "aint.h"
 #include "jtlimits.h"
 
@@ -513,7 +513,7 @@ int ComplexJtLimit::CritPoints(float p[2]) const
 // the derivative is 0 because sometimes a singularity occurs
 // at a place where the derivative is not defined or discontinous
 // 
-int ComplexJtLimit::Singularities(float psi[2]) const
+int ComplexJtLimit::Singularities(float psi[4]) const
 {
     int m;
     float u[4]; 

@@ -6,7 +6,7 @@
 //	Description : Templates for monster "Rat"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ai_rat.h"
 #include "../../ai_monsters_misc.h"
 #include "../../../game_graph.h"
@@ -207,8 +207,7 @@ bool CAI_Rat::calc_node(Fvector const &next_position)
 
 Fvector CAI_Rat::calc_position()
 {
-	Fvector				tSavedPosition = Position();
-	SRotation			tSavedTorsoTarget = movement().m_body.target;
+	Fvector tSavedPosition = Position();
 
 	// Update position and orientation of the planes
 	float fAT = m_fASpeed * m_fTimeUpdateDelta;

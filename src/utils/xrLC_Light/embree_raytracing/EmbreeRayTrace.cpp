@@ -255,8 +255,8 @@ void errors_embree(void* userPtr, enum RTCError code, const char* str)
  
 void EmbreeData::IntializeDevice()
 {
-	bool avx_test = CPU::ID.hasFeature(CPUFeature::AVX2);
-	bool sse = CPU::ID.hasFeature(CPUFeature::SSE);
+	bool avx_test = CPU::ID().hasFeature(CPUFeature::AVX2);
+	bool sse = CPU::ID().hasFeature(CPUFeature::SSE);
 
 	const char* config = "";
 	if (avx_test)

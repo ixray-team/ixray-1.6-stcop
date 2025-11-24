@@ -367,7 +367,7 @@ Snd_NewCacheLine()
 	return cache_idx;
 }
 
-static u32
+[[maybe_unused]]static u32
 Snd_TellSource(sound_source& source)
 {
 	return ov_pcm_tell(&source.file);
@@ -692,7 +692,6 @@ Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
 	do {
 		auto& source = mixer.sources[slot.sound_name.c_str()];
 		u32 found_cache_idx = Snd_FindAvailableCacheLine(source, slot.position);
-		u32 begin_pos = 0, end_pos = 0;
 
 		if (found_cache_idx == 0) {
 			Snd_UpdateCache(slot_idx);
@@ -706,7 +705,6 @@ Snd_ReadSlotData(u32 slot_idx, float** data, u32 frames_count)
 
 		auto& cache_line = mixer.cache_lines[found_cache_idx - 1];
 		u32 begin_offset = slot.position - cache_line.start;
-		u32 last_frames = source.pub.frames_total - slot.position;
 		u32 cache_frames = std::min(std::min(frames_to_read, cache_line.end-slot.position), (u32)SND_BLOCKSIZE);
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			memcpy(&data[ch][frames_count-frames_to_read], &cache_line.data[ch][begin_offset], cache_frames * sizeof(float));
@@ -817,7 +815,7 @@ Snd_PrecacheRenderCallback()
 	counter++;
 }
 
-static void
+[[maybe_unused]]static void
 Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 {
 	auto& slot = mixer.slots[slot_idx - 1];
@@ -894,7 +892,7 @@ Snd_MixerRenderCallback(float* buffer)
 	timestamp = Snd_GetTimestamp();
 
 	memset(buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
-	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = { 0 };
+	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
 
 	float* process_buffer[SND_CHANNEL_COUNT] = {};
 	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
@@ -1392,7 +1390,6 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 							Fvector tri_norm;
 							tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
 
-							float dot = dir.dotproduct(tri_norm);
 							R_ASSERT(T->dummy < mixer.zones.size());
 							slot.zone_idx = T->dummy + 1;
 						} else {
@@ -1412,7 +1409,6 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			bool sound_exists = (cmd.param1 && mixer.sounds.contains((ref_sound*)cmd.param1));
 			ref_sound* sound = sound_exists ? (ref_sound*)cmd.param1 : nullptr;
 			u16 flags = cmd.param0;
-			double delay = *(double*)&cmd.param2;
 			CObject* obj = (CObject*)cmd.param3;
 
 			bool is_same_file = mixer.slots[cmd.slot - 1].sound_name == cmd.string_storage.c_str();
@@ -1854,7 +1850,6 @@ Snd_EngineToResonanceParams(const sound_zone_params& s,
 	out_rev = vraudio::ReverbProperties();
 
 	constexpr float HF_REF = 5000.0f;
-	constexpr float LF_REF = 250.0f;
 
 	// Room dimensions
 	out_ref.room_dimensions[0] = s.size.x;

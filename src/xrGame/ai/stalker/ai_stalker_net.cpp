@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "stdafx.h"
+#include "StdAfx.h"
+#include "StdAfx.h"
 #include "ai_stalker.h"
 
 #include "ai_object_location.h"
@@ -74,7 +74,6 @@ void CAI_Stalker::net_Import(NET_Packet& P)
 	}
 
 	R_ASSERT(Remote());
-	u8 flags;
 
 	P.r_float();
 

@@ -123,4 +123,4 @@ IC	void sub_diapasones(u16 &from1,u16 &to1,const u16 &from0,const u16 &to0)
 	to1=to1-dip;
 }
 
-#endif  PH_FRACTURE_H
+#endif

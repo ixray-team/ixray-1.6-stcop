@@ -35,6 +35,9 @@ source_group("3rd Interfaces" FILES ${SND_SOURCE_3RDI_FILES})
 # Apply list
 list(APPEND SND_SRC_FILES ${SND_SOURCE_ALL_FILES})
 
+if (IXRAY_ENABLE_RESONANCEAUDIO)
+    list(FILTER SND_SRC_FILES EXCLUDE REGEX "pffft.*")
+endif()
 if(NOT IXRAY_MP)
     list(FILTER SND_SRC_FILES EXCLUDE REGEX "Recorder/*.*")
 endif()

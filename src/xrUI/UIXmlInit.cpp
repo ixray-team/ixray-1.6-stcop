@@ -721,7 +721,6 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 	int cnt_static						= 0;
 	int cnt_frameline					= 0;
 	int cnt_framewindow					= 0;
-	int cnt_text						= 0;
 	string512							buff;
 
 	while(node)
@@ -759,10 +758,6 @@ void CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR path, int index, CU
 			pParentWnd->AttachChild	(pUIFramewindow);
 
 			++cnt_framewindow;
-		}else
-		if(0==_stricmp(node_name,"auto_text"))
-		{
-			++cnt_text;
 		}
 		node = node->NextSibling();
 	}
