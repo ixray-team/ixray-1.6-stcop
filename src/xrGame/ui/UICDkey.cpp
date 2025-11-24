@@ -1,5 +1,5 @@
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UICDkey.h"
 #include "../../xrUI/Widgets/UILines.h"
 #include "../../xrEngine/line_edit_control.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIGameTutorial.h"
 #include "../../xrUI/Widgets/UIWindow.h"

@@ -136,7 +136,7 @@ void CSE_ALifeObject::spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int
         return;
     }
 
-    if (CSE_ALifeItemWeapon* W = smart_cast<CSE_ALifeItemWeapon*>(E))
+    if (smart_cast<CSE_ALifeItemWeapon*>(E) != nullptr)
     {
         if (pSettings->line_exist(wpnSection, "ammo_class"))
         {
@@ -243,7 +243,6 @@ void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile& ini)
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
     LPCSTR itemSection = "";
     LPCSTR spawnArgs = "";
-    bool isSpawned = false;
 
     if (m_loadouts.empty()) {
         return;

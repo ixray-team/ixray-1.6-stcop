@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIListBoxItem.h"
 #include "UIScrollView.h"
 #include "../../xrServerEntities/object_broker.h"

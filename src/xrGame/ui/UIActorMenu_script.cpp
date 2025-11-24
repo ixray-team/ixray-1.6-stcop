@@ -5,7 +5,7 @@
 //	Description : UI ActorMenu script implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
 #include "UIGameCustom.h"

@@ -137,7 +137,7 @@ u32 CUIListBox::GetSelectedIDX()
 
 	for (CUIWindow* child : m_pad->GetChildWndList())
 	{
-		if (CUIListBoxItem* item = child->ui_cast_list_box_item())
+		if (child->ui_cast_list_box_item() != nullptr)
 		{
 			if (child == w)
 			{

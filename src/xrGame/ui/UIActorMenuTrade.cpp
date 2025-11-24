@@ -1,5 +1,5 @@
-//#include "stdafx.h"
-#include "stdafx.h"
+//#include "StdAfx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "UIActorMenu.h"
 #include "../../xrUI/Widgets/UI3tButton.h"

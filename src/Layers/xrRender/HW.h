@@ -5,10 +5,6 @@
 
 #include "HWCaps.h"
 
-#ifndef _EDITOR
-#	include <renderdoc/api/app/renderdoc_app.h>
-#endif
-
 #ifndef _MAYA_EXPORT
 #include "stats_manager.h"
 #endif

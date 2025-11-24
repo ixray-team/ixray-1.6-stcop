@@ -14,7 +14,7 @@
 #include "UIGameCustom.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
 
-xr_token	game_types		[];
+extern xr_token game_types[];
 
 CUIChangeMap::CUIChangeMap()
 {

@@ -98,7 +98,7 @@ void ISpatial_DB::q_ray(xr_vector<ISpatialShared>& R, u32 _o, u32 _mask_and, con
 
 	R.resize(0);
 
-	spatial_ray_walker W(CPU::ID.hasFeature(CPUFeature::SSE), !!(_o&O_ONLYFIRST), !!(_o&O_ONLYNEAREST));
+	spatial_ray_walker W(CPU::ID().hasFeature(CPUFeature::SSE), !!(_o&O_ONLYFIRST), !!(_o&O_ONLYNEAREST));
 	W._init(this, _mask_and, _start, _dir, _range);
 	W.walk(R, m_root, m_center, m_bounds);
 }

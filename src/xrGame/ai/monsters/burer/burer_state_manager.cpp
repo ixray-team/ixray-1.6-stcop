@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "burer.h"
 #include "burer_state_manager.h"
 

@@ -5,7 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object handler action planner missile handling
 ////////////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+#include "StdAfx.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "object_handler_planner.h"
 #include "object_property_evaluators.h"

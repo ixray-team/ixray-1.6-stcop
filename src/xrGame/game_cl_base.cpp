@@ -280,9 +280,8 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 
 }
 
-void	game_cl_GameState::OnGameMessage	(NET_Packet& P)
+void game_cl_GameState::OnGameMessage(NET_Packet& P)
 {
-	VERIFY	(this && &P);
 	u32 msg	;
 	P.r_u32	(msg);
 

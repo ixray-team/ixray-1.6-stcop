@@ -40,8 +40,9 @@ bool CItemManager::useful			(const CGameObject *object) const
 	if (!object->getEnabled())
 		return false;
 
-	if (!&object->ai_location())
-		return false;
+	// FX: χηνυ
+	//if (!&object->ai_location())
+	//	return false;
 
 	if (!inherited::is_useful(object))
 		return false;

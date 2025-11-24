@@ -60,8 +60,6 @@ void CImGuiManager::InitPlatform()
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
-	ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-
 	ImGuiStyle& Style = ImGui::GetStyle();
 	XRay::ImGui::MakeEditorTheme();
 
@@ -71,7 +69,6 @@ void CImGuiManager::InitPlatform()
 		Style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
-	float ddpi, hdpi, vdpi;
 	float scale = GetWindowScale(g_AppInfo.Window);
 
 	LoadImGuiFont(ImGui::RegularFont, "rus\\RobotoMono.ttf", scale);

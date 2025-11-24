@@ -1,17 +1,24 @@
 # General build options
-add_compile_options(-Wno-switch -Wno-unused-result)
+add_compile_options(-Wno-switch -Wno-unused-result -Wno-deprecated-declarations -Wno-inconsistent-missing-override -Wno-inline-new-delete)
+add_compile_options(-Wno-implicit-exception-spec-mismatch -Wno-macro-redefined -Wno-unused-local-typedef -Wno-microsoft-unqualified-friend)
+add_compile_options(-Wno-comment)
+add_compile_options(-msse4.2) # crc32
 
 if (WIN32)
-    add_compile_options(--Wno-microsoft-template-shadow)
+    add_compile_options(-Wno-microsoft-template-shadow -Wno-overloaded-virtual -Wno-unknown-pragmas -Wno-class-conversion -Wno-reorder-ctor)
+    add_compile_options(-Wno-microsoft-cast -Wno-microsoft-enum-forward-reference -Wno-bitwise-op-parentheses -Wno-misleading-indentation -Wno-logical-op-parentheses)
+    add_compile_options(-Wno-explicit-specialization-storage-class -Wno-microsoft-pure-definition -Wno-ignored-pragmas -Wno-exceptions -Wno-ignored-attributes)
+    #add_compile_options()
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _UNICODE UNICODE)
+    add_compile_options(/MP)
+    add_compile_options("$<$<CONFIG:DEBUG>:/Od>" "$<$<CONFIG:DEBUG>:/MD>" "/Ob1")
 else()
     add_compile_options(-fms-extensions)
     #add_compile_options(-fexperimental-library) # stacktrace
     add_compile_options(
-        -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format -Wno-inconsistent-missing-override -Wno-undefined-inline
-        -Wno-inline-new-delete -Wno-implicit-exception-spec-mismatch -Wno-unknown-warning-option -Wno-tautological-constant-out-of-range-compare
-        -Wno-macro-redefined -Wno-int-to-pointer-cast -Wno-deprecated-declarations -Wno-deprecated-literal-operator
+        -Wno-null-dereference -Wno-nonnull -Wno-format-truncation -Wno-attributes -Wno-format -Wno-undefined-inline -Wno-unknown-warning-option 
+        -Wno-tautological-constant-out-of-range-compare -Wno-macro-redefined -Wno-int-to-pointer-cast -Wno-deprecated-literal-operator
     )
-    add_compile_options(-msse4.2) # crc32
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # ranges
     add_compile_definitions(_GNU_SOURCE) # mremap

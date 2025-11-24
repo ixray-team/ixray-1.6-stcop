@@ -779,9 +779,9 @@ void CDetailPathManager::postprocess_key_points(
 			}
 		}
 		{
-			u32				vertex_id = ai().level_graph().check_position_in_direction(m_key_points[i-1].vertex_id,m_key_points[i-1].position,key_point1.position);
+			u32 vertex_id = ai().level_graph().check_position_in_direction(m_key_points[i-1].vertex_id,m_key_points[i-1].position,key_point1.position);
 			if (!ai().level_graph().valid_vertex_id(vertex_id)) {
-				vertex_id	= vertex_id;
+				vertex_id = vertex_id;
 			}
 		}
 		{

@@ -6,7 +6,7 @@
 //	Description : Debug functions for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #if USE_OLD_OBJECT_PLANNER
 #include "Legacy/object_handler_planner.h"
@@ -168,7 +168,7 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 	typename planner_type::EVALUATORS::const_iterator	I = brain.evaluators().begin();
 	typename planner_type::EVALUATORS::const_iterator	E = brain.evaluators().end();
 	for ( ; I != E; ++I) {
-		auto J = std::lower_bound(brain.current_state().conditions().begin(),brain.current_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
+		auto J = std::lower_bound(brain.current_state().conditions().begin(),brain.current_state().conditions().end(),typename planner_type::CWorldProperty((*I).first,false));
 		char				temp = '?';
 		if ((J != brain.current_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';
@@ -179,7 +179,7 @@ void draw_planner						(const planner_type &brain, LPCSTR start_indent, LPCSTR i
 	DBG_OutText	("%s%starget world state",start_indent,indent);
 	I = brain.evaluators().begin();
 	for ( ; I != E; ++I) {
-		auto J = std::lower_bound(brain.target_state().conditions().begin(),brain.target_state().conditions().end(),planner_type::CWorldProperty((*I).first,false));
+		auto J = std::lower_bound(brain.target_state().conditions().begin(),brain.target_state().conditions().end(),typename planner_type::CWorldProperty((*I).first,false));
 		char				temp = '?';
 		if ((J != brain.target_state().conditions().end()) && ((*J).condition() == (*I).first)) {
 			temp			= (*J).value() ? '+' : '-';

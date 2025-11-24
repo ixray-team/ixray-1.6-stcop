@@ -44,9 +44,9 @@ void CEnvModifier::load	(IReader* fs, u32 version)
 
 }
 
-float	CEnvModifier::sum	(CEnvModifier& M, Fvector3& view)
+float CEnvModifier::sum(CEnvModifier& M, Fvector3& view)
 {
-	float	_dist_sq;
+	float _dist_sq = 0;
 
 	switch(M.shape_type)
 	{
@@ -373,7 +373,7 @@ void CEnvDescriptor::load	(CEnvironment& environment, CInifile& config, pcstr se
 	}
 
 	Ivector3 tm				={0,0,0};
-    const int result = sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
+    [[maybe_unused]] const int result = sscanf(m_identifier.c_str(), "%d:%d:%d", &tm.x, &tm.y, &tm.z);
     //R_ASSERT3(result == 3 && (tm.x >= 0) && (tm.x < 24) && (tm.y >= 0) && (tm.y < 60) && (tm.z >= 0) && (tm.z < 60),
     //    "Incorrect weather time", m_identifier.c_str());
 	exec_time				= tm.x*3600.f+tm.y*60.f+tm.z;
@@ -632,7 +632,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 	float rain_f = f;
 	{
 		if (A.rain_density <= 0.01f) // if the previous desc did not have the rain at all - make a
-			// delayed rain begining
+		{	// delayed rain begining
 			if (f < NO_RAIN_TO_RAINY_TIME_OFFSET) // dont start rain and rain effects, untill we are
 				// close to the half of the cycle time
 				rain_f = 0.f;
@@ -640,11 +640,11 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 				rain_f = (f - NO_RAIN_TO_RAINY_TIME_OFFSET) /
 				(1.f -
 					NO_RAIN_TO_RAINY_TIME_OFFSET); // get the 0.0 - 1.0 value from offseted
-		// weight for the rest of the time, when we
-		// need the rain and rain effects enabled
-
+			// weight for the rest of the time, when we
+			// need the rain and rain effects enabled
+		}
 		else if (B.rain_density <= 0.01f) // if next weather is not rainy at all - then DO rain only
-			// untill half of the cycle time is past
+		{	// untill half of the cycle time is past
 			if (f <
 				1.f - NO_RAIN_TO_RAINY_TIME_OFFSET) // dont start rain and rain effects, untill we
 				// are at least close to the half of the cycle
@@ -654,6 +654,7 @@ void CEnvDescriptorMixer::lerp	(CEnvironment* Env, CEnvDescriptor& A, CEnvDescri
 					NO_RAIN_TO_RAINY_TIME_OFFSET); // get the 0.0 - 1.0 value from offseted weight
 			else // if we passed half of the time - stop rain and effects
 				rain_f = 1.f;
+		}
 	}
 
 	float rain_fi = 1.f - rain_f;

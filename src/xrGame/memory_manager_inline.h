@@ -7,9 +7,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "enemy_manager.h"
 #include "memory_space.h"
+#include "visual_memory_manager.h"
+
 template <typename T, typename _predicate>
 IC	void CMemoryManager::fill_enemies	(const xr_vector<T>* objects, const _predicate &predicate) const
 {
@@ -36,11 +37,9 @@ IC	void CMemoryManager::fill_enemies	(const xr_vector<T>* objects, const _predic
 }
 
 template <typename _predicate>
-IC	void CMemoryManager::fill_enemies	(const _predicate &predicate) const
+IC void CMemoryManager::fill_enemies(const _predicate& predicate) const
 {
 	fill_enemies(visual().objectsPtr(), predicate);
-	//	fill_enemies			(sound().objects(),predicate);
-	//	fill_enemies			(hit().objects(),predicate);
 }
 
 IC	CVisualMemoryManager	&CMemoryManager::visual		() const

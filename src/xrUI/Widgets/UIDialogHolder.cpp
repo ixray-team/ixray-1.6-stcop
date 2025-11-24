@@ -6,7 +6,7 @@
 #include "../../xrEngine/IGame_Actor.h"
 #include "../../xrEngine/IGame_UICustom.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "../xrEngine/CustomHud.h"
+#include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/xr_object.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd)

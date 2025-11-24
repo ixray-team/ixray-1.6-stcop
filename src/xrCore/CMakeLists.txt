@@ -190,7 +190,7 @@ target_link_libraries(xrCore PUBLIC SDL3-shared)
 target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
 if(WIN32)
-	if (NOT IXR_ARM_ENABLE)
+	if(NOT IXR_ARM_ENABLE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		target_link_libraries(xrCore PRIVATE dxerr)
 	endif()
 

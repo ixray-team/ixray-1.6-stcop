@@ -1,4 +1,3 @@
-#pragma once
 #include "stdafx.h"
 
 XRCORE_API wchar_t* Platform::ANSI_TO_TCHAR(const char* C)

@@ -108,7 +108,7 @@ void CNvReader::InitDeviceInfo()
 void CNvReader::MakeGPUCount()
 {
 	NvU32 logicalGPUCount;
-	NvAPI_EnumLogicalGPUs(gpuHandlesLg, &logicalGPUCount);
+	NvAPI_EnumLogicalGPUs(gpuHandlesLg, (unsigned long*)&logicalGPUCount);
 
 	for (NvU32 i = 0; i < logicalGPUCount; ++i)
 	{
