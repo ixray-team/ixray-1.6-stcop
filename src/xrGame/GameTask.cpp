@@ -95,7 +95,8 @@ void CGameTask::CreateMapLocation( bool on_load )
 		m_linked_map_location->m_owner_task_id = m_ID;
 	}
 
-	VERIFY( m_linked_map_location );
+	if (!m_linked_map_location)
+		return;
 
 	if ( !on_load )
 	{
