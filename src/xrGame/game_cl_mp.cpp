@@ -1097,14 +1097,13 @@ void	game_cl_mp::OnEventMoneyChanged			(NET_Packet& P)
 			m_game_ui_custom->DisplayMoneyChange	(MoneyStr);
 	};
 	u8 NumBonuses = P.r_u8();
-	s32 TotalBonusMoney = 0;
+
 	shared_str BonusStr = (NumBonuses > 1) ? "Your bonuses : " : ((NumBonuses == 1) ? "Your bonus : " : "");
 	for (u8 i=0; i<NumBonuses; i++)
 	{
 		s32 BonusMoney = P.r_s32();
 		SPECIAL_KILL_TYPE BonusReason = SPECIAL_KILL_TYPE(P.r_u8());
 		u8 BonusKills = (BonusReason == SKT_KIR)? P.r_u8() : 0;
-		TotalBonusMoney += BonusMoney;
 		//---------------------------------------------------------
 		KillMessageStruct BMS;
 		string256	MoneyStr;

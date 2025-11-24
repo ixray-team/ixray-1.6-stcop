@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UITaskWnd.h"
 #include "UIMapWnd.h"
 #include "object_broker.h"

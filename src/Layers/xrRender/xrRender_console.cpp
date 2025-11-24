@@ -365,36 +365,6 @@ public:
 	}
 };
 
-#ifdef USE_DX11
-class CCC_RenderDocCaptureStart : public IConsole_Command {
-public:
-	CCC_RenderDocCaptureStart(LPCSTR N) : IConsole_Command(N) {
-		bEmptyArgsHandled = true;
-	};
-
-	virtual void Execute(LPCSTR args) {
-		if (Device.GetRenderDocAPI()) {
-			HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-			Device.GetRenderDocAPI()->StartFrameCapture(RDevice, hwnd);
-		}
-	}
-};
-
-class CCC_RenderDocCaptureEnd : public IConsole_Command {
-public:
-	CCC_RenderDocCaptureEnd(LPCSTR N) : IConsole_Command(N) {
-		bEmptyArgsHandled = true;
-	};
-
-	virtual void Execute(LPCSTR args) {
-		if (Device.GetRenderDocAPI()) {
-			HWND hwnd = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(g_AppInfo.Window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-			Device.GetRenderDocAPI()->EndFrameCapture(RDevice, hwnd);
-		}
-	}
-};
-#endif
-
 class CCC_memory_stats : public IConsole_Command
 {
 protected	:
@@ -776,8 +746,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_shift_v", &ps_r__WallmarkSHIFT_V, 0.0f, 1.f);
 
 #ifdef USE_DX11
-	CMD1(CCC_RenderDocCaptureStart, "rdoc_start");
-	CMD1(CCC_RenderDocCaptureEnd, "rdoc_end");
 	//	Allow real-time fog config reload
 	CMD1(CCC_Fog_Reload, "r3_fog_reload");
 #endif

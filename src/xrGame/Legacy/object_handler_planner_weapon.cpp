@@ -6,7 +6,7 @@
 //	Description : Object handler action planner weapon handling
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #if USE_OLD_OBJECT_PLANNER
 #include "object_handler_planner.h"

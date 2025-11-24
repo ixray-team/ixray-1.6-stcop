@@ -101,20 +101,23 @@ protected:
 	virtual void	Init_internal			(const shared_str& name, CInifile& pLtx, const shared_str& sect_name, LPCSTR sh_name);
 };
 
-class CUILevelMap final : public CUICustomMap
+class CUILevelMap final :
+	public CUICustomMap
 {
 	typedef  CUICustomMap inherited;
 
 	CUIMapWnd*					m_mapWnd;
 	bool						legacySpotScaling;
-	Frect						m_GlobalRect;			// virtual map size (meters)
-								CUILevelMap			(const CUILevelMap &obj) {}
+	Frect						m_GlobalRect;
 
-			CUILevelMap			&operator=			(const CUILevelMap &obj) {}
 public:
-								CUILevelMap			(CUIMapWnd*);
-	virtual						~CUILevelMap		();
-	const Frect&				GlobalRect			() const								{return m_GlobalRect;}
+	CUILevelMap(CUIMapWnd*);
+	virtual ~CUILevelMap();
+
+	CUILevelMap(const CUILevelMap& obj) = delete;
+	CUILevelMap& operator= (const CUILevelMap& obj) = delete;
+
+	const Frect&				GlobalRect			() const {return m_GlobalRect;}
 	virtual void				Draw				();
 	virtual void				Show				(bool status);
 	virtual void				Update				();

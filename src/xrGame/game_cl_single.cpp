@@ -101,6 +101,7 @@ void game_cl_Single::SetEnvironmentGameTimeFactor		(const float fTimeFactor)
 }
 
 #pragma optimize("s",on)
+template<>
 void CScriptGameDifficulty::script_register(lua_State *L)
 {
 	module(L)

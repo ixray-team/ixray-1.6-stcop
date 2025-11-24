@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIMpTradeWnd.h"
 #include "UIMpItemsStoreWnd.h"
 
@@ -113,89 +113,93 @@ bool CUIMpTradeWnd::BuyItemAction(SBuyItemInfo* itm)
 
 bool CUIMpTradeWnd::TryToBuyItem(SBuyItemInfo* buy_itm, u32 buy_flags, SBuyItemInfo* itm_parent)
 {
-	SBuyItemInfo* iinfo 			= buy_itm;
+	SBuyItemInfo* iinfo = buy_itm;
 	const shared_str& buy_item_name = iinfo->m_name_sect;
-	
-	const bool is_helper	= buy_itm->m_cell_item->IsHelper();
-	bool	b_can_buy		= is_helper || CheckBuyPossibility(buy_item_name, buy_flags, false);
-	if(!b_can_buy)
+
+	const bool is_helper = buy_itm->m_cell_item->IsHelper();
+	bool	b_can_buy = is_helper || CheckBuyPossibility(buy_item_name, buy_flags, false);
+	if (!b_can_buy)
 		return				false;
-	
-	if(0==(bf_ignore_team&buy_flags))
+
+	if (0 == (bf_ignore_team & buy_flags))
 	{
-	if (GameID() == eGameIDCaptureTheArtefact)
-	{
-		game_cl_CaptureTheArtefact* cta_game = Game().cast_game_cl_capturetheartefact();
-		if (cta_game && !cta_game->LocalPlayerCanBuyItem(buy_item_name))
-			return			false;
-	} else
-	{
-		game_cl_Deathmatch* dm_game = Game().cast_game_cl_deathmatch();
-		if (dm_game && !dm_game->LocalPlayerCanBuyItem(buy_item_name))
-			return			false;
-	}
+		if (GameID() == eGameIDCaptureTheArtefact)
+		{
+			game_cl_CaptureTheArtefact* cta_game = Game().cast_game_cl_capturetheartefact();
+			if (cta_game && !cta_game->LocalPlayerCanBuyItem(buy_item_name))
+				return			false;
+		}
+		else
+		{
+			game_cl_Deathmatch* dm_game = Game().cast_game_cl_deathmatch();
+			if (dm_game && !dm_game->LocalPlayerCanBuyItem(buy_item_name))
+				return			false;
+		}
 	}
 
-	u32 _item_cost			= m_item_mngr->GetItemCost(buy_item_name, GetRank() );
-	if ( is_helper )
+	u32 _item_cost = m_item_mngr->GetItemCost(buy_item_name, GetRank());
+	if (is_helper)
 	{
 		_item_cost = 0;
 	}
 
-	if( (buy_flags&bf_check_money) )
+	if ((buy_flags & bf_check_money))
 	{
-		SetMoneyAmount				(GetMoneyAmount() - _item_cost);
+		SetMoneyAmount(GetMoneyAmount() - _item_cost);
 	}
 
-	if( buy_flags&bf_own_itm )
+	if (buy_flags & bf_own_itm)
 	{
-		iinfo->SetState				(SBuyItemInfo::e_own);
-	}else
-		iinfo->SetState				(SBuyItemInfo::e_bought);
-
-
-	CUICellItem* cell_itm				= nullptr;
-	bool b_alone						= true;
-	if(iinfo->m_cell_item->OwnerList())// just from shop
+		iinfo->SetState(SBuyItemInfo::e_own);
+	}
+	else
 	{
-		cell_itm					= iinfo->m_cell_item->OwnerList()->RemoveItem(iinfo->m_cell_item, false );
-		b_alone						= false;
-	}else //new created
-	{
-		cell_itm					= iinfo->m_cell_item;
-		b_alone						= true;
+		iinfo->SetState(SBuyItemInfo::e_bought);
 	}
 
-	R_ASSERT(cell_itm->OwnerList()==nullptr);
-
-	cell_itm->SetTextureColor			(m_item_color_normal);
-	bool b_addon					= TryToAttachItemAsAddon(iinfo, itm_parent);
-	if(!b_addon)
+	CUICellItem* cell_itm = nullptr;
+	if (iinfo->m_cell_item->OwnerList())// just from shop
 	{
-		CUIDragDropListEx*_new_owner	= nullptr;
-		_new_owner						= GetMatchedListForItem(buy_item_name);
-		
-		R_ASSERT2						(!_new_owner->IsOwner(cell_itm), buy_item_name.c_str());
-
-		_new_owner->SetItem				(cell_itm);
-		cell_itm->SetCustomDraw			(nullptr);
-		cell_itm->SetAccelerator		(0);
-
-		UpdateCorrespondingItemsForList	(_new_owner);
-
-	}else{
-		DestroyItem					(iinfo);
+		cell_itm = iinfo->m_cell_item->OwnerList()->RemoveItem(iinfo->m_cell_item, false);
+	}
+	else
+	{
+		cell_itm = iinfo->m_cell_item;
 	}
 
-	RenewShopItem					(buy_item_name, true);
+	R_ASSERT(cell_itm->OwnerList() == nullptr);
 
-	if( (buy_flags&bf_normal) && _item_cost!=0)
+	cell_itm->SetTextureColor(m_item_color_normal);
+	bool b_addon = TryToAttachItemAsAddon(iinfo, itm_parent);
+	if (!b_addon)
 	{
-		int cost					= -(int)_item_cost;
-		SetMoneyChangeString		(cost);
+		CUIDragDropListEx* _new_owner = nullptr;
+		_new_owner = GetMatchedListForItem(buy_item_name);
+
+		R_ASSERT2(!_new_owner->IsOwner(cell_itm), buy_item_name.c_str());
+
+		_new_owner->SetItem(cell_itm);
+		cell_itm->SetCustomDraw(nullptr);
+		cell_itm->SetAccelerator(0);
+
+		UpdateCorrespondingItemsForList(_new_owner);
+
+	}
+	else
+	{
+		DestroyItem(iinfo);
+	}
+
+	RenewShopItem(buy_item_name, true);
+
+	if ((buy_flags & bf_normal) && _item_cost != 0)
+	{
+		int cost = -(int)_item_cost;
+		SetMoneyChangeString(cost);
 	}
 	return						true;
 }
+
 #include "../../xrEngine/string_table.h"
 bool CUIMpTradeWnd::CheckBuyPossibility(const shared_str& sect_name, u32 buy_flags, bool b_silent)
 {

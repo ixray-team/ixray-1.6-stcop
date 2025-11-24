@@ -5,11 +5,10 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Space restriction bridge inline functions
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "level_graph.h"
 #include "ai_space.h"
+#include "space_restriction_base.h"
 
 IC	CSpaceRestrictionBridge::CSpaceRestrictionBridge		(CSpaceRestrictionBase *object)
 {

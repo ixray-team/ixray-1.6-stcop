@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIChangeWeather.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
