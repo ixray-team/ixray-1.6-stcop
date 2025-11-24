@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "flesh.h"
 #include "flesh_state_manager.h"
 

@@ -137,7 +137,7 @@ public:
     int		SetGoal( const Matrix G, int limits_on );
 	float	Length( ) const { return solver.Length(); } 
 
-    int SetAimGoal(const float goal[3], const float axis[3], float flex_angle)
+    void SetAimGoal(const float goal[3], const float axis[3], float flex_angle)
     {
 		solver.SetAimGoal(goal, axis, flex_angle);
     }

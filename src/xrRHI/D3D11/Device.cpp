@@ -40,7 +40,6 @@ void InternalDevice11::SetTextureFactory(IRHITextureFactory* factory)
 		delete TextureFactory;
 	}
 	TextureFactory = static_cast<DX11TextureFactory*>(factory);
-	TextureFactory = TextureFactory;
 }
 
 bool InternalDevice11::UpdateBuffersD3D11()
@@ -311,7 +310,6 @@ bool InternalDevice11::CreateD3D11()
 	if (!TextureFactory)
 	{
 		TextureFactory = new DX11TextureFactory(DX11Device, HWRenderContext);
-		TextureFactory = TextureFactory;
 	}
 
 	return true;

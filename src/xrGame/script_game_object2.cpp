@@ -679,7 +679,7 @@ void CScriptGameObject::set_visual_name(LPCSTR visual, bool bForce)
 		stalker->PPhysicsShell() = tmp_shell;
 		tmp_shell = nullptr;
 
-		if (IKinematicsAnimated* V = stalker->Visual()->dcast_PKinematicsAnimated())
+		if (stalker->Visual()->dcast_PKinematicsAnimated() != nullptr)
 		{
 			if (!stalker->already_dead())
 			{

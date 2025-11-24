@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../Level.h"
 #include "../GamePersistent.h"
 #include "../game_sv_single.h"

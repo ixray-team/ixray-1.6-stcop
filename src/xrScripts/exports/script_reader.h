@@ -10,4 +10,4 @@
 
 #include "../xrScripts/script_export_space.h"
 
-typedef class_exporter_lib<IReader> SCRIPTS_API CScriptReader;
+typedef class_exporter_lib<IReader> CScriptReader;

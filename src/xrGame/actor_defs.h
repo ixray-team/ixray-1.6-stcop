@@ -1,8 +1,6 @@
-#include "PHSynchronize.h"
-#include "xrserver_space.h"
-
 #pragma once
-
+#include "PHSynchronize.h"
+#include "xrServer_Space.h"
 
 #define ACTOR_HEIGHT			1.75f
 #define ACTOR_LOOKOUT_SPEED		2.f
