@@ -5,7 +5,7 @@
 //	Description : UI Secondary Task Wnd class impl
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UISecondTaskWnd.h"
 
 #include "../../xrUI/xrUIXmlParser.h"
@@ -133,7 +133,6 @@ void UITaskListWnd::UpdateList()
 
 	m_list->Clear();
 	
-	u32 count_for_check = 0;
 	vGameTasks& tasks = Level().GameTaskManager()->GetGameTasks();
 	vGameTasks::iterator itb = tasks.begin();
 	vGameTasks::iterator ite = tasks.end();
@@ -149,10 +148,9 @@ void UITaskListWnd::UpdateList()
 			if ( item->init_task( task, this ) )
 			{
 				m_list->AddWindow( item, true );
-				++count_for_check;
 			}
 		}
-	}// for
+	}
 	m_list->SetScrollPos(prev_scroll_pos);
 }
 

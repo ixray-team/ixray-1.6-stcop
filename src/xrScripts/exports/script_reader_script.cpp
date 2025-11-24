@@ -44,9 +44,10 @@ static luabind::internal_string r_file_as_string(const char* path)
 	std::memcpy(result.data(), reader->pointer(), sizeof(char) * reader->length());
 	FS.r_close(reader);
 
-	return std::move(result);
+	return result;
 }
 
+#if 0
 static void w_file_from_string(const char* path, const char* buffer)
 {
 	auto fileIter = FS.exist(path);
@@ -63,8 +64,10 @@ static void w_file_from_string(const char* path, const char* buffer)
 	writer->w(buffer, xr_strlen(buffer));
 	FS.w_close(writer);
 }
+#endif
 
 #pragma optimize("s",on)
+template<>
 void CScriptReader::script_register(lua_State *L)
 {
 	module(L)

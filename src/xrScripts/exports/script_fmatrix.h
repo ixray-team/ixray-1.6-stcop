@@ -9,4 +9,4 @@
 #pragma once
 #include "../xrScripts/script_export_space.h"
 
-typedef class_exporter_lib<Fmatrix> SCRIPTS_API CScriptFmatrix;
+typedef class_exporter_lib<Fmatrix> CScriptFmatrix;

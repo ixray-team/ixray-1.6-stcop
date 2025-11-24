@@ -2,8 +2,6 @@
 #include "AsureXML.h"
 #include <magic_enum/magic_enum.hpp>
 
-static xr_string_map<xr_string, FS_FileSet> HashDataAddons;
-
 CXMLOverride::EOverrideMode CXMLOverride::GetOverrideMode(tinyxml2::XMLElement* Element) const
 {
 	if (Element->Attribute("override"))
@@ -202,6 +200,8 @@ void CXMLOverride::GenerateNewDoc(tinyxml2::XMLDocument& Original, tinyxml2::XML
 
 FS_FileSet CXMLOverride::GetModifFiles(const char* Path, const char* File)
 {
+	static xr_string_map<xr_string, FS_FileSet> HashDataAddons;
+
 	xr_path OrigXML = File;
 	xr_string ValidFileName = OrigXML.xfilename();
 	ValidFileName = ValidFileName.substr(0, ValidFileName.length() - OrigXML.extension().generic_string().length());

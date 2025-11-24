@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pseudo_gigant.h"
 #include "pseudo_gigant_step_effector.h"
 #include "../../../Actor.h"
@@ -409,9 +409,8 @@ void CPseudoGigant::on_threaten_execute()
 				CGameObject::u_EventGen(tmp_packet, GE_PSEUDO_GIGANT_KICK, pObj->ID());
 				Level().Server->SendTo(client->ID, tmp_packet, net_flags(TRUE, TRUE));
 
-				if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0) return;
-
-				Fvector pos = pObj->Position();
+				if ((pA->GetMovementState(eReal) & ACTOR_DEFS::mcJump) != 0)
+					return;
 
 				// check distance to enemy
 				float dist = pA->Position().distance_to(pObj->Position());
