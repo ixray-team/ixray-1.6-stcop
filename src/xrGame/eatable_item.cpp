@@ -202,7 +202,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 	if (!use_animator || use_animator && !actor)
 	{
 		// If uses 255, then skip the decrement for infinite usages
-		if (m_iRemainingUses != (-1))
+		if (m_iRemainingUses != u8(-1))
 		{
 			if (m_iRemainingUses > 0)
 			{

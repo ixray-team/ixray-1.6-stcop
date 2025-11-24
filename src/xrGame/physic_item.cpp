@@ -9,7 +9,7 @@
 #include "StdAfx.h"
 #include "physic_item.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "xrserver_objects.h"
+#include "xrServer_Objects.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../Include/xrRender/Kinematics.h"

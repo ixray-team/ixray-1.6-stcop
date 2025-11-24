@@ -1143,7 +1143,7 @@ void CInifile::LTXLoad(IReader* F, LPCSTR path, xr_string_map<xr_string, Sect>& 
 			ParentSet.push_back(LTXHelpStr2);
 		}
 
-		return std::move(ParentSet);
+		return ParentSet;
 	};
 
 	const auto loadFile = [&](const char* _fn, const char* inc_path, const char* name)

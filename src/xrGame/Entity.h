@@ -5,14 +5,13 @@
 #include "damage_manager.h"
 #include "EntityCondition.h"
 // refs
-class	ENGINE_API CCameraBase;
-class	ENGINE_API C3DSound;
-class	ENGINE_API CMotionDef;
-class	ENGINE_API IKinematics;
-class	ENGINE_API CBoneInstance;
-class	CWeaponList;
-class   CPHMovementControl;
-class	CHudItem;
+class ENGINE_API CCameraBase;
+class ENGINE_API CMotionDef;
+class IKinematics;
+class CBoneInstance;
+class CWeaponList;
+class CPHMovementControl;
+class CHudItem;
 class CActor;
 class CAI_Stalker;
 class CEntityAlive;

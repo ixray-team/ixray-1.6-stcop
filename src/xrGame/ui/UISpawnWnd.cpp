@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UISpawnWnd.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../Level.h"

@@ -58,7 +58,6 @@ static void InvalidateQueries()
                 auto& event = state.events[i];
 
                 D3D11_QUERY_DESC desc = { D3D11_QUERY_TIMESTAMP_DISJOINT };
-                ID3D11Query* query = nullptr;
 
                 R_CHK(DX11Device->CreateQuery(&desc, event.disjoint.GetAddressOf()));
                 desc.Query = D3D11_QUERY_TIMESTAMP;
