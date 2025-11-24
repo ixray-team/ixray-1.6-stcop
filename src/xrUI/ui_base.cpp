@@ -327,8 +327,10 @@ void ui_core::RenderUIDebugger()
 
 		Fvector2 Size = Selected->GetWndSize();
 
-		AbsPos.x /= get_current_kx();
-		Size.x /= get_current_kx();
+		AbsPos.x	*= get_current_zx();
+		Size.x		*= get_current_zx();
+		AbsPos.y	*= get_current_zy();
+		Size.y		*= get_current_zy();
 
 		ImDrawList* Draw = ImGui::GetForegroundDrawList();
 
@@ -412,7 +414,18 @@ float ui_core::get_current_kx()
 	float res = (h/w)/(UI_BASE_HEIGHT/UI_BASE_WIDTH);
 	return res;
 }
-
+float ui_core::get_current_zx()
+{
+	float w = float(Device.TargetWidth);
+	float res = w / UI_BASE_WIDTH;
+	return res;
+}
+float ui_core::get_current_zy()
+{
+	float h = float(Device.TargetHeight);
+	float res = h / UI_BASE_HEIGHT;
+	return res;
+}
 shared_str	ui_core::get_xml_name(LPCSTR fn)
 {
 	string_path				str;
