@@ -5,7 +5,7 @@
 //	Description : UI war state (PDA) window class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "UIWarState.h"
 #include "../../xrUI/Widgets/UIStatic.h"

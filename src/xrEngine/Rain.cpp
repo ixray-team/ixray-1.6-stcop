@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#pragma once
 
 #include "Rain.h"
 #include "IGame_Persistent.h"
@@ -11,8 +10,8 @@
 #include "../xrCore/Collision/xr_area.h"
 #include "xr_object.h"
 
-ENGINE_API extern BOOL bIsRaindropCollision = false;
-ENGINE_API extern BOOL bIsSndOnRoof = false;
+ENGINE_API BOOL bIsRaindropCollision = false;
+ENGINE_API BOOL bIsSndOnRoof = false;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////

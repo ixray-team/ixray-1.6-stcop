@@ -6,7 +6,7 @@
 //	Description : Fire and enemy parameters for monster "Stalker"
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "ai_stalker.h"
 #include "ai_stalker_impl.h"
@@ -81,18 +81,25 @@ float CAI_Stalker::GetWeaponAccuracy() const
 	//влияние ранга на меткость
 	base				*= m_fRankDisperison;
 
-	if (!movement().path_completed()) {
+	if (!movement().path_completed())
+	{
 		if (movement().movement_type() == eMovementTypeWalk)
+		{
 			if (movement().body_state() == eBodyStateStand)
-				return		(base*m_disp_walk_stand);
+				return		(base * m_disp_walk_stand);
 			else
-				return		(base*m_disp_walk_crouch);
+				return		(base * m_disp_walk_crouch);
+		}
 		else
+		{
 			if (movement().movement_type() == eMovementTypeRun)
+			{
 				if (movement().body_state() == eBodyStateStand)
-					return	(base*m_disp_run_stand);
+					return	(base * m_disp_run_stand);
 				else
-					return	(base*m_disp_run_crouch);
+					return	(base * m_disp_run_crouch);
+			}
+		}
 	}
 	
 	if (movement().body_state() == eBodyStateStand)

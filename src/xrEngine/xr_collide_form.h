@@ -6,7 +6,7 @@
 
 // refs
 class ENGINE_API	CObject;
-class ENGINE_API	CInifile;
+class XRCORE_API	CInifile;
 
 // t-defs
 const u32	clGET_TRIS			= (1<<0);

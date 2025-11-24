@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIPdaSpot.h"
 #include <dinput.h>
 #include "Level.h"

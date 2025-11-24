@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UICellItem.h"
 #include "../../xrUI/UICursor.h"
 #include "../inventory_item.h"

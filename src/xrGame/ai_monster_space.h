@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "xrserver_space.h"
+#include "xrServer_Space.h"
 
 namespace MonsterSpace {
 	enum EMentalState {

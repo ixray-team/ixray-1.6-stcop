@@ -5,7 +5,7 @@
 //	Description : Smooth progress bar for loading screen implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UILoadingScreenProgress.h"
 
 #include "UIStatic.h"

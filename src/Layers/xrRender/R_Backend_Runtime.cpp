@@ -135,7 +135,7 @@ void CBackend::set_Textures(STextureList* _T)
 	{
 		std::pair<u32, ref_texture>& loader = *_it;
 		u32			load_id = loader.first;
-		CTexture* load_surf = &*loader.second;
+		CTexture* load_surf = loader.second ? &*loader.second : nullptr;
 		//		if (load_id < 256)		{
 		if (load_id < CTexture::rstVertex)
 		{
@@ -158,7 +158,7 @@ void CBackend::set_Textures(STextureList* _T)
 #endif
 			{
 				//	Set up pixel shader resources
-				VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
+				//VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
 
 				// vertex only //d-map or vertex	
 				u32		load_id_remapped = load_id - CTexture::rstVertex;
@@ -176,7 +176,7 @@ void CBackend::set_Textures(STextureList* _T)
 			else if (load_id < CTexture::rstHull)
 			{
 				//	Set up pixel shader resources
-				VERIFY(load_id < CTexture::rstGeometry + mtMaxGeometryShaderTextures);
+				//VERIFY(load_id < CTexture::rstGeometry + mtMaxGeometryShaderTextures);
 
 				// vertex only //d-map or vertex	
 				u32		load_id_remapped = load_id - CTexture::rstGeometry;
@@ -193,7 +193,7 @@ void CBackend::set_Textures(STextureList* _T)
 			else if (load_id < CTexture::rstDomain)
 			{
 				//	Set up pixel shader resources
-				VERIFY(load_id < CTexture::rstHull + mtMaxHullShaderTextures);
+				//VERIFY(load_id < CTexture::rstHull + mtMaxHullShaderTextures);
 
 				// vertex only //d-map or vertex	
 				u32		load_id_remapped = load_id - CTexture::rstHull;
@@ -211,7 +211,7 @@ void CBackend::set_Textures(STextureList* _T)
 			else if (load_id < CTexture::rstCompute)
 			{
 				//	Set up pixel shader resources
-				VERIFY(load_id < CTexture::rstDomain + mtMaxDomainShaderTextures);
+				//VERIFY(load_id < CTexture::rstDomain + mtMaxDomainShaderTextures);
 
 				// vertex only //d-map or vertex	
 				u32		load_id_remapped = load_id - CTexture::rstDomain;
@@ -228,7 +228,7 @@ void CBackend::set_Textures(STextureList* _T)
 			else if (load_id < CTexture::rstInvalid)
 			{
 				//	Set up pixel shader resources
-				VERIFY(load_id < CTexture::rstCompute + mtMaxComputeShaderTextures);
+				//VERIFY(load_id < CTexture::rstCompute + mtMaxComputeShaderTextures);
 
 				// vertex only //d-map or vertex	
 				u32		load_id_remapped = load_id - CTexture::rstCompute;

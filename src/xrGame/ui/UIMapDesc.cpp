@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "UIMapDesc.h"
 #include "../../xrUI/Widgets/UIStatic.h"

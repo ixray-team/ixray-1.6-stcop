@@ -7,7 +7,7 @@
 //	Description : Element for step-by-step value adjustment using arrows or direct clicks
 ////////////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UIArrowStepper.h"
 #include "UI3tButton.h"
@@ -77,9 +77,6 @@ void CUIArrowStepper::InitArrowStepper(Fvector2 pos, Fvector2 size)
 	LPCSTR nodevalue_track			= xml_doc.Read("track_texture_name", 0, "ui_inGame2_opt_slider_bar");
 	LPCSTR left_btn_texture_name	= xml_doc.Read("left_btn_texture_name", 0, "ui_date_bt_left");
 	LPCSTR right_btn_texture_name	= xml_doc.Read("right_btn_texture_name", 0, "ui_date_bt_right");
-
-	float							item_height;
-	float							item_width;
 
 	Fvector2 TrySize				= size;
 	float ib_pos					= xml_doc.ReadFlt("ib_pos", 0, 30.0f);

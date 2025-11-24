@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UISpinText.h"
 #include "UILines.h"
 #include "../../xrEngine/string_table.h"

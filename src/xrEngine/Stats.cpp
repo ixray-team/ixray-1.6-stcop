@@ -163,17 +163,7 @@ void CStats::Show()
 		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
 		F.OutNext	("TPS:         %2.2f M",	fTPS);
 		m_pRender->OutData1(F);
-		//F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
-		//F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
-		//F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
-#ifdef _DEBUG
-		F.OutSkip	();
-		F.OutNext	("mapped:      %d",			g_file_mapped_memory);
-		F.OutSkip	();
-		m_pRender->OutData2(F);
-#endif
 		m_pRender->OutData3(F);
-		//F.OutNext	("xforms:      %d",			RCache.stat.xforms);
 		F.OutSkip	();
 
 #define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))

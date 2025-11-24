@@ -189,7 +189,7 @@ void SDL_Application()
 	config.FontDataOwnedByAtlas = false;
 
 	gCompilerMode.CompilerIconsFont = io.Fonts->AddFontFromMemoryTTF(IconsFont, sizeof(IconsFont), 16.f, &config, io.Fonts->GetGlyphRangesDefault());
-	gCompilerMode.ThreadsPerWork = CPU::ID.n_threads - 1;
+	gCompilerMode.ThreadsPerWork = CPU::ID().n_threads - 1;
 
 	bool done = false;
 

@@ -1187,7 +1187,7 @@ void game_sv_CaptureTheArtefact::LoadArtefactRPoints()
 				if (!(GameType & eGameIDCaptureTheArtefact))
 					continue;
 				
-				VERIFY2( ((team >= 0) && (team < 4)) ||
+				VERIFY2( ((team >= 0) && (team <= ETeam::endOffset)) ||
 					(type != rptActorSpawn), 
 					"Problem with team indexes. In Editor green team id = 1, blue team id = 2, but in game - 0, 1.");
 				

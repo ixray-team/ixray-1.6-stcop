@@ -17,7 +17,6 @@ void IGame_ObjectPool::prefetch()
 {
 	R_ASSERT(m_PrefetchObjects.empty());
 
-	int	p_count = 0;
 	string256 section;
 
 	// prefetch objects
@@ -27,7 +26,6 @@ void IGame_ObjectPool::prefetch()
 	{
 		const CInifile::Item& item = *I;
 		CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
-		p_count++;
 		CObject* pObject = (CObject*)NEW_INSTANCE(CLS);
 		pObject->Load(item.first.c_str());
 		VERIFY2(pObject->cNameSect().c_str(), item.first.c_str());
