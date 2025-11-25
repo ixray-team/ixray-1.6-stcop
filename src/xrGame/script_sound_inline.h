@@ -88,6 +88,11 @@ IC	void CScriptSound::SetPosition			(const Fvector &position)
 	m_sound.set_position(position);
 }
 
+IC	void CScriptSound::SetPanning			(double left, double right)
+{
+	m_sound.set_panning(left, right);
+}
+
 IC	void CScriptSound::SetFrequency			(float frequency)
 {
 	m_sound.set_frequency(frequency);
