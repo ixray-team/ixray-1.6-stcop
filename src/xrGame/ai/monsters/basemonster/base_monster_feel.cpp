@@ -148,7 +148,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 				need_kick_animator = true;
 			}
 
-			if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+			if (need_kick_animator && !Actor()->HudAnimator()->IsAnyAnimatorActive())
 			{
 				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
 				{
@@ -166,14 +166,14 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 				{
 					if (front_kick_animator.size() > 0)
 					{
-						Actor()->HudAnimator()->StartAnimator(front_kick_animator);
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
 					}
 				}
 				else
 				{
 					if (back_kick_animator.size() > 0)
 					{
-						Actor()->HudAnimator()->StartAnimator(back_kick_animator);
+						Actor()->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
 					}
 				}
 			}

@@ -2337,7 +2337,7 @@ void CScriptGameObject::StartActorAnimator(LPCSTR section)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimator() != nullptr)
 		{
 			pActor->StartAnimator(section);
 		}
@@ -2352,9 +2352,9 @@ void CScriptGameObject::StopActorAnimator()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimator() != nullptr)
 		{
-			pActor->HudAnimator()->StopAnimator();
+			pActor->HudAnimator()->ItemAnimator()->StopAnimator();
 		}
 	}
 	else
@@ -2367,7 +2367,7 @@ LPCSTR CScriptGameObject::GetActorAnimatorSection()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() ? *pActor->HudAnimator()->GetSection() : "null";
+		return pActor->HudAnimator() != nullptr ? *pActor->HudAnimator()->ItemAnimator()->GetSection() : "null";
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorAnimatorSection!");
@@ -2378,7 +2378,7 @@ bool CScriptGameObject::IsAnimatorActive()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() && pActor->HudAnimator()->IsActive();
+		return pActor->HudAnimator()->ItemAnimator() != nullptr && pActor->HudAnimator()->ItemAnimator()->IsActive();
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member IsAnimatorActive!");
@@ -2389,7 +2389,7 @@ u8 CScriptGameObject::GetActorAnimatorRestoredSlot()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() ? pActor->HudAnimator()->GetSlotToRestore() : 0;
+		return pActor->HudAnimator() ? pActor->HudAnimator()->ItemAnimator()->GetSlotToRestore() : 0;
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorAnimatorRestoredSlot!");
@@ -2400,7 +2400,7 @@ bool CScriptGameObject::GetAnimatorForceHideItems()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() && pActor->HudAnimator()->IsForceHideItems();
+		return pActor->HudAnimator() != nullptr && pActor->HudAnimator()->IsForceHideItems();
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetAnimatorForceHideItems!");
@@ -2411,7 +2411,7 @@ void CScriptGameObject::SetAnimatorForceHideItems(bool status)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimator() != nullptr)
 		{
 			pActor->HudAnimator()->SetForceHideItems(status);
 		}
