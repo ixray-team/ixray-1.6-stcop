@@ -300,13 +300,13 @@ void CSnork::HitEntityInJump(const CEntity *pEntity)
 			need_kick_animator = true;
 		}
 
-		if (need_kick_animator && !Actor()->HudAnimator()->IsActive())
+		if (need_kick_animator && !Actor()->HudAnimator()->IsAnyAnimatorActive())
 		{
 			Actor()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 			const shared_str& front_kick_animator = Actor()->m_sFrontKickAnimator;
 			if (front_kick_animator.size() > 0)
 			{
-				Actor()->HudAnimator()->StartAnimator(front_kick_animator);
+				Actor()->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
 			}
 		}
 	}

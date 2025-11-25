@@ -408,7 +408,7 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 	if (g_pGameLevel)
 	{
 		CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
-		if (actor && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		if (actor && actor->HudAnimator()->ItemAnimator() && actor->HudAnimator()->IsAnyAnimatorActive())
 		{
 			return;
 		}
