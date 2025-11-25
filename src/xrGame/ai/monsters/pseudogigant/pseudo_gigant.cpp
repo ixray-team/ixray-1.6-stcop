@@ -350,7 +350,7 @@ void CPseudoGigant::on_threaten_execute()
 				need_kick_animator = true;
 			}
 
-			if (need_kick_animator && !pA->HudAnimator()->IsActive())
+			if (need_kick_animator && !pA->HudAnimator()->IsAnyAnimatorActive())
 			{
 				auto GetAngleCos = [&](const Fvector& v1, const Fvector& v2)
 				{
@@ -369,14 +369,14 @@ void CPseudoGigant::on_threaten_execute()
 				{
 					if (front_kick_animator.size() > 0)
 					{
-						pA->HudAnimator()->StartAnimator(front_kick_animator);
+						pA->HudAnimator()->ItemAnimator()->StartAnimator(front_kick_animator);
 					}
 				}
 				else
 				{
 					if (back_kick_animator.size() > 0)
 					{
-						pA->HudAnimator()->StartAnimator(back_kick_animator);
+						pA->HudAnimator()->ItemAnimator()->StartAnimator(back_kick_animator);
 					}
 				}
 			}

@@ -189,7 +189,7 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 		if (HudAnimator())
 		{
-			HudAnimator()->StartAnimator(animator_section);
+			HudAnimator()->ItemAnimator()->StartAnimator(animator_section);
 		}
 	}break;
 	case GEG_PLAYER_ITEM2SLOT:
