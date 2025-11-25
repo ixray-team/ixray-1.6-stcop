@@ -28,6 +28,7 @@ public:
 	sound_event*						Handler;
 
 	xr_string_map<xr_string, u32>		SoundDevices;
+
 protected:
 	// Collider
 	CDB::MODEL*							geom_SOM;
