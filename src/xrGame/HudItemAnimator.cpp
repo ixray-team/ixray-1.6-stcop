@@ -52,12 +52,30 @@ void CHudItemAnimator::Update()
 	if (m_bNeedActivated)
 	{
 		bool wpn_hide = !g_player_hud->attached_item(0) && !m_actor->inventory().ActiveItem() && !m_actor->inventory().GetNextActiveSlot() && !m_actor->inventory().GetActiveSlot();
-		if (wpn_hide && !g_player_hud->attached_item(1))
+		if (wpn_hide && g_player_hud->GetAnimator() == nullptr && !g_player_hud->attached_item(1))
 		{
 			PlayMotion();
 		}
 		else
 		{
+			if (CBackpackAnimator* backpack_animator = m_actor->HudAnimator()->BackpackAnimator())
+			{
+				if (backpack_animator->IsActive() && backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+				{
+					if (m_AnimatorForceHideItems)
+					{
+						backpack_animator->StopAnimator();
+					}
+					else
+					{
+						backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+					}
+
+					m_iRestoreSlot = backpack_animator->GetSlotToRestore();
+					m_bRestoreDetector = backpack_animator->NeedRestoreDetector();
+				}
+			}
+
 			CHudItem* active_item = m_actor->inventory().ActiveItem() ? m_actor->inventory().ActiveItem()->cast_hud_item() : nullptr;
 			if (active_item != nullptr)
 			{
@@ -402,6 +420,50 @@ void CHudItemAnimator::CallStartCallback()
 		else
 		{
 			Msg("Error to call start script callback [%s] in animator [%s]", *m_sLuaStartCallback, *m_section);
+		}
+	}
+}
+
+void CBackpackAnimator::OnAnimationEnd(u32 state)
+{
+	switch (state)
+	{
+		case eShowing:
+		{
+			if (auto ui = CurrentGameUI())
+			{
+				ui->ShowActorMenu();
+			}
+			SetState(eIdle);
+		}break;
+		default:
+		{
+			CHudStateAnimator::OnAnimationEnd(state);
+			break;
+		}
+	};
+}
+
+void CBackpackAnimator::SwitchAnimator()
+{
+	if (GetState() == eIdle)
+	{
+		SetState(eHiding);
+		m_actor->set_pda_disabled(false);
+
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideActorMenu();
+		}
+	}
+	else if (!m_bNeedActivated && GetState() == eHidden && g_player_hud->GetAnimator() == nullptr)
+	{
+		m_bNeedActivated = true;
+		m_actor->set_pda_disabled(true);
+
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideShownDialogs();
 		}
 	}
 }
