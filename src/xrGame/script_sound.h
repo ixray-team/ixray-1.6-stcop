@@ -34,6 +34,7 @@ public:
 	IC		void				Stop				();
 	IC		void				StopDeffered		();
 	IC		void				SetPosition			(const Fvector &position);
+	IC		void				SetPanning			(double left, double right);
 	IC		void				SetFrequency		(float frequency);
 	IC		void				SetVolume			(float volume);
 	IC		CSound_params	    GetParams			();
