@@ -103,8 +103,10 @@ function PsyAntenna:generate_phantoms()
 end
 function PsyAntenna:update_sound()
 	if not self.sound_initialized then
-		self.sound_obj_left:play_at_pos		(db.actor, vector():set(-1, 0, 1), 0, sound_object.s2d + sound_object.looped)
-		self.sound_obj_right:play_at_pos	(db.actor, vector():set( 1, 0, 1), 0, sound_object.s2d + sound_object.looped)
+		self.sound_obj_left:play		(db.actor, 0, sound_object.s2d + sound_object.looped)
+		self.sound_obj_left:set_panning	(1, 0)
+		self.sound_obj_right:play		(db.actor, 0, sound_object.s2d + sound_object.looped)
+		self.sound_obj_right:set_panning(0, 1)
 
 		self.sound_initialized = true
 	end
