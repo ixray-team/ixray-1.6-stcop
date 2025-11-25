@@ -827,7 +827,7 @@ Snd_PhononSpatialProcess(float** data, u32 slot_idx)
 	Fvector& distances = slot.parameters[(u32)Mixer::ParameterId::DistanceRange];
 
 	if (slot.hrtf_slot == 0) {
-		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /* slot.flags& (u32)Mixer::Flags::NoOCC */);
+		DSP_SpatialProcess(data, slot.parameters[(u32)Mixer::ParameterId::DistanceRange], mixer.P, mixer.D, mixer.N, pos, false /*slot.flags& (u32)Mixer::Flags::NoOCC */);
 		return;
 	}
 
@@ -1612,7 +1612,7 @@ Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
 	mixer.cmd.emplace_back(sound_command{ 
 		.slot = slot, .id = sound_cmd_id::play, .param0 = flags, .param1 = (u64)sound, 
 		.param2 = *(u64*)&delay, .param3 = (u64)sound->_g_object(), 
-		.string_storage = sound->_p->fn_attached[0].c_str()
+		.string_storage = sound->_p->fn_attached[0]
 	});
 }
 
@@ -1691,7 +1691,7 @@ Mixer::SetVolume(u32 slot, double volume)
 		return;
 	}
 
-	volume = std::clamp(volume, 0.0, 10.0);	
+	volume = std::clamp(volume, 0.0, 1.0);	
 	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
 }
 
