@@ -543,7 +543,7 @@ void CInventory::Activate(u16 slot, bool bForce, bool ForceHide)
 
 	if (CActor* actor = m_pOwner->cast_actor())
 	{
-		if (actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		if (actor->HudAnimator() != nullptr && actor->HudAnimator()->IsAnyAnimatorActive())
 		{
 			if (CHudItem* hud_item = ActiveItem() ? ActiveItem()->cast_hud_item() : nullptr)
 			{

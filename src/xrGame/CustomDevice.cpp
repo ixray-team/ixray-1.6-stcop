@@ -249,7 +249,7 @@ void CCustomDevice::switch_device()
 {
 	CObject* control_entity = Level().CurrentControlEntity();
 	CActor* actor = control_entity != nullptr ? control_entity->cast_actor() : nullptr;
-	if (actor != nullptr && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+	if (actor != nullptr && actor->HudAnimator() != nullptr && actor->HudAnimator()->IsAnyAnimatorActive())
 	{
 		return;
 	}
@@ -612,7 +612,7 @@ void CCustomDevice::UpdateVisibility()
 	if (m_bNeedActivation)
 	{
 		CActor* actor = Level().CurrentControlEntity()->cast_actor();
-		if (actor && actor->HudAnimator() && actor->HudAnimator()->IsActive())
+		if (actor && actor->HudAnimator() != nullptr && actor->HudAnimator()->IsAnyAnimatorActive())
 		{
 			m_bNeedActivation = false;
 			return;
