@@ -115,7 +115,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
 				occ[0].set(V[T.verts[0]]);
 				occ[1].set(V[T.verts[1]]);
 				occ[2].set(V[T.verts[2]]);
-				occ_value = psSoundOcclusionScale;
+				occ_value = OcclusionMaterialCallback(R_->material);
 			}
 		}
 	}
