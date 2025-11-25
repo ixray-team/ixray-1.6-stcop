@@ -286,7 +286,7 @@ void  CBurer::StaminaHit()
 	if (kick_animator.size() > 0)
 	{
 		pActor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-		pActor->HudAnimator()->StartAnimator(kick_animator);
+		pActor->HudAnimator()->ItemAnimator()->StartAnimator(kick_animator);
 	}
 }
 
