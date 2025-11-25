@@ -1085,9 +1085,9 @@ void CActor::Die	(CObject* who)
 		m_DangerSnd.stop		();		
 	}
 
-	if (HudAnimator()->IsActive())
+	if (HudAnimator()->IsAnyAnimatorActive())
 	{
-		HudAnimator()->StopAnimator();
+		HudAnimator()->StopGetAnimator();
 	}
 
 	if	(IsGameTypeSingle())
@@ -1425,7 +1425,7 @@ void CActor::UpdateCL()
 
 	CCustomDevice* dev = GetDevice();
 
-	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
+	if (!g_player_hud->m_need_reload && !HudAnimator()->IsAnyAnimatorActive())
 	{
 	
 		if (item != nullptr || dev != nullptr)
