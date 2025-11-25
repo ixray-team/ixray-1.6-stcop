@@ -150,12 +150,12 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		PIItem knife_item = inventory().ItemFromSlot(KNIFE_SLOT);
 		if (m_sQuickKickAnimator.size() > 0 && knife_item != nullptr)
 		{
-			if (!HudAnimator()->IsActive())
+			if (!HudAnimator()->ItemAnimator()->IsActive())
 			{
 				if (knife_item != inventory().ActiveItem())
 				{
 					StartAnimator(m_sQuickKickAnimator);
-					HudAnimator()->SetLeftCallback({ this, &CActor::MakeKick });
+					HudAnimator()->ItemAnimator()->SetLeftCallback({ this, &CActor::MakeKick });
 				}
 				else
 				{
@@ -207,7 +207,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			CurrentGameUI()->UIMainIngameWnd->ShowQuickSlotsPanel();
 		}
 
-		if (HudAnimator() && HudAnimator()->IsActive())
+		if (HudAnimator() && HudAnimator()->ItemAnimator()->IsActive())
 		{
 			return;
 		}
@@ -592,7 +592,7 @@ void CActor::StartAnimator(const shared_str& section)
 {
 	if (IsGameTypeSingle())
 	{
-		HudAnimator()->StartAnimator(section);
+		HudAnimator()->ItemAnimator()->StartAnimator(section);
 	}
 	else
 	{
@@ -855,7 +855,7 @@ bool CActor::use_Holder(CHolderCustom* holder)
 
 void CActor::ActorUse()
 {
-	if (HudAnimator() && HudAnimator()->IsActive())
+	if (HudAnimator() && HudAnimator()->ItemAnimator()->IsActive())
 	{
 		return;
 	}
@@ -1172,10 +1172,10 @@ void CActor::SwitchNightVision()
 	{
 		if (m_sNVGAnimator.size() > 0)
 		{
-			if (HudAnimator() && !HudAnimator()->IsActive())
+			if (HudAnimator() && !HudAnimator()->ItemAnimator()->IsActive())
 			{
 				StartAnimator(m_sNVGAnimator);
-				HudAnimator()->SetLeftCallback({ GetNightVisionEffector(), &CNightVisionEffector::SwitchNightVision });
+				HudAnimator()->ItemAnimator()->SetLeftCallback({ GetNightVisionEffector(), &CNightVisionEffector::SwitchNightVision });
 			}
 		}
 		else
@@ -1270,10 +1270,10 @@ void CActor::SwitchTorch()
 
 		if (m_sHeadlampAnimator.size() > 0)
 		{
-			if (HudAnimator() && !HudAnimator()->IsActive())
+			if (HudAnimator() && !HudAnimator()->ItemAnimator()->IsActive())
 			{
 				StartAnimator(m_sHeadlampAnimator);
-				HudAnimator()->SetLeftCallback({ torch, &CTorch::Switch });
+				HudAnimator()->ItemAnimator()->SetLeftCallback({ torch, &CTorch::Switch });
 			}
 		}
 		else
@@ -1366,10 +1366,10 @@ void CActor::ClearMask()
 
 	if (m_sClearMaskAnimator.size() > 0)
 	{
-		if (HudAnimator() && !HudAnimator()->IsActive())
+		if (HudAnimator() && !HudAnimator()->ItemAnimator()->IsActive())
 		{
 			StartAnimator(m_sClearMaskAnimator);
-			HudAnimator()->SetLeftCallback({ this, &CActor::ClearMaskCB });
+			HudAnimator()->ItemAnimator()->SetLeftCallback({ this, &CActor::ClearMaskCB });
 		}
 	}
 }
