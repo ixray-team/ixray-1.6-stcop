@@ -53,3 +53,18 @@ private:
 	shared_str m_sLuaModifySect = "null";
 	shared_str m_sLuaPrecondFunc = "null";
 };
+
+class CBackpackAnimator final : public CHudStateAnimator
+{
+public:
+	CBackpackAnimator(CActor* parent, const shared_str& section) : CHudStateAnimator(parent, section) {}
+	virtual ~CBackpackAnimator() = default;
+
+	virtual void SwitchAnimator() override;
+
+	virtual CBackpackAnimator* cast_backpack_animator() override { return this; }
+	virtual CHudStateAnimator* cast_hud_state_animator() override { return this; }
+
+protected:
+	virtual void OnAnimationEnd(u32 state) override;
+};
