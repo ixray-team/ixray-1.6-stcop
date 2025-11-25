@@ -37,7 +37,7 @@ bool ScreenshotManager::SaveScreenshot(IRender_interface::ScreenshotMode Mode, L
 
 	// Create ScratchImage in BGRA8 format and copy rows
 	ScratchImage Img;
-	HRESULT Hr = Img.Initialize2D(DXGI_FORMAT_B8G8R8A8_UNORM, Width, Height, 1, 1);
+	HRESULT Hr = Img.Initialize2D((DXGI_FORMAT)Rtv->GetSurface()->GetFormat(), Width, Height, 1, 1);
 	if (FAILED(Hr))
 	{
 		return false;
