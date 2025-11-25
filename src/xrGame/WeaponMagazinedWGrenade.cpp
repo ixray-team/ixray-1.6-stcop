@@ -80,12 +80,12 @@ void CWeaponMagazinedWGrenade::LoadSounds(LPCSTR section)
 {
 	inherited::LoadSounds(section);
 
-	m_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
 
 	if (SoundExist(section, "snd_shoot_grenade_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, TRUE);
-		m_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
 	}
 
 	if (SoundExist(section, "snd_load_grenade"))
@@ -667,11 +667,11 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_shoot_grenade_actor))
 			{
-				m_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
+				m_layered_sounds.PlaySound("sndShotGActor", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
 			}
 			else
 			{
-				m_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
+				m_layered_sounds.PlaySound("sndShotG", get_LastFP2(), H_Root(), !!GetHUDmode(), false, true);
 			}
 
 			AddShotEffector();
@@ -965,10 +965,10 @@ void CWeaponMagazinedWGrenade::UpdateSounds()
 	Fvector P = get_LastFP();
 	if (Device.dwFrame % 3 == 0)
 	{
-		m_sounds.SetPosition("sndShotG", P);
+		m_layered_sounds.SetPosition("sndShotG", P);
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_shoot_grenade_actor))
 		{
-			m_sounds.SetPosition("sndShotGActor", P);
+			m_layered_sounds.SetPosition("sndShotGActor", P);
 		}
 	}
 	else if (Device.dwFrame % 3 == 1)
@@ -1112,11 +1112,11 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	result |= process_if_exists(section, "launch_speed", &CInifile::r_float, m_fLaunchSpeed, test);
 
 	result2 = process_if_exists_set(section, "snd_shoot_grenade", &CInifile::r_string, str, test);
-	if (result2 && !test) { m_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot); }
+	if (result2 && !test) { m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot); }
 	result |= result2;
 
 	result2 = process_if_exists_set(section, "snd_shoot_grenade_actor", &CInifile::r_string, str, test);
-	if (result2 && !test) { m_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot); }
+	if (result2 && !test) { m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot); }
 	result |= result2;
 
 	result2 = process_if_exists_set(section, "snd_reload_grenade", &CInifile::r_string, str, test);
