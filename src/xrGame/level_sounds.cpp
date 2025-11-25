@@ -118,15 +118,10 @@ void SMusicTrack::Play()
 		m_SourceStereo.play	(0, sm_Intro);
 	else
 	{
-#ifdef IXR_HYPESOUND
 		m_SourceLeft.play(0, sm_Intro);
-		//m_SourceLeft.set_panning(1.0f, 0.f);
+		m_SourceLeft.set_panning(1.0f, 0.f);
 		m_SourceRight.play(0, sm_Intro);
-		//m_SourceRight.set_panning(0.f, 1.0f);
-#else
-		m_SourceLeft.play_at_pos(nullptr, Fvector().set(-0.5f, 0.f, 0.3f), sm_Intro);
-		m_SourceRight.play_at_pos(nullptr, Fvector().set(+0.5f, 0.f, 0.3f), sm_Intro);
-#endif
+		m_SourceRight.set_panning(0.f, 1.0f);
 	}
 	SetVolume					(1.0f);
 }
