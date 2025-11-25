@@ -855,7 +855,7 @@ bool CActor::use_Holder(CHolderCustom* holder)
 
 void CActor::ActorUse()
 {
-	if (HudAnimator() && HudAnimator()->ItemAnimator()->IsActive())
+	if (HudAnimator() && HudAnimator()->IsAnyAnimatorActive())
 	{
 		return;
 	}
