@@ -311,6 +311,8 @@ void CGamePersistent::WeathersUpdate()
 					pos.z = _sin(angle);
 					pos.normalize().mul(ch.get_rnd_sound_dist()).add(Device.vCameraPosition);
 					pos.y += 10.f;
+					snd._p->g_type = ESoundTypes::SOUND_TYPE_WORLD_AMBIENT;
+
 					snd.play_at_pos(0, pos);
 
 					if (!snd.handle() || Core.ParamsData.test(ECoreParams::nosound))
