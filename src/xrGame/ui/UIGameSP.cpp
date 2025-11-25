@@ -123,12 +123,19 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	case kINVENTORY:
 		{
-			if ( !pActor->inventory_disabled() )
-				ShowActorMenu();
-
+			if (!pActor->inventory_disabled())
+			{
+				if (pActor->HudAnimator()->BackpackAnimator() != nullptr)
+				{
+					pActor->HudAnimator()->BackpackAnimator()->SwitchAnimator();
+				}
+				else
+				{
+					ShowActorMenu();
+				}
+			}
 			break;
 		}
-
 	case kSCORES:
         if (!pActor->pda_disabled())
         {

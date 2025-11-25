@@ -357,6 +357,15 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pO
 {
 	if (TopInputReceiver())		return;
 
+	CBackpackAnimator* backpack_animator = pActorInv->cast_actor()->HudAnimator()->BackpackAnimator();
+
+	if (backpack_animator != nullptr
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+	{
+		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+	}
+
 	m_ActorMenu->SetActor(pActorInv);
 	m_ActorMenu->SetPartner(pOtherOwner);
 
@@ -367,6 +376,15 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pO
 void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox) //Deadbody search
 {
 	if (TopInputReceiver())		return;
+
+	CBackpackAnimator* backpack_animator = pActorInv->cast_actor()->HudAnimator()->BackpackAnimator();
+
+	if (backpack_animator != nullptr
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+	{
+		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+	}
 
 	m_ActorMenu->SetActor(pActorInv);
 	m_ActorMenu->SetInvBox(pBox);
