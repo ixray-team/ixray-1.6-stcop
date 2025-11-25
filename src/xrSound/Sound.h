@@ -168,6 +168,7 @@ public:
 	IC void					play					( CObject* O, u32 flags=0, float delay=0.f);
 	IC void					play_at_pos				( CObject* O, const Fvector &pos ,	u32 flags=0, float delay=0.f);
 	IC void					play_no_feedback		( CObject* O, u32 flags=0, float delay=0.f, Fvector* pos=0, float* vol=0, float* freq=0, Fvector2* range=0);
+	IC void					set_panning				( double left, double right);
 
 	IC void					stop 					( );
 	IC void					stop_deffered			( );
@@ -309,6 +310,13 @@ IC void	ref_sound::destroy						( )														{	 		::Sound->destroy	(*this);	
 IC void	ref_sound::play							( CObject* O,						u32 flags, float d)	{	 		::Sound->play		(*this,O,flags,d);											}
 IC void	ref_sound::play_at_pos					( CObject* O, const Fvector &pos,	u32 flags, float d)	{	 		::Sound->play_at_pos(*this,O,pos,flags,d);										}
 IC void	ref_sound::play_no_feedback				( CObject* O, u32 flags, float d, Fvector* pos, float* vol, float* freq, Fvector2* range){	 ::Sound->play_no_feedback(*this,O,flags,d,pos,vol,freq,range);	}
+IC void	ref_sound::set_panning					( double left, double right )									
+{	
+	if (slot())
+	{
+		XRay::Sound::Mixer::SetPanning(slot(), left, right);
+	}
+}
 
 IC void	ref_sound::set_position(const Fvector& pos) 
 { 
