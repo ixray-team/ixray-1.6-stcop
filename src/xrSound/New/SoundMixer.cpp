@@ -1074,7 +1074,7 @@ Snd_MixerRenderCallback(float* buffer)
 				IPLAudioBuffer out_buf = { .numChannels = 1, .numSamples = SND_BLOCKSIZE, .data = &process_buffer[ch] };
 				IPLReflectionEffectParams params = {};
 				ConvertReverbSettings(&zone.settings, &params, SND_SAMPLERATE);
-				iplReflectionEffectApply(zone.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
+				iplReflectionEffectApply(zone.state.effect[ch], &params, &reverb_buf, &out_buf, nullptr);
 			}
 #endif
 			float reverb_gain = std::clamp(zone.settings.reverb, 0.0f, 1.0f) * 0.010f;
@@ -1942,7 +1942,7 @@ Mixer::ResetZones()
 #ifndef DISABLE_STEAM_AUDIO
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			if (zone.state.effect[ch] != nullptr) {
-				iplReflectionEffectRelease(&zone.effect[ch]);
+				iplReflectionEffectRelease(&zone.state.effect[ch]);
 			}
 		}
 #endif
