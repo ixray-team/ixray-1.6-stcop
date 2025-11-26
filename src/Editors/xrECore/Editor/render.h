@@ -209,6 +209,8 @@ public:
 	virtual void			add_SkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm) {};
 	virtual void			add_SkeletonWallmark(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size) {};
 
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) override { return nullptr;}
+
 	virtual void			add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) {}
 	// Render mode
 	virtual void			rmNear();
