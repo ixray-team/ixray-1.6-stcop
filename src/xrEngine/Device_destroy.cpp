@@ -33,6 +33,15 @@ void CRenderDevice::Destroy()
 	m_pRender->ValidateHW();
 
 	_Destroy					(FALSE);
+	
+	auto& hGameRef = Engine.External.hGame;
+	if (hGameRef)
+	{
+		using xrGameRenderPreDestroy = void();
+		xrGameRenderPreDestroy* pxrGameRenderPreDestroy = (xrGameRenderPreDestroy*)GetProcAddress(hGameRef, "xrGameRenderPreDestroy");
+		R_ASSERT(pxrGameRenderPreDestroy);
+		pxrGameRenderPreDestroy();
+	}
 
 	// real destroy
 	m_pRender->DestroyHW();

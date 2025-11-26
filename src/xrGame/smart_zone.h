@@ -11,7 +11,7 @@
 #include "space_restrictor.h"
 #include "../xrScripts/script_export_space.h"
 
-class CSmartZone final : 
+class CSmartZone : 
 	public CSpaceRestrictor
 {
 public:

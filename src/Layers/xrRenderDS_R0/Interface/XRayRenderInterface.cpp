@@ -129,6 +129,12 @@ void CDS0_RenderInterface::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* 
 {
 }
 
+StaticWallmarkHandle::WallmarkHandlePtr CDS0_RenderInterface::add_DynamicWallmark(const wm_shader& S, const Fvector& P,
+	float w, float h, float r, CDB::TRI* T, Fvector* V)
+{
+	return nullptr;
+}
+
 void CDS0_RenderInterface::clear_static_wallmarks()
 {
 }

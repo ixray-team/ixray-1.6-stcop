@@ -54,10 +54,10 @@ enum class EditorUI : u8
 class ENGINE_API CEngineAPI
 {
 private:
-	HMODULE hGame;
 	HMODULE hRender;
 
 public:
+	HMODULE hGame;
 	HMODULE hGameSpy;
 
 	Factory_Create* pCreate;

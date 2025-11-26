@@ -346,4 +346,12 @@ zoom_limp_speed			=	6.0
 
 
 ;Скорость изменения амплитуды раскачки при смене режима перемещения
-amplitude_delta			= 	0.01 
+amplitude_delta			= 	0.01
+
+[dynamic_wallmark]:space_restrictor
+GroupControlSection =
+$spawn      = "ai\dynamic_wallmark"
+$def_sphere = 1
+class = DYNA_WM
+
+shape_transp_color    = 135, 245, 66, 24

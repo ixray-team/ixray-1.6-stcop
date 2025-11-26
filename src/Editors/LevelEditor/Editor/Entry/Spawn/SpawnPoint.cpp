@@ -473,6 +473,49 @@ void CSpawnPoint::SSpawnData::OnAnimControlClick(ButtonValue* value, bool& bModi
 	}
 }
 
+void CSpawnPoint::SSpawnData::OnWallmarkUpdateClick(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	CSE_ALifeDynamicWallmark* DW = smart_cast<CSE_ALifeDynamicWallmark*>(m_Data);
+	VERIFY(DW);
+
+	if (!Wallmark)
+	{
+		EWallmarkWrapper::WMData data;
+		data.Shader = DW->shader;
+		data.Texture = DW->texture;
+		data.Pos = m_owner->GetPosition();
+		data.Dir = m_owner->_Transform().j;
+		data.Pos.add(data.Dir);
+		data.Dir.invert();
+		data.w = DW->w;
+		data.r = DW->r;
+		data.h = DW->h;
+		Wallmark = xr_make_shared<EWallmarkWrapper>(data);
+	} else
+	{
+		auto& data = Wallmark->GetData();
+		data.Shader = DW->shader;
+		data.Texture = DW->texture;
+		data.Pos = m_owner->GetPosition();
+		data.Dir = m_owner->_Transform().j;
+		data.Pos.add(data.Dir);
+		data.Dir.invert();
+		data.w = DW->w;
+		data.r = DW->r;
+		data.h = DW->h;
+	
+		Wallmark->Update();
+	}
+}
+
+void CSpawnPoint::SSpawnData::OnWallmarkDetachClick(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	if (Wallmark)
+	{
+		Wallmark->Detach();
+	}
+}
+
 void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	xrCriticalSectionGuard guard(mLuaEnter);
@@ -482,15 +525,22 @@ void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 	if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDeathmatch|eGameIDTeamDeathmatch|eGameIDArtefactHunt|eGameIDCaptureTheArtefact))
 		PHelper().CreateFlag8		(items, PrepareKey(pref,"MP respawn"), &m_flags, eSDTypeRespawn);
 
-   if(m_Visual)
-   {
-	ButtonValue* BV = PHelper().CreateButton	    (	items, 
+    if(m_Visual)
+    {
+		ButtonValue* BV = PHelper().CreateButton	    (	items, 
 									PrepareKey(pref,m_Data->name(),"Model\\AnimationControl"),
 									"|<<,Play,Pause,Stop,>>|",
 									0);
-   BV->OnBtnClickEvent.bind			(this,&CSpawnPoint::SSpawnData::OnAnimControlClick);
+		BV->OnBtnClickEvent.bind(this,&CSpawnPoint::SSpawnData::OnAnimControlClick);
+    }
 
-   }
+	if (CSE_ALifeDynamicWallmark* DW = smart_cast<CSE_ALifeDynamicWallmark*>(m_Data);DW)
+	{
+		auto Button = PHelper().CreateButton(items, PrepareKey(pref,m_Data->name(), "Update Wallmark"), "Update", 0);
+		Button->OnBtnClickEvent.bind(this, &CSpawnPoint::SSpawnData::OnWallmarkUpdateClick);
+		Button = PHelper().CreateButton(items, PrepareKey(pref, m_Data->name(), "Convert Wallmark to Static"), "Convert", 0);
+		Button->OnBtnClickEvent.bind(this, &CSpawnPoint::SSpawnData::OnWallmarkDetachClick);
+	}
 }
 
 void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F)

@@ -14,6 +14,7 @@ public:
 	virtual void Copy(IWallMarkArray &_in) = 0;
 
 	virtual void	AppendMark(LPCSTR s_textures) = 0;
+	virtual void	AppendMark(LPCSTR s_shader, LPCSTR s_textures) = 0;
 	virtual void	clear() = 0;
 	virtual bool	empty() = 0;
 	//	Igor: this function performs unobviouse small memory allocations/
