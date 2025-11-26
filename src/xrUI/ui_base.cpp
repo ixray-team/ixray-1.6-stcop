@@ -210,6 +210,10 @@ void ui_core::PopScissor()
 }
 
 #ifdef DEBUG_DRAW
+
+#define ArrowMoveStep 0.5f
+#define ArrowMove(arrow, znk, orin) if (ImGui::IsKeyPressed(arrow)) {Fvector2 NPosition = Selected->GetWndPos(); NPosition.orin znk= ArrowMoveStep; Selected->SetWndPos(NPosition);}
+
 void ui_core::RenderUIDebugger()
 {
 	static CUIWindow* Selected = nullptr;
@@ -344,16 +348,72 @@ void ui_core::RenderUIDebugger()
 
 		ImDrawList* Draw = ImGui::GetForegroundDrawList();
 
+		bool a = 
+			UIDebuggerMouseMove(Selected, 
+			(ImGui::GetIO().MousePos.x >= (AbsPos.x) && ImGui::GetIO().MousePos.x <= (AbsPos.x + Size.x) &&
+			ImGui::GetIO().MousePos.y >= (AbsPos.y) && ImGui::GetIO().MousePos.y <= (AbsPos.y + Size.y)));
+
+		ImU32 col = a ?
+			IM_COL32(255, 50, 50, 220) :
+			IM_COL32(50, 255, 500, 220);
+
+		ArrowMove(ImGuiKey_UpArrow		, -, y) else
+		ArrowMove(ImGuiKey_DownArrow	, +, y) else
+		ArrowMove(ImGuiKey_LeftArrow	, -, x) else
+		ArrowMove(ImGuiKey_RightArrow	, +, x) 
+
 		Draw->AddRect
 		(
 			ImVec2(AbsPos.x, AbsPos.y),
 			ImVec2(AbsPos.x + Size.x, AbsPos.y + Size.y),
-			IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f
+			col, 0.0f, 0, 2.0f
 		);
 	}
 
 	LastFrameWidgets.clear();
 }
+
+bool ui_core::UIDebuggerMouseMove(CUIWindow* Selected, bool inside)
+{
+	static bool lockDrag = false;
+
+	ImVec2 mouse_delta = {};
+	if ((ImGui::IsMouseDragging(ImGuiMouseButton_Left) && inside) || (lockDrag && !inside))
+	{
+		lockDrag = true;
+		mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left);
+
+		mouse_delta.x /= get_current_zx();
+		mouse_delta.y /= get_current_zy();
+
+
+		if ((inside || lockDrag) && (mouse_delta.x != 0.0f || mouse_delta.y != 0.0f))
+		{
+			Fvector2 Position = Selected->GetWndPos();
+
+			Position.x += mouse_delta.x;
+			Position.y += mouse_delta.y;
+
+			Selected->SetWndPos(Position);
+
+			ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+		}
+	}
+	else
+	{
+		lockDrag = false;
+	}
+#if 0
+	ImGui::Begin("dbg_test");
+	ImGui::Text("delta %f : %f", mouse_delta.x, mouse_delta.y);
+	ImGui::Text("lockdrg %d", lockDrag);
+	ImGui::Text("inside %d", inside);
+
+	ImGui::End();
+#endif
+	return (inside || lockDrag);
+}
+
 #endif
 
 ui_core::ui_core()
