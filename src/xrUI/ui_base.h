@@ -37,6 +37,7 @@ public:
 #ifdef DEBUG_DRAW
 	xr_hash_set<CUIWindow*> LastFrameWidgets;
 	void RenderUIDebugger();
+	bool UIDebuggerMouseMove(CUIWindow*, bool);
 #endif
 					ui_core							();
 					~ui_core						();
