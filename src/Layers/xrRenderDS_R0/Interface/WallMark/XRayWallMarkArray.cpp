@@ -12,6 +12,10 @@ void CDS0_WallMarkArray::AppendMark(LPCSTR s_textures)
 {
 }
 
+void CDS0_WallMarkArray::AppendMark(LPCSTR s_shader, LPCSTR s_textures)
+{
+}
+
 void CDS0_WallMarkArray::clear()
 {
 }
