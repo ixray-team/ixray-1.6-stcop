@@ -1,6 +1,7 @@
 #pragma once
 
 #define SPAWNPOINT_VERSION   			0x0018
+#include "Editor/Tools/Wallmark/ESceneWallmarkTools.h"
 
 // refs
 class CSE_Visual;
@@ -54,6 +55,7 @@ public:
         Flags8			m_flags;
         xr_vector<CLE_Visual*> m_VisualHelpers;
         IRenderVisual*  IdleParticle = nullptr;
+		xr_shared_ptr<EWallmarkWrapper> Wallmark = nullptr;
         CLE_Motion*		m_Motion;
         CSpawnPoint*	m_owner;
 
@@ -91,6 +93,8 @@ public:
 		void    		Render			(bool bSelected, const Fmatrix& parent,int priority, bool strictB2F);
 		void    		OnFrame			();
     	void 	OnAnimControlClick		(ButtonValue* value, bool& bModif, bool& bSafe);  
+		void	OnWallmarkUpdateClick	(ButtonValue* value, bool& bModif, bool& bSafe);
+		void	OnWallmarkDetachClick	(ButtonValue* value, bool& bModif, bool& bSafe);
         
 		virtual void get_bone_xform				(LPCSTR name, Fmatrix& xform);
         IC CSE_Abstract* GetEntity()const { return m_Data; }
