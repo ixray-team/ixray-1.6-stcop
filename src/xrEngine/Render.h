@@ -6,6 +6,7 @@
 #include "vis_common.h"
 //#include "IRenderDetailModel.h"
 
+#include "WallmarkHandle.h"
 #include "../xrCore/API/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
 class IUIShader;
@@ -267,6 +268,8 @@ public:
 	//	Prefer this function when possible
 	virtual void					add_StaticWallmark		(IWallMarkArray *pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V, bool UseCameraDirection = false) {};
 	virtual void					clear_static_wallmarks	() {};
+
+	virtual StaticWallmarkHandle::WallmarkHandlePtr add_DynamicWallmark		(const wm_shader& S, const Fvector& P, float w, float h, float r, CDB::TRI* T, Fvector* V) = 0;
 
 	//	Prefer this function when possible
 	virtual void					add_SkeletonWallmark	(const Fmatrix* xf, IKinematics* obj, IWallMarkArray *pArray, const Fvector& start, const Fvector& dir, float size) {};
