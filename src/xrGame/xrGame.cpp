@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "StdAfx.h"
+#include "DynamicWallmarkZone.h"
 #include "object_factory.h"
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
@@ -113,6 +114,11 @@ extern "C"
 #ifdef DEBUG
 		unit_test_stack_string();
 #endif
+	}
+	
+	DLL_API void __cdecl xrGameRenderPreDestroy()
+	{
+		CDynamicWallmarkRegistry::Instance().ClearWallmarks();
 	}
 
 	DLL_API DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
