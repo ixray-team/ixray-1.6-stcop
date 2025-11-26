@@ -628,7 +628,13 @@ script_binding          = bind_restrictor.bind
 shape_transp_color    = 0, 255, 0, 24
 shape_edge_color    = 32, 32, 32, 255
 
+[dynamic_wallmark]:space_restrictor
+GroupControlSection =
+$spawn      = "ai\dynamic_wallmark"
+$def_sphere = 1
+class = DYNA_WM
 
+shape_transp_color    = 135, 245, 66, 24
 
 [camp_zone]
 GroupControlSection = spawn_group_restrictor
