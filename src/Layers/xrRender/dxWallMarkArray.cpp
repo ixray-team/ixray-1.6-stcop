@@ -21,6 +21,13 @@ void dxWallMarkArray::AppendMark(LPCSTR s_textures)
 	m_CollideMarks.push_back(s);
 }
 
+void dxWallMarkArray::AppendMark(LPCSTR s_shader, LPCSTR s_textures)
+{
+	ref_shader	s;
+	s.create(s_shader,s_textures);
+	m_CollideMarks.push_back(s);
+}
+
 void dxWallMarkArray::clear()
 {
 	return m_CollideMarks.clear();
