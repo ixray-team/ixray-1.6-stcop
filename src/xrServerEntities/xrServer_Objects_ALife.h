@@ -360,6 +360,16 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeSpaceRestrictor,CSE_ALifeDynamicObject,CSE
 	virtual bool					used_ai_locations			() const;
 SERVER_ENTITY_DECLARE_END
 
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeDynamicWallmark,CSE_ALifeSpaceRestrictor)
+
+	shared_str shader = "effects\\wallmark";
+	shared_str texture = "";
+	float h = 1.0f, w = 1.0f, r = 0.0f;
+
+	CSE_ALifeDynamicWallmark(LPCSTR caSection);
+	virtual							~CSE_ALifeDynamicWallmark	();
+SERVER_ENTITY_DECLARE_END
+
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeLevelChanger,CSE_ALifeSpaceRestrictor)
 	GameGraph::_GRAPH_ID			m_tNextGraphID;
 	u32								m_dwNextNodeID;
