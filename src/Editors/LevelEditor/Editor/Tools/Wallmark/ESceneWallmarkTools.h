@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor/Tools/Base/ESceneCustomMTools.h"
 
 class ESceneWallmarkTool: public ESceneToolBase
 {
@@ -11,7 +12,9 @@ public:
 	struct wallmark 
 	{
     	enum{
-        	flSelected	= (1<<0)
+    		flSelected	= (1<<0),
+			flRemoved	= (1<<1),
+			flTemporary = (1<<2),
         };
         wm_slot*		parent;
         float			w,h,r;
@@ -54,7 +57,6 @@ private:
 
     void 				RecurseTri				(u32 t, Fmatrix &mView, wallmark &W);
 	void 				BuildMatrix				(Fmatrix &mView, float inv_w, float inv_h, float angle, const Fvector& from);
-	BOOL 				AddWallmark_internal	(const Fvector& S, const Fvector& D, shared_str s, shared_str t, float w, float h, float r);
 
 	void				RefiningSlots			();
 private:
@@ -64,6 +66,8 @@ private:
     // controls
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
+
+	void FilterTempWallmarks(WMSVec& OutVec);
 public:
 	enum{
     	flDrawWallmark	= (1<<0),
@@ -142,5 +146,34 @@ public:
     // utils
     virtual void		GetBBox 				(Fbox& bb, bool bSelOnly);
 	BOOL 				AddWallmark				(const Fvector& start, const Fvector& dir);
+	BOOL 				AddWallmark_internal	(const Fvector& S, const Fvector& D, shared_str s, shared_str t, float w, float h, float r, wallmark** out_wm = nullptr);
 	BOOL 				MoveSelectedWallmarkTo	(const Fvector& start, const Fvector& dir);
+};
+
+class EWallmarkWrapper
+{
+public:
+	struct WMData
+	{
+		Fvector Pos;
+		Fvector Dir;
+		shared_str Shader;
+		shared_str Texture;
+		float w;
+		float h;
+		float r;
+	};
+private:
+	ESceneWallmarkTool::wallmark* m_wallmark = nullptr;
+	WMData m_data;
+
+public:
+	EWallmarkWrapper(const WMData& data);
+	~EWallmarkWrapper();
+
+	WMData& GetData() {return m_data;}
+
+	void Update();
+	void Detach();
+	
 };

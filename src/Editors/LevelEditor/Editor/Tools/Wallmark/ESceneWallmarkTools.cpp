@@ -141,7 +141,29 @@ void ESceneWallmarkTool::Clear(bool bOnlyNodes)
 
 bool ESceneWallmarkTool::Valid		(){return !marks.empty();}
 bool ESceneWallmarkTool::IsNeedSave(){return marks.size();}
-void ESceneWallmarkTool::OnFrame	(){}
+void ESceneWallmarkTool::OnFrame	()
+{
+	bool HasRemoved = false;
+	for (auto elem : marks)
+	{
+		for (WMVecIt m_it=elem->items.begin(); m_it!=elem->items.end(); )
+		{
+			if ((*m_it)->flags.is(wallmark::flRemoved)){
+				(*m_it)->flags.set(wallmark::flRemoved,false);
+				wm_destroy	(*m_it);
+				*m_it		= elem->items.back();
+				elem->items.pop_back();
+				HasRemoved = true;
+			}else{
+				m_it++;
+			}
+		}
+	}
+	if (HasRemoved)
+	{
+		UI->RedrawScene();
+	}
+}
 
 struct zero_slot_pred 
 {
@@ -264,11 +286,14 @@ void ESceneWallmarkTool::SaveLTX(CInifile& ini, int id)
     ini.w_float			("main", "mark_height", m_MarkHeight);
     ini.w_float			("main", "mark_rotate", m_MarkRotate);
     ini.w_string		("main", "sh_name", m_ShName.c_str());
-    ini.w_string		("main", "tx_name", m_TxName.c_str());
+	ini.w_string		("main", "tx_name", m_TxName.c_str());
+
+	WMSVec CopySlots = {};
+	FilterTempWallmarks(CopySlots);
 
 	u32 i				= 0;
     string128			buff, buff2;
-    for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); ++slot_it, ++i)
+    for (WMSVecIt slot_it=CopySlots.begin(); slot_it!=CopySlots.end(); ++slot_it, ++i)
     {
         wm_slot* slot	= *slot_it;
 
@@ -311,6 +336,11 @@ void ESceneWallmarkTool::SaveLTX(CInifile& ini, int id)
 //.            F.w				(&*W->verts.begin(),sizeof(FVF::LIT)*W->verts.size());
         }
     }
+
+	for (auto& elem : CopySlots)
+	{
+		xr_delete(elem);
+	}
 }
 
 bool ESceneWallmarkTool::LoadStream(IReader& F)
@@ -451,8 +481,12 @@ void ESceneWallmarkTool::SaveStream(IWriter& F)
 	F.close_chunk	();
 
 	F.open_chunk	(WM_CHUNK_ITEMS2);
-    for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
-		F.open_chunk(slot_it-marks.begin());
+
+	WMSVec CopySlots = {};
+	FilterTempWallmarks(CopySlots);
+	
+    for (WMSVecIt slot_it=CopySlots.begin(); slot_it!=CopySlots.end(); slot_it++){
+		F.open_chunk(slot_it-CopySlots.begin());
         wm_slot* slot= *slot_it;	
         F.w_u32		(slot->items.size());
         if (slot->items.size()){
@@ -473,6 +507,11 @@ void ESceneWallmarkTool::SaveStream(IWriter& F)
 		F.close_chunk();
     }
 	F.close_chunk	();
+
+	for (auto& elem : CopySlots)
+	{
+		xr_delete(elem);
+	}
 }
 
 bool ESceneWallmarkTool::LoadSelection(IReader& F)
@@ -492,10 +531,13 @@ bool ESceneWallmarkTool::Export(LPCSTR path)
     
     xr_string fn		= xr_string(path)+"level.wallmarks";
 	IWriter*	F		= FS.w_open(fn.c_str()); R_ASSERT(F);
+
+	WMSVec CopySlots = {};
+	FilterTempWallmarks(CopySlots);
                              
     F->open_chunk		(1);
-    F->w_u32			(marks.size());
-    for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
+    F->w_u32			(CopySlots.size());
+    for (WMSVecIt slot_it=CopySlots.begin(); slot_it!=CopySlots.end(); slot_it++){
         wm_slot* slot= *slot_it;	
         F->w_u32		(slot->items.size());
         if (slot->items.size()){
@@ -503,6 +545,7 @@ bool ESceneWallmarkTool::Export(LPCSTR path)
             F->w_stringZ(slot->tx_name);
             for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
                 wallmark* W	= *w_it;
+            	VERIFY(!W->flags.test(wallmark::flTemporary));
                 F->w	(&W->bounds,sizeof(W->bounds));
                 F->w_u32(W->verts.size());
                 F->w	(&*W->verts.begin(),sizeof(FVF::LIT)*W->verts.size());
@@ -511,7 +554,12 @@ bool ESceneWallmarkTool::Export(LPCSTR path)
     }
     F->close_chunk	();
 
-    FS.w_close		(F);
+	FS.w_close		(F);
+
+	for (auto& elem : CopySlots)
+	{
+		xr_delete(elem);
+	}
     
 	return true;
 }                
@@ -654,7 +702,7 @@ int	ESceneWallmarkTool::ObjectCount()
 	return count;
 }
 
-BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, shared_str sh, shared_str tx, float width, float height, float rotate)
+BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvector& dir, shared_str sh, shared_str tx, float width, float height, float rotate, wallmark** out_wm)
 {
     /*
 	if (ObjectCount()>=MAX_WALLMARK_COUNT){
@@ -749,6 +797,10 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 			if (wm->bounds.P.similar(W->bounds.P,0.02f)){ // replace
 				wm_destroy	(wm);
 				*it			= W;
+				if (out_wm)
+				{
+					*out_wm = W;
+				}
 				return TRUE;
 			}
 		}
@@ -759,6 +811,10 @@ BOOL ESceneWallmarkTool::AddWallmark_internal(const Fvector& start, const Fvecto
 
 	// no similar - register _new_
 	if (slot) slot->items.push_back(W);
+	if (out_wm)
+	{
+		*out_wm = W;
+	}
     return TRUE;
 }
 
@@ -852,7 +908,11 @@ bool ESceneWallmarkTool::ExportStatic(SceneBuilder* B, bool b_selected_only)
     for (WMSVecIt slot_it=marks.begin(); slot_it!=marks.end(); slot_it++){
         wm_slot* slot		= *slot_it;	
         for (WMVecIt w_it=slot->items.begin(); w_it!=slot->items.end(); w_it++){
-            wallmark* W		= *w_it;
+        	wallmark* W		= *w_it;
+        	if (W->flags.test(wallmark::flTemporary))
+        	{
+        		continue;
+        	}
 		    int sect_num	= B->CalculateSector(W->bounds.P,W->bounds.R);
 	        int m_id		= B->BuildMaterial	(*slot->sh_name,COMPILER_SHADER,*slot->tx_name,1,sect_num,false);
             u32 f_cnt 		= W->verts.size()/3;
@@ -907,4 +967,81 @@ void ESceneWallmarkTool::GetBBox(Fbox& bb, bool bSelOnly)
         }
     }
 }
+
+void ESceneWallmarkTool::FilterTempWallmarks(WMSVec& OutVec)
+{
+	for (auto Slot : OutVec)
+	{
+		xr_delete(Slot);
+	}
+	OutVec.clear();
+	for (auto Slot : marks)
+	{
+		bool HasNonTemporary = false;
+		for (auto wm : Slot->items)
+		{
+			if (!wm->flags.test(wallmark::flTemporary))
+			{
+				HasNonTemporary = true;
+				break;
+			}
+		}
+		if (!HasNonTemporary)
+		{
+			continue;
+		}
+		wm_slot* CopySlot = new wm_slot(Slot->sh_name,Slot->tx_name);
+		for (auto wm : Slot->items)
+		{
+			if (!wm->flags.test(wallmark::flTemporary))
+			{
+				CopySlot->items.push_back(wm);
+			}
+		}
+		OutVec.push_back(CopySlot);
+	}
+}
+
+EWallmarkWrapper::EWallmarkWrapper(const WMData& data)
+{
+	m_data = data;
+	auto wm_tool = Scene->GetTool(OBJCLASS_WM);
+	((ESceneWallmarkTool*)wm_tool)->AddWallmark_internal(data.Pos,data.Dir,data.Shader,data.Texture,
+		data.w,data.h,data.r, &m_wallmark);
+	if (m_wallmark)
+	{
+		m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flTemporary, true);
+	}
+}
+
+EWallmarkWrapper::~EWallmarkWrapper()
+{
+	if (m_wallmark){
+		m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flRemoved, true);
+	}
+}
+
+void EWallmarkWrapper::Update()
+{
+	if (m_wallmark)
+	{
+		m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flRemoved, true);
+	}
+	auto wm_tool = Scene->GetTool(OBJCLASS_WM);
+	((ESceneWallmarkTool*)wm_tool)->AddWallmark_internal(m_data.Pos,m_data.Dir,m_data.Shader,m_data.Texture,
+		m_data.w,m_data.h,m_data.r, &m_wallmark);
+	if (m_wallmark)
+	{
+		m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flTemporary, true);
+	}
+}
+
+void EWallmarkWrapper::Detach()
+{
+	if (!m_wallmark) return;
+
+	m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flTemporary, false);
+	m_wallmark = nullptr;
+}
+
 
