@@ -918,6 +918,61 @@ void CSE_ALifeSpaceRestrictor::FillProps		(LPCSTR pref, PropItemVec& items)
 #endif // #ifndef XRGAME_EXPORTS
 
 ////////////////////////////////////////////////////////////////////////////
+// CSE_ALifeDynamicWallmark
+////////////////////////////////////////////////////////////////////////////
+
+CSE_ALifeDynamicWallmark::CSE_ALifeDynamicWallmark(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)
+{
+}
+
+CSE_ALifeDynamicWallmark::~CSE_ALifeDynamicWallmark()
+{
+}
+
+void CSE_ALifeDynamicWallmark::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
+{
+	inherited::STATE_Read		(tNetPacket,size);
+	tNetPacket.r_stringZ(shader);
+	tNetPacket.r_stringZ(texture);
+	tNetPacket.r_float(w);
+	tNetPacket.r_float(h);
+	tNetPacket.r_float(r);
+}
+
+void CSE_ALifeDynamicWallmark::STATE_Write	(NET_Packet	&tNetPacket)
+{
+	inherited::STATE_Write		(tNetPacket);
+	tNetPacket.w_stringZ(shader);
+	tNetPacket.w_stringZ(texture);
+	tNetPacket.w_float(w);
+	tNetPacket.w_float(h);
+	tNetPacket.w_float(r);
+}
+
+void CSE_ALifeDynamicWallmark::UPDATE_Read	(NET_Packet	&tNetPacket)
+{
+	inherited::UPDATE_Read		(tNetPacket);
+}
+
+void CSE_ALifeDynamicWallmark::UPDATE_Write	(NET_Packet	&tNetPacket)
+{
+	inherited::UPDATE_Write	(tNetPacket);
+}
+
+#ifndef XRGAME_EXPORTS
+void CSE_ALifeDynamicWallmark::FillProps		(LPCSTR pref, PropItemVec& items)
+{
+	inherited::FillProps(pref,items);
+	PHelper().CreateChoose(items, PrepareKey(pref,*s_name,"Shader"),			&shader, 		smEShader);
+	PHelper().CreateChoose(items, PrepareKey(pref,*s_name,"Texture"),			&texture, 		smTexture);
+	PHelper().CreateFloat(items, PrepareKey(pref,*s_name,"Width"), &w, 0, 1000);
+	PHelper().CreateFloat(items, PrepareKey(pref,*s_name,"Height"), &h, 0, 1000);
+	PHelper().CreateFloat(items, PrepareKey(pref,*s_name,"Rotation"), &r, 0, 10);
+}
+#endif // #ifndef XRGAME_EXPORTS
+
+
+////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeLevelChanger
 ////////////////////////////////////////////////////////////////////////////
 CSE_ALifeLevelChanger::CSE_ALifeLevelChanger(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection)

@@ -47,6 +47,7 @@
 #include "ai_object_location.h"
 #include "inventory_upgrade_manager.h"
 #include "ActorHelmet.h"
+#include "DynamicWallmarkZone.h"
 #include "PickupManager.h"
 #include "UIActorMenu.h"
 #include "../xrServerEntities/restriction_space.h"
@@ -1152,6 +1153,25 @@ void RefreshNames()
 	}
 }
 
+void switch_wallmark(CScriptGameObject* object, bool isOn)
+{
+	if (OnClient()) {
+		return;
+	}
+	if (!object)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "switch_wallmark: dynamic wallmark object is NULL!");
+		return;
+	}
+	auto DW = smart_cast<CDynamicWallmarkZone*>(&object->object());
+	if (!DW)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "switch_wallmark: dynamic wallmark object [%s] is not a CDynamicWallmarkZone!", object->object().Name());
+		return;
+	}
+	DW->SwitchWallmark(isOn);
+}
+
 bool IsUIShown()
 {
 	return CurrentGameUI()->GameIndicatorsShown();
@@ -1674,6 +1694,9 @@ void CLevel::script_register(lua_State *L)
 		def("get_parameter_upgraded_int", &GetParameterUpgradedInt),
 		def("valid_saved_game_int", &ValidSavedGameInt),
 		def("is_tactical_hud", &IsTacticalHud),
+
+		// Dynamic wallmarks switch
+		def("switch_wallmark", &switch_wallmark),
 
 		// new for fmp
 		def("get_object_by_client", &get_object_by_client),
