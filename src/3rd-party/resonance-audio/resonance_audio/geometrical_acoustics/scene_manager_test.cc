@@ -19,6 +19,7 @@ limitations under the License.
 #include <functional>
 #include <random>
 #include <vector>
+#include <utility>
 
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
 #include "Eigen/Core"

@@ -40,7 +40,7 @@ struct sound_backend_state
     u64 write_position;
     SDL_AudioStream* stream;
     SDL_AudioDeviceID device;
-    HANDLE sound_thread;
+    ThreadID sound_thread;
     float* buffer;
     float* output_buffer;
     audio_render_callback render_callback;
