@@ -1629,6 +1629,10 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 			{
 				weap_mag->UnloadChamber();
 			}
+
+			weap_mag->m_bHaveShell = false;
+			weap_mag->m_bNeedPumpState = false;
+
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
 				CUICellItem* child_itm = cell_item->Child(i);
@@ -1641,6 +1645,9 @@ void CUIActorMenu::ProcessPropertiesBoxClicked(CUIWindow* w, void* d)
 					{
 						child_weap_mag->UnloadChamber();
 					}
+
+					child_weap_mag->m_bHaveShell = false;
+					child_weap_mag->m_bNeedPumpState = false;
 				}
 			}
 			break;

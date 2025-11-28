@@ -705,17 +705,11 @@ void CActor::ProcessKeys(CHudItem* itm)
 		}
 	}
 
-	/*if (!wpn->IsActionProcessing() && wpn->GetState() != CWeapon::eSprintEnd && (GetMovementState(eReal) & mcSprint) == 0 && (m_iKeyFlags & kfFIRE) != 0)
+	if ((m_iKeyFlags & kfFIRE) != 0 && itm->CanStartAction(this))
 	{
 		wpn->Action(kWPN_FIRE, CMD_START);
-
-		if (!IsActionKeyPressed(kWPN_FIRE))
-		{
-			wpn->Action(kWPN_FIRE, CMD_STOP);
-		}
-
 		SetActorKeyRepeatFlag(kfFIRE, false);
-	}*/
+	}
 
 	if ((m_iKeyFlags & kfGLAUNCHSWITCH) != 0 && itm->CanStartAction(this))
 	{
