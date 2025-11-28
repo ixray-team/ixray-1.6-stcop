@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "UIActorMenu.h"
 #include "UIActorStateInfo.h"
 #include "../Actor.h"
@@ -598,7 +598,7 @@ void CUIActorMenu::highlight_item_slot(CUICellItem* cell_item)
 		return;
 	}
 
-	if (CEatableItem* eatable = item->cast_eatable_item())
+	if (item->cast_eatable_item() != nullptr)
 	{
 		if (cell_item->OwnerList() && GetListType(cell_item->OwnerList()) == iQuickSlot)
 		{
@@ -615,7 +615,7 @@ void CUIActorMenu::highlight_item_slot(CUICellItem* cell_item)
 		return;
 	}
 
-	if (CArtefact* artefact = item->cast_artefact())
+	if (item->cast_artefact() != nullptr)
 	{
 		if (cell_item->OwnerList() && GetListType(cell_item->OwnerList()) == iActorBelt)
 		{
@@ -953,7 +953,7 @@ void CUIActorMenu::ResetMode()
 
 void CUIActorMenu::UpdateActorMoneyMP()
 {
-	if ( !&Level() || !Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle() )
+	if (!Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle() )
 	{
 		m_ActorMoney->SetText("");
 		return;
@@ -968,7 +968,7 @@ void CUIActorMenu::UpdateActorMoneyMP()
 
 void CUIActorMenu::SetActorInfoMP()
 {
-	if (!&Level() || !Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle())
+	if (!Level().game || !Game().local_player || !m_pActorInvOwner || IsGameTypeSingle())
 	{
 		m_ActorCharacterInfo->ClearInfo();
 		return;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "monster_enemy_manager.h"
 #include "basemonster/base_monster.h"
 #include "../ai_monsters_misc.h"
@@ -239,13 +239,12 @@ bool CMonsterEnemyManager::is_faced(const CEntityAlive *object0, const CEntityAl
 		return false;
 	}
 
-	float			yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov, fRange;
+	float			yaw1, pitch1, yaw2, pitch2, fYawFov, fPitchFov;
 	Fvector			tPosition = object0->Position();
 
 	yaw1			= object0->Orientation().yaw;
 	pitch1			= object0->Orientation().pitch;
 	fYawFov			= angle_normalize_signed(object0->ffGetFov()*PI/180.f);
-	fRange			= object0->ffGetRange();
 
 	fYawFov			= angle_normalize_signed((_abs(fYawFov) + _abs(atanf(1.f/tPosition.distance_to(object1->Position()))))/2.f);
 	fPitchFov		= angle_normalize_signed(fYawFov*1.f);

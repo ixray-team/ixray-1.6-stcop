@@ -202,30 +202,24 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
 	float str_length = pFont->SizeOf_( text );
 	float scr_width  = 0.99f * float(Device.TargetWidth);
-	if( str_length > scr_width ) //1024.0f
+	if (str_length > scr_width) //1024.0f
 	{
-		float f	= 0.0f;
-		int sz	= 0;
-		int ln	= 0;
-		char* one_line = (char*)_alloca( (CONSOLE_BUF_SIZE + 1) * sizeof(char) );
-		
-		while( text[sz] && (ln + sz < CONSOLE_BUF_SIZE-5) )// перенос строк
+		int sz = 0;
+		int ln = 0;
+		char* one_line = (char*)_alloca((CONSOLE_BUF_SIZE + 1) * sizeof(char));
+
+		while (text[sz] && (ln + sz < CONSOLE_BUF_SIZE - 5))// перенос строк
 		{
-			one_line[ln+sz]   = text[sz];
-			one_line[ln+sz+1] = 0;
-			
-			float t	= pFont->SizeOf_( one_line + ln );
-			if ( t > scr_width )
+			one_line[ln + sz] = text[sz];
+			one_line[ln + sz + 1] = 0;
+
+			float t = pFont->SizeOf_(one_line + ln);
+			if (t > scr_width)
 			{
-				OutFont		( text + sz + 1, pos_y );
-				pos_y		-= m_line_height;
-				pFont->OutI	( -0.99f, pos_y, "%s", one_line + ln );
-				ln			= sz + 1;
-				f			= 0.0f;
-			}
-			else
-			{
-				f = t;
+				OutFont(text + sz + 1, pos_y);
+				pos_y -= m_line_height;
+				pFont->OutI(-0.99f, pos_y, "%s", one_line + ln);
+				ln = sz + 1;
 			}
 
 			++sz;

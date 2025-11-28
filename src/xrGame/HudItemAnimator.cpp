@@ -12,12 +12,12 @@ void CHudItemAnimator::StopAnimator()
 {
 	CHudAnimatorBase::StopAnimator();
 
-	m_left_callback = nullptr;
-	m_left2_callback = nullptr;
-	m_right_callback = nullptr;
-	m_right2_callback = nullptr;
-	m_start_callback = nullptr;
-	m_end_callback = nullptr;
+	m_left_callback.clear();
+	m_left2_callback.clear();
+	m_right_callback.clear();
+	m_right2_callback.clear();
+	m_start_callback.clear();
+	m_end_callback.clear();
 
 	m_sLuaLeftCallback = "null";
 	m_sLuaLeft2Callback = "null";
@@ -291,7 +291,7 @@ void CHudItemAnimator::CallLeftCallback()
 	if (m_left_callback)
 	{
 		m_left_callback();
-		m_left_callback = nullptr;
+		m_left_callback.clear();
 	}
 
 	if (m_sLuaLeftCallback != "null")
@@ -314,7 +314,7 @@ void CHudItemAnimator::CallLeft2Callback()
 	if (m_left2_callback)
 	{
 		m_left2_callback();
-		m_left2_callback = nullptr;
+		m_left2_callback.clear();
 	}
 
 	if (m_sLuaLeft2Callback != "null")
@@ -337,7 +337,7 @@ void CHudItemAnimator::CallRightCallback()
 	if (m_right_callback)
 	{
 		m_right_callback();
-		m_right_callback = nullptr;
+		m_right_callback.clear();
 	}
 
 	if (m_sLuaRightCallback != "null")
@@ -360,7 +360,7 @@ void CHudItemAnimator::CallRight2Callback()
 	if (m_right2_callback)
 	{
 		m_right2_callback();
-		m_right2_callback = nullptr;
+		m_right2_callback.clear();
 	}
 
 	if (m_sLuaRight2Callback != "null")
@@ -383,7 +383,7 @@ void CHudItemAnimator::CallEndCallback()
 	if (m_end_callback)
 	{
 		m_end_callback();
-		m_end_callback = nullptr;
+		m_end_callback.clear();
 	}
 
 	if (m_sLuaEndCallback != "null")
@@ -406,7 +406,7 @@ void CHudItemAnimator::CallStartCallback()
 	if (m_start_callback)
 	{
 		m_start_callback();
-		m_start_callback = nullptr;
+		m_start_callback.clear();
 	}
 
 	if (m_sLuaStartCallback != "null")
