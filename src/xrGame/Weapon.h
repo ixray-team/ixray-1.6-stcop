@@ -253,7 +253,7 @@ protected:
 	void UpdateScopePosition();
 	void UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type);
 	void UpdateLiteAmmoBones(u32 idx);
-	void UpdateShellBones(u32 idx, u8 type);
+	void UpdateShellBones(u8 type);
 	virtual void UpdateBonePartAnimations() {}
 	//инициализация свойств присоединенных аддонов
 	virtual void InitAddons();
@@ -405,6 +405,7 @@ protected:
 	bool m_bActorCanShoot = true;
 	bool m_bIsAimAnimationPlaying = false;
 	bool m_bBlockFiremodeinGLM = false;
+	bool m_bNeedPumpReloadEnd = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
@@ -724,6 +725,7 @@ public:
 			float			GetFirstBulletDisp	()	const	{ return m_first_bullet_controller.get_fire_dispertion(); };
 
 	virtual void			UnloadChamber(bool spawn_ammo = true);
+	virtual void			LoadChamber();
 
 	virtual void OnChangeVisual() final override;
 
