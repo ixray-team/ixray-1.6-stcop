@@ -18,6 +18,7 @@ limitations under the License.
 #define RESONANCE_AUDIO_AMBISONICS_AMBISONIC_LOOKUP_TABLE_H_
 
 #include <vector>
+#include <type_traits>
 
 #include "base/spherical_angle.h"
 

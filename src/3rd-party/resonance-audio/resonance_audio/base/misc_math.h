@@ -27,6 +27,8 @@ limitations under the License.
 #include <limits>
 #include <utility>
 #include <vector>
+#include <type_traits>
+#include <cstddef>
 
 #include "base/integral_types.h"
 #include "Eigen/Dense"

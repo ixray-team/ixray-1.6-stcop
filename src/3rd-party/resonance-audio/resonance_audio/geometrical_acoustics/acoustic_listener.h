@@ -20,6 +20,7 @@ limitations under the License.
 #include <array>
 #include <cstddef>
 #include <vector>
+#include <utility>
 
 #include "Eigen/Core"
 #include "base/constants_and_types.h"

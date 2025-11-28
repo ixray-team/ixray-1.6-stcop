@@ -16,7 +16,7 @@ limitations under the License.
 
 #ifndef RESONANCE_AUDIO_UTILS_PSEUDOINVERSE_H_
 #define RESONANCE_AUDIO_UTILS_PSEUDOINVERSE_H_
-
+#include <utility>
 #include "Eigen/Dense"
 
 namespace vraudio {
