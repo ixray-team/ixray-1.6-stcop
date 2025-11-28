@@ -130,11 +130,11 @@ void CGameMtlLibrary::Load()
 
 	FS.r_close		(F);
 
-	::Sound->OcclusionMaterialCallback = +[](u16 MtlID)->float
+	::Sound->OcclusionMaterialCallback = xr_delegate<float(u16)>(+[](u16 MtlID)->float
 	{
 		const SGameMtl* MtlIter = GMLib.GetMaterialByIdx((int)MtlID);
 		return MtlIter->fSndOcclusionFactor;
-	};
+	});
 }
 
 #ifdef GM_NON_GAME
