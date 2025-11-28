@@ -123,7 +123,7 @@ public:
 			return out_params;
 		}
 
-		return { 0 };
+		return {};
 	}
 
 	IC bool is_2d() { return ((XRay::Sound::Mixer::GetFlags(slot) & (u32)XRay::Sound::Mixer::Flags::Spatial) == 0); }

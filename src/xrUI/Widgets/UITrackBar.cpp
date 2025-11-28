@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UITrackBar.h"
 #include "UI3tButton.h"
@@ -102,8 +102,6 @@ bool CUITrackBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 
 void CUITrackBar::InitTrackBar(Fvector2 pos, Fvector2 size)
 {
-	const float EditBoxSize = 20.f * UI().get_current_kx();
-
 	CUIXml xml_doc;
 	xml_doc.Load			(CONFIG_PATH, UI_PATH, "backend\\trackbar.xml");
 

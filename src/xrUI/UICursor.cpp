@@ -6,9 +6,6 @@
 #include "UIXmlInit.h"
 #include <UIHelper.h>
 
-
-constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
-
 CUICursor::CUICursor()
 	: m_static(nullptr)
 {    
