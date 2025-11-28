@@ -5,7 +5,7 @@
 //	Description : UI Faction War state class implementation
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 
 #include "FactionState.h"
@@ -36,9 +36,9 @@ FactionState::FactionState():
 	ResetStates();
 }
 
-FactionState::FactionState( shared_str const& id )
+FactionState::FactionState( shared_str const& id ) :
+	FactionState()
 {
-	this->FactionState::FactionState();
 	set_faction_id2( id );
 }
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "DynamicWallmarkZone.h"
 #include "../Include/xrRender/WallMarkArray.h"
 

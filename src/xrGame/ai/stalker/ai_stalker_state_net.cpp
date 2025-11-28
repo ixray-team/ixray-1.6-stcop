@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ai_stalker_state_net.h"
 #include "stalker_movement_manager_smart_cover.h"
 #include "Inventory.h"
@@ -247,7 +247,6 @@ void aistalker_state_net::GetState(CAI_Stalker* stalker)
 		{
 			CObject* obj = Level().Objects.net_Find(u_active_id);
 			CInventoryItem* itemINV = obj != nullptr ? obj->cast_inventory_item() : nullptr;
-			CGameObject* game_object = obj != nullptr ? obj->cast_game_object() : nullptr;
 
 			if (itemINV && itemINV->parent_id() == stalker->ID())
 			{

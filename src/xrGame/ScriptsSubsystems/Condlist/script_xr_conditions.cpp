@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+#include "StdAfx.h"
 #include "script_xr_conditions.h"
 #include "script_xr_conditions_functions.h"
 

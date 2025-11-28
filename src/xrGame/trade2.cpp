@@ -200,26 +200,16 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying, bool b_free)
 
 	clamp(relation_factor, 0.0f, 1.0f);
 
-	const SInventoryOwner* _partner = nullptr;
 	bool buying = true;
 	bool is_actor = (pThis.type == TT_ACTOR) || (pPartner.type == TT_ACTOR);
 
 	if (is_actor)
 	{
-		//.		buying				= (pPartner.type == TT_ACTOR);
 		buying = b_buying;
-		_partner = &(buying ? pThis : pPartner);
 	}
-	else
-	{
-		// rare case
-		_partner = &pPartner;
-	}
-	//.	const SInventoryOwner	&partner = *_partner;
 
 	// computing action factor
 	const CTradeFactors* p_trade_factors = nullptr;
-
 
 	if (buying)
 	{
@@ -260,11 +250,7 @@ u32	CTrade::GetItemPrice(PIItem pItem, bool b_buying, bool b_free)
 	}
 
 	// computing deficit_factor
-#if 0
-	float deficit_factor = partner.inv_owner->deficit_factor(pItem->object().cNameSect());
-#else
 	float deficit_factor = 1.f;
-#endif
 
 	// total price calculation
 	u32	result = iFloor(base_cost * condition_factor * action_factor * deficit_factor);
