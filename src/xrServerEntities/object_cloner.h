@@ -138,7 +138,7 @@ struct CCloner
 		}
 
 		template <typename T1, typename T2>
-		IC	static void add(T1 &data, typename T2 &value)
+		IC	static void add(T1 &data, T2 &value)
 		{
 			data.insert			(value);
 		}

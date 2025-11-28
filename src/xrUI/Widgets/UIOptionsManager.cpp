@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIOptionsManager.h"
 #include "UIOptionsItem.h"
 #include "../../xrEngine/XR_IOConsole.h"
