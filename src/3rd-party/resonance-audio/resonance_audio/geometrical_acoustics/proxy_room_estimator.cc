@@ -18,6 +18,7 @@ limitations under the License.
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 #include "Eigen/Core"
 #include "base/logging.h"

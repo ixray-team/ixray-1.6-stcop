@@ -67,7 +67,7 @@ set(INSTALL_DIR "${PROJECT_SOURCE_DIR}/install" CACHE PATH "Install path")
 
 set(RA_SOURCE_DIR ${PROJECT_SOURCE_DIR}/resonance_audio/)
 
-use_cxx11()
+#use_cxx11()
 if (BUILD_RESONANCE_AUDIO_TESTS OR BUILD_GEOMETRICAL_ACOUSTICS_TESTS)
     enable_testing()
 
