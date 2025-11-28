@@ -70,6 +70,7 @@ protected:
 	virtual void	UpdateSounds	();
 
 	bool			TryReload		();
+	bool			TryReloadChamber		();
 
 protected:
 	virtual void	ReloadMagazine();
