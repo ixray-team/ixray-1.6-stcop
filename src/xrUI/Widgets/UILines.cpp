@@ -6,7 +6,7 @@
 //
 // Copyright 2005 GSC Game World
 
-#include "StdAfx.h"
+#include "stdafx.h"
 
 #include "UILines.h"
 #include "UIXmlInit.h"
@@ -142,6 +142,7 @@ void CUILines::ParseText(bool force)
 	BOOL bNewLines = FALSE;
 
 	if (uFlags.test(flRecognizeNewLine))
+	{
 		if (m_pFont->IsMultibyte())
 		{
 			CUILine* ptmp_line = new CUILine();
@@ -173,6 +174,7 @@ void CUILines::ParseText(bool force)
 		{
 			line->ProcessNewLines();
 		}
+	}
 
 	if (m_pFont->IsMultibyte()) {
 #define UBUFFER_SIZE 100

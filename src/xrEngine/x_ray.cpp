@@ -379,21 +379,6 @@ struct damn_keys_filter {
 #undef dwFilterKeysStructSize
 #undef dwToggleKeysStructSize
 
-static void* __cdecl luabind_allocator(void* context, const void* pointer, size_t const size) {
-	if (!size) {
-		void* non_const_pointer = const_cast<LPVOID>(pointer);
-		xr_free(non_const_pointer);
-		return nullptr;
-	}
-
-	if (!pointer) {
-		return xr_malloc(size);
-	}
-
-	void* non_const_pointer = const_cast<LPVOID>(pointer);
-	return xr_realloc(non_const_pointer, size);
-}
-
 ENGINE_API void EngineLoadStage1(char* lpCmdLine)
 {
 	PROF_EVENT("EngineLoadStage1");

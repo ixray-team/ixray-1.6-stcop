@@ -18,9 +18,7 @@
 
 #include "../Include/xrRender/UIRender.h"
 
-static float const UI_BASE_WIDTH	= 1024.0f;
 static float const UI_BASE_HEIGHT	= 768.0f;
-static float const LDIST            = 0.05f;
 static u32   const cmd_history_max  = 64;
 
 static u32 const prompt_font_color  = color_rgba( 228, 228, 255, 255 );
@@ -271,7 +269,6 @@ void CConsole::OnRender()
 	DrawBackgrounds( bGame );
 	
 	float fMaxY = bGame ? 0.0f : 1.0f;
-	float dwMaxY = (float)Device.TargetHeight;	
 	float maxStrWidth = Device.TargetWidth * 0.9f; // max cmd str width
 
 	float outY = fMaxY - m_line_height * 1.1f;

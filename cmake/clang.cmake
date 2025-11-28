@@ -6,6 +6,7 @@ add_compile_options(-msse4.2) # crc32
 if (WIN32)
     add_compile_options(-Wno-microsoft-template-shadow -Wno-overloaded-virtual -Wno-unknown-pragmas -Wno-class-conversion -Wno-reorder-ctor)
     add_compile_options(-Wno-microsoft-cast -Wno-microsoft-enum-forward-reference -Wno-bitwise-op-parentheses -Wno-misleading-indentation)
+    add_compile_options(-Wno-explicit-specialization-storage-class -Wno-microsoft-pure-definition -Wno-ignored-pragmas -Wno-exceptions)
     #add_compile_options()
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS _UNICODE UNICODE)
     add_compile_options(/MP)

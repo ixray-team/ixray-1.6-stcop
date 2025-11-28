@@ -892,7 +892,7 @@ Snd_MixerRenderCallback(float* buffer)
 	timestamp = Snd_GetTimestamp();
 
 	memset(buffer, 0, SND_BLOCKSIZE * SND_CHANNEL_COUNT * sizeof(float));
-	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = { 0 };
+	static float _process_buffer[SND_CHANNEL_COUNT][SND_BLOCKSIZE] = {};
 
 	float* process_buffer[SND_CHANNEL_COUNT] = {};
 	for (size_t i = 0; i < SND_CHANNEL_COUNT; i++) {
