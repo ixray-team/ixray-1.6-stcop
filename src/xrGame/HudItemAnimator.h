@@ -37,12 +37,12 @@ private:
 
 	bool m_bBlend = false;
 
-	xr_delegate<void()> m_left_callback = nullptr;
-	xr_delegate<void()> m_left2_callback = nullptr;
-	xr_delegate<void()> m_right_callback = nullptr;
-	xr_delegate<void()> m_right2_callback = nullptr;
-	xr_delegate<void()> m_start_callback = nullptr;
-	xr_delegate<void()> m_end_callback = nullptr;
+	xr_delegate<void()> m_left_callback;
+	xr_delegate<void()> m_left2_callback;
+	xr_delegate<void()> m_right_callback;
+	xr_delegate<void()> m_right2_callback;
+	xr_delegate<void()> m_start_callback;
+	xr_delegate<void()> m_end_callback;
 
 	shared_str m_sLuaLeftCallback = "null";
 	shared_str m_sLuaLeft2Callback = "null";

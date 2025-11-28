@@ -212,7 +212,6 @@ void ui_core::PopScissor()
 #ifdef DEBUG_DRAW
 
 #define ArrowMoveStep 0.5f
-#define ArrowMove(arrow, znk, orin) if (ImGui::IsKeyPressed(arrow)) {Fvector2 NPosition = Selected->GetWndPos(); NPosition.orin znk= ArrowMoveStep; Selected->SetWndPos(NPosition);}
 
 void ui_core::RenderUIDebugger()
 {
@@ -357,10 +356,31 @@ void ui_core::RenderUIDebugger()
 			IM_COL32(255, 50, 50, 220) :
 			IM_COL32(50, 255, 500, 220);
 
-		ArrowMove(ImGuiKey_UpArrow		, -, y) else
-		ArrowMove(ImGuiKey_DownArrow	, +, y) else
-		ArrowMove(ImGuiKey_LeftArrow	, -, x) else
-		ArrowMove(ImGuiKey_RightArrow	, +, x) 
+		auto ArrowMove = [](ImGuiKey key, auto operation, char axis)
+		{
+			if (ImGui::IsKeyPressed(key))
+			{
+				Fvector2 NPosition = Selected->GetWndPos();
+				if constexpr (std::is_same_v<decltype(operation), std::minus<>>)
+				{
+					if (axis == 'x') NPosition.x -= ArrowMoveStep;
+					else if (axis == 'y') NPosition.y -= ArrowMoveStep;
+				}
+				else if constexpr (std::is_same_v<decltype(operation), std::plus<>>)
+				{
+					if (axis == 'x') NPosition.x += ArrowMoveStep;
+					else if (axis == 'y') NPosition.y += ArrowMoveStep;
+				}
+				Selected->SetWndPos(NPosition);
+				return true;
+			}
+			return false;
+		};
+
+		if (ArrowMove(ImGuiKey_UpArrow, std::minus{}, 'y')) {}
+		else if (ArrowMove(ImGuiKey_DownArrow, std::plus{}, 'y')) {}
+		else if (ArrowMove(ImGuiKey_LeftArrow, std::minus{}, 'x')) {}
+		else if (ArrowMove(ImGuiKey_RightArrow, std::plus{}, 'x')) {}
 
 		Draw->AddRect
 		(
