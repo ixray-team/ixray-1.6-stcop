@@ -12,6 +12,18 @@ public:
 	_vector3<T>	n;
 	T			d = 0;
 public:
+
+	constexpr _plane() = default;
+	constexpr _plane(const _vector3<T>& normal, T distance) : d(distance) { n.set(normal); }
+
+	constexpr _plane(std::initializer_list<T> init)
+	{
+		n.x = init.size() > 0 ? *(init.begin() + 0) : T(0);
+		n.y = init.size() > 1 ? *(init.begin() + 1) : T(0);
+		n.z = init.size() > 2 ? *(init.begin() + 2) : T(0);
+		d   = init.size() > 3 ? *(init.begin() + 3) : T(0);
+	}
+
 	IC	SelfRef	set		(Self &P)
 	{
 		n.set	(P.n);

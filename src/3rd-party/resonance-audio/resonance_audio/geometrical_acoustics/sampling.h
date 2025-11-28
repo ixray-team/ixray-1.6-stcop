@@ -20,6 +20,7 @@ limitations under the License.
 #define RESONANCE_AUDIO_GEOMETRICAL_ACOUSTICS_SAMPLING_H_
 
 #include <cmath>
+#include <utility>
 
 #include "Eigen/Dense"
 #include "base/constants_and_types.h"
