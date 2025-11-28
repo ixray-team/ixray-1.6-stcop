@@ -1426,8 +1426,8 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			memset(mixer.slots[cmd.slot - 1].history, 0, sizeof(mixer.slots[cmd.slot - 1].history));
 			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::VolumePerChannel] = Fvector(source.pub.volume, 1.0f, 1.0f);
 			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::DistanceRange] = Fvector(source.pub.min_distance, source.pub.max_distance, source.pub.max_ai_distance);
-			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Pitch] = Fvector(1.0f, 1.0f, 1.0f);
-			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Panning] = Fvector(1.0f, 1.0f, 1.0f);
+			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Pitch] = Fvector{1.0f, 1.0f, 1.0f};
+			mixer.slots[cmd.slot - 1].parameters[(u32)Mixer::ParameterId::Panning] = Fvector{1.0f, 1.0f, 1.0f};
 			mixer.slots[cmd.slot - 1].position = 0;
 			mixer.slots[cmd.slot - 1].stopping_position = (u32)-1;
 			mixer.slots[cmd.slot - 1].sound_name = cmd.string_storage.c_str();
@@ -1506,7 +1506,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 			}
 		} break;
 		case sound_cmd_id::update_parameter: {
-			mixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector(*(double*)&cmd.param1, *(double*)&cmd.param2, *(double*)&cmd.param3);
+			mixer.slots[cmd.slot - 1].parameters[(u32)cmd.param0] = Fvector{(float)*(double*)&cmd.param1, (float)*(double*)&cmd.param2, (float)*(double*)&cmd.param3};
 
 			auto& slot = mixer.slots[cmd.slot - 1];
 			if (slot.flags & (u16)Flags::Spatial && cmd.param0 == (u16)ParameterId::Position) {
@@ -1643,7 +1643,7 @@ Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, f
 		volume = (volume ? volume : &params.volume);
 	}
 
-	if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector(*pitch));
+	if (pitch) Mixer::UpdateParameter(slot_idx, ParameterId::Pitch, Fvector{*pitch, 1.f, 1.f});
 	if (distance) Mixer::UpdateParameter(slot_idx, ParameterId::DistanceRange, *distance);
 	if (pos) Mixer::UpdateParameter(slot_idx, ParameterId::Position, *pos);
 	if (volume) Mixer::SetVolume(slot_idx, *volume);
