@@ -19,6 +19,7 @@ limitations under the License.
 #include <cmath>
 #include <functional>
 #include <random>
+#include <utility>
 
 #include "third_party/googletest/googletest/include/gtest/gtest.h"
 #include "Eigen/Dense"
