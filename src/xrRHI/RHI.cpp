@@ -509,9 +509,7 @@ void CRHI::ClearIndexBuffer()
 	}
 	else
 	{
-		InternalDevice9* Device = (InternalDevice9*)DevicePtr;
 		IDirect3DDevice9* DxDevice = (IDirect3DDevice9*)DevicePtr->RawDevice;
-
 		CHK_DX(DxDevice->SetIndices(nullptr));
 	}
 #endif

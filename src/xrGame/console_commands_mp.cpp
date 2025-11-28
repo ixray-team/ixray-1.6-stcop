@@ -6,7 +6,7 @@
 #include "game_cl_base.h"
 #include "game_cl_mp.h"
 #include "Actor.h"
-#include "xrServer_Object_base.h"
+#include "xrServer_Object_Base.h"
 #include "RegistryFuncs.h"
 #include "GamePersistent.h"
 #include "MainMenu.h"
@@ -1241,8 +1241,6 @@ public:
 	{ 
 		S[0]=0;
 		if( IsGameTypeSingle() )									return;
-		if (!(&Level()))											return;
-		if (!(&Game()))												return;
 		game_PlayerState* tmp_player = Game().local_player;
 		if (!tmp_player)											return;
 		xr_sprintf( S, "is \"%s\" ", tmp_player->getName());
@@ -1253,8 +1251,6 @@ public:
 	virtual void Execute(LPCSTR args) 
 	{
 		if (IsGameTypeSingle())		return;
-		if (!(&Level()))			return;
-		if (!(&Game()))				return;
 
 		game_PlayerState* tmp_player = Game().local_player;
 		if (!tmp_player)			return;
@@ -1911,14 +1907,11 @@ public:
 		if(Level().Server && Level().Server->game) 
 		{
 			game_sv_mp* game = Level().Server->game->cast_game_sv_mp();
-			if ( game )
+			if (game)
 			{
-				string256 msg;
-				xr_strconcat(msg,args);
-				if ( xr_strlen(msg) > 256 )
-				{
-					msg[256] = 0;
-				}
+				string512 msg;
+				xr_strconcat(msg, args);
+
 				game->SvSendChatMessage(msg);
 			}
 		}
@@ -2058,8 +2051,6 @@ public:
 
 		if (IsGameTypeSingle()) return;
 		if (g_dedicated_server) return;
-		if (!(&Level())) return;
-		if (!(&Game())) return;
 
 		if (!Game().local_player)
 			return;

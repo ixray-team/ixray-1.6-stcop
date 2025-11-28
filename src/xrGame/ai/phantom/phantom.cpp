@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "phantom.h"
 #include "../../Level.h"
 #include "../../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
@@ -136,7 +136,7 @@ void CPhantom::SwitchToState_internal(EState new_state)
 	if (new_state!=m_CurState){
 		IKinematicsAnimated *K	= smart_cast<IKinematicsAnimated*>(Visual());
 		Fmatrix	xform			= XFORM_center	();
-		UpdateEvent				= 0;
+		UpdateEvent.clear();
 		// after event
 		switch (m_CurState){
 		case stBirth:		break;

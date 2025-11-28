@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "../Level.h"
 #include "../Actor.h"
 #include "../alife_simulator.h"

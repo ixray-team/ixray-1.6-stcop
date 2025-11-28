@@ -1,4 +1,4 @@
-#include "Stdafx.h"
+#include "StdAfx.h"
 
 #include "UIMapWndActions.h"
 #include "UIMap.h"
@@ -14,13 +14,11 @@ constexpr float	MinMoveTime = 0.25f;
 
 void FRbmkMapActionPlanner::Update()
 {
-
-			
 	auto Initialize = [this]()
 	{
-		float Distance				= this->Owner->GlobalMap()->CalcOpenRect(this->Owner->m_tgtCenter,DesiredMapRect,TargetZoom);
+		float Distance				= Owner->GlobalMap()->CalcOpenRect(Owner->m_tgtCenter,DesiredMapRect,TargetZoom);
 		bool NeedMove				= !fis_zero(Distance,EPS_L);
-		bool NeedZoom				= !fsimilar(TargetZoom, this->Owner->GlobalMap()->GetCurrentZoom().x, EPS_L);
+		bool NeedZoom				= !fsimilar(TargetZoom, Owner->GlobalMap()->GetCurrentZoom().x, EPS_L);
 		
 		EndMovingTime				= Device.fTimeGlobal;
 		

@@ -149,7 +149,7 @@ DSP_Compressor(float attack_ms, float release_ms, float threshold_db, float rati
         for (size_t k = 0; k < frames; k++) {
             float& sample = data[ch][k];
 
-            float temp = lin2dB(sample + FLT_EPSILON);
+            float temp = lin2dB(std::abs(sample) + FLT_EPSILON);
             float over_db = temp - threshold_db;
             if (over_db < 0.0f) over_db = 0.0f;
             over_db += FLT_EPSILON; 

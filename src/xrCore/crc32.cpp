@@ -72,7 +72,7 @@ u32 crc32(const void* P, size_t len)
 {
 	Crc32Initializer::init();
 
-	if (CPU::ID.hasFeature(CPUFeature::SSE42))
+	if (CPU::ID().hasFeature(CPUFeature::SSE42))
 	{
 		return crc32_sse42(P, len);
 	}
@@ -93,7 +93,7 @@ u32 crc32(const void* P, size_t len, u32 starting_crc)
 {
 	Crc32Initializer::init();
 
-	if (CPU::ID.hasFeature(CPUFeature::SSE42))
+	if (CPU::ID().hasFeature(CPUFeature::SSE42))
 	{
 		return crc32_sse42(P, len, ~starting_crc);
 	}

@@ -235,7 +235,7 @@ void COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 
 	// SSE
 	// Binary dispatcher
-	cform_ray_collider RC(CPU::ID.hasFeature(CPUFeature::SSE), !!(ray_mode&OPT_CULL), !!(ray_mode&OPT_ONLYFIRST), !!(ray_mode&OPT_ONLYNEAREST));
+	cform_ray_collider RC(CPU::ID().hasFeature(CPUFeature::SSE), !!(ray_mode&OPT_CULL), !!(ray_mode&OPT_ONLYFIRST), !!(ray_mode&OPT_ONLYNEAREST));
 	RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 	RC._stab(N);
 }
@@ -252,7 +252,7 @@ ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 	const AABBNoLeafNode* N = T->GetNodes();
 	r_clear();
 
-	cform_ray_collider RC(CPU::ID.hasFeature(CPUFeature::SSE), true, false, false);
+	cform_ray_collider RC(CPU::ID().hasFeature(CPUFeature::SSE), true, false, false);
 	RC.ctxt = context;
 	RC._init_intersection(this, MDL, context->r_start, context->r_dir, context->r_range);
 	RC._stab(N);

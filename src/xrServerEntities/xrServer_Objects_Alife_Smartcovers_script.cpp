@@ -6,7 +6,7 @@
 //	Description : Server smartcovers for ALife simulator, script export
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "pch_script.h"
 #include "xrServer_Objects_Alife_Smartcovers.h"
 #include "xrServer_script_macroses.h"
