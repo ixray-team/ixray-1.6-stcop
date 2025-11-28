@@ -320,14 +320,14 @@ IC void	ref_sound::set_position(const Fvector& pos)
 IC void	ref_sound::set_frequency(float freq)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::Pitch, Fvector(freq));
+		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::Pitch, Fvector{ freq , freq , freq });
 	}
 }
 
 IC void	ref_sound::set_range(float min, float max)
 {
 	if (slot()) {
-		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::Pitch, Fvector(min, max));
+		XRay::Sound::Mixer::UpdateParameter(slot(), XRay::Sound::Mixer::ParameterId::Pitch, Fvector{ min, max, 1.f });
 	}
 }
 
