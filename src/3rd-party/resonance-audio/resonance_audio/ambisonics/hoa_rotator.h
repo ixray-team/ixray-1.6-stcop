@@ -18,6 +18,7 @@ limitations under the License.
 #define RESONANCE_AUDIO_AMBISONICS_HOA_ROTATOR_H_
 
 #include <vector>
+#include <utility>
 
 #include "Eigen/Dense"
 #include "base/audio_buffer.h"
