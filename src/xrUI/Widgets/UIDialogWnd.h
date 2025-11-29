@@ -28,7 +28,7 @@ public:
 	virtual bool Dispatch						(int cmd, int param)			{return true;}
     virtual void ShowOrHideDialog				(bool bDoHideIndicators);
 			void ShowDialog						(bool bDoHideIndicators);
-			void HideDialog						();
+	virtual void HideDialog						();
 
 	virtual bool IR_process						();
 

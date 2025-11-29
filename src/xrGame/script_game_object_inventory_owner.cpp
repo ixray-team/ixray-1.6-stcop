@@ -2379,7 +2379,7 @@ u8 CScriptGameObject::GetActorAnimatorRestoredSlot()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() ? pActor->HudAnimator()->ItemAnimator()->GetSlotToRestore() : 0;
+		return pActor->HudAnimator() != nullptr ? pActor->HudAnimator()->SlotToRestore() : 0;
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorAnimatorRestoredSlot!");
@@ -2390,7 +2390,7 @@ bool CScriptGameObject::GetAnimatorForceHideItems()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() != nullptr && pActor->HudAnimator()->IsForceHideItems();
+		return pActor->HudAnimator() != nullptr && pActor->HudAnimator()->ForceHideItems();
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetAnimatorForceHideItems!");
@@ -2403,12 +2403,42 @@ void CScriptGameObject::SetAnimatorForceHideItems(bool status)
 	{
 		if (pActor->HudAnimator() != nullptr)
 		{
-			pActor->HudAnimator()->SetForceHideItems(status);
+			pActor->HudAnimator()->ForceHideItems() = status;
 		}
 	}
 	else
 	{
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member SetAnimatorForceHideItems!");
+	}
+}
+
+void CScriptGameObject::ShowStateAnimator(LPCSTR section)
+{
+	if (CActor* pActor = object().cast_actor())
+	{
+		if (pActor->HudAnimator() != nullptr)
+		{
+			pActor->HudAnimator()->HudStateAnimator()->ShowStateAnimator(section);
+		}
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member ShowStateAnimator!");
+	}
+}
+
+void CScriptGameObject::HideStateAnimator()
+{
+	if (CActor* pActor = object().cast_actor())
+	{
+		if (pActor->HudAnimator() != nullptr)
+		{
+			pActor->HudAnimator()->HudStateAnimator()->HideStateAnimator();
+		}
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member HideStateAnimator!");
 	}
 }
 
