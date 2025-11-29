@@ -59,6 +59,7 @@ public:
 
 	void	Save			(NET_Packet& Packet);
 	void	Load			(NET_Packet& Packet);
+	void Serialize(ISaveObject& Object);
 
 	const char*	dateToString	(int mode);
 	const char*	timeToString	(int mode);
@@ -67,3 +68,4 @@ public:
 
 extern u32 get_time();
 extern xrTime get_time_struct();
+extern void ctime_serialize(xrTime* self, ISaveObject* save);

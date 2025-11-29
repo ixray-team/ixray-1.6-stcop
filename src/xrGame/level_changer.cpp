@@ -250,6 +250,15 @@ void CLevelChanger::load(IReader &input_packet)
 	m_b_enabled				= !!input_packet.r_u8();
 }
 
+void CLevelChanger::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CLevelChanger")
+	{
+		inherited::Serialize(Object);
+		Object << m_invite_str << m_b_enabled;
+	}
+}
+
 bool CLevelChanger::net_SaveRelevant()
 {
 	if(!m_b_enabled || m_invite_str!=DEF_INVITATION )

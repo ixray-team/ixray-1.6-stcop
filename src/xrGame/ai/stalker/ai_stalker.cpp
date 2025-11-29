@@ -1157,6 +1157,16 @@ void CAI_Stalker::load (IReader &packet)
 	brain().load			(packet);
 }
 
+void CAI_Stalker::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CAI_Stalker")
+	{
+		inherited::Serialize(Object);
+		CInventoryOwner::Serialize(Object);
+		brain().Serialize(Object);
+	}
+}
+
 void CAI_Stalker::load_critical_wound_bones()
 {
 	fill_bones_body_parts			("head",		critical_wound_type_head);

@@ -83,7 +83,7 @@
 		static bool ignore_always = false;\
 		if (!ignore_always){ \
 			string1024 buff; \
-			xr_sprintf(buff, message, __VA_ARGS__); \
+			xr_sprintf(buff, message, ##__VA_ARGS__); \
 			::Debug.fail(_TRE(#expr),buff,DEBUG_INFO,ignore_always);\
 		} \
 		return false;\
@@ -155,7 +155,7 @@
 		static bool ignore_always = false;\
 		if (!ignore_always){ \
 			string1024 buff; \
-			xr_sprintf(buff, message, __VA_ARGS__); \
+			xr_sprintf(buff, message, ##__VA_ARGS__); \
 			::Debug.fail(_TRE(#expr),buff,DEBUG_INFO,ignore_always);\
 		} \
 		return false;\
@@ -169,7 +169,7 @@
 #		define NODEFAULT assert(false)
 #	endif
 
-#	define VERIFY(expr)				do {} while (0)
+#	define VERIFY(...)				do {} while (0)
 #	define VERIFY2(expr, e2)		do {} while (0)
 #	define VERIFY3(expr, e2, e3)	do {} while (0)
 #	define VERIFY4(expr, e2, e3, e4)do {} while (0)

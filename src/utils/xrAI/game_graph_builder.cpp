@@ -16,6 +16,7 @@
 #include "../../xrGame/game_level_cross_table.h"
 #include "xrCrossTable.h"
 #include "graph_engine.h"
+#include "../xrCore/Save/SaveManager.h"
 
 CGameGraphBuilder::CGameGraphBuilder		()
 {
@@ -130,6 +131,74 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	F_entity_Destroy		(entity);
 }
 
+void CGameGraphBuilder::load_graph_point(ISaveObject& Object)
+{
+	shared_str				section_id;
+	Object << section_id;
+	//net_packet.r_stringZ	(section_id);
+
+//	if (xr_strcmp("graph_point",section_id))
+//		return;
+
+	CSE_Abstract			*entity = F_entity_Create(section_id.c_str());
+	if (!entity) {
+		Msg					("Cannot create entity from section %s, skipping",section_id.c_str());
+		return;
+	}
+
+	CSE_ALifeGraphPoint		*graph_point = smart_cast<CSE_ALifeGraphPoint*>(entity);
+	if (!graph_point) {
+		F_entity_Destroy	(entity);
+		return;
+	}
+
+	entity->Spawn_Serialize(Object, true);
+
+	vertex_type				vertex;
+	vertex.tLocalPoint		= graph_point->o_Position;
+	// check for duplicate graph point positions
+	{
+		graph_type::const_vertex_iterator	I = graph().vertices().begin();
+		graph_type::const_vertex_iterator	E = graph().vertices().end();
+		for ( ; I != E; ++I) {
+			if ((*I).second->data().tLocalPoint.distance_to_sqr(vertex.tLocalPoint) < EPS_L) {
+				Msg			("! removing graph point [%s][%f][%f][%f] because it is too close to the another graph point",entity->name_replace(),VPUSH(entity->o_Position));
+				F_entity_Destroy(entity);
+				return;
+			}
+		}
+	}
+
+	vertex.tGlobalPoint		= graph_point->o_Position;
+	vertex.tNodeID			= level_graph().valid_vertex_position(vertex.tLocalPoint) ? level_graph().vertex_id(vertex.tLocalPoint) : u32(-1);
+	if (!level_graph().valid_vertex_id(vertex.tNodeID)) {
+		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map",entity->name_replace(),VPUSH(entity->o_Position));
+		F_entity_Destroy	(entity);
+		return;
+	}
+
+	{
+		graph_type::const_vertex_iterator	I = graph().vertices().begin();
+		graph_type::const_vertex_iterator	E = graph().vertices().end();
+		for ( ; I != E; ++I) {
+			if ((*I).second->data().tNodeID == vertex.tNodeID) {
+				Msg			("! removing graph point [%s][%f][%f][%f] because it has the same AI node as another graph point",entity->name_replace(),VPUSH(entity->o_Position));
+				F_entity_Destroy	(entity);
+				return;
+			}
+		}
+	}
+
+	vertex.tNeighbourCount	= 0;
+	Memory.mem_copy			(vertex.tVertexTypes,graph_point->m_tLocations,GameGraph::LOCATION_TYPE_COUNT*sizeof(GameGraph::_LOCATION_ID));
+	vertex.tLevelID			= 0;
+	vertex.tDeathPointCount = 0;
+
+	graph().add_vertex		(vertex,graph().vertices().size());
+
+	F_entity_Destroy		(entity);
+}
+
 void CGameGraphBuilder::load_graph_points	(const float &start, const float &amount)
 {
 	Progress				(start);
@@ -140,16 +209,31 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 	xr_strconcat(spawn_file_name,*m_level_name,"level.spawn");
 	IReader					*reader = FS.r_open(spawn_file_name);
 	u32						id;
-	NET_Packet				net_packet;
-	for	(
-			IReader *chunk = reader->open_chunk_iterator(id);
-			chunk;
-			chunk = reader->open_chunk_iterator(id,chunk)
-		)
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{
-		net_packet.B.data.resize(chunk->length());
-		chunk->r			(net_packet.B.data.data(),net_packet.B.data.size());
-		load_graph_point	(net_packet);
+		for	(
+				IReader *chunk = reader->open_chunk_iterator(id);
+				chunk;
+				chunk = reader->open_chunk_iterator(id,chunk)
+			)
+		{
+			CSaveObjectLoad* Obj = CSaveManager::GetInstance().EditorBeginLoad(chunk);
+			load_graph_point	(*Obj);
+			xr_delete(Obj);
+		}
+	} else
+	{
+		NET_Packet				net_packet;
+		for	(
+				IReader *chunk = reader->open_chunk_iterator(id);
+				chunk;
+				chunk = reader->open_chunk_iterator(id,chunk)
+			)
+		{
+			net_packet.B.data.resize(chunk->length());
+			chunk->r			(net_packet.B.data.data(),net_packet.B.data.size());
+			load_graph_point	(net_packet);
+		}
 	}
 	
 	FS.r_close				(reader);

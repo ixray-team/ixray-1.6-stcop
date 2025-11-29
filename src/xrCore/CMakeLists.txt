@@ -3,7 +3,7 @@ set(CORE_SRC_FILES)
 
 file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS "*.*")
 
-# NatVis и NuGet-конфиги
+# NatVis пїЅ NuGet-пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 file(GLOB_RECURSE CORE_NATVIS_FILES "../ixray.natvis")
 
 foreach(_file IN LISTS CORE_SOURCE_ALL_FILES)
@@ -55,6 +55,7 @@ endif()
 
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(xrCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_include_directories(xrCore PUBLIC ${EXTERNAL_INCLUDE_DIR})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 

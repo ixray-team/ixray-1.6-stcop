@@ -324,15 +324,8 @@ function anomaly_zone_binder:set_forced_override(artefact_name)
     end)
 end
 
-function anomaly_zone_binder:reload(section)
-	return PROF_EVENT_CLOSURE("reload", function()
-        object_binder.reload(self, section)
-    end)
-end
-
 function anomaly_zone_binder:reinit()
 	return PROF_EVENT_CLOSURE("reinit", function()
-        object_binder.reinit(self)
         db.storage[self.object:id()] = {}
         self.st = db.storage[self.object:id()]
     end)
@@ -340,9 +333,6 @@ end
 
 function anomaly_zone_binder:net_spawn(server_object)
 	return PROF_EVENT_CLOSURE("net_spawn", function()
-        if not object_binder.net_spawn(self, server_object) then
-            return false
-        end
         db.add_anomaly(self)
         db.add_obj(self.object)
         return true
@@ -354,14 +344,11 @@ function anomaly_zone_binder:net_destroy()
         db.del_anomaly(self)
         db.del_obj(self.object)
         db.storage[self.object:id()] = nil
-        object_binder.net_destroy(self)
     end)
 end
 
 function anomaly_zone_binder:update(delta)
-	return PROF_EVENT_CLOSURE("update", function()
-        object_binder.update(self, delta)
-        
+	return PROF_EVENT_CLOSURE("update", function()        
         SendScriptCallback("anomaly_zone_on_update", self, self.object)
     
         -- Fix actual count of artefacts - like 1.6.03 Unofficial
@@ -478,7 +465,6 @@ end
 function anomaly_zone_binder:save(thread)
 	return PROF_EVENT_CLOSURE("save", function()
         set_save_marker(thread, "save", false, "anomaly_zone_binder")
-        object_binder.save(self, thread)
     
         local count = 0
         for k,v in pairs(self.artefact_ways_by_id) do
@@ -521,7 +507,6 @@ end
 function anomaly_zone_binder:load(thread)
 	return PROF_EVENT_CLOSURE("load", function()
         set_save_marker(thread, "load", false, "anomaly_zone_binder")
-        object_binder.load(self, thread)
     
         local count = thread:r_u16()
         for i=1,count do
@@ -558,4 +543,102 @@ function anomaly_zone_binder:load(thread)
             self:cleanup()
         end
     end)
+end
+-- Serializing anomaly zone
+function anomaly_zone_binder:Serialize(Object)
+	Object:ForChunk("anomaly_zone_binder", function()
+		Object:ForChunk("anomaly_zone_binder:data", function()
+			if Object:IsSave() then
+				local count = 0
+				for k,v in pairs(self.artefact_ways_by_id) do
+					count = count + 1
+				end
+				Object:s_u16(count)
+				Object:ForArray(function()
+					for k,v in pairs(self.artefact_ways_by_id) do
+						Object:ForChunk("anomaly_zone_binder:artefact_ways_by_id", function()
+							Object:s_u16(k)
+							Object:s_stringZ(v)
+						end)
+					end
+				end)
+
+				
+				local count = 0
+				for k,v in pairs(self.artefact_points_by_id) do
+					count = count + 1
+				end
+				Object:s_u16(count)
+				Object:ForArray(function()
+					for k,v in pairs(self.artefact_points_by_id) do
+						Object:ForChunk("anomaly_zone_binder:artefact_points_by_id", function()
+							Object:s_u16(k)
+							Object:s_u8(v)
+						end)
+					end
+				end)
+			else
+				local count = 0
+				count = Object:s_u16(count)
+				Object:ForArray(function()
+					for i=1,count do
+						Object:ForChunk("anomaly_zone_binder:artefact_ways_by_id", function()
+							local art_id = 0
+							art_id = Object:s_u16(art_id)
+							local way_name = ""
+							way_name = Object:s_stringZ(way_name)
+							artefact_ways_by_id[art_id] = way_name
+							self.artefact_ways_by_id[art_id] = way_name
+							parent_zones_by_artefact_id[art_id] = self
+						end)
+					end
+				end)
+
+				local count = 0
+				count = Object:s_u16(count)
+				Object:ForArray(function()
+					for k,v in pairs(self.artefact_points_by_id) do
+						Object:ForChunk("anomaly_zone_binder:artefact_points_by_id", function()
+							local art_id = 0
+							art_id = Object:s_u16(art_id)
+							local point_name = 0
+							point_name = Object:s_u8(point_name)
+							artefact_points_by_id[art_id] = point_name
+							self.artefact_points_by_id[art_id] = point_name
+						end)
+					end
+				end)
+			end
+			self.spawned_count = Object:s_u8(self.spawned_count)
+			self.respawn_artefacts = Object:s_bool(self.respawn_artefacts)
+			self.forced_spawn = Object:s_bool(self.forced_spawn)
+			self.forced_spawn_override = Object:s_bool(self.forced_spawn_override)
+			self.forced_artefact = Object:s_stringZ(self.forced_artefact)
+			if Object:IsSave() then
+				local layer_num = tonumber(string.sub(self.cur_layer, string.find(self.cur_layer, "_")+1, string.len(self.cur_layer)))
+				if(layer_num) then
+					Object:s_u8(layer_num)
+				else
+					Object:s_u8(-1)
+				end
+			else
+				local layer_num = 0
+				layer_num = Object:s_u8(layer_num)
+				if(layer_num~=255) then
+					self.cur_layer = "layer_"..layer_num
+				end
+			end
+			self.turned_off = Object:s_bool(self.turned_off)
+		end)
+	end)
+    if Object:IsSave() then
+	    SendScriptCallback("anomaly_zone_on_save", self, self.object, thread, parent_zones_by_artefact_id)
+    else
+	    SendScriptCallback("anomaly_zone_on_load", self, self.object, thread, parent_zones_by_artefact_id)
+        
+	    -- from 1.6.03 Unofficial
+	    if (self.spawned_count < 0 or self.spawned_count > 200) then
+ 		    self:cleanup()
+	    end
+    end
 end

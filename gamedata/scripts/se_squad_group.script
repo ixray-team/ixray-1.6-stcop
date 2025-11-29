@@ -31,3 +31,9 @@ end
 function se_squad:STATE_Read(packet)
 	cse_alife_online_offline_group.STATE_Read (self, packet)
 end
+
+function se_squad:STATE_Serialize(Object)
+	Object:ForChunk("se_squad:STATE", function()
+		cse_alife_online_offline_group.STATE_Serialize (self, Object)
+	end)
+end
