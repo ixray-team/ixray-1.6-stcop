@@ -4,8 +4,10 @@
 #include "CustomDevice.h"
 #include "Actor.h"
 #include "Inventory.h"
-#include "ai_space.h"
 #include "ui/UIGameCustom.h"
+
+#include "ai_space.h"
+#include "../../xrScripts/script_engine.h"
 
 bool m_AnimatorForceHideItems = false;
 
@@ -20,17 +22,42 @@ void CHudAnimatorBase::Load()
 	m_sounds.Clear();
 
 	m_bCanSprint = READ_IF_EXISTS(pSettings, r_bool, m_section, "can_sprint", false);
+	m_bHideUI = READ_IF_EXISTS(pSettings, r_bool, m_section, "hide_ui", true);
 
 	m_fHudFov = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov", 0.0f);
 	m_fHudFovFactor = READ_IF_EXISTS(pSettings, r_float, m_section, "hud_fov_factor", 1.0f);
+
+	m_sLuaLeftCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "left_lua_callback", "null");
+	m_sLuaLeft2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "left2_lua_callback", "null");
+	m_sLuaRightCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "right_lua_callback", "null");
+	m_sLuaRight2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "right2_lua_callback", "null");
+	m_sLuaStartCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "start_lua_callback", "null");
+	m_sLuaEndCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "end_lua_callback", "null");
 }
 
 void CHudAnimatorBase::StopAnimator()
 {
 	m_bIsPlaying = false;
-	m_actor->set_inventory_disabled(false);
-	m_actor->set_pda_disabled(false);
+	m_manager->Parent()->set_inventory_disabled(false);
+	m_manager->Parent()->set_pda_disabled(false);
 	g_player_hud->delete_animator_item();
+
+	m_manager->SetCurrentAnimator(nullptr);
+
+	m_left_callback.clear();
+	m_left2_callback.clear();
+	m_right_callback.clear();
+	m_right2_callback.clear();
+	m_start_callback.clear();
+	m_end_callback.clear();
+
+	m_sLuaLeftCallback = "null";
+	m_sLuaLeft2Callback = "null";
+	m_sLuaRightCallback = "null";
+	m_sLuaRight2Callback = "null";
+	m_sLuaStartCallback = "null";
+	m_sLuaEndCallback = "null";
+	m_sLuaModifySect = "null";
 }
 
 ENGINE_API extern float psHUD_FOV_def;
@@ -55,11 +82,146 @@ bool CHudAnimatorBase::HudAnimationExist(const shared_str& name)
 	return false;
 }
 
-CHudStateAnimator::CHudStateAnimator(CActor* parent, const shared_str& section) : CHudAnimatorBase(parent)
+void CHudAnimatorBase::CallLeftCallback()
 {
-	m_section = section;
-	Load();
+	if (m_left_callback)
+	{
+		m_left_callback();
+		m_left_callback.clear();
+	}
+
+	if (m_sLuaLeftCallback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaLeftCallback, lua_func))
+		{
+			lua_func();
+			m_sLuaLeftCallback = "null";
+		}
+		else
+		{
+			Msg("Error to call left script callback [%s] in animator [%s]", *m_sLuaLeftCallback, *m_section);
+		}
+	}
 }
+
+void CHudAnimatorBase::CallLeft2Callback()
+{
+	if (m_left2_callback)
+	{
+		m_left2_callback();
+		m_left2_callback.clear();
+	}
+
+	if (m_sLuaLeft2Callback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaLeft2Callback, lua_func))
+		{
+			lua_func();
+			m_sLuaLeft2Callback = "null";
+		}
+		else
+		{
+			Msg("Error to call left2 script callback [%s] in animator [%s]", *m_sLuaLeft2Callback, *m_section);
+		}
+	}
+}
+
+void CHudAnimatorBase::CallRightCallback()
+{
+	if (m_right_callback)
+	{
+		m_right_callback();
+		m_right_callback.clear();
+	}
+
+	if (m_sLuaRightCallback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaRightCallback, lua_func))
+		{
+			lua_func();
+			m_sLuaRightCallback = "null";
+		}
+		else
+		{
+			Msg("Error to call right script callback [%s] in animator [%s]", *m_sLuaRightCallback, *m_section);
+		}
+	}
+}
+
+void CHudAnimatorBase::CallRight2Callback()
+{
+	if (m_right2_callback)
+	{
+		m_right2_callback();
+		m_right2_callback.clear();
+	}
+
+	if (m_sLuaRight2Callback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaRight2Callback, lua_func))
+		{
+			lua_func();
+			m_sLuaRight2Callback = "null";
+		}
+		else
+		{
+			Msg("Error to call right2 script callback [%s] in animator [%s]", *m_sLuaRight2Callback, *m_section);
+		}
+	}
+}
+
+void CHudAnimatorBase::CallEndCallback()
+{
+	if (m_end_callback)
+	{
+		m_end_callback();
+		m_end_callback.clear();
+	}
+
+	if (m_sLuaEndCallback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaEndCallback, lua_func))
+		{
+			lua_func();
+			m_sLuaEndCallback = "null";
+		}
+		else
+		{
+			Msg("Error to call end script callback [%s] in animator [%s]", *m_sLuaEndCallback, *m_section);
+		}
+	}
+}
+
+void CHudAnimatorBase::CallStartCallback()
+{
+	if (m_start_callback)
+	{
+		m_start_callback();
+		m_start_callback.clear();
+	}
+
+	if (m_sLuaStartCallback != "null")
+	{
+		luabind::functor<void> lua_func;
+		if (ai().script_engine().functor(*m_sLuaStartCallback, lua_func))
+		{
+			lua_func();
+			m_sLuaStartCallback = "null";
+		}
+		else
+		{
+			Msg("Error to call start script callback [%s] in animator [%s]", *m_sLuaStartCallback, *m_section);
+		}
+	}
+}
+
+CHudStateAnimator::CHudStateAnimator(CHudAnimatorManager* manager) : CHudAnimatorBase(manager)
+{}
 
 void CHudStateAnimator::Load()
 {
@@ -87,36 +249,57 @@ void CHudStateAnimator::Update()
 {
 	if (m_bNeedActivated)
 	{
-		bool wpn_hide = !g_player_hud->attached_item(0) && !m_actor->inventory().ActiveItem() && !m_actor->inventory().GetNextActiveSlot() && !m_actor->inventory().GetActiveSlot();
-		if (wpn_hide && !g_player_hud->attached_item(1))
+		m_manager->SetTargetAnimator(this);
+
+		bool wpn_hide = !g_player_hud->attached_item(0) && !m_manager->Parent()->inventory().ActiveItem() && !m_manager->Parent()->inventory().GetNextActiveSlot() && !m_manager->Parent()->inventory().GetActiveSlot();
+		if (wpn_hide && g_player_hud->GetAnimator() == nullptr && !g_player_hud->attached_item(1))
 		{
 			m_bNeedActivated = false;
 			SetState(eShowing);
 		}
 		else
 		{
-			CHudItem* active_item = m_actor->inventory().ActiveItem() ? m_actor->inventory().ActiveItem()->cast_hud_item() : nullptr;
+			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
+			if (current_animator != nullptr && this != current_animator)
+			{
+				if (CHudStateAnimator* state_animator = current_animator->cast_hud_state_animator())
+				{
+					if (state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden && state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+					{
+						if (m_AnimatorForceHideItems)
+						{
+							state_animator->StopAnimator();
+						}
+						else
+						{
+							state_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+						}
+					}
+				}
+			}
+
+			CHudItem* active_item = m_manager->Parent()->inventory().ActiveItem() ? m_manager->Parent()->inventory().ActiveItem()->cast_hud_item() : nullptr;
 			if (active_item != nullptr)
 			{
-				u16 slot = m_actor->inventory().GetActiveSlot();
-				m_iRestoreSlot = slot;
+				u16 slot = m_manager->Parent()->inventory().GetActiveSlot();
+				m_manager->SlotToRestore() = slot;
 
 				if (m_AnimatorForceHideItems)
 				{
-					m_actor->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+					m_manager->Parent()->inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 					active_item->SwitchState(CHUDState::EHudStates::eHidden);
 					active_item->SetState(CHUDState::EHudStates::eHidden);
 					g_player_hud->detach_item_idx(0);
 				}
 				else if (active_item->GetState() != CHUDState::EHudStates::eHiding)
 				{
-					m_actor->inventory().Activate(NO_ACTIVE_SLOT);
+					m_manager->Parent()->inventory().Activate(NO_ACTIVE_SLOT);
 				}
 			}
 
-			if (CCustomDevice* dev = m_actor->GetDevice())
+			if (CCustomDevice* dev = m_manager->Parent()->GetDevice())
 			{
-				m_bRestoreDetector = true;
+				m_manager->RestoreDevice() = true;
 
 				if (m_AnimatorForceHideItems)
 				{
@@ -188,7 +371,7 @@ void CHudStateAnimator::UpdateAnimation()
 					auto Icurr = M.pick_mark(motion_curr_time);
 					if (Iprev == nullptr && Icurr != nullptr)
 					{
-						//OnMotionMark(M);
+						OnMotionMark(M, m_on_animation_end_state);
 					}
 				}
 
@@ -208,6 +391,9 @@ void CHudStateAnimator::UpdateAnimation()
 	}
 }
 
+void CHudStateAnimator::OnMotionMark(const motion_marks& mark, u32 state)
+{}
+
 void CHudStateAnimator::OnAnimationEnd(u32 state)
 {
 	switch (state)
@@ -216,16 +402,27 @@ void CHudStateAnimator::OnAnimationEnd(u32 state)
 	{
 		SetState(eHidden);
 
-		if (m_iRestoreSlot > 0 && m_actor->inventory().ItemFromSlot(m_iRestoreSlot))
+		m_manager->Parent()->set_pda_disabled(false);
+		m_manager->Parent()->set_inventory_disabled(false);
+
+		if (m_manager->TargetAnimator() != nullptr)
 		{
-			m_actor->inventory().Activate(m_iRestoreSlot);
-			m_iRestoreSlot = 0;
+			break;
 		}
 
-		if (m_bRestoreDetector && m_actor->GetDevice(true))
+		u8& slot_to_restore = m_manager->SlotToRestore();
+		bool& restore_device = m_manager->RestoreDevice();
+
+		if (slot_to_restore > 0 && m_manager->Parent()->inventory().ItemFromSlot(slot_to_restore))
 		{
-			m_actor->GetDevice(true)->ToggleDetector(true, true);
-			m_bRestoreDetector = false;
+			m_manager->Parent()->inventory().Activate(slot_to_restore);
+			slot_to_restore = 0;
+		}
+
+		if (restore_device && m_manager->Parent()->GetDevice(true))
+		{
+			m_manager->Parent()->GetDevice(true)->ToggleDetector(true, true);
+			restore_device = false;
 		}
 	}break;
 	case eShowing:
@@ -258,16 +455,23 @@ void CHudStateAnimator::OnStateSwitch(u32 state)
 
 		m_bIsPlaying = true;
 
+		if (m_manager->TargetAnimator() == this)
+		{
+			m_manager->SetTargetAnimator(nullptr);
+		}
+
+		m_manager->SetCurrentAnimator(this);
+
 		if (m_sounds.FindSoundItem("sndDraw", false))
 		{
-			m_sounds.PlaySound("sndDraw", zero_vel, m_actor, true);
+			m_sounds.PlaySound("sndDraw", zero_vel, m_manager->Parent(), true);
 		}
 	}break;
 	case eHiding:
 	{
 		if (m_sounds.FindSoundItem("sndHide", false))
 		{
-			m_sounds.PlaySound("sndHide", zero_vel, m_actor, true);
+			m_sounds.PlaySound("sndHide", zero_vel, m_manager->Parent(), true);
 		}
 		PlayMotion("anm_hide", true, eHiding);
 	}break;
@@ -284,7 +488,7 @@ void CHudStateAnimator::OnStateSwitch(u32 state)
 		PlayMotion("anm_bore", true, eBore);
 		if (m_sounds.FindSoundItem("sndBore", false))
 		{
-			m_sounds.PlaySound("sndBore", zero_vel, m_actor, true);
+			m_sounds.PlaySound("sndBore", zero_vel, m_manager->Parent(), true);
 		}
 	}break;
 	case eSprintStart:
@@ -328,7 +532,7 @@ void CHudStateAnimator::PlayAnimIdle()
 
 bool CHudStateAnimator::TryPlayAnimIdle()
 {
-	u32 state = m_actor->GetMovementState(eReal);
+	u32 state = m_manager->Parent()->GetMovementState(eReal);
 	if (state & ACTOR_DEFS::EMoveCommand::mcSprint && CanSprint() && HudAnimationExist("anm_idle_sprint"))
 	{
 		if (!m_bSwitchSprint && HudAnimationExist("anm_idle_sprint_start"))
@@ -408,14 +612,70 @@ void CHudStateAnimator::SwitchAnimator()
 	if (GetState() == eIdle)
 	{
 		SetState(eHiding);
-		m_actor->set_pda_disabled(false);
-		m_actor->set_inventory_disabled(false);
 	}
 	else if (!m_bNeedActivated && GetState() == eHidden && g_player_hud->GetAnimator() == nullptr)
 	{
+		m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+
+		if (m_sLuaModifySect != "null")
+		{
+			luabind::functor<const char*> lua_func;
+			if (ai().script_engine().functor(*m_sLuaModifySect, lua_func))
+			{
+				m_section = lua_func(m_section.c_str());
+				m_sLuaModifySect = "null";
+			}
+			else
+			{
+				Msg("Error to call section modify script [%s] in animator [%s]", *m_sLuaModifySect, *m_section);
+			}
+		}
+
+		Load();
+
 		m_bNeedActivated = true;
-		m_actor->set_pda_disabled(true);
-		m_actor->set_inventory_disabled(true);
+
+		if (m_bHideUI)
+		{
+			m_manager->Parent()->set_pda_disabled(true);
+			m_manager->Parent()->set_inventory_disabled(true);
+
+			if (auto ui = CurrentGameUI())
+			{
+				ui->HideShownDialogs();
+			}
+		}
+	}
+}
+
+void CHudStateAnimator::ShowStateAnimator(const shared_str& section)
+{
+	m_section = section;
+
+	m_sLuaModifySect = READ_IF_EXISTS(pSettings, r_string, m_section, "modify_sect_lua_callback", "null");
+
+	if (m_sLuaModifySect != "null")
+	{
+		luabind::functor<const char*> lua_func;
+		if (ai().script_engine().functor(*m_sLuaModifySect, lua_func))
+		{
+			m_section = lua_func(m_section.c_str());
+			m_sLuaModifySect = "null";
+		}
+		else
+		{
+			Msg("Error to call section modify script [%s] in animator [%s]", *m_sLuaModifySect, *m_section);
+		}
+	}
+
+	Load();
+
+	m_bNeedActivated = true;
+
+	if (m_bHideUI)
+	{
+		m_manager->Parent()->set_pda_disabled(true);
+		m_manager->Parent()->set_inventory_disabled(true);
 
 		if (auto ui = CurrentGameUI())
 		{
@@ -424,16 +684,35 @@ void CHudStateAnimator::SwitchAnimator()
 	}
 }
 
+void CHudStateAnimator::HideStateAnimator()
+{
+	SetState(eHiding);
+}
+
+void CHudStateAnimator::StopAnimator()
+{
+	m_current_state = eHidden;
+	m_on_animation_end_state = eHidden;
+	m_current_motion_def = nullptr;
+	m_dwMotionStartTm = 0;
+	m_dwMotionEndTm = 0;
+	m_dwMotionCurrTm = 0;
+	m_bStopAtEndAnimIsRunning = false;
+
+	CHudAnimatorBase::StopAnimator();
+}
+
 CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 {
-	m_item_animator = new CHudItemAnimator(actor);
+	m_item_animator = new CHudItemAnimator(this);
+	m_hud_state_animator = new CHudStateAnimator(this);
 
 	if (pGameGlobals->line_exist("backpack", "backpack_animator"))
 	{
 		LPCSTR backpack_animator = pGameGlobals->r_string("backpack", "backpack_animator");
 		if (pSettings->section_exist(backpack_animator))
 		{
-			m_backpack_animator = new CBackpackAnimator(actor, backpack_animator);
+			m_backpack_animator = new CBackpackAnimator(this, backpack_animator);
 		}
 	}
 
@@ -461,6 +740,11 @@ void CHudAnimatorManager::Update()
 		BackpackAnimator()->Update();
 	}
 
+	if (HudStateAnimator() != nullptr)
+	{
+		HudStateAnimator()->Update();
+	}
+
 	//if (PdaAnimator() != nullptr)
 	//{
 	//	PdaAnimator()->Update();
@@ -469,96 +753,70 @@ void CHudAnimatorManager::Update()
 
 bool CHudAnimatorManager::IsAnyAnimatorActive()
 {
-	if (ItemAnimator() != nullptr && ItemAnimator()->IsActive())
+	if (CurrentAnimator() != nullptr && CurrentAnimator()->IsActive())
 	{
 		return true;
 	}
-
-	if (BackpackAnimator() != nullptr && BackpackAnimator()->IsActive())
-	{
-		return true;
-	}
-
-	//if (PdaAnimator() != nullptr)
-	//{
-	//	return PdaAnimator()->IsActive();
-	//}
 
 	return false;
 }
 
 bool CHudAnimatorManager::CanSprint()
 {
-	if (ItemAnimator() != nullptr && ItemAnimator()->IsActive())
+	if (CurrentAnimator() != nullptr && CurrentAnimator()->IsActive())
 	{
-		return ItemAnimator()->CanSprint();
+		return CurrentAnimator()->CanSprint();
 	}
-
-	if (BackpackAnimator() != nullptr && BackpackAnimator()->IsActive())
-	{
-		return BackpackAnimator()->CanSprint();
-	}
-
-	//if (PdaAnimator() != nullptr && PdaAnimator()->IsActive())
-	//{
-	//	return PdaAnimator()->CanSprint();
-	//}
 
 	return true;
 }
 
 float CHudAnimatorManager::GetHudFov()
 {
-	if (ItemAnimator() != nullptr && ItemAnimator()->IsActive())
+	if (CurrentAnimator() != nullptr && CurrentAnimator()->IsActive())
 	{
-		return ItemAnimator()->GetHudFov();
+		return CurrentAnimator()->GetHudFov();
 	}
-
-	if (BackpackAnimator() != nullptr && BackpackAnimator()->IsActive())
-	{
-		return BackpackAnimator()->GetHudFov();
-	}
-
-	//if (PdaAnimator() != nullptr && PdaAnimator()->IsActive())
-	//{
-	//	return PdaAnimator()->GetHudFov();
-	//}
 
 	return psHUD_FOV_def;
 }
 
 void CHudAnimatorManager::StopGetAnimator()
 {
-	if (ItemAnimator() != nullptr && ItemAnimator()->IsActive())
+	if (CurrentAnimator() != nullptr && CurrentAnimator()->IsActive())
 	{
-		ItemAnimator()->StopAnimator();
+		CurrentAnimator()->StopAnimator();
 	}
 
-	if (BackpackAnimator() != nullptr && BackpackAnimator()->IsActive())
+	if (TargetAnimator() != nullptr && TargetAnimator()->IsActive())
 	{
-		BackpackAnimator()->StopAnimator();
+		TargetAnimator()->StopAnimator();
 	}
-
-	//if (PdaAnimator() != nullptr && PdaAnimator()->IsActive())
-	//{
-	//	PdaAnimator()->StopAnimator();
-	//}
 }
 
-void CHudAnimatorManager::SetForceHideItems(bool value)
-{
-	m_AnimatorForceHideItems = value;
-}
-
-bool CHudAnimatorManager::IsForceHideItems()
+bool& CHudAnimatorManager::ForceHideItems()
 {
 	return m_AnimatorForceHideItems;
 }
 
 void CHudAnimatorManager::OnMovementChanged()
 {
-	if (BackpackAnimator() != nullptr && BackpackAnimator()->IsActive())
+	CHudAnimatorBase* current_animator = CurrentAnimator();
+
+	if (current_animator == nullptr)
 	{
-		BackpackAnimator()->OnMovementChanged();
+		return;
+	}
+
+	CHudStateAnimator* state_animator = current_animator->cast_hud_state_animator();
+
+	if (state_animator == nullptr)
+	{
+		return;
+	}
+
+	if (state_animator->IsActive())
+	{
+		state_animator->OnMovementChanged();
 	}
 }
