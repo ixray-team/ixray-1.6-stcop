@@ -1,5 +1,5 @@
-#ifndef __M__
-#define __M__
+#pragma once
+
 /*
 *	DirectX-compliant, ie row-column order, ie m[Row][Col].
 *	Same as:
@@ -970,4 +970,10 @@ ICF bool	_valid			(const _matrix<T>& m)
 extern XRCORE_API Fmatrix	Fidentity;
 extern XRCORE_API Dmatrix	Didentity;
 
-#endif
+template<typename T> ISaveObject& operator<<(ISaveObject& Object, _matrix<T>& Value) {
+	Object << Value._11 << Value._12 << Value._13 << Value._14;
+	Object << Value._21 << Value._22 << Value._23 << Value._24;
+	Object << Value._31 << Value._32 << Value._33 << Value._34;
+	Object << Value._41 << Value._42 << Value._43 << Value._44;
+	return Object;
+}

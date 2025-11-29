@@ -34,6 +34,15 @@ void GAME_NEWS_DATA::save (IWriter& stream)
 	save_data(tex_rect,		stream);
 }
 
+ISaveObject& operator<<(ISaveObject& Object, GAME_NEWS_DATA& Data)
+{
+	BEGIN_CHUNK(Object, "GAME_NEWS_DATA")
+	{
+		Object << Data.m_type << Data.news_caption << Data.news_text << Data.receive_time << Data.texture_name;
+	}
+	return Object;
+}
+
 void GAME_NEWS_DATA::load (IReader& stream)
 {
 	load_data(m_type,		stream);

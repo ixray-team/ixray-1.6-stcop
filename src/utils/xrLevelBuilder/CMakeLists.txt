@@ -42,7 +42,9 @@ file(GLOB XAI_SOURCE_ENTT_FILES
     "../../xrServerEntities/xrServer_Objects_ALife_Monsters.cpp"
     "../../xrServerEntities/xrServer_Object_Base.cpp"
     "../../xrServerEntities/xrServer_Space.cpp"
-    "../../xrEngine/xrLoadSurface.cpp"
+    "../../xrServerEntities/server_entity_wrapper.h"
+    "../../xrServerEntities/server_entity_wrapper.cpp"
+    "../../xrServerEntities/server_entity_wrapper_inline.h"
     "../../xrGame/game_level_cross_table.cpp"
 )
 

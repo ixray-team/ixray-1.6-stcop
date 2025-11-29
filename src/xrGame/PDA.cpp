@@ -248,6 +248,15 @@ void CPda::load(IReader& input_packet)
 	IPowerManager::net_load(input_packet);
 }
 
+void CPda::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CPda")
+	{
+		inherited::Serialize(Object);
+		Object << m_sFullName;
+	}
+}
+
 CObject* CPda::GetOwnerObject()
 {
 	return Level().Objects.net_Find(GetOriginalOwnerID());

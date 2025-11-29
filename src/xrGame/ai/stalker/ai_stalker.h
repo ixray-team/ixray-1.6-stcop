@@ -240,8 +240,9 @@ public:
 	virtual void						net_Relcase							(CObject*	 O);
 
 	//save/load server serialization
-	virtual void						save								(NET_Packet &output_packet);
-	virtual void						load								(IReader &input_packet);
+	virtual void						save								(NET_Packet &output_packet) override;
+	virtual void						load								(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void						UpdateCL							();
 	virtual void						shedule_Update						(u32 dt);

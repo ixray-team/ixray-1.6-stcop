@@ -31,5 +31,11 @@ struct xrGUID
 	}
 };
 
+inline ISaveObject& operator<<(ISaveObject& Object, xrGUID& GUID)
+{
+	Object << GUID.g[0] << GUID.g[1];
+	return Object;
+}
+
 XRCORE_API xrGUID generate_guid();
 XRCORE_API const char* generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buffer_size);

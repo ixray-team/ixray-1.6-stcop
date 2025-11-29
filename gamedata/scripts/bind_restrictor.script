@@ -17,23 +17,13 @@ function restrictor_binder:__init(obj, char_ini) super(obj)
 	self.loaded = false
 end
 
-function restrictor_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function restrictor_binder:reinit()
-	object_binder.reinit(self)
-
 	db.storage[self.object:id()] = { }
 
 	self.st = db.storage[self.object:id()]
 end
 
 function restrictor_binder:net_spawn(data)
-	if not object_binder.net_spawn( self,data ) then
-		return false
-	end
-
 	db.add_zone(self.object)
 	db.add_obj(self.object)
 
@@ -72,8 +62,6 @@ function restrictor_binder:net_destroy()
 	db.del_obj(self.object)
 
 	db.storage[self.object:id()] = nil
-
-	object_binder.net_destroy(self)
 end
 
 -- вызывается из обновления актёра!(БРЕХНЯ!!!!!!!)
@@ -103,8 +91,6 @@ end
 
 function restrictor_binder:save(packet)
 	set_save_marker(packet, "save", false, "restrictor_binder")
-	object_binder.save(self, packet)
-
 	xr_logic.save_obj(self.object, packet)
 	set_save_marker(packet, "save", true, "restrictor_binder")
 end
@@ -114,9 +100,15 @@ function restrictor_binder:load(reader)
 	self.loaded = true
 
 	printf( "restrictor_binder:load" )
-
-	object_binder.load(self, reader)
-
 	xr_logic.load_obj(self.object, reader)
 	set_save_marker(reader, "load", true, "restrictor_binder")
+end
+
+function restrictor_binder:Serialize(Object)
+	if not Object:IsSave() then
+		self.loaded = true
+	end
+	Object:ForChunk("restrictor_binder", function()
+		xr_logic.Serialize_obj(self.object, Object)
+	end)
 end

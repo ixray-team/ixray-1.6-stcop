@@ -29,6 +29,14 @@ void CCameraFirstEye::load(IReader& packet)
 	load_data(pitch, packet); 
 }
 
+void CCameraFirstEye::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCameraFirstEye")
+	{
+		Object << pitch;
+	}
+}
+
 void CCameraFirstEye::Update(Fvector& point, Fvector& noise_dangle, bool force_update_pos)
 {
 	inherited::Update(point, noise_dangle, force_update_pos);

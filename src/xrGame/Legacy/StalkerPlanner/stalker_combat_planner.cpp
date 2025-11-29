@@ -557,3 +557,11 @@ void CStalkerCombatPlanner::load(IReader &packet)
 {
 	inherited::load			(packet);
 }
+
+void CStalkerCombatPlanner::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CStalkerCombatPlanner")
+	{
+		inherited::Serialize(Object);
+	}
+}

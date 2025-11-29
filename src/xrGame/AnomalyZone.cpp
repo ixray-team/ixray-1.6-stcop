@@ -2068,3 +2068,13 @@ void CAnomalyZone::load							(IReader &input_packet)
 		AnomalyGravity->load(input_packet);
 	}
 }
+
+void CAnomalyZone::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCustomZone")
+	{
+		inherited::Serialize(Object);
+		u8* Value = (u8*)&m_eZoneState;
+		Object << *Value;
+	}
+}

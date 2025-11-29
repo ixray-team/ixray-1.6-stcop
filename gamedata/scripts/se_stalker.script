@@ -93,6 +93,44 @@ function se_stalker:STATE_Read(packet, size)
 	self.death_droped = packet:r_bool()
 end
 --------------------
+function se_stalker:STATE_Serialize(Object)
+	Object:ForChunk("se_stalker:STATE", function()
+		cse_alife_human_stalker.STATE_Serialize (self, Object)
+		Object:ForChunk("se_stalker:STATE:data", function()
+			if Object:IsSave() then
+                local lvid = nil
+				if self.online then
+					lvid = level and level.object_by_id(self.id) and level.object_by_id(self.id):level_vertex_id()
+				else
+					lvid = db.offline_objects[self.id] and db.offline_objects[self.id].level_vertex_id
+				end
+                if lvid then
+		            Object:ForChunk("se_stalker:STATE:data:lvid", function()
+                        Object:s_u32(lvid)
+                    end)
+                end
+                local active_sect = db.offline_objects[self.id] and db.offline_objects[self.id].active_section
+                if active_sect then
+		            Object:ForChunk("se_stalker:STATE:data:active_sect", function()
+                        Object:s_stringZ(active_sect)
+                    end)
+                end
+			else
+				if db.offline_objects[self.id] == nil then
+					db.offline_objects[self.id] = {}
+				end
+		        Object:ForChunk("se_stalker:STATE:data:active_sect", function()
+                    db.offline_objects[self.id].active_section = Object:s_stringZ("")
+                end)
+		        Object:ForChunk("se_stalker:STATE:data:lvid", function()
+                    db.offline_objects[self.id].level_vertex_id = Object:s_u32(0)
+                end)
+			end
+			self.death_droped = Object:s_bool(self.death_droped )
+		end)
+	end)
+end
+--------------------
 function se_stalker:on_before_register()
 end
 --------------------

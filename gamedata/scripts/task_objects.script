@@ -376,3 +376,27 @@ function CGeneralTask:load(packet)
 
 	set_save_marker(packet, "load", true, "CGeneralTask")
 end
+
+function CGeneralTask:Serialize(Object)
+	Object:ForChunk("CGeneralTask", function()
+		self.status = status_by_id[Object:s_u8(id_by_status[self.status])]
+		if not Object:IsSave() then
+			self.inited_time = game.CTime()
+		end
+		self.inited_time:Serialize(Object)
+	    self.current_title = Object:s_stringZ(self.current_title)
+	    self.current_descr = Object:s_stringZ(self.current_descr)
+        if Object:IsSave() then
+            if self.current_target then
+                Object:ForChunk("CGeneralTask:current_target", function()
+                    Object:s_u32(self.current_target)
+                end)
+            end
+        else
+	    	self.current_target = nil
+            Object:ForChunk("CGeneralTask:current_target", function()
+                self.current_target = Object:s_u32(0)
+            end)
+        end
+	end)
+end

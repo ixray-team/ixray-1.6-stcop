@@ -17,6 +17,7 @@
 #include "alife_simulator.h"
 #include "alife_spawn_registry.h"
 #include "../xrEngine/string_table.h"
+#include <../xrCore/Save/SaveManager.h>
 
 extern const char* alife_section;
 
@@ -39,11 +40,25 @@ bool CSavedGameWrapper::valid_saved_game		(IReader &stream)
 	if (stream.length() < 8)
 		return					(false);
 
-	if (stream.r_u32() != u32(-1))
-		return					(false);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		ESaveVariableType type;
+		stream.r(&type, sizeof(ESaveVariableType));
+		if (type != ESaveVariableType::t_chunk) {
+			return false;
+		}
+	} else
+	{
+		if (stream.r_u32() != u32(-1))
+		{
+			return					(false);
+		}
 
-	if (stream.r_u32() < ALIFE_VERSION)
-		return					(false);
+		if (stream.r_u32() < ALIFE_VERSION)
+		{
+			return					(false);
+		}
+	}
 
 	return						(true);
 }
@@ -75,6 +90,26 @@ CSavedGameWrapper::CSavedGameWrapper			(const char* saved_game_name)
 		m_actor_health			= 1.f;
 		m_level_id				= _LEVEL_ID(-1);
 		m_level_name			= "";
+		return;
+	}
+
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SGameInfoFast data;
+		if (!CSaveManager::GetInstance().GetGameInfoFast(stream, data)) {
+			FS.r_close(stream);
+			CALifeTimeManager		time_manager(alife_section);
+			m_game_time = time_manager.game_time();
+			m_actor_health = 1.f;
+			m_level_id = _LEVEL_ID(-1);
+			m_level_name = "";
+			return;
+		}
+		m_game_time = data.m_game_time;
+		m_actor_health = data.m_actor_health;
+		m_level_id = data.m_level_id;
+		m_level_name = data.m_level_name;
+		FS.r_close(stream);
 		return;
 	}
 

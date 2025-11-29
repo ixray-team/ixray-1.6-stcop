@@ -11,20 +11,12 @@ function anomaly_field_binder:__init(obj) super(obj)
 	self.last_update = time_global()
 end
 
-function anomaly_field_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function anomaly_field_binder:reinit()
-	object_binder.reinit(self)
 	db.storage[self.object:id()] = {}
 	self.st = db.storage[self.object:id()]
 end
 
 function anomaly_field_binder:net_spawn(server_object)
-	if not object_binder.net_spawn(self, server_object) then
-		return false
-	end
 	db.add_zone(self.object)
 	db.add_obj(self.object)
 	fields_by_names[self.object:name()] = self
@@ -36,7 +28,6 @@ function anomaly_field_binder:net_destroy()
 	db.del_obj(self.object)
 	db.storage[self.object:id()] = nil
 	fields_by_names[self.object:name()] = nil
-	object_binder.net_destroy(self)
 end
 
 function anomaly_field_binder:set_enable(bEnable)
@@ -48,7 +39,6 @@ function anomaly_field_binder:set_enable(bEnable)
 end
 
 function anomaly_field_binder:update(delta)
-	object_binder.update(self, delta)
 	
 	SendScriptCallback("anomaly_field_on_update", self, self.object)
 	
@@ -56,9 +46,4 @@ function anomaly_field_binder:update(delta)
 		return
 	end
 	self.last_update = time_global()
-end
-
--- Standart function for save
-function anomaly_field_binder:net_save_relevant()
-	return true
 end
