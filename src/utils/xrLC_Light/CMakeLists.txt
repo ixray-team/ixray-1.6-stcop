@@ -81,7 +81,9 @@ list(APPEND LCL_SRC_FILES
 )
 
 # Check CUDA + OptiX
-find_package(CUDAToolkit)
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	find_package(CUDAToolkit)
+endif()
 
 if(CUDAToolkit_FOUND)
 	message(STATUS "CUDA found: ${CUDAToolkit_VERSION}")
