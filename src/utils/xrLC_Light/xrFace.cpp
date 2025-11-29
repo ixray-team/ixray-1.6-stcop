@@ -55,7 +55,7 @@ void destroy_face( Face* &v, bool unregister )
 	g_bUnregister = tmp_unregister;
 }
 
-
+template<>
 Tvertex<DataVertex>::Tvertex()
 {
  	R_ASSERT( inlc_global_data() );
@@ -83,6 +83,7 @@ Tvertex<DataVertex>::~Tvertex()
 	}
 }
 
+template<>
 Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 {
 	R_ASSERT( &vertises_storage == &inlc_global_data()->g_vertices() );
@@ -135,23 +136,13 @@ void Face::	Failure		()
 {
 	dwInvalidFaces			++;
 
-	// clMsg		("* ERROR: Invalid face. (A=%f,e0=%f,e1=%f,e2=%f)",
-	// 	CalcArea(),
-	// 	v[0]->P.distance_to(v[1]->P),
-	// 	v[0]->P.distance_to(v[2]->P),
-	// 	v[1]->P.distance_to(v[2]->P)
-	// 	);
-	// clMsg		("*        v0[%f,%f,%f], v1[%f,%f,%f], v2[%f,%f,%f]",
-	// 	VPUSH(v[0]->P),
-	// 	VPUSH(v[1]->P),
-	// 	VPUSH(v[2]->P)
-	// 	);
 	inlc_global_data()->err_invalid().w_fvector3	(v[0]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[1]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[2]->P);
 }
 
-void	Face::Verify		()
+template<>
+void Face::Verify()
 {
 	// 1st :: area
 	float	_a	= CalcArea();
@@ -177,6 +168,7 @@ void start_unwarp_recursion()
 	affected				= 1;
 }
 
+template<>
 void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces)
 { 
 	// range: no recursive method realisation

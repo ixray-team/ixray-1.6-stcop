@@ -1,8 +1,6 @@
 project(SQL_Gen)
 set(SQL_Gen_SRC_FILES)
 
-#set(USE_NVTT ON)
-
 # Files import
 file(GLOB_RECURSE SQL_Gen_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"

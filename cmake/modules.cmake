@@ -6,6 +6,10 @@ include("${CMAKE_MODULE_PATH}/LuaBind.cmake")
 include("${CMAKE_MODULE_PATH}/Ogg.cmake")
 include("${CMAKE_MODULE_PATH}/Vorbis.cmake")
 include("${CMAKE_MODULE_PATH}/FreeImage.cmake")
+include("${CMAKE_MODULE_PATH}/nvtt.cmake")
+include("${CMAKE_MODULE_PATH}/yamlcpp.cmake")
+include("${CMAKE_MODULE_PATH}/lzo.cmake")
+include("${CMAKE_MODULE_PATH}/tbb.cmake")
 
 # Resonance Audio 3rd
 include("${CMAKE_MODULE_PATH}/eigen.cmake")
@@ -15,6 +19,12 @@ if (IXRAY_MP)
     include("${CMAKE_MODULE_PATH}/GameNetworkingSockets.cmake")
     include("${CMAKE_MODULE_PATH}/Opus.cmake")
     include("${CMAKE_MODULE_PATH}/SpeexDSP.cmake")
+endif()
+
+if(WIN32)
+    include("${CMAKE_MODULE_PATH}/amd_ags.cmake")
+    include("${CMAKE_MODULE_PATH}/discord_game_sdk.cmake")
+    include("${CMAKE_MODULE_PATH}/DirectXMesh.cmake")
 endif()
 
 # Headers only libraries

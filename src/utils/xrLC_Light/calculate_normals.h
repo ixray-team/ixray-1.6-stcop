@@ -64,7 +64,7 @@ static void	calc_normals( vecVertex &vertices, vecFace &faces )
 		{
  			vecFace new_adj;
 			typename itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
-			typename itterate_adjacents_type::RecurseTri( 0, p );
+			itterate_adjacents_type::RecurseTri( 0, p );
  
 			type_vertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
 			VCountAllocated++;
