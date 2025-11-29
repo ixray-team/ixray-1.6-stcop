@@ -200,6 +200,10 @@ target_link_libraries(xrECore PRIVATE Vorbis::vorbis)
 target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
 target_link_libraries(xrECore PRIVATE OpenAL::OpenAL)
 
+if (WIN32)
+	target_link_libraries(xrECore PUBLIC DirectXMesh::DirectXMesh)
+endif()
+
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 ## DirectX SDK
@@ -211,9 +215,7 @@ endif()
 
 ## DirectX SDK
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib)
 target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## lunaSVG

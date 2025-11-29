@@ -86,7 +86,7 @@ void DiscordShared::SetPhase(const xr_string& Name) noexcept
 
 void DiscordShared::SyncActivity() noexcept 
 {
-	static bool isCorrect = true;
+	[[maybe_unused]] static bool isCorrect = true;
 #ifdef IXR_ENABLE_DISCORD
 
 	Activity.SetDetails(Platform::ANSI_TO_UTF8(Status).c_str());

@@ -62,7 +62,7 @@ struct CWrapHelper<bool> {
 template <typename T>
 typename CWrapHelper<T>::result_type	*wrap_value		(luabind::object object, LPCSTR name)
 {
-	return						(CWrapHelper<T>::wrap_value<
+	return						(CWrapHelper<T>::template wrap_value<
 		std::is_class<T>::value &&
 		!std::is_same<shared_str,T>::value
 	>(object,name));
@@ -71,7 +71,7 @@ typename CWrapHelper<T>::result_type	*wrap_value		(luabind::object object, LPCST
 template <typename T>
 typename CWrapHelper<T>::result_type	*wrap_value		(luabind::object object, luabind::object table, LPCSTR name)
 {
-	return						(CWrapHelper<T>::wrap_value<
+	return						(CWrapHelper<T>::template wrap_value<
 		std::is_class<T>::value &&
 		!std::is_same<shared_str,T>::value
 	>(object,table,name));
