@@ -385,6 +385,25 @@ void		CPhysicsShellHolder::	load				(IReader &input_packet)
 
 }
 
+void CPhysicsShellHolder::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CPhysicsShellHolder")
+	{
+		inherited::Serialize(Object);
+		if (Object.IsSave()) {
+			u8 enable_state = (u8)stNotDefitnite;
+			if (PPhysicsShell() && PPhysicsShell()->isActive())
+			{
+				enable_state = u8(PPhysicsShell()->isEnabled() ? stEnable : stDisable);
+			}
+			Object << enable_state;
+		}
+		else {
+			Object << st_enable_state;
+		}
+	}
+}
+
 void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 {
 	IKinematics* K	=PKinematics(Visual());
@@ -475,6 +494,71 @@ void CPhysicsShellHolder::PHLoadState(IReader& P) {
 		SPHNetState state;
 		state.net_Load(P,min,max);
 		PHGetSyncItem(i)->set_State(state);
+	}
+}
+
+void CPhysicsShellHolder::PHSerializeState(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CEatableItem")
+	{
+		VisMask _vm;
+
+		IKinematics* K = smart_cast<IKinematics*>(Visual());
+		if (K)
+			BEGIN_CHUNK(Object, "IKinematics"){
+			_vm = K->LL_GetBonesVisible();
+			Object << _vm;
+			u16 Value = K->LL_GetBoneRoot();
+			Object << Value;
+			K->LL_SetBoneRoot(Value);
+		}
+
+		Fvector min;
+		Fvector max;
+		u16 bones_number;
+		if (Object.IsSave()) {
+			min.set(flt_max, flt_max, flt_max);
+			max.set(-flt_max, -flt_max, -flt_max);
+			/////////////////////////////////////
+
+			bones_number = PHGetSyncItemsNumber();
+			for (u16 i = 0; i < bones_number; i++)
+			{
+				SPHNetState state;
+				PHGetSyncItem(i)->get_State(state);
+				Fvector& p = state.position;
+				if (p.x < min.x)min.x = p.x;
+				if (p.y < min.y)min.y = p.y;
+				if (p.z < min.z)min.z = p.z;
+
+				if (p.x > max.x)max.x = p.x;
+				if (p.y > max.y)max.y = p.y;
+				if (p.z > max.z)max.z = p.z;
+			}
+
+			min.sub(2.f * EPS_L);
+			max.add(2.f * EPS_L);
+
+			VERIFY(!min.similar(max));
+		}
+		Object << min << max << bones_number;
+		VERIFY(!min.similar(max));
+
+		K->LL_SetBonesVisible(_vm);
+
+		BEGIN_ARRAY(Object)
+		{
+			for (u16 i = 0; i < bones_number; i++)
+			{
+				BEGIN_CHUNK(Object, "SPHNetState")
+				{
+					SPHNetState state;
+					PHGetSyncItem(i)->get_State(state);
+					state.net_Serialize(Object, min, max);
+					PHGetSyncItem(i)->set_State(state);
+				}
+			}
+		}
 	}
 }
 

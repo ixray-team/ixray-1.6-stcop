@@ -55,9 +55,10 @@ public:
 	virtual void		net_Import		(NET_Packet& P);
 	virtual	void		net_Destroy		();
 
-	virtual void		save			(NET_Packet &output_packet);
-	virtual void		load			(IReader &input_packet);
-	virtual bool		net_SaveRelevant()							{return inherited::net_SaveRelevant();}
+	virtual void		save			(NET_Packet &output_packet) override;
+	virtual void		load			(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
+	virtual bool		net_SaveRelevant()		override					{return inherited::net_SaveRelevant();}
 
 	virtual void		Die				(CObject* who);
 	virtual void		Think			();

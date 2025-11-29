@@ -24,7 +24,7 @@ function se_level_changer:STATE_Write(packet)
 
 	set_save_marker(packet, "save", false, "se_level_changer")
 	packet:w_bool(self.enabled)
-		packet:w_stringZ(self.hint)
+	packet:w_stringZ(self.hint)
 	set_save_marker(packet, "save", true, "se_level_changer")
 end
 --------------------
@@ -39,4 +39,16 @@ function se_level_changer:STATE_Read(packet, size)
 	self.enabled = packet:r_bool()
 	self.hint = packet:r_stringZ()
 	set_save_marker(packet, "load", true, "se_level_changer")
+end
+--------------------
+function se_level_changer:STATE_Serialize(Object)
+	Object:ForChunk("se_level_changer:STATE", function()
+		cse_alife_level_changer.STATE_Serialize(self, Object)
+		if not editor() or Object:IsSave() then
+			Object:ForChunk("se_level_changer:STATE:data", function()
+				self.enabled = Object:s_bool(self.enabled)
+				self.hint = Object:s_stringZ(self.hint)
+			end)
+		end
+	end)
 end

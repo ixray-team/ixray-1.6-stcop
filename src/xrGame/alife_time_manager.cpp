@@ -49,4 +49,21 @@ void CALifeTimeManager::load			(IReader	&file_stream)
 	m_time_factor				= file_stream.r_float();
 	m_normal_time_factor		= file_stream.r_float();
 	m_start_time				= Device.dwTimeGlobal;
+}
+
+void CALifeTimeManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CALifeTimeManager")
+	{
+		if (Object.IsSave())
+		{
+			m_game_time = game_time();
+			m_start_time = Device.dwTimeGlobal;
+		}
+		Object << m_game_time << m_time_factor << m_normal_time_factor;
+		if (!Object.IsSave())
+		{
+			m_start_time = Device.dwTimeGlobal;
+		}
+	}
 };

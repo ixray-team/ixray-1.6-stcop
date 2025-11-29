@@ -235,9 +235,11 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 	const static bool noHUDonMaster = EngineExternal()[EEngineExternalUI::DisableHudRenderingOnMaster];
 	bool renderHUD = noHUDonMaster ? g_SingleGameDifficulty == egdNovice : true;
 	if (renderHUD)
+	{
 		CurrentGameUI()->UIMainIngameWnd->AnimateContacts(b_alive);
+	}
 
-	Level().MapManager().AddRelationLocation		( pInvOwner );
+	Level().MapManager().AddRelationLocation( pInvOwner );
 
 	CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
 }

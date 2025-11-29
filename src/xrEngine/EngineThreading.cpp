@@ -7,6 +7,7 @@
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 #include "../xrCore/discord/discord.h"
+#include "../xrCore/Save/SaveManager.h"
 
 void XRay::Engine::PreRenderThread()
 {
@@ -47,6 +48,21 @@ void XRay::Engine::GameThread()
 		if (g_pGameLevel && g_pGameLevel->bReady)
 		{
 			g_pGameLevel->SoundEvent_Dispatch();
+		}
+	}
+
+	{
+		PROF_EVENT("Save Writing");
+		while (auto task = CSaveManager::GetInstance().PopSaveTask())
+		{
+			Device.async_tasks.run([=]()
+			{
+				PROF_START_THREAD("Async Task");
+				PROF_EVENT("Save writing task");
+				task->WriteSavedDataImpl();
+				xr_delete(task);
+				PROF_STOP_THREAD();
+			});
 		}
 	}
 

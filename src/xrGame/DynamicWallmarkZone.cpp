@@ -106,6 +106,21 @@ void CDynamicWallmarkZone::load(IReader& input_packet)
     SwitchWallmark(LocCurrentStatus);
 }
 
+void CDynamicWallmarkZone::Serialize(ISaveObject& Object)
+{
+    BEGIN_CHUNK(Object, "CDynamicWallmarkZone::Serialize")
+    {
+        inherited::Serialize(Object);
+        bool LocCurrentStatus = CurrentStatus;
+        Object << LocCurrentStatus;
+        BEGIN_CHUNK(Object, "CDynamicWallmarkZone::Serialize::WMData")
+        {
+            Object << shader << texture << w << h << r;
+        }
+        SwitchWallmark(LocCurrentStatus);
+    }
+}
+
 void CDynamicWallmarkZone::SwitchWallmark(bool isOn)
 {
     if (isOn == CurrentStatus)

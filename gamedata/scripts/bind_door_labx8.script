@@ -70,9 +70,6 @@ function door_binder_labx8:__init(obj) super(obj)
 end
 
 function door_binder_labx8:net_spawn(server_object)
-	if not(object_binder.net_spawn(self, server_object)) then
-		return false
-	end
 	db.add_anim_obj(self.object, self)
 	self.object:get_physics_object():stop_anim()
 	self.object:get_physics_object():anim_time_set(0)
@@ -93,11 +90,9 @@ function door_binder_labx8:net_destroy()
 	end
 	self.object:set_callback(callback.script_animation, nil)
 	db.del_anim_obj(self.object)
-	object_binder.net_destroy(self)
 end
 
 function door_binder_labx8:update(delta)
-	object_binder.update(self, delta)
 	if self.anim_time and self.loaded then
 		self.object:get_physics_object():anim_time_set(self.anim_time)
 		self.anim_time = nil
@@ -187,15 +182,9 @@ end
 function door_binder_labx8:use_callback(obj)
     xr_logic.pick_section_from_condlist(get_story_object("actor"), obj, self.on_use)
 end
-
--- Standart function for save
-function door_binder_labx8:net_save_relevant()
-	return true
-end
 -- Saving
 function door_binder_labx8:save(packet)
 	set_save_marker(packet, "save", false, "door_binder_labx8")
-	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)
 	packet:w_bool(self.is_idle)
 	packet:w_bool(self.is_play_fwd)
@@ -206,7 +195,6 @@ end
 -- Loading
 function door_binder_labx8:load(packet)
 	set_save_marker(packet, "load", false, "door_binder_labx8")
-	object_binder.load(self, packet)
 	xr_logic.load_obj(self.object, packet)
 	self.is_idle = packet:r_bool()
 	self.is_play_fwd = packet:r_bool()
@@ -214,4 +202,22 @@ function door_binder_labx8:load(packet)
 	self.anim_time = packet:r_float()
 	self.loaded = true
 	set_save_marker(packet, "load", true, "door_binder_labx8")
+end
+-- Serializing
+function door_binder_labx8:Serialize(Object)
+	Object:ForChunk("door_binder_labx8", function()
+		Object:ForChunk("door_binder_labx8:data", function()
+			xr_logic.Serialize_obj(self.object, Object)
+			self.is_idle = Object:s_bool(self.is_idle)
+			self.is_play_fwd = Object:s_bool(self.is_play_fwd)
+			if Object:IsSave() then
+				Object:s_float(self.object:get_physics_object():anim_time_get())
+			else
+				self.anim_time = Object:s_float(self.anim_time)
+			end
+		end)
+	end)
+	if not Object:IsSave() then
+		self.loaded = true
+	end
 end

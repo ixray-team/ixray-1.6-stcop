@@ -123,4 +123,56 @@ function object_collection:load(packet)
         set_save_marker(packet, "load", true, "object_collection")
     end)
 end
+function object_collection:Serialize(Object)
+	Object:ForChunk("object_collection", function()
+		self.m_count = Object:s_u16(self.m_count)	
+		self.m_last_id = Object:s_u32(self.m_last_id)
+
+		if Object:IsSave() then
+			local n = 0
+			for k,v in pairs(self.m_free) do
+				n = n + 1		
+			end		
+			Object:s_u32(n)
+			Object:ForArray(function()
+				for k,v in pairs(self.m_free) do
+					Object:s_u32(k)
+				end
+			end)
+			
+			local n = 0
+			for k,v in pairs(self.m_given) do
+				n = n + 1		
+			end		
+			Object:s_u32(n)
+			Object:ForArray(function()
+				for k,v in pairs(self.m_given) do
+					Object:s_u32(k)
+				end
+			end)
+		else
+			local n = 0
+			n = Object:s_u32(n)
+			self.m_free = {}
+			Object:ForArray(function()
+				for i = 1,n do
+					local id = 0
+					id = Object:s_u32(id)
+					self.m_free[id] = 1
+				end	
+			end)
+			
+			local n = 0
+			n = Object:s_u32(n)
+			self.m_given = {}
+			Object:ForArray(function()
+				for i = 1,n do
+					local id = 0
+					id = Object:s_u32(id)
+					self.m_given[id] = true
+				end	
+			end)
+		end
+	end)
+end
 

@@ -1,5 +1,4 @@
-#ifndef __FRECT
-#define __FRECT
+#pragma once
 
 template <class T>
 struct _rect {
@@ -101,4 +100,6 @@ ICF bool	_valid			(const _rect<T>& m)
 	return _valid(m.lt) && _valid(m.rb);
 }
 
-#endif
+template<typename T> ISaveObject& operator<<(ISaveObject& Object, _rect<T>& Value) {
+	return Object << Value.x1 << Value.x2 << Value.y1 << Value.y2;
+}

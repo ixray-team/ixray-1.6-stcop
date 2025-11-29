@@ -303,6 +303,32 @@ void SHeliMovementState::load(IReader &input_packet)
 
 }
 
+void SHeliMovementState::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"SHeliMovementState")
+	{
+		s16* Value = (s16*)&type;
+		Object << *Value << patrol_begin_idx << patrol_path_name << maxLinearSpeed << LinearAcc_fw << LinearAcc_bk << speedInDestPoint
+			<< desiredPoint << curLinearSpeed << curLinearAcc << currP << currPathH << currPathP << round_center << round_radius
+			<< round_reverse << onPointRangeDist;
+		if (type == eMovPatrolPath) {
+			s32 Value;
+			if (Object.IsSave()) {
+				Value = currPatrolVertex->vertex_id();
+				Object << Value;
+			}
+			else {
+				currPatrolPath = ai().patrol_paths().path(patrol_path_name);
+				Object << Value;
+				currPatrolVertex = currPatrolPath->vertex(Value);
+			}
+		}
+		if (type == eMovRoundPath) {
+			goByRoundPath(round_center, round_radius, !round_reverse);
+		}
+	}
+}
+
 float SHeliMovementState::GetSafeAltitude()
 {
 	Fbox	boundingVolume = Level().ObjectSpace.GetBoundingVolume();

@@ -10,14 +10,17 @@
 
 #include "../../xrEngine/xrLevel.h"
 #include "alife_space.h"
+#include "../../xrEngine/AI/graph_abstract.h"
 
+class ISaveObject;
 class CLevelGraph;
 class CGameLevelCrossTable;
 
 template <
 	typename _data_type,
 	typename _edge_weight_type,
-	typename _vertex_id_type
+	typename _vertex_id_type,
+	typename _edge_data_type
 >
 class CGraphAbstract;
 
@@ -64,6 +67,7 @@ private:
 			void		create_graph				(const float &start, const float &amount);
 			void		load_level_graph			(const float &start, const float &amount);
 			void		load_graph_point			(NET_Packet &net_packet);
+			void		load_graph_point			(ISaveObject& Object);
 			void		load_graph_points			(const float &start, const float &amount);
 
 private:

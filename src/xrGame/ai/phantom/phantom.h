@@ -65,10 +65,11 @@ public:
 	virtual bool		net_Spawn					( CSE_Abstract* DC );
 	virtual void		net_Destroy					();
 	
-	virtual void		net_Export					(NET_Packet& P);
-	virtual void		net_Import					(NET_Packet& P);
-	virtual void		save						(NET_Packet &output_packet);
-	virtual void		load						(IReader &input_packet);
+	virtual void		net_Export					(NET_Packet& P) override;
+	virtual void		net_Import					(NET_Packet& P) override;
+	virtual void		save						(NET_Packet &output_packet) override;
+	virtual void		load						(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void		shedule_Update				(u32 DT); 
 	virtual void		UpdateCL					();

@@ -69,7 +69,7 @@ local weapon_hide = false
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:__init (obj) super(obj)
+function actor_binder:__init (obj) super(self, obj)
 	self.bCheckStart = false
 	self.weather_manager = level_weathers.WeatherManager()
 	self.actor_detector = xr_detector.actor_detector()

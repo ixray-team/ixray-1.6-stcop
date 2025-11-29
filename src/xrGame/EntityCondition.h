@@ -119,6 +119,7 @@ public:
 
 	virtual void			save					(NET_Packet &output_packet);
 	virtual void			load					(IReader &input_packet);
+	virtual void Serialize(ISaveObject& Object);
 
 	IC float				GetPower				() const			{return m_fPower;}	
 	IC void					SetPower				(float val)			{ m_fPower = val; clamp(m_fPower, 0.f, m_fPowerMax); }

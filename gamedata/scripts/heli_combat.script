@@ -251,6 +251,51 @@ function heli_combat:load( packet )
 	set_save_marker(packet, "load", true, "heli_combat")
 end
 
+function heli_combat:Serialize( Object )
+	if not Object:IsSave() or not utils.level_changing() then
+		Object:ForChunk("heli_combat", function()
+			self.initialized = Object:s_bool( self.initialized )
+			if(self.initialized) then
+				Object:ForChunk("heli_combat:data", function()
+					local t = time_global()
+
+					self.enemy_id = Object:s_u32 ( self.enemy_id )
+					if Object:IsSave() then
+						Object:s_u32 ( t - self.enemy_last_seen_time )
+					else
+						local temp = 0
+						temp = Object:s_u32(temp)
+						self.enemy_last_seen_time = t - temp
+					end
+					self.can_forget_enemy = Object:s_bool( self.can_forget_enemy )
+					self.enemy_forgetable = Object:s_bool( self.enemy_forgetable )
+					self.enemy_last_seen_pos = Object:s_vec3( self.enemy_last_seen_pos )
+				
+					self.combat_type = Object:s_u8  ( self.combat_type )
+				
+					if self.combat_type == combat_type_search then
+						if Object:IsSave() then
+							Object:s_u32 ( self.change_dir_time - t )
+							Object:s_u32 ( self.change_pos_time - t )
+						else
+							local temp = 0
+							temp = Object:s_u32 ( temp )
+							self.change_dir_time      = temp + t
+							temp = Object:s_u32 ( temp )
+							self.change_pos_time      = temp + t
+						end
+						self.flight_direction = Object:s_bool( self.flight_direction )
+						self.center_pos = Object:s_vec3( self.center_pos )
+					
+					elseif self.combat_type == combat_type_flyby then
+						self.flyby_states_for_one_pass = Object:s_s16( self.flyby_states_for_one_pass )
+					end
+				end)
+			end
+		end)
+	end
+end
+
 function heli_combat:waypoint_callback()
 	if self.enemy_id and not self:combat_ignore_check() then
 		self.was_callback = true

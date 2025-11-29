@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xrServer_Objects_ALife.h"
+#include "../xrCore/Save/SaveObject.h"
 
 class CALifeObjectRegistry
 {
@@ -22,16 +23,22 @@ protected:
 	// todo: needed to be refactored because Level contains objects as vector so it is better to have vector and some unordered_set for searching id if we want to make searching faster than std::find of vector?
 	xr_vector<CSE_ALifeDynamicObject*> m_objects_as_vec;
 private:
-			void					save					(IWriter &memory_stream, CSE_ALifeDynamicObject *object, u32 &object_count);
+	void save(IWriter &memory_stream, CSE_ALifeDynamicObject *object, u32 &object_count);
+	void Serialize(ISaveObject& Object, CSE_ALifeDynamicObject* object, u32& object_count);
 
+	void SerializeElem(ISaveObject& Object, CSE_ALifeDynamicObject* elem);
+	u32 m_serializable_object_count = 0;
+			
 public:
 	static	CSE_ALifeDynamicObject	*get_object				(IReader &file_stream);
+	static	CSE_ALifeDynamicObject* get_object(ISaveObject& Object);
 
 public:
 									CALifeObjectRegistry	(const char* section);
 	virtual							~CALifeObjectRegistry	();
 	virtual	void					save					(IWriter &memory_stream);
 			void					load					(IReader &file_stream);
+			virtual void			Serialize(ISaveObject& Object);
 	IC		void					add						(CSE_ALifeDynamicObject *object);
 	IC		void					remove					(const ALife::_OBJECT_ID &id, bool no_assert = false);
 	IC		CSE_ALifeDynamicObject	*object					(const ALife::_OBJECT_ID &id, bool no_assert = false) const;

@@ -221,9 +221,11 @@ public:
 	//object serialization
 	virtual void			net_Save			(NET_Packet &net_packet);
 	virtual void			net_Load			(IReader	&ireader);
+	virtual void			net_Serialize		(ISaveObject& Object);
 	virtual bool			net_SaveRelevant	();
 	virtual void			save				(NET_Packet &output_packet);
 	virtual void			load				(IReader &input_packet);
+	virtual void			Serialize			(ISaveObject& Object);
 
 	virtual bool			net_Relevant		()	{ return getLocal();	}	// send messages only if active and local
 	virtual void			spatial_move		();

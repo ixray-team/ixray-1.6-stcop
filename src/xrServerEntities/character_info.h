@@ -67,6 +67,7 @@ public:
 #ifdef XRGAME_EXPORTS
 	void 						load				(IReader&);
 	void 						save				(NET_Packet&);
+	virtual void Serialize(ISaveObject& Object);
 
 	//инициализация профиля подразумевает
 	//загрузку соответствующего CSpecificCharacter, по 

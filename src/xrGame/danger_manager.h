@@ -70,6 +70,7 @@ public:
 public:
 			void		save				(NET_Packet &packet) const;
 			void		load				(IReader &packet);
+			virtual void Serialize(ISaveObject& Object);
 };
 
 #include "danger_manager_inline.h"

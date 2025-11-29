@@ -11,6 +11,7 @@
 #include "../xrEngine/xr_object.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "patrol_path_params.h"
+#include "SaveObjectHelpers.h"
 
 void CLevel::cl_Process_Spawn(NET_Packet& P)
 {
@@ -37,6 +38,52 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 //-------------------------------------------------
 	//force object to be local for server client
 	if (OnServer())		{
+		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
+	};
+
+	/*
+	game_spawn_queue.push_back(E);
+	if (g_bDebugEvents)		ProcessGameSpawns();
+	/*/
+	g_sv_Spawn					(E);
+
+	F_entity_Destroy			(E);
+	//*/
+};
+
+void CLevel::local_Process_Spawn(NET_Packet& P)
+{
+	// Begin analysis
+	shared_str			s_name;
+	P.r_stringZ			(s_name);
+	PROF_EVENT("cl_Process_Spawn")
+	// Create DC (xrSE)
+	CSE_Abstract*	E	= F_entity_Create	(*s_name);
+	R_ASSERT2(E, *s_name);
+
+	xr_unique_ptr<CSaveObjectLoad> ObjLoad;
+	ObjLoad.reset(SaveObjectNetPacketHelper::GetLoadObjectFromPacket(P));
+	
+	E->Spawn_Serialize(*ObjLoad);
+	if (E->s_flags.is(M_SPAWN_UPDATE))
+	{
+		E->UPDATE_Serialize(*ObjLoad);
+	}
+
+	//E->Spawn_Read		(P);
+	//if (E->s_flags.is(M_SPAWN_UPDATE))
+	//	E->UPDATE_Read	(P);
+
+	if (!E->match_configuration())
+	{
+		F_entity_Destroy(E);
+		return;
+	}
+	//-------------------------------------------------
+	//.	Msg ("M_SPAWN - %s[%d][%x] - %d %d", *s_name,  E->ID, E,E->ID_Parent, Device.dwFrame);
+	//-------------------------------------------------
+	//force object to be local for server client
+	if (OnServer())		{
 		E->s_flags.set(M_SPAWN_OBJECT_LOCAL, true);
 	};
 
@@ -50,7 +97,7 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 	//*/
 };
 
-void CLevel::g_cl_Spawn		(const char* name, u8 rp, u16 flags, Fvector pos)
+void CLevel::g_cl_Spawn		(LPCSTR name, u8 rp, u16 flags, Fvector pos)
 {
 	// Create
 	CSE_Abstract*		E	= F_entity_Create(name);
@@ -70,8 +117,15 @@ void CLevel::g_cl_Spawn		(const char* name, u8 rp, u16 flags, Fvector pos)
 
 	// Send
 	NET_Packet			P;
-	E->Spawn_Write		(P,true);
-	Send				(P,net_flags(true));
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *E);
+	}
+	else
+	{
+		E->Spawn_Write		(P,true);
+	}
+	Send(P,net_flags(true));
 
 	// Destroy
 	F_entity_Destroy	(E);
@@ -207,13 +261,19 @@ CSE_Abstract *CLevel::spawn_item		(const char* section, const Fvector &position,
 
 	if (!return_item) {
 		NET_Packet				P;
-		abstract->Spawn_Write	(P,true);
-		Send					(P,net_flags(true));
-		F_entity_Destroy		(abstract);
-		return					(0);
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *abstract);
+		}
+		else
+		{
+			abstract->Spawn_Write(P,true);
+		}
+		Send(P,net_flags(true));
+		F_entity_Destroy(abstract);
+		return nullptr;
 	}
-	else
-		return				(abstract);
+	return abstract;
 }
 
 void CLevel::SpawnItem(const char* section, const Fvector& position, u32 level_vertex_id, ALife::_OBJECT_ID parent_id) {

@@ -1,5 +1,12 @@
 #include "StdAfx.h"
 #include "PHNetState.h"
+#include "../xrCore/Save/SaveObject.h"
+
+ISaveObject& operator<<(ISaveObject& Object, SPHNetState& Value)
+{
+	Value.net_Serialize(Object);
+	return Object;
+}
 
 void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
 {
@@ -18,6 +25,23 @@ static void r_vec_q8(src& P,Fvector& vec,const Fvector& min,const Fvector& max)
 	clamp(vec.x,min.x,max.x);
 	clamp(vec.y,min.y,max.y);
 	clamp(vec.z,min.z,max.z);
+}
+
+void s_vec_q8(ISaveObject& Object, Fvector& vec,const Fvector& min,const Fvector& max)
+{
+	if (Object.IsSave())
+	{
+		clamp(vec.x,min.x,max.x);
+		clamp(vec.y,min.y,max.y);
+		clamp(vec.z,min.z,max.z);
+	}
+	Object << vec;
+	if (!Object.IsSave())
+	{
+		clamp(vec.x,min.x,max.x);
+		clamp(vec.y,min.y,max.y);
+		clamp(vec.z,min.z,max.z);
+	}
 }
 
 void w_qt_q8(NET_Packet& P,const Fquaternion& q)
@@ -49,6 +73,24 @@ static void r_qt_q8(src& P,Fquaternion& q)
 	clamp(q.y,-1.f,1.f);
 	clamp(q.z,-1.f,1.f);
 	clamp(q.w,-1.f,1.f);
+}
+static void s_qt_q8(ISaveObject& Object, Fquaternion& q)
+{
+	if (Object.IsSave())
+	{
+		clamp(q.x,-1.f,1.f);
+		clamp(q.y,-1.f,1.f);
+		clamp(q.z,-1.f,1.f);
+		clamp(q.w,-1.f,1.f);
+	}
+	Object << q;
+	if (!Object.IsSave())
+	{
+		clamp(q.x,-1.f,1.f);
+		clamp(q.y,-1.f,1.f);
+		clamp(q.z,-1.f,1.f);
+		clamp(q.w,-1.f,1.f);
+	}
 }
 
 #ifdef XRGAME_EXPORTS
@@ -193,6 +235,24 @@ void SPHNetState::net_Load(IReader &P,const Fvector& min,const Fvector& max)
 	read(P, min, max);
 }
 
+void SPHNetState::net_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "SPHNetState")
+	{
+		Object << linear_vel << position << quaternion << enabled;
+	}
+}
+
+void SPHNetState::net_Serialize(ISaveObject& Object, const Fvector& min, const Fvector& max)
+{
+	BEGIN_CHUNK(Object, "SPHNetState")
+	{
+		s_vec_q8(Object, position, min, max);
+		s_qt_q8(Object, quaternion);
+		Object << enabled;
+	}
+}
+
 SPHBonesData::SPHBonesData()
 {
 	bones_mask.set_all();
@@ -252,6 +312,29 @@ void SPHBonesData::net_Load(NET_Packet &P)
 		bones.push_back(S);
 	}
 }
+
+void SPHBonesData::net_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "SPHBonesData")
+	{
+		bones.clear();
+		Object << bones_mask << root_bone;
+		if (Object.IsSave())
+		{
+			Fvector _mn = get_min(), _mx = get_max();
+			Object << _mn << _mx;
+			((CSaveObject&)Object).Serialize(bones, {this, &SPHBonesData::PerElemAction});
+		}
+		else
+		{
+			Fvector _mn, _mx;
+			u16 bones_number;
+			Object << _mn << _mx << bones_number;
+			((CSaveObject&)Object).Serialize(bones, {this, &SPHBonesData::PerElemAction});
+		}
+	}
+}
+
 
 void SPHBonesData::set_min_max(const Fvector& _min, const Fvector& _max)
 {

@@ -519,6 +519,14 @@ void CLevel::ProcessGameEvents		()
 					P.r_begin(dummy16);
 					cl_Process_Spawn(P);
 				}break;
+			case M_SPAWN_LOCAL:
+				{
+					PROF_EVENT("M_SPAWN_LOCAL");
+					u16 dummy16;
+					P.r_begin(dummy16);
+					local_Process_Spawn(P);
+					break;
+				}
 			case M_EVENT:
 				{
 					PROF_EVENT("M_EVENT");

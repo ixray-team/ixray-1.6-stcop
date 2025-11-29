@@ -13,6 +13,12 @@ file(GLOB_RECURSE ELE_SOURCE_EDITOR_TOOLS_FILES CONFIGURE_DEPENDS "Editor/Tools/
 file(GLOB_RECURSE ELE_SOURCE_EDITOR_UTILS_FILES CONFIGURE_DEPENDS "Editor/Utils/*.*")
 file(GLOB_RECURSE ELE_SOURCE_ENGINE_FILES CONFIGURE_DEPENDS "Engine/*.*")
 
+file(GLOB_RECURSE ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES CONFIGURE_DEPENDS
+    "../../xrServerEntities/server_entity_wrapper.h"
+    "../../xrServerEntities/server_entity_wrapper.cpp"
+    "../../xrServerEntities/server_entity_wrapper_inline.h"
+    )
+
 file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
     "../../Layers/xrRenderDX10/dx10DetailManager_VS*"
     "../../Layers/xrRender/DetailManager*"
@@ -21,6 +27,7 @@ file(GLOB_RECURSE ELE_SOURCE_RENDER_FILES CONFIGURE_DECORENDS
 set(ELE_SRC_FILES)
 
 source_group("editor/ai" FILES ${ELE_SOURCE_AI_FILES})
+source_group("editor/server_entity_wrapper" FILES ${ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES})
 source_group("editor/tools" FILES ${ELE_SOURCE_EDITOR_TOOLS_FILES})
 source_group("editor/utils" FILES ${ELE_SOURCE_EDITOR_UTILS_FILES})
 source_group("editor/plugins" FILES ${ELE_SOURCE_PLUGINS_FILES})
@@ -35,6 +42,7 @@ source_group("le/res" FILES ${ELE_SOURCE_ENTRY_RES_FILES})
 # Apply list
 list(APPEND ELE_SRC_FILES ${ELE_SOURCE_ALL_FILES})
 list(APPEND ELE_SRC_FILES ${ELE_SOURCE_RENDER_FILES})
+list(APPEND ELE_SRC_FILES ${ELE_SOURCE_SERVER_ENTITIES_WRAPPER_FILES})
 
 # Remove unused files
 list(FILTER ELE_SRC_FILES EXCLUDE REGEX "cl_raypick.cpp$")

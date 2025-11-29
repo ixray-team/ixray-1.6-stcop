@@ -21,7 +21,6 @@ end
 -- Class update
 function crow_binder:update(delta)
 -- standart update
-    object_binder.update(self, delta)
  	SendScriptCallback("crow_on_update", self.object, self.st)
 
     if not(self.object:alive()) and (self.body_timer<=time_global()-120000) and (self.body_timer~=0) then
@@ -30,22 +29,14 @@ function crow_binder:update(delta)
         alife():release(alife():object(self.object:id()), true)
     end
 end
--- Reload object
-function crow_binder:reload(section)
-    object_binder.reload(self, section)
-end
 -- Reinitialize object
 function crow_binder:reinit()
     self.body_timer = 0
-    object_binder.reinit(self)
     db.storage[self.object:id()] = {}
     self.st = db.storage[self.object:id()]
 end
 -- Net spawn
 function crow_binder:net_spawn(sobject)
-    if not(object_binder.net_spawn(self, sobject)) then
-        return false
-    end
 
 	local se_obj = alife():object(self.object:id())
 	if not (se_obj) then 
@@ -73,7 +64,6 @@ function crow_binder:net_destroy()
         end --*Crow FIX*
     end --*Crow FIX*
     db.del_obj(self.object)
-    object_binder.net_destroy(self)
 end
 -- Crow death callback
 function crow_binder:death_callback(victim, who)
@@ -85,17 +75,10 @@ function crow_binder:death_callback(victim, who)
             bind_crow.crow_counter = 0 --*Crow FIX*
         end --*Crow FIX*
     end --*Crow FIX*
-
-    SendScriptCallback("crow_on_death", victim, who)
-end
--- Standart function for save
-function crow_binder:net_save_relevant()
-	return true
 end
 -- Saving crow
 function crow_binder:save(package)
 	set_save_marker(package, "save", false, "crow_binder")
-	object_binder.save(self, package)
 	xr_logic.save_obj(self.object, package)
 	package:w_u32(self.body_timer)
 	set_save_marker(package, "save", true, "crow_binder")
@@ -103,8 +86,16 @@ end
 -- Loading crow
 function crow_binder:load(reader)
 	set_save_marker(reader, "load", false, "crow_binder")
-	object_binder.load(self, reader)
 	xr_logic.load_obj(self.object, reader)
 	self.body_timer = reader:r_u32()
 	set_save_marker(reader, "load", true, "crow_binder")
+end
+-- Serializing crow
+function crow_binder:Serialize(Object)
+    Object:ForChunk("crow_binder", function()
+        Object:ForChunk("crow_binder:data", function()
+	        xr_logic.Serialize_obj(self.object, Object)
+	        self.body_timer = Object:s_u32(self.body_timer)
+        end)
+    end)
 end

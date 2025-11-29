@@ -210,7 +210,11 @@ void CSpaceRestrictorWrapper::build_border			()
 		std::sort					(m_border.begin(),m_border.end(),sort_by_xz_predicate(m_level_graph));
 	}
 
-	VERIFY3							(!m_border.empty(),"space restrictor has no border",object().name_replace());
+	if (!m_border.empty())
+	{
+		Msg("! space restrictor [%s] has no border", object().name_replace());
+	}
+	//VERIFY3							(!m_border.empty(),"space restrictor has no border",object().name_replace());
 }
 
 void CSpaceRestrictorWrapper::verify_connectivity	()

@@ -33,6 +33,7 @@ struct SHeliEnemy{
 	void save						(NET_Packet &output_packet);
 	void load						(IReader &input_packet);
 	void Load						(const char* section);
+	void Serialize(ISaveObject& Object);
 };
 
 enum EHeliBodyState{eBodyByPath,eBodyToPoint};
@@ -56,6 +57,7 @@ struct SHeliBodyState{
 	void save						(NET_Packet &output_packet);
 	void load						(IReader &input_packet);
 	void Load						(const char* section);
+	void Serialize(ISaveObject& Object);
 
 };
 
@@ -124,6 +126,7 @@ public:
 	void	CreateRoundPoints			(Fvector center, float radius, float start_h, float end_h, xr_vector<STmpPt>& round_points);
 	void	save						(NET_Packet &output_packet);
 	void	load						(IReader &input_packet);
+	void Serialize(ISaveObject& Object);
 	void	Load						(const char* section);
 	void	net_Destroy					();
 };
@@ -277,9 +280,10 @@ public:
 	virtual void SyncWrite(NET_Packet& Packet)override;
 
 	virtual bool					net_Relevant		() override;
-	virtual void					net_Relcase			(CObject* O );
-	virtual void					save				(NET_Packet &output_packet);
-	virtual void					load				(IReader &input_packet);
+	virtual void					net_Relcase			(CObject* O ) override;
+	virtual void					save				(NET_Packet &output_packet) override;
+	virtual void					load				(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void					SpawnInitPhysics	(CSE_Abstract	*D);
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()						{return PhysicsShellHolder();}

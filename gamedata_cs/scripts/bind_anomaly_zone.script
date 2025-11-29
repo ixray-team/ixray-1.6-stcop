@@ -11,7 +11,7 @@ function bind(obj)
 end
 
 class "anomaly_zone_binder" (object_binder)
-function anomaly_zone_binder:__init(obj) super(obj)
+function anomaly_zone_binder:__init(obj) super(self, obj)
 	local ini				= obj:spawn_ini()
 	local path				= utils.cfg_get_string(ini, "anomal_zone", "artefact_ways", nil, true, "", nil)	
 	local artefacts			= utils.cfg_get_string(ini, "anomal_zone", "artefacts", nil, true, "", nil)
