@@ -60,7 +60,10 @@ const Fvector& CUI_Camera::GetPosition() const
 {
     if (UI->IsPlayInEditor())
     {
-        return g_pGameLevel->Cameras().Position();
+        static Fvector LastPos;
+        LastPos = g_pGameLevel->Cameras().Position();
+
+        return LastPos; 
     }
     return m_Position;
 }
@@ -69,7 +72,10 @@ const Fvector& CUI_Camera::GetRight() const
 {
 	if (UI->IsPlayInEditor())
 	{
-        return g_pGameLevel->Cameras().Right();
+        static Fvector LastPos;
+        LastPos = g_pGameLevel->Cameras().Right();
+
+        return LastPos;
 	}
    return m_CamMat.i;
 }
@@ -78,7 +84,10 @@ const Fvector& CUI_Camera::GetNormal() const
 {
 	if (UI->IsPlayInEditor())
 	{
-        return g_pGameLevel->Cameras().Up();
+        static Fvector LastPos;
+        LastPos = g_pGameLevel->Cameras().Up();
+
+        return LastPos;
 	}
     return m_CamMat.j;
 }
@@ -87,7 +96,10 @@ const Fvector& CUI_Camera::GetDirection() const
 {
 	if (UI->IsPlayInEditor())
 	{
-        return g_pGameLevel->Cameras().Direction();
+        static Fvector LastPos;
+        LastPos = g_pGameLevel->Cameras().Direction();
+
+        return LastPos;
 	}
     return m_CamMat.k;
 }
