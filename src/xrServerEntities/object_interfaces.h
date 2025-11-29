@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrCore/Save/SaveObject.h"
 
 class NET_Packet;
 
@@ -33,14 +34,26 @@ class IPureSerializeObject :
 public:
 };
 
-class IPureServerObject :
-	public IPureSerializeObject<IReader, IWriter>
+class IPureStateUpdateObject
 {
 public:
+	virtual ~IPureStateUpdateObject() = default;
+	
 	virtual void STATE_Write(NET_Packet& tNetPacket) = 0;
 	virtual void STATE_Read(NET_Packet& tNetPacket, u16 size) = 0;
 	virtual void UPDATE_Write(NET_Packet& tNetPacket) = 0;
 	virtual void UPDATE_Read(NET_Packet& tNetPacket) = 0;
+
+#if !defined(MPCF_EXPORTS) and !defined(MPB_EXPORTS) and !defined(MPSI_EXPORTS)
+	virtual void STATE_Serialize(ISaveObject& Object) = 0;
+	virtual void UPDATE_Serialize(ISaveObject& Object) = 0;
+#endif
+};
+
+class IPureServerObject :
+	public IPureSerializeObject<IReader, IWriter>,
+	public IPureStateUpdateObject
+{
 };
 
 class IPureSchedulableObject

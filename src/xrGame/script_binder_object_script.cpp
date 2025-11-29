@@ -22,7 +22,7 @@ void CScriptBinderObject::script_register(lua_State *L)
 	[
 		class_<CScriptBinderObject, CScriptBinderObjectWrapper>("object_binder")
 			.def_readwrite("object",			&CScriptBinderObject::m_object)
-			.def(								constructor<CScriptGameObject*>())
+			.def(								constructor<luabind::object>())
 			.def("reinit",						&CScriptBinderObject::reinit,			&CScriptBinderObjectWrapper::reinit_static)
 			.def("reload",						&CScriptBinderObject::reload,			&CScriptBinderObjectWrapper::reload_static)
 			.def("net_spawn",					&CScriptBinderObject::net_Spawn,		&CScriptBinderObjectWrapper::net_Spawn_static)

@@ -332,6 +332,17 @@ void CPhantom::load(IReader &input_packet)
 {
 	SwitchToState	(EState(input_packet.r_s32()));
 }
+void CPhantom::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CPhantom")
+	{
+		u32* Value = (u32*)&m_CurState;
+		Object << *Value;
+		if (!Object.IsSave()) {
+			SwitchToState(EState(*Value));
+		}
+	}
+}
 void CPhantom::net_Export	(NET_Packet& P)					// export to server
 {
 	// export 

@@ -32,6 +32,7 @@ class CALifeSmartTerrainTask;
 		INHERIT_PURE\
 		DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 		DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
+		DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Serialize,	ISaveObject)\
 		DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		const char*,	PropItemVec)\
 		DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
 #else // #ifndef XRGAME_EXPORTS
@@ -39,6 +40,7 @@ class CALifeSmartTerrainTask;
 		INHERIT_PURE\
 		DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 		DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
+		DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Serialize,	ISaveObject)\
 		DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
 #endif // #ifndef XRGAME_EXPORTS
 
@@ -197,11 +199,13 @@ struct CWrapperAbstractItem : public T, public luabind::wrap_base {
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,FillProps	) \
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Write	) \
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Read	) \
+		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Serialize)\
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,init		)
 #else // #ifndef XRGAME_EXPORTS
 #	define luabind_virtual_abstract(a,b) \
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Write	) \
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Read	) \
+		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Serialize)\
 		DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,init		)
 #endif // #ifndef XRGAME_EXPORTS
 

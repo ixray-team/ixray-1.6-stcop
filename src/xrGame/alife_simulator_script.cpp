@@ -201,28 +201,37 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	}
 
 	if (id_parent == ALife::INVALID_OBJECT_ID)
-		return							(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
+	{
+		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent);
+	}
 
-	CSE_ALifeDynamicObject				*object = ai().alife().objects().object(id_parent,true);
+	CSE_ALifeDynamicObject* object = ai().alife().objects().object(id_parent,true);
 	if (!object) {
-		Msg								("! invalid parent id [%d] specified",id_parent);
-		return							(0);
+		Msg("! invalid parent id [%d] specified",id_parent);
+		return nullptr;
 	}
 
 	if (!object->m_bOnline)
-		return							(self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent));
+	{
+		return self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent);
+	}
 
-	NET_Packet							packet;
-	packet.w_begin						(M_SPAWN);
-	packet.w_stringZ					(section);
-	
-	CSE_Abstract						*item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
-	item->Spawn_Write					(packet,false);
-	self_->server().FreeID				(item->ID,0);
-	F_entity_Destroy					(item);
+	CSE_Abstract* item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
+	NET_Packet packet;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(packet, *item);
+	} else
+	{
+		packet.w_begin(M_SPAWN);
+		packet.w_stringZ(section);
+		item->Spawn_Write(packet,false);
+	}
+	self_->server().FreeID(item->ID,0);
+	F_entity_Destroy(item);
 
-	ClientID							clientID;
-	clientID.set						(ALife::INVALID_OBJECT_ID);
+	ClientID clientID;
+	clientID.set(ALife::INVALID_OBJECT_ID);
 
 	u16									dummy;
 	packet.r_begin						(dummy);
@@ -283,18 +292,21 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, const char* 
 		return							(item);
 	}
 
-	NET_Packet							packet;
-	packet.w_begin						(M_SPAWN);
-	packet.w_stringZ					(section);
-	
 	CSE_Abstract						*item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
-
 	CSE_ALifeItemAmmo					*ammo = item->cast_item_ammo();
 	THROW								(ammo);
 	THROW								(ammo->m_boxSize >= ammo_to_spawn);
 	ammo->a_elapsed						= (u16)ammo_to_spawn;
-
-	item->Spawn_Write					(packet,false);
+	NET_Packet							packet;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(packet, *item);
+	} else
+	{
+		packet.w_begin						(M_SPAWN);
+		packet.w_stringZ					(section);
+		item->Spawn_Write					(packet,false);
+	}
 	self_->server().FreeID				(item->ID,0);
 	F_entity_Destroy					(item);
 
@@ -429,10 +441,15 @@ void IterateInfo(const CALifeSimulator* alife, const ALife::_OBJECT_ID& id, cons
 CSE_Abstract* reprocess_spawn(CALifeSimulator* self, CSE_Abstract* object)
 {
 	NET_Packet	packet;
-	packet.w_begin(M_SPAWN);
-	packet.w_stringZ(object->s_name);
-
-	object->Spawn_Write(packet, false);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(packet, *object);
+	} else
+	{
+		packet.w_begin(M_SPAWN);
+		packet.w_stringZ(object->s_name);
+		object->Spawn_Write(packet, false);
+	}
 	self->server().FreeID(object->ID, 0);
 	F_entity_Destroy(object);
 

@@ -49,12 +49,15 @@
 #include "nvg.h"
 #include "ui/UIPdaSpot.h"
 #include "../xrEngine/GamepadService.h"
+#include "helicopter.h"
+#include "Cutscenes/CutsceneManager.h"
 #include "ai/stalker/ai_stalker.h"
 
 namespace
 {
 bool IsMedkitSection(const shared_str& section)
 {
+	// TODO: Хардкод, не хорошо!
 	return section == "medkit"
 		|| section == "medkit_army"
 		|| section == "medkit_scientic";
@@ -1835,6 +1838,8 @@ void CActor::UpdateCL()
 
 	UpdateInventoryOwner(Device.dwTimeDelta);
 	
+	CHeliFlareManager::GetInstance().Update(Device.fTimeDelta); // Definitely need to find more suitable place for such updates... 
+
 	float current_fov = currentFOV();
 
 	if (g_Alive() && m_holder == nullptr)
@@ -3318,7 +3323,7 @@ float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type
 	{
 		if (CArtefact* artefact = item->cast_artefact())
 		{
-			res_hit_power_k += artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			res_hit_power_k += artefact->AffectHit(1.0f, hit_type);
 			_af_count += 1.0f;
 		}
 	}

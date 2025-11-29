@@ -7,7 +7,7 @@ function bind(obj)
 end
 --------------------------------------------------------------------------------
 class "agru_door_binder" (object_binder)
-function agru_door_binder:__init(obj) super(obj)
+function agru_door_binder:__init(obj) super(self, obj)
 	self.idle_snd = sound_object("device\\bridge\\motor_run")
 	self.down_snd = sound_object("device\\bridge\\motor_stop")
 	self.start_snd = sound_object("device\\bridge\\motor_start")

@@ -1197,30 +1197,27 @@ CMapLocation* CUIMapWnd::UnderSpot(Fvector RealPosition, CUILevelMap* curr_map)
 	Fvector2 RealPositionXZ;
 	RealPositionXZ.set(RealPosition.x, RealPosition.z);
 
-	Locations Spots = Level().MapManager().Locations();
-	Locations_it it;
 	Fvector2 m_position_on_map;
 	Fvector2 m_position_mouse = curr_map->ConvertRealToLocal(RealPositionXZ, false);
 	float TargetLocationDistance = 100.0f;
 	CMapLocation* ml = NULL;
 
-	for (it = Spots.begin(); it != Spots.end(); ++it)
+	for (auto& elem : Level().MapManager().Locations())
 	{
-		if ((*it).location->IsUserDefined())
+		if (elem.location->IsUserDefined())
 		{
 			Msg("qweasdd: CUIMapWnd::UnderSpot map loc is user defined!");
-			m_position_on_map = curr_map->ConvertRealToLocal((*it).location->CalcPosition(), false);
+			m_position_on_map = curr_map->ConvertRealToLocal(elem.location->CalcPosition(), false);
 
 			float distance = m_position_on_map.distance_to(m_position_mouse);
 
-			Fvector2 FvectorSize = (*it).location->SpotSize();
+			Fvector2 FvectorSize = elem.location->SpotSize();
 			float size = (FvectorSize.x + FvectorSize.y) / 2;
 
 			if ((distance < size) && (distance < TargetLocationDistance))
 			{
 				TargetLocationDistance = distance;
-				ml = (*it).location;
-
+				ml = elem.location;
 			}
 		}
 	}

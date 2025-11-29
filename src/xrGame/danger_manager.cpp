@@ -349,3 +349,11 @@ void CDangerManager::load			(IReader &packet)
 {
 	load_data				(m_ignored,packet);
 }
+
+void CDangerManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CDangerManager")
+	{
+		Object << m_ignored;
+	}
+}

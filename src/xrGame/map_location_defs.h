@@ -23,6 +23,8 @@ struct SLocationKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 	virtual void destroy							();
 };
 
+ISaveObject& operator<<(ISaveObject& Object, SLocationKey& Data);
+
 using Locations = xr_vector<SLocationKey>;
 using Locations_it = Locations::iterator;
 

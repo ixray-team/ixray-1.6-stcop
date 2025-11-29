@@ -38,6 +38,8 @@ public:
 	virtual void Load(const char* section);
 	virtual	bool evaluate();
 
+	virtual void Serialize(ISaveObject& Object) {};
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 typedef CPropertyEvaluator<CScriptGameObject> CScriptPropertyEvaluator;

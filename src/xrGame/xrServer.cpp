@@ -17,6 +17,13 @@
 #include "screenshot_server.h"
 #include "xrServer_info.h"
 #include "xrServer_Objects.h"
+
+#pragma warning(push)
+#pragma warning(disable:4995)
+#include <functional>
+
+#include "SaveObjectHelpers.h"
+#pragma warning(pop)
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "game_sv_single.h"
@@ -254,21 +261,27 @@ void xrServer::Update()
 
 	// spawn queue
 	u32 svT = Device.TimerAsync();
-	while (!(q_respawn.empty() || (svT < q_respawn.begin()->timestamp)))
+	while (!(q_respawn.empty() || (svT<q_respawn.begin()->timestamp)))
 	{
 		// get
-		svs_respawn R = *q_respawn.begin();
+		svs_respawn	R = *q_respawn.begin();
 		q_respawn.erase(q_respawn.begin());
 
 		// 
-		CSE_Abstract* E					= ID_to_entity(R.phantom);
-		E->Spawn_Write		(Packet,false);
-		u16								ID;
-		Packet.r_begin		(ID);
+		CSE_Abstract* E	= ID_to_entity(R.phantom);
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(Packet, *E);
+		} else
+		{
+			E->Spawn_Write(Packet,false);
+		}
+		u16 ID;
+		Packet.r_begin(ID);
 		R_ASSERT(M_SPAWN==ID);
-		ClientID						clientID; 
+		ClientID clientID; 
 		clientID.set(ALife::INVALID_OBJECT_ID);
-		Process_spawn		(Packet,clientID);
+		Process_spawn(Packet,clientID);
 	}
 
 	SendUpdatesToAll();
@@ -721,11 +734,11 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
 	switch (type)
 	{
 		case M_UPDATE:
-		{
-			Process_update(P, sender); // No broadcast
-		}
-		break;
+			{
+				Process_update(P,sender);						// No broadcast
+			}break;
 		case M_SPAWN:
+		case M_SPAWN_LOCAL:
 		{
 			if (CL && CL->flags.bLocal)
 			{
@@ -1985,12 +1998,19 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 
 		// Associate
 		E->owner = CL;
-		E->Spawn_Write(P, true);
-		E->UPDATE_Write(P);
-
-		if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			E->SyncWrite(P);
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacketFull(P, *E);
+		}
+		else
+		{
+			E->Spawn_Write(P, true);
+			E->UPDATE_Write(P);
+
+			if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+			{
+				E->SyncWrite(P);
+			}
 		}
 
 		CSE_ALifeObject* object = smart_cast<CSE_ALifeObject*>(E);
@@ -2002,6 +2022,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 	}
 	else
 	{
+		VERIFY(!EngineExternal()[EEngineExternalSystem::AdvancedSerialization]);
 		E->Spawn_Write(P, false);
 		E->UPDATE_Write(P);
 
@@ -2493,8 +2514,14 @@ void xrServer::SLS_Default()
 	_actor->set_name_replace("designer");
 	_actor->s_flags.flags |= M_SPAWN_OBJECT_ASPLAYER;
 	NET_Packet packet;
-	packet.w_begin(M_SPAWN);
-	_actor->Spawn_Write(packet, true);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(packet, *_actor);
+	} else
+	{
+		packet.w_begin(M_SPAWN);
+		_actor->Spawn_Write(packet, true);
+	}
 
 	u16 id;
 	packet.r_begin(id);
@@ -2507,6 +2534,7 @@ void xrServer::SLS_Default()
 
 void xrServer::SLS_Load(IReader& fs)
 {
+	VERIFY(!EngineExternal()[EEngineExternalSystem::AdvancedSerialization]);
 	// Generate spawn+update
 	NET_Packet P;
 	u16 u_id = 0xffff;
@@ -2535,6 +2563,7 @@ void xrServer::SLS_Load(IReader& fs)
 
 void xrServer::SLS_Save(IWriter& fs)
 {
+	VERIFY(!EngineExternal()[EEngineExternalSystem::AdvancedSerialization]);
 	// Generate spawn+update
 	NET_Packet P;
 	u32 position;
@@ -3367,7 +3396,16 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 		// create entity
 		E = entity_Create(s_name);
 		R_ASSERT3(E, "Can't create entity.", s_name);
-		E->Spawn_Read(P);
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			xr_unique_ptr<CSaveObjectLoad> Obj;
+			Obj.reset(SaveObjectNetPacketHelper::GetLoadObjectFromPacket(P));
+			E->Spawn_Serialize(*Obj);
+		}
+		else
+		{
+			E->Spawn_Read(P);
+		}
 		if (
 			!E->m_gameType.MatchType((u16)game->Type()) ||
 			!E->match_configuration() ||
@@ -3475,27 +3513,48 @@ CSE_Abstract* xrServer::Process_spawn(NET_Packet& P, ClientID sender, bool bSpaw
 	if (CL)
 	{
 		// For local ONLY
-		E->Spawn_Write(Packet, true);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			E->UPDATE_Write(Packet);
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacketPossibleFull(Packet, *E);
+		}
+		else
+		{
+			E->Spawn_Write(Packet, true);
+			if (E->s_flags.is(M_SPAWN_UPDATE))
+			{
+				E->UPDATE_Write(Packet);
+			}
 		}
 		SendTo(CL->ID, Packet, net_flags(true, true));
 
 		// For everybody, except client, which contains authorative copy
-		E->Spawn_Write(Packet, false);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			E->UPDATE_Write(Packet);
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacketPossibleFull(Packet, *E);
+		}
+		else
+		{
+			E->Spawn_Write(Packet, false);
+			if (E->s_flags.is(M_SPAWN_UPDATE))
+			{
+				E->UPDATE_Write(Packet);
+			}
 		}
 		SendBroadcast(CL->ID, Packet, net_flags(true, true));
 	}
 	else
 	{
-		E->Spawn_Write(Packet, false);
-		if (E->s_flags.is(M_SPAWN_UPDATE))
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 		{
-			E->UPDATE_Write(Packet);
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacketPossibleFull(Packet, *E);
+		}
+		else
+		{
+			E->Spawn_Write(Packet, false);
+			if (E->s_flags.is(M_SPAWN_UPDATE))
+			{
+				E->UPDATE_Write(Packet);
+			}
 		}
 		ClientID clientID;
 		clientID.set(0);

@@ -40,6 +40,14 @@ void CCameraLook::load(IReader& packet)
 	load_data(pitch, packet);
 }
 
+void CCameraLook::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCameraLook")
+	{
+		Object << pitch;
+	}
+}
+
 void CCameraLook::Update(Fvector& point, Fvector& /**noise_dangle/**/)
 {
 	vPosition.set		(point);

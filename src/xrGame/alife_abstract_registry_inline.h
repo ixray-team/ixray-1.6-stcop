@@ -8,6 +8,12 @@
 
 #pragma once
 
+namespace SaveSystemDefined
+{
+	template<typename K, typename V>
+	void Serialize(ISaveObject& Object, xr_map<K, V>& Value);
+}
+
 #define TEMPLATE_SPECIALIZATION template <typename _index_type, typename _data_type>
 #define CSALifeAbstractRegistry CALifeAbstractRegistry<_index_type,_data_type>
 
@@ -32,6 +38,12 @@ TEMPLATE_SPECIALIZATION
 void CSALifeAbstractRegistry ::load					(IReader &file_stream)
 {
 	load_data		(m_objects,file_stream);
+}
+
+TEMPLATE_SPECIALIZATION
+void CSALifeAbstractRegistry ::serialize					(ISaveObject& Object)
+{
+	SaveSystemDefined::Serialize(Object, m_objects);
 }
 
 TEMPLATE_SPECIALIZATION

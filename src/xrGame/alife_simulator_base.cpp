@@ -154,20 +154,40 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 
 CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAbstract, CSE_ALifeDynamicObject *j)
 {
-	NET_Packet					tNetPacket;
-	const char*						S = pSettings->r_string(tpALifeGroupAbstract->base()->s_name,"monster_section");
+	const char*					S = pSettings->r_string(tpALifeGroupAbstract->base()->s_name,"monster_section");
 	CSE_Abstract				*l_tpAbstract = F_entity_Create(S);
 	R_ASSERT2					(l_tpAbstract,"Can't create entity.");
 	CSE_ALifeDynamicObject* k = l_tpAbstract->cast_alife_dynamic_object();
 	R_ASSERT2					(k,"Non-ALife object in the 'game.spawn'");
 
-	j->Spawn_Write				(tNetPacket,true);
-	k->Spawn_Read				(tNetPacket);
-	tNetPacket.w_begin			(M_UPDATE);
-	j->UPDATE_Write				(tNetPacket);
-	u16							id;
-	tNetPacket.r_begin			(id);
-	k->UPDATE_Read				(tNetPacket);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		{
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->Spawn_Serialize(ObjSave, true, true);
+			ObjLoad.TransferSaveData(ObjSave);
+			k->Spawn_Serialize(ObjLoad, true, true);
+		}
+		{
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->UPDATE_Serialize(ObjSave);
+			ObjLoad.TransferSaveData(ObjSave);
+			k->UPDATE_Serialize(ObjLoad);
+		}
+	}
+	else
+	{
+		NET_Packet					tNetPacket;
+		j->Spawn_Write				(tNetPacket,true);
+		k->Spawn_Read				(tNetPacket);
+		tNetPacket.w_begin			(M_UPDATE);
+		j->UPDATE_Write				(tNetPacket);
+		u16							id;
+		tNetPacket.r_begin			(id);
+		k->UPDATE_Read				(tNetPacket);
+	}
 	k->s_name					= S;
 	k->m_tSpawnID				= j->m_tSpawnID;
 	k->ID						= server().PerformIDgen(ALife::INVALID_OBJECT_ID);
@@ -199,14 +219,35 @@ void CALifeSimulatorBase::create(CSE_ALifeDynamicObject *&i, CSE_ALifeDynamicObj
 	i = tpSE_Abstract->cast_alife_dynamic_object();
 	R_ASSERT2					(i,"Non-ALife object in the 'game.spawn'");
 
-	NET_Packet					tNetPacket;
-	j->Spawn_Write				(tNetPacket,true);
-	i->Spawn_Read				(tNetPacket);
-	tNetPacket.w_begin			(M_UPDATE);
-	j->UPDATE_Write				(tNetPacket);
-	u16							id;
-	tNetPacket.r_begin			(id);
-	i->UPDATE_Read				(tNetPacket);
+
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		{
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->Spawn_Serialize(ObjSave, true, true);
+			ObjLoad.TransferSaveData(ObjSave);
+			i->Spawn_Serialize(ObjLoad, true, true);
+		}
+		{
+			CSaveObjectSave ObjSave;
+			CSaveObjectLoad ObjLoad;
+			j->UPDATE_Serialize(ObjSave);
+			ObjLoad.TransferSaveData(ObjSave);
+			i->UPDATE_Serialize(ObjLoad);
+		}
+	}
+	else
+	{
+		NET_Packet					tNetPacket;
+		j->Spawn_Write				(tNetPacket,true);
+		i->Spawn_Read				(tNetPacket);
+		tNetPacket.w_begin			(M_UPDATE);
+		j->UPDATE_Write				(tNetPacket);
+		u16							id;
+		tNetPacket.r_begin			(id);
+		i->UPDATE_Read				(tNetPacket);
+	}
 
 	R_ASSERT3					(!(i->used_ai_locations()) || (i->m_tNodeID != u32(-1)),"Invalid vertex for object ",i->name_replace());
 

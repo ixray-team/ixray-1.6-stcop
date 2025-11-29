@@ -15,6 +15,7 @@ struct SStatDetailBData: public IPureSerializeObject<IReader,IWriter>
 	virtual void load								(IReader &stream);
 };
 
+ISaveObject& operator<<(ISaveObject& Object, SStatDetailBData& Data);
 
 typedef xr_vector<SStatDetailBData>	vStatDetailData;
 
@@ -28,6 +29,8 @@ struct SStatSectionData: public IPureSerializeObject<IReader,IWriter>
 	virtual void			save			(IWriter &stream);
 	virtual void			load			(IReader &stream);
 };
+
+ISaveObject& operator<<(ISaveObject& Object, SStatSectionData& Data);
 
 typedef xr_vector<SStatSectionData> vStatSectionData;
 typedef CALifeAbstractRegistry<u16, vStatSectionData> CActorStatisticRegistry;

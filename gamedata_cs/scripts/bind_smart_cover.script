@@ -8,7 +8,7 @@ function bind(obj)
 end
 
 class "smart_cover_binder" (object_binder)
-function smart_cover_binder:__init(obj) super(obj)
+function smart_cover_binder:__init(obj) super(self, obj)
 end
 function smart_cover_binder:net_spawn(server_object)
 	if not object_binder.net_spawn(self, server_object) then

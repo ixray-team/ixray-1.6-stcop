@@ -171,6 +171,7 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
 public:
 	void							cform_read		(NET_Packet& P);
 	void							cform_write		(NET_Packet& P);
+	void							cform_serialize	(ISaveObject& Object);
 									CSE_Shape		();
 	virtual							~CSE_Shape		();
 	virtual ISE_Shape*  	shape			() = 0;
@@ -189,7 +190,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
 	virtual							~CSE_Temporary	();
 SERVER_ENTITY_DECLARE_END
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
+SERVER_ENTITY_DECLARE_BEGIN(CSE_PHSkeleton, IPureStateUpdateObject)
 								CSE_PHSkeleton(const char* caSection);
 virtual							~CSE_PHSkeleton();
 
@@ -210,6 +211,7 @@ enum{
 protected:
 	virtual void					data_load				(NET_Packet &tNetPacket);
 	virtual void					data_save				(NET_Packet &tNetPacket);
+	virtual void					data_serialize			(ISaveObject& Object);
 public:
 SERVER_ENTITY_DECLARE_END
 

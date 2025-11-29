@@ -18,7 +18,9 @@
 #include "ui/UIActorMenu.h"
 #include "../xrEngine/string_table.h"
 #include "ai_object_location.h"
+#include "Artefact.h"
 #include "object_broker.h"
+#include "SaveObjectHelpers.h"
 
 #ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
@@ -171,8 +173,8 @@ void CInventoryItem::Load(const char* section)
 
 	u32 inv_grid_x = pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
 	u32 inv_grid_y = pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
-	u32 inv_grid_width = pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
-	u32 inv_grid_height = pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+	u32 inv_grid_width = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "inv_grid_width", 1);
+	u32 inv_grid_height = READ_IF_EXISTS(pSettings, r_u32, m_object->cNameSect(), "inv_grid_height", 1);
 	ScaleIcon = READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "inv_scale", 1.0f);
 	IconsTexture = READ_IF_EXISTS(pSettings, r_string, section, "icons_texture", nullptr);
 
@@ -448,8 +450,15 @@ bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 
 		// Send
 		NET_Packet P;
-		D->Spawn_Write(P, true);
-		Level().Send(P, net_flags(true));
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *D);
+		}
+		else
+		{
+			D->Spawn_Write(P,true);
+		}
+		Level().Send(P,net_flags(true));
 		// Destroy
 		F_entity_Destroy(D);
 	}
@@ -747,6 +756,52 @@ void CInventoryItem::load(IReader& packet)
 	object().PPhysicsShell()->Disable();
 
 	SetDrawCost(packet.r_u8() == 1);
+}
+
+void CInventoryItem::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CInventoryItem")
+	{
+		Object << m_ItemCurrPlace.value << m_fCondition << m_AdditionalDescription << m_IsUsedAdditionalDescription;
+
+		if (!Object.IsSave() && m_IsUsedAdditionalDescription)
+		{
+			SetAdditionalDescription(m_AdditionalDescription.c_str());
+		}
+
+		//--	load_data( m_upgrades, packet );
+		//--	install_loaded_upgrades();
+
+		/*if (Object.IsSave()) {
+			CArtefact* artefact = smart_cast<CArtefact*>(this);
+
+			if (artefact && artefact->IsInContainer())
+			{
+				u8 Value = 0;
+				Object << Value;
+				return;
+			}
+		}*/
+		u8 num_items;
+		if (Object.IsSave()) {
+			num_items = (u8)object().PHGetSyncItemsNumber();
+		}
+		Object << num_items;
+
+		if (!num_items) {
+			return;
+		}
+
+		if (!Object.IsSave()&&!object().PPhysicsShell()) {
+			object().setup_physic_shell();
+			object().PPhysicsShell()->Disable();
+		}
+
+		object().PHSerializeState(Object);
+		if (!Object.IsSave()) {
+			object().PPhysicsShell()->Disable();
+		}
+	}
 }
 
 ///////////////////////////////////////////////

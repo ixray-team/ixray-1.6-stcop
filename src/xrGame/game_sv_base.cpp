@@ -13,6 +13,7 @@
 #include "object_broker.h"
 #include "alife_simulator.h"
 #include "debug_renderer.h"
+#include "SaveObjectHelpers.h"
 #include "xrGameSpyServer.h"
 
 #define			MAPROT_LIST_NAME		"maprot_list.ltx"
@@ -577,12 +578,18 @@ CSE_Abstract*		game_sv_GameState::spawn_begin				(const char* N)
 
 CSE_Abstract*		game_sv_GameState::spawn_end				(CSE_Abstract* E, ClientID id)
 {
-	NET_Packet						P;
-	u16								skip_header;
-	E->Spawn_Write					(P,true);
-	P.r_begin						(skip_header);
-	CSE_Abstract* N = m_server->Process_spawn	(P,id);
-	F_entity_Destroy				(E);
+	NET_Packet P;
+	u16 skip_header;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *E);
+	} else
+	{
+		E->Spawn_Write(P,true);
+	}
+	P.r_begin(skip_header);
+	CSE_Abstract* N = m_server->Process_spawn(P,id);
+	F_entity_Destroy(E);
 
 	return N;
 }

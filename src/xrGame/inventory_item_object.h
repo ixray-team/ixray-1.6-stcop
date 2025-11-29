@@ -73,24 +73,25 @@ public:
 	virtual	void Hit(SHit* pHDS);
 
 	virtual void OnH_B_Independent(bool just_before_destroy);
-	virtual void OnH_A_Independent();
-	virtual void OnH_B_Chield();
-	virtual void OnH_A_Chield();
-	virtual void UpdateCL();
-	virtual void OnEvent(NET_Packet& P, u16 type);
-	virtual bool net_Spawn(CSE_Abstract* DC);
-	virtual void net_Destroy();
-	virtual void net_Import(NET_Packet& P);					// import from server
-	virtual void net_Export(NET_Packet& P);					// export to server
-	virtual void save(NET_Packet& output_packet);
-	virtual void load(IReader& input_packet);
-	virtual bool net_SaveRelevant() { return true; }
-	virtual void renderable_Render();
-	virtual void reload(const char* section);
-	virtual void reinit();
-	virtual void activate_physic_shell();
-	virtual void on_activate_physic_shell();
-	virtual	void modify_holder_params(float& range, float& fov) const;
+	virtual void OnH_A_Independent() override;
+	virtual void OnH_B_Chield() override;
+	virtual void OnH_A_Chield() override;
+	virtual void UpdateCL() override;
+	virtual void OnEvent(NET_Packet& P, u16 type) override;
+	virtual bool net_Spawn(CSE_Abstract* DC) override;
+	virtual void net_Destroy() override;
+	virtual void net_Import(NET_Packet& P) override;					// import from server
+	virtual void net_Export(NET_Packet& P) override;					// export to server
+	virtual void save(NET_Packet& output_packet) override;
+	virtual void load(IReader& input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
+	virtual bool net_SaveRelevant() override { return true; }
+	virtual void renderable_Render() override;
+	virtual void reload(const char* section) override;
+	virtual void reinit() override;
+	virtual void activate_physic_shell() override;
+	virtual void on_activate_physic_shell() override;
+	virtual	void modify_holder_params(float& range, float& fov) const override;
 
 	virtual void OnChangeVisual() override;
 

@@ -22,7 +22,7 @@ end
 --'--------------------------------------------------------------------------------------------------------------------
 local arena_zones = {}
 class "arena_zone_binder" (object_binder)
-function arena_zone_binder:__init(obj) super(obj)
+function arena_zone_binder:__init(obj) super(self, obj)
 	self.saved_obj = {}
 	arena_zones[obj:name()] = self
 end

@@ -83,7 +83,26 @@ struct CLoader {
 		template <typename T1, typename T2>
 		IC	static void add(T1 &data, T2 &value)
 		{
-			add_helper<T1,T2>::template add<is_tree_structure<T1>::value>(data,value);
+			if constexpr (std::is_same_v<T1, xr_vector<typename T1::value_type>>)
+			{
+				data.emplace_back(value);
+			}
+			else if constexpr (
+				std::is_same_v<T1, xr_set<typename T1::value_type>>
+				|| std::is_same_v<T1, xr_hash_set<typename T1::value_type>>){
+				data.insert(value);
+			}
+			else if constexpr (std::is_same_v<T1, xr_map<typename T1::key_type, typename T1::mapped_type>>
+				|| std::is_same_v<T1, xr_hash_map<typename T1::key_type, typename T1::mapped_type>>
+				)
+			{
+				data.insert(value);
+			}
+			else
+			{
+				T1::This_is_not_valid_member_of_type_made_only_to_trigger_error_instead_of_problematic_static_assert();
+				T2::This_is_not_valid_member_of_type_made_only_to_trigger_error_instead_of_problematic_static_assert();
+			}
 		}
 
 		template <typename T>

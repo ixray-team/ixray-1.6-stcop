@@ -29,6 +29,7 @@
 #include "ai_obstacle.h"
 #include "magic_box3.h"
 #include "animation_movement_controller.h"
+#include "SaveObjectHelpers.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "../xrScripts/script_callback_ex.h"
 
@@ -382,8 +383,15 @@ bool CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if(!E->client_data.empty())
 	{	
 //		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
-		IReader			ireader = IReader(&*E->client_data.begin(), (int)E->client_data.size());
+		IReader			ireader = IReader(E->client_data.data(), (int)E->client_data.size());
 		net_Load		(ireader);
+	}
+	else if (E->client_data_new)
+	{
+		auto PartialObj = new CSaveObjectLoad(E->client_data_new);
+		net_Serialize(*PartialObj);
+		xr_delete(PartialObj); // client_data_new там возвращается в пул
+		E->client_data_new = nullptr;
 	}
 	else {
 //		Msg				("no client data for object [%d][%s], load is skipped",ID(),*cName());
@@ -529,6 +537,26 @@ void CGameObject::load			(IReader &input_packet)
 {
 }
 
+void CGameObject::net_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CGameObject::net_Serialize")
+	{
+		auto ChunkDepth = Object.GetChunkStackDepth();
+		Serialize(Object);
+		R_ASSERT4(ChunkDepth == Object.GetChunkStackDepth(), "Saving object result invalid chunk opening and closing tags!", "Serialize (client object)", Name());
+		CScriptBinder::Serialize(Object);
+		R_ASSERT4(ChunkDepth == Object.GetChunkStackDepth(), "Saving object result invalid chunk opening and closing tags!", "Serialize (script binder)", Name());
+	}
+}
+
+void CGameObject::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CGameObject")
+	{
+
+	}
+}
+
 void CGameObject::spawn_supplies()
 {
 	if (!spawn_ini() || ai().get_alife())
@@ -569,12 +597,13 @@ void CGameObject::spawn_supplies()
 
 		}
 		for (u32 i=0; i<j; ++i)
-			if (::Random.randF(1.f) < p){
+			if (::Random.randF(1.f) < p)
+			{
 				CSE_Abstract* A=Level().spawn_item	(N,Position(),ai_location().level_vertex_id(),ID(),true);
 
 				CSE_ALifeInventoryItem* pSE_InventoryItem = A->cast_inventory_item();
 				if(pSE_InventoryItem)
-						pSE_InventoryItem->m_fCondition = f_cond;
+					pSE_InventoryItem->m_fCondition = f_cond;
 
 				CSE_ALifeItemWeapon* W = A->cast_item_weapon();
 				if (W)
@@ -587,11 +616,17 @@ void CGameObject::spawn_supplies()
 						W->m_addon_flags.set(CSE_ALifeItemWeapon::eWeaponAddonGrenadeLauncher, bLauncher);
 				}
 
-				NET_Packet					P;
-				A->Spawn_Write				(P,true);
+				NET_Packet P;
+				if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+				{
+					SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *A);
+				} else {
+					NET_Packet					P;
+					A->Spawn_Write				(P,true);
+				}
 				Level().Send				(P,net_flags(true));
 				F_entity_Destroy			(A);
-		}
+			}
 	}
 }
 
@@ -832,17 +867,19 @@ void VisualCallback	(IKinematics *tpKinematics)
 
 CScriptGameObject *CGameObject::lua_game_object		() const
 {
-	if (!m_spawned)
+	if (!I_ASSERT_M(m_spawned, "! you are trying to use a destroyed object [%i]", ID()))
 	{
-		Msg("! you are trying to use a destroyed object [%i]", ID());
 		ai().script_engine().print_stack();
 		return NULL;
 	}
 
 	THROW							(m_spawned);
 	if (!m_lua_game_object)
+	{
 		m_lua_game_object			= new CScriptGameObject(const_cast<CGameObject*>(this));
-	return							(m_lua_game_object);
+	}
+	IVERIFY(m_lua_game_object);
+	return m_lua_game_object;
 }
 
 bool CGameObject::NeedToDestroyObject()	const

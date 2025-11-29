@@ -34,12 +34,7 @@ function smart_terrain_binder:__init( obj ) super( obj )
 end
 
 function smart_terrain_binder:net_spawn( server_object )
-	return PROF_EVENT_CLOSURE("net_spawn", function()
-    	
-        if not object_binder.net_spawn( self, server_object ) then
-            return false
-        end
-    
+	return PROF_EVENT_CLOSURE("net_spawn", function()    
         -- получить ссылку на настоящий серверный объект
         self.se_smart_terrain = alife():object( server_object.id )
     
@@ -56,8 +51,6 @@ function smart_terrain_binder:net_destroy()
         
         db.del_zone( self.object )
         db.del_smart_terrain( self.se_smart_terrain )
-    
-        object_binder.net_destroy( self )
 	end)
 end
 
@@ -74,8 +67,10 @@ end
 
 function smart_terrain_binder:update( delta )
     return PROF_EVENT_CLOSURE("update", function()
-        object_binder.update( self, delta )
         SendScriptCallback("binder_smart_terrain_on_update", self, self.object, delta)
         self.se_smart_terrain:update()
     end)
+end
+
+function smart_terrain_binder:Serialize(Object)
 end

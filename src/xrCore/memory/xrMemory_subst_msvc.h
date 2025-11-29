@@ -1,4 +1,5 @@
 #pragma once
+#include "xrMemory.h"
 
 template <bool _is_pm, typename T>
 struct xr_special_free

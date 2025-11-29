@@ -30,8 +30,19 @@ namespace MemorySpace
 
 	struct SObjectParams 
 	{
+		virtual ~SObjectParams() = default;
 		u32     m_level_vertex_id;
 		Fvector m_position;
+
+		virtual void Serialize(ISaveObject& Object) {
+			Object << m_level_vertex_id << m_position;
+#ifdef USE_ORIENTATION
+			BEGIN_CHUNK(Object,"SObjectParams::Orientation")
+			{
+				Object << m_orientation;
+			}
+#endif
+		}
 	};
 
 	struct CObjectParams :
@@ -42,6 +53,7 @@ namespace MemorySpace
 
 	struct SMemoryObject
 	{
+		virtual ~SMemoryObject() = default;
 		u32  m_level_time;
 		u32  m_last_level_time;
 		bool m_enabled;
@@ -57,6 +69,51 @@ namespace MemorySpace
 		{
 			m_enabled = true;
 		}
+
+		virtual void Serialize(ISaveObject& Object) {
+#ifdef USE_GAME_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::game_time")
+			{
+				Object << m_game_time;
+			}
+#endif
+#ifdef USE_LEVEL_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::level_time")
+			{
+				Object << m_level_time;
+			}
+#endif
+#ifdef USE_LAST_GAME_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::last_game_time")
+			{
+				Object << m_last_game_time;
+			}
+#endif
+#ifdef USE_LAST_LEVEL_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::last_level_time")
+			{
+				Object << m_last_level_time;
+			}
+#endif
+#ifdef USE_FIRST_GAME_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::first_game_time")
+			{
+				Object << m_first_game_time;
+			}
+#endif
+#ifdef USE_FIRST_LEVEL_TIME
+			BEGIN_CHUNK(Object,"SMemoryObject::first_level_time")
+			{
+				Object << m_first_level_time;
+			}
+#endif
+#ifdef USE_UPDATE_COUNT
+			BEGIN_CHUNK(Object,"SMemoryObject::update_count")
+			{
+				Object << m_update_count;
+			}
+#endif
+		}
 	};
 
 	struct CMemoryObject :
@@ -71,6 +128,12 @@ namespace MemorySpace
 		    bool	operator==(ALife::_OBJECT_ID id) const; 
 	 static ALife::_OBJECT_ID		object_id(const CObject* object);
 		IC	void	fill(const CGameObject* game_object, const CGameObject* self, const u64& mask);
+
+		virtual void Serialize(ISaveObject& Object) override {
+			SMemoryObject::Serialize(Object);
+			m_object_params.Serialize(Object);
+			m_self_params.Serialize(Object);
+		}
 	};
 
 	struct CVisibleObject : 

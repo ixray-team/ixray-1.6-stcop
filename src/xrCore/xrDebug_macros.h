@@ -169,7 +169,7 @@
 #		define NODEFAULT assert(false)
 #	endif
 
-#	define VERIFY(expr)				do {} while (0)
+#	define VERIFY(...)				do {} while (0)
 #	define VERIFY2(expr, e2)		do {} while (0)
 #	define VERIFY3(expr, e2, e3)	do {} while (0)
 #	define VERIFY4(expr, e2, e3, e4)do {} while (0)

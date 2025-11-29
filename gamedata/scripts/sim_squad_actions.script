@@ -15,6 +15,12 @@ end
 -- Загрузка
 function reach_target:load(packet)
 end
+
+function reach_target:Serialize(Object)
+	Object:ForChunk("reach_target", function()
+		
+	end)
+end
 --' Апдейт действия
 function reach_target:update(under_simulation)
 	--printf("Squad[%s] attack_update", self.squad_id)
@@ -73,6 +79,12 @@ function stay_on_target:save(packet)
 end
 -- Загрузка
 function stay_on_target:load(packet)
+end
+
+function stay_on_target:Serialize(Object)
+	Object:ForChunk("stay_on_target", function()
+		
+	end)
 end
 --' Апдейт действия
 function stay_on_target:update(under_simulation)
