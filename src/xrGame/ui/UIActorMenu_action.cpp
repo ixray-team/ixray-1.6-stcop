@@ -443,21 +443,12 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		return true;
 	}	
 
-	CBackpackAnimator* backpack_animator = m_pActorInvOwner->cast_actor()->HudAnimator()->BackpackAnimator();
-
 	if ( is_binded(kUSE, dik) || is_binded(kINVENTORY, dik) )
 	{
 		if ( WINDOW_KEY_PRESSED == keyboard_action )
 		{
 			g_btnHint->Discard();
 			HideDialog();
-
-			if (backpack_animator != nullptr
-				&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
-				&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
-			{
-				backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
-			}
 
 			if (m_pActorInvOwner->IsTalking())
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
@@ -471,13 +462,6 @@ bool CUIActorMenu::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 			g_btnHint->Discard();
 			HideDialog();
-
-			if (backpack_animator != nullptr
-				&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
-				&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
-			{
-				backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
-			}
 
 			if (m_pActorInvOwner->IsTalking())
 				CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();
@@ -534,15 +518,6 @@ void CUIActorMenu::OnBtnExitClicked(CUIWindow* w, void* d)
 {
 	g_btnHint->Discard();
 	HideDialog();
-
-	CBackpackAnimator* backpack_animator = m_pActorInvOwner->cast_actor()->HudAnimator()->BackpackAnimator();
-
-	if (backpack_animator != nullptr
-		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
-		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
-	{
-		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
-	}
 
 	if (m_pActorInvOwner->IsTalking())
 		CurrentGameUI()->TalkMenu->UITalkDialogWnd->Show();

@@ -1051,3 +1051,20 @@ void CUIActorMenu::OnSuccessRepairMP(PIItem item)
 		SeparateUpgradeItem();
 	}
 }
+
+void CUIActorMenu::HideDialog()
+{
+	if (!IsShown())
+		return;
+
+	CBackpackAnimator* backpack_animator = m_pActorInvOwner->cast_actor()->HudAnimator()->BackpackAnimator();
+
+	if (backpack_animator != nullptr
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
+		&& backpack_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+	{
+		backpack_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+	}
+
+	GetHolder()->StopDialog(this);
+}
