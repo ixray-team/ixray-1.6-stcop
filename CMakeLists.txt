@@ -37,11 +37,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    include("cmake/clang.cmake")
+	include("cmake/clang.cmake")
 elseif (MSVC)
-    include("cmake/msvc.cmake")
+	include("cmake/msvc.cmake")
 else()
-    include("cmake/gcc.cmake")
+	include("cmake/gcc.cmake")
 endif()
 
 # Add new build types
@@ -53,7 +53,7 @@ set(PREDEFINED_TARGETS_FOLDER "CustomTargets")
 
 # ASan
 if (IXRAY_ASAN)
-    add_compile_options(-fsanitize=address)
+	add_compile_options(-fsanitize=address)
 endif()
 
 ## Disable user-cheats for Release/Shipping build
@@ -62,8 +62,8 @@ add_compile_definitions("$<$<CONFIG:Debug>:DEBUG_DRAW>")
 add_compile_definitions("$<$<CONFIG:RelWithDebInfo>:DEBUG_DRAW>")
 add_compile_definitions("$<$<CONFIG:Release>:MASTER_GOLD>")
 if (DEVIXRAY_ENABLE_SHIPPING)
-    add_compile_definitions("$<$<CONFIG:Shipping>:MASTER_GOLD>")
-    add_compile_definitions("$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
+	add_compile_definitions("$<$<CONFIG:Shipping>:MASTER_GOLD>")
+	add_compile_definitions("$<$<CONFIG:Shipping>:SHIPPING_BUILD>")
 endif()
 
 # Download API from GitHub Releases
@@ -74,9 +74,9 @@ include("cmake/functions.cmake")
 
 # Configure NuGet
 if (WIN32)
-    include("cmake/windows/nuget.cmake")
+	include("cmake/windows/nuget.cmake")
 else()
-    include("cmake/linux/nuget.cmake")
+	include("cmake/linux/nuget.cmake")
 endif()
 
 # SDK folders
@@ -84,10 +84,10 @@ set(IXRAY_SDK_LIB ${CMAKE_CURRENT_SOURCE_DIR}/sdk/libraries/${CMAKE_VS_PLATFORM_
 set(IXRAY_SDK_BIN ${CMAKE_CURRENT_SOURCE_DIR}/sdk/binaries/${CMAKE_VS_PLATFORM_NAME}/)
 set(IXRAY_SDK_INC ${CMAKE_CURRENT_SOURCE_DIR}/sdk/include/)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 else()
-    set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/)
+	set(IXRAY_OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/)
 endif()
 
 # Modules (Nuget or Src)
@@ -106,7 +106,7 @@ add_subdirectory("src")
 
 # Plugins 
 if (IXRAY_PLUGINS)
-    add_subdirectory("src/plugins")
+	add_subdirectory("src/plugins")
 endif()
 
 # Utils
