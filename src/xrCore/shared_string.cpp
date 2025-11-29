@@ -109,7 +109,7 @@ str_value* str_container::dock(str_c value)
 	// calc len
 	u32		s_len = xr_strlen(value);
 	u32		s_len_with_zero = (u32)s_len + 1;
-	VERIFY(sizeof(str_value) + s_len_with_zero < 4096);
+	VERIFY(sizeof(str_value) + s_len_with_zero < shared_str_limit);
 
 	// setup find structure
 	char	header[sizeof(str_value)];

@@ -69,18 +69,21 @@ namespace ScriptStoryIDManager
 void CScriptStoryIDManager::script_register(lua_State* L)
 {
     using namespace luabind;
-    
-    module(L, "story_objects_engine")[
-        class_<CScriptStoryIDManager>("CScriptStoryIDManager")
-            .def("register",	&ScriptStoryIDManager::Register)
-            .def("unregister_by_id", (void(CScriptStoryIDManager::*)(ALife::_OBJECT_ID))&CScriptStoryIDManager::Unregister)
-            .def("unregister_by_story_id", (void(CScriptStoryIDManager::*)(const char*))&CScriptStoryIDManager::Unregister)
-            .def("get", &ScriptStoryIDManager::get)
-            .def("get_story_id", &ScriptStoryIDManager::get_story_id),
-            def("get_story_objects_registry", &CScriptStoryIDManager::GetInstance),
-            def("check_spawn_ini_for_story_id", &CScriptStoryIDManager::VerifiedRegisterObject),
-            def("is_engine_implementation", &ScriptStoryIDManager::IsEngineImplementation)
+
+    if (EngineExternal()[EEngineExternalSystem::EngineScriptStoryID])
+    {
+        module(L, "story_objects_engine")[
+            class_<CScriptStoryIDManager>("CScriptStoryIDManager")
+                .def("register",	&ScriptStoryIDManager::Register)
+                .def("unregister_by_id", (void(CScriptStoryIDManager::*)(ALife::_OBJECT_ID))&CScriptStoryIDManager::Unregister)
+                .def("unregister_by_story_id", (void(CScriptStoryIDManager::*)(const char*))&CScriptStoryIDManager::Unregister)
+                .def("get", &ScriptStoryIDManager::get)
+                .def("get_story_id", &ScriptStoryIDManager::get_story_id),
+                def("get_story_objects_registry", &CScriptStoryIDManager::GetInstance),
+                def("check_spawn_ini_for_story_id", &CScriptStoryIDManager::VerifiedRegisterObject),
+                def("is_engine_implementation", &ScriptStoryIDManager::IsEngineImplementation)
             ];
+    }
 }
 
 void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script_story_id)

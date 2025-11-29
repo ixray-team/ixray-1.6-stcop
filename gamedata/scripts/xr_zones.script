@@ -27,10 +27,6 @@ function arena_zone_binder:__init(obj) super(obj)
 	arena_zones[obj:name()] = self
 end
 function arena_zone_binder:net_spawn(server_object)
-	if not object_binder.net_spawn(self, server_object) then
-		return false
-	end
-
 	self.object:set_callback(callback.zone_enter, self.on_enter, self)
 	self.object:set_callback(callback.zone_exit, self.on_exit, self)
 
@@ -39,8 +35,6 @@ end
 function arena_zone_binder:net_destroy()
 	self.object:set_callback(callback.zone_enter, nil)
 	self.object:set_callback(callback.zone_exit, nil)
-
-	object_binder.net_destroy(self)
 end
 function arena_zone_binder:purge_items()
 	local alife = alife()
@@ -54,7 +48,6 @@ end
 --' Сохранение списка зарегистренных объектов
 function arena_zone_binder:save(packet)
 	printf("ARENA ZONE SAVE")
-	object_binder.save(self, packet)
 	set_save_marker(packet, "save", false, "arena_zone_binder")
 	
 	local num = #self.saved_obj
@@ -67,7 +60,6 @@ end
 --' Загрузка списка зарегистренных объектов
 function arena_zone_binder:load(packet)
 	printf("ARENA ZONE LOAD")
-	object_binder.load(self, packet)
 	set_save_marker(packet, "load", false, "arena_zone_binder")
 
 	local num = packet:r_u8()	
@@ -75,6 +67,32 @@ function arena_zone_binder:load(packet)
 		self.saved_obj[packet:r_u32()] = true
 	end	
 	set_save_marker(packet, "load", true, "arena_zone_binder")
+end
+
+function arena_zone_binder:Serialize(Object)
+	Object:ForChunk("arena_zone_binder", function()
+		Object:ForChunk("arena_zone_binder:data", function()
+			if Object:IsSave() then
+				local num = #self.saved_obj
+				num = Object:s_u16(num)
+				Object:ForArray(function()
+					for k,v in pairs(self.saved_obj) do
+						Object:s_u32(k)
+					end
+				end)
+			else
+				local num = 0
+				num = Object:s_u16(num)	
+				Object:ForArray(function()
+					for i=1,num do
+						local index = 0
+						index = Object:s_u32(index)	
+						self.saved_obj[index] = true
+					end	
+				end)
+			end
+		end)
+	end)
 end
 
 --' callback на вход в зону. Нужно регистрить все объекты, кроме игрока.

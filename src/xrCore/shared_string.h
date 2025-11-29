@@ -45,6 +45,9 @@ public:
 XRCORE_API extern str_container* g_pStringContainer;
 
 //////////////////////////////////////////////////////////////////////////
+
+constexpr size_t shared_str_limit = 4096;
+
 class XRCORE_API shared_str
 {
 	str_value* p_;

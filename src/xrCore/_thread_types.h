@@ -21,6 +21,15 @@ using xr_atomic_s32  = std::atomic_int;
 using xr_atomic_bool = std::atomic_bool;
 using xr_atomic_float = std::atomic<float>;
 
+template<typename T>
+ISaveObject& operator<<(ISaveObject& obj, std::atomic<T>& Value)
+{
+	T temp = Value.load();
+	obj << temp;
+	Value.store(temp);
+	return obj;
+}
+
 // Tasks Redefinition
 #ifdef IXR_WINDOWS
 using xr_task_group = concurrency::task_group;

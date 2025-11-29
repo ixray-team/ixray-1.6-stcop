@@ -20,18 +20,11 @@ function signal_light_binder:__init(obj) super(obj)
 	self.loaded = false
 end
 
-function signal_light_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function signal_light_binder:reinit()
-	object_binder.reinit(self)
 	db.signal_light[self.object:name()] = self
 end
 
 function signal_light_binder:update(delta)
-	object_binder.update(self, delta)
-
     local obj = self.object
 	if self.start_time == nil then
         if self.need_turn_off then
@@ -75,19 +68,10 @@ function signal_light_binder:update(delta)
 			obj:get_hanging_lamp():turn_on()
 		end
 	end
-
-end
-
-function signal_light_binder:net_spawn(data)
-	if not object_binder.net_spawn(self, data) then
-		return false
-	end
-	return true
 end
 
 function signal_light_binder:net_destroy()
 	db.signal_light[self.object:name()] = nil
-	object_binder.net_destroy(self)
 end
 
 function signal_light_binder:launch()
@@ -138,7 +122,6 @@ end
 
 function signal_light_binder:save(packet)
 	set_save_marker(packet, "save", false, "signal_light_binder")
-	object_binder.save(self, packet)
 	if self.start_time == nil then
 		packet:w_u32(-1)
 	else
@@ -150,7 +133,6 @@ end
 
 function signal_light_binder:load(reader)
 	set_save_marker(reader, "load", false, "signal_light_binder")
-	object_binder.load(self, reader)
 	local time = reader:r_u32()
 	if time ~= 4294967296 then
 		self.start_time = time_global() - time
@@ -159,4 +141,32 @@ function signal_light_binder:load(reader)
 	self.loaded = true
 	self.delta_time = time_global()
 	set_save_marker(reader, "load", true, "signal_light_binder")
+end
+
+function signal_light_binder:Serialize(Object)
+	Object:ForChunk("signal_light_binder", function()
+		Object:ForChunk("signal_light_binder:data", function()	
+			if Object:IsSave() then
+                if self.start_time ~= nil then
+                    Object:ForChunk("signal_light_binder:data:start_time", function()
+					    Object:s_u32(time_global()-self.start_time)
+                    end)
+                end
+			else
+                Object:ForChunk("signal_light_binder:data:start_time", function()
+				    local time = 0
+				    time = Object:s_u32(time)
+                    if time == 4294967296 then 
+                        abort("Invalid time for signal_light_binder!")
+                    end
+					self.start_time = time_global() - time
+                end)
+			end
+    		self.slow_fly_started = Object:s_bool(self.slow_fly_started)
+			if not Object:IsSave() then
+				self.loaded = true
+				self.delta_time = time_global()
+			end
+		end)
+	end)
 end

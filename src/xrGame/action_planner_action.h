@@ -44,8 +44,9 @@ public:
 	IC		void		add_condition			(_world_operator *action, u32 condition_id, bool condition_value);
 	IC		void		add_effect				(_world_operator *action, u32 condition_id, bool condition_value);
 
-	virtual	void		save					(NET_Packet &packet) {inherited_planner::save(packet); inherited_action::save(packet);}
-	virtual	void		load					(IReader &packet)	 {inherited_planner::load(packet); inherited_action::load(packet);}
+	virtual	void		save					(NET_Packet &packet) override {inherited_planner::save(packet); inherited_action::save(packet);}
+	virtual	void		load					(IReader &packet) override	 {inherited_planner::load(packet); inherited_action::load(packet);}
+	virtual void Serialize(ISaveObject& Object) override { inherited_planner::Serialize(Object); inherited_action::Serialize(Object); }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -328,6 +328,106 @@ function CSE_NewAttachableItem:STATE_Read	(packet, size)
 	self._choose_16				= packet:r_stringZ()
 end
 
+function CSE_NewAttachableItem:STATE_Serialize(Object)
+	Object:ForChunk("CSE_NewAttachableItem:STATE", function()
+		log("CSE_NewAttachableItem::STATE_Write called!")
+		cse_alife_item.STATE_Serialize	(self,Object)
+		Object:ForChunk("CSE_NewAttachableItem:STATE:data", function()
+			-- s16
+			self._s16_0 = Object:s_s16				(self._s16_0)
+			self._s16_1 = Object:s_s16				(self._s16_1)
+			self._s16_2 = Object:s_s16				(self._s16_2)
+			self._s16_3 = Object:s_s16				(self._s16_3)
+			-- s32
+			self._s32_0 = Object:s_s32				(self._s32_0)
+			self._s32_1 = Object:s_s32				(self._s32_1)
+			self._s32_2 = Object:s_s32				(self._s32_2)
+			self._s32_3 = Object:s_s32				(self._s32_3)
+			-- u8
+			self._u8_0 = Object:s_u8					(self._u8_0)
+			self._u8_1 = Object:s_u8					(self._u8_1)
+			self._u8_2 = Object:s_u8					(self._u8_2)
+			self._u8_3 = Object:s_u8					(self._u8_3)
+			-- u16							   
+			self._u16_0 = Object:s_u16				(self._u16_0)
+			self._u16_1 = Object:s_u16				(self._u16_1)
+			self._u16_2 = Object:s_u16				(self._u16_2)
+			self._u16_3 = Object:s_u16				(self._u16_3)
+			-- u32							   
+			self._u32_0 = Object:s_u32				(self._u32_0)
+			self._u32_1 = Object:s_u32				(self._u32_1)
+			self._u32_2 = Object:s_u32				(self._u32_2)
+			self._u32_3 = Object:s_u32				(self._u32_3)
+			-- float
+			self._float_0 = Object:s_float				(self._float_0)
+			self._float_1 = Object:s_float				(self._float_1)
+			self._float_2 = Object:s_float				(self._float_2)
+			self._float_3 = Object:s_float				(self._float_3)
+			self._float_4 = Object:s_float				(self._float_4)
+			-- bool
+			self._bool_0 = Object:s_bool				(self._bool_0)
+			-- vector
+			self._vector_0 = Object:s_vec3				(self._vector_0)
+			self._vector_1 = Object:s_vec3				(self._vector_1)
+			self._vector_2 = Object:s_vec3				(self._vector_2)
+			self._vector_3 = Object:s_vec3				(self._vector_3)
+			self._vector_4 = Object:s_vec3				(self._vector_4)
+			-- vcolor
+			self._vcolor_0 = Object:s_vec3				(self._vcolor_0)
+			-- angle
+			self._angle_0 = Object:s_float				(self._angle_0)
+			self._angle_1 = Object:s_float				(self._angle_1)
+			self._angle_2 = Object:s_float				(self._angle_2)
+			self._angle_3 = Object:s_float				(self._angle_3)
+			self._angle_4 = Object:s_float				(self._angle_4)
+			-- vangle
+			self._vangle_0 = Object:s_vec3				(self._vangle_0)
+			self._vangle_1 = Object:s_vec3				(self._vangle_1)
+			self._vangle_2 = Object:s_vec3				(self._vangle_2)
+			self._vangle_3 = Object:s_vec3				(self._vangle_3)
+			self._vangle_4 = Object:s_vec3				(self._vangle_4)
+			-- flags16
+			self._flag16_0.set(Object:s_u16				(self._flag16_0:get()))
+    		-- flags32
+			self._flag32_0.set(Object:s_u32				(self._flag32_0:get()))
+    		-- color
+			self._color_0 = Object:s_u32				(self._color_0)
+			-- time
+			self._time_0 = Object:s_float				(self._time_0)
+			self._time_1 = Object:s_float				(self._time_1)
+			self._time_2 = Object:s_float				(self._time_2)
+			-- text
+			self._text_0 = Object:s_stringZ			(self._text_0)
+			-- token8
+			self._token8_0 = Object:s_u8					(self._token8_0)
+			-- token16
+			self._token16_0 = Object:s_u16				(self._token16_0)
+			-- token32
+			self._token32_0 = Object:s_u32				(self._token32_0)
+			-- list
+			self._listvalue_0 = Object:s_stringZ			(self._listvalue_0)
+			-- choose
+			self._choose_00 = Object:s_stringZ			(self._choose_00)
+			self._choose_01 = Object:s_stringZ			(self._choose_01)
+			self._choose_02 = Object:s_stringZ			(self._choose_02)
+			self._choose_03 = Object:s_stringZ			(self._choose_03)
+			self._choose_04 = Object:s_stringZ			(self._choose_04)
+			self._choose_05 = Object:s_stringZ			(self._choose_05)
+			self._choose_06 = Object:s_stringZ			(self._choose_06)
+			self._choose_07 = Object:s_stringZ			(self._choose_07)
+			self._choose_08 = Object:s_stringZ			(self._choose_08)
+			self._choose_09 = Object:s_stringZ			(self._choose_09)
+			self._choose_10 = Object:s_stringZ			(self._choose_10)
+			self._choose_11 = Object:s_stringZ			(self._choose_11)
+			self._choose_12 = Object:s_stringZ			(self._choose_12)
+			self._choose_13 = Object:s_stringZ			(self._choose_13)
+			self._choose_14 = Object:s_stringZ			(self._choose_14)
+			self._choose_15 = Object:s_stringZ			(self._choose_15)
+			self._choose_16 = Object:s_stringZ			(self._choose_16)
+		end)
+	end)
+end
+
 function CSE_NewAttachableItem:FillProps	(pref,items)
 	log							("CSE_NewAttachableItem::FillProps called!")
 	cse_alife_item.FillProps	(self,pref,items)

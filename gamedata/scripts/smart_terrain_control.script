@@ -118,3 +118,13 @@ function CBaseOnActorControl:load(packet)
 
 	set_save_marker(packet, "load", true, "CBaseOnActorControl")
 end
+
+function CBaseOnActorControl:Serialize(Object)
+	Object:ForChunk("CBaseOnActorControl", function()
+		self.status = Object:s_u8(self.status)
+		if not Object:IsSave() or not self.alarm_time then
+			self.alarm_time = game.CTime()
+		end
+		self.alarm_time:Serialize(Object)
+	end)
+end

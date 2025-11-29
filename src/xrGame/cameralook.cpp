@@ -27,6 +27,14 @@ Fvector CCameraLook2::m_cam_offset_l;
 bool CCameraLook2::m_use_inertion;
 Fvector m_cam_offset_curr = {0.f, 0.f, 0.f};
 
+void CCameraLook::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCameraLook")
+	{
+		Object << pitch;
+	}
+}
+
 ICF static bool GetPickDist_Callback(collide::rq_result& result, LPVOID params)
 {
 	collide::rq_result* RQ = (collide::rq_result*)params;

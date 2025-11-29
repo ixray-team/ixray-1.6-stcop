@@ -668,6 +668,15 @@ void CEntityAlive::load	(IReader &input_packet)
 	conditions().load(input_packet);
 }
 
+void CEntityAlive::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CEntityAlive")
+	{
+		inherited::Serialize(Object);
+		conditions().Serialize(Object);
+	}
+}
+
 bool	CEntityAlive::net_SaveRelevant		()
 {
 	return		(true);

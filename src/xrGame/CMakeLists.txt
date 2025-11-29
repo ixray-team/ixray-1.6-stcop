@@ -100,6 +100,11 @@ file(GLOB_RECURSE XGM_SOURCE_SERV_FILES
 	"xrServer*.*"
 	"game_*.*"
 )
+file(GLOB_RECURSE XGM_SOURCE_SERVER_ENTITIES_WRAPPER_FILES
+    "../../xrServerEntities/server_entity_wrapper.h"
+    "../../xrServerEntities/server_entity_wrapper.cpp"
+    "../../xrServerEntities/server_entity_wrapper_inline.h"
+)
 file(GLOB_RECURSE XGM_SOURCE_STORY_ID_FILES "ScriptsSubsystems/StoryID/*.*")
 file(GLOB_RECURSE XGM_SOURCE_CONDLIST_ID_FILES "ScriptsSubsystems/Condlist/*.*")
 

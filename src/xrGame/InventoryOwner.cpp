@@ -22,6 +22,7 @@
 #include "map_manager.h"
 #include "UIGameSP.h"
 #include "ui/UITalkWnd.h"
+#include "SaveObjectHelpers.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ActorHelmet.h"
 #include "antigas_filter.h"
@@ -230,6 +231,27 @@ void CInventoryOwner::load(IReader& input_packet)
 		m_game_name = TranslateName(m_game_name_str.c_str());
 	}
 }
+
+void CInventoryOwner::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CInventoryOwner")
+	{
+		u8 active_slot = inventory().GetActiveSlot();
+		Object << active_slot;
+		if (active_slot == NO_ACTIVE_SLOT)
+		{
+			inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+		}
+		m_tmp_active_slot_num = active_slot;
+		CharacterInfo().Serialize(Object);
+		Object << m_game_name_str << m_money;
+		if (!Object.IsSave() && g_actor != nullptr && this->object_id() != Actor()->object_id())
+		{
+			m_game_name = TranslateName(m_game_name_str.c_str());
+		}
+	}
+}
+
 
 void CInventoryOwner::UpdateInventoryOwner(u32 deltaT)
 {
@@ -463,7 +485,12 @@ void CInventoryOwner::spawn_supplies()
 		pda->m_original_owner = game_object->ID();
 
 		NET_Packet P;
-		abstract->Spawn_Write(P, true);
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *abstract);
+		} else {
+			abstract->Spawn_Write(P, true);
+		}
 		Level().Send(P, net_flags(true));
 		F_entity_Destroy(abstract);
 	}

@@ -91,10 +91,7 @@ function agru_door_binder:animation_end_callback(is_end)
 		self.is_idle = true
 	end
 end
--- Standart function for save
-function agru_door_binder:net_save_relevant()
-	return true
-end
+
 -- Saving crow
 function agru_door_binder:save(packet)
 	set_save_marker(packet, "save", false, "agru_door_binder")

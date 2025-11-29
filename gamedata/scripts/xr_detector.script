@@ -73,3 +73,27 @@ function actor_detector:load(packet)
 	end
   set_save_marker(packet, "load", true, "actor_detector")
 end
+function actor_detector:Serialize(Object)
+  Object:ForChunk("actor_detector", function()
+    if Object:IsSave() then
+      if self.init_time == -1 then
+        Object:s_bool(false)
+      else
+        Object:s_bool(true)
+        self.init_time:Serialize(Object)
+        self.last_update_time:Serialize(Object)
+      end 
+    else
+      local flag = false
+      flag = Object:s_bool(flag)
+      if flag then
+        self.init_time = game.CTime()
+        self.last_update_time = game.CTime()
+        self.init_time:Serialize(Object)
+        self.last_update_time:Serialize(Object)
+      else
+        self.init_time = -1
+      end
+    end
+  end)
+end

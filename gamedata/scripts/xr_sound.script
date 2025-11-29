@@ -225,6 +225,94 @@ function actor_load(thread)
     end)
 end
 
+function actor_Serialize(Object)
+	Object:ForChunk("sound_actor_save", function()
+		Object:ForArray(function()
+			for k,v in pairs(sound_theme.theme) do
+				Object:ForChunk("sound_data", function()
+					v:Serialize(Object)
+				end)
+			end
+		end)
+		
+		if Object:IsSave() then
+			local n = 0
+			for k,v in pairs(sound_table) do
+				n = n + 1
+			end
+			Object:s_u32(n)
+			Object:ForArray(function()
+				for k,v in pairs(sound_table) do
+					Object:ForChunk("sound_table:elem", function()
+						Object:s_u32(k)
+						Object:s_stringZ(v.section)
+					end)
+				end
+			end)
+			
+			local n = 0
+			for k,v in pairs(looped_sound) do
+				n = n + 1
+			end
+			Object:s_u32(n)
+			Object:ForArray(function()
+				for k,v in pairs(looped_sound) do
+					Object:ForChunk("looped_sound:elem", function()
+						Object:s_u32(k)
+						n = 0
+						for kk,vv in pairs(looped_sound[k]) do
+							n = n + 1
+						end
+						Object:s_u32(n)
+						Object:ForArray(function()
+							for kk,vv in pairs(looped_sound[k]) do
+								Object:s_stringZ(kk)
+							end
+						end)
+					end)
+				end
+			end)
+		else
+			sound_table = {}
+			local n = 0
+			n = Object:s_u32(n)
+			Object:ForArray(function()
+				for i = 1,n do
+					Object:ForChunk("sound_table:elem", function()
+						local id = 0
+						id = Object:s_u32(id)
+						local theme = ""
+						theme = Object:s_stringZ(theme)
+						sound_table[id] = sound_theme.theme[theme]
+					end)
+				end
+			end)
+			
+			looped_sound = {}
+			local n = 0
+			n = Object:s_u32(n)
+			Object:ForArray(function()
+				for i = 1,n do
+					Object:ForChunk("looped_sound:elem", function()
+						local id = 0
+						id = Object:s_u32(id)
+						looped_sound[id] = {}
+						local nn = 0
+						nn = Object:s_u32(nn)
+						Object:ForArray(function()
+							for i = 1,nn do
+								local sound = ""
+								sound = Object:s_stringZ(sound)
+								looped_sound[id][sound] = sound_theme.theme[sound]
+							end
+						end)
+					end)
+				end
+			end)
+		end
+	end)
+end
+
 function save_npc(thread, npc_id)
 	return PROF_EVENT_CLOSURE("save_npc", function()
         set_save_marker(thread, "save", false, "sound_npc_save")
@@ -243,6 +331,17 @@ function load_npc(thread, npc_id)
         end
         set_save_marker(thread, "load", true, "sound_npc_save")
     end)
+end
+function Serialize_npc(Object, npc_id)
+	Object:ForChunk("sound_npc_save", function()
+		Object:ForArray(function()
+			for k,v in pairs(sound_theme.theme) do
+				Object:ForChunk("sound_npc_elem", function()
+					v:Serialize_npc(Object, npc_id)
+				end)
+			end
+		end)
+	end)
 end
 
 

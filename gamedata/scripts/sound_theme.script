@@ -328,6 +328,27 @@ function npc_sound:load(thread)
 	end
 --	set_save_marker(thread, "load", true, "npc_sound")
 end
+function npc_sound:Serialize(Object)
+	Object:ForChunk("npc_sound", function()
+		if Object:IsSave() then
+            if self.played_id then
+	            Object:ForChunk("npc_sound", function()
+                    Object:s_u32(self.played_id);
+                end)
+            end
+		else
+			self.played_id = nil
+	        Object:ForChunk("npc_sound", function()
+                self.played_id = Object:s_u32(0);
+            end)
+		end
+		if self.group_snd then
+			Object:ForChunk("npc_sound:group", function()
+				self.can_play_group_sound = Object:s_bool(self.can_play_group_sound)
+			end)
+		end
+	end)
+end
 function npc_sound:save_npc(thread, npc_id)
 --	set_save_marker(thread, "save", false, "npc_sound_save_npc")
 	if not self.group_snd then
@@ -341,6 +362,15 @@ function npc_sound:load_npc(thread, npc_id)
 		self.can_play_sound[npc_id] = thread:r_bool()
 	end
 --	set_save_marker(thread, "load", true, "npc_sound_save_npc")
+end
+function npc_sound:Serialize_npc(Object, npc_id)
+	Object:ForChunk("npc_sound:npc", function()
+		if not self.group_snd then
+			Object:ForChunk("npc_sound:ngroup", function()
+				self.can_play_sound[npc_id] = Object:s_bool(self.can_play_sound[npc_id])
+			end)
+		end
+	end)
 end
 --'--------------------------------------------------------------------------------------------------------------------
 --' Класс "звуковая коллекция игрока"
@@ -531,9 +561,31 @@ function actor_sound:load(thread)
 	end
 --	set_save_marker(thread, "load", true, "actor_sound")
 end
+function actor_sound:Serialize(Object)
+	Object:ForChunk("actor_sound", function()
+		if Object:IsSave() then
+            if self.played_id then
+	            Object:ForChunk("npc_sound", function()
+                    Object:s_u32(self.played_id);
+                end)
+            end
+		else
+			self.played_id = nil
+	        Object:ForChunk("npc_sound", function()
+                self.played_id = Object:s_u32(0);
+            end)
+		end
+	end)
+end
 function actor_sound:save_npc(thread)
 end
 function actor_sound:load_npc(thread)
+end
+
+function actor_sound:Serialize_npc(Object)
+	--Object:ForChunk("actor_sound:npc", function()
+		
+	--end)
 end
 
 
@@ -720,9 +772,31 @@ function object_sound:load(thread)
 	end
 --	set_save_marker(thread, "load", true, "object_sound")
 end
+function object_sound:Serialize(Object)
+	Object:ForChunk("object_sound", function()
+		if Object:IsSave() then
+            if self.played_id then
+	            Object:ForChunk("npc_sound", function()
+                    Object:s_u32(self.played_id);
+                end)
+            end
+		else
+			self.played_id = nil
+	        Object:ForChunk("npc_sound", function()
+                self.played_id = Object:s_u32(0);
+            end)
+		end
+	end)
+end
 function object_sound:save_npc(thread)
 end
 function object_sound:load_npc(thread)
+end
+
+function object_sound:Serialize_npc(Object)
+	--Object:ForChunk("object_sound:npc", function()
+		
+	--end)
 end
 --'--------------------------------------------------------------------------------------------------------------------
 --' Класс "зацикленный звук"
@@ -778,9 +852,19 @@ function looped_sound:load(thread)
 --	set_save_marker(thread, "load", false, "looped_sound")
 --	set_save_marker(thread, "load", true, "looped_sound")
 end
+function looped_sound:Serialize(Object)
+	--Object:ForChunk("looped_sound", function()
+		
+	--end)
+end
 function looped_sound:save_npc(thread)
 end
 function looped_sound:load_npc(thread)
+end
+function looped_sound:Serialize_npc(Object)
+	--Object:ForChunk("looped_sound:npc", function()
+		
+	--end)
 end
 --'--------------------------------------------------------------------------------------------------------------------
 --' Загрузка звуков

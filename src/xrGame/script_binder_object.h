@@ -20,8 +20,9 @@ public:
 	CScriptGameObject			*m_object;
 
 public:
-						CScriptBinderObject	(CScriptGameObject *object);
+						CScriptBinderObject	(luabind::object Object);
 	virtual				~CScriptBinderObject();
+	virtual void		FinishInitialization();
 	virtual void		reinit				();
 	virtual void		reload				(const char* section);
 	virtual bool		net_Spawn			(SpawnType DC);
@@ -31,6 +32,7 @@ public:
 	virtual void		shedule_Update		(u32 time_delta);
 	virtual void		save				(NET_Packet *output_packet);
 	virtual void		load				(IReader	*input_packet);
+	virtual void Serialize(ISaveObject* Object);
 	virtual bool		net_SaveRelevant	();
 	virtual void		net_Relcase			(CScriptGameObject *object);
 

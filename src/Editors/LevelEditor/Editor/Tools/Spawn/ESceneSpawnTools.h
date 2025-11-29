@@ -53,7 +53,7 @@ public:
     virtual bool   		LoadLTX            		(CInifile&);
     virtual void   		SaveStream            		(IWriter&);
 	virtual void   		SaveLTX            		(CInifile&, int id);
-    virtual bool		can_use_inifile			()				{return true;}
+    virtual bool		can_use_inifile			()				{return !EngineExternal()[EEngineExternalSystem::AdvancedSerialization];}
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
 	virtual int 		MultiRenameObjects		();
