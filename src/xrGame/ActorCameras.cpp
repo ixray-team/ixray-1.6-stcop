@@ -401,7 +401,7 @@ void CActor::cam_Update(float dt, float fFOV)
 				psHUD_FOV = pItem->GetHudFov();
 			else if (pDevice && pDevice->HudItemData())
 				psHUD_FOV = pDevice->GetHudFov();
-			else if (HudAnimator() && HudAnimator()->IsAnyAnimatorActive())
+			else if (HudAnimator() != nullptr)
 				psHUD_FOV = HudAnimator()->GetHudFov();
 			else
 				psHUD_FOV = psHUD_FOV_def;

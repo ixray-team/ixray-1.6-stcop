@@ -290,13 +290,19 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 	if(m_flags.test(etiNeedPauseSound))
 		Device.Pause			(FALSE, FALSE, TRUE, "simpleitem_stop");
 
-	if ( g_pGameLevel )
+	if (g_pGameLevel)
 	{
- 		if (CurrentGameUI() && CurrentGameUI()->PdaMenu().IsShown() )
+		if (CurrentGameUI() && CurrentGameUI()->PdaMenu().IsShown())
 		{
 			CurrentGameUI()->PdaMenu().HideDialog();
 		}
+
+		if (CurrentGameUI() && CurrentGameUI()->ActorMenu().IsShown())
+		{
+			CurrentGameUI()->ActorMenu().HideDialog();
+		}
 	}
+
 	inherited::Stop				();
 	return true;
 }
@@ -325,6 +331,29 @@ void CUISequenceSimpleItem::OnKeyboardPress	(int dik)
 
 			if(itm.m_bfinalize)
 			{
+				if (g_pGameLevel)
+				{
+					CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+					if (actor != nullptr)
+					{
+						CHudAnimatorBase* current_animator = actor->HudAnimator()->CurrentAnimator();
+						CHudAnimatorBase* target_animator = actor->HudAnimator()->TargetAnimator();
+						CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr;
+
+						if (target_animator != nullptr)
+						{
+							actor->HudAnimator()->SetTargetAnimator(nullptr);
+						}
+
+						if (state_animator != nullptr &&
+							state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden &&
+							state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+						{
+							state_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+						}
+					}
+				}
+
 				m_flags.set					(etiCanBeStopped, TRUE);
 				m_stop_lua_functions.clear	();
 				Stop						();
