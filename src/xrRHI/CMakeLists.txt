@@ -44,19 +44,12 @@ target_compile_definitions(xrRHI PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrRHI PUBLIC xrCore)
 target_link_libraries(xrRHI PUBLIC imgui)
+
 if (WIN32)
 	target_link_libraries(xrRHI PUBLIC "d3d11.lib")
 	target_link_libraries(xrRHI PUBLIC "d3d9.lib")
 	target_link_libraries(xrRHI PUBLIC "dxgi.lib")
 	target_link_libraries(xrRHI PRIVATE "d3dcompiler.lib")
-
-	# Deps
-	target_include_directories(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
-	target_link_libraries(xrRHI PRIVATE "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib")
-	
-	# AMD AGS SDK
-	target_include_directories(xrRHI PUBLIC ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/inc/)
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/amd_ags_sdk/lib/amd_ags_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+	target_link_libraries(xrRHI PRIVATE DirectXMesh::DirectXMesh)
+	target_link_libraries(xrRHI PRIVATE AMD_AGS::AMD_AGS)
 endif()

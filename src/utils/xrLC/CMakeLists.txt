@@ -89,6 +89,6 @@ target_link_libraries(xrLC PUBLIC MagicFM)
 target_link_libraries(xrLC PUBLIC NvMender2003)
 #target_link_libraries(xrLC PUBLIC "meshoptimizer.lib")
 
-# DXMesh
-target_link_libraries(xrLC PUBLIC ${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/native/lib/x64/Release/DirectXMesh.lib)
-target_include_directories(xrLC PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+if (WIN32)
+    target_link_libraries(xrLC PRIVATE DirectXMesh::DirectXMesh)
+endif()

@@ -119,7 +119,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		nullptr,												/* .window */
 		Title,													/* .title */
 		text,													/* .message */
-		ButtonsList.size(),	/* .numbuttons */
+		(int)ButtonsList.size(),	/* .numbuttons */
 		ButtonsList.data(),										/* .buttons */
 		nullptr													/* .colorScheme */
 	};
