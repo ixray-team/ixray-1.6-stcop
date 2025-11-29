@@ -79,8 +79,8 @@ target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLAT
 
 add_custom_command(TARGET ${PROJECT_NAME}
 	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${IXRAY_OUTPUT}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${IXRAY_OUTPUT}
 )
 
 if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
@@ -90,7 +90,7 @@ if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
 	# Copy binaries
 	add_custom_command(TARGET ${PROJECT_NAME}
 		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${IXRAY_OUTPUT}
 	)
 endif()
 

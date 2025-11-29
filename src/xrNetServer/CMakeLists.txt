@@ -56,13 +56,13 @@ if(IXRAY_MP)
 endif()
 
 # MySQL Connector
-if (IXRAY_MP_SQL)
+if (IXRAY_MP AND IXRAY_MP_SQL)
     target_include_directories(xrNetServer PUBLIC "${MYSQLCONNECTOR}include/")
     target_link_libraries(xrNetServer PUBLIC "${MYSQLCONNECTOR}lib/mysqlcppconn.lib")
     add_custom_command(TARGET ${PROJECT_NAME} 
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/mysqlcppconn-9-vs14.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/mysqlcppconn-9-vs14.dll ${IXRAY_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libcrypto-1_1-x64.dll ${IXRAY_OUTPUT}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MYSQLCONNECTOR}bin/libssl-1_1-x64.dll ${IXRAY_OUTPUT}
     )
 endif()

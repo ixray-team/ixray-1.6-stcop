@@ -35,8 +35,8 @@ void RenderText(const char* text, int x, int y) {
 		int srcX = (charIndex % CHARS_PER_ROW) * CHAR_WIDTH;
 		int srcY = (charIndex / CHARS_PER_ROW) * CHAR_HEIGHT;
 
-		SDL_FRect srcRect = { srcX, srcY, CHAR_WIDTH, CHAR_HEIGHT };
-		SDL_FRect dstRect = { x + i * CHAR_WIDTH, y, CHAR_WIDTH, CHAR_HEIGHT };
+		SDL_FRect srcRect = { (float)srcX, (float)srcY, CHAR_WIDTH, CHAR_HEIGHT };
+		SDL_FRect dstRect = { (float)x + i * CHAR_WIDTH, (float)y, (float)CHAR_WIDTH, (float)CHAR_HEIGHT };
 
 		SDL_RenderTexture(splashRenderer, fontTexture, &srcRect, &dstRect);
 	}
@@ -46,7 +46,7 @@ void Update(int progress = 0, const char*status = "")
 {
 	int pgHeight = 10;
 
-	SDL_FRect progressBarBackground = { 0, WinH - pgHeight, WinW, pgHeight };
+	SDL_FRect progressBarBackground = { 0, (float)WinH - (float)pgHeight, (float)WinW, (float)pgHeight };
 	SDL_FRect progressBarFill = 
 	{ 
 		progressBarBackground.x, 
@@ -62,7 +62,7 @@ void Update(int progress = 0, const char*status = "")
 	WinW = sizeX;
 	WinH = sizeY;
 
-	SDL_FRect dstRect = { 0, 0, WinW, WinH };
+	SDL_FRect dstRect = { 0, 0, (float)WinW, (float)WinH };
 	SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
 
 	SDL_SetRenderDrawColor(splashRenderer, 150, 150, 150, 255);

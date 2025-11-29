@@ -301,7 +301,7 @@ void BaseClient::_Recieve(const void* data, u32 data_size, u32 /*param*/)
 		)
 	{
 		// Internal system message
-		if ((data_size == sizeof(MSYS_PING)))
+		if (data_size == (u32)sizeof(MSYS_PING))
 		{
 			// It is reverted(server) ping
 			u32		    time = TimerAsync(device_timer);

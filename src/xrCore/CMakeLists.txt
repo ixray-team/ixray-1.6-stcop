@@ -159,7 +159,6 @@ endif()
 
 # Includes 
 target_include_directories(xrCore PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(xrCore PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../3rd-party/lzo/include")
 target_include_directories(xrCore PUBLIC ${EXTERNAL_INCLUDE_DIR})
 target_include_directories(xrCore PUBLIC ${CMAKE_BINARY_DIR}/dep)
 
@@ -187,6 +186,9 @@ endif()
 
 # Linker list
 target_link_libraries(xrCore PUBLIC SDL3-shared)
+target_link_libraries(xrCore PUBLIC TBB::tbb)
+target_link_libraries(xrCore PUBLIC LZO::lzo2)
+target_link_libraries(xrCore PRIVATE yaml-cpp)
 target_link_libraries(xrCore PRIVATE opcode-prosectors)
 
 if(WIN32)
@@ -194,39 +196,14 @@ if(WIN32)
 		target_link_libraries(xrCore PRIVATE dxerr)
 	endif()
 
+	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
 	target_link_libraries(xrCore PRIVATE "dbghelp.lib")
 	target_link_libraries(xrCore PRIVATE "winmm.lib")
 	target_link_libraries(xrCore PRIVATE "faultrep.lib")
-
-	target_link_libraries(xrCore PRIVATE ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll.lib)
 endif()
 
 # Git Info
 include(gitver.cmake)
-
-## Platform specific (NEED REWORK!!!)
-if(WIN32)
-	target_include_directories(xrCore PUBLIC ${YAML_INCL})
-	target_link_libraries(xrCore PUBLIC ${YAML_LIB})
-
-	target_link_libraries(xrCore PUBLIC ${LZO_LIB})
-	target_include_directories(xrCore PUBLIC ${LZO}/build/native/include/)
-
-	target_link_libraries(xrCore PUBLIC ${IXR_TBB_LIB})
-	target_include_directories(xrCore PUBLIC ${IXR_TBB_INC})
-
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.dll ${IXRAY_OUTPUT}
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/dep/discord_gamesdk/lib/${NUGET_PACKAGE_PLATFORM_EX}/discord_game_sdk.dll ${IXRAY_OUTPUT}
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LZO}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/lzo2.dll ${IXRAY_OUTPUT}
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${YAML_BIN} ${IXRAY_OUTPUT}/${YAML_LIB_NAME}
-	)
-else()
-	target_include_directories(xrCore PUBLIC ${LZO_INCLUDE_DIR})
-	target_link_libraries(xrCore PUBLIC TBB::tbb)
-	target_link_libraries(xrCore PUBLIC ${LZO_LIBRARY})
-	target_link_libraries(xrCore PUBLIC yaml-cpp)
-endif()
 
 # Set relative runpath
 if(NOT WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")

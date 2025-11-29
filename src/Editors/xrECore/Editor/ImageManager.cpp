@@ -612,20 +612,24 @@ void CImageManager::ApplyBorders(U32Vec& tgt_data, u32 w, u32 h)
 BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, time_t age)
 {
 	BOOL bResult = TRUE;
+
 	// save render params
-	Flags32 old_flag= 	psDeviceFlags;
+	Flags32 old_flag = psDeviceFlags;
+
 	// set render params
-	psDeviceFlags.set(rsStatistic|rsDrawGrid,FALSE);
-//	u32 cc						= 	EPrefs.scene_clear_color;
-//	EPrefs.scene_clear_color 	= 	0x00333333;
+	psDeviceFlags.set(rsDrawGrid,FALSE);
+	psDeviceFlags.set(rsStatistic,FALSE);
 
 	U32Vec pixels;
 	u32 w=512,h=512;
-	if (EDevice->MakeScreenshot(pixels,w,h)){
+	if (EDevice->MakeScreenshot(pixels,w,h))
+	{
 		EObjectThumbnail tex(tex_name,false);
 		tex.CreateFromData(pixels.data(),w,h,obj->GetFaceCount(),obj->GetVertexCount());
 		tex.Save(age);
-	}else{
+	}
+	else
+	{
 		bResult = FALSE;
 		ELog.DlgMsg(mtError,"Can't make screenshot.");
 	}
