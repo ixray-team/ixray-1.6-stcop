@@ -181,7 +181,7 @@ public:
 #endif
 SERVER_ENTITY_DECLARE_END
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeGroupAbstract)
+SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeGroupAbstract, IPureStateUpdateObject)
 	ALife::OBJECT_VECTOR			m_tpMembers;
 	bool							m_bCreateSpawnPositions;
 	u16								m_wCount;
@@ -238,6 +238,18 @@ public:
 	{
 		inherited1::UPDATE_Write	(tNetPacket);
 		inherited2::UPDATE_Write	(tNetPacket);
+	};
+
+	virtual void STATE_Serialize(ISaveObject& Object) override
+	{
+		inherited1::STATE_Serialize(Object);
+		inherited2::STATE_Serialize(Object);
+	};
+
+	virtual void UPDATE_Serialize(ISaveObject& Object) override
+	{
+		inherited1::UPDATE_Serialize(Object);
+		inherited2::UPDATE_Serialize(Object);
 	};
 
 	virtual CSE_Abstract *init		()
@@ -450,6 +462,7 @@ public:
 	};
 	/////////// network ///////////////
 	u8								m_u8NumItems;
+	Flags8							m_State;
 	bool							prev_freezed;
 	bool							freezed;
 	SPHNetState						State;
@@ -500,6 +513,9 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectHangingLamp,CSE_ALifeDynamicObjectVi
 	float							glow_radius;
 // game
     float							m_health;
+
+	bool IsInited = false;
+	bool IsSpawnActive = true;
 	
                                     CSE_ALifeObjectHangingLamp	(const char* caSection);
     virtual							~CSE_ALifeObjectHangingLamp	();
@@ -581,7 +597,11 @@ SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeCar,CSE_ALifeDynamicObjectVisual,CSE_PHSke
 protected:
 	virtual void					data_load				(NET_Packet &tNetPacket);
 	virtual void					data_save				(NET_Packet &tNetPacket);
+	virtual void					data_serialize(ISaveObject& Object) override;
 SERVER_ENTITY_DECLARE_END
+
+ISaveObject& operator<<(ISaveObject& Object, CSE_ALifeCar::SDoorState& Value);
+ISaveObject& operator<<(ISaveObject& Object, CSE_ALifeCar::SWheelState& Value);
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObjectBreakable,CSE_ALifeDynamicObjectVisual)
     float							m_health;

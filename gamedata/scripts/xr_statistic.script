@@ -282,6 +282,128 @@ function load(package)
 	end
 end
 
+function Serialize(package)
+	package:ForChunk("xr_statistic", function()
+		package:ForChunk("xr_statistic::actor_statistic", function()
+			if not package:IsSave() then
+				actor_statistic = {}
+			end
+			actor_statistic.surges  			= package:s_u16(actor_statistic.surges)
+			actor_statistic.completed_quests 	= package:s_u16(actor_statistic.completed_quests)
+			actor_statistic.killed_monsters  	= package:s_u32(actor_statistic.killed_monsters)
+			actor_statistic.killed_stalkers  	= package:s_u32(actor_statistic.killed_stalkers)
+			actor_statistic.founded_secrets  	= package:s_u16(actor_statistic.founded_secrets)
+			actor_statistic.artefacts_founded	= package:s_u32(actor_statistic.artefacts_founded)
+			actor_statistic.best_monster_rank 	= package:s_u32(actor_statistic.best_monster_rank)
+			if not package:IsSave() then
+				local str = ""
+				str = package:s_stringZ(str)
+				if(str~="nil") then
+					actor_statistic.best_monster = str
+				end
+				str = package:s_stringZ(str)
+				if(str~="nil") then
+					actor_statistic.favorite_weapon_sect = str
+				end
+			else
+				package:s_stringZ(tostring(actor_statistic.best_monster))
+				package:s_stringZ(tostring(actor_statistic.favorite_weapon_sect))
+			end
+		end)
+
+		package:ForChunk("xr_statistic::weapons_table", function()
+			if package:IsSave() then
+				local i = 0
+				for k,v in pairs(weapons_table) do
+					i = i + 1
+				end
+				package:s_u16(i)
+				package:ForArray(function()
+					for k,v in pairs(weapons_table) do
+						package:ForChunk("xr_statistic::weapons_table::elem", function()
+							package:s_stringZ(tostring(k))
+							package:s_float(v)
+						end)
+					end
+				end)
+			else
+				weapons_table = {}
+				local n = 0
+				n = package:s_u16(n)
+				package:ForArray(function()
+					for i = 1,n do
+						package:ForChunk("xr_statistic::weapons_table::elem", function()
+						local k = package:s_stringZ("")
+						local v = package:s_float(0.0)
+						weapons_table[k] = v
+						end)
+					end
+				end)
+			end
+		end)
+
+		package:ForChunk("xr_statistic::artefacts_table", function()
+			if package:IsSave() then
+				local i = 0
+				for k,v in pairs(artefacts_table) do
+					i = i + 1
+				end
+				package:s_u32(i)
+				package:ForArray(function()
+					for k,v in pairs(artefacts_table) do
+						package:ForChunk("xr_statistic::artefacts_table::elem", function()
+							package:s_stringZ(k)
+							package:s_bool(v)
+						end)
+					end
+				end)
+			else
+				artefacts_table = {}
+				local n = 0
+				n = package:s_u32(n)
+				package:ForArray(function()
+					for i = 1,n do
+						package:ForChunk("xr_statistic::artefacts_table::elem", function()
+							log("n "..tostring(n))
+							local k = ""
+							k = package:s_stringZ(k)
+							local v = false
+							v = package:s_bool(v)
+							artefacts_table[k] = v
+						end)
+					end
+				end)
+			end
+		end)
+
+		package:ForChunk("xr_statistic::taken_artefacts", function()
+			if package:IsSave() then
+				local i = 0
+				for k,v in pairs(taken_artefacts) do
+					i = i + 1
+				end
+				package:s_u32(i)
+				package:ForArray(function()
+					for k,v in pairs(taken_artefacts) do
+						package:s_u32(k)
+					end
+				end)
+			else
+				taken_artefacts = {}
+				local n = 0
+				n = package:s_u32(n)
+				package:ForArray(function()
+					for i = 1,n do
+						local k = 0
+						k = package:s_u32(k)
+						taken_artefacts[k] = k
+					end
+				end)
+			end
+		end)
+	end)
+end
+
 function pioneer_functor()
 	if not has_alife_info("pioneer_achievement_gained") then
 		if has_alife_info("zat_b14_give_item_linker")

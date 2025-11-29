@@ -500,17 +500,16 @@ void CUILevelMap::UpdateSpots()
 	Frect				_r;
 	GetAbsoluteRect		(_r);
 
-	if( false==MapWnd()->ActiveMapRect().intersected(_r)) return;
-
-	Locations& ls		= Level().MapManager().Locations();
-	Locations_it it		= ls.begin();
-	Locations_it it_e	= ls.end();
-
-	for(u32 idx=0; it!=it_e;++it,++idx)
+	if( false==MapWnd()->ActiveMapRect().intersected(_r))
 	{
-		if( (*it).actual && MapName() == (*it).location->GetLevelName() )
+		return;
+	}
+	
+	for (auto& elem : Level().MapManager().Locations())
+	{
+		if(elem.actual && MapName() == elem.location->GetLevelName() )
 		{
-			(*it).location->UpdateLevelMap(this);
+			elem.location->UpdateLevelMap(this);
 		}
 	}
 }
@@ -684,10 +683,11 @@ void CUIMiniMap::Init_internal(const shared_str& name, CInifile& pLtx, const sha
 
 void CUIMiniMap::UpdateSpots()
 {
-	DetachAll					();
-	Locations& ls = Level().MapManager().Locations();
-	for(Locations_it it=ls.begin(); it!=ls.end(); ++it)
-		(*it).location->UpdateMiniMap(this);
+	DetachAll();
+	for (auto& elem : Level().MapManager().Locations())
+	{
+		elem.location->UpdateMiniMap(this);
+	}
 }
 
 void  CUIMiniMap::Draw()

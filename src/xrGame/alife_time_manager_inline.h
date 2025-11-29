@@ -45,3 +45,10 @@ IC	void			CALifeTimeManager::change_game_time		(u32 value)
 	m_game_time		+= value;
 }
 
+IC void CALifeTimeManager::set_date_time(u64 date_time)
+{
+	m_start_game_time = date_time;
+	m_game_time = m_start_game_time;
+	m_start_time = Device.dwTimeGlobal;
+}
+

@@ -15,6 +15,7 @@
 #include "../../../ActorEffector.h"
 #include "psy_dog_aura.h"
 #include "psy_dog_state_manager.h"
+#include "SaveObjectHelpers.h"
 #include "../../../alife_object_registry.h"
 #include "../../../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
 
@@ -115,9 +116,16 @@ bool CPsyDog::spawn_phantom()
 	
 	// spawn here
 	NET_Packet					P;
-	phantom->Spawn_Write		(P,true);
-	Level().Send				(P,net_flags(true));
-	F_entity_Destroy			(phantom);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *phantom);
+	}
+	else
+	{
+		phantom->Spawn_Write		(P,true);
+	}
+	Level().Send(P,net_flags(true));
+	F_entity_Destroy(phantom);
 
 	return true;
 }

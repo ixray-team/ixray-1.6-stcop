@@ -58,6 +58,8 @@ public:
 
 	virtual void PhDataUpdate(float step) override;
 	virtual void PhTune(float step) override;
+	
+	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); }
 
 	virtual CExplosiveRocket* cast_explosive_rocket() override { return nullptr; }
 	virtual CGameObject* cast_game_object() override { return this; }

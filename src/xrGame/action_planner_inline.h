@@ -419,5 +419,70 @@ IC	void CPlanner::load	(IReader &packet)
 	m_loaded						= true;
 }
 
+TEMPLATE_SPECIALIZATION
+void CPlanner::SerializeEval(ISaveObject& Object, CProblemSolver::EVALUATORS::value_type& elem) {
+	elem.second->Serialize(Object);
+}
+
+TEMPLATE_SPECIALIZATION
+void CPlanner::SerializeOper(ISaveObject& Object, CProblemSolver::SOperator& elem) {
+	elem.m_operator->Serialize(Object);
+}
+
+TEMPLATE_SPECIALIZATION
+void CPlanner::SerializeStor(ISaveObject& Object, CSolverConditionValue& elem) {
+	Object << elem.m_condition << elem.m_value;
+}
+
+TEMPLATE_SPECIALIZATION
+IC	void CPlanner::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CPlanner")
+	{
+		BEGIN_CHUNK(Object,"CPlanner::m_evaluators")
+		{
+			BEGIN_ARRAY(Object)
+			{
+				for (auto& elem : this->m_evaluators)
+				{
+					BEGIN_CHUNK(Object, "CPlanner::m_evaluator")
+					{
+						elem.second->Serialize(Object);
+					}
+				}
+			}
+		}
+
+		BEGIN_CHUNK(Object,"CPlanner::m_operators")
+		{
+			BEGIN_ARRAY(Object)
+			{
+				for (auto& elem : this->m_operators)
+				{
+					BEGIN_CHUNK(Object, "CPlanner::m_operator")
+					{
+						elem.m_operator->Serialize(Object);
+					}
+				}
+			}
+		}
+
+		BEGIN_CHUNK(Object,"CPlanner::m_storage")
+		{
+			BEGIN_ARRAY(Object)
+			{
+				for (auto& elem : this->m_storage.m_storage)
+				{
+					BEGIN_CHUNK(Object, "CPlanner::m_storage_elem")
+					{
+						Object << elem.m_condition << elem.m_value;
+					}
+				}
+			}
+		}
+		m_loaded = true;
+	}
+}
+
 #undef TEMPLATE_SPECIALIZATION
 #undef CPlanner

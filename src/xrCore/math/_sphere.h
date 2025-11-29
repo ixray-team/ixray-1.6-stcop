@@ -1,5 +1,4 @@
-#ifndef _F_SPHERE_H_
-#define _F_SPHERE_H_
+#pragma once
 
 template <class T>
 struct _sphere {
@@ -313,4 +312,6 @@ ICF bool	_valid			(const _sphere<T>& s)		{ return _valid(s.P) && _valid(s.R);	}
 
 void	XRCORE_API		Fsphere_compute		(Fsphere& dest, const Fvector *verts, int count);
 
-#endif
+template<typename T> ISaveObject& operator<<(ISaveObject& Object, _sphere<T>& Value) {
+	return Object << Value.P << Value.R;
+}
