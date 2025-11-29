@@ -12,7 +12,7 @@ function(add_imported_lib name include_dir lib_path dll_paths)
 
     foreach(dll_file IN LISTS dll_paths)
         if(EXISTS "${dll_file}")
-            set(target_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>")
+            set(target_dir "${IXRAY_OUTPUT}")
             add_custom_command(TARGET copy_all_dlls PRE_BUILD
                 COMMAND ${CMAKE_COMMAND} -E make_directory "${target_dir}"
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -29,7 +29,7 @@ function(target_copy_dependency TARGET_NAME FILE_PATH)
         add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     ${FILE_PATH}
-                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+                    ${IXRAY_OUTPUT}
         )
     else()
         get_filename_component(FILE_NAME ${FILE_PATH} NAME)

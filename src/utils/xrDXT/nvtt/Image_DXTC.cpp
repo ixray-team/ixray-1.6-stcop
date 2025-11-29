@@ -503,7 +503,6 @@ void Image_DXTC::DecompressDXT1()
     int yblocks = m_DDSD.dwHeight / 4;
     DWORD* pBase = (DWORD*)m_pDecompBytes;
     DWORD* pImPos = (DWORD*)pBase;			// pos in decompressed data
-    u16* pPos = (u16*)m_pCompBytes;	// pos in compressed data
     DXTColBlock* pBlock;
     Color8888 col_0, col_1, col_2, col_3;
     u16 wrd;
@@ -530,7 +529,6 @@ void Image_DXTC::DecompressDXT3()
     int yblocks = m_DDSD.dwHeight / 4;
     DWORD* pBase = (DWORD*)m_pDecompBytes;
     DWORD* pImPos = (DWORD*)pBase; // pos in decompressed data
-    u16* pPos = (u16*)m_pCompBytes; // pos in compressed data
     DXTColBlock* pBlock;
     DXTAlphaBlockExplicit* pAlphaBlock;
     Color8888 col_0, col_1, col_2, col_3;
@@ -573,7 +571,6 @@ void Image_DXTC::DecompressDXT5()
     int yblocks = m_DDSD.dwHeight / 4;
     DWORD* pBase = (DWORD*)m_pDecompBytes;
     DWORD* pImPos = (DWORD*)pBase; // pos in decompressed data
-    u16* pPos = (u16*)m_pCompBytes; // pos in compressed data    
     Color8888 col_0, col_1, col_2, col_3;    
     // fill alphazero with appropriate value to zero out alpha when
     //  alphazero is ANDed with the image color 32 bit DWORD:
