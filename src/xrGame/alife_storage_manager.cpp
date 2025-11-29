@@ -8,6 +8,8 @@
 
 #include "StdAfx.h"
 #include "alife_storage_manager.h"
+
+#include "Actor.h"
 #include "alife_simulator_header.h"
 #include "alife_time_manager.h"
 #include "alife_spawn_registry.h"
@@ -15,12 +17,14 @@
 #include "alife_graph_registry.h"
 #include "alife_group_registry.h"
 #include "alife_registry_container.h"
+#include "alife_simulator.h"
 #include "xrServer.h"
 #include "Level.h"
 #include "../xrEngine/x_ray.h"
 #include "saved_game_wrapper.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "autosave_manager.h"
+#include "../xrCore/Save/SaveManager.h"
 #include "../xrEngine/string_table.h"
 
 XRCORE_API string_path g_bug_report_file;
@@ -33,7 +37,7 @@ CALifeStorageManager::~CALifeStorageManager()
 {
 }
 
-void CALifeStorageManager::save(const char* save_name_no_check, bool update_name)
+void CALifeStorageManager::save(const char* save_name_no_check, bool update_name, bool non_async)
 {
 	const char* game_saves_path		= FS.get_path("$game_saves$")->m_Path;
 
@@ -61,48 +65,70 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 	luabind::functor<void> funct1;
 	if (ai().script_engine().functor("alife_storage_manager.CALifeStorageManager_before_save", funct1))
 	{
-		funct1((const char*)m_save_name);
+		funct1((str_c)m_save_name);
 	}
-
-	u32 source_count;
-	u32 dest_count;
-	void* dest_data;
-	{
-		CMemoryWriter stream;
-		header().save(stream);
-		{
-			stream.open_chunk(MARSHAL_CHUNK_DATA);
-			stream.w_u32(marshal_save_data.size());
-			stream.w(marshal_save_data.data(), marshal_save_data.size());
-			stream.close_chunk();
-		}
-		time_manager().save(stream);
-		spawns().save(stream);
-		objects().save(stream);
-		registry().save(stream);
-
-		source_count = stream.tell();
-		void* source_data = stream.pointer();
-		dest_count = rtc_csize(source_count);
-		dest_data = xr_malloc(dest_count);
-		dest_count = (u32)rtc_compress(dest_data, dest_count, source_data, source_count);
-	}
-
+	
 	string_path temp;
 	FS.update_path(temp, "$game_saves$", m_save_name);
-	IWriter* writer = FS.w_open(temp);
-	writer->w_u32(u32(-1));
-	writer->w_u32(ALIFE_VERSION);
 
-	writer->w_u32(source_count);
-	writer->w(dest_data, dest_count);
-	xr_free(dest_data);
-	FS.w_close(writer, true);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		auto SaveObj = CSaveManager::GetInstance().BeginSave();
+		SGameInfoFast info;
+		info.m_actor_health = g_actor ? g_actor->GetfHealth() : 0;
+		info.m_game_time = ai().alife().time_manager().game_time();
+		auto map_name = Level().name(); // TODO: get actual level name
+		info.m_level_name = map_name.size() ? map_name.c_str() : "Start";
+		info.m_level_id = map_name.size() ? ai().level_graph().level_id() : u16(-1);
+		header().Serialize(*SaveObj);
+		BEGIN_CHUNK(*SaveObj, "MarshalData")
+		{
+			*SaveObj << marshal_save_data;
+		}
+		time_manager().Serialize(*SaveObj);
+		spawns().Serialize(*SaveObj);
+		objects().Serialize(*SaveObj);
+		registry().Serialize(*SaveObj);
+		CSaveManager::GetInstance().WriteSavedData(info, SaveObj, temp, !non_async);
+	} else
+	{
+		u32 source_count;
+		u32 dest_count;
+		void* dest_data;
+		{
+			CMemoryWriter stream;
+			header().save(stream);
+			{
+				stream.open_chunk(MARSHAL_CHUNK_DATA);
+				stream.w_u32(marshal_save_data.size());
+				stream.w(marshal_save_data.data(), marshal_save_data.size());
+				stream.close_chunk();
+			}
+			time_manager().save(stream);
+			spawns().save(stream);
+			objects().save(stream);
+			registry().save(stream);
+			source_count = stream.tell();
+			void* source_data = stream.pointer();
+			dest_count = rtc_csize(source_count);
+			dest_data = xr_malloc(dest_count);
+			dest_count = (u32)rtc_compress(dest_data, dest_count, source_data, source_count);
+		}
+
+		IWriter* writer = FS.w_open(temp);
+		writer->w_u32(u32(-1));
+		writer->w_u32(ALIFE_VERSION);
+
+		writer->w_u32(source_count);
+		writer->w(dest_data, dest_count);
+		xr_free(dest_data);
+		FS.w_close(writer, non_async);
 #ifdef DEBUG
-	Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, source_count, dest_count + 4);
+		Msg("* Game %s is successfully saved to file '%s' (%d bytes compressed to %d)", m_save_name, temp, source_count, dest_count + 4);
 #else // DEBUG
-	Msg("* Game %s is successfully saved to file '%s'", m_save_name, temp);
+		Msg("* Game %s is successfully saved to file '%s'", m_save_name, temp);
 #endif // DEBUG
+	}
 
 	// To get the savegame fname to make our own custom save states
 	luabind::functor<void> funct3;
@@ -115,16 +141,29 @@ void CALifeStorageManager::save(const char* save_name_no_check, bool update_name
 		xr_strcpy					(m_save_name,saveBackup);
 }
 
-void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char* file_name)
+void CALifeStorageManager::load(IReader* stream, const char* file_name)
 {
-	IReader source(buffer, buffer_size);
-	header().load(source);
-	
-	if (auto MarshalChunk = source.open_chunk(MARSHAL_CHUNK_DATA); MarshalChunk)
+	IReader& source = *stream;
+	CSaveObjectLoad* Obj = nullptr;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
 	{
-		marshal_save_data.resize(MarshalChunk->r_u32());
-		std::memcpy(marshal_save_data.data(), MarshalChunk->pointer(), marshal_save_data.size());
+		Obj = CSaveManager::GetInstance().BeginLoad(stream);
+		header().Serialize(*Obj);
+		BEGIN_CHUNK(*Obj, "MarshalData")
+		{
+			*Obj << marshal_save_data;
+		}
 	}
+	else
+	{
+		header().load(source);
+		if (auto MarshalChunk = source.open_chunk(MARSHAL_CHUNK_DATA); MarshalChunk)
+		{
+			marshal_save_data.resize(MarshalChunk->r_u32());
+			std::memcpy(marshal_save_data.data(), MarshalChunk->pointer(), marshal_save_data.size());
+		}
+	}
+	
 	
 	// So we can get the fname to make our own custom save states
 	luabind::functor<void> funct;
@@ -134,29 +173,39 @@ void CALifeStorageManager::load(void* buffer, const u32& buffer_size, const char
 		funct(file_name);
 	}
 
-	time_manager().load(source);
-	spawns().load(source, file_name);
-	graph().on_load();
-	objects().load(source);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		time_manager().Serialize(*Obj);
+		spawns().Serialize(*Obj);
+		graph().on_load();
+		objects().Serialize(*Obj);
+		registry().Serialize(*Obj);
+		xr_delete(Obj);
+	} else
+	{
+		time_manager().load(source);
+		spawns().load(source, file_name);
+		graph().on_load();
+		objects().load(source);
+		registry().load(source);
+	}
 
 	VERIFY(can_register_objects());
 	can_register_objects(false);
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	B = objects().objects().begin();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	E = objects().objects().end();
-	CALifeObjectRegistry::OBJECT_REGISTRY::iterator	I;
-	for (I = B; I != E; ++I) {
-		ALife::_OBJECT_ID id = I->second->ID;
-		I->second->ID = server().PerformIDgen(id);
-		VERIFY(id == I->second->ID);
-		register_object(I->second, false);
+	auto& Objects = objects().objects();
+	for (auto& elem : Objects) {
+		ALife::_OBJECT_ID id = elem.second->ID;
+		elem.second->ID = server().PerformIDgen(id);
+		VERIFY(id == elem.second->ID);
+		register_object(elem.second, false);
 	}
-
-	registry().load(source);
 
 	can_register_objects(true);
 
-	for (I = B; I != E; ++I)
-		I->second->on_register();
+	for (auto& elem : Objects)
+	{
+		elem.second->on_register();
+	}
 
 	if (!g_pGameLevel)
 		return;
@@ -225,12 +274,21 @@ bool CALifeStorageManager::load(const char* save_name_no_check)
 	unload();
 	reload(m_section);
 
-	u32 source_count = stream->r_u32();
-	void* source_data = xr_malloc(source_count);
-	rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
-	FS.r_close(stream);
-	load(source_data, source_count, file_name);
-	xr_free(source_data);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		stream->rewind();
+		load(stream, file_name);
+		FS.r_close(stream);
+	} else
+	{
+		u32 source_count = stream->r_u32();
+		void* source_data = xr_malloc(source_count);
+		rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
+		FS.r_close(stream);
+		IReader ReaderStream = IReader(source_data, source_count);
+		load(&ReaderStream, file_name);
+		xr_free(source_data);
+	}
 
 	groups().on_after_game_load();
 
@@ -247,11 +305,14 @@ void CALifeStorageManager::save(NET_Packet& net_packet)
 
 	shared_str game_name;
 	net_packet.r_stringZ(game_name);
-	save(*game_name, !!net_packet.r_u8());
+	save(*game_name, !!net_packet.r_u8(), !EngineExternal()[EEngineExternalSystem::AdvancedSerialization]);
 }
 
 void CALifeStorageManager::prepare_objects_for_save()
 {
 	Level().ClientSend();
-	Level().ClientSave();
+	if (!EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		Level().ClientSave();
+	}
 }

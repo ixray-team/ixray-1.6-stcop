@@ -47,6 +47,7 @@ public:
 
     void load(IReader& file_stream);
     void save(IWriter& memory_stream);
+    void Serialize(ISaveObject& Object);
 };
 
 #include "alife_registry_container_inline.h"

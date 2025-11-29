@@ -334,3 +334,13 @@ void	CSpecificCharacter::load(IReader& input_packet)
 	load_data(data()->m_icon_name, input_packet);
 #endif
 }
+
+void CSpecificCharacter::Serialize(ISaveObject& Object)
+{
+#ifdef  XRGAME_EXPORTS
+	BEGIN_CHUNK(Object, "CSpecificCharacter")
+	{
+		Object << data()->m_icon_name;
+	}
+#endif
+}

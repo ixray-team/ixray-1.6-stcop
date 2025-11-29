@@ -135,8 +135,9 @@ public:
 	virtual void			ProcessCustomSyncFlag_CL(u8 flags) {};
 
 	//save/load server serialization
-	virtual void			save							(NET_Packet &output_packet) {inherited::save(output_packet);}
-	virtual void			load							(IReader &input_packet)		{inherited::load(input_packet);}
+	virtual void			save							(NET_Packet &output_packet) override {inherited::save(output_packet);}
+	virtual void			load							(IReader &input_packet) override		{inherited::load(input_packet);}
+	virtual void Serialize(ISaveObject& Object) override;
 
 
 	virtual void			UpdateCL						();

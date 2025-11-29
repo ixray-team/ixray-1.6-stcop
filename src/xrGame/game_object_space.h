@@ -79,6 +79,8 @@ namespace GameObject {
 		eActorHudAnimationEnd,
 		eOnBestEnemySelected,
 
+		eDangerousMaterialTouch,
+
 		eDummy = u32(-1),
 	};
 };

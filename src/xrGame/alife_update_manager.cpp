@@ -208,7 +208,10 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	net_packet.r_vec3				(graph().actor()->o_Position);
 	net_packet.r_vec3				(graph().actor()->o_Angle);
 
-	Level().ClientSave				();
+	if (!EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		Level().ClientSave				();
+	}
 
 	graph().actor()->o_torso.yaw	= graph().actor()->o_Angle.y;
 	graph().actor()->o_torso.pitch	= graph().actor()->o_Angle.x;
@@ -235,7 +238,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	string256						temp;
 	*m_server_command_line			= xr_strconcat(temp,autosave_name,temp0);
 	
-	save							(autosave_name);
+	save							(autosave_name, true, true);
 
 	graph().actor()->m_tGraphID		= safe_graph_vertex_id;
 	graph().actor()->m_tNodeID		= safe_level_vertex_id;

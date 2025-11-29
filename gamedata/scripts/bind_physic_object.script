@@ -32,13 +32,7 @@ function generic_physics_binder:__init(obj) super(obj)
 	self.loaded = false
 end
 
-function generic_physics_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function generic_physics_binder:reinit()
-	object_binder.reinit(self)
-
 	printf("generic_physics_binder:reinit()")
 
 	printf("_bp: generic_physics_binder: %s", self.object:name())
@@ -46,8 +40,6 @@ function generic_physics_binder:reinit()
 end
 
 function generic_physics_binder:update(delta)
-	object_binder.update(self, delta)
-
 	SendScriptCallback("physic_object_on_update", self, self.object, delta)
 
 	if not self.initialized and db.actor then
@@ -77,10 +69,6 @@ function generic_physics_binder:update(delta)
 end
 
 function generic_physics_binder:net_spawn(data)
-	if not object_binder.net_spawn(self, data) then
-		return false
-	end
-
 	if self.object:section() == "physic_door" then
 		db.level_doors[self.object:id()] = self.object:position()
 	end
@@ -122,8 +110,6 @@ function generic_physics_binder:net_destroy()
 	db.del_obj(self.object)
 
 	db.storage[self.object:id()] = nil
-
-	object_binder.net_destroy(self)
 end
 
 function generic_physics_binder:net_save_relevant()
@@ -133,7 +119,6 @@ end
 
 function generic_physics_binder:save(packet)
 	printf("generic_physics_binder:save(): self.object:name()='%s'", self.object:name())
-	object_binder.save(self, packet)
 	set_save_marker(packet, "save", false, "physics_binder")
 	xr_logic.save_obj(self.object, packet)
 	set_save_marker(packet, "save", true, "physics_binder")
@@ -142,10 +127,18 @@ end
 function generic_physics_binder:load(reader)
 	self.loaded = true
 	printf("generic_physics_binder:load(): self.object:name()='%s'", self.object:name())
-	object_binder.load(self, reader)
 	set_save_marker(reader, "load", false, "physics_binder")
 	xr_logic.load_obj(self.object, reader)
 	set_save_marker(reader, "load", true, "physics_binder")
+end
+
+function generic_physics_binder:Serialize(Object)
+	if not Object:IsSave() then
+		self.loaded = true
+	end
+	Object:ForChunk("physics_binder", function()
+		xr_logic.Serialize_obj(self.object, Object)
+	end)
 end
 
 function generic_physics_binder:use_callback(obj, who)
