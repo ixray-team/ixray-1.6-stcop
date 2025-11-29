@@ -89,6 +89,52 @@ function se_zone_anom:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_anom:STATE_Serialize(Object)
+	Object:ForChunk("se_zone_anom:STATE", function()
+		cse_anomalous_zone.STATE_Serialize( self, Object )
+
+		if not Object:IsSave() or editor() then
+			return
+		end
+		
+		if (is_single_player_game() == false) then
+			return
+		end 
+
+        local FlagSave = true -- Ранее тут была ванильная система определения наличия времени через флаг, современная версия использует чанки
+
+        if Object:IsSave() then
+            if self.last_spawn_time then
+                Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                    FlagSave = false
+			        self.last_spawn_time:Serialize(Object)
+                end)
+            end
+        else
+            Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                FlagSave = false
+				self.last_spawn_time = game.CTime()
+			    self.last_spawn_time:Serialize(Object)
+            end)
+        end
+	
+        -- Удалить через какое-то время т.к. будет мёртвым кодом
+        if FlagSave then
+		    local flag = false
+		    if(Object:IsSave()) then
+		    	flag = self.last_spawn_time ~= nil
+		    end
+		    flag = Object:s_bool(flag)
+		    if flag == true then
+		    	if not Object:IsSave() then
+		    		self.last_spawn_time = game.CTime()
+		    	end
+		    	self.last_spawn_time:Serialize(Object)
+		    end
+        end
+	end)
+end
+
 function se_zone_anom:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_zone_anom")
 	cse_anomalous_zone.on_unregister(self)
@@ -163,6 +209,52 @@ function se_zone_torrid:STATE_Read( packet, size )
 	end
 end
 
+function se_zone_torrid:STATE_Serialize(Object)
+	Object:ForChunk("se_zone_torrid:STATE", function()
+		cse_torrid_zone.STATE_Serialize( self, Object )
+
+		if not Object:IsSave() or editor() then
+			return
+		end
+
+		if (is_single_player_game() == false) then
+			return
+		end
+
+        local FlagSave = true -- Ранее тут была ванильная система определения наличия времени через флаг, современная версия использует чанки
+
+        if Object:IsSave() then
+            if self.last_spawn_time then
+                Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                    FlagSave = false
+			        self.last_spawn_time:Serialize(Object)
+                end)
+            end
+        else
+            Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                FlagSave = false
+				self.last_spawn_time = game.CTime()
+			    self.last_spawn_time:Serialize(Object)
+            end)
+        end
+	
+        -- Удалить через какое-то время т.к. будет мёртвым кодом
+        if FlagSave then
+		    local flag = false
+		    if(Object:IsSave()) then
+		    	flag = self.last_spawn_time ~= nil
+		    end
+		    flag = Object:s_bool(flag)
+		    if flag == true then
+		    	if not Object:IsSave() then
+		    		self.last_spawn_time = game.CTime()
+		    	end
+		    	self.last_spawn_time:Serialize(Object)
+		    end
+        end
+	end)
+end
+
 function se_zone_torrid:on_unregister()
 	SendScriptCallback("server_entity_on_unregister", self, "se_zone_torrid")
 	cse_custom_zone.on_unregister(self)
@@ -227,6 +319,52 @@ function se_zone_visual:STATE_Read( packet, size )
 	if flag == 1 then
 		self.last_spawn_time = utils.r_CTime(packet)
 	end
+end
+
+function se_zone_visual:STATE_Serialize(Object)
+	Object:ForChunk("se_zone_visual:STATE", function()
+		cse_zone_visual.STATE_Serialize( self, Object )
+
+		if not Object:IsSave() or editor() then
+			return
+		end
+
+		if (is_single_player_game() == false) then
+			return
+		end
+
+        local FlagSave = true -- Ранее тут была ванильная система определения наличия времени через флаг, современная версия использует чанки
+
+        if Object:IsSave() then
+            if self.last_spawn_time then
+                Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                    FlagSave = false
+			        self.last_spawn_time:Serialize(Object)
+                end)
+            end
+        else
+            Object:ForChunk("se_zone_anom:STATE:last_spawn_time", function()
+                FlagSave = false
+				self.last_spawn_time = game.CTime()
+			    self.last_spawn_time:Serialize(Object)
+            end)
+        end
+	
+        -- Удалить через какое-то время т.к. будет мёртвым кодом
+        if FlagSave then
+		    local flag = false
+		    if(Object:IsSave()) then
+		    	flag = self.last_spawn_time ~= nil
+		    end
+		    flag = Object:s_bool(flag)
+		    if flag == true then
+		    	if not Object:IsSave() then
+		    		self.last_spawn_time = game.CTime()
+		    	end
+		    	self.last_spawn_time:Serialize(Object)
+		    end
+        end
+	end)
 end
 
 function se_zone_visual:on_unregister()

@@ -243,6 +243,45 @@ function PsyAntenna:load(p)
 	end
 	set_save_marker(p, "load", true, "psy_antenna_obj")
 end
+function PsyAntenna:Serialize(Object)
+	Object:ForChunk("psy_antenna_obj", function()
+		self.hit_intensity = Object:s_float(self.hit_intensity)
+		self.sound_intensity = Object:s_float(self.sound_intensity)
+		self.sound_intensity_base = Object:s_float(self.sound_intensity_base)
+		self.mute_sound_threshold = Object:s_float(self.mute_sound_threshold)
+		self.no_static = Object:s_bool(self.no_static)
+		self.no_mumble = Object:s_bool(self.no_mumble)
+		self.hit_type = Object:s_stringZ(self.hit_type)
+		self.hit_freq = Object:s_u32(self.hit_freq)
+
+		self.postprocess_count = Object:s_u8(self.postprocess_count)
+		Object:ForArray(function()
+			if Object:IsSave() then
+				for k,v in pairs(self.postprocess) do
+					Object:ForChunk("psy_antenna_obj:elem", function()
+						Object:s_stringZ(k)
+						Object:s_float(v.intensity)
+						Object:s_float(v.intensity_base)
+						Object:s_u32(v.idx)
+					end)
+				end
+			else
+				self.postprocess = {}
+				for i=1, self.postprocess_count do
+					Object:ForChunk("psy_antenna_obj:elem", function()
+						local k = Object:s_stringZ("")
+						local ii = Object:s_float(0.0)
+						local ib = Object:s_float(0.0)
+						local idx = Object:s_u32(0)
+						self.postprocess[k] = {intensity_base = ib, intensity = ii, idx = idx}
+						level.add_pp_effector(k, idx, true)
+						level.set_pp_effector_factor(idx, ii)
+					end)
+				end
+			end
+		end)
+	end)
+end
 
 ----------------------------------------------------------------------------------------------------
 -- логическая схема для space restrictor
@@ -388,6 +427,27 @@ function load(p)
 		psy_antenna:load(p)
 	end
 	set_save_marker(p, "load", true, "sr_psy_antenna")
+end
+
+function Serialize( Object )
+	Object:ForChunk("sr_psy_antenna", function()
+		if Object:IsSave() then
+			if psy_antenna and not utils.level_changing() then
+				Object:ForChunk("sr_psy_antenna:data", function()
+					psy_antenna:Serialize( Object )
+				end)
+			end
+		else
+			Object:ForChunk("sr_psy_antenna:data", function()
+				if psy_antenna then
+					abort("sr_psy_antenna.psy_antenna already exists!")
+				end
+				psy_antenna = PsyAntenna()
+				psy_antenna:construct()
+				psy_antenna:Serialize(Object)
+			end)
+		end
+	end)
 end
 
 function add_to_binder(npc, ini, scheme, section, storage)

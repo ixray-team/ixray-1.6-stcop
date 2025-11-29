@@ -864,6 +864,35 @@ void CMapLocation::load(IReader &stream)
 	}
 }
 
+void CMapLocation::serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CMapLocation")
+	{
+		if (Object.IsSave())
+		{
+			Object << m_hint;
+		} else
+		{
+			xr_string str;
+			Object << str;
+			SetHint(str.c_str());
+		}
+		Object << m_flags << m_owner_task_id;
+		if (IsUserDefined())
+		{
+			BEGIN_CHUNK(Object, "CMapLocation::UserDefined")
+			{
+				Object << m_cached.m_LevelName << m_cached.m_Position << m_cached.m_graphID;
+				if (!Object.IsSave())
+				{
+					m_position_on_map = m_cached.m_Position;
+					m_position_global.set(m_position_on_map.x, 0.f, m_position_on_map.y);
+				}
+			}
+		}
+	}
+}
+
 void CMapLocation::SetHint(const shared_str& hint)		
 {
 	if ( hint == "disable_hint" )

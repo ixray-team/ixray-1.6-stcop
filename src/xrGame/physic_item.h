@@ -39,4 +39,6 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return this; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 	virtual void CreatePhysicsShell() override;
+	
+	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); }
 };

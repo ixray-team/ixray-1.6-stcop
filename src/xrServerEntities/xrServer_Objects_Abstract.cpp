@@ -14,6 +14,7 @@
 
 #include "xrServer_Objects_Abstract.h"
 #include "xrMessages.h"
+#include "../xrCore/Save/SaveInterface.h"
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Visual
@@ -59,6 +60,14 @@ void CSE_Visual::visual_write  	(NET_Packet	&tNetPacket)
 {
 	tNetPacket.w_stringZ		(visual_name);
 	tNetPacket.w_u8				(flags.get());
+}
+
+void CSE_Visual::visual_serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Visual::visual")
+	{
+		Object << visual_name << flags.flags;
+	}
 }
 
 void CSE_Visual::OnChangeVisual	(PropValue* sender)
@@ -110,6 +119,14 @@ void CSE_Motion::motion_read	(NET_Packet	&tNetPacket)
 void CSE_Motion::motion_write	(NET_Packet	&tNetPacket)
 {
 	tNetPacket.w_stringZ			(motion_name);
+}
+
+void CSE_Motion::motion_serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Motion::motion")
+	{
+		Object << motion_name;
+	}
 }
 
 void CSE_Motion::OnChangeMotion	(PropValue* sender)

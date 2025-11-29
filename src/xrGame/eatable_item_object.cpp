@@ -99,6 +99,15 @@ void CEatableItemObject::load(IReader& packet)
 	CEatableItem::load(packet);
 }
 
+void CEatableItemObject::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CEatableItemObject")
+	{
+		CPhysicItem::Serialize(Object);
+		CEatableItem::Serialize(Object);
+	}
+}
+
 void CEatableItemObject::renderable_Render()
 {
 	CPhysicItem::renderable_Render();

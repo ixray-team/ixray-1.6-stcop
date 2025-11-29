@@ -41,6 +41,7 @@ public:
 public:
 			void						on_state_write		(NET_Packet &packet);
 			void						on_state_read		(NET_Packet &packet);
+			void						on_state_serialize(ISaveObject& Object);
 
 public:
 	IC		object_type					&object				() const;
