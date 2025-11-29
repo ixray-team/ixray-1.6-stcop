@@ -15,7 +15,6 @@ extern bool shared_str_initialized;
 XRCORE_API xrDebug Debug;
 
 #define DEBUG_INVOKE	__debugbreak();
-static BOOL bException = FALSE;
 #define USE_OWN_ERROR_MESSAGE_WINDOW
 
 #ifndef DEBUG

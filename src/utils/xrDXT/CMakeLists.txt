@@ -1,8 +1,6 @@
 project(xrDXT)
 set(DXT_SRC_FILES)
 
-#set(USE_NVTT ON)
-
 # Files import
 file(GLOB_RECURSE DXT_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
@@ -36,18 +34,9 @@ target_compile_definitions(xrDXT PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrDXT PUBLIC xrCore)
+target_link_libraries(xrDXT PRIVATE NVTT::nvtt)
 
 if (WIN32)
-    # NVTT
-    target_link_libraries(xrDXT PRIVATE ${NVTT}runtimes/win-x64/native/Release/nvtt.lib)
-    target_include_directories(xrDXT PRIVATE "${NVTT}build/native/include/")
-
-    ## Copy binaries
-    add_custom_command(TARGET ${PROJECT_NAME} 
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVTT}runtimes/win-x64/native/Release/nvtt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    )
-
     # RedImage
     target_link_libraries(xrDXT PUBLIC ${REDIMAGE_LIB})
     target_include_directories(xrDXT PUBLIC "${REDIMAGE_INCL}")
@@ -55,11 +44,6 @@ if (WIN32)
     ## Copy binaries
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${REDIMAGE_BIN} ${IXRAY_OUTPUT}
     )
-else()
-    target_link_libraries(xrDXT PRIVATE nvtt)
-    
-    FetchContent_GetProperties(nvtt)
-    target_include_directories(xrDXT PRIVATE ${nvtt_SOURCE_DIR}/src)
 endif()

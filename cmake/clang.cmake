@@ -34,8 +34,6 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
     include("cmake/freebsd/packages.cmake")
     add_compile_options(-mwaitpkg)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    include("cmake/linux/packages.cmake")
 endif()
 
 # Setup build patches

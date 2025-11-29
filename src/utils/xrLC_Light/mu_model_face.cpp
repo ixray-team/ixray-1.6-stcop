@@ -10,12 +10,15 @@ static poolSS<_face,   8 * 1024> mu_faces;
 poolSS<_vertex,8*1024>	&mu_vertices_pool();
 poolSS<_face,8*1024>	&mu_faces_pool();
 
+template<>
 Tface<data_vertex>::Tface()
 {}
 
+template<>
 Tvertex<data_vertex>::Tvertex()
 {}
 
+template<>
 _vertex* _vertex::CreateCopy_NOADJ(v_vertices& vertises_storage) const
 {
 	_vertex* V = mu_vertices_pool().create();
@@ -33,6 +36,7 @@ template<>
 Tvertex<data_vertex>::~Tvertex()
 {}
 
+template<>
 void _face::Failure()
 {
 }
