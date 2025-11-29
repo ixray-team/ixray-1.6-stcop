@@ -59,7 +59,9 @@
 #include "../xrEngine/thunderbolt.h"
 #include "material_manager.h"
 #include "../xrUI/Widgets/UIActionRepeaters.h"
+
 #include "ElectronicsProblemsManager.h"
+#include "SaveObjectHelpers.h"
 
 using namespace luabind;
 
@@ -345,9 +347,12 @@ float get_global_time_factor() { return (Device.time_factor()); }
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
 	g_SingleGameDifficulty		= dif;
+	if (g_pGameLevel)
+	{
 	game_cl_Single* game		= Game().cast_game_cl_single();
 	VERIFY(game);
 	game->OnDifficultyChanged	();
+	}
 }
 ESingleGameDifficulty get_game_difficulty()
 {
@@ -385,6 +390,21 @@ void change_game_time(u32 days, u32 hours, u32 mins)
 		value			*= 1000;//msec		
 		g_pGamePersistent->Environment().ChangeGameTime(fValue);
 		tpGame->alife().time_manager().change_game_time(value);
+	}
+}
+
+void set_game_date_time(LPCSTR date, LPCSTR time)
+{
+	game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+	if (tpGame && ai().get_alife())
+	{
+		u32	years, months, days, hours, minutes, seconds;
+		sscanf(time, "%d:%d:%d", &hours, &minutes, &seconds);
+		sscanf(date, "%d.%d.%d", &days, &months, &years);
+		auto newTime = generate_time(years, months, days, hours, minutes, seconds);
+		float fValue = static_cast<float>(days * 86400 + hours * 3600 + minutes * 60);
+		g_pGamePersistent->Environment().ChangeGameTime(fValue);
+		tpGame->alife().time_manager().set_date_time(newTime);
 	}
 }
 
@@ -832,7 +852,9 @@ void add_pp_effector(const char* fn, int id, bool cyclic)
 {
 	CPostprocessAnimator* pp		= new CPostprocessAnimator(id, cyclic);
 	pp->Load						(fn);
-	Actor()->Cameras().AddPPEffector	(pp);
+	auto actor = Actor();
+	R_ASSERT(actor);
+	actor->Cameras().AddPPEffector	(pp);
 }
 
 void remove_pp_effector(int id)
@@ -1573,7 +1595,14 @@ void spawn_anomaly(const char* str, int level_vertex_id, const Fvector& position
 	AlifeZone->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 
 	NET_Packet					P;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *object);
+	}
+	else
+	{
 	object->Spawn_Write(P, true);
+	}
 	Level().Send(P, net_flags(true));
 	F_entity_Destroy(object);
 }
@@ -2232,7 +2261,8 @@ void CLevel::script_register(lua_State *L)
 			.def("set"					,&xrTime::set)
 			.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
 			.def("dateToString"			,&xrTime::dateToString)
-			.def("timeToString"			,&xrTime::timeToString),
+			.def("timeToString"			,&xrTime::timeToString)
+			.def("Serialize", &ctime_serialize),
 			// declarations
 			def("time",					get_time),
 			def("get_game_time",		get_time_struct),

@@ -32,6 +32,8 @@ struct ARTICLE_DATA : public IPureSerializeObject<IReader,IWriter>
 	EArticleType			article_type;
 };
 
+ISaveObject& operator<<(ISaveObject& Object, ARTICLE_DATA& Data);
+
 using ARTICLE_ID_VECTOR = xr_vector<shared_str>;
 using ARTICLE_ID_IT = ARTICLE_ID_VECTOR::iterator;
 

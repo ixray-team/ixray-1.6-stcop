@@ -11,13 +11,17 @@ class NET_Packet;
 
 class CWound
 {
+	friend ISaveObject& operator<<(ISaveObject& Object, CWound& Value);
+	
 public:
+	CWound() : CWound(-1) {}
 	CWound				(u16 bone_num);
 	virtual ~CWound		(void);
 
 	//serialization
 	virtual void save	(NET_Packet &output_packet);
 	virtual void load	(IReader &input_packet);
+	virtual void Serialize(ISaveObject& Object);
 
 	float	TotalSize	();
 	float	TypeSize	(ALife::EHitType hit_type);
@@ -57,3 +61,5 @@ protected:
 
 	bool						m_bToBeDestroy;
 };
+
+ISaveObject& operator<<(ISaveObject& Object, CWound& Value);

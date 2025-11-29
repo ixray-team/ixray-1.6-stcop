@@ -873,6 +873,54 @@ function sim_squad_scripted:STATE_Read(packet, size)
     end)
 end
 
+function sim_squad_scripted:STATE_Serialize(Object)
+	Object:ForChunk("sim_squad_scripted:STATE", function()
+		cse_alife_online_offline_group.STATE_Serialize (self, Object)
+		Object:ForChunk("sim_squad_scripted:STATE:data", function()
+			if Object:IsSave() then
+                if self.current_target_id then
+		            Object:ForChunk("sim_squad_scripted:STATE:data:current_target_id", function()
+				        Object:s_stringZ(self.current_target_id)
+                    end)
+                end
+                if self.respawn_point_id then
+		            Object:ForChunk("sim_squad_scripted:STATE:data:respawn_point_id", function()
+				        Object:s_stringZ(self.respawn_point_id)
+                    end)
+                end
+                if self.respawn_point_prop_section then
+		            Object:ForChunk("sim_squad_scripted:STATE:data:respawn_point_prop_section", function()
+				        Object:s_stringZ(self.respawn_point_prop_section)
+                    end)
+                end
+                if self.smart_id then
+		            Object:ForChunk("sim_squad_scripted:STATE:data:smart_id", function()
+				        Object:s_u32(self.smart_id)
+                    end)
+                end
+			else
+				self.current_target_id = nil
+				self.respawn_point_id = nil
+				self.respawn_point_prop_section = nil
+				self.smart_id = nil
+		        Object:ForChunk("sim_squad_scripted:STATE:data:current_target_id", function()
+				    self.current_target_id = Object:s_stringZ("")
+                end)
+		        Object:ForChunk("sim_squad_scripted:STATE:data:respawn_point_id", function()
+				    self.respawn_point_id = Object:s_stringZ("")
+                end)
+		        Object:ForChunk("sim_squad_scripted:STATE:data:respawn_point_prop_section", function()
+				    self.respawn_point_prop_section = Object:s_stringZ("")
+                end)
+		        Object:ForChunk("sim_squad_scripted:STATE:data:smart_id", function()
+				    self.smart_id = Object:s_u32(0)
+                end)
+				self:init_squad_on_load()
+			end
+		end)
+	end)
+end
+
 --***********************************************************************************************
 --*										SERVER_OBJECT											*
 --***********************************************************************************************

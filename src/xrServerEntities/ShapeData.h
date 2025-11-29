@@ -23,3 +23,5 @@ struct CShapeData
 
 	ShapeVec shapes;
 };
+
+XRCORE_API ISaveObject& operator<<(ISaveObject& Object, CShapeData::shape_def& Value);

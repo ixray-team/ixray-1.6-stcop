@@ -111,8 +111,7 @@ function motivator_binder:extrapolate_callback(cur_pt)
 end
 
 function motivator_binder:reinit()
-	return PROF_EVENT_CLOSURE("reinit", function() 
-            object_binder.reinit(self)
+	return PROF_EVENT_CLOSURE("reinit", function()
             --memusage.collect_info(self.object, "reinit_start")
             --printf("motivator_binder:reinit(): self.object:name()='%s'", self.object:name())
     
@@ -153,10 +152,6 @@ function motivator_binder:net_spawn(sobject)
         end
     
         xrs_dyn_music.npc_table[self.object:id()] = self.object:id()
-        --memusage.collect_info(self.object, "netspawn_start")
-        if not object_binder.net_spawn(self, sobject) then
-            return false
-        end
     
         db.add_obj(self.object)
     
@@ -304,8 +299,6 @@ function motivator_binder:net_destroy()
         if self.e_index ~= nil then
             db.delete_enemy( self.e_index )
         end
-    
-        object_binder.net_destroy(self)
     end)
 end
 
@@ -448,9 +441,7 @@ function motivator_binder:use_callback(obj, who)
 end
 
 function motivator_binder:update(delta)
-	return PROF_EVENT_CLOSURE("update", function()
-		object_binder.update(self, delta)
-		
+	return PROF_EVENT_CLOSURE("update", function()		
 		if xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] and self.object:best_enemy() == nil then
 			xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] = nil
 		end
@@ -557,23 +548,9 @@ function motivator_binder:update(delta)
 	end)
 end
 
-function motivator_binder:reload(section)
-	return PROF_EVENT_CLOSURE("reload", function() 
-        --memusage.collect_info(self.object, "reload_start")
-        object_binder.reload(self, section)
-        --memusage.collect_info(self.object, "reload_end")
-    end)
-end
-
-function motivator_binder:net_save_relevant()
-	--printf("motivator_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
-	return true
-end
-
 function motivator_binder:save(packet)
 	return PROF_EVENT_CLOSURE("save", function() 
         set_save_marker(packet, "save", false, "motivator_binder")
-        object_binder.save(self, packet)
         xr_logic.save_obj(self.object, packet)
         trade_manager.save(self.object, packet)
     --	treasure_manager.save(packet)
@@ -597,7 +574,6 @@ function motivator_binder:load(reader)
 	return PROF_EVENT_CLOSURE("load", function() 
         self.loaded = true
         set_save_marker(reader, "load", false, "motivator_binder")
-        object_binder.load(self, reader)
         xr_logic.load_obj(self.object, reader)
         trade_manager.load(self.object, reader)
     --	treasure_manager.load(reader)
@@ -612,6 +588,42 @@ function motivator_binder:load(reader)
     
         set_save_marker(reader, "load", true, "motivator_binder")
     end)
+end
+
+function motivator_binder:Serialize(Object)
+	return PROF_EVENT_CLOSURE("Serialize", function() 
+	    if not Object:IsSave() then
+	    	self.loaded = true
+	    end
+	    Object:ForChunk("motivator_binder", function()
+	    	xr_logic.Serialize_obj(self.object, Object)
+	    	trade_manager.Serialize(self.object, Object)
+	    	xr_sound.Serialize_npc(Object, self.object:id())
+
+	    	if Object:IsSave() then
+		    	local i = 0
+		    	for k,v in pairs(self.opened_doors) do
+		    		i = i + 1
+		    	end
+		    	Object:s_u8(i)
+		    	Object:ForArray(function()
+		    		for k,v in pairs(self.opened_doors) do
+		    			Object:s_u32(k)
+		    		end
+		    	end)
+		    else
+		    	local i = 0
+		    	i = Object:s_u8(i)
+		    	Object:ForArray(function()
+		    		for k = 1,i do
+		    			local key = 0
+		    			key = Object:s_u32(key)
+		    			self.opened_doors[key] = true
+		    		end
+		    	end)
+		    end
+	    end)
+	end)
 end
 
 function motivator_binder:hear_callback(self, who_id, sound_type, sound_position, sound_power)

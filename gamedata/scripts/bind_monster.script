@@ -43,13 +43,7 @@ function generic_object_binder:__init(obj) super(obj)
 	self.loaded = false
 end
 
-function generic_object_binder:reload(section)
-	object_binder.reload(self, section)
-end
-
 function generic_object_binder:reinit()
-	object_binder.reinit(self)
-
 	db.storage[self.object:id()] = { }
 	self.st = db.storage[self.object:id()]
 
@@ -57,8 +51,6 @@ function generic_object_binder:reinit()
 end
 
 function generic_object_binder:update(delta)
-	object_binder.update(self, delta)
-
 	SendScriptCallback("monster_on_update", self.object, self.st)
 
 	if xr_combat_ignore.fighting_with_actor_npcs[self.object:id()] and self.object:best_enemy() == nil then
@@ -67,8 +59,6 @@ function generic_object_binder:update(delta)
 
 	local squad = get_object_squad(self.object)
 	local object_alive = self.object:alive()
-	--' printf("_bp: generic_object_binder: UPDATE [name='%s' time=%d]",
-	--'	self.object:name(), time_global())
 
 	if not object_alive then
 		return
@@ -275,10 +265,6 @@ function generic_object_binder:hear_callback(self, who_id, sound_type, sound_pos
 end
 
 function generic_object_binder:net_spawn(sobject)
-	if not object_binder.net_spawn(self, sobject) then
-		return false
-	end
-
 	local on_offline_condlist = db.storage[self.object:id()] and db.storage[self.object:id()].overrides and db.storage[self.object:id()].overrides.on_offline_condlist
 	if on_offline_condlist ~= nil then
 		xr_logic.pick_section_from_condlist(db.actor, self.object, on_offline_condlist)
@@ -348,23 +334,10 @@ function generic_object_binder:net_destroy()
 
 	db.del_obj(self.object)
 	db.storage[self.object:id()] = nil
-	object_binder.net_destroy(self)
-end
-
-function generic_object_binder:reload(section)
-	object_binder.reload(self, section)
-	--printf("generic_object_binder:reload(): self.object:name()='%s'", self.object:name())
-end
-
-function generic_object_binder:net_save_relevant()
-	--printf("generic_object_binder:net_save_relevant(): self.object:name()='%s'", self.object:name())
-	return true
 end
 
 function generic_object_binder:save(packet)
-
 	set_save_marker(packet, "save", false, "generic_object_binder")
-	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)
 	set_save_marker(packet, "save", true, "generic_object_binder")
 end
@@ -372,7 +345,15 @@ end
 function generic_object_binder:load(reader)
 	self.loaded = true
 	set_save_marker(reader, "load", false, "generic_object_binder")
-	object_binder.load(self, reader)
 	xr_logic.load_obj(self.object, reader)
 	set_save_marker(reader, "load", true, "generic_object_binder")
+end
+
+function generic_object_binder:Serialize(Object)
+	if not Object:IsSave() then
+		self.loaded = true
+	end
+	Object:ForChunk("generic_object_binder", function()
+		xr_logic.Serialize_obj(self.object, Object)
+	end)
 end

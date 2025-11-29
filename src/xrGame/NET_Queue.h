@@ -21,6 +21,7 @@ public:
 		switch (ID)
 		{
 		case M_SPAWN:
+		case M_SPAWN_LOCAL:
 			{
 				P.read_start();
 //				timestamp = P->

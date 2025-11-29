@@ -1,8 +1,12 @@
 #include "stdafx.h"
+
+#include "../../../../../xrCore/Save/SaveManager.h"
 #include "../../../../../xrServerEntities/xrServer_Objects_ALife.h"
 #include "../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "../xrServerEntities/xrServer_Objects.h"
+#include "../xrCore/Save/MemoryBuffer.h"
+#include "../xrCore/Save/SaveManager.h"
 #include "../../../../xrECore/Editor/Intersect.h"
 
 #define SPAWNPOINT_CHUNK_VERSION		0xE411
@@ -24,6 +28,8 @@
 #define SPAWNPOINT_CHUNK_ENVMOD3		0xE424
 #define SPAWNPOINT_CHUNK_FLAGS			0xE425
 #define SPAWNPOINT_CHUNK_ENVMOD4		0xE426
+
+#define SPAWNPOINT_CHUNK_SPAWNDATA_NEWTYPE 0xE427
 
 
 #define RPOINT_SIZE 0.5f
@@ -348,12 +354,29 @@ void CSpawnPoint::SSpawnData::SaveStream(IWriter& F)
 	F.w_u8				(m_flags.get());
 	F.close_chunk		();
 
-	F.open_chunk		(SPAWNPOINT_CHUNK_SPAWNDATA);
-	NET_Packet 			Packet;
-	m_Data->Spawn_Write	(Packet,true);
-	F.w_u32				(Packet.B.data.size());
-	F.w					(Packet.B.data.data(),Packet.B.data.size());
-	F.close_chunk		();
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		F.open_chunk(SPAWNPOINT_CHUNK_SPAWNDATA_NEWTYPE);
+
+		SSaveTask dummy;
+		CSaveObjectSave* SaveData = CSaveManager::GetInstance().EditorBeginSave();
+		m_Data->Spawn_Serialize(*SaveData, true);
+		CMemoryBuffer Buffer;
+		Buffer.Write(ESaveVariableType::t_chunk);
+		SaveData->Write(&Buffer, &dummy);
+		Buffer.Write(&F);
+		xr_delete(SaveData);
+		
+		F.close_chunk();
+	} else
+	{
+		F.open_chunk		(SPAWNPOINT_CHUNK_SPAWNDATA);
+		NET_Packet 			Packet;
+		m_Data->Spawn_Write	(Packet,true);
+		F.w_u32				(Packet.B.data.size());
+		F.w					(Packet.B.data.data(),Packet.B.data.size());
+		F.close_chunk		();
+	}
 }
 
 bool CSpawnPoint::SSpawnData::LoadStream(IReader& F)
@@ -363,16 +386,31 @@ bool CSpawnPoint::SSpawnData::LoadStream(IReader& F)
 	F.r_stringZ			(temp,sizeof(temp));
 
 	if(F.find_chunk(SPAWNPOINT_CHUNK_FLAGS))
+	{
 		m_flags.assign	(F.r_u8());
+	}
 
-	NET_Packet 			Packet;
-	R_ASSERT(F.find_chunk(SPAWNPOINT_CHUNK_SPAWNDATA));
-	Packet.B.data.resize(F.r_u32());
-	F.r(Packet.B.data.data(),Packet.B.data.size());
-	Create				(temp);
-	if (Valid())
-		if (!m_Data->Spawn_Read(Packet))
-			Destroy		();
+	if (auto Chunk = F.open_chunk(SPAWNPOINT_CHUNK_SPAWNDATA_NEWTYPE); Chunk)
+	{
+		auto LoadData = CSaveManager::GetInstance().EditorBeginLoad(Chunk);
+		Create(temp);
+		if (Valid() && !m_Data->Spawn_Serialize(*LoadData, true))
+		{
+			Destroy();
+		}
+		Chunk->close();
+	} else if (Chunk = F.open_chunk(SPAWNPOINT_CHUNK_SPAWNDATA); Chunk)
+	{
+		NET_Packet Packet;
+		Packet.B.data.resize(Chunk->r_u32());
+		Chunk->r(Packet.B.data.data(),Packet.B.data.size());
+		Create(temp);
+		if (Valid() && !m_Data->Spawn_Read(Packet))
+		{
+			Destroy();
+		}
+		Chunk->close();
+	}
 
 	return Valid();
 }
@@ -397,14 +435,34 @@ bool CSpawnPoint::SSpawnData::ExportGame(SExportStreams* F, CSpawnPoint* owner)
 		cform->assign_shapes	(&*shape->GetShapes().begin(),shape->GetShapes().size());
 	}
 	// end
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		
+		SSaveTask dummy;
+		CSaveObjectSave* SaveData = CSaveManager::GetInstance().EditorBeginSave();
+		CMemoryBuffer Buffer;
+		shared_str temp = m_Data->name();
+		(*SaveData) << temp;
+		m_Data->Spawn_Serialize(*SaveData, true);
+		Buffer.Write(ESaveVariableType::t_chunk);
+		SaveData->Write(&Buffer, &dummy);
+		xr_delete(SaveData);
 
-	NET_Packet					Packet;
-	m_Data->Spawn_Write			(Packet,true);
+		SExportStreamItem& tgt 		= (m_flags.test(eSDTypeRespawn))? F->spawn_rs : F->spawn;
+		tgt.stream.open_chunk		(tgt.chunk++);
+		Buffer.Write((IWriter*)(&tgt.stream));
+		tgt.stream.close_chunk		();
+		
+	} else
+	{
+		NET_Packet					Packet;
+		m_Data->Spawn_Write			(Packet,true);
 
-	SExportStreamItem& tgt 		= (m_flags.test(eSDTypeRespawn))? F->spawn_rs : F->spawn;
-	tgt.stream.open_chunk		(tgt.chunk++);
-	tgt.stream.w				(Packet.B.data.data(),Packet.B.data.size());
-	tgt.stream.close_chunk		();
+		SExportStreamItem& tgt 		= (m_flags.test(eSDTypeRespawn))? F->spawn_rs : F->spawn;
+		tgt.stream.open_chunk		(tgt.chunk++);
+		tgt.stream.w				(Packet.B.data.data(),Packet.B.data.size());
+		tgt.stream.close_chunk		();
+	}
 
 	return true;
 }

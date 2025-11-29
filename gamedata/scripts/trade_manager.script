@@ -206,6 +206,70 @@ function load(obj, packet)
 	end
 	set_save_marker(packet, "load", true, "trade_manager")
 end
+
+function Serialize(obj, Object)
+	local tt = nil
+	if Object:IsSave() then
+		tt = trade_manager[obj:id()]
+		if tt == nil then
+			return
+		end
+	else
+		if not Object:HasChunk("trade_manager") then
+			return
+		end
+		trade_manager[obj:id()] = {}
+		tt = trade_manager[obj:id()]
+		tt.update_time = -1
+		tt.resuply_time = -1
+	end
+
+	Object:ForChunk("trade_manager", function()
+		tt.cfg_ltx = Object:s_stringZ(tostring(tt.cfg_ltx))
+
+		if not Object:IsSave() then
+			tt.config = get_cached_ini(tt.cfg_ltx)
+		end
+
+		if not Object:IsSave() or tt.current_buy_condition then
+			Object:ForChunk("trade_manager::current_buy_condition", function()
+				tt.current_buy_condition = Object:s_stringZ(tostring(tt.current_buy_condition))
+				if Object:IsSave() then
+					obj:buy_condition(tt.config, tt.current_buy_condition)
+				end
+			end)
+		end
+
+		if not Object:IsSave() or tt.current_sell_condition then
+			Object:ForChunk("trade_manager::current_sell_condition", function()
+				tt.current_sell_condition = Object:s_stringZ(tostring(tt.current_sell_condition))
+				if Object:IsSave() then
+					obj:sell_condition(tt.config, tt.current_sell_condition)
+				end
+			end)
+		end
+
+		if not Object:IsSave() or tt.current_buy_supplies then
+			Object:ForChunk("trade_manager::current_buy_supplies", function()
+				tt.current_buy_supplies = Object:s_stringZ(tostring(tt.current_buy_supplies))
+			end)
+		end
+
+		local cur_tm = time_global()
+
+		if not Object:IsSave() or tt.update_time then
+			Object:ForChunk("trade_manager::update_time", function()
+				tt.update_time = cur_tm + Object:s_s32(tt.update_time - cur_tm)
+			end)
+		end
+
+		if not Object:IsSave() or tt.resuply_time then
+			Object:ForChunk("trade_manager::resuply_time", function()
+				tt.resuply_time = cur_tm + Object:s_s32(tt.resuply_time - cur_tm)
+			end)
+		end
+	end)
+end
 ----------- NOT TO DELETE!!!!!!!!! called from engine
 function get_buy_discount(npc_id)
 	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "discounts", nil, false, "", "")

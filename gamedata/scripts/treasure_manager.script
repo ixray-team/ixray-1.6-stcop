@@ -331,6 +331,92 @@ function CTreasureManager:load(package)
         set_save_marker(package, "load", true, "CTreasureManager")
     end)
 end
+
+function CTreasureManager:Serialize(Object)
+	Object:ForChunk("CTreasureManager", function()
+		self.items_spawned = Object:s_bool(self.items_spawned)
+		if not Object:IsSave() then
+			self.items_from_secrets = {}
+		end
+		if Object:IsSave() then
+			local num = 0
+			for k,v in pairs(self.items_from_secrets) do
+				num = num + 1
+			end
+			Object:s_u32(num)
+			Object:ForArray(function()
+				for k,v in pairs(self.items_from_secrets) do
+					Object:ForChunk("CTreasureManager:items_from_secrets", function()
+						Object:s_u32(k)
+						Object:s_u32(v)
+					end)
+				end
+			end)
+			
+			local num = 0
+			for k,v in pairs(self.secrets) do
+				num = num + 1
+			end
+			Object:s_u32(num)
+			Object:ForArray(function()
+				for k,v in pairs(self.secrets) do
+					Object:ForChunk("CTreasureManager:secrets", function()
+						if not(self.secret_restrs[k]) then
+							Object:s_u32(-1)
+						else
+							Object:s_u32(self.secret_restrs[k])
+						end
+						Object:s_bool(v.given)
+						Object:s_bool(v.checked)
+						Object:s_u8(v.to_find)
+					end)
+				end
+			end)
+		else
+			local num = 0
+			num = Object:s_u32(num)
+			Object:ForArray(function()
+				for i=1,num do
+					Object:ForChunk("CTreasureManager:items_from_secrets", function()
+						local k = 0
+						k = Object:s_u32(k)
+						local v = 0
+						v = Object:s_u32(v)
+						self.items_from_secrets[k] = v
+					end)
+				end
+			end)
+			
+			local num = 0
+			num = Object:s_u32(num)
+			Object:ForArray(function()
+				for i=1,num do
+					Object:ForChunk("CTreasureManager:secrets", function()
+						local id = 0
+						id = Object:s_u32(id)
+						for k,v in pairs(self.secret_restrs) do
+							if(v==id) then
+								id = k
+								break
+							end
+						end
+						local given = false
+						given = Object:s_bool(given)
+						local checked = false
+						checked = Object:s_bool(checked)
+						local to_find = 0
+						to_find = Object:s_u8(to_find)
+						if(id~=alife_const.invalid_object_id and self.secrets[id]) then
+							self.secrets[id].given = given
+							self.secrets[id].checked = checked
+							self.secrets[id].to_find = to_find
+						end
+					end)
+				end
+			end)
+		end
+	end)
+end
 --------------------------------------------------------------------------------
 function get_treasure_manager()
 	if(treasure_manager==nil) then

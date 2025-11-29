@@ -65,7 +65,9 @@ void CScriptBinder::reload(const char* section)
 
 	VERIFY(!m_object);
 	if (!pSettings->line_exist(section, "script_binding"))
+	{
 		return;
+	}
 
 	luabind::functor<void>	lua_function;
 	if (!ai().script_engine().functor(pSettings->r_string(section, "script_binding"), lua_function))
@@ -78,7 +80,8 @@ void CScriptBinder::reload(const char* section)
 
 	try
 	{
-		lua_function(game_object ? game_object->lua_game_object() : 0);
+		auto script_obj = game_object ? game_object->lua_game_object() : nullptr;
+		lua_function(script_obj);
 	}
 	catch (...)
 	{
@@ -142,6 +145,7 @@ void CScriptBinder::set_object(CScriptBinderObject* object)
 {
 	if (IsGameTypeSingleCompatible())
 	{
+		IVERIFY(object);
 		VERIFY2(!m_object, "Cannot bind to the object twice!");
 		m_object = object;
 	}
@@ -189,6 +193,18 @@ void CScriptBinder::load			(IReader &input_packet)
 		}
 		catch(...) {
 			clear			();
+		}
+	}
+}
+
+void CScriptBinder::Serialize(ISaveObject& Object)
+{
+	if (m_object) {
+		try {
+			m_object->Serialize(&Object);
+		}
+		catch (...) {
+			clear();
 		}
 	}
 }

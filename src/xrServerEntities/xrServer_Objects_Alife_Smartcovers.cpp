@@ -177,6 +177,25 @@ void CSE_SmartCover::UPDATE_Write(NET_Packet &tNetPacket)
 {
 	inherited1::UPDATE_Write	(tNetPacket);
 }
+
+void CSE_SmartCover::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_SmartCover::STATE")
+	{
+		inherited1::STATE_Serialize(Object);
+		cform_serialize(Object);
+		Object << m_description << m_hold_position_time << m_enter_min_enemy_distance << m_exit_min_enemy_distance << m_is_combat_cover << m_can_fire;
+	}
+}
+
+void CSE_SmartCover::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_SmartCover::UPDATE")
+	{
+		inherited1::UPDATE_Serialize(Object);
+	}
+}
+
 #ifndef XRGAME_EXPORTS
 void CSE_SmartCover::FillProps	(const char* pref, PropItemVec& items)
 {
