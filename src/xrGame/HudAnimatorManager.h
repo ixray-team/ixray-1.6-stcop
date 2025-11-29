@@ -10,6 +10,7 @@ class CMotionDef;
 class CHudItemAnimator;
 class CBackpackAnimator;
 class CHudStateAnimator;
+class CHudAnimatorManager;
 
 class CHudAnimatorBase
 {
@@ -23,21 +24,36 @@ protected:
 	bool m_bCanSprint = false;
 	bool m_bNeedActivated = false;
 	bool m_bIsPlaying = false;
-	bool m_bRestoreDetector = false;
+	bool m_bHideUI = true;
 
 	float m_fHudFov = 0.0f;
 	float m_fHudFovFactor = 1.0f;
 
 	shared_str m_section;
 	HUD_SOUND_COLLECTION m_sounds;
-	CActor* m_actor = nullptr;
-	u8 m_iRestoreSlot = 0;
+	CHudAnimatorManager* m_manager = nullptr;
+
+	xr_delegate<void()> m_left_callback;
+	xr_delegate<void()> m_left2_callback;
+	xr_delegate<void()> m_right_callback;
+	xr_delegate<void()> m_right2_callback;
+	xr_delegate<void()> m_start_callback;
+	xr_delegate<void()> m_end_callback;
+
+	shared_str m_sLuaLeftCallback = "null";
+	shared_str m_sLuaLeft2Callback = "null";
+	shared_str m_sLuaRightCallback = "null";
+	shared_str m_sLuaRight2Callback = "null";
+	shared_str m_sLuaStartCallback = "null";
+	shared_str m_sLuaEndCallback = "null";
+	shared_str m_sLuaModifySect = "null";
+	shared_str m_sLuaPrecondFunc = "null";
 
 	bool HudAnimationExist(const shared_str& name);
 
 public:
 
-	CHudAnimatorBase(CActor* parent) : m_actor(parent) {}
+	CHudAnimatorBase(CHudAnimatorManager* manager) : m_manager(manager) {}
 	virtual ~CHudAnimatorBase();
 
 	virtual void Load();
@@ -45,10 +61,22 @@ public:
 	shared_str GetSection() const { return m_section; }
 	bool IsActive() const { return m_bIsPlaying || m_bNeedActivated; }
 	virtual void StopAnimator();
-	u8 GetSlotToRestore() const { return m_iRestoreSlot; }
 	float GetHudFov() const;
 	bool CanSprint() const { return m_bCanSprint; }
-	bool NeedRestoreDetector() const { return m_bRestoreDetector; }
+
+	void SetLeftCallback(xr_delegate<void()> callback) { m_left_callback = callback; }
+	void SetLeft2Callback(xr_delegate<void()> callback) { m_left2_callback = callback; }
+	void SetRightCallback(xr_delegate<void()> callback) { m_right_callback = callback; }
+	void SetRight2Callback(xr_delegate<void()> callback) { m_right2_callback = callback; }
+	void SetStartCallback(xr_delegate<void()> callback) { m_start_callback = callback; }
+	void SetEndCallback(xr_delegate<void()> callback) { m_end_callback = callback; }
+
+	void CallLeftCallback();
+	void CallLeft2Callback();
+	void CallRightCallback();
+	void CallRight2Callback();
+	void CallStartCallback();
+	void CallEndCallback();
 
 	virtual CHudItemAnimator* cast_item_animator() { return nullptr; }
 	virtual CHudStateAnimator* cast_hud_state_animator() { return nullptr; }
@@ -74,7 +102,7 @@ protected:
 	void OnStateSwitch(u32 state);
 	void UpdateAnimation();
 	void PlayMotion(const shared_str& name, bool blend, u32 state);
-	//void OnMotionMark(const motion_marks& mark);
+	virtual void OnMotionMark(const motion_marks& mark, u32 state);
 	void PlayAnimIdle();
 	void PlayAnimIdleMoving();
 	void PlayAnimIdleMovingSlow();
@@ -96,7 +124,7 @@ public:
 		eLastAnimatorState = eHiding
 	};
 
-	CHudStateAnimator(CActor* parent, const shared_str& section);
+	CHudStateAnimator(CHudAnimatorManager* manager);
 	virtual ~CHudStateAnimator() = default;
 
 	virtual void Load() override;
@@ -104,8 +132,13 @@ public:
 	void OnMovementChanged();
 	virtual void SwitchAnimator();
 
+	virtual void ShowStateAnimator(const shared_str& section);
+	virtual void HideStateAnimator();
+
 	void SetState(u32 state) { OnStateSwitch(state); }
 	u32 GetState() const { return m_current_state; }
+
+	virtual void StopAnimator() override;
 
 	virtual CHudStateAnimator* cast_hud_state_animator() override { return this; }
 };
@@ -116,9 +149,18 @@ public:
 class CHudAnimatorManager
 {
 	CActor* m_actor = nullptr;
+
 	//CHudPdaAnimator* m_pda_animator = nullptr;
 	CHudItemAnimator* m_item_animator = nullptr;
+	CHudStateAnimator* m_hud_state_animator = nullptr;
 	CBackpackAnimator* m_backpack_animator = nullptr;
+
+	CHudAnimatorBase* m_current_animator = nullptr;
+	CHudAnimatorBase* m_target_animator = nullptr;
+
+	bool m_bRestoreDevice = false;
+	u8 m_iRestoreSlot = 0;
+
 public:
 	CHudAnimatorManager(CActor* parent);
 	~CHudAnimatorManager();
@@ -129,10 +171,19 @@ public:
 	bool IsAnyAnimatorActive();
 	bool CanSprint();
 	float GetHudFov();
-	void SetForceHideItems(bool value);
-	bool IsForceHideItems();
+	bool& ForceHideItems();
+	bool& RestoreDevice() { return m_bRestoreDevice; }
+	u8& SlotToRestore() { return m_iRestoreSlot; }
+
+	CActor* Parent() { return m_actor; }
+
+	void SetCurrentAnimator(CHudAnimatorBase* animator) { m_current_animator = animator; }
+	void SetTargetAnimator(CHudAnimatorBase* animator) { m_target_animator = animator; }
 
 	//CHudPdaAnimator* PdaAnimator() { return m_pda_animator; }
 	CHudItemAnimator* ItemAnimator() { return m_item_animator; }
+	CHudStateAnimator* HudStateAnimator() { return m_hud_state_animator; }
+	CHudAnimatorBase* CurrentAnimator() { return m_current_animator; }
+	CHudAnimatorBase* TargetAnimator() { return m_target_animator; }
 	CBackpackAnimator* BackpackAnimator() { return m_backpack_animator; }
 };
