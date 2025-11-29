@@ -209,6 +209,39 @@ function Crelease_body:load(reader)
     end)
 end
 
+function Crelease_body:Serialize(Object)
+	Object:ForChunk("Crelease_body", function()
+		if Object:IsSave() then
+			local count = #self.release_objects_table
+			Object:s_u32(count)
+			Object:ForArray(function()
+				for k,v in pairs(self.release_objects_table) do
+					Object:s_u32(v.id)
+				end
+			end)
+			local level_id = game_graph():vertex(alife():actor().m_game_vertex_id):level_id()
+			Object:s_u16(level_id)
+		else
+			local count = 0
+			count = Object:s_u32(count)
+			self.release_objects_table = {}
+			Object:ForArray(function()
+				for i = 1, count do
+					local vid = 0
+					vid = Object:s_u32(vid)
+					self.release_objects_table[i] = {}
+					self.release_objects_table[i].id = vid
+				end
+			end)
+			local level_id = 0
+			level_id = Object:s_u16(level_id)
+			if level_id ~= game_graph():vertex(alife():object(0).m_game_vertex_id):level_id() then
+				self.release_objects_table = {}
+			end
+		end
+	end)
+end
+
 function get_release_body_manager()
 	return PROF_EVENT_CLOSURE("get_release_body_manager", function()
         if(RB_manager==nil) then

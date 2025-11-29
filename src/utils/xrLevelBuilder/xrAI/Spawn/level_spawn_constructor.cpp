@@ -22,6 +22,9 @@
 #include "restriction_space.h"
 #include <random>
 
+#include "../../xrCore/Save/SaveManager.h"
+#include "../../xrCore/Save/SaveObject.h"
+
 #define IGNORE_ZERO_SPAWN_POSITIONS
 
 extern thread_local std::mt19937 rng;
@@ -87,26 +90,43 @@ void CLevelSpawnConstructor::init								()
 	}
 }
 
-CSE_Abstract *CLevelSpawnConstructor::create_object						(IReader *chunk)
+CSE_Abstract *CLevelSpawnConstructor::create_object(IReader *chunk)
 {
-	NET_Packet				net_packet;
-	net_packet.B.data.resize(chunk->length());
-	chunk->r				(net_packet.B.data.data(),net_packet.B.data.size());
-//	we do not need to close chunk since we iterate on them
-//	chunk->close			();
-	u16						ID;
-	net_packet.r_begin		(ID);
-	R_ASSERT2				(M_SPAWN==ID,"ID doesn't match to the spawn-point ID!");
-	string64				section_name;
-	net_packet.r_stringZ	(section_name);
-	CSE_Abstract			*abstract = F_entity_Create(section_name);
-	if (!abstract) {
-		string256			temp;
-		xr_sprintf				(temp,"Can't create entity '%s' !\n",section_name);
-		R_ASSERT2			(abstract,temp);
+	shared_str s_name;
+	NET_Packet net_packet;
+	CSaveObjectLoad* Obj = nullptr;
+
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		Obj = CSaveManager::GetInstance().EditorBeginLoad(chunk);
+		(*Obj) << s_name;
+	} else
+	{
+		net_packet.B.data.resize(chunk->length());
+		chunk->r(net_packet.B.data.data(),net_packet.B.data.size());
+		//	we do not need to close chunk since we iterate on them
+		//	chunk->close			();
+		u16 ID;
+		net_packet.r_begin(ID);
+		R_ASSERT2(M_SPAWN==ID,"ID doesn't match to the spawn-point ID!");
+		string64 section_name;
+		net_packet.r_stringZ(section_name);
+		s_name = section_name;
 	}
-	abstract->Spawn_Read	(net_packet);
-	return					(abstract);
+		
+	CSE_Abstract* abstract = F_entity_Create(s_name.c_str());
+	I_ASSERT_M(abstract, "Can't create entity '%s' !\n",s_name.c_str());
+	
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		VERIFY(Obj);
+		abstract->Spawn_Serialize(*Obj, true);
+		xr_delete(Obj);
+	} else
+	{
+		abstract->Spawn_Read(net_packet);
+	}
+	return abstract;
 }
 
 void CLevelSpawnConstructor::add_graph_point					(CSE_Abstract			*abstract)

@@ -190,6 +190,15 @@ void CWeaponBinoculars::load(IReader& input_packet)
 	load_data(m_fRTZoomFactor, input_packet);
 }
 
+void CWeaponBinoculars::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CWeaponBinoculars")
+	{
+		inherited::Serialize(Object);
+		Object << m_fRTZoomFactor;
+	}
+}
+
 bool CWeaponBinoculars::GetBriefInfo(II_BriefInfo& info)
 {
 	info.clear();

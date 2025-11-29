@@ -362,6 +362,17 @@ void CMemoryManager::load							(IReader &packet)
 	danger().load				(packet);
 }
 
+void CMemoryManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CMemoryManager")
+	{
+		visual().Serialize(Object);
+		sound().Serialize(Object);
+		hit().Serialize(Object);
+		danger().Serialize(Object);
+	}
+}
+
 // we do this due to the limitation of client spawn manager
 // should be revisited from the acrhitectural point of view
 void CMemoryManager::on_requested_spawn				(CObject *object)

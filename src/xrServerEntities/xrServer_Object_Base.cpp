@@ -12,10 +12,12 @@
 #include "game_base_space.h"
 #include "script_value_container_impl.h"
 #include "clsid_game.h"
+#include "../xrCore/Save/SaveManager.h"
 
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <malloc.h>
+
 #pragma warning(pop)
 
 #ifndef AI_COMPILER
@@ -25,6 +27,9 @@
 #ifdef XRGAME_EXPORTS
 #	include "ai_space.h"
 #	include "alife_simulator.h"
+#	include "../xrCore/Save/SaveObject.h"
+#	include "../xrCore/Save/SaveManager.h"
+#	include "Level.h"
 #endif 
 
 const char* script_section = "script";
@@ -147,6 +152,13 @@ CSE_Abstract::~CSE_Abstract					()
 {
 	xr_free						(s_name_replace);
 	xr_delete					(m_ini_file);
+
+	if (client_data_new)
+	{
+		client_data_new->Clear();
+		CSaveManager::GetInstance().ReleaseSaveable(client_data_new);
+		client_data_new = nullptr;
+	}
 }
 
 CSE_Visual* CSE_Abstract::visual			()
@@ -220,7 +232,7 @@ void CSE_Abstract::Spawn_Write				(NET_Packet	&tNetPacket, bool bLocal)
 	tNetPacket.w_u16			(client_data_size);
 //	Msg							("SERVER:saving:save:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 	if (client_data_size > 0) {
-		tNetPacket.w			(&*client_data.begin(),client_data_size);
+		tNetPacket.w			(client_data.data(),client_data_size);
 	}
 
 	tNetPacket.w_u16			(m_tSpawnID);
@@ -334,7 +346,7 @@ bool CSE_Abstract::Spawn_Read				(NET_Packet	&tNetPacket)
 		if (client_data_size > 0) {
 //			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 			client_data.resize	(client_data_size);
-			tNetPacket.r		(&*client_data.begin(),client_data_size);
+			tNetPacket.r		(client_data.data(),client_data_size);
 		}
 		else
 			client_data.clear	();
@@ -383,7 +395,7 @@ void	CSE_Abstract::load			(NET_Packet	&tNetPacket)
 //		Msg						("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
 #endif // DEBUG
 		client_data.resize		(client_data_size);
-		tNetPacket.r			(&*client_data.begin(),client_data_size);
+		tNetPacket.r			(client_data.data(),client_data_size);
 	}
 	else {
 #ifdef DEBUG
@@ -474,18 +486,119 @@ bool CSE_Abstract::validate					()
 	return						(true);
 }
 
-/**
-void CSE_Abstract::save_update				(NET_Packet &tNetPacket)
+bool CSE_Abstract::Spawn_Serialize(ISaveObject& Object, bool bLocal, bool Copying) 
 {
-	tNetPacket.w				(&m_spawn_count,sizeof(m_spawn_count));
-	tNetPacket.w				(&m_last_spawn_time,sizeof(m_last_spawn_time));
-	tNetPacket.w				(&m_next_spawn_time,sizeof(m_next_spawn_time));
-}
+	BEGIN_CHUNK(Object,"CSE_Abstract")
+	{
+		Object << s_name << s_name_replace << s_RP << o_Position << o_Angle << RespawnTime << ID << ID_Parent << ID_Phantom;
 
-void CSE_Abstract::load_update				(NET_Packet &tNetPacket)
-{
-	tNetPacket.r				(&m_spawn_count,sizeof(m_spawn_count));
-	tNetPacket.r				(&m_last_spawn_time,sizeof(m_last_spawn_time));
-	tNetPacket.r				(&m_next_spawn_time,sizeof(m_next_spawn_time));
+#ifdef XRSE_FACTORY_EXPORTS
+		if (ID >= u16(-1) && ID != ALife::INVALID_OBJECT_ID)
+		{
+			ID = ALife::INVALID_OBJECT_ID;
+		}
+		if (ID_Parent >= u16(-1) && ID_Parent != ALife::INVALID_OBJECT_ID)
+		{
+			ID_Parent = ALife::INVALID_OBJECT_ID;
+		}
+		if (ID_Phantom >= u16(-1) && ID_Phantom != ALife::INVALID_OBJECT_ID)
+		{
+			ID_Phantom = ALife::INVALID_OBJECT_ID;
+		}
+#endif
+		
+		/*BEGIN_CHUNK(Object,"CSE_Abstract::Ticking") // Uncomment if ticking disable functionality will port, delete overwise
+		{
+			Object << bIsTicking;
+		}*/
+		
+		{
+			u16 FlagsTemp;
+			u16 SpawnVersion;
+			if (Object.IsSave()) {
+				if (bLocal) {
+					FlagsTemp = u16(s_flags.flags | M_SPAWN_OBJECT_LOCAL);
+				}
+				else {
+					FlagsTemp = u16(s_flags.flags & ~(M_SPAWN_OBJECT_LOCAL | M_SPAWN_OBJECT_ASPLAYER));
+				}
+				SpawnVersion = SPAWN_VERSION;
+			}
+			Object << FlagsTemp << SpawnVersion;
+			if (!Object.IsSave()) {
+				s_flags.assign(FlagsTemp);
+				m_wVersion = SpawnVersion;
+			}
+		}
+		Object << m_gameType.m_GameType;
+		{
+			u16 SpawnVer;
+			if (Object.IsSave()) {
+				SpawnVer = script_server_object_version();
+			}
+			Object << SpawnVer;
+			if(!Object.IsSave()) {
+				m_script_version = SpawnVer;
+			}
+		}
+
+#ifdef XRGAME_EXPORTS
+		BEGIN_CHUNK(Object,"CSE_Abstract::ClientObject")
+		{
+			bool has_data = false;
+			if (Object.IsSave()) {
+				auto Obj = smart_cast<CGameObject*>(Level().Objects.net_Find(ID));
+				has_data = Obj || (Copying && client_data_new);
+				Object << has_data;
+				if (has_data)
+				{
+					if (Copying)
+					{
+						Object.MergeSubchunk(client_data_new);
+					} else
+					{
+						Obj->net_Serialize(Object);
+					}
+				}
+			}
+			else {
+				Object << has_data;
+				if(has_data)
+				{
+					if (client_data_new)
+					{
+						client_data_new->Clear();
+						CSaveManager::GetInstance().ReleaseSaveable(client_data_new);
+					}
+					client_data_new = Object.ExtractCurrentChunkRaw();
+				}
+			}
+		}
+#endif
+
+		Object << m_tSpawnID;
+
+#ifdef XRSE_FACTORY_EXPORTS
+		assign();
+#endif
+
+		{
+#ifndef MASTER_GOLD
+			((CSaveObject&)Object).ClearDebugData();
+#endif
+			auto ChunkDepth = Object.GetChunkStackDepth();
+			STATE_Serialize(Object);
+			if (ChunkDepth != Object.GetChunkStackDepth())
+			{
+				R_ASSERT4(ChunkDepth == Object.GetChunkStackDepth(), "Serializing object result invalid chunk opening and closing tags!", "STATE_Serialize", name());
+#ifndef MASTER_GOLD
+				((CSaveObject&)Object).PopDebugData();
+			} else
+			{
+				((CSaveObject&)Object).ClearDebugData();
+#endif
+			}
+		}
+	}
+	return true;
 }
-/**/

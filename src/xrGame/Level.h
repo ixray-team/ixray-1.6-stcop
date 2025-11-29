@@ -315,6 +315,7 @@ public:
 
 	void						cl_Process_Event		(ALife::_OBJECT_ID dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
+	void						local_Process_Spawn		(NET_Packet& P);
 	void						ProcessGameEvents		( );
 	void						ProcessGameSpawns		( );
 	void						ProcessCompressedUpdate	(NET_Packet& P, u8 const compression_type);
@@ -467,8 +468,8 @@ public:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-IC CLevel&				Level()		{ return *((CLevel*) g_pGameLevel);			}
-IC game_cl_GameState&	Game()		{ return *Level().game;					}
+IC CLevel&				Level()		{ VERIFY(g_pGameLevel); return *((CLevel*) g_pGameLevel); }
+IC game_cl_GameState&	Game()		{ auto game = Level().game;	VERIFY(game); return *game;	}
 	u32					GameID();
 
 

@@ -45,9 +45,10 @@ public:
 	bool				IsLevelChangerEnabled() const				{return m_b_enabled;}
 	void				SetLEvelChangerInvitationStr(const char* str)	{m_invite_str = str;}
 	//serialization
-	virtual bool	net_SaveRelevant		();
-	virtual void	save					(NET_Packet &output_packet);
-	virtual void	load					(IReader &input_packet);
+	virtual bool net_SaveRelevant() override;
+	virtual void save(NET_Packet &output_packet) override;
+	virtual void load(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual CGameObject* cast_game_object() { return this; }
 	virtual CLevelChanger* cast_level_changer() { return this; }

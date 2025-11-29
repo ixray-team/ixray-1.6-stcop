@@ -56,13 +56,14 @@ public:
 	virtual void	UpdateCL		( );								// Called each frame, so no need for dt
 
 
-	virtual void	SpawnInitPhysics	(CSE_Abstract	*D)																;
-	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()	{return PhysicsShellHolder();}								;
-	virtual	void	CopySpawnInit		()																				;
-	virtual void	net_Save			(NET_Packet& P)																	;
-	virtual	bool	net_SaveRelevant	();
-	virtual void	save				(NET_Packet &output_packet);
-	virtual void	load				(IReader &input_packet);
+	virtual void SpawnInitPhysics(CSE_Abstract	*D) override;
+	virtual CPhysicsShellHolder* PPhysicsShellHolder() override {return PhysicsShellHolder();};
+	virtual	void CopySpawnInit() override;
+	virtual void net_Save(NET_Packet& P) override;
+	virtual	bool net_SaveRelevant() override;
+	virtual void save(NET_Packet &output_packet) override;
+	virtual void load(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual bool	renderable_ShadowGenerate	( ) { return true;	}
 	virtual bool	renderable_ShadowReceive	( ) { return true;	}

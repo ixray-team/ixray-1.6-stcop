@@ -82,6 +82,7 @@ public:
 public:
 			void				save						(NET_Packet &packet) const;
 			void				load						(IReader &packet);
+			virtual void Serialize(ISaveObject& Object);
 			void 		on_requested_spawn			(CObject *object);
 };
 

@@ -74,6 +74,66 @@ function se_smart_cover:STATE_Read (packet, size)
 		end
 	end
 end
+function se_smart_cover:STATE_Serialize(Object)
+	Object:ForChunk("se_smart_cover:STATE", function()
+		cse_smart_cover.STATE_Serialize (self, Object)
+		Object:ForChunk("se_smart_cover:STATE:data", function()
+			self.last_description = Object:s_stringZ(self.last_description)
+			local existing_loopholes = {}
+			if not Object:IsSave() then
+				local smart_cover_description
+				if self.last_description ~= "" then
+					smart_cover_description = self.last_description
+				else
+					smart_cover_description = self:description()
+				end
+				if smart_cover_description ~= nil then
+					printf("name %s descr %s", self:name(), tostring(smart_cover_description))
+					if smart_covers == nil then
+						abort("smartcovers is nil")
+					end
+					if smart_covers.descriptions[smart_cover_description] == nil then
+						abort("smartcover [%s] has wrong description [%s]!!!", self:name(), tostring(smart_cover_description))
+					end
+					local loopholes = smart_covers.descriptions[smart_cover_description].loopholes
+					for k,v in pairs (loopholes) do
+						existing_loopholes[v.id] = true
+					end
+				end
+			end
+		
+			local n = 0
+			if Object:IsSave() then
+				for k,v in pairs (self.loopholes) do
+					n = n + 1
+				end
+			end
+			n = Object:s_u8(n)
+			Object:ForArray(function()
+				if Object:IsSave() then
+					for k,v in pairs (self.loopholes) do
+						Object:ForChunk("se_smart_cover:STATE:loophole_data", function()
+							Object:s_stringZ(k)
+							Object:s_bool(v)
+						end)
+					end
+				else
+					for i = 1, n do
+						Object:ForChunk("se_smart_cover:STATE:loophole_data", function()
+							local loophole_id = ""
+							local loophole_exist = false
+							loophole_id = Object:s_stringZ(loophole_id)
+							loophole_exist = Object:s_bool(loophole_exist)
+							if existing_loopholes[loophole_id] then
+								self.loopholes[loophole_id] = loophole_exist
+							end
+						end)
+					end
+				end
+			end)
+		end)
+	end)
+end
 function se_smart_cover:on_before_register()
 	cse_smart_cover.on_before_register( self )
 	registered_smartcovers[self:name()] = self

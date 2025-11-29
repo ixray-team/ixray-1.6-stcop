@@ -361,6 +361,72 @@ void CHitMemoryManager::load	(IReader &packet)
 	}
 }
 
+void CHitMemoryManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CHitMemoryManager")
+	{
+		if (!m_object->g_Alive()) {
+			return;
+		}
+
+		if (!Object.IsSave()) {
+			typedef CClientSpawnManager::CALLBACK_TYPE	CALLBACK_TYPE;
+			CALLBACK_TYPE					callback;
+			callback.bind(&m_object->memory(), &CMemoryManager::on_requested_spawn);
+		}
+
+		((CSaveObject&)Object).Serialize(*m_hits, fastdelegate::MakeDelegate(this, &CHitMemoryManager::SerializeSingle));
+
+	}
+}
+
+void CHitMemoryManager::SerializeSingle(ISaveObject& Object, CHitObject& Value)
+{
+	BEGIN_CHUNK(Object,"CHitObject")
+	{
+		Value.Serialize(Object);
+		if (Object.IsSave()) {
+			VERIFY(m_object);
+			u16 Value = m_object->ID();
+			Object << Value;
+		}
+		else {
+
+			CDelayedHitObject			delayed_object;
+			Object << delayed_object.m_object_id;
+
+			CHitObject& object = delayed_object.m_hit_object;
+			object.m_object = smart_cast<CEntityAlive*>(Level().Objects.net_Find(delayed_object.m_object_id));
+
+			//////////////////////////////////////////////////////////
+
+			if (object.m_object) {
+				add(object);
+			}
+			else {
+				m_delayed_objects.push_back(delayed_object);
+				const CClientSpawnManager::CSpawnCallback* spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
+				if (!spawn_callback || !spawn_callback->m_object_callback) {
+					typedef CClientSpawnManager::CALLBACK_TYPE	CALLBACK_TYPE;
+					CALLBACK_TYPE					callback;
+					callback.bind(&m_object->memory(), &CMemoryManager::on_requested_spawn);
+					if (!g_dedicated_server) {
+						Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
+					}
+#ifdef DEBUG
+					else {
+						if (spawn_callback && spawn_callback->m_object_callback) {
+							VERIFY(spawn_callback->m_object_callback == callback);
+						}
+					}
+#endif // DEBUG
+				}
+			}
+		}
+		Object << Value.m_direction << Value.m_bone_index << Value.m_amount;
+	}
+}
+
 void CHitMemoryManager::clear_delayed_objects()
 {
 	if (m_delayed_objects.empty())

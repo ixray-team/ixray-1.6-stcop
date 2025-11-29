@@ -494,6 +494,65 @@ void CSoundMemoryManager::load	(IReader &packet)
 	}
 }
 
+void CSoundMemoryManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSoundMemoryManager")
+	{
+
+		if (!m_object->g_Alive()) {
+			return;
+		}
+
+		((CSaveObject&)Object).Serialize(*m_sounds, fastdelegate::MakeDelegate(this, &CSoundMemoryManager::SerializeSingle));
+	}
+}
+
+void CSoundMemoryManager::SerializeSingle(ISaveObject& Object, CSoundObject& Value)
+{
+	BEGIN_CHUNK(Object,"CSoundObject")
+	{
+		Value.Serialize(Object);
+		if (Object.IsSave()) {
+			VERIFY(m_object);
+			u16 Value = m_object->ID();
+			Object << Value;
+		}
+		else {
+
+			CDelayedSoundObject			delayed_object;
+			Object << delayed_object.m_object_id;
+
+			CSoundObject& object = delayed_object.m_sound_object;
+			object.m_object = smart_cast<CEntityAlive*>(Level().Objects.net_Find(delayed_object.m_object_id));
+
+			//////////////////////////////////////////////////////////
+
+			if (object.m_object) {
+				add(object);
+			}
+			else {
+				m_delayed_objects.push_back(delayed_object);
+				const CClientSpawnManager::CSpawnCallback* spawn_callback = Level().client_spawn_manager().callback(delayed_object.m_object_id, m_object->ID());
+				if (!spawn_callback || !spawn_callback->m_object_callback) {
+					typedef CClientSpawnManager::CALLBACK_TYPE	CALLBACK_TYPE;
+					CALLBACK_TYPE					callback;
+					callback.bind(&m_object->memory(), &CMemoryManager::on_requested_spawn);
+					if (!g_dedicated_server) {
+						Level().client_spawn_manager().add(delayed_object.m_object_id, m_object->ID(), callback);
+					}
+#ifdef DEBUG
+					else {
+						if (spawn_callback && spawn_callback->m_object_callback) {
+							VERIFY(spawn_callback->m_object_callback == callback);
+						}
+					}
+#endif // DEBUG
+				}
+			}
+		}
+	}
+}
+
 void CSoundMemoryManager::clear_delayed_objects()
 {
 	if (m_delayed_objects.empty())

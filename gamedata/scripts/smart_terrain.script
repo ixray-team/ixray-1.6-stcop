@@ -911,6 +911,191 @@ function se_smart_terrain:STATE_Read(packet, size)
         set_save_marker(packet, "load", true, "se_smart_terrain")
     end)
 end
+
+function se_smart_terrain:STATE_Serialize(Object)
+	Object:ForChunk("se_smart_terrain:STATE", function()
+		cse_alife_smart_zone.STATE_Serialize(self, Object)
+
+		if not Object:IsSave() and editor() then
+			return
+		end
+
+		Object:ForChunk("se_smart_terrain:STATE:data", function()
+			if Object:IsSave() then
+				-- Информацию о НПС, идущих в смарт
+				local n = 0
+				for k,v in pairs(self.arriving_npc) do
+					n = n + 1
+				end
+				Object:s_u8(n)
+				Object:ForArray(function()
+					for k,v in pairs(self.arriving_npc) do
+						Object:s_u16(k)
+					end
+				end)			
+			
+				-- Информацию о НПС в смарте
+				n = 0
+				for k,v in pairs(self.npc_info) do
+					n = n + 1
+				end
+			
+				Object:s_u8(n)
+				Object:ForArray(function()
+					for k,v in pairs(self.npc_info) do
+						Object:ForChunk("se_stalker:STATE:npc", function()
+							Object:s_u16(k)
+							Object:s_u8(v.job_prior)
+							Object:s_u8(v.job_id)
+							Object:s_bool(v.begin_job)
+							Object:s_stringZ(v.need_job)
+						end)
+					end
+				end)
+			
+				n = 0
+				for k,v in pairs(self.dead_time) do
+					n = n + 1
+				end
+				Object:s_u8(n)
+				Object:ForArray(function()
+					for k,v in pairs(self.dead_time) do
+						Object:ForChunk("se_stalker:STATE:dead_npc", function()
+							Object:s_u8(k)
+							v:Serialize(Object)
+						end)
+					end
+				end)
+			
+				if self.base_on_actor_control ~= nil then
+					Object:ForChunk("se_stalker:STATE:base_on_actor_control", function()
+						self.base_on_actor_control:Serialize(Object)
+					end)
+				end
+			
+				if self.respawn_point then
+					Object:ForChunk("se_stalker:STATE:respawn_point", function()
+						local n = 0
+						for k,v in pairs(self.already_spawned) do
+							n = n + 1
+						end
+						Object:s_u8(n)
+						Object:ForArray(function()
+							for k,v in pairs(self.already_spawned) do
+								Object:ForChunk("se_stalker:STATE:respawn_point:already_spawned", function()
+									Object:s_stringZ(k)
+									Object:s_u8(v.num)
+								end)
+							end
+						end)
+					
+						if self.last_respawn_update ~= nil then
+							Object:ForChunk("se_stalker:STATE:respawn_point:last_respawn_update", function()
+								self.last_respawn_update:Serialize(Object)
+							end)
+						end
+					end)
+				end
+			
+				if self.population < 0 then
+					abort("Smart_terrain [%s] population can't be less than zero!!!", self:name())
+				end
+				Object:s_u8(self.population)
+			else
+				self:read_params()
+			
+				-- Информацию о НПС, идущих в смарт
+				local n = 0
+				n = Object:s_u8(n)
+				Object:ForArray(function()
+					self.arriving_npc = {}
+					for i = 1,n do
+						local id = 0
+						id = Object:s_u16(id)
+						self.arriving_npc[id] = false
+					end
+				end)
+			
+				-- Информацию о НПС в смарте
+				n = Object:s_u8(n)
+				--printf("load %s npc", tostring(n))
+				self.npc_info = {}
+				Object:ForArray(function()
+					for i = 1,n do
+						Object:ForChunk("se_stalker:STATE:npc", function()
+							local id = 0
+							id = Object:s_u16(id)
+							--printf("__ id %s", tostring(id))
+							self.npc_info[id] = {}
+							local npc_info = self.npc_info[id]
+							npc_info.job_prior = Object:s_u8(-1)
+							--printf("__ job_prior %s", tostring(npc_info.job_prior))
+							if npc_info.job_prior == 255 then
+								npc_info.job_prior = -1
+							end
+							npc_info.job_id = Object:s_u8(-1)
+							--printf("__ job_id %s", tostring(npc_info.job_id))
+							if npc_info.job_id == 255 then
+								npc_info.job_id = -1
+							end
+							npc_info.begin_job = Object:s_bool(false)
+							--printf("__ begin_job %s", tostring(npc_info.begin_job))
+							npc_info.need_job = Object:s_stringZ("")
+						end)
+					end
+				end)
+			
+				n = Object:s_u8(n)
+				self.dead_time = {}
+				--printf("load %s dead_time", tostring(n))
+				Object:ForArray(function()
+					for i =1,n do
+						Object:ForChunk("se_stalker:STATE:dead_npc", function()
+							local job_id = 0
+							job_id = Object:s_u8(job_id)
+							--printf("__ job_id %s", tostring(job_id))
+							local dead_time = game.CTime()
+							dead_time:Serialize(Object)
+							self.dead_time[job_id] = dead_time
+						end)
+					end
+				end)
+			
+				self.need_init_npc = true
+
+				Object:ForChunk("se_stalker:STATE:base_on_actor_control", function()
+					self.base_on_actor_control:Serialize(Object)
+				end)
+
+				Object:ForChunk("se_stalker:STATE:respawn_point", function()
+					n = Object:s_u8(n)
+					Object:ForArray(function()
+						for i = 1, n do
+							Object:ForChunk("se_stalker:STATE:respawn_point:already_spawned", function()
+								local id = ""
+								id = Object:s_stringZ(id)
+								local num = 0
+								num = Object:s_u8(num)
+								self.already_spawned[id].num = num
+							end)
+						end
+					end)
+
+					if Object:HasChunk("se_stalker:STATE:respawn_point:last_respawn_update") then
+						Object:ForChunk("se_stalker:STATE:respawn_point:last_respawn_update", function()
+							self.last_respawn_update = game.CTime()
+							self.last_respawn_update:Serialize(Object)
+						end)
+					else
+						self.last_respawn_update = nil
+					end
+				end)			
+				self.population = Object:s_u8(self.population)
+			end
+		end)
+	end)
+end
+
 -- Инициализация НПС после загрузки.
 function se_smart_terrain:init_npc_after_load()
 	return PROF_EVENT_CLOSURE("init_npc_after_load", function()

@@ -103,3 +103,7 @@ struct ENGINE_API VisMask final
 		_visimask_ex.invert();
 	}
 };
+
+inline ISaveObject& operator<<(ISaveObject& Object, VisMask& Value) {
+	return Object << Value._visimask.flags << Value._visimask_ex.flags;
+}
