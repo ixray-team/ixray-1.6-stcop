@@ -5,6 +5,8 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include <functional>
 
+#include "SaveObjectHelpers.h"
+
 item_respawn_manager::spawn_item::spawn_item()
 {
 	item_object = nullptr;
@@ -334,13 +336,21 @@ ALife::_OBJECT_ID item_respawn_manager::respawn_item(CSE_Abstract* item_object)
 #ifdef DEBUG
 	Msg("--- Respawning item %s - it's time...", item_object->name());
 #endif // #ifdef DEBUG
-	item_object->Spawn_Write(spawn_packet_store, false);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(spawn_packet_store, *item_object);
+	} else
+	{
+		item_object->Spawn_Write(spawn_packet_store, false);
+	}
 	u16 skip_header;
 	spawn_packet_store.r_begin(skip_header);
 	CSE_Abstract* spawned_item = m_server->Process_spawn(
 		spawn_packet_store, m_server->GetServerClient()->ID);
 	if (!spawned_item)
+	{
 		return 0;
+	}
 	return spawned_item->ID;
 }
 

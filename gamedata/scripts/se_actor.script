@@ -63,6 +63,22 @@ function se_actor:STATE_Read(packet, size)
 		set_save_marker(packet, "load", true, "se_actor")
 	end
 end
+--------------------
+function se_actor:STATE_Serialize(Object)
+	Object:ForChunk("se_actor:STATE", function()
+		cse_alife_creature_actor.STATE_Serialize(self, Object)
+		
+		if editor() and not Object:IsSave() then
+			return
+		end
+
+		if Object:IsSave() or db.actor == nil then
+			Object:ForChunk("se_actor:STATE:start_pos", function()
+				self.start_position_filled = Object:s_bool(self.start_position_filled)
+			end)
+		end
+	end)
+end
 
 
 --***********************************************************************************************

@@ -21,6 +21,8 @@
 #include <direct.h>
 #include <random>
 
+#include "../../xrCore/Save/SaveManager.h"
+
 thread_local std::mt19937 rng = std::mt19937(std::random_device()());
 
 extern const char* GAME_CONFIG;
@@ -213,24 +215,37 @@ public:
 			IReader									*O = F->open_chunk_iterator(id);
 			int i = 0;
 			for (; O; O = F->open_chunk_iterator(id,O))	{
-				NET_Packet							P;
-				P.B.data.resize(O->length());
-				O->r								(P.B.data.data(),P.B.data.size());
-				u16									ID;
-				P.r_begin							(ID);
-				R_ASSERT							(M_SPAWN==ID);
-				P.r_stringZ							(fName);
-				CSE_Abstract						*E_ = F_entity_Create(fName);
-				R_ASSERT3							(E_,"Can't create entity.",fName);
-//				E->Spawn_Read						(P);
+				NET_Packet P;
+				CSaveObjectLoad* Obj = nullptr;
+				shared_str section_id;
+				if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+				{
+					Obj = CSaveManager::GetInstance().EditorBeginLoad(O);
+					(*Obj) << section_id;
+				} else
+				{
+					P.B.data.resize(O->length());
+					O->r								(P.B.data.data(),P.B.data.size());
+					u16									ID;
+					P.r_begin							(ID);
+					R_ASSERT							(M_SPAWN==ID);
+					P.r_stringZ							(fName);
+					section_id = fName;
+				}
+				CSE_Abstract						*E_ = F_entity_Create(section_id.c_str());
+				R_ASSERT3							(E_,"Can't create entity.",section_id.c_str());
 				CSE_ALifeGraphPoint					*tpGraphPoint = smart_cast<CSE_ALifeGraphPoint*>(E_);
 				if (tpGraphPoint) {
-					E_->Spawn_Read					(P);
+					if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+					{
+						E_->Spawn_Serialize(*Obj, true);
+					} else {
+						E_->Spawn_Read(P);
+					}
 
-					Fvector							tVector;
-					tVector							= tpGraphPoint->o_Position;
-					GameGraph::_GRAPH_ID			tGraphID = GameGraph::_GRAPH_ID(-1);
-					float							fMinDistance = 1000000.f;
+					Fvector tVector = tpGraphPoint->o_Position;
+					GameGraph::_GRAPH_ID tGraphID = GameGraph::_GRAPH_ID(-1);
+					float fMinDistance = 1000000.f;
 					{
 						GRAPH_VERTEX_IT					B_ = m_tpVertices.begin();
 						GRAPH_VERTEX_IT					I_ = B_;

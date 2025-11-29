@@ -111,6 +111,14 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("item_to_slot",				int(GameObject::eItemToSlot)),
 				value("item_to_ruck",				int(GameObject::eItemToRuck)),
 				value("on_foot_step",				int(GameObject::eOnFootStep)),
+
+				// anomal pseudogigant
+				value("shield_on", int(GameObject::eShieldOn)),
+				value("shield_off", int(GameObject::eShieldOff)),
+				value("jump", int(GameObject::eJump)),
+
+				// dangerous material touch
+				value("dangerous_material_touch", int(GameObject::eDangerousMaterialTouch)),
 				
 				// car
 				value("on_attach_vehicle", 			int(GameObject::eAttachVehicle)),

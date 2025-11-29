@@ -152,6 +152,15 @@ void CInventoryItemObject::load(IReader& packet)
 	CInventoryItem::load(packet);
 }
 
+void CInventoryItemObject::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CInventoryItemObject")
+	{
+		CPhysicItem::Serialize(Object);
+		CInventoryItem::Serialize(Object);
+	}
+}
+
 void CInventoryItemObject::renderable_Render()
 {
 	CPhysicItem::renderable_Render();

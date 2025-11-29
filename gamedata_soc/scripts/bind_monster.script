@@ -38,7 +38,7 @@ end
 ------------------------------------------------------------------------------------
 class "generic_object_binder" (object_binder)
 
-function generic_object_binder:__init(obj) super(obj)
+function generic_object_binder:__init(obj) super(self, obj)
 	self.loaded = false
 end 
 

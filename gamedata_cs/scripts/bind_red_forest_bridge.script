@@ -8,7 +8,7 @@ function bind(obj)
 end
 
 class "bridge_binder" (object_binder)
-function bridge_binder:__init(obj) super(obj)
+function bridge_binder:__init(obj) super(self, obj)
 	self.bridge = obj
 	local se_koleso = alife():story_object(516)
 	self.se_koleso_id = se_koleso and se_koleso.id

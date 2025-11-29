@@ -32,6 +32,24 @@ void SStatDetailBData::load(IReader &stream)
 		load_data			(str_value,		stream);
 }
 
+ISaveObject& operator<<(ISaveObject& Object, SStatDetailBData& Data)
+{
+	BEGIN_CHUNK(Object, "SStatDetailBData")
+	{
+		Object << Data.key << Data.int_count << Data.int_points << Data.str_value;
+	}
+	return Object;
+}
+
+ISaveObject& operator<<(ISaveObject& Object, SStatSectionData& Data)
+{
+	BEGIN_CHUNK(Object, "SStatSectionData")
+	{
+		Object << Data.data << Data.key;
+	}
+	return Object;
+}
+
 
 ////////////////////////////////////////////////
 void SStatSectionData::save(IWriter &stream)	

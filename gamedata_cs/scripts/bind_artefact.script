@@ -9,7 +9,7 @@ function bind(obj)
 end
 
 class "artefact_binder" (object_binder)
-function artefact_binder:__init(obj) super(obj)
+function artefact_binder:__init(obj) super(self, obj)
 	db.storage[self.object:id()] = { }
 end
 function artefact_binder:net_spawn(server_object)

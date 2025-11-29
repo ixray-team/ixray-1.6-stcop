@@ -29,6 +29,15 @@ void ARTICLE_DATA::save (IWriter& stream)
 	save_data(article_type, stream);
 }
 
+ISaveObject& operator<<(ISaveObject& Object, ARTICLE_DATA& Data)
+{
+	BEGIN_CHUNK(Object, "ARTICLE_DATA")
+	{
+		Object << Data.receive_time << Data.article_id << Data.readed << Data.article_type;
+	}
+	return Object;
+}
+
 CEncyclopediaArticle::CEncyclopediaArticle()
 {
 }

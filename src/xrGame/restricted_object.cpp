@@ -68,11 +68,17 @@ bool CRestrictedObject::net_Spawn			(CSE_Abstract* data)
 	m_applied					= false;
 	m_removed					= true;
 	
-	string4096					temp0;
-	string4096					temp1;
-	
-	xr_strcpy						(temp0,*monster->m_out_space_restrictors);
-	xr_strcpy						(temp1,*monster->m_in_space_restrictors);
+	string4096					temp0 = {};
+	string4096					temp1 = {};
+
+	if (monster->m_out_space_restrictors.size() > 0)
+	{
+		xr_strcpy						(temp0,*monster->m_out_space_restrictors);
+	}
+	if (monster->m_in_space_restrictors.size() > 0)
+	{
+		xr_strcpy						(temp1,*monster->m_in_space_restrictors);
+	}
 
 	if (ai().get_alife()) {
 		construct_string		(temp0,sizeof(temp0),monster->m_dynamic_out_restrictions);

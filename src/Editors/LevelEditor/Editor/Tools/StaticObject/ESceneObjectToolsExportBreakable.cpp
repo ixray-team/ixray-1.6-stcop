@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include "../../../../../xrCore/Save/SaveManager.h"
+#include "../../../../../xrCore/Save/MemoryBuffer.h"
 #include "../../Utils/GeometryPartExtractor.h"
 #include "../xrServerEntities/xrServer_Object_Base.h"
 #include "../xrServerEntities/xrServer_Objects_Abstract.h"
@@ -151,12 +154,30 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 						Tools->m_DebugDraw.AppendLine(P->m_RefOffset, Fvector().mad(P->m_RefOffset, MX.k, 1.f), 0xFF0000FF, false, false);
 					}
 
-					NET_Packet Packet;
-					m_Data->Spawn_Write(Packet, true);
+					if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+					{
+						F->spawn.stream.open_chunk(F->spawn.chunk++);
 
-					F->spawn.stream.open_chunk(F->spawn.chunk++);
-					F->spawn.stream.w(Packet.B.data.data(), Packet.B.data.size());
-					F->spawn.stream.close_chunk();
+						SSaveTask dummy;
+						auto Obj = CSaveManager::GetInstance().EditorBeginSave();
+						shared_str temp = m_Data->name();
+						(*Obj) << temp;
+						m_Data->Spawn_Serialize(*Obj, true);
+						CMemoryBuffer buff;
+						buff.Write(ESaveVariableType::t_chunk);
+						Obj->Write(&buff, &dummy);
+						buff.Write((IWriter*)(&F->spawn.stream));
+						xr_delete(Obj);
+						
+						F->spawn.stream.close_chunk();
+					} else {
+						NET_Packet Packet;
+						m_Data->Spawn_Write(Packet, true);
+
+						F->spawn.stream.open_chunk(F->spawn.chunk++);
+						F->spawn.stream.w(Packet.B.data.data(), Packet.B.data.size());
+						F->spawn.stream.close_chunk();
+					}
 					g_SEFactoryManager->destroy_entity(m_Data);
 				}
 			}
@@ -296,12 +317,34 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 						m_Data->angle().set			(P->m_RefRotate);
 
 						m_Data->set_additional_info((void*)mat_name);
-						NET_Packet					Packet;
-						m_Data->Spawn_Write			(Packet,true);
+						
 
-						F->spawn.stream.open_chunk	(F->spawn.chunk++);
-						F->spawn.stream.w			(Packet.B.data.data(),Packet.B.data.size());
-						F->spawn.stream.close_chunk	();
+						if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+						{
+							
+							F->spawn.stream.open_chunk	(F->spawn.chunk++);
+							
+							SSaveTask dummy;
+							auto Obj = CSaveManager::GetInstance().EditorBeginSave();
+							shared_str temp = m_Data->name();
+							(*Obj) << temp;
+							m_Data->Spawn_Serialize(*Obj, true);
+							CMemoryBuffer buff;
+							buff.Write(ESaveVariableType::t_chunk);
+							Obj->Write(&buff, &dummy);
+							buff.Write((IWriter*)(&F->spawn.stream));
+							xr_delete(Obj);
+
+							F->spawn.stream.close_chunk	();
+						} else
+						{
+							NET_Packet					Packet;
+							m_Data->Spawn_Write			(Packet,true);
+
+							F->spawn.stream.open_chunk	(F->spawn.chunk++);
+							F->spawn.stream.w			(Packet.B.data.data(),Packet.B.data.size());
+							F->spawn.stream.close_chunk	();
+						}
 
 						if (s_draw_dbg)
 						{

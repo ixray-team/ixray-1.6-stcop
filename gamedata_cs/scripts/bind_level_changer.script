@@ -13,7 +13,7 @@ end
 --------------------------------------------------------------------------------
 class "lchanger_binder" (object_binder)
 -- Class constructor
-function lchanger_binder:__init(obj) super(obj)
+function lchanger_binder:__init(obj) super(self, obj)
 end
 -- Class update
 function lchanger_binder:update(delta)

@@ -838,6 +838,48 @@ function CSurgeManager:load(packet)
         set_save_marker(packet, "load", true, "SurgeHide")
     end)
 end
+
+function CSurgeManager:Serialize(Object)
+	Object:ForChunk("SurgeHide", function()
+		if not Object:IsSave() then
+			self:initialize()
+		end
+		self.finished = Object:s_bool(self.finished)
+		self.started = Object:s_bool(self.started)
+		if not Object:IsSave() then
+			self.last_surge_time = game.CTime()
+		end
+		self.last_surge_time:Serialize(Object)
+		if(self.started) then
+			if not Object:IsSave() then
+				self.inited_time = game.CTime()
+			end
+			self.inited_time:Serialize(Object)
+			Object:ForArray(function()
+				for lvl,value in pairs(self.levels_respawn) do
+					if Object:IsSave() then
+						Object:s_bool(value or false)
+					else
+						self.levels_respawn[lvl] = Object:s_bool(value)
+					end
+				end
+			end)
+
+			self.task_given = Object:s_bool(self.task_given)
+			self.effector_set = Object:s_bool(self.effector_set)
+			self.second_message_given = Object:s_bool(self.second_message_given)
+			self.ui_disabled = Object:s_bool(self.ui_disabled)
+			self.blowout_sound = Object:s_bool(self.blowout_sound)
+
+			self.surge_message = Object:s_stringZ(self.surge_message)
+			self.surge_task_sect = Object:s_stringZ(self.surge_task_sect)
+		end
+		self._delta = Object:s_u32(self._delta)
+		if not Object:IsSave() then
+			self.loaded = true
+		end
+	end)
+end
 --------------------------------------------------------------------------------
 function get_surge_manager()
 	if surge_manager == nil then

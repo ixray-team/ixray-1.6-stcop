@@ -14,6 +14,8 @@
 #include "alife_human_brain.h"
 #include "alife_monster_brain.h"
 
+#include "../xrScripts/exports/SaveSystem_script.h"
+
 #ifndef XRSE_FACTORY_EXPORTS
 #	include "FreeMP/ScriptEvents.h"
 #	include "PHSimpleCalls.h"
@@ -123,7 +125,8 @@ void export_classes	(lua_State *L)
 	CSE_SmartCover::script_register(L);
 
 	fs_registrator::script_register(L);
-
+	SaveSystemScript::script_register(L);
+	
 #ifdef XRSE_FACTORY_EXPORTS
 	CScriptPropertiesListHelper::script_register(L);
 #else

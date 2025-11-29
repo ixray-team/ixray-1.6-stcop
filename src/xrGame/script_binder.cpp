@@ -64,13 +64,16 @@ void CScriptBinder::reload(const char* section)
 	PROF_EVENT("CScriptBinder::reload");
 
 	VERIFY(!m_object);
-	if (!pSettings->line_exist(section, "script_binding"))
+	auto func_name = pSettings->r_string_nullable(section, "script_binding");
+	if (!func_name)
+	{
 		return;
+	}
 
 	luabind::functor<void>	lua_function;
-	if (!ai().script_engine().functor(pSettings->r_string(section, "script_binding"), lua_function))
+	if (!ai().script_engine().functor(func_name, lua_function))
 	{
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "function %s is not loaded!", pSettings->r_string(section, "script_binding"));
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "function %s is not loaded!", func_name);
 		return;
 	}
 
@@ -78,7 +81,8 @@ void CScriptBinder::reload(const char* section)
 
 	try
 	{
-		lua_function(game_object ? game_object->lua_game_object() : 0);
+		auto script_obj = game_object ? game_object->lua_game_object() : nullptr;
+		lua_function(script_obj);
 	}
 	catch (...)
 	{
@@ -142,6 +146,7 @@ void CScriptBinder::set_object(CScriptBinderObject* object)
 {
 	if (IsGameTypeSingleCompatible())
 	{
+		IVERIFY(object);
 		VERIFY2(!m_object, "Cannot bind to the object twice!");
 		m_object = object;
 	}
@@ -193,7 +198,19 @@ void CScriptBinder::load			(IReader &input_packet)
 	}
 }
 
-bool CScriptBinder::net_SaveRelevant()
+void CScriptBinder::Serialize(ISaveObject& Object)
+{
+	if (m_object) {
+		try {
+			m_object->Serialize(&Object);
+		}
+		catch (...) {
+			clear();
+		}
+	}
+}
+
+BOOL CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
 		try {
