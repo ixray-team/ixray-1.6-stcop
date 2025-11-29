@@ -49,7 +49,6 @@ void GenerateAdvancedFilterMipMaps(u32& w, u32& h, nvtt::InputOptions& inOpt, u3
 }
 
 static HFILE gFileOut;
-static HFILE gFileIn;
 
 void ExtractCubeFacesFromCrossRGBA(const u8* src, int W, int H, int pitch, std::array<xr_vector<u8>, 6>& faces)
 {
