@@ -405,6 +405,8 @@ public:
 	void						TakeAllFromInventoryBox		();
 	void						UpdateConditionProgressBars	();
 
+	virtual void				HideDialog() override;
+
 	void OnSuccessRepairMP(PIItem item);
 	const UIInvUpgradeInfo* GetUpgradeInfo() const { return m_upgrade_info; }
 

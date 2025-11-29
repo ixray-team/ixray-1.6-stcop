@@ -405,12 +405,17 @@ void CUISequencer::IR_OnMouseWheel		(int direction)
 
 void CUISequencer::IR_OnKeyboardPress	(int dik)
 {
+	CActor* actor = nullptr;
+
 	if (g_pGameLevel)
 	{
-		CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
-		if (actor && actor->HudAnimator()->ItemAnimator() && actor->HudAnimator()->IsAnyAnimatorActive())
+		actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+		if (actor != nullptr)
 		{
-			return;
+			if (actor->HudAnimator()->ItemAnimator() != nullptr && actor->HudAnimator()->ItemAnimator()->IsActive())
+			{
+				return;
+			}
 		}
 	}
 
@@ -429,12 +434,26 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 
 	if(binded && CurrentGameUI())
 	{
-		if(CurrentGameUI()->ActorMenu().IsShown())
+		if (actor != nullptr)
+		{
+			CHudAnimatorBase* current_animator = actor->HudAnimator()->CurrentAnimator();
+			CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr;
+
+			if (state_animator != nullptr &&
+				state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden &&
+				state_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+			{
+				state_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+			}
+		}
+
+		if (CurrentGameUI()->ActorMenu().IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
 			return;
 		}
-		if(CurrentGameUI()->PdaMenu().IsShown())
+
+		if (CurrentGameUI()->PdaMenu().IsShown())
 		{
 			CurrentGameUI()->HidePdaMenu();
 			return;
