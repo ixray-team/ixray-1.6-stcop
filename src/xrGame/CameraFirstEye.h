@@ -30,6 +30,7 @@ public:
 
 			void save(NET_Packet& output_packet) override;
 			void load(IReader& input_packet) override;
+			virtual void Serialize(ISaveObject& Object) override;
 };
 
 #endif // __CAMERALOOK_H__

@@ -1,6 +1,6 @@
 #pragma once
 #include <nlohmann/json.hpp>
-#include "../../Concepts.h"
+#include "../../ConceptsStr.h"
 
 #ifdef XRGAME_EXPORTS
 #	error Don't use in Game code! Only for utils!

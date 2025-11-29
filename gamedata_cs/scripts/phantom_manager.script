@@ -15,7 +15,7 @@ function PhantomManager:spawn_phantom	(pos)
 end
 
 class "Phantom"		(object_binder)
-function Phantom:__init(obj) super(obj)
+function Phantom:__init(obj) super(self, obj)
 	g_PhantomManager:add_phantom();
 end
 function Phantom:net_destroy()

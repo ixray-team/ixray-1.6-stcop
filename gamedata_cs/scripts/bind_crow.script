@@ -14,7 +14,7 @@ end
 --------------------------------------------------------------------------------
 class "crow_binder" (object_binder)
 -- Class constructor
-function crow_binder:__init(obj) super(obj)
+function crow_binder:__init(obj) super(self, obj)
     self.body_timer = 0
 end
 -- Class update

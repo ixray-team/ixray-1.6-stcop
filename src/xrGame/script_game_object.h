@@ -127,6 +127,7 @@ struct CSightParams {
 
 class CScriptGameObject {
 	mutable CGameObject		*m_game_object;
+	luabind::object m_LuaObjRef;
 							CScriptGameObject		(CScriptGameObject const& game_object);
 
 public:
@@ -512,7 +513,7 @@ public:
 			CScriptGameObject		*GetCorpse		() const;
 			CScriptSoundInfo		GetSoundInfo	();
 			CScriptMonsterHitInfo	GetMonsterHitInfo();
-			void					bind_object		(CScriptBinderObject *object);
+			void					bind_object		(CScriptBinderObject* object);
 			CScriptGameObject		*GetCurrentOutfit() const;
 			float					GetCurrentOutfitProtection(int hit_type);
 			

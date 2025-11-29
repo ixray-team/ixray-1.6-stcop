@@ -8,13 +8,11 @@
 
 #pragma once
 
-#include "../xrServerEntities/object_interfaces.h"
+#include "object_interfaces.h"
 
 class CSE_Abstract;
 
-class CServerEntityWrapper : 
-	public IPureSerializeObject<IReader,IWriter> 
-{
+class CServerEntityWrapper : public IPureSerializeObject<IReader,IWriter> {
 private:
 	CSE_Abstract			*m_object;
 
@@ -25,6 +23,7 @@ public:
 	virtual	void			load					(IReader &stream);
 			void			save_update				(IWriter &stream);
 			void			load_update				(IReader &stream);
+	void serialize_update(ISaveObject& Object);
 	IC		CSE_Abstract	&object					() const;
 };
 

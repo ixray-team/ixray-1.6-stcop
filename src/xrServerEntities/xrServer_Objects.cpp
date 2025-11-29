@@ -78,6 +78,14 @@ void CSE_Shape::cform_write					(NET_Packet	&tNetPacket)
 	}
 }
 
+void CSE_Shape::cform_serialize		(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CSE_Shape::cform_read")
+	{
+		Object << shapes;
+	}
+}
+
 void CSE_Shape::assign_shapes	(CShapeData::shape_def* _shapes, u32 _cnt)
 {
 	shapes.resize	(_cnt);
@@ -117,6 +125,18 @@ void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 }
 
+void CSE_Spectator::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Spectator::STATE")
+	{}
+}
+
+void CSE_Spectator::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Spectator::UPDATE")
+	{}
+}
+
 #if !defined(XRGAME_EXPORTS)
 void CSE_Spectator::FillProps				(const char* pref, PropItemVec& items)
 {
@@ -154,66 +174,26 @@ void CSE_Temporary::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 };
 
+void CSE_Temporary::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Temporary::STATE")
+	{
+		Object << m_tNodeID;
+	}
+}
+
+void CSE_Temporary::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Temporary::UPDATE")
+	{}
+}
+
 #ifndef XRGAME_EXPORTS
 void CSE_Temporary::FillProps				(const char* pref, PropItemVec& values)
 {
 };
 #endif // #ifndef XRGAME_EXPORTS
 
-/**
-////////////////////////////////////////////////////////////////////////////
-// CSE_SpawnGroup
-////////////////////////////////////////////////////////////////////////////
-
-CSE_SpawnGroup::CSE_SpawnGroup				(const char* caSection) : CSE_Abstract(caSection)
-{
-}
-
-CSE_SpawnGroup::~CSE_SpawnGroup				()
-{
-}
-
-void CSE_SpawnGroup::STATE_Read				(NET_Packet	&tNetPacket, u16 size)
-{
-	if (m_wVersion < 84)
-		tNetPacket.r_float		(m_spawn_probability);
-
-	if (m_wVersion > 80) {
-		if (m_wVersion < 84) {
-			tNetPacket.r_float	();
-			tNetPacket.r_float	();
-			m_spawn_flags.assign(tNetPacket.r_u32());
-			tNetPacket.r_stringZ(m_spawn_control);
-		}
-		else {
-			if (m_wVersion < 85) {
-				tNetPacket.r_u64		(m_min_spawn_interval);
-				tNetPacket.r_u64		(m_max_spawn_interval);
-			}
-		}
-	}
-}
-
-void CSE_SpawnGroup::STATE_Write			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_SpawnGroup::UPDATE_Read			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_SpawnGroup::UPDATE_Write			(NET_Packet	&tNetPacket)
-{
-}
-
-#ifndef XRGAME_EXPORTS
-void CSE_SpawnGroup::FillProps				(const char* pref, PropItemVec& values)
-{
-	inherited::FillProps		(pref,values);
-	PHelper().CreateFlag32		(values,PrepareKey(pref,*s_name,"Spawn\\spawn single item only"),	&m_spawn_flags,	flSpawnSingleItemOnly);
-}
-#endif // #ifndef XRGAME_EXPORTS
-/**/
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
@@ -300,6 +280,30 @@ void CSE_PHSkeleton::UPDATE_Read(NET_Packet &tNetPacket)
 
 }
 
+void CSE_PHSkeleton::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_PHSkeleton::STATE")
+	{
+		CSE_Visual* visual = smart_cast<CSE_Visual*>(this);
+		R_ASSERT(visual);
+		Object << visual->startup_animation << _flags.flags << source_id;
+	}
+}
+
+void CSE_PHSkeleton::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_PHSkeleton::UPDATE")
+	{}
+}
+
+void CSE_PHSkeleton::data_serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_PHSkeleton::data")
+	{
+		saved_bones.net_Serialize(Object);
+	}
+}
+
 #ifndef XRGAME_EXPORTS
 void CSE_PHSkeleton::FillProps				(const char* pref, PropItemVec& values)
 {
@@ -341,6 +345,22 @@ void CSE_AbstractVisual::UPDATE_Read	(NET_Packet	&tNetPacket)
 void CSE_AbstractVisual::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 }
+
+void CSE_AbstractVisual::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_AbstractVisual::STATE")
+	{
+		visual_serialize(Object);
+		Object << startup_animation;
+	}
+}
+
+void CSE_AbstractVisual::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_AbstractVisual::UPDATE")
+	{}
+}
+
 const char*	CSE_AbstractVisual::getStartupAnimation		()
 {
 	return *startup_animation;

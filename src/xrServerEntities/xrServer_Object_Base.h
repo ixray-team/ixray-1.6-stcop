@@ -14,6 +14,18 @@
 #include "alife_space.h"
 #include "../xrCore/client_id.h"
 
+enum class SpawnFileChunks : u8
+{
+	// Original
+	Header = 0,
+	SpawnGraphOld = 1,
+	LevelPoints = 2,
+	PatrolPathStorage = 3,
+	GameGraph = 4,
+	// New serialization system
+	SpawnGraphNew = 5
+};
+
 class NET_Packet;
 class xrClientData;
 class CSE_ALifeGroupAbstract;
@@ -98,6 +110,7 @@ public:
 
 	//client object custom data serialization
 	xr_vector<u8>					client_data;
+	CSaveChunk* client_data_new = nullptr;
 	virtual void					load					(NET_Packet	&tNetPacket);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -119,6 +132,7 @@ public:
 	//
 	virtual void			Spawn_Write				(NET_Packet &tNetPacket, bool bLocal);
 	virtual bool			Spawn_Read				(NET_Packet &tNetPacket);
+	virtual bool Spawn_Serialize(ISaveObject& Object, bool bLocal = true, bool Copying = false);
 	virtual const char*			name					() const override;
 	virtual const char*			name_replace			() const override;
 	virtual void			set_name				(const char* s) override

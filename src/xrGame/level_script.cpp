@@ -57,7 +57,12 @@
 #include "../xrEngine/thunderbolt.h"
 #include "material_manager.h"
 #include "../xrUI/Widgets/UIActionRepeaters.h"
+#include "Cutscenes/CutsceneItem.h"
+#include "Cutscenes/CutsceneManager.h"
+
 #include "ElectronicsProblemsManager.h"
+#include "SamZone.h"
+#include "SaveObjectHelpers.h"
 
 using namespace luabind;
 
@@ -311,9 +316,12 @@ float get_global_time_factor() { return (Device.time_factor()); }
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
 	g_SingleGameDifficulty		= dif;
-	game_cl_Single* game		= Game().cast_game_cl_single();
-	VERIFY(game);
-	game->OnDifficultyChanged	();
+	if (g_pGameLevel)
+	{
+		game_cl_Single* game		= Game().cast_game_cl_single();
+		VERIFY(game);
+		game->OnDifficultyChanged	();
+	}
 }
 ESingleGameDifficulty get_game_difficulty()
 {
@@ -351,6 +359,21 @@ void change_game_time(u32 days, u32 hours, u32 mins)
 		value			*= 1000;//msec		
 		g_pGamePersistent->Environment().ChangeGameTime(fValue);
 		tpGame->alife().time_manager().change_game_time(value);
+	}
+}
+
+void set_game_date_time(LPCSTR date, LPCSTR time)
+{
+	game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+	if (tpGame && ai().get_alife())
+	{
+		u32	years, months, days, hours, minutes, seconds;
+		sscanf(time, "%d:%d:%d", &hours, &minutes, &seconds);
+		sscanf(date, "%d.%d.%d", &days, &months, &years);
+		auto newTime = generate_time(years, months, days, hours, minutes, seconds);
+		float fValue = static_cast<float>(days * 86400 + hours * 3600 + minutes * 60);
+		g_pGamePersistent->Environment().ChangeGameTime(fValue);
+		tpGame->alife().time_manager().set_date_time(newTime);
 	}
 }
 
@@ -782,7 +805,9 @@ void add_pp_effector(const char* fn, int id, bool cyclic)
 {
 	CPostprocessAnimator* pp		= new CPostprocessAnimator(id, cyclic);
 	pp->Load						(fn);
-	Actor()->Cameras().AddPPEffector	(pp);
+	auto actor = Actor();
+	R_ASSERT(actor);
+	actor->Cameras().AddPPEffector	(pp);
 }
 
 void remove_pp_effector(int id)
@@ -1538,7 +1563,14 @@ void spawn_anomaly(const char* str, int level_vertex_id, const Fvector& position
 	AlifeZone->m_space_restrictor_type = RestrictionSpace::eRestrictorTypeNone;
 
 	NET_Packet					P;
-	object->Spawn_Write(P, true);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *object);
+	}
+	else
+	{
+		object->Spawn_Write(P, true);
+	}
 	Level().Send(P, net_flags(true));
 	F_entity_Destroy(object);
 }
@@ -2038,6 +2070,9 @@ void CLevel::script_register(lua_State *L)
 		def("valid_saved_game_int", &ValidSavedGameInt),
 		def("is_tactical_hud", &IsTacticalHud),
 
+		// launch SAM
+		def("launch_sam", &launch_sam),
+		
 		// Dynamic wallmarks switch
 		def("switch_wallmark", &switch_wallmark),
 

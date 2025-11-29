@@ -1,5 +1,6 @@
-#ifndef __V3D__
-#define __V3D__
+#pragma once
+
+class ISaveObject;
 
 template <class T>
 struct _vector3 
@@ -700,4 +701,7 @@ aa2_largest:	// aa2 is largest
 	return true;
 }
 ICF bool exact_normalize(Fvector3& a) { return exact_normalize(&a.x);	}
-#endif
+
+template<typename T> ISaveObject& operator<<(ISaveObject& Object, _vector3<T>& Value) {
+	return Object << Value.x << Value.y << Value.z;
+}

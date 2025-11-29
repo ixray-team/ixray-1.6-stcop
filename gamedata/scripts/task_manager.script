@@ -37,6 +37,40 @@ function CRandomTask:load(reader)
 
 	set_save_marker(reader, "load", true, "CRandomTask")
 end
+
+function CRandomTask:Serialize(Object)
+	Object:ForChunk("CRandomTask", function()
+		if Object:IsSave() then
+			local n = 0
+			for k,v in pairs(self.task_info) do
+				n = n + 1
+			end
+			Object:s_u16(n)
+			Object:ForArray(function()
+				for k,v in pairs(self.task_info) do
+					Object:ForChunk("CRandomTask:elem", function()
+						Object:s_stringZ(k)
+						self.task_info[k]:Serialize(Object)
+					end)
+				end
+			end)
+		else
+			local n = 0
+			n = Object:s_u16(n)
+			Object:ForArray(function()
+				for i=1,n do
+					Object:ForChunk("CRandomTask:elem", function()
+						local id = ""
+						id = Object:s_stringZ(id)
+						local obj = task_objects.CGeneralTask(self.task_ini, id)
+						obj:Serialize(Object)
+						self.task_info[id] = obj
+					end)
+				end
+			end)
+		end
+	end)
+end
 --------------------------------------------------------------------------------
 
 --' Выдача квеста игроку

@@ -50,8 +50,9 @@ public:
 
     virtual bool					net_Spawn(CSE_Abstract* DC) override;
     
-    virtual void			save				(NET_Packet &output_packet);
-    virtual void			load				(IReader &input_packet);
+    virtual void save (NET_Packet &output_packet) override;
+    virtual void load (IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
     void SwitchWallmark(bool isOn);
 

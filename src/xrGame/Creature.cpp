@@ -1013,6 +1013,17 @@ void CCreature::load (IReader &packet)
 		memory().load		(packet);
 }
 
+void CCustomMonster::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCustomMonster")
+	{
+		inherited::Serialize(Object);
+		if (g_Alive()) {
+			memory().Serialize(Object);
+		}
+	}
+}
+
 
 bool CCreature::update_critical_wounded	(const u16 &bone_id, const float &power)
 {

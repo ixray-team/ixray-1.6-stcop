@@ -131,6 +131,62 @@ function CCover_manager:load(packet)
     end)
 end
 
+function CCover_manager:Serialize(Object)
+	Object:ForChunk("CCover_manager", function()
+		self.is_valid = Object:s_bool(self.is_valid)
+		if Object:IsSave() then
+			local n = 0
+			for k,v in pairs(self.cover_table) do
+				n = n + 1
+			end
+			Object:s_u8(n)
+			Object:ForArray(function()
+				for k,v in pairs(self.cover_table) do
+					Object:ForChunk("CCover_manager:elem", function()
+						Object:s_u16(k)
+						Object:s_u32(v.cover_vertex_id)
+						Object:s_float(v.cover_position.x)
+						Object:s_float(v.cover_position.y)
+						Object:s_float(v.cover_position.z)
+						Object:s_float(v.look_pos.x)
+						Object:s_float(v.look_pos.y)
+						Object:s_float(v.look_pos.z)
+						Object:s_bool(v.is_smart_cover)
+					end)
+				end
+			end)
+		else
+			local n = 0
+			n = Object:s_u8(n)
+			Object:ForArray(function()
+				for i = 1,n do
+					Object:ForChunk("CCover_manager:elem", function()
+						local npc_id = 0
+						npc_id = Object:s_u16(npc_id)
+						local cover_vertex_id = 0
+						cover_vertex_id = Object:s_u32(cover_vertex_id)
+						local cover_position = Object():set(0,0,0)
+						cover_position.x = Object:s_float(cover_position.x)
+						cover_position.y = Object:s_float(cover_position.y)
+						cover_position.z = Object:s_float(cover_position.z)
+
+						local look_pos = vector():set(0,0,0)
+						look_pos.x = Object:s_float(look_pos.x)
+						look_pos.y = Object:s_float(look_pos.y)
+						look_pos.z = Object:s_float(look_pos.z)
+
+						local is_smart_cover = false
+						is_smart_cover = Object:s_bool(is_smart_cover)
+
+						self.cover_table[npc_id] = {cover_vertex_id = cover_vertex_id, cover_position = cover_position,
+													 look_pos = look_pos, is_smart_cover = is_smart_cover}
+					end)
+				end
+			end)
+		end
+	end)
+end
+
 
 
 -- Есть ли у объекта выбранный смарт кавер

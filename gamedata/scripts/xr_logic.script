@@ -1349,6 +1349,34 @@ function load_logic(obj, reader)
     end)
 end
 
+function Serialize_logic(obj, Object)
+	local npc_id = obj:id()
+	local cur_tm = time_global()
+
+	-- GAMETIME added by Stohe.
+	Object:ForChunk("xr_logic::Serialize_logic", function()
+		if Object:IsSave() then
+			local activation_time = db.storage[npc_id].activation_time
+			if not activation_time then
+				activation_time = 0
+			end
+			Object:s_s32(activation_time - cur_tm)
+			if db.storage[npc_id].activation_game_time then
+				Object:ForChunk("xr_logic::Serialize_logic::activation_game_time", function()
+					db.storage[npc_id].activation_game_time:Serialize(Object)
+				end)
+			end
+		else
+			db.storage[npc_id].activation_time = Object:s_s32(0) + cur_tm
+			db.storage[npc_id].activation_game_time = nil
+			Object:ForChunk("xr_logic::Serialize_logic::activation_game_time", function()
+				db.storage[npc_id].activation_game_time = game.CTime()
+				db.storage[npc_id].activation_game_time:Serialize(Object)
+			end)
+		end
+	end)
+end
+
 local pstor_number = 0
 local pstor_string = 1
 local pstor_boolean = 2
@@ -1455,6 +1483,79 @@ function pstor_load_all(obj, reader)
             --printf("_bp: pstor_load_all: loaded [%s]='%s'", varname, utils.to_str(pstor[varname]))
         end
     end)
+end
+
+function pstor_Serialize_all(obj, Object)
+	Object:ForChunk("pstor_Serialize_all", function()
+		local npc_id = obj:id()
+		local pstor = db.storage[npc_id].pstor
+		if not pstor then
+			pstor = {}
+			db.storage[npc_id].pstor = pstor
+		end
+
+		local ctr = 0
+		if Object:IsSave() then
+			for k, v in pairs(pstor) do
+				ctr = ctr + 1
+			end
+		end
+		ctr = Object:s_u32(ctr)
+
+		Object:ForArray(function()
+			if Object:IsSave() then
+				for k, v in pairs(pstor) do
+					--printf("_bp: pstor_save_all: saving [%s]='%s'", utils.to_str(k), utils.to_str(v))
+					Object:ForChunk("pstor_Serialize_all::elem", function()
+						Object:s_stringZ(k)
+						local tv = type(v)
+						if tv == "number" then
+                            Object:ForChunk("pstor_Serialize_all::elem:data", function()
+							    Object:s_u8(pstor_number)
+							    Object:s_float(v)
+                            end)
+				 		elseif tv == "string" then
+                            Object:ForChunk("pstor_Serialize_all::elem:data", function()
+							    Object:s_u8(pstor_string)
+							    Object:s_stringZ(v)
+                            end)
+				 		elseif tv == "boolean" then
+                            Object:ForChunk("pstor_Serialize_all::elem:data", function()
+							    Object:s_u8(pstor_boolean)
+							    Object:s_bool(v)
+                            end)
+						else
+							abort("xr_logic: pstor_save_all: not registered type '%s' encountered", tv)
+						end
+					end)
+				end
+			else
+				for i = 1, ctr do
+					Object:ForChunk("pstor_Serialize_all::elem", function()
+						local varname = ""
+						varname = Object:s_stringZ(varname)
+                        pstor[varname] = nil
+                        Object:ForChunk("pstor_Serialize_all::elem:data", function()
+						    local tn = 0
+						    tn = Object:s_u8(tn)
+						    if tn == pstor_number then
+							    local val = 0.0
+							    pstor[varname] = Object:s_float(val)
+						    elseif tn == pstor_string then
+							    local val = ""
+							    pstor[varname] = Object:s_stringZ(val)
+						    elseif tn == pstor_boolean then
+							    local val = false
+							    pstor[varname] = Object:s_bool(val)
+						    else
+						    	abort("xr_logic: pstor_load_all: not registered type N %d encountered", tn)
+						    end
+                        end)
+					end)
+				end
+			end
+		end)
+	end)
 end
 
 function save_obj(obj, packet)
@@ -1571,6 +1672,65 @@ function load_obj(obj, reader)
         pstor_load_all(obj, reader)
         set_save_marker(reader, "load", true, "object"..obj:name())
     end)
+end
+
+function Serialize_obj(obj, Object)
+	Object:ForChunk("xr_logic.Serialize_obj", function()
+		local npc_id = obj:id()
+		local st = db.storage[npc_id]
+
+        if Object:IsSave() then
+            if st.job_ini then
+                Object:ForChunk("xr_logic.Serialize_obj:job_ini", function()
+                    Object:s_stringZ(st.job_ini)
+                end)
+            end
+            if st.ini_filename then
+                Object:ForChunk("xr_logic.Serialize_obj:ini_filename", function()
+                    Object:s_stringZ(st.ini_filename)
+                end)
+            end
+            if st.section_logic then
+                Object:ForChunk("xr_logic.Serialize_obj:section_logic", function()
+                    Object:s_stringZ(st.section_logic)
+                end)
+            end
+        else
+            st.job_ini = nil
+		    st.loaded_ini_filename = nil
+		    st.loaded_section_logic = nil
+            Object:ForChunk("xr_logic.Serialize_obj:job_ini", function()
+                st.job_ini = Object:s_stringZ("")
+            end)
+            Object:ForChunk("xr_logic.Serialize_obj:ini_filename", function()
+                st.loaded_ini_filename = Object:s_stringZ("")
+            end)
+            Object:ForChunk("xr_logic.Serialize_obj:section_logic", function()
+                st.loaded_section_logic = Object:s_stringZ("")
+            end)
+        end
+
+		local active_section = tostring(st.active_section)
+		active_section = Object:s_stringZ(active_section)
+
+		local gulag_name = Object:s_stringZ(tostring(st.gulag_name))
+
+		if gulag_name == "nil" then
+			gulag_name = ""
+		end
+
+		st.loaded_active_section = active_section
+		st.loaded_gulag_name = gulag_name
+
+		Serialize_logic(obj, Object)
+		if Object:IsSave() then
+			if st.active_scheme then
+				issue_event(obj, db.storage[npc_id][st.active_scheme], "save")
+			end
+		end
+
+		pstor_Serialize_all(obj, Object)
+	end)
 end
 
 function get_customdata_or_ini_file(npc, filename)

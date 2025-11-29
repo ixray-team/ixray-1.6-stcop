@@ -329,6 +329,14 @@ void CBaseMonster::update_enemy_accessible_and_at_home_info	()
 	}
 }
 
+void CBaseMonster::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CBaseMonster")
+	{
+		inherited::Serialize(Object);
+	}
+}
+
 void CBaseMonster::UpdateCL()
 {
 	PROF_EVENT("CBaseMonster::UpdateCL")

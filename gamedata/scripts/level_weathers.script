@@ -442,6 +442,18 @@ function WeatherManager:save_state(m_data)
 	SetStorageVar(STORAGE_KEY, self.storage)
 end
 
+function WeatherManager:Serialize(F)
+    if F:IsSave() then
+    	SetStorageVar(STORAGE_KEY, self.storage)
+    end
+end
+
+function WeatherManager:Serialize_state(m_data)
+    if F:IsSave() then
+    	SetStorageVar(STORAGE_KEY, self.storage)
+    end
+end
+
 function WeatherManager:select_weather(now)
 end
 

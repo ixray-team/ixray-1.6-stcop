@@ -34,6 +34,14 @@ void CCameraFirstEye::load(IReader& packet)
 	load_data(pitch, packet); 
 }
 
+void CCameraFirstEye::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CCameraFirstEye")
+	{
+		Object << pitch;
+	}
+}
+
 void CCameraFirstEye::UpdateLookat()
 {
 	if(!lookat_active)

@@ -44,7 +44,7 @@ end
 
 ---------------------------------------------------------------------------------------------
 class "generic_physics_binder" (object_binder)
-function generic_physics_binder:__init(obj) super(obj)
+function generic_physics_binder:__init(obj) super(self, obj)
 	self.initialized = false
 	self.loaded = false
 end

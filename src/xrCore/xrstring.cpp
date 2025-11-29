@@ -272,3 +272,16 @@ xr_string xr_string::Join(xrStringVector::iterator beginIter, xrStringVector::it
 
 	return Result;
 }
+
+ISaveObject& operator<<(ISaveObject& Object, xr_string& Value) {
+	if (Object.IsSave()) {
+		shared_str temp = Value.c_str();
+		Object << temp;
+	}
+	else {
+		shared_str temp;
+		Object << temp;
+		Value = temp.c_str();
+	}
+	return Object;
+}

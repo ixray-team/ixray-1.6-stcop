@@ -12,7 +12,7 @@
 #include "graph_abstract.h"
 #include "../../xrServerEntities/xrServer_Object_Base.h"
 #include "spawn_constructor_space.h"
-#include "server_entity_wrapper.h"
+#include "../../xrServerEntities/server_entity_wrapper.h"
 
 class CSE_Abstract;
 class CLevelSpawnConstructor;

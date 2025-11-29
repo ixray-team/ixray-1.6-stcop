@@ -31,6 +31,8 @@ public:
 			void			init_functors	(xr_vector<shared_str>& v_src, task_state_functors& v_dest);
 };
 
+ISaveObject& operator<<(ISaveObject& Object, SScriptTaskHelper& Value);
+
 class SGameTaskObjective : public IPureSerializeObject<IReader, IWriter>
 {
     friend struct SGameTaskKey;
@@ -100,6 +102,7 @@ public:
 
     void save(IWriter& stream) override;
     void load(IReader& stream) override;
+    virtual void serialize(ISaveObject& Object);
 
 private:
     void SendInfo(const xr_vector<shared_str>&);
@@ -155,6 +158,12 @@ public:
     void CommitScriptHelperContents();
 };
 
+inline ISaveObject& operator<<(ISaveObject& Object, SGameTaskObjective& Value)
+{
+    Value.serialize(Object);
+    return Object;
+}
+
 using OBJECTIVES_VECTOR = xr_vector<SGameTaskObjective>;
 
 class CGameTask : public SGameTaskObjective
@@ -180,6 +189,7 @@ public:
 
     void save(IWriter& stream) override;
     void load(IReader& stream) override;
+    void serialize(ISaveObject& Object) override;
 
     void ChangeStateCallback() override;
 

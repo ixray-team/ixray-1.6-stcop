@@ -3471,6 +3471,16 @@ void CWeaponMagazined::load(IReader &input_packet)
 	load_data		(m_iCurFireMode, input_packet);
 }
 
+void CWeaponMagazined::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CWeaponMagazined")
+	{
+		inherited::Serialize(Object);
+		Object << m_iQueueSize << m_iShotNum << m_iCurFireMode;
+		SetQueueSize(m_iQueueSize);
+	}
+}
+
 void CWeaponMagazined::net_Export	(NET_Packet& P)
 {
 	inherited::net_Export (P);

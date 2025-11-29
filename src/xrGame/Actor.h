@@ -683,10 +683,11 @@ public:
 	void						net_Relcase			( CObject* O ) override;					//
 	virtual void 				on_requested_spawn  (CObject *object);
 	//object serialization
-	void						save				(NET_Packet &output_packet) override;
-	void						load				(IReader &input_packet) override;
-	void						net_Save			(NET_Packet& P) override;
-	bool						net_SaveRelevant	() override;
+	virtual void						save				(NET_Packet &output_packet) override;
+	virtual void						load				(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
+	virtual void						net_Save			(NET_Packet& P) override;
+	virtual	bool						net_SaveRelevant	() override;
 protected:
 	xr_deque<net_update>	NET;
 	Fvector					NET_SavedAccel;

@@ -90,7 +90,47 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, const char* game_name)
 	chunk0->close				();
 }
 
-void CALifeSpawnRegistry::load				(const char* spawn_name)
+void CALifeSpawnRegistry::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CALifeSpawnRegistry")
+	{
+		if (Object.IsSave())
+		{
+			Msg("* Saving spawns...");
+
+			auto GUID = header().guid();
+			Object << m_spawn_name << GUID;
+
+			serialize_updates(Object);
+		}
+		else
+		{
+			xrGUID GUID;
+			Object << m_spawn_name << GUID;
+
+			string_path file_name;
+
+			if (g_pGamePersistent->GameType() == eGameIDSingle)
+			{
+				bool file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
+				R_ASSERT(file_exists, "Can't find spawn file:", *m_spawn_name);
+			}
+			else
+			{
+				bool file_exists = !!FS.exist(file_name, "level", "alife", ".spawn");
+				R_ASSERT(file_exists, "Can't find spawn file:", "alife.spawn");
+			}
+
+			VERIFY(!m_file);
+			m_file = FS.r_open(file_name);
+			load(*m_file,&GUID);
+
+			serialize_updates(Object);
+		}
+	}
+}
+
+void CALifeSpawnRegistry::load				(LPCSTR spawn_name)
 {
 	Msg							("* Loading spawn registry...");
 	m_spawn_name				= spawn_name;
@@ -165,7 +205,12 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	chunk->close				();
 	R_ASSERT2					(!save_guid || (*save_guid == header().guid()) || ignore_save_incompatibility(),"Saved game doesn't correspond to the spawn : DELETE SAVED GAME!");
 
-	chunk						= file_stream.open_chunk(1);
+	chunk = file_stream.open_chunk(SpawnFileChunks::SpawnGraphOld);
+	if (!chunk)
+	{
+		chunk = file_stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
+		IVERIFY(chunk);
+	}
 	m_spawns.load				(*chunk);
 	chunk->close				();
 
@@ -255,6 +300,50 @@ void CALifeSpawnRegistry::load_updates		(IReader &stream)
 		const SPAWN_GRAPH::CVertex	*vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
 		VERIFY						(vertex);
 		vertex->data()->load_update	(*chunk);
+	}
+}
+
+void CALifeSpawnRegistry::serialize_updates(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CALifeSpawnRegistry::m_spawns")
+	{
+		if (Object.IsSave())
+		{
+			auto Value = m_spawns.vertices().size();
+			Object << Value;
+			BEGIN_ARRAY(Object)
+			{
+				for (auto& elem : m_spawns.vertices())
+				{
+					BEGIN_CHUNK(Object, "CALifeSpawnRegistry::m_spawns::vertex")
+					{
+						u16 VertexID = elem.second->vertex_id();
+						Object << VertexID;
+						elem.second->data()->serialize_update(Object);
+					}
+				}
+			}
+		}
+		else
+		{
+			u64 Value;
+			Object << Value;
+			u16 vertex_id;
+			BEGIN_ARRAY(Object)
+			{
+				for (auto& elem : m_spawns.vertices())
+				{
+					BEGIN_CHUNK(Object, "CALifeSpawnRegistry::m_spawns::vertex")
+					{
+						Object << vertex_id;
+						VERIFY(ALife::_SPAWN_ID(-1) > vertex_id);
+						auto vertex = m_spawns.vertex(ALife::_SPAWN_ID(vertex_id));
+						VERIFY(vertex);
+						elem.second->data()->serialize_update(Object);
+					}
+				}
+			}
+		}
 	}
 }
 

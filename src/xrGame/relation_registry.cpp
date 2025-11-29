@@ -47,6 +47,18 @@ void RELATION_DATA::save (IWriter& stream)
 	save_data(communities, stream);
 }
 
+void RELATION_DATA::serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "RELATION_DATA::personal")
+	{
+		Object << personal;
+	}
+	BEGIN_CHUNK(Object, "RELATION_DATA::communities")
+	{
+		Object << communities;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 RELATION_REGISTRY::RELATION_MAP_SPOTS::RELATION_MAP_SPOTS()

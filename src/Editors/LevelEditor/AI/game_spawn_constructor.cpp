@@ -12,9 +12,11 @@
 #include "../../xrServerEntities/xrServer_Objects.h"
 #include "../../xrServerEntities/xrServer_Objects_Abstract.h"
 #include "../../xrServerEntities/xrServer_Objects_ALife_All.h"
-#include "server_entity_wrapper.h"
+#include "../../xrServerEntities/server_entity_wrapper.h"
 #include "graph_engine_editor.h"
 #include "patrol_path_storage.h"
+#include "../../../xrCore/Save/MemoryBuffer.h"
+#include "../../../xrCore/Save/SaveManager.h"
 
 extern const char* GAME_CONFIG;
 
@@ -162,31 +164,98 @@ bool CGameSpawnConstructor::save_spawn				(const char* name, const char* output)
 	m_spawn_header.m_spawn_count	= spawn_graph().vertex_count();
 	m_spawn_header.m_level_count	= (u32)m_level_spawns.size();
 	
-	stream.open_chunk				(0);
-	stream.w_u32					(m_spawn_header.m_version);
-	save_data						(m_spawn_header.m_guid,stream);
-	save_data						(m_spawn_header.m_graph_guid,stream);
-	stream.w_u32					(m_spawn_header.m_spawn_count);
-	stream.w_u32					(m_spawn_header.m_level_count);
-	stream.close_chunk				();
-	
-	stream.open_chunk				(1);
-	save_data						(spawn_graph(),stream);
-	stream.close_chunk				();
+	stream.open_chunk(SpawnFileChunks::Header);
+	stream.w_u32(m_spawn_header.m_version);
+	save_data(m_spawn_header.m_guid,stream);
+	save_data(m_spawn_header.m_graph_guid,stream);
+	stream.w_u32(m_spawn_header.m_spawn_count);
+	stream.w_u32(m_spawn_header.m_level_count);
+	stream.close_chunk();
 
-	stream.open_chunk				(2);
-	save_data						(m_level_points,stream);
-	stream.close_chunk				();
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
+		auto& graph = spawn_graph();
 
-	stream.open_chunk				(3);
-	save_data						(m_patrol_path_storage,stream);
-	stream.close_chunk				();
+		stream.open_chunk(GraphAbstractChunks::VerticesNum);
+		stream.w_u32(graph.vertex_count());
+		stream.close_chunk();
 
-	stream.open_chunk				(4);
-	m_game_graph->save				(stream);
-	stream.close_chunk				();
+		stream.open_chunk(GraphAbstractChunks::VerticesData);
+		auto I = graph.vertices().begin();
+		auto E = graph.vertices().end();
+		SSaveTask dummy;
+		for (int i=0; I != E; ++I)
+		{
+			stream.open_chunk(i);
+			{
+				stream.open_chunk(GraphAbstractVertexChunks::ID);
+				save_data(I->second->vertex_id(),stream);
+				stream.close_chunk();
 
-	return	stream.save_to(*spawn_name(output));
+				stream.open_chunk(GraphAbstractVertexChunks::Data);
+
+				auto& obj = I->second->data()->object();
+				auto SaveObjPtr = CSaveManager::GetInstance().EditorBeginSave();
+				auto& SaveObj = *SaveObjPtr;
+				shared_str temp = obj.name();
+				SaveObj << temp;
+				obj.Spawn_Serialize(SaveObj, true);
+				obj.UPDATE_Serialize(SaveObj);
+				CMemoryBuffer buff;
+				buff.Write(ESaveVariableType::t_chunk);
+				SaveObj.Write(&buff, &dummy);
+				buff.Write((IWriter*)(&stream));
+				xr_delete(SaveObjPtr);
+				
+				stream.close_chunk();
+			}
+			stream.close_chunk();
+		}
+		stream.close_chunk();
+
+		stream.open_chunk(GraphAbstractChunks::Edges);
+		{
+			for (auto& Vertex : graph.vertices())
+			{
+				if (Vertex.second->edges().empty())
+				{
+					continue;
+				}
+				save_data(Vertex.second->vertex_id(),stream);
+
+				stream.w_u32(Vertex.second->edges().size());
+				for (auto& Edge : Vertex.second->edges())
+				{
+					save_data(Edge.vertex_id(),stream);
+					save_data(Edge.weight(),stream);
+				}
+			}
+		}
+		stream.close_chunk();
+		
+		stream.close_chunk();
+		
+	} else
+	{
+		stream.open_chunk(SpawnFileChunks::SpawnGraphOld);
+		save_data(spawn_graph(),stream);
+		stream.close_chunk();
+	}
+
+	stream.open_chunk(SpawnFileChunks::LevelPoints);
+	save_data(m_level_points,stream);
+	stream.close_chunk();
+
+	stream.open_chunk(SpawnFileChunks::PatrolPathStorage);
+	save_data(m_patrol_path_storage,stream);
+	stream.close_chunk();
+
+	stream.open_chunk(SpawnFileChunks::GameGraph);
+	m_game_graph->save(stream);
+	stream.close_chunk();
+
+	return stream.save_to(*spawn_name(output));
 }
 
 bool CGameSpawnConstructor::save_spawn(const char* name, CMemoryWriter& stream)
@@ -197,7 +266,7 @@ bool CGameSpawnConstructor::save_spawn(const char* name, CMemoryWriter& stream)
 	m_spawn_header.m_spawn_count = spawn_graph().vertex_count();
 	m_spawn_header.m_level_count = (u32)m_level_spawns.size();
 
-	stream.open_chunk(0);
+	stream.open_chunk(SpawnFileChunks::Header);
 	stream.w_u32(m_spawn_header.m_version);
 	save_data(m_spawn_header.m_guid, stream);
 	save_data(m_spawn_header.m_graph_guid, stream);
@@ -205,9 +274,76 @@ bool CGameSpawnConstructor::save_spawn(const char* name, CMemoryWriter& stream)
 	stream.w_u32(m_spawn_header.m_level_count);
 	stream.close_chunk();
 
-	stream.open_chunk(1);
-	save_data(spawn_graph(), stream);
-	stream.close_chunk();
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		stream.open_chunk(SpawnFileChunks::SpawnGraphNew);
+		auto& graph = spawn_graph();
+
+		stream.open_chunk(GraphAbstractChunks::VerticesNum);
+		stream.w_u32(graph.vertex_count());
+		stream.close_chunk();
+
+		stream.open_chunk(GraphAbstractChunks::VerticesData);
+		auto I = graph.vertices().begin();
+		auto E = graph.vertices().end();
+		SSaveTask dummy;
+		for (int i=0; I != E; ++I)
+		{
+			stream.open_chunk(i);
+			{
+				stream.open_chunk(GraphAbstractVertexChunks::ID);
+				save_data(I->second->vertex_id(),stream);
+				stream.close_chunk();
+
+				stream.open_chunk(GraphAbstractVertexChunks::Data);
+
+				auto& obj = I->second->data()->object();
+				auto SaveObjPtr = CSaveManager::GetInstance().EditorBeginSave();
+				auto& SaveObj = *SaveObjPtr;
+				shared_str temp = obj.name();
+				SaveObj << temp;
+				obj.Spawn_Serialize(SaveObj, true);
+				obj.UPDATE_Serialize(SaveObj);
+				CMemoryBuffer buff;
+				buff.Write(ESaveVariableType::t_chunk);
+				SaveObj.Write(&buff, &dummy);
+				buff.Write((IWriter*)(&stream));
+				xr_delete(SaveObjPtr);
+				
+				stream.close_chunk();
+			}
+			stream.close_chunk();
+		}
+		stream.close_chunk();
+
+		stream.open_chunk(GraphAbstractChunks::Edges);
+		{
+			for (auto& Vertex : graph.vertices())
+			{
+				if (Vertex.second->edges().empty())
+				{
+					continue;
+				}
+				save_data(Vertex.second->vertex_id(),stream);
+
+				stream.w_u32(Vertex.second->edges().size());
+				for (auto& Edge : Vertex.second->edges())
+				{
+					save_data(Edge.vertex_id(),stream);
+					save_data(Edge.weight(),stream);
+				}
+			}
+		}
+		stream.close_chunk();
+		
+		stream.close_chunk();
+		
+	} else
+	{
+		stream.open_chunk(SpawnFileChunks::SpawnGraphOld);
+		save_data						(spawn_graph(),stream);
+		stream.close_chunk				();
+	}
 
 	stream.open_chunk(2);
 	save_data(m_level_points, stream);

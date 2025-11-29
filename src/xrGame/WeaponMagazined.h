@@ -179,8 +179,9 @@ public:
 			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 
-	virtual void	save				(NET_Packet &output_packet);
-	virtual void	load				(IReader &input_packet);
+	virtual void	save				(NET_Packet &output_packet) override;
+	virtual void	load				(IReader &input_packet) override;
+	virtual void Serialize(ISaveObject& Object) override;
 
 	virtual void OnMotionMark(u8 state, const motion_marks&);
 	virtual bool WpnCanShoot() const { return true; }

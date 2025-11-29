@@ -90,7 +90,8 @@ void CLevel::ClientReceive()
 
 		switch (m_type)
 		{
-		case M_SPAWN:			
+		case M_SPAWN:
+		case M_SPAWN_LOCAL:
 			{
 				if (!bReady) //!m_bGameConfigStarted || 
 				{

@@ -962,7 +962,11 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 
 		-- добавляем возможность указать приоритет уникальной работы в секции логики.(по дефолту её приоритет равен 45-ти)
 		local new_prior = utils.cfg_get_number(job_ini_file, "logic@"..work_field, "prior", nil , false, 45)
-
+		if new_prior >= 255 then
+			abort("Ini file ["..ini_path.."], sect ["..sect.."]: invalid job prior! Must be in range [0; 254]")
+            new_prior = 255
+		end
+        
 		-- Проверяем есть ли у работы поле suitable. Если есть, нам нужно добавить прекондишн
 		local job_suitable = utils.cfg_get_string(job_ini_file, "logic@"..work_field, "suitable", smart, false, "")
 		local is_monster = utils.cfg_get_bool(job_ini_file, "logic@"..work_field, "monster_job", smart, false, false)

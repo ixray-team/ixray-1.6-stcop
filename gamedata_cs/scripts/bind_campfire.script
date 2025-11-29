@@ -9,7 +9,7 @@ function bind(obj)
 end
 
 class "campfire_binder" (object_binder)
-function campfire_binder:__init(obj) super(obj)
+function campfire_binder:__init(obj) super(self, obj)
 	self.campfire = obj:get_campfire()
 end
 function campfire_binder:net_spawn(server_object)

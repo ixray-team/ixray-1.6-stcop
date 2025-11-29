@@ -24,6 +24,7 @@
 #include "../../xrUI/Widgets/UIProgressShape.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "PhysicsShellHolder.h"
+#include "SaveObjectHelpers.h"
 
 CUIProgressShape* g_MissileForceShape = nullptr;
 u8 CMissile::m_uSlotToRestore = NO_ACTIVE_SLOT;
@@ -204,7 +205,14 @@ void CMissile::spawn_fake_missile()
 		alife_object->m_flags.set	(CSE_ALifeObject::flCanSave,false);
 
 		NET_Packet			P;
-		object->Spawn_Write	(P,true);
+		if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+		{
+			SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *object);
+		}
+		else
+		{
+			object->Spawn_Write	(P,true);
+		}
 		Level().Send		(P,net_flags(true));
 		F_entity_Destroy	(object);
 	}

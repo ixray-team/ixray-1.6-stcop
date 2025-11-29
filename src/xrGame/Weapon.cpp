@@ -38,6 +38,8 @@
 
 #include <algorithm>
 
+#include "SaveObjectHelpers.h"
+
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
@@ -1216,6 +1218,26 @@ void CWeapon::load(IReader &input_packet)
 	ProcessScope();
 }
 
+void CWeapon::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CWeapon")
+	{
+		inherited::Serialize(Object);
+		Object << iAmmoElapsed << m_cur_scope << m_flagsAddOnState << m_ammoType << m_zoom_params.m_bIsZoomModeNow;
+
+		if (!Object.IsSave()) {
+			UpdateAddonsVisibility();
+			if (m_zoom_params.m_bIsZoomModeNow) {
+				OnZoomIn();
+			}
+			else {
+				OnZoomOut();
+			}
+		}
+
+	}
+}
+
 void CWeapon::OnEvent(NET_Packet& P, u16 type) 
 {
 	switch (type)
@@ -2198,13 +2220,24 @@ void CWeapon::SpawnAmmo(u32 boxCurr, const char* ammoSect, ALife::_OBJECT_ID Par
 		{
 			l_pA->a_elapsed			= (u16)(boxCurr > l_pA->m_boxSize ? l_pA->m_boxSize : boxCurr);
 			NET_Packet				P;
-			D->Spawn_Write			(P, true);
+			if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+			{
+				SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *D);
+			}
+			else
+			{
+				D->Spawn_Write			(P, true);
+			}
 			Level().Send			(P,net_flags(true));
 
-			if(boxCurr > l_pA->m_boxSize) 
+			if(boxCurr > l_pA->m_boxSize)
+			{
 				boxCurr				-= l_pA->m_boxSize;
-			else 
+			}
+			else
+			{
 				boxCurr				= 0;
+			}
 		}
 	}
 	F_entity_Destroy				(D);

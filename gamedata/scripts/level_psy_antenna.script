@@ -84,6 +84,11 @@ function PsyAntenna:save				(packet)
 	packet:r_u32								(self.phase)
 	set_save_marker(packet, "save", true, "psy_antenna")
 end
+function PsyAntenna:Serialize				(Object)
+	Object:ForChunk("psy_antenna", function()
+		self.phase = Object:s_u32(self.phase)
+	end)
+end
 
 function PsyAntenna:is_idle_time		(tm)
 	if tm>=13 and tm<14 then 			return true;

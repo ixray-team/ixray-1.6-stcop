@@ -153,6 +153,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet);
 	virtual void load(IReader& input_packet);
+	virtual void Serialize(ISaveObject& Object);
 	virtual bool net_SaveRelevant() { return true; }
 	void SetDrawCost(bool state) { m_draw_cost = state; }
 	virtual void render_item_ui() {}; //when in slot & query return true

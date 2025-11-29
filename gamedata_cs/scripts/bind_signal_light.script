@@ -8,7 +8,7 @@ end
 
 ---------------------------------------------------------------------------------------------
 class "signal_light_binder" (object_binder)
-function signal_light_binder:__init(obj) super(obj)
+function signal_light_binder:__init(obj) super(self, obj)
     self.need_turn_off = true
 --	self.initialized = false
 	self.loaded = false

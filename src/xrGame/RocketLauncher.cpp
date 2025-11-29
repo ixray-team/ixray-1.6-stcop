@@ -9,6 +9,7 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "Level.h"
 #include "ai_object_location.h"
+#include "SaveObjectHelpers.h"
 #include "../xrEngine/IGame_Persistent.h"
 
 void CRocketLauncher::Load(const char* section)
@@ -39,7 +40,14 @@ void CRocketLauncher::SpawnRocket(const shared_str& rocket_section, CGameObject*
 	D->RespawnTime = 0;
 
 	NET_Packet P;
-	D->Spawn_Write(P, true);
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *D);
+	}
+	else
+	{
+		D->Spawn_Write(P, true);
+	}
 	Level().Send(P, net_flags(true));
 	F_entity_Destroy(D);
 }

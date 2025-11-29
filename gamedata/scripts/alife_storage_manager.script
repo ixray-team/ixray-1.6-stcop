@@ -57,6 +57,12 @@ function CALifeStorageManager_before_save(fname)
 	end
 	
 	m_data.GAME_VERSION = GAME_VERSION
+    if not m_data.se_object then
+        m_data.se_object = {}
+    end
+    if not m_data.game_object then
+        m_data.game_object = {}
+    end
 	
 	SendScriptCallback("save_state", m_data)
 	

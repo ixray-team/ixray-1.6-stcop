@@ -48,7 +48,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 class "motivator_binder" (object_binder)
 
-function motivator_binder:__init (obj) super(obj)
+function motivator_binder:__init (obj) super(self, obj)
 	self.loaded = false
 	self.last_update = 0
 	----memusage.collect_info(self.object, "__init")

@@ -670,16 +670,22 @@ void CGamePersistent::start_game_intro		()
 
 void CGamePersistent::update_game_intro()
 {
+	auto func = [&]()
+	{
+		m_intro_event = nullptr;
+		// Engine timers starts ticking here, after game really starts (including finished intro)
+		//CBinderManager::GetInstance().NotifyLoadFinished(); 
+	};
 	if(m_intro && (false==m_intro->IsActive()))
 	{
 		xr_delete				(m_intro);
 		Msg("intro_delete ::update_game_intro");
-		m_intro_event			= nullptr;
+		func();
 	}
 	else
 	if(!m_intro)
 	{
-		m_intro_event			= nullptr;
+		func();
 	}
 }
 

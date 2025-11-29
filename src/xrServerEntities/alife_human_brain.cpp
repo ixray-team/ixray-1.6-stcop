@@ -113,3 +113,11 @@ void CALifeHumanBrain::on_state_read		(NET_Packet &packet)
 		load_data						(m_cpMainWeaponPreferences,packet);
 	}
 }
+
+void CALifeHumanBrain::on_state_serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CALifeHumanBrain::State")
+	{
+		Object << m_cpEquipmentPreferences << m_cpMainWeaponPreferences;
+	}
+}

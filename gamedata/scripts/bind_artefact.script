@@ -13,9 +13,6 @@ function artefact_binder:__init(obj) super(obj)
 	db.storage[self.object:id()] = { }
 end
 function artefact_binder:net_spawn(server_object)
-	if not object_binder.net_spawn(self, server_object) then
-		return false
-	end
 	db.add_obj(self.object)
 	local artefact = self.object:get_artefact()
 	local id = self.object:id()
@@ -34,7 +31,6 @@ function artefact_binder:net_spawn(server_object)
 	return true
 end
 function artefact_binder:update(delta)
-	object_binder.update(self, delta)
 	printf("pl:art [%s] pos %s", self.object:name(), vec_to_str(self.object:position()))
 	
 	SendScriptCallback("artefact_on_update", self, self.object)
@@ -66,5 +62,4 @@ function artefact_binder:update(delta)
 end
 function artefact_binder:net_destroy(server_object)
 	db.del_obj(self.object)
-	object_binder.net_destroy(self)
 end

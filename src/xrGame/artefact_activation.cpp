@@ -21,6 +21,7 @@
 #include "xrServer_Objects_ALife_Monsters.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "restriction_space.h"
+#include "SaveObjectHelpers.h"
 #include "../xrEngine/IGame_Persistent.h"
 
 SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)
@@ -178,33 +179,38 @@ void SArtefactActivation::SpawnAnomaly()
 	float zone_radius	= (float)atof(_GetItem(str,1,tmp));
 	const char* zone_sect	= _GetItem(str,0,tmp); //must be last call of _GetItem... (const char* !!!)
 
-		Fvector pos;
-		m_af->Center(pos);
-		CSE_Abstract		*object = Level().spawn_item(	zone_sect,
-															pos,
-															(g_dedicated_server)?u32(-1):m_af->ai_location().level_vertex_id(),
-															ALife::INVALID_OBJECT_ID,
-															true
-		);
-		CSE_ALifeAnomalousZone*		AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);
-		VERIFY(AlifeZone);
-		CShapeData::shape_def		_shape;
-		_shape.data.sphere.P.set	(0.0f,0.0f,0.0f);
-		_shape.data.sphere.R		= zone_radius;
-		_shape.type					= CShapeData::cfSphere;
-		AlifeZone->assign_shapes	(&_shape,1);
-//		AlifeZone->m_maxPower		= zone_power;
-		AlifeZone->m_owner_id		= m_owner_id;
-		AlifeZone->m_space_restrictor_type	= RestrictionSpace::eRestrictorTypeNone;
+	Fvector pos;
+	m_af->Center(pos);
+	CSE_Abstract		*object = Level().spawn_item(	zone_sect,
+														pos,
+														(g_dedicated_server)?u32(-1):m_af->ai_location().level_vertex_id(),
+														ALife::INVALID_OBJECT_ID,
+														true
+	);
+	CSE_ALifeAnomalousZone*		AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);
+	VERIFY(AlifeZone);
+	CShapeData::shape_def		_shape;
+	_shape.data.sphere.P.set	(0.0f,0.0f,0.0f);
+	_shape.data.sphere.R		= zone_radius;
+	_shape.type					= CShapeData::cfSphere;
+	AlifeZone->assign_shapes	(&_shape,1);
+	AlifeZone->m_owner_id		= m_owner_id;
+	AlifeZone->m_space_restrictor_type	= RestrictionSpace::eRestrictorTypeNone;
 
-		NET_Packet					P;
+	NET_Packet					P;
+	if (EngineExternal()[EEngineExternalSystem::AdvancedSerialization])
+	{
+		SaveObjectNetPacketHelper::PrepareLocalSpawnPacket(P, *object);
+	}
+	else
+	{
 		object->Spawn_Write			(P,true);
-		Level().Send				(P,net_flags(true));
-		F_entity_Destroy			(object);
-//. #ifdef DEBUG
-		Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);
-//. #endif
+	}
+	Level().Send				(P,net_flags(true));
+	F_entity_Destroy			(object);
+	Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);
 }
+
 shared_str clear_brackets(const char* src)
 {
 	if	(0==src)					return	shared_str(0);

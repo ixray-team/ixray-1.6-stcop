@@ -119,4 +119,11 @@ typedef _vector2<int>		Ivector2;
 template <class T>
 bool	_valid			(const _vector2<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y);	}
 
+template<typename T>
+ISaveObject& operator<<(ISaveObject& Object, _vector2<T>& data)
+{
+	Object << data.x << data.y;
+	return Object;
+}
+
 #endif

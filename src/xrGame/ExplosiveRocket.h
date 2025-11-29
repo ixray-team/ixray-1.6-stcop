@@ -61,6 +61,7 @@ public:
 
 	virtual void save(NET_Packet& output_packet) override { inherited::save(output_packet); }
 	virtual void load(IReader& input_packet) override { inherited::load(input_packet); }
+	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); }
 	virtual bool net_SaveRelevant() override { return inherited::net_SaveRelevant(); }
 
 	virtual void OnH_A_Chield() override { inherited::OnH_A_Chield(); }

@@ -96,6 +96,8 @@ enum class EEngineExternalPlatform : u8
 
 enum class EEngineExternalSystem : u8
 {
+	AdvancedSerialization,
+	AdvancedSerializationDebugLog,
 	EngineScriptStoryID,
 	CustomMessageInClipboardOnCrash,
 	DisablePause,

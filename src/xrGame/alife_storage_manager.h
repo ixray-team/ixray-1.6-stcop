@@ -22,14 +22,14 @@ protected:
 	const char*			m_section;
 private:
 			void	prepare_objects_for_save();
-			void	load					(void *buffer, const u32 &buffer_size, const char* file_name);
+			void	load					(IReader* stream, const char* file_name);
 
 public:
 	xr_vector<u8> marshal_save_data;
 	IC				CALifeStorageManager	(xrServer *server, const char* section);
 	virtual			~CALifeStorageManager	();
 			bool	load					(const char*	save_name = 0);
-			void	save					(const char*	save_name = 0, bool update_name = true);
+			void	save					(const char*	save_name = 0, bool update_name = true, bool non_async = false);
 			void	save					(NET_Packet &net_packet);
 };
 

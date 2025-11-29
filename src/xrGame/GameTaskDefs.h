@@ -38,6 +38,7 @@ struct SGameTaskKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 
 	virtual void 	save								(IWriter &stream);
 	virtual void 	load								(IReader &stream);
+	virtual void serialize(ISaveObject& Object);
 	virtual void 	destroy								();
 
 	IC CGameTask* getGameTask(void) const { return game_task; }
@@ -46,6 +47,8 @@ struct SGameTaskKey : public IPureSerializeObject<IReader,IWriter>,public IPureD
 private:
 	CGameTask* game_task;
 };
+
+ISaveObject& operator<<(ISaveObject& Object, SGameTaskKey& Data);
 
 using vGameTasks = xr_vector<SGameTaskKey>;
 using vGameTasks_it = vGameTasks::iterator;
