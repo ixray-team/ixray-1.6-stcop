@@ -1005,6 +1005,8 @@ public:
 	float GetGasmaskCondition();
 	bool GetAnimatorForceHideItems();
 	void SetAnimatorForceHideItems(bool status);
+	void ShowStateAnimator(LPCSTR section);
+	void HideStateAnimator();
 	bool IsInCar();
 	void IterateFeelTouch(const luabind::functor<bool>& functor);
 			bool IsActorLadder() const;
