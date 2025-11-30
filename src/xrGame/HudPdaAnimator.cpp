@@ -50,10 +50,10 @@ void CHudPdaAnimator::Update()
 
 	if (auto ui = CurrentGameUI())
 	{
-		if (ui->PdaMenu().IsShown())
+		if (ui->PdaMenu()->IsShown())
 		{
-			ui->PdaMenu().Enable(m_bIsEnabled);
-			ui->PdaMenu().Update();
+			ui->PdaMenu()->Enable(m_bIsEnabled);
+			ui->PdaMenu()->Update();
 		}
 	}
 
@@ -152,7 +152,7 @@ void CHudPdaAnimator::OnAnimationEnd(u32 state)
 
 		if (auto ui = CurrentGameUI())
 		{
-			ui->PdaMenu().HideDialog();
+			ui->PdaMenu()->HideDialog();
 		}
 
 		m_manager->Parent()->set_inventory_disabled(false);
@@ -228,8 +228,8 @@ void CHudPdaAnimator::OnStateSwitch(u32 state)
 
 		if (auto ui = CurrentGameUI())
 		{
-			ui->PdaMenu().ShowDialog(false);
-			ui->PdaMenu().Enable(false);
+			ui->PdaMenu()->ShowDialog(false);
+			ui->PdaMenu()->Enable(false);
 		}
 	}break;
 	case eIdle:

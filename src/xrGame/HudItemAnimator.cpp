@@ -301,7 +301,7 @@ void CBackpackAnimator::OnAnimationEnd(u32 state)
 		{
 			if (auto ui = CurrentGameUI())
 			{
-				if (!ui->ActorMenu().IsShown())
+				if (!ui->ActorMenu()->IsShown())
 				{
 					ui->ShowActorMenu();
 				}

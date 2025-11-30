@@ -2388,7 +2388,7 @@ void CActor::RenderItemUI()
 	CHudPdaAnimator* pdaAnimator = HudAnimator()->PdaAnimator();
 	if (pdaAnimator != nullptr && pdaAnimator->IsActive())
 	{
-		CUIPdaWnd* PdaMenu = &CurrentGameUI()->PdaMenu();
+		CUIPdaWnd* PdaMenu = CurrentGameUI()->PdaMenu();
 		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
 
 		if (PdaMenu->IsShown())

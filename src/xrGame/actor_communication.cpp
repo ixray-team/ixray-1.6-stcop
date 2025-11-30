@@ -84,7 +84,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion) const
                 break;
             default: NODEFAULT;
             };
-			CurrentGameUI()->PdaMenu().PdaContentsChanged(p);
+			CurrentGameUI()->PdaMenu()->PdaContentsChanged(p);
         }
         
         if (CurrentGameUI())
@@ -123,7 +123,7 @@ void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 	if ( CurrentGameUI() )
 	{
 		CurrentGameUI()->UIMainIngameWnd->ReceiveNews(&news_data);
-		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::news);
+		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::news);
 	}
 }
 
@@ -253,14 +253,14 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 
 	Level().MapManager().AddRelationLocation		( pInvOwner );
 
-	CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::contacts);
+	CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
 }
 
 void CActor::LostPdaContact		(CInventoryOwner* pInvOwner)
 {
 	Level().MapManager().RemoveRelationLocation(pInvOwner);
 
-	CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::contacts);
+	CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::contacts);
 }
 
 void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
