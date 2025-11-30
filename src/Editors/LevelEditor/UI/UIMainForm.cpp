@@ -37,7 +37,7 @@ UIMainForm::UIMainForm()
 	m_WorldProperties = new UIWorldPropertiesFrom();
 	m_Render->SetContextMenuEvent(TOnRenderContextMenu(this, &UIMainForm::DrawContextMenu));
 	m_Render->SetToolBarEvent(TOnRenderToolBar(this, &UIMainForm::DrawRenderToolBar));
-	m_Render->OnFocusCallback = ViewportFocusCallback;
+	m_Render->OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	// Action
 	m_tMenu         = EDevice->Resources->_CreateTexture("ed\\bar\\menu");
