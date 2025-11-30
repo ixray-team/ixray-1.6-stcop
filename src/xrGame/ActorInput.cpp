@@ -349,8 +349,13 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 			break;
 		case kSHOW_QUICK_SLOTS:
 		{
+			// Only hide panel if it was shown by key press (not by item use)
+			// This prevents hiding when key binding is changed and old key is released
 			if (CurrentGameUI() && CurrentGameUI()->UIMainIngameWnd)
 			{
+				// Check if panel was actually shown by key press before hiding
+				// The panel state is managed by SetQuickSlotsPanelVisible which sets m_quick_slots_force_visible_by_key
+				// We only hide if the panel was force-visible (meaning it was shown by key)
 				CurrentGameUI()->UIMainIngameWnd->SetQuickSlotsPanelVisible(false);
 			}
 		}

@@ -90,10 +90,11 @@ public:
 
 protected:
 	// Panel fade state
-	bool				m_quick_slots_visible = false;
-	bool				m_quick_slots_force_visible = false;
-	float				m_quick_slots_alpha = 0.0f; //
-	float				m_quick_slots_last_interaction_time = -1000.0f;
+	bool				m_quick_slots_visible = false; // Temporary visibility (auto-hides after delay)
+	bool				m_quick_slots_force_visible = false; // Forced visibility (manual toggle, blocks auto-hide)
+	bool				m_quick_slots_force_visible_by_key = false; // Track if force visibility was set by key press
+	float				m_quick_slots_alpha = 0.0f; // Alpha value for fade effect (0.0 = transparent, 1.0 = opaque)
+	float				m_quick_slots_last_interaction_time = 0.0f; // Timestamp of last interaction for auto-hide timer
 
 protected:
 
