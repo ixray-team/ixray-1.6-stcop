@@ -96,7 +96,7 @@ static MStatus extract_bones(MFnSkinCluster& skin_fn, xr_bone_vec& bones)
 
 		unsigned num_parents = joint_fn.parentCount();
 		if (num_parents > 1) {
-			msg("xray_re: can't handle multi-parented joint %s", name);
+			msg("xray_re: can't handle multi-parented joint %s", name.c_str());
 			MGlobal::displayError(MString("xray_re: can't handle multi-parented joint ") + name.c_str());
 			return MS::kInvalidParameter;
 		} else if (num_parents == 1) {
