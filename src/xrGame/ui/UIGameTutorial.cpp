@@ -459,18 +459,18 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 			}
 		}
 
-		if(&CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu().IsShown())
+		if(CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
 			return;
 		}
-		if (&CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd().IsShown())
+		if (CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd()->IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
 			return;
 		}
 
-		if (CurrentGameUI()->PdaMenu().IsShown())
+		if (CurrentGameUI()->PdaMenu()->IsShown())
 		{
 			CurrentGameUI()->HidePdaMenu();
 			return;

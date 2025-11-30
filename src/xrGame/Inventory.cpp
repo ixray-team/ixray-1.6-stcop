@@ -281,9 +281,9 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 		{
 			current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 		}
-		else if(&current_ui->ActorMenu() && current_ui->ActorMenu().GetMenuMode()==mmDeadBodySearch)
+		else if(current_ui->ActorMenu() && current_ui->ActorMenu()->GetMenuMode()==mmDeadBodySearch)
 		{
-			if (m_pOwner == current_ui->ActorMenu().GetPartner())
+			if (m_pOwner == current_ui->ActorMenu()->GetPartner())
 			{
 				current_ui->OnInventoryAction(pIItem, GE_OWNERSHIP_TAKE);
 			}
@@ -1259,9 +1259,9 @@ bool CInventory::Eat(PIItem pIItem)
 				Actor()->callback(GameObject::eUseObject)(pIItem->cast_game_object()->lua_game_object());
 
 			if (pItemToEat->IsUsingCondition() && pItemToEat->GetRemainingUses() < 1 && pItemToEat->CanDelete())
-				CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+				CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
 		
-			CurrentGameUI()->ActorMenu().SetCurrentItem(NULL);
+			CurrentGameUI()->ActorMenu()->SetCurrentItem(NULL);
 		}
 	}
 	else if (IsGameTypeSingle() && Actor()->m_inventory == this)

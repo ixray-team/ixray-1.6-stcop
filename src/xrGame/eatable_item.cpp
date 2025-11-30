@@ -226,9 +226,9 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 			}
 		}
 
-		if (&CurrentGameUI()->ActorMenu())
+		if (CurrentGameUI()->ActorMenu())
 		{
-			CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+			CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
 		}
 	}
 
@@ -285,7 +285,7 @@ void CEatableItem::EatableEffects()
 
 	if (CurrentGameUI())
 	{
-		CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
+		CurrentGameUI()->ActorMenu()->RefreshCurrentItemCell();
 	}
 
 	if (Empty() && CanDelete())
