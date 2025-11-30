@@ -152,7 +152,7 @@ void RenderMainUI()
 			{
 				if (FILE.Select)
 				{
-					Msg("Level For Building : %s", FILE.Name);
+					Msg("Level For Building : %s", FILE.Name.c_str());
 					break;
 				}
 			}

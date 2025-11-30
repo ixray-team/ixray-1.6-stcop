@@ -248,8 +248,8 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 	};
 	if ( m_game_ui )
 	{
-		if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown()) 
-			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+		if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown()) 
+			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
 		return FALSE;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
@@ -264,8 +264,8 @@ BOOL game_cl_Deathmatch::CanCallSkinMenu			()
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if ( m_game_ui )
 	{
-		if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown()) 
-			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+		if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown()) 
+			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
 		return FALSE;
 	}
 	/*if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
@@ -667,8 +667,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	//	StartStopMenu(m_game_ui->m_pInventoryMenu,true);
 	if ( m_game_ui )
 	{
-		if (((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
-			|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown())) && !CanCallInventoryMenu())
+		if (((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
+			|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown())) && !CanCallInventoryMenu())
 			m_game_ui->HideActorMenu();
 	}
 		
@@ -754,8 +754,8 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 		{
 			if (m_game_ui)
 			{
-				if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
-					|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+				if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
+					|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
 				{
 					m_game_ui->HideActorMenu();
 				}
@@ -1120,8 +1120,8 @@ void				game_cl_Deathmatch::OnGameRoundStarted				()
 	}
 	if (pCurBuyMenu) pCurBuyMenu->ClearPreset(_preset_idx_last);
 	//-----------------------------------------------------------------
-	if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
-		|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+	if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
+		|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
 	{
 		m_game_ui->HideActorMenu();
 	}
@@ -1200,8 +1200,8 @@ void game_cl_Deathmatch::OnPlayerFlagsChanged(game_PlayerState* ps)
 	{
 		if ( ps == local_player && m_game_ui)
 		{
-			if ((&m_game_ui->ActorMenu() && m_game_ui->ActorMenu().IsShown())
-				|| (&m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd().IsShown()))
+			if ((m_game_ui->ActorMenu() && m_game_ui->ActorMenu()->IsShown())
+				|| (m_game_ui->InventoryWnd() && m_game_ui->InventoryWnd()->IsShown()))
 				m_game_ui->HideActorMenu();
 		}
 		return;
