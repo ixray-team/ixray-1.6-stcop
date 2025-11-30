@@ -16,13 +16,13 @@ IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtracto
 		const xr_shared_ptr<CSurface>& surf = sp_it->first;
 		int gm_id			= surf->_GameMtl(); 
 		if (gm_id==GAMEMTL_NONE_ID){
-			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->Name(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
+			ELog.DlgMsg(mtError, "%s Object '%s', surface '%s' contain invalid game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(), surf->_Name());
 			bResult 		= FALSE; 
 			break; 
 		}
 		SGameMtl* M 		=  GameMaterialLibraryEditors->GetMaterialByID(gm_id);
 		if (0==M){
-			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->Name(), mesh->Parent()->m_LibName.c_str(),surf->_Name());
+			ELog.DlgMsg		(mtError,"%s Object '%s', surface '%s' contain undefined game material.", mesh->Name().c_str(), mesh->Parent()->m_LibName.c_str(),surf->_Name());
 			bResult 		= FALSE; 
 			break; 
 		}
