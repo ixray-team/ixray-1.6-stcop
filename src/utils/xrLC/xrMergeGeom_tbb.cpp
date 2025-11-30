@@ -4,9 +4,9 @@
 #include "../xrLC_Light/xrDeflector.h"
 
 // TBB Helpers
-extern ICF BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis);
-extern ICF void	MakeCube(Fbox& BB_dest, const Fbox& BB_src);
-extern ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base);
+extern BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis);
+extern void	MakeCube(Fbox& BB_dest, const Fbox& BB_src);
+extern BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base);
 
 IC BOOL	ValidateMergeTBB(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u32 f2, const Fbox& bb, float& volume)
 {
