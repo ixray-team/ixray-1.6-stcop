@@ -457,4 +457,7 @@
 	<string id="st_grenade_frags_hit">
 		<text>Урон от осколков</text>
 	</string>
+	<string id="kb_show_quick_slots">
+		<text>Показать панель быстрого доступа</text>
+	</string>
 </string_table>
