@@ -218,12 +218,12 @@ void HUD_SOUND_COLLECTION::StopAllSounds()
 
 void HUD_SOUND_COLLECTION::LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive, int type)
 {
-	HUD_SOUND_ITEM& snd_item = *FindSoundItem(alias, false);
-	if (&snd_item)
+	HUD_SOUND_ITEM* snd_item = FindSoundItem(alias, false);
+	if (snd_item)
 	{
-		HUD_SOUND_ITEM::LoadSound(section, line, snd_item, type);
-		snd_item.m_alias = alias;
-		snd_item.m_b_exclusive = exclusive;
+		HUD_SOUND_ITEM::LoadSound(section, line, *snd_item, type);
+		snd_item->m_alias = alias;
+		snd_item->m_b_exclusive = exclusive;
 	}
 	else
 	{
