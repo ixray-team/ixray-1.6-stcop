@@ -797,7 +797,7 @@ void CContentView::LoadCustomIcons()
 		else
 		{
 			string_path Path = {};
-			sprintf(Path, "%s%s", "ed\\content_browser\\", el.second);
+			sprintf(Path, "%s%s", "ed\\content_browser\\", el.second.c_str());
 			Icons[el.first.c_str()] = { EDevice->Resources->_CreateTexture(Path),	true };
 		}
 

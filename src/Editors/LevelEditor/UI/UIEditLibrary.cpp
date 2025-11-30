@@ -32,7 +32,7 @@ UIEditLibrary::UIEditLibrary()
 	m_SelectLods = false;
 	m_RealTexture = nullptr;
 
-	View.OnFocusCallback = ViewportFocusCallback;
+	View.OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 
 	SearchList.SetOnItemFocusedEvent({this, &UIEditLibrary::OnItemFocused});
 	SearchList.SetOnItemUnfocusedEvent({this, &UIEditLibrary::OnItemUnfocused});

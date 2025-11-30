@@ -1445,7 +1445,7 @@ void CActor::save(NET_Packet &output_packet)
 	inherited::save(output_packet);
 	CInventoryOwner::save(output_packet);
 	output_packet.w_u8(u8(m_bOutBorder));
-	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu().pUITaskWnd;
+	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu()->pUITaskWnd;
 	if (task_wnd)
 	{
 		output_packet.w_u8(task_wnd->IsTreasuresEnabled() ? 1 : 0);
@@ -1478,7 +1478,7 @@ void CActor::load(IReader &input_packet)
 	inherited::load(input_packet);
 	CInventoryOwner::load(input_packet);
 	m_bOutBorder=!!(input_packet.r_u8());
-	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu().pUITaskWnd;
+	CUITaskWnd* task_wnd = HUD().GetGameUI()->PdaMenu()->pUITaskWnd;
 	if (task_wnd)
 	{
 		task_wnd->TreasuresEnabled(!!input_packet.r_u8());

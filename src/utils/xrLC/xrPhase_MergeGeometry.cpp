@@ -27,7 +27,7 @@ struct data_material
 };
 
 // Stuff For need
-ICF void	MakeCube(Fbox& BB_dest, const Fbox& BB_src)
+void	MakeCube(Fbox& BB_dest, const Fbox& BB_src)
 {
 	Fvector C, D;
 	BB_src.get_CD(C, D);
@@ -58,7 +58,7 @@ ICF BOOL	FaceEqual(Face* F1, Face* F2)
 	return TRUE;
 }
 
-ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
+BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -104,7 +104,7 @@ ICF BOOL	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
 	return true;
 }
 
-ICF BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis)
+BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis)
 {
 	if ((merged[iAxis] > (4 * c_SS_maxsize / 3)) &&
 		(merged[iAxis] > (orig1[iAxis] + 1)) &&

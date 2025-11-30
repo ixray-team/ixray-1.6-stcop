@@ -134,7 +134,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	{
 		if (!pActor->inventory_disabled())
 		{
-			PdaMenu().SetActiveSubdialog("eptMap");
+			PdaMenu()->SetActiveSubdialog("eptMap");
 			ShowPdaMenu();
 		}
 		break;
@@ -144,7 +144,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	{
 		if (!pActor->inventory_disabled())
 		{
-			PdaMenu().SetActiveSubdialog("eptContacts");
+			PdaMenu()->SetActiveSubdialog("eptContacts");
 			ShowPdaMenu();
 		}
 		break;

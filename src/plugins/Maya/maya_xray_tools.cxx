@@ -162,7 +162,7 @@ MStatus maya_dm_reader::reader(const MFileObject& file, const MString& options, 
 			end_progress();
 			maya_import_tools(dm, &status);
 		} else {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 			end_progress();
 		}
@@ -197,7 +197,7 @@ MStatus maya_object_translator::reader(const MFileObject& file, const MString& o
 		if (object->load_object(path.asChar()))
 			maya_import_tools(object, &status, options);
 		else {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 		}
 		delete object;
@@ -304,7 +304,7 @@ MStatus maya_ogf_reader::reader(const MFileObject& file, const MString& options,
 			maya_import_tools(ogf, &status);
 			delete ogf;
 		} else {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 			end_progress();
 		}
@@ -346,7 +346,7 @@ MStatus maya_omf_reader::reader(const MFileObject& file, const MString& options,
 			}
 			end_progress();
 		} else {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 			end_progress();
 		}
@@ -378,7 +378,7 @@ MStatus maya_skl_translator::reader(const MFileObject& file, const MString& opti
 		const MString path = file.resolvedFullName();
 		xr_skl_motion* smotion = new xr_skl_motion;
 		if (!smotion->load_skl(path.asChar())) {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 			delete smotion;
 			return MS::kFailure;
@@ -435,7 +435,7 @@ MStatus maya_skls_reader::reader(const MFileObject& file, const MString& options
 		const MString path = file.resolvedFullName();
 		xr_object* object = new xr_object;
 		if (!object->load_skls(path.asChar())) {
-			msg("xray_re: can't open %s", path);
+			msg("xray_re: can't open %s", path.asUTF8());
 			MGlobal::displayError(MString("xray_re: can't open ") + path);
 			delete object;
 			return MS::kFailure;

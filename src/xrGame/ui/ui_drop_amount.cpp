@@ -102,37 +102,37 @@ void CUIItemDropAmountWnd::PerformDrop()
 	{
 	case eModeDrop:
 	{
-		if (&CurrentGameUI()->ActorMenu())
+		if (CurrentGameUI()->ActorMenu())
 		{
-			CurrentGameUI()->ActorMenu().DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->ActorMenu()->DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		else
 		{
-			CurrentGameUI()->InventoryWnd().DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->InventoryWnd()->DropAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		break;
 	}
 	case eModeMove:
 	{
-		if (&CurrentGameUI()->ActorMenu())
+		if (CurrentGameUI()->ActorMenu())
 		{
-			CurrentGameUI()->ActorMenu().MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->ActorMenu()->MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		else
 		{
-			CurrentGameUI()->CarBodyWnd().MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->CarBodyWnd()->MoveAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		break;
 	}
 	case eModeTake:
 	{
-		if (&CurrentGameUI()->ActorMenu())
+		if (CurrentGameUI()->ActorMenu())
 		{
-			CurrentGameUI()->ActorMenu().TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->ActorMenu()->TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		else
 		{
-			CurrentGameUI()->CarBodyWnd().TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
+			CurrentGameUI()->CarBodyWnd()->TakeAllCurrentItem(m_UITrackBar->GetIValue() - 1);
 		}
 		break;
 	}
