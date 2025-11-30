@@ -82,7 +82,15 @@ bool CUITabControl::AddItem(CUITabButton *pButton)
 
 void CUITabControl::RemoveItemById(const shared_str& id)
 {
-    const auto it = std::find(m_TabsArr.begin(), m_TabsArr.end(), id);
+	TABS_VECTOR_it it = m_TabsArr.begin();
+	for (; it != m_TabsArr.end(); ++it)
+	{
+		CUITabButton* btn = *it;
+		if (btn->m_btn_id == id)
+		{
+			break;
+		}
+	}
     const bool tabControlItemFound = it != m_TabsArr.end();
 
     R_ASSERT(tabControlItemFound);

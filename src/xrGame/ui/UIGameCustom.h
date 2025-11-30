@@ -154,10 +154,10 @@ public:
 	virtual void		Render					();
 	virtual void _BCL	OnFrame					();
 	
-	IC CUIActorMenu&	ActorMenu				() const { return *m_ActorMenu; }
-	IC CUIInventoryWnd&	InventoryWnd			() const { return *m_InventoryMenu; }
-	IC CUICarBodyWnd&	CarBodyWnd				() const { return *m_CarBodyMenu; }
-	IC CUIPdaWnd&		PdaMenu					() const { return *m_PdaMenu;   }
+	IC CUIActorMenu*	ActorMenu				() const { return m_ActorMenu; }
+	IC CUIInventoryWnd*	InventoryWnd			() const { return m_InventoryMenu; }
+	IC CUICarBodyWnd*	CarBodyWnd				() const { return m_CarBodyMenu; }
+	IC CUIPdaWnd*		PdaMenu					() const { return m_PdaMenu;   }
 			bool		ShowActorMenu			();
 			void		HideActorMenu			();
 			void		UpdateActorMenu			(); //Alundaio

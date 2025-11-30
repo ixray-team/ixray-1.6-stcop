@@ -127,14 +127,14 @@ void game_cl_freemp::TranslateGameMessage(u32 msg, NET_Packet& P)
 	{
 	case GAME_EVENT_MP_REPAIR_SUCCESS:
 	{
-		if (m_game_ui && m_game_ui->ActorMenu().IsShown() && m_game_ui->ActorMenu().GetMenuMode() == mmUpgrade)
+		if (m_game_ui && m_game_ui->ActorMenu()->IsShown() && m_game_ui->ActorMenu()->GetMenuMode() == mmUpgrade)
 		{
 			u16 itemId = P.r_u16();
 			CObject* finded_item = Level().Objects.net_Find(itemId);
 
 			if (PIItem item = finded_item != nullptr ? finded_item->cast_inventory_item() : nullptr)
 			{
-				m_game_ui->ActorMenu().OnSuccessRepairMP(item);
+				m_game_ui->ActorMenu()->OnSuccessRepairMP(item);
 			}
 		}
 	}break;
