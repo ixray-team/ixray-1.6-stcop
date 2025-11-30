@@ -237,7 +237,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			return;
 		}
 
-		if (!&CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu().m_pQuickSlot)
+		if (!CurrentGameUI()->ActorMenu() || !CurrentGameUI()->ActorMenu()->m_pQuickSlot)
 		{
 			break;
 		}
@@ -265,7 +265,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", best_itm->NameItem());
 				_s->wnd()->TextItemControl()->SetText(str);
 
-				CurrentGameUI()->ActorMenu().m_pQuickSlot->ReloadReferences(this);
+				CurrentGameUI()->ActorMenu()->m_pQuickSlot->ReloadReferences(this);
 			}
 		}
 	}

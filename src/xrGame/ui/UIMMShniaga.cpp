@@ -25,6 +25,8 @@ CUIMMShniaga::CUIMMShniaga()
 	m_shniaga		= new CUIStatic();	AttachChild(m_shniaga);
 	m_magnifier		= new CUIStatic();	m_shniaga->AttachChild(m_magnifier);	m_magnifier->SetPPMode();
 	m_mag_pos		= 0;
+	m_anims[0]		= nullptr;
+	m_anims[1]		= nullptr;
 
 	m_selected		= nullptr;
 

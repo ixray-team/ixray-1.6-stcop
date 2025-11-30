@@ -67,7 +67,7 @@ void UILeftBarForm::Draw()
 
 	if (ImGui::Begin("Edit Mode", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 	{
-		static ObjClassID Tools[OBJCLASS_COUNT + 1] = {
+		static ESceneItemsGuids Tools[OBJCLASS_COUNT + 1] = {
 			OBJCLASS_SCENEOBJECT,
 			OBJCLASS_LIGHT,
 			OBJCLASS_SOUND_SRC,
