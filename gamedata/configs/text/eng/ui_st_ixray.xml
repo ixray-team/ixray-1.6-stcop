@@ -454,4 +454,7 @@
 	<string id="st_grenade_frags_hit">
 		<text>Frag damage</text>
 	</string>
+	<string id="kb_show_quick_slots">
+		<text>Show Quick Slots</text>
+	</string>
 </string_table>
