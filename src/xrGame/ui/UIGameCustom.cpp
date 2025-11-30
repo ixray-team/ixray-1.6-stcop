@@ -73,7 +73,7 @@ CUIGameCustom::~CUIGameCustom()
 
 bool CUIGameCustom::HasShownDialogs() const
 {
-	return ActorMenu().IsShown() || PdaMenu().IsShown();
+	return ActorMenu()->IsShown() || PdaMenu()->IsShown();
 }
 
 void CUIGameCustom::OnFrame() 
@@ -540,7 +540,7 @@ void CUIGameCustom::CommonMessageOut(LPCSTR text)
 }
 void CUIGameCustom::UpdatePda()
 {
-	PdaMenu().UpdatePda();
+	PdaMenu()->UpdatePda();
 }
 
 void CUIGameCustom::update_fake_indicators(u8 type, float power)

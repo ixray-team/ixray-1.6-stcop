@@ -1208,7 +1208,7 @@ bool IndicatorsShown()
 
 bool InventoryShown()
 {
-	return CurrentGameUI()->ActorMenu().IsShown();
+	return CurrentGameUI()->ActorMenu()->IsShown();
 }
 
 bool ElectronicsBreak()
