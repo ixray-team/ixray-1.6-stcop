@@ -98,7 +98,7 @@ void CUITalkWnd::InitTalkDialog()
 	else if (UITalkDialogWnd->UIOurPhrasesFrame)
 		UITalkDialogWnd->UIOurPhrasesFrame->UITitleText.SetTextIfNodeExist(m_pOurInvOwner->Name());
 
-	UITalkDialogWnd->swapCharacterNames = !&CurrentGameUI()->ActorMenu();
+	UITalkDialogWnd->swapCharacterNames = !CurrentGameUI()->ActorMenu();
 	if (UITalkDialogWnd->swapCharacterNames)
 	{
 		UITalkDialogWnd->UICharacterInfoRight.InitCharacter(m_pOurInvOwner);
@@ -418,7 +418,7 @@ void CUITalkWnd::SwitchToTrade()
 	if ( m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() )
 	{
 		UITalkDialogWnd->Hide();
-		if (&CurrentGameUI()->ActorMenu())
+		if (CurrentGameUI()->ActorMenu())
 		{
 			CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
 		}

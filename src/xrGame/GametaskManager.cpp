@@ -165,7 +165,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	if (CurrentGameUI())
 	{
 		CurrentGameUI()->UpdatePda();
-		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::quests);
+		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::quests);
 	}
 	t->ChangeStateCallback();
 
@@ -259,7 +259,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, ETaskState state, u16 objectiv
 	if (CurrentGameUI())
 	{
 		CurrentGameUI()->UpdatePda();
-		CurrentGameUI()->PdaMenu().PdaContentsChanged(pda_section::quests);
+		CurrentGameUI()->PdaMenu()->PdaContentsChanged(pda_section::quests);
 	}
 }
 
