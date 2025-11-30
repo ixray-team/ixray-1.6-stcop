@@ -208,9 +208,9 @@ void CUISequenceSimpleItem::Update()
 	{
  		if(CurrentGameUI())
 		{
-			if (CurrentGameUI()->PdaMenu().IsShown()		||
-				(&CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu().IsShown())		||
-				(&CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd().IsShown()) ||
+			if (CurrentGameUI()->PdaMenu()->IsShown()		||
+				(CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())		||
+				(CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd()->IsShown()) ||
 				CurrentGameUI()->TalkMenu->IsShown()			||
 				CurrentGameUI()->UIChangeLevelWnd->IsShown() ||
 				(MainMenu()->IsActive() && !m_owner->m_flags.test(CUISequencer::etsOverMainMenu) )
@@ -256,70 +256,70 @@ void CUISequenceSimpleItem::Start()
 		bool bShowPda			= false;
 		if (     !_stricmp( m_pda_section, "pda_tasks"       ) ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptTasks");		
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptTasks");		
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_fraction_war") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptFractionWar");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptFractionWar");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_ranking"     ) ) 
 		{
-			if (CurrentGameUI()->PdaMenu().pUIRankingWnd)
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRanking");	
+			if (CurrentGameUI()->PdaMenu()->pUIRankingWnd)
+				CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptRanking");	
 			else
-				CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptRankingGlobal");
+				CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptRankingGlobal");
 
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_logs"        ) ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptLogs");		
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptLogs");		
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_show_second_task_wnd" ) )
 		{
-			CurrentGameUI()->PdaMenu().Show_SecondTaskWnd(true);	
+			CurrentGameUI()->PdaMenu()->Show_SecondTaskWnd(true);	
 			bShowPda = true;
 		}
 		// SoC only
 		else if( !_stricmp( m_pda_section, "pda_contacts") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptContacts");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptContacts");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_map") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptMap");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptMap");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_quests") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptQuests");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptQuests");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_diary") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptDiary");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptDiary");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_statistics") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptActorStatistic");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptActorStatistic");
 			bShowPda = true;	
 		}
 		else if( !_stricmp( m_pda_section, "pda_encyclopedia") ) 
 		{
-			CurrentGameUI()->PdaMenu().SetActiveSubdialog("eptEncyclopedia");
+			CurrentGameUI()->PdaMenu()->SetActiveSubdialog("eptEncyclopedia");
 			bShowPda = true;	
 		}
 		
 		if (CurrentGameUI())
 		{
-			if ( ( !CurrentGameUI()->PdaMenu().IsShown() &&  bShowPda ) || (CurrentGameUI()->PdaMenu().IsShown() && !bShowPda ) )
+			if ( ( !CurrentGameUI()->PdaMenu()->IsShown() &&  bShowPda ) || (CurrentGameUI()->PdaMenu()->IsShown() && !bShowPda ) )
 			{
-				CurrentGameUI()->PdaMenu().ShowOrHideDialog(true);
+				CurrentGameUI()->PdaMenu()->ShowOrHideDialog(true);
 			}
 		}
 	}
@@ -346,14 +346,14 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 
 	if (g_pGameLevel)
 	{
-		if (CurrentGameUI() && CurrentGameUI()->PdaMenu().IsShown())
+		if (CurrentGameUI() && CurrentGameUI()->PdaMenu()->IsShown())
 		{
-			CurrentGameUI()->PdaMenu().HideDialog();
+			CurrentGameUI()->PdaMenu()->HideDialog();
 		}
 
-		if (CurrentGameUI() && CurrentGameUI()->ActorMenu().IsShown())
+		if (CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu()->IsShown())
 		{
-			CurrentGameUI()->ActorMenu().HideDialog();
+			CurrentGameUI()->ActorMenu()->HideDialog();
 		}
 	}
 

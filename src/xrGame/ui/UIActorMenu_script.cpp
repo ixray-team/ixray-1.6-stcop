@@ -38,12 +38,12 @@ using namespace luabind;
 
 CUIActorMenu* GetActorMenu()
 {
-	return &CurrentGameUI()->ActorMenu();
+	return CurrentGameUI()->ActorMenu();
 }
 
 CUIPdaWnd* GetPDAMenu()
 {
-	return &CurrentGameUI()->PdaMenu();
+	return CurrentGameUI()->PdaMenu();
 }
 
 CUIMainIngameWnd* GetMainGameMenu()
@@ -53,7 +53,7 @@ CUIMainIngameWnd* GetMainGameMenu()
 
 u8 GrabMenuMode()
 {
-	return (u8)(CurrentGameUI()->ActorMenu().GetMenuMode());
+	return (u8)(CurrentGameUI()->ActorMenu()->GetMenuMode());
 }
 
 void ActorMenuSetPartner_script(CUIActorMenu* menu, CScriptGameObject* GO)

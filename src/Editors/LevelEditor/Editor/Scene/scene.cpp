@@ -375,7 +375,7 @@ bool EScene::GetBox(Fbox& box, ObjectList& lst)
 
 void EScene::Modified()
 {
-	switch (LTools->CurrentClassID())
+	switch ((ESceneItemsGuids)LTools->CurrentClassID())
 	{
 	case OBJCLASS_SPAWNPOINT:
 	{

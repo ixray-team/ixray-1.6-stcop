@@ -198,7 +198,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}break;
 	case kWPN_ZOOM_ALTER:
 	{
-		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->PdaMenu())
+		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == CurrentGameUI()->PdaMenu())
 		{
 			CObject* current_entity = CurrentEntity();
 			if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
@@ -216,7 +216,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	}
 	case kWPN_ZOOM:
 	{
-		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->PdaMenu())
+		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == CurrentGameUI()->PdaMenu())
 		{
 			CObject* current_entity = CurrentEntity();
 			if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)

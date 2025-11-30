@@ -10,7 +10,7 @@ static void ViewportFocusCallback()
 
 CViewportParticle::CViewportParticle()
 {
-	View.OnFocusCallback = ViewportFocusCallback;
+	View.OnFocusCallback = (xr_delegate<void()>)ViewportFocusCallback;
 	ViewName = "Empty mesh";
 }
 
