@@ -1683,7 +1683,7 @@ static int acceptSocket(const char *webServerAddrs)
         hSock = WSAAccept((unsigned int) hListen,                    
                           &sockaddr,  
                           &sockaddrLen,               
-                          isAddrOKCallback,  
+                          (LPCONDITIONPROC)isAddrOKCallback,  
                           (DWORD) webServerAddrs);
 
         if (hSock != INVALID_SOCKET)
