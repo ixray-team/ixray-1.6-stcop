@@ -232,7 +232,9 @@
 	    </static_grenade>
 
 
-		<static_wpn_icon x="982" y="723" width="24" height="30" align="c" alignment="c"/>
+		<static_wpn_icon x="982" y="723" width="24" height="30" align="c" alignment="c" display_mode="text">
+			<text font="letterica16" color="ui_7" align="c" vert_align="c"/>
+		</static_wpn_icon>
 
 	    <static_fire_mode x="864" y="723" width="14" height="19">
 	        <text font="letterica16" color="ui_7" align="c" vert_align="c"/>
