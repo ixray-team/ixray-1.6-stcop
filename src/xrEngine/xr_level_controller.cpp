@@ -694,9 +694,8 @@ public:
 	}
 	virtual void Save(IWriter* F) 
 	{
-		if(m_work_idx==0)
-			F->w_printf		("default_controls\r\n");
-
+		// Don't write "default_controls" section header - it causes conflicts when loading user.ltx
+		// The default_controls command would reload default_controls.ltx and overwrite user bindings
 		for(int idx=0; idx<bindings_count;++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
