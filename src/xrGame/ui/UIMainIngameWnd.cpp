@@ -425,9 +425,10 @@ void CUIMainIngameWnd::Init()
 
 	// Quick slots panel hidden by default
 	m_quick_slots_visible = EngineExternal()[EEngineExternalUI::ShowQuickSlotByDefault];
-	m_quick_slots_force_visible = m_quick_slots_visible;
+	m_quick_slots_force_visible = false; // Never force visibility on init to allow auto-hide
+	m_quick_slots_force_visible_by_key = false; // Track if force visibility was set by key press
 	m_quick_slots_alpha = 0.0f;
-	m_quick_slots_last_interaction_time = -1000.0f;
+	m_quick_slots_last_interaction_time = 0.0f; // Initialize to 0 instead of negative value
 
 	// Скрываем все элементы панели по умолчанию
 	if (!m_quick_slots_visible)
@@ -652,6 +653,7 @@ void CUIMainIngameWnd::RenderQuickInfos()
 void CUIMainIngameWnd::ShowQuickSlotsPanel()
 {
 	m_quick_slots_visible = true;
+	m_quick_slots_force_visible = false; // Reset force visibility to allow auto-hide
 	m_quick_slots_last_interaction_time = Device.fTimeGlobal;
 }
 
@@ -659,21 +661,39 @@ void CUIMainIngameWnd::HideQuickSlotsPanelImmediate()
 {
 	m_quick_slots_visible = false;
 	m_quick_slots_force_visible = false;
+	m_quick_slots_force_visible_by_key = false;
 	m_quick_slots_alpha = 0.0f;
 }
 
 void CUIMainIngameWnd::SetQuickSlotsPanelVisible(bool visible)
 {
-	m_quick_slots_force_visible = visible;
+	// Only update force_visible_by_key flag when setting to true
+	// This allows us to track if panel was shown by key press
 	if (visible)
 	{
+		m_quick_slots_force_visible = true;
+		m_quick_slots_force_visible_by_key = true; // Track that visibility was set by key
 		m_quick_slots_last_interaction_time = Device.fTimeGlobal;
+	}
+	else
+	{
+		// Only hide if panel was actually shown by key press
+		// This prevents hiding when key binding is changed and old key is released
+		if (m_quick_slots_force_visible_by_key)
+		{
+			m_quick_slots_force_visible = false;
+			m_quick_slots_force_visible_by_key = false;
+		}
 	}
 }
 
 void CUIMainIngameWnd::TickQuickSlotsPanelFade()
 {
 	const float dt = Device.fTimeDelta;
+	if (dt <= 0.0f)
+	{
+		return; // Protection against invalid delta time
+	}
 
 	bool should_be_visible = m_quick_slots_force_visible || m_quick_slots_visible;
 
