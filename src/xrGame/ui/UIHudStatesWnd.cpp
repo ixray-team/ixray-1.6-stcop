@@ -23,6 +23,8 @@
 #include "../ai/monsters/basemonster/base_monster.h"
 #include "../PDA.h"
 #include "WeaponMagazinedWGrenade.h"
+#include "../Weapon.h"
+#include "../../xrEngine/string_table.h"
 
 CUIHudStatesWnd::CUIHudStatesWnd()
 :m_b_force_update(true),
@@ -193,6 +195,13 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
+	
+	// Check if text mode is enabled for weapon icon
+	LPCSTR display_mode = xml.ReadAttrib("static_wpn_icon", 0, "display_mode", nullptr);
+	if (display_mode && xr_strcmp(display_mode, "text") == 0)
+	{
+		m_weapon_icon_text_mode = true;
+	}
 
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
@@ -363,7 +372,52 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		//		UIWeaponBack.SetText		( str_name.c_str() );
 		m_fire_mode->SetText(m_item_info.fire_mode.c_str());
-		SetAmmoIcon(m_item_info.icon.c_str());
+		
+		// If text mode is enabled, display ammo name instead of icon
+		if (m_weapon_icon_text_mode)
+		{
+			CWeapon* weapon = item->cast_weapon();
+			if (weapon && weapon->m_ammoTypes.size() > 0)
+			{
+				// Get current ammo type
+				u8 currAmmoType = weapon->GetAmmoType();
+				if (currAmmoType < weapon->m_ammoTypes.size())
+				{
+					LPCSTR ammo_section = weapon->m_ammoTypes[currAmmoType].c_str();
+					if (pSettings->section_exist(ammo_section))
+					{
+						// Read inv_name_short from config
+						shared_str inv_name_short_id = pSettings->r_string(ammo_section, "inv_name_short");
+						// Translate through CStringTable
+						shared_str translated_name = g_pStringTable->translate(inv_name_short_id);
+						
+						// Hide texture by making it transparent, show text instead
+						m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 0));
+						m_ui_weapon_icon->SetText(translated_name.c_str());
+						m_ui_weapon_icon->Show(true);
+					}
+					else
+					{
+						m_ui_weapon_icon->Show(false);
+					}
+				}
+				else
+				{
+					m_ui_weapon_icon->Show(false);
+				}
+			}
+			else
+			{
+				m_ui_weapon_icon->Show(false);
+			}
+		}
+		else
+		{
+			// Clear text and restore texture visibility when using icon mode
+			m_ui_weapon_icon->SetText("");
+			m_ui_weapon_icon->SetTextureColor(color_rgba(255, 255, 255, 255));
+			SetAmmoIcon(m_item_info.icon.c_str());
+		}
 
 		if (m_ui_weapon_cur_ammo)
 		{
