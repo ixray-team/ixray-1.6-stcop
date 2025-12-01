@@ -108,23 +108,35 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 {
-	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>( itm );
-	if ( !itm )
+	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
+	if (!itm)
 	{
 		return false;
 	}
-	if ( object()->object().cNameSect() != ci->object()->object().cNameSect() )
+
+	if (object()->object().cNameSect() != ci->object()->object().cNameSect())
 	{
 		return false;
 	}
-	if ( !fsimilar( object()->GetCondition(), ci->object()->GetCondition(), 0.01f ) )
+
+	if (!fsimilar(object()->GetCondition(), ci->object()->GetCondition(), 0.01f))
 	{
 		return false;
 	}
-	if ( !object()->equal_upgrades( ci->object()->upgardes() ) )
+
+	if (!object()->equal_upgrades(ci->object()->upgardes()))
 	{
 		return false;
 	}
+
+	CEatableItem* CiEatableItem = ci->object()->cast_eatable_item();
+	CEatableItem* EatableItem = object()->cast_eatable_item();
+
+	if (CiEatableItem != nullptr && EatableItem != nullptr && CiEatableItem->GetRemainingUses() != EatableItem->GetRemainingUses())
+	{
+		return false;
+	}
+
 	return true;
 }
 
