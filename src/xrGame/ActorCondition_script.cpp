@@ -84,10 +84,12 @@ void CActorCondition::script_register(lua_State *L)
 			.def("GetRadiation", &CEntityCondition::GetRadiation)
 			.def("GetPsyHealth", &CEntityCondition::GetPsyHealth)
 			.def("GetSatiety", &CEntityCondition::GetSatiety)
+			.def("GetThirst", &CEntityCondition::GetThirst)
 			.def("GetEntityMorale", &CEntityCondition::GetEntityMorale)
 			.def("GetHealthLost", &CEntityCondition::GetHealthLost)
 			.def("IsLimping", &CEntityCondition::IsLimping)
 			.def("ChangeSatiety", &CEntityCondition::ChangeSatiety)
+			.def("ChangeThirst", &CEntityCondition::ChangeThirst)
 			.def("ChangeHealth", &CEntityCondition::ChangeHealth)
 			.def("ChangePower", &CEntityCondition::ChangePower)
 			.def("ChangeRadiation", &CEntityCondition::ChangeRadiation)
@@ -130,6 +132,11 @@ void CActorCondition::script_register(lua_State *L)
 			.def("V_SatietyHealth", &CActorCondition::V_SatietyHealth)
 			.def("SatietyCritical", &CActorCondition::SatietyCritical)
 			.def("GetSatiety", &CActorCondition::GetSatiety)
+			.def("V_Thirst", &CActorCondition::V_Thirst)
+			.def("V_ThirstPower", &CActorCondition::V_ThirstPower)
+			.def("V_ThirstHealth", &CActorCondition::V_ThirstHealth)
+			.def("ThirstCritical", &CActorCondition::ThirstCritical)
+			.def("GetThirst", &CActorCondition::GetThirst)
 			.def("BoostMaxWeight", &CActorCondition::BoostMaxWeight)
 			.def("BoostHpRestore", &CActorCondition::BoostHpRestore)
 			.def("BoostPowerRestore", &CActorCondition::BoostPowerRestore)
@@ -166,6 +173,7 @@ void CActorCondition::script_register(lua_State *L)
 				value("eCriticalPowerReached", int(CActorCondition::eCriticalPowerReached)),
 				value("eCriticalBleedingSpeed", int(CActorCondition::eCriticalBleedingSpeed)),
 				value("eCriticalSatietyReached", int(CActorCondition::eCriticalSatietyReached)),
+				value("eCriticalThirstReached", int(CActorCondition::eCriticalThirstReached)),
 				value("eCriticalRadiationReached", int(CActorCondition::eCriticalRadiationReached)),
 				value("eWeaponJammedReached", int(CActorCondition::eWeaponJammedReached)),
 				value("ePhyHealthMinReached", int(CActorCondition::ePhyHealthMinReached)),

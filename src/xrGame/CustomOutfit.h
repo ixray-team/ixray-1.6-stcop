@@ -52,11 +52,12 @@ public:
 	float					m_additional_weight;
 	float					m_additional_weight2;
 
-	float					m_fHealthRestoreSpeed;
-	float 					m_fRadiationRestoreSpeed;
-	float 					m_fSatietyRestoreSpeed;
-	float					m_fPowerRestoreSpeed;
-	float					m_fBleedingRestoreSpeed;
+	float m_fHealthRestoreSpeed = 0.0f;
+	float m_fRadiationRestoreSpeed = 0.0f;
+	float m_fSatietyRestoreSpeed = 0.0f;
+	float m_fThirstRestoreSpeed = 0.0f;
+	float m_fPowerRestoreSpeed = 0.0f;
+	float m_fBleedingRestoreSpeed = 0.0f;
 
 	shared_str				m_BonesProtectionSect;
 	shared_str				m_NightVisionSect;

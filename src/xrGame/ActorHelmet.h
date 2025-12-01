@@ -33,14 +33,15 @@ public:
 
 	bool					GlassPresent = false;
 
-	float					m_fPowerLoss;
-	float					m_fHealthRestoreSpeed;
-	float 					m_fRadiationRestoreSpeed;
-	float 					m_fSatietyRestoreSpeed;
-	float					m_fPowerRestoreSpeed;
-	float					m_fBleedingRestoreSpeed;
+	float m_fPowerLoss = 0.0f;
+	float m_fHealthRestoreSpeed = 0.0f;
+	float m_fRadiationRestoreSpeed = 0.0f;
+	float m_fSatietyRestoreSpeed = 0.0f;
+	float m_fThirstRestoreSpeed = 0.0f;
+	float m_fPowerRestoreSpeed = 0.0f;
+	float m_fBleedingRestoreSpeed = 0.0f;
 
-	float					m_fShowNearestEnemiesDistance;
+	float m_fShowNearestEnemiesDistance;
 
 	void					ReloadBonesProtection	();
 	void					AddBonesProtection		(LPCSTR bones_section);

@@ -881,10 +881,12 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	{
 		float thirst = pActor->conditions().GetThirst();
 		float thirst_critical = pActor->conditions().ThirstCritical();
-		float thirst_koef = (thirst - thirst_critical) / (thirst < thirst_critical ? 1 - thirst_critical : thirst_critical);
+		float thirst_koef = (thirst - thirst_critical) / (thirst >= thirst_critical ? 1 - thirst_critical : thirst_critical);
 
-		if (thirst_koef < 0.5)
+		if (thirst_koef > 0.5f)
+		{
 			m_ind_thirst->Show(false);
+		}
 		else
 		{
 			m_ind_thirst->Show(true);

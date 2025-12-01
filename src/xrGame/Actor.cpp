@@ -1912,6 +1912,13 @@ void CActor::UpdateConditionArtefacts()
 					cond_loss += val * 0.2f;
 			}
 
+			if (conditions().GetThirst() < 1.0f)
+			{
+				val = artefact->m_fThirstRestoreSpeed;
+				if (val > 0.0f)
+					cond_loss += val * 0.2f;
+			}
+
 			if (conditions().GetPower() < 1.0f)
 			{
 				val = artefact->m_fPowerRestoreSpeed;
@@ -2621,6 +2628,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 			conditions().ChangeHealth((artefact->m_fHealthRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangePower((artefact->m_fPowerRestoreSpeed * art_cond) * f_update_time);
 			conditions().ChangeSatiety((artefact->m_fSatietyRestoreSpeed * art_cond) * f_update_time);
+			conditions().ChangeThirst((artefact->m_fThirstRestoreSpeed * art_cond) * f_update_time);
 
 			if ((artefact->m_fRadiationRestoreSpeed * art_cond) > 0.0f)
 			{
@@ -2641,6 +2649,7 @@ void CActor::UpdateArtefactsOnBeltAndOutfit()
 		conditions().ChangeHealth		(outfit->m_fHealthRestoreSpeed    * f_update_time);
 		conditions().ChangePower		(outfit->m_fPowerRestoreSpeed     * f_update_time);
 		conditions().ChangeSatiety		(outfit->m_fSatietyRestoreSpeed   * f_update_time);
+		conditions().ChangeThirst		(outfit->m_fThirstRestoreSpeed   * f_update_time);
 		conditions().ChangeRadiation	(outfit->m_fRadiationRestoreSpeed * f_update_time);
 	}
 }
@@ -2849,6 +2858,7 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 	{
 		res = conditions().change_v().m_fV_HealthRestore;
 		res += conditions().V_SatietyHealth() * ( (conditions().GetSatiety() > 0.0f) ? 1.0f : -1.0f );
+		res += conditions().V_ThirstHealth() * ( (conditions().GetThirst() > 0.0f) ? 1.0f : -1.0f );
 
 		for (const PIItem item : inventory().m_belt)
 		{
@@ -2895,6 +2905,24 @@ float CActor::GetRestoreSpeed( ALife::EConditionRestoreType const& type )
 		if (CCustomOutfit* outfit = GetOutfit())
 		{
 			res += outfit->m_fSatietyRestoreSpeed;
+		}
+		break;
+	}
+	case ALife::eThirstRestoreSpeed:
+	{
+		res = conditions().V_Thirst();
+
+		for (const PIItem item : inventory().m_belt)
+		{
+			if (CArtefact* artefact = item->cast_artefact())
+			{
+				res += (artefact->m_fThirstRestoreSpeed * artefact->GetCondition());
+			}
+		}
+
+		if (CCustomOutfit* outfit = GetOutfit())
+		{
+			res += outfit->m_fThirstRestoreSpeed;
 		}
 		break;
 	}

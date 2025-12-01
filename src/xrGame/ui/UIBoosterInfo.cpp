@@ -16,6 +16,7 @@ CUIBoosterInfo::CUIBoosterInfo()
 		m_booster_items[i] = nullptr;
 	}
 	m_booster_satiety = nullptr;
+	m_booster_thirst = nullptr;
 	m_booster_sleepiness = nullptr;
 	m_booster_anabiotic = nullptr;
 	m_booster_time = nullptr;
@@ -25,6 +26,7 @@ CUIBoosterInfo::~CUIBoosterInfo()
 {
 	delete_data(m_booster_items);
 	xr_delete(m_booster_satiety);
+	xr_delete(m_booster_thirst);
 	xr_delete(m_booster_sleepiness);
 	xr_delete(m_booster_anabiotic);
 	xr_delete(m_booster_time);
@@ -88,6 +90,14 @@ void CUIBoosterInfo::InitFromXml(CUIXml& xml)
 	m_booster_satiety->SetCaption(name);
 	xml.SetLocalRoot( base_node );
 
+	if (xml.NavigateToNode("boost_thirst"))
+	{
+		m_booster_thirst = new UIBoosterInfoItem();
+		m_booster_thirst->Init(xml, "boost_thirst");
+		m_booster_thirst->SetAutoDelete(false);
+		m_booster_thirst->SetCaption(g_pStringTable->translate("ui_inv_thirst").c_str());
+		xml.SetLocalRoot(base_node);
+	}
 
 	if (xml.NavigateToNode("boost_sleepiness"))
 	{
@@ -204,6 +214,21 @@ void CUIBoosterInfo::SetInfo( shared_str const& section )
 			AttachChild(m_booster_satiety);
 		}
 	}
+	if (pSettings->line_exist(section.c_str(), "eat_thirst") && m_booster_thirst)
+	{
+		val = pSettings->r_float(section, "eat_thirst");
+		if (!fis_zero(val))
+		{
+			m_booster_thirst->SetValue(val);
+			pos.set(m_booster_thirst->GetWndPos());
+			pos.y = h;
+			m_booster_thirst->SetWndPos(pos);
+
+			h += m_booster_thirst->GetWndSize().y;
+			AttachChild(m_booster_thirst);
+		}
+	}
+
 
 	if(pSettings->line_exist(section.c_str(), "eat_sleepiness") && m_booster_sleepiness)
 	{

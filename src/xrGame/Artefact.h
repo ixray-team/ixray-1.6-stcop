@@ -42,12 +42,14 @@ public:
 	float	GetHealthPower() { return m_fHealthRestoreSpeed; }
 	float	GetRadiationPower() { return m_fRadiationRestoreSpeed; }
 	float	GetSatietyPower() { return m_fSatietyRestoreSpeed; }
+	float	GetThirstPower() { return m_fThirstRestoreSpeed; }
 	float	GetPowerPower() { return m_fPowerRestoreSpeed; }
 	float	GetBleedingPower() { return m_fBleedingRestoreSpeed; }
 
 	void	SetHealthPower(float value) { m_fHealthRestoreSpeed = value; }
 	void	SetRadiationPower(float value) { m_fRadiationRestoreSpeed = value; }
 	void	SetSatietyPower(float value) { m_fSatietyRestoreSpeed = value; }
+	void	SetThirstPower(float value) { m_fThirstRestoreSpeed = value; }
 	void	SetPowerPower(float value) { m_fPowerRestoreSpeed = value; }
 	void	SetBleedingPower(float value) { m_fBleedingRestoreSpeed = value; }
 
@@ -95,6 +97,7 @@ public:
 	float							m_fHealthRestoreSpeed;
 	float 							m_fRadiationRestoreSpeed;
 	float 							m_fSatietyRestoreSpeed;
+	float 							m_fThirstRestoreSpeed;
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;
 	CHitImmunity 					m_ArtefactHitImmunities;

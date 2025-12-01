@@ -63,9 +63,10 @@ LPCSTR af_restore_section_names[] = // ALife::EConditionRestoreType
 {
 	"health_restore_speed",			// eHealthRestoreSpeed=0
 	"satiety_restore_speed",		// eSatietyRestoreSpeed=1
-	"power_restore_speed",			// ePowerRestoreSpeed=2
-	"bleeding_restore_speed",		// eBleedingRestoreSpeed=3
-	"radiation_restore_speed",		// eRadiationRestoreSpeed=4
+	"thirst_restore_speed",		// eThirstRestoreSpeed=2
+	"power_restore_speed",			// ePowerRestoreSpeed=3
+	"bleeding_restore_speed",		// eBleedingRestoreSpeed=4
+	"radiation_restore_speed",		// eRadiationRestoreSpeed=5
 };
 
 LPCSTR af_immunity_caption[] =  // ALife::EInfluenceType
@@ -87,6 +88,7 @@ LPCSTR af_restore_caption[] =  // ALife::EConditionRestoreType
 {
 	"ui_inv_health",
 	"ui_inv_satiety",
+	"ui_inv_thirst",
 	"ui_inv_power",
 	"ui_inv_bleeding",
 	"ui_inv_radiation",
@@ -141,6 +143,11 @@ void CUIArtefactParams::InitFromXml( CUIXml& xml )
 
 	for ( u32 i = 0; i < ALife::eRestoreTypeMax; ++i )
 	{
+		if (!xml.NavigateToNode(af_restore_section_names[i]))
+		{
+			continue;
+		}
+
 		m_restore_item[i] = new UIArtefactParamItem();
 		m_restore_item[i]->Init( xml, af_restore_section_names[i] );
 		m_restore_item[i]->SetAutoDelete(false);
@@ -241,6 +248,11 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 
 		for (u32 i = 0; i < ALife::eRestoreTypeMax; ++i)
 		{
+			if (m_restore_item[i] == nullptr)
+			{
+				continue;
+			}
+
 			val = pSettings->r_float(af_section, af_restore_section_names[i]);
 			if (fis_zero(val))
 			{
