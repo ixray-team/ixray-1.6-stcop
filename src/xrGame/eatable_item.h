@@ -52,7 +52,25 @@ public:
 	IC bool CanConsumeCharge() const { return m_bConsumeChargeOnUse == 1; };
 	u8 GetMaxUses() const { return m_iMaxUses; };
 	u8 GetRemainingUses() const { return m_iRemainingUses; };
-	void SetRemainingUses(u8 value) { if (value <= m_iMaxUses) m_iRemainingUses = value; };
+	void SetRemainingUses(u8 value)
+	{
+		if (value <= m_iMaxUses)
+		{
+			m_iRemainingUses = value;
+		}
+
+		if (IsUsingCondition())
+		{
+			if (m_iMaxUses > 0)
+			{
+				SetCondition((float)(m_iRemainingUses / m_iMaxUses));
+			}
+			else
+			{
+				SetCondition(0.0f);
+			}
+		}
+	}
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
