@@ -647,13 +647,10 @@ bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
 			params_section.printf("ammo_params_section_%d", i);
 			if (pSettings->line_exist(hud_sect, *params_section))
 			{
-				if (need_add)
-				{
-					SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
-					bone_params->Load(pSettings->r_string(hud_sect, *params_section));
-					m_ammo_bones_mag.push_back(bone_params);
-					result = true;
-				}
+				SAmmoBonesParams* bone_params = new SAmmoBonesParams(i);
+				bone_params->Load(pSettings->r_string(hud_sect, *params_section));
+				m_ammo_bones_mag.push_back(bone_params);
+				result = true;
 			}
 		}
 	}
