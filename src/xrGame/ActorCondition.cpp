@@ -217,6 +217,7 @@ void CActorCondition::UpdateCondition()
 		clamp(Alcohol.Current, 0.0f, 1.0f);
 
 		UpdateSatiety();
+		UpdateThirst();
 		UpdateBoosters();
 	}
 
@@ -295,7 +296,6 @@ void CActorCondition::UpdateCondition()
 		}
 	}
 
-	UpdateThirst();
 	UpdateSleepiness();
 
 	inherited::UpdateCondition();
@@ -497,17 +497,17 @@ void CActorCondition::UpdateThirst()
 	if (!enableThirst)
 		return;
 
-	if (Thirst.Current < 1)
+	if (Thirst.Current > 0.0f)
 	{
-		Thirst.Current += Thirst.Variability * m_fDeltaTime;
+		Thirst.Current -= Thirst.Variability * m_fDeltaTime;
 		clamp(Thirst.Current, 0.0f, 1.0f);
 	}
 
-	float ThirstHealthKoef = ((1.f - Thirst.Current) - Thirst.Critical) / (Thirst.Current < Thirst.Critical ? 1 - Thirst.Critical : Thirst.Critical);
+	float thirst_health_koef = (Thirst.Current - Thirst.Critical) / (Thirst.Current >= Thirst.Critical ? 1 - Thirst.Critical : Thirst.Critical);
 	if (CanBeHarmed() && !psActorFlags.test(AF_DISABLE_CONDITION_TEST))
 	{
-		m_fDeltaHealth += Thirst.HealthBoost * ThirstHealthKoef * m_fDeltaTime;
-		m_fDeltaPower += Thirst.PowerBoost * (1.f - Thirst.Current) * m_fDeltaTime;
+		m_fDeltaHealth += Thirst.HealthBoost * thirst_health_koef * m_fDeltaTime;
+		m_fDeltaPower += Thirst.PowerBoost * Thirst.Current * m_fDeltaTime;
 	}
 }
 
@@ -623,6 +623,7 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_curr_medicine_influence.fHealth, output_packet);
 	save_data			(m_curr_medicine_influence.fPower, output_packet);
 	save_data			(m_curr_medicine_influence.fSatiety, output_packet);
+	save_data			(m_curr_medicine_influence.fThirst, output_packet);
 	save_data			(m_curr_medicine_influence.fRadiation, output_packet);
 	save_data			(m_curr_medicine_influence.fWoundsHeal, output_packet);
 	save_data			(m_curr_medicine_influence.fMaxPowerUp, output_packet);
@@ -653,6 +654,7 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_curr_medicine_influence.fHealth, input_packet);
 	load_data			(m_curr_medicine_influence.fPower, input_packet);
 	load_data			(m_curr_medicine_influence.fSatiety, input_packet);
+	load_data			(m_curr_medicine_influence.fThirst, input_packet);
 	load_data			(m_curr_medicine_influence.fRadiation, input_packet);
 	load_data			(m_curr_medicine_influence.fWoundsHeal, input_packet);
 	load_data			(m_curr_medicine_influence.fMaxPowerUp, input_packet);
@@ -676,7 +678,8 @@ void CActorCondition::reinit()
 {
 	inherited::reinit();
 	m_bLimping = false;
-	Satiety.Current = 1.f;
+	Satiety.Current = 1.0f;
+	Thirst.Current = 1.0f;
 }
 
 void CActorCondition::ChangeAlcohol(float value)

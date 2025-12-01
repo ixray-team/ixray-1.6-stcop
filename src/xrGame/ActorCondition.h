@@ -18,11 +18,12 @@ private:
 			eCriticalMaxPowerReached		=(1<<1),
 			eCriticalBleedingSpeed			=(1<<2),
 			eCriticalSatietyReached			=(1<<3),
-			eCriticalRadiationReached		=(1<<4),
-			eWeaponJammedReached			=(1<<5),
-			ePhyHealthMinReached			=(1<<6),
-			eCantWalkWeight					=(1<<7),
-			eCantWalkWeightReached			=(1<<8),
+			eCriticalThirstReached			=(1<<4),
+			eCriticalRadiationReached		=(1<<5),
+			eWeaponJammedReached			=(1<<6),
+			ePhyHealthMinReached			=(1<<7),
+			eCantWalkWeight					=(1<<8),
+			eCantWalkWeightReached			=(1<<9),
 			};
 	Flags16											m_condition_flags;
 private:
