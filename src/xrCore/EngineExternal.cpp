@@ -124,6 +124,11 @@ bool CEngineExternal::operator[](const EEngineExternalGame& ID) const
 	return READ_IF_EXISTS(pOptions, r_bool, "gameplay", magic_enum::enum_name(ID).data(), false);
 }
 
+bool CEngineExternal::operator[](const EEngineExternalSpawnSupplies& ID) const
+{
+	return READ_IF_EXISTS(pOptions, r_bool, "spawn_supplies", magic_enum::enum_name(ID).data(), false);
+}
+
 bool CEngineExternal::operator[](const EEngineExternalRender& ID) const
 {
 	return READ_IF_EXISTS(pOptions, r_bool, "render", magic_enum::enum_name(ID).data(), false);

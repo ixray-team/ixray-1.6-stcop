@@ -63,8 +63,13 @@ EnableInventoryPistolSlot = true        ; 2nd slot for pistols only (like in CS/
 EnableImproveWeaponMisfire = false		; Gunslinger Mod Style
 EnableDelayedWeaponActions = false		; Gunslinger Mod Style
 EnableLegacyUpgradeSystem = true		; Use upgrade system from Clear Sky
-EnableLoadoutsForSpawnSupplies = true			; Use loadouts for npc profiles
-EnableCocStyleForLoadoutsSpawnSupplies = true	; spawn once random item section by once random loadout OR spawn all items sections by once random loadout
+
+[spawn_supplies]
+EnableLoadoutsSupplies 						= true; Use loadouts for npc profiles
+;; select one option ;;
+EnableSpawnFullRandomLoadout				= false; Spawn all sections by once random loadout included for npc 
+EnableSpawnOnceRandomItemPerEachLoadouts	= true; Spawn by one item each loadouts included for npc (CoC Style)
+EnableSpawnOnceRandomitemByRandomLoadout	= false; Spawn once random item by all included loadouts for npc
 
 ; Dialogs
 DialogFovScale = 0.75 ; Increasing fov during dialogue
