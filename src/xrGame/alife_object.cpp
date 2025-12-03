@@ -198,21 +198,25 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 	);
 #pragma warning(pop)
 
-    const static bool isEnableLoadoutsForSpawnSupplies = EngineExternal()[EEngineExternalGame::EnableLoadoutsForSpawnSupplies];
-    const static bool isEnableCocStyleForLoadoutsSpawnSupplies = EngineExternal()[EEngineExternalGame::EnableCocStyleForLoadoutsSpawnSupplies];
+    processingVanillaSpawn(ini);
 
-    if (isEnableLoadoutsForSpawnSupplies) {
-        if (isEnableCocStyleForLoadoutsSpawnSupplies) 
-        {
-            processingSpawnOnceRandomItemInRandomLoadout(ini);
+    if (EngineExternal()[EEngineExternalSpawnSupplies::EnableLoadoutsSupplies]) {
+
+        if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnFullRandomLoadout]) {
+            processingSpawnFullRandomLoadout(ini);
+            return;
         }
-        else 
-        {
-            processingSpawnOnceFullRandomLoadout(ini);
+
+        if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomItemPerEachLoadouts]) {
+            processingSpawnOnceRandomItemPerEachLoadouts(ini);
+            return;
+        }
+
+        if (EngineExternal()[EEngineExternalSpawnSupplies::EnableSpawnOnceRandomitemByRandomLoadout]) {
+            processingSpawnOnceRandomitemByRandomLoadout(ini);
+            return;
         }
     }
-
-    processingVanillaSpawn(ini);
 }
 
 xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
@@ -238,7 +242,7 @@ xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
 }
 
 // Спавнит один полный лодаут среди случайных в рамках инклуда в профиле нпц в разделе supplies
-void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile& ini)
+void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
 {
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
     LPCSTR itemSection = "";
@@ -288,7 +292,7 @@ void CSE_ALifeObject::processingSpawnOnceFullRandomLoadout(CInifile& ini)
 }
 
 // Спавнит один случайный предмет среди случайно выбранного лодаута в рамках инклуда в профиле нпц в разделе supplies
-void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini)
+void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini)
 {
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
     if (m_loadouts.empty()) {
@@ -322,6 +326,52 @@ void CSE_ALifeObject::processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini
         CSEItem,
         parseFloatParameterValue(spawnArgs, "cond=", 1.0f)
     );
+}
+
+// Спавнит по одному случайному предмету из каждого лодаута присутствующего у нпц в профиле в рамках 1 файла инклуда
+void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini)
+{
+    xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
+    LPCSTR itemSection = "";
+    LPCSTR spawnArgs = "";
+    size_t randomLoadoutItemIndex = 0;
+    size_t l_size = 0;
+
+    if (m_loadouts.empty()) {
+        return;
+    }
+
+    for (size_t il = 0; il < m_loadouts.size(); il++) {
+        l_size = m_loadouts[il]->Data.size();
+        if (l_size <= 0) {
+            continue;
+        }
+
+        randomLoadoutItemIndex = ::Random.randI(0, l_size);
+        itemSection = m_loadouts[il]->Data[randomLoadoutItemIndex].first.c_str();
+        spawnArgs = m_loadouts[il]->Data[randomLoadoutItemIndex].second.c_str();
+
+
+        if (pSettings->section_exist(itemSection))
+        {
+            CSE_Abstract* CSEItem = setAddonFlagsIsWeapon(
+                alife().spawn_item(itemSection, o_Position, m_tNodeID, m_tGraphID, ID),
+                spawnArgs
+            );
+
+            spawnAmmoForWeapon(
+                itemSection,
+                CSEItem,
+                parseIntParameterValue(spawnArgs, "ammo_type=", 0),
+                getCountValueToSpawn(spawnArgs)
+            );
+
+            setItemCondition(
+                CSEItem,
+                parseFloatParameterValue(spawnArgs, "cond=", 1.0f)
+            );
+        }
+    }
 }
 
 // Ванильный спавн
