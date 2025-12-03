@@ -165,8 +165,9 @@ private:
 	virtual void					spawnAmmoForWeapon(LPCSTR wpnSection, CSE_Abstract* E, int i_ammo_type, u32 countAmmoBoxesToSpawn);
 	virtual void					setItemCondition(CSE_Abstract* E, float condition);
 	virtual xr_vector <CInifile::Sect*> parseLoadouts(CInifile& ini);
-	virtual void					processingSpawnOnceFullRandomLoadout(CInifile& ini);
-	virtual void					processingSpawnOnceRandomItemInRandomLoadout(CInifile& ini);
+	virtual void					processingSpawnFullRandomLoadout(CInifile& ini);
+	virtual void					processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini);
+	virtual void					processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini);
 	virtual void					processingVanillaSpawn(CInifile& ini);
 #endif
 

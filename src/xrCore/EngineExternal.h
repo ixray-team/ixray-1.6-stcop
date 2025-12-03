@@ -21,6 +21,14 @@ enum class EEngineExternalPhysical
 	None
 };
 
+enum class EEngineExternalSpawnSupplies
+{
+	EnableLoadoutsSupplies,
+	EnableSpawnFullRandomLoadout,
+	EnableSpawnOnceRandomItemPerEachLoadouts,
+	EnableSpawnOnceRandomitemByRandomLoadout
+};
+
 enum class EEngineExternalGame
 {
 	EnableThirst,
@@ -39,8 +47,6 @@ enum class EEngineExternalGame
 	EnableImproveWeaponMisfire,
 	EnableDelayedWeaponActions,
 	EnableLegacyUpgradeSystem,
-	EnableLoadoutsForSpawnSupplies,
-	EnableCocStyleForLoadoutsSpawnSupplies,
 };
 
 enum class EEngineExternalRender 
@@ -117,6 +123,7 @@ public:
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
 	bool operator[](const EEngineExternalGame& ID) const;
+	bool operator[](const EEngineExternalSpawnSupplies& ID) const;
 	bool operator[](const EEngineExternalRender& ID) const;
 	bool operator[](const EEngineExternalEnvironment& ID) const;
 	bool operator[](const EEngineExternalPlatform& ID) const;
