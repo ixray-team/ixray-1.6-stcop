@@ -394,6 +394,15 @@
 	<string id="st_dress_backpack">
 		<text>надеть рюкзак</text>
 	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Сила качания камеры</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Замедление после урона</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Прицеливание по клику</text>
+	</string>
 	<string id="kb_clear_gasmask">
 		<text>Протирание маски</text>
 	</string>
@@ -424,19 +433,10 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Укажите количество предметов для взятия</text>
 	</string>
-	<string id="ui_mm_bobbing_factor">
-		<text>Сила качания камеры</text>
+	<string id="st_gameplay_settings">
+		<text>Игровой процесс</text>
 	</string>
-	<string id="ui_mm_hit_slowmo">
-		<text>Замедление после урона</text>
+	<string id="st_ui_settings">
+		<text>Интерфейс</text>
 	</string>
-	<string id="ui_mm_wpn_aim_toggle">
-		<text>Прицеливание по клику</text>
-	</string>
-    <string id="st_gameplay_settings">
-        <text>Игровой процесс</text>
-    </string>
-    <string id="st_ui_settings">
-        <text>Интерфейс</text>
-    </string>
 </string_table>
