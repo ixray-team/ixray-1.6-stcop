@@ -68,6 +68,7 @@ private:
 	const char*			m_onZoneTouch = {};
 	
 	CUIStatic*			m_ui_active_ammo_type = nullptr;
+	CUIStatic*			m_ui_ammo_type_magazine = nullptr;
 	CUIStatic*			m_ui_ammo_type_separator = nullptr;
 	CUIStatic*			m_ui_ammo_type_backpack = nullptr;
 	CUIStatic*			m_ui_fire_mode_icon = nullptr;
