@@ -1,0 +1,52 @@
+{
+  "badgeLabel": "IX-Ray Platform • Скачать",
+  "branchLabel": "Стабильный · {version}",
+  "hero": {
+    "title": "Скачивание платформы <span>IX-Ray {version}</span>",
+    "description": "Modernized X-Ray based on X-Ray 1.6.02<br>Последний релиз: {date}"
+  },
+  "labels": {
+    "production": "Production ready",
+    "libraries": "Библиотеки",
+    "missing": "Ссылка появится после загрузки релиза"
+  },
+  "fallback": {
+    "version": "—",
+    "date": "—",
+    "releasePage": "https://github.com/ixray-team/ixray-1.6-stcop/releases"
+  },
+  "cards": {
+    "main": {
+      "title": "Game Build",
+      "description": "Полная сборка для игроков, включающая движок и ресурсы",
+      "tag": "Рекомендуется",
+      "button": "Скачать Game Build",
+      "dots": [
+        "Windows x64 система",
+        "Release конфигурация",
+        "Включает движок и ресурсы",
+        "Готово к запуску игр"
+      ]
+    },
+    "developer": {
+      "title": "Developer Build",
+      "description": "Сборка с отладочной информацией и инструментами для модмейкеров",
+      "tag": "Разработчикам",
+      "button": "Скачать"
+    },
+    "utilities": {
+      "title": "Utilities",
+      "description": "Утилиты для работы с движком: компиляторы уровней, сетевые инструменты, паковщик/распаковщик игровых архивов",
+      "tag": "Разработчикам",
+      "button": "Скачать",
+      "secondaryText": "Библиотеки"
+    },
+    "server": {
+      "title": "Server",
+      "description": "Серверная часть для многопользовательских игр, включая игровой билд и выделенный сервер",
+      "tag": "Сервер",
+      "button": "Скачать",
+      "secondaryText": "Библиотеки"
+    }
+  }
+}

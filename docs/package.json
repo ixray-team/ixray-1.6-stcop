@@ -1,0 +1,21 @@
+{
+  "name": "ixray-docs",
+  "version": "0.0.1",
+  "description": "ixray documentation ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vitepress dev config",
+    "docs:build": "vitepress build config",
+    "docs:preview": "vitepress preview config"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vitepress": "^2.0.0-alpha.15",
+    "vitepress-plugin-lightbox": "^1.0.3"
+  },
+  "dependencies": {
+    "medium-zoom": "^1.1.0"
+  }
+}
