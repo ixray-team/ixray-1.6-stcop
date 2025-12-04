@@ -1,0 +1,52 @@
+{
+  "badgeLabel": "IX-Ray Platform • Download",
+  "branchLabel": "Stable · {version}",
+  "hero": {
+    "title": "Download <span>IX-Ray {version}</span>",
+    "description": "Modernized X-Ray based on X-Ray 1.6.02<br>Latest release: {date}"
+  },
+  "labels": {
+    "production": "Production ready",
+    "libraries": "Libraries",
+    "missing": "Link will appear with the next release upload"
+  },
+  "fallback": {
+    "version": "—",
+    "date": "—",
+    "releasePage": "https://github.com/ixray-team/ixray-1.6-stcop/releases"
+  },
+  "cards": {
+    "main": {
+      "title": "Game Build",
+      "description": "Full build for players that ships with the engine and all required resources",
+      "tag": "Recommended",
+      "button": "Download Game Build",
+      "dots": [
+        "Windows x64 target",
+        "Release configuration",
+        "Engine and bundled resources included",
+        "Ready to launch the game"
+      ]
+    },
+    "developer": {
+      "title": "Developer Build",
+      "description": "Build for modders with debug info and extra tooling for faster iteration",
+      "tag": "Developers",
+      "button": "Download"
+    },
+    "utilities": {
+      "title": "Utilities",
+      "description": "Tooling for the engine: level compilers, networking helpers, pack/unpack utilities",
+      "tag": "Developers",
+      "button": "Download",
+      "secondaryText": "Libraries"
+    },
+    "server": {
+      "title": "Server",
+      "description": "Server bundle for multiplayer that ships with the game build and dedicated server",
+      "tag": "Server",
+      "button": "Download",
+      "secondaryText": "Libraries"
+    }
+  }
+}
