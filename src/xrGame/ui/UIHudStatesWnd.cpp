@@ -180,13 +180,6 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ui_active_ammo_type = UIHelper::CreateStatic(xml, "static_active_ammo_type", this);
 		m_use_adaptive_ammo_mode = true;
 		
-		// Read custom font for magazine ammo (font name must match engine font name, e.g. "graffiti32", "letterica16")
-		LPCSTR magazine_font = xml.ReadAttrib("static_active_ammo_type", 0, "magazine_font", nullptr);
-		if (magazine_font)
-		{
-			m_ammo_magazine_font = UI().Font().GetFont(magazine_font);
-		}
-		
 		// Read normal color from text element
 		m_ammo_normal_color = m_ui_active_ammo_type->TextItemControl()->GetTextColor();
 		
@@ -213,13 +206,44 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ammo_low_threshold = xml.ReadAttribFlt("static_active_ammo_type", 0, "low_ammo_threshold", 0.15f);
 		clamp(m_ammo_low_threshold, 0.0f, 1.0f);
 		
+		Frect ammoTypeRect = m_ui_active_ammo_type->GetWndRect();
+		
+		// Read custom font for magazine ammo (font name must match engine font name, e.g. "graffiti32", "letterica16")
+		LPCSTR magazine_font = xml.ReadAttrib("static_active_ammo_type", 0, "magazine_font", nullptr);
+		if (magazine_font)
+		{
+			m_ammo_magazine_font = UI().Font().GetFont(magazine_font);
+		}
+		
+		// Read position offsets for magazine ammo
+		float magazine_x = xml.ReadAttribFlt("static_active_ammo_type", 0, "magazine_x", 0.0f);
+		float magazine_y = xml.ReadAttribFlt("static_active_ammo_type", 0, "magazine_y", 0.0f);
+		
+		// Create magazine ammo widget programmatically as child of main widget
+		m_ui_ammo_type_magazine = new CUIStatic();
+		m_ui_ammo_type_magazine->SetAutoDelete(true);
+		m_ui_active_ammo_type->AttachChild(m_ui_ammo_type_magazine);
+		// Position relative to parent (0,0 is parent's top-left corner)
+		m_ui_ammo_type_magazine->SetWndPos(Fvector2().set(magazine_x, magazine_y));
+		m_ui_ammo_type_magazine->SetWndSize(Fvector2().set(60.0f, ammoTypeRect.height()));
+		m_ui_ammo_type_magazine->TextItemControl()->SetTextAlignment(CGameFont::alRight);
+		m_ui_ammo_type_magazine->Show(false);
+		
+		// Set font for magazine ammo
+		if (m_ammo_magazine_font)
+		{
+			m_ui_ammo_type_magazine->SetFont(m_ammo_magazine_font);
+		}
+		else if (m_ui_active_ammo_type->GetFont())
+		{
+			m_ui_ammo_type_magazine->SetFont(m_ui_active_ammo_type->GetFont());
+		}
+		
 		// Check if separator is enabled
 		int separator = xml.ReadAttribInt("static_active_ammo_type", 0, "separator", 0);
 		if (separator == 1)
 		{
 			m_use_ammo_type_separator = true;
-			
-			Frect ammoTypeRect = m_ui_active_ammo_type->GetWndRect();
 			
 			// Read position offsets for separator
 			float separator_x = xml.ReadAttribFlt("static_active_ammo_type", 0, "separator_x", ammoTypeRect.width() + 2.0f);
@@ -257,7 +281,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 			m_ui_ammo_type_backpack->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
 			m_ui_ammo_type_backpack->Show(false);
 			
-			// Set fonts
+			// Set fonts for separator and backpack
 			if (m_ammo_magazine_font)
 			{
 				m_ui_ammo_type_separator->SetFont(m_ammo_magazine_font);
@@ -629,46 +653,54 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (m_item_info.cur_ammo.size())
 		{
 			m_ui_active_ammo_type->Show(true);
-			m_ui_active_ammo_type->SetText(m_item_info.cur_ammo.c_str());
 			
-			// Apply custom magazine font if specified
-			if (m_ammo_magazine_font)
-			{
-				m_ui_active_ammo_type->SetFont(m_ammo_magazine_font);
-			}
-			
-			// Calculate ammo percentage and apply dynamic color
+			// Get weapon reference for ammo calculations
 			CWeaponMagazined* wpnm = item->cast_weapon_magazined();
-			if (wpnm)
+			
+			// Display magazine ammo in separate widget
+			if (m_ui_ammo_type_magazine)
 			{
-				int currentAmmo = wpnm->GetAmmoElapsed();
-				// Use total_ammo from brief info to estimate magazine capacity
-				int magazineSize = atoi(m_item_info.total_ammo.c_str());
-				if (magazineSize == 0)
-					magazineSize = currentAmmo; // Fallback to current if total unknown
+				m_ui_ammo_type_magazine->Show(true);
+				m_ui_ammo_type_magazine->SetText(m_item_info.cur_ammo.c_str());
 				
-				if (magazineSize > 0)
+				// Apply custom magazine font if specified
+				if (m_ammo_magazine_font)
 				{
-					float ammoPercent = (float)currentAmmo / (float)magazineSize;
+					m_ui_ammo_type_magazine->SetFont(m_ammo_magazine_font);
+				}
+				
+				// Calculate ammo percentage and apply dynamic color
+				if (wpnm)
+				{
+					int currentAmmo = wpnm->GetAmmoElapsed();
+					// Use total_ammo from brief info to estimate magazine capacity
+					int magazineSize = atoi(m_item_info.total_ammo.c_str());
+					if (magazineSize == 0)
+						magazineSize = currentAmmo; // Fallback to current if total unknown
 					
-					// Apply low ammo color if below threshold
-					if (ammoPercent <= m_ammo_low_threshold)
+					if (magazineSize > 0)
 					{
-						m_ui_active_ammo_type->SetTextColor(m_ammo_low_color);
+						float ammoPercent = (float)currentAmmo / (float)magazineSize;
+						
+						// Apply low ammo color if below threshold
+						if (ammoPercent <= m_ammo_low_threshold)
+						{
+							m_ui_ammo_type_magazine->SetTextColor(m_ammo_low_color);
+						}
+						else
+						{
+							m_ui_ammo_type_magazine->SetTextColor(m_ammo_normal_color);
+						}
 					}
 					else
 					{
-						m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
+						m_ui_ammo_type_magazine->SetTextColor(m_ammo_normal_color);
 					}
 				}
 				else
 				{
-					m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
+					m_ui_ammo_type_magazine->SetTextColor(m_ammo_normal_color);
 				}
-			}
-			else
-			{
-				m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
 			}
 			
 			// Display separator and backpack ammo count if enabled
@@ -712,6 +744,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		else
 		{
 			m_ui_active_ammo_type->Show(false);
+			if (m_ui_ammo_type_magazine)
+				m_ui_ammo_type_magazine->Show(false);
 			if (m_use_ammo_type_separator && m_ui_ammo_type_separator)
 				m_ui_ammo_type_separator->Show(false);
 			if (m_ui_ammo_type_backpack)
