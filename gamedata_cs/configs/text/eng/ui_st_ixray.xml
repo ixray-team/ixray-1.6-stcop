@@ -391,6 +391,15 @@
 	<string id="st_dress_backpack">
 		<text>put on backpack</text>
 	</string>
+	<string id="ui_mm_bobbing_factor">
+		<text>Camera bobbing factor</text>
+	</string>
+	<string id="ui_mm_hit_slowmo">
+		<text>Slowdown after damage</text>
+	</string>
+	<string id="ui_mm_wpn_aim_toggle">
+		<text>Toggle Aim</text>
+	</string>
 	<string id="kb_clear_gasmask">
 		<text>Wipe mask</text>
 	</string>
@@ -421,19 +430,10 @@
 	<string id="st_custom_drop_hint_2">
 		<text>Specify amount of items to take</text>
 	</string>
-	<string id="ui_mm_bobbing_factor">
-		<text>Camera bobbing factor</text>
+	<string id="st_gameplay_settings">
+		<text>Gameplay</text>
 	</string>
-	<string id="ui_mm_hit_slowmo">
-		<text>Slowdown after damage</text>
+	<string id="st_ui_settings">
+		<text>User interface</text>
 	</string>
-	<string id="ui_mm_wpn_aim_toggle">
-		<text>Toggle Aim</text>
-	</string>
-    <string id="st_gameplay_settings">
-        <text>Gameplay</text>
-    </string>
-    <string id="st_ui_settings">
-        <text>User interface</text>
-    </string>
 </string_table>
