@@ -174,6 +174,117 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_ui_weapon_third_ammo = UIHelper::CreateTextWnd(xml, "static_third_ammo", this);
 	//-Alundaio
 
+	// Adaptive ammo count widget: displays current magazine ammo count and backpack ammo count
+	if (xml.NavigateToNode("static_active_ammo_type", 0))
+	{
+		m_ui_active_ammo_type = UIHelper::CreateStatic(xml, "static_active_ammo_type", this);
+		m_use_adaptive_ammo_mode = true;
+		
+		// Read custom font for magazine ammo (font name must match engine font name, e.g. "graffiti32", "letterica16")
+		LPCSTR magazine_font = xml.ReadAttrib("static_active_ammo_type", 0, "magazine_font", nullptr);
+		if (magazine_font)
+		{
+			m_ammo_magazine_font = UI().Font().GetFont(magazine_font);
+		}
+		
+		// Read normal color from text element
+		m_ammo_normal_color = m_ui_active_ammo_type->TextItemControl()->GetTextColor();
+		
+		// Read low ammo color (format: "r,g,b,a")
+		LPCSTR low_ammo_color = xml.ReadAttrib("static_active_ammo_type", 0, "low_ammo_color", nullptr);
+		if (low_ammo_color)
+		{
+			u32 r, g, b, a;
+			if (sscanf_s(low_ammo_color, "%d,%d,%d,%d", &r, &g, &b, &a) == 4)
+			{
+				m_ammo_low_color = color_rgba(r, g, b, a);
+			}
+			else
+			{
+				m_ammo_low_color = color_rgba(255, 0, 0, 255); // Default red
+			}
+		}
+		else
+		{
+			m_ammo_low_color = color_rgba(255, 0, 0, 255); // Default red
+		}
+		
+		// Read low ammo threshold (0.0 to 1.0)
+		m_ammo_low_threshold = xml.ReadAttribFlt("static_active_ammo_type", 0, "low_ammo_threshold", 0.15f);
+		clamp(m_ammo_low_threshold, 0.0f, 1.0f);
+		
+		// Check if separator is enabled
+		int separator = xml.ReadAttribInt("static_active_ammo_type", 0, "separator", 0);
+		if (separator == 1)
+		{
+			m_use_ammo_type_separator = true;
+			
+			Frect ammoTypeRect = m_ui_active_ammo_type->GetWndRect();
+			
+			// Read position offsets for separator
+			float separator_x = xml.ReadAttribFlt("static_active_ammo_type", 0, "separator_x", ammoTypeRect.width() + 2.0f);
+			float separator_y = xml.ReadAttribFlt("static_active_ammo_type", 0, "separator_y", 0.0f);
+			
+			// Create separator widget programmatically as child of main widget
+			m_ui_ammo_type_separator = new CUIStatic();
+			m_ui_ammo_type_separator->SetAutoDelete(true);
+			m_ui_active_ammo_type->AttachChild(m_ui_ammo_type_separator);
+			// Position relative to parent (0,0 is parent's top-left corner)
+			m_ui_ammo_type_separator->SetWndPos(Fvector2().set(separator_x, separator_y));
+			m_ui_ammo_type_separator->SetWndSize(Fvector2().set(10.0f, ammoTypeRect.height()));
+			m_ui_ammo_type_separator->SetText("/");
+			m_ui_ammo_type_separator->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
+			m_ui_ammo_type_separator->Show(false);
+			
+			// Read custom font for backpack ammo (font name must match engine font name)
+			LPCSTR backpack_font = xml.ReadAttrib("static_active_ammo_type", 0, "backpack_font", nullptr);
+			if (backpack_font)
+			{
+				m_ammo_backpack_font = UI().Font().GetFont(backpack_font);
+			}
+			
+			// Read position offsets for backpack ammo
+			float backpack_x = xml.ReadAttribFlt("static_active_ammo_type", 0, "backpack_x", ammoTypeRect.width() + 12.0f);
+			float backpack_y = xml.ReadAttribFlt("static_active_ammo_type", 0, "backpack_y", 0.0f);
+			
+			// Create backpack ammo count widget programmatically as child of main widget
+			m_ui_ammo_type_backpack = new CUIStatic();
+			m_ui_ammo_type_backpack->SetAutoDelete(true);
+			m_ui_active_ammo_type->AttachChild(m_ui_ammo_type_backpack);
+			// Position relative to parent
+			m_ui_ammo_type_backpack->SetWndPos(Fvector2().set(backpack_x, backpack_y));
+			m_ui_ammo_type_backpack->SetWndSize(Fvector2().set(60.0f, ammoTypeRect.height()));
+			m_ui_ammo_type_backpack->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
+			m_ui_ammo_type_backpack->Show(false);
+			
+			// Set fonts
+			if (m_ammo_magazine_font)
+			{
+				m_ui_ammo_type_separator->SetFont(m_ammo_magazine_font);
+			}
+			else if (m_ui_active_ammo_type->GetFont())
+			{
+				m_ui_ammo_type_separator->SetFont(m_ui_active_ammo_type->GetFont());
+			}
+			
+			if (m_ammo_backpack_font)
+			{
+				m_ui_ammo_type_backpack->SetFont(m_ammo_backpack_font);
+			}
+			else if (m_ui_active_ammo_type->GetFont())
+			{
+				m_ui_ammo_type_backpack->SetFont(m_ui_active_ammo_type->GetFont());
+			}
+			
+			// Set colors
+			m_ui_ammo_type_separator->SetTextColor(m_ammo_normal_color);
+			m_ui_ammo_type_backpack->SetTextColor(m_ammo_normal_color);
+		}
+		
+		// Hide legacy ammo type widgets in adaptive mode (will be hidden during update)
+		// Note: actual hiding happens in UpdateActiveItemInfo to maintain proper state
+	}
+
 	// HACK: St4lker0k765: idk why, but default values in CUIXmlInit::GetColor are glitchy as hell, so i'll try this instead
 	if (xml.NavigateToNode("active_ammo_color", 0))
 		m_ui_weapon_ammo_color_active = CUIXmlInit::GetColor(xml, "active_ammo_color", 0, color_rgba(238, 155, 23, 255));
@@ -185,7 +296,57 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	else
 		m_ui_weapon_ammo_color_inactive = color_rgba(238, 155, 23, 150);
 
-	m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
+	m_fire_mode = UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
+	
+	// Check if fire mode icon mode is enabled
+	if (xml.NavigateToNode("static_fire_mode", 0))
+	{
+		int use_icon = xml.ReadAttribInt("static_fire_mode", 0, "use_icon", 0);
+		if (use_icon == 1)
+		{
+			m_use_fire_mode_icons = true;
+			
+			// Create icon widget using same position as text widget
+			m_ui_fire_mode_icon = UIHelper::CreateStatic(xml, "static_fire_mode", this);
+			m_ui_fire_mode_icon->SetShader(InventoryUtilities::GetEquipmentIconsShader());
+			m_ui_fire_mode_icon->Show(false);
+			
+			// Hide text widget in icon mode
+			m_fire_mode->Show(false);
+			
+			// Initialize fire mode icon mapping
+			// Check for custom mappings in XML
+			XML_NODE* fire_mode_node = xml.NavigateToNode("static_fire_mode", 0);
+			if (fire_mode_node)
+			{
+				int mapping_count = xml.GetNodesNum(fire_mode_node, "mode_mapping");
+				for (int i = 0; i < mapping_count; ++i)
+				{
+					XML_NODE* mapping_node = xml.NavigateToNode(fire_mode_node, "mode_mapping", i);
+					if (mapping_node)
+					{
+						shared_str mode_text = xml.ReadAttrib(mapping_node, "text", "");
+						shared_str icon_name = xml.ReadAttrib(mapping_node, "icon", "");
+						if (mode_text.size() && icon_name.size())
+						{
+							m_fire_mode_icon_map[mode_text] = icon_name;
+						}
+					}
+				}
+			}
+			
+			// Set default mappings if not specified in XML
+			if (m_fire_mode_icon_map.empty())
+			{
+				m_fire_mode_icon_map["1"] = "icon_fmode_single";
+				m_fire_mode_icon_map["a"] = "icon_fmode_auto";
+				m_fire_mode_icon_map["A"] = "icon_fmode_auto";
+				m_fire_mode_icon_map["2"] = "icon_fmode_2burst";
+				m_fire_mode_icon_map["3"] = "icon_fmode_3burst";
+			}
+		}
+	}
+	
 	if (xml.NavigateToNode("static_grenade", 0))
 	{
 		m_ui_grenade = UIHelper::CreateTextWnd(xml, "static_grenade", this);
@@ -371,7 +532,49 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		item->GetBriefInfo(m_item_info);
 
 		//		UIWeaponBack.SetText		( str_name.c_str() );
-		m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+		
+		// Fire mode display: icon or text
+		if (m_use_fire_mode_icons && m_ui_fire_mode_icon)
+		{
+			// Icon mode
+			shared_str fire_mode_str = m_item_info.fire_mode.c_str();
+			auto it = m_fire_mode_icon_map.find(fire_mode_str);
+			
+			if (it != m_fire_mode_icon_map.end())
+			{
+				shared_str icon_name = it->second;
+				
+				// Try to load texture from ui_textures_descr
+				if (CUITextureMaster::ItemExist(icon_name.c_str()))
+				{
+					m_ui_fire_mode_icon->InitTexture(icon_name.c_str());
+					m_ui_fire_mode_icon->SetStretchTexture(true);
+					m_ui_fire_mode_icon->Show(true);
+					m_fire_mode->Show(false);
+				}
+				else
+				{
+					// Fallback to text if icon not found
+					m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+					m_fire_mode->Show(true);
+					m_ui_fire_mode_icon->Show(false);
+				}
+			}
+			else
+			{
+				// No mapping found, use text
+				m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+				m_fire_mode->Show(true);
+				m_ui_fire_mode_icon->Show(false);
+			}
+		}
+		else
+		{
+			// Text mode (default)
+			m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+			if (m_ui_fire_mode_icon)
+				m_ui_fire_mode_icon->Show(false);
+		}
 		
 		// If text mode is enabled, display ammo name instead of icon
 		if (m_weapon_icon_text_mode)
@@ -419,6 +622,117 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			SetAmmoIcon(m_item_info.icon.c_str());
 		}
 
+	// Adaptive mode: display current magazine ammo count and backpack ammo count
+	if (m_use_adaptive_ammo_mode && m_ui_active_ammo_type)
+	{
+		// Display current magazine ammo count
+		if (m_item_info.cur_ammo.size())
+		{
+			m_ui_active_ammo_type->Show(true);
+			m_ui_active_ammo_type->SetText(m_item_info.cur_ammo.c_str());
+			
+			// Apply custom magazine font if specified
+			if (m_ammo_magazine_font)
+			{
+				m_ui_active_ammo_type->SetFont(m_ammo_magazine_font);
+			}
+			
+			// Calculate ammo percentage and apply dynamic color
+			CWeaponMagazined* wpnm = item->cast_weapon_magazined();
+			if (wpnm)
+			{
+				int currentAmmo = wpnm->GetAmmoElapsed();
+				// Use total_ammo from brief info to estimate magazine capacity
+				int magazineSize = atoi(m_item_info.total_ammo.c_str());
+				if (magazineSize == 0)
+					magazineSize = currentAmmo; // Fallback to current if total unknown
+				
+				if (magazineSize > 0)
+				{
+					float ammoPercent = (float)currentAmmo / (float)magazineSize;
+					
+					// Apply low ammo color if below threshold
+					if (ammoPercent <= m_ammo_low_threshold)
+					{
+						m_ui_active_ammo_type->SetTextColor(m_ammo_low_color);
+					}
+					else
+					{
+						m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
+					}
+				}
+				else
+				{
+					m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
+				}
+			}
+			else
+			{
+				m_ui_active_ammo_type->SetTextColor(m_ammo_normal_color);
+			}
+			
+			// Display separator and backpack ammo count if enabled
+			if (m_use_ammo_type_separator && m_ui_ammo_type_separator && m_ui_ammo_type_backpack)
+			{
+				m_ui_ammo_type_separator->Show(true);
+				
+				// Determine which ammo type count to display based on current ammo type
+				if (wpnm)
+				{
+					shared_str backpack_ammo = "";
+					if (wpnm->m_ammoType == 0)
+						backpack_ammo = m_item_info.fmj_ammo;
+					else if (wpnm->m_ammoType == 1)
+						backpack_ammo = m_item_info.ap_ammo;
+					else if (wpnm->m_ammoType == 2)
+						backpack_ammo = m_item_info.third_ammo;
+					
+					if (backpack_ammo.size())
+					{
+						m_ui_ammo_type_backpack->Show(true);
+						m_ui_ammo_type_backpack->SetText(backpack_ammo.c_str());
+						
+						// Apply custom backpack font if specified
+						if (m_ammo_backpack_font)
+						{
+							m_ui_ammo_type_backpack->SetFont(m_ammo_backpack_font);
+						}
+					}
+					else
+					{
+						m_ui_ammo_type_backpack->Show(false);
+					}
+				}
+				else
+				{
+					m_ui_ammo_type_backpack->Show(false);
+				}
+			}
+		}
+		else
+		{
+			m_ui_active_ammo_type->Show(false);
+			if (m_use_ammo_type_separator && m_ui_ammo_type_separator)
+				m_ui_ammo_type_separator->Show(false);
+			if (m_ui_ammo_type_backpack)
+				m_ui_ammo_type_backpack->Show(false);
+		}
+		
+		// Hide standard cur_ammo, legacy widgets and grenade in adaptive mode
+		if (m_ui_weapon_cur_ammo)
+			m_ui_weapon_cur_ammo->Show(false);
+		if (m_ui_weapon_fmj_ammo)
+			m_ui_weapon_fmj_ammo->Show(false);
+		if (m_ui_weapon_ap_ammo)
+			m_ui_weapon_ap_ammo->Show(false);
+		if (m_ui_weapon_third_ammo)
+			m_ui_weapon_third_ammo->Show(false);
+		if (m_ui_grenade)
+			m_ui_grenade->Show(false);
+	}
+	// Legacy mode: use standard widgets
+	else
+	{
 		if (m_ui_weapon_cur_ammo)
 		{
 			m_ui_weapon_cur_ammo->Show(true);
@@ -444,6 +758,18 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			m_ui_weapon_third_ammo->Show(true);
 			m_ui_weapon_third_ammo->SetText(m_item_info.third_ammo.c_str());
 			m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_inactive);
+		}
+
+		// Control visibility via alpha channel (active - opaque, inactive - semi-transparent)
+		CWeaponMagazined* wpnm = item->cast_weapon_magazined();
+		if (wpnm)
+		{
+			if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
+				m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
+			else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
+				m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
+			else if (wpnm->m_ammoType == 2 && m_ui_weapon_third_ammo)
+				m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
 		}
 
 		if (m_ui_weapon_sign_ammo)
@@ -474,7 +800,6 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (m_ui_grenade)
 		{
 			m_ui_grenade->Show(true);
-
 			m_ui_grenade->SetText(m_item_info.grenade.c_str());
 			
 			CWeaponMagazinedWGrenade* wpn = item->cast_weapon_magazined_w_grenade();
@@ -483,17 +808,7 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			else
 				m_ui_grenade->SetTextColor(m_ui_weapon_ammo_color_inactive);
 		}
-
-		CWeaponMagazined* wpnm = item->cast_weapon_magazined();
-		if (wpnm)
-		{
-			if (wpnm->m_ammoType == 0 && m_ui_weapon_fmj_ammo)
-				m_ui_weapon_fmj_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
-			else if (wpnm->m_ammoType == 1 && m_ui_weapon_ap_ammo)
-				m_ui_weapon_ap_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
-			else if (wpnm->m_ammoType == 2 && m_ui_weapon_third_ammo)
-				m_ui_weapon_third_ammo->SetTextColor(m_ui_weapon_ammo_color_active);
-		}
+	}
 	}
 	else
 	{
@@ -501,6 +816,15 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		if (m_ui_weapon_cur_ammo)
 			m_ui_weapon_cur_ammo->Show(false);
+
+		if (m_ui_active_ammo_type)
+			m_ui_active_ammo_type->Show(false);
+
+		if (m_ui_ammo_type_separator)
+			m_ui_ammo_type_separator->Show(false);
+
+		if (m_ui_ammo_type_backpack)
+			m_ui_ammo_type_backpack->Show(false);
 
 		if (m_ui_weapon_fmj_ammo)
 			m_ui_weapon_fmj_ammo->Show(false);
@@ -515,6 +839,9 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			m_ui_weapon_third_ammo->Show(false); //Alundaio: Third Ammo
 
 		m_fire_mode->Show(false);
+		
+		if (m_ui_fire_mode_icon)
+			m_ui_fire_mode_icon->Show(false);
 
 		if (m_ui_grenade)
 			m_ui_grenade->Show(false);
