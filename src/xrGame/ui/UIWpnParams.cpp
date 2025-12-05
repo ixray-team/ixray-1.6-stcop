@@ -255,20 +255,18 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 				if (ammo_types.size() >= 3)
 					icons_texture1 = READ_IF_EXISTS(pSettings, r_string, ammo_types[2].c_str(), "icons_texture", nullptr);
 
+				float scaleIcon = READ_IF_EXISTS(pSettings, r_float, ammo_types[1].c_str(), "inv_scale", 1.0f);
 				m_stAmmoType3->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture1));
-				tex_rect.x1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_x") * INV_GRID_WIDTH(isHQIcons);
-				tex_rect.y1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(isHQIcons);
-				tex_rect.x2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_width") * INV_GRID_WIDTH(isHQIcons);
-				tex_rect.y2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(isHQIcons);
+				tex_rect.x1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_x") * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y1 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_y") * INV_GRID_HEIGHT(scaleIcon);
+				tex_rect.x2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_width") * INV_GRID_WIDTH(scaleIcon);
+				tex_rect.y2 = pSettings->r_float(ammo_types[2].c_str(), "inv_grid_height") * INV_GRID_HEIGHT(scaleIcon);
 				tex_rect.rb.add(tex_rect.lt);
 				m_stAmmoType3->SetTextureRect(tex_rect);
 				m_stAmmoType3->TextureOn();
 				m_stAmmoType3->SetStretchTexture(true);
 
-				if (isHQIcons)
-					m_stAmmoType3->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / 2, (tex_rect.y2 - tex_rect.y1) / 2));
-				else
-					m_stAmmoType3->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx(), tex_rect.y2 - tex_rect.y1));
+				m_stAmmoType3->SetWndSize(Fvector2().set((tex_rect.x2 - tex_rect.x1) * UI().get_current_kx() / scaleIcon, (tex_rect.y2 - tex_rect.y1) / scaleIcon));
 			}
 		}
 	}
