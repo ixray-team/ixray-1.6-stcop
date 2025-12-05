@@ -65,6 +65,7 @@ public:
 	CCameraManager&				Cameras			()				{return *m_pCameras;};
 
 	BOOL						bReady;
+	bool						UseSnowmask = true;
 
 	CInifile*					pLevel;
 public:	// deferred sound events

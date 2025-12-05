@@ -9,6 +9,13 @@
 UseDynamicSnowMask = true
 ```
 
+## Отключение для определённых локаций
+В `level.ltx` пропишите:
+```ini
+[weather]
+snowmask = false
+```
+
 ## Заснеживание: Динамика
 * Для заснеживания на динамике нужно создавать дополнительную текстурную маску с подписью `_snowmask`. 
 ![image](https://github.com/user-attachments/assets/c747eab5-5e45-4f61-8201-6ab63104f7a9)
@@ -19,6 +26,12 @@ UseDynamicSnowMask = true
 * Само заснеживание хранится в зелёном канале текстуры
 ![image](https://github.com/user-attachments/assets/05e7212a-6c43-4800-ab7b-218990b67ffe)
 ![image](https://github.com/user-attachments/assets/77c878e5-6f46-4499-8cb6-b9852a6f71f3)
+
+### Установка цвета для маски
+В **engine_external.ltx** установите в `[shaders_options]` следующее:
+```hlsl
+DYNAMIC_SNOW_COLOR = float3(1, 0, 0) ; Цвет в rgb от 0 до 1
+```
 
 ## Заснеживание: Статика
 * Статика не требует каких-либо дополнительных масок, кроме `textures/shaders/snowmask/snow.dds`

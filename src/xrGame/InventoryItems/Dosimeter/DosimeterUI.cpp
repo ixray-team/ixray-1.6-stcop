@@ -86,13 +86,13 @@ void CUIDosimeter::update()
 	xr_sprintf(s, "%05.0lf", rad);
 	string16 tex;
 	xr_sprintf(tex, "green_%c", s[1]);
-	m_seg1->InitTextureEx(tex, "hud\\p3d");
+	m_seg1->InitTextureEx(tex, "hud\\dosimeter");
 	xr_sprintf(tex, "green_%c", s[2]);
-	m_seg2->InitTextureEx(tex, "hud\\p3d");
+	m_seg2->InitTextureEx(tex, "hud\\dosimeter");
 	xr_sprintf(tex, "green_%c", s[3]);
-	m_seg3->InitTextureEx(tex, "hud\\p3d");
+	m_seg3->InitTextureEx(tex, "hud\\dosimeter");
 	xr_sprintf(tex, "green_%c", s[4]);
-	m_seg4->InitTextureEx(tex, "hud\\p3d");
+	m_seg4->InitTextureEx(tex, "hud\\dosimeter");
 
 	if (Device.dwTimeGlobal > m_workTick + WORK_PERIOD)
 	{
