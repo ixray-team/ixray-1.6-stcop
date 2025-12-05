@@ -9,8 +9,7 @@
 #pragma once
 
 #include "../xrScripts/script_export_space.h"
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
+#include "ParticlesObject.h"
 
 // refs
 class CObjectAnimator;
@@ -24,7 +23,7 @@ public:
 	virtual						~CScriptParticlesCustom();
 	CScriptParticles* m_owner;
 								CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName);
-	virtual void				shedule_Update		(u32 dt);
+	virtual void				Update		(u32 dt);
 
 	void						LoadPath			(LPCSTR caPathName);
 	void						StartPath			(bool looped);

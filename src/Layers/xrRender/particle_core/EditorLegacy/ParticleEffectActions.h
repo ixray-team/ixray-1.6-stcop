@@ -110,7 +110,7 @@ namespace EPALegacy
 		void 		Load2		(CInifile& ini, const shared_str& sect);
 		void 		Save2		(CInifile& ini, const shared_str& sect) const;
 	};
-	struct PARTICLES_API EParticleAction
+	struct EParticleAction
 	{	
 		enum class EVersion : u32
 		{
@@ -207,175 +207,175 @@ namespace EPALegacy
 		};
 	};
 
-	struct PARTICLES_API EPAAvoid final : public EParticleAction
+	struct EPAAvoid final : public EParticleAction
 	{
 		EPAAvoid	();
 		virtual void	Compile		(IWriter& F);
 	};
  
-	struct PARTICLES_API EPABounce final : public EParticleAction
+	struct EPABounce final : public EParticleAction
 	{
 		EPABounce	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPACopyVertexB final : public EParticleAction
+	struct EPACopyVertexB final : public EParticleAction
 	{
 		EPACopyVertexB();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPADamping final : public EParticleAction
+	struct EPADamping final : public EParticleAction
 	{
 		EPADamping	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAExplosion final : public EParticleAction
+	struct EPAExplosion final : public EParticleAction
 	{
 		EPAExplosion();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAFollow final : public EParticleAction
+	struct EPAFollow final : public EParticleAction
 	{
 		EPAFollow	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAGravitate final : public EParticleAction
+	struct EPAGravitate final : public EParticleAction
 	{
 		EPAGravitate();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAGravity final : public EParticleAction
+	struct EPAGravity final : public EParticleAction
 	{
 		EPAGravity	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAJet final : public EParticleAction
+	struct EPAJet final : public EParticleAction
 	{
 		EPAJet		();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAKillOld final : public EParticleAction
+	struct EPAKillOld final : public EParticleAction
 	{
 		EPAKillOld	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAMatchVelocity final : public EParticleAction
+	struct EPAMatchVelocity final : public EParticleAction
 	{
 		EPAMatchVelocity();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAMove final : public EParticleAction
+	struct EPAMove final : public EParticleAction
 	{
 		EPAMove		();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAOrbitLine final : public EParticleAction
+	struct EPAOrbitLine final : public EParticleAction
 	{
 		EPAOrbitLine();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAOrbitPoint final : public EParticleAction
+	struct EPAOrbitPoint final : public EParticleAction
 	{
 		EPAOrbitPoint();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPARandomAccel final : public EParticleAction
+	struct EPARandomAccel final : public EParticleAction
 	{
 		EPARandomAccel();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPARandomDisplace final : public EParticleAction
+	struct EPARandomDisplace final : public EParticleAction
 	{
 		EPARandomDisplace();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPARandomVelocity final : public EParticleAction
+	struct EPARandomVelocity final : public EParticleAction
 	{
 		EPARandomVelocity();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPARestore final : public EParticleAction
+	struct EPARestore final : public EParticleAction
 	{
 		EPARestore	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAScatter final : public EParticleAction
+	struct EPAScatter final : public EParticleAction
 	{
 		EPAScatter	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPASink final : public EParticleAction
+	struct EPASink final : public EParticleAction
 	{
 		EPASink		();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPASinkVelocity final : public EParticleAction
+	struct EPASinkVelocity final : public EParticleAction
 	{
 		EPASinkVelocity();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPASpeedLimit final : public EParticleAction
+	struct EPASpeedLimit final : public EParticleAction
 	{
 		EPASpeedLimit();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPASource final : public EParticleAction
+	struct EPASource final : public EParticleAction
 	{
 		EPASource	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPATargetColor final : public EParticleAction
+	struct EPATargetColor final : public EParticleAction
 	{
 		EPATargetColor();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPATargetSize final : public EParticleAction
+	struct EPATargetSize final : public EParticleAction
 	{
 		EPATargetSize();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPATargetRotate final : public EParticleAction
+	struct EPATargetRotate final : public EParticleAction
 	{
 		EPATargetRotate();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPATargetVelocity final : public EParticleAction
+	struct EPATargetVelocity final : public EParticleAction
 	{
 		EPATargetVelocity();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAVortex final : public EParticleAction
+	struct EPAVortex final : public EParticleAction
 	{
 		EPAVortex	();
 		virtual void	Compile		(IWriter& F);
 	};
 
-	struct PARTICLES_API EPATurbulence final : public EParticleAction
+	struct EPATurbulence final : public EParticleAction
 	{
 		float	***nval;
 		float 	age;
@@ -387,31 +387,31 @@ namespace EPALegacy
 
 	// Binders
 
-	struct PARTICLES_API EPABindColorValue final: public EParticleAction
+	struct EPABindColorValue final: public EParticleAction
 	{
 		EPABindColorValue();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPABindColorAlpha final: public EParticleAction
+	struct EPABindColorAlpha final: public EParticleAction
 	{
 		EPABindColorAlpha();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPABindSizeValue final: public EParticleAction
+	struct EPABindSizeValue final: public EParticleAction
 	{
 		EPABindSizeValue();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPABindRotateValue final: public EParticleAction
+	struct EPABindRotateValue final: public EParticleAction
 	{
 		EPABindRotateValue();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPABindVelocityValue final: public EParticleAction
+	struct EPABindVelocityValue final: public EParticleAction
 	{
 		EPABindVelocityValue();
 		virtual void Compile(IWriter& F);
@@ -419,31 +419,31 @@ namespace EPALegacy
 
 	// Animators
 
-	struct PARTICLES_API EPAColorAnimator final : public EParticleAction
+	struct EPAColorAnimator final : public EParticleAction
 	{
 		EPAColorAnimator();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPASizeAnimator final : public EParticleAction
+	struct EPASizeAnimator final : public EParticleAction
 	{
 		EPASizeAnimator();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAVelocityAnimator final : public EParticleAction
+	struct EPAVelocityAnimator final : public EParticleAction
 	{
 		EPAVelocityAnimator();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPAVelocityRotationAnimator final : public EParticleAction
+	struct EPAVelocityRotationAnimator final : public EParticleAction
 	{
 		EPAVelocityRotationAnimator();
 		virtual void Compile(IWriter& F);
 	};
 
-	struct PARTICLES_API EPACreator // the only reason I created this struct is to export this fucking function, because for some reason it didn't do that as normal function!
+	struct EPACreator // the only reason I created this struct is to export this fucking function, because for some reason it didn't do that as normal function!
 	{
 		static EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type);
 	};

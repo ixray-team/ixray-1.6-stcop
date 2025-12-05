@@ -3,6 +3,12 @@ project(ParticlesEditor)
 # Files import
 file(GLOB_RECURSE EPE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.*"
+	"../../Layers/xrRender/particle_core/particle_core.*"
+	"../../Layers/xrRender/particle_core/noise.*"
+	"../../Layers/xrRender/particle_core/particle_actions_collection.*"
+	"../../Layers/xrRender/particle_core/particle_actions_collection_io.cpp"
+	"../../Layers/xrRender/particle_core/particle_holder.h"
+	"../../Layers/xrRender/particle_core/psystem.h"
 )
 
 set(EPE_SRC_FILES)
@@ -34,7 +40,6 @@ target_compile_definitions(ParticlesEditor PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 target_link_libraries(ParticlesEditor PUBLIC xrCore)
 target_link_libraries(ParticlesEditor PUBLIC xrEUI)
 target_link_libraries(ParticlesEditor PUBLIC xrEProps)
-target_link_libraries(ParticlesEditor PUBLIC xrParticles)
 target_link_libraries(ParticlesEditor PUBLIC xrECore)
 
 # Move precompiled header
