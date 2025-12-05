@@ -27,7 +27,6 @@ target_compile_definitions(xrRender_DS0 PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrRender_DS0 PRIVATE xrCore)
 target_link_libraries(xrRender_DS0 PRIVATE xrEngineCore)
-target_link_libraries(xrRender_DS0 PRIVATE xrParticles)
 
 ## RenderDoc
 target_include_directories(xrRender_DS0 PUBLIC "${RENDERDOC_API}")

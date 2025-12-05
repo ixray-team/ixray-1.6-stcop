@@ -6,6 +6,8 @@
 #include "StdAfx.h"
 #include "pch_script.h"
 #include "BottleItem.h"
+
+#include "ParticlesObject.h"
 #include "xrMessages.h"
 
 static constexpr float BREAK_POWER = 5.0f;
