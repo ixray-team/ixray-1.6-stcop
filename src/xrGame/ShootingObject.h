@@ -9,8 +9,6 @@
 #include "alife_space.h"
 #include "../xrEngine/Render.h"
 #include "anticheat_dumpable_object.h"
-#include "../xrParticles/psystem.h"
-#include "../xrParticles/ParticlesObject.h"
 
 class CCartridge;
 class CParticlesObject;

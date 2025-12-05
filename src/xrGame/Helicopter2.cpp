@@ -9,6 +9,7 @@
 #include "../xrPhysics/MathUtils.h"
 
 #include "Actor.h"
+#include "ParticlesObject.h"
 #include "physics_game.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)

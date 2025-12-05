@@ -42,7 +42,7 @@
 #include "character_hit_animations_params.h"
 #include "inventory_upgrade_manager.h"
 #include "FreeMP/game_sv_freemp.h"
-
+#include "ParticlesObject.h"
 #include "gamespy/GameSpy_Full.h"
 
 #include "ai_debug_variables.h"

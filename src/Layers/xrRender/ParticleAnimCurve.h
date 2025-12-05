@@ -1,5 +1,5 @@
 #pragma once
-#include "../../xrParticles/ParticleAnimCurveInterface.h"
+#include "../../xrEngine/ParticleAnimCurveInterface.h"
 
 namespace PS
 {

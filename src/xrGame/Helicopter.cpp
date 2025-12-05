@@ -10,6 +10,7 @@
 #include "script_game_object.h"
 #include "../xrEngine/LightAnimLibrary.h"
 //#include "physicscommon.h"
+#include "ParticlesObject.h"
 #include "../../xrUI/ui_base.h"
 //50fps fixed
 float STEP=0.02f;
