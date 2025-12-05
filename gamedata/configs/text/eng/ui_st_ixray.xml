@@ -457,4 +457,7 @@
 	<string id="kb_show_quick_slots">
 		<text>Show Quick Slots</text>
 	</string>
+	<string id="ui_mm_show_minimap">
+		<text>Show minimap</text>
+	</string>
 </string_table>
