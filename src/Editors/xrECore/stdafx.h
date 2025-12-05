@@ -20,7 +20,7 @@
 #include "../xrEProps/stdafx.h"
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../../xrSound/Sound.h"
-#include "../../xrParticles/psystem.h"
+#include "../../Layers/xrRender/particle_core/psystem.h"
 
 #include "../../xrEngine/Fmesh.h"
 #include "../../xrEngine/_d3d_extensions.h"

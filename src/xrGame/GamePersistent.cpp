@@ -40,7 +40,7 @@
 #include "../xrCore/discord/discord.h"
 #include "../xrEngine/string_table.h"
 #include "Level_Bullet_Manager.h"
-
+#include "ParticlesObject.h"
 extern int g_keypress_on_start;
 
 CGamePersistent::CGamePersistent(void)
@@ -418,6 +418,79 @@ void CGamePersistent::WeathersUpdate()
 		if (ambient_particles&&!ambient_particles->IsPlaying())
 			Particles::Details::Destroy(ambient_particles);
 	}
+}
+
+void CGamePersistent::UpdatePlayDestroyParticles()
+{
+	// Play req particle systems
+	while (!ps_needtoplay.empty())
+	{
+		xr_shared_ptr<CParticlesObject> pInstance = ps_needtoplay.back();
+		ps_needtoplay.pop_back();
+		pInstance->Play(false);
+	}
+
+	if (!ps_active_deffer.empty())
+	{
+		ps_active.reserve(ps_active.size() + ps_active_deffer.size());
+
+		for (xr_shared_ptr<CParticlesObject>& Part : ps_active_deffer)
+		{
+			ps_active.push_back(Part);
+		}
+		ps_active_deffer.clear();
+	}
+
+	ps_active.erase(std::remove_if
+	(
+		ps_active.begin(), ps_active.end(),
+		[](const xr_shared_ptr<CParticlesObject>& Obj)->bool
+		{
+			return Obj->m_NeedDestroy;
+		}
+	), ps_active.end());
+}
+
+void CGamePersistent::UpdateParticles()
+{
+	if (DevicePtr && !Device.IsEditorMode() && !g_dedicated_server)
+	{
+		PROF_EVENT(__FUNCTION__);
+		u32 dwTime = Device.dwTimeGlobal;
+		for (xr_shared_ptr<CParticlesObject> particle : ps_active)
+		{
+			if (!particle->m_NeedDestroy)
+			{
+				particle->Update(dwTime - particle->dwLastTime);
+				particle->dwLastTime = dwTime;
+			}
+		}
+	}
+}
+
+void CGamePersistent::destroy_particles(bool all_particles)
+{
+	PROF_EVENT(__FUNCTION__);
+	ps_needtoplay.clear();
+
+	// delete active particles
+	if (all_particles)
+	{
+		ps_active.clear();
+	}
+	else
+	{
+		ps_active.erase(std::remove_if
+		(
+			ps_active.begin(), ps_active.end(),
+			[](const xr_shared_ptr<CParticlesObject>& Obj)->bool
+			{
+				return Obj->destroy_on_game_load();
+			}
+		), ps_active.end());
+	}
+
+	VERIFY(ps_needtoplay.empty() && (!all_particles || ps_active.empty()));
 }
 
 void CGamePersistent::start_logo_intro()

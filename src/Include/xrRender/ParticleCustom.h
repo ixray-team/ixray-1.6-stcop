@@ -1,6 +1,10 @@
-#ifndef	ParticleCustom_included
-#define	ParticleCustom_included
 #pragma once
+
+namespace PAPI
+{
+	enum PActionEnum;
+	struct ParticleAction;
+}
 
 class IParticleCustom
 {
@@ -30,5 +34,3 @@ public:
 
 	virtual PAPI::ParticleAction* FindPA(shared_str PEName, PAPI::PActionEnum Action) = 0;
 };
-
-#endif	//	ParticleCustom_included

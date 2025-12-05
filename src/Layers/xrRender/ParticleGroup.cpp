@@ -1,8 +1,4 @@
 #include "stdafx.h"
-
-
-#include "../../xrParticles/psystem.h"
-
 #include "ParticleGroup.h"
 #include "PSLibrary.h"
 #include "ParticleEffect.h"
@@ -403,7 +399,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
 			{
 				PAPI::Particle* particles;
 				u32 p_cnt;
-				PAPI::ParticleManager()->GetParticles(E->GetHandleEffect(), particles, p_cnt);
+				E->Pholder.GetParticles(particles, p_cnt);
 				VERIFY(p_cnt == _children_related.size());
 
 				if (p_cnt)
@@ -543,7 +539,6 @@ CParticleGroup::~CParticleGroup()
 
 	// Msg ("!!! destoy PG");
 	for (u32 i=0; i<items.size(); i++) items[i].Clear();
-	items.clear();
 }
 
 void CParticleGroup::OnFrame(u32 u_dt)
@@ -619,6 +614,7 @@ void CParticleGroup::OnFrame(u32 u_dt)
 
 void CParticleGroup::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_InitialPosition		= m.c;
 	for (SItemVecIt i_it=items.begin(); i_it!=items.end(); i_it++) 
 		i_it->UpdateParent(m,velocity,bXFORM);
@@ -646,6 +642,7 @@ BOOL CParticleGroup::Compile(CPGDef* def)
 
 void CParticleGroup::Play()
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_CurrentTime   = 0;
 	m_RT_Flags.set	(flRT_DefferedStop,FALSE);
 	m_RT_Flags.set 	(flRT_Playing,TRUE);
