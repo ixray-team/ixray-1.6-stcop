@@ -17,6 +17,10 @@ export default defineConfig({
     'ru/:rest*': ':rest*',
   },
 
+  head: [
+    ['link', { rel: 'icon', href: '/ixray-1.6-stcop/favicon.ico' }] 
+  ],
+
   locales: {
     root: ruLocale,
     en: enLocale,
@@ -29,6 +33,7 @@ export default defineConfig({
   },
 
   themeConfig: {
+	 logo: '/logo.svg',
     search: {
       provider: 'local',
       options: {}
