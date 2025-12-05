@@ -29,12 +29,13 @@ float4 scaled_screen_res; //Render resolution
 //From Timothy Lottes
 float3 Lottes_Tonemap(float3 c)
 {
-	return c / (max(c.r, max(c.g, c.b)) + 1.0);
+	return saturate(c * rcp(1.0f + c));
 }
 
 float3 Lottes_Tonemap_Inverse(float3 c)
 {
-	return c / (1.0 - max(c.r, max(c.g, c.b)));
+	c = saturate(c);
+	return c * rcp(1.00001f - c);
 }
 
 static const int2 offset_3x3[9] =
