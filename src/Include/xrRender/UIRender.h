@@ -64,6 +64,8 @@ public:
 
 	virtual void	CacheSetXformWorld	(const Fmatrix& M) = 0;
 	virtual void	CacheSetCullMode	(CullMode) = 0;
+
+	virtual void zb_enable(u32 val) = 0;
 };
 
 #endif	//	UIRender_included
