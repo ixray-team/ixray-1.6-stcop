@@ -2814,11 +2814,14 @@ void CCC_RegisterCommands()
 
 
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 	//extern BOOL g_use_new_ballistics;
 	//CMD4(CCC_Integer,	"use_new_ballistics",	&g_use_new_ballistics, 0, 1);
 	extern float g_bullet_time_factor;
 	CMD4(CCC_Float, "g_bullet_time_factor", &g_bullet_time_factor, 0.f, 10.f);
+
+	extern BOOL g_bullet_debug_trj;
+	CMD4(CCC_Integer, "g_bullet_debug_trj", &g_bullet_debug_trj, 0, 1);
 #endif
 
 
