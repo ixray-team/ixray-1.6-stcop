@@ -20,7 +20,7 @@
 #include "../xrEngine/xr_collide_form.h"
 #include "Weapon.h"
 #include "ik/math3d.h"
-#include "Actor.h"
+#include "ParticlesObject.h"
 #include "ai/monsters/basemonster/base_monster.h"
 
 //константы ShootFactor, определяющие 

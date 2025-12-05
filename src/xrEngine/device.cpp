@@ -198,16 +198,11 @@ void CRenderDevice::on_idle		()
 	}
 	else 
 	{
-		{
-			PROF_EVENT("Update Particles");
-			if (g_pGamePersistent)
-				g_pGamePersistent->UpdateParticles();
+		if (g_pGamePersistent)
+			g_pGamePersistent->UpdatePlayDestroyParticles();
 
-			if (Device.ModelDefferClear)
-			{
-				Device.ModelDefferClear();
-			}
-		}
+		if (Device.ModelDefferClear)
+			Device.ModelDefferClear();
 
 		for (auto it = m_time_callbacks.begin(); it != m_time_callbacks.end();)
 		{
@@ -359,7 +354,6 @@ void CRenderDevice::Run()
 	// Stop Balance-Threads
 	secondary_tasks.wait();
 	details_task.wait();
-	ParticleWorkerCallback = nullptr;
 }
 
 u32 app_inactive_time		= 0;
@@ -484,14 +478,12 @@ void CRenderDevice::FrameMove()
 		clamp(fTimeDelta, 0.0000002f, .1f);
 
 		fTimeDeltaSmoothing = fTimeDelta;
+		if (!Paused())
+			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
+		clamp(fTimeDeltaSmoothing, 0.0000002f, .1f);
 
 		if(use_smoothed_delta)
-		{
-			delta_filter.CalculateSmoothedDelta(fTimeDeltaSmoothing);
-			clamp(fTimeDeltaSmoothing, 0.0000002f, .1f);
-		}
-
-		fTimeDelta = fTimeDeltaSmoothing;
+			fTimeDelta = fTimeDeltaSmoothing;
 
 		if (Paused()) {
 			fTimeDelta = 0.0f;
