@@ -78,7 +78,7 @@
 #include "../xrEngine/Rain.h"
 #include "script_hit.h"
 #include "../../xrScripts/script_engine.h"
-
+#include "ParticlesObject.h"
 using namespace luabind;
 
 const u32		patch_frames	= 50;

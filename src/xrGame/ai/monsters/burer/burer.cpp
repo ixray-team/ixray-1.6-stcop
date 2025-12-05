@@ -14,6 +14,7 @@
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
 #include "burer_fast_gravi.h"
+#include "ParticlesObject.h"
 #include "../anti_aim_ability.h"
 #include "../anti_aim_ability.h"
 
