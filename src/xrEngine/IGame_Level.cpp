@@ -101,6 +101,12 @@ BOOL IGame_Level::Load			(u32 dwNum)
 		Debug.fatal	(DEBUG_INFO,"Can't find level configuration file '%s'.",temp);
 	pLevel						= new CInifile	( temp );
 	
+	UseSnowmask = true;
+	if (pLevel->section_exist("weather") && pLevel->line_exist("weather", "snowmask"))
+	{
+		UseSnowmask = !!pLevel->r_bool("weather", "snowmask");
+	}
+
 	// Open
 	g_pGamePersistent->SetLoadStageTitle	("st_opening_stream");
 	g_pGamePersistent->LoadTitle	();
