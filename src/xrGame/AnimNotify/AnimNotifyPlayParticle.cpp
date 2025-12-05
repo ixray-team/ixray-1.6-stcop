@@ -4,8 +4,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
 
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
+#include "ParticlesObject.h"
 
 constexpr u32 m_particles_num = 20;
 

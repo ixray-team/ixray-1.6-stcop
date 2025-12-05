@@ -53,6 +53,10 @@ class CGamePersistent:
 	void				UpdateDof				();
 
 public:
+	xr_vector<xr_shared_ptr<CParticlesObject>> ps_active;
+	xr_vector<xr_shared_ptr<CParticlesObject>> ps_active_deffer;
+	xr_vector<xr_shared_ptr<CParticlesObject>> ps_needtoplay;
+
 	IReader*			pDemoFile;
 	u32					uTime2Change;
 	EVENT				eDemoStart;
@@ -76,6 +80,10 @@ public:
 	virtual void			OnEvent					(EVENT E, u64 P1, u64 P2);
 
 	virtual void		UpdateGameType			();
+
+	virtual	void		destroy_particles		(bool all_particles);
+	virtual	void		UpdatePlayDestroyParticles();
+	virtual	void		UpdateParticles			();
 
 	virtual void		RegisterModel			(IRenderVisual* V);
 	virtual	float		MtlTransparent			(u32 mtl_idx);
