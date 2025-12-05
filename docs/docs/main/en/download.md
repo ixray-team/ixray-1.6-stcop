@@ -6,7 +6,7 @@ hero:
   name: "IX-Ray Platform"
 ---
 <script setup>
-import Download from '../../components/Download.vue'
+import Download from '../../../components/Download.vue'
 </script>
 
 <Download />

@@ -14,8 +14,15 @@ export default defineConfig({
   lastUpdated: true,
   ignoreDeadLinks: true,
   rewrites: {
-    'ru/:rest*': ':rest*',
+    'main/ru/:rest*': ':rest*',
+    'main/en/:rest*': 'en/:rest*',
+    'mods/ru/:rest*': 'mods/:rest*',
+    'mods/en/:rest*': 'en/mods/:rest*',
   },
+
+  head: [
+    ['link', { rel: 'icon', href: '/ixray-1.6-stcop/favicon.ico' }] 
+  ],
 
   locales: {
     root: ruLocale,
@@ -29,6 +36,7 @@ export default defineConfig({
   },
 
   themeConfig: {
+	 logo: '/logo.svg',
     search: {
       provider: 'local',
       options: {}

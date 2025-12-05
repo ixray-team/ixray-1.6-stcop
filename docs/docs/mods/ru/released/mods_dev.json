@@ -1,0 +1,147 @@
+﻿{
+  "eyebrow": "Каталог",
+  "title": "Список модификаций",
+  "subtitle": "Данные ниже — пример. Подставьте реальные моды или подключите источник данных.",
+  "labels": {
+    "view": "Подробнее",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "aiw",
+      "title": "Alone in Windstorm: Fallen Bear",
+      "description": "Суровое будущее после мирового ядерного конфликта. Местом действия сюжета станет один из регионов Дальнего Востока",
+      "author": "AIW Team",
+      "link": "https://ap-pro.ru/forums/topic/3903-alone-in-windstorm-fallen-bear/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/аив.png"
+    },
+    {
+      "id": "AnotherSide",
+      "title": "Another Side",
+      "description": "Как стать наёмником? Легко. Если высок боевой дух и низок моральный облик",
+      "author": "Another Side",
+      "link": "https://vk.com/stalker_another_side",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/anotherside.png"
+    },
+    {
+      "id": "ikarus",
+      "title": "Икарус",
+      "description": "Сюжет мода повествует о девушке, которая отправляется в Зону, чтобы найти похищенную сестру",
+      "author": "Mawrak",
+      "link": "https://ap-pro.ru/forums/topic/11616-sostoyalsya-anons-modifikacii-«proekt-icarus»/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/икарус.png"
+    },
+    {
+      "id": "whitelist",
+      "title": "Чистый Лист",
+      "description": "Soon",
+      "author": "NeptunNZ",
+      "link": "",
+      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=%D0%A7%D0%B8%D1%81%D1%82%D1%8B%D0%B9+%D0%9B%D0%B8%D1%81%D1%82"
+    },
+    {
+      "id": "tihoemesto",
+      "title": "Тихое место",
+      "description": "",
+      "author": "Артем Якушев",
+      "link": "https://vk.com/stalker_modification",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/тихоеместо.png"
+    },
+    {
+      "id": "kotovzlom",
+      "title": "KOTOVZLOM",
+      "description": "Постирония в стилистике киберпанка 1970 годов",
+      "author": "Retro Zone",
+      "link": "https://vk.com/kotovzlom",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/котовзлом.png"
+    },
+    {
+      "id": "newspaces",
+      "title": "Новые Просторы. Город потерянных грёз",
+      "description": "Откройте для себя новые просторы ЧЗО",
+      "author": "Isoteric Studio",
+      "link": "https://vk.com/isotericstudio",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/ньюспейсы.png"
+    },
+    {
+      "id": "strannik",
+      "title": "СТРАННИК",
+      "description": "Последствия взрыва коллайдера, аномальная энергия и радиация, охватившая всю планету",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/12350-strannik/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/страннику.png"
+    },
+    {
+      "id": "x7",
+      "title": "X-7: Эпицентр",
+      "description": "Перед сталкерами была поставлена задача проникнуть в лабораторию Х-7 и добыть информацию о проводившихся в ней экспериментах",
+      "author": "X7 Team",
+      "link": "https://ap-pro.ru/forums/topic/6215-x-7-epicentr",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/x7.png"
+    },
+    {
+      "id": "scope",
+      "title": "Scope",
+      "description": "",
+      "author": "Who I'Am",
+      "link": "https://vk.com/public207228241",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/scope.png"
+    },
+    {
+      "id": "project2",
+      "title": "[Проект №2]",
+      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/проект2.png"
+    },
+    {
+      "id": "drakoshindev",
+      "title": "Escape From Zone",
+      "description": "Soon",
+      "author": "LostPath",
+      "link": "https://vk.com/lost_pafos",
+      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=Escape+From+Zone"
+    },
+    {
+      "id": "TToZ",
+      "title": "The Trailblazer of Zone",
+      "description": "В центре сюжета — группа неизвестных и смелых людей, решивших отправиться в Зону в качестве первопроходцев",
+      "author": "thetrailblazerofzone",
+      "link": "https://vk.com/thetrailblazerofzone",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/ttoz.png"
+    },
+    {
+      "id": "newlive",
+      "title": "Грань: Новая Жизнь",
+      "description": "Грань - проект, который будет стремиться показать Зону от лица разных людей",
+      "author": "ScR1pt",
+      "link": "",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/грань.png"
+    },
+    {
+      "id": "vestnik",
+      "title": "Вестник",
+      "description": "Soon",
+      "author": "FacingSlave",
+      "link": "https://vk.com/club231757914",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/Вестник.png"
+    },
+    {
+      "id": "pa2",
+      "title": "Пространственная Аномалия 2",
+      "description": "Soon",
+      "author": "",
+      "link": "https://vk.com/spatial_anomaly",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/па2.png"
+    },
+    {
+      "id": "sv3",
+      "title": "Смерти Вопреки 3: Осколок Тьмы",
+      "description": "Осень. 2017 год. В Зоне произошёл Сверхмощный выброс, который образовал новые неизвестные территории",
+      "author": "CortezZz Team",
+      "link": "https://ap-pro.ru/forums/topic/13377-smerti-vopreki-3-oskolok-tmy-anons-modifikacii",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/св3.png"
+    }
+  ]
+}

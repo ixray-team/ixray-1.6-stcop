@@ -1,0 +1,59 @@
+﻿{
+  "eyebrow": "Каталог",
+  "title": "Список модификаций",
+  "subtitle": "Данные ниже — пример. Подставьте реальные моды или подключите источник данных.",
+  "labels": {
+    "view": "Скачать / открыть",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "dreamcatcher",
+      "title": "Ловец Снов",
+      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
+      "author": "Dreamcatcher Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/ловец.png"
+    },
+    {
+      "id": "one-way-ticket",
+      "title": "Билет в один конец",
+      "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
+      "author": "OneWay Studio",
+      "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/билет.png"
+    },
+    {
+      "id": "sins-academic",
+      "title": "Грехи Академика. Красный Рассвет",
+      "description": "Военная драма с упором на боевые миссии и сложные решения.",
+      "author": "Red Dawn",
+      "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/академик.png"
+    },
+    {
+      "id": "pavlik-day",
+      "title": "Один день из жизни Павлика",
+      "description": "Короткая история в духе дневников с атмосферой сталкерского быта.",
+      "author": "Pavlik Dev",
+      "link": "https://ap-pro.ru/forums/topic/10129-odin-den-iz-zhizni-pavlika",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/равлик.png"
+    },
+    {
+      "id": "back-to-past",
+      "title": "Назад в прошлое",
+      "description": "Возвращение к истокам с переосмыслением классических локаций.",
+      "author": "Retro Zone",
+      "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/назад.png"
+    },
+    {
+      "id": "awakening-2055",
+      "title": "Пробуждение. 2055",
+      "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
+      "author": "Future Lab",
+      "link": "https://vk.com/wall-195948120_7369",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site/2055.png"
+    }
+  ]
+}
