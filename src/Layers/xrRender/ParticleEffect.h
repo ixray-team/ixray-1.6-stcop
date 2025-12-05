@@ -7,7 +7,7 @@
 
 #include "FBasicVisual.h"
 #include "dxParticleCustom.h"
-
+#include "particle_core/particle_holder.h"
 namespace PS
 {
 	class ECORE_API CParticleEffect: public dxParticleCustom
@@ -17,15 +17,14 @@ namespace PS
 	protected:
 		float				m_fElapsedLimit;
 
-		int					m_HandleEffect;
-		int					m_HandleActionList;
-
 		s32					m_MemDT;
 
 		Fvector				m_InitialPosition;
+		xrCriticalSection	onframe_lock;
 	public:
 		CPEDef*				m_Def;
         Fmatrix				m_XFORM;
+		PAPI::ParticleHolder Pholder;
     protected:
     	DestroyCallback		m_DestroyCallback;
         CollisionCallback	m_CollisionCallback;
@@ -61,8 +60,6 @@ namespace PS
 		BOOL				Compile				(CPEDef* def);
 
 		IC CPEDef*			GetDefinition		(){return m_Def;}
-		IC int				GetHandleEffect		(){return m_HandleEffect;}
-		IC int				GetHandleActionList	(){return m_HandleActionList;}
 
 		virtual void		Play				();
 		virtual void		Stop				(BOOL bDefferedStop=TRUE);

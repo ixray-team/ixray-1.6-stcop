@@ -8,7 +8,6 @@
 #include "IGame_Level.h"
 #include "XR_IOConsole.h"
 #include "Render.h"
-#include "PS_instance.h"
 #include "CustomHUD.h"
 
 ENGINE_API	IGame_Persistent* g_pGamePersistent = nullptr;
@@ -151,61 +150,6 @@ void IGame_Persistent::OnFrame()
 {
 	if (!Device.Paused() || Device.dwPrecacheFrame)
 		Environment().OnFrame();
-}
-
-void IGame_Persistent::UpdateParticles()
-{
-	// Play req particle systems
-	while (!ps_needtoplay.empty())
-	{
-		xr_shared_ptr<CPS_Instance> pInstance = ps_needtoplay.back();
-		ps_needtoplay.pop_back();
-		pInstance->Play(false);
-	}
-
-	if (!ps_active_deffer.empty())
-	{
-		ps_active.reserve(ps_active.size() + ps_active_deffer.size());
-
-		for (xr_shared_ptr<CPS_Instance>& Part : ps_active_deffer)
-		{
-			ps_active.push_back(Part);
-		}
-		ps_active_deffer.clear();
-	}
-
-	ps_active.erase(std::remove_if
-	(
-		ps_active.begin(), ps_active.end(),
-		[](const xr_shared_ptr<CPS_Instance>& Obj)->bool
-		{
-			return Obj->m_NeedDestroy;
-		}
-	), ps_active.end());
-}
-
-void IGame_Persistent::destroy_particles(const bool& all_particles)
-{
-	ps_needtoplay.clear();
-
-	// delete active particles
-	if (all_particles)
-	{
-		ps_active.clear();
-	}
-	else
-	{
-		ps_active.erase(std::remove_if
-		(
-			ps_active.begin(), ps_active.end(),
-			[](const xr_shared_ptr<CPS_Instance>& Obj)->bool
-			{
-				return Obj->destroy_on_game_load();
-			}
-		), ps_active.end());
-	}
-
-	VERIFY(ps_needtoplay.empty() && (!all_particles || ps_active.empty()));
 }
 
 void IGame_Persistent::OnAssetsChanged()

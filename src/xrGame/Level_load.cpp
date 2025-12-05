@@ -15,6 +15,7 @@
 
 #include "inventory_upgrade_manager.h"
 #include "ElectronicsProblemsManager.h"
+#include "ParticlesObject.h"
 
 BOOL CLevel::Load_GameSpecific_Before()
 {

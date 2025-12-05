@@ -28,7 +28,7 @@
 #include "ai_object_location.h"
 #include "movement_manager.h"
 #include "game_object_space.h"
-
+#include "ParticlesObject.h"
 void  ActionCallback(IKinematics *tpKinematics);
 
 CScriptEntity::CScriptEntity()
