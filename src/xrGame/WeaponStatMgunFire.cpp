@@ -6,6 +6,7 @@
 #include "Actor.h"
 #include "ActorEffector.h"
 #include "EffectorShot.h"
+#include "ParticlesObject.h"
 #include "Weapon.h"
 
 const Fvector&	CWeaponStatMgun::get_CurrentFirePoint()
@@ -144,7 +145,7 @@ void CWeaponStatMgun::AddShotEffector()
 		CCameraShotEffector* S = smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot));
 
 		CameraRecoil camera_recoil;
-		// Настройка параметров отдачи для стационарного пулемета
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		camera_recoil.MaxAngleVert = camMaxAngle;
 		camera_recoil.RelaxSpeed = camRelaxSpeed;
 		camera_recoil.MaxAngleHorz = 0.25f;

@@ -33,7 +33,7 @@
 #ifndef _EDITOR
 #include "../../xrEngine/IGame_Level.h"
 
-#include "../../xrParticles/psystem.h"
+#include "../xrRender/particle_core/psystem.h"
 #include "../xrRender/xrRender_console.h"
 #include "FStaticRender.h"
 #endif

@@ -14,6 +14,7 @@
 #include "Explosive.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "CharacterPhysicsSupport.h"
+#include "ParticlesObject.h"
 //extern CPHWorld*	ph_world;
 CBlackGraviArtefact::CBlackGraviArtefact(void) 
 {

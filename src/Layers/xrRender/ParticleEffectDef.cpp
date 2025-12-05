@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "ParticleEffectDef.h"
 #include "ParticleEffect.h"
 #include "../../xrServerEntities/object_destroyer.h"
@@ -9,7 +7,7 @@
 	#include "../../Editors/xrECore/Editor/UI_ToolsCustom.h"
 	#include "../../Editors/xrECore/Editor/ParticleEffectActions.h"
 #else
-#include "../../xrParticles/EditorLegacy/ParticleEffectActions.h"
+#include "../../Layers/xrRender/particle_core/EditorLegacy/ParticleEffectActions.h"
 #endif
 
 //---------------------------------------------------------------------------
@@ -106,7 +104,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 					pick_cnt++;
 					if (cb&&(pick_cnt==1)) if (!cb(owner,m,pt,n)) break;
 					if (m_Flags.is(dfCollisionDel)){ 
-	                   	ParticleManager()->RemoveParticle(owner->m_HandleEffect,i);
+						owner->Pholder.RemoveParticle(i);
 					}else{
 						// Compute tangential and normal components of velocity
 						float nmag = m.vel * n;

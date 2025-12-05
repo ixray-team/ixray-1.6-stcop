@@ -10,7 +10,7 @@
 #include "script_particles.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "../xrEngine/IGame_Persistent.h"
-
+#include "GamePersistent.h"
 CScriptParticlesCustom::CScriptParticlesCustom(CScriptParticles* owner, LPCSTR caParticlesName):
 	CParticlesObject(caParticlesName,FALSE,true)
 {
@@ -51,10 +51,11 @@ void CScriptParticlesCustom::PSI_destroy()
 	CParticlesObject::PSI_destroy();
 }
 
-void CScriptParticlesCustom::shedule_Update(u32 _dt)
+void CScriptParticlesCustom::Update(u32 _dt)
 {
-	CParticlesObject::shedule_Update(_dt);
-	if (m_animator){
+	CParticlesObject::Update(_dt);
+	if (m_animator)
+	{
 		float dt				= float(_dt)/1000.f; 
 		Fvector prev_pos		= m_animator->XFORM().c;
 		m_animator->Update		(dt);
@@ -97,7 +98,7 @@ void CScriptParticlesCustom::remove_owner	()
 CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 {
 	m_particles = xr_make_shared<CScriptParticlesCustom>(this, caParticlesName);
-	g_pGamePersistent->ps_active_deffer.push_back(m_particles);
+	GamePersistent().ps_active_deffer.push_back(m_particles);
 }
 
 CScriptParticles::~CScriptParticles()

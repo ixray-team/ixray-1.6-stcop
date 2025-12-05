@@ -1,6 +1,4 @@
 #include "stdafx.h"
-
-
 #include "ParticleEffect.h"
 #include "CHudInitializer.h"
 
@@ -60,8 +58,6 @@ void PS::OnEffectParticleDead(void* , u32 , PAPI::Particle& , u32 )
 //------------------------------------------------------------------------------
 CParticleEffect::CParticleEffect()
 {
-	m_HandleEffect 			= ParticleManager()->CreateEffect(1);		VERIFY(m_HandleEffect>=0);
-	m_HandleActionList		= ParticleManager()->CreateActionList();	VERIFY(m_HandleActionList>=0);
 	m_RT_Flags.zero			();
 	m_Def					= 0;
 	m_fElapsedLimit			= 0.f;
@@ -73,21 +69,22 @@ CParticleEffect::CParticleEffect()
 }
 CParticleEffect::~CParticleEffect()
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	// Log					("--- destroy PE");
 	OnDeviceDestroy			();
-	ParticleManager()->DestroyEffect		(m_HandleEffect);
-	ParticleManager()->DestroyActionList	(m_HandleActionList);
 }
 
 void CParticleEffect::Play()
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_RT_Flags.set		(flRT_DefferedStop,FALSE);
 	m_RT_Flags.set		(flRT_Playing,TRUE);
-    ParticleManager()->PlayEffect(m_HandleEffect,m_HandleActionList);
+	Pholder.PlayEffect();
 }
 void CParticleEffect::Stop(BOOL bDefferedStop)
 {
-    ParticleManager()->StopEffect(m_HandleEffect,m_HandleActionList,bDefferedStop);
+	xrCriticalSectionGuard guard(&onframe_lock);
+	Pholder.StopEffect(bDefferedStop);
 	if (bDefferedStop){
 		m_RT_Flags.set	(flRT_DefferedStop,TRUE);
 	}else{
@@ -102,16 +99,18 @@ void CParticleEffect::RefreshShader()
 
 void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, BOOL bXFORM)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_RT_Flags.set			(flRT_XFORM, bXFORM);
 	if (bXFORM)				m_XFORM.set	(m);
 	else{
 		m_InitialPosition	= m.c;
-        ParticleManager()->Transform(m_HandleActionList,m,velocity);
+		Pholder.Transform(m,velocity);
 	}
 }
 
 void CParticleEffect::OnFrame(u32 frame_dt)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	if (0==m_RT_Flags.is(flRT_LiveUpdate))
 	{
 		if (m_Def && m_RT_Flags.is(flRT_Playing)) 
@@ -140,11 +139,11 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 						}
 					}
 				}
-				ParticleManager()->Update(m_HandleEffect, m_HandleActionList, fDT_STEP);
+				Pholder.Update(fDT_STEP);
 
 				PAPI::Particle* particles;
 				u32 p_cnt;
-				ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
+				Pholder.GetParticles(particles, p_cnt);
 
 				// our actions
 				if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))	m_Def->ExecuteAnimate(particles, p_cnt, fDT_STEP);
@@ -191,10 +190,10 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 	{
 		if (m_Def && m_RT_Flags.is(flRT_Playing))
 		{
-			ParticleManager()->Update(m_HandleEffect, m_HandleActionList, Device.fTimeDelta);
+			Pholder.Update(Device.fTimeDelta);
 			PAPI::Particle* particles = nullptr;
 			u32 p_cnt = 0;
-			ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
+			Pholder.GetParticles(particles, p_cnt);
 			if (!particles) return;
 			// our actions
 			if (m_Def->m_Flags.is(CPEDef::dfFramed | CPEDef::dfAnimated))	m_Def->ExecuteAnimate(particles, p_cnt, Device.fTimeDelta);
@@ -247,6 +246,7 @@ void CParticleEffect::OnFrame(u32 frame_dt)
 
 BOOL CParticleEffect::Compile(CPEDef* def)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	m_Def 						= def;
 	if (m_Def){
 		// refresh shader
@@ -254,9 +254,9 @@ BOOL CParticleEffect::Compile(CPEDef* def)
 
 		// append actions
 		IReader F				(m_Def->m_Actions.pointer(),m_Def->m_Actions.size());
-        ParticleManager()->LoadActions		(m_HandleActionList,F);
-        ParticleManager()->SetMaxParticles	(m_HandleEffect,m_Def->m_MaxParticles);
-        ParticleManager()->SetCallback		(m_HandleEffect,OnEffectParticleBirth,OnEffectParticleDead,this,0);
+        Pholder.LoadActions		(F);
+        Pholder.SetMaxParticles	(m_Def->m_MaxParticles);
+        Pholder.SetCallback		(OnEffectParticleBirth,OnEffectParticleDead,this,0);
 		// time limit
 		if (m_Def->m_Flags.is(CPEDef::dfTimeLimit))
 			m_fElapsedLimit 	= m_Def->m_fTimeLimit;
@@ -267,18 +267,27 @@ BOOL CParticleEffect::Compile(CPEDef* def)
 
 void CParticleEffect::SetBirthDeadCB(PAPI::OnBirthParticleCB bc, PAPI::OnDeadParticleCB dc, void* owner, u32 p)
 {
-    ParticleManager()->SetCallback		(m_HandleEffect,bc,dc,owner,p);
+	xrCriticalSectionGuard guard(&onframe_lock);
+	Pholder.SetCallback		(bc,dc,owner,p);
 }
 
 u32 CParticleEffect::ParticlesCount()
 {
-	return ParticleManager()->GetParticlesCount(m_HandleEffect);
+	xrCriticalSectionGuard guard(&onframe_lock);
+	return Pholder.GetParticlesCount();
 }
 
 PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEnum Action)
 {
 	R_ASSERT4(PEName == Name(), "Attempt to find PA in wrong PE", PEName.c_str(), Name().c_str());
-	return ParticleManager()->FindAction(m_HandleActionList,Action);
+	for (auto action : Pholder.m_actions)
+	{
+		if (action->type == Action)
+		{
+			return action;
+		}
+	}
+	return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -291,6 +300,7 @@ void CParticleEffect::Copy(dxRender_Visual* )
 
 void CParticleEffect::OnDeviceCreate()
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	if (m_Def){
 		if (m_Def->m_Flags.is(CPEDef::dfSprite)){
 			geom.create			(FVF::F_LIT, RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -301,6 +311,7 @@ void CParticleEffect::OnDeviceCreate()
 
 void CParticleEffect::OnDeviceDestroy()
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	if (m_Def){
 		if (m_Def->m_Flags.is(CPEDef::dfSprite)){
 			geom.destroy		();
@@ -433,12 +444,14 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 }
 
 extern ENGINE_API float		psHUD_FOV;
-void CParticleEffect::Render(float) {
+void CParticleEffect::Render(float)
+{
+	xrCriticalSectionGuard guard(&onframe_lock);
 	u32 dwOffset, dwCount;
 	// Get a pointer to the particles in gp memory
 	PAPI::Particle* particles;
 	u32 p_cnt;
-	ParticleManager()->GetParticles(m_HandleEffect, particles, p_cnt);
+	Pholder.GetParticles(particles, p_cnt);
 
 	if (p_cnt > 0)
 	{
@@ -649,7 +662,7 @@ void CParticleEffect::Render(float )
 	// Get a pointer to the particles in gp memory
     PAPI::Particle* particles;
     u32 			p_cnt;
-    ParticleManager()->GetParticles(m_HandleEffect,particles,p_cnt);
+	Pholder.GetParticles(particles,p_cnt);
 
 	if(p_cnt>0){
 		if (m_Def&&m_Def->m_Flags.is(CPEDef::dfSprite)){

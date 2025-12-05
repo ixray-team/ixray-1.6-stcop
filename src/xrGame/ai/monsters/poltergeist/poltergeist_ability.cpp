@@ -4,7 +4,7 @@
 #include "../../../Level.h"
 #include "../../../material_manager.h"
 #include "../../../level_debug.h"
-
+#include "../../../ParticlesObject.h"
 
 CPolterSpecialAbility::CPolterSpecialAbility(CPoltergeist *polter)
 {

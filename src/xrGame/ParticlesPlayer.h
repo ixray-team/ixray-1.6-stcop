@@ -5,11 +5,10 @@
 
 #pragma once
 
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/VisMask.h"
 
+class CParticlesObject;
 using PARTICLES_PTR_VECTOR = xr_vector<CParticlesObject*>;
 using PARTICLES_PTR_VECTOR_IT = PARTICLES_PTR_VECTOR::iterator;
 
