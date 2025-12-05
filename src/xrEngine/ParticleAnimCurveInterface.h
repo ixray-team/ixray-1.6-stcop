@@ -2,11 +2,11 @@
 
 namespace PS
 {
-    class PARTICLES_API IPAC
+    class ENGINE_API IPAC
     {
     public:
 
-        virtual ~IPAC(){};
+        virtual ~IPAC() = default;
     
         virtual Fvector4 GetValueOnIndex(int index) = 0;
         virtual Fvector4 GetValueOnTime(float time) = 0;
@@ -21,9 +21,14 @@ namespace PS
         virtual Fvector4 FastUpdateValue(size_t& CurrentIndex, float& CurrentTime, float dt, bool Loop, bool Reverse = false) = 0;
     };
 
-    class PARTICLES_API IPACLibrary;
+    class ENGINE_API IPACLibrary
+    {
+    public:
+        virtual ~IPACLibrary() = default;
+        virtual PS::IPAC* FindIPAC(LPCSTR name) = 0;
+    };
 
-    class PARTICLES_API CPACLibraryWrapper
+    class ENGINE_API CPACLibraryWrapper
     {
         IPACLibrary* PACLibrary = nullptr;
 
@@ -39,11 +44,5 @@ namespace PS
         CPACLibraryWrapper& operator=(const CPACLibraryWrapper&) = delete;
         CPACLibraryWrapper(CPACLibraryWrapper&&) = delete;
         CPACLibraryWrapper& operator=(CPACLibraryWrapper&&) = delete;
-    };
-
-    class PARTICLES_API IPACLibrary
-    {
-    public:
-        virtual PS::IPAC* FindIPAC(LPCSTR name) = 0;
     };
 }

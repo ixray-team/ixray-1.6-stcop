@@ -19,7 +19,6 @@
 #include "../xrRender/dxUIShader.h"
 #include "../../xrCore/git_version.h"
 
-#include "../../xrParticles/ParticlesAsyncManager.h"
 #include "../xrRender/RenderInterfaceShared.h"
 using namespace R_dsgraph;
 
@@ -221,7 +220,6 @@ IRender_Glow*			CRender::glow_create			()					{ return new CGlow();								}
 
 ENGINE_API	extern xr_atomic_bool g_bRendering;
 
-#include "../../xrEngine/PS_instance.h"
 void					CRender::set_Object				(IRenderable*		O )	
 {
 	VERIFY					(g_bRendering);
@@ -527,7 +525,7 @@ void CRender::Render()
 	r_pmask										(true,true);	// enable priority "0" and "1"
 	if(L_Shadows)L_Shadows->render				();				// ... and shadows
 	r_dsgraph_render_lods						(false,true);	// lods - FB
-	CParticlesAsync::Wait();
+
 	r_dsgraph_render_graph						(1);			// normal level, secondary priority
 	L_Dynamic->render							(1);			// addititional light sources, secondary priority
 	phase = PHASE_NORMAL;

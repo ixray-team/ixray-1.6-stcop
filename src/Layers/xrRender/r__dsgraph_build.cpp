@@ -358,6 +358,7 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 		{
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+			xrCriticalSectionGuard guard(&pG->onframe_lock);
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
 				PS::CParticleGroup::SItem&			I_		= *i_it;
 				if (I_._effect)		add_leafs_Dynamic		(I_._effect);
@@ -453,6 +454,7 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 		{
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+			xrCriticalSectionGuard guard(&pG->onframe_lock);
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)
 			{
 				PS::CParticleGroup::SItem&			I_		= *i_it;
@@ -555,6 +557,7 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 		{
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+			xrCriticalSectionGuard guard(&pG->onframe_lock);
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
 				PS::CParticleGroup::SItem&			I_		= *i_it;
 				if (fcvPartial==VIS) {

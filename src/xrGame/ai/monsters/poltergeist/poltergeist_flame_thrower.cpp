@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+
+#include "ParticlesObject.h"
 #include "poltergeist.h"
 #include "../../../../xrServerEntities/xrMessages.h"
 #include "../../../ai_object_location.h"
