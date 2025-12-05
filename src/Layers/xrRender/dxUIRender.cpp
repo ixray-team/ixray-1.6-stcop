@@ -156,3 +156,8 @@ void dxUIRender::CacheSetCullMode(CullMode m)
 	RCache.set_CullMode	(CULL_NONE+m);
 }
 
+void dxUIRender::zb_enable(u32 val)
+{
+	RCache.set_Z(val);
+}
+
