@@ -127,15 +127,16 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if(bump)
 	{
 		string512 errorMsg;
-		xr_sprintf(errorMsg, "Missing bump texture: %s\n"
-			"                         Loading texture: %s", dt, C.L_textures[0].c_str());
+		xr_sprintf(errorMsg, "Missing bump texture: %s\n\t\t\tLoading texture: %s", dt, C.L_textures[0].c_str());
 
 		R_ASSERT3(fnameB[0] && xr_strlen(fnameB), errorMsg,  "Missing bump texture\n");
 		R_ASSERT3(fnameA[0] && xr_strlen(fnameA), errorMsg,  "Missing bump texture\n");
 	}
 
 	string_path temp;
-	bool snow_texture = FS.exist(temp, "$textures$", C.L_textures[0].c_str(), "_snowmask.dds");
+
+	static bool UseWinterPass = EngineExternal()[EEngineExternalRender::UseDynamicSnowMask];
+	bool snow_texture = UseWinterPass && FS.exist(temp, "$textures$", C.L_textures[0].c_str(), "_snowmask.dds");
 	if (snow_texture)
 	{
 		RImplementation.addShaderOption("USE_SNOW_TEXTURE", "1");
@@ -144,8 +145,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	if(bHasDetailBump)
 	{
 		string512 errorMsg;
-		xr_sprintf(errorMsg, "Missing detail texture: %s\n"
-			"                         Loading texture: %s", dt, C.L_textures[0].c_str());
+		xr_sprintf(errorMsg, "Missing detail texture: %s\n\t\t\tLoading texture: %s", dt, C.L_textures[0].c_str());
 
 		R_ASSERT3(texDetailBump[0] && xr_strlen(texDetailBump), errorMsg, "Missing detail texture");
 		R_ASSERT3(texDetailBumpX[0] && xr_strlen(texDetailBumpX), errorMsg, "Missing detail texture");
