@@ -460,4 +460,7 @@
 	<string id="kb_show_quick_slots">
 		<text>Показать панель быстрого доступа</text>
 	</string>
+	<string id="ui_mm_show_minimap">
+		<text>Показать мини-карту</text>
+	</string>
 </string_table>
