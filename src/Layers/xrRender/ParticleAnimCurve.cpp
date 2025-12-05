@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "ParticleAnimCurve.h"
 
-#include <json/json.hpp>
-
 #ifdef _EDITOR
 #include "Editor/UI_ToolsCustom.h"
 #endif
