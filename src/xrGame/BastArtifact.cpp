@@ -5,6 +5,8 @@
 
 #include "StdAfx.h"
 #include "BastArtifact.h"
+
+#include "ParticlesObject.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrPhysics/ExtendedGeom.h"
 

@@ -40,7 +40,7 @@
 #include "../../../ai_object_location.h"
 #include "../../../ai_space.h"
 #include "../../../../xrScripts/script_engine.h"
-
+#include "../../../ParticlesObject.h"
 #include "../anti_aim_ability.h"
 
 // Lain: added 

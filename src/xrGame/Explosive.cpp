@@ -8,8 +8,7 @@
 
 #include "../xrPhysics/PhysicsShell.h"
 #include "Entity.h"
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
+#include "ParticlesObject.h"
 
 //для вызова статических функций поражения осколками
 #include "Weapon.h"

@@ -6,7 +6,6 @@
 
 class IRenderVisual;
 class IMainMenu;
-class ENGINE_API CPS_Instance;
 extern ENGINE_API bool g_dedicated_server;
 
 class ENGINE_API IGame_Persistent : 
@@ -59,15 +58,6 @@ public:
 
 	params m_game_params;
 	ShaderParamsData ShaderParams;
-
-public:
-	xr_vector<xr_shared_ptr<CPS_Instance>> ps_active;
-	xr_vector<xr_shared_ptr<CPS_Instance>> ps_active_deffer;
-	xr_vector<xr_shared_ptr<CPS_Instance>> ps_needtoplay;
-
-public:
-			void					destroy_particles	(const bool &all_particles);
-
 public:
 	virtual void					PreStart			(LPCSTR op);
 	virtual void					Start				(LPCSTR op);
@@ -78,7 +68,9 @@ public:
 	void							Prefetch			( );
 	IMainMenu*						m_pMainMenu;	
 
-			void					UpdateParticles();
+	virtual	void					UpdatePlayDestroyParticles() {};
+	virtual	void					UpdateParticles		() {};
+	virtual	void					destroy_particles	(bool all_particles) {};
 
 	virtual bool					OnRenderPPUI_query	() { return FALSE; };	// should return true if we want to have second function called
 	virtual void					OnRenderPPUI_main	() {};

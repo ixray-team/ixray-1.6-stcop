@@ -5,7 +5,7 @@
 #include "../../../xrEngine/motion.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
-
+#include "../../ParticlesObject.h"
 CPhantom::CPhantom()
 {
 	fSpeed				= 4.f;

@@ -6,7 +6,6 @@
 
 #ifdef DEBUG
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/PS_instance.h"
 #endif
 
 

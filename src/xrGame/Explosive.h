@@ -13,10 +13,8 @@
 #include "wallmark_manager.h"
 #include "HudSound.h"
 
-#include "../xrParticles/stdafx.h"
-#include "../xrParticles/ParticlesObject.h"
-
 class IRender_Light;
+class CParticlesObject;
 
 using BLASTED_OBJECTS_V = xr_vector<CPhysicsShellHolder*>;
 using BLASTED_OBJECTS_I = BLASTED_OBJECTS_V::iterator;

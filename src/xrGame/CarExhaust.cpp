@@ -7,6 +7,7 @@
 #include "Hit.h"
 #include "PHDestroyable.h"
 #include "Car.h"
+#include "ParticlesObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrPhysics/IPHWorld.h"
 //#include "PHWorld.h"

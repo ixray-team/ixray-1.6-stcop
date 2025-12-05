@@ -5,8 +5,7 @@
 #include "../xrECore/Editor/ParticleEffectActions.h"
 #include "../xrEProps/FolderLib.h"
 #include "../Public/PropertiesListHelper.h"
-#include "../../xrParticles/particle_actions_collection.h"
-#include "../../xrParticles/noise.h"
+#include "../../Layers/xrRender/particle_core/noise.h"
 
 using namespace PAPI; 
 #define PARTICLE_ACTION_VERSION_MIN 0x0000
