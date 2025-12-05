@@ -52,9 +52,6 @@ private:
 
 	friend id_to_index;
 public:
-	CInfoPortion(void);
-	~CInfoPortion(void) override;
-
 	//инициализация info данными
 	//если info с таким id раньше не использовался
 	//он будет загружен из файла
