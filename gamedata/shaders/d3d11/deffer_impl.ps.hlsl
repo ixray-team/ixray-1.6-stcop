@@ -64,9 +64,13 @@ void main(p_bumped_new I, out OutStructure O)
 	#else
 		float4 Detail = s_detail.Sample(smp_base, tcdbump);
 		float4 DetailBump = s_detailBump.Sample(smp_base, tcdbump);
+		float4 DetailBumpX = s_detailBumpX.Sample(smp_base, tcdbump);
 
-		M.Roughness = DetailBump.x;
-		M.Normal.xyz = DetailBump.wzy - 0.5f;
+		M.Roughness = DetailBumpX.y;
+		M.Metalness = DetailBumpX.x;
+		M.Normal.xy = DetailBump.wy - 128.0f / 255.0f;
+		M.Normal.z = sqrt(1.0f - dot(M.Normal.xy, M.Normal.xy));
+		M.Color.xyz *= Detail * 2.0f;
 	#endif
 #else
 	#ifdef USE_4_BUMP
