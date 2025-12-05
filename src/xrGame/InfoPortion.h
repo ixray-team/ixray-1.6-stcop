@@ -8,7 +8,7 @@
 
 #include "PhraseDialogDefs.h"
 
-
+using TASK_ID_VECTOR = xr_vector<shared_str>;
 struct SInfoPortionData : CSharedResource
 {
 						SInfoPortionData ();
@@ -27,6 +27,9 @@ struct SInfoPortionData : CSharedResource
 	//скриптовые действия, которые активируется после того как 
 	//информацию получает персонаж
 	CDialogScriptHelper		m_InfoScriptHelper;
+
+	//присоединенные задания
+	TASK_ID_VECTOR		m_GameTasks;
 
 	//массив с индексами тех порций информации, которые
 	//исчезнут, после получения этой info_portion
@@ -60,6 +63,7 @@ public:
 	const ARTICLE_ID_VECTOR&						ArticlesDisable	()	const {return info_data()->m_ArticlesDisable;}
 	const DIALOG_ID_VECTOR&							DialogNames	()	const {return info_data()->m_DialogNames;}
 	const SInfoPortionData::INFO_ID_VECTOR&			DisableInfos()	const {return info_data()->m_DisableInfo;}
+    const TASK_ID_VECTOR&							GameTasks() const	{ return info_data()->m_GameTasks; }
 	
 			void									RunScriptActions		(const CGameObject* pOwner)	{info_data()->m_InfoScriptHelper.Action(pOwner, NULL, NULL);}
 
