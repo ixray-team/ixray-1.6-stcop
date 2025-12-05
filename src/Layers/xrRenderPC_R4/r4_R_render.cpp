@@ -5,8 +5,6 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
 
-#include "../../xrParticles/ParticlesAsyncManager.h"
-
 #include "../xrRender/QueryHelper.h"
 
 #include "OverlayAPI/FSR2Wrapper.h"
@@ -792,7 +790,6 @@ void CRender::render_forward				()
 		render_main								(false);//
 		//	Igor: we don't want to render old lods on next frame.
 		mapLOD.clear							();
-		CParticlesAsync::Wait();
 		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
 		PortalTraverser.fade_render				()	;					// faded-portals
 		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms

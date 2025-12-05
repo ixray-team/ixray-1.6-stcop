@@ -10,7 +10,7 @@
 
 #include "CustomOutfit.h"
 #include "InventoryOwner.h"
-
+#include "ParticlesObject.h"
 
 #ifdef	DEBUG
 BOOL debug_step_info = FALSE;

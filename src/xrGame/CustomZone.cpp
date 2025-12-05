@@ -16,6 +16,7 @@
 #include "zone_effector.h"
 #include "BreakableObject.h"
 #include "GamePersistent.h"
+#include "ParticlesObject.h"
 
 #define WIND_RADIUS (4*Radius())	//расстояние до актера, когда появляется ветер 
 #define FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence

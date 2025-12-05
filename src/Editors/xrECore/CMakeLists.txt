@@ -131,6 +131,12 @@ file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
 	"../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
 	"../../Layers/xrRenderPC_R1/Blender_Vertex.*"
 	"../../Layers/xrRender/smol-atlas.*"
+	"../../Layers/xrRender/particle_core/particle_core.*"
+	"../../Layers/xrRender/particle_core/noise.*"
+	"../../Layers/xrRender/particle_core/particle_actions_collection.*"
+	"../../Layers/xrRender/particle_core/particle_actions_collection_io.cpp"
+	"../../Layers/xrRender/particle_core/particle_holder.h"
+	"../../Layers/xrRender/particle_core/psystem.h"
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
@@ -186,7 +192,6 @@ target_link_libraries(xrECore PUBLIC xrCore)
 target_link_libraries(xrECore PUBLIC xrEUI)
 target_link_libraries(xrECore PUBLIC xrEProps)
 target_link_libraries(xrECore PUBLIC luabind)
-target_link_libraries(xrECore PUBLIC xrParticles)
 target_link_libraries(xrECore PUBLIC xrSound)
 target_link_libraries(xrECore PUBLIC xrEngineCore)
 target_link_libraries(xrECore PUBLIC xrPhysics)

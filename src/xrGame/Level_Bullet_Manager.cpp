@@ -14,6 +14,7 @@
 
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/Kinematics.h"
+#include "ParticlesObject.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"

@@ -2,7 +2,7 @@
 #include "flare.h"
 #include "player_hud.h"
 #include "../xrEngine/LightAnimLibrary.h"
-
+#include "ParticlesObject.h"
 void CFlare::Load(LPCSTR section)
 {
 	inherited::Load			(section);

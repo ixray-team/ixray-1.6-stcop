@@ -17,6 +17,7 @@
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/WallMarkArray.h"
+#include "ParticlesObject.h"
 //#ifdef	DEBUG
 //#include "phdebug.h"
 //#endif

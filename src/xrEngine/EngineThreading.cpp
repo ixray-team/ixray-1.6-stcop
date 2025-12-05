@@ -4,7 +4,8 @@
 #include "IGame_Persistent.h"
 #include "IGame_Level.h"
 #include "Rain.h"
-
+#include "../Include/xrRender/RenderVisual.h"
+#include "../Include/xrRender/ParticleCustom.h"
 #include "../xrCore/discord/discord.h"
 
 void XRay::Engine::PreRenderThread()
@@ -22,15 +23,12 @@ void XRay::Engine::PreRenderThread()
 			it();
 	}
 
-	if (g_pGamePersistent && g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
+	if(g_pGamePersistent)
 	{
-		g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
-	}
+		if (g_pGamePersistent->pEnvironment && g_pGamePersistent->pEnvironment->eff_Rain)
+			g_pGamePersistent->pEnvironment->eff_Rain->UpdateItems();
 
-	if (Device.ParticleWorkerCallback)
-	{
-		PROF_EVENT("Process Particles");
-		Device.ParticleWorkerCallback();
+		g_pGamePersistent->UpdateParticles();
 	}
 
 	Platform::SetThreadName("X-Ray Empty Task");

@@ -14,7 +14,7 @@
 
 #include "game_cl_mp.h"
 #include "WeaponRPG7.h"
-
+#include "ParticlesObject.h"
 #define FLAME_TIME 0.05f
 
 
