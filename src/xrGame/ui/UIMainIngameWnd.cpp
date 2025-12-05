@@ -472,8 +472,11 @@ void CUIMainIngameWnd::Draw()
 		UIZoneMap->disabled = !renderHUD;
 	}
 
-	UIZoneMap->visible = true;
-	UIZoneMap->Render();
+	if (psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UIZoneMap->visible = true;
+		UIZoneMap->Render();
+	}
 
 	bool tmp = UIMotionIcon->IsShown();
 	UIMotionIcon->Show(false);
@@ -533,7 +536,10 @@ void CUIMainIngameWnd::Update()
 		return;
 	}
 
-	UIZoneMap->Update();
+	if (psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UIZoneMap->Update();
+	}
 	
 //	UIHealthBar.SetProgressPos	(m_pActor->GetfHealth()*100.0f);
 	UIMotionIcon->SetPower		(pActor->conditions().GetPower()*100.0f);
@@ -993,13 +999,19 @@ void CUIMainIngameWnd::ShowZoneMap( bool status )
 }
 
 void CUIMainIngameWnd::DrawZoneMap() 
-{ 
-	UIZoneMap->Render(); 
+{
+	if (psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UIZoneMap->Render();
+	}
 }
 
 void CUIMainIngameWnd::UpdateZoneMap() 
-{ 
-	UIZoneMap->Update(); 
+{
+	if (psHUD_Flags.test(HUD_MINIMAP))
+	{
+		UIZoneMap->Update();
+	}
 }
 
 void CUIMainIngameWnd::UpdateMainIndicators()

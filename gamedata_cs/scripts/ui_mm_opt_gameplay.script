@@ -90,4 +90,5 @@ function opt_gameplay:InitControls(x, y, xml, handler)
 	addCheck("ui_mm_tips", "hud_info")
  	addCheck("ui_st_disable_hud", "hud_draw")
  	addCheck("ui_rs_fps_show", "rs_fps_show")
+	addCheck("ui_mm_show_minimap", "hud_minimap")
 end
