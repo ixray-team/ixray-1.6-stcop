@@ -28,6 +28,7 @@
 
 
 #include "ActorCondition.h"
+#include "ParticlesObject.h"
 
 #ifdef _new_buy_wnd
 	#include	"ui/UIMpTradeWnd.h"
