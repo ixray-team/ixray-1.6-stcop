@@ -32,7 +32,7 @@ float const CBulletManager::parent_ignore_distance	= 3.f;
 	static float const air_resistance_epsilon		= .1f;
 #endif // #ifdef DEBUG
 float g_bullet_time_factor							= 1.f;
-
+BOOL g_bullet_debug_trj = FALSE;
 SBullet::SBullet()
 {
 }
@@ -157,6 +157,8 @@ void CBulletManager::Load		()
 	cnt						= _GetItemCount(explode_particles);
 	for (int k=0; k<cnt; ++k)
 		m_ExplodeParticles.push_back	(_GetItem(explode_particles,k,tmp));
+
+	m_trj_shader->create("portal");
 }
 
 void CBulletManager::PlayExplodePS( const Fmatrix& xf )
@@ -208,6 +210,8 @@ void CBulletManager::AddBullet(const Fvector& position,
 //	u32 OwnerID					= sender_id;
 	xrCriticalSectionGuard guard(&m_Lock);
 	SBullet& bullet				= m_Bullets.emplace_back();
+	if (g_bullet_debug_trj)
+		bullet.lines.reserve(256);
 	bullet.Init					(position, direction, starting_speed, power, /*power_critical,*/ impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, air_resistance_factor, SendHit);
 //	bullet.frame_num			= Device.dwFrame;
 	bullet.flags.aim_bullet		= AimBullet;
@@ -239,8 +243,12 @@ void CBulletManager::UpdateWorkload()
 
 	BulletVec::reverse_iterator	i = m_Bullets.rbegin();
 	BulletVec::reverse_iterator	e = m_Bullets.rend();
-	for (u16 j=u16(e - i); i != e; ++i, --j) {
+	for (u16 j=u16(e - i); i != e; ++i, --j)
+	{
 		if ( process_bullet( rq_storage, *i, u32(time_delta*g_bullet_time_factor)) )
+			continue;
+
+		if (g_bullet_debug_trj && Device.dwTimeGlobal < (*i).born_time + 10000)
 			continue;
 
 		VERIFY					(j > 0);
@@ -807,6 +815,9 @@ static bool try_update_bullet				(SBullet& bullet, Fvector const& gravity, float
 	if ( fis_zero(bullet.speed) )
 		return					(false);
 
+	if(g_bullet_debug_trj && !bullet.bullet_pos.similar(new_position))
+		bullet.lines.push_back({ bullet.bullet_pos, new_position });
+
 	bullet.bullet_pos			= new_position;
 	bullet.dir					= Fvector(new_velocity).normalize_safe();
 	bullet.life_time			= time;
@@ -1013,6 +1024,30 @@ void CBulletManager::Render	()
 	UIRender->SetShader				(*tracers.sh_Tracer);
 	UIRender->FlushPrimitive		();
 	UIRender->CacheSetCullMode		(IUIRender::cmCCW);
+
+	if(g_bullet_debug_trj)
+	{
+		constexpr u32 color = color_rgba(100, 255, 100, 255);
+		UIRender->zb_enable(1);
+		UIRender->SetShader(*m_trj_shader);
+
+		for (SBullet& bullet : m_Bullets)
+		{
+			if (bullet.lines.empty()) continue;
+
+			UIRender->StartPrimitive(bullet.lines.size() * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
+
+			for (auto& line : bullet.lines)
+			{
+				UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
+				UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
+			}
+
+			UIRender->FlushPrimitive();
+		}
+
+		UIRender->zb_enable(0);
+	}
 }
 
 void CBulletManager::CommitEvents			()	// @ the start of frame

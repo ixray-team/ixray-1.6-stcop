@@ -18,6 +18,7 @@ struct SBullet_Hit
 //структура, описывающая пулю и ее свойства в полете
 struct SBullet
 {
+	xr_vector<std::pair<Fvector, Fvector>> lines;
 	u32				init_frame_num			;			//номер кадра на котором была запущена пуля
 	union			{
 		struct			{
@@ -173,6 +174,8 @@ protected:
 	float					m_fTracerWidth;
 	float 					m_fTracerLengthMax;
 	float 					m_fTracerLengthMin;
+
+	ui_shader				m_trj_shader;
 protected:
 	void					PlayWhineSound		(SBullet* bullet, CObject* object, const Fvector& pos);
 	void					PlayExplodePS		(const Fmatrix& xf);
