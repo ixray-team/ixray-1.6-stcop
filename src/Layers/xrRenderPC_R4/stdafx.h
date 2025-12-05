@@ -23,7 +23,7 @@
 #define		R_R4	4
 #define		RENDER	R_R4
 
-#include "../../xrParticles/psystem.h"
+#include "../xrRender/particle_core/psystem.h"
 
 #include "../xrRender/HW.h"
 #include "../xrRender/Shader.h"
