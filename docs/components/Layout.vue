@@ -58,7 +58,7 @@ onMounted(() => {
   <div
     v-if="frontmatter.layout !== false"
     class="Layout"
-    :class="frontmatter.pageClass"
+    :class="[{ 'has-hero-video': !!heroVideo }, frontmatter.pageClass]"
   >
     <slot name="layout-top" />
     <VPSkipLink />
@@ -133,5 +133,22 @@ onMounted(() => {
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
+}
+
+@media (max-width: 959px) {
+  .has-hero-video :deep(.VPHero .main) {
+    order: 1;
+  }
+
+  .has-hero-video :deep(.VPHero .image) {
+    order: 2;
+    margin: 24px 0 0;
+  }
+
+  .has-hero-video :deep(.VPHero .image-container) {
+    width: 100%;
+    height: auto;
+    max-width: 720px;
+  }
 }
 </style>
