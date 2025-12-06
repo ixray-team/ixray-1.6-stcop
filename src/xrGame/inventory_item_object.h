@@ -35,6 +35,8 @@ class CInventoryItemObject :
 			public CInventoryItem, 
 			public CPhysicItem
 {
+
+	shared_str m_sNewVisualName;
 public:
 							CInventoryItemObject	();
 	virtual					~CInventoryItemObject	();
@@ -92,6 +94,11 @@ public:
 	virtual void	activate_physic_shell	();
 	virtual void	on_activate_physic_shell();
 	virtual	void	modify_holder_params			(float &range, float &fov) const;
+
+	virtual void	OnChangeVisual() override;
+
+	virtual bool	install_upgrade_impl(LPCSTR section, bool test) override;
+
 public:
 	////////// network //////////////////////////////////////////////////
 	virtual void	make_Interpolation		();
