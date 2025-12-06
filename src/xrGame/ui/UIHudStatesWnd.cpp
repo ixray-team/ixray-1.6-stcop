@@ -708,6 +708,9 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			{
 				m_ui_ammo_type_separator->Show(true);
 				
+				// Get weapon reference for ammo calculations
+				CWeaponMagazined* wpnm = item->cast_weapon_magazined();
+				
 				// Determine which ammo type count to display based on current ammo type
 				if (wpnm)
 				{
@@ -728,6 +731,19 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 						if (m_ammo_backpack_font)
 						{
 							m_ui_ammo_type_backpack->SetFont(m_ammo_backpack_font);
+						}
+						
+						// Update separator size to match backpack font height
+						CGameFont* backpackFont = m_ui_ammo_type_backpack->GetFont();
+						if (backpackFont)
+						{
+							float fontHeight = backpackFont->GetHeight();
+							if (fontHeight > 0.0f)
+							{
+								// Get current separator width and update height
+								Fvector2 separatorSize = m_ui_ammo_type_separator->GetWndSize();
+								m_ui_ammo_type_separator->SetWndSize(Fvector2().set(separatorSize.x, fontHeight));
+							}
 						}
 					}
 					else
