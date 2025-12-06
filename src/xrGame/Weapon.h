@@ -713,6 +713,8 @@ public:
 
 	virtual void			UnloadChamber(bool spawn_ammo = true);
 
+	virtual void OnChangeVisual() final override;
+
 protected:
 	int						iAmmoElapsed;		// ammo in magazine, currently
 	int						iMagazineSize;		// size (in bullets) of magazine

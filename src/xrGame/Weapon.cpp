@@ -4680,3 +4680,16 @@ void CWeapon::net_Relcase(CObject* object)
 
 	m_zoom_params.m_pVision->remove_links(object);
 }
+
+void CWeapon::OnChangeVisual()
+{
+	inherited::OnChangeVisual();
+
+	if (Visual() == nullptr)
+	{
+		return;
+	}
+
+	UpdateAddonsVisibility();
+	ProcessScope();
+}
