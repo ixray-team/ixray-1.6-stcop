@@ -47,6 +47,7 @@ enum class EditorUI : u8
 	Tools_RenderDebug_SVGStorageViewer,
 	Tools_OMFEditor,
 	Tools_InputManager,
+	Tools_CarEditor,
 	UI_General,
 	Count
 };
