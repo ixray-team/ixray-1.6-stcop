@@ -87,6 +87,12 @@ void CInventoryItemObject::UpdateCL			()
 {
 	CPhysicItem::UpdateCL				();
 	CInventoryItem::UpdateCL			();
+
+	if (m_sNewVisualName.size() > 0 && Visual() != nullptr)
+	{
+		cNameVisual_set(m_sNewVisualName);
+		m_sNewVisualName = "";
+	}
 }
 
 void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
@@ -95,14 +101,14 @@ void CInventoryItemObject::OnEvent			(NET_Packet& P, u16 type)
 	CInventoryItem::OnEvent				(P, type);
 }
 
-BOOL CInventoryItemObject::net_Spawn		(CSE_Abstract* DC)
+BOOL CInventoryItemObject::net_Spawn(CSE_Abstract* DC)
 {
-	BOOL								res = CPhysicItem::net_Spawn(DC);
-	CInventoryItem::net_Spawn			(DC);
-	auto pKA = Visual()->dcast_PKinematicsAnimated();
-	if (pKA != nullptr)
+	BOOL res = CPhysicItem::net_Spawn(DC);
+	CInventoryItem::net_Spawn(DC);
+
+	if (IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated())
 	{
-		auto motionId = pKA->ID_Cycle_Safe("idle");
+		MotionID motionId = pKA->ID_Cycle_Safe("idle");
 		if (!motionId)
 		{
 			motionId.set(0, 0);
@@ -110,7 +116,46 @@ BOOL CInventoryItemObject::net_Spawn		(CSE_Abstract* DC)
 
 		pKA->PlayCycle(motionId, false);
 	}
-	return								(res);
+
+	return res;
+}
+
+void CInventoryItemObject::OnChangeVisual()
+{
+	CPhysicItem::OnChangeVisual();
+
+	if (Visual() == nullptr)
+	{
+		return;
+	}
+
+	if (IKinematicsAnimated* pKA = Visual()->dcast_PKinematicsAnimated())
+	{
+		MotionID motionId = pKA->ID_Cycle_Safe("idle");
+		if (!motionId)
+		{
+			motionId.set(0, 0);
+		}
+
+		pKA->PlayCycle(motionId, false);
+	}
+}
+
+bool CInventoryItemObject::install_upgrade_impl(LPCSTR section, bool test)
+{
+	bool result = CInventoryItem::install_upgrade_impl(section, test);
+
+	bool result2 = false;
+	LPCSTR str = {};
+
+	result2 = process_if_exists_set(section, "visual", &CInifile::r_string, str, test);
+	if (result2 && !test)
+	{
+		m_sNewVisualName = str;
+	}
+	result |= result2;
+
+	return result;
 }
 
 void CInventoryItemObject::net_Destroy		()

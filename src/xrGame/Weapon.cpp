@@ -4760,3 +4760,16 @@ void CWeapon::MakeWeaponKick(Fvector& pos, Fvector& dir)
 		Level().BulletManager().AddBullet(pos, tmpdir, 10000.0f, m_fast_kick_params.hp, m_fast_kick_params.imp, H_Parent()->ID(), ID(), m_fast_kick_params.htype, m_fast_kick_params.hdist, c, 1.0f, true, false);
 	}
 }
+
+void CWeapon::OnChangeVisual()
+{
+	inherited::OnChangeVisual();
+
+	if (Visual() == nullptr)
+	{
+		return;
+	}
+
+	UpdateAddonsVisibility();
+	ProcessScope();
+}
