@@ -18,11 +18,6 @@
 #include "../xrEngine/string_table.h"
 #include "../../xrUI/UIHelper.h"
 
-extern u32 const red_clr;
-extern u32 const green_clr;
-
-// =====================================================================
-
 CUIGrenadeParams::CUIGrenadeParams()
 {}
 
@@ -77,14 +72,17 @@ void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn
 	}
 
 	const auto elementColorize = [&](CUIStatic* text, float first, float second)
-		{
-			if (first == second)
-				text->SetTextColor(color_rgba(124, 119, 115, 255));
-			else if (first < second)
-				text->SetTextColor(red_clr);
-			else
-				text->SetTextColor(green_clr);
-		};
+	{
+		constexpr u32 red_clr = color_argb(255, 210, 50, 50);
+		constexpr u32 green_clr = color_argb(255, 50, 255, 50);
+
+		if (first == second)
+			text->SetTextColor(color_rgba(124, 119, 115, 255));
+		else if (first < second)
+			text->SetTextColor(red_clr);
+		else
+			text->SetTextColor(green_clr);
+	};
 
 	CGrenade* grenade = smart_cast<CGrenade*>(&cur_wpn);
 
