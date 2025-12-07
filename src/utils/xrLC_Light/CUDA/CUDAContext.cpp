@@ -22,6 +22,41 @@ xr_path GetExecutableDir()
 
 bool OptixContext::Initialize()
 {
+	// --- 1. Primary context через CUDA Runtime ---
+	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
+	CUDA_CHECK(cudaFree(0));
+
+	cudaDeviceProp deviceProps;
+	CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, cudaDeviceId));
+  	Msg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
+
+	// --- 2. Получаем primary CUcontext через Driver API ---
+	CUdevice cuDev;
+	CUcontext cuCtx;
+	 
+ 	CUDA_CHECK_2( cuDeviceGet(&cuDev, cudaDeviceId) );
+	CUDA_CHECK_2 ( cuDevicePrimaryCtxRetain(&cuCtx, cuDev) );
+	CUDA_CHECK_2 ( cuCtxSetCurrent(cuCtx) );
+
+	// --- 3. OptiX ---
+	OPTIX_CHECK(optixInit());
+
+	OptixDeviceContextOptions options = {};
+	options.logCallbackFunction = &OptixLogCallback;
+	options.logCallbackLevel = 4;
+
+	// В этом режиме OptiX требует НЕ nullptr
+	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
+
+	// --- 4. Pipeline ---
+	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
+	CreatePipeline(fullPtxPath.xstring().c_str());
+
+	return true;
+}
+
+/*bool OptixContext::Initialize()
+{
 	// 1. Инициализация CUDA
 	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
 	CUDA_CHECK(cudaFree(0));
@@ -43,7 +78,7 @@ bool OptixContext::Initialize()
 	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
 	CreatePipeline(fullPtxPath.xstring().c_str());
 	return true;
-}
+}*/
 
 void OptixContext::Destroy()
 {
