@@ -11,9 +11,6 @@
 #include "WeaponKnife.h"
 #include "../xrEngine/string_table.h"
 
-u32 const red_clr = color_argb(255, 210, 50, 50);
-u32 const green_clr = color_argb(255, 50, 255, 50);
-
 struct SLuaKnifeParams
 {
 	luabind::functor<float>		m_functorDamage;
@@ -137,7 +134,10 @@ void CUIKnifeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 			dist2_sl = slot_knife->GetHit2Dist();
 		}
 	}
-	
+
+	constexpr u32 red_clr = color_argb(255, 210, 50, 50);
+	constexpr u32 green_clr = color_argb(255, 50, 255, 50);
+
 	if (dist1 == dist1_sl)
 		m_textDist1Value.SetTextColor(m_meters_name.GetTextColor());
 	else if (dist1 < dist1_sl)
