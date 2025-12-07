@@ -12,9 +12,6 @@
 #include "../../xrUI/UIHelper.h"
 #include "../../xrEngine/string_table.h"
 
-u32 const red_clr   = color_argb(255,210,50,50);
-u32 const green_clr = color_argb(255,170,170,170);
-
 CUIArtefactParams::CUIArtefactParams(const CParamType& type)
 {
 	for ( u32 i = 0; i < ALife::eHitTypeWound_2; ++i )
@@ -368,6 +365,9 @@ void UIArtefactParamItem::SetValue( float value )
 		xr_strconcat( str, buf );
 	}
 	m_value->SetText( str );
+
+	constexpr u32 red_clr = color_argb(255, 210, 50, 50);
+	constexpr u32 green_clr = color_argb(255, 170, 170, 170);
 
 	bool positive = (value >= 0.0f);
 	positive      = (m_sign_inverse)? !positive : positive;
