@@ -123,6 +123,7 @@ struct sound_mixer_state
 	xrSRWLock render_lock;
 	xrSRWLock update_lock;
 	xrSRWLock manage_lock;
+	xrCriticalSection play_lock;
 
 	sound_stats stats = { 0 };
 	float time_factor = 1.0f;
@@ -899,7 +900,7 @@ Snd_MixerRenderCallback(float* buffer)
 		process_buffer[i] = _process_buffer[i];
 	}
 
-	for (size_t i = 0; i < SND_BUS_COUNT; i++) {
+	for (size_t i = 0; i < SND_BUS_COUNT; i++) {	
 		for (size_t ch = 0; ch < SND_CHANNEL_COUNT; ch++) {
 			memset(mixer.buses[i].data[ch], 0, SND_BLOCKSIZE * sizeof(float));
 		}
@@ -1403,6 +1404,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 		}
 	}
 
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	for (const auto& cmd : mixer.cmd) {
 		switch (cmd.id) {
 		case sound_cmd_id::play: {
@@ -1536,18 +1538,21 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 void 
 Mixer::StopAll()
 {
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::stop_all });
 }
 
 void 
 Mixer::PauseAll()
 {
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::pause_all });
 }
 
 void
 Mixer::ResumeAll()
 {
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .id = sound_cmd_id::resume_all });
 }
 
@@ -1597,6 +1602,8 @@ Mixer::Destroy(u32 slot)
 	}
 
 	mixer.slots[slot - 1].fake_state = State::Stopped;
+
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::destroy });
 	mixer.stats.possible_free_count++;
 }
@@ -1604,6 +1611,8 @@ Mixer::Destroy(u32 slot)
 void 
 Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
 {
+	xrCriticalSectionGuard guard(mixer.play_lock);
+
 	if (slot == 0 || sound == nullptr || sound->_p == nullptr || sound->_p->fn_attached[0] == nullptr) {
 		return;
 	}
@@ -1619,6 +1628,8 @@ Mixer::Play(u32 slot, u16 flags, ref_sound* sound, double delay)
 void 
 Mixer::PlayNoFeedback(u16 flags, ref_sound* sound, CObject* obj, double delay, float* pitch, float* volume, Fvector* distance, Fvector* pos)
 {
+	xrCriticalSectionGuard guard(mixer.play_lock);
+
 	u32 slot_idx = Create();
 	if (slot_idx == 0) {
 		return;
@@ -1656,6 +1667,7 @@ Mixer::Pause(u32 slot)
 		return;
 	}
 
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.slots[slot - 1].fake_state = State::Paused;
 	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::pause });
 }
@@ -1670,6 +1682,8 @@ Mixer::Stop(u32 slot, bool deferred)
 	if (!deferred) {
 		mixer.slots[slot - 1].fake_state = State::Stopped;
 	}
+
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .slot = slot, .id = sound_cmd_id::stop, .param0 = deferred });
 }
 
@@ -1681,6 +1695,7 @@ Mixer::UpdateParameter(u32 slot, ParameterId parameter, Fvector value)
 	}
 
 	double p0 = value.x, p1 = value.y, p2 = value.z;
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{.slot=slot,.id=sound_cmd_id::update_parameter,.param0=(u16)parameter,.param1=*(u64*)&p0,.param2=*(u64*)&p1,.param3=*(u64*)&p2});
 }
 
@@ -1691,7 +1706,8 @@ Mixer::SetVolume(u32 slot, double volume)
 		return;
 	}
 
-	volume = std::clamp(volume, 0.0, 1.0);	
+	volume = std::clamp(volume, 0.0, 1.0);
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_volume, .param1 = *(u64*)&volume });
 }
 
@@ -1704,6 +1720,8 @@ Mixer::SetPanning(u32 slot, double left, double right)
 
 	left = std::clamp(left, 0.0, 1.0);
 	right = std::clamp(right, 0.0, 1.0);
+
+	xrCriticalSectionGuard guard(mixer.play_lock);
 	mixer.cmd.emplace_back(sound_command{ .slot = slot,.id = sound_cmd_id::set_panning, .param1 = *(u64*)&left, .param2 = *(u64*)&right });
 }
 
