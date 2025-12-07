@@ -21,6 +21,20 @@
         }                                                                    \
     } while (0)
 
+#define CUDA_CHECK_2(call)                                                       \
+    do {                                                                         \
+        CUresult err = (call);                                                   \
+        if (err != CUDA_SUCCESS) {                                               \
+            const char* errStr = nullptr;                                        \
+            cuGetErrorString(err, &errStr);                                      \
+            Msg("! CUDA Error at %s:%d: %s (code %d)\n",                         \
+                __FILE__, __LINE__,                                              \
+                (errStr ? errStr : "Unknown CUDA error"),                        \
+                err);                                                             \
+        }                                                                        \
+    } while (0)
+
+
 
 class OptixContext
 {
