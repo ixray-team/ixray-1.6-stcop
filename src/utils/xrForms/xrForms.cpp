@@ -58,6 +58,8 @@ CJsonSerializer* Serializer = nullptr;
 extern bool ShowMainUI;
 void Startup(LPSTR lpCmdLine) 
 {
+ 	xrLogger::EnableFastDebugLog();
+
 	SaveCompilerCfg();
 
 	GetIterationData().push_back({ "xrLC" });
