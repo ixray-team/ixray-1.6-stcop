@@ -121,30 +121,126 @@ public:
 		return *this;	
 	}
 
+	//damped harmonic oscillator
 	IC SelfRef spring_inertion(const Self& target, Self& velocity, T deltaTime, T stiffness, T damping)
 	{
-		Self acceleration;
-		acceleration.sub(target, *this);
-		acceleration.mul(stiffness);
+		T criticalDamping = 2.f * std::sqrt(stiffness);
+		T dampingRatio = damping / criticalDamping;
 
-		Self dampForce;
-		dampForce.mul(velocity, damping);
-		acceleration.sub(dampForce);
+		Self delta;
+		delta.sub(*this, target);
 
-		velocity.x += acceleration.x * deltaTime;
-		velocity.y += acceleration.y * deltaTime;
-		velocity.z += acceleration.z * deltaTime;
+		Self temp1, temp2, temp3;
 
-		x += velocity.x * deltaTime;
-		y += velocity.y * deltaTime;
-		z += velocity.z * deltaTime;
+		if (dampingRatio < 1.f)
+		{
+			T omega = std::sqrt(stiffness);
+			T omegaSq = 1.f - dampingRatio * dampingRatio;
+			T dampedOmega = omega * std::sqrt(omegaSq);
+
+			T decay = std::exp(-dampingRatio * omega * deltaTime);
+
+			T cosTerm = std::cos(dampedOmega * deltaTime);
+			T sinTerm = std::sin(dampedOmega * deltaTime);
+
+			T deltaCoeff = cosTerm + dampingRatio * omega / dampedOmega * sinTerm;
+
+			temp1.mul(delta, deltaCoeff);
+			temp1.mul(decay);
+
+			T velCoeff = sinTerm / dampedOmega;
+			temp2.mul(velocity, velCoeff);
+			temp2.mul(decay);
+
+			temp3 = target;
+			temp3.add(temp1);
+			temp3.add(temp2);
+			Self sum;
+			sum.mul(delta, deltaCoeff);
+			temp1.mul(velocity, velCoeff);
+			sum.add(temp1);
+
+			sum.mul(-dampingRatio * omega);
+
+			T deltaVelCoeff = -dampedOmega * sinTerm + dampingRatio * omega * cosTerm;
+			temp1.mul(delta, deltaVelCoeff);
+			sum.add(temp1);
+
+			temp1.mul(velocity, cosTerm);
+			sum.add(temp1);
+
+			sum.mul(decay);
+
+			velocity = sum;
+			*this = temp3;
+		}
+		else if (dampingRatio > 1.f)
+		{
+			T omega = std::sqrt(stiffness);
+			T xiSqMinus1 = dampingRatio * dampingRatio - 1.f;
+			T alpha1 = -dampingRatio * omega + omega * std::sqrt(xiSqMinus1);
+			T alpha2 = -dampingRatio * omega - omega * std::sqrt(xiSqMinus1);
+
+			T det = alpha2 - alpha1;
+			T c2 = (velocity.x - alpha1 * delta.x) / det;
+			T c1 = delta.x - c2;
+
+			Self newPos, newVel;
+
+			T exp1 = std::exp(alpha1 * deltaTime);
+			T exp2 = std::exp(alpha2 * deltaTime);
+
+			newPos.x = target.x + c1 * exp1 + c2 * exp2;
+			newVel.x = c1 * alpha1 * exp1 + c2 * alpha2 * exp2;
+
+			c2 = (velocity.y - alpha1 * delta.y) / det;
+			c1 = delta.y - c2;
+
+			newPos.y = target.y + c1 * exp1 + c2 * exp2;
+			newVel.y = c1 * alpha1 * exp1 + c2 * alpha2 * exp2;
+
+			c2 = (velocity.z - alpha1 * delta.z) / det;
+			c1 = delta.z - c2;
+
+			newPos.z = target.z + c1 * exp1 + c2 * exp2;
+			newVel.z = c1 * alpha1 * exp1 + c2 * alpha2 * exp2;
+
+			*this = newPos;
+			velocity = newVel;
+		}
+		else
+		{
+			T omega = std::sqrt(stiffness);
+			T expTerm = std::exp(-omega * deltaTime);
+
+			temp1.mul(delta, omega);
+			temp1.add(velocity);
+			temp1.mul(deltaTime);
+			temp1.add(delta);
+			temp1.mul(expTerm);
+
+			temp2 = target;
+			temp2.add(temp1);
+
+			temp3.mul(delta, omega);
+			temp3.add(velocity);
+			temp3.mul(deltaTime);
+			temp3.add(delta);
+			temp3.mul(-omega);
+			temp3.add(velocity);
+			temp3.mul(expTerm);
+
+			*this = temp2;
+			velocity = temp3;
+		}
 
 		Self diff;
 		diff.sub(target, *this);
+
 		if (diff.magnitude() < EPS_L && velocity.magnitude() < 0.01f)
 		{
-			set(target);
-			velocity.set(0.f, 0.f, 0.f);
+			*this = target;
+			velocity = { T(0),T(0),T(0) };
 		}
 
 		return *this;
