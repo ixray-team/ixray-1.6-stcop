@@ -101,4 +101,6 @@ target_compile_definitions(mp_gpprof_server PRIVATE PTW32_STATIC_LIB)
 
 # Linker list
 target_link_libraries(mp_gpprof_server PUBLIC xrCore)
-target_link_libraries(mp_gpprof_server PUBLIC "ws2_32.lib")
+if (WIN32)
+    target_link_libraries(mp_gpprof_server PUBLIC WindowsSDK::WS2_32)
+endif()

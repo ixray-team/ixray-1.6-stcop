@@ -68,15 +68,9 @@ target_compile_definitions(xrRender_R2 PRIVATE _USRDLL)
 
 # Linker list
 target_link_libraries(xrRender_R2 PRIVATE xrEngineCore)
-target_link_libraries(xrRender_R2 PRIVATE "d3d9.lib")
-
-## DirectX SDK
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
-
-## RenderDoc
-target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")
-
-## lunaSVG
 target_link_libraries(xrRender_R2 PUBLIC lunasvg)
+
+if (WIN32)
+    target_link_libraries(xrRender_R2 PRIVATE DirectX::Tex)
+    target_link_libraries(xrRender_R2 PRIVATE DirectX::Mesh)
+endif()

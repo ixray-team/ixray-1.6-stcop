@@ -112,21 +112,10 @@ target_link_libraries(xrEngineCore PUBLIC xrNetServer)
 target_link_libraries(xrEngineCore PUBLIC imgui)
 target_link_libraries(xrEngineCore PUBLIC xrRHI)
 target_link_libraries(xrEngineCore PUBLIC FreeType::FreeType)
+target_link_libraries(xrEngineCore PUBLIC Ogg::ogg)
+target_link_libraries(xrEngineCore PUBLIC Theora::theora)
 
-target_link_libraries(xrEngineCore PRIVATE "Winmm.lib")
-target_link_libraries(xrEngineCore PRIVATE "Vfw32.lib")
-
-# Copy binaries
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ENGINE_THRA}native/bin/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.dll ${IXRAY_OUTPUT}
-)
-
-## Theora
-target_link_libraries(xrEngineCore PUBLIC ${ENGINE_THRA}native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libtheora.lib)
-target_include_directories(xrEngineCore PUBLIC "${ENGINE_THRA}/native/include/")
-
-## OGG
-target_link_libraries(xrEngineCore PUBLIC ${SND_OGG}/native/lib/${CMAKE_VS_PLATFORM_NAME}/Release/libogg.lib)
-target_include_directories(xrEngineCore PUBLIC "${SND_OGG}/native/include/")
-
-target_include_directories(xrEngineCore PUBLIC "${RENDERDOC_API}")
+if (WIN32)
+    target_link_libraries(xrEngineCore PRIVATE WindowsSDK::WinMM)
+    target_link_libraries(xrEngineCore PRIVATE WindowsSDK::VFW32)
+endif()
