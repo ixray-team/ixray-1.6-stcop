@@ -43,8 +43,8 @@ endif()
 target_link_libraries(xrNetServer PUBLIC xrCore)
 
 if (WIN32)
-    target_link_libraries(xrNetServer PRIVATE "Ws2_32.lib")
-    target_link_libraries(xrNetServer PRIVATE "dxguid.lib")
+    target_link_libraries(xrNetServer PRIVATE WindowsSDK::WS2_32)
+    target_link_libraries(xrNetServer PRIVATE WindowsSDK::DXGUID)
 endif()
 
 # Move precompiled header
