@@ -2652,6 +2652,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "dbg_draw_ph_ik_predict", &ph_dbg_draw_mask1, phDbgDrawIKPredict);
 	CMD3(CCC_Mask, "dbg_draw_ph_ik_collision", &ph_dbg_draw_mask1, phDbgDrawIKCollision);
 	CMD3(CCC_Mask, "dbg_draw_ph_ik_shift_object", &ph_dbg_draw_mask1, phDbgDrawIKSHiftObject);
+	extern int ik_shift_object;
+	CMD4(CCC_Integer, "ik_shift_object", &ik_shift_object, 0, 1);
 	CMD3(CCC_Mask, "dbg_draw_ph_ik_blending", &ph_dbg_draw_mask1, phDbgDrawIKBlending);
 	CMD1(CCC_DBGDrawCashedClear, "dbg_ph_cashed_clear");
 	extern BOOL dbg_draw_character_bones;
