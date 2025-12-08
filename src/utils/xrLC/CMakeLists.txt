@@ -90,5 +90,5 @@ target_link_libraries(xrLC PUBLIC NvMender2003)
 #target_link_libraries(xrLC PUBLIC "meshoptimizer.lib")
 
 if (WIN32)
-    target_link_libraries(xrLC PRIVATE DirectXMesh::DirectXMesh)
+    target_link_libraries(xrLC PRIVATE DirectX::Mesh)
 endif()
