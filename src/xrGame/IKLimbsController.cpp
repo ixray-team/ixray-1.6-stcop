@@ -248,6 +248,8 @@ void	CIKLimbsController::ShiftObject( const SCalculateData cd[max_size] )
 		
 }
 
+int ik_shift_object = 1;
+
 void CIKLimbsController::Calculate( )
 {
 	update_blend( m_legs_blend );
@@ -279,10 +281,9 @@ void CIKLimbsController::Calculate( )
 	root_bi.set_callback( root_bi.callback_type(), 0, root_bi.callback_param(), TRUE );
 
 
-	if( ik_shift_object  )//&& ! m_object->animation_movement_controlled( )
+	if(ik_shift_object)//&& ! m_object->animation_movement_controlled( )
 	{
-
-			ShiftObject( cd );
+		ShiftObject( cd );
 	}
 
 	const u16 sz =(u16)_bone_chains.size();
