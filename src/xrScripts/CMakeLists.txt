@@ -57,7 +57,10 @@ target_compile_definitions(xrScripts PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrScripts PUBLIC xrCore)
 target_link_libraries(xrScripts PUBLIC xrEngineCore)
-target_link_libraries(xrScripts PRIVATE "ws2_32.lib")
+
+if (WIN32)
+    target_link_libraries(xrScripts PRIVATE WindowsSDK::WS2_32)
+endif()
 
 ## LuaJIT
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
