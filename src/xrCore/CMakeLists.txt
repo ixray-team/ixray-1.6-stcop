@@ -197,9 +197,9 @@ if(WIN32)
 	endif()
 
 	target_link_libraries(xrCore PRIVATE DiscordSDK::discord)
-	target_link_libraries(xrCore PRIVATE "dbghelp.lib")
-	target_link_libraries(xrCore PRIVATE "winmm.lib")
-	target_link_libraries(xrCore PRIVATE "faultrep.lib")
+	target_link_libraries(xrCore PRIVATE WindowsSDK::WinMM)
+	target_link_libraries(xrCore PRIVATE WindowsSDK::DBGHELP)
+	target_link_libraries(xrCore PRIVATE WindowsSDK::FAULTREP)
 endif()
 
 # Git Info
