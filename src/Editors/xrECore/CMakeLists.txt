@@ -188,18 +188,14 @@ target_compile_options(xrECore PRIVATE /W0)
 target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
-target_link_libraries(xrECore PUBLIC xrCore)
 target_link_libraries(xrECore PUBLIC xrEUI)
 target_link_libraries(xrECore PUBLIC xrEProps)
 target_link_libraries(xrECore PUBLIC luabind)
-target_link_libraries(xrECore PUBLIC xrSound)
 target_link_libraries(xrECore PUBLIC xrEngineCore)
 target_link_libraries(xrECore PUBLIC xrPhysics)
 target_link_libraries(xrECore PUBLIC xrDXT)
 target_link_libraries(xrECore PUBLIC MagicFM)
 target_link_libraries(xrECore PUBLIC NvMender2003)
-target_link_libraries(xrECore PUBLIC "d3d9.lib")
-target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
 target_link_libraries(xrECore PRIVATE Ogg::ogg)
 target_link_libraries(xrECore PRIVATE Vorbis::vorbis)
@@ -207,7 +203,8 @@ target_link_libraries(xrECore PRIVATE Vorbis::vorbisfile)
 target_link_libraries(xrECore PRIVATE OpenAL::OpenAL)
 
 if (WIN32)
-	target_link_libraries(xrECore PUBLIC DirectXMesh::DirectXMesh)
+	target_link_libraries(xrECore PUBLIC DirectX::Mesh)
+	target_link_libraries(xrECore PUBLIC DirectX::Tex)
 endif()
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
@@ -218,11 +215,6 @@ if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
 else()
 	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
 endif()
-
-## DirectX SDK
-target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
-target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## lunaSVG
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

@@ -49,9 +49,6 @@ list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_DX11_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_LUA_FILES})
 list(APPEND XRR4_SRC_FILES ${XRR4_SOURCE_INCL_FILES})
 
-# Remove unused files
-#list(FILTER XRR4_SRC_FILES EXCLUDE REGEX "../xrRender/HW.cpp")
-
 # xrRender_R4 project
 add_library(xrRender_R4 SHARED ${XRR4_SRC_FILES})
 target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
@@ -59,8 +56,6 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
-target_include_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/build/native/include/")
-target_include_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/include/")
 
 # Project defines
 target_compile_definitions(xrRender_R4 PRIVATE XRRENDER_R4_EXPORTS)
@@ -70,39 +65,18 @@ target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrRender_R4 PUBLIC xrEngineCore)
-target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
-target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
-target_link_libraries(xrRender_R4 PUBLIC "dxguid.lib")
-target_link_libraries(xrRender_R4 PRIVATE "d3dcompiler.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
 
-## AMD FidelityFX FSR 2
-target_link_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
-
-add_custom_command(TARGET ${PROJECT_NAME}
-	POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${IXRAY_OUTPUT}
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${IXRAY_OUTPUT}
-)
-
-if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-	target_link_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/lib/")
-	target_link_libraries(xrRender_R4 PUBLIC "nvsdk_ngx_d.lib")
-
-	# Copy binaries
-	add_custom_command(TARGET ${PROJECT_NAME}
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NVIDIA_DLSS}/bin/nvngx_dlss.dll ${IXRAY_OUTPUT}
-	)
+if (WIN32)
+	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR2)
+	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR2_DX11)
+	target_link_libraries(xrRender_R4 PUBLIC NVIDIA::DLSS)
+	target_link_libraries(xrRender_R4 PUBLIC DirectX::Tex)
+	target_link_libraries(xrRender_R4 PUBLIC DirectX::Mesh)
+	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3D11)
+	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGI)
+	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::DXGUID)
+	target_link_libraries(xrRender_R4 PRIVATE WindowsSDK::D3DCompiler)
 endif()
-
-## DirectX SDK
-target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrRender_R4 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## RenderDoc
 target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")

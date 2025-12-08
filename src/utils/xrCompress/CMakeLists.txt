@@ -39,7 +39,7 @@ endif()
 target_link_libraries(xrCompress PUBLIC xrCore)
 target_link_libraries(xrCompress PUBLIC imgui)
 if (WIN32)
-    target_link_libraries(xrCompress PRIVATE "winmm.lib")
+    target_link_libraries(xrCompress PRIVATE WindowsSDK::WinMM)
 endif()
 
 # Set relative runpath
