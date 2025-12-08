@@ -178,7 +178,7 @@ namespace EPALegacy
 		PDomain&		_domain		(LPCSTR name){auto 	it=domains.find(name); 	R_ASSERT2(it!=domains.end(),name);	return it->second;}
 		PBool&			_bool		(LPCSTR name){auto 	it=bools.find(name); 	R_ASSERT2(it!=bools.end(),name); 	return it->second;}
 		PBool*			_bool_safe	(LPCSTR name){auto 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
-		PString&		_string		(LPCSTR name){auto	it=strings.find(name);	R_ASSERT(it!=strings.end(),name);	return it->second;}
+		PString&		_string		(LPCSTR name){auto	it=strings.find(name);	R_ASSERT2(it!=strings.end(),name);	return it->second;}
 	public:
 	
 		virtual void	Compile		(IWriter& F)=0;
