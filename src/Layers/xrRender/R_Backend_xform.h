@@ -22,22 +22,22 @@ public:
 	Fmatrix			m_vp_old;	// Derived	- view2projection old frame
 	Fmatrix			m_wvp_old;	// Derived	- world2view2projection old frame
 	
-	R_constant*		c_invw;
-	R_constant*		c_invv;
+	RHIShaderConstant*		c_invw;
+	RHIShaderConstant*		c_invv;
 
-	R_constant*		c_w;
-	R_constant*		c_v;
-	R_constant*		c_p;
-	R_constant*		c_wv;
-	R_constant*		c_vp;
-	R_constant*		c_wvp;
+	RHIShaderConstant*		c_w;
+	RHIShaderConstant*		c_v;
+	RHIShaderConstant*		c_p;
+	RHIShaderConstant*		c_wv;
+	RHIShaderConstant*		c_vp;
+	RHIShaderConstant*		c_wvp;
 
-	R_constant*		c_w_old;
-	R_constant*		c_v_old;
-	R_constant*		c_p_old;
-	R_constant*		c_wv_old;
-	R_constant*		c_vp_old;
-	R_constant*		c_wvp_old;
+	RHIShaderConstant*		c_w_old;
+	RHIShaderConstant*		c_v_old;
+	RHIShaderConstant*		c_p_old;
+	RHIShaderConstant*		c_wv_old;
+	RHIShaderConstant*		c_vp_old;
+	RHIShaderConstant*		c_wvp_old;
 private:
 	bool			m_bInvWValid;
 public:
@@ -60,22 +60,22 @@ public:
 	IC const Fmatrix&	get_V_old () { return m_v_old; }
 	IC const Fmatrix&	get_P_old () { return m_p_old; }
 
-	IC void			set_c_invw	(R_constant* C);
-	IC void			set_c_invv	(R_constant* C);
+	IC void			set_c_invw	(RHIShaderConstant* C);
+	IC void			set_c_invv	(RHIShaderConstant* C);
 
-	IC void			set_c_w		(R_constant* C);
-	IC void			set_c_v		(R_constant* C);
-	IC void			set_c_p		(R_constant* C);
-	IC void			set_c_wv	(R_constant* C);
-	IC void			set_c_vp	(R_constant* C);
-	IC void			set_c_wvp	(R_constant* C);
+	IC void			set_c_w		(RHIShaderConstant* C);
+	IC void			set_c_v		(RHIShaderConstant* C);
+	IC void			set_c_p		(RHIShaderConstant* C);
+	IC void			set_c_wv	(RHIShaderConstant* C);
+	IC void			set_c_vp	(RHIShaderConstant* C);
+	IC void			set_c_wvp	(RHIShaderConstant* C);
 
-	IC void			set_c_w_old (R_constant* C);
-	IC void			set_c_v_old (R_constant* C);
-	IC void			set_c_p_old (R_constant* C);
-	IC void			set_c_wv_old(R_constant* C);
-	IC void			set_c_vp_old(R_constant* C);
-	IC void			set_c_wvp_old(R_constant* C);
+	IC void			set_c_w_old (RHIShaderConstant* C);
+	IC void			set_c_v_old (RHIShaderConstant* C);
+	IC void			set_c_p_old (RHIShaderConstant* C);
+	IC void			set_c_wv_old(RHIShaderConstant* C);
+	IC void			set_c_vp_old(RHIShaderConstant* C);
+	IC void			set_c_wvp_old(RHIShaderConstant* C);
 
 private:
 	void			apply_invw	();
