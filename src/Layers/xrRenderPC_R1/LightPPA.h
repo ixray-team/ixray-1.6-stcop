@@ -1,11 +1,4 @@
-// LightPPA.h: interface for the CLightPPA class.
-//
-//////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_LIGHTPPA_H__E5B97AC9_84A6_4773_9FEF_3BC5D1CEF8B6__INCLUDED_)
-#define AFX_LIGHTPPA_H__E5B97AC9_84A6_4773_9FEF_3BC5D1CEF8B6__INCLUDED_
 #pragma once
-
 #include "../xrRender/light.h"
 
 struct	CLightR_Vertex
@@ -31,11 +24,6 @@ public:
 	void			render_spot		(u32 _priority);
 };
 
-//////////////////////////////////////////////////////////////////////////
-// binders for lighting
-//////////////////////////////////////////////////////////////////////////
-class cl_light_PR		: public R_constant_setup		{	virtual void setup	(R_constant* C);	};
-class cl_light_C		: public R_constant_setup		{	virtual void setup	(R_constant* C);	};
-class cl_light_XFORM	: public R_constant_setup		{	virtual void setup	(R_constant* C);	};
-
-#endif // !defined(AFX_LIGHTPPA_H__E5B97AC9_84A6_4773_9FEF_3BC5D1CEF8B6__INCLUDED_)
+class cl_light_PR		: public RHIShaderConstant::Setup {	virtual void setup(RHIShaderConstant* C);	};
+class cl_light_C		: public RHIShaderConstant::Setup {	virtual void setup(RHIShaderConstant* C);	};
+class cl_light_XFORM	: public RHIShaderConstant::Setup {	virtual void setup(RHIShaderConstant* C);	};

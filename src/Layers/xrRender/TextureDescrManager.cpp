@@ -5,12 +5,12 @@
 
 // eye-params
 float					r__dtex_range	= 50;
-class cl_dt_scaler		: public R_constant_setup {
+class cl_dt_scaler		: public RHIShaderConstant::Setup {
 public:
 	float				scale;
 
 	cl_dt_scaler		(float s) : scale(s)	{};
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		RCache.set_c	(C,scale,scale,scale,1/r__dtex_range);
 	}
@@ -271,7 +271,7 @@ void CTextureDescrMngr::GetTextureUsage	(const shared_str& tex_name, BOOL& bDiff
 	}
 }
 
-BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup* &CS) const
+BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res, RHIShaderConstant::Setup* &CS) const
 {
 	map_TD::const_iterator I = m_texture_details.find	(tex_name);
 	if (I!=m_texture_details.end())
