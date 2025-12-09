@@ -218,7 +218,7 @@ public:
 	virtual void			rmNormal();
 
 	IC void apply_lmaterial() {
-		R_constant* C = &*RCache.get_c("s_base"); // get sampler
+		RHIShaderConstant* C = &*RCache.get_c("s_base"); // get sampler
 		if(0 == C)			return;
 		VERIFY(RC_dest_sampler == C->destination);
 		VERIFY(RC_sampler == C->type);

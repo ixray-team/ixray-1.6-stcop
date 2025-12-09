@@ -263,7 +263,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
 }
 #endif
 
-void CBlender_Compile::r_Constant(LPCSTR name, R_constant_setup* s)
+void CBlender_Compile::r_Constant(LPCSTR name, RHIShaderConstant::Setup* s)
 {
     R_ASSERT(s);
     ref_constant C = ctable.get(name);

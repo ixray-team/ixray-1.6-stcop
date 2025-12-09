@@ -1,7 +1,7 @@
 #pragma once
 
-struct	R_constant;
-struct	R_constant_load;
+struct	RHIShaderConstant;
+struct	RHIShaderConstant::Loader;
 
 class dx10ConstantBuffer :
 	public xr_resource_named
@@ -17,15 +17,15 @@ public:
 
 	//	Set copy data into constant buffer
 	//	Plain buffer member
-	void			set(R_constant* C, R_constant_load& L, const Fmatrix& A);
-	void			set(R_constant* C, R_constant_load& L, const Fvector4& A);
-	void			set(R_constant* C, R_constant_load& L, float A);
-	void			set(R_constant* C, R_constant_load& L, int A);
+	void			set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fmatrix& A);
+	void			set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fvector4& A);
+	void			set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, float A);
+	void			set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, int A);
 	//	Array buffer member
-	void			seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A);
-	void			seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A);
+	void			seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fmatrix& A);
+	void			seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fvector4& A);
 
-	void*			AccessDirect(R_constant_load& L, u32 DataSize);
+	void*			AccessDirect(RHIShaderConstant::Loader& L, u32 DataSize);
 
 private:
 	Fvector4*		Access(u16	offset);
