@@ -82,7 +82,7 @@ IC void CBackend::set_Constants			(R_constant_table* C_)
 	R_constant_table::c_table::iterator	it	= C_->table.begin();
 	R_constant_table::c_table::iterator	end	= C_->table.end	();
 	for (; it!=end; it++)	{
-		R_constant*		Cs	= &**it;
+		RHIShaderConstant*		Cs	= &**it;
 		VERIFY(Cs);
 		if (Cs && Cs->handler) {
 			Cs->handler->setup(Cs);
