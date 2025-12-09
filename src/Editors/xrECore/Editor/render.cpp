@@ -543,9 +543,9 @@ DWORD CRender::get_dx_level()
 }
 
 static class cl_lighting_enable : 
-	public R_constant_setup
+	public RHIShaderConstant::Setup
 {
-	virtual void setup(R_constant* C)
+	virtual void setup(RHIShaderConstant* C)
 	{
 		float is_lighting_enable = 0.0f;
 		if(g_pGamePersistent && psDeviceFlags.test(rsEnvironment))

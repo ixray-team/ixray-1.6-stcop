@@ -174,7 +174,7 @@ public:
 	}
 	IC void							apply_lmaterial				()
 	{
-		R_constant*		C	= &*RCache.get_c	(c_sbase);		// get sampler
+		RHIShaderConstant*		C	= &*RCache.get_c	(c_sbase);		// get sampler
 		if (0==C)			return;
 		VERIFY				(RC_dest_sampler	== C->destination);
 		VERIFY				(RC_sampler			== C->type);

@@ -14,7 +14,7 @@ IC Fvector4* dx10ConstantBuffer::Access(u16 offset)
 	return (Fvector4*) res;
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fmatrix& A)
+IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fmatrix& A)
 {
 	VERIFY		(RC_float == C->type);
 	//	TEST
@@ -54,7 +54,7 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fmatrix
 	}
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fvector4& A)
+IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, const Fvector4& A)
 {
 	VERIFY		(RC_float	== C->type);
 	VERIFY		(RC_1x4		== L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
@@ -86,7 +86,7 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fvector
 	//c_f.dirty	(L.index,L.index+1);
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, float A)
+IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, float A)
 {
 	VERIFY		(RC_float	== C->type);
 	VERIFY		(RC_1x1		== L.cls);
@@ -98,7 +98,7 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, float A)
 	//c_f.dirty	(L.index,L.index+1);
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, int A)
+IC void dx10ConstantBuffer::set(RHIShaderConstant* C, RHIShaderConstant::Loader& L, int A)
 {
 	VERIFY		(RC_int		== C->type);
 	VERIFY		(RC_1x1		== L.cls);
@@ -110,7 +110,7 @@ IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, int A)
 	//c_f.dirty	(L.index,L.index+1);
 }
 
-IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A)
+IC void dx10ConstantBuffer::seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fmatrix& A)
 {
 	//	TEST
 	//return;
@@ -161,7 +161,7 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
 	}
 }
 
-IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A)
+IC void dx10ConstantBuffer::seta(RHIShaderConstant* C, RHIShaderConstant::Loader& L, u32 e, const Fvector4& A)
 {
 	//	TEST
 	//return;
@@ -179,7 +179,7 @@ IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const
 	//c_f.dirty	(base,base+1);
 }
 
-IC void* dx10ConstantBuffer::AccessDirect(R_constant_load& L, u32 DataSize)
+IC void* dx10ConstantBuffer::AccessDirect(RHIShaderConstant::Loader& L, u32 DataSize)
 {
 	//	Check buffer size in client code: don't know if actual data will cross
 	//	buffer boundaries.

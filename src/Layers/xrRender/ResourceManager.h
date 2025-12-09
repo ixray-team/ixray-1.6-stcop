@@ -25,7 +25,7 @@ private:
 	};
 	struct texture_detail	{
 		const char*			T;
-		R_constant_setup*	cs;
+		RHIShaderConstant::Setup*	cs;
 	};
 public:
 	using map_Blender = xr_map<const char*, IBlender*, str_pred>;
@@ -114,7 +114,7 @@ private:
 	xrCriticalSection creationGuard;
 public:
 	CTextureDescrMngr									m_textures_description;
-	xr_vector<std::pair<shared_str,R_constant_setup*> >	v_constant_setup;
+	xr_vector<std::pair<shared_str,RHIShaderConstant::Setup*> >	v_constant_setup;
 	lua_State*											LSVM;
 	BOOL												bDeferredLoad;
 private:
@@ -127,7 +127,7 @@ public:
 	IBlender* 						_FindBlender		(LPCSTR Name);
 	void							_GetMemoryUsage		(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
 	void							_DumpMemoryUsage	();
-//.	BOOL							_GetDetailTexture	(LPCSTR Name, LPCSTR& T, R_constant_setup* &M);
+//.	BOOL							_GetDetailTexture	(LPCSTR Name, LPCSTR& T, RHIShaderConstant::Setup* &M);
 
 	map_Blender&					_GetBlenders		()		{	return m_blenders;	}
 
@@ -227,7 +227,7 @@ public:
 	Shader*			Create					(LPCSTR s_shader=0, LPCSTR s_textures=0,	LPCSTR s_constants=0,	LPCSTR s_matrices=0);
 	Shader*			Create					(IBlender*	B,		LPCSTR s_shader=0,		LPCSTR s_textures=0,	LPCSTR s_constants=0, LPCSTR s_matrices=0);
 	void			Delete					(const Shader*		S	);
-	void			RegisterConstantSetup	(LPCSTR name,		R_constant_setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
+	void			RegisterConstantSetup	(LPCSTR name,		RHIShaderConstant::Setup* s)	{	v_constant_setup.push_back(std::make_pair(shared_str(name),s));	}
 
 	SGeometry*		CreateGeom				(RHIInputElementDesc* decl, size_t DeclSize, IRHIBuffer* vb, IRHIBuffer* ib);
 	SGeometry*		CreateGeom				(D3DVERTEXELEMENT9* decl, IRHIBuffer* vb, IRHIBuffer* ib);

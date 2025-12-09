@@ -76,7 +76,7 @@ void ComputeShader::Dispatch(u32 dimx, u32 dimy, u32 dimz)
 	R_constant_table::c_table::iterator	end = m_ctable->table.end();
 	for (; it != end; it++)
 	{
-		R_constant* Cs = &**it;
+		RHIShaderConstant* Cs = &**it;
 		if (Cs->handler)	Cs->handler->setup(Cs);
 	}
 
