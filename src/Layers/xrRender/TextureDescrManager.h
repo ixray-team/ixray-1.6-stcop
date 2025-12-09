@@ -11,7 +11,7 @@ class CTextureDescrMngr
 	struct texture_assoc
 	{
 		shared_str			detail_name;
-		//R_constant_setup*	cs;
+		//RHIShaderConstant::Setup*	cs;
 		u8					usage;
         texture_assoc       () : /*cs(NULL),*/ usage(0) {}
 		~texture_assoc		() { /*xr_delete(cs);*/ }
@@ -49,7 +49,7 @@ public:
 	shared_str	GetBumpName		(const shared_str& tex_name) const;
 	float		GetMaterial		(const shared_str& tex_name) const;
 	void		GetTextureUsage	(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;
-	BOOL		GetDetailTexture(const shared_str& tex_name, LPCSTR& res, R_constant_setup* &CS) const;
+	BOOL		GetDetailTexture(const shared_str& tex_name, LPCSTR& res, RHIShaderConstant::Setup* &CS) const;
 	BOOL		UseSteepParallax(const shared_str& tex_name) const;
 	BOOL		UsePBRTexures	(const shared_str& tex_name) const;
 };
