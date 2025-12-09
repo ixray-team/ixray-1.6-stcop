@@ -14,7 +14,7 @@
 
 
 // pool
-//.static	poolSS<R_constant,512>			g_constant_allocator;
+//.static	poolSS<RHIShaderConstant,512>			g_constant_allocator;
 
 //R_constant_table::~R_constant_table	()	{	dxRenderDeviceRender::Instance().Resources->_DeleteConstantTable(this);	}
 
@@ -147,11 +147,11 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 				// We have determined all valuable info, search if constant already created
 				ref_constant	C = get(name);
 				if (!C) {
-					C = new R_constant();//.g_constant_allocator.create();
+					C = new RHIShaderConstant();//.g_constant_allocator.create();
 					C->name = name;
 					C->destination = RC_dest_sampler;
 					C->type = RC_sampler;
-					R_constant_load& L = C->samp;
+					RHIShaderConstant::Loader& L = C->samp;
 					L.index = u16(r_index + ((destination & 1) ? 0 : D3DVERTEXTEXTURESAMPLER0));
 					L.cls = RC_sampler;
 					table.push_back(C);
@@ -159,7 +159,7 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 				else {
 					R_ASSERT(C->destination == RC_dest_sampler);
 					R_ASSERT(C->type == RC_sampler);
-					R_constant_load& L = C->samp;
+					RHIShaderConstant::Loader& L = C->samp;
 					R_ASSERT(L.index == r_index);
 					R_ASSERT(L.cls == RC_sampler);
 				}
@@ -181,11 +181,11 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 		// We have determined all valuable info, search if constant already created
 		ref_constant	C = get(name);
 		if (!C) {
-			C = new R_constant();//.g_constant_allocator.create();
+			C = new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name = name;
 			C->destination = destination;
 			C->type = type;
-			R_constant_load& L = (destination & 1) ? C->ps : C->vs;
+			RHIShaderConstant::Loader& L = (destination & 1) ? C->ps : C->vs;
 			L.index = r_index;
 			L.cls = r_type;
 			table.push_back(C);
@@ -193,7 +193,7 @@ BOOL	R_constant_table::parse(void* _desc, u32 destination)
 		else {
 			C->destination |= destination;
 			VERIFY(C->type == type);
-			R_constant_load& L = (destination & 1) ? C->ps : C->vs;
+			RHIShaderConstant::Loader& L = (destination & 1) ? C->ps : C->vs;
 			L.index = r_index;
 			L.cls = r_type;
 		}
@@ -219,7 +219,7 @@ void R_constant_table::merge(R_constant_table* T)
 		ref_constant C = get(*src->name);
 		if (!C)
 		{
-			C = new R_constant();//.g_constant_allocator.create();
+			C = new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name = src->name;
 			C->destination = src->destination;
 			C->type = src->type;
@@ -240,8 +240,8 @@ void R_constant_table::merge(R_constant_table* T)
 			VERIFY2(!(C->destination & src->destination & RC_dest_sampler), "Can't have samplers or textures with the same name for PS, VS and GS.");
 			C->destination |= src->destination;
 			VERIFY(C->type == src->type);
-			R_constant_load& sL = src->get_load(src->destination);
-			R_constant_load& dL = C->get_load(src->destination);
+			RHIShaderConstant::Loader& sL = src->get_load(src->destination);
+			RHIShaderConstant::Loader& dL = C->get_load(src->destination);
 			dL.index = sL.index;
 			dL.cls = sL.cls;
 		}

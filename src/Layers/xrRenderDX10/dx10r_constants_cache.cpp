@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../xrRender/r_constants_cache.h"
 
-dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
+dx10ConstantBuffer& R_constants::GetCBuffer(RHIShaderConstant* C, BufferType BType)
 {
 	if (BType == BT_PixelBuffer)
 	{
