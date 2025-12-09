@@ -65,22 +65,22 @@ ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float
 	}
 	return pVisual->shader->E[id]._get();
 }
-static class cl_parallax		: public R_constant_setup		{	virtual void setup	(R_constant* C)
+static class cl_parallax		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
 {
 	float			h			=	ps_r2_df_parallax_h;
 	RCache.set_c	(C,h,-h/2.f,1.f/r_dtex_range,1.f/r_dtex_range);
 }}	binder_parallax;
 
-static class cl_LOD		: public R_constant_setup
+static class cl_LOD		: public RHIShaderConstant::Setup
 {
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		RCache.LOD.set_LOD(C);
 	}
 } binder_LOD;
 
-static class cl_pos_decompress_params : public R_constant_setup {
-	virtual void setup(R_constant* C) {
+static class cl_pos_decompress_params : public RHIShaderConstant::Setup {
+	virtual void setup(RHIShaderConstant* C) {
 
 		float VertTan = 1.0f / Device.mProject._22;
 		float HorzTan = VertTan / Device.fASPECT;
@@ -90,8 +90,8 @@ static class cl_pos_decompress_params : public R_constant_setup {
 }	binder_pos_decompress_params;
 
 extern ENGINE_API float psHUD_FOV;
-static class cl_pos_decompress_params_hud : public R_constant_setup {
-	virtual void setup(R_constant* C) {
+static class cl_pos_decompress_params_hud : public RHIShaderConstant::Setup {
+	virtual void setup(RHIShaderConstant* C) {
 		float VertTan = -1.0f * tanf(deg2rad(psHUD_FOV / 2.0f));
 		float HorzTan = -VertTan / Device.fASPECT;
 
@@ -100,22 +100,22 @@ static class cl_pos_decompress_params_hud : public R_constant_setup {
 	}
 }	binder_pos_decompress_params_hud;
 
-static class cl_pos_decompress_params2		: public R_constant_setup		{	virtual void setup	(R_constant* C)
+static class cl_pos_decompress_params2		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
 {
 	RCache.set_c	(C, RCache.get_width(), RCache.get_height(), 1.0f / RCache.get_width(), 1.0f / RCache.get_height());
 
 }}	binder_pos_decompress_params2;
 
-static class cl_depth_unpack : public R_constant_setup {
-	virtual void setup(R_constant* C) {
+static class cl_depth_unpack : public RHIShaderConstant::Setup {
+	virtual void setup(RHIShaderConstant* C) {
 		RCache.set_c(C, Device.mProject_saved._43, Device.mProject_saved._33,
 			Device.mProject_hud._43, Device.mProject_hud._33);
 	}
 } binder_depth_unpack;
 
-static class cl_water_intensity : public R_constant_setup		
+static class cl_water_intensity : public RHIShaderConstant::Setup		
 {	
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fWaterIntensity;
@@ -123,9 +123,9 @@ static class cl_water_intensity : public R_constant_setup
 	}
 }	binder_water_intensity;
 
-static class cl_sun_shafts_intensity : public R_constant_setup		
+static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
 {	
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;
@@ -133,9 +133,9 @@ static class cl_sun_shafts_intensity : public R_constant_setup
 	}
 }	binder_sun_shafts_intensity;
 
-static class cl_alpha_ref	: public R_constant_setup 
+static class cl_alpha_ref	: public RHIShaderConstant::Setup 
 {	
-	virtual void setup (R_constant* C) 
+	virtual void setup (RHIShaderConstant* C) 
 	{
 		auto Callback = [C](u32 m_uiAlphaRef)
 		{
