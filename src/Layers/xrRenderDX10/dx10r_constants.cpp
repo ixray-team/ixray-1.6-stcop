@@ -160,18 +160,18 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 				// We have determined all valuable info, search if constant already created
 				ref_constant	C		=	get	(name);
 				if (!C)	{
-				C					=	new R_constant();//.g_constant_allocator.create();
+				C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 				C->name				=	name;
 				C->destination		=	RC_dest_sampler;
 				C->type				=	RC_sampler;
-				R_constant_load& L	=	C->samp;
+				RHIShaderConstant::Loader& L	=	C->samp;
 				L.index				=	u16(r_index	+ ( (destination&1)? 0 : D3DVERTEXTEXTURESAMPLER0 ));
 				L.cls				=	RC_sampler	;
 				table.push_back		(C);
 				} else {
 				R_ASSERT			(C->destination	==	RC_dest_sampler);
 				R_ASSERT			(C->type		==	RC_sampler);
-				R_constant_load& L	=	C->samp;
+				RHIShaderConstant::Loader& L	=	C->samp;
 				R_ASSERT			(L.index		==	r_index);
 				R_ASSERT			(L.cls			==	RC_sampler);
 				}
@@ -194,12 +194,12 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 		// We have determined all valuable info, search if constant already created
 		ref_constant	C		=	get	(name);
 		if (!C)	{
-			C					=	new R_constant();//.g_constant_allocator.create();
+			C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name				=	name;
 			C->destination		=	destination;
 			C->type				=	type;
-			//R_constant_load& L	=	(destination&1)?C->ps:C->vs;
-			R_constant_load& L	=	C->get_load(destination);/*((destination&RC_dest_pixel)
+			//RHIShaderConstant::Loader& L	=	(destination&1)?C->ps:C->vs;
+			RHIShaderConstant::Loader& L	=	C->get_load(destination);/*((destination&RC_dest_pixel)
 									? C->ps : (destination&RC_dest_vertex)
 									? C->vs : C->gs);*/
 			L.index				=	r_index;
@@ -208,8 +208,8 @@ BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable
 		} else {
 			C->destination		|=	destination;
 			VERIFY	(C->type	==	type);
-			//R_constant_load& L	=	(destination&1)?C->ps:C->vs;
-			R_constant_load& L	=	C->get_load(destination);/*((destination&RC_dest_pixel)
+			//RHIShaderConstant::Loader& L	=	(destination&1)?C->ps:C->vs;
+			RHIShaderConstant::Loader& L	=	C->get_load(destination);/*((destination&RC_dest_pixel)
 									? C->ps : (destination&RC_dest_vertex)
 									? C->vs : C->gs);*/
 			L.index				=	r_index;
@@ -281,11 +281,11 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
 		ref_constant	C		=	get	(ResDesc.Name);
 		if (!C)	
 		{
-			C					=	new R_constant();//.g_constant_allocator.create();
+			C					=	new RHIShaderConstant();//.g_constant_allocator.create();
 			C->name				=	ResDesc.Name;
 			C->destination		=	RC_dest_sampler;
 			C->type				=	type;
-			R_constant_load& L	=	C->samp;
+			RHIShaderConstant::Loader& L	=	C->samp;
 			L.index				=	r_index;
 			L.cls				=	type;
 			table.push_back		(C);
@@ -294,7 +294,7 @@ BOOL R_constant_table::parseResources(ID3DShaderReflection* pReflection, int Res
 		{
 			R_ASSERT			(C->destination	==	RC_dest_sampler);
 			R_ASSERT			(C->type		==	type);
-			R_constant_load& L	=	C->samp;
+			RHIShaderConstant::Loader& L	=	C->samp;
 			R_ASSERT			(L.index		==	r_index);
 			R_ASSERT			(L.cls			==	type);
 		}
