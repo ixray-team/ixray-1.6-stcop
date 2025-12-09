@@ -57,13 +57,13 @@ ShaderElement*			CRender::rimp_select_sh_static	(dxRender_Visual	*pVisual, float
 	}
 	return pVisual->shader->E[id]._get();
 }
-static class cl_parallax		: public R_constant_setup		{	virtual void setup	(R_constant* C)
+static class cl_parallax		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
 {
 	float			h			=	ps_r2_df_parallax_h;
 	RCache.set_c	(C,h,-h/2.f,1.f/r_dtex_range,1.f/r_dtex_range);
 }}	binder_parallax;
 
-static class cl_pos_decompress_params		: public R_constant_setup		{	virtual void setup	(R_constant* C)
+static class cl_pos_decompress_params		: public RHIShaderConstant::Setup		{	virtual void setup	(RHIShaderConstant* C)
 {
 	float VertTan =  -1.0f * tanf( deg2rad(Device.fFOV/2.0f ) );
 	float HorzTan =  - VertTan / Device.fASPECT;
@@ -72,9 +72,9 @@ static class cl_pos_decompress_params		: public R_constant_setup		{	virtual void
 
 }}	binder_pos_decompress_params;
 
-static class cl_water_intensity : public R_constant_setup		
+static class cl_water_intensity : public RHIShaderConstant::Setup		
 {	
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fWaterIntensity;
@@ -82,9 +82,9 @@ static class cl_water_intensity : public R_constant_setup
 	}
 }	binder_water_intensity;
 
-static class cl_sun_shafts_intensity : public R_constant_setup		
+static class cl_sun_shafts_intensity : public RHIShaderConstant::Setup		
 {	
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
 		float fValue = E.m_fSunShaftsIntensity;

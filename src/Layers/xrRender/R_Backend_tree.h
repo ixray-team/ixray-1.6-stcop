@@ -5,39 +5,39 @@
 class ECORE_API	R_tree
 {
 public:
-	R_constant*		c_m_xform_v;
-	R_constant*		c_m_xform;
+	RHIShaderConstant*		c_m_xform_v;
+	RHIShaderConstant*		c_m_xform;
 
-	R_constant*		c_consts;
-	R_constant*		c_wave;
-	R_constant*		c_wind;
+	RHIShaderConstant*		c_consts;
+	RHIShaderConstant*		c_wave;
+	RHIShaderConstant*		c_wind;
 	
-	R_constant*		c_consts_old;
-	R_constant*		c_wave_old;
-	R_constant*		c_wind_old;
+	RHIShaderConstant*		c_consts_old;
+	RHIShaderConstant*		c_wave_old;
+	RHIShaderConstant*		c_wind_old;
 
-	R_constant*		c_c_scale;
-	R_constant*		c_c_bias;
-	R_constant*		c_c_sun;
+	RHIShaderConstant*		c_c_scale;
+	RHIShaderConstant*		c_c_bias;
+	RHIShaderConstant*		c_c_sun;
 
 public:
 	R_tree		();
 	void			unmap		();
 
-	void			set_c_m_xform_v		(R_constant* C) {c_m_xform_v = C;}
-	void			set_c_m_xform		(R_constant* C) {c_m_xform = C;}
+	void			set_c_m_xform_v		(RHIShaderConstant* C) {c_m_xform_v = C;}
+	void			set_c_m_xform		(RHIShaderConstant* C) {c_m_xform = C;}
 
-	void			set_c_consts		(R_constant* C) {c_consts = C;}
-	void			set_c_wave			(R_constant* C) {c_wave = C;}
-	void			set_c_wind			(R_constant* C) {c_wind = C;}
+	void			set_c_consts		(RHIShaderConstant* C) {c_consts = C;}
+	void			set_c_wave			(RHIShaderConstant* C) {c_wave = C;}
+	void			set_c_wind			(RHIShaderConstant* C) {c_wind = C;}
 	
-	void			set_c_consts_old	(R_constant* C) {c_consts_old = C;}
-	void			set_c_wave_old		(R_constant* C) {c_wave_old = C;}
-	void			set_c_wind_old		(R_constant* C) {c_wind_old = C;}
+	void			set_c_consts_old	(RHIShaderConstant* C) {c_consts_old = C;}
+	void			set_c_wave_old		(RHIShaderConstant* C) {c_wave_old = C;}
+	void			set_c_wind_old		(RHIShaderConstant* C) {c_wind_old = C;}
 
-	void			set_c_c_scale		(R_constant* C) {c_c_scale = C;}
-	void			set_c_c_bias		(R_constant* C) {c_c_bias = C;}
-	void			set_c_c_sun			(R_constant* C) {c_c_sun = C;}
+	void			set_c_c_scale		(RHIShaderConstant* C) {c_c_scale = C;}
+	void			set_c_c_bias		(RHIShaderConstant* C) {c_c_bias = C;}
+	void			set_c_c_sun			(RHIShaderConstant* C) {c_c_sun = C;}
 
 	void			set_m_xform_v		(Fmatrix& mat);
 	void			set_m_xform			(Fmatrix& mat);
