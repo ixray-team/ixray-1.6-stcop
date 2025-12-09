@@ -17,7 +17,7 @@ const float	SSM_tex_size 			=	32.f;
 //////////////////////////////////////////////////////////////////////////
 // binders for lighting
 //////////////////////////////////////////////////////////////////////////
-void cl_light_PR::setup(R_constant* C)
+void cl_light_PR::setup(RHIShaderConstant* C)
 {
 	Fvector&	P	= RImplementation.r1_dlight_light->position;
 	float		R	= RImplementation.r1_dlight_light->range;
@@ -25,14 +25,14 @@ void cl_light_PR::setup(R_constant* C)
 	else													RCache.set_c	(C,P.x,P.y,P.z,1.f/R);
 }
 
-void cl_light_C::setup(R_constant* C)
+void cl_light_C::setup(RHIShaderConstant* C)
 {
 	Fcolor		_C	= RImplementation.r1_dlight_light->color;
 				_C.mul_rgb	(RImplementation.r1_dlight_scale);
 	RCache.set_c	(C,_C.r,_C.g,_C.b,1.f);
 }
 
-void cl_light_XFORM::setup(R_constant* C)
+void cl_light_XFORM::setup(RHIShaderConstant* C)
 {
 	RCache.set_c	(C,RImplementation.r1_dlight_tcgen);
 }
