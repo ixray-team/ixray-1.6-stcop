@@ -4,8 +4,14 @@
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../../xrUI/Widgets/UIEditKeyBind.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrEngine/CustomHUD.h"
 
 CUIKeyBinding::CUIKeyBinding()
+	: m_scroll_wnd(nullptr)
+	, m_quickSlotsItem(nullptr)
+	, m_quickSlotsKey1(nullptr)
+	, m_quickSlotsKey2(nullptr)
 {
 	for (int i=0; i<3; i++)
 		AttachChild		(&m_header[i]);
@@ -74,17 +80,37 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 			
 			float item_width				= m_header[1].GetWidth()-3.0f;
 			float item_pos					= m_header[1].GetWndPos().x;
-			CUIEditKeyBind* pEditKB			= new CUIEditKeyBind(true);pEditKB->SetAutoDelete(true);
-			pEditKB->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
-			pEditKB->AssignProps			(exe,"key_binding");
-			pItem->AttachChild				(pEditKB);
+			CUIEditKeyBind* pEditKB1		= new CUIEditKeyBind(true);pEditKB1->SetAutoDelete(true);
+			pEditKB1->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
+			pEditKB1->AssignProps			(exe,"key_binding");
+			pItem->AttachChild				(pEditKB1);
 
 			item_width						= m_header[2].GetWidth()-3.0f;
 			item_pos						= m_header[2].GetWndPos().x;
-			pEditKB							= new CUIEditKeyBind(false);pEditKB->SetAutoDelete(true);
-			pEditKB->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
-			pEditKB->AssignProps			(exe,"key_binding");
-			pItem->AttachChild				(pEditKB);
+			CUIEditKeyBind* pEditKB2		= new CUIEditKeyBind(false);pEditKB2->SetAutoDelete(true);
+			pEditKB2->InitKeyBind			(Fvector2().set(item_pos, 0.0f), Fvector2().set(item_width, pItem->GetWndSize().y) );
+			pEditKB2->AssignProps			(exe,"key_binding");
+			pItem->AttachChild				(pEditKB2);
+
+			// Enable/disable quick slots binding based on hud_hide_quick_slots setting
+			// Element is always visible, but only enabled when option is on
+			if (0 == xr_strcmp(*exe, "show_quick_slots"))
+			{
+				// Store references for dynamic updates
+				m_quickSlotsItem = pItem;
+				m_quickSlotsKey1 = pEditKB1;
+				m_quickSlotsKey2 = pEditKB2;
+
+				const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+				// Element is always visible
+				pItem->Show(true);
+				pEditKB1->Show(true);
+				pEditKB2->Show(true);
+				// Enable/disable for interaction based on setting
+				pItem->Enable(isHideQuickSlotsEnabled);
+				pEditKB1->Enable(isHideQuickSlotsEnabled);
+				pEditKB2->Enable(isHideQuickSlotsEnabled);
+			}
 		}
 		xml_doc.SetLocalRoot				(xml_doc.GetRoot());
 	}
@@ -162,3 +188,32 @@ bool CUIKeyBinding::IsActionExist(LPCSTR action, CUIXml& xml_doc)
 	return ret;
 }
 #endif
+
+void CUIKeyBinding::Update()
+{
+	CUIWindow::Update();
+	
+	// Only update if scroll window is initialized (InitFromXml completed)
+	if (m_scroll_wnd)
+	{
+		UpdateQuickSlotsBindingState();
+	}
+}
+
+void CUIKeyBinding::UpdateQuickSlotsBindingState()
+{
+	// Check if elements exist and are valid
+	if (m_quickSlotsItem && m_quickSlotsKey1 && m_quickSlotsKey2)
+	{
+		// Safely access psHUD_Flags
+		const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+		// Element is always visible
+		m_quickSlotsItem->Show(true);
+		m_quickSlotsKey1->Show(true);
+		m_quickSlotsKey2->Show(true);
+		// Enable/disable for interaction based on setting
+		m_quickSlotsItem->Enable(isHideQuickSlotsEnabled);
+		m_quickSlotsKey1->Enable(isHideQuickSlotsEnabled);
+		m_quickSlotsKey2->Enable(isHideQuickSlotsEnabled);
+	}
+}
