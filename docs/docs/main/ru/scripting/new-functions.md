@@ -54,6 +54,15 @@ float GetAdditionalMaxWalkWeight() const;
 
 void SetAdditionalMaxWalkWeight(float add_max_walk_weight);
 //-- Устанавливает дополнительный вес, при котором актер может передвигаться.
+
+void set_actor_sleepiness(float value)    //-- Прямая установка сонливости гг
+void set_actor_satiety(float value)       //-- Прямая установка голода гг
+void set_actor_thirst(float value)        //-- Прямая установка жажды гг
+void set_actor_health(float value)        //-- Прямая установка здоровья гг
+void set_actor_power(float value)         //-- Прямая установка стамины гг
+void set_actor_radiation(float value)     //-- Прямая установка радиации гг
+void set_actor_psy_health(float value)    //-- Прямая установка пси здоровья гг
+void set_actor_morale(float value)        //-- Прямая установка морали гг
 ```
 * Камера
 ```cpp

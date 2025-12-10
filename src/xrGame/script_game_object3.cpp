@@ -1955,3 +1955,75 @@ bool CScriptGameObject::SetWorldObjectBoneVisibility(LPCSTR boneName, bool bVisi
 	
 	return false;
 }
+
+// FFx0001 ++
+void CScriptGameObject::SetActorSleepiness(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorSleepiness(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorSatiety(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorSatiety(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorThirst(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorThirst(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorHealth(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorHealth(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorPower(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorPower(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorRadiation(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorRadiation(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorPsyHealth(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorPsyHealth(value);
+	}
+}
+
+// FFx0001 ++
+void CScriptGameObject::SetActorMorale(float value)
+{
+	if (CActor* obj = g_actor)
+	{
+		obj->SetActorMorale(value);
+	}
+}
