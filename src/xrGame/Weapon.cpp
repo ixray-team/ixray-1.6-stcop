@@ -2715,7 +2715,7 @@ bool CWeapon::CanAimNow()
 
 			if (IsScopeAttached())
 			{
-				sect = GetCurrentScopeSection();
+				sect = ScopeAttachable() ? GetScopeName() : cNameSect();
 			}
 
 			if (READ_IF_EXISTS(pSettings, r_bool, sect, "prohibit_aim_for_grenade_mode", false))
@@ -4197,11 +4197,12 @@ void CWeapon::LoadChamber()
 bool CWeapon::GetScopeBack()
 {
 	if (bUseAltScope && m_eScopeStatus != ALife::eAddonPermanent && IsScopeAttached())
+	{
 		return !!READ_IF_EXISTS(pSettings, r_bool, GetNameWithAttachmentScope(), "scope_back", false);
+	}
 
-	return !!READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "scope_back", false);
+	return !!READ_IF_EXISTS(pSettings, r_bool, ScopeAttachable() ? GetScopeName() : cNameSect(), "scope_back", false);
 }
-
 
 void CWeapon::UpdateCollimatorSight()
 {
