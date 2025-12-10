@@ -456,6 +456,12 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_actor_runback_coef",		&CScriptGameObject::SetActorRunBackCoef)   
 		.def("get_actor_power_boost_time", &CScriptGameObject::GetActorPowerBoostTime)
 
+		// FFx0001 (manipulate bones)
+		.def("is_world_object_bone_visible", &CScriptGameObject::IsWorldObjectBoneVisible)
+		.def("set_world_object_bone_visibility", &CScriptGameObject::SetWorldObjectBoneVisibility)
+		.def("is_hud_object_bone_visible", &CScriptGameObject::IsHudObjectBoneVisible)
+		.def("set_hud_object_bone_visibility", &CScriptGameObject::SetHudObjectBoneVisibility)
+
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)
 		.def("weapon_addon_attach",			&CScriptGameObject::Weapon_AddonAttach)

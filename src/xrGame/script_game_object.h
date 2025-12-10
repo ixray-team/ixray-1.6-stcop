@@ -485,8 +485,16 @@ public:
 			bool				IsItemUsedAdditionalDescription();
 
 			u32					GetAmmoElapsed		();
-			u32					GetAmmoElapsedWithChamber(); // FFx0001 ++
-			bool				IsWeaponUseChamber(); // FFx0001 ++
+
+			// FFx0001 ++
+			u32					GetAmmoElapsedWithChamber(); 
+			bool				IsWeaponUseChamber();
+			bool				IsWorldObjectBoneVisible(LPCSTR bone_name);
+			bool				SetWorldObjectBoneVisibility(LPCSTR boneName, bool bVisibility);
+			bool				IsHudObjectBoneVisible(LPCSTR bone_name);
+			bool				SetHudObjectBoneVisibility(LPCSTR boneName, bool bVisibility);
+			// FFx0001 --
+
 			void				SetAmmoElapsed		(int ammo_elapsed);
 			u32					GetSuitableAmmoTotal		() const;
 			void				SetQueueSize		(u32 queue_size);
