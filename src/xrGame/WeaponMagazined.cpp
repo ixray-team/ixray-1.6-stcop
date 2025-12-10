@@ -254,7 +254,7 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	if (SoundExist(section, "snd_jam"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_jam, TRUE);
-		m_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundEmptyClick);
+		m_layered_sounds.LoadSound(section, "snd_jam", "sndJam", true, m_eSoundEmptyClick);
 	}
 
 	//Only for improve misfire external!
@@ -1347,7 +1347,7 @@ void CWeaponMagazined::SelectShotSound()
 	{
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_jam) && IsMisfire())
 		{
-			PlaySound("sndJam", get_LastFP());
+			m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), !!GetHUDmode(), false);
 		}
 		else
 		{
@@ -1392,7 +1392,7 @@ void CWeaponMagazined::OnShotJammed()
 {
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_jam))
 	{
-		PlaySound("sndJam", get_LastFP());
+		m_layered_sounds.PlaySound("sndJam", get_LastFP(), H_Parent(), !!GetHUDmode(), false);
 	}
 
 	PlayAnimShoot();
