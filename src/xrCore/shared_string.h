@@ -66,7 +66,7 @@ public:
 	shared_str&			operator=	(str_c rhs) { _set(rhs);	return (shared_str&)*this; }
 	shared_str&			operator=	(shared_str const& rhs) { _set(rhs);	return (shared_str&)*this; }
 	str_c				operator*	() const { return p_ ? p_->value : 0; }
-	bool				operator!	() const { return p_ == 0; }
+						operator bool	() const { return p_ != nullptr; }
 	char				operator[]	(size_t id) { return p_->value[id]; }
 	str_c				c_str		() const { return p_ ? p_->value : 0; }
 
