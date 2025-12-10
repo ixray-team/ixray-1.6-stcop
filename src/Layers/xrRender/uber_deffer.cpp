@@ -17,9 +17,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 #endif
 
 	bool bump = ps_r__common_flags.test(R2FLAG_USE_BUMP) && pTexture.bump_exist();
+	bool lmap = false;
 
 #ifndef _EDITOR
-	bool lmap = false;
 	if(C.L_textures.size() >= 3)
 	{
 		auto tex = C.L_textures[2].c_str();
@@ -28,8 +28,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			lmap = true;
 		}
 	}
-#else 
-	bool lmap = false;
 #endif
 
 	string256 dt;
