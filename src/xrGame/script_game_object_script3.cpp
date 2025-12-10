@@ -462,6 +462,16 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_hud_object_bone_visible", &CScriptGameObject::IsHudObjectBoneVisible)
 		.def("set_hud_object_bone_visibility", &CScriptGameObject::SetHudObjectBoneVisibility)
 
+		// FFx0001 (actor params forvard controll)
+		.def("set_actor_sleepiness", &CScriptGameObject::SetActorSleepiness)
+		.def("set_actor_satiety", &CScriptGameObject::SetActorSatiety)
+		.def("set_actor_thirst", &CScriptGameObject::SetActorThirst)
+		.def("set_actor_health", &CScriptGameObject::SetActorHealth)
+		.def("set_actor_power", &CScriptGameObject::SetActorPower)
+		.def("set_actor_radiation", &CScriptGameObject::SetActorRadiation)
+		.def("set_actor_psy_health", &CScriptGameObject::SetActorPsyHealth)
+		.def("set_actor_morale", &CScriptGameObject::SetActorMorale)
+
 		//For Weapons
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)
 		.def("weapon_addon_attach",			&CScriptGameObject::Weapon_AddonAttach)
