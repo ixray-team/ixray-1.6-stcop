@@ -83,13 +83,6 @@ public:
 	const CTextureAtlas* get_atlas(u32 id) const;
 	const std::pmr::vector<CTextureAtlas>& get_atlases(void) const;
 
-	void delete_atlas(u32 id);
-
-	void generate_cache();
-
-	// make it optional field that will check should we cache
-	void load_cache();
-
 	const FactoryPtr<IUIShader>& get_shader(const std::string_view& subpath, float requested_width, float requested_height);
 	const FactoryPtr<IUIShader>& get_default_shader();
 

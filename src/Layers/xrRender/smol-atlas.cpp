@@ -102,11 +102,6 @@ struct smol_pool_t
     }
 };
 
-static inline int max_i(int a, int b)
-{
-    return a > b ? a : b;
-}
-
 struct smol_atlas_item_t
 {
     explicit smol_atlas_item_t(int x_, int y_, int w_, int h_, int shelf_)
@@ -219,18 +214,25 @@ struct smol_shelf_t
         smol_free_span_t* it = m_free_spans.m_head;
         smol_free_span_t* prev = nullptr;
         bool added = false;
-        while (it != nullptr) {
-            if (free_e->x < it->x) {
+
+        while (it != nullptr)
+        {
+            if (free_e->x < it->x)
+            {
                 // found right place, insert into the list
                 m_free_spans.insert(prev, free_e);
                 added = true;
                 break;
             }
+
             prev = it;
             it = it->next;
         }
+
         if (!added)
+        {
             m_free_spans.insert(prev, free_e);
+        }
 
         merge_free_spans(prev, free_e, span_pool);
     }
@@ -289,14 +291,16 @@ struct smol_atlas_t
         int best_score = 0x7fffffff;
 
         int top_y = 0;
-        for (auto& shelf : m_shelves) {
+        for (auto& shelf : m_shelves)
+        {
             const int shelf_h = shelf.m_height;
-            top_y = max_i(top_y, shelf.m_y + shelf_h);
+            top_y = std::max(top_y, shelf.m_y + shelf_h);
             
             if (shelf_h < h)
                 continue; // too short
             
-            if (shelf_h == h) { // exact height fit, try to use it
+            if (shelf_h == h)
+            { // exact height fit, try to use it
                 smol_atlas_item_t* res = shelf.alloc_item(w, h, m_item_pool, m_span_pool);
                 if (res != nullptr)
                     return res;
@@ -304,13 +308,15 @@ struct smol_atlas_t
 
             // otherwise the shelf is too tall, track best one
             int score = shelf_h - h;
-            if (score < best_score && shelf.has_space_for(w)) {
+            if (score < best_score && shelf.has_space_for(w))
+            {
                 best_score = score;
                 best_shelf = &shelf;
             }
         }
 
-        if (best_shelf) {
+        if (best_shelf) 
+        {
             smol_atlas_item_t* res = best_shelf->alloc_item(w, h, m_item_pool, m_span_pool);
             if (res != nullptr)
                 return res;
@@ -344,7 +350,8 @@ struct smol_atlas_t
 
     smol_pool_t<smol_atlas_item_t> m_item_pool;
     smol_pool_t<smol_free_span_t> m_span_pool;
-    std::vector<smol_shelf_t> m_shelves;
+    xr_vector<smol_shelf_t> m_shelves;
+
     int m_width;
     int m_height;
 };
@@ -390,14 +397,17 @@ int sma_item_x(const smol_atlas_item_t* item)
 {
     return item->x;
 }
+
 int sma_item_y(const smol_atlas_item_t* item)
 {
     return item->y;
 }
+
 int sma_item_width(const smol_atlas_item_t* item)
 {
     return item->width;
 }
+
 int sma_item_height(const smol_atlas_item_t* item)
 {
     return item->height;
