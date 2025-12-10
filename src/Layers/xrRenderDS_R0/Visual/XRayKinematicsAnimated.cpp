@@ -168,7 +168,7 @@ u16 CDS0_KinematicsAnimated::LL_PartID(LPCSTR B)
 	for (u16 id = 0; id < MAX_PARTS; id++)
 	{
 		CPartDef& P = (*m_Partition)[id];
-		if (0 == P.Name)	continue;
+		if (nullptr == P.Name)	continue;
 		if (0 == _stricmp(B, *P.Name)) return id;
 	}
 	return BI_NONE;
@@ -330,7 +330,7 @@ CBlend* CDS0_KinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL
 		return 0;
 	}
 	if (part >= MAX_PARTS)	return 0;
-	if (0 == m_Partition->part(part).Name)	return 0;
+	if (nullptr == m_Partition->part(part).Name)	return 0;
 
 	//	shared_motions* s_mots	= &m_Motions[motion.slot];
 	//	CMotionDef* m_def		= s_mots->motion_def(motion.idx);
@@ -463,7 +463,7 @@ void CDS0_KinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave
 	// Cycles
 	for (u16 part = 0; part < MAX_PARTS; part++)
 	{
-		if (0 == m_Partition->part(part).Name)
+		if (nullptr == m_Partition->part(part).Name)
 			continue;
 		I = blend_cycles[part].begin(); E = blend_cycles[part].end();
 		for (; I != E; I++)
