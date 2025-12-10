@@ -20,8 +20,6 @@
 
 dxRenderFactory RenderFactoryImpl;
 
-//# include "dx##Class.h" \
-
 #define RENDER_FACTORY_IMPLEMENT(Class) \
 	I##Class* dxRenderFactory::Create##Class() \
 { \
