@@ -395,14 +395,6 @@ const char* CTextureAtlas::getTextureName() const
 	return "";
 }
 
-
-void CTextureAtlas::saveOnDisk()
-{
-#ifdef DEBUG
-
-#endif
-}
-
 u32 CTextureAtlas::getID() const
 {
 	return m_id;
@@ -483,50 +475,54 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 	element_lookupid_type result = element_lookupid_type(-1);
 
 	auto pMortonCodeCalculate = [](float _x, float _y) -> u64
-		{
-			constexpr float minVal = 0.0f;
-			constexpr float maxVal = 32768.0f;
-			constexpr uint32_t maxInt = 0x7FFFFF; // 23 bits for precision
+	{
+		constexpr float minVal = 0.0f;
+		constexpr float maxVal = 32768.0f;
+		constexpr uint32_t maxInt = 0x7FFFFF; // 23 bits for precision
 
-			// Normalize to [0, 1] range
-			float nx = (_x - minVal) / (maxVal - minVal);
-			float ny = (_y - minVal) / (maxVal - minVal);
+		// Normalize to [0, 1] range
+		float nx = (_x - minVal) / (maxVal - minVal);
+		float ny = (_y - minVal) / (maxVal - minVal);
 
-			// Scale to integer range
-			uint32_t ix = static_cast<uint32_t>(nx * maxInt);
-			uint32_t iy = static_cast<uint32_t>(ny * maxInt);
+		// Scale to integer range
+		uint32_t ix = static_cast<uint32_t>(nx * maxInt);
+		uint32_t iy = static_cast<uint32_t>(ny * maxInt);
 
-			// Interleave bits using magic numbers (faster than loop)
-			uint64_t x64 = ix;
-			uint64_t y64 = iy;
+		// Interleave bits using magic numbers (faster than loop)
+		uint64_t x64 = ix;
+		uint64_t y64 = iy;
 
-			x64 = (x64 | (x64 << 16)) & 0x0000FFFF0000FFFF;
-			x64 = (x64 | (x64 << 8)) & 0x00FF00FF00FF00FF;
-			x64 = (x64 | (x64 << 4)) & 0x0F0F0F0F0F0F0F0F;
-			x64 = (x64 | (x64 << 2)) & 0x3333333333333333;
-			x64 = (x64 | (x64 << 1)) & 0x5555555555555555;
+		x64 = (x64 | (x64 << 16)) & 0x0000FFFF0000FFFF;
+		x64 = (x64 | (x64 << 8)) & 0x00FF00FF00FF00FF;
+		x64 = (x64 | (x64 << 4)) & 0x0F0F0F0F0F0F0F0F;
+		x64 = (x64 | (x64 << 2)) & 0x3333333333333333;
+		x64 = (x64 | (x64 << 1)) & 0x5555555555555555;
 
-			y64 = (y64 | (y64 << 16)) & 0x0000FFFF0000FFFF;
-			y64 = (y64 | (y64 << 8)) & 0x00FF00FF00FF00FF;
-			y64 = (y64 | (y64 << 4)) & 0x0F0F0F0F0F0F0F0F;
-			y64 = (y64 | (y64 << 2)) & 0x3333333333333333;
-			y64 = (y64 | (y64 << 1)) & 0x5555555555555555;
+		y64 = (y64 | (y64 << 16)) & 0x0000FFFF0000FFFF;
+		y64 = (y64 | (y64 << 8)) & 0x00FF00FF00FF00FF;
+		y64 = (y64 | (y64 << 4)) & 0x0F0F0F0F0F0F0F0F;
+		y64 = (y64 | (y64 << 2)) & 0x3333333333333333;
+		y64 = (y64 | (y64 << 1)) & 0x5555555555555555;
 
-			return x64 | (y64 << 1);
-		};
+		return x64 | (y64 << 1);
+	};
 
 	if (m_is_storage_dirty)
 	{
-		std::sort(m_atlas_items_spatial_indexing.begin(), m_atlas_items_spatial_indexing.end(), [pMortonCodeCalculate, this](const CTAESpatialIndex& left, const CTAESpatialIndex& right) -> bool {
+		std::sort
+		(
+			m_atlas_items_spatial_indexing.begin(), m_atlas_items_spatial_indexing.end(),
+			[pMortonCodeCalculate, this](const CTAESpatialIndex& left, const CTAESpatialIndex& right) -> bool
+			{
+				R_ASSERT(left.lookup_id >= 0 && "must be initialized and valid!");
+				R_ASSERT(right.lookup_id >= 0 && "must be initialized and valid!");
 
-			R_ASSERT(left.lookup_id >= 0 && "must be initialized and valid!");
-			R_ASSERT(right.lookup_id >= 0 && "must be initialized and valid!");
+				const CTextureAtlasElement& el_left = m_atlas_items[left.lookup_id];
+				const CTextureAtlasElement& el_right = m_atlas_items[right.lookup_id];
 
-			const CTextureAtlasElement& el_left = m_atlas_items[left.lookup_id];
-			const CTextureAtlasElement& el_right = m_atlas_items[right.lookup_id];
-
-			return pMortonCodeCalculate(el_left.w(), el_left.h()) < pMortonCodeCalculate(el_right.w(), el_right.h());
-			});
+				return pMortonCodeCalculate(el_left.w(), el_left.h()) < pMortonCodeCalculate(el_right.w(), el_right.h());
+			}
+		);
 
 		m_is_storage_dirty = false;
 	}
@@ -534,22 +530,29 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 	u64 queryCode = pMortonCodeCalculate(x, y);
 
 	// Binary search for the closest Morton code
-	auto it = std::lower_bound(m_atlas_items_spatial_indexing.begin(), m_atlas_items_spatial_indexing.end(),
-		pMortonCodeCalculate(0.0f, 0.0f),
-		[pMortonCodeCalculate, queryCode, this](const CTAESpatialIndex& p, const u64) {
+	auto it = std::lower_bound
+	(
+		m_atlas_items_spatial_indexing.begin(), m_atlas_items_spatial_indexing.end(), pMortonCodeCalculate(0.0f, 0.0f),
+		[pMortonCodeCalculate, queryCode, this](const CTAESpatialIndex& p, const u64)
+		{
 			R_ASSERT(p.lookup_id >= 0 && "must be initialized and valid!");
 
 			const CTextureAtlasElement& el = m_atlas_items[p.lookup_id];
 
 			return pMortonCodeCalculate(el.w(), el.h()) < queryCode;
-		});
+		}
+	);
 
 	// Check if we're at the beginning or end
 	if (it == m_atlas_items_spatial_indexing.begin())
+	{
 		return 0;
+	}
 
 	if (it == m_atlas_items_spatial_indexing.end())
+	{
 		return static_cast<element_lookupid_type>(m_atlas_items_spatial_indexing.size() - 1);
+	}
 
 	// Compare with previous element to find which is closer
 	element_lookupid_type idx = static_cast<element_lookupid_type>(it - m_atlas_items_spatial_indexing.begin());
@@ -560,8 +563,7 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 	u64 code1 = pMortonCodeCalculate(el_code1.w(), el_code1.h());
 	u64 code2 = pMortonCodeCalculate(el_code2.w(), el_code2.h());
 
-	return static_cast<element_lookupid_type>((std::abs(static_cast<int64_t>(queryCode - code1)) <
-		std::abs(static_cast<int64_t>(queryCode - code2))) ? idx : idx - 1);
+	return static_cast<element_lookupid_type>((std::abs(static_cast<int64_t>(queryCode - code1)) < std::abs(static_cast<int64_t>(queryCode - code2))) ? idx : idx - 1);
 }
 
 bool CTextureAtlas::removeElement(float x, float y)
@@ -606,11 +608,8 @@ FactoryPtr<IUIShader>* CTextureAtlas::getShader(void) const
 
 void CTextureAtlas::createShader()
 {
-#ifdef DEBUG
-	R_ASSERT(!shader_was_created && "you must call only once!");
-	R_ASSERT(!m_p_shader && "must be not inited!");
-#endif
-
+	VERIFY(!shader_was_created && "you must call only once!");
+	VERIFY(!m_p_shader && "must be not inited!");
 	R_ASSERT(m_p_texture && "early calling, texture must exist!");
 
 	if (!m_p_shader && m_p_texture)
@@ -651,9 +650,7 @@ CSVGStorage::CSVGStorage(u32 flags) :
 
 CSVGStorage::~CSVGStorage()
 {
-#ifdef DEBUG
-	R_ASSERT(!m_init_was_called && "you forgot to call uninit!");
-#endif
+	VERIFY(!m_init_was_called && "you forgot to call uninit!");
 }
 
 void CSVGStorage::init()
@@ -715,7 +712,7 @@ CTextureAtlas* CSVGStorage::get_atlas(u32 id)
 
 	auto it = std::find_if(m_storage_atlases.begin(), m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
 		return atlas.getID() == id;
-		});
+	});
 
 	if (it != m_storage_atlases.end())
 		return &(*it);
@@ -732,7 +729,7 @@ const CTextureAtlas* CSVGStorage::get_atlas(u32 id) const
 
 	auto it = std::find_if(m_storage_atlases.begin(), m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
 		return atlas.getID() == id;
-		});
+	});
 
 	if (it != m_storage_atlases.end())
 		return &(*it);
@@ -745,31 +742,12 @@ const std::pmr::vector<CTextureAtlas>& CSVGStorage::get_atlases(void) const
 	return m_storage_atlases;
 }
 
-void CSVGStorage::delete_atlas(u32 id)
-{
-
-}
-
-void CSVGStorage::generate_cache()
-{
-
-}
-
-// make it optional field that will check should we cache
-void CSVGStorage::load_cache()
-{
-
-}
-
 const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath, float requested_width, float requested_height)
 {
 	R_ASSERT(m_p_default_shader && "default shader must be initialized!");
 
-	if (subpath.empty() == false)
+	if (!subpath.empty())
 	{
-		// todo: 
-	//	R_ASSERT(false && "todo");
-
 		if (subpath == _kDefaultSVGShader)
 			return get_default_shader();
 
@@ -777,13 +755,10 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 		{
 			auto lookup = try_allocate(subpath, requested_width, requested_height, nullptr);
 			R_ASSERT(lookup.isValid() && "failed to allocate!");
-
 			m_storage_textures[subpath.data()] = lookup;
 
 			char idx = lookup.atlas_ids[0];
-
 			CTextureAtlas& atlas = m_storage_atlases[idx];
-
 			R_ASSERT(atlas.getShader() && "must be valid!");
 
 			return *(atlas.getShader());
@@ -795,8 +770,7 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 
 			for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
 			{
-				if (
-					lookup_list.atlas_ids[i] != CTextureAtlas::element_lookupid_type(-1))
+				if (lookup_list.atlas_ids[i] != CTextureAtlas::element_lookupid_type(-1))
 				{
 					const CTextureAtlas& atlas = m_storage_atlases[i];
 
@@ -829,14 +803,11 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 			if (!found)
 			{
 				// didn't find appropriate size so let's allocate
-
 				auto lookup = try_allocate(subpath, requested_width, requested_height, &lookup_list);
 				R_ASSERT(lookup.isValid() && "failed to allocate!");
 
 				char idx = lookup.atlas_ids[0];
-
 				CTextureAtlas& atlas = m_storage_atlases[idx];
-
 				R_ASSERT(atlas.getShader() && "must be valid!");
 
 				return *atlas.getShader();
@@ -971,8 +942,6 @@ void CSVGStorage::init_default_atlas()
 {
 	string_path fn;
 	FS.update_path(fn, "$game_textures$", _kSVGStorge_DefaultSVGTextureSubPathName);
-	// 	bool try_load = FS.TryLoad(fn);
-	// 	R_ASSERT(try_load && "failed to obtain file");
 
 	IReader* pReader = FS.r_open(fn);
 
@@ -1003,9 +972,7 @@ void CSVGStorage::init_default_atlas()
 				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
 #ifdef USE_DX11
 				bmp.convertToRGBA();
-#else
 #endif
-
 
 				m_default_atlas.addRegion(_notused_lookupid, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
@@ -1034,14 +1001,7 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 	bool was_added = false;
 	for (CTextureAtlas& atlas : m_storage_atlases)
 	{
-		bool status = try_add_data(
-			subpath,
-			requested_width,
-			requested_height,
-			iter,
-			atlas,
-			p_existed ? *p_existed : result
-		);
+		bool status = try_add_data(subpath, requested_width, requested_height, iter, atlas, p_existed ? *p_existed : result);
 
 #ifdef DEBUG
 		if (status)
@@ -1055,8 +1015,10 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 		if (was_added)
 		{
 			if (p_existed)
+			{
 				result = *p_existed;
-			
+			}
+
 			break;
 		}
 
@@ -1102,11 +1064,9 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 #ifdef DEBUG
 			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d;tex_name:%s] and addded region w: %.2f h: %.2f ",
 				atlas.getID(),
-				atlas.getWidth(),
-				atlas.getHeight(),
+				atlas.getWidth(), atlas.getHeight(),
 				atlas.getTextureName(),
-				requested_width,
-				requested_height
+				requested_width, requested_height
 			);
 #endif
 			m_storage_atlases.emplace_back(std::move(atlas));
@@ -1157,8 +1117,6 @@ bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_
 
 	if (lookup_el_id != CTextureAtlas::element_lookupid_type(-1))
 	{
-		//	R_ASSERT(false && "todo: implement");
-
 		R_ASSERT(atlas_lookup_id <= CTextureAtlas::element_lookupid_type(3) && "overflow, same texture can be placed at most in 4 atlases!");
 
 		bool filled_atlas_info = false;
@@ -1243,28 +1201,21 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 
 	string_path fn;
 	FS.update_path(fn, "$game_textures$", buf);
-	// 	bool try_load = FS.TryLoad(fn);
-	// 	R_ASSERT(try_load && "failed to load");
-
 	IReader* pReader = FS.r_open(fn);
 
 	result = !!(pReader);
-
 	R_ASSERT(pReader && "failed to open file!");
 
 	if (pReader)
 	{
 		u32 len = pReader->length();
-		std::unique_ptr<lunasvg::Document> doc;
-
 		// todo: probably pmr would be better?
 		xr_string data;
 		data.resize(len);
 		pReader->r(&data[0], len);
-		doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
+		auto doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
 
 		R_ASSERT(doc.get() && "failed to load svg document!");
-
 		result = !!(doc.get());
 
 		if (doc.get())
@@ -1273,7 +1224,6 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 
 #ifdef USE_DX11
 			bmp->convertToRGBA();
-#else
 #endif
 		}
 

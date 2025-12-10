@@ -1,39 +1,19 @@
 #include "stdafx.h"
-
-
 #include "SH_Atomic.h"
 #include "ResourceManager.h"
-
 #include "dxRenderDeviceRender.h"
-
-// Atomic
-//SVS::~SVS								()			{	_RELEASE(vs);		dxRenderDeviceRender::Instance().Resources->_DeleteVS			(this);	}
-//SPS::~SPS								()			{	_RELEASE(ps);		dxRenderDeviceRender::Instance().Resources->_DeletePS			(this);	}
-//SState::~SState							()			{	_RELEASE(state);	dxRenderDeviceRender::Instance().Resources->_DeleteState		(this);	}
-//SDeclaration::~SDeclaration				()			{	_RELEASE(dcl);		dxRenderDeviceRender::Instance().Resources->_DeleteDecl		(this);	}
 
 ///////////////////////////////////////////////////////////////////////
 //	SVS
-SVS::SVS() :
-	vs(0)
-#ifdef USE_DX11
-//	,signature(0)
-#endif //USE_DX11
+SVS::SVS() : vs(0)
 {
-	;
 }
-
 
 SVS::~SVS()
 {
 	DEV->_DeleteVS(this);
-#ifdef USE_DX11
-	//_RELEASE(signature);
-	//	Now it is release automatically
-#endif //USE_DX11
 	_RELEASE(vs);
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 //	SPS
