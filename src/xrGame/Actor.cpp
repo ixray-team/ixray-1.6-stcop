@@ -2326,7 +2326,7 @@ void CActor::shedule_Update	(u32 DT)
 				}
 				else if (m_pVehicleWeLookingAt)
 				{
-					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == 0 ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
+					m_sDefaultObjAction = m_pVehicleWeLookingAt->m_sUseAction == nullptr ? m_sCarCharacterUseAction : m_pVehicleWeLookingAt->m_sUseAction;
 
 					if (CCar* pCar = m_pVehicleWeLookingAt->cast_car())
 					{
