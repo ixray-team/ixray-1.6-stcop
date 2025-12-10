@@ -493,6 +493,14 @@ public:
 			bool				SetWorldObjectBoneVisibility(LPCSTR boneName, bool bVisibility);
 			bool				IsHudObjectBoneVisible(LPCSTR bone_name);
 			bool				SetHudObjectBoneVisibility(LPCSTR boneName, bool bVisibility);
+			void				SetActorSleepiness(const float value);
+			void				SetActorSatiety(const float value);
+			void				SetActorThirst(const float value);
+			void				SetActorHealth(const float value);
+			void				SetActorPower(const float value);
+			void				SetActorRadiation(const float value);
+			void				SetActorPsyHealth(const float value);
+			void				SetActorMorale(const float value);
 			// FFx0001 --
 
 			void				SetAmmoElapsed		(int ammo_elapsed);
