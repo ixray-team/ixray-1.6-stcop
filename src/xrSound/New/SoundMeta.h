@@ -166,7 +166,7 @@ struct sound_reberb_state
 struct sound_zone_params
 {
     float data[SND_CHANNEL_COUNT][SND_BLOCKSIZE];
-    float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
+    float compressor_envelope[SND_CHANNEL_COUNT][2] = {FLT_EPSILON, FLT_EPSILON};
     u32 version;
     u32	environment;
     u32 use_count;
