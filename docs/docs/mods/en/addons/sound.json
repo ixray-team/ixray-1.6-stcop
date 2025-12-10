@@ -1,0 +1,35 @@
+﻿{
+  "eyebrow": "Addons · Sound",
+  "title": "Sound addons",
+  "subtitle": "Sample data for sound packs. Replace with real entries.",
+  "labels": {
+    "view": "Download / open",
+    "soon": "Coming soon"
+  },
+  "mods": [
+    {
+      "id": "sound-overhaul",
+      "title": "Sound Overhaul",
+      "description": "Large update to ambience and weapon sounds.",
+      "author": "AudioLab",
+      "link": "https://example.com/addons/sound-overhaul",
+      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=Sound+Overhaul"
+    },
+    {
+      "id": "atmospheric-ambience",
+      "title": "Atmospheric Ambience",
+      "description": "Loops for swamps, creatures, and radio noise.",
+      "author": "Ambience Crew",
+      "link": "https://example.com/addons/ambience",
+      "image": "https://dummyimage.com/640x360/1f2937/ffffff&text=Ambience"
+    },
+    {
+      "id": "footsteps-pack",
+      "title": "Footsteps Pack",
+      "description": "Footstep set for surfaces and gear states.",
+      "author": "SndFX",
+      "link": "https://example.com/addons/footsteps-pack",
+      "image": "https://dummyimage.com/640x360/0b3a3d/e0f2fe&text=Footsteps"
+    }
+  ]
+}

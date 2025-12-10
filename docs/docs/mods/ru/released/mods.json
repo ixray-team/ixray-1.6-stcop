@@ -1,0 +1,59 @@
+﻿{
+  "eyebrow": "Каталог",
+  "title": "Список модификаций",
+  "subtitle": "Данные ниже — пример. Подставьте реальные моды или подключите источник данных.",
+  "labels": {
+    "view": "Скачать / открыть",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "dreamcatcher",
+      "title": "Ловец Снов",
+      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
+      "author": "Dreamcatcher Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://sun9-82.userapi.com/s/v1/ig2/tighvCPCVJGrQuOqF0NKqZDXB5AA40lWjvU2Rh2ixOjmJAD3sKED5PIwVn_4xTtMUaEpKgnj8Na2m9Azl3ua_LSp.jpg?quality=95&crop=0,0,2558,1439&as=32x18,48x27,72x40,108x61,160x90,240x135,360x203,480x270,540x304,640x360,720x405,1080x608,1280x720,1440x810,2558x1439&from=bu&cs=2558x0"
+    },
+    {
+      "id": "one-way-ticket",
+      "title": "Билет в один конец",
+      "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
+      "author": "OneWay Studio",
+      "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
+      "image": "https://dummyimage.com/640x360/1f2937/e5e7eb&text=%D0%91%D0%B8%D0%BB%D0%B5%D1%82+%D0%B2+%D0%BE%D0%B4%D0%B8%D0%BD+%D0%BA%D0%BE%D0%BD%D0%B5%D1%86"
+    },
+    {
+      "id": "sins-academic",
+      "title": "Грехи Академика. Красный Рассвет",
+      "description": "Военная драма с упором на боевые миссии и сложные решения.",
+      "author": "Red Dawn",
+      "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
+      "image": "https://dummyimage.com/640x360/111827/ffffff&text=%D0%93%D1%80%D0%B5%D1%85%D0%B8+%D0%90%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA%D0%B0"
+    },
+    {
+      "id": "pavlik-day",
+      "title": "Один день из жизни Павлика",
+      "description": "Короткая история в духе дневников с атмосферой сталкерского быта.",
+      "author": "Pavlik Dev",
+      "link": "https://ap-pro.ru/forums/topic/10129-odin-den-iz-zhizni-pavlika",
+      "image": "https://dummyimage.com/640x360/0b3a3d/e0f2fe&text=%D0%9E%D0%B4%D0%B8%D0%BD+%D0%B4%D0%B5%D0%BD%D1%8C+%D0%B8%D0%B7+%D0%B6%D0%B8%D0%B7%D0%BD%D0%B8"
+    },
+    {
+      "id": "back-to-past",
+      "title": "Назад в прошлое",
+      "description": "Возвращение к истокам с переосмыслением классических локаций.",
+      "author": "Retro Zone",
+      "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
+      "image": "https://dummyimage.com/640x360/0f172a/cbd5f5&text=%D0%9D%D0%B0%D0%B7%D0%B0%D0%B4+%D0%B2+%D0%BF%D1%80%D0%BE%D1%88%D0%BB%D0%BE%D0%B5"
+    },
+    {
+      "id": "awakening-2055",
+      "title": "Пробуждение. 2055",
+      "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
+      "author": "Future Lab",
+      "link": "https://vk.com/wall-195948120_7369",
+      "image": "https://dummyimage.com/640x360/111827/b8ffd4&text=%D0%9F%D1%80%D0%BE%D0%B1%D1%83%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5+2055"
+    }
+  ]
+}

@@ -6,8 +6,8 @@ import DeveloperCard from './download/DeveloperCard.vue'
 import EngineCard from './download/EngineCard.vue'
 import ServerCard from './download/ServerCard.vue'
 import UtilitiesCard from './download/UtilitiesCard.vue'
-import enCopy from '../docs/en/download.json'
-import ruCopy from '../docs/ru/download.json'
+import enCopy from '../docs/main/en/download.json'
+import ruCopy from '../docs/main/ru/download.json'
 
 type LocaleKey = 'ru' | 'en'
 type LocaleCopy = typeof ruCopy

@@ -1,0 +1,35 @@
+﻿{
+  "eyebrow": "Аддоны · Звук",
+  "title": "Звуковые аддоны",
+  "subtitle": "Пример данных для аддонов. Замените на реальные звуковые пакеты.",
+  "labels": {
+    "view": "Скачать / открыть",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "sound-overhaul",
+      "title": "Sound Overhaul",
+      "description": "Большое обновление звуков окружения и оружия.",
+      "author": "AudioLab",
+      "link": "https://example.com/addons/sound-overhaul",
+      "image": "https://dummyimage.com/640x360/0f172a/e5e7eb&text=Sound+Overhaul"
+    },
+    {
+      "id": "atmospheric-ambience",
+      "title": "Atmospheric Ambience",
+      "description": "Атмосферные лупы для болот, болотных тварей и радиопомех.",
+      "author": "Ambience Crew",
+      "link": "https://example.com/addons/ambience",
+      "image": "https://dummyimage.com/640x360/1f2937/ffffff&text=Ambience"
+    },
+    {
+      "id": "footsteps-pack",
+      "title": "Footsteps Pack",
+      "description": "Набор шагов для разных поверхностей и экипировки.",
+      "author": "SndFX",
+      "link": "https://example.com/addons/footsteps-pack",
+      "image": "https://dummyimage.com/640x360/0b3a3d/e0f2fe&text=Footsteps"
+    }
+  ]
+}

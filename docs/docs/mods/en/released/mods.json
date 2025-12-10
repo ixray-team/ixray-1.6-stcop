@@ -1,0 +1,59 @@
+﻿{
+  "eyebrow": "Catalog",
+  "title": "Released mods",
+  "subtitle": "Entries are placeholders. Replace them with real mods or a data feed.",
+  "labels": {
+    "view": "Download / open",
+    "soon": "Coming soon"
+  },
+  "mods": [
+    {
+      "id": "dreamcatcher",
+      "title": "Dreamcatcher",
+      "description": "Story-focused mod about exploring the Zone and its eerie anomalies.",
+      "author": "Dreamcatcher Team",
+      "link": "https://example.com/mods/dreamcatcher",
+      "image": "https://dummyimage.com/640x360/0f172a/ffffff&text=Dreamcatcher"
+    },
+    {
+      "id": "one-way-ticket",
+      "title": "One Way Ticket",
+      "description": "Hardcore campaign about survival with no way back from the Zone.",
+      "author": "OneWay Studio",
+      "link": "https://example.com/mods/one-way-ticket",
+      "image": "https://dummyimage.com/640x360/1f2937/e5e7eb&text=One+Way+Ticket"
+    },
+    {
+      "id": "sins-academic",
+      "title": "Sins of the Academic: Red Dawn",
+      "description": "Military drama with combat-heavy missions and tough choices.",
+      "author": "Red Dawn",
+      "link": "https://example.com/mods/sins-academic",
+      "image": "https://dummyimage.com/640x360/111827/ffffff&text=Red+Dawn"
+    },
+    {
+      "id": "pavlik-day",
+      "title": "One Day in Pavlik’s Life",
+      "description": "Short diary-style story capturing everyday stalker life.",
+      "author": "Pavlik Dev",
+      "link": "https://example.com/mods/pavlik-day",
+      "image": "https://dummyimage.com/640x360/0b3a3d/e0f2fe&text=Pavlik"
+    },
+    {
+      "id": "back-to-past",
+      "title": "Back to the Past",
+      "description": "A return to the roots with reimagined classic locations.",
+      "author": "Retro Zone",
+      "link": "https://example.com/mods/back-to-past",
+      "image": "https://dummyimage.com/640x360/0f172a/cbd5f5&text=Back+to+the+Past"
+    },
+    {
+      "id": "awakening-2055",
+      "title": "Awakening 2055",
+      "description": "Late-timeline take with new tech and survival in a changed Zone.",
+      "author": "Future Lab",
+      "link": "https://example.com/mods/awakening-2055",
+      "image": "https://dummyimage.com/640x360/111827/b8ffd4&text=Awakening+2055"
+    }
+  ]
+}
