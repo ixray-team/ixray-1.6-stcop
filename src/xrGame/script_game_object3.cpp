@@ -1857,3 +1857,101 @@ void CScriptGameObject::SetSubIcon(bool m_custom_mark, Fvector2 m_custom_mark_of
 		iitem->m_custom_mark_clr = m_custom_mark_clr;
 	}
 }
+
+
+// FFx0001 ++
+bool CScriptGameObject::IsWorldObjectBoneVisible(LPCSTR boneName)
+{
+	IKinematics* KI = PKinematics(object().Visual());
+	if (!KI) {
+		return false;
+	}
+
+	u16 boneId = KI->LL_BoneID(boneName);
+	if (boneId == BI_NONE) {
+		return false;
+	}
+
+	return KI->LL_GetBoneVisible(boneId);
+}
+
+// FFx0001 ++
+bool CScriptGameObject::IsHudObjectBoneVisible(LPCSTR boneName)
+{
+	CHudItem* HI = object().cast_hud_item();
+	if (!HI || !HI->HudItemData()) {
+		return false;
+	}
+
+	IKinematics* KI = HI->HudItemData()->m_model;
+	if (!KI)
+	{
+		return false;
+	}
+
+	u16 boneId = KI->LL_BoneID(boneName);
+	if (boneId == BI_NONE)
+	{
+		return false;
+	}
+
+	return KI->LL_GetBoneVisible(boneId);
+}
+
+//FFx0001 ++
+bool CScriptGameObject::SetHudObjectBoneVisibility(LPCSTR boneName, bool bVisibility)
+{
+	CHudItem* HI = object().cast_hud_item();
+	if (!HI || !HI->HudItemData()) {
+		return false;
+	}
+
+	IKinematics* KI = HI->HudItemData()->m_model;
+	if (!KI)
+	{
+		return false;
+	}
+
+	u16 boneId = KI->LL_BoneID(boneName);
+	if (boneId == BI_NONE)
+	{
+		return false;
+	}
+
+	if ((bool)KI->LL_GetBoneVisible(boneId) != bVisibility)
+	{
+		KI->CalculateBones(TRUE);
+		KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
+		KI->CalculateBones(TRUE);
+		return true;
+	}
+	
+	return false;
+}
+
+// FFx0001 ++
+bool CScriptGameObject::SetWorldObjectBoneVisibility(LPCSTR boneName, bool bVisibility)
+{
+	IKinematics* KI = PKinematics(object().Visual());
+	if (!KI)
+	{
+		return false;
+	}
+
+	u16 boneId = KI->LL_BoneID(boneName);
+	if (boneId == BI_NONE)
+	{
+		return false;
+	}
+
+	if ((bool)KI->LL_GetBoneVisible(boneId) != bVisibility)
+	{
+		KI->CalculateBones(TRUE);
+		KI->LL_SetBoneVisible(boneId, bVisibility, TRUE);
+		KI->CalculateBones(TRUE);
+		
+		return true;
+	}
+	
+	return false;
+}
