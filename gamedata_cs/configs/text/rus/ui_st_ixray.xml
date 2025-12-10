@@ -458,9 +458,12 @@
 		<text>Урон от осколков</text>
 	</string>
 	<string id="kb_show_quick_slots">
-		<text>Показать панель быстрого доступа</text>
+		<text>Панель быстрого доступа</text>
 	</string>
 	<string id="ui_mm_show_minimap">
-		<text>Показать мини-карту</text>
+		<text>Показать миникарту</text>
+	</string>
+	<string id="ui_mm_hide_quick_slots">
+		<text>Скрыть быстрый доступ</text>
 	</string>
 </string_table>
