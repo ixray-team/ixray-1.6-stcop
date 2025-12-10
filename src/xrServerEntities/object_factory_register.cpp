@@ -44,6 +44,7 @@
 #	include "ai/monsters/cat/cat.h"
 #	include "ai/monsters/tushkano/tushkano.h"
 #	include "ai/monsters/rats/ai_rat.h"
+#	include "ai/monsters/anomal_pseudogigant/anomal_pseudo_gigant.h"
 
 #	include "ai/phantom/phantom.h"
 
@@ -62,6 +63,7 @@
 
 #	include "helicopter.h"
 
+#	include "ArtCombiner.h"
 #	include "MercuryBall.h"
 #	include "BlackGraviArtifact.h"
 #	include "BastArtifact.h"
@@ -79,6 +81,8 @@
 #   include "WeaponMagazinedWGrenade.h"
 #	include "WeaponSVD.h"
 #	include "WeaponStatMgun.h"
+#	include "Flamethrower.h"
+#	include "FlameCanister.h"
 
 #	include "Scope.h"
 #	include "Silencer.h"
@@ -123,10 +127,14 @@
 #	include "SimpleDetector.h"
 #	include "EliteDetector.h"
 #	include "AdvancedDetector.h"
-#include "CustomDevice.h"
-#include "Flashlight.h"
+#	include "CustomDevice.h"
+#	include "Flashlight.h"
 #	include "ZoneCampfire.h"
 #include "team_capture_zone.h"
+#	include "EmiZone.h"
+#	include "MagnetZone.h"
+#	include "MissileSam.h"
+#	include "SamZone.h"
 #	include "DynamicWallmarkZone.h"
 
 #	include "Torch.h"
@@ -242,6 +250,7 @@ void CObjectFactory::register_classes	()
 //	add<CSE_SpawnGroup>											(CLSID_AI_SPAWN_GROUP			,"spawn_group");
 	add<CSE_ALifeGraphPoint>									(CLSID_AI_GRAPH					,"graph_point");
 	add<CSE_ALifeOnlineOfflineGroup>							(CLSID_ONLINE_OFFLINE_GROUP		,"online_offline_group");
+	add<CSE_Conditional>										(CLSID_CONDITIONAL, "conditional");
 #endif // #ifndef NO_SINGLE
 	
 	// client and server entities
@@ -259,6 +268,7 @@ void CObjectFactory::register_classes	()
 	ADD(CPsyDogPhantom			,CSE_ALifePsyDogPhantom			,CLSID_AI_DOG_PSY_PHANTOM		,"psy_dog_phantom");
 	ADD(CBurer					,CSE_ALifeMonsterBase			,CLSID_AI_BURER					,"burer");
 	ADD(CPseudoGigant			,CSE_ALifeMonsterBase			,CLSID_AI_GIANT					,"pseudo_gigant");
+	ADD(CAnomalPseudoGigant		,CSE_ALifeMonsterBase			,CLSID_AI_ANOMAL_GIANT			,"anomal_pseudo_gigant");
 	ADD(CController				,CSE_ALifeMonsterBase			,CLSID_AI_CONTROLLER			,"controller");
 	ADD(CPoltergeist			,CSE_ALifeMonsterBase			,CLSID_AI_POLTERGEIST			,"poltergeist");
 	ADD(CZombie					,CSE_ALifeMonsterBase			,CLSID_AI_ZOMBIE				,"zombie");
@@ -296,10 +306,12 @@ void CObjectFactory::register_classes	()
 	ADD(CArtefact				,CSE_ALifeItemArtefact			,CLSID_AF_GALANTINE				,"art_galantine");
 	ADD(CGraviArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_GRAVI					,"art_gravi");
 	ADD(CGraviArtefact			,CSE_ALifeItemArtefact			,CLSID_ARTEFACT					,"artefact");
+	ADD(CArtCombiner			,CSE_ALifeItemArtefactCombiner	,CLSID_AF_COMBINER				,"art_combiner");
 	ADD(CtaGameArtefact			,CSE_ALifeItemArtefact			,CLSID_AF_CTA					,"art_cta");
 
 	//  [8/15/2006]
 	ADD(CWeaponMagazined		,CSE_ALifeItemWeaponMagazined	,CLSID_OBJECT_W_MAGAZINED		,"wpn_wmagaz");
+	ADD(CFlamethrower			,CSE_ALifeItemFlamethrower		,CLSID_OBJECT_W_FLAMETHROWER	,"wpn_flamethrower");
 	//  [8/15/2006]
 	//  [8/17/2006]
 	ADD(CWeaponMagazinedWGrenade,CSE_ALifeItemWeaponMagazinedWGL,CLSID_OBJECT_W_MAGAZWGL		,"wpn_wmaggl");
@@ -328,6 +340,7 @@ void CObjectFactory::register_classes	()
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_VOG25			,"wpn_ammo_vog25");
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_OG7B			,"wpn_ammo_og7b");
 	ADD(CWeaponAmmo				,CSE_ALifeItemAmmo				,CLSID_OBJECT_A_M209			,"wpn_ammo_m209");
+	ADD(CFlameCanister			,CSE_ALifeItemFuel				,CLSID_OBJECT_FLAME_CANISTER	,"wpn_flame_canister");
 	//-----------------------------------------------------------------------------------------------------
 
 	//Weapons Add-on
@@ -371,6 +384,7 @@ void CObjectFactory::register_classes	()
 	// Rockets
 	ADD(CExplosiveRocket		,CSE_Temporary					,CLSID_OBJECT_G_RPG7			,"wpn_grenade_rpg7");
 	ADD(CExplosiveRocket		,CSE_Temporary					,CLSID_OBJECT_G_FAKE			,"wpn_grenade_fake");
+	ADD(CMissileSam				,CSE_Temporary					,CLSID_OBJECT_G_SAM				,"wpn_grenade_sam");
 
 	//-----------------------------------------------------------------------------------------------------------------
 	ADD(CMPPlayersBag			,CSE_ALifeItem					,CLSID_OBJECT_PLAYERS_BAG		,"mp_players_bag");
@@ -383,6 +397,8 @@ void CObjectFactory::register_classes	()
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_ACIDF					,"zone_acid_fog");
 	ADD(CMincer					,CSE_ALifeAnomalousZone			,CLSID_Z_GALANT					,"zone_galantine");
 	ADD(CRadioactiveZone		,CSE_ALifeAnomalousZone			,CLSID_Z_RADIO					,"zone_radioactive");
+	ADD(CMagnetZone				,CSE_ALifeAnomalousZone			,CLSID_Z_MAGNET					,"zone_magnet");
+	ADD(CEmiZone				,CSE_ALifeAnomalousZone			,CLSID_Z_EMI					,"zone_emi");
 	ADD(CHairsZone				,CSE_ALifeZoneVisual			,CLSID_Z_BFUZZ					,"zone_bfuzz");
 	ADD(CHairsZone				,CSE_ALifeZoneVisual			,CLSID_Z_RUSTYH					,"zone_rusty_hair");
 	ADD(CMosquitoBald			,CSE_ALifeAnomalousZone			,CLSID_Z_DEAD					,"zone_dead");
@@ -398,7 +414,8 @@ void CObjectFactory::register_classes	()
 	ADD(CAmebaZone				,CSE_ALifeZoneVisual			,CLSID_Z_AMEBA					,"ameba_zone");
 	ADD(CNoGravityZone			,CSE_ALifeAnomalousZone			,CLSID_Z_NOGRAVITY				,"nogravity_zone");
 	ADD(CZoneCampfire			,CSE_ALifeAnomalousZone			,CLSID_Z_CAMPFIRE				,"zone_campfire");
-	ADD(CDynamicWallmarkZone		,CSE_ALifeDynamicWallmark		,TEXT2CLSID("DYNA_WM")			,"dynamic_wallmark");
+	ADD(CSamZone				,CSE_ALifeSpaceRestrictor		,TEXT2CLSID("SAM_ZONE")			,"sam_zone");
+	ADD(CDynamicWallmarkZone	,CSE_ALifeDynamicWallmark		,TEXT2CLSID("DYNA_WM")			,"dynamic_wallmark");
 	// Detectors
 	ADD(CSimpleDetector			,CSE_ALifeItemDetector			,CLSID_DETECTOR_SIMPLE			,"device_detector_simple");
 	ADD(CAdvancedDetector		,CSE_ALifeItemDetector			,CLSID_DETECTOR_ADVANCED		,"device_detector_advanced");

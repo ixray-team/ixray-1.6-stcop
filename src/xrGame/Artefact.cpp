@@ -40,12 +40,6 @@ CArtefact::CArtefact()
 	m_pTrailLight				= nullptr;
 	m_activationObj				= nullptr;
 	m_detectorObj				= nullptr;
-	m_additional_weight			= 0.0f;
-	m_fSleepinessRestoreSpeed	= 0.0f;
-	m_fEquipmentDurabilityModifier = 1.0f;
-	m_fInventoryWeightModifier	= 1.0f;
-	m_fJumpHeightModifier		= 0.0f;
-	m_fMovementSpeedModifier	= 0.0f;
 	has_detector_visibling		= false;
 	m_ParticlesBoneID			= BI_NONE;
 	m_LightBoneID				= BI_NONE;
@@ -106,11 +100,11 @@ void CArtefact::Load(const char* section)
 
 	IRestoresOwner::Load(section);
 
-	m_fEquipmentDurabilityModifier = READ_IF_EXISTS(pSettings, r_float, section, "equipment_durability_modifier", 1.0f);
-	m_fInventoryWeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "inventory_weight_modifier", 1.0f);
-	m_fJumpHeightModifier = READ_IF_EXISTS(pSettings, r_float, section, "jump_height_modifier", 0.0f);
-	m_fMovementSpeedModifier = READ_IF_EXISTS(pSettings, r_float, section, "movement_speed_modifier", 0.0f);
-	m_fSleepinessRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "sleepiness_restore_speed", 0.0f);
+	m_fEquipmentDurabilityModifier = pSettings->read_if_exists<float>(section, "equipment_durability_modifier", 1.0f);
+	m_fInventoryWeightModifier = pSettings->read_if_exists<float>(section, "inventory_weight_modifier", 1.0f);
+	m_fJumpHeightModifier = pSettings->read_if_exists<float>(section, "jump_height_modifier", 0.0f);
+	m_fMovementSpeedModifier = pSettings->read_if_exists<float>(section, "movement_speed_modifier", 0.0f);
+	m_fSleepinessRestoreSpeed = pSettings->read_if_exists<float>(section, "sleepiness_restore_speed", 0.0f);
 		
 	if (pSettings->section_exist(pSettings->r_string(section,"hit_absorbation_sect")))
 	{
@@ -118,15 +112,17 @@ void CArtefact::Load(const char* section)
 	}
 
 	m_bCanSpawnZone			= !!pSettings->line_exist("artefact_spawn_zones", section);
-	m_af_rank				= READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
-	m_additional_weight		= READ_IF_EXISTS(pSettings, r_float, section,"additional_inventory_weight", 0.0f);
-	m_fDegradationRate		= READ_IF_EXISTS(pSettings, r_float, section, "degrade_rate", 0.0f);
+	m_af_rank				= pSettings->read_if_exists<u8>(section,"af_rank",0);
+	m_additional_weight		= pSettings->read_if_exists<float>(section,"additional_inventory_weight",0.0f);
+	m_fDegradationRate		= pSettings->read_if_exists<float>(section,"degrade_rate",0.0f);
 }
 
 bool CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
 	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
-		m_detectorObj				= new SArtefactDetectorsSupport(this);
+	{
+		m_detectorObj				= xr_make_unique<SArtefactDetectorsSupport>(this);
+	}
 
 	bool result						= inherited::net_Spawn(DC);
 
@@ -169,7 +165,7 @@ void CArtefact::net_Destroy()
 
 	CPHUpdateObject::Deactivate		();
 	xr_delete						(m_activationObj);
-	xr_delete						(m_detectorObj);
+	m_detectorObj.reset();
 }
 
 void CArtefact::OnH_A_Chield() 
@@ -592,7 +588,17 @@ void CArtefact::ForceTransform(const Fmatrix& m)
 {
 	VERIFY(PPhysicsShell());
 	XFORM().set(m);
-	PPhysicsShell()->SetGlTransformDynamic(m);// XFORM().set(m);
+	PPhysicsShell()->SetGlTransformDynamic( m );// XFORM().set(m);
+}
+
+float CArtefact::GetImmunity(ALife::EHitType hit_type)
+{
+	return m_ArtefactHitImmunities.GetHitImmunity(hit_type);
+}
+
+float CArtefact::AffectHit(float Power, ALife::EHitType hit_type)
+{
+	return m_ArtefactHitImmunities.AffectHit(Power, hit_type);
 }
 
 void CArtefact::CreateArtefactActivation()

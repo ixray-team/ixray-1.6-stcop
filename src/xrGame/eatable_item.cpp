@@ -94,7 +94,7 @@ void CEatableItem::Serialize(ISaveObject& Object)
 	}
 }
 
-BOOL CEatableItem::net_Spawn(CSE_Abstract* DC)
+bool CEatableItem::net_Spawn(CSE_Abstract* DC)
 {
 	if (!inherited::net_Spawn(DC))
 	{

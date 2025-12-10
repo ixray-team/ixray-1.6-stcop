@@ -208,10 +208,10 @@ public:
 	virtual	const MonsterSpace::SBoneRotation &head_orientation	() const;
 	
 	virtual void				UpdatePositionAnimation	();
-	virtual void				set_ready_to_save		();
-	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
-	virtual CCreature*		cast_creature		()	{return this;}
-	virtual CScriptEntity*		cast_script_entity		()	{return this;}
+	virtual void				set_ready_to_save		() override;
+	virtual CPhysicsShellHolder*cast_physics_shell_holder	() override {return this;}
+	virtual CCreature*			cast_creature			() override {return this;}
+	virtual CScriptEntity*		cast_script_entity		() override {return this;}
 	virtual CGameObject*		cast_game_object		() override	{return this;}
 
 			void				load_killer_clsids		(const char* section);

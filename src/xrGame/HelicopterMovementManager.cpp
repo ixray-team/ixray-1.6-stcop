@@ -6,6 +6,7 @@
 #include "patrol_path_storage.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
+#include "ParticlesObject.h"
 
 SHeliMovementState::~SHeliMovementState()
 {
@@ -20,7 +21,75 @@ void SHeliMovementState::net_Destroy()
 	}
 }
 
-void SHeliMovementState::Load(const char* section)
+CHeliFlare::~CHeliFlare()
+{
+	Particles::Details::Destroy(m_particles);
+}
+
+void CHeliFlare::InitParticle(Constants* constants_, xr_string ParticlesName)
+{
+	this->constants_ = constants_;
+	m_particles = Particles::Details::Create(ParticlesName.c_str(), false);
+}
+
+void CHeliFlare::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CHeliFlare")
+	{
+		Object << FlarePosition << FlareDirection << LifeTime;
+		if (!Object.IsSave())
+		{
+			Fmatrix	matrix = Fmatrix();
+			matrix.identity();
+			matrix.c.set(FlarePosition);
+			m_particles->SetXFORM(matrix);
+		}
+	}
+}
+
+void CHeliFlare::Activate()
+{
+	CurrentSpeed = constants_->xzStartSpeed;
+	Fmatrix	matrix = Fmatrix();
+	matrix.c.set(FlarePosition);
+	m_particles->SetXFORM(matrix);
+	m_particles->Play(false);
+}
+
+void CHeliFlare::Deactivate()
+{
+	m_particles->Stop();
+	LifeTime = 0.0f;
+}
+
+void CHeliFlare::Update(float f_time_delta)
+{
+	LifeTime += f_time_delta;
+	Fvector DeltaMove = FlareDirection;
+	DeltaMove *= CurrentSpeed * f_time_delta;
+	CurrentSpeed -= constants_->xzSlowing * f_time_delta;
+	CurrentSpeed = std::max(0.0f, CurrentSpeed);
+	DeltaMove.y -= constants_->GravitySpeed * f_time_delta;
+	FlarePosition += DeltaMove;
+	Fmatrix	matrix = Fmatrix();
+	matrix.identity();
+	matrix.c.set(FlarePosition);
+	m_particles->UpdateParent(matrix, DeltaMove.mul(0.5f));
+}
+
+ISaveObject& operator<<(ISaveObject& Object, CHeliFlare& HeliFlare)
+{
+	HeliFlare.Serialize(Object);
+	return Object;
+}
+
+CHeliFlareManager::CHeliFlareManager()
+{
+	Load("heli_flare");
+}
+
+
+void SHeliMovementState::Load(LPCSTR section)
 {
 	float angularSpeedPitch		= pSettings->r_float(section,"path_angular_sp_pitch");
 	AngSP					= angularSpeedPitch;
@@ -468,6 +537,11 @@ Fvector CHelicopter::GetCurrVelocityVec()
 //	dir.sub				(m_movement.desiredPoint,m_movement.currP);
 	dir.normalize_safe	();
 	return				dir;
+}
+
+void CHelicopter::DropFlares()
+{
+	RequestedDropFlaresCount += FlaresPairsDropCount;
 }
 
 #ifdef DEBUG_DRAW

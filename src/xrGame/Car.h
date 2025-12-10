@@ -559,14 +559,14 @@ private:
 
 	virtual	void reinit			();
 	virtual	void reload			(const char* section);
-	virtual CGameObject			*cast_game_object			()	{return this;}
-	virtual CExplosive			*cast_explosive				()	{return this;}
-	virtual CPhysicsShellHolder	*cast_physics_shell_holder	()	{return this;}
-	virtual CScriptEntity		*cast_script_entity			()	{return this;}
-	virtual IDamageSource		*cast_IDamageSource			()	{return this;}
-	virtual CHolderCustom		*cast_holder_custom			()	{return this;}
-	virtual CCar*				cast_car					()	{return this;}
-	virtual CInventoryOwner*	cast_inventory_owner		()	{return this;}
+	virtual CGameObject			*cast_game_object			() override {return this;}
+	virtual CExplosive			*cast_explosive				() override {return this;}
+	virtual CPhysicsShellHolder	*cast_physics_shell_holder	() override {return this;}
+	virtual CScriptEntity		*cast_script_entity			() override {return this;}
+	virtual IDamageSource		*cast_IDamageSource			() override {return this;}
+	virtual CHolderCustom		*cast_holder_custom			() override {return this;}
+	virtual CCar*				cast_car					() override {return this;}
+	virtual CInventoryOwner*	cast_inventory_owner		() override {return this;}
 
 private:
 	struct SCarNetUpdate

@@ -19,6 +19,7 @@
 
 #include "../xrScripts/script_export_space.h"
 
+class CFlamethrower;
 class CEntity;
 class ENGINE_API CMotionDef;
 class CSE_ALifeItemWeapon;
@@ -67,6 +68,7 @@ public:
 	virtual CWeaponRPG7* cast_weapon_rpg7() { return nullptr; }
 	virtual CWeaponRG6* cast_weapon_rg6() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() override { return nullptr; }
+	virtual CFlamethrower* cast_flamethrower() override { return nullptr; }
 
 
 	//serialization
@@ -180,7 +182,7 @@ public:
 	bool					IsUpdating			();
 
 
-	bool					IsMisfire			() const;
+	virtual bool			IsMisfire			() const;
 	bool					CheckForMisfire		();
 
 
@@ -533,7 +535,7 @@ public:
 
 	bool SwitchZoom(u32 flags);
 
-	IC bool					IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
+	virtual bool			IsZoomEnabled		()	const		{return m_zoom_params.m_bZoomEnabled;}
 	virtual	void			ZoomInc				();
 	virtual	void			ZoomDec				();
 	virtual void			OnZoomIn			();
@@ -652,7 +654,7 @@ protected:
 	virtual void			FireEnd				();
 
 	virtual void			Reload				();
-			void			StopShooting		();
+	virtual void			StopShooting		();
     
 
 	// обработка визуализации выстрела

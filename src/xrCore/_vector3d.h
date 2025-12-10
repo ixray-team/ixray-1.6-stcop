@@ -344,7 +344,7 @@ public:
 		return *this;	
 	}
 
-	ICF	SelfRef GetNormalizedCopy(void)
+	ICF	Self GetNormalizedCopy(void)
 	{
 #ifdef FS_DEBUG
 		VERIFY(square_magnitude() > std::numeric_limits<T>::min());

@@ -25,6 +25,8 @@
 #include <luabind/iterator_pair_policy.hpp>
 #include <Actor.h>
 
+#include "SaveObjectHelpers.h"
+
 using namespace luabind;
 
 typedef xr_vector<std::pair<shared_str,int> >	STORY_PAIRS;
@@ -233,10 +235,10 @@ CSE_Abstract *CALifeSimulator__spawn_item2		(CALifeSimulator *self_, const char*
 	ClientID clientID;
 	clientID.set(ALife::INVALID_OBJECT_ID);
 
-	u16									dummy;
-	packet.r_begin						(dummy);
-	VERIFY								(dummy == M_SPAWN);
-	return								(self_->server().Process_spawn(packet,clientID));
+	u16 dummy;
+	packet.r_begin(dummy);
+	VERIFY(dummy == M_SPAWN || dummy == M_SPAWN_LOCAL);
+	return self_->server().Process_spawn(packet,clientID);
 }
 
 // Allows to call alife():register(se_obj) manually afterward so that packet editing can be done safely when spawning object with a parent

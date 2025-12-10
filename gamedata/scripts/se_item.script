@@ -101,6 +101,36 @@ function se_weapon:can_switch_online()
 	return cse_alife_item_weapon.can_switch_online(self)
 end
 
+class "se_flamethrower" (cse_alife_item_flamethrower)
+function se_flamethrower:__init (section) super (section)
+	self.secret_item = false
+end
+function se_flamethrower:on_register()
+	cse_alife_item_flamethrower.on_register( self )
+	-- Проверяем кастомдату обьекта на наличие стори айди.
+	story_objects.check_spawn_ini_for_story_id(self)
+
+	-- Собираем статистику по предметам.
+	if registred_items[self:section_name()] == nil then
+		registred_items[self:section_name()] = 1
+	else
+		registred_items[self:section_name()] = registred_items[self:section_name()] + 1
+	end
+
+	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
+end
+function se_flamethrower:on_unregister()
+	--' Отрегистрация в таскменеджере
+	unregister_story_object_by_id(self.id)
+	cse_alife_item_flamethrower.on_unregister( self )
+end
+function se_flamethrower:can_switch_online()
+	if(self.secret_item) then
+		return false
+	end
+	return cse_alife_item_flamethrower.can_switch_online(self)
+end
+
 class "se_weapon_shotgun" (cse_alife_item_weapon_shotgun)
 function se_weapon_shotgun:__init (section) super (section)
 	self.secret_item = false
@@ -386,6 +416,30 @@ function se_ammo:keep_saved_data_anyway()
 	return false
 end
  -- IX-Ray END
+
+class "se_flame_canister" (cse_alife_item_fuel)
+function se_flame_canister:__init (section) super (section)
+	self.secret_item = false
+end
+
+function se_flame_canister:on_register()
+	cse_alife_item_fuel.on_register( self )
+	-- Проверяем кастомдату обьекта на наличие стори айди.
+	story_objects.check_spawn_ini_for_story_id(self)
+
+	self.secret_item = treasure_manager.get_treasure_manager():register_item(self)
+end
+
+function se_flame_canister:on_unregister()
+	unregister_story_object_by_id(self.id)
+	cse_alife_item_fuel.on_unregister(self)
+end
+function se_flame_canister:can_switch_online()
+	if(self.secret_item) then
+		return false
+	end
+	return cse_alife_item_fuel.can_switch_online(self)
+end
 -- GRENADES --------------------------------------------------------------------------------------------------------------------------
 class "se_grenade" (cse_alife_item_grenade)
 function se_grenade:__init (section) super (section)

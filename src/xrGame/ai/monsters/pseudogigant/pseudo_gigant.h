@@ -4,7 +4,7 @@
 #include "../../../../xrScripts/script_export_space.h"
 
 
-class CPseudoGigant final : public CBaseMonster,
+class CPseudoGigant : public CBaseMonster,
 					  public CControlledEntity<CPseudoGigant> {
 	
 	typedef		CBaseMonster						inherited;

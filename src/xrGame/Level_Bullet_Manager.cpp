@@ -7,6 +7,7 @@
 #include "Level_Bullet_Manager.h"
 #include "game_cl_base.h"
 #include "Actor.h"
+#include "FlamethrowerTraceCollision.h"
 #include "GamePersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_cl_mp.h"
@@ -276,6 +277,9 @@ void CBulletManager::Clear()
 	m_Events.clear();
 	m_Bullets_Tracers.clear();
 	m_WhineSounds.clear();
+#ifdef DEBUG
+	FlameManagersToDraw.clear();
+#endif
 }
 
 void CBulletManager::AddBullet(

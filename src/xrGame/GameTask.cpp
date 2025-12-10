@@ -799,7 +799,7 @@ void CGameTask::serialize(ISaveObject& Object)
 	}
 }
 
-void SGameTaskObjective::SetIconName_script(pcstr tex)
+void SGameTaskObjective::SetIconName_script(const char* tex)
 {
 	m_icon_texture_name = tex;
 	m_icon_rect = CUITextureMaster::GetTextureRect(m_icon_texture_name.c_str());

@@ -98,6 +98,31 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(const char* section, const Fvecto
 	CSE_Abstract				*abstract = F_entity_Create(section);
 	R_ASSERT3					(abstract,"Cannot find item with section",section);
 
+	if (auto conditional = smart_cast<CSE_Conditional*>(abstract))
+	{
+		auto OldAbstract = abstract;
+		switch (conditional->m_condition) {
+		case CSE_Conditional::Conditions::LuaFunc:
+			{
+				xr_string buffer = "conditional_spawn.";
+				buffer += section;
+				luabind::functor<bool> func;
+				R_ASSERT(ai().script_engine().functor(buffer.c_str() ,func), "Unable to find spawn function for conditional", buffer.c_str());
+				section = func() ? conditional->m_section_meet_cond.c_str() : conditional->m_section_not_meet_cond.c_str();
+				abstract = F_entity_Create(section);
+				break;
+			}
+		default:
+			{
+				R_ASSERT(false, "Invalid condition for conditional section", section);
+				F_entity_Destroy(OldAbstract);
+				return nullptr;
+			}
+		}
+
+		F_entity_Destroy(OldAbstract);
+	}
+	
 	abstract->s_name			= section;
 //.	abstract->s_gameid			= u8(GAME_SINGLE);
 	abstract->s_RP				= 0xff;
