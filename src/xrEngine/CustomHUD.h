@@ -15,6 +15,7 @@ ENGINE_API extern Flags32		psHUD_Flags;
 #define HUD_DRAW_RT2			(1<<12)
 #define HUD_CROSSHAIR_POINT		(1<<13)
 #define HUD_MINIMAP				(1<<14)
+#define HUD_HIDE_QUICK_SLOTS	(1<<15)
 
 class ENGINE_API IRender_Visual;
 class CUI;
