@@ -1132,7 +1132,6 @@ void CActorDeathEffector::UpdateCL()
 void CActorDeathEffector::OnPPEffectorReleased()
 {
 	m_b_actual				= false;	
-	Msg("111");
 	//m_pParent->health()		= -1.0f;
 	m_pParent->SetHealth		(-1.0f);
 }
@@ -1207,4 +1206,40 @@ float CActorCondition::GetHealthBoost()
 	}
 
 	return total;
+}
+
+void CActorCondition::SetActorSleepiness(const float value)
+{
+	Sleepiness.Current = value;
+	clamp(Sleepiness.Current, 0.0f, 1.0f);
+}
+
+void CActorCondition::SetActorSatiety(const float value)
+{
+	Satiety.Current = value;
+	clamp(Satiety.Current, 0.0f, 1.0f);
+}
+
+void CActorCondition::SetActorThirst(const float value)
+{
+	Thirst.Current = value;
+	clamp(Thirst.Current, 0.0f, 1.0f);
+}
+
+void CActorCondition::SetActorRadiation(const float value)
+{
+	m_fRadiation = value;
+	clamp(m_fRadiation, 0.0f, m_fRadiationMax);
+}
+
+void CActorCondition::SetActorPsyHealth(const float value)
+{
+	m_fPsyHealth = value;
+	clamp(m_fPsyHealth, 0.0f, m_fPsyHealthMax);
+}
+
+void CActorCondition::SetActorMorale(const float value)
+{
+	m_fEntityMorale = value;
+	clamp(m_fEntityMorale, 0.0f, m_fEntityMoraleMax);
 }

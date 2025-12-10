@@ -95,6 +95,13 @@ public:
 	float	GetMaxFireWoundProtection				() {return m_max_fire_wound_protection;};
 	float	GetHealthBoost();
 
+	virtual void SetActorSleepiness(const float value);
+	virtual void SetActorSatiety(const float value);
+	virtual void SetActorThirst(const float value);
+	virtual void SetActorRadiation(const float value);
+	virtual void SetActorPsyHealth(const float value);
+	virtual void SetActorMorale(const float value);
+
 public:
 	PlayerAddiction Satiety;
 	PLAYER_ADDICTION_IMPL(Satiety);
