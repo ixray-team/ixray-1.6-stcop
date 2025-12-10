@@ -78,8 +78,6 @@ public:
 	void* getResource() const;
 	const char* getTextureName() const;
 
-	void saveOnDisk();
-
 	u32 getID() const;
 	void setID(u32);
 
