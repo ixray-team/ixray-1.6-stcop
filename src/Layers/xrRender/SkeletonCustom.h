@@ -205,6 +205,25 @@ public:
 	u16								LL_VisibleBoneCount	()					{	return visimask.count();										}
 	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
+
+	ICF void				_BCL	LL_GetBoneWorldPosition	(u16 bone_id, const Fmatrix& xform, Fvector& result)
+	{
+		{
+			xrCriticalSectionGuard g(UCalc_Mutex);
+			LL_GetBoneInstance(bone_id).mTransform.transform_tiny(result);
+		}
+		xform.transform_tiny(result);
+	}
+
+	ICF void				_BCL	LL_GetBoneWorldTransform(u16 bone_id, const Fmatrix& xform, Fmatrix& result)
+	{
+		{
+			xrCriticalSectionGuard g(UCalc_Mutex);
+			result.mulA_43(LL_GetBoneInstance(bone_id).mTransform);
+		}
+		result.mulA_43(xform);
+	}
+
 	ICF Fmatrix&					LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
 	ICF Fmatrix&					LL_GetTransform_R_old(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform_old;		}	// rendering only old
 	Fobb&							LL_GetBox			(u16 bone_id)		{	VERIFY2(bone_id < LL_BoneCount(), make_string<const char*>("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));	return (*bones)[bone_id]->obb;	}
