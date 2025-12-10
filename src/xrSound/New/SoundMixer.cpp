@@ -533,7 +533,7 @@ Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 
 		for (size_t ch = 0; ch < std::min((u8)SND_CHANNEL_COUNT, source.pub.channels_count); ch++) {
 			for (size_t idx = 0; idx < status; idx++) {
-				buffer[ch][offset + idx] = pcm[ch][idx];
+				buffer[ch][offset + idx] = std::clamp(pcm[ch][idx], -1.0f, 1.0f);
 			}
 		}
 
@@ -543,6 +543,7 @@ Snd_ReadFromSource(sound_source& source, float** buffer, u32 frames)
 	if (source.pub.channels_count == 1) {
 		memcpy(buffer[1], buffer[0], frames * sizeof(float));
 	}
+
 
 	return frames - last_frames;
 }
@@ -1064,9 +1065,10 @@ Snd_MixerRenderCallback(float* buffer)
 			}
 
 #ifndef DISABLE_RESONANCE_AUDIO
+			DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, reverb_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope[0]);
 			zone.state.ra_context->SetPlanarBuffer(zone.state.buffer, reverb_buffer, SND_CHANNEL_COUNT, SND_BLOCKSIZE);
 			zone.state.ra_context->FillPlanarOutputBuffer(SND_CHANNEL_COUNT, SND_BLOCKSIZE, process_buffer);
-			DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, bus_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope);
+			DSP_Compressor(0.0001f, 0.100f, -20.0f, 2.0f, bus_buffer, 1.0f, SND_BLOCKSIZE, zone.compressor_envelope[1]);
 #endif
 
 #ifndef DISABLE_STEAM_AUDIO
