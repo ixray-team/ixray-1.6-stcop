@@ -5,7 +5,8 @@ export const modsSidebar: DefaultTheme.Sidebar = [
     text: 'Start',
     collapsed: false,
     items: [
-      { text: 'Test', link: '/en/mods/released/mods' },
+      { text: 'Released', link: '/en/mods/released/mods' },
+      { text: 'WIP', link: '/en/mods/released/mods_dev' },
     ]
   },
   {
