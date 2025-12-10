@@ -1,13 +1,14 @@
 ---
-title: Sound addons (test)
+title: Sound Addons (test)
 ---
 
 <script setup lang="ts">
 import ModsList from '../../../../components/ModsList.vue';
+
 </script>
 
-## Sound addons
+## Sound Addons
 
-Test page to verify the mods list component with `addons/sound.json` data.
+Test page for checking the mods list component. Data is loaded automatically from the nearby `sound.json` file.
 
 <ModsList />

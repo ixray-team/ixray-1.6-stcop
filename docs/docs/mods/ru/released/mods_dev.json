@@ -1,0 +1,139 @@
+﻿{
+  "eyebrow": "Каталог",
+  "title": "Список модификаций",
+  "subtitle": "Данные ниже — пример. Подставьте реальные моды или подключите источник данных.",
+  "labels": {
+    "view": "Подробнее",
+    "soon": "Скоро"
+  },
+  "mods": [
+    {
+      "id": "aiw",
+      "title": "Alone in Windstorm: Fallen Bear",
+      "description": "Суровое будущее после мирового ядерного конфликта. Местом действия сюжета станет один из регионов Дальнего Востока",
+      "author": "AIW Team",
+      "link": "https://ap-pro.ru/forums/topic/3903-alone-in-windstorm-fallen-bear/",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448290562301100042/image.png?ex=693ab931&is=693967b1&hm=2ecd021ddd57ffb84d554e3d332c374ecf0a162ea2e2e0cd87e048842d34a820&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "AnotherSide",
+      "title": "Another Side",
+      "description": "Как стать наёмником? Легко. Если высок боевой дух и низок моральный облик",
+      "author": "Another Side",
+      "link": "https://vk.com/stalker_another_side",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448292255767986176/image.png?ex=693abac5&is=69396945&hm=a1359638f3b47cabca86082d682e6b5a877d77d483887e6d10430acc753837ec"
+    },
+    {
+      "id": "whitelist",
+      "title": "Чистый Лист",
+      "description": "Soon",
+      "author": "NeptunNZ",
+      "link": "",
+      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=%D0%A7%D0%B8%D1%81%D1%82%D1%8B%D0%B9+%D0%9B%D0%B8%D1%81%D1%82"
+    },
+    {
+      "id": "tihoemesto",
+      "title": "Тихое место",
+      "description": "",
+      "author": "Артем Якушев",
+      "link": "https://vk.com/stalker_modification",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448295738454048913/image.png?ex=693abe04&is=69396c84&hm=940af54ad703f4e4bd61a4fdd61132ea351dc5734798f1ddf889ba784c23fb2b&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "kotovzlom",
+      "title": "KOTOVZLOM",
+      "description": "Постирония в стилистике киберпанка 1970 годов",
+      "author": "Retro Zone",
+      "link": "https://vk.com/kotovzlom",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448296192105775246/image.png?ex=693abe70&is=69396cf0&hm=f1b2a7745fb8a61f20e213a4ce40425354cb99607971f7fecb9c8f7b41dff695&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "newspaces",
+      "title": "Новые Просторы. Город потерянных грёз",
+      "description": "Откройте для себя новые просторы ЧЗО",
+      "author": "Isoteric Studio",
+      "link": "https://vk.com/isotericstudio",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448297313922584697/image.png?ex=693abf7b&is=69396dfb&hm=a52c004ae626db200905c579f0089084dff80293da48c6da6b08538a3bbbb2cc&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "strannik",
+      "title": "СТРАННИК",
+      "description": "Последствия взрыва коллайдера, аномальная энергия и радиация, охватившая всю планету",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/12350-strannik/",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448299133822832773/image.png?ex=693ac12d&is=69396fad&hm=d71b135cb1b1ce3be6cddf86a7d78e861609b5fddb3805a3e1caa71568f8f66e&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "x7",
+      "title": "X-7: Эпицентр",
+      "description": "Перед сталкерами была поставлена задача проникнуть в лабораторию Х-7 и добыть информацию о проводившихся в ней экспериментах",
+      "author": "X7 Team",
+      "link": "https://ap-pro.ru/forums/topic/6215-x-7-epicentr",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448299650078474362/image.png?ex=693ac1a8&is=69397028&hm=27d424d047c10effc4317b236151194fb1a00edcb34fffdd8123af84878b4a3f&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "scope",
+      "title": "Scope",
+      "description": "",
+      "author": "Who I'Am",
+      "link": "https://vk.com/public207228241",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448301023713165371/image.png?ex=693ac2f0&is=69397170&hm=a6fae21174348dbb49c431ab093e316a665a5eb15f241db7852d5655ff117b69&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "project2",
+      "title": "[Проект №2]",
+      "description": "Попытка перенести сюжет игры S.T.A.L.K.E.R. Mobile",
+      "author": "Graff46",
+      "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448302113359921192/image.png?ex=693ac3f3&is=69397273&hm=e2a13457c6ec3b22904790bd5c896ca907e47b5e2eeb5a29aa7901726068f306&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "drakoshindev",
+      "title": "Escape From Zone",
+      "description": "Soon",
+      "author": "LostPath",
+      "link": "https://vk.com/lost_pafos",
+      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=Escape+From+Zone"
+    },
+    {
+      "id": "TToZ",
+      "title": "The Trailblazer of Zone",
+      "description": "В центре сюжета — группа неизвестных и смелых людей, решивших отправиться в Зону в качестве первопроходцев",
+      "author": "thetrailblazerofzone",
+      "link": "https://vk.com/thetrailblazerofzone",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448303278348570666/image.png?ex=693ac509&is=69397389&hm=788d2ab0c2db555f263650c7744019719fdd833078ecd2d7c6183f1634d6bd1a&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "newlive",
+      "title": "Грань: Новая Жизнь",
+      "description": "Грань - проект, который будет стремиться показать Зону от лица разных людей",
+      "author": "ScR1pt",
+      "link": "",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448303928889442385/image.png?ex=693ac5a4&is=69397424&hm=66edb13f3139204146effb338742d939c62648d3e0d9ba71d2995191522afd25&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "vestnik",
+      "title": "Вестник",
+      "description": "Soon",
+      "author": "FacingSlave",
+      "link": "https://vk.com/club231757914",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448304514082803742/image.png?ex=693ac630&is=693974b0&hm=448dc73b853627d976152046ce2e205db499a0fbb4f12dc0730ddc92a5ca95b6&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "pa2",
+      "title": "Пространственная Аномалия 2",
+      "description": "Soon",
+      "author": "",
+      "link": "https://vk.com/spatial_anomaly",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448305928959951100/image.png?ex=693ac781&is=69397601&hm=b30c5e0d5b42fd989e38d4d6af3d82d0c6644abb5abef2a4d70f8d9998037f1a&=&format=webp&quality=lossless"
+    },
+    {
+      "id": "sv3",
+      "title": "Смерти Вопреки 3: Осколок Тьмы",
+      "description": "Осень. 2017 год. В Зоне произошёл Сверхмощный выброс, который образовал новые неизвестные территории",
+      "author": "CortezZz Team",
+      "link": "https://ap-pro.ru/forums/topic/13377-smerti-vopreki-3-oskolok-tmy-anons-modifikacii",
+      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448306489042141204/image.png?ex=693ac807&is=69397687&hm=b3a2ae6959afd5905852cb5747bb1ec42c6b820ede0a14834aee9c537be98a5a&=&format=webp&quality=lossless"
+    }
+  ]
+}

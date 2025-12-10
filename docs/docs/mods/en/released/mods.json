@@ -1,59 +1,59 @@
 ﻿{
   "eyebrow": "Catalog",
-  "title": "Released mods",
-  "subtitle": "Entries are placeholders. Replace them with real mods or a data feed.",
+  "title": "Mods List",
+  "subtitle": "The data below is an example. Replace with real mods or connect a data source.",
   "labels": {
-    "view": "Download / open",
+    "view": "Download / Open",
     "soon": "Coming soon"
   },
   "mods": [
     {
       "id": "dreamcatcher",
       "title": "Dreamcatcher",
-      "description": "Story-focused mod about exploring the Zone and its eerie anomalies.",
+      "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
       "author": "Dreamcatcher Team",
-      "link": "https://example.com/mods/dreamcatcher",
-      "image": "https://dummyimage.com/640x360/0f172a/ffffff&text=Dreamcatcher"
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280234209316925/9ce3671a1265d54c.png?ex=693aaf93&is=69395e13&hm=ef7a55908ad1606e9640b158ee7bbe839c59bae5b184afb63a4c925f6f3dde86&"
     },
     {
       "id": "one-way-ticket",
-      "title": "One Way Ticket",
-      "description": "Hardcore campaign about survival with no way back from the Zone.",
+      "title": "One-Way Ticket",
+      "description": "A hardcore campaign about survival with no return from the Zone.",
       "author": "OneWay Studio",
-      "link": "https://example.com/mods/one-way-ticket",
-      "image": "https://dummyimage.com/640x360/1f2937/e5e7eb&text=One+Way+Ticket"
+      "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280886339567697/image.png?ex=693ab02f&is=69395eaf&hm=b07fc8335f8c98bf6f1dc6bb9fa4719528f92c4a822171a175950ca80dcc94b6"
     },
     {
       "id": "sins-academic",
       "title": "Sins of the Academic: Red Dawn",
-      "description": "Military drama with combat-heavy missions and tough choices.",
+      "description": "A military drama emphasizing combat missions and tough decisions.",
       "author": "Red Dawn",
-      "link": "https://example.com/mods/sins-academic",
-      "image": "https://dummyimage.com/640x360/111827/ffffff&text=Red+Dawn"
+      "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280233768648704/fe5cf9f0f5b4cd78.png?ex=693aaf93&is=69395e13&hm=0e350212c092052a4741ba876b78ac16413291ecef3f6bc6097ef9cad9eaaf7a&"
     },
     {
       "id": "pavlik-day",
-      "title": "One Day in Pavlik’s Life",
-      "description": "Short diary-style story capturing everyday stalker life.",
+      "title": "One Day in Pavlik's Life",
+      "description": "A short diary-style story capturing the everyday atmosphere of a stalker.",
       "author": "Pavlik Dev",
-      "link": "https://example.com/mods/pavlik-day",
-      "image": "https://dummyimage.com/640x360/0b3a3d/e0f2fe&text=Pavlik"
+      "link": "https://ap-pro.ru/forums/topic/10129-odin-den-iz-zhizni-pavlika",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448281191097700494/image.png?ex=693ab077&is=69395ef7&hm=da2f154e74356338ee4a30857c3a78fd24e2d0428acd9994afd47e12cf4e8da0"
     },
     {
       "id": "back-to-past",
       "title": "Back to the Past",
-      "description": "A return to the roots with reimagined classic locations.",
+      "description": "A return to the roots with a reinterpretation of classic locations.",
       "author": "Retro Zone",
-      "link": "https://example.com/mods/back-to-past",
-      "image": "https://dummyimage.com/640x360/0f172a/cbd5f5&text=Back+to+the+Past"
+      "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448281641578664076/image.png?ex=693ab0e3&is=69395f63&hm=09a73f762ca53959f008df8c9d3de6de813721850fdb7ca840ec7c641d52407c"
     },
     {
       "id": "awakening-2055",
-      "title": "Awakening 2055",
-      "description": "Late-timeline take with new tech and survival in a changed Zone.",
+      "title": "Awakening. 2055",
+      "description": "A late timeline: new technologies and survival in an altered Zone.",
       "author": "Future Lab",
-      "link": "https://example.com/mods/awakening-2055",
-      "image": "https://dummyimage.com/640x360/111827/b8ffd4&text=Awakening+2055"
+      "link": "https://vk.com/wall-195948120_7369",
+      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448284162954891274/image.png?ex=693ab33c&is=693961bc&hm=9c6b80d868a071754ed28bd29925c5464c6cf5ec1a4e51deb65bfb5a2359b334"
     }
   ]
 }
