@@ -5,6 +5,100 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "Level.h"
 
+CHeliFlareManager& CHeliFlareManager::GetInstance()
+{
+	static CHeliFlareManager HeliFlareManager;
+	return HeliFlareManager;
+}
+
+void CHeliFlareManager::Load(LPCSTR section)
+{
+	if (pSettings->section_exist(section))
+	{
+		FlareData.xzSlowing = pSettings->r_float(section, "xzSlowing");
+		FlareData.GravitySpeed = pSettings->r_float(section, "GravitySpeed");
+		FlareData.xzStartSpeed = pSettings->r_float(section, "xzStartSpeed");
+		FlareData.LifeTimeMax = pSettings->r_float(section, "LifeTimeMax");
+		FlareParticle = pSettings->r_string(section, "Particle");
+	}
+}
+
+void CHeliFlareManager::Update(float delta)
+{
+	if(!ActiveFlares.empty()){
+		CHeliFlare* StartFlare = ActiveFlares.front();
+		ActiveFlares.pop_front();
+		ActiveFlares.push_back(StartFlare);
+		CHeliFlare* CurrentFlare;
+		do
+		{
+			CurrentFlare = ActiveFlares.front();
+			ActiveFlares.pop_front();
+			if (CurrentFlare->IsExpired())
+			{
+				CurrentFlare->Deactivate();
+				InactiveFlares.push_back(CurrentFlare);
+			} else
+			{
+				CurrentFlare->Update(delta);
+				ActiveFlares.push_back(CurrentFlare);
+			}
+		} while (CurrentFlare != StartFlare);
+	}
+}
+
+CHeliFlare* CHeliFlareManager::GetInactiveFlare()
+{
+	CHeliFlare* Flare;
+	if(InactiveFlares.empty())
+	{
+		Flare = new CHeliFlare();
+		Flare->InitParticle(&FlareData, FlareParticle);
+	}else
+	{
+		Flare = InactiveFlares.front();
+		InactiveFlares.pop_front();
+	}
+	return Flare;
+}
+
+void CHeliFlareManager::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object, "CHeliFlareManager")
+	{
+		BEGIN_CHUNK(Object, "CHeliFlareManager::ActiveFlares")
+		{
+			Object << ActiveFlares;
+		}
+		BEGIN_CHUNK(Object, "CHeliFlareManager::InactiveFlares")
+		{
+			auto temp = InactiveFlares.size();
+			Object << temp;
+			if (!Object.IsSave())
+			{
+				for (auto elem : InactiveFlares)
+				{
+					xr_delete(elem);
+				}
+				for (int i = 0; i < temp; i++)
+				{
+					auto NewFlare = GetInactiveFlare();
+					InactiveFlares.push_back(NewFlare);
+				}
+			}
+		}
+	}
+}
+
+void CHeliFlareManager::ActivateFlare(Fmatrix xform, Fvector dir)
+{
+	CHeliFlare* Flare = GetInactiveFlare();
+	Flare->SetTransform(xform);
+	Flare->SetDirection(dir);
+	Flare->Activate();
+	ActiveFlares.push_back(Flare);
+}
+
 void  
 CHelicopter::BoneMGunCallbackX(CBoneInstance *B)
 {

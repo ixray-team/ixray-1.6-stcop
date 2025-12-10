@@ -332,8 +332,11 @@ bool CParticleGroup::SItem::IsPlaying() const
 void CParticleGroup::SItem::UpdateParent(const Fmatrix& m, const Fvector& velocity, bool bXFORM)
 {
 	if (root_effect)
+	{
 		root_effect->UpdateParent(m,velocity,bXFORM);
+	}
 }
+
 //------------------------------------------------------------------------------
 void OnGroupParticleBirth(void* owner, u32 param, PAPI::Particle& m, u32 idx)
 {

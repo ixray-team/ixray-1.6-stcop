@@ -25,6 +25,7 @@
 #define CLSID_AI_STALKER			MK_CLSID('A','I','_','S','T','L',' ',' ')
 #define CLSID_AI_BURER				MK_CLSID('A','I','_','B','U','R','E','R')
 #define CLSID_AI_GIANT				MK_CLSID('A','I','_','G','I','A','N','T')
+#define CLSID_AI_ANOMAL_GIANT		MK_CLSID('A','I','_','G','I','G','_','A')
 #define CLSID_AI_CHIMERA			MK_CLSID('A','I','_','H','I','M','E','R')
 #define CLSID_AI_FRACTURE			MK_CLSID('A','I','_','F','R','A','C','T')
 #define CLSID_AI_DOG_BLACK			MK_CLSID('A','I','_','D','O','G','_','B')
@@ -62,6 +63,7 @@
 #define CLSID_AF_RUSTY_HAIR			MK_CLSID('A','F','_','R','H','A','I','R')
 #define CLSID_AF_GALANTINE			MK_CLSID('A','F','_','G','A','L','A','N')
 #define CLSID_AF_CTA				MK_CLSID('A','F','_','C','T','A',' ',' ')
+#define CLSID_AF_COMBINER			MK_CLSID('A','F','_','C','O','M','B','I')
 
 #define CLSID_ARTEFACT				MK_CLSID('A','R','T','E','F','A','C','T')
 
@@ -78,6 +80,7 @@
 #define CLSID_OBJECT_W_ASHOTGUN		MK_CLSID('W','_','A','S','H','T','G','N')
 //  [8/15/2006]
 #define CLSID_OBJECT_W_MAGAZINED	MK_CLSID('W','_','W','M','A','G','A','Z')
+#define CLSID_OBJECT_W_FLAMETHROWER	MK_CLSID('W','_','F','L','A','M','E','_')
 //  [8/15/2006]
 //  [8/17/2006]
 #define CLSID_OBJECT_W_MAGAZWGL		MK_CLSID('W','_','W','M','A','G','G','L')
@@ -97,6 +100,7 @@
 #define	CLSID_OBJECT_W_STATMGUN		MK_CLSID('W','_','S','T','M','G','U','N')
 // Weapons Ammo
 #define CLSID_OBJECT_AMMO			MK_CLSID('A','M','M','O',' ',' ',' ',' ')
+#define CLSID_OBJECT_FLAME_CANISTER	MK_CLSID('A','M','M','O','_','F','L','C')
 //-----------------------------------------------------------------------------
 #define CLSID_OBJECT_A_VOG25		MK_CLSID('A','_','V','O','G','2','5',' ')
 #define CLSID_OBJECT_A_OG7B			MK_CLSID('A','_','O','G','7','B',' ',' ')
@@ -106,6 +110,7 @@
 #define CLSID_OBJECT_W_SCOPE		MK_CLSID('W','_','S','C','O','P','E',' ')
 #define CLSID_OBJECT_W_SILENCER		MK_CLSID('W','_','S','I','L','E','N','C')
 #define CLSID_OBJECT_W_GLAUNCHER	MK_CLSID('W','_','G','L','A','U','N','C')
+#define CLSID_OBJECT_W_MAGAZINE     MK_CLSID('W','_','M','A','G','A','Z',' ')
 
 // Modifiers
 #define CLSID_OBJECT_M_QDAMAGE		MK_CLSID('O','_','Q','D','M','G',' ',' ')
@@ -143,6 +148,8 @@
 #define CLSID_Z_ACIDF 				MK_CLSID('Z','_','A','C','I','D','F',' ')
 #define CLSID_Z_GALANT				MK_CLSID('Z','_','G','A','L','A','N','T')
 #define CLSID_Z_RADIO				MK_CLSID('Z','_','R','A','D','I','O',' ')
+#define CLSID_Z_MAGNET				MK_CLSID('Z','_','M','A','G','N','E','T')
+#define CLSID_Z_EMI					MK_CLSID('Z','_','E','M','I',' ',' ',' ')
 #define CLSID_Z_BFUZZ				MK_CLSID('Z','_','B','F','U','Z','Z',' ')
 #define CLSID_Z_RUSTYH				MK_CLSID('Z','_','R','U','S','T','Y','H')
 #define CLSID_Z_AMEBA				MK_CLSID('Z','_','A','M','E','B','A',' ')
@@ -158,6 +165,7 @@
 #define CLSID_SMART_ZONE			MK_CLSID('S','M','R','T','Z','O','N','E')
 #define CLSID_Z_CAMPFIRE			MK_CLSID('Z','_','C','F','I','R','E',' ')
 #define CLSID_Z_CAPTURE_BASE  		MK_CLSID('Z','_','C','P','O','I','N','T')
+#define CLSID_Z_SAM			        MK_CLSID('S','A','M','_','Z','N','_','S')
 
 // Detectors
 #define CLSID_DETECTOR_SIMPLE		MK_CLSID('D','_','S','I','M','D','E','T')
@@ -205,6 +213,7 @@
 #define CLSID_OBJECT_G_RPG7			MK_CLSID('G','_','R','P','G','7',' ',' ')
 #define CLSID_GRENADE_RGD5			MK_CLSID('G','_','R','G','D','5',' ',' ')
 #define CLSID_OBJECT_G_FAKE			MK_CLSID('G','_','F','A','K','E',' ',' ')
+#define CLSID_OBJECT_G_SAM			MK_CLSID('G','_','S','A','M',' ',' ',' ')
 
 //---------------------------------------------------------------------------------
 #define CLSID_OBJECT_PLAYERS_BAG	MK_CLSID('M','P','_','P','L','B','A','G')
@@ -249,3 +258,4 @@
 #define CLSID_SMART_TERRAIN				MK_CLSID('S','M','R','T','T','R','R','N')
 #define CLSID_SMART_COVER				MK_CLSID('S','M','R','T','_','C','_','S')
 #define CLSID_SIM_FACTION				MK_CLSID('S','F','A','C','T','I','O','N')
+#define CLSID_CONDITIONAL		MK_CLSID('C','O','N','D',' ',' ',' ',' ')

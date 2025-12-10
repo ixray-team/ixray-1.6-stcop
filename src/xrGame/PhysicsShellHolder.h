@@ -55,17 +55,17 @@ public:
 	{
 		return this;
 	}
-	virtual	const IObjectPhysicsCollision* physics_collision();
-	virtual	const IPhysicsShell* physics_shell() const;
-	virtual		  IPhysicsShell* physics_shell();
-	virtual const IPhysicsElement* physics_character() const;
+	virtual	const IObjectPhysicsCollision* physics_collision() override ;
+	virtual	const IPhysicsShell* physics_shell() const override ;
+	virtual		  IPhysicsShell* physics_shell() override ;
+	virtual const IPhysicsElement* physics_character() const override ;
 	virtual CPHDestroyable* ph_destroyable() { return nullptr; }
 	virtual ICollisionDamageReceiver* PHCollisionDamageReceiver() { return nullptr; }
 	virtual CPHSkeleton* PHSkeleton() { return nullptr; }
 
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-	virtual CPhysicItem* cast_physics_item() { return nullptr; }
-	virtual CGameObject* cast_game_object() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CPhysicItem* cast_physics_item() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
 	virtual IDamageSource* cast_IDamageSource() { return nullptr; }
 
 	virtual CPHSoundPlayer* ph_sound_player() { return nullptr; }
@@ -100,7 +100,7 @@ public:
 	virtual void			deactivate_physics_shell ();
 
 	virtual void			net_Destroy			() override;
-	bool			net_Spawn			(CSE_Abstract*	DC) override override;
+	bool			net_Spawn			(CSE_Abstract*	DC) override;
 	virtual void			save				(NET_Packet &output_packet) override;
 	virtual void			load				(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;

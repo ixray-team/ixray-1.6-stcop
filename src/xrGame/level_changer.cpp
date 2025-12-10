@@ -259,7 +259,7 @@ void CLevelChanger::Serialize(ISaveObject& Object)
 	}
 }
 
-BOOL CLevelChanger::net_SaveRelevant()
+bool CLevelChanger::net_SaveRelevant()
 {
 	if(!m_b_enabled || m_invite_str!=DEF_INVITATION )
 		return true;

@@ -416,6 +416,7 @@ void CCustomRocket::StartEngine()
 	if (m_flyingSound.handle())
 		m_flyingSound.play_at_pos(0, XFORM().c, sm_Looped);
 
+	m_pPhysicsShell->set_ApplyByGravity(m_affect_gravity);
 	StartLights();
 	StartParticles();
 
@@ -480,6 +481,11 @@ void CCustomRocket::UpdateEngine()
 	if (!getVisible())
 	{
 		Msg("! CCustomRocket::UpdateEngine called, but false==getVisible() id[%d] frame[%d]", ID(), Device.dwFrame);
+	}
+
+	if (IsEngineInfinite())
+	{
+		return;
 	}
 
 	if (m_dwEngineTime <= 0)

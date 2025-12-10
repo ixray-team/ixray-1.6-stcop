@@ -554,7 +554,7 @@ public:
 						(*this) << *(elem.first);
 					}
 					else {
-						Key Value = elem.first;
+						Key& Value = elem.first;
 						(*this) << Value;
 					}
 					if constexpr (std::is_pointer_v<Mapped>) {
@@ -768,6 +768,18 @@ ISaveObject& operator<<(ISaveObject& Object, xr_hash_map<K, V, H, Eq>& Value) {
 
 template<IsSaveObjectSerializable T>
 ISaveObject& operator<<(ISaveObject& Object, xr_deque<T>& Value)
+{
+	return ((CSaveObject*)&Object)->Serialize(Value);
+}
+
+template<IsSaveObjectSerializable T>
+ISaveObject& operator<<(ISaveObject& Object, xr_unique_ptr<T>& Value)
+{
+	return ((CSaveObject*)&Object)->Serialize(Value);
+}
+
+template<IsSaveObjectSerializable T1, IsSaveObjectSerializable T2>
+ISaveObject& operator<<(ISaveObject& Object, xr_pair<T1, T2>& Value)
 {
 	return ((CSaveObject*)&Object)->Serialize(Value);
 }
