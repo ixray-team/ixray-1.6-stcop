@@ -6,6 +6,10 @@
 
 GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
 {
+    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+    {
+        return;
+    }
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -20,6 +24,11 @@ GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
 
 GPUEventWrapper::~GPUEventWrapper()
 {
+    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+    {
+        return;
+    }
+
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
