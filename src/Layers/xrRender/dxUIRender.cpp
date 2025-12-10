@@ -33,9 +33,7 @@ void dxUIRender::SetAlphaRef(int aref)
 void dxUIRender::SetScissor(Irect* rect)
 {
 	RCache.set_Scissor(rect);
-#if RENDER == R_R4
-	GRHI->StateManager->OverrideScissoring(rect ? true : false, true);
-#endif
+	GRHI->StateManager->OverrideScissoring(rect != nullptr, true);
 }
 
 void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
@@ -47,10 +45,12 @@ void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 {
 	string_path buff;
-	if ( FS.exist(buff,"$game_textures$", tex_name, ".ogm") )
+	if (FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
+	{
 		return "hud\\movie";
-	else
-		return sh_name;
+	}
+
+	return sh_name;
 }
 
 void dxUIRender::PushPoint(float x, float y, float z, u32 C, float u, float v)
