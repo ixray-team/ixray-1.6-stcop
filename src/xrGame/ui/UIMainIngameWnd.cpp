@@ -38,6 +38,7 @@
 #include "../alife_registry_wrappers.h"
 
 #include "../../xrEngine/string_table.h"
+#include "../../xrEngine/CustomHUD.h"
 
 #ifdef DEBUG
 #	include "../attachable_item.h"
@@ -701,6 +702,15 @@ void CUIMainIngameWnd::TickQuickSlotsPanelFade()
 		return; // Protection against invalid delta time
 	}
 
+	// If hide quick slots option is disabled, panel is always visible
+	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	if (!isHideQuickSlotsEnabled)
+	{
+		m_quick_slots_alpha = 1.0f;
+		m_quick_slots_visible = true;
+		return;
+	}
+
 	bool should_be_visible = m_quick_slots_force_visible || m_quick_slots_visible;
 
 	if (should_be_visible)
@@ -1336,7 +1346,9 @@ void CUIMainIngameWnd::UpdateQuickSlots()
 		return;
 	}
 
-	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
+	// If hide quick slots option is disabled, panel is always visible
+	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	bool should_show_panel = (!isHideQuickSlotsEnabled) || m_quick_slots_force_visible || m_quick_slots_visible;
 
 	int i = -1;
 	for (const auto& slot : m_quick_slots_icons)
@@ -1454,7 +1466,9 @@ void CUIMainIngameWnd::DrawMainIndicatorsForInventory()
 	UpdateBoosterIndicators(pActor->conditions().GetCurBoosterInfluences());
 
 	// Проверяем, должна ли панель быть видимой
-	bool should_show_panel = m_quick_slots_force_visible || m_quick_slots_visible;
+	// If hide quick slots option is disabled, panel is always visible
+	const bool isHideQuickSlotsEnabled = psHUD_Flags.test(HUD_HIDE_QUICK_SLOTS);
+	bool should_show_panel = (!isHideQuickSlotsEnabled) || m_quick_slots_force_visible || m_quick_slots_visible;
 
 	// Отрисовываем быстрые слоты только если панель должна быть видимой
 	if (should_show_panel)
