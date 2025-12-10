@@ -83,16 +83,16 @@ public:
 	virtual					~CBaseMonster						();
 
 public:
-	virtual	Feel::Sound*				dcast_FeelSound				()	{ return this;	}
-	virtual	CCharacterPhysicsSupport*	character_physics_support	()	{return m_pPhysics_support;}
-	virtual const	CCharacterPhysicsSupport*	character_physics_support()const{return m_pPhysics_support;}
-	virtual CPHDestroyable*				ph_destroyable				();
-	virtual CEntityAlive*				cast_entity_alive			()	{return this;}
-	virtual CEntity*					cast_entity					()	{return this;}
-	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()	{return this;}
-	virtual CCreature*				cast_creature			()	{return this;}
-	virtual CScriptEntity*				cast_script_entity			()	{return this;}
-	virtual CBaseMonster*				cast_base_monster			()	{return this;}
+	virtual	Feel::Sound*				dcast_FeelSound						() override { return this;	}
+	virtual	CCharacterPhysicsSupport*	character_physics_support			() override {return m_pPhysics_support;}
+	virtual const	CCharacterPhysicsSupport*	character_physics_support	()const override {return m_pPhysics_support;}
+	virtual CPHDestroyable*				ph_destroyable						() override;
+	virtual CEntityAlive*				cast_entity_alive					() override {return this;}
+	virtual CEntity*					cast_entity							() override {return this;}
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder			() override {return this;}
+	virtual CCreature*					cast_creature						() override {return this;}
+	virtual CScriptEntity*				cast_script_entity					() override {return this;}
+	virtual CBaseMonster*				cast_base_monster					() override {return this;}
 
 	virtual CInventoryOwner				*cast_inventory_owner		() override {return this;}
 	virtual CGameObject*				cast_game_object			() override {return this;}

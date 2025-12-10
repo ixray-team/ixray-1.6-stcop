@@ -116,7 +116,8 @@ void CHelicopter::Load(const char* section)
 	const char* lanim						= pSettings->r_string	(section,"light_color_animmator");
 	m_lanim								= LALib.FindItem(lanim);
 
-
+	FlaresPairsDropCount				= pSettings->r_u32(section, "flares_count");
+	FlaresDropDelay = pSettings->r_float(section, "flares_drop_delay");
 }
 
 void CHelicopter::reload(const char* section)
@@ -130,6 +131,7 @@ void CollisionCallbackAlife(bool& do_colide,bool bo1,dContact& c,SGameMtl* mater
 void ContactCallbackAlife(CDB::TRI* T,dContactGeom* c)
 {
 }
+
 bool CHelicopter::net_Spawn(CSE_Abstract*	DC)
 {
 
@@ -388,8 +390,7 @@ void CHelicopter::UpdateCL()
 
 		return;
 	}
-	else
-		PPhysicsShell()->SetTransform(XFORM(),  mh_unspecified );
+	PPhysicsShell()->SetTransform(XFORM(),  mh_unspecified );
 
 	m_movement.Update();
 
@@ -409,9 +410,20 @@ void CHelicopter::UpdateCL()
 #endif
 
 	if(m_engineSound.slot())
+	{
 		m_engineSound.set_position(XFORM().c);
-	
+	}
 
+	LastFlareDropTime += Device.fTimeDelta;
+	LastFlareDropTime = std::min(LastFlareDropTime, FlaresDropDelay);
+	if(RequestedDropFlaresCount > 0 && LastFlareDropTime >= FlaresDropDelay)
+	{
+		LastFlareDropTime -= FlaresDropDelay;
+		--RequestedDropFlaresCount;
+		Fvector RightDir = XFORM().i;
+		CHeliFlareManager::GetInstance().ActivateFlare(XFORM(), RightDir);
+		CHeliFlareManager::GetInstance().ActivateFlare(XFORM(), RightDir.invert());
+	}
 
 	m_enemy.Update();
 	//weapon

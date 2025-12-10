@@ -2,26 +2,8 @@
 #include "inventory_item_object.h"
 #include "anticheat_dumpable_object.h"
 #include "../xrScripts/script_export_space.h"
-
-struct SCartridgeParam
-{
-    float	kDist, kDisp, kHit, kImpulse, kAP, kAirRes;
-	int		buckShot;
-	float	impair;
-	float	fWallmarkSize;
-	u8		u8ColorID;
-
-	IC void Init()
-	{
-		kDist = kDisp = kHit = kImpulse = 1.0f;
-		kAP       = 0.0f;
-		kAirRes   = 0.0f;
-		buckShot  = 1;
-		impair    = 1.0f;
-		fWallmarkSize = 0.0f;
-		u8ColorID     = 0;
-	}
-};
+#include "CartrigeParam.h"
+#include "RepackerInterface.h"
 
 class CCartridge final : 
 	public IAnticheatDumpable
@@ -54,14 +36,17 @@ public:
 	virtual shared_str const 	GetAnticheatSectionName	() const { return m_ammoSect; };
 };
 
-class CWeaponAmmo final : public CInventoryItemObject
+class CWeaponAmmo final :
+	public CInventoryItemObject,
+	public IRepackerInterface
 {
 	using inherited = CInventoryItemObject;
 public:
 	CWeaponAmmo() = default;
 	virtual ~CWeaponAmmo() = default;
 
-	virtual CWeaponAmmo				*cast_weapon_ammo	()	{return this;}
+	virtual CWeaponAmmo* cast_weapon_ammo() {return this;}
+	virtual IRepackerInterface* cast_repacker_interface() override {return this;}
 	virtual void					Load				(const char* section);
 	virtual bool					net_Spawn			(CSE_Abstract* DC);
 	virtual void					net_Destroy			();
@@ -77,6 +62,9 @@ public:
 	virtual	u32						Cost				() const;
 
 	bool							Get					(CCartridge &cartridge);
+	
+	virtual bool Repack(PIItem Other) override;
+	virtual bool IsValid() const override;
 
 	SCartridgeParam cartridge_param;
 

@@ -88,6 +88,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("hud_animation_end",			int(GameObject::eActorHudAnimationEnd)),
 				value("helicopter_on_point",		int(GameObject::eHelicopterOnPoint)),
 				value("helicopter_on_hit",			int(GameObject::eHelicopterOnHit)),
+				value("helicopter_on_sam_hit",		int(GameObject::eHelicopterOnSamHit)),
 				value("on_item_take",				int(GameObject::eOnItemTake)),
 				value("on_item_drop",				int(GameObject::eOnItemDrop)),
 				value("script_animation",			int(GameObject::eScriptAnimation)),

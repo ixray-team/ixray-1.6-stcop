@@ -335,17 +335,16 @@ public:
 	virtual DLL_Pure			*_construct				();
 
 public:
-	virtual CGameObject*		cast_game_object			()  {return this;};
-	virtual CInventoryItem*		cast_inventory_item			()	{return this;}
-	virtual CAttachableItem*	cast_attachable_item		()	{return this;}
-	virtual CEatableItem*		cast_eatable_item			()	{return this;}
-	virtual CEntityAlive*		cast_entity_alive			()	{return this;}
-	virtual CEntity*			cast_entity					()	{return this;}
-	virtual CPhysicsShellHolder*cast_physics_shell_holder	()	{return this;}
-	virtual CCreature*		cast_creature			()	{return this;}
-	virtual CScriptEntity*		cast_script_entity			()	{return this;}
-	virtual CWeapon*			cast_weapon					()	{return NULL;}
-	virtual CAI_Rat				*dcast_Rat					()	{return this;};
+	virtual CGameObject*		cast_game_object			() override {return this;};
+	virtual CInventoryItem*		cast_inventory_item			() override {return this;}
+	virtual CAttachableItem*	cast_attachable_item		() override {return this;}
+	virtual CEatableItem*		cast_eatable_item			() override {return this;}
+	virtual CEntityAlive*		cast_entity_alive			() override {return this;}
+	virtual CEntity*			cast_entity					() override {return this;}
+	virtual CPhysicsShellHolder*cast_physics_shell_holder	() override {return this;}
+	virtual CCreature*			cast_creature				() override {return this;}
+	virtual CScriptEntity*		cast_script_entity			() override {return this;}
+	virtual CWeapon*			cast_weapon					() override {return NULL;}
 
 public:
 

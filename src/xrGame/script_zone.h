@@ -32,9 +32,9 @@ public:
 			bool	active_contact		(ALife::_OBJECT_ID id) const;
 	virtual bool	IsVisibleForZones	()				{return false;}
 	virtual	bool	register_schedule	() const		{return true;}
-	virtual CSpaceRestrictor* cast_restrictor() { return this; }
-	virtual CScriptZone* cast_script_zone() { return this; }
-	virtual CGameObject* cast_game_object() { return this; }
+	virtual CSpaceRestrictor* cast_restrictor() override { return this; }
+	virtual CScriptZone* cast_script_zone() override { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
 
 #ifdef DEBUG
 	virtual	void	OnRender			();

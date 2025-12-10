@@ -479,6 +479,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_izlom);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_poltergeist);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_pseudogigant);
+	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_anomal_pseudogigant);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_zombie);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_snork);
 	imgui_clsid_manager.add_monster(imgui_clsid_manager.monster_tushkano);
@@ -506,6 +507,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_walther);
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_magazine);
 	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_stationary_machine_gun);
+	imgui_clsid_manager.add_weapon(imgui_clsid_manager.weapon_flamethrower);
 
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_torch);
 	imgui_clsid_manager.add_item(imgui_clsid_manager.item_d_pda);
@@ -535,6 +537,7 @@ void InitImGuiCLSIDInGame()
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_m209);
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_f1);
 	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_rgd5);
+	imgui_clsid_manager.add_ammo(imgui_clsid_manager.ammo_flame_canister);
 
 	imgui_clsid_manager.add_outfit(imgui_clsid_manager.outfit);
 	imgui_clsid_manager.add_outfit(imgui_clsid_manager.helmet);

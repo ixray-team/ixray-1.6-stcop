@@ -22,6 +22,9 @@
 #include "ActorEffector.h"
 #include "Weapon.h"
 #include "../../../ActorCondition.h"
+#include "../abilities/poltergeist/PolterTele.h"
+#include "../abilities/poltergeist/PolterFlame.h"
+#include "../abilities/poltergeist/PolterChem.h"
 
 void SetActorVisibility(ALife::_OBJECT_ID who, float value);
 

@@ -9,7 +9,7 @@
 #include "Explosive.h"
 #include "inventory_item.h"
 
-class CExplosiveRocket final :
+class CExplosiveRocket :
 	public CCustomRocket,
 	public CInventoryItem,
 	public CExplosive

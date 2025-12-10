@@ -21,12 +21,12 @@ public:
 	virtual DLL_Pure* _construct() override;
 
 public:
-	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
-	virtual CInventoryItem* cast_inventory_item() { return this; }
-	virtual CAttachableItem* cast_attachable_item() { return this; }
-	virtual CFoodItem* cast_food_item() { return nullptr; }
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CEatableItem* cast_eatable_item() { return this; }
+	virtual CPhysicsShellHolder* cast_physics_shell_holder() override { return this; }
+	virtual CInventoryItem* cast_inventory_item() override { return this; }
+	virtual CAttachableItem* cast_attachable_item() override { return this; }
+	virtual CFoodItem* cast_food_item() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CEatableItem* cast_eatable_item() override { return this; }
 
 public:
 	virtual void Load(const char* section) override;

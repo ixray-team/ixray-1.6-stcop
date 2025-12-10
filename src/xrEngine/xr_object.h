@@ -8,6 +8,8 @@
 #include "ICollidable.h"
 #include "EngineAPI.h"
 #include "device.h"
+class CMissileSam;
+class IRepackerInterface;
 // refs
 //class	ENGINE_API	IRender_Visual;
 class	ENGINE_API	IRender_Sector;
@@ -215,6 +217,7 @@ public:
 	virtual CEntity*					cast_entity			()					{return nullptr;}
 	virtual CEntityAlive*				cast_entity_alive	()					{return nullptr;}
 	virtual CMissile*					cast_missile		()					{return nullptr;}
+	virtual CMissileSam*				cast_missile_sam	()					{return nullptr;}
 	virtual CPhysicsShellHolder*		cast_physics_shell_holder()				{return nullptr;}
 	virtual CWeapon*					cast_weapon			()					{return nullptr;}
 	virtual CHudItem*					cast_hud_item		()					{return nullptr;}
