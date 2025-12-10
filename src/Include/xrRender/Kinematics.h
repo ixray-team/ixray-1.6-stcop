@@ -54,6 +54,9 @@ virtual	const IBoneData&		_BCL	GetBoneData(u16 bone_id) const = 0;
 	virtual ICF			Fmatrix& _BCL	LL_GetTransform(u16 bone_id) = 0;
 	virtual ICF const	Fmatrix& _BCL	LL_GetTransform(u16 bone_id) const = 0;
 
+	virtual ICF			void	 _BCL	LL_GetBoneWorldPosition(u16 bone_id, const Fmatrix& xform, Fvector& result) {};
+	virtual ICF			void	 _BCL	LL_GetBoneWorldTransform(u16 bone_id, const Fmatrix& xform, Fmatrix& result) {};
+
 	virtual ICF Fmatrix&				LL_GetTransform_R(u16 bone_id) = 0;
 	virtual Fobb&						LL_GetBox(u16 bone_id) = 0;
 	virtual const Fbox&			_BCL	GetBox()const = 0;

@@ -989,17 +989,10 @@ Fvector	CEntityAlive::get_new_local_point_on_mesh	( u16& bone_id ) const
 
 Fvector CEntityAlive::get_last_local_point_on_mesh	( Fvector const& last_point, u16 bone_id ) const
 {
-	if ( bone_id == u16(-1) )
+	if ( bone_id == u16(-1) || !Visual())
 		return							inherited::get_last_local_point_on_mesh( last_point, bone_id );
 
-	IKinematics* const kinematics		= PKinematics( Visual() );
-	VERIFY								( kinematics );
-
-	Fmatrix transform = kinematics->LL_GetTransform(bone_id);
-
 	Fvector result;
-	transform.transform_tiny			( result, last_point );
-
-	XFORM().transform_tiny				( result, Fvector(result) );
-	return								result;
+	PKinematics(Visual())->LL_GetBoneWorldPosition(bone_id, XFORM(), result);
+	return result;
 }

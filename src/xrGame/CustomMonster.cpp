@@ -549,21 +549,16 @@ BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
 
 void CCustomMonster::eye_pp_s0			( )
 {
-	// Eye matrix
-	IKinematics* V							= PKinematics(Visual());
-	//V->CalculateBones						();
-	Fmatrix&	mEye						= V->LL_GetTransform(u16(eye_bone));
-	Fmatrix		X;							X.mul_43	(XFORM(),mEye);
-	VERIFY									(_valid(mEye));
-
 	const MonsterSpace::SBoneRotation		&rotation = head_orientation();
 
 	VERIFY									(_valid(rotation.current.yaw));
 	VERIFY									(_valid(m_fEyeShiftYaw));
 	VERIFY									(_valid(rotation.current.pitch));
-
 	eye_matrix.setHPB						(-rotation.current.yaw + m_fEyeShiftYaw,-rotation.current.pitch,0);
-	eye_matrix.c.add						(X.c,m_tEyeShift);
+
+	Fvector eye_wpos;
+	PKinematics(Visual())->LL_GetBoneWorldPosition(u16(eye_bone), XFORM(), eye_wpos);
+	eye_matrix.c.add						(eye_wpos,m_tEyeShift);
 
 	VERIFY									(_valid(eye_matrix));
 }
