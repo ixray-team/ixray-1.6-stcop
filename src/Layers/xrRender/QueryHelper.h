@@ -29,10 +29,10 @@ IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
 	return RDevice->CreateQuery( &desc, ppQuery);
 }
 
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, u32 Flags = 0)
+IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize )
 {
 	//	Use D3Dxx_ASYNC_GETDATA_DONOTFLUSH for prevent flushing
-	return RContext->GetData(pQuery, pData, DataSize, Flags);
+	return RContext->GetData(pQuery, pData, DataSize, 0);
 }
 
 IC HRESULT BeginQuery( ID3DQuery *pQuery)
@@ -54,7 +54,7 @@ IC HRESULT CreateQuery ( ID3DQuery **ppQuery, D3DQUERYTYPE Type)
 	return RDevice->CreateQuery(Type, ppQuery);
 }
 
-IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize, u32)
+IC HRESULT GetData( ID3DQuery *pQuery, void *pData, UINT DataSize )
 {
 	return pQuery->GetData( pData, DataSize, D3DGETDATA_FLUSH);
 }
