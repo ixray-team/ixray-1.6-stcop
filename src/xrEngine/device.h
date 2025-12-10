@@ -99,6 +99,8 @@ public:
 	Fmatrix									mView;
 	Fmatrix									mProject;
 	Fmatrix									mFullTransform;
+	Fmatrix									mInvFullTransform;
+	Fmatrix									mInv3x4FullTransform;
 
 	// Copies of corresponding members. Used for synchronization.
 	Fvector									vCameraPosition_saved;
@@ -114,6 +116,8 @@ public:
 	Fmatrix									mView_hud;
 	Fmatrix									mProject_hud;
 	Fmatrix									mFullTransform_hud;
+	Fmatrix									mFullTransform_hud_special;
+	Fmatrix									mInv3x4FullTransform_hud_special;
 
 	Fmatrix									mView_hud_old;
 	Fmatrix									mProject_hud_old;
@@ -219,9 +223,6 @@ public:
 	// Dependent classes
 	CStats*									Statistic;
 
-	// Engine flow-control
-	Fmatrix									mInvFullTransform;
-	
 	CRenderDevice();
 	virtual ~CRenderDevice() noexcept = default;
 
@@ -274,6 +275,46 @@ public:
 		);
 		if (I != seqParallel.end())
 			seqParallel.erase	(I);
+	}
+
+	ICF void transform_hud2world(Fmatrix& xf)
+	{
+		xf.mulA_43(mFullTransform_hud_special);
+		xf.mulA_43(mInv3x4FullTransform);
+	}
+
+	ICF void transform_hud2world(Fvector& pos)
+	{
+		mFullTransform_hud_special.transform_tiny(pos);
+		mInv3x4FullTransform.transform_tiny(pos);
+	}
+
+	ICF void transform_hud2world(Fvector& pos, Fvector& dir)
+	{
+		dir.add(pos);
+		transform_hud2world(dir);
+		transform_hud2world(pos);
+		dir = dir.sub(pos).normalize();
+	}
+
+	ICF void transform_world2hud(Fmatrix& xf)
+	{
+		xf.mulA_43(mFullTransform);
+		xf.mulA_43(mInv3x4FullTransform_hud_special);
+	}
+
+	ICF void transform_world2hud(Fvector& pos)
+	{
+		mFullTransform.transform_tiny(pos);
+		mInv3x4FullTransform_hud_special.transform_tiny(pos);
+	}
+
+	ICF void transform_world2hud(Fvector& pos, Fvector& dir)
+	{
+		dir.add(pos);
+		transform_world2hud(dir);
+		transform_world2hud(pos);
+		dir = dir.sub(pos).normalize();
 	}
 
 public:
