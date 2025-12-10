@@ -3150,6 +3150,47 @@ void CActor::SetBestEnemy(CScriptGameObject* enemy)
 	m_pBestEnemy = enemy;
 }
 
+
+void CActor::SetActorThirst(const float value)
+{
+	conditions().SetActorThirst(value);
+}
+
+void CActor::SetActorSatiety(const float value) 
+{ 
+	conditions().SetActorSatiety(value);
+}
+
+void CActor::SetActorSleepiness(const float value)
+{ 
+	conditions().SetActorSleepiness(value);
+}
+
+void CActor::SetActorHealth(const float value)
+{
+	conditions().SetHealth(value);
+}
+
+void CActor::SetActorPower(const float value)
+{ 
+	conditions().SetPower(value);
+}
+
+void CActor::SetActorRadiation(const float value)
+{ 
+	conditions().SetActorRadiation(value);
+}
+
+void CActor::SetActorPsyHealth(const float value)
+{ 
+	conditions().SetActorPsyHealth(value);
+}
+
+void CActor::SetActorMorale(const float value)
+{ 
+	conditions().SetActorMorale(value);
+}
+
 CScriptGameObject* CActor::GetBestEnemy()
 {
 	return m_pBestEnemy;

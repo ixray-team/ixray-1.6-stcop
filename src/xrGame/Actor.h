@@ -873,6 +873,15 @@ private:
 	CScriptGameObject* m_pBestEnemy = nullptr;
 
 public:
+	virtual void SetActorSleepiness(const float value);
+	virtual void SetActorSatiety(const float value);
+	virtual void SetActorThirst(const float value);
+	virtual void SetActorHealth(const float value);
+	virtual void SetActorPower(const float value);
+	virtual void SetActorRadiation(const float value);
+	virtual void SetActorPsyHealth(const float value);
+	virtual void SetActorMorale(const float value);
+
 	void SetBestEnemy(CScriptGameObject* enemy);
 	CScriptGameObject* GetBestEnemy();
 
