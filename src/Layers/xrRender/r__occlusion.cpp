@@ -136,12 +136,9 @@ R_occlusion::occq_result R_occlusion::occq_get		(u32&	ID		)
 		VERIFY2( ID<used.size(),make_string<const char*>("_Pos = %d, size() = %d ", ID, used.size()));
 		while	((hr=GetData(used[ID].Q, &fragments,sizeof(fragments)))==S_FALSE) 
 		{
-			if (!SwitchToThread())			
-				Sleep(ps_r2_wait_sleep);
-
-			if (T.GetElapsed_ms() > 500)	
+			if (T.GetElapsed_ms_f() >= 0.1f)
 			{
-				fragments	= (occq_result)-1;//0xffffffff;
+				fragments = 5;
 				break;
 			}
 		}
