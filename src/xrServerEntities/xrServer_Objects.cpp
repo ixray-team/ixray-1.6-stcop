@@ -8,6 +8,7 @@
 
 #include "StdAfx.h"
 #include "xrServer_Objects.h"
+#include <magic_enum/magic_enum.hpp>
 #include "game_base_space.h"
 #include "xrServer_Objects_ALife.h"
 
@@ -193,6 +194,62 @@ void CSE_Temporary::FillProps				(const char* pref, PropItemVec& values)
 {
 };
 #endif // #ifndef XRGAME_EXPORTS
+
+////////////////////////////////////////////////////////////////////////////
+// CSE_Conditional
+////////////////////////////////////////////////////////////////////////////
+CSE_Conditional::CSE_Conditional				(LPCSTR caSection) : CSE_Abstract(caSection)
+{
+	m_section_meet_cond = pSettings->r_string(caSection, "meet_cond");
+	m_section_not_meet_cond = pSettings->r_string(caSection, "not_meet_cond");
+	std::optional<Conditions> temp = magic_enum::enum_cast<Conditions>(pSettings->r_string(caSection, "condition"));
+	if (I_ASSERT_M(temp.has_value(), "Conditional spawn section has invalid condition", caSection))
+	{
+		m_condition = temp.value();
+	} else
+	{
+		m_condition = Conditions::Invalid;
+	}
+}
+
+CSE_Conditional::~CSE_Conditional				()
+{
+}
+
+void CSE_Conditional::STATE_Read				(NET_Packet	&tNetPacket, u16 size)
+{
+}
+
+void CSE_Conditional::STATE_Write				(NET_Packet	&tNetPacket)
+{
+}
+
+void CSE_Conditional::UPDATE_Read				(NET_Packet	&tNetPacket)
+{
+}
+
+void CSE_Conditional::UPDATE_Write			(NET_Packet	&tNetPacket)
+{
+}
+
+void CSE_Conditional::STATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Conditional::STATE")
+	{}
+}
+
+void CSE_Conditional::UPDATE_Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"CSE_Conditional::UPDATE")
+	{}
+}
+
+#ifndef XRGAME_EXPORTS
+void CSE_Conditional::FillProps				(LPCSTR pref, PropItemVec& values)
+{
+};
+#endif // #ifndef XRGAME_EXPORTS
+
 
 
 ////////////////////////////////////////////////////////////////////////////

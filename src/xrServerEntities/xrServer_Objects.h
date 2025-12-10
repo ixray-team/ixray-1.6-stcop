@@ -164,6 +164,10 @@
 // 128	 CSE_ALifeObjectClimable		added can_fire in smart covers;
 // 129	 CSE_ALifeItemWeapon			added cur_scope
 //       CSE_AlifeCreatureActor         added IsWaunded and helicopter sync
+// 130	 New features and strong recommendation to retire old serialization system:
+//		 Add CSE_Conditional, CSE_ALifeItemArtefactCombiner, CSE_ALifeItemFlamethrower and CSE_ALifeItemFuel
+//		 Add m_script_story_ID in CSE_ALifeObject
+//		 
 //------------------------------------------------------------------------------
 #define SPAWN_VERSION	u16(130)
 
@@ -188,6 +192,21 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
 	u32								m_tNodeID;
 									CSE_Temporary	(const char* caSection);
 	virtual							~CSE_Temporary	();
+SERVER_ENTITY_DECLARE_END
+
+SERVER_ENTITY_DECLARE_BEGIN(CSE_Conditional,CSE_Abstract)
+
+	enum class Conditions
+	{
+		Invalid,
+		LuaFunc
+	};
+
+	CSE_Conditional	(LPCSTR caSection);
+	virtual	~CSE_Conditional	();
+	shared_str m_section_meet_cond;
+	shared_str m_section_not_meet_cond;
+	Conditions m_condition;
 SERVER_ENTITY_DECLARE_END
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_PHSkeleton, IPureStateUpdateObject)

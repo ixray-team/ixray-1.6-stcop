@@ -1013,7 +1013,7 @@ void CCreature::load (IReader &packet)
 		memory().load		(packet);
 }
 
-void CCustomMonster::Serialize(ISaveObject& Object)
+void CCreature::Serialize(ISaveObject& Object)
 {
 	BEGIN_CHUNK(Object,"CCustomMonster")
 	{

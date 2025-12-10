@@ -28,12 +28,12 @@ private:
 	u16						m_lastHitBoneID = u16(-1);
 	ALife::_OBJECT_ID		m_lastHitWhoID = ALife::_OBJECT_ID(-1);
 public:
-	virtual CEntityAlive*		cast_entity_alive		()	{return this;}
-	virtual CActor*				cast_actor				()  {return nullptr;}
-	virtual CAI_Stalker* cast_stalker() { return nullptr; }
-	virtual CEntity* cast_entity() { return this; }
-	virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
-	virtual CGameObject* cast_game_object() { return this; }
+	virtual CEntityAlive*		cast_entity_alive		() override {return this;}
+	virtual CActor*				cast_actor				() override {return nullptr;}
+	virtual CAI_Stalker* cast_stalker() override { return nullptr; }
+	virtual CEntity* cast_entity() override { return this; }
+	virtual CInventoryOwner* cast_inventory_owner() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
 public:
 	bool					m_bEntityIgnoredByMonsters = false;
 	bool					m_bMobility;
@@ -41,6 +41,25 @@ public:
 	float					m_fIntelligence;
 	u32						m_use_timeout;
 	u8						m_squad_index;
+
+protected:
+	xr_hash_set<CObject*> AffectedEmiZones = {};
+
+public:
+
+	IC void SetInEmi(CObject* Zone) { AffectedEmiZones.emplace(Zone); }
+	IC void SetOutEmi(CObject* Zone) { AffectedEmiZones.erase(Zone); }
+	IC bool IsInEmi() { return !AffectedEmiZones.empty(); }
+
+protected:
+
+	// Force ignore on PDA
+	bool IgnoreOnPDA = false;
+
+public:
+
+	IC void SetIgnoreOnPDA(bool Ignore) { IgnoreOnPDA = Ignore; }
+	IC bool IsIgnoreOnPDA() { return IgnoreOnPDA; }
 
 private:
 	bool					m_is_agresive;

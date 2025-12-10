@@ -476,6 +476,7 @@ void CSE_ALifeObject::STATE_Write			(NET_Packet &tNetPacket)
 	tNetPacket.w_stringZ		(m_ini_string);
 	tNetPacket.w_u32			(m_story_id);
 	tNetPacket.w_u32			(m_spawn_story_id);
+	tNetPacket.w_stringZ		(m_script_story_ID);
 }
 
 void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
@@ -536,6 +537,9 @@ void CSE_ALifeObject::STATE_Read			(NET_Packet &tNetPacket, u16 size)
 
 	if (m_wVersion > 111)
 		tNetPacket.r_u32		(m_spawn_story_id);
+
+	if (m_wVersion > 129)
+		tNetPacket.r_stringZ		(m_script_story_ID);
 }
 
 void CSE_ALifeObject::UPDATE_Write			(NET_Packet &tNetPacket)
@@ -583,6 +587,7 @@ void CSE_ALifeObject::FillProps				(const char* pref, PropItemVec& items)
 	PHelper().CreateFlag32		(items,	PrepareKey(pref,*s_name,"ALife\\Used AI locations"),	&m_flags,			flUsedAI_Locations);
 	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Story ID"),				&m_story_id,		&*fp_data.story_names.begin(), fp_data.story_names.size());
 	PHelper().CreateRToken32	(items,	PrepareKey(pref,*s_name,"ALife\\Spawn Story ID"),		&m_spawn_story_id,	&*fp_data.spawn_story_names.begin(), fp_data.spawn_story_names.size());
+	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"ALife\\Script Story ID"),&m_script_story_ID);
 #	endif // #ifdef XRSE_FACTORY_EXPORTS
 }
 #endif // #ifndef XRGAME_EXPORTS

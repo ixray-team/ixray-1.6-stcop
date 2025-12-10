@@ -131,6 +131,73 @@ public:
 	void	net_Destroy					();
 };
 
+class CHeliFlare
+{
+public:
+	struct Constants
+	{
+		float xzStartSpeed = 0.0f;
+		float xzSlowing = 0.0f;
+		float GravitySpeed = 0.0f;
+		float LifeTimeMax = 0.0f;
+	};
+
+private:
+
+	Constants* constants_ = nullptr;
+	Fvector FlarePosition{};
+	Fvector FlareDirection{};
+	float CurrentSpeed = 0.0f;
+
+	//Fmatrix xform{};
+	float LifeTime = 0.0f;
+
+	xr_shared_ptr<CParticlesObject> m_particles = nullptr;
+
+public:
+	~CHeliFlare();
+	void InitParticle(Constants* constants_, xr_string ParticlesName);
+
+	void Serialize(ISaveObject& Object);
+	void SetTransform(Fmatrix xform){FlarePosition = xform.c;}
+	void SetDirection(Fvector fvector){FlareDirection = fvector;}
+	void Activate();
+	void Deactivate();
+
+	bool IsExpired() { return LifeTime >= constants_->LifeTimeMax; }
+	void Update(float f_time_delta);
+};
+
+ISaveObject& operator<<(ISaveObject& Object, CHeliFlare& HeliFlare);
+
+class CHeliFlareManager
+{
+
+	CHeliFlareManager();
+
+	CHeliFlare* GetInactiveFlare();
+	
+	CHeliFlare::Constants FlareData = {};
+	xr_deque<CHeliFlare*> InactiveFlares = {};
+	xr_deque<CHeliFlare*> ActiveFlares = {};
+	xr_string FlareParticle = "";
+	
+public:
+
+	CHeliFlareManager(const CHeliFlareManager&) = delete;
+	CHeliFlareManager(CHeliFlareManager&&) = delete;
+	CHeliFlareManager& operator=(const CHeliFlareManager&) = delete;
+	CHeliFlareManager& operator=(CHeliFlareManager&&) = delete;
+
+	static CHeliFlareManager& GetInstance();
+
+	void Load(LPCSTR section);
+
+	void Update(float delta);
+	void Serialize(ISaveObject& Object);
+	void ActivateFlare(Fmatrix xform, Fvector dir);
+};
+
 class CHelicopter final : public CEntity,
 						public CShootingObject,
 						public CRocketLauncher,
@@ -233,6 +300,11 @@ protected:
 	shared_str						m_smoke_particle;
 	CParticlesObject*				m_pParticle;
 	Fmatrix							m_particleXFORM;
+	
+	u32 FlaresPairsDropCount = 0;
+	u32 RequestedDropFlaresCount = 0;
+	float FlaresDropDelay = 0.0f;
+	float LastFlareDropTime = 0.0f;
 
 	void							StartFlame					();
 	void							UpdateHeliParticles			();
@@ -308,10 +380,10 @@ public:
 	virtual const Fmatrix&			get_ParticlesXFORM			();
 	virtual const Fvector&			get_CurrentFirePoint		();
 
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CExplosive* cast_explosive() { return this; }
-	virtual CHelicopter* cast_helicopter() { return this; }
-	virtual CPHSkeleton* PHSkeleton() { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CExplosive* cast_explosive() override { return this; }
+	virtual CHelicopter* cast_helicopter() override { return this; }
+	virtual CPHSkeleton* PHSkeleton() override { return this; }
 	virtual CRocketLauncher* cast_rocket_launcher() override { return this; }
 
 public:
@@ -357,6 +429,8 @@ public:
 	float					GetSafeAltitude					()				{return m_movement.GetSafeAltitude();};
 	float					GetHeliHealth					() const		{return inherited::GetfHealth();}
 	float					SetHeliHealth					(float value)	{return inherited::SetfHealth(value);}
+
+	void DropFlares();
 
 #ifdef DEBUG_DRAW
 public:

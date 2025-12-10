@@ -196,6 +196,33 @@ bool CWeaponAmmo::Get(CCartridge &cartridge)
 	return true;
 }
 
+bool CWeaponAmmo::Repack(PIItem Other)
+{
+	CWeaponAmmo* OtherCasted = smart_cast<CWeaponAmmo*>(Other);
+	VERIFY(OtherCasted);
+	if (OtherCasted->m_boxCurr == OtherCasted->m_boxSize)
+	{
+		return true;
+	}
+	u32 Sum = OtherCasted->m_boxCurr + m_boxCurr;
+	if (Sum > OtherCasted->m_boxSize)
+	{
+		m_boxCurr = Sum - OtherCasted->m_boxSize;
+		OtherCasted->m_boxCurr = OtherCasted->m_boxSize;
+		return true;
+	}
+	OtherCasted->m_boxCurr = Sum;
+	if (OnServer()) {
+		SetDropManual(TRUE);
+	}
+	return false;
+}
+
+bool CWeaponAmmo::IsValid() const
+{
+	return m_boxCurr;
+}
+
 void CWeaponAmmo::renderable_Render() 
 {
 	if(!m_ready_to_destroy)

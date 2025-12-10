@@ -50,8 +50,8 @@ public:
 	virtual void load(IReader &input_packet) override;
 	virtual void Serialize(ISaveObject& Object) override;
 
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CLevelChanger* cast_level_changer() { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CLevelChanger* cast_level_changer() override { return this; }
 
 #ifdef DEBUG_DRAW
 	virtual void		OnRender();

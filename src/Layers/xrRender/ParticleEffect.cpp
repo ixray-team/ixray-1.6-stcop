@@ -82,7 +82,9 @@ void CParticleEffect::UpdateParent(const Fmatrix& m, const Fvector& velocity, bo
 	xrCriticalSectionGuard guard(&onframe_lock);
 	m_RT_Flags.set(flRT_XFORM, bXFORM);
 	if (bXFORM)
+	{
 		m_XFORM.set(m);
+	}
 	else
 	{
 		m_InitialPosition = m.c;

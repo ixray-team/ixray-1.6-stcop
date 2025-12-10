@@ -58,12 +58,12 @@ public:
 	CEntity					();
 	virtual ~CEntity		();
 	virtual DLL_Pure		*_construct				();
-	virtual CEntity*		cast_entity			()	{return this;}
-	virtual CActor*			cast_actor			()  {return nullptr;}
-	virtual CAI_Stalker* cast_stalker() { return nullptr; }
-	virtual CEntityAlive* cast_entity_alive() { return nullptr; }
-	virtual CInventoryOwner* cast_inventory_owner() { return nullptr; }
-	virtual CGameObject* cast_game_object() { return this; }
+	virtual CEntity*		cast_entity			() override {return this;}
+	virtual CActor*			cast_actor			() override {return nullptr;}
+	virtual CAI_Stalker* cast_stalker() override { return nullptr; }
+	virtual CEntityAlive* cast_entity_alive() override { return nullptr; }
+	virtual CInventoryOwner* cast_inventory_owner() override { return nullptr; }
+	virtual CGameObject* cast_game_object() override { return this; }
 
 public:
 
@@ -71,7 +71,7 @@ public:
 	virtual void Load(const char* section) override;
 	virtual void reinit() override;
 	virtual void reload(const char* section) override;
-	bool net_Spawn(CSE_Abstract* DC) override override;
+	bool net_Spawn(CSE_Abstract* DC) override;
 	virtual void net_Destroy() override;
 	
 	virtual void Serialize(ISaveObject& Object) override { inherited::Serialize(Object); };

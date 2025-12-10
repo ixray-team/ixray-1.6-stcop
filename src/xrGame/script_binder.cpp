@@ -210,7 +210,7 @@ void CScriptBinder::Serialize(ISaveObject& Object)
 	}
 }
 
-BOOL CScriptBinder::net_SaveRelevant()
+bool CScriptBinder::net_SaveRelevant()
 {
 	if (m_object) {
 		try {

@@ -43,9 +43,9 @@ public:
 	virtual	bool	bfAssignWatch(CScriptEntityAction	*tpEntityAction);
 	virtual	bool	bfAssignObject(CScriptEntityAction *tpEntityAction);
 
-	virtual CScriptEntity* cast_script_entity() { return this; }
-	virtual CGameObject* cast_game_object() { return this; }
-	virtual CProjector* cast_projector() { return this; }
+	virtual CScriptEntity* cast_script_entity() override { return this; }
+	virtual CGameObject* cast_game_object() override { return this; }
+	virtual CProjector* cast_projector() override { return this; }
 
 			Fvector GetCurrentDirection	();
 private:

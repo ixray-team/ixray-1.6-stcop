@@ -97,10 +97,12 @@ enum class EEngineExternalSystem : u8
 	AdvancedSerialization,
 	AdvancedSerializationDebugLog,
 	EngineScriptStoryID,
+	EngineAmmoRepacker,
 	CustomMessageInClipboardOnCrash,
 	DisablePause,
 	DisableConsole,
-	None
+	None,
+	Unknown = static_cast<u8>(-1)
 };
 
 constexpr const char* kPlatformNameCOP = "cop";

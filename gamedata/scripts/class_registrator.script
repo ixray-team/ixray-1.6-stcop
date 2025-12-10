@@ -134,4 +134,10 @@ function register(object_factory)
 	-- ONLINE_OFFLINE_GROUP --------------------------------------------------------------------------------------------------------------
 
 	s_register	(object_factory, 							"sim_squad_scripted.sim_squad_scripted",	"ON_OFF_S",			"online_offline_group_s")
+    
+	cs_register	(object_factory, "CAnomalPseudoGigant",   	"se_monster.se_monster",				"SM_GIG_A",			"anom_gigant_s")
+	cs_register	(object_factory, "CMagnetZone",				"se_zones.se_zone_anom",				"ZS_MAGNT",			"zone_magnet_s")
+	cs_register	(object_factory, "CEmiZone",				"se_zones.se_zone_anom",				"ZS_EMI",			"zone_emi_s")
+	cs_register	(object_factory, "CFlamethrower",			"se_item.se_flamethrower",				"WP_FLAME",			"wpn_flamethrower_s")
+	cs_register	(object_factory, "CFlameCanister",			"se_item.se_flame_canister",			"AM_FLC_S",		"wpn_flame_canister_s")
 end

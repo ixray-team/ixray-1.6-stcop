@@ -37,16 +37,16 @@ public:
 	CAI_Trader		();
 	virtual				~CAI_Trader		();
 
-	virtual CAttachmentOwner*			cast_attachment_owner	()						{return this;}
-	virtual CInventoryOwner*			cast_inventory_owner	()						{return this;}
-	virtual CEntityAlive*				cast_entity_alive		()						{return this;}
-	virtual CEntity*					cast_entity				()						{return this;}
-	virtual CGameObject*				cast_game_object		()						{return this;}
-	virtual CPhysicsShellHolder*		cast_physics_shell_holder	()					{return this;}
-	virtual CScriptEntity*				cast_script_entity		()						{return this;}
-	virtual CAI_Trader*					cast_trader				()						{ return this; }
-	virtual CPhraseDialogManager*		cast_phrase_dialog_manager()					{ return this; }
-	virtual CAI_PhraseDialogManager*		cast_ai_phrase_dialog_manager()				{ return this; }
+	virtual CAttachmentOwner*			cast_attachment_owner	() override {return this;}
+	virtual CInventoryOwner*			cast_inventory_owner	() override {return this;}
+	virtual CEntityAlive*				cast_entity_alive		() override {return this;}
+	virtual CEntity*					cast_entity				() override {return this;}
+	virtual CGameObject*				cast_game_object		() override {return this;}
+	virtual CPhysicsShellHolder*		cast_physics_shell_holder	() override {return this;}
+	virtual CScriptEntity*				cast_script_entity		() override {return this;}
+	virtual CAI_Trader*					cast_trader				() override { return this; }
+	virtual CPhraseDialogManager*		cast_phrase_dialog_manager() override { return this; }
+	virtual CAI_PhraseDialogManager*		cast_ai_phrase_dialog_manager() override { return this; }
 
 	virtual DLL_Pure	*_construct		();
 	virtual void		Load			( const char* section );

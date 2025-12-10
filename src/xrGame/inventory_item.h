@@ -15,6 +15,9 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "../xrScripts/script_export_space.h"
 
+class CFlameCanister;
+class CFlamethrower;
+
 enum EHandDependence {
 	hdNone = 0,
 	hd1Hand = 1,
@@ -384,6 +387,9 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return nullptr; }
 	virtual CBackpack* cast_backpack() { return nullptr; }
 	virtual CWeaponShotgun* cast_weapon_shotgun() { return nullptr; }
+	virtual CFlameCanister* cast_flame_canister() { return nullptr; }
+	virtual CFlamethrower* cast_flamethrower() { return nullptr; }
+	virtual IRepackerInterface* cast_repacker_interface() {return nullptr;}
 
 	////////// upgrades //////////////////////////////////////////////////
 public:

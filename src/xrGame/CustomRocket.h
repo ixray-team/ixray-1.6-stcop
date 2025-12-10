@@ -120,6 +120,7 @@ protected:
 	void PlayContact();
 	static void	ObjectContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 
+	virtual bool IsEngineInfinite() { return false; }
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
 	//////////////////////////////////////////////////////////////////////////
@@ -128,6 +129,7 @@ protected:
 	bool m_bLightsEnabled = false;
 	//флаг, что подсветка будет остановлена
 	//вместе с двигателем
+	bool m_affect_gravity = true;
 	bool m_bStopLightsWithEngine = true;
 	//подсветка во время полета и работы двигателя
 	ref_light m_pTrailLight = nullptr;

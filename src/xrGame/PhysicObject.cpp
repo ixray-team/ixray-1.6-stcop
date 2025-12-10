@@ -306,9 +306,10 @@ void CPhysicObject::CreateSkeleton(CSE_ALifeObjectPhysic* po)
 	if(m_pPhysicsShell) return;
 	if(!Visual()) return;
 	const char*	fixed_bones=*po->fixed_bones;
+	bool Fixed = fixed_bones ? fixed_bones[0]!='\0' : false;
 	m_pPhysicsShell=P_build_Shell(this,!po->_flags.test(CSE_PHSkeleton::flActive),fixed_bones);
-	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,fixed_bones[0]!='\0');
-	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,fixed_bones[0]!='\0');
+	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,Fixed);
+	ApplySpawnIniToPhysicShell(PKinematics(Visual())->LL_UserData(),m_pPhysicsShell,Fixed);
 }
 
 void CPhysicObject::Load(const char* section)

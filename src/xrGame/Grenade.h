@@ -77,12 +77,12 @@ protected:
 public:
 
 	virtual bool			UsedAI_Locations					();
-	virtual CGrenade		*cast_grenade						()	{return this;}
-	virtual CExplosive		*cast_explosive						()	{return this;}
-	virtual CMissile		*cast_missile						()	{return this;}
-	virtual CHudItem		*cast_hud_item						()	{return this;}
-	virtual CGameObject		*cast_game_object					()	{return this;}
-	virtual IDamageSource	*cast_IDamageSource					()	{return CExplosive::cast_IDamageSource();}
+	virtual CGrenade		*cast_grenade						() override {return this;}
+	virtual CExplosive		*cast_explosive						() override {return this;}
+	virtual CMissile		*cast_missile						() override {return this;}
+	virtual CHudItem		*cast_hud_item						() override {return this;}
+	virtual CGameObject		*cast_game_object					() override {return this;}
+	virtual IDamageSource	*cast_IDamageSource					() override {return CExplosive::cast_IDamageSource();}
 
 	SContactGrenadeParams& ContactParams						() { return m_contact_grenade_params; }
 

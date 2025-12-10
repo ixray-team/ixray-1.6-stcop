@@ -32,6 +32,11 @@
 #	include	"ActorCondition.h"
 #	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 #	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
+#	include <ai/monsters/anomal_pseudogigant/anomal_pseudo_gigant.h>
+#	include <EmiZone.h>
+#	include <MagnetZone.h>
+#	include <Flamethrower.h>
+#	include "FlamethrowerTraceCollision.h"
 #	include "EnhancementEditionLuaLayer.h"
 #	include "InteractiveObject.h"
 #	include "antigas_filter.h"
@@ -90,11 +95,13 @@ void export_classes	(lua_State *L)
 	CSE_ALifeItem::script_register(L);
 	CSE_ALifeItemTorch::script_register(L);
 	CSE_ALifeItemAmmo::script_register(L);
+	CSE_ALifeItemFuel::script_register(L);
 	CSE_ALifeItemWeapon::script_register(L);
 	CSE_ALifeItemWeaponMagazined::script_register(L);
 	CSE_ALifeItemWeaponMagazinedWGL::script_register(L);
 	CSE_ALifeItemWeaponShotGun::script_register(L);
 	CSE_ALifeItemWeaponAutoShotGun::script_register(L);
+	CSE_ALifeItemFlamethrower::script_register(L);
 	CSE_ALifeItemDetector::script_register(L);
 	CSE_ALifeItemArtefact::script_register(L);
 	CSE_ALifeItemPDA::script_register(L);
@@ -270,6 +277,9 @@ void export_classes	(lua_State *L)
 	CMedkit::script_register(L);
 	CPhysicsShellHolder::script_register(L);
 	CWeaponAmmo::script_register(L);
+	CAnomalPseudoGigant::script_register(L);
+	CEmiZone::script_register(L);
+	CMagnetZone::script_register(L);
 	CGameTaskManager::script_register(L);
 
 	RPoint::script_register(L);
