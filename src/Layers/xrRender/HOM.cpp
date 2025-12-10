@@ -265,76 +265,102 @@ void CHOM::Render_DB			(CFrustum& base)
 	}
 }
 
-void CHOM::Render		(CFrustum& base)
+void CHOM::Render(CFrustum& base)
 {
-	if (!bEnabled)		return;
-	
-	Device.Statistic->RenderCALC_HOM.Begin	();
-	Raster.clear		();
-	Render_DB			(base);
-	Raster.propagade	();
-	MT_frame_rendered	= Device.dwFrame;
-	Device.Statistic->RenderCALC_HOM.End	();
+	if (!bEnabled)
+	{
+		return;
+	}
+
+	Device.Statistic->RenderCALC_HOM.Begin();
+	Raster.clear();
+	Render_DB(base);
+	Raster.propagade();
+	MT_frame_rendered = Device.dwFrame;
+	Device.Statistic->RenderCALC_HOM.End();
 }
 
-ICF	BOOL	xform_b0	(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+ICF	bool xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
-	float z		= _x*X._13 + _y*X._23 + _z*X._33 + X._43;			if (z<EPS) return TRUE;
-	float iw	= 1.f/(_x*X._14 + _y*X._24 + _z*X._34 + X._44);		
-	min.x=max.x	= (_x*X._11 + _y*X._21 + _z*X._31 + X._41)*iw;
-	min.y=max.y	= (_x*X._12 + _y*X._22 + _z*X._32 + X._42)*iw;	
-	minz		= 0.f+z*iw;
+	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+	if (z < EPS)
+	{
+		return TRUE;
+	}
+
+	float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+	min.x = max.x = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
+	min.y = max.y = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
+	minz = 0.f + z * iw;
 	return FALSE;
 }
-ICF	BOOL	xform_b1	(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+
+ICF	bool xform_b1(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
 {
 	float t;
-	float z		= _x*X._13 + _y*X._23 + _z*X._33 + X._43;		if (z<EPS)	return TRUE;
-	float iw	= 1.f/(_x*X._14 + _y*X._24 + _z*X._34 + X._44);
-	t 			= (_x*X._11 + _y*X._21 + _z*X._31 + X._41)*iw;	if (t<min.x) min.x=t; else if (t>max.x) max.x=t;
-	t			= (_x*X._12 + _y*X._22 + _z*X._32 + X._42)*iw;	if (t<min.y) min.y=t; else if (t>max.y) max.y=t;
-	t			= 0.f+z*iw;										if (t<minz)	 minz =t;
-	return FALSE;
+	float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
+	if (z < EPS)
+	{
+		return TRUE;
+	}
+
+	float iw = 1.f / (_x * X._14 + _y * X._24 + _z * X._34 + X._44);
+	t = (_x * X._11 + _y * X._21 + _z * X._31 + X._41) * iw;
+	if (t < min.x) min.x = t; else if (t > max.x) max.x = t;
+	t = (_x * X._12 + _y * X._22 + _z * X._32 + X._42) * iw;
+	if (t < min.y) min.y = t; else if (t > max.y) max.y = t;
+	t = 0.f + z * iw;
+
+	if (t < minz)
+		minz = t;
+	return false;
 }
-IC	BOOL	_visible	(Fbox& B, Fmatrix& m_xform_01)
+
+IC bool _visible(Fbox& B, Fmatrix& m_xform_01)
 {
 	// Find min/max points of xformed-box
 	Fvector2	min,max;
 	float		z;
-	if (xform_b0(min,max,z,m_xform_01,B.min.x, B.min.y, B.min.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.min.y, B.max.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.min.y, B.max.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.min.y, B.min.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.max.y, B.min.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.max.y, B.max.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.max.y, B.max.z)) return TRUE;
-	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.max.y, B.min.z)) return TRUE;
-	return Raster.test	(min.x,min.y,max.x,max.y,z);
+	if (xform_b0(min,max,z,m_xform_01,B.min.x, B.min.y, B.min.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.min.y, B.max.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.min.y, B.max.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.min.y, B.min.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.max.y, B.min.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.min.x, B.max.y, B.max.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.max.y, B.max.z)) return true;
+	if (xform_b1(min,max,z,m_xform_01,B.max.x, B.max.y, B.min.z)) return true;
+	return !!Raster.test	(min.x,min.y,max.x,max.y,z);
 }
 
-BOOL CHOM::visible		(Fbox3& B)
+bool CHOM::visible(Fbox3& B)
 {
-	if (!bEnabled)							return TRUE;
-	if (B.contains(Device.vCameraPosition))	return TRUE;
-	return _visible		(B,m_xform_01)		;
+	if (!bEnabled)
+		return true;
+
+	if (B.contains(Device.vCameraPosition))
+		return true;
+
+	return _visible(B, m_xform_01);
 }
 
-BOOL CHOM::visible		(Fsphere& S)
+bool CHOM::visible(Fsphere& S)
 {
-	Fbox B;B.setb(S.P,Fvector().set(S.R, S.R, S.R));
+	Fbox B; B.setb(S.P, Fvector().set(S.R, S.R, S.R));
 	return visible(B);
 }
 
-BOOL CHOM::visible		(Fbox2& B, float depth)
+bool CHOM::visible(Fbox2& B, float depth)
 {
-	if (!bEnabled)		return TRUE;
+	if (!bEnabled)
+		return true;
+
 	return Raster.test	(B.min.x,B.min.y,B.max.x,B.max.y,depth);
 }
 
-BOOL CHOM::visible		(vis_data& vis)
+bool CHOM::visible(vis_data& vis)
 {
-	if (Device.dwFrame<vis.hom_frame)	return TRUE;				// not at this time :)
-	if (!bEnabled)						return TRUE;				// return - everything visible
+	if (Device.dwFrame<vis.hom_frame)	return true;				// not at this time :)
+	if (!bEnabled)						return true;				// return - everything visible
 	
 	// Now, the test time comes
 	// 0. The object was hidden, and we must prove that each frame	- test		| frame-old, tested-new, hom_res = false;
@@ -346,7 +372,7 @@ BOOL CHOM::visible		(vis_data& vis)
 #ifdef DEBUG
 	Device.Statistic->RenderCALC_HOM.Begin	();
 #endif
-	BOOL result			= _visible			(vis.box,m_xform_01);
+	bool result			= _visible			(vis.box,m_xform_01);
 	u32  delay			= 1;
 	if (result)
 	{
@@ -364,43 +390,58 @@ BOOL CHOM::visible		(vis_data& vis)
 	return result;
 }
 
-BOOL CHOM::visible		(sPoly& P)
+bool CHOM::visible(sPoly& P)
 {
-	if (!bEnabled)		return TRUE;
+	if (!bEnabled)
+	{
+		return true;
+	}
 
 	// Find min/max points of xformed-box
-	Fvector2	min,max;
-	float		z;
-	
-	if (xform_b0(min,max,z,m_xform_01,P.front().x,P.front().y,P.front().z)) return TRUE;
-	for (u32 it=1; it<P.size(); it++)
-		if (xform_b1(min,max,z,m_xform_01,P[it].x,P[it].y,P[it].z)) return TRUE;
-	return Raster.test	(min.x,min.y,max.x,max.y,z);
+	Fvector2 min, max;
+	float z;
+
+	if (xform_b0(min, max, z, m_xform_01, P.front().x, P.front().y, P.front().z))
+	{
+		return true;
+	}
+
+	for (u32 it = 1; it < P.size(); it++)
+	{
+		if (xform_b1(min, max, z, m_xform_01, P[it].x, P[it].y, P[it].z))
+		{
+			return true;
+		}
+	}
+
+	return Raster.test(min.x, min.y, max.x, max.y, z);
 }
 
-void CHOM::Disable		()
+void CHOM::Disable()
 {
-	bEnabled			= FALSE;
+	bEnabled = FALSE;
 }
 
-void CHOM::Enable		()
+void CHOM::Enable()
 {
-	bEnabled			= m_pModel?TRUE:FALSE;
+	bEnabled = m_pModel != nullptr;
 }
 
 #ifdef DEBUG_DRAW
 #include "dxDebugRender.h"
 
-void CHOM::OnRender	()
+void CHOM::OnRender()
 {
 	Raster.on_dbg_render();
 
-	if (psDeviceFlags.is(rsOcclusionDraw)){
-
-		if (m_pModel) {
+	if (psDeviceFlags.is(rsOcclusionDraw))
+	{
+		if (m_pModel)
+		{
 			xr_vector<u32> pairs;
 			pairs.resize(m_pModel->get_tris_count() * 6);
-			for (size_t i = 0; i < m_pModel->get_tris_count(); i++) {
+			for (size_t i = 0; i < m_pModel->get_tris_count(); i++)
+			{
 				CDB::TRI* T = m_pModel->get_tris() + i;
 				Fvector* verts = m_pModel->get_verts();
 				pairs[(i * 6) + 0] = T->verts[0];
@@ -411,52 +452,11 @@ void CHOM::OnRender	()
 				pairs[(i * 6) + 5] = T->verts[0];
 			}
 
-			DebugRenderImpl.add_lines(
+			DebugRenderImpl.add_lines
+			(
 				m_pModel->get_verts(), m_pModel->get_verts_count(),
 				pairs.data(), (u32)pairs.size() / 2, 0xFFFFFFFF
 			);
-#if 0 
-			using LVec = xr_vector<FVF::L>;
-			using LVecIt = LVec::iterator;
-
-			static LVec	poly;	poly.resize(m_pModel->get_tris_count() * 3);
-			static LVec	line;	line.resize(m_pModel->get_tris_count() * 6);
-			for (int it = 0; it < m_pModel->get_tris_count(); it++) {
-				CDB::TRI* T = m_pModel->get_tris() + it;
-				Fvector* verts = m_pModel->get_verts();
-				poly[it * 3 + 0].set(*(verts + T->verts[0]), 0x80FFFFFF);
-				poly[it * 3 + 1].set(*(verts + T->verts[1]), 0x80FFFFFF);
-				poly[it * 3 + 2].set(*(verts + T->verts[2]), 0x80FFFFFF);
-				line[it * 6 + 0].set(*(verts + T->verts[0]), 0xFFFFFFFF);
-				line[it * 6 + 1].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-				line[it * 6 + 2].set(*(verts + T->verts[1]), 0xFFFFFFFF);
-				line[it * 6 + 3].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-				line[it * 6 + 4].set(*(verts + T->verts[2]), 0xFFFFFFFF);
-				line[it * 6 + 5].set(*(verts + T->verts[0]), 0xFFFFFFFF);
-			}
-			RCache.set_xform_world(Fidentity);
-			// draw solid
-			Device.SetNearer(TRUE);
-			RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_Draw(D3DPT_TRIANGLELIST, &*poly.begin(), (int)poly.size() / 3);
-			Device.SetNearer(FALSE);
-			// draw wire
-			if (bDebug) {
-				RImplementation.rmNear();
-			}
-			else {
-				Device.SetNearer(TRUE);
-			}
-			RCache.set_Shader(dxRenderDeviceRender::Instance().m_SelectionShader);
-			RCache.dbg_Draw(D3DPT_LINELIST, &*line.begin(), (int)line.size() / 2);
-			if (bDebug) {
-				RImplementation.rmNormal();
-			}
-			else {
-				Device.SetNearer(FALSE);
-			}
-		}
-#endif
 		}
 	}
 }
@@ -465,12 +465,13 @@ void CHOM::OnRender	()
 #ifdef DEBUG
 void CHOM::stats()
 {
-	if (m_pModel){
-		CGameFont& F		= *Device.Statistic->Font();
-		F.OutNext			(" **** HOM-occ ****");
-		F.OutNext			("  visible:  %2d", tris_in_frame_visible);
-		F.OutNext			("  frustum:  %2d", tris_in_frame);
-		F.OutNext			("    total:  %2d", m_pModel->get_tris_count());
+	if (m_pModel)
+	{
+		CGameFont& F = *Device.Statistic->Font();
+		F.OutNext(" **** HOM-occ ****");
+		F.OutNext("  visible:  %2d", tris_in_frame_visible);
+		F.OutNext("  frustum:  %2d", tris_in_frame);
+		F.OutNext("    total:  %2d", m_pModel->get_tris_count());
 	}
 }
 #endif
