@@ -2443,6 +2443,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "hud_info", &psHUD_Flags, HUD_INFO);
 	CMD3(CCC_Mask, "hud_draw", &psHUD_Flags, HUD_DRAW);
 	CMD3(CCC_Mask, "hud_minimap", &psHUD_Flags, HUD_MINIMAP);
+	CMD3(CCC_Mask, "hud_hide_quick_slots", &psHUD_Flags, HUD_HIDE_QUICK_SLOTS);
 
 	// hud
 	psHUD_Flags.set(HUD_CROSSHAIR, true);
@@ -2450,6 +2451,7 @@ void CCC_RegisterCommands()
 	psHUD_Flags.set(HUD_DRAW, true);
 	psHUD_Flags.set(HUD_INFO, true);
 	psHUD_Flags.set(HUD_MINIMAP, true);
+	psHUD_Flags.set(HUD_HIDE_QUICK_SLOTS, true);
 
 	CMD3(CCC_Mask, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
 	CMD3(CCC_Mask, "hud_crosshair_point", &psHUD_Flags, HUD_CROSSHAIR_POINT);
