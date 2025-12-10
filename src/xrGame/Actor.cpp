@@ -1524,7 +1524,7 @@ void CActor::UpdateCL()
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsAnyAnimatorActive())
 	{
-
+	
 		if (item != nullptr || dev != nullptr)
 		{
 			if (dev != nullptr)
@@ -1535,21 +1535,21 @@ void CActor::UpdateCL()
 					dev->HideDetector(true, true);
 				}
 			}
-
+	
 			if (item != nullptr)
 			{
 				if (old_slot == 0)
 				{
 					old_slot = inventory().GetActiveSlot();
 				}
-
+	
 				if (item->GetState() == CHUDState::eIdle)
 				{
 					inventory().Activate(0);
 				}
 			}
 		}
-		else if (item == nullptr && dev == nullptr)
+		else if (g_player_hud->attached_item(0) == nullptr && g_player_hud->attached_item(1) == nullptr)
 		{
 			g_player_hud->m_need_reload = true;
 			if (g_player_hud->NextHUDSect.size() > 0)
@@ -1561,24 +1561,24 @@ void CActor::UpdateCL()
 			{
 				g_player_hud->load_default();
 			}
-
+	
 			u16 saved_old_slot = NO_ACTIVE_SLOT;
-
+	
 			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
 			{
 				saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
 				inventory().Activate(old_slot);
 				old_slot = 0;
 			}
-
+	
 			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == PISTOL_SLOT_NEW || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
-
+	
 			if (bres && need_restore_detector && GetDevice(true) != nullptr)
 			{
 				need_restore_detector = false;
 				GetDevice(true)->switch_device();
 			}
-
+	
 		}
 	}
 
