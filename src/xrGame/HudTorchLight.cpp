@@ -6,28 +6,6 @@
 #include "Actor.h"
 #include "Inventory.h"
 
-void TransformToHudTemp(Fvector& pos)
-{
-	Fmatrix inv_v;
-	inv_v.invert(Device.mView);
-	Fmatrix inv_p;
-	inv_p.invert(Device.mProject);
-
-	Device.mView.transform_tiny(pos);
-	Device.mProject_hud.transform_tiny(pos);
-
-	inv_p.transform_tiny(pos);
-	inv_v.transform_tiny(pos);
-}
-
-void TransformToHud(Fvector& pos, Fvector& dir)
-{
-	dir.add(pos);
-	TransformToHudTemp(dir);
-	TransformToHudTemp(pos);
-	dir = dir.sub(pos).normalize();
-}
-
 HudLightTorch::~HudLightTorch()
 {
 	if (RenderLight != nullptr)
@@ -139,9 +117,7 @@ void HudLightTorch::SwitchTorchlight(bool isActive)
 void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 {
 	if (RenderLight == nullptr || OmniLight == nullptr || item == nullptr || item->object().Visual() == nullptr)
-	{
 		return;
-	}
 
 	if (item->object().H_Parent())
 	{
@@ -154,33 +130,26 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 		}
 	}
 
+	Fvector lightPos = { 0, 0, 0 };
+	Fvector lightDir = { 0, 0, 1 };
+	Fvector omniPos = { 0, 0, 0 };
+	Fvector up, right;
 
-	bool isHudMode = item->GetHUDmode();
-	if (IsRenderLight)
+	if (item->GetHUDmode())
 	{
-		IKinematics* kin = nullptr;
-		Fmatrix xform;
-		Fvector lightPos = { 0, 0, 0 };
-		Fvector lightDir = { 0, 0, 1 };
-		Fvector omniPos = { 0, 0, 0 };
-		u16 lightBoneId = BI_NONE;
-		u16 lightDirBoneId = BI_NONE;
-		Fvector up, right;
+		Fmatrix xform = item->HudItemData()->m_item_transform;
+		IKinematics* kin = item->HudItemData()->m_model;
+		u16 lightBoneId = kin->LL_BoneID(LightBone);
 
-		if (isHudMode)
+		Fvector3 curr_light_offset = LightOffset;
+		Fvector3 curr_omni_offset = OmniOffset;
+
+		if (item->cast_custom_device())
 		{
-			xform = item->HudItemData()->m_item_transform;
-			kin = item->HudItemData()->m_model;
-			lightBoneId = kin->LL_BoneID(LightBone);
-
-			Fvector3 curr_light_offset = LightOffset;
-			Fvector3 curr_omni_offset = OmniOffset;
-
-			if (item->cast_custom_device() != nullptr)
+			PIItem active_item = Actor()->inventory().ActiveItem();
+			if (CWeapon* wpn = active_item ? active_item->cast_weapon() : nullptr)
 			{
-				PIItem active_item = Actor()->inventory().ActiveItem();
-				CWeapon* wpn = active_item != nullptr ? active_item->cast_weapon() : nullptr;
-				if (wpn != nullptr && wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
+				if(wpn->WpnCanShoot() && wpn->GetAimFactor() > 0.001f)
 				{
 					Fvector3 aim_offset = AimOffset;
 					aim_offset.mul(wpn->GetAimFactor());
@@ -188,54 +157,51 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 					curr_omni_offset.add(aim_offset);
 				}
 			}
-
-			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, curr_omni_offset);
-
-			if (IsLightDirByBone)
-			{
-				lightDirBoneId = kin->LL_BoneID(LightDirBoneName);
-				kin->LL_GetTransform(lightDirBoneId).transform_tiny(lightDir, LightOffset);
-				lightDir = lightDir.sub(lightPos).normalize();
-			}
 		}
-		else
-		{
-			xform = item->object().XFORM();
-			kin = item->object().Visual()->dcast_PKinematics();
-			lightBoneId = kin->LL_BoneID(LightBone);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightWorldOffset);
-			kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, OmniWorldOffset);
 
-			if (IsLightDirByBone)
-			{
-				lightDirBoneId = kin->LL_BoneID(LightDirBoneName);
-				kin->LL_GetTransform(lightDirBoneId).transform_tiny(lightDir, LightWorldOffset);
-				lightDir = lightDir.sub(lightPos).normalize();
-			}
+		kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, curr_light_offset);
+		kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, curr_omni_offset);
+
+		if (IsLightDirByBone)
+		{
+			u16 lightDirBoneId = kin->LL_BoneID(LightDirBoneName);
+			kin->LL_GetTransform(lightDirBoneId).transform_tiny(lightDir, LightOffset);
+			lightDir = lightDir.sub(lightPos).normalize();
+		}
+
+		Device.transform_hud2world(omniPos);
+		Device.transform_hud2world(lightPos, lightDir);
+	}
+	else
+	{
+		Fmatrix xform = item->object().XFORM();
+		IKinematics* kin = item->object().Visual()->dcast_PKinematics();
+		u16 lightBoneId = kin->LL_BoneID(LightBone);
+		kin->LL_GetTransform(lightBoneId).transform_tiny(lightPos, LightWorldOffset);
+		kin->LL_GetTransform(lightBoneId).transform_tiny(omniPos, OmniWorldOffset);
+
+		if (IsLightDirByBone)
+		{
+			u16 lightDirBoneId = kin->LL_BoneID(LightDirBoneName);
+			kin->LL_GetTransform(lightDirBoneId).transform_tiny(lightDir, LightWorldOffset);
+			lightDir = lightDir.sub(lightPos).normalize();
 		}
 
 		xform.transform_tiny(lightPos);
 		xform.transform_tiny(omniPos);
 		xform.transform_dir(lightDir);
-
-		if (isHudMode)
-		{
-			TransformToHud(lightPos, lightDir);
-			TransformToHudTemp(omniPos);
-		}
-
-		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);
-
-		OmniLight->set_hud_mode(false);
-		OmniLight->set_position(omniPos);
-
-		RenderLight->set_hud_mode(false);
-		RenderLight->set_position(lightPos);
-		RenderLight->set_rotation(lightDir, right);
-
-		RenderLight->set_ignore_object(item->object().H_Root());
 	}
+
+	Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);
+
+	OmniLight->set_hud_mode(false);
+	OmniLight->set_position(omniPos);
+
+	RenderLight->set_hud_mode(false);
+	RenderLight->set_position(lightPos);
+	RenderLight->set_rotation(lightDir, right);
+
+	RenderLight->set_ignore_object(item->object().H_Root());
 
 	RenderLight->set_active(IsRenderLight);
 	OmniLight->set_active(false);
