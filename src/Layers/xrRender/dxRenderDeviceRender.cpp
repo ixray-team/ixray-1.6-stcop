@@ -152,10 +152,6 @@ void dxRenderDeviceRender::SetupStates()
 void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 {
 #ifndef _EDITOR
-//#ifndef USE_DX11
-//	Caps.Update();
-//#endif
-
 	// Signal everyone - device created
 	RCache.OnDeviceCreate		();
 	m_Gamma.Update				();
@@ -163,21 +159,16 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 	::Render->create			();
 	Device.Statistic->OnDeviceCreate	();
 
-//#ifndef DEDICATED_SERVER
 	if (!g_dedicated_server)
 	{
 		m_WireShader.create			("editor\\wire");
 		m_SelectionShader.create	("editor\\selection");
 
 		DUImpl.OnDeviceCreate			();
-#ifdef USE_DX11
-#ifdef DEBUG_DRAW
+#if defined(USE_DX11) && defined(DEBUG_DRAW)
 		DebugRenderImpl.Init();
-#endif // DEBUG_DRAW
-#endif // USE_DX11
-
+#endif
 	}
-//#endif
 #endif
 }
 
