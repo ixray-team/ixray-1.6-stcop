@@ -2,10 +2,11 @@
 
 export const modsSidebar: DefaultTheme.Sidebar = [
   {
-    text: 'Старт',
+    text: 'Модификации',
     collapsed: false,
     items: [
-      { text: 'Тест', link: '/mods/released/mods' },
+      { text: 'Вышедшие', link: '/mods/released/mods' },
+      { text: 'В разработке', link: '/mods/released/mods_dev' },
     ]
   },
   {
