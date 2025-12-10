@@ -196,41 +196,6 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
-{
-	if (!pTo) return;
-	CCameraBase* cam = Actor()->cam_Active();
-	Fvector des_dir;
-	Fvector des_pt;
-
-	if (isFocus)
-	{	
-		auto pk = PKinematics(pTo->Visual());
-
-		if (pk != nullptr)
-		{
-			auto bone = pk->LL_BoneID("bip01_head");
-
-			Fmatrix headPos = pk->LL_GetTransform(bone);
-			headPos.mulA_43(pTo->XFORM());
-			des_pt = headPos.c;
-		}
-	}
-	else
-	{
-		pTo->Center(des_pt);
-		des_pt.y += pTo->Radius() * 0.5f;
-	}
-
-	des_dir.sub(des_pt,cam->vPosition);
-
-	float p,h;
-	des_dir.getHP(h,p);
-
-	Fvector targ_angles = EulerYawPitchRollInertion({ cam->pitch , cam->yaw, 0.f}, { -p, -h, 0.f}, 0.5f, Device.fTimeDelta);
-	cam->pitch = targ_angles.x;
-	cam->yaw = targ_angles.y;
-}
 
 void CUITalkWnd::Update()
 {
@@ -256,7 +221,33 @@ void CUITalkWnd::Update()
 	}
 
 	inherited::Update();
-	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
+
+	if(CGameObject* pOtherGO = m_pOthersInvOwner ? m_pOthersInvOwner->cast_game_object() : nullptr)
+	{
+		CCameraBase* cam = Actor()->cam_Active();
+
+		Fvector target_pos;
+		if (m_pOthersInvOwner->GetFocusingOnNpc())
+		{
+			if (IKinematics* pk = PKinematics(pOtherGO->Visual()))
+				pk->LL_GetBoneWorldPosition(pk->LL_BoneID("bip01_head"), pOtherGO->XFORM(), target_pos);
+		}
+		else
+		{
+			pOtherGO->Center(target_pos);
+			target_pos.y += pOtherGO->Radius() * 0.5f;
+		}
+
+		Fvector target_dir;
+		target_dir.sub(target_pos, cam->vPosition);
+		target_dir.normalize();
+		float p, h;
+		target_dir.getHP(h, p);
+
+		Fvector targ_angles = EulerYawPitchRollInertion({ cam->pitch , cam->yaw, 0.f }, { -p, -h, 0.f }, 0.5f, Device.fTimeDelta);
+		cam->pitch = targ_angles.x;
+		cam->yaw = targ_angles.y;
+	}
 
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
