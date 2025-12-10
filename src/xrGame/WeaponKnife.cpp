@@ -244,34 +244,49 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
 {
 	inherited::OnMotionMark(state, M);
-	if (state == eFire)
+
+	if (M.name == "Left")
 	{
-		m_hit_dist		=	m_Hit1Distance;
-		m_splash_dir	=	m_Hit1SpashDir;
-		m_splash_radius	=	m_Hit1SplashRadius;
-		m_hits_count	=	m_Splash1HitsCount;
-		m_perv_hits_count = m_Splash1PerVictimsHCount;
-	} else if (state == eFire2)
+		if (state == eFire)
+		{
+			m_hit_dist = m_Hit1Distance;
+			m_splash_dir = m_Hit1SpashDir;
+			m_splash_radius = m_Hit1SplashRadius;
+			m_hits_count = m_Splash1HitsCount;
+			m_perv_hits_count = m_Splash1PerVictimsHCount;
+		}
+		else if (state == eFire2)
+		{
+			m_hit_dist = m_Hit2Distance;
+			m_splash_dir = m_Hit2SpashDir;
+			m_splash_radius = m_Hit2SplashRadius;
+			m_hits_count = m_Splash2HitsCount;
+			m_perv_hits_count = 0;
+		}
+		else
+		{
+			return;
+		}
+	}
+	else if (M.name == "Right" && (state == eFire || state == eFire2))
 	{
-		m_hit_dist		=	m_Hit2Distance;
-		m_splash_dir	=	m_Hit2SpashDir;
-		m_splash_radius	=	m_Hit2SplashRadius;
-		m_hits_count	=	m_Splash2HitsCount;
-		m_perv_hits_count = 0;
-	} else
+		SetPending(false);
+		return;
+	}
+	else
 	{
 		return;
 	}
 
-	Fvector	p1, d; 
-	p1.set			(get_LastFP()); 
-	d.set			(get_LastFD());
-	fireDistance	= m_hit_dist + m_splash_radius;
+	Fvector	p1, d;
+	p1.set(get_LastFP());
+	d.set(get_LastFD());
+	fireDistance = m_hit_dist + m_splash_radius;
 
-	if(H_Parent())
+	if (H_Parent())
 	{
-		H_Parent()->cast_entity()->g_fireParams(this, p1,d);
-		KnifeStrike(p1,d);
+		H_Parent()->cast_entity()->g_fireParams(this, p1, d);
+		KnifeStrike(p1, d);
 	}
 }
 
@@ -280,15 +295,17 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	switch (state)
 	{
 	case eHiding:	SwitchState(eHidden);	break;
-	
-	case eFire: 
+
+	case eFire:
 	case eFire2: 	SwitchState(eIdle);		break;
 
 	case eShowing:
-	case eIdle:		SwitchState(eIdle);		break;	
+	case eIdle:		SwitchState(eIdle);		break;
 
 	default:		inherited::OnAnimationEnd(state);
 	}
+
+	bWorking = false;
 }
 
 void CWeaponKnife::state_Attacking	(float)
@@ -398,7 +415,7 @@ void CWeaponKnife::UpdateCL()
 
 void CWeaponKnife::FireStart()
 {	
-	if (GetState() != eIdle && GetState() != eShowing)
+	if (IsPending() && GetState() != eShowing)
 	{
 		return;
 	}
@@ -409,11 +426,12 @@ void CWeaponKnife::FireStart()
 
 void CWeaponKnife::Fire2Start()
 {
-	if (GetState() != eIdle && GetState() != eShowing)
+	if (IsPending() && GetState() != eShowing)
 	{
 		return;
 	}
 
+	inherited::FireStart();
 	SwitchState(eFire2);
 }
 
@@ -436,6 +454,7 @@ bool CWeaponKnife::Action(u16 cmd, u32 flags)
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -1066,6 +1085,6 @@ void CWeaponKnife::FastKick()
 	fHitImpulse_cur = fHitImpulse_1;
 
 	motion_marks mark;
-	mark.name = "Right";
+	mark.name = "Left";
 	OnMotionMark(eFire, mark);
 }
