@@ -21,6 +21,13 @@ enum class EEngineExternalPhysical
 	None
 };
 
+enum class EEngineExternalSound
+{
+	EnableWorldAmbientOcclusion,
+	MaterialOCC,
+	None
+};
+
 enum class EEngineExternalSpawnSupplies
 {
 	EnableLoadoutsSupplies,
@@ -76,12 +83,6 @@ enum class EEngineExternalRender
 enum class EEngineExternalEnvironment
 {
 	ReadSunConfig,
-	None
-};
-
-enum class EEngineExternalSound
-{
-	EnableWorldAmbientOcclusion,
 	None
 };
 
