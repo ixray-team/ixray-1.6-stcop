@@ -143,13 +143,13 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 
 	if (m_bHideUI)
 	{
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideShownDialogs();
+		}
+
 		m_manager->Parent()->set_inventory_disabled(true);
 		m_manager->Parent()->set_pda_disabled(true);
-
-		if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
-		{
-			CurrentGameUI()->TopInputReceiver()->HideDialog();
-		}
 	}
 }
 
@@ -168,6 +168,17 @@ void CHudItemAnimator::PlayMotion()
 	}
 
 	m_manager->SetCurrentAnimator(this);
+
+	if (m_bHideUI)
+	{
+		if (auto ui = CurrentGameUI())
+		{
+			ui->HideShownDialogs();
+		}
+
+		m_manager->Parent()->set_inventory_disabled(true);
+		m_manager->Parent()->set_pda_disabled(true);
+	}
 
 	CallStartCallback();
 
@@ -339,12 +350,12 @@ void CBackpackAnimator::SwitchAnimator()
 
 		if (m_bHideUI)
 		{
-			m_manager->Parent()->set_pda_disabled(true);
-
 			if (auto ui = CurrentGameUI())
 			{
 				ui->HideShownDialogs();
 			}
+
+			m_manager->Parent()->set_pda_disabled(true);
 		}
 	}
 }
