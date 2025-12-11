@@ -762,7 +762,6 @@ float CAI_Stalker::pick_distance		()
 	if (!inventory().ActiveItem())
 		return				(start_pick_distance());
 		
-	update_can_kill_info	();
 	return					(m_pick_distance);
 }
 
@@ -771,12 +770,16 @@ void CAI_Stalker::update_can_kill_info	()
 	if (m_pick_frame_id == Device.dwFrame)
 		return;
 
+	if (!inventory().ActiveItem())
+		return;
+
+	PROF_EVENT(__FUNCTION__);
+
 	m_pick_frame_id			= Device.dwFrame;
 	m_can_kill_member		= false;
 	m_can_kill_enemy		= false;
 
 	Fvector					position, direction;
-	VERIFY					(inventory().ActiveItem());
 	g_fireParams			(0,position,direction);
 	can_kill_entity_from	(position,direction,start_pick_distance());
 }
@@ -1332,14 +1335,12 @@ bool CAI_Stalker::can_kill_member							()
 	if (!animation().script_animations().empty())
 		return				(false);
 
-	update_can_kill_info	();
 	return					(m_can_kill_member);
 }
 
 bool CAI_Stalker::can_kill_enemy							()
 {
 	VERIFY					(inventory().ActiveItem());
-	update_can_kill_info	();
 	return					(m_can_kill_enemy);
 }
 
