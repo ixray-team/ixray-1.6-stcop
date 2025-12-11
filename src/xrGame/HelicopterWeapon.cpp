@@ -65,8 +65,7 @@ void CHelicopter::MGunUpdateFire()
 	else
 		no_fire_time = -1;
 
-	CShootingObject::UpdateFlameParticles();
-	CShootingObject::UpdateLight();
+	CShootingObject::UpdateEffects();
 
 	if(!IsWorking()) {
 		clamp(fShotTimeCounter,0.0f, flt_max);
@@ -135,14 +134,13 @@ void CHelicopter::OnShot		()
 
 	FireBullet(fire_pos, fire_dir, fireDispersionBase, m_CurrentAmmo, ID(), ID(), OnServer());
 
-	StartShotParticles	();
 	if(m_bLightShotEnabled) 
 		Light_Start			();
 
 
-	StartFlameParticles		();
-	StartSmokeParticles		(fire_pos, zero_vel);
-	OnShellDrop				(fire_pos, zero_vel);
+	StartFlameParticle();
+	StartSmokeParticle(zero_vel);
+	StartShellParticle(zero_vel);
 
     m_sounds_layered.PlaySound("m_sndShot", fire_pos, this, false, false, true);
 }
@@ -180,7 +178,6 @@ void CHelicopter::MGunFireStart()
 void CHelicopter::MGunFireEnd()
 {
 	CShootingObject::FireEnd	();
-	StopFlameParticles			();
 	m_enemy.fStartFireTime		= -1.0f;
 }
 
