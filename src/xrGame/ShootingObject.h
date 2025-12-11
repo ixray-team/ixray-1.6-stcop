@@ -22,25 +22,23 @@ protected:
 	CShootingObject();
 	virtual ~CShootingObject() = default;
 
-	void	reinit	();
-	void	reload	(LPCSTR section) {};
-	void	Load	(LPCSTR section);
-
-	Fvector		m_vCurrentShootDir;
-	Fvector		m_vCurrentShootPos;
+	void	reload(LPCSTR section) {};
+	void	Load(LPCSTR section);
 
 private:
 	float		m_air_resistance_factor;
-
-protected:
-	//ID персонажа который иницировал действие
-	u16			m_iCurrentParentID;
-
-
 //////////////////////////////////////////////////////////////////////////
 // Fire Params
 //////////////////////////////////////////////////////////////////////////
 protected:
+
+	enum
+	{
+		eDefaultFire = 0,
+		eSilencerFire = 1,
+		eGlauncherFire = 2,
+	} fire_mode = eDefaultFire;
+
 	virtual void			LoadFireParams		(LPCSTR section); 		//сила выстрела
 	virtual bool			SendHitAllowed		(CObject* pUser);
 	virtual void			FireBullet			(const Fvector& pos, 
@@ -137,7 +135,6 @@ protected:
 	float					light_lifetime;
 	u32						light_frame;
 	float					light_time;
-	//включение подсветки во время выстрела
 	bool					m_bLightShotEnabled;
 protected:
 	void					Light_Create		();
@@ -146,66 +143,38 @@ protected:
 	void					Light_Start			();
 	void					Light_Render		(const Fvector& P);
 
-	virtual	void			LoadLights			(LPCSTR section, LPCSTR prefix);
-	virtual void			RenderLight			();
-	virtual void			UpdateLight			();
-	virtual void			StopLight			();
-	virtual bool			IsHudModeNow		()=0;
-//////////////////////////////////////////////////////////////////////////
-// партикловая система
-//////////////////////////////////////////////////////////////////////////
+			void			LoadLights			(LPCSTR section, LPCSTR prefix);
+			void			RenderLight			();
+			void			UpdateEffects		();
+			void			StopLight			();
+	virtual bool			IsHudModeNow		() { return false; };
 protected:
-	//функции родительского объекта
-	virtual const Fvector&	get_CurrentFirePoint()		= 0;
-	virtual const Fmatrix&	get_ParticlesXFORM()		= 0;
-	virtual void			ForceUpdateFireParticles	(){};
+	virtual const Fvector&	get_CurrentFirePoint()	{ return zero_vel; };
+	virtual const Fvector&	get_CurrentFirePoint2() { return get_CurrentFirePoint(); };
+	virtual const Fvector&	get_CurrentShellPoint()	{ return get_CurrentFirePoint(); };
+	virtual const Fmatrix&	get_ParticlesXFORM()	{ return Fidentity; };
 	
-	////////////////////////////////////////////////
-	//общие функции для работы с партиклами оружия
-			void			StartParticles		(CParticlesObject*& pParticles, LPCSTR particles_name, const Fvector& pos, const Fvector& vel = zero_vel, bool auto_remove_flag = false);
-			void			StopParticles		(CParticlesObject*& pParticles);
-			void			UpdateParticles		(CParticlesObject*& pParticles, const Fvector& pos, const  Fvector& vel = zero_vel);
+			void			LoadParticle		(LPCSTR section, LPCSTR line, xr_shared_ptr<CParticlesObject>& particle);
 
-			void			LoadShellParticles	(LPCSTR section, LPCSTR prefix);
-			void			LoadFlameParticles	(LPCSTR section, LPCSTR prefix);
-	
-	////////////////////////////////////////////////
-	//спецефические функции для партиклов
-	//партиклы огня
-			void			StartFlameParticles	();
-			void			StopFlameParticles	();
-			void			UpdateFlameParticles();
-
-	//партиклы дыма
-			void			StartSmokeParticles	(const Fvector& play_pos, const Fvector& parent_vel);
-
-	//партиклы полосы от пули
-			void			StartShotParticles	();
-
-	//партиклы гильз
-			void			OnShellDrop			(const Fvector& play_pos, const Fvector& parent_vel);
-protected:
-	//имя пратиклов для гильз
-	shared_str				m_sShellParticles;
+			void			StartFlameParticle();
+			void			StartSmokeParticle(const Fvector& parent_vel);
+			void			StartShellParticle(const Fvector& parent_vel);
 public:
 	Fvector					vLoadedShellPoint;
 	float					m_fPredBulletTime;
 	float					m_fTimeToAim;
 	BOOL					m_bUseAimBullet;
 protected:
-	//имя пратиклов для огня
-	shared_str				m_sFlameParticlesCurrent;
-	//для выстрела 1м и 2м видом стрельбы
-	shared_str				m_sFlameParticles;
-	//объект партиклов огня
-	xr_shared_ptr<CParticlesObject>		m_pFlameParticles;
 
-	//имя пратиклов для дыма
-	shared_str				m_sSmokeParticlesCurrent;
-	shared_str				m_sSmokeParticles;
-	
-	//имя партиклов следа от пули
-	shared_str				m_sShotParticles;
+	shared_str						m_sShellParticles;
+
+	xr_shared_ptr<CParticlesObject> m_pSmokeParticles;
+	xr_shared_ptr<CParticlesObject> m_pFlameParticles;
+
+	xr_shared_ptr<CParticlesObject> m_pSmokeSilencerParticles;
+	xr_shared_ptr<CParticlesObject> m_pFlameSilencerParticles;
+	xr_shared_ptr<CParticlesObject> m_pFlameGlaucherParticles;
+
 public:
 	virtual void				DumpActiveParams		(shared_str const & section_name, CInifile & dst_ini) const;
 };
