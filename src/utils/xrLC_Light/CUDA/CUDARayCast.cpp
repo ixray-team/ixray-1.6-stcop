@@ -2,98 +2,8 @@
 #include "CUDARayCast.h"
 #include "CUDAContext.h"
 #include "CUDAGeometryBuilder.h"
-
 #include "../xrLC_GlobalData.h"
-#include "../xrMU_Model_Reference.h"
-
-#include <embree_raytracing/EmbreeRayTrace.h>
-
-extern size_t GetHeapMemory();
-
-struct FaceDataIntel;
  
-bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
-{
-	xrLC_GlobalData* globalData = lc_global_data();
-	if (!globalData)
-		return false;
-
-	OptixGeometryBuilder geometryBuilder;
- 	// 1. Обрабатываем статическую геометрию
-
-	Phase("CUDA Get LC Faces");
-
-	Status("Build BLAS...");
-
-	CTimer t;
-	t.Start();
-
-	size_t Start = GetHeapMemory();
- 
-	clMsg("Processing Memory: %u mb", Start / 1024 / 1024);
-	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
-
-	for (Face* F : globalData->g_faces())
-	{
- 		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow) continue;
-
-		b_material& M = globalData->materials()[F->dwMaterial];
-		b_texture& T = globalData->textures()[M.surfidx];
- 
-		bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
-		if (!isTransparent) 
- 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
- 		else
- 			geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-    }
-	
-	// 2. Обрабатываем MU-референсы
-	for (auto ref : globalData->mu_refs())
-	{
-		xr_vector<FaceDataIntel> tempBuffer;
-		ref->export_cform_rcast_new(tempBuffer);
-
-		for (auto& pF : tempBuffer) 
-		{
-			Face* F = (Face*)pF.ptr;
-			b_material& M = globalData->materials()[F->dwMaterial];
-			b_texture& T = globalData->textures()[M.surfidx];
-
-			bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
-			if (!isTransparent) 
-  				geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
- 			else
- 				geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
- 		}
-	}
-
-	clMsg("Processing Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
-
-	geometryBuilder.RemoveDublicates();
-
-	Phase("CUDA Building RCastModel");
-
-	// 3. Строим BLAS
-	if (!geometryBuilder.BuildBLAS(context, outScene))
- 		return false;
-
-
- 	// // 4. Строим TLAS
-	if (!geometryBuilder.BuildTLAS(context, outScene, stream))
-		return false;
-
-	geometryBuilder.Clear();
-	geometryBuilder.MemoryDealoc();
-
-	clMsg("Processing Faces: %u, Vertex: %u", geometryBuilder.triangles.size(), geometryBuilder.vertices.size());
-	
-	
-	clMsg("[GPU] Stage acceleration data build : % u ms | Memory in CPU (no cleared): % u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
-
-	return true;
-}
-
 // Пример использования:
 static OptixContext optixContext;
 static CUstream cudaStream = nullptr;
@@ -195,29 +105,33 @@ void XRay::RayTrace::CUDA::InitializeTextures(xr_vector<TextureData>& gpuTexture
 struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
- 	// 
-	unsigned char	    flags; 
-	hardware_raytask*	rays;
-	hardware_color*		colors;				// Position, Direction, Color
-	hardware_lighting*	lights;				// Lights
+
+	unsigned char		flags;
+	Hardware_Raytask*	rays;
+	Hardware_Color*		colors;		// Раньше rays == colors
+
+	Hardware_Lighting*	lights;
 	int					counts_lights;
+
+	CDeflector_GPU*		GpuDeflectors;
+	bool				DeflectorsBig;
 };
 
 class RayTracer
 {
 	// Colors (Result)
-	hardware_color*		  h_colors;			// CPU alloc
-	hardware_color*		  d_colors;			// GPU alloc
+	Hardware_Color*		  h_colors;			// CPU alloc
+	Hardware_Color*		  d_colors;			// GPU alloc
 
 	// Positions Rays (Incoming)
-	hardware_raytask*		h_rays;			// CPU alloc
-	hardware_raytask*		d_rays;			// GPU alloc
+	Hardware_Raytask*		h_rays;			// CPU alloc
+	Hardware_Raytask*		d_rays;			// GPU alloc
 
 
 	// Lighting 
 	int					  size_lights;
-	hardware_lighting*    h_lights;			// CPU alloc
-	hardware_lighting*	  d_lights;			// GPU alloc
+	Hardware_Lighting*    h_lights;			// CPU alloc
+	Hardware_Lighting*	  d_lights;			// GPU alloc
 
 
 	// Parrrams (.cu export __constant__ Params g_params; )
@@ -252,12 +166,12 @@ public:
 		CUDA_CHECK(cudaMalloc(&d_params,	  sizeof(OPTICK_Params)));										// Device Alloc
 
 		// colors
-		CUDA_CHECK(cudaMallocHost(&h_colors, max_rays * sizeof(hardware_color)));							// Host Alloc
-		CUDA_CHECK(cudaMalloc(&d_colors, max_rays * sizeof(hardware_color)));								// Device Alloc
+		CUDA_CHECK(cudaMallocHost(&h_colors, max_rays * sizeof(Hardware_Color)));							// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_colors, max_rays * sizeof(Hardware_Color)));								// Device Alloc
 
 		// positions
-		CUDA_CHECK(cudaMallocHost(&h_rays, max_rays * sizeof(hardware_raytask)));							// Host Alloc
-		CUDA_CHECK(cudaMalloc(&d_rays, max_rays * sizeof(hardware_raytask)));								// Device Alloc
+		CUDA_CHECK(cudaMallocHost(&h_rays, max_rays * sizeof(Hardware_Raytask)));							// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_rays, max_rays * sizeof(Hardware_Raytask)));								// Device Alloc
 		
 		isInitialized = true;
 
@@ -275,7 +189,7 @@ public:
  
  		auto Light = [&](R_Light& L, eType type)
 		{
-			hardware_lighting cuL;
+			Hardware_Lighting cuL;
  			cuL.type			= L.type;
  			cuL.light_type		= type;
 			cuL.diffuse			= { L.diffuse.x, L.diffuse.y, L.diffuse.z };
@@ -294,7 +208,7 @@ public:
 		u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
  		
 		// Заполняем буфер Источников света
- 		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(hardware_lighting)));
+ 		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(Hardware_Lighting)));
 
 		int INDEX_LIGHT = 0;
 		for (auto& RGB : Lights.rgb)
@@ -313,14 +227,12 @@ public:
 			INDEX_LIGHT++;
 		}
  	
-		CUDA_CHECK( cudaMalloc(&d_lights, sizeof(hardware_lighting) * numLights) );
-		CUDA_CHECK( cudaMemcpy(d_lights, h_lights, sizeof(hardware_lighting) * numLights, cudaMemcpyHostToDevice) );
+		CUDA_CHECK( cudaMalloc(&d_lights, sizeof(Hardware_Lighting) * numLights) );
+		CUDA_CHECK( cudaMemcpy(d_lights, h_lights, sizeof(Hardware_Lighting) * numLights, cudaMemcpyHostToDevice) );
 		size_lights = numLights;
 	}
-
-
-//	u32 CurrentWritedRays = 0;
-	u8  current_flags = 0;
+	 
+ 	u8  current_flags = 0;
 
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
@@ -342,8 +254,8 @@ public:
 
 	void ClearDeviceResult()
 	{
-		memset(h_colors, 0, max_rays * sizeof(hardware_color));
-		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(hardware_color)));
+		memset(h_colors, 0, max_rays * sizeof(Hardware_Color));
+		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(Hardware_Color)));
 	}
 
 	void TraceRaysNew(size_t INDEX)
@@ -354,12 +266,15 @@ public:
  		h_params[0] =
 		{
 			.handle = CommitedScene.tlasHandle,
+			
 			// Result Buffer
 			.flags  = current_flags,
 			.rays   = d_rays,
 			.colors = d_colors,
 			.lights = d_lights,
 			.counts_lights = size_lights,
+			.GpuDeflectors = nullptr,
+			.DeflectorsBig = false,
 		};
  		 
 		// Копируем Стартовые параметры !!! асинхронно
@@ -367,7 +282,7 @@ public:
 			cudaMemcpyAsync(
 				d_rays,
 				h_rays,
-				CurrentWritedRays * sizeof(hardware_raytask),
+				CurrentWritedRays * sizeof(Hardware_Raytask),
 				cudaMemcpyHostToDevice,
 				stream
 			)
@@ -398,7 +313,7 @@ public:
 		cudaMemcpyAsync(
 			h_colors,
 			d_colors,
-			CurrentWritedRays * sizeof(hardware_color),
+			CurrentWritedRays * sizeof(Hardware_Color),
 			cudaMemcpyDeviceToHost,
 			stream
 			)
@@ -408,7 +323,7 @@ public:
 		CUDA_CHECK(cudaStreamSynchronize(stream));
 
 		// Копия цветов
-		auto copy_color = [&](hardware_color& Chw, base_color_c& C)
+		auto copy_color = [&](Hardware_Color& Chw, base_color_c& C)
 		{
 			C.hemi = Chw.hemi;
 			C.sun = Chw.sun;
@@ -431,7 +346,332 @@ public:
 };
 
 static RayTracer GPURayTracer;
+
+
+class DeflectorTraces
+{
+	CUstream	  stream;					// Отдельный стрим
+
+	// Lighting 
+	int					size_lights;
+	Hardware_Lighting*  h_lights;			// CPU alloc
+	Hardware_Lighting*  d_lights;			// GPU alloc
+ 
+	// Parrrams (.cu export __constant__ Params g_params; )
+	OPTICK_Params* h_params;				// CPU alloc
+	OPTICK_Params* d_params;				// GPU alloc)
+
+	// Deflector Data
+
+	CDeflector_GPU* h_deflector;			// В последующем используем для вычистки 
+	CDeflector_GPU* d_deflector;
+	 
+	bool isInitialized = false;
+public:
+	~DeflectorTraces()
+	{
+		if (h_params) cudaFreeHost(h_params);
+ 		if (d_params) cudaFree(d_params);
+  	}
+	 
+	void Init()
+	{
+		CUDA_CHECK(cudaMallocHost(&h_deflector, sizeof(CDeflector_GPU) * 256 * 1024));										// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_deflector, sizeof(CDeflector_GPU) * 256 * 1024));										// Host Alloc
+
+ 		CUDA_CHECK(cudaStreamCreate(&stream));
+
+		// parrams
+		CUDA_CHECK(cudaMallocHost(&h_params, sizeof(OPTICK_Params)));										// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_params, sizeof(OPTICK_Params)));											// Device Alloc
+		 
+		isInitialized = true;
+
+		InitializeLights(lc_global_data()->L_static());
+	}
+
+	void InitializeLights(base_lighting& Lights)
+	{
+		enum eType : u16
+		{
+			eSun,
+			eHemi,
+			eRGB
+		};
+
+		auto Light = [&](R_Light& L, eType type)
+			{
+				Hardware_Lighting cuL;
+				cuL.type = L.type;
+				cuL.light_type = type;
+				cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+				cuL.position = { L.position.x, L.position.y, L.position.z };
+				cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
+				cuL.range = L.range;
+				cuL.range2 = L.range2;
+				cuL.falloff = L.falloff;
+				cuL.attenuation0 = L.attenuation0;
+				cuL.attenuation1 = L.attenuation1;
+				cuL.attenuation2 = L.attenuation2;
+				cuL.energy = L.energy;
+				return cuL;
+			};
+
+		u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
+
+		// Заполняем буфер Источников света
+		CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(Hardware_Lighting)));
+
+		int INDEX_LIGHT = 0;
+		for (auto& RGB : Lights.rgb)
+		{
+			h_lights[INDEX_LIGHT] = Light(RGB, eRGB);
+			INDEX_LIGHT++;
+		}
+		for (auto& SUN : Lights.sun)
+		{
+			h_lights[INDEX_LIGHT] = Light(SUN, eSun);
+			INDEX_LIGHT++;
+		}
+		for (auto& HEMI : Lights.hemi)
+		{
+			h_lights[INDEX_LIGHT] = Light(HEMI, eHemi);
+			INDEX_LIGHT++;
+		}
+
+		CUDA_CHECK(cudaMalloc(&d_lights, sizeof(Hardware_Lighting) * numLights));
+		CUDA_CHECK(cudaMemcpy(d_lights, h_lights, sizeof(Hardware_Lighting) * numLights, cudaMemcpyHostToDevice));
+		size_lights = numLights;
+	}
+	 
+	int CurrentDeflectors = 0;
+	void SetDeflectors(CDeflector& D)
+	{
+		UVTriGPU* h_deflectors_quads		= nullptr;	// CPU Alloc
+		UVTriGPU* d_deflectors_quads		= nullptr;	// GPU Alloc
+
+		Hardware_Color* h_deflectors_colors = nullptr;	// CPU Alloc
+		Hardware_Color* d_deflectors_colors = nullptr;	// GPU Alloc
+
+		unsigned char* h_deflectors_markers = nullptr;	// CPU Alloc
+		unsigned char* d_deflectors_markers = nullptr;	// GPU Alloc
+
+		// Quads
+		auto SizeDeflectorUV = sizeof(UVTriGPU) * D.UVpolys.size();
+
+ 		CUDA_CHECK(cudaMallocHost(&h_deflectors_quads, SizeDeflectorUV) );							// Host Alloc
+
+
+		int IndexUV = 0;
+		for (auto& O : D.UVpolys)
+		{
+			h_deflectors_quads[IndexUV].N.set( VPUSH( O.owner->N ) );
+
+			h_deflectors_quads[IndexUV].uv[0].set(O.uv[0].x, O.uv[0].y);
+			h_deflectors_quads[IndexUV].uv[1].set(O.uv[1].x, O.uv[1].y);
+			h_deflectors_quads[IndexUV].uv[2].set(O.uv[2].x, O.uv[2].y);
+			
+			auto V1 = O.owner->v[0]; auto V2 = O.owner->v[1]; auto V3 = O.owner->v[2];
+
+			h_deflectors_quads[IndexUV].V[0].P.set(VPUSH(V1->P));
+			h_deflectors_quads[IndexUV].V[1].P.set(VPUSH(V2->P));
+			h_deflectors_quads[IndexUV].V[2].P.set(VPUSH(V3->P));
+ 
+			h_deflectors_quads[IndexUV].V[0].N.set(VPUSH(V1->N));
+			h_deflectors_quads[IndexUV].V[1].N.set(VPUSH(V2->N));
+			h_deflectors_quads[IndexUV].V[2].N.set(VPUSH(V3->N));
+ 
+			// Копия цветов
+			auto copy_color = [&](Hardware_Color& Chw, base_color& C)
+				{
+					base_color_c cnew;	
+					C._get(cnew);
+
+					Chw.hemi = cnew.hemi;
+					Chw.sun  = cnew.sun;
+					Chw.set_rgb_f32( VPUSH(cnew.rgb ) );
+  				};
+			 
+			copy_color(h_deflectors_quads[IndexUV].V[0].C, V1->C);
+			copy_color(h_deflectors_quads[IndexUV].V[1].C, V2->C);
+			copy_color(h_deflectors_quads[IndexUV].V[2].C, V3->C);
+
+			IndexUV++;
+  		}
   
+		// Copy Quads 
+
+		// Msg("GPU Memory Need: %u kb", SizeDeflectorUV / 1024 );
+		CUDA_CHECK(cudaMalloc(&d_deflectors_quads, SizeDeflectorUV));
+ 		CUDA_CHECK(cudaMemcpy(d_deflectors_quads, h_deflectors_quads, SizeDeflectorUV, cudaMemcpyHostToDevice));		// Device Copy
+ 
+		// Copy Colors 
+		auto SurfaceSize = D.layer.surface.size() * sizeof(Hardware_Color);
+		CUDA_CHECK(cudaMallocHost(&h_deflectors_colors, SurfaceSize));							// Host Alloc
+
+		auto IndexSURFACE = 0;
+		for (auto& O : D.layer.surface)
+		{
+			base_color_c C; O._get(C);
+			h_deflectors_colors[IndexSURFACE].hemi = C.hemi;
+			h_deflectors_colors[IndexSURFACE].sun  = C.sun;
+			h_deflectors_colors[IndexSURFACE].set_rgb_f32( VPUSH( C.rgb ) );
+			IndexSURFACE++;
+		}
+
+		CUDA_CHECK(cudaMalloc(&d_deflectors_colors, SurfaceSize));
+		CUDA_CHECK(cudaMemcpy(d_deflectors_colors, h_deflectors_colors, SurfaceSize, cudaMemcpyHostToDevice));		// Device Copy
+
+		// Copy Markers
+		auto MarkersSize = D.layer.marker.size() * sizeof(unsigned char);
+		CUDA_CHECK(cudaMallocHost(&h_deflectors_markers, MarkersSize));							// Host Alloc
+
+		int IndexMarker = 0;
+		for (auto& O : D.layer.marker)
+		{
+			h_deflectors_markers[IndexMarker] = O;
+ 			IndexMarker++;
+		}
+		
+		CUDA_CHECK(cudaMalloc(&d_deflectors_markers, MarkersSize));
+		CUDA_CHECK(cudaMemcpy(d_deflectors_markers, h_deflectors_markers, MarkersSize, cudaMemcpyHostToDevice));		// Device Copy
+
+ 		// В самом последнем 
+		h_deflector[CurrentDeflectors].Width			= D.layer.width;
+		h_deflector[CurrentDeflectors].Height			= D.layer.height;
+ 		h_deflector[CurrentDeflectors].marker_size		= D.layer.marker.size();
+		h_deflector[CurrentDeflectors].surfaces_size	= D.layer.surface.size();
+		h_deflector[CurrentDeflectors].UVTrisSize		= D.UVpolys.size();
+ 		h_deflector[CurrentDeflectors].normal.set(VPUSH(D.normal));
+ 		h_deflector[CurrentDeflectors].UVTris			= d_deflectors_quads;
+		h_deflector[CurrentDeflectors].surfaces			= d_deflectors_colors;
+		h_deflector[CurrentDeflectors].marker			= d_deflectors_markers;
+		
+		// Copy To GPU
+		// CUDA_CHECK(cudaMalloc(&d_deflector[CurrentDeflectors], sizeof(CDeflector_GPU)));											// Device Alloc
+		CUDA_CHECK(cudaMemcpy(d_deflector + CurrentDeflectors, h_deflector + CurrentDeflectors, sizeof(CDeflector_GPU), cudaMemcpyHostToDevice));		// Device Copy
+
+		CurrentDeflectors++;
+
+		cudaFreeHost(h_deflectors_markers);
+		cudaFreeHost(h_deflectors_colors);
+		cudaFreeHost(h_deflectors_quads);
+ 	}
+
+	void FreeDeflectors()
+	{
+		for (auto I = 0; I < CurrentDeflectors; I++)
+		{
+			CUDA_CHECK ( cudaFree(h_deflector[I].surfaces) );
+			CUDA_CHECK ( cudaFree(h_deflector[I].marker) ) ;
+			CUDA_CHECK ( cudaFree(h_deflector[I].UVTris) );
+		}
+
+		CurrentDeflectors = 0;
+
+		CUDA_CHECK(cudaFreeHost(h_deflector));										// Host Alloc
+		CUDA_CHECK(cudaFree(d_deflector));
+
+		CUDA_CHECK(cudaMallocHost(&h_deflector, sizeof(CDeflector_GPU) * 256 * 1024));										// Host Alloc
+		CUDA_CHECK(cudaMalloc(&d_deflector, sizeof(CDeflector_GPU) * 256 * 1024));
+	}
+
+	// 
+
+	void RunTracing()
+	{
+ 		// Подготавливаем данные на хосте
+		h_params[0] =
+		{
+			.handle = CommitedScene.tlasHandle,
+
+			// Result Buffer
+			.flags = 0,
+			.rays = nullptr,
+			.colors = nullptr,
+			.lights = d_lights,
+			.counts_lights = size_lights,
+			.GpuDeflectors = d_deflector,
+			.DeflectorsBig = false,
+		};
+		 
+		// Копируем на устройство
+		CUDA_CHECK(cudaMemcpyAsync(
+			d_params,
+			h_params,
+			sizeof(OPTICK_Params),
+			cudaMemcpyHostToDevice,
+			stream
+		));
+
+		// Запускаем трассировку
+		unsigned int WidthSize = CurrentDeflectors;		// Выстраивается кол-во тасков
+ 		unsigned int HeightSize = 1;
+		unsigned int DepthSize = 1;
+
+		OPTIX_CHECK(optixLaunch
+		(
+			optixContext.GetPipeline(),
+			stream,
+			reinterpret_cast<CUdeviceptr> (d_params),
+			sizeof(OPTICK_Params),
+			&optixContext.GetSBT(),
+			WidthSize, HeightSize, DepthSize  // Запускаем N лучей
+		));
+ 
+		// Синхронизируем только один раз
+		CUDA_CHECK(cudaStreamSynchronize(stream));
+	}
+
+	void RunTracingBig()
+	{
+		// Подготавливаем данные на хосте
+		h_params[0] =
+		{
+			.handle = CommitedScene.tlasHandle,
+
+			// Result Buffer
+			.flags = 0,
+			.rays = nullptr,
+			.colors = nullptr,
+			.lights = d_lights,
+			.counts_lights = size_lights,
+			.GpuDeflectors = d_deflector,
+			.DeflectorsBig = true,
+		};
+
+		// Копируем на устройство
+		CUDA_CHECK(cudaMemcpyAsync(
+			d_params,
+			h_params,
+			sizeof(OPTICK_Params),
+			cudaMemcpyHostToDevice,
+			stream
+		));
+
+		// Запускаем трассировку
+		unsigned int WidthSize = CurrentDeflectors;		// Выстраивается кол-во тасков
+		unsigned int HeightSize = 1;
+		unsigned int DepthSize = 1;
+
+		OPTIX_CHECK(optixLaunch
+		(
+			optixContext.GetPipeline(),
+			stream,
+			reinterpret_cast<CUdeviceptr> (d_params),
+			sizeof(OPTICK_Params),
+			&optixContext.GetSBT(),
+			WidthSize, HeightSize, DepthSize  // Запускаем N лучей
+		));
+
+		// Синхронизируем только один раз
+		CUDA_CHECK(cudaStreamSynchronize(stream));
+	}
+};
+
+
+static DeflectorTraces GPUDeflectorTrace;
+
 // Raytracer Initialize
 void XRay::RayTrace::CUDA::RayTraceInitialize(base_lighting& L, u8 CurrentFlags)
 {
@@ -463,4 +703,27 @@ xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
 {
 	return GPURayTracer.GetColors();
 }
+
+static bool isInitlized = false;
+
+void XRay::RayTrace::CUDA::RayTraceDeflector(CDeflector& D)
+{
+	if (!isInitlized)
+	{
+		isInitlized = true;
+		GPUDeflectorTrace.Init();
+	}
+ 	GPUDeflectorTrace.SetDeflectors(D);
+}
+
+void XRay::RayTrace::CUDA::RayTraceDeflectorsAll()
+{
+	GPUDeflectorTrace.RunTracing();
+}
  
+void XRay::RayTrace::CUDA::RayTraceDeflectorsFree()
+{
+	GPUDeflectorTrace.FreeDeflectors();
+}
+
+
