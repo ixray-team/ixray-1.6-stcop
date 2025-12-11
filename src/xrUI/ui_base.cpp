@@ -453,7 +453,10 @@ ui_core::ui_core()
 	m_currentPointType			= IUIRender::pttTL;
 
 #ifdef DEBUG_DRAW
-	CImGuiManager::Instance().Subscribe("UIDEBUG", CImGuiManager::ERenderPriority::eMedium, xr_make_delegate(this, &ui_core::RenderUIDebugger));
+	if (!Device.IsEditorMode())
+	{
+		CImGuiManager::Instance().Subscribe("UIDEBUG", CImGuiManager::ERenderPriority::eMedium, xr_make_delegate(this, &ui_core::RenderUIDebugger));
+	}
 #endif
 }
 

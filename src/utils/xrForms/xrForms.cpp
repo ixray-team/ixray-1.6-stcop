@@ -312,7 +312,16 @@ int APIENTRY WinMain
 {
 	// Initialize debugging
 	Debug._initialize(false);
-	Core._initialize("IX-Ray Compilers");
+
+	LPCSTR fsgame_ltx_name = "-fsltx ";
+	string_path fsgame = "";
+
+	if (strstr(lpCmdLine, fsgame_ltx_name))
+	{
+		int sz = xr_strlen(fsgame_ltx_name);
+		sscanf(strstr(lpCmdLine, fsgame_ltx_name) + sz, "%[^ ] ", fsgame);
+	}
+	Core._initialize("IX-Ray Compilers", nullptr, true, fsgame[0] ? fsgame : nullptr);
 
 	Serializer = new CJsonSerializer("xrlevelbuilder.json");
 	Serializer->Read("ai", gCompilerMode.AI);
