@@ -930,7 +930,7 @@ Snd_MixerRenderCallback(float* buffer)
 		if (!Snd_SlotOcclusion(i + 1, dt, &occ_volume)) {
 			// TODO: hack for simulated sounds
 			slot.position = std::min(slot.position + SND_BLOCKSIZE, source.pub.frames_total);
-			if (slot.position == source.pub.frames_total) {
+			if (slot.position == source.pub.frames_total && (slot.flags & (u16)Mixer::Flags::Looped) == 0) {
 				MixerNewState(i + 1, Mixer::State::Stopped);
 				continue;
 			}
