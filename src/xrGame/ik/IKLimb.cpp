@@ -791,7 +791,8 @@ IC void	CIKLimb::GetPickDir( Fvector &v, SCalculateData& cd ) const
 
 void	CIKLimb::	AnimGoal			( Fmatrix &gl )
 {
-	Kinematics()->Bone_GetAnimPos( gl, m_bones[m_foot.ref_bone()], 1<<0, false );
+	//Kinematics()->Bone_GetAnimPos( gl, m_bones[m_foot.ref_bone()], 1<<0, false );
+	gl = Kinematics()->LL_GetTransform(m_bones[m_foot.ref_bone()]);
 }
 
 void	CIKLimb::SetAnimGoal			( SCalculateData& cd )
