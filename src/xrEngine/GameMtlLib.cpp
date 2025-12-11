@@ -154,8 +154,15 @@ void CGameMtlLibrary::Load()
 
 	::Sound->OcclusionMaterialCallback = xr_delegate<float(u16)>(+[](u16 MtlID)->float
 	{
-		const SGameMtl* MtlIter = GMLib.GetMaterialByIdx((int)MtlID);
-		return MtlIter->fSndOcclusionFactor;
+		static bool UseMaterialOCC = EngineExternal()[EEngineExternalSound::MaterialOCC];
+
+		if (UseMaterialOCC)
+		{
+			const SGameMtl* MtlIter = GMLib.GetMaterialByIdx((int)MtlID);
+			return MtlIter->fSndOcclusionFactor;
+		}
+
+		return psSoundOcclusionScale;
 	});
 }
 
