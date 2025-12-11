@@ -939,7 +939,7 @@ void CAI_Stalker::shedule_Update(u32 DT)
 #endif // USE_SCHEDULER_IN_AGENT_MANAGER
 
 		Exec_Visibility();
-
+		update_can_kill_info();
 		process_enemies();
 
 		PROF_EVENT("update memory");
