@@ -224,9 +224,10 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateFloat(props, "Weather\\Weather time factor", &env_speed, 0.f, 10000.f);
     PHelper().CreateRText(props, "Weather\\Weather Cycle", &sWeather);*/
 
-	PHelper().CreateSText	(props, "Compilers Path\\xrLC",						&Compiler_xrLC);
-	PHelper().CreateSText	(props,	"Compilers Path\\xrAI",						&Compiler_xrAI);
-	PHelper().CreateSText	(props, "Compilers Path\\xrDO",						&Compiler_xrDO);
+	PHelper().CreateSText	(props, "Compilers\\xrLC",						&Compiler_xrLC);
+	PHelper().CreateSText	(props,	"Compilers\\xrAI",						&Compiler_xrAI);
+	PHelper().CreateSText	(props, "Compilers\\xrDO",						&Compiler_xrDO);
+	PHelper().CreateBool	(props, "Compilers\\Duplicate Object Position Is Error",						&DuplicateObjectPositionAsError);
 	
 	PHelper().CreateBool(props, "Compilers\\LODs For All MU", &LODsForAllMU);
 	
