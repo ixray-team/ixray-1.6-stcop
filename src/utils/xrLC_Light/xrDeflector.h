@@ -11,24 +11,17 @@
 #include "xrDeflectorLight_Packed.h"
 
 class  base_lighting;
-class CDeflector;
+class  СDeflector;
 extern EmbreeData EmbreeMain;
-class execute_statistics;
-
-
-
+class  execute_statistics;
 
 class XRLC_LIGHT_API CDeflector
 {
-
 public:
  	bool ApplyLmap = false;
 	bool ApplyEdge = false;
 	bool ApplyResolution = false;
  	bool bMerged = false;
-
-	u32  ColorsRecvested = 0;
-	u32  ColorsApply = 0;
  
 	Fvector				normal;
  	xr_vector<UVtri>	UVpolys;
@@ -37,9 +30,10 @@ public:
 	Fsphere				Sphere;
 
 	// se7kills Освещение на GPU
-	xrCriticalSection csApply;
-	xr_concurrent_unordered_map<size_t, base_color_c>								def_color_map;
-	xr_concurrent_unordered_map<size_t, u8>											def_FacesCount;
+	xrCriticalSection csColors;
+	
+ 	xr_hash_map<size_t, base_color_c>								def_color_map;
+	xr_hash_map<size_t, u8>											def_FacesCount;
 	 
 
 public:
@@ -55,10 +49,10 @@ public:
 	void	GetRect				(Fvector2 &min, Fvector2 &max);
 	u32		GetFaceCount()		{ return (u32)UVpolys.size();	};
 		
+	void	PrepareForLighting	();
 	void	Light				(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H	);
 	void	L_Direct			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
-	void	L_Direct_Edge		(CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
-	void	L_Calculate			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
+ 
 	u32		weight				() { return layer.Area(); }	
 	u16		GetBaseMaterial		() ;
 
@@ -107,17 +101,10 @@ public:
 		size_t STri = UVpolys.capacity() * sizeof(UVtri);
 		return STri;
 	}
-
-
-	size_t size_of_colors() const
-	{
- 		return 0;
-	}
-
-
+ 
 	// Stage 1
-	void LightGPU( HASH& H);
-	void L_DirectGPU( HASH& H);
+	void LightGPU();
+	void L_DirectGPU();
 
 	// cuda recvest color reciver
 	void ApplyColors();
@@ -125,10 +112,10 @@ public:
 	void ApplyColor(size_t INDEX, base_color_c& C);
 
 	// Stage 2
-	void EdgesLighting(HASH& H);
+	void EdgesLighting();
  
 	// Stage 3
-	void LowerResolutionGPU(HASH& H);
+	void LowerResolutionGPU();
 	void ApplyExpadBordersGPU();
 };
 
