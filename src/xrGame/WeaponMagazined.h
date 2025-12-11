@@ -21,11 +21,6 @@ class CWeaponMagazined : public CWeapon
 protected:
 	//звук текущего выстрела
 	xr_string		m_sSndShotCurrent;
-
-	//дополнительная информация о глушителе
-	LPCSTR			m_sSilencerFlameParticles;
-	LPCSTR			m_sSilencerSmokeParticles;
-
 	ESoundTypes		m_eSoundShow;
 	ESoundTypes		m_eSoundHide;
 	ESoundTypes		m_eSoundShot;

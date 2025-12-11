@@ -682,6 +682,7 @@ u32 CParticleGroup::ParticlesCount()
 
 PAPI::ParticleAction* CParticleGroup::FindPA(shared_str PEName, PAPI::PActionEnum Action)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	auto it = std::find_if(items.begin(), items.end(), [&](SItem& elem)
 	{
 		return elem._effect->dcast_ParticleCustom()->Name() == PEName;

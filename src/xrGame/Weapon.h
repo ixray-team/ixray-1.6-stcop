@@ -563,7 +563,7 @@ private:
 	firedeps				m_current_firedeps;
 
 protected:
-	virtual void			UpdateFireDependencies_internal	();
+			void UpdateFireDependencies_internal	();
 	virtual void UpdatePosition(const Fmatrix& transform);
 	virtual void UpdatePosition_alt(const Fmatrix& transform);
 	virtual void			UpdateXForm				();
@@ -578,10 +578,10 @@ public:
 	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
 	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
 
-	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP();				}
-	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2();				}
+	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP(); }
+	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2(); }
+	virtual const Fvector&	get_CurrentShellPoint	()			{ return get_LastSP(); };
 	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
-	virtual void			ForceUpdateFireParticles();
 	virtual void			debug_draw_firedeps		();
 
 protected:
@@ -675,16 +675,6 @@ protected:
 	//оружия
 	float					m_fMinRadius;
 	float					m_fMaxRadius;
-
-protected:	
-	//для второго ствола
-			void			StartFlameParticles2();
-			void			StopFlameParticles2	();
-			void			UpdateFlameParticles2();
-protected:
-	shared_str				m_sFlameParticles2;
-	//объект партиклов для стрельбы из 2-го ствола
-	CParticlesObject*		m_pFlameParticles2;
 
 public:
 	int						GetAmmoCount_forType(shared_str const& ammo_type) const;
