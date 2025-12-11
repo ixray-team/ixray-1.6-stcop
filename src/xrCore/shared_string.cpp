@@ -147,6 +147,9 @@ str_value* str_container::dock(str_c value)
 		result->dwLength = sv->dwLength;
 		result->dwCRC = sv->dwCRC;
 		CopyMemory(result->value, value, s_len_with_zero);
+#ifndef MASTER_GOLD
+		result->value_ptr = result->value;
+#endif
 
 		impl->insert(result);
 	}

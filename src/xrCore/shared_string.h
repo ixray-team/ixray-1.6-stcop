@@ -11,6 +11,9 @@ struct XRCORE_API str_value
 	u32 dwCRC;
 
 	str_value* next;
+#ifndef MASTER_GOLD
+	str_c value_ptr;
+#endif
 	char value[];
 };
 
