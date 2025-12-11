@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "XeSSWrapper.h"
 
+#if 0
 XeSSWrapper g_XESSWrapper;
 
 XeSSWrapper::~XeSSWrapper()
@@ -110,3 +111,4 @@ inline shared_str XeSSWrapper::XeSSResultToString(xess_result_t result)
         default: return "Unknown error code";
     }
 }
+#endif

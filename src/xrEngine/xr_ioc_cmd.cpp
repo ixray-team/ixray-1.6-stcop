@@ -54,7 +54,7 @@ xr_token qscale_mode_token[] =
 	{ "st_filter_linear", 1},
 	{ "st_filter_dlss", 2},
 	{ "st_filter_fsr", 3},
-	{ "st_filter_xess", 4},
+//	{ "st_filter_xess", 4},
 	{ 0, 0 }
 };
 

@@ -103,12 +103,12 @@ target_link_libraries(xrRender_R4 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex
 target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")
 
 ## Intel XESS
-target_include_directories(xrRender_R4 PUBLIC "${INTEL_XESS}")
-target_link_libraries(xrRender_R4 PUBLIC "${INTEL_XESS_LIB}")
-target_link_libraries(xrRender_R4 PUBLIC "${INTEL_XESS_DX11_LIB}")
-
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_DX11_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
+#target_include_directories(xrRender_R4 PUBLIC "${INTEL_XESS}")
+#target_link_libraries(xrRender_R4 PUBLIC "${INTEL_XESS_LIB}")
+#target_link_libraries(xrRender_R4 PUBLIC "${INTEL_XESS_DX11_LIB}")
+#
+#add_custom_command(TARGET ${PROJECT_NAME}
+#    POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_DX11_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+#)

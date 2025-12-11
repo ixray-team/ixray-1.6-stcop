@@ -967,8 +967,10 @@ CRenderTarget::~CRenderTarget	()
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
-	g_XESSWrapper.Destroy();
 
+#if 0
+	g_XESSWrapper.Destroy();
+#endif
 	CImGuiManager::Instance().Unsubscribe("GraphicDebug");
 
 	if (g_debug_blend_state != nullptr) 

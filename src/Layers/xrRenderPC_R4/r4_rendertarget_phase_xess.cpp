@@ -6,6 +6,7 @@ extern Fvector3 ps_r_taa_jitter_full;
 
 void CRenderTarget::init_xess()
 {
+#if 0
     g_XESSWrapper.Destroy();
 
     XeSSWrapper::ContextParameters initParams = {};
@@ -23,11 +24,13 @@ void CRenderTarget::init_xess()
     initParams.device = RDevice;
 
     g_XESSWrapper.Create(initParams);
+#endif
 }
 
 bool CRenderTarget::phase_xess()
 {
     GPU_EVENT(XESS);
+#if 0
 
     XeSSWrapper::DrawParameters xessParams = {};
     xessParams.deviceContext = RContext;
@@ -64,5 +67,8 @@ bool CRenderTarget::phase_xess()
     xessParams.exposureScale = 1.0f;
 
     return g_XESSWrapper.Draw(xessParams);
+#else
+    return false;
+#endif
 }
 

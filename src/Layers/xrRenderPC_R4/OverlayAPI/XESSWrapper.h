@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 #include <xess/xess.h>
 #include <xess/xess_d3d11.h>
 
@@ -64,3 +65,4 @@ private:
 };
 
 extern XeSSWrapper g_XESSWrapper;
+#endif
