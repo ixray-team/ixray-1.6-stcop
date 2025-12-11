@@ -104,7 +104,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 	if (RI.val_bInvisible)		return;
 
 	// strict-sorting selection
-	if (sh->flags.bStrictB2F)
+	if (sh->flags.bStrictB2F && !pVisual->dcast_ParticleCustom())
 	{
 		mapSorted.insertInAnyWay(distSQ, { SSA, RI.val_pObject, pVisual, *RI.val_pTransform, sh });
 		return;
