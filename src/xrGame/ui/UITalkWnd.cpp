@@ -230,6 +230,32 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void UpdateCameraDirection(CGameObject* pTo, bool isFocus)
+{
+	CCameraBase* cam = Actor()->cam_Active();
+
+	Fvector target_pos;
+	if (pTo->cast_inventory_owner()->GetFocusingOnNpc())
+	{
+		if (IKinematics* pk = PKinematics(pTo->Visual()))
+			pk->LL_GetBoneWorldPosition(pk->LL_BoneID("bip01_head"), pTo->XFORM(), target_pos);
+	}
+	else
+	{
+		pTo->Center(target_pos);
+		target_pos.y += pTo->Radius() * 0.5f;
+	}
+
+	Fvector target_dir;
+	target_dir.sub(target_pos, cam->vPosition);
+	target_dir.normalize();
+	float p, h;
+	target_dir.getHP(h, p);
+
+	Fvector targ_angles = EulerYawPitchRollInertion({ cam->pitch , cam->yaw, 0.f }, { -p, -h, 0.f }, 0.5f, Device.fTimeDelta);
+	cam->pitch = targ_angles.x;
+	cam->yaw = targ_angles.y;
+}
 
 void CUITalkWnd::Update()
 {
@@ -255,34 +281,7 @@ void CUITalkWnd::Update()
 	}
 
 	inherited::Update();
-
-	if(CGameObject* pOtherGO = m_pOthersInvOwner ? m_pOthersInvOwner->cast_game_object() : nullptr)
-	{
-		CCameraBase* cam = Actor()->cam_Active();
-
-		Fvector target_pos;
-		if (m_pOthersInvOwner->GetFocusingOnNpc())
-		{
-			if (IKinematics* pk = PKinematics(pOtherGO->Visual()))
-				pk->LL_GetBoneWorldPosition(pk->LL_BoneID("bip01_head"), pOtherGO->XFORM(), target_pos);
-		}
-		else
-		{
-			pOtherGO->Center(target_pos);
-			target_pos.y += pOtherGO->Radius() * 0.5f;
-		}
-
-		Fvector target_dir;
-		target_dir.sub(target_pos, cam->vPosition);
-		target_dir.normalize();
-		float p, h;
-		target_dir.getHP(h, p);
-
-		Fvector targ_angles = EulerYawPitchRollInertion({ cam->pitch , cam->yaw, 0.f }, { -p, -h, 0.f }, 0.5f, Device.fTimeDelta);
-		cam->pitch = targ_angles.x;
-		cam->yaw = targ_angles.y;
-	}
-
+	UpdateCameraDirection(m_pOthersInvOwner->cast_game_object(), m_pOthersInvOwner->GetFocusingOnNpc());
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
 
 	if (playing_sound())
