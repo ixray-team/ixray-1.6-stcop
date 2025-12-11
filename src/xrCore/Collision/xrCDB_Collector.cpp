@@ -186,7 +186,7 @@ namespace CDB
 		scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
 		scale.div(VMscale);
 
-		Msg("*** Set Hash Scale for Compacting: {%f, %f, %f}", VPUSH(scale));
+		// Msg("*** Set Hash Scale for Compacting: {%f, %f, %f}", VPUSH(scale));
 
 		// Preallocate memory
 		verts.reserve	(apx_vertices);
