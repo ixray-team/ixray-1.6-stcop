@@ -66,5 +66,11 @@ namespace XRay::RayTrace::CUDA
     void RayTraceRun(size_t max_rays);
 
     xr_vector<base_color_c>& RayTraceResult();
+   
+    
+    // CDeflector CUDA
+    void RayTraceDeflector(CDeflector& D);
+    void RayTraceDeflectorsAll();
+    void RayTraceDeflectorsFree();
 }
  
