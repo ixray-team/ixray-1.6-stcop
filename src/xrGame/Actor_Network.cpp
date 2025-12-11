@@ -754,6 +754,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 
 void CActor::net_Destroy	()
 {
+	if (g_pGameLevel)
+	{
+		g_pGameLevel->SoundEvent_OnDestDestroy(this);
+	}
 	inherited::net_Destroy	();
 
 	if (m_holder_id != ALife::_OBJECT_ID(-1))
