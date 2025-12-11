@@ -1417,7 +1417,7 @@ void CActor::UpdateCL()
 
 	if (!g_player_hud->m_need_reload && !HudAnimator()->IsActive())
 	{
-
+	
 		if (item != nullptr || dev != nullptr)
 		{
 			if (dev != nullptr)
@@ -1428,21 +1428,21 @@ void CActor::UpdateCL()
 					dev->HideDetector(true, true);
 				}
 			}
-
+	
 			if (item != nullptr)
 			{
 				if (old_slot == 0)
 				{
 					old_slot = inventory().GetActiveSlot();
 				}
-
+	
 				if (item->GetState() == CHUDState::eIdle)
 				{
 					inventory().Activate(0);
 				}
 			}
 		}
-		else if (item == nullptr && dev == nullptr)
+		else if (g_player_hud->attached_item(0) == nullptr && g_player_hud->attached_item(1) == nullptr)
 		{
 			g_player_hud->m_need_reload = true;
 			if (g_player_hud->NextHUDSect.size() > 0)
@@ -1454,9 +1454,9 @@ void CActor::UpdateCL()
 			{
 				g_player_hud->load_default();
 			}
-
+	
 			u16 saved_old_slot = NO_ACTIVE_SLOT;
-
+	
 			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
 			{
 				saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
@@ -1471,7 +1471,7 @@ void CActor::UpdateCL()
 				need_restore_detector = false;
 				GetDevice(true)->switch_device();
 			}
-
+	
 		}
 	}
 
