@@ -15,11 +15,16 @@ struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
 
-	unsigned char	 flags;
-	hardware_raytask* rays;
-	hardware_color* colors;
-	hardware_lighting* lights;
-	int counts_lights;
+	unsigned char		flags;
+	Hardware_Raytask*	rays;
+	Hardware_Color*		colors;		// Раньше rays == colors
+
+	Hardware_Lighting*	lights;
+	int					counts_lights;
+
+	CDeflector_GPU*		GpuDeflectors;
+	bool				DeflectorsBig;
+
 };
 
 extern "C"
@@ -38,7 +43,7 @@ enum eType
 	eRGB = 2
 };
 
-__device__ float RunOptickTask(HardwareVector& P, HardwareVector& N, float Range)
+__device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Range)
 {
 	const float3 origin = P.getVector3();
 	const float3 dir = N.getVector3();
@@ -60,14 +65,14 @@ __device__ float RunOptickTask(HardwareVector& P, HardwareVector& N, float Range
 	return (hit == 0) ? 1.0f : 0.0f;
 }
 
-__device__ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C)
+__device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C)
 {
-	HardwareVector Ldir;
-	HardwareVector Pnew = P;
+	Hardware_Vector Ldir;
+	Hardware_Vector Pnew = P;
 	Pnew.Mad_Self(N, 0.01f);
 
-	HardwareVector LightPosition = { L.position.x, L.position.y, L.position.z };
-	HardwareVector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
+	Hardware_Vector LightPosition = { L.position.x, L.position.y, L.position.z };
+	Hardware_Vector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
 
 	bool isSunOrHemi = L.light_type != eRGB;
 	float att = 0;
@@ -163,39 +168,134 @@ enum Flags
 	LP_dont_sun  = (1 << 3),
 };
 
-__device__ void run_tracing_new(int index)
+__device__ void LightPoint(Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& ColorUV, unsigned char flags)
 {
-	unsigned char flags = g_params.flags;
-
-	hardware_raytask& Rays = g_params.rays[index];
-	HardwareVector P(Rays.Position);
-	HardwareVector N(Rays.Direction);
-
-	hardware_color& ColorUV = g_params.colors[index];
-
- 
-	for (int i = 0; i < g_params.counts_lights; i++)
+ 	for (int i = 0; i < g_params.counts_lights; i++)
 	{
-		hardware_lighting& L = g_params.lights[i];
+		Hardware_Lighting& L = g_params.lights[i];
 
 		if (!(LP_dont_hemi & flags) && L.type == eHemi)
- 			CalculatePoint(L, P, N, ColorUV);
- 
+			CalculatePoint(L, P, N, ColorUV);
+
 		if (!(LP_dont_rgb & flags) && L.type == eRGB)
 			CalculatePoint(L, P, N, ColorUV);
 
 		if (!(LP_dont_sun & flags) && L.type == eSun)
 			CalculatePoint(L, P, N, ColorUV);
 	}
+}
+
+__device__ void run_tracing_new(int index)
+{
+	unsigned char flags = g_params.flags;
+
+	Hardware_Raytask& Rays = g_params.rays[index];
+	Hardware_Vector P(Rays.Position);
+	Hardware_Vector N(Rays.Direction);
+
+	Hardware_Color& ColorUV = g_params.colors[index];
+	 
+	LightPoint(P, N, ColorUV, flags);
+}
+
+
+
+__device__ void DeflectorsProcess(CDeflector_GPU& Defl)
+{
+	// Setup variables
+	Hardware_Vector2	dim, half;
+	dim.set(float(Defl.Width), float(Defl.Height));
+	half.set(.5f / dim.x, .5f / dim.y);
+
+	// Jitter data
+	Hardware_Vector2	JS;
+	JS.set(.4999f / dim.x, .4999f / dim.y);
+
+	unsigned int      Jcount;
+	Hardware_Vector2* Jitter;
+	Jitter_Select_GPU(Jitter, Jcount);
+
+	// Lighting itself
+	for (unsigned int V = 0; V < Defl.Height; V++)
+	{
+		for (unsigned int U = 0; U < Defl.Width; U++)
+		{
+			unsigned int	Fcount = 0;
+			Hardware_Color	C;
  
+			for (unsigned int J = 0; J < Jcount; J++)
+			{
+				// LUMEL space
+				Hardware_Vector2 P;
+				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+				 
+				// World space
+				Hardware_Vector		wP, wN, B;
+				for (auto TRI_INDEX =0; TRI_INDEX < Defl.UVTrisSize; TRI_INDEX++)
+				{
+					auto TRI = Defl.UVTris[TRI_INDEX];
+					if (TRI.isInside(P, B))
+					{
+						// We found triangle and have barycentric coords
+							 
+						VertexGPU& V1 = TRI.V[0];
+						VertexGPU& V2 = TRI.V[1];
+						VertexGPU& V3 = TRI.V[2];
+
+						wP.from_bary(V1.P, V2.P, V3.P, B);
+
+						{
+							wN.from_bary(V1.N, V2.N, V3.N, B);
+							// exact_normalize(wN); // TODO ! se7kills
+							wN.Add(TRI.N);
+							// exact_normalize(wN);  // TODO ! se7kills
+						}
+
+						LightPoint(wP, wN, C, 0);
+ 						 
+						Fcount += 1;
+	
+						break;
+					}
+				}
+			}
+ 
+			if (Fcount)
+			{
+				C.scale(Fcount);
+				C.mul(.5f);
+				Defl.surfaces[V * Defl.Width + U] = C;
+				Defl.marker  [V * Defl.Width + U] = 255;
+			}
+			else {
+				Defl.surfaces[V * Defl.Width + U] = C;
+				Defl.marker  [V * Defl.Width + U]   = 0;
+			}
+		}
+	}
+
+}
+
+__device__ void run_deflectors(int index)
+{
+	if (g_params.GpuDeflectors != nullptr)
+	{
+ 		DeflectorsProcess(g_params.GpuDeflectors[index]);
+ 	}
+	else
+	{
+		run_tracing_new(index);
+	}
 }
 
 // Entry points
-
 extern "C" __global__ void __raygen__rg()
 {
 	const uint3 launch_idx = optixGetLaunchIndex();
-	run_tracing_new(launch_idx.x);
+	run_deflectors(launch_idx.x);
+ 
+ 	// run_tracing_new(launch_idx.x);
 }
 
 extern "C" __global__ void __miss__ms()
@@ -212,3 +312,8 @@ extern "C" __global__ void __anyhit__ah()
 {
 	// Not used
 }
+ 
+// se7kills TODO:  CDeflectorGPU Релизацию сделать ! (Полная копия до 2048 за раз)
+// (На гпу расщитываем все даже for ( auto K : UVTri ) { if ( K.isInsize() ) { light_point() } } )
+
+// Добавил VertexGPU, UVTriGPU, _TCF_GPU Для копирования в GPU

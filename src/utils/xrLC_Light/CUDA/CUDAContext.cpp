@@ -131,7 +131,7 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	pipelineCompileOptions.numPayloadValues = 2;
 	pipelineCompileOptions.numAttributeValues = 2;
 	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
-	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";
+	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params
 
 	char log[2048];
 	size_t sizeof_log = sizeof(log);

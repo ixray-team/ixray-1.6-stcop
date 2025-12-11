@@ -8,7 +8,7 @@
 #include "xrLC_GlobalData.h"
 #include "xrFace.h"
 
-void copy_color(hardware_color& Chw, base_color_c& C)
+void copy_color(Hardware_Color& Chw, base_color_c& C)
 {
 	C.hemi = Chw.hemi;
 	C.sun = Chw.sun;
@@ -17,7 +17,7 @@ void copy_color(hardware_color& Chw, base_color_c& C)
 	C.rgb.set(temp_rgb.x, temp_rgb.y, temp_rgb.z);
 };
 
-auto LightHW = [&](hardware_lighting& L)
+auto LightHW = [&](Hardware_Lighting& L)
 	{
 		R_Light cuL;
 		cuL.type = L.type;
@@ -36,7 +36,7 @@ auto LightHW = [&](hardware_lighting& L)
 
 auto Light = [&](R_Light& L, int type)
 	{
-		hardware_lighting cuL;
+		Hardware_Lighting cuL;
 		cuL.type = L.type;
 		cuL.light_type = type;
 		cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
@@ -54,7 +54,7 @@ auto Light = [&](R_Light& L, int type)
 
 // Embree
 
-float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareVector& Dnew, float R, Face* Skip)
+float RaytraceEmbreeNew(Hardware_Lighting& Lnew, Hardware_Vector& Pnew, Hardware_Vector& Dnew, float R, Face* Skip)
 {
 	auto V = LightHW(Lnew);
 	auto P = Fvector().set(Pnew.x, Pnew.y, Pnew.z);
@@ -63,15 +63,15 @@ float RaytraceEmbreeNew(hardware_lighting& Lnew, HardwareVector& Pnew, HardwareV
 
 }
 
-void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, hardware_color& C, Face* Skip)
+void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C, Face* Skip)
 {
-	HardwareVector Ldir;
-	HardwareVector Pnew = P;
+	Hardware_Vector Ldir;
+	Hardware_Vector Pnew = P;
 	Pnew.Mad_Self(N, 0.01f);
 
-	HardwareVector LightPosition(L.position);
-	HardwareVector LightDirection(L.direction);
-	HardwareVector LightDiffuse(L.diffuse);
+	Hardware_Vector LightPosition(L.position);
+	Hardware_Vector LightDirection(L.direction);
+	Hardware_Vector LightDiffuse(L.diffuse);
 
 	bool isSunOrHemi = L.light_type != LGroup::eRGB;
 	float att = 0;
@@ -157,28 +157,28 @@ void CalculatePoint(hardware_lighting& L, HardwareVector& P, HardwareVector& N, 
 	}
 };
 
-void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, hardware_color& Cnew, u8 flags, Face* Skip)
+void ProcessRays(Fvector& P, Fvector& D, base_lighting& LS, Hardware_Color& Cnew, u8 flags, Face* Skip)
 {
-	HardwareVector Pos(P.x, P.y, P.z);
-	HardwareVector Dir(D.x, D.y, D.z);
+	Hardware_Vector Pos(P.x, P.y, P.z);
+	Hardware_Vector Dir(D.x, D.y, D.z);
 	if (!(flags & LP_dont_sun))
 		for (auto& L : LS.sun)
 		{
-			hardware_lighting Lnew = Light(L, LGroup::eSun);
+			Hardware_Lighting Lnew = Light(L, LGroup::eSun);
 			CalculatePoint(Lnew, Pos, Dir, Cnew, Skip);
 		}
 
 	if (!(flags & LP_dont_hemi))
 		for (auto& L : LS.hemi)
 		{
-			hardware_lighting Lnew = Light(L, LGroup::eHemi);
+			Hardware_Lighting Lnew = Light(L, LGroup::eHemi);
 			CalculatePoint(Lnew, Pos, Dir, Cnew, Skip);
 		}
 
 	if (!(flags & LP_dont_rgb))
 		for (auto& L : LS.rgb)
 		{
-			hardware_lighting Lnew = Light(L, LGroup::eRGB);
+			Hardware_Lighting Lnew = Light(L, LGroup::eRGB);
 			CalculatePoint(Lnew, Pos, Dir, Cnew, Skip);
 		}
 }

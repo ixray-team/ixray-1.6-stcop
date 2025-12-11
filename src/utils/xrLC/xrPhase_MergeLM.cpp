@@ -107,31 +107,29 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 		curarea += defl_area;
 		merge_count++;
 	}
+  
+	placer_perpixel._InitSurface_tbb();
 
+
+	xr_atomic_u32 CurrentIndex = 0;
 	xr_atomic_u32 ErrorsPlace = 0;
 	u32 MergedCount = 0;
-	u32 CurrentIndex = 0;
- 
-	static xrCriticalSection IndexLock;
-
-	auto calculate_maps = [&]()
+	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t thread_id)
 	{
-		while (true)
+		static xrCriticalSection IndexLock;
+ 		while (true)
 		{
-			IndexLock.Enter();
-			u32 iter = CurrentIndex;
-			CurrentIndex++;
-			IndexLock.Leave();
- 			if (iter >= merge_count) break;			 
+			u32 IndexTask = CurrentIndex.fetch_add(1);
+			if (IndexTask >= merge_count) break;
 			if (ErrorsPlace.load() > 4096) break;
 
-			auto D = Layer[iter];
+			auto D = Layer[IndexTask];
 			lm_layer& L = D->layer;
 
-			if (iter % 512 == 0)
+			if (IndexTask % 512 == 0)
 			{
 				placer_perpixel.RecalcY();
-				AditionalData("IT: %u/%u | filled: %u | NoPlaced: %u", iter, merge_count, placer_perpixel.FilledPercent, ErrorsPlace.load());
+				AditionalData("IT: %u/%u | filled: %u | NoPlaced: %u", IndexTask, merge_count, placer_perpixel.FilledPercent, ErrorsPlace.load());
 			}
 
 			L_rect		rT, rS;
@@ -139,8 +137,9 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 			rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
 			rS.iArea = L.Area();
 			rT = rS;
+
 			bool rotated = false;
- 			if (placer_perpixel.rect_place_full(rT, &L))
+			if (placer_perpixel.rect_place_full(rT, &L))
 			{
 				IndexLock.Enter();
 				if (D->bMerged == false)
@@ -152,53 +151,11 @@ u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
 				IndexLock.Leave();
 			}
 			else
-			if (L.Area() < 128)
-				ErrorsPlace.fetch_add(1);
-  		}
- 	};
-
-	placer_perpixel._InitSurface_tbb();
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t thread_id)
-	{
-		calculate_maps();
+				if (L.Area() < 128)
+					ErrorsPlace.fetch_add(1);
+		}
 	});
 
-	/*
-	for (u32 it = 0; it < merge_count; it++)
-	{
-		lm_layer& L = Layer[it]->layer;
-
-		if (it % 512 == 0)
-		{
-			placer_perpixel.RecalcY();
-			AditionalData("IT: %u/%u | filled: %u | NoPlaced: %u", it, merge_count, placer_perpixel.FilledPercent, ErrorsPlace);
-		}
-
-		L_rect		rT, rS;
-		rS.a.set(0, 0);
-		rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
-		rS.iArea = L.Area();
-		rT = rS;
-		bool rotated = false;
-
-		if (placer_perpixel.rect_place_full(rT, &L))
-		{
- 			lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), rotated);
-			Layer[it]->bMerged = TRUE;
-			MergedCount++;
-		}
-		else
-			if (L.Area() < 128)
-				ErrorsPlace++;
-
-		// Раний выход
-		if (ErrorsPlace > 4096) // && placer_perpixel.FilledPercent > 400
-			break;
-
-		Progress(float(it) / float(merge_count));
-	}
-	*/
-	
 	Progress(1.f);
 	return MergedCount;
 } 
