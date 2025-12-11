@@ -2174,9 +2174,6 @@ public:
 			{
 				xr_shared_ptr<CParticlesObject> pParticle = Particles::Details::Create(string, FALSE);
 
-				if (!pParticle->IsLooped())
-					pParticle->SetAutoRemove(true);
-
 				// вычислить позицию и направленность партикла
 				Fmatrix pos;
 				pos.identity();

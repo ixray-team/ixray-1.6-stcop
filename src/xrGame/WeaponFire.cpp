@@ -113,8 +113,6 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 	{
 		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
 	}
-
-	StartShotParticles		();
 	
 	if(m_bLightShotEnabled) 
 		Light_Start			();
@@ -206,8 +204,6 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
 	}
 
-	StartShotParticles();
-
 	if (m_bLightShotEnabled)
 		Light_Start();
 
@@ -241,12 +237,6 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 
 void CWeapon::StopShooting()
 {
-//	SetPending			(TRUE);
-
-	//принудительно останавливать зацикленные партиклы
-	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
-		StopFlameParticles	();	
-
 	if (!ParentIsActor() && GetState() == eFire)
 	{
 		SwitchState(eIdle);
@@ -265,18 +255,4 @@ void CWeapon::FireEnd()
 {
 	CShootingObject::FireEnd();
 
-}
-
-
-void CWeapon::StartFlameParticles2	()
-{
-	CShootingObject::StartParticles (m_pFlameParticles2, *m_sFlameParticles2, get_LastFP2());
-}
-void CWeapon::StopFlameParticles2	()
-{
-	CShootingObject::StopParticles (m_pFlameParticles2);
-}
-void CWeapon::UpdateFlameParticles2	()
-{
-	if (m_pFlameParticles2)			CShootingObject::UpdateParticles (m_pFlameParticles2, get_LastFP2());
 }

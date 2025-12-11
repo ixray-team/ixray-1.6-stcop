@@ -24,8 +24,6 @@ void CWeaponMagazinedWGrenade::Load(LPCSTR section)
 	inherited::Load(section);
 	CRocketLauncher::Load(section);
 
-	m_sFlameParticles2 = pSettings->r_string(section, "grenade_flame_particles");
-
 	if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 	{
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
@@ -439,6 +437,8 @@ void CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	iMagazineSize = m_bGrenadeMode ? 1 : iMagazineSize2;
 
+	CShootingObject::fire_mode = m_bGrenadeMode ? eGlauncherFire : IsSilencerAttached() ? eSilencerFire : eDefaultFire;
+
 	m_ammoTypes.swap(m_ammoTypes2);
 
 	swap(m_ammoType, m_ammoType2);
@@ -665,7 +665,7 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 			}
 
 			AddShotEffector();
-			StartFlameParticles2();
+			StartFlameParticle();
 		}
 		break;
 	}

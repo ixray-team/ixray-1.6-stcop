@@ -46,7 +46,6 @@ CWeaponMagazined::CWeaponMagazined()
 	m_sounds_enabled			= true;
 	
 	m_sSndShotCurrent			= "sndShot";
-	m_sSilencerFlameParticles	= m_sSilencerSmokeParticles = nullptr;
 
 	m_bFireSingleShot			= false;
 	m_iShotNum					= 0;
@@ -67,15 +66,6 @@ void CWeaponMagazined::net_Destroy()
 void CWeaponMagazined::Load(LPCSTR section)
 {
 	inherited::Load(section);
-
-	//звуки и партиклы глушителя, еслит такой есть
-	if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
-	{
-		if (pSettings->line_exist(section, "silencer_flame_particles"))
-			m_sSilencerFlameParticles = pSettings->r_string(section, "silencer_flame_particles");
-		if (pSettings->line_exist(section, "silencer_smoke_particles"))
-			m_sSilencerSmokeParticles = pSettings->r_string(section, "silencer_smoke_particles");
-	}
 
 	m_iBaseDispersionedBulletsCount = READ_IF_EXISTS(pSettings, r_u8, section, "base_dispersioned_bullets_count", 0);
 	m_fBaseDispersionedBulletsSpeed = READ_IF_EXISTS(pSettings, r_float, section, "base_dispersioned_bullets_speed", m_fStartBulletSpeed);
@@ -1504,17 +1494,14 @@ void CWeaponMagazined::OnShot()
 	// Animation
 	PlayAnimShoot();
 
+	StartFlameParticle();
+
 	// Shell Drop
 	Fvector vel;
 	PHGetLinearVell(vel);
-	OnShellDrop(get_LastSP(), vel);
 
-	// Огонь из ствола
-	StartFlameParticles();
-
-	//дым из ствола
-	ForceUpdateFireParticles();
-	StartSmokeParticles(get_LastFP(), vel);
+	StartShellParticle(vel);
+	StartSmokeParticle(vel);
 
 	if (H_Parent())
 	{
@@ -2582,17 +2569,14 @@ void CWeaponMagazined::InitAddons()
 
 	if (IsSilencerAttached())
 	{
-		m_sFlameParticlesCurrent = m_sSilencerFlameParticles;
-		m_sSmokeParticlesCurrent = m_sSilencerSmokeParticles;
-
+		CShootingObject::fire_mode = eSilencerFire;
 		//подсветка от выстрела
 		LoadLights(*cNameSect(), "silencer_");
 		ApplySilencerKoeffs();
 	}
 	else
 	{
-		m_sFlameParticlesCurrent = m_sFlameParticles;
-		m_sSmokeParticlesCurrent = m_sSmokeParticles;
+		CShootingObject::fire_mode = eDefaultFire;
 
 		//подсветка от выстрела
 		LoadLights(*cNameSect(), "");
@@ -3310,8 +3294,13 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 
 	if (m_eSilencerStatus == ALife::eAddonAttachable || m_eSilencerStatus == ALife::eAddonPermanent)
 	{
-		result |= process_if_exists_set(section, "silencer_flame_particles", &CInifile::r_string, m_sSilencerFlameParticles, test);
-		result |= process_if_exists_set(section, "silencer_smoke_particles", &CInifile::r_string, m_sSilencerSmokeParticles, test);
+		LPCSTR sil_ps = nullptr;
+		result |= process_if_exists_set(section, "silencer_flame_particles", &CInifile::r_string, sil_ps, test);
+		if(sil_ps)
+			LoadParticle(section, sil_ps, m_pFlameSilencerParticles);
+		result |= process_if_exists_set(section, "silencer_smoke_particles", &CInifile::r_string, sil_ps, test);
+		if (sil_ps)
+			LoadParticle(section, sil_ps, m_pSmokeSilencerParticles);
 
 		result2 = process_if_exists_set(section, "snd_silncer_shot", &CInifile::r_string, str, test);
 		if (result2 && !test)

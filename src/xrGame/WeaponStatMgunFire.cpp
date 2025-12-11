@@ -32,7 +32,6 @@ void CWeaponStatMgun::FireEnd()
 {
 	m_dAngle.set(0.0f,0.0f);
 	inheritedShooting::FireEnd();
-	StopFlameParticles	();
 	RemoveShotEffector ();
 }
 
@@ -40,9 +39,7 @@ void CWeaponStatMgun::UpdateFire()
 {
 	fShotTimeCounter -= Device.fTimeDelta;
 	
-
-	inheritedShooting::UpdateFlameParticles();
-	inheritedShooting::UpdateLight();
+	inheritedShooting::UpdateEffects();
 
 	if (m_overheat_enabled)
 	{
@@ -119,16 +116,14 @@ void CWeaponStatMgun::OnShot()
 
 	FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, Owner()->ID(), ID(), SendHitAllowed(Owner()));
 
-	StartShotParticles();
-
 	if (m_bLightShotEnabled)
 	{
 		Light_Start();
 	}
 
-	StartFlameParticles();
-	StartSmokeParticles(m_fire_pos, zero_vel);
-	OnShellDrop(m_fire_pos, zero_vel);
+	StartFlameParticle();
+	StartSmokeParticle(zero_vel);
+	StartShellParticle(zero_vel);
 
 	bool b_hud_mode = (Level().CurrentEntity() == Owner()->dcast_CObject());
 	m_sounds_layered.PlaySound("sndShot", m_fire_pos, Owner(), b_hud_mode);
