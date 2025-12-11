@@ -98,8 +98,7 @@ void CCarWeapon::UpdateFire()
 {
 	fShotTimeCounter -= Device.fTimeDelta;
 
-	inheritedShooting::UpdateFlameParticles();
-	inheritedShooting::UpdateLight();
+	inheritedShooting::UpdateEffects();
 	
 	if(m_bAutoFire){
 		if(m_allow_fire){
@@ -220,7 +219,6 @@ void CCarWeapon::FireStart()
 void CCarWeapon::FireEnd()	
 {
 	inheritedShooting::FireEnd();
-	StopFlameParticles	();
 }
 
 #include "holder_custom.h"
@@ -231,13 +229,11 @@ void CCarWeapon::OnShot()
 	FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, holder->Engaged() ? 0 : m_object->ID(),
 		m_object->ID(), SendHitAllowed(m_object));
 
-	StartShotParticles();
-
 	if (m_bLightShotEnabled)
 		Light_Start();
 
-	StartFlameParticles();
-	StartSmokeParticles(m_fire_pos, zero_vel);
+	StartFlameParticle();
+	StartSmokeParticle(zero_vel);
 
     SoundsLayered.PlaySound("m_sndShot", m_fire_pos, m_object, false);
 }

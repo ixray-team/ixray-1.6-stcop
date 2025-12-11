@@ -35,22 +35,6 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 //		g_verify_stalkers		();
 }
 
-void CScriptParticlesCustom::PSI_internal_delete()
-{
-	if (m_owner)
-		m_owner->m_particles = nullptr;
-
-	CParticlesObject::PSI_destroy();
-}
-
-void CScriptParticlesCustom::PSI_destroy()
-{
-	if (m_owner)
-		m_owner->m_particles = nullptr;
-
-	CParticlesObject::PSI_destroy();
-}
-
 void CScriptParticlesCustom::Update(u32 _dt)
 {
 	CParticlesObject::Update(_dt);
@@ -108,12 +92,9 @@ CScriptParticles::~CScriptParticles()
 		// destroy particles
 		m_particles->remove_owner	();
 
-		if (!m_particles->IsLooped() && m_particles->IsPlaying())
-			m_particles->SetAutoRemove(true);
-		else
-			m_particles->PSI_destroy();
+		m_particles->Destroy();
 
-		m_particles					= 0;
+		m_particles					= nullptr;
 	}
 }
 
