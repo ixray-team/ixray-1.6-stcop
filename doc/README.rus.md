@@ -79,11 +79,12 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 ## Возможности
 
 - Поддержка архитектур: __x64__
+- Поддерживается Visual Studio 2019-2026
 - Система сборки __CMake__
 - Поддерживаемые рендеры: __DirectX 9.0c__, __DirectX 11__
 - Улучшенная производительность и повышенный FPS
 - Загрузка уровней ускорена в 3-4 раза
-- [Расширены возможности для модмейкеров](https://github.com/ixray-team/ixray-1.6-stcop/wiki)
+- [Расширены возможности для модмейкеров](ixray-team.github.io/ixray-1.6-stcop/)
 - Исправление оригинальных ошибок
 - [Поддержка инструментов отладки: __ASAN__, __RenderDoc__ и __LuaPanda__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/%D0%98%D0%BD%D1%82%D0%B5%D0%B3%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
 - [Поддержка __DLTX__ и __XMLOverride__](https://github.com/ixray-team/ixray-1.6-stcop/wiki#addons)
@@ -112,13 +113,13 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
-- Установите оригинальную игру (Steam\GOG)
+- Установите оригинальную игру
 - Удалите в основной папке игры: `bin`, `gamedata` (при наличии)
 - Распакуйте архив в основную папку игры с заменой файлов
 
 Для сборки:
 
-- [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com/vs/community/)
+- [Visual Studio 2022 (или 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
   - MFC
   - Windows SDK 10.0.19041.0+
 - [Git](https://git-scm.com/downloads)
@@ -126,7 +127,7 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 
 Для разработки:
 
-- [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com/vs/community/)
+- [Visual Studio 2022 (или 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
 - [Git](https://git-scm.com/downloads)
 - [CMake with CMake GUI](https://cmake.org/download/)
 
@@ -140,6 +141,19 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 # С GitHub
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 ```
+
+> [!IMPORTANT]
+> Подготовка системы перед сборкой
+>
+> Чтобы избежать ошибок, выполните два обязательных условия:
+>
+> 1. Отключите сторонние сетевые инструменты:
+>     - Обходы DPI
+>     - VPN- и прокси-сервисы
+>
+> 2. Включите поддержку длинных путей в Windows:
+>     - Это системное ограничение на 260 символов в пути к файлу
+>     - Примечание: В новых версиях Windows 10/11 этот параметр часто включён по умолчанию. Проверить можно командой `fsutil behavior query LongPathsEnabled` в терминале с правами администратора. Если выведет `1` — включено
 
 ### Генерация решения Visual Studio
 

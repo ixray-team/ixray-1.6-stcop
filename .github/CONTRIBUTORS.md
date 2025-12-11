@@ -29,6 +29,7 @@ Detail list of all contributors to IX-Ray project
   - mnelenpridumivat
   - MiX225
   - kola2451
+  - FFx0001
 
 - IX-Ray Partners:
   - _V_O_IN_
@@ -65,7 +66,7 @@ Detail list of all contributors to IX-Ray project
 - xrEugene
 - xrLil-Batya
 - Vertver
-- revolucas
+- revolucas (Alundaio)
 - tatarinrafa
 - Giperion
 - range-vs
@@ -81,6 +82,16 @@ Detail list of all contributors to IX-Ray project
 - Baryshev194
 - SkyLoader
 - wasertech
+- TheParaziT
+- Vyacheslav
+- Xottab-DUTY
+- Graff46
+- RainbowZerg
+- zhoracementov
+- DriveAlphinist
+- xr-Renn
+- rederr404
+- LostAlphaRus
 
 ## Former Contributors
 

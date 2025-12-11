@@ -79,10 +79,11 @@ Latest release of the engine can be downloaded on the [releases page](https://gi
 ## Features
 
 - Architectures support: __x64__
+- Visual Studio 2019-2026 is supported
 - __CMake__ build system
 - Supported renderers: __DirectX 9.0c__, __DirectX 11__
 - Improved performance and better FPS
-- [Extended opportunities for modmakers](https://github.com/ixray-team/ixray-1.6-stcop/wiki)
+- [Extended opportunities for modmakers](ixray-team.github.io/ixray-1.6-stcop/)
 - Fixed original bugs
 - Increased level loading speed by 3-4 times
 - [Debugging tools support: __ASAN__, __RenderDoc__ and __LuaPanda__](https://github.com/ixray-team/ixray-1.6-stcop/wiki/%D0%98%D0%BD%D1%82%D0%B5%D0%B3%D1%80%D0%B0%D1%86%D0%B8%D0%B8)
@@ -112,13 +113,13 @@ For launching:
 - [OpenAL Driver](https://www.openal.org/downloads/)
 - [Visual C++ Redistributable](https://www.microsoft.com/en-gb/download/details.aspx?id=48145)
 - [DirectX End-User Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=35)
-- Install original game from Steam or GOG
+- Install original game
 - Delete in main folder of the game: `bin`, `gamedata` (if exists)
 - Unpack archive to main folder of the game
 
 For building:
 
-- [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com/vs/community/)
+- [Visual Studio 2022 (or 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
   - MFC
   - Windows SDK 10.0.19041.0+
 - [Git](https://git-scm.com/downloads)
@@ -126,7 +127,7 @@ For building:
 
 For development:
 
-- [Visual Studio 2022 Community Edition](https://visualstudio.microsoft.com/vs/community/)
+- [Visual Studio 2022 (or 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
 - [Git](https://git-scm.com/downloads)
 - [CMake with CMake GUI](https://cmake.org/download/)
 
@@ -140,6 +141,19 @@ Download the repository firstly:
 # From GitHub
 git clone https://github.com/ixray-team/ixray-1.6-stcop.git
 ```
+
+> [!IMPORTANT]
+> System preparation before building
+>
+> To avoid errors, you must meet two requirements:
+>
+> 1. Disable third-party network tools:
+>     - DPI bypass tools
+>     - VPN and proxy services
+>
+> 2. Enable Long Paths support in Windows:
+>     - This is the system limit of 260 characters for a file path
+>     - Note: In newer versions of Windows 10/11, this setting is often enabled by default. You can check it by running the command `fsutil behavior query LongPathsEnabled` in a terminal with administrator rights. If it outputs `1`, it is enabled
 
 ### Generate Visual Studio solution
 

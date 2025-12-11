@@ -29,6 +29,7 @@
   - mnelenpridumivat
   - MiX225
   - kola2451
+  - FFx0001
 
 - IX-Ray Partners:
   - _V_O_IN_
@@ -65,7 +66,7 @@
 - xrEugene
 - xrLil-Batya
 - Vertver
-- revolucas
+- revolucas (Alundaio)
 - tatarinrafa
 - Giperion
 - range-vs
@@ -81,6 +82,16 @@
 - Baryshev194
 - SkyLoader
 - wasertech
+- TheParaziT
+- Vyacheslav
+- Xottab-DUTY
+- Graff46
+- RainbowZerg
+- zhoracementov
+- DriveAlphinist
+- xr-Renn
+- rederr404
+- LostAlphaRus
 
 ## Бывшие участники
 
