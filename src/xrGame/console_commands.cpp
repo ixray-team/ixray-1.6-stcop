@@ -2571,6 +2571,8 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer, "ph_tri_clear_disable_count", &ph_console::ph_tri_clear_disable_count, 0, 255);
 	CMD4(CCC_FloatBlock, "ph_tri_query_ex_aabb_rate", &ph_console::ph_tri_query_ex_aabb_rate, 1.01f, 3.f);
 	CMD3(CCC_Mask, "g_no_clip", &psActorFlags, AF_NO_CLIP);
+	extern bool no_amb_effects;
+	CMD2(CCC_Boolean, "g_no_amb_effects", &no_amb_effects);
 #endif // DEBUG
 
 #ifndef MASTER_GOLD

@@ -265,11 +265,11 @@ void CGamePersistent::OnGameEnd	()
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
 }
-
+bool no_amb_effects = false;
 void CGamePersistent::WeathersUpdate()
 {
 	PROF_EVENT("CGamePersistent WeathersUpdate");
-	if (g_pGameLevel && !g_dedicated_server)
+	if (g_pGameLevel && !g_dedicated_server && !no_amb_effects)
 	{
 		BOOL bIndoor = Render->InIndoor();
 
