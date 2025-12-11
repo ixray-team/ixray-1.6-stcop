@@ -79,6 +79,7 @@ public:
  
  	void RestartALL()
 	{
+		Recalculated = 0;
 		// start
 		current_flags = 0;
 
@@ -90,7 +91,6 @@ public:
 		task_pools.shrink_to_fit();
 
 		ProcessingGPU = 0;
-		ProcessingCPU_copy = 0;
 		ProcessingCPU_result = 0;
 	}
  
@@ -108,10 +108,9 @@ public:
 	xrCriticalSection csEnter;
 
 	// Stats
+	u32 Recalculated = 0;
 	u32 ProcessingGPU = 0;
-	u32 ProcessingCPU_copy = 0;
-	u32 ProcessingCPU_result = 0;
-
+ 	u32 ProcessingCPU_result = 0;
 };
 
 extern PackedLighting GPUTaskinSystem;

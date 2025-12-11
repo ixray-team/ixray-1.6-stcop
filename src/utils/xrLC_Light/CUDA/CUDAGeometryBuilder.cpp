@@ -3,6 +3,7 @@
 #include "../../xrLC/Build.h"
 
 
+
 bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
@@ -272,6 +273,99 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
 
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
+
+    return true;
+}
+
+
+
+// Scene Global Data
+#include "../xrLC_GlobalData.h"
+#include "../xrMU_Model_Reference.h"
+#include <embree_raytracing/EmbreeRayTrace.h>
+
+
+extern size_t GetHeapMemory();
+struct FaceDataIntel;
+
+bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
+{
+    xrLC_GlobalData* globalData = lc_global_data();
+    if (!globalData)
+        return false;
+
+    OptixGeometryBuilder geometryBuilder;
+    // 1. Обрабатываем статическую геометрию
+
+    Phase("CUDA Get LC Faces");
+
+    Status("Build BLAS...");
+
+    CTimer t;
+    t.Start();
+
+    size_t Start = GetHeapMemory();
+
+    clMsg("Processing Memory: %u mb", Start / 1024 / 1024);
+    xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+
+    for (Face* F : globalData->g_faces())
+    {
+        const Shader_xrLC& SH = F->Shader();
+        if (!SH.flags.bLIGHT_CastShadow) continue;
+
+        b_material& M = globalData->materials()[F->dwMaterial];
+        b_texture& T = globalData->textures()[M.surfidx];
+
+        bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+        if (!isTransparent)
+            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+        else
+            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+    }
+
+    // 2. Обрабатываем MU-референсы
+    for (auto ref : globalData->mu_refs())
+    {
+        xr_vector<FaceDataIntel> tempBuffer;
+        ref->export_cform_rcast_new(tempBuffer);
+
+        for (auto& pF : tempBuffer)
+        {
+            Face* F = (Face*)pF.ptr;
+            b_material& M = globalData->materials()[F->dwMaterial];
+            b_texture& T = globalData->textures()[M.surfidx];
+
+            bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+            if (!isTransparent)
+                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            else
+                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+        }
+    }
+
+    clMsg("Processing Geometry: %u ms | Memory: %u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
+
+    geometryBuilder.RemoveDublicates();
+
+    Phase("CUDA Building RCastModel");
+
+    // 3. Строим BLAS
+    if (!geometryBuilder.BuildBLAS(context, outScene))
+        return false;
+
+
+    // // 4. Строим TLAS
+    if (!geometryBuilder.BuildTLAS(context, outScene, stream))
+        return false;
+
+    geometryBuilder.Clear();
+    geometryBuilder.MemoryDealoc();
+
+    clMsg("Processing Faces: %u, Vertex: %u", geometryBuilder.triangles.size(), geometryBuilder.vertices.size());
+
+
+    clMsg("[GPU] Stage acceleration data build : % u ms | Memory in CPU (no cleared): % u mb", t.GetElapsed_ms(), (GetHeapMemory() - Start) / 1024 / 1024);
 
     return true;
 }
