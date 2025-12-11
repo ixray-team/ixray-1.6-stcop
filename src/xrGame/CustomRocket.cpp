@@ -69,7 +69,6 @@ void CCustomRocket::net_Destroy()
 	inherited::net_Destroy();
 
 	StopEngine();
-	StopFlying();
 }
 
 void CCustomRocket::SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel)
@@ -331,7 +330,6 @@ void CCustomRocket::PlayContact()
 	}
 
 	StopEngine();
-	StopFlying();
 
 	m_eState = eCollide;
 
@@ -377,7 +375,6 @@ void CCustomRocket::OnH_A_Independent()
 	}
 
 	setVisible(true);
-	StartFlying();
 	StartEngine();
 }
 
@@ -386,22 +383,15 @@ void CCustomRocket::UpdateCL()
 	inherited::UpdateCL();
 
 	PlayContact();
-	switch (m_eState)
-	{
-	case eInactive:
-		break;
-		//состояния eEngine и eFlying отличаются, тем
-		//что вызывается UpdateEngine у eEngine, остальные
-		//функции общие
-	case eEngine:
-		UpdateEngine();
-	case eFlying:
-		UpdateLights();
-		UpdateParticles();
-		break;
-	}
+
 	if (m_eState == eEngine || m_eState == eFlying)
 	{
+		if (m_flyingSound.is_playing())
+			m_flyingSound.set_position(XFORM().c);
+
+		UpdateLights();
+		UpdateParticles();
+
 		if (m_time_to_explode < Device.fTimeGlobal)
 		{
 			Contact(Position(), Direction());
@@ -422,7 +412,12 @@ void CCustomRocket::StartEngine()
 	m_eState = eEngine;
 	m_dwEngineTime = m_dwEngineWorkTime;
 
-	StartEngineParticles();
+	if (m_flyingSound.handle())
+		m_flyingSound.play_at_pos(0, XFORM().c, sm_Looped);
+
+	StartLights();
+	StartParticles();
+
 	R_ASSERT(m_pPhysicsShell);
 	CPHUpdateObject::Activate();
 }
@@ -438,7 +433,11 @@ void CCustomRocket::StopEngine()
 		StopLights();
 	}
 
-	StopEngineParticles();
+	if (m_flyingSound.is_playing())
+		m_flyingSound.stop();
+
+	StopLights();
+	StopParticles();
 
 	CPHUpdateObject::Deactivate();
 }
@@ -542,116 +541,50 @@ void CCustomRocket::PhTune(float step)
 
 void CCustomRocket::UpdateParticles()
 {
-	if (m_flyingSound.is_playing())
+	if (m_pEngineParticles || m_pFlyParticles)
 	{
-		m_flyingSound.set_position(XFORM().c);
+		Fvector vel;
+		PHGetLinearVell(vel);
+
+		vel.add(m_vPrevVel, vel);
+		vel.mul(0.5f);
+		m_vPrevVel.set(vel);
+
+		Fmatrix particles_xform;
+		particles_xform.identity();
+		particles_xform.k.set(XFORM().k);
+		particles_xform.k.mul(-1.f);
+		Fvector dir = particles_xform.k;
+		Fvector::generate_orthonormal_basis(particles_xform.k, particles_xform.j, particles_xform.i);
+		particles_xform.c.set(XFORM().c);
+		dir.normalize_safe();
+		particles_xform.c.add(dir);
+
+		if (m_pEngineParticles)
+			m_pEngineParticles->UpdateParent(particles_xform, vel);
+
+		if (m_pFlyParticles)
+			m_pFlyParticles->UpdateParent(particles_xform, vel);
 	}
+}
 
-	if (m_pEngineParticles == nullptr && m_pFlyParticles == nullptr)
-	{
-		return;
-	}
-
-	Fvector vel;
-	PHGetLinearVell(vel);
-
-	vel.add(m_vPrevVel, vel);
-	vel.mul(0.5f);
-	m_vPrevVel.set(vel);
-
-	Fmatrix particles_xform;
-	particles_xform.identity();
-	particles_xform.k.set(XFORM().k);
-	particles_xform.k.mul(-1.f);
-	Fvector dir = particles_xform.k;
-	Fvector::generate_orthonormal_basis(particles_xform.k, particles_xform.j, particles_xform.i);
-	particles_xform.c.set(XFORM().c);
-	dir.normalize_safe();
-	particles_xform.c.add(dir);
+void CCustomRocket::StartParticles()
+{
+	m_pFlyParticles = m_sFlyParticles ? Particles::Details::Create(*m_sFlyParticles, FALSE) : nullptr;
+	m_pEngineParticles = m_sEngineParticles ? Particles::Details::Create(*m_sEngineParticles, FALSE) : nullptr;
+	UpdateParticles();
+	if (m_pFlyParticles)
+		m_pFlyParticles->Play(false);
+	if (m_pEngineParticles)
+		m_pEngineParticles->Play(false);
+}
+void CCustomRocket::StopParticles()
+{
+	if (m_pFlyParticles)
+		m_pFlyParticles->Destroy();
 
 	if (m_pEngineParticles)
-	{
-		m_pEngineParticles->UpdateParent(particles_xform, vel);
-	}
-
-	if (m_pFlyParticles)
-	{
-		m_pFlyParticles->UpdateParent(particles_xform, vel);
-	}
-}
-
-void CCustomRocket::StartEngineParticles()
-{
-	VERIFY(m_pEngineParticles == nullptr);
-	if (!m_sEngineParticles)
-	{
-		return;
-	}
-
-	m_pEngineParticles = Particles::Details::Create(*m_sEngineParticles, FALSE);
-
-	UpdateParticles();
-	m_pEngineParticles->Play(false);
-
-	VERIFY(m_pEngineParticles);
-}
-void CCustomRocket::StopEngineParticles()
-{
-	if (m_pEngineParticles == nullptr)
-	{
-		return;
-	}
-
-	m_pEngineParticles->Stop();
-	m_pEngineParticles->SetAutoRemove(true);
-	m_pEngineParticles = nullptr;
-}
-void CCustomRocket::StartFlyParticles()
-{
-	if (m_flyingSound.handle())
-		m_flyingSound.play_at_pos(0, XFORM().c, sm_Looped);
-
-	VERIFY(m_pFlyParticles == nullptr);
-
-	if (!m_sFlyParticles)
-	{
-		return;
-	}
-
-	m_pFlyParticles = Particles::Details::Create(*m_sFlyParticles, FALSE);
-
-	UpdateParticles();
-	m_pFlyParticles->Play(false);
-
-	VERIFY(m_pFlyParticles);
-	VERIFY3(m_pFlyParticles->IsLooped(), "must be a looped particle system for rocket fly: %s", *m_sFlyParticles);
-}
-void CCustomRocket::StopFlyParticles()
-{
-	if (m_flyingSound.is_playing())
-	{
-		m_flyingSound.stop();
-	}
-
-	if (m_pFlyParticles == nullptr)
-	{
-		return;
-	}
-
-	m_pFlyParticles->Stop();
-	m_pFlyParticles->SetAutoRemove(true);
-	m_pFlyParticles = nullptr;
-}
-
-void CCustomRocket::StartFlying()
-{
-	StartFlyParticles();
-	StartLights();
-}
-void CCustomRocket::StopFlying()
-{
-	StopFlyParticles();
-	StopLights();
+		m_pEngineParticles->Destroy();
 }
 
 void CCustomRocket::OnEvent(NET_Packet& P, u16 type)

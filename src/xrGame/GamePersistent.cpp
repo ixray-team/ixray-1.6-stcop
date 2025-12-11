@@ -485,7 +485,7 @@ void CGamePersistent::destroy_particles(bool all_particles)
 			ps_active.begin(), ps_active.end(),
 			[](const xr_shared_ptr<CParticlesObject>& Obj)->bool
 			{
-				return Obj->destroy_on_game_load();
+				return Obj->m_destroy_on_game_load;
 			}
 		), ps_active.end());
 	}

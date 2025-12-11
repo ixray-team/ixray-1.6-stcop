@@ -279,15 +279,12 @@ u32 CParticleEffect::ParticlesCount()
 
 PAPI::ParticleAction* CParticleEffect::FindPA(shared_str PEName, PAPI::PActionEnum Action)
 {
+	xrCriticalSectionGuard guard(&onframe_lock);
 	R_ASSERT4(PEName == Name(), "Attempt to find PA in wrong PE", PEName.c_str(), Name().c_str());
-	for (auto action : Pholder.m_actions)
-	{
-		if (action->type == Action)
-		{
-			return action;
-		}
-	}
-	return nullptr;
+
+	auto it = std::find_if(Pholder.m_actions.begin(), Pholder.m_actions.end(), [Action](PAPI::ParticleAction* action) { return action->type == Action; });
+	
+	return it != Pholder.m_actions.end() ? *it : nullptr;
 }
 
 //------------------------------------------------------------------------------

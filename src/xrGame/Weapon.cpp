@@ -76,9 +76,6 @@ CWeapon::CWeapon()
 
 	m_pCurrentAmmo			= nullptr;
 
-	m_pFlameParticles2		= nullptr;
-	m_sFlameParticles2		= nullptr;
-
 	m_bIAmWeaponRPG7 = false;
 	m_fCurrentCartirdgeDisp = 1.f;
 
@@ -241,17 +238,14 @@ void CWeapon::UpdateXForm	()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
-	if (Device.dwFrame!=dwFP_Frame) 
-	{
-		dwFP_Frame			= Device.dwFrame;
-
 		UpdateXForm			();
 
 		if ( GetHUDmode() )
 		{
 			HudItemData()->setup_firedeps		(m_current_firedeps);
 			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
-		} else 
+	}
+	else 
 		{
 			// 3rd person or no parent
 			Fmatrix& parent			= XFORM();
@@ -278,27 +272,6 @@ void CWeapon::UpdateFireDependencies_internal()
 			VERIFY(_valid(m_current_firedeps.m_FireParticlesXForm));
 		}
 	}
-}
-
-void CWeapon::ForceUpdateFireParticles()
-{
-	if ( !GetHUDmode() )
-	{//update particlesXFORM real bullet direction
-
-		if (!H_Parent())		return;
-		if (!H_Parent()->cast_entity())		return;
-		Fvector					p, d; 
-		H_Parent()->cast_entity()->g_fireParams	(this, p,d);
-
-		Fmatrix						_pxf;
-		_pxf.k						= d;
-		_pxf.i.crossproduct			(Fvector().set(0.0f,1.0f,0.0f),	_pxf.k);
-		_pxf.j.crossproduct			(_pxf.k,		_pxf.i);
-		_pxf.c						= XFORM().c;
-		
-		m_current_firedeps.m_FireParticlesXForm.set	(_pxf);
-	}
-}
 
 void CWeapon::Load		(LPCSTR section)
 {
@@ -316,9 +289,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_zoom_inertion.OriginOffset = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_origin_offset", ORIGIN_OFFSET * 0.5f);
 	m_zoom_inertion.TendtoSpeed = READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_aim_tendto_speed", TENDTO_SPEED);
 	
-	if(pSettings->line_exist(section, "flame_particles_2"))
-		m_sFlameParticles2 = pSettings->r_string(section, "flame_particles_2");
-
 	// load ammo classes
 	m_ammoTypes.clear	(); 
 	LPCSTR				S = pSettings->r_string(section,"ammo_class");
@@ -1116,8 +1086,6 @@ void CWeapon::net_Destroy	()
 	inherited::net_Destroy	();
 
 	//удалить объекты партиклов
-	StopFlameParticles	();
-	StopFlameParticles2	();
 	StopLight			();
 	Light_Destroy		();
 
@@ -1482,11 +1450,7 @@ void CWeapon::UpdateCL		()
 	inherited::UpdateCL		();
 
 	//подсветка от выстрела
-	UpdateLight				();
-
-	//нарисовать партиклы
-	UpdateFlameParticles	();
-	UpdateFlameParticles2	();
+	UpdateEffects();
 
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
@@ -3064,7 +3028,6 @@ void CWeapon::OnMagazineEmpty	()
 
 void CWeapon::reinit			()
 {
-	CShootingObject::reinit		();
 	CHudItemObject::reinit			();
 }
 
