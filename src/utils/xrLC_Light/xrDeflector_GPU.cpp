@@ -3,14 +3,18 @@
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
 #include "xrFace.h"
+
+
+// 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
  
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 
-void CDeflector::LightGPU( HASH& H )
+void CDeflector::LightGPU()
 {
 	// Geometrical bounds
 	Fbox bb;	
 	bb.invalidate();
+
 	try 
 	{
 		for (u32 fid = 0; fid < UVpolys.size(); fid++)
@@ -33,23 +37,13 @@ void CDeflector::LightGPU( HASH& H )
 	try
 	{
 		lm_layer& lm = layer;
-
-		// UV & HASH
+ 		// UV  
 		RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
 		
-		Fbox2			bounds;
-		Bounds_Summary(bounds);
-		H.initialize(bounds, (u32)UVpolys.size());
-		for (u32 fid = 0; fid < UVpolys.size(); fid++) {
-			UVtri* T = &(UVpolys[fid]);
-			Bounds(fid, bounds);
-			H.add(bounds, T);
-		}
-
 		// Calculate
 		lm.create(lm.width, lm.height);
-		L_DirectGPU(H);
-	}
+  		L_DirectGPU();
+ 	}
 	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::L_Calculate");
@@ -57,22 +51,23 @@ void CDeflector::LightGPU( HASH& H )
 
 }
 
-// Запрашивает лучи у ГПУ
-void CDeflector::L_DirectGPU(   HASH& H)
+/// Запрашивает лучи у ГПУ
+void CDeflector::L_DirectGPU()
 {
 	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
-		{
-			Vertex* V1 = F->v[0];
-			Vertex* V2 = F->v[1];
-			Vertex* V3 = F->v[2];
-			wP.from_bary(V1->P, V2->P, V3->P, B);
-			wN.from_bary(V1->N, V2->N, V3->N, B);
-			exact_normalize(wN);
-			wN.add(F->N);
-			exact_normalize(wN);
-		};
+	{
+		Vertex* V1 = F->v[0];
+		Vertex* V2 = F->v[1];
+		Vertex* V3 = F->v[2];
+		wP.from_bary(V1->P, V2->P, V3->P, B);
+		wN.from_bary(V1->N, V2->N, V3->N, B);
+		exact_normalize(wN);
+		wN.add(F->N);
+		exact_normalize(wN);
+	};
 
 	lm_layer& lm = layer;
+ 
  	// Setup variables
 	Fvector2	dim, half;
 	dim.set(float(lm.width), float(lm.height));
@@ -99,14 +94,13 @@ void CDeflector::L_DirectGPU(   HASH& H)
 				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
 				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
 
-				xr_vector<UVtri*>& space = H.query(P.x, P.y);
  				// World space
 				Fvector wP, wN, B;
-				for (UVtri** it = &*space.begin(); it != &*space.end(); it++)
+				for (auto& TRIANLGE : UVpolys)
 				{
-					if ((*it)->isInside(P, B))
+					if (TRIANLGE.isInside(P, B))
 					{
-						Face* F = (*it)->owner;
+						Face* F = TRIANLGE.owner;
 						FromBarry(F, wP, wN, B);
 						
   						GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
@@ -122,7 +116,7 @@ void CDeflector::L_DirectGPU(   HASH& H)
 	}
 }
 
-void CDeflector::EdgesLighting(HASH& H)
+void CDeflector::EdgesLighting()
 {
 	auto& lm = layer;
 
@@ -144,6 +138,7 @@ void CDeflector::EdgesLighting(HASH& H)
 		for (int I = 0; I <= steps; I++)
 		{
 			float	time = float(I) / float(steps);
+			
 			Fvector2	uv;
 			uv.x = size.x * time + p1.x;
 			uv.y = size.y * time + p1.y;
@@ -168,18 +163,8 @@ void CDeflector::EdgesLighting(HASH& H)
 		}
 	};
  
- 	Fbox2			bounds;
-	Bounds_Summary(bounds);
-	H.initialize(bounds, (u32)UVpolys.size());
-	for (u32 fid = 0; fid < UVpolys.size(); fid++)
-	{
-		UVtri* T = &(UVpolys[fid]);
-		Bounds(fid, bounds);
-		H.add(bounds, T);
-	}
-
 	ApplyEdge = true;
-
+ 
 	// *** Render Edges (Embree Process)
 	float texel_size = (1.f / float(_max(lm.width, lm.height))) / 8.f;
 	for (u32 t = 0; t < UVpolys.size(); t++)
@@ -197,7 +182,7 @@ void CDeflector::ApplyColors()
 {
 	lm_layer& lm = layer;
 
- 	// Faces Только будет при простом проходе
+  	// Faces Только будет при простом проходе
 	if (def_FacesCount.size() && ApplyLmap)
 	{
 		ApplyLmap = false;
@@ -239,26 +224,22 @@ void CDeflector::ClearResults()
 
 void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 {
-	csApply.Enter();
+	csColors.Enter();
 	if (def_color_map.end() != def_color_map.find(IKey))
 	 	def_color_map[IKey].add(C);
 	else
 		def_color_map[IKey] = C;
-	csApply.Leave();
+	csColors.Leave();
 }
 
-// Перерасчет в более сжатый формат
-
+/// Перерасчет в более сжатый формат
 BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
 BOOL	compress_Zero(lm_layer& lm, u32 rms);
 
-void CDeflector::LowerResolutionGPU(HASH& H)
+void CDeflector::LowerResolutionGPU()
 {
-	ApplyColors();
- 
  	for (u32 ref = 254; ref > 0; ref--)
-	if (!ApplyBorders(layer, ref))
-		break;
+	if (!ApplyBorders(layer, ref))		break;
 
  	ApplyResolution = false;
 
@@ -267,33 +248,25 @@ void CDeflector::LowerResolutionGPU(HASH& H)
 		u32	w, h;
 		if (compress_Zero(layer, rms_zero))
 		{
-			ApplyResolution = true;
+ 			ApplyResolution = true;
 			return;		// already with borders
 		}
 		else if (compress_RMS(layer, rms_shrink, w, h))
 		{
-			Fbox2 bounds;
-			Bounds_Summary(bounds);
-			H.initialize(bounds, (u32)UVpolys.size());
-			for (u32 fid = 0; fid < UVpolys.size(); fid++)
-			{
-				UVtri* T = &(UVpolys[fid]);
-				Bounds(fid, bounds);
-				H.add(bounds, T);
-			}
-
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);
-			L_DirectGPU(H);
-		}
+			L_DirectGPU(); 
+
+			GPUTaskinSystem.Recalculated++;
+		}	
 	}
 	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - Compression");
-	}
+	}	
 }
  
-// xr_atomic_u32 Index = 0;
+/// После сжатия пересчитываем
 void CDeflector::ApplyExpadBordersGPU()
 {
 	if (ApplyResolution) return;
@@ -371,4 +344,58 @@ void CDeflector::ApplyExpadBordersGPU()
 	{
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
 	}
+}
+
+
+// New Cuda 
+#include <CUDA/CUDARayCast.h>
+void CopyToGPU()
+{
+	xr_vector<CDeflector*> small_deflectors;
+	xr_vector<CDeflector*> big_deflectors;
+
+	for (auto& O : lc_global_data()->g_deflectors())
+	{
+		if (O->layer.width > 64 && O->layer.height > 64)
+		{
+			big_deflectors.push_back(O);
+		}
+		else
+		{
+			small_deflectors.push_back(O);
+		}
+	}
+ 	Msg("Deflectors small[%u] big(>16) [%u]", small_deflectors.size(), big_deflectors.size() );
+
+	CTimer T; T.Start();
+ 	for (auto& O : small_deflectors)
+	{
+ 		// Geometrical bounds
+ 		O->PrepareForLighting();
+  		XRay::RayTrace::CUDA::RayTraceDeflector(*O);
+	}
+ 	Msg("Copy Deflectors Time: %u ms", T.GetElapsed_ms());
+
+	T.Start();
+	XRay::RayTrace::CUDA::RayTraceDeflectorsAll();
+	Msg("GPU Deflectors Time: %u ms", T.GetElapsed_ms());
+	 
+	XRay::RayTrace::CUDA::RayTraceDeflectorsFree();
+
+	  T.Start();
+	for (auto& O : big_deflectors)
+	{
+		// Geometrical bounds
+		O->PrepareForLighting();
+		XRay::RayTrace::CUDA::RayTraceDeflector(*O);
+	}
+	Msg("Copy Big Deflectors Time: %u ms", T.GetElapsed_ms());
+
+	T.Start();
+	XRay::RayTrace::CUDA::RayTraceDeflectorsAll();
+	Msg("GPU Deflectors Time: %u ms", T.GetElapsed_ms());
+
+	XRay::RayTrace::CUDA::RayTraceDeflectorsFree();
+
+
 }
