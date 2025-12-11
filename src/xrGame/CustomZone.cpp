@@ -666,7 +666,7 @@ float CCustomZone::Power(float dist, float nearest_shape_radius)
 
 void CCustomZone::PlayIdleParticles(bool bIdleLight)
 {
-	m_idle_sound.play_at_pos(0, Position(), true);
+	m_idle_sound.play_at_pos(0, Position(), sm_Looped);
 
 	if(*m_sIdleParticles)
 	{
