@@ -9,48 +9,179 @@
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
-void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+// Освещение
+
+// Compression 
+extern BOOL	compress_Zero(lm_layer& lm, u32 rms);
+extern BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+ 
+// GPU Deflectors
+void CDeflector::PrepareForLighting()
 {
-	Fvector		vdir;
-	vdir.sub	(v2,v1);
-	
-	lm_layer&	lm	= layer;
-	
-	Fvector2		size; 
-	size.x			= p2.x-p1.x;
-	size.y			= p2.y-p1.y;
-	int	du			= iCeil(_abs(size.x)/texel_size);
-	int	dv			= iCeil(_abs(size.y)/texel_size);
-	int steps		= _max(du,dv);
-	if (steps<=0)	return;
-	
-	for (int I=0; I<=steps; I++)
+	// Geometrical bounds
+	Fbox bb;		bb.invalidate();
+ 	for (u32 fid = 0; fid < UVpolys.size(); fid++)
 	{
-		float	time = float(I)/float(steps);
-		Fvector2	uv;
-		uv.x	= size.x*time+p1.x;
-		uv.y	= size.y*time+p1.y;
-		int	_x  = iFloor(uv.x*float(lm.width)); 
-		int _y	= iFloor(uv.y*float(lm.height));
-		
-		if ((_x<0)||(_x>=(int)lm.width))	continue;
-		if ((_y<0)||(_y>=(int)lm.height))	continue;
-		
-		if (lm.marker[_y*lm.width+_x])		continue;
-		
-		// ok - perform lighting
-		base_color_c	C;
-		Fvector			P;	P.mad(v1,vdir,time);
-		VERIFY(inlc_global_data());
-
-		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
-
-		C.mul		(.5f);
-		lm.surface	[_y*lm.width+_x]._set	(C);
-		lm.marker	[_y*lm.width+_x]		= 255;
+		Face* F = UVpolys[fid].owner;
+		for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
 	}
+	bb.getsphere(Sphere.P, Sphere.R);
+ 
+	lm_layer& lm = layer;
+ 	// UV
+	RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+
+	// Calculate
+ 	lm.create(lm.width, lm.height);
 }
 
+
+void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+{
+	// Geometrical bounds
+	Fbox bb;		bb.invalidate();
+	try {
+		for (u32 fid = 0; fid < UVpolys.size(); fid++)
+		{
+			Face* F = UVpolys[fid].owner;
+			for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
+		}
+		bb.getsphere(Sphere.P, Sphere.R);
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - sphere calc");
+	}
+
+	// Convert lights to local form
+	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
+
+	auto Light = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+		{
+			try
+			{
+				lm_layer& lm = layer;
+
+				// UV
+				RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+
+				// Calculate
+				R_ASSERT(lm.width <= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
+				R_ASSERT(lm.height <= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
+				lm.create(lm.width, lm.height);
+				L_Direct(DB, LightsSelected, H);
+			}
+			catch (...)
+			{
+				clMsg("* ERROR: CDeflector::L_Calculate");
+			}
+		};
+
+	// Calculate and fill borders
+	Light(DB, LightsSelected, H);
+
+
+	for (u32 ref = 254; ref > 0; ref--)
+	if (!ApplyBorders(layer, ref)) break;
+
+	// Compression
+	try
+	{
+		u32	w, h;
+		if (compress_Zero(layer, rms_zero))
+		{
+			return;		// already with borders
+		}
+		else if (compress_RMS(layer, rms_shrink, w, h))
+		{
+			// Reacalculate lightmap at lower resolution
+			layer.create(w, h);
+			Light(DB, LightsSelected, H);
+		}
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - Compression");
+	}
+
+
+	// Move to xrDeflectorLight_ApplyLmap.cpp
+	// Expand with borders
+	try
+	{
+		if (layer.width == 1)
+		{
+			// Horizontal ZERO - vertical line
+			lm_layer		T;
+			T.create(2 * BORDER, layer.height + 2 * BORDER);
+
+			// Transfer
+			for (u32 y = 0; y < T.height; y++)
+			{
+				int			py = int(y) - BORDER;
+				clamp(py, 0, int(layer.height - 1));
+				base_color	C = layer.surface[py];
+				T.surface[y * 2 + 0] = C;
+				T.marker[y * 2 + 0] = 255;
+				T.surface[y * 2 + 1] = C;
+				T.marker[y * 2 + 1] = 255;
+			}
+
+			// Exchange
+			T.width = 0;
+			T.height = layer.height;
+			layer = T;
+		}
+		else if (layer.height == 1)
+		{
+			// Vertical ZERO - horizontal line
+			lm_layer		T;
+			T.create(layer.width + 2 * BORDER, 2 * BORDER);
+
+			// Transfer
+			for (u32 x = 0; x < T.width; x++)
+			{
+				int			px = int(x) - BORDER;
+				clamp(px, 0, int(layer.width - 1));
+				base_color	C = layer.surface[px];
+				T.surface[0 * T.width + x] = C;
+				T.marker[0 * T.width + x] = 255;
+				T.surface[1 * T.width + x] = C;
+				T.marker[1 * T.width + x] = 255;
+			}
+
+			// Exchange
+			T.width = layer.width;
+			T.height = 0;
+			layer = T;
+		}
+		else
+		{
+			// Generic blit
+			lm_layer		lm_old = layer;
+			lm_layer		lm_new;
+			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
+			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
+			layer = lm_new;
+
+			ApplyBorders(layer, 254);
+			ApplyBorders(layer, 253);
+			ApplyBorders(layer, 252);
+			ApplyBorders(layer, 251);
+			for (u32 ref = 250; ref > 0; ref--)
+				if (!ApplyBorders(layer, ref))
+					break;
+
+			layer.width = lm_old.width;
+			layer.height = lm_old.height;
+		}
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
+	}
+}
+ 
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
 	R_ASSERT	(DB);
@@ -76,13 +207,12 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	
 	for (u32 V=0; V<lm.height; V++)
 	{
- 
-		for (u32 U=0; U<lm.width; U++)	
+ 		for (u32 U=0; U<lm.width; U++)	
 		{
- 
-			u32				Fcount	= 0;
+ 			u32				Fcount	= 0;
 			base_color_c	C;
-			try {
+			try
+			{
 				for (u32 J=0; J<Jcount; J++) 
 				{
 					// LUMEL space
@@ -90,16 +220,15 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 					P.x = float(U)/dim.x + half.x + Jitter[J].x * JS.x;
 					P.y = float(V)/dim.y + half.y + Jitter[J].y * JS.y;
 					
-					xr_vector<UVtri*>&	space	= H.query(P.x,P.y);
 					
 					// World space
 					Fvector		wP,wN,B;
-					for (UVtri** it=&*space.begin(); it!=&*space.end(); it++)
+					for (auto& TRI : UVpolys)
 					{
-						if ((*it)->isInside(P,B)) 
+  						if (TRI.isInside(P,B))
 						{
 							// We found triangle and have barycentric coords
-							Face	*F	= (*it)->owner;
+							Face	*F	= TRI.owner;
 							Vertex	*V1 = F->v[0];
 							Vertex	*V2 = F->v[1];
 							Vertex	*V3 = F->v[2];
@@ -147,6 +276,47 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 		}
 	}
 
+
+	auto DirectEdge = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+	{
+		Fvector		vdir;
+		vdir.sub(v2, v1);
+
+		lm_layer& lm = layer;
+
+		Fvector2		size;
+		size.x = p2.x - p1.x;
+		size.y = p2.y - p1.y;
+		int	du = iCeil(_abs(size.x) / texel_size);
+		int	dv = iCeil(_abs(size.y) / texel_size);
+		int steps = _max(du, dv);
+		if (steps <= 0)	return;
+
+		for (int I = 0; I <= steps; I++)
+		{
+			float	time = float(I) / float(steps);
+			Fvector2	uv;
+			uv.x = size.x * time + p1.x;
+			uv.y = size.y * time + p1.y;
+			int	_x = iFloor(uv.x * float(lm.width));
+			int _y = iFloor(uv.y * float(lm.height));
+
+			if ((_x < 0) || (_x >= (int)lm.width))	continue;
+			if ((_y < 0) || (_y >= (int)lm.height))	continue;
+			if (lm.marker[_y * lm.width + _x])		continue;
+
+			// ok - perform lighting
+			base_color_c	C;
+			Fvector			P;	P.mad(v1, vdir, time);
+			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
+
+			C.mul(.5f);
+			lm.surface[_y * lm.width + _x]._set(C);
+			lm.marker[_y * lm.width + _x] = 255;
+		}
+	};
+
+
 	// *** Render Edges
 	float texel_size = (1.f/float(_max(lm.width,lm.height)))/8.f;
 	for (u32 t=0; t<UVpolys.size(); t++)
@@ -155,9 +325,9 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 		Face*		F	= T.owner;
 		R_ASSERT	(F);
 		try {
-			L_Direct_Edge	(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
-			L_Direct_Edge	(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
-			L_Direct_Edge	(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
+			DirectEdge(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
+			DirectEdge(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
+			DirectEdge(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
 		} catch (...)
 		{
 			clMsg("* ERROR (Edge). Recovered. ");

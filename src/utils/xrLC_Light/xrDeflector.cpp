@@ -1,12 +1,10 @@
 #include "stdafx.h"
- 
 #include "xrDeflector.h"
 #include "xrLC_GlobalData.h"
-
 #include "math.h"
 #include "xrFace.h"
  
-  
+// Размещение в dds файле выходном  
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	// R_ASSERT(ds_x>=(ss_x+px));
@@ -107,9 +105,6 @@ void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_
 }
 
 //-------------------------------------
-
-//CDeflector*				Deflector = 0;
-
 IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
 {
 	Fvector B;
@@ -130,6 +125,7 @@ CDeflector::~CDeflector()
 {
 }
 
+// Делается в UV генерации
 void CDeflector::OA_Export()
 {
 	if (UVpolys.empty()) return;
@@ -256,6 +252,9 @@ void CDeflector::GetRect	(Fvector2 &min, Fvector2 &max)
 	}
 }
 
+
+// Пред расчет при запекании освещения
+
 void CDeflector::RemapUV	(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate)
 {
 	dest.clear	();
@@ -316,34 +315,7 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 }
 
 
-void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
-{
-	try
-	{
-		lm_layer&		lm	= layer;
-
-		// UV & HASH
-		RemapUV			(0,0,lm.width,lm.height,lm.width,lm.height,FALSE);
-		Fbox2			bounds;
-		Bounds_Summary	(bounds);
-		H.initialize	(bounds,(u32)UVpolys.size());
-		for (u32 fid=0; fid<UVpolys.size(); fid++)	{
-			UVtri* T	= &(UVpolys[fid]);
-			Bounds		(fid,bounds);
-			H.add		(bounds,T);
-		}
-
-		// Calculate
-		R_ASSERT		(lm.width	<= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
-		R_ASSERT		(lm.height	<= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
-  		lm.create		(lm.width, lm.height);
-		L_Direct		(DB,LightsSelected,H);
-	} catch (...)
-	{
-		clMsg("* ERROR: CDeflector::L_Calculate");
-	}
-}
-
+// Дампинг и сравнение
 u16	CDeflector:: GetBaseMaterial		() 
 {
 	return UVpolys.front().owner->dwMaterial;	
@@ -351,31 +323,18 @@ u16	CDeflector:: GetBaseMaterial		()
 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 {
-	if( bMerged != D.bMerged )
-		return false;
-	
-	if( !normal.similar( D.normal, eps ) )
-		return false;
-
-	if( !Sphere.P.similar( D.Sphere.P, eps ) )
-		return false;
-
-	if( !fsimilar( Sphere.R, D.Sphere.R, eps ) )
-		return false;
-
-	if( UVpolys.size() != D.UVpolys.size() )
-		return false;
+	if( bMerged != D.bMerged )						return false;
+ 	if( !normal.similar( D.normal, eps ) )			return false;
+ 	if( !Sphere.P.similar( D.Sphere.P, eps ) )		return false;
+ 	if( !fsimilar( Sphere.R, D.Sphere.R, eps ) )	return false;
+ 	if( UVpolys.size() != D.UVpolys.size() )		return false;
 
 	for( u32 i = 0; i < UVpolys.size(); ++i )
 	{
-		if( !UVpolys[i].similar( D.UVpolys[i], eps ) )
-		{
-			return false;
-		}
+		if( !UVpolys[i].similar( D.UVpolys[i], eps ) ) { return false; }
 	}
 
-	return 
-		layer.similar( D.layer, eps );
+	return   layer.similar( D.layer, eps );
 }
  
 void DumpDeflctor( u32 id )
@@ -383,8 +342,6 @@ void DumpDeflctor( u32 id )
 	VERIFY( inlc_global_data()->g_deflectors().size()>id );
 	const CDeflector &D = *inlc_global_data()->g_deflectors()[id];
 	clMsg( "deflector id: %d - faces num: %d ", id, D.UVpolys.size() );
-	
-
 }
 
 void DumpDeflctor( const CDeflector &D )
