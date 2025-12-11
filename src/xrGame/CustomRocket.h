@@ -77,9 +77,6 @@ public:
 	virtual	void UpdateEngine();
 	virtual	void UpdateEnginePh();
 
-	virtual	void StartFlying();
-	virtual	void StopFlying();
-
 	virtual	void SetLaunchParams(const Fmatrix& xform, const Fvector& vel, const Fvector& angular_vel);
 
 	virtual void OnEvent(NET_Packet& P, u16 type) override;
@@ -159,10 +156,8 @@ protected:
 	float gbg_rocket_speed2 = 0.0f;
 #endif
 protected:
-	virtual void StartEngineParticles();
-	virtual void StopEngineParticles();
-	virtual void StartFlyParticles();
-	virtual void StopFlyParticles();
+	virtual void StartParticles();
+	virtual void StopParticles();
 
 	virtual void UpdateParticles();
 #ifdef DEBUG
