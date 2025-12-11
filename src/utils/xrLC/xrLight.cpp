@@ -174,9 +174,6 @@ void	CBuild::LMaps					()
 {
 	mem_Compact();
 
-	CopyToGPU();
-
-
 	/*
 	// se7kills
 	// Подсчет одинаковых Lmaps
@@ -215,24 +212,27 @@ void	CBuild::LMaps					()
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
-		Status("Lighting Precalculate for GPU...");
+		// Se7kills 
+		CopyToGPU(); // Новый способ
 
-		CTimer start_time; start_time.Start();
-
-		size_t SPLIT = 1024 * 256;
-		for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size(); )
-		{
-			size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
-			Msg("Start Working: %u to %u", INDEX, end);
-
- 			LmapsStageGPU(1, true, INDEX, end);
-			LmapsStageGPU(2, true, INDEX, end);
-
-			LmapsStageGPU(1, false, INDEX, end);
-			LmapsStageGPU(2, false, INDEX, end);
-			INDEX += SPLIT;
-		}
-		Msg("%f seconds", start_time.GetElapsed_sec());
+		// Status("Lighting Precalculate for GPU...");
+		// 
+		// CTimer start_time; start_time.Start();
+		// 
+		// size_t SPLIT = 1024 * 256;
+		// for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size(); )
+		// {
+		// 	size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
+		// 	Msg("Start Working: %u to %u", INDEX, end);
+		// 
+ 		// 	LmapsStageGPU(1, true, INDEX, end);
+		// 	LmapsStageGPU(2, true, INDEX, end);
+		// 
+		// 	LmapsStageGPU(1, false, INDEX, end);
+		// 	LmapsStageGPU(2, false, INDEX, end);
+		// 	INDEX += SPLIT;
+		// }
+		// Msg("%f seconds", start_time.GetElapsed_sec());
   	}
 	else
 #endif
