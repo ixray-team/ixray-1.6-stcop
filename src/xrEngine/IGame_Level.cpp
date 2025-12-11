@@ -256,99 +256,84 @@ void IGame_Level::SetViewEntity( CObject* O  )
 	pCurrentViewEntity=O;
 }
 
-void	IGame_Level::SoundEvent_Register	( ref_sound_data_ptr S, float range )
+void IGame_Level::SoundEvent_Register( ref_sound_data_ptr S, float range )
 {
-	PROF_EVENT("IGame_Level::SoundEvent_Register")
-	if (!g_bLoaded)									return;
-	if (!S)											return;
-	if (S->g_object && S->g_object->getDestroy())	{S->g_object=0; return;}
-	if (0==S->slot)								return;
+	PROF_EVENT("IGame_Level::SoundEvent_Register");
+	if (!g_bLoaded) return;
+	if (!S) return;
+	if (S->g_object && S->g_object->getDestroy()) {S->g_object=nullptr; return;}
+	if (0u==S->slot) return;
 
-	clamp					(range,0.1f,500.f);
+	clamp(range,0.1f,500.f);
 
-	CSound_params p	= S->get_params();
-	Fvector snd_position	= p.position;
-	if(S->is_2d()){
-		snd_position.add	(Sound->listener_position());
-	}
+	CSound_params p = S->get_params();
+	Fvector snd_position = p.position;
+	if(S->is_2d())
+		snd_position.add(Sound->listener_position());
 
-	VERIFY					(_valid(range) );
-	range					= _min(range,p.max_ai_distance);
-	VERIFY					(_valid(snd_position));
-	VERIFY					(_valid(p.max_ai_distance));
-	VERIFY					(_valid(p.volume));
+	VERIFY(_valid(range) );
+	range = _min(range,p.max_ai_distance);
+	VERIFY(_valid(snd_position));
+	VERIFY(_valid(p.max_ai_distance));
+	VERIFY(_valid(p.volume));
 
-	// Query objects
-	Fvector					bb_size	=	{range,range,range};
-	g_SpatialSpace->q_box	(snd_ER,0,STYPE_REACTTOSOUND,snd_position,bb_size);
+	g_SpatialSpace->q_box(snd_ER, 0, STYPE_REACTTOSOUND, snd_position, { range,range,range });
 
 	// Iterate
-	auto it	= snd_ER.begin	();
-	auto end	= snd_ER.end	();
-	for (; it!=end; it++)	{
-		Feel::Sound* L		= (*it)->dcast_FeelSound	();
-		if (0==L)			continue;
-		CObject* CO = (*it)->dcast_CObject();	VERIFY(CO);
+	for (auto& spatial : snd_ER)
+	{
+		Feel::Sound* L = spatial->dcast_FeelSound();
+		if (0==L) continue;
+		CObject* CO = spatial->dcast_CObject();
+		VERIFY(CO);
 		if (CO->getDestroy()) continue;
 
 		// Energy and signal
-		VERIFY				(_valid((*it)->spatial.sphere.P));
-		float dist			= snd_position.distance_to((*it)->spatial.sphere.P);
+		VERIFY(_valid(spatial->spatial.sphere.P));
+		float dist = snd_position.distance_to(spatial->spatial.sphere.P);
 		if (dist>p.max_ai_distance) continue;
-		VERIFY				(_valid(dist));
-		float Power			= (1.f-dist/p.max_ai_distance)*p.volume;
-		VERIFY				(_valid(Power));
-		if (Power>EPS_S)	{
-			float occ		= Sound->get_occlusion_to((*it)->spatial.sphere.P,snd_position);
-			VERIFY			(_valid(occ))	;
-			Power			*= occ;
-			if (Power>EPS_S)	{
-				_esound_delegate	D	=	{ L, S, Power };
-				snd_Events.push_back	(D)	;
-			}
+		VERIFY(_valid(dist));
+		float Power = (1.f-dist/p.max_ai_distance)*p.volume;
+		VERIFY(_valid(Power));
+		if (Power>EPS_S)
+		{
+			float occ = Sound->get_occlusion_to(spatial->spatial.sphere.P,snd_position);
+			VERIFY(_valid(occ));
+			Power *= occ;
+			if (Power>EPS_S)
+				snd_Events.push_back({ L, S, Power });
 		}
 	}
-	snd_ER.resize(0);
 }
 
-void	IGame_Level::SoundEvent_Dispatch	( )
+void IGame_Level::SoundEvent_Dispatch()
 {
 	PROF_EVENT("IGame_Level::SoundEvent_Dispatch");
-	while	(!snd_Events.empty())	{
-		_esound_delegate&	D	= snd_Events.back	();
-		VERIFY				(D.dest && D.source);
-		if (D.source->slot)	{
-			D.dest->feel_sound_new	(
-				D.source->g_object,
-				D.source->g_type,
-				D.source->g_userdata,
-				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position,
+	for(_esound_delegate& D : snd_Events)
+	{
+		VERIFY(D.dest && D.source);
+		if (D.source->slot)
+		{
+			D.dest->feel_sound_new
+			(
+				D.source->g_object, 
+				D.source->g_type, 
+				D.source->g_userdata, 
+				D.source->is_2d() ? Device.vCameraPosition : D.source->get_params().position, 
 				D.power
 			);
 		}
-		snd_Events.pop_back		();
 	}
+
+	snd_Events.clear();
 }
 
 // Lain: added
 void   IGame_Level::SoundEvent_OnDestDestroy (Feel::Sound* obj)
 {
-	PROF_EVENT("IGame_Level::SoundEvent_OnDestDestroy")
-	struct rem_pred
-	{
-		rem_pred(Feel::Sound* obj) : m_obj(obj) {}
-
-		bool operator () (const _esound_delegate& d)
-		{
-			return d.dest == m_obj;
-		}
-
-	private:
-		Feel::Sound* m_obj;
-	};
-
-	snd_Events.erase( std::remove_if(snd_Events.begin(), snd_Events.end(), rem_pred(obj)),
-	                  snd_Events.end() );
+	PROF_EVENT("IGame_Level::SoundEvent_OnDestDestroy");
+	if(!snd_Events.empty())
+		snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) {return d.dest == obj; }), snd_Events.end() );
 }
 
 
