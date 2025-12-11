@@ -879,14 +879,9 @@ float CCustomMonster::feel_vision_mtl_transp(CObject* O, u32 element)
 void CCustomMonster::feel_sound_new	(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector &position, float power)
 {
 	// Lain: added
-	if (!g_Alive())
-	{
+	if (!g_Alive() || getDestroy() || who==nullptr || who->getDestroy())
 		return;
-	}
-	if (getDestroy())
-	{
-		return;
-	}
+
 	memory().sound().feel_sound_new(who,type,user_data,position,power);
 }
 
