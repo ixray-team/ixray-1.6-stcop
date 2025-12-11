@@ -134,7 +134,7 @@ u32 get_weapon_type();
 
 string weapon_get_ammo_section(ammo_type);
 void weapon_addon_attach(obj);
-void weapon_addon_detach(obj);
+void weapon_addon_detach(section, bSpawnToInventory);
 
 //-- Upgrades
 bool install_upgrade(name);
@@ -162,6 +162,13 @@ void AmmoSetCount(count);                   //-- Установить кол-в�
 int AmmoBoxSize();                          //-- Получить кол-во патронов в 1 пачке 
 int get_ammo_in_magazine_and_chamber()      //-- Число боеприпасов снаряжённых в магазин и патронник
 bool is_weapon_use_chamber()                //-- Использует ли оружие патронник
+```
+## CScriptGameObject управление видимостью костей
+```cpp
+bool is_world_object_bone_visible(string boneName)                        //-- Видна ли кость на мировом визуале обьекта
+bool set_world_object_bone_visibility(string boneName, bool bVisibility)  //-- Установить видимость кости на мировом визуале обьекта
+bool is_hud_object_bone_visible(string boneName)                          //-- Видна ли кость на худовом визуале обьекта
+bool set_hud_object_bone_visibility(string boneName, bool bVisibility)    //-- Установить видимость кости на худовом визуале обьекта
 ```
 ## CCar
 ```cpp

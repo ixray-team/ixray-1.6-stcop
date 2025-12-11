@@ -1,5 +1,6 @@
 ---
-title: Модификации (тест)
+title: Вышедшие модификации
+aside: false
 ---
 
 <script setup lang="ts">

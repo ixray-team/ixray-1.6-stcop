@@ -1,5 +1,6 @@
 ---
-title: Mods (test)
+title: Released
+aside: false
 ---
 
 <script setup lang="ts">
