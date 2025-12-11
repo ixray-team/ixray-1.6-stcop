@@ -21,6 +21,12 @@ enum class EEngineExternalPhysical
 	None
 };
 
+enum class EEngineExternalSound
+{
+	MaterialOCC,
+	None
+};
+
 enum class EEngineExternalSpawnSupplies
 {
 	EnableLoadoutsSupplies,
@@ -128,6 +134,7 @@ public:
 	bool operator[](const EEngineExternalRender& ID) const;
 	bool operator[](const EEngineExternalEnvironment& ID) const;
 	bool operator[](const EEngineExternalPlatform& ID) const;
+	bool operator[](const EEngineExternalSound& ID) const;
 
 	xr_string_map<xr_string, xr_string> ShadersOptions;
 	Ivector2 gamesaveSize;
