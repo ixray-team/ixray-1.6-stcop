@@ -55,55 +55,52 @@ void CBuild::ProcessLMAPS_CPU()
 			}			
 		}
 	);
-
-	xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
 };
 
 
 #ifdef LCCUDA_BUILD
 #include "../xrLC_Light/xrDeflectorLight_Packed.h"
 
-u32 TotalGPU, TotalCPU, TotalCPUApply;
-u32 TotalGarbage, TotalApply, TotalStage2;
-
 void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 {
+	CTimer tGlobal; 
+	tGlobal.Start();
+
 	thread_local HASH			H;
 	GPUTaskinSystem.RestartALL();
 
-	CTimer tStats; tStats.Start();
+	CTimer tStats; 
+	tStats.Start();
 	static xrCriticalSection LockGuard;
-
- 	{
-		u32 IndexTaskID = Begin;
+  
+  	{
+  		u32 IndexTaskID = Begin;
 		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
 		{
 			while (true)
 			{
 				LockGuard.Enter();
 				if (IndexTaskID >= End) { LockGuard.Leave(); break; }
- 				CDeflector* D = lc_global_data()->g_deflectors()[IndexTaskID];
+  				CDeflector* D = lc_global_data()->g_deflectors()[IndexTaskID];
 				IndexTaskID += 1;
 				LockGuard.Leave();
 
-				if (Stage == 1)
-					isFirst ? D->LightGPU(H) : D->LowerResolutionGPU(H);
-				if (Stage == 2)
-					D->EdgesLighting(H);
+				if (Stage == 1) isFirst ? D->LightGPU() : D->LowerResolutionGPU();
+				if (Stage == 2) D->EdgesLighting();
 
-				if (Stage == 1)
-					AditionalData("*** [LMAPS] Processing Lmaps [%u/%u]", IndexTaskID, lc_global_data()->g_deflectors().size());
-				else if(Stage == 2)
-					AditionalData("*** [LMAPS] Processing Edges [%u/%u]", IndexTaskID, lc_global_data()->g_deflectors().size());
+ 				AditionalData("*** [LMAPS] Processing Lmaps [%u/%u]", IndexTaskID, lc_global_data()->g_deflectors().size());
 			}				
 		});
-		GPUTaskinSystem.LightPointPackedDeflectorsRun();
-	}
+ 	}
 
-	u32 PGarbage = tStats.GetElapsed_ms(); tStats.Start();
+	u32 PGarbage = tStats.GetElapsed_ms(); 
+ 	GPUTaskinSystem.LightPointPackedDeflectorsRun();	// Скипаем  сбор tStats 
+	u32 PApply, PClearing;
 
 	{
-		std::atomic<u32> index_task;
+		tStats.Start();
+
+ 		std::atomic<u32> index_task;
  		auto task = [&](size_t ITask)
 		{
 			u32 Index = index_task.fetch_add(1, std::memory_order_relaxed);
@@ -112,12 +109,15 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 			CDeflector* D = lc_global_data()->g_deflectors()[ITask];
 			D->ApplyColors();
 		};
- 		// xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), task);
-		for (auto dID = 0; dID< lc_global_data()->g_deflectors().size(); dID++)
+ 		
+ 		for (auto dID = 0; dID< lc_global_data()->g_deflectors().size(); dID++)
 			task(dID);
 
-		CTimer t; t.Start();
-		index_task.store(0);
+		PApply = tStats.GetElapsed_ms();
+
+		tStats.Start();
+
+ 		index_task.store(0);
  		auto task_clear = [&](size_t IndexTask)
 		{			
 			u32 Index = index_task.fetch_add(1, std::memory_order_relaxed);
@@ -128,10 +128,10 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
  		};
 		xr_parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), task_clear);
 
-		clMsg("$ Elapsed Clearing: %u ms", t.GetElapsed_ms());
+		PClearing = tStats.GetElapsed_ms();
 	}
 	
-	u32 PApply = tStats.GetElapsed_ms(); tStats.Start();
+	tStats.Start();
 	
 	if (Stage == 2 && !isFirst)
 	{
@@ -154,61 +154,86 @@ void CBuild::LmapsStageGPU(int Stage, bool isFirst, size_t Begin, size_t End)
 	}
 
 	u32 PExpand = tStats.GetElapsed_ms();  
+	 
+	Msg("$ Garbage: %u ms, Apply: %u ms; Clearing apply: %u ms, PExpand: %u ms | Recalculated [%u] Lmaps", PGarbage, PApply, PClearing, PExpand, GPUTaskinSystem.Recalculated);
+	Msg("$ [LMAPS] GPU: %u ms | CPU[MT] Apply: %u ms",
+		GPUTaskinSystem.ProcessingGPU,
+		GPUTaskinSystem.ProcessingCPU_result
+	);
 
-	// clMsg("$ [LMAPS] Ready [%u/%u] total [%u] | Garbage: %u ms, Apply: %u ms, PExpand: %u ms", 
-	// Begin, End, lc_global_data()->g_deflectors().size(),
-	// PGarbage, PApply, PExpand);
 
-	//clMsg("$ [LMAPS] GPU: %u ms | CPU Copy: %u ms | CPU[MT] Apply: %u ms",
-	//	GPUTaskinSystem.ProcessingGPU, GPUTaskinSystem.ProcessingCPU_copy, GPUTaskinSystem.ProcessingCPU_result);
+	Msg("Stage: %u | isFirst: %u | Elapsed: %u ms", Stage, isFirst, tGlobal.GetElapsed_ms());
 
-	TotalGPU += GPUTaskinSystem.ProcessingGPU;
-	TotalCPU += GPUTaskinSystem.ProcessingCPU_copy;
-	TotalCPUApply += GPUTaskinSystem.ProcessingCPU_result;
-
-	TotalGarbage += PGarbage;
-	TotalApply += PApply;
-	TotalStage2 += PExpand;
-
-	if (Stage == 2 && !isFirst)
-	{
-		clMsg("Deflectors: Merging lightmaps...");
-		xrPhase_MergeLM(Begin, End);
-	}
+	xrLogger::FlushLog();
 }
 #endif
-
-
+ 
+extern void CopyToGPU();
 
 void	CBuild::LMaps					()
 {
 	mem_Compact();
 
+	/*
+	// se7kills
+	// Подсчет одинаковых Lmaps
+	{
+		struct DeflectorD
+		{
+			u32 Count;
+			u32 Width;
+			u32 Height;
+		};
+
+		std::unordered_map<size_t, DeflectorD> map_exist;
+		for (auto& O : lc_global_data()->g_deflectors())
+		{
+			size_t hashKey = std::hash<u32>()(O->layer.width) ^ std::hash<u32>()(O->layer.height);
+			map_exist[hashKey].Count += 1;
+			map_exist[hashKey].Width  = O->layer.width;
+			map_exist[hashKey].Height = O->layer.height;
+		}
+
+		xr_vector<DeflectorD> data;  
+		for (auto& K : map_exist)
+			data.push_back(K.second);
+
+		std::sort(data.begin(), data.end(), [&](DeflectorD& Deflector, DeflectorD& Deflector2) {return  Deflector.Count < Deflector2.Count;  });
+
+		int INDEX = 0;
+		for (auto& O : data)
+		{
+			INDEX++;
+			Msg("Deflector[%u] Width[%u] Height[%u] count[%u]", INDEX, O.Width, O.Height, O.Count);
+		}
+
+	}*/
+	 
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
-		Status("Lighting Precalculate for GPU...");
+		// Se7kills 
+		CopyToGPU(); // Новый способ
 
-		CTimer start_time; start_time.Start();
-
-		size_t SPLIT = 1024 * 256;
-		for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size();)
-		{
-			size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
-			clMsg("Start Working: %u to %u", INDEX, end);
-
- 			LmapsStageGPU(1, true, INDEX, end);
-			LmapsStageGPU(2, true, INDEX, end);
-
-			LmapsStageGPU(1, false, INDEX, end);
-			LmapsStageGPU(2, false, INDEX, end);
-			INDEX += SPLIT;
-		}
-		clMsg("%f seconds", start_time.GetElapsed_sec());
-
- 		clMsg("$ Garbage: %u ms, Apply: %u ms, PExpand: %u ms", TotalGarbage, TotalApply, TotalStage2);
- 		clMsg("$ [LMAPS] GPU: %u ms | CPU Copy: %u ms | CPU[MT] Apply: %u ms",	TotalGPU, TotalCPU, TotalCPUApply);
-	}
+		// Status("Lighting Precalculate for GPU...");
+		// 
+		// CTimer start_time; start_time.Start();
+		// 
+		// size_t SPLIT = 1024 * 256;
+		// for (size_t INDEX = 0; INDEX < lc_global_data()->g_deflectors().size(); )
+		// {
+		// 	size_t end = std::min(INDEX + SPLIT, lc_global_data()->g_deflectors().size());
+		// 	Msg("Start Working: %u to %u", INDEX, end);
+		// 
+ 		// 	LmapsStageGPU(1, true, INDEX, end);
+		// 	LmapsStageGPU(2, true, INDEX, end);
+		// 
+		// 	LmapsStageGPU(1, false, INDEX, end);
+		// 	LmapsStageGPU(2, false, INDEX, end);
+		// 	INDEX += SPLIT;
+		// }
+		// Msg("%f seconds", start_time.GetElapsed_sec());
+  	}
 	else
 #endif
 	{
@@ -253,8 +278,8 @@ void CBuild::Light()
  
 
 	//****************************************** Merge LMAPS
-	// Phase("LIGHT: Merging lightmaps...");
-	// xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
+	Phase("LIGHT: Merging lightmaps...");
+	xrPhase_MergeLM(0, lc_global_data()->g_deflectors().size());
 
 	// Save Lmaps
 	Phase("LIGHT: Save lightmaps...");
