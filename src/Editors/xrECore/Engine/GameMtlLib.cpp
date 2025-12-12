@@ -44,10 +44,14 @@ EGameMtlVersion SGameMtl::Load(IReader& fs)
     fSndOcclusionFactor		= fs.r_float();
 
 	if(fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
+	{
 	    fFlotationFactor	= fs.r_float();
+	}
 
     if(fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS))
-    	fInjuriousSpeed		= fs.r_float();
+    {
+        fInjuriousSpeed		= fs.r_float();
+    }
     
 	if(fs.find_chunk(GAMEMTL_CHUNK_DENSITY))
     {
@@ -61,8 +65,14 @@ EGameMtlVersion SGameMtl::Load(IReader& fs)
         vers = GAMEMTL_VERSION_COP;
     }
     else
+    {
         fShootFactorMP = fShootFactor;
-
+    }
+    
+    if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS_CALLBACK))
+    {
+        fs.r_stringZ(m_DangerTouchType);
+    }
     return vers;
 }
 
@@ -207,7 +217,7 @@ void SGameMtl::Save(IWriter& fs)
     Flags.set(flSlowDown, !fis_zero(1.f - fFlotationFactor, EPS_L));
     Flags.set(flShootable, fis_zero(fShootFactor, EPS_L));
     Flags.set(flTransparent, fis_zero(fVisTransparencyFactor, EPS_L));
-    Flags.set(flInjurious, !fis_zero(fInjuriousSpeed, EPS_L));
+    Flags.set(flInjurious, !fis_zero(fInjuriousSpeed, EPS_L) || m_DangerTouchType.size());
 
     fs.open_chunk(GAMEMTL_CHUNK_MAIN);
     fs.w_u32(ID);
@@ -252,6 +262,13 @@ void SGameMtl::Save(IWriter& fs)
     fs.open_chunk(GAMEMTL_CHUNK_DENSITY);
     fs.w_float(fDensityFactor);
     fs.close_chunk();
+
+    if (m_DangerTouchType.size())
+    {
+        fs.open_chunk(GAMEMTL_CHUNK_INJURIOUS_CALLBACK);
+        fs.w_stringZ(m_DangerTouchType);
+        fs.close_chunk();
+    }
 
 }
 
