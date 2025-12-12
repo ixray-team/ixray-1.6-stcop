@@ -578,14 +578,14 @@
 	</storyline_task_location>
 	<storyline_task_spot x="0" y="0" width="19" height="19" stretch="1" alignment="c" location_level="5">
 	    <texture>ui_inGame2_PDA_icon_Primary_mission</texture>
-	    <static_border x="-4" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
+	    <static_border x="-5" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
 		    <texture r="242" g="231" b="11">ui_pda2_stask_last_02</texture>
 	    </static_border>
 	</storyline_task_spot>
 
 	<storyline_task_spot_mini x="0" y="0" width="19" height="19" stretch="1" alignment="c" location_level="5">
 	    <texture>ui_inGame2_PDA_icon_Primary_mission</texture>
-	    <static_border x="-4" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
+	    <static_border x="-5" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
 		    <texture r="242" g="231" b="11">ui_mmap_stask_last_02</texture>
 	    </static_border>
 	    <texture_below>storyline_task_spot_below</texture_below>
@@ -599,14 +599,14 @@
 
 	<secondary_task_spot x="0" y="0" width="19" height="19" stretch="1" alignment="c" location_level="5">
 	    <texture>ui_inGame2_PDA_icon_Secondary_mission</texture>
-	    <static_border x="-4" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
+	    <static_border x="-5" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
 		    <texture>ui_pda2_stask_last_02</texture>
 	    </static_border>
 	</secondary_task_spot>
 
 	<secondary_task_spot_mini x="0" y="0" width="19" height="19" stretch="1" alignment="c" location_level="5">
 	    <texture>ui_inGame2_PDA_icon_Secondary_mission</texture>
-	    <static_border x="-4" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
+	    <static_border x="-5" y="-5" width="29" height="29" stretch="1" light_anim="ui_slow_blinking_alpha" la_cyclic="1" la_texture="1" la_text="0" la_alpha="1">
 		    <texture>ui_mmap_stask_last_02</texture>
 	    </static_border>
 	    <texture_below>secondary_task_spot_below</texture_below>
