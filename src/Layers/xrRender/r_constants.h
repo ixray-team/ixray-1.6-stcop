@@ -9,9 +9,6 @@
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 #endif //USE_DX11
 
-
-class  ECORE_API	RHIShaderConstant::Setup;
-
 enum
 {
 	RC_float		= 0,
