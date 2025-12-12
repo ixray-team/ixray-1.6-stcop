@@ -333,7 +333,7 @@ void RenderUI()
 				ImGui::Text("    precache: %.2fms", (float)stats->precache_time_micros / 1000.0f);
 				ImGui::Text("    render:   %.2fms", (float)stats->render_time_micros / 1000.0f);
 				static u32 filter = 0;
-				if (ImGui::BeginListBox("Filter", { 0, 5 * 22 })) {
+				if (ImGui::BeginListBox("Filter", { 0, 6 * 22 })) {
 					if (ImGui::Selectable("None", filter == 0)) {
 						filter = 0;
 					} if (ImGui::Selectable("Stopped", filter == 1)) {
@@ -344,6 +344,8 @@ void RenderUI()
 						filter = 3;
 					} if (ImGui::Selectable("Playing", filter == 4)) {
 						filter = 4;
+					} if (ImGui::Selectable("Delay", filter == 5)) {
+						filter = 5;
 					}
 					ImGui::EndListBox();
 				}
@@ -363,6 +365,9 @@ void RenderUI()
 					} else if (filter == 3 && (slot.state != XRay::Sound::Mixer::State::Playing)) {
 						continue;
 					} else if (filter == 4 && (slot.state != XRay::Sound::Mixer::State::Playing || !XRay::Sound::Mixer::SlotIsRelated(i + 1))) {
+						continue;
+					} else if (filter == 5 && (slot.state != XRay::Sound::Mixer::State::Delay))
+					{
 						continue;
 					}
 
