@@ -180,7 +180,8 @@ public:
 	}
 	IC void							apply_lmaterial				()
 	{
-		RHIShaderConstant*		C	= &*RCache.get_c	(c_sbase);		// get sampler
+		ref_constant constant = RCache.get_c(c_sbase);
+		RHIShaderConstant*		C	= constant ? &*constant : nullptr;		// get sampler
 		if (0==C)			return;
 		VERIFY				(RC_dest_sampler	== C->destination);
 		VERIFY				(RC_dx10texture		== C->type);
