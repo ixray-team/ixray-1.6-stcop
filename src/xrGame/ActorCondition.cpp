@@ -17,6 +17,7 @@
 #include "InventoryVolumeSystem.h"
 
 #include "PDA.h"
+#include "PHScriptCall.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "UIGameCustom.h"
 #include "ui/UIMainIngameWnd.h"
@@ -458,9 +459,16 @@ float CActorCondition::GetInjuriousMaterialDamage()
 	if(mat_injurios!=GAMEMTL_NONE_IDX)
 	{
 		const SGameMtl* mtl		= GMLib.GetMaterialByIdx(mat_injurios);
+		R_ASSERT(mtl);
+		if(mtl->m_DangerTouchType.size())
+		{
+			Actor()->callback(GameObject::ECallbackType::eDangerousMaterialTouch)(mtl->m_DangerTouchType.c_str());
+		}
 		return					mtl->fInjuriousSpeed;
 	}else
+	{
 		return 0.0f;
+	}
 }
 
 void CActorCondition::SetZoneDanger( float danger, ALife::EInfluenceType type )

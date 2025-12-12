@@ -18,6 +18,7 @@ class ButtonValue;
 #define GAMEMTL_CHUNK_INJURIOUS			0x1006
 #define GAMEMTL_CHUNK_DENSITY			0x1007
 #define GAMEMTL_CHUNK_FACTORS_MP       	0x1008
+#define GAMEMTL_CHUNK_INJURIOUS_CALLBACK 0x1006
 //----------------------------------------------------
 #define GAMEMTLPAIR_CHUNK_PAIR   		0x1000
 //#define GAMEMTLPAIR_CHUNK_FLOTATION   0x1001 - obsolete
@@ -101,6 +102,8 @@ struct MTL_EXPORT_API SGameMtl
 public:
 	shared_str			m_Name;
     shared_str			m_Desc;
+
+	shared_str			m_DangerTouchType = "";
 
     Flags32				Flags;
     // physics part
