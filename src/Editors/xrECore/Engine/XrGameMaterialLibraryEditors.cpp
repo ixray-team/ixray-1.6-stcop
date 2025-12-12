@@ -340,6 +340,8 @@ void SGameMtlEditor::FillProp(PropItemVec& items, ListItem* owner)
     PHelper().CreateFloat(items, "Factors\\Flotation (1-full passable)", &fFlotationFactor);
 
     PHelper().CreateFloat(items, "Factors\\Density Factor", &fDensityFactor, 0.0f, 1000.0f, 1.0f, 1);
+
+    PHelper().CreateRText(items, "Factors\\Danger Touch", &m_DangerTouchType);
 }
 
 
@@ -589,6 +591,13 @@ void SGameMtlEditor::Save(IWriter& fs)
     fs.open_chunk(GAMEMTL_CHUNK_DENSITY);
     fs.w_float(fDensityFactor);
     fs.close_chunk();
+
+    if (m_DangerTouchType.size())
+    {
+        fs.open_chunk(GAMEMTL_CHUNK_INJURIOUS_CALLBACK);
+        fs.w_stringZ(m_DangerTouchType);
+        fs.close_chunk();
+    }
 
 }
 
