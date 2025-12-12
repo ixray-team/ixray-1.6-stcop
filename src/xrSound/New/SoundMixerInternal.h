@@ -37,13 +37,13 @@ struct sound_slot_state
     XRay::Sound::Mixer::State prev_state;
     XRay::Sound::Mixer::State state;
     XRay::Sound::Mixer::State fake_state;
-    u16 flags;
+    u8 flags;
     u32 zone_idx;
     u32 position;
     u32 stopping_position;
     u32 hrtf_slot;
     f32 history[SND_CHANNEL_COUNT][SND_RESAMPLING_QUALITY + 1];
-    //ref_sound * sound;
+    float delay = 0.f;
     xr_string sound_name;
     Fvector parameters[(u32)XRay::Sound::Mixer::ParameterId::Count];
     f32 fade_volume = 1.0f;
