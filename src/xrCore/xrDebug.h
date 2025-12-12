@@ -66,5 +66,8 @@ public:
 extern XRCORE_API xrDebug Debug;
 
 XRCORE_API void LogStackTrace(const char* header);
+#if defined(IXR_WINDOWS)
+XRCORE_API void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo);
+#endif
 
 #include "xrDebug_macros.h"
