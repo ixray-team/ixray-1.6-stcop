@@ -42,8 +42,8 @@ public:
 	// process event
 	virtual	void		event_on_step			() {}
 
-	inline void PlayRainStep(const bool bHudView);
-	inline void PlayExoStep(const bool bHudView);
+	void PlayRainStep(const bool bHudView);
+	void PlayExoStep(const bool bHudView);
 	void CheckExo();
 protected:
 			Fvector		get_foot_position		(ELegType leg_type);
