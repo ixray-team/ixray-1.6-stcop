@@ -32,3 +32,9 @@ features:
   - title: Platforms
     details: Extended support for multiplayer, CoC, OMP and Clear Sky
 ---
+
+<script setup>
+import VkArticleWidget from '../../../components/VkArticleWidget.vue';
+</script>
+
+<VkArticleWidget />
