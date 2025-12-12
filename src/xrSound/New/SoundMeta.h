@@ -62,7 +62,7 @@ class CObject;
 
 namespace XRay::Sound::Mixer
 {
-    enum class Flags : u32
+    enum class Flags : u8
     {
         None = 0,
         Looped = (1 << 0),
@@ -78,6 +78,7 @@ namespace XRay::Sound::Mixer
     {
         Stopped,
         Playing,
+        Delay,
         Paused
     };
 
