@@ -481,7 +481,6 @@ static bool EnabledStackTrace = true;
 
 void ProcessStackTrace(_EXCEPTION_POINTERS *pExceptionInfo)
 {
-	
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 

@@ -27,6 +27,43 @@ IC bool compare_safe(const luabind::object& o1, const luabind::object& o2)
 #	define process_error
 #endif
 
+
+#if !defined(MASTER_GOLD) && defined(IXR_WINDOWS) && (defined(_MSC_VER) || (defined(__clang__) && defined(_MSC_EXTENSIONS)))
+#define ALLOW_SEH_EXCEPTIONS
+#include <windows.h> // for EXCEPTION_ACCESS_VIOLATION
+#include <excpt.h>
+
+inline int lua_ex_filter(unsigned int code, struct _EXCEPTION_POINTERS *ep)
+{
+    if (IsDebuggerPresent())
+    {
+        DebugBreak();
+    }
+    ProcessStackTrace(ep);
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+// Универсальная обертка для SEH
+template<typename Func>
+auto SafeSEHCall(Func&& func) -> decltype(func())
+{
+    __try
+    {
+        return func();
+    }
+    __except(lua_ex_filter(GetExceptionCode(), GetExceptionInformation()))
+    {
+        FATAL("Unhandled exception in Lua callback!");
+        // Возвращаем значение по умолчанию для типа
+        using ReturnType = decltype(func());
+        if constexpr (!std::is_same_v<ReturnType, void>)
+        {
+            return ReturnType();
+        }
+    }
+}
+#endif
+
 template<typename TResult>
 class CScriptCallbackEx
 {
@@ -100,24 +137,39 @@ public:
     {
         return !m_functor.is_valid() ? 0 : &CScriptCallbackEx::empty;
     }
-
+private:
+    
     template<typename... Args>
-    TResult operator()(Args &&...args) const
+    inline TResult LuaCallSEHEx(Args&&... args) const
     {
         PROF_EVENT(__FUNCTION__);
+        auto func = [&]() -> TResult
+        {
+            VERIFY(m_functor.is_valid());
+            if (m_object.is_valid())
+            {
+                VERIFY(m_object.is_valid());
+                return TResult(m_functor(m_object, std::forward<Args>(args)...));
+            }
+            return TResult(m_functor(std::forward<Args>(args)...));
+        };
+#ifdef ALLOW_SEH_EXCEPTIONS
+        return SafeSEHCall(func);
+#else
+        return func();
+#endif
+    }
+
+    template<typename... Args>
+    inline TResult LuaCallCPPEx(Args&&... args) const
+    {
         try
         {
             try
             {
                 if (m_functor)
                 {
-                    VERIFY(m_functor.is_valid());
-                    if (m_object.is_valid())
-                    {
-                        VERIFY(m_object.is_valid());
-                        return TResult(m_functor(m_object, std::forward<Args>(args)...));
-                    }
-                    return TResult(m_functor(std::forward<Args>(args)...));
+                    return LuaCallSEHEx(std::forward<Args>(args)...);
                 }
             }
             process_error catch (...)
@@ -130,59 +182,58 @@ public:
             const_cast<CScriptCallbackEx<TResult>*>(this)->clear();
         }
         return TResult(0);
+    }
+
+public:
+    template<typename... Args>
+    TResult operator()(Args &&...args) const
+    {
+        return LuaCallCPPEx(std::forward<Args>(args)...);
     }
 
     template<typename... Args>
     TResult operator()(Args &&...args)
     {
-        PROF_EVENT(__FUNCTION__);
-        try
-        {
-            try
-            {
-                if (m_functor)
-                {
-                    VERIFY(m_functor.is_valid());
-                    if (m_object.is_valid())
-                    {
-                        VERIFY(m_object.is_valid());
-                        return TResult(m_functor(m_object, std::forward<Args>(args)...));
-                    }
-                    return TResult(m_functor(std::forward<Args>(args)...));
-                }
-            }
-            process_error catch (...)
-            {
-                g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
-            }
-        }
-        catch (...)
-        {
-            const_cast<CScriptCallbackEx<TResult>*>(this)->clear();
-        }
-        return TResult(0);
+        return LuaCallCPPEx(std::forward<Args>(args)...);
     }
 };
 
 template<>
 template<typename... Args>
-void CScriptCallbackEx<void>::operator()(Args &&...args) const
+void CScriptCallbackEx<void>::LuaCallSEHEx(Args &&...args) const
 {
     PROF_EVENT(__FUNCTION__);
+    auto func = [&]() -> void
+    {
+        VERIFY(m_functor.is_valid());
+        if (m_object.is_valid())
+        {
+            VERIFY(m_object.is_valid());
+            m_functor(m_object, std::forward<Args>(args)...);
+        }
+        else
+        {
+            m_functor(std::forward<Args>(args)...);
+        }
+    };
+#ifdef ALLOW_SEH_EXCEPTIONS
+    SafeSEHCall(func);
+#else
+    func();
+#endif
+}
+
+template<>
+template<typename... Args>
+void CScriptCallbackEx<void>::LuaCallCPPEx(Args &&...args) const
+{
     try
     {
         try
         {
             if (m_functor)
             {
-                VERIFY(m_functor.is_valid());
-                if (m_object.is_valid())
-                {
-                    VERIFY(m_object.is_valid());
-                    m_functor(m_object, std::forward<Args>(args)...);
-                }
-                else
-                    m_functor(std::forward<Args>(args)...);
+                LuaCallSEHEx(std::forward<Args>(args)...);
             }
         }
         process_error catch (...)
@@ -198,32 +249,14 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) const
 
 template<>
 template<typename... Args>
+void CScriptCallbackEx<void>::operator()(Args &&...args) const
+{
+    LuaCallCPPEx(std::forward<Args>(args)...);
+}
+
+template<>
+template<typename... Args>
 void CScriptCallbackEx<void>::operator()(Args &&...args)
 {
-    PROF_EVENT(__FUNCTION__);
-    try
-    {
-        try
-        {
-            if (m_functor)
-            {
-                VERIFY(m_functor.is_valid());
-                if (m_object.is_valid())
-                {
-                    VERIFY(m_object.is_valid());
-                    m_functor(m_object, std::forward<Args>(args)...);
-                }
-                else
-                    m_functor(std::forward<Args>(args)...);
-            }
-        }
-        process_error catch (...)
-        {
-            g_pScriptEngine->print_output(g_pScriptEngine->lua(), "", 1);
-        }
-    }
-    catch (...)
-    {
-        const_cast<CScriptCallbackEx<void>*>(this)->clear();
-    }
+    LuaCallCPPEx(std::forward<Args>(args)...);
 }
