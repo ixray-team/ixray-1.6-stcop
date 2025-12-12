@@ -1,8 +1,5 @@
 #pragma once
 
-struct	RHIShaderConstant;
-struct	RHIShaderConstant::Loader;
-
 class dx10ConstantBuffer :
 	public xr_resource_named
 {
