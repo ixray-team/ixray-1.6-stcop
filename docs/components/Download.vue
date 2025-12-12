@@ -92,13 +92,17 @@ const findAssetLink = (keywords: string[]) => {
   return asset?.browser_download_url || null
 }
 
+const preferReleaseLink = (keywords: string[]) => {
+  return findAssetLink([...keywords, 'release']) || findAssetLink(keywords)
+}
+
 const assetLinks = computed(() => ({
   game: findAssetLink(['engine', 'game']),
   developer: findAssetLink(['engine', 'develop']),
-  utilitiesBin: findAssetLink(['utilities', 'bin']),
-  utilitiesLib: findAssetLink(['utilities', 'lib']),
-  serverBin: findAssetLink(['server', 'bin']),
-  serverLib: findAssetLink(['server', 'lib']),
+  utilitiesBin: preferReleaseLink(['utilities', 'bin']),
+  utilitiesLib: preferReleaseLink(['utilities', 'lib']),
+  serverBin: preferReleaseLink(['server', 'bin']),
+  serverLib: preferReleaseLink(['server', 'lib']),
 }))
 
 const heroTitle = computed(() => copy.value.hero.title.replace('{version}', releaseVersion.value))
