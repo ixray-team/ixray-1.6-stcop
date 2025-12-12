@@ -267,15 +267,15 @@ public:
 	ICF	ref_constant				get_c				(shared_str&	n)													{ if (ctable) return ctable->get(n); return 0;}
 
 	// constants - direct (fast)
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_)		constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_)		constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_)		constants.set(C_,x,y,z,w);			}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_)		constants.seta(C_,e,A);				}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_)		constants.seta(C_,e,A);				}
-	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_)		constants.seta(C_,e,x,y,z,w);		}
+	ICF	void						set_c				(RHIShaderConstant* C_, const Fmatrix& A)									{ if (C_) constants.set(C_,A);					}
+	ICF	void						set_c				(RHIShaderConstant* C_, const Fvector4& A)									{ if (C_) constants.set(C_,A);					}
+	ICF	void						set_c				(RHIShaderConstant* C_, float x, float y, float z, float w)					{ if (C_) constants.set(C_,x,y,z,w);			}
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fmatrix& A)							{ if (C_) constants.seta(C_,e,A);				}
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, const Fvector4& A)							{ if (C_) constants.seta(C_,e,A);				}
+	ICF	void						set_ca				(RHIShaderConstant* C_, u32 e, float x, float y, float z, float w)			{ if (C_) constants.seta(C_,e,x,y,z,w);			}
 #ifdef USE_DX11
-	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_)		constants.set(C_,A);					}
-	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_)		constants.set(C_,A);					}
+	ICF	void						set_c				(RHIShaderConstant* C_, float A)											{ if (C_) constants.set(C_,A);					}
+	ICF	void						set_c				(RHIShaderConstant* C_, int A)												{ if (C_) constants.set(C_,A);					}
 #endif //USE_DX11
 
 
