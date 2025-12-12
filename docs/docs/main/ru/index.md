@@ -32,3 +32,9 @@ features:
   - title: Platforms
     details: Расширенная поддержка мультиплеера, CoC, OMP и Clear Sky
 ---
+
+<script setup>
+import VkArticleWidget from '../../../components/VkArticleWidget.vue';
+</script>
+
+<VkArticleWidget />
