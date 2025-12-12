@@ -80,8 +80,12 @@ EGameMtlVersion SGameMtl::Load(IReader& fs)
     {
         fShootFactorMP = fShootFactor;
     }
-
-    return vers;
+	
+	if (fs.find_chunk(GAMEMTL_CHUNK_INJURIOUS_CALLBACK))
+	{
+		fs.r_stringZ(m_DangerTouchType);
+	}
+	return vers;
 }
 
 void CGameMtlLibrary::Load()

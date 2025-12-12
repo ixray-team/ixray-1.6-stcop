@@ -209,11 +209,11 @@ public:
 	virtual void SetIcon(const shared_str& iconName, bool is_outfit_icon = false);
 
 	//для работы с relation system
-	ALife::_OBJECT_ID								object_id	() const;
-	s32		Community	() const {return CharacterInfo().Community().index();};
-	s32			Rank		() const {return CharacterInfo().Rank().value();};
-	s32		Reputation	() const {return CharacterInfo().Reputation().value();};
-	float							Sympathy	() const {return CharacterInfo().Sympathy(); }
+	ALife::_OBJECT_ID object_id() const;
+	s32 Community() const {return CharacterInfo().Community().index();}
+	s32 Rank() const {return CharacterInfo().Rank().value();}
+	s32 Reputation() const {return CharacterInfo().Reputation().value();}
+	float Sympathy() const {return CharacterInfo().Sympathy(); }
 
 protected:
 	CCharacterInfo* m_pCharacterInfo = nullptr;
@@ -267,7 +267,6 @@ public:
 		VERIFY(m_trade_parameters);
 		return *m_trade_parameters;
 	}
-
 	virtual	const char* trade_section() const;
 	float deficit_factor(const shared_str& section) const;
 	void buy_supplies(CInifile& ini_file, const char* section);
