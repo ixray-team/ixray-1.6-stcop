@@ -2,6 +2,7 @@
 // XRay typedefs, which don't use xalloc
 #include <span>
 #include <array>
+#include <variant>
 
 template <class T, size_t Ext = std::dynamic_extent>
 using xr_span = std::span<T, Ext>;
@@ -17,3 +18,6 @@ using xr_wstring_view = std::wstring_view;
 
 template<typename Type, size_t Size>
 using xr_array = std::array<Type, Size>;
+
+template <class... Types>
+using xr_variant = std::variant<Types...>;

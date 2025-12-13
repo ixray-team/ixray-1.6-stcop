@@ -1204,6 +1204,30 @@ void RefreshNames()
 	}
 }
 
+void launch_sam(CScriptGameObject* launch_object, CScriptGameObject* target)
+{
+	if (OnClient()) {
+		return;
+	}
+	if (!launch_object)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "launch_sam: launch object is NULL!");
+		return;
+	}
+	auto sam = smart_cast<CSamZone*>(&launch_object->object());
+	if (!sam)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "launch_sam: launch object [%s] is not a CSamZone!", launch_object->object().Name());
+		return;
+	}
+	if (!target)
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "target_sam: target is NULL!");
+		return;
+	}
+	sam->LaunchMissile(&target->object());
+}
+		
 void switch_wallmark(CScriptGameObject* object, bool isOn)
 {
 	if (OnClient()) {
@@ -1954,6 +1978,7 @@ void CLevel::script_register(lua_State *L)
 		def("get_time_hours",					get_time_hours),
 		def("get_time_minutes",					get_time_minutes),
 		def("change_game_time",					change_game_time),
+		def("set_game_date_time", set_game_date_time), // runtime set new date with time
 
 		def("high_cover_in_direction",			high_cover_in_direction),
 		def("low_cover_in_direction",			low_cover_in_direction),
@@ -2092,6 +2117,27 @@ void CLevel::script_register(lua_State *L)
 		def("get",						&level_nearest::Get)
 	];
 
+	module(L, "animslot")
+	[
+		def("play_cutscene", &CCutsceneManager::PlayCutscene),
+		def("stop_current_cutscene", &CCutsceneManager::FinishCurrentCutscene)
+	];
+
+	module(L)
+		[
+			class_<SCutsceneObjectElement>("SCutsceneObjectElement")
+				.def("set_all_bones_visibility", &SCutsceneObjectElement::SetAllBonesVisibility)
+				.def("set_bone_visibility", &SCutsceneObjectElement::SetBoneVisibility)
+				.def("set_parent", &SCutsceneObjectElement::SetParent)
+				.def("set_anim_to_play", &SCutsceneObjectElement::SetAnimToPlay)
+				.def("set_on_finish_func", &SCutsceneObjectElement::SetOnFinishFunc)
+				.def("get_bone_id", &SCutsceneObjectElement::GetBoneID)
+				.def("set_bones_weapon", &SCutsceneObjectElement::SetBonesWeapon),
+			class_<CCutsceneItem>("CCutsceneItem")
+				.def("create_object_element", &CCutsceneItem::CreateObjectElement)
+				.def("set_pivot_object", &CCutsceneItem::SetPivotObject)
+		];
+
 	module(L, "player_hud")
 	[
 		def("show_legs", &show_legs)
@@ -2221,7 +2267,8 @@ void CLevel::script_register(lua_State *L)
 			.def("set"					,&xrTime::set)
 			.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
 			.def("dateToString"			,&xrTime::dateToString)
-			.def("timeToString"			,&xrTime::timeToString),
+			.def("timeToString"			,&xrTime::timeToString)
+			.def("Serialize", &ctime_serialize),
 			// declarations
 			def("time",					get_time),
 			def("get_game_time",		get_time_struct),

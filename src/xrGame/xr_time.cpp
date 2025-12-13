@@ -26,7 +26,11 @@ xrTime get_time_struct()
 	return xrTime(__game_time());
 }
 
-const char*	xrTime::dateToString	(int mode)								
+void ctime_serialize(xrTime* self, ISaveObject* save) {
+	self->Serialize(*save);
+}
+
+LPCSTR	xrTime::dateToString	(int mode)								
 { 
 	return *InventoryUtilities::GetDateAsString(m_time,(InventoryUtilities::EDatePrecision)mode);
 }
@@ -100,6 +104,41 @@ void xrTime::Load(NET_Packet& Packet)
 	Packet.r_u32(Tm.TimeTotal);
 
 	set(Tm.Years + 2000, Tm.Month, Tm.Days, Tm.Hours, Tm.Min, Tm.Sec, 0);
+}
+
+void xrTime::Serialize(ISaveObject& Object)
+{
+	BEGIN_CHUNK(Object,"xrTime")
+	{
+		if (!Object.IsSave()) {
+			TimePacked Tm = {};
+			Object << Tm.TimeTotal;
+
+			set(Tm.Years + 2000, Tm.Month, Tm.Days, Tm.Hours, Tm.Min, Tm.Sec, 0);
+		}
+		else {
+			u32 y;
+			u32 mo;
+			u32 d;
+			u32 h;
+			u32 mi;
+			u32 s;
+			u32 ms;
+
+			get(y, mo, d, h, mi, s, ms);
+
+			TimePacked Tm = {};
+			Tm.Years = y - 2000;
+			Tm.Month = mo;
+			Tm.Days = d;
+
+			Tm.Hours = h;
+			Tm.Min = mi;
+			Tm.Sec = s;
+
+			Object << Tm.TimeTotal;
+		}
+	}
 }
 
 float	xrTime::diffSec(const xrTime& other)

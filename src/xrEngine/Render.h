@@ -265,7 +265,7 @@ public:
 	virtual void					flush					()											{};	
 	virtual void					set_Object				(IRenderable*		O	)					{};
 	virtual	void					add_Occluder			(Fbox2&	bb_screenspace	)					{};	// mask screen region as oclluded (-1..1, -1..1)
-	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false)	{};	// add visual leaf	(no culling performed at all)
+	virtual void					add_Visual				(IRenderVisual*	V, bool IgnoreOptimize = false, bool Force = false)	{};	// add visual leaf	(no culling performed at all)
 	virtual void					add_Geometry			(IRenderVisual*	V	)					{};	// add visual(s)	(all culling performed)
 	virtual void					add_StaticWallmark		(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {};
 

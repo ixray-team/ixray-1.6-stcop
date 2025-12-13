@@ -143,8 +143,14 @@ protected:
 	IGameGraph					*m_game_graph;
 
 	xr_deque<NET_Packet>		script_client_events;
+	
+	using DefferedScriptCallback = std::function<void()>;
+	xr_deque<DefferedScriptCallback> m_deffered_scripts_callbacks;
 
 public:
+
+	inline void CreateDefferedScriptCallback(DefferedScriptCallback Callback){m_deffered_scripts_callbacks.push_back(Callback);}
+	
 #ifdef DEBUG
 	// level debugger
 	CLevelDebug					*m_level_debug;
