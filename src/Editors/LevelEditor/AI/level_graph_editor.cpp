@@ -169,19 +169,22 @@ void CLevelGraphEditor::clear()
 
 bool CLevelGraphEditor::save_temp()
 {
-	string_path FileName;
-	xr_strcpy(FileName, Scene->m_LevelOp.m_FNLevelPath.c_str());
-	xr_strcat(FileName, "\\level.ai.temp");
-	FS.update_path(FileName, _game_levels_, FileName);
-	IWriter* fs = FS.w_open(FileName);
-	if (!fs)
+	string_path level_ai;
+	string_path level_ai_temp;
+
+	xr_strcpy(level_ai, Scene->m_LevelOp.m_FNLevelPath.c_str());
+	xr_strcat(level_ai, "\\level.ai");
+	FS.update_path(level_ai, _game_levels_, level_ai);
+
+	xr_strcpy(level_ai_temp, Scene->m_LevelOp.m_FNLevelPath.c_str());
+	xr_strcat(level_ai_temp, "\\level.ai.temp");
+	FS.update_path(level_ai_temp, _game_levels_, level_ai_temp);
+
+	if (!FS.exist(level_ai))
 		return false;
 
-	fs->w(&m_RealHeader, sizeof(m_RealHeader));
-	for (size_t i = 0; i < m_RealNodes.size(); i++)
-	{
-		fs->w(&m_RealNodes[i], sizeof(NodeCompressed));
-	}
-	FS.w_close(fs);
+	FS.file_copy(level_ai, level_ai_temp);
 	return true;
 }
+
+
