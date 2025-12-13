@@ -38,6 +38,7 @@ enum class EditorUI : u8
 	ActorInfos,
 	HudAdjust,
 	LevelInspector,
+	CutsceneAdjust,
 	ScenesViewer,
 	CameraEffectors,
 	Game_TimeManager,

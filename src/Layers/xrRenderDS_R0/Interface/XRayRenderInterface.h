@@ -38,7 +38,7 @@ public:
 	virtual	GenerationLevel			get_generation() { return GenerationLevel::GENERATION_R1; }
 
 	virtual void add_Occluder(Fbox2& bb_screenspace); 
-	virtual void add_Visual(IRenderVisual* V); 
+	virtual void add_Visual(IRenderVisual* V, bool IgnoreOptimize = false, bool Force = false); 
 	virtual void add_Geometry(IRenderVisual* V);
 	virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
 	virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
