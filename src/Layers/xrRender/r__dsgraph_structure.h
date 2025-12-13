@@ -70,8 +70,8 @@ public:
 	u32															counter_D	;
 	bool														b_loaded	;
 public:
-	virtual		void					set_Transform			(Fmatrix*	M	)				{ VERIFY(M);	val_pTransform = M;	}
-	virtual		void					set_LocalTransform		(Fmatrix*	M	)				{ VERIFY(M);	val_pLocalTransform = M;	}
+	void set_Transform(Fmatrix&	M) override { val_pTransform = &M; }
+	void set_LocalTransform(Fmatrix& M) override { val_pLocalTransform = &M; }
 	virtual		void					set_UI					(bool 		V	)				{ val_bUI		= V;				}
 	virtual		void					set_HUD					(bool 		V	)				{ val_bHUD		= V;				}
 	virtual		bool					get_HUD					()								{ return		val_bHUD;			}
@@ -137,11 +137,11 @@ public:
 	}
 
 	void		add_Static(dxRender_Visual* pVisual, u32 planes);
-	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false); // if detected node's full visibility
+	void		add_leafs_Dynamic(dxRender_Visual* pVisual, bool IgnoreObject = false, bool Force = false); // if detected node's full visibility
 
 	void		r_pmask											(bool deffered = false, bool forward = false, bool wallmarks = false) { pmask[0] = deffered; pmask[1] = forward; pmask[2] = wallmarks; }
 
-	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center);
+	void		r_dsgraph_insert_dynamic						(dxRender_Visual	*pVisual, Fvector& Center, bool Force);
 	void		r_dsgraph_insert_static							(dxRender_Visual	*pVisual);
 
 	void		r_dsgraph_render_graph							(u32	_priority,	bool _clear=true);

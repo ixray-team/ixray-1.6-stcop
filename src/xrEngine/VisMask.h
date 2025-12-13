@@ -60,10 +60,16 @@ struct ENGINE_API VisMask final
 			return !!_visimask_ex.is(u64(1) << (_digit - 64));
 	}
 
-	IC	void zero()
+	IC void zero()
 	{
 		_visimask.zero();
 		_visimask_ex.zero();
+	}
+
+	IC void one()
+	{
+		_visimask.one();
+		_visimask_ex.one();
 	}
 
 	IC	u16 count()
