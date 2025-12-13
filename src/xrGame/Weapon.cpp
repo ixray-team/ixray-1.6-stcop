@@ -766,8 +766,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	if (m_ammo_bones_lite.bullet_cnt > 0)
 	{
-		static shared_str read_bullet_bone_name = pSettings->r_string(section, "bullet_bone_name");
-		static shared_str bullet_bone_name = read_bullet_bone_name;
+		shared_str read_bullet_bone_name = pSettings->r_string(section, "bullet_bone_name");
+		shared_str bullet_bone_name = read_bullet_bone_name;
 
 		for (u32 i = 1; i < m_ammo_bones_lite.bullet_cnt; ++i)
 		{
