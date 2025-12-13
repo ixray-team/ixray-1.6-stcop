@@ -324,7 +324,27 @@ CGameSpawnConstructor::CGameSpawnConstructor()
 
 bool CGameSpawnConstructor::build(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check)
 {
+
+	string_path spawn_src;
+	string_path spawn_dst;
+
+	xr_sprintf(spawn_src, "%s.spawn", name);
+	FS.update_path(spawn_src, "$game_spawn$", spawn_src);
+	FS.update_path(spawn_dst, "$game_spawn$", "editor.spawn");
+
+	if (FS.exist(spawn_src))
+	{
+		Msg("PIE: use existing spawn: %s", spawn_src);
+
+		if (FS.exist(spawn_dst))
+			FS.file_delete(spawn_dst);
+
+		FS.file_copy(spawn_src, spawn_dst);
+		return true;
+	}
+
 	Msg("Start build spawn");
+
 	if (!load_spawns(name, no_separator_check))
 		return false;
 	if (!process_spawns())
@@ -333,6 +353,7 @@ bool CGameSpawnConstructor::build(LPCSTR name, LPCSTR output, LPCSTR start, bool
 		return false;
 	if (!save_spawn(name, output))
 		return false;
+
 	return true;
 }
 
