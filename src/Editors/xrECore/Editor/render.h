@@ -179,7 +179,7 @@ public:
 	virtual void					RenderUI(bool = false);
 
 	virtual void					set_Transform(Fmatrix* M);
-	virtual void					add_Visual(IRenderVisual* visual, bool) override;
+	virtual void					add_Visual(IRenderVisual* visual, bool IgnoreOptimize = false, bool Force = false) override;
 
 	virtual ref_shader		getShader(int id);
 	virtual	CRenderTarget* getTarget() { return Target; }

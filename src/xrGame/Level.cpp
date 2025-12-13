@@ -617,6 +617,14 @@ void CLevel::OnFrame()
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG
 
+	while (!m_deffered_scripts_callbacks.empty())
+	{
+		auto elem = m_deffered_scripts_callbacks.front();
+		m_deffered_scripts_callbacks.pop_front();
+		elem();
+	}
+	VERIFY(m_deffered_scripts_callbacks.empty());
+
 	Fvector	temp_vector;
 	m_feel_deny.feel_touch_update(temp_vector, 0.f);
 

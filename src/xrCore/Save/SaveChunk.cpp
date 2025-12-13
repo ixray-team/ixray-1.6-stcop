@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SaveChunk.h"
-
+#include "xrDebug_macros.h"
 #include <magic_enum/magic_enum.hpp>
 
 #include "MemoryBuffer.h"
@@ -344,7 +344,7 @@ void CSaveChunk::r_bool(bool& A)
 {
 	if (_currentArrayStack.empty()) {
 		// Fallback for legacy BOOL serialization type
-		if (!IVERIFY(_variables[_currentReadIndex]->GetVariableType() == ESaveVariableType::t_bool, "Try to read bool in chunk [%s], got something other. Try fallback for BOOL", _chunkName.c_str()))
+		if (!IVERIFY_M(_variables[_currentReadIndex]->GetVariableType() == ESaveVariableType::t_bool, "Try to read bool in chunk [%s], got something other. Try fallback for BOOL", _chunkName.c_str()))
 		{
 			R_ASSERT(_variables[_currentReadIndex]->GetVariableType() == ESaveVariableType::t_s32, "Invalid variable type access in chunk", _chunkName.c_str());
 			A = SSaveVariableGetter::GetValue<s32, CSaveVariableS32>(_variables[_currentReadIndex++]);	
@@ -355,7 +355,7 @@ void CSaveChunk::r_bool(bool& A)
 	}
 	else {
 		auto CurrentArray = _currentArrayStack.top();
-		if (!IVERIFY(CurrentArray->GetCurrentElement()->GetVariableType() == ESaveVariableType::t_bool, "Try to read bool in chunk [%s], got something other. Try fallback for BOOL", _chunkName.c_str()))
+		if (!IVERIFY_M(CurrentArray->GetCurrentElement()->GetVariableType() == ESaveVariableType::t_bool, "Try to read bool in chunk [%s], got something other. Try fallback for BOOL", _chunkName.c_str()))
 		{
 			R_ASSERT(CurrentArray->GetCurrentElement()->GetVariableType() == ESaveVariableType::t_s32, "Invalid variable type access in chunk", _chunkName.c_str());
 			A = SSaveVariableGetter::GetValue<s32, CSaveVariableS32>(CurrentArray->GetCurrentElement());

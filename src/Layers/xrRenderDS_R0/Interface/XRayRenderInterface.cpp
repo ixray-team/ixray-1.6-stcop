@@ -108,7 +108,7 @@ void CDS0_RenderInterface::add_Occluder(Fbox2& bb_screenspace)
 {
 }
 
-void CDS0_RenderInterface::add_Visual(IRenderVisual* V)
+void CDS0_RenderInterface::add_Visual(IRenderVisual* V, bool IgnoreOptimize, bool Force)
 {
 	if (IKinematics* IK = V->dcast_PKinematics())
 	{

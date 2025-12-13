@@ -171,8 +171,9 @@ IC bool HasNextLOD(dxRender_Visual *pVisual, u32 next_type)
     return false;
 }
 
-void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center)
+void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center, bool Force)
 {
+	PROF_EVENT("R_dsgraph_structure::r_dsgraph_insert_dynamic")
 	CRender& RI = RImplementation;
 
 	if (pVisual->vis.marker == RI.marker)	
@@ -187,9 +188,9 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 	pVisual->vis.accept_frame = Device.dwFrame;
 #endif
 
-	float distSQ;
-	float SSA = CalcSSA(distSQ, Center, pVisual);
-	if (SSA <= r_ssaDISCARD) return;
+	float distSQ			;
+	float SSA				=	CalcSSA		(distSQ,Center,pVisual);
+	if (SSA<=r_ssaDISCARD && !Force)		return;
 
 	// Distortive geometry should be marked and R2 special-cases it
 	// a) Allow to optimize RT order
@@ -363,6 +364,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
 void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 {
+	PROF_EVENT("R_dsgraph_structure::r_dsgraph_insert_static")
 	CRender& RI = RImplementation;
 
 	if (pVisual->vis.marker == RI.marker)	
@@ -480,9 +482,12 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject)
+void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject, bool Force)
 {
-	if (0 == pVisual) return;
+	if (nullptr == pVisual)
+	{
+		return;
+	}
 
 	if (!IsValuableToRender(pVisual, false, phase == CRender::PHASE_SMAP, *val_pTransform, IgnoreObject))
 	{
@@ -494,6 +499,7 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 	{
 	case MT_PARTICLE_GROUP:
 		{
+			//PROF_EVENT("CRender::add_leafs_Dynamic: MT_PARTICLE_GROUP")
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 			xrCriticalSectionGuard guard(pG->onframe_lock);
@@ -513,15 +519,19 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 		return;
 	case MT_HIERRARHY:
 		{
+			//PROF_EVENT("CRender::add_leafs_Dynamic: MT_HIERRARHY")
 			// Add all children, doesn't perform any tests
 			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 			for (dxRender_Visual* V : pV->children)
-				add_leafs_Dynamic(V, IgnoreObject);
+			{
+				add_leafs_Dynamic(V, IgnoreObject, Force);
+			}
 		}
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
+			//PROF_EVENT("CRender::add_leafs_Dynamic: MT_SKELETON")
 			// Add all children, doesn't perform any tests
 			CKinematics * pV = (CKinematics*)pVisual;
 			bool _use_lod = false;
@@ -533,8 +543,10 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 				if (ssa<r_ssaLOD_A)
 					_use_lod= true;
 			}
-			if (_use_lod)				
-				add_leafs_Dynamic(pV->m_lod, IgnoreObject);
+			if (_use_lod)
+			{
+				add_leafs_Dynamic(pV->m_lod, IgnoreObject, Force);
+			}
 			else
 			{
 #if RENDER==R_R1
@@ -542,17 +554,20 @@ void R_dsgraph_structure::add_leafs_Dynamic(dxRender_Visual *pVisual, bool Ignor
 				pV->CalculateWallmarks		();		//. bug?
 #endif
 				for (dxRender_Visual* V : pV->children)
-					add_leafs_Dynamic(V, IgnoreObject);
+				{
+					add_leafs_Dynamic(V, IgnoreObject, Force);
+				}
 			}
 		}
 		return;
 	default:
 		{
+			//PROF_EVENT("CRender::add_leafs_Dynamic: Default")
 			// General type of visual
 			// Calculate distance to it's center
 			Fvector Tpos;
 			val_pTransform->transform_tiny(Tpos, pVisual->vis.sphere.P);
-			r_dsgraph_insert_dynamic(pVisual,Tpos);
+			r_dsgraph_insert_dynamic(pVisual,Tpos, Force);
 		}
 		return;
 	}
@@ -742,11 +757,13 @@ void add_leafs_Static(xr_vector<dxRender_Visual*>& children)
 		case MT_TREE_PM:
 		case MT_TREE_ST:
 		{
+			//PROF_EVENT("CRender::add_leafs_Static: MT_TREE")
 			// General type of visual
 			RI.r_dsgraph_insert_static(pVisual);
 		}continue;
 		default:
 		{
+			//PROF_EVENT("CRender::add_leafs_Static: Default")
 			// General type of visual
 			RI.r_dsgraph_insert_static(pVisual);
 		}continue;
@@ -812,7 +829,9 @@ void R_dsgraph_structure::add_Static(dxRender_Visual *pVisual, u32 planes)
 		if (fcvPartial == VIS)
 		{
 			for (dxRender_Visual* V : pV->children)
+			{
 				add_Static(V, planes);
+			}
 		}
 		else
 		{
