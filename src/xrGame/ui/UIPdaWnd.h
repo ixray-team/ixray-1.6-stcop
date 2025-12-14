@@ -90,6 +90,7 @@ public:
 			LPCSTR			GetActiveSection	()					{return m_sActiveSection.c_str();};
 			CUITabControl*	GetTabControl		()					{return UITabControl;};
 	
+			virtual void HideDialog() override;
 
 			void			SetActiveSubdialog	(const shared_str& section);
 			void			SetActiveSubdialog_script(LPCSTR section)				{ SetActiveSubdialog((const shared_str&)section); };

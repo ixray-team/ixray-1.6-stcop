@@ -115,12 +115,20 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	switch ( get_binded_action(dik) )
 	{
 	case kACTIVE_JOBS:
+	{
+		if (!pActor->pda_disabled())
 		{
-			if ( !pActor->pda_disabled() )
+			if (pActor->HudAnimator()->PdaAnimator() != nullptr)
+			{
+				pActor->HudAnimator()->PdaAnimator()->SwitchAnimator();
+			}
+			else
+			{
 				ShowPdaMenu();
-			break;
+			}
 		}
-
+		break;
+	}
 	case kINVENTORY:
 		{
 			if (!pActor->inventory_disabled())
