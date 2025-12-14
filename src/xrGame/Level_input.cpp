@@ -23,6 +23,8 @@
 
 #include "../Include/xrRender/DebugRender.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "ui/UIPdaWnd.h"
+#include "HudPdaAnimator.h"
 
 //Alundaio
 #include "pch_script.h"
@@ -194,6 +196,42 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			}
 			return;
 		}break;
+	case kWPN_ZOOM_ALTER:
+	{
+		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->PdaMenu())
+		{
+			CObject* current_entity = CurrentEntity();
+			if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
+			{
+				if (pActor->HudAnimator() != nullptr && pActor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					if (pActor->HudAnimator()->PdaAnimator()->InputKeyPress(kWPN_ZOOM_ALTER))
+					{
+						return;
+					}
+				}
+			}
+		}
+		break;
+	}
+	case kWPN_ZOOM:
+	{
+		if (b_ui_exist && CurrentGameUI()->TopInputReceiver() == &CurrentGameUI()->PdaMenu())
+		{
+			CObject* current_entity = CurrentEntity();
+			if (CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr)
+			{
+				if (pActor->HudAnimator() != nullptr && pActor->HudAnimator()->PdaAnimator() != nullptr)
+				{
+					if (pActor->HudAnimator()->PdaAnimator()->InputKeyPress(kWPN_ZOOM))
+					{
+						return;
+					}
+				}
+			}
+		}
+		break;
+	}
 	case kALIFE_CMD: {
 		if (m_isStartAttack)
 		{

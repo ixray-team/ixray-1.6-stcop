@@ -43,13 +43,37 @@ extern u32 hud_adj_mode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
-	if(hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))	return;
-
-	if (Remote())		return;
-	if (IsTalking())	return;
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
-	if (load_screen_renderer.IsActive()) {
+	if (hud_adj_mode && pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
+	{
 		return;
+	}
+
+	if (Remote())
+	{
+		return;
+	}
+
+	if (IsTalking())
+	{
+		return;
+	}
+
+	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	{
+		return;
+	}
+
+	if (load_screen_renderer.IsActive())
+	{
+		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyPress(cmd))
+		{
+			return;
+		}
 	}
 
 	switch (cmd)
@@ -281,13 +305,26 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 	}
 
 	if (Remote())
+	{
 		return;
+	}
 
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
+	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	{
+		return;
+	}
 
 	if (IsWaunded)
 	{
 		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyRelease(cmd))
+		{
+			return;
+		}
 	}
 
 	if (g_Alive())	
@@ -359,9 +396,20 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		return;
 	}
 
-	if (Remote() || !g_Alive())					return;
-	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))	return;
-	if (IsTalking())							return;
+	if (Remote() || !g_Alive())	
+	{
+		return;
+	}
+
+	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
+	{
+		return;
+	}
+
+	if (IsTalking())
+	{
+		return;
+	}
 
 	if(m_holder)
 	{
@@ -381,6 +429,14 @@ void CActor::IR_OnKeyboardHold(int cmd)
 	if (IsWaunded)
 	{
 		return;
+	}
+
+	if (HudAnimator() != nullptr)
+	{
+		if (HudAnimator()->InputKeyHold(cmd))
+		{
+			return;
+		}
 	}
 
 	float LookFactor = GetLookFactor();
@@ -1084,15 +1140,25 @@ void CActor::set_input_external_handler(CActorInputHandler *handler)
 
 void CActor::SwitchNightVision()
 {
-	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
-	{
-		return;
-	}
-
 	bool has_nvg = GetOutfit() && GetOutfit()->m_NightVisionSect.size() > 0 || GetHelmet() && GetHelmet()->m_NightVisionSect.size() > 0;
 
 	if (!has_nvg)
 	{
+		return;
+	}
+
+	if (CHudStateAnimator* state_animator = HudAnimator()->CurrentAnimator() != nullptr ? HudAnimator()->CurrentAnimator()->cast_hud_state_animator() : nullptr)
+	{
+		if (state_animator->GetState() == CHudStateAnimator::EAnimatorStates::eIdle)
+		{
+			if (state_animator->m_eAnimationsFlags.test(CHudStateAnimator::EAnimationsFlags::af_nvg))
+			{
+				state_animator->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_nvg, true);
+				state_animator->SetState(CHudStateAnimator::EAnimatorStates::eDeviceSwitch);
+				return;
+			}
+		}
+
 		return;
 	}
 
@@ -1186,16 +1252,26 @@ void CActor::SwitchNightVision()
 }
 
 void CActor::SwitchTorch()
-{ 
-	if (CurrentGameUI() && CurrentGameUI()->TopInputReceiver())
-	{
-		return;
-	}
-
+{
 	PIItem item_from_slot = inventory().ItemFromSlot(TORCH_SLOT);
 
 	if (CTorch* torch = item_from_slot ? item_from_slot->cast_torch() : nullptr)
 	{
+		if (CHudStateAnimator* state_animator = HudAnimator()->CurrentAnimator() != nullptr ? HudAnimator()->CurrentAnimator()->cast_hud_state_animator() : nullptr)
+		{
+			if (state_animator->GetState() == CHudStateAnimator::EAnimatorStates::eIdle)
+			{
+				if (state_animator->m_eAnimationsFlags.test(CHudStateAnimator::EAnimationsFlags::af_torch))
+				{
+					state_animator->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_torch, true);
+					state_animator->SetState(CHudStateAnimator::EAnimatorStates::eDeviceSwitch);
+					return;
+				}
+			}
+
+			return;
+		}
+
 		PIItem active_item = inventory().ActiveItem();
 		CHudItem* itm = active_item != nullptr ? active_item->cast_hud_item() : nullptr;
 		CWeapon* wpn = itm != nullptr ? itm->cast_weapon() : nullptr;
@@ -1208,7 +1284,7 @@ void CActor::SwitchTorch()
 				return;
 			}
 
-			if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_nvg) && dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_nvg))
+			if (itm->m_eAnimationsFlags.test(CHudItem::EAnimationsFlags::af_torch) && dev->m_eAnimationsFlags.test(CCustomDevice::EAnimationsFlags::af_torch))
 			{
 				if (!itm->SetKeyRepeatFlag(ACTOR_DEFS::EActorKeyflags::kfHEADLAMP))
 				{
@@ -1289,6 +1365,21 @@ void CActor::ClearMask()
 	
 	if (!has_glass)
 	{
+		return;
+	}
+
+	if (CHudStateAnimator* state_animator = HudAnimator()->CurrentAnimator() != nullptr ? HudAnimator()->CurrentAnimator()->cast_hud_state_animator() : nullptr)
+	{
+		if (state_animator->GetState() == CHudStateAnimator::EAnimatorStates::eIdle)
+		{
+			if (state_animator->m_eAnimationsFlags.test(CHudStateAnimator::EAnimationsFlags::af_clear_mask))
+			{
+				state_animator->m_eDevicesFlags.set(CHudItem::EDevicesFlags::df_clear_mask, true);
+				state_animator->SetState(CHudStateAnimator::EAnimatorStates::eDeviceSwitch);
+				return;
+			}
+		}
+
 		return;
 	}
 
