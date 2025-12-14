@@ -364,6 +364,37 @@ void key_binding_registrator::script_register(lua_State *L)
                 value("DIK_MOUSE_3", int(MOUSE_3)),
                 value("DIK_MOUSE_4", int(MOUSE_4)),
                 value("DIK_MOUSE_5", int(MOUSE_5))
-			]
+            ],
+        class_<key_binding_registrator_gamepad >("gamepad_keys")
+            .enum_("gamepad_keys")
+			[
+                value("BUTTON_A", int(SDL_GAMEPAD_BUTTON_SOUTH)),
+                value("BUTTON_B", int(SDL_GAMEPAD_BUTTON_EAST)),
+                value("BUTTON_X", int(SDL_GAMEPAD_BUTTON_WEST)),
+                value("BUTTON_Y", int(SDL_GAMEPAD_BUTTON_NORTH)),
+                value("BUTTON_BACK", int(SDL_GAMEPAD_BUTTON_BACK)),
+                value("BUTTON_GUIDE", int(SDL_GAMEPAD_BUTTON_GUIDE)),
+                value("BUTTON_START", int(SDL_GAMEPAD_BUTTON_START)),
+                value("BUTTON_LSTICK", int(SDL_GAMEPAD_BUTTON_LEFT_STICK)),
+                value("BUTTON_RSTICK", int(SDL_GAMEPAD_BUTTON_RIGHT_STICK)),
+                value("BUTTON_LSHOULDER", int(SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)),
+                value("BUTTON_RSHOULDER", int(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)),
+                value("BUTTON_DPAD_UP", int(SDL_GAMEPAD_BUTTON_DPAD_UP)),
+                value("BUTTON_DPAD_DOWN", int(SDL_GAMEPAD_BUTTON_DPAD_DOWN)),
+                value("BUTTON_DPAD_LEFT", int(SDL_GAMEPAD_BUTTON_DPAD_LEFT)),
+                value("BUTTON_DPAD_RIGHT", int(SDL_GAMEPAD_BUTTON_DPAD_RIGHT)),
+                value("BUTTON_MISC1", int(SDL_GAMEPAD_BUTTON_MISC1)),
+                value("BUTTON_RIGHT_PADDLE1", int(SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1)),
+                value("BUTTON_LEFT_PADDLE1", int(SDL_GAMEPAD_BUTTON_LEFT_PADDLE1)),
+                value("BUTTON_RIGHT_PADDLE2", int(SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2)),
+                value("BUTTON_LEFT_PADDLE2", int(SDL_GAMEPAD_BUTTON_LEFT_PADDLE2)),
+                value("BUTTON_TOUCHPAD", int(SDL_GAMEPAD_BUTTON_TOUCHPAD)),
+                value("BUTTON_MISC2", int(SDL_GAMEPAD_BUTTON_MISC2)),
+                value("BUTTON_MISC3", int(SDL_GAMEPAD_BUTTON_MISC3)),
+                value("BUTTON_MISC4", int(SDL_GAMEPAD_BUTTON_MISC4)),
+                value("BUTTON_MISC5", int(SDL_GAMEPAD_BUTTON_MISC5)),
+                value("BUTTON_MISC6", int(SDL_GAMEPAD_BUTTON_MISC6))
+            ]
+
 	];
 }
