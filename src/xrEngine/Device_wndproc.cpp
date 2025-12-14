@@ -33,6 +33,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 		{
 			pInput->GamepadButtonUpdate(Event.gbutton.button, true);
+			pInput->SetControllerMode(true);
 			break;
 		}
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -60,6 +61,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 				// L2 & R2 Triggers
 				pInput->AdaptiveTriggerUpdate(Event.gaxis.axis == 4, Value);
 			}
+			pInput->SetControllerMode(true);
 
 			break;
 		}
@@ -141,6 +143,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_KEY_DOWN:
 		{
 			pInput->KeyboardButtonUpdate(Event.key.scancode, true);
+			pInput->SetControllerMode(false);
 			break;
 		}
 		case SDL_EVENT_KEY_UP:
@@ -151,11 +154,13 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 		case SDL_EVENT_MOUSE_MOTION:
 		{
 			pInput->MouseMotion(Event.motion.xrel, Event.motion.yrel);
+			pInput->SetControllerMode(false);
 			break;
 		}
 		case SDL_EVENT_MOUSE_WHEEL:
 		{
 			pInput->MouseScroll(Event.wheel.y);
+			pInput->SetControllerMode(false);
 			break;
 		}
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -171,6 +176,7 @@ bool CRenderDevice::on_event	(SDL_Event& Event)
 			if (Event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
 			{
 				pInput->MousePressed(mouse_button);
+				pInput->SetControllerMode(false);
 			}
 			else
 			{
