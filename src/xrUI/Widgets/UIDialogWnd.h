@@ -16,8 +16,10 @@ public:
 
 	virtual void Show							(bool status);
 
-	virtual bool OnKeyboardAction						(int dik, EUIMessages keyboard_action);
+	virtual bool OnKeyboardAction				(int dik, EUIMessages keyboard_action);
 	virtual bool OnKeyboardHold					(int dik);
+
+	virtual bool OnGamepadKeyAction				(int key, EUIMessages gamepad_action);
 
 	CDialogHolder* GetHolder					()								{return m_pParentHolder;};
 			void SetHolder						(CDialogHolder* h)				{m_pParentHolder = h;};
