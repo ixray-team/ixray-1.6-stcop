@@ -1292,6 +1292,7 @@ void CWeapon::OnH_A_Chield		()
 {
 	inherited::OnH_A_Chield		();
 	UpdateAddonsVisibility		();
+	ProcessScope();
 	shedule.t_min = shedule.t_max = 1;
 	//Engine.Sheduler.Unregister(this);
 	Engine.Sheduler.Register(this, TRUE);
@@ -1301,6 +1302,7 @@ void CWeapon::OnActiveItem ()
 {
 	//. from Activate
 	UpdateAddonsVisibility();
+	ProcessScope();
 	m_BriefInfo_CalcFrame = 0;
 
 //. Show
