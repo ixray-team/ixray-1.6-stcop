@@ -200,13 +200,12 @@ ENGINE_API void GetActionAllBinding	(LPCSTR action, char* dst_buff, int dst_buff
 
 extern ENGINE_API ConsoleBindCmds bindConsoleCmds;
 
-// 0xED - max vavue in DIK* enum
-#define MOUSE_1		(0xED + 100)
-#define MOUSE_2		(0xED + 101)
-#define MOUSE_3		(0xED + 102)
+#define MOUSE_1		(SDL_SCANCODE_COUNT + 100)
+#define MOUSE_2		(SDL_SCANCODE_COUNT + 101)
+#define MOUSE_3		(SDL_SCANCODE_COUNT + 102)
 
-#define MOUSE_4		(0xED + 103)
-#define MOUSE_5		(0xED + 104)
-#define MOUSE_6		(0xED + 105)
-#define MOUSE_7		(0xED + 106)
-#define MOUSE_8		(0xED + 107)
+#define MOUSE_4		(SDL_SCANCODE_COUNT + 103)
+#define MOUSE_5		(SDL_SCANCODE_COUNT + 104)
+#define MOUSE_6		(SDL_SCANCODE_COUNT + 105)
+#define MOUSE_7		(SDL_SCANCODE_COUNT + 106)
+#define MOUSE_8		(SDL_SCANCODE_COUNT + 107)

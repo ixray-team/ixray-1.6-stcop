@@ -368,6 +368,8 @@ void CMainMenu::IR_GamepadKeyPress(int id)
 
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST)
 		IR_UIOnKeyboardPress(SDL_SCANCODE_ESCAPE);
+
+	CDialogHolder::IR_UIOnGamepadKeyPress(id);
 }
 
 void CMainMenu::IR_OnMouseWheel(int direction)
