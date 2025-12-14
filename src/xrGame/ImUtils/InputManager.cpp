@@ -693,8 +693,167 @@ public:
 	}
 };
 
+class GeneralMouseLayout {
+private:
+	float base_key_width;
+	float base_key_height;
+	const ImVec4 color_general_key = ImVec4(0.3f, 0.3f, 0.5f, 1.0f);
+	const ImVec4 color_side_key = ImVec4(0.5f, 0.22f, 0.3f, 1.0f);
+	const ImVec4 color_middle_key = ImVec4(0.4f, 0.7f, 0.4f, 1.0f);
+
+	Key keys[3] = {
+		Key("left", color_general_key, false, 1.0f, true, 2.0f),
+		Key("middle", color_middle_key, false, 1.0f, true, 1.0f),
+		Key("right", color_general_key, false, 1.0f, true, 2.0f)
+	};
+
+	Key keys_side[2] = {
+		Key("mouse4", color_side_key),
+		Key("mouse5", color_side_key)
+	};
+
+	const unsigned char rowCount[2] =
+	{
+		sizeof(keys) / sizeof(keys[0]),
+		sizeof(keys_side) / sizeof(keys_side[0])
+	};
+
+	const Key* p_keys[2] = {
+		&keys[0],
+		&keys_side[0]
+	};
+
+public:
+
+
+	unsigned char GetMouseKeyIndex(Uint8 code) noexcept
+	{
+		switch (code)
+		{
+		case SDL_BUTTON_LEFT:
+			return 0;
+		case SDL_BUTTON_MIDDLE:
+			return 1;
+		case SDL_BUTTON_RIGHT:
+			return 2;
+		default:
+		{
+			assert(false && "don't pass this please");
+			return 0;
+		}
+		}
+	}
+
+	unsigned char GetMouseSideKeyIndex(Uint8 code) noexcept
+	{
+		switch (code)
+		{
+		case SDL_BUTTON_X1:
+			return 0;
+		case SDL_BUTTON_X2:
+			return 1;
+		default:
+		{
+			assert(false && "don't pass this please");
+			return 0;
+		}
+		}
+	}
+
+	GeneralMouseLayout()
+		: base_key_width(40.0f),
+		base_key_height(40.0f)
+	{
+	}
+
+	void draw() {
+
+		float total_base_width = 0.0f;
+		constexpr int _kRowCount = sizeof(rowCount) / sizeof(rowCount[0]);
+		for (unsigned char i = 0; i < _kRowCount; ++i)
+		{
+			float row_width = 0.0f;
+
+			for (unsigned char j = 0; j < rowCount[i]; ++j)
+			{
+				const Key* p_buffer = p_keys[i];
+				const Key& key = p_buffer[j];
+				row_width += key.width;
+			}
+
+
+			// Add spacing between keys (n-1 spacings per row)
+			row_width += (rowCount[i] - 1) * 0.1f; // 0.1 units for spacing
+			total_base_width = std::max(total_base_width, row_width);
+		}
+
+		// Get available width and calculate scale
+		float available_width = ImGui::GetContentRegionAvail().x;
+		float scale = available_width / (total_base_width * base_key_width);
+
+		// Apply scaling with constraints
+		scale = std::min(scale, 2.0f); // Max 2x scale
+		scale = std::max(scale, 0.3f); // Min 0.3x scale
+
+		float key_width = base_key_width * scale;
+		float key_height = base_key_height * scale;
+		float spacing = 4.0f * scale;
+
+		for (unsigned char i = 0; i < _kRowCount; ++i)
+		{
+			ImGui::BeginGroup();
+
+			for (unsigned char j = 0; j < rowCount[i]; ++j)
+			{
+				const Key* p_buffer = p_keys[i];
+				const Key& key = p_buffer[j];
+				float actual_width = key_width * key.width;
+
+				// Set button color
+				ImGui::PushStyleColor(ImGuiCol_Button, key.color);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
+					ImVec4(key.color.x * 1.2f, key.color.y * 1.2f, key.color.z * 1.2f, key.color.w));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive,
+					ImVec4(key.color.x * 0.8f, key.color.y * 0.8f, key.color.z * 0.8f, key.color.w));
+
+				// Draw the key
+
+				if (key.is_visible)
+				{
+
+					if (i == 5 && j == rowCount[i] - 1)
+					{
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() - (key_height * 1.3f));
+					}
+
+					if (ImGui::Button(key.label, ImVec2(actual_width, key_height * key.height)))
+					{
+
+					}
+				}
+				else
+				{
+					ImGui::BeginDisabled();
+					ImGui::InvisibleButton(key.label, ImVec2(actual_width, key_height));
+					ImGui::EndDisabled();
+				}
+
+				ImGui::PopStyleColor(3);
+
+				// Add spacing between keys
+				ImGui::SameLine(0.0f, spacing);
+			}
+			ImGui::EndGroup();
+
+			// Add spacing between rows
+			ImGui::Dummy(ImVec2(0.0f, spacing));
+		}
+	}
+};
+
 // Usage in your ImGui application:
 GeneralKeyboardLayout keyboard_layout;
+GeneralMouseLayout mouse_layout;
 
 
 void RenderKeyboard(InGameEditor_InputManager* p_editor, const CInputDevice* pKeyboard, const CInputDeviceVendorInfo* pInfo, unsigned char id)
@@ -737,7 +896,7 @@ void RenderMouse(InGameEditor_InputManager* p_editor, const CInputDevice* pMouse
 
 			ImGui::SeparatorText("Layout");
 
-
+			mouse_layout.draw();
 
 			ImGui::SeparatorText("Bindings");
 
