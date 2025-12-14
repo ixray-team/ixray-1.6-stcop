@@ -80,6 +80,10 @@
 #include "script_hit.h"
 #include "../../xrScripts/script_engine.h"
 #include "ParticlesObject.h"
+#include "PDA.h"
+#include "UIPdaWnd.h"
+#include "../xrUI/UICursor.h"
+
 using namespace luabind;
 
 const u32		patch_frames	= 50;
@@ -2376,6 +2380,26 @@ void CActor::renderable_Render()
 	inherited::renderable_Render();
 	CInventoryOwner::renderable_Render();
 	VERIFY(_valid(XFORM()));
+}
+
+void CActor::RenderItemUI()
+{
+	CHudPdaAnimator* pdaAnimator = HudAnimator()->PdaAnimator();
+	if (pdaAnimator != nullptr && pdaAnimator->IsActive())
+	{
+		CUIPdaWnd* PdaMenu = &CurrentGameUI()->PdaMenu();
+		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
+
+		if (PdaMenu->IsShown())
+		{
+			PdaMenu->Draw();
+		}
+
+		if (PdaMenu == TopInputReceiver)
+		{
+			GetUICursor().OnRender();
+		}
+	}
 }
 
 BOOL CActor::renderable_ShadowGenerate	() 

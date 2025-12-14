@@ -8,6 +8,7 @@
 class player_hud;
 class CHudItem;
 class CMotionDef;
+class CHudAnimatorBase;
 
 enum EHudMixType : u8
 {
@@ -245,22 +246,27 @@ struct animator_item
 {
 	player_hud* m_parent = nullptr;
 	IKinematics* m_item = nullptr;
+	CHudAnimatorBase* m_animator = nullptr;
 
 	Fmatrix m_attach_offset;
 	Fmatrix m_item_transform;
 	Fvector m_item_attach[2];
-	Fvector m_hands_attach[2];
 	u32	m_upd_firedeps_frame = u32(-1);
 	bool IsPlaying = false;
-
+	hud_item_measures::hud_hands_positions m_hands_positions;
 	player_hud_motion_container	m_hand_motions;
 
 	shared_str m_section;
 
-	animator_item(player_hud* pParent, const shared_str& section);
+	animator_item(CHudAnimatorBase* animator, player_hud* pParent, const shared_str& section);
 	~animator_item();
 	void update(bool bForce);
 	void render();
+
+	Fvector& hands_attach_pos();
+	Fvector& hands_attach_rot();
+	
+	void update_hud_additional(Fmatrix& trans);
 
 	void anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed);
 	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md);
@@ -315,7 +321,7 @@ public:
 	shared_str		NextHUDSect;
 
 	IKinematicsAnimated* GetModel() { return m_model; }
-	animator_item* create_animator_item(const shared_str& section);
+	animator_item* create_animator_item(CHudAnimatorBase* animator, const shared_str& section);
 	void			delete_animator_item();
 	animator_item* GetAnimator() { return m_animator_item; }
 

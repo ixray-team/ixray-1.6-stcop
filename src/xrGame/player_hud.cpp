@@ -1521,7 +1521,7 @@ const Fvector& player_hud::attach_rot() const
 
 	if (m_animator_item)
 	{
-		return m_last_rot = m_animator_item->m_hands_attach[1];
+		return m_last_rot = m_animator_item->hands_attach_rot();
 	}
 
 	if (m_attached_items[0])
@@ -1540,7 +1540,7 @@ const Fvector& player_hud::attach_pos() const
 
 	if (m_animator_item)
 	{
-		return m_last_pos = m_animator_item->m_hands_attach[0];
+		return m_last_pos = m_animator_item->hands_attach_pos();
 	}
 
 	if (m_attached_items[0])
@@ -1656,14 +1656,22 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 	return				motion_length(M, md, speed);
 }
 
-void player_hud::update_additional	(Fmatrix& trans)
+void player_hud::update_additional(Fmatrix& trans)
 {
-	if(m_attached_items[0] || m_attached_items[0]&&m_attached_items[1])
+	if (m_animator_item != nullptr)
+	{
+		m_animator_item->update_hud_additional(trans);
+	}
+	if (m_attached_items[0] || m_attached_items[0] && m_attached_items[1])
+	{
 		m_attached_items[0]->update_hud_additional(trans);
+	}
 	else
 	{
-		if(m_attached_items[1])
+		if (m_attached_items[1])
+		{
 			m_attached_items[1]->update_hud_additional(trans);
+		}
 	}
 }
 
@@ -2231,7 +2239,7 @@ void player_hud::load_default()
 	load(actorHudDefault);
 }
 
-animator_item* player_hud::create_animator_item(const shared_str& section)
+animator_item* player_hud::create_animator_item(CHudAnimatorBase* animator, const shared_str& section)
 {
 	if (m_animator_item && m_animator_item->m_section != section)
 	{
@@ -2240,7 +2248,7 @@ animator_item* player_hud::create_animator_item(const shared_str& section)
 
 	if (!m_animator_item)
 	{
-		m_animator_item = new animator_item(this, section);
+		m_animator_item = new animator_item(animator, this, section);
 	}
 
 	return m_animator_item;
@@ -2254,11 +2262,8 @@ void player_hud::delete_animator_item()
 	}
 }
 
-animator_item::animator_item(player_hud* pParent, const shared_str& section)
+animator_item::animator_item(CHudAnimatorBase* animator, player_hud* pParent, const shared_str& section) : m_parent(pParent), m_section(section), m_animator(animator)
 {
-	m_section = section;
-	m_parent = pParent;
-
 	if (pSettings->line_exist(section, "item_visual"))
 	{
 		const shared_str& visual_name = pSettings->r_string(section, "item_visual");
@@ -2268,21 +2273,14 @@ animator_item::animator_item(player_hud* pParent, const shared_str& section)
 		m_item_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, section.c_str(), "item_orientation", zero_vel);
 	}
 
-	bool is_16x9 = UI().is_widescreen();
-	string64 _prefix;
-	xr_sprintf(_prefix, "%s", is_16x9 ? "_16x9" : "");
-	string128 val_name;
-
-	xr_strconcat(val_name, "hands_position", _prefix);
-	m_hands_attach[0] = pSettings->r_fvector3(section, val_name);
-	xr_strconcat(val_name, "hands_orientation", _prefix);
-	m_hands_attach[1] = pSettings->r_fvector3(section, val_name);
+	m_hands_positions.Load(section, UI().is_widescreen());
 
 	m_hand_motions.load(pParent->GetModel(), section);
 }
 
 animator_item::~animator_item()
 {
+	m_animator = nullptr;
 	IsPlaying = false;
 	if (m_item)
 	{
@@ -2414,4 +2412,19 @@ u32 animator_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CM
 		}
 	}
 	return ret;
+}
+
+void animator_item::update_hud_additional(Fmatrix& trans)
+{
+	m_animator->UpdateHudAdditonal(trans);
+}
+
+Fvector& animator_item::hands_attach_pos()
+{
+	return m_hands_positions.hands_offsets[0][0];
+}
+
+Fvector& animator_item::hands_attach_rot()
+{
+	return m_hands_positions.hands_offsets[1][0];
 }
