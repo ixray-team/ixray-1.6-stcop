@@ -326,8 +326,26 @@ xr_string EScene::LevelPartPath(LPCSTR full_name)
 
 xr_string EScene::LevelPartName(LPCSTR map_name, ObjClassID cls)
 {
-	return 			LevelPartPath(map_name)+GetTool(cls)->ClassName() + ".part";
+	xr_string path = LevelPartPath(map_name);
+	xr_string class_name = GetTool(cls)->ClassName();
+
+	if (cls == OBJCLASS_AIMAP)
+	{
+		xr_string ixray_name = path + "ai_map_ixray.part";
+		if (FS.exist(ixray_name.c_str()))
+		{
+			Msg("* [AI MAP] Load: %s", ixray_name.c_str());
+			return ixray_name;
+		}
+		else
+		{
+			Msg("~ [AI MAP] Load Legacy AI-MAP");
+		}
+	}
+
+	return path + class_name + ".part";
 }
+
 
 void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
 {
@@ -395,7 +413,21 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
 			}else
 			{
 				// !ForUndo
-					xr_string part_name 	= part_prefix + _I->second->ClassName() + ".part";
+				xr_string class_name = _I->second->ClassName();
+
+				xr_string part_name;
+				if (class_name == "ai_map")
+				{
+					part_name = part_prefix + "ai_map_ixray.part";
+					Msg("* [AI MAP] Save: %s", part_name.c_str());
+				}
+				else
+				{
+					part_name = part_prefix + class_name + ".part";
+					Msg("* [SCENE] Save: %s", part_name.c_str());
+				}
+
+
 					if(_I->second->can_use_inifile())
 					{
 						EFS.MarkFile			(part_name.c_str(),true);
