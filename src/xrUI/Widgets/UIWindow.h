@@ -69,7 +69,7 @@ public:
 	CUIWindow*				GetChildMouseHandler();
 
 
-	virtual bool			OnKeyboardAction			(int dik, EUIMessages keyboard_action);
+	virtual bool			OnKeyboardAction	(int dik, EUIMessages keyboard_action);
 	virtual bool			OnKeyboardHold		(int dik);
 
 	virtual bool 			OnMouseAction				(float x, float y, EUIMessages mouse_action);
@@ -78,6 +78,8 @@ public:
 	virtual bool 			OnDbClick			();
 	virtual bool 			OnMouseDown			(int mouse_btn);
 	virtual void 			OnMouseUp			(int mouse_btn);
+
+	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
 
 	virtual void 			OnFocusReceive		();
 	virtual void 			OnFocusLost			();
