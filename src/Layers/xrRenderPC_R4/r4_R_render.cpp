@@ -12,6 +12,8 @@
 #include "../../xrEngine/GameFont.h"
 #include "../../xrEngine/x_ray.h"
 #include "../xrRender/SkeletonCustom.h"
+#include "../../xrEngine/IGame_Actor.h"
+
 static	float	CalcSSADynamic				(const Fvector& C, float R)
 {
     Fvector4 v_res1, v_res2;
@@ -486,6 +488,12 @@ void CRender::Render()
 	{
 		ps_r_taa_jitter.set(0, 0, -1);
 		ps_r_taa_jitter_full.set(ps_r_taa_jitter);
+	}
+
+	if (g_pIGameActor)
+	{
+		Target->u_setrt(Target->rt_ui_pda, 0, 0);
+		g_pIGameActor->RenderItemUI();
 	}
 
 	Target->u_setrt(Target->rt_Generic_0, Target->rt_Velocity, 0, 0);

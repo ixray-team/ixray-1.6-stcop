@@ -72,6 +72,8 @@
 #define		r2_RT_smaa_edgetex "$user$edgetex"
 #define		r2_RT_smaa_blendtex "$user$blendtex"
 
+#define		r_ui_pda			"$user$ui_pda"
+
 #define		JITTER(a) r2_jitter #a
 
 const		float				SMAP_near_plane		= .1f	;
