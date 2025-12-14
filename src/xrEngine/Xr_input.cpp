@@ -12,113 +12,6 @@ ENGINE_API float	psMouseUISens		= 1.f;
 ENGINE_API float	psMouseSensScale	= 1.f;
 ENGINE_API Flags32	psMouseInvert		= {FALSE};
 
-float stop_vibration_time				= flt_max;
-
-#define MOUSEBUFFERSIZE			64
-#define KEYBOARDBUFFERSIZE		64
-#define _KEYDOWN(name,key)		( name[key] & 0x80 )
-
-
-#define DECLARE_KEY_ENTRY(keyName) { (u8)keyName, xstring(#keyName)},
-
-const xr_hash_map<u8, xr_string> KeyNamesTable =
-{
-	{(u8)SDL_SCANCODE_TAB,		"Tab"},
-	{(u8)SDL_SCANCODE_RETURN,	"Enter"},
-	{(u8)SDL_SCANCODE_LSHIFT,    "Shift"},
-	{(u8)SDL_SCANCODE_LCTRL,  "Ctrl"},
-	{(u8)SDL_SCANCODE_CAPSLOCK,	"Caps Lock"},
-	{(u8)SDL_SCANCODE_PAUSE,		"Pause"},
-	{(u8)SDL_SCANCODE_BACKSPACE,		"Backspace"},
-	{(u8)SDL_SCANCODE_PAGEUP,		"Pg Up"},
-	{(u8)SDL_SCANCODE_PAGEDOWN,		"Pg Down"},
-	{(u8)SDL_SCANCODE_HOME,		"Home"},
-	{(u8)SDL_SCANCODE_LEFT,		"Left"},
-	{(u8)SDL_SCANCODE_UP,		"Up"},
-	{(u8)SDL_SCANCODE_RIGHT,		"Right"},
-	{(u8)SDL_SCANCODE_DOWN,		"Down"},
-	{(u8)SDL_SCANCODE_SPACE,		"Space"},
-	{(u8)SDL_SCANCODE_ESCAPE,	"Esc"},
-	{(u8)SDL_SCANCODE_INSERT,	"Insert"},
-	{(u8)SDL_SCANCODE_DELETE,	"Del"},
-	{(u8)SDL_SCANCODE_0,			"0"},
-	{(u8)SDL_SCANCODE_1,			"1"},
-	{(u8)SDL_SCANCODE_2,			"2"},
-	{(u8)SDL_SCANCODE_3,			"3"},
-	{(u8)SDL_SCANCODE_4,			"4"},
-	{(u8)SDL_SCANCODE_5,			"5"},
-	{(u8)SDL_SCANCODE_6,			"6"},
-	{(u8)SDL_SCANCODE_7,			"7"},
-	{(u8)SDL_SCANCODE_8,			"8"},
-	{(u8)SDL_SCANCODE_9,			"9"},
-	{(u8)SDL_SCANCODE_A,			"A"},
-	{(u8)SDL_SCANCODE_B,			"B"},
-	{(u8)SDL_SCANCODE_C,			"C"},
-	{(u8)SDL_SCANCODE_D,			"D"},
-	{(u8)SDL_SCANCODE_E,			"E"},
-	{(u8)SDL_SCANCODE_F,			"F"},
-	{(u8)SDL_SCANCODE_G,			"G"},
-	{(u8)SDL_SCANCODE_H,			"H"},
-	{(u8)SDL_SCANCODE_I,			"I"},
-	{(u8)SDL_SCANCODE_J,			"J"},
-	{(u8)SDL_SCANCODE_K,			"K"},
-	{(u8)SDL_SCANCODE_L,			"L"},
-	{(u8)SDL_SCANCODE_M,			"M"},
-	{(u8)SDL_SCANCODE_N,			"N"},
-	{(u8)SDL_SCANCODE_O,			"O"},
-	{(u8)SDL_SCANCODE_P,			"P"},
-	{(u8)SDL_SCANCODE_Q,			"Q"},
-	{(u8)SDL_SCANCODE_R,			"R"},
-	{(u8)SDL_SCANCODE_S,			"S"},
-	{(u8)SDL_SCANCODE_T,			"T"},
-	{(u8)SDL_SCANCODE_U,			"U"},
-	{(u8)SDL_SCANCODE_V,			"V"},
-	{(u8)SDL_SCANCODE_W,			"W"},
-	{(u8)SDL_SCANCODE_X,			"X"},
-	{(u8)SDL_SCANCODE_Y,			"Y"},
-	{(u8)SDL_SCANCODE_Z,			"Z"},
-	{(u8)SDL_SCANCODE_LGUI,       "lWin"},
-	{(u8)SDL_SCANCODE_RGUI,       "lWin"},
-	{(u8)SDL_SCANCODE_SLEEP,      "Sleep"},
-	{(u8)SDL_SCANCODE_APPLICATION,"Apps"},
-	{(u8)SDL_SCANCODE_KP_0,       "NumPad0"},
-	{(u8)SDL_SCANCODE_KP_1,       "NumPad1"},
-	{(u8)SDL_SCANCODE_KP_2,       "NumPad2"},
-	{(u8)SDL_SCANCODE_KP_3,       "NumPad3"},
-	{(u8)SDL_SCANCODE_KP_4,       "NumPad4"},
-	{(u8)SDL_SCANCODE_KP_5,       "NumPad5"},
-	{(u8)SDL_SCANCODE_KP_6,       "NumPad6"},
-	{(u8)SDL_SCANCODE_KP_7,       "NumPad7"},
-	{(u8)SDL_SCANCODE_KP_8,       "NumPad8"},
-	{(u8)SDL_SCANCODE_KP_9,       "NumPad9"},
-	{(u8)SDL_SCANCODE_KP_MULTIPLY,"*"},
-	{(u8)SDL_SCANCODE_KP_PLUS,    "+"},
-	{(u8)SDL_SCANCODE_KP_MINUS,   "-"},
-	{(u8)SDL_SCANCODE_KP_DIVIDE,  "/"},
-	{(u8)SDL_SCANCODE_KP_DECIMAL, "."},
-	{(u8)SDL_SCANCODE_F1,		"F1"},
-	{(u8)SDL_SCANCODE_F2,		"F2"},
-	{(u8)SDL_SCANCODE_F3,		"F3"},
-	{(u8)SDL_SCANCODE_F4,		"F4"},
-	{(u8)SDL_SCANCODE_F5,		"F5"},
-	{(u8)SDL_SCANCODE_F6,		"F6"},
-	{(u8)SDL_SCANCODE_F7,		"F7"},
-	{(u8)SDL_SCANCODE_F8,		"F8"},
-	{(u8)SDL_SCANCODE_F9,		"F9"},
-	{(u8)SDL_SCANCODE_F10,		"F10"},
-	{(u8)SDL_SCANCODE_F11,		"F11"},
-	{(u8)SDL_SCANCODE_F12,		"F12"},
-	{(u8)SDL_SCANCODE_F13,		"F13"},
-	{(u8)SDL_SCANCODE_F14,		"F14"},
-	{(u8)SDL_SCANCODE_F15,		"F15"},
-	{(u8)SDL_SCANCODE_NUMLOCKCLEAR,	"NumLock"},
-	{(u8)SDL_SCANCODE_SCROLLLOCK,	"ScrollLock"},
-	{(u8)SDL_SCANCODE_LSHIFT,	"Left Shift"},
-	{(u8)SDL_SCANCODE_RSHIFT,	"Right Shift"},
-	{(u8)SDL_SCANCODE_LCTRL,	"Left Ctrl"},
-	{(u8)SDL_SCANCODE_RCTRL,	"Right Ctrl"},
-};
-
 static bool g_exclusive	= true;
 static void on_error_dialog			(bool before)
 {
@@ -601,7 +494,7 @@ void CInput::acquire()
 
 void  CInput::feedback(u16 s1, u16 s2, float time)
 {
-	stop_vibration_time = RDEVICE.fTimeGlobal + time;
+	SDL_RumbleGamepad(pGamePad, s1, s2, time*1000);
 }
 
 bool CInput::FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept

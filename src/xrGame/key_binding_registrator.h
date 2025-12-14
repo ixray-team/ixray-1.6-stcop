@@ -6,3 +6,8 @@ struct key_binding_registrator
 {
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+
+struct key_binding_registrator_gamepad
+{
+	DECLARE_SCRIPT_REGISTER_FUNCTION
+};

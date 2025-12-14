@@ -21,6 +21,7 @@
 #include "map_manager.h"
 #include "ScriptXMLInit.h"
 #include "../xrUI/Widgets/UIArrow.h"
+#include "../xrEngine/xr_input.h"
 
 using namespace luabind;
 
@@ -31,6 +32,10 @@ int placeholder_func() // to keep game from crashing during menu init
 	return 0;
 }
 
+bool IsControllerMode()
+{
+	return pInput->GetControllerMode();
+}
 
 #pragma optimize("s",on)
 void UIRegistrator::script_register(lua_State *L)
@@ -88,7 +93,8 @@ void UIRegistrator::script_register(lua_State *L)
 
 	module(L,"main_menu")
 	[
-		def("get_main_menu",				&MainMenu)
+		def("get_main_menu",				&MainMenu),
+		def("in_controller_mode",			&IsControllerMode)
 	];
 
 	CMapManager::script_register(L);

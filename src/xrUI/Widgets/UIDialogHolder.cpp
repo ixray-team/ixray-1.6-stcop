@@ -306,6 +306,37 @@ bool CDialogHolder::IR_UIOnKeyboardPress(int dik)
 	return true;
 }
 
+bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
+{
+	CUIDialogWnd*	TIR = TopInputReceiver();
+	if(!TIR)				
+		return false;
+
+	if(!TIR->IR_process())	
+		return false;
+
+	if (TIR->OnGamepadKeyAction(id,	WINDOW_KEY_PRESSED))
+		return true;
+
+// TODO: add customizable bindings for gamepad
+/*	if (!TIR->StopAnyMove() && g_pGameLevel)
+	{
+		CObject* O = g_pGameLevel->CurrentEntity();
+		if (O)
+		{
+			IInputReceiver* IR = O->GetIIR();
+			if (IR)
+			{
+				EGameActions action = get_binded_action(id);
+				if (action != kQUICK_USE_1 && action != kQUICK_USE_2 && action != kQUICK_USE_3 && action != kQUICK_USE_4)
+					IR->IR_OnKeyboardPress(action);
+			}
+			return false;
+		}
+	}*/
+	return true;
+};
+
 bool CDialogHolder::IR_UIOnKeyboardRelease(int dik)
 {
 	CUIDialogWnd* TIR		= TopInputReceiver();
