@@ -69,6 +69,7 @@ public:
 	ref_rt						rt_Surface;
 	ref_rt						rt_SurfaceTemp;
 	ref_rt						rt_Velocity;
+	ref_rt						rt_ui_pda;
 
 	ref_rtc						rt_Reflection;
 	ref_rtc						rt_Reflection_temp;

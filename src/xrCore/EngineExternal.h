@@ -54,6 +54,7 @@ enum class EEngineExternalGame
 	EnableDelayedWeaponActions,
 	EnableLegacyUpgradeSystem,
 	EnableEngineArtefactSpawn,
+	Enable3DPDA,
 };
 
 enum class EEngineExternalRender 
