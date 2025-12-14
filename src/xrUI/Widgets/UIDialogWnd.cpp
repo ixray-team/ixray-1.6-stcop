@@ -35,6 +35,17 @@ bool CUIDialogWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return false;
 }
 
+bool CUIDialogWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
+{
+	if (!IR_process()) 
+		return false;
+
+	if (inherited::OnGamepadKeyAction(key, gamepad_action))
+		return true;
+
+	return false;
+}
+
 bool CUIDialogWnd::IR_process()
 {
 	if (!IsEnabled() || GetHolder() == nullptr)
