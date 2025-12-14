@@ -76,6 +76,7 @@ private:
 	char						old_mouseState[COUNT_MOUSE_BUTTONS] = {};
 	char						old_KBState[COUNT_KB_BUTTONS] = {};
 	char						old_GPState[COUNT_GP_BUTTONS] = {};
+	bool						controllerMode = false;
 
 	Fvector2 LeftAxis = { 0, 0 };
 	Fvector2 RightAxis = { 0, 0 };
@@ -141,6 +142,8 @@ public:
 
 	void						feedback(u16 s1, u16 s2, float time);
 
+	void						SetControllerMode(bool val) { controllerMode = val; }
+	bool						GetControllerMode() { return controllerMode; }
 private:
 	bool FillVendorInfo(const CInputDevice& device, CInputDeviceVendorInfo& info) noexcept;
 	bool GetConnectedInputKeyboards(CInputDevice(&pool)[DEF_XR_INPUT_MAX_INPUT_CONNECTED_DEVICES_COUNT], unsigned char max_keyboards = DEF_XR_INPUT_MAX_INPUT_CONNECTED_KEYBOARD_COUNT) noexcept;

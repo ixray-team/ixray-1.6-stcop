@@ -657,8 +657,7 @@ void CLevel::IR_GamepadKeyPress(int id)
 	if (Device.Paused())
 		return;
 
-	// TODO
-	//if (CurrentGameUI() && CurrentGameUI()->IR_GamepadKeyPress(key)) return;
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadKeyPress(id)) return;
 
 	if (g_actor != nullptr && g_actor->g_Alive())
 	{
