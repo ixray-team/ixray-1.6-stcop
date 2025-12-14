@@ -323,8 +323,17 @@ void CUIPdaWnd::Show_MapLegendWnd( bool status )
 	pUITaskWnd->ShowMapLegend( status );
 }
 
+static u32 pda_render_frame = 0;
+
 void CUIPdaWnd::Draw()
 {
+	if (pda_render_frame == Device.dwFrame)
+	{
+		return;
+	}
+
+	pda_render_frame = Device.dwFrame;
+
 	inherited::Draw();
 //.	DrawUpdatedSections();
 	DrawHint();
@@ -420,13 +429,36 @@ void RearrangeTabButtons(CUITabControl* pTab)
 
 bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if ( is_binded(kACTIVE_JOBS, dik) )
+	if (is_binded(kACTIVE_JOBS, dik))
 	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action )
+		if (WINDOW_KEY_PRESSED == keyboard_action)
+		{
 			HideDialog();
+		}
 
 		return true;
-	}	
+	}
 
-	return inherited::OnKeyboardAction(dik,keyboard_action);
+	return inherited::OnKeyboardAction(dik, keyboard_action);
+}
+
+void CUIPdaWnd::HideDialog()
+{
+	if (!IsShown())
+	{
+		return;
+	}
+
+	CObject* current_entity = Level().CurrentControlEntity();
+
+	CHudPdaAnimator* pda_animator = current_entity != nullptr ? current_entity->cast_actor()->HudAnimator()->PdaAnimator() : nullptr;
+
+	if (pda_animator != nullptr
+		&& pda_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHidden
+		&& pda_animator->GetState() != CHudStateAnimator::EAnimatorStates::eHiding)
+	{
+		pda_animator->SetState(CHudStateAnimator::EAnimatorStates::eHiding);
+	}
+
+	GetHolder()->StopDialog(this);
 }

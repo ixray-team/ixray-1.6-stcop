@@ -155,7 +155,7 @@ void CHudItemAnimator::StartAnimator(const shared_str& section)
 
 void CHudItemAnimator::PlayMotion()
 {
-	g_player_hud->create_animator_item(m_section);
+	g_player_hud->create_animator_item(this, m_section);
 
 	u32 ret = g_player_hud->GetAnimator()->anim_play("anm_show", m_bBlend, m_current_motion_def);
 
