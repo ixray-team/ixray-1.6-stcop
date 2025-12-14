@@ -124,13 +124,13 @@ const mods = computed(() => copy.value.mods as ModCard[])
 </template>
 
 <style scoped>
+
 :first-child {
   --mod-card-radius: 16px;
   --mod-card-bg: #05070a;
   --mod-card-border: rgba(255, 255, 255, 0.06);
   --mod-card-accent: #72d6ff;
   --mod-card-accent-soft: rgba(114, 214, 255, 0.18);
-  --mod-card-text-main: #f5f7ff;
   --mod-card-text-muted: #a3adc2;
   --mod-card-text-soft: #7b85a0;
 }
@@ -175,27 +175,20 @@ const mods = computed(() => copy.value.mods as ModCard[])
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-:root {
-  --mod-card-radius: 16px;
-  --mod-card-bg: #05070a;
-  --mod-card-border: rgba(255, 255, 255, 0.06);
-  --mod-card-accent: #72d6ff;
-  --mod-card-accent-soft: rgba(114, 214, 255, 0.18);
-  --mod-card-text-main: #f5f7ff;
-  --mod-card-text-muted: #a3adc2;
-  --mod-card-text-soft: #7b85a0;
-}
-
 .mod-card {
+  //min-height: 510px;
+  height: 100%;
   position: relative;
   border-radius: var(--mod-card-radius);
-  background: radial-gradient(circle at 0 0, rgba(114, 214, 255, 0.12), transparent 55%),
-              radial-gradient(circle at 100% 100%, rgba(120, 100, 255, 0.18), transparent 55%),
-              var(--mod-card-bg);
-  border: 1px solid var(--mod-card-border);
+  background: radial-gradient(circle at 0 0, rgba(37, 99, 235, 0.08), transparent 55%),
+              radial-gradient(circle at 100% 100%, rgba(100, 214, 255, 0.12), transparent 55%),
+              white;
+    border: 1px solid var(--mod-card-border);
+
+  
   overflow: hidden;
   box-shadow:
-    0 10px 26px rgba(0, 0, 0, 0.7),
+    0 10px 26px rgba(0, 0, 0, 0.17),
     0 0 0 1px rgba(255, 255, 255, 0.02);
   transition:
     transform 0.18s ease,
@@ -203,6 +196,8 @@ const mods = computed(() => copy.value.mods as ModCard[])
     border-color 0.18s ease,
     background 0.18s ease;
 }
+
+
 
 /* Вертикальная: тянется по ширине колонки, высота из aspect-ratio */
 .mod-card--vertical {
@@ -266,6 +261,7 @@ const mods = computed(() => copy.value.mods as ModCard[])
 /* Текстовая часть */
 .mod-card__body {
   flex: 1;
+  min-height: 0; 
   padding: 0.65rem 0.7rem 0.75rem;
   display: flex;
   flex-direction: column;
@@ -277,14 +273,16 @@ const mods = computed(() => copy.value.mods as ModCard[])
   font-size: 0.95rem;
   line-height: 1.2;
   font-weight: 700;
-  color: var(--mod-card-text-main);
+  color: #374151;
 }
 
 .mod-card__desc {
+  flex: 1; 
+  overflow: hidden;
   margin: 0;
   font-size: 0.78rem;
   line-height: 1.4;
-  color: var(--mod-card-text-muted);
+  color: #4b5563;
 }
 
 /* Метаданные */
@@ -299,7 +297,7 @@ const mods = computed(() => copy.value.mods as ModCard[])
 
 .mod-card__author {
   font-weight: 500;
-  color: var(--mod-card-text-muted);
+  color:  #636e85;;
 }
 
 .mod-card__dot {
@@ -322,15 +320,15 @@ const mods = computed(() => copy.value.mods as ModCard[])
   border: none;
   background:
     radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.4), transparent 55%),
-    linear-gradient(135deg, #4fe6ff, #8f7bff);
-  color: #02040a;
+    linear-gradient(135deg, #363bd3, #8f7bff);
+  color: white;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
     0 6px 18px rgba(76, 210, 255, 0.35);
   transition:
     transform 0.18s ease,
@@ -342,12 +340,9 @@ const mods = computed(() => copy.value.mods as ModCard[])
 .mod-card:hover {
   transform: translateY(-3px);
   box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.85),
+    0 18px 40px rgba(0, 0, 0, 0.20),
     0 0 22px var(--mod-card-accent-soft);
   border-color: rgba(114, 214, 255, 0.5);
-  background: radial-gradient(circle at 0 0, rgba(114, 214, 255, 0.18), transparent 60%),
-              radial-gradient(circle at 100% 100%, rgba(120, 100, 255, 0.26), transparent 60%),
-              var(--mod-card-bg);
 }
 
 .mod-card:hover .mod-card__media img {
@@ -374,5 +369,46 @@ const mods = computed(() => copy.value.mods as ModCard[])
 .mod-card__link[aria-disabled="true"] {
   pointer-events: none;
   cursor: default;
+}
+
+/*       D.A.R.K.        */
+
+:root.dark .mod-card {
+  background: radial-gradient(circle at 0 0, rgba(114, 214, 255, 0.12), transparent 55%),
+              radial-gradient(circle at 100% 100%, rgba(120, 100, 255, 0.18), transparent 55%),
+              var(--mod-card-bg);
+  border: 1px solid var(--mod-card-border);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.02);		  
+}
+:root.dark .mod-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.85),
+    0 0 22px var(--mod-card-accent-soft);
+  border-color: rgba(114, 214, 255, 0.5);
+
+}
+
+:root.dark .mod-card__btn {
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.4), transparent 55%),
+    linear-gradient(135deg, #4fe6ff, #8f7bff);
+  color: #02040a;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.8),
+    0 6px 18px rgba(76, 210, 255, 0.35);
+}
+
+:root.dark .mod-card__title {
+  color: #f5f7ff;
+}
+
+:root.dark .mod-card__desc {
+  color: var(--mod-card-text-muted);
+}
+:root.dark .mod-card__author {
+  color: var(--mod-card-text-muted);
 }
 </style>
