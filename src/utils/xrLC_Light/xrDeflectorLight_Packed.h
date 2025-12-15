@@ -15,20 +15,24 @@ enum LGroup : u8
 };
 
 // Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024		* 200		// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	128  * 1024					// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
+#define MAX_RAYS_PER_TASK   48 * 1024				// Общее кол-во Задач (на запуск GPU)
+#define MAX_RAYS_PER_GPU	48 * 1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
+
+// Для RTX 3060 ~+ 48 SM  Блоков по 1024 Таскера
 
 struct RayRecvestIndex
 {
 	void* Owner = 0;
-   	size_t INDEX_TASK;
+   	size_t  INDEX_TASK;
+	
 
 	// Task Pos, Dir, Skip
 	Fvector P;
 	Fvector N;
 	// Face* skip;
+	// u8		JitterIndex;
 };
- 
+  
 class PackedLighting
 {
 	// new hash
@@ -79,18 +83,20 @@ public:
  
  	void RestartALL()
 	{
-		Recalculated = 0;
 		// start
-		current_flags = 0;
+		Recalculated = 0;
+ 		current_flags = 0;
 
 		// Basic Tasks
   		Colors.clear();
 
 		// task pool memory clear
-		task_pools.clear();
-		task_pools.shrink_to_fit();
+		// task_pools.clear();
+		// task_pools.shrink_to_fit();
 
-		ProcessingGPU = 0;
+		task_pools.reserve(MAX_RAYS_PER_TASK);
+ 
+ 		ProcessingGPU = 0;
 		ProcessingCPU_result = 0;
 	}
  
@@ -103,7 +109,7 @@ public:
 	u8	    current_flags = 0;
  
 	// tasks	
-	xr_concurrent_vector<RayRecvestIndex>																task_pools;			// BASIC UV
+	xr_concurrent_vector<RayRecvestIndex>																task_pools;			//Working
 
 	xrCriticalSection csEnter;
 
