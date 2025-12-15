@@ -6,28 +6,6 @@
 #include "Actor.h"
 #include "Inventory.h"
 
-void TransformToHudTemp(Fvector& pos)
-{
-	Fmatrix inv_v;
-	inv_v.invert(Device.mView);
-	Fmatrix inv_p;
-	inv_p.invert(Device.mProject);
-
-	Device.mView.transform_tiny(pos);
-	Device.mProject_hud.transform_tiny(pos);
-
-	inv_p.transform_tiny(pos);
-	inv_v.transform_tiny(pos);
-}
-
-void TransformToHud(Fvector& pos, Fvector& dir)
-{
-	dir.add(pos);
-	TransformToHudTemp(dir);
-	TransformToHudTemp(pos);
-	dir = dir.sub(pos).normalize();
-}
-
 HudLightTorch::~HudLightTorch()
 {
 	if (RenderLight != nullptr)
@@ -221,8 +199,8 @@ void HudLightTorch::UpdateTorchFromObject(CHudItem* item) const
 
 		if (isHudMode)
 		{
-			TransformToHud(lightPos, lightDir);
-			TransformToHudTemp(omniPos);
+			Device.transform_hud2world(lightPos, lightDir);
+			Device.transform_hud2world(omniPos);
 		}
 
 		Fvector::generate_orthonormal_basis_normalized(lightDir, up, right);
