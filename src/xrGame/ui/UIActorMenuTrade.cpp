@@ -192,7 +192,7 @@ bool CUIActorMenu::ToActorTrade(CUICellItem* itm, bool b_use_cursor_pos)
 		if (IsGameTypeSingle())
 		{
 			bool result = (old_owner_type != iActorBag) ? m_pActorInvOwner->inventory().Ruck(iitem) : true;
-			R_ASSERT(result);
+            VERIFY(result);
 		}
 
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
