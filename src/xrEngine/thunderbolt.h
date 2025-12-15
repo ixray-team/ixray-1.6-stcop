@@ -1,9 +1,6 @@
 // Rain.h: interface for the CRain class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef ThunderboltH
-#define ThunderboltH
 #pragma once
 
 //refs
@@ -80,16 +77,13 @@ private:
 	Fvector3					current_direction;
 
 	FactoryPtr<IThunderboltRender>	m_pRender;
-	//ref_geom			  		hGeom_model;
-	// states
+
 	enum EState
 	{
 		stIdle,
 		stWorking
 	};
 	EState						state;
-
-	//ref_geom			  		hGeom_gradient;
 
 	Fvector						lightning_center;
 	float						lightning_size;
@@ -99,16 +93,7 @@ private:
 	float						current_time;
 	float						next_lightning_time;
 	BOOL						bEnabled;
-
-	// params
-//	Fvector2					p_var_alt;
-//	float						p_var_long;
-//	float						p_min_dist;
-//	float						p_tilt;
-//	float						p_second_prop;
-//	float						p_sky_color;
-//	float						p_sun_color;
-//	float						p_fog_color;
+	bool IsEnabled = true;
 private:
 	BOOL						RayPick				(const Fvector& s, const Fvector& d, float& range);
 	void						Bolt				(shared_str id, float period, float life_time);
@@ -118,8 +103,7 @@ public:
 
 	void						OnFrame				(shared_str id,float period, float duration);
 	void						Render				();
+	void Enable(bool Value);
 
 	shared_str 					AppendDef			(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
 };
-
-#endif //ThunderboltH

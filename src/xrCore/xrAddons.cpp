@@ -109,4 +109,6 @@ void CAddonManager::ReadMetaInfo(const xr_string& InitFile)
 		}
 		NewAddon.ScriptInit = scriptStr.c_str();
 	}
+
+	Addons.push_back(NewAddon);
 }
