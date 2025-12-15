@@ -151,14 +151,15 @@ BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, col
 			EditorScene->SetPlayInEditorRayPickCall(false);
 			return value;
 		}
-		else
-			return false;
+
+		return false;
 	}
 	else
 	{
 		if (!g_pGameLevel || !g_pGameLevel->bReady)
 			return false;
 	}
+
 	BOOL bRes;
 	collide::rq_result	RQ;
 	CObject* E 			= g_pGameLevel->CurrentViewEntity();
@@ -181,14 +182,21 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 	}
 }
 
+void CEffect_Rain::Enable(bool status)
+{
+	IsEnabled = status;
+}
+
 void CEffect_Rain::OnFrame()
 {
 	PROF_EVENT("CEffect_Rain::OnFrame");
 
 	if (!g_pGameLevel && !Device.IsEditorMode())
+	{
 		return;
+	}
 
-	if (g_dedicated_server)
+	if (g_dedicated_server || !IsEnabled)
 	{
 		return;
 	}
@@ -401,8 +409,11 @@ void CEffect_Rain::Render()
 	if (!g_pGameLevel && !Device.IsEditorMode())
 		return;
 
-	xrCriticalSectionGuard guard(&rainCS);
-	m_pRender->Render(*this);
+	if (IsEnabled)
+	{
+		xrCriticalSectionGuard guard(&rainCS);
+		m_pRender->Render(*this);
+	}
 }
 
 // startup _new_ particle system
