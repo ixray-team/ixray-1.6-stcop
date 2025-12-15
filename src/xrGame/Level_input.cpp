@@ -681,6 +681,8 @@ void CLevel::IR_GamepadUpdateStick(int id, Fvector2 value)
 	if (Device.Paused())
 		return;
 
+	if (CurrentGameUI() && CurrentGameUI()->IR_UIOnGamepadUpdateStick(id, value)) return;
+
 	if (g_actor != nullptr && g_actor->g_Alive())
 	{
 		g_actor->IR_GamepadUpdateStick(id, value);

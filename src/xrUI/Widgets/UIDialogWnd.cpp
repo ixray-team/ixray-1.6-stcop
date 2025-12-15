@@ -46,6 +46,17 @@ bool CUIDialogWnd::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 	return false;
 }
 
+bool CUIDialogWnd::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
+{
+	if (!IR_process()) 
+		return false;
+
+	if (inherited::OnGamepadStickAction(key, value, gamepad_action))
+		return true;
+
+	return false;
+}
+
 bool CUIDialogWnd::IR_process()
 {
 	if (!IsEnabled() || GetHolder() == nullptr)
