@@ -41,34 +41,40 @@ struct Hardware_Vector2
 
 	// Math
 
-	__device__ float DotProduct(Hardware_Vector2& Another) const
+	__device__ float DotProduct(Hardware_Vector2& Another)
 	{
 		return x * Another.x + y * Another.y;
 	}
 
-	__device__ float DistanceSquared(Hardware_Vector2& Another) const
+	__device__ float DistanceSquared(Hardware_Vector2& Another)
 	{
 		return (x - Another.x) * (x - Another.x) + (y - Another.y) * (y - Another.y);
 	}
 
-	__device__ Hardware_Vector2 Add(Hardware_Vector2& Another) const
+	__device__ Hardware_Vector2 Add(Hardware_Vector2& Another)
 	{
 		Hardware_Vector2 Result(0, 0);;
 		Result = { x + Another.x, y + Another.y };
+		x = Result.x;
+		y = Result.y;
 		return Result;
 	}
 
-	__device__ Hardware_Vector2 Subtract(Hardware_Vector2& Another) const
+	__device__ Hardware_Vector2 Subtract(Hardware_Vector2& Another)
 	{
 		Hardware_Vector2 Result(0, 0);;
 		Result = { x - Another.x, y - Another.y };
+		x = Result.x;
+		y = Result.y;
 		return Result;
 	}
 
-	__device__ Hardware_Vector2 Subtract(Hardware_Vector2& main, Hardware_Vector2& Other) const
+	__device__ Hardware_Vector2 Subtract(Hardware_Vector2& p1, Hardware_Vector2& p2)
 	{
 		Hardware_Vector2 Result(0, 0);;
-		Result = { Other.x - main.x, Other.y - main.y};
+		Result = { p1.x - p2.x, p1.y - p2.y};
+		x = Result.x;
+		y = Result.y;
 		return Result;
 	}
 
@@ -170,24 +176,43 @@ struct Hardware_Vector
 		return (x - Another.x) * (x - Another.x) + (y - Another.y) * (y - Another.y) + (z - Another.z) * (z - Another.z);
 	}
 
-	__device__ Hardware_Vector Add(Hardware_Vector& Another) const
+	__device__ Hardware_Vector Add(Hardware_Vector& Another)
 	{
 		Hardware_Vector Result(0, 0, 0);;
 		Result = { x + Another.x, y + Another.y, z + Another.z };
+		x = Result.x;
+		y = Result.y;
+		z = Result.z;
 		return Result;
 	}
 
-	__device__ Hardware_Vector Subtract(Hardware_Vector& Another) const
+	__device__ Hardware_Vector Add(float s)
+	{
+		Hardware_Vector Result(0, 0, 0);;
+		Result = { x + s, y + s, z + s };
+		x = Result.x;
+		y = Result.y;
+		z = Result.z;
+		return Result;
+	}
+
+	__device__ Hardware_Vector Subtract(Hardware_Vector& Another)
 	{
 		Hardware_Vector Result(0, 0, 0);;
 		Result = { x - Another.x, y - Another.y, z - Another.z };
+		x = Result.x;
+		y = Result.y;
+		z = Result.z;
 		return Result;
 	}
 
-	__device__ Hardware_Vector Subtract(Hardware_Vector& main, Hardware_Vector& Other) const
+	__device__ Hardware_Vector Subtract(Hardware_Vector& main, Hardware_Vector& Other) 
 	{
 		Hardware_Vector Result(0, 0, 0);;
 		Result = { Other.x - main.x, Other.y - main.y, Other.z - main.z };
+		x = Result.x;
+		y = Result.y;
+		z = Result.z;
 		return Result;
 	}
 
@@ -196,6 +221,13 @@ struct Hardware_Vector
 		x += Another.x * Influence;
 		y += Another.y * Influence;
 		z += Another.z * Influence;
+	}
+
+	__device__ void MadOthers(Hardware_Vector& p, Hardware_Vector& d, float Influence)
+	{
+		x = p.x + d.x * Influence;
+		y = p.y + d.y * Influence;
+		z = p.z + d.z * Influence;
 	}
 
 	__device__ void set(float InX, float InY, float InZ)
@@ -235,44 +267,22 @@ struct Hardware_Vector
 
 struct Hardware_Color
 {
-	union
-	{
-		uint32_t rgba;
-		struct
-		{
-			uint8_t r, g, b, a;
-		};
-	};
-
+ 	Hardware_Vector rgb;
 	float hemi;
 	float sun;
-	uint32_t _pad;
-
+ 
 	__device__ Hardware_Color()
 	{
-		rgba = 0;
-		hemi = 0.0f;
+		rgb.set(0,0,0);
+ 		hemi = 0.0f;
 		sun = 0.0f;
-		_pad = 0;
-	}
-
-	__device__ void set_rgb_f32(float x, float y, float z)
-	{
-		r = static_cast<uint8_t>(fminf(fmaxf(x * 255.0f, 0.0f), 255.0f));
-		g = static_cast<uint8_t>(fminf(fmaxf(y * 255.0f, 0.0f), 255.0f));
-		b = static_cast<uint8_t>(fminf(fmaxf(z * 255.0f, 0.0f), 255.0f));
-		a = 0;
-	}
-
-	__device__ float3 get_rgb_f32() const
-	{
-		return make_float3(r / 255.0f, g / 255.0f, b / 255.0f);
-	}
-
+ 	}
+ 
 	__device__ void mul(float s)
 	{
-		float3 rgb = get_rgb_f32();
-		set_rgb_f32(rgb.x * s, rgb.y * s, rgb.z * s);
+ 		rgb.x *= s;
+		rgb.y *= s;
+		rgb.z *= s;
 
 		hemi *= s;
 		sun *= s;
@@ -280,9 +290,9 @@ struct Hardware_Color
 
 	__device__ void add(float s)
 	{
-		float3 rgb = get_rgb_f32();
-		rgb = make_float3(rgb.x + s, rgb.y + s, rgb.z + s);
-		set_rgb_f32(rgb.x, rgb.y, rgb.z);
+ 		rgb.x += s;
+		rgb.y += s;
+		rgb.z += s;
 
 		hemi += s;
 		sun += s;
@@ -290,42 +300,24 @@ struct Hardware_Color
 
 	__device__ void add(const Hardware_Color& s)
 	{
-		float3 rgb0 = get_rgb_f32();
-		float3 rgb1 = s.get_rgb_f32();
-		set_rgb_f32(rgb0.x + rgb1.x, rgb0.y + rgb1.y, rgb0.z + rgb1.z);
+		rgb.x += s.rgb.x;
+		rgb.y += s.rgb.y;
+		rgb.z += s.rgb.z;
 
 		hemi += s.hemi;
 		sun += s.sun;
 	}
-
-	__device__ void scale(int samples)
-	{
-		float inv = 1.0f / static_cast<float>(samples);
-		mul(inv);
-	}
-
+ 
 	__device__ void max(const Hardware_Color& s)
 	{
-		float3 rgb0 = get_rgb_f32();
-		float3 rgb1 = s.get_rgb_f32();
-		set_rgb_f32(fmaxf(rgb0.x, rgb1.x), fmaxf(rgb0.y, rgb1.y), fmaxf(rgb0.z, rgb1.z));
+		rgb.x = fmaxf(rgb.x, s.rgb.x);
+		rgb.y = fmaxf(rgb.y, s.rgb.y);
+		rgb.z = fmaxf(rgb.z, s.rgb.z);
 
 		hemi = fmaxf(hemi, s.hemi);
 		sun = fmaxf(sun, s.sun);
 	}
-
-	__device__ void lerp(const Hardware_Color& A, const Hardware_Color& B, float s)
-	{
-		float is = 1.0f - s;
-		float3 rgb;
-		rgb.x = A.r * is + B.r * s;
-		rgb.y = A.g * is + B.g * s;
-		rgb.z = A.b * is + B.b * s;
-		set_rgb_f32(rgb.x / 255.0f, rgb.y / 255.0f, rgb.z / 255.0f);
-
-		hemi = A.hemi * is + B.hemi * s;
-		sun = A.sun * is + B.sun * s;
-	}
+ 
 };
  
 struct Hardware_Lighting
@@ -365,15 +357,15 @@ struct _TCF_GPU
 	__device__ void barycentric(Hardware_Vector2& P, float& u, float& v, float& w)
 	{
 		Hardware_Vector2 	kV02; kV02.Subtract (uv[0], uv[2]);
-		Hardware_Vector2 	kV12; kV12.Subtract(uv[1], uv[2]);
-		Hardware_Vector2 	kPV2; kPV2.Subtract(P, uv[2]);
+		Hardware_Vector2 	kV12; kV12.Subtract (uv[1], uv[2]);
+		Hardware_Vector2 	kPV2; kPV2.Subtract (P, uv[2]);
 
-		float		fM00 = kV02.DotProduct(kV02);
-		float		fM01 = kV02.DotProduct(kV12);
-		float		fM11 = kV12.DotProduct(kV12);
-		float		fR0  = kV02.DotProduct(kPV2);
-		float		fR1  = kV12.DotProduct(kPV2);
-		float		fDet = fM00 * fM11 - fM01 * fM01;
+		float		fM00		= kV02.DotProduct(kV02);
+		float		fM01		= kV02.DotProduct(kV12);
+		float		fM11		= kV12.DotProduct(kV12);
+		float		fR0			= kV02.DotProduct(kPV2);
+		float		fR1			= kV12.DotProduct(kPV2);
+		float		fDet		= fM00 * fM11 - fM01 * fM01;
 
 		u = (fM11 * fR0 - fM01 * fR1) / fDet;
 		v = (fM00 * fR1 - fM01 * fR0) / fDet;
@@ -401,6 +393,12 @@ struct UVTriGPU : public _TCF_GPU
 };
 
 // CDeflectorGPU 
+struct DeflectorsJitter
+{
+	Hardware_Vector2	dim, half;
+	Hardware_Vector2	JS;
+	unsigned int		SamplesCaptured;
+};
 
 struct CDeflector_GPU
 {
@@ -416,42 +414,24 @@ struct CDeflector_GPU
 	unsigned int        Width;
 	unsigned int        Height;
 	Hardware_Vector		normal;
+
+	DeflectorsJitter	Jitter;
 };
  
+#include "optix.h"
 
-// Jitter Select
-__device__ void Jitter_Select_GPU(Hardware_Vector2*& Jitter, unsigned int& Jcount)
+struct OPTICK_Params
 {
-	Hardware_Vector2 Jitter1[1] =
-	{
-		{0,0}
-	};
-	Hardware_Vector2 Jitter4[4] =
-	{
-		{-1,-1}, {1,-1}, {1,1}, {-1,1}
-	};
-	Hardware_Vector2 Jitter9[9] = 
-	{
-		{-1,-1},	{0,-1},		{1,-1},
-		{-1,0},		{0,0},		{1,0},
-		{-1,1},		{0,1},		{1,1}
-	};
+	OptixTraversableHandle handle;
 
-	switch (9)
-	{
-	case 1:
-		Jcount = 1;
-		Jitter = Jitter1;
-		break;
-	case 9:
-		Jcount = 9;
-		Jitter = Jitter9;
-		break;
-	case 4:
-	default:
-		Jcount = 4;
-		Jitter = Jitter4;
-		break;
-	}
-}
+	unsigned char		flags;
+	Hardware_Raytask* rays;
+	Hardware_Color* colors;		// Раньше rays == colors
 
+	Hardware_Lighting* lights;
+	int					counts_lights;
+
+	CDeflector_GPU* GpuDeflectors;
+	bool				DeflectorsBig;
+	int					DeflectorsBigID;
+};
