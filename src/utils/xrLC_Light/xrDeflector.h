@@ -11,7 +11,6 @@
 #include "xrDeflectorLight_Packed.h"
 
 class  base_lighting;
-class  СDeflector;
 extern EmbreeData EmbreeMain;
 class  execute_statistics;
 
