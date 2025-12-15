@@ -351,17 +351,20 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	}
 #endif // DEBUG
 	// camera
+	float dt = psCamInert - 10.f * Device.fTimeDelta;
+	clamp(dt, 0.f, 0.99f);
+
 	if (flags&CCameraBase::flPositionRigid)
 		m_cam_info.p.set		(P);
 	else
-		m_cam_info.p.inertion	(P,	psCamInert);
+		m_cam_info.p.inertion	(P, dt);
 	if (flags&CCameraBase::flDirectionRigid)
 	{
 		m_cam_info.d.set		(D);
 		m_cam_info.n.set		(N);
 	}else{
-		m_cam_info.d.inertion	(D,	psCamInert);
-		m_cam_info.n.inertion	(N,	psCamInert);
+		m_cam_info.d.inertion	(D, dt);
+		m_cam_info.n.inertion	(N, dt);
 	}
 	
 	// Normalize
@@ -374,9 +377,9 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 	float src = 10 * Device.fTimeDelta;	clamp(src, 0.f, 1.f);
 	float dst = 1 - src;
 	
-	m_cam_info.fFov = m_cam_info.fFov * dst + fFOV_Dest * src;
-	m_cam_info.fFar				= m_cam_info.fFar*dst		+ fFAR_Dest*src;
-	m_cam_info.fAspect			= m_cam_info.fAspect*dst	+ (fASPECT_Dest*aspect)*src;
+	m_cam_info.fFov = m_cam_info.first_init ? fFOV_Dest : m_cam_info.fFov * dst + fFOV_Dest * src;
+	m_cam_info.fFar				= m_cam_info.first_init ? fFAR_Dest : m_cam_info.fFar*dst + fFAR_Dest*src;
+	m_cam_info.fAspect			= m_cam_info.first_init ? fASPECT_Dest * aspect : m_cam_info.fAspect*dst + (fASPECT_Dest*aspect)*src;
 	m_cam_info.dont_apply			= false;
 
 	UpdateCamEffectors			();
@@ -387,6 +390,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 			ApplyDevice		(Device.fViewportNear);
 
 	UpdateDeffered			();
+	m_cam_info.first_init = false;
 }
 
 bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
@@ -492,6 +496,9 @@ void CCameraManager::ApplyDevice (float _viewport_near)
 	Device.fFOV					= m_cam_info.fFov;
 	Device.fASPECT				= m_cam_info.fAspect;
 	Device.mProject.build_projection(deg2rad(m_cam_info.fFov), m_cam_info.fAspect, _viewport_near, m_cam_info.fFar);
+
+	if(Device.dwPrecacheFrame==0u)
+		Device.CalculateTransforms();
 
 	if( g_pGamePersistent && g_pGamePersistent->m_pMainMenu->IsActive() )
 		ResetPP					();
