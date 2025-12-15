@@ -80,6 +80,7 @@ public:
 	virtual void 			OnMouseUp			(int mouse_btn);
 
 	virtual bool			OnGamepadKeyAction	(int key, EUIMessages gamepad_action);
+	virtual bool			OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action);
 
 	virtual void 			OnFocusReceive		();
 	virtual void 			OnFocusLost			();
