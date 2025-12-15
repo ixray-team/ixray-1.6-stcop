@@ -18,7 +18,7 @@ class CHUDTarget
 {
 private:
 	ui_shader				hShader;
-	float					fuzzyShowInfo;
+	float					accumulatedTime;
 	SPickParam				PP;
 
 	bool					m_bShowCrosshair;
