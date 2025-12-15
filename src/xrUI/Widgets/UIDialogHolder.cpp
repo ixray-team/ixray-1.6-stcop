@@ -318,22 +318,23 @@ bool CDialogHolder::IR_UIOnGamepadKeyPress(int id)
 	if (TIR->OnGamepadKeyAction(id,	WINDOW_KEY_PRESSED))
 		return true;
 
-// TODO: add customizable bindings for gamepad
-/*	if (!TIR->StopAnyMove() && g_pGameLevel)
-	{
-		CObject* O = g_pGameLevel->CurrentEntity();
-		if (O)
-		{
-			IInputReceiver* IR = O->GetIIR();
-			if (IR)
-			{
-				EGameActions action = get_binded_action(id);
-				if (action != kQUICK_USE_1 && action != kQUICK_USE_2 && action != kQUICK_USE_3 && action != kQUICK_USE_4)
-					IR->IR_OnKeyboardPress(action);
-			}
-			return false;
-		}
-	}*/
+	// TODO: add customizable bindings for gamepad
+	return true;
+};
+
+bool CDialogHolder::IR_UIOnGamepadUpdateStick(int id, Fvector2 value)
+{
+	CUIDialogWnd*	TIR = TopInputReceiver();
+	if(!TIR)				
+		return false;
+
+	if(!TIR->IR_process())	
+		return false;
+
+	if (TIR->OnGamepadStickAction(id, value, WINDOW_KEY_PRESSED))
+		return true;
+
+	// TODO: add customizable bindings for gamepad
 	return true;
 };
 
