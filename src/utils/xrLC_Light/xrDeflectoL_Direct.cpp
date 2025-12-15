@@ -204,6 +204,8 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	
 	// Lighting itself
 	DB->ray_options	(0);
+
+	u32 Skipped = 0; u32 Processed = 0;
 	
 	for (u32 V=0; V<lm.height; V++)
 	{
@@ -219,8 +221,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 					Fvector2 P;
 					P.x = float(U)/dim.x + half.x + Jitter[J].x * JS.x;
 					P.y = float(V)/dim.y + half.y + Jitter[J].y * JS.y;
-					
-					
+					 
 					// World space
 					Fvector		wP,wN,B;
 					for (auto& TRI : UVpolys)
@@ -264,18 +265,21 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 				clMsg("* ERROR (Light). Recovered. ");
 			}
 			
-			if (Fcount) {
+			if (Fcount) 
+			{
 				C.scale			(Fcount);
 				C.mul			(.5f);
+
 				lm.surface		[V*lm.width+U]._set(C);
 				lm.marker		[V*lm.width+U] = 255;
-			} else {
+			}
+			else 
+			{
 				lm.surface		[V*lm.width+U]._set(C);	// 0-0-0-0-0
 				lm.marker		[V*lm.width+U] = 0;
 			}
 		}
 	}
-
 
 	auto DirectEdge = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 	{
