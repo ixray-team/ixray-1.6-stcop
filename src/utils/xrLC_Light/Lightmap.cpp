@@ -103,7 +103,9 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 
 void CLightmap::Save( LPCSTR path )
 {
-	static int		lmapNameID = 0; ++lmapNameID;
+	static int		lmapNameID = 0;
+	++lmapNameID;
+
 	CTimer t;
 	t.Start();
 
