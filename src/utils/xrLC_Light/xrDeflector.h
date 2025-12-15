@@ -11,15 +11,14 @@
 #include "xrDeflectorLight_Packed.h"
 
 class  base_lighting;
-class  СDeflector;
 extern EmbreeData EmbreeMain;
 class  execute_statistics;
 
 class XRLC_LIGHT_API CDeflector
 {
 public:
- 	bool ApplyLmap = false;
-	bool ApplyEdge = false;
+   	bool ApplyLmap			= false;
+ 
 	bool ApplyResolution = false;
  	bool bMerged = false;
  
@@ -31,11 +30,14 @@ public:
 
 	// se7kills Освещение на GPU
 	xrCriticalSection csColors;
+	struct ColorsData
+	{
+		base_color_c C;
+		u8 LSamples = 0;
+	};
 	
- 	xr_hash_map<size_t, base_color_c>								def_color_map;
-	xr_hash_map<size_t, u8>											def_FacesCount;
-	 
-
+ 	xr_hash_map<size_t, ColorsData>								def_color_map;
+ 
 public:
 
 	CDeflector					();
@@ -107,16 +109,13 @@ public:
 	void L_DirectGPU();
 
 	// cuda recvest color reciver
-	void ApplyColors();
-	void ClearResults();
-	void ApplyColor(size_t INDEX, base_color_c& C);
-
-	// Stage 2
-	void EdgesLighting();
+	u32 ProcessedUVColors;
+	bool ApplyColors();
+ 	void ApplyColor(size_t INDEX, base_color_c& C);
  
 	// Stage 3
 	void LowerResolutionGPU();
-	void ApplyExpadBordersGPU();
+	void ApplyExpandBordersGPU();
 };
 
 
