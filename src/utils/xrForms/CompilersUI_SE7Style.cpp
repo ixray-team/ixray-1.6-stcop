@@ -46,17 +46,26 @@ void RenderMainUI()
 
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
-	
+
+
 	if (!ShowMainUI) 
 	{
+
+		if (Size[0] != 1000 || Size[1] != 950)
+		{
+			SDL_SetWindowSize(g_AppInfo.Window, 1000, 950);
+		}
+
 		RenderCompilerUI(Size[0], Size[1]);
 		return;
 	}
 
-	if ( Size[0] != 1000 || Size[1] != 675)
+
+	if (Size[0] != 1000 || Size[1] != 675)
 	{
 		SDL_SetWindowSize(g_AppInfo.Window, 1000, 675);
 	}
+	
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
