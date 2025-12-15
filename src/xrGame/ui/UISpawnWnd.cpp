@@ -156,17 +156,19 @@ bool CUISpawnWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		HideDialog							();
 		game->OnTeamSelect(-1);
 		return true;
-	case SDL_SCANCODE_RETURN:
-		HideDialog							();
+	}
+
+	if (get_binded_action(dik) == kUI_ACCEPT)
+	{
+		HideDialog();
 		if (m_pImage1->GetSelectedState())
 			game->OnTeamSelect(0);
 		else if (m_pImage2->GetSelectedState())
 			game->OnTeamSelect(1);
 		else
-			game->OnTeamSelect(-1);		
+			game->OnTeamSelect(-1);
 		return true;
 	}
-
 	return inherited::OnKeyboardAction(dik, keyboard_action);
 }
 
