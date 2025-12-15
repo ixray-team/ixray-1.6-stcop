@@ -97,8 +97,7 @@ public:
 
 	// Lmaps Processing 
 	void	ProcessLMAPS_CPU		();
-	void	LmapsStageGPU			(int Stage, bool isFirst, size_t Begin, size_t End);
-	void	LMaps					();
+ 	void	LMaps					();
 
 
 	//void	Light_R2				();
