@@ -188,7 +188,7 @@ void RunTaskGPU()
 	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
 	GPUTaskinSystem.current_flags = flags;
 
-	//
+	// Однопоточный режим пока что 
 	xr_map<size_t, u32> FacesCount;  
  	for (u32 V = 0; V < defl.Height(); V++)
 	{
