@@ -3,6 +3,7 @@
 #include "UIXmlInit.h"
 #include "UIHint.h"
 #include "UIStatic.h"
+#include "../../xrEngine/xr_input.h"
 
 CUI3tButton::CUI3tButton()
 {
@@ -29,6 +30,7 @@ CUI3tButton::CUI3tButton()
 	m_BtnStaticParams.m_ClrStateD			= def_clr;
 	m_BtnStaticParams.m_ClrStateT			= def_clr;
 	m_BtnStaticParams.m_ClrStateH			= def_clr;
+	m_inputIcon								= nullptr;
 }
 
 CUI3tButton::~CUI3tButton()
@@ -298,6 +300,15 @@ void CUI3tButton::Update()
 		if (m_BtnStatic && m_BtnStaticParams.m_bNeedClrChanging)
 			m_BtnStatic->TextItemControl()->SetTextColor(m_BtnStaticParams.m_ClrStateE);
 		textColor = m_dwTextColor[S_Enabled];
+	}
+
+	// hide controller icon if using keyboard/mouse
+	if (m_inputIcon)
+	{
+		if (pInput->GetControllerMode())
+			m_inputIcon->Show(true);
+		else
+			m_inputIcon->Show(false);
 	}
 
 	TextItemControl()->SetTextColor		(textColor);
