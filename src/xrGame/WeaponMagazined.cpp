@@ -28,6 +28,7 @@
 #include "Legacy/object_handler_planner.h"
 #endif
 #include "../xrScripts/script_callback_ex.h"
+#include "../xrEngine/xr_input.h"
 
 CUIXml* pWpnScopeXml = nullptr;
 
@@ -1481,6 +1482,8 @@ void CWeaponMagazined::OnShot()
 	ApplyPattern();
 	// Camera	
 	AddShotEffector();
+
+	pInput->feedback(65535, 65535, 0.1f);
 
 	// Animation
 	PlayAnimShoot();
