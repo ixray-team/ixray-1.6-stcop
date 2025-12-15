@@ -391,6 +391,8 @@ public:
 		FS.update_path(fn, "$game_saves$", fn_);
 
 		g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord(fn));
+		if(g_actor)
+			g_pGameLevel->Cameras().UpdateFromCamera(g_actor->cam_Active());
 	}
 };
 
@@ -435,6 +437,8 @@ public:
 			xr_strconcat(fn, args, ".xrdemo");
 			FS.update_path(fn, "$game_saves$", fn);
 			g_pGameLevel->Cameras().AddCamEffector(new CDemoPlay(fn, 1.0f, loops));
+			if (g_actor)
+				g_pGameLevel->Cameras().UpdateFromCamera(g_actor->cam_Active());
 		}
 	}
 };
