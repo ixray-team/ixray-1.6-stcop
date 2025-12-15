@@ -113,35 +113,51 @@ void run_mu_light()
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
 	{
+		Phase("Lighting Mu-Refs Started GPU");
 		GPUTaskinSystem.RestartALL();
 
 		// Gathering
-		int REF_INDEX = 0;
-		for (auto& REF : inlc_global_data()->mu_refs())
+		CTimer tStats; tStats.Start();
+
+		xr_atomic_u32 REF_INDEX = 0;
+ 		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t ThreadID)
 		{
-			AditionalData("REF LIGHT: %u/%u", REF_INDEX, inlc_global_data()->mu_refs().size());
-			REF->calc_lighting_cuda_1();
-			REF_INDEX++;
-		}
-		GPUTaskinSystem.LightPointPacked_MODELRun();
+			while (true)
+			{
+				u32 IndexTask = REF_INDEX.fetch_add(1);
+				if (IndexTask >= inlc_global_data()->mu_refs().size()) break;
+
+ 				AditionalData("REF LIGHT: %u/%u", IndexTask, inlc_global_data()->mu_refs().size());
+				auto MRef = inlc_global_data()->mu_refs()[IndexTask];
+				MRef->calc_lighting_cuda_1();
+			};
+
+			// Завершаем накопленые данные
+ 			GPUTaskinSystem.LightPointPacked_MODELRun();
+ 		});
+ 		Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
 		
 		// APPLY
-		REF_INDEX = 0;
+
+		tStats.Start();
+		u32 _REF_INDEX = 0;
 		for (auto& REF : inlc_global_data()->mu_refs())
 		{
-			AditionalData("REF LIGHT APPLY: %u/%u", REF_INDEX, inlc_global_data()->mu_refs().size());
+			AditionalData("REF LIGHT APPLY: %u/%u", _REF_INDEX, inlc_global_data()->mu_refs().size());
 
 			REF->calc_lighting_cuda_2();
 			REF->calc_lighting_cuda_3();
-			REF_INDEX++;
+			_REF_INDEX++;
 		}
-
+		Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
 		GPUTaskinSystem.RestartALL(); // Выгружаем все Это последнее освещение 
 	}
 	else
 #endif
 	{
+		Phase("Lighting Mu-Refs Started CPU");
+
 		ThreadTaskID = 0;
 		for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
 			mu_secondary.start(new CMULight(thID));
