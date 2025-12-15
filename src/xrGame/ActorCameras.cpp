@@ -488,36 +488,32 @@ void CActor::cam_Update(float dt, float fFOV)
 		fPrevCamPos			= flCurrentPlayerY;
 	}
 
-	float _viewport_near			= Device.fViewportNear;
 	// calc point
-	xform.transform_tiny			(point);
+	xform.transform_tiny(point);
 
-	CCameraBase* C					= cam_Active();
-
-	C->Update						(point,dangle);
-	C->f_fov						= fFOV;
+	if (Level().CurrentEntity() == this)
+	{
+		for (CCameraBase* cam : cameras)
+		{
+			cam->Update(point, dangle);
+			cam->f_fov = fFOV;
+		}
+	}
 
 	if (Level().CurrentEntity() == this)
 	{
 		if(!psActorFlags.test(AF_NO_CLIP))
-			collide_camera( *cam_Active(), _viewport_near, this);
+			collide_camera( *cam_Active(), Device.fViewportNear, this);
 	}
 
-	Cameras().UpdateFromCamera(C);
-
-	if (pItem != nullptr)
-	{
-		UpdateLensFOV(pItem->cast_weapon(), Cameras().Fov());
-	}
-
-	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
-	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
+	fCurAVelocity			= vPrevCamDir.sub(cam_FirstEye()->vDirection).magnitude()/Device.fTimeDelta;
+	vPrevCamDir				= cam_FirstEye()->vDirection;
 
 	// Высчитываем разницу между предыдущим и текущим Yaw \ Pitch от 1-го лица //--#SM+ Begin#--
-	float& cam_yaw_cur = cameras[eacFirstEye]->yaw;
+	float& cam_yaw_cur = cam_FirstEye()->yaw;
 	static float cam_yaw_prev = cam_yaw_cur;
 
-	float& cam_pitch_cur = cameras[eacFirstEye]->pitch;
+	float& cam_pitch_cur = cam_FirstEye()->pitch;
 	static float cam_pitch_prev = cam_pitch_cur;
 
 	fFPCamYawMagnitude = angle_difference_signed(cam_yaw_prev, cam_yaw_cur) / Device.fTimeDelta; // L+ / R-
@@ -530,18 +526,25 @@ void CActor::cam_Update(float dt, float fFOV)
 #ifdef DEBUG
 	if( dbg_draw_camera_collision )
 	{
-		dbg_draw_viewport( *cameras[eacFirstEye], _viewport_near );
-		dbg_draw_viewport( Cameras(), _viewport_near );
+		dbg_draw_viewport( *cam_FirstEye(), Device.fViewportNear);
+		dbg_draw_viewport( Cameras(), Device.fViewportNear);
 	}
 #endif
-
 	if (Level().CurrentEntity() == this)
 	{
-		Level().Cameras().UpdateFromCamera	(C);
-		if ((eacFirstEye == cam_active || eacLookAt == cam_active) &&
-			!Level().Cameras().GetCamEffector(cefDemo)) {
-			Cameras().ApplyDevice(_viewport_near);
+		if (Level().Cameras().GetCamEffector(cefDemo) || cam_active > eacLookAt)
+			Level().Cameras().UpdateFromCamera(cam_Active());// auto apply device
+		else
+		{
+			Cameras().UpdateFromCamera(cam_Active());
+			UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
+			Cameras().ApplyDevice(Device.fViewportNear);
 		}
+	}
+	else//don't apply device i am not local player
+	{
+		Cameras().UpdateFromCamera(cam_Active());
+		UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
 	}
 }
 
