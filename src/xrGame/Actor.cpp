@@ -1368,7 +1368,7 @@ bool need_restore_detector = false;
 void CActor::PlayRainOnHelmetSound()
 {
 	const float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	if (factor < EPS_L)
+	if (factor < EPS_L || !g_pGamePersistent->Environment().eff_Rain->IsEnabled)
 	{
 		m_rainOnHelmetSnd.stop();
 		return;
