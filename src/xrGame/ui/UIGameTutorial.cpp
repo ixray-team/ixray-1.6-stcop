@@ -390,7 +390,7 @@ void CUISequencer::IR_GamepadKeyPress(int id)
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_DPAD_UP)
 		IR_OnKeyboardPress(SDL_SCANCODE_UP);
 
-	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_SOUTH)
+	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_START)
 		IR_OnKeyboardPress(SDL_SCANCODE_RETURN);
 
 	if (id == SDL_GamepadButton::SDL_GAMEPAD_BUTTON_EAST)
