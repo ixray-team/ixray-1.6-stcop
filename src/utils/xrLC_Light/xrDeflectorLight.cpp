@@ -6,7 +6,7 @@
 #include "light_point.h"
 #include "xrFace.h"
 
-#include "../xrForms/CompilersUI.h" 
+#include "../xrForms/CompilersUI.h"
 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {
