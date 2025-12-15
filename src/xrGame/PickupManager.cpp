@@ -3,7 +3,7 @@
 #include "Actor.h"
 #include "inventory_item.h"
 #include "../xrEngine/GameMtlLib.h"
-
+#include "../xrEngine/CameraBase.h"
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 
 CPickUpManager::CPickUpManager(CActor* NewOwner) :
@@ -17,12 +17,17 @@ void CPickUpManager::RenderInfo()
 {
 	Owner->feel_touch_update(Owner->Position(), PickupInfoRadius);
 
+	Fmatrix project, view, transform;
+	view.build_camera_dir(Owner->cam_FirstEye()->vPosition, Owner->cam_Active()->vDirection, Owner->cam_Active()->vNormal);
+	project.build_projection(deg2rad(Owner->cam_Active()->f_fov), Owner->cam_Active()->f_aspect, Device.fViewportNear, PickupInfoRadius);
+	transform.mul(project, view);
+
 	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+	frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
 
 	for (CObject* Item: Owner->feel_touch)
 	{
-		if (CanPickItem(frustum, Device.vCameraPosition, Item))
+		if (CanPickItem(frustum, Owner->cam_FirstEye()->vPosition, Item))
 			PickupInfoDraw(Item);
 	}
 }
