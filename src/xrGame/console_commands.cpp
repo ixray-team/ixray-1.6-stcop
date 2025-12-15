@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "pch_script.h"
-#include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/FDemoRecord.h"
@@ -390,6 +389,8 @@ public:
 		FS.update_path(fn, "$game_saves$", fn_);
 
 		g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord(fn));
+		if(g_actor)
+			g_pGameLevel->Cameras().UpdateFromCamera(g_actor->cam_Active());
 	}
 };
 

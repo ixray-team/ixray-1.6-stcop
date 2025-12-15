@@ -232,7 +232,7 @@ public:
 	virtual void Clear						();
 	void End								();
 	void FrameMove							();
-	
+	void CalculateTransforms				();
 	void overdrawBegin						();
 	void overdrawEnd						();
 
