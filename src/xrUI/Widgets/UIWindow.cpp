@@ -492,7 +492,7 @@ bool CUIWindow::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	return false;
 }
 
-//реакция на геймпад
+//реакция на геймпад (кнопки)
 bool CUIWindow::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 {
 	bool result;
@@ -515,6 +515,34 @@ bool CUIWindow::OnGamepadKeyAction(int key, EUIMessages gamepad_action)
 			result = (*it)->OnGamepadKeyAction(key, gamepad_action);
 			
 			if(result)	return true;
+		}
+	}
+	return false;
+}
+
+//реакция на геймпад (стики)
+bool CUIWindow::OnGamepadStickAction(int key, Fvector2 value, EUIMessages gamepad_action)
+{
+	bool result;
+
+	//если есть дочернее окно,захватившее клавиатуру, то
+	//сообщение направляем ему сразу
+	if (nullptr != m_pKeyboardCapturer)
+	{
+		result = m_pKeyboardCapturer->OnGamepadStickAction(key, value, gamepad_action);
+
+		if (result) return true;
+	}
+	xrCriticalSectionGuard guard(csUi);
+	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
+
+	for (; it != m_ChildWndList.rend(); ++it)
+	{
+		if ((*it)->IsEnabled())
+		{
+			result = (*it)->OnGamepadStickAction(key, value, gamepad_action);
+
+			if (result)	return true;
 		}
 	}
 	return false;
