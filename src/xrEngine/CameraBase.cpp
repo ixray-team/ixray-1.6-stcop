@@ -70,15 +70,3 @@ float CCameraBase::CheckLimRoll( ){
 	}else 
 		return 0;
 }
-SCamEffectorInfo::SCamEffectorInfo()
-{
-	p.set				(0,0,0);
-	d.set				(0,0,1);
-	n.set				(0,1,0);
-
-	fFov				= 90.0f;
-	fFar				= 100.0f;
-	fAspect				= 1.f;
-	dont_apply			= false;
-	affected_on_hud		= true;
-}
