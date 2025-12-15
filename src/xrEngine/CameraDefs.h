@@ -13,16 +13,16 @@ struct ENGINE_API SBaseEffector
 
 struct ENGINE_API SCamEffectorInfo
 {
-	Fvector		p; 
-	Fvector		d; 
-	Fvector		n;
-	Fvector		r;
-	float		fFov; 
-	float		fFar; 
-	float		fAspect; 
-	bool		dont_apply;
-	bool		affected_on_hud;
-	SCamEffectorInfo();
+	Fvector		p = { 0.f,0.f,0.f };
+	Fvector		d = { 0.f,0.f,1.f };
+	Fvector		n = { 0.f,1.f,0.f };
+	Fvector		r = { 1.f,0.f,0.f };
+	float		fFov = 90.0f;
+	float		fFar = 100.0f;
+	float		fAspect = 1.f;
+	bool		dont_apply = false;
+	bool		affected_on_hud = true;
+	bool		first_init = true;
 	SCamEffectorInfo& operator	= (const SCamEffectorInfo& other)
 	{
 		p					= other.p; 

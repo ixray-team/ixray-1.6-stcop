@@ -672,9 +672,13 @@ if (!g_pGameLevel)
 						C = Actor()->cam_Active();
 					else
 						C = Actor()->Holder()->Camera();
-
-					Actor()->Cameras().UpdateFromCamera		(C);
-					Actor()->Cameras().ApplyDevice			(Device.fViewportNear);
+					if (Level().Cameras().GetCamEffector(cefDemo))
+						Level().Cameras().UpdateFromCamera(C);
+					else
+					{
+						Actor()->Cameras().UpdateFromCamera(C);
+						Actor()->Cameras().ApplyDevice(Device.fViewportNear);
+					}
 #ifdef DEBUG
 					if(psActorFlags.test(AF_NO_CLIP))
 					{
@@ -719,8 +723,13 @@ if (!g_pGameLevel)
 			else
 				C = Actor()->Holder()->Camera();
 
-			Actor()->Cameras().UpdateFromCamera			(C);
-			Actor()->Cameras().ApplyDevice				(Device.fViewportNear);
+			if (Level().Cameras().GetCamEffector(cefDemo))
+				Level().Cameras().UpdateFromCamera(C);
+			else
+			{
+				Actor()->Cameras().UpdateFromCamera(C);
+				Actor()->Cameras().ApplyDevice(Device.fViewportNear);
+			}
 
 		}
 #endif // MASTER_GOLD

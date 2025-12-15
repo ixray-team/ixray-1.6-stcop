@@ -235,54 +235,18 @@ void CRenderDevice::on_idle		()
 		FrameMove();
 	}
 
-	// Precache
-	if (dwPrecacheFrame)
+	if (dwPrecacheFrame!=0u)
 	{
-		float factor					= float(dwPrecacheFrame) / float(dwPrecacheTotal);
-		float angle						= PI_MUL_2 * factor;
-		vCameraDirection.set			(_sin(angle),0,_cos(angle));	vCameraDirection.normalize	();
-		vCameraTop.set					(0,1,0);
-		vCameraRight.crossproduct		(vCameraTop,vCameraDirection);
+		float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+		float angle = PI_MUL_2 * factor;
+		vCameraDirection.set(_sin(angle), 0, _cos(angle));	vCameraDirection.normalize();
+		vCameraTop.set(0, 1, 0);
+		vCameraRight.crossproduct(vCameraTop, vCameraDirection);
 
-		mView.build_camera_dir			(vCameraPosition,vCameraDirection,vCameraTop);
+		mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+
+		CalculateTransforms();
 	}
-
-	// Matrices
-	mFullTransform.mul			( mProject,mView	);
-	m_pRender->SetCacheXform(mView, mProject);
-
-	mInvFullTransform.invert44(mFullTransform);
-	mInv3x4FullTransform.invert(mFullTransform);
-	
-	mView_hud_old			= mView_hud;
-	mProject_hud_old		= mProject_hud;
-	mFullTransform_hud_old	= mFullTransform_hud;
-
-	mView_old				= mView_saved;
-	mProject_old			= mProject_saved;
-	mFullTransform_old		= mFullTransform_saved;
-
-	m_pRender->SetCacheXformOld(mView_old, mProject_old);
-
-	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
-		Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-	mView_hud.set(mView);
-	mFullTransform_hud.mul(mProject_hud, mView_hud);
-
-	mFullTransform_hud_special.mul(Fmatrix().build_projection(deg2rad(psHUD_FOV), Device.fASPECT,
-		Device.fViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane), mView_hud);
-	mInv3x4FullTransform_hud_special.invert(mFullTransform_hud_special);
-
-	mView_saved				= mView;
-	mProject_saved			= mProject;
-	mFullTransform_saved	= mFullTransform;
-
-	vCameraPosition_saved	= vCameraPosition;
-
-	// *** Resume threads
-	// Capture end point - thread must run only ONE cycle
-	// Release start point - allow thread to run
 
 	secondary_tasks.run(&XRay::Engine::GameThread);
 
@@ -314,6 +278,41 @@ void CRenderDevice::on_idle		()
 	}
 }
 
+void CRenderDevice::CalculateTransforms()
+{
+	mFullTransform.mul(mProject,mView);
+	m_pRender->SetCacheXform(mView, mProject);
+
+	mInvFullTransform.invert44(mFullTransform);
+	mInv3x4FullTransform.invert(mFullTransform);
+
+	mView_hud_old			= mView_hud;
+	mProject_hud_old		= mProject_hud;
+	mFullTransform_hud_old	= mFullTransform_hud;
+
+	mView_old				= mView_saved;
+	mProject_old			= mProject_saved;
+	mFullTransform_old		= mFullTransform_saved;
+
+	m_pRender->SetCacheXformOld(mView_old, mProject_old);
+
+	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
+		Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	mView_hud.set(mView);
+	mFullTransform_hud.mul(mProject_hud, mView_hud);
+
+	mFullTransform_hud_special.mul(Fmatrix().build_projection(deg2rad(psHUD_FOV), Device.fASPECT,
+		Device.fViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane), mView_hud);
+	mInv3x4FullTransform_hud_special.invert(mFullTransform_hud_special);
+
+	mView_saved				= mView;
+	mProject_saved			= mProject;
+	mFullTransform_saved	= mFullTransform;
+
+	vCameraPosition_saved	= vCameraPosition;
+}
+
 bool quiting = false;
 
 void CRenderDevice::message_loop()
@@ -333,7 +332,7 @@ void CRenderDevice::message_loop()
 		if (!quiting)
 		{
 		on_idle();
-	}
+		}
 	}
 }
 
@@ -471,8 +470,8 @@ struct EfficientFilteredDelta
 		return median + 3.0f * mad;
 	}
 } delta_filter;
+
 bool use_smoothed_delta = false;
-void ProcessLoading();
 void CRenderDevice::FrameMove()
 {
 	PROF_EVENT("Render: Frame Move");
@@ -510,17 +509,10 @@ void CRenderDevice::FrameMove()
 	}
 
 	Statistic->EngineTOTAL.Begin();
-	ProcessLoading();
-	Statistic->EngineTOTAL.End();
-}
-
-void ProcessLoading()
-{
 	Device.seqFrame.Process(rp_Frame);
 	g_bLoaded = TRUE;
+	Statistic->EngineTOTAL.End();
 }
-
-ENGINE_API BOOL bShowPauseString = TRUE;
 
 CRenderDevice::CRenderDevice() :
 	m_pRender(0)
@@ -531,6 +523,7 @@ CRenderDevice::CRenderDevice() :
 	m_bNearer = FALSE;
 };
 
+ENGINE_API BOOL bShowPauseString = TRUE;
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
 	static int snd_emitters_ = -1;
