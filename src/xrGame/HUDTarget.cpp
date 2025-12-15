@@ -33,7 +33,7 @@ u32 C_DEFAULT = color_rgba(0xff, 0xff, 0xff, 0x80);
 #define C_SIZE		0.025f
 #define NEAR_LIM	0.5f
 
-#define SHOW_INFO_SPEED		0.5f
+#define SHOW_INFO_SPEED		1.5f
 #define HIDE_INFO_SPEED		10.f
 
 
@@ -54,7 +54,7 @@ CHUDTarget::CHUDTarget	()
 {    
 	targetFont			= nullptr;
 	bInitialized		= false;
-	fuzzyShowInfo		= 0.f;
+	accumulatedTime		= 0.f;
 	PP.RQ.range			= 0.f;
 
 	PP.RQ.set				(nullptr, 0.f, -1);
@@ -236,31 +236,28 @@ void CHUDTarget::Render()
 							C = colorFriend; break;
 						}
 
-						if (fuzzyShowInfo > 0.5f)
-						{
-							targetFont->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
-							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
-							targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
-						}
+						targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
+						targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->Name()));
+						targetFont->OutNext("%s", *g_pStringTable->translate(others_inv_owner->CharacterInfo().Community().id()));
 					}
 				}
-				fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
+				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 			else if (l_pI && our_inv_owner && PP.RQ.range < 2.0f * 2.0f)
 			{
-				if (fuzzyShowInfo > 0.5f && l_pI->NameItem())
+				if (l_pI->NameItem())
 				{
-					targetFont->SetColor(subst_alpha(C, u8(iFloor(255.f * (fuzzyShowInfo - 0.5f) * 2.f))));
+					targetFont->SetColor(subst_alpha(C, static_cast<u32>(lerp(0.f, 255.f, accumulatedTime))));
 					targetFont->OutNext("%s", l_pI->NameItem());
 				}
-				fuzzyShowInfo += SHOW_INFO_SPEED * Device.fTimeDelta;
+				accumulatedTime += SHOW_INFO_SPEED * Device.fTimeDelta;
 			}
 		}
 		else
 		{
-			fuzzyShowInfo -= HIDE_INFO_SPEED*Device.fTimeDelta;
+			accumulatedTime -= HIDE_INFO_SPEED * Device.fTimeDelta;
 		}
-		clamp(fuzzyShowInfo,0.f,1.f);
+		clamp(accumulatedTime,0.f,1.f);
 	}
 
 	if (psHUD_Flags.test(HUD_CROSSHAIR_DIST))
