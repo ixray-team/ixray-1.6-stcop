@@ -69,8 +69,14 @@ namespace XRay::RayTrace::CUDA
    
     
     // CDeflector CUDA
-    void RayTraceDeflector(CDeflector& D);
-    void RayTraceDeflectorsAll();
+    
+    // Loading
+    void RayTraceDeflectors(xr_vector<CDeflector*> vector);
+    void CopyToHost(xr_vector<CDeflector*> vector);
+ 
+    void RayTraceDeflectorOne(int DeflectorID, int Width, int Height);
+    
+    // Free
     void RayTraceDeflectorsFree();
 }
  

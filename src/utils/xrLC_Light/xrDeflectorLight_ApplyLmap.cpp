@@ -84,12 +84,9 @@ BOOL NEW_ApplyBorders(lm_layer& lm, u32 ref)
 	bool			bNeedContinue = false;
 
 	buffer_vector<base_color>	buf_surf_line0(_alloca(lm.width * sizeof(base_color)), lm.width);
-
-	buffer_vector<base_color>	buf_surf_line1(_alloca(lm.width * sizeof(base_color)), lm.width);
-
-	buffer_vector<u8>			buf_marker_line0(_alloca(lm.width * sizeof(u8)), lm.width);
-
-	buffer_vector<u8>			buf_marker_line1(_alloca(lm.width * sizeof(u8)), lm.width);
+ 	buffer_vector<base_color>	buf_surf_line1(_alloca(lm.width * sizeof(base_color)), lm.width);
+ 	buffer_vector<u8>			buf_marker_line0(_alloca(lm.width * sizeof(u8)), lm.width);
+ 	buffer_vector<u8>			buf_marker_line1(_alloca(lm.width * sizeof(u8)), lm.width);
 
 
 	lm_line line0(buf_surf_line0, buf_marker_line0);
@@ -113,15 +110,15 @@ BOOL NEW_ApplyBorders(lm_layer& lm, u32 ref)
 			sv_color0._set(-1, -1, -1);
 
 			u8		   sv_marker0 = u8(-1);
-			for (int x = 0; x < (int)lm.width; x++)
+			for (int x = 0; x < (int) lm.width; x++)
 			{
 				base_color sv_color = sv_color0;
 				u8		   sv_marker = sv_marker0;
 				sv_color0 = lm.surface[y * lm.width + x];
 				sv_marker0 = lm.marker[y * lm.width + x];
+				
 				if (lm.marker[y * lm.width + x] == 0)
 				{
-
 					base_color_c	clr;
 					u32			C = 0;
 					if (y > 0)
@@ -142,10 +139,14 @@ BOOL NEW_ApplyBorders(lm_layer& lm, u32 ref)
 					GET(lm, x, y + 1, ref, C, clr);
 					GET(lm, x + 1, y + 1, ref, C, clr);
 
-					if (C) {
+					if (C) 
+					{
 						clr.scale(C);
 						lm.surface[y * lm.width + x]._set(clr);
 						lm.marker[y * lm.width + x] = u8(ref);
+
+						// if (ref >= 255) clMsg("V: [%u] U: [%u]  is alpha == %u", ref);
+	 
 						bNeedContinue = TRUE;
 					}
 
@@ -169,8 +170,7 @@ IC u32	rms_diff(u32 a, u32 b)
 	if (a > b)	return a - b;
 	else		return b - a;
 }
-
-
+ 
 // Это при сжатии используется
 BOOL	__stdcall rms_test_compress(lm_layer& lm, u32 w, u32 h, u32 rms)
 {
@@ -272,6 +272,7 @@ u32	__stdcall rms_average(lm_layer& lm, base_color_c& C)
 			}
 		}
 	}
+
 	return	_count;
 }
 
@@ -283,7 +284,20 @@ BOOL	compress_Zero(lm_layer& lm, u32 rms)
 
 	if (0 == _count)
 	{
-		clMsg("* ERROR: Lightmap not calculated (W: %u | H: %u)", lm.width, lm.height);
+		u32 AnyMarker = 0;
+		for (int y = 0; y < lm.height; y++)
+		{
+			for (int x = 0; x < lm.width; x++)
+			{
+				u32	offset = y * lm.width + x;
+				if (lm.marker[offset] > 0)
+				{
+					AnyMarker++;
+				}
+			}
+		}
+ 
+		Msg("* ERROR: Lightmap not calculated (W: %u | H: %u) | Markers Has: %u", lm.width, lm.height, AnyMarker);
 		return	FALSE;
 	}
 	else
