@@ -52,6 +52,8 @@
 #include "UIActorMenu.h"
 #include "../xrServerEntities/restriction_space.h"
 #include "../xrEngine/GameMtlLib.h"
+#include "../xrEngine/Rain.h"
+#include "../xrEngine/thunderbolt.h"
 #include "material_manager.h"
 
 #include "ElectronicsProblemsManager.h"
@@ -1556,6 +1558,12 @@ void CLevel::script_register(lua_State *L)
 		def("get_next_wdesc_execution_time", get_next_wdesc_execution_time),
 		def("get_past_weather", get_past_wdesc),
 		def("get_next_weather", get_next_wdesc),
+		def("enable_rain", +[](bool Value) 
+			{
+				g_pGamePersistent->Environment().eff_Rain->Enable(false);
+				g_pGamePersistent->Environment().eff_Thunderbolt->Enable(false);
+			}
+		),
 
 		def("get_fog_distance",					get_fog_distance),
 		def("GetActorMaterialPairName",			GetActorMaterialPairName),
