@@ -1,9 +1,6 @@
 // Rain.h: interface for the CRain class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#ifndef RainH
-#define RainH
 #pragma once
 
 #include "../xrCore/Collision/xr_collide_defs.h"
@@ -44,18 +41,10 @@ private:
 		stIdle		= 0,
 		stWorking
 	};
+
 private:
 	// Visualization	(rain) and (drops)
 	FactoryPtr<IRainRender>	m_pRender;
-	/*
-	// Visualization	(rain)
-	ref_shader						SH_Rain;
-	ref_geom						hGeom_Rain;
-
-	// Visualization	(drops)
-	IRender_DetailModel*			DM_Drop;
-	ref_geom						hGeom_Drops;
-	*/
 	
 	// Data and logic
 	xr_vector<Item>					items;
@@ -95,6 +84,7 @@ public:
 	void							Render			();
 	void							OnFrame			();
 	void							UpdateItems		();
+
 	void InvalidateState();
 	float GetRainVolume() const { return m_rainVolume; }
 
@@ -102,4 +92,3 @@ public:
 	bool IsEnabled = true;
 	void Enable(bool Value);
 };
-#endif //RainH
