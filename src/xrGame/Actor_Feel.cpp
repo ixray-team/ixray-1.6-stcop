@@ -131,12 +131,15 @@ void	CActor::PickupModeUpdate_COD	()
 
 		return;
 	};
-	
-	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
-	ISpatialResult.resize(0);
-	g_SpatialSpace->q_frustum		(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
+	Fmatrix project, view, transform;
+	view.build_camera_dir(cam_FirstEye()->vPosition, cam_Active()->vDirection, cam_Active()->vNormal);
+	project.build_projection(deg2rad(cam_Active()->f_fov), cam_Active()->f_aspect, Device.fViewportNear, 2.45f);
+	transform.mul(project, view);
+
+	CFrustum frustum;
+	frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
+	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 
 	float maxlen					= 1000.0f;
 	CInventoryItem* pNearestItem	= nullptr;
@@ -154,8 +157,6 @@ void	CActor::PickupModeUpdate_COD	()
 
 		Fvector A, B, tmp;
 		pIItem->object().Center(A);
-		if (A.distance_to_sqr(Position()) > 4)
-			continue;
 
 		tmp.sub(A, cam_Active()->vPosition);
 		B.mad(cam_Active()->vPosition, cam_Active()->vDirection, tmp.dotproduct(cam_Active()->vDirection));
@@ -164,7 +165,7 @@ void	CActor::PickupModeUpdate_COD	()
 		if (len > 1)
 			continue;
 
-		if (maxlen>len && !pIItem->object().getDestroy())
+		if (maxlen>len)
 		{
 			maxlen = len;
 			pNearestItem = pIItem;
@@ -173,9 +174,7 @@ void	CActor::PickupModeUpdate_COD	()
 
 	if(pNearestItem)
 	{
-		CFrustum frustum_;
-		frustum_.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-		if (!pPickup->CanPickItem(frustum_, Device.vCameraPosition, &pNearestItem->object()))
+		if (!pPickup->CanPickItem(frustum, cam_FirstEye()->vPosition, &pNearestItem->object()))
 			pNearestItem = nullptr;
 	}
 
@@ -216,12 +215,11 @@ void	CActor::Check_for_AutoPickUp()
 	if (!g_Alive())								return;
 
 	Fvector bc; 
-	bc.add				(Position(), m_AutoPickUp_AABB_Offset);
+	bc.add(Position(), m_AutoPickUp_AABB_Offset);
 	Fbox APU_Box;
-	APU_Box.set			(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
+	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	xr_vector<ISpatialShared>	ISpatialResult_;
-	g_SpatialSpace->q_box   (ISpatialResult_, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
+	g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_COLLIDEABLE, bc, m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
 	for (ISpatialShared& spatial : ISpatialResult)
@@ -267,7 +265,6 @@ void CActor::Feel_Grenade_Update( float rad )
 	Fvector pos_actor;
 	Center( pos_actor );
 
-	q_nearest.resize(0);
 	g_pGameLevel->ObjectSpace.GetNearest( q_nearest, pos_actor, rad, nullptr );
 
 	// select only grenade
