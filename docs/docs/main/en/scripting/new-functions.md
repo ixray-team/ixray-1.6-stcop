@@ -631,3 +631,20 @@ bool is_item_used_additional_description()
 		•  Minimum condition to use: 30 %
   ```
 :::
+
+## level
+```lua
+--// enable/disable rain effector
+level.enable_rain(value)
+retval: none
+args: value (boolean)
+
+--// Switch wallmark visible
+level.switch_wallmark(wallmark_object, status)
+retval: none
+args: wallmark_object(script game object), status (boolean)
+
+--// Get fog distance from current env
+level.get_fog_distance()
+retval: float
+```
