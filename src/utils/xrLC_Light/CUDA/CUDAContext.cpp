@@ -34,7 +34,7 @@ bool OptixContext::Initialize()
 	CUdevice cuDev;
 	CUcontext cuCtx;
 	 
- 	CUDA_CHECK_2( cuDeviceGet(&cuDev, cudaDeviceId) );
+ 	CUDA_CHECK_2 ( cuDeviceGet(&cuDev, cudaDeviceId) );
 	CUDA_CHECK_2 ( cuDevicePrimaryCtxRetain(&cuCtx, cuDev) );
 	CUDA_CHECK_2 ( cuCtxSetCurrent(cuCtx) );
 
@@ -128,7 +128,9 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	OptixPipelineCompileOptions pipelineCompileOptions = {};
 	pipelineCompileOptions.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
 	pipelineCompileOptions.usesMotionBlur = false;
-	pipelineCompileOptions.numPayloadValues = 2;
+	
+	// Todo Сделать где то глобальным параметром через DEFINE
+	pipelineCompileOptions.numPayloadValues = 3;	// se7kills (Важное влияет на количество аргументов OptixTrace)
 	pipelineCompileOptions.numAttributeValues = 2;
 	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
 	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params

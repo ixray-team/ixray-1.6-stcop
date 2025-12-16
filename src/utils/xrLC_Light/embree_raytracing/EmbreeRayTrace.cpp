@@ -99,34 +99,6 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	// LUT вместо деления и sqr
 	ctxt->energy *= opacityLUT[pixel_a];
 
-	/* 
-  	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-	// barycentric coords
-	// note: W,U,V order
-	B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-	//// calc UV
-	Fvector2* cuv = F->getTC0();
-	Fvector2	uv;
-	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
-	
-	u32* raw	= static_cast<u32*>(T.pSurface);
-	u32 pixel	= raw[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-	// Дополнение Контекста
-	ctxt->energy *= opac;
-	*/
-
 	if (ctxt->energy < EmbreeEnergyMAX)
 		return false;
 
@@ -137,14 +109,14 @@ void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-
 	Face* F = EmbreeMain.static_geom.dummy[hit->primID];
-	if (F == ctxt->skip)
+	if (F != ctxt->skip)
 	{
-		args->valid[0] = 0;  return;
+		ctxt->energy = 0;
+		args->valid[0] = -1; // Приехали
+		return;
 	}
- 	ctxt->energy = 0;
-	args->valid[0] = -1; // Приехали
+	args->valid[0] = 0;		 // Продолжаем Trace
 }
  
 void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
@@ -154,14 +126,13 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 
 	// Собрать все
 	Face* F = EmbreeMain.static_geom_transp.dummy[hit->primID]; 
-	 
- 	if (F != ctxt->skip && !CalculateEnergy(ctxt, hit, F, ctxt->B))
+	if (F != ctxt->skip && !CalculateEnergy(ctxt, hit, F, ctxt->B))
 	{
- 		ctxt->energy = 0;
-		args->valid[0] = -1; 		return;
+		ctxt->energy = 0;
+		args->valid[0] = -1; // Приехали
+		return;
 	}
-
- 	args->valid[0] = 0;
+	args->valid[0] = 0;		 // Продолжаем Trace
 }
 
 float EmbreeData::RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
