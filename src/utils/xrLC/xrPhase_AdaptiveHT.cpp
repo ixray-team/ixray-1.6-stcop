@@ -143,7 +143,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 
 		GPUTaskinSystem.LightPointPackedRun();
 
-		for (auto& TASK : GPUTaskinSystem.Colors)
+		for (auto& TASK : GPUTaskinSystem.task_colors)
 		{
 			u32 U   = GPUTaskinSystem.GetU(TASK.first);
 			auto& C = TASK.second;
