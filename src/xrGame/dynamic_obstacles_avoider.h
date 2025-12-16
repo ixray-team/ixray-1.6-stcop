@@ -21,5 +21,3 @@ protected:
 public:
 			bool		movement_enabled	() const;
 };
-
-#include "dynamic_obstacles_avoider_inline.h"

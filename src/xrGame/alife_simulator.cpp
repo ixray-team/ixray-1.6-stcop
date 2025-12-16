@@ -49,10 +49,10 @@ void restart_all				()
 #endif // DEBUG
 }
 
-CALifeSimulator::CALifeSimulator		(xrServer *server, shared_str *command_line) :
-	CALifeUpdateManager			(server,alife_section),
-	CALifeInteractionManager	(server,alife_section),
-	CALifeSimulatorBase			(server,alife_section)
+CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :
+	CALifeUpdateManager(server, alife_section),
+	CALifeInteractionManager(server, alife_section),
+	CALifeSimulatorBase(server, alife_section)
 {
 	PROF_EVENT("CALifeSimulator::CALifeSimulator");
 	restart_all();
@@ -109,7 +109,6 @@ CALifeSimulator::~CALifeSimulator		()
 
 void CALifeSimulator::destroy			()
 {
-//	validate					();
 	CALifeUpdateManager::destroy();
 	VERIFY						(ai().get_alife());
 	ai().set_alife				(0);
@@ -117,7 +116,6 @@ void CALifeSimulator::destroy			()
 
 void CALifeSimulator::setup_simulator	(CSE_ALifeObject *object)
 {
-//	VERIFY2						(!object->m_alife_simulator,object->s_name_replace);
 	object->m_alife_simulator	= this;
 }
 
