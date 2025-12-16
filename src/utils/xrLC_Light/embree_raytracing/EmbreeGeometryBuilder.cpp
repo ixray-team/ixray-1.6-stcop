@@ -6,7 +6,7 @@
 #include <execution>
 #include <array>
  
-void TriangleContainer::RemoveDublicates()
+void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent)
 {
     size_t VertexStart = verts_v.size();
 
@@ -109,19 +109,14 @@ void TriangleContainer::RemoveDublicates()
     raw_faces.clear();
     raw_faces.shrink_to_fit();
 
-    clMsg("$ Remove Dublicates: %u ms | Vertex Now: CAP: %u| SIZE: %u | Vertex Pre : %u",
-        tStats.GetElapsed_ms(),
-        verts_v.capacity(), verts_v.size(),
-        VertexStart);
+    Msg("$ Geometry %s Remove Dublicate Vertex : from %u to %u", isTransparent? "Transparent" : "Opacue", VertexStart, verts_v.size());
 }
-
-
-void TriangleContainer::RemoveDublicatesFaces()
+ 
+void TriangleContainer::RemoveDublicatesFaces(bool isTransparent)
 {
     if (faces_v.empty())        return;
 
-    CTimer t; 
-    t.Start();
+    CTimer t; t.Start();
 
     // 1. Убираем дубликаты треугольников через сортировку
     xr_vector<IndexedTri> temp;
@@ -161,9 +156,10 @@ void TriangleContainer::RemoveDublicatesFaces()
     // меняем местами
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
-
-
-    clMsg("$ Triangles : Compacted From %u to (CAP: %u | SIZE: %u) | %u ms", pFaces, faces_v.capacity(), faces_v.size(), t.GetElapsed_ms());
+ 
+     Msg("$ Geometry %s Remove Dublicate Triangles : from %u to %u", 
+         isTransparent ? "Transparent" : "Opacue",
+         pFaces, faces_v.size());
 }
 
 
