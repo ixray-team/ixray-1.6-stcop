@@ -415,8 +415,7 @@ void RenderHUDAdjustManager()
 
 									if (ImGui::Button("Reset##IPosition"))
 									{
-										xr_strconcat(val_name, "item_position", _prefix);
-										position = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+										position = pSettings->r_fvector3(p_item->m_sect_name, "item_position");
 									}
 
 									if (ImGui::BeginTable("Data##HUDPI", 1))
@@ -439,8 +438,7 @@ void RenderHUDAdjustManager()
 									Fvector& rotation = p_item->m_measures.m_item_attach[1];
 									if (ImGui::Button("Reset##IRotation"))
 									{
-										xr_strconcat(val_name, "item_orientation", _prefix);
-										rotation = pSettings->r_fvector3(p_item->m_sect_name, val_name);
+										rotation = pSettings->r_fvector3(p_item->m_sect_name, "item_orientation");
 									}
 
 									if (ImGui::BeginTable("Data##HUDR", 1))
