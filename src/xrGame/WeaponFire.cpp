@@ -71,7 +71,7 @@ void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
 //	float Deterioration = GetWeaponDeterioration();
 //	Msg("Deterioration = %f", Deterioration);
 
-	if (!psActorFlags.test(AF_INFINITEDURABILITY))
+	if (!psActorFlags.test(AF_INFINITE_DURABILITY))
 	{
 		ChangeCondition(-GetWeaponDeterioration() * l_cartridge.param_s.impair);
 	}
@@ -160,7 +160,7 @@ void CWeapon::FireTraceChamber(const Fvector& P, const Fvector& D)
 		l_cartridge.param_s.u8ColorID = m_u8TracerColorID;
 	//-------------------------------------------------------------
 
-	if (!psActorFlags.test(AF_INFINITEDURABILITY))
+	if (!psActorFlags.test(AF_INFINITE_DURABILITY))
 	{
 		ChangeCondition(-GetWeaponDeterioration() * l_cartridge.param_s.impair);
 	}
