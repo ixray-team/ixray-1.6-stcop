@@ -30,24 +30,10 @@ struct RayRecvestIndex
 	Fvector P;
 	Fvector N;
 	// Face* skip;
-	// u8		JitterIndex;
 };
   
 class PackedLighting
 {
-	// new hash
-	typedef xr_hash_map<size_t, base_color_c>		color_map;
-
-public:
-	// Result Vector
-	PackedLighting()
-	{	
-  	};
- 
-	~PackedLighting() 
-	{
- 	};
-
 public:
  
 	// Unordered for maps
@@ -68,12 +54,14 @@ public:
 
 	void InitializeGPU();
 	
-	// Implicit (or AdaptiveHT) (No Has Deflector)
-	void LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
-	void LightPointPackedRun();
+	/* Специальные релизация под разные типы освещения */
 
-	xrCriticalSection csAdd;
- 
+
+	// Implicit (or AdaptiveHT) (No Has Deflector)
+	void LightPointPacked_Implicit(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
+	void LightPointPacked_ImplicitRun();
+
+ 	// Deflectors 
 	void LightPointPackedDeflector(size_t IndexTask, CDeflector* D, Fvector& P, Fvector& N, u32 flags, Face* skip);
  	void LightPointPackedDeflectorsRun();
  
@@ -81,42 +69,37 @@ public:
  	void LightPointPacked_MODEL(xrMU_Reference* MU, u32 I, Fvector& P, Fvector& N, u32 flags, Face* skip);
 	void LightPointPacked_MODELRun();
  
+	
+	/* Универсальный */
+ 
+	// Lightpoint Base
+ 	xrCriticalSection									csEnter;
+	xr_concurrent_vector        <RayRecvestIndex>		task_pools;
+	xr_concurrent_unordered_map <size_t, base_color_c>  task_colors;
+
+	// Basic
+	void LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip);
+	void LightPointPackedRun();
+
+ 
  	void RestartALL()
 	{
 		// start
 		Recalculated = 0;
  		current_flags = 0;
 
-		// Basic Tasks
-  		Colors.clear();
-
-		// task pool memory clear
-		// task_pools.clear();
-		// task_pools.shrink_to_fit();
-
-		task_pools.reserve(MAX_RAYS_PER_TASK);
- 
- 		ProcessingGPU = 0;
-		ProcessingCPU_result = 0;
+		// clearing pool
+		task_pools.clear();
+		task_colors.clear();
 	}
  
-	// Task Index, Color. 
-	// простые задчи
- 	color_map			Colors;	
-
+  
 	// Stats 
 	bool	isInitializedGPU = false;
 	u8	    current_flags = 0;
- 
-	// tasks	
-	xr_concurrent_vector<RayRecvestIndex>																task_pools;			//Working
-
-	xrCriticalSection csEnter;
-
+ 	 
 	// Stats
 	u32 Recalculated = 0;
-	u32 ProcessingGPU = 0;
- 	u32 ProcessingCPU_result = 0;
 };
 
 extern PackedLighting GPUTaskinSystem;
