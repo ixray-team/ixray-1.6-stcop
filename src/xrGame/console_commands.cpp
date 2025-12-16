@@ -2397,8 +2397,8 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "dbg_draw_lchangers", &dbg_net_Draw_Flags, dbg_draw_lchangers);
 
-	CMD3(CCC_Mask, "g_unlimited_fire", &psActorFlags, AF_INFINITEFIRE);
-	CMD3(CCC_Mask, "g_unlimited_durability", &psActorFlags, AF_INFINITEDURABILITY);
+	CMD3(CCC_Mask, "g_unlimited_fire", &psActorFlags, AF_INFINITE_FIRE);
+	CMD3(CCC_Mask, "g_unlimited_durability", &psActorFlags, AF_INFINITE_DURABILITY);
 
 	CMD1(CCC_ChZLoggerTest, "chZLoggerTest");
 	CMD1(CCC_ConsoleColors, "get_console_colors");
@@ -2581,8 +2581,8 @@ void CCC_RegisterCommands()
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_JumpToLevel, "jump_to_level");
-	CMD3(CCC_Mask, "g_god", &psActorFlags, AF_GODMODE);
-	CMD3(CCC_Mask, "g_unlimitedammo", &psActorFlags, AF_UNLIMITEDAMMO);
+	CMD3(CCC_Mask, "g_god", &psActorFlags, AF_GOD_MODE);
+	CMD3(CCC_Mask, "g_unlimitedammo", &psActorFlags, AF_UNLIMITED_AMMO);
 	CMD1(CCC_Script, "run_script");
 	CMD1(CCC_ScriptCommand, "run_string");
 	CMD1(CCC_TimeFactor, "time_factor");
@@ -2593,7 +2593,7 @@ void CCC_RegisterCommands()
 #endif // MASTER_GOLD
 
 	CMD1(CCC_ReloadSystemLtx, "reload_system_ltx");
-	CMD3(CCC_Mask, "g_autopickup", &psActorFlags, AF_AUTOPICKUP);
+	CMD3(CCC_Mask, "g_autopickup", &psActorFlags, AF_AUTO_PICKUP);
 	CMD3(CCC_Mask, "g_dynamic_music", &psActorFlags, AF_DYNAMIC_MUSIC);
 	CMD3(CCC_Mask, "g_important_save", &psActorFlags, AF_IMPORTANT_SAVE);
 	CMD3(CCC_Mask, "g_hit_slowmo", &psActorFlags, AF_HIT_SLOWMO);
