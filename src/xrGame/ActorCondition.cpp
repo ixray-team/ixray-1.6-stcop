@@ -27,7 +27,7 @@
 BOOL	GodMode	()	
 { 
 	if (IsGameTypeSingle()) 
-		return psActorFlags.test(AF_GODMODE|AF_DISABLE_CONDITION_TEST); 
+		return psActorFlags.test(AF_GOD_MODE|AF_DISABLE_CONDITION_TEST); 
 
 	return false;	
 }
@@ -219,7 +219,7 @@ float CActorCondition::GetZoneMaxPower( ALife::EHitType hit_type ) const
 void CActorCondition::UpdateCondition()
 {
 	// FX: Хак для кат-сцен (GODMODE_RT)
-	if (!psActorFlags.test(AF_GODMODE))
+	if (!psActorFlags.test(AF_GOD_MODE))
 	{
 		Alcohol.Current += Alcohol.Variability * m_fDeltaTime;
 		clamp(Alcohol.Current, 0.0f, 1.0f);

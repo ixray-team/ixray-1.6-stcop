@@ -748,7 +748,7 @@ void CScriptGameObject::invulnerable(bool invulnerable)
 {
 	if (object().cast_actor() != nullptr)
 	{
-		psActorFlags.set(AF_GODMODE, invulnerable);
+		psActorFlags.set(AF_GOD_MODE, invulnerable);
 	}
 	else if (CCustomMonster* monster = object().cast_custom_monster())
 	{
