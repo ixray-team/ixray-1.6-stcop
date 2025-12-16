@@ -14,6 +14,7 @@ option(IXRAY_USE_R2 "Enable DirectX 9 dynamic render" ON)
 option(IXRAY_USE_COMPRESSOR "Enable xrCompresor" ON)
 option(IXRAY_UNITYBUILD "Enable UnityBuild for xrGame" ON)
 option(IXRAY_PROFILER "Enable Optick for perf debug" OFF)
+set(IXRAY_BUILD_BATCH_SIZE "32" CACHE STRING "UNITY_BUILD_BATCH_SIZE")
 
 # CI trash
 option(IXRAY_COMPRESSOR_ONLY "Build only compressor" OFF)
