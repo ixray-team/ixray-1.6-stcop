@@ -20,8 +20,8 @@
 
 Одна кривая анимации с соответствующим модификатором (`Color Animator`, `Size Animator`, `Velocity Animator`) может заменить множество обычных соответствующих модификаторов (`Target Color`, `Target Velocity`, `Target Size`) с выставленными `TimeFrom` и `TimeTo` параметрами. Более того, однажды созданная кривая может быть заново использована в других партиклах без необходимости заново настраивать анимацию.
 
-![image]("https://github.com/user-attachments/assets/7c11168e-b45d-4e49-a07f-9840af50aa22")
-![image]("https://github.com/user-attachments/assets/c6aa06ed-1635-4019-b5af-68320590e31d")
+![image](https://github.com/user-attachments/assets/7c11168e-b45d-4e49-a07f-9840af50aa22)
+![image](https://github.com/user-attachments/assets/c6aa06ed-1635-4019-b5af-68320590e31d)
 
 Если выбрать кривую из списка элементов, то в `RightBar` можно открыть редактор кривых. В основном поле будет находится визуализация кривых. В полосе ниже основного поля будут находится ключи анимации. На оси Х внизу расположено время ключа в милисекундах, а на Y слева будут показаны значения кривых в зависимости от времени.
 
@@ -48,9 +48,9 @@
 
 # Изменения в интерфейсе редактора
 ## Тип элемента в дереве и дочерние элементы
-![image]("https://github.com/user-attachments/assets/82ce92ed-a4b0-4db0-84c6-966881ef0c94")
-![image]("https://github.com/user-attachments/assets/12a11e0c-11e3-4257-a842-1bafb3a20f84")
-![image]("https://github.com/user-attachments/assets/2e66cd9f-4b20-4ed2-8fcb-15e4b233adeb")
+![image](https://github.com/user-attachments/assets/82ce92ed-a4b0-4db0-84c6-966881ef0c94)
+![image](https://github.com/user-attachments/assets/12a11e0c-11e3-4257-a842-1bafb3a20f84)
+![image](https://github.com/user-attachments/assets/2e66cd9f-4b20-4ed2-8fcb-15e4b233adeb)
 
 Каждый элемент обзавёлся идентификатором типа, которому он принадлежит:
 * `PG` - группа

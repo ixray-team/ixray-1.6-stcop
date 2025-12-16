@@ -22,8 +22,8 @@ A new data type for particles - a pre-made 4-channel (RGBA) animation curve. Can
 
 A single animation curve with its corresponding modifier (`Color Animator`, `Size Animator`, `Velocity Animator`) can replace multiple standard modifiers (`Target Color`, `Target Velocity`, `Target Size`) with manually set `TimeFrom` and `TimeTo` parameters. Furthermore, a once-created curve can be reused in other particles without the need to reconfigure the animation.
 
-![image]("https://github.com/user-attachments/assets/7c11168e-b45d-4e49-a07f-9840af50aa22")
-![image]("https://github.com/user-attachments/assets/c6aa06ed-1635-4019-b5af-68320590e31d")
+![image](https://github.com/user-attachments/assets/7c11168e-b45d-4e49-a07f-9840af50aa22)
+![image](https://github.com/user-attachments/assets/c6aa06ed-1635-4019-b5af-68320590e31d)
 
 If you select a curve from the element list, the curve editor will open in the `RightBar`. The main area will display a visualization of the curves. The strip below the main area will contain the animation keys. The X-axis at the bottom shows the key time in milliseconds, and the Y-axis on the left shows the curve values depending on time.
 
@@ -53,9 +53,9 @@ Modifiers created to animate a particle parameter according to an assigned curve
 
 # Changes in the Editor Interface
 ## Element Type in the Tree and Child Elements
-![image]("https://github.com/user-attachments/assets/82ce92ed-a4b0-4db0-84c6-966881ef0c94")
-![image]("https://github.com/user-attachments/assets/12a11e0c-11e3-4257-a842-1bafb3a20f84")
-![image]("https://github.com/user-attachments/assets/2e66cd9f-4b20-4ed2-8fcb-15e4b233adeb")
+![image](https://github.com/user-attachments/assets/82ce92ed-a4b0-4db0-84c6-966881ef0c94)
+![image](https://github.com/user-attachments/assets/12a11e0c-11e3-4257-a842-1bafb3a20f84)
+![image](https://github.com/user-attachments/assets/2e66cd9f-4b20-4ed2-8fcb-15e4b233adeb)
 
 Each element now has an identifier for the type it belongs to:
 * `PG` - Particle Group
