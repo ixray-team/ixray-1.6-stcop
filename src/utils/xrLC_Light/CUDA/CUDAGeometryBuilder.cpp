@@ -2,9 +2,10 @@
 #include "CUDAGeometryBuilder.h"
 #include "../../xrLC/Build.h"
 
+#include "Vector3HW.h"
 
 
-bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outBuffers)
+bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
 
@@ -70,8 +71,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
 
 
     // 7. Сборка BLAS
-
-    OPTIX_CHECK(
+     OPTIX_CHECK(
     optixAccelBuild
     (
         context,
@@ -96,8 +96,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
     uint64_t compactedSize = 0;
     CUDA_CHECK(cudaMemcpy(&compactedSize, reinterpret_cast<void*>(d_compactedSize), sizeof(uint64_t), cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_compactedSize)));
-
-
+ 
     // 9. Компактация, если это выгодно
     if (compactedSize != 0 && compactedSize < bufferSizes.outputSizeInBytes)
     {
@@ -120,8 +119,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
         // Сохраняем компактный
         outBuffers.blasBuffer = d_compactedBuffer;
         outBuffers.blasHandle = compactedHandle;
-
-
+ 
         clMsg("$ [BLAS] Accel Structure Compacted From : %u mb to : %u mb",
             bufferSizes.outputSizeInBytes / 1024 / 1024,
             compactedSize / 1024 / 1024
@@ -144,7 +142,7 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, XRay::RayTrace:
     return true;
 }
 
-bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene, CUstream stream)
+bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream)
 {
     // 1. Строим TLAS (один экземпляр BLAS)
     OptixInstance instance = {};
@@ -162,12 +160,10 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
     instance.traversableHandle = outScene.blasHandle;
 
     // 2. Алокация под GPU
-
     CUdeviceptr d_instances;
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_instances), sizeof(OptixInstance)));
     CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(d_instances), &instance, sizeof(OptixInstance), cudaMemcpyHostToDevice));
-
-
+ 
     // 3. Входные данные для структуры 
     OptixBuildInput buildInput = {};
     buildInput.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
@@ -181,7 +177,6 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
     buildOptions.operation = OPTIX_BUILD_OPERATION_BUILD;
 
     // 5. Вычисление требуемой памяти
-
     OptixAccelBufferSizes bufferSizes;
     OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &buildOptions, &buildInput, 1, &bufferSizes));
 
@@ -190,15 +185,13 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outScene.tlasBuffer), bufferSizes.outputSizeInBytes));
 
-  
     // 7. Дескриптор компактации
     OptixAccelEmitDesc emitDesc = {};
     CUdeviceptr d_compactedSize;
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedSize), sizeof(uint64_t)));
     emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
     emitDesc.result = d_compactedSize;
-
-
+ 
     OPTIX_CHECK(optixAccelBuild(
         context,
         stream,
@@ -214,63 +207,10 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
         1
     ));
 
-    /*
-    // 8. Узнаём размер скомпактированной структуры
-    uint64_t compactedSize = 0;
-    CUDA_CHECK(cudaMemcpy(&compactedSize, reinterpret_cast<void*>(d_compactedSize), sizeof(uint64_t), cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_compactedSize)));
-
-
-    // 9. Компактация, если это выгодно
-    if (compactedSize != 0 && compactedSize < bufferSizes.outputSizeInBytes)
-    {
-        CUdeviceptr d_compactedBuffer;
-        CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedBuffer), compactedSize));
-
-        OptixTraversableHandle compactedHandle;
-        
-        OPTIX_CHECK
-        (
-        optixAccelCompact(
-            context,
-            0, // stream
-            outScene.tlasBuffer,
-            d_compactedBuffer,
-            compactedSize,
-            &compactedHandle
-        )
-        );
-
-        // Освобождаем старый буфер
-        CUDA_CHECK
-        (
-           cudaFree(reinterpret_cast<void*>(outScene.tlasBuffer))
-        );
-
-        // Сохраняем компактный
-        outScene.tlasBuffer = d_compactedBuffer;
-        outScene.tlasHandle = compactedHandle;
-
-
-        clMsg("$ [TLAS] Used Memory compacted: %u b to : %u b",
-            bufferSizes.outputSizeInBytes,
-            compactedSize
-        );
-    }
-    else
-    {
-        clMsg("$ [TLAS] Used Memory: %u mb",
-            bufferSizes.outputSizeInBytes / 1024 / 1024
-        );
-    }
-    
-    */
-
     clMsg("$ [TLAS] Used Memory: %u mb",
         bufferSizes.outputSizeInBytes / 1024 / 1024
     );
-
-
+     
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
 
@@ -284,11 +224,10 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, XRay::RayTrace:
 #include "../xrMU_Model_Reference.h"
 #include <embree_raytracing/EmbreeRayTrace.h>
 
-
 extern size_t GetHeapMemory();
 struct FaceDataIntel;
 
-bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene)
+bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
 {
     xrLC_GlobalData* globalData = lc_global_data();
     if (!globalData)
@@ -301,11 +240,9 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
 
     Status("Build BLAS...");
 
-    CTimer t;
-    t.Start();
+    CTimer t;  t.Start();
 
     size_t Start = GetHeapMemory();
-
     clMsg("Processing Memory: %u mb", Start / 1024 / 1024);
     xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
 
@@ -323,6 +260,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         else
             geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
     }
+
 
     // 2. Обрабатываем MU-референсы
     for (auto ref : globalData->mu_refs())
