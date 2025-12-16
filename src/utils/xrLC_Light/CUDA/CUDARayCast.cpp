@@ -9,16 +9,17 @@
 
 // Пример использования:
 OptixContext optixContext;
-OptixTraversableHandle g_optixHandle;
-XRay::RayTrace::CUDA::OptixMeshBuffers CommitedScene;
+OptixMeshBuffers CommitedScene;
 
 
 static CUstream cudaStream = nullptr;
-XRay::RayTrace::CUDA::FaceData* d_faces;
-XRay::RayTrace::CUDA::MaterialData* d_materials;
+FaceData* d_faces;
+MaterialData* d_materials;
+
+
 cudaTextureObject_t* d_textures;
 u32 g_faceCount;
-
+ 
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
 	// Однократная инициализация
@@ -40,8 +41,7 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
- 	g_optixHandle = CommitedScene.tlasHandle;
-
+ 
 	clMsg("Processing Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 }
 
@@ -103,8 +103,6 @@ void XRay::RayTrace::CUDA::InitializeTextures(xr_vector<TextureData>& gpuTexture
 
 	delete[] texObjects;
 }
- 
-
  
 class RayTracer
 {
@@ -260,9 +258,6 @@ public:
 			.colors = d_colors,
 			.lights = d_lights,
 			.counts_lights = size_lights,
-			.GpuDeflectors = nullptr,
-			.DeflectorsBig = false,
-			.DeflectorsBigID = 0,
 		};
  		 
 		// Копируем Стартовые параметры !!! асинхронно
