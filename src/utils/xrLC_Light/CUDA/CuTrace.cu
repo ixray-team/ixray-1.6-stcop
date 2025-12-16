@@ -1,4 +1,4 @@
-#include <cuda_runtime.h>
+Ôªø#include <cuda_runtime.h>
 #include <optix.h>
 #include <optix_device.h>
 #include "Vector3HW.h"
@@ -36,19 +36,23 @@ __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Ran
 	const float maxT = Range;
 
 	unsigned int hit = 0;
+	unsigned int Energy = 100;
+	unsigned int HitsCollected = 0;
+
+	//// –û–±–Ω–æ–≤–∏—Ç—å —Ä–∞–∑–º–µ—Ä –≤ CUDAContext –í pipelineCompileOptions.numPayloadValues (–ï—Å–ª–∏ –º–µ–Ω—è—Ç—å –∫–æ–ª-–≤–æ Payloads)
  	optixTrace(
 		g_params.handle,
 		origin,
 		dir,
 		0.0f, maxT, 0.0f,
 		OptixVisibilityMask(255),
-		OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+		OPTIX_RAY_FLAG_NONE,
+		//OPTIX_RAY_FLAG_DISABLE_ANYHIT,
 		0, 1, 0,
-		hit
+		hit, Energy, HitsCollected
 	);
 
-	// return 0.0f;
- 	return (hit == 0) ? 1.0f : 0.0f;
+	return float (Energy / 100) ; // (hit == 0) ? 1.0f : 0.0f;
 }
 
 __device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C)
@@ -183,8 +187,11 @@ __device__ void run_tracing_new(int index)
 	LightPoint(P, N, ColorUV, flags);
 }
  
- 
+#include "optix_types.h"
+
 // Entry points
+#define ENERGY_MIN 0.01f
+
 extern "C" __global__ void __raygen__rg()
 {
 	const uint3 launch_idx = optixGetLaunchIndex();
@@ -204,71 +211,37 @@ extern "C" __global__ void __closesthit__ch()
 extern "C" __global__ void __anyhit__ah()
 {
 	// Not used
+	unsigned int hit				= optixGetPayload_0();
+	unsigned int energy_int			= optixGetPayload_1();
+	unsigned int hits_collected		= optixGetPayload_2();
+
+	float energy   = energy_int / 100;
+
+	// energy attenuation (LUT)
+ 	energy			*= 0.8f;
+	hits_collected  += 1;
+
+	// if (hits_collected > 2)
+	// {
+	// 	optixSetPayload_1(int(energy * 100));
+	// 	return;
+	// }
+	
+	// opaque ‚Üí –æ—Å—Ç–∞–Ω–æ–≤–∏—Ç—å
+	if (energy < ENERGY_MIN)
+	{
+	 	optixSetPayload_1(0);
+		return; // closesthit –±—É–¥–µ—Ç –≤—ã–∑–≤–∞–Ω
+	}
+	 
+	// // transparent ‚Üí –ø—Ä–æ–ø—É—Å–∫–∞–µ–º –∏ –ª–µ—Ç–∏–º –¥–∞–ª—å—à–µ
+	optixSetPayload_1( int(energy * 100) );
+	optixSetPayload_2(hits_collected);
+
+	optixIgnoreIntersection();
 }
  
-// se7kills TODO:  CDeflectorGPU –ÂÎËÁ‡ˆË˛ Ò‰ÂÎ‡Ú¸ ! (œÓÎÌ‡ˇ ÍÓÔËˇ ‰Ó 2048 Á‡ ‡Á)
-// (Õ‡ „ÔÛ ‡Ò˘ËÚ˚‚‡ÂÏ ‚ÒÂ ‰‡ÊÂ for ( auto K : UVTri ) { if ( K.isInsize() ) { light_point() } } )
+// se7kills TODO:  CDeflectorGPU –†–µ–ª–∏–∑–∞—Ü–∏—é —Å–¥–µ–ª–∞—Ç—å ! (–ü–æ–ª–Ω–∞—è –∫–æ–ø–∏—è –¥–æ 2048 –∑–∞ —Ä–∞–∑)
+// (–ù–∞ –≥–ø—É —Ä–∞—Å—â–∏—Ç—ã–≤–∞–µ–º –≤—Å–µ –¥–∞–∂–µ for ( auto K : UVTri ) { if ( K.isInsize() ) { light_point() } } )
 
-// ƒÓ·‡‚ËÎ VertexGPU, UVTriGPU, _TCF_GPU ƒÎˇ ÍÓÔËÓ‚‡ÌËˇ ‚ GPU
-
-
-/*
-__device__ void DeflectorProcessOne(CDeflector_GPU& Defl, int TaskJitter, int U, int V)
-{
-	Hardware_Vector2 Jitter9[9] =
-	{
-		{-1,-1},	{0,-1},		{1,-1},
-		{-1,0},		{0,0},		{1,0},
-		{-1,1},		{0,1},		{1,1}
-	};
-
-	Hardware_Color	C;
-
-	// LUMEL space
-	Hardware_Vector2 P;
-	P.x = float(U) / Defl.Jitter.dim.x + Defl.Jitter.half.x + Jitter9[TaskJitter].x * Defl.Jitter.JS.x;
-	P.y = float(V) / Defl.Jitter.dim.y + Defl.Jitter.half.y + Jitter9[TaskJitter].y * Defl.Jitter.JS.y;
-
-	// World space
-	Hardware_Vector		wP, wN, B;
-	for (auto TRI_INDEX = 0; TRI_INDEX < Defl.UVTrisSize; TRI_INDEX++)
-	{
-		auto TRI = Defl.UVTris[TRI_INDEX];
-		if (TRI.isInside(P, B))
-		{
-			// We found triangle and have barycentric coords
-			VertexGPU& V1 = TRI.V[0];
-			VertexGPU& V2 = TRI.V[1];
-			VertexGPU& V3 = TRI.V[2];
-
-			wP.from_bary(V1.P, V2.P, V3.P, B);
-
-			{
-				wN.from_bary(V1.N, V2.N, V3.N, B);
-				// exact_normalize(wN);  // TODO ! se7kills
-				wN.Add(TRI.N);
-				// exact_normalize(wN);  // TODO ! se7kills
-			}
-
-			LightPoint(wP, wN, C, 0);
-			Defl.Jitter.SamplesCaptured += 1;
-
-			break;
-		}
-	}
-
-	// if (Fcount)
-	// {
-	// 	C.scale(Fcount);
-	// 	C.mul(.5f);
-	// 	Defl.surfaces[V * Defl.Width + U] = C;
-	// 	Defl.marker[V * Defl.Width + U] = 255;
-	// }
-	// else
-	// {
-	// 	Defl.surfaces[V * Defl.Width + U] = C;
-	// 	Defl.marker[V * Defl.Width + U] = 0;
-	// }
-
-}
-*/
+// –î–æ–±–∞–≤–∏–ª VertexGPU, UVTriGPU, _TCF_GPU –î–ª—è –∫–æ–ø–∏—Ä–æ–≤–∞–Ω–∏—è –≤ GPU

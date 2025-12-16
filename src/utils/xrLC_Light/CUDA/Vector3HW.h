@@ -1,8 +1,8 @@
 #pragma once
 #include <cuda_runtime.h>
 
-#define EPS_L 0.0010000f;
-#define EPS_S 0.0000001f
+#define EPS_L_GPU 0.0010000f;
+#define EPS_S_GPU 0.0000001f
 
 // Hardware Vectors 
 struct Hardware_Vector2
@@ -241,7 +241,7 @@ struct Hardware_Vector
 	{
 		float Magnitude = x * x + y * y + z * z;
 
-		if (Magnitude > EPS_S)
+		if (Magnitude > EPS_S_GPU)
 		{
 			Magnitude = sqrtf(1 / Magnitude);
 			x *= Magnitude;
@@ -341,97 +341,50 @@ struct Hardware_Raytask
 	float3 Position;
 	float3 Direction;
 };
-
-// Vertex, Triangle GPU
-
-struct VertexGPU
+ 
+//
+struct TextureData
 {
-	Hardware_Vector P, N;
-	Hardware_Color C;
+	unsigned int  width;
+	unsigned int  height;
+	unsigned int  * pSurface; // Указатель на GPU память
+	bool hasAlpha;
+
+	// Для CUDA texture objects
+	cudaTextureObject_t texObj;
 };
 
-struct _TCF_GPU
+struct FaceData
 {
-	Hardware_Vector2			uv[3];
-
-	__device__ void barycentric(Hardware_Vector2& P, float& u, float& v, float& w)
-	{
-		Hardware_Vector2 	kV02; kV02.Subtract (uv[0], uv[2]);
-		Hardware_Vector2 	kV12; kV12.Subtract (uv[1], uv[2]);
-		Hardware_Vector2 	kPV2; kPV2.Subtract (P, uv[2]);
-
-		float		fM00		= kV02.DotProduct(kV02);
-		float		fM01		= kV02.DotProduct(kV12);
-		float		fM11		= kV12.DotProduct(kV12);
-		float		fR0			= kV02.DotProduct(kPV2);
-		float		fR1			= kV12.DotProduct(kPV2);
-		float		fDet		= fM00 * fM11 - fM01 * fM01;
-
-		u = (fM11 * fR0 - fM01 * fR1) / fDet;
-		v = (fM00 * fR1 - fM01 * fR0) / fDet;
-		w = 1.0f - u - v;
-	}
-
-	__device__ void	barycentric(Hardware_Vector2& P, Hardware_Vector& B) { barycentric(P, B.x, B.y, B.z); }
-	__device__ bool	isInside(float u, float v, float w) { return (u >= 0 && u <= 1) && (v >= 0 && v <= 1) && (w >= 0 && w <= 1); }
-	__device__ bool	isInside(Hardware_Vector& B) { return	isInside(B.x, B.y, B.z); }
-	__device__ bool	isInside(Hardware_Vector2& P, Hardware_Vector& B) { barycentric(P, B);	return isInside(B); }
-
-	// bool	similar(const _TCF_GPU& _tc, float eps) const
-	// {
-	// 	return	uv[0].similar(_tc.uv[0], eps) &&
-	// 			uv[1].similar(_tc.uv[1], eps) &&
-	// 			uv[2].similar(_tc.uv[2], eps);
-	// }
-
+	int dwMaterial;
+	unsigned int flags;
+	Hardware_Vector2 tc0[3]; // UV координаты
 };
 
-struct UVTriGPU : public _TCF_GPU
+struct MaterialData
 {
-	VertexGPU V[3];
-	Hardware_Vector N;
-};
-
-// CDeflectorGPU 
-struct DeflectorsJitter
-{
-	Hardware_Vector2	dim, half;
-	Hardware_Vector2	JS;
-	unsigned int		SamplesCaptured;
-};
-
-struct CDeflector_GPU
-{
-	UVTriGPU*			UVTris;
-	unsigned int		UVTrisSize;
-
-	Hardware_Color*		surfaces;
-	unsigned int		surfaces_size;
-
-	unsigned char *		marker;
-	unsigned int		marker_size;
-
-	unsigned int        Width;
-	unsigned int        Height;
-	Hardware_Vector		normal;
-
-	DeflectorsJitter	Jitter;
+	int surfidx; // Индекс текстуры
 };
  
 #include "optix.h"
-
 struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
 
 	unsigned char		flags;
-	Hardware_Raytask* rays;
-	Hardware_Color* colors;		// Раньше rays == colors
+	Hardware_Raytask*	rays;
+	Hardware_Color*		colors;		// Раньше rays == colors
 
-	Hardware_Lighting* lights;
+	Hardware_Lighting*	lights;
 	int					counts_lights;
+};
 
-	CDeflector_GPU* GpuDeflectors;
-	bool				DeflectorsBig;
-	int					DeflectorsBigID;
+struct OptixMeshBuffers
+{
+	CUdeviceptr vertexBuffer = 0;
+	CUdeviceptr indexBuffer = 0;
+	CUdeviceptr blasBuffer = 0;
+	OptixTraversableHandle blasHandle = 0;
+	CUdeviceptr tlasBuffer = 0;
+	OptixTraversableHandle tlasHandle = 0;
 };
