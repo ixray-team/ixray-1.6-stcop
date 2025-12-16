@@ -237,10 +237,10 @@ bool CImageManager::MakeGameTexture(ETextureThumbnail* THM, LPCSTR game_name, u3
 		return false;
 	}
 
-	string_path Path = {};
-	FS.update_path(Path, _game_textures_, "");
+	//string_path Path = {};
+	//FS.update_path(Path, _game_textures_, "");
 
-	FS.rescan_path(Path, true);
+	//FS.rescan_path(Path, true);
 
 	//R_ASSERT((res == 1) && FS.file_length(game_name));
 	return res == 1;
@@ -459,10 +459,10 @@ int CImageManager::GetTexturesRaw(FS_FileSet& files, BOOL bFolders)
 //------------------------------------------------------------------------------
 int CImageManager::GetLocalNewTextures(FS_FileSet& files)
 {
-	string_path ImportPath = {};
+	//string_path ImportPath = {};
 
-	FS.update_path(ImportPath, _import_, "");
-	FS.rescan_path(ImportPath, true);
+	//FS.update_path(ImportPath, _import_, "");
+	//FS.rescan_path(ImportPath, true);
 
 	return FS.file_list(files,_import_,FS_ListFiles|FS_RootOnly,"*.tga,*.bmp,*.dds,*.png,*.jpg");
 }
@@ -688,10 +688,10 @@ void CImageManager::RefreshTextures(AStringVec* modif)
 {
 	if (FS.can_write_to_alias(_textures_))
 	{
-		string_path ImageDir = {};
-		FS.update_path(ImageDir, _textures_, "");
+		//string_path ImageDir = {};
+		//FS.update_path(ImageDir, _textures_, "");
 
-		FS.rescan_path(ImageDir, true);
+		//FS.rescan_path(ImageDir, true);
 
 		if (modif)
 		{

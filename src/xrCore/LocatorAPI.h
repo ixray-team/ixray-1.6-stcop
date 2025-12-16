@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 #pragma once
-
+#include "filewatch_wrapper.h"
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;
@@ -71,6 +71,7 @@ private:
     int							m_iLockRescan	; 
     void						check_pathes	();
 
+	xrSRWLock					m_files_lock	;
 	files_set					m_files			;
 	BOOL						bNoRecurse		;
 
@@ -137,8 +138,11 @@ private:
 private:
 	// IXR: .xrignore
 	xr_vector<xr_string> IgnoreData;
-			void				ParseIgnoreList		();
-			bool				CheckSkip			(const xr_string& Path) const;
+	void ParseIgnoreList();
+	bool CheckSkip(const xr_string& Path) const;
+	
+	void FileEventAdd(LPCSTR file);
+	void FileEventDel(LPCSTR file);
 
 public:
 								CLocatorAPI			();
@@ -217,6 +221,29 @@ public:
 	void						rescan_pathes		();
 	void						lock_rescan			();
 	void						unlock_rescan		();
+};
+
+class XRCORE_API CFilewatcher
+{
+	using FilewatcherImplPtr = filewatch::FileWatch<std::string>*;
+	FilewatcherImplPtr WatcherPtr = nullptr;
+	bool FilewatcherActive = true;
+
+	CFilewatcher() = default;
+	
+public:
+	~CFilewatcher();
+	CFilewatcher(const CFilewatcher&) = delete;
+	CFilewatcher& operator=(const CFilewatcher&) = delete;
+	CFilewatcher(CFilewatcher&&) = delete;
+	CFilewatcher& operator=(CFilewatcher&&) = delete;
+
+	static CFilewatcher& instance();
+
+	IC void SetFilewatcherActive(bool Active){FilewatcherActive = Active;}
+	IC bool GetFilewatcherActive() const {return FilewatcherActive;}
+	IC void SetFilewatcher(FilewatcherImplPtr Watcher);
+	
 };
 
 extern XRCORE_API	CLocatorAPI*					xr_FS;

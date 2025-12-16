@@ -38,6 +38,7 @@ void CLocatorAPI::auth_runtime(void* params)
 	m_auth_code = 0;
 	bool				do_break = false;
 
+	xrSRWLockGuard g(m_files_lock, true);
 	for (files_it it = m_files.begin(); it != m_files.end(); ++it) {
 		const file& f = *it;
 
