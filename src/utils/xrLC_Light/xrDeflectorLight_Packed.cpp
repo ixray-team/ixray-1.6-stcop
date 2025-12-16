@@ -17,65 +17,92 @@ void PackedLighting::InitializeGPU()
 	XRay::RayTrace::CUDA::InitializeRayTracing();
 }
 
+//  
 void PackedLighting::LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
 {
 	if (task_pools.size() >= MAX_RAYS_PER_TASK - 1024)			// Хитрость чтобы часто не вызывать блокировку
 	{
-		csAdd.Enter();
+		csEnter.Enter();
 		if (task_pools.size() >= MAX_RAYS_PER_TASK - 1024)
 			LightPointPackedRun();
-		csAdd.Leave();
+		csEnter.Leave();
 	}
 
 	RayRecvestIndex task_data;		// MT SAFE
 	task_data.INDEX_TASK = MakeKey(U, V);
- 	task_data.P = P;
+	task_data.P = P;
 	task_data.N = N;
 	// task_data.skip = skip;
+
 	task_pools.push_back(std::move(task_data));
 }
 
 void PackedLighting::LightPointPackedRun()
 {
+	// Инициализируем
+	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
+
+	// Устанавливаем параметры 
+	for (size_t RayIndex = 0; RayIndex < task_pools.size(); RayIndex++)
+		XRay::RayTrace::CUDA::RayTraceAddRay(task_pools[RayIndex], RayIndex);
+
+	// Запускаем трейсинг
+	XRay::RayTrace::CUDA::RayTraceRun(task_pools.size());
+
+	// Получаем результаты
+	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+	for (size_t TaskID = 0; TaskID < task_pools.size(); TaskID++)
+	{
+		auto& RAY_INFO = task_pools[TaskID];
+		task_colors[RAY_INFO.INDEX_TASK].add(colors[TaskID]);
+	}
+	colors.clear();
+
+	// Очистка
+	task_pools.clear();
+}
+
+
+///
+thread_local xr_vector<RayRecvestIndex> task_pools_implicit;
+void PackedLighting::LightPointPacked_Implicit(u32 U, u32 V, Fvector& P, Fvector& N, u32 flags, Face* skip)
+{
+	if (task_pools_implicit.size() >= MAX_RAYS_PER_TASK - 1024)			// Хитрость чтобы часто не вызывать блокировку
+		LightPointPacked_ImplicitRun();
+ 
+	RayRecvestIndex task_data;		// MT SAFE
+	task_data.INDEX_TASK = MakeKey(U, V);
+ 	task_data.P = P;
+	task_data.N = N;
+	// task_data.skip = skip;
+	
+	task_pools_implicit.push_back(std::move(task_data));
+}
+
+extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
+void PackedLighting::LightPointPacked_ImplicitRun()
+{
  	// Инициализируем
  	XRay::RayTrace::CUDA::RayTraceInitialize(lc_global_data()->L_static(), current_flags);
-	xr_vector<base_color_c> colors_result; 
-	colors_result.reserve(task_pools.size());
-	
+  	
 	// Устанавливаем параметры 
- 	auto process = [&](size_t begin, size_t end)
+	auto& recvests = task_pools_implicit;
+ 	for (size_t RayIndex = 0; RayIndex < recvests.size(); RayIndex++)
+		XRay::RayTrace::CUDA::RayTraceAddRay(recvests[RayIndex], RayIndex);
+
+	// Запускаем трейсинг
+	XRay::RayTrace::CUDA::RayTraceRun(recvests.size());
+
+	// Получаем результаты
+	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+  	for (size_t TaskID = 0; TaskID < recvests.size(); TaskID++)
 	{
-		if (begin >= task_pools.size())		return;
-		end = std::min(end, task_pools.size());
+		auto& RAY_INFO = recvests[TaskID];
+ 		ApplyColorGPU(RAY_INFO.INDEX_TASK, colors[TaskID]);
+  	}
  
-		size_t RayIndex = 0;
-		for (size_t it = begin; it < end; it++, RayIndex++)
- 			XRay::RayTrace::CUDA::RayTraceAddRay(task_pools[it], RayIndex);
- 
-		// Запускаем трейсинг
-		XRay::RayTrace::CUDA::RayTraceRun(RayIndex);
-
-		// Получаем результаты
-		auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
-		colors_result.insert(colors_result.end(), colors.begin(), colors.end());
- 		colors.clear();
-	};
-
-	size_t Splice = MAX_RAYS_PER_GPU;
-	
-	int Splices = task_pools.size() / Splice;
-	int IndexSplit = 0;
-	for (size_t it = 0; it < task_pools.size(); it += Splice, IndexSplit++)
- 		process(it, it + Splice); 
- 
- 	for (size_t it = 0; it < task_pools.size(); it ++)
-	{
-		auto& RAY_INFO = task_pools[it];
-		Colors[RAY_INFO.INDEX_TASK].add(colors_result[it]);
- 	}
-
  	// Очистка
-   	task_pools.clear();
+	recvests.clear();
 }
 
 // Deflectors

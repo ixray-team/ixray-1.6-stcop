@@ -50,7 +50,8 @@ struct RayQueryContext
 alignas(64) static float opacityLUT[256];
 struct OpacityInit {
 	OpacityInit() {
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i < 256; i++)
+		{
 			float a = float(i) / 255.f;
 			opacityLUT[i] = 1.f - a * a; // 1 - (a^2)
 		}
@@ -61,7 +62,7 @@ struct OpacityInit {
 bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 {
 	const b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	const b_texture& T = inlc_global_data()->textures()[M.surfidx];
+	const b_texture& T  = inlc_global_data()->textures()[M.surfidx];
 
 	// barycentrics (без Fvector, сразу в скаляры)
 	float b0 = 1.0f - hit->u - hit->v;
@@ -93,11 +94,11 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 
 	// fetch pixel
 	const uint32_t* raw = static_cast<const uint32_t*>(T.pSurface);
-	uint32_t pixel = raw[V * T.dwWidth + U];
+	uint32_t pixel   = raw[V * T.dwWidth + U];
 	uint32_t pixel_a = (pixel >> 24) & 0xFF;
 
 	// LUT вместо деления и sqr
-	ctxt->energy *= opacityLUT[pixel_a];
+  	ctxt->energy *= opacityLUT[pixel_a];
 
 	if (ctxt->energy < EmbreeEnergyMAX)
 		return false;

@@ -181,7 +181,7 @@ void LightVertex()
 
 		GPUTaskinSystem.LightPointPackedRun();
 
-		for (auto& C : GPUTaskinSystem.Colors)
+		for (auto& C : GPUTaskinSystem.task_colors)
 		{
 			int INDEX = GPUTaskinSystem.GetU(C.first);
 			auto& V = lc_global_data()->g_vertices()[INDEX];
