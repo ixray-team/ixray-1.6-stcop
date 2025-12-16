@@ -5,9 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : ALife Simulator
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "alife_interaction_manager.h"
 #include "alife_update_manager.h"
 #include "../xrScripts/script_export_space.h"
@@ -29,10 +27,6 @@ public:
 	virtual	void	destroy				();
 	IReader const* get_config			( shared_str config ) const;
 
-#if 0//def DEBUG
-			void	validate			();
-#endif //DEBUG
-
 private:
 	typedef xr_list< std::pair<shared_str,IReader*> >	configs_type;
 	mutable configs_type	m_configs_lru;
@@ -40,6 +34,3 @@ private:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 #pragma warning(pop)
-
-
-#include "alife_simulator_inline.h"

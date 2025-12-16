@@ -97,6 +97,4 @@ public:
 
 } // namespace smart_cover
 
-#include "smart_cover_planner_actions_inline.h"
-
 #endif // SMART_COVER_PLANNER_ACTIONS_H_INCLUDED

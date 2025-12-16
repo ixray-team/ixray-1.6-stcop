@@ -56,5 +56,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-#include "script_particles_inline.h"
