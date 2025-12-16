@@ -180,6 +180,4 @@ public:
 
 } // namespace smart_cover
 
-#include "smart_cover_loophole_planner_actions_inline.h"
-
 #endif // SMART_COVER_LOOPHOLE_PLANNER_ACTIONS_H_INCLUDED
