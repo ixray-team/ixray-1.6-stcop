@@ -2480,7 +2480,7 @@ void CScriptGameObject::SetInvulnerable(bool value)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		psActorFlags.set(AF_GODMODE, value);
+		psActorFlags.set(AF_GOD_MODE, value);
 	}
 	else
 	{
