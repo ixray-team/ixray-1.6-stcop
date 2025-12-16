@@ -161,110 +161,148 @@ void ImplicitExecute::Execute()
 }
 
 #ifdef LCCUDA_BUILD
-void RunTaskGPU()
+
+class CImplicitDeflector
 {
-	clMsg("$ Run Tasks GPU");
-
-	CTimer tStats;
-	tStats.Start();
-  
- 	ImplicitDeflector& defl = cl_globs.DATA();
-	// Setup variables
-	Fvector2 dim, half;
-	dim.set(float(defl.Width()), float(defl.Height()));
-	half.set(.5f / dim.x, .5f / dim.y);
-
-	// Jitter data
-	Fvector2 JS;
-	JS.set(.499f / dim.x, .499f / dim.y);
-	u32 Jcount;
-	Fvector2* Jitter;
-	Jitter_Select(Jitter, Jcount);
-
-
-	GPUTaskinSystem.RestartALL();
-
-
-	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
-	GPUTaskinSystem.current_flags = flags;
-
-	// Однопоточный режим пока что 
-	xr_map<size_t, u32> FacesCount;  
- 	for (u32 V = 0; V < defl.Height(); V++)
+	struct ColorsReady
 	{
-		for (u32 U = 0; U < defl.Width(); U++)
-		{
-			base_color_c C;
-			u32 Fcount = 0;
-			try
-			{
-				for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
-				{
-					// LUMEL space
-					Fvector2				P;
-					P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
-					P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
-					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
-
-					// World space
-					Fvector wP, wN, B;
-					for (vecFaceIt it = space.begin(); it != space.end(); it++)
-					{
-						Face* F = *it;
-						_TCF& tc = F->tc[0];
-						if (tc.isInside(P, B))
-						{
-							// We found triangle and have barycentric coords
-							Vertex* V1 = F->v[0];
-							Vertex* V2 = F->v[1];
-							Vertex* V3 = F->v[2];
-							wP.from_bary(V1->P, V2->P, V3->P, B);
-							wN.from_bary(V1->N, V2->N, V3->N, B);
-							wN.normalize();
-
-							GPUTaskinSystem.LightPointPacked(U, V, wP, wN, flags, F);
-							Fcount++;
-						}
-					}
-				}
-			}
-			catch (...)
-			{
-				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
-			}
-
-			FacesCount[GPUTaskinSystem.MakeKey(U, V)] = Fcount;
-		}
-		AditionalData("Current: %u", V);
+		base_color_c C;
+		u8			 Samples = 0;
 	};
 
-	// Остаток доработать 
-	GPUTaskinSystem.LightPointPackedRun();
+	xr_concurrent_unordered_map <size_t, ColorsReady>		ColorsImplicitGPU;
 
-	CTimer tColors; tColors.Start();
-  	for (auto& T : GPUTaskinSystem.Colors)
+public:
+	ImplicitDeflector* defl = nullptr;
+ 
+	CImplicitDeflector()
 	{
-		auto KEY = T.first;
-		u32 U = GPUTaskinSystem.GetU(KEY);
-		u32 V = GPUTaskinSystem.GetV(KEY);
+ 	}
 
-		u32 Fcount = FacesCount[KEY];
-		if (Fcount)
-		{
-			auto& C = T.second;
-			// Calculate lighting amount
-			C.scale(Fcount);
-			C.mul(.5f);
-			defl.Lumel(U, V)._set(C);
-			defl.Marker(U, V) = 255;
-		}
-		else
-		{
-			defl.Marker(U, V) = 0;
-		}
+	void ApplyColor(size_t IndexTask, base_color_c& C)
+	{
+		ColorsImplicitGPU[IndexTask].C.add(C);
+		ColorsImplicitGPU[IndexTask].Samples++;
 	}
- 	
-	GPUTaskinSystem.RestartALL();
+
+	void ApplyColors()
+	{
+ 		for (auto& T : ColorsImplicitGPU)
+		{
+			auto KEY = T.first;
+ 			u8	Samples = T.second.Samples;
+
+			u32 U = GPUTaskinSystem.GetU(KEY);
+			u32 V = GPUTaskinSystem.GetV(KEY);
+
+ 			if (Samples)
+			{
+				auto& C = T.second.C;	// Color
+				// Calculate lighting amount
+				C.scale(Samples);
+				C.mul(.5f);
+				defl->Lumel(U, V)._set(C);
+				defl->Marker(U, V) = 255;
+			}
+			else
+			{
+				defl->Marker(U, V) = 0;
+			}
+		}
+		ColorsImplicitGPU.clear();
+
+	}
+
+	void RunTaskGPU()
+	{
+		clMsg("$ Run Tasks GPU");
+		defl = & cl_globs.DATA();
+
+		CTimer tStats;
+		tStats.Start();
+ 
+		// Setup variables
+		Fvector2 dim, half;
+		dim.set(float(defl->Width()), float(defl->Height()));
+		half.set(.5f / dim.x, .5f / dim.y);
+
+		// Jitter data
+		Fvector2 JS;
+		JS.set(.499f / dim.x, .499f / dim.y);
+		u32 Jcount;
+		Fvector2* Jitter;
+		Jitter_Select(Jitter, Jcount);
+
+		GPUTaskinSystem.RestartALL();
+
+		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
+		GPUTaskinSystem.current_flags = flags;
+
+		// Однопоточный режим пока что 
+		xr_atomic_u32 task_height  = 0;
+		xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TaskID)
+		{
+  			while(true)
+			{
+				auto V = task_height.fetch_add(1);
+				if (V >= defl->Height()) break;
+ 
+				for (u32 U = 0; U < defl->Width(); U++)
+				{
+ 					try
+					{
+						for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
+						{
+							// LUMEL space
+							Fvector2				P;
+							P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
+							P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
+							xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+							// World space
+							Fvector wP, wN, B;
+							for (vecFaceIt it = space.begin(); it != space.end(); it++)
+							{
+								Face* F = *it;
+								_TCF& tc = F->tc[0];
+								if (tc.isInside(P, B))
+								{
+									// We found triangle and have barycentric coords
+									Vertex* V1 = F->v[0];
+									Vertex* V2 = F->v[1];
+									Vertex* V3 = F->v[2];
+									wP.from_bary(V1->P, V2->P, V3->P, B);
+									wN.from_bary(V1->N, V2->N, V3->N, B);
+									wN.normalize();
+
+									GPUTaskinSystem.LightPointPacked_Implicit(U, V, wP, wN, flags, F);
+								}
+							}
+						}
+					}
+					catch (...)
+					{
+						clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
+					}
+				}
+				AditionalData("Current: %u", V);
+			};
+
+			// Остаток доработать 
+			GPUTaskinSystem.LightPointPacked_ImplicitRun();
+		});
+		
+		ApplyColors();
+
+		GPUTaskinSystem.RestartALL();
+	}
+};
+
+CImplicitDeflector GPU_DeflectorIMPL;
+
+void ApplyColorGPU(size_t IndexTask, base_color_c& C)
+{
+	GPU_DeflectorIMPL.ApplyColor(IndexTask, C);
 }
 #endif
 
@@ -301,8 +339,6 @@ void ImplicitLightingExec()
 			ImplicitDeflector& ImpD = it->second;
 			ImpD.faces.push_back(F);
 		}
-
-
 	}
 
 	// Lighing
@@ -320,7 +356,7 @@ void ImplicitLightingExec()
 #ifdef LCCUDA_BUILD
 		if (gCompilerMode.CUDA)
 		{
-			RunTaskGPU();
+			GPU_DeflectorIMPL.RunTaskGPU();
 		}
 		else
 #endif
