@@ -104,7 +104,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTOPICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON| AF_HIT_SLOWMO };
+Flags32			psActorFlags={AF_DISABLE_CONDITION_TEST|AF_AUTO_PICKUP|AF_RUN_BACKWARD|AF_IMPORTANT_SAVE|AF_DISPLAY_VOICE_ICON| AF_HIT_SLOWMO };
 
 ENGINE_API extern float		psHUD_FOV;
 ENGINE_API extern bool g_3d_scopes;
@@ -3130,7 +3130,7 @@ void CActor::On_SetEntity()
 
 bool CActor::unlimited_ammo()
 {
-	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
+	return !!psActorFlags.test(AF_UNLIMITED_AMMO);
 }
 
 CCustomDevice* CActor::GetDevice(bool in_slot)
@@ -3154,7 +3154,7 @@ CCustomDevice* CActor::GetDevice(bool in_slot)
 
 bool CActor::infinite_fire()
 {
-	return !!psActorFlags.test(AF_INFINITEFIRE);
+	return !!psActorFlags.test(AF_INFINITE_FIRE);
 }
 
 float CActor::GetHandJitterScale(CHudItem* itm) const

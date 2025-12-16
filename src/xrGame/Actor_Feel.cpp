@@ -209,7 +209,7 @@ void	CActor::PickupModeUpdate_COD	()
 void	CActor::Check_for_AutoPickUp()
 {
 	// mp only
-	if (!psActorFlags.test(AF_AUTOPICKUP))		return;
+	if (!psActorFlags.test(AF_AUTO_PICKUP))		return;
 	if (IsGameTypeSingleCompatible())			return;
 	if (Level().CurrentControlEntity() != this) return;
 	if (!g_Alive())								return;
