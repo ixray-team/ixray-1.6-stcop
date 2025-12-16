@@ -43,5 +43,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-
-#include "patrol_path_params_inline.h"

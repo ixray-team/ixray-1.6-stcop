@@ -71,8 +71,6 @@ public:
 
 public:
 	virtual void	Load					(LPCSTR section);
-//*	virtual LPCSTR	Name					();
-//*	virtual LPCSTR	NameShort				();
 	virtual	void	Hit						(SHit* pHDS);
 
 	virtual void	OnH_B_Independent		(bool just_before_destroy);
@@ -127,5 +125,3 @@ protected:
 	}
 
 };
-
-#include "inventory_item_object_inline.h"
