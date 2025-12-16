@@ -122,6 +122,6 @@ struct TriangleContainer
 	};
 
 
-	void RemoveDublicates();
-	void RemoveDublicatesFaces();
+	void RemoveDublicatesVertexs(bool isTransparent);
+	void RemoveDublicatesFaces(bool isTransparent);
 };

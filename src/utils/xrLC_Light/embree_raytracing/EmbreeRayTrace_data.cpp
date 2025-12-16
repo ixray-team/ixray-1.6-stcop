@@ -52,7 +52,7 @@ void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float r
 // OFF PACKED PROCESSING
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
 {
-	clMsg(" - EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
+	Msg(" - EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
 }
  
 
@@ -107,11 +107,11 @@ void EmbreeData::BuildRaytraceModel( )
  	}
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
- 	static_geom.RemoveDublicates();
-	static_geom_transp.RemoveDublicates();
+ 	static_geom.RemoveDublicatesVertexs(false);
+	static_geom_transp.RemoveDublicatesVertexs(true);
 
-	static_geom.RemoveDublicatesFaces();
-	static_geom_transp.RemoveDublicatesFaces();
+	static_geom.RemoveDublicatesFaces(false);
+	static_geom_transp.RemoveDublicatesFaces(true);
 
 }
 
@@ -181,8 +181,8 @@ void EmbreeData::BuildRcast()
  	}
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
  
-	container.RemoveDublicates();
-	container.RemoveDublicatesFaces();
+	container.RemoveDublicatesVertexs(false);
+	container.RemoveDublicatesFaces(false);
 
 	
  	t.Start();
