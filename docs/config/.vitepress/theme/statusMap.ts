@@ -21,6 +21,7 @@ export const supportStatusMap: Record<string, SupportMeta> = {
   '/graphics/dynamic-wallmark': { label: '2.0', state: 'supported' },
   '/scripting/weather-manager': { label: 'Unsupported', state: 'unsupported' },
   '/scripting/luamarshal': { label: 'Unsupported', state: 'unsupported' },
+  '/editors/particles': { label: '1.4', state: 'supported' },
 }
 
 const normalizeLink = (link: string) => link.replace(/^\/(en|ru)(?=\/)/, '')

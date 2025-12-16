@@ -1,250 +1,634 @@
-# New functions
-## Global namespace
+# New Functions
+## Global Namespace
 
-```cpp
-bool IsDedicated(); //-- Script is executed on a dedicated server
-bool OnClient();    //-- Script is executed on the client side
-bool OnServer();    //-- Script is executed on the server side
+```lua
+--// Script is executed on a dedicated server
+IsDedicated()
+retval: boolean
 
-Fvector2 GetCursorPosition();     //-- Get cursor position
-void SetCursorPosition(Fvector2); //-- Set cursor position
+--// Script is executed on the client side
+OnClient()
+retval: boolean
+
+--// Script is executed on the server side
+OnServer()
+retval: boolean
+
+--// Get cursor position
+GetCursorPosition(cursor_pos)
+retval: vector2
+args: cursor_pos (vector2)
+
+--// Set cursor position
+SetCursorPosition(pos)
+retval: none
+args: pos (vector2)
 ```
 
 ## player_hud
 
-```cpp
-void show_legs(bool); //-- Show/hide legs
+```lua
+--// Show/hide legs
+player_hud.show_legs(value)
+retval: none
+args: value (boolean)
 ```
 
 ## CActor
 
 ### New
 
-* Player status
-```cpp
-bool is_god_mode();
-//-- Is the actor in god mode
+* Actor Status
+```lua
+--// Is the actor in god mode
+db.actor:is_god_mode()
+retval: boolean
 
-void SetInvulnerable(bool);
-//-- Enable/disable god mode
+--// Enable/disable god mode
+db.actor:SetInvulnerable(value)
+retval: none
+args: value (boolean)
 
-bool ActorIsJump();
-//-- Is the actor currently jumping
+--// Check if actor is currently jumping
+db.actor:ActorIsJump()
+retval: boolean
 
-float GetActorMaxWeight() const;
-//-- Max weight the actor can carry
+--// Get max weight the actor can carry
+db.actor:GetActorMaxWeight()
+retval: number
 
-void SetActorMaxWeight(float max_weight);
-//-- Set max weight the actor can carry
+--// Set max weight the actor can carry
+db.actor:SetActorMaxWeight(max_weight)
+retval: none
+args: max_weight (number)
 
-float GetActorMaxWalkWeight() const;
-//-- Max weight at which the actor can walk
+--// Get max weight at which the actor can walk
+db.actor:GetActorMaxWalkWeight()
+retval: number
 
-void SetActorMaxWalkWeight(float max_walk_weight);
-//-- Set max weight at which the actor can walk
+--// Set max weight at which the actor can walk
+db.actor:SetActorMaxWalkWeight(max_walk_weight)
+retval: none
+args: max_walk_weight (number)
 
-float GetAdditionalMaxWeight() const;
-//-- Extra carry weight granted by the suit
+--// Get extra carry weight granted by the suit
+db.actor:GetAdditionalMaxWeight()
+retval: number
 
-void SetAdditionalMaxWeight(float add_max_weight);
-//-- Set extra carry weight granted by the suit
+--// Set extra carry weight granted by the suit
+db.actor:SetAdditionalMaxWeight(add_max_weight)
+retval: none
+args: add_max_weight (number)
 
-float GetAdditionalMaxWalkWeight() const;
-//-- Extra walking weight granted by the suit
+--// Get extra walking weight granted by the suit
+db.actor:GetAdditionalMaxWalkWeight()
+retval: number
 
-void SetAdditionalMaxWalkWeight(float add_max_walk_weight);
-//-- Set extra walking weight granted by the suit
+--// Set extra walking weight granted by the suit
+db.actor:SetAdditionalMaxWalkWeight(add_max_walk_weight)
+retval: none
+args: add_max_walk_weight (number)
+
+--// Set sleepiness directly
+db.actor:set_actor_sleepiness(value)
+retval: none
+args: value (number)
+
+--// Set satiety directly
+db.actor:set_actor_satiety(value)
+retval: none
+args: value (number)
+
+--// Set thirst directly
+db.actor:set_actor_thirst(value)
+retval: none
+args: value (number)
+
+--// Set health directly
+db.actor:set_actor_health(value)
+retval: none
+args: value (number)
+
+--// Set stamina directly
+db.actor:set_actor_power(value)
+retval: none
+args: value (number)
+
+--// Set radiation directly
+db.actor:set_actor_radiation(value)
+retval: none
+args: value (number)
+
+--// Set psy health directly
+db.actor:set_actor_psy_health(value)
+retval: none
+args: value (number)
+
+--// Set morale directly
+db.actor:set_actor_morale(value)
+retval: none
+args: value (number)
 ```
 * Camera
-```cpp
-bool is_first_person();  //-- Is first-person camera active
-void set_first_person(); //-- Switch to first-person camera
-void set_third_person(); //-- Switch to third-person camera
+```lua
+--// Is first-person camera active
+db.actor:is_first_person()
+retval: boolean
+
+--// Switch to first-person camera
+db.actor:set_first_person()
+retval: none
+
+--// Switch to third-person camera
+db.actor:set_third_person()
+retval: none
 ```
 * [Boosters](/scripting/exported-enums#eboostparams)
-```cpp
-bool is_booster_influence(EBoostParams);        //-- Does the booster affect the actor (param from EBoostParams)
-float get_booster_influence_time(EBoostParams); //-- Get booster effect time (param from EBoostParams)
+```lua
+--// Check if booster affects the actor (param from EBoostParams)
+db.actor:is_booster_influence(boost_param)
+retval: boolean
+args: boost_param (EBoostParams)
 
-void apply_booster(string);                     //-- Apply booster (section name with booster params)
-void set_booster_time(number, EBoostParams);    //-- Set booster effect time (time, param from EBoostParams)
-float get_actor_power_boost_time();             //-- Returns active eBoostPowerRestore duration
+--// Get booster effect time (param from EBoostParams)
+db.actor:get_booster_influence_time(boost_param)
+retval: number
+args: boost_param (EBoostParams)
+
+--// Apply booster (section name with booster params)
+db.actor:apply_booster(section_name)
+retval: none
+args: section_name (string)
+
+--// Set booster effect time (time, param from EBoostParams)
+db.actor:set_booster_time(time, boost_param)
+retval: none
+args: time (number), boost_param (EBoostParams)
+
+--// Get active eBoostPowerRestore duration
+db.actor:get_actor_power_boost_time()
+retval: number
 ```
 * Actor shadow
-```cpp
-bool is_actor_shadow();      //-- Is actor shadow enabled
-void set_actor_shadow(bool); //-- Enable/disable actor shadow
+```lua
+--// Check if actor shadow is enabled
+db.actor:is_actor_shadow()
+retval: boolean
+
+--// Enable/disable actor shadow
+db.actor:set_actor_shadow(value)
+retval: none
+args: value (boolean)
 ```
 * Movement
-```cpp
-bool get_movement_state(EMovementStates, EMoveCommand);       //-- Get actor movement state (first: movement type e.g. eWishful; second: command e.g. mcSprint)
-void set_movement_state(EMovementStates, EMoveCommand, bool); //-- Set actor movement command (movement type, command, state true/false)
+```lua
+--// Get actor movement state (first: movement type e.g. eWishful; second: command e.g. mcSprint)
+db.actor:get_movement_state(movement_type, move_command)
+retval: boolean
+args: movement_type (EMovementStates), move_command (EMoveCommand)
+
+--// Set actor movement command (movement type, command, state true/false)
+db.actor:set_movement_state(movement_type, move_command, status)
+retval: none
+args: movement_type (EMovementStates), move_command (EMoveCommand), status (boolean)
 ```
 * Inventory
-```cpp
-void set_pda_disabled(bool);
-//-- Disable/enable PDA
+```lua
+--// Disable/enable PDA
+db.actor:set_pda_disabled(value)
+retval: none
+args: value (boolean)
 
-bool is_pda_disabled();
-//-- Is PDA accessible
+--// Is PDA accessible
+db.actor:is_pda_disabled()
+retval: boolean
 
-void set_inventory_disabled(bool);
-//-- Disable/enable inventory
+--// Disable/enable inventory
+db.actor:set_inventory_disabled(value)
+retval: none
+args: value (boolean)
 
-bool is_inventory_disabled();
-//-- Is inventory accessible
+--// Is inventory accessible
+db.actor:is_inventory_disabled()
+retval: boolean
 ```
 * Interactions
-```cpp
-void attach_vehicle(CScriptGameObject* Car, bool force);
- //-- Put actor into a vehicle
+```lua
+--// Put actor into a vehicle
+db.actor:attach_vehicle(car, force)
+retval: none
+args: car (CScriptGameObject), force (boolean)
 
-void detach_vehicle(bool force);
-//-- Remove actor from vehicle
+--// Remove actor from vehicle
+db.actor:detach_vehicle(force)
+retval: none
+args: force (boolean)
 
-CScriptGameObject* get_attached_vehicle();
-//-- Current holder the actor is in
+--// Get current holder the actor is in
+db.actor:get_attached_vehicle()
+retval: CScriptGameObject
 
-bool is_ladder();
-//-- Is actor on a ladder
+--// Is actor on a ladder
+db.actor:is_ladder()
+retval: boolean
 
-string get_cutscene_visual();
-//-- Get visual name during an active cutscene
+--// Get visual name during an active cutscene
+db.actor:get_cutscene_visual()
+retval: string
 
-void set_best_enemy(CScriptGameObject*);
-//-- Set active target
+--// Set active target
+db.actor:set_best_enemy(enemy)
+retval: none
+args: enemy (CScriptGameObject)
 ```
 ## CoC Extended
-* Weapon
-```cpp
-//-- State
-u8 get_weapon_substate();
-int get_ammo_count_for_type(type);
-u32 get_main_weapon_type();
-u32 get_weapon_type();
+* Server alife object `local se_obj = alife():object(obj_id)`
+```lua
+--// Get character icon
+se_obj:character_icon()
+retval: string
 
-string weapon_get_ammo_section(ammo_type);
-void weapon_addon_attach(obj);
-void weapon_addon_detach(obj);
+--// Set character rank
+se_obj:set_rank(rank)
+retval: none
+args: rank (number)
 
-//-- Upgrades
-bool install_upgrade(name);
-bool has_upgrade(name);
-void iterate_installed_upgrades();
+--// Set character profile
+se_obj:set_profile_name(profile)
+retval: none
+args: profile (string)
+
+--// Get character name
+se_obj:character_name()
+retval: string
+
+--// Set character name
+se_obj:set_character_name(name)
+retval: none
+args: name (string)
 ```
-* Other
-```cpp
-void set_character_icon(icon);               //-- Set character icon
-void change_character_rank(char_rank);       //-- Set character rank
-LPCSTR character_name();                     //-- Get character name
-LPCSTR character_icon();                     //-- Get character icon
-void set_rank(rank);                         //-- Set character rank
-void set_profile_name(profile);              //-- Set character profile
-void set_character_name(name);               //-- Set character name
-void iterate_feel_touch(function bool(id));  //-- Iterate objects around actor until found
-void hide_detector();                        //-- Hide detector
-bool IsOnBelt(obj);                          //-- Check item on belt
-obj item_on_belt(ItemID);                    //-- Get item by ID
-u32 play_hud_motion(Name, UseMix, state);    //-- Play HUD animation
-void switch_state(state);                    //-- Switch weapon state
-u32 get_state();                             //-- Get HUD item state
-u16 ammo_get_count();                        //-- Get ammo count
-void AmmoSetCount(count);                    //-- Set ammo count
-int AmmoBoxSize();                           //-- Get ammo per box
-int get_ammo_in_magazine_and_chamber();      //-- Ammo loaded into mag + chamber
-bool is_weapon_use_chamber();                //-- Does weapon use chamber
+
+* Client alife object `local npc = level.object_by_id(npc_id) or db.actor`
+```lua
+--// Set character rank
+npc:change_character_rank(char_rank)
+retval: none
+args: char_rank (number)
+
+--// Iterate objects around actor until found
+npc:iterate_feel_touch(callback)
+retval: none
+args: callback (function) -- function(obj_id: number): boolean
 ```
+
+* CActor
+```lua
+--// Hide detector
+db.actor:hide_detector()
+```
+
+* Weapon `local weapon = db.actor:active_item()`
+```lua
+--// Get weapon substate
+weapon:get_weapon_substate()
+retval: number
+
+--// Get ammo count for specific type
+weapon:get_ammo_count_for_type(type)
+retval: number
+args: type (number)
+
+--// Get main weapon type
+weapon:get_main_weapon_type()
+retval: number
+
+--// Get weapon type
+weapon:get_weapon_type()
+retval: number
+
+--// Get ammo section for type
+weapon:weapon_get_ammo_section(ammo_type)
+retval: string
+args: ammo_type (number)
+
+--// Attach addon to weapon
+weapon:weapon_addon_attach(obj)
+retval: none
+args: obj (CScriptGameObject)
+
+--// Detach addon from weapon
+weapon:weapon_addon_detach(section, bSpawnToInventory)
+retval: none
+args: section (string), bSpawnToInventory (boolean)
+
+--// Install upgrade
+weapon:install_upgrade(name)
+retval: boolean
+args: name (string)
+
+--// Check if upgrade is installed
+weapon:has_upgrade(name)
+retval: boolean
+args: name (string)
+
+--// Iterate installed upgrades using callback function
+weapon:iterate_installed_upgrades(callback)
+retval: none
+args: callback (function) -- function(upgrade_sect: string, wpn_obj: self): boolean
+
+--// Check item on belt
+weapon:IsOnBelt(other_obj)
+retval: boolean
+args: other_obj (CScriptGameObject)
+
+--// Play HUD animation
+weapon:play_hud_motion(name, use_mix, state)
+retval: number
+args: name (string), use_mix (boolean), state (number)
+
+--// Switch weapon state
+weapon:switch_state(state)
+retval: none
+args: state (number)
+
+--// Get HUD item state
+weapon:get_state()
+retval: number
+
+--// Get ammo count
+weapon:ammo_get_count()
+retval: number
+
+--// Set ammo count
+weapon:ammo_set_count(count)
+retval: none
+args: count (number)
+
+--// Get ammo per box
+weapon:ammo_box_size()
+retval: number
+
+--// Get ammo loaded into magazine and chamber
+weapon:get_ammo_in_magazine_and_chamber()
+retval: number
+
+--// Does weapon use chamber
+weapon:is_weapon_use_chamber()
+retval: boolean
+```
+* Items
+```lua
+--// Get item by ID
+item:item_on_belt(item_id)
+retval: CScriptGameObject
+args: item_id (number)
+```
+
+## Bone Visibility Control
+`local obj = level.object_by_id(obj_id) or db.actor`
+```lua
+--// Is bone visible on world visual
+obj:is_world_object_bone_visible(boneName)
+retval: boolean
+args: boneName (string)
+
+--// Set bone visibility on world visual
+obj:set_world_object_bone_visibility(boneName, bVisibility)
+retval: boolean
+args: boneName (string), bVisibility (boolean)
+
+--// Is bone visible on HUD visual
+obj:is_hud_object_bone_visible(boneName)
+retval: boolean
+args: boneName (string)
+
+--// Set bone visibility on HUD visual
+obj:set_hud_object_bone_visibility(boneName, bVisibility)
+retval: boolean
+args: boneName (string), bVisibility (boolean)
+```
+
 ## CCar
-```cpp
-void AddFuel(float);   //-- Add fuel (respecting m_fuel_tank limit)
-property fuel;         //-- Current fuel
-property fuel_tank;    //-- Fuel tank size
+`local car = level.object_by_id(car_id)`
+```lua
+--// Add fuel (respecting m_fuel_tank limit)
+car:AddFuel(amount)
+retval: none
+args: amount (number)
+
+--// Get current fuel
+car.fuel
+--// Set current fuel
+car.fuel = value
+
+--// Get fuel tank size
+car.fuel_tank
+--// Set fuel tank size
+car.fuel_tank = value
 ```
 
-### From Lost Alpha
-```cpp
-LPCSTR get_past_wdesc();                    //-- Get previous weather
-LPCSTR get_next_wdesc();                    //-- Get next weather
-float get_past_wdesc_execution_time();      //-- Get execution time of previous weather
-float get_next_wdesc_execution_time();      //-- Get execution time of next weather
-float get_weather_game_time();              //-- Get weather game time
-void set_past_wdesc(LPCSTR WeatherSection); //-- Set previous weather
-void set_next_wdesc(LPCSTR WeatherSection); //-- Set next weather
+## From Lost Alpha
+```lua
+--// Get previous weather
+level.get_past_wdesc()
+retval: string
+
+--// Get next weather
+level.get_next_wdesc()
+retval: string
+
+--// Get execution time of previous weather
+level.get_past_wdesc_execution_time()
+retval: number
+
+--// Get execution time of next weather
+level.get_next_wdesc_execution_time()
+retval: number
+
+--// Get weather game time
+level.get_weather_game_time()
+retval: number
+
+--// Set previous weather
+level.set_past_wdesc(WeatherSection)
+retval: none
+args: WeatherSection (string)
+
+--// Set next weather
+level.set_next_wdesc(WeatherSection)
+retval: none
+args: WeatherSection (string)
 ```
 
 ## CUIGameCustom
 ```lua
-AddHudMessage(string) -- Show a message on screen 
+--// Show a message on screen
+get_hud():AddHudMessage(text)
+retval: none
+args: text (string)
 ```
 
 ## alife_simulator
 ```lua
-jump_to_level(name)                    //-- Teleport actor to level 
-teleport_object(id, gv_id, lv_id, pos) //-- Teleport ALife object 
-iterate_info(id, function)
-reprocess_spawn(sobj) 
-set_objects_per_update(count)
-set_process_time(time)
-get_children(sobj)
-```
-* Object Iterator (Lost Alpha)
-```lua
-for id, se_obj in alife():objects() do
-    ...
-end
+--// Teleport actor to level
+alife():jump_to_level(name)
+retval: none
+args: name (string)
+
+--// Teleport alife object
+alife():teleport_object(id, gv_id, lv_id, pos)
+retval: none
+args: id (number), gv_id (number), lv_id (number), pos (vector)
+
+--// Iterate object information
+alife():iterate_info(id, callback)
+retval: none
+args: id (number), callback (function)
+
+--// Reprocess spawn
+alife():reprocess_spawn(sobj)
+retval: none
+args: sobj (CScriptGameObject)
+
+--// Set objects per update
+alife():set_objects_per_update(count)
+retval: none
+args: count (number)
+
+--// Set process time
+alife():set_process_time(time)
+retval: none
+args: time (number)
+
+--// Get child objects
+alife():get_children(sobj)
+retval: table
+args: sobj (CScriptGameObject)
+
+--// Iterator for alife objects (Lost Alpha)
+alife():objects()
+retval: iterator
+-- Example:
+-- for id, se_obj in alife():objects() do
+--     -- id (number), se_obj (CScriptGameObject)
+-- end
 ```
 
-## game
-### CTime
+## CTime
 ```lua
-save(packet) --// Saves time in compressed form (4 bytes) 
-load(packet) --// Loads time in compressed form (4 bytes) 
+--// Save time in compressed form (4 bytes)
+game.get_game_time():save(packet)
+retval: none
+args: packet (net_packet)
+
+--// Load time in compressed form (4 bytes)
+game.get_game_time():load(packet)
+retval: none
+args: packet (net_packet)
 ```
+
 ## `save`
 ```lua
-set_stage(name) --// Send current chunk name to engine (debug info)
-call_error()    --// Trigger save error (debug info)
-```
-## [animslot](/animation-system/hud-animator)
-```lua
-animslot.play(section, anim) //-- Play HUD animation 
+--// Send current chunk name to engine (debug info)
+save.set_stage(name)
+retval: none
+args: name (string)
+
+--// Trigger save error (debug info)
+save.call_error()
+retval: none
+args: none
 ```
 
-## [CEatableItem](/gameplay/general/items-used)
-* Functions
-```cpp
-bool Empty();              //-- Item can no longer be used
-bool CanDelete();          //-- Item will be deleted if it cannot be used
-bool GetMaxUses();         //-- Max uses
-u8 GetRemainingUses();     //-- Remaining uses
-void SetRemainingUses(u8); //-- Set remaining uses
-float Weight();            //-- Current item weight
-int Cost();                //-- Item cost
+## [animslot](/animation-system/hud-animator)
+```lua
+--// Play HUD animation
+animslot.play(section, anim)
+retval: none
+args: section (string), anim (string)
 ```
-* Properties 
-```cpp
-bool m_bRemoveAfterUse;  //-- Remove item if it cannot be used
-float m_fWeightFull;     //-- Initial item weight 
-float m_fWeightEmpty;    //-- Empty item weight 
+
+## [CEatableItem](/gameplay/general/items-used) `local bread = level.object_by_id(item_id)`
+```lua
+--// Item can no longer be used
+bread:Empty()
+retval: boolean
+
+--// Item will be deleted if it cannot be used
+bread:CanDelete()
+retval: boolean
+
+--// Max uses
+bread:GetMaxUses()
+retval: number
+
+--// Remaining uses
+bread:GetRemainingUses()
+retval: number
+
+--// Set remaining uses
+bread:SetRemainingUses(count)
+retval: none
+args: count (number)
+
+--// Current item weight
+bread:Weight()
+retval: number
+
+--// Item cost
+bread:Cost()
+retval: number
+
+--// Item will be deleted if it cannot be used (property)
+bread.m_bRemoveAfterUse
+--// Set property value
+bread.m_bRemoveAfterUse = value
+
+--// Initial item weight (property)
+bread.m_fWeightFull
+--// Set property value
+bread.m_fWeightFull = value
+
+--// Empty item weight (property)
+bread.m_fWeightEmpty
+--// Set property value
+bread.m_fWeightEmpty = value
 ```
 
 ## CMapManager
-* Functions
-```cpp
-void RemoveMapLocation(CMapLocation* ml); 
-//-- Remove specified map location
+```lua
+--// Remove specified map location
+level.map_manager():RemoveMapLocation(ml)
+retval: none
+args: ml (CMapLocation)
 
-void RemoveMapLocationByObjectID(u16 id); 
-//-- Remove map location by object ID
+--// Remove map location by object ID
+level.map_manager():RemoveMapLocationByObjectID(id)
+retval: none
+args: id (number)
 
-void DisableAllPointers(); 
-//-- Disable all pointers on map
+--// Disable all pointers on map
+level.map_manager():DisableAllPointers()
+retval: none
+args: none
 
-void MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor); 
-//-- Run functor for each location with given type and ID
+--// Run functor for each location with given type and ID
+level.map_manager():MapLocationsForEach(spot_type, id, functor)
+retval: none
+args:
+  spot_type (string)
+  id        (number)
+  functor   (function) -> bool
+    true  - continue iteration
+    false - stop
 
-void AllLocationsForEach(const luabind::functor<bool>& functor); 
-//-- Run functor for all locations
+--// Run functor for all map locations
+level.map_manager():AllLocationsForEach(functor)
+retval: none
+args:
+  functor (function) -> bool
+    true  - continue iteration
+    false - stop
 ```
 
 ::: details Examples
@@ -276,63 +660,85 @@ void AllLocationsForEach(const luabind::functor<bool>& functor);
 
 ## CMapLocation
 * Functions
-```cpp
-bool HintEnabled(); 
-//-- Are map location hints enabled
+```lua
+--// Are map location hints enabled
+location:HintEnabled()
+retval: boolean
 
-LPCSTR GetHint(); 
-//-- Get location hint text
+--// Get location hint text
+location:GetHint()
+retval: string
 
-void SetHint(const shared_str& hint); 
-//-- Set location hint text
+--// Set location hint text
+location:SetHint(hint)
+retval: none
+args: hint (string)
 
-bool PointerEnabled(); 
-//-- Are map pointers enabled
+--// Are map pointers enabled
+location:PointerEnabled()
+retval: boolean
 
-void EnablePointer(); 
-//-- Enable map pointer
+--// Enable map pointer
+location:EnablePointer()
+retval: none
 
-void DisablePointer(); 
-//-- Disable map pointer
+--// Disable map pointer
+location:DisablePointer()
+retval: none
 
-LPCSTR GetType() const; 
-//-- Get map location type
+--// Get map location type
+location:GetType()
+retval: string
 
-Fvector2 SpotSize(); 
-//-- Get map marker size
+--// Get map marker size
+location:SpotSize()
+retval: Fvector2
 
-bool IsUserDefined() const; 
-//-- Is the location user-defined
+--// Is the location user-defined
+location:IsUserDefined()
+retval: boolean
 
-void SetUserDefinedFlag(BOOL state); 
-//-- Mark location as user-defined
+--// Mark location as user-defined
+location:SetUserDefinedFlag(state)
+retval: none
+args: state (boolean)
 
-void HighlightSpot(bool state, const Fcolor& color); 
-//-- Highlight map marker
+--// Highlight map marker
+location:HighlightSpot(state, color)
+retval: none
+args: state (boolean), color (Fcolor)
 
-bool Collidable() const; 
-//-- Is the location collidable
+--// Is the location collidable
+location:Collidable()
+retval: boolean
 
-bool SpotEnabled(); 
-//-- Is the marker enabled
+--// Is the marker enabled
+location:SpotEnabled()
+retval: boolean
 
-void EnableSpot(); 
-//-- Enable marker
+--// Enable marker
+location:EnableSpot()
+retval: none
 
-void DisableSpot(); 
-//-- Disable marker
+--// Disable marker
+location:DisableSpot()
+retval: none
 
-const shared_str& GetLevelName(); 
-//-- Get level name for the location
+--// Get level name for the location
+location:GetLevelName()
+retval: string
 
-const Fvector2& GetPosition(); 
-//-- Get map position
+--// Get map position
+location:GetPosition()
+retval: Fvector2
 
-u16 ObjectID(); 
-//-- Get map location object ID
+--// Get map location object ID
+location:ObjectID()
+retval: number
 
-Fvector GetLastPosition(); 
-//-- Get last known position
+--// Get last known position
+location:GetLastPosition()
+retval: Fvector
 ```
 ::: details Examples
 
@@ -418,57 +824,81 @@ Fvector GetLastPosition();
 
 * Properties
 
-```csharp
-property bool mechanic //-- set - mark NPC as mechanic; get - is NPC a mechanic
+```lua
+--// Set NPC as mechanic; get - is NPC a mechanic
+object.mechanic = true/false
 ```
 
 * Functions
 
-```cpp
-void set_fire(bool);
-//-- Enable/disable fire
+```lua
+--// Enable/disable fire
+object:set_fire(bool)
+retval: none
+args: bool
 
-void SetCharacterMaxWeight(float);
-//-- Set max weight InventoryOwner can carry.
+--// Set max weight InventoryOwner can carry
+object:SetCharacterMaxWeight(float)
+retval: none
+args: float
 
-float GetTotalWeight() const;
-//-- Total inventory weight of InventoryOwner.
+--// Get total inventory weight of InventoryOwner
+object:GetTotalWeight()
+retval: float
 
-float Weight() const;
-//-- Weight of the specific item.
+--// Get weight of specific item
+object:Weight()
+retval: float
 
-float GetActorJumpSpeed() const;
-//-- Actor jump speed.
+--// Get actor jump speed
+object:GetActorJumpSpeed()
+retval: float
 
-void SetActorJumpSpeed(float jump_speed);
-//-- Set actor jump speed.
+--// Set actor jump speed
+object:SetActorJumpSpeed(float)
+retval: none
+args: float
 
-float GetActorSprintKoef() const;
-//-- Actor sprint coefficient.
+--// Get actor sprint coefficient
+object:GetActorSprintKoef()
+retval: float
 
-void SetActorSprintKoef(float sprint_koef);
-//-- Set actor sprint coefficient.
+--// Set actor sprint coefficient
+object:SetActorSprintKoef(float)
+retval: none
+args: float
 
-float GetActorRunCoef() const;
-//-- Actor run coefficient.
+--// Get actor run coefficient
+object:GetActorRunCoef()
+retval: float
 
-void SetActorRunCoef(float run_coef);
-//-- Set actor run coefficient.
+--// Set actor run coefficient
+object:SetActorRunCoef(float)
+retval: none
+args: float
 
-float GetActorRunBackCoef() const;
-//-- Actor backward run coefficient.
+--// Get actor backward run coefficient
+object:GetActorRunBackCoef()
+retval: float
 
-void SetActorRunBackCoef(float run_back_coef);
-//-- Set actor backward run coefficient.
+--// Set actor backward run coefficient
+object:SetActorRunBackCoef(float)
+retval: none
+args: float
 
-void set_health_ex();
-//-- Change entity health directly (with delta) instead of standard health
+--// Change entity health directly (with delta)
+object:set_health_ex()
+retval: none
 
-void set_sub_inventory_icon_text(LPCSTR m_custom_text, int item_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset);
-//-- Add custom text to the inventory item icon
+--// Add custom text to inventory item icon
+object:set_sub_inventory_icon_text(text, color, font, offset)
+retval: none
+args: string, int, string, vector2
 
-void set_sub_inventory_icon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr);
-//-- Add custom texture to the inventory item icon
+--// Add custom texture to inventory item icon
+object:set_sub_inventory_icon(mark, offset, size, texture, color)
+retval: none
+args: bool, vector2, vector2, string, int
 ```
 
 ::: details Examples
@@ -553,32 +983,51 @@ void set_sub_inventory_icon(bool m_custom_mark, Fvector2 m_custom_mark_offset, F
 
 ## ActorMenu
 ```lua
-ActorMenu.get_pda_menu()   //-- Get PDA UI class
-ActorMenu.get_actor_menu() //-- Get Actor UI class
-ActorMenu.get_menu_mode()  //-- Get current UI ID
-ActorMenu.get_maingame()   //-- Get maingame UI ID
+--// Get PDA UI class
+ActorMenu.get_pda_menu()
+retval: CUIPdaWnd
+
+--// Get Actor UI class
+ActorMenu.get_actor_menu()
+retval: CUIActorMenu
+
+--// Get current UI ID
+ActorMenu.get_menu_mode()
+retval: number
+
+--// Get maingame UI class
+ActorMenu.get_maingame()
+retval: CUIMainIngameWnd
 ```
 
 ## CUIListBox
-```cpp
-void SetSelectedIndex(id); //-- Select element
+```lua
+--// Select element by index
+listbox:SetSelectedIndex(id)
+retval: none
+args: int
 ```
 
 ## CScriptGameObject
 You can now add custom calculated extra text to an item description—useful for auto-generated dynamic stats.
 
 ```lua
--- Get additional description text attached to an inventory item.
-string get_item_additional_description()
+--// Get additional description text attached to an inventory item
+object:get_item_additional_description()
+retval: string
 
--- Set additional description text on an inventory item.
-void set_item_additional_description(string)
+--// Set additional description text on an inventory item
+object:set_item_additional_description(text)
+retval: none
+args: string
 
--- Clear additional description text from an inventory item.
-void unset_item_additional_description()
+--// Clear additional description text from an inventory item
+object:unset_item_additional_description()
+retval: none
 
--- Is additional description text set.
-bool is_item_used_additional_description()
+--// Is additional description text set
+object:is_item_used_additional_description()
+retval: bool
 ```
 
 ::: details Example: optimized way to set additional item description via script
