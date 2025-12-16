@@ -17,7 +17,7 @@ bool isFirstPerson() { return Actor()->active_cam() == eacFirstEye; }
 void setFirstPerson() { Actor()->cam_Set(eacFirstEye); }
 void setThirdPerson() { Actor()->cam_Set(eacLookAt); }
 
-bool isGodMode() { return psActorFlags.test(AF_GODMODE); }
+bool isGodMode() { return psActorFlags.test(AF_GOD_MODE); }
 bool isActorShadow() { return psGameFlags.test(rsActorShadow); }
 void setActorShadow(bool state) { psGameFlags.set(rsActorShadow, state); }
 
