@@ -8,7 +8,8 @@
 
 #pragma once
 
-class CDamageManager {
+class CDamageManager
+{
 protected:
 	float				m_default_hit_factor;
 	float				m_default_wound_factor;
@@ -28,5 +29,3 @@ private:
 			// init default params
 			void		init_bones		(LPCSTR section, CInifile const * ini);
 };
-
-#include "damage_manager_inline.h"
