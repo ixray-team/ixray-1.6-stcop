@@ -48,6 +48,7 @@ enum class EditorUI : u8
 	Tools_OMFEditor,
 	Tools_InputManager,
 	Tools_CarEditor,
+	Tools_PostProcessEffectorEditor,
 	UI_General,
 	Count
 };
