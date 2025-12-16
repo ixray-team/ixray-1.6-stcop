@@ -13,7 +13,7 @@
       "description": "A harsh future after a global nuclear conflict. The story is set in one of the regions of the Russian Far East",
       "author": "AIW Team",
       "link": "https://ap-pro.ru/forums/topic/3903-alone-in-windstorm-fallen-bear/",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448290562301100042/image.png?ex=693ab931&is=693967b1&hm=2ecd021ddd57ffb84d554e3d332c374ecf0a162ea2e2e0cd87e048842d34a820&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%B8%D0%B2.png"
     },
     {
       "id": "AnotherSide",
@@ -21,7 +21,7 @@
       "description": "How to become a mercenary? Easy — if your fighting spirit is high and your moral compass is low",
       "author": "Another Side",
       "link": "https://vk.com/stalker_another_side",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448292255767986176/image.png?ex=693abac5&is=69396945&hm=a1359638f3b47cabca86082d682e6b5a877d77d483887e6d10430acc753837ec"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/anotherside.png"
     },
     {
         "id": "ikarus",
@@ -29,7 +29,7 @@
         "description": "The mod's plot follows a girl who enters the Zone to find her kidnapped sister",
         "author": "Mawrak",
         "link": "https://ap-pro.ru/forums/topic/11616-sostoyalsya-anons-modifikacii-«proekt-icarus»/",
-        "image": "https://media.discordapp.net/attachments/1159422865804902400/1448573887947341885/image.png?ex=693bc110&is=693a6f90&hm=a86b0988f48f95dad5f9e0e4cad63f5a45427bebbaf8801d6bb47764bd87402b&=&format=webp&quality=lossless"
+        "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B8%D0%BA%D0%B0%D1%80%D1%83%D1%81.png"
     },
     {
       "id": "whitelist",
@@ -37,7 +37,7 @@
       "description": "Soon",
       "author": "NeptunNZ",
       "link": "",
-      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=%D0%A7%D0%B8%D1%81%D1%82%D1%8B%D0%B9+%D0%9B%D0%B8%D1%81%D1%82"
+      "image": "https://dummyimage.com/262x241/84868f/f2f2f2.png&text=%D0%A7%D0%B8%D1%81%D1%82%D1%8B%D0%B9+%D0%9B%D0%B8%D1%81%D1%82"
     },
     {
       "id": "tihoemesto",
@@ -45,7 +45,7 @@
       "description": "",
       "author": "Артем Якушев",
       "link": "https://vk.com/stalker_modification",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448295738454048913/image.png?ex=693abe04&is=69396c84&hm=940af54ad703f4e4bd61a4fdd61132ea351dc5734798f1ddf889ba784c23fb2b&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D1%82%D0%B8%D1%85%D0%BE%D0%B5%D0%BC%D0%B5%D1%81%D1%82%D0%BE.png"
     },
     {
       "id": "kotovzlom",
@@ -53,7 +53,7 @@
       "description": "Post-irony in the style of 1970s cyberpunk",
       "author": "Retro Zone",
       "link": "https://vk.com/kotovzlom",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448296192105775246/image.png?ex=693abe70&is=69396cf0&hm=f1b2a7745fb8a61f20e213a4ce40425354cb99607971f7fecb9c8f7b41dff695&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BA%D0%BE%D1%82%D0%BE%D0%B2%D0%B7%D0%BB%D0%BE%D0%BC.png"
     },
     {
       "id": "newspaces",
@@ -61,7 +61,7 @@
       "description": "Discover new territories of the Zone",
       "author": "Isoteric Studio",
       "link": "https://vk.com/isotericstudio",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448297313922584697/image.png?ex=693abf7b&is=69396dfb&hm=a52c004ae626db200905c579f0089084dff80293da48c6da6b08538a3bbbb2cc&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D1%8C%D1%8E%D1%81%D0%BF%D0%B5%D0%B9%D1%81%D1%8B.png"
     },
     {
       "id": "strannik",
@@ -69,7 +69,7 @@
       "description": "The aftermath of a collider explosion: anomalous energy and radiation that engulfed the planet",
       "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/12350-strannik/",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448299133822832773/image.png?ex=693ac12d&is=69396fad&hm=d71b135cb1b1ce3be6cddf86a7d78e861609b5fddb3805a3e1caa71568f8f66e&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%BD%D0%B8%D0%BA%D1%83.png"
     },
     {
       "id": "x7",
@@ -77,7 +77,7 @@
       "description": "Stalkers are tasked with infiltrating the X-7 laboratory and obtaining information about the experiments conducted there",
       "author": "X7 Team",
       "link": "https://ap-pro.ru/forums/topic/6215-x-7-epicentr",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448299650078474362/image.png?ex=693ac1a8&is=69397028&hm=27d424d047c10effc4317b236151194fb1a00edcb34fffdd8123af84878b4a3f&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/x7.png"
     },
     {
       "id": "scope",
@@ -85,7 +85,7 @@
       "description": "",
       "author": "Who I'Am",
       "link": "https://vk.com/public207228241",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448301023713165371/image.png?ex=693ac2f0&is=69397170&hm=a6fae21174348dbb49c431ab093e316a665a5eb15f241db7852d5655ff117b69&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/scope.png"
     },
     {
       "id": "project2",
@@ -93,7 +93,7 @@
       "description": "An attempt to adapt the S.T.A.L.K.E.R. Mobile storyline",
       "author": "Graff46",
       "link": "https://ap-pro.ru/forums/topic/2029-proekt-%E2%84%962/",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448302113359921192/image.png?ex=693ac3f3&is=69397273&hm=e2a13457c6ec3b22904790bd5c896ca907e47b5e2eeb5a29aa7901726068f306&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%822.png"
     },
     {
       "id": "drakoshindev",
@@ -101,7 +101,7 @@
       "description": "Soon",
       "author": "LostPath",
       "link": "https://vk.com/lost_pafos",
-      "image": "https://dummyimage.com/400x190/84868f/f2f2f2.png&text=Escape+From+Zone"
+      "image": "https://dummyimage.com/262x241/84868f/f2f2f2.png&text=Escape+From+Zone"
     },
     {
       "id": "TToZ",
@@ -109,7 +109,7 @@
       "description": "The story centers on a group of unknown brave people who set out into the Zone as pioneers",
       "author": "thetrailblazerofzone",
       "link": "https://vk.com/thetrailblazerofzone",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448303278348570666/image.png?ex=693ac509&is=69397389&hm=788d2ab0c2db555f263650c7744019719fdd833078ecd2d7c6183f1634d6bd1a&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/ttoz.png"
     },
     {
       "id": "newlive",
@@ -117,7 +117,7 @@
       "description": "Edge is a project that aims to show the Zone from the perspective of different people",
       "author": "ScR1pt",
       "link": "",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448303928889442385/image.png?ex=693ac5a4&is=69397424&hm=66edb13f3139204146effb338742d939c62648d3e0d9ba71d2995191522afd25&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/грань.png"
     },
     {
       "id": "vestnik",
@@ -125,7 +125,7 @@
       "description": "Soon",
       "author": "FacingSlave",
       "link": "https://vk.com/club231757914",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448304514082803742/image.png?ex=693ac630&is=693974b0&hm=448dc73b853627d976152046ce2e205db499a0fbb4f12dc0730ddc92a5ca95b6&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%92%D0%B5%D1%81%D1%82%D0%BD%D0%B8%D0%BA.png"
     },
     {
       "id": "pa2",
@@ -133,7 +133,7 @@
       "description": "Soon",
       "author": "",
       "link": "https://vk.com/spatial_anomaly",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448305928959951100/image.png?ex=693ac781&is=69397601&hm=b30c5e0d5b42fd989e38d4d6af3d82d0c6644abb5abef2a4d70f8d9998037f1a&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BF%D0%B02.png" 
     },
     {
       "id": "sv3",
@@ -141,7 +141,7 @@
       "description": "Autumn 2017. A super-powerful emission occurred in the Zone, forming new unknown territories",
       "author": "CortezZz Team",
       "link": "https://ap-pro.ru/forums/topic/13377-smerti-vopreki-3-oskolok-tmy-anons-modifikacii",
-      "image": "https://media.discordapp.net/attachments/1159422865804902400/1448306489042141204/image.png?ex=693ac807&is=69397687&hm=b3a2ae6959afd5905852cb5747bb1ec42c6b820ede0a14834aee9c537be98a5a&=&format=webp&quality=lossless"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D1%81%D0%B23.png"
     }
   ]
 }

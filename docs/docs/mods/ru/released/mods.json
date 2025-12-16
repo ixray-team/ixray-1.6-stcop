@@ -13,7 +13,7 @@
       "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
       "author": "Dreamcatcher Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280234209316925/9ce3671a1265d54c.png?ex=693aaf93&is=69395e13&hm=ef7a55908ad1606e9640b158ee7bbe839c59bae5b184afb63a4c925f6f3dde86&"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
     },
     {
       "id": "one-way-ticket",
@@ -21,7 +21,7 @@
       "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
       "author": "OneWay Studio",
       "link": "https://ap-pro.ru/forums/topic/10232-%C2%ABbilet-v-odin-konec%C2%BB/",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280886339567697/image.png?ex=693ab02f&is=69395eaf&hm=b07fc8335f8c98bf6f1dc6bb9fa4719528f92c4a822171a175950ca80dcc94b6"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B1%D0%B8%D0%BB%D0%B5%D1%82.png"
     },
     {
       "id": "sins-academic",
@@ -29,7 +29,7 @@
       "description": "Военная драма с упором на боевые миссии и сложные решения.",
       "author": "Red Dawn",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448280233768648704/fe5cf9f0f5b4cd78.png?ex=693aaf93&is=69395e13&hm=0e350212c092052a4741ba876b78ac16413291ecef3f6bc6097ef9cad9eaaf7a&"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png"
     },
     {
       "id": "pavlik-day",
@@ -37,7 +37,7 @@
       "description": "Короткая история в духе дневников с атмосферой сталкерского быта.",
       "author": "Pavlik Dev",
       "link": "https://ap-pro.ru/forums/topic/10129-odin-den-iz-zhizni-pavlika",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448281191097700494/image.png?ex=693ab077&is=69395ef7&hm=da2f154e74356338ee4a30857c3a78fd24e2d0428acd9994afd47e12cf4e8da0"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D1%80%D0%B0%D0%B2%D0%BB%D0%B8%D0%BA.png"
     },
     {
       "id": "back-to-past",
@@ -45,7 +45,7 @@
       "description": "Возвращение к истокам с переосмыслением классических локаций.",
       "author": "Retro Zone",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448281641578664076/image.png?ex=693ab0e3&is=69395f63&hm=09a73f762ca53959f008df8c9d3de6de813721850fdb7ca840ec7c641d52407c"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png"
     },
     {
       "id": "awakening-2055",
@@ -53,7 +53,7 @@
       "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
       "author": "Future Lab",
       "link": "https://vk.com/wall-195948120_7369",
-      "image": "https://cdn.discordapp.com/attachments/1159422865804902400/1448284162954891274/image.png?ex=693ab33c&is=693961bc&hm=9c6b80d868a071754ed28bd29925c5464c6cf5ec1a4e51deb65bfb5a2359b334"
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
     }
   ]
 }
