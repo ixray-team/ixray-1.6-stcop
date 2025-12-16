@@ -13,7 +13,9 @@
 
 class CSE_ALifeTrader;
 
-class CALifeSurgeManager : public virtual CALifeSimulatorBase {
+class CALifeSurgeManager :
+	public virtual CALifeSimulatorBase
+{
 protected:
 	typedef CALifeSimulatorBase inherited;
 
