@@ -5,12 +5,11 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Physic item
 ////////////////////////////////////////////////////////////////////////////
-
 #pragma once
-
 #include "GameObject.h"
 #include "PHShellCreator.h"
 #include "PhysicsShellHolder.h"
+
 class CPhysicItem : 
 			public CPhysicsShellHolder,
 			public CPHShellSimpleCreator
@@ -39,5 +38,3 @@ public:
 	virtual CPhysicItem* cast_physics_item() { return this; }
 	virtual CPhysicsShellHolder* cast_physics_shell_holder() { return this; }
 };
-
-#include "physic_item_inline.h"
