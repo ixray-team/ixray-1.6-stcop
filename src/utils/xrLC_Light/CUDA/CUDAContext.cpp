@@ -53,32 +53,7 @@ bool OptixContext::Initialize()
 	CreatePipeline(fullPtxPath.xstring().c_str());
 
 	return true;
-}
-
-/*bool OptixContext::Initialize()
-{
-	// 1. Инициализация CUDA
-	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
-	CUDA_CHECK(cudaFree(0));
-
-	cudaDeviceProp deviceProps;
-	CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, cudaDeviceId));
-
-	Msg("[OptiX] Using CUDA device: %s (SM %d.%d)",
-		deviceProps.name, deviceProps.major, deviceProps.minor);
-
-	// 2. Инициализация OptiX
-	OptixDeviceContextOptions options = {};
-	options.logCallbackFunction = &OptixLogCallback;
-	options.logCallbackLevel = 4; // Уровень логгирования (1-4)
-
-	OPTIX_CHECK(optixInit());
-	OPTIX_CHECK(optixDeviceContextCreate(cudaContext, &options, &optixContext));
-
-	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
-	CreatePipeline(fullPtxPath.xstring().c_str());
-	return true;
-}*/
+} 
 
 void OptixContext::Destroy()
 {

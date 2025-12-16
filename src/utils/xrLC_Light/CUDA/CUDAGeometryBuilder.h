@@ -123,9 +123,6 @@ public:
     void RemoveDublicates()
     {
         size_t VertexStart = vertices.size();
-
-        CTimer tStats;
-        tStats.Start();
         //----------------------
         // 1. Собираем все вершины
         //----------------------
@@ -198,8 +195,7 @@ public:
         raw_faces.clear();
         raw_faces.shrink_to_fit();
 
-        clMsg("$ Remove Dublicates: %u ms | Vertex Now: %u | Vertex Pre : %u", 
-            tStats.GetElapsed_ms(),
+        clMsg("$ Remove Vertex Dublicates: Pre : %u | Now: %u", 
             vertices.size(), 
             VertexStart);
     };
