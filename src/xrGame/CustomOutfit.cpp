@@ -151,7 +151,7 @@ void CCustomOutfit::ReloadBonesProtection()
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
 {
 	hit_power *= GetHitImmunity(hit_type);
-	if (!psActorFlags.test(AF_INFINITEDURABILITY))
+	if (!psActorFlags.test(AF_INFINITE_DURABILITY))
 	{
 		ChangeCondition(-hit_power);
 	}
