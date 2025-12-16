@@ -50,12 +50,6 @@ void RenderMainUI()
 
 	if (!ShowMainUI) 
 	{
-
-		if (Size[0] != 1000 || Size[1] != 950)
-		{
-			SDL_SetWindowSize(g_AppInfo.Window, 1000, 950);
-		}
-
 		RenderCompilerUI(Size[0], Size[1]);
 		return;
 	}
