@@ -159,12 +159,9 @@ void CActor::net_Export	(NET_Packet& P)					// export to server
 	}
 }
 
-static void w_vec_q8(NET_Packet& P,const Fvector& vec,const Fvector& min,const Fvector& max)
-{
-	P.w_float_q8(vec.x,min.x,max.x);
-	P.w_float_q8(vec.y,min.y,max.y);
-	P.w_float_q8(vec.z,min.z,max.z);
-}
+void w_vec_q8(NET_Packet& P, const Fvector& vec, const Fvector& min, const Fvector& max);
+void w_qt_q8(NET_Packet& P, const Fquaternion& q);
+
 static void r_vec_q8(NET_Packet& P,Fvector& vec,const Fvector& min,const Fvector& max)
 {
 	P.r_float_q8(vec.x,min.x,max.x);
@@ -175,28 +172,7 @@ static void r_vec_q8(NET_Packet& P,Fvector& vec,const Fvector& min,const Fvector
 	clamp(vec.y,min.y,max.y);
 	clamp(vec.z,min.z,max.z);
 }
-static void w_qt_q8(NET_Packet& P,const Fquaternion& q)
-{
-	//Fvector Q;
-	//Q.set(q.x,q.y,q.z);
-	//if(q.w<0.f)	Q.invert();
-	//P.w_float_q8(Q.x,-1.f,1.f);
-	//P.w_float_q8(Q.y,-1.f,1.f);
-	//P.w_float_q8(Q.z,-1.f,1.f);
-	///////////////////////////////////////////////////
-	P.w_float_q8(q.x,-1.f,1.f);
-	P.w_float_q8(q.y,-1.f,1.f);
-	P.w_float_q8(q.z,-1.f,1.f);
-	P.w_float_q8(q.w,-1.f,1.f);
 
-	///////////////////////////////////////////
-
-
-	//P.w_float_q8(q.x,-1.f,1.f);
-	//P.w_float_q8(q.y,-1.f,1.f);
-	//P.w_float_q8(q.z,-1.f,1.f);
-	//P.w(sign())
-}
 static void r_qt_q8(NET_Packet& P,Fquaternion& q)
 {
 	//// x^2 + y^2 + z^2 + w^2 = 1

@@ -180,12 +180,6 @@ source_group("ai_brains/planners" FILES ${XGM_SOURCE_AI_PLANNERS} )
 source_group("ai_brains/stalker/brains" FILES ${XGM_SOURCE_AI_STALKER_AI_Brains} )
 source_group("ai_brains/stalker/pathes" FILES ${XGM_SOURCE_AI_STALKER_AI_Pathes})
 source_group("ai_brains/monsters" FILES ${XGM_SOURCE_AI_STALKER_AI_Controls} )
- 
-
-
-
-
-
 
 # Apply list
 list(APPEND XGM_SRC_FILES ${XGM_SOURCE_ALL_FILES})
@@ -202,7 +196,7 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "ui/UIRankFraction.*")
 add_library(xrGame SHARED ${XGM_SRC_FILES})
 
 if (IXRAY_UNITYBUILD)
-	set_target_properties(xrGame PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE 32)
+	set_target_properties(xrGame PROPERTIES UNITY_BUILD ON UNITY_BUILD_BATCH_SIZE ${IXRAY_BUILD_BATCH_SIZE})
 	target_compile_options(xrGame PRIVATE /bigobj)
 	set_source_files_properties(../xrServerEntities/script_engine_export.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 endif()
