@@ -1,10 +1,15 @@
 #pragma once
+#include <execution>
+
 #include "../../xrCore/Collision/xrCDB.h"
+#include "../../xrLC/Build.h"
+
 #include "xrFace.h"
 #include "CUDARayCast.h"
 #include "CUDAContext.h"
-#include "../../xrLC/Build.h"
-#include <execution>
+
+
+struct OptixMeshBuffers;
 
 struct GridKeyVertexies 
 {
@@ -50,14 +55,24 @@ struct GridKeyHasher
 class OptixGeometryBuilder
 {
 private:
-    struct VertexData
+    // Remove Dublicates Private:
+    struct IndexedVertex
     {
-        Fvector Vertex;
-        u32 verID;
+        Fvector v;
+        uint32_t originalIndex;
     };
 
-    std::unordered_map<GridKeyVertexies, xr_vector<VertexData>, GridKeyHasher>       hash_vertices;
- 
+    struct FaceRaw
+    {
+        Fvector v[3];
+        Face* F;
+    };
+    xr_vector<FaceRaw> raw_faces;
+    void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
+    {
+        raw_faces.push_back({ {v1, v2, v3}, F });
+    };
+
 public:
     xr_vector<Fvector>   vertices;
     xr_vector<CDB::TRI>  triangles;
@@ -68,63 +83,21 @@ public:
         vertices.clear();
         triangles.clear();
         facePointers.clear();
-        hash_vertices.clear();
-    }
+     }
 
     void MemoryDealoc()
     {
-         vertices.shrink_to_fit();
+        vertices.shrink_to_fit();
         triangles.shrink_to_fit();
         facePointers.shrink_to_fit();
     }
-
-
+     
     u32 AddVertex(const Fvector& v)
     {
-        // const float cell_size = 1.0f;
-        // 
-        // // Квантизация координат
-        // GridKeyVertexies key(v.x, v.y, v.z);
-        // 
-        // // Generate hash key
-        // auto itHash = hash_vertices.find(key);
-        // if (itHash != hash_vertices.end())
-        // {
-        //     Vertex* parsed = nullptr;
-        //     for (auto& vertex : itHash->second)
-        //     {
-        //         if (vertex.Vertex.similar(v, 0.001f))
-        //             return vertex.verID; // Нашли похожую вершину
-        //     }
-        // }
-        // 
-        // vertices.push_back(v);
-        // 
-        // u32 VertexID = vertices.size() - 1;
-        // 
-        // VertexData new_vertex;
-        // new_vertex.Vertex = vertices.back();
-        // new_vertex.verID = VertexID;
-        // hash_vertices[key].push_back(new_vertex);
-        // return VertexID;
-
         vertices.push_back(v);
         return vertices.size() - 1;
     }
-
-    // Face Raw
-    struct FaceRaw
-    {
-        Fvector v[3];
-        Face* F;
-    };
-
-    xr_vector<FaceRaw> raw_faces;
-    void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
-    {
-        raw_faces.push_back({ {v1, v2, v3}, F });
-    };
-
+     
     void AddFace(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
     {
         // Добавляем вершины и получаем их индексы
@@ -144,12 +117,8 @@ public:
 
         AddFaceRaw(F, v1, v2, v3);
     }
-
-    struct IndexedVertex
-    {
-        Fvector v;
-        uint32_t originalIndex;
-    };
+    
+    // Remove Dublicates
 
     void RemoveDublicates()
     {
@@ -235,6 +204,6 @@ public:
             VertexStart);
     };
 
-    bool BuildBLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outBuffers);
-    bool BuildTLAS(OptixDeviceContext context, XRay::RayTrace::CUDA::OptixMeshBuffers& outScene, CUstream stream);
+    bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
+    bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream);
 };
