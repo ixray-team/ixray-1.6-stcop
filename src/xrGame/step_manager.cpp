@@ -27,7 +27,7 @@ CStepManager::CStepManager()
 {
 	if (stepRainSounds.empty())
 	{
-		FS.file_list(stepRainSounds, "$game_sounds$", FS_ListFiles, R"(material\human\step\rain_*)");
+		FS.file_list(stepRainSounds, _game_sounds_, FS_ListFiles, R"(material\human\step\rain_*)");
 	}
 
 	if (m_rain_steps.empty())
@@ -45,7 +45,7 @@ CStepManager::CStepManager()
 
 	if (stepExoSounds.empty())
 	{
-		FS.file_list(stepExoSounds, "$game_sounds$", FS_ListFiles, R"(exo\exo_step*)");
+		FS.file_list(stepExoSounds, _game_sounds_, FS_ListFiles, R"(exo\exo_step*)");
 	}
 
 	if (m_exo_steps.empty())

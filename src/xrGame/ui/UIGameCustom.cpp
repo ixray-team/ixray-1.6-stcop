@@ -570,7 +570,7 @@ void CMapListHelper::LoadMapInfo(LPCSTR map_cfg_fn, const xr_string& map_name, L
 void CMapListHelper::Load()
 {
 	string_path					fn;
-	FS.update_path				(fn, "$game_config$", "mp\\map_list.ltx");
+	FS.update_path				(fn, _game_config_, "mp\\map_list.ltx");
 	CInifile map_list_cfg		(fn);
 
 	//read weathers set
@@ -587,7 +587,7 @@ void CMapListHelper::Load()
 
 	// scan for additional maps
 	FS_FileSet			fset;
-	FS.file_list		(fset,"$game_levels$",FS_ListFiles,"*level.ltx");
+	FS.file_list		(fset,_game_levels_,FS_ListFiles,"*level.ltx");
 
 	FS_FileSetIt fit	= fset.begin();
 	FS_FileSetIt fit_e	= fset.end();
@@ -595,12 +595,12 @@ void CMapListHelper::Load()
 	for( ;fit!=fit_e; ++fit)
 	{
 		string_path					map_cfg_fn;
-		FS.update_path				(map_cfg_fn, "$game_levels$", (*fit).name.c_str());
+		FS.update_path				(map_cfg_fn, _game_levels_, (*fit).name.c_str());
 		LoadMapInfo					(map_cfg_fn, (*fit).name);
 	}
 	//scan all not laoded archieves
 	LPCSTR tmp_entrypoint			= "temporary_gamedata\\";
-	FS_Path* game_levels			= FS.get_path("$game_levels$");
+	FS_Path* game_levels			= FS.get_path(_game_levels_);
 	xr_string prev_root				= game_levels->m_Root;
 	game_levels->_set_root			(tmp_entrypoint);
 
@@ -617,7 +617,7 @@ void CMapListHelper::Load()
 		FS.LoadArchive				(A, tmp_entrypoint);
 
 		string_path					map_cfg_fn;
-		FS.update_path				(map_cfg_fn, "$game_levels$", ln);
+		FS.update_path				(map_cfg_fn, _game_levels_, ln);
 
 		
 		xr_strcat					(map_cfg_fn,"\\level.ltx");
