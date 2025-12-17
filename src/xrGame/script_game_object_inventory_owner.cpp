@@ -2022,6 +2022,28 @@ u8 CScriptGameObject::Weapon_GetCurrentScope()
 	return 255;
 }
 
+void CScriptGameObject::AddonsAttacher(u8 addons, u8 scope_idx)
+{
+	if (CWeaponMagazined* weapon = object().cast_weapon_magazined())
+	{
+		weapon->SetAddonsState(addons);
+
+		if (addons & CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAddonScope)
+		{
+			weapon->m_cur_scope = scope_idx;
+		}
+
+		weapon->InitAddons();
+		weapon->UpdateAddonsVisibility();
+		weapon->UpdateHUDAddonsVisibility();
+		weapon->ProcessScope();
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CWeaponMagazined : cannot access class member AddonsAttacher!");
+	}
+}
+
 LPCSTR CScriptGameObject::Weapon_GetAmmoSection(u8 ammo_type)
 {
 	CWeaponMagazined* weapon = object().cast_weapon_magazined();
