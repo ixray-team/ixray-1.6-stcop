@@ -3169,11 +3169,21 @@ float CActor::GetHandJitterScale(CHudItem* itm) const
 		return _jitter_time_remains / restore_time;
 }
 
+float CActor::GetNoclipSpeedScale() const
+{
+	return this->m_fNoclipSpeedScale;
+}
+
+void CActor::SetNoclipSpeedScale(float scale)
+{
+	m_fNoclipSpeedScale += scale;
+	clamp(m_fNoclipSpeedScale, 1.0f, 1000.0f);
+}
+
 void CActor::SetBestEnemy(CScriptGameObject* enemy)
 {
 	m_pBestEnemy = enemy;
 }
-
 
 void CActor::SetActorThirst(const float value)
 {
