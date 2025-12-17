@@ -315,6 +315,15 @@ void CParticleTool::OnFrame()
             THROW;
         }
     }
+
+
+    {
+        PROF_EVENT("seqParallelBeforRender");
+        for (auto& it : Device.seqParallelBeforRender)
+            it();
+
+        Device.seqParallelBeforRender.clear();
+    }
 }
 
 void CParticleTool::ZoomObject(BOOL bSelOnly)
