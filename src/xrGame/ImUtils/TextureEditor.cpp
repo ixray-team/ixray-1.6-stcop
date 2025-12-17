@@ -82,7 +82,7 @@ void TextureEditor_WorkerThread()
 
 				IWriter* pWriter = FS.w_open(path_to_settings);
 
-				if (pWriter)
+				if (pWriter && g_imgui_texture_editor.is_init)
 				{
 					pWriter->w(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
 					
@@ -186,14 +186,19 @@ void TextureEditor_WorkerThread()
 
 void RenderTextureEditor()
 {
+	if (g_imgui_texture_editor.is_thread_started == false)
+	{
+		g_imgui_texture_editor.worker_thread = std::thread(&TextureEditor_WorkerThread);
+		g_imgui_texture_editor.worker_thread.detach();
+		g_imgui_texture_editor.is_thread_started = true;
+	}
+
+
 	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_TextureEditor)])
 		return;
 
 	if (g_imgui_texture_editor.is_init == false)
 	{
-		g_imgui_texture_editor.worker_thread = std::thread(&TextureEditor_WorkerThread);
-		g_imgui_texture_editor.worker_thread.detach();
-
 		constexpr u32 _kReserve = 4096 * 4;
 		constexpr u32 _kReserveFilter = 4096;
 
