@@ -2005,7 +2005,7 @@ void CScriptGameObject::Weapon_AddonDetach(LPCSTR item_section, bool b_spawn_ite
 void CScriptGameObject::Weapon_SetCurrentScope(u8 type)
 {
 	CWeaponMagazined* weapon = object().cast_weapon_magazined();
-	if (!weapon)
+	if (weapon != nullptr)
 	{
 		weapon->m_cur_scope = type;
 	}
@@ -2018,7 +2018,7 @@ void CScriptGameObject::Weapon_SetCurrentScope(u8 type)
 u8 CScriptGameObject::Weapon_GetCurrentScope()
 {
 	CWeaponMagazined* weapon = object().cast_weapon_magazined();
-	if (weapon == nullptr)
+	if (weapon != nullptr)
 	{
 		return weapon->m_cur_scope;
 	}

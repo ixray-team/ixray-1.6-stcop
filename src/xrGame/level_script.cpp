@@ -204,7 +204,7 @@ CScriptGameObject *get_object_by_id(u16 id)
 	if (!pGameObject)
 	{
 		//g_pScriptEngine->print_stack();
-		return nullptr;
+		return 0;
 	}
 
 	return pGameObject->lua_game_object();
