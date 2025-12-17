@@ -80,18 +80,20 @@ void TextureEditor_WorkerThread()
 			}
 			case CImGuiTextureEditor::eRequestType::kWriteSettings:
 			{
-				string_path path_to_settings;
-				FS.update_path(path_to_settings, "$app_data_root$", "texture_editor_settings.bin");
-
-				IWriter* pWriter = FS.w_open(path_to_settings);
-
-				if (pWriter && g_imgui_texture_editor.is_init)
+				if (g_imgui_texture_editor.is_init)
 				{
-					pWriter->w(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
+					string_path path_to_settings;
+					FS.update_path(path_to_settings, "$app_data_root$", "texture_editor_settings.bin");
+					IWriter* pWriter = FS.w_open(path_to_settings);
 					
-					Msg("[TextureEditor]: saved settings to -> texture_editor_settings.bin");
+					if (pWriter)
+					{
+						pWriter->w(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
 
-					FS.w_close(pWriter);
+						Msg("[TextureEditor]: saved settings to -> texture_editor_settings.bin");
+
+						FS.w_close(pWriter);
+					}
 				}
 
 				g_imgui_texture_editor.is_settings_write = true;
