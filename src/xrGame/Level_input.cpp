@@ -272,7 +272,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
 	{
 #ifdef DEBUG
-		FS.get_path					("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		// FS.rescan_pathes();
 		FS.IsAddonPhase = true;
@@ -288,7 +288,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	switch (key) {
 	case SDL_SCANCODE_F7: {
 		if (!IsGameTypeSingle()) return;
-		FS.get_path					("$game_config$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+		FS.get_path					(_game_config_)->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.get_path					("$game_scripts$")->m_Flags.set(FS_Path::flNeedRescan, TRUE);
 		FS.rescan_pathes			();
 		NET_Packet					net_packet;
