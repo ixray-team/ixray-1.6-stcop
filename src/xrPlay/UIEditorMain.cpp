@@ -210,7 +210,7 @@ void RenderScenesViewer() {
 	static auto scenesIni = CInifile(
 			FS.update_path(
 				file_name,
-				"$game_config$",
+				_game_config_,
 				"scripts\\scenes.ltx"
 			),
 			TRUE,
