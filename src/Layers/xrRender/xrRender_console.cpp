@@ -341,7 +341,7 @@ public:
 		auto setConfig = [&](const char* basePath)
 		{
 			xr_string path = xr_string("ixray_settings\\") + basePath;
-			if (FS.exist("$game_config$", path.c_str()))
+			if (FS.exist(_game_config_, path.c_str()))
 			{
 				xr_strcpy(_cfg, path.c_str());
 			}
@@ -359,7 +359,7 @@ public:
 			case 4: setConfig("rspec_extreme.ltx"); break;
 			case 5: setConfig("rspec_ultra.ltx"); break;
 		}
-		FS.update_path			(_cfg,"$game_config$",_cfg);
+		FS.update_path			(_cfg,_game_config_,_cfg);
 		xr_strconcat(cmd,"cfg_load", " ", _cfg);
 		Console->Execute		(cmd);
 	}

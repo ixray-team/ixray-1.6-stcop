@@ -17,8 +17,6 @@
 #   include "../xrECore/Editor/ui_main.h"
 #endif
 
-#define _game_data_			"$game_data$"
-
 bool ped_sort_pred(const PS::CPEDef* a, const PS::CPEDef* b){	return xr_strcmp(a->Name(),b->Name())<0;}
 bool pgd_sort_pred(const PS::CPGDef* a, const PS::CPGDef* b){	return xr_strcmp(a->m_Name,b->m_Name)<0;}
 bool pacd_sort_pred(const PS::CPACDef* a, const PS::CPACDef* b){	return xr_strcmp(a->getName(),b->getName())<0;}

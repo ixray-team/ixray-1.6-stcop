@@ -21,7 +21,7 @@ void CScriptSoundAction::SetSound			(LPCSTR caSoundToPlay)
 	m_tGoalType			= eGoalTypeSoundAttached;
 	m_bStartedToPlay	= false;
 	string_path			l_caFileName;
-	if (FS.exist(l_caFileName,"$game_sounds$",*m_caSoundToPlay,".ogg")) {
+	if (FS.exist(l_caFileName,_game_sounds_,*m_caSoundToPlay,".ogg")) {
 		m_bStartedToPlay= false;
 		m_bCompleted	= false;
 	}

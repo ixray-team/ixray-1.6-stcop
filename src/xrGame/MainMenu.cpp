@@ -132,7 +132,7 @@ CMainMenu::~CMainMenu	()
 void CMainMenu::ReadTextureInfo()
 {
 	FS_FileSet fset;
-	FS.file_list(fset, "$game_config$", FS_ListFiles,"ui\\textures_descr\\*.xml");
+	FS.file_list(fset, _game_config_, FS_ListFiles,"ui\\textures_descr\\*.xml");
 	FS_FileSetIt fit	= fset.begin();
 	FS_FileSetIt fit_e	= fset.end();
 

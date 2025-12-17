@@ -122,7 +122,7 @@ bool CXml::Load(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 void CXml::Save()
 {
 	string_path Path = {};
-	FS.update_path(Path, "$game_config$", m_xml_file_name);
+	FS.update_path(Path, _game_config_, m_xml_file_name);
 	m_Doc.SaveFile(Path);
 }
 
@@ -150,7 +150,7 @@ bool CXml::Load(LPCSTR path, LPCSTR xml_filename)
 	{
 		for (const FS_File& File : AsureData)
 		{
-			IReader* AF = FS.r_open("$game_config$", File.name.c_str());
+			IReader* AF = FS.r_open(_game_config_, File.name.c_str());
 
 			CMemoryWriter AW;
 			ParseFile(path, AW, AF, this);

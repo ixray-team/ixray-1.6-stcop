@@ -146,7 +146,7 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 	xr_strcpy(fname, fRName);
 	fix_texture_name(fname);
 	IReader* reader = nullptr;
-	if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump"))
+	if (!FS.exist(fn, _game_textures_, fname, ".dds") && strstr(fname, "_bump"))
 	{
 		goto _BUMP_from_base;
 	}
@@ -158,13 +158,13 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 	{
 		goto _DDS;
 	}
-	if (FS.exist(fn, "$game_textures$", fname, ".dds"))
+	if (FS.exist(fn, _game_textures_, fname, ".dds"))
 	{
 		goto _DDS;
 	}
 
 	Msg("! Can't find texture '%s'", fname);
-	R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+	R_ASSERT(FS.exist(fn, _game_textures_, "ed\\ed_not_existing_texture", ".dds"));
 	goto _DDS;
 
 	_DDS:
@@ -371,7 +371,7 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 			//Msg("! Fallback to default bump map: %s", fname);
 			if (strstr(fname, "_bump#"))
 			{
-				R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
+				R_ASSERT2(FS.exist(fn, _game_textures_, "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
 				reader = FS.r_open(fn);
 				R_ASSERT2(reader, fn);
 				img_size = reader->length();
@@ -381,7 +381,7 @@ IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 			Msg("! Fallback to default bump map: %s", fname);
 			if (strstr(fname, "_bump"))
 			{
-				R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
+				R_ASSERT2(FS.exist(fn, _game_textures_, "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
 				reader = FS.r_open(fn);
 				R_ASSERT2(reader, fn);
 				img_size = reader->length();

@@ -171,7 +171,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
 
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(),_name,".vs.hlsl");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		FS.update_path				(cname,	_game_shaders_, cname);
 //		LPCSTR						target		= nullptr;
 
 		IReader*					fs			= FS.r_open(cname);
@@ -237,7 +237,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		string_path					cname;
         LPCSTR						shader_path = ::Render->getShaderPath();
 		xr_strconcat(cname,shader_path, _name,".ps.hlsl");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		FS.update_path				(cname,	_game_shaders_, cname);
 
 		// duplicate and zero-terminate
 		IReader* file			= FS.r_open(cname);

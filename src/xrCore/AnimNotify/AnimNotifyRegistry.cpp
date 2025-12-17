@@ -8,7 +8,7 @@ CAnimNotifyRegistry::CAnimNotifyRegistry()
 {
     xr_set<xr_string> files;
     string_path path;
-    FS.update_path(path, "$game_config$", "misc\\anim_notify");
+    FS.update_path(path, _game_config_, "misc\\anim_notify");
     FS.get_all_files_in_dir(files, path);
     for (auto& str : files)
     {

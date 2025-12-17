@@ -155,7 +155,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(), _name,".vs.hlsl");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		FS.update_path				(cname,	_game_shaders_, cname);
 		//		LPCSTR						target		= nullptr;
 
 		// duplicate and zero-terminate
@@ -167,7 +167,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 			xr_sprintf			(tmp, "DX10: %s is missing. Replace with stub_default.vs.hlsl", cname);
 			Msg					(tmp);
 			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".vs.hlsl");
-			FS.update_path		(cname,	"$game_shaders$", cname);
+			FS.update_path		(cname,	_game_shaders_, cname);
 			file				= FS.r_open(cname);
 		}
 		u32	const size			= file->length();
@@ -249,7 +249,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		// Open file
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(),_name,".ps.hlsl");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		FS.update_path				(cname,	_game_shaders_, cname);
 
 		// duplicate and zero-terminate
 		IReader*		R		= FS.r_open(cname);
@@ -262,7 +262,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.ps.hlsl", cname);
 			Msg					(tmp);
 			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".ps.hlsl");
-			FS.update_path				(cname,	"$game_shaders$", cname);
+			FS.update_path				(cname,	_game_shaders_, cname);
 			R		= FS.r_open(cname);
 		}
 
@@ -336,7 +336,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
 		// Open file
 		string_path					cname;
 		xr_strconcat(cname,::Render->getShaderPath(),_name,".gs.hlsl");
-		FS.update_path				(cname,	"$game_shaders$", cname);
+		FS.update_path				(cname,	_game_shaders_, cname);
 
 		// duplicate and zero-terminate
 		IReader*		R		= FS.r_open(cname);
@@ -349,7 +349,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR _name)
 			xr_sprintf				(tmp, "DX10: %s is missing. Replace with stub_default.gs.hlsl", cname);
 			Msg					(tmp);
 			xr_strconcat(cname,::Render->getShaderPath(),"stub_default",".gs.hlsl");
-			FS.update_path				(cname,	"$game_shaders$", cname);
+			FS.update_path				(cname,	_game_shaders_, cname);
 			R		= FS.r_open(cname);
 		}
 		IReader* file			= FS.r_open(cname);

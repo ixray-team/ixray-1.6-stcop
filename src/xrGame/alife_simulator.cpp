@@ -149,7 +149,7 @@ IReader const* CALifeSimulator::get_config	( shared_str config ) const
 	}
 
 	string_path						file_name;
-	FS.update_path					( file_name,"$game_config$", config.c_str() );
+	FS.update_path					( file_name,_game_config_, config.c_str() );
 	if ( !FS.exist(file_name) )
 		return						0;
 

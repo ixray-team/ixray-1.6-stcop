@@ -342,7 +342,7 @@ void CTexture::Load()
 
 	// Check for OGM
 	string_path fn;
-	if (FS.exist(fn, "$game_textures$", *cName, ".ogm"))
+	if (FS.exist(fn, _game_textures_, *cName, ".ogm"))
 	{
 		// AVI
 		pTheora = new CTheoraSurface();
@@ -387,7 +387,7 @@ void CTexture::Load()
 
 		}
 	}
-	else if (FS.exist(fn, "$game_textures$", *cName, ".avi"))
+	else if (FS.exist(fn, _game_textures_, *cName, ".avi"))
 	{
 		// AVI
 		pAVI = new CAviPlayerCustom();
@@ -427,7 +427,7 @@ void CTexture::Load()
 
 		}
 	}
-	else if (FS.exist(fn, "$game_textures$", *cName, ".seq"))
+	else if (FS.exist(fn, _game_textures_, *cName, ".seq"))
 	{
 		// Sequence
 		string256 buffer;

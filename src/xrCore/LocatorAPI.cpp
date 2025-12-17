@@ -1023,10 +1023,10 @@ void CLocatorAPI::check_cached_files	(LPSTR fname, const u32 &fname_size, const 
 	if (pathes.size() <= 1)
 		return;
 	
-	if (!path_exist("$server_root$"))
+	if (!path_exist(_server_root_))
 		return;
 
-	LPCSTR			path_base = get_path("$server_root$")->m_Path;
+	LPCSTR			path_base = get_path(_server_root_)->m_Path;
 	u32				len_base = xr_strlen(path_base);
 	LPCSTR			path_file = fname;
 	u32				len_file = xr_strlen(path_file);
@@ -1229,8 +1229,8 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 
 	IReader* R		= 0;
 	if (0==xr_strcmp(ext,".dds")){
-		P			= get_path("$game_textures$");               
-		update_path	(e_cpy_name,"$textures$",source_name+xr_strlen(P->m_Path));
+		P			= get_path(_game_textures_);               
+		update_path	(e_cpy_name,_textures_,source_name+xr_strlen(P->m_Path));
 		// tga
 		*strext		(e_cpy_name) = 0;
 		xr_strcat		(e_cpy_name,".tga");
@@ -1243,8 +1243,8 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
 	}
 	
 	if (0==xr_strcmp(ext,".ogg")){
-		P			= get_path("$game_sounds$");                               
-		update_path	(e_cpy_name,"$sounds$",source_name+xr_strlen(P->m_Path));
+		P			= get_path(_game_sounds_);                               
+		update_path	(e_cpy_name,_sounds_,source_name+xr_strlen(P->m_Path));
 		// wav
 		*strext		(e_cpy_name) = 0;
 		xr_strcat		(e_cpy_name,".wav");

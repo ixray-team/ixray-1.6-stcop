@@ -1010,7 +1010,7 @@ struct CCC_ReloadSystemLtx : public IConsole_Command {
 
 	virtual void Execute(LPCSTR args) {
 		string_path fname;
-		FS.update_path(fname, "$game_config$", "system.ltx");
+		FS.update_path(fname, _game_config_, "system.ltx");
 		CInifile::Destroy(pSettings);
 		pSettings = new CInifile(fname, TRUE);
 		CHECK_OR_EXIT(
@@ -1457,7 +1457,7 @@ public:
 
 		string_path				fn;
 
-		if (!FS.exist(arguments) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, "$game_meshes$", name)) {
+		if (!FS.exist(arguments) && !FS.exist(fn, "$level$", name) && !FS.exist(fn, _game_meshes_, name)) {
 			Msg("! Cannot find visual \"%s\"", arguments);
 			return;
 		}
@@ -1799,10 +1799,10 @@ static bool isValidSection(std::string_view section)
 
 	if (visual.find(".ogf") == xr_string::npos)
 	{
-		full_path.printf("%s%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data(), ".ogf");
+		full_path.printf("%s%s%s", FS.get_path(_game_meshes_)->m_Path, visual.data(), ".ogf");
 	}
 	else {
-		full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
+		full_path.printf("%s%s", FS.get_path(_game_meshes_)->m_Path, visual.data());
 	}
 
 	xr_strlwr(full_path);
