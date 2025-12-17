@@ -49,6 +49,7 @@ enum class EditorUI : u8
 	Tools_InputManager,
 	Tools_CarEditor,
 	Tools_PostProcessEffectorEditor,
+	Tools_TextureEditor,
 	Audio_General,
 	UI_General,
 	Count
