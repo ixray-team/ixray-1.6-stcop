@@ -48,12 +48,15 @@ void TextureEditor_WorkerThread()
 					{
 						IReader* pReader = FS.r_open("$app_data_root$", "texture_editor_settings.bin");
 
-						if (pReader)
+						if (pReader && pReader->length())
 						{
 							pReader->r(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
 							
 							Msg("[TextureEditor]: read settings from -> texture_editor_settings.bin");
+						}
 
+						if (pReader)
+						{
 							FS.r_close(pReader);
 						}
 					}
