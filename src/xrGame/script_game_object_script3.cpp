@@ -476,6 +476,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("weapon_get_ammo_section",		&CScriptGameObject::Weapon_GetAmmoSection)
 		.def("weapon_addon_attach",			&CScriptGameObject::Weapon_AddonAttach)
 		.def("weapon_addon_detach",			&CScriptGameObject::Weapon_AddonDetach)
+		.def("addons_attach",				&CScriptGameObject::AddonsAttacher)
 		.def("get_ammo_count_for_type",     &CScriptGameObject::GetAmmoCount)
 		.def("get_main_weapon_type",		&CScriptGameObject::GetMainWeaponType)
 		.def("get_weapon_type",				&CScriptGameObject::GetWeaponType)
