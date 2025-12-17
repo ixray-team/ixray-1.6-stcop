@@ -52,6 +52,7 @@ enum EMovementStates
 
 enum EMoveCommand
 {
+	mcNoMove	= 0,
 	mcFwd		= (1ul<<0ul),
 	mcBack		= (1ul<<1ul),
 	mcLStrafe	= (1ul<<2ul),
@@ -71,7 +72,7 @@ enum EMoveCommand
 	mcAnyAction = (mcAnyMove|mcJump|mcFall|mcLanding|mcLanding2), //mcTurn|
 	mcAnyState	= (mcCrouch|mcAccel|mcClimb|mcSprint),
 	mcLookout	= (mcLLookout|mcRLookout),
-	mcJumpSeq = (mcJump | mcFall | mcLanding | mcLanding2),
+	mcJumpSeq	= (mcJump | mcFall | mcLanding | mcLanding2),
 };
 
 // enum дл€ определени€ действи€ над вещью на которую наведен в текущее врем€ прицел.

@@ -1159,6 +1159,8 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 		{
 			character_physics_support()->movement()->SetNonInteractive(true);
 			character_physics_support()->movement()->SetVelocity(Fvector().set(0.f,0.f,0.f));
+			mstate_wishful = mcNoMove;
+			mstate_real = mcNoMove;
 		}
 		else if(character_physics_support()->movement()->bNonInteractiveMode)
 				character_physics_support()->movement()->SetNonInteractive(false);
