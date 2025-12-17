@@ -98,7 +98,7 @@
 			// Open file
 			string_path					cname;
 			xr_strconcat(cname,::Render->getShaderPath(), _name, ShaderTypeTraits<T>::GetShaderExt());
-			FS.update_path				(cname,	"$game_shaders$", cname);
+			FS.update_path				(cname,	_game_shaders_, cname);
 
 			// duplicate and zero-terminate
 			IReader* file				= FS.r_open(cname);

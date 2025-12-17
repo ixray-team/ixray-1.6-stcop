@@ -220,7 +220,7 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 /*	if (!g_dedicated_server)
 	{
 		string_path		S;
-		FS.update_path	(S,"$game_config$","script.ltx");
+		FS.update_path	(S,_game_config_,"script.ltx");
 		CInifile		*l_tpIniFile = new CInifile(S);
 		R_ASSERT		(l_tpIniFile);
 

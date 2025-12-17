@@ -234,7 +234,7 @@ void CScriptEngine::remove_script_process	(const EScriptProcessors &process_id)
 void CScriptEngine::load_common_scripts()
 {
 	string_path S;
-	FS.update_path(S, "$game_config$", "script.ltx");
+	FS.update_path(S, _game_config_, "script.ltx");
 	CInifile* l_tpIniFile = new CInifile(S);
 	R_ASSERT(l_tpIniFile);
 
@@ -340,7 +340,7 @@ void CScriptEngine::register_script_classes		()
 	return;
 #endif
 	string_path					S;
-	FS.update_path				(S,"$game_config$","script.ltx");
+	FS.update_path				(S,_game_config_,"script.ltx");
 	CInifile					*l_tpIniFile = new CInifile(S);
 	R_ASSERT					(l_tpIniFile);
 

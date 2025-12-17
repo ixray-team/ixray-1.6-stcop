@@ -30,7 +30,7 @@ void fix_texture_thm_name(LPSTR fn)
 void CTextureDescrMngr::LoadLTX()
 {
 	string_path				fname;		
-	FS.update_path			(fname,"$game_textures$","textures.ltx");
+	FS.update_path			(fname,_game_textures_,"textures.ltx");
 
 	if (FS.exist(fname))
 	{
@@ -259,7 +259,7 @@ void CTextureDescrMngr::Load()
 #endif // #ifdef DEBUG
 
 	LoadLTX					();
-	LoadTHM					("$game_textures$");
+	LoadTHM					(_game_textures_);
 	LoadTHM					("$level$");
 
 #ifdef DEBUG

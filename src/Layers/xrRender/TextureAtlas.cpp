@@ -941,7 +941,7 @@ void CSVGStorage::init_default()
 void CSVGStorage::init_default_atlas()
 {
 	string_path fn;
-	FS.update_path(fn, "$game_textures$", _kSVGStorge_DefaultSVGTextureSubPathName);
+	FS.update_path(fn, _game_textures_, _kSVGStorge_DefaultSVGTextureSubPathName);
 
 	IReader* pReader = FS.r_open(fn);
 
@@ -1200,7 +1200,7 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 	std::sprintf(buf, "ui%s%s", Platform::kPreferredSeparator, subpath.data());
 
 	string_path fn;
-	FS.update_path(fn, "$game_textures$", buf);
+	FS.update_path(fn, _game_textures_, buf);
 	IReader* pReader = FS.r_open(fn);
 
 	result = !!(pReader);
