@@ -30,7 +30,7 @@ void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 		string_path					map_cfg_fn;
 		string_path					fname;
 		xr_strconcat(fname,name.c_str(), "\\level.ltx");
-		FS.update_path				(map_cfg_fn, "$game_levels$", fname);
+		FS.update_path				(map_cfg_fn, _game_levels_, fname);
 		levelIni					= new CInifile(map_cfg_fn);
 	}
 
