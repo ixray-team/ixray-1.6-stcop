@@ -303,6 +303,8 @@ private:
 	float m_fLookOutAmplK = 0.0f;
 	float m_fLookOutSpeedAmplDXPow = 0.0f;
 
+	float m_fNoclipSpeedScale = 3.0f;
+
 public:
 	bool					m_bAllowDeathRemove;
 	float					m_fLegs_shift;
@@ -318,6 +320,9 @@ public:
 	void SetHandsJitterTime(u32 time) { _jitter_time_remains = time; }
 	bool IsHandJitter() const { return _jitter_time_remains > 0; }
 	float GetHandJitterScale(CHudItem* itm) const;
+
+	float GetNoclipSpeedScale() const;
+	void  SetNoclipSpeedScale(float scale);
 
 	void					SetZoomRndSeed			(s32 Seed = 0);
 	s32						GetZoomRndSeed			()	{ return m_ZoomRndSeed;	};
