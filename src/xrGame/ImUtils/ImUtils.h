@@ -359,6 +359,36 @@ struct CHudAdjustManager
 	bool is_initialized;
 };
 
+template <typename T>
+class ThreadSafeQueue {
+private:
+	std::queue<T> data_queue;
+	mutable std::mutex mut;
+	std::condition_variable cond;
+
+public:
+	void push(T value) {
+		std::lock_guard<std::mutex> lock(mut); // Acquire lock
+		data_queue.push(std::move(value));     // Push item
+		cond.notify_one();                     // Notify one waiting consumer
+	} // Lock is automatically released here
+
+	T pop() {
+		std::unique_lock<std::mutex> lock(mut); // Acquire lock
+		// Wait until queue is not empty, condition variable releases lock while waiting
+		cond.wait(lock, [this] { return !data_queue.empty(); });
+		T value = std::move(data_queue.front()); // Get item
+		data_queue.pop();                        // Remove item
+		return value;
+	} // Lock is automatically released here
+
+	bool empty() const {
+		std::lock_guard<std::mutex> lock(mut);
+		return data_queue.empty();
+	}
+};
+
+/// @brief author: wh1t3lord, wt - means worker thread
 struct CImGuiTextureEditor
 {
 	enum eAnalyzedStatus
@@ -368,6 +398,22 @@ struct CImGuiTextureEditor
 		kTHMIsNotValid = 1 << 3,
 		kDimensionsNotPowerOf2 = 1 << 4,
 		kNoMipMaps = 1 << 5
+	};
+
+	enum class eRequestType
+	{
+		kReadSettings,
+		kWriteSettings,
+		kReadAll,
+		kReadMetadataOfSelected,
+		kShutdownThread,
+		kInvalid = -1
+	};
+
+	struct SRequestData
+	{
+		eRequestType type = eRequestType::kInvalid;
+		u64 selected_id = 0;
 	};
 
 #define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
@@ -387,9 +433,19 @@ struct CImGuiTextureEditor
 		int format = -1;
 	};
 
+	// todo: serialize to binary and read before init...
+	struct SUserSettings
+	{
+		bool show_invalid_first = false;
+	};
+
 	bool is_init = false;
+
+	// written on wt side
 	bool is_all_analyzed=false;
 	bool is_running_wt = true;
+	bool is_settings_read = false;
+	bool is_settings_write = false;
 
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
@@ -405,11 +461,15 @@ struct CImGuiTextureEditor
 	u64 invalid_by_filenamelength = 0;
 	u64 invalid_by_thm = 0;
 
+	SUserSettings settings;
+
 	std::string_view wt_current_analyzing_texture;
 	std::string path_to_texture_folder;
 
 	std::vector<STextureEntry> textures;
 	std::vector<STextureEntry> filter_query;
+
+	ThreadSafeQueue<SRequestData> requests;
 	std::thread worker_thread;
 };
 
