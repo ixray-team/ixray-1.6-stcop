@@ -15,19 +15,11 @@ CPickUpManager::CPickUpManager(CActor* NewOwner) :
 
 void CPickUpManager::RenderInfo()
 {
-	Owner->feel_touch_update(Owner->Position(), PickupInfoRadius);
-
-	Fmatrix project, view, transform;
-	view.build_camera_dir(Owner->cam_FirstEye()->vPosition, Owner->cam_Active()->vDirection, Owner->cam_Active()->vNormal);
-	project.build_projection(deg2rad(Owner->cam_Active()->f_fov), Owner->cam_Active()->f_aspect, Device.fViewportNear, PickupInfoRadius);
-	transform.mul(project, view);
-
-	CFrustum frustum;
-	frustum.CreateFromMatrix(transform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+	Owner->feel_touch_update(Owner->cam_FirstEye()->vPosition, PickupInfoRadius);
 
 	for (CObject* Item: Owner->feel_touch)
 	{
-		if (CanPickItem(frustum, Owner->cam_FirstEye()->vPosition, Item))
+		if (CanPickItem(Render->ViewBase, Owner->cam_FirstEye()->vPosition, Item))
 			PickupInfoDraw(Item);
 	}
 }
@@ -40,12 +32,9 @@ void CPickUpManager::PickupInfoDraw(CObject* object)
 
 	Fmatrix res;
 	res.mul(Device.mFullTransform, object->XFORM());
+
 	Fvector4 v_res;
 	Fvector shift;
-
-	LPCSTR draw_str = item->NameItem();
-	shift.set(0, 0, 0);
-
 	res.transform(v_res, shift);
 
 	if (v_res.z < 0 || v_res.w < 0)
@@ -61,37 +50,9 @@ void CPickUpManager::PickupInfoDraw(CObject* object)
 	font->SetAligment(CGameFont::alCenter);
 	font->SetColor(PICKUP_INFO_COLOR);
 
-	font->Out(x, y, draw_str);
+	font->Out(x, y, item->NameItem());
 }
 
-ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
-{
-	bool& bOverlaped = *(bool*)params;
-	if (result.O)
-	{
-		if (Level().CurrentEntity() == result.O)
-		{ //ignore self-actor
-			return true;
-		}
-		else
-		{ //check obstacle flag
-			if (result.O->SpatialComponent->spatial.type & STYPE_OBSTACLE)
-				bOverlaped = true;
-
-			return TRUE;
-		}
-	}
-	else
-	{
-		//получить треугольник и узнать его материал
-		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
-			return TRUE;
-	}
-
-	bOverlaped = true;
-	return FALSE;
-}
 #include "DestroyablePhysicsObject.h"
 bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
 {
@@ -112,9 +73,36 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 			VERIFY(!fis_zero(RD.dir.square_magnitude()));
 
 			RQR.r_clear();
-			Level().ObjectSpace.RayQuery(RQR, RD, info_trace_callback, &bOverlaped, nullptr, item);
+			Level().ObjectSpace.RayQuery(RQR, RD, [](collide::rq_result& result, LPVOID params) -> BOOL
+			{
+				bool& bOverlaped = *(bool*)params;
+				if (result.O)
+				{
+					if (Level().CurrentEntity() == result.O)
+					{ //ignore self-actor
+						return TRUE;
+					}
+					else
+					{ //check obstacle flag
+						if (result.O->SpatialComponent->spatial.type & STYPE_OBSTACLE)
+							bOverlaped = true;
 
-			for (collide::rq_result result : RQR.r_results())
+						return TRUE;
+					}
+				}
+				else
+				{
+					//получить треугольник и узнать его материал
+					CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+					if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
+						return TRUE;
+				}
+
+				bOverlaped = true;
+				return FALSE;
+			}, &bOverlaped, nullptr, item);
+
+			for (collide::rq_result& result : RQR.r_results())
 			{
 				CGameObject* GO = result.O != nullptr ? result.O->cast_game_object() : nullptr;
 				if (GO == nullptr)
@@ -152,6 +140,11 @@ bool CPickUpManager::CanPickItem(const CFrustum& frustum, const Fvector& from, C
 				return false;
 			}
 		}
+		else
+			return false;
 	}
+	else
+		return false;
+
 	return !bOverlaped;
 }
