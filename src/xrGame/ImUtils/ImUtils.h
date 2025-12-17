@@ -359,6 +359,120 @@ struct CHudAdjustManager
 	bool is_initialized;
 };
 
+template <typename T>
+class ThreadSafeQueue {
+private:
+	std::queue<T> data_queue;
+	mutable std::mutex mut;
+	std::condition_variable cond;
+
+public:
+	void push(T value) {
+		std::lock_guard<std::mutex> lock(mut); // Acquire lock
+		data_queue.push(std::move(value));     // Push item
+		cond.notify_one();                     // Notify one waiting consumer
+	} // Lock is automatically released here
+
+	T pop() {
+		std::unique_lock<std::mutex> lock(mut); // Acquire lock
+		// Wait until queue is not empty, condition variable releases lock while waiting
+		cond.wait(lock, [this] { return !data_queue.empty(); });
+		T value = std::move(data_queue.front()); // Get item
+		data_queue.pop();                        // Remove item
+		return value;
+	} // Lock is automatically released here
+
+	bool empty() const {
+		std::lock_guard<std::mutex> lock(mut);
+		return data_queue.empty();
+	}
+};
+
+/// @brief author: wh1t3lord, wt - means worker thread
+struct CImGuiTextureEditor
+{
+	enum eAnalyzedStatus
+	{
+		kInvalidFileName = 1 << 1,
+		kNoTHMPresented = 1 << 2,
+		kTHMIsNotValid = 1 << 3,
+		kDimensionsNotPowerOf2 = 1 << 4,
+		kNoMipMaps = 1 << 5
+	};
+
+	enum class eRequestType
+	{
+		kReadSettings,
+		kWriteSettings,
+		kReadAll,
+		kReadMetadataOfSelected,
+		kShutdownThread,
+		kInvalid = -1
+	};
+
+	struct SRequestData
+	{
+		eRequestType type = eRequestType::kInvalid;
+		u64 selected_id = 0;
+	};
+
+#define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
+
+	// don't store metadata only on when selected
+	struct STextureEntry
+	{
+		u8 analyze_status_result_flags = 0;
+		char path[IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT * 2];
+	};
+
+	struct STextureMetadata
+	{
+		int mipcount = -1;
+		int width = -1;
+		int height = -1;
+		int format = -1;
+	};
+
+	// todo: serialize to binary and read before init...
+	struct SUserSettings
+	{
+		bool show_invalid_first = false;
+	};
+
+	bool is_init = false;
+	bool is_thread_started = false;
+	// written on wt side
+	bool is_all_analyzed=false;
+	bool is_running_wt = true;
+	bool is_settings_read = false;
+	bool is_settings_write = false;
+
+	std::byte _memory_metadata[sizeof(STextureMetadata)];
+	STextureMetadata* pMetadataOfSelected = nullptr;
+
+	u64 selected_index = u64(-1);
+
+	u64 current_analyzed_count = 0;
+	u64 total_textures_in_folder = 0;
+	u64 total_thm_in_folder = 0;
+	u64 total_files_in_folder = 0;
+
+	u64 valid_count = 0;
+	u64 invalid_by_filenamelength = 0;
+	u64 invalid_by_thm = 0;
+
+	SUserSettings settings;
+
+	std::string_view wt_current_analyzing_texture;
+	std::string path_to_texture_folder;
+
+	std::vector<STextureEntry> textures;
+	std::vector<STextureEntry> filter_query;
+
+	ThreadSafeQueue<SRequestData> requests;
+	std::thread worker_thread;
+};
+
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
 
 void InitSections();
@@ -375,6 +489,7 @@ void RenderToolsOMFEditorWindow();
 void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
+void RenderTextureEditor();
 void DestroySpawnManagerWindow();
 
 void RegisterImGuiInGame();
@@ -383,3 +498,4 @@ void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
 extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
 extern CHudAdjustManager imgui_hud_adjust_manager;
+extern CImGuiTextureEditor g_imgui_texture_editor;
