@@ -32,7 +32,7 @@ void CPartition::load(IKinematics* V, LPCSTR model_name)
 
 	xr_strcat(fn, sizeof(fn), ".ltx");
 
-	FS.update_path(fn_full, "$game_meshes$", fn);
+	FS.update_path(fn_full, _game_meshes_, fn);
 
 	CInifile ini(fn_full, TRUE, TRUE, FALSE);
 

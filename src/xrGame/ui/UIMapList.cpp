@@ -136,7 +136,7 @@ void CUIMapList::OnListItemClicked()
 
 	Frect orig_rect = m_pMapPic->GetTextureRect();
 
-	if (FS.exist("$game_textures$",full_name.c_str()))
+	if (FS.exist(_game_textures_,full_name.c_str()))
 		m_pMapPic->InitTexture		(map_name.c_str());
 	else
 		m_pMapPic->InitTexture		("ui\\ui_noise");
