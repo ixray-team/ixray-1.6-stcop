@@ -628,6 +628,11 @@ bool TUI::Idle()
 
 	Sleep(1);
 
+	if (g_pGamePersistent)
+	{
+		g_pGamePersistent->UpdatePlayDestroyParticles();
+	}
+
 	OnFrame();
 
 	Device.secondary_tasks.run([]()
