@@ -8,7 +8,7 @@ XRCORE_API CEngineExternal* g_pEngineExternal = nullptr;
 CEngineExternal::CEngineExternal() : m_is_rendering_ui_vector_when_error_use_default_atlas{}, m_preferredUIRendering(EEngineExternalUIRenderingType::Unknown), m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
 {
 	string_path fname;
-	FS.update_path(fname, "$game_config$", "engine_external.ltx");
+	FS.update_path(fname, _game_config_, "engine_external.ltx");
 	pOptions = new CInifile(fname);
 
 	if (pOptions->section_exist("shaders_options"))

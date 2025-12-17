@@ -400,9 +400,9 @@ Snd_LoadSource(sound_source& source, const char* name)
 	source.pub.name = N;
 
 	xr_strconcat(fn, N, ".ogg");
-	if (!FS.exist("$level$", fn))	FS.update_path(fn, "$game_sounds$", fn);
+	if (!FS.exist("$level$", fn))	FS.update_path(fn, _game_sounds_, fn);
 	if (!FS.exist(fn)) {
-		FS.update_path(fn, "$game_sounds$", "$no_sound.ogg");
+		FS.update_path(fn, _game_sounds_, "$no_sound.ogg");
 		Msg("! Can't find sound '%s'", source.pub.name.c_str());
 	}
 

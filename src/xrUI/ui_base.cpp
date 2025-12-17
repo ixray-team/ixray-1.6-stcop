@@ -540,7 +540,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 		else
 			xr_sprintf(str, "%s_21", fn);
 
-		if (!FS.exist(str_, "$game_config$", "ui\\", str))
+		if (!FS.exist(str_, _game_config_, "ui\\", str))
 		{
 			if (strext(fn))
 			{
@@ -551,7 +551,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 			else
 				xr_sprintf(str, "%s_16", fn);
 
-			if (!FS.exist(str_, "$game_config$", "ui\\", str))
+			if (!FS.exist(str_, _game_config_, "ui\\", str))
 			{
 				xr_sprintf(str, "%s", fn);
 				if (!strext(fn)) 
@@ -575,7 +575,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 		else
 			xr_sprintf				(str, "%s_16", fn);
 
-		if(!FS.exist(str_, "$game_config$", "ui\\" , str) )
+		if(!FS.exist(str_, _game_config_, "ui\\" , str) )
 		{
 			xr_sprintf(str, "%s", fn);
 			if (!strext(fn) ) 
