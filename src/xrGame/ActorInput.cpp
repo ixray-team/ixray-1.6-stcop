@@ -287,19 +287,31 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
 void CActor::IR_OnMouseWheel(int direction)
 {
-	if(hud_adj_mode)
+	if (hud_adj_mode)
 	{
 		g_player_hud->tune({ 0.f,0.f,float(direction) });
 		return;
 	}
 
-	if(inventory().Action( (direction>0)? (u16)kWPN_ZOOM_DEC:(u16)kWPN_ZOOM_INC , CMD_START)) return;
-
-
-	if (direction>0)
-		OnNextWeaponSlot				();
+	if (inventory().Action(direction > 0 ? (u16)kWPN_ZOOM_DEC : (u16)kWPN_ZOOM_INC, CMD_START))
+		return;
+	
+	if (psActorFlags.test(AF_NO_CLIP))
+	{
+		if (Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT) || Level().IR_GetKeyState(SDL_SCANCODE_RSHIFT))
+		{
+			SetNoclipSpeedScale(direction > 0 ? 5.0: -5.0f);
+			return;
+		}
+		SetNoclipSpeedScale(direction > 0 ? 1.0: -1.0f);
+	}
 	else
-		OnPrevWeaponSlot				();
+	{
+		if (direction > 0)
+			OnNextWeaponSlot();
+		else
+			OnPrevWeaponSlot();
+	}
 }
 
 void CActor::IR_OnKeyboardRelease(int cmd)
@@ -1496,20 +1508,13 @@ void CActor::MakeKick()
 #ifndef MASTER_GOLD
 #include "../xrPhysics/IPHWorld.h"
 collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject* ignore);
+
 void CActor::NoClipFly(int cmd)
 {
-    Fvector cur_pos, right, left;
+	Fvector cur_pos, right, left;
     cur_pos.set(0, 0, 0);
-    float scale = 5.f;
-    if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
-        scale = 2.0f;
-    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_X))
-        scale = 7.0f;
-    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT))
-        scale = 10.0f;
-    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_CAPSLOCK))
-        scale = 15.0f;
-    else if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
+	
+    if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
 	{
         collide::rq_result RQ = GetPickResult(cam_Active()->Position(), cam_Active()->Direction(), 1000.0f, this);
         if (RQ.element>=0)
@@ -1519,36 +1524,36 @@ void CActor::NoClipFly(int cmd)
 	switch (cmd)
 	{
 		case kJUMP:
-			cur_pos.mad({ 0,1,0 }, scale / 2.0f);
+			cur_pos.mad({ 0,1,0 }, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,1,0 }, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,1,0 }, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kCROUCH:
-			cur_pos.mad({ 0,-1,0 }, scale / 2.0f);
+			cur_pos.mad({ 0,-1,0 }, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,-1,0 }, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,-1,0 }, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kFWD:
-			cur_pos.mad(cam_Active()->vDirection, scale / 2.0f);
+			cur_pos.mad(cam_Active()->vDirection, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, cam_Active()->vDirection, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, cam_Active()->vDirection, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kBACK:
-			cur_pos.mad(Fvector(cam_Active()->vDirection).invert(), scale / 2.0f);
+			cur_pos.mad(Fvector(cam_Active()->vDirection).invert(), GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(cam_Active()->vDirection).invert(), (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(cam_Active()->vDirection).invert(), (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kR_STRAFE:
 			right.set(cam_Active()->Right());
-			cur_pos.mad(right, scale / 2.0f);
+			cur_pos.mad(right, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, right, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, right, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kL_STRAFE:
 			left.set(Fvector(cam_Active()->Right()).invert());
-			cur_pos.mad(left, scale / 2.0f);
+			cur_pos.mad(left, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, left, (scale * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, left, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
 			break;
 		case kCAM_1:
 		    cam_Set(eacFirstEye);
@@ -1586,7 +1591,7 @@ void CActor::NoClipFly(int cmd)
 		}break;
 	}
 	if(!m_pPhysicsShell)
-		SetPhPosition(XFORM().translate_add(cur_pos.mul(scale * Device.fTimeDelta)));
+		SetPhPosition(XFORM().translate_add(cur_pos.mul(GetNoclipSpeedScale() * Device.fTimeDelta)));
 
 	if(inventory().Action((u16)cmd, CMD_START))return;
 }
