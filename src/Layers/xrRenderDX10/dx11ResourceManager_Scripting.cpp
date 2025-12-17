@@ -216,7 +216,7 @@ void	CResourceManager::LS_Load			()
 	];
 
 	// load shaders
-	xr_vector<char*>*	folder			= FS.file_list_open	("$game_shaders$",::Render->getShaderPath(),FS_ListFiles|FS_RootOnly);
+	xr_vector<char*>*	folder			= FS.file_list_open	(_game_shaders_,::Render->getShaderPath(),FS_ListFiles|FS_RootOnly);
 	VERIFY								(folder);
 	for (u32 it=0; it<folder->size(); it++)	{
 		string_path						namesp,fn;
@@ -225,7 +225,7 @@ void	CResourceManager::LS_Load			()
 		*strext	(namesp)=0;
 		if		(0==namesp[0])			xr_strcpy	(namesp,"_G");
 		xr_strconcat(fn,::Render->getShaderPath(),(*folder)[it]);
-		FS.update_path					(fn,"$game_shaders$",fn);
+		FS.update_path					(fn,_game_shaders_,fn);
 		try {
 			Script::bfLoadFileIntoNamespace	(LSVM,fn,namesp,true);
 		} catch (...)

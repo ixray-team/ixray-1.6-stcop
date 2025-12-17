@@ -22,7 +22,7 @@ CEffect_Rain::CEffect_Rain()
 	snd_Ambient.create("ambient\\rain", st_Effect, sg_Undefined);
 
 	string_path RainSounds = {};
-	FS.update_path(RainSounds, "$game_sounds$", "ambient\\rain_drops_roof.ogg");
+	FS.update_path(RainSounds, _game_sounds_, "ambient\\rain_drops_roof.ogg");
 
 	if (FS.exist(RainSounds))
 	{

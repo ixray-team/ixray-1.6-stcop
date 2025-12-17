@@ -1,6 +1,6 @@
 #pragma once
 
-const LPCSTR CONFIG_PATH			= "$game_config$";
+const LPCSTR CONFIG_PATH			= _game_config_;
 const LPCSTR UI_PATH				= "ui";
 
 
