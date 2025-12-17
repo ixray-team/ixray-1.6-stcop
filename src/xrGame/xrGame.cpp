@@ -98,7 +98,7 @@ extern "C"
 	DLL_API void __cdecl xrGameInitialize()
 	{
 		string_path GameGlobals = {};
-		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
+		FS.update_path(GameGlobals, _game_config_, "game_global.ltx");
 		pGameGlobals = new CInifile(GameGlobals);
 
 		CCC_RegisterCommands();

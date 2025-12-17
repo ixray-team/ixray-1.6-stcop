@@ -194,7 +194,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
 	);
 
 	CInifile ini(&temp,
-		FS.get_path("$game_config$")->m_Path
+		FS.get_path(_game_config_)->m_Path
 	);
 #pragma warning(pop)
 
@@ -241,7 +241,7 @@ xr_vector <CInifile::Sect*> CSE_ALifeObject::parseLoadouts(CInifile& ini)
     return m_loadouts;
 }
 
-// Спавнит один полный лодаут среди случайных в рамках инклуда в профиле нпц в разделе supplies
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ supplies
 void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
 {
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
@@ -291,7 +291,7 @@ void CSE_ALifeObject::processingSpawnFullRandomLoadout(CInifile& ini)
     }
 }
 
-// Спавнит один случайный предмет среди случайно выбранного лодаута в рамках инклуда в профиле нпц в разделе supplies
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ supplies
 void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini)
 {
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
@@ -328,7 +328,7 @@ void CSE_ALifeObject::processingSpawnOnceRandomitemByRandomLoadout(CInifile& ini
     );
 }
 
-// Спавнит по одному случайному предмету из каждого лодаута присутствующего у нпц в профиле в рамках 1 файла инклуда
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini)
 {
     xr_vector <CInifile::Sect*> m_loadouts = parseLoadouts(ini);
@@ -374,7 +374,7 @@ void CSE_ALifeObject::processingSpawnOnceRandomItemPerEachLoadouts(CInifile& ini
     }
 }
 
-// Ванильный спавн
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 void CSE_ALifeObject::processingVanillaSpawn(CInifile& ini)
 {
     LPCSTR itemSection = "";

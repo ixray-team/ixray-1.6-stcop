@@ -41,7 +41,7 @@ void				game_cl_mp::AddMessageMenu			(LPCSTR	menu_section, LPCSTR snd_path, LPCS
 		{
 			string_path FileName_Voice, FileName_Radio, fn;
 			xr_sprintf(FileName_Voice, "%s%s%d\\voice_%s%d", snd_path, team_prefix, 1, SoundName, s);
-			if (!FS.exist(fn,"$game_sounds$",FileName_Voice,".ogg")) break;
+			if (!FS.exist(fn,_game_sounds_,FileName_Voice,".ogg")) break;
 			
 			pNewMessage->aVariants.push_back(TEAMSOUND());
 			TEAMSOUND*	pNewTeamSound = &(pNewMessage->aVariants.back());
@@ -51,7 +51,7 @@ void				game_cl_mp::AddMessageMenu			(LPCSTR	menu_section, LPCSTR snd_path, LPCS
 
 				xr_sprintf(FileName_Voice, "%s%s%d\\voice_%s%d", snd_path, team_prefix, t, SoundName, s);
 				xr_sprintf(FileName_Radio, "%s%s%d\\radio_%s%d", snd_path, team_prefix, t, SoundName, s);
-				if (FS.exist(fn,"$game_sounds$",FileName_Voice,".ogg") && FS.exist(fn,"$game_sounds$",FileName_Radio,".ogg"))
+				if (FS.exist(fn,_game_sounds_,FileName_Voice,".ogg") && FS.exist(fn,_game_sounds_,FileName_Radio,".ogg"))
 				{
 					pNewTeamSound->push_back(cl_Message_Sound());
 					cl_Message_Sound* pMsgSound = &(pNewTeamSound->back());

@@ -660,14 +660,14 @@ void iterate_sounds					(LPCSTR prefix, u32 max_count, const CScriptCallbackEx<v
 		string_path					fn, s;
 		LPSTR						S = (LPSTR)&s;
 		_GetItem					(prefix,j,s);
-		if (FS.exist(fn,"$game_sounds$",S,".ogg"))
+		if (FS.exist(fn,_game_sounds_,S,".ogg"))
 			callback				(prefix);
 
 		for (u32 i=0; i<max_count; ++i)
 		{
 			string_path					name;
 			xr_sprintf					(name,"%s%d",S,i);
-			if (FS.exist(fn,"$game_sounds$",name,".ogg"))
+			if (FS.exist(fn,_game_sounds_,name,".ogg"))
 				callback			(name);
 		}
 	}
