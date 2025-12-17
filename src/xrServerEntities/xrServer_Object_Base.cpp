@@ -113,7 +113,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 #endif // #ifdef XRGAME_EXPORTS
 		{
 			string_path			file_name;
-			FS.update_path		(file_name,"$game_config$", raw_file_name);
+			FS.update_path		(file_name,_game_config_, raw_file_name);
 			if ( FS.exist(file_name) )
 				config			= FS.r_open(file_name);
 		}
@@ -174,7 +174,7 @@ CInifile &CSE_Abstract::spawn_ini			()
 
 		m_ini_file = new CInifile(
 			&temp,
-			FS.get_path("$game_config$")->m_Path
+			FS.get_path(_game_config_)->m_Path
 		);
 	}
 #pragma warning(push)

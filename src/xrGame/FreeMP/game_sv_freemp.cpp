@@ -284,7 +284,7 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 
 	string_path fname = {};
-	FS.update_path(fname, "$game_config$", "mp\\fmp_respawn_items.ltx");
+	FS.update_path(fname, _game_config_, "mp\\fmp_respawn_items.ltx");
 	CInifile Ini(fname, TRUE);
 
 	if (!Ini.section_exist("spawn"))

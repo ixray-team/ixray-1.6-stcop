@@ -218,7 +218,7 @@ FS_FileSet CXMLOverride::GetModifFiles(const char* Path, const char* File)
 	}
 
 	FS_FileSet& ModifyList = HashDataAddons[ModifPathMask];
-	FS.file_list(ModifyList, "$game_config$", FS_ListFiles, ModifPathMask.c_str());
+	FS.file_list(ModifyList, _game_config_, FS_ListFiles, ModifPathMask.c_str());
 
 	return ModifyList;
 }

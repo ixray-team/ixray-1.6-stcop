@@ -52,7 +52,7 @@ void CSE_ALifeTraderAbstract::spawn_supplies()
 				xr_strlen(dynamic_object->m_ini_string)
 			);
 
-			CInifile ini(&temp, FS.get_path("$game_config$")->m_Path);
+			CInifile ini(&temp, FS.get_path(_game_config_)->m_Path);
 #pragma warning(pop)
 
 			if (ini.section_exist("dont_spawn_character_supplies"))

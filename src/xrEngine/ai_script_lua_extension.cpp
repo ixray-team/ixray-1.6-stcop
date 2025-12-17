@@ -117,7 +117,7 @@ int Lua::LuaOut(Lua::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 void Script::vfLoadStandardScripts(CLuaVirtualMachine *tpLuaVM)
 {
 	string256		S,S1;
-	FS.update_path	(S,"$game_data$","script.ltx");
+	FS.update_path	(S,_game_data_,"script.ltx");
 	CInifile		*l_tpIniFile = new CInifile(S);
 	R_ASSERT		(l_tpIniFile);
 	LPCSTR			caScriptString = l_tpIniFile->r_string("common","script");

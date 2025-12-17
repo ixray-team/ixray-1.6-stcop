@@ -420,7 +420,7 @@ void game_sv_GameState::Create					(shared_str &options)
 	// loading scripts
 	ai().script_engine().remove_script_process(ScriptEngine::eScriptProcessorGame);
 	string_path					S;
-	FS.update_path(S, "$game_config$", "script.ltx");
+	FS.update_path(S, _game_config_, "script.ltx");
 	CInifile* l_tpIniFile = new CInifile(S);
 	R_ASSERT(l_tpIniFile);
 
