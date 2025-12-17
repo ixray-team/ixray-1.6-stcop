@@ -27,6 +27,7 @@ void TextureEditor_WorkerThread()
 
 
 	using status_t = CImGuiTextureEditor::eAnalyzedStatus;
+	using texture_t = CImGuiTextureEditor::STextureEntry;
 
 	while (g_imgui_texture_editor.is_running_wt)
 	{
@@ -49,22 +50,26 @@ void TextureEditor_WorkerThread()
 				g_imgui_texture_editor.wt_current_analyzing_texture = file_path;
 				temp = file_path.c_str();
 
-				const auto& fn = temp.filename().string();
+				std::filesystem::path folder = temp.parent_path().filename();
+				std::filesystem::path filename = temp.filename();
+
+				std::filesystem::path real_name = folder / filename;
+
+				const auto& fn = real_name.string();
 				
 				if (fn.find(".dds") != std::string::npos && fn.find(".thm") == std::string::npos)
 				{
-					constexpr u32 _kFileNameLength = (sizeof(CImGuiTextureEditor::STextureEntry::filename) / sizeof(CImGuiTextureEditor::STextureEntry::filename[0]));
-
 					CImGuiTextureEditor::STextureEntry data;
-					data.filename[0] = 0;
+					data.path[0] = 0;
 
 					std::strcat(
-						data.filename,
+						data.path,
 						fn.data()
 					);
 
+					constexpr u32 _kFileNameLimit = sizeof(texture_t::path) / sizeof(texture_t::path[0]);
 
-					if (fn.size() > _kFileNameLength)
+					if (fn.size() > _kFileNameLimit)
 					{
 						data.analyze_status_result_flags |= status_t::kInvalidFileName;
 					}
@@ -179,7 +184,7 @@ void RenderTextureEditor()
 							{
 							case 0:
 							{
-								ImGui::Text("[%d] %s", row+1, texture.filename);
+								ImGui::Text("[%d] %s", row+1, texture.path);
 								break;
 							}
 							case 1:
