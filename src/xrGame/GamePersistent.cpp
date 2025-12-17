@@ -451,7 +451,7 @@ void CGamePersistent::UpdatePlayDestroyParticles()
 
 void CGamePersistent::UpdateParticles()
 {
-	if (DevicePtr && !Device.IsEditorMode() && !g_dedicated_server)
+	if (DevicePtr && !g_dedicated_server)
 	{
 		PROF_EVENT(__FUNCTION__);
 		u32 dwTime = Device.dwTimeGlobal;
