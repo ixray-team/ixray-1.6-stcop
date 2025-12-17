@@ -370,18 +370,19 @@ struct CImGuiTextureEditor
 		kNoMipMaps = 1 << 5
 	};
 
+#define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
+
 	// don't store metadata only on when selected
 	struct STextureEntry
 	{
 		u8 analyze_status_result_flags = 0;
-		// honestly, if a user has a such long file name that exceeded this limit than it is not okay! 
-		char filename[128];
+		char path[IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT * 2];
 	};
 
 	bool is_init = false;
 	bool is_all_analyzed=false;
 	bool is_running_wt = true;
-
+	
 	std::string_view wt_current_analyzing_texture;
 
 	std::string path_to_texture_folder;
