@@ -379,13 +379,22 @@ struct CImGuiTextureEditor
 		char path[IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT * 2];
 	};
 
+	struct STextureMetadata
+	{
+		int mipcount = -1;
+		int width = -1;
+		int height = -1;
+		int format = -1;
+	};
+
 	bool is_init = false;
 	bool is_all_analyzed=false;
 	bool is_running_wt = true;
-	
-	std::string_view wt_current_analyzing_texture;
 
-	std::string path_to_texture_folder;
+	std::byte _memory_metadata[sizeof(STextureMetadata)];
+	STextureMetadata* pMetadataOfSelected = nullptr;
+
+	u64 selected_index = u64(-1);
 
 	u64 current_analyzed_count = 0;
 	u64 total_textures_in_folder = 0;
@@ -395,6 +404,9 @@ struct CImGuiTextureEditor
 	u64 valid_count = 0;
 	u64 invalid_by_filenamelength = 0;
 	u64 invalid_by_thm = 0;
+
+	std::string_view wt_current_analyzing_texture;
+	std::string path_to_texture_folder;
 
 	std::vector<STextureEntry> textures;
 	std::vector<STextureEntry> filter_query;
