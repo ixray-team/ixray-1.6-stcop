@@ -31,6 +31,7 @@
 #include <GamePersistent.h>
 
 #include "../xrCore/git_version.h"
+#include "ImUtils/ImUtils.h"
 
 //#define DEMO_BUILD
 
@@ -127,6 +128,8 @@ CMainMenu::~CMainMenu	()
 
 	xr_delete						(m_demo_info_loader);
 	delete_data						(m_pMB_ErrDlgs);	
+
+	g_imgui_texture_editor.is_running_wt = false;
 }
 
 void CMainMenu::ReadTextureInfo()

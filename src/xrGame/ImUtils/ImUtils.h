@@ -359,6 +359,50 @@ struct CHudAdjustManager
 	bool is_initialized;
 };
 
+struct CImGuiTextureEditor
+{
+	enum eAnalyzedStatus
+	{
+		kInvalidFileName = 1 << 1,
+		kNoTHMPresented = 1 << 2,
+		kTHMIsNotValid = 1 << 3,
+		kDimensionsNotPowerOf2 = 1 << 4,
+		kNoMipMaps = 1 << 5
+	};
+
+	struct STextureEntry
+	{
+		u8 analyze_status_result_flags = 0;
+		int mipcount=-1;
+		int width=-1;
+		int height=-1;
+
+		// honestly, if a user has a such long file name that exceeded this limit than not okay! 
+		char filename[128];
+	};
+
+	bool is_init = false;
+	bool is_all_analyzed=false;
+	bool is_running_wt = true;
+
+	std::string_view wt_current_analyzing_texture;
+
+	std::string path_to_texture_folder;
+
+	u64 current_analyzed_count = 0;
+	u64 total_textures_in_folder = 0;
+	u64 total_thm_in_folder = 0;
+	u64 total_files_in_folder = 0;
+
+	u64 valid_count = 0;
+	u64 invalid_by_filenamelength = 0;
+	u64 invalid_by_thm = 0;
+
+	std::vector<STextureEntry> textures;
+	std::vector<STextureEntry> filter_query;
+	std::thread worker_thread;
+};
+
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
 
 void InitSections();
@@ -375,6 +419,7 @@ void RenderToolsOMFEditorWindow();
 void RenderCarConfigEditor();
 void RenderToolsInputManagerWindow();
 void RenderToolsRenderDebugSVGStorageViewerWindow();
+void RenderTextureEditor();
 void DestroySpawnManagerWindow();
 
 void RegisterImGuiInGame();
@@ -383,3 +428,4 @@ void execute_console_command_deferred(CConsole* c, LPCSTR string_to_execute);
 extern clsid_manager* g_pClsidManager;
 extern CImGuiGameSearchManager imgui_search_manager;
 extern CHudAdjustManager imgui_hud_adjust_manager;
+extern CImGuiTextureEditor g_imgui_texture_editor;
