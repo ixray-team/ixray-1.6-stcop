@@ -412,6 +412,8 @@ protected:
 	bool m_bIsAimAnimationPlaying = false;
 	bool m_bBlockFiremodeinGLM = false;
 	bool m_bNeedPumpReloadEnd = false;
+	bool m_bGaussScheme = false;
+	bool m_bGaussScreen = false;
 
 	bool m_bHaveShell = false;
 	bool m_bNeedPumpState = false;
