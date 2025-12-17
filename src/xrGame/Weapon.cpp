@@ -633,6 +633,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_fCollimatorLevelsProblem = READ_IF_EXISTS(pSettings, r_float, section, "collimator_problems_level", 0.0f);
 
+	m_bGaussScheme = !!READ_IF_EXISTS(pSettings, r_bool, section, "use_gauss_scheme", false);
+
 	m_bAmmoInChamber = READ_IF_EXISTS(pSettings, r_bool, section, "ammo_in_chamber", false);
 	m_bHideColimSightInAlter = READ_IF_EXISTS(pSettings, r_bool, section, "hide_collimator_sights_in_alter_zoom", true);
 	
@@ -1221,6 +1223,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	//Раскоментить, когда релизнимся
 	//save_data(m_bHaveShell, output_packet);
 	//save_data(m_bNeedPumpState, output_packet);
+	//save_data(m_bGaussScreen, output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -1242,6 +1245,7 @@ void CWeapon::load(IReader &input_packet)
 	//Раскоментить, когда релизнимся
 	//load_data(m_bHaveShell, input_packet);
 	//load_data(m_bNeedPumpState, input_packet);
+	//load_data(m_bGaussScreen, input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 	{
