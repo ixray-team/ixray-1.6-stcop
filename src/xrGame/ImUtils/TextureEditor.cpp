@@ -16,6 +16,8 @@
 
 CImGuiTextureEditor g_imgui_texture_editor;
 
+constexpr decltype(CImGuiTextureEditor::selected_index) _kInvalidSelectedID = decltype(CImGuiTextureEditor::selected_index)(-1);
+
 void TextureEditor_WorkerThread()
 {
 	if (!xr_FS)
