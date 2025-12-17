@@ -107,9 +107,10 @@ void RenderTextureEditor()
 		g_imgui_texture_editor.worker_thread.detach();
 
 		constexpr u32 _kReserve = 4096 * 4;
+		constexpr u32 _kReserveFilter = 4096;
 
 		g_imgui_texture_editor.textures.reserve(_kReserve);
-		g_imgui_texture_editor.filter_query.reserve(_kReserve);
+		g_imgui_texture_editor.filter_query.reserve(_kReserveFilter);
 
 		g_imgui_texture_editor.is_init = true;
 	}
