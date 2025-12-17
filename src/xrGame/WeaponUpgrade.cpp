@@ -40,6 +40,14 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_fast_knife( section, test );
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
 
+	BOOL value = FALSE;
+	bool result2 = process_if_exists_set(section, "use_gauss_scheme", &CInifile::r_bool, value, test);
+
+	if (result2 && !test)
+	{
+		m_bGaussScheme = !!value;
+	}
+
 	return result;
 }
 
