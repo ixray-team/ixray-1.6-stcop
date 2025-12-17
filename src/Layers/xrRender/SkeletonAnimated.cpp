@@ -768,7 +768,7 @@ void CKinematicsAnimated::LoadOmf(const char* path, const char* name)
 	string_path fn = {};
 	if (!FS.exist(fn, "$level$", path))
 	{
-		if (!FS.exist(fn, "$game_meshes$", path))
+		if (!FS.exist(fn, _game_meshes_, path))
 		{
 #ifdef _EDITOR
 			Msg("!Can't find motion file '%s'.", path);
@@ -806,7 +806,7 @@ void CKinematicsAnimated::ProcessOmfFiles(const char* pathOmf, const char* nameO
 	if (strstr(pathOmf, "\\*.omf"))
 	{
 		FS_FileSet fset;
-		FS.file_list(fset, "$game_meshes$", FS_ListFiles, pathOmf);
+		FS.file_list(fset, _game_meshes_, FS_ListFiles, pathOmf);
 		FS.file_list(fset, "$level$", FS_ListFiles, pathOmf);
 
 		if (fset.size() == 0)

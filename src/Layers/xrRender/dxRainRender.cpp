@@ -5,7 +5,7 @@
 
 dxRainRender::dxRainRender()
 {
-	IReader* F = FS.r_open("$game_meshes$","dm\\rain.dm"); 
+	IReader* F = FS.r_open(_game_meshes_,"dm\\rain.dm"); 
 	VERIFY3(F,"Can't open file.","dm\\rain.dm");
 
 	DM_Drop	= ::RImplementation.model_CreateDM		(F);
