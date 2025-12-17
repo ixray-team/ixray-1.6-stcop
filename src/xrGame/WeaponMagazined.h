@@ -167,6 +167,7 @@ public:
 	virtual void	OnZoomIn			();
 	virtual void	OnZoomOut			();
 			void	ChangeFireMode		(u16 cmd);
+			void	SwitchGaussScreen();
 			bool	HasFireModes		() { return m_aFireModes.size() > 1; };
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };	
 
