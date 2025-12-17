@@ -281,7 +281,11 @@ void CRenderDevice::on_idle		()
 void CRenderDevice::CalculateTransforms()
 {
 	mFullTransform.mul(mProject,mView);
-	m_pRender->SetCacheXform(mView, mProject);
+
+	if (m_pRender)
+	{
+		m_pRender->SetCacheXform(mView, mProject);
+	}
 
 	mInvFullTransform.invert44(mFullTransform);
 	mInv3x4FullTransform.invert(mFullTransform);
@@ -294,7 +298,10 @@ void CRenderDevice::CalculateTransforms()
 	mProject_old			= mProject_saved;
 	mFullTransform_old		= mFullTransform_saved;
 
-	m_pRender->SetCacheXformOld(mView_old, mProject_old);
+	if (m_pRender)
+	{
+		m_pRender->SetCacheXformOld(mView_old, mProject_old);
+	}
 
 	mProject_hud.build_projection(deg2rad(psHUD_FOV), Device.fASPECT, 
 		Device.fHUDViewportNear, g_pGamePersistent->Environment().CurrentEnv->far_plane);
