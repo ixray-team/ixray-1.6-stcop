@@ -222,7 +222,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	bBlockSprint = false;
 
 	string_path rainOnHelmet = {};
-	FS.update_path(rainOnHelmet, "$game_sounds$", R"(ambient\rain_on_helmet.ogg)");
+	FS.update_path(rainOnHelmet, _game_sounds_, R"(ambient\rain_on_helmet.ogg)");
 	if (FS.exist(rainOnHelmet))
 	{
 		m_rainOnHelmetSnd.create(R"(ambient\rain_on_helmet)", st_Effect, sg_Undefined);

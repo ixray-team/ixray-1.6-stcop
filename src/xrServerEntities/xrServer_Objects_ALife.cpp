@@ -119,7 +119,7 @@ void	SFillPropData::load			()
 #else // XRGAME_EXPORTS
 	CInifile				*Ini = 0;
 	string_path				gm_name;
-	FS.update_path			(gm_name,"$game_config$",GAME_CONFIG);
+	FS.update_path			(gm_name,_game_config_,GAME_CONFIG);
 	R_ASSERT3				(FS.exist(gm_name),"Couldn't find file",gm_name);
 	Ini						= new CInifile(gm_name);
 #endif // XRGAME_EXPORTS
