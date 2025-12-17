@@ -370,14 +370,11 @@ struct CImGuiTextureEditor
 		kNoMipMaps = 1 << 5
 	};
 
+	// don't store metadata only on when selected
 	struct STextureEntry
 	{
 		u8 analyze_status_result_flags = 0;
-		int mipcount=-1;
-		int width=-1;
-		int height=-1;
-
-		// honestly, if a user has a such long file name that exceeded this limit than not okay! 
+		// honestly, if a user has a such long file name that exceeded this limit than it is not okay! 
 		char filename[128];
 	};
 
