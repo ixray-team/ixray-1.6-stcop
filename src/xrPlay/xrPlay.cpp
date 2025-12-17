@@ -64,12 +64,12 @@ static void LoadCustomSettings()
 {
 	PROF_EVENT("LoadCustomSettings");
 	FS_FileSet settingsFiles = {};
-	FS.file_list(settingsFiles, "$game_config$", FS_ListFiles, "ixray_settings\\default_settings*.ltx");
+	FS.file_list(settingsFiles, _game_config_, FS_ListFiles, "ixray_settings\\default_settings*.ltx");
 
 	for (auto& fsFile : settingsFiles)
 	{
 		string_path defaultSettings = {};
-		FS.update_path(defaultSettings, "$game_config$", fsFile.name.c_str());
+		FS.update_path(defaultSettings, _game_config_, fsFile.name.c_str());
 		Console->ExecuteScript(defaultSettings);
 	}
 }

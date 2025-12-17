@@ -97,7 +97,7 @@ void InitSections()
 	imgui_spawn_manager.legacyNewsMode = !xml_test.NavigateToNode("caption_static");
 
 	string_path	file_path;
-	FS.update_path(file_path, "$game_config$", "misc\\script_sound.ltx");
+	FS.update_path(file_path, _game_config_, "misc\\script_sound.ltx");
 	CInifile ini(file_path);
 
 	if (ini.line_exist("pda_tips", "path") == 1)
@@ -109,7 +109,7 @@ void InitSections()
 		xr_sprintf(with_format_name, sizeof(with_format_name), "%s.ogg", pSoundRelativeName);
 
 
-		if (FS.exist("$game_sounds$", with_format_name))
+		if (FS.exist(_game_sounds_, with_format_name))
 		{
 			memcpy_s(imgui_spawn_manager.sound_tip_path, sizeof(imgui_spawn_manager.sound_tip_path), pSoundRelativeName, strlen(pSoundRelativeName));
 		}
@@ -143,10 +143,10 @@ void InitSections()
 
 			if (visual.find(".ogf") == xr_string_view::npos)
 			{
-				full_path.printf("%s%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data(), ".ogf");
+				full_path.printf("%s%s%s", FS.get_path(_game_meshes_)->m_Path, visual.data(), ".ogf");
 			}
 			else {
-				full_path.printf("%s%s", FS.get_path("$game_meshes$")->m_Path, visual.data());
+				full_path.printf("%s%s", FS.get_path(_game_meshes_)->m_Path, visual.data());
 			}
 			xr_strlwr(full_path);
 			if (!FS.exist(full_path.c_str()))

@@ -664,10 +664,10 @@ public:
 	HRESULT  __stdcall Open(D3D_INCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) {
 		string_path pname;
 		xr_strconcat(pname, ::Render->getShaderPath(), pFileName);
-		IReader* R = FS.r_open("$game_shaders$", pname);
+		IReader* R = FS.r_open(_game_shaders_, pname);
 		if(0 == R) {
 			// possibly in shared directory or somewhere else - open directly
-			R = FS.r_open("$game_shaders$", pFileName);
+			R = FS.r_open(_game_shaders_, pFileName);
 			if(0 == R) {
 				return E_FAIL;
 			}

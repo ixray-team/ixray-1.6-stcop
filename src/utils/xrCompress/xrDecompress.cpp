@@ -50,7 +50,7 @@ int xrDecompressor::ExtractFile(const char* filename)
 		}
 	}
 
-	IReader* pReader = FS.r_open("$game_data$", filename);
+	IReader* pReader = FS.r_open(_game_data_, filename);
 	if (pReader)
 	{
 		size_t size = pReader->length();
@@ -155,7 +155,7 @@ void xrDecompressor::Decompress()
 	Msg("Start Decompress\n");
 	timer.Start();
 
-	auto files = FS.file_list_open("$game_data$");
+	auto files = FS.file_list_open(_game_data_);
 	VERIFY(files);
 
 	Msg("%d file(s) to decompress in %d archive(s)\n", (int)files->size(), (int)FS.m_archives.size());

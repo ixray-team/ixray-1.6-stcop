@@ -128,7 +128,7 @@ void InitSettings	()
 {
 	PROF_EVENT("InitSettings");
 	string_path					fname; 
-	FS.update_path				(fname,"$game_config$","system.ltx");
+	FS.update_path				(fname,_game_config_,"system.ltx");
 #ifdef DEBUG
 	Msg							("Updated path to system.ltx is %s", fname);
 #endif // #ifdef DEBUG
@@ -143,7 +143,7 @@ void InitSettings	()
 	CInifile::allow_include_func_t	tmp_functor;
 	tmp_functor.bind(&tmp_excluder, &path_excluder_predicate::is_allow_include);
 
-	FS.update_path				(fname,"$game_config$","game.ltx");
+	FS.update_path				(fname,_game_config_,"game.ltx");
 	pGameIni					= new CInifile	(fname,TRUE);
 	CHECK_OR_EXIT				(0!=pGameIni->section_count(), make_string<const char*>("Cannot find file %s.\nReinstalling application may fix this problem.",fname));
 }

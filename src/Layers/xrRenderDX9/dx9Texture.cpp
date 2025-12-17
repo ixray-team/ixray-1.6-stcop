@@ -265,9 +265,9 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 		goto _DDS;
 	if (FS.exist(fn, "$game_saves$", fname, ".dds"))
 		goto _DDS;
-	if (FS.exist(fn, "$game_textures$", fname, ".dds"))
+	if (FS.exist(fn, _game_textures_, fname, ".dds"))
 		goto _DDS;
-	if (!FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump"))
+	if (!FS.exist(fn, _game_textures_, fname, ".dds") && strstr(fname, "_bump"))
 		goto _BUMP_from_base;
 	if (FS.TryLoad(xr_string(fname) + ".dds"))
 	{
@@ -277,7 +277,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	}
 	Msg("! Can't find texture '%s'", fname);
 
-	R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+	R_ASSERT(FS.exist(fn, _game_textures_, "ed\\ed_not_existing_texture", ".dds"));
 	goto _DDS;
 
 _DDS:
@@ -353,7 +353,7 @@ _DDS:
 			FS.r_close(S);
 
 			string_path temp;
-			R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+			R_ASSERT(FS.exist(temp, _game_textures_, "ed\\ed_not_existing_texture", ".dds"));
 			R_ASSERT(xr_strcmp(temp, fn));
 			xr_strcpy(fn, temp);
 			goto _DDS;
@@ -393,7 +393,7 @@ _DDS:
 				PrintTextureError(result, fname, &bitData, bitSize, pTexture3D);
 
 				string_path temp;
-				R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+				R_ASSERT(FS.exist(temp, _game_textures_, "ed\\ed_not_existing_texture", ".dds"));
 				R_ASSERT(xr_strcmp(temp, fn));
 				xr_strcpy(fn, temp);
 				goto _DDS;
@@ -487,7 +487,7 @@ _DDS:
 				PrintTextureError(TextureApplyResult, fname, bitData, bitSize, pTexture2D, T_sysmem != nullptr);
 
 				string_path temp;
-				R_ASSERT(FS.exist(temp, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
+				R_ASSERT(FS.exist(temp, _game_textures_, "ed\\ed_not_existing_texture", ".dds"));
 				R_ASSERT(xr_strcmp(temp, fn));
 				xr_strcpy(fn, temp);
 				goto _DDS;
@@ -503,7 +503,7 @@ _BUMP_from_base:
 		//Msg("! Fallback to default bump map: %s", fname);
 		if (strstr(fname, "_bump#"))
 		{
-			R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
+			R_ASSERT2(FS.exist(fn, _game_textures_, "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
 			S = FS.r_open(fn);
 			R_ASSERT2(S, fn);
 			img_size = S->length();
@@ -513,7 +513,7 @@ _BUMP_from_base:
 		Msg("! Fallback to default bump map: %s", fname);
 		if (strstr(fname, "_bump"))
 		{
-			R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
+			R_ASSERT2(FS.exist(fn, _game_textures_, "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
 			S = FS.r_open(fn);
 			R_ASSERT2(S, fn);
 			img_size = S->length();

@@ -279,10 +279,10 @@ void CApplication::Level_Append(LPCSTR folder)
 	xr_strconcat(N3, folder, "level.geom");
 	xr_strconcat(N4, folder, "level.cform");
 	if (
-		FS.exist("$game_levels$", N1) &&
-		FS.exist("$game_levels$", N2) &&
-		FS.exist("$game_levels$", N3) &&
-		FS.exist("$game_levels$", N4)
+		FS.exist(_game_levels_, N1) &&
+		FS.exist(_game_levels_, N2) &&
+		FS.exist(_game_levels_, N3) &&
+		FS.exist(_game_levels_, N4)
 		)
 	{
 		sLevelInfo			LI;
@@ -302,7 +302,7 @@ void CApplication::Level_Scan()
 	Levels.clear();
 
 
-	xr_vector<char*>* folder = FS.file_list_open("$game_levels$", FS_ListFolders | FS_RootOnly);
+	xr_vector<char*>* folder = FS.file_list_open(_game_levels_, FS_ListFolders | FS_RootOnly);
 	//.	R_ASSERT							(folder&&folder->size());
 
 	for (u32 i = 0; i < folder->size(); ++i)
@@ -343,7 +343,7 @@ void CApplication::Level_Set(u32 L)
 			string_path temp2;
 			gen_logo_name(path, Levels[L].folder, count);
 
-			if (FS.exist(temp2, "$game_textures$", path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) 
+			if (FS.exist(temp2, _game_textures_, path, ".dds") || FS.exist(temp2, "$level$", path, ".dds")) 
 			{
 				count++;
 			} 
@@ -355,7 +355,7 @@ void CApplication::Level_Set(u32 L)
 
 				string_path nm;
 				xr_strconcat(nm, path, ".dds");
-				FS.update_path(temp3, "$game_textures$", nm);
+				FS.update_path(temp3, _game_textures_, nm);
 				if (!FS.exist(temp3))
 				{
 					xr_strconcat(path, "intro\\intro_no_start_picture.dds");

@@ -42,7 +42,7 @@ inline static shared_str FillLanguages()
 {
 	FS_FileSet langSet = {};
 	string_path path = {};
-	FS.update_path(path, "$game_config$", "");
+	FS.update_path(path, _game_config_, "");
 	xr_sprintf(path, "%s%s", path, "text\\");
 	FS.file_list(langSet, path, FS_ListFolders | FS_RootOnly);
 
@@ -130,10 +130,10 @@ void CStringTable::Init		()
 	string_path exclude_files_mask = {};
 
 	xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sLanguage.c_str());
-	FS.file_list(fset, "$game_config$", FS_ListFiles, files_mask);
+	FS.file_list(fset, _game_config_, FS_ListFiles, files_mask);
 
 	xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sLanguage.c_str());
-	FS.file_list(efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+	FS.file_list(efset, _game_config_, FS_ListFiles, exclude_files_mask);
 
 	for (const FS_File& File : fset)
 	{
@@ -155,10 +155,10 @@ void CStringTable::Init		()
 		FS_FileSet fallback_efset;
 
 		xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sFallbackLanguage.c_str());
-		FS.file_list(fallback_fset, "$game_config$", FS_ListFiles, files_mask);
+		FS.file_list(fallback_fset, _game_config_, FS_ListFiles, files_mask);
 
 		xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sFallbackLanguage.c_str());
-		FS.file_list(fallback_efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+		FS.file_list(fallback_efset, _game_config_, FS_ListFiles, exclude_files_mask);
 
 		for (const FS_File& File : fallback_fset)
 		{
@@ -276,10 +276,10 @@ void CStringTable::ReloadLanguage(const char* lang)
 	string_path exclude_files_mask = {};
 
 	xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sLanguage.c_str());
-	FS.file_list(fset, "$game_config$", FS_ListFiles, files_mask);
+	FS.file_list(fset, _game_config_, FS_ListFiles, files_mask);
 
 	xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sLanguage.c_str());
-	FS.file_list(efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+	FS.file_list(efset, _game_config_, FS_ListFiles, exclude_files_mask);
 
 	for (const FS_File& File : fset)
 	{
@@ -301,10 +301,10 @@ void CStringTable::ReloadLanguage(const char* lang)
 		FS_FileSet fallback_efset;
 
 		xr_sprintf(files_mask, "text\\%s\\*.xml", pData->m_sFallbackLanguage.c_str());
-		FS.file_list(fallback_fset, "$game_config$", FS_ListFiles, files_mask);
+		FS.file_list(fallback_fset, _game_config_, FS_ListFiles, files_mask);
 
 		xr_sprintf(exclude_files_mask, "text\\%s\\mod_*.xml", pData->m_sFallbackLanguage.c_str());
-		FS.file_list(fallback_efset, "$game_config$", FS_ListFiles, exclude_files_mask);
+		FS.file_list(fallback_efset, _game_config_, FS_ListFiles, exclude_files_mask);
 
 		for (const FS_File& File : fallback_fset)
 		{

@@ -41,7 +41,7 @@ CScriptIniFile* reload_system_ini()
 {
 	pSettings->Destroy(const_cast<CInifile*>(pSettings));
 	string_path fname;
-	FS.update_path(fname, "$game_config$", "system.ltx");
+	FS.update_path(fname, _game_config_, "system.ltx");
 	pSettings = new CInifile(fname);
 	return	((CScriptIniFile*)pSettings);
 }
@@ -85,7 +85,7 @@ SCRIPTS_API CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 		(CScriptIniFile*)
 		new CInifile(
 			&temp,
-			FS.get_path("$game_config$")->m_Path
+			FS.get_path(_game_config_)->m_Path
 		)
 	);
 }
