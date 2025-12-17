@@ -11,7 +11,7 @@ namespace compression
 	{
 		VERIFY(dest == nullptr);
 		string_path			file_name;
-		FS.update_path(file_name, "$game_config$", "mp\\ppmd_updates.mdl");
+		FS.update_path(file_name, _game_config_, "mp\\ppmd_updates.mdl");
 		R_ASSERT2(FS.exist(file_name), "can't find configs\\mp\\ppmd_updates.mdl");
 
 		IReader* reader = FS.r_open(file_name);
@@ -40,7 +40,7 @@ namespace compression
 		dest_wm = (u8*)(size_t(wm_buffer + 16) & ~0xf);
 
 		string_path			file_name;
-		FS.update_path(file_name, "$game_config$", "mp\\lzo_updates.dic");
+		FS.update_path(file_name, _game_config_, "mp\\lzo_updates.dic");
 		R_ASSERT2(FS.exist(file_name), "can't find configs\\mp\\lzo_updates.dic");
 		IReader* reader = FS.r_open(file_name);
 		u32					buffer_size = reader->length();

@@ -830,7 +830,7 @@ void    CEnvironment::load_level_specific_ambients ()
 
 	string_path full_path;
 	CInifile* level_ambients = new CInifile(
-			FS.update_path(full_path, "$game_config$", path),
+			FS.update_path(full_path, _game_config_, path),
 			TRUE,
 			TRUE,
 			FALSE);

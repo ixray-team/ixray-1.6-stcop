@@ -45,7 +45,7 @@ void dxUIRender::GetActiveTextureResolution(Fvector2 &res)
 LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 {
 	string_path buff;
-	if (FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
+	if (FS.exist(buff, _game_textures_, tex_name, ".ogm"))
 	{
 		return "hud\\movie";
 	}

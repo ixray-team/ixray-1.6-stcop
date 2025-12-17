@@ -36,7 +36,7 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path){
 bool CMMSound::check_file(LPCSTR fname){
 	string_path		_path;
 	xr_strconcat(_path, fname, ".ogg");
-	return FS.exist("$game_sounds$", _path) ? true : false;		
+	return FS.exist(_game_sounds_, _path) ? true : false;		
 }
 
 void CMMSound::whell_Play()
@@ -69,7 +69,7 @@ void CMMSound::music_Play()
 
 	string_path		_path;
 	xr_strconcat(_path, m_play_list[i].c_str(), ".ogg");
-	VERIFY			(FS.exist("$game_sounds$", _path ));	
+	VERIFY			(FS.exist(_game_sounds_, _path ));	
 
 	m_music_stereo.create(_path,st_Music,sg_SourceType);
     m_music_stereo.play(nullptr, sm_Intro|sm_Looped);
