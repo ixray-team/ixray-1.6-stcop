@@ -25,9 +25,6 @@ void RenderPPEEditor()
 	if (!ai().get_alife())
 		return;
 
-	if (imgui_hud_adjust_manager.is_initialized == false)
-		return;
-
 	if (!g_actor)
 		return;
 
