@@ -355,7 +355,7 @@ function move_mgr:time_callback()
 	if db.storage[self.object:id()].active_scheme == nil then
 		return
 	end
-	if self.last_index and self.patrol_walk:terminal(self.last_index) then
+	if self.last_index and self.last_index ~= -1 and self.patrol_walk:terminal(self.last_index) then
 		if utils.stalker_at_waypoint(self.object, self.patrol_walk, self.last_index) then
 			--' Если стоим на конечной точке пути и с нее никуда не сдвинулись,
 			--' сразу иммитируем callback на прибытие, чтобы включить look.
