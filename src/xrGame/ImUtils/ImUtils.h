@@ -437,6 +437,7 @@ struct CImGuiTextureEditor
 	struct SUserSettings
 	{
 		bool show_invalid_first = false;
+		bool show_only_dds_and_thm = false;
 	};
 
 	bool is_thread_finished_execution = false;
@@ -456,6 +457,14 @@ struct CImGuiTextureEditor
 	u32 current_analyzed_count = 0;
 	u32 total_textures_in_folder = 0;
 	u32 total_thm_in_folder = 0;
+	u32 total_unable_to_classify_files_in_folder = 0;
+	u32 total_seq_in_folder = 0;
+	u32 total_png_in_folder = 0;
+	u32 total_svg_in_folder = 0;
+	u32 total_bmp_in_folder = 0;
+	u32 total_ogm_in_folder = 0;
+	u32 total_ini_in_folder = 0;
+	u32 total_other_in_folder = 0;
 	u32 total_files_in_folder = 0;
 
 	u32 valid_count = 0;

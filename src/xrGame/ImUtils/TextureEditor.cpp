@@ -50,9 +50,16 @@ void TextureEditor_WorkerThread()
 
 						if (pReader && pReader->length())
 						{
-							pReader->r(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
-							
-							Msg("[TextureEditor]: read settings from -> texture_editor_settings.bin");
+							if (pReader->length() != sizeof(g_imgui_texture_editor.settings))
+							{
+								Msg("[TextureEditor]: trying to read different version of settings... Reset settings to default");
+							}
+							else
+							{
+								pReader->r(&g_imgui_texture_editor.settings, sizeof(g_imgui_texture_editor.settings));
+
+								Msg("[TextureEditor]: read settings from -> texture_editor_settings.bin");
+							}
 						}
 
 						if (pReader)
@@ -88,7 +95,7 @@ void TextureEditor_WorkerThread()
 					
 					if (pWriter)
 					{
-						pWriter->w(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
+						pWriter->w(&g_imgui_texture_editor.settings, sizeof(g_imgui_texture_editor.settings));
 
 						Msg("[TextureEditor]: saved settings to -> texture_editor_settings.bin");
 
@@ -156,11 +163,71 @@ void TextureEditor_WorkerThread()
 
 							++g_imgui_texture_editor.total_textures_in_folder;
 						}
-
-						if (fn.find(".thm") != std::string::npos && fn.find(".dds") == std::string::npos)
+						else if (fn.find(".thm") != std::string::npos && fn.find(".dds") == std::string::npos)
 						{
 							++g_imgui_texture_editor.total_thm_in_folder;
 						}
+						else if (fn.find(".seq") != std::string::npos)
+						{
+							++g_imgui_texture_editor.total_seq_in_folder;
+						}
+						else if (
+							fn.find(".png") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_png_in_folder;
+						}
+						else if (
+							fn.find(".svg") != std::string::npos &&
+							fn.find(".dds") == std::string::npos && 
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_svg_in_folder;
+						}
+						else if (
+							fn.find(".bmp") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_bmp_in_folder;
+						}
+						else if (
+							fn.find(".ogm") != std::string::npos && 
+							fn.find(".dds") == std::string::npos && 
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_ogm_in_folder;
+						}
+						else if (
+							fn.find(".ini") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_ini_in_folder;
+						}
+						else
+						{
+							if (
+								fn.find(".dds") != std::string::npos && 
+								fn.find(".thm") != std::string::npos
+								)
+							{
+								++g_imgui_texture_editor.total_unable_to_classify_files_in_folder;
+							}
+							else
+							{
+								++g_imgui_texture_editor.total_other_in_folder;
+							}
+
+						}
+
+
 
 						++g_imgui_texture_editor.current_analyzed_count;
 					}
@@ -230,22 +297,38 @@ void RenderTextureEditor()
 					constexpr ImVec4 _kColorInvalid = ImVec4(0.8f, 0.0f, 0.0f, 1.0f);
 
 					ImGui::SeparatorText("Stats");
-					ImGui::Text("Total files: %zu", g_imgui_texture_editor.total_files_in_folder);
-					ImGui::Text("\t- .dds: %zu", g_imgui_texture_editor.total_textures_in_folder);
-					ImGui::Text("\t- .thm: %zu", g_imgui_texture_editor.total_thm_in_folder);
+					ImGui::Text("Total files: %d", g_imgui_texture_editor.total_files_in_folder);
+					ImGui::Text("\t- .dds: %d", g_imgui_texture_editor.total_textures_in_folder);
+					ImGui::Text("\t- .thm: %d", g_imgui_texture_editor.total_thm_in_folder);
+
+					if (g_imgui_texture_editor.settings.show_only_dds_and_thm == false)
+					{
+						ImGui::Text("\t- .seq: %d", g_imgui_texture_editor.total_seq_in_folder);
+						ImGui::Text("\t- .png: %d", g_imgui_texture_editor.total_png_in_folder);
+						ImGui::Text("\t- .svg: %d", g_imgui_texture_editor.total_svg_in_folder);
+						ImGui::Text("\t- .bmp: %d", g_imgui_texture_editor.total_bmp_in_folder);
+						ImGui::Text("\t- .ogm: %d", g_imgui_texture_editor.total_ogm_in_folder);
+						ImGui::Text("\t- .ini: %d", g_imgui_texture_editor.total_ini_in_folder);
+						ImGui::Text("\t- other: %d", g_imgui_texture_editor.total_other_in_folder);
+						ImGui::SetItemTooltip("extensions that weren't recognizable by engine");
+					}
+
+					ImGui::Text("\t- unknown: %d", g_imgui_texture_editor.total_unable_to_classify_files_in_folder);
+					ImGui::SetItemTooltip(".thm but has .dds or .dds but has .thm as extension\nso we won't try to determine them as thm or dds files");
 
 					ImGui::Text("Valid:");
-					ImGui::Text("\t- textures: %zu", g_imgui_texture_editor.valid_count);
+					ImGui::Text("\t- textures: %d", g_imgui_texture_editor.valid_count);
 					ImGui::Text("Invalid:");
-					ImGui::Text("\t- by filename: %zu", 0);
-					ImGui::Text("\t- no thm: %zu", 0);
-					ImGui::Text("\t- invalid thm: %zu", 0);
-					ImGui::Text("\t- not power of 2: %zu", 0);
-					ImGui::Text("\t- no mip-maps: %zu", 0);
+					ImGui::Text("\t- by filename: %d", 0);
+					ImGui::Text("\t- no thm: %d", 0);
+					ImGui::Text("\t- invalid thm: %d", 0);
+					ImGui::Text("\t- not power of 2: %d", 0);
+					ImGui::Text("\t- no mip-maps: %d", 0);
 
 					ImGui::SeparatorText("Settings");
 
 					ImGui::Checkbox("Show invalid first", &g_imgui_texture_editor.settings.show_invalid_first);
+					ImGui::Checkbox("Show only dds and thm", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
 
 					ImGui::SeparatorText("Search");
 
