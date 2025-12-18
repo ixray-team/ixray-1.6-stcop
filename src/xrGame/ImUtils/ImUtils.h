@@ -405,7 +405,7 @@ struct CImGuiTextureEditor
 		kReadSettings,
 		kWriteSettings,
 		kReadAll,
-		kReadMetadataOfSelected,
+		kUpdateSelected,
 		kShutdownThread,
 		kInvalid = -1
 	};
@@ -413,7 +413,7 @@ struct CImGuiTextureEditor
 	struct SRequestData
 	{
 		eRequestType type = eRequestType::kInvalid;
-		u64 selected_id = 0;
+		u32 selected_id = 0;
 	};
 
 #define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
@@ -437,8 +437,10 @@ struct CImGuiTextureEditor
 	struct SUserSettings
 	{
 		bool show_invalid_first = false;
+		bool show_only_dds_and_thm = false;
 	};
 
+	bool is_thread_finished_execution = false;
 	bool is_init = false;
 	bool is_thread_started = false;
 	// written on wt side
@@ -447,19 +449,29 @@ struct CImGuiTextureEditor
 	bool is_settings_read = false;
 	bool is_settings_write = false;
 
+	bool is_update_selected = false;
+
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
 
-	u64 selected_index = u64(-1);
+	u32 selected_index = u32(-1);
 
-	u64 current_analyzed_count = 0;
-	u64 total_textures_in_folder = 0;
-	u64 total_thm_in_folder = 0;
-	u64 total_files_in_folder = 0;
+	u32 current_analyzed_count = 0;
+	u32 total_textures_in_folder = 0;
+	u32 total_thm_in_folder = 0;
+	u32 total_unable_to_classify_files_in_folder = 0;
+	u32 total_seq_in_folder = 0;
+	u32 total_png_in_folder = 0;
+	u32 total_svg_in_folder = 0;
+	u32 total_bmp_in_folder = 0;
+	u32 total_ogm_in_folder = 0;
+	u32 total_ini_in_folder = 0;
+	u32 total_other_in_folder = 0;
+	u32 total_files_in_folder = 0;
 
-	u64 valid_count = 0;
-	u64 invalid_by_filenamelength = 0;
-	u64 invalid_by_thm = 0;
+	u32 valid_count = 0;
+	u32 invalid_by_filenamelength = 0;
+	u32 invalid_by_thm = 0;
 
 	SUserSettings settings;
 
@@ -467,10 +479,11 @@ struct CImGuiTextureEditor
 	std::string path_to_texture_folder;
 
 	std::vector<STextureEntry> textures;
-	std::vector<STextureEntry> filter_query;
+	std::vector<u32> filter_query;
 
 	ThreadSafeQueue<SRequestData> requests;
 	std::thread worker_thread;
+	char window_selected_name[512];
 };
 
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
