@@ -314,7 +314,7 @@ void RenderTextureEditor()
 					}
 
 					ImGui::Text("\t- unknown: %d", g_imgui_texture_editor.total_unable_to_classify_files_in_folder);
-					ImGui::SetItemTooltip(".thm but has .dds or .dds but has .thm as extension\nso we won't try to determine them as thm or dds files");
+					ImGui::SetItemTooltip("filename contains .thm and .dds\nso we won't try to determine them as thm or dds files");
 
 					ImGui::Text("Valid:");
 					ImGui::Text("\t- textures: %d", g_imgui_texture_editor.valid_count);
