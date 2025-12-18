@@ -249,8 +249,10 @@ void RenderTextureEditor()
 
 					ImGui::SeparatorText("Search");
 
-					char _name[sizeof(CImGuiTextureEditor::STextureEntry::path)];
-					ImGui::InputText("name", _name, sizeof(_name));
+					char _input_buffer[sizeof(CImGuiTextureEditor::STextureEntry::path)];
+					_input_buffer[0] = 0;
+
+					ImGui::InputText("name", _input_buffer, sizeof(_input_buffer));
 					ImGui::SameLine();
 
 					if (ImGui::Button("submit##TESearch"))
