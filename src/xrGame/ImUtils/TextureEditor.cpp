@@ -237,8 +237,18 @@ void TextureEditor_WorkerThread()
 
 				break;
 			}
-			case CImGuiTextureEditor::eRequestType::kReadMetadataOfSelected:
+			case CImGuiTextureEditor::eRequestType::kUpdateSelected:
 			{
+				if (req.selected_id != _kInvalidSelectedID)
+				{
+					if (req.selected_id < g_imgui_texture_editor.textures.size())
+					{
+
+					}
+				}
+
+				g_imgui_texture_editor.is_update_selected = true;
+
 				break;
 			}
 			default:
@@ -328,7 +338,7 @@ void RenderTextureEditor()
 					ImGui::SeparatorText("Settings");
 
 					ImGui::Checkbox("Show invalid first", &g_imgui_texture_editor.settings.show_invalid_first);
-					ImGui::Checkbox("Show only dds and thm", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
+					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
 
 					ImGui::SeparatorText("Search");
 
@@ -347,14 +357,37 @@ void RenderTextureEditor()
 
 					constexpr const char* _kColumnNames[] = {
 						"Name",
-						"Status",
-						"Editing"
+						"Status"
 					};
 
 					constexpr u32 _kColumnsSize = sizeof(_kColumnNames) / sizeof(_kColumnNames[0]);
 
 					size_t textures_count = g_imgui_texture_editor.textures.size();
 					size_t row_max = textures_count;
+
+					if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
+					{
+						if (g_imgui_texture_editor.is_update_selected)
+						{
+							using texture_t = CImGuiTextureEditor::STextureEntry;
+
+							const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
+
+							ImGui::Text("%s", selected.path);
+						}
+						else
+						{
+							ImGui::Text("Loading...");
+						}
+					}
+					else
+					{
+						ImGui::Text("No Selected!");
+					}
+
+					ImGui::Separator();
+
+
 
 					ImGui::BeginTable("##TETV", _kColumnsSize);
 					
@@ -391,26 +424,20 @@ void RenderTextureEditor()
 									char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
 									std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
 
-									if (ImGui::Selectable(sel_name))
-									{
+									bool selected_status = g_imgui_texture_editor.selected_index == row;
 
+									if (ImGui::Selectable(sel_name, selected_status))
+									{
+										g_imgui_texture_editor.is_update_selected = false;
+										g_imgui_texture_editor.selected_index = row;
+										g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .selected_id = row });
 									}
 
-									//	ImGui::Text("[%d] %s", row+1, texture.path);
 									break;
 								}
 								case 1:
 								{
 									ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
-									break;
-								}
-								case 2:
-								{
-									// todo: make selection
-									if (row == 0)
-									{
-										ImGui::Text("editing selected...");
-									}
 									break;
 								}
 								}

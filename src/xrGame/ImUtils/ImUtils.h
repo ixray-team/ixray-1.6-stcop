@@ -405,7 +405,7 @@ struct CImGuiTextureEditor
 		kReadSettings,
 		kWriteSettings,
 		kReadAll,
-		kReadMetadataOfSelected,
+		kUpdateSelected,
 		kShutdownThread,
 		kInvalid = -1
 	};
@@ -448,6 +448,8 @@ struct CImGuiTextureEditor
 	bool is_running_wt = true;
 	bool is_settings_read = false;
 	bool is_settings_write = false;
+
+	bool is_update_selected = false;
 
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
