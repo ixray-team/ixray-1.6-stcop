@@ -34,15 +34,17 @@ CPatrolPathParams::~CPatrolPathParams	()
 u32	CPatrolPathParams::count			() const
 {
 	VERIFY(m_path);
-	if (!m_path)
+	if (m_path == nullptr)
+	{
 		return 0;
+	}
 	return (u32)(m_path->vertices().size());
 }
 
 const Fvector &CPatrolPathParams::point	(u32 index) const
 {
 	VERIFY(m_path);
-	if (!m_path)
+	if (m_path == nullptr)
 		return m_dummy;
 	VERIFY(!m_path->vertices().empty());
 	if (!m_path->vertex(index)) {
@@ -58,22 +60,36 @@ const Fvector &CPatrolPathParams::point	(u32 index) const
 
 u32	CPatrolPathParams::level_vertex_id	(u32 index) const
 {
+	if (m_path == nullptr)
+	{
+		return u32(-1);
+	}
+
 	VERIFY(m_path->vertex(index));
-	if (!m_path || !m_path->vertex(index))
+	if (!m_path->vertex(index))
 		return u32(-1);
 	return (m_path->vertex(index)->data().level_vertex_id());
 }
 
 GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id	(u32 index) const
 {
+	if (m_path == nullptr)
+	{
+		return GameGraph::_GRAPH_ID(-1);
+	}
 	VERIFY(m_path->vertex(index));
-	if (!m_path || !m_path->vertex(index))
+	if (!m_path->vertex(index))
 		return GameGraph::_GRAPH_ID(-1);
 	return (m_path->vertex(index)->data().game_vertex_id());
 }
 
 u32	CPatrolPathParams::point			(LPCSTR name) const
 {
+	if (m_path == nullptr)
+	{
+		return u32(-1);
+	}
+
 	if (m_path->point(name))
 		return (m_path->point(name)->vertex_id());
 
@@ -82,6 +98,11 @@ u32	CPatrolPathParams::point			(LPCSTR name) const
 
 u32	CPatrolPathParams::point			(const Fvector &point) const
 {
+	if (m_path == nullptr)
+	{
+		return u32(-1);
+	}
+
 	if (!m_path->point(point))
 		return u32(-1);
 
@@ -90,6 +111,11 @@ u32	CPatrolPathParams::point			(const Fvector &point) const
 
 bool CPatrolPathParams::flag			(u32 index, u8 flag_index) const
 {
+	if (m_path == nullptr)
+	{
+		return false;
+	}
+
 	VERIFY(m_path->vertex(index));
 	if (!m_path->vertex(index))
 		return false;
@@ -99,6 +125,11 @@ bool CPatrolPathParams::flag			(u32 index, u8 flag_index) const
 
 Flags32 CPatrolPathParams::flags		(u32 index) const
 {
+	if (m_path == nullptr)
+	{
+		return Flags32().assign(0);
+	}
+
 	VERIFY(m_path->vertex(index));
 	if (!m_path->vertex(index))
 		return Flags32().assign(0);
@@ -108,14 +139,24 @@ Flags32 CPatrolPathParams::flags		(u32 index) const
 
 LPCSTR	CPatrolPathParams::name	(u32 index) const
 {
+	if (m_path == nullptr)
+	{
+		return "";
+	}
+
 	VERIFY(m_path->vertex(index));
 	if (!m_path->vertex(index))
-		return nullptr;
+		return "";
 	return (*m_path->vertex(index)->data().name());
 }
 
 bool CPatrolPathParams::terminal (u32 index) const
 {
+	if (m_path == nullptr)
+	{
+		return false;
+	}
+
 	VERIFY(m_path->vertex(index));
 	if (!m_path->vertex(index))
 		return false;
