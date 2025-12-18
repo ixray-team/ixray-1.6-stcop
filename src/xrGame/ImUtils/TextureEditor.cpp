@@ -42,7 +42,7 @@ void TextureEditor_WorkerThread()
 			{
 			case CImGuiTextureEditor::eRequestType::kReadSettings:
 			{
-				if (g_imgui_texture_editor.is_settings_read==false)
+				if (g_imgui_texture_editor.is_settings_read == false)
 				{
 					if (FS.exist("$app_data_root$", "texture_editor_settings.bin"))
 					{
@@ -50,9 +50,16 @@ void TextureEditor_WorkerThread()
 
 						if (pReader && pReader->length())
 						{
-							pReader->r(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
-							
-							Msg("[TextureEditor]: read settings from -> texture_editor_settings.bin");
+							if (pReader->length() != sizeof(g_imgui_texture_editor.settings))
+							{
+								Msg("[TextureEditor]: trying to read different version of settings... Reset settings to default");
+							}
+							else
+							{
+								pReader->r(&g_imgui_texture_editor.settings, sizeof(g_imgui_texture_editor.settings));
+
+								Msg("[TextureEditor]: read settings from -> texture_editor_settings.bin");
+							}
 						}
 
 						if (pReader)
@@ -85,10 +92,10 @@ void TextureEditor_WorkerThread()
 					string_path path_to_settings;
 					FS.update_path(path_to_settings, "$app_data_root$", "texture_editor_settings.bin");
 					IWriter* pWriter = FS.w_open(path_to_settings);
-					
+
 					if (pWriter)
 					{
-						pWriter->w(&g_imgui_texture_editor.settings.show_invalid_first, sizeof(g_imgui_texture_editor.settings.show_invalid_first));
+						pWriter->w(&g_imgui_texture_editor.settings, sizeof(g_imgui_texture_editor.settings));
 
 						Msg("[TextureEditor]: saved settings to -> texture_editor_settings.bin");
 
@@ -156,11 +163,71 @@ void TextureEditor_WorkerThread()
 
 							++g_imgui_texture_editor.total_textures_in_folder;
 						}
-
-						if (fn.find(".thm") != std::string::npos && fn.find(".dds") == std::string::npos)
+						else if (fn.find(".thm") != std::string::npos && fn.find(".dds") == std::string::npos)
 						{
 							++g_imgui_texture_editor.total_thm_in_folder;
 						}
+						else if (fn.find(".seq") != std::string::npos)
+						{
+							++g_imgui_texture_editor.total_seq_in_folder;
+						}
+						else if (
+							fn.find(".png") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_png_in_folder;
+						}
+						else if (
+							fn.find(".svg") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_svg_in_folder;
+						}
+						else if (
+							fn.find(".bmp") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_bmp_in_folder;
+						}
+						else if (
+							fn.find(".ogm") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_ogm_in_folder;
+						}
+						else if (
+							fn.find(".ini") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
+						{
+							++g_imgui_texture_editor.total_ini_in_folder;
+						}
+						else
+						{
+							if (
+								fn.find(".dds") != std::string::npos &&
+								fn.find(".thm") != std::string::npos
+								)
+							{
+								++g_imgui_texture_editor.total_unable_to_classify_files_in_folder;
+							}
+							else
+							{
+								++g_imgui_texture_editor.total_other_in_folder;
+							}
+
+						}
+
+
 
 						++g_imgui_texture_editor.current_analyzed_count;
 					}
@@ -170,8 +237,18 @@ void TextureEditor_WorkerThread()
 
 				break;
 			}
-			case CImGuiTextureEditor::eRequestType::kReadMetadataOfSelected:
+			case CImGuiTextureEditor::eRequestType::kUpdateSelected:
 			{
+				if (req.selected_id != _kInvalidSelectedID)
+				{
+					if (req.selected_id < g_imgui_texture_editor.textures.size())
+					{
+
+					}
+				}
+
+				g_imgui_texture_editor.is_update_selected = true;
+
 				break;
 			}
 			default:
@@ -182,11 +259,13 @@ void TextureEditor_WorkerThread()
 			}
 
 		}
-		
+
 
 	}
 
-	Msg("[Threading]: Shutdown thread -> %s", _kThreadName);
+	Msg("[TextureEditor]: Shutdown thread -> %s", _kThreadName);
+
+	g_imgui_texture_editor.is_thread_finished_execution = true;
 }
 
 void RenderTextureEditor()
@@ -194,7 +273,6 @@ void RenderTextureEditor()
 	if (g_imgui_texture_editor.is_thread_started == false)
 	{
 		g_imgui_texture_editor.worker_thread = std::thread(&TextureEditor_WorkerThread);
-		g_imgui_texture_editor.worker_thread.detach();
 		g_imgui_texture_editor.is_thread_started = true;
 	}
 
@@ -205,10 +283,9 @@ void RenderTextureEditor()
 	if (g_imgui_texture_editor.is_init == false)
 	{
 		constexpr u32 _kReserve = 4096 * 4;
-		constexpr u32 _kReserveFilter = 4096;
 
 		g_imgui_texture_editor.textures.reserve(_kReserve);
-		g_imgui_texture_editor.filter_query.reserve(_kReserveFilter);
+		g_imgui_texture_editor.filter_query.reserve(_kReserve);
 
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kReadSettings });
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kReadAll });
@@ -230,27 +307,45 @@ void RenderTextureEditor()
 					constexpr ImVec4 _kColorInvalid = ImVec4(0.8f, 0.0f, 0.0f, 1.0f);
 
 					ImGui::SeparatorText("Stats");
-					ImGui::Text("Total files: %zu", g_imgui_texture_editor.total_files_in_folder);
-					ImGui::Text("\t- .dds: %zu", g_imgui_texture_editor.total_textures_in_folder);
-					ImGui::Text("\t- .thm: %zu", g_imgui_texture_editor.total_thm_in_folder);
+					ImGui::Text("Total files: %d", g_imgui_texture_editor.total_files_in_folder);
+					ImGui::Text("\t- .dds: %d", g_imgui_texture_editor.total_textures_in_folder);
+					ImGui::Text("\t- .thm: %d", g_imgui_texture_editor.total_thm_in_folder);
+
+					if (g_imgui_texture_editor.settings.show_only_dds_and_thm == false)
+					{
+						ImGui::Text("\t- .seq: %d", g_imgui_texture_editor.total_seq_in_folder);
+						ImGui::Text("\t- .png: %d", g_imgui_texture_editor.total_png_in_folder);
+						ImGui::Text("\t- .svg: %d", g_imgui_texture_editor.total_svg_in_folder);
+						ImGui::Text("\t- .bmp: %d", g_imgui_texture_editor.total_bmp_in_folder);
+						ImGui::Text("\t- .ogm: %d", g_imgui_texture_editor.total_ogm_in_folder);
+						ImGui::Text("\t- .ini: %d", g_imgui_texture_editor.total_ini_in_folder);
+						ImGui::Text("\t- other: %d", g_imgui_texture_editor.total_other_in_folder);
+						ImGui::SetItemTooltip("extensions that weren't recognizable by engine");
+					}
+
+					ImGui::Text("\t- unknown: %d", g_imgui_texture_editor.total_unable_to_classify_files_in_folder);
+					ImGui::SetItemTooltip("filename contains .thm and .dds\nso we won't try to determine them as thm or dds files");
 
 					ImGui::Text("Valid:");
-					ImGui::Text("\t- textures: %zu", g_imgui_texture_editor.valid_count);
+					ImGui::Text("\t- textures: %d", g_imgui_texture_editor.valid_count);
 					ImGui::Text("Invalid:");
-					ImGui::Text("\t- by filename: %zu", 0);
-					ImGui::Text("\t- no thm: %zu", 0);
-					ImGui::Text("\t- invalid thm: %zu", 0);
-					ImGui::Text("\t- not power of 2: %zu", 0);
-					ImGui::Text("\t- no mip-maps: %zu", 0);
+					ImGui::Text("\t- by filename: %d", 0);
+					ImGui::Text("\t- no thm: %d", 0);
+					ImGui::Text("\t- invalid thm: %d", 0);
+					ImGui::Text("\t- not power of 2: %d", 0);
+					ImGui::Text("\t- no mip-maps: %d", 0);
 
 					ImGui::SeparatorText("Settings");
 
 					ImGui::Checkbox("Show invalid first", &g_imgui_texture_editor.settings.show_invalid_first);
+					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
 
 					ImGui::SeparatorText("Search");
 
-					char _name[sizeof(CImGuiTextureEditor::STextureEntry::path)];
-					ImGui::InputText("name", _name, sizeof(_name));
+					char _input_buffer[sizeof(CImGuiTextureEditor::STextureEntry::path)];
+					_input_buffer[0] = 0;
+
+					ImGui::InputText("name", _input_buffer, sizeof(_input_buffer));
 					ImGui::SameLine();
 
 					if (ImGui::Button("submit##TESearch"))
@@ -262,8 +357,7 @@ void RenderTextureEditor()
 
 					constexpr const char* _kColumnNames[] = {
 						"Name",
-						"Status",
-						"Editing"
+						"Status"
 					};
 
 					constexpr u32 _kColumnsSize = sizeof(_kColumnNames) / sizeof(_kColumnNames[0]);
@@ -271,8 +365,10 @@ void RenderTextureEditor()
 					size_t textures_count = g_imgui_texture_editor.textures.size();
 					size_t row_max = textures_count;
 
+
+
 					ImGui::BeginTable("##TETV", _kColumnsSize);
-					
+
 					for (u32 i = 0; i < _kColumnsSize; ++i)
 					{
 						ImGui::TableSetupColumn(_kColumnNames[i]);
@@ -280,49 +376,66 @@ void RenderTextureEditor()
 
 					ImGui::TableHeadersRow();
 
-					for (size_t row = 0; row < row_max; ++row)
+					ImGuiListClipper clipper;
+
+					clipper.Begin(u32(g_imgui_texture_editor.textures.size()));
+
+					while (clipper.Step())
 					{
-						ImGui::TableNextRow();
-
-
-						for (size_t column = 0; column < _kColumnsSize; ++column)
+						//for (u32 row = 0; row < row_max; ++row)
+						for (u32 row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
 						{
-							ImGui::TableSetColumnIndex((int)column);
+							ImGui::TableNextRow();
 
 
-							const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[row];
+							for (size_t column = 0; column < _kColumnsSize; ++column)
+							{
+								ImGui::TableSetColumnIndex((int)column);
 
-							switch (column)
-							{
-							case 0:
-							{
-								ImGui::Text("[%d] %s", row+1, texture.path);
-								break;
-							}
-							case 1:
-							{
-								ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
-								break;
-							}
-							case 2:
-							{
-								// todo: make selection
-								if (row == 0)
+
+								const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[row];
+
+								switch (column)
 								{
-									ImGui::Text("editing selected...");
+								case 0:
+								{
+									char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
+									std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
+
+									bool selected_status = g_imgui_texture_editor.selected_index == row;
+
+									if (ImGui::Selectable(sel_name, selected_status))
+									{
+										g_imgui_texture_editor.window_selected_name[0] = 0;
+										g_imgui_texture_editor.is_update_selected = false;
+										g_imgui_texture_editor.selected_index = row;
+										g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .selected_id = row });
+										std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
+										std::strcat(g_imgui_texture_editor.window_selected_name, g_imgui_texture_editor.textures[row].path);
+									}
+
+									break;
 								}
-								break;
-							}
+								case 1:
+								{
+									ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
+									break;
+								}
+								}
 							}
 						}
 					}
 
+					clipper.End();
+
+
+
 					ImGui::EndTable();
 
-					
+
 
 				}
-				else 
+				else
 				{
 					if (g_imgui_texture_editor.total_files_in_folder == 0)
 					{
@@ -330,9 +443,9 @@ void RenderTextureEditor()
 					}
 					else
 					{
-						ImGui::Text("Analyzing... [%s] %zu/%zu", 
+						ImGui::Text("Analyzing... [%s] %zu/%zu",
 							g_imgui_texture_editor.wt_current_analyzing_texture.data(),
-							g_imgui_texture_editor.current_analyzed_count, 
+							g_imgui_texture_editor.current_analyzed_count,
 							g_imgui_texture_editor.total_files_in_folder
 						);
 					}
@@ -343,7 +456,7 @@ void RenderTextureEditor()
 
 			if (ImGui::BeginTabItem("Game", &is_in_game))
 			{
-			
+
 				ImGui::EndTabItem();
 			}
 		}
@@ -351,4 +464,30 @@ void RenderTextureEditor()
 	}
 
 	ImGui::End();
+
+	if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
+	{
+		if (ImGui::Begin(g_imgui_texture_editor.window_selected_name, 0, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+
+			if (g_imgui_texture_editor.is_update_selected)
+			{
+				using texture_t = CImGuiTextureEditor::STextureEntry;
+
+				const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
+
+				ImGui::Text("%s", selected.path);
+			}
+			else
+			{
+				ImGui::Text("Loading...");
+			}
+
+		}
+
+		ImGui::End();
+	}
+
+
+
 }
