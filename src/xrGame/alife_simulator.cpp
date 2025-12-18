@@ -17,6 +17,7 @@
 #include "object_factory.h"
 #include "alife_object_registry.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "../xrScripts/exports/script_ini_file.h"
 
 #ifdef DEBUG
 #	include "moving_objects.h"
@@ -26,6 +27,7 @@ LPCSTR alife_section = "alife";
 
 extern void destroy_lua_wpn_params	();
 extern void destroy_lua_knife_params();
+XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void restart_all				()
 {
@@ -47,6 +49,13 @@ void restart_all				()
 #ifdef DEBUG
 	ai().moving_objects().clear	();
 #endif // DEBUG
+
+	for (auto& cacheIni : *cached_ini_map)
+	{
+		xr_delete(cacheIni.second);
+	}
+
+	cached_ini_map->clear();
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :
