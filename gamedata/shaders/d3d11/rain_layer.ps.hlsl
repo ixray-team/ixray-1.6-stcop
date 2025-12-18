@@ -1,10 +1,6 @@
 #include "common.hlsli"
 #include "shadow.hlsli"
 
-#ifndef USE_SUNMASK
-float3x4 m_sunmask;
-#endif
-
 Texture2D s_water;
 
 float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 pos2d : SV_POSITION) : SV_Target

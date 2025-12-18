@@ -1,12 +1,9 @@
 #include "common.hlsli"
 #include "shadow.hlsli"
 
-#ifndef USE_SUNMASK
-float3x4 m_sunmask; // ortho-projection
-#endif
-
 Texture3D s_water;
 Texture2D s_waterFall;
+
 float4 RainDensity; //	float
 float4 RainFallof;
 float4 WorldX; //	Float3

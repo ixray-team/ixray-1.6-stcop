@@ -4,7 +4,6 @@
 #include "common.hlsli"
 #include "pcf_filter.hlsli"
 
-
 Texture2DArray<float> s_smap_sun; //Sun, three cascades
 Texture2D<float> s_smap; //Point-spot, rain
 
@@ -36,6 +35,7 @@ bool calc_cascades(in float3 position, in float4x4 smap_vp_matrix[3], inout int 
 			break;
 		}
 	}
+
 	return is_in_bounds;
 }
 
@@ -67,32 +67,18 @@ float shadow_sun(float3 texcoord, int cascade_index)
 	return pcf_3x3(s_smap_sun, smp_smap, texcoord, smap_dims, bias, cascade_index);
 #elif SUN_QUALITY == 1 //Medium
 	return pcf_5x5(s_smap_sun, smp_smap, texcoord, smap_dims, bias, cascade_index);
-#elif SUN_QUALITY == 2 //High
+#else //High
 	return pcf_7x7(s_smap_sun, smp_smap, texcoord, smap_dims, bias, cascade_index);
-#elif SUN_QUALITY == 3 //Ultra
-	return 1.0;
-#elif SUN_QUALITY == 4 //Extreme
-	return 1.0;
 #endif
 }
-
-//Cloud shadows
-#ifdef USE_SUNMASK
 
 float3x4 m_sunmask;
+
 float sunmask(float4 P)
 {
-    float2 tc = mul(m_sunmask, P).xy;
-    return PushGamma(lerp(0.25, 1.0, s_lmap.SampleLevel(smp_linear, tc, 0.0).w)); //LVutner: Always should use REPEAT
+    return 0.25f + 0.75f * s_lmap.SampleLevel(smp_linear, mul(m_sunmask, P).xy, 0.0).w;
 }
 
-#else
-	
-float sunmask(float4 P)
-{
-    return 1.0;
-}
 
-#endif
 #endif
 
