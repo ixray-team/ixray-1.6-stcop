@@ -12,19 +12,19 @@
 class CScriptIniFile;
 
 SCRIPTS_API CScriptIniFile* create_ini_file(LPCSTR ini_string);
-xr_hash_map<xr_string, CScriptIniFile*> cached_ini_map;
+XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 CScriptIniFile* CacheIni(const char* Name)
 {
-	auto Iter = cached_ini_map.find(Name);
-	if (Iter != std::end(cached_ini_map))
+	auto Iter = cached_ini_map->find(Name);
+	if (Iter != std::end(*cached_ini_map))
 	{
-		return Iter->second;
+		return (CScriptIniFile*)Iter->second;
 	}
 
-	auto& IniFile = cached_ini_map[Name];
+	auto& IniFile = (*cached_ini_map)[Name];
 	IniFile = new CScriptIniFile(Name);
-	return IniFile;
+	return (CScriptIniFile*)IniFile;
 }
 
 void ExportEELayer(lua_State* L)
@@ -32,7 +32,7 @@ void ExportEELayer(lua_State* L)
 	// Other trash module
 	luabind::module(L)
 	[
-		luabind::def("get_cached_ini",   &CacheIni, luabind::adopt<0>()),
+		luabind::def("get_cached_ini",   &CacheIni),
 		luabind::def("unlock_trophy",    +[]() {}),
 		luabind::def("get_platform_id",  +[]() { return 7; }),
 		luabind::def("detectKeyboard",   +[]() { return true; }),

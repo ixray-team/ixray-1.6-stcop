@@ -4,6 +4,8 @@
 
 #include "FS_internal.h"
 
+XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map = nullptr;
+
 static constexpr const char* DLTX_DELETE = "DLTX_DELETE";
 
 XRCORE_API CInifile* pSettings = nullptr;
@@ -47,9 +49,10 @@ XRCORE_API BOOL _parse(LPSTR dest, LPCSTR src)
 					++src;
 				}
 				continue;
-			} else if (*src=='"') 
-			{
-				bInsideSTR = !bInsideSTR;
+			}
+ else if (*src == '"')
+ {
+	 bInsideSTR = !bInsideSTR;
 			}
 			*dest++ = *src++;
 		}
@@ -60,17 +63,18 @@ XRCORE_API BOOL _parse(LPSTR dest, LPCSTR src)
 
 XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
 {
-	if (src) 
+	if (src)
 	{
 		BOOL bInsideSTR = false;
-		while (*src) 
+		while (*src)
 		{
-			if (*src == ',') 
+			if (*src == ',')
 			{
 				if (bInsideSTR) { *dest++ = *src++; }
-				else			{ *dest++ = *src++; *dest++ = ' '; }
+				else { *dest++ = *src++; *dest++ = ' '; }
 				continue;
-			} else if (*src=='"')
+			}
+			else if (*src == '"')
 			{
 				bInsideSTR = !bInsideSTR;
 			}
@@ -81,10 +85,10 @@ XRCORE_API void _decorate(LPSTR dest, LPCSTR src)
 }
 //------------------------------------------------------------------------------
 
-BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
+BOOL	CInifile::Sect::line_exist(LPCSTR L, LPCSTR* val)
 {
-	SectCIt A = std::lower_bound(Data.begin(),Data.end(),L,item_pred);
-	if (A!=Data.end() && xr_strcmp(*A->first,L)==0){
+	SectCIt A = std::lower_bound(Data.begin(), Data.end(), L, item_pred);
+	if (A != Data.end() && xr_strcmp(*A->first, L) == 0) {
 		if (val) *val = *A->second;
 		return TRUE;
 	}
@@ -92,54 +96,65 @@ BOOL	CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val )
 }
 //------------------------------------------------------------------------------
 
-CInifile::CInifile(IReader* F ,LPCSTR path ,allow_include_func_t allow_include_func)
+CInifile::CInifile(IReader* F, LPCSTR path, allow_include_func_t allow_include_func)
 {
 	PROF_EVENT("CInifile::CInifile IReader");
-	m_file_name[0]	= 0;
-	m_flags.zero	();
-	m_flags.set		(eSaveAtEnd,		FALSE);
-	m_flags.set		(eReadOnly,			TRUE);
-	m_flags.set		(eOverrideNames,	FALSE);
-	Load			(F,path, allow_include_func);
+	m_file_name[0] = 0;
+	m_flags.zero();
+	m_flags.set(eSaveAtEnd, FALSE);
+	m_flags.set(eReadOnly, TRUE);
+	m_flags.set(eOverrideNames, FALSE);
+	Load(F, path, allow_include_func);
 }
 
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd, u32 sect_count, allow_include_func_t allow_include_func)
 {
 	PROF_EVENT("CInifile::CInifile FileName");
-	if(szFileName && strstr(szFileName,"system"))
-		Msg("-----loading %s",szFileName);
+	if (szFileName && strstr(szFileName, "system"))
+		Msg("-----loading %s", szFileName);
 
-	m_file_name[0]	= 0;
-	m_flags.zero	();
-	if(szFileName)
-		xr_strcpy		(m_file_name, sizeof(m_file_name), szFileName);
+	m_file_name[0] = 0;
+	m_flags.zero();
+	if (szFileName)
+		xr_strcpy(m_file_name, sizeof(m_file_name), szFileName);
 
-	m_flags.set		(eSaveAtEnd, SaveAtEnd);
-	m_flags.set		(eReadOnly, ReadOnly);
+	m_flags.set(eSaveAtEnd, SaveAtEnd);
+	m_flags.set(eReadOnly, ReadOnly);
 
 	if (bLoad)
-	{	
-		string_path	path,folder; 
-		_splitpath	(m_file_name, path, folder, 0, 0 );
-		xr_strcat		(path,sizeof(path),folder);
-		IReader* R 	= FS.r_open(szFileName);
-		if (R){
-			if(sect_count)
+	{
+		string_path	path, folder;
+		_splitpath(m_file_name, path, folder, 0, 0);
+		xr_strcat(path, sizeof(path), folder);
+		IReader* R = FS.r_open(szFileName);
+		if (R) {
+			if (sect_count)
 				DATA.reserve(sect_count);
-			Load		(R, path
-			, allow_include_func
+			Load(R, path
+				, allow_include_func
 			);
-			FS.r_close	(R);
+			FS.r_close(R);
 		}
 	}
 }
 
-CInifile::~CInifile( )
+CInifile::~CInifile()
 {
-	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd)) 
+	if (!m_flags.test(eReadOnly) && m_flags.test(eSaveAtEnd))
 	{
 		if (!save_as())
 			Msg("!Can't save inifile: %s", m_file_name);
+	}
+
+	auto iter = std::find_if(cached_ini_map->begin(), cached_ini_map->end(),
+		[this](const std::pair<xr_string, CInifile*>& left) {
+			return left.second == this;
+		}
+	);
+
+	if (iter != cached_ini_map->end())
+	{
+		cached_ini_map->erase(iter);
 	}
 
 	RootIt I = DATA.begin();

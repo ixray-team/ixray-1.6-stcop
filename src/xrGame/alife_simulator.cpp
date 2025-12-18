@@ -27,7 +27,7 @@ LPCSTR alife_section = "alife";
 
 extern void destroy_lua_wpn_params	();
 extern void destroy_lua_knife_params();
-extern xr_hash_map<xr_string, CScriptIniFile*> cached_ini_map;
+XRCORE_API xr_hash_map<xr_string, CInifile*>* cached_ini_map;
 
 void restart_all				()
 {
@@ -50,12 +50,12 @@ void restart_all				()
 	ai().moving_objects().clear	();
 #endif // DEBUG
 
-	for (auto& cacheIni : cached_ini_map)
+	for (auto& cacheIni : *cached_ini_map)
 	{
 		xr_delete(cacheIni.second);
 	}
 
-	cached_ini_map.clear();
+	cached_ini_map->clear();
 }
 
 CALifeSimulator::CALifeSimulator(xrServer* server, shared_str* command_line) :
