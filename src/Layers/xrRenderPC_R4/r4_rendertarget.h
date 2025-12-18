@@ -75,8 +75,8 @@ public:
 	ref_rtc						rt_Reflection_temp;
 	ref_rt						rt_Depth;
 
-	ID3DTexture2D*				rt_smap_depth_sun_tex;
-	ID3D11DepthStencilView*		rt_smap_depth_sun_dsv[3];
+	IRHISurface*				rt_smap_depth_sun_tex;
+	IRHIDepthStencilView*		rt_smap_depth_sun_dsv[3];
 	ref_texture					rt_smap_depth_sun;
 
 	// 

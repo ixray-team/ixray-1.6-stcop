@@ -328,13 +328,14 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 	{
 		bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		if (bNormal || bSpecial) {
-		#ifndef USE_DX11
+		if (bNormal || bSpecial)
+		{
+#ifndef USE_DX11
 			Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
-		#else
-			RContext->ClearDepthStencilView(Target->rt_smap_depth_sun_dsv[cascade_ind], D3D_CLEAR_DEPTH, 1.0f, 0L);
+#else
+			GRHI->ClearDepthStencil(Target->rt_smap_depth_sun_dsv[cascade_ind], ERHI_CLEAR_TARGET::DEPTH, 1.f, 0);
 			Target->u_setrt(nullptr, nullptr, nullptr, Target->rt_smap_depth_sun_dsv[cascade_ind]);
-		#endif
+#endif
 			RCache.set_xform_world(Fidentity);
 			RCache.set_xform_view(Fidentity);
 			RCache.set_xform_project(fuckingsun->X.D.combine);

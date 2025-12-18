@@ -145,9 +145,9 @@ static class cl_alpha_ref	: public RHIShaderConstant::Setup
 	}
 } binder_alpha_ref;
 
-static class cl_m_shadow_sun : public R_constant_setup		
+static class cl_m_shadow_sun : public RHIShaderConstant::Setup
 {	
-	virtual void setup	(R_constant* C)
+	virtual void setup	(RHIShaderConstant* C)
 	{
 		Fmatrix xf_invview;
 		xf_invview.invert(Device.mView);
