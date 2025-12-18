@@ -120,10 +120,12 @@ extern "C"
 
 	DLL_API void __cdecl xrGameShutdown()
 	{
-		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
-		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
-
-		g_imgui_texture_editor.worker_thread.join();
+		if (g_imgui_texture_editor.is_thread_started)
+		{
+			g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
+			g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
+			g_imgui_texture_editor.worker_thread.join();
+		}
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
