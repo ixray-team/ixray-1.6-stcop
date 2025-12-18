@@ -393,7 +393,7 @@ struct CImGuiTextureEditor
 {
 	enum eAnalyzedStatus
 	{
-		kInvalidFileName = 1 << 1,
+		kTooLongPath = 1 << 1,
 		kNoTHMPresented = 1 << 2,
 		kTHMIsNotValid = 1 << 3,
 		kDimensionsNotPowerOf2 = 1 << 4,
@@ -416,13 +416,16 @@ struct CImGuiTextureEditor
 		u32 selected_id = 0;
 	};
 
-#define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
-
 	// don't store metadata only on when selected
 	struct STextureEntry
 	{
-		u8 analyze_status_result_flags = 0;
-		char path[IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT * 2];
+		u32 analyze_status_result_flags = 0;
+		/// @brief only filename with extension
+		string_path filename;
+		/// @brief no filename
+		string_path subpath; 
+		/// @brief full absolute path to file with extension
+		string_path path;
 	};
 
 	struct STextureMetadata
@@ -444,7 +447,7 @@ struct CImGuiTextureEditor
 	bool is_init = false;
 	bool is_thread_started = false;
 	// written on wt side
-	bool is_all_analyzed=false;
+	bool is_all_analyzed = false;
 	bool is_running_wt = true;
 	bool is_settings_read = false;
 	bool is_settings_write = false;
