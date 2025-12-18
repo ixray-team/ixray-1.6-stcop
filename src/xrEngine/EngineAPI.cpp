@@ -167,7 +167,19 @@ void CEngineAPI::Initialize(void)
 
 void CEngineAPI::Destroy(void)
 {
-	if (hGame)				{ Platform::FreeLibrary(hGame);	hGame	= 0; }
+	if (hGame)				
+	{
+		using callback_t = void();
+		callback_t* pShutdownCallback = (callback_t*)Platform::GetAddress(hGame, "xrGameShutdown");
+
+		if (pShutdownCallback)
+		{
+			pShutdownCallback();
+		}
+
+		Platform::FreeLibrary(hGame);
+		hGame	= 0;
+	}
 	if (hRender)			{ Platform::FreeLibrary(hRender); hRender = 0; }
 
 	pCreate					= 0;
