@@ -74,9 +74,10 @@ private:
     };
 
 public:
-    xr_vector<Fvector>   vertices;
-    xr_vector<CDB::TRI>  triangles;
-    xr_vector<Face*>     facePointers;
+    xr_vector<Fvector>        vertices;
+    xr_vector<CDB::TRI>       triangles;
+    xr_vector<Face*>          facePointers;
+
 
     IC void Clear()
     {

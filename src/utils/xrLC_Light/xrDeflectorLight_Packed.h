@@ -24,12 +24,11 @@ struct RayRecvestIndex
 {
 	void* Owner = 0;
    	size_t  INDEX_TASK;
-	
-
+ 
 	// Task Pos, Dir, Skip
 	Fvector P;
 	Fvector N;
-	// Face* skip;
+	unsigned int FaseSkip;
 };
   
 class PackedLighting
@@ -103,3 +102,7 @@ public:
 };
 
 extern PackedLighting GPUTaskinSystem;
+
+
+u32 GetFaceIndex(Face* F);
+void SetFaceIndex(Face* F, u32 Index);
