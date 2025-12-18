@@ -4,10 +4,10 @@
 
 InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const wchar_t* wname)
 {
-    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    {
-        return;
-    }
+    //if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+    //{
+    //    return;
+    //}
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -20,10 +20,10 @@ InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const
 
 InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
 {
-    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    {
-        return;
-    }
+    //if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+    //{
+    //    return;
+    //}
 
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
