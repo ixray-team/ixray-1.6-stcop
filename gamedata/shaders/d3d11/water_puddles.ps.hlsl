@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
+#include "shadow.hlsli"
 
 struct PSInput
 {
