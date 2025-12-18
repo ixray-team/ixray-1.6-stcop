@@ -29,15 +29,13 @@ enum eType
 	eRGB = 2
 };
 
-__device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Range)
+__device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Range, unsigned int SkipID)
 {
 	const float3 origin = P.getVector3();
 	const float3 dir = N.getVector3();
 	const float maxT = Range;
 
-	unsigned int hit = 0;
-	unsigned int Energy = 100;
-	unsigned int HitsCollected = 0;
+ 	unsigned int Energy = 100;
 
 	//// Обновить размер в CUDAContext В pipelineCompileOptions.numPayloadValues (Если менять кол-во Payloads)
  	optixTrace(
@@ -49,17 +47,18 @@ __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Ran
 		OPTIX_RAY_FLAG_NONE,
 		//OPTIX_RAY_FLAG_DISABLE_ANYHIT,
 		0, 1, 0,
-		hit, Energy, HitsCollected
+		Energy, SkipID
 	);
 
-	return float (Energy / 100) ; // (hit == 0) ? 1.0f : 0.0f;
+	// Баг был тут поченил
+	return float (Energy) / 100.0f ;  
 }
 
-__device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C)
+__device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C, unsigned int SkipID)
 {
 	Hardware_Vector Ldir;
 	Hardware_Vector Pnew = P;
-	Pnew.Mad_Self(N, 0.01f);
+	Pnew.Mad_Self(N, 0.1f);
 
 	Hardware_Vector LightPosition = { L.position.x, L.position.y, L.position.z };
 	Hardware_Vector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
@@ -76,7 +75,7 @@ __device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardwar
 		if (D <= 0)
 			return;
 
-		float trace = RunOptickTask(Pnew, Ldir, 1000.f);
+		float trace = RunOptickTask(Pnew, Ldir, 1000.f, SkipID);
 		att = isSunOrHemi ? L.energy * trace : D * L.energy * trace;
 	}
 	break;
@@ -93,7 +92,7 @@ __device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardwar
 			return;
 
 		float R = sqrtf(sqD);
-		float trace = RunOptickTask(Pnew, Ldir, R);
+		float trace = RunOptickTask(Pnew, Ldir, R, SkipID);
 		float scale = D * L.energy * trace;
 
 		if (isSunOrHemi)
@@ -123,7 +122,7 @@ __device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardwar
 			return;
 
 		float R = sqrtf(sqD);
-		float trace = RunOptickTask(Pnew, Ldir, R);
+		float trace = RunOptickTask(Pnew, Ldir, R, SkipID);
 		att = powf(D, 0.125f) * L.energy * trace * (1.0f - R / L.range);
 	}
 	break;
@@ -157,20 +156,20 @@ enum Flags
 	LP_dont_sun  = (1 << 3),
 };
 
-__device__ void LightPoint(Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& ColorUV, unsigned char flags)
+__device__ void LightPoint(Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& ColorUV, unsigned char flags, unsigned int SkipID)
 {
  	for (int i = 0; i < g_params.counts_lights; i++)
 	{
 		Hardware_Lighting& L = g_params.lights[i];
 
 		if (!(LP_dont_hemi & flags) && L.type == eHemi)
-			CalculatePoint(L, P, N, ColorUV);
+			CalculatePoint(L, P, N, ColorUV, SkipID);
 
 		if (!(LP_dont_rgb & flags) && L.type == eRGB)
-			CalculatePoint(L, P, N, ColorUV);
+			CalculatePoint(L, P, N, ColorUV, SkipID);
 
 		if (!(LP_dont_sun & flags) && L.type == eSun)
-			CalculatePoint(L, P, N, ColorUV);
+			CalculatePoint(L, P, N, ColorUV, SkipID);
 	}
 }
 
@@ -181,10 +180,11 @@ __device__ void run_tracing_new(int index)
 	Hardware_Raytask& Rays = g_params.rays[index];
 	Hardware_Vector P(Rays.Position);
 	Hardware_Vector N(Rays.Direction);
+	unsigned int SkipID = Rays.SkipFace;
 
 	Hardware_Color& ColorUV = g_params.colors[index];
 	 
-	LightPoint(P, N, ColorUV, flags);
+	LightPoint(P, N, ColorUV, flags, SkipID);
 }
  
 #include "optix_types.h"
@@ -200,44 +200,79 @@ extern "C" __global__ void __raygen__rg()
 
 extern "C" __global__ void __miss__ms()
 {
-	optixSetPayload_0(0);
 }
 
 extern "C" __global__ void __closesthit__ch()
 {
-	optixSetPayload_0(1);
+}
+
+__device__ void calculate_energy(Hardware_FaceData& F, Hardware_TextureData& T, int primID, float& energy)
+{
+ 	// barycentrics
+	const float2 bc  = optixGetTriangleBarycentrics();
+	float hitU = bc.x;
+	float hitV = bc.y;
+
+	float b0 = 1.0f - hitU - hitV;
+ 	 
+	// interpolate UV
+	float u = F.TC0[0].x * b0 + F.TC0[1].x * hitU + F.TC0[2].x * hitV;
+	float v = F.TC0[0].y * b0 + F.TC0[1].y * hitU + F.TC0[2].y * hitV;
+
+	int U = (int) floor (u * float(T.width) + .5f);
+	int V = (int) floor (v * float(T.height) + .5f);
+	U %= T.width;		if (U < 0) U += T.width;
+	V %= T.height;		if (V < 0) V += T.height;
+
+	float a = ( T.pSurface[V * T.width + U] / 255.0f );
+	float Transparency = (1.f - a * a);
+	
+	if (F.bWater)
+		energy *= 0.9991f; // 10 / 255
+	else 
+		energy *= Transparency;
 }
 
 extern "C" __global__ void __anyhit__ah()
 {
 	// Not used
-	unsigned int hit				= optixGetPayload_0();
-	unsigned int energy_int			= optixGetPayload_1();
-	unsigned int hits_collected		= optixGetPayload_2();
+	const int primID				= optixGetPrimitiveIndex();
+	unsigned int energy_int			= optixGetPayload_0();
+	unsigned int SkipID				= optixGetPayload_1();
+ 	float energy					= energy_int / 100.0f;
+ 
+	Hardware_FaceData&    F			= g_params.faces[primID];
+	Hardware_TextureData& T			= g_params.textures[F.surfidx];
 
-	float energy   = energy_int / 100;
-
-	// energy attenuation (LUT)
- 	energy			*= 0.8f;
-	hits_collected  += 1;
-
-	// if (hits_collected > 2)
-	// {
-	// 	optixSetPayload_1(int(energy * 100));
-	// 	return;
-	// }
-	
-	// opaque → остановить
-	if (energy < ENERGY_MIN)
+	if (SkipID == primID)					// Затычка для воды пока что не нашел почему не расчитывается 
 	{
-	 	optixSetPayload_1(0);
-		return; // closesthit будет вызван
+		// пропускаем и летим дальше
+		optixIgnoreIntersection();
+		return;
+	}
+
+	if (F.bOpacue || T.pSurface == nullptr)
+	{
+		energy = 0;
+		optixSetPayload_0(0);
+		return;
 	}
 	 
-	// // transparent → пропускаем и летим дальше
-	optixSetPayload_1( int(energy * 100) );
-	optixSetPayload_2(hits_collected);
+	// energy attenuation (LUT)
+	calculate_energy(F, T, primID, energy);				// Проверка тут на воду не понятно почему делает ее темной
 
+	// opaque → остановить
+ 	if (energy < ENERGY_MIN)
+	{
+	 	optixSetPayload_0(0);
+		return; // closesthit будет вызван
+	}
+		
+	// transparent → пропускаем и летим дальше
+
+	// Тут тоже сделал явное преобразование
+	unsigned int EnergyReturn = float(energy * 100.0f);
+	optixSetPayload_0(EnergyReturn);
 	optixIgnoreIntersection();
 }
  
