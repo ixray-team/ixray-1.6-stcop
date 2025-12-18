@@ -49,11 +49,20 @@ void CUIActorMenu::InitTradeMode()
 	m_PartnerBottomInfo->Show		(true);
 	m_PartnerWeight->Show			(true);
     if (m_trade_button)
+	{
         m_trade_button->Show(true);
+		m_trade_button->Enable(false);  // Disable until items added
+	}
     if (m_trade_buy_button)
+	{
         m_trade_buy_button->Show(true);
+		m_trade_buy_button->Enable(false);  // Disable until items added
+	}
     if (m_trade_sell_button)
+	{
         m_trade_sell_button->Show(true);
+		m_trade_sell_button->Enable(false);  // Disable until items added
+	}
 
 	VERIFY							( m_pPartnerInvOwner );
 	m_pPartnerInvOwner->StartTrading();
@@ -441,6 +450,19 @@ void CUIActorMenu::UpdatePrices()
 	m_PartnerTradePrice->SetWndPos( pos );
 //	pos.x = pos.x - m_PartnerTradeCaption->GetWndSize().x - 5.0f;
 //	m_PartnerTradeCaption->SetWndPos( pos );
+
+// Update trade buttons state based on items in trade lists
+	bool has_actor_items = m_pTradeActorList->ItemsCount() > 0;
+	bool has_partner_items = m_pTradePartnerList->ItemsCount() > 0;
+
+	if (m_trade_button)
+		m_trade_button->Enable(has_actor_items || has_partner_items);
+
+	if (m_trade_buy_button)
+		m_trade_buy_button->Enable(has_partner_items);
+
+	if (m_trade_sell_button)
+		m_trade_sell_button->Enable(has_actor_items);	
 }
 
 void CUIActorMenu::OnBtnPerformTrade(CUIWindow* w, void* d)
