@@ -423,10 +423,19 @@ function action_reach_task_location:soldier_execute()
 	self.object:set_path_type(game_object.level_path)
 
 	if squad_target == nil or squad_target:clsid() == clsid.online_offline_group_s or xr_conditions.surge_started() then
+		if not squad or not squad:commander_id() then
+			return
+		end
+		
 		self.object:set_movement_type(level.object_by_id(squad:commander_id()):movement_type())
 		self.object:set_mental_state (level.object_by_id(squad:commander_id()):mental_state())
 		return
 	end
+	
+	if not self.object then
+		return
+	end
+	
 	if level.object_by_id(get_object_squad(self.object):commander_id()):movement_type() == move.stand then
 		self.object:set_movement_type(move.stand)
 		return

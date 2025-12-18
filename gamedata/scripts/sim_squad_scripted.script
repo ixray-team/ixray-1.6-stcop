@@ -496,10 +496,13 @@ function sim_squad_scripted:set_location_types(new_smart_name)
 		--printf("target is squad or actor setting [squad_terrain]!")
 		self:set_location_types_section("squad_terrain")
 		for k,v in pairs(simulation_objects.get_sim_obj_registry().objects) do
-			if alife():object(k):clsid() == clsid.smart_terrain then
-				local props_base = alife():object(k).props and alife():object(k).props["base"]
-				if props_base and tonumber(props_base) == 0 then
-					self:set_location_types_section(alife():object(k):name())
+			local sim_obj = alife():object(k)
+			if sim_obj and sim_obj.id then
+				if sim_obj:clsid() == clsid.smart_terrain then
+					local props_base = sim_obj.props and sim_obj.props["base"]
+					if props_base and tonumber(props_base) == 0 then
+					    self:set_location_types_section(sim_obj:name())
+					end
 				end
 			end
 		end
@@ -515,10 +518,12 @@ function sim_squad_scripted:add_squad_member(spawn_section, spawn_position, lv_i
 
 	local position = spawn_position
 
-	local obj =  alife():create(spawn_section,
-								position,
-								lv_id,
-								gv_id)
+	local obj =  alife():create(
+		spawn_section,
+		position,
+		lv_id,
+		gv_id
+	)
 
 	self:register_member(obj.id)
 	self.sound_manager:register_npc(obj.id)
@@ -846,30 +851,36 @@ function sim_squad_scripted:show()
 		return
 	end
 	local spot = ""
+
+	local spots = {
+		["dev_debug"] = {
+			["friends"] = "alife_presentation_squad_friend_debug",
+			["neutral"] = "alife_presentation_squad_neutral_debug",
+			["monster"] = "alife_presentation_squad_monster_debug",
+			["enemy"] = "alife_presentation_squad_enemy_debug",
+		},
+		["friends"] = "alife_presentation_squad_friend",
+		["neutral"] = "alife_presentation_squad_neutral",
+	}
+	
+	
+	local is_not_monster_squad = (not is_squad_monster[self.player_id])
+	
 	if dev_debug then -- IX-Ray: Fixed PDA squad rendering in Lua devmode
-		if not(is_squad_monster[self.player_id]) then
-			local relation = game_relations.get_squad_goodwill_to_actor_by_id(self.id)
-			if(relation=="friends") then
-				spot = "alife_presentation_squad_friend_debug"
-			elseif(relation=="neutral") then
-				spot = "alife_presentation_squad_neutral_debug"
-			else 
-				spot = "alife_presentation_squad_enemy_debug"
-			end
+		if is_not_monster_squad then
+			local squad_goodwill_to_actor = game_relations.get_squad_goodwill_to_actor_by_id(self.id) or "undefined"
+			spot = spots["dev_debug"][squad_goodwill_to_actor] or spots["dev_debug"]["enemy"]
 		else
-			spot = "alife_presentation_squad_monster_debug"
+			spot = spots["dev_debug"]["monster"]
 		end
 	else
-		if not(is_squad_monster[self.player_id]) then
-			local relation = game_relations.get_squad_relation_to_actor_by_id(self.id)
-			if(relation=="friends") then
-				spot = "alife_presentation_squad_friend"
-			elseif(relation=="neutral") then
-				spot = "alife_presentation_squad_neutral"
-			end
+		if is_not_monster_squad then
+			local squad_relation_to_actor = game_relations.get_squad_relation_to_actor_by_id(self.id) or "undefined"
+			spot = spots[squad_relation_to_actor] or ""
 		end
 	end
-	if(spot~="") then
+	
+	if(spot ~= "") then
 		if spot == self.spot_section then
 			level.map_change_spot_hint(self.current_spot_id, self.spot_section, self:get_squad_props())
 			return
@@ -949,9 +960,9 @@ function sim_squad_scripted:get_alife_task()
 end
 
 local smarts_by_no_assault_zones = {
-									["zat_a2_sr_no_assault"] 	= "zat_stalker_base_smart",
-									["jup_a6_sr_no_assault"] 	= "jup_a6",
-									["jup_b41_sr_no_assault"] 	= "jup_b41"
+	["zat_a2_sr_no_assault"] 	= "zat_stalker_base_smart",
+	["jup_a6_sr_no_assault"] 	= "jup_a6",
+	["jup_b41_sr_no_assault"] 	= "jup_b41"
 }
 
 function sim_squad_scripted:sim_available()
