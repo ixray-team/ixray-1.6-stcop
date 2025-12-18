@@ -407,13 +407,20 @@ struct CImGuiTextureEditor
 		kReadAll,
 		kUpdateSelected,
 		kShutdownThread,
+		kFilterQuery,
 		kInvalid = -1
+	};
+
+	enum class eFilterQueryType : u32
+	{
+		kSearch,
+		kInvalid = u32(-1)
 	};
 
 	struct SRequestData
 	{
 		eRequestType type = eRequestType::kInvalid;
-		u32 selected_id = 0;
+		u32 payload = 0;
 	};
 
 	// don't store metadata only on when selected
@@ -452,10 +459,14 @@ struct CImGuiTextureEditor
 	bool is_settings_read = false;
 	bool is_settings_write = false;
 
+	bool is_filter_processing = false;
+
 	bool is_update_selected = false;
 
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
+
+	u8 search_frame_count = 0;
 
 	u32 selected_index = u32(-1);
 
@@ -486,7 +497,8 @@ struct CImGuiTextureEditor
 
 	ThreadSafeQueue<SRequestData> requests;
 	std::thread worker_thread;
-	char window_selected_name[512];
+	string_path window_selected_name;
+	string_path search_input_buffer;
 };
 
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
