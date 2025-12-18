@@ -1195,12 +1195,22 @@ function generic_scheme_overrides(npc)
 end
 
 function mob_release(mob)
+	if not mob then
+		abort("!error xr_logic: mob_release: missing mob_object ")
+		return 
+	end
+	
 	if mob:get_script() then
 		mob:script(false, script_name())
 	end
 end
 
 function mob_capture(mob, reset_actions)
+	if not mob then
+		abort("!error xr_logic: mob_capture: missing mob_object ")
+		return 
+	end
+	
 	if reset_actions == nil then
 		abort("mob_capture: reset_actions parameter's value is not specified")
 	end
@@ -1215,10 +1225,20 @@ function mob_capture(mob, reset_actions)
 end
 
 function mob_captured(mob)
+	if not mob then
+		abort("!error xr_logic: mob_captured: missing mob_object ")
+		return false
+	end
+	
 	return mob:get_script()
 end
 
 function save_logic(obj, packet)
+	if not obj or not packet then
+		abort("!error xr_logic: save_logic: missing object or packet")
+		return 
+	end
+	
 	local npc_id = obj:id()
 	local cur_tm = time_global()
 
@@ -1233,6 +1253,11 @@ function save_logic(obj, packet)
 end
 
 function load_logic(obj, reader)
+	if not obj or not reader then
+		abort("!error xr_logic: load_logic: missing object or reader")
+		return 
+	end
+	
 	local npc_id = obj:id()
 	local cur_tm = time_global()
 
@@ -1254,6 +1279,16 @@ function pstor_is_registered_type(tv)
 end
 
 function pstor_store(obj, varname, val)
+	if not obj then
+		abort("!error xr_logic: pstor_store: missing object")
+		return 
+	end
+	
+	if not varname then
+		abort("!error xr_logic: pstor_store: missing varname")
+		return 
+	end
+	
 	local npc_id = obj:id()
 
 	if db.storage[npc_id].pstor == nil then
@@ -1267,6 +1302,16 @@ function pstor_store(obj, varname, val)
 end
 
 function pstor_retrieve(obj, varname, defval)
+	if not obj then
+		abort("!error xr_logic: pstor_retrieve: missing object")
+		return defval
+	end
+	
+	if not varname then
+		printf("!error xr_logic: pstor_retrieve: missing varname")
+		return defval
+	end
+	
 	local npc_id = obj:id()
 
 	if db.storage[npc_id].pstor ~= nil then
@@ -1283,6 +1328,16 @@ function pstor_retrieve(obj, varname, defval)
 end
 
 function pstor_save_all(obj, packet)
+	if not obj then
+		abort("!error xr_logic: pstor_save_all: missing object")
+		return
+	end
+	
+	if not packet then
+		abort("!error xr_logic: pstor_save_all: missing packet")
+		return
+	end
+	
 	local npc_id = obj:id()
 	local pstor = db.storage[npc_id].pstor
 	if not pstor then
@@ -1316,6 +1371,16 @@ function pstor_save_all(obj, packet)
 end
 
 function pstor_load_all(obj, reader)
+	if not obj then
+		printf("!error xr_logic: pstor_load_all: missing object")
+		return
+	end
+	
+	if not reader then
+		printf("!error xr_logic: pstor_load_all: missing reader")
+		return
+	end
+
 	local npc_id = obj:id()
 	local pstor = db.storage[npc_id].pstor
 	if not pstor then

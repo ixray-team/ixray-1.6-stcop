@@ -607,10 +607,13 @@ end
 -- настроить логику для объекта, который в онлайне.
 function se_smart_terrain:setup_logic(obj)
 	--printf("setup npc logic %s", obj:name())
---	callstack()
-	local npc_data = self.npc_info[obj:id()]
-
-    if npc_data == nil then
+	--	callstack()
+	if not obj then
+        return
+    end
+	
+	local npc_data = self.npc_info[obj:id()] or nil
+    if not npc_data then
         return
     end
 
