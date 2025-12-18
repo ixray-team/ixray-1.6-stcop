@@ -433,6 +433,7 @@ function state_manager:set_state(state_name, callback, timeout, target, extra)
 
 	if state_lib.states[state_name] == nil then
 		abort("ERROR: ILLEGAL SET STATE CALLED!!! %s fo %s", tostring(state_name), self.npc:name())
+		return
 	end
 	if target then
 		if target.look_position then
