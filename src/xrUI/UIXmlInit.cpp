@@ -431,14 +431,6 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, LPCSTR path, int index, CUI3tButt
 	InitTextureOffset	(xml_doc, path, index, pWnd);
 	InitSound			(xml_doc, path, index, pWnd);
 
-	xr_strconcat(buf, path, ":input_icon");
-	if (xml_doc.NavigateToNode(buf))
-	{
-		pWnd->m_inputIcon = new CUIStatic();
-		pWnd->AttachChild(pWnd->m_inputIcon);
-		InitStatic(xml_doc, buf, index, pWnd->m_inputIcon);
-	}
-
 	LPCSTR accel		= xml_doc.ReadAttrib(path, index, "accel", nullptr);
 	if(accel)
 	{
