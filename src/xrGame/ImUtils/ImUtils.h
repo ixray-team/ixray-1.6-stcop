@@ -483,6 +483,7 @@ struct CImGuiTextureEditor
 
 	ThreadSafeQueue<SRequestData> requests;
 	std::thread worker_thread;
+	char window_selected_name[512];
 };
 
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;

@@ -42,7 +42,7 @@ void TextureEditor_WorkerThread()
 			{
 			case CImGuiTextureEditor::eRequestType::kReadSettings:
 			{
-				if (g_imgui_texture_editor.is_settings_read==false)
+				if (g_imgui_texture_editor.is_settings_read == false)
 				{
 					if (FS.exist("$app_data_root$", "texture_editor_settings.bin"))
 					{
@@ -92,7 +92,7 @@ void TextureEditor_WorkerThread()
 					string_path path_to_settings;
 					FS.update_path(path_to_settings, "$app_data_root$", "texture_editor_settings.bin");
 					IWriter* pWriter = FS.w_open(path_to_settings);
-					
+
 					if (pWriter)
 					{
 						pWriter->w(&g_imgui_texture_editor.settings, sizeof(g_imgui_texture_editor.settings));
@@ -181,7 +181,7 @@ void TextureEditor_WorkerThread()
 						}
 						else if (
 							fn.find(".svg") != std::string::npos &&
-							fn.find(".dds") == std::string::npos && 
+							fn.find(".dds") == std::string::npos &&
 							fn.find(".thm") == std::string::npos
 							)
 						{
@@ -196,8 +196,8 @@ void TextureEditor_WorkerThread()
 							++g_imgui_texture_editor.total_bmp_in_folder;
 						}
 						else if (
-							fn.find(".ogm") != std::string::npos && 
-							fn.find(".dds") == std::string::npos && 
+							fn.find(".ogm") != std::string::npos &&
+							fn.find(".dds") == std::string::npos &&
 							fn.find(".thm") == std::string::npos
 							)
 						{
@@ -214,7 +214,7 @@ void TextureEditor_WorkerThread()
 						else
 						{
 							if (
-								fn.find(".dds") != std::string::npos && 
+								fn.find(".dds") != std::string::npos &&
 								fn.find(".thm") != std::string::npos
 								)
 							{
@@ -259,7 +259,7 @@ void TextureEditor_WorkerThread()
 			}
 
 		}
-		
+
 
 	}
 
@@ -365,32 +365,10 @@ void RenderTextureEditor()
 					size_t textures_count = g_imgui_texture_editor.textures.size();
 					size_t row_max = textures_count;
 
-					if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
-					{
-						if (g_imgui_texture_editor.is_update_selected)
-						{
-							using texture_t = CImGuiTextureEditor::STextureEntry;
-
-							const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
-
-							ImGui::Text("%s", selected.path);
-						}
-						else
-						{
-							ImGui::Text("Loading...");
-						}
-					}
-					else
-					{
-						ImGui::Text("No Selected!");
-					}
-
-					ImGui::Separator();
-
 
 
 					ImGui::BeginTable("##TETV", _kColumnsSize);
-					
+
 					for (u32 i = 0; i < _kColumnsSize; ++i)
 					{
 						ImGui::TableSetupColumn(_kColumnNames[i]);
@@ -428,9 +406,12 @@ void RenderTextureEditor()
 
 									if (ImGui::Selectable(sel_name, selected_status))
 									{
+										g_imgui_texture_editor.window_selected_name[0] = 0;
 										g_imgui_texture_editor.is_update_selected = false;
 										g_imgui_texture_editor.selected_index = row;
 										g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .selected_id = row });
+										std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
+										std::strcat(g_imgui_texture_editor.window_selected_name, g_imgui_texture_editor.textures[row].path);
 									}
 
 									break;
@@ -451,10 +432,10 @@ void RenderTextureEditor()
 
 					ImGui::EndTable();
 
-					
+
 
 				}
-				else 
+				else
 				{
 					if (g_imgui_texture_editor.total_files_in_folder == 0)
 					{
@@ -462,9 +443,9 @@ void RenderTextureEditor()
 					}
 					else
 					{
-						ImGui::Text("Analyzing... [%s] %zu/%zu", 
+						ImGui::Text("Analyzing... [%s] %zu/%zu",
 							g_imgui_texture_editor.wt_current_analyzing_texture.data(),
-							g_imgui_texture_editor.current_analyzed_count, 
+							g_imgui_texture_editor.current_analyzed_count,
 							g_imgui_texture_editor.total_files_in_folder
 						);
 					}
@@ -475,7 +456,7 @@ void RenderTextureEditor()
 
 			if (ImGui::BeginTabItem("Game", &is_in_game))
 			{
-			
+
 				ImGui::EndTabItem();
 			}
 		}
@@ -483,4 +464,30 @@ void RenderTextureEditor()
 	}
 
 	ImGui::End();
+
+	if (g_imgui_texture_editor.selected_index != _kInvalidSelectedID)
+	{
+		if (ImGui::Begin(g_imgui_texture_editor.window_selected_name, 0, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+
+			if (g_imgui_texture_editor.is_update_selected)
+			{
+				using texture_t = CImGuiTextureEditor::STextureEntry;
+
+				const texture_t& selected = g_imgui_texture_editor.textures[g_imgui_texture_editor.selected_index];
+
+				ImGui::Text("%s", selected.path);
+			}
+			else
+			{
+				ImGui::Text("Loading...");
+			}
+
+		}
+
+		ImGui::End();
+	}
+
+
+
 }
