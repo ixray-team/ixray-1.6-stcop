@@ -830,7 +830,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 				{
 					if (pOKiller && pOKiller==Level().CurrentViewEntity())
 					{
-						if (pWeapon->cast_weapon_knife() != nullptr)
+						if (pWeapon && pWeapon->cast_weapon_knife())
 						{
 							PlaySndMessage(ID_BUTCHER);
 						}
