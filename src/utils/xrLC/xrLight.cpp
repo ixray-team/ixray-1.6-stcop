@@ -157,10 +157,12 @@ void CBuild::Light()
  
 	//****************************************** Implicit
 	Phase("LIGHT: Implicit...");
+	Light_prepare();
  	ImplicitLighting();
 
 	//****************************************** LMAPS
 	Phase("LIGHT: LMaps...");
+	Light_prepare();
  	LMaps();
 
 	//****************************************** Vertex
