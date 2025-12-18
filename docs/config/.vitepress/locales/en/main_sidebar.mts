@@ -140,6 +140,7 @@ export const mainSidebar: DefaultTheme.Sidebar = [
         items: [
           { text: 'Plugins', link: '/en/editors/plugins' },
           { text: 'Dialog Editor', link: '/en/editors/dialog-editor' },
+          { text: 'Particles', link: '/en/editors/particles' },
         ]
       },
     ]

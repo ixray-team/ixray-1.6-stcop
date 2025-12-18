@@ -7,6 +7,9 @@ hero:
 ---
 <script setup>
 import Download from '../../../components/Download.vue'
+import VkArticleWidget from '../../../components/VkArticleWidget.vue'
 </script>
 
 <Download />
+
+<VkArticleWidget />

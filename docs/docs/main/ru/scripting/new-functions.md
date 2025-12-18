@@ -1,19 +1,37 @@
 # Новые функции
 ## Глобальное пространство
 
-```cpp
-bool IsDedicated(); //-- Скрипт был вызван на Dedicated сервере
-bool OnClient();    //-- Скрипт был вызван на стороне клиента 
-bool OnServer();    //-- Скрипт был вызван на стороне сервера
+```lua
+--// Скрипт был вызван на Dedicated сервере
+IsDedicated()
+retval: boolean
 
-Fvector2 GetCursorPosition()     //-- Получить позицию курсора
-void SetCursorPosition(Fvector2) //-- Установить позицию курсора
+--// Скрипт был вызван на стороне клиента
+OnClient()
+retval: boolean
+
+--// Скрипт был вызван на стороне сервера
+OnServer()
+retval: boolean
+
+--// Получить позицию курсора
+GetCursorPosition(cursor_pos)
+retval: vector2
+args: cursor_pos (vector2)
+
+--// Установить позицию курсора
+SetCursorPosition(pos)
+retval: none
+args: pos (vector2)
 ```
 
 ## player_hud
 
-```cpp
-void show_legs(bool) //-- показать/скрыть ноги
+```lua
+--// показать/скрыть ноги
+player_hud.show_legs(value)
+retval: none
+args: value (boolean)
 ```
 
 ## CActor
@@ -21,553 +39,699 @@ void show_legs(bool) //-- показать/скрыть ноги
 ### Новое
 
 * Статус ГГ
-```cpp
-bool is_god_mode()
-//-- Находится ли ГГ в "режиме бога"
+```lua
+--// Находится ли ГГ в "режиме бога"
+db.actor:is_god_mode()
+retval: boolean
 
-void SetInvulnerable(bool)
-//-- Установить "Режим Бога"
+--// Установить "Режим Бога"
+db.actor:SetInvulnerable(value)
+retval: none
+args: value (boolean)
 
-bool ActorIsJump();
-//-- Проверяет, в прыжке ли актер в данный момент.
+--// Проверяет, в прыжке ли актер в данный момент
+db.actor:ActorIsJump()
+retval: boolean
 
-float GetActorMaxWeight() const;
-//-- Возвращает максимальный вес, который актер может нести.
+--// Возвращает максимальный вес, который актер может нести
+db.actor:GetActorMaxWeight()
+retval: number
 
-void SetActorMaxWeight(float max_weight);
-//-- Устанавливает максимальный вес, который актер может нести.
+--// Устанавливает максимальный вес, который актер может нести
+db.actor:SetActorMaxWeight(max_weight)
+retval: none
+args: max_weight (number)
 
-float GetActorMaxWalkWeight() const;
-//-- Возвращает максимальный вес, при котором актер может передвигаться.
+--// Возвращает максимальный вес, при котором актер может передвигаться
+db.actor:GetActorMaxWalkWeight()
+retval: number
 
-void SetActorMaxWalkWeight(float max_walk_weight);
-//-- Устанавливает максимальный вес, при котором актер может передвигаться.
+--// Устанавливает максимальный вес, при котором актер может передвигаться
+db.actor:SetActorMaxWalkWeight(max_walk_weight)
+retval: none
+args: max_walk_weight (number)
 
-float GetAdditionalMaxWeight() const;
-//-- Возвращает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита.
+--// Возвращает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита
+db.actor:GetAdditionalMaxWeight()
+retval: number
 
-void SetAdditionalMaxWeight(float add_max_weight);
-//-- Устанавливает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита.
+--// Устанавливает дополнительный вес, который костюм актера позволяет нести сверх стандартного лимита
+db.actor:SetAdditionalMaxWeight(add_max_weight)
+retval: none
+args: add_max_weight (number)
 
-float GetAdditionalMaxWalkWeight() const;
-//-- Возвращает дополнительный вес, при котором актер может передвигаться.
+--// Возвращает дополнительный вес, при котором актер может передвигаться
+db.actor:GetAdditionalMaxWalkWeight()
+retval: number
 
-void SetAdditionalMaxWalkWeight(float add_max_walk_weight);
-//-- Устанавливает дополнительный вес, при котором актер может передвигаться.
+--// Устанавливает дополнительный вес, при котором актер может передвигаться
+db.actor:SetAdditionalMaxWalkWeight(add_max_walk_weight)
+retval: none
+args: add_max_walk_weight (number)
+
+--// Прямая установка сонливости гг
+db.actor:set_actor_sleepiness(value)
+retval: none
+args: value (number)
+
+--// Прямая установка голода гг
+db.actor:set_actor_satiety(value)
+retval: none
+args: value (number)
+
+--// Прямая установка жажды гг
+db.actor:set_actor_thirst(value)
+retval: none
+args: value (number)
+
+--// Прямая установка здоровья гг
+db.actor:set_actor_health(value)
+retval: none
+args: value (number)
+
+--// Прямая установка стамины гг
+db.actor:set_actor_power(value)
+retval: none
+args: value (number)
+
+--// Прямая установка радиации гг
+db.actor:set_actor_radiation(value)
+retval: none
+args: value (number)
+
+--// Прямая установка пси здоровья гг
+db.actor:set_actor_psy_health(value)
+retval: none
+args: value (number)
+
+--// Прямая установка морали гг
+db.actor:set_actor_morale(value)
+retval: none
+args: value (number)
 ```
 * Камера
-```cpp
-bool is_first_person();  //-- Активна ли камера "От первого лица"
-void set_first_person(); //-- Установить камеру "От первого лица"
-void set_third_person(); //-- Установить камеру "От третьего лица"
+```lua
+--// Активна ли камера "От первого лица"
+db.actor:is_first_person()
+retval: boolean
+
+--// Установить камеру "От первого лица"
+db.actor:set_first_person()
+retval: none
+
+--// Установить камеру "От третьего лица"
+db.actor:set_third_person()
+retval: none
 ```
 * [Бустеры](/scripting/exported-enums#eboostparams)
-```cpp
-bool is_booster_influence(EBoostParams);        //-- Влияет ли бустер на актора (параметр буста из EBoostParams)
-float get_booster_influence_time(EBoostParams); //-- Получить время влияния бустера на актора (параметр буста из EBoostParams)
+```lua
+--// Влияет ли бустер на актора (параметр буста из EBoostParams)
+db.actor:is_booster_influence(boost_param)
+retval: boolean
+args: boost_param (EBoostParams)
 
-void apply_booster(string);                     //-- Применить бустер (имя секции с параметрами бустера)
-void set_booster_time(number, EBoostParams);    //-- Установить время влияния бустера (время, параметр буста из EBoostParams)
-float get_actor_power_boost_time()              //-- Возвращает время действия активного eBoostPowerRestore 
+--// Получить время влияния бустера на актора (параметр буста из EBoostParams)
+db.actor:get_booster_influence_time(boost_param)
+retval: number
+args: boost_param (EBoostParams)
+
+--// Применить бустер (имя секции с параметрами бустера)
+db.actor:apply_booster(section_name)
+retval: none
+args: section_name (string)
+
+--// Установить время влияния бустера (время, параметр буста из EBoostParams)
+db.actor:set_booster_time(time, boost_param)
+retval: none
+args: time (number), boost_param (EBoostParams)
+
+--// Возвращает время действия активного eBoostPowerRestore
+db.actor:get_actor_power_boost_time()
+retval: number
 ```
 * Тень от ГГ
-```cpp
-bool is_actor_shadow();      //-- Проверить включена ли тень от ГГ
-void set_actor_shadow(bool); //-- Включить/выключить тень от ГГ
+```lua
+--// Проверить включена ли тень от ГГ
+db.actor:is_actor_shadow()
+retval: boolean
+
+--// Включить/выключить тень от ГГ
+db.actor:set_actor_shadow(value)
+retval: none
+args: value (boolean)
 ```
 * Движение
-```cpp
-bool get_movement_state(EMovementStates, EMoveCommand);       //-- Получить состояние движения актора (первое - тип движения, например, желаемый (eWishful); второе - команда движения, например спринт (mcSprint))
-void set_movement_state(EMovementStates, EMoveCommand, bool); //-- Установить состояние команды движения актора (первое - тип движения; второе - команда движения; третье - статус, true\false)
+```lua
+--// Получить состояние движения актора (первое - тип движения, например, желаемый (eWishful); второе - команда движения, например спринт (mcSprint))
+db.actor:get_movement_state(movement_type, move_command)
+retval: boolean
+args: movement_type (EMovementStates), move_command (EMoveCommand)
+
+--// Установить состояние команды движения актора (первое - тип движения; второе - команда движения; третье - статус, true\false)
+db.actor:set_movement_state(movement_type, move_command, status)
+retval: none
+args: movement_type (EMovementStates), move_command (EMoveCommand), status (boolean)
 ```
 * Инвентарь
-```cpp
-void set_pda_disabled(bool)
-//-- Выключить/включить PDA
+```lua
+--// Выключить/включить PDA
+db.actor:set_pda_disabled(value)
+retval: none
+args: value (boolean)
 
-bool is_pda_disabled()
-//-- Доступен ли PDA
+--// Доступен ли PDA
+db.actor:is_pda_disabled()
+retval: boolean
 
-void set_inventory_disabled(bool)
-//-- Выключить/включить инвентарь
+--// Выключить/включить инвентарь
+db.actor:set_inventory_disabled(value)
+retval: none
+args: value (boolean)
 
-bool is_inventory_disabled()
-//-- Доступен ли инвентарь
+--// Доступен ли инвентарь
+db.actor:is_inventory_disabled()
+retval: boolean
 ```
 * Взаимодействия
-```cpp
-void attach_vehicle(CScriptGameObject* Car, bool force)
- //-- Посадить актера в машину
+```lua
+--// Посадить актера в машину
+db.actor:attach_vehicle(car, force)
+retval: none
+args: car (CScriptGameObject), force (boolean)
 
-void detach_vehicle(bool force)
-//-- Высадить актера из машины
+--// Высадить актера из машины
+db.actor:detach_vehicle(force)
+retval: none
+args: force (boolean)
 
-CScriptGameObject* get_attached_vehicle()
-//-- Возвращает текущий Holder, в котором находится актер
+--// Возвращает текущий Holder, в котором находится актер
+db.actor:get_attached_vehicle()
+retval: CScriptGameObject
 
-bool is_ladder()
-//-- Находится ли актер на лестнице
+--// Находится ли актер на лестнице
+db.actor:is_ladder()
+retval: boolean
 
-string get_cutscene_visual()
-//-- Возвращает название визуала во время активной Cut Scene
+--// Возвращает название визуала во время активной Cut Scene
+db.actor:get_cutscene_visual()
+retval: string
 
-void set_best_enemy(CScriptGameObject*)
-//-- Установить активную цель
+--// Установить активную цель
+db.actor:set_best_enemy(enemy)
+retval: none
+args: enemy (CScriptGameObject)
 ```
 ## CoC Extended
-* Weapon
-```cpp
-//-- State
-u8 get_weapon_substate();
-int get_ammo_count_for_type(type);
-u32 get_main_weapon_type();
-u32 get_weapon_type();
+* Сервервный alife объект `local se_obj = alife():object(obj_id)`
+```lua
+--// Узнать иконку персонажа
+se_obj:character_icon()
+retval: string
 
-string weapon_get_ammo_section(ammo_type);
-void weapon_addon_attach(obj);
-void weapon_addon_detach(section, bSpawnToInventory);
+--// Установить ранг персонажа
+se_obj:set_rank(rank)
+retval: none
+args: rank (number)
 
-//-- Upgrades
-bool install_upgrade(name);
-bool has_upgrade(name);
-void iterate_installed_upgrades();
+--// Установить профиль персонажа
+se_obj:set_profile_name(profile)
+retval: none
+args: profile (string)
+
+--// Узнать имя персонажа
+se_obj:character_name()
+retval: string
+
+--// Установить имя персонажа
+se_obj:set_character_name(name)
+retval: none
+args: name (string)
 ```
-* Other
-```cpp
-void set_character_icon(icon)               //-- Установить иконку персонажа
-void change_character_rank(char_rank)       //-- Установить ранг персонажа
-LPCSTR character_name()                     //-- Узнать имя персонажа
-LPCSTR character_icon()                     //-- Узнать иконку персонажа
-void set_rank(rank)                         //-- Установить ранг персонажа
-void set_profile_name(profile)              //-- Установить профиль персонажа
-void set_character_name(name)               //-- Установить имя персонажа
-void iterate_feel_touch(function bool(id)); //-- Перебирать объекты вокруг актера до нахождения нужного
-void hide_detector();                       //-- Убрать детектор
-bool IsOnBelt(obj);                         //-- Проверить предмет на поясе
-obj item_on_belt(ItemID);                   //-- Получить предмет по ID
-u32 play_hud_motion(Name, UseMix, state);   //-- Проиграть анимацию на худе
-void switch_state(state);                   //-- Переключить state оружия
-u32 get_state();                            //-- Получить state худового предмета
-u16 ammo_get_count();                       //-- Получить количество патронов 
-void AmmoSetCount(count);                   //-- Установить кол-во патронов
-int AmmoBoxSize();                          //-- Получить кол-во патронов в 1 пачке 
-int get_ammo_in_magazine_and_chamber()      //-- Число боеприпасов снаряжённых в магазин и патронник
-bool is_weapon_use_chamber()                //-- Использует ли оружие патронник
+
+* Клиентский alife объект `local npc = level.object_by_id(npc_id) or db.actor`
+```lua
+--// Установить ранг персонажа
+npc:change_character_rank(char_rank)
+retval: none
+args: char_rank (number)
+
+--// Перебирать объекты вокруг актера до нахождения нужного
+npc:iterate_feel_touch(callback)
+retval: none
+args: callback (function) -- function(obj_id: number): boolean
 ```
-## CScriptGameObject управление видимостью костей
-```cpp
-bool is_world_object_bone_visible(string boneName)                        //-- Видна ли кость на мировом визуале обьекта
-bool set_world_object_bone_visibility(string boneName, bool bVisibility)  //-- Установить видимость кости на мировом визуале обьекта
-bool is_hud_object_bone_visible(string boneName)                          //-- Видна ли кость на худовом визуале обьекта
-bool set_hud_object_bone_visibility(string boneName, bool bVisibility)    //-- Установить видимость кости на худовом визуале обьекта
+
+* CActor
+```lua
+--// Убрать детектор
+db.actor:hide_detector()
 ```
+
+* Weapon `local weapon = db.actor:active_item()`
+```lua
+--// Получить подсостояние оружия
+weapon:get_weapon_substate()
+retval: number
+
+--// Получить количество патронов определенного типа
+weapon:get_ammo_count_for_type(type)
+retval: number
+args: type (number)
+
+--// Получить тип основного оружия
+weapon:get_main_weapon_type()
+retval: number
+
+--// Получить тип оружия
+weapon:get_weapon_type()
+retval: number
+
+--// Получить секцию патронов для типа
+weapon:weapon_get_ammo_section(ammo_type)
+retval: string
+args: ammo_type (number)
+
+--// Прикрепить аддон к оружию
+weapon:weapon_addon_attach(obj)
+retval: none
+args: obj (CScriptGameObject)
+
+--// Открепить аддон от оружия
+weapon:weapon_addon_detach(section, bSpawnToInventory)
+retval: none
+args: section (string), bSpawnToInventory (boolean)
+
+--// Установить апгрейд
+weapon:install_upgrade(name)
+retval: boolean
+args: name (string)
+
+--// Проверить наличие апгрейда
+weapon:has_upgrade(name)
+retval: boolean
+args: name (string)
+
+--// Итерировать установленные апгрейды с помощью callback-функции
+weapon:iterate_installed_upgrades(callback)
+retval: none
+args: callback (function) -- function(upgrade_sect: string, wpn_obj: self): boolean
+
+--// Проверить предмет на поясе
+weapon:IsOnBelt(other_obj)
+retval: boolean
+args: other_obj (CScriptGameObject)
+
+--// Проиграть анимацию на худе
+weapon:play_hud_motion(name, use_mix, state)
+retval: number
+args: name (string), use_mix (boolean), state (number)
+
+--// Переключить state оружия
+weapon:switch_state(state)
+retval: none
+args: state (number)
+
+--// Получить state худового предмета
+weapon:get_state()
+retval: number
+
+--// Получить количество патронов 
+weapon:ammo_get_count()
+retval: number
+
+--// Установить кол-во патронов
+weapon:ammo_set_count(count)
+retval: none
+args: count (number)
+
+--// Получить кол-во патронов в 1 пачке 
+weapon:ammo_box_size()
+retval: number
+
+--// Число боеприпасов снаряжённых в магазин и патронник
+weapon:get_ammo_in_magazine_and_chamber()
+retval: number
+
+--// Использует ли оружие патронник
+weapon:is_weapon_use_chamber()
+retval: boolean
+```
+* Items
+```lua
+--// Получить предмет по ID
+item:item_on_belt(item_id)
+retval: CScriptGameObject
+args: item_id (number)
+```
+
+## Управление видимостью костей
+`local obj = level.object_by_id(obj_id) or db.actor`
+```lua
+--// Видна ли кость на мировом визуале объекта
+obj:is_world_object_bone_visible(boneName)
+retval: boolean
+args: boneName (string)
+
+--// Установить видимость кости на мировом визуале объекта
+obj:set_world_object_bone_visibility(boneName, bVisibility)
+retval: boolean
+args: boneName (string), bVisibility (boolean)
+
+--// Видна ли кость на худовом визуале объекта
+obj:is_hud_object_bone_visible(boneName)
+retval: boolean
+args: boneName (string)
+
+--// Установить видимость кости на худовом визуале объекта
+obj:set_hud_object_bone_visibility(boneName, bVisibility)
+retval: boolean
+args: boneName (string), bVisibility (boolean)
+```
+
 ## CCar
-```cpp
-void AddFuel(float);   //-- Добавить топливо (с учётом предела m_fuel_tank)
-property fuel;         //-- Свойство объекта: текущее топливо
-property fuel_tank;    //-- Свойство объекта: размер топливного бака
+`local car = level.object_by_id(car_id)`
+```lua
+--// Добавить топливо (с учётом предела m_fuel_tank)
+car:AddFuel(amount)
+retval: none
+args: amount (number)
+
+--// Получить текущее топливо
+car.fuel
+--// Установить текущее топливо
+car.fuel = value
+
+--// Получить размер топливного бака
+car.fuel_tank
+--// Установить размер топливного бака  
+car.fuel_tank = value
 ```
 
-### From Lost Alpha
-```cpp
-LPCSTR get_past_wdesc();                    //-- получить предыдущую погоду
-LPCSTR get_next_wdesc();                    //-- получить следующую погоду
-float get_past_wdesc_execution_time();      //-- получить время исполнения прошлой погоды
-float get_next_wdesc_execution_time();      //-- получить время следующей погоды
-float get_weather_game_time();              //-- получить погодное время
-void set_past_wdesc(LPCSTR WeatherSection); //-- установить предыдущую погоду
-void set_next_wdesc(LPCSTR WeatherSection); //-- установить следующую погоду
+## From Lost Alpha
+```lua
+--// получить предыдущую погоду
+level.get_past_wdesc()
+retval: string
+
+--// получить следующую погоду
+level.get_next_wdesc()
+retval: string
+
+--// получить время исполнения прошлой погоды
+level.get_past_wdesc_execution_time()
+retval: number
+
+--// получить время следующей погоды
+level.get_next_wdesc_execution_time()
+retval: number
+
+--// получить погодное время
+level.get_weather_game_time()
+retval: number
+
+--// установить предыдущую погоду
+level.set_past_wdesc(WeatherSection)
+retval: none
+args: WeatherSection (string)
+
+--// установить следующую погоду
+level.set_next_wdesc(WeatherSection)
+retval: none
+args: WeatherSection (string)
 ```
 
 ## CUIGameCustom
 ```lua
-AddHudMessage(string) -- Вывести сообщение на экран 
+--// Вывести сообщение на экран
+get_hud():AddHudMessage(text)
+retval: none
+args: text (string)
 ```
 
 ## alife_simulator
 ```lua
-jump_to_level(name)                    //-- Переместить актера на локацию 
-teleport_object(id, gv_id, lv_id, pos) //-- Переместить alife объект 
-iterate_info(id, function)
-reprocess_spawn(sobj) 
-set_objects_per_update(count)
-set_process_time(time)
-get_children(sobj)
-```
-* Object Iterator (Lost Alpha)
-```lua
-for id, se_obj in alife():objects() do
-    ...
+--// Переместить актера на локацию
+alife():jump_to_level(name)
+retval: none
+args: name (string)
+
+--// Переместить alife объект
+alife():teleport_object(id, gv_id, lv_id, pos)
+retval: none
+args: id (number), gv_id (number), lv_id (number), pos (vector)
+
+--// Итерировать информацию объекта
+alife():iterate_info(id, callback)
+retval: none
+args: id (number), callback (function)
+
+--// Репроцессинг спавна
+alife():reprocess_spawn(sobj)
+retval: none
+args: sobj (CScriptGameObject)
+
+--// Установить количество объектов для обновления
+alife():set_objects_per_update(count)
+retval: none
+args: count (number)
+
+--// Установить время обработки
+alife():set_process_time(time)
+retval: none
+args: time (number)
+
+--// Получить дочерние объекты
+alife():get_children(sobj)
+retval: table
+args: sobj (CScriptGameObject)
+
+--// Итератор по alife объектам (Lost Alpha)
+alife():objects()
+retval: iterator
+-- Пример:
+-- for id, se_obj in alife():objects() do
+--     -- id (number), se_obj (CScriptGameObject)
+-- end
 ```
 
-## game
-### CTime
+## CTime
 ```lua
-save(packet) --// Сохраняет время в сжатом виде (4 байта) 
-load(packet) --// Загружает время в сжатом виде (4 байта) 
+--// Сохраняет время в сжатом виде (4 байта)
+game.get_game_time():save(packet)
+retval: none
+args: packet (net_packet)
+
+--// Загружает время в сжатом виде (4 байта)
+game.get_game_time():load(packet)
+retval: none
+args: packet (net_packet)
 ```
+
 ## `save`
 ```lua
-set_stage(name) --// Передать название текущего чанка в движок (отладочная информация)
-call_error()    --// Вызвать ошибку при сохранении (отладочная информация)
-```
-## [animslot](/animation-system/hud-animator)
-```lua
-animslot.play(section, anim) //-- Проиграть анимацию на худе 
+--// Передать название текущего чанка в движок (отладочная информация)
+save.set_stage(name)
+retval: none
+args: name (string)
+
+--// Вызвать ошибку при сохранении (отладочная информация)
+save.call_error()
+retval: none
+args: none
 ```
 
-## [CEatableItem](/gameplay/general/items-used)
-* Функции
-```cpp
-bool Empty();              //-- Предмет больше не может быть использован
-bool CanDelete();          //-- Предмет будет удалён, если его нельзя будет использовать
-bool GetMaxUses();         //-- Кол-во максимальных использований 
-u8 GetRemainingUses();     //-- Кол-во оставшихся использований
-void SetRemainingUses(u8); //-- Установить кол-во оставшихся использований
-float Weight();            //-- Текущий вес предмета
-int Cost();                //-- Стоимость предмета
+## [animslot](/animation-system/hud-animator)
+```lua
+--// Проиграть анимацию на худе
+animslot.play(section, anim)
+retval: none
+args: section (string), anim (string)
 ```
-* Свойства 
-```cpp
-bool m_bRemoveAfterUse;  //-- Предмет будет удалён, если его нельзя будет использовать
-float m_fWeightFull;     //-- Начальный вес предмета 
-float m_fWeightEmpty;    //-- Вес пустого предмета 
+
+## [CEatableItem](/gameplay/general/items-used) `local bread = level.object_by_id(item_id)`
+```lua
+--// Предмет больше не может быть использован
+bread:Empty()
+retval: boolean
+
+--// Предмет будет удалён, если его нельзя будет использовать
+bread:CanDelete()
+retval: boolean
+
+--// Кол-во максимальных использований
+bread:GetMaxUses()
+retval: number
+
+--// Кол-во оставшихся использований
+bread:GetRemainingUses()
+retval: number
+
+--// Установить кол-во оставшихся использований
+bread:SetRemainingUses(count)
+retval: none
+args: count (number)
+
+--// Текущий вес предмета
+bread:Weight()
+retval: number
+
+--// Стоимость предмета
+bread:Cost()
+retval: number
+
+--// Предмет будет удалён, если его нельзя будет использовать (свойство)
+bread.m_bRemoveAfterUse
+--// Установить значение свойства
+bread.m_bRemoveAfterUse = value
+
+--// Начальный вес предмета (свойство)
+bread.m_fWeightFull
+--// Установить значение свойства
+bread.m_fWeightFull = value
+
+--// Вес пустого предмета (свойство)
+bread.m_fWeightEmpty
+--// Установить значение свойства
+bread.m_fWeightEmpty = value
 ```
 
 ## CMapManager
-* Функции
-```cpp
-void RemoveMapLocation(CMapLocation* ml); 
-//-- Удаляет указанную локацию на карте
-
-void RemoveMapLocationByObjectID(u16 id); 
-//-- Удаляет локацию на карте по идентификатору объекта
-
-void DisableAllPointers(); 
-//-- Отключает все указатели на карте
-
-void MapLocationsForEach(LPCSTR spot_type, u16 id, const luabind::functor<bool>& functor); 
-//-- Выполняет заданную функцию для каждой локации на карте с указанным типом и идентификатором
-
-void AllLocationsForEach(const luabind::functor<bool>& functor); 
-//-- Выполняет заданную функцию для всех локаций на карте
-```
-
-::: details Примеры
-
 ```lua
-  -- Пример использования RemoveMapLocationByObjectID
-  mapManager:RemoveMapLocationByObjectID(123)
+--// Удаляет указанную локацию на карте
+level.map_manager():RemoveMapLocation(ml)
+retval: none
+args: ml (CMapLocation)
 
-  -- Пример использования RemoveMapLocation
-  local location = mapManager:GetMapLocation("spot_type", 123)
-  mapManager:RemoveMapLocation(location)
+--// Удаляет локацию на карте по идентификатору объекта
+level.map_manager():RemoveMapLocationByObjectID(id)
+retval: none
+args: id (number)
 
-  -- Пример использования DisableAllPointers
-  mapManager:DisableAllPointers()
+--// Отключает все указатели на карте
+level.map_manager():DisableAllPointers()
+retval: none
+args: none
 
-  -- Пример использования MapLocationsForEach
-  mapManager:MapLocationsForEach("spot_type", 123, function(location)
-	  print(location:GetHint())
-	  return false -- возвращает true, если нужно прервать итерацию
-  end)
+--// Выполняет функцию для каждой локации с указанным типом и идентификатором
+level.map_manager():MapLocationsForEach(spot_type, id, functor)
+retval: none
+args:
+  spot_type (string)
+  id        (number)
+  functor   (function) -> bool
+    true  - продолжить перебор
+    false - остановить
 
-  -- Пример использования AllLocationsForEach
-  mapManager:AllLocationsForEach(function(location)
-	  print(location:GetHint())
-	  return false -- возвращает true, если нужно прервать итерацию
-  end)
-  ```
-:::
+--// Выполняет функцию для всех локаций на карте
+level.map_manager():AllLocationsForEach(functor)
+retval: none
+args:
+  functor (function) -> bool
+    true  - продолжить перебор
+    false - остановить
 
-## CMapLocation
-* Функции
-```cpp
-bool HintEnabled(); 
-//-- Проверяет, включены ли подсказки для локаций на карте
-
-LPCSTR GetHint(); 
-//-- Возвращает подсказку, связанную с локацией на карте
-
-void SetHint(const shared_str& hint); 
-//-- Устанавливает подсказку для локации на карте
-
-bool PointerEnabled(); 
-//-- Проверяет, включены ли указатели для локаций на карте
-
-void EnablePointer(); 
-//-- Включает указатель для локации на карте
-
-void DisablePointer(); 
-//-- Отключает указатель для локации на карте
-
-LPCSTR GetType() const; 
-//-- Возвращает тип локации на карте
-
-Fvector2 SpotSize(); 
-//-- Возвращает размер метки на карте
-
-bool IsUserDefined() const; 
-//-- Проверяет, является ли локация на карты объявленной пользователем
-
-void SetUserDefinedFlag(BOOL state); 
-//-- Устанавливает флаг объявления локации пользовательской 
-
-void HighlightSpot(bool state, const Fcolor& color); 
-//-- Подсвечивает метку на карте
-
-bool Collidable() const; 
-//-- Проверяет, является ли локация на каре коллидирующей
-
-bool SpotEnabled(); 
-//-- Проверяет, включена ли метка для локации на карте
-
-void EnableSpot(); 
-//-- Включает метку для локации на карте
-
-void DisableSpot(); 
-//-- Отключает метку для локации на карте
-
-const shared_str& GetLevelName(); 
-//-- Возвращает название уровня, связанного с локацией на карте
-
-const Fvector2& GetPosition(); 
-//-- Возвращает позицию локации на карте
-
-u16 ObjectID(); 
-//-- Возвращает идентификатор объекта локации на карте
-
-Fvector GetLastPosition(); 
-//-- Возвращает последнюю известную позицию локации на карте
 ```
-::: details Примеры
 
+## CScriptGameObject `local object = level.object_by_id(item_id) or db.actor`
 ```lua
-  -- Пример использования HintEnabled
-  if location:HintEnabled() then
-      print("Подсказка включена")
-  end
+--// сделать НПС механиком
+object.mechanic = true/false
 
-  -- Пример использования GetHint
-  local hint = location:GetHint()
-  print("Подсказка: " .. hint)
+--// Включить / выключить стрельбу
+object:set_fire(bool)
+retval: none
+args: bool
 
-  -- Пример использования SetHint
-  location:SetHint("Новая подсказка")
+--// Устанавливает максимальный вес, который InventoryOwner может нести
+object:SetCharacterMaxWeight(float)
+retval: none
+args: float
 
-  -- Пример использования PointerEnabled
-  if location:PointerEnabled() then
-      print("Указатель включен")
-  end
+--// Возвращает суммарный вес инвентаря InventoryOwner'а
+object:GetTotalWeight()
+retval: float
 
-  -- Пример использования EnablePointer
-  location:EnablePointer()
+--// Возвращает вес конкретного предмета
+object:Weight()
+retval: float
 
-  -- Пример использования DisablePointer
-  location:DisablePointer()
+--// Возвращает скорость прыжка актёра
+object:GetActorJumpSpeed()
+retval: float
 
-  -- Пример использования GetType
-  local type = location:GetType()
-  print("Тип местоположения: " .. type)
+--// Устанавливает скорость прыжка актёра
+object:SetActorJumpSpeed(float)
+retval: none
+args: float
 
-  -- Пример использования SpotSize
-  local size = location:SpotSize()
-  print("Размер метки: " .. size.x .. ", " .. size.y)
+--// Возвращает коэффициент спринта актёра
+object:GetActorSprintKoef()
+retval: float
 
-  -- Пример использования IsUserDefined
-  if location:IsUserDefined() then
-      print("Пользовательское местоположение")
-  end
+--// Устанавливает коэффициент спринта актёра
+object:SetActorSprintKoef(float)
+retval: none
+args: float
 
-  -- Пример использования SetUserDefinedFlag
-  location:SetUserDefinedFlag(true)
+--// Возвращает коэффициент бега актёра
+object:GetActorRunCoef()
+retval: float
 
-  -- Пример использования HighlightSpot
-  local color = {r = 1, g = 0, b = 0, a = 1}
-  location:HighlightSpot(true, color)
+--// Устанавливает коэффициент бега актёра
+object:SetActorRunCoef(float)
+retval: none
+args: float
 
-  -- Пример использования Collidable
-  if location:Collidable() then
-      print("Местоположение коллидирующее")
-  end
+--// Возвращает коэффициент бега назад актёра
+object:GetActorRunBackCoef()
+retval: float
 
-  -- Пример использования SpotEnabled
-  if location:SpotEnabled() then
-      print("Метка включена")
-  end
+--// Устанавливает коэффициент бега назад актёра
+object:SetActorRunBackCoef(float)
+retval: none
+args: float
 
-  -- Пример использования EnableSpot
-  location:EnableSpot()
+--// Меняет здоровье энтити напрямую (минуя стандартный health с дельтой)
+object:set_health_ex()
+retval: none
 
-  -- Пример использования DisableSpot
-  location:DisableSpot()
+--// Добавить кастомный текст к иконке предмета в инвентаре
+object:set_sub_inventory_icon_text(text, color, font, offset)
+retval: none
+args: string, int, string, vector2
 
-  -- Пример использования GetLevelName
-  local levelName = location:GetLevelName()
-  print("Название уровня: " .. levelName)
+--// Добавить кастомную текстуру к иконке предмета в инвентаре
+object:set_sub_inventory_icon(mark, offset, size, texture, color)
+retval: none
+args: bool, vector2, vector2, string, int
 
-  -- Пример использования GetPosition
-  local position = location:GetPosition()
-  print("Позиция: " .. position.x .. ", " .. position.y)
-
-  -- Пример использования ObjectID
-  local id = location:ObjectID()
-  print("ID объекта: " .. id)
-
-  -- Пример использования GetLastPosition
-  local lastPosition = location:GetLastPosition()
-  print("Последняя позиция: " .. lastPosition.x .. ", " .. lastPosition.y .. ", " .. lastPosition.z)
-  ```
-:::
-
-## CScriptGameObject
-
-* Свойства
-
-```csharp
-property bool mechanic //-- set - сделать НПС механником; get - является ли NPC механником
 ```
-
-* Функции
-
-```cpp
-void set_fire(bool)
-//-- Включить/выключить стрельбу
-
-void SetCharacterMaxWeight(float)
-//-- Устанавливает максимальный вес, который InventoryOwner может нести.
-
-float GetTotalWeight() const;
-//-- Возвращает суммарный вес инвентаря InventoryOwner'a.
-
-float Weight() const;
-//-- Возвращает вес конкретного предмета.
-
-float GetActorJumpSpeed() const;
-//-- Возвращает скорость прыжка актера.
-
-void SetActorJumpSpeed(float jump_speed);
-//-- Устанавливает скорость прыжка актера.
-
-float GetActorSprintKoef() const;
-//-- Возвращает коэффициент спринта актера.
-
-void SetActorSprintKoef(float sprint_koef);
-//-- Устанавливает коэффициент спринта актера.
-
-float GetActorRunCoef() const;
-//-- Возвращает коэффициент бега актера.
-
-void SetActorRunCoef(float run_coef);
-//-- Устанавливает коэффициент бега актера.
-
-float GetActorRunBackCoef() const;
-//-- Возвращает коэффициент бега назад актера.
-
-void SetActorRunBackCoef(float run_back_coef);
-//-- Устанавливает коэффициент бега назад актера.
-
-void set_health_ex()
-//-- Меняем здоровье ентити напрямую, а не через стандартный health (с дельтой)
-
-void set_sub_inventory_icon_text(LPCSTR m_custom_text, int item_custom_text_clr_inv, LPCSTR item_custom_text_font, Fvector2 m_custom_text_offset);
-//-- Добавить кастомный текст к иконке предмета в инвентаре
-
-void set_sub_inventory_icon(bool m_custom_mark, Fvector2 m_custom_mark_offset, Fvector2 m_custom_mark_size, LPCSTR m_custom_mark_texture, int m_custom_mark_clr);
-//-- Добавить кастомную текстуру к иконке предмета в инвентаре
-```
-
-::: details Примеры
-
-```lua
-  -- Пример использования Добавить кастомный текст к иконке предмета в инвентаре
-  item:set_sub_inventory_icon_text("22123", GetARGB(255, 128, 155, 255), "font_product_sans_14", vector2():set(10, 10))
-  
-  -- Пример использования Добавить кастомную текстуру к иконке предмета в инвентаре
-  item:set_sub_inventory_icon(true, vector2():set(3, 3), vector2():set(15, 15), "ui_inGame2_inventory_status_bar", GetARGB(255, 128, 155, 255))
-
-  -- Пример использования ActorIsJump
-  if actor:ActorIsJump() then
-      print("Актер прыгает")
-  end
-
-  -- Пример использования GetActorMaxWeight
-  local maxWeight = actor:GetActorMaxWeight()
-  print("Максимальный вес актера: " .. maxWeight)
-
-  -- Пример использования SetActorMaxWeight
-  actor:SetActorMaxWeight(100.0)
-
-  -- Пример использования GetActorMaxWalkWeight
-  local maxWalkWeight = actor:GetActorMaxWalkWeight()
-  print("Максимальный вес для ходьбы: " .. maxWalkWeight)
-
-  -- Пример использования SetActorMaxWalkWeight
-  actor:SetActorMaxWalkWeight(80.0)
-
-  -- Пример использования GetAdditionalMaxWeight
-  local additionalWeight = actor:GetAdditionalMaxWeight()
-  print("Дополнительный вес: " .. additionalWeight)
-
-  -- Пример использования SetAdditionalMaxWeight
-  actor:SetAdditionalMaxWeight(20.0)
-
-  -- Пример использования GetAdditionalMaxWalkWeight
-  local additionalWalkWeight = actor:GetAdditionalMaxWalkWeight()
-  print("Дополнительный вес для ходьбы: " .. additionalWalkWeight)
-
-  -- Пример использования SetAdditionalMaxWalkWeight
-  actor:SetAdditionalMaxWalkWeight(15.0)
-
-  -- Пример использования GetTotalWeight
-  local totalWeight = actor:GetTotalWeight()
-  print("Суммарный вес инвентаря: " .. totalWeight)
-
-  -- Пример использования Weight
-  local itemWeight = actor:Weight()
-  print("Вес предмета: " .. itemWeight)
-
-  -- Пример использования GetActorJumpSpeed
-  local jumpSpeed = actor:GetActorJumpSpeed()
-  print("Скорость прыжка актера: " .. jumpSpeed)
-
-  -- Пример использования SetActorJumpSpeed
-  actor:SetActorJumpSpeed(5.0)
-
-  -- Пример использования GetActorSprintKoef
-  local sprintKoef = actor:GetActorSprintKoef()
-  print("Коэффициент спринта: " .. sprintKoef)
-
-  -- Пример использования SetActorSprintKoef
-  actor:SetActorSprintKoef(1.5)
-
-  -- Пример использования GetActorRunCoef
-  local runCoef = actor:GetActorRunCoef()
-  print("Коэффициент бега: " .. runCoef)
-
-  -- Пример использования SetActorRunCoef
-  actor:SetActorRunCoef(1.2)
-
-  -- Пример использования GetActorRunBackCoef
-  local runBackCoef = actor:GetActorRunBackCoef()
-  print("Коэффициент бега назад: " .. runBackCoef)
-
-  -- Пример использования SetActorRunBackCoef
-  actor:SetActorRunBackCoef(0.8)
-  ```
-:::
 
 ## ActorMenu
 ```lua
-ActorMenu.get_pda_menu()   //-- Получить UI класс ПДА
-ActorMenu.get_actor_menu() //-- Получить UI класс Актера
-ActorMenu.get_menu_mode()  //-- Получить ID текущего UI
-ActorMenu.get_maingame()   //-- Получить ID класс maingame
+--// Получить UI класс ПДА
+ActorMenu.get_pda_menu()
+retval: CUIPdaWnd
+
+--// Получить UI класс актёра
+ActorMenu.get_actor_menu()
+retval: CUIActorMenu
+
+--// Получить ID текущего UI
+ActorMenu.get_menu_mode()
+retval: number
+
+--// Получить UI-класс maingame
+ActorMenu.get_maingame()
+retval: CUIMainIngameWnd
 ```
 
 ## CUIListBox
 ```cpp
-void SetSelectedIndex(id) //-- Выделить элемент
+--// Выделить элемент списка по индексу
+listbox:SetSelectedIndex(id)
+retval: none
+args: int
 ```
 
 ## CScriptGameObject
@@ -575,17 +739,22 @@ void SetSelectedIndex(id) //-- Выделить элемент
 Полезно для авто генерации дополнительных динамических характеристик предмета.
 
 ```lua
--- Получить строку дополнительного описания установленного на инвентарный предмет.
-string get_item_additional_description()
+--// Получить строку дополнительного описания установленного на инвентарный предмет
+object:get_item_additional_description()
+retval: string
 
--- Установить строку дополнительного описания на инвентарный предмет.
-void set_item_additional_description(string)
+--// Установить строку дополнительного описания на инвентарный предмет
+object:set_item_additional_description(text)
+retval: none
+args: string
 
--- Очистить строку дополнительного описания установленного на инвентарный предмет.
-void unset_item_additional_description()
+--// Очистить строку дополнительного описания установленного на инвентарный предмет
+object:unset_item_additional_description()
+retval: none
 
--- Установлена ли строка дополнительного описания на инвентарный предмет.
-bool is_item_used_additional_description()
+--// Проверить, установлена ли строка дополнительного описания на инвентарный предмет
+object:is_item_used_additional_description()
+retval: bool
 ```
 
 ::: details Пример оптимизированного варианта установки дополнительного описания к предмету через скрипт
@@ -638,3 +807,20 @@ bool is_item_used_additional_description()
 		•  Минимальный порог использования: 30 %
   ```
 :::
+
+## level
+```lua
+--// enable/disable rain effector
+level.enable_rain(value)
+retval: none
+args: value (boolean)
+
+--// Switch wallmark visible
+level.switch_wallmark(wallmark_object, status)
+retval: none
+args: wallmark_object(script game object), status (boolean)
+
+--// Get fog distance from current env
+level.get_fog_distance()
+retval: float
+```

@@ -125,6 +125,11 @@ function CUIActorMenu_OnItemDropped(itm1,itm2,from_slot,to_slot)
 	return true
 end
 ```
+* OnDonateCurrentItem
+```lua
+function CUIActorMenu_DonateCurrentItem(parent, itm)
+end
+```
 * OnItemFocusReceive
 ```lua
 function CUIActorMenu_OnItemFocusReceive(itm)

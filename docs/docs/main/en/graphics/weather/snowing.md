@@ -9,6 +9,13 @@ Enable it in **engine_external.ltx** by setting `UseDynamicSnowMask` to `true`:
 UseDynamicSnowMask = true
 ```
 
+## Disabling for Specific Locations
+In `level.ltx`, add:
+```ini
+[weather]
+snowmask = false
+```
+
 ## Snowing: Dynamic objects
 * Create an additional texture mask with the suffix `_snowmask`. 
 ![image](https://github.com/user-attachments/assets/c747eab5-5e45-4f61-8201-6ab63104f7a9)
@@ -19,6 +26,12 @@ UseDynamicSnowMask = true
 * Snow data is stored in the green channel of the texture
 ![image](https://github.com/user-attachments/assets/05e7212a-6c43-4800-ab7b-218990b67ffe)
 ![image](https://github.com/user-attachments/assets/77c878e5-6f46-4499-8cb6-b9852a6f71f3)
+
+### Setting the Mask Color
+In **engine_external.ltx**, set the following under `[shaders_options]`:
+```hlsl
+DYNAMIC_SNOW_COLOR = float3(1, 0, 0) ; Color in rgb from 0 to 1
+```
 
 ## Snowing: Static objects
 * Statics need no extra masks beyond `textures/shaders/snowmask/snow.dds`
