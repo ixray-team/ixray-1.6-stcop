@@ -32,8 +32,12 @@ char g_application_path[256];
 
 //. extern xr_vector<shared_str>*	LogFile;
 
+extern xr_hash_map<xr_string, CInifile*>* cached_ini_map;
+
 void xrCore::_initialize	(LPCSTR _ApplicationName, xrLogger::LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
+	cached_ini_map = new xr_hash_map<xr_string, CInifile*>();
+
 	PROF_EVENT("xrCore::_initialize");
 	xr_strcpy					(ApplicationName,_ApplicationName);
 	if (0==init_counter) 
@@ -120,7 +124,7 @@ void xrCore::_destroy		()
 			xr_free			(buffer);
 			xr_delete		(trained_model);
 		}
-
+		xr_delete(cached_ini_map);
 		Memory._destroy		();
 	}
 }
