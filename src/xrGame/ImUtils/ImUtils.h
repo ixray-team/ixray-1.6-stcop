@@ -393,11 +393,12 @@ struct CImGuiTextureEditor
 {
 	enum eAnalyzedStatus
 	{
-		kInvalidFileName = 1 << 1,
-		kNoTHMPresented = 1 << 2,
+		kTooLongPath = 1 << 1,
+		kHasTHM = 1 << 2,
 		kTHMIsNotValid = 1 << 3,
 		kDimensionsNotPowerOf2 = 1 << 4,
-		kNoMipMaps = 1 << 5
+		kNoMipMaps = 1 << 5,
+		kIgnoreTHM = 1 << 6
 	};
 
 	enum class eRequestType
@@ -407,22 +408,48 @@ struct CImGuiTextureEditor
 		kReadAll,
 		kUpdateSelected,
 		kShutdownThread,
+		kFilterQuery,
 		kInvalid = -1
+	};
+
+	enum class eFilterQueryType : u32
+	{
+		kSearch,
+		kInvalidFirst,
+		/// @brief means we don't clear filter_query and just apply filtering for existed set of entries
+		kInvalidFirstExisted,
+		kNoFilter,
+		kInvalid = u32(-1)
 	};
 
 	struct SRequestData
 	{
 		eRequestType type = eRequestType::kInvalid;
-		u32 selected_id = 0;
+		u32 payload = 0;
 	};
-
-#define IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT 128 
 
 	// don't store metadata only on when selected
 	struct STextureEntry
 	{
-		u8 analyze_status_result_flags = 0;
-		char path[IXRAY_TEXTURE_EDITOR_FILENAME_LENGTH_LIMIT * 2];
+		bool is_valid() const
+		{
+			return analyze_status_result_flags != 0 && (((analyze_status_result_flags & eAnalyzedStatus::kHasTHM) == eAnalyzedStatus::kHasTHM) || ((analyze_status_result_flags & eAnalyzedStatus::kIgnoreTHM) == eAnalyzedStatus::kIgnoreTHM)) && (
+				(
+					(analyze_status_result_flags & eAnalyzedStatus::kTooLongPath) == eAnalyzedStatus::kTooLongPath ||
+					(analyze_status_result_flags & eAnalyzedStatus::kTHMIsNotValid) == eAnalyzedStatus::kTHMIsNotValid ||
+					(analyze_status_result_flags & eAnalyzedStatus::kDimensionsNotPowerOf2) == eAnalyzedStatus::kDimensionsNotPowerOf2 ||
+					(analyze_status_result_flags & eAnalyzedStatus::kNoMipMaps) == eAnalyzedStatus::kNoMipMaps
+					) == false)
+				;
+		}
+
+		u32 analyze_status_result_flags = 0;
+		/// @brief only filename with extension
+		string_path filename;
+		/// @brief no filename
+		string_path subpath;
+		/// @brief full absolute path to file with extension
+		string_path path;
 	};
 
 	struct STextureMetadata
@@ -444,19 +471,25 @@ struct CImGuiTextureEditor
 	bool is_init = false;
 	bool is_thread_started = false;
 	// written on wt side
-	bool is_all_analyzed=false;
+	bool is_all_analyzed = false;
 	bool is_running_wt = true;
 	bool is_settings_read = false;
 	bool is_settings_write = false;
 
+	bool is_filter_processing = false;
+
 	bool is_update_selected = false;
+
+	bool is_settings_applied = false;
 
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
 
+	u8 search_frame_count = 0;
+
 	u32 selected_index = u32(-1);
 
-	u32 current_analyzed_count = 0;
+	std::atomic<u32> current_analyzed_count = 0;
 	u32 total_textures_in_folder = 0;
 	u32 total_thm_in_folder = 0;
 	u32 total_unable_to_classify_files_in_folder = 0;
@@ -483,7 +516,8 @@ struct CImGuiTextureEditor
 
 	ThreadSafeQueue<SRequestData> requests;
 	std::thread worker_thread;
-	char window_selected_name[512];
+	string_path window_selected_name;
+	string_path search_input_buffer;
 };
 
 constexpr float kGeneralAlphaLevelForImGuiWindows = 0.5f;
