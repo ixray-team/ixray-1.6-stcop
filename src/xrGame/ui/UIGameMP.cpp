@@ -66,6 +66,8 @@ bool UIGameMP::IsServerInfoShown	()
 {
 	if (m_pServerInfo)
 		return m_pServerInfo->IsShown();
+
+	return false;
 }
 
 //shows only if it has some info ...
