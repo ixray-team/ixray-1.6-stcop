@@ -128,13 +128,6 @@ CMainMenu::~CMainMenu	()
 
 	xr_delete						(m_demo_info_loader);
 	delete_data						(m_pMB_ErrDlgs);	
-
-	g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
-
-	while (!g_imgui_texture_editor.is_settings_write)
-	{
-	}
-	g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
 }
 
 void CMainMenu::ReadTextureInfo()
