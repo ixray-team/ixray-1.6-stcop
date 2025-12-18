@@ -243,30 +243,30 @@ void UIInvUpgPropertiesWnd::set_info(ItemUpgrades_type const& item_upgrades)
 		}
 	}
 
-	if (GetParent())
+	// Для финальной высоты нужно добавить высоту последнего элемента, если количество нечетное
+	if (m_iNumUpgr > 0)
 	{
-		if (m_iNumUpgr % 2 == 0)
+		UIProperty* last_property = nullptr;
+		for (auto& ui_property : m_properties_ui)
 		{
-			height -= visiblePropertiesHeight - (m_fnext_line_pos / 2.f);
+			if (ui_property->IsShown())
+			{
+				last_property = ui_property;
+			}
 		}
-		else
+		
+		if (last_property)
 		{
-			height += m_fnext_line_pos / 2.f;
+			if (m_iNumUpgr % 2 != 0)
+			{
+				height += last_property->GetWndSize().y;
+			}
+			else
+			{
+				height += last_property->GetWndSize().y;
+			}
 		}
 	}
-	else
-	{
-		if (m_iNumUpgr % 2 != 0)
-		{
-			height += m_fnext_line_pos;
-		}
-		else
-		{
-			visiblePropertiesHeight = 0.0f;
-		}
-	}
-
-	height += visiblePropertiesHeight;
 	SetHeight(height);
 }
 
