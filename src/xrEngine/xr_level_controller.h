@@ -125,8 +125,6 @@ enum EGameActions
 	kWPN_CHAMBER_UNLOAD,
 	kWPN_CHAMBER_CHECK,
 
-	kUI_ACCEPT,
-
 	kLASTACTION,
 	kNOTBINDED,
 	kFORCEDWORD		= u32(-1)
@@ -174,7 +172,6 @@ struct _binding
 {
 	_action*		m_action;
 	_keyboard*		m_keyboard[2];
-	_keyboard*		m_gamepad;
 };
 
 extern ENGINE_API _binding g_key_bindings[];
