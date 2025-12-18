@@ -952,7 +952,7 @@ function add_exclusive_job(sect, work_field, smart_ini, job_table)
 		if fs:exist("$game_config$",ini_path) == nil then
 				abort("there is no configuration file [%s]", ini_path)
 		end
-		local job_ini_file = ini_file(ini_path)
+		local job_ini_file = get_cached_ini(ini_path)
 		local job_online =  utils.cfg_get_string(job_ini_file, "logic@"..work_field, "job_online", db.actor ,false , "", nil)
 
 		-- добавляем возможность указать приоритет уникальной работы в секции логики.(по дефолту её приоритет равен 45-ти)
