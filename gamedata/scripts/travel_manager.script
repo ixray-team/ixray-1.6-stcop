@@ -9,7 +9,7 @@ function Ctraveler:__init()
 
 
 	self.smart_to_stringtables = {}
-	for i=0, ini_file:line_count("locations")-1 do
+	for i=0, (ini_file:line_count("locations") -1) do
 		temp1, id, value = ini_file:r_line("locations", i, "", "")
 
 		self.smart_to_stringtables[id] = value
@@ -17,7 +17,7 @@ function Ctraveler:__init()
 
 	self.smart_travels = {}
 	self.smart_by_phrase = {}
-	for i=0, ini_file:line_count("traveler")-1 do
+	for i=0, (ini_file:line_count("traveler") -1) do
 		temp1, id, value = ini_file:r_line("traveler", i, "", "")
 
 		self.smart_travels[id] = {}
@@ -61,71 +61,71 @@ function init_traveler_dialog(dialog)
 	local npc_phrase_script = npc_phrase:GetPhraseScript()
 	npc_phrase_script:SetScriptText("travel_manager.squad_action_description")
 
-		-- Может ли игрок пойти с ними
-		actor_phrase = dialog:AddPhrase("dm_traveler_can_i_go_with_you", "11", "1", -10000)
+	-- Может ли игрок пойти с ними
+	actor_phrase = dialog:AddPhrase("dm_traveler_can_i_go_with_you", "11", "1", -10000)
+	actor_script = actor_phrase:GetPhraseScript()
+	actor_script:AddPrecondition("travel_manager.squad_on_move")
+
+	npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_actor_companion_yes", "111", "11", -10000)
+	npc_phrase_script = npc_phrase:GetPhraseScript()
+	npc_phrase_script:AddPrecondition("travel_manager.squad_can_take_actor")
+
+	actor_phrase = dialog:AddPhrase("dm_traveler_actor_go_with_squad", "1111", "111", -10000)
+	actor_script = actor_phrase:GetPhraseScript()
+	actor_script:AddAction("travel_manager.actor_go_with_squad")
+
+	actor_phrase = dialog:AddPhrase("dm_traveler_actor_dont_go_with_squad", "1112", "111", -10000)
+
+	npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_actor_companion_no", "112", "11", -10000)
+	npc_phrase_script = npc_phrase:GetPhraseScript()
+	npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_take_actor")
+
+	-- Игрок просит разрешения провести его
+	actor_phrase = dialog:AddPhrase("dm_traveler_take_me_to", "12", "1", -10000)
+
+	npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_where_do_you_want", "121", "12", -10000)
+	npc_phrase_script = npc_phrase:GetPhraseScript()
+	npc_phrase_script:AddPrecondition("travel_manager.squad_can_travel")
+
+	-- Формирование таргетов для проводников
+	local travel_class = get_travel_class()
+	for k,v in pairs(travel_class.smart_travels) do
+		actor_phrase = dialog:AddPhrase(game.translate_string(v.name)..".", v.phrase_id, "121", -10000)
 		actor_script = actor_phrase:GetPhraseScript()
-		actor_script:AddPrecondition("travel_manager.squad_on_move")
+		actor_script:AddPrecondition("travel_manager.travel_condlist")
 
+		npc_phrase = dialog:AddPhrase("if you see this - this is bad", v.phrase_id.."_1", v.phrase_id, -10000)
+		npc_phrase_script = npc_phrase:GetPhraseScript()
+		npc_phrase_script:SetScriptText("travel_manager.get_travel_cost")
 
-			npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_actor_companion_yes", "111", "11", -10000)
-			npc_phrase_script = npc_phrase:GetPhraseScript()
-			npc_phrase_script:AddPrecondition("travel_manager.squad_can_take_actor")
+		actor_phrase = dialog:AddPhrase("dm_traveler_actor_agree", v.phrase_id.."_11", v.phrase_id.."_1", -10000)
+		actor_script = actor_phrase:GetPhraseScript()
+		actor_script:AddAction("travel_manager.actor_travel_with_squad")
+		actor_script:AddPrecondition("travel_manager.actor_have_money")
 
-				actor_phrase = dialog:AddPhrase("dm_traveler_actor_go_with_squad", "1111", "111", -10000)
-				actor_script = actor_phrase:GetPhraseScript()
-				actor_script:AddAction("travel_manager.actor_go_with_squad")
+		actor_phrase = dialog:AddPhrase("dm_traveler_actor_has_no_money", v.phrase_id.."_13", v.phrase_id.."_1", -10000)
+		actor_script = actor_phrase:GetPhraseScript()
+		actor_script:AddPrecondition("travel_manager.actor_have_not_money")
 
-				actor_phrase = dialog:AddPhrase("dm_traveler_actor_dont_go_with_squad", "1112", "111", -10000)
+		actor_phrase = dialog:AddPhrase("dm_traveler_actor_refuse", v.phrase_id.."_14", v.phrase_id.."_1", -10000)
+	end
+		
+	actor_phrase = dialog:AddPhrase("dm_traveler_actor_refuse", "1211", "121", -10000)
 
+	npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_i_cant_travel", "122", "12", -10000)
+	npc_phrase_script = npc_phrase:GetPhraseScript()
+	npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_travel")
 
-			npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_actor_companion_no", "112", "11", -10000)
-			npc_phrase_script = npc_phrase:GetPhraseScript()
-			npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_take_actor")
-
-		-- Игрок просит разрешения провести его
-		actor_phrase = dialog:AddPhrase("dm_traveler_take_me_to", "12", "1", -10000)
-
-			npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_where_do_you_want", "121", "12", -10000)
-			npc_phrase_script = npc_phrase:GetPhraseScript()
-			npc_phrase_script:AddPrecondition("travel_manager.squad_can_travel")
-
-				-- Формирование таргетов для проводников
-				local travel_class = get_travel_class()
-				for k,v in pairs(travel_class.smart_travels) do
-					actor_phrase = dialog:AddPhrase(game.translate_string(v.name)..".", v.phrase_id, "121", -10000)
-					actor_script = actor_phrase:GetPhraseScript()
-					actor_script:AddPrecondition("travel_manager.travel_condlist")
-
-						npc_phrase = dialog:AddPhrase("if you see this - this is bad", v.phrase_id.."_1", v.phrase_id, -10000)
-						npc_phrase_script = npc_phrase:GetPhraseScript()
-						npc_phrase_script:SetScriptText("travel_manager.get_travel_cost")
-
-							actor_phrase = dialog:AddPhrase("dm_traveler_actor_agree", v.phrase_id.."_11", v.phrase_id.."_1", -10000)
-							actor_script = actor_phrase:GetPhraseScript()
-							actor_script:AddAction("travel_manager.actor_travel_with_squad")
-							actor_script:AddPrecondition("travel_manager.actor_have_money")
-
-							actor_phrase = dialog:AddPhrase("dm_traveler_actor_has_no_money", v.phrase_id.."_13", v.phrase_id.."_1", -10000)
-							actor_script = actor_phrase:GetPhraseScript()
-							actor_script:AddPrecondition("travel_manager.actor_have_not_money")
-
-							actor_phrase = dialog:AddPhrase("dm_traveler_actor_refuse", v.phrase_id.."_14", v.phrase_id.."_1", -10000)
-
-				end
-				actor_phrase = dialog:AddPhrase("dm_traveler_actor_refuse", "1211", "121", -10000)
-
-
-			npc_phrase = dialog:AddPhrase("dm_traveler_"..npc_community.."_i_cant_travel", "122", "12", -10000)
-			npc_phrase_script = npc_phrase:GetPhraseScript()
-			npc_phrase_script:AddPrecondition("travel_manager.squad_cannot_travel")
-
-		-- Игрок выходит из диалога
-		actor_phrase = dialog:AddPhrase("dm_traveler_bye", "13", "1", -10000)
+	-- Игрок выходит из диалога
+	actor_phrase = dialog:AddPhrase("dm_traveler_bye", "13", "1", -10000)
 end
 
 
-
 function uni_traveler_precond(actor, npc)
+	if not npc then
+		return false
+	end
+	
 	local squad = get_object_squad(npc)
 
 	if squad ~= nil and squad:commander_id() ~= npc:id() then
@@ -234,22 +234,20 @@ end
 
 
 function squad_action_description(actor, npc, dialog_id, phrase_id)
-
+	if not npc then
+		return "dm_" .. "stalker" .."_doing_nothing_"..tostring(math.random(1,3))
+	end
+	
 	local npc_squad = get_object_squad(npc)
 
-	if npc_squad.current_action == nil or npc_squad.current_action.name == "stay_point" then
+	if (not npc_squad) or npc_squad.current_action == nil or npc_squad.current_action.name == "stay_point" then
 		return "dm_" .. "stalker" .."_doing_nothing_"..tostring(math.random(1,3))  --npc:character_community()
 	end
 
 	local target_id = npc_squad.assigned_target_id
---	if target_id == nil then
---		return "dm_" .. npc:character_community() .."_doing_nothing"
---	end
-
 	local target_obj = alife():object(target_id)
 
 	if target_obj == nil then
-
 		abort("SIM TARGET NOT EXIST %s, action_name %s", tostring(target_id), tostring(npc_squad.current_action.name))
 	end
 
@@ -273,19 +271,34 @@ function squad_action_description(actor, npc, dialog_id, phrase_id)
 end
 
 function squad_on_move(actor, npc, dialog_id, phrase_id)
-	local npc_squad = get_object_squad(npc)
-
-	if npc_squad.current_action == nil or npc_squad.current_action.name == "stay_point" then
+	if not npc then
 		return false
 	end
+	
+	local npc_squad = get_object_squad(npc)
+	if npc_squad == nil or npc_squad.current_action == nil or npc_squad.current_action.name == "stay_point" then
+		return false
+	end
+	
 	return true
 end
 
 function squad_can_take_actor(npc, actor, dialog_id, phrase_id)
+	if not npc then
+		return false
+	end
+	
 	local npc_squad = get_object_squad(npc)
-
+	if not npc_squad then
+		return false
+	end
+	
 	local target_id = npc_squad.assigned_target_id
 	local target_obj = alife():object(target_id)
+	if not target_obj then
+		return false
+	end
+	
 	local target_clsid = target_obj:clsid()
 
 	if target_clsid == clsid.smart_terrain then
@@ -300,9 +313,16 @@ function squad_cannot_take_actor(npc, actor, dialog_id, phrase_id)
 end
 
 function actor_go_with_squad(actor, npc, dialog_id, phrase_id)
-	xr_effects.scenario_autosave(actor, npc, {"st_save_uni_travel_generic"})
-
+	if not npc then
+		return
+	end
+	
 	local npc_squad = get_object_squad(npc)
+	if not npc_squad then
+		return
+	end
+	
+	xr_effects.scenario_autosave(actor, npc, {"st_save_uni_travel_generic"})
 
 	local target_id = npc_squad.assigned_target_id
 	local smart = alife():object(target_id)
@@ -359,14 +379,21 @@ end
 
 
 function squad_can_travel(npc, actor, dialog_id, phrase_id)
+	if not npc then
+		return false
+	end
+	
 	local travel_class = get_travel_class()
-
 	local npc_squad = get_object_squad(npc)
+	if not npc_squad then
+		return false
+	end
 	for id, smart_table in pairs(travel_class.smart_travels) do
 		if check_smart_availability(id, smart_table, npc_squad) then
 			return true
 		end
 	end
+	
 	return false
 end
 
@@ -393,16 +420,23 @@ function get_price_by_distance(distance)
 end
 
 function get_travel_cost(actor, npc, dialog_id, phrase_id, p1)
+	if not npc then
+		return 0
+	end
+	
+	local npc_squad = get_object_squad(npc)
+	if not npc_squad then
+		return 0
+	end
+	
 	local travel_phrase_id = string.sub(phrase_id, 1, string.len(phrase_id) - 2)
-
 	local travel_class = get_travel_class()
 
 	-- Берем по id фразы смарт
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)
-	local npc_squad = get_object_squad(npc)
-
+	
 	--local distance = simulation_objects.sim_dist_to(npc_squad , smart)
 
 	local squad_position = npc:position()
@@ -418,26 +452,17 @@ end
 
 function actor_have_money(actor, npc, dialog_id, phrase_id)
 	local travel_phrase_id = string.sub(phrase_id, 1, string.len(phrase_id) - 2)
-
 	local travel_class = get_travel_class()
 
 	-- Берем по id фразы смарт
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)
-	local npc_squad = get_object_squad(npc)
-
-
-	--local distance = simulation_objects.sim_dist_to(npc_squad , smart)
-
 	local squad_position = npc:position()
 	local smart_position = smart.position
-
 	local distance = squad_position:distance_to(smart_position)
-
-	local price = get_price_by_distance(distance)
-
-	return price <= db.actor:money()
+	
+	return get_price_by_distance(distance) <= db.actor:money()
 end
 
 function actor_have_not_money(actor, npc, dialog_id, phrase_id)
@@ -445,6 +470,15 @@ function actor_have_not_money(actor, npc, dialog_id, phrase_id)
 end
 
 function actor_travel_with_squad(actor, npc, dialog_id, phrase_id)
+	if not npc then
+		return
+	end
+	
+	local npc_squad = get_object_squad(npc)
+	if not npc_squad then
+		return
+	end
+	
 	xr_effects.scenario_autosave(actor, npc, {"st_save_uni_travel_generic"})
 
 	local travel_phrase_id = string.sub(phrase_id, 1, string.len(phrase_id) - 3)
@@ -462,8 +496,6 @@ function actor_travel_with_squad(actor, npc, dialog_id, phrase_id)
 	local smart_name = travel_class.smart_by_phrase[travel_phrase_id]
 	local board = sim_board.get_sim_board()
 	local smart = board:get_smart_by_name(smart_name)
-	local npc_squad = get_object_squad(npc)
-
 	local distance = simulation_objects.sim_dist_to(npc_squad , smart)
 
 	local price = get_price_by_distance(distance)
