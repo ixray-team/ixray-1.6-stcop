@@ -206,10 +206,9 @@ void RenderTextureEditor()
 	if (g_imgui_texture_editor.is_init == false)
 	{
 		constexpr u32 _kReserve = 4096 * 4;
-		constexpr u32 _kReserveFilter = 4096;
 
 		g_imgui_texture_editor.textures.reserve(_kReserve);
-		g_imgui_texture_editor.filter_query.reserve(_kReserveFilter);
+		g_imgui_texture_editor.filter_query.reserve(_kReserve);
 
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kReadSettings });
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kReadAll });
@@ -283,50 +282,62 @@ void RenderTextureEditor()
 
 					ImGui::TableHeadersRow();
 
-					for (size_t row = 0; row < row_max; ++row)
+					ImGuiListClipper clipper;
+
+					clipper.Begin(u32(g_imgui_texture_editor.textures.size()));
+
+					while (clipper.Step())
 					{
-						ImGui::TableNextRow();
-
-
-						for (size_t column = 0; column < _kColumnsSize; ++column)
+						//for (u32 row = 0; row < row_max; ++row)
+						for (u32 row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
 						{
-							ImGui::TableSetColumnIndex((int)column);
+							ImGui::TableNextRow();
 
 
-							const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[row];
-
-							switch (column)
+							for (size_t column = 0; column < _kColumnsSize; ++column)
 							{
-							case 0:
-							{
-								char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
-								std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
+								ImGui::TableSetColumnIndex((int)column);
 
-								if (ImGui::Selectable(sel_name))
+
+								const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[row];
+
+								switch (column)
 								{
-									
-								}
-
-							//	ImGui::Text("[%d] %s", row+1, texture.path);
-								break;
-							}
-							case 1:
-							{
-								ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
-								break;
-							}
-							case 2:
-							{
-								// todo: make selection
-								if (row == 0)
+								case 0:
 								{
-									ImGui::Text("editing selected...");
+									char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
+									std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
+
+									if (ImGui::Selectable(sel_name))
+									{
+
+									}
+
+									//	ImGui::Text("[%d] %s", row+1, texture.path);
+									break;
 								}
-								break;
-							}
+								case 1:
+								{
+									ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
+									break;
+								}
+								case 2:
+								{
+									// todo: make selection
+									if (row == 0)
+									{
+										ImGui::Text("editing selected...");
+									}
+									break;
+								}
+								}
 							}
 						}
 					}
+
+					clipper.End();
+
+
 
 					ImGui::EndTable();
 
