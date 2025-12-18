@@ -482,7 +482,8 @@ void CUIActorMenu::InfoCurItem( CUICellItem* cell_item )
 			item_owner && item_owner==m_pActorInvOwner)
 		)
 			m_ItemInfo->InitItem	( cell_item, compare_item, u32(-1), "st_no_trade_tip_1" );
-		else if(current_item->GetCondition()<m_pPartnerInvOwner->trade_parameters().buy_item_condition_factor)
+		else if(item_owner && item_owner==m_pActorInvOwner &&
+				current_item->GetCondition() < m_pPartnerInvOwner->trade_parameters().buy_item_condition_factor)
 			m_ItemInfo->InitItem	( cell_item, compare_item, u32(-1), "st_no_trade_tip_2" );
 		else
 			m_ItemInfo->InitItem	( cell_item, compare_item, item_price );
