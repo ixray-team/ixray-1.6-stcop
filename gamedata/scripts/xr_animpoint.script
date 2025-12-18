@@ -333,12 +333,17 @@ function animpoint:update()
 
 	local camp_action, is_director = self.camp:get_camp_action(self.npc_id)
 	local tbl = {}
-	if(is_director) then
-		--printf(" [%s] is director", self.npc_id)
-		tbl = assoc_tbl[camp_action].director
+	if not self.camp then
+		local npc = db.storage[self.npc_id] and db.storage[self.npc_id].object
+		printf("Trying to use invalid camp! Obj [%s], pos [%s]", npc and npc:name() or "unknown", vec_to_str(self.position))
 	else
-		--printf(" [%s] is not director", self.npc_id)
-		tbl = assoc_tbl[camp_action].listener
+		if(is_director) then
+			--printf(" [%s] is director", self.npc_id)
+			tbl = assoc_tbl[camp_action].director
+		else
+			--printf(" [%s] is not director", self.npc_id)
+			tbl = assoc_tbl[camp_action].listener
+		end
 	end
 
 	local found = false
