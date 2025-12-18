@@ -91,44 +91,16 @@ LPCSTR CUIMessageBoxEx::GetPassword()
 
 bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (keyboard_action == WINDOW_KEY_PRESSED)
+	if(keyboard_action==WINDOW_KEY_PRESSED)
 	{
-		switch (get_binded_action(dik))
-		{
-		case kUI_ACCEPT:
+		if (get_binded_action(dik) == kUI_ACCEPT)
 		{
 			m_pMessageBox->OnYesOk();
-			return true;
 		}
-		case kQUIT:
-		{
-			m_pMessageBox->OnBtnNo();
-			return true;
-		}
-		}
+		else
+			return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 	}
 	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
-}
-
-bool CUIMessageBoxEx::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
-{
-	if (gamepad_action == WINDOW_KEY_PRESSED)
-	{
-		switch (get_binded_action(id))
-		{
-		case kUI_ACCEPT:
-		{
-			m_pMessageBox->OnYesOk();
-			return true;
-		}
-		case kQUIT:
-		{
-			m_pMessageBox->OnBtnNo();
-			return true;
-		}
-		}
-	}
-	return CUIDialogWnd::OnGamepadKeyAction(id, gamepad_action);
 }
 
 void  CUIMessageBoxEx::SetTextEditURL( LPCSTR text )
