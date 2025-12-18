@@ -194,7 +194,7 @@ function se_smart_terrain:read_params()
 	local fs = getFS()
 	if filename and filename~="" then
 		if fs:exist("$game_config$",filename) then
-			self.ini = ini_file(filename)
+			self.ini = get_cached_ini(filename)
 		else
 			abort("There is no configuration file [%s] in smart_terrain [%s]", filename, 	self:name())
 		end
