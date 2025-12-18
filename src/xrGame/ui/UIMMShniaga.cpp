@@ -347,11 +347,6 @@ bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
-		if (get_binded_action(dik) == kUI_ACCEPT)
-		{
-			OnBtnClick();
-			return true;
-		}
 		switch (dik)
 		{
 			case SDL_SCANCODE_UP:
@@ -362,6 +357,9 @@ bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 				if (m_selected_btn < BtnCount() - 1)
 					SelectBtn(m_selected_btn + 1);
 				return true;
+			case SDL_SCANCODE_RETURN:
+				OnBtnClick();
+				return true;
 			case SDL_SCANCODE_ESCAPE:
 				if (m_page != epi_main)
 					ShowMain();
@@ -371,37 +369,6 @@ bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 
 
 	return CUIWindow::OnKeyboardAction(dik, keyboard_action);
-}
-
-bool CUIMMShniaga::OnGamepadKeyAction(int id, EUIMessages gamepad_action)
-{
-
-	if (WINDOW_KEY_PRESSED == gamepad_action)
-	{
-		if (get_binded_action(id) == kUI_ACCEPT)
-		{
-			OnBtnClick();
-			return true;
-		}
-		switch (id)
-		{
-			case SDL_GAMEPAD_BUTTON_DPAD_UP:
-				if (m_selected_btn > 0)
-					SelectBtn(m_selected_btn - 1);
-				return true;
-			case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
-				if (m_selected_btn < BtnCount() - 1)
-					SelectBtn(m_selected_btn + 1);
-				return true;
-			case SDL_GAMEPAD_BUTTON_EAST:
-				if (m_page != epi_main)
-					ShowMain();
-				return true;
-		}
-	}
-
-
-	return CUIWindow::OnGamepadKeyAction(id, gamepad_action);
 }
 
 int CUIMMShniaga::BtnCount()
