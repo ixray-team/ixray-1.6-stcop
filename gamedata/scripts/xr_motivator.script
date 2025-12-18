@@ -202,7 +202,7 @@ if db.offline_objects[self.object:id()] then
 	db.offline_objects[self.object:id()].level_vertex_id = self.object:level_vertex_id()
 	db.offline_objects[self.object:id()].active_section = db.storage[self.object:id()].active_section
 end
-------------------------------------------------n
+------------------------------------------------
 
 	db.del_obj(self.object)
 
@@ -230,17 +230,6 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 	if(who:id()==db.actor:id()) then
 		xr_statistic.set_best_weapon(amount)
 
---[[
-		local se_obj = alife():object(obj:id())
-		if se_obj and se_obj.m_smart_terrain_id ~= 65535 and amount > 0 then
-			local smart_obj = alife():object(se_obj.m_smart_terrain_id)
-			smart_obj:set_alarm()
-
-			if smart_obj.base_on_actor_control ~= nil then
-				smart_obj.base_on_actor_control:actor_attack()
-			end
-		end
-]]
 		-- Ищем смарты по расстоянию
 		if amount > 0 then
 			for k,v in pairs(sim_board.get_sim_board().smarts) do
@@ -250,7 +239,11 @@ function motivator_binder:hit_callback(obj, amount, local_direction, who, bone_i
 					local actor_level_id = game_graph():vertex(alife():actor().m_game_vertex_id):level_id()
 					if level_id == actor_level_id and db.actor:position():distance_to_sqr(smart.position) <= 6400 then
 						if self.object:relation(db.actor) ~= game_object.enemy then
-							smart.base_on_actor_control:actor_attack()
+							local base_pos = db.zone_by_name[smart.base_on_actor_control.noweap_zone]:position()
+							local distance = obj:position():distance_to(base_pos)
+							if distance < 100 then
+								smart.base_on_actor_control:actor_attack()
+							end
 						end
 					end				
 				end
