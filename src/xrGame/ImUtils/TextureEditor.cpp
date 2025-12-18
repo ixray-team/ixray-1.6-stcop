@@ -519,7 +519,7 @@ void RenderTextureEditor()
 					{
 						ImGui::Text("Analyzing: %zu/%zu",
 							g_imgui_texture_editor.current_analyzed_count,
-							g_imgui_texture_editor.total_files_in_folder
+							g_imgui_texture_editor.textures.size()
 						);
 
 						ImGui::Text("[%s]",
