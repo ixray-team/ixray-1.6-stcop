@@ -71,7 +71,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 	}
 	else
 	{
-		VERIFY(zb->GetDimension() == ERHI_DSV_DIMENSION::TEXTURE2D);
+		VERIFY(zb->GetSurface() != nullptr);
 		dwWidth = zb->GetSurface()->GetWidth();
 		dwHeight = zb->GetSurface()->GetHeight();
 	}
