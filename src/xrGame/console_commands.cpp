@@ -1960,10 +1960,16 @@ public:
 
 	virtual void	Execute(LPCSTR args)
 	{
+		if (!IsGameTypeSingleCompatible())
+		{
+			Msg("! This command can be executed only in single player or FreeMP mode");
+			return;
+		}
 		int count = 1;
 		char nameSection[128] = {};
 		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
-		if (sc > 2) {
+		if (sc > 2)
+		{
 			Msg("! Failed to parse input");
 			return;
 		}
@@ -2094,25 +2100,36 @@ public:
 	CCC_GSpawnToInventory(LPCSTR N) : IConsole_Command(N) {
 	}
 
-	virtual void Execute(LPCSTR args) override {
-		if (g_pGameLevel == nullptr) {
+	virtual void Execute(LPCSTR args) override 
+	{
+		if (g_pGameLevel == nullptr) 
+		{
 			return;
 		}
 
 		CActor* actor = Level().CurrentEntity() != nullptr ? Level().CurrentEntity()->cast_actor() : nullptr;
-		if (actor == nullptr) {
+		if (actor == nullptr) 
+		{
+			return;
+		}
+
+		if (!IsGameTypeSingleCompatible())
+		{
+			Msg("! This command can be executed only in single player or FreeMP mode");
 			return;
 		}
 
 		int count = 1;
 		char nameSection[128] = {};
 		auto sc = sscanf_s(args, "%s %d", nameSection, (unsigned)sizeof(nameSection), &count);
-		if (sc > 2) {
+		if (sc > 2) 
+		{
 			Msg("! Failed to parse input");
 			return;
 		}
 
-		if (!pSettings->section_exist(nameSection)) {
+		if (!pSettings->section_exist(nameSection)) 
+		{
 			Msg("! Can't find section: %s", nameSection);
 			return;
 		}
@@ -2127,15 +2144,17 @@ public:
 			}
 		}
 
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++) 
+		{
 			CALifeSimulator__spawn_item2(&Level().Server->game->alife(), nameSection, actor->Position(), actor->ai_location().level_vertex_id(),
 				actor->ai_location().game_vertex_id(), actor->ID());
 		}
 	}
 
-	virtual void fill_tips(vecTips& tips, u32 mode) override {
-		if (!ai().get_alife()) {
-			Msg("! ALife simulator is needed to perform specified command!");
+	virtual void fill_tips(vecTips& tips, u32 mode) override 
+	{
+		if (!ai().get_alife()) 
+		{
 			return;
 		}
 
