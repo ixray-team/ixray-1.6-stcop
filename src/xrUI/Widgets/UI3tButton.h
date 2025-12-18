@@ -62,7 +62,6 @@ public:
 	CUI_IB_Static*			m_background;
 	CUI_IB_FrameLineWnd*	m_back_frameline;
 	CUI_IB_FrameWindow*		m_back_framewindow;
-	CUIStatic*				m_inputIcon;
 
 private:
 	struct sBtnStaticParams
