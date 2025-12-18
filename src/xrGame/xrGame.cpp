@@ -121,10 +121,6 @@ extern "C"
 	DLL_API void __cdecl xrGameShutdown()
 	{
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
-
-		while (!g_imgui_texture_editor.is_settings_write)
-		{
-		}
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
 	}
 	

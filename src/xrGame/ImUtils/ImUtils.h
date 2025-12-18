@@ -439,6 +439,7 @@ struct CImGuiTextureEditor
 		bool show_invalid_first = false;
 	};
 
+	bool is_thread_finished_execution = false;
 	bool is_init = false;
 	bool is_thread_started = false;
 	// written on wt side

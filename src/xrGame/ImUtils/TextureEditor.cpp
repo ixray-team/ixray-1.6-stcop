@@ -186,7 +186,9 @@ void TextureEditor_WorkerThread()
 
 	}
 
-	Msg("[Threading]: Shutdown thread -> %s", _kThreadName);
+	Msg("[TextureEditor]: Shutdown thread -> %s", _kThreadName);
+
+	g_imgui_texture_editor.is_thread_finished_execution = true;
 }
 
 void RenderTextureEditor()
