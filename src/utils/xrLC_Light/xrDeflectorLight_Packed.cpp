@@ -32,8 +32,8 @@ void PackedLighting::LightPointPacked(u32 U, u32 V, Fvector& P, Fvector& N, u32 
 	task_data.INDEX_TASK = MakeKey(U, V);
 	task_data.P = P;
 	task_data.N = N;
-	// task_data.skip = skip;
-
+	task_data.FaseSkip = GetFaceIndex(skip);
+ 
 	task_pools.push_back(std::move(task_data));
 }
 
@@ -74,8 +74,8 @@ void PackedLighting::LightPointPacked_Implicit(u32 U, u32 V, Fvector& P, Fvector
 	task_data.INDEX_TASK = MakeKey(U, V);
  	task_data.P = P;
 	task_data.N = N;
-	// task_data.skip = skip;
-	
+ 	task_data.FaseSkip = GetFaceIndex(skip);
+
 	task_pools_implicit.push_back(std::move(task_data));
 }
 
@@ -122,6 +122,8 @@ void PackedLighting::LightPointPackedDeflector(size_t IndexTask, CDeflector* D, 
 	task_data.P = P;
 	task_data.N = N;
 	task_data.Owner = D; 
+	task_data.FaseSkip = GetFaceIndex(skip);
+
 	task_pools_deflectors.emplace_back( task_data );
 }
 
@@ -162,6 +164,8 @@ void PackedLighting::LightPointPacked_MODEL(xrMU_Reference* MU, u32 I, Fvector& 
 	task_data.P = P;
 	task_data.N = N;
 	task_data.Owner = MU;
+	task_data.FaseSkip = GetFaceIndex(skip);
+
  	task_pools_mu.push_back(std::move(task_data));
 
 	// todo Add skiping faces
@@ -189,3 +193,17 @@ void PackedLighting::LightPointPacked_MODELRun()
 	}
 	task_pools_mu.clear();
 }
+
+
+// Enumerate Faces
+xr_hash_map<Face*, u32>   facesIndexes;
+u32 GetFaceIndex(Face* F)
+{
+	return facesIndexes[F];
+}
+
+void SetFaceIndex(Face* F, u32 Index)
+{
+	facesIndexes[F] = Index;
+}
+
