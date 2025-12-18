@@ -1463,19 +1463,19 @@ function get_customdata_or_ini_file(npc, filename)
 			return ini
 		else
 			--printf("custom_data_or_ini:3!!!")
-			return ini_file([[scripts\dummy.ltx]])
+			return get_cached_ini([[scripts\dummy.ltx]])
 		end
 	elseif string.find( filename, "*" ) == 1 then
 		-- динамический ltx
 		if st.job_ini ~= nil then
 			--printf("custom_data_or_ini:job_ini!!!")
-			return ini_file(st.job_ini)
+			return get_cached_ini(st.job_ini)
 		end
 		--printf("custom_data_or_ini:4!!!")
 		return xr_gulag.loadLtx(string.sub(filename, 2))
 	else
 		--printf("custom_data_or_ini:5!!!")
-		return ini_file(filename)
+		return get_cached_ini(filename)
 	end
 	--printf("custom_data_or_ini:6!!!")
 end

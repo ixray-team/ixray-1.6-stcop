@@ -14,7 +14,7 @@ function trade_init(npc, cfg)
 --'	end
 
 	trade_manager[npc:id()].cfg_ltx = cfg
-	trade_manager[npc:id()].config = ini_file(cfg)
+	trade_manager[npc:id()].config = get_cached_ini(cfg)
 
 	-- коэфициенты покупки
 	local str = utils.cfg_get_string(trade_manager[npc:id()].config, "trader", "buy_condition", npc, true, "")
@@ -171,7 +171,7 @@ function load(obj, packet)
 	tt.cfg_ltx = packet:r_stringZ()
 	printf("TRADE LOAD [%s]: cfg_ltx = %s", obj:name(), tostring(tt.cfg_ltx))
 
-	tt.config = ini_file(tt.cfg_ltx)
+	tt.config = get_cached_ini(tt.cfg_ltx)
 
 	a = packet:r_stringZ()
 	printf("TRADE LOAD [%s]: current_buy_condition = %s", obj:name(), tostring(a))
