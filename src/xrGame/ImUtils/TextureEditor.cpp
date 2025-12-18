@@ -298,7 +298,15 @@ void RenderTextureEditor()
 							{
 							case 0:
 							{
-								ImGui::Text("[%d] %s", row+1, texture.path);
+								char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
+								std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
+
+								if (ImGui::Selectable(sel_name))
+								{
+									
+								}
+
+							//	ImGui::Text("[%d] %s", row+1, texture.path);
 								break;
 							}
 							case 1:

@@ -12,6 +12,8 @@
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
 
+#include "ImUtils/ImUtils.h"
+
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
 
@@ -114,6 +116,16 @@ extern "C"
 		string_path GameGlobals = {};
 		FS.update_path(GameGlobals, _game_config_, "game_global.ltx");
 		pGameGlobals = new CInifile(GameGlobals);
+	}
+
+	DLL_API void __cdecl xrGameShutdown()
+	{
+		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
+
+		while (!g_imgui_texture_editor.is_settings_write)
+		{
+		}
+		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
