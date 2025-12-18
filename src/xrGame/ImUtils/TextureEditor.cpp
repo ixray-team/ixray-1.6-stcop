@@ -196,7 +196,6 @@ void RenderTextureEditor()
 	if (g_imgui_texture_editor.is_thread_started == false)
 	{
 		g_imgui_texture_editor.worker_thread = std::thread(&TextureEditor_WorkerThread);
-		g_imgui_texture_editor.worker_thread.detach();
 		g_imgui_texture_editor.is_thread_started = true;
 	}
 

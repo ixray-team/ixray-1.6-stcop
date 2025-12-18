@@ -122,6 +122,8 @@ extern "C"
 	{
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
 		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
+
+		g_imgui_texture_editor.worker_thread.join();
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
