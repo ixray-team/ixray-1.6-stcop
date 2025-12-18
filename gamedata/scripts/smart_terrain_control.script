@@ -58,7 +58,7 @@ end
 -- Возвращает статус угрожает ли игрок смарту или нет (находится ли с оружием в пределах новеапон зоны).
 function CBaseOnActorControl:get_actor_treat()
 	local zone = db.zone_by_name[self.noweap_zone]
-	if zone == nil then
+	if not zone or not db.actor then
 		return false
 	end
 
