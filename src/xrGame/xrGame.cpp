@@ -12,6 +12,8 @@
 #include "../../xrUI/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
 
+#include "ImUtils/ImUtils.h"
+
 void CCC_RegisterCommands	();
 void RegisterExpressionDelegates();
 
@@ -114,6 +116,14 @@ extern "C"
 #ifdef DEBUG
 		unit_test_stack_string();
 #endif
+	}
+
+	DLL_API void __cdecl xrGameShutdown()
+	{
+		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
+		g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
+
+		g_imgui_texture_editor.worker_thread.join();
 	}
 	
 	DLL_API void __cdecl xrGameRenderPreDestroy()
