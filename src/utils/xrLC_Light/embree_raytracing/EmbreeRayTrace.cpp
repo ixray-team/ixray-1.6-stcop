@@ -65,14 +65,12 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 	const b_texture& T  = inlc_global_data()->textures()[M.surfidx];
 
 	// barycentrics (без Fvector, сразу в скаляры)
-	float b0 = 1.0f - hit->u - hit->v;
-	float b1 = hit->u;
-	float b2 = hit->v;
-
+	float Barry0 = 1.0f - hit->u - hit->v;
+ 
 	// UV сразу float
 	const Fvector2* cuv = F->getTC0();
-	float u = cuv[0].x * b0 + cuv[1].x * b1 + cuv[2].x * b2;
-	float v = cuv[0].y * b0 + cuv[1].y * b1 + cuv[2].y * b2;
+	float u = cuv[0].x * Barry0 + cuv[1].x * hit->u + cuv[2].x * hit->v;
+	float v = cuv[0].y * Barry0 + cuv[1].y * hit->u + cuv[2].y * hit->v;
 
 	int U = int(u * T.dwWidth + 0.5f);
 	int V = int(v * T.dwHeight + 0.5f);

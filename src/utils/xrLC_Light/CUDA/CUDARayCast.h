@@ -9,19 +9,21 @@
 #include <optix_stubs.h>
 #include <cuda_runtime.h>
 
-class PackedLighting;
-  
 struct RayRecvestIndex;
-struct TextureData;
- 
 
 namespace XRay::RayTrace::CUDA
 {
+    // Отдельный инициализвтор
+    void InitializeLights();
+
+    // Загрузить Faces
+    void InitializeFaces(xr_vector<Face*> Faces);
+
+    // Загрузить Альфу Текстур
+    void InitializeTexturesAlpha();
+
     // Builder Scene
 	bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
-
-    // Textures (not used now)
-    void InitializeTextures(xr_vector<TextureData>& gpuTextures, cudaTextureObject_t*& d_texObjects);
 
     // RayTracing
     void InitializeRayTracing();
@@ -34,4 +36,3 @@ namespace XRay::RayTrace::CUDA
 
     xr_vector<base_color_c>& RayTraceResult();
 }
- 

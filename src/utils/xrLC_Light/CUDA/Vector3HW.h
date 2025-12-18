@@ -340,32 +340,30 @@ struct Hardware_Raytask
 {
 	float3 Position;
 	float3 Direction;
+	unsigned int SkipFace;
 };
  
 //
-struct TextureData
+
+struct Hardware_TextureData
 {
 	unsigned int  width;
 	unsigned int  height;
-	unsigned int  * pSurface; // Указатель на GPU память
-	bool hasAlpha;
+	unsigned char  * pSurface; // Указатель на GPU память (Только Alpha)
+	// bool		  hasAlpha;
 
 	// Для CUDA texture objects
-	cudaTextureObject_t texObj;
+	// cudaTextureObject_t texObj;
 };
 
-struct FaceData
+struct Hardware_FaceData
 {
-	int dwMaterial;
-	unsigned int flags;
-	Hardware_Vector2 tc0[3]; // UV координаты
+ 	Hardware_Vector2 TC0[3]; // UV координаты
+	unsigned short surfidx;
+	bool		 bOpacue = false;
+	bool		 bWater = false;
 };
 
-struct MaterialData
-{
-	int surfidx; // Индекс текстуры
-};
- 
 #include "optix.h"
 struct OPTICK_Params
 {
@@ -375,8 +373,14 @@ struct OPTICK_Params
 	Hardware_Raytask*	rays;
 	Hardware_Color*		colors;		// Раньше rays == colors
 
-	Hardware_Lighting*	lights;
-	int					counts_lights;
+	Hardware_Lighting*	  lights;
+	int					  counts_lights;
+
+	Hardware_FaceData*	  faces;
+	int					  count_faces;
+
+	Hardware_TextureData* textures;
+	int					  count_textures;
 };
 
 struct OptixMeshBuffers
