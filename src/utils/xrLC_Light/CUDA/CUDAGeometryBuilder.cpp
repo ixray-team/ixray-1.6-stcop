@@ -223,10 +223,11 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include "../xrLC_GlobalData.h"
 #include "../xrMU_Model_Reference.h"
 #include <embree_raytracing/EmbreeRayTrace.h>
+#include "xrDeflectorLight_Packed.h"
 
 extern size_t GetHeapMemory();
 struct FaceDataIntel;
-
+ 
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
 {
     xrLC_GlobalData* globalData = lc_global_data();
@@ -237,7 +238,6 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     // 1. Обрабатываем статическую геометрию
 
     Phase("CUDA Get LC Faces");
-
     Status("Build BLAS...");
 
     CTimer t;  t.Start();
@@ -255,8 +255,22 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         b_texture& T = globalData->textures()[M.surfidx];
 
         bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+
+        xr_string text = T.name; 
+        bool isWater = text.contains("water");
+
+        F->flags.bOpaque = !isTransparent;
+        F->flags.bWater = isWater;
+
+        // if (F->flags.bWater)
+        // {
+        //     Msg("Loading Water: %s | Surface: %p | HasAlpha: %s | W: %u | H: %u", T.name, T.pSurface, T.bHasAlpha ? "true" : "false", T.dwWidth, T.dwHeight);
+        // }
+
         if (!isTransparent)
-            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+        {
+             geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+        }
         else
             geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
     }
@@ -275,8 +289,11 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             b_texture& T = globalData->textures()[M.surfidx];
 
             bool isTransparent = !F->flags.bOpaque && T.pSurface && T.bHasAlpha;
+
             if (!isTransparent)
-                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            {
+                 geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            }
             else
                 geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
         }
@@ -289,14 +306,22 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     Phase("CUDA Building RCastModel");
 
     // 3. Строим BLAS
-    if (!geometryBuilder.BuildBLAS(context, outScene))
-        return false;
+    if (!geometryBuilder.BuildBLAS(context, outScene))          return false;
+ 
+    // 4. Строим TLAS
+    if (!geometryBuilder.BuildTLAS(context, outScene, stream))  return false;
 
+    // 5: Face Pointers Loading to GPU
+    XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
 
-    // // 4. Строим TLAS
-    if (!geometryBuilder.BuildTLAS(context, outScene, stream))
-        return false;
-
+    // 6. Индексируем фаейсы из созданой геометрии
+    int Index = 0;
+    for (auto& F : geometryBuilder.facePointers)
+    {
+        SetFaceIndex( F, Index );
+        Index++;
+    }
+ 
     geometryBuilder.Clear();
     geometryBuilder.MemoryDealoc();
 
