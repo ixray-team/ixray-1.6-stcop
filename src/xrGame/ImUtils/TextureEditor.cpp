@@ -517,10 +517,13 @@ void RenderTextureEditor()
 					}
 					else
 					{
-						ImGui::Text("Analyzing... [%s] %zu/%zu",
-							g_imgui_texture_editor.wt_current_analyzing_texture.data(),
+						ImGui::Text("Analyzing: %zu/%zu",
 							g_imgui_texture_editor.current_analyzed_count,
 							g_imgui_texture_editor.total_files_in_folder
+						);
+
+						ImGui::Text("[%s]",
+							g_imgui_texture_editor.wt_current_analyzing_texture.data()
 						);
 					}
 				}
