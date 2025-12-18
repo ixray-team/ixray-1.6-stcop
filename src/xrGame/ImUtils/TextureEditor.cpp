@@ -18,6 +18,40 @@ CImGuiTextureEditor g_imgui_texture_editor;
 
 constexpr decltype(CImGuiTextureEditor::selected_index) _kInvalidSelectedID = decltype(CImGuiTextureEditor::selected_index)(-1);
 
+
+void validate_entry(
+	const xr_vector<const xr_string*>& thms,
+	CImGuiTextureEditor::STextureEntry& entry
+)
+{
+	if (thms.empty())
+		return;
+
+	g_imgui_texture_editor.wt_current_analyzing_texture = entry.path;
+
+	std::filesystem::path thm = entry.path;
+	thm.replace_extension(".thm");
+
+	auto it = std::find_if(thms.begin(), thms.end(), [thm](const xr_string* const& el) -> bool {
+		return el->c_str() == thm;
+		});
+
+	if (it != thms.end())
+	{
+		entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kHasTHM;
+	}
+	else
+	{
+		std::string_view path_view = entry.path;
+
+		if (path_view.find("bump#") != std::string_view::npos)
+		{
+			entry.analyze_status_result_flags |= CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM;
+		}
+	}
+}
+
+
 void TextureEditor_WorkerThread()
 {
 	if (!xr_FS)
@@ -115,30 +149,35 @@ void TextureEditor_WorkerThread()
 				if (g_imgui_texture_editor.is_all_analyzed == false)
 				{
 					xr_set<xr_string> files;
-					FS_Path* pPath = FS.get_path(_game_textures_);
+					FS_Path* pTexturesFolder = FS.get_path(_game_textures_);
 
-					if (pPath)
+					if (!pTexturesFolder)
 					{
-						FS.get_all_files_in_dir(files, pPath->m_Path);
+						g_imgui_texture_editor.is_all_analyzed = true;
+
+						Msg("[TextureEditor]: ! invalid filesystem was initialized on your side -> report to developers!");
+
+						break;
+					}
+
+					if (pTexturesFolder)
+					{
+						FS.get_all_files_in_dir(files, pTexturesFolder->m_Path);
 						g_imgui_texture_editor.total_files_in_folder = files.size();
 					}
 
 					g_imgui_texture_editor.current_analyzed_count = 0;
 
-					std::filesystem::path temp;
+					xr_vector<const xr_string*> thms;
+
 					for (const xr_string& file_path : files)
 					{
-						g_imgui_texture_editor.wt_current_analyzing_texture = file_path;
-						temp = file_path.c_str();
+						const auto& fn = file_path;
 
-						std::filesystem::path folder = temp.parent_path().filename();
-						std::filesystem::path filename = temp.filename();
-
-						std::filesystem::path real_name = folder / filename;
-
-						const auto& fn = real_name.string();
-
-						if (fn.find(".dds") != std::string::npos && fn.find(".thm") == std::string::npos)
+						if (
+							fn.find(".dds") != std::string::npos &&
+							fn.find(".thm") == std::string::npos
+							)
 						{
 							CImGuiTextureEditor::STextureEntry data;
 							data.path[0] = 0;
@@ -148,23 +187,41 @@ void TextureEditor_WorkerThread()
 								fn.data()
 							);
 
-							constexpr u32 _kFileNameLimit = sizeof(texture_t::path) / sizeof(texture_t::path[0]);
-
-							if (fn.size() > _kFileNameLimit)
+							if (fn.size() > sizeof(string_path))
 							{
-								data.analyze_status_result_flags |= status_t::kInvalidFileName;
+								data.analyze_status_result_flags |= status_t::kTooLongPath;
 							}
 							else
 							{
+								std::filesystem::path temp = fn.c_str();
+
+								data.filename[0] = 0;
+								data.subpath[0] = 0;
+
+								std::strcat(data.filename, temp.filename().string().c_str());
+
+								std::filesystem::path no_fn = fn.c_str();
+								no_fn.remove_filename();
+
+								std::filesystem::path relative = std::filesystem::relative(no_fn, pTexturesFolder->m_Path);
+
+								if (relative != ".")
+								{
+									std::strcat(data.subpath, relative.string().c_str());
+								}
+
+								g_imgui_texture_editor.wt_current_analyzing_texture = file_path.c_str();
 								++g_imgui_texture_editor.valid_count;
 							}
 
 							g_imgui_texture_editor.textures.push_back(data);
+							g_imgui_texture_editor.filter_query.push_back(g_imgui_texture_editor.textures.size() - 1);
 
 							++g_imgui_texture_editor.total_textures_in_folder;
 						}
 						else if (fn.find(".thm") != std::string::npos && fn.find(".dds") == std::string::npos)
 						{
+							thms.push_back(&file_path);
 							++g_imgui_texture_editor.total_thm_in_folder;
 						}
 						else if (fn.find(".seq") != std::string::npos)
@@ -226,11 +283,50 @@ void TextureEditor_WorkerThread()
 							}
 
 						}
-
-
-
-						++g_imgui_texture_editor.current_analyzed_count;
 					}
+
+					xr_task_group tasks;
+
+					constexpr u32 _kTaskBatchSize = 256;
+
+					u32 task_batch_count = (g_imgui_texture_editor.textures.size() - (g_imgui_texture_editor.textures.size() % _kTaskBatchSize)) / _kTaskBatchSize;
+
+					for (u32 i = 0; i < task_batch_count; ++i)
+					{
+						u32 iter_count = _kTaskBatchSize;
+						u32 iter_start = _kTaskBatchSize * i;
+
+						tasks.run([iter_count, iter_start, thms]() {
+							for (u32 i = 0; i < iter_count; ++i)
+							{
+								u32 real_index = i + iter_start;
+								CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[real_index];
+								validate_entry(thms, texture);
+								++g_imgui_texture_editor.current_analyzed_count;
+							}
+							});
+					}
+
+
+
+					if (g_imgui_texture_editor.textures.size() % _kTaskBatchSize != 0)
+					{
+						u32 iter_count = g_imgui_texture_editor.textures.size() % _kTaskBatchSize;
+						u32 iter_start = (g_imgui_texture_editor.textures.size() - (g_imgui_texture_editor.textures.size() % _kTaskBatchSize));
+
+						tasks.run([iter_count, iter_start, thms]() {
+							for (u32 i = 0; i < iter_count; ++i)
+							{
+								u32 real_index = i + iter_start;
+
+								CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[real_index];
+								validate_entry(thms, texture);
+								++g_imgui_texture_editor.current_analyzed_count;
+							}
+							});
+					}
+
+					tasks.wait();
 
 					g_imgui_texture_editor.is_all_analyzed = true;
 				}
@@ -239,15 +335,143 @@ void TextureEditor_WorkerThread()
 			}
 			case CImGuiTextureEditor::eRequestType::kUpdateSelected:
 			{
-				if (req.selected_id != _kInvalidSelectedID)
+				g_imgui_texture_editor.is_update_selected = false;
+
+				if (req.payload != _kInvalidSelectedID)
 				{
-					if (req.selected_id < g_imgui_texture_editor.textures.size())
+					if (req.payload < g_imgui_texture_editor.textures.size())
 					{
 
 					}
 				}
 
 				g_imgui_texture_editor.is_update_selected = true;
+
+				break;
+			}
+			case CImGuiTextureEditor::eRequestType::kFilterQuery:
+			{
+				if (g_imgui_texture_editor.is_all_analyzed == false)
+				{
+					g_imgui_texture_editor.is_filter_processing = false;
+					break;
+				}
+
+				CImGuiTextureEditor::eFilterQueryType ft = static_cast<CImGuiTextureEditor::eFilterQueryType>(req.payload);
+
+				switch (ft)
+				{
+				case CImGuiTextureEditor::eFilterQueryType::kSearch:
+				{
+					g_imgui_texture_editor.is_filter_processing = true;
+
+					std::string_view buf = g_imgui_texture_editor.search_input_buffer;
+
+					if (buf.empty() == false)
+					{
+						g_imgui_texture_editor.filter_query.clear();
+
+						u32 i = 0;
+						for (const auto& t : g_imgui_texture_editor.textures)
+						{
+							std::string_view filename = t.filename;
+
+							R_ASSERT(filename.empty() == false && "should be not empty at all!");
+
+							if (filename.find(buf) != std::string_view::npos)
+							{
+								g_imgui_texture_editor.filter_query.push_back(i);
+							}
+
+							++i;
+						}
+
+					}
+					else
+					{
+						if (g_imgui_texture_editor.filter_query.size() != g_imgui_texture_editor.textures.size())
+						{
+							g_imgui_texture_editor.filter_query.clear();
+
+							u32 i = 0;
+
+							for (const auto& t : g_imgui_texture_editor.textures)
+							{
+								g_imgui_texture_editor.filter_query.push_back(i);
+								++i;
+							}
+						}
+					}
+
+
+					break;
+				}
+				case CImGuiTextureEditor::eFilterQueryType::kInvalidFirst:
+				{
+					g_imgui_texture_editor.is_filter_processing = true;
+
+					g_imgui_texture_editor.filter_query.clear();
+
+					u32 i = 0;
+					for (const auto& t : g_imgui_texture_editor.textures)
+					{
+						if (t.is_valid() == false)
+						{
+							g_imgui_texture_editor.filter_query.push_back(i);
+						}
+						++i;
+					}
+
+					i = 0;
+					for (const auto& t : g_imgui_texture_editor.textures)
+					{
+						if (t.is_valid())
+						{
+							g_imgui_texture_editor.filter_query.push_back(i);
+						}
+						++i;
+					}
+
+					break;
+				}
+				case CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted:
+				{
+					g_imgui_texture_editor.is_filter_processing = true;
+
+					std::sort(g_imgui_texture_editor.filter_query.begin(), g_imgui_texture_editor.filter_query.end(), [](const u32& left_id, const u32& right_id)->bool {
+
+						const CImGuiTextureEditor::STextureEntry& left = g_imgui_texture_editor.textures[left_id];
+						const CImGuiTextureEditor::STextureEntry& right = g_imgui_texture_editor.textures[right_id];
+
+						return left.is_valid() == false && right.is_valid() == true;
+
+						});
+
+					break;
+				}
+				case CImGuiTextureEditor::eFilterQueryType::kNoFilter:
+				{
+					g_imgui_texture_editor.is_filter_processing = true;
+					g_imgui_texture_editor.filter_query.clear();
+
+					u32 i = 0;
+
+					for (const auto& t : g_imgui_texture_editor.textures)
+					{
+						g_imgui_texture_editor.filter_query.push_back(i);
+						++i;
+					}
+
+					break;
+				}
+				default:
+				{
+					R_ASSERT2(false, "report to developers!");
+					break;
+				}
+				}
+
+				g_imgui_texture_editor.is_filter_processing = false;
 
 				break;
 			}
@@ -282,6 +506,8 @@ void RenderTextureEditor()
 
 	if (g_imgui_texture_editor.is_init == false)
 	{
+		g_imgui_texture_editor.search_input_buffer[0] = 0;
+
 		constexpr u32 _kReserve = 4096 * 4;
 
 		g_imgui_texture_editor.textures.reserve(_kReserve);
@@ -309,6 +535,7 @@ void RenderTextureEditor()
 					ImGui::SeparatorText("Stats");
 					ImGui::Text("Total files: %d", g_imgui_texture_editor.total_files_in_folder);
 					ImGui::Text("\t- .dds: %d", g_imgui_texture_editor.total_textures_in_folder);
+					ImGui::SetItemTooltip("analyzed: %d", g_imgui_texture_editor.current_analyzed_count.load());
 					ImGui::Text("\t- .thm: %d", g_imgui_texture_editor.total_thm_in_folder);
 
 					if (g_imgui_texture_editor.settings.show_only_dds_and_thm == false)
@@ -337,100 +564,206 @@ void RenderTextureEditor()
 
 					ImGui::SeparatorText("Settings");
 
-					ImGui::Checkbox("Show invalid first", &g_imgui_texture_editor.settings.show_invalid_first);
-					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
-
-					ImGui::SeparatorText("Search");
-
-					char _input_buffer[sizeof(CImGuiTextureEditor::STextureEntry::path)];
-					_input_buffer[0] = 0;
-
-					ImGui::InputText("name", _input_buffer, sizeof(_input_buffer));
-					ImGui::SameLine();
-
-					if (ImGui::Button("submit##TESearch"))
+					if (ImGui::Checkbox("Show invalid first", &g_imgui_texture_editor.settings.show_invalid_first))
 					{
-						// todo: do filter stuff by name
-					}
-
-					ImGui::Separator();
-
-					constexpr const char* _kColumnNames[] = {
-						"Name",
-						"Status"
-					};
-
-					constexpr u32 _kColumnsSize = sizeof(_kColumnNames) / sizeof(_kColumnNames[0]);
-
-					size_t textures_count = g_imgui_texture_editor.textures.size();
-					size_t row_max = textures_count;
-
-
-
-					ImGui::BeginTable("##TETV", _kColumnsSize);
-
-					for (u32 i = 0; i < _kColumnsSize; ++i)
-					{
-						ImGui::TableSetupColumn(_kColumnNames[i]);
-					}
-
-					ImGui::TableHeadersRow();
-
-					ImGuiListClipper clipper;
-
-					clipper.Begin(u32(g_imgui_texture_editor.textures.size()));
-
-					while (clipper.Step())
-					{
-						//for (u32 row = 0; row < row_max; ++row)
-						for (u32 row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
+						if (g_imgui_texture_editor.settings.show_invalid_first)
 						{
-							ImGui::TableNextRow();
-
-
-							for (size_t column = 0; column < _kColumnsSize; ++column)
+							if (g_imgui_texture_editor.search_input_buffer[0] != 0)
 							{
-								ImGui::TableSetColumnIndex((int)column);
+								g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch) });
 
 
-								const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[row];
+								g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted) });
+							}
+							else
+							{
+								g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst) });
+							}
+						}
+						else
+						{
+							g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kNoFilter) });
 
-								switch (column)
-								{
-								case 0:
-								{
-									char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path) * 2];
-									std::sprintf(sel_name, "[%d] %s", row + 1, texture.path);
-
-									bool selected_status = g_imgui_texture_editor.selected_index == row;
-
-									if (ImGui::Selectable(sel_name, selected_status))
-									{
-										g_imgui_texture_editor.window_selected_name[0] = 0;
-										g_imgui_texture_editor.is_update_selected = false;
-										g_imgui_texture_editor.selected_index = row;
-										g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .selected_id = row });
-										std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
-										std::strcat(g_imgui_texture_editor.window_selected_name, g_imgui_texture_editor.textures[row].path);
-									}
-
-									break;
-								}
-								case 1:
-								{
-									ImGui::TextColored(ImVec4(0.0f, 0.8f, 0.0f, 1.0f), "%s", "valid");
-									break;
-								}
-								}
+							if (g_imgui_texture_editor.search_input_buffer[0] != 0)
+							{
+								g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch) });
 							}
 						}
 					}
 
-					clipper.End();
+					ImGui::Checkbox("Show only dds and thm in stats", &g_imgui_texture_editor.settings.show_only_dds_and_thm);
+
+					ImGui::SeparatorText("Search");
+
+					if (ImGui::InputText("##SearchInput",
+						g_imgui_texture_editor.search_input_buffer,
+						sizeof(g_imgui_texture_editor.search_input_buffer)
+					))
+					{
+						if (g_imgui_texture_editor.search_frame_count > 0)
+						{
+							g_imgui_texture_editor.search_frame_count = 0;
+						}
+
+						if (g_imgui_texture_editor.search_frame_count == 0)
+						{
+							++g_imgui_texture_editor.search_frame_count;
+						}
+					}
+
+					if (g_imgui_texture_editor.search_frame_count > 0)
+					{
+						++g_imgui_texture_editor.search_frame_count;
+
+						if (g_imgui_texture_editor.search_frame_count > 5)
+						{
+							g_imgui_texture_editor.search_frame_count = 0;
+
+							g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery,
+								.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch) });
+
+							if (g_imgui_texture_editor.settings.show_invalid_first)
+							{
+								g_imgui_texture_editor.requests.push({
+									.type = CImGuiTextureEditor::eRequestType::kFilterQuery,
+.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirstExisted)
+									});
+							}
+						}
+					}
+
+					if (g_imgui_texture_editor.is_settings_applied == false)
+					{
+						if (g_imgui_texture_editor.settings.show_invalid_first)
+						{
+							g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery, .payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kInvalidFirst) });
+						}
+
+						g_imgui_texture_editor.is_settings_applied = true;
+					}
+
+					ImGui::SameLine();
+
+					ImGui::Separator();
+
+					if (g_imgui_texture_editor.is_filter_processing == false)
+					{
+						constexpr const char* _kColumnNames[] = {
+							"Name",
+							"Status"
+						};
+
+						constexpr u32 _kColumnsSize = sizeof(_kColumnNames) / sizeof(_kColumnNames[0]);
+
+						ImGui::BeginTable("##TETV", _kColumnsSize);
+
+						for (u32 i = 0; i < _kColumnsSize; ++i)
+						{
+							ImGui::TableSetupColumn(_kColumnNames[i]);
+						}
+
+						ImGui::TableHeadersRow();
+
+						ImGuiListClipper clipper;
+
+						clipper.Begin(u32(g_imgui_texture_editor.filter_query.size()));
+
+						while (clipper.Step())
+						{
+							for (u32 row = clipper.DisplayStart; row < clipper.DisplayEnd; ++row)
+							{
+								ImGui::TableNextRow();
+
+
+								for (size_t column = 0; column < _kColumnsSize; ++column)
+								{
+									ImGui::TableSetColumnIndex((int)column);
+
+
+									const CImGuiTextureEditor::STextureEntry& texture = g_imgui_texture_editor.textures[g_imgui_texture_editor.filter_query[row]];
+
+									switch (column)
+									{
+									case 0:
+									{
+										char sel_name[sizeof(CImGuiTextureEditor::STextureEntry::path)];
+										std::sprintf(sel_name, "[%d] %s", row + 1, texture.filename);
+
+										bool selected_status = g_imgui_texture_editor.selected_index == g_imgui_texture_editor.filter_query[row];
+
+										if (ImGui::Selectable(sel_name, selected_status))
+										{
+											g_imgui_texture_editor.window_selected_name[0] = 0;
+											g_imgui_texture_editor.selected_index = g_imgui_texture_editor.filter_query[row];
+											g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .payload = g_imgui_texture_editor.filter_query[row] });
+											std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
+
+											std::filesystem::path temp = g_imgui_texture_editor.textures[g_imgui_texture_editor.filter_query[row]].path;
+
+											std::strcat(g_imgui_texture_editor.window_selected_name, temp.filename().string().c_str());
+										}
+
+										if (texture.subpath[0] != 0)
+										{
+											ImGui::SetItemTooltip("Filename: [%s]\nSubpath: [%s]\nPath: [%s]",
+												texture.filename,
+												texture.subpath,
+												texture.path
+											);
+										}
+										else
+										{
+											ImGui::SetItemTooltip("Filename: [%s]\nPath: [%s]",
+												texture.filename,
+												texture.path
+											);
+										}
+
+										break;
+									}
+									case 1:
+									{
+
+										ImVec4 status_color = _kColorValid;
+										bool is_valid = true;
+										const char* pStatusName = "valid";
+
+										if (
+											(
+												texture.analyze_status_result_flags == 0 ||
+												(
+
+													(texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kTooLongPath) == CImGuiTextureEditor::eAnalyzedStatus::kTooLongPath ||
+													(texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid) == CImGuiTextureEditor::eAnalyzedStatus::kTHMIsNotValid ||
+													(texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2) == CImGuiTextureEditor::eAnalyzedStatus::kDimensionsNotPowerOf2 ||
+													(texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps) == CImGuiTextureEditor::eAnalyzedStatus::kNoMipMaps))
+											&&
+											(!((texture.analyze_status_result_flags & CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM) == CImGuiTextureEditor::eAnalyzedStatus::kIgnoreTHM))
+											)
+										{
+											status_color = _kColorInvalid;
+											is_valid = false;
+											pStatusName = "invalid";
+										}
+
+										ImGui::TextColored(status_color, "%s", pStatusName);
+										break;
+									}
+									}
+								}
+							}
+						}
+
+						clipper.End();
 
 
 
-					ImGui::EndTable();
+						ImGui::EndTable();
+					}
+					else
+					{
+						ImGui::Text("Filtering...");
+					}
 
 
 
@@ -441,12 +774,21 @@ void RenderTextureEditor()
 					{
 						ImGui::Text("Preparing...");
 					}
+					else if (g_imgui_texture_editor.current_analyzed_count == 0)
+					{
+						ImGui::Text("Found: [%s]",
+							g_imgui_texture_editor.wt_current_analyzing_texture.data()
+						);
+					}
 					else
 					{
-						ImGui::Text("Analyzing... [%s] %zu/%zu",
-							g_imgui_texture_editor.wt_current_analyzing_texture.data(),
-							g_imgui_texture_editor.current_analyzed_count,
-							g_imgui_texture_editor.total_files_in_folder
+						ImGui::Text("Analyzing: %zu/%zu",
+							g_imgui_texture_editor.current_analyzed_count.load(),
+							g_imgui_texture_editor.textures.size()
+						);
+
+						ImGui::Text("[%s]",
+							g_imgui_texture_editor.wt_current_analyzing_texture.data()
 						);
 					}
 				}
