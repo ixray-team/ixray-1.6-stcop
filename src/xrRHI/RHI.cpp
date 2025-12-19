@@ -207,12 +207,7 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
         return Result;
     }
 
-    struct Mode
-    {
-        int W;
-        int H;
-    };
-    xr_vector<Mode> Modes = xr_vector<Mode>();
+    xr_vector<Ivector2> Modes;
 
     for (int D = 0; D < NumDisplays; ++D)
     {
@@ -258,24 +253,24 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
 
     SDL_free(Displays);
 
-    std::sort(Modes.begin(), Modes.end(), [](const Mode& A, const Mode& B)
+    std::sort(Modes.begin(), Modes.end(), [](const Ivector2& A, const Ivector2& B)
     {
-        if (A.W == B.W)
+        if (A.x == B.x)
         {
-            return A.H < B.H;
+            return A.y < B.y;
         }
-        return A.W < B.W;
+        return A.x < B.x;
     });
 
-    Modes.erase(std::unique(Modes.begin(), Modes.end(), [](const Mode& A, const Mode& B)
+    Modes.erase(std::unique(Modes.begin(), Modes.end(), [](const Ivector2& A, const Ivector2& B)
     {
-        return A.W == B.W && A.H == B.H;
+        return A.x == B.x && A.y == B.y;
     }), Modes.end());
 
-    for (const Mode& M : Modes)
+    for (const Ivector2& M : Modes)
     {
         string32 Str;
-        xr_sprintf(Str, sizeof(Str), "%dx%d", M.W, M.H);
+        xr_sprintf(Str, sizeof(Str), "%dx%d", M.x, M.y);
         Result.push_back(Str);
     }
 
@@ -283,7 +278,6 @@ xr_vector<shared_str> CRHI::DisplaySizeArray()
 
     return Result;
 }
-
 
 IRHISurface* CRHI::CreateTexture3D(const RHITextureDesc& Desc, RHISubResource* SubResource)
 {

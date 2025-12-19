@@ -31,7 +31,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	float dv			= owner.lightning_phase*0.5f;
 	dv					= (owner.lightning_phase>0.5f)?Random.randI(2)*0.5f:dv;
 
-	RCache.set_CullMode	(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	u32					v_offset,i_offset;
 	
 	dxThunderboltDescRender *pThRen = (dxThunderboltDescRender*)&*owner.current->m_pRender;
@@ -49,7 +49,7 @@ void dxThunderboltRender::Render(CEffect_Thunderbolt &owner)
 	RCache.set_Shader	(pThRen->l_model->shader);
 	RCache.set_Geometry	(hGeom_model);
 	RCache.Render		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,v_offset,0,vCount_Lock,i_offset,iCount_Lock/3);
-	RCache.set_CullMode	(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 
 	// gradient
 	Fvector				vecSx, vecSy;

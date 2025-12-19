@@ -5,7 +5,7 @@ void CRenderTarget::phase_smaa()
     // Phase 0: edge detection ////////////////////////////////////////////////
     u_setrt(rt_smaa_edgetex, nullptr, nullptr, nullptr);
 
-    RCache.set_CullMode(CULL_NONE);
+    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
     RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     GRHI->ClearTarget(RCache.get_RT());
 
@@ -17,7 +17,7 @@ void CRenderTarget::phase_smaa()
     // Phase 1: blend weights calculation ////////////////////////////////////
     u_setrt(rt_smaa_blendtex, nullptr, nullptr, nullptr);
 
-    RCache.set_CullMode(CULL_NONE);
+    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
     RCache.set_Stencil(TRUE, D3DCMP_EQUAL, 0x1, 0, 0, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
     GRHI->ClearTarget(RCache.get_RT());
 
@@ -29,7 +29,7 @@ void CRenderTarget::phase_smaa()
     // Phase 2: neighbour blend //////////////////////////////////////////////
     u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
 
-    RCache.set_CullMode(CULL_NONE);
+    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
     RCache.set_Stencil(FALSE);
 
     // Draw COLOR

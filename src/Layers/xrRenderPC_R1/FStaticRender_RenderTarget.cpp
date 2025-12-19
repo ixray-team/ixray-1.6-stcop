@@ -140,7 +140,7 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 	float ddw = 1.0f / _w;
 	float ddh = 1.0f / _h;
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	FVF::V* pv = (FVF::V*)RCache.Vertex.Lock(4, g_fxaa->vb_stride, Offset);
@@ -422,7 +422,7 @@ void	CRenderTarget::phase_distortion	()
 	frame_distort								= Device.dwFrame;
 	RCache.set_RT								(RT_distort->pRT);
 	GRHI->SetDepthStencilView					(ZB);
-	RCache.set_CullMode							(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable					( );
 	CHK_DX(RDevice->Clear					( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,127,127), 1.0f, 0L));
 	

@@ -110,7 +110,6 @@ void dxDebugRender::NextSceneMode()
 
 void dxDebugRender::ZEnable(bool bEnable)
 {
-	//CHK_DX(RDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
 	RCache.set_Z(bEnable);
 }
 
@@ -129,9 +128,9 @@ void dxDebugRender::CacheSetXformWorld(const Fmatrix& M)
 	RCache.set_xform_world(M);
 }
 
-void dxDebugRender::CacheSetCullMode(CullMode m)
+void dxDebugRender::CacheSetCullMode(ERHI_CULLMODE m)
 {
-	RCache.set_CullMode	(CULL_NONE+m);
+	GRHI->StateManager->SetCullMode(m);
 }
 
 void dxDebugRender::SetAmbient(u32 colour)

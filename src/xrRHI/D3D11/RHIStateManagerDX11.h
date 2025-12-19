@@ -27,7 +27,7 @@ public:
 	virtual void SetDepthFunc(u32 Func) override;
 	virtual void SetDepthEnable(u32 Enable) override;
 	virtual void SetColorWriteEnable(u32 WriteMask) override;
-	virtual void SetCullMode(u32 Mode) override;
+	virtual void SetCullMode(ERHI_CULLMODE Mode) override;
 	virtual void BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback) override;
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) override;
 

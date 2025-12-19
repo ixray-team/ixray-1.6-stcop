@@ -140,7 +140,7 @@ void SimulatorStates::UpdateDesc( D3D_RASTERIZER_DESC &desc ) const
 				break;
 
 			case D3DRS_CULLMODE:
-				desc.CullMode = dx10StateUtils::ConvertCullMode((D3DCULL)S.v2);
+				desc.CullMode = (D3D11_CULL_MODE)S.v2;
 				break;
 
 			case D3DRS_DEPTHBIAS:

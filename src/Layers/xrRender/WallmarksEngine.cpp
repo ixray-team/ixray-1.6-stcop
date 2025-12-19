@@ -403,14 +403,21 @@ ICF void FlushStream(ref_geom hGeom, ref_shader shader, u32& w_offset, FVF::LIT*
 	PROF_EVENT("FlushStream");
 	u32 w_count					= u32(w_verts-w_start);
 	RCache.Vertex.Unlock		(w_count,hGeom->vb_stride);
-	if (w_count)			
+	if (w_count)
 	{
-		RCache.set_Shader		(shader);
-		RCache.set_Geometry		(hGeom);
-		if (bSuppressCull)		RCache.set_CullMode (CULL_NONE);
-		RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,w_offset,w_count/3);
-		if (bSuppressCull)		RCache.set_CullMode	(CULL_CCW);
-		Device.Statistic->RenderDUMP_WMT_Count += w_count/3;
+		RCache.set_Shader(shader);
+		RCache.set_Geometry(hGeom);
+		if (bSuppressCull)
+		{
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+		}
+
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, w_offset, w_count / 3);
+		if (bSuppressCull)
+		{
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+		}
+		Device.Statistic->RenderDUMP_WMT_Count += w_count / 3;
 	}
 }
 
