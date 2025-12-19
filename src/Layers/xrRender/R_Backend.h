@@ -14,37 +14,38 @@
 
 #include "FVF.h"
 
-const	u32		CULL_CCW			= D3DCULL_CCW;
-const	u32		CULL_CW				= D3DCULL_CW;
-const	u32		CULL_NONE			= D3DCULL_NONE;
-
-///		detailed statistic
-struct	R_statistics_element	{
-	u32		verts,dips;
-	ICF		void	add			(u32 _verts)	{ verts+=_verts; dips++; }
+/// detailed statistic
+struct R_statistics_element
+{
+	u32 verts,dips;
+	ICF void add(u32 _verts)
+	{
+		verts+=_verts; dips++; 
+	}
 };
-struct	R_statistics			{
-	R_statistics_element		s_static		;
-	R_statistics_element		s_flora			;
-	R_statistics_element		s_flora_lods	;
-	R_statistics_element		s_details		;
-	R_statistics_element		s_ui			;
-	R_statistics_element		s_dynamic		;
-	R_statistics_element		s_dynamic_sw	;
-	R_statistics_element		s_dynamic_inst	;
-	R_statistics_element		s_dynamic_1B	;
-	R_statistics_element		s_dynamic_2B	;
-	R_statistics_element		s_dynamic_3B	;
-	R_statistics_element		s_dynamic_4B	;
+
+struct R_statistics
+{
+	R_statistics_element s_static;
+	R_statistics_element s_flora;
+	R_statistics_element s_flora_lods;
+	R_statistics_element s_details;
+	R_statistics_element s_ui;
+	R_statistics_element s_dynamic;
+	R_statistics_element s_dynamic_sw;
+	R_statistics_element s_dynamic_inst;
+	R_statistics_element s_dynamic_1B;
+	R_statistics_element s_dynamic_2B;
+	R_statistics_element s_dynamic_3B;
+	R_statistics_element s_dynamic_4B;
 };
 
 #pragma warning(push)
 #pragma warning(disable:4324)
-class  ECORE_API CBackend
+class ECORE_API CBackend
 {
 public:
-#ifdef USE_DX11
-	enum	MaxTextures
+	enum MaxTextures
 	{
 		//	Actually these values are 128
 		mtMaxPixelShaderTextures = 16,
@@ -58,20 +59,11 @@ public:
 	{
 		MaxCBuffers	= 22
 	};
-#else //USE_DX11
-	enum	MaxTextures
-	{
-		mtMaxPixelShaderTextures = 16,
-		mtMaxVertexShaderTextures = 4,
-	};
-#endif
-	
-
 
 public:            
 	// Dynamic geometry streams
-	_VertexStream					Vertex;
-	_IndexStream					Index;
+	_VertexStream Vertex;
+	_IndexStream Index;
 
 	IRHIBuffer* QuadIB;
 	IRHIBuffer* old_QuadIB;
@@ -258,8 +250,6 @@ public:
 	IC  void						set_ZFunc			(u32 _func);
 	IC  void						set_AlphaRef		(u32 _value);
 	IC  void						set_ColorWriteEnable(u32 _mask = D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
-	IC  void						set_CullMode		(u32 _mode);
-	IC  u32							get_CullMode		(){return GRHI->StateManager->GetCullMode();}
 	IC	void						set_Scissor			(Irect*	rect=NULL);
 
 	// constants
@@ -394,9 +384,4 @@ IC void CBackend::set_AlphaRef(u32 _value)
 IC void	CBackend::set_ColorWriteEnable(u32 _mask)
 {
 	GRHI->StateManager->SetColorWriteEnable(_mask);
-}
-
-ICF void CBackend::set_CullMode(u32 _mode)
-{
-	GRHI->StateManager->SetCullMode(_mode);
 }

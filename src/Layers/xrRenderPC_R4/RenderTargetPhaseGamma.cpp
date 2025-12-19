@@ -21,7 +21,7 @@ void CRenderTarget::PhaseGammaApply()
 	u_setrt(w, h, RTarget, nullptr, nullptr, nullptr);
 #endif
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
  	RImplementation.rmNormal();
 
 	RCache.set_Element(s_gamma->E[0]);

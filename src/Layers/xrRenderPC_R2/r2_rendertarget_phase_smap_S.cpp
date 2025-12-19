@@ -13,7 +13,7 @@ void CRenderTarget::phase_smap_spot(light* L)
 	GRHI->SetViewport(VP);
 
 	// Misc		- draw only front-faces //back-faces
-	RCache.set_CullMode(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(FALSE);
 	// no transparency
 #pragma todo("can optimize for multi-lights covering more than say 50%...")

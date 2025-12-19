@@ -341,14 +341,13 @@ void dxRenderDeviceRender::Begin()
 {
 #ifndef _EDITOR
 #ifndef USE_DX11
-	CHK_DX					(RDevice->BeginScene());
+	CHK_DX(RDevice->BeginScene());
 #else
 #endif //USE_DX11
-	
-	RCache.OnFrameBegin		();
-	RCache.set_CullMode		(CULL_CW);
-	RCache.set_CullMode		(CULL_CCW);
-	RCache.set_Z			(TRUE);
+
+	RCache.OnFrameBegin();
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_Z(TRUE);
 #endif
 
 	GRHI->GPUStatsBegin();

@@ -68,9 +68,8 @@ void CDetailManager::hw_Load_Shaders()
 
 void CDetailManager::hw_Render(light*L)
 {
-	PROF_EVENT("CDetailManager::hw_Render")
-
-	RCache.set_CullMode		(CULL_NONE);
+	PROF_EVENT("CDetailManager::hw_Render");
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_xform_world	(Fidentity);
 
 	float scale = 1.f / float(quant);
@@ -104,8 +103,8 @@ void CDetailManager::hw_Render(light*L)
 		consts.set(scale, scale, scale, 1.f);
 		hw_Render_dump(consts, wave.div(PI_MUL_2), wave_dir2, wave_old.div(PI_MUL_2), wave_dir2_old, 0, LodLQ, L);
 	}
- 
-	RCache.set_CullMode		(CULL_CCW);
+
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)

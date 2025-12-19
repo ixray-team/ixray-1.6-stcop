@@ -22,7 +22,7 @@ public:
 	virtual void SetDepthEnable(u32 enable) = 0;
 	virtual void SetDepthFunc(u32 func) = 0;
 	virtual void SetColorWriteEnable(u32 mask) = 0;
-	virtual void SetCullMode(u32 mode) = 0;
+	virtual void SetCullMode(ERHI_CULLMODE mode) = 0;
 	virtual void UnmapConstants() = 0;
 	virtual void BindAlphaRefCallback(const BindAlphaCallbackDecl& Callback) {};
 
@@ -34,9 +34,9 @@ public:
 	virtual void* GetCache(ERHI_STATE_CACHE_TYPE Type, void* Desc) { return nullptr; };
 	virtual void OverrideScissoring(bool Override = true, bool Value = true) {};
 
-	u32 GetCullMode() const { return CacheCullMode; }
+	ERHI_CULLMODE GetCullMode() const { return CacheCullMode; }
 
 protected:
 	BindAlphaCallbackDecl BindAlphaCallback;
-	u32 CacheCullMode = u32(-1);
+	ERHI_CULLMODE CacheCullMode = ERHI_CULLMODE::NONE;
 };

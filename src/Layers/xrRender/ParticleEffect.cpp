@@ -585,11 +585,12 @@ void CParticleEffect::Render(float)
 				RCache.set_xform_world	(Fidentity);
 				RCache.set_Geometry		(geom);
 
-                RCache.set_CullMode		(m_Def->m_Flags.is(CPEDef::dfCulling)?(m_Def->m_Flags.is(CPEDef::dfCullCCW)?CULL_CCW:CULL_CW):CULL_NONE);
-				RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,dwOffset,0,dwCount,0,dwCount/2);
-                RCache.set_CullMode		(CULL_CCW	); 
+				GRHI->StateManager->SetCullMode(m_Def->m_Flags.is(CPEDef::dfCulling) ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,dwOffset,0,dwCount,0,dwCount/2);
+				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 #ifndef _EDITOR
-				if (GetHudMode()) {
+				if (GetHudMode())
+				{
 					RImplementation.rmNormal();
 					initalizer.SetDefaultMode();
 					ApplyTexgen(Device.mFullTransform);
@@ -737,7 +738,8 @@ void CParticleEffect::Render(float )
 #if 1 //ndef _EDITOR
 				CHudInitializer initalizer(false);
 
-				if (GetHudMode()) {
+				if (GetHudMode())
+				{
 					initalizer.SetHudMode();
 					RImplementation.rmNear();
 #ifdef _EDITOR
@@ -751,11 +753,12 @@ void CParticleEffect::Render(float )
 				RCache.set_xform_world	(Fidentity);
 				RCache.set_Geometry		(geom);
 
-                RCache.set_CullMode		(m_Def->m_Flags.is(CPEDef::dfCulling)?(m_Def->m_Flags.is(CPEDef::dfCullCCW)?CULL_CCW:CULL_CW):CULL_NONE);
-				RCache.Render	   		(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,dwOffset,0,dwCount,0,dwCount/2);
-                RCache.set_CullMode		(CULL_CCW	); 
+				GRHI->StateManager->SetCullMode(m_Def->m_Flags.is(CPEDef::dfCulling) ? (m_Def->m_Flags.is(CPEDef::dfCullCCW) ? ERHI_CULLMODE::BACK : ERHI_CULLMODE::FRONT) : ERHI_CULLMODE::NONE);
+				RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,dwOffset,0,dwCount,0,dwCount/2);
+				GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 #if 1 //ndef _EDITOR
-				if (GetHudMode()) {
+				if (GetHudMode())
+				{
 					RImplementation.rmNormal();
 					initalizer.SetDefaultMode();
 #ifdef _EDITOR

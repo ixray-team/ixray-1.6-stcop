@@ -26,7 +26,7 @@ void	CRenderTarget::phase_smap_direct(light* L, u32 sub_phase)
 	RCache.set_Stencil(FALSE);
 
 	//	Cull always CCW. If you want to revert to previouse solution, please, revert bias setup/
-	RCache.set_CullMode(CULL_CCW);	// near
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);	// near
 	RCache.set_ColorWriteEnable(FALSE);
 }
 

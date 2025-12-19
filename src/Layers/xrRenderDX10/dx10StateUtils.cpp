@@ -5,23 +5,6 @@
 
 namespace dx10StateUtils
 {
-
-D3D_CULL_MODE ConvertCullMode(D3DCULL Mode)
-{
-	switch (Mode)
-	{
-	case D3DCULL_NONE:
-		return D3D_CULL_NONE;
-	case D3DCULL_CW:
-		return D3D_CULL_FRONT;
-	case D3DCULL_CCW:
-		return D3D_CULL_BACK;
-	default:
-		VERIFY(!"Unexpected cull mode!");
-		return D3D_CULL_NONE;
-	}
-}
-
 D3D_COMPARISON_FUNC ConvertCmpFunction(D3DCMPFUNC Func)
 {
 	switch (Func)
@@ -162,7 +145,7 @@ void ResetDescription( D3D_RASTERIZER_DESC &desc )
 {
 	ZeroMemory(&desc, sizeof(desc));
 	desc.FillMode = D3D_FILL_SOLID;
-	desc.CullMode = D3D_CULL_BACK;
+	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
 	desc.FrontCounterClockwise = FALSE;
 	desc.DepthBias = 0;
 	desc.DepthBiasClamp = 0.0f;
