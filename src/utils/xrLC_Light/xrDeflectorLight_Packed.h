@@ -2,6 +2,7 @@
 #include "xrFace.h"
 #include "base_lighting.h"
 #include "base_color.h"
+
 #include "lm_layer.h"
 #include "uv_tri.h"
 #include "R_light.h"
@@ -28,7 +29,12 @@ struct RayRecvestIndex
 	// Task Pos, Dir, Skip
 	Fvector P;
 	Fvector N;
+
 	unsigned int FaseSkip;
+
+	bool	UseSphere = false;
+	Fvector SphereP;
+	float   SphereR;
 };
   
 class PackedLighting
