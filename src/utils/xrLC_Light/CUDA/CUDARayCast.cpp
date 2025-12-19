@@ -32,7 +32,7 @@ struct TextureDataCPU
 void XRay::RayTrace::CUDA::InitializeLights()
 {
 	auto Lights = lc_global_data()->L_static();
-
+ 
 	enum eType : u16
 	{
 		eSun,
@@ -60,6 +60,8 @@ void XRay::RayTrace::CUDA::InitializeLights()
 
 	u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
 
+	Msg("[GPU DEVICE ALLOCATE] FACES[%u] Allocate : %llu kb", numLights, numLights * sizeof(Hardware_Lighting) / 1024);
+ 
 	Hardware_Lighting* h_lights = nullptr;			// CPU alloc
 	// Заполняем буфер Источников света
 	CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(Hardware_Lighting)));
@@ -90,8 +92,10 @@ void XRay::RayTrace::CUDA::InitializeLights()
 
 void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
 {
+	size_t Allocated_mem = size_t(Faces.size() * sizeof(Hardware_FaceData)) / 1024 / 1024;
+
 	Hardware_FaceData* faces_host = nullptr;
-	int alloc_size = Faces.size() * sizeof(Hardware_FaceData);
+	size_t alloc_size = Faces.size() * sizeof(Hardware_FaceData);
  	CUDA_CHECK ( cudaMallocHost(&faces_host, alloc_size) );
 	
 	int IndexFace = 0;
@@ -111,14 +115,16 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
 
 		IndexFace++;
 	}
+  
+	clMsg("* [GPU_DEVICE MEMORY] Faces data : %llu mb", Allocated_mem);
 
 	CUDA_CHECK( cudaMalloc(&gpu_faces, alloc_size) );
 	CUDA_CHECK( cudaMemcpy(gpu_faces, faces_host, alloc_size, cudaMemcpyHostToDevice) );
  	cudaFreeHost(faces_host);
 
+
 	size_faces = Faces.size();
 
-	Msg("[GPU] FACES[%u] Allocate : %llu kb", Faces.size(), Faces.size() * sizeof(Hardware_FaceData) / 1024);
 }
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
@@ -200,7 +206,7 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 	allocated += cpu_tex_gpu.size() * sizeof(Hardware_TextureData);
 	size_textures = cpu_tex_gpu.size();
 
-	Msg("[GPU] Textures[%u] Allocate : %llu kb", cpu_tex_gpu.size(), allocated / 1024);
+	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu kb", cpu_tex_gpu.size(), allocated / 1024);
 }
 
 void XRay::RayTrace::CUDA::InitializeRayTracing()
@@ -225,7 +231,6 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
  
-	clMsg("Processing Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 	InitializeLights();
 	InitializeTexturesAlpha();
 }
@@ -302,15 +307,20 @@ public:
 		memset(h_colors, 0, max_rays * sizeof(Hardware_Color));
 		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(Hardware_Color)));
 	}
+ 
 	 
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
 		h_rays[INDEX] =
 		{
-			.Position = make_float3(Task.P.x, Task.P.y, Task.P.z),
-			.Direction = make_float3(Task.N.x, Task.N.y, Task.N.z),
-			.SkipFace = Task.FaseSkip
+			.Position		= make_float3(Task.P.x, Task.P.y, Task.P.z),
+			.Direction		= make_float3(Task.N.x, Task.N.y, Task.N.z),
+			.SkipFace		= Task.FaseSkip,
+			
+			.UseSphere		= Task.UseSphere,
+ 			.Sphere_Pos		= make_float3(Task.SphereP.x, Task.SphereP.y, Task.SphereP.z),
+			.Sphare_Range	= Task.SphereR
  		};
 	}
 	 
@@ -411,7 +421,7 @@ thread_local RayTracer GPURayTracer;
  
 
 // Raytracer Initialize
-void XRay::RayTrace::CUDA::RayTraceInitialize(base_lighting& L, u8 CurrentFlags)
+void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags)
 {
 	if (!GPURayTracer.isInitialized)
  		GPURayTracer.Init(MAX_RAYS_PER_GPU);

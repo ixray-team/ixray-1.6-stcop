@@ -6,12 +6,27 @@
 
 // 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
 // 14.12.2025 (Повыпиливал лишние действие с Edge) там можно было и так посчитать ;
-
+ 
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 
 /// Запрашивает лучи у ГПУ
 void CDeflector::LightGPU()
 {
+	Fbox bb;		bb.invalidate();
+	try 
+	{
+		for (u32 fid = 0; fid < UVpolys.size(); fid++)
+		{
+			Face* F = UVpolys[fid].owner;
+			for (int i = 0; i < 3; i++)	bb.modify(F->v[i]->P);
+		}
+		bb.getsphere(Sphere.P, Sphere.R);
+	}
+	catch (...)
+	{
+		clMsg("* ERROR: CDeflector::Light - sphere calc");
+	}
+	 
 	// se7kills todo: Аналог на GPU
  	// LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
@@ -32,6 +47,7 @@ void CDeflector::LightGPU()
 
 }
 
+thread_local HASH hash_2d;
 
 void CDeflector::L_DirectGPU()
 {
@@ -60,6 +76,21 @@ void CDeflector::L_DirectGPU()
 	Jitter_Select(Jitter, Jcount);
 	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
  
+	// Создание тоже может занимать время
+ 	bool UseHash = lm.width > 16 && lm.height > 16;
+ 	if (UseHash)
+	{ 		
+		Fbox2			bounds;
+		Bounds_Summary(bounds);
+		hash_2d.initialize(bounds, (u32)UVpolys.size());
+		for (u32 fid = 0; fid < UVpolys.size(); fid++)
+		{
+			UVtri* T = &(UVpolys[fid]);
+			Bounds(fid, bounds);
+			hash_2d.add(bounds, T);
+		}
+	}
+	 
 	for (u32 V = 0; V < lm.height; V++)
 	{
  		for (u32 U = 0; U < lm.width; U++)
@@ -75,17 +106,36 @@ void CDeflector::L_DirectGPU()
 
  				// World space
 				Fvector wP, wN, B;
-				for (auto& TRIANLGE : UVpolys)
+				if (UseHash)
 				{
-					if (TRIANLGE.isInside(P, B))
+					auto& Hash = hash_2d.query(P.x, P.y);
+					for (auto& TRIANGLE : Hash)
 					{
-						Face* F = TRIANLGE.owner;
-						FromBarry(F, wP, wN, B);
-   						GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
-   						Fcount += 1;
- 						break;
+						if (TRIANGLE->isInside(P, B))
+						{
+							Face* F = TRIANGLE->owner;
+							FromBarry(F, wP, wN, B);
+							GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
+							Fcount += 1;
+							break;
+						}
 					}
 				}
+				else
+				{
+					for (auto& TRIANGLE : UVpolys)
+					{
+						if (TRIANGLE.isInside(P, B))
+						{
+							Face* F = TRIANGLE.owner;
+							FromBarry(F, wP, wN, B);
+							GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
+							Fcount += 1;
+							break;
+						}
+					}
+				}
+
 			}
 
 			if (Fcount > 0)
@@ -153,6 +203,11 @@ void CDeflector::L_DirectGPU()
   
 
 /// Залетают лучи после расчета в ГПУ
+
+// se7kills:
+// Убрал hash_map Дорого ее чистить и память кушает 
+// Сделал вектор Samples Для хранения результатов в lm_layer
+ 
 bool CDeflector::ApplyColors()
 {
 	lm_layer& lm = layer;
@@ -162,40 +217,51 @@ bool CDeflector::ApplyColors()
 	if ( ApplyLmap)
 	{
 		ApplyLmap = false;
-		
-		base_color_c C_Zero;
+ 
+	
+		base_color_c C_Zero, Cnew;
  		for (u32 V = 0; V < lm.height; V++)
 		{
 			for (u32 U = 0; U < lm.width; U++)
 			{
-				auto Key = GPUTaskinSystem.MakeKey(U, V);
+				u32		Key   = V * lm.width + U;
+				u8   Samples  = lm.samples[Key];
+				auto& CResult = lm.surface[Key];
 
-				if (def_color_map.end() != def_color_map.find(Key))
+				if (Samples > 0)
 				{
-					auto C		 = def_color_map[Key].C;
-					auto Samples = def_color_map[Key].LSamples;
-					C.scale(Samples);
-					C.mul(.5f);
- 
-					lm.surface[V * lm.width + U]._set(C);
+ 					CResult._get(Cnew);
+					Cnew.scale(Samples);
+					Cnew.mul(0.5f);
+					CResult._set(Cnew);
 				}
 				else
 				{
-					lm.surface[V * lm.width + U]._set(C_Zero);
-  				}
+					CResult._set(C_Zero);
+				}
 			}
 		}
-		def_color_map.clear();
    	}	
  
 	return AnyValue;
-}
-
+} 
 
 void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
-{
- 	def_color_map[IKey].LSamples++;
-	def_color_map[IKey].C.add(C);
+{	
+	auto& lm = layer;
+
+	u32 U = GPUTaskinSystem.GetU(IKey);
+	u32 V = GPUTaskinSystem.GetV(IKey);
+
+	u32 Key = V * lm.width + U;
+ 	auto& CResult		= lm.surface[Key];
+	auto& Keys			= lm.samples[Key];
+	Keys += 1;
+
+	base_color_c cNew;
+	CResult._get(cNew);
+	cNew.add(C);
+	CResult._set(cNew);
 }
 
 /// Перерасчет в более сжатый формат

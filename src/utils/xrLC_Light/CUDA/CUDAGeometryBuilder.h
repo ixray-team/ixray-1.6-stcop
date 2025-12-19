@@ -7,8 +7,7 @@
 #include "xrFace.h"
 #include "CUDARayCast.h"
 #include "CUDAContext.h"
-
-
+ 
 struct OptixMeshBuffers;
 
 struct GridKeyVertexies 
@@ -52,6 +51,7 @@ struct GridKeyHasher
 
 };
 
+
 class OptixGeometryBuilder
 {
 private:
@@ -60,6 +60,36 @@ private:
     {
         Fvector v;
         uint32_t originalIndex;
+    }; 
+
+    struct IndexFaces
+    {
+        uint32_t i1, i2, i3;
+        uint32_t originalIndex;
+
+        IndexFaces(const CDB::TRI& tri, uint32_t idx) : originalIndex(idx)
+        {
+            // нормализуем пор€док вершин (сортировка трЄх чисел)
+            i1 = tri.verts[0];
+            i2 = tri.verts[1];
+            i3 = tri.verts[2];
+
+            if (i1 > i2) std::swap(i1, i2);
+            if (i2 > i3) std::swap(i2, i3);
+            if (i1 > i2) std::swap(i1, i2);
+        }
+
+        bool operator<(const IndexFaces& other) const
+        {
+            if (i1 != other.i1) return i1 < other.i1;
+            if (i2 != other.i2) return i2 < other.i2;
+            return i3 < other.i3;
+        }
+
+        bool similar(const IndexFaces& other) const
+        {
+            return i1 == other.i1 && i2 == other.i2 && i3 == other.i3;
+        }
     };
 
     struct FaceRaw
@@ -76,6 +106,7 @@ private:
 public:
     xr_vector<Fvector>        vertices;
     xr_vector<CDB::TRI>       triangles;
+
     xr_vector<Face*>          facePointers;
 
 
@@ -123,7 +154,6 @@ public:
 
     void RemoveDublicates()
     {
-        size_t VertexStart = vertices.size();
         //----------------------
         // 1. Собираем все вершины
         //----------------------
@@ -195,11 +225,50 @@ public:
         //----------------------
         raw_faces.clear();
         raw_faces.shrink_to_fit();
-
-        clMsg("$ Remove Vertex Dublicates: Pre : %u | Now: %u", 
-            vertices.size(), 
-            VertexStart);
     };
+
+    // Remove Dublicate Faces
+    void RemoveDublicateFaces()
+    {
+        if (triangles.empty())        return;
+
+        // 1. Убираем дубликаты треугольников через сортировку
+        xr_vector<IndexFaces> temp;
+        temp.reserve(triangles.size());
+
+        for (size_t i = 0; i < triangles.size(); ++i)
+        {
+            temp.emplace_back(triangles[i], static_cast<uint32_t>(i));
+        }
+
+        std::sort(std::execution::par, temp.begin(), temp.end());
+
+        // создаём новые массивы
+        xr_vector<CDB::TRI> new_faces;
+        xr_vector<Face*> new_dummy;
+        new_faces.reserve(triangles.size());
+        new_dummy.reserve(facePointers.size());
+
+        // первый всегда берём
+        new_faces.push_back(triangles[temp[0].originalIndex]);
+        new_dummy.push_back(facePointers[temp[0].originalIndex]);
+
+        for (size_t i = 1; i < temp.size(); ++i)
+        {
+            if (!temp[i].similar(temp[i - 1]))
+            {
+                new_faces.push_back(triangles[temp[i].originalIndex]);
+                new_dummy.push_back(facePointers[temp[i].originalIndex]);
+            }
+        }
+
+        new_faces.shrink_to_fit();
+        new_dummy.shrink_to_fit();
+
+        // меняем местами
+        triangles.swap(new_faces);
+        facePointers.swap(new_dummy);
+    }
 
     bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
     bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream);
