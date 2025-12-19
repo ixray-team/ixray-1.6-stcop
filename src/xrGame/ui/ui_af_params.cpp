@@ -71,6 +71,7 @@ LPCSTR af_actor_param_names[] =
 	"satiety_health_v",
 	"satiety_v",
 	"satiety_power_v",
+	"thirst_power_v",
 	"wound_incarnation_v",
 	"radiation_v",
 };
@@ -229,15 +230,15 @@ void CUIArtefactParams::SetInfo(CInventoryItem& pInvItem)
 			if (!m_restore_item[id])
 				continue;
 
-			float actor_val = pSettings->r_float("actor_condition", af_actor_param_names[id]);
-			val = pSettings->r_float(af_section, restore_section);
+			float actor_val = READ_IF_EXISTS(pSettings, r_float, "actor_condition", af_actor_param_names[id], 0.0f);
+			val = READ_IF_EXISTS(pSettings, r_float, af_section, restore_section, 0.0f);
 			if (fis_zero(val))
 			{
 				continue;
 			}
 			if (m_restore_item[id]->GetLegacyMode())
 			{
-				val = (val/actor_val);
+				val /= actor_val;
 			}
 			setValue(m_restore_item[id], val * pInvItem.GetCondition());
 		}
