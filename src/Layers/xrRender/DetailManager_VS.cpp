@@ -185,8 +185,8 @@ void CDetailManager::hw_Load_Shaders()
 
 void CDetailManager::hw_Render(light*L)
 {
-	PROF_EVENT("CDetailManager::hw_Render")
-	RCache.set_CullMode		(CULL_NONE);
+	PROF_EVENT("CDetailManager::hw_Render");
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_xform_world	(Fidentity);
 	// Setup geometry and DMA
 	RCache.set_Geometry		(hw_Geom);
@@ -221,7 +221,7 @@ void CDetailManager::hw_Render(light*L)
 		hw_Render_dump(&*hwc_s_array, 0, 1, L);
 	}
 
-	RCache.set_CullMode		(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 }
 
 struct InstanceData
