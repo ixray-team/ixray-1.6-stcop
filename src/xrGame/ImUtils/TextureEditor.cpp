@@ -289,6 +289,8 @@ void TextureEditor_WorkerThread()
 			}
 			case CImGuiTextureEditor::eRequestType::kUpdateSelected:
 			{
+				g_imgui_texture_editor.is_update_selected = false;
+
 				if (req.payload != _kInvalidSelectedID)
 				{
 					if (req.payload < g_imgui_texture_editor.textures.size())
@@ -537,7 +539,6 @@ void RenderTextureEditor()
 										if (ImGui::Selectable(sel_name, selected_status))
 										{
 											g_imgui_texture_editor.window_selected_name[0] = 0;
-											g_imgui_texture_editor.is_update_selected = false;
 											g_imgui_texture_editor.selected_index = g_imgui_texture_editor.filter_query[row];
 											g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kUpdateSelected, .payload = g_imgui_texture_editor.filter_query[row] });
 											std::strcat(g_imgui_texture_editor.window_selected_name, "Selected - ");
