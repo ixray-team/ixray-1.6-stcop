@@ -54,7 +54,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	L_dir.normalize				();
 
 	// Perform masking (only once - on the first/near phase)
-	RCache.set_CullMode			(CULL_NONE	);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	if (SE_SUN_NEAR==sub_phase)	//.
 	{
 		// Fill vertex buffer
@@ -91,7 +91,7 @@ void CRenderTarget::accum_direct_cascade	( u32 sub_phase, Fmatrix& xform, Fmatri
 	//if( sub_phase == SE_SUN_FAR ) //******************************************************************
 	{
 		phase_accumulator					()	;
-		RCache.set_CullMode					(CULL_CCW); //******************************************************************
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable			()	;
 
 		// texture adjustment matrix
@@ -343,7 +343,7 @@ void CRenderTarget::accum_direct_volumetric	(u32 sub_phase, const u32, const Fma
 		// setup
 
 		RCache.set_Element			(s_accum_direct_volumetric_cascade->E[0]);
-		RCache.set_CullMode			(CULL_CCW); 
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 
 		RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0.0f);
 		RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0.0f);
