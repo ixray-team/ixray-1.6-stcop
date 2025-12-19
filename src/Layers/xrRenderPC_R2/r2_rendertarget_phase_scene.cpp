@@ -39,7 +39,7 @@ void	CRenderTarget::phase_scene_begin	()
 
 	// Misc		- draw only front-faces
 	CHK_DX(RDevice->SetRenderState	( D3DRS_TWOSIDEDSTENCILMODE,FALSE				));
-	RCache.set_CullMode					( CULL_CCW );
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable			( );
 }
 

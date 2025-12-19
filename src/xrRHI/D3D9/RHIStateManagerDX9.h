@@ -14,7 +14,7 @@ public:
     void SetDepthEnable(u32 enable) override;
     void SetDepthFunc(u32 func) override;
     void SetColorWriteEnable(u32 mask) override;
-    void SetCullMode(u32 mode) override;
+    void SetCullMode(ERHI_CULLMODE mode) override;
     void SetAlphaRef(u32 mode) override;
     void UnmapConstants() override;
     void Reset() override {};
