@@ -44,8 +44,7 @@ void ImplicitThread::Execute()
 
 // 2 : Mainthread + UI thread
 int ThreadTaskID_Implication = 0;
-CTimer tImplicit;
-
+ 
 xrCriticalSection csLockImplicit;
 ImplicitCalcGlobs cl_globs;
 
@@ -54,25 +53,20 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 	// Start threads
 	ThreadTaskID_Implication = 0;
 
-	tImplicit.Start();
-
-	CThreadManager tmanager;
+  	CThreadManager tmanager;
 	for (u32 thID = 0; thID < gCompilerMode.ThreadsPerWork; thID++)
-	{
-		tmanager.start(new ImplicitThread(thID, &defl));
-	}
-
-	tmanager.wait();
+ 		tmanager.start(new ImplicitThread(thID, &defl));
+ 	tmanager.wait();
 }
 
 void ImplicitExecute::Execute()
 {
-	ImplicitDeflector& defl = cl_globs.DATA();
+	ImplicitDeflector& defl			= cl_globs.DATA();
 	CDB::COLLIDER DB;
 
 	// Setup variables
 	Fvector2 dim, half;
-	dim.set(float(defl.Width()), float(defl.Height()));
+	dim .set(float(defl.Width()), float(defl.Height()));
 	half.set(.5f / dim.x, .5f / dim.y);
 
 	// Jitter data
@@ -98,7 +92,9 @@ void ImplicitExecute::Execute()
 
 		Progress(float(V) / float(defl.Height()));
 		csLockImplicit.Leave();
-
+ 
+		AditionalData("CurrentV: %u", V);
+ 
 		for (u32 U = 0; U < defl.Width(); U++)
 		{
 			base_color_c C;
@@ -154,9 +150,6 @@ void ImplicitExecute::Execute()
 				defl.Marker(U, V) = 0;
 			}
 		}
-
-		if (V % 8 == 0)
-			AditionalData("CurrentV: %u | time: %.0f", V, tImplicit.GetElapsed_sec());
 	}
 }
 
@@ -197,7 +190,9 @@ public:
 
  			if (Samples)
 			{
-				auto& C = T.second.C;	// Color
+				// Color
+				auto& C = T.second.C;
+ 
 				// Calculate lighting amount
 				C.scale(Samples);
 				C.mul(.5f);
@@ -285,6 +280,7 @@ public:
 						clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 					}
 				}
+
 				AditionalData("Current: %u", V);
 			};
 

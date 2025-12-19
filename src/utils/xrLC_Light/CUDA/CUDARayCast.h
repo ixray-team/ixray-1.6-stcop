@@ -29,7 +29,7 @@ namespace XRay::RayTrace::CUDA
     void InitializeRayTracing();
  
     // Ray Trace Call
-    void RayTraceInitialize(base_lighting& L, u8 CurrentFlags);
+    void RayTraceInitialize(u8 CurrentFlags);
 
     void RayTraceAddRay(RayRecvestIndex& ray, size_t index);
     void RayTraceRun(size_t max_rays);
