@@ -119,7 +119,7 @@ void CUIDosimeter::Draw()
 	UI().m_currentPointType = IUIRender::pttLIT;
 
 	UIRender->CacheSetXformWorld(LM);
-	UIRender->CacheSetCullMode(IUIRender::cmNONE);
+	UIRender->CacheSetCullMode(ERHI_CULLMODE::NONE);
 
 	CUIWindow::Draw();
 

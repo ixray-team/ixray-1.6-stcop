@@ -15,7 +15,7 @@ void CRenderTarget::phase_gtao()
 		GPU_EVENT(gtao_render);
 		//Render the AO and view-z into new rendertarget
 		u_setrt(rt_gtao_0, nullptr, nullptr, nullptr);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_Stencil(FALSE);
 
 		//Go go power rangers
@@ -29,7 +29,7 @@ void CRenderTarget::phase_gtao()
 		GPU_EVENT(gtao_filter);
 		//Blur...
 		u_setrt(rt_ssao_temp, nullptr, nullptr, nullptr);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_Stencil(FALSE);
 
 		//Go go power rangers
@@ -46,7 +46,7 @@ void CRenderTarget::phase_sslr() {
 		GPU_EVENT(sslr_render);
 		//Render the AO and view-z into new rendertarget
 		u_setrt(rt_sslr, rt_sslr_data, nullptr, nullptr);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[2]);
@@ -57,7 +57,7 @@ void CRenderTarget::phase_sslr() {
 	{
 		GPU_EVENT(sslr_filter);
 		u_setrt(rt_sslr_temp, nullptr, nullptr, nullptr);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[3]);
@@ -68,7 +68,7 @@ void CRenderTarget::phase_sslr() {
 	{
 		GPU_EVENT(sslr_temporal);
 		u_setrt(rt_sslr, nullptr, nullptr, nullptr);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 		//Go go power rangers
 		RCache.set_Element(s_gtao->E[4]);

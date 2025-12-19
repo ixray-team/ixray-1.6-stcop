@@ -1,32 +1,32 @@
 #include "stdafx.h"
 
 #pragma pack(push,4)
-struct v_build	{
-	Fvector4	p;
-	Fvector2	uv0;
-	Fvector2	uv1;
-	Fvector2	uv2;
-	Fvector2	uv3;
+struct v_build
+{
+	Fvector4 p;
+	Fvector2 uv0;
+	Fvector2 uv1;
+	Fvector2 uv2;
+	Fvector2 uv3;
 };
 
-struct v_filter {
-	Fvector4	p;
-	Fvector4	uv[8];
+struct v_filter 
+{
+	Fvector4 p;
+	Fvector4 uv[8];
 };
 #pragma pack(pop)
 
-void	CRenderTarget::phase_luminance()
+void CRenderTarget::phase_luminance()
 {
 	u32		Offset	= 0;
-//	float	eps		= EPS_S;
 	float	eps		= 0;
 
 	// Targets
-	RCache.set_Stencil						(FALSE);
-	RCache.set_CullMode						(CULL_NONE);
-	RCache.set_ColorWriteEnable				();
+	RCache.set_Stencil(FALSE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_ColorWriteEnable();
 	RCache.set_Z(FALSE);
-	//CHK_DX									(RDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,nullptr,nullptr,nullptr);
