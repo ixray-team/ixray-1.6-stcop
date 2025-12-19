@@ -29,7 +29,10 @@ function normal(shader, t_base, t_second, t_detail)
     shader:dx10texture("s_image", "$user$generic")
 
     shader:dx10texture("s_material", "$user$material")
+	
+    shader:dx10texture("s_smap_sun", "$user$smap_depth_sun")
 
+    shader:dx10sampler("smp_smap")
     shader:dx10sampler("smp_base")
     shader:dx10sampler("smp_nofilter")
     shader:dx10sampler("smp_rtlinear")
