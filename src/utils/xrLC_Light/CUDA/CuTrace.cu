@@ -54,13 +54,17 @@ __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Ran
 	return float (Energy) / 100.0f ;  
 }
 
-__device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& C, unsigned int SkipID)
+__device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, Hardware_Color& C)
 {
+	Hardware_Vector P(Task.Position);
+	Hardware_Vector N(Task.Direction);
+	unsigned int	SkipID = Task.SkipFace;
+
 	Hardware_Vector Ldir;
 	Hardware_Vector Pnew = P;
 	Pnew.Mad_Self(N, 0.1f);
 
-	Hardware_Vector LightPosition = { L.position.x, L.position.y, L.position.z };
+	Hardware_Vector LightPosition  = { L.position.x, L.position.y, L.position.z };
 	Hardware_Vector LightDirection = { L.direction.x, L.direction.y, L.direction.z };
 
 	bool isSunOrHemi = L.light_type != eRGB;
@@ -82,6 +86,18 @@ __device__ void CalculatePoint(Hardware_Lighting& L, Hardware_Vector& P, Hardwar
 
 	case LT_POINT:
 	{
+		// Хрень для дефлекторов 
+		if (Task.UseSphere)
+		{
+			Hardware_Vector SpherePos(Task.Sphere_Pos);
+			float			SphereRange = Task.Sphare_Range;
+		
+			float dist = SpherePos.DistanceTo(LightPosition);
+			if (dist > (SphereRange + L.range))
+				return;
+		}
+
+
 		float sqD = P.DistanceSquared(LightPosition);
 		if (sqD > L.range2)
 			return;
@@ -156,20 +172,20 @@ enum Flags
 	LP_dont_sun  = (1 << 3),
 };
 
-__device__ void LightPoint(Hardware_Vector& P, Hardware_Vector& N, Hardware_Color& ColorUV, unsigned char flags, unsigned int SkipID)
+__device__ void LightPoint(Hardware_Raytask& task, Hardware_Color& ColorUV, unsigned char flags)
 {
  	for (int i = 0; i < g_params.counts_lights; i++)
 	{
 		Hardware_Lighting& L = g_params.lights[i];
 
 		if (!(LP_dont_hemi & flags) && L.type == eHemi)
-			CalculatePoint(L, P, N, ColorUV, SkipID);
+			CalculatePoint(task, L, ColorUV);
 
 		if (!(LP_dont_rgb & flags) && L.type == eRGB)
-			CalculatePoint(L, P, N, ColorUV, SkipID);
+			CalculatePoint(task, L, ColorUV);
 
 		if (!(LP_dont_sun & flags) && L.type == eSun)
-			CalculatePoint(L, P, N, ColorUV, SkipID);
+			CalculatePoint(task, L, ColorUV);
 	}
 }
 
@@ -177,14 +193,10 @@ __device__ void run_tracing_new(int index)
 {
 	unsigned char flags = g_params.flags;
 
-	Hardware_Raytask& Rays = g_params.rays[index];
-	Hardware_Vector P(Rays.Position);
-	Hardware_Vector N(Rays.Direction);
-	unsigned int SkipID = Rays.SkipFace;
-
+	Hardware_Raytask& Task = g_params.rays[index];
 	Hardware_Color& ColorUV = g_params.colors[index];
 	 
-	LightPoint(P, N, ColorUV, flags, SkipID);
+	LightPoint(Task, ColorUV, flags);
 }
  
 #include "optix_types.h"
@@ -244,7 +256,7 @@ extern "C" __global__ void __anyhit__ah()
 	Hardware_FaceData&    F			= g_params.faces[primID];
 	Hardware_TextureData& T			= g_params.textures[F.surfidx];
 
-	if (SkipID == primID)					// Затычка для воды пока что не нашел почему не расчитывается 
+	if (SkipID == primID)
 	{
 		// пропускаем и летим дальше
 		optixIgnoreIntersection();
@@ -253,6 +265,7 @@ extern "C" __global__ void __anyhit__ah()
 
 	if (F.bOpacue || T.pSurface == nullptr)
 	{
+		// Не имеюь прозрачности  → останавливаемся
 		energy = 0;
 		optixSetPayload_0(0);
 		return;
@@ -269,8 +282,7 @@ extern "C" __global__ void __anyhit__ah()
 	}
 		
 	// transparent → пропускаем и летим дальше
-
-	// Тут тоже сделал явное преобразование
+ 	// Тут тоже сделал явное преобразование
 	unsigned int EnergyReturn = float(energy * 100.0f);
 	optixSetPayload_0(EnergyReturn);
 	optixIgnoreIntersection();
