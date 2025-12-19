@@ -100,6 +100,9 @@ protected:
 	
 	void			UpdateWorkload				(float DT);
 
+	xr_vector<CObject*> nearbyObjects;
+	xr_vector<CEntityAlive*> deadNPCs;
+
 public:						
 	u32				o_workload_frame	;
 	u32				o_workload_rframe	;
