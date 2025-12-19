@@ -292,7 +292,7 @@ void RHIStateManagerDX11::SetColorWriteEnable(u32 WriteMask)
 	}
 }
 
-void RHIStateManagerDX11::SetCullMode(u32 Mode)
+void RHIStateManagerDX11::SetCullMode(ERHI_CULLMODE Mode)
 {
 	ValidateRDesc();
 
