@@ -90,7 +90,7 @@ void CWeaponBM16::PlayReloadSound()
 	}
 	else
 	{
-		if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_jam && IsMisfire()))
+		if (m_eSoundsFlags.test(ESoundsFlags::sf_reload_jam) && IsMisfire())
 		{
 			PlaySound("sndReloadMis", get_LastFP());
 		}

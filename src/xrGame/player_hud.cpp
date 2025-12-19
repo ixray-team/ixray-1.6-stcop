@@ -90,7 +90,7 @@ void player_hud_motion_container::load(IKinematicsAnimated* model, const shared_
 		CImGuiManager::Instance().Subscribe
 		(
 			"HudAdjust",
-			CImGuiManager::ERenderPriority::eMedium, [this]
+			CImGuiManager::ERenderPriority::eMedium, []
 			{
 				if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]) {
 					return;
@@ -769,7 +769,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, EHudMixType bMi
 
 	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, need_mix_hands, md, speed);
 	
-	if(IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated())
+	if(m_model->dcast_PKinematicsAnimated() != nullptr)
 	{
 		shared_str item_anm_name;
 		if(anm->m_base_name!=anm->m_additional_name)

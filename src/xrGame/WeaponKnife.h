@@ -154,7 +154,7 @@ private:
 		victim_filter	(victim_filter const & copy);
 		bool operator()	(spartial_base_t::value_type const & left) const;
 	private:
-		victim_filter & operator=(victim_filter const & copy) {};
+		victim_filter & operator=(victim_filter const & copy) = delete;
 
 		u16				m_except_id;
 		CWeaponKnife*	m_owner;
@@ -172,7 +172,7 @@ private:
 		best_victim_selector(best_victim_selector const & copy);
 		void operator()(spartial_base_t::value_type const & left);
 	private:
-		best_victim_selector & operator=(best_victim_selector const & copy) {};
+		best_victim_selector & operator=(best_victim_selector const & copy) = delete;
 		
 		Fvector			m_start_pos;
 		float			m_min_dist;
