@@ -241,8 +241,6 @@ void CBuild::Run(LPCSTR P)
 	// Phase("Adaptive HT tessalate ...");
 	xrPhase_AdaptiveHT_tessalte();
 
-
-	Phase("Building RayTrace Model...");
 	Light_prepare();
 
 #ifdef LCCUDA_BUILD
