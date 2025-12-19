@@ -1,5 +1,11 @@
 #include "common.hlsli"
 
+struct PSInput
+{
+	float4 hpos : SV_POSITION;
+	float2 texcoord : TEXCOORD0;
+};
+
 #undef USE_ULTRA_SHADOWS
 
 #define RAY_PATH 2.0h
@@ -22,16 +28,15 @@
 
 #include "shadow.hlsli"
 
-float4 volume_range; //	x - near plane, y - far plane
 float4 sun_shafts_intensity;
 
-float4 main(v2p_TL I) : SV_Target
+float4 main(PSInput I) : SV_Target
 {
 #ifndef SUN_SHAFTS_QUALITY
     return float4(0, 0, 0, 0);
 #else //	SUN_SHAFTS_QUALITY
     IXrayGbuffer O;
-    GbufferUnpack(I.Tex0.xy, I.HPos.xy, O);
+    GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
     float3 P = O.Point;
 
@@ -42,7 +47,7 @@ float4 main(v2p_TL I) : SV_Target
 	float3 direction = P / RAY_SAMPLES;
 #else //	JITTER_SUN_SHAFTS
 	//	Variable ray length, variable step dencity, use jittering
-	float4 J0 = jitter0.Sample(smp_jitter, I.HPos.xy / JITTER_TEXTURE_SIZE);
+	float4 J0 = jitter0.Sample(smp_jitter, I.hpos.xy / JITTER_TEXTURE_SIZE);
 	float coeff = (RAY_SAMPLES - J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
 	float3 direction = P * coeff;
 #endif //	JITTER_SUN_SHAFTS
@@ -50,8 +55,8 @@ float4 main(v2p_TL I) : SV_Target
     float depth = P.z;
     float deltaDepth = direction.z;
 
-    float4 current = mul(m_shadow, float4(P, 1.0f));
-    float4 delta = mul(m_shadow, float4(direction, 0.0f));
+    float4 current = mul(m_shadow_sun[2], float4(P, 1.0f));
+    float4 delta = mul(m_shadow_sun[2], float4(direction, 0.0f));
 
     float res = 0.0f;
     float max_density = sun_shafts_intensity.x;
@@ -66,11 +71,7 @@ float4 main(v2p_TL I) : SV_Target
     {
         if (depth > 0.3)
         {
-		#ifndef FILTER_LOW
-			res += density * shadow(current);
-		#else
-			res += density * sample_hw_pcf(current, float4(0, 0, 0, 0));
-		#endif
+			res += density * s_smap_sun.SampleCmpLevelZero(smp_smap, float3(current.xy, 2), current.z).x;
         }
 
         depth -= deltaDepth;
