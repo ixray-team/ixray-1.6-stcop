@@ -1,5 +1,6 @@
 #include "common.hlsli"
 #include "reflections.hlsli"
+#include "shadow.hlsli"
 
 struct PSInput
 {
@@ -46,13 +47,11 @@ float4 main(PSInput I) : SV_Target
 	float3 WaterPos = mul(m_V, float4(I.world_position, 1.0)).xyz;
 
 #ifdef USE_SSLR_ON_WATER
-    float3 WaterPoint = WaterPos.z * float3(I.hpos.xy * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
 	float3 Reflect = mul((float3x3)m_V, vreflect);
-	
-    float4 sslr = ScreenSpaceLocalReflections(WaterPoint, Reflect);
+    float4 sslr = ScreenSpaceLocalReflections(WaterPos, Reflect);
 	
 	#ifdef USE_OFFSCREEN_REFLECTIONS
-		float4 vslr = FastViewReflections(WaterPoint, Reflect);
+		float4 vslr = FastViewReflections(WaterPos, Reflect);
 		
 		float Fog = saturate(length(vslr.xyz) * fog_params.w + fog_params.x);
 		vslr.w *= 1.f - Fog * Fog;
@@ -114,11 +113,31 @@ float4 main(PSInput I) : SV_Target
 	alpha = min(alpha, saturate(waterDepth));
 	alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
 
-	float4 Light = s_accumulator.Sample(smp_nofilter, I.hpos.xy * pos_decompression_params2.zw);
-	Light *= 1.0f - base.w;
+	float Shadow = 1.0f;
+	
+#ifndef USE_R2_STATIC_SUN
+	int cascade_index;
+	float3 smap_texcoord;
+	
+	bool is_in_bounds = calc_cascades(I.world_position.xyz, m_shadow_sun, cascade_index, smap_texcoord);
+	
+	if(is_in_bounds) 
+	{
+		Shadow = pcf_3x3(s_smap_sun, smp_smap, smap_texcoord, float2(SMAP_size, 1.0 / SMAP_size), 0.0, cascade_index);
+	}
 
-	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Light.w;
+	if(cascade_index >= 2)
+	{
+		float3 Factor = smoothstep(0.499f, 0.498f, abs(smap_texcoord - 0.5f));
+		float Fade = Factor.x * Factor.y * Factor.z;
+		
+		Shadow = lerp(1.0f, Shadow, Fade);
+	}
+#endif
+	
+	final += SpecularPhong(v2point, Nw, L_sun_dir_w.xyz) * Shadow;
 #endif
 	
 	return PushGamma(lerp(float4(final, PopGamma(alpha)), fog_color, calc_fogging(I.world_position)));
 }
+
