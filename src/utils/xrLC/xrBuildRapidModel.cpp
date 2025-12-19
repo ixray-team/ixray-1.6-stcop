@@ -37,6 +37,8 @@ void SaveUVM			(LPCSTR fname, xr_vector<b_rc_face>& vm)
 
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
+	Phase("Building RayTrace Model...");
+
 	float	p_total			= 0;
 	float	p_cost			= 1.f/(lc_global_data()->g_faces().size());
 	lc_global_data()->destroy_rcmodel();

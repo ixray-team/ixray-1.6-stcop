@@ -18,8 +18,7 @@ class XRLC_LIGHT_API CDeflector
 {
 public:
    	bool ApplyLmap			= false;
- 
-	bool ApplyResolution = false;
+ 	bool ApplyResolution = false;
  	bool bMerged = false;
  
 	Fvector				normal;
@@ -29,14 +28,13 @@ public:
 	Fsphere				Sphere;
 
 	// se7kills Освещение на GPU
-	xrCriticalSection csColors;
-	struct ColorsData
-	{
-		base_color_c C;
-		u8 LSamples = 0;
-	};
-	
- 	xr_hash_map<size_t, ColorsData>								def_color_map;
+	// xrCriticalSection csColors;
+	// struct ColorsData
+	// {
+	// 	base_color_c C;
+	// 	u8 LSamples = 0;
+	// };
+ 	// xr_hash_map<size_t, ColorsData>								def_color_map;
  
 public:
 

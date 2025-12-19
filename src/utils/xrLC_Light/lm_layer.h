@@ -11,21 +11,25 @@ struct XRLC_LIGHT_API  lm_layer
 	u32						height;
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
+	xr_vector<u8>			samples;
  
 public:
 	void					create			(u32 w, u32 h)
 	{
 		width				= w;
 		height				= h;
+		
 		u32		size		= w*h;
 		surface.clear();	surface.resize	(size);
-		marker.clear();		marker.assign	(size,0);
+		marker.clear();		marker.assign	(size, 0);
+ 		samples.clear();	samples.assign  (size, 0);
 	}
 	void					destroy			()
 	{
 		width=height		= 0;
 		surface.clear();
 		marker.clear();
+		samples.clear();
 	}
 
 	void					clear_memory()
@@ -33,9 +37,11 @@ public:
 		width = height = 0;
 		surface.clear();
 		marker.clear();
+		samples.clear();
 
 		surface.shrink_to_fit();
 		marker.shrink_to_fit();
+		samples.shrink_to_fit();
 	}
 
 	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }
