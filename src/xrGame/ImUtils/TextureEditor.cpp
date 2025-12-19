@@ -309,6 +309,8 @@ void TextureEditor_WorkerThread()
 				{
 				case CImGuiTextureEditor::eFilterQueryType::kSearch:
 				{
+					g_imgui_texture_editor.is_filter_processing = true;
+
 					std::string_view buf = g_imgui_texture_editor.search_input_buffer;
 
 					if (buf.empty() == false)
@@ -480,8 +482,6 @@ void RenderTextureEditor()
 
 							g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kFilterQuery,
 								.payload = static_cast<u32>(CImGuiTextureEditor::eFilterQueryType::kSearch) });
-
-							g_imgui_texture_editor.is_filter_processing = true;
 						}
 					}
 
