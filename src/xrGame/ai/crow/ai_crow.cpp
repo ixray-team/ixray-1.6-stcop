@@ -356,7 +356,31 @@ void CAI_Crow::shedule_Update		(u32 DT)
 		if(fGoalChangeTime<=0)	{
 			fGoalChangeTime += fGoalChangeDelta+fGoalChangeDelta*Random.randF(-0.5f,0.5f);
 
-			Fvector vP = Actor()->Position();
+			Level().ObjectSpace.GetNearest(nearbyObjects, Position(), 300.0f, NULL);
+			for (CObject* obj : nearbyObjects) 
+			{
+				if (CEntityAlive* entity = smart_cast<CEntityAlive*>(obj); entity && !entity->g_Alive()) 
+				{
+					deadNPCs.push_back(entity);
+				}
+			}
+
+			Fvector vP;
+			if (!deadNPCs.empty()) 
+			{
+				CEntityAlive* targetNPC = deadNPCs[Random.randI(0, deadNPCs.size())];
+				vP = targetNPC->Position();
+				//Msg("Flying to dead NPC at [%f, %f, %f]", vP.x, vP.y, vP.z);
+			}
+			else 
+			{
+				vP = Actor()->Position();
+				float distanceToActor = Position().distance_to(vP);
+				if (distanceToActor > 500.0f) 
+				{
+					fGoalChangeTime = 30.0f;
+				}
+			}
 
 			Fvector dest_dir;
 			dest_dir.sub(Actor()->Position(), Position());
