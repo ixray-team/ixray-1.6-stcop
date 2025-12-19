@@ -20,7 +20,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType) {
 	p1.set((_w + .5f) / _w, (_h + .5f) / _h);
 
 	// Configure rendering settings
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
 	// Lock and set vertices

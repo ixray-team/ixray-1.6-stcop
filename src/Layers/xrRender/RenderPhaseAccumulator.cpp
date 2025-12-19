@@ -20,7 +20,7 @@ void CRenderTarget::phase_accumulator()
 
 		// Stencil	- draw only where stencil >= 0x1
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_ColorWriteEnable();
 	}
 
@@ -44,6 +44,6 @@ void CRenderTarget::phase_vol_accumulator()
 	}
 
 	RCache.set_Stencil(FALSE);
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_ColorWriteEnable();
 }

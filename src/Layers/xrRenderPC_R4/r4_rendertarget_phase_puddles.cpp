@@ -18,7 +18,7 @@ void CRenderTarget::phase_puddles()
 		RCache.set_xform_world(puddle.m_world);
 
 		RCache.set_Shader(s_puddles);
-		RCache.set_CullMode(CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 
 		RCache.set_c("puddle_constants", g_pGamePersistent->Environment().wetness_factor * puddle.m_height);
 

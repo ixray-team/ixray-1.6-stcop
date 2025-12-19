@@ -1019,11 +1019,11 @@ void CBulletManager::Render	()
 		tracers.Render			(bullet.bullet_pos, center, tracer_direction, length, width, bullet.m_u8ColorID, bullet.speed, bActor);
 	}
 	
-	UIRender->CacheSetCullMode		(IUIRender::cmNONE);
+	UIRender->CacheSetCullMode		(ERHI_CULLMODE::NONE);
 	UIRender->CacheSetXformWorld	(Fidentity);
 	UIRender->SetShader				(*tracers.sh_Tracer);
 	UIRender->FlushPrimitive		();
-	UIRender->CacheSetCullMode		(IUIRender::cmCCW);
+	UIRender->CacheSetCullMode		(ERHI_CULLMODE::BACK);
 
 	if(g_bullet_debug_trj)
 	{

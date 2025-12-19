@@ -151,9 +151,9 @@ void dxUIRender::CacheSetXformWorld(const Fmatrix& M)
 	RCache.set_xform_world(M);
 }
 
-void dxUIRender::CacheSetCullMode(CullMode m)
+void dxUIRender::CacheSetCullMode(ERHI_CULLMODE m)
 {
-	RCache.set_CullMode	(CULL_NONE+m);
+	GRHI->StateManager->SetCullMode(m);
 }
 
 void dxUIRender::zb_enable(u32 val)

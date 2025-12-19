@@ -21,7 +21,7 @@ public:
 	virtual void	OnFrameEnd			();
 	virtual void	SetShader			(const debug_shader &shader);
 	virtual void	CacheSetXformWorld	(const Fmatrix& M);
-	virtual void	CacheSetCullMode	(CullMode);
+	virtual void	CacheSetCullMode	(ERHI_CULLMODE);
 	virtual void	SetAmbient			(u32 colour);
 
 	// Shaders
