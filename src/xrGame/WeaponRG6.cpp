@@ -10,15 +10,10 @@
 #include "InventoryOwner.h"
 
 #ifdef DEBUG
-#	include "phdebug.h"
+#	include "PHDebug.h"
 #endif
 
-
-CWeaponRG6::~CWeaponRG6()
-{
-}
-
-BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
+BOOL CWeaponRG6::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL l_res = inheritedSG::net_Spawn(DC);
 	if (!l_res) return l_res;
@@ -30,20 +25,17 @@ BOOL	CWeaponRG6::net_Spawn				(CSE_Abstract* DC)
 
 		if (fake_grenade_name.size())
 		{
-			int k=iAmmoElapsed;
+			int k = iAmmoElapsed;
 			while (k)
 			{
 				k--;
 				inheritedRL::SpawnRocket(*fake_grenade_name, this);
 			}
 		}
-//			inheritedRL::SpawnRocket(*fake_grenade_name, this);
 	}
-	
 
-	
 	return l_res;
-};
+}
 
 void CWeaponRG6::Load(LPCSTR section)
 {

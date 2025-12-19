@@ -1060,20 +1060,25 @@ bool CWeaponMagazinedWGrenade::IsNecessaryItem(const shared_str& item_sect)
 
 bool CWeaponMagazinedWGrenade::install_upgrade_ammo_class(LPCSTR section, bool test)
 {
-	LPCSTR str;
+	LPCSTR str = {};
 
-	bool result = process_if_exists(section, "ammo_mag_size", &CInifile::r_s32, iMagazineSize2, test);
-	iMagazineSize = m_bGrenadeMode ? 1 : iMagazineSize2;
+	bool result = false;
+	bool result2 = false;
 
-	//	ammo_class = ammo_5.45x39_fmj, ammo_5.45x39_ap  // name of the ltx-section of used ammo
-	bool result2 = process_if_exists_set(section, "ammo_class", &CInifile::r_string, str, test);
+	bool grenade_mode = m_bGrenadeMode;
+
+	int& current_size = grenade_mode ? iMagazineSize2 : iMagazineSize;
+
+	result2 = process_if_exists(section, "ammo_mag_size", &CInifile::r_s32, current_size, test);
+
+	result2 = process_if_exists_set(section, "ammo_class", &CInifile::r_string, str, test);
 	if (result2 && !test)
 	{
-		xr_vector<shared_str>& ammo_types = m_bGrenadeMode ? m_ammoTypes2 : m_ammoTypes;
+		xr_vector<shared_str>& ammo_types = grenade_mode ? m_ammoTypes2 : m_ammoTypes;
 		ammo_types.clear();
 		for (int i = 0, count = _GetItemCount(str); i < count; ++i)
 		{
-			string128						ammo_item;
+			string128 ammo_item = {};
 			_GetItem(str, i, ammo_item);
 			ammo_types.push_back(ammo_item);
 		}
