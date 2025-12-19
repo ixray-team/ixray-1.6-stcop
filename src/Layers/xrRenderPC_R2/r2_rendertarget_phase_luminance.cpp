@@ -15,16 +15,16 @@ struct v_filter {
 };
 #pragma pack(pop)
 
-void	CRenderTarget::phase_luminance()
+void CRenderTarget::phase_luminance()
 {
 	u32		Offset	= 0;
 	float	eps		= EPS_S;
 
 	// Targets
-	RCache.set_Stencil						(FALSE);
-	RCache.set_CullMode						(CULL_NONE);
-	RCache.set_ColorWriteEnable				();
-	CHK_DX									(RDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
+	RCache.set_Stencil(FALSE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
+	RCache.set_ColorWriteEnable();
+	CHK_DX(RDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
 	// 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
 	u_setrt									(rt_LUM_64,nullptr,nullptr,nullptr);

@@ -5,7 +5,7 @@ void CRenderTarget::phase_taa()
 {
 	//Output directly to rt_Generic_0 hence we didn't call CopyResource before
     u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
-    RCache.set_CullMode(CULL_NONE);
+    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
     RCache.set_Stencil(FALSE);
 
     RCache.set_Element(s_taa->E[0]);
@@ -35,7 +35,7 @@ void CRenderTarget::phase_mblur()
 	{
 		u_setrt(rt_Generic_2, nullptr, nullptr, nullptr);
 
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_Stencil(FALSE);
 
 		RCache.set_Element(s_taa->E[1]);

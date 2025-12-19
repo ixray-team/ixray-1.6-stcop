@@ -384,19 +384,12 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 					SV.bones[3 % bone_count].id * 3);
 			}
 		}
-
-		//if (S->m_Flags.is(CSurface::sf2Sided))
-		//{
-		//	pv->P.set((pv - 1)->P);	pv->N.invert((pv - 1)->N);	pv->uv.set((pv - 1)->uv); pv++;
-		//	pv->P.set((pv - 3)->P);	pv->N.invert((pv - 3)->N);	pv->uv.set((pv - 3)->uv); pv++;
-		//	pv->P.set((pv - 5)->P);	pv->N.invert((pv - 5)->N);	pv->uv.set((pv - 5)->uv); pv++;
-		//}
 	}
 
-	u32 OldCullMode = RCache.get_CullMode();
+	ERHI_CULLMODE OldCullMode = GRHI->StateManager->GetCullMode();
 	if (S->m_Flags.is(CSurface::sf2Sided))
 	{
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	}
 
 	Stream->Unlock(FaceCount * 3, m_Parent->vs_SkeletonGeom->vb_stride);
@@ -408,6 +401,6 @@ void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 
 	if (S->m_Flags.is(CSurface::sf2Sided))
 	{
-		RCache.set_CullMode(OldCullMode);
+		GRHI->StateManager->SetCullMode(OldCullMode);
 	}
 }
