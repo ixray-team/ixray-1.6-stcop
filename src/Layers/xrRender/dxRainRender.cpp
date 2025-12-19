@@ -90,12 +90,12 @@ void dxRainRender::Render(CEffect_Rain &owner)
 	// Render if needed
 	if (vCount)
 	{
-		RCache.set_CullMode(CULL_NONE);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 		RCache.set_xform_world		(Fidentity);
 		RCache.set_Shader			(SH_Rain);
 		RCache.set_Geometry			(hGeom_Rain);
 		RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vOffset,0,vCount,0,vCount/2);
-		RCache.set_CullMode(CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	}
 
 	// Particles

@@ -35,16 +35,7 @@ void	CRenderTarget::phase_combine	()
 			t_LUM_dest->surface_set(rt_LUM_pool[1]->pSurface);
 	}
 
-	RCache.set_CullMode	( CULL_NONE );
-
-	//if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_OPT_DATA))
-	//{
-	//	phase_downsamp();
-	//}
-	//else if (RImplementation.SSAO.test(ESSAO_DATA::SSAO_BLUR))
-	//{
-	//	phase_ssao();
-	//}
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 
 	// low/hi RTs
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
@@ -179,7 +170,7 @@ void	CRenderTarget::phase_combine	()
 	// Forward rendering
 	{
 		u_setrt							(rt_Generic_0,0,0,RDepth);		// LDR RT
-		RCache.set_CullMode				(CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_Stencil				(FALSE);
 		RCache.set_ColorWriteEnable		();
 		//g_pGamePersistent->Environment().RenderClouds	();
@@ -213,10 +204,12 @@ void	CRenderTarget::phase_combine	()
 	BOOL	bDistort	= RImplementation.o.distortion_enabled;				// This can be modified
 	{
 		u32 count = RImplementation.mapDistort.size() + RImplementation.mapHUDDistort.size();
-		if		((0 == count) && !_menu_pp)		bDistort= FALSE;
-		if (bDistort)		{
+		if ((0 == count) && !_menu_pp) bDistort= FALSE;
+
+		if (bDistort)
+		{
 			u_setrt						(rt_Generic_1,0,0,RDepth);		// Now RT is a distortion mask
-			RCache.set_CullMode			(CULL_CCW);
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 			RCache.set_Stencil			(FALSE);
 			RCache.set_ColorWriteEnable	();
 			CHK_DX(RDevice->Clear	( 0L, nullptr, D3DCLEAR_TARGET, color_rgba(127,127,0,127), 1.0f, 0L));
@@ -229,7 +222,7 @@ void	CRenderTarget::phase_combine	()
 	//	Render to RT texture to be able to copy RT even in windowed mode.
 	u_setrt(rt_Color, 0, 0, RDepth);
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	if (1)	
@@ -315,7 +308,7 @@ void	CRenderTarget::phase_combine	()
 	}
 
 #ifdef DEBUG
-	RCache.set_CullMode	( CULL_CCW );
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	static	xr_vector<Fplane>		saved_dbg_planes;
 	if (bDebug)		
 		saved_dbg_planes= dbg_planes;
@@ -373,7 +366,7 @@ void CRenderTarget::phase_wallmarks		()
 	u_setrt								(rt_Color,nullptr,nullptr,RDepth);
 	// Stencil	- draw only where stencil >= 0x1
 	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
-	RCache.set_CullMode					(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_ColorWriteEnable			(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
 }
 

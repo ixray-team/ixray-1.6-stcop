@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #ifdef DEBUG_DRAW
 CDS0_DebugRender::CDS0_DebugRender()
 {
@@ -28,7 +29,7 @@ void CDS0_DebugRender::CacheSetXformWorld(const Fmatrix& M)
 {
 }
 
-void CDS0_DebugRender::CacheSetCullMode(CullMode mode)
+void CDS0_DebugRender::CacheSetCullMode(ERHI_CULLMODE mode)
 {
 }
 

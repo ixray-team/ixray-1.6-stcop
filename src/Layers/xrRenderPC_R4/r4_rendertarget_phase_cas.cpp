@@ -3,7 +3,7 @@
 void CRenderTarget::phase_cas()
 {
     u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
-    RCache.set_CullMode(CULL_NONE);
+    GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
     RCache.set_Stencil(FALSE);
 
 	// Draw COLOR

@@ -76,7 +76,7 @@ void CRenderTarget::phase_combine()
 
 	u_setrt(rt_Generic_0, 0, 0, RDepth);
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	// draw skybox
@@ -168,7 +168,7 @@ void CRenderTarget::phase_combine()
 		GPU_EVENT(Forward_rendering);
 		phase_scene_forward();
 
-		RCache.set_CullMode (CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_Stencil (FALSE);
 		RCache.set_ColorWriteEnable ();
 
@@ -197,7 +197,7 @@ void CRenderTarget::phase_combine()
 
 			RImplementation.rmNormal();
 			GRHI->ClearTarget(rt_Generic_1->pRT, ERTColor::Gray);
-			RCache.set_CullMode(CULL_CCW);
+			GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 			RCache.set_Stencil(FALSE);
 			RCache.set_ColorWriteEnable();
 			RImplementation.r_dsgraph_render_distort();
@@ -286,7 +286,7 @@ void CRenderTarget::phase_combine()
 
 	RImplementation.rmNormal();
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 	{
 		GPU_EVENT(combine_2);
@@ -360,7 +360,7 @@ void CRenderTarget::phase_combine()
 	}
 
 #ifdef DEBUG
-	RCache.set_CullMode	( CULL_CCW );
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	static	xr_vector<Fplane>		saved_dbg_planes;
 	if (bDebug)		saved_dbg_planes= dbg_planes;
 	else			dbg_planes		= saved_dbg_planes;
@@ -399,14 +399,14 @@ void CRenderTarget::phase_combine()
 #endif
 }
 
-void CRenderTarget::phase_wallmarks		()
+void CRenderTarget::phase_wallmarks()
 {
 	// Targets
 	u_setrt(rt_Color, nullptr, nullptr, RDepth);
 	// Stencil	- draw only where stencil >= 0x1
-	RCache.set_Stencil					(TRUE,D3DCMP_LESSEQUAL,0x01,0xff,0x00);
-	RCache.set_CullMode					(CULL_CCW);
-	RCache.set_ColorWriteEnable			(D3DCOLORWRITEENABLE_RED|D3DCOLORWRITEENABLE_GREEN|D3DCOLORWRITEENABLE_BLUE);
+	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
+	RCache.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);
 }
 
 void CRenderTarget::phase_combine_volumetric()

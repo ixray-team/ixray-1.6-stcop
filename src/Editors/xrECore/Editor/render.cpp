@@ -166,11 +166,11 @@ void CRenderTarget::accum_spot(light* L)
 		RCache.set_ColorWriteEnable(FALSE);
 		RCache.set_Element(s_accum->E[0]);		// masker
 
-		RCache.set_CullMode(CULL_CW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, dwLightMarkerID, 0x01, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 
-		RCache.set_CullMode(CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 		draw_volume(L);
 	}
@@ -178,7 +178,7 @@ void CRenderTarget::accum_spot(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable();
-	RCache.set_CullMode(CULL_CW); // back
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
 	Fmatrix m_Texgen; u_compute_texgen_screen(m_Texgen);
@@ -417,7 +417,7 @@ void CRender::Render()
 
 		Target->reset_light_marker(true);
 
-		RCache.set_CullMode(CULL_CCW); // back
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK); // back
 		RCache.set_Stencil(FALSE);
 	}
 

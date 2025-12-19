@@ -18,10 +18,8 @@ void CRenderTarget::accum_reflected		(light* L)
 
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
-	RCache.set_ColorWriteEnable				();
-	if (bIntersect)	RCache.set_CullMode		(CULL_CW);		// back
-	else			RCache.set_CullMode		(CULL_CCW);		// front
-
+	RCache.set_ColorWriteEnable();
+	GRHI->StateManager->SetCullMode(bIntersect ? ERHI_CULLMODE::FRONT : ERHI_CULLMODE::BACK);
 	// 2D texgen (texture adjustment matrix)
 	Fmatrix			m_Texgen;
 	{

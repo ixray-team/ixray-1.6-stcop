@@ -5,13 +5,6 @@
 class IDebugRender
 {
 public:
-	enum CullMode
-	{
-		cmNONE = 0,
-		cmCW,
-		cmCCW,
-	};
-
 	enum dbgShaderHandle
 	{
 		dbgShaderWindow = 0,
@@ -30,7 +23,7 @@ public:
 	virtual void	OnFrameEnd			() = 0;
 	virtual void	SetShader			(const debug_shader &shader) = 0;
 	virtual void	CacheSetXformWorld	(const Fmatrix& M) = 0;
-	virtual void	CacheSetCullMode	(CullMode) = 0;
+	virtual void	CacheSetCullMode	(ERHI_CULLMODE) = 0;
 	virtual void	SetAmbient			(u32 colour) = 0;
 
 	// Shaders

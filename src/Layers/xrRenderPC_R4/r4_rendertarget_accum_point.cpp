@@ -49,12 +49,12 @@ void CRenderTarget::accum_point		(light* L)
 	//RCache.set_ColorWriteEnable		(FALSE);
 
 	// backfaces: if (1<=stencil && zfail)	stencil = light_id
-	RCache.set_CullMode				(CULL_CW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
    	RCache.set_Stencil				(TRUE,D3DCMP_LESSEQUAL,dwLightMarkerID,0x01,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
 	// frontfaces: if (1<=stencil && zfail)	stencil = 0x1
-	RCache.set_CullMode				(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE);
 	draw_volume						(L);
 
@@ -64,11 +64,7 @@ void CRenderTarget::accum_point		(light* L)
 	// *****************************	Minimize overdraw	*************************************
 	// Select shader (front or back-faces), *** back, if intersect near plane
 	RCache.set_ColorWriteEnable				();
-	RCache.set_CullMode						(CULL_CW);		// back
-	/*
-	if (bIntersect)	RCache.set_CullMode		(CULL_CW);		// back
-	else			RCache.set_CullMode		(CULL_CCW);		// front
-	*/
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 
 	// 2D texgens 
 	Fmatrix			m_Texgen;			u_compute_texgen_screen	(m_Texgen	);
@@ -95,7 +91,7 @@ void CRenderTarget::accum_point		(light* L)
 		RCache.set_c					("Ldynamic_hud",	(int)L->flags.bHudMode);
 		RCache.set_c					("m_texgen",		m_Texgen);
 
-		RCache.set_CullMode				(CULL_CW);		// back
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::FRONT);
 		// Render if (light_id <= stencil && z-pass)
 		RCache.set_Stencil(TRUE, D3DCMP_EQUAL, dwLightMarkerID, 0xff, 0x00);
 		draw_volume(L);
