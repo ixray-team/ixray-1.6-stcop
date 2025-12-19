@@ -13,7 +13,7 @@ void CRenderTarget::RenderEffect(ScreenPostProcessType postProcessType, bool pos
 	}
 
 	// Configure rendering settings
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
 	// Lock and set vertices
@@ -90,7 +90,7 @@ void CRenderTarget::PhaseGasmask()
 	u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
 
 	// Configure rendering settings
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(false);
 
 	// Set shader and geometry
