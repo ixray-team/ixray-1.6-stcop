@@ -1,10 +1,12 @@
 [general]
-Platform = cs ; Platform mode. Supported values: cop (Call of Pripyat), cs (Clear Sky)
-title = st_ixray_title_cs ; Mod name
-SaveImageSize = 128, 128
+Platform = cs                          ; Platform mode. Supported values: cop (Call of Pripyat), cs (Clear Sky), soc (Shadow of Chernobyl)
+title = st_ixray_title_cs              ; Mod name
+SaveImageSize = 128, 128               ; Size of saved thumbnail image
 
 [shaders_options]
 USE_LEGACY_LIGHT = 1                   ; 1 - legacy pipeline, 0 - PBR pipeline
+; USE_SOC_LIGHTING = 1				   	; For levels with SoC lightmap format
+; USE_DIFFUSE_SKY_COLOR = 1			   	; For SoC weather
 
 ; Hozar: Use brga skycolor format
 ; USE_BGRA_SKYCOLOR = 1;
@@ -90,6 +92,12 @@ UseLegacyParticleLoader = false 		; Use SoC format for particles.xr
 
 [environment]
 ReadSunConfig = false                   ; Enable sun movement in configurations
+
+[localization]
+PreferedFallbackLanguage = eng
+
+[sound]
+MaterialOCC = false                     ; Use materail occ info
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extended sections

@@ -25,7 +25,7 @@ float4 main(p_volume I, float4 pos2d : SV_POSITION) : SV_Target
     float4 PS = mul(m_shadow, Point);
 
 #ifdef USE_SHADOW
-    Lightmap *= max(Ldynamic_hud, shadow(PS));
+    Lightmap *= max(Ldynamic_hud, shadow_local(PS.xyz / PS.w));
 
     #ifdef USE_HUD_SHADOWS
 		if (O.Depth < 0.02f && dot(Lightmap.xyz, Light.xyz) > 0.0001f)

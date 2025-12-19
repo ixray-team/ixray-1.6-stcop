@@ -75,7 +75,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 	for(uint i = 0; i < NUM_SAMPLES; ++i)
 	{
 		float2 offset = Disk32_Normalized[i] * scaled_screen_res.zw * DISK32_RADIUS;
-		offset = mirror(I.texcoord.xy + offset * 32.0f);
+		offset = mirror(I.texcoord.xy + offset * 16.0f);
 		
 		SSLR = s_refl.SampleLevel(smp_nofilter, offset, 0);
 		
