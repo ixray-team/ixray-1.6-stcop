@@ -56,10 +56,10 @@ void RHIStateManagerDX9::SetColorWriteEnable(u32 Mask)
     Device->SetRenderState(D3DRS_COLORWRITEENABLE3, Mask);
 }
 
-void RHIStateManagerDX9::SetCullMode(u32 Mode)
+void RHIStateManagerDX9::SetCullMode(ERHI_CULLMODE Mode)
 {
     CacheCullMode = Mode;
-    Device->SetRenderState(D3DRS_CULLMODE, Mode);
+    Device->SetRenderState(D3DRS_CULLMODE, (u32)Mode);
 }
 
 void RHIStateManagerDX9::SetAlphaRef(u32 mode)

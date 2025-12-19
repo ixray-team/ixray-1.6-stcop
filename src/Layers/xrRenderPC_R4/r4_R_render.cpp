@@ -301,7 +301,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 void CRender::render_menu() {
 	GPU_EVENT(render_menu);
 	//	Globals
-	RCache.set_CullMode(CULL_CCW);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 	RCache.set_Stencil(FALSE);
 	RCache.set_ColorWriteEnable();
 
@@ -501,7 +501,7 @@ void CRender::Render()
 	GRHI->ClearTarget(Target->rt_Generic_0->pRT);
 	GRHI->ClearTarget(Target->rt_Velocity->pRT);
 
-	RCache.set_CullMode(CULL_NONE);
+	GRHI->StateManager->SetCullMode(ERHI_CULLMODE::NONE);
 	RCache.set_Stencil(FALSE);
 
 	g_pGamePersistent->Environment().RenderSky();
@@ -747,8 +747,7 @@ void CRender::Render()
 		RCache.set_xform_view				(Device.mView);
 		// Stencil - write 0x1 at pixel pos - 
 		RCache.set_Stencil(TRUE, D3DCMP_ALWAYS, 0x01, 0xff, 0xff, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
-		//RCache.set_Stencil				(TRUE,D3DCMP_ALWAYS,0x00,0xff,0xff,D3DSTENCILOP_KEEP,D3DSTENCILOP_REPLACE,D3DSTENCILOP_KEEP);
-		RCache.set_CullMode					(CULL_CCW);
+		GRHI->StateManager->SetCullMode(ERHI_CULLMODE::BACK);
 		RCache.set_ColorWriteEnable			();
 		RImplementation.r_dsgraph_render_emissive();
 	}
