@@ -176,6 +176,11 @@ struct Hardware_Vector
 		return (x - Another.x) * (x - Another.x) + (y - Another.y) * (y - Another.y) + (z - Another.z) * (z - Another.z);
 	}
 
+	__device__ float DistanceTo(Hardware_Vector& Another) const
+	{
+		return sqrt( DistanceSquared(Another) );
+	}
+
 	__device__ Hardware_Vector Add(Hardware_Vector& Another)
 	{
 		Hardware_Vector Result(0, 0, 0);;
@@ -341,25 +346,24 @@ struct Hardware_Raytask
 	float3 Position;
 	float3 Direction;
 	unsigned int SkipFace;
+
+	bool   UseSphere = false;
+	float3 Sphere_Pos;
+	float  Sphare_Range;
 };
  
-//
-
 struct Hardware_TextureData
 {
 	unsigned int  width;
 	unsigned int  height;
 	unsigned char  * pSurface; // Указатель на GPU память (Только Alpha)
-	// bool		  hasAlpha;
-
-	// Для CUDA texture objects
-	// cudaTextureObject_t texObj;
 };
 
 struct Hardware_FaceData
 {
  	Hardware_Vector2 TC0[3]; // UV координаты
 	unsigned short surfidx;
+
 	bool		 bOpacue = false;
 	bool		 bWater = false;
 };
@@ -369,9 +373,9 @@ struct OPTICK_Params
 {
 	OptixTraversableHandle handle;
 
-	unsigned char		flags;
-	Hardware_Raytask*	rays;
-	Hardware_Color*		colors;		// Раньше rays == colors
+	unsigned char		  flags;
+	Hardware_Raytask*	  rays;
+	Hardware_Color*		  colors;		// Раньше rays == colors
 
 	Hardware_Lighting*	  lights;
 	int					  counts_lights;

@@ -89,17 +89,22 @@ void	CBuild::LMaps					()
 					if (D == nullptr) continue;
 
 					isFirst ? D->LightGPU() : D->LowerResolutionGPU();
-					AditionalData("*** [LMAPS] Processing Lmaps [%u/%u]", Index, deflectors.size());
+					
+					AditionalData("*** [LMAPS] Lmap [%u/%u] W: %u | H: %u", Index, deflectors.size(), D->layer.width, D->layer.height);
 				}
 
 				// Система тасков щас иная
 				GPUTaskinSystem.LightPointPackedDeflectorsRun();
 			});
 			 
+
 			int IndexApply = 0;
 			for (auto& D : deflectors)
 			{
-				if (D->ApplyColors()) IndexApply++;
+				if (D->ApplyColors()) 
+					IndexApply++;
+
+				AditionalData("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
 			}
 
 			Msg("*** [LMAPS] Apply Lmaps [%u/%u]", IndexApply, deflectors.size());
