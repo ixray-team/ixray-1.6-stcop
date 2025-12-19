@@ -323,10 +323,15 @@ CRenderTarget::CRenderTarget()
 		R_CHK(RDevice->CreateBlendState(&desc, &g_debug_blend_state));
 	}
 
-	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]() {
-		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)]) {
+	CImGuiManager::Instance().Subscribe("GraphicDebug", CImGuiManager::ERenderPriority::eMedium, [this]()
+	{
+		if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+		{
+			GRHI->GPUStatsEnable = false;
 			return;
 		}
+
+		GRHI->GPUStatsEnable = true;
 
 		auto State = g_debug_blend_state;
 		auto DisplayTarget = [State](const ref_rt& rt, bool& ShowData)

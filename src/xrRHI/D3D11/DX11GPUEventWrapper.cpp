@@ -4,10 +4,6 @@
 
 InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const wchar_t* wname)
 {
-    //if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    //{
-    //    return;
-    //}
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -15,16 +11,14 @@ InternalDX11GPUEventWrapper::InternalDX11GPUEventWrapper(const char* name, const
         pAnnotation->BeginEvent(wname);
     }
 
-    _index = GPUEvents_PushEvent(name);
+    if (GRHI->GPUStatsEnable)
+    {
+        _index = GPUEvents_PushEvent(name);
+    }
 }
 
 InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
 {
-    //if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    //{
-    //    return;
-    //}
-
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -32,5 +26,8 @@ InternalDX11GPUEventWrapper::~InternalDX11GPUEventWrapper()
         pAnnotation->EndEvent();
     }
 
-    GPUEvents_PopEvent(_index);
+    if (GRHI->GPUStatsEnable && _index != -1)
+    {
+        GPUEvents_PopEvent(_index);
+    }
 }

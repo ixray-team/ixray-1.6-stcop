@@ -419,6 +419,11 @@ void CRHI::SetConstantBuffers(u32 Min, u32 Max, xr_vector<IRHIBuffer*> Buffers, 
 
 void CRHI::GPUStatsBegin() const
 {
+	if (!GPUStatsEnable)
+	{
+		return;
+	}
+
 #ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
@@ -431,6 +436,12 @@ void CRHI::GPUStatsBegin() const
 
 const RHI_GPU_EVENT& CRHI::GPUStats() const
 {
+	static RHI_GPU_EVENT DummyEvents = {};
+	if (!GPUStatsEnable)
+	{
+		return DummyEvents;
+	}
+
 #ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{
@@ -440,12 +451,16 @@ const RHI_GPU_EVENT& CRHI::GPUStats() const
 	}
 #endif
 
-	static RHI_GPU_EVENT DummyEvents = {};
 	return DummyEvents;
 }
 
 void CRHI::GPUStatsEnd() const
 {
+	if (!GPUStatsEnable)
+	{
+		return;
+	}
+
 #ifdef IXR_WINDOWS
 	if (APILevel == ERHI_API_LAYER::D3D11)
 	{

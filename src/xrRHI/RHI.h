@@ -121,10 +121,6 @@ public:
 	IRHIDepthStencilView* GetDepthStencilView() const;
 	IRHIRenderTargetView* GetRenderTargetView(size_t ID) const;
 
-	void GPUStatsBegin() const;
-	const RHI_GPU_EVENT& GPUStats() const;
-	void GPUStatsEnd() const;
-
 	void ClearVertexBuffer(u32 vb_stride);
 	void ClearIndexBuffer();
 
@@ -137,6 +133,11 @@ public:
 		const void* srcData, size_t srcSize, const char* sourceName, const void* defines, void* include,
 		const char* entryPoint, const char* target, u32 flags1, u32 flags2, void** code, void** errors
 	);
+
+	void GPUStatsBegin() const;
+	const RHI_GPU_EVENT& GPUStats() const;
+	void GPUStatsEnd() const;
+
 public:
 	IRHIDevice* DevicePtr = nullptr;
 	IRHIShaderResourceStateCache* ShaderResourceCache = nullptr;
@@ -146,6 +147,7 @@ public:
 	ERHI_API_LAYER APILevel = ERHI_API_LAYER::NOT_CREATED;
 	IRHIGPU* DriverExt = nullptr;
 
+	bool GPUStatsEnable = false;
 private:
 	void* Shaders[RHI_SHADERS_TYPE_SIZE];
 };

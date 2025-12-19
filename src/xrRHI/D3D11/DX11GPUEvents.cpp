@@ -9,6 +9,8 @@ using Microsoft::WRL::ComPtr;
 #define DX11Device ((ID3D11Device*)GRHI->DevicePtr->RawDevice)
 #define DX11Context ((ID3D11DeviceContext*)GRHI->GetContext())
 
+static bool RenderingAtFrame = false;
+
 struct gpu_event_item
 {
     u32 begin_offset;
@@ -101,6 +103,7 @@ void GPUEvents_BeginRendering()
     curr_state.counter = 0;
 
     GPUEvents_PushEvent("Frame");
+    RenderingAtFrame = true;
 }
 
 int GPUEvents_PushEvent(const char* name)
@@ -136,7 +139,11 @@ void GPUEvents_PopEvent(int index)
 
 void GPUEvents_EndRendering()
 {
-    GPUEvents_PopEvent(0);
+    if (RenderingAtFrame)
+    {
+        GPUEvents_PopEvent(0);
+        RenderingAtFrame = false;
+    }
 }
 
 const RHI_GPU_EVENT& GPUEvents_Statistics()
