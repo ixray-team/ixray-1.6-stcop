@@ -73,16 +73,7 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent)
 
     faces_v.clear();                         dummy.clear();
     faces_v.reserve(raw_faces.size());       dummy.reserve(raw_faces.size());
-   
-    // Material Data
-    
-    bool cform_has = cform_data.size();
-    if (cform_has)
-    {
-        cform_data.clear();
-        cform_data.reserve(raw_faces.size());
-    }
-     
+
     for (size_t i = 0; i < raw_faces.size(); ++i)
     {
         Triangle tri;
@@ -93,14 +84,6 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent)
 
         auto Face = raw_faces[i].F;
         dummy.push_back(Face);
-        
-        if (cform_has)
-        {
-            CFormTriangle data;
-            data.MaterialID = raw_faces[i].material;
-            data.Sector = raw_faces[i].Sector;;
-            cform_data.push_back(data);
-        }
     }
 
     //----------------------
@@ -162,41 +145,6 @@ void TriangleContainer::RemoveDublicatesFaces(bool isTransparent)
          pFaces, faces_v.size());
 }
 
-
-size_t TriangleContainer::AddVertex(Fvector& V)
-{
-    verts_v.push_back(V);
-    return verts_v.size();
-}
-
-void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
-{
-    Triangle triangle;
-    triangle.point1 = AddVertex(v1);
-    triangle.point2 = AddVertex(v2);
-    triangle.point3 = AddVertex(v3);
-    faces().push_back(triangle);
-    dummy.push_back((Face*)F);
-
-    AddFaceRaw( (Face*) F, v1, v2, v3);
-}
-
-void TriangleContainer::AddFaceMaterial(void* F, Fvector& v1, Fvector& v2, Fvector& v3, u16 MaterialID, u16 SectorID)
-{
-    Triangle triangle;
-    triangle.point1 = AddVertex(v1);
-    triangle.point2 = AddVertex(v2);
-    triangle.point3 = AddVertex(v3);
-    faces().push_back(triangle);
-    
-    CFormTriangle data;
-    data.MaterialID = MaterialID;
-    data.Sector = SectorID;
-    cform_data.push_back(data);
-
-    AddFaceRawMaterial((Face*)F, v1, v2, v3, MaterialID, SectorID);
-}
-   
 void TriangleContainer::ClearAll()
 {
     dummy.clear();
