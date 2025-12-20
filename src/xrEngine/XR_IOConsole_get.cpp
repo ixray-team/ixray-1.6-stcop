@@ -41,12 +41,12 @@ float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const {
 }
 
 IConsole_Command* CConsole::GetCommand(LPCSTR cmd) const {
-	vecCMD_CIT it = Commands.find( cmd );
-	if (it == Commands.end()) {
+	const auto it = Commands.find(cmd);
+	
+	if (it == Commands.end())
 		return nullptr;
-	} else {
-		return it->second;
-	}
+	
+	return it->second;
 }
 
 
