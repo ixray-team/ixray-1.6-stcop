@@ -19,6 +19,8 @@ void RegisterExpressionDelegates();
 
 CInifile* pGameGlobals = nullptr;
 
+CImGuiEditorsGlobalState g_imgui_editors_state;
+
 void LoadCallbackGlobals(bool& flag, const char*& value, const char* section)
 {
 	flag = pGameGlobals->line_exist("callbacks", section);
@@ -103,6 +105,12 @@ extern "C"
 		FS.update_path(GameGlobals, _game_config_, "game_global.ltx");
 		pGameGlobals = new CInifile(GameGlobals);
 
+		if (g_imgui_editors_state.is_thread_started == false)
+		{
+			g_imgui_editors_state.worker_thread = std::thread(&AllEditorsAndTools_WorkerThread);
+			g_imgui_editors_state.is_thread_started = true;
+		}
+
 		CCC_RegisterCommands();
 		// keyboard binding
 		CCC_RegisterInput();
@@ -120,11 +128,21 @@ extern "C"
 
 	DLL_API void __cdecl xrGameShutdown()
 	{
-		if (g_imgui_texture_editor.is_thread_started)
+		if (g_imgui_editors_state.is_thread_started)
 		{
-			g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kWriteSettings });
-			g_imgui_texture_editor.requests.push({ .type = CImGuiTextureEditor::eRequestType::kShutdownThread });
-			g_imgui_texture_editor.worker_thread.join();
+			ime_request_t req;
+
+			req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+			req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kWriteSettings);
+
+			g_imgui_editors_state.requests.push(req);
+
+			req.editor_type = static_cast<u32>(eImGuiEditorType::kNoEditor);
+			req.request_type = 0; // means we want to shutdown our thread
+			
+			g_imgui_editors_state.requests.push(req);
+
+			g_imgui_editors_state.worker_thread.join();
 		}
 	}
 	
