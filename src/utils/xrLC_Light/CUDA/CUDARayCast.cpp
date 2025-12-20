@@ -211,6 +211,8 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
+	Phase("CUDA Initialize RayTracing (Rcast-Cform)");
+
 	// Однократная инициализация
 	static bool initialized = false;
 	if (!initialized)
@@ -307,8 +309,7 @@ public:
 		memset(h_colors, 0, max_rays * sizeof(Hardware_Color));
 		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(Hardware_Color)));
 	}
- 
-	 
+  
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
