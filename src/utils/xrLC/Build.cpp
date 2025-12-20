@@ -243,6 +243,13 @@ void CBuild::Run(LPCSTR P)
 
 	Light_prepare();
 
+	Phase("Building Level.cform ...");
+	BuildCForm();
+
+	// se7kills: теперь тут код эксплота build.cform
+	Phase("Building Build.cform ...");
+	EmbreeMain.BuildRcast();
+
 #ifdef LCCUDA_BUILD
 	if (gCompilerMode.CUDA)
  		GPUTaskinSystem.InitializeGPU();
@@ -264,12 +271,6 @@ void CBuild::Run(LPCSTR P)
 	//should be after normals, so that double-sided faces gets separated
 	BuildPortals(*fs);
 
- 	Phase("Building CFORM ...");
- 	BuildCForm();
-
-	// se7kills: теперь тут код эксплота build.cform
-	Phase("Building Rcast Model ...");
-	EmbreeMain.BuildRcast();
  
 	// All lighting + lmaps building and saving
 	Light();

@@ -83,9 +83,9 @@ void EmbreeData::BuildRaytraceModel( )
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		b_texture& T = inlc_global_data()->textures()[M.surfidx];
  		if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
-  			static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+  			static_geom.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
  		else
- 			static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+ 			static_geom_transp.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
  	}
 
  
@@ -99,16 +99,16 @@ void EmbreeData::BuildRaytraceModel( )
  			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 			b_texture& T = inlc_global_data()->textures()[M.surfidx];
 			if (F->flags.bOpaque || !T.pSurface || !T.bHasAlpha)
-				static_geom.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+				static_geom.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 			else
-				static_geom_transp.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+				static_geom_transp.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 		}
 			
  	}
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
- 	static_geom.RemoveDublicatesVertexs(false);
-	static_geom_transp.RemoveDublicatesVertexs(true);
+ 	static_geom.RemoveDublicatesVertexs(false);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
+	static_geom_transp.RemoveDublicatesVertexs(true);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
 
 	static_geom.RemoveDublicatesFaces(false);
 	static_geom_transp.RemoveDublicatesFaces(true);
@@ -155,17 +155,15 @@ extern CBuild* pBuild;
 void EmbreeData::BuildRcast()
 { 
 	Status("Start Export Build.cform");
-
-   
 	TriangleContainer container;
  
-	CTimer t;	t.Start();
+	CTimer tStats;	tStats.Start();
 	Status("[RcastModel] Capturing Faces...");
 	for (auto F : lc_global_data()->g_faces())
 	{
 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow)	continue;
-  		container.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+  		container.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 	}
 
 
@@ -176,16 +174,16 @@ void EmbreeData::BuildRcast()
 		for (auto& FaceIntel : temp_buffer)
 		{
 			Face* F = (Face*)FaceIntel.ptr;
-			container.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+			container.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 		}
  	}
-	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
  
-	container.RemoveDublicatesVertexs(false);
-	container.RemoveDublicatesFaces(false);
+	container.RemoveDublicatesVertexs(false);	// Обезательно 
+	container.RemoveDublicatesFaces(false);		// Обезательно 
 
-	
- 	t.Start();
+ 	clMsg("Build.cform is builded at : %u ms", tStats.GetElapsed_ms());
+
+	tStats.Start();
 
 	string_path				fn;
 	IWriter* MFS = FS.w_open(xr_strconcat(fn, pBuild->path, "build.cform"));
@@ -235,16 +233,16 @@ void EmbreeData::BuildRcast()
 	MFS->w(&*rc_faces.begin(), size_t(rc_faces.size() * sizeof(b_rc_face)) );
 	MFS->close_chunk();
 
-	size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
-	size_t vertex_mem = container.vertex_cnt() * sizeof(Fvector);
-	size_t faces_mem = container.faces_cnt() * sizeof(CDB::TRI);
-	Msg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
-	Msg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
- 	Msg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
-	Msg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
+	// size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
+	// size_t vertex_mem  = container.vertex_cnt() * sizeof(Fvector);
+	// size_t faces_mem   = container.faces_cnt() * sizeof(CDB::TRI);
+	// clMsg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
+	// clMsg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
+ 	// clMsg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
+	// clMsg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
 
 	FS.w_close(MFS);
 
-	Status("Ended Saving Faces: [%u ms]", t.GetElapsed_ms());
+	clMsg("Build.cform is exported at : %u ms", tStats.GetElapsed_ms());
 }
 
