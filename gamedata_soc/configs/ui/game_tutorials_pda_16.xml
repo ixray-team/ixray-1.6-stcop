@@ -15,7 +15,7 @@
 					которая будет помогать тебе не сдохнуть в Зоне. Ну а если и сдохнешь, то хоть
 					другие знать будут как и где. Хе-хе. Шучу. Давай напомню кратко, как
 					пользоваться…-->
-		<!--item>
+		<item>
 			<length_sec>17</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
@@ -26,7 +26,7 @@
 			<grab_input>1</grab_input>
 			<pda_section>pda_quests</pda_section>
 			<main_wnd/>
-		</item-->
+		</item>
 
 		<item><!--Твои Задания расположены в первом разделе ПДА.-->
 			<length_sec>4</length_sec>
@@ -63,7 +63,7 @@
 		</item>
 		
 		<!--Запомни - каждое новое задание автоматически переключает целеуказание на мини-карте на себя-->
-		<!--item>
+		<item>
 			<length_sec>9</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
@@ -72,7 +72,7 @@
 			<grab_input>1</grab_input>
 			<pda_section>pda_quests</pda_section>
 			<main_wnd/>
-		</item-->
+		</item>
 
 		<item><!--Дальше: Второй раздел ПДА - это Карта.-->
 			<length_sec>5</length_sec>
@@ -150,7 +150,7 @@
 		</delme_item>
 		
 		<!--вобщем разберешься…там не сложно…В ПДА есть раздел Контакты -->
-		<!--item>
+		<item>
 			<length_sec>8</length_sec>
 			<pause_state>off</pause_state>
 			<guard_key/>
@@ -159,7 +159,7 @@
 			<grab_input>1</grab_input>
 			<pda_section>pda_quests</pda_section>
 			<main_wnd/>
-		</item-->
+		</item>
 
 		<item><!--В контактах список сталкеров, которые находятся в радиусе 50 метров. 
 					Плюс их короткое описание, ранг, группировка и вероятное отношение к тебе. 
