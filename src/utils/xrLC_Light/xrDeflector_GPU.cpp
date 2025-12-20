@@ -250,13 +250,13 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 {	
 	auto& lm = layer;
 
-	u32 U = GPUTaskinSystem.GetU(IKey);
-	u32 V = GPUTaskinSystem.GetV(IKey);
+	u32 U				= GPUTaskinSystem.GetU(IKey);
+	u32 V				= GPUTaskinSystem.GetV(IKey);
 
-	u32 Key = V * lm.width + U;
+	u32 Key				= V * lm.width + U;
  	auto& CResult		= lm.surface[Key];
 	auto& Keys			= lm.samples[Key];
-	Keys += 1;
+	Keys				+= 1;
 
 	base_color_c cNew;
 	CResult._get(cNew);

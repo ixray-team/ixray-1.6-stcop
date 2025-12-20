@@ -51,17 +51,10 @@ struct GridKeyHasher
 
 };
 
-
 class OptixGeometryBuilder
 {
 private:
     // Remove Dublicates Private:
-    struct IndexedVertex
-    {
-        Fvector v;
-        uint32_t originalIndex;
-    }; 
-
     struct IndexFaces
     {
         uint32_t i1, i2, i3;
@@ -91,25 +84,28 @@ private:
             return i1 == other.i1 && i2 == other.i2 && i3 == other.i3;
         }
     };
-
+ 
+    struct IndexedVertex
+    {
+        Fvector v;
+        uint32_t originalIndex;
+    }; 
+     
     struct FaceRaw
     {
         Fvector v[3];
         Face* F;
     };
     xr_vector<FaceRaw> raw_faces;
-    void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
-    {
-        raw_faces.push_back({ {v1, v2, v3}, F });
-    };
+ 
 
 public:
     xr_vector<Fvector>        vertices;
     xr_vector<CDB::TRI>       triangles;
-
     xr_vector<Face*>          facePointers;
 
-
+    size_t RawFacesSize() { return raw_faces.size(); }
+     
     IC void Clear()
     {
         vertices.clear();
@@ -123,67 +119,48 @@ public:
         triangles.shrink_to_fit();
         facePointers.shrink_to_fit();
     }
-     
-    u32 AddVertex(const Fvector& v)
-    {
-        vertices.push_back(v);
-        return vertices.size() - 1;
-    }
-     
+
     void AddFace(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
     {
         // Добавляем вершины и получаем их индексы
-        u32 idx1 = AddVertex(v1);
-        u32 idx2 = AddVertex(v2);
-        u32 idx3 = AddVertex(v3);
-
-        // Создаем треугольник
-        CDB::TRI tri;
-        tri.verts[0] = idx1;
-        tri.verts[1] = idx2;
-        tri.verts[2] = idx3;
-        tri.dummy = 0;
-      
-        triangles.push_back(tri);
-        facePointers.push_back(F);
-
-        AddFaceRaw(F, v1, v2, v3);
+        raw_faces.push_back({ {v1, v2, v3}, F });
     }
     
     // Remove Dublicates
-
     void RemoveDublicates()
     {
-        //----------------------
-        // 1. Собираем все вершины
-        //----------------------
         size_t totalVerts = raw_faces.size() * 3;
         xr_vector<IndexedVertex> temp;
         temp.reserve(totalVerts);
 
-        for (size_t i = 0; i < raw_faces.size(); ++i)
-        {
-            for (int j = 0; j < 3; ++j)
-            {
-                temp.push_back({ raw_faces[i].v[j], static_cast<uint32_t>(i * 3 + j) });
-            }
-        }
-        //----------------------
-        // 2. Сортируем вершины
-        //----------------------
-        std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
-            {
-                if (a.v.x != b.v.x) return a.v.x < b.v.x;
-                if (a.v.y != b.v.y) return a.v.y < b.v.y;
-                return a.v.z < b.v.z;
-            });
-        //----------------------
-        // 3. Убираем дубликаты
-        //----------------------
         xr_vector<uint32_t> remap(totalVerts);
         xr_vector<Fvector> unique_vertices;
         unique_vertices.reserve(totalVerts / 3);
 
+        //----------------------
+        // 1. Собираем все вершины
+        //----------------------
+        for (size_t i = 0; i < raw_faces.size(); ++i)
+        {
+            size_t IndexVertex = i * 3;
+            temp.push_back({ raw_faces[i].v[0], static_cast<uint32_t>(IndexVertex + 0) });    // 1
+            temp.push_back({ raw_faces[i].v[1], static_cast<uint32_t>(IndexVertex + 1) });    // 2
+            temp.push_back({ raw_faces[i].v[2], static_cast<uint32_t>(IndexVertex + 2) });    // 3
+        }
+
+        //----------------------
+        // 2. Сортируем вершины
+        //----------------------
+        std::sort(std::execution::par, temp.begin(), temp.end(), [](const IndexedVertex& a, const IndexedVertex& b)
+        {
+            if (a.v.x != b.v.x) return a.v.x < b.v.x;
+            if (a.v.y != b.v.y) return a.v.y < b.v.y;
+            return a.v.z < b.v.z;
+        });
+         
+        //----------------------
+        // 3. Убираем дубликаты
+        //----------------------
         uint32_t newIndex = 0;
         unique_vertices.push_back(temp[0].v);
         remap[temp[0].originalIndex] = 0;
@@ -197,7 +174,7 @@ public:
             }
             remap[temp[i].originalIndex] = newIndex;
         }
-
+      
         // Сожмать до реального размера
         unique_vertices.shrink_to_fit();
 
@@ -205,10 +182,9 @@ public:
         // 4. Перестраиваем треугольники
         //----------------------
         vertices.swap(unique_vertices);
-
+         
         triangles.clear();                       facePointers.clear();
         triangles.reserve(raw_faces.size());     facePointers.reserve(raw_faces.size());
- 
         for (size_t i = 0; i < raw_faces.size(); ++i)
         {
             CDB::TRI tri;
