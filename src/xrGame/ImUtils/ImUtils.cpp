@@ -439,3 +439,49 @@ const char* clsid_manager::translateCLSID(CLASS_ID id) {
 	}
 	return g_pStringTable ? g_pStringTable->translate(name).c_str() : name;
 }
+
+void AllEditorsAndTools_WorkerThread()
+{
+	constexpr const char _kThreadName[] = "IXRAY - ImGui Editors&Tools thread";
+	thread_name(_kThreadName);
+
+	while (g_imgui_editors_state.is_running_wt)
+	{
+		if (g_imgui_editors_state.requests.empty() == false)
+		{
+			const ime_request_t& req = g_imgui_editors_state.requests.pop();
+
+			eImGuiEditorType et = static_cast<eImGuiEditorType>(req.editor_type);
+
+			switch (et)
+			{
+			case eImGuiEditorType::kTextureEditor:
+			{
+				TextureEditor_WorkerThread(req);
+				break;
+			}
+			case eImGuiEditorType::kOMFEditor:
+			{
+				OMFEditor_WorkerThread(req);
+				break;
+			}
+			case eImGuiEditorType::kNoEditor:
+			{
+				if (req.request_type == 0)
+				{
+					g_imgui_editors_state.is_running_wt = false;
+				}
+
+				break;
+			}
+			default:
+			{
+				R_ASSERT2(false, "you forgot to register new workload!");
+				break;
+			}
+			}
+		}
+	}
+
+	Msg("[IXRAY]: Shutdown thread -> %s", _kThreadName);
+}
