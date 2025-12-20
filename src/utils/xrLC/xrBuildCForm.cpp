@@ -9,18 +9,16 @@
 #include "../../xrCore/Collision/xrCDB.h"
 #include "../xrLC_Light/embree_raytracing/EmbreeGeometryBuilder.h"
 
-int GetVertexIndex(Vertex* F)
+int GetVertexIndex(Vertex* Vert)
 {
-	vecVertexIt it = std::lower_bound(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end(), F);
-
+	vecVertexIt it = std::lower_bound(lc_global_data()->g_vertices().begin(), lc_global_data()->g_vertices().end(), Vert);
 	R_ASSERT(it != lc_global_data()->g_vertices().end());
-
 	return int(it - lc_global_data()->g_vertices().begin());
 }
 
-int getCFormVID(vecVertex& V, Vertex* F)
+int getCFormVID(vecVertex& V, Vertex* Vertx)
 {
-	vecVertexIt it = std::lower_bound(V.begin(), V.end(), F);
+	vecVertexIt it = std::lower_bound(V.begin(), V.end(), Vertx);
 	return int(it - V.begin());
 }
 int bCriticalErrCnt = 0;
@@ -156,15 +154,10 @@ void CBuild::BuildCForm	()
 	hdr.facecount = (u32)CL.getTS();
 	hdr.aabb = BB;
 	MFS->w(&hdr, sizeof(hdr));
-	Msg("CFORM Saving HDR: %u", MFS->tell());
-
-	// Data
+ 	// Data
 	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
-	Msg("CFORM Saving Verts: %u", MFS->tell());
-
-	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
-	Msg("CFORM Saving FACES: %u", MFS->tell());
-
+ 	MFS->w(CL.getT(), (u32)CL.getTS() * sizeof(CDB::TRI));
+ 
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
 	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
@@ -172,66 +165,6 @@ void CBuild::BuildCForm	()
 		F->pDeflector = NULL;
 	}
 	FS.w_close(MFS);
-
-	/*
- 	// Заполняем faces*
-	TriangleContainer container;
-  	for (auto TRI : lc_global_data()->g_faces())
-	{
-		if (TRI->Shader().flags.bCollision)
- 			container.AddFaceMaterial(TRI, 
-				TRI->v[0]->P, TRI->v[1]->P, TRI->v[2]->P,
-				TRI->dwMaterialGame, materials()[TRI->dwMaterial].sector);
-	}
- 	for (auto& ref : mu_refs())
-	{
-		xr_vector<FaceDataIntel> temp_buffer;
-		ref->export_cform_game_new(temp_buffer);
-		for (auto& FaceIntel : temp_buffer)
-		{
-			Face* F = (Face*)FaceIntel.ptr;
-			container.AddFaceMaterial(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3, F->dwMaterialGame, materials()[F->dwMaterial].sector);
-		}
-	}
-
-	container.RemoveDublicates();
-	container.RemoveDublicatesFaces();
-
-	// Расщитуем BBox Уровня
-	Fbox BB;
-	BB.invalidate	();
-	for (auto V : container.verts_v)
-		BB.modify( V );
-
-	// Saving
-	string_path		fn;
-	IWriter*		MFS	= FS.w_open	(xr_strconcat(fn,pBuild->path,"level.cform"));
-	Status			("Saving...");
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version		= CFORM_CURRENT_VERSION;
-	hdr.vertcount	= (u32)container.vertex_cnt();
-	hdr.facecount	= (u32)container.faces_cnt();
-	hdr.aabb		= BB;
-	MFS->w			(&hdr,sizeof(hdr));
- 
-	// Data
-	MFS->w			(container.vertex().data(), (u32)container.vertex_cnt() * sizeof(Fvector));
-	for (u32 TRI_INDEX = 0; TRI_INDEX < container.faces_cnt(); TRI_INDEX++)
-	{
-		CDB::TRI T = container.GetCDBMaterial(TRI_INDEX);
- 		MFS->w(&T, sizeof(CDB::TRI));
-	}
-	FS.w_close(MFS);
- 
-	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
-	for (vecFaceIt I=lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
-	{
-		Face* F			= *I;
-		F->pDeflector	= NULL;
-	}
-	*/
 }
 
 void CBuild::BuildPortals(IWriter& fs)
