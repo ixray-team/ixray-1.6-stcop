@@ -72,7 +72,7 @@ ENGINE_API _action  actions[]		= {
 	{ "active_jobs",		kACTIVE_JOBS			,_both},
 	{ "map",				kMAP					,_both},
 	{ "contacts",			kCONTACTS				,_sp},
-																
+
 	{ "vote_begin",			kVOTE_BEGIN				,_mp},		
 	{ "show_admin_menu",	kSHOW_ADMIN_MENU		,_mp},		
 	{ "vote",				kVOTE					,_mp},		
@@ -927,8 +927,34 @@ void ConsoleBindCmds::clear()
 bool ConsoleBindCmds::execute(int dik)
 {
 	xr_map<int,_conCmd>::iterator it = m_bindConsoleCmds.find(dik);
-	if(it==m_bindConsoleCmds.end())
+	
+	if (it == m_bindConsoleCmds.end())
 		return false;
+
+	string512 buffer;
+	_GetItem(it->second.cmd.c_str(), 0, buffer, ' ');
+
+	if (buffer[0] != '\0')
+	{
+		CCC_Boolean* ccc_bool = dynamic_cast<CCC_Boolean*>(Console->GetCommand(buffer));
+		CCC_Mask* ccc_mask = dynamic_cast<CCC_Mask*>(Console->GetCommand(buffer));
+
+		if (ccc_bool)
+		{
+			ccc_bool->SetInverseValue();
+			Console->Execute(ccc_bool->Name());
+			
+			return true;
+		}
+
+		if (ccc_mask)
+		{
+			ccc_mask->SetInverseValue();
+			Console->Execute(ccc_mask->Name());
+			
+			return true;
+		}
+	}
 
 	Console->Execute(it->second.cmd.c_str());
 	return true;
