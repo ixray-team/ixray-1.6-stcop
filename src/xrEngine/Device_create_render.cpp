@@ -137,16 +137,25 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
 				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
 				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
+
+
+				//ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
+				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
+				ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+
+				if (ImGui::BeginMenu("Editors##InGame"))
+				{
 				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 				ImGui::MenuItem("Car Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_CarEditor)]);
-			
 				ImGui::MenuItem("PPE Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_PostProcessEffectorEditor)]);
 				ImGui::SetItemTooltip("Post-Process Effector");
 
 				ImGui::MenuItem("Texture Editor", nullptr, &States[static_cast<u8>(EditorUI::Tools_TextureEditor)]);
-				//ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
-					ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
-				ImGui::MenuItem("Hud Adjust (Legacy)", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+					ImGui::MenuItem("OMF", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+					ImGui::MenuItem("Input", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
+
+					ImGui::EndMenu();
+				}
 
 				ImGui::EndMenu();
 			}
@@ -156,6 +165,7 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::MenuItem("UI Debug", nullptr, &States[static_cast<u8>(EditorUI::UI_General)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
 				ImGui::MenuItem("Render Debug", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
+				ImGui::MenuItem("SVG Storage Viewer Debug", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
 			#if defined(IXRAY_PROFILER)
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
@@ -182,29 +192,10 @@ bool CRenderDevice::InitRenderDevice(ERHI_API_LAYER API)
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Tools"))
+			if (ImGui::BeginMenu("Scripting"))
 			{
 				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
 				ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
-
-				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
-				{
-					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
-					ImGui::MenuItem("Input##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_InputManager)]);
-					
-					if (ImGui::BeginMenu("Render##ToolsInGameImGui"))
-					{
-						if (ImGui::BeginMenu("Debug##RenderToolsInGameImGui"))
-						{
-							ImGui::MenuItem("SVGStorageViewer##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
-							ImGui::EndMenu();
-						}
-
-						ImGui::EndMenu();
-					}
-
-					ImGui::EndMenu();
-				}
 
 
 				ImGui::EndMenu();
