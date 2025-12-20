@@ -8,14 +8,16 @@
 bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
+    Msg( "0. Start BLAS | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
 
-     // 1. Загружаем вершины на GPU
+    // 1. Загружаем вершины на GPU
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.vertexBuffer),
         sizeof(Fvector) * vertices.size()));
     CUDA_CHECK(cudaMemcpy(reinterpret_cast<void*>(outBuffers.vertexBuffer),
         vertices.data(),
         sizeof(Fvector) * vertices.size(),
         cudaMemcpyHostToDevice));
+    Msg("1. Loading *Vertex | CPUHeap: %u mb", GetHeapMemory() / 1024/ 1024);
 
     // 2. Загружаем индексы на GPU
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.indexBuffer),
@@ -24,6 +26,8 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         triangles.data(),
         sizeof(CDB::TRI) * triangles.size(),
         cudaMemcpyHostToDevice));
+
+    Msg("2. Loading *Index | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
 
     // 3. Настройка входных данных для BLAS
     OptixBuildInput buildInput = {};
@@ -43,6 +47,8 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     buildInput.triangleArray.flags = &flags;
     buildInput.triangleArray.numSbtRecords = 1;
 
+    Msg("3. Starting Parrams BLAS | CPUHeap: %u mb | used: %u mb", GetHeapMemory() / 1024 / 1024);
+ 
     // 4. Настройка параметров сборки
     OptixAccelBuildOptions accelOptions = {};
     accelOptions.buildFlags = OPTIX_BUILD_FLAG_ALLOW_COMPACTION | OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
@@ -51,11 +57,15 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     // 5. Вычисление требуемой памяти
     OptixAccelBufferSizes bufferSizes;
     OPTIX_CHECK(optixAccelComputeMemoryUsage(context, &accelOptions, &buildInput, 1, &bufferSizes));
-
+    Msg("5. Calculate need memory BLAS | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+     
     // 6. Выделение памяти
     CUdeviceptr tempBuffer;
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&tempBuffer), bufferSizes.tempSizeInBytes));
+    Msg("6.1 Memory allocation BLAS  | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outBuffers.blasBuffer), bufferSizes.outputSizeInBytes));
+    Msg("6.2 Memory allocation BLAS  | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
 
 
     // 7. Готовим дескриптор для запроса размера компактации
@@ -64,8 +74,10 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_compactedSize), sizeof(uint64_t)));
     emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
     emitDesc.result = d_compactedSize;
+    Msg("7. Memory allocation d_compactedSize | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+
  
-    // 7. Сборка BLAS
+    // 8. Сборка BLAS
     OPTIX_CHECK(
     optixAccelBuild
     (
@@ -84,12 +96,17 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     )
     );
 
-    // 8. Узнаём размер скомпактированной структуры
+    Msg("8. Building BLAS | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+
+
+    // 9. Узнаём размер скомпактированной структуры
     uint64_t compactedSize = 0;
     CUDA_CHECK(cudaMemcpy(&compactedSize, reinterpret_cast<void*>(d_compactedSize), sizeof(uint64_t), cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_compactedSize)));
+
+    Msg("9. Getting Compacted size memory | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
  
-    // 9. Компактация, если это выгодно
+    // 10. Компактация, если это выгодно
     size_t size_precompact = bufferSizes.outputSizeInBytes;
     if (compactedSize != 0 && compactedSize < bufferSizes.outputSizeInBytes)
     {
@@ -112,15 +129,20 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
         // Сохраняем компактный
         outBuffers.blasBuffer = d_compactedBuffer;
         outBuffers.blasHandle = compactedHandle;
-     }
+    }
 
-    clMsg("* [GPU DEVICE MEMORY] Build BLAS: FULL MEMORY(%u mb) / COMPACTED TO(%u mb)",
-        size_precompact / 1024 / 1024 ,
-        compactedSize / 1024 / 1024
-    );
+    Msg("10. Compacting size < orig | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+ 
+    // clMsg("* [GPU DEVICE MEMORY] Build BLAS: FULL MEMORY(%u mb) / COMPACTED TO(%u mb)",
+    //     size_precompact / 1024 / 1024 ,
+    //     compactedSize / 1024 / 1024
+    // );
      
     // 11. Освобождаем временный буфер
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(tempBuffer)));
+
+    Msg("11. Clearing temp buffer | CPUHeap: %u mb", GetHeapMemory() / 1024 / 1024);
+
 
     return true;
 }
@@ -213,10 +235,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     if (!globalData)        return false;
 
     OptixGeometryBuilder geometryBuilder;
-    // 1. Обрабатываем статическую геометрию
-
-    Phase("CUDA Geometry Build Faces");
-     
+    // 1. Обрабатываем статическую геометрию    
     size_t Start                                                = GetHeapMemory();
 
     xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
@@ -259,8 +278,8 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         }
     }
    
-    size_t pVertex = geometryBuilder.vertices.size();  
-    size_t pFaces = geometryBuilder.triangles.size();
+    size_t pVertex = geometryBuilder.RawFacesSize() * 3;
+    size_t pFaces  = geometryBuilder.RawFacesSize();
 
     geometryBuilder.RemoveDublicates();
     geometryBuilder.RemoveDublicateFaces();
