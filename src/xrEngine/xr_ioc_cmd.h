@@ -77,9 +77,11 @@ public		:
 	CCC_Mask(LPCSTR N, Flags32* V, u32 M) :
 	  IConsole_Command(N),
 	  value(V),
-	  mask(M)
-	{};
-	  const BOOL GetValue()const{ return value->test(mask); }
+	  mask(M) {}
+
+	BOOL GetValue() const {return value->test(mask);}
+	void SetInverseValue() {value->invert(mask);}
+	
 	virtual void	Execute	(LPCSTR args)
 	{
 		if (EQ(args,"on"))			value->set(mask,TRUE);
@@ -397,16 +399,21 @@ public		:
 
 class ENGINE_API CCC_Boolean : public IConsole_Command
 {
-protected	:
-public		:
+public:
 	bool* value;
 
-	  const bool GetValue	() const {return *value;};
+	bool GetValue() const {return *value;}
+	
+	void SetInverseValue() const
+	{
+		bool old_val = *value;
+		*value = !old_val;
+	}
 
 	CCC_Boolean(LPCSTR N, bool* V) :
 	  IConsole_Command(N),
 	  value(V)
-	{};
+	{}
 
 	virtual void	Execute	(LPCSTR args)
 	{
