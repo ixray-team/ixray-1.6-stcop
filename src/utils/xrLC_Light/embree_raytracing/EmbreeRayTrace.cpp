@@ -274,8 +274,8 @@ void EmbreeData::IntelEmbereLOAD()
 	rtcSetSceneFlags(IntelScene, scene_flags);
 
 	// LOADING NORMAL GEOM
-	Phase("Building RayTrace Model...");
-  	InitializeGeometry( );
+	Phase("IntelEmbree: Initialize RayTracing (Rcast-Cform)");
+   	InitializeGeometry( );
 }
 
 void EmbreeData::IntelEmbereUNLOAD()
