@@ -32,6 +32,22 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B8%D0%BA%D0%B0%D1%80%D1%83%D1%81.png"
     },
     {
+      "id": "lastnewyear",
+      "title": "Чужой среди Чужих: Последний Новый год",
+      "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск",
+      "author": "It's Boomer",
+      "link": "https://vk.com/wall-15844953_951638",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
+      "id": "dreamcatcher2r",
+      "title": "Ловец Снов 2.0: Ремастер",
+      "description": "Сюжетный мод с уклоном в исследование Зоны и мистические аномалии.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+    },
+    {
       "id": "whitelist",
       "title": "Чистый Лист",
       "description": "Soon",

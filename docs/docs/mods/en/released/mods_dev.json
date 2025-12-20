@@ -32,6 +32,22 @@
         "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B8%D0%BA%D0%B0%D1%80%D1%83%D1%81.png"
     },
     {
+      "id": "lastnewyear",
+      "title": "Alien Among Aliens: The Last New Year",
+      "description": "The main character is an ordinary stalker nicknamed Vint, who set out for Limansk",
+      "author": "It's Boomer",
+      "link": "https://vk.com/wall-15844953_951638",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
+      "id": "dreamcatcher2r",
+      "title": "Dreamcatcher 2.0: Remaster",
+      "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
+      "author": "Vivient Team",
+      "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/dreamcatcher2r.png"
+    },
+    {
       "id": "whitelist",
       "title": "Clean Slate",
       "description": "Soon",
