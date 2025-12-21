@@ -1028,9 +1028,8 @@ void CBulletManager::Render	()
 	if(g_bullet_debug_trj)
 	{
 		constexpr u32 color = color_rgba(100, 255, 100, 255);
-		UIRender->zb_enable(1);
+		
 		UIRender->SetShader(*m_trj_shader);
-
 		for (SBullet& bullet : m_Bullets)
 		{
 			if (bullet.lines.empty()) continue;
@@ -1045,8 +1044,6 @@ void CBulletManager::Render	()
 
 			UIRender->FlushPrimitive();
 		}
-
-		UIRender->zb_enable(0);
 	}
 }
 
