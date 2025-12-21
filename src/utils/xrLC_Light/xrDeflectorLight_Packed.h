@@ -7,14 +7,7 @@
 #include "uv_tri.h"
 #include "R_light.h"
 #include "xrMU_Model_Reference.h"
-
-enum LGroup : u8
-{
-	eSun = 1,
-	eHemi = 2,
-	eRGB = 3
-};
-
+ 
 // Initialize TASKS
 #define MAX_RAYS_PER_TASK   48 * 1024				// Общее кол-во Задач (на запуск GPU)
 #define MAX_RAYS_PER_GPU	48 * 1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
