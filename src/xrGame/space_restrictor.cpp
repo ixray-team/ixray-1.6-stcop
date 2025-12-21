@@ -81,7 +81,7 @@ BOOL CSpaceRestrictor::net_Spawn(CSE_Abstract* data)
 	{
 		SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
 	}
-
+	SpatialComponent->spatial.type |= STYPE_RESTRICTOR;
 	setEnabled(FALSE);
 	setVisible(FALSE);
 
