@@ -3,7 +3,6 @@
 
 //#include "xr_effgamma.h"
 #include "x_ray.h"
-#include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
 //#include "fbasicvisual.h"
 #include "CameraManager.h"
@@ -182,11 +181,7 @@ public:
 };
 
 //-----------------------------------------------------------------------
-class CCC_SaveCFG : public IConsole_Command
-{
-public:
-	CCC_SaveCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
-	virtual void Execute(LPCSTR args) 
+void CCC_SaveCFG::Execute(LPCSTR args)
 	{
 		string_path			cfg_full_name;
 		xr_strcpy			(cfg_full_name, (xr_strlen(args)>0)?args:Console->ConfigFile);
@@ -204,27 +199,26 @@ public:
 		if ( FS.exist(cfg_full_name) )
 			b_allow = SetFileAttributes(Platform::ANSI_TO_TCHAR(cfg_full_name),FILE_ATTRIBUTE_NORMAL);
 
-		if ( b_allow ){
+	if (b_allow)
+	{
 			IWriter* F			= FS.w_open(cfg_full_name);
-				CConsole::vecCMD_IT it;
-				for (it=Console->Commands.begin(); it!=Console->Commands.end(); it++)
-					it->second->Save(F);
+		for (auto& pair : Console->Commands)
+			pair.second->Save(F);
 				FS.w_close			(F);
 				Msg("Config-file [%s] saved successfully",cfg_full_name);
-		}else
+	}
+	else
 			Msg("!Cannot store config file [%s]", cfg_full_name);
 	}
-};
-CCC_LoadCFG::CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) 
-{};
 
 void CCC_LoadCFG::Execute(LPCSTR args) 
 {
-		Msg("Executing config-script \"%s\"...",args);
 		string_path						cfg_name;
+	xr_strcpy(cfg_name, (xr_strlen(args) > 0) ? args : Console->ConfigFile);
+	Msg("Executing config-script \"%s\"...", cfg_name);
 
-		xr_strcpy							(cfg_name, args);
-		if (strext(cfg_name))			*strext(cfg_name) = 0;
+	if (strext(cfg_name))
+		*strext(cfg_name) = 0;
 		xr_strcat							(cfg_name,".ltx");
 
 		string_path						cfg_full_name;
@@ -236,18 +230,20 @@ void CCC_LoadCFG::Execute(LPCSTR args)
 		
 		IReader* F						= FS.r_open(cfg_full_name);
 		
+	if (F)
+	{
 		string1024						str;
-		if (F!=nullptr) {
-			while (!F->eof()) {
+		while (!F->eof())
+		{
 				F->r_string				(str,sizeof(str));
 				if(allow(str))
 					Console->Execute	(str);
 			}
 			FS.r_close(F);
 			Msg("[%s] successfully loaded.",cfg_full_name);
-		} else {
-			Msg("! Cannot open script file [%s]",cfg_full_name);
 		}
+	else
+		Msg("! Cannot open script file [%s]",cfg_full_name);
 }
 
 CCC_LoadCFG_custom::CCC_LoadCFG_custom(LPCSTR cmd)
@@ -776,7 +772,7 @@ void CCC_Register()
 #endif
 
 	// Camera
-	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 0.9f);
+	CMD4(CCC_Float,		"cam_inert", &psCamInert, 0.0f, 100.0f);
 	CMD2(CCC_Float,		"cam_slide_inert",		&psCamSlideInert);
 
 	CMD4(CCC_Float, "cam_viewport_near", &Device.fViewportNear, EPS_S, 10.f);

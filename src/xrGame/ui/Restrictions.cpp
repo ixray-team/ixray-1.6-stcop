@@ -2,7 +2,6 @@
 
 #include "Restrictions.h"
 #ifdef DEBUG
-#	include "../../xrEngine/XR_IOConsole.h"
 #	include "../../xrEngine/xr_ioc_cmd.h"
 #endif //#ifdef DEBUG
 #include "../../xrEngine/string_table.h"
