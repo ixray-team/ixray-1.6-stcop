@@ -28,33 +28,28 @@ struct TextureDataCPU
 	u32 Width;
 	u32 Height;
 };
-
+ 
 void XRay::RayTrace::CUDA::InitializeLights()
 {
 	auto Lights = lc_global_data()->L_static();
  
-	enum eType : u16
-	{
-		eSun,
-		eHemi,
-		eRGB
-	};
-
-	auto Light = [&](R_Light& L, eType type)
+	auto Light = [&](R_Light& L, eTypeGPU type)
 		{
 			Hardware_Lighting cuL;
-			cuL.type = L.type;
-			cuL.light_type = type;
-			cuL.diffuse = { L.diffuse.x, L.diffuse.y, L.diffuse.z };
-			cuL.position = { L.position.x, L.position.y, L.position.z };
-			cuL.direction = { L.direction.x, L.direction.y, L.direction.z };
-			cuL.range = L.range;
-			cuL.range2 = L.range2;
-			cuL.falloff = L.falloff;
-			cuL.attenuation0 = L.attenuation0;
-			cuL.attenuation1 = L.attenuation1;
-			cuL.attenuation2 = L.attenuation2;
-			cuL.energy = L.energy;
+			cuL.type			= L.type;
+			cuL.diffuse			= { L.diffuse.x, L.diffuse.y, L.diffuse.z };
+			cuL.position		= { L.position.x, L.position.y, L.position.z };
+			cuL.direction		= { L.direction.x, L.direction.y, L.direction.z };
+			cuL.range			= L.range;
+			cuL.range2			= L.range2;
+			cuL.falloff			= L.falloff;
+			cuL.attenuation0	= L.attenuation0;
+			cuL.attenuation1	= L.attenuation1;
+			cuL.attenuation2	= L.attenuation2;
+			cuL.energy			= L.energy;
+
+			// RGB, SUN, HEMI
+			cuL.light_type		= type;
 			return cuL;
 		};
 
@@ -66,22 +61,22 @@ void XRay::RayTrace::CUDA::InitializeLights()
 	CUDA_CHECK(cudaMallocHost(&h_lights, numLights * sizeof(Hardware_Lighting)));
 
 	int INDEX_LIGHT = 0;
-	for (auto& RGB : Lights.rgb)
+	for (auto& HEMI : Lights.hemi)
 	{
-		h_lights[INDEX_LIGHT] = Light(RGB, eRGB);
+		h_lights[INDEX_LIGHT] = Light(HEMI, eTypeGPU::eHemi);
 		INDEX_LIGHT++;
 	}
 	for (auto& SUN : Lights.sun)
 	{
-		h_lights[INDEX_LIGHT] = Light(SUN, eSun);
+		h_lights[INDEX_LIGHT] = Light(SUN, eTypeGPU::eSun);
 		INDEX_LIGHT++;
 	}
-	for (auto& HEMI : Lights.hemi)
+	for (auto& RGB : Lights.rgb)
 	{
-		h_lights[INDEX_LIGHT] = Light(HEMI, eHemi);
+		h_lights[INDEX_LIGHT] = Light(RGB, eTypeGPU::eRGB);
 		INDEX_LIGHT++;
 	}
-
+  
 	CUDA_CHECK(cudaMalloc(&gpu_lights, sizeof(Hardware_Lighting) * numLights));
 	CUDA_CHECK(cudaMemcpy(gpu_lights, h_lights, sizeof(Hardware_Lighting) * numLights, cudaMemcpyHostToDevice));
 
