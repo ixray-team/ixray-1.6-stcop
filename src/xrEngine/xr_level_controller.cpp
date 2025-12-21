@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "XR_IOConsole.h"
 #include "xr_input.h"
 #include "xr_ioc_cmd.h"
 #include "xr_level_controller.h"
@@ -936,23 +935,23 @@ bool ConsoleBindCmds::execute(int dik)
 
 	if (buffer[0] != '\0')
 	{
-		CCC_Boolean* ccc_bool = dynamic_cast<CCC_Boolean*>(Console->GetCommand(buffer));
-		CCC_Mask* ccc_mask = dynamic_cast<CCC_Mask*>(Console->GetCommand(buffer));
-
-		if (ccc_bool)
+		if(IConsole_Command* cmd = Console->GetCommand(buffer))
 		{
-			ccc_bool->SetInverseValue();
-			Console->Execute(ccc_bool->Name());
-			
-			return true;
-		}
+			if (CCC_Boolean* ccc_bool = cmd->dcast_bool())
+			{
+				ccc_bool->SetInverseValue();
+				Console->Execute(ccc_bool->Name());
 
-		if (ccc_mask)
-		{
-			ccc_mask->SetInverseValue();
-			Console->Execute(ccc_mask->Name());
-			
-			return true;
+				return true;
+			}
+
+			if (CCC_Mask* ccc_mask = cmd->dcast_mask())
+			{
+				ccc_mask->SetInverseValue();
+				Console->Execute(ccc_mask->Name());
+
+				return true;
+			}
 		}
 	}
 
