@@ -77,24 +77,21 @@ void CDeflector::L_DirectGPU()
 	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
  
 	// Создание тоже может занимать время
- 	bool UseHash = lm.width > 16 && lm.height > 16;
- 	if (UseHash)
-	{ 		
-		Fbox2			bounds;
-		Bounds_Summary(bounds);
-		hash_2d.initialize(bounds, (u32)UVpolys.size());
-		for (u32 fid = 0; fid < UVpolys.size(); fid++)
-		{
-			UVtri* T = &(UVpolys[fid]);
-			Bounds(fid, bounds);
-			hash_2d.add(bounds, T);
-		}
+	Fbox2			bounds;
+	Bounds_Summary(bounds);
+	hash_2d.initialize(bounds, (u32)UVpolys.size());
+	for (u32 fid = 0; fid < UVpolys.size(); fid++)
+	{
+		UVtri* T = &(UVpolys[fid]);
+		Bounds(fid, bounds);
+		hash_2d.add(bounds, T);
 	}
 	 
 	for (u32 V = 0; V < lm.height; V++)
 	{
  		for (u32 U = 0; U < lm.width; U++)
 		{
+			base_color_c newC;
  			u32 Fcount = 0;
 			size_t TaskID = GPUTaskinSystem.MakeKey(U, V); 
 
@@ -106,36 +103,18 @@ void CDeflector::L_DirectGPU()
 
  				// World space
 				Fvector wP, wN, B;
-				if (UseHash)
+				auto& Hash = hash_2d.query(P.x, P.y);
+				for (auto& TRIANGLE : Hash)
 				{
-					auto& Hash = hash_2d.query(P.x, P.y);
-					for (auto& TRIANGLE : Hash)
+					if (TRIANGLE->isInside(P, B))
 					{
-						if (TRIANGLE->isInside(P, B))
-						{
-							Face* F = TRIANGLE->owner;
-							FromBarry(F, wP, wN, B);
-							GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
-							Fcount += 1;
-							break;
-						}
+						Face* F = TRIANGLE->owner;
+						FromBarry(F, wP, wN, B);
+						GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
+ 						Fcount += 1;
+						break;
 					}
 				}
-				else
-				{
-					for (auto& TRIANGLE : UVpolys)
-					{
-						if (TRIANGLE.isInside(P, B))
-						{
-							Face* F = TRIANGLE.owner;
-							FromBarry(F, wP, wN, B);
-							GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
-							Fcount += 1;
-							break;
-						}
-					}
-				}
-
 			}
 
 			if (Fcount > 0)
@@ -178,11 +157,10 @@ void CDeflector::L_DirectGPU()
 			// ok - perform lighting
 			Fvector			P;
 			P.mad(v1, vdir, time);
-
+			  
 			u32 flags = 0;
 			size_t TaskID = GPUTaskinSystem.MakeKey(_x, _y);
 			GPUTaskinSystem.LightPointPackedDeflector(TaskID, Deflector, P, N, flags, skip);
-
 			lm.marker[_y * lm.width + _x] = 255;
 		}
 	};
@@ -198,7 +176,9 @@ void CDeflector::L_DirectGPU()
 		EdgeProcessing(this, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size, F);
 	}
 
-	ApplyLmap = true;
+	
+	// Для теста выключаем
+	ApplyLmap = true; //  (Включает ApplyColors)
 }
   
 
@@ -207,7 +187,6 @@ void CDeflector::L_DirectGPU()
 // se7kills:
 // Убрал hash_map Дорого ее чистить и память кушает 
 // Сделал вектор Samples Для хранения результатов в lm_layer
- 
 bool CDeflector::ApplyColors()
 {
 	lm_layer& lm = layer;
@@ -265,6 +244,8 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 }
 
 /// Перерасчет в более сжатый формат
+
+
 BOOL	compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
 BOOL	compress_Zero(lm_layer& lm, u32 rms);
 
