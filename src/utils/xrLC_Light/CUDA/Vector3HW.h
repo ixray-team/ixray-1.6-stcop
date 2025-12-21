@@ -325,6 +325,13 @@ struct Hardware_Color
  
 };
  
+enum eTypeGPU
+{
+	eSun = 0,
+	eHemi = 1,
+	eRGB = 2
+};
+
 struct Hardware_Lighting
 {
 	uint16_t type;				// Type of light source		
