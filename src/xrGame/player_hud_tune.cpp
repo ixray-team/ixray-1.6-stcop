@@ -192,19 +192,51 @@ void attachable_hud_item::debug_draw_firedeps()
 
 	if(hud_adj_mode==5||hud_adj_mode==6||hud_adj_mode==7 ||bForce)
 	{
+		if (!m_measures.m_prop_flags.test(hud_item_measures::e_fire_point) &&
+			!m_measures.m_prop_flags.test(hud_item_measures::e_fire_point2) &&
+			!m_measures.m_prop_flags.test(hud_item_measures::e_shell_point))
+		{
+			return;
+		}
+
 		CDebugRenderer			&render = Level().debug_renderer();
 
 		firedeps			fd;
 		setup_firedeps		(fd);
 		
-		if (hud_adj_mode == 5 || forceFPDraw)
-			render.draw_aabb(fd.vLastFP, 0.005f, 0.005f, 0.005f, color_xrgb(255, 0, 0));
+		Fobb obb;
+		Fmatrix trans = m_item_transform;
+		Device.transform_hud2world(trans);
+		obb.m_rotate.i.set(trans.i);
+		obb.m_rotate.j.set(trans.j);
+		obb.m_rotate.k.set(trans.k);
+		obb.m_halfsize.set(0.005f, 0.005f, 0.005f);
+		if (m_measures.m_prop_flags.test(hud_item_measures::e_fire_point) && (hud_adj_mode == 5 || forceFPDraw))
+		{
+			Fvector FP = fd.vLastFP;
+			Device.transform_hud2world(FP);
+			obb.m_translate.set(FP);
+			obb.xform_full(trans);
+			render.draw_obb(trans, color_xrgb(255, 0, 0));
+		}
 
-		if (hud_adj_mode == 6 || forceFP2Draw)
-			render.draw_aabb(fd.vLastFP2, 0.005f, 0.005f, 0.005f, color_xrgb(0, 0, 255));
+		if (m_measures.m_prop_flags.test(hud_item_measures::e_fire_point2) && (hud_adj_mode == 6 || forceFP2Draw))
+		{
+			Fvector FP2 = fd.vLastFP2;
+			Device.transform_hud2world(FP2);
+			obb.m_translate.set(FP2);
+			obb.xform_full(trans);
+			render.draw_obb(trans, color_xrgb(0, 0, 255));
+		}
 
-		if (hud_adj_mode == 7 || forceSPDraw)
-			render.draw_aabb(fd.vLastSP, 0.005f, 0.005f, 0.005f, color_xrgb(0, 255, 0));
+		if (m_measures.m_prop_flags.test(hud_item_measures::e_shell_point) && (hud_adj_mode == 7 || forceSPDraw))
+		{
+			Fvector SP = fd.vLastSP;
+			Device.transform_hud2world(SP);
+			obb.m_translate.set(SP);
+			obb.xform_full(trans);
+			render.draw_obb(trans, color_xrgb(0, 255, 0));
+		}
 	}
 #endif // DEBUG
 }
