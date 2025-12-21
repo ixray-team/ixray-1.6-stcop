@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
 
 void CConsole::DrawUIConsoleVars()
