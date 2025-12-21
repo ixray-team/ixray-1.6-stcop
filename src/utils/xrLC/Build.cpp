@@ -299,14 +299,21 @@ void CBuild::RunAfterLight(IWriter* fs)
 	{
 		u32 m;
 		Status("MU : Models...");
-		for (m = 0; m < mu_models().size(); m++) {
+		xr_parallel_for(size_t(0), size_t(mu_models().size()), [&] (size_t m)
+		{
 			calc_ogf(*mu_models()[m]);
+		});
+
+		for (m = 0; m < mu_models().size(); m++)
+		{
 			export_geometry(*mu_models()[m]);
 		}
-
+		
 		Status("MU : References...");
-		for (m = 0; m < mu_refs().size(); m++)
+		xr_parallel_for(size_t(0), size_t(mu_refs().size()), [&] (size_t m)
+		{
 			export_ogf(*mu_refs()[m]);
+		});
 	}
 
 	Status("MU : References...");
