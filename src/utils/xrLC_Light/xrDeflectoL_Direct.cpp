@@ -235,21 +235,17 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 							Vertex	*V3 = F->v[2];
 							wP.from_bary(V1->P,V2->P,V3->P,B);							
 							
-							{ 
-								wN.from_bary(V1->N,V2->N,V3->N,B);
-								exact_normalize	(wN); 
-								wN.add		(F->N);				
-								exact_normalize	(wN);
-							}
+							// Normals
+							wN.from_bary(V1->N,V2->N,V3->N,B);
+							exact_normalize	(wN); 
+							wN.add		(F->N);				
+							exact_normalize	(wN);
 
 							try 
 							{
-								VERIFY(inlc_global_data());
-
 								u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
 								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F); 
-
-								Fcount		+= 1;
+ 								Fcount		+= 1;
 							} 
 							catch (...)
 							{
