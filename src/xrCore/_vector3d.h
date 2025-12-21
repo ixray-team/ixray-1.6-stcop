@@ -478,7 +478,7 @@ public:
 	IC _vector3 	operator/	(const float s) const			{	float invs = 1.0f / s;	return _vector3(x*invs, y*invs, z*invs);	}
 	IC _vector3 	operator+	(const _vector3& a) const		{	return _vector3(x+a.x, y+a.y, z+a.z);		}
 	IC _vector3 	operator-	(const _vector3& a) const		{	return _vector3(x-a.x, y-a.y, z-a.z);		}
-	IC _vector3 	operator-	()								{	x = -x;	y = -y;	z = -z;	return *this;		}
+	IC _vector3 	operator-	()								{	return _vector3(-x, -y, -z); }
 	IC _vector3& operator+=	(const _vector3& a)				{	x += a.x;y += a.y;z += a.z;	return *this;	}
 	IC _vector3& operator-=	(const _vector3& a)		 		{	x -= a.x;y -= a.y;z -= a.z;	return *this;	}
 	IC _vector3& operator*=	(const float a)					{	x *= a;	y *= a;	z *= a;	return *this;		}
