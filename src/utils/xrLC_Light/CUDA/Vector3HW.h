@@ -214,7 +214,7 @@ struct Hardware_Vector
 	__device__ Hardware_Vector Subtract(Hardware_Vector& main, Hardware_Vector& Other) 
 	{
 		Hardware_Vector Result(0, 0, 0);;
-		Result = { Other.x - main.x, Other.y - main.y, Other.z - main.z };
+		Result = { main.x - Other.x, main.y - Other.y, main.z - Other.z };
 		x = Result.x;
 		y = Result.y;
 		z = Result.z;
