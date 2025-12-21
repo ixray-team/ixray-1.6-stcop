@@ -5,6 +5,13 @@
 #include "cl_log.h"
 #include <timeapi.h>
 
+const char* texture_formats[] = 
+{
+	"RGBA (No compression)",
+	"BC7 (DX11 Only)",
+	"BC5 (Original)"
+};
+
 //Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
 extern size_t GetHeapMemory();
@@ -29,6 +36,7 @@ void InitializeUIData()
 	}
 }
 
+int current_format = 0;
 static bool autoScroll = true;
 static bool hideLogSection = true;
 static bool ResizeMaximal = false;
@@ -37,7 +45,6 @@ void DrawCompilerConfig();
 void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
-
 
 void RenderMainUI()
 {
@@ -286,15 +293,30 @@ void DrawLCConfig()
 		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
 		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
-		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
+
 		ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
  
 		ImGui::Separator();
-		
-		ImGui::SetNextItemWidth(100);
-		if (ImGui::Combo("lmaps", &item_current_selected, lightmap_resolution, max_resolution))
- 			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
+
+		ImGui::Spacing();
+		ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Lightmaps");
+		ImGui::Spacing();
+
+		ImGui::Text("Size:");
+		ImGui::SetNextItemWidth(180);
+		if (ImGui::Combo("##lmaps", &item_current_selected, lightmap_resolution, max_resolution))
+		{
+			gCompilerMode.LC_sizeLmaps = atoi(lightmap_resolution[item_current_selected]);
+		}
+
+		ImGui::Text("Format:");
+		ImGui::SetNextItemWidth(180);
+		if (ImGui::Combo("##Texture Format", &current_format, texture_formats, IM_ARRAYSIZE(texture_formats)))
+		{
+			gCompilerMode.LmapsFormat = static_cast<LCLightmapFormat>(current_format);
+		}
+
 		ImGui::Checkbox("LMAP places by se7kills", &gCompilerMode.LC_LmapsAlternative);
 		ImGui::Checkbox("SoC LMaps", &gCompilerMode.LC_legacyLM);
 
