@@ -71,7 +71,7 @@ BOOL smart_cover::object::net_Spawn		(CSE_Abstract *server_entity)
 
 	setEnabled						(FALSE);
 	setVisible						(FALSE);
-
+	SpatialComponent->spatial.type |= STYPE_RESTRICTOR;
 	return (TRUE);
 }
 
