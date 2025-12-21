@@ -402,7 +402,14 @@ void ImplicitLightingExec()
 			u32	h = TEX.dwHeight;
 			u32	pitch = w * 4;
 			STextureParams fmt = TEX.THM;
-			fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
+
+			switch (gCompilerMode.LmapsFormat)
+			{
+				case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+				case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+				case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+			}
+
 			fmt.flags.set(STextureParams::flDitherColor, FALSE);
 			fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
 			fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
@@ -426,7 +433,14 @@ void ImplicitLightingExec()
 			u32	h = TEX.dwHeight;
 			u32	pitch = w * 4;
 			STextureParams			fmt;
-			fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
+
+			switch (gCompilerMode.LmapsFormat)
+			{
+				case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+				case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+				case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+			}
+
 			fmt.flags.set(STextureParams::flDitherColor, FALSE);
 			fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
 			fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);

@@ -39,6 +39,7 @@ void setup_luabind_allocator()
 extern int item_current_selected;
 extern int item_current_jitter;
 extern int item_current_jitter_mu;
+extern int current_format;
 
 void StartupAI();
 void StartupLC();
@@ -273,7 +274,7 @@ void SaveCompilerCfg()
 	Serializer->Write("LC_Noise", gCompilerMode.LC_Noise);
 	Serializer->Write("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Write("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
-	Serializer->Write("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
+	Serializer->Write("LC_tex_format", current_format);
 	Serializer->Write("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
 	Serializer->Write("LC_skipWeld", gCompilerMode.LC_skipWeld);
 	Serializer->Write("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);
@@ -342,7 +343,7 @@ int APIENTRY WinMain
 	Serializer->Read("LC_Noise", gCompilerMode.LC_Noise);
 	Serializer->Read("LC_Tess", gCompilerMode.LC_Tess);
 	Serializer->Read("LC_SkipInvalidFaces", gCompilerMode.LC_SkipInvalidFaces);
-	Serializer->Read("LC_tex_rgba", gCompilerMode.LC_tex_rgba);
+	Serializer->Read("LC_tex_format", current_format);
 	Serializer->Read("LC_NoSubdivide", gCompilerMode.LC_NoSubdivide);
 	Serializer->Read("LC_skipWeld", gCompilerMode.LC_skipWeld);
 	Serializer->Read("IsOverloadedSettings", gCompilerMode.IsOverloadedSettings);

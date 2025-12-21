@@ -51,7 +51,6 @@ class XRLC_LIGHT_API xrLC_GlobalData
 private:
 	bool _skipInvalid;
 	bool _skipTesselate;
-	bool _lmapRGBA;
 	bool _skipSubdivide;
 	u32 JSampleMU;
 	bool _OverrideSettings;
@@ -134,9 +133,6 @@ public:
 
 	bool GetSkipTesselate() { return _skipTesselate; }
 	void SetSkipTesselate(bool skipTesselate) { _skipTesselate = skipTesselate; }
-
-	bool GetLmapRGBA() { return _lmapRGBA; }
-	void SetLmapRGBA(bool lmapRGBA) { _lmapRGBA = lmapRGBA; }
 
 	bool GetSkipSubdivide() { return _skipSubdivide; }
 	void SetSkipSubdivide(bool skipSubdivide) { _skipSubdivide = skipSubdivide; }

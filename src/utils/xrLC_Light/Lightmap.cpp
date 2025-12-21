@@ -101,7 +101,7 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
     }
 }
 
-void CLightmap::Save( LPCSTR path )
+void CLightmap::Save(LPCSTR path)
 {
 	static int		lmapNameID = 0;
 	++lmapNameID;
@@ -110,90 +110,96 @@ void CLightmap::Save( LPCSTR path )
 	t.Start();
 
 	// Borders correction
- 	for (u32 _y=0; _y<gCompilerMode.LC_sizeLmaps; _y++)
+	for (u32 _y = 0; _y < gCompilerMode.LC_sizeLmaps; _y++)
 	{
-		for (u32 _x=0; _x<gCompilerMode.LC_sizeLmaps; _x++)
+		for (u32 _x = 0; _x < gCompilerMode.LC_sizeLmaps; _x++)
 		{
-			u32	offset	= _y*gCompilerMode.LC_sizeLmaps+_x;
-			if (lm.marker[offset]>=(254-BORDER))
-				lm.marker[offset]=255;
-			else 
-				lm.marker[offset]=0;
+			u32	offset = _y * gCompilerMode.LC_sizeLmaps + _x;
+			if (lm.marker[offset] >= (254 - BORDER))
+				lm.marker[offset] = 255;
+			else
+				lm.marker[offset] = 0;
 		}
 	}
 	clMsg("[Lightmap] Borders correction: %u ms", t.GetElapsed_ms());
-	
+
 	t.Start();
-	for (u32 ref=254; ref>(254-16); ref--) 
+	for (u32 ref = 254; ref > (254 - 16); ref--)
 	{
-		ApplyBorders	(lm, ref);
-		Progress		(1.f - float(ref)/float(254-16));
+		ApplyBorders(lm, ref);
+		Progress(1.f - float(ref) / float(254 - 16));
 	}
 	clMsg("[Lightmap] Apply Borders: %u ms", t.GetElapsed_ms());
 
-	Progress			(1.f);
+	Progress(1.f);
 
 	xr_vector<u32>			lm_packed;
-	lm.Pack					(lm_packed);
+	lm.Pack(lm_packed);
 
 	xr_vector<u32>			hemi_packed;
-	lm.Pack_hemi			(hemi_packed);
+	lm.Pack_hemi(hemi_packed);
 
-	lm_texture.bHasAlpha		= TRUE;
-	lm_texture.dwWidth			= lm.width;
-	lm_texture.dwHeight			= lm.height;
-	lm_texture.pSurface			= NULL;
-	
-	lm.destroy					();
-	
- 	t.Start();
-	Status			("Compression base...");
-	{
+	lm_texture.bHasAlpha = TRUE;
+	lm_texture.dwWidth = lm.width;
+	lm_texture.dwHeight = lm.height;
+	lm_texture.pSurface = NULL;
 
-
-		string_path				FN;
-		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
-		xr_sprintf					(FN,"%s%s_1.dds",	path,lm_texture.name);
-		BYTE*	raw_data		= LPBYTE(&*lm_packed.begin());
-		u32	w					= lm_texture.dwWidth;//lm.width;
-		u32	h					= lm_texture.dwHeight;//lm.height;
-		u32	pitch				= w*4;
-
-		STextureParams fmt;
-		fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
-		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
-		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
-		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
-	}
-	lm_packed.clear();
-	
-	clMsg("[Lightmap] Save Base: %u ms",t.GetElapsed_ms());
+	lm.destroy();
 
 	t.Start();
-	Status			("Compression hemi..."); //.
+	Status("Compression base...");
 	{
-
-
-		u32 w					= lm_texture.dwWidth;//lm.width;
-		u32 h					= lm_texture.dwHeight;//lm.height;
-		u32	pitch				= w*4;
-
 		string_path				FN;
-		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
-		xr_sprintf					(FN,"%s%s_2.dds", path, lm_texture.name);
-		BYTE*	raw_data		= LPBYTE(&*hemi_packed.begin());
+		xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
+		xr_sprintf(FN, "%s%s_1.dds", path, lm_texture.name);
+		BYTE* raw_data = LPBYTE(&*lm_packed.begin());
+		u32	w = lm_texture.dwWidth;//lm.width;
+		u32	h = lm_texture.dwHeight;//lm.height;
+		u32	pitch = w * 4;
 
 		STextureParams fmt;
-		fmt.fmt = lc_global_data()->GetLmapRGBA() ? STextureParams::tfRGBA : STextureParams::tfDXT5;
-		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
-		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
-		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-		DXTUtils::Compress(FN,raw_data,0,w,h,pitch,&fmt,4);
+		switch (gCompilerMode.LmapsFormat)
+		{
+			case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+			case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+			case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+		}
+
+		fmt.flags.set(STextureParams::flDitherColor, FALSE);
+		fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
+		fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+		DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
 	}
+	lm_packed.clear();
+
+	clMsg("[Lightmap] Save Base: %u ms", t.GetElapsed_ms());
+
+	t.Start();
+	Status("Compression hemi...");
+
+	u32 w = lm_texture.dwWidth;//lm.width;
+	u32 h = lm_texture.dwHeight;//lm.height;
+	u32	pitch = w * 4;
+
+	string_path				FN;
+	xr_sprintf(lm_texture.name, "lmap#%d", lmapNameID);
+	xr_sprintf(FN, "%s%s_2.dds", path, lm_texture.name);
+	u8* raw_data = LPBYTE(&*hemi_packed.begin());
+
+	STextureParams fmt;
+	switch (gCompilerMode.LmapsFormat)
+	{
+		case LCLightmapFormat::FORMAT_RGBA: fmt.fmt = STextureParams::tfRGBA; break;
+		case LCLightmapFormat::FORMAT_BC7:  fmt.fmt = STextureParams::tfBC7; break;
+		case LCLightmapFormat::FORMAT_BC5:  fmt.fmt = STextureParams::tfDXT5; break;
+	}
+
+	fmt.flags.set(STextureParams::flDitherColor, FALSE);
+	fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
+	fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+	DXTUtils::Compress(FN, raw_data, 0, w, h, pitch, &fmt, 4);
 
 	clMsg("[Lightmap] Save Hemi: %u ms", t.GetElapsed_ms());
 
 	GetHeapMemory();
 }
- 
