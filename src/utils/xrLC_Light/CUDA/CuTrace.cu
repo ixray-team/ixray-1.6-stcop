@@ -23,13 +23,6 @@ extern "C"
 #define LT_POINT		1
 #define LT_SECONDARY	2
 
-enum eType
-{
-	eSun = 0,
-	eHemi = 1,
-	eRGB = 2
-};
-
 __device__ float RunOptickTask(Hardware_Vector& P, Hardware_Vector& N, float Range, unsigned int SkipID)
 {
 	const float3 origin = P.getVector3();
@@ -186,14 +179,12 @@ __device__ void LightPoint(Hardware_Raytask& task, Hardware_Color& ColorUV, unsi
 	{
 		Hardware_Lighting& L = g_params.lights[i];
 
-		if (!(LP_dont_hemi & flags) && L.type == eHemi)
-			CalculatePoint(task, L, ColorUV);
+		if ((LP_dont_hemi & flags) && L.light_type == eHemi ||
+			(LP_dont_rgb & flags)  && L.light_type == eRGB  || 
+			(LP_dont_sun & flags)  && L.light_type == eSun )			continue;
 
-		if (!(LP_dont_rgb & flags) && L.type == eRGB)
-			CalculatePoint(task, L, ColorUV);
 
-		if (!(LP_dont_sun & flags) && L.type == eSun)
-			CalculatePoint(task, L, ColorUV);
+ 			CalculatePoint(task, L, ColorUV);
 	}
 }
 
