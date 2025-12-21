@@ -40,7 +40,6 @@ void	CCar::cam_Update			(float dt, float fov)
 	}
 	active_camera->f_fov				= fov;
 	active_camera->Update				(P,Da);
-	Level().Cameras().UpdateFromCamera	(active_camera);
 }
 
 void	CCar::OnCameraChange		(int type)
