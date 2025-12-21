@@ -58,9 +58,8 @@ void XRay::RayTrace::CUDA::InitializeLights()
 			return cuL;
 		};
 
-	u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
 
-	Msg("[GPU DEVICE ALLOCATE] FACES[%u] Allocate : %llu kb", numLights, numLights * sizeof(Hardware_Lighting) / 1024);
+	u32 numLights = Lights.rgb.size() + Lights.hemi.size() + Lights.sun.size();
  
 	Hardware_Lighting* h_lights = nullptr;			// CPU alloc
 	// Заполняем буфер Источников света
@@ -92,13 +91,10 @@ void XRay::RayTrace::CUDA::InitializeLights()
 
 void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
 {
-	size_t Allocated_mem = size_t(Faces.size() * sizeof(Hardware_FaceData)) / 1024 / 1024;
+	xr_vector<Hardware_FaceData> faces_host;
+	faces_host.resize(Faces.size());
 
-	Hardware_FaceData* faces_host = nullptr;
-	size_t alloc_size = Faces.size() * sizeof(Hardware_FaceData);
- 	CUDA_CHECK ( cudaMallocHost(&faces_host, alloc_size) );
-	
-	int IndexFace = 0;
+ 	int IndexFace = 0;
 	for (auto& F : Faces)
 	{
  		unsigned short surface = lc_global_data()->materials()[F->dwMaterial].surfidx;
@@ -115,16 +111,15 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*> Faces)
 
 		IndexFace++;
 	}
-  
-	clMsg("* [GPU_DEVICE MEMORY] Faces data : %llu mb", Allocated_mem);
 
+	size_t alloc_size = faces_host.size() * sizeof(Hardware_FaceData);
 	CUDA_CHECK( cudaMalloc(&gpu_faces, alloc_size) );
-	CUDA_CHECK( cudaMemcpy(gpu_faces, faces_host, alloc_size, cudaMemcpyHostToDevice) );
- 	cudaFreeHost(faces_host);
+	CUDA_CHECK( cudaMemcpy(gpu_faces, faces_host.data(), alloc_size, cudaMemcpyHostToDevice));
+ 
+ 	size_faces = Faces.size();
 
-
-	size_faces = Faces.size();
-
+	// 🔥 РЕАЛЬНО освобождаем CPU память
+	faces_host.clear();
 }
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
@@ -310,6 +305,7 @@ public:
 		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(Hardware_Color)));
 	}
   
+
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
