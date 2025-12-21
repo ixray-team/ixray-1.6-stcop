@@ -388,7 +388,10 @@ void dxRenderDeviceRender::Begin()
 #endif
 
 #if defined(USE_DX11) && defined(DEBUG_DRAW)
-	GPUEvents_BeginRendering();
+	if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+	{
+		GPUEvents_BeginRendering();
+	}
 #endif
 }
 
@@ -455,7 +458,10 @@ void dxRenderDeviceRender::End()
 
 		DebugRenderImpl.m_lines.resize(0);
 #if defined(USE_DX11) && defined(DEBUG_DRAW)
-		GPUEvents_EndRendering();
+		if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+		{
+			GPUEvents_EndRendering();
+		}
 #endif
 	}
 #else
