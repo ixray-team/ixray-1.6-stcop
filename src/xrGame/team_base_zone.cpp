@@ -87,7 +87,7 @@ BOOL CTeamBaseZone::net_Spawn	(CSE_Abstract* DC)
 		(Level().MapManager().AddMapLocation(BaseMapLocation,ID()))->EnablePointer();
 		
 	};
-
+	SpatialComponent->spatial.type |= STYPE_RESTRICTOR;
 	return						(bOk);
 }
 
