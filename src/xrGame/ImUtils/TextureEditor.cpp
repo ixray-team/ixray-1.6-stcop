@@ -18,6 +18,8 @@ CImGuiTextureEditor g_imgui_texture_editor;
 
 constexpr decltype(CImGuiTextureEditor::selected_index) _kInvalidSelectedID = decltype(CImGuiTextureEditor::selected_index)(-1);
 
+constexpr u16 kTextureEditor_PreviewsVersion = sizeof(string_path) / sizeof(std::remove_extent_t<string_path>);
+constexpr u16 kTextureEditor_PreviewsEntrySize = kTextureEditor_PreviewsVersion + sizeof(u64);
 
 void validate_entry(
 	const xr_vector<const xr_string*>& thms,
@@ -791,6 +793,7 @@ void RenderTextureEditor()
 
 											ImGui::Separator();
 
+#if 0
 											if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 											{
 												ImGui::Text("Preview:");
@@ -812,6 +815,7 @@ void RenderTextureEditor()
 
 												ImGui::Text("Loading. . .");
 											}
+#endif
 
 											ImGui::EndTooltip();
 										}
