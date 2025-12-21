@@ -96,6 +96,16 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		}break;
 	}
 
+#ifndef MASTER_GOLD
+	if (psActorFlags.test(AF_NO_CLIP))
+	{
+		NoClipFly(cmd);
+		if (m_holder && kUSE != cmd)
+			m_holder->OnKeyboardPress(cmd);
+		return;
+	}
+#endif //DEBUG
+
 	if (!g_Alive()) return;
 
 	if(m_holder && kUSE != cmd)
@@ -105,15 +115,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		return;
 	}else
 		if(inventory().Action((u16)cmd, CMD_START))					return;
-
-#ifndef MASTER_GOLD
-	if(psActorFlags.test(AF_NO_CLIP))
-	{
-		NoClipFly(cmd);
-		return;
-	}
-#endif //DEBUG
-
 
 	if (IsWaunded)
 	{
@@ -422,11 +423,10 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		return;
 	}
 
-	if (Remote() || !g_Alive())	
+	if (Remote())	
 	{
 		return;
 	}
-
 	if (m_input_external_handler && !m_input_external_handler->authorized(cmd))
 	{
 		return;
@@ -437,20 +437,25 @@ void CActor::IR_OnKeyboardHold(int cmd)
 		return;
 	}
 
-	if(m_holder)
-	{
-		m_holder->OnKeyboardHold(cmd);
-		return;
-	}
-
 #ifndef MASTER_GOLD
-	if(psActorFlags.test(AF_NO_CLIP) && (cmd==kFWD || cmd==kBACK || cmd==kL_STRAFE || cmd==kR_STRAFE 
-		|| cmd==kJUMP || cmd==kCROUCH))
+	if (psActorFlags.test(AF_NO_CLIP) && (cmd == kFWD || cmd == kBACK || cmd == kL_STRAFE || cmd == kR_STRAFE
+		|| cmd == kJUMP || cmd == kCROUCH))
 	{
 		NoClipFly(cmd);
 		return;
 	}
 #endif //DEBUG
+
+	if (!g_Alive())
+	{
+		return;
+	}
+
+	if(m_holder)
+	{
+		m_holder->OnKeyboardHold(cmd);
+		return;
+	}
 
 	if (IsWaunded)
 	{
@@ -1511,50 +1516,100 @@ collide::rq_result GetPickResult(Fvector pos, Fvector dir, float range, CObject*
 
 void CActor::NoClipFly(int cmd)
 {
-	Fvector cur_pos, right, left;
+	Fvector cur_pos;
     cur_pos.set(0, 0, 0);
-	
+	CCar* pCar = m_holder ? m_holder->cast_car() : nullptr;
+
     if (pInput->iGetAsyncKeyState(SDL_SCANCODE_DELETE))
 	{
-        collide::rq_result RQ = GetPickResult(cam_Active()->Position(), cam_Active()->Direction(), 1000.0f, this);
+        collide::rq_result RQ = GetPickResult(Device.vCameraPosition, Device.vCameraDirection, 1000.0f, this);
         if (RQ.element>=0)
-            SetPhPosition(XFORM().translate(Fvector(cam_Active()->Position()).mad(Fvector(cam_Active()->Direction()), RQ.range)));
+		{
+			if (pCar)
+			{
+				pCar->m_pPhysicsShell->Disable();
+				pCar->m_pPhysicsShell->DisableCollision();
+				pCar->m_pPhysicsShell->SetGlTransformDynamic(pCar->XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+				pCar->correct_spawn_pos();
+				pCar->m_pPhysicsShell->set_LinearVel(zero_vel);
+				pCar->m_pPhysicsShell->set_AngularVel(zero_vel);
+				pCar->m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+				pCar->m_pPhysicsShell->Enable();
+			}
+			else if (m_pPhysicsShell)
+			{
+				m_pPhysicsShell->Disable();
+				m_pPhysicsShell->DisableCollision();
+				m_pPhysicsShell->SetGlTransformDynamic(XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+				correct_spawn_pos();
+				m_pPhysicsShell->set_LinearVel(zero_vel);
+				m_pPhysicsShell->set_AngularVel(zero_vel);
+				m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
+				m_pPhysicsShell->Enable();
+			}
+			else
+				SetPhPosition(XFORM().translate(Fvector(Device.vCameraPosition).mad(Fvector(Device.vCameraDirection), RQ.range)));
+		}
     }
 
 	switch (cmd)
 	{
 		case kJUMP:
-			cur_pos.mad({ 0,1,0 }, GetNoclipSpeedScale() / 2.0f);
+		{
+			Fvector top;
+			top.set(Device.vCameraTop);
+			cur_pos.mad(top, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,1,0 }, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, top, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(top, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kCROUCH:
-			cur_pos.mad({ 0,-1,0 }, GetNoclipSpeedScale() / 2.0f);
+		{
+			Fvector down;
+			down.set(Device.vCameraTop).invert();
+			cur_pos.mad(down, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, { 0,-1,0 }, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, down, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(down, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kFWD:
-			cur_pos.mad(cam_Active()->vDirection, GetNoclipSpeedScale() / 2.0f);
+		{
+			cur_pos.mad(Device.vCameraDirection, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, cam_Active()->vDirection, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, Device.vCameraDirection, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(Device.vCameraDirection, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kBACK:
-			cur_pos.mad(Fvector(cam_Active()->vDirection).invert(), GetNoclipSpeedScale() / 2.0f);
+		{
+			cur_pos.mad(Fvector(Device.vCameraDirection).invert(), GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
-				m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(cam_Active()->vDirection).invert(), (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+				m_pPhysicsShell->applyImpulseTrace(cur_pos, Fvector(Device.vCameraDirection).invert(), (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(Fvector(Device.vCameraDirection).invert(), (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kR_STRAFE:
-			right.set(cam_Active()->Right());
+		{
+			Fvector right;
+			right.set(Device.vCameraRight);
 			cur_pos.mad(right, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
 				m_pPhysicsShell->applyImpulseTrace(cur_pos, right, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(right, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kL_STRAFE:
-			left.set(Fvector(cam_Active()->Right()).invert());
+		{
+			Fvector left;
+			left.set(Device.vCameraRight).invert();
 			cur_pos.mad(left, GetNoclipSpeedScale() / 2.0f);
 			if (m_pPhysicsShell)
 				m_pPhysicsShell->applyImpulseTrace(cur_pos, left, (GetNoclipSpeedScale() * m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
-			break;
+			if (pCar && pCar->m_pPhysicsShell)
+				pCar->m_pPhysicsShell->applyImpulse(left, (GetNoclipSpeedScale() * pCar->m_pPhysicsShell->getMass() * physics_world()->Gravity()) * Device.fTimeDelta);
+		}break;
 		case kCAM_1:
 		    cam_Set(eacFirstEye);
 		    break;
@@ -1590,7 +1645,7 @@ void CActor::NoClipFly(int cmd)
 			}
 		}break;
 	}
-	if(!m_pPhysicsShell)
+	if(!m_pPhysicsShell && !pCar)
 		SetPhPosition(XFORM().translate_add(cur_pos.mul(GetNoclipSpeedScale() * Device.fTimeDelta)));
 
 	if(inventory().Action((u16)cmd, CMD_START))return;
