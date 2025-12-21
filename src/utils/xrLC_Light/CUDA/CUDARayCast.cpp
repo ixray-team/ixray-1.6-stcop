@@ -206,8 +206,8 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
-	Phase("CUDA Initialize RayTracing (Rcast-Cform)");
-
+	Phase("CUDA: Initialize Raytrace Model");
+ 
 	// Однократная инициализация
 	static bool initialized = false;
 	if (!initialized)
