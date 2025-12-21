@@ -28,7 +28,6 @@ extern CompilersMode gCompilerMode;
 
 void StartupLC() 
 {
-
 	g_build_options.b_radiosity = gCompilerMode.LC_GI;
 	g_build_options.b_noise = gCompilerMode.LC_Noise;
 	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
@@ -45,7 +44,6 @@ void StartupLC()
 		create_global_data();
 		lc_global_data()->SetSkipInvalid(gCompilerMode.LC_SkipInvalidFaces);
 		lc_global_data()->SetSkipTesselate(!gCompilerMode.LC_Tess);
-		lc_global_data()->SetLmapRGBA(gCompilerMode.LC_tex_rgba);
 		lc_global_data()->SetSkipSubdivide(gCompilerMode.LC_NoSubdivide);
 		lc_global_data()->SetSkipTHM(gCompilerMode.SkipTHM);
 

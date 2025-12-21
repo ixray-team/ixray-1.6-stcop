@@ -8,8 +8,17 @@ struct LevelFileData
 	bool Select = false;
 };
 
+enum class LCLightmapFormat
+{
+	FORMAT_RGBA,
+	FORMAT_BC7,
+	FORMAT_BC5
+};
+
 struct CompilersMode
 {
+	LCLightmapFormat LmapsFormat = LCLightmapFormat::FORMAT_RGBA;
+
 	bool Silent = false;
 	bool Embree = true;
 	bool CUDA = true;
@@ -33,7 +42,6 @@ struct CompilersMode
 	bool LC_Noise = true;
 	bool LC_Tess = true;
 	bool LC_SkipInvalidFaces = true;
-	bool LC_tex_rgba = false;
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 	bool LC_legacyLM = false;
@@ -58,7 +66,6 @@ struct CompilersMode
 	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;
 	bool AI_FreeMPBuild = false;
-
 
 	bool AI_BuildLevel = false;
 	bool AI_PureCovers = false;
