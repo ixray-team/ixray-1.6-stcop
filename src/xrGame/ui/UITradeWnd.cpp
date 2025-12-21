@@ -866,7 +866,7 @@ void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
 	else
 	{
 		PIItem IItm = (PIItem)itm->m_pData;
-		if (IItm->CurrSlot() && !itm->ChildsCount())
+		if (IItm->CurrSlot() && IItm->CurrPlace() == eItemPlaceSlot && !itm->ChildsCount())
 		{
 			itm->SetTextureColor(color_rgba(100, 255, 100, 255));
 		}
