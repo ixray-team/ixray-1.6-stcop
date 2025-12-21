@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "pch_script.h"
-#include "../xrEngine/XR_IOConsole.h"
 #include "../xrEngine/xr_ioc_cmd.h"
 #include "../xrEngine/CustomHUD.h"
 #include "../xrEngine/FDemoRecord.h"

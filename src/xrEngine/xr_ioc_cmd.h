@@ -1,5 +1,5 @@
 #pragma once
-
+#include "XR_IOConsole.h"
 #define CMD0(cls)					{ static cls x##cls();				Console->AddCommand(&x##cls);}
 #define CMD1(cls,p1)				{ static cls x##cls(p1);			Console->AddCommand(&x##cls);}
 #define CMD2(cls,p1,p2)				{ static cls x##cls(p1,p2);			Console->AddCommand(&x##cls);}
@@ -8,7 +8,17 @@
 
 #include <charconv>
 
-class ENGINE_API	IConsole_Command
+class ENGINE_API CCC_Mask;
+class ENGINE_API CCC_Mask16;
+class ENGINE_API CCC_ToggleMask;
+class ENGINE_API CCC_Token;
+class ENGINE_API CCC_Float;
+class ENGINE_API CCC_Vector3;
+class ENGINE_API CCC_Integer;
+class ENGINE_API CCC_Boolean;
+class ENGINE_API CCC_String;
+
+class ENGINE_API IConsole_Command
 {
 public		:
 	friend class	CConsole;
@@ -66,6 +76,16 @@ public		:
 	virtual void	add_to_LRU		(shared_str const& arg);
 			void	add_LRU_to_tips	(vecTips& tips);
 
+	virtual IConsole_Command* dcast_icommand(){return this;}
+	virtual CCC_Mask* dcast_mask() { return nullptr; }
+	virtual CCC_Mask16* dcast_mask16() { return nullptr; }
+	virtual CCC_ToggleMask* dcast_tmask() { return nullptr; }
+	virtual CCC_Token* dcast_token() { return nullptr; }
+	virtual CCC_Float* dcast_float() { return nullptr; }
+	virtual CCC_Vector3* dcast_vector() { return nullptr; }
+	virtual CCC_Integer* dcast_int() { return nullptr; }
+	virtual CCC_Boolean* dcast_bool() { return nullptr; }
+	virtual CCC_String* dcast_string() { return nullptr; }
 }; // class IConsole_Command
 
 class ENGINE_API	CCC_Mask : public IConsole_Command
@@ -101,6 +121,21 @@ public		:
 		tips.push_back( str );
 	}
 
+	static Flags32& FastCommand(LPCSTR command_name, u32 mask = 0)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Mask* new_cmd = new CCC_Mask(command_name, new Flags32, mask);
+			Console->Commands[command_name] = new_cmd;
+			*new_cmd->value = { 0 };
+			return *static_cast<CCC_Mask*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Mask*>((*it).second)->value;
+	}
+
+	virtual CCC_Mask* dcast_mask() { return this; }
 };
 
 class ENGINE_API CCC_Mask16 : 
@@ -136,6 +171,22 @@ public		:
 		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
 		tips.push_back( str );
 	}
+
+	static Flags16& FastCommand(LPCSTR command_name, u32 mask = 0)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Mask16* new_cmd = new CCC_Mask16(command_name, new Flags16, mask);
+			Console->Commands[command_name] = new_cmd;
+			*new_cmd->value = { 0 };
+			return *static_cast<CCC_Mask16*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Mask16*>((*it).second)->value;
+	}
+
+	virtual CCC_Mask16* dcast_mask16() { return this; }
 };
 
 class ENGINE_API	CCC_ToggleMask : public IConsole_Command
@@ -168,6 +219,21 @@ public		:
 		tips.push_back( str );
 	}
 
+	static Flags32& FastCommand(LPCSTR command_name, u32 mask = 0)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_ToggleMask* new_cmd = new CCC_ToggleMask(command_name, new Flags32, mask);
+			Console->Commands[command_name] = new_cmd;
+			*new_cmd->value = { 0 };
+			return *static_cast<CCC_ToggleMask*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_ToggleMask*>((*it).second)->value;
+	}
+
+	virtual CCC_ToggleMask* dcast_tmask() { return this; }
 };
 
 class ENGINE_API	CCC_Token : public IConsole_Command
@@ -246,6 +312,21 @@ public		:
 		}
 	}
 
+	static u32& FastCommand(LPCSTR command_name, xr_token& token)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Token* new_cmd = new CCC_Token(command_name, new u32, new xr_token(std::move(token)));
+			Console->Commands[command_name] = new_cmd;
+			*new_cmd->value = 0;
+			return *static_cast<CCC_Token*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Token*>((*it).second)->value;
+	}
+
+	virtual CCC_Token* dcast_token() { return this; }
 };
 
 #undef min
@@ -253,9 +334,8 @@ public		:
 
 class ENGINE_API CCC_Float : public IConsole_Command
 {
-protected	:
+public:
 	float*			value;
-public		:
 	float			min, max;
 
 	CCC_Float(LPCSTR N, float* V, float _min=0, float _max=1) :
@@ -292,16 +372,30 @@ public		:
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
+	static float& FastCommand(LPCSTR command_name, float min = -1000.f, float max = 1000.f)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Float* new_cmd = new CCC_Float(command_name, new float, min, max);
+			Console->Commands[command_name] = new_cmd;
+			*new_cmd->value = 0.f;
+			return *static_cast<CCC_Float*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Float*>((*it).second)->value;
+	}
+
+	virtual CCC_Float* dcast_float() { return this; }
 };
 
 class ENGINE_API CCC_Vector3 : public IConsole_Command
 {
-protected	:
-	Fvector*		value;
 public:
+	Fvector*		value;
 	Fvector			min, max;
 
-	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) :
+	CCC_Vector3(LPCSTR N, Fvector* V, Fvector _min = {-1000.f, -1000.f, -1000.f }, Fvector _max = { 1000.f, 1000.f, 1000.f }) :
 	  IConsole_Command(N),
 	  value(V)
 	{
@@ -344,22 +438,39 @@ public:
 	}
 	virtual void	Info	(TInfo& I)
 	{	
-		xr_sprintf(I,sizeof(I),"vector3 in range [%e,%e,%e]-[%e,%e,%e]",min.x,min.y,min.z,max.x,max.y,max.z);
+		xr_sprintf(I,sizeof(I),"vector3 in range [%f,%f,%f]-[%f,%f,%f]",min.x,min.y,min.z,max.x,max.y,max.z);
 	}
-	virtual void fill_tips(vecTips& tips, u32 mode) {
+	virtual void fill_tips(vecTips& tips, u32 mode)
+	{
 		TStatus  str;
-		xr_sprintf( str, sizeof(str), "(%e, %e, %e)  (current)  [(%e,%e,%e)-(%e,%e,%e)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z );
-		tips.push_back( str );
+		xr_sprintf(str, sizeof(str), "%f, %f, %f", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
+		tips.push_back(str);
+		xr_sprintf(str, sizeof(str), "[(%f,%f,%f)-(%f,%f,%f)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
+		tips.push_back(str);
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
+	static Fvector& FastCommand(LPCSTR command_name, Fvector min = { -1000.f, -1000.f, -1000.f }, Fvector max = { 1000.f, 1000.f, 1000.f })
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Vector3* new_cmd = new CCC_Vector3(command_name, new Fvector, min, max);
+			*new_cmd->value = zero_vel;
+			Console->Commands[command_name] = new_cmd;
+			return *static_cast<CCC_Vector3*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Vector3*>((*it).second)->value;
+	}
+
+	virtual CCC_Vector3* dcast_vector() { return this; }
 };
 
 class ENGINE_API	CCC_Integer : public IConsole_Command
 {
-protected	:
+public:
 	int*			value;
-public		:
 	int				min, max;
 	  const int GetValue	() const {return *value;};
 	void GetBounds(int& imin, int& imax) const {
@@ -395,6 +506,21 @@ public		:
  		IConsole_Command::fill_tips( tips, mode );
 	}
 
+	static int& FastCommand(LPCSTR command_name, int min = -1000, int max = 1000)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Integer* new_cmd = new CCC_Integer(command_name, new int, min, max);
+			*new_cmd->value = 0;
+			Console->Commands[command_name] = new_cmd;
+			return *static_cast<CCC_Integer*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Integer*>((*it).second)->value;
+	}
+
+	virtual CCC_Integer* dcast_int() { return this; }
 };
 
 class ENGINE_API CCC_Boolean : public IConsole_Command
@@ -410,7 +536,7 @@ public:
 		*value = !old_val;
 	}
 
-	CCC_Boolean(LPCSTR N, bool* V) :
+	CCC_Boolean(LPCSTR N, bool* V, bool min = false, bool max = true) :
 	  IConsole_Command(N),
 	  value(V)
 	{}
@@ -443,19 +569,35 @@ public:
 	}
 
 	virtual void fill_tips(vecTips& tips, u32 mode) {
-		TStatus str = {};
-		xr_sprintf(str, sizeof(str), "%s  (current)  [%s,%s]", *value ? "true" : "false", "true", "false");
+		TStatus str{};
+		xr_sprintf(str, sizeof(str), "%s", *value ? "true" : "false");
 		tips.push_back(str);
 		IConsole_Command::fill_tips(tips, mode);
 	}
+
+	static bool& FastCommand(LPCSTR command_name, bool min = false, bool max = true)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_Boolean* new_cmd = new CCC_Boolean(command_name, new bool, min, max);
+			*new_cmd->value = false;
+			Console->Commands[command_name] = new_cmd;
+			return *static_cast<CCC_Boolean*>(new_cmd)->value;
+		}
+		else
+			return *static_cast<CCC_Boolean*>((*it).second)->value;
+	}
+
+	virtual CCC_Boolean* dcast_bool() { return this; }
 };
 
-class ENGINE_API	CCC_String : public IConsole_Command
+class ENGINE_API CCC_String : public IConsole_Command
 {
-protected:
+public:
 	LPSTR			value;
 	int				size;
-public:
+
 	CCC_String(LPCSTR N, LPSTR V, int _size=2) :
 		IConsole_Command(N),
 		value	(V),
@@ -483,13 +625,34 @@ public:
 		IConsole_Command::fill_tips( tips, mode );
 	}
 
+	static LPSTR FastCommand(LPCSTR command_name, int _size = 512)
+	{
+		auto it = Console->Commands.find(command_name);
+		if (it == Console->Commands.end())
+		{
+			CCC_String* new_cmd = new CCC_String(command_name, new char[_size], _size);
+			Console->Commands[command_name] = new_cmd;
+			return static_cast<CCC_String*>(new_cmd)->value;
+		}
+		else
+			return static_cast<CCC_String*>((*it).second)->value;
+	}
+
+	virtual CCC_String* dcast_string() { return this; }
+};
+
+class ENGINE_API CCC_SaveCFG : public IConsole_Command
+{
+public:
+	CCC_SaveCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual void Execute(LPCSTR args);
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
 {
 public:
-	virtual bool	allow			(LPCSTR cmd)	{return true;};
-					CCC_LoadCFG		(LPCSTR N);
+	CCC_LoadCFG(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+	virtual bool	allow(LPCSTR cmd) { return true; };
 	virtual void	Execute			(LPCSTR args);
 };
 
