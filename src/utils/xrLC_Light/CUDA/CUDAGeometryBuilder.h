@@ -248,4 +248,116 @@ public:
 
     bool BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers);
     bool BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream);
+
+    // Initialize Model
+    void InitializeModel()
+    {
+        vertices.clear(); 
+        triangles.clear();
+        facePointers.clear(); 
+
+        for (auto& Face : raw_faces)
+        {
+            CDB::TRI tri;
+            tri.dummy = 0;
+
+            for (auto k = 0; k < 3; k++)
+            {
+                vertices.push_back(Face.v[k]);
+                tri.verts[k] = vertices.size() - 1;
+            }
+          
+
+            triangles.push_back(tri);
+            facePointers.push_back(Face.F);
+        }
+        raw_faces.clear();
+   
+    }
+
+    // Quantized Dedup 
+    
+    struct CellIndex
+    {
+        xr_vector<uint32_t> indices;
+    };
+     
+    // Метод удалиления дубликатов без высокого потребления памяти
+    void RemoveDublicates_Batched()
+    {
+        constexpr float EPS  = 0.001f;
+        constexpr float CELL = 0.01f;
+
+        vertices.clear();
+        triangles.clear();
+        facePointers.clear();
+
+        vertices.reserve(raw_faces.size() / 2);
+        triangles.reserve(raw_faces.size());
+        facePointers.reserve(raw_faces.size());
+
+        constexpr size_t BATCH = 250'000;
+
+        xr_hash_map<size_t, CellIndex> grid;
+        grid.reserve(1000);
+
+        for (size_t base = 0; base < raw_faces.size(); base += BATCH)
+        {
+            AditionalData("Processing Dublicate Vertex: %u / %u", base, raw_faces.size());
+
+            size_t end = std::min(base + BATCH, raw_faces.size());
+            grid.clear();
+             
+            for (size_t i = base; i < end; ++i)
+            {
+                CDB::TRI tri;
+                tri.dummy = 0;
+
+                for (int k = 0; k < 3; ++k)
+                {
+                    const Fvector& v = raw_faces[i].v[k];
+                    int xnew = int(v.x / CELL);
+                    int ynew = int(v.y / CELL);
+                    int znew = int(v.z / CELL);
+
+                    size_t hash = std::hash<int>()(xnew) ^ (std::hash<int>()(ynew) << 1) ^ (std::hash<int>()(znew) << 1);
+
+                    auto& cell = grid[hash];
+                    uint32_t found = UINT32_MAX;
+
+                    for (uint32_t idx : cell.indices)
+                    {
+                        if (vertices[idx].similar(v, EPS))
+                        {
+                            found = idx;
+                            break;
+                        }
+                    }
+
+                    if (found == UINT32_MAX)
+                    {
+                        found = (uint32_t)vertices.size();
+                        vertices.push_back(v);
+                        cell.indices.push_back(found);
+                    }
+
+                    tri.verts[k] = found;
+                }
+
+                triangles.push_back(tri);
+                facePointers.push_back(raw_faces[i].F);
+            }
+
+            // 💣 освобождаем батч
+            for (auto& [k, c] : grid)
+                c.indices.clear();
+        }
+
+        raw_faces.clear();
+        raw_faces.shrink_to_fit();
+
+        vertices.shrink_to_fit();
+        triangles.shrink_to_fit();
+        facePointers.shrink_to_fit();
+    }
 };
