@@ -80,6 +80,8 @@ BOOL CActor::feel_touch_on_contact	(CObject *O)
 #include "ai/monsters/ai_monster_utils.h"
 #include "PickupManager.h"
 
+BOOL g_b_COD_PickUpMode = TRUE;
+
 void CActor::PickupModeUpdate()
 {
 	if(!pPickup->GetPickupMode())
@@ -89,21 +91,31 @@ void CActor::PickupModeUpdate()
 		return;
 
 	//подбирание объекта
-	if(	m_pObjectWeLookingAt									&& 
-		m_pObjectWeLookingAt->cast_inventory_item()				&& 
-		m_pObjectWeLookingAt->cast_inventory_item()->Useful()	&&
-		m_pUsableObject											&& 
-		!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt) )
-	{
-		m_pUsableObject->use(this);
-		Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
+	if (g_b_COD_PickUpMode) {
+		if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() &&
+			m_pObjectWeLookingAt->cast_inventory_item()->Useful() && m_pUsableObject &&
+			!m_pUsableObject->nonscript_usable() &&
+			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt)) {
+			m_pUsableObject->use(this);
+			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
+		}
+	}
+	else {
+		if (m_pObjectWeLookingAt && m_pObjectWeLookingAt->cast_inventory_item() &&
+			m_pObjectWeLookingAt->cast_inventory_item()->Useful() &&
+			m_pObjectWeLookingAt->cast_inventory_item()->CanTake() &&
+			!Level().m_feel_deny.is_object_denied(m_pObjectWeLookingAt)) {
+			if (m_pUsableObject && !m_pUsableObject->nonscript_usable())
+				m_pUsableObject->use(this);
+			Game().SendPickUpEvent(ID(), m_pObjectWeLookingAt->ID());
+		}
 	}
 
 	pPickup->RenderInfo();
 }
 
 #include "../xrEngine/CameraBase.h"
-BOOL	g_b_COD_PickUpMode = TRUE;
+
 void	CActor::PickupModeUpdate_COD	()
 {
 	if (Level().CurrentViewEntity() != this || !g_b_COD_PickUpMode) return;

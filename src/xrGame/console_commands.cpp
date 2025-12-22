@@ -110,6 +110,7 @@ extern float	_delta_pos;
 extern float	_delta_rot;
 
 ENGINE_API extern float	g_console_sensitive;
+extern	BOOL	g_b_COD_PickUpMode;
 
 void register_mp_console_commands();
 //-----------------------------------------------------------
@@ -2427,7 +2428,8 @@ void CCC_RegisterCommands()
 	CMD1(CCC_ChZLoggerTest, "chZLoggerTest");
 	CMD1(CCC_ConsoleColors, "get_console_colors");
 #endif
-
+	CMD4(CCC_Integer, "cl_cod_pickup_mode", &g_b_COD_PickUpMode, 0, 1);
+	
 	CMD1(CCC_MemStats, "stat_memory");
 	// game
 	CMD3(CCC_Mask, "g_crouch_toggle", &psActorFlags, AF_CROUCH_TOGGLE);
