@@ -22,28 +22,38 @@ CUICustomMap::CUICustomMap ()
 
 void CUICustomMap::Initialize(shared_str name, LPCSTR sh_name)
 {
-	CInifile* levelIni	= nullptr;
-	if(name==g_pGameLevel->name())
+	CInifile* levelIni = nullptr;
+	if (name == g_pGameLevel->name())
+	{
 		levelIni = g_pGameLevel->pLevel;
+	}
 	else
 	{
 		string_path					map_cfg_fn;
 		string_path					fname;
-		xr_strconcat(fname,name.c_str(), "\\level.ltx");
-		FS.update_path				(map_cfg_fn, _game_levels_, fname);
-		levelIni					= new CInifile(map_cfg_fn);
+		xr_strconcat(fname, name.c_str(), "\\level.ltx");
+		FS.update_path(map_cfg_fn, _game_levels_, fname);
+		levelIni = new CInifile(map_cfg_fn);
 	}
 
-	if(levelIni->section_exist("level_map") && levelIni->line_exist("level_map", "bound_rect")) // Step 1: Try to read from level.ltx (CS/CoP)
+	if (levelIni->section_exist("level_map") && levelIni->line_exist("level_map", "bound_rect")) // Step 1: Try to read from level.ltx (CS/CoP)
 	{
-		Init_internal	(name, *levelIni, "level_map", sh_name);
+		Init_internal(name, *levelIni, "level_map", sh_name);
 	}
 	else if (pGameIni->section_exist(name)) // Step 2: If level_map not exists in level.ltx, try to read from game.ltx instead (SoC)
 	{
 		Init_internal(name, *pGameIni, name.c_str(), sh_name);
 	}
-	if(levelIni != g_pGameLevel->pLevel)
+	else
+	{
+		Msg("! Not found minimap texture in %s level", *name);
+		m_UIStaticItem.CreateShader("");
+	}
+
+	if (levelIni != g_pGameLevel->pLevel)
+	{
 		xr_delete(levelIni);
+	}
 }
 
 CUICustomMap::~CUICustomMap()
