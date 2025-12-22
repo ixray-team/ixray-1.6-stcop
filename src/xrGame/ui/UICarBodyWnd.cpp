@@ -263,6 +263,7 @@ void CUICarBodyWnd::UpdateLists()
 	for(it =  ruck_list.begin(); ruck_list.end() != it; ++it) 
 	{
 		CUICellItem* itm				= create_cell_item(*it);
+		ColorizeItem					(itm);
 		m_pUIOurBagList->SetItem		(itm);
 	}
 
@@ -1679,4 +1680,17 @@ void CUICarBodyWnd::PlaySnd(eCarBodySndAction a)
 {
 	if (sounds[a].handle())
         sounds[a].play					(nullptr, sm_2D);
+}
+
+void CUICarBodyWnd::ColorizeItem(CUICellItem* itm)
+{
+	PIItem IItm = (PIItem)itm->m_pData;
+	if (IItm->CurrSlot() && IItm->CurrPlace() == eItemPlaceSlot && !itm->ChildsCount())
+	{
+		itm->SetTextureColor(color_rgba(100, 255, 100, 255));
+	}
+	else
+	{
+		itm->SetTextureColor(color_rgba(255, 255, 255, 255));
+	}
 }
