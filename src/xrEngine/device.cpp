@@ -159,13 +159,15 @@ void CRenderDevice::on_idle		()
 	}
 
 	// FPS Limit
-	if (g_dwFPSlimit > 0)
+	bool main_menu_active = g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive();
+	int fps_limit = main_menu_active ? 500 : g_dwFPSlimit;
+	if (fps_limit > 0)
 	{
 		static DWORD dwLastFrameTime = 0;
 		int dwCurrentTime = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
 
 		int selected_time = (dwCurrentTime - (int)dwLastFrameTime);
-		if (selected_time >= 0 && selected_time < (1000 / g_dwFPSlimit))
+		if (selected_time >= 0 && selected_time < (1000 / fps_limit))
 			return;
 		dwLastFrameTime = dwCurrentTime;
 	}
@@ -177,7 +179,7 @@ void CRenderDevice::on_idle		()
 
 	Device.BeginRender();
 	const bool Minimized = SDL_GetWindowFlags(g_AppInfo.Window) & SDL_WINDOW_MINIMIZED;
-	const bool Focus = !Minimized && !(g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()) && !CImGuiManager::Instance().IsCapturingInputs();
+	const bool Focus = !Minimized && !main_menu_active && !CImGuiManager::Instance().IsCapturingInputs();
 
 	SDL_SetWindowMouseGrab(g_AppInfo.Window, !g_dedicated_server && Focus);
 	SDL_SetWindowRelativeMouseMode(g_AppInfo.Window, !g_dedicated_server && Focus);
