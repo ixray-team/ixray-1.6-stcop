@@ -9,12 +9,11 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-int rsDVB_Size = 4096;
-int rsDIB_Size = 512;
-
 void _VertexStream::Create()
 {
 	DEV->Evict();
+
+	rsDVB_Size = 4096;
 
 	mSize = rsDVB_Size * 1024;
 
@@ -51,7 +50,18 @@ void* _VertexStream::Lock	( u32 vl_Count, u32 Stride, u32& vOffset )
 	// Ensure there is enough space in the VB for this data
 	u32	bytes_need		= vl_Count*Stride;
 	R_ASSERT2			((bytes_need<=mSize) && vl_Count, make_string<const char*>("bytes_need = %d, mSize = %d, vl_Count = %d", bytes_need, mSize, vl_Count));
+	if (bytes_need > mSize)
+	{
+		rsDVB_Size += rsDVB_Size;
 
+		reset_begin();
+		reset_end();
+		for (auto geom : DEV->_GetGeoms())
+		{
+			if (geom->vb == old_pVB)
+				geom->vb = pVB;
+		}
+	}
 	// Vertex-local info
 	u32 vl_mSize		= mSize/Stride;
 	u32 vl_mPosition	= mPosition/Stride + 1;
@@ -126,7 +136,7 @@ void _VertexStream::_clear()
 void _IndexStream::Create()
 {
 	DEV->Evict();
-
+	rsDIB_Size = 512u;
 	mSize = rsDIB_Size * 1024;
 
 	RHIBufferDesc bufferDesc;
@@ -159,7 +169,18 @@ u16* _IndexStream::Lock(u32 Count, u32& vOffset)
 
 	// Ensure there is enough space in the VB for this data
 	R_ASSERT((2 * Count <= mSize) && Count);
+	if (2 * Count > mSize)
+	{
+		rsDIB_Size += rsDIB_Size;
 
+		reset_begin();
+		reset_end();
+		for (auto geom : DEV->_GetGeoms())
+		{
+			if (geom->ib == old_pIB)
+				geom->ib = pIB;
+		}
+	}
 	// If either user forced us to flush,
 	// or there is not enough space for the index data,
 	// then flush the buffer contents
