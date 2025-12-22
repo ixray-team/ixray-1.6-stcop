@@ -205,7 +205,7 @@ void CUITradeWnd::Update()
 		UpdateLists					(et);
 
 	inherited::Update				();
-	UpdateCameraDirection			(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
+	//UpdateCameraDirection			(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
 
 	if(UIDealMsg){
 		UIDealMsg->Update();
