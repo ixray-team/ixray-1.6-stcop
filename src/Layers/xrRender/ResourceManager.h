@@ -213,6 +213,8 @@ public:
 	Shader*							_lua_Create			(LPCSTR		s_shader,	LPCSTR s_textures);
 	BOOL							_lua_HasShader		(LPCSTR		s_shader);
 
+	xr_vector<SGeometry*>&			_GetGeoms			()		{	return v_geoms;	}
+
 	CResourceManager						()	: bDeferredLoad(TRUE){	}
 	~CResourceManager						()	;
 
