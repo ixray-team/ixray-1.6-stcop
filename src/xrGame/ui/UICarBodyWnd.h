@@ -117,6 +117,7 @@ protected:
 	bool					ToDeadBodyBag				(CUICellItem* itm, bool b_use_cursor_pos);
 	bool					TransferItem				(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check);
 	void					BindDragDropListEnents		(CUIDragDropListEx* lst);
+	void					ColorizeItem				(CUICellItem* itm);
 private:
 	const char* m_onCanTake = {};
 	bool m_isCanTake = false;
