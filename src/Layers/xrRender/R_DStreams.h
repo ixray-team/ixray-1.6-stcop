@@ -12,6 +12,7 @@ class  ECORE_API _VertexStream
 {
 private :
 	IRHIBuffer*		pVB;
+	u32							rsDVB_Size;
 	u32							mSize;			// size in bytes
 	u32							mPosition;		// position in bytes
 	u32							mDiscardID;		// ID of discard - usually for caching
@@ -44,6 +45,7 @@ class  ECORE_API _IndexStream
 {
 private :
 	IRHIBuffer*		pIB;
+	u32							rsDIB_Size;
 	u32							mSize;		// real size (usually mCount, aligned on 512b boundary)
 	u32							mPosition;
 	u32							mDiscardID;
