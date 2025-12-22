@@ -15,9 +15,6 @@
 CEditorRenderDevice 	*	EDevice;
 bool g_bIsEditor;
 
-extern int	rsDVB_Size;
-extern int	rsDIB_Size;
-
 //CStatsPhysics* _BCL			CEditorRenderDevice::StatPhysics() { return Statistic; }
 void	   _BCL			CEditorRenderDevice::AddSeqFrame(pureFrame* f, bool mt) { seqFrame.Add(f, REG_PRIORITY_LOW); }
 void	   _BCL			CEditorRenderDevice::RemoveSeqFrame(pureFrame* f) { seqFrame.Remove(f); }
@@ -59,9 +56,6 @@ CEditorRenderDevice::CEditorRenderDevice()
 {
 	RenderRadius = 400;
 	psDeviceFlags.assign(rsStatistic|rsFilterLinear|rsFog|rsDrawGrid);
-// dynamic buffer size
-	rsDVB_Size		= 1024 * 16;
-	rsDIB_Size		= 2048;
 // default initialization
     m_ScreenQuality = 1.f;
 	//dwMaximized = 0;
