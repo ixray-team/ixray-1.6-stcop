@@ -817,7 +817,7 @@ float CHudItem::GetHudFov()
 
 		float fBaseFov = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
 		clamp(fBaseFov, 5.f, 180.f);
-		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
+/*		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
 		if (isCollision)
 		{
 			float src = m_nearwall_speed_mod * Device.fTimeDelta;
@@ -828,8 +828,10 @@ float CHudItem::GetHudFov()
 		}
 		else
 		{
+*/
+
 			m_nearwall_last_hud_fov = fBaseFov;
-		}
+//		}
 	}
 
 	return m_nearwall_last_hud_fov * m_fHudFovFactor;

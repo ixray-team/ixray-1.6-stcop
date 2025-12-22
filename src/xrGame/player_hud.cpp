@@ -538,6 +538,21 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_inertion_params.m_tendto_ret_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_ret_speed", 5.0f);
 	m_inertion_params.m_tendto_ret_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_ret_aim_speed", 5.0f);
 
+	if (pSettings->line_exist(sect_name, "hud_collision_enable")) {
+		if (pSettings->r_bool(sect_name, "hud_collision_enable")) {
+			m_collision_offset[0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "hud_collision_offset_pos", zero_vel);
+			m_collision_offset[1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "hud_collision_offset_rot", zero_vel);
+		}
+		else {
+			m_collision_offset[0] = Fvector().set(0.f, 0.f, 0.f);
+			m_collision_offset[1] = Fvector().set(0.f, 0.f, 0.f);
+		}
+	}
+	else {
+		m_collision_offset[0] = Fvector().set(0.f, -0.5f, -0.25f);
+		m_collision_offset[1] = Fvector().set(-0.8f, 0.f, 0.f);
+	}
+
 	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point")==pSettings->line_exist(sect_name,"fire_bone"),		sect_name.c_str());
 	R_ASSERT2(pSettings->line_exist(sect_name,"fire_point2")==pSettings->line_exist(sect_name,"fire_bone2"),	sect_name.c_str());
 	R_ASSERT2(pSettings->line_exist(sect_name,"shell_point")==pSettings->line_exist(sect_name,"shell_bone"),	sect_name.c_str());

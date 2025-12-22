@@ -3271,6 +3271,42 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const
 	}
 }
 
+static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params) {
+	collide::rq_result* RQ = (collide::rq_result*)params;
+	if (!result.O) {
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+		if (T->material < GMLib.CountMaterial()) {
+			if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable) ||
+				GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flActorObstacle))
+				return TRUE;
+		}
+	}
+	*RQ = result;
+	return FALSE;
+}
+
+static float GetRayQueryDist() {
+	collide::rq_result RQ;
+	g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Device.vCameraDirection, 3.0f,
+		collide::rqtStatic, RQ, Actor());
+	if (!RQ.O) {
+		CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + RQ.element;
+		if (T->material < GMLib.CountMaterial()) {
+			collide::rq_result RQ2;
+			collide::rq_results RQR;
+			RQ2.range = 3.0f;
+			collide::ray_defs RD(Device.vCameraPosition, Device.vCameraDirection, RQ2.range,
+				CDB::OPT_CULL, collide::rqtStatic);
+			if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ2, NULL,
+				Level().CurrentEntity())) {
+				clamp(RQ2.range, RQ.range, RQ2.range);
+				return RQ2.range;
+			}
+		}
+	}
+	return RQ.range;
+}
+
 void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
 	CActor* pActor = H_Parent() != nullptr ? H_Parent()->cast_actor() : nullptr;
@@ -3319,6 +3355,64 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	}
 
 	clamp(m_zoom_params.m_fZoomRotationFactor, 0.f, 1.f);
+
+	const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
+
+	if (isCollision) {
+		float dist = GetRayQueryDist();
+
+		attachable_hud_item* hi = HudItemData();
+		R_ASSERT(hi);
+		Fvector curr_offs, curr_rot;
+		curr_offs = hi->m_measures.m_collision_offset[0]; // pos,aim
+		curr_rot = hi->m_measures.m_collision_offset[1];  // rot,aim
+		curr_offs.mul(m_fFactor);
+		curr_rot.mul(m_fFactor);
+
+		float m_fColPosition;
+		float m_fColRotation;
+
+		if (dist <= 0.8 && !IsZoomed()) {
+			m_fColPosition = curr_offs.y + ((1 - dist - 0.2) * 5.0f);
+			m_fColRotation = curr_rot.x + ((1 - dist - 0.2) * 5.0f);
+		}
+		else {
+			m_fColPosition = curr_offs.y;
+			m_fColRotation = curr_rot.x;
+		}
+
+		if (m_fFactor < m_fColPosition) {
+			m_fFactor += Device.fTimeDelta / 0.3;
+			if (m_fFactor > m_fColPosition)
+				m_fFactor = m_fColPosition;
+		}
+		else if (m_fFactor > m_fColPosition) {
+			m_fFactor -= Device.fTimeDelta / 0.3;
+			if (m_fFactor < m_fColPosition)
+				m_fFactor = m_fColPosition;
+		}
+
+		Fmatrix hud_rotation;
+		hud_rotation.identity();
+		hud_rotation.rotateX(curr_rot.x);
+
+		Fmatrix hud_rotation_y;
+		hud_rotation_y.identity();
+		hud_rotation_y.rotateY(curr_rot.y);
+		hud_rotation.mulA_43(hud_rotation_y);
+
+		hud_rotation_y.identity();
+		hud_rotation_y.rotateZ(curr_rot.z);
+		hud_rotation.mulA_43(hud_rotation_y);
+
+		hud_rotation.translate_over(curr_offs);
+		trans.mulB_43(hud_rotation);
+
+		clamp(m_fFactor, 0.f, 1.f);
+	}
+	else {
+		m_fFactor = 0.0;
+	}
 }
 
 void CWeapon::SetAmmoElapsed(int ammo_count)

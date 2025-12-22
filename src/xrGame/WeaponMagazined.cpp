@@ -416,6 +416,11 @@ void CWeaponMagazined::FireStart()
 	bool IsActor = ParentIsActor();
 	CObject* parent = H_Parent();
 
+	if (IsActor && m_fFactor > 0) {
+		StopShooting();
+		return;
+	}
+
 	if (!IsMisfire())
 	{
 		if (iAmmoElapsed + iAmmoChamberElapsed > 0)
@@ -1145,6 +1150,11 @@ void CWeaponMagazined::state_Fire(float dt)
 
 void CWeaponMagazined::state_FireChamber(float dt)
 {
+	if (ParentIsActor() && m_fFactor > 0) {
+		StopShooting();
+		return;
+	}
+
 	if (iAmmoChamberElapsed > 0)
 	{
 		VERIFY(fOneShotTime > 0.f);
@@ -2543,7 +2553,10 @@ void CWeaponMagazined::PlayAnimIdle()
 			PlayHUDMotion(SetCurrentStateAnimation("anm_idle_aim_start"), EHudMixType::eMixAll, GetState());
 			return;
 		}
-
+		if (smart_cast<CActor*>(this->H_Parent()) && m_fFactor > 0) {
+			OnZoomOut();
+			return;
+		}
 		PlayAnimAim();
 	}
 	else
@@ -2646,6 +2659,11 @@ void CWeaponMagazined::OnZoomIn			()
 
 	if(GetState() == eIdle)
 		PlayAnimIdle();
+
+	if (smart_cast<CActor*>(this->H_Parent()) && m_fFactor > 0) {
+		OnZoomOut();
+		return;
+	}
 
 	if(H_Parent())
 	{
