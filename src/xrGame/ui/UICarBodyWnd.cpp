@@ -1685,7 +1685,7 @@ void CUICarBodyWnd::PlaySnd(eCarBodySndAction a)
 void CUICarBodyWnd::ColorizeItem(CUICellItem* itm)
 {
 	PIItem IItm = (PIItem)itm->m_pData;
-	if (IItm->CurrSlot() && IItm->CurrPlace() == eItemPlaceSlot && !itm->ChildsCount())
+	if (IItm->CurrSlot() && IItm->CurrPlace() == eItemPlaceSlot && IItm->BaseSlot() != GRENADE_SLOT && !itm->ChildsCount())
 	{
 		itm->SetTextureColor(color_rgba(100, 255, 100, 255));
 	}
