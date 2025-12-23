@@ -105,7 +105,7 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	pipelineCompileOptions.usesMotionBlur = false;
 	
 	// Todo Сделать где то глобальным параметром через DEFINE
-	pipelineCompileOptions.numPayloadValues = 3;	// se7kills (Важное влияет на количество аргументов OptixTrace)
+	pipelineCompileOptions.numPayloadValues = 4;	// se7kills (Важное влияет на количество аргументов OptixTrace)
 	pipelineCompileOptions.numAttributeValues = 2;
 	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
 	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params
