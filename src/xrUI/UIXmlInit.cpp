@@ -231,7 +231,8 @@ bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStac
 {
 	bool RetVal = InitWindow(xml_doc, path, index, pWnd);
 
-	pWnd->AlignLeft = !xml_doc.ReadAttribBool(path, index, "right", true);
+	pWnd->SetRightAlign(xml_doc.ReadAttribBool(path, index, "right", true));
+	pWnd->SetSpacing(xml_doc.ReadAttribFlt(path, index, "spacing", 0.0f));
 
 	return RetVal;
 }

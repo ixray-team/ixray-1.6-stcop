@@ -17,6 +17,7 @@ void CUIStackPanel::Draw()
 
 			W->SetWndPos(Fvector2().set(x, 0.f));
 			x += W->GetWndSize().x;
+			x += Spacing;
 
 			W->Draw();
 		}
@@ -46,6 +47,7 @@ void CUIStackPanel::Draw()
 
 			W->SetWndPos(Fvector2().set(x, 0.f));
 			x -= W->GetWndSize().x;
+			x -= Spacing;
 
 			W->Draw();
 		}
