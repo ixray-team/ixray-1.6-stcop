@@ -182,7 +182,7 @@ __device__ void CalculatePoint(Hardware_Raytask& Task, Hardware_Lighting& L, uns
 
 	case LT_POINT:
 	{
-		float sqD = P.DistanceSQR(LightPosition);
+		float sqD = P.DistanceSquared(LightPosition);
 		if (sqD > L.range2)
 			return;
 
