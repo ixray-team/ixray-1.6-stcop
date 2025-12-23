@@ -972,11 +972,14 @@ void CBulletManager::Render	()
 	xrCriticalSectionGuard guard(&m_Lock);
 	//u32	vOffset			=	0	;
 	u32 bullet_num		= (u32)m_Bullets.size();
-
+	u32 totalLines = 0;
 	UIRender->StartPrimitive((u32)bullet_num*12, IUIRender::ptTriList, IUIRender::pttLIT);
 
 	for(SBullet& bullet : m_Bullets)
 	{
+		if (g_bullet_debug_trj)
+			totalLines += bullet.lines.size();
+
 		if(!bullet.flags.allow_tracer)	
 			continue;
 
@@ -1025,24 +1028,62 @@ void CBulletManager::Render	()
 	UIRender->FlushPrimitive		();
 	UIRender->CacheSetCullMode		(ERHI_CULLMODE::BACK);
 
-	if(g_bullet_debug_trj)
+	if (g_bullet_debug_trj)
 	{
+		if (totalLines <= 0) return;
+
 		constexpr u32 color = color_rgba(100, 255, 100, 255);
-		
+		constexpr u32 MAX_VERTICES_PER_BATCH = 160'000;
+		constexpr u32 MAX_LINES_PER_BATCH = 80'000;
+
 		UIRender->SetShader(*m_trj_shader);
-		for (SBullet& bullet : m_Bullets)
+
+		if (totalLines <= MAX_LINES_PER_BATCH)
 		{
-			if (bullet.lines.empty()) continue;
+			UIRender->StartPrimitive(totalLines * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
 
-			UIRender->StartPrimitive(bullet.lines.size() * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
-
-			for (auto& line : bullet.lines)
+			for (SBullet& bullet : m_Bullets)
 			{
-				UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
-				UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
+				for (auto& line : bullet.lines)
+				{
+					UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
+					UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
+				}
 			}
 
 			UIRender->FlushPrimitive();
+		}
+		else
+		{
+			u32 linesInCurrentBatch = 0;
+			bool batchStarted = false;
+
+			for (SBullet& bullet : m_Bullets)
+			{
+				for (auto& line : bullet.lines)
+				{
+					if (!batchStarted || linesInCurrentBatch >= MAX_LINES_PER_BATCH)
+					{
+						if (batchStarted)
+						{
+							UIRender->FlushPrimitive();
+							batchStarted = false;
+						}
+
+						u32 linesToStart = std::min(totalLines - (linesInCurrentBatch % MAX_LINES_PER_BATCH), MAX_LINES_PER_BATCH);
+						UIRender->StartPrimitive(linesToStart * 2, IUIRender::ptLineList, IUIRender::ePointType::pttLIT);
+						batchStarted = true;
+						linesInCurrentBatch = 0;
+					}
+
+					UIRender->PushPoint(VPUSH(line.first), color, 0, 0);
+					UIRender->PushPoint(VPUSH(line.second), color, 0, 0);
+					linesInCurrentBatch++;
+				}
+			}
+
+			if (batchStarted)
+				UIRender->FlushPrimitive();
 		}
 	}
 }
