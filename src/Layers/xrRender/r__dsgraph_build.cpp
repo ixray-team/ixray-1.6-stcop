@@ -431,108 +431,6 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
-{
-	//PROF_EVENT("add_Dynamic")
-
-	// Check frustum visibility and calculate distance to visual's center
-	Fvector		Tpos;	// transformed position
-	EFC_Visible	VIS;
-
-	val_pTransform->transform_tiny	(Tpos, pVisual->vis.sphere.P);
-	VIS = View->testSphere			(Tpos, pVisual->vis.sphere.R,planes);
-	if (fcvNone==VIS) return FALSE	;
-
-	// If we get here visual is visible or partially visible
-	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
-
-	switch (pVisual->Type) {
-	case MT_PARTICLE_GROUP:
-		{
-			// Add all children, doesn't perform any tests
-			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
-			xrCriticalSectionGuard guard(&pG->onframe_lock);
-			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)
-			{
-				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (fcvPartial==VIS) 
-				{
-					if (I_._effect)		add_Dynamic				(I_._effect,planes);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_Dynamic(*pit,planes);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_Dynamic(*pit,planes);
-				} else 
-				{
-					if (I_._effect)		add_leafs_Dynamic		(I_._effect);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
-				}
-			}
-		}
-		break;
-	case MT_HIERRARHY:
-		{
-			// Add all children
-			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-			I = pV->children.begin	();
-			E = pV->children.end	();
-			if (fcvPartial==VIS) 
-			{
-				for (; I!=E; I++)	add_Dynamic			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
-			}
-		}
-		break;
-	case MT_SKELETON_ANIM:
-	case MT_SKELETON_RIGID:
-		{
-			// Add all children, doesn't perform any tests
-			CKinematics * pV			= (CKinematics*)pVisual;
-			BOOL	_use_lod			= FALSE	;
-			if (pV->m_lod)				
-			{
-				Fvector							Tpos_;	float		D;
-				val_pTransform->transform_tiny	(Tpos_, pV->vis.sphere.P);
-				float		ssa		=	CalcSSA	(D,Tpos_,pV->vis.sphere.R/2.f);	// assume dynamics never consume full sphere
-				if (ssa<r_ssaLOD_A)	_use_lod	= TRUE		;
-			}
-			if (_use_lod)
-			{
-				add_leafs_Dynamic			(pV->m_lod)		;
-			} else 
-			{
-#if RENDER==R_R1
-				pV->CalculateBones			(TRUE);
-				pV->CalculateWallmarks		();		//. bug?
-#endif
-				I = pV->children.begin		();
-				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
-			}
-			/*
-			I = pV->children.begin		();
-			E = pV->children.end		();
-			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Dynamic			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
-			}
-			*/
-		}
-		break;
-	default:
-		{
-			// General type of visual
-			r_dsgraph_insert_dynamic(pVisual,Tpos);
-		}
-		break;
-	}
-	return TRUE;
-}
-
 void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Static")
@@ -552,19 +450,18 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 	// If we get here visual is visible or partially visible
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
 
-	switch (pVisual->Type) {
+	switch (pVisual->Type)
+	{
 	case MT_PARTICLE_GROUP:
 		{
 			// Add all children, doesn't perform any tests
 			PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
 			xrCriticalSectionGuard guard(&pG->onframe_lock);
-			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++){
-				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (fcvPartial==VIS) {
-					if (I_._effect)		add_Dynamic				(I_._effect,planes);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_Dynamic(*pit,planes);
-					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_Dynamic(*pit,planes);
-				} else {
+			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)
+			{
+				PS::CParticleGroup::SItem& I_ = *i_it;
+				if (fcvPartial != VIS)
+				{
 					if (I_._effect)		add_leafs_Dynamic		(I_._effect);
 					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
 					for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
