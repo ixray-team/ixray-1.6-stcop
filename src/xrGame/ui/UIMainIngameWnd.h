@@ -16,6 +16,7 @@ class	CInventoryItem;
 class	CUIHudStatesWnd;
 class	CUIMotionIcon;
 class	CUIArtefactPanel;
+class	CUIStackPanel;
 
 class CUIMainIngameWnd final :
 	public CUIWindow
@@ -60,6 +61,8 @@ public:
 	CUIStatic*			UIStaticQuickHelp;
 	CUIMotionIcon* UIMotionIcon;
 	CUIZoneMap* UIZoneMap;
+
+	CUIStackPanel* UIStackPanel;
 
 	//иконка, показывающая количество активных PDA
 	CUIStatic*			UIPdaOnline;

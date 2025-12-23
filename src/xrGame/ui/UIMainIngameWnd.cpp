@@ -93,6 +93,7 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIRadiaitionIcon			= nullptr;
 	UIWoundIcon					= nullptr;
 	UIPdaOnline					= nullptr;
+	UIStackPanel				= nullptr;
 	m_ind_bleeding_svg_inited = false;
 	m_ind_weapon_broken_svg_inited = false;
 	m_ind_helmet_broken_svg_inited = false;
@@ -272,44 +273,51 @@ void CUIMainIngameWnd::Init()
 		SetActiveVoiceIcon(false);
 	}
 
+	if (uiXml.NavigateToNode("indicator_booster_stack_panel", 0))
+		UIStackPanel = UIHelper::CreateStackPanel(uiXml, "indicator_booster_stack_panel", this);
+
+	CUIWindow* boosterParent = this;
+	if (UIStackPanel)
+		boosterParent = UIStackPanel;
+
 	if (uiXml.NavigateToNode("indicator_booster_psy", 0))
 	{
-		m_ind_boost_psy = UIHelper::CreateStatic(uiXml, "indicator_booster_psy", this);
+		m_ind_boost_psy = UIHelper::CreateStatic(uiXml, "indicator_booster_psy", boosterParent);
 		m_ind_boost_psy->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_radia", 0))
 	{
-		m_ind_boost_radia = UIHelper::CreateStatic(uiXml, "indicator_booster_radia", this);
+		m_ind_boost_radia = UIHelper::CreateStatic(uiXml, "indicator_booster_radia", boosterParent);
 		m_ind_boost_radia->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_chem", 0))
 	{
-		m_ind_boost_chem = UIHelper::CreateStatic(uiXml, "indicator_booster_chem", this);
+		m_ind_boost_chem = UIHelper::CreateStatic(uiXml, "indicator_booster_chem", boosterParent);
 		m_ind_boost_chem->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_wound", 0))
 	{
-		m_ind_boost_wound = UIHelper::CreateStatic(uiXml, "indicator_booster_wound", this);
+		m_ind_boost_wound = UIHelper::CreateStatic(uiXml, "indicator_booster_wound", boosterParent);
 		m_ind_boost_wound->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_weight", 0))
 	{
-		m_ind_boost_weight = UIHelper::CreateStatic(uiXml, "indicator_booster_weight", this);
+		m_ind_boost_weight = UIHelper::CreateStatic(uiXml, "indicator_booster_weight", boosterParent);
 		m_ind_boost_weight->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_health", 0))
 	{
-		m_ind_boost_health = UIHelper::CreateStatic(uiXml, "indicator_booster_health", this);
+		m_ind_boost_health = UIHelper::CreateStatic(uiXml, "indicator_booster_health", boosterParent);
 		m_ind_boost_health->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_power", 0))
 	{
-		m_ind_boost_power = UIHelper::CreateStatic(uiXml, "indicator_booster_power", this);
+		m_ind_boost_power = UIHelper::CreateStatic(uiXml, "indicator_booster_power", boosterParent);
 		m_ind_boost_power->Show(false);
 	}
 	if (uiXml.NavigateToNode("indicator_booster_rad", 0))
 	{
-		m_ind_boost_rad = UIHelper::CreateStatic(uiXml, "indicator_booster_rad", this);
+		m_ind_boost_rad = UIHelper::CreateStatic(uiXml, "indicator_booster_rad", boosterParent);
 		m_ind_boost_rad->Show(false);
 	}
 	
