@@ -32,7 +32,7 @@ namespace XRay::RayTrace::CUDA
     void RayTraceInitialize(u8 CurrentFlags);
 
     void RayTraceAddRay(RayRecvestIndex& ray, size_t index);
-    void RayTraceRun(size_t max_rays);
+    void RayTraceRun();
 
     xr_vector<base_color_c>& RayTraceResult();
 }

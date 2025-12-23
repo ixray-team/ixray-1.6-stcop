@@ -26,9 +26,6 @@ void CDeflector::LightGPU()
 	{
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
-	 
-	// se7kills todo: Аналог на GPU
- 	// LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
 	// Calculate and fill borders
 	try
@@ -53,11 +50,8 @@ void CDeflector::L_DirectGPU()
 {
 	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 	{
-		Vertex* V1 = F->v[0];
-		Vertex* V2 = F->v[1];
-		Vertex* V3 = F->v[2];
-		wP.from_bary(V1->P, V2->P, V3->P, B);
-		wN.from_bary(V1->N, V2->N, V3->N, B);
+		wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
+		wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
 		exact_normalize(wN);
 		wN.add(F->N);
 		exact_normalize(wN);
@@ -74,10 +68,9 @@ void CDeflector::L_DirectGPU()
 	u32 Jcount; Fvector2 JS; Fvector2* Jitter;
 	JS.set(.4999f / dim.x, .4999f / dim.y);
 	Jitter_Select(Jitter, Jcount);
-	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
  
 	// Создание тоже может занимать время
-	Fbox2			bounds;
+  	Fbox2			bounds;
 	Bounds_Summary(bounds);
 	hash_2d.initialize(bounds, (u32)UVpolys.size());
 	for (u32 fid = 0; fid < UVpolys.size(); fid++)
@@ -86,13 +79,12 @@ void CDeflector::L_DirectGPU()
 		Bounds(fid, bounds);
 		hash_2d.add(bounds, T);
 	}
-	 
+ 
 	for (u32 V = 0; V < lm.height; V++)
 	{
  		for (u32 U = 0; U < lm.width; U++)
 		{
-			base_color_c newC;
- 			u32 Fcount = 0;
+  			u32 Fcount = 0;
 			size_t TaskID = GPUTaskinSystem.MakeKey(U, V); 
 
 			for (u32 J = 0; J < Jcount; J++)
@@ -110,7 +102,7 @@ void CDeflector::L_DirectGPU()
 					{
 						Face* F = TRIANGLE->owner;
 						FromBarry(F, wP, wN, B);
-						GPUTaskinSystem.LightPointPackedDeflector(TaskID, this, wP, wN, flags, F);
+						GPUTaskinSystem.LightPointPacked_add_task(TaskID, this, wP, wN, F);
  						Fcount += 1;
 						break;
 					}
@@ -158,9 +150,8 @@ void CDeflector::L_DirectGPU()
 			Fvector			P;
 			P.mad(v1, vdir, time);
 			  
-			u32 flags = 0;
 			size_t TaskID = GPUTaskinSystem.MakeKey(_x, _y);
-			GPUTaskinSystem.LightPointPackedDeflector(TaskID, Deflector, P, N, flags, skip);
+			GPUTaskinSystem.LightPointPacked_add_task(TaskID, Deflector, P, N, skip);
 			lm.marker[_y * lm.width + _x] = 255;
 		}
 	};
@@ -279,7 +270,6 @@ void CDeflector::LowerResolutionGPU()
 		clMsg("* ERROR: CDeflector::Light - Compression");
 	}	
 }
- 
 
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
