@@ -173,13 +173,17 @@ struct Hardware_Vector
 
 	__device__ float DistanceSquared(Hardware_Vector& Another) const
 	{
-		return (x - Another.x) * (x - Another.x) + (y - Another.y) * (y - Another.y) + (z - Another.z) * (z - Another.z);
+		return 
+			(x - Another.x) * (x - Another.x) + 
+			(y - Another.y) * (y - Another.y) + 
+			(z - Another.z) * (z - Another.z);
 	}
 
 	__device__ float DistanceTo(Hardware_Vector& Another) const
 	{
 		return sqrt( DistanceSquared(Another) );
 	}
+
 
 	__device__ Hardware_Vector Add(Hardware_Vector& Another)
 	{
@@ -211,10 +215,10 @@ struct Hardware_Vector
 		return Result;
 	}
 
-	__device__ Hardware_Vector Subtract(Hardware_Vector& main, Hardware_Vector& Other) 
+	__device__ Hardware_Vector Subtract(Hardware_Vector& a, Hardware_Vector& b) 
 	{
 		Hardware_Vector Result(0, 0, 0);;
-		Result = { main.x - Other.x, main.y - Other.y, main.z - Other.z };
+		Result = { a.x - b.x, a.y - b.y, a.z - b.z };
 		x = Result.x;
 		y = Result.y;
 		z = Result.z;
@@ -348,15 +352,27 @@ struct Hardware_Lighting
 	float	 energy;			// For radiosity ONLY
 };
 
+
+struct Hit
+{
+	float maxT;
+	float minT;
+};
+
 struct Hardware_Raytask 
 {
-	float3 Position;
-	float3 Direction;
-	unsigned int SkipFace;
+	float3   Position;
+	float3   Direction;
+   
+	Hit*     Hits;
+	// unsigned char    CurrentHitID;
 
-	bool   UseSphere = false;
-	float3 Sphere_Pos;
-	float  Sphare_Range;
+	// bool   UseSphere = false;
+
+	//	float3 Sphere_Pos;
+	//	float  Sphare_Range;
+	// int	  CurrentHitID;
+	// Hit    hits[2048];
 };
  
 struct Hardware_TextureData
