@@ -88,9 +88,9 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			v = tp3 - p1;
 			
 			// The rest of this is needed for bouncing.
-			radius1Sqr = u.length();
+			radius1Sqr = u.magnitude();
 			Fvector tu = u / radius1Sqr;
-			radius2Sqr = v.length();
+			radius2Sqr = v.magnitude();
 			Fvector tv = v / radius2Sqr;
 			
 			p2 = tu ^ tv; // This is the non-unit normal.
@@ -107,9 +107,9 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			v = Fvector(a6, a7, a8);
 			
 			// The rest of this is needed for bouncing.
-			radius1Sqr = u.length();
+			radius1Sqr = u.magnitude();
 			Fvector tu = u / radius1Sqr;
-			radius2Sqr = v.length();
+			radius2Sqr = v.magnitude();
 			Fvector tv = v / radius2Sqr;
 			
 			p2 = tu ^ tv; // This is the non-unit normal.
@@ -165,7 +165,7 @@ pDomain::pDomain(PDomainEnum dtype, float a0, float a1,
 			// Given an arbitrary nonzero vector3 n, make two orthonormal
 			// vectors u and v forming a frame [u,v,n.normalize()].
 			Fvector n = p2;
-			float p2l2 = n.length2(); // Optimize this.
+			float p2l2 = n.square_magnitude(); // Optimize this.
 			n.normalize_safe();
 			
 			// radius2Sqr stores 1 / (p2.p2)
@@ -240,7 +240,7 @@ BOOL pDomain::Within(const Fvector &pos) const
 	case PDSphere:
 		{
 			Fvector rvec(pos - p1);
-			float rSqr = rvec.length2();
+			float rSqr = rvec.square_magnitude();
 			return rSqr <= radius1Sqr && rSqr >= radius2Sqr;
 		}
 	case PDCylinder:
@@ -267,7 +267,7 @@ BOOL pDomain::Within(const Fvector &pos) const
 			
 			// Check radial distance; scale radius along axis for cones
 			Fvector xrad = x - p2 * dist; // Radial component of x
-			float rSqr = xrad.length2();
+			float rSqr = xrad.square_magnitude();
 			
 			if(type == PDCone)
 				return (rSqr <= _sqr(dist * radius1) &&
@@ -279,7 +279,7 @@ BOOL pDomain::Within(const Fvector &pos) const
 		{
 			Fvector x(pos - p1);
 			// return exp(-0.5 * xSq * Sqr(oneOverSigma)) * ONEOVERSQRT2PI * oneOverSigma;
-			float Gx = expf(x.length2() * radius2Sqr) * radius2;
+			float Gx = expf(x.square_magnitude() * radius2Sqr) * radius2;
 			return (drand48() < Gx);
 		}
 	case PDPoint:
