@@ -93,7 +93,8 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 	UIRadiaitionIcon			= nullptr;
 	UIWoundIcon					= nullptr;
 	UIPdaOnline					= nullptr;
-	UIStackPanel				= nullptr;
+	UIStackPanelBoosters		= nullptr;
+	UIStackPanelIndicators		= nullptr;
 	m_ind_bleeding_svg_inited = false;
 	m_ind_weapon_broken_svg_inited = false;
 	m_ind_helmet_broken_svg_inited = false;
@@ -177,28 +178,35 @@ void CUIMainIngameWnd::Init()
 	xml_init.InitScrollView(uiXml, "icons_scroll_view", 0, m_UIIcons);
 	AttachChild(m_UIIcons);
 
+	if (uiXml.NavigateToNode("indicator_stack_panel", 0))
+		UIStackPanelIndicators = UIHelper::CreateStackPanel(uiXml, "indicator_stack_panel", this);
+
+	CUIWindow* indicatorParent = this;
+	if (UIStackPanelIndicators)
+		indicatorParent = UIStackPanelIndicators;
+
 	if (uiXml.NavigateToNode("indicator_bleeding", 0))
-		m_ind_bleeding = UIHelper::CreateStatic(uiXml, "indicator_bleeding", this);
+		m_ind_bleeding = UIHelper::CreateStatic(uiXml, "indicator_bleeding", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_radiation", 0))
-		m_ind_radiation = UIHelper::CreateStatic(uiXml, "indicator_radiation", this);
+		m_ind_radiation = UIHelper::CreateStatic(uiXml, "indicator_radiation", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_starvation", 0))
-		m_ind_starvation = UIHelper::CreateStatic(uiXml, "indicator_starvation", this);
+		m_ind_starvation = UIHelper::CreateStatic(uiXml, "indicator_starvation", indicatorParent);
 	const static bool enableThirst = EngineExternal()[EEngineExternalGame::EnableThirst];
 	if (enableThirst)
-		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", this);
+		m_ind_thirst = UIHelper::CreateStatic(uiXml, "indicator_thirst", indicatorParent);
 
 	const static bool enableSleepiness = EngineExternal()[EEngineExternalGame::EnableSleepiness];
 	if (enableSleepiness)
-		m_ind_sleepiness = UIHelper::CreateStatic(uiXml, "indicator_sleepiness", this);
+		m_ind_sleepiness = UIHelper::CreateStatic(uiXml, "indicator_sleepiness", indicatorParent);
 
 	if (uiXml.NavigateToNode("indicator_weapon_broken", 0))
-		m_ind_weapon_broken = UIHelper::CreateStatic(uiXml, "indicator_weapon_broken", this);
+		m_ind_weapon_broken = UIHelper::CreateStatic(uiXml, "indicator_weapon_broken", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_helmet_broken", 0))
-		m_ind_helmet_broken = UIHelper::CreateStatic(uiXml, "indicator_helmet_broken", this);
+		m_ind_helmet_broken = UIHelper::CreateStatic(uiXml, "indicator_helmet_broken", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_outfit_broken", 0))
-		m_ind_outfit_broken = UIHelper::CreateStatic(uiXml, "indicator_outfit_broken", this);
+		m_ind_outfit_broken = UIHelper::CreateStatic(uiXml, "indicator_outfit_broken", indicatorParent);
 	if (uiXml.NavigateToNode("indicator_overweight", 0))
-		m_ind_overweight = UIHelper::CreateStatic(uiXml, "indicator_overweight", this);
+		m_ind_overweight = UIHelper::CreateStatic(uiXml, "indicator_overweight", indicatorParent);
 
 	bool isRaster = EngineExternal().isRenderingUIRaster();
 
@@ -274,11 +282,11 @@ void CUIMainIngameWnd::Init()
 	}
 
 	if (uiXml.NavigateToNode("indicator_booster_stack_panel", 0))
-		UIStackPanel = UIHelper::CreateStackPanel(uiXml, "indicator_booster_stack_panel", this);
+		UIStackPanelBoosters = UIHelper::CreateStackPanel(uiXml, "indicator_booster_stack_panel", this);
 
 	CUIWindow* boosterParent = this;
-	if (UIStackPanel)
-		boosterParent = UIStackPanel;
+	if (UIStackPanelBoosters)
+		boosterParent = UIStackPanelBoosters;
 
 	if (uiXml.NavigateToNode("indicator_booster_psy", 0))
 	{

@@ -62,7 +62,8 @@ public:
 	CUIMotionIcon* UIMotionIcon;
 	CUIZoneMap* UIZoneMap;
 
-	CUIStackPanel* UIStackPanel;
+	CUIStackPanel* UIStackPanelBoosters;
+	CUIStackPanel* UIStackPanelIndicators;
 
 	//иконка, показывающая количество активных PDA
 	CUIStatic*			UIPdaOnline;
