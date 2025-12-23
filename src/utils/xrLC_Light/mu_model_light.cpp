@@ -97,6 +97,7 @@ public:
 
 
 #include "xrDeflectorLight_Packed.h"
+#include <light_point.h>
 
 void run_mu_light()
 {
@@ -115,7 +116,9 @@ void run_mu_light()
 	{
 		Phase("Lighting Mu-Refs Started GPU");
 		GPUTaskinSystem.RestartALL();
-
+ 		GPUTaskinSystem.ColorsMapType = eMumodel;
+		GPUTaskinSystem.current_flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT;
+	
 		// Gathering
 		CTimer tStats; tStats.Start();
 
@@ -133,7 +136,7 @@ void run_mu_light()
 			};
 
 			// Завершаем накопленые данные
- 			GPUTaskinSystem.LightPointPacked_MODELRun();
+ 			GPUTaskinSystem.LightPointPacked_run_tasks();
  		});
  		Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
 		

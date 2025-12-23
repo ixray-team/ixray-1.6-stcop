@@ -18,8 +18,8 @@ class XRLC_LIGHT_API CDeflector
 {
 public:
    	bool ApplyLmap			= false;
- 	bool ApplyResolution = false;
- 	bool bMerged = false;
+ 	bool ApplyResolution	= false;
+ 	bool bMerged			= false;
  
 	Fvector				normal;
  	xr_vector<UVtri>	UVpolys;
@@ -27,15 +27,6 @@ public:
 	lm_layer			layer;
 	Fsphere				Sphere;
 
-	// se7kills Освещение на GPU
-	// xrCriticalSection csColors;
-	// struct ColorsData
-	// {
-	// 	base_color_c C;
-	// 	u8 LSamples = 0;
-	// };
- 	// xr_hash_map<size_t, ColorsData>								def_color_map;
- 
 public:
 
 	CDeflector					();
@@ -50,8 +41,8 @@ public:
 	u32		GetFaceCount()		{ return (u32)UVpolys.size();	};
 		
 	void	PrepareForLighting	();
-	void	Light				(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H	);
-	void	L_Direct			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
+	void	Light				(CDB::COLLIDER* DB, base_lighting* LightsSelected);
+	void	L_Direct			(CDB::COLLIDER* DB, base_lighting* LightsSelected);
  
 	u32		weight				() { return layer.Area(); }	
 	u16		GetBaseMaterial		() ;

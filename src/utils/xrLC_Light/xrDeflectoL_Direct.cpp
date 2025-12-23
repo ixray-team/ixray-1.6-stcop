@@ -35,8 +35,10 @@ void CDeflector::PrepareForLighting()
  	lm.create(lm.width, lm.height);
 }
 
+thread_local HASH			Hash2dDeflectorEmbree;
 
-void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+
+void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
 	// Geometrical bounds
 	Fbox bb;		bb.invalidate();
@@ -56,7 +58,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 	// Convert lights to local form
 	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
 
-	auto Light = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+	auto Light = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		{
 			try
 			{
@@ -65,11 +67,25 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 				// UV
 				RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
 
+
+				// Hash Initialize
+				Fbox2			bounds;
+				Bounds_Summary(bounds);
+
+				Hash2dDeflectorEmbree.initialize(bounds, (u32)UVpolys.size());
+				for (u32 fid = 0; fid < UVpolys.size(); fid++)
+				{
+					UVtri* T = &(UVpolys[fid]);
+					Bounds(fid, bounds);
+					Hash2dDeflectorEmbree.add(bounds, T);
+				}
+
+
 				// Calculate
 				R_ASSERT(lm.width <= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
 				R_ASSERT(lm.height <= (gCompilerMode.LC_sizeLmaps - 2 * BORDER));
 				lm.create(lm.width, lm.height);
-				L_Direct(DB, LightsSelected, H);
+				L_Direct(DB, LightsSelected);
 			}
 			catch (...)
 			{
@@ -78,7 +94,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 		};
 
 	// Calculate and fill borders
-	Light(DB, LightsSelected, H);
+	Light(DB, LightsSelected);
 
 
 	for (u32 ref = 254; ref > 0; ref--)
@@ -96,7 +112,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 		{
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);
-			Light(DB, LightsSelected, H);
+			Light(DB, LightsSelected);
 		}
 	}
 	catch (...)
@@ -182,7 +198,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 	}
 }
  
-void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
 	R_ASSERT	(DB);
 	R_ASSERT	(LightsSelected);
@@ -206,8 +222,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	DB->ray_options	(0);
 
 	u32 Skipped = 0; u32 Processed = 0;
-	
-	for (u32 V=0; V<lm.height; V++)
+ 	for (u32 V=0; V<lm.height; V++)
 	{
  		for (u32 U=0; U<lm.width; U++)	
 		{
@@ -224,12 +239,14 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 					 
 					// World space
 					Fvector		wP,wN,B;
-					for (auto& TRI : UVpolys)
+					
+					auto TRIS = Hash2dDeflectorEmbree.query(P.x, P.y);
+					for (auto TRI : TRIS)
 					{
-  						if (TRI.isInside(P,B))
+  						if (TRI->isInside(P,B))
 						{
 							// We found triangle and have barycentric coords
-							Face	*F	= TRI.owner;
+							Face	*F	= TRI->owner;
 							Vertex	*V1 = F->v[0];
 							Vertex	*V2 = F->v[1];
 							Vertex	*V3 = F->v[2];
@@ -277,7 +294,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 		}
 	}
 
-	auto DirectEdge = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+	auto EdgeProcessing = [&](CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 	{
 		Fvector		vdir;
 		vdir.sub(v2, v1);
@@ -307,7 +324,8 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 
 			// ok - perform lighting
 			base_color_c	C;
-			Fvector			P;	P.mad(v1, vdir, time);
+			Fvector			P;	
+			P.mad(v1, vdir, time);
 			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT, skip); //.
 
 			C.mul(.5f);
@@ -325,9 +343,9 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 		Face*		F	= T.owner;
 		R_ASSERT	(F);
 		try {
-			DirectEdge(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
-			DirectEdge(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
-			DirectEdge(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
+			EdgeProcessing(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
+			EdgeProcessing(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
+			EdgeProcessing(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
 		} catch (...)
 		{
 			clMsg("* ERROR (Edge). Recovered. ");
