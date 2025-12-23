@@ -232,6 +232,7 @@ public:
 
 		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
 		GPUTaskinSystem.current_flags = flags;
+		GPUTaskinSystem.ColorsMapType = eImplicit;
 
 		// Однопоточный режим пока что 
 		xr_atomic_u32 task_height  = 0;
@@ -270,7 +271,7 @@ public:
 									wN.from_bary(V1->N, V2->N, V3->N, B);
 									wN.normalize();
 
-									GPUTaskinSystem.LightPointPacked_Implicit(U, V, wP, wN, flags, F);
+									GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(U, V), nullptr, wP, wN, F);
 								}
 							}
 						}
@@ -285,7 +286,7 @@ public:
 			};
 
 			// Остаток доработать 
-			GPUTaskinSystem.LightPointPacked_ImplicitRun();
+			GPUTaskinSystem.LightPointPacked_run_tasks();
 		});
 		
 		ApplyColors();

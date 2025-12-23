@@ -162,7 +162,11 @@ void LightVertex()
 	{
 		int INDEX = 0;
 		GPUTaskinSystem.RestartALL();
+		GPUTaskinSystem.ColorsMapType = eCommon;
 
+		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
+		GPUTaskinSystem.current_flags = flags;
+ 
 		xr_vector<float> v_transparency;
 		v_transparency.resize(lc_global_data()->g_vertices().size());
 		for (auto V : lc_global_data()->g_vertices())
@@ -171,15 +175,14 @@ void LightVertex()
 
 			if (GetTranslucency(V, v_trans))
 			{
- 				u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
- 				GPUTaskinSystem.LightPointPacked(INDEX, 0, V->P, V->N, flags, 0);
+  				GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(INDEX, 0), nullptr, V->P, V->N, 0);
 			}
 
 			v_transparency[INDEX] = v_trans;
 			INDEX++;
 		}
 
-		GPUTaskinSystem.LightPointPackedRun();
+		GPUTaskinSystem.LightPointPacked_run_tasks();
 
 		for (auto& C : GPUTaskinSystem.task_colors)
 		{
