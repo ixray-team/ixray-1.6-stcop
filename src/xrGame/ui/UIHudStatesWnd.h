@@ -12,6 +12,7 @@ class CUIProgressShape;
 class CUIXml;
 class CUIArrow;
 class CActor;
+class CUIStackPanel;
 
 int const it_max = ALife::infl_max_count - 1;
 
@@ -61,6 +62,8 @@ private:
 
 	bool				m_isZoneTouch = false;
 	const char*			m_onZoneTouch = {};
+
+	CUIStackPanel*		UIStackPanelDangers;
 public:
 	
 	CUITextWnd*			m_ui_weapon_cur_ammo = nullptr;
