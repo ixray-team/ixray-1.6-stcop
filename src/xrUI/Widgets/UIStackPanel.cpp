@@ -5,51 +5,108 @@ void CUIStackPanel::Draw()
 {
 	xrCriticalSectionGuard guard(csUi);
 
-	if (AlignLeft)
+	switch (SPAlignment)
 	{
-		float x = 0.0f;
-		for (CUIWindow* W : m_ChildWndList)
+	case eLeft:
 		{
-			if (!W || !W->IsShown() || W->GetCustomDraw())
+			float x = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
 			{
-				continue;
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(x, 0.f));
+				x += W->GetWndSize().x;
+				x += Spacing;
+
+				W->Draw();
+			}
+		}
+		break;
+	case eRight:
+		{
+			float totalWidth = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W)
+				{
+					continue;
+				}
+
+				totalWidth += W->GetWndSize().x;
 			}
 
-			W->SetWndPos(Fvector2().set(x, 0.f));
-			x += W->GetWndSize().x;
-			x += Spacing;
+			float x = totalWidth;
+			SetWidth(totalWidth);
 
-			W->Draw();
-		}
-	}
-	else
-	{
-		float totalWidth = 0.0f;
-		for (CUIWindow* W : m_ChildWndList)
-		{
-			if (!W)
+			for (CUIWindow* W : m_ChildWndList)
 			{
-				continue;
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(x, 0.f));
+				x -= W->GetWndSize().x;
+				x -= Spacing;
+
+				W->Draw();
+			}
+		}
+		break;
+	case eTop:
+		{
+			float y = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(0.f, y));
+				y += W->GetWndSize().y;
+				y += Spacing;
+
+				W->Draw();
+			}
+		}
+		break;
+	case eBottom:
+		{
+			float totalHeight = 0.0f;
+			for (CUIWindow* W : m_ChildWndList)
+			{
+				if (!W)
+				{
+					continue;
+				}
+
+				totalHeight += W->GetWndSize().y;
 			}
 
-			totalWidth += W->GetWndSize().x;
-		}
+			float y = totalHeight;
+			SetHeight(totalHeight);
 
-		float x = totalWidth;
-		SetWidth(totalWidth);
-
-		for (CUIWindow* W : m_ChildWndList)
-		{
-			if (!W || !W->IsShown() || W->GetCustomDraw())
+			for (CUIWindow* W : m_ChildWndList)
 			{
-				continue;
+				if (!W || !W->IsShown() || W->GetCustomDraw())
+				{
+					continue;
+				}
+
+				W->SetWndPos(Fvector2().set(0.f, y));
+				y -= W->GetWndSize().y;
+				y -= Spacing;
+
+				W->Draw();
 			}
-
-			W->SetWndPos(Fvector2().set(x, 0.f));
-			x -= W->GetWndSize().x;
-			x -= Spacing;
-
-			W->Draw();
 		}
+		break;
+	default:
+		R_ASSERT2(false, "not implemented :(");
+		break;
 	}
 }

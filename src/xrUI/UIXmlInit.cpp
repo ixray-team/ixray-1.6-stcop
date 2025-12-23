@@ -225,7 +225,19 @@ bool CUIXmlInit::InitStackPanel(CUIXml& xml_doc, LPCSTR path, int index, CUIStac
 {
 	bool RetVal = InitWindow(xml_doc, path, index, pWnd);
 
-	pWnd->SetRightAlign(xml_doc.ReadAttribBool(path, index, "right", true));
+
+	CUIStackPanel::EStackPanelAlignment mode = CUIStackPanel::eLeft;
+	if (xml_doc.ReadAttribBool(path, index, "right", true))
+	{
+		mode = CUIStackPanel::eRight;
+	}
+	LPCSTR mode_str = xml_doc.ReadAttrib(path, index, "sp_align");
+	if (_stricmp(mode_str, "right") == 0) { mode = CUIStackPanel::eRight; }
+	else if (_stricmp(mode_str, "top") == 0) { mode = CUIStackPanel::eTop; }
+	else if (_stricmp(mode_str, "left") == 0) { mode = CUIStackPanel::eLeft; }
+	else if (_stricmp(mode_str, "bottom") == 0) { mode = CUIStackPanel::eBottom; }
+	pWnd->SPAlignment = mode;
+
 	pWnd->SetSpacing(xml_doc.ReadAttribFlt(path, index, "spacing", 0.0f));
 
 	return RetVal;
