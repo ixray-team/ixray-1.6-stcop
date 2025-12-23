@@ -113,7 +113,7 @@ void CPEDef::ExecuteCollision(PAPI::Particle* particles, u32 p_cnt, float dt, CP
 
 						// Compute _new velocity heading out:
 						// Don't apply friction if tangential velocity < cutoff
-						if(vt.length2() <= m_fCollideSqrCutoff){
+						if(vt.square_magnitude() <= m_fCollideSqrCutoff){
 							m.vel = vt - vn * m_fCollideResilience;
 						}else{
 							m.vel = vt * m_fCollideOneMinusFriction - vn * m_fCollideResilience;
