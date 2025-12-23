@@ -99,7 +99,6 @@ private:
 	void								LoadSectors				(IReader *fs);
 	void								LoadSWIs				(CStreamReader	*fs);
 
-	BOOL								add_Dynamic				(dxRender_Visual	*pVisual, u32 planes);		// normal processing
 	void								add_Static				(dxRender_Visual	*pVisual, u32 planes);
 	void								add_leafs_Dynamic		(dxRender_Visual	*pVisual); // if detected node's full visibility
 	void								add_leafs_Static		(dxRender_Visual	*pVisual);						// if detected node's full visibility
