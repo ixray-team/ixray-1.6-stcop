@@ -14,7 +14,7 @@
 class GPUEventWrapper
 {
 private:
-	int _index;
+	int _index = -1;
 
 public:
 	GPUEventWrapper(const char* name, const wchar_t* wname);

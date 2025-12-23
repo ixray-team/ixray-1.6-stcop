@@ -6,10 +6,6 @@
 
 GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
 {
-    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    {
-        return;
-    }
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -18,17 +14,15 @@ GPUEventWrapper::GPUEventWrapper(const char* name, const wchar_t* wname)
     }
 
 #ifdef USE_DX11
-    _index = GPUEvents_PushEvent(name);
+    if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
+    {
+        _index = GPUEvents_PushEvent(name);
+    }
 #endif
 }
 
 GPUEventWrapper::~GPUEventWrapper()
 {
-    if (!Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)])
-    {
-        return;
-    }
-
     ID3DUserDefinedAnnotation* pAnnotation = (ID3DUserDefinedAnnotation*)g_pAnnotation;
 
     if (pAnnotation)
@@ -37,7 +31,10 @@ GPUEventWrapper::~GPUEventWrapper()
     }
 
 #ifdef USE_DX11
-    GPUEvents_PopEvent(_index);
+    if (Engine.External.EditorStates[static_cast<std::uint8_t>(EditorUI::Shaders)] && _index != -1)
+    {
+        GPUEvents_PopEvent(_index);
+    }
 #endif
 }
 

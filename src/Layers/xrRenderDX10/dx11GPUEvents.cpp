@@ -5,6 +5,8 @@ using Microsoft::WRL::ComPtr;
 
 #define MAX_STACK_COUNT 64
 
+static bool RenderingAtFrame = false;
+
 struct gpu_event_item
 {
     u32 begin_offset;
@@ -95,6 +97,7 @@ GPUEvents_BeginRendering()
     curr_state.counter = 0;
 
     GPUEvents_PushEvent("Frame");
+    RenderingAtFrame = true;
 }
 
 int
@@ -133,7 +136,11 @@ GPUEvents_PopEvent(int index)
 void 
 GPUEvents_EndRendering()
 {
-    GPUEvents_PopEvent(0);
+    if (RenderingAtFrame)
+    {
+        GPUEvents_PopEvent(0);
+        RenderingAtFrame = false;
+    }
 }
 
 const gpu_events_perf&
