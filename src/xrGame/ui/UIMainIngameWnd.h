@@ -15,6 +15,7 @@ class	CMissile;
 class	CInventoryItem;
 class	CUIHudStatesWnd;
 class	CUIMotionIcon;
+class	CUIStackPanel;
 
 class CUIMainIngameWnd: public CUIWindow  
 {
@@ -58,6 +59,9 @@ public:
 	CUITextWnd*			UIStaticQuickHelp;
 	CUIMotionIcon*		UIMotionIcon;
 	CUIZoneMap*			UIZoneMap;
+
+	CUIStackPanel* UIStackPanelBoosters;
+	CUIStackPanel* UIStackPanelIndicators;
 
 	CUIHudStatesWnd*	m_ui_hud_states;
 
