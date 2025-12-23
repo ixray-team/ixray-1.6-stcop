@@ -25,13 +25,13 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 					
 					if(dist < look_ahead)
 					{
-						float vm = m.vel.length();
+						float vm = m.vel.magnitude();
 						Fvector Vn = m.vel / vm;
 						// float dot = Vn * position.p2;
 						
 						Fvector tmp = (position.p2 * (magdt / (dist*dist+epsilon))) + Vn;
-						m.vel = tmp * (vm / tmp.length());
-						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+						m.vel = tmp * (vm / tmp.magnitude());
+						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 						{
 							m.rot_vel = m.vel;
 							m.rot_vel.normalize_safe();
@@ -50,13 +50,13 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 					// radius1 stores -n*p, which is d.
 					float dist = m.pos * position.p2 + position.radius1;
 					
-					float vm = m.vel.length();
+					float vm = m.vel.magnitude();
 					Fvector Vn = m.vel / vm;
 					// float dot = Vn * position.p2;
 					
 					Fvector tmp = (position.p2 * (magdt / (dist*dist+epsilon))) + Vn;
-					m.vel = tmp * (vm / tmp.length());
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+					m.vel = tmp * (vm / tmp.magnitude());
+					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 					{
 						m.rot_vel = m.vel;
 						m.rot_vel.normalize_safe();
@@ -128,15 +128,15 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				// A hit! A most palpable hit!
 				// Compute distance to the three edges.
 				Fvector uofs = (un * (un * offset)) - offset;
-				float udistSqr = uofs.length2();
+				float udistSqr = uofs.square_magnitude();
 				Fvector vofs = (vn * (vn * offset)) - offset;
-				float vdistSqr = vofs.length2();
+				float vdistSqr = vofs.square_magnitude();
 				
 				Fvector foffset((u + v) - offset);
 				Fvector fofs = (un * (un * foffset)) - foffset;
-				float fdistSqr = fofs.length2();
+				float fdistSqr = fofs.square_magnitude();
 				Fvector gofs = (un * (un * foffset)) - foffset;
-				float gdistSqr = gofs.length2();
+				float gdistSqr = gofs.square_magnitude();
 				
 				Fvector S;
 				if(udistSqr <= vdistSqr && udistSqr <= fdistSqr
@@ -148,13 +148,13 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				S.normalize_safe();
 				
 				// We now have a vector3 to safety.
-				float vm = m.vel.length();
+				float vm = m.vel.magnitude();
 				Fvector Vn = m.vel / vm;
 				
 				// Blend S into V.
 				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.length());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				m.vel = tmp * (vm / tmp.magnitude());
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -230,12 +230,12 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				// A hit! A most palpable hit!
 				// Compute distance to the three edges.
 				Fvector uofs = (un * (un * offset)) - offset;
-				float udistSqr = uofs.length2();
+				float udistSqr = uofs.square_magnitude();
 				Fvector vofs = (vn * (vn * offset)) - offset;
-				float vdistSqr = vofs.length2();
+				float vdistSqr = vofs.square_magnitude();
 				Fvector foffset(offset - u);
 				Fvector fofs = (fn * (fn * foffset)) - foffset;
-				float fdistSqr = fofs.length2();
+				float fdistSqr = fofs.square_magnitude();
 				Fvector S;
 				if(udistSqr <= vdistSqr && udistSqr <= fdistSqr) S = uofs;
 				else if(vdistSqr <= fdistSqr) S = vofs;
@@ -244,13 +244,13 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				S.normalize_safe();
 				
 				// We now have a vector3 to safety.
-				float vm = m.vel.length();
+				float vm = m.vel.magnitude();
 				Fvector Vn = m.vel / vm;
 				
 				// Blend S into V.
 				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.length());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				m.vel = tmp * (vm / tmp.magnitude());
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -302,7 +302,7 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				// Offset from origin in plane, phit - origin
 				Fvector offset(phit - position.p1);
 				
-				float rad = offset.length2();
+				float rad = offset.square_magnitude();
 				
 				if(rad > r1Sqr || rad < r2Sqr)
 					continue;
@@ -312,13 +312,13 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				S.normalize_safe();
 				
 				// We now have a vector3 to safety.
-				float vm = m.vel.length();
+				float vm = m.vel.magnitude();
 				Fvector Vn = m.vel / vm;
 				
 				// Blend S into V.
 				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.length());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				m.vel = tmp * (vm / tmp.magnitude());
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -338,7 +338,7 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				// First do a ray-sphere intersection test and
 				// see if it's soon enough.
 				// Can I do this faster without t?
-				float vm = m.vel.length();
+				float vm = m.vel.magnitude();
 				Fvector Vn = m.vel / vm;
 				
 				Fvector L = position.p1 - m.pos;
@@ -360,8 +360,8 @@ void PAPI::PAAvoid::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 				
 				// Blend S into V.
 				Fvector tmp = (S * (magdt / (t*t+epsilon))) + Vn;
-				m.vel = tmp * (vm / tmp.length());
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				m.vel = tmp * (vm / tmp.magnitude());
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -485,7 +485,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Compute new velocity heading out:
 				// Don't apply friction if tangential velocity < cutoff
-				if(vt.length2() <= cutoffSqr)
+				if(vt.square_magnitude() <= cutoffSqr)
 				{
 					m.vel = vt - vn * resilience;
 				}
@@ -493,7 +493,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				{
 					m.vel = vt * oneMinusFriction - vn * resilience;
 				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -545,7 +545,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				// Offset from origin in plane, phit - origin
 				Fvector offset(phit - position.p1);
 				
-				float rad = offset.length2();
+				float rad = offset.square_magnitude();
 				
 				if(rad > r1Sqr || rad < r2Sqr)
 					continue;
@@ -558,7 +558,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Compute new velocity heading out:
 				// Don't apply friction if tangential velocity < cutoff
-				if(vt.length2() <= cutoffSqr)
+				if(vt.square_magnitude() <= cutoffSqr)
 				{
 					m.vel = vt - vn * resilience;
 				}
@@ -566,7 +566,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				{
 					m.vel = vt * oneMinusFriction - vn * resilience;
 				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -602,7 +602,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Compute new velocity heading out:
 				// Don't apply friction if tangential velocity < cutoff
-				if(vt.length2() <= cutoffSqr)
+				if(vt.square_magnitude() <= cutoffSqr)
 				{
 					m.vel = vt - vn * resilience;
 				}
@@ -610,7 +610,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				{
 					m.vel = vt * oneMinusFriction - vn * resilience;
 				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -687,7 +687,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Compute new velocity heading out:
 				// Don't apply friction if tangential velocity < cutoff
-				if(vt.length2() <= cutoffSqr)
+				if(vt.square_magnitude() <= cutoffSqr)
 				{
 					m.vel = vt - vn * resilience;
 				}
@@ -695,7 +695,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				{
 					m.vel = vt * oneMinusFriction - vn * resilience;
 				}
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -749,7 +749,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 						
 						// Compute new velocity heading out:
 						// Don't apply friction if tangential velocity < cutoff
-						if(vt.length2() <= cutoffSqr)
+						if(vt.square_magnitude() <= cutoffSqr)
 						{
 							m.vel = vt - vn * resilience;
 						}
@@ -757,7 +757,7 @@ void PABounce::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 						{
 							m.vel = vt * oneMinusFriction - vn * resilience;
 						}
-						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+						if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 						{
 							m.rot_vel = m.vel;
 							m.rot_vel.normalize_safe();
@@ -851,7 +851,7 @@ void PADamping::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		Particle &m = pHolder->particles[i];
-		float vSqr = m.vel.length2();
+		float vSqr = m.vel.square_magnitude();
 		
 		if(vSqr >= vlowSqr && vSqr <= vhighSqr)
 		{
@@ -859,7 +859,7 @@ void PADamping::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			m.vel.y *= scale.y;
 			m.vel.z *= scale.z;
 		}
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 		{
 			m.rot_vel = m.vel;
 			m.rot_vel.normalize_safe();
@@ -909,14 +909,14 @@ void PAExplosion::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 		
 		// Figure direction to particle.
 		Fvector dir		(m.pos - center);
-		float distSqr 	= dir.length2();
+		float distSqr 	= dir.square_magnitude();
 		float dist 		= _sqrt(distSqr);
 		float DistFromWaveSqr = _sqr(radius - dist);
 		
 		float Gd 		= expf(DistFromWaveSqr * inexp) * outexp;
 		
 		m.vel 			+= dir * (Gd * magdt / ((dist+EPS) * (distSqr + epsilon)));
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 		{
 			m.rot_vel = m.vel;
 			m.rot_vel.normalize_safe();
@@ -982,13 +982,13 @@ void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Accelerate toward the particle after me in the list.
 			Fvector tohim(pHolder->particles[i+1].pos - m.pos); // tohim = p1 - p0
-			float tohimlenSqr = tohim.length2();
+			float tohimlenSqr = tohim.square_magnitude();
 			
 			if(tohimlenSqr < max_radiusSqr)
 			{
 				// Compute force exerted between the two bodies
 				m.vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1004,11 +1004,11 @@ void PAFollow::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Accelerate toward the particle after me in the list.
 			Fvector tohim(pHolder->particles[i+1].pos - m.pos); // tohim = p1 - p0
-			float tohimlenSqr = tohim.length2();
+			float tohimlenSqr = tohim.square_magnitude();
 			
 			// Compute force exerted between the two bodies
 			m.vel += tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -1062,7 +1062,7 @@ void PAGravitate::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 				Particle &mj = pHolder->particles[j];
 				
 				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.length2()+EPS_S;
+				float tohimlenSqr = tohim.square_magnitude()+EPS_S;
 				
 				if(tohimlenSqr < max_radiusSqr)
 				{
@@ -1071,7 +1071,7 @@ void PAGravitate::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 					
 					m.vel += acc;
 					mj.vel -= acc;
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 					{
 						m.rot_vel = m.vel;
 						m.rot_vel.normalize_safe();
@@ -1094,14 +1094,14 @@ void PAGravitate::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 				Particle &mj = pHolder->particles[j];
 				
 				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.length2()+EPS_S;
+				float tohimlenSqr = tohim.square_magnitude()+EPS_S;
 				
 				// Compute force exerted between the two bodies
 				Fvector acc(tohim * (magdt / (_sqrt(tohimlenSqr) * (tohimlenSqr + epsilon))));
 				
 				m.vel += acc;
 				mj.vel -= acc;
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1182,7 +1182,7 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			if(rSqr < max_radiusSqr)
 			{
@@ -1191,7 +1191,7 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Step velocity with acceleration
 				m.vel += accel * (magdt / (rSqr + epsilon));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1210,14 +1210,14 @@ void PAJet::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			Fvector accel;
 			acc.Generate(accel);
 			
 			// Step velocity with acceleration
 			m.vel += accel * (magdt / (rSqr + epsilon));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -1282,7 +1282,7 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			if(rSqr < max_radiusSqr)
 			{
@@ -1293,7 +1293,7 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 				
 				// Step velocity with acceleration
 				m.vel += accel * (magdt / (rSqr + epsilon));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1312,14 +1312,14 @@ void PAScatter::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Distance to jet (force drops as 1/r^2)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			Fvector accel;
             accel = dir/_sqrt(rSqr);
 			
 			// Step velocity with acceleration
 			m.vel += accel * (magdt / (rSqr + epsilon));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -1409,7 +1409,7 @@ void PAMatchVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm
 				Particle &mj = pHolder->particles[j];
 				
 				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.length2();
+				float tohimlenSqr = tohim.square_magnitude();
 				
 				if(tohimlenSqr < max_radiusSqr)
 				{
@@ -1418,7 +1418,7 @@ void PAMatchVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm
 					
 					m.vel += acc;
 					mj.vel -= acc;
-					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+					if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 					{
 						m.rot_vel = m.vel;
 						m.rot_vel.normalize_safe();
@@ -1441,14 +1441,14 @@ void PAMatchVelocity::Execute(ParticleHolder *pHolder, const float dt, float& tm
 				Particle &mj = pHolder->particles[j];
 				
 				Fvector tohim(mj.pos - m.pos); // tohim = p1 - p0
-				float tohimlenSqr = tohim.length2();
+				float tohimlenSqr = tohim.square_magnitude();
 				
 				// Compute force exerted between the two bodies
 				Fvector acc(mj.vel * (magdt / (tohimlenSqr + epsilon)));
 				
 				m.vel += acc;
 				mj.vel -= acc;
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1531,13 +1531,13 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 			
 			// Distance to line (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = into.length2();
+			float rSqr = into.square_magnitude();
 			
 			if(rSqr < max_radiusSqr)
 			{
 				// Step velocity with acceleration
 				m.vel += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1562,11 +1562,11 @@ void PAOrbitLine::Execute(ParticleHolder *pHolder, const float dt, float& tm_max
 			
 			// Distance to line (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = into.length2();
+			float rSqr = into.square_magnitude();
 			
 			// Step velocity with acceleration
 			m.vel += into * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -1631,13 +1631,13 @@ void PAOrbitPoint::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 			
 			// Distance to gravity well (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			// Step velocity with acceleration
 			if(rSqr < max_radiusSqr)
 			{
 				m.vel += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+				if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 				{
 					m.rot_vel = m.vel;
 					m.rot_vel.normalize_safe();
@@ -1657,11 +1657,11 @@ void PAOrbitPoint::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 			
 			// Distance to gravity well (force drops as 1/r^2, normalize by 1/r)
 			// Soften by epsilon to avoid tight encounters to infinity
-			float rSqr = dir.length2();
+			float rSqr = dir.square_magnitude();
 			
 			// Step velocity with acceleration
 			m.vel += dir * (magdt / (_sqrt(rSqr) + (rSqr + epsilon)));
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -1718,7 +1718,7 @@ void PARandomAccel::Execute(ParticleHolder *pHolder, const float dt, float& tm_m
 		// being near the original velocity after unit time. Smaller
 		// dt approach a normal distribution instead of a square wave.
 		m.vel += acceleration * dt;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 		{
 			m.rot_vel = m.vel;
 			m.rot_vel.normalize_safe();
@@ -1794,7 +1794,7 @@ void PARandomVelocity::Execute(ParticleHolder *pHolder, const float dt, float& t
 		// Shouldn't multiply by dt because velocities are
 		// invariant of dt. How should dt affect this?
 		m.vel = velocity;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 		{
 			m.rot_vel = m.vel;
 			m.rot_vel.normalize_safe();
@@ -1888,7 +1888,7 @@ void PARestore::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			
 			// Figure new velocity at next timestep
 			m.vel.z += a + b;
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -2177,12 +2177,12 @@ void PASpeedLimit::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 	for(u32 i = 0; i < pHolder->p_count; i++)
 	{
 		Particle &m = pHolder->particles[i];
-		float sSqr = m.vel.length2();
+		float sSqr = m.vel.square_magnitude();
 		if(sSqr<min_sqr && sSqr)
 		{
 			float s = _sqrt(sSqr);
 			m.vel *= (min_speed/s);
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -2192,7 +2192,7 @@ void PASpeedLimit::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 		{
 			float s = _sqrt(sSqr);
 			m.vel *= (max_speed/s);
-			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+			if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 			{
 				m.rot_vel = m.vel;
 				m.rot_vel.normalize_safe();
@@ -2335,7 +2335,7 @@ void PATargetVelocity::Execute(ParticleHolder *pHolder, const float dt, float& t
 	{
 		Particle &m = pHolder->particles[i];
 		m.vel += (velocity - m.vel) * scaleFac;
-		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+		if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
 		{
 			m.rot_vel = m.vel;
 			m.rot_vel.normalize_safe();
@@ -2387,7 +2387,7 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			Fvector offset(m.pos - center);
 			
 			// Compute distance from particle to tip of vortex.
-			float rSqr = offset.length2();
+			float rSqr = offset.square_magnitude();
 			
 			// Don't do anything to particle if too close or too far.
 			if(rSqr > max_radiusSqr)
@@ -2431,7 +2431,7 @@ void PAVortex::Execute(ParticleHolder *pHolder, const float dt, float& tm_max)
 			Fvector offset(m.pos - center);
 			
 			// Compute distance from particle to tip of vortex.
-			float rSqr = offset.length2();
+			float rSqr = offset.square_magnitude();
 			
 			float r = _sqrt(rSqr);
 			
@@ -2581,7 +2581,7 @@ void PATurbulence::Execute(ParticleHolder *pHolder, const float dt, float& tm_ma
 		_mvel = _mm_mul_ps( _mvel , _vmo );
 
     	_mm_store_fvector( m.vel , _mvel );
-    	if (AlighRotVelocityToVelocity && !fis_zero(m.vel.length()))
+    	if (AlighRotVelocityToVelocity && !fis_zero(m.vel.magnitude()))
     	{
     		m.rot_vel = m.vel;
     		m.rot_vel.normalize_safe();
