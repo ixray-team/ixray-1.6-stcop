@@ -585,20 +585,19 @@ public:
 		}
 	}
 
-	IC float 	length		() const						{	return _sqrt(x*x+y*y+z*z);					}
-	IC float 	length2		() const						{	return (x*x+y*y+z*z);						}
-	
-	IC float 	operator*	(const _vector3 &a) const		{	return x*a.x + y*a.y + z*a.z;				}
-	IC _vector3 operator*	(const T s) const			{	return Self{x*s, y*s, z*s};				}
-	IC _vector3 operator/	(const T s) const			{	float invs = 1.0f / s;	return Self{x*invs, y*invs, z*invs};	}
-	IC _vector3 operator+	(const _vector3& a) const		{	return Self{x+a.x, y+a.y, z+a.z};		}
-	IC _vector3 operator-	(const _vector3& a) const		{	return Self{x-a.x, y-a.y, z-a.z};		}
-	IC _vector3 operator-	()								{	x = -x;	y = -y;	z = -z;	return *this;		}
-	IC _vector3& operator+=	(const _vector3& a)				{	x += a.x;y += a.y;z += a.z;	return *this;	}
-	IC _vector3& operator-=	(const _vector3& a)		 		{	x -= a.x;y -= a.y;z -= a.z;	return *this;	}
-	IC _vector3& operator*=	(const T a)						{	x *= a;	y *= a;	z *= a;	return *this;		}
-	IC _vector3& operator/=	(const T a)						{	float b = 1.0f / a;	x *= b;	y *= b;	z *= b;	return *this;		}
-	IC _vector3 	operator^	(const _vector3& b) const		{	return Self {y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x};		}
+
+	IC T 	operator* (const Self&a) const	{ return x*a.x + y*a.y + z*a.z; }//dot
+	IC Self operator* (const T s) const		{ return Self{x*s, y*s, z*s}; }//mul
+	IC Self operator/ (const T s) const		{ T invs = 1.0f / s; return Self{x*invs, y*invs, z*invs}; }//fast div
+	IC Self operator+ (const Self& a) const	{ return Self{x+a.x, y+a.y, z+a.z}; }//add
+	IC Self operator- (const Self& a) const	{ return Self{x-a.x, y-a.y, z-a.z}; }//sub
+	IC Self operator- ()					{ return Self(-x, -y, -z); }//invert
+
+	IC Self& operator+=	(const Self& a)			{ x += a.x;y += a.y;z += a.z; return *this; }//add
+	IC Self& operator-=	(const Self& a)		 	{ x -= a.x;y -= a.y;z -= a.z; return *this;	}//sub
+	IC Self& operator*=	(const T a)				{ x *= a;	y *= a;	z *= a;	return *this; }//mul
+	IC Self& operator/=	(const T a)				{ T b = 1.0f / a; x *= b; y *= b; z *= b; return *this;	}//fast div
+	IC Self  operator^	(const Self& b) const	{ return Self {y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x}; }//cross
 };
 typedef _vector3<float>		Fvector;
 typedef _vector3<float>		Fvector3;
