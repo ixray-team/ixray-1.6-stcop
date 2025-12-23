@@ -163,8 +163,6 @@ void xrMU_Reference::calc_lighting()
 // Capture RAYS
 void xrMU_Reference::calc_lighting_cuda_1()
 {
-	u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_DEFAULT;
-
 	// calc pure rotation matrix
 	Fmatrix Rxform, tmp, R;
 	R.set(xform);
@@ -192,7 +190,8 @@ void xrMU_Reference::calc_lighting_cuda_1()
 			Fvector				P, N;
 			N.random_dir(vN, deg2rad(30.f));
 			P.mad(vP, N, a);
-			GPUTaskinSystem.LightPointPacked_MODEL(this, I, P, N, flags, 0);
+
+ 			GPUTaskinSystem.LightPointPacked_add_task(I, this, P, N, 0);
 		}
 	}
 }
@@ -204,8 +203,7 @@ void xrMU_Reference::calc_lighting_cuda_2()
 	typedef	xr_multimap<float, xrMU_Model::v_vertices>	mapVert;
 	typedef	mapVert::iterator				mapVertIt;
 	mapVert									g_trans;
-
-
+	 
 	// trans-epsilons
 	const float eps = EPS_L;
 	const float eps2 = 2.f * eps;
