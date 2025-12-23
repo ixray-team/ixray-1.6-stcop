@@ -55,6 +55,7 @@ CUIHudStatesWnd::CUIHudStatesWnd()
 	m_fake_indicators_update = false;
 	m_arrow = nullptr;
 	m_arrow_shadow = nullptr;
+	UIStackPanelDangers = nullptr;
 	//-	Load_section();
 }
 
@@ -143,14 +144,21 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 		m_resist_back_starvation = UIHelper::CreateStatic(xml, "resist_back_starvation", this);
 	// electra = no has CStatic!!
 
+	if (xml.NavigateToNode("indik_stack_panel", 0))
+		UIStackPanelDangers = UIHelper::CreateStackPanel(xml, "indik_stack_panel", this);
+
+	CUIWindow* indicatorParent = this;
+	if (UIStackPanelDangers)
+		indicatorParent = UIStackPanelDangers;
+
 	if (xml.NavigateToNode("indik_rad", 0))
-		m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", this );
+		m_indik[ALife::infl_rad]  = UIHelper::CreateStatic( xml, "indik_rad", indicatorParent);
 	if (xml.NavigateToNode("indik_fire", 0))
-		m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", this );
+		m_indik[ALife::infl_fire] = UIHelper::CreateStatic( xml, "indik_fire", indicatorParent);
 	if (xml.NavigateToNode("indik_acid", 0))
-		m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", this );
+		m_indik[ALife::infl_acid] = UIHelper::CreateStatic( xml, "indik_acid", indicatorParent);
 	if (xml.NavigateToNode("indik_psi", 0))
-		m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", this );
+		m_indik[ALife::infl_psi]  = UIHelper::CreateStatic( xml, "indik_psi", indicatorParent);
 	if (xml.NavigateToNode("indicator_starvation", 0))
 		m_ind_starvation = UIHelper::CreateStatic(xml, "indicator_starvation", this);
 

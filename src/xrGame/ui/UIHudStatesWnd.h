@@ -11,6 +11,7 @@ class CUIProgressShape;
 class CUIXml;
 class CUIArrow;
 class CActor;
+class CUIStackPanel;
 
 int const it_max = ALife::infl_max_count - 1;
 
@@ -66,7 +67,8 @@ private:
 	CUIStatic*			m_ui_ammo_type_separator = nullptr;
 	CUIStatic*			m_ui_ammo_type_backpack = nullptr;
 	CUIStatic*			m_ui_fire_mode_icon = nullptr;
-	
+	CUIStackPanel*		UIStackPanelDangers;
+
 	xr_map<shared_str, shared_str>	m_fire_mode_icon_map;
 	
 	// Adaptive ammo display customization
