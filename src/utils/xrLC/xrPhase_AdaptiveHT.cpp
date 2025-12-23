@@ -131,17 +131,20 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 		clMsg("Start Processing AdaptiveHT : MEMORY: %u mb", GetHeapMemory() / 1024 / 1024);
 
 		GPUTaskinSystem.RestartALL();
+		GPUTaskinSystem.ColorsMapType = eCommon;
+		GPUTaskinSystem.current_flags = LP_dont_rgb + LP_dont_sun;
+		 
 		for (size_t VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
 		{
 			// 1: VertexID, 2: SampleID
 			auto& V = lc_global_data()->g_vertices()[VertexID];
 			V->normalFromAdj();
-			GPUTaskinSystem.LightPointPacked((u32)VertexID, 0, V->P, V->N, LP_dont_rgb + LP_dont_sun, 0);
+			GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(VertexID, 0), nullptr, V->P, V->N, 0);
 		
 			AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
 		}
 
-		GPUTaskinSystem.LightPointPackedRun();
+		GPUTaskinSystem.LightPointPacked_run_tasks();
 
 		for (auto& TASK : GPUTaskinSystem.task_colors)
 		{

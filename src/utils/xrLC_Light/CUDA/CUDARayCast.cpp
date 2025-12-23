@@ -153,6 +153,7 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 		data.Height = T.dwHeight;
  	}
 
+
 	// Textures (alpha only)
 	xr_vector<Hardware_TextureData> cpu_tex_gpu(Textures.size());
 
@@ -296,29 +297,26 @@ public:
 
 	void ClearDeviceResult()
 	{
-		memset(h_colors, 0, max_rays * sizeof(Hardware_Color));
+  		memset(h_colors, 0, max_rays * sizeof(Hardware_Color));
 		CUDA_CHECK(cudaMemset(d_colors, 0, max_rays * sizeof(Hardware_Color)));
 	}
-  
-
+   
 	// Заполнять после вызова StartRayTracing (чтобы индекс начинался с 0) (при каждой новой стадии освещения)
+	
+	u32 LastIndexTask = 0;
 	void WriteRayToBuffer(RayRecvestIndex& Task, size_t INDEX)
 	{
 		h_rays[INDEX] =
 		{
-			.Position		= make_float3(Task.P.x, Task.P.y, Task.P.z),
-			.Direction		= make_float3(Task.N.x, Task.N.y, Task.N.z),
-			.SkipFace		= Task.FaseSkip,
-			
-			.UseSphere		= Task.UseSphere,
- 			.Sphere_Pos		= make_float3(Task.SphereP.x, Task.SphereP.y, Task.SphereP.z),
-			.Sphare_Range	= Task.SphereR
- 		};
+			.Position = make_float3(Task.P.x, Task.P.y, Task.P.z),
+			.Direction = make_float3(Task.N.x, Task.N.y, Task.N.z),
+  		};
+		LastIndexTask = INDEX;
 	}
 	 
-	void TraceRaysNew(size_t INDEX)
+	void TraceRaysNew()
 	{
-		size_t CurrentWritedRays = INDEX;
+ 		size_t CurrentWritedRays = LastIndexTask;
 
   		// Подготавливаем данные на хосте
 		h_params[0] =
@@ -381,11 +379,11 @@ public:
 			stream
 			)
 		);
- 
+
+
 		// Синхронизируем только один раз
 		CUDA_CHECK(cudaStreamSynchronize(stream));
-
-
+	
 		// Копия цветов
 		auto copy_color = [&](Hardware_Color& Chw, base_color_c& C)
 		{
@@ -396,6 +394,7 @@ public:
 		};
 
 		// Добавляем результат в конец списка
+		colors.clear();
 		for (int it = 0; it < CurrentWritedRays; it++)
 		{
 			base_color_c C;
@@ -417,26 +416,17 @@ void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags)
 {
 	if (!GPURayTracer.isInitialized)
  		GPURayTracer.Init(MAX_RAYS_PER_GPU);
- 
-	GPURayTracer.current_flags = CurrentFlags; 
+ 	GPURayTracer.current_flags = CurrentFlags; 
 }
 
 void XRay::RayTrace::CUDA::RayTraceAddRay(RayRecvestIndex& task, size_t index)
 {
-	if (!GPURayTracer.isInitialized)
- 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
- 
 	GPURayTracer.WriteRayToBuffer(task, index);
 }
 
-void XRay::RayTrace::CUDA::RayTraceRun(size_t max_rays)
+void XRay::RayTrace::CUDA::RayTraceRun()
 {
-	if (!GPURayTracer.isInitialized)
- 		GPURayTracer.Init(MAX_RAYS_PER_GPU);
- 
-	// Чистим цвета 
-	GPURayTracer.colors.clear();
-	GPURayTracer.TraceRaysNew(max_rays);
+	GPURayTracer.TraceRaysNew();
 }
 
 xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()

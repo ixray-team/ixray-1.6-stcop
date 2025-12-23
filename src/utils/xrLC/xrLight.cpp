@@ -15,7 +15,6 @@
  
 void CBuild::ProcessLMAPS_CPU()
 {
-	thread_local HASH			H;
 	thread_local CDB::COLLIDER	DB;
 	thread_local base_lighting	LightsSelected;
  
@@ -46,7 +45,7 @@ void CBuild::ProcessLMAPS_CPU()
 				// Perform operation
 				try
 				{
-					D->Light(&DB, &LightsSelected, H);
+					D->Light(&DB, &LightsSelected);
 				}
 				catch (...)
 				{
@@ -60,7 +59,9 @@ void CBuild::ProcessLMAPS_CPU()
 
 #ifdef LCCUDA_BUILD
 #include "../xrLC_Light/xrDeflectorLight_Packed.h"
+#include "../xrLC_Light/light_point.h"
 #endif
+
  
 void	CBuild::LMaps					()
 {
@@ -76,6 +77,9 @@ void	CBuild::LMaps					()
  		auto RunCollect = [&](xr_vector<CDeflector*>& deflectors, bool isFirst)
 		{
 			GPUTaskinSystem.RestartALL();
+
+			GPUTaskinSystem.ColorsMapType = eDeflectors;
+			GPUTaskinSystem.current_flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
 
 			xr_atomic_u32 IndexTaskID = 0;
   			xr_parallel_for(size_t(0), size_t(gCompilerMode.ThreadsPerWork), [&](size_t TID)
@@ -94,7 +98,7 @@ void	CBuild::LMaps					()
 				}
 
 				// Система тасков щас иная
-				GPUTaskinSystem.LightPointPackedDeflectorsRun();
+				GPUTaskinSystem.LightPointPacked_run_tasks();
 			});
 			 
 
