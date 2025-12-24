@@ -14,7 +14,6 @@ public:
 	virtual void		UpdateWorkload		(u32 dt);
 	virtual void		shedule_Update		(u32 dt);
 	BOOL				net_Spawn			(CSE_Abstract* DC);
-	virtual void		net_Destroy			();
 	virtual bool		IsVisibleForZones	() { return true;		}
 	virtual	bool		Enable				();
 	virtual	bool		Disable				();

@@ -36,7 +36,7 @@ public:
 	virtual bool			ability_can_drag		() {return true;}
 
 	virtual	void			post_fsm_update			();
-
+	virtual BOOL			AlwaysTheCrow			();
 	
 	virtual bool			use_center_to_aim		() const {return true;}
 	virtual bool			check_start_conditions	(ControlCom::EControlType);
