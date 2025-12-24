@@ -10,13 +10,13 @@ struct vis_data;
 class IRenderVisual
 {
 public:
-	IRenderVisual() { _ignore_optimization = false; }
+	IRenderVisual() = default;
 	virtual ~IRenderVisual() {;}
 
 	virtual vis_data&	_BCL	getVisData() = 0;
 	virtual u32					getType() = 0;
 
-	bool _ignore_optimization;
+	bool IsIgnoreOptimize = false;
 
 
 	virtual shared_str	getDebugName() = 0;

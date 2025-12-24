@@ -9,27 +9,136 @@
 #include "ParticleGroup.h"
 #include "FTreeVisual.h"
 
-using	namespace R_dsgraph;
+#include "newproject_dsgraph_constants.h"
+
+using namespace R_dsgraph;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Scene graph actual insertion and sorting ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-float		r_ssaDISCARD;
-float		r_ssaDONTSORT;
-float		r_ssaLOD_A,			r_ssaLOD_B;
-float		r_ssaGLOD_start,	r_ssaGLOD_end;
-float		r_ssaHZBvsTEX;
+float r_ssaDISCARD;
+float r_ssaDONTSORT;
+float r_ssaLOD_A;
+float r_ssaLOD_B;
+float r_ssaGLOD_start;
+float r_ssaGLOD_end;
+float r_ssaHZBvsTEX;
 
-ICF	float	CalcSSA				(float& distSQ, Fvector& C, dxRender_Visual* V)
+// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
+IC float GetDistFromCamera(const Fvector& from_position)
 {
-	float R	= V->vis.sphere.R + 0;
-	distSQ	= Device.vCameraPosition.distance_to_sqr(C)+EPS;
-	return	R/distSQ;
+	float distance = Device.vCameraPosition.distance_to(from_position);
+	float fov_K = BASE_FOV / Device.fFOV;
+	float adjusted_distane = distance / fov_K;
+
+	return adjusted_distane;
 }
-ICF	float	CalcSSA				(float& distSQ, Fvector& C, float R)
+
+IC bool IsValuableToRender(dxRender_Visual* pVisual, bool isStatic, bool sm, Fmatrix& transform_matrix, bool ignore_optimize = false)
 {
-	distSQ	= Device.vCameraPosition.distance_to_sqr(C)+EPS;
-	return	R/distSQ;
+	if (ignore_optimize)
+		return true;
+
+	int opt_level = isStatic ? opt_static : opt_dynamic;
+	if (opt_level < 1)
+	{
+		return true;
+	}
+
+	float sphere_volume = pVisual->getVisData().sphere.volume();
+	Fvector pos = pVisual->vis.sphere.P;
+
+	if (!isStatic)
+	{
+		transform_matrix.transform_tiny(pos, pVisual->vis.sphere.P);
+	}
+
+	float adjusted_distance = GetDistFromCamera(pos);
+
+	// Настройки для статических и динамических объектов
+	static Fvector4 static_sizes[12] =
+	{
+		o_optimize_static_l1_size, o_optimize_static_l2_size, o_optimize_static_l3_size,
+		o_optimize_static_l4_size, o_optimize_static_l5_size, o_optimize_static_l6_size,
+		o_optimize_static_l7_size, o_optimize_static_l8_size, o_optimize_static_l9_size,
+		o_optimize_static_l10_size, o_optimize_static_l11_size, o_optimize_static_l12_size
+	};
+	static Fvector4 static_dists[12] =
+	{
+		o_optimize_static_l1_dist, o_optimize_static_l2_dist, o_optimize_static_l3_dist,
+		o_optimize_static_l4_dist, o_optimize_static_l5_dist, o_optimize_static_l6_dist,
+		o_optimize_static_l7_dist, o_optimize_static_l8_dist, o_optimize_static_l9_dist,
+		o_optimize_static_l10_dist, o_optimize_static_l11_dist, o_optimize_static_l12_dist
+	};
+	static Fvector4 dynamic_sizes[5] =
+	{
+		o_optimize_dynamic_l1_size, o_optimize_dynamic_l2_size, o_optimize_dynamic_l3_size,
+		o_optimize_dynamic_l4_size, o_optimize_dynamic_l5_size
+	};
+	static Fvector4 dynamic_dists[5] =
+	{
+		o_optimize_dynamic_l1_dist, o_optimize_dynamic_l2_dist, o_optimize_dynamic_l3_dist,
+		o_optimize_dynamic_l4_dist, o_optimize_dynamic_l5_dist
+	};
+
+	auto CheckLevelLabmda = [](Fvector4* sizes, Fvector4* dists, int count, int opt_level, float sphere_volume, float adjusted_distance) -> bool
+	{
+		for (int i = 0; i < count; ++i)
+		{
+			Fvector4 sz = sizes[i];
+			Fvector4 ds = dists[i];
+
+			float level_size = sz.x;
+			float level_dist = ds.x;
+
+			// Определяем компоненту по opt_level
+			switch (opt_level)
+			{
+				case 2: level_size = sz.y; level_dist = ds.y; break;
+				case 3: level_size = sz.z; level_dist = ds.z; break;
+				case 4: level_size = sz.w; level_dist = ds.w; break;
+			}
+
+			if (sphere_volume < level_size && adjusted_distance > level_dist)
+			{
+				return false;
+			}
+		}
+		return true;
+	};
+
+	if (sm && ps_r__common_flags.test(RFLAG_OPT_SHAD_GEOM))
+	{
+		if (sphere_volume < 50000.f && adjusted_distance > 160.f)
+		{
+			return false;
+		}
+
+		if (!CheckLevelLabmda(static_sizes, static_dists, std::size(static_sizes), opt_level, sphere_volume, adjusted_distance))
+		{
+			return false;
+		}
+	}
+
+	if (isStatic)
+	{
+		return CheckLevelLabmda(static_sizes, static_dists, std::size(static_sizes), opt_level, sphere_volume, adjusted_distance);
+	}
+
+	return CheckLevelLabmda(dynamic_sizes, dynamic_dists, std::size(dynamic_sizes), opt_level, sphere_volume, adjusted_distance);
+}
+
+ICF	float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
+{
+	float R = V->vis.sphere.R + 0;
+	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	return	R / distSQ;
+}
+
+ICF	float CalcSSA(float& distSQ, Fvector& C, float R)
+{
+	distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+	return	R / distSQ;
 }
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fvector& Center)
@@ -272,10 +381,12 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
+void CRender::add_leafs_Dynamic(dxRender_Visual *pVisual, bool IgnoreObject)
 {
-	//PROF_EVENT("add_leafs_Dynamic")
 	if (0==pVisual)				return;
+
+	if (!IsValuableToRender(pVisual, false, phase == 1, *val_pTransform, IgnoreObject))
+		return;
 
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be useful for 'hierrarhy' visual
@@ -288,9 +399,9 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			xrCriticalSectionGuard guard(&pG->onframe_lock);
 			for (PS::CParticleGroup::SItemVecIt i_it=pG->items.begin(); i_it!=pG->items.end(); i_it++)	{
 				PS::CParticleGroup::SItem&			I_		= *i_it;
-				if (I_._effect)		add_leafs_Dynamic		(I_._effect);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit);
-				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit);
+				if (I_._effect)		add_leafs_Dynamic		(I_._effect, IgnoreObject);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_related.begin();	pit!=I_._children_related.end(); pit++)	add_leafs_Dynamic(*pit, IgnoreObject);
+				for (xr_vector<dxRender_Visual*>::iterator pit = I_._children_free.begin();		pit!=I_._children_free.end();	pit++)	add_leafs_Dynamic(*pit, IgnoreObject);
 			}
 		}
 		return;
@@ -300,7 +411,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+			for (; I!=E; I++)	add_leafs_Dynamic	(*I, IgnoreObject);
 		}
 		return;
 	case MT_SKELETON_ANIM:
@@ -318,7 +429,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			}
 			if (_use_lod)				
 			{
-				add_leafs_Dynamic			(pV->m_lod)		;
+				add_leafs_Dynamic			(pV->m_lod, IgnoreObject)		;
 			} else {
 #if RENDER==R_R1
 				pV->CalculateBones			(TRUE);
@@ -326,7 +437,7 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 #endif
 				I = pV->children.begin		();
 				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (; I!=E; I++)	add_leafs_Dynamic	(*I, IgnoreObject);
 			}
 		}
 		return;
@@ -349,6 +460,9 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 	if(RImplementation.phase==CRender::PHASE_NORMAL)
 #endif
 	if (!HOM.visible(pVisual->vis))		return;
+
+	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, phase == 1, *val_pTransform))
+		return;
 
 	// Visual is 100% visible - simply add it
 	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
@@ -434,6 +548,8 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 {
 	//PROF_EVENT("add_Static")
+	if (!pVisual->IsIgnoreOptimize && !IsValuableToRender(pVisual, true, phase == 1, *val_pTransform))
+		return;
 
 	// Check frustum visibility and calculate distance to visual's center
 	EFC_Visible	VIS;

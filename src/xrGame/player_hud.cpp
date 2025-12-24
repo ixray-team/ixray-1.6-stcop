@@ -485,7 +485,7 @@ bool  attachable_hud_item::need_renderable()
 void attachable_hud_item::render()
 {
 	::Render->set_Transform		(&m_item_transform);
-	::Render->add_Visual		(m_model->dcast_RenderVisual());
+	::Render->add_Visual		(m_model->dcast_RenderVisual(), true);
 	debug_draw_firedeps			();
 	m_parent_hud_item->render_hud_mode();
 }
@@ -1418,7 +1418,7 @@ void player_hud::render_hud()
 	if(b_r0 || b_r1 || m_animator_item && m_animator_item->IsPlaying || m_bhands_visible)
 	{
 		::Render->set_Transform(&m_transform);
-		::Render->add_Visual(m_model->dcast_RenderVisual());
+		::Render->add_Visual(m_model->dcast_RenderVisual(), true);
 	}
 
 	if(b_r0) {
@@ -1481,7 +1481,7 @@ void player_hud::render_hud()
 			::Render->set_HUD(FALSE);
 
 			::Render->set_Transform(&Actor()->XFORM());
-			::Render->add_Visual(m_legs_model->dcast_RenderVisual());
+			::Render->add_Visual(m_legs_model->dcast_RenderVisual(), true);
 
 			::Render->set_HUD(bHud);
 		}
@@ -2319,10 +2319,12 @@ void animator_item::update(bool bForce)
 void animator_item::render()
 {
 	if (!m_item)
+	{
 		return;
+	}
 
 	::Render->set_Transform(&m_item_transform);
-	::Render->add_Visual(m_item->dcast_RenderVisual());
+	::Render->add_Visual(m_item->dcast_RenderVisual(), true);
 }
 
 void animator_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn, float speed)
