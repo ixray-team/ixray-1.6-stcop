@@ -266,7 +266,6 @@ void CWeaponStatMgun::cam_Update			(float dt, float fov)
 	
 
 	Camera()->Update							(P,Da);
-	Level().Cameras().UpdateFromCamera			(Camera());
 
 }
 
