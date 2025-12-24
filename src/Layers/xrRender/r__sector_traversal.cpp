@@ -62,7 +62,7 @@ void CPortalTraverser::traverse			(IRender_Sector* start, CFrustum& F, Fvector& 
 
 void CPortalTraverser::fade_portal	(CPortal* _p, float ssa)
 {
-	if(RImplementation.HOM.visible(_p->S))
+	if(RImplementation.HOM.visible(_p->S) || psGameFlags.test(rsDrawPortals))
 		f_portals.push_back				(std::make_pair(_p,ssa));
 }
 void CPortalTraverser::initialize	()
