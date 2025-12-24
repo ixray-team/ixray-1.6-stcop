@@ -66,6 +66,7 @@ public:
 
 	virtual void	UpdateCL			();
 	virtual	void	shedule_Update		(u32 dt);
+	virtual BOOL	AlwaysTheCrow();
 
 			void	set_actor_ignore	(bool const actor_ignore) { m_actor_ignore = actor_ignore; }
 			bool	get_actor_ignore	() const { return m_actor_ignore; }

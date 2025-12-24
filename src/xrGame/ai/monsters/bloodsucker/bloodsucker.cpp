@@ -960,6 +960,14 @@ void CAI_Bloodsucker::manual_deactivate()
 	setVisible		(TRUE);
 }
 
+BOOL CAI_Bloodsucker::AlwaysTheCrow()
+{
+	if (m_visibility_state == no_visibility)
+		return TRUE;
+
+	return inherited::AlwaysTheCrow();
+}
+
 void   CAI_Bloodsucker::renderable_Render ()
 {
 	if ( m_visibility_state != no_visibility )
