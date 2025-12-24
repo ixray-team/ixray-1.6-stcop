@@ -124,7 +124,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
 	lineFrame(all_modes, "st_common_settings")
 
-	addTrack(all_modes, "ui_mm_detail_density", "r__detail_density", 0.02, true, "float", false, "sdNothing")
+	addTrack(all_modes, "ui_mm_detail_density", "r__detail_density", 0.02, true, "float", false, "sdVidRestart")
 	addTrack(all_modes, "ui_mm_grass_distance", "r__detail_radius", 1, false, "int", true, "sdNothing")    
 	addTrack(all_modes, "ui_mm_vis_distance", "rs_vis_distance", 0.1, false, "float", false, "sdNothing")
 	addTrack(all_modes, "ui_mm_geometry_lod", "r__geometry_lod", 0.1, false, "float", false, "sdNothing")
@@ -135,13 +135,13 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 	
 	lineFrame(all_modes, "st_surface_options")
 
-	addTrack(all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, "sdNothing")
+	addTrack(all_modes, "ui_mm_texture_quality", "texture_lod", 1, true, "int", false, "sdVidRestart")
 	addTrack(all_modes, "ui_mm_anisotropic", "r__tf_aniso", 1, false, "int", false, "sdNothing")
 	
 	addCheck(mode_1, "ui_mm_r1_detail_textures", "r1_detail_textures", "sdNothing")
 	addCheck(mode_2, "ui_mm_r2_detail_bump", "r2_detail_bump", "sdNothing")
 	addCheck(mode_2, "ui_mm_r2_steep_parallax", "r2_steep_parallax", "sdNothing")
-	addCheck(mode_4, "ui_mm_r4_enable_tessellation", "r4_enable_tessellation", "sdNothing")
+	addCheck(mode_4, "ui_mm_r4_enable_tessellation", "r4_enable_tessellation", "sdVidRestart")
 	
 	-----------------------------------------------------------------------------
 	-----------------------------------------------------------------------------
