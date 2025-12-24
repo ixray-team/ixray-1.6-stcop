@@ -627,6 +627,9 @@ void CAI_Bloodsucker::UpdateCL()
 		m_vampire_want_value += m_vampire_want_speed * client_update_fdelta();
 		clamp(m_vampire_want_value,0.f,1.f);
 	}
+
+	if (state_invisible)
+		MakeMeCrow();
 }
 
 void CAI_Bloodsucker::shedule_Update(u32 dt)

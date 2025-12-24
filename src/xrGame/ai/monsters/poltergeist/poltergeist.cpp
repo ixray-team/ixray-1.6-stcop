@@ -313,12 +313,9 @@ void CPoltergeist::UpdateCL()
 	
 	ability()->update_frame	();
 
-	if (Actor() && Actor()->memory().visual().visible_now(this) &&
-		 Actor()->Position().distance_to(Position()) < 85.f )
-	{
-		MakeMeCrow					();
-	}
-	
+	if (state_invisible)
+		MakeMeCrow();
+
 	//	Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 
