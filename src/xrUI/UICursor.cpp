@@ -6,6 +6,9 @@
 #include "UIXmlInit.h"
 #include <UIHelper.h>
 
+extern ENGINE_API float	psMouseSens;
+extern ENGINE_API float	psMouseUISens;
+
 CUICursor::CUICursor()
 	: m_static(nullptr)
 {    
@@ -109,9 +112,20 @@ void CUICursor::UpdateCursorPosition(int _dx, int _dy)
 	if (!CImGuiManager::Instance().IsCapturingInputs())
 	{
 		vPrevPos = vPos;
-		SDL_GetMouseState(&vPos.x, &vPos.y);
-		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
-		vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+
+		if (psDeviceFlags.test(rsFullscreen))
+		{
+			float sens = psMouseUISens;
+			vPos.x += _dx * sens;
+			vPos.y += _dy * sens;
+		}
+		else
+		{
+			SDL_GetMouseState(&vPos.x, &vPos.y);
+			vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+			vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+		}
+
 		clamp(vPos.x, 0.f, UI_BASE_WIDTH);
 		clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
 	}
