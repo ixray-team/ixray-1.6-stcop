@@ -627,9 +627,6 @@ void CAI_Bloodsucker::UpdateCL()
 		m_vampire_want_value += m_vampire_want_speed * client_update_fdelta();
 		clamp(m_vampire_want_value,0.f,1.f);
 	}
-
-	if (state_invisible)
-		MakeMeCrow();
 }
 
 void CAI_Bloodsucker::shedule_Update(u32 dt)
@@ -961,6 +958,14 @@ void CAI_Bloodsucker::manual_deactivate()
 {
 	state_invisible = false;
 	setVisible		(TRUE);
+}
+
+BOOL CAI_Bloodsucker::AlwaysTheCrow()
+{
+	if (m_visibility_state == no_visibility)
+		return TRUE;
+
+	return inherited::AlwaysTheCrow();
 }
 
 void   CAI_Bloodsucker::renderable_Render ()

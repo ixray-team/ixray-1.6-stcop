@@ -313,10 +313,15 @@ void CPoltergeist::UpdateCL()
 	
 	ability()->update_frame	();
 
-	if (state_invisible)
-		MakeMeCrow();
-
 	//	Visual()->getVisData().hom_frame = Device.dwFrame;
+}
+
+BOOL CPoltergeist::AlwaysTheCrow()
+{
+	if (state_invisible)
+		return TRUE;
+
+	return inherited::AlwaysTheCrow();
 }
 
 void CPoltergeist::ForceFinalAnimation()
