@@ -1291,8 +1291,6 @@ void CWeapon::OnH_A_Independent	()
 	Light_Destroy				();
 	UpdateAddonsVisibility		();
 	ProcessScope();
-	Engine.Sheduler.Unregister(this);
-	//Engine.Sheduler.Register(this);
 };
 
 void CWeapon::OnH_A_Chield		()
@@ -1300,9 +1298,6 @@ void CWeapon::OnH_A_Chield		()
 	inherited::OnH_A_Chield		();
 	UpdateAddonsVisibility		();
 	ProcessScope();
-	shedule.t_min = shedule.t_max = 1;
-	//Engine.Sheduler.Unregister(this);
-	Engine.Sheduler.Register(this, TRUE);
 };
 
 void CWeapon::OnActiveItem ()
@@ -4765,4 +4760,19 @@ void CWeapon::OnChangeVisual()
 	const bool for_grenade = IsGrenadeMode();
 	const u32 config = for_grenade ? iAmmoElapsed : iAmmoElapsed + iAmmoChamberElapsed;
 	UpdateAmmoBones(for_grenade ? m_ammo_bones_gl : m_ammo_bones_mag, config, GetTargetAmmoType(for_grenade));
+}
+
+#include "ai/stalker/ai_stalker.h"
+#include "memory_manager.h"
+#include "enemy_manager.h"
+// нормальный оптимизированный фикс 
+// чтобы сталкеры которые не попадают в камеру
+// и находятся далеко от нас могли полноценно поддерживать бой
+// а не устраивать пистолетные дуэли
+BOOL CWeapon::AlwaysTheCrow()
+{
+	if (H_Parent() && H_Parent()->cast_stalker() && H_Parent()->cast_stalker()->memory().enemy().selected() && m_pInventory && m_pInventory->ActiveItem() == this && !m_strapped_mode)
+		return TRUE;
+
+	return inherited::AlwaysTheCrow();
 }
