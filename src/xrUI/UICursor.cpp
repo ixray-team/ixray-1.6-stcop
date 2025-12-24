@@ -6,8 +6,6 @@
 #include "UIXmlInit.h"
 #include <UIHelper.h>
 
-
-constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 extern ENGINE_API float	psMouseSens;
 extern ENGINE_API float	psMouseUISens;
 
