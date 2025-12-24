@@ -530,21 +530,15 @@ void CActor::cam_Update(float dt, float fFOV)
 		dbg_draw_viewport( Cameras(), Device.fViewportNear);
 	}
 #endif
+	Cameras().UpdateFromCamera(cam_active==eacLookAt ? cameras[eacLookAt] : cameras[eacFirstEye]);
+	UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
+
 	if (Level().CurrentEntity() == this)
 	{
 		if (Level().Cameras().GetCamEffector(cefDemo) || cam_active > eacLookAt)
 			Level().Cameras().UpdateFromCamera(cam_Active());// auto apply device
 		else
-		{
-			Cameras().UpdateFromCamera(cam_Active());
-			UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
 			Cameras().ApplyDevice(Device.fViewportNear);
-		}
-	}
-	else//don't apply device i am not local player
-	{
-		Cameras().UpdateFromCamera(cam_Active());
-		UpdateLensFOV(pItem ? pItem->cast_weapon() : nullptr, Cameras().Fov());
 	}
 }
 
