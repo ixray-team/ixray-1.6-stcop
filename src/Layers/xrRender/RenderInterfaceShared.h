@@ -157,9 +157,9 @@ IRender_Target* CRender::getTarget()
 	return Target;
 }
 
-void CRender::add_Visual(IRenderVisual* V)
+void CRender::add_Visual(IRenderVisual* V, bool Ignore)
 {
-	add_leafs_Dynamic((dxRender_Visual*)V);
+	add_leafs_Dynamic((dxRender_Visual*)V, Ignore);
 }
 
 void CRender::add_Geometry(IRenderVisual* V)
