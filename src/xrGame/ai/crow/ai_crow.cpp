@@ -147,11 +147,13 @@ void CAI_Crow::Load(LPCSTR section)
 	VERIFY2(valid_pos(Position()), dbg_valide_pos_string(Position(), this, "CAI_Crow::Load( LPCSTR section )").c_str());
 }
 
-BOOL CAI_Crow::net_Spawn		(CSE_Abstract* DC)
+BOOL CAI_Crow::net_Spawn(CSE_Abstract* DC)
 {
 	BOOL R		= inherited::net_Spawn	(DC);
 	setVisible	(TRUE);
 	setEnabled	(TRUE);
+
+	renderable.visual->IsIgnoreOptimize = true;
 
 	// animations
 	IKinematicsAnimated*	M		= Visual()->dcast_PKinematicsAnimated();
