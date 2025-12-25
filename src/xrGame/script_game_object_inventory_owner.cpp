@@ -2602,3 +2602,32 @@ bool CScriptGameObject::IsInCar()
 	Msg("! IsInCar(): method applicable only for actor!");
 	return false;
 }
+
+bool CScriptGameObject::GetGasmaskStatus()
+{
+	//if (CActor* pActor = smart_cast<CActor*>(&object()))
+	//{
+	//	return g_pGamePersistent && g_pGamePersistent->m_pGShaderConstants
+	//		&& g_pGamePersistent->m_pGShaderConstants->m_fGasMaskEnabled;
+	//}
+	//else
+	//{
+	//	Msg("! GetGasmaskStatus(): method applicable only for actor!");
+	//}
+	return false;
+}
+
+float CScriptGameObject::GetGasmaskCondition()
+{
+	//if (CActor* pActor = smart_cast<CActor*>(&object()))
+	//{
+	//	return g_pGamePersistent && g_pGamePersistent->m_pGShaderConstants
+	//		&& g_pGamePersistent->m_pGShaderConstants->m_fGasMaskCondition;
+	//}
+	//else
+	//{
+	//	Msg("! GetGasmaskCondition(): method applicable only for actor!");
+	//}
+	//return 0.f;
+	return 1.f;
+}

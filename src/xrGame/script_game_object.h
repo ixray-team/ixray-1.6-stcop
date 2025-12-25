@@ -1019,6 +1019,8 @@ public:
 	LPCSTR GetCutsceneVisual();
 	void SetInvulnerable(bool value);
 	void SetFire(bool value);
+	bool GetGasmaskStatus();
+	float GetGasmaskCondition();
 	bool GetAnimatorForceHideItems();
 	void SetAnimatorForceHideItems(bool status);
 	void ShowStateAnimator(LPCSTR section);
