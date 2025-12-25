@@ -107,7 +107,9 @@ extern "C"
 			g_imgui_editors_state.is_thread_started = true;
 		}
 
-
+		string_path GameGlobals = {};
+		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
+		pGameGlobals = new CInifile(GameGlobals);
 
 		CCC_RegisterCommands();
 		// keyboard binding
@@ -122,10 +124,6 @@ extern "C"
 #ifdef DEBUG
 		unit_test_stack_string();
 #endif
-
-		string_path GameGlobals = {};
-		FS.update_path(GameGlobals, _game_config_, "game_global.ltx");
-		pGameGlobals = new CInifile(GameGlobals);
 	}
 
 	DLL_API void __cdecl xrGameShutdown()
