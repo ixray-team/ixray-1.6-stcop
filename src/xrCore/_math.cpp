@@ -19,7 +19,7 @@
 XRCORE_API	Fmatrix			Fidentity;
 XRCORE_API	Dmatrix			Didentity;
 XRCORE_API	CRandom			Random;
-
+XRCORE_API float pvUVAdjustment[0x2000];
 namespace CPU 
 {
 	XRCORE_API u64				clk_per_second	;
@@ -136,7 +136,7 @@ void _initialize_cpu	(void)
 
 	Fidentity.identity		();	// Identity matrix
 	Didentity.identity		();	// Identity matrix
-	pvInitializeStatics		();	// Lookup table for compressed normals
+	pvInitializeStatics();	// Lookup table for compressed normals
 	_initialize_cpu_thread	();
 
 	g_initialize_cpu_called = true;
