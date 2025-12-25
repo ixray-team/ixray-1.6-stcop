@@ -68,7 +68,7 @@ private:
 protected :
 	void					LoadSpot						(LPCSTR type, bool bReload); 
 	void					UpdateSpot						(CUICustomMap* map, CMapSpot* sp );
-	void					UpdateSpotPointer				(CUICustomMap* map, CMapSpotPointer* sp, const Fvector2& real);
+	void					UpdateSpotPointer				(CUICustomMap* map, CMapSpotPointer* sp);
 	void					CalcLevelName					();
 	CMapSpotPointer*		GetSpotPointer					(CMapSpot* sp);
 	CMapSpot*				GetSpotBorder					(CMapSpot* sp);
