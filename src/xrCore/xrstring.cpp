@@ -20,7 +20,7 @@ xr_vector<xr_string> xr_string::Split(char splitCh) const
 			if ((StrCursor - SubStrBeginCursor) > 0)
 			{
 				Len = StrCursor - SubStrBeginCursor;
-				Result.emplace_back(xr_string(&at(SubStrBeginCursor), Len));
+				Result.emplace_back(&at(SubStrBeginCursor), Len);
 				SubStrBeginCursor = StrCursor + 1;
 			}
 			else
