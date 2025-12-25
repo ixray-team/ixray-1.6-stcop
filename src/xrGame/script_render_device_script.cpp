@@ -56,7 +56,9 @@ void CScriptRenderDevice::script_register(lua_State *L)
 			.def_readonly("aspect_ratio",			&CRenderDeviceData::fASPECT)
 			.def("time_global",						&time_global)
 			.def_readonly("precache_frame",			&CRenderDeviceData::dwPrecacheFrame)
-			.def_readonly("frame",					&CRenderDeviceData::dwFrame),
+			.def_readonly("frame",					&CRenderDeviceData::dwFrame)
+			.def_readonly("ftime_delta",			&CRenderDeviceData::fTimeDelta)
+			.def_readonly("dwtime_continual",		&CRenderDeviceData::dwTimeContinual),
 
 		def("app_ready",						&is_app_ready),
 
