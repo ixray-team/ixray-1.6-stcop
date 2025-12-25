@@ -47,49 +47,10 @@ void game_cl_Single::OnDifficultyChanged()
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
-ALife::_TIME_ID game_cl_Single::GetGameTime		()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(ai().alife().time_manager().game_time());
-	else
-		return(inherited::GetGameTime());
-}
-
-ALife::_TIME_ID game_cl_Single::GetStartGameTime	()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(ai().alife().time_manager().start_game_time());
-	else
-		return(inherited::GetStartGameTime());
-}
-
-float game_cl_Single::GetGameTimeFactor		()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return(ai().alife().time_manager().time_factor());
-	else
-		return(inherited::GetGameTimeFactor());
-}
 
 void game_cl_Single::SetGameTimeFactor(const float fTimeFactor)
 {
 	Level().Server->game->SetGameTimeFactor(fTimeFactor);
-}
-
-ALife::_TIME_ID game_cl_Single::GetEnvironmentGameTime	()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return	(ai().alife().time_manager().game_time());
-	else
-		return	(inherited::GetEnvironmentGameTime());
-}
-
-float game_cl_Single::GetEnvironmentGameTimeFactor		()
-{
-	if (ai().get_alife() && ai().alife().initialized())
-		return	(ai().alife().time_manager().time_factor());
-	else
-		return	(inherited::GetEnvironmentGameTimeFactor());
 }
 
 void game_cl_Single::SetEnvironmentGameTimeFactor		(const float fTimeFactor)
