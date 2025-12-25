@@ -703,19 +703,25 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 
 void parse_anim_params(LPCSTR val, SAAParam &anim) 
 {
-	string16			cur_elem;
+	auto ParseFloatLambda = [](const char* str, float& out)
+	{
+		char* end;
+		out = std::strtof(str, &end);
+		return (*end == ',') ? end + 1 : end;
+	};
 
-	_GetItem	(val,0,cur_elem);		anim.time			= float(atof(cur_elem));
-	_GetItem	(val,1,cur_elem);		anim.hit_power		= float(atof(cur_elem));
-	_GetItem	(val,2,cur_elem);		anim.impulse		= float(atof(cur_elem));
-	_GetItem	(val,3,cur_elem);		anim.impulse_dir.x	= float(atof(cur_elem));
-	_GetItem	(val,4,cur_elem);		anim.impulse_dir.y	= float(atof(cur_elem));
-	_GetItem	(val,5,cur_elem);		anim.impulse_dir.z	= float(atof(cur_elem));
-	_GetItem	(val,6,cur_elem);		anim.foh.from_yaw	= float(atof(cur_elem));
-	_GetItem	(val,7,cur_elem);		anim.foh.to_yaw		= float(atof(cur_elem));
-	_GetItem	(val,8,cur_elem);		anim.foh.from_pitch	= float(atof(cur_elem));
-	_GetItem	(val,9,cur_elem);		anim.foh.to_pitch	= float(atof(cur_elem));
-	_GetItem	(val,10,cur_elem);		anim.dist			= float(atof(cur_elem));
+	const char* ptr = val;
+	ptr = ParseFloatLambda(ptr, anim.time);
+	ptr = ParseFloatLambda(ptr, anim.hit_power);
+	ptr = ParseFloatLambda(ptr, anim.impulse);
+	ptr = ParseFloatLambda(ptr, anim.impulse_dir.x);
+	ptr = ParseFloatLambda(ptr, anim.impulse_dir.y);
+	ptr = ParseFloatLambda(ptr, anim.impulse_dir.z);
+	ptr = ParseFloatLambda(ptr, anim.foh.from_yaw);
+	ptr = ParseFloatLambda(ptr, anim.foh.to_yaw);
+	ptr = ParseFloatLambda(ptr, anim.foh.from_pitch);
+	ptr = ParseFloatLambda(ptr, anim.foh.to_pitch);
+	ParseFloatLambda(ptr, anim.dist);
 
 	anim.impulse_dir.normalize();
 
