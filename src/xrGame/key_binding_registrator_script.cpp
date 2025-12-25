@@ -357,7 +357,13 @@ void key_binding_registrator::script_register(lua_State *L)
                 value("MOUSE_2", int(MOUSE_2)),
                 value("MOUSE_3", int(MOUSE_3)),
                 value("MOUSE_4", int(MOUSE_4)),
-                value("MOUSE_5", int(MOUSE_5))
+                value("MOUSE_5", int(MOUSE_5)),
+                
+                value("DIK_MOUSE_1", int(MOUSE_1)),
+                value("DIK_MOUSE_2", int(MOUSE_2)),
+                value("DIK_MOUSE_3", int(MOUSE_3)),
+                value("DIK_MOUSE_4", int(MOUSE_4)),
+                value("DIK_MOUSE_5", int(MOUSE_5))
             ],
         class_<key_binding_registrator_gamepad >("gamepad_keys")
             .enum_("gamepad_keys")
