@@ -16,9 +16,9 @@
             right_ident="0" left_ident="0" top_indent="0" bottom_indent="0"
             vert_interval="0" always_show_scroll="0"/>
 
-		<dialog x="478" y="274" width="487" height="462">
+		<dialog x="478" y="274" width="487" height="462" stretch="1">
 			<texture>ui_inGame2_opt_main_window</texture>
-	        <auto_static x="14" y="27" width="461" height="38">
+	        <auto_static x="14" y="27" width="461" height="38" stretch="1">
 	            <texture>ui_inGame2_opt_buttons_frame</texture>
 	        </auto_static>
 		</dialog>
