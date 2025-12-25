@@ -387,15 +387,25 @@ class cl_hemi_color : public RHIShaderConstant::Setup {
 			return;
 		}
 #endif
-		if (marker != Device.dwFrame) {
+		if (marker != Device.dwFrame) 
+		{
 			CEnvDescriptorMixer& desc = *g_pGamePersistent->Environment().CurrentEnv;
 #if defined(_EDITOR) || RENDER != R_R1
-			result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
-				desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+			if (desc.old_style)
+			{
+				result.set(desc.sky_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
+					desc.sky_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.sky_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+			}
+			else
+			{
+				result.set(desc.hemi_color.x * ps_r2_sun_lumscale_hemi * 4.0f,
+					desc.hemi_color.y * ps_r2_sun_lumscale_hemi * 4.0f, desc.hemi_color.z * ps_r2_sun_lumscale_hemi * 4.0f, desc.weight);
+			}
 #else
 			result.set(desc.hemi_color);
 #endif
 		}
+
 		RCache.set_c(C, result);
 	}
 }; static cl_hemi_color binder_hemi_color;
