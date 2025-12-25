@@ -476,7 +476,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		}
 
 		if(GetSpotPointer(sp) && map->NeedShowPointer(wnd_rect))
-			UpdateSpotPointer( map, GetSpotPointer(sp), position);
+			UpdateSpotPointer( map, GetSpotPointer(sp));
 	}
 	else if ( Level().name() == map->MapName() && GetSpotPointer(sp) )
 	{
@@ -539,7 +539,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 				Fvector2 position;
 				position.set			((*lit)->Position().x, (*lit)->Position().z);
 				m_position_on_map		= map->ConvertRealToLocal(position, false);
-				UpdateSpotPointer		(map, GetSpotPointer(sp), position);
+				UpdateSpotPointer		(map, GetSpotPointer(sp));
 			}
 			else
 			{
@@ -558,7 +558,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 						Fvector2 position;
 						position.set			(p.x, p.z);
 						m_position_on_map		= map->ConvertRealToLocal(position, false);
-						UpdateSpotPointer		(map, GetSpotPointer(sp), position);
+						UpdateSpotPointer		(map, GetSpotPointer(sp));
 					}
 				}
 			}
@@ -568,16 +568,15 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 
 }
 
-void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, const Fvector2& real)
+void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
 {
 	if(sp->GetParent()) 
 		return ;// already is child
 
 	float		heading;
 	Fvector2	pointer_pos;
-	Fvector2    tmp = map->Heading() ? map->ConvertRealToLocal(real, true) : m_position_on_map;
 
-	if (map->GetPointerTo(tmp, sp->GetWidth() / 2, pointer_pos, heading))
+	if (map->GetPointerTo(m_position_on_map, sp->GetWidth() / 2, pointer_pos, heading))
 	{
 		sp->SetWndPos(pointer_pos);
 		sp->SetHeading(heading);
