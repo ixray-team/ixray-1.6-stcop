@@ -487,10 +487,20 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 #include "UIGameCustom.h"
 #include "HUDManager.h"
 
-class CCC_ALifeSave : public IConsole_Command {
+class CCC_ALifeSave : public IConsole_Command
+{
+private:
+	bool m_isSaveStatus = false;
+	const char* m_onSaveStatus = {};
 public:
-	CCC_ALifeSave(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args) {
+	CCC_ALifeSave(LPCSTR N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+		LoadCallbackGlobals(m_isSaveStatus, m_onSaveStatus, "OnSaveStatus");
+	};
+
+	virtual void Execute(LPCSTR args)
+	{
 
 #if 0
 		if (!Level().autosave_manager().ready_for_autosave()) {
@@ -506,6 +516,14 @@ public:
 		{
 			Msg("cannot make saved game because actor is dead :(");
 			return;
+		}
+
+		luabind::functor<bool> savesFunctor;
+		if (m_isSaveStatus)
+		{
+			R_ASSERT2(ai().script_engine().functor(m_onSaveStatus, savesFunctor), "Failed to get functor <OnSaveStatus>");
+			if (!savesFunctor())
+				return;
 		}
 
 //		Console->Execute("stat_memory");

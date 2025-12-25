@@ -96,6 +96,10 @@ extern "C"
 {
 	DLL_API void __cdecl xrGameInitialize()
 	{
+		string_path GameGlobals = {};
+		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
+		pGameGlobals = new CInifile(GameGlobals);
+
 		CCC_RegisterCommands();
 		// keyboard binding
 		CCC_RegisterInput();
@@ -109,10 +113,6 @@ extern "C"
 #ifdef DEBUG
 		unit_test_stack_string();
 #endif
-
-		string_path GameGlobals = {};
-		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
-		pGameGlobals = new CInifile(GameGlobals);
 	}
 
 	DLL_API DLL_Pure* __cdecl xrFactory_Create(CLASS_ID clsid)
