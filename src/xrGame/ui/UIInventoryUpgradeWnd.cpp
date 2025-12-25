@@ -256,7 +256,7 @@ void CUIInventoryUpgradeWnd::SetCurScheme(const shared_str& id)
 		}
 	}
 
-	VERIFY2(0, make_string<const char*>("Scheme <%s> does not loaded !", id.c_str()));
+	R_ASSERT2(0, make_string<const char*>("Scheme <%s> does not loaded !", id.c_str()));
 }
 
 bool CUIInventoryUpgradeWnd::CheckEnableDisassembleButton(CInventoryItem& inv_item)
