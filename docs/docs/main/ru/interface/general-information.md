@@ -24,6 +24,9 @@
  <!-- Elements -->
 </indicator_start_line>
 ```
+
+* tag `spacing="2` - отступ в 2 пикселя (опционально)
+
 ```lua
 local sp =  xml:InitStackPanel("indicator_start_line", self) --> Создаём панель (родитель: CUIWindows)
 sp:SetRightAlign(true)            --// установить выравнивание по правой стороне 

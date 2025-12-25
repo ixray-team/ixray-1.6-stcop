@@ -1,17 +1,4 @@
 # Оружейные классы
-## CExplosive
-
-> [!IMPORTANT]  
-> **Статус**: Поддерживается <br>
-> **Минимальная версия**: 1.1
-
-```ini
-wallmark_section = explosion_marks; Установка wallmark'и от взрыва (указывается секция из конфига)
-```
-
-* Следующие настройки звуков работаю в системе `Sound Layers`:
-* * `snd_explode`
-
 ## CHudItem
 
 > [!IMPORTANT]
@@ -59,16 +46,6 @@ snd_draw = "snd" ; Звук доставания
 snd_holster = "snd" ; Звук прятанья
 snd_throw_begin = "snd" ; Звук замаха перед броском
 snd_throw = "snd" ; Звук броска
-```
-
-## CGrenade
-
-> [!IMPORTANT]
-> **Статус**: Поддерживается <br>
-> **Минимальная версия**: 1.1
-```ini
-explosion_on_hit = true; Взрыв при получении урона
-explosion_hit_types = 6, 8 ; Типы урона 
 ```
 
 ## CWeapon

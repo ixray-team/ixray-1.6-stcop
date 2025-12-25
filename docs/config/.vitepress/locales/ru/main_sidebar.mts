@@ -56,7 +56,10 @@ export const mainSidebar: DefaultTheme.Sidebar = [
   {
     text: 'Система оружия',
     collapsed: false,
-    items: [{ text: 'Классы оружия', link: '/weapon-system/weapon-classes' }],
+    items: [
+      { text: 'Общие данные', link: '/weapon-system/weapon-classes' },
+      { text: 'Взрывчатка', link: '/weapon-system/explosive-classes' }
+    ],
   },
   {
     text: 'Анимационная система',

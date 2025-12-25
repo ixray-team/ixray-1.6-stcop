@@ -25,6 +25,9 @@ Implementation example:
  <!-- Elements -->
 </indicator_start_line>
 ```
+
+* tag `spacing="2` - spacing of 2 pixels (optional)
+
 ```lua
 local sp = xml:InitStackPanel("indicator_start_line", self) -- Create a panel (parent: CUIWindows)
 sp:SetRightAlign(true)            -- set right alignment

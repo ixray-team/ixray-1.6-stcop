@@ -57,7 +57,8 @@ export const mainSidebar: DefaultTheme.Sidebar = [
     text: 'Weapon system',
     collapsed: false,
     items: [
-      { text: 'Weapon classes', link: '/en/weapon-system/weapon-classes' },
+      { text: 'General information', link: '/en/weapon-system/weapon-classes' },
+      { text: 'Explosive classes', link: '/en/weapon-system/explosive-classes' }
     ]
   },
   {
