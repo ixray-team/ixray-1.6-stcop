@@ -494,6 +494,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_invulnerable",			&CScriptGameObject::SetInvulnerable)
 		.def("set_best_enemy",				&CScriptGameObject::SetBestEnemy)
 		.def("set_fire",					&CScriptGameObject::SetFire)
+		.def("get_gasmask_status",			&CScriptGameObject::GetGasmaskStatus)
+		.def("get_gasmask_condition",		&CScriptGameObject::GetGasmaskCondition)
 		.def("set_head_rotate",				&CScriptGameObject::SetHeadRotate)
 		.def("set_default_visual",			&CScriptGameObject::SetActorDefaultVisual)
 		.def("IsInCar", &CScriptGameObject::IsInCar)
