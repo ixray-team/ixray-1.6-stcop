@@ -765,6 +765,7 @@ void CCC_Register()
 	CMD3(CCC_Mask,		"mouse_invert",			&psMouseInvert,1);
 	psMouseSens			= 0.12f;
 	CMD4(CCC_Float,		"mouse_sens",			&psMouseSens,		0.001f, 0.6f);
+	CMD4(CCC_Float,		"mouse_sens_ui",		&psMouseUISens,		0.01f, 2.f);
 
 #ifndef MASTER_GOLD
 	// Other
