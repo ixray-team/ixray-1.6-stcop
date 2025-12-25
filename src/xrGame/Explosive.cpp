@@ -141,9 +141,14 @@ void CExplosive::Load(CInifile const *ini,LPCSTR section)
 		}
 	}
 
-	m_bDynamicParticles	 = FALSE;
-	if (ini->line_exist(section, "dynamic_explosion_particles"))
-		m_bDynamicParticles = ini->r_bool(section, "dynamic_explosion_particles");
+	m_bDynamicParticles	 = READ_IF_EXISTS(ini, r_bool, section, "dynamic_explosion_particles", FALSE);
+
+	m_bIsGasExplosive = READ_IF_EXISTS(pSettings, r_bool, section, "is_gas_explosive", false);
+	m_sBlastActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_callback", "");
+	m_sBlastBeginActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_begin_callback", "");
+	m_sBlastEndActorCallback = READ_IF_EXISTS(pSettings, r_string, section, "actor_blast_end_callback", "");
+	m_uBlastUpdateTime = READ_IF_EXISTS(pSettings, r_u32, section, "blast_update_time", 2000);
+	m_uParticlesUpdateTime = READ_IF_EXISTS(pSettings, r_u32, section, "particles_update_time", 500);
 }
 
 void CExplosive::net_Destroy	()
@@ -350,9 +355,10 @@ void CExplosive::Explode()
 	Fvector::generate_orthonormal_basis(explode_matrix.j, explode_matrix.i, explode_matrix.k);
 	explode_matrix.c.set(pos);
 
-	CParticlesObject* pStaticPG; 
-	pStaticPG = Particles::Details::Create(*m_sExplodeParticles,!m_bDynamicParticles).get();
-	if (m_bDynamicParticles) m_pExpParticle = pStaticPG;
+	auto pStaticPG = Particles::Details::Create(*m_sExplodeParticles,!m_bDynamicParticles);
+	if (m_bDynamicParticles)
+		m_pExpParticle = pStaticPG;
+
 	pStaticPG->UpdateParent(explode_matrix,vel);
 	pStaticPG->Play(false);
 
@@ -446,6 +452,8 @@ void CExplosive::PositionUpdate()
 	explode_matrix.j.set(dir);
 	Fvector::generate_orthonormal_basis(explode_matrix.j, explode_matrix.i, explode_matrix.k);
 	explode_matrix.c.set(pos);
+
+
 	
 }
 void CExplosive::GetExplPosition(Fvector &p)
@@ -495,6 +503,48 @@ void CExplosive::UpdateCL()
 			if (m_fExplodeHideDurationMax <= (m_fExplodeDurationMax - m_fExplodeDuration))
 			{
 				HideExplosive();
+			}
+		}
+		else if (m_bIsGasExplosive)
+		{
+			if (m_uLastParticlesUpdateTime < Device.dwTimeGlobal)
+			{
+				m_uLastParticlesUpdateTime = Device.dwTimeGlobal + m_uParticlesUpdateTime;
+
+				if (!m_pExpParticle)
+				{
+					Fvector	vel;
+					smart_cast<CPhysicsShellHolder*>(cast_game_object())->PHGetLinearVell(vel);
+
+					Fmatrix explode_matrix;
+					explode_matrix.identity();
+					explode_matrix.j.set(m_vExplodeDir);
+					Fvector::generate_orthonormal_basis(explode_matrix.j, explode_matrix.i, explode_matrix.k);
+					explode_matrix.c.set(m_vExplodePos);
+
+					auto pStaticPG = Particles::Details::Create(*m_sExplodeParticles, false);
+					if (m_bDynamicParticles) m_pExpParticle = pStaticPG;
+					pStaticPG->UpdateParent(explode_matrix, vel);
+					pStaticPG->Play(false);
+				}
+			}
+
+			if (m_uLastBlastUpdateTime < Device.dwTimeGlobal)
+			{
+				m_uLastBlastUpdateTime = Device.dwTimeGlobal + m_uBlastUpdateTime;
+
+				xr_vector<ISpatialShared> ISpatialResult;
+				g_SpatialSpace->q_sphere(ISpatialResult, 0, STYPE_COLLIDEABLE, m_vExplodePos, m_fBlastRadius);
+
+				for (u32 o_it = 0; o_it < ISpatialResult.size(); ++o_it)
+				{
+					CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(ISpatialResult[o_it]->dcast_CObject());
+					if (pGameObject && cast_game_object()->ID() != pGameObject->ID())
+					{
+						if (std::find(m_blasted_objects.cbegin(), m_blasted_objects.cend(), pGameObject) == m_blasted_objects.cend())
+							m_blasted_objects.push_back(pGameObject);
+					}
+				}
 			}
 		}
 		UpdateExplosionPos();
@@ -672,6 +722,16 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
 	if(l_pGO->Visual())		l_pGO->Center	(l_goPos); 
 	else					return; //мне непонятно зачем наносить хит от взрыва по объектам не имеющим вижуал - поэтому игнорируем
 
+	auto* pActor = smart_cast<CActor*>(l_pGO);
+	if (pActor && pActor->g_Alive() && m_sBlastBeginActorCallback.size())
+	{
+		luabind::functor<bool> actorFunctor;
+		R_ASSERT2(ai().script_engine().functor(m_sBlastBeginActorCallback.c_str(), actorFunctor), make_string<const char*>("Failed to get functor <%s>", m_sBlastBeginActorCallback.c_str()));
+
+		if (!actorFunctor())
+			return;
+	}
+
 #ifdef DEBUG
 	if(ph_dbg_draw_mask.test(phDbgDrawExplosions))
 	{
@@ -714,6 +774,14 @@ void CExplosive::ExplodeWaveProcessObject(collide::rq_results& storage, CPhysics
 
 	}
 #endif
+
+	if (pActor && pActor->g_Alive() && m_sBlastEndActorCallback.size())
+	{
+		luabind::functor<void> actorFunctor;
+		R_ASSERT2(ai().script_engine().functor(m_sBlastEndActorCallback.c_str(), actorFunctor),
+			make_string<const char*>("Failed to get functor <%s>", m_sBlastEndActorCallback.c_str()));
+		actorFunctor();
+	}
 }
 struct SRemovePred
 {
@@ -789,7 +857,7 @@ u16	CExplosive::Initiator()
 
 void CExplosive::UpdateExplosionParticles ()
 {
-	if (!m_bDynamicParticles || m_pExpParticle == nullptr || !m_pExpParticle->IsPlaying()) return;
+	if (!m_bDynamicParticles && !m_bIsGasExplosive || m_pExpParticle == nullptr || !m_pExpParticle->IsPlaying()) return;
 	CGameObject	*GO=cast_game_object();
 	if (!GO) return;
 

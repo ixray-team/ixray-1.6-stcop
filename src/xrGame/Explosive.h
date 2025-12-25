@@ -165,8 +165,18 @@ protected:
 	virtual	void				StopLight	();
 
 	BOOL						m_bDynamicParticles;
-	CParticlesObject*			m_pExpParticle;
+	xr_shared_ptr<CParticlesObject> m_pExpParticle;
 	virtual void				UpdateExplosionParticles ();	
+
+
+	bool						m_bIsGasExplosive;
+	u32							m_uLastBlastUpdateTime;
+	u32							m_uLastParticlesUpdateTime;
+	u32							m_uBlastUpdateTime;
+	u32							m_uParticlesUpdateTime;
+	shared_str					m_sBlastActorCallback;
+	shared_str					m_sBlastBeginActorCallback;
+	shared_str					m_sBlastEndActorCallback;
 
 	// эффектор
 	struct {
