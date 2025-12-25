@@ -69,21 +69,8 @@ void CRenderTarget::accum_direct_cascade()
 		m_clouds_shadow.mulA_44(m_xform);
 	}
 
-
-	u32 Offset = 0;
-	constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
-
 	//Render the AO and view-z into new rendertarget
 	phase_accumulator();
-
-	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(3, g_combine->vb_stride, Offset);
-	pv->set(-1.0, 1.0, 1.0, 1.0, vertex_color, 0.0, 0.0);
-	pv++;
-	pv->set(3.0, 1.0, 1.0, 1.0, vertex_color, 2.0, 0.0);
-	pv++;
-	pv->set(-1.0, -3.0, 1.0, 1.0, vertex_color, 0.0, 2.0);
-	pv++;
-	RCache.Vertex.Unlock(3, g_combine->vb_stride);
 
 	RCache.set_Element(s_accum_direct->E[0]);
 
@@ -91,8 +78,8 @@ void CRenderTarget::accum_direct_cascade()
 	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);
 	RCache.set_c("m_sunmask", m_clouds_shadow);
 
-	RCache.set_Geometry(g_combine);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 
 	if (ps_r_sun_shafts > 0)
 	{
@@ -121,23 +108,11 @@ void CRenderTarget::accum_direct_volumetric()
 	phase_vol_accumulator();
 	RCache.set_ColorWriteEnable();
 
-	u32 Offset = 0;
-	constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
-
-	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(3, g_combine->vb_stride, Offset);
-	pv->set(-1.0, 1.0, 1.0, 1.0, vertex_color, 0.0, 0.0);
-	pv++;
-	pv->set(3.0, 1.0, 1.0, 1.0, vertex_color, 2.0, 0.0);
-	pv++;
-	pv->set(-1.0, -3.0, 1.0, 1.0, vertex_color, 0.0, 2.0);
-	pv++;
-	RCache.Vertex.Unlock(3, g_combine->vb_stride);
-
 	RCache.set_Element(s_accum_direct_volumetric->E[0]);
 
 	RCache.set_c("Ldynamic_dir", L_dir.x, L_dir.y, L_dir.z, 0);
 	RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, 0);
 
-	RCache.set_Geometry(g_combine);
-	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, Offset, 0, 3, 0, 1);
+	RCache.set_Geometry(FSTriangleGeom);
+	RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, 0, 0, 3, 0, 1);
 }
