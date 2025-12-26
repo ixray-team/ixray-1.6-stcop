@@ -23,6 +23,7 @@
 
 #include <luabind/iterator_policy.hpp>
 #include <luabind/iterator_pair_policy.hpp>
+#include <Actor.h>
 
 using namespace luabind;
 
@@ -468,6 +469,21 @@ xr_vector<u16>& get_children(const CALifeSimulator* self, CSE_Abstract* object)
 	return object->children;
 }
 
+void set_start_position_from_smart(pcstr smartName)
+{
+    string64 tmp;
+    xr_sprintf(tmp, "%s", smartName);
+    g_start_position_smart = tmp;
+}
+void set_start_position(Fvector& pos)
+{
+    g_start_position = pos;
+}
+void set_start_game_vertex_id(int id)
+{
+    g_start_game_vertex_id = id;
+}
+
 #pragma optimize("s",on)
 void CALifeSimulator::script_register			(lua_State *L)
 {
@@ -516,9 +532,12 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("register", &reprocess_spawn)
 			.def("set_objects_per_update", &set_objects_per_update)
 			.def("set_process_time", &CALifeSimulator::set_process_time)
-			.def("get_children", &get_children, return_stl_iterator)
+			.def("get_children", &get_children, return_stl_iterator),
 
-		,def("alife",						&alife)
+        def("alife", &alife),
+        def("set_start_position_from_smart", &set_start_position_from_smart),
+        def("set_start_position", &set_start_position),
+        def("set_start_game_vertex_id", &set_start_game_vertex_id)
 	];
 
 	{
