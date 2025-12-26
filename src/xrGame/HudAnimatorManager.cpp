@@ -11,6 +11,8 @@
 
 bool m_AnimatorForceHideItems = false;
 
+extern float g_motion_speed;
+
 CHudAnimatorBase::~CHudAnimatorBase()
 {
 	StopAnimator();
@@ -33,10 +35,13 @@ void CHudAnimatorBase::Load()
 	m_sLuaRight2Callback = READ_IF_EXISTS(pSettings, r_string, m_section, "right2_lua_callback", "null");
 	m_sLuaStartCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "start_lua_callback", "null");
 	m_sLuaEndCallback = READ_IF_EXISTS(pSettings, r_string, m_section, "end_lua_callback", "null");
+
+	m_fMotionHideSpeed = READ_IF_EXISTS(pSettings, r_float, m_section, "hide_speed_factor", 1.0f);
 }
 
 void CHudAnimatorBase::StopAnimator()
 {
+	g_motion_speed = 1.0f;
 	m_bIsPlaying = false;
 	m_manager->Parent()->set_inventory_disabled(false);
 	m_manager->Parent()->set_pda_disabled(false);
@@ -282,11 +287,14 @@ void CHudStateAnimator::Update()
 		bool wpn_hide = !g_player_hud->attached_item(0) && !m_manager->Parent()->inventory().ActiveItem() && !m_manager->Parent()->inventory().GetNextActiveSlot() && !m_manager->Parent()->inventory().GetActiveSlot();
 		if (wpn_hide && g_player_hud->GetAnimator() == nullptr && !g_player_hud->attached_item(1))
 		{
+			g_motion_speed = 1.0f;
 			m_bNeedActivated = false;
 			SetState(eShowing);
 		}
 		else
 		{
+			g_motion_speed = m_fMotionHideSpeed;
+
 			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
 			if (current_animator != nullptr && this != current_animator)
 			{

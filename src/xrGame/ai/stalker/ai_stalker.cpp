@@ -664,7 +664,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
 	//загрузить иммунитеты из модельки сталкера
-	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual()); VERIFY(pKinematics);
+	IKinematics* pKinematics = PKinematics(Visual()); VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
 	if(ini)
 	{
@@ -1196,8 +1196,6 @@ float CAI_Stalker::shedule_Scale				()
 
 void CAI_Stalker::aim_bone_id					(shared_str const &bone_id)
 {
-//	IKinematics				*kinematics = smart_cast<IKinematics*>(Visual());
-//	VERIFY2					(kinematics->LL_BoneID(bone_id) != BI_NONE, make_string<const char*>("Cannot find bone %s",bone_id));
 	m_aim_bone_id			= bone_id;
 }
 
@@ -1273,7 +1271,7 @@ bool CAI_Stalker::infinite_fire()
 
 void CAI_Stalker::ResetBoneProtections(LPCSTR imm_sect, LPCSTR bone_sect)
 {
-	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual());
+	IKinematics* pKinematics = PKinematics(Visual());
 	CInifile* ini = pKinematics->LL_UserData();
 	if (ini)
 	{
