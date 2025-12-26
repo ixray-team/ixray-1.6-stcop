@@ -909,6 +909,9 @@ extern bool		isActorAccelerated			(u32 mstate, bool ZoomMode);
 
 IC	CActorCondition	&CActor::conditions	() const{ VERIFY(m_entity_condition); return(*m_entity_condition);}
 
+extern Fvector      g_start_position;
+extern int          g_start_game_vertex_id;
+extern shared_str   g_start_position_smart;
 extern CActor*		g_actor;
 extern CActor*		g_actor_single;
 CActor*				Actor		();
