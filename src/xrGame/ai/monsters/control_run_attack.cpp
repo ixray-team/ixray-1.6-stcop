@@ -47,7 +47,7 @@ void CControlRunAttack::activate()
 	{
 		return;
 	}
-	ctrl_anim->global.set_motion ( smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe("stand_attack_run_0") );
+	ctrl_anim->global.set_motion (m_object->Visual()->dcast_PKinematicsAnimated()->ID_Cycle_Safe("stand_attack_run_0") );
 	ctrl_anim->global.actual	= false;
 }
 

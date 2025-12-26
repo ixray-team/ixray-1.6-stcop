@@ -43,7 +43,7 @@ void CALifeSurgeManager::spawn_new_spawns			()
 	for (u16 ObjectID : m_temp_spawns) {
 		CSE_ALifeDynamicObject* object = nullptr;
 		auto& AbstarctObject = spawns().spawns().vertex(ObjectID)->data()->object();
-		CSE_ALifeDynamicObject* spawn = smart_cast<CSE_ALifeDynamicObject*>(&AbstarctObject);
+		CSE_ALifeDynamicObject* spawn = AbstarctObject.cast_alife_dynamic_object();
 
 		create(object, spawn, ObjectID);
 	}
