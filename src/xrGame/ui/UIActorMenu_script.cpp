@@ -459,6 +459,18 @@ void pda_hide(CUIPdaWnd* pda)
 	}
 }
 
+void pda_switch_zoom(CUIPdaWnd* pda)
+{
+	if (Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator() != nullptr)
+	{
+		Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator()->SwitchZoom();
+	}
+	else
+	{
+		Msg("Can't switch zoom on PDA without animator :(");
+	}
+}
+
 #pragma optimize("s",on)
 void CUIActorMenu::script_register(lua_State *L)
 {
@@ -510,7 +522,8 @@ void CUIActorMenu::script_register(lua_State *L)
 				.def("SetActiveDialog", &CUIPdaWnd::SetActiveDialog)
 				.def("GetActiveDialog", &CUIPdaWnd::GetActiveDialog)
 				.def("GetActiveSection", &CUIPdaWnd::GetActiveSection)
-				.def("GetTabControl", &CUIPdaWnd::GetTabControl),
+				.def("GetTabControl", &CUIPdaWnd::GetTabControl)
+				.def("SwitchZoom", &pda_switch_zoom),
 
 				class_< CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
 				.def(constructor<>())
