@@ -153,7 +153,7 @@ void CControlManagerCustom::update_schedule()
 void CControlManagerCustom::ta_fill_data(SAnimationTripleData &data, LPCSTR s1, LPCSTR s2, LPCSTR s3, bool execute_once, bool skip_prep, u32 capture_type)
 {
 	// Load triple animations
-	IKinematicsAnimated	*skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	data.pool[0]		= skel_animated->ID_Cycle_Safe(s1);	VERIFY(data.pool[0]);
 	data.pool[1]		= skel_animated->ID_Cycle_Safe(s2);	VERIFY(data.pool[1]);
 	data.pool[2]		= skel_animated->ID_Cycle_Safe(s3);	VERIFY(data.pool[2]);
@@ -286,7 +286,7 @@ void CControlManagerCustom::jump(CObject *obj, const SControlJumpData &ta)
 
 void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCSTR s4, u32 vel_mask_prepare, u32 vel_mask_ground, u32 flags)
 {
-	IKinematicsAnimated	*skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	if ( !skel_animated )
 	{
 		return; // monster is dead, so no skeleton (early return due to bug: 18755)
@@ -485,7 +485,7 @@ void CControlManagerCustom::check_jump_over_physics()
 		Level().ObjectSpace.GetNearest	(m_nearest,travel_point.position, m_object->Radius(), nullptr);
 
 		for (u32 k=0;k<m_nearest.size();k++) {
-			CPhysicsShellHolder *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[k]);
+			CPhysicsShellHolder *obj = m_nearest[k]->cast_physics_shell_holder();
 			if (!obj || !obj->PPhysicsShell() || !obj->PPhysicsShell()->isActive() || (obj->Radius() < 0.5f)) continue;
 			if (m_object->Position().distance_to(obj->Position()) < MAX_DIST_SUM / 2) continue;
 
@@ -584,7 +584,7 @@ void CControlManagerCustom::check_threaten()
 
 void CControlManagerCustom::add_melee_jump_data(LPCSTR left,LPCSTR right)
 {
-	IKinematicsAnimated	*skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skel_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 	m_melee_jump_data.anim_ls = skel_animated->ID_Cycle_Safe(left);
 	m_melee_jump_data.anim_rs = skel_animated->ID_Cycle_Safe(right);
 }
@@ -610,7 +610,7 @@ void CControlManagerCustom::check_melee_jump()
 void CControlManagerCustom::fill_rotation_data(SControlRotationJumpData	&data, LPCSTR left1,LPCSTR left2,LPCSTR right1,LPCSTR right2, float angle, u32 flags)
 {
 	VERIFY				(m_object->Visual());
-	IKinematicsAnimated	*skeleton_animated	= smart_cast<IKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skeleton_animated	= m_object->Visual()->dcast_PKinematicsAnimated();
 
 	data.flags.assign			(flags);
 	data.turn_angle				= angle;

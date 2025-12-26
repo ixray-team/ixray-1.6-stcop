@@ -37,6 +37,7 @@ void CHudItemAnimator::Update()
 		}
 		else
 		{
+
 			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
 			if (CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr)
 			{

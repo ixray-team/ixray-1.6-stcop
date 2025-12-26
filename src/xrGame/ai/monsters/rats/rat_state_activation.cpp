@@ -164,9 +164,11 @@ void CAI_Rat::activate_state_eat()
 	direction.getHP						(y,p);
 	if (a && angle_difference(y,-movement().m_body.current.yaw) < PI_DIV_6) {
 		m_fSpeed						= 0;
-		if (Device.dwTimeGlobal - m_previous_query_time > m_dwHitInterval) {
+		if (Device.dwTimeGlobal - m_previous_query_time > m_dwHitInterval)
+		{
 			m_previous_query_time		= Device.dwTimeGlobal;
-			const CEntityAlive			*const_corpse = smart_cast<const CEntityAlive*>(memory().item().selected());
+			CGameObject* cast_selected_item = const_cast<CGameObject*>(memory().item().selected());
+			const CEntityAlive			*const_corpse = cast_selected_item != nullptr ? cast_selected_item->cast_entity_alive() : nullptr;
 			VERIFY						(const_corpse);
 			CEntityAlive				*corpse = const_cast<CEntityAlive*>(const_corpse);
 			VERIFY						(corpse);

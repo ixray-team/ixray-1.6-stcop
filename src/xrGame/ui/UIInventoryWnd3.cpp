@@ -27,7 +27,8 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 	SetCurrentItem							(nullptr);
 	if(!itm->Useful())						return;
 
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	SendEvent_Item_Eat						(itm, pInvOwner->object_id());
 
 	PlaySnd									(eInvItemUse);
@@ -79,7 +80,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	{
 		return;
 	}
-	CWeapon* weapon = smart_cast<CWeapon*>( item );
+	CWeapon* weapon = item->cast_weapon();
 
 	switch ( UIPropertiesBox.GetClickedItem()->GetTAG() )
 	{
@@ -91,7 +92,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		break;	
 	case INVENTORY_EAT2_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_functor", 0);
 		if (functor_name)
 		{
@@ -106,7 +107,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	}
 	case INVENTORY_EAT3_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_functor", 0);
 		if (functor_name)
 		{
@@ -121,7 +122,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	}
 	case INVENTORY_EAT4_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_functor", 0);
 		if (functor_name)
 		{
@@ -136,7 +137,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 	}
 	case INVENTORY_EAT5_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_functor", 0);
 		if (functor_name)
 		{
@@ -162,7 +163,8 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			}
 			else
 			{
-				CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+				CObject* current_entity = Level().CurrentEntity();
+				CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 				SendEvent_Item_Drop(item, pInvOwner->object_id());
 			}
 			break;
@@ -182,7 +184,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetScopeName().c_str(), child_iitm);
@@ -198,7 +200,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetSilencerName().c_str(), child_iitm);
@@ -214,7 +216,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetGrenadeLauncherName().c_str(), child_iitm);
@@ -230,7 +232,8 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		break;
 	case INVENTORY_UNLOAD_MAGAZINE:
 		{
-			CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->m_pData);
+			CWeapon* data = (CWeapon*)cell_item->m_pData;
+			CWeaponMagazined* weap_mag = data != nullptr ? data->cast_weapon_magazined() : nullptr;
 			if (weap_mag == nullptr)
 			{
 				break;
@@ -241,7 +244,8 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
 				CUICellItem* child_itm = cell_item->Child(i);
-				CWeaponMagazined* child_weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)child_itm->m_pData);
+				data = (CWeapon*)child_itm->m_pData;
+				CWeaponMagazined* child_weap_mag = data != nullptr ? data->cast_weapon_magazined() : nullptr;
 				if (child_weap_mag != nullptr)
 				{
 					UnloadWeapon(child_weap_mag);
@@ -252,7 +256,7 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		}
 	case INVENTORY_PLAY_ACTION:
 		{
-			CPda* pPda = smart_cast<CPda*>(item);
+			CPda* pPda = item->cast_pda();
 			if(!pPda)
 				break;
 			pPda->PlayScriptFunction();
@@ -260,13 +264,16 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		}
 	case INVENTORY_PARSE_ITEM:
 	{
-		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame == nullptr) {
+		game_sv_Single* tpGame = Level().Server->game->cast_game_sv_single();
+		if (tpGame == nullptr)
+		{
 			break;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor == nullptr) {
+		CObject* current_entity = Level().CurrentEntity();
+		CActor* actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+		if (actor == nullptr)
+		{
 			break;
 		}
 
@@ -356,13 +363,14 @@ void CUIInventoryWnd::TryHidePropertiesBox()
 
 void CUIInventoryWnd::PropertiesBoxForSlots( PIItem item, bool& b_show )
 {
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if(item->parent_id() != pInvOwner->object_id()) {
 		return;
 	}
 
-	CCustomOutfit* pOutfit	= smart_cast<CCustomOutfit*>( item );
-	CHelmet* pHelmet		= smart_cast<CHelmet*>		( item );
+	CCustomOutfit* pOutfit = item->cast_outfit();
+	CHelmet* pHelmet		= item->cast_helmet();
 	CInventory*  inv		= GetInventory();
 
 	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
@@ -422,7 +430,7 @@ void CUIInventoryWnd::PropertiesBoxForSlots( PIItem item, bool& b_show )
 void CUIInventoryWnd::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, bool& b_show )
 {
 	//отсоединение аддонов от вещи
-	CWeapon*	pWeapon = smart_cast<CWeapon*>( item );
+	CWeapon*	pWeapon = item->cast_weapon();
 	if ( !pWeapon )
 	{
 		return;
@@ -468,7 +476,8 @@ void CUIInventoryWnd::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem ite
 		{
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
-				CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->Child(i)->m_pData);
+				CWeapon* data = (CWeapon*)cell_item->Child(i)->m_pData;
+				CWeaponMagazined* weap_mag = data != nullptr ? data->cast_weapon_magazined() : nullptr;
 				if (weap_mag != nullptr && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed()))
 				{
 					b = true;
@@ -488,10 +497,10 @@ void CUIInventoryWnd::PropertiesBoxForAddon( PIItem item, bool& b_show )
 {
 	//присоединение аддонов к активному слоту (2 или 3)
 
-	CScope*				pScope				= smart_cast<CScope*>			(item);
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(item);
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(item);
-	CInventory*			inv					= GetInventory();
+	CScope* pScope = item->cast_addon_scope();
+	CSilencer* pSilencer = item->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
+	CInventory* inv = GetInventory();
 
 	PIItem	item_in_slot_2 = inv->ItemFromSlot(INV_SLOT_2);
 	PIItem	item_in_slot_3 = inv->ItemFromSlot(INV_SLOT_3);
@@ -674,7 +683,7 @@ void CUIInventoryWnd::PropertiesBoxForUsing( PIItem item, bool& b_show )
 
 void CUIInventoryWnd::PropertiesBoxForPlaying(PIItem item, bool& b_show)
 {
-	CPda* pPda = smart_cast<CPda*>(item);
+	CPda* pPda = item->cast_pda();
 	if(!pPda || !pPda->CanPlayScriptFunction())
 		return;
 

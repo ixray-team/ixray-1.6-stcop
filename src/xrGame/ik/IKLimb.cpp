@@ -349,7 +349,7 @@ void CIKLimb::Create( u16 id, IKinematicsAnimated* K, bool collide_ )
 	m_id				= id;
 	m_K					= K;
 	
-	IKinematics*	CK	= smart_cast<IKinematics*>( K );
+	IKinematics*	CK	= K->dcast_PKinematics();
 	parse_bones_string( CK, ik_bones[ get_id() ], m_bones );
 
 	if( has_ik_settings( CK ) )

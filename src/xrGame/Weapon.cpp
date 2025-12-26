@@ -2064,7 +2064,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 	CSE_Abstract *D					= F_entity_Create(ammoSect);
 
 	{	
-		CSE_ALifeItemAmmo *l_pA		= smart_cast<CSE_ALifeItemAmmo*>(D);
+		CSE_ALifeItemAmmo *l_pA		= D->cast_item_ammo();
 		R_ASSERT					(l_pA);
 		l_pA->m_boxSize				= (u16)pSettings->r_s32(ammoSect, "box_size");
 		D->s_name					= ammoSect;
@@ -3195,7 +3195,8 @@ const CInventoryItem* CWeapon::can_kill(const xr_vector<const CGameObject*>& ite
 
 	for (const CGameObject* game_obj : items)
 	{
-		const CInventoryItem* inventory_item = smart_cast<const CInventoryItem*>(game_obj);
+		CGameObject* obj = const_cast<CGameObject*>(game_obj);
+		const CInventoryItem* inventory_item = obj->cast_inventory_item();
 
 		if (inventory_item == nullptr)
 		{
@@ -3219,7 +3220,8 @@ bool CWeapon::ready_to_kill() const
 
 u8 CWeapon::GetCurrentHudOffsetIdx() const
 {
-	const CActor* pActor = smart_cast<const CActor*>(H_Parent());
+	CObject* parent = const_cast<CObject*>(H_Parent());
+	const CActor* pActor = parent != nullptr ? parent->cast_actor() : nullptr;
 	if (!pActor)
 	{
 		return 0;

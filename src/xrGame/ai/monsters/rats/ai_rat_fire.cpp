@@ -83,24 +83,32 @@ void CAI_Rat::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 /**e
 		sound().play		(eRatSoundInjuring);
 }
 
-bool CAI_Rat::useful		(const CItemManager *manager, const CGameObject *object) const
+bool CAI_Rat::useful(const CItemManager* manager, const CGameObject* object) const
 {
 	if (g_Alive())
-		return			(false);
+	{
+		return false;
+	}
 
 	if (!memory().item().useful(object))
-		return			(false);
+	{
+		return false;
+	}
 
-	const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(object);
+	CGameObject* cast_game_object = const_cast<CGameObject*>(object);
+	const CEntityAlive* entity_alive = cast_game_object != nullptr ? cast_game_object->cast_entity_alive() : nullptr;
 	if (!entity_alive)
-		return			(false);
+	{
+		return false;
+	}
 
-	return				(true);
+	return true;
 }
 
 float CAI_Rat::evaluate		(const CItemManager *manager, const CGameObject *object) const
 {
-	const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(object);
+	CGameObject* cast_game_object = const_cast<CGameObject*>(object);
+	const CEntityAlive* entity_alive = cast_game_object != nullptr ? cast_game_object->cast_entity_alive() : nullptr;
 	VERIFY				(entity_alive);
 	if (!entity_alive->g_Alive()) {
 		if ((Device.dwTimeGlobal - entity_alive->GetLevelDeathTime() < m_dwEatCorpseInterval) && (entity_alive->m_fFood > 0) && (m_bEatMemberCorpses || (entity_alive->g_Team() != g_Team())) && (m_bCannibalism || (entity_alive->CLS_ID != CLS_ID)))

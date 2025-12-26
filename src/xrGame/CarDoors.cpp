@@ -245,7 +245,7 @@ void CCarDoor::Update()
 
 		if (OnClient())
 		{
-			IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+			IKinematics* pKinematics = PKinematics(pCar->Visual());
 			pKinematics->CalculateBones();
 		}
 		break;
@@ -260,7 +260,7 @@ void CCarDoor::Update()
 
 			if (OnClient())
 			{
-				IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+				IKinematics* pKinematics = PKinematics(pCar->Visual());
 				pKinematics->CalculateBones();
 			}
 		}
@@ -275,7 +275,7 @@ void CCarDoor::Update()
 
 			if (OnClient())
 			{
-				IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+				IKinematics* pKinematics = PKinematics(pCar->Visual());
 				pKinematics->CalculateBones();
 			}
 			RemoveFromUpdate();
@@ -344,7 +344,7 @@ void CCarDoor::ClosedToOpening()
 	if (!Joint)return;
 	if (Joint->bActive)return;
 	Fmatrix door_form, root_form;
-	IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
+	IKinematics* pKinematics = PKinematics(pCar->Visual());
 	CBoneInstance& bone_instance = pKinematics->LL_GetBoneInstance(u16(bone_id));
 	bone_instance.set_callback(bctPhysics, pCar->PPhysicsShell()->GetBonesCallback(), Joint->PSecond_element());
 
@@ -361,25 +361,11 @@ void CCarDoor::ClosingToClosed()
 {
 	state = closed;
 	if (!Joint) return;
-	smart_cast<IKinematics*>(pCar->Visual())->CalculateBones();
+	PKinematics(pCar->Visual())->CalculateBones();
 
-	//	Fmatrix door_form;
-	//IKinematics* pKinematics = smart_cast<IKinematics*>(pCar->Visual());
-	//	CBoneData& bone_data= pKinematics->LL_GetData(u16(bone_id));
-	//CBoneInstance& bone_instance = pKinematics->LL_GetBoneInstance(u16(bone_id));
-	//bone_instance.set_callback(bctPhysics, 0, Joint->PFirst_element(), FALSE);
-	//bone_instance.set_callback( bone_instance.callback_type(),bone_instance.callback(),bone_instance.callback_param(),FALSE);
-	//bone_instance.Callback_overwrite=FALSE;
-	//Joint->PSecond_element()->Deactivate();
-	//Joint->Deactivate();
 	Joint->SetLimits(0, 0, 0);
 	RemoveFromUpdate();
-
-	//door_form.set(bone_data.bind_transform);
-	//bone_instance.mTransform.set(door_form);
 }
-
-
 
 float CCarDoor::GetAngle()
 {

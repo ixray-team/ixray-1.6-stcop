@@ -40,8 +40,9 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 #ifndef SILENCE
 			Msg("Trying to take - %s (%d)", *O->cName(),O->ID());
 #endif
-			CGameObject	*_O = smart_cast<CGameObject*>(O);
-			if (inventory().CanTakeItem(smart_cast<CInventoryItem*>(_O))) {
+			CGameObject	*_O = O->cast_game_object();
+			if (inventory().CanTakeItem(_O->cast_inventory_item()))
+			{
 				O->H_SetParent(this);
 				inventory().Take(_O,true, false);
 				if (!inventory().ActiveItem() && GetScriptControl() && smart_cast<CShootingObject*>(O))
@@ -107,11 +108,11 @@ void CAI_Stalker::OnEvent		(NET_Packet& P, u16 type)
 void CAI_Stalker::on_ownership_reject	( CObject*O, bool just_before_destroy )
 {
 	m_pPhysics_support->in_UpdateCL			();
-	IKinematics* const kinematics			= smart_cast<IKinematics*>(Visual());
+	IKinematics* const kinematics			= PKinematics(Visual());
 	kinematics->CalculateBones_Invalidate	();
 	kinematics->CalculateBones				(true);
 
-	CGameObject* const game_object			= smart_cast<CGameObject*>(O);
+	CGameObject* const game_object			= O != nullptr ? O->cast_game_object() : nullptr;
 	VERIFY									(game_object);
 	
 	if ( !inventory().DropItem(game_object, just_before_destroy, just_before_destroy) )
@@ -159,7 +160,7 @@ void CAI_Stalker::feel_touch_new				(CObject* O)
 	if ((O->SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != O->SpatialComponent->spatial.type) return;
 
 	// Now, test for game specific logical objects to minimize traffic
-	CInventoryItem		*I	= smart_cast<CInventoryItem*>	(O);
+	CInventoryItem		*I	= O->cast_inventory_item();
 
 	if (!wounded() && !critically_wounded() && I && I->useful_for_NPC() && can_take(I)) {
 #ifndef SILENCE

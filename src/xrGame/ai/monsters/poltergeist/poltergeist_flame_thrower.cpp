@@ -257,7 +257,8 @@ void CPolterFlame::on_die()
 
 bool CPolterFlame::get_valid_flame_position(const CObject *target_object, Fvector &res_pos)
 {
-	const CGameObject *Obj = smart_cast<const CGameObject *>(target_object);
+	CObject* cast_target = const_cast<CObject*>(target_object);
+	const CGameObject *Obj = cast_target != nullptr ? cast_target->cast_game_object() : nullptr;
 	if (!Obj) return (false);
 
 	Fvector dir;

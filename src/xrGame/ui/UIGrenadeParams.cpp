@@ -84,7 +84,7 @@ void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn
 			text->SetTextColor(green_clr);
 	};
 
-	CGrenade* grenade = smart_cast<CGrenade*>(&cur_wpn);
+	CGrenade* grenade = cur_wpn.cast_grenade();
 
 	float blastHit = grenade->GetBlastHit();
 	float blastHit_sl = blastHit;
@@ -103,7 +103,7 @@ void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn
 
 	if (slot_wpn)
 	{
-		CGrenade* slot_grenade = smart_cast<CGrenade*>(slot_wpn);
+		CGrenade* slot_grenade = cur_wpn.cast_grenade();
 		if (slot_grenade)
 		{
 			blastHit_sl = slot_grenade->GetBlastHit();
@@ -139,6 +139,6 @@ void CUIGrenadeParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn
 
 bool CUIGrenadeParams::Check(CInventoryItem& cur_wpn)
 {
-	CGrenade* grenade = smart_cast<CGrenade*>(&cur_wpn);
+	CGrenade* grenade = cur_wpn.cast_grenade();
 	return grenade;
 }

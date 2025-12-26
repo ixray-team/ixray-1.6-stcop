@@ -215,7 +215,8 @@ bool CMonsterEnemyManager::see_enemy_recently(const CEntityAlive* enemy_)
 
 bool CMonsterEnemyManager::enemy_see_me_now()
 {
-	const CActor* actor = smart_cast<const CActor*>(enemy);
+	CEntityAlive* cast_enemy = const_cast<CEntityAlive*>(enemy);
+	const CActor* actor = cast_enemy != nullptr ? cast_enemy->cast_actor() : nullptr;
 	if (actor) 
 	{
 		return (Level().CurrentViewEntity());
