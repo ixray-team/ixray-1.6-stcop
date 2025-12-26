@@ -52,6 +52,7 @@ protected:
 	virtual void	switch2_ChamberUnload();
 	virtual void	switch2_ChamberCheck();
 	virtual void	switch2_Pump();
+	virtual void	switch2_Bore() override;
 	
 	virtual void	OnShot			();
 			void	OnShotJammed	();

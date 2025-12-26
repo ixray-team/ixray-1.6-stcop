@@ -467,6 +467,23 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 		m_eSoundsFlags2.set(ESoundsFlags2::sf_mag_shot, true);
 		m_sounds.LoadSound(section, "snd_mag_shot", "sndMagShot", true, m_eSoundEmptyClick);
 	}
+
+	if (SoundExist(section, "snd_bore_empty"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_bore_empty, true);
+		m_sounds.LoadSound(section, "snd_bore_empty", "sndBoreEmpty", false, m_eSoundHide);
+	}
+
+	if (SoundExist(section, "snd_bore_jammed"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_bore_jammed, true);
+		m_sounds.LoadSound(section, "snd_bore_jammed", "sndBoreMis", false, m_eSoundHide);
+	}
+	else if (SoundExist(section, "snd_bore_misfire"))
+	{
+		m_eSoundsFlags2.set(ESoundsFlags2::sf_bore_jammed, true);
+		m_sounds.LoadSound(section, "snd_bore_misfire", "sndBoreMis", false, m_eSoundHide);
+	}
 }
 
 void CWeaponMagazined::FireStart()
@@ -1884,6 +1901,26 @@ void CWeaponMagazined::switch2_Hiding()
 
 	PlayAnimHide();
 	SetPending(TRUE);
+}
+
+void CWeaponMagazined::switch2_Bore()
+{
+	SetPending(false);
+	PlayAnimBore();
+
+	const CObject* root = H_Root();
+	if (IsMisfire() && m_eSoundsFlags2.test(ESoundsFlags2::sf_bore_jammed))
+	{
+		PlaySound("sndBoreMis", root->Position());
+	}
+	else if (iAmmoChamberElapsed + iAmmoElapsed == 0 && m_eSoundsFlags2.test(ESoundsFlags2::sf_bore_empty))
+	{
+		PlaySound("sndBoreEmpty", root->Position());
+	}
+	else
+	{
+		PlaySound("sndBore", root->Position());
+	}
 }
 
 void CWeaponMagazined::switch2_Hidden()
