@@ -25,10 +25,17 @@ void CMonsterCorpseMemory::init_external(CBaseMonster *M, TTime mem_time)
 
 void CMonsterCorpseMemory::update() 
 {
-	for (xr_vector<const CGameObject *>::const_iterator I = monster->memory().item().objects().begin(); I != monster->memory().item().objects().end(); ++I) {
-		if (monster->memory().visual().visible_now(*I)) {
-			const CEntityAlive *p_corpse = smart_cast<const CEntityAlive*>(*I);
-			if (!p_corpse || p_corpse->g_Alive()) continue;
+	for (xr_vector<const CGameObject *>::const_iterator I = monster->memory().item().objects().begin(); I != monster->memory().item().objects().end(); ++I)
+	{
+		if (monster->memory().visual().visible_now(*I))
+		{
+			CGameObject* object = const_cast<CGameObject*>(*I);
+			const CEntityAlive *p_corpse = object != nullptr ? object->cast_entity_alive() : nullptr;
+			if (p_corpse == nullptr || p_corpse->g_Alive())
+			{
+				continue;
+			}
+
 			add_corpse(p_corpse);
 		}
 	}
