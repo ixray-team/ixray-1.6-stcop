@@ -435,6 +435,30 @@ void CUIActorMenu::HighlightSectionInSlot(LPCSTR section, u8 type, u16 slot_id)
 	m_highlight_clear = false;
 }
 
+void pda_show(CUIPdaWnd* pda, bool hide_indik)
+{
+	if (Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator() != nullptr)
+	{
+		Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator()->SwitchAnimator();
+	}
+	else
+	{
+		pda->ShowDialog(hide_indik);
+	}
+}
+
+void pda_hide(CUIPdaWnd* pda)
+{
+	if (Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator() != nullptr)
+	{
+		Level().CurrentEntity()->cast_actor()->HudAnimator()->PdaAnimator()->HideStateAnimator();
+	}
+	else
+	{
+		pda->HideDialog();
+	}
+}
+
 #pragma optimize("s",on)
 void CUIActorMenu::script_register(lua_State *L)
 {
@@ -480,8 +504,8 @@ void CUIActorMenu::script_register(lua_State *L)
 			class_< CUIPdaWnd, CUIDialogWnd>("CUIPdaWnd")
 				.def(constructor<>())
 				.def("IsShown", &CUIPdaWnd::IsShown)
-				.def("ShowDialog", &CUIPdaWnd::ShowDialog)
-				.def("HideDialog", &CUIPdaWnd::HideDialog)
+				.def("ShowDialog", &pda_show)
+				.def("HideDialog", &pda_hide)
 				.def("SetActiveSubdialog", &CUIPdaWnd::SetActiveSubdialog_script)
 				.def("SetActiveDialog", &CUIPdaWnd::SetActiveDialog)
 				.def("GetActiveDialog", &CUIPdaWnd::GetActiveDialog)
