@@ -55,7 +55,7 @@ BOOL CDestroyablePhysicsObject::net_Spawn(CSE_Abstract* DC)
 	CSE_PHSkeleton *l_tpPHSkeleton = smart_cast<CSE_PHSkeleton*>(DC);
 	child_part = l_tpPHSkeleton && l_tpPHSkeleton->source_id != u16(-1);
 	BOOL res=inherited::net_Spawn(DC);
-	IKinematics		*K=smart_cast<IKinematics*>(Visual());
+	IKinematics		*K=PKinematics(Visual());
 	CInifile* ini=K->LL_UserData();
 	//R_ASSERT2(ini->section_exist("destroyed"),"destroyable_object must have -destroyed- section in model user data");
 	CPHDestroyable::Init();
@@ -92,7 +92,7 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 		lua_game_object(), 
 		HDS.power,
 		HDS.dir,
-		smart_cast<const CGameObject*>(HDS.who)->lua_game_object(),
+		HDS.who->cast_game_object()->lua_game_object(),
 		HDS.bone()
 	);
 
@@ -117,12 +117,13 @@ void CDestroyablePhysicsObject::Destroy()
 {
 	VERIFY(!physics_world()->Processing());
 
-	if (g_pGamePersistent->GameType() == eGameIDFreeMP)
+	if (g_pGamePersistent->GameType() & eGameIDFreeMP)
 	{
 		setVisible(FALSE);
 	}
 
-	const CGameObject *who_object = smart_cast<const CGameObject*>(FatalHit().initiator());
+	CObject* cast_initiator = const_cast<CObject*>(FatalHit().initiator());
+	const CGameObject *who_object = cast_initiator != nullptr ? cast_initiator->cast_game_object() : nullptr;
 	callback(GameObject::eDeath)(lua_game_object(), who_object ? who_object->lua_game_object() : 0);
 	CPHDestroyable::Destroy(ID(),"physic_destroyable_object");
 	if(m_destroy_sound.handle()) {

@@ -116,32 +116,37 @@ void CAI_Trader::LookAtActor(CBoneInstance *B)
 
 //////////////////////////////////////////////////////////////////////////
 
-BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
+BOOL CAI_Trader::net_Spawn(CSE_Abstract* DC)
 {
-	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeTrader			*l_tpTrader = smart_cast<CSE_ALifeTrader*>(e);
-	R_ASSERT				(l_tpTrader);
+	CSE_Abstract* e = (CSE_Abstract*)(DC);
+	CSE_ALifeTrader* l_tpTrader = e->cast_trader();
+	R_ASSERT(l_tpTrader);
 
 	//проспавнить PDA у InventoryOwner
 	if (!CInventoryOwner::net_Spawn(DC))
-		return				(FALSE);
+	{
+		return FALSE;
+	}
 
 	if (!inherited::net_Spawn(DC) || !CScriptEntity::net_Spawn(DC))
-		return				(FALSE);
+	{
+		return FALSE;
+	}
 
-	setVisible				(TRUE);
-	setEnabled				(TRUE);
+	setVisible(TRUE);
+	setEnabled(TRUE);
 
-	set_money				( l_tpTrader->m_dwMoney, false );
+	set_money(l_tpTrader->m_dwMoney, false);
 
 	// Установка callback на кости
-	CBoneInstance			*bone_head =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
-	bone_head->set_callback	(bctCustom,BoneCallback,this);
+	IKinematics* kin = PKinematics(Visual());
+	CBoneInstance* bone_head = &kin->LL_GetBoneInstance(kin->LL_BoneID("bip01_head"));
+	bone_head->set_callback(bctCustom, BoneCallback, this);
 
-	shedule.t_min			= 100;
-	shedule.t_max			= 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
+	shedule.t_min = 100;
+	shedule.t_max = 2500; // This equaltiy is broken by Dima :-( // 30 * NET_Latency / 4;
 
-	return					(TRUE);
+	return TRUE;
 }
 
 void CAI_Trader::net_Export		(NET_Packet& P)
@@ -164,62 +169,74 @@ void CAI_Trader::net_Import		(NET_Packet& P)
 	setEnabled						(TRUE);
 }
 
-void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
+void CAI_Trader::OnEvent(NET_Packet& P, u16 type)
 {
-	inherited::OnEvent			(P,type);
-	CInventoryOwner::OnEvent	(P,type);
+	inherited::OnEvent(P, type);
+	CInventoryOwner::OnEvent(P, type);
 
 	u16 id;
 	CObject* Obj;
 
-	switch (type) {
-		case GE_TRADE_BUY:
-		case GE_OWNERSHIP_TAKE:
-			P.r_u16		(id);
-			Obj = Level().Objects.net_Find	(id);
-			if(inventory().CanTakeItem(smart_cast<CInventoryItem*>(Obj))){
-				Obj->H_SetParent(this);
-				inventory().Take(smart_cast<CGameObject*>(Obj), false, false);
-			}else
-			{
-				NET_Packet				P_;
-				u_EventGen				(P_,GE_OWNERSHIP_REJECT,ID());
-				P_.w_u16					(u16(Obj->ID()));
-				u_EventSend				(P_);
-			}
-			break;
-		case GE_TRADE_SELL:
-		case GE_OWNERSHIP_REJECT:
-			{
-				P.r_u16		(id);
-				Obj = Level().Objects.net_Find	(id);
-				bool just_before_destroy		= !P.r_eof() && P.r_u8();
-				bool dont_create_shell			= (type==GE_TRADE_SELL) || just_before_destroy;
+	switch (type)
+	{
+	case GE_TRADE_BUY:
+	case GE_OWNERSHIP_TAKE:
+	{
+		P.r_u16(id);
+		Obj = Level().Objects.net_Find(id);
+		if (inventory().CanTakeItem(Obj->cast_inventory_item()))
+		{
+			Obj->H_SetParent(this);
+			inventory().Take(Obj->cast_game_object(), false, false);
+		}
+		else
+		{
+			NET_Packet P_;
+			u_EventGen(P_, GE_OWNERSHIP_REJECT, ID());
+			P_.w_u16(u16(Obj->ID()));
+			u_EventSend(P_);
+		}
+		break;
+	}
+	case GE_TRADE_SELL:
+	case GE_OWNERSHIP_REJECT:
+	{
+		P.r_u16(id);
+		Obj = Level().Objects.net_Find(id);
+		bool just_before_destroy = !P.r_eof() && P.r_u8();
+		bool dont_create_shell = (type == GE_TRADE_SELL) || just_before_destroy;
 
-				Obj->SetTmpPreDestroy			(just_before_destroy);
-				inventory().DropItem			(smart_cast<CGameObject*>(Obj), just_before_destroy, dont_create_shell);
-				//if(inventory().DropItem(smart_cast<CGameObject*>(Obj), just_before_destroy)) 
-				//	Obj->H_SetParent(0, just_before_destroy); //moved to DropItem
-			}break;
-		case GE_TRANSFER_AMMO:
-			break;
+		Obj->SetTmpPreDestroy(just_before_destroy);
+		inventory().DropItem(Obj->cast_game_object(), just_before_destroy, dont_create_shell);
+	}break;
+	case GE_TRANSFER_AMMO:
+	{
+		break;
+	}
 	}
 }
 
-void CAI_Trader::feel_touch_new				(CObject* O)
+void CAI_Trader::feel_touch_new(CObject* O)
 {
-	if (!g_Alive())		return;
-	if (Remote())		return;
+	if (!g_Alive())
+	{
+		return;
+	}
 
-	// Now, test for game specific logical objects to minimize traffic
-	CInventoryItem		*I	= smart_cast<CInventoryItem*>	(O);
+	if (Remote())
+	{
+		return;
+	}
 
-	if (I && I->useful_for_NPC()) {
-		Msg("Taking item %s!",*I->object().cName());
-		NET_Packet		P;
-		u_EventGen		(P,GE_OWNERSHIP_TAKE,ID());
-		P.w_u16			(u16(I->object().ID()));
-		u_EventSend		(P);
+	CInventoryItem* I = O != nullptr ? O->cast_inventory_item() : nullptr;
+
+	if (I != nullptr && I->useful_for_NPC())
+	{
+		Msg("Taking item %s!", *I->object().cName());
+		NET_Packet P;
+		u_EventGen(P, GE_OWNERSHIP_TAKE, ID());
+		P.w_u16(u16(I->object().ID()));
+		u_EventSend(P);
 	}
 }
 
@@ -247,7 +264,7 @@ void CAI_Trader::shedule_Update	(u32 dt)
 
 void CAI_Trader::g_WeaponBones	(int &L, int &R1, int &R2)
 {
-	IKinematics *V	= smart_cast<IKinematics*>(Visual());
+	IKinematics *V	= PKinematics(Visual());
 	R1				= V->LL_BoneID("bip01_r_hand");
 	R2				= V->LL_BoneID("bip01_r_finger2");
 	L				= V->LL_BoneID("bip01_l_finger1");
@@ -350,19 +367,26 @@ bool CAI_Trader::BuyArtefact (CArtefact* pArtefact)
 	return false;
 }
 
-ALife::ERelationType  CAI_Trader::tfGetRelationType	(const CEntityAlive *tpEntityAlive) const
+ALife::ERelationType CAI_Trader::tfGetRelationType(const CEntityAlive* tpEntityAlive) const
 {
-	const CInventoryOwner* pOtherIO = smart_cast<const CInventoryOwner*>(tpEntityAlive);
+	CEntityAlive* cast_entity_alive = const_cast<CEntityAlive*>(tpEntityAlive);
+	const CInventoryOwner* pOtherIO = cast_entity_alive != nullptr ? cast_entity_alive->cast_inventory_owner() : nullptr;
 
 	ALife::ERelationType relation = ALife::eRelationTypeDummy;
 
-	if(pOtherIO && !(const_cast<CEntityAlive *>(tpEntityAlive)->cast_base_monster()))
+	if (pOtherIO != nullptr && !(const_cast<CEntityAlive*>(tpEntityAlive)->cast_base_monster()))
+	{
 		relation = RELATION_REGISTRY().GetRelationType(static_cast<const CInventoryOwner*>(this), pOtherIO);
+	}
 
-	if(ALife::eRelationTypeDummy != relation)
+	if (ALife::eRelationTypeDummy != relation)
+	{
 		return relation;
+	}
 	else
+	{
 		return inherited::tfGetRelationType(tpEntityAlive);
+	}
 }
 
 DLL_Pure *CAI_Trader::_construct	()

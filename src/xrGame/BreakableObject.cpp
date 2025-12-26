@@ -46,8 +46,7 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
 	VERIFY(!collidable.model);
 	collidable.model = new CCF_Skeleton(this);
 	// set bone id
-	R_ASSERT				(Visual()&&smart_cast<IKinematics*>(Visual()));
-//	IKinematics* K			= smart_cast<IKinematics*>(Visual());
+	R_ASSERT				(Visual()&&PKinematics(Visual()));
 	fHealth					= obj->m_health;
 	processing_deactivate	();
 	setVisible				(TRUE);
@@ -125,37 +124,12 @@ void CBreakableObject::DestroyUnbroken()
 	DestroyStaticGeomShell( m_pUnbrokenObject );
 }
 
-//void CBreakableObject::CreateBroken()
-//{
-	//CPhysicsShell* shell=P_create_splited_Shell();
-	//shell->preBuild_FromKinematics(smart_cast<IKinematics*>(Visual()));
-	//shell->mXFORM.set(XFORM());
-	//shell->set_PhysicsRefObject(this);
-	////m_Shell->Build();
-	//shell->setDensity(1000.f);
-	//dMass m;
-	//dMassSetBox(&m,m_Shell->getMass()/100.f,1.f,1.f,1.f);
-	//shell->addEquelInertiaToEls(m);
-	//shell->SmoothElementsInertia(0.3f);
-	////shell->SetAirResistance(0.002f*skel_airr_lin_factor,
-	////	0.3f*skel_airr_ang_factor);
-	//ELEMENT_STORAGE& elements = pshell->Elements();
-	//ELEMENT_I i=elements.begin(),e=elements.end();
-	//for(;e!=i;i++)
-	//{
-	//	m_Shells.push_back(P_create_splited_Shell());
-	//	m_Shells.back()->mXFORM.set(XFORM());
-	//	m_Shells.back()->add_Element	(*i);
-	//	m_Shells.back()->Build();
-	//}
-
-//}
 void CBreakableObject::CreateBroken()
 {
 	phys_shell_verify_object_model ( *this );
 	processing_activate();
 	m_Shell=P_create_splited_Shell();
-	m_Shell->preBuild_FromKinematics(smart_cast<IKinematics*>(Visual()));
+	m_Shell->preBuild_FromKinematics(PKinematics(Visual()));
 	m_Shell->mXFORM.set(XFORM());
 	//m_Shell->SetAirResistance(0.002f*skel_airr_lin_factor,
 	//	0.3f*skel_airr_ang_factor);
@@ -176,11 +150,11 @@ void CBreakableObject::CreateBroken()
 
 void CBreakableObject::ActivateBroken()
 {
-	m_pPhysicsShell=m_Shell;
-	IKinematics* K=smart_cast<IKinematics*>(Visual());
+	m_pPhysicsShell = m_Shell;
+	IKinematics* K = PKinematics(Visual());
 	m_pPhysicsShell->set_Kinematics(K);
 	m_pPhysicsShell->RunSimulation();
-	m_pPhysicsShell->SetCallbacks( );
+	m_pPhysicsShell->SetCallbacks();
 	K->CalculateBones_Invalidate();
 	K->CalculateBones(TRUE);
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());

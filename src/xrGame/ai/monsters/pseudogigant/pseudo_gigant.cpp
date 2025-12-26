@@ -247,9 +247,13 @@ void CPseudoGigant::on_threaten_execute()
 	// разбросить объекты
 	m_nearest.resize(0);
 	Level().ObjectSpace.GetNearest	(m_nearest,Position(), 15.f, nullptr); 
-	for (u32 i=0;i<m_nearest.size();i++) {
-		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
-		if (!obj || !obj->m_pPhysicsShell) continue;
+	for (u32 i=0;i<m_nearest.size();i++)
+	{
+		CPhysicsShellHolder* obj = m_nearest[i] != nullptr ? m_nearest[i]->cast_physics_shell_holder() : nullptr;
+		if (!obj || !obj->m_pPhysicsShell)
+		{
+			continue;
+		}
 
 		Fvector dir;
 		Fvector pos;
@@ -271,7 +275,8 @@ void CPseudoGigant::on_threaten_execute()
 		// играть партиклы
 		PlayParticles(m_kick_particles, pos, Direction());
 
-		CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
+		CEntityAlive* cast_get_enemy = const_cast<CEntityAlive*>(EnemyMan.get_enemy());
+		CActor *pA = cast_get_enemy != nullptr ? cast_get_enemy->cast_actor() : nullptr;
 	if (!pA)
 		return;
 
@@ -304,7 +309,7 @@ void CPseudoGigant::on_threaten_execute()
 		HS.weaponID = (ID());														//	l_P.w_u16	(ID());
 		HS.dir = (Fvector().set(0.f, 1.f, 0.f));									//	l_P.w_dir	(Fvector().set(0.f,1.f,0.f));
 		HS.power = (hit_value);													//	l_P.w_float	(m_kick_damage);
-		HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
+		HS.boneID = (PKinematics(pA->Visual())->LL_GetBoneRoot());
 		HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));									//	l_P.w_vec3	(Fvector().set(0.f,0.f,0.f));
 		HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());						//	l_P.w_float	(20 * pA->movement_control()->GetMass());
 		HS.hit_type = (ALife::eHitTypeStrike);										//	l_P.w_u16	( u16(ALife::eHitTypeWound) );
@@ -431,7 +436,7 @@ void CPseudoGigant::on_threaten_execute()
 				HS.weaponID = (pObj->ID());														//	l_P.w_u16	(ID());
 				HS.dir = (Fvector().set(0.f, 1.f, 0.f));									//	l_P.w_dir	(Fvector().set(0.f,1.f,0.f));
 				HS.power = (hit_value);													//	l_P.w_float	(m_kick_damage);
-				HS.boneID = (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
+				HS.boneID = (PKinematics(pA->Visual())->LL_GetBoneRoot());
 				HS.p_in_bone_space = (Fvector().set(0.f, 0.f, 0.f));									//	l_P.w_vec3	(Fvector().set(0.f,0.f,0.f));
 				HS.impulse = (80 * pA->character_physics_support()->movement()->GetMass());						//	l_P.w_float	(20 * pA->movement_control()->GetMass());
 				HS.hit_type = (ALife::eHitTypeStrike);										//	l_P.w_u16	( u16(ALife::eHitTypeWound) );

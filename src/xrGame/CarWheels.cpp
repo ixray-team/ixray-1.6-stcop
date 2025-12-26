@@ -202,7 +202,7 @@ void CCar::SWheelDrive::Init()
 	pwheel->Init();
 	gear_factor = pwheel->radius / pwheel->car->m_ref_radius;
 
-	const Fmatrix& bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
+	const Fmatrix& bone_data = PKinematics(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
 	pos_fvd = bone_data.k.x > 0.f ? -1.f : 1.f;
 }
 
@@ -231,11 +231,11 @@ float CCar::SWheelDrive::ASpeed() const
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CCar::SWheelSteer::Init()
 {
-	IKinematics* pKinematics=smart_cast<IKinematics*>(pwheel->car->Visual());
+	IKinematics* pKinematics=PKinematics(pwheel->car->Visual());
 	pwheel->Init();
 	(pwheel->car->bone_map.find(pwheel->bone_id))->second.joint->GetLimits(lo_limit,hi_limit,0);
 	
-	auto bone_data = smart_cast<IKinematics*>(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
+	auto bone_data = PKinematics(pwheel->car->Visual())->LL_GetTransform(pwheel->bone_id);
 	pos_right = bone_data.i.y > 0.f ? -1.f : 1.f;
 
 	float steering_torque_=pKinematics->LL_UserData()->r_float("car_definition","steering_torque");

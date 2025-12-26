@@ -60,7 +60,7 @@ void CStateAbstract::execute()
 			if ( current_substate == u32(-1) )
 			{
 				debug::text_tree tree;
-				if ( CBaseMonster* p_monster = smart_cast<CBaseMonster*>(object) )
+				if (CBaseMonster* p_monster = object->cast_base_monster())
 				{
 					p_monster->add_debug_info(tree);
 				}

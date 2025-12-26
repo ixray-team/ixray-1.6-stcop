@@ -396,8 +396,8 @@ void CControlJump::stop()
 // Get target point in world space
 Fvector CControlJump::get_target(CObject *obj)
 {
-	u16 bone_id			= smart_cast<IKinematics*>(obj->Visual())->LL_GetBoneRoot			();
-	CBoneInstance &bone = smart_cast<IKinematics*>(obj->Visual())->LL_GetBoneInstance		(bone_id);
+	u16 bone_id			= PKinematics(obj->Visual())->LL_GetBoneRoot			();
+	CBoneInstance &bone = PKinematics(obj->Visual())->LL_GetBoneInstance		(bone_id);
 
 	Fmatrix	global_transform;
 	global_transform.mul	(obj->XFORM(),bone.mTransform);
@@ -526,7 +526,7 @@ void CControlJump::hit_test()
 	} 
 
 	if (m_object_hitted) 
-		m_object->HitEntityInJump(smart_cast<CEntity*>(m_data.target_object));
+		m_object->HitEntityInJump(m_data.target_object != nullptr ? m_data.target_object->cast_entity() : nullptr);
 }
 
 bool CControlJump::can_jump(CObject *target)

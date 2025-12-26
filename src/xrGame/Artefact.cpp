@@ -122,7 +122,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 
 	StartLights();
 	m_CarringBoneID					= u16(-1);
-	IKinematicsAnimated	*K			= smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated	*K			= Visual()->dcast_PKinematicsAnimated();
 	if(K)
 		K->PlayCycle("idle");
 	
@@ -249,7 +249,7 @@ void CArtefact::UpdateWorkload		(u32 dt)
 	Fvector vel = {0, 0, 0};
 	if (H_Parent()) 
 	{
-		CPhysicsShellHolder* pPhysicsShellHolder = smart_cast<CPhysicsShellHolder*>(H_Parent());
+		CPhysicsShellHolder* pPhysicsShellHolder = H_Parent()->cast_physics_shell_holder();
 		if(pPhysicsShellHolder) pPhysicsShellHolder->PHGetLinearVell(vel);
 	}
 	CParticlesPlayer::SetParentVel	(vel);
@@ -394,11 +394,11 @@ void CArtefact::UpdateXForm()
 		if (0==H_Parent())	return;
 
 		// Get access to entity and its visual
-		CEntityAlive*		E		= smart_cast<CEntityAlive*>(H_Parent());
+		CEntityAlive*		E		= H_Parent()->cast_entity_alive();
         
 		if(!E)				return	;
 
-		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
+		const CInventoryOwner	*parent = E->cast_inventory_owner();
 		if (parent && parent->use_simplified_visual())
 			return;
 
