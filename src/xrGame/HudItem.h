@@ -95,6 +95,9 @@ protected:
 		u8						m_started_rnd_anim_idx;
 		bool					m_bStopAtEndAnimIsRunning;
 	};
+
+	virtual void switch2_Bore();
+
 public:
 	virtual void				Load				(LPCSTR section);
 	virtual void				LoadSounds			(LPCSTR section);

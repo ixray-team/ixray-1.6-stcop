@@ -235,15 +235,7 @@ void CHudItem::OnStateSwitch(u32 S)
 	}
 	case eBore:
 	{
-		SetPending		(FALSE);
-
-		PlayAnimBore	();
-		if(HudItemData())
-		{
-			Fvector P		= HudItemData()->m_item_transform.c;
-			m_sounds.PlaySound("sndBore", P, object().H_Root(), !!GetHUDSoundMode(), false, m_started_rnd_anim_idx);
-		}
-
+		switch2_Bore();
 		break;
 	}
 	case eSprintStart:
@@ -293,6 +285,15 @@ void CHudItem::OnStateSwitch(u32 S)
 	{
 		m_bSwitchSprint = false;
 	}
+}
+
+void CHudItem::switch2_Bore()
+{
+	SetPending(false);
+	PlayAnimBore();
+
+	const CObject* root = object().H_Root();
+	PlaySound("sndBore", root->Position());
 }
 
 void CHudItem::OnAnimationEnd(u32 state)
