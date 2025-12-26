@@ -34,12 +34,19 @@ highlight_related_sections = related_section_a, related_section_b
 use_condition = false; Whether the item has a wear progress bar
 ```
 
-> **Minimum Version**: 1.2.2 <br>
-> Console commands r_use_gasmask and r_use_rain_drops
+> [!IMPORTANT]
+> **Minimum Version**: 1.2.2
+* Console commands r_use_gasmask and r_use_rain_drops
 
 ```ini
 hud_gas_mask_avaliable = true; Whether gas mask rendering is available
 hud_rain_drops_avaliable = true; Whether rain drops rendering is available
+```
+
+> [!IMPORTANT]
+> **Minimum Version**: 1.4
+```ini
+physic_strike_protection = 0.7; physic strike hit protection 
 ```
 
 ## Armor (CCustomOutfit)
@@ -53,12 +60,20 @@ use_condition = false      ; Whether the item has a wear progress bar
 forbid_change_skin = false ; Whether it changes the visual (hands/legs)
 ```
 
-> **Minimum Version**: 1.2.2 <br>
->Console commands r_use_gasmask and r_use_rain_drops
+> [!IMPORTANT]
+> **Minimum Version**: 1.2.2
+* Console commands r_use_gasmask and r_use_rain_drops
 ```ini
 hud_gas_mask_avaliable = true; Whether gas mask rendering is available
 hud_rain_drops_avaliable = true; Whether rain drops rendering is available
 ```
+
+> [!IMPORTANT]
+> **Minimum Version**: 1.4
+```ini
+physic_strike_protection = 0.7; physic strike hit protection 
+```
+> Also supported for upgrades
 
 ## Torch (CTorch)
 

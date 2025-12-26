@@ -16,6 +16,22 @@
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
     },
     {
+      "id": "awakening-2055",
+      "title": "Пробуждение. 2055",
+      "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
+      "author": "Little Frenchman (Жекан)",
+      "link": "https://vk.com/wall-195948120_7369",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
+    },
+    {
+      "id": "lastnewyear",
+      "title": "Чужой среди Чужих: Последний Новый год",
+      "description": "Главный герой — обычный сталкер по прозвищу Винт, который отправился в Лиманск",
+      "author": "It's Boomer",
+      "link": "https://vk.com/wall-15844953_951638",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
+    },
+    {
       "id": "one-way-ticket",
       "title": "Билет в один конец",
       "description": "Хардкорная кампания про выживание без обратной дороги из Зоны.",
@@ -27,7 +43,7 @@
       "id": "sins-academic",
       "title": "Грехи Академика. Красный Рассвет",
       "description": "Военная драма с упором на боевые миссии и сложные решения.",
-      "author": "Red Dawn",
+      "author": "Mawrak",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png"
     },
@@ -46,14 +62,6 @@
       "author": "Retro Zone",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png"
-    },
-    {
-      "id": "awakening-2055",
-      "title": "Пробуждение. 2055",
-      "description": "Поздний таймлайн: новые технологии и выживание в изменённой Зоне.",
-      "author": "Future Lab",
-      "link": "https://vk.com/wall-195948120_7369",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
     }
   ]
 }
