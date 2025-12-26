@@ -1,87 +1,45 @@
 #include "StdAfx.h"
 #include "pch_script.h"
-#include "Actor_Flags.h"
+#include "Actor.h"
 #include "HUDManager.h"
-#ifdef DEBUG
-
-#	include "PHDebug.h"
-#endif // DEBUG
-#include "alife_space.h"
-#include "Hit.h"
-#include "PHDestroyable.h"
 #include "Car.h"
-#include "xrServer_Objects_ALife_Monsters.h"
 #include "cameralook.h"
 #include "CameraFirstEye.h"
 #include "EffectorBobbing.h"
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
-#include "SleepEffector.h"
-#include "character_info.h"
-#include "CustomOutfit.h"
 #include "ActorCondition.h"
 #include "UIGameCustom.h"
-#include "../xrPhysics/matrix_utils.h"
 #include "clsid_game.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "Grenade.h"
-#include "Torch.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "InfoPortion.h"
-
 #include "ui/UIArtefactPanel.h"
-// breakpoints
 #include "../xrEngine/xr_input.h"
-//
-#include "Actor.h"
 #include "ActorAnimation.h"
 #include "actor_anim_defs.h"
-#include "HudItem.h"
-#include "ai_space.h"
-#include "trade.h"
+#include "Weapon.h"
 #include "Inventory.h"
-//#include "Physics.h"
-#include "Level.h"
 #include "GamePersistent.h"
-#include "game_cl_base.h"
-#include "game_cl_single.h"
-#include "xrMessages.h"
 #include "../xrEngine/string_table.h"
-#include "UsableScriptObject.h"
-#include "../xrCore/Collision/cl_intersect.h"
-//#include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "../Include/xrRender/Kinematics.h"
-#include "Artefact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"
 #include "../xrPhysics/IColisiondamageInfo.h"
 #include "ui/UIMainIngameWnd.h"
-#include "map_manager.h"
-#include "GametaskManager.h"
 #include "actor_memory.h"
 #include "script_game_object.h"
-#include "game_object_space.h"
-#include "InventoryBox.h"
 #include "location_manager.h"
 #include "player_hud.h"
-#include "ai/monsters/basemonster/base_monster.h"
-
-#include "../Include/xrRender/UIRender.h"
-
-#include "ai_object_location.h"
 #include "ui/UIMotionIcon.h"
-#include "ui/UIActorMenu.h"
 #include "ActorHelmet.h"
 #include "ActorBackpack.h"
-#include "ui/UIDragDropReferenceList.h"
 #include "../../xrUI/UIFontDefines.h"
 #include "PickupManager.h"
 #include "../xrEngine/Rain.h"
 #include "script_hit.h"
-#include "../../xrScripts/script_engine.h"
 #include "ParticlesObject.h"
-#include "PDA.h"
 #include "UIPdaWnd.h"
 #include "../xrUI/UICursor.h"
 
@@ -330,13 +288,14 @@ xr_vector<xr_string> CActor::GetKnownPortionDialogs(shared_str id) const
 	CInfoPortion infoPortion;
 	infoPortion.Load(id);
 
-	auto KnownDialogs = infoPortion.DialogNames();
+	auto& KnownDialogs = infoPortion.DialogNames();
 
-	if (KnownDialogs.empty()) {
+	if (KnownDialogs.empty())
+	{
 		return {};
 	}
 
-	for (auto Dialog : KnownDialogs)
+	for (auto& Dialog : KnownDialogs)
 	{
 		SafeVector.push_back(Dialog.c_str());
 	}
@@ -352,13 +311,14 @@ xr_vector<xr_string> CActor::GetKnownPortionDisable(shared_str id) const
 	CInfoPortion infoPortion;
 	infoPortion.Load(id);
 
-	auto disableInfos = infoPortion.DisableInfos();
+	auto& disableInfos = infoPortion.DisableInfos();
 
-	if (disableInfos.empty()) {
+	if (disableInfos.empty())
+	{
 		return {};
 	}
 
-	for (auto Info : disableInfos)
+	for (auto& Info : disableInfos)
 	{
 		SafeVector.push_back(Info.c_str());
 	}
@@ -374,13 +334,14 @@ xr_vector<xr_string> CActor::GetKnownPortionArticles(shared_str id) const
 	CInfoPortion infoPortion;
 	infoPortion.Load(id);
 
-	auto KnownArticles = infoPortion.Articles();
+	auto& KnownArticles = infoPortion.Articles();
 
-	if (KnownArticles.empty()) {
+	if (KnownArticles.empty())
+	{
 		return {};
 	}
 
-	for (auto Article : KnownArticles)
+	for (auto& Article : KnownArticles)
 	{
 		SafeVector.push_back(Article.c_str());
 	}
@@ -396,13 +357,14 @@ xr_vector<xr_string> CActor::GetKnownPortionArticlesDisable(shared_str id) const
 	CInfoPortion infoPortion;
 	infoPortion.Load(id);
 
-	auto KnownArticlesDisable = infoPortion.ArticlesDisable();
+	auto& KnownArticlesDisable = infoPortion.ArticlesDisable();
 
-	if (KnownArticlesDisable.empty()) {
+	if (KnownArticlesDisable.empty())
+	{
 		return {};
 	}
 
-	for (auto ArticleDisable : KnownArticlesDisable)
+	for (auto& ArticleDisable : KnownArticlesDisable)
 	{
 		SafeVector.push_back(ArticleDisable.c_str());
 	}
@@ -418,13 +380,14 @@ xr_vector<xr_string> CActor::GetKnownPortionTasks(shared_str id) const
 	CInfoPortion infoPortion;
 	infoPortion.Load(id);
 
-	auto KnownTasks = infoPortion.GameTasks();
+	auto& KnownTasks = infoPortion.GameTasks();
 
-	if (KnownTasks.empty()) {
+	if (KnownTasks.empty())
+	{
 		return {};
 	}
 
-	for (auto Task : KnownTasks)
+	for (auto& Task : KnownTasks)
 	{
 		SafeVector.push_back(Task.c_str());
 	}
@@ -432,11 +395,13 @@ xr_vector<xr_string> CActor::GetKnownPortionTasks(shared_str id) const
 	return SafeVector;
 }
 
-void CActor::GiveInfoPortion(const char* infoPortion) {
+void CActor::GiveInfoPortion(const char* infoPortion)
+{
 	this->TransferInfo(infoPortion, true);
 }
 
-void CActor::DisableInfoPortion(const char* infoPortion) {
+void CActor::DisableInfoPortion(const char* infoPortion)
+{
 	this->TransferInfo(infoPortion, false);
 }
 
@@ -2716,7 +2681,7 @@ void CActor::OnItemDrop(CInventoryItem *inventory_item, bool just_before_destroy
 			inventory().Slot(GRENADE_SLOT, grenade, true, true);
 	}
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
+	CArtefact* artefact = inventory_item->cast_artefact();
 	if (artefact && artefact->m_ItemCurrPlace.type == eItemPlaceBelt)
 		MoveArtefactBelt(artefact, false);
 }
@@ -2740,7 +2705,7 @@ void CActor::OnItemRuck		(CInventoryItem *inventory_item, const SInvItemPlace& p
 {
 	CInventoryOwner::OnItemRuck(inventory_item, previous_place);
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
+	CArtefact* artefact = inventory_item->cast_artefact();
 	if (artefact && previous_place.type == eItemPlaceBelt)
 		MoveArtefactBelt(artefact, false);
 }
@@ -2749,7 +2714,7 @@ void CActor::OnItemBelt		(CInventoryItem *inventory_item, const SInvItemPlace& p
 {
 	CInventoryOwner::OnItemBelt(inventory_item, previous_place);
 
-	CArtefact* artefact = smart_cast<CArtefact*>(inventory_item);
+	CArtefact* artefact = inventory_item->cast_artefact();
 	if (artefact)
 		MoveArtefactBelt(artefact, true);
 }
@@ -2861,21 +2826,20 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 
 float CActor::HitArtefactsOnBeltLegacy(float hit_power, ALife::EHitType hit_type)
 {
-	float res_hit_power_k		= 1.0f;
-	float _af_count				= 0.0f;
-	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
-		inventory().m_belt.end() != it; ++it) 
+	float res_hit_power_k = 1.0f;
+	float _af_count = 0.0f;
+	for (const PIItem item : inventory().m_belt)
 	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if(artefact)
+		if (CArtefact* artefact = item->cast_artefact())
 		{
-			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
-			_af_count		+= 1.0f;
+			res_hit_power_k += artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			_af_count += 1.0f;
 		}
 	}
-	res_hit_power_k			-= _af_count;
 
-	return					res_hit_power_k * hit_power;
+	res_hit_power_k -= _af_count;
+
+	return res_hit_power_k * hit_power;
 }
 
 float CActor::GetProtection_ArtefactsOnBelt(ALife::EHitType hit_type)
