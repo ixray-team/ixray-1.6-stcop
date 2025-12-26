@@ -415,42 +415,17 @@ void CAI_Rat::CreateSkeleton(){
 	//sphere.R=0.25;
 	//element->add_Sphere(sphere);
 	element->setDensity(m_phMass);
-	element->SetMaterial(smart_cast<IKinematics*>(Visual())->LL_GetData(smart_cast<IKinematics*>(Visual())->LL_GetBoneRoot()).game_mtl_idx);
+	IKinematics* kin = PKinematics(Visual());
+	element->SetMaterial(kin->LL_GetData(kin->LL_GetBoneRoot()).game_mtl_idx);
 	m_pPhysicsShell=P_create_Shell();
 	m_pPhysicsShell->add_Element(element);
 	m_pPhysicsShell->Activate(XFORM(),0,XFORM());
 	m_pPhysicsShell->set_PhysicsRefObject( this );
-	if(!fsimilar(0.f,m_saved_impulse)){
+
+	if(!fsimilar(0.f,m_saved_impulse))
+	{
 		m_pPhysicsShell->applyHit(m_saved_hit_position,m_saved_hit_dir,m_saved_impulse,0,m_saved_hit_type);
 	}
-	/*
-	IKinematics* M		= smart_cast<IKinematics*>(Visual());			VERIFY(M);
-	m_pPhysicsShell		= P_create_Shell();
-
-	//get bone instance
-	int id=M->LL_BoneID("bip01_pelvis");
-	CBoneInstance& instance=M->LL_GetBoneInstance				(id);
-
-	//create root element
-	CPhysicsElement* element=P_create_Element				();
-	element->mXFORM.identity();
-	instance.set_callback(m_pPhysicsShell->GetBonesCallback(),element);
-	Fobb box;
-	box.m_rotate.identity();
-	box.m_translate.set(0,0,0);
-	box.m_halfsize.set(0.10f,0.085f,0.25f);
-	element->add_Box(box);
-
-	element->setDensity(200.f);
-	m_pPhysicsShell->add_Element(element);
-	element->SetMaterial("materials/skel1");
-
-	//set shell start position
-	Fmatrix m;
-	m.set(mRotate);
-	m.c.set(Position());
-	m_pPhysicsShell->mXFORM.set(m);
-	*/
 }
 
 void CAI_Rat::shedule_Update(u32 dt)
@@ -661,7 +636,7 @@ void CAI_Rat::activate_physic_shell	()
 
 void CAI_Rat::on_activate_physic_shell	()
 {
-	CObject						*object = smart_cast<CObject*>(H_Parent());
+	CObject						*object = H_Parent();
 	R_ASSERT					(object);
 	XFORM().set					(object->XFORM());
 	inherited::activate_physic_shell();

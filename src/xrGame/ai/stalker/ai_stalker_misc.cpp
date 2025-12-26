@@ -66,7 +66,7 @@ bool CAI_Stalker::useful		(const CItemManager *manager, const CGameObject *objec
 
 	if(GO->cast_missile())
 	{
-		const CBolt* bolt = smart_cast<const CBolt*>(GO->cast_missile());
+		const CBolt* bolt = GO->cast_bolt();
 		if (bolt)
 			return			(false);
 	}
@@ -119,7 +119,8 @@ void CAI_Stalker::react_on_grenades		()
 		return;
 
 //	u32							interval = AFTER_GRENADE_DESTROYED_INTERVAL;
-	const CMissile				*missile = smart_cast<const CMissile*>(reaction.m_grenade);
+	CExplosive* cast_explosive = const_cast<CExplosive*>(reaction.m_grenade);
+	const CMissile				*missile = cast_explosive != nullptr ? cast_explosive->cast_missile() : nullptr;
 //	if (missile && (missile->destroy_time() > Device.dwTimeGlobal))
 //		interval				= missile->destroy_time() - Device.dwTimeGlobal + AFTER_GRENADE_DESTROYED_INTERVAL;
 //	m_object->agent_manager().add_danger_location(reaction.m_game_object->Position(),Device.dwTimeGlobal,interval,GRENADE_RADIUS);
