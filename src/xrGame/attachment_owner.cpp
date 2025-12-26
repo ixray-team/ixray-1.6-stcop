@@ -42,34 +42,38 @@ void CAttachmentOwner::reinit()
 void CAttachmentOwner::net_Destroy()
 {
 #ifdef DEBUG
-	if (!attached_objects().empty()) {
-		Msg("Object %s has attached items :", *smart_cast<CGameObject*>(this)->cName());
-		//		xr_vector<CAttachableItem*>::const_iterator	I = attached_objects().begin();
-		//		xr_vector<CAttachableItem*>::const_iterator	E = attached_objects().end();
-		//		for ( ; I != E; ++I)
-		//			Msg					("* %s",*(*I)->item().object().cName());
+	if (!attached_objects().empty())
+	{
+		Msg("Object %s has attached items :", cast_game_object()->cName());
 	}
 #endif
 	R_ASSERT(attached_objects().empty());
 }
 
-void CAttachmentOwner::renderable_Render		()
+void CAttachmentOwner::renderable_Render()
 {
-	xr_vector<CAttachableItem*>::iterator	I = m_attached_objects.begin();
-	xr_vector<CAttachableItem*>::iterator	E = m_attached_objects.end();
-	for ( ; I != E; ++I)
-		(*I)->renderable_Render();
+	for (CAttachableItem* item : m_attached_objects)
+	{
+		item->renderable_Render();
+	}
 }
 
 void AttachmentCallback(IKinematics* tpKinematics)
 {
-	CGameObject* game_object = smart_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
+	CObject* callback = static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam());
+	CGameObject* game_object = callback != nullptr ? callback->cast_game_object() : nullptr;
 	VERIFY(game_object);
 
-	CAttachmentOwner* attachment_owner = smart_cast<CAttachmentOwner*>(game_object);
+	CAttachmentOwner* attachment_owner = game_object != nullptr ? game_object->cast_attachment_owner() : nullptr;
 	VERIFY(attachment_owner);
 
-	IKinematics* kinematics = smart_cast<IKinematics*>(game_object->Visual());
+	if (game_object == nullptr)
+	{
+		R_ASSERT(game_object);
+		return;
+	}
+
+	IKinematics* kinematics = PKinematics(game_object->Visual());
 
 	for (const CAttachableItem* it : attachment_owner->attached_objects())
 	{
@@ -151,7 +155,8 @@ bool  CAttachmentOwner::attached(shared_str sect_name) const
 
 bool CAttachmentOwner::can_attach(const CInventoryItem* inventory_item) const
 {
-	const CAttachableItem* item = smart_cast<const CAttachableItem*>(inventory_item);
+	PIItem cast_piitem = const_cast<PIItem>(inventory_item);
+	const CAttachableItem* item = cast_piitem != nullptr ? cast_piitem->cast_attachable_item() : nullptr;
 	if (item == nullptr || !item->enabled() || !item->can_be_attached())
 	{
 		return false;

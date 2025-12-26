@@ -319,7 +319,7 @@ void CAI_Dog::start_animation()
 
 	b_state_anim = true;
 	com_man().script_capture(ControlCom::eControlAnimation);
-	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle(get_current_animation(),TRUE,animation_end,this);
+	Visual()->dcast_PKinematicsAnimated()->PlayCycle(get_current_animation(), TRUE, animation_end, this);
 	b_state_end = true;
 }
 
@@ -450,7 +450,7 @@ bool  CAI_Dog::can_use_agressive_jump (const CObject* enemy)
 #ifdef _DEBUG
 void CAI_Dog::debug_on_key(int key)
 {
-	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated *>(Visual());
+	IKinematicsAnimated *skel = Visual()->dcast_PKinematicsAnimated();
 
 	switch (key){
 	case SDL_SCANCODE_1:

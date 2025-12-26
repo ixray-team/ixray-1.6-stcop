@@ -31,7 +31,7 @@ CCarWeapon::CCarWeapon(CPhysicsShellHolder* obj)
 	m_object	= obj;
 	m_Ammo		= new CCartridge();
 
-	IKinematics* K			= smart_cast<IKinematics*>(m_object->Visual());
+	IKinematics* K			= PKinematics(m_object->Visual());
 	CInifile* pUserData		= K->LL_UserData(); 
 
 	m_rotate_x_bone			= K->LL_BoneID	(pUserData->r_string("mounted_weapon_definition","rotate_x_bone"));
@@ -88,7 +88,7 @@ void CCarWeapon::UpdateCL()
 {
 	if(!m_bActive)				return;
 	UpdateBarrelDir				();
-	IKinematics* K				= smart_cast<IKinematics*>(m_object->Visual());
+	IKinematics* K				= PKinematics(m_object->Visual());
 	K->CalculateBones_Invalidate();
 	K->CalculateBones			(TRUE);
 	UpdateFire					();
@@ -129,17 +129,17 @@ void CCarWeapon::SetBoneCallbacks()
 {
 //	m_object->PPhysicsShell()->EnabledCallbacks(FALSE);
 	
-	CBoneInstance& biX		= smart_cast<IKinematics*>(m_object->Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= PKinematics(m_object->Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
 	biX.set_callback		(bctCustom,BoneCallbackX,this);
-	CBoneInstance& biY		= smart_cast<IKinematics*>(m_object->Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= PKinematics(m_object->Visual())->LL_GetBoneInstance(m_rotate_y_bone);
 	biY.set_callback		(bctCustom,BoneCallbackY,this);
 }
 
 void CCarWeapon::ResetBoneCallbacks()
 {
-	CBoneInstance& biX		= smart_cast<IKinematics*>(m_object->Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= PKinematics(m_object->Visual())->LL_GetBoneInstance(m_rotate_x_bone);
 	biX.reset_callback		();
-	CBoneInstance& biY		= smart_cast<IKinematics*>(m_object->Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= PKinematics(m_object->Visual())->LL_GetBoneInstance(m_rotate_y_bone);
 	biY.reset_callback		();
 
 //	m_object->PPhysicsShell()->EnabledCallbacks(TRUE);
@@ -147,7 +147,7 @@ void CCarWeapon::ResetBoneCallbacks()
 
 void CCarWeapon::UpdateBarrelDir()
 {
-	IKinematics* K		= smart_cast<IKinematics*>(m_object->Visual());
+	IKinematics* K		= PKinematics(m_object->Visual());
 	m_fire_bone_xform	= K->LL_GetTransform(m_fire_bone);
 
 	m_fire_bone_xform.mulA_43(m_object->XFORM());
@@ -224,7 +224,7 @@ void CCarWeapon::FireEnd()
 #include "holder_custom.h"
 void CCarWeapon::OnShot()
 {
-	CHolderCustom* holder = smart_cast<CHolderCustom*>(m_object);
+	CHolderCustom* holder = m_object->cast_holder_custom();
 
 	FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, holder->Engaged() ? 0 : m_object->ID(),
 		m_object->ID(), SendHitAllowed(m_object));

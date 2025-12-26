@@ -38,9 +38,8 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 
 	if ((!IsGameTypeSingle()) && !itm)
 	{
-		CObject *pActor = nullptr;
-
-        pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		CObject* current_entity = Level().CurrentEntity();
+        CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 
 		xr_string a;
 		if (pActor)
@@ -64,7 +63,7 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 		if(itm)
 		{
 			PIItem _iitem	= (PIItem)itm->m_pData;
-			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(_iitem); VERIFY(pOutfit);
+			CCustomOutfit* pOutfit = _iitem != nullptr ? _iitem->cast_outfit() : nullptr; VERIFY(pOutfit);
 			/*
 			r.lt			= pOutfit->GetIconPos();
 			r.x1			*= ICON_GRID_WIDTH;
