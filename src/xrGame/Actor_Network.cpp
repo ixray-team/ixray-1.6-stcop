@@ -1474,6 +1474,7 @@ void CActor::save(NET_Packet &output_packet)
 
 	output_packet.w_u8(u8(m_inventory_disabled));
 	output_packet.w_u8(u8(m_pda_disabled));
+	output_packet.w_u8(u8(m_use_disabled));
 }
 
 void CActor::load(IReader &input_packet)
@@ -1508,6 +1509,7 @@ void CActor::load(IReader &input_packet)
 
 	set_inventory_disabled(!!input_packet.r_u8());
 	set_pda_disabled(!!input_packet.r_u8());
+	set_use_disabled(!!input_packet.r_u8());
 }
 
 #ifdef DEBUG
