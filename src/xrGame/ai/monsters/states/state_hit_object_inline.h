@@ -39,44 +39,42 @@ void CStateMonsterHitObjectAbstract::execute()
 TEMPLATE_SPECIALIZATION
 bool CStateMonsterHitObjectAbstract::check_start_conditions()
 {
-	target									= 0;
-	
-	// получить физ. объекты в радиусе
-	m_nearest_objects.clear_not_free		();
-	Level().ObjectSpace.GetNearest			(m_nearest_objects,object->Position(), object->Radius() - 0.5f, object()); 
-	
-	xr_vector<CObject*>::iterator B = m_nearest_objects.begin();
-	xr_vector<CObject*>::iterator E = m_nearest_objects.end();
+	target = 0;
 
-	for (xr_vector<CObject*>::iterator I = B; I != E; I++)	 {
-		CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(*I);
+	// получить физ. объекты в радиусе
+	m_nearest_objects.clear_not_free();
+	Level().ObjectSpace.GetNearest(m_nearest_objects, object->Position(), object->Radius() - 0.5f, object());
+
+	for (CObject* nearest_object : m_nearest_objects)
+	{
+		CPhysicsShellHolder* obj = nearest_object != nullptr ? nearest_object->cast_physics_shell_holder() : nullptr;
 		if (!obj || !obj->m_pPhysicsShell) continue;
 
 		// определить дистанцию до врага
 		Fvector d;
-		d.sub(obj->Position(),object->Position());
+		d.sub(obj->Position(), object->Position());
 
 		// проверка на  Field-Of-Hit
-		float my_h,my_p;
-		float h,p;
+		float my_h, my_p;
+		float h, p;
 
-		object->Direction().getHP(my_h,my_p);
-		d.getHP(h,p);
+		object->Direction().getHP(my_h, my_p);
+		d.getHP(h, p);
 
-		float from	= angle_normalize(my_h - TEST_ANGLE);
-		float to	= angle_normalize(my_h + TEST_ANGLE);
+		float from = angle_normalize(my_h - TEST_ANGLE);
+		float to = angle_normalize(my_h + TEST_ANGLE);
 
 		if (!is_angle_between(h, from, to)) continue;
 
-		from	= angle_normalize(my_p - TEST_ANGLE);
-		to		= angle_normalize(my_p + TEST_ANGLE);
+		from = angle_normalize(my_p - TEST_ANGLE);
+		to = angle_normalize(my_p + TEST_ANGLE);
 
 		if (!is_angle_between(p, from, to)) continue;
 
-		target	= obj;
+		target = obj;
 		return true;
 	}
-	
+
 	return false;
 }
 

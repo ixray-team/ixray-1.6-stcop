@@ -370,7 +370,6 @@ void CAI_Stalker::Hit(SHit* pHDS)
 				float					power_factor = m_power_fx_factor * HDS.damage() / 100.f;
 				clamp					(power_factor,0.f,1.f);
 
-				//IKinematicsAnimated		*tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
 				IKinematics *tpKinematics = PKinematics(Visual());
 	#ifdef DEBUG
 				tpKinematics->LL_GetBoneInstance	(HDS.bone());
@@ -548,8 +547,10 @@ void CAI_Stalker::update_best_item_info_impl()
 	{
 		xr_vector<const CGameObject*>::const_iterator	I = memory().item().objects().begin();
 		xr_vector<const CGameObject*>::const_iterator	E = memory().item().objects().end();
-		for ( ; I != E; ++I) {
-			const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(*I);
+		for ( ; I != E; ++I)
+		{
+			CGameObject* cast_game_object = const_cast<CGameObject*>(*I);
+			const CInventoryItem* inventory_item = cast_game_object != nullptr ? cast_game_object->cast_inventory_item() : nullptr;
 			if (!inventory_item || !memory().item().useful(&inventory_item->object()))
 				continue;
 			CInventoryItem			*item			= inventory_item->can_kill(&inventory());
@@ -588,8 +589,10 @@ void CAI_Stalker::update_best_item_info_impl()
 	// and item which can make this item killing
 	xr_vector<const CGameObject*>::const_iterator	I = memory().item().objects().begin();
 	xr_vector<const CGameObject*>::const_iterator	E = memory().item().objects().end();
-	for ( ; I != E; ++I) {
-		const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(*I);
+	for ( ; I != E; ++I)
+	{
+		CGameObject* cast_game_object = const_cast<CGameObject*>(*I);
+		const CInventoryItem* inventory_item = cast_game_object != nullptr ? cast_game_object->cast_inventory_item() : nullptr;
 		if (!inventory_item || !memory().item().useful(&inventory_item->object()))
 			continue;
 		const CInventoryItem	*item = inventory_item->can_kill(memory().item().objects());
@@ -959,7 +962,7 @@ void CAI_Stalker::on_weapon_hide			(CWeapon *weapon)
 
 void CAI_Stalker::notify_on_wounded_or_killed	(CObject *object)
 {
-	CAI_Stalker							*stalker = smart_cast<CAI_Stalker*>(object);
+	CAI_Stalker							*stalker = object != nullptr ? object->cast_stalker() : nullptr;
 	if (!stalker)
 		return;
 

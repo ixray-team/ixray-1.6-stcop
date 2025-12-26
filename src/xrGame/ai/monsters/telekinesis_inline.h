@@ -35,9 +35,9 @@ void CTelekinesis<_Object>::Activate()
 	//xr_vector<CObject*> &m_nearest		= Level().ObjectSpace.q_nearest; 
 
 	// все объекты внести в список 
-	for (u32 i = 0; i < m_nearest.size(); i++) {
-		
-		CGameObject *obj = smart_cast<CGameObject *>(m_nearest[i]);
+	for (u32 i = 0; i < m_nearest.size(); i++)
+	{
+		CGameObject *obj = m_nearest[i] != nullptr ? m_nearest[i]->cast_game_object() : nullptr;
 		if (!obj || !obj->m_pPhysicsShell) continue;
 		
 		// отключить гравитацию

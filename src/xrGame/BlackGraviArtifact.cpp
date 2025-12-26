@@ -78,7 +78,7 @@ void CBlackGraviArtefact::net_Relcase(CObject* O)
 {
 	inherited::net_Relcase(O);
 	//for vector
-	GAME_OBJECT_LIST_it I=std::remove_if(m_GameObjectList.begin(),m_GameObjectList.end(),SRP(smart_cast<CPhysicsShellHolder*>(O)));
+	GAME_OBJECT_LIST_it I=std::remove_if(m_GameObjectList.begin(),m_GameObjectList.end(),SRP(O->cast_physics_shell_holder()));
 	m_GameObjectList.erase(I,m_GameObjectList.end());
 	//for list
 	//m_GameObjectList.remove_if(SRP(smart_cast<CPhysicsShellHolder*>(O)));
@@ -132,8 +132,8 @@ void	CBlackGraviArtefact::Hit					(SHit* pHDS)
 
 void CBlackGraviArtefact::feel_touch_new(CObject* O) 
 {
-	CPhysicsShellHolder* pGameObject = smart_cast<CPhysicsShellHolder*>(O);
-	CArtefact* pArtefact = smart_cast<CArtefact*>(O);
+	CPhysicsShellHolder* pGameObject = O->cast_physics_shell_holder();
+	CArtefact* pArtefact = O->cast_artefact();
 
 	if(pGameObject && !pArtefact) 
 	{
@@ -144,7 +144,7 @@ void CBlackGraviArtefact::feel_touch_new(CObject* O)
 void CBlackGraviArtefact::feel_touch_delete(CObject* O) 
 {
 	CGameObject* pGameObject = static_cast<CGameObject*>(O);
-	CArtefact* pArtefact = smart_cast<CArtefact*>(O);
+	CArtefact* pArtefact = O->cast_artefact();
 
 	if(pGameObject && !pArtefact)
 	{
@@ -200,7 +200,7 @@ void CBlackGraviArtefact::GraviStrike()
 		}
 
 		float hit_power		;
-		CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(pGameObject);
+		CEntityAlive* pEntityAlive = pGameObject->cast_entity_alive();
 		if(pGameObject->m_pPhysicsShell)	hit_power = 0;
 		else if(pEntityAlive && pEntityAlive->g_Alive() && 
 				pEntityAlive->character_physics_support()->movement()->CharacterExist())

@@ -667,16 +667,16 @@ void CUITradeWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropList
 	static xr_vector<shared_str>	ammo_types;
 	ammo_types.resize(0);
 
-	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
+	CWeapon* weapon = weapon_item->cast_weapon();
+	CWeaponBinoculars* binoc = weapon_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = weapon_item->cast_weapon_knife();
 	if ( !weapon || binoc || knife)
 	{
 		return;
 	}
 	ammo_types.assign( weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end() );
 
-	CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(weapon_item);
+	CWeaponMagazinedWGrenade* wg = weapon_item->cast_weapon_magazined_w_grenade();
 	if ( wg )
 	{
 		if ( wg->IsGrenadeLauncherAttached() && wg->m_ammoTypes2.size() )
@@ -700,7 +700,7 @@ void CUITradeWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropList
 		{
 			continue;
 		}
-		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* ammo = item->cast_weapon_ammo();
 		if ( !ammo )
 		{
 			highlight_addons_for_weapon( weapon_item, ci );
@@ -725,9 +725,9 @@ void CUITradeWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropListE
 {
 	VERIFY( ammo_item );
 	VERIFY( ddlist );
-	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
+	CWeaponAmmo* ammo = ammo_item->cast_weapon_ammo();
+	CWeaponBinoculars* binoc = ammo_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = ammo_item->cast_weapon_knife();
 	if ( !ammo  )
 	{
 		return;
@@ -744,7 +744,7 @@ void CUITradeWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropListE
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if (!weapon || binoc || knife)
 		{
 			continue;
@@ -761,7 +761,7 @@ void CUITradeWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropListE
 			}
 		}
 		
-		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(item);
+		CWeaponMagazinedWGrenade* wg = item->cast_weapon_magazined_w_grenade();
 		if ( !wg || !wg->IsGrenadeLauncherAttached() || !wg->m_ammoTypes2.size() )
 		{
 			continue; // for i
@@ -788,21 +788,21 @@ bool CUITradeWnd::highlight_addons_for_weapon( PIItem weapon_item, CUICellItem* 
 		return false;
 	}
 
-	CScope* pScope = smart_cast<CScope*>(item);
+	CScope* pScope = item->cast_addon_scope();
 	if (pScope && weapon_item->CanAttach(item))
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CSilencer* pSilencer = smart_cast<CSilencer*>(item);
+	CSilencer* pSilencer = item->cast_addon_silencer();
 	if ( pSilencer && weapon_item->CanAttach(pSilencer) )
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(item);
+	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
 	if ( pGrenadeLauncher && weapon_item->CanAttach(pGrenadeLauncher) )
 	{
 		ci->m_select_armament = true;
@@ -816,9 +816,9 @@ void CUITradeWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropLis
 	VERIFY( addon_item );
 	VERIFY( ddlist );
 
-	CScope*				pScope				= smart_cast<CScope*>			(addon_item);
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(addon_item);
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(addon_item);
+	CScope* pScope = addon_item->cast_addon_scope();
+	CSilencer* pSilencer = addon_item->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = addon_item->cast_addon_grenade_launcher();
 
 	if ( !pScope && !pSilencer && !pGrenadeLauncher )
 	{
@@ -834,7 +834,7 @@ void CUITradeWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropLis
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if ( !weapon )
 		{
 			continue;

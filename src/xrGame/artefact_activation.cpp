@@ -153,11 +153,12 @@ void SArtefactActivation::ChangeEffects()
 												m_af->ID(),
 												iFloor(state_def.m_time*1000) );
 	};
-	if(state_def.m_animation.size()){
-		IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(m_af->Visual());
-		if(K)K->PlayCycle(*state_def.m_animation);
-	}
 
+	if (state_def.m_animation.size())
+	{
+		IKinematicsAnimated* K = m_af->Visual()->dcast_PKinematicsAnimated();
+		if (K)K->PlayCycle(*state_def.m_animation);
+	}
 }
 
 void SArtefactActivation::UpdateEffects()

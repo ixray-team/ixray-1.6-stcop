@@ -202,7 +202,7 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	
 	CBaseMonster *monster = nullptr;
 	if(m_pOthersObject) {
-		monster										= smart_cast<CBaseMonster *>(m_pOthersObject);
+		monster										= m_pOthersObject->cast_base_monster();
 		if (monster || m_pOthersObject->use_simplified_visual() ) 
 		{
 			m_pUICharacterInfoRight->ClearInfo		();
@@ -323,7 +323,7 @@ void CUICarBodyWnd::Update()
 		UpdateLists		();
 
 	
-	if(m_pOthersObject && (smart_cast<CGameObject*>(m_pOurObject))->Position().distance_to((smart_cast<CGameObject*>(m_pOthersObject))->Position()) > 3.0f)
+	if(m_pOthersObject && m_pOurObject->cast_game_object()->Position().distance_to(m_pOthersObject->cast_game_object()->Position()) > 3.0f)
 	{
 		GetHolder()->StartStopMenu(this,true);
 	}
@@ -385,8 +385,9 @@ void CUICarBodyWnd::TakeAll()
 {
 	u32 cnt				= m_pUIOthersBagList->ItemsCount();
 	u16 tmp_id = 0;
-	if(m_pInventoryBox){
-		tmp_id	= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+	if(m_pInventoryBox)
+	{
+		tmp_id	= m_pOurObject->cast_game_object()->ID();
 	}
 
 	for(u32 i=0; i<cnt; ++i)
@@ -563,13 +564,14 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 
 void CUICarBodyWnd::EatItem()
 {
-	CActor *pActor				= smart_cast<CActor*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CActor *pActor				= current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 	if(!pActor)					return;
 
 	CUIDragDropListEx* owner_list		= CurrentItem()->OwnerList();
-	if(owner_list==m_pUIOthersBagList)
+	if (owner_list == m_pUIOthersBagList)
 	{
-		u16 owner_id				= (m_pInventoryBox)?m_pInventoryBox->ID():smart_cast<CGameObject*>(m_pOthersObject)->ID();
+		u16 owner_id = (m_pInventoryBox) ? m_pInventoryBox->ID() : m_pOthersObject->cast_game_object()->ID();
 
 		move_item_from_to(	owner_id, //from
 					Actor()->ID(), //to
@@ -606,7 +608,7 @@ bool CUICarBodyWnd::OnItemDrop(CUICellItem* itm)
 		}
 	}else
 	{
-		u16 tmp_id	= (smart_cast<CGameObject*>(m_pOurObject))->ID();
+		u16 tmp_id	= m_pOurObject->cast_game_object()->ID();
 
 		bool bMoveDirection		= (old_owner==m_pUIOthersBagList);
 
@@ -662,10 +664,10 @@ bool CUICarBodyWnd::OnItemRButtonClick(CUICellItem* itm)
 bool CUICarBodyWnd::TransferItem(PIItem itm, CInventoryOwner* owner_from, CInventoryOwner* owner_to, bool b_check)
 {
 	VERIFY									(nullptr==m_pInventoryBox);
-	CGameObject* go_from					= smart_cast<CGameObject*>(owner_from);
-	CGameObject* go_to						= smart_cast<CGameObject*>(owner_to);
+	CGameObject* go_from					= owner_from->cast_game_object();
+	CGameObject* go_to						= owner_to->cast_game_object();
 
-	if(smart_cast<CBaseMonster*>(go_to))	return false;
+	if(go_to->cast_base_monster() != nullptr)	return false;
 	if(b_check)
 	{
 		float invWeight						= owner_to->inventory().CalcTotalWeight();
@@ -762,16 +764,16 @@ void CUICarBodyWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropLi
 	static xr_vector<shared_str>	ammo_types;
 	ammo_types.resize(0);
 
-	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
+	CWeapon* weapon = weapon_item->cast_weapon();
+	CWeaponBinoculars* binoc = weapon_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = weapon_item->cast_weapon_knife();
 	if ( !weapon || binoc || knife)
 	{
 		return;
 	}
 	ammo_types.assign( weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end() );
 
-	CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(weapon_item);
+	CWeaponMagazinedWGrenade* wg = weapon_item->cast_weapon_magazined_w_grenade();
 	if ( wg )
 	{
 		if ( wg->IsGrenadeLauncherAttached() && wg->m_ammoTypes2.size() )
@@ -795,7 +797,7 @@ void CUICarBodyWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDropLi
 		{
 			continue;
 		}
-		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* ammo = item->cast_weapon_ammo();
 		if ( !ammo )
 		{
 			highlight_addons_for_weapon( weapon_item, ci );
@@ -820,9 +822,9 @@ void CUICarBodyWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropLis
 {
 	VERIFY( ammo_item );
 	VERIFY( ddlist );
-	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
+	CWeaponAmmo* ammo = ammo_item->cast_weapon_ammo();
+	CWeaponBinoculars* binoc = ammo_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = ammo_item->cast_weapon_knife();
 	if ( !ammo  )
 	{
 		return;
@@ -839,7 +841,7 @@ void CUICarBodyWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropLis
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if (!weapon || binoc || knife)
 		{
 			continue;
@@ -856,7 +858,7 @@ void CUICarBodyWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropLis
 			}
 		}
 		
-		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(item);
+		CWeaponMagazinedWGrenade* wg = item->cast_weapon_magazined_w_grenade();
 		if ( !wg || !wg->IsGrenadeLauncherAttached() || !wg->m_ammoTypes2.size() )
 		{
 			continue; // for i
@@ -883,21 +885,21 @@ bool CUICarBodyWnd::highlight_addons_for_weapon( PIItem weapon_item, CUICellItem
 		return false;
 	}
 
-	CScope* pScope = smart_cast<CScope*>(item);
+	CScope* pScope = item->cast_addon_scope();
 	if (pScope && weapon_item->CanAttach(item))
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CSilencer* pSilencer = smart_cast<CSilencer*>(item);
+	CSilencer* pSilencer = item->cast_addon_silencer();
 	if ( pSilencer && weapon_item->CanAttach(pSilencer) )
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(item);
+	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
 	if ( pGrenadeLauncher && weapon_item->CanAttach(pGrenadeLauncher) )
 	{
 		ci->m_select_armament = true;
@@ -911,9 +913,9 @@ void CUICarBodyWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropL
 	VERIFY( addon_item );
 	VERIFY( ddlist );
 
-	CScope*				pScope				= smart_cast<CScope*>			(addon_item);
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(addon_item);
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(addon_item);
+	CScope*				pScope				= addon_item->cast_addon_scope();
+	CSilencer*			pSilencer			= addon_item->cast_addon_silencer();
+	CGrenadeLauncher*	pGrenadeLauncher	= addon_item->cast_addon_grenade_launcher();
 
 	if ( !pScope && !pSilencer && !pGrenadeLauncher )
 	{
@@ -929,7 +931,7 @@ void CUICarBodyWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDropL
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if ( !weapon )
 		{
 			continue;
@@ -965,8 +967,8 @@ void CUICarBodyWnd::TryHidePropertiesBox()
 void CUICarBodyWnd::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item, bool& b_show )
 {
 	//отсоединение аддонов от вещи
-	CWeapon*	pWeapon = smart_cast<CWeapon*>( item );
-	if ( !pWeapon )
+	CWeapon* pWeapon = item->cast_weapon();
+	if (!pWeapon)
 	{
 		return;
 	}
@@ -1011,7 +1013,8 @@ void CUICarBodyWnd::PropertiesBoxForWeapon( CUICellItem* cell_item, PIItem item,
 		{
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
-				CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->Child(i)->m_pData);
+				CWeapon* weapon = (CWeapon*)cell_item->Child(i)->m_pData;
+				CWeaponMagazined* weap_mag = weapon != nullptr ? weapon->cast_weapon_magazined() : nullptr;
 				if (weap_mag != nullptr && (weap_mag->GetAmmoElapsed() || weap_mag->IsChamber() && weap_mag->GetAmmoChamberElapsed()))
 				{
 					b = true;
@@ -1031,10 +1034,10 @@ void CUICarBodyWnd::PropertiesBoxForAddon( PIItem item, bool& b_show )
 {
 	//присоединение аддонов к активному слоту (2 или 3)
 
-	CScope*				pScope				= smart_cast<CScope*>			(item);
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(item);
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(item);
-	CInventory*			inv					= &m_pOurObject->inventory();
+	CScope* pScope = item->cast_addon_scope();
+	CSilencer* pSilencer = item->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
+	CInventory* inv = &m_pOurObject->inventory();
 
 	PIItem	item_in_slot_2 = inv->ItemFromSlot(INV_SLOT_2);
 	PIItem	item_in_slot_3 = inv->ItemFromSlot(INV_SLOT_3);
@@ -1147,7 +1150,7 @@ void CUICarBodyWnd::PropertiesBoxForAddon( PIItem item, bool& b_show )
 void CUICarBodyWnd::PropertiesBoxForUsing( PIItem item, bool& b_show )
 {
 	LPCSTR act_str = nullptr;
-	CGameObject* GO = smart_cast<CGameObject*>(item);
+	CGameObject* GO = item->cast_game_object();
 	shared_str	section_name = GO->cNameSect();
 
 	//ability to set eat string from settings
@@ -1217,7 +1220,7 @@ void CUICarBodyWnd::PropertiesBoxForUsing( PIItem item, bool& b_show )
 
 void CUICarBodyWnd::PropertiesBoxForPlaying(PIItem item, bool& b_show)
 {
-	CPda* pPda = smart_cast<CPda*>(item);
+	CPda* pPda = item->cast_pda();
 	if(!pPda || !pPda->CanPlayScriptFunction())
 		return;
 
@@ -1272,7 +1275,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 	{
 		return;
 	}
-	CWeapon* weapon = smart_cast<CWeapon*>( item );
+	CWeapon* weapon = item->cast_weapon();
 
 	switch (m_pUIPropertiesBox->GetClickedItem()->GetTAG() )
 	{
@@ -1281,7 +1284,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 		break;	
 	case INVENTORY_EAT2_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_functor", 0);
 		if (functor_name)
 		{
@@ -1296,7 +1299,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 	}
 	case INVENTORY_EAT3_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_functor", 0);
 		if (functor_name)
 		{
@@ -1311,7 +1314,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 	}
 	case INVENTORY_EAT4_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_functor", 0);
 		if (functor_name)
 		{
@@ -1326,7 +1329,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 	}
 	case INVENTORY_EAT5_ACTION:
 	{
-		CGameObject* GO = smart_cast<CGameObject*>(item);
+		CGameObject* GO = item->cast_game_object();
 		LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_functor", 0);
 		if (functor_name)
 		{
@@ -1384,7 +1387,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetScopeName().c_str(), child_iitm);
@@ -1400,7 +1403,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetSilencerName().c_str(), child_iitm);
@@ -1416,7 +1419,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 			{
 				CUICellItem*	child_itm	= cell_item->Child(i);
 				PIItem			child_iitm	= (PIItem)(child_itm->m_pData);
-				CWeapon* wpn = smart_cast<CWeapon*>( child_iitm );
+				CWeapon* wpn = child_iitm != nullptr ? child_iitm->cast_weapon() : nullptr;
 				if ( child_iitm && wpn )
 				{
 					DetachAddon(wpn->GetGrenadeLauncherName().c_str(), child_iitm);
@@ -1432,7 +1435,8 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 		break;
 	case INVENTORY_UNLOAD_MAGAZINE:
 		{
-			CWeaponMagazined* weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)cell_item->m_pData);
+			CWeapon* weapon = (CWeapon*)cell_item->m_pData;
+			CWeaponMagazined* weap_mag = weapon != nullptr ? weapon->cast_weapon_magazined() : nullptr;
 			if (weap_mag == nullptr)
 			{
 				break;
@@ -1443,7 +1447,8 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 			for (u32 i = 0; i < cell_item->ChildsCount(); ++i)
 			{
 				CUICellItem* child_itm = cell_item->Child(i);
-				CWeaponMagazined* child_weap_mag = smart_cast<CWeaponMagazined*>((CWeapon*)child_itm->m_pData);
+				weapon = (CWeapon*)child_itm->m_pData;
+				CWeaponMagazined* child_weap_mag = weapon != nullptr ? weapon->cast_weapon_magazined() : nullptr;
 				if (child_weap_mag != nullptr)
 				{
 					UnloadWeapon(child_weap_mag);
@@ -1454,7 +1459,7 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 		}
 	case INVENTORY_PLAY_ACTION:
 		{
-			CPda* pPda = smart_cast<CPda*>(item);
+			CPda* pPda = item->cast_pda();
 			if(!pPda)
 				break;
 			pPda->PlayScriptFunction();
@@ -1462,13 +1467,16 @@ void CUICarBodyWnd::ProcessPropertiesBoxClicked()
 		}
 	case INVENTORY_PARSE_ITEM:
 	{
-		auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
-		if (tpGame == nullptr) {
+		game_sv_Single* tpGame = Level().Server->game->cast_game_sv_single();
+		if (tpGame == nullptr)
+		{
 			break;
 		}
 
-		auto actor = smart_cast<CActor*>(Level().CurrentEntity());
-		if (actor == nullptr) {
+		CObject* current_entity = Level().CurrentEntity();
+		CActor* actor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
+		if (actor == nullptr)
+		{
 			break;
 		}
 

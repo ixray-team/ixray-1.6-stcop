@@ -52,7 +52,7 @@ void CStateMonsterRestFunAbstract::execute()
 	
 	if ((dist < this->object->db().m_fDistToCorpse + 0.5f) && (this->time_last_hit + MIN_DELAY < Device.dwTimeGlobal)) {
 		CEntityAlive		*corpse = const_cast<CEntityAlive *>		(this->object->CorpseMan.get_corpse());
-		CPhysicsShellHolder	*target = smart_cast<CPhysicsShellHolder *>	(corpse);
+		CPhysicsShellHolder	*target = corpse != nullptr ? corpse->cast_physics_shell_holder() : nullptr;
 
 		if  (target && target->m_pPhysicsShell) {
 			Fvector			dir_;

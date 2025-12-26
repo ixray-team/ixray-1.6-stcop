@@ -11,6 +11,7 @@
 
 bool m_AnimatorForceHideItems = false;
 
+
 CHudAnimatorBase::~CHudAnimatorBase()
 {
 	StopAnimator();
