@@ -871,6 +871,7 @@ public:
 			bool			inventory_disabled () const { return m_inventory_disabled; }
 			void			set_pda_disabled(bool is_disabled) { m_pda_disabled = is_disabled; }
 			bool			pda_disabled() const { return m_pda_disabled; }
+			void			set_use_disabled(bool is_disabled) { m_use_disabled = is_disabled; }
 			virtual IInputReceiver* GetIIR() override { return this; }
 private:
 			void			set_state_box(u32	mstate);
@@ -878,6 +879,7 @@ private:
 	bool					m_disabled_hitmarks;
 	bool					m_inventory_disabled;
 	bool					m_pda_disabled;
+	bool					m_use_disabled;
 //static CPhysicsShell		*actor_camera_shell;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
