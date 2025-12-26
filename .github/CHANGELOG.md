@@ -46,6 +46,7 @@ Full changelog of _IX-Ray_ 1.6 project
 - Fixed weapon bones visibility (@Shtrecker)
 - Optimized animation parameter parsing (@ForserX)
 - Reset player movement states when `g_no_clip` is enabled (@v2v3v4)
+- Restored camera-shell collision detection logic (@Drombeys)
 
 ### Resources
 
