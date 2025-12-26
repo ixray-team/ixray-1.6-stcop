@@ -133,7 +133,7 @@ void CHudItem::LoadSounds(LPCSTR section)
 
 void CHudItem::PlaySound(LPCSTR alias, const Fvector& position, bool allowOverlap)
 {
-	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDSoundMode(), false , allowOverlap);
+	m_sounds.PlaySound(alias, position, object().H_Root(), !!GetHUDSoundMode(), false, allowOverlap, m_started_rnd_anim_idx);
 }
 
 void CHudItem::renderable_Render()
