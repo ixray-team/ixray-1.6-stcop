@@ -120,8 +120,7 @@ __IX-Ray__ - это форк движка __X-Ray 1.6__, который напр
 Для сборки:
 
 - [Visual Studio 2022 (или 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
-  - MFC
-  - Windows SDK 10.0.19041.0+
+  - Windows SDK 10.025+
 - [Git](https://git-scm.com/downloads)
 - [CMake](https://cmake.org/download/)
 

@@ -4,6 +4,63 @@ English | [Русский](../doc/CHANGELOG.rus.md)
 
 Full changelog of _IX-Ray_ 1.6 project
 
+## Release 1.3.1 (December 2025)
+
+### Common
+
+- Updated root documents (@Drombeys)
+- Updated website and documentation (@Drombeys, @ForserX, @St4lker0k765, @GladiatorVS, @mnelenpridumivat, @kola2451, @FFx0001)
+
+### Engine
+
+- Added error checking for `BN_bn2dec` function (@openhands)
+- Fixed critical crash when mob path doesn't exist (@Drombeys)
+- Fixed memory leak in ASN.1 combination (@tabudz)
+- Fixed overflow checking in `BN_bn2dec` function (@openhands)
+- Fixed potential infinite loop in `BN_mod_sqrt` function (@openhands)
+- Implemented cursor emulation for fullscreen, use system cursor for windowed mode (@ForserX)
+- Prevented small subgroup attacks on DH/DHE (@tabudz)
+- Restored FPS lock for menus (@v2v3v4)
+
+### Graphics (renders, shaders)
+
+- Added GPU event disabling (@Drombeys, @ForserX)
+- Fixed clouds when using USE_LEGACY_SKY_TONEMAP macro (@Hozar2002)
+
+### Gameplay
+
+- Added game crash on missing upgrade scheme (@St4lker0k765)
+- Added invalid community check to `general_goodwill` function (@St4lker0k765)
+- Added spacing support for `CUIStackPanel` (@St4lker0k765)
+- Added stack panel support for boosters and anomaly fields (@St4lker0k765)
+- Added vertical modes for `CUIStackPanel` (@St4lker0k765)
+- Excluded missing ammo section from ammo switching (@St4lker0k765)
+- Fixed `snd_reload_jammed` sound for BM16 weapon (@Shtrecker)
+- Fixed ammunition display system loading (@Shtrecker)
+- Fixed info panel height for upgrade icons (@nicknames)
+- Fixed original booster usage bug(@Shtrecker)
+- Fixed original campfire sound playback bug (@v2v3v4)
+- Fixed script exports (@Shtrecker)
+- Fixed spot pointer position (@St4lker0k765)
+- Fixed unary minus operator in `_vector3` (@ForserX)
+- Fixed weapon bones visibility (@Shtrecker)
+- Optimized animation parameter parsing (@ForserX)
+- Reset player movement states when `g_no_clip` is enabled (@v2v3v4)
+
+### Resources
+
+- Added mouse sensitivity adjustment to UI in control options (@Drombeys)
+- Applied stretch mode for options window (@Drombeys)
+- Fixed base attack detection when NPC is not nearby (@FFx0001)
+- Fixed crash during location loading stage (@Drombeys)
+- Fixed original task marker misalignment bug (@St4lker0k765)
+
+### Toolchain
+
+- Fixed crash after item position and orientation reset (@St4lker0k765)
+- Reworked AI map saving to `.part` format for SDK compatibility (@VodkaNET)
+- Reworked slider handling in HUD adjust system (@Drombeys)
+
 ## Release 1.3 (December 2025)
 
 ### Common

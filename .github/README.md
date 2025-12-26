@@ -120,8 +120,7 @@ For launching:
 For building:
 
 - [Visual Studio 2022 (or 2026) Community Edition](https://visualstudio.microsoft.com/vs/community/)
-  - MFC
-  - Windows SDK 10.0.19041.0+
+  - Windows SDK 10.025+
 - [Git](https://git-scm.com/downloads)
 - [CMake](https://cmake.org/download/)
 
