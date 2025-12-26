@@ -7,7 +7,6 @@
 #include "UIActorMenu.h"
 
 extern bool m_AnimatorForceHideItems;
-extern float g_motion_speed;
 
 void CHudItemAnimator::StopAnimator()
 {
@@ -34,12 +33,10 @@ void CHudItemAnimator::Update()
 		bool wpn_hide = !g_player_hud->attached_item(0) && !m_manager->Parent()->inventory().ActiveItem() && !m_manager->Parent()->inventory().GetNextActiveSlot() && !m_manager->Parent()->inventory().GetActiveSlot();
 		if (wpn_hide && g_player_hud->GetAnimator() == nullptr && !g_player_hud->attached_item(1))
 		{
-			g_motion_speed = 1.0f;
 			PlayMotion();
 		}
 		else
 		{
-			g_motion_speed = m_fMotionHideSpeed;
 
 			CHudAnimatorBase* current_animator = m_manager->Parent()->HudAnimator()->CurrentAnimator();
 			if (CHudStateAnimator* state_animator = current_animator != nullptr ? current_animator->cast_hud_state_animator() : nullptr)
