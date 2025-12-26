@@ -42,6 +42,8 @@ private:
 	IReader									*m_chunk;
 	IGameGraph								*m_game_graph;
 
+    void load_spawn_position_from_smart();
+
 protected:
 			void							save_updates				(IWriter &stream);
 			void							load_updates				(IReader &stream);
