@@ -107,7 +107,11 @@ void main(PSInput I, out float4 Point : SV_Target0, out float4 Final : SV_Target
 	
 	Final = s_image.Sample(smp_rtlinear, PrevSpecularUV.xy);
 	
-	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, saturate(O.Hemi * 3.0f), 0.0f).xyzz;
+#ifdef USE_OFFSCREEN_REFLECTIONS
+	O.Hemi = saturate(O.Hemi * 3.0f);
+#endif
+	
+	float4 Hemi = CompureSpecularIrradance(Reflection.xyz, O.Hemi, 0.0f).xyzz;
 	SSLR.w *= GetBorderAtten(PrevSpecularUV);
 	
 #ifdef USE_OFFSCREEN_REFLECTIONS
