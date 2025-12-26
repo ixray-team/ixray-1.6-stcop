@@ -28,6 +28,7 @@ protected:
 
 	float m_fHudFov = 0.0f;
 	float m_fHudFovFactor = 1.0f;
+	float m_fMotionHideSpeed = 1.0f;
 
 	shared_str m_section;
 	HUD_SOUND_COLLECTION m_sounds;
