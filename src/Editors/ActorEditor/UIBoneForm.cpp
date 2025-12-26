@@ -12,6 +12,10 @@ struct DragDropData
 
 void UIBoneForm::Draw()
 {
+    if (bOpen)
+    {
+        ImGui::OpenPopup("Bone Form");
+    }
     if (!ImGui::BeginPopupModal("Bone Form", &bOpen, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize))
     {
         bOpen = false;
