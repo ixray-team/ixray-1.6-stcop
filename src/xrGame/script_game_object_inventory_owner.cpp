@@ -1239,6 +1239,18 @@ bool CScriptGameObject::IsInventoryDisabled()
 	return false;
 }
 
+void CScriptGameObject::SetUseDisabled(bool value)
+{
+	if (CActor* actor = object().cast_actor())
+	{
+		actor->set_use_disabled(value);
+	}
+	else
+	{
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member set_use_disabled!");
+	}
+}
+
 bool CScriptGameObject::night_vision_enabled() const
 {
 	if (CActor* actor = object().cast_actor())

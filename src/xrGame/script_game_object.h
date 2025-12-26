@@ -427,6 +427,7 @@ public:
 			bool				IsPdaDisabled		();
 			void				SetInventoryDisabled(bool b);
 			bool				IsInventoryDisabled	();
+			void				SetUseDisabled(bool b);
 
 			bool				Weapon_IsGrenadeLauncherAttached();
 			bool				Weapon_IsScopeAttached			();
