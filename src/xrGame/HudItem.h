@@ -95,6 +95,9 @@ protected:
 		u8						m_started_rnd_anim_idx;
 		bool					m_bStopAtEndAnimIsRunning;
 	};
+
+	virtual void switch2_Bore();
+
 public:
 	virtual void				Load				(LPCSTR section);
 	virtual void				LoadSounds			(LPCSTR section);
@@ -298,6 +301,8 @@ public:
 		sf_pump_aim_last = (1 << 10),
 		sf_pump_empty = (1 << 20),
 		sf_pump_aim_empty = (1 << 21),
+		sf_bore_empty = (1 << 22),
+		sf_bore_jammed = (1 << 23),
 	};
 
 	Flags32 m_eDevicesFlags;
