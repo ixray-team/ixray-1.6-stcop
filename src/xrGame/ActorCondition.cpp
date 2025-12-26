@@ -986,7 +986,7 @@ bool CActorCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const sh
 
 bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bool use_sound)
 {
-	if(B.fBoostValue>0.0f)
+	if (B.fBoostValue > 0.0f)
 	{
 		if (m_object->Local() && m_object == Level().CurrentViewEntity())
 		{
@@ -995,17 +995,26 @@ bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect, bo
 				if(m_use_sound._feedback())
 					m_use_sound.stop		();
 
-				shared_str snd_name			= pSettings->r_string(sect, "use_sound");
-				m_use_sound.create			(snd_name.c_str(), st_Effect, sg_SourceType);
-				m_use_sound.play			(nullptr, sm_2D);
+				shared_str snd_name = pSettings->r_string(sect, "use_sound");
+				m_use_sound.create(snd_name.c_str(), st_Effect, sg_SourceType);
+				m_use_sound.play(nullptr, sm_2D);
 			}
 		}
 
-		BOOSTER_MAP::iterator it = m_booster_influences.find(B.m_type);
-		if(it!=m_booster_influences.end())
-			DisableBoostParameters((*it).second);
+		SBooster& this_booster = m_booster_influences[B.m_type];
 
-		m_booster_influences[B.m_type] = B;
+		if (this_booster.fBoostValue * this_booster.fBoostTime > B.fBoostValue * B.fBoostTime)
+		{
+			return true;
+		}
+
+		BOOSTER_MAP::iterator it = m_booster_influences.find(B.m_type);
+		if (it != m_booster_influences.end())
+		{
+			DisableBoostParameters((*it).second);
+		}
+
+		this_booster = B;
 		BoostParameters(B);
 	}
 	return true;
