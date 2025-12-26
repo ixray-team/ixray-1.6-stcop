@@ -100,11 +100,19 @@ void HUD_SOUND_ITEM::PlaySound(HUD_SOUND_ITEM& hud_snd, const Fvector& position,
 		flags |= sm_Looped;
 	}
 
-    hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(hud_snd.sounds.size())];
+	u32 sounds_pool_size = (u32)hud_snd.sounds.size();
+	if (index != u8(-1) && index < sounds_pool_size)
+	{
+		hud_snd.m_activeSnd = &hud_snd.sounds[index];
+	}
+	else
+	{
+		hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(sounds_pool_size)];
+	}
 
     float vol = hud_snd.m_activeSnd->volume * (b_hud_mode ? psHUDSoundVolume : 1.0f) * g_fHudSndVolumeFactor;
 
-    Fvector pos = (flags & sm_2D) ? Fvector{} : position;
+    Fvector pos = (flags & sm_2D) ? zero_vel : position;
 
     if (!allowOverlap)
     {
