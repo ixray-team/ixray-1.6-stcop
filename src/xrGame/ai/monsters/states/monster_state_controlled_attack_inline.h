@@ -44,7 +44,8 @@ const CEntityAlive *CStateMonsterControlledAttackAbstract::get_enemy()
 {
 	CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(this->object);
 	VERIFY(entity);
-	return smart_cast<const CEntityAlive*>(entity->get_data().m_object);
+	CEntity* cast_entity = const_cast<CEntity*>(entity->get_data().m_object);
+	return cast_entity != nullptr ? cast_entity->cast_entity_alive() : nullptr;
 }
 
 #undef TEMPLATE_SPECIALIZATION

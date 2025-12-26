@@ -183,9 +183,10 @@ void CPolterTele::tele_find_objects(xr_vector<CObject*> &objects, const Fvector 
 	m_nearest.resize(0);
 	Level().ObjectSpace.GetNearest	(m_nearest, pos, m_pmt_radius, nullptr);
 
-	for (u32 i=0;i<m_nearest.size();i++) {
-		CPhysicsShellHolder *obj			= smart_cast<CPhysicsShellHolder *>(m_nearest[i]);
-		CCustomMonster		*custom_monster	= smart_cast<CCustomMonster *>(m_nearest[i]);
+	for (u32 i=0;i<m_nearest.size();i++)
+	{
+		CPhysicsShellHolder* obj = m_nearest[i] != nullptr ? m_nearest[i]->cast_physics_shell_holder() : nullptr;
+		CCustomMonster* custom_monster = m_nearest[i] != nullptr ? m_nearest[i]->cast_base_monster() : nullptr;
 		if (!obj || 
 			!obj->PPhysicsShell() || 
 			!obj->PPhysicsShell()->isActive()|| 
@@ -253,8 +254,9 @@ bool CPolterTele::tele_raise_objects()
 	//	CTelekinesis::activate		(obj, m_pmt_tele_raise_speed, m_pmt_tele_object_height, m_pmt_tele_time_object_keep, rotate);
 	//}
 
-	if (!tele_objects.empty()) {
-		CPhysicsShellHolder *obj = smart_cast<CPhysicsShellHolder *>(tele_objects[0]);
+	if (!tele_objects.empty())
+	{
+		CPhysicsShellHolder* obj = tele_objects[0] != nullptr ? tele_objects[0]->cast_physics_shell_holder() : nullptr;
 
 		// применить телекинез на объект
 		bool	rotate = false;

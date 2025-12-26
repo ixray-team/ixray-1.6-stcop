@@ -80,7 +80,7 @@ void CPolterSpecialAbility::on_hit(SHit* pHDS)
 		if(BI_NONE != pHDS->bone()) {
 
 			//вычислить координаты попадания
-			IKinematics* V = smart_cast<IKinematics*>(m_object->Visual());
+			IKinematics* V = PKinematics(m_object->Visual());
 
 			Fvector start_pos = pHDS->bone_space_position();
 			Fmatrix& m_bone = V->LL_GetBoneInstance(pHDS->bone()).mTransform;
@@ -114,7 +114,7 @@ void CPoltergeist::PhysicalImpulse	(const Fvector &position)
 	
 	u32 index = Random.randI		(m_nearest.size());
 	
-	CPhysicsShellHolder  *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[index]);
+	CPhysicsShellHolder  *obj = m_nearest[index] != nullptr ? m_nearest[index]->cast_physics_shell_holder() : nullptr;
 	if (!obj || !obj->m_pPhysicsShell) return;
 
 	Fvector dir;
