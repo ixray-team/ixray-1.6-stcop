@@ -162,7 +162,7 @@ CSE_ALifeDynamicObject *CALifeSimulator__create	(CALifeSimulator *self_, ALife::
 		g_pScriptEngine->print_stack();
 	}
 
-	CSE_ALifeDynamicObject				*spawn = smart_cast<CSE_ALifeDynamicObject*>(&vertex->data()->object());
+	CSE_ALifeDynamicObject* spawn = vertex->data()->object().cast_alife_dynamic_object();
 	THROW								(spawn);
 
 	CSE_ALifeDynamicObject				*object;
@@ -266,7 +266,7 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, LPCSTR secti
 	if (!object || !object->m_bOnline) {
 		CSE_Abstract					*item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent);
 
-		CSE_ALifeItemAmmo				*ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
+		CSE_ALifeItemAmmo				*ammo = item->cast_item_ammo();
 		THROW							(ammo);
 		THROW							(ammo->m_boxSize >= ammo_to_spawn);
 		ammo->a_elapsed					= (u16)ammo_to_spawn;
@@ -280,7 +280,7 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self_, LPCSTR secti
 	
 	CSE_Abstract						*item = self_->spawn_item(section,position,level_vertex_id,game_vertex_id,id_parent,false);
 
-	CSE_ALifeItemAmmo					*ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
+	CSE_ALifeItemAmmo					*ammo = item->cast_item_ammo();
 	THROW								(ammo);
 	THROW								(ammo->m_boxSize >= ammo_to_spawn);
 	ammo->a_elapsed						= (u16)ammo_to_spawn;
@@ -312,7 +312,7 @@ void CALifeSimulator__release(CALifeSimulator* self_, CSE_Abstract* object, bool
 		return;
 	}
 
-	CSE_ALifeObject* alife_object = smart_cast<CSE_ALifeObject*>(object);
+	CSE_ALifeObject* alife_object = object->cast_alife_object();
 
 	if (alife_object != nullptr && !alife_object->m_bOnline)
 	{

@@ -248,8 +248,8 @@ void CUIInventoryWnd::Update()
 	if(m_b_need_reinit)
 		InitInventory					();
 
-
-	CEntityAlive *pEntityAlive			= smart_cast<CEntityAlive*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CEntityAlive *pEntityAlive			= current_entity != nullptr ? current_entity->cast_entity_alive() : nullptr;
 
 	if(pEntityAlive) 
 	{
@@ -262,7 +262,7 @@ void CUIInventoryWnd::Update()
 		v = pEntityAlive->conditions().GetRadiation()*100.0f;
 		UIProgressBarRadiation.SetProgressPos	(v);
 
-		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
+		CInventoryOwner* pOurInvOwner	= pEntityAlive != nullptr ? pEntityAlive->cast_inventory_owner() : nullptr;
 		u32 _money						= 0;
 
 		if (!IsGameTypeSingle()){
@@ -281,7 +281,8 @@ void CUIInventoryWnd::Update()
 		UIMoneyWnd.SetText				(sMoney);
 
 		// update outfit parameters
-		CCustomOutfit* outfit			= smart_cast<CCustomOutfit*>(pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem);		
+		PIItem inv_item = pOurInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem;
+		CCustomOutfit* outfit = inv_item != nullptr ? inv_item->cast_outfit() : nullptr;
 		UIOutfitInfo.UpdateInfo			(outfit);		
 	}
 
@@ -299,7 +300,8 @@ void CUIInventoryWnd::Show(bool status)
 
 		if (!IsGameTypeSingle())
 		{
-			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+			CObject* current_entity = Level().CurrentEntity();
+			CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 			if (!pActor) return;
 
 			pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
@@ -334,7 +336,8 @@ void CUIInventoryWnd::Show(bool status)
 		ClearAllLists();
 
 		//достать вещь в активный слот
-		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		CObject* current_entity = Level().CurrentEntity();
+		CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 		if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT &&
 			pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
 		{
@@ -344,7 +347,6 @@ void CUIInventoryWnd::Show(bool status)
 
 		if (!IsGameTypeSingle())
 		{
-			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 			if (!pActor)			return;
 
 			pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
@@ -368,7 +370,8 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 
 
 	//спрятать вещь из активного слота в инвентарь на время вызова менюшки
-	CActor *pActor								= smart_cast<CActor*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 	if(pActor && item_to_upgrade == pActor->inventory().ActiveItem())
 	{
 			m_iCurrentActiveSlot				= pActor->inventory().GetActiveSlot();
