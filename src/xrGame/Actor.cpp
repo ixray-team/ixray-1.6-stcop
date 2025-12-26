@@ -173,6 +173,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	m_disabled_hitmarks		= false;
 	m_inventory_disabled	= false;
 	m_pda_disabled			= false;
+	m_use_disabled			= false;
 
 	m_hud_animator			= new CHudAnimatorManager(this);
 
