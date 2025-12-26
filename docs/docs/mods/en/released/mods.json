@@ -11,9 +11,25 @@
       "id": "dreamcatcher",
       "title": "Dreamcatcher",
       "description": "A story-driven mod focused on exploring the Zone and its mystical anomalies.",
-      "author": "Dreamcatcher Team",
+      "author": "Vivient Team",
       "link": "https://ap-pro.ru/forums/topic/5764-lovec-snov/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BB%D0%BE%D0%B2%D0%B5%D1%86.png"
+    },
+    {
+      "id": "awakening-2055",
+      "title": "Awakening. 2055",
+      "description": "A late timeline: new technologies and survival in an altered Zone.",
+      "author": "Little Frenchman (Jekan)",
+      "link": "https://vk.com/wall-195948120_7369",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
+    },
+    {
+      "id": "lastnewyear",
+      "title": "Alien Among Aliens: The Last New Year",
+      "description": "The main character is an ordinary stalker nicknamed Vint, who set out for Limansk",
+      "author": "It's Boomer",
+      "link": "https://vk.com/wall-15844953_951638",
+      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/last_ny.png"
     },
     {
       "id": "one-way-ticket",
@@ -27,7 +43,7 @@
       "id": "sins-academic",
       "title": "Sins of the Academic: Red Dawn",
       "description": "A military drama emphasizing combat missions and tough decisions.",
-      "author": "Red Dawn",
+      "author": "Mawrak",
       "link": "https://ap-pro.ru/forums/topic/10194-grehi-akademika-krasnyy-rassvet/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%BA.png"
     },
@@ -46,14 +62,6 @@
       "author": "Retro Zone",
       "link": "https://ap-pro.ru/forums/topic/12208-stalker-nazad-v-proshloe/",
       "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/%D0%BD%D0%B0%D0%B7%D0%B0%D0%B4.png"
-    },
-    {
-      "id": "awakening-2055",
-      "title": "Awakening. 2055",
-      "description": "A late timeline: new technologies and survival in an altered Zone.",
-      "author": "Future Lab",
-      "link": "https://vk.com/wall-195948120_7369",
-      "image": "https://raw.githubusercontent.com/ixray-team/ixray-artwork/refs/heads/default/res/Site_media/2055.png"
     }
   ]
 }

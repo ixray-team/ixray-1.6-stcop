@@ -34,12 +34,21 @@ highlight_related_sections = related_section_a, related_section_b
 use_condition = false; Имеет ли предмет прогрессбар износа
 ```
 
+> [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
-> Консольные команды r_use_gasmask и r_use_rain_drops
+
+* Консольные команды r_use_gasmask и r_use_rain_drops
 
 ```ini
 hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
 hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
+```
+
+> [!IMPORTANT]
+> **Минимальная версия**: 1.4
+
+```ini
+physic_strike_protection = 0.7; physic strike hit protection 
 ```
 
 ## Броня (CCustomOutfit)
@@ -53,12 +62,20 @@ use_condition = false      ; Имеет ли предмет прогрессба
 forbid_change_skin = false ; Меняет ли визуал (руки/ноги)
 ```
 
+> [!IMPORTANT]
 > **Минимальная версия**: 1.2.2 <br>
->Консольные команды r_use_gasmask и r_use_rain_drops
+* Консольные команды r_use_gasmask и r_use_rain_drops
 ```ini
 hud_gas_mask_avaliable = true; Доступна ли отрисовка капель дождя
 hud_rain_drops_avaliable = true; Доступна ли отрисовка газ маски
 ```
+
+> [!IMPORTANT]
+> **Минимальная версия**: 1.4
+```ini
+physic_strike_protection = 0.7; physic strike hit protection 
+```
+> Также поддерживается и для апгрейдов
 
 ## Фонарь (CTorch)
 
