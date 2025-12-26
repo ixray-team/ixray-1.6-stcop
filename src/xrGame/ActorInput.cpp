@@ -965,7 +965,7 @@ void CActor::ActorUse()
 		m_pUsableObject->use(this);
 	}
 	
-	if (m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
+	if (m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable() && m_use_disabled == false)
 	{
 		if (IsGameTypeSingleCompatible())
 		{
@@ -999,7 +999,7 @@ void CActor::ActorUse()
 				{
 					//только если находимся в режиме single
 					CUIGameCustom* pGameSP = CurrentGameUI();
-					if (pGameSP && TestMonster)
+					if (pGameSP && TestMonster && m_use_disabled == false)
 					{
 						if (!m_pPersonWeLookingAt->deadbody_closed_status())
 						{
