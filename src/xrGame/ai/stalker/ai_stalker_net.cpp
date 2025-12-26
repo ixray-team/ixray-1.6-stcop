@@ -337,7 +337,7 @@ enum EventTypeSTALKER
 
 void CAI_Stalker::ApplyAnimation(StalkerMotionData& anims)
 {
-	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated* ka = Visual()->dcast_PKinematicsAnimated();
 	if (!ka)
 		return;
 
@@ -458,7 +458,7 @@ void CAI_Stalker::UpdateScriptAnim(NET_Packet& packet)
 	}
 
 
-	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
+	IKinematicsAnimated* ka = Visual()->dcast_PKinematicsAnimated();
 	if (!ka)
 		return;
 

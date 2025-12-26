@@ -36,7 +36,7 @@ struct remove_non_savable_predicate {
 	{
 		CSE_Abstract	*object = m_server->game->get_entity_from_eid(id);
 		VERIFY			(object);
-		CSE_ALifeObject	*alife_object = smart_cast<CSE_ALifeObject*>(object);
+		CSE_ALifeObject	*alife_object = object->cast_alife_object();
 		VERIFY			(alife_object);
 		return			(!alife_object->can_save());
 	}
@@ -77,7 +77,7 @@ void CALifeSwitchManager::remove_online(CSE_ALifeDynamicObject *object, bool upd
 	object->m_bOnline			= false;
 	
 	m_saved_chidren				= object->children;
-	CSE_ALifeTraderAbstract		*inventory_owner = smart_cast<CSE_ALifeTraderAbstract*>(object);
+	CSE_ALifeTraderAbstract		*inventory_owner = object->cast_trader_abstract();
 	if (inventory_owner) {
 		m_saved_chidren.erase	(
 			std::remove_if(
