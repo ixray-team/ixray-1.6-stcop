@@ -56,7 +56,8 @@ void CUIInventoryWnd::InitInventory_delayed()
 
 void CUIInventoryWnd::InitInventory() 
 {
-	CInventoryOwner *pInvOwner	= smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if(!pInvOwner)				return;
 
 	m_pInv						= &pInvOwner->inventory();
@@ -119,8 +120,8 @@ void CUIInventoryWnd::InitInventory()
 
 void CUIInventoryWnd::DropCurrentItem(bool b_all)
 {
-
-	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CActor* pActor = current_entity != nullptr ? current_entity->cast_actor() : nullptr;
 	if(!pActor)				return;
 
 	if(!b_all && CurrentIItem() && !CurrentIItem()->IsQuestItem())
@@ -154,7 +155,8 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 {
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
 	PIItem	iitem							= (PIItem)itm->m_pData;
-	CInventoryOwner* pInvOwner				= smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	bool b_own_item							= (iitem->parent_id() == pInvOwner->object_id());
 
 	if(GetInventory()->CanPutInSlot(iitem, slot_id))
@@ -210,7 +212,8 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place, u16 slot_id)
 
 bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 {
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	PIItem	iitem						= (PIItem)itm->m_pData;
 
 	if(GetInventory()->CanPutInRuck(iitem))
@@ -243,7 +246,8 @@ bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)
 
 bool CUIInventoryWnd::ToBelt(CUICellItem* itm, bool b_use_cursor_pos)
 {
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	PIItem	iitem						= (PIItem)itm->m_pData;
 	bool b_own_item = (iitem->parent_id() == pInvOwner->object_id());
 
@@ -496,16 +500,16 @@ void CUIInventoryWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDrop
 	static xr_vector<shared_str>	ammo_types;
 	ammo_types.resize(0);
 
-	CWeapon* weapon = smart_cast<CWeapon*>(weapon_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(weapon_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(weapon_item);
+	CWeapon* weapon = weapon_item->cast_weapon();
+	CWeaponBinoculars* binoc = weapon_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = weapon_item->cast_weapon_knife();
 	if ( !weapon || binoc || knife)
 	{
 		return;
 	}
 	ammo_types.assign( weapon->m_ammoTypes.begin(), weapon->m_ammoTypes.end() );
 
-	CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(weapon_item);
+	CWeaponMagazinedWGrenade* wg = weapon_item->cast_weapon_magazined_w_grenade();
 	if ( wg )
 	{
 		if ( wg->IsGrenadeLauncherAttached() && wg->m_ammoTypes2.size() )
@@ -529,7 +533,7 @@ void CUIInventoryWnd::highlight_ammo_for_weapon( PIItem weapon_item, CUIDragDrop
 		{
 			continue;
 		}
-		CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+		CWeaponAmmo* ammo = item->cast_weapon_ammo();
 		if ( !ammo )
 		{
 			highlight_addons_for_weapon( weapon_item, ci );
@@ -554,9 +558,9 @@ void CUIInventoryWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropL
 {
 	VERIFY( ammo_item );
 	VERIFY( ddlist );
-	CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(ammo_item);
-	CWeaponBinoculars* binoc = smart_cast<CWeaponBinoculars*>(ammo_item);
-	CWeaponKnife* knife = smart_cast<CWeaponKnife*>(ammo_item);
+	CWeaponAmmo* ammo = ammo_item->cast_weapon_ammo();
+	CWeaponBinoculars* binoc = ammo_item->cast_weapon_binoculars();
+	CWeaponKnife* knife = ammo_item->cast_weapon_knife();
 	if ( !ammo  )
 	{
 		return;
@@ -573,7 +577,7 @@ void CUIInventoryWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropL
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if (!weapon || binoc || knife)
 		{
 			continue;
@@ -590,7 +594,7 @@ void CUIInventoryWnd::highlight_weapons_for_ammo( PIItem ammo_item, CUIDragDropL
 			}
 		}
 		
-		CWeaponMagazinedWGrenade* wg = smart_cast<CWeaponMagazinedWGrenade*>(item);
+		CWeaponMagazinedWGrenade* wg = item->cast_weapon_magazined_w_grenade();
 		if ( !wg || !wg->IsGrenadeLauncherAttached() || !wg->m_ammoTypes2.size() )
 		{
 			continue; // for i
@@ -617,21 +621,21 @@ bool CUIInventoryWnd::highlight_addons_for_weapon( PIItem weapon_item, CUICellIt
 		return false;
 	}
 
-	CScope* pScope = smart_cast<CScope*>(item);
+	CScope* pScope = item->cast_addon_scope();
 	if (pScope && weapon_item->CanAttach(item))
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CSilencer* pSilencer = smart_cast<CSilencer*>(item);
+	CSilencer* pSilencer = item->cast_addon_silencer();
 	if ( pSilencer && weapon_item->CanAttach(pSilencer) )
 	{
 		ci->m_select_armament = true;
 		return true;
 	}
 
-	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>(item);
+	CGrenadeLauncher* pGrenadeLauncher = item->cast_addon_grenade_launcher();
 	if ( pGrenadeLauncher && weapon_item->CanAttach(pGrenadeLauncher) )
 	{
 		ci->m_select_armament = true;
@@ -645,9 +649,9 @@ void CUIInventoryWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDro
 	VERIFY( addon_item );
 	VERIFY( ddlist );
 
-	CScope*				pScope				= smart_cast<CScope*>			(addon_item);
-	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(addon_item);
-	CGrenadeLauncher*	pGrenadeLauncher	= smart_cast<CGrenadeLauncher*>	(addon_item);
+	CScope* pScope = addon_item->cast_addon_scope();
+	CSilencer* pSilencer = addon_item->cast_addon_silencer();
+	CGrenadeLauncher* pGrenadeLauncher = addon_item->cast_addon_grenade_launcher();
 
 	if ( !pScope && !pSilencer && !pGrenadeLauncher )
 	{
@@ -663,7 +667,7 @@ void CUIInventoryWnd::highlight_weapons_for_addon( PIItem addon_item, CUIDragDro
 		{
 			continue;
 		}
-		CWeapon* weapon = smart_cast<CWeapon*>(item);
+		CWeapon* weapon = item->cast_weapon();
 		if ( !weapon )
 		{
 			continue;
@@ -699,7 +703,8 @@ void CUIInventoryWnd::ClearAllLists()
 
 void CUIInventoryWnd::DropAllCurrentItem(u32 item_amount)
 {
-	CInventoryOwner* pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
+	CObject* current_entity = Level().CurrentEntity();
+	CInventoryOwner* pInvOwner = current_entity != nullptr ? current_entity->cast_inventory_owner() : nullptr;
 	if ( CurrentIItem() && !CurrentIItem()->IsQuestItem() )
 	{
 		for( u32 i = 0; i < item_amount; ++i )
