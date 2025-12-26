@@ -202,7 +202,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_pda_disabled",				&CScriptGameObject::IsPdaDisabled)
 		.def("set_inventory_disabled",		&CScriptGameObject::SetInventoryDisabled)
 		.def("is_inventory_disabled",		&CScriptGameObject::IsInventoryDisabled)
-		
+		.def("set_use_disabled",			&CScriptGameObject::SetUseDisabled)
+
 		.def("hide_weapon",					&CScriptGameObject::HideWeapon)
 		.def("hide_detector",				&CScriptGameObject::HideDetector)
 		.def("switch_detector",				&CScriptGameObject::SwitchDetector)
