@@ -247,7 +247,6 @@ public:
 
 	//
 	virtual IBlender*				blender_create				(CLASS_ID cls);
-	virtual void					blender_destroy				(IBlender* &);
 
 	//
 	virtual IRender_ObjectSpecific*	ros_create					(IRenderable*		parent);

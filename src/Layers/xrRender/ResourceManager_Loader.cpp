@@ -32,10 +32,10 @@ void CResourceManager::OnDeviceDestroy(BOOL )
 	m_constants.clear	();
 
    	// Release blenders
-	for (map_BlenderIt b=m_blenders.begin(); b!=m_blenders.end(); b++)
+	for (map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
 	{
-		xr_free				((char*&)b->first);
-		IBlender::Destroy	(b->second);
+		xr_free((char*&)b->first);
+		xr_delete(b->second);
 	}
 	m_blenders.clear	();
 

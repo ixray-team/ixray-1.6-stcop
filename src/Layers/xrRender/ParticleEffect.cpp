@@ -8,34 +8,30 @@ using namespace PS;
 const u32	PS::uDT_STEP 	= 33;
 const float	PS::fDT_STEP 	= float(uDT_STEP)/1000.f;
 
-static void ApplyTexgen( const Fmatrix &mVP )
+static void ApplyTexgen(const Fmatrix& mVP)
 {
 	Fmatrix mTexgen;
 
+	const float _w = float(RCache.get_width());
+	const float _h = float(RCache.get_height());
 #ifdef USE_DX11
-	Fmatrix			mTexelAdjust		= 
-	{
-		0.5f,				0.0f,				0.0f,			0.0f,
-		0.0f,				-0.5f,				0.0f,			0.0f,
-		0.0f,				0.0f,				1.0f,			0.0f,
-		0.5f,				0.5f,				0.0f,			1.0f
-	};
-#else //USE_DX11
-	float	_w						= float(RCache.get_width());
-	float	_h						= float(RCache.get_height());
-	float	o_w						= (.5f / _w);
-	float	o_h						= (.5f / _h);
-	Fmatrix			mTexelAdjust		= 
-	{
-		0.5f,				0.0f,				0.0f,			0.0f,
-		0.0f,				-0.5f,				0.0f,			0.0f,
-		0.0f,				0.0f,				1.0f,			0.0f,
-		0.5f + o_w,			0.5f + o_h,			0.0f,			1.0f
-	};
+	const float o_w = 0.f;
+	const float o_h = 0.f;
+#else 
+	const float o_w = (.5f / _w);
+	const float o_h = (.5f / _h);
 #endif
 
-	mTexgen.mul(mTexelAdjust,mVP);
-	RCache.set_c( "mVPTexgen", mTexgen );
+	Fmatrix mTexelAdjust =
+	{
+		0.5f,		0.0f,		0.0f, 0.0f,
+		0.0f,		-0.5f,		0.0f, 0.0f,
+		0.0f,		0.0f,		1.0f, 0.0f,
+		0.5f + o_w,	0.5f + o_h,	0.0f, 1.0f
+	};
+
+	mTexgen.mul(mTexelAdjust, mVP);
+	RCache.set_c("mVPTexgen", mTexgen);
 }
 
 void PS::OnEffectParticleBirth(void* owner, u32 , PAPI::Particle& m, u32 )
