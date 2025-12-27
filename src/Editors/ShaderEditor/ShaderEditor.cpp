@@ -16,7 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* pCmdLin
 
 	splash::update(5, "Initializing Debugger");
 
-	if (!IsDebuggerPresent()) Debug._initialize(false);
+	Debug._initialize(false);
 
 	splash::update(15, "Initializing Core System");
 
