@@ -15,10 +15,16 @@ Texture2D s_snow;
 #endif
 
 #ifndef DYNAMIC_SNOW_COLOR
-#define DYNAMIC_SNOW_COLOR float3(0.75f, 0.75f, 0.75f)
+	#define DYNAMIC_SNOW_COLOR float3(0.75f, 0.75f, 0.75f)
 #endif
 
-void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, uint idx)
+#ifndef PLANE_CORRECTION_VAL
+	#define PLANE_CORRECTION_VAL 0.25f
+#endif
+
+// TODO: to Shader External
+
+float2 UpdateTC(inout p_bumped_new I, in float2 texCoord, Texture2D heightMap, uint idx)
 {
 	float3x3 TBN = float3x3(I.M1, I.M2, I.M3);
 	float3 viewDir = mul(transpose(TBN), -I.position.xyz);
@@ -27,20 +33,28 @@ void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, 
 	
 	float2 currTexCoord = texCoord;
 	float height = heightMap.Sample(smp_base, currTexCoord)[idx];
+	
+#ifndef USE_PARALLAX_PLANE_CORRECTION
 	texCoord += viewDir.xy * PARALLAX_HEIGHT * (height - 0.5f);
+#else
+	texCoord += viewDir.xy * PARALLAX_HEIGHT * (height - 0.5f) * rcp(max(PLANE_CORRECTION_VAL, abs(viewDir.z)));
+#endif
 	
 #ifdef ALLOW_STEEPPARALLAX
     if (I.position.z < fParallaxStopFade)
     {
 		const float minLayers = 8.0f;
-		const float maxLayers = 20.0f;
-		const uint reliefSteps = 5;
+		const float maxLayers = 32.0f;
 		
 		float numLayers = lerp(maxLayers, minLayers, abs(viewDir.z));
 		float layerDepth = rcp(numLayers);
 		
 		float2 texcoordDelta = viewDir.xy * layerDepth * PARALLAX_HEIGHT;
 		
+#ifdef USE_PARALLAX_PLANE_CORRECTION
+		texcoordDelta *= rcp(max(PLANE_CORRECTION_VAL, abs(viewDir.z)));
+#endif
+	
 		float currDepthMapVal = 1.0f - height;
 		float currLayerDepth = 0.5f;
 		
@@ -54,6 +68,9 @@ void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, 
 			currTexCoord -= texcoordDelta;
 			currDepthMapVal = 1.0f - heightMap.SampleLevel(smp_base, currTexCoord, 0.0f)[idx];
 		}
+		
+#ifndef DISABLE_RELIEF_STEPS
+		const uint reliefSteps = 5;
 		
 		texcoordDelta *= 0.5;
 		layerDepth *= 0.5;
@@ -80,20 +97,23 @@ void UpdateTC(inout p_bumped_new I, inout float2 texCoord, Texture2D heightMap, 
 				currLayerDepth -= layerDepth;
 			}
 		}
-			
-        float fParallaxFade = smoothstep(fParallaxStartFade, fParallaxStopFade, I.position.z);	
-		texCoord = lerp(currTexCoord, texCoord, fParallaxFade);
+#endif
+		
+        float fParallaxFade = smoothstep(fParallaxStopFade, fParallaxStartFade, I.position.z);	
+		texCoord = lerp(texCoord, currTexCoord, fParallaxFade);
     }
 #endif
+
+	return texCoord;
 }
 
 void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 {
 #if defined(USE_STEEPPARALLAX) && defined(USE_HIGH_QUALITY)
     #ifdef USE_PBR
-		UpdateTC(I, I.tcdh.xy, s_bump, 0);
+		I.tcdh.xy = UpdateTC(I, I.tcdh.xy, s_bump, 0);
     #else
-		UpdateTC(I, I.tcdh.xy, s_bumpX, 3);
+		I.tcdh.xy = UpdateTC(I, I.tcdh.xy, s_bumpX, 3);
 	#endif
 #endif
 
