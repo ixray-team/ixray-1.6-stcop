@@ -102,42 +102,42 @@ void CWeaponMagazined::LoadSounds(LPCSTR section)
 	m_sounds.LoadSound(section, "snd_draw", "sndShow", false, m_eSoundShow);
 	m_sounds.LoadSound(section, "snd_holster", "sndHide", false, m_eSoundHide);
 
-	m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot, st_Shooting);
 	if (SoundExist(section, "snd_shoot_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot, st_Shooting);
 	}
 
-	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_silncer_shot", "sndSilencerShot", false, m_eSoundShot, st_Shooting);
 	if (SoundExist(section, "snd_silncer_shot_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_sil, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silncer_shot_actor", "sndSilencerShotActor", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_shot_last"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_shot_last_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_silencer_shot_last"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last_sil, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last", "sndSilencerShotLast", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last", "sndSilencerShotLast", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_silencer_shot_last_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last_sil, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_silencer_shot_last_actor", "sndSilencerShotLastActor", false, m_eSoundShot, st_Shooting);
 	}
 
 	m_sounds.LoadSound(section, "snd_empty", "sndEmptyClick", false, m_eSoundEmptyClick);
@@ -3313,7 +3313,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	result2 = process_if_exists_set(section, "snd_shoot", &CInifile::r_string, str, test);
 	if (result2 && !test)
 	{
-		m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot", "sndShot", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 
@@ -3321,7 +3321,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_actor", "sndShotActor", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 
@@ -3329,7 +3329,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_last, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last", "sndShotLast", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 
@@ -3337,7 +3337,7 @@ bool CWeaponMagazined::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_actor_last, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shot_last_actor", "sndShotLastActor", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 
