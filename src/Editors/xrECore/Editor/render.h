@@ -267,17 +267,11 @@ public:
 	virtual void					set_Object(IRenderable* O);
 	virtual	void					add_Occluder(Fbox2& bb_screenspace);	// mask screen region as oclluded (-1..1, -1..1)
 	virtual void					add_Geometry(IRenderVisual* V);	// add visual(s)	(all culling performed)
-//	virtual void					add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)=0;
 	virtual void					add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
+
 	//	Prefer this function when possible
 	virtual void					add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) {}
 	virtual void					clear_static_wallmarks() {}
-	//virtual void					add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)						= 0;
-	//virtual void					add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)=0;
-
-	//virtual IBlender*				blender_create			(CLASS_ID cls)								= 0;
-	//virtual void					blender_destroy			(IBlender* &)								= 0;
-
 	virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);
 	virtual void					ros_destroy(IRender_ObjectSpecific*&);
 

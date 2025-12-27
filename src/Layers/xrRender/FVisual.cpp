@@ -2,19 +2,20 @@
 #include "../../xrEngine/Fmesh.h"
 #include "FVisual.h"
 
-Fvisual::Fvisual()  : dxRender_Visual()
+Fvisual::Fvisual() :
+	dxRender_Visual()
 {
-	m_fast	=	0;
+	m_fast = 0;
 }
 
 Fvisual::~Fvisual()
 {
-	xr_delete	(m_fast);
+	xr_delete(m_fast);
 }
 
-void Fvisual::Release	()
+void Fvisual::Release()
 {
-	dxRender_Visual::Release			();
+	dxRender_Visual::Release();
 }
 
 void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
@@ -159,48 +160,43 @@ void Fvisual::Load		(const char* N, IReader *data, u32 dwFlags)
 
 	if (dwFlags&VLOAD_NOVERTICES)	
 		return;
-	else	
-		rm_geom.create		(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
+
+	rm_geom.create(vFormat, FormatSize, p_rm_Vertices,p_rm_Indices);
 }
 
-void Fvisual::Render		(float )
+void Fvisual::Render(float)
 {
-	//PROF_EVENT("Fvisual::Render");
 #if (RENDER==R_R2) || (RENDER==R_R4)
-	if (m_fast && RImplementation.phase==CRender::PHASE_SMAP && !RCache.is_TessEnabled())
+	if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && !RCache.is_TessEnabled())
 	{
-		RCache.set_Geometry		(m_fast->rm_geom);
-		RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,m_fast->vBase,0,m_fast->vCount,m_fast->iBase,m_fast->dwPrimitives);
-		RCache.stat.r.s_static.add	(m_fast->vCount);
-	} else {
-		RCache.set_Geometry		(rm_geom);
-		RCache.Render			(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,vCount,iBase,dwPrimitives);
-		RCache.stat.r.s_static.add	(vCount);
+		RCache.set_Geometry(m_fast->rm_geom);
+		RCache.Render(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST, m_fast->vBase, 0, m_fast->vCount, m_fast->iBase, m_fast->dwPrimitives);
+		RCache.stat.r.s_static.add(m_fast->vCount);
+		return;
 	}
-#else // (RENDER==R_R2) || (RENDER==R_R4)
+#endif
 	RCache.set_Geometry			(rm_geom);
 	RCache.Render				(ERHI_PRIMITIVE_TOPOLOGY::TRIANGLE_LIST,vBase,0,vCount,iBase,dwPrimitives);
 	RCache.stat.r.s_static.add	(vCount);
-#endif // (RENDER==R_R2) || (RENDER==R_R4)
 }
 
 #define PCOPY(a)	a = pFrom->a
-void	Fvisual::Copy			(dxRender_Visual *pSrc)
+void Fvisual::Copy(dxRender_Visual* pSrc)
 {
-	dxRender_Visual::Copy		(pSrc);
+	dxRender_Visual::Copy(pSrc);
 
-	Fvisual	*pFrom				= dynamic_cast<Fvisual*> (pSrc);
+	Fvisual* pFrom = dynamic_cast<Fvisual*> (pSrc);
 
-	PCOPY	(rm_geom);
+	PCOPY(rm_geom);
 
-	PCOPY	(p_rm_Vertices); if (p_rm_Vertices) p_rm_Vertices->AddRef();
-	PCOPY	(vBase);
-	PCOPY	(vCount);
+	PCOPY(p_rm_Vertices); if (p_rm_Vertices) p_rm_Vertices->AddRef();
+	PCOPY(vBase);
+	PCOPY(vCount);
 
-	PCOPY	(p_rm_Indices); if (p_rm_Indices) p_rm_Indices->AddRef();
-	PCOPY	(iBase);
-	PCOPY	(iCount);
-	PCOPY	(dwPrimitives);
+	PCOPY(p_rm_Indices); if (p_rm_Indices) p_rm_Indices->AddRef();
+	PCOPY(iBase);
+	PCOPY(iCount);
+	PCOPY(dwPrimitives);
 
-	PCOPY	(m_fast);
+	PCOPY(m_fast);
 }
