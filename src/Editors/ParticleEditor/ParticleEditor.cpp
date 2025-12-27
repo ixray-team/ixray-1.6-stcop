@@ -39,7 +39,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	splash::update(5, "Initializing Debugger");
 
-	if (!IsDebuggerPresent()) Debug._initialize(false);
+	Debug._initialize(false);
+
 	const char* FSName = "fs.ltx";
 
 	splash::update(10, "Initializing COM Library");
