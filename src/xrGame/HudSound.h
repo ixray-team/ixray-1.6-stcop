@@ -8,9 +8,9 @@ struct HUD_SOUND_ITEM
         m_alias = "";
     }
 
-    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr);
+    static void LoadSound(LPCSTR section, LPCSTR line, ref_sound& hud_snd, int type = sg_SourceType, float* volume = nullptr, float* delay = nullptr, esound_type sound_type = st_Effect);
 
-    static void LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND_ITEM& hud_snd, int type = sg_SourceType);
+    static void LoadSound(LPCSTR section, LPCSTR line, HUD_SOUND_ITEM& hud_snd, int type = sg_SourceType, esound_type sound_type = st_Effect);
 
 	static void DestroySound(HUD_SOUND_ITEM& hud_snd);
 
@@ -83,7 +83,7 @@ public:
 
 	void						StopSound		(	LPCSTR alias);
 
-    void LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+    void LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
 
 	void						SetPosition		(	LPCSTR alias, 	const Fvector& pos);
 	void						StopAllSounds	();
@@ -99,8 +99,8 @@ public:
     void PlaySound(LPCSTR alias, const Fvector& position, const CObject* parent, bool hud_mode, bool looped = false, bool allowOverlap = false, u8 index = u8(-1));
     void StopSound(LPCSTR alias);
     void StopAllSounds();
-    void LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
-    void LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType);
+    void LoadSound(LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
+    void LoadSound(CInifile const* ini, LPCSTR section, LPCSTR line, LPCSTR alias, bool exclusive = false, int type = sg_SourceType, esound_type sound_type = st_Effect);
     void SetPosition(LPCSTR alias, const Fvector& pos);
 };
 //-Alundaio

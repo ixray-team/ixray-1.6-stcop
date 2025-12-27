@@ -71,7 +71,8 @@ namespace XRay::Sound::Mixer
         NoPosUpdate = (1 << 3),
         NoFeedback = (1 << 4),
         NoOCC = (1 << 5),
-        Music = (1 << 6)
+        Music = (1 << 6),
+        Shooting = (1 << 7)
     };
 
     enum class State : u8
