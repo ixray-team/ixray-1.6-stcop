@@ -63,16 +63,11 @@ void		IBlender::CreatePalette(xr_vector<IBlender*> &palette)
 #ifndef _EDITOR
 // Engine
 #include "../../../xrEngine/Render.h"
-IBlender*	IBlender::Create	(CLASS_ID cls)
+IBlender* IBlender::Create(CLASS_ID cls)
 {
 	return ::RImplementation.blender_create	(cls);
 }
-void		IBlender::Destroy	(IBlender*& B)
-{
-	::RImplementation.blender_destroy		(B);
-}
 #else
-
 // Editor
 #include "../../xrRenderPC_R1/BlenderDefault.h"
 #include "../../xrRenderPC_R1/Blender_default_aref.h"
@@ -121,9 +116,5 @@ IBlender*	IBlender::Create	(CLASS_ID cls)
 	case B_PARTICLE:		return new CBlender_Particle();	
 	}
 	return 0;
-}
-void		IBlender::Destroy	(IBlender*& B)
-{
-	xr_delete	(B);
 }
 #endif

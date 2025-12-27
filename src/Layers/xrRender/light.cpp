@@ -82,35 +82,29 @@ void light::destroy(bool deffered)
 }
 
 
-#if (RENDER==R_R2) || (RENDER==R_R4)
-void light::set_texture		(LPCSTR name)
+void light::set_texture(LPCSTR name)
 {
-	if ((0==name) || (0==name[0]))
+#if (RENDER==R_R2) || (RENDER==R_R4)
+	if ((0 == name) || (0 == name[0]))
 	{
 		// default shaders
-		s_spot.destroy		();
-		s_point.destroy		();
+		s_spot.destroy();
+		s_point.destroy();
 		s_volumetric.destroy();
 		return;
 	}
 
-#pragma todo				("Only shadowed spot implements projective texture")
-	string256				temp;
-	
-	xr_strconcat(temp,"r2\\accum_spot_",name);
-	s_spot.create			(RImplementation.Target->b_accum_spot,temp,name);
+#pragma todo("Only shadowed spot implements projective texture")
+	string256 temp;
 
-	s_volumetric.create		("accum_volumetric", name);
-}
+	xr_strconcat(temp, "r2\\accum_spot_", name);
+	s_spot.create(RImplementation.Target->b_accum_spot, temp, name);
+
+	s_volumetric.create("accum_volumetric", name);
 #endif
-
-#if RENDER==R_R1
-void light::set_texture		(LPCSTR name)
-{
 }
-#endif
 
-void light::set_shadow				(bool b)						
+void light::set_shadow(bool b)						
 { 
 	flags.bShadow=b;
 #if RENDER!=R_R1
@@ -165,32 +159,37 @@ void light::set_active(bool a)
 	}
 }
 
-void	light::set_position		(const Fvector& P)
+void light::set_position(const Fvector& P)
 {
-	float	eps					=	EPS;	//_max	(range*0.001f,EPS_L);
-	if (position.similar(P,eps))return	;
-	position.set				(P);
+	float	eps = EPS;	//_max	(range*0.001f,EPS_L);
+	if (position.similar(P, eps))return;
+	position.set(P);
 	spatial_move();
 }
 
-void	light::set_range		(float R)			{
-	float	eps					=	_max	(range*0.1f,EPS);
-	if (fsimilar(range,R,eps))	return	;
-	range						= R		;
+void light::set_range(float R)
+{
+	float	eps = _max(range * 0.1f, EPS);
+	if (fsimilar(range, R, eps))	return;
+	range = R;
 	spatial_move();
 };
 
-void	light::set_cone			(float angle)		{
-	if (fsimilar(cone,angle))	return	;
-	VERIFY						(cone < deg2rad(121.f));	// 120 is hard limit for lights
-	cone						= angle;
+void light::set_cone(float angle)
+{
+	if (fsimilar(cone, angle))
+		return;
+
+	VERIFY(cone < deg2rad(121.f));	// 120 is hard limit for lights
+	cone = angle;
 	spatial_move();
 }
-void	light::set_rotation		(const Fvector& D, const Fvector& R)	{ 
-	Fvector	old_D		= direction;
-	direction.normalize	(D);
+void light::set_rotation(const Fvector& D, const Fvector& R)
+{
+	Fvector	old_D = direction;
+	direction.normalize(D);
 	right.normalize(R);
-	if (!fsimilar(1.f, old_D.dotproduct(D),EPS_S))	spatial_move();
+	if (!fsimilar(1.f, old_D.dotproduct(D), EPS_S))	spatial_move();
 }
 
 #if RENDER!=R_R1
@@ -236,9 +235,10 @@ bool light::has_light_visible_from_sectors()
 }
 #endif
 
-void	light::spatial_move			()
+void light::spatial_move()
 {
-	switch(flags.type)	{
+	switch(flags.type)
+	{
 	case IRender_Light::REFLECTED	:	
 	case IRender_Light::POINT		:	
 		{
@@ -395,11 +395,6 @@ void	light::optimize_smap_size()
 			if (dist<0)	dist	= 0;
 	float	ssa					= clampr	(range*range / (1.f+dist*dist),0.f,1.f);
 
-	// compute intensity
-	//float	intensity0			= (L->color.r + L->color.g + L->color.b)/3.f;
-	//float	intensity1			= (L->color.r * 0.2125f + L->color.g * 0.7154f + L->color.b * 0.0721f);
-	//float	intensity			= (intensity0+intensity1)/2.f;		// intensity1 tends to underestimate...
-
 	// compute how much duelling frusta occurs	[-1..1]-> 1 + [-0.5 .. +0.5]
 	float	duel_dot			= 1.f -	0.5f*Device.vCameraDirection.dotproduct(direction);
 
@@ -411,7 +406,6 @@ void	light::optimize_smap_size()
 
 	// factors
 	float	factor0				= powf	(ssa,		1.f/2.f);		// ssa is quadratic
-	//float	factor1				= powf	(intensity, 1.f/16.f);		// less perceptually important?
 	float	factor2				= powf	(duel_dot,	1.f/4.f);		// difficult to fast-change this -> visible
 	float	factor3				= powf	(sizefactor,1.f/4.f);		// this shouldn't make much difference
 	float	factor4				= powf	(widefactor,1.f/2.f);		// make it linear ???
