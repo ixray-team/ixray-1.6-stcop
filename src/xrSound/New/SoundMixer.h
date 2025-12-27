@@ -34,7 +34,7 @@ namespace XRay::Sound::Mixer
 {
     XRSOUND_API void Initialize();
     XRSOUND_API void Shutdown();
-    XRSOUND_API void Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N);
+    XRSOUND_API void Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float shooting_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N);
     XRSOUND_API void StopAll();
     XRSOUND_API void PauseAll();
     XRSOUND_API void ResumeAll();
