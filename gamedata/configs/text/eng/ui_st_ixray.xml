@@ -201,6 +201,9 @@
 	<string id="st_proc">
 		<text>%</text>
 	</string>
+	<string id="st_parse">
+		<text>parse</text>
+	</string>					   
 	<string id="WP_BINOC">
 		<text>Binocular</text>
 	</string>
@@ -459,5 +462,8 @@
 	</string>
 	<string id="ui_mm_hide_quick_slots">
 		<text>Hide quick access panel</text>
+	</string>
+	<string id="ui_mm_shoot_volume">
+		<text>Shots volume</text>
 	</string>
 </string_table>

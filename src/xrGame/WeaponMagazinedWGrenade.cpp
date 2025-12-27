@@ -68,12 +68,12 @@ void CWeaponMagazinedWGrenade::LoadSounds(LPCSTR section)
 {
 	inherited::LoadSounds(section);
 
-	m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+	m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot, st_Shooting);
 
 	if (SoundExist(section, "snd_shoot_grenade_actor"))
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot, st_Shooting);
 	}
 
 	if (SoundExist(section, "snd_load_grenade"))
@@ -1129,7 +1129,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	result2 = process_if_exists_set(section, "snd_shoot_grenade", &CInifile::r_string, str, test);
 	if (result2 && !test)
 	{
-		m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade", "sndShotG", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 
@@ -1137,7 +1137,7 @@ bool CWeaponMagazinedWGrenade::install_upgrade_impl(LPCSTR section, bool test)
 	if (result2 && !test)
 	{
 		m_eSoundsFlags.set(ESoundsFlags::sf_shoot_grenade_actor, TRUE);
-		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot);
+		m_layered_sounds.LoadSound(section, "snd_shoot_grenade_actor", "sndShotGActor", false, m_eSoundShot, st_Shooting);
 	}
 	result |= result2;
 

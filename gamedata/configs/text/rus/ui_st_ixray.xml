@@ -3,7 +3,7 @@
 	<string id="st_ixray_title">
 		<text>S.T.A.L.K.E.R.: Зов Припяти</text>
 	</string>
-	 <string id="st_ixray_title_cs">
+	<string id="st_ixray_title_cs">
 		<text>S.T.A.L.K.E.R.: Чистое Небо</text>
 	</string>
 	<string id="st_ixray_title_soc">
@@ -463,5 +463,8 @@
 	</string>
 	<string id="ui_mm_hide_quick_slots">
 		<text>Скрыть быстрый доступ</text>
+	</string>
+	<string id="ui_mm_shoot_volume">
+		<text>Громкость выстрелов</text>
 	</string>
 </string_table>

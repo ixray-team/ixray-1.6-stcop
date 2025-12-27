@@ -130,6 +130,7 @@ struct sound_mixer_state
 	float master_volume = 0.0f;
 	float effect_volume = 0.0f;
 	float music_volume = 0.0f;
+	float shooting_volume = 0.0f;
 	float compression = 0.0f;
 	float compressor_envelope[SND_CHANNEL_COUNT] = { FLT_EPSILON, FLT_EPSILON };
 	Fvector P, D, N;             
@@ -999,7 +1000,18 @@ Snd_MixerRenderCallback(float* buffer)
 
 		// Apply final volumes
 		float slot_volume = volumes.x * volumes.y * volumes.z;
-		float volume_final = occ_volume * slot_volume * ((slot.flags & (u16)Mixer::Flags::Music) ? mixer.music_volume : mixer.effect_volume) * slot.fade_volume;
+
+		float vol_mixer = mixer.effect_volume;
+		if (slot.flags & (u16)Mixer::Flags::Music)
+		{
+			vol_mixer = mixer.music_volume;
+
+		}
+		else if (slot.flags & (u16)Mixer::Flags::Shooting)
+		{
+			vol_mixer = mixer.shooting_volume;
+		}
+		float volume_final = occ_volume * slot_volume * vol_mixer * slot.fade_volume;
 		begin_factor *= volume_final;
 		end_factor *= volume_final;
 
@@ -1339,7 +1351,7 @@ IC void	volume_lerp(float& c, float t, float s, float dt)
 }
 
 void 
-Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
+Mixer::Update(void* event_handler, float time_factor, float volume, float eff_volume, float mus_volume, float shooting_volume, float compression, const Fmatrix& mtx, Fvector P, Fvector D, Fvector N)
 {
 	PROF_EVENT("Sound: Update Stage");
 	sound_event* handler = (sound_event*)event_handler;
@@ -1353,6 +1365,7 @@ Mixer::Update(void* event_handler, float time_factor, float volume, float eff_vo
 	mixer.master_volume = volume;
 	mixer.effect_volume = eff_volume;
 	mixer.music_volume = mus_volume;
+	mixer.shooting_volume = shooting_volume;
 	mixer.m_V = mtx;
 	mixer.P = P;
 	mixer.D = D;

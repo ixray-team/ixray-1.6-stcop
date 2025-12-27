@@ -80,7 +80,7 @@ CCarWeapon::~CCarWeapon()
 void CCarWeapon::Load(LPCSTR section)
 {
 	inheritedShooting::Load(section);
-    SoundsLayered.LoadSound(section, "snd_shoot", "m_sndShot", false);
+    SoundsLayered.LoadSound(section, "snd_shoot", "m_sndShot", false, -1, st_Shooting);
 	m_Ammo->Load(pSettings->r_string(section, "ammo_class"), 0);
 }
 

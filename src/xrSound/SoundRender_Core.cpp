@@ -20,6 +20,7 @@ float	psSoundRolloff = 0.75f;
 u32		psSoundModel = 0;
 float	psSoundVEffects = 1.0f;
 float	psSoundVFactor = 1.0f;
+float	psSoundVShooting = 1.0f;
 float	psSoundCompression = 0.5f;
 
 float	psSoundVMusic = 1.0f;
@@ -52,7 +53,7 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundCompression, m_V, P, D, N);
+	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVShooting, psSoundCompression, m_V, P, D, N);
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
 #endif
@@ -485,6 +486,11 @@ u32 CSoundRender_Core::GetMixedFlags(u32 flags, ref_sound& S)
 	if (flags & sm_NoFeedback)
 	{
 		MixedFlags |= (u32)Mixer::Flags::NoFeedback;
+	}
+
+	if (S._sound_type() == st_Shooting)
+	{
+		MixedFlags |= (u32)Mixer::Flags::Shooting;
 	}
 
 	if ((flags & sm_Intro))
