@@ -409,6 +409,7 @@ struct CImGuiTextureEditor
 		kUpdateSelected,
 		kShutdownThread,
 		kLoadTooltipPreview,
+		kUnloadResources,
 		kFilterQuery,
 		kInvalid = -1
 	};
@@ -486,6 +487,10 @@ struct CImGuiTextureEditor
 
 	std::byte _memory_metadata[sizeof(STextureMetadata)];
 	STextureMetadata* pMetadataOfSelected = nullptr;
+	IRHISurface* pTexturePreview = nullptr;
+	IRHIShaderResourceView* pTexturePreviewSRV = nullptr;
+	IRHISurface* pTextureSelected = nullptr;
+	IRHIShaderResourceView* pTextureSelectedSRV = nullptr;
 
 	u8 search_frame_count = 0;
 
