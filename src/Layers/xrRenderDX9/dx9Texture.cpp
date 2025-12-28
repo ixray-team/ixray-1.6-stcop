@@ -241,6 +241,28 @@ void PrintTextureError(HRESULT hr, const char* fname, const void* ddsData, size_
 	Msg("4. Check mipmap chain consistency");
 }
 
+IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /*= false*/)
+{
+	ID3DBaseTexture* pTexture = this->texture_load(fname, msize);
+	IRHISurface* pResult = nullptr;
+	if (pTexture) {
+		// Create RHITextureDesc for the loaded texture
+		RHITextureDesc rhiDesc;
+		rhiDesc.Width = 1;  // Will be set properly by the texture
+		rhiDesc.Height = 1;
+		rhiDesc.Depth = 1;
+		rhiDesc.MipLevels = 1;
+		rhiDesc.Format = ERHI_FORMAT::B8G8R8A8_UNORM;
+		rhiDesc.CPUAccessFlags = 0;
+		rhiDesc.MiscFlags = 0;
+
+		// Use GRHI to create the surface from loaded texture
+		pResult = GRHI->CreateTextureFromMemory(pTexture, 0, rhiDesc);
+	}
+
+	return pResult;
+}
+
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
 	ID3DBaseTexture* pTexture3D = nullptr;
