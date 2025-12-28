@@ -89,6 +89,10 @@ int APIENTRY WinMain
 		return -1;
 	}
 
+	SDL_Window* wnd1 = nullptr;
+	splash::show((void*&)wnd1);
+
+	splash::update(5, "Initializing debugger");
 	Debug._initialize(false);
 
 	// Check for another instance
@@ -110,27 +114,29 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
+	splash::update(10, "Calculating display modes");
 	EnumerateDisplayModes();
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, 0);
 	SDL_HideWindow(g_AppInfo.Window);
 
-	SDL_Window* wnd1 = nullptr;
-	splash::show((void*&)wnd1);
-
+	splash::update(20, "Initializing xrCore");
 	EngineLoadStage1(lpCmdLine);
 
 #ifdef DEBUG_DRAW
 	xrLogger::EnableFastDebugLog();
 #endif
+	splash::update(30, "Initializing engine");
 	EngineLoadStage2();
 
+	splash::update(40, "Calculating renderer list");
 	Engine.External.CreateRendererList();
 
 		{
 			PROF_EVENT("Console::Create");
 	Console = new CConsole();
 		}
+	splash::update(50, "Reading user settings");
 	EngineLoadStage3();
 
 		{
@@ -150,15 +156,19 @@ int APIENTRY WinMain
 	}
 		}
 
+	splash::update(60, "Initializing engine external");
 	Engine.External.Initialize();
 
 	//Console->Execute("stat_memory");
 	Msg("IX-Ray %s %s build info: hash[%s] branch[%s] commit author[%s]", EngineExternal().GetCurrentPlatformFullName(), _VER, _HASH, _BRANCH, _AUTHOR);
 
+	splash::update(75, "Creating device");
 	EngineLoadStage4();
 
+	splash::update(90, "Loading custom settings");
 	LoadCustomSettings();
 
+	splash::update(100, "Finalizing");
 	// Splash wnd => Game wnd
 	splash::hide();
 		SDL_DestroyWindow(wnd1);
