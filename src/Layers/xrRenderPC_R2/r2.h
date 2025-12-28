@@ -208,6 +208,8 @@ public:
 	virtual	void					level_Load					(IReader*);
 	virtual void					level_Unload				();
 
+	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override;
+
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
 
 	virtual HRESULT					shader_compile			(
