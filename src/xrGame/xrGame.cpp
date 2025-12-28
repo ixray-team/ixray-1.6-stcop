@@ -137,6 +137,11 @@ extern "C"
 
 			g_imgui_editors_state.requests.push(req);
 
+			req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+			req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kUnloadResources);
+
+			g_imgui_editors_state.requests.push(req);
+
 			req.editor_type = static_cast<u32>(eImGuiEditorType::kNoEditor);
 			req.request_type = 0; // means we want to shutdown our thread
 			
