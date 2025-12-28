@@ -5,8 +5,9 @@ set(IXRAY_FOLDER_3RD FOLDER "3rd Party")
 if(NOT IXRAY_COMPRESSOR_ONLY)
     add_subdirectory("ode")
     add_subdirectory("crypto")
+    add_subdirectory("NvTriStrip")
 
-     # resonance-audio
+    # resonance-audio
     if (IXRAY_ENABLE_RESONANCEAUDIO)
         add_subdirectory("resonance-audio")
     endif()
@@ -36,6 +37,7 @@ endif()
 # Move 3rd
 if(NOT IXRAY_COMPRESSOR_ONLY)
     set_target_properties(ODE PROPERTIES ${IXRAY_FOLDER_3RD})
+    set_target_properties(NvTriStrip PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(crypto PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(lunasvg PROPERTIES ${IXRAY_FOLDER_3RD})
     set_target_properties(pffft PROPERTIES ${IXRAY_FOLDER_3RD})
