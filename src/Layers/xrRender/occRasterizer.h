@@ -35,21 +35,44 @@ private:
 	occD			bufDepth_2	[occ_dim_2][occ_dim_2];
 	occD			bufDepth_3	[occ_dim_3][occ_dim_3];
 public:
-	IC int			df_2_s32		(float d)	{ return iFloor	(d*occQ_s32);				}
-	IC s16			df_2_s16		(float d)	{ return s16(iFloor	(d*occQ_s16));			}
-	IC int			df_2_s32up		(float d)	{ return iCeil	(d*occQ_s32);				}
-	IC s16			df_2_s16up		(float d)	{ return s16(iCeil	(d*occQ_s16));			}
-	IC float		ds32_2_f		(s32 d)		{ return float(d)/occQ_s32;					}
-	IC float		ds16_2_f		(s16 d)		{ return float(d)/occQ_s16;					}
+	ICF int			df_2_s32		(float d)	{ return iFloor	(d*occQ_s32);				}
+	ICF s16			df_2_s16		(float d)	{ return s16(iFloor	(d*occQ_s16));			}
+	ICF int			df_2_s32up		(float d)	{ return iCeil	(d*occQ_s32);				}
+	ICF s16			df_2_s16up		(float d)	{ return s16(iCeil	(d*occQ_s16));			}
+	ICF float		ds32_2_f		(s32 d)		{ return float(d)/occQ_s32;					}
+	ICF float		ds16_2_f		(s16 d)		{ return float(d)/occQ_s16;					}
 
 	void			clear		();
 	void			propagade	();
 	u32				rasterize	(occTri* T);
-	BOOL			test		(float x0, float y0, float x1, float y1, float z);
+
+	ICF	BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float _y1, occD z)
+	{
+		int x0 = iFloor(_x0 * dim + .5f);	clamp(x0, 0, dim - 1);
+		int x1 = iFloor(_x1 * dim + .5f);	clamp(x1, x0, dim - 1);
+		int y0 = iFloor(_y0 * dim + .5f);	clamp(y0, 0, dim - 1);
+		int y1 = iFloor(_y1 * dim + .5f);	clamp(y1, y0, dim - 1);
+
+		for (int y = y0; y <= y1; y++)
+		{
+			occD* base = depth + y * dim;
+			occD* it = base + x0;
+			occD* end = base + x1;
+			for (; it <= end; it++)
+				if (z < *it)	return TRUE;
+		}
+		return FALSE;
+	}
+
+	ICF BOOL test(float _x0, float _y0, float _x1, float _y1, float _z)
+	{
+		occD z = df_2_s32up(_z) + 1;
+		return test_Level(get_depth_level(0), occ_dim_0, _x0, _y0, _x1, _y1, z);
+	}
 	
-	occTri**		get_frame	()			{ return &(bufFrame[0][0]);	}
-	float*			get_depth	()			{ return &(bufDepth[0][0]);	}
-	occD*			get_depth_level	(int level)	
+	ICF occTri**	get_frame()			{ return &(bufFrame[0][0]);	}
+	ICF float*		get_depth()			{ return &(bufDepth[0][0]);	}
+	ICF occD*		get_depth_level	(int level)
 	{
 		switch (level)
 		{
