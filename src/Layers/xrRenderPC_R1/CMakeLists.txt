@@ -82,6 +82,7 @@ target_compile_definitions(xrRender_R1 PRIVATE _USRDLL)
 # Linker list
 target_link_libraries(xrRender_R1 PRIVATE xrEngineCore)
 target_link_libraries(xrRender_R1 PUBLIC lunasvg)
+target_link_libraries(xrRender_R1 PUBLIC NvTriStrip)
 
 if (WIN32)
     target_link_libraries(xrRender_R1 PUBLIC DirectX::Tex)
