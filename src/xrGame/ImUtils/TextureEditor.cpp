@@ -21,6 +21,10 @@ constexpr decltype(CImGuiTextureEditor::selected_index) _kInvalidSelectedID = de
 constexpr u16 kTextureEditor_PreviewsVersion = sizeof(string_path) / sizeof(std::remove_extent_t<string_path>);
 constexpr u16 kTextureEditor_PreviewsEntrySize = kTextureEditor_PreviewsVersion + sizeof(u64);
 
+constexpr ImVec2 kTextureEditor_PreviewSizeHigh = ImVec2(512.0f, 512.0f);
+constexpr ImVec2 kTextureEditor_PreviewSizeMid = ImVec2(256.0f, 256.0f);
+constexpr ImVec2 kTextureEditor_PreviewSizeLow = ImVec2(64.0f, 64.0f);
+
 void validate_entry(
 	const xr_vector<const xr_string*>& thms,
 	CImGuiTextureEditor::STextureEntry& entry
@@ -355,6 +359,28 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 	}
 	case CImGuiTextureEditor::eRequestType::kLoadTooltipPreview:
 	{
+		// for debug purposes
+#if 0
+		if (g_imgui_texture_editor.pTexturePreview != nullptr)
+		{
+			g_imgui_texture_editor.is_preview_tooltip_image_loaded = true;
+			g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
+			break;
+		}
+#endif
+
+		if (g_imgui_texture_editor.pTexturePreview)
+		{
+			g_imgui_texture_editor.pTexturePreview->Release();
+			g_imgui_texture_editor.pTexturePreview = nullptr;
+		}
+
+		if (g_imgui_texture_editor.pTexturePreviewSRV)
+		{
+			g_imgui_texture_editor.pTexturePreviewSRV->Release();
+			g_imgui_texture_editor.pTexturePreviewSRV = nullptr;
+		}
+
 		u32 tex_id = req.payload;
 
 		R_ASSERT(tex_id != u32(-1));
@@ -366,11 +392,66 @@ void TextureEditor_WorkerThread(const ime_request_t& req)
 			R_ASSERT(std::string_view(tex.path).empty() == false);
 			R_ASSERT(std::string_view(tex.filename).empty() == false);
 
+			string_path subpath;
+
+			if (std::string_view(tex.subpath).empty())
+				std::sprintf(subpath, "%s", tex.filename);
+			else
+			{
+				std::filesystem::path builder;
+				builder = tex.subpath;
+				builder /= tex.filename;
+
+				std::sprintf(subpath, "%s", builder.string().c_str());
+			}
+
+			u32 tex_size=0;
+			IRHISurface* pSurface = Render->load_texture(subpath, tex_size);
+			
+			if (pSurface)
+			{
+				g_imgui_texture_editor.pTexturePreview = pSurface;
+
+				if (GRHI->APILevel != D3D9)
+				{
+					RHIShaderResourceViewDesc desc_srv;
+					desc_srv.MipLevels = 1;
+					desc_srv.Format = pSurface->GetFormat();
+					desc_srv.MostDetailedMip = 0;
+					desc_srv.ViewDimension = ERHI_SRV_DIMENSION::TEXTURE2D;
+					desc_srv.FirstArraySlice = 0;
+					desc_srv.ArraySize = 1;
+					desc_srv.ElementWidth = 0;
+
+					IRHIShaderResourceView* pView = GRHI->CreateShaderResourceView(pSurface, &desc_srv);
+
+					if (pView)
+					{
+						g_imgui_texture_editor.pTexturePreviewSRV = pView;
+					}
+				}
+			}
 
 		}
 
 		g_imgui_texture_editor.is_preview_tooltip_image_loaded = true;
 		g_imgui_texture_editor.is_preview_tooltip_image_load_started = false;
+
+		break;
+	}
+	case CImGuiTextureEditor::eRequestType::kUnloadResources:
+	{
+		if (g_imgui_texture_editor.pTexturePreview)
+		{
+			g_imgui_texture_editor.pTexturePreview->Release();
+			g_imgui_texture_editor.pTexturePreview = nullptr;
+		}
+
+		if (g_imgui_texture_editor.pTexturePreviewSRV)
+		{
+			g_imgui_texture_editor.pTexturePreviewSRV->Release();
+			g_imgui_texture_editor.pTexturePreviewSRV = nullptr;
+		}
 
 		break;
 	}
@@ -782,21 +863,52 @@ void RenderTextureEditor()
 										{
 											was_tooltip_shown = true;
 
-											ImGui::Text("Filename: [%s]", texture.filename);
+											ImGui::TextWrapped("Filename: [%s]", texture.filename);
 											
 											if (texture.subpath[0] != 0)
 											{
-												ImGui::Text("Subpath: [%s]", texture.subpath);
+												ImGui::TextWrapped("Subpath: [%s]", texture.subpath);
 											}
 
-											ImGui::Text("Path: [%s]", texture.path);
+											ImGui::TextWrapped("Path: [%s]", texture.path);
 
 											ImGui::Separator();
 
-#if 0
+#if 1
 											if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 											{
 												ImGui::Text("Preview:");
+												
+												if (g_imgui_texture_editor.pTexturePreview)
+												{
+													ImVec2 preview_size = kTextureEditor_PreviewSizeHigh;
+
+													u32 texture_size = std::max(g_imgui_texture_editor.pTexturePreview->GetWidth(), g_imgui_texture_editor.pTexturePreview->GetHeight());
+
+													if (texture_size < preview_size.x && texture_size > kTextureEditor_PreviewSizeLow.x)
+													{
+														preview_size = kTextureEditor_PreviewSizeMid;
+													}
+													else if (texture_size < kTextureEditor_PreviewSizeMid.x)
+													{
+														preview_size = kTextureEditor_PreviewSizeLow;
+													}
+
+													if (GRHI->APILevel == D3D9)
+													{
+														if (g_imgui_texture_editor.pTexturePreview->GetRawTexture())
+														{
+															ImGui::Image(g_imgui_texture_editor.pTexturePreview->GetRawTexture(), preview_size);
+														}
+													}
+													else if (GRHI->APILevel == D3D11)
+													{
+														if (g_imgui_texture_editor.pTexturePreviewSRV && g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV())
+														{
+															ImGui::Image(g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV(), preview_size);
+														}
+													}
+												}
 											}
 											else
 											{
