@@ -15,7 +15,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Russian (Russia) resources
+// Русский (Россия) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
@@ -77,12 +77,14 @@ END
 
 IDB_PNG1                PNG                     "ixray_splash.png"
 
-#endif    // Russian (Russia) resources
+IDB_FONT                PNG                     "font.png"
+
+#endif    // Русский (Россия) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Ukrainian (Ukraine) resources
+// Украинский (Украина) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
@@ -115,7 +117,7 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Ukrainian (Ukraine) resources
+#endif    // Украинский (Украина) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
