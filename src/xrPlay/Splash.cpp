@@ -17,6 +17,64 @@ HINSTANCE hInstanceG = (HINSTANCE)&__ImageBase;
 SDL_Renderer* splashRenderer = nullptr;
 SDL_Texture* texture = nullptr;
 bool isInit = false;
+int WinW = 0, WinH = 0;
+
+//
+SDL_Texture* fontTexture = nullptr;
+const int CHAR_WIDTH = 9;
+const int CHAR_HEIGHT = 17;
+const int CHARS_PER_ROW = 14;
+bool outText = false;
+
+void RenderText(const char* text, int x, int y) {
+	if (!outText) return;
+
+	for (size_t i = 0; i < strlen(text); ++i) {
+		char c = text[i];
+		int charIndex = c - 32;
+		int srcX = (charIndex % CHARS_PER_ROW) * CHAR_WIDTH;
+		int srcY = (charIndex / CHARS_PER_ROW) * CHAR_HEIGHT;
+
+		SDL_FRect srcRect = { (float)srcX, (float)srcY, CHAR_WIDTH, CHAR_HEIGHT };
+		SDL_FRect dstRect = { (float)x + i * CHAR_WIDTH, (float)y, (float)CHAR_WIDTH, (float)CHAR_HEIGHT };
+
+		SDL_RenderTexture(splashRenderer, fontTexture, &srcRect, &dstRect);
+	}
+}
+
+void Update(int progress = 0, const char*status = "")
+{
+	int pgHeight = 10;
+
+	SDL_FRect progressBarBackground = { 0, (float)WinH - (float)pgHeight, (float)WinW, (float)pgHeight };
+	SDL_FRect progressBarFill = 
+	{ 
+		progressBarBackground.x, 
+		progressBarBackground.y,
+		(progress * progressBarBackground.w) / 100,
+		progressBarBackground.h
+	};
+
+	SDL_RenderClear(splashRenderer);
+
+	float sizeX, sizeY;
+	SDL_GetTextureSize(texture, &sizeX, &sizeY);
+	WinW = sizeX;
+	WinH = sizeY;
+
+	SDL_FRect dstRect = { 0, 0, (float)WinW, (float)WinH };
+	SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
+
+	SDL_SetRenderDrawColor(splashRenderer, 150, 150, 150, 255);
+	SDL_RenderFillRect(splashRenderer, &progressBarBackground);
+
+	SDL_SetRenderDrawColor(splashRenderer, 3, 181, 3, 255);
+	SDL_RenderFillRect(splashRenderer, &progressBarFill);
+
+	RenderText(status, (WinW - (strlen(status) * CHAR_WIDTH) )/2, progressBarBackground.y - CHAR_HEIGHT);
+
+	SDL_RenderPresent(splashRenderer);
+}
 
 SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName, LPCTSTR lpType) {
 	HMODULE hMODULE = hInstanceG;
@@ -47,15 +105,8 @@ SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName
 		ErrorMsg("Failed to decode PNG (ID %d)", lpName);
 		return nullptr;
 	}
-
-	SDL_Surface* surface = SDL_CreateSurfaceFrom(
-		width,
-		height,
-		SDL_PIXELFORMAT_RGBA32,
-		imageData,
-		width * 4
-	);
-
+	
+	SDL_Surface* surface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, imageData, width * 4);
 	if (!surface) {
 		stbi_image_free(imageData);
 		ErrorMsg("Failed to create pixel format (ID %d). %s", lpName, SDL_GetError());
@@ -65,69 +116,48 @@ SDL_Surface* LoadPNGSurfaceFromResource(unsigned char* imageData, LPCTSTR lpName
 	return surface;
 }
 
-SDL_Surface* LoadSplashSurface(unsigned char* imageData, LPCTSTR lpName, LPCTSTR lpType)
-{
-	char path[MAX_PATH];
-
-	GetModuleFileNameA(NULL, path, MAX_PATH);
-	xr_string splash_path = path;
-
-	splash_path = splash_path.erase(splash_path.find_last_of('\\'), splash_path.size() - 1);
-	splash_path += "\\splash.png";
-
-	int width, height, channels;
-	imageData = stbi_load(splash_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-
-	return !imageData ?
-		LoadPNGSurfaceFromResource(imageData, lpName, lpType)
-		:
-		SDL_CreateSurfaceFrom(
-			width,
-			height,
-			SDL_PIXELFORMAT_RGBA32,
-			imageData,
-			width * 4
-		);
-}
-
 void Destroy()
 {
+	if (texture)
+		SDL_DestroyTexture(texture);
+	SDL_DestroyTexture(fontTexture);
+
 	SDL_DestroyRenderer(splashRenderer);
-	SDL_DestroyTexture(texture);
 
 	splashRenderer = nullptr;
 	texture = nullptr;
+	fontTexture = nullptr;
 }
-
 
 namespace splash
 {
-	void show(void* &window)
+	void show(void*& window)
 	{
-		PROF_EVENT("splash::show");
 		if (isInit) return;
-
+		
+		outText = true;
+		
 		unsigned char* imageData = nullptr;
 
-		SDL_Surface* surface = LoadSplashSurface(imageData, MAKEINTRESOURCE(IDB_PNG1), TEXT("PNG"));
-
+		SDL_Surface* surface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_PNG1), TEXT("PNG"));
+		
 		if (!surface)
 		{
 			ErrorMsg("Failed to create surface (ID %d)", IDB_PNG1);
 			return;
 		}
 
-		int WinH = surface->h;
-		int WinW = surface->w;
+		WinH = surface->h;
+		WinW = surface->w;
 
 		window = SDL_CreateWindow(
-			"Loading...",
+			"Loading...", 
 			WinW,
 			WinH,
-			SDL_WINDOW_BORDERLESS |
-			SDL_WINDOW_NOT_FOCUSABLE
+			SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP | 
+			SDL_WINDOW_NOT_FOCUSABLE | SDL_WINDOW_TRANSPARENT
 		);
-
+		
 		if (!window) {
 			Destroy();
 			ErrorMsg("SDL_CreateWindow Error: %s", SDL_GetError());
@@ -140,7 +170,7 @@ namespace splash
 			ErrorMsg("SDL_CreateRenderer Error: %s", SDL_GetError());
 			return;
 		}
-
+		
 		texture = SDL_CreateTextureFromSurface(splashRenderer, surface);
 		SDL_DestroySurface(surface);
 		stbi_image_free(imageData);
@@ -151,24 +181,41 @@ namespace splash
 			return;
 		}
 
-		{
-			//SDL_QueryTexture(texture, nullptr, nullptr, &WinW, &WinH);
+		SDL_Surface* fontSurface = LoadPNGSurfaceFromResource(imageData, MAKEINTRESOURCE(IDB_FONT), TEXT("PNG"));
 
-			SDL_FRect dstRect = { 0, 0, (float)WinW, (float)WinH };
-			SDL_RenderTexture(splashRenderer, texture, nullptr, &dstRect);
-			SDL_RenderPresent(splashRenderer);
+		if (!fontSurface)
+		{
+			ErrorMsg("Failed to create font surface (ID %d)", IDB_PNG1);
+			outText = false;
 		}
+
+		if (outText){
+			fontTexture = SDL_CreateTextureFromSurface(splashRenderer, fontSurface);
+			SDL_DestroySurface(fontSurface);
+
+			if (!fontTexture) {
+				ErrorMsg("Failed to create font texture (ID %d)", IDB_PNG1);
+				outText = false;
+			}
+		}
+
+		Update();
 
 		isInit = true;
 		return;
 	}
 
+	void splash::update(int progress, const char*status)
+	{
+		if (!isInit) return;
+		
+		Update(progress, status);
+
+		return;
+	}
 
 	void hide()
 	{
-		PROF_EVENT("splash::hide");
-		SDL_RenderClear(splashRenderer);
-		SDL_RenderPresent(splashRenderer);
 		Destroy();
 	}
 }
