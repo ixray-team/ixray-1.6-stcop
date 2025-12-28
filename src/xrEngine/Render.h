@@ -20,6 +20,7 @@ struct ENGINE_API	FSlideWindowItem;
 class IRenderVisual;
 class IKinematics;
 class CGameFont;
+class IRHISurface;
 
 #ifndef _EDITOR
 extern const	float		fLightSmoothFactor;
@@ -312,6 +313,9 @@ public:
 	virtual void					rmFar					()											{};
 	virtual void					rmNormal				()											{};
 	virtual u32						memory_usage			()											{ return 0;};
+
+	virtual IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging=false)=0;
+
 
 	virtual void renderImGuiDebugWindow_SVGStorage() {}
 		

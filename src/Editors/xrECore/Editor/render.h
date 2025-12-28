@@ -236,7 +236,7 @@ public:
 		return "editor\\";
 	}
 
-
+	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override;
 	virtual IDirect3DBaseTexture9* texture_load(LPCSTR	fname, u32& mem_size);
 
 	virtual DWORD					get_dx_level();

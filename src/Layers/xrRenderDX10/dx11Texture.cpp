@@ -116,6 +116,11 @@ IC void PrintLoadTextureError(HRESULT hr, TexMetadata& imageInfo, const char* fn
 	Msg("! TEXTURE CREATION ERROR: %s", errorDetails);
 }
 
+IRHISurface* CRender::load_texture(LPCSTR fname, u32& msize, bool bStaging /* = false */)
+{
+	return this->texture_load(fname, msize, bStaging);
+}
+
 IRHISurface* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
 {
 	// Moved here just to avoid warning
