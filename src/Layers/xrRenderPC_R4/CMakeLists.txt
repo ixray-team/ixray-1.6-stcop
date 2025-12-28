@@ -65,6 +65,8 @@ target_compile_definitions(xrRender_R4 PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrRender_R4 PUBLIC xrEngineCore)
+target_link_libraries(xrRender_R4 PUBLIC NvTriStrip)
+target_link_libraries(xrRender_R4 PUBLIC lunasvg)
 
 if (WIN32)
 	target_link_libraries(xrRender_R4 PUBLIC AMD::FSR2)
@@ -91,6 +93,3 @@ target_include_directories(xrRender_R4 PUBLIC "${RENDERDOC_API}")
 #	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 #	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${INTEL_XESS_DX11_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 #)
-
-## lunaSVG
-target_link_libraries(xrRender_R4 PUBLIC lunasvg)
