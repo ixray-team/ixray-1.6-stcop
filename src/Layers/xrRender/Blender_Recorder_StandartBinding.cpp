@@ -508,6 +508,24 @@ static class cl_inv_v : public RHIShaderConstant::Setup
 	}
 } binder_inv_v;
 
+static class cl_env_wind : public RHIShaderConstant::Setup
+{
+	u32	marker;
+	Fmatrix	result;
+
+	virtual void setup(RHIShaderConstant* C)
+	{
+#ifdef _EDITOR
+		if (!g_pGamePersistent || !g_pGamePersistent->Environment().CurrentEnv) {
+			RCache.set_c(C, 0, 0, 0.0f, 0.0f);
+			return;
+		}
+#endif
+		const Fvector& WindDir = g_pGamePersistent->Environment().wind_blast_direction;
+		RCache.set_c(C, WindDir.x, WindDir.y, WindDir.z, g_pGamePersistent->Environment().wind_strength_factor);
+	}
+} binder_wind;
+
 static class cl_m_hud_params : public RHIShaderConstant::Setup
 {
 	virtual void setup(RHIShaderConstant* C) {
@@ -626,6 +644,7 @@ void	CBlender_Compile::SetMapping()
 	r_Constant("consts", &tree_binder_consts);
 	r_Constant("wave", &tree_binder_wave);
 	r_Constant("wind", &tree_binder_wind);
+	r_Constant("env_wind", &binder_wind);
 
 #ifdef USE_DX11
 	r_Constant("consts_old", &tree_binder_consts_old);
