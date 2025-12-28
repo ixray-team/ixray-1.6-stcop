@@ -91,6 +91,7 @@ public:
 	virtual void Calculate();
 
 
+	IRHISurface* load_texture(LPCSTR fname, u32& msize, bool bStaging = false) override { return nullptr; };
 	virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 
 	
