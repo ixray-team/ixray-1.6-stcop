@@ -53,7 +53,7 @@ void CSoundRender_Core::update(const Fmatrix& m_V, const Fvector& P, const Fvect
 
 	// Events
 	listenerPos = P;
-	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVShooting, psSoundCompression, m_V, P, D, N);
+	XRay::Sound::Mixer::Update(Handler, psTimeFactor, master_volume, psSoundVEffects, psSoundVMusic, psSoundVEffects * psSoundVShooting, psSoundCompression, m_V, P, D, N);
 #ifdef XR_MP_BUILD
 	pSoundVoiceChat->Update(P, D, N);
 #endif
