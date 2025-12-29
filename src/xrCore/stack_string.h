@@ -58,6 +58,12 @@ public:
 		// https://godbolt.org/z/9cc833e1W
 		m_buffer[0] = char_t(0);
 	}
+	
+	stack_string(LPCSTR Str)
+	{
+		m_buffer[0] = char_t(0);
+		append(Str); // maybe need to optimize
+	}
 
 	~stack_string() {}
 
@@ -449,3 +455,25 @@ using xr_stack_wstring = stack_string<char16_t, StringLength>;
 
 template<xr_ssnt_t StringLength>
 using xr_stack_tstring = stack_string<xr_char_t, StringLength>;
+
+using xr_stack_string_path = xr_stack_string<2 * _MAX_PATH>;
+using xr_stack_string16 = xr_stack_string<16>;
+using xr_stack_string32 = xr_stack_string<32>;
+using xr_stack_string64 = xr_stack_string<64>;
+using xr_stack_string128 = xr_stack_string<128>;
+using xr_stack_string256 = xr_stack_string<256>;
+using xr_stack_string512 = xr_stack_string<512>;
+using xr_stack_string1024 = xr_stack_string<1024>;
+using xr_stack_string2048 = xr_stack_string<2048>;
+using xr_stack_string4096 = xr_stack_string<4096>;
+
+using xr_stack_wstring_path = xr_stack_wstring<2 * _MAX_PATH>;
+using xr_stack_wstring16 = xr_stack_wstring<16>;
+using xr_stack_wstring32 = xr_stack_wstring<32>;
+using xr_stack_wstring64 = xr_stack_wstring<64>;
+using xr_stack_wstring128 = xr_stack_wstring<128>;
+using xr_stack_wstring256 = xr_stack_wstring<256>;
+using xr_stack_wstring512 = xr_stack_wstring<512>;
+using xr_stack_wstring1024 = xr_stack_wstring<1024>;
+using xr_stack_wstring2048 = xr_stack_wstring<2048>;
+using xr_stack_wstring4096 = xr_stack_wstring<4096>;
