@@ -1,5 +1,4 @@
 # Engine Extension Configuration
-# Engine Extension Configuration
 
 ## Overview
 

@@ -1,4 +1,3 @@
-```markdown
 ### **List of Encodings for XML Localization Files:**
 > [!IMPORTANT]  
 > **Status**: Supported <br>
@@ -11,5 +10,3 @@
 | Russian                        | `windows-1251` |
 | English, German           | `windows-1252` |
 | French, Italian, Spanish | `windows-1252` |
-
-```

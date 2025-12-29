@@ -1,4 +1,3 @@
-```markdown
 # Preset User Parameters
 
 > [!IMPORTANT]  
@@ -26,5 +25,3 @@ Create a **ixray_settings** subdirectory in the **configs** folder, and in it cr
 - ✔ Remember that the engine loads all files by mask `default_settings_*.ltx` in alphabetical order;
 - ⚠ Settings from other addons may also override values;
 - ✖ Don't use to override control keys — this may ruin the user experience.
-
-```
