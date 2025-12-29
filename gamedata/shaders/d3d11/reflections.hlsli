@@ -227,50 +227,60 @@ float4 FastViewReflectionsSSR(float3 Point, float3 Reflect, bool is_hud)
 
 float4 ScreenSpaceLocalReflections(float3 Point, float3 Reflect)
 {
-    //float2 ReflUV = 0.0;
-    //float3 HitPos, TestPos;
-    //float L = 0.025f, DeltaL = 0.0f;
-	//
-    //float Fade = saturate(dot(Reflect, normalize(Point)) * 4.0f);
-	//
-    //if (Fade < 0.001f)
-    //{
-    //    return 0.0f;
-    //}
-	//
-    //[unroll(15)]
-    //for (int i = 0; i < 15; i++)
-    //{
-    //    TestPos = Point + Reflect * L;
-    //    ReflUV = gbuf_unpack_uv(TestPos);
-    //    HitPos = gbuf_unpack_position(ReflUV);
-    //    if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))))
-    //    {
-    //        L = length(Point - HitPos);
-    //    }
-    //    else
-    //    {
-    //        return 0.0f;
-    //    }
-    //}
-	//
-    //DeltaL = length(HitPos) - length(Point);
-    //Fade *= step(-0.4f, DeltaL);
-
-	float4 SSLR = FastViewReflectionsSSR(Point, Reflect, false);
-	float2 ReflUV = gbuf_unpack_uv(SSLR.xyz);
+#ifndef USE_OFFSCREEN_REFLECTIONS
+    float2 ReflUV = 0.0;
+    float3 HitPos, TestPos;
+    float L = 0.025f, DeltaL = 0.0f;
+	
+    float Fade = saturate(dot(Reflect, normalize(Point)) * 4.0f);
+	
+    if (Fade < 0.001f)
+    {
+       return 0.0f;
+    }
+	
+    [unroll(15)]
+    for (int i = 0; i < 15; i++)
+    {
+       TestPos = Point + Reflect * L;
+       ReflUV = gbuf_unpack_uv(TestPos);
+       HitPos = gbuf_unpack_position(ReflUV);
+       if (all(min(min(1.f - ReflUV.x, ReflUV.x), min(1.f - ReflUV.y, ReflUV.y))))
+       {
+           L = length(Point - HitPos);
+       }
+       else
+       {
+           return 0.0f;
+       }
+    }
+	
+    DeltaL = length(HitPos) - length(Point);
+    Fade *= step(-0.4f, DeltaL);
+#else
+	float4 HitPos = FastViewReflectionsSSR(Point, Reflect, false);
+	float2 ReflUV = gbuf_unpack_uv(HitPos.xyz);
+	
+	float Fade = HitPos.w;
+#endif
 
     float Attention = GetBorderAtten(ReflUV, 0.125f);
     ReflUV -= s_velocity.SampleLevel(smp_nofilter, ReflUV, 0).xy * float2(0.5f, -0.5f);
-    SSLR.w *= min(Attention, GetBorderAtten(ReflUV, 0.125f));
-
+	
+    Fade *= min(Attention, GetBorderAtten(ReflUV, 0.125f));
+	
 #ifdef SKYBLED_FADE
-    float Fog = saturate(length(SSLR.xyz) * fog_params.w + fog_params.x);
-    SSLR.w *= 1.f - Fog * Fog;
+    float Fog = saturate(length(HitPos.xyz) * fog_params.w + fog_params.x);
+    Fade *= 1.f - Fog * Fog;
 #endif
 
     float3 Color = s_image.SampleLevel(smp_rtlinear, ReflUV, 0).xyz;
-    return float4(Color, SSLR.w);
+	Color *= rcp(1.0f + Color);
+	
+	Color = saturate(Color);
+	Color *= rcp(1.0f - max(EPS, Color));
+	
+    return float4(Color, Fade);
 }
 #endif
 
