@@ -6,6 +6,8 @@
 #include "LocatorAPI_defs.h"
 
 class XRCORE_API CStreamReader;
+class XRCORE_API CReaderGuarded;
+class XRCORE_API CWriterGuarded;
 
 class XRCORE_API CLocatorAPI  
 {
@@ -150,6 +152,8 @@ public:
 	void						r_close				(IReader* &S);
 	void						r_close				(CStreamReader* &fs);
 
+	CReaderGuarded rg_open(LPCSTR initial, LPCSTR N);
+
 	void						get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir);
 
 	IWriter*					w_open				(LPCSTR initial, LPCSTR N);
@@ -157,6 +161,8 @@ public:
 	IWriter*					w_open_ex			(LPCSTR initial, LPCSTR N);
 	IC IWriter*					w_open_ex			(LPCSTR N){return w_open_ex(0,N);}
 	void						w_close				(IWriter* &S);
+	
+	CWriterGuarded wg_open(LPCSTR initial, LPCSTR N);
 
 	xr_string					fix_path			(const xr_string& file);
 
@@ -210,3 +216,37 @@ public:
 
 extern XRCORE_API	CLocatorAPI*					xr_FS;
 #define FS (*xr_FS)
+
+class XRCORE_API CReaderGuarded
+{
+	IReader* Reader;
+public:
+	CReaderGuarded(IReader* Reader) : Reader(Reader) {}
+	~CReaderGuarded() { if (Reader) {FS.r_close(Reader);}}
+
+	CReaderGuarded(const CReaderGuarded&) = delete;
+	CReaderGuarded& operator=(const CReaderGuarded&) = delete;
+	CReaderGuarded(CReaderGuarded&&) = delete;
+	CReaderGuarded& operator=(CReaderGuarded&&) = delete;
+
+	IReader& operator*() const { return *Reader; }
+	IReader* operator->() const { return Reader; }
+	operator bool() const { return Reader; }
+};
+
+class XRCORE_API CWriterGuarded
+{
+	IWriter* Writer;
+public:
+	CWriterGuarded(IWriter* Writer) : Writer(Writer) {}
+	~CWriterGuarded() { if (Writer) {FS.w_close(Writer);}}
+
+	CWriterGuarded(const CWriterGuarded&) = delete;
+	CWriterGuarded& operator=(const CWriterGuarded&) = delete;
+	CWriterGuarded(CWriterGuarded&&) = delete;
+	CWriterGuarded& operator=(CWriterGuarded&&) = delete;
+
+	IWriter& operator*() const { return *Writer; }
+	IWriter* operator->() const { return Writer; }
+	operator bool() const { return Writer; }
+};
