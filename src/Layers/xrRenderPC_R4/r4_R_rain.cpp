@@ -26,11 +26,14 @@ static int			facetable[6][4] = {
 	{ 3, 2, 4, 5 },		{ 1, 0, 7, 6 },
 };
 
-//////////////////////////////////////////////////////////////////////////
-void CRender::render_rain() {
-	//return;
-	float	fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-	if(fRainFactor < EPS_L)			return;
+void CRender::render_rain()
+{
+	float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+
+	if (fRainFactor < EPS_L)
+	{
+		return;
+	}
 
 	GPU_EVENT(render_rain);
 
@@ -38,9 +41,7 @@ void CRender::render_rain() {
 	// нет необходимости создавать каждый кадр структуру размером почти в киллобайт на стеке.
 	light& RainLight = *RImplementation.Lights.rain_light;
 
-	//static const float	source_offset		= 40.f;
-
-	static const float	source_offset = 10000.f;
+	static const float source_offset = 10000.f;
 	RainLight.direction.set(0.0f, -1.0f, 0.0f);
 	RainLight.position.set(Device.vCameraPosition.x, Device.vCameraPosition.y + source_offset, Device.vCameraPosition.z);
 
@@ -49,26 +50,24 @@ void CRender::render_rain() {
 	// calculate view-frustum bounds in world space
 	Fmatrix	ex_project{}, ex_full{};
 	Fmatrix ex_full_inverse{};
+
+	// Funny rounding. This will reduce flickering. 
+	const float fRainFov = std::floor(Device.fFOV * 0.1f + 1.0f) * 10.0f;
+	const float fRainFar = ps_r3_dyn_wet_surf_far;
+
+	ex_project.build_projection(deg2rad(fRainFov), Device.fASPECT, Device.fViewportNear, fRainFar);
+	ex_full.mul(ex_project, Device.mView);
+	ex_full_inverse.invert44(ex_full);
+
+	//	Calculate view frustum were we can see dynamic rain radius
 	{
-		//	
-		const float fRainFar = ps_r3_dyn_wet_surf_far;
-		ex_project.build_projection(deg2rad(Device.fFOV/* *Device.fASPECT*/), Device.fASPECT, Device.fViewportNear, fRainFar);
-		ex_full.mul(ex_project, Device.mView);
-		ex_full_inverse.invert44(ex_full);
+		const float H = fRainFar;
+		const float a = tanf(deg2rad(fRainFov) / 2);
+		const float c = tanf(deg2rad(fRainFov * Device.fASPECT) / 2);
+		const float b_2 = H * H * (1.0f + a * a + c * c);
 
-		//	Calculate view frustum were we can see dynamic rain radius
-		{
-			//	b^2 = 2RH, B - side enge of the pyramid, h = height
-			//	R = b^2/(2*H)
-			const float H = fRainFar;
-			const float a = tanf(deg2rad(Device.fFOV) / 2);
-			const float c = tanf(deg2rad(Device.fFOV * Device.fASPECT) / 2);
-			const float b_2 = H * H * (1.0f + a * a + c * c);
-			fBoundingSphereRadius = b_2 / (2.0f * H);
-		}
+		fBoundingSphereRadius = b_2 / (2.0f * H);
 	}
-
-	//Device.vCameraDirection
 
 	// Compute volume(s) - something like a frustum for infinite directional light
 	// Also compute virtual light position and sector it is inside
@@ -77,6 +76,7 @@ void CRender::render_rain() {
 	Fvector3					cull_COP;
 	CSector* cull_sector;
 	Fmatrix						cull_xform;
+
 	{
 		// Lets begin from base frustum
 		Fmatrix		fullxform_inv = ex_full_inverse;
@@ -127,42 +127,41 @@ void CRender::render_rain() {
 
 		// Create frustum for query
 		cull_frustum._clear();
-		for(u32 p = 0; p < cull_planes.size(); p++)
-			cull_frustum._add(cull_planes[p]);
 
+		for(u32 p = 0; p < cull_planes.size(); p++)
+		{
+			cull_frustum._add(cull_planes[p]);
+		}
 
 		// Create approximate ortho-xform
 		// view: auto find 'up' and 'right' vectors
-		Fmatrix						mdir_View, mdir_Project;
-		Fvector						L_dir, L_up, L_right, L_pos;
+		Fmatrix mdir_View, mdir_Project;
+		Fvector L_dir, L_up, L_right, L_pos;
+
 		L_pos.set(RainLight.position);
 		L_dir.set(RainLight.direction).normalize();
-		L_right.set(1, 0, 0);					if(_abs(L_right.dotproduct(L_dir)) > .99f)	L_right.set(0, 0, 1);
+
+		L_right = abs(L_dir.x) > 0.99f ? Fidentity.k : Fidentity.i;
+
 		L_up.crossproduct(L_dir, L_right).normalize();
 		L_right.crossproduct(L_up, L_dir).normalize();
+
 		mdir_View.build_camera_dir(L_pos, L_dir, L_up);
 
 		// projection: box
 		//	Simple
-		Fbox	frustum_bb;			frustum_bb.invalidate();
-		for(int it = 0; it < 8; it++) {
-			//for (int it=0; it<9; it++)	{
+		Fbox frustum_bb; frustum_bb.invalidate();
+		for(int it = 0; it < 8; it++) 
+		{
 			Fvector	xf = wform(mdir_View, hull.points[it]);
 			frustum_bb.modify(xf);
 		}
+
 		Fbox& bb = frustum_bb;
 		bb.grow(EPS);
 
-		//	HACK
-		//	TODO: DX10: Calculate bounding sphere for view frustum
-		//	TODO: DX10: Reduce resolution.
-		//bb.min.x = -50;
-		//bb.max.x = 50;
-		//bb.min.y = -50;
-		//bb.max.y = 50;
-
 		//	Offset RainLight position to center rain shadowmap
-		Fvector3	vRectOffset;
+		Fvector3 vRectOffset;
 		vRectOffset.set(fBoundingSphereRadius * Device.vCameraDirection.x, 0, fBoundingSphereRadius * Device.vCameraDirection.z);
 		bb.min.x = -fBoundingSphereRadius + vRectOffset.x;
 		bb.max.x = fBoundingSphereRadius + vRectOffset.x;
@@ -206,13 +205,12 @@ void CRender::render_rain() {
 	}
 
 	// Begin SMAP-render
-	{
-		bool	bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		VERIFY(!bSpecialFull);
-		HOM.Disable();
-		phase = PHASE_SMAP;
-		r_pmask(true, false);
-	}
+	bool bSpecialFull = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+	VERIFY(!bSpecialFull);
+
+	HOM.Disable();
+	phase = PHASE_SMAP;
+	r_pmask(true, false);
 
 	// Fill the database
 	r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, FALSE);
@@ -222,23 +220,21 @@ void CRender::render_rain() {
 
 	// Render shadow-map
 	//. !!! We should clip based on shrinked frustum (again)
+
+	bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
+	bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+
+	if (bNormal || bSpecial) 
 	{
-		bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-		bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		if(bNormal || bSpecial) {
-			Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
-			RCache.set_xform_world(Fidentity);
-			RCache.set_xform_view(Fidentity);
-			RCache.set_xform_project(RainLight.X.D.combine);
-			r_dsgraph_render_graph(0);
-		}
+		Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
+		RCache.set_xform_world(Fidentity);
+		RCache.set_xform_view(Fidentity);
+		RCache.set_xform_project(RainLight.X.D.combine);
+		r_dsgraph_render_graph(0);
 	}
 
 	// End SMAP-render
-	{
-		//		fuckingsun->svis.end					();
-		r_pmask(true, false);
-	}
+	r_pmask(true, false);
 
 	// Restore XForms
 	RCache.set_xform_world(Fidentity);
