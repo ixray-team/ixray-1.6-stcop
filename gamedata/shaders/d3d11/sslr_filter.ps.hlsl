@@ -54,16 +54,18 @@ float4 main(PSInputFullscreen I) : SV_Target
     IXrayGbuffer O;
     GbufferUnpack(I.texcoord.xy, I.hpos.xy, O);
 
-	float4 SSLR = s_refl.SampleLevel(smp_rtlinear, I.texcoord.xy, 0);
-	float4 BaseColor = s_image.SampleLevel(smp_rtlinear, I.texcoord.xy, 0.0f);
+	float4 SSLR = s_refl.SampleLevel(smp_nofilter, I.texcoord.xy, 0);
+	float4 BaseColor = s_image.SampleLevel(smp_nofilter, I.texcoord.xy, 0.0f);
 	
 	if(O.Depth >= 1.0f)
 	{		
 		return 0.0f;
 	}
 		
-	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth);
+	float3 ReflectPoint = GbufferGetPointRealUnjitter(I.texcoord.xy, O.Depth) * lerp(0.02f, 1.0f, BaseColor.w);
 	float3 View = normalize(ReflectPoint);
+	
+	O.Roughness = lerp(1.0f, O.Roughness, BaseColor.w);
 	
 	float4 FinalColor = BaseColor.xyzz;
  	FinalColor.w = length(O.Point - SSLR.xyz);
@@ -82,8 +84,8 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float4 Color = s_image.SampleLevel(smp_nofilter, offset, 0.0f);
 		float3 Light = O.Point - SSLR.xyz;
 		
-		float S = length(Light);
-		Light *= rcp(max(0.000001f, S));
+		float Length = length(Light);
+		Light *= rcp(max(EPS_S, Length));
 		
 		float3 Half = normalize(Light + View);
 
@@ -96,7 +98,7 @@ float4 main(PSInputFullscreen I) : SV_Target
 		float SampleWeight = D * G * SSLR.w;
 		SampleWeight *= 1.0f - abs(Color.w - BaseColor.w);
 
-		Color.w = S;
+		Color.w = Length;
 		FinalColor += Color * SampleWeight;
 		
 		FinalWeight += SampleWeight;
