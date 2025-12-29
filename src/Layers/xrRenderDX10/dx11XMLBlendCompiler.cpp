@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "dx11XMLBlendCompiler.h"
 #include "../xrRender/dxRenderDeviceRender.h"
+#include "../xrRender/uber_deffer.h"
 
 CXMLBlend::CXMLBlend(const char* FileName)
 {
@@ -88,6 +89,12 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 	else
 	{
 		pCompiler->r_Pass(VSName, PSName, bFog, bZb[0], bZb[1]);
+	}
+
+	bool bUber = Parser.ReadAttribBool(pElement, "uber_deffer");
+	if (bUber)
+	{
+		uber_deffer(*pCompiler, true, nullptr, nullptr, false, nullptr, true, true);
 	}
 
 	// Check blend
@@ -179,21 +186,33 @@ ShaderElement* CXMLBlend::MakeShader(const char* Texture, XML_NODE* pElement)
 	{
 		shared_str TextureName = Parser.ReadAttrib(pTexture, "name", "none");
 		shared_str RtName = Parser.ReadAttrib(pTexture, "rt", "none");
+		shared_str AddNode = Parser.ReadAttrib(pTexture, "append", "none");
 		xr_string DestTexName = Parser.ReadAttrib(pTexture, "dest", "none");
 		if (TextureName != "none" && RtName != "none")
 		{
 			if (RtName == "t_base")
 			{
+				xr_string BaseName = t_0;
+
+				if (AddNode != "none")
+				{
+					BaseName += AddNode.c_str();
+				}
+
 				if (DestTexName != "none")
 				{
 					xr_string TryTexName = TextureName.c_str() + DestTexName;
-					pCompiler->r_dx10Texture(TryTexName.c_str(), t_0);
+					pCompiler->r_dx10Texture(TryTexName.c_str(), BaseName.c_str());
 				}
-				else pCompiler->r_dx10Texture(TextureName.c_str(), t_0);
-
+				else
+				{
+					pCompiler->r_dx10Texture(TextureName.c_str(), BaseName.c_str());
+				}
 			}
 			else
+			{
 				pCompiler->r_dx10Texture(TextureName.c_str(), RtName.c_str());
+			}
 		}
 
 		pTexture = Parser.NavigateToNode(pElement, "texture", Idx);
