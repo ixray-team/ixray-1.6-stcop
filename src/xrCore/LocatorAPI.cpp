@@ -1341,6 +1341,11 @@ void CLocatorAPI::r_close(CStreamReader*& fs)
 	fs->close();
 }
 
+CReaderGuarded CLocatorAPI::rg_open(LPCSTR initial, LPCSTR N)
+{
+	return CReaderGuarded(r_open(initial, N));
+}
+
 void CLocatorAPI::get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir)
 {
 	for (auto& elem : m_files)
@@ -1390,6 +1395,11 @@ void CLocatorAPI::w_close(IWriter*& S)
 			Register(fname, 0xffffffff, 0, 0, StSize, StSize, Time);
 		}
 	}
+}
+
+CWriterGuarded CLocatorAPI::wg_open(LPCSTR initial, LPCSTR N)
+{
+	return CWriterGuarded(w_open(initial, N));
 }
 
 xr_string CLocatorAPI::fix_path(const xr_string& file)
