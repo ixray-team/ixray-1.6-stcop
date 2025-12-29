@@ -4,7 +4,7 @@
 #include "dxRenderDeviceRender.h"
 void fix_texture_name(LPSTR fn);
 
-void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, LPCSTR detail_replace, bool DO_NOT_FINISH)
+void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, LPCSTR detail_replace, bool DO_NOT_FINISH, bool DO_NOT_START)
 {
 	string256 fname, fnameA, fnameB;
 	xr_strcpy(fname, *C.L_textures[0]);
@@ -185,13 +185,16 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 			C.r_dx10Texture("s_tdetailBumpX", texDetailBumpX);
 		}
 	}
-	else if (C.SH->flags.bLandscape)
+	else if (!DO_NOT_START)
 	{
-		C.r_Pass(vs, ps, FALSE, TRUE, FALSE);
-	}
-	else
-	{
-		C.r_Pass(vs, ps, FALSE);
+		if (C.SH->flags.bLandscape)
+		{
+			C.r_Pass(vs, ps, FALSE, TRUE, FALSE);
+		}
+		else
+		{
+			C.r_Pass(vs, ps, FALSE);
+		}
 	}
 
 	C.r_dx10Texture("s_base", C.L_textures[0]);
@@ -230,7 +233,11 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR vs, LPCSTR ps, BOOL aref, 
 	C.r_dx10Sampler("smp_rtlinear");
 
 #else //USE_DX11
-	C.r_Pass(vs, ps, FALSE);
+
+	if (!DO_NOT_START)
+	{
+		C.r_Pass(vs, ps, FALSE);
+	}
 
 	C.r_Sampler_waf("s_base", C.L_textures[0].c_str(), false);
 
