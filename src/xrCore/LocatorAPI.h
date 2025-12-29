@@ -229,9 +229,9 @@ public:
 	CReaderGuarded(CReaderGuarded&&) = delete;
 	CReaderGuarded& operator=(CReaderGuarded&&) = delete;
 
-	IReader& operator*() const { return *Reader; }
-	IReader* operator->() const { return Reader; }
-	operator bool() const { return Reader; }
+	ICF IReader& operator*() const { return *Reader; }
+	ICF IReader* operator->() const { return Reader; }
+	ICF operator bool() const { return Reader; }
 };
 
 class XRCORE_API CWriterGuarded
@@ -246,7 +246,7 @@ public:
 	CWriterGuarded(CWriterGuarded&&) = delete;
 	CWriterGuarded& operator=(CWriterGuarded&&) = delete;
 
-	IWriter& operator*() const { return *Writer; }
-	IWriter* operator->() const { return Writer; }
-	operator bool() const { return Writer; }
+	ICF IWriter& operator*() const { return *Writer; }
+	ICF IWriter* operator->() const { return Writer; }
+	ICF operator bool() const { return Writer; }
 };
