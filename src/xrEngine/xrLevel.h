@@ -53,6 +53,13 @@ enum EBuildQuality
 	ebq_force_u16 = u16(-1)
 };
 
+enum class CFormVersions : u32
+{
+	Vanilla = 4,
+	VanillaChunkedMain,
+	VanillaChunkedData
+};
+
 #pragma pack(push,8)
 struct hdrLEVEL
 {
@@ -62,7 +69,7 @@ struct hdrLEVEL
 
 struct hdrCFORM
 {
-	u32 version;
+	CFormVersions version;
 	u32 vertcount;
 	u32 facecount;
 	Fbox aabb;
