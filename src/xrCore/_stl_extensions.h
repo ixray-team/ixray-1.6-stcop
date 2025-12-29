@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <array>
+#include <span>
 
 using std::swap;
 
@@ -68,6 +69,9 @@ namespace std
 // vector
 template <typename T, typename allocator = xalloc<T> >
 using xr_vector = std::vector<T, allocator>;
+
+template <class T, size_t Ext = std::dynamic_extent>
+using xr_span = std::span<T, Ext>;
 
 template <typename K, typename V>
 using xr_pair = std::pair<K, V>;
