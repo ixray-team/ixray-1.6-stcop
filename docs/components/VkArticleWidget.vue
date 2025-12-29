@@ -5,6 +5,7 @@ const widgetId = 'vk-article-widget'
 const articleUrl = '@ixray_platform-ix-ray-platform-13-obzor'
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
+const isBlocked = ref(false)
 
 const loadScript = () =>
   new Promise<void>((resolve, reject) => {
@@ -54,10 +55,20 @@ onMounted(async () => {
   try {
     await loadScript()
     if (typeof window !== 'undefined') {
-      initWidget()
+      // Проверяем, загрузился ли объект VK после скрипта
+      setTimeout(() => {
+        if (!window.VK?.Widgets?.Article) {
+          isBlocked.value = true
+          errorMessage.value = 'Не удалось загрузить виджет'
+        } else {
+          initWidget()
+        }
+      }, 2000) // Даем скрипту время на загрузку
     }
   } catch (error) {
     errorMessage.value = 'Не удалось загрузить виджет'
+    // Если скрипт не загрузился, это, скорее всего, блокировщик
+    isBlocked.value = true
     console.error(error)
   } finally {
     isLoading.value = false
@@ -68,10 +79,23 @@ onMounted(async () => {
 <template>
   <div class="vk-article-widget">
     <div :id="widgetId" class="vk-article-widget__container" />
+    
+    <!-- Статус загрузки -->
     <p v-if="isLoading" class="vk-article-widget__status">Загрузка...</p>
-    <p v-else-if="errorMessage" class="vk-article-widget__status vk-article-widget__status--error">
-      {{ errorMessage }}
-    </p>
+    
+    <!-- Сообщение об ошибке -->
+    <div v-else-if="errorMessage" class="vk-article-widget__fallback">
+      <p class="vk-article-widget__status vk-article-widget__status--error">
+        {{ errorMessage }}
+      </p>
+      
+      <!-- Специальное сообщение о блокировке AdBlock -->
+      <div v-if="isBlocked" class="adblock-warning">
+        <p><strong>Виджет ВКонтакте не загрузился.</strong></p>
+        <p>Возможно, его заблокировало расширение для блокировки рекламы (AdBlock, uBlock и т.д.).</p>
+        <p>Пожалуйста, отключите блокировку для этого сайта или добавьте его в исключения, чтобы увидеть содержимое.</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -96,5 +120,19 @@ onMounted(async () => {
 
 .vk-article-widget__status--error {
   color: var(--vp-c-danger-1);
+}
+
+.adblock-warning {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid #ffa500;
+  border-radius: 8px;
+  background-color: #fff8e1;
+  font-size: 14px;
+  color: #5d4037;
+}
+
+.adblock-warning p {
+  margin: 5px 0;
 }
 </style>

@@ -1,4 +1,3 @@
-````markdown
 # **Wildcard Support in File Paths**
 
 > [!IMPORTANT]  
@@ -71,5 +70,3 @@ Now you can use a mask:
 - ✔ **Check the list of loaded files** to avoid unwanted resources being included;
 - ⚠ **Recursive masks** (`*`) may result in loading extra files — use them carefully;
 - ✖ **Don't use masks** if you need strict control over the order or composition of files.
-
-````

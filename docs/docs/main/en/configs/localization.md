@@ -1,4 +1,3 @@
-````markdown
 # Game Localization
 # **In-Game Language Switching**
 
@@ -80,5 +79,3 @@ To add a new language to the game, follow these steps:
 
 1. [Working with fonts in IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop/wiki/Fonts)
 2. [File encodings](https://github.com/ixray-team/ixray-1.6-stcop/wiki/File-Encoding)
-
-````

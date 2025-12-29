@@ -1,4 +1,3 @@
-````markdown
 # XMLOverride
 > [!IMPORTANT]
 > **Status**: Supported <br>
@@ -54,5 +53,3 @@ Write the following in the mod file:
       </background>
 </w>
 ```
-
-````
