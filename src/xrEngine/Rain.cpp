@@ -73,8 +73,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * radius;
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(10.f, dest);
 
@@ -89,8 +89,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * (radius * 0.5f);
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(5.f, dest);
 
@@ -121,8 +121,8 @@ void CEffect_Rain::Born(Item& dest, float radius, shared_str& rainType)
 	{
 		float angle = ::Random.randF(0.f, PI_MUL_2);
 		float dist = _sqrt(::Random.randF()) * radius;
-		float x = dist * _cos(angle);
-		float z = dist * _sin(angle);
+		float x = dist * std::cos(angle);
+		float z = dist * std::sin(angle);
 
 		computeDirection(10.f, dest);
 
@@ -273,7 +273,7 @@ void CEffect_Rain::OnFrame()
 	// ambient sound
 	if (snd_Ambient.is_playing())
 	{
-		m_rainVolume = _max(0.1f, factor) * hemi_factor;
+		m_rainVolume = std::max(0.1f, factor) * hemi_factor;
 		snd_Ambient.set_volume(m_rainVolume);
 	}
 

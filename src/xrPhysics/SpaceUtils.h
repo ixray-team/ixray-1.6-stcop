@@ -16,6 +16,6 @@ IC void spatialParsFromDGeom(dGeomID d_space,Fvector& center,Fvector& AABB,float
 		(dAABB[4]+dAABB[5])/2.f
 		);
 	AABB.x=dAABB[1]-center.x,AABB.y=dAABB[3]-center.y,AABB.z=dAABB[5]-center.z;
-	radius=_max(AABB.x,_max(AABB.y,AABB.z));
+	radius= std::max(AABB.x, std::max(AABB.y,AABB.z));
 }
 #endif

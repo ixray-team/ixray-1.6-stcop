@@ -134,7 +134,7 @@ void CIKFoot::set_toe(  u16 bones[4] )
 	ibind.set( ibind2 );
 	ax.set( foot_normal );
 	Kinematics()->EnumBoneVertices( pred, bones[2] );
-	m_toe_position.v.x = _max( pos.x, m_toe_position.v.x );
+	m_toe_position.v.x = std::max( pos.x, m_toe_position.v.x );
 	/////////////////////////////////////////////////////////
 	ax.sub( foot_normal, foot_dir );
 	ax.normalize();
@@ -228,7 +228,7 @@ ik_goal_matrix::e_collide_state	 CIKFoot::CollideFoot( float angle, float &out_a
 	Fvector	axp;			axp.sub( global_toe, global_bone_pos );	
 	float	dfoot_toe		=p.n.dotproduct( axp );
 	out_angle = angle;
-	if( dfoot_tri < m_foot_width * _abs( foot_normal.dotproduct( p.n ) ) )
+	if( dfoot_tri < m_foot_width * std::abs( foot_normal.dotproduct( p.n ) ) )
 		return ik_goal_matrix::cl_aligned;
 	axp.sub( Fvector( ).mul( ax, axp.dotproduct( ax ) ) );															//vector from nc_toe to ax
 	float	dtoe_ax = axp.magnitude();	
@@ -260,9 +260,9 @@ bool CIKFoot::make_shift( Fmatrix &xm,const Fvector &cl_point, bool collide, con
 	Fvector point;
 	xm.transform_tiny( point, cl_point );
 	float dot = p.n.dotproduct( shift );
-	if( _abs( dot ) < min_dot )
+	if(std::abs( dot ) < min_dot )
 	{
-		shift.add( Fvector( ).mul( p.n, min_dot - _abs( dot ) ) );
+		shift.add( Fvector( ).mul( p.n, min_dot - std::abs( dot ) ) );
 		dot = p.n.dotproduct( shift );
 	}
 	VERIFY( !fis_zero( dot ) );
@@ -341,7 +341,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 	}
 
 	float	dtoe_tri		=-cld.m_plane.d - cld.m_plane.n.dotproduct( global_point );	
-	if(  !cld.collided ||  _abs( dtoe_tri ) > collide_dist )
+	if(  !cld.collided || std::abs( dtoe_tri ) > collide_dist )
 	{
 		m.set( global_anim, ik_goal_matrix::cl_free );
 		return false;
@@ -376,7 +376,7 @@ bool CIKFoot::GetFootStepMatrix( ik_goal_matrix &m, const Fmatrix &g_anim, const
 	{
 		DBG_DrawPoint(global_point, 0.03f, color_rgba(255, 0, 0, 255));
 	}
-	if(!fsimilar( _abs( DET( g_anim ) - 1.f ), _abs( DET( m.get() ) - 1.f ), 0.001f ) )
+	if(!fsimilar(std::abs( DET( g_anim ) - 1.f ), std::abs( DET( m.get() ) - 1.f ), 0.001f ) )
 		Msg("scale g_anim: %f scale m: %f ",  DET( g_anim ) ,  DET( m.get() ) );
 #endif
 

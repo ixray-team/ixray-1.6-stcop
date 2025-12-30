@@ -153,7 +153,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 
 	// *** Validate results
 	vNorm.set(0,1,0);
-	if (vNorm.dotproduct(N.Plane.n)<_cos(deg2rad(60.f)))  return FALSE;
+	if (vNorm.dotproduct(N.Plane.n)< std::cos(deg2rad(60.f)))  return FALSE;
 
 	float y_old = vAt.y;
 	float y_new = N.Pos.y;
@@ -774,7 +774,7 @@ SAINode* ESceneAIMapTool::FindNeighbor(SAINode* N, int side, bool bIgnoreConstra
 			float dy= flt_max;
 			for (AINodeIt I=nodes->begin(); I!=nodes->end(); I++)
 				if (fsimilar((*I)->Pos.x,Pos.x,EPS_L)&&fsimilar((*I)->Pos.z,Pos.z,EPS_L)){ 
-					float _dy = _abs((*I)->Pos.y-Pos.y);
+					float _dy = std::abs((*I)->Pos.y-Pos.y);
 					if (_dy<dy){dy=_dy; R=*I;}
 				}
 		}else{
@@ -785,7 +785,7 @@ SAINode* ESceneAIMapTool::FindNeighbor(SAINode* N, int side, bool bIgnoreConstra
 			for (AINodeIt I=nodes->begin(); I!=nodes->end(); I++){
 				if (fsimilar((*I)->Pos.x,Pos.x,EPS_L)&&fsimilar((*I)->Pos.z,Pos.z,EPS_L)){ 
 					float _dy = (*I)->Pos.y-Pos.y;
-					float _ady= _abs(_dy);
+					float _ady= std::abs(_dy);
 					if (_dy>=0.f){
 						if ((_ady<m_Params.fCanUP)&&(_ady<dy_up))		{dy_up=_ady; R_up=*I;}
 					}else{
