@@ -321,7 +321,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	float temp_f = 0.0f;
 	temp_f					= pSettings->r_float( section,"cam_relax_speed" );
-	cam_recoil.RelaxSpeed	= _abs( deg2rad( temp_f ) );
+	cam_recoil.RelaxSpeed	= std::abs( deg2rad( temp_f ) );
 	VERIFY2(!fis_zero(cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line cam_relax_speed = %f", section, temp_f));
 	if ( fis_zero(cam_recoil.RelaxSpeed) )
 	{
@@ -332,7 +332,7 @@ void CWeapon::Load		(LPCSTR section)
 	if ( pSettings->line_exist( section, "cam_relax_speed_ai" ) )
 	{
 		temp_f						= pSettings->r_float( section, "cam_relax_speed_ai" );
-		cam_recoil.RelaxSpeed_AI	= _abs( deg2rad( temp_f ) );
+		cam_recoil.RelaxSpeed_AI	= std::abs( deg2rad( temp_f ) );
 		VERIFY2(!fis_zero(cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line cam_relax_speed_ai = %f", section, temp_f));
 		if ( fis_zero(cam_recoil.RelaxSpeed_AI) )
 		{
@@ -340,7 +340,7 @@ void CWeapon::Load		(LPCSTR section)
 		}
 	}
 	temp_f						= pSettings->r_float( section, "cam_max_angle" );
-	cam_recoil.MaxAngleVert		= _abs( deg2rad( temp_f ) );
+	cam_recoil.MaxAngleVert		= std::abs( deg2rad( temp_f ) );
 	VERIFY2(!fis_zero(cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line cam_max_angle = %f", section, temp_f));
 
 	if ( fis_zero(cam_recoil.MaxAngleVert) )
@@ -349,7 +349,7 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	
 	temp_f						= pSettings->r_float( section, "cam_max_angle_horz" );
-	cam_recoil.MaxAngleHorz		= _abs( deg2rad( temp_f ) );
+	cam_recoil.MaxAngleHorz		= std::abs( deg2rad( temp_f ) );
 	VERIFY2(!fis_zero(cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line cam_max_angle_horz = %f", section, temp_f));
 
 	if ( fis_zero(cam_recoil.MaxAngleHorz) )
@@ -360,7 +360,7 @@ void CWeapon::Load		(LPCSTR section)
 	temp_f						= pSettings->r_float( section, "cam_step_angle_horz" );
 	cam_recoil.StepAngleHorz	= deg2rad( temp_f );
 	
-	cam_recoil.DispersionFrac	= _abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", 0.7f ) );
+	cam_recoil.DispersionFrac	= std::abs( READ_IF_EXISTS( pSettings, r_float, section, "cam_dispersion_frac", 0.7f ) );
 
 	
 	//zoom_cam_recoil.Clone( cam_recoil ); ==== ������ !!!!!!!!!!
@@ -379,7 +379,7 @@ void CWeapon::Load		(LPCSTR section)
 	
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed" ) )
 	{
-		zoom_cam_recoil.RelaxSpeed		= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_relax_speed" ) ) );
+		zoom_cam_recoil.RelaxSpeed		= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_relax_speed" ) ) );
 		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed), make_string<const char*>("Section [%s], line zoom_cam_relax_speed = %f", section, zoom_cam_recoil.RelaxSpeed));
 		if ( fis_zero(zoom_cam_recoil.RelaxSpeed) )
 		{
@@ -388,7 +388,7 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed_ai" ) )
 	{
-		zoom_cam_recoil.RelaxSpeed_AI	= _abs( deg2rad( pSettings->r_float( section,"zoom_cam_relax_speed_ai" ) ) );
+		zoom_cam_recoil.RelaxSpeed_AI	= std::abs( deg2rad( pSettings->r_float( section,"zoom_cam_relax_speed_ai" ) ) );
 		VERIFY2(!fis_zero(zoom_cam_recoil.RelaxSpeed_AI), make_string<const char*>("Section [%s], line zoom_cam_relax_speed_ai = %f", section, zoom_cam_recoil.RelaxSpeed_AI));
 		if ( fis_zero(zoom_cam_recoil.RelaxSpeed_AI) )
 		{
@@ -397,7 +397,7 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	if ( pSettings->line_exist( section, "zoom_cam_max_angle" ) )
 	{
-		zoom_cam_recoil.MaxAngleVert	= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle" ) ) );
+		zoom_cam_recoil.MaxAngleVert	= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle" ) ) );
 		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleVert), make_string<const char*>("Section [%s], line zoom_cam_max_angle = %f", section, zoom_cam_recoil.MaxAngleVert));
 
 		if ( fis_zero(zoom_cam_recoil.MaxAngleVert) )
@@ -407,7 +407,7 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	if ( pSettings->line_exist( section, "zoom_cam_max_angle_horz" ) )
 	{
-		zoom_cam_recoil.MaxAngleHorz	= _abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle_horz" ) ) ); 
+		zoom_cam_recoil.MaxAngleHorz	= std::abs( deg2rad( pSettings->r_float( section, "zoom_cam_max_angle_horz" ) ) );
 		VERIFY2(!fis_zero(zoom_cam_recoil.MaxAngleHorz), make_string<const char*>("Section [%s], line zoom_cam_max_angle_horz = %f", section, zoom_cam_recoil.MaxAngleHorz));
 
 		if ( fis_zero(zoom_cam_recoil.MaxAngleHorz) )
@@ -419,7 +419,7 @@ void CWeapon::Load		(LPCSTR section)
 		zoom_cam_recoil.StepAngleHorz	= deg2rad( pSettings->r_float( section, "zoom_cam_step_angle_horz" ) ); 
 	}
 	if ( pSettings->line_exist( section, "zoom_cam_dispersion_frac" ) )	{
-		zoom_cam_recoil.DispersionFrac	= _abs( pSettings->r_float( section, "zoom_cam_dispersion_frac" ) );
+		zoom_cam_recoil.DispersionFrac	= std::abs( pSettings->r_float( section, "zoom_cam_dispersion_frac" ) );
 	}
 
 	m_pdm.m_fPDM_disp_base			= READ_IF_EXISTS(pSettings, r_float, section, "PDM_disp_base", 1.0f);

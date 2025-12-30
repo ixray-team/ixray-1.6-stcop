@@ -277,7 +277,7 @@ bool game_sv_Deathmatch::OnKillResult(KILL_RES KillResult, game_PlayerState* pKi
 //.			pKiller->kills += 1;
 			pKiller->m_iRivalKills++;
 			pKiller->m_iKillsInRowCurr++;
-			pKiller->m_iKillsInRowMax = _max(pKiller->m_iKillsInRowCurr,pKiller->m_iKillsInRowMax);
+			pKiller->m_iKillsInRowMax = std::max(pKiller->m_iKillsInRowCurr,pKiller->m_iKillsInRowMax);
 			if (pTeam)
 			{
 				s32 ResMoney = pTeam->m_iM_KillRival;

@@ -173,7 +173,7 @@ void CRender::render_rain()
 			bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs);
 		cull_xform.mul(mdir_Project, mdir_View);
 
-		s32		limit = _min(RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
+		s32		limit = std::min((int)RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
 
 		// build viewport xform
 		float	view_dim = float(limit);

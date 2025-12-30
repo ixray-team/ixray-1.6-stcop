@@ -3,7 +3,7 @@
 #include "UIMapWndActions.h"
 #include "UIMap.h"
 #include "UIMapWnd.h"
-
+#undef min
 FRbmkMapActionPlanner::FRbmkMapActionPlanner(CUIMapWnd* InOwner): Owner(InOwner), EndMovingTime(0), TargetZoom(0), DesiredMapRect()
 {
 }
@@ -50,7 +50,7 @@ void FRbmkMapActionPlanner::Update()
 		CUIGlobalMap* UIGlobalMap		= Owner->GlobalMap();
 		float GlobalTime				= Device.fTimeGlobal;
 		float TimeTo					= EndMovingTime-GlobalTime;
-		float DeltaTime					= _min(Device.fTimeDelta,TimeTo);
+		float DeltaTime					= std::min(Device.fTimeDelta,TimeTo);
 		if(EndMovingTime > Device.fTimeGlobal)
 		{
 			Frect CurrentRect = UIGlobalMap->GetWndRect();

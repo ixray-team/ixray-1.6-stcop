@@ -558,13 +558,13 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 	if (dx)
 	{
 		float d = float(dx) * scale;
-		cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, _abs(d));
+		cam_Active()->Move((d < 0) ? kLEFT : kRIGHT, std::abs(d));
 	}
 
 	if (dy)
 	{
 		float d = ((psMouseInvert.test(1)) ? -1 : 1) * float(dy) * scale * 3.0f / 4.0f;
-		cam_Active()->Move((d > 0) ? kUP : kDOWN, _abs(d));
+		cam_Active()->Move((d > 0) ? kUP : kDOWN, std::abs(d));
 	}
 }
 

@@ -1,8 +1,6 @@
 #include "StdAfx.h"
 #include "compiler.h"
 
-#include "cl_intersect.h"
-
 xr_unique_ptr<CDB::MODEL> LevelPtr;
 
 CDB::COLLIDER IXRC;

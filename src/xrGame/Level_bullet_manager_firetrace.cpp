@@ -22,7 +22,7 @@
 #include "ik/math3d.h"
 #include "ParticlesObject.h"
 #include "ai/monsters/basemonster/base_monster.h"
-
+#undef min
 //константы ShootFactor, определяющие 
 //поведение пули при столкновении с объектом
 #define RICOCHET_THRESHOLD		0.1
@@ -103,7 +103,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 								{
 									game_difficulty_hit_probability = weapon->hit_probability();
 									float fly_dist = bullet->fly_dist + dist;
-									dist_factor = _min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
+									dist_factor = std::min(1.f, fly_dist / Level().BulletManager().m_fHPMaxDist);
 								}
 							}
 
@@ -480,7 +480,7 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	{
 		// уменьшение скорости полета в зависимости от угла падения пули (чем прямее угол, тем больше потеря)
 		bullet->flags.allow_ricochet = 0;
-		float scale = 1.0f - _abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
+		float scale = 1.0f - std::abs(bullet->dir.dotproduct(hit_normal)) * m_fCollisionEnergyMin;
 		clamp(scale, 0.0f, m_fCollisionEnergyMax);
 		speed_scale = scale;
 

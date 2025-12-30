@@ -234,7 +234,7 @@ public:
 		Msg("Client Objects : %d", CLObjNum);
 		Msg("Server Objects : %d", SVObjNum);
 
-		for (u32 CO= 0; CO<_max(CLObjNum, SVObjNum); CO++)
+		for (u32 CO= 0; CO< std::max(CLObjNum, SVObjNum); CO++)
 		{
 			if (CO < CLObjNum && CO < SVObjNum)
 			{

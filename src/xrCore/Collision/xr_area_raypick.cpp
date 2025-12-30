@@ -36,7 +36,7 @@ BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 
 BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object)
 {
-	VERIFY(_abs(dir.magnitude() - 1) < EPS);
+	VERIFY(std::abs(dir.magnitude() - 1) < EPS);
 
 	CObjectSpaceThreadData::r_temp.r_clear();
 	CObjectSpaceThreadData::xrc.ray_options(CDB::OPT_ONLYFIRST);

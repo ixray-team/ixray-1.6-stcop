@@ -99,7 +99,7 @@ void CUIMapLocationHint::SetInfoStr(LPCSTR text)
 	S->AdjustHeightToText	();
 	float new_w				= S->GetWndPos().x + S->GetWndSize().x + 20.0f;
 
-	float new_h				= _max(64.0f, S->GetWndPos().y+S->GetWndSize().y+20.0f);
+	float new_h				= std::max(64.0f, S->GetWndPos().y+S->GetWndSize().y+20.0f);
 	SetWndSize				(Fvector2().set(new_w, new_h));
 }
 
@@ -188,7 +188,7 @@ void CUIMapLocationHint::SetInfoTask(CGameTask* task)
 		m_info["t_time_rem"]->SetWndPos( pos_ );
 
 		pos_   = m_info["t_hint_text"]->GetWndPos();
-		pos_.y = _max( pos_.y, m_info["t_icon"]->GetWndPos().y + m_info["t_icon"]->GetWndSize().y + 7 );
+		pos_.y = std::max( pos_.y, m_info["t_icon"]->GetWndPos().y + m_info["t_icon"]->GetWndSize().y + 7 );
 		m_info["t_hint_text"]->SetWndPos( pos_ );
 	}
 	else if ( task->GetTaskType() == eTaskTypeAdditional && Level().GameTaskManager()->IsMultipleTask() )

@@ -47,7 +47,7 @@ void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
 		m_UIImage->SetWidth				(m_UIImage->GetWidth() * UI().get_current_kx());
 
 		float img_x						= (GetWidth()-m_UIImage->GetWidth())/2.0f;
-		img_x							= _max(0.0f, img_x);
+		img_x							= std::max(0.0f, img_x);
 		m_UIImage->SetWndPos			(Fvector2().set(img_x, m_UIImage->GetWndPos().y));
 	};
 	m_UIText->SetTextST					(article->data()->text.c_str());

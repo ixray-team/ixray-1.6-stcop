@@ -27,9 +27,9 @@ public:
 		ray.fwd_dir.set (_dir);
 		if (!bSSE)	{
 			// for FPU - zero out inf
-			if (_abs(_dir.x)>flt_eps){}	else ray.inv_dir.x=0;
-			if (_abs(_dir.y)>flt_eps){}	else ray.inv_dir.y=0;
-			if (_abs(_dir.z)>flt_eps){}	else ray.inv_dir.z=0;
+			if (std::abs(_dir.x)>flt_eps){}	else ray.inv_dir.x=0;
+			if (std::abs(_dir.y)>flt_eps){}	else ray.inv_dir.y=0;
+			if (std::abs(_dir.z)>flt_eps){}	else ray.inv_dir.z=0;
 		}
 		range	= _range;
 		range2	= _range*_range;

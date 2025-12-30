@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "cl_intersect.h"
+#include "../../xrCore/Collision/cl_intersect.h"
 #include "../xrForms/xrThread.h"
 //#include <mmsystem.h>
 

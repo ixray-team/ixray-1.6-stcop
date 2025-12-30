@@ -130,7 +130,7 @@ void ESceneFogVolumeTool::UnGroupCurrent()
 
 void ESceneFogVolumeTool::RegisterGroup(u32 group)
 {
-   m_group_counter = _max(m_group_counter, group);
+   m_group_counter = std::max(m_group_counter, group);
 }
 
 void ESceneFogVolumeTool::Selected(EFogVolume* fv)

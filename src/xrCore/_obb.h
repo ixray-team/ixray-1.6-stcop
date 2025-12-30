@@ -154,9 +154,9 @@ public:
         T absR[3][3];
         for (int i = 0; i < 3; i++)
         {
-            absR[0][i] = _abs(R.i[i]);
-            absR[1][i] = _abs(R.j[i]);
-            absR[2][i] = _abs(R.k[i]);
+            absR[0][i] = std::abs(R.i[i]);
+            absR[1][i] = std::abs(R.j[i]);
+            absR[2][i] = std::abs(R.k[i]);
         }
 
         for (int i = 0; i < 3; i++)
@@ -164,7 +164,7 @@ public:
             T r = m_halfsize.x * absR[0][i] +
                 m_halfsize.y * absR[1][i] +
                 m_halfsize.z * absR[2][i];
-            if (_abs(diff[i]) > aabbExtents[i] + r)
+            if (std::abs(diff[i]) > aabbExtents[i] + r)
                 return false;
         }
 
@@ -175,9 +175,9 @@ public:
                 aabbExtents.z * absR[i][2];
 
             T projection;
-            if (i == 0) projection = _abs(diff.dotproduct(R.i));
-            else if (i == 1) projection = _abs(diff.dotproduct(R.j));
-            else projection = _abs(diff.dotproduct(R.k));
+            if (i == 0) projection = std::abs(diff.dotproduct(R.i));
+            else if (i == 1) projection = std::abs(diff.dotproduct(R.j));
+            else projection = std::abs(diff.dotproduct(R.k));
 
             if (projection > m_halfsize[i] + r)
                 return false;
@@ -237,14 +237,14 @@ public:
             T p1 = verts[1].dotproduct(axes[i]);
             T p2 = verts[2].dotproduct(axes[i]);
 
-            T minTri = _min(p0, _min(p1, p2));
-            T maxTri = _max(p0, _max(p1, p2));
+            T minTri = std::min(p0, std::min(p1, p2));
+            T maxTri = std::max(p0, std::max(p1, p2));
 
             T obbProj = m_translate.dotproduct(axes[i]);
             T obbHalf =
-                m_halfsize.x * _abs(m_rotate.i.dotproduct(axes[i])) +
-                m_halfsize.y * _abs(m_rotate.j.dotproduct(axes[i])) +
-                m_halfsize.z * _abs(m_rotate.k.dotproduct(axes[i]));
+                m_halfsize.x * std::abs(m_rotate.i.dotproduct(axes[i])) +
+                m_halfsize.y * std::abs(m_rotate.j.dotproduct(axes[i])) +
+                m_halfsize.z * std::abs(m_rotate.k.dotproduct(axes[i]));
 
             T obbMin = obbProj - obbHalf;
             T obbMax = obbProj + obbHalf;
@@ -276,19 +276,19 @@ public:
 
         if (outside_count == 1)
         {
-            x = _max(-m_halfsize.x, _min(x, m_halfsize.x));
-            y = _max(-m_halfsize.y, _min(y, m_halfsize.y));
-            z = _max(-m_halfsize.z, _min(z, m_halfsize.z));
+            x = std::max(-m_halfsize.x, std::min(x, m_halfsize.x));
+            y = std::max(-m_halfsize.y, std::min(y, m_halfsize.y));
+            z = std::max(-m_halfsize.z, std::min(z, m_halfsize.z));
         }
         else if (outside_count == 2)
         {
             T dist[6];
-            dist[0] = _abs(x + m_halfsize.x);
-            dist[1] = _abs(x - m_halfsize.x);
-            dist[2] = _abs(y + m_halfsize.y);
-            dist[3] = _abs(y - m_halfsize.y);
-            dist[4] = _abs(z + m_halfsize.z);
-            dist[5] = _abs(z - m_halfsize.z);
+            dist[0] = std::abs(x + m_halfsize.x);
+            dist[1] = std::abs(x - m_halfsize.x);
+            dist[2] = std::abs(y + m_halfsize.y);
+            dist[3] = std::abs(y - m_halfsize.y);
+            dist[4] = std::abs(z + m_halfsize.z);
+            dist[5] = std::abs(z - m_halfsize.z);
 
             int closest_face = 0;
             T min_dist = dist[0];
@@ -311,9 +311,9 @@ public:
             case 5: z = m_halfsize.z; break;
             }
 
-            x = _max(-m_halfsize.x, _min(x, m_halfsize.x));
-            y = _max(-m_halfsize.y, _min(y, m_halfsize.y));
-            z = _max(-m_halfsize.z, _min(z, m_halfsize.z));
+            x = std::max(-m_halfsize.x, std::min(x, m_halfsize.x));
+            y = std::max(-m_halfsize.y, std::min(y, m_halfsize.y));
+            z = std::max(-m_halfsize.z, std::min(z, m_halfsize.z));
         }
         else
         {
@@ -378,9 +378,9 @@ public:
                     Tvector ab; ab.sub(b, a);
                     T denom = planes[i].n.dotproduct(ab);
 
-                    if (_abs(denom) > EPS && temp_count < 12)
+                    if (std::abs(denom) > EPS && temp_count < 12)
                     {
-                        T t = _max(0.0f, _min(1.0f, -da / denom));
+                        T t = std::max(0.0f, std::min(1.0f, -da / denom));
                         temp[temp_count++].mad(a, ab, t);
                     }
                 }
