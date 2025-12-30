@@ -113,7 +113,13 @@ namespace std
 	};
 }
 
-IC void	xr_strlwr(xr_string& src) { for (xr_string::iterator it = src.begin(); it != src.end(); it++) *it = xr_string::value_type(tolower(*it)); }
+IC void	xr_strlwr(xr_string& src)
+{
+	for (xr_string::iterator it = src.begin(); it != src.end(); it++)
+	{
+		*it = xr_string::value_type(tolower(*it));
+	}
+}
 
 // Функция для преобразования русских символов в нижний регистр
 IC xr_string xr_strlwr_rus(const xr_string& str)

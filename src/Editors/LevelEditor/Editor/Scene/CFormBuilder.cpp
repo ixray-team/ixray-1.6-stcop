@@ -74,10 +74,7 @@ void CFormBuilder::clear()
 
 void CFormBuilder::Load(CObjectSpace* To, CDB::build_callback cb)
 {
-	hdrCFORM H = {};
-	H.vertcount = m_Vertex.size();
-	H.facecount = m_Faces.size();
-	H.version = CFORM_CURRENT_VERSION;
-	H.aabb = m_Box;
-	To->Create(m_Vertex.data(),m_Faces.data(), H, cb,nullptr,false);
+	XRay::CForm::CFormatVanilla CForm;
+	CForm.AddStaticGeom(m_Vertex, m_Faces);
+	To->Create(CForm, cb, nullptr, false);
 }

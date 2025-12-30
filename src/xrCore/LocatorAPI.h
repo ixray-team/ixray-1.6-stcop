@@ -143,26 +143,28 @@ private:
 public:
 								CLocatorAPI			();
 								~CLocatorAPI		();
-	void						_initialize			(u32 flags, LPCSTR target_folder=0, LPCSTR fs_name=0);
+	void						_initialize			(u32 flags, LPCSTR target_folder=nullptr, LPCSTR fs_name=nullptr);
 	void						_destroy			();
 
 	CStreamReader*				rs_open				(LPCSTR initial, LPCSTR N);
 	IReader*					r_open				(LPCSTR initial, LPCSTR N);
-	IC IReader*					r_open				(LPCSTR N){return r_open(0,N);}
+	IC IReader*					r_open				(LPCSTR N){return r_open(nullptr,N);}
 	void						r_close				(IReader* &S);
 	void						r_close				(CStreamReader* &fs);
 
 	CReaderGuarded rg_open(LPCSTR initial, LPCSTR N);
+	CReaderGuarded rg_open(LPCSTR N);
 
 	void						get_all_files_in_dir(xr_set<xr_string>& out, LPCSTR dir);
 
 	IWriter*					w_open				(LPCSTR initial, LPCSTR N);
-	IC IWriter*					w_open				(LPCSTR N){return w_open(0,N);}
+	IC IWriter*					w_open				(LPCSTR N){return w_open(nullptr,N);}
 	IWriter*					w_open_ex			(LPCSTR initial, LPCSTR N);
-	IC IWriter*					w_open_ex			(LPCSTR N){return w_open_ex(0,N);}
+	IC IWriter*					w_open_ex			(LPCSTR N){return w_open_ex(nullptr,N);}
 	void						w_close				(IWriter* &S);
 	
 	CWriterGuarded wg_open(LPCSTR initial, LPCSTR N);
+	CWriterGuarded wg_open(LPCSTR N);
 
 	xr_string					fix_path			(const xr_string& file);
 
@@ -197,6 +199,7 @@ public:
     FS_Path*					get_path			(LPCSTR path);
     FS_Path*					append_path			(LPCSTR path_alias, LPCSTR root, LPCSTR add, BOOL recursive);
     LPCSTR						update_path			(string_path& dest, LPCSTR initial, LPCSTR src);
+	LPCSTR						update_path			(xr_stack_string_path& dest, LPCSTR initial, LPCSTR src);
 
 	int							file_list			(FS_FileSet& dest, LPCSTR path, u32 flags=FS_ListFiles, LPCSTR mask=0);
 
