@@ -841,93 +841,119 @@ void RenderTextureEditor()
 											std::strcat(g_imgui_texture_editor.window_selected_name, temp.filename().string().c_str());
 										}
 
-										/*
-										if (texture.subpath[0] != 0)
-										{
-											ImGui::SetItemTooltip("Filename: [%s]\nSubpath: [%s]\nPath: [%s]",
-												texture.filename,
-												texture.subpath,
-												texture.path
-											);
-										}
-										else
-										{
-											ImGui::SetItemTooltip("Filename: [%s]\nPath: [%s]",
-												texture.filename,
-												texture.path
-											);
-										}
-										*/
-
 										if (ImGui::BeginItemTooltip())
 										{
 											was_tooltip_shown = true;
 
-											ImGui::TextWrapped("Filename: [%s]", texture.filename);
+											constexpr const char* _kColumnNamesTooltipTable[] = {
+												"File name",
+												"Folder path",
+												"Preview",
+//												"Full path"
+											};
+
+											constexpr u32 _kColumnsSizeTooltipTable = sizeof(_kColumnNamesTooltipTable) / sizeof(_kColumnNamesTooltipTable[0]);
 											
-											if (texture.subpath[0] != 0)
+											if (_kColumnsSizeTooltipTable < 4)
+												ImGui::Text("Full path: %s", texture.path);
+
+											ImGui::BeginTable("##TTTETV", _kColumnsSizeTooltipTable);
+
+											for (u32 i_tt = 0; i_tt < _kColumnsSizeTooltipTable; ++i_tt)
 											{
-												ImGui::TextWrapped("Subpath: [%s]", texture.subpath);
+												ImGui::TableSetupColumn(_kColumnNamesTooltipTable[i_tt]);
 											}
 
-											ImGui::TextWrapped("Path: [%s]", texture.path);
+											ImGui::TableHeadersRow();
 
-											ImGui::Separator();
+											ImGui::TableNextRow();
 
+											for (u32 column_tt = 0; column_tt < _kColumnsSizeTooltipTable; ++column_tt)
+											{
+												ImGui::TableSetColumnIndex((int)column_tt);
+
+												switch (column_tt)
+												{
+												case 0:
+												{
+													ImGui::Text("%s", texture.filename);
+													break;
+												}
+												case 1:
+												{
+													if (texture.subpath[0] != 0)
+													{
+														ImGui::Text("%s", texture.subpath);
+													}
+													break;
+												}
+												case 2:
+												{
 #if 1
-											if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
-											{
-												ImGui::Text("Preview:");
-												
-												if (g_imgui_texture_editor.pTexturePreview)
-												{
-													ImVec2 preview_size = kTextureEditor_PreviewSizeHigh;
-
-													u32 texture_size = std::max(g_imgui_texture_editor.pTexturePreview->GetWidth(), g_imgui_texture_editor.pTexturePreview->GetHeight());
-
-													if (texture_size < preview_size.x && texture_size > kTextureEditor_PreviewSizeLow.x)
+													if (g_imgui_texture_editor.is_preview_tooltip_image_loaded)
 													{
-														preview_size = kTextureEditor_PreviewSizeMid;
-													}
-													else if (texture_size < kTextureEditor_PreviewSizeMid.x)
-													{
-														preview_size = kTextureEditor_PreviewSizeLow;
-													}
-
-													if (GRHI->APILevel == D3D9)
-													{
-														if (g_imgui_texture_editor.pTexturePreview->GetRawTexture())
+														if (g_imgui_texture_editor.pTexturePreview)
 														{
-															ImGui::Image(g_imgui_texture_editor.pTexturePreview->GetRawTexture(), preview_size);
+															ImVec2 preview_size = kTextureEditor_PreviewSizeHigh;
+
+															u32 texture_size = std::max(g_imgui_texture_editor.pTexturePreview->GetWidth(), g_imgui_texture_editor.pTexturePreview->GetHeight());
+
+															if (texture_size < preview_size.x && texture_size > kTextureEditor_PreviewSizeLow.x)
+															{
+																preview_size = kTextureEditor_PreviewSizeMid;
+															}
+															else if (texture_size < kTextureEditor_PreviewSizeMid.x)
+															{
+																preview_size = kTextureEditor_PreviewSizeLow;
+															}
+
+															if (GRHI->APILevel == D3D9)
+															{
+																if (g_imgui_texture_editor.pTexturePreview->GetRawTexture())
+																{
+																	ImGui::Image(g_imgui_texture_editor.pTexturePreview->GetRawTexture(), preview_size);
+																}
+															}
+															else if (GRHI->APILevel == D3D11)
+															{
+																if (g_imgui_texture_editor.pTexturePreviewSRV && g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV())
+																{
+																	ImGui::Image(g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV(), preview_size);
+																}
+															}
 														}
 													}
-													else if (GRHI->APILevel == D3D11)
+													else
 													{
-														if (g_imgui_texture_editor.pTexturePreviewSRV && g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV())
+														if (g_imgui_texture_editor.is_preview_tooltip_image_load_started == false)
 														{
-															ImGui::Image(g_imgui_texture_editor.pTexturePreviewSRV->GetRawSRV(), preview_size);
+															ime_request_t req;
+
+															req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
+															req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipPreview);
+															req.payload = g_imgui_texture_editor.filter_query[row];
+
+															g_imgui_editors_state.requests.push(req);
+
+															g_imgui_texture_editor.is_preview_tooltip_image_load_started = true;
 														}
+
+														ImGui::Text("Loading. . .");
 													}
-												}
-											}
-											else
-											{
-												if (g_imgui_texture_editor.is_preview_tooltip_image_load_started == false)
-												{
-													ime_request_t req;
-
-													req.editor_type = static_cast<u32>(eImGuiEditorType::kTextureEditor);
-													req.request_type = static_cast<u32>(CImGuiTextureEditor::eRequestType::kLoadTooltipPreview);
-													req.payload = g_imgui_texture_editor.filter_query[row];
-
-													g_imgui_editors_state.requests.push(req);
-
-													g_imgui_texture_editor.is_preview_tooltip_image_load_started = true;
-												}
-
-												ImGui::Text("Loading. . .");
-											}
 #endif
+
+													break;
+												}
+												case 3:
+												{
+													ImGui::Text("%s", texture.path);
+
+													break;
+												}
+												}
+											}
+
+											ImGui::EndTable();
 
 											ImGui::EndTooltip();
 										}
